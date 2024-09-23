@@ -6,14 +6,13 @@
 
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 
 // static
@@ -25,17 +24,22 @@ IOSChromePasswordSenderServiceFactory::GetInstance() {
 
 // static
 password_manager::PasswordSenderService*
-IOSChromePasswordSenderServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+IOSChromePasswordSenderServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+password_manager::PasswordSenderService*
+IOSChromePasswordSenderServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<password_manager::PasswordSenderService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 IOSChromePasswordSenderServiceFactory::IOSChromePasswordSenderServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PasswordSenderService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 IOSChromePasswordSenderServiceFactory::
@@ -44,13 +48,8 @@ IOSChromePasswordSenderServiceFactory::
 std::unique_ptr<KeyedService>
 IOSChromePasswordSenderServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerEnableSenderService)) {
-    return nullptr;
-  }
-
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::OUTGOING_PASSWORD_SHARING_INVITATION,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel()));

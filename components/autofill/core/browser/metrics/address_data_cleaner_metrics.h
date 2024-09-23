@@ -13,6 +13,8 @@ void LogNumberOfProfilesConsideredForDedupe(size_t num_considered);
 
 void LogNumberOfProfilesRemovedDuringDedupe(size_t num_removed);
 
+void LogNumberOfQuasiDuplicateProfilesRemovedDuringDedupe(size_t num_removed);
+
 // Log the number of kLocalOrSyncable Autofill addresses that were because they
 // have not been used for `kDisusedDataModelDeletionTimeDelta`.
 void LogNumberOfAddressesDeletedForDisuse(size_t num_profiles);

@@ -12,9 +12,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
+#include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/service/sync_prefs.h"
 
@@ -37,8 +37,8 @@ DeviceInfoSyncClientImpl::~DeviceInfoSyncClientImpl() = default;
 std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 // Since the local sync backend is currently only supported on Windows, Mac and
 // Linux don't even check the pref on other os-es.
-// TODO(crbug.com/1052397): Reassess whether the next block needs to be included
-// in lacros-chrome once build flag switch of lacros-chrome is
+// TODO(crbug.com/40118868): Reassess whether the next block needs to be
+// included in lacros-chrome once build flag switch of lacros-chrome is
 // complete.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -54,7 +54,7 @@ std::string DeviceInfoSyncClientImpl::GetSigninScopedDeviceId() const {
 
 // syncer::DeviceInfoSyncClient:
 bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
-  // TODO(crbug.com/1286405): Current logic allows to disable receiving tabs
+  // TODO(crbug.com/40210838): Current logic allows to disable receiving tabs
   // in Ash, while sending is still enabled - this seems to be the best solution
   // for Lacros-Primary. Once Lacros-Only is the only available option, this
   // should simply check whether SendTabToSelf datatype is enabled.
@@ -63,6 +63,13 @@ bool DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingEnabled() const {
 #else
   return true;
 #endif
+}
+
+// syncer::DeviceInfoSyncClient:
+sync_pb::SyncEnums_SendTabReceivingType
+DeviceInfoSyncClientImpl::GetSendTabToSelfReceivingType() const {
+  return sync_pb::
+      SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_OR_UNSPECIFIED;
 }
 
 // syncer::DeviceInfoSyncClient:
@@ -80,7 +87,7 @@ std::optional<std::string> DeviceInfoSyncClientImpl::GetFCMRegistrationToken()
 }
 
 // syncer::DeviceInfoSyncClient:
-std::optional<syncer::ModelTypeSet>
+std::optional<syncer::DataTypeSet>
 DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
   return SyncInvalidationsServiceFactory::GetForProfile(profile_)
       ->GetInterestedDataTypes();

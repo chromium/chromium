@@ -42,7 +42,7 @@ message DownloadFileType {
     PLATFORM_TYPE_LINUX = 3;
     PLATFORM_TYPE_MAC = 4;
     PLATFORM_TYPE_WINDOWS = 5;
-    PLATFORM_TYPE_FUCHSIA = 6;
+    // Deprecated: PLATFORM_TYPE_FUCHSIA = 6;
   }
 
   // Next id: 6
@@ -67,7 +67,7 @@ message DownloadFileType {
     ZIP = 1;
     RAR = 2;
     DMG = 3;
-    OFFICE_DOCUMENT = 4;
+    // Deprecated: OFFICE_DOCUMENT = 4;
     SEVEN_ZIP = 5;
   }
   optional InspectionType inspection_type = 6;

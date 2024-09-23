@@ -4,15 +4,17 @@
 
 #include <jni.h>
 
-#include "chrome/browser/incognito/jni_headers/IncognitoUtils_jni.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 
-static jboolean JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env) {
-  PrefService* prefs =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/incognito/jni_headers/IncognitoUtils_jni.h"
+
+static jboolean JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env,
+                                                           Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
   policy::IncognitoModeAvailability incognito_pref =
       IncognitoModePrefs::GetAvailability(prefs);
   DCHECK(incognito_pref == policy::IncognitoModeAvailability::kEnabled ||
@@ -22,9 +24,9 @@ static jboolean JNI_IncognitoUtils_GetIncognitoModeEnabled(JNIEnv* env) {
   return incognito_pref != policy::IncognitoModeAvailability::kDisabled;
 }
 
-static jboolean JNI_IncognitoUtils_GetIncognitoModeManaged(JNIEnv* env) {
-  PrefService* prefs =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
+static jboolean JNI_IncognitoUtils_GetIncognitoModeManaged(JNIEnv* env,
+                                                           Profile* profile) {
+  PrefService* prefs = profile->GetPrefs();
   return prefs->IsManagedPreference(
       policy::policy_prefs::kIncognitoModeAvailability);
 }

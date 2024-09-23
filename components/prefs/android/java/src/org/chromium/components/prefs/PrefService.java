@@ -96,6 +96,22 @@ public class PrefService {
      * @param preference The name of the preference.
      * @return value The value of the specified preference.
      */
+    public long getLong(@NonNull String preference) {
+        return PrefServiceJni.get().getLong(mNativePrefServiceAndroid, preference);
+    }
+
+    /**
+     * @param preference The name of the preference.
+     * @param value The value the specified preference will be set to.
+     */
+    public void setLong(@NonNull String preference, long value) {
+        PrefServiceJni.get().setLong(mNativePrefServiceAndroid, preference, value);
+    }
+
+    /**
+     * @param preference The name of the preference.
+     * @return value The value of the specified preference.
+     */
     @NonNull
     public String getString(@NonNull String preference) {
         return PrefServiceJni.get().getString(mNativePrefServiceAndroid, preference);
@@ -143,6 +159,10 @@ public class PrefService {
         double getDouble(long nativePrefServiceAndroid, String preference);
 
         void setDouble(long nativePrefServiceAndroid, String preference, double value);
+
+        long getLong(long nativePrefServiceAndroid, String preference);
+
+        void setLong(long nativePrefServiceAndroid, String preference, long value);
 
         String getString(long nativePrefServiceAndroid, String preference);
 

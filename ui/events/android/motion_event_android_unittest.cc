@@ -9,7 +9,7 @@
 #include <limits>
 
 #include "base/android/jni_android.h"
-#include "base/numerics/math_constants.h"
+#include "base/numerics/angle_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -42,10 +42,10 @@ constexpr int kAndroidButtonPrimary = 1;
 
 // This function convert tilt_x and tilt_y back to tilt_rad.
 float ConvertToTiltRad(float tilt_x, float tilt_y) {
-  float tilt_x_r = sinf(tilt_x * base::kPiFloat / 180.f);
-  float tilt_x_z = cosf(tilt_x * base::kPiFloat / 180.f);
-  float tilt_y_r = sinf(tilt_y * base::kPiFloat / 180.f);
-  float tilt_y_z = cosf(tilt_y * base::kPiFloat / 180.f);
+  float tilt_x_r = sinf(base::DegToRad(tilt_x));
+  float tilt_x_z = cosf(base::DegToRad(tilt_x));
+  float tilt_y_r = sinf(base::DegToRad(tilt_y));
+  float tilt_y_z = cosf(base::DegToRad(tilt_y));
   float r_x = tilt_x_r * tilt_y_z;
   float r_y = tilt_y_r * tilt_x_z;
   float r = sqrtf(r_x * r_x + r_y * r_y);

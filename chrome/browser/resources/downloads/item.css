@@ -1,0 +1,342 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/action_link_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit action-link-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --controlled-by-active-color: #333;
+  --controlled-by-active-link-color: var(--google-blue-600);
+  --controlled-by-inactive-color: #5a5a5a;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --controlled-by-active-color: inherit;
+    --controlled-by-active-link-color: var(--cr-link-color);
+    --controlled-by-inactive-color: inherit;
+  }
+}
+
+cr-button {
+  font-weight: 500;
+  margin: 0;
+  min-width: auto;
+}
+
+#date {
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: .25px;
+  margin: 21px auto 6px;
+  padding-bottom: 4px;
+  padding-top: 8px;
+  width: var(--downloads-card-width);
+}
+
+#date:empty {
+  display: none;
+}
+
+#content {
+  border-radius: var(--cr-card-border-radius);
+  margin: 6px auto;
+  min-height: 75px;
+  width: var(--downloads-card-width);
+  max-width: calc(100% - 2 * var(--downloads-card-margin));
+}
+#main-content {
+  display: flex;
+  flex: none;
+}
+
+#content.is-active {
+  background-color: var(--cr-card-background-color);
+  box-shadow: var(--cr-card-shadow);
+}
+
+@media (prefers-color-scheme: light) {
+  #content:not(.is-active) {
+    /* GM3 color for "filled cards" */
+    background-color: rgb(221, 227, 234);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  #content:not(.is-active) {
+    /* GM3 color for "filled cards" */
+    background-color: rgb(51, 53, 55);
+    border-color: var(--google-grey-800);
+  }
+}
+
+#details {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;  /* This allows #url to ellide correctly. */
+  padding-bottom: 16px;
+  padding-inline-end: 16px;
+  padding-inline-start: var(--downloads-card-margin);
+  padding-top: 18px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #details {
+    border-color: rgba(var(--google-grey-800-rgb), .8);
+  }
+}
+
+#content:not(.is-active) #name {
+  text-decoration: line-through;
+}
+
+@media (prefers-color-scheme: dark) {
+  #content:not(.is-active) :-webkit-any(#name, #tag) {
+    color: var(--google-grey-500);
+  }
+}
+
+.item-tray {
+  flex: none;
+  width: var(--downloads-card-width);
+}
+
+.icon-wrapper {
+  align-self: start;
+  flex: none;
+  justify-content: center;
+  margin: 18px 24px;
+}
+
+.icon,
+#file-icon-wrapper {
+  height: 32px;
+  width: 32px;
+}
+
+#file-icon-wrapper {
+  overflow: hidden;  /* Reduces file icon flicker on initial load. */
+}
+
+#content:not(.is-active) .icon {
+  filter: grayscale(100%);
+  opacity: .5;
+}
+
+#esb-download-row-promo {
+  background-color: var(--cr-hover-background-color);
+}
+
+#file-icon-wrapper cr-icon[icon-color='light-grey'] {
+  color: var(--google-grey-400);
+}
+
+#file-icon-wrapper cr-icon[icon-color='red'] {
+  color: var(--google-red-700);
+}
+
+#file-icon-wrapper cr-icon[icon-color='yellow'] {
+  color: var(--google-yellow-500);
+}
+
+@media (prefers-color-scheme: dark) {
+  #file-icon-wrapper cr-icon[icon-color='red'] {
+    color: var(--google-red-300);
+  }
+}
+
+#file-icon-wrapper cr-icon[icon-color='grey'] {
+  color: var(--google-grey-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  #file-icon-wrapper cr-icon[icon-color='grey'] {
+    color: var(--google-grey-500);
+  }
+}
+
+.description[description-color='red'] {
+  color: var(--google-red-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  .description[description-color='red'] {
+    color: var(--google-red-300);
+  }
+}
+
+.description[description-color='grey'] {
+  color: var(--google-grey-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  .description[description-color='grey'] {
+    color: var(--google-grey-500);
+  }
+}
+
+#name,
+#file-link,
+#url {
+  max-width: 100%;
+}
+
+#name,
+#file-link {
+  font-weight: 500;
+  word-break: break-all;
+}
+
+@media (prefers-color-scheme: light) {
+  .is-active :-webkit-any(#file-link) {
+    color: var(--google-blue-600);
+  }
+
+  .is-active #name {
+    color: var(--cr-primary-text-color);
+  }
+}
+
+#name {
+  margin-inline-end: 12px;  /* Only really affects #tag. */
+}
+
+#tag {
+  color: #5a5a5a;
+  font-weight: 500;
+}
+
+#url {
+  color: inherit;
+  display: block;
+  margin-top: 6px;
+  min-height: 0;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* Ellipsize beginning and preserve the end to always display the eTLD+1. */
+  direction: rtl;
+  text-align: end;
+}
+
+#referrer-url {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  flex-wrap: nowrap;
+  margin-top: 6px;
+}
+
+#referrer-url a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: rtl;
+  text-align: end;
+  margin-left: 4px;
+  margin-right: 4px;
+  text-decoration: none;
+  min-height: 0;
+  color: inherit;
+}
+
+:host-context([dir=rtl]) #url {
+  direction: ltr;
+}
+
+.is-active #url {
+  color: var(--cr-secondary-text-color);
+}
+.is-active #referrer-url a {
+  color: var(--cr-secondary-text-color);
+}
+
+#progress,
+.description:not(:empty),
+.controls {
+  margin-top: 16px;
+}
+
+@media (prefers-color-scheme: light) {
+  .is-active .description[description-color=''] {
+    color: #616161;
+  }
+}
+
+#progress {
+  /* TODO(dbeam): border-radius on container and progress bar. */
+  --cr-progress-active-color: var(--google-blue-600);
+  --cr-progress-container-color: rgb(223, 222, 223);
+  width: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  #progress {
+    --cr-progress-active-color: var(--google-blue-300);
+    --cr-progress-container-color: var(--google-grey-800);
+  }
+}
+
+#controlled-by,
+#controlled-by a {
+  color: var(--controlled-by-inactive-color);
+}
+
+.is-active #controlled-by {
+  color: var(--controlled-by-active-color);
+}
+
+.is-active #controlled-by a {
+  color: var(--controlled-by-active-link-color);
+}
+
+.more-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#remove-old {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-margin-end: 12px;
+  --cr-icon-button-margin-start: 12px;
+  margin-top: 12px;
+}
+
+#action-icon-buttons {
+  display: flex;
+  flex-direction: row;
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  gap: 12px;
+  margin-top: 12px;
+  margin-inline-start: 12px;
+  margin-inline-end: 12px;
+}
+
+#incognito {
+  -webkit-mask-image: url(images/incognito_marker.svg);
+  background-color: var(--cr-secondary-text-color);
+  height: 16px;
+  margin-block-end: 20px;
+  margin-block-start: auto;
+  width: 16px;
+}
+
+#deepScan {
+  margin-inline-end: 8px;
+}

@@ -14,6 +14,7 @@
 #include "components/value_store/value_store_change.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
+#include "extensions/common/extension_id.h"
 
 using value_store::ValueStore;
 
@@ -29,7 +30,7 @@ ValueStore::Status ReadOnlyError() {
 }  // namespace
 
 PolicyValueStore::PolicyValueStore(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     SequenceBoundSettingsChangedCallback observer,
     std::unique_ptr<ValueStore> delegate)
     : extension_id_(extension_id),

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] slot with tabindex=0 that generates a box should be focusable
+  assert_equals: expected null but got Element node <slot tabindex="0" style="display: inline-block;"></slot>
+Harness: the test ran to completion.
+

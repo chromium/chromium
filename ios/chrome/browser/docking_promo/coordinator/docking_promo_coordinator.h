@@ -8,11 +8,25 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 
+@protocol FirstRunScreenDelegate;
 @protocol PromosManagerUIHandler;
 
 // Presents a fullscreen, animated, instructional promo informing users how to
 // drag the Chrome icon to their iOS homescreen dock.
 @interface DockingPromoCoordinator : ChromeCoordinator <DockingPromoCommands>
+
+/// Initializes a DockingPromoCoordinator. Used for app-launch promo with the
+/// Promos Manager & Feature Engagement Tracker.
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+    NS_DESIGNATED_INITIALIZER;
+
+/// Initializes a DockingPromoCoordinator with a first run delegate.
+- (instancetype)initWithBaseNavigationController:
+                    (UINavigationController*)navigationController
+                                         browser:(Browser*)browser
+                                        delegate:(id<FirstRunScreenDelegate>)
+                                                     delegate;
 
 // The promos manager UI handler to alert about UI changes.
 @property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;

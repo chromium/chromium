@@ -48,10 +48,8 @@ class CORE_EXPORT LoaderFactoryForFrame final
   CodeCacheHost* GetCodeCacheHost() override;
 
  private:
-  void IssueKeepAliveHandleIfRequested(
-      const network::ResourceRequest& network_request,
-      mojom::blink::LocalFrameHost& local_frame_host,
-      mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver);
+  mojo::PendingRemote<mojom::blink::KeepAliveHandle> MaybeIssueKeepAliveHandle(
+      const network::ResourceRequest& network_request);
   scoped_refptr<BackgroundCodeCacheHost> GetBackgroundCodeCacheHost();
 
   URLLoaderThrottleProvider* GetURLLoaderThrottleProvider();

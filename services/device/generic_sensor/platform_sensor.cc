@@ -22,11 +22,11 @@ namespace device {
 
 PlatformSensor::PlatformSensor(mojom::SensorType type,
                                SensorReadingSharedBuffer* reading_buffer,
-                               PlatformSensorProvider* provider)
+                               base::WeakPtr<PlatformSensorProvider> provider)
     : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       reading_buffer_(reading_buffer),
       type_(type),
-      provider_(provider),
+      provider_(std::move(provider)),
       is_active_(false) {
   VLOG(1) << "Platform sensor created. Type " << type_ << ".";
 }
@@ -230,7 +230,7 @@ bool PlatformSensor::UpdateSensorInternal(const ConfigMap& configurations) {
     return true;
   }
 
-  // TODO(https://crbug.com/1427302): `is_active_` needs to be set to true
+  // TODO(crbug.com/40261729): `is_active_` needs to be set to true
   // before before calling `StartSensor` because
   // `FakePlatformSensor::StartSensor` calls
   // `PlatformSensor::UpdateSharedBuffer` before returning, which without this
@@ -278,12 +278,8 @@ bool PlatformSensor::IsSignificantlyDifferent(const SensorReading& lhs,
     case mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
     case mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION:
     case mojom::SensorType::MAGNETOMETER:
-    case mojom::SensorType::PRESSURE:
-    case mojom::SensorType::PROXIMITY:
       return !base::ranges::equal(lhs.raw.values, rhs.raw.values);
   }
-  NOTREACHED();
-  return false;
 }
 
 base::WeakPtr<PlatformSensor> PlatformSensor::AsWeakPtr() {

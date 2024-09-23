@@ -10,7 +10,6 @@ mojom("mojo") {
   sources = [
     "alert.mojom",
     "application.mojom",
-    "color_panel.mojom",
     "font.mojom",
     "menu.mojom",
     "native_widget_ns_window.mojom",
@@ -20,11 +19,14 @@ mojom("mojo") {
   ]
 
   public_deps = [
+    "//components/system_media_controls:mojo",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
     "//ui/base/accelerators/mojom",
     "//ui/base/cursor/mojom",
+    "//ui/base/ime/mojom",
     "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/display/mojom",
     "//ui/events/mojom",
     "//ui/gfx/geometry/mojom",
@@ -55,7 +57,10 @@ mojom("mojo") {
         "//ui/gfx/platform_font_mac.h",
       ]
       traits_sources = [ "font_mojom_traits.cc" ]
-      traits_public_deps = [ "//ui/gfx" ]
+      traits_public_deps = [
+        "//ui/base/ime",
+        "//ui/gfx",
+      ]
     },
   ]
 }

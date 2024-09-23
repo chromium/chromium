@@ -6,7 +6,7 @@
       "Name": "Managed cellular",
       "Cellular": {
         "AutoConnect": true,
-        "SMDPAddress": "1$SMDP.GSMA.COM$00000-00000-00000-000-0001",
+        "SMDPAddress": "LPA:1$SMDP.GSMA.COM$00000-00000-00000-000-0001",
         "ICCID": "1000000000000000000",
       }
     }

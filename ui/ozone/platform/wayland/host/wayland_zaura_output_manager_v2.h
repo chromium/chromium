@@ -54,6 +54,8 @@ class WaylandZAuraOutputManagerV2
     return pending_output_metrics_map_;
   }
 
+  void DumpState(std::ostream& out) const;
+
  private:
   WaylandOutput* GetWaylandOutput(WaylandOutput::Id output_id);
 

@@ -14,7 +14,7 @@
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
-#import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
+#import "ios/chrome/credential_provider_extension/ui/mock_credential_response_handler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -48,42 +48,6 @@
 
 @end
 
-// Fake implementation of CredentialResponseHandler so tests can
-// tell when a credential has been saved.
-@interface FakeCredentialResponseHandler : NSObject <CredentialResponseHandler>
-
-@property(nonatomic, strong) ASPasswordCredential* credential;
-
-@property(nonatomic, strong) void (^receivedCredentialBlock)();
-
-@property(nonatomic, assign) ASExtensionErrorCode errorCode;
-
-@property(nonatomic, strong) void (^receivedErrorCodeBlock)();
-
-@end
-
-@implementation FakeCredentialResponseHandler
-
-- (void)userSelectedCredential:(ASPasswordCredential*)credential {
-  self.credential = credential;
-  if (self.receivedCredentialBlock) {
-    self.receivedCredentialBlock();
-  }
-}
-
-- (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {
-  self.errorCode = errorCode;
-  if (self.receivedErrorCodeBlock) {
-    self.receivedErrorCodeBlock();
-  }
-}
-
-- (void)completeExtensionConfigurationRequest {
-  // No-op.
-}
-
-@end
-
 namespace {
 
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -99,12 +63,13 @@ NSUserDefaults* TestUserDefaults() {
 
 ArchivableCredential* TestCredential(NSString* recordIdentifier) {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                                  gaia:nil
                                               password:@"qwerty123"
                                                   rank:5
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
-                                                  user:@"user"
+                                              username:@"user"
                                                   note:@"note"];
 }
 
@@ -124,8 +89,8 @@ class NewPasswordMediatorTest : public PlatformTest {
   id<MutableCredentialStore> store_;
   FakeNewPasswordUIHandler* uiHandler_ =
       [[FakeNewPasswordUIHandler alloc] init];
-  FakeCredentialResponseHandler* responseHandler_ =
-      [[FakeCredentialResponseHandler alloc] init];
+  MockCredentialResponseHandler* responseHandler_ =
+      [[MockCredentialResponseHandler alloc] init];
 };
 
 void NewPasswordMediatorTest::SetUp() {
@@ -178,6 +143,7 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
                                    note:testNote
+                                   gaia:nil
                           shouldReplace:NO];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
     return blockWaitCompleted;
@@ -186,8 +152,8 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   EXPECT_FALSE(uiHandler_.alertedCredentialExists);
   EXPECT_FALSE(uiHandler_.alertedSaveFailed);
 
-  EXPECT_NSEQ(testUsername, responseHandler_.credential.user);
-  EXPECT_NSEQ(testPassword, responseHandler_.credential.password);
+  EXPECT_NSEQ(testUsername, responseHandler_.passwordCredential.user);
+  EXPECT_NSEQ(testPassword, responseHandler_.passwordCredential.password);
 
   // Reload the store from memory and check that the credential was added.
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
@@ -198,7 +164,7 @@ TEST_F(NewPasswordMediatorTest, SaveNewCredential) {
   EXPECT_TRUE(freshCredentialStore);
   EXPECT_TRUE(freshCredentialStore.credentials);
   EXPECT_EQ(2u, freshCredentialStore.credentials.count);
-  EXPECT_NSEQ(testUsername, freshCredentialStore.credentials[1].user);
+  EXPECT_NSEQ(testUsername, freshCredentialStore.credentials[1].username);
 }
 
 // Tests that `-saveNewCredential:completion:` updates an existing credential
@@ -237,6 +203,7 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
                                    note:testNote
+                                   gaia:nil
                           shouldReplace:NO];
 
   EXPECT_TRUE(uiHandler_.alertedCredentialExists);
@@ -249,6 +216,7 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   [mediator_ saveCredentialWithUsername:testUsername
                                password:testPassword
                                    note:testNote
+                                   gaia:nil
                           shouldReplace:YES];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^BOOL {
     return blockWaitCompleted;
@@ -257,8 +225,8 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   EXPECT_FALSE(uiHandler_.alertedCredentialExists);
   EXPECT_FALSE(uiHandler_.alertedSaveFailed);
 
-  EXPECT_NSEQ(testUsername, responseHandler_.credential.user);
-  EXPECT_NSEQ(testPassword, responseHandler_.credential.password);
+  EXPECT_NSEQ(testUsername, responseHandler_.passwordCredential.user);
+  EXPECT_NSEQ(testPassword, responseHandler_.passwordCredential.password);
 
   // Reload the store from memory and check that the credential was updated.
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
@@ -269,6 +237,8 @@ TEST_F(NewPasswordMediatorTest, SaveUpdateCredential) {
   EXPECT_TRUE(freshCredentialStore);
   EXPECT_TRUE(freshCredentialStore.credentials);
   EXPECT_EQ(1u, freshCredentialStore.credentials.count);
-  EXPECT_NSEQ(testUsername, freshCredentialStore.credentials.firstObject.user);
+  EXPECT_NSEQ(testUsername,
+              freshCredentialStore.credentials.firstObject.username);
 }
-}
+
+}  // namespace

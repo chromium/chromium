@@ -8,6 +8,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink::test {
@@ -18,6 +19,7 @@ MainThreadIsolate::MainThreadIsolate() {
 
 MainThreadIsolate::~MainThreadIsolate() {
   CHECK_NE(nullptr, isolate_);
+  MemoryCache::Get()->EvictResources();
   isolate()->ClearCachesForTesting();
   V8PerIsolateData::From(isolate())->ClearScriptRegexpContext();
   ThreadState::Current()->CollectAllGarbageForTesting();

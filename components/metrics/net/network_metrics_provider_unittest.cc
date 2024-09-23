@@ -21,10 +21,8 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "ios/web/public/test/web_task_environment.h"
-using MetricsTaskEnvironment = web::WebTaskEnvironment;
 #else  // !BUILDFLAG(IS_IOS)
 #include "content/public/test/browser_task_environment.h"
-using MetricsTaskEnvironment = content::BrowserTaskEnvironment;
 #endif  // BUILDFLAG(IS_IOS)
 
 namespace metrics {
@@ -36,12 +34,17 @@ class NetworkMetricsProviderTest : public testing::Test {
       delete;
 
  protected:
-  NetworkMetricsProviderTest()
-      : task_environment_(MetricsTaskEnvironment::IO_MAINLOOP) {}
-  ~NetworkMetricsProviderTest() override {}
+  NetworkMetricsProviderTest() = default;
+  ~NetworkMetricsProviderTest() override = default;
 
  private:
-  MetricsTaskEnvironment task_environment_;
+#if BUILDFLAG(IS_IOS)
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
+#else
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::IO_MAINLOOP};
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

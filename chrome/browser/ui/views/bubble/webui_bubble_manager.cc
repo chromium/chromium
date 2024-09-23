@@ -7,6 +7,8 @@
 #include "base/notimplemented.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level_recorder.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -46,39 +48,20 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
 
   cache_timer_->Stop();
 
-  bubble_init_start_time_ = base::TimeTicks::Now();
-
-  const content::RenderProcessHost* spare_render_process_host =
-      content::RenderProcessHost::GetSpareRenderProcessHost();
-  bubble_warmup_level_ = WebUIBubbleWarmUpLevel::kNoRenderer;
-
+  WebUIContentsWarmupLevelRecorder warmup_level_recorder;
+  warmup_level_recorder.BeforeContentsCreation();
   bubble_view_ = CreateWebUIBubbleDialog(anchor, arrow);
-
-  content::RenderProcessHost* render_process_host = bubble_view_->web_view()
-                                                        ->GetWebContents()
-                                                        ->GetPrimaryMainFrame()
-                                                        ->GetProcess();
-  const bool bubble_using_spare_render_process =
-      render_process_host == spare_render_process_host;
-
-  size_t top_chrome_frames = 0;
-  render_process_host->ForEachRenderFrameHost(
-      [&top_chrome_frames](content::RenderFrameHost* rfh) {
-        top_chrome_frames +=
-            base::EndsWith(rfh->GetSiteInstance()->GetSiteURL().host_piece(),
-                           chrome::kChromeUITopChromeDomain);
-      });
-  const bool bubble_reused_render_process = top_chrome_frames > 1;
-
-  if (bubble_using_cached_web_contents_) {
-    bubble_warmup_level_ = WebUIBubbleWarmUpLevel::kNavigatedWebContents;
-  } else if (bubble_using_spare_render_process) {
-    bubble_warmup_level_ = WebUIBubbleWarmUpLevel::kSpareRenderer;
-  } else if (bubble_reused_render_process) {
-    bubble_warmup_level_ = WebUIBubbleWarmUpLevel::kDedicatedRenderer;
-  }
+  warmup_level_recorder.AfterContentsCreation(
+      bubble_view_->web_view()->GetWebContents());
+  warmup_level_recorder.SetUsedCachedContents(
+      bubble_using_cached_web_contents_);
+  contents_warmup_level_ = warmup_level_recorder.GetWarmupLevel();
 
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
+
+  observers_.Notify(&WebUIBubbleManagerObserver::BeforeBubbleWidgetShowed,
+                    bubble_view_->GetWidget());
+
   // Some bubbles can be triggered when there is no active browser (e.g. emoji
   // picker in Chrome OS launcher). In that case, the close bubble helper isn't
   // needed.
@@ -90,6 +73,10 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
 
   if (identifier)
     bubble_view_->SetProperty(views::kElementIdentifierKey, identifier);
+
+  if (GetContentsWrapper()->is_ready_to_show()) {
+    GetContentsWrapper()->ShowUI();
+  }
 
   return true;
 }
@@ -104,6 +91,14 @@ void WebUIBubbleManager::CloseBubble() {
 
 views::Widget* WebUIBubbleManager::GetBubbleWidget() const {
   return bubble_view_ ? bubble_view_->GetWidget() : nullptr;
+}
+
+void WebUIBubbleManager::AddObserver(WebUIBubbleManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebUIBubbleManager::RemoveObserver(WebUIBubbleManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void WebUIBubbleManager::OnWidgetDestroying(views::Widget* widget) {
@@ -132,22 +127,4 @@ void WebUIBubbleManager::ResetContentsWrapper() {
 
 void WebUIBubbleManager::DisableCloseBubbleHelperForTesting() {
   disable_close_bubble_helper_ = true;
-}
-
-std::string ToString(WebUIBubbleWarmUpLevel warmup_level) {
-  switch (warmup_level) {
-    case WebUIBubbleWarmUpLevel::kNoRenderer:
-      return "NoRenderer";
-    case WebUIBubbleWarmUpLevel::kSpareRenderer:
-      return "SpareRenderer";
-    case WebUIBubbleWarmUpLevel::kDedicatedRenderer:
-      return "DedicatedRenderer";
-    case WebUIBubbleWarmUpLevel::kRedirectedWebContents:
-      return "RedirectedWebContents";
-    case WebUIBubbleWarmUpLevel::kNavigatedWebContents:
-      return "NavigatedWebContents";
-    default:
-      NOTIMPLEMENTED();
-      return "";
-  }
 }

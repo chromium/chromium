@@ -41,7 +41,7 @@ component("shell_dialogs") {
     "//url",
   ]
 
-  if (is_chromeos || is_castos || is_cast_android) {
+  if (is_chromeos || is_castos) {
     sources += [ "shell_dialog_stub.cc" ]
   }
 
@@ -54,10 +54,7 @@ component("shell_dialogs") {
       "shell_dialog_linux.cc",
       "shell_dialog_linux.h",
     ]
-    deps += [
-      "//components/dbus/thread_linux",
-      "//ui/linux:linux_ui",
-    ]
+    deps += [ "//ui/linux:linux_ui" ]
     if (use_dbus) {
       defines += [ "USE_DBUS" ]
       sources += [
@@ -65,6 +62,7 @@ component("shell_dialogs") {
         "select_file_dialog_linux_portal.h",
       ]
       deps += [
+        "//components/dbus/thread_linux",
         "//dbus",
         "//ui/views",
       ]
@@ -114,7 +112,7 @@ component("shell_dialogs") {
     ]
     deps += [
       "//ui/android",
-      "//ui/base:ui_base_jni_headers",
+      "//ui/base:select_file_dialog_jni_headers",
     ]
     include_dirs = [ "$root_gen_dir/ui" ]
     libs = [ "jnigraphics" ]
@@ -137,7 +135,7 @@ component("shell_dialogs") {
     sources += [ "select_file_dialog_fuchsia.cc" ]
   }
 
-  # TODO(crbug.com/1052397): Rename is_chromeos_lacros.
+  # TODO(crbug.com/40118868): Rename is_chromeos_lacros.
   if (is_chromeos_lacros) {
     sources += [
       "select_file_dialog_lacros.cc",
@@ -161,9 +159,7 @@ test("shell_dialogs_unittests") {
 
   if (is_mac) {
     sources += [ "select_file_dialog_mac_unittest.mm" ]
-    weak_frameworks = [
-      "UniformTypeIdentifiers.framework",  # macOS 11
-    ]
+    frameworks = [ "UniformTypeIdentifiers.framework" ]
   }
 
   if (is_win) {

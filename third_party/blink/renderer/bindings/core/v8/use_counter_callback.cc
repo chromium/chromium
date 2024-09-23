@@ -333,9 +333,6 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kAsyncStackTaggingCreateTaskCall:
       blink_feature = WebFeature::kV8AsyncStackTaggingCreateTaskCall;
       break;
-    case v8::Isolate::kImportAssertionDeprecatedSyntax:
-      blink_feature = WebFeature::kV8ImportAssertionDeprecatedSyntax;
-      break;
     case v8::Isolate::kCompileHintsMagicAll:
       blink_feature = WebFeature::kV8CompileHintsMagicAll;
       break;
@@ -360,6 +357,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmModuleCompilation:
       blink_feature = WebFeature::kWebAssemblyModuleCompilation;
       break;
+    case v8::Isolate::kInvalidatedNoUndetectableObjectsProtector:
+      blink_feature = WebFeature::kV8InvalidatedNoUndetectableObjectsProtector;
+      break;
     case v8::Isolate::kWasmJavaScriptPromiseIntegration:
       blink_feature = WebFeature::kV8WasmJavaScriptPromiseIntegration;
       break;
@@ -380,6 +380,18 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kWasmTypedFuncRef:
       blink_feature = WebFeature::kV8WasmTypedFuncRef;
+      break;
+    case v8::Isolate::kDocumentAllLegacyCall:
+      blink_feature = WebFeature::kV8DocumentAllLegacyCall;
+      break;
+    case v8::Isolate::kDocumentAllLegacyConstruct:
+      blink_feature = WebFeature::kV8DocumentAllLegacyConstruct;
+      break;
+    case v8::Isolate::kDurationFormat:
+      blink_feature = WebFeature::kDurationFormat;
+      break;
+    case v8::Isolate::kConsoleContext:
+      blink_feature = WebFeature::kV8ConsoleContext;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink

@@ -4,7 +4,6 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -14,6 +13,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -34,6 +34,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/update_user_activation_state_interceptor.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
@@ -59,6 +60,7 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/test_print_preview_observer.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #endif
 
@@ -138,8 +140,8 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
   // inner WebContents. The direct access is centralized in this helper function
   // for easier migration.
   //
-  // TODO(crbug/1261928): Update this implementation for MPArch, and consider
-  // relocate it to `content/public/test/browser_test_utils.h`.
+  // TODO(crbug.com/40202416): Update this implementation for MPArch, and
+  // consider relocate it to `content/public/test/browser_test_utils.h`.
   void WaitForGuestViewLoadStop(GuestViewBase* guest_view) {
     auto* guest_contents = guest_view->web_contents();
     ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
@@ -190,42 +192,6 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {}
 };
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-class PrintPreviewDelegate : printing::PrintPreviewUI::TestDelegate {
- public:
-  PrintPreviewDelegate() {
-    printing::PrintPreviewUI::SetDelegateForTesting(this);
-  }
-  PrintPreviewDelegate(const PrintPreviewDelegate&) = delete;
-  PrintPreviewDelegate& operator=(const PrintPreviewDelegate&) = delete;
-  ~PrintPreviewDelegate() override {
-    printing::PrintPreviewUI::SetDelegateForTesting(nullptr);
-  }
-
-  void WaitUntilPreviewIsReady() {
-    if (total_page_count_ > 0)
-      return;
-
-    base::RunLoop run_loop;
-    quit_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
- private:
-  // PrintPreviewUI::TestDelegate:
-  void DidGetPreviewPageCount(uint32_t page_count) override {
-    EXPECT_GE(page_count, 1u);
-    total_page_count_ = page_count;
-    if (quit_callback_)
-      std::move(quit_callback_).Run();
-  }
-  void DidRenderPreviewPage(content::WebContents* preview_dialog) override {}
-
-  uint32_t total_page_count_ = 0;
-  base::OnceClosure quit_callback_;
-};
-#endif
 
 }  // namespace
 
@@ -289,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 // other cross-origin content. On the embedder side, when the first page loads,
 // the <object> loads some text/csv content to create a MimeHandlerViewGuest.
 // The test passes if MHV loads.
-// TODO(crbug.com/1182355): Disabled due to flakes.
+// TODO(crbug.com/40751404): Disabled due to flakes.
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
                        DISABLED_NavigationRaceFromCrossProcessRenderer) {
   const std::string kTestName = "test_navigation_race_cross_origin";
@@ -662,8 +628,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
   content::TestNavigationObserver reload_observer(embedder_web_contents);
   constexpr char kMsg[] = R"({"id":1,"method":"Page.reload"})";
   devtools_agent_host->DispatchProtocolMessage(
-      &devtools_agent_host_client,
-      base::as_bytes(base::make_span(kMsg, strlen(kMsg))));
+      &devtools_agent_host_client, base::byte_span_from_cstring(kMsg));
   reload_observer.Wait();
   devtools_agent_host->DetachClient(&devtools_agent_host_client);
 }
@@ -682,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbeddedThenPrint) {
-  PrintPreviewDelegate print_preview_delegate;
+  printing::TestPrintPreviewObserver print_observer(/*wait_for_loaded=*/false);
   RunTestWithUrl(embedded_test_server()->GetURL("/test_embedded.html"));
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -697,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, EmbeddedThenPrint) {
   // dialog.
   ASSERT_TRUE(content::ExecJs(main_frame,
                               "setTimeout(function() { window.print(); }, 0)"));
-  print_preview_delegate.WaitUntilPreviewIsReady();
+  print_observer.WaitUntilPreviewIsReady();
 }
 #endif
 

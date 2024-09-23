@@ -73,7 +73,6 @@ class ExceptionState;
 class FetchEvent;
 class RespondWithObserver;
 class RequestInit;
-class ScriptPromise;
 class ScriptState;
 class ServiceWorker;
 class ServiceWorkerClients;
@@ -169,7 +168,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   ServiceWorkerRegistration* registration();
   ::blink::ServiceWorker* serviceWorker();
 
-  ScriptPromise skipWaiting(ScriptState*);
+  ScriptPromise<IDLUndefined> skipWaiting(ScriptState*);
 
   void BindServiceWorker(mojo::PendingReceiver<mojom::blink::ServiceWorker>);
   void BindControllerServiceWorker(
@@ -240,11 +239,14 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // native fetch.
   void RespondToFetchEventWithNoResponse(
       int fetch_event_id,
+      FetchEvent* fetch_event,
       const KURL& request_url,
       bool range_request,
       std::optional<network::DataElementChunkedDataPipe> request_body,
       base::TimeTicks event_dispatch_time,
       base::TimeTicks respond_with_settled_time);
+  void OnStreamingUploadCompletion(int fetch_event_id);
+
   // Responds to the fetch event with |response|.
   void RespondToFetchEvent(int fetch_event_id,
                            const KURL& request_url,
@@ -636,7 +638,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   Member<::blink::ServiceWorker> service_worker_;
 
   // Registry of interfaces exposed to the browser from Service Workers.
-  const raw_ptr<InterfaceRegistry, ExperimentalRenderer> interface_registry_;
+  const raw_ptr<InterfaceRegistry> interface_registry_;
 
   // Map from service worker version id to JavaScript ServiceWorker object in
   // current execution context.
@@ -723,6 +725,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       fetch_response_callbacks_;
 
   HeapHashMap<int, Member<FetchEvent>> pending_preload_fetch_events_;
+  HeapHashMap<int, Member<FetchEvent>> pending_streaming_upload_fetch_events_;
 
   // Track outstanding FetchEvent objects still waiting for a response by
   // request URL.  This information can be used as a hint that cache_storage

@@ -83,8 +83,7 @@ final class DescriptorMessageInfoFactory implements MessageInfoFactory {
               "AllFields",
               "DescriptorForType",
               "InitializationErrorString",
-              // TODO(b/219045204): re-enable
-              // "UnknownFields",
+              "UnknownFields",
               // obsolete. kept for backwards compatibility of generated code
               "CachedSize"));
 
@@ -150,7 +149,7 @@ final class DescriptorMessageInfoFactory implements MessageInfoFactory {
    * <p>This class is thread-safe.
    */
   // <p>The code is adapted from the C++ implementation:
-  // https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/compiler/java/java_helpers.h
+  // https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/compiler/java/java_helpers.h
   static class IsInitializedCheckAnalyzer {
 
     private final Map<Descriptor, Boolean> resultCache =

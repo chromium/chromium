@@ -47,7 +47,11 @@ class FileProducer {
 // All member functions must be called on the UI thread.
 class FakeRecentSource : public RecentSource {
  public:
+  // Creates a recent source for kTesting volume type.
   FakeRecentSource();
+  // Creates a recent source with the specified volume type.
+  FakeRecentSource(
+      extensions::api::file_manager_private::VolumeType volume_type);
 
   FakeRecentSource(const FakeRecentSource&) = delete;
   FakeRecentSource& operator=(const FakeRecentSource&) = delete;
@@ -57,7 +61,8 @@ class FakeRecentSource : public RecentSource {
   // RecentSource overrides. When this method is called it triggers GetFiles
   // calls on all known file producers. When all file producers deliver the
   // results the callback is called with all delivered files.
-  void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
+  void GetRecentFiles(const Params& params,
+                      GetRecentFilesCallback callback) override;
 
   std::vector<RecentFile> Stop(int32_t call_id) override;
 

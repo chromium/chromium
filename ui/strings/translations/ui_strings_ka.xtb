@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">გამოკითხვა</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ტბაიტი/წმ</translation>
 <translation id="2353636109065292463">თქვენი ინტერნეტ-კავშირის შემოწმება</translation>
+<translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2388990488038464401">გსურთ ამ ნომერზე დარეკვა თქვენი ტელეფონიდან?</translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
 <translation id="24452542372838207">შეტყობინების გაშლა</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">ახალი</translation>
 <translation id="2666092431469916601">ზედა</translation>
 <translation id="2701330563083355633">გაზიარებულია <ph name="DEVICE_NAME" />-დან</translation>
-<translation id="271033894570825754">ახალი</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 წლის წინ}other{# წლის წინ}}</translation>
 <translation id="2878511608894704031">ყველაფრის წაშლა</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 დღეში}other{# დღეში}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> სისტემა</translation>
 <translation id="5583640892426849032">უკუშლა</translation>
 <translation id="5613020302032141669">მარცხენა ისარი</translation>
+<translation id="5633029987065897167">ცარიელი</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 წთ}other{# წთ}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{აქტიური იყო დღეს}=1{აქტიური იყო 1 დღის წინ}other{აქტიური იყო # დღის წინ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 დღე და }other{# დღე და }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF კონტენტი</translation>
 <translation id="6539092367496845964">წარმოიქმნა შეფერხება. ცადეთ მოგვიანებით.</translation>
 <translation id="654149438358937226">ყველა შეტყობინების დაბლოკვა</translation>
-<translation id="6612467943526193239">კალიბრაციიდან გამოსასვლელად, დააჭირეთ კლავიშს „Esc“.</translation>
 <translation id="6620110761915583480">ფაილის შენახვა</translation>
 <translation id="6699343763173986273">შემდეგი მედია ჩანაწერი</translation>
 <translation id="6808150112686056157">მედიის შეწყვეტა</translation>

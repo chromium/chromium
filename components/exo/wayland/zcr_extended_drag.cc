@@ -49,18 +49,6 @@ class ZcrExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
     return settings_ & ZCR_EXTENDED_DRAG_V1_OPTIONS_LOCK_CURSOR;
   }
 
-  void OnSwallowed(const std::string& mime_type) override {
-    zcr_extended_drag_source_v1_send_swallow(resource_, mime_type.c_str());
-    wl_client_flush(wl_resource_get_client(resource_));
-  }
-
-  void OnUnswallowed(const std::string& mime_type,
-                     const gfx::Vector2d& offset) override {
-    zcr_extended_drag_source_v1_send_unswallow(resource_, mime_type.c_str(),
-                                               offset.x(), offset.y());
-    wl_client_flush(wl_resource_get_client(resource_));
-  }
-
   void OnDataSourceDestroying() override { delete this; }
 
  private:
@@ -117,7 +105,7 @@ void extended_drag_offer_swallow(wl_client* client,
                                  wl_resource* resource,
                                  uint32_t serial,
                                  const char* mime_type) {
-  GetUserDataAs<ExtendedDragOffer>(resource)->Swallow(serial, mime_type);
+  // [deprecatd]: No need to implement this.
 }
 
 void extended_drag_offer_unswallow(wl_client* client,
@@ -126,9 +114,7 @@ void extended_drag_offer_unswallow(wl_client* client,
                                    const char* mime_type,
                                    int32_t x_offset,
                                    int32_t y_offset) {
-  gfx::Vector2d offset{x_offset, y_offset};
-  GetUserDataAs<ExtendedDragOffer>(resource)->Unswallow(serial, mime_type,
-                                                        offset);
+  // [deprecatd]: No need to implement this.
 }
 
 const struct zcr_extended_drag_offer_v1_interface

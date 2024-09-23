@@ -9,7 +9,6 @@ import org.junit.Assert;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -34,7 +33,7 @@ public class LayoutTestUtils {
                         finishedShowingCallbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Only trigger immediately if the layout visible and not mid-transition.
                     if (layoutManager.isLayoutVisible(type)
@@ -47,16 +46,17 @@ public class LayoutTestUtils {
                 });
 
         try {
-            finishedShowingCallbackHelper.waitForFirst();
+            finishedShowingCallbackHelper.waitForOnly();
         } catch (TimeoutException e) {
             assert false : "Timed out waiting for layout (@LayoutType " + type + ") to show!";
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.removeObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> layoutManager.removeObserver(observer));
     }
 
     /**
      * Start showing a layout and wait for it to finish showing.
+     *
      * @param layoutManager A layout manager to show different layouts.
      * @param type The type of layout to show.
      * @param animate Whether to animate the transition.

@@ -8,11 +8,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.annotation.StyleableRes;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import org.chromium.ui.R;
 import org.chromium.ui.base.UiAndroidFeatureList;
@@ -23,11 +23,11 @@ import org.chromium.ui.base.UiAndroidFeatureList;
  * calculation to set up leading correctly and allows it to be set in XML. It overwrites
  * android:lineSpacingExtra and android:lineSpacingMultiplier.
  */
-public class TextViewWithLeading extends TextView {
+public class TextViewWithLeading extends AppCompatTextView {
     /**
-     * Constructing TextViewWithLeading programmatically without an {@link AttributeSet} will
-     * render it functionally equivalent to a TextView - that is no leading will be applied. This
-     * method is provided for use from subclasses.
+     * Constructing TextViewWithLeading programmatically without an {@link AttributeSet} will render
+     * it functionally equivalent to a TextView - that is no leading will be applied. This method is
+     * provided for use from subclasses.
      */
     protected TextViewWithLeading(Context context) {
         super(context);

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/kcer/extra_instances.h"
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -15,7 +17,9 @@
 #include "base/scoped_observation.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
+#include "chrome/browser/ash/net/client_cert_store_kcer.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
@@ -71,16 +75,23 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
-    const user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(
-        Profile::FromBrowserContext(browser_context_));
+    Profile* profile = Profile::FromBrowserContext(browser_context_);
 
-    // Use the device-wide system key slot only if the user is affiliated on the
-    // device.
-    const bool use_system_key_slot = user->IsAffiliated();
-    return std::make_unique<ClientCertStoreAsh>(
-        nullptr,  // no additional provider
-        use_system_key_slot, user->username_hash(),
-        ClientCertStoreAsh::PasswordDelegateFactory());
+    if (ash::features::ShouldUseKcerClientCertStore()) {
+      return std::make_unique<ClientCertStoreKcer>(
+          nullptr,  // no additional provider
+          kcer::KcerFactoryAsh::GetKcer(profile));
+    } else {
+      const user_manager::User* user =
+          ProfileHelper::Get()->GetUserByProfile(profile);
+      // Use the device-wide system key slot only if the user is affiliated on
+      // the device.
+      const bool use_system_key_slot = user->IsAffiliated();
+      return std::make_unique<ClientCertStoreAsh>(
+          nullptr,  // no additional provider
+          use_system_key_slot, user->username_hash(),
+          ClientCertStoreAsh::PasswordDelegateFactory());
+    }
   }
 
  private:
@@ -91,7 +102,7 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
                           public SystemTokenCertDbStorage::Observer {
  public:
   DelegateForDevice() {
-    scoped_observeration_.Observe(SystemTokenCertDbStorage::Get());
+    scoped_observation_.Observe(SystemTokenCertDbStorage::Get());
   }
 
   ~DelegateForDevice() override = default;
@@ -101,20 +112,26 @@ class DelegateForDevice : public PlatformKeysServiceImplDelegate,
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
-    return std::make_unique<ClientCertStoreAsh>(
-        nullptr,  // no additional provider
-        /*use_system_key_slot=*/true, /*username_hash=*/std::string(),
-        ClientCertStoreAsh::PasswordDelegateFactory());
+    if (ash::features::ShouldUseKcerClientCertStore()) {
+      return std::make_unique<ClientCertStoreKcer>(
+          nullptr,  // no additional provider
+          kcer::ExtraInstances::GetDeviceKcer());
+    } else {
+      return std::make_unique<ClientCertStoreAsh>(
+          nullptr,  // no additional provider
+          /*use_system_key_slot=*/true, /*username_hash=*/std::string(),
+          ClientCertStoreAsh::PasswordDelegateFactory());
+    }
   }
 
  private:
   base::ScopedObservation<SystemTokenCertDbStorage,
                           SystemTokenCertDbStorage::Observer>
-      scoped_observeration_{this};
+      scoped_observation_{this};
 
   // SystemTokenCertDbStorage::Observer
   void OnSystemTokenCertDbDestroyed() override {
-    scoped_observeration_.Reset();
+    scoped_observation_.Reset();
     ShutDown();
   }
 };
@@ -136,8 +153,9 @@ PlatformKeysServiceFactory* PlatformKeysServiceFactory::GetInstance() {
 
 // static
 PlatformKeysService* PlatformKeysServiceFactory::GetDeviceWideService() {
-  if (device_wide_service_for_testing_)
+  if (device_wide_service_for_testing_) {
     return device_wide_service_for_testing_;
+  }
 
   if (!device_wide_service_) {
     device_wide_service_ = std::make_unique<PlatformKeysServiceImpl>(
@@ -159,6 +177,7 @@ void PlatformKeysServiceFactory::SetDeviceWideServiceForTesting(
 
 void PlatformKeysServiceFactory::SetTestingMode(bool is_testing_mode) {
   map_to_softoken_attrs_for_testing_ = is_testing_mode;
+  allow_alternative_params_for_testing_ = is_testing_mode;
 }
 
 PlatformKeysServiceFactory::PlatformKeysServiceFactory()
@@ -166,9 +185,12 @@ PlatformKeysServiceFactory::PlatformKeysServiceFactory()
           "PlatformKeysService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(NssServiceFactory::GetInstance());
 }
@@ -190,6 +212,8 @@ PlatformKeysServiceFactory::BuildServiceInstanceForBrowserContext(
       std::make_unique<PlatformKeysServiceImpl>(std::move(delegate));
   platform_keys_service_impl->SetMapToSoftokenAttrsForTesting(
       map_to_softoken_attrs_for_testing_);
+  platform_keys_service_impl->SetAllowAlternativeParamsForTesting(
+      allow_alternative_params_for_testing_);
 
   return platform_keys_service_impl;
 }

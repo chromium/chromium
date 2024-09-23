@@ -140,9 +140,21 @@ public final class OmniboxImageSupplierUnitTest {
     }
 
     @Test
-    public void generateFavicon() {
+    public void generateFavicon_beforeNativeInitialized() {
         doReturn(mBitmap1).when(mIconGenerator).generateIconForUrl(NAV_URL);
 
+        mSupplier.generateFavicon(NAV_URL, mCallback1);
+        ShadowLooper.runUiThreadTasks();
+
+        verifyReturnedIcon(null);
+        verifyNoOtherInteractionsAndClearInteractions();
+    }
+
+    @Test
+    public void generateFavicon_afterNativeInitialized() {
+        doReturn(mBitmap1).when(mIconGenerator).generateIconForUrl(NAV_URL);
+
+        mSupplier.onNativeInitialized();
         mSupplier.generateFavicon(NAV_URL, mCallback1);
         ShadowLooper.runUiThreadTasks();
 

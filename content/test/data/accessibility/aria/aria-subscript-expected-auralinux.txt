@@ -10,12 +10,12 @@
 ++++++[static] name=' ' text-position=sub
 ++++++[content deletion] text-position=sub
 ++++++++[section] name='3' text-position=sub
-++++++++++[section] name='oops' text-position=sub
+++++++++++[section] description='oops' description-from:tooltip text-position=sub
 ++++++++++++[static] name='3' text-position=sub
 ++++++[static] name=' ' text-position=sub
 ++++++[content insertion] text-position=sub
 ++++++++[link] name='2' text-position=sub
-++++++++++[section] name='better' text-position=sub
+++++++++++[section] description='better' description-from:tooltip text-position=sub
 ++++++++++++[static] name='2' text-position=sub
 ++++++[static] name=' ' text-position=sub
 ++++[static] name='O'

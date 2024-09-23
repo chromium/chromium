@@ -1,0 +1,240 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("accessibility") {
+  sources = [
+    "accessibility_dlc_installer.cc",
+    "accessibility_dlc_installer.h",
+    "accessibility_event_rewriter_delegate_impl.cc",
+    "accessibility_event_rewriter_delegate_impl.h",
+    "accessibility_extension_loader.cc",
+    "accessibility_extension_loader.h",
+    "accessibility_manager.cc",
+    "accessibility_manager.h",
+    "accessibility_panel.cc",
+    "accessibility_panel.h",
+    "chromevox_panel.cc",
+    "chromevox_panel.h",
+    "dictation.cc",
+    "dictation.h",
+    "event_handler_common.cc",
+    "event_handler_common.h",
+    "facegaze_settings_event_handler.h",
+    "magnification_manager.cc",
+    "magnification_manager.h",
+    "magnifier_type.h",
+    "select_to_speak_event_handler_delegate_impl.cc",
+    "select_to_speak_event_handler_delegate_impl.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/webui/settings/public/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:resources",
+    "//chrome/browser:resources_grit",
+    "//chrome/browser/ash/accessibility/service",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chrome/browser/ui/aura/accessibility",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/audio/public/cpp/sounds",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/language_packs",
+    "//chromeos/dbus/power",
+    "//components/input",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/live_caption:constants",
+    "//extensions/browser/api/virtual_keyboard_private",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
+    "//extensions/common:mojom",
+    "//services/accessibility:buildflags",
+    "//ui/content_accelerators",
+    "//ui/events/ash",
+    "//ui/views/controls/webview",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//components/session_manager/core",
+    "//components/soda",
+    "//content/public/browser",
+    "//dbus",
+    "//extensions/browser",
+    "//extensions/common",
+    "//services/accessibility/public/mojom:assistive_technology_type",
+    "//skia",
+    "//ui/events/devices",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/accessibility/service" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "accessibility_feature_browsertest.cc",
+    "accessibility_feature_browsertest.h",
+    "accessibility_test_utils.cc",
+    "accessibility_test_utils.h",
+    "autoclick_test_utils.cc",
+    "autoclick_test_utils.h",
+    "automation_test_utils.cc",
+    "automation_test_utils.h",
+    "dictation_test_utils.cc",
+    "dictation_test_utils.h",
+    "facegaze_test_utils.cc",
+    "facegaze_test_utils.h",
+    "fullscreen_magnifier_test_helper.cc",
+    "fullscreen_magnifier_test_helper.h",
+    "select_to_speak_test_utils.cc",
+    "select_to_speak_test_utils.h",
+    "speech_monitor.cc",
+    "speech_monitor.h",
+    "switch_access_test_utils.cc",
+    "switch_access_test_utils.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs",
+    "//components/privacy_sandbox:features",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser:test_support",
+    "//ui/base:test_support",
+    "//ui/base/ime/ash",
+    "//ui/display:display_manager_test_api",
+  ]
+
+  public_deps = [
+    "//chrome/browser/extensions",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//ui/events:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "accessibility_dlc_installer_unittest.cc" ]
+
+  deps = [
+    ":accessibility",
+    "//base",
+    "//chrome/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "accessibility_common_browsertest.cc",
+    "accessibility_extension_api_browsertest.cc",
+    "accessibility_extension_channel_browsertest.cc",
+    "accessibility_highlights_browsertest.cc",
+    "accessibility_manager_browsertest.cc",
+    "autoclick_browsertest.cc",
+    "dictation_browsertest.cc",
+    "dictation_bubble_test_helper.cc",
+    "dictation_bubble_test_helper.h",
+    "facegaze_browsertest.cc",
+    "magnification_controller_browsertest.cc",
+    "magnification_manager_browsertest.cc",
+    "select_to_speak_browsertest.cc",
+    "spoken_feedback_app_list_browsertest.cc",
+    "spoken_feedback_browsertest.cc",
+    "spoken_feedback_browsertest.h",
+    "sticky_keys_browsertest.cc",
+    "switch_access_browsertest.cc",
+    "touch_exploration_controller_browsertest.cc",
+  ]
+
+  deps = [
+    ":accessibility",
+    ":test_support",
+    "//ash/app_list",
+    "//ash/app_list/model:app_list_model",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/accessibility/service:test_support",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/base",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/preferences",
+    "//chrome/browser/ui/ash/input_method",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/ui/aura/accessibility",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/live_caption:constants",
+    "//ui/events:test_support",
+
+    # Tests from subdirectories:
+    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
+    "//chrome/browser/ash/accessibility/service:browser_tests",
+  ]
+}
+
+if (is_chromeos_device) {
+  source_set("integration_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "spoken_feedback_integration_test.cc" ]
+
+    deps = [
+      ":accessibility",
+      "//ash",
+      "//base",
+      "//chrome/common",
+      "//chrome/test:ash_integration_test_support",
+      "//chrome/test:test_support",
+      "//extensions/browser",
+      "//ui/base:test_support",
+      "//ui/events",
+    ]
+  }
+}

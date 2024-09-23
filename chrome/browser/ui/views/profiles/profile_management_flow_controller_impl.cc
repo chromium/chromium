@@ -9,13 +9,13 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -27,11 +27,6 @@ ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback)
     : ProfileManagementFlowController(host, std::move(clear_host_callback)) {}
-
-base::queue<ProfileManagementFlowController::Step>
-ProfileManagementFlowControllerImpl::RegisterPostIdentitySteps() {
-  return {};
-}
 
 ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
     default;
@@ -110,7 +105,8 @@ ProfileManagementFlowControllerImpl::CreateSamlStep(
 void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
     Profile* signed_in_profile,
     const CoreAccountInfo& account_info,
-    std::unique_ptr<content::WebContents> contents) {
+    std::unique_ptr<content::WebContents> contents,
+    StepSwitchFinishedCallback step_switch_finished_callback) {
   CHECK(!signin_util::IsForceSigninEnabled() ||
         base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker));
   DCHECK(signed_in_profile);
@@ -131,7 +127,8 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
                                             std::move(contents)));
   }
 
-  SwitchToStep(step, /*reset_state=*/true);
+  SwitchToStep(step, /*reset_state=*/true,
+               std::move(step_switch_finished_callback));
 
   // If we need to go back, we should go all the way to the beginning of the
   // flow and after that, recreate the account selection step to ensure no data
@@ -143,17 +140,40 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
 }
 #endif
 
-void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps() {
-  post_identity_steps_ = RegisterPostIdentitySteps();
-  AdvanceToNextPostIdentityStep();
+void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps(
+    PostHostClearedCallback post_host_cleared_callback,
+    StepSwitchFinishedCallback step_switch_finished_callback) {
+  post_identity_steps_ =
+      RegisterPostIdentitySteps(std::move(post_host_cleared_callback));
+  AdvanceToNextPostIdentityStep(std::move(step_switch_finished_callback));
 }
 
-void ProfileManagementFlowControllerImpl::AdvanceToNextPostIdentityStep() {
+void ProfileManagementFlowControllerImpl::AdvanceToNextPostIdentityStep(
+    StepSwitchFinishedCallback step_switch_finished_callback) {
   if (post_identity_steps_.empty()) {
     return;
   }
 
   Step next_step = post_identity_steps_.front();
   post_identity_steps_.pop();
-  SwitchToStep(next_step, /*reset_state=*/true);
+  SwitchToStep(next_step, /*reset_state=*/true,
+               std::move(step_switch_finished_callback));
+}
+
+void ProfileManagementFlowControllerImpl::HandleIdentityStepsCompleted(
+    Profile* profile,
+    PostHostClearedCallback post_host_cleared_callback,
+    bool is_continue_callback,
+    StepSwitchFinishedCallback step_switch_finished_callback) {
+  CHECK(profile);
+
+  if (is_continue_callback) {
+    // The flow is closing, we just drop `step_switch_finished_callback`, only
+    // schedule `post_host_cleared_callback` to run.
+    FinishFlowAndRunInBrowser(profile, std::move(post_host_cleared_callback));
+    return;
+  }
+
+  SwitchToPostIdentitySteps(std::move(post_host_cleared_callback),
+                            std::move(step_switch_finished_callback));
 }

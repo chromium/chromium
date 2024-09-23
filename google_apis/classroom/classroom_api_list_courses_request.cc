@@ -53,6 +53,7 @@ ListCoursesRequest::ListCoursesRequest(RequestSender* sender,
       teacher_id_(teacher_id),
       page_token_(page_token),
       callback_(std::move(callback)) {
+  CHECK(!student_id_.empty() || !teacher_id_.empty());
   CHECK(!callback_.is_null());
 }
 

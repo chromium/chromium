@@ -4,6 +4,8 @@
 
 #include "flags.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/metrics/field_trial_params.h"
 #include "content/common/features.h"
@@ -12,7 +14,11 @@
 
 namespace content {
 
-bool IsFedCmAuthzEnabled() {
+std::optional<bool> IsFedCmAuthzOverridden() {
+  return base::FeatureList::GetStateIfOverridden(features::kFedCmAuthz);
+}
+
+bool IsFedCmAuthzFlagEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAuthz);
 }
 
@@ -25,10 +31,7 @@ FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag() {
   if (base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled)) {
     return FedCmIdpSigninStatusMode::ENABLED;
   }
-  if (base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusMetrics)) {
-    return FedCmIdpSigninStatusMode::METRICS_ONLY;
-  }
-  return FedCmIdpSigninStatusMode::DISABLED;
+  return FedCmIdpSigninStatusMode::METRICS_ONLY;
 }
 
 bool IsFedCmMetricsEndpointEnabled() {
@@ -39,8 +42,8 @@ bool IsFedCmSelectiveDisclosureEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSelectiveDisclosure);
 }
 
-bool IsFedCmSkipWellKnownForSameSiteEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSkipWellKnownForSameSite);
+bool IsFedCmSameSiteNoneEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmSameSiteNone);
 }
 
 bool IsFedCmIdPRegistrationEnabled() {
@@ -56,37 +59,24 @@ bool IsWebIdentityDigitalCredentialsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
-bool IsFedCmAutoSelectedFlagEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAutoSelectedFlag);
-}
-
-bool IsFedCmDomainHintEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmDomainHint);
-}
-
-bool IsFedCmErrorEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmError);
-}
-
-bool IsFedCmDisconnectEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmDisconnect);
-}
-
-bool IsFedCmAddAccountEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAddAccount);
-}
-
-bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kFedCmExemptIdpWithThirdPartyCookies);
+bool IsFedCmUseOtherAccountEnabled(bool is_button_mode) {
+  // TODO(crbug.com/328470597): this feature is bundled with the button mode at
+  // the moment. We should decouple them when supporting the feature in the
+  // widget flow.
+  return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount) ||
+         (IsFedCmButtonModeEnabled() && is_button_mode);
 }
 
 bool IsFedCmButtonModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmButtonMode);
 }
 
-bool IsFedCmSameSiteLoginStatusEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSameSiteLoginStatus);
+bool IsFedCmSameSiteLaxEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmSameSiteLax);
+}
+
+bool IsFedCmFlexibleFieldsEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmFlexibleFields);
 }
 
 }  // namespace content

@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/ui/ash/arc_vm_data_migration_confirmation_dialog.h"
+#include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -154,11 +154,6 @@ void ArcVmDataMigrationNotifier::ShowNotification() {
   notification.SetSystemPriority();
   // Set no timeout so that the notification never disappears spontaneously.
   notification.set_never_timeout(true);
-  if (!ArcVmDataMigrationShouldBeDismissible(days_until_deadline)) {
-    // Pin the notification so that it is moved from the desktop to the
-    // notification list when the close button is clicked.
-    notification.set_pinned(true);
-  }
 
   NotificationDisplayService::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification,

@@ -31,6 +31,8 @@ class PpapiBlinkPlatformImpl : public BlinkPlatformImpl {
   blink::WebSandboxSupport* GetSandboxSupport() override;
   uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t link_hash) override;
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override;
   blink::WebString DefaultLocale() override;
 
  private:

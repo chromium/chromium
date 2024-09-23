@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("session_api") {
+  sources = [
+    "constants.h",
+    "create_session_request.cc",
+    "create_session_request.h",
+    "get_session_request.cc",
+    "get_session_request.h",
+    "session_client_impl.cc",
+    "session_client_impl.h",
+    "session_parser.cc",
+    "session_parser.h",
+    "update_session_request.cc",
+    "update_session_request.h",
+    "upload_token_request.cc",
+    "upload_token_request.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca/proto",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//google_apis/common",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "create_session_request_unittest.cc",
+    "get_session_request_unittest.cc",
+    "session_parser_unittest.cc",
+    "update_session_request_unittest.cc",
+    "upload_token_request_unittest.cc",
+  ]
+
+  deps = [
+    ":session_api",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca/proto",
+    "//google_apis/common",
+    "//google_apis/common:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

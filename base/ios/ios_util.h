@@ -14,22 +14,6 @@
 namespace base {
 namespace ios {
 
-// Returns whether the operating system is iOS 12 or later.
-// TODO(crbug.com/1129482): Remove once minimum supported version is at least 12
-BASE_EXPORT bool IsRunningOnIOS12OrLater();
-
-// Returns whether the operating system is iOS 13 or later.
-// TODO(crbug.com/1129483): Remove once minimum supported version is at least 13
-BASE_EXPORT bool IsRunningOnIOS13OrLater();
-
-// Returns whether the operating system is iOS 14 or later.
-// TODO(crbug.com/1129484): Remove once minimum supported version is at least 14
-BASE_EXPORT bool IsRunningOnIOS14OrLater();
-
-// Returns whether the operating system is iOS 15 or later.
-// TODO(crbug.com/1227419): Remove once minimum supported version is at least 15
-BASE_EXPORT bool IsRunningOnIOS15OrLater();
-
 // Returns whether the operating system is iOS 16 or later.
 BASE_EXPORT bool IsRunningOnIOS16OrLater();
 
@@ -66,10 +50,6 @@ BASE_EXPORT bool IsMultipleScenesSupported();
 // iOS 15 introduced pre-warming, which launches and then pauses the app, to
 // speed up actual launch time.
 BASE_EXPORT bool IsApplicationPreWarmed();
-
-// The iPhone 14 Pro and Pro Max introduced a dynamic island. This should only
-// be called when working around UIKit bugs.
-BASE_EXPORT bool HasDynamicIsland();
 
 }  // namespace ios
 }  // namespace base

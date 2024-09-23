@@ -13,39 +13,148 @@ wallpaper-grid-item.sea-pen-image {
 
 .sea-pen-image[aria-selected='true']::part(image) {
   animation: none;
-}
 
-.sea-pen-image[aria-selected='true']::part(icon) {
-  --cr-icon-button-size: 20px;
-  background-color: var(--cros-bg-color);
-  border-bottom-right-radius: 50%;
-  left: -8px;
-  padding: 8px;
-  top: -8px;
+  /* Increase image's border radius to prevent corner border from appearing
+   * around the checkmark. */
+  border-top-left-radius: calc(
+    var(--personalization-app-grid-item-border-radius) + 10px);
 }
 
 .sea-pen-image[aria-selected='true']::part(item) {
   border-radius: var(--personalization-app-grid-item-border-radius);
 }
 
-.sea-pen-image[aria-selected='true']::part(icon)::before {
-  border-top-left-radius: 50%;
-  top: 8px;
-  box-shadow: 0 -8px 0 0 var(--cros-bg-color);
-  content: "";
-  height: 16px;
-  left: 36px;
-  position: absolute;
-  width: 16px;
+.sea-pen-image[aria-selected='true']::part(ironIcon) {
+  left: -2px;
+  top: -2px;
 }
 
-.sea-pen-image[aria-selected='true']::part(icon)::after {
+.sea-pen-image[aria-selected='true']::part(iconContainer) {
+  background-color: var(--cros-bg-color);
+  border-bottom-right-radius: 50%;
+  padding: 7px;
+  left: 0;
+  top: 0;
+}
+
+.sea-pen-image[aria-selected='true']::part(iconContainer)::before {
   border-top-left-radius: 50%;
-  box-shadow: -8px 0 0 0 var(--cros-bg-color);
+  top: 0px;
+  box-shadow: 0 -14px 0 0 var(--cros-bg-color);
   content: "";
-  height: 16px;
-  left: 8px;
+  height: 28px;
+  left: 38px;
   position: absolute;
-  top: 36px;
-  width: 16px;
+  width: 28px;
+}
+
+.sea-pen-image[aria-selected='true']::part(iconContainer)::after {
+  border-top-left-radius: 50%;
+  box-shadow: -14px 0 0 0 var(--cros-bg-color);
+  content: "";
+  height: 28px;
+  left: 0px;
+  position: absolute;
+  top: 38px;
+  width: 28px;
+}
+
+.sea-pen-image.recent-used-image[aria-selected='true']::part(iconContainer) {
+  padding: 4px;
+}
+
+.sea-pen-image.recent-used-image[aria-selected='true']::part(iconContainer)::before {
+  box-shadow: 0 -10px 0 0 var(--cros-bg-color);
+  height: 20px;
+  left: 28px;
+  width: 20px;
+}
+
+.sea-pen-image.recent-used-image[aria-selected='true']::part(iconContainer)::after {
+  box-shadow: -10px 0 0 0 var(--cros-bg-color);
+  height: 20px;
+  top: 28px;
+  width: 20px;
+}
+
+iron-icon[icon^='personalization-shared-illo:'] {
+  --iron-icon-width: 400px;
+  --iron-icon-height: 177px;
+  top: -24px;
+}
+
+.illustration-container {
+  align-items: center;
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.illustration-message {
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-title-1-font);
+  margin: 0 12px 0 12px;
+  max-width: 420px;
+  position: relative;
+  top: -25px;
+  white-space: pre-line;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in-900ms {
+  animation-direction: normal;
+  animation-duration: 900ms;
+  animation-iteration-count: 1;
+  animation-name: fade-in;
+  animation-timing-function: ease-in-out;
+}
+
+.fade-in-200ms {
+  animation-direction: normal;
+  animation-duration: 200ms;
+  animation-iteration-count: 1;
+  animation-name: fade-in;
+  animation-timing-function: linear;
+}
+
+#searchButtons {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  margin-block: 24px;
+  position: relative;
+  width: 100%;
+}
+
+#searchButtons cr-button {
+  margin: 0 4px;
+  padding-inline-end: 16px;
+}
+
+#inspireMeAnimation {
+  height: 20px;
+  width: 20px;
+}
+
+#inspire:not(:hover) #inspireMeAnimation,
+#inspire:hover #inspireIcon {
+  display: none;
+}
+
+#inspire:hover #inspireMeAnimation,
+#inspire:not(:hover) #inspireIcon {
+  display: block;
 }

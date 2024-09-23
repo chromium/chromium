@@ -50,20 +50,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 
   omnibox_view()->GetFocusManager()->ClearFocus();
 
-  if (features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2 ||
-      base::FeatureList::IsEnabled(
-          omnibox::kOmniboxSteadyStateBackgroundColor)) {
-    // With CR23, blurring the Omnibox w/ in-progress input (e.g. "foo") should
-    // result in the on-focus colors.
-    EXPECT_EQ(color_after_focus, location_bar()->background()->get_color());
-    EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
-  } else {
-    // Without CR23, blurring the Omnibox w/ in-progress input (e.g. "foo")
-    // should restore the original colors.
-    EXPECT_EQ(color_before_focus, location_bar()->background()->get_color());
-    EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
-  }
+  // Blurring the Omnibox w/ in-progress input (e.g. "foo") should result in
+  // the on-focus colors.
+  EXPECT_EQ(color_after_focus, location_bar()->background()->get_color());
+  EXPECT_EQ(color_after_focus, omnibox_view()->GetBackgroundColor());
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {

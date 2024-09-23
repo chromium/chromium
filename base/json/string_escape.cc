@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
@@ -112,29 +113,31 @@ bool EscapeJSONStringImpl(const S& str, bool put_in_quotes, std::string* dest) {
 
 }  // namespace
 
-bool EscapeJSONString(StringPiece str, bool put_in_quotes, std::string* dest) {
-  return EscapeJSONStringImpl(str, put_in_quotes, dest);
-}
-
-bool EscapeJSONString(StringPiece16 str,
+bool EscapeJSONString(std::string_view str,
                       bool put_in_quotes,
                       std::string* dest) {
   return EscapeJSONStringImpl(str, put_in_quotes, dest);
 }
 
-std::string GetQuotedJSONString(StringPiece str) {
+bool EscapeJSONString(std::u16string_view str,
+                      bool put_in_quotes,
+                      std::string* dest) {
+  return EscapeJSONStringImpl(str, put_in_quotes, dest);
+}
+
+std::string GetQuotedJSONString(std::string_view str) {
   std::string dest;
   EscapeJSONStringImpl(str, true, &dest);
   return dest;
 }
 
-std::string GetQuotedJSONString(StringPiece16 str) {
+std::string GetQuotedJSONString(std::u16string_view str) {
   std::string dest;
   EscapeJSONStringImpl(str, true, &dest);
   return dest;
 }
 
-std::string EscapeBytesAsInvalidJSONString(StringPiece str,
+std::string EscapeBytesAsInvalidJSONString(std::string_view str,
                                            bool put_in_quotes) {
   std::string dest;
 

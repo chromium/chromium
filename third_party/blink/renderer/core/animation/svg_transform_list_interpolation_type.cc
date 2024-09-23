@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/animation/non_interpolable_value.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -67,10 +68,15 @@ InterpolableValue* TranslateToInterpolableValue(SVGTransform* transform) {
 SVGTransform* TranslateFromInterpolableValue(const InterpolableValue& value) {
   const auto& list = To<InterpolableList>(value);
 
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber in this file.
+  CSSToLengthConversionData length_resolver;
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kTranslate);
-  transform->SetTranslate(To<InterpolableNumber>(list.Get(0))->Value(),
-                          To<InterpolableNumber>(list.Get(1))->Value());
+  transform->SetTranslate(
+      To<InterpolableNumber>(list.Get(0))->Value(length_resolver),
+      To<InterpolableNumber>(list.Get(1))->Value(length_resolver));
   return transform;
 }
 
@@ -85,10 +91,12 @@ InterpolableValue* ScaleToInterpolableValue(SVGTransform* transform) {
 SVGTransform* ScaleFromInterpolableValue(const InterpolableValue& value) {
   const auto& list = To<InterpolableList>(value);
 
+  CSSToLengthConversionData length_resolver;
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kScale);
-  transform->SetScale(To<InterpolableNumber>(list.Get(0))->Value(),
-                      To<InterpolableNumber>(list.Get(1))->Value());
+  transform->SetScale(
+      To<InterpolableNumber>(list.Get(0))->Value(length_resolver),
+      To<InterpolableNumber>(list.Get(1))->Value(length_resolver));
   return transform;
 }
 
@@ -104,11 +112,13 @@ InterpolableValue* RotateToInterpolableValue(SVGTransform* transform) {
 SVGTransform* RotateFromInterpolableValue(const InterpolableValue& value) {
   const auto& list = To<InterpolableList>(value);
 
+  CSSToLengthConversionData length_resolver;
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kRotate);
-  transform->SetRotate(To<InterpolableNumber>(list.Get(0))->Value(),
-                       To<InterpolableNumber>(list.Get(1))->Value(),
-                       To<InterpolableNumber>(list.Get(2))->Value());
+  transform->SetRotate(
+      To<InterpolableNumber>(list.Get(0))->Value(length_resolver),
+      To<InterpolableNumber>(list.Get(1))->Value(length_resolver),
+      To<InterpolableNumber>(list.Get(2))->Value(length_resolver));
   return transform;
 }
 
@@ -119,7 +129,8 @@ InterpolableValue* SkewXToInterpolableValue(SVGTransform* transform) {
 SVGTransform* SkewXFromInterpolableValue(const InterpolableValue& value) {
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kSkewx);
-  transform->SetSkewX(To<InterpolableNumber>(value).Value());
+  transform->SetSkewX(
+      To<InterpolableNumber>(value).Value(CSSToLengthConversionData()));
   return transform;
 }
 
@@ -130,7 +141,8 @@ InterpolableValue* SkewYToInterpolableValue(SVGTransform* transform) {
 SVGTransform* SkewYFromInterpolableValue(const InterpolableValue& value) {
   auto* transform =
       MakeGarbageCollected<SVGTransform>(SVGTransformType::kSkewy);
-  transform->SetSkewY(To<InterpolableNumber>(value).Value());
+  transform->SetSkewY(
+      To<InterpolableNumber>(value).Value(CSSToLengthConversionData()));
   return transform;
 }
 
@@ -149,9 +161,9 @@ InterpolableValue* ToInterpolableValue(SVGTransform* transform,
       return SkewYToInterpolableValue(transform);
     case SVGTransformType::kMatrix:
     case SVGTransformType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -170,9 +182,9 @@ SVGTransform* FromInterpolableValue(const InterpolableValue& value,
       return SkewYFromInterpolableValue(value);
     case SVGTransformType::kMatrix:
     case SVGTransformType::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -186,6 +198,11 @@ class SVGTransformListChecker : public InterpolationType::ConversionChecker {
  public:
   explicit SVGTransformListChecker(const InterpolationValue& underlying)
       : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
+
+  void Trace(Visitor* visitor) const final {
+    InterpolationType::ConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_);
+  }
 
   bool IsValid(const InterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
@@ -204,7 +221,7 @@ class SVGTransformListChecker : public InterpolationType::ConversionChecker {
   }
 
  private:
-  const Persistent<const InterpolationValueGCed> underlying_;
+  const Member<const InterpolationValueGCed> underlying_;
 };
 
 }  // namespace
@@ -212,7 +229,7 @@ class SVGTransformListChecker : public InterpolationType::ConversionChecker {
 InterpolationValue SVGTransformListInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // This function is no longer called, because maybeConvertSingle has been
   // overridden.
   return nullptr;
@@ -256,7 +273,7 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertSingle(
       interpolable_parts.push_back(underlying.interpolable_value->Clone());
     }
     conversion_checkers.push_back(
-        std::make_unique<SVGTransformListChecker>(underlying));
+        MakeGarbageCollected<SVGTransformListChecker>(underlying));
   } else {
     DCHECK(!keyframe.IsNeutral());
   }

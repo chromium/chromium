@@ -35,7 +35,9 @@ storage::FileSystemURL CreateFileSystemURL(Profile* profile,
 // FileChangeServiceBridgeAsh --------------------------------------------------
 
 FileChangeServiceBridgeAsh::FileChangeServiceBridgeAsh(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  profile_observation_.Observe(profile_);
+}
 
 FileChangeServiceBridgeAsh::~FileChangeServiceBridgeAsh() = default;
 
@@ -44,9 +46,17 @@ void FileChangeServiceBridgeAsh::BindReceiver(
   receivers_.Add(this, std::move(receiver));
 }
 
+void FileChangeServiceBridgeAsh::OnProfileWillBeDestroyed(Profile* profile) {
+  CHECK_EQ(profile_, profile);
+  profile_ = nullptr;
+  profile_observation_.Reset();
+}
+
 void FileChangeServiceBridgeAsh::OnFileCreatedFromShowSaveFilePicker(
     const GURL& file_picker_binding_context,
     const base::FilePath& file_path) {
+  CHECK(profile_);
+
   if (storage::FileSystemURL file_system_url =
           CreateFileSystemURL(profile_, file_path);
       file_system_url.is_valid()) {

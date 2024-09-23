@@ -44,7 +44,7 @@ TEST_F(VirtualKeyboardTest, EventsAreHandledBasedOnHitTestBounds) {
 
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(false);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   // Add two hit test bounds (coordinates relative to keyboard window).
   // Both are 10x10 squares, but placed in different locations.
@@ -94,7 +94,7 @@ TEST_F(VirtualKeyboardTest, HitTestBoundsAreResetWhenContainerTypeChanges) {
 
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
   keyboard_controller->ShowKeyboard(false);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   // Set empty hit test bounds, so all events pass through to the background.
   keyboard_controller->SetHitTestBounds(std::vector<gfx::Rect>());

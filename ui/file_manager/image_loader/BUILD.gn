@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
@@ -31,27 +31,18 @@ copy("from_files_app") {
 }
 
 copy("copy_src") {
-  sources = [
-    "background.ts",
-    "cache.ts",
-    "image_loader.ts",
-    "image_loader_client.ts",
-    "image_loader_util.ts",
-    "image_orientation.ts",
-    "image_request_task.js",
-    "load_image_request.ts",
-    "piex_loader.ts",
-    "scheduler.ts",
-  ]
+  sources = rebase_path(image_loader_ts, ".", "..")
   outputs = [ "$preprocess_folder/image_loader/{{source_file_part}}" ]
 }
 
 dts_files = [
   "image_loader_private.d.ts",
+  "overrides.d.ts",
+  "//tools/typescript/definitions/chrome_event.d.ts",
   "//tools/typescript/definitions/runtime.d.ts",
 ]
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = tsc_folder
   tsconfig_base = "tsconfig_base.json"
@@ -68,7 +59,7 @@ ts_library("build_ts") {
     "//ash/webui/common/resources:generate_definitions",
   ]
 
-  in_files = image_loader_static_js_files + image_loader_ts + [
+  in_files = image_loader_ts + [
                "file_manager/common/js/file_types_data.js",
                "file_manager/common/js/file_types_base.ts",
                "file_manager/common/js/lru_cache.ts",
@@ -95,8 +86,6 @@ optimize_webui("build") {
   deps = [
     ":build_ts",
     "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_static",
-    "//ui/file_manager:preprocess_static_image_loader",
   ]
   if (enable_webui_inline_sourcemaps) {
     deps += [ "//ui/file_manager:merge_source_maps" ]

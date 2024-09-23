@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/ic_warning_red_24dp" />
+
+    <TextView
+        android:id="@+id/account_picker_auth_error_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:text="@string/signin_account_picker_bottom_sheet_error_title" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_horizontal"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:text="@string/signin_account_picker_auth_error_subtitle"
+        app:leading="@dimen/text_size_medium_leading" />
+
+    <include layout="@layout/account_picker_bottom_sheet_continue_button" />
+
+</LinearLayout>

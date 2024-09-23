@@ -55,6 +55,8 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_APT", ADDRESS_HOME_APT},
          {"ADDRESS_HOME_APT_NUM", ADDRESS_HOME_APT_NUM},
          {"ADDRESS_HOME_APT_TYPE", ADDRESS_HOME_APT_TYPE},
+         {"ADDRESS_HOME_HOUSE_NUMBER_AND_APT",
+          ADDRESS_HOME_HOUSE_NUMBER_AND_APT},
          {"ADDRESS_HOME_CITY", ADDRESS_HOME_CITY},
          {"ADDRESS_HOME_STATE", ADDRESS_HOME_STATE},
          {"ADDRESS_HOME_ZIP", ADDRESS_HOME_ZIP},
@@ -138,7 +140,8 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK",
           ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK},
          {"ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK",
-          ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK}});
+          ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK},
+         {"IMPROVED_PREDICTION", IMPROVED_PREDICTION}});
 
 bool IsFillableFieldType(FieldType field_type) {
   switch (field_type) {
@@ -170,6 +173,7 @@ bool IsFillableFieldType(FieldType field_type) {
     case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_NUM:
     case ADDRESS_HOME_APT_TYPE:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
     case ADDRESS_HOME_CITY:
     case ADDRESS_HOME_STATE:
     case ADDRESS_HOME_ZIP:
@@ -237,6 +241,9 @@ bool IsFillableFieldType(FieldType field_type) {
     case NOT_USERNAME:
       return false;
 
+    case IMPROVED_PREDICTION:
+      return false;
+
     // Credential field types that the server should never return as
     // classifications.
     case NOT_ACCOUNT_CREATION_PASSWORD:
@@ -272,7 +279,7 @@ std::string_view FieldTypeToStringView(FieldType type) {
   if (it != kFieldTypeToTypeName->end()) {
     return it->second;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string FieldTypeToString(FieldType type) {
@@ -280,7 +287,7 @@ std::string FieldTypeToString(FieldType type) {
 }
 
 FieldType TypeNameToFieldType(std::string_view type_name) {
-  auto* it = kTypeNameToFieldType.find(type_name);
+  auto it = kTypeNameToFieldType.find(type_name);
   return it != kTypeNameToFieldType.end() ? it->second : UNKNOWN_TYPE;
 }
 
@@ -421,6 +428,8 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Address street location and landmark";
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
       return "Address locality and landmark";
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+      return "House number and apartment number";
     case DELIVERY_INSTRUCTIONS:
       return "Delivery instructions";
     case CREDIT_CARD_NAME_FULL:
@@ -449,10 +458,12 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
     case ONE_TIME_CODE:
       return "One time code";
+    case IMPROVED_PREDICTION:
+      return "Improved prediction";
     case MAX_VALID_FIELD_TYPE:
       return "";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FieldTypeSet GetFieldTypesOfGroup(FieldTypeGroup group) {
@@ -528,6 +539,7 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK:
     case ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK:
     case DELIVERY_INSTRUCTIONS:
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
       return FieldTypeGroup::kAddress;
 
     case CREDIT_CARD_NAME_FULL:
@@ -541,14 +553,19 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
-    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return FieldTypeGroup::kCreditCard;
+
+    case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+      return FieldTypeGroup::kStandaloneCvcField;
 
     case IBAN_VALUE:
       return FieldTypeGroup::kIban;
 
     case COMPANY_NAME:
       return FieldTypeGroup::kCompany;
+
+    case IMPROVED_PREDICTION:
+      return FieldTypeGroup::kPredictionImprovements;
 
     case PASSWORD:
     case ACCOUNT_CREATION_PASSWORD:
@@ -587,7 +604,7 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case MAX_VALID_FIELD_TYPE:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
@@ -652,9 +669,6 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kBirthdateYear:
       return FieldTypeGroup::kNoGroup;
 
-    case HtmlFieldType::kUpiVpa:
-      return FieldTypeGroup::kNoGroup;
-
     case HtmlFieldType::kOneTimeCode:
       return FieldTypeGroup::kNoGroup;
 
@@ -668,7 +682,7 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kUnrecognized:
       return FieldTypeGroup::kNoGroup;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
@@ -801,7 +815,6 @@ FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kBirthdateDay:
     case HtmlFieldType::kBirthdateMonth:
     case HtmlFieldType::kBirthdateYear:
-    case HtmlFieldType::kUpiVpa:
     case HtmlFieldType::kTransactionAmount:
     case HtmlFieldType::kTransactionCurrency:
     case HtmlFieldType::kMerchantPromoCode:
@@ -810,7 +823,7 @@ FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kUnrecognized:
       return UNKNOWN_TYPE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace autofill

@@ -33,13 +33,12 @@ class RecentDiskSource : public RecentSource {
   // Does nothing if no volume is registered at `mount_point_name`.
   // If `ignore_dotfiles` is true, recents will ignore directories and files
   // starting with a dot. Set `max_depth` to zero for unlimited depth.
-  // The `max_files` parameter limits the maximum number of files returned on
-  // the callback of `params` of GetRecentFiles method.
-  RecentDiskSource(std::string mount_point_name,
-                   bool ignore_dotfiles,
-                   int max_depth,
-                   size_t max_files,
-                   std::string uma_histogram_name);
+  RecentDiskSource(
+      extensions::api::file_manager_private::VolumeType volume_type,
+      std::string mount_point_name,
+      bool ignore_dotfiles,
+      int max_depth,
+      std::string uma_histogram_name);
 
   RecentDiskSource(const RecentDiskSource&) = delete;
   RecentDiskSource& operator=(const RecentDiskSource&) = delete;
@@ -47,7 +46,8 @@ class RecentDiskSource : public RecentSource {
   ~RecentDiskSource() override;
 
   // RecentSource overrides:
-  void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
+  void GetRecentFiles(const Params& params,
+                      GetRecentFilesCallback callback) override;
 
   // Stops the recent files search. Returns any partial results already
   // collected.
@@ -63,20 +63,20 @@ class RecentDiskSource : public RecentSource {
 
   static const char kLoadHistogramName[];
 
-  void ScanDirectory(const Params& params,
+  void ScanDirectory(const int32_t call_id,
                      const base::FilePath& path,
                      int depth);
-  void OnReadDirectory(const Params& params,
+  void OnReadDirectory(const int32_t call_id,
                        const base::FilePath& path,
                        int depth,
                        base::File::Error result,
                        storage::FileSystemOperation::FileEntryList entries,
                        bool has_more);
-  void OnGotMetadata(const Params& params,
+  void OnGotMetadata(const int32_t call_id,
                      const storage::FileSystemURL& url,
                      base::File::Error result,
                      const base::File::Info& info);
-  void OnReadOrStatFinished(const Params& params);
+  void OnReadOrStatFinished(int32_t call_id);
 
   storage::FileSystemURL BuildDiskURL(const Params& params,
                                       const base::FilePath& path) const;
@@ -93,11 +93,14 @@ class RecentDiskSource : public RecentSource {
   // map is only accessed on the UI thread we do not need to use additional
   // locks to guarantee its consistency.
   struct CallContext {
-    CallContext(size_t max_files, GetRecentFilesCallback callback);
+    CallContext(const Params& params, GetRecentFilesCallback callback);
     // Move constructor; necessary as callback is a move-only type.
     CallContext(CallContext&& context);
 
     ~CallContext();
+
+    // The parameters of the GetRecentFiles call.
+    const Params params;
 
     // The callback called when the files and their metadata is ready.
     GetRecentFilesCallback callback;
@@ -113,9 +116,6 @@ class RecentDiskSource : public RecentSource {
 
   // A map from call_id to the context of the call.
   base::IDMap<std::unique_ptr<CallContext>> context_map_;
-
-  // The maximum number of files returned by this source.
-  const size_t max_files_;
 
   base::WeakPtrFactory<RecentDiskSource> weak_ptr_factory_{this};
 };

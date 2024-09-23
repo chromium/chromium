@@ -30,6 +30,7 @@
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/update/eol_notice_quick_settings_view.h"
+#include "ash/system/update/extended_updates_notice_quick_settings_view.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -176,7 +177,7 @@ class QuickSettingsHeader::ManagedStateView : public views::Button {
   const raw_ref<const gfx::VectorIcon> icon_;
 };
 
-BEGIN_METADATA(QuickSettingsHeader, ManagedStateView, views::Button)
+BEGIN_METADATA(QuickSettingsHeader, ManagedStateView)
 END_METADATA
 
 class QuickSettingsHeader::EnterpriseManagedView
@@ -234,7 +235,6 @@ class QuickSettingsHeader::EnterpriseManagedView
     const std::string account_domain_manager = model->account_domain_manager();
 
     const bool visible = session_controller->ShouldDisplayManagedUI() ||
-                         model->active_directory_managed() ||
                          !enterprise_domain_manager.empty() ||
                          !account_domain_manager.empty();
     SetVisible(visible);
@@ -277,7 +277,7 @@ class QuickSettingsHeader::EnterpriseManagedView
   bool narrow_layout_ = false;
 };
 
-BEGIN_METADATA(QuickSettingsHeader, EnterpriseManagedView, ManagedStateView)
+BEGIN_METADATA(QuickSettingsHeader, EnterpriseManagedView)
 END_METADATA
 
 QuickSettingsHeader::QuickSettingsHeader(
@@ -308,12 +308,19 @@ QuickSettingsHeader::QuickSettingsHeader(
     if (Shell::Get()->system_tray_model()->update_model()->show_eol_notice()) {
       eol_notice_ =
           AddChildView(std::make_unique<EolNoticeQuickSettingsView>());
+    } else if (Shell::Get()
+                   ->system_tray_model()
+                   ->update_model()
+                   ->show_extended_updates_notice()) {
+      extended_updates_notice_ = AddChildView(
+          std::make_unique<ExtendedUpdatesNoticeQuickSettingsView>());
     }
   }
 
   // If the release track is not "stable" then show the channel indicator UI.
   auto channel = Shell::Get()->shell_delegate()->GetChannel();
-  if (channel_indicator_utils::IsDisplayableChannel(channel) && !eol_notice_) {
+  if (channel_indicator_utils::IsDisplayableChannel(channel) && !eol_notice_ &&
+      !extended_updates_notice_) {
     channel_view_ =
         AddChildView(std::make_unique<ChannelIndicatorQuickSettingsView>(
             channel, is_active_state && Shell::Get()
@@ -347,23 +354,28 @@ views::Label* QuickSettingsHeader::GetSupervisedButtonLabelForTest() {
   return supervised_view_->label();
 }
 
+views::View* QuickSettingsHeader::GetExtendedUpdatesViewForTest() {
+  return extended_updates_notice_;
+}
+
 void QuickSettingsHeader::UpdateVisibilityAndLayout() {
   // The managed view and the supervised view are never shown together.
   DCHECK(!enterprise_managed_view_->GetVisible() ||
          !supervised_view_->GetVisible());
 
+  // The notice views are never shown together.
+  DCHECK(!!channel_view_ + !!eol_notice_ + !!extended_updates_notice_ <= 1);
+
   // Make `this` view visible if a child is visible.
   bool managed_view_visible =
       enterprise_managed_view_->GetVisible() || supervised_view_->GetVisible();
-  bool channel_view_visible = !!channel_view_;
-  bool eol_notice_visible = !!eol_notice_;
+  bool notice_view_visible =
+      channel_view_ || eol_notice_ || extended_updates_notice_;
 
-  SetVisible(managed_view_visible || channel_view_visible ||
-             eol_notice_visible);
+  SetVisible(managed_view_visible || notice_view_visible);
 
   // Update button sizes for one column vs. two columns.
-  bool two_columns =
-      managed_view_visible && (channel_view_visible || eol_notice_visible);
+  bool two_columns = managed_view_visible && notice_view_visible;
   gfx::Size size = two_columns ? kNarrowButtonSize : kWideButtonSize;
   enterprise_managed_view_->SetPreferredSize(size);
   supervised_view_->SetPreferredSize(size);
@@ -373,6 +385,9 @@ void QuickSettingsHeader::UpdateVisibilityAndLayout() {
   if (eol_notice_) {
     eol_notice_->SetPreferredSize(size);
   }
+  if (extended_updates_notice_) {
+    extended_updates_notice_->SetPreferredSize(size);
+  }
 
   // Use custom narrow layouts when two columns are showing.
   enterprise_managed_view_->SetNarrowLayout(two_columns);
@@ -381,6 +396,9 @@ void QuickSettingsHeader::UpdateVisibilityAndLayout() {
   }
   if (eol_notice_) {
     eol_notice_->SetNarrowLayout(two_columns);
+  }
+  if (extended_updates_notice_) {
+    extended_updates_notice_->SetNarrowLayout(two_columns);
   }
 }
 

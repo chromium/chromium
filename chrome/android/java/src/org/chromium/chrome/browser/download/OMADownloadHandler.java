@@ -132,22 +132,23 @@ public class OMADownloadHandler extends BroadcastReceiver {
     private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
             NetworkTrafficAnnotationTag.createComplete(
                     "oma_download_handler_android",
-                    "semantics {"
-                            + "  sender: 'OMA Download Handler (Android)'"
-                            + "  description: 'Uploads file download status to the server URL '"
-                            + "               'specified in the download descriptor XML, as ' "
-                            + "               'required by the OMA DRM specification.'"
-                            + "  trigger: 'After an OMA DRM file download completes.'"
-                            + "  data: 'Info related to the download.'"
-                            + "  destination: OTHER"
-                            + "}"
-                            + "policy {"
-                            + "  cookies_allowed: NO"
-                            + "  setting: 'This feature cannot be disabled by settings as it is '"
-                            + "           'part of the OMA DRM specification.'"
-                            + "  policy_exception_justification:"
-                            + "      'Not implemented.'"
-                            + "}");
+                    """
+                    semantics {
+                      sender: "OMA Download Handler (Android)"
+                      description:
+                        "Uploads file download status to the server URL specified in the download "
+                        "descriptor XML, as required by the OMA DRM specification."
+                      trigger: "After an OMA DRM file download completes."
+                      data: "Info related to the download."
+                      destination: OTHER
+                    }
+                    policy {
+                      cookies_allowed: NO
+                      setting:
+                        "This feature cannot be disabled by settings as it is part of the OMA DRM "
+                        "specification."
+                      policy_exception_justification: "Not implemented."
+                    }""");
 
     private final Context mContext;
     private final SharedPreferencesManager mSharedPrefs;
@@ -321,7 +322,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 ParcelFileDescriptor fd = null;
                 if (isContentUri) {
                     int fileDescriptor =
-                            ContentUriUtils.openContentUriForRead(mDownloadInfo.getFilePath());
+                            ContentUriUtils.openContentUri(mDownloadInfo.getFilePath(), "r");
                     if (fileDescriptor > 0) {
                         fd = ParcelFileDescriptor.fromFd(fileDescriptor);
                     }
@@ -539,15 +540,15 @@ public class OMADownloadHandler extends BroadcastReceiver {
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.confirm_oma_download, null);
 
-        TextView textView = (TextView) v.findViewById(R.id.oma_download_name);
+        TextView textView = v.findViewById(R.id.oma_download_name);
         textView.setText(omaInfo.getValue(OMA_NAME));
-        textView = (TextView) v.findViewById(R.id.oma_download_vendor);
+        textView = v.findViewById(R.id.oma_download_vendor);
         textView.setText(omaInfo.getValue(OMA_VENDOR));
-        textView = (TextView) v.findViewById(R.id.oma_download_size);
+        textView = v.findViewById(R.id.oma_download_size);
         textView.setText(omaInfo.getValue(OMA_SIZE));
-        textView = (TextView) v.findViewById(R.id.oma_download_type);
+        textView = v.findViewById(R.id.oma_download_type);
         textView.setText(getOpennableType(omaInfo));
-        textView = (TextView) v.findViewById(R.id.oma_download_description);
+        textView = v.findViewById(R.id.oma_download_description);
         textView.setText(omaInfo.getValue(OMA_DESCRIPTION));
 
         DialogInterface.OnClickListener clickListener =

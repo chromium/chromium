@@ -106,10 +106,10 @@ public class OverlayPanelContent {
     private boolean mIsContentViewShowing;
 
     /** The observer used by this object to inform implementers of different events. */
-    private OverlayContentDelegate mContentDelegate;
+    private OverlayPanelContentDelegate mContentDelegate;
 
     /** Used to observe progress bar events. */
-    private OverlayContentProgressObserver mProgressObserver;
+    private OverlayPanelContentProgressObserver mProgressObserver;
 
     /** If a URL is set to delayed load (load on user interaction), it will be stored here. */
     private String mPendingUrl;
@@ -228,8 +228,8 @@ public class OverlayPanelContent {
      * @param currentTabSupplier Supplies the current activity {@link Tab}.
      */
     public OverlayPanelContent(
-            @NonNull OverlayContentDelegate contentDelegate,
-            @NonNull OverlayContentProgressObserver progressObserver,
+            @NonNull OverlayPanelContentDelegate contentDelegate,
+            @NonNull OverlayPanelContentProgressObserver progressObserver,
             @NonNull Activity activity,
             @NonNull Profile profile,
             float barHeight,
@@ -378,9 +378,7 @@ public class OverlayPanelContent {
         // Creates an initially hidden WebContents which gets shown when the panel is opened.
         mWebContents = WebContentsFactory.createWebContents(mProfile, true, false);
 
-        ContentView cv =
-                ContentView.createContentView(
-                        mActivity, /* eventOffsetHandler= */ null, mWebContents);
+        ContentView cv = ContentView.createContentView(mActivity, mWebContents);
         if (mContentViewWidth != 0 || mContentViewHeight != 0) {
             int width =
                     mContentViewWidth == 0
@@ -394,7 +392,7 @@ public class OverlayPanelContent {
         }
 
         OverlayViewDelegate delegate = new OverlayViewDelegate(cv);
-        mWebContents.initialize(
+        mWebContents.setDelegates(
                 VersionInfo.getProductVersion(),
                 delegate,
                 cv,
@@ -616,20 +614,6 @@ public class OverlayPanelContent {
         mWebContents.setSize(mContentViewWidth, viewHeight);
     }
 
-    /**
-     * Remove the list history entry from this panel if it was within a certain timeframe.
-     * @param historyUrl The URL to remove.
-     * @param urlTimeMs The time the URL was navigated to.
-     */
-    public void removeLastHistoryEntry(String historyUrl, long urlTimeMs) {
-        OverlayPanelContentJni.get()
-                .removeLastHistoryEntry(
-                        mNativeOverlayPanelContentPtr,
-                        OverlayPanelContent.this,
-                        historyUrl,
-                        urlTimeMs);
-    }
-
     /** Destroy the native component of this class. */
     @VisibleForTesting
     public void destroy() {
@@ -653,12 +637,6 @@ public class OverlayPanelContent {
         long init(OverlayPanelContent caller);
 
         void destroy(long nativeOverlayPanelContent, OverlayPanelContent caller);
-
-        void removeLastHistoryEntry(
-                long nativeOverlayPanelContent,
-                OverlayPanelContent caller,
-                String historyUrl,
-                long urlTimeMs);
 
         void onPhysicalBackingSizeChanged(
                 long nativeOverlayPanelContent,

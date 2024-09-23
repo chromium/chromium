@@ -175,7 +175,7 @@ is_debug = false
 is_official_build = true
 target_cpu = "arm64"
 target_os = "fuchsia"
-use_goma = true  # If appropriate.
+use_remoteexec = true  # If appropriate.
 ```
 
 ### 2. Build
@@ -199,7 +199,7 @@ the end, for `chrome_fuchsia`, `web_engine`, and `cast_runner`. The number that
 is deployed to the device is the `compressed` version.
 
 ## How to reduce your binary-size for Fuchsia
-TODO(crbug.com/1296349): Fill this out.
+TODO(crbug.com/40821616): Fill this out.
 
 ### Obvious regressions
 

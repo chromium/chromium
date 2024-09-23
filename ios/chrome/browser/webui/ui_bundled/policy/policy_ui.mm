@@ -9,7 +9,6 @@
 
 #import "base/json/json_string_value_serializer.h"
 #import "base/json/json_writer.h"
-#import "base/values.h"
 #import "components/grit/policy_resources.h"
 #import "components/grit/policy_resources_map.h"
 #import "components/policy/core/browser/policy_conversions.h"
@@ -23,8 +22,10 @@
 #import "components/version_info/version_info.h"
 #import "components/version_ui/version_handler_helper.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui_handler.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -35,9 +36,9 @@
 
 namespace {
 
-base::Value::List GetChromePolicyNames(ChromeBrowserState* browser_state) {
+base::Value::List GetChromePolicyNames(ProfileIOS* profile) {
   policy::SchemaRegistry* registry =
-      browser_state->GetPolicyConnector()->GetSchemaRegistry();
+      profile->GetPolicyConnector()->GetSchemaRegistry();
   scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
 
   // Add Chrome policy names.
@@ -68,8 +69,7 @@ base::Value::Dict GetVersionInfo() {
   return version_info;
 }
 
-web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(
-    ChromeBrowserState* chrome_browser_state) {
+web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUIPolicyHost);
   PolicyUIHandler::AddCommonLocalizedStringsToSource(source);
@@ -137,10 +137,9 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(
   };
   source->AddLocalizedStrings(kStrings);
 
-  const bool allow_policy_test_page = policy::utils::IsPolicyTestingEnabled(
-      chrome_browser_state->GetPrefs(), GetChannel());
-  // Test page should only load if testing is enabled and the profile is not
-  // managed by cloud.
+  const bool allow_policy_test_page = PolicyUI::ShouldLoadTestPage(profile);
+
+  // Test page should only load if testing is enabled.
   if (allow_policy_test_page) {
     // Localized strings for chrome://policy/test.
     static constexpr webui::LocalizedString kPolicyTestStrings[] = {
@@ -159,6 +158,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(
         {"testTableRemove", IDS_REMOVE},
         {"testAdd", IDS_POLICY_TEST_ADD},
         {"testNameSelect", IDS_POLICY_SELECT_NAME},
+        {"testTableNamespace", IDS_POLICY_HEADER_NAMESPACE},
         {"testTablePreset", IDS_POLICY_TEST_TABLE_PRESET},
         {"testTablePresetCustom", IDS_POLICY_TEST_PRESET_CUSTOM},
         {"testTablePresetLocalMachine", IDS_POLICY_TEST_PRESET_LOCAL_MACHINE},
@@ -176,13 +176,12 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(
     // input types.
     policy::Schema chrome_schema =
         policy::Schema::Wrap(policy::GetChromeSchemaData());
-    base::Value::List policy_names = GetChromePolicyNames(chrome_browser_state);
+    base::Value::List policy_names = GetChromePolicyNames(profile);
 
-    std::string policy_names_to_types;
-    JSONStringValueSerializer serializer(&policy_names_to_types);
-    serializer.Serialize(
-        policy::utils::GetPolicyNameToTypeMapping(policy_names, chrome_schema));
-    source->AddString("policyNamesToTypes", policy_names_to_types);
+    std::string schema;
+    JSONStringValueSerializer serializer(&schema);
+    serializer.Serialize(PolicyUI::GetSchema(profile));
+    source->AddString("initialSchema", schema);
 
     // Strings for policy levels, scopes and sources.
     static constexpr webui::LocalizedString kPolicyTestTypes[] = {
@@ -245,10 +244,47 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(
 PolicyUI::PolicyUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
   web_ui->AddMessageHandler(std::make_unique<PolicyUIHandler>());
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui);
-  web::WebUIIOSDataSource::Add(chrome_browser_state,
-                               CreatePolicyUIHtmlSource(chrome_browser_state));
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  web::WebUIIOSDataSource::Add(profile, CreatePolicyUIHtmlSource(profile));
+}
+
+// static
+bool PolicyUI::ShouldLoadTestPage(ProfileIOS* profile) {
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  // Test page should only load if testing is enabled and the profile is not
+  // managed.
+  return policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),
+                                               GetChannel()) &&
+         !auth_service->HasPrimaryIdentityManaged(
+             signin::ConsentLevel::kSignin);
+}
+
+// static
+base::Value PolicyUI::GetSchema(ProfileIOS* profile) {
+  // Build a dictionary like this:
+  // {
+  //   "chrome": {
+  //     "PolicyOne": "number",
+  //     "PolicyTwo": "string",
+  //     ...
+  //   }
+  // }
+  // A dictionary is used to be consistent with other platforms sharing the
+  // policy test page frontend implementation.
+  base::Value::Dict dict;
+
+  // Create a string policy_names_to_types mapping policy names to their
+  // input types.
+  policy::Schema chrome_schema =
+      policy::Schema::Wrap(policy::GetChromeSchemaData());
+  base::Value::List policy_names = GetChromePolicyNames(profile);
+
+  // "chrome" is the only namespace on iOS.
+  dict.Set("chrome", policy::utils::GetPolicyNameToTypeMapping(policy_names,
+                                                               chrome_schema));
+
+  return base::Value(std::move(dict));
 }
 
 PolicyUI::~PolicyUI() {}

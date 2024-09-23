@@ -8,17 +8,23 @@
 #include <string>
 #include <utility>
 
+#include "base/features.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 namespace {
 
 BASE_FEATURE(kTestFeature1, "TestFeature1", FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestFeature2, "TestFeature2", FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kTestFeatureParam1,
+                   &kTestFeature1,
+                   "TestFeatureParam1",
+                   false);
 
 void ExpectFeatures(const std::string& enabled_features,
                     const std::string& disabled_features) {
@@ -37,8 +43,9 @@ std::string GetActiveFieldTrialGroupName(const std::string trial_name) {
   FieldTrial::ActiveGroups groups;
   FieldTrialList::GetActiveFieldTrialGroups(&groups);
   for (const auto& group : groups) {
-    if (group.trial_name == trial_name)
+    if (group.trial_name == trial_name) {
       return group.group_name;
+    }
   }
   return std::string();
 }
@@ -699,5 +706,17 @@ TEST_F(ScopedFeatureListTest, InitWithFeatureStates) {
   }
 }
 
-}  // namespace test
-}  // namespace base
+TEST_F(ScopedFeatureListTest, FeatureParameterCache) {
+  // Check the default parameter, and bring it on its local cache if the cache
+  // is enabled.
+  ASSERT_FALSE(kTestFeatureParam1.Get());
+
+  // Ensure if the parameter override works if the cache feature is enabled
+  // outside the ScopedFeatureList.
+  test::ScopedFeatureList feature_list_to_override_cached_parameter;
+  feature_list_to_override_cached_parameter.InitAndEnableFeatureWithParameters(
+      kTestFeature1, {{kTestFeatureParam1.name, "true"}});
+  ASSERT_TRUE(kTestFeatureParam1.Get());
+}
+
+}  // namespace base::test

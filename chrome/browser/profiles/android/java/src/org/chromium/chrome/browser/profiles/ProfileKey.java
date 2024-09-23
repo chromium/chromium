@@ -23,18 +23,6 @@ public class ProfileKey implements SimpleFactoryKeyHandle {
     }
 
     /**
-     * Returns the regular (i.e., not off-the-record) profile key.
-     *
-     * Note: The function name uses the "last used" terminology for consistency with
-     * profile_manager.cc which supports multiple regular profiles.
-     */
-    public static ProfileKey getLastUsedRegularProfileKey() {
-        // TODO(mheikal): Assert at least reduced mode is started when https://crbug.com/973241 is
-        // fixed.
-        return ProfileKeyJni.get().getLastUsedRegularProfileKey();
-    }
-
-    /**
      * Handles type conversion of Java side {@link SimpleFactoryKeyHandle} to {@link ProfileKey}.
      * @param simpleFactoryKeyHandle Java reference to native SimpleFactoryKey.
      * @return A strongly typed reference the {@link ProfileKey}.
@@ -80,8 +68,6 @@ public class ProfileKey implements SimpleFactoryKeyHandle {
 
     @NativeMethods
     interface Natives {
-        ProfileKey getLastUsedRegularProfileKey();
-
         ProfileKey getOriginalKey(long nativeProfileKeyAndroid);
 
         boolean isOffTheRecord(long nativeProfileKeyAndroid);

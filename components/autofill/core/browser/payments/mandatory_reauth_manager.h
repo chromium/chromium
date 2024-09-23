@@ -84,7 +84,9 @@ class MandatoryReauthManager {
 
   // Once the authentication is complete, triggers
   // `authentication_complete_callback` with a success or failure response.
+  // `non_interactive_payment_method_type` is used for logging purposes.
   virtual void StartDeviceAuthentication(
+      NonInteractivePaymentMethodType non_interactive_payment_method_type,
       base::OnceCallback<void(bool)> authentication_complete_callback);
 
   // This method is triggered once an authentication flow is completed. It will

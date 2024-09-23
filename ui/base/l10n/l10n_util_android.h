@@ -18,6 +18,8 @@ std::u16string GetDisplayNameForLocale(const std::string& locale,
                                        const std::string& display_locale);
 
 COMPONENT_EXPORT(UI_BASE) bool IsLayoutRtl();
+COMPONENT_EXPORT(UI_BASE) bool ShouldMirrorBackForwardGestures();
+COMPONENT_EXPORT(UI_BASE) void SetRtlForTesting(bool is_rtl);
 
 }  // namespace l10n_util
 

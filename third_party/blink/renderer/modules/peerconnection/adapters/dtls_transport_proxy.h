@@ -68,7 +68,7 @@ class DtlsTransportProxy : public webrtc::DtlsTransportObserverInterface {
 
   const scoped_refptr<base::SingleThreadTaskRunner> proxy_thread_;
   const scoped_refptr<base::SingleThreadTaskRunner> host_thread_;
-  raw_ptr<webrtc::DtlsTransportInterface, ExperimentalRenderer> dtls_transport_;
+  raw_ptr<webrtc::DtlsTransportInterface> dtls_transport_;
   CrossThreadHandle<Delegate> delegate_;
 };
 

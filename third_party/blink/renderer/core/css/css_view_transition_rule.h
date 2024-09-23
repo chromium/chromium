@@ -11,7 +11,6 @@
 
 namespace blink {
 
-class ExecutionContext;
 class StyleRuleViewTransition;
 
 class CSSViewTransitionRule final : public CSSRule {
@@ -27,8 +26,7 @@ class CSSViewTransitionRule final : public CSSRule {
   void Trace(Visitor*) const override;
 
   String navigation() const;
-
-  void setNavigation(const ExecutionContext*, const String&);
+  Vector<String> types() const;
 
  private:
   CSSRule::Type GetType() const override { return kViewTransitionRule; }

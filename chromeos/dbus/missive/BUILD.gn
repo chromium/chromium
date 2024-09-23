@@ -9,12 +9,16 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 component("missive") {
   defines = [ "IS_MISSIVE_IMPL" ]
 
+  public_deps = [ "//components/reporting/storage:storage_configuration" ]
+
   deps = [
     ":history_tracker",
     "//base",
     "//components/reporting/proto:interface_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/reporting/storage:storage_module_interface",
+    "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/util:disconnectable_client",
     "//components/reporting/util:status",
     "//dbus",
@@ -26,6 +30,8 @@ component("missive") {
     "fake_missive_client.h",
     "missive_client.cc",
     "missive_client.h",
+    "missive_storage_module.cc",
+    "missive_storage_module.h",
   ]
 }
 

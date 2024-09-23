@@ -6,16 +6,18 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_CARD_BUBBLE_CONTROLLER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/security_state/core/security_state.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -29,7 +31,7 @@ enum class BubbleType;
 
 // Implementation of per-tab class to control the local/server save credit card
 // bubble, the local/server save CVC bubble, and Omnibox icon.
-// TODO(crbug.com/1487232): Refactor SaveCardBubbleControllerImpl to split the
+// TODO(crbug.com/40934022): Refactor SaveCardBubbleControllerImpl to split the
 // states into different classes.
 class SaveCardBubbleControllerImpl
     : public AutofillBubbleControllerBase,
@@ -41,6 +43,10 @@ class SaveCardBubbleControllerImpl
   SaveCardBubbleControllerImpl& operator=(const SaveCardBubbleControllerImpl&) =
       delete;
   ~SaveCardBubbleControllerImpl() override;
+
+  // Time in sec to wait before auto-closing confirmation bubble.
+  static constexpr base::TimeDelta kAutoCloseConfirmationBubbleWaitSec =
+      base::Seconds(3);
 
   // Sets up the controller and is responsible for offering both local card save
   // and local CVC save. The offer-to-save CVC bubble saves CVC for an existing
@@ -54,10 +60,13 @@ class SaveCardBubbleControllerImpl
   // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,
   // and the users are informed that the CVC will also be stored. If the type is
   // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
-  void OfferLocalSave(
+  // TODO(crbug.com/40937065) refactor: pass Iban by value since all they then
+  // immediately move it into a member.
+  virtual void OfferLocalSave(
       const CreditCard& card,
-      AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::LocalSaveCardPromptCallback save_card_prompt_callback);
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+          save_card_prompt_callback);
 
   // Sets up the controller and is responsible for offering both card save and
   // CVC save to Google Payments. The offer-to-save CVC bubble uploads CVC for
@@ -79,8 +88,9 @@ class SaveCardBubbleControllerImpl
   void OfferUploadSave(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
-      AutofillClient::SaveCreditCardOptions options,
-      AutofillClient::UploadSaveCardPromptCallback save_card_prompt_callback);
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options,
+      payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
+          save_card_prompt_callback);
 
   // Exists for testing purposes only. (Otherwise shown through ReshowBubble())
   // Sets up the controller for the Manage Cards view. This displays the card
@@ -88,7 +98,17 @@ class SaveCardBubbleControllerImpl
   void ShowBubbleForManageCardsForTesting(const CreditCard& card);
 
   void ReshowBubble(bool is_user_gesture);
-  virtual void ShowConfirmationBubbleView(bool card_saved);
+
+  // Shows upload result to users. `card_saved` indicates if the card is
+  // successfully saved. `on_confirmation_closed_callback` will be invoked
+  // once confirmation bubble is closed. Posts a delayed task to auto-close the
+  // confirmation bubble if user doesn't close the bubble before
+  // `kAutoCloseConfirmationBubbleWaitSec`.
+  virtual void ShowConfirmationBubbleView(
+      bool card_saved,
+      std::optional<
+          payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
+          on_confirmation_closed_callback);
 
   // SaveCardBubbleController:
   std::u16string GetWindowTitle() const override;
@@ -100,14 +120,15 @@ class SaveCardBubbleControllerImpl
   const CreditCard& GetCard() const override;
   base::OnceCallback<void(PaymentsBubbleClosedReason)>
   GetOnBubbleClosedCallback() override;
-  const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+  const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
   GetConfirmationUiParams() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
   ui::ImageModel GetCreditCardImage() const override;
 
-  void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
-                        user_provided_card_details) override;
+  void OnSaveButton(
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+          user_provided_card_details) override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageCardsClicked() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
@@ -115,6 +136,7 @@ class SaveCardBubbleControllerImpl
   bool IsUploadSave() const override;
   BubbleType GetBubbleType() const override;
   bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const override;
+  void HideSaveCardBubble() override;
 
   // SavePaymentIconController:
   std::u16string GetSavePaymentIconTooltipText() const override;
@@ -123,8 +145,9 @@ class SaveCardBubbleControllerImpl
   void OnAnimationEnded() override;
   bool IsIconVisible() const override;
   AutofillBubbleBase* GetPaymentBubbleView() const override;
-  PaymentBubbleType GetPaymentBubbleType() const override;
   int GetSaveSuccessAnimationStringId() const override;
+
+  static base::AutoReset<bool> IgnoreWindowActivationForTesting();
 
  protected:
   explicit SaveCardBubbleControllerImpl(content::WebContents* web_contents);
@@ -136,9 +159,6 @@ class SaveCardBubbleControllerImpl
   void OnVisibilityChanged(content::Visibility visibility) override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
-
-  // Gets the security level of the page.
-  virtual security_state::SecurityLevel GetSecurityLevel() const;
 
  private:
   friend class content::WebContentsUserData<SaveCardBubbleControllerImpl>;
@@ -154,6 +174,9 @@ class SaveCardBubbleControllerImpl
   void UpdateSaveCardIcon();
 
   void OpenUrl(const GURL& url);
+
+  // Returns whether the web contents related to the controller is active.
+  bool IsWebContentsActive();
 
   // Should outlive this object.
   raw_ptr<PersonalDataManager> personal_data_manager_;
@@ -175,12 +198,17 @@ class SaveCardBubbleControllerImpl
   // name provided/confirmed by the user if it was requested. Will also return
   // the expiration month and year provided by the user if the expiration date
   // was requested.
-  AutofillClient::UploadSaveCardPromptCallback
+  payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
       upload_save_card_prompt_callback_;
 
   // Callback to run once the user makes a decision with respect to the local
   // credit card offer-to-save prompt or the local CVC offer-to-save prompt.
-  AutofillClient::LocalSaveCardPromptCallback local_save_card_prompt_callback_;
+  payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
+      local_save_card_prompt_callback_;
+
+  // Callback to run after save card confirmation bubble is closed.
+  std::optional<payments::PaymentsAutofillClient::OnConfirmationClosedCallback>
+      on_confirmation_closed_callback_;
 
   // Governs whether the upload or local save version of the UI should be shown.
   bool is_upload_save_ = false;
@@ -211,7 +239,7 @@ class SaveCardBubbleControllerImpl
   // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,
   // and the users are informed that the CVC will also be stored. If the type is
   // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
-  AutofillClient::SaveCreditCardOptions options_;
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options_;
 
   // Contains the details of the card that will be saved if the user accepts.
   CreditCard card_;
@@ -219,12 +247,13 @@ class SaveCardBubbleControllerImpl
   // If no legal message should be shown then this variable is an empty vector.
   LegalMessageLines legal_message_lines_;
 
-  // The security level for the current context.
-  security_state::SecurityLevel security_level_;
-
   // UI parameters needed to display the save card confirmation view.
-  std::optional<SaveCardAndVirtualCardEnrollConfirmationUiParams>
+  std::optional<SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams>
       confirmation_ui_params_;
+
+  // Timer that controls auto closure of confirmation bubble. Should be
+  // stopped once the bubble is closed.
+  base::OneShotTimer auto_close_confirmation_timer_;
 
   // Weak pointer factory for this save card bubble controller.
   base::WeakPtrFactory<SaveCardBubbleControllerImpl> weak_ptr_factory_{this};

@@ -1,0 +1,78 @@
+Test that position-try rules are reported.
+w: 100, h: 100
+Dumping CSS position-try rules: 
+@position-try --top (active) {
+    width: 100px; @[21:2-21:15]
+    height: 100px; @[22:2-22:16]
+    top: anchor(--anchor top); @[23:2-23:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --bottom (inactive) {
+    width: 50px; @[27:2-27:14]
+    height: 50px; @[28:2-28:15]
+    top: anchor(--anchor bottom); @[29:2-29:31]
+    width: 50px; @[undefined-undefined]
+    height: 50px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: 1
+w: 50, h: 50
+Dumping CSS position-try rules: 
+@position-try --top (inactive) {
+    width: 100px; @[21:2-21:15]
+    height: 100px; @[22:2-22:16]
+    top: anchor(--anchor top); @[23:2-23:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --bottom (active) {
+    width: 50px; @[27:2-27:14]
+    height: 50px; @[28:2-28:15]
+    top: anchor(--anchor bottom); @[29:2-29:31]
+    width: 50px; @[undefined-undefined]
+    height: 50px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: 2
+w: 300, h: 300
+Dumping CSS position-try rules: 
+@position-try --top (inactive) {
+    width: 100px; @[21:2-21:15]
+    height: 100px; @[22:2-22:16]
+    top: anchor(--anchor top); @[23:2-23:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --bottom (inactive) {
+    width: 50px; @[27:2-27:14]
+    height: 50px; @[28:2-28:15]
+    top: anchor(--anchor bottom); @[29:2-29:31]
+    width: 50px; @[undefined-undefined]
+    height: 50px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: undefined
+w: 100, h: 200
+Dumping CSS position-try rules: 
+@position-try --top (inactive) {
+    width: 100px; @[21:2-21:15]
+    height: 100px; @[22:2-22:16]
+    top: anchor(--anchor top); @[23:2-23:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --bottom (inactive) {
+    width: 50px; @[27:2-27:14]
+    height: 50px; @[28:2-28:15]
+    top: anchor(--anchor bottom); @[29:2-29:31]
+    width: 50px; @[undefined-undefined]
+    height: 50px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: 0
+

@@ -9,18 +9,13 @@
 
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_preference_service_delegate.h"
 
-class PrefService;
-
 @protocol AddressBarPreferenceConsumer;
 
 // The Mediator for address bar preference setting.
 @interface AddressBarPreferenceMediator
     : NSObject <AddressBarPreferenceServiceDelegate>
 
-- (instancetype)initWithOriginalPrefService:(PrefService*)originalPrefService
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)init;
 
 // The consumer of the address bar preference mediator.
 @property(nonatomic, weak) id<AddressBarPreferenceConsumer> consumer;

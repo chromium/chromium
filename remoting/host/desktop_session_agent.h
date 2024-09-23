@@ -10,8 +10,8 @@
 
 #include <map>
 #include <memory>
-
 #include <optional>
+
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -27,12 +27,12 @@
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/file_transfer/session_file_operations_handler.h"
+#include "remoting/host/mojo_video_capturer_list.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_mojom_traits.h"
+#include "remoting/host/mouse_shape_pump.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/events/event.h"
 
@@ -51,7 +51,6 @@ class ActionExecutor;
 class AudioCapturer;
 class AudioPacket;
 class AutoThreadTaskRunner;
-class DesktopCapturer;
 class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
@@ -71,7 +70,6 @@ class InputEventTracker;
 class DesktopSessionAgent
     : public base::RefCountedThreadSafe<DesktopSessionAgent>,
       public IPC::Listener,
-      public webrtc::DesktopCapturer::Callback,
       public webrtc::MouseCursorMonitor::Callback,
       public ClientSessionControl,
       public mojom::DesktopSessionAgent,
@@ -112,10 +110,6 @@ class DesktopSessionAgent
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // webrtc::DesktopCapturer::Callback implementation.
-  void OnCaptureResult(webrtc::DesktopCapturer::Result result,
-                       std::unique_ptr<webrtc::DesktopFrame> frame) override;
-
   // webrtc::MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
@@ -133,8 +127,8 @@ class DesktopSessionAgent
              StartCallback callback) override;
 
   // mojom::DesktopSessionControl implementation.
-  void CaptureFrame() override;
-  void SelectSource(int id) override;
+  void CreateVideoCapturer(int64_t desktop_display_id,
+                           CreateVideoCapturerCallback callback) override;
   void SetScreenResolution(const ScreenResolution& resolution) override;
   void LockWorkstation() override;
   void InjectSendAttentionSequence() override;
@@ -174,14 +168,6 @@ class DesktopSessionAgent
 
   // Handles keyboard layout changes.
   void OnKeyboardLayoutChange(const protocol::KeyboardLayout& layout);
-
-  // Notifies the network process when a new shared memory region is created.
-  void OnSharedMemoryRegionCreated(int id,
-                                   base::ReadOnlySharedMemoryRegion region,
-                                   uint32_t size);
-
-  // Notifies the network process when a shared memory region is released.
-  void OnSharedMemoryRegionReleased(int id);
 
   // Posted to |audio_capture_task_runner_| to start the audio capturer.
   void StartAudioCapturer();
@@ -237,18 +223,15 @@ class DesktopSessionAgent
   // True if the desktop session agent has been started.
   bool started_ = false;
 
-  // Captures the screen and composites with the mouse cursor if necessary.
-  std::unique_ptr<DesktopCapturer> video_capturer_;
+  // Per-display capturers which capture the screen and composite with the mouse
+  // cursor if necessary.
+  MojoVideoCapturerList video_capturers_;
 
   // Captures mouse shapes.
-  std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;
+  std::unique_ptr<MouseShapePump> mouse_shape_pump_;
 
   // Watches for keyboard layout changes.
   std::unique_ptr<KeyboardLayoutMonitor> keyboard_layout_monitor_;
-
-  // Keep reference to the last frame sent to make sure shared buffer is alive
-  // before it's received.
-  std::unique_ptr<webrtc::DesktopFrame> last_frame_;
 
   // Routes file-transfer messages to the corresponding reader/writer to be
   // executed.

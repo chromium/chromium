@@ -25,7 +25,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
       const AutofillProfile* original_profile,
       std::optional<std::u16string> user_email,
       const std::string& locale,
-      AutofillClient::SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback);
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillSaveUpdateAddressProfileDelegateIOS&) = delete;
@@ -73,8 +73,6 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   void AutoDecline();
   virtual bool Never();
 
-  // Updates |profile_| |type| value to |value|.
-  void SetProfileInfo(const FieldType& type, const std::u16string& value);
   void SetProfile(AutofillProfile* profile);
 
   const AutofillProfile* GetProfile() const;
@@ -99,15 +97,13 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   std::optional<std::u16string> UserAccountEmail() const { return user_email_; }
 
-  // Returns true if the profile's source is
-  // `AutofillProfile::Source::kAccount`.
-  bool IsProfileAnAccountProfile() const {
-    return profile_.source() == autofill::AutofillProfile::Source::kAccount;
-  }
+  // Returns true if the profile's record type is
+  // `AutofillProfile::RecordType::kAccount`.
+  bool IsProfileAnAccountProfile() const { return profile_.IsAccountProfile(); }
 
 #if defined(UNIT_TEST)
   // Getter for |user_decision_|. Used for the testing purposes.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision() const {
+  AutofillClient::AddressPromptUserDecision user_decision() const {
     return user_decision_;
   }
 #endif
@@ -118,8 +114,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   void RunSaveAddressProfilePromptCallback();
 
   // Sets |user_decision_| based on |user_decision|.
-  void SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision user_decision);
+  void SetUserDecision(AutofillClient::AddressPromptUserDecision user_decision);
 
   // The application locale.
   std::string locale_;
@@ -146,8 +141,8 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   // Records the last user decision based on the interactions with the
   // banner/modal to be sent with |address_profile_save_prompt_callback_|.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision_ =
-      AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored;
+  AutofillClient::AddressPromptUserDecision user_decision_ =
+      AutofillClient::AddressPromptUserDecision::kIgnored;
 };
 
 }  // namespace autofill

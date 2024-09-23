@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {NativeLayerImpl, PrinterSetupInfoMessageType, PrinterSetupInfoMetricsSource, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
+import {NativeLayerImpl, PrinterSetupInfoInitiator, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from 'chrome://print/print_preview.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import type {NativeLayerCrosStub} from './native_layer_cros_stub.js';
@@ -14,6 +15,7 @@ import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 import {NativeLayerStub} from './native_layer_stub.js';
 
 suite('PrinterSetupInfoTest', function() {
+  let parentDiv: HTMLElement;
   let setupInfoElement: PrintPreviewPrinterSetupInfoCrosElement;
   let nativeLayer: NativeLayerStub;
   let nativeLayerCros: NativeLayerCrosStub;
@@ -40,11 +42,11 @@ suite('PrinterSetupInfoTest', function() {
   /** Appends `PrintPreviewPrinterSetupInfoCrosElement` to document body. */
   async function setupElement(): Promise<void> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    parentDiv = document.createElement('div');
     setupInfoElement =
         document.createElement(PrintPreviewPrinterSetupInfoCrosElement.is);
-    setupInfoElement.setMetricsSourceForTesting(
-        PrinterSetupInfoMetricsSource.PREVIEW_AREA);
-    document.body.appendChild(setupInfoElement);
+    parentDiv.appendChild(setupInfoElement);
+    document.body.appendChild(parentDiv);
     flush();
     await nativeLayerCros.whenCalled('getShowManagePrinters');
   }
@@ -71,6 +73,7 @@ suite('PrinterSetupInfoTest', function() {
     assertTrue(isChildVisible(setupInfoElement, 'cr-button'));
     assertTrue(isChildVisible(setupInfoElement, '.message-heading'));
     assertTrue(isChildVisible(setupInfoElement, '.message-detail'));
+    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
   });
 
   /** Verifies button text is localized. */
@@ -94,7 +97,9 @@ suite('PrinterSetupInfoTest', function() {
     await setupElement();
     assertEquals(0, nativeLayer.getCallCount('managePrinters'));
 
-    // Click button.
+    // Click button. Set the initiator so the correct metric is recorded.
+    setupInfoElement.setInitiatorForTesting(
+        PrinterSetupInfoInitiator.PREVIEW_AREA, /*startResizeObserver=*/ false);
     const managePrinters =
         getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
     managePrinters.click();
@@ -172,8 +177,9 @@ suite('PrinterSetupInfoTest', function() {
         assertEquals(0, nativeLayer.getCallCount(recordMetricsFunction));
 
         // Set metrics source to destination-dialog-cros and click.
-        setupInfoElement.setMetricsSourceForTesting(
-            PrinterSetupInfoMetricsSource.DESTINATION_DIALOG_CROS);
+        setupInfoElement.setInitiatorForTesting(
+            PrinterSetupInfoInitiator.DESTINATION_DIALOG_CROS,
+            /*startResizeObserver=*/ false);
         const managePrinters =
             getShadowElement<CrButtonElement>(setupInfoElement, 'cr-button');
         managePrinters.click();
@@ -182,8 +188,9 @@ suite('PrinterSetupInfoTest', function() {
         verifyRecordInHistogramCall(/*callIndex=*/ 0, /*expectedBucket=*/ 1);
 
         // Set metrics source to destination-dialog-cros and click.
-        setupInfoElement.setMetricsSourceForTesting(
-            PrinterSetupInfoMetricsSource.PREVIEW_AREA);
+        setupInfoElement.setInitiatorForTesting(
+            PrinterSetupInfoInitiator.PREVIEW_AREA,
+            /*startResizeObserver=*/ false);
         managePrinters.click();
 
         // Call should use bucket `PREVIEW_AREA_CONNECTION_ERROR`.
@@ -202,5 +209,45 @@ suite('PrinterSetupInfoTest', function() {
     assertTrue(isChildVisible(setupInfoElement, '.message-heading'));
     assertTrue(isChildVisible(setupInfoElement, '.message-detail'));
     assertFalse(isChildVisible(setupInfoElement, 'cr-button'));
+  });
+
+  /**
+   * Verifies the illustration is hidden when the Print Preview parent element
+   * becomes too small then reappears when the element is expanded.
+   */
+  test('HideIllustrationForSmallWindow', async function() {
+    await setupElement();
+    parentDiv.style.height = '1000px';
+    parentDiv.style.width = '1000px';
+    parentDiv.classList.add('preview-area-message');
+    setupInfoElement.setInitiatorForTesting(
+        PrinterSetupInfoInitiator.PREVIEW_AREA, /*startResizeObserver=*/ true);
+
+    // Verify the illustration is showing initially.
+    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
+
+    // Reducing the width should hide the illustration.
+    parentDiv.style.width = '249px';
+    await waitAfterNextRender(parentDiv);
+    await waitAfterNextRender(setupInfoElement);
+    assertFalse(isChildVisible(setupInfoElement, 'cr-icon'));
+
+    // Expanding the width should show the illustration.
+    parentDiv.style.width = '1000px';
+    await waitAfterNextRender(parentDiv);
+    await waitAfterNextRender(setupInfoElement);
+    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
+
+    // Reducing the height should hide the illustration.
+    parentDiv.style.height = '399px';
+    await waitAfterNextRender(parentDiv);
+    await waitAfterNextRender(setupInfoElement);
+    assertFalse(isChildVisible(setupInfoElement, 'cr-icon'));
+
+    // Expanding the height should show the illustration.
+    parentDiv.style.height = '1000px';
+    await waitAfterNextRender(parentDiv);
+    await waitAfterNextRender(setupInfoElement);
+    assertTrue(isChildVisible(setupInfoElement, 'cr-icon'));
   });
 });

@@ -32,3 +32,12 @@ Dumping matched rules:
     }
 Dumping inherited rules: 
 
+There should not be a rule for #commented-out-property.
+Dumping inline style: 
+{
+}
+Dumping matched rules: 
+*#commented-out-property* {    regular
+}
+Dumping inherited rules: 
+

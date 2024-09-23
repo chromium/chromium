@@ -31,10 +31,12 @@ def main():
     target_dir = os.path.abspath(os.path.join(args.out_dir, 'target'))
     home_dir = os.path.abspath(os.path.join(target_dir, 'cargo_home'))
 
-    return RunCargo(args.rust_sysroot, home_dir, [
+    cargo_args = [
         '--locked', 'run', '--release', '--manifest-path', GNRT_MANIFEST_PATH,
         '--target-dir', target_dir, '--'
-    ] + gnrt_args)
+    ] + gnrt_args
+    success = RunCargo(args.rust_sysroot, home_dir, cargo_args)
+    return 0 if success else 1
 
 
 if __name__ == '__main__':

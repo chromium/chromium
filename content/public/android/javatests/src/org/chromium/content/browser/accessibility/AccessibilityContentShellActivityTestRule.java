@@ -26,11 +26,10 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 
-import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -95,12 +94,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
-     * Helper method to set up our tests. This method replaces the @Before method.
-     * Leaving a commented @Before annotation on method as a reminder/context clue.
+     * Helper method to set up our tests. This method replaces the @Before method. Leaving a
+     * commented @Before annotation on method as a reminder/context clue.
      */
     /* @Before */
     public void setupTestFramework() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
                     AccessibilityState.setIsScreenReaderEnabledForTesting(true);
@@ -112,12 +111,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
-
-        FeatureList.setTestCanUseDefaultsForTesting();
     }
 
     public void setupTestFrameworkForBasicMode() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
                     AccessibilityState.setStateMaskForTesting(EVENT_TYPE_MASK, EVENT_TYPE_MASK_ALL);
@@ -128,12 +125,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
-
-        FeatureList.setTestCanUseDefaultsForTesting();
     }
 
     public void setupTestFrameworkForFormControlsMode() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
                     AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(true);
@@ -145,8 +140,6 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
-
-        FeatureList.setTestCanUseDefaultsForTesting();
     }
 
     /** Helper method to tear down our tests so we can start the next test clean. */
@@ -235,7 +228,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 });
 
         int virtualViewId =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> findNodeMatching(View.NO_ID, matcher, element));
         Assert.assertNotEquals(View.NO_ID, virtualViewId);
         return virtualViewId;
@@ -244,15 +237,15 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     /**
      * Helper method to perform actions on the UI so we can then send accessibility events
      *
-     * @param viewId int                   virtualViewId of the given node
-     * @param action int                   desired AccessibilityNodeInfo action
-     * @param args Bundle                  action bundle
-     * @return boolean                     return value of performAction
-     * @throws ExecutionException          Error
+     * @param viewId int virtualViewId of the given node
+     * @param action int desired AccessibilityNodeInfo action
+     * @param args Bundle action bundle
+     * @return boolean return value of performAction
+     * @throws ExecutionException Error
      */
     public boolean performActionOnUiThread(int viewId, int action, Bundle args)
             throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> mNodeProvider.performAction(viewId, action, args));
     }
 
@@ -278,7 +271,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
     /** Helper method for executing a given JS method for the current web contents. */
     public void executeJS(String method) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> getWebContents().evaluateJavaScriptForTests(method, null));
     }
 
@@ -298,7 +291,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                         virtualViewId,
                         AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS,
                         null));
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
 
         CriteriaHelper.pollUiThread(
@@ -320,14 +313,14 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
-     * Call through the WebContentsAccessibilityImpl to send a signal that we are ready to begin
-     * a test (using the kEndOfTest signal for simplicity). Poll until we receive the generated
-     * Blink event in response, then reset the tracker.
+     * Call through the WebContentsAccessibilityImpl to send a signal that we are ready to begin a
+     * test (using the kEndOfTest signal for simplicity). Poll until we receive the generated Blink
+     * event in response, then reset the tracker.
      */
     public void sendReadyForTestSignal() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mWcax.signalEndOfTestForTesting());
+        ThreadUtils.runOnUiThreadBlocking(() -> mWcax.signalEndOfTestForTesting());
         CriteriaHelper.pollUiThread(() -> mTracker.testComplete(), READY_FOR_TEST_ERROR);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mTracker.signalReadyForTest());
+        ThreadUtils.runOnUiThreadBlocking(() -> mTracker.signalReadyForTest());
     }
 
     /**
@@ -335,7 +328,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * are done with a test. Poll until we receive the generated Blink event in response.
      */
     public void sendEndOfTestSignal() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mWcax.signalEndOfTestForTesting());
+        ThreadUtils.runOnUiThreadBlocking(() -> mWcax.signalEndOfTestForTesting());
         CriteriaHelper.pollUiThread(() -> mTracker.testComplete(), END_OF_TEST_ERROR);
     }
 

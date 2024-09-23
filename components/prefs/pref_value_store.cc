@@ -5,10 +5,11 @@
 #include "components/prefs/pref_value_store.h"
 
 #include <stddef.h>
+
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "components/prefs/pref_notifier.h"
 #include "components/prefs/pref_observer.h"
 
@@ -38,8 +39,7 @@ void PrefValueStore::PrefStoreKeeper::Initialize(
     pref_store_->AddObserver(this);
 }
 
-void PrefValueStore::PrefStoreKeeper::OnPrefValueChanged(
-    const std::string& key) {
+void PrefValueStore::PrefStoreKeeper::OnPrefValueChanged(std::string_view key) {
   pref_value_store_->OnPrefValueChanged(type_, key);
 }
 
@@ -116,7 +116,7 @@ PrefValueStore::PrefStoreType PrefValueStore::ControllingPrefStoreForPref(
   return INVALID_STORE;
 }
 
-bool PrefValueStore::GetValue(base::StringPiece name,
+bool PrefValueStore::GetValue(std::string_view name,
                               base::Value::Type type,
                               const base::Value** out_value) const {
   // Check the |PrefStore|s in order of their priority from highest to lowest,
@@ -136,7 +136,7 @@ bool PrefValueStore::GetRecommendedValue(const std::string& name,
 }
 
 void PrefValueStore::NotifyPrefChanged(
-    const std::string& path,
+    std::string_view path,
     PrefValueStore::PrefStoreType new_store) {
   DCHECK(new_store != INVALID_STORE);
   // A notification is sent when the pref value in any store changes. If this
@@ -232,7 +232,7 @@ bool PrefValueStore::PrefValueInStoreRange(
     PrefValueStore::PrefStoreType first_checked_store,
     PrefValueStore::PrefStoreType last_checked_store) const {
   if (first_checked_store > last_checked_store) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -244,7 +244,7 @@ bool PrefValueStore::PrefValueInStoreRange(
   return false;
 }
 
-bool PrefValueStore::GetValueFromStore(base::StringPiece name,
+bool PrefValueStore::GetValueFromStore(std::string_view name,
                                        PrefValueStore::PrefStoreType store_type,
                                        const base::Value** out_value) const {
   // Only return true if we find a value and it is the correct type, so stale
@@ -260,7 +260,7 @@ bool PrefValueStore::GetValueFromStore(base::StringPiece name,
 }
 
 bool PrefValueStore::GetValueFromStoreWithType(
-    base::StringPiece name,
+    std::string_view name,
     base::Value::Type type,
     PrefStoreType store,
     const base::Value** out_value) const {
@@ -278,7 +278,7 @@ bool PrefValueStore::GetValueFromStoreWithType(
 }
 
 void PrefValueStore::OnPrefValueChanged(PrefValueStore::PrefStoreType type,
-                                        const std::string& key) {
+                                        std::string_view key) {
   NotifyPrefChanged(key, type);
 }
 

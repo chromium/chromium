@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_image.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/mediasession/chapter_information.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
@@ -102,6 +103,7 @@ SanitizeChapterInformationAndConvertToMojo(const ChapterInformation* chapter,
     return mojo_chapter;
   }
 
+  mojo_chapter = media_session::mojom::blink::ChapterInformation::New();
   mojo_chapter->title = chapter->title().Left(kMaxStringLength);
   mojo_chapter->startTime = base::Seconds(chapter->startTime());
 

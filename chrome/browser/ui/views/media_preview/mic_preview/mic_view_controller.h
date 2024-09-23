@@ -29,7 +29,9 @@ class MicViewController {
   MicViewController(MediaView& base_view,
                     bool needs_borders,
                     ui::SimpleComboboxModel& combobox_model,
-                    MediaViewControllerBase::SourceChangeCallback callback);
+                    bool allow_device_selection,
+                    MediaViewControllerBase::SourceChangeCallback callback,
+                    media_preview_metrics::Context metrics_context);
   MicViewController(const MicViewController&) = delete;
   MicViewController& operator=(const MicViewController&) = delete;
   ~MicViewController();

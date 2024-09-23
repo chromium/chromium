@@ -1,3 +1,55 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/chromeos/app_mode",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor chromeos codes in //chrome to break these dependencies; see
+  # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
+  # this list.
+  "+chrome/browser/app_mode",
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/app_mode",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
+  "+chrome/browser/ash/system_web_apps/test_support",
+  "+chrome/browser/ash/system_web_apps/types",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/extensions/extension_service.h",
+  "+chrome/browser/extensions/extension_service_test_base.h",
+  "+chrome/browser/extensions/external_loader.h",
+  "+chrome/browser/extensions/external_provider_impl.h",
+  "+chrome/browser/extensions/forced_extensions/install_stage_tracker.h",
+  "+chrome/browser/extensions/install_observer.h",
+  "+chrome/browser/extensions/install_tracker_factory.h",
+  "+chrome/browser/extensions/install_tracker.h",
+  "+chrome/browser/extensions/updater",
+  "+chrome/browser/lacros/app_mode",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/apps/chrome_app_delegate.h",
+  "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_commands.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_list_observer.h",
+  "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/exclusive_access",
+  "+chrome/browser/ui/extensions/application_launch.h",
+  "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+  "+chrome/browser/ui/web_applications",
+  "+chrome/browser/web_applications",
+  "+chrome/common",
+  "+chrome/test",
+]
+
 specific_include_rules = {
   "chrome_kiosk_app_launcher\.cc": [
     "+chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h",

@@ -19,7 +19,9 @@ invocations: [
         complexity: 9,
         packetlossperc: 20,
         useinbandfec: true,
-        usedtx: true
+        usedtx: true,
+        signal: 'voice',
+        application: 'voip',
       }
     }
   },

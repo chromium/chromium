@@ -1,10 +1,13 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 module shopping_service.mojom;
 
-import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
+import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // This is a specialized version of shopping_specifics proto. The
 // struct here has most of the same information with the proto but
@@ -24,9 +27,7 @@ struct ProductInfo {
   // Direct link to the product image.
   url.mojom.Url image_url;
 
-  // Direct link to the product page. Right now this is
-  // only used to fetch site favicon in case image_url
-  // is not available.
+  // Direct link to the product page.
   url.mojom.Url product_url;
 
   // Price as shown in the page. This should include
@@ -40,14 +41,17 @@ struct ProductInfo {
 
   // The product cluster id.
   uint64 cluster_id;
+
+  // The category labels of the product.
+  array<string> category_labels;
 };
 
 struct BookmarkProductInfo {
-    // The ID of the bookmark that owns this product info.
-    int64 bookmark_id;
+  // The ID of the bookmark that owns this product info.
+  int64 bookmark_id;
 
-    // The product information associated with 'bookmark_id'.
-    ProductInfo info;
+  // The product information associated with 'bookmark_id'.
+  ProductInfo info;
 };
 
 struct PricePoint {
@@ -56,8 +60,27 @@ struct PricePoint {
   string formatted_price;
 };
 
+struct UrlInfo {
+  // Title of the page represented by the URL.
+  string title;
+
+  // Url.
+  url.mojom.Url url;
+
+  // Favicon URL if it exists, otherwise an empty URL.
+  url.mojom.Url favicon_url;
+
+  // Thumbnail URL if it exists, otherwise an empty URL.
+  url.mojom.Url thumbnail_url;
+};
+
 struct PriceInsightsInfo {
-  enum PriceBucket { kUnknown, kLow, kTypical, kHigh };
+  enum PriceBucket {
+    kUnknown,
+    kLow,
+    kTypical,
+    kHigh,
+  };
 
   // The product cluster id.
   uint64 cluster_id;
@@ -90,15 +113,113 @@ struct PriceInsightsInfo {
   string currency_code;
 };
 
-// Used by the price tracking section in side panel to bootstrap
-// bidirectional communication.
+struct ProductSpecificationsDescriptionText {
+  // The actual text for the description.
+  string text;
+
+  // A context URL for the description if available.
+  array<UrlInfo> urls;
+};
+
+struct ProductSpecificationsOption {
+  // The descriptions for this particular option of a product.
+  array<ProductSpecificationsDescriptionText> descriptions;
+};
+
+enum ProductSpecificationsDisclosureVersion {
+  kUnknown = 0,
+  kV1 = 1,
+};
+
+struct ProductSpecificationsDescription {
+  // The possible options for a feature of a product.
+  array<ProductSpecificationsOption> options;
+
+  // The label for the contained description texts.
+  string label;
+
+  // Alternative text with additional context for this description.
+  string alt_text;
+};
+
+struct ProductSpecificationsValue {
+  // One or more descriptions about the feature being described by this value.
+  array<ProductSpecificationsDescription> specification_descriptions;
+
+  // Summaries describing the collective list of descriptions.
+  array<ProductSpecificationsDescriptionText> summary;
+};
+
+struct ProductSpecificationsProduct {
+  // The GPC ID for this product.
+  uint64 product_cluster_id;
+
+  // The title of the product.
+  string title;
+
+  // The URL for the product image.
+  url.mojom.Url image_url;
+
+  // A map of dimension IDs to the string value as it relates to this product.
+  map<uint64, ProductSpecificationsValue> product_dimension_values;
+
+  // A list of summaries about the product.
+  array<ProductSpecificationsDescriptionText> summary;
+};
+
+// Describes whether different parts of the Compare feature are enabled.
+struct ProductSpecificationsFeatureState {
+  bool is_syncing_tab_compare;
+  bool can_load_full_page_ui;
+  bool can_manage_sets;
+  bool can_fetch_data;
+  bool is_allowed_for_enterprise;
+  bool is_quality_logging_allowed;
+  bool is_signed_in;
+};
+
+// This struct represents information acquired from the product specifications
+// backend.
+struct ProductSpecifications {
+  // A map of dimension IDs to the name of the dimension.
+  map<uint64, string> product_dimension_map;
+
+  // The products that the dimensions pertain to.
+  array<ProductSpecificationsProduct> products;
+};
+
+// This struct represents information tied to sync (the product specifications
+// persistence layer).
+struct ProductSpecificationsSet {
+  // The human reabable name of this set.
+  string name;
+
+  // The UUID for this set in string form.
+  mojo_base.mojom.Uuid uuid;
+
+  // The user's product URLs.
+  array<url.mojom.Url> urls;
+};
+
+//TODO(b/311697865) move this to a common location.
+enum UserFeedback {
+  kUnspecified,
+  kThumbsUp,
+  kThumbsDown,
+};
+
+// Used by surfaces like the price tracking section in side panel, product
+// specifications, chrome://history etc, to bootstrap bidirectional
+// communication.
 interface ShoppingServiceHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
-  CreateShoppingServiceHandler(pending_remote<Page> page,
+  CreateShoppingServiceHandler(
+      pending_remote<Page> page,
       pending_receiver<ShoppingServiceHandler> handler);
 };
 
 // Browser-side handler for requests from WebUI page.
+// TODO(b/359684506): Move feature-specific functions to separate handlers.
 interface ShoppingServiceHandler {
   // Returns all the tracked product info from bookmarks.
   GetAllPriceTrackedBookmarkProductInfo()
@@ -117,8 +238,29 @@ interface ShoppingServiceHandler {
   // Returns the product info for current url.
   GetProductInfoForCurrentUrl() => (ProductInfo productInfo);
 
+  // Returns the product info for the provided URL.
+  GetProductInfoForUrl(url.mojom.Url url)
+      => (url.mojom.Url url, ProductInfo productInfo);
+
   // Returns the price insights info for current url.
-  GetPriceInsightsInfoForCurrentUrl() => (PriceInsightsInfo priceInsightsInfo);
+  GetPriceInsightsInfoForCurrentUrl()
+      => (PriceInsightsInfo priceInsightsInfo);
+
+  // Returns the price insights info for the provided URL.
+  GetPriceInsightsInfoForUrl(url.mojom.Url url)
+      => (url.mojom.Url url, PriceInsightsInfo priceInsightsInfo);
+
+  // Returns the product specifications for the provided list of URLs.
+  GetProductSpecificationsForUrls(array<url.mojom.Url> urls)
+      => (ProductSpecifications productSpecs);
+
+  // Returns a list of URL infos for each product tab the user has open.
+  // This excludes non-HTTP/HTTPS URLs.
+  GetUrlInfosForProductTabs() => (array<UrlInfo> url_infos);
+
+  // Returns a list of URL infos for recently viewed tabs. Each of these does
+  // not necessarily represent an open tab.
+  GetUrlInfosForRecentlyViewedTabs() => (array<UrlInfo> url_infos);
 
   // Notify the backend that the UI is ready to be shown.
   ShowInsightsSidePanelUI();
@@ -135,19 +277,81 @@ interface ShoppingServiceHandler {
   // Sets the price tracking status of the current URL.
   SetPriceTrackingStatusForCurrentUrl(bool track);
 
-  // Open url in a new tab.
+  // Opens url in a new tab.
   OpenUrlInNewTab(url.mojom.Url url);
+
+  // Opens |url| in an existing or new tab.
+  SwitchToOrOpenTab(url.mojom.Url url);
 
   // Returns the name of the parent bookmark folder of the current URL. This
   // will only be called when the current page is bookmarked.
-  GetParentBookmarkFolderNameForCurrentUrl() => (mojo_base.mojom.String16 name);
+  GetParentBookmarkFolderNameForCurrentUrl()
+      => (mojo_base.mojom.String16 name);
 
   // Show the bookmark editor dialog for the current URL. This will only be
   // called when the current page is bookmarked.
   ShowBookmarkEditorForCurrentUrl();
 
-  // Show feedback form.
-  ShowFeedback();
+  // Show the product specifications set based on the uuid, `in_new_tab`
+  // indicates whether the browser should open the set in a new tab or
+  // current tab.
+  ShowProductSpecificationsSetForUuid(mojo_base.mojom.Uuid uuid,
+      bool in_new_tab);
+
+  // Show feedback form for price insights.
+  ShowFeedbackForPriceInsights();
+
+  // Get all of a user's product specifications sets.
+  GetAllProductSpecificationsSets() => (array<ProductSpecificationsSet> sets);
+
+  // Return product specification set corresponding to identifier |uuid|.
+  GetProductSpecificationsSetByUuid(mojo_base.mojom.Uuid uuid)
+      => (ProductSpecificationsSet? set);
+
+  // Creates a new product specifications set and returns the new entity.
+  AddProductSpecificationsSet(string name, array<url.mojom.Url> urls)
+      => (ProductSpecificationsSet? created_set);
+
+  // Deletes a product specifications set given its UUID.
+  DeleteProductSpecificationsSet(mojo_base.mojom.Uuid uuid);
+
+  // Set the name for a product specifications set associated with the provided
+  // Uuid. If no set with the provided Uuid exists, nullopt is returned.
+  SetNameForProductSpecificationsSet(mojo_base.mojom.Uuid uuid, string name)
+      => (ProductSpecificationsSet? updated_set);
+
+  // Set the URLs for a product specifications set associated with the provided
+  // Uuid. If no set with the provided Uuid exists, nullopt is returned.
+  SetUrlsForProductSpecificationsSet(mojo_base.mojom.Uuid uuid,
+      array<url.mojom.Url> urls) => (ProductSpecificationsSet? updated_set);
+
+  // Store the user feedback for product specifications supplied by the user.
+  SetProductSpecificationsUserFeedback(UserFeedback feedback);
+
+  // Updates the user's accepted disclosure version for product specifications.
+  SetProductSpecificationAcceptedDisclosureVersion(
+      ProductSpecificationsDisclosureVersion version);
+
+  // If eligible, show the product specifications disclosure. 'urls' are the
+  // member URLs of the current product specifications set, and `name` is the
+  // set name. `disclosure_shown` is returned to indicate whether this attempt
+  // succeeded (i.e. whether the disclosure is shown).
+  MaybeShowProductSpecificationDisclosure(array<url.mojom.Url> urls,
+      string name) => (bool disclosure_shown);
+
+  // Gets called when user has explicitly declined the product specification
+  // disclosure.
+  DeclineProductSpecificationDisclosure();
+
+  // Sync user account for compare feature.
+  ShowSyncSetupFlow();
+
+  // Get access state for compare feature.
+  GetProductSpecificationsFeatureState()
+      => (ProductSpecificationsFeatureState state);
+
+  // Get the title of a page in history, if it exists.
+  GetPageTitleFromHistory(url.mojom.Url url) => (string title);
 };
 
 // WebUI-side handler for requests from the browser.
@@ -165,10 +369,19 @@ interface Page {
   // constructed from it. `attempted_track` is true when the failed
   // operation is to track price, false when the failed operation is to
   // untrack price.
-  OperationFailedForBookmark(BookmarkProductInfo bookmark_product,
-                             bool attempted_track);
+  OperationFailedForBookmark(
+      BookmarkProductInfo bookmark_product, bool attempted_track);
 
   // Callback when a product bookmark is observed to be moved and
   // pass along the BookmarkProductInfo of the product.
   OnProductBookmarkMoved(BookmarkProductInfo bookmark_product);
+
+  // Callback when a product specifications set is created.
+  OnProductSpecificationsSetAdded(ProductSpecificationsSet set);
+
+  // Callback when a product specifications set is updated.
+  OnProductSpecificationsSetUpdated(ProductSpecificationsSet set);
+
+  // Callback when a product specifications set is removed.
+  OnProductSpecificationsSetRemoved(mojo_base.mojom.Uuid uuid);
 };

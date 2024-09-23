@@ -76,7 +76,7 @@ class PluginVmDriveImageDownloadService {
 
   raw_ptr<PluginVmInstaller> plugin_vm_installer_;
   std::unique_ptr<drive::DriveServiceInterface> drive_service_;
-  std::unique_ptr<crypto::SecureHash> secure_hash_service_;
+  std::unique_ptr<crypto::SecureHash> hasher_;
   std::string file_id_;
   int64_t total_bytes_downloaded_ = 0;
   base::FilePath download_directory_{kPluginVmDriveDownloadDirectory};

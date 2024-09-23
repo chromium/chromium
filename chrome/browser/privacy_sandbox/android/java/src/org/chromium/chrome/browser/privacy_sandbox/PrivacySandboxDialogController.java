@@ -6,10 +6,19 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.base.version_info.VersionInfo;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewConstraints;
+import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.ViewAndroidDelegate;
 
 import java.lang.ref.WeakReference;
 
@@ -19,11 +28,13 @@ public class PrivacySandboxDialogController {
     private static boolean sDisableAnimations;
     private static boolean sDisableEEANoticeForTesting;
 
-    public static boolean shouldShowPrivacySandboxDialog(boolean isIncognito) {
-        if (isIncognito) {
+    public static boolean shouldShowPrivacySandboxDialog(Profile profile, int surfaceType) {
+        assert profile != null;
+        if (profile.isOffTheRecord()) {
             return false;
         }
-        @PromptType int promptType = PrivacySandboxBridge.getRequiredPromptType();
+        @PromptType
+        int promptType = new PrivacySandboxBridge(profile).getRequiredPromptType(surfaceType);
         if (promptType != PromptType.M1_CONSENT
                 && promptType != PromptType.M1_NOTICE_EEA
                 && promptType != PromptType.M1_NOTICE_ROW
@@ -33,13 +44,48 @@ public class PrivacySandboxDialogController {
         return true;
     }
 
+    public static ThinWebView createThinWebView(
+            WebContents webContents,
+            Profile profile,
+            ActivityWindowAndroid activityWindowAndroid,
+            String url) {
+        ContentView contentView =
+                ContentView.createContentView(
+                        activityWindowAndroid.getContext().get(), webContents);
+        webContents.setDelegates(
+                VersionInfo.getProductVersion(),
+                ViewAndroidDelegate.createBasicDelegate(contentView),
+                contentView,
+                activityWindowAndroid,
+                WebContents.createDefaultInternalsHolder());
+        webContents.getNavigationController().loadUrl(new LoadUrlParams(url));
+        ThinWebView thinWebView =
+                ThinWebViewFactory.create(
+                        activityWindowAndroid.getContext().get(),
+                        new ThinWebViewConstraints(),
+                        activityWindowAndroid.getIntentRequestTracker());
+        thinWebView.attachWebContents(webContents, contentView, new WebContentsDelegateAndroid());
+        thinWebView
+                .getView()
+                .setLayoutParams(
+                        new ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT));
+        return thinWebView;
+    }
+
     /** Launches an appropriate dialog if necessary and returns whether that happened. */
     public static boolean maybeLaunchPrivacySandboxDialog(
-            Context context, @NonNull SettingsLauncher settingsLauncher, boolean isIncognito) {
-        if (isIncognito) {
+            Context context,
+            Profile profile,
+            int surfaceType,
+            ActivityWindowAndroid activityWindowAndroid) {
+        assert profile != null;
+        if (profile.isOffTheRecord()) {
             return false;
         }
-        @PromptType int promptType = PrivacySandboxBridge.getRequiredPromptType();
+        PrivacySandboxBridge privacySandboxBridge = new PrivacySandboxBridge(profile);
+        @PromptType int promptType = privacySandboxBridge.getRequiredPromptType(surfaceType);
         Dialog dialog = null;
         switch (promptType) {
             case PromptType.NONE:
@@ -47,20 +93,29 @@ public class PrivacySandboxDialogController {
             case PromptType.M1_CONSENT:
                 dialog =
                         new PrivacySandboxDialogConsentEEA(
-                                context, settingsLauncher, sDisableAnimations);
+                                context,
+                                privacySandboxBridge,
+                                sDisableAnimations,
+                                surfaceType,
+                                profile,
+                                activityWindowAndroid);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_EEA:
-                showNoticeEEA(context, settingsLauncher);
+                showNoticeEEA(context, privacySandboxBridge, surfaceType);
                 return true;
             case PromptType.M1_NOTICE_ROW:
-                dialog = new PrivacySandboxDialogNoticeROW(context, settingsLauncher);
+                dialog =
+                        new PrivacySandboxDialogNoticeROW(
+                                context, privacySandboxBridge, surfaceType);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_RESTRICTED:
-                dialog = new PrivacySandboxDialogNoticeRestricted(context, settingsLauncher);
+                dialog =
+                        new PrivacySandboxDialogNoticeRestricted(
+                                context, privacySandboxBridge, surfaceType);
                 dialog.show();
                 sDialog = new WeakReference<>(dialog);
                 return true;
@@ -72,10 +127,13 @@ public class PrivacySandboxDialogController {
     }
 
     /** Shows the NoticeEEA dialog. */
-    public static void showNoticeEEA(Context context, SettingsLauncher settingsLauncher) {
+    public static void showNoticeEEA(
+            Context context,
+            PrivacySandboxBridge privacySandboxBridge,
+            @SurfaceType int surfaceType) {
         if (!sDisableEEANoticeForTesting) {
             Dialog dialog;
-            dialog = new PrivacySandboxDialogNoticeEEA(context, settingsLauncher);
+            dialog = new PrivacySandboxDialogNoticeEEA(context, privacySandboxBridge, surfaceType);
             dialog.show();
             sDialog = new WeakReference<>(dialog);
         }

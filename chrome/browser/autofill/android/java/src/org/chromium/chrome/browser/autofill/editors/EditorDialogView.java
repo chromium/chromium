@@ -36,7 +36,8 @@ import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -58,10 +59,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The editor dialog. Can be used for editing contact information, shipping address,
- * billing address.
+ * The editor dialog. Can be used for editing contact information, shipping address, billing
+ * address.
  *
- * TODO(https://crbug.com/799905): Move payment specific functionality to separate class.
+ * <p>TODO(crbug.com/41363594): Move payment specific functionality to separate class.
  */
 public class EditorDialogView extends AlwaysDismissedDialog
         implements OnClickListener,
@@ -79,11 +80,11 @@ public class EditorDialogView extends AlwaysDismissedDialog
     @Nullable private static EditorObserverForTest sObserverForTest;
 
     private final Activity mActivity;
-    private final HelpAndFeedbackLauncher mHelpLauncher;
+    private final Profile mProfile;
     private final Handler mHandler;
     private final int mHalfRowMargin;
     private final List<FieldView> mFieldViews;
-    // TODO(crbug.com/1435314): substitute this with SimpleRecyclerViewMCP.
+    // TODO(crbug.com/40265078): substitute this with SimpleRecyclerViewMCP.
     private final List<PropertyModelChangeProcessor<PropertyModel, TextFieldView, PropertyKey>>
             mTextFieldMCPs;
     private final List<PropertyModelChangeProcessor<PropertyModel, DropdownFieldView, PropertyKey>>
@@ -113,15 +114,15 @@ public class EditorDialogView extends AlwaysDismissedDialog
     /**
      * Builds the editor dialog.
      *
-     * @param activity             The activity on top of which the UI should be displayed.
-     * @param helpLauncher         The launcher of user help activity.
+     * @param activity The activity on top of which the UI should be displayed.
+     * @param profile The Profile being edited.
      */
-    public EditorDialogView(Activity activity, HelpAndFeedbackLauncher helpLauncher) {
+    public EditorDialogView(Activity activity, Profile profile) {
         super(activity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
         // Sets transparent background for animating content view.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mActivity = activity;
-        mHelpLauncher = helpLauncher;
+        mProfile = profile;
         mHandler = new Handler();
         mIsDismissed = false;
 
@@ -278,10 +279,11 @@ public class EditorDialogView extends AlwaysDismissedDialog
                             handleDelete();
                         }
                     } else if (item.getItemId() == R.id.help_menu_id) {
-                        mHelpLauncher.show(
-                                mActivity,
-                                mActivity.getString(R.string.help_context_autofill),
-                                null);
+                        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                                .show(
+                                        mActivity,
+                                        mActivity.getString(R.string.help_context_autofill),
+                                        null);
                     }
                     return true;
                 });

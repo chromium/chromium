@@ -4,6 +4,18 @@
 
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
 
+FakeDelegate::FakeDelegate(content::WebContents* web_contents)
+    : web_contents_(web_contents) {}
+
+FakeDelegate::~FakeDelegate() = default;
+
+void FakeDelegate::OnAccountSelected(const GURL& idp_config_url,
+                                     const Account& account) {
+  if (account_selected_cb_) {
+    std::move(account_selected_cb_).Run();
+  }
+}
+
 gfx::NativeView FakeDelegate::GetNativeView() {
   return gfx::NativeView();
 }

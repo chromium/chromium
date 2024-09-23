@@ -8,13 +8,15 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/permissions/android/bluetooth_scanning_prompt_android_delegate.h"
-#include "components/permissions/android/jni_headers/BluetoothScanningPermissionDialog_jni.h"
 #include "components/permissions/permission_util.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/permissions/android/jni_headers/BluetoothScanningPermissionDialog_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -106,7 +108,7 @@ void BluetoothScanningPromptAndroid::OnDialogFinished(JNIEnv* env,
       event_handler_.Run(content::BluetoothScanningPrompt::Event::kCanceled);
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace permissions

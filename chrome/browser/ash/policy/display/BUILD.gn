@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("display") {
+  sources = [
+    "display_resolution_handler.cc",
+    "display_resolution_handler.h",
+    "display_rotation_default_handler.cc",
+    "display_rotation_default_handler.h",
+    "display_settings_handler.cc",
+    "display_settings_handler.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chromeos/ash/components/settings",
+    "//chromeos/crosapi/mojom",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//ui/display",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "device_display_cros_browser_test.cc",
+    "device_display_cros_browser_test.h",
+    "display_resolution_handler_browsertest.cc",
+    "display_rotation_default_handler_browsertest.cc",
+  ]
+
+  deps = [
+    ":display",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/settings",
+    "//components/policy/proto",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common/api",
+    "//testing/gtest",
+    "//ui/display",
+    "//ui/display:display_manager_test_api",
+    "//ui/display/manager",
+  ]
+}

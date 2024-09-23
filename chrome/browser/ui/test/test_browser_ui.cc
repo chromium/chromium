@@ -20,7 +20,7 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -32,8 +32,12 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-// TODO(https://crbug.com/958242) support Mac for pixel tests.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+#if BUILDFLAG(IS_WIN)
+#include "ui/events/platform/platform_event_source.h"
+#endif
+
+// TODO(crbug.com/40625383) support Mac for pixel tests.
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define SUPPORTS_PIXEL_TEST
@@ -64,10 +68,26 @@ class ScopedMouseDisabler {
         view->GetWidget()->GetNativeWindow()->GetRootWindow());
     generator.MoveMouseTo({0, 0});
     cursor_client_->DisableMouseEvents();
+    cursor_client_->LockCursor();
+#if BUILDFLAG(IS_WIN)
+    // On Windows, cursor client disable isn't consistently respected, and it's
+    // also used to handle touch -> mouse event translation, so use this
+    // instead. See crbug.com/333846475 for an example of the problem this
+    // solves.
+    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
+#endif
   }
+
   ScopedMouseDisabler(const ScopedMouseDisabler&) = delete;
   const ScopedMouseDisabler operator=(const ScopedMouseDisabler&) = delete;
-  ~ScopedMouseDisabler() { cursor_client_->EnableMouseEvents(); }
+
+  ~ScopedMouseDisabler() {
+#if BUILDFLAG(IS_WIN)
+    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(false);
+#endif
+    cursor_client_->UnlockCursor();
+    cursor_client_->EnableMouseEvents();
+  }
 
  private:
   raw_ptr<aura::client::CursorClient> cursor_client_;
@@ -77,10 +97,10 @@ class ScopedMouseDisabler {
 }  // namespace
 
 TestBrowserUi::TestBrowserUi() {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-  // TODO(1429079): Make these pass with x64 win magic numbers.
+  // TODO(crbug.com/40262522): Make these pass with x64 win magic numbers.
   SetPixelMatchAlgorithm(
       std::make_unique<ui::test::FuzzySkiaGoldMatchingAlgorithm>(
           /*max_different_pixels=*/1000, /*pixel_delta_threshold=*/255 * 3));
@@ -112,7 +132,7 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
     return ui::test::ActionResult::kNotAttempted;
   }
 
-  // Disable and hide cursor to prvent any interference with the
+  // Disable and hide cursor to prevent any interference with the
   // screenshots.
   ScopedMouseDisabler disable(view);
 
@@ -132,13 +152,7 @@ ui::test::ActionResult TestBrowserUi::VerifyPixelUi(
   compositor->ScheduleFullRedraw();
   ui::DrawWaiterForTest::WaitForCompositingEnded(compositor);
 
-  views::ViewSkiaGoldPixelDiff pixel_diff(
-      // For the CR2023 screenshots add a "CR2023" prefix so that they are
-      // compared exclusively with previous CR2023 screenshots. We would like
-      // Skia Gold to catch regressions in both CR2023 and non-CR2023.
-      // TODO(crbug.com/1444466): remove this after CR2023 launch.
-      features::IsChromeRefresh2023() ? "CR2023_" + screenshot_prefix
-                                      : screenshot_prefix);
+  views::ViewSkiaGoldPixelDiff pixel_diff(screenshot_prefix);
   bool success = pixel_diff.CompareViewScreenshot(screenshot_name, view,
                                                   GetPixelMatchAlgorithm());
   return success ? ui::test::ActionResult::kSucceeded

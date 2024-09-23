@@ -23,7 +23,6 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/content/common/translate.mojom.h"
-#include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -40,7 +39,7 @@ FakeTranslateAgent::FakeTranslateAgent()
 
 FakeTranslateAgent::~FakeTranslateAgent() = default;
 
-// TODO(crbug.com/1064974) Remove with subframe translation launch.
+// TODO(crbug.com/40123934) Remove with subframe translation launch.
 mojo::PendingRemote<translate::mojom::TranslateAgent>
 FakeTranslateAgent::BindToNewPageRemote() {
   receiver_.reset();

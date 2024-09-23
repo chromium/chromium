@@ -103,6 +103,8 @@
 #define XML_NANO_HTTP_READ	2
 #define XML_NANO_HTTP_NONE	4
 
+#define __xmlIOErr(domain, code, extra) ((void) 0)
+
 typedef struct xmlNanoHTTPCtxt {
     char *protocol;	/* the protocol name */
     char *hostname;	/* the host name */
@@ -147,9 +149,9 @@ static int xmlNanoHTTPFetchContent( void * ctx, char ** ptr, int * len );
  * Handle an out of memory condition
  */
 static void
-xmlHTTPErrMemory(const char *extra)
+xmlHTTPErrMemory(void)
 {
-    __xmlSimpleError(XML_FROM_HTTP, XML_ERR_NO_MEMORY, NULL, NULL, extra);
+    xmlRaiseMemoryError(NULL, NULL, NULL, XML_FROM_HTTP, NULL);
 }
 
 /**
@@ -358,7 +360,7 @@ xmlNanoHTTPNewCtxt(const char *URL) {
 
     ret = (xmlNanoHTTPCtxtPtr) xmlMalloc(sizeof(xmlNanoHTTPCtxt));
     if (ret == NULL) {
-        xmlHTTPErrMemory("allocating context");
+        xmlHTTPErrMemory();
         return(NULL);
     }
 
@@ -504,7 +506,7 @@ xmlNanoHTTPRecv(xmlNanoHTTPCtxtPtr ctxt)
         if (ctxt->in == NULL) {
             ctxt->in = (char *) xmlMallocAtomic(65000);
             if (ctxt->in == NULL) {
-                xmlHTTPErrMemory("allocating input");
+                xmlHTTPErrMemory();
                 ctxt->last = -1;
                 return (-1);
             }
@@ -529,7 +531,7 @@ xmlNanoHTTPRecv(xmlNanoHTTPCtxtPtr ctxt)
             ctxt->inlen *= 2;
             ctxt->in = (char *) xmlRealloc(tmp_ptr, ctxt->inlen);
             if (ctxt->in == NULL) {
-                xmlHTTPErrMemory("allocating input buffer");
+                xmlHTTPErrMemory();
                 xmlFree(tmp_ptr);
                 ctxt->last = -1;
                 return (-1);
@@ -1219,8 +1221,10 @@ xmlNanoHTTPRead(void *ctx, void *dest, int len) {
     }
     if (ctxt->inptr - ctxt->inrptr < len)
         len = ctxt->inptr - ctxt->inrptr;
-    memcpy(dest, ctxt->inrptr, len);
-    ctxt->inrptr += len;
+    if (len > 0) {
+        memcpy(dest, ctxt->inrptr, len);
+        ctxt->inrptr += len;
+    }
     return(len);
 }
 
@@ -1388,7 +1392,7 @@ retry:
     }
 
     if ((ctxt->protocol == NULL) || (strcmp(ctxt->protocol, "http"))) {
-	__xmlIOErr(XML_FROM_HTTP, XML_HTTP_URL_SYNTAX, "Not a valid HTTP URI");
+	__xmlIOErr(XML_FROM_IO, XML_IO_UNSUPPORTED_PROTOCOL, ctxt->protocol);
         xmlNanoHTTPFreeCtxt(ctxt);
 	if (redirURL != NULL) xmlFree(redirURL);
         return(NULL);
@@ -1444,7 +1448,7 @@ retry:
     bp = (char*)xmlMallocAtomic(blen);
     if ( bp == NULL ) {
         xmlNanoHTTPFreeCtxt( ctxt );
-	xmlHTTPErrMemory("allocating header buffer");
+	xmlHTTPErrMemory();
 	return ( NULL );
     }
 
@@ -1831,9 +1835,9 @@ int main(int argc, char **argv) {
 	    xmlNanoHTTPFetch(argv[1], "-", &contentType);
 	if (contentType != NULL) xmlFree(contentType);
     } else {
-        xmlGenericError(xmlGenericErrorContext,
+        fprintf(stderr,
 		"%s: minimal HTTP GET implementation\n", argv[0]);
-        xmlGenericError(xmlGenericErrorContext,
+        fprintf(stderr,
 		"\tusage %s [ URL [ filename ] ]\n", argv[0]);
     }
     xmlNanoHTTPCleanup();
@@ -1844,7 +1848,7 @@ int main(int argc, char **argv) {
 #ifdef STANDALONE
 #include <stdio.h>
 int main(int argc, char **argv) {
-    xmlGenericError(xmlGenericErrorContext,
+    fprintf(stderr,
 	    "%s : HTTP support not compiled in\n", argv[0]);
     return(0);
 }

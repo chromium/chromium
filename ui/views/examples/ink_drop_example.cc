@@ -146,7 +146,7 @@ void InkDropExample::CreateInkDrop() {
 
 void InkDropExample::SetInkDropState(InkDropState state) {
   ui::MouseEvent event(
-      ui::ET_MOUSE_PRESSED,
+      ui::EventType::kMousePressed,
       gfx::PointF(ink_drop_view_->GetLocalBounds().CenterPoint()),
       gfx::PointF(ink_drop_view_->origin()), base::TimeTicks(), 0, 0);
   ui::ScopedAnimationDurationScaleMode scale(

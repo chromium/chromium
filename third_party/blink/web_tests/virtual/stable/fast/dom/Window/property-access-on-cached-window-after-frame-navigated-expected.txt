@@ -9,6 +9,7 @@ PASS oldChildWindow.crossOriginIsolated is newChildWindow.crossOriginIsolated
 PASS oldChildWindow.devicePixelRatio is newChildWindow.devicePixelRatio
 PASS oldChildWindow.documentPictureInPicture.onenter is newChildWindow.documentPictureInPicture.onenter
 PASS oldChildWindow.documentPictureInPicture.window is newChildWindow.documentPictureInPicture.window
+PASS oldChildWindow.fence is newChildWindow.fence
 PASS oldChildWindow.innerHeight is newChildWindow.innerHeight
 PASS oldChildWindow.innerWidth is newChildWindow.innerWidth
 PASS oldChildWindow.isSecureContext is newChildWindow.isSecureContext
@@ -43,6 +44,7 @@ PASS oldChildWindow.navigator.connection.onchange is newChildWindow.navigator.co
 PASS oldChildWindow.navigator.connection.rtt is newChildWindow.navigator.connection.rtt
 PASS oldChildWindow.navigator.connection.saveData is newChildWindow.navigator.connection.saveData
 PASS oldChildWindow.navigator.cookieEnabled is newChildWindow.navigator.cookieEnabled
+PASS oldChildWindow.navigator.deprecatedRunAdAuctionEnforcesKAnonymity is newChildWindow.navigator.deprecatedRunAdAuctionEnforcesKAnonymity
 PASS oldChildWindow.navigator.deviceMemory is newChildWindow.navigator.deviceMemory
 PASS oldChildWindow.navigator.doNotTrack is newChildWindow.navigator.doNotTrack
 PASS oldChildWindow.navigator.gpu.wgslLanguageFeatures.size is newChildWindow.navigator.gpu.wgslLanguageFeatures.size
@@ -164,6 +166,7 @@ PASS oldChildWindow.ononline is newChildWindow.ononline
 PASS oldChildWindow.onpagehide is newChildWindow.onpagehide
 PASS oldChildWindow.onpagereveal is newChildWindow.onpagereveal
 PASS oldChildWindow.onpageshow is newChildWindow.onpageshow
+PASS oldChildWindow.onpageswap is newChildWindow.onpageswap
 PASS oldChildWindow.onpause is newChildWindow.onpause
 PASS oldChildWindow.onplay is newChildWindow.onplay
 PASS oldChildWindow.onplaying is newChildWindow.onplaying
@@ -184,6 +187,8 @@ PASS oldChildWindow.onreset is newChildWindow.onreset
 PASS oldChildWindow.onresize is newChildWindow.onresize
 PASS oldChildWindow.onscroll is newChildWindow.onscroll
 PASS oldChildWindow.onscrollend is newChildWindow.onscrollend
+PASS oldChildWindow.onscrollsnapchange is newChildWindow.onscrollsnapchange
+PASS oldChildWindow.onscrollsnapchanging is newChildWindow.onscrollsnapchanging
 PASS oldChildWindow.onsearch is newChildWindow.onsearch
 PASS oldChildWindow.onsecuritypolicyviolation is newChildWindow.onsecuritypolicyviolation
 PASS oldChildWindow.onseeked is newChildWindow.onseeked
@@ -281,6 +286,7 @@ PASS oldChildWindow.visualViewport.offsetLeft is newChildWindow.visualViewport.o
 PASS oldChildWindow.visualViewport.offsetTop is newChildWindow.visualViewport.offsetTop
 PASS oldChildWindow.visualViewport.onresize is newChildWindow.visualViewport.onresize
 PASS oldChildWindow.visualViewport.onscroll is newChildWindow.visualViewport.onscroll
+PASS oldChildWindow.visualViewport.onscrollend is newChildWindow.visualViewport.onscrollend
 PASS oldChildWindow.visualViewport.pageLeft is newChildWindow.visualViewport.pageLeft
 PASS oldChildWindow.visualViewport.pageTop is newChildWindow.visualViewport.pageTop
 PASS oldChildWindow.visualViewport.scale is newChildWindow.visualViewport.scale

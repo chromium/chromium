@@ -23,8 +23,8 @@ namespace {
 // will round-trip a URL through the escaping process so that it can be adjusted
 // pre-storing, to allow later comparisons to work as expected.
 GURL URLEscapedForHistory(const GURL& url) {
-  // TODO(crbug.com/973871): This is a very large hammer; see if limited unicode
-  // escaping would be sufficient.
+  // TODO(crbug.com/41464782): This is a very large hammer; see if limited
+  // unicode escaping would be sufficient.
   return net::GURLWithNSURL(net::NSURLWithGURL(url));
 }
 
@@ -109,7 +109,7 @@ GURL URLEscapedForHistory(const GURL& url) {
   // If the user interacted with the page, categorize it as a link navigation.
   // If not, categorize it is a client redirect as it occurred without user
   // input and should not be added to the history stack.
-  // TODO(crbug.com/549301): Improve transition detection.
+  // TODO(crbug.com/41213462): Improve transition detection.
   ui::PageTransition transition =
       userInteractionState->UserInteractionRegisteredSincePageLoaded()
           ? ui::PAGE_TRANSITION_LINK
@@ -182,7 +182,7 @@ GURL URLEscapedForHistory(const GURL& url) {
 // Adds a new NavigationItem with the given URL and state object to the
 // history stack. A state object is a serialized generic JavaScript object
 // that contains details of the UI's state for a given NavigationItem/URL.
-// TODO(crbug.com/956511): Move the pushState/replaceState logic into
+// TODO(crbug.com/40624624): Move the pushState/replaceState logic into
 // NavigationManager.
 - (void)pushStateWithPageURL:(const GURL&)pageURL
                  stateObject:(NSString*)stateObject

@@ -1,0 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ntp.calendar.mojom;
+
+import "chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom";
+
+// Browser-side handler for requests from NTP Module UI.
+interface OutlookCalendarPageHandler {
+  // Returns a list of the events on the user's Outlook Calendar for today.
+  GetEvents() => (array<CalendarEvent> events);
+};

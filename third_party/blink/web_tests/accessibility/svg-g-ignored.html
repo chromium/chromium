@@ -21,14 +21,10 @@
 
 test(function(t) {
   var axGroup1 = accessibilityController.accessibleElementById('g1');
-  assert_equals(axGroup1.role, 'AXRole: AXGroup');
-  assert_equals(axGroup1.childAtIndex(0).role, 'AXRole: AXGenericContainer');
-  assert_true(axGroup1.isIgnored);
+  assert_true(!axGroup1);
 
   var axGroup2 = accessibilityController.accessibleElementById('g2');
-  assert_equals(axGroup2.role, 'AXRole: AXGroup');
-  assert_equals(axGroup2.childAtIndex(0).role, 'AXRole: AXGenericContainer');
-  assert_true(axGroup2.isIgnored);
+  assert_true(!axGroup2);
 }, 'When AccessibilityIncludeSvgGElement disabled, SVG groups are ignored');
 
 </script>

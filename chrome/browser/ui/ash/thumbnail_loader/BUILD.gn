@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("thumbnail_loader") {
+  sources = [
+    "thumbnail_loader.cc",
+    "thumbnail_loader.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/image_decoder",
+    "//chrome/browser/profiles:profile",
+    "//extensions/browser",
+    "//extensions/common",
+    "//net",
+    "//services/data_decoder/public/cpp",
+    "//storage/browser",
+    "//third_party/re2",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "thumbnail_loader_browsertest.cc" ]
+
+  deps = [
+    ":thumbnail_loader",
+    "//base",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//storage/browser",
+    "//ui/gfx",
+    "//url",
+  ]
+}

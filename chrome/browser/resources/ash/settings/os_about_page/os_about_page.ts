@@ -8,7 +8,7 @@
  */
 
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
@@ -56,6 +56,7 @@ export interface OsAboutPageElement {
   $: {
     buttonContainer: HTMLElement,
     checkForUpdatesButton: CrButtonElement,
+    extendedUpdatesButton: CrButtonElement,
     productLogo: HTMLImageElement,
     regulatoryInfo: HTMLElement,
     relaunchButton: CrButtonElement,
@@ -195,7 +196,8 @@ export class OsAboutPageElement extends OsAboutPageBase {
       showCheckUpdates_: {
         type: Boolean,
         computed: 'computeShowCheckUpdates_(' +
-            'currentUpdateStatusEvent_, hasCheckedForUpdates_, hasEndOfLife_)',
+            'currentUpdateStatusEvent_, hasCheckedForUpdates_, hasEndOfLife_,' +
+            'showExtendedUpdatesOption_)',
       },
 
       showUpdateWarningDialog_: {
@@ -271,15 +273,57 @@ export class OsAboutPageElement extends OsAboutPageBase {
           };
         },
       },
+
+      /**
+       * Controls whether the extended updates opt-in option is shown.
+       */
+      showExtendedUpdatesOption_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeShowExtendedUpdatesOption_(' +
+            'isExtendedUpdatesOptInEligible_,' +
+            'currentUpdateStatusEvent_)',
+      },
+
+      /**
+       * Whether the device is eligible to opt into extended updates.
+       * Value is obtained from the extended updates controller.
+       */
+      isExtendedUpdatesOptInEligible_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether extended updates date has passed.
+       * Value is derived from update engine.
+       */
+      isExtendedUpdatesDatePassed_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether user opt-in is required to receive extended updates.
+       * Value is updated from update engine.
+       */
+      isExtendedUpdatesOptInRequired_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   static get observers() {
     return [
       'updateShowUpdateStatus_(hasEndOfLife_, currentUpdateStatusEvent_,' +
-          'hasCheckedForUpdates_)',
-      'updateShowButtonContainer_(showRelaunch_, showCheckUpdates_)',
+          'hasCheckedForUpdates_, showExtendedUpdatesOption_)',
+      'updateShowButtonContainer_(showRelaunch_, showCheckUpdates_,' +
+          'showExtendedUpdatesOption_)',
       'handleCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
+      'updateIsExtendedUpdatesOptInEligible_(' +
+          'hasEndOfLife_, isExtendedUpdatesDatePassed_,' +
+          'isExtendedUpdatesOptInRequired_)',
     ];
   }
 
@@ -312,6 +356,10 @@ export class OsAboutPageElement extends OsAboutPageBase {
   private updateInfo_?: AboutPageUpdateInfo;
   private isPendingOsUpdateDeepLink_: boolean;
   private isRevampWayfindingEnabled_: boolean;
+  private showExtendedUpdatesOption_: boolean;
+  private isExtendedUpdatesOptInEligible_: boolean;
+  private isExtendedUpdatesDatePassed_: boolean;
+  private isExtendedUpdatesOptInRequired_: boolean;
 
   private aboutBrowserProxy_: AboutPageBrowserProxy;
 
@@ -350,6 +398,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
       this.eolMessageWithMonthAndYear_ = result.aboutPageEndOfLifeMessage || '';
       this.showEolIncentive_ = !!result.shouldShowEndOfLifeIncentive;
       this.shouldShowOfferText_ = !!result.shouldShowOfferText;
+      this.isExtendedUpdatesDatePassed_ = !!result.isExtendedUpdatesDatePassed;
+      this.isExtendedUpdatesOptInRequired_ =
+          !!result.isExtendedUpdatesOptInRequired;
     });
 
     this.aboutBrowserProxy_.checkInternetConnection().then(result => {
@@ -364,6 +415,8 @@ export class OsAboutPageElement extends OsAboutPageBase {
         'true') {
       this.onCheckUpdatesClick_();
     }
+
+    this.registerExtendedUpdatesObserver_();
   }
 
   override ready(): void {
@@ -399,6 +452,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
         'tpm-firmware-update-status-changed',
         this.onTpmFirmwareUpdateStatusChanged_.bind(this));
     this.aboutBrowserProxy_.refreshTpmFirmwareUpdateStatus();
+    this.addWebUiListener(
+        'extended-updates-setting-changed',
+        this.onExtendedUpdatesSettingChanged_.bind(this));
   }
 
   private onUpdateStatusChanged_(event: UpdateStatusChangedEvent): void {
@@ -446,7 +502,6 @@ export class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private onRelaunchClick_(): void {
-    recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().relaunch();
   }
 
@@ -465,8 +520,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
       return;
     }
 
-    // Do not show "updated" status if the device is end of life.
-    if (this.hasEndOfLife_) {
+    // Do not show "updated" status if the device is end of life or needs to
+    // opt into extended updates.
+    if (this.hasEndOfLife_ || this.showExtendedUpdatesOption_) {
       this.showUpdateStatus_ = false;
       return;
     }
@@ -480,7 +536,8 @@ export class OsAboutPageElement extends OsAboutPageBase {
    * container displays an unwanted border (see separator class).
    */
   private updateShowButtonContainer_(): void {
-    this.showButtonContainer_ = this.showRelaunch_ || this.showCheckUpdates_;
+    this.showButtonContainer_ = this.showRelaunch_ || this.showCheckUpdates_ ||
+        this.showExtendedUpdatesOption_;
 
     // Check if we have yet to focus the check for update button.
     if (!this.isPendingOsUpdateDeepLink_) {
@@ -583,6 +640,11 @@ export class OsAboutPageElement extends OsAboutPageBase {
     if (this.hasEndOfLife_) {
       return 'os-settings:end-of-life';
     }
+    // Show a special icon if extended updates are available.
+    // TODO(b/328506053): Finalize icon.
+    if (this.showExtendedUpdatesOption_) {
+      return 'os-settings:about-update-complete';
+    }
 
     switch (this.currentUpdateStatusEvent_.status) {
       case UpdateStatus.DISABLED_BY_ADMIN:
@@ -595,7 +657,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
             'cr:error-outline';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
-        // TODO(crbug.com/986596): Don't use browser icons here. Fork them.
+        // TODO(crbug.com/40637166): Don't use browser icons here. Fork them.
         return this.isRevampWayfindingEnabled_ ?
             'os-settings:about-update-complete' :
             'settings:check-circle';
@@ -622,7 +684,7 @@ export class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private getThrobberSrcIfUpdating_(): string|null {
-    if (this.hasEndOfLife_) {
+    if (this.hasEndOfLife_ || this.showExtendedUpdatesOption_) {
       return null;
     }
 
@@ -678,8 +740,9 @@ export class OsAboutPageElement extends OsAboutPageBase {
   }
 
   private computeShowCheckUpdates_(): boolean {
-    // Disable update button if the device is end of life.
-    if (this.hasEndOfLife_) {
+    // Disable update button if the device is end of life or needs to opt-in
+    // to extended updates.
+    if (this.hasEndOfLife_ || this.showExtendedUpdatesOption_) {
       return false;
     }
 
@@ -802,6 +865,44 @@ export class OsAboutPageElement extends OsAboutPageBase {
           this.i18n('aboutFirmwareUpToDateDescription');
     }
     return null;
+  }
+
+  private computeShowExtendedUpdatesOption_(): boolean {
+    return this.isExtendedUpdatesOptInEligible_ &&
+        this.checkStatus_(UpdateStatus.UPDATED);
+  }
+
+  private updateIsExtendedUpdatesOptInEligible_(): void {
+    this.aboutBrowserProxy_
+        .isExtendedUpdatesOptInEligible(
+            this.hasEndOfLife_, this.isExtendedUpdatesDatePassed_,
+            this.isExtendedUpdatesOptInRequired_)
+        .then(result => {
+          this.isExtendedUpdatesOptInEligible_ = result;
+        });
+  }
+
+  private onExtendedUpdatesSettingChanged_(): void {
+    this.updateIsExtendedUpdatesOptInEligible_();
+  }
+
+  private onExtendedUpdatesButtonClick_(): void {
+    this.aboutBrowserProxy_.openExtendedUpdatesDialog();
+  }
+
+  private registerExtendedUpdatesObserver_(): void {
+    const extendedUpdatesObserver = new IntersectionObserver(
+        (entries: IntersectionObserverEntry[],
+         observer: IntersectionObserver) => {
+          entries.forEach((entry: IntersectionObserverEntry) => {
+            if (entry.isIntersecting) {
+              this.aboutBrowserProxy_.recordExtendedUpdatesShown();
+              observer.disconnect();
+              return;
+            }
+          });
+        });
+    extendedUpdatesObserver.observe(this.$.extendedUpdatesButton);
   }
 }
 

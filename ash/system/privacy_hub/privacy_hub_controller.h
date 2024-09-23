@@ -66,7 +66,7 @@ class ASH_EXPORT PrivacyHubController {
   // Gets the geolocation controller.
   GeolocationPrivacySwitchController* geolocation_controller();
 
-  CameraPrivacySwitchSynchronizer* CameraSynchronizerForTest();
+  CameraPrivacySwitchController* CameraSynchronizerForTest();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -93,11 +93,9 @@ class ASH_EXPORT PrivacyHubController {
   static bool CheckCameraLEDFallbackDirectly();
 
   // ARC++ geolocation toggle is migrating to ChromeOS. ChromeOS has 3 states
-  // for geolocation access level, while ARC++ has 2. These functions implement
-  // the mappings between ARC++ boolean values and ChromeOS's
-  // `GeolocationAccessLevel`s.
-  static GeolocationAccessLevel ArcToCrosGeolocationPermissionMapping(
-      bool enabled);
+  // for geolocation access level, while ARC++ has 2. These function implements
+  // the mapping from ChromeOS's `GeolocationAccessLevel`s to ARC++ boolean
+  // values.
   static bool CrosToArcGeolocationPermissionMapping(
       GeolocationAccessLevel access_level);
 
@@ -107,7 +105,6 @@ class ASH_EXPORT PrivacyHubController {
   void InitUsingCameraLEDFallback();
 
   std::unique_ptr<CameraPrivacySwitchController> camera_controller_;
-  std::unique_ptr<CameraPrivacySwitchDisabled> camera_disabled_;
   std::unique_ptr<MicrophonePrivacySwitchController> microphone_controller_;
   std::unique_ptr<SpeakOnMuteDetectionPrivacySwitchController>
       speak_on_mute_controller_;

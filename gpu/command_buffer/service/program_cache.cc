@@ -10,6 +10,9 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span_writer.h"
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_macros.h"
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "third_party/angle/src/common/angle_version_info.h"
@@ -46,11 +49,9 @@ void ProgramCache::Clear() {
 
 bool ProgramCache::HasSuccessfullyCompiledShader(
     const std::string& shader_signature) const {
-  char sha[kHashLength];
+  Hash sha;
   ComputeShaderHash(shader_signature, sha);
-  const std::string sha_string(sha, kHashLength);
-
-  return base::Contains(compiled_shaders_, sha_string);
+  return base::Contains(compiled_shaders_, sha);
 }
 
 ProgramCache::LinkedProgramStatus ProgramCache::GetLinkedProgramStatus(
@@ -59,25 +60,20 @@ ProgramCache::LinkedProgramStatus ProgramCache::GetLinkedProgramStatus(
     const std::map<std::string, GLint>* bind_attrib_location_map,
     const std::vector<std::string>& transform_feedback_varyings,
     GLenum transform_feedback_buffer_mode) const {
-  char a_sha[kHashLength];
-  char b_sha[kHashLength];
+  Hash a_sha;
+  Hash b_sha;
   ComputeShaderHash(shader_signature_a, a_sha);
   ComputeShaderHash(shader_signature_b, b_sha);
 
-  char sha[kHashLength];
-  ComputeProgramHash(a_sha,
-                     b_sha,
-                     bind_attrib_location_map,
+  Hash program_sha;
+  ComputeProgramHash(a_sha, b_sha, bind_attrib_location_map,
                      transform_feedback_varyings,
-                     transform_feedback_buffer_mode,
-                     sha);
-  const std::string sha_string(sha, kHashLength);
-
-  LinkStatusMap::const_iterator found = link_status_.find(sha_string);
-  if (found == link_status_.end()) {
+                     transform_feedback_buffer_mode, program_sha);
+  auto found_it = link_status_.find(program_sha);
+  if (found_it == link_status_.end()) {
     return ProgramCache::LINK_UNKNOWN;
   } else {
-    return found->second;
+    return found_it->second;
   }
 }
 
@@ -87,44 +83,34 @@ void ProgramCache::LinkedProgramCacheSuccess(
     const LocationMap* bind_attrib_location_map,
     const std::vector<std::string>& transform_feedback_varyings,
     GLenum transform_feedback_buffer_mode) {
-  char a_sha[kHashLength];
-  char b_sha[kHashLength];
+  Hash a_sha;
+  Hash b_sha;
   ComputeShaderHash(shader_signature_a, a_sha);
   ComputeShaderHash(shader_signature_b, b_sha);
-  char sha[kHashLength];
-  ComputeProgramHash(a_sha,
-                     b_sha,
-                     bind_attrib_location_map,
+  Hash program_sha;
+  ComputeProgramHash(a_sha, b_sha, bind_attrib_location_map,
                      transform_feedback_varyings,
-                     transform_feedback_buffer_mode,
-                     sha);
-  const std::string a_sha_string(a_sha, kHashLength);
-  const std::string b_sha_string(b_sha, kHashLength);
-  const std::string sha_string(sha, kHashLength);
-
-  CompiledShaderCacheSuccess(a_sha_string);
-  CompiledShaderCacheSuccess(b_sha_string);
-  LinkedProgramCacheSuccess(sha_string);
+                     transform_feedback_buffer_mode, program_sha);
+  CompiledShaderCacheSuccess(a_sha);
+  CompiledShaderCacheSuccess(b_sha);
+  LinkedProgramCacheSuccess(program_sha);
 }
 
-void ProgramCache::LinkedProgramCacheSuccess(const std::string& program_hash) {
+void ProgramCache::LinkedProgramCacheSuccess(const Hash& program_hash) {
   link_status_[program_hash] = LINK_SUCCEEDED;
 }
 
-void ProgramCache::CompiledShaderCacheSuccess(const std::string& shader_hash) {
+void ProgramCache::CompiledShaderCacheSuccess(const Hash& shader_hash) {
   compiled_shaders_.insert(shader_hash);
 }
 
-void ProgramCache::ComputeShaderHash(
-    const std::string& str,
-    char* result) const {
-  base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(str.c_str()),
-                      str.length(), reinterpret_cast<unsigned char*>(result));
+void ProgramCache::ComputeShaderHash(std::string_view str, Hash& result) const {
+  result = base::SHA1Hash(base::as_byte_span(str));
 }
 
-void ProgramCache::Evict(const std::string& program_hash,
-                         const std::string& shader_0_hash,
-                         const std::string& shader_1_hash) {
+void ProgramCache::Evict(const Hash& program_hash,
+                         const Hash& shader_0_hash,
+                         const Hash& shader_1_hash) {
   link_status_.erase(program_hash);
   compiled_shaders_.erase(shader_0_hash);
   compiled_shaders_.erase(shader_1_hash);
@@ -152,55 +138,51 @@ size_t CalculateVaryingsSize(const std::vector<std::string>& varyings) {
 }  // anonymous namespace
 
 void ProgramCache::ComputeProgramHash(
-    const char* hashed_shader_0,
-    const char* hashed_shader_1,
+    HashView hashed_shader_0,
+    HashView hashed_shader_1,
     const std::map<std::string, GLint>* bind_attrib_location_map,
     const std::vector<std::string>& transform_feedback_varyings,
     GLenum transform_feedback_buffer_mode,
-    char* result) const {
-  const size_t shader0_size = kHashLength;
-  const size_t shader1_size = kHashLength;
+    Hash& result) const {
+  const size_t shader0_size = hashed_shader_0.size();
+  const size_t shader1_size = hashed_shader_1.size();
   const size_t angle_commit_size = angle::GetANGLECommitHashSize();
   const size_t map_size = CalculateMapSize(bind_attrib_location_map);
   const size_t var_size = CalculateVaryingsSize(transform_feedback_varyings);
   const size_t total_size = shader0_size + shader1_size + angle_commit_size
       + map_size + var_size + sizeof(transform_feedback_buffer_mode);
 
-  std::unique_ptr<unsigned char[]> buffer(new unsigned char[total_size]);
-  memcpy(buffer.get(), hashed_shader_0, shader0_size);
-  memcpy(&buffer[shader0_size], hashed_shader_1, shader1_size);
-  size_t current_pos = shader0_size + shader1_size;
-  memcpy(&buffer[current_pos], angle::GetANGLECommitHash(), angle_commit_size);
-  current_pos += angle_commit_size;
+  auto buffer_storage = base::HeapArray<uint8_t>::Uninit(total_size);
+  auto buffer = base::SpanWriter(base::span(buffer_storage));
+
+  CHECK(buffer.Write(hashed_shader_0));
+  CHECK(buffer.Write(hashed_shader_1));
+  CHECK(buffer.Write(base::as_byte_span(
+      // SAFETY: angle::GetANGLECommitHashSize() gives the number of bytes
+      // pointed to by angle::GetANGLECommitHash().
+      UNSAFE_BUFFERS(
+          base::span(angle::GetANGLECommitHash(), angle_commit_size)))));
+
   if (map_size != 0) {
     // copy our map
     for (auto it = bind_attrib_location_map->begin();
          it != bind_attrib_location_map->end();
          ++it) {
-      const size_t name_size = it->first.length();
-      memcpy(&buffer.get()[current_pos], it->first.c_str(), name_size);
-      current_pos += name_size;
-      const GLint value = it->second;
-      buffer[current_pos++] = value >> 24;
-      buffer[current_pos++] = static_cast<unsigned char>(value >> 16);
-      buffer[current_pos++] = static_cast<unsigned char>(value >> 8);
-      buffer[current_pos++] = static_cast<unsigned char>(value);
+      CHECK(buffer.Write(base::as_byte_span(it->first)));
+      CHECK(buffer.WriteI32BigEndian(it->second));
     }
   }
 
   if (var_size != 0) {
     // copy transform feedback varyings
     for (auto& varying : transform_feedback_varyings) {
-      const size_t name_size = varying.length();
-      memcpy(&buffer.get()[current_pos], varying.c_str(), name_size);
-      current_pos += name_size;
-      buffer[current_pos++] = ' ';
+      CHECK(buffer.Write(base::as_byte_span(varying)));
+      CHECK(buffer.WriteU8LittleEndian(uint8_t{' '}));
     }
   }
-  memcpy(&buffer[current_pos], &transform_feedback_buffer_mode,
-      sizeof(transform_feedback_buffer_mode));
-  base::SHA1HashBytes(buffer.get(),
-                      total_size, reinterpret_cast<unsigned char*>(result));
+  CHECK(buffer.Write(base::byte_span_from_ref(transform_feedback_buffer_mode)));
+  CHECK_EQ(buffer.remaining(), 0u);  // Verify the size was computed correctly.
+  result = base::SHA1Hash(buffer_storage);
 }
 
 void ProgramCache::HandleMemoryPressure(
@@ -218,6 +200,10 @@ void ProgramCache::HandleMemoryPressure(
   }
 
   Trim(limit);
+}
+
+size_t ProgramCache::HashHasher::operator()(const Hash& hash) const {
+  return base::FastHash(hash);
 }
 
 }  // namespace gles2

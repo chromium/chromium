@@ -13,8 +13,10 @@ class SizeF;
 
 namespace chrome_pdf {
 
+// All the code here works in the PDF coordinate space. The origin is at the
+// bottom-left, and all units are in points.
+
 // A rect struct for use with FPDF bounding box functions.
-// With PDFs, origin is bottom-left.
 struct PdfRectangle {
   float left;
   float bottom;
@@ -24,9 +26,8 @@ struct PdfRectangle {
 
 // Calculate the scale factor between `content_rect` and a page of `src_size`.
 //
-// `content_rect` specifies the printable area of the destination page, with
-// origin at left-bottom. Values are in points.
-// `src_size` specifies the source page size in points.
+// `content_rect` specifies the printable area of the destination page.
+// `src_size` specifies the source page size.
 // `rotated` True if source page is rotated 90 degree or 270 degree.
 float CalculateScaleFactor(const gfx::Rect& content_rect,
                            const gfx::SizeF& src_size,
@@ -60,28 +61,26 @@ PdfRectangle CalculateClipBoxBoundary(const PdfRectangle& media_box,
 void ScalePdfRectangle(float scale_factor, PdfRectangle* rect);
 
 // Calculate the clip box translation offset for a page that does need to be
-// scaled. All parameters are in points.
+// scaled.
 //
-// `content_rect` specifies the printable area of the destination page, with
-// origin at left-bottom.
-// `source_clip_box` specifies the source clip box positions, relative to
-// origin at left-bottom.
+// `content_rect` specifies the printable area of the destination page.
+// `source_clip_box` specifies the source clip box positions, relative to the
+// origin.
 // Returns the final translation offsets for the source clip box, relative to
-// origin at left-bottom.
+// the origin.
 gfx::PointF CalculateScaledClipBoxOffset(const gfx::Rect& content_rect,
-                                         const PdfRectangle& source_clip_box_);
+                                         const PdfRectangle& source_clip_box);
 
 // Calculate the clip box offset for a page that does not need to be scaled.
-// All parameters are in points.
 //
 // `rotation` specifies the source page rotation values which are N / 90
 // degrees.
 // `page_width` specifies the screen destination page width.
 // `page_height` specifies the screen destination page height.
-// `source_clip_box` specifies the source clip box positions, relative to origin
-// at left-bottom.
+// `source_clip_box` specifies the source clip box positions, relative to the
+// origin.
 // Returns the final translation offsets for the source clip box, relative to
-// origin at left-bottom.
+// the origin.
 gfx::PointF CalculateNonScaledClipBoxOffset(
     int rotation,
     int page_width,

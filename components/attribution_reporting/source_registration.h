@@ -14,15 +14,16 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
-#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
@@ -34,7 +35,7 @@ void RecordSourceRegistrationError(mojom::SourceRegistrationError);
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   // Doesn't log metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
-      Parse(base::Value::Dict, mojom::SourceType);
+      Parse(base::Value, mojom::SourceType);
 
   // Logs metric on parsing failures.
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
@@ -67,9 +68,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   // These `base::TimeDelta`s must be non-negative if set. This is verified by
   // the `Parse()` and `IsValid()` methods.
   base::TimeDelta expiry = kMaxSourceExpiry;
-  EventReportWindows event_report_windows;
+  TriggerSpecs trigger_specs;
   base::TimeDelta aggregatable_report_window = expiry;
-  MaxEventLevelReports max_event_level_reports;
   int64_t priority = 0;
   FilterData filter_data;
   std::optional<uint64_t> debug_key;
@@ -78,6 +78,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   mojom::TriggerDataMatching trigger_data_matching =
       mojom::TriggerDataMatching::kModulus;
   EventLevelEpsilon event_level_epsilon;
+  SourceAggregatableDebugReportingConfig aggregatable_debug_reporting_config;
+  int64_t destination_limit_priority = 0;
+  std::optional<AttributionScopesData> attribution_scopes_data;
 };
 
 }  // namespace attribution_reporting

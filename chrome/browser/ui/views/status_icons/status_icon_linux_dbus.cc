@@ -155,7 +155,7 @@ bool ShouldWriteIconToFile() {
     case base::nix::DESKTOP_ENVIRONMENT_LXQT:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 base::FilePath WriteIconFile(size_t icon_file_id,

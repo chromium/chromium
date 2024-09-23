@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_TEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_TEST_H_
 
+#include <memory>
 #include <optional>
 
-#include <gtest/gtest.h>
 #include "base/task/single_thread_task_runner.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
@@ -39,6 +40,9 @@ class SimTest : public testing::Test {
   void InitializeFencedFrameRoot(
       blink::FencedFrame::DeprecatedFencedFrameMode mode);
 
+  // Creates a WebView that is prerendered.
+  void InitializePrerenderPageRoot();
+
   // Load URL in the local frame root.
   void LoadURL(const String& url);
 
@@ -54,6 +58,7 @@ class SimTest : public testing::Test {
   frame_test_helpers::TestWebFrameClient& WebFrameClient();
   frame_test_helpers::TestWebFrameWidget& GetWebFrameWidget();
   SimCompositor& Compositor();
+  frame_test_helpers::WebViewHelper& WebViewHelper();
 
   Vector<String>& ConsoleMessages();
   void ResizeView(const gfx::Size&);
@@ -77,6 +82,9 @@ class SimTest : public testing::Test {
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
       bool is_for_scalable_page);
+
+  virtual std::unique_ptr<frame_test_helpers::TestWebFrameClient>
+  CreateWebFrameClientForMainFrame();
 
   void SetPreferCompositingToLCDText(bool enabled);
   test::TaskEnvironment& task_environment() { return task_environment_; }

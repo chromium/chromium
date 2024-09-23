@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cronet_c.h"
-
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/cronet/native/test/test_util.h"
+#include "cronet_c.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -79,8 +78,9 @@ TEST_F(BufferTest, TestInitWithAlloc) {
 
 #if defined(ARCH_CPU_64_BITS) &&                                              \
     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||               \
-     defined(THREAD_SANITIZER) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
-     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
+     defined(THREAD_SANITIZER) ||                                             \
+     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || BUILDFLAG(IS_CHROMEOS) || \
+     BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA))
 // - ASAN and MSAN malloc by default triggers crash instead of returning null on
 //   failure.
 // - PartitionAlloc malloc also crashes on allocation failure by design.

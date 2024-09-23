@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/i18n/char_iterator.h"
+
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -12,7 +19,7 @@ namespace i18n {
 
 // UTF8CharIterator ------------------------------------------------------------
 
-UTF8CharIterator::UTF8CharIterator(base::StringPiece str)
+UTF8CharIterator::UTF8CharIterator(std::string_view str)
     : str_(str), array_pos_(0), next_pos_(0), char_pos_(0), char_(0) {
   if (!str_.empty())
     CBU8_NEXT(str_.data(), next_pos_, str_.length(), char_);
@@ -34,7 +41,7 @@ bool UTF8CharIterator::Advance() {
 
 // UTF16CharIterator -----------------------------------------------------------
 
-UTF16CharIterator::UTF16CharIterator(StringPiece16 str)
+UTF16CharIterator::UTF16CharIterator(std::u16string_view str)
     : UTF16CharIterator(str, 0) {}
 
 UTF16CharIterator::UTF16CharIterator(UTF16CharIterator&& to_move) = default;
@@ -45,7 +52,7 @@ UTF16CharIterator& UTF16CharIterator::operator=(UTF16CharIterator&& to_move) =
     default;
 
 // static
-UTF16CharIterator UTF16CharIterator::LowerBound(StringPiece16 str,
+UTF16CharIterator UTF16CharIterator::LowerBound(std::u16string_view str,
                                                 size_t array_index) {
   DCHECK_LE(array_index, str.length());
   CBU16_SET_CP_START(str.data(), 0, array_index);
@@ -53,7 +60,7 @@ UTF16CharIterator UTF16CharIterator::LowerBound(StringPiece16 str,
 }
 
 // static
-UTF16CharIterator UTF16CharIterator::UpperBound(StringPiece16 str,
+UTF16CharIterator UTF16CharIterator::UpperBound(std::u16string_view str,
                                                 size_t array_index) {
   DCHECK_LE(array_index, str.length());
   CBU16_SET_CP_LIMIT(str.data(), 0, array_index, str.length());
@@ -101,7 +108,8 @@ bool UTF16CharIterator::Rewind() {
   return true;
 }
 
-UTF16CharIterator::UTF16CharIterator(StringPiece16 str, size_t initial_pos)
+UTF16CharIterator::UTF16CharIterator(std::u16string_view str,
+                                     size_t initial_pos)
     : str_(str),
       array_pos_(initial_pos),
       next_pos_(initial_pos),

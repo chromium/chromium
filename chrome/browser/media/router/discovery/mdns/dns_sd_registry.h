@@ -34,6 +34,7 @@ class DnsSdRegistry : public DnsSdDelegate {
    public:
     virtual void OnDnsSdEvent(const std::string& service_type,
                               const DnsSdServiceList& services) = 0;
+    virtual void OnDnsSdPermissionRejected() = 0;
 
    protected:
     virtual ~DnsSdObserver() {}
@@ -112,6 +113,7 @@ class DnsSdRegistry : public DnsSdDelegate {
   void ServiceRemoved(const std::string& service_type,
                       const std::string& service_name) override;
   void ServicesFlushed(const std::string& service_type) override;
+  void ServicesPermissionRejected() override;
 
   std::map<std::string, std::unique_ptr<ServiceTypeData>> service_data_map_;
 

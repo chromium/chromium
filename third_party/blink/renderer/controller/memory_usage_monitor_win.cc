@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/controller/memory_usage_monitor_win.h"
 
-#include <windows.h>  // Must be in front of other Windows header files.
+#include <tchar.h>
+#include <windows.h>
 
 #include <psapi.h>
-#include <tchar.h>
 
 #include "third_party/blink/public/platform/platform.h"
 

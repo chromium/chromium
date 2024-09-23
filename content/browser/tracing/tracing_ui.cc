@@ -33,7 +33,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/tracing_controller.h"
-#include "content/public/browser/tracing_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -59,7 +58,7 @@ void OnGotCategories(WebUIDataSource::GotDataCallback callback,
   }
 
   auto res = base::MakeRefCounted<base::RefCountedString>();
-  base::JSONWriter::Write(category_list, &res->data());
+  base::JSONWriter::Write(category_list, &res->as_string());
   std::move(callback).Run(res);
 }
 
@@ -145,7 +144,7 @@ void ReadProtobufTraceData(
 void TracingCallbackWrapperBase64(WebUIDataSource::GotDataCallback callback,
                                   std::unique_ptr<std::string> data) {
   base::RefCountedString* data_base64 = new base::RefCountedString();
-  data_base64->data() = base::Base64Encode(*data);
+  data_base64->as_string() = base::Base64Encode(*data);
   std::move(callback).Run(data_base64);
 }
 
@@ -233,9 +232,7 @@ void OnTracingRequest(const std::string& path,
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-TracingUI::TracingUI(WebUI* web_ui)
-    : WebUIController(web_ui),
-      delegate_(GetContentClient()->browser()->GetTracingDelegate()) {
+TracingUI::TracingUI(WebUI* web_ui) : WebUIController(web_ui) {
   // Set up the chrome://tracing/ source.
   WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUITracingHost);

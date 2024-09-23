@@ -12,6 +12,7 @@
     attribute EventHandler onconnect;
     attribute EventHandler ondisconnect;
 
+    [RuntimeEnabled=SerialPortConnected] readonly attribute boolean connected;
     [CallWith=ScriptState, RaisesException]
     readonly attribute ReadableStream readable;
     [CallWith=ScriptState, RaisesException]
@@ -19,13 +20,13 @@
 
     [MeasureAs=SerialPortGetInfo] SerialPortInfo getInfo();
     [CallWith=ScriptState, RaisesException, MeasureAs=SerialPortOpen]
-    Promise<void> open(SerialOptions options);
+    Promise<undefined> open(SerialOptions options);
     [CallWith=ScriptState, RaisesException]
     Promise<SerialInputSignals> getSignals();
     [CallWith=ScriptState, RaisesException]
-    Promise<void> setSignals(optional SerialOutputSignals signals = {});
+    Promise<undefined> setSignals(optional SerialOutputSignals signals = {});
     [RaisesException, CallWith=ScriptState, MeasureAs=SerialPortClose]
-    Promise<void> close();
+    Promise<undefined> close();
     [RaisesException, CallWith=ScriptState, MeasureAs=SerialPortForget]
-    Promise<void> forget();
+    Promise<undefined> forget();
 };

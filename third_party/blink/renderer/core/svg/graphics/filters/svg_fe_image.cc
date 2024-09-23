@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_fe_image.h"
 
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
@@ -161,9 +162,10 @@ sk_sp<PaintFilter> FEImage::CreateImageFilterForLayoutObject(
   cc::PaintCanvas* canvas = paint_recorder.beginRecording();
   canvas->concat(AffineTransformToSkM44(transform));
   {
-    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-    SVGObjectPainter(layout_object).PaintResourceSubtree(builder->Context());
-    builder->EndRecording(*canvas);
+    PaintRecordBuilder builder;
+    SVGObjectPainter(layout_object, nullptr)
+        .PaintResourceSubtree(builder.Context());
+    builder.EndRecording(*canvas);
   }
   return sk_make_sp<RecordPaintFilter>(
       paint_recorder.finishRecordingAsPicture(), gfx::RectFToSkRect(cull_rect));

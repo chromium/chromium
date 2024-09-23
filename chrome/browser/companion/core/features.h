@@ -22,7 +22,6 @@ BASE_DECLARE_FEATURE(kCompanionEnabledByObservingExpsNavigations);
 }  // namespace internal
 
 BASE_DECLARE_FEATURE(kCompanionEnableSearchWebInNewTabContextMenuItem);
-BASE_DECLARE_FEATURE(kCompanionEnableNewBadgesInContextMenu);
 BASE_DECLARE_FEATURE(kCompanionEnablePageContent);
 }  // namespace features
 

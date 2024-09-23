@@ -10,14 +10,16 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "sampled_profile.pb.h"
+#include "base/types/optional_util.h"
+#include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
+#include "mojo/public/cpp/base/proto_wrapper.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#include "third_party/metrics_proto/sampled_profile.pb.h"
 
 namespace metrics {
 
@@ -27,7 +29,7 @@ constexpr base::FeatureState kSamplingProfilerReportingDefaultState =
     base::FEATURE_ENABLED_BY_DEFAULT;
 
 bool SamplingProfilerReportingEnabled() {
-  // TODO(crbug.com/1384179): Do not call this function before the FeatureList
+  // TODO(crbug.com/40246378): Do not call this function before the FeatureList
   // is registered.
   if (!base::FeatureList::GetInstance()) {
     // The FeatureList is not registered: use the feature's default state. This
@@ -91,19 +93,28 @@ class PendingProfiles {
 
   // Collects |serialized_profile|. It may be ignored depending on the
   // pre-defined storage capacity and whether collection is enabled.
-  // |serialized_profile| must be passed with std::move because it could be very
-  // large.
-  void MaybeCollectSerializedProfile(base::TimeTicks profile_start_time,
-                                     std::string&& serialized_profile);
+  void MaybeCollectSerializedProfile(
+      base::TimeTicks profile_start_time,
+      mojom::SampledProfilePtr serialized_profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns all the serialized profiles that have been collected but not yet
-  // retrieved. For thread-safety reasons, returns a copy, so this is an
-  // expensive function. Fortunately, it's only called during ChromeOS tast
+  // retrieved. For thread-safety reasons, deserializes under a lock, so this is
+  // an expensive function. Fortunately, it's only called during ChromeOS tast
   // integration tests.
-  std::vector<std::string> GetUnretrievedProfiles() {
+  std::vector<SampledProfile> GetUnretrievedProfiles() {
     base::AutoLock scoped_lock(lock_);
-    return serialized_profiles_;
+    std::vector<SampledProfile> profiles;
+    profiles.reserve(serialized_profiles_.size());
+    for (const mojom::SampledProfilePtr& serialized_profile :
+         serialized_profiles_) {
+      SampledProfile profile;
+      if (base::OptionalUnwrapTo(
+              serialized_profile->contents.As<SampledProfile>(), profile)) {
+        profiles.push_back(std::move(profile));
+      }
+    }
+    return profiles;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -142,85 +153,8 @@ class PendingProfiles {
   base::TimeTicks last_collection_enable_time_ GUARDED_BY(lock_);
 
   // The set of completed serialized profiles that should be reported.
-  std::vector<std::string> serialized_profiles_ GUARDED_BY(lock_);
+  std::vector<mojom::SampledProfilePtr> serialized_profiles_ GUARDED_BY(lock_);
 };
-
-std::optional<int32_t> FindHashNameIndexInProfile(const SampledProfile& profile,
-                                                  const uint64_t name_hash) {
-  const auto& name_hashes = profile.call_stack_profile().metadata_name_hash();
-  const auto loc = base::ranges::find(name_hashes, name_hash);
-  if (loc == name_hashes.end()) {
-    return std::nullopt;
-  }
-  return loc - name_hashes.begin();
-}
-
-// Remove temp profile metadata for LCP tagging.
-void RemoveTempLCPMetadata(SampledProfile& profile) {
-  const uint64_t nav_start_name_hash =
-      base::HashMetricName("Internal.LargestContentfulPaint.NavigationStart");
-  const uint64_t document_token_name_hash =
-      base::HashMetricName("Internal.LargestContentfulPaint.DocumentToken");
-
-  std::optional<int32_t> navigation_start_name_hash_index =
-      FindHashNameIndexInProfile(profile, nav_start_name_hash);
-  std::optional<int32_t> document_token_name_hash_index =
-      FindHashNameIndexInProfile(profile, document_token_name_hash);
-
-  // Remove profile_metadata items.
-  auto* profile_metadata =
-      profile.mutable_call_stack_profile()->mutable_profile_metadata();
-  profile_metadata->erase(
-      base::ranges::remove_if(
-          *profile_metadata,
-          [&](const CallStackProfile_MetadataItem& item) {
-            return item.name_hash_index() == navigation_start_name_hash_index ||
-                   item.name_hash_index() == document_token_name_hash_index;
-          }),
-      profile_metadata->end());
-
-  // Remove name hashes
-  auto* name_hashes =
-      profile.mutable_call_stack_profile()->mutable_metadata_name_hash();
-  name_hashes->erase(
-      base::ranges::remove_if(*name_hashes,
-                              [&](uint64_t name_hash) {
-                                return name_hash == nav_start_name_hash ||
-                                       name_hash == document_token_name_hash;
-                              }),
-      name_hashes->end());
-
-  // Update name_hash_index of all MetadataItem.
-  const auto shift_index = [&](CallStackProfile_MetadataItem& item) {
-    int64_t offset = 0;
-    if (navigation_start_name_hash_index.has_value() &&
-        item.name_hash_index() > *navigation_start_name_hash_index) {
-      offset++;
-    }
-    if (document_token_name_hash_index.has_value() &&
-        item.name_hash_index() > *document_token_name_hash_index) {
-      offset++;
-    }
-
-    item.set_name_hash_index(item.name_hash_index() - offset);
-  };
-
-  base::ranges::for_each(*profile_metadata, shift_index);
-  for (auto& stack_sample :
-       *profile.mutable_call_stack_profile()->mutable_stack_sample()) {
-    base::ranges::for_each(*stack_sample.mutable_metadata(), shift_index);
-  }
-
-  // Remove timestamps
-  for (auto& stack_sample :
-       *profile.mutable_call_stack_profile()->mutable_stack_sample()) {
-    stack_sample.clear_sample_time_offset_ms();
-  }
-
-  if (profile.trigger_event() != SampledProfile::PERIODIC_HEAP_COLLECTION) {
-    profile.mutable_call_stack_profile()->clear_profile_time_offset_ms();
-  }
-}
 
 // static
 PendingProfiles* PendingProfiles::GetInstance() {
@@ -230,7 +164,7 @@ PendingProfiles* PendingProfiles::GetInstance() {
 }
 
 std::vector<SampledProfile> PendingProfiles::RetrieveProfiles() {
-  std::vector<std::string> serialized_profiles;
+  std::vector<mojom::SampledProfilePtr> serialized_profiles;
 
   {
     base::AutoLock scoped_lock(lock_);
@@ -240,9 +174,11 @@ std::vector<SampledProfile> PendingProfiles::RetrieveProfiles() {
   // Deserialize all serialized profiles, skipping over any that fail to parse.
   std::vector<SampledProfile> profiles;
   profiles.reserve(serialized_profiles.size());
-  for (const auto& serialized_profile : serialized_profiles) {
+  for (const mojom::SampledProfilePtr& serialized_profile :
+       serialized_profiles) {
     SampledProfile profile;
-    if (profile.ParseFromString(serialized_profile)) {
+    if (base::OptionalUnwrapTo(
+            serialized_profile->contents.As<SampledProfile>(), profile)) {
       profiles.push_back(std::move(profile));
     }
   }
@@ -300,8 +236,8 @@ void PendingProfiles::MaybeCollectProfile(base::TimeTicks profile_start_time,
   }
 
   // Serialize the profile without holding the lock.
-  std::string serialized_profile;
-  profile.SerializeToString(&serialized_profile);
+  mojom::SampledProfilePtr serialized_profile = mojom::SampledProfile::New();
+  serialized_profile->contents = mojo_base::ProtoWrapper(profile);
 
   MaybeCollectSerializedProfile(profile_start_time,
                                 std::move(serialized_profile));
@@ -309,7 +245,7 @@ void PendingProfiles::MaybeCollectProfile(base::TimeTicks profile_start_time,
 
 void PendingProfiles::MaybeCollectSerializedProfile(
     base::TimeTicks profile_start_time,
-    std::string&& serialized_profile) {
+    mojom::SampledProfilePtr serialized_profile) {
   base::AutoLock scoped_lock(lock_);
 
   // There is no room for additional profiles.
@@ -422,14 +358,10 @@ ReceivedProfileCounter::GetSuccessfullyCollectedCounts() {
   // And then add in any pending ones. Copying and then deserializing all the
   // profiles is expensive, but again, this should only be called during tast
   // integration tests.
-  std::vector<std::string> unretrieved_profiles(
-      PendingProfiles::GetInstance()->GetUnretrievedProfiles());
-  for (const std::string& serialized_profile : unretrieved_profiles) {
-    SampledProfile profile;
-    if (profile.ParseFromString(serialized_profile)) {
-      if (WasMinimallySuccessful(profile)) {
-        ++successful_counts[profile.process()][profile.thread()];
-      }
+  for (const SampledProfile& profile :
+       PendingProfiles::GetInstance()->GetUnretrievedProfiles()) {
+    if (WasMinimallySuccessful(profile)) {
+      ++successful_counts[profile.process()][profile.thread()];
     }
   }
 
@@ -476,7 +408,7 @@ void CallStackProfileMetricsProvider::ReceiveProfile(
 void CallStackProfileMetricsProvider::ReceiveSerializedProfile(
     base::TimeTicks profile_start_time,
     bool is_heap_profile,
-    std::string&& serialized_profile) {
+    mojom::SampledProfilePtr serialized_profile) {
   // Note: All parameters of this function come from a Mojo message from an
   // untrusted process.
   if (GetCpuInterceptorCallbackInstance()) {
@@ -484,7 +416,8 @@ void CallStackProfileMetricsProvider::ReceiveSerializedProfile(
     // trust `is_heap_profile` and `serialized_profile` here.
     DCHECK(!is_heap_profile);
     SampledProfile profile;
-    if (profile.ParseFromString(serialized_profile)) {
+    if (base::OptionalUnwrapTo(
+            serialized_profile->contents.As<SampledProfile>(), profile)) {
       DCHECK(profile.trigger_event() == SampledProfile::PROCESS_STARTUP ||
              profile.trigger_event() == SampledProfile::PERIODIC_COLLECTION);
       GetCpuInterceptorCallbackInstance().Run(std::move(profile));
@@ -538,7 +471,6 @@ void CallStackProfileMetricsProvider::ProvideCurrentSessionData(
     // disabled.
     DCHECK(SamplingProfilerReportingEnabled() ||
            profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION);
-    RemoveTempLCPMetadata(profile);
     *uma_proto->add_sampled_profile() = std::move(profile);
   }
 }

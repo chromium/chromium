@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -81,7 +81,7 @@ base::FilePath MaybeMountDriveFs(
       return registration.second->mount_path();
     }
   }
-  NOTREACHED() << datadir_suffix;
+  NOTREACHED_IN_MIGRATION() << datadir_suffix;
   return {};
 }
 
@@ -185,7 +185,7 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
       }
 
       // Filter out non-matching results.
-      base::EraseIf(results_, [=](const auto& item_ptr) {
+      std::erase_if(results_, [=, this](const auto& item_ptr) {
         if (!item_ptr->metadata) {
           return true;
         }
@@ -723,6 +723,18 @@ void FakeDriveFs::GetDocsOfflineStats(
   drivefs::mojom::DocsOfflineStatsPtr stats =
       drivefs::mojom::DocsOfflineStats::New();
   std::move(callback).Run(drive::FILE_ERROR_OK, std::move(stats));
+}
+
+void FakeDriveFs::GetMirrorSyncStatusForFile(
+    const base::FilePath& path,
+    drivefs::mojom::DriveFs::GetMirrorSyncStatusForFileCallback callback) {
+  std::move(callback).Run(drivefs::mojom::MirrorItemSyncingStatus::kSynced);
+}
+
+void FakeDriveFs::GetMirrorSyncStatusForDirectory(
+    const base::FilePath& path,
+    drivefs::mojom::DriveFs::GetMirrorSyncStatusForDirectoryCallback callback) {
+  std::move(callback).Run(drivefs::mojom::MirrorItemSyncingStatus::kSynced);
 }
 
 }  // namespace drivefs

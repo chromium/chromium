@@ -11,6 +11,7 @@
 #include "base/trace_event/traced_value.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "url/gurl.h"
 
@@ -44,9 +45,9 @@ class ContentfulPaintTimingInfo {
       const std::optional<net::RequestPriority>& image_request_priority,
       bool in_main_frame,
       const blink::LargestContentfulPaintType type,
-      const absl::optional<base::TimeDelta>& image_discovery_time,
-      const absl::optional<base::TimeDelta>& image_load_start,
-      const absl::optional<base::TimeDelta>& image_load_end);
+      const std::optional<base::TimeDelta>& image_discovery_time,
+      const std::optional<base::TimeDelta>& image_load_start,
+      const std::optional<base::TimeDelta>& image_load_end);
   ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
   void Reset(const std::optional<base::TimeDelta>& time,
              const uint64_t& size,
@@ -85,8 +86,8 @@ class ContentfulPaintTimingInfo {
           (size_ == 0u && !time_.has_value()));
 
     // Returns if timing is not set because of 0 size.
-    // TODO(crbug.com/1473188) We should revisit if we should check timing being
-    // 0 too.
+    // TODO(crbug.com/40926935) We should revisit if we should check timing
+    // being 0 too.
     return (size_ == 0u && !time_.has_value());
   }
 
@@ -132,7 +133,6 @@ class ContentfulPaint {
 
 class LargestContentfulPaintHandler {
  public:
-  using FrameTreeNodeId = int;
   static void SetTestMode(bool enabled);
   LargestContentfulPaintHandler();
 
@@ -163,11 +163,12 @@ class LargestContentfulPaintHandler {
           first_input_or_scroll_notified_timestamp,
       content::RenderFrameHost* subframe_rfh,
       const GURL& main_frame_url);
-  inline void RecordMainFrameTreeNodeId(int main_frame_tree_node_id) {
+  inline void RecordMainFrameTreeNodeId(
+      content::FrameTreeNodeId main_frame_tree_node_id) {
     main_frame_tree_node_id_.emplace(main_frame_tree_node_id);
   }
 
-  inline int MainFrameTreeNodeId() const {
+  inline content::FrameTreeNodeId MainFrameTreeNodeId() const {
     return main_frame_tree_node_id_.value();
   }
 
@@ -187,11 +188,7 @@ class LargestContentfulPaintHandler {
   void OnDidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle,
       base::TimeTicks navigation_start);
-  void OnSubFrameDeleted(int frame_tree_node_id);
-
-  const ContentfulPaintTimingInfo& GetImageContentfulPaintTimingInfo() const {
-    return main_frame_contentful_paint_.Image();
-  }
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id);
 
   void UpdateSoftNavigationLargestContentfulPaint(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&);
@@ -207,7 +204,7 @@ class LargestContentfulPaintHandler {
       const page_load_metrics::mojom::LargestContentfulPaintTiming&
           largest_contentful_paint,
       ContentfulPaint& subframe_contentful_paint,
-      const absl::optional<base::TimeDelta>&
+      const std::optional<base::TimeDelta>&
           first_input_or_scroll_notified_timestamp,
       const base::TimeDelta& navigation_start_offset,
       const bool is_cross_site);
@@ -235,7 +232,7 @@ class LargestContentfulPaintHandler {
 
   // Used for Telemetry to distinguish the LCP events from different
   // navigations.
-  std::optional<int> main_frame_tree_node_id_;
+  std::optional<content::FrameTreeNodeId> main_frame_tree_node_id_;
 
   // The first input or scroll across all frames in the page. Used to filter out
   // paints that occur on other frames but after this time.
@@ -243,7 +240,8 @@ class LargestContentfulPaintHandler {
 
   // Navigation start offsets for the most recently committed document in each
   // frame.
-  std::map<FrameTreeNodeId, base::TimeDelta> subframe_navigation_start_offset_;
+  std::map<content::FrameTreeNodeId, base::TimeDelta>
+      subframe_navigation_start_offset_;
 };
 
 }  // namespace page_load_metrics

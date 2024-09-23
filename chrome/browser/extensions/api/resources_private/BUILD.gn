@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+source_set("resources_private") {
+  sources = [
+    "resources_private_api.cc",
+    "resources_private_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ "//extensions/browser" ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/common/extensions/api",
+    "//components/prefs",
+    "//printing/buildflags",
+    "//ui/base",
+  ]
+
+  if (enable_pdf) {
+    deps += [
+      "//chrome/browser/pdf",
+      "//pdf:buildflags",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/ash/components/browser_context_helper" ]
+  }
+}

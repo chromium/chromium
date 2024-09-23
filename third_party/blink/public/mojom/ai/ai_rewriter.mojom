@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+
+// The enumerations and struct follows the explainer in
+// https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
+
+// This tone option is used when creating an AIRewriter.
+enum AIRewriterTone {
+  kAsIs,
+  kMoreFormal,
+  kMoreCasual,
+};
+
+// This length option is used when creating an AIRewriter.
+enum AIRewriterLength {
+  kAsIs,
+  kShorter,
+  kLonger,
+};
+
+// This is used when creating a new AIRewriter.
+struct AIRewriterCreateOptions {
+  string? shared_context;
+  AIRewriterTone tone;
+  AIRewriterLength length;
+};
+
+// Interface for AIRewriter that can stream the output string.
+interface AIRewriter {
+  // Rewrite the input string. The shared context string, tone option and length
+  // option can be set when creating the AIRewriter.
+  // `input` is a string that is set when the JS API `rewriter.rewrite()` is
+  // called.
+  // `context` is a optional string that is set in the AIRewriterRewriteOptions
+  // when the JS API `rewriter.rewrite()` is called.
+  Rewrite(
+    string input,
+    string? context,
+    pending_remote<ModelStreamingResponder> pending_responder);
+};

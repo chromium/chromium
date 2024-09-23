@@ -14,16 +14,30 @@ source_set("profiles") {
     "incognito_helpers.h",
     "profile_key.cc",
     "profile_key.h",
-
-    # TODO(b/307628893): Move profile_key_android.cc to
-    # chrome/browser/profiles:profiles once the circular dependency is removed.
-    "profile_key_android.h",
   ]
 
-  # Cannot depend on //chrome/browser:browser.
-  deps = [ ":profile" ]
+  if (is_android) {
+    sources += [
+      "profile_android.cc",
+      "profile_key_android.cc",
+      "profile_key_android.h",
+    ]
+  }
 
-  public_deps = [ "//components/leveldb_proto" ]
+  # Cannot depend on //chrome/browser:browser.
+  deps = []
+  if (is_android) {
+    deps += [
+      "//chrome/browser/profiles/android:jni_headers",
+      "//chrome/common:constants",
+      "//content/public/browser",
+    ]
+  }
+
+  public_deps = [
+    ":profile",
+    "//components/leveldb_proto",
+  ]
 }
 
 # This target should be very minimal, likely no new sources should be added
@@ -35,19 +49,13 @@ source_set("profile") {
     "profile.h",
     "profile_keyed_service_factory.cc",
     "profile_keyed_service_factory.h",
+    "profile_manager_observer.h",
     "profile_observer.h",
     "profile_selections.cc",
     "profile_selections.h",
     "refcounted_profile_keyed_service_factory.cc",
     "refcounted_profile_keyed_service_factory.h",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "profile_types_ash.cc",
-      "profile_types_ash.h",
-    ]
-  }
 
   public_deps = [ "//base" ]
 
@@ -91,4 +99,176 @@ source_set("profile") {
   if (is_android) {
     deps += [ "//chrome/browser/profiles/android:jni_headers" ]
   }
+}
+
+source_set("profile_util") {
+  sources = [
+    "nuke_profile_directory_utils.h",
+    "pref_service_builder_utils.h",
+    "profile_avatar_icon_util.h",
+    "reporting_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//mojo/public/cpp/bindings",
+    "//services/preferences/public/mojom",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("profile_util_impl") {
+  sources = [
+    "nuke_profile_directory_utils.cc",
+    "pref_service_builder_utils.cc",
+    "profile_avatar_icon_util.cc",
+    "reporting_util.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":profile",
+    ":profile_attributes",
+    ":profile_util",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//cc/paint",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common",
+    "//components/account_id",
+    "//components/embedder_support:browser_util",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/keyed_service/content",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/supervised_user/core/browser",
+    "//components/sync_preferences",
+    "//components/variations/service",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//services/preferences/public/mojom",
+    "//ui/base",
+    "//ui/color",
+    "//ui/color/dynamic_color",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/native_theme",
+    "//url",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/login/users",
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/profiles",
+    ]
+  }
+}
+
+source_set("profile_attributes") {
+  sources = [
+    "profile_attributes_entry.h",
+    "profile_attributes_init_params.h",
+    "profile_attributes_storage.h",
+    "profile_attributes_storage_observer.h",
+  ]
+
+  public_deps = [
+    ":profile_util",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/account_id",
+    "//ui/gfx",
+  ]
+}
+
+source_set("profile_attributes_impl") {
+  sources = [
+    "profile_attributes_entry.cc",
+    "profile_attributes_init_params.cc",
+    "profile_attributes_storage.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":profile_attributes",
+    ":profile_util",
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/common:constants",
+    "//components/account_id",
+    "//components/policy/core/browser:browser",
+    "//components/policy/core/common:common",
+    "//components/prefs",
+    "//components/profile_metrics",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//third_party/icu:icui18n",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx:color_utils",
+    "//ui/native_theme",
+  ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_list" ]
+  }
+}
+
+source_set("profile_statistics") {
+  sources = [
+    "profile_statistics.h",
+    "profile_statistics_aggregator.h",
+    "profile_statistics_common.h",
+    "profile_statistics_factory.h",
+  ]
+
+  public_deps = [
+    ":profile",
+    "//base",
+    "//components/browsing_data/core",
+    "//components/keyed_service/core",
+  ]
+
+  deps = [
+    "//components/autofill/core/browser",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//device/fido:fido",
+  ]
+}
+
+source_set("profile_statistics_impl") {
+  sources = [
+    "profile_statistics.cc",
+    "profile_statistics_aggregator.cc",
+    "profile_statistics_common.cc",
+    "profile_statistics_factory.cc",
+  ]
+
+  deps = [
+    ":profile",
+    ":profile_statistics",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/autofill",
+    "//components/browsing_data/core",
+    "//content/public/browser",
+  ]
 }

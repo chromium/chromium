@@ -14,15 +14,13 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 std::u16string HostedDomainForPrimaryAccount(Browser* browser) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser->GetBrowserState());
+      IdentityManagerFactory::GetForProfile(browser->GetBrowserState());
   return base::UTF8ToUTF16(
       identity_manager
           ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(

@@ -12,7 +12,7 @@
 #include "components/password_manager/core/browser/sharing/recipient_info.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace password_manager {
@@ -42,7 +42,7 @@ class PasswordSenderService : public KeyedService {
                              const PasswordRecipient& recipient) = 0;
 
   // Used to wire sync data type.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 };
 

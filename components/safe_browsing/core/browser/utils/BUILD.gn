@@ -6,24 +6,16 @@ source_set("utils") {
   sources = [
     "backoff_operator.cc",
     "backoff_operator.h",
-    "scheme_logger.cc",
-    "scheme_logger.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//base",
-    "//url",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "backoff_operator_unittest.cc",
-    "scheme_logger_unittest.cc",
-  ]
+  sources = [ "backoff_operator_unittest.cc" ]
   deps = [
     ":utils",
     "//base/test:test_support",

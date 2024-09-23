@@ -19,7 +19,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/uploading/upload_job.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
 namespace base {

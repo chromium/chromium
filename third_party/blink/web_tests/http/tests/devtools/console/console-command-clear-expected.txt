@@ -5,5 +5,5 @@ console-command-clear.js:16 one
 console-command-clear.js:17 two
 console-command-clear.js:18 three
 === After clear ===
-VM:1 Console was cleared
+Console was cleared
 

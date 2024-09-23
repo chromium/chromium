@@ -4,6 +4,8 @@
 
 #include "net/spdy/alps_decoder.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/features.h"
@@ -11,8 +13,8 @@
 namespace net {
 namespace {
 
-bool ReadUint16PrefixedStringPiece(base::StringPiece* payload,
-                                   base::StringPiece* output) {
+bool ReadUint16PrefixedStringPiece(std::string_view* payload,
+                                   std::string_view* output) {
   if (payload->size() < 2) {
     return false;
   }
@@ -143,11 +145,11 @@ bool AlpsDecoder::AcceptChParser::OnFrameHeader(spdy::SpdyStreamId stream_id,
 void AlpsDecoder::AcceptChParser::OnFramePayload(const char* data, size_t len) {
   DCHECK_EQ(Error::kNoError, error_);
 
-  base::StringPiece payload(data, len);
+  std::string_view payload(data, len);
 
   while (!payload.empty()) {
-    base::StringPiece origin;
-    base::StringPiece value;
+    std::string_view origin;
+    std::string_view value;
     if (!ReadUint16PrefixedStringPiece(&payload, &origin) ||
         !ReadUint16PrefixedStringPiece(&payload, &value)) {
       if (base::FeatureList::IsEnabled(

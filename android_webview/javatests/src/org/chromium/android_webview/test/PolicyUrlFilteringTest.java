@@ -25,6 +25,7 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.policy.AwPolicyProvider;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
@@ -32,7 +33,6 @@ import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.components.policy.test.PolicyData;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class PolicyUrlFilteringTest extends AwParameterizedTest {
     public void testBlocklistedUrl() throws Throwable {
         final AwPolicyProvider testProvider =
                 new AwPolicyProvider(mActivityTestRule.getActivity().getApplicationContext());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> CombinedPolicyProvider.get().registerProvider(testProvider));
 
         navigateAndCheckOutcome(
@@ -188,7 +188,7 @@ public class PolicyUrlFilteringTest extends AwParameterizedTest {
         AbstractAppRestrictionsProvider.setTestRestrictions(
                 PolicyData.asBundle(Arrays.asList(policies)));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> testProvider.refresh());
+        ThreadUtils.runOnUiThreadBlocking(() -> testProvider.refresh());
 
         // To avoid race conditions
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

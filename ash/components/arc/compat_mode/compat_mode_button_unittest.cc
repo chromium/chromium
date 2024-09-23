@@ -75,21 +75,22 @@ class CompatModeButtonTest : public views::ViewsTestBase {
 TEST_F(CompatModeButtonTest, ConstructDestruct) {}
 
 TEST_F(CompatModeButtonTest, PressWithMouseEvent) {
-  auto event = GenerateMouseEvent(ui::ET_MOUSE_PRESSED);
+  auto event = GenerateMouseEvent(ui::EventType::kMousePressed);
   compat_mode_button()->OnMousePressed(event);
   EXPECT_TRUE(compat_mode_button_controller()->visible_when_button_pressed());
 }
 
 TEST_F(CompatModeButtonTest, PressWithGestureEvent) {
-  auto double_tap_event = GenerateGestureEvent(ui::ET_GESTURE_DOUBLE_TAP);
+  auto double_tap_event =
+      GenerateGestureEvent(ui::EventType::kGestureDoubleTap);
   compat_mode_button()->OnGestureEvent(&double_tap_event);
   EXPECT_FALSE(compat_mode_button_controller()->visible_when_button_pressed());
 
-  auto tap_down_event = GenerateGestureEvent(ui::ET_GESTURE_TAP_DOWN);
+  auto tap_down_event = GenerateGestureEvent(ui::EventType::kGestureTapDown);
   compat_mode_button()->OnGestureEvent(&tap_down_event);
   EXPECT_TRUE(compat_mode_button_controller()->visible_when_button_pressed());
 
-  auto tap_event = GenerateGestureEvent(ui::ET_GESTURE_TAP);
+  auto tap_event = GenerateGestureEvent(ui::EventType::kGestureTap);
   compat_mode_button()->OnGestureEvent(&tap_event);
   EXPECT_TRUE(compat_mode_button_controller()->visible_when_button_pressed());
 }

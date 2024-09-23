@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -28,6 +27,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -44,7 +44,7 @@ public class SurveyClientBridgeUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    Activity mActivity;
+    LifecycleDispatcherActivity mActivity;
     @Mock SurveyClientFactory mFactory;
     @Mock SurveyClient mDelegateSurveyClient;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -52,7 +52,8 @@ public class SurveyClientBridgeUnitTest {
 
     @Before
     public void setup() {
-        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mActivity = Robolectric.buildActivity(LifecycleDispatcherActivity.class).get();
+        mActivity.setLifecycleDispatcher(mActivityLifecycleDispatcher);
         SurveyClientFactory.setInstanceForTesting(mFactory);
 
         doReturn(mDelegateSurveyClient).when(mFactory).createClient(any(), any(), any());
@@ -156,7 +157,7 @@ public class SurveyClientBridgeUnitTest {
         verify(mDelegateSurveyClient)
                 .showSurvey(
                         eq(mActivity),
-                        isNull(),
+                        eq(mActivityLifecycleDispatcher),
                         bitValueCaptor.capture(),
                         stringValueCaptor.capture());
 
@@ -171,5 +172,21 @@ public class SurveyClientBridgeUnitTest {
                 "String PSD value mismatch.",
                 "stringVal2",
                 stringValueCaptor.getValue().get("string2"));
+    }
+
+    // Test activity that allows ActivityLifecycleDispatcherProvider casting in code.
+    static class LifecycleDispatcherActivity extends Activity
+            implements ActivityLifecycleDispatcherProvider {
+
+        private ActivityLifecycleDispatcher mDispatcher;
+
+        public void setLifecycleDispatcher(ActivityLifecycleDispatcher dispatcher) {
+            mDispatcher = dispatcher;
+        }
+
+        @Override
+        public ActivityLifecycleDispatcher getLifecycleDispatcher() {
+            return mDispatcher;
+        }
     }
 }

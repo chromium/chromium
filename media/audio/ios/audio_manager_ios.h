@@ -24,7 +24,7 @@ namespace media {
 // iOS implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
 // the AudioManager class.
-// TODO(crbug.com/1413450): Fill this implementation out.
+// TODO(crbug.com/40255660): Fill this implementation out.
 class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
  public:
   AudioManagerIOS(std::unique_ptr<AudioThread> audio_thread,

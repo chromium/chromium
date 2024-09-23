@@ -110,7 +110,7 @@ net::CanonicalCookie GetTestCookie(const GURL& url, const std::string& name) {
           /*expiration_time=*/base::Time(), /*last_access_time=*/base::Time(),
           /*secure=*/true, /*http_only=*/false,
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-          /*partition_key=*/std::nullopt);
+          /*partition_key=*/std::nullopt, /*status=*/nullptr);
   return *cookie;
 }
 
@@ -1046,8 +1046,9 @@ TEST_F(GaiaCookieManagerServiceTest, GaiaCookieLastListAccountsDataSaved) {
     // as the pref should be cleared.
     expected_accounts.clear();
     expected_signed_out_accounts.clear();
-    GoogleServiceAuthError error(
-        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
+    GoogleServiceAuthError error =
+        GoogleServiceAuthError::FromUnexpectedServiceResponse(
+            "Error parsing ListAccounts response");
     EXPECT_CALL(observer,
                 OnGaiaAccountsInCookieUpdated(
                     ListedAccountEquals(expected_accounts),

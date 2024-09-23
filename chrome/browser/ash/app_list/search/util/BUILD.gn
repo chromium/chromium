@@ -11,7 +11,55 @@ proto_library("proto") {
   sources = [
     "ftrl_optimizer.proto",
     "mrfu_cache.proto",
-    "persistent_proto_test.proto",
     "score_normalizer.proto",
+  ]
+}
+
+static_library("util") {
+  sources = [
+    "ftrl_optimizer.cc",
+    "ftrl_optimizer.h",
+    "keyword_cache.cc",
+    "keyword_cache.h",
+    "mrfu_cache.cc",
+    "mrfu_cache.h",
+    "score_normalizer.cc",
+    "score_normalizer.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":proto",
+    "//ash",
+    "//base",
+
+    # TODO(crbug.com/353875741): Remove this after fixing cyclic dependency from
+    # //chrome/browser/ash/app_list/search for
+    # obj/chrome/browser/ash/app_list/search/util/util/keyword_cache.o.
+    "//chrome/browser/apps/app_preload_service/proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "ftrl_optimizer_unittest.cc",
+    "keyword_cache_unittest.cc",
+    "mrfu_cache_unittest.cc",
+    "score_normalizer_unittest.cc",
+  ]
+
+  deps = [
+    ":util",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/app_list/search/util:proto",
+    "//chrome/browser/ui",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

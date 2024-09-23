@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -117,24 +116,24 @@ class ASH_EXPORT HoverHighlightView : public views::Button {
   // Override from Button to also set the tooltip for all child elements.
   void OnSetTooltipText(const std::u16string& tooltip_text) override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
   friend class TrayAccessibilityTest;
 
   void PerformAction();
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnFocus() override;
 
   // Adds a view that acts as a container for all views that are added into the
   // sub-row, i.e. the row below the label.
   void AddSubRowContainer();
 
-  void OnEnabledChanged();
+  // views::Button:
+  void OnEnabledChanged() override;
+
+  void SetAndUpdateAccessibleDefaultAction();
 
   // Determines whether the view is populated or not. If it is, Reset() should
   // be called before re-populating the view.
@@ -150,10 +149,6 @@ class ASH_EXPORT HoverHighlightView : public views::Button {
   raw_ptr<TriView, DanglingUntriaged> tri_view_ = nullptr;
   bool expandable_ = false;
   AccessibilityState accessibility_state_ = AccessibilityState::DEFAULT;
-  base::CallbackListSubscription enabled_changed_subscription_ =
-      AddEnabledChangedCallback(
-          base::BindRepeating(&HoverHighlightView::OnEnabledChanged,
-                              base::Unretained(this)));
 };
 
 }  // namespace ash

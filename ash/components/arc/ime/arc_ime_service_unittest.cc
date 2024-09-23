@@ -433,7 +433,8 @@ TEST_F(ArcImeServiceTest, OnKeyboardAppearanceChanged) {
   EXPECT_FALSE(fake_arc_ime_bridge_->last_keyboard_availability());
 
   const gfx::Rect keyboard_bounds(0, 480, 1200, 320);
-  ash::KeyboardStateDescriptor desc{true, keyboard_bounds, keyboard_bounds,
+  ash::KeyboardStateDescriptor desc{/*is_visible=*/true, /*is_temporary=*/false,
+                                    keyboard_bounds, keyboard_bounds,
                                     keyboard_bounds};
   instance_->OnKeyboardAppearanceChanged(desc);
   EXPECT_EQ(keyboard_bounds, fake_arc_ime_bridge_->last_keyboard_bounds());
@@ -448,6 +449,17 @@ TEST_F(ArcImeServiceTest, OnKeyboardAppearanceChanged) {
       new_scale_factor);
 
   // Keyboard bounds passed to Android should be changed.
+  instance_->OnKeyboardAppearanceChanged(desc);
+  EXPECT_EQ(new_keyboard_bounds, fake_arc_ime_bridge_->last_keyboard_bounds());
+  EXPECT_TRUE(fake_arc_ime_bridge_->last_keyboard_availability());
+
+  // Temporarily hide the keyboard. This signal should be no-op.
+  desc.is_temporary = true;
+  desc.visual_bounds = gfx::Rect();
+  desc.displaced_bounds_in_screen = gfx::Rect();
+  desc.occluded_bounds_in_screen = gfx::Rect();
+
+  // Keyboard bounds and availability hasn't changed.
   instance_->OnKeyboardAppearanceChanged(desc);
   EXPECT_EQ(new_keyboard_bounds, fake_arc_ime_bridge_->last_keyboard_bounds());
   EXPECT_TRUE(fake_arc_ime_bridge_->last_keyboard_availability());
@@ -607,7 +619,7 @@ TEST_F(ArcImeServiceTest, OnDispatchingKeyEventPostIME) {
   instance_->OnTextInputTypeChanged(ui::TEXT_INPUT_TYPE_TEXT, true,
                                     mojom::TEXT_INPUT_FLAG_NONE);
 
-  ui::KeyEvent event{ui::ET_KEY_PRESSED,
+  ui::KeyEvent event{ui::EventType::kKeyPressed,
                      ui::VKEY_A,
                      ui::DomCode::US_A,
                      0,
@@ -627,8 +639,8 @@ TEST_F(ArcImeServiceTest, OnDispatchingKeyEventPostIME) {
   EXPECT_TRUE(event.handled());
 
   ui::KeyEvent non_character_event{
-      ui::ET_KEY_PRESSED,       ui::VKEY_RETURN,      ui::DomCode::ENTER, 0,
-      ui::DomKey::UNIDENTIFIED, ui::EventTimeForNow()};
+      ui::EventType::kKeyPressed, ui::VKEY_RETURN,      ui::DomCode::ENTER, 0,
+      ui::DomKey::UNIDENTIFIED,   ui::EventTimeForNow()};
   // A non-character event from physical device should pass to the next phase.
   instance_->OnDispatchingKeyEventPostIME(&non_character_event);
   EXPECT_FALSE(non_character_event.handled());
@@ -640,7 +652,7 @@ TEST_F(ArcImeServiceTest, OnDispatchingKeyEventPostIME) {
   EXPECT_FALSE(non_character_event.handled());
 
   // A key event consumed by IME already should not pass to the next phase.
-  ui::KeyEvent fabricated_event{ui::ET_KEY_PRESSED,
+  ui::KeyEvent fabricated_event{ui::EventType::kKeyPressed,
                                 ui::VKEY_PROCESSKEY,
                                 ui::DomCode::US_A,
                                 0,
@@ -654,8 +666,8 @@ TEST_F(ArcImeServiceTest, OnDispatchingKeyEventPostIME) {
 
   // Language input keys from VK should not pass to the next phase.
   ui::KeyEvent language_input_event{
-      ui::ET_KEY_PRESSED,  ui::VKEY_CONVERT,     ui::DomCode::CONVERT, 0,
-      ui::DomKey::CONVERT, ui::EventTimeForNow()};
+      ui::EventType::kKeyPressed, ui::VKEY_CONVERT,     ui::DomCode::CONVERT, 0,
+      ui::DomKey::CONVERT,        ui::EventTimeForNow()};
   instance_->OnDispatchingKeyEventPostIME(&language_input_event);
   EXPECT_FALSE(language_input_event.handled());
   language_input_event.SetProperties(properties);
@@ -670,7 +682,7 @@ TEST_F(ArcImeServiceTest, SendKeyEvent) {
   instance_->OnTextInputTypeChanged(ui::TEXT_INPUT_TYPE_TEXT, true,
                                     mojom::TEXT_INPUT_FLAG_NONE);
 
-  ui::KeyEvent event{ui::ET_KEY_PRESSED,
+  ui::KeyEvent event{ui::EventType::kKeyPressed,
                      ui::VKEY_A,
                      ui::DomCode::US_A,
                      0,
@@ -694,8 +706,8 @@ TEST_F(ArcImeServiceTest, SendKeyEvent) {
   }
 
   ui::KeyEvent non_character_event{
-      ui::ET_KEY_PRESSED,       ui::VKEY_RETURN,      ui::DomCode::ENTER, 0,
-      ui::DomKey::UNIDENTIFIED, ui::EventTimeForNow()};
+      ui::EventType::kKeyPressed, ui::VKEY_RETURN,      ui::DomCode::ENTER, 0,
+      ui::DomKey::UNIDENTIFIED,   ui::EventTimeForNow()};
   {
     std::optional<bool> handled;
     auto copy = std::make_unique<ui::KeyEvent>(non_character_event);
@@ -713,7 +725,7 @@ TEST_F(ArcImeServiceTest, SendKeyEvent) {
     EXPECT_FALSE(handled.value());
   }
 
-  ui::KeyEvent fabricated_event{ui::ET_KEY_PRESSED,
+  ui::KeyEvent fabricated_event{ui::EventType::kKeyPressed,
                                 ui::VKEY_PROCESSKEY,
                                 ui::DomCode::US_A,
                                 0,

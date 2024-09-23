@@ -6,7 +6,7 @@
 // browser.
 
 [platforms=("chromeos", "lacros"),
-  implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private.h"]
+  implemented_in="chrome/browser/chromeos/extensions/accessibility_service_private/accessibility_service_private.h"]
 
 namespace accessibilityServicePrivate {
   callback VoidCallback = void();
@@ -15,7 +15,7 @@ namespace accessibilityServicePrivate {
     // Called when Select to Speak in ChromeOS should speak the current
     // text selection; fired when the context menu option was clicked in
     // a selection context.
-    [supportsPromises] static void speakSelectedText(
+    static void speakSelectedText(
       optional VoidCallback callback);
   };
 

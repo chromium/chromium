@@ -109,7 +109,7 @@ found in the LICENSE file.
   </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 
   <TextView
-      android:id="@+id/autofill_address_profile_prompt_source_notice"
+      android:id="@+id/autofill_address_profile_prompt_record_type_notice"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginEnd="@dimen/address_prompt_end_margin"

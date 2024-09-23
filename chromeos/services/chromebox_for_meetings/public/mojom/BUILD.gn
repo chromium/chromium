@@ -1,0 +1,33 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //ash")
+
+mojom_component("mojom") {
+  sources = [
+    "cfm_service_manager.mojom",
+    "xu_camera.mojom",
+  ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  if (is_cfm && is_chromeos_ash) {
+    sources += [
+      "cfm_browser.mojom",
+      "external_display_brightness.mojom",
+      "meet_devices_data_aggregator.mojom",
+      "meet_devices_diagnostics.mojom",
+      "meet_devices_info.mojom",
+      "meet_devices_logger.mojom",
+    ]
+    public_deps += [ "//chromeos/ash/services/cros_healthd/public/mojom" ]
+  }
+
+  output_prefix = "chromeos_cfmservice_mojom"
+  macro_prefix = "CHROMEOS_CFMSERVICE_MOJOM"
+}

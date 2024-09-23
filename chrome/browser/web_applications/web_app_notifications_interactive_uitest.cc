@@ -9,7 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -26,21 +28,21 @@
 
 namespace web_app {
 
-class WebAppNotificationsBrowserTest : public WebAppControllerBrowserTest {
+class WebAppNotificationsBrowserTest : public WebAppBrowserTestBase {
  public:
-  using WebAppControllerBrowserTest::WebAppControllerBrowserTest;
+  using WebAppBrowserTestBase::WebAppBrowserTestBase;
   ~WebAppNotificationsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
 
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     display_service_tester_.reset();
-    WebAppControllerBrowserTest::TearDownOnMainThread();
+    WebAppBrowserTestBase::TearDownOnMainThread();
   }
 
   NotificationDisplayServiceTester& display_service_tester() {
@@ -290,6 +292,11 @@ class WebAppNotificationsBrowserTest_MacPermissions
     // kStandalone.
     SetAppBrowserForAppId(app_id);
   }
+
+  void TearDownOnMainThread() override {
+    test::UninstallAllWebApps(browser()->profile());
+    WebAppNotificationsBrowserTest::TearDownOnMainThread();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_MacPermissions, Granted) {
@@ -340,9 +347,9 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_MacPermissions, Denied) {
 
 IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_MacPermissions,
                        PreviouslyDenied) {
-  EXPECT_EQ("denied", RequestAndRespondToPermission(
-                          mac_notifications::mojom::RequestPermissionResult::
-                              kPermissionPreviouslyDenied));
+  EXPECT_EQ("default", RequestAndRespondToPermission(
+                           mac_notifications::mojom::RequestPermissionResult::
+                               kPermissionPreviouslyDenied));
 }
 
 #endif

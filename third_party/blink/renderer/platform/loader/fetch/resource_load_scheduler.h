@@ -401,7 +401,7 @@ class PLATFORM_EXPORT ResourceLoadScheduler final
 
   const Member<DetachableConsoleLogger> console_logger_;
 
-  raw_ptr<const base::Clock, ExperimentalRenderer> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   ThrottleOptionOverride throttle_option_override_;
 

@@ -13,6 +13,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/url_canon.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 namespace network {
@@ -31,7 +32,7 @@ bool DecodePath(std::string_view path, std::string* output) {
 }
 
 int DefaultPortForScheme(const std::string& scheme) {
-  return url::DefaultPortForScheme(scheme.data(), scheme.size());
+  return url::DefaultPortForScheme(scheme);
 }
 
 // NotMatching is the only negative member, the rest are different types of
@@ -78,15 +79,24 @@ bool SourceAllowHost(const mojom::CSPSource& source, const std::string& host) {
     // The renderer version of this function counts how many times it happens.
     // It might be useful to do it outside of blink too.
     // See third_party/blink/renderer/core/frame/csp/csp_source.cc
-    return base::EndsWith(host, '.' + source.host,
-                          base::CompareCase::INSENSITIVE_ASCII);
+    return base::EndsWith(host, '.' + source.host);
   } else {
-    return base::EqualsCaseInsensitiveASCII(host, source.host);
+    return host == source.host;
   }
 }
 
 bool SourceAllowHost(const mojom::CSPSource& source, const GURL& url) {
-  return SourceAllowHost(source, url.host());
+  // Chromium currently has an issue handling non-special URLs. The url.host()
+  // function returns an empty string for them. See
+  // crbug.com/40063064 for details.
+  //
+  // In the future, once non-special URLs are fully supported, we might consider
+  // checking the host information for them too.
+  //
+  // For now, we check `url.IsStandard()` to maintain consistent behavior
+  // regardless of the url::StandardCompliantNonSpecialSchemeURLParsing feature
+  // state.
+  return SourceAllowHost(source, url.IsStandard() ? url.host() : "");
 }
 
 PortMatchingResult SourceAllowPort(const mojom::CSPSource& source,
@@ -191,7 +201,7 @@ bool CheckCSPSource(const mojom::CSPSource& source,
                     bool has_followed_redirect,
                     bool is_opaque_fenced_frame) {
   // Opaque fenced frames only allow https urls.
-  // TODO(crbug.com/1243568): Update the DCHECK and the return condition below
+  // TODO(crbug.com/40195488): Update the DCHECK and the return condition below
   // if opaque fenced frames can map to non-https potentially trustworthy urls.
   if (is_opaque_fenced_frame)
     DCHECK_EQ(url.scheme(), url::kHttpsScheme);

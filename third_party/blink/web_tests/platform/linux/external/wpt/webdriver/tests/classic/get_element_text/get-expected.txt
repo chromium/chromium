@@ -1,0 +1,16 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  AssertionError: assert 'no such element' == 'no such window'
+[FAIL] test_no_such_element_with_shadow_root
+  assert 500 == 404
+[FAIL] test_transform_capitalize[underscore]
+  AssertionError: assert 'Foo_Bar' == 'Foo_bar'
+[FAIL] test_shadow_root_slot[default visible]
+  AssertionError: assert '' == 'foobar'
+[FAIL] test_shadow_root_slot[default outside]
+  AssertionError: assert 'bar' == 'foobar'
+[FAIL] test_shadow_root_slot[default hidden]
+  AssertionError: assert '' == 'bar'
+[FAIL] test_pretty_print_xml
+  AssertionError: assert '' == 'cheese'
+Harness: the test ran to completion.

@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<policyDefinitions revision="1.0" schemaVersion="1.0">
+  <policyNamespaces>
+    <target namespace="Google.Policies.CloudManagement" prefix="cloud"/>
+    <using namespace="Google.Policies" prefix="Google"/>
+  </policyNamespaces>
+  <supersededAdm fileName="GoogleCloudManagement.adm" />
+  <resources minRequiredRevision="1.0" />
+
+  <supportedOn>
+    <definitions>
+      <definition name="Sup_GoogleUpdate1_3_34_3"
+          displayName="$(string.Sup_GoogleUpdate1_3_34_3)" />
+    </definitions>
+  </supportedOn>
+
+  <categories>
+    <category name="Cat_CloudManagement"
+        displayName="$(string.Cat_CloudManagement)"
+        explainText="$(string.Explain_CloudManagement)">
+      <parentCategory ref="Google:Cat_Google" />
+    </category>
+  </categories>
+
+  <policies>
+    <policy name="Pol_EnrollmentMandatory" class="Machine"
+        displayName="$(string.Pol_EnrollmentMandatory)"
+        explainText="$(string.Explain_EnrollmentMandatory)"
+        presentation="$(presentation.Pol_EnrollmentMandatory)"
+        key="Software\Policies\Google\CloudManagement"
+        valueName="EnrollmentMandatory">
+      <parentCategory ref="Cat_CloudManagement"/>
+      <supportedOn ref="Sup_GoogleUpdate1_3_34_3"/>
+      <enabledValue>
+        <decimal value="1"/>
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0"/>
+      </disabledValue>
+    </policy>
+
+    <policy name="Pol_EnrollmentToken" class="Machine"
+        displayName="$(string.Pol_EnrollmentToken)"
+        explainText="$(string.Explain_EnrollmentToken)"
+        presentation="$(presentation.Pol_EnrollmentToken)"
+        key="Software\Policies\Google\CloudManagement">
+      <parentCategory ref="Cat_CloudManagement"/>
+      <supportedOn ref="Sup_GoogleUpdate1_3_34_3"/>
+      <elements>
+        <text id="Part_EnrollmentToken" maxLength="1024"
+              valueName="EnrollmentToken"/>
+      </elements>
+    </policy>
+  </policies>
+</policyDefinitions>

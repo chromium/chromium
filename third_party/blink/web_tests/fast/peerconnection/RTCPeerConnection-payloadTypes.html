@@ -4,19 +4,14 @@
 <title>RTCPeerConnection RTP payload types</title>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="resources/RTCPeerConnection-helper.js"></script>
 </head>
 <body>
 <script>
 
 // Test that when creating an offer we do not run out of valid payload types.
-// This uses the deprecated RTP datachannels which means an extra payload
-// type is allocated.
-const legacy_datachannel_constraint = {
-    optional: [{ RtpDataChannels: true }]
-}
-
 promise_test(async t => {
-  const pc1 = new RTCPeerConnection(null, legacy_datachannel_constraint);
+  const pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
 
   const offer = await pc1.createOffer({offerToReceiveAudio: true, offerToReceiveVideo: true});
@@ -48,6 +43,36 @@ promise_test(async t => {
     });
   assert_equals(forbiddenPayloadTypes.length, 0)
 }, 'createOffer with the maximum set of codecs and RTP datachannels does not generate invalid payload types');
+
+// Test local SDP munging of payload type.
+// This is illegal according to spec, but has been supported in the past, so we verify
+// that it is not yet broken.
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => {
+    pc1.close();
+    pc2.close();
+  });
+  pc1.addTransceiver('audio');
+  const offer = await pc1.createOffer();
+  // Replace all Opus (default PT: 111) codec references with "121"
+  // This includes the m= line, the a=rtpmap line, and the fmtp parameter of RED.
+  offer.sdp = offer.sdp.replace(/111/g, "121");
+  console.log(offer.sdp);
+  // Check that the codec has the assigned PT.
+  // The codec list is populated only after offer/answer is exchanged.
+  await pc1.setLocalDescription(offer);
+  await pc2.setRemoteDescription(offer);
+  await pc2.setLocalDescription();
+  await pc1.setRemoteDescription(pc2.localDescription);
+  const parameters = pc1.getSenders()[0].getParameters();
+  // Note: fragile - this depends on the media codec being the first one.
+  assert_equals(parameters.codecs[0].mimeType, 'audio/opus');
+  assert_equals(parameters.codecs[0].payloadType, 121);
+
+}, 'Modifying PT after createOffer() succeeds');
+
 </script>
 </body>
 </html>

@@ -2,7 +2,7 @@ Name: Google Input Tools
 Short Name: google_input_tools
 URL: https://github.com/googlei18n/google-input-tools.git
 Version: 1.0.4.6
-Revision: @4801be41532a02b42f30e0e57bd54914132ea7cd
+Revision: 4801be41532a02b42f30e0e57bd54914132ea7cd
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes

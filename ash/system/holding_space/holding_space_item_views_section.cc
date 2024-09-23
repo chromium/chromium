@@ -12,9 +12,8 @@
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -50,7 +49,7 @@ void InitLayerForAnimations(views::View* view) {
 // because callbacks that bind to a WeakPtr receiver cannot return a non-void
 // type.
 //
-// TODO(crbug.com/1506856): It would be nice if CallbackLayerAnimationObserver
+// TODO(crbug.com/40947532): It would be nice if CallbackLayerAnimationObserver
 // took a OnceCallback and used that as an implicit signal to self-delete the
 // observer on completion. Until then, this needs to use a RepeatingCallback,
 // even though the callback only runs once.
@@ -125,7 +124,7 @@ class HoldingSpaceScrollView : public views::ScrollView,
       this};
 };
 
-BEGIN_METADATA(HoldingSpaceScrollView, views::ScrollView)
+BEGIN_METADATA(HoldingSpaceScrollView)
 END_METADATA
 
 }  // namespace
@@ -181,7 +180,7 @@ void HoldingSpaceItemViewsSection::Init() {
 
   // The `container_`'s children should be announced "List item X of Y", where
   // X is the 1-based child index and Y is the count of children.
-  container_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
+  container_->GetViewAccessibility().SetRole(ax::mojom::Role::kList);
 
   // Placeholder.
   auto placeholder = CreatePlaceholder();
@@ -499,12 +498,10 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
   // Disable propagation of `PreferredSizeChanged()` while performing batch
   // child additions/removals to reduce the number of layout events bubbling up.
   disable_preferred_size_changed_ = true;
-  base::ScopedClosureRunner scoped_preferred_size_changed(base::BindOnce(
-      [](HoldingSpaceItemViewsSection* section) {
-        section->disable_preferred_size_changed_ = false;
-        section->PreferredSizeChanged();
-      },
-      base::Unretained(this)));
+  absl::Cleanup scoped_preferred_size_changed = [this] {
+    disable_preferred_size_changed_ = false;
+    PreferredSizeChanged();
+  };
 
   // Removing the item views will cause the `header_` to go invisible, clearing
   // its focus. Make sure that if the `header_` was focused and is meant to stay
@@ -548,7 +545,7 @@ void HoldingSpaceItemViewsSection::OnAnimateOutCompleted(
     MaybeAnimateIn();
 }
 
-BEGIN_METADATA(HoldingSpaceItemViewsSection, views::View)
+BEGIN_METADATA(HoldingSpaceItemViewsSection)
 END_METADATA
 
 }  // namespace ash

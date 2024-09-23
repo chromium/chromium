@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -23,12 +24,13 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/gpu_browsertest_helpers.h"
-#include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -86,7 +88,7 @@ class CompositorImplLowEndBrowserTest : public CompositorImplBrowserTest {
 // OnContextLost().
 class ContextLostRunLoop : public viz::ContextLostObserver {
  public:
-  ContextLostRunLoop(viz::ContextProvider* context_provider)
+  explicit ContextLostRunLoop(viz::RasterContextProvider* context_provider)
       : context_provider_(context_provider) {
     context_provider_->AddObserver(this);
   }
@@ -106,7 +108,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
       run_loop_.Quit();
       return;
     }
-    context_provider_->ContextGL()->Flush();
+    context_provider_->RasterInterface()->Flush();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ContextLostRunLoop::CheckForContextLoss,
@@ -118,7 +120,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   // viz::LostContextProvider:
   void OnContextLost() override { did_lose_context_ = true; }
 
-  const raw_ptr<viz::ContextProvider> context_provider_;
+  const raw_ptr<viz::RasterContextProvider> context_provider_;
   bool did_lose_context_ = false;
   base::RunLoop run_loop_;
 };
@@ -203,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTest,
   // The callback will cancel the loop used to wait.
   static_cast<content::Compositor*>(compositor_impl())
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-          [](base::OnceClosure quit, base::TimeTicks presentation_timestamp) {
+          [](base::OnceClosure quit, const viz::FrameTimingDetails& details) {
             std::move(quit).Run();
           },
           loop.QuitClosure()));
@@ -236,6 +238,13 @@ class CompositorImplBrowserTestRefreshRate
 };
 
 IN_PROC_BROWSER_TEST_F(CompositorImplBrowserTestRefreshRate, VideoPreference) {
+  if (gfx::SurfaceControl::SupportsSetFrameRate()) {
+    // If SurfaceControl allows specifying the frame rate for each Surface, it's
+    // done within the GPU process instead of sending the frame preference back
+    // to the browser (and so our TestHooks are not consulted).
+    GTEST_SKIP();
+  }
+
   window()->SetTestHooks(this);
   expected_refresh_rate_ = 60.f;
   run_loop_ = std::make_unique<base::RunLoop>();

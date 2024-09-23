@@ -8,17 +8,6 @@
   public <init>();
 }
 
-# These classes aren't themselves referenced, but __ProcessService[0,1,2...] are
-# referenced, and we look up these services by appending a number onto the name
-# of the base class. Thus, we need to keep the base class name around so that
-# the child classes can be looked up.
--keep class org.chromium.content.app.SandboxedProcessService {
-  public <init>();
-}
--keep class org.chromium.content.app.PrivilegedProcessService {
-  public <init>();
-}
-
 # Let proguard know CastMediaOptions in CastOptions is always null, so it can
 # trim unused MediaNotificationService methods. This saves about 170 methods in
 # the dex file. https://crbug.com/855081
@@ -40,4 +29,16 @@
 # reflection.
 -keep,allowobfuscation public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
   public <init>();
+}
+
+# To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
+# is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
+# Note that AppBarLayout$Behavior is needed to keep the scrolling behavior.
+-keep class com.google.android.material.appbar.AppBarLayout$Behavior {
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>();
+}
+-keep class com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior {
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>();
 }

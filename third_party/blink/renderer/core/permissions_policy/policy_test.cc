@@ -32,14 +32,14 @@ class PolicyTest : public testing::Test {
 
     auto origin = SecurityOrigin::CreateFromString(kSelfOrigin);
 
-    auto permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
-        nullptr, {}, origin->ToUrlOrigin());
+    PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
     auto header = PermissionsPolicyParser::ParseHeader(
         "fullscreen *; payment 'self'; midi 'none'; camera 'self' "
         "https://example.com https://example.net",
         "gyroscope=(self \"https://*.example.com\" \"https://example.net\")",
-        origin.get(), dummy_logger_, dummy_logger_);
-    permissions_policy->SetHeaderPolicy(header);
+        origin.get(), dummy_logger, dummy_logger);
+    auto permissions_policy = PermissionsPolicy::CreateFromParentPolicy(
+        nullptr, header, {}, origin->ToUrlOrigin());
 
     auto& security_context =
         page_holder_->GetFrame().DomWindow()->GetSecurityContext();
@@ -48,9 +48,6 @@ class PolicyTest : public testing::Test {
   }
 
   DOMFeaturePolicy* GetPolicy() const { return policy_; }
-
-  PolicyParserMessageBuffer dummy_logger_ =
-      PolicyParserMessageBuffer("", true /* discard_message */);
 
  protected:
   test::TaskEnvironment task_environment_;
@@ -217,12 +214,13 @@ TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
 }
 
 TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginA) {
+  PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
   ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
           SecurityOrigin::CreateFromString(kSelfOrigin),
-          SecurityOrigin::CreateFromString(kOriginA), dummy_logger_);
+          SecurityOrigin::CreateFromString(kOriginA), dummy_logger);
   GetPolicy()->UpdateContainerPolicy(
       container_policy, SecurityOrigin::CreateFromString(kOriginA));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
@@ -243,12 +241,13 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginA) {
 }
 
 TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginASubdomain) {
+  PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
   ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
           SecurityOrigin::CreateFromString(kSelfOrigin),
-          SecurityOrigin::CreateFromString(kOriginASubdomain), dummy_logger_);
+          SecurityOrigin::CreateFromString(kOriginASubdomain), dummy_logger);
   GetPolicy()->UpdateContainerPolicy(
       container_policy, SecurityOrigin::CreateFromString(kOriginASubdomain));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
@@ -269,12 +268,13 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginASubdomain) {
 }
 
 TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginB) {
+  PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
   ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
           SecurityOrigin::CreateFromString(kSelfOrigin),
-          SecurityOrigin::CreateFromString(kOriginB), dummy_logger_);
+          SecurityOrigin::CreateFromString(kOriginB), dummy_logger);
   GetPolicy()->UpdateContainerPolicy(
       container_policy, SecurityOrigin::CreateFromString(kOriginB));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
@@ -294,12 +294,13 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginB) {
 }
 
 TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
+  PolicyParserMessageBuffer dummy_logger("", true /* discard_message */);
   ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
           "'src'",
           SecurityOrigin::CreateFromString(kSelfOrigin),
-          SecurityOrigin::CreateFromString(kOriginBSubdomain), dummy_logger_);
+          SecurityOrigin::CreateFromString(kOriginBSubdomain), dummy_logger);
   GetPolicy()->UpdateContainerPolicy(
       container_policy, SecurityOrigin::CreateFromString(kOriginBSubdomain));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
@@ -319,4 +320,3 @@ TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
 }
 
 }  // namespace blink
-

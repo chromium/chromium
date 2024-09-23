@@ -6,23 +6,18 @@
 Also probably a good example of how to *not* write HTML.
 """
 
-from __future__ import print_function
-
 import collections
 import logging
 import sys
 import tempfile
-from typing import Any, Dict, IO, List, Optional, OrderedDict, Set, Tuple, Union
+from typing import Any, Dict, IO, List, Optional, Set, Union
 
 import six
 
 from unexpected_passes_common import data_types
 
-# Used for posting Monorail comments.
-from blinkpy.common.net import luci_auth
-from blinkpy.common.system import executive
-from blinkpy.common.system import system_host
-from blinkpy.w3c import monorail
+# Used for posting Buganizer comments.
+from blinkpy.w3c import buganizer
 
 FULL_PASS = 'Fully passed in the following'
 PARTIAL_PASS = 'Partially passed in the following'
@@ -171,10 +166,10 @@ SECTION_UNUSED = ('Unused Expectations (Indicative Of The Configuration No '
 MAX_BUGS_PER_LINE = 5
 MAX_CHARACTERS_PER_CL_LINE = 72
 
-MONORAIL_COMMENT = ('The unexpected pass finder removed the last expectation '
-                    'associated with this bug. An associated CL should be '
-                    'landing shortly, after which this bug can be closed once '
-                    'a human confirms there is no more work to be done.')
+BUGANIZER_COMMENT = ('The unexpected pass finder removed the last expectation '
+                     'associated with this bug. An associated CL should be '
+                     'landing shortly, after which this bug can be closed once '
+                     'a human confirms there is no more work to be done.')
 
 ElementType = Union[Dict[str, Any], List[str], str]
 # Sample:
@@ -331,7 +326,7 @@ def OutputResults(stale_dict: data_types.TestExpectationMap,
       _RecursiveHtmlToFile(active_str_dict, file_handle)
 
     if unused_expectations_str_list:
-      file_handle.write('\n<h1>' + SECTION_UNUSED + "</h1>\n")
+      file_handle.write('\n<h1>' + SECTION_UNUSED + '</h1>\n')
       _RecursiveHtmlToFile(unused_expectations_str_list, file_handle)
     if unmatched_results_str_dict:
       file_handle.write('\n<h1>' + SECTION_UNMATCHED + '</h1>\n')
@@ -622,9 +617,9 @@ def _OutputAffectedUrls(affected_urls: List[str],
     orphaned_urls: A list of strings containing URLs to output as closable.
     file_handle: A file handle to write the string to. Defaults to stdout.
   """
-  _OutputUrlsForCommandLine(affected_urls, "Affected bugs", file_handle)
+  _OutputUrlsForCommandLine(affected_urls, 'Affected bugs', file_handle)
   if orphaned_urls:
-    _OutputUrlsForCommandLine(orphaned_urls, "Closable bugs", file_handle)
+    _OutputUrlsForCommandLine(orphaned_urls, 'Closable bugs', file_handle)
 
 
 def _OutputUrlsForCommandLine(urls: List[str],
@@ -729,53 +724,28 @@ def _PostCommentsToOrphanedBugs(orphaned_urls: List[str]) -> None:
   """
 
   try:
-    monorail_api = _GetMonorailApi()
-  except executive.ScriptError as e:
+    buganizer_client = _GetBuganizerClient()
+  except buganizer.BuganizerError as e:
     logging.error(
         'Encountered error when authenticating, cannot post comments. %s', e)
     return
 
   for url in orphaned_urls:
     try:
-      project, issue = _ExtractMonorailInfoFromUrl(url)
-    except ValueError as e:
-      logging.warning('Unable to extract Monorail information from %s: %s', url,
-                      e)
-      continue
-
-    comment_list = monorail_api.get_comment_list(project, issue)
-    existing_comments = [c['content'] for c in comment_list['items']]
-    if MONORAIL_COMMENT not in existing_comments:
-      monorail_api.insert_comment(project, issue, MONORAIL_COMMENT)
-
-
-def _GetMonorailApi() -> monorail.MonorailAPI:
-  """Helper function to get a usable Monorail API."""
-  host = system_host.SystemHost()
-  auth = luci_auth.LuciAuth(host)
-  token = auth.get_access_token()
-  return monorail.MonorailAPI(access_token=token)
+      comment_list = buganizer_client.GetIssueComments(url)
+      # GetIssueComments currently returns a dict if something goes wrong
+      # instead of raising an exception.
+      if isinstance(comment_list, dict):
+        logging.exception('Failed to get comments from %s: %s', url,
+                          comment_list.get('error', 'error not provided'))
+        continue
+      existing_comments = [c['comment'] for c in comment_list]
+      if BUGANIZER_COMMENT not in existing_comments:
+        buganizer_client.NewComment(url, BUGANIZER_COMMENT)
+    except buganizer.BuganizerError:
+      logging.exception('Could not fetch or add comments for %s', url)
 
 
-def _ExtractMonorailInfoFromUrl(url: str) -> Tuple[str, int]:
-  """Extracts information for use with Monorail from a crbug URL.
-
-  Raises ValueError if parsing is not possible.
-
-  Args:
-    url: A crbug.com URL to parse.
-
-  Returns:
-    A tuple (project, issue). |project| is a string containing the Monorail
-    project, while |issue| is an int containing the issue ID/bug number.
-  """
-  if 'crbug.com/' not in url:
-    raise ValueError('Given URL does not appear to be a crbug URL')
-  identifier = url.split('crbug.com/', 1)[1]
-  if '/' in identifier:
-    project, _, issue = identifier.partition('/')
-    issue = int(issue)
-  else:
-    project = 'chromium'
-    issue = int(identifier)
-  return project, issue
+def _GetBuganizerClient() -> buganizer.BuganizerClient:
+  """Helper function to get a usable Buganizer client."""
+  return buganizer.BuganizerClient()

@@ -114,10 +114,10 @@ class {{export_attribute}} {{struct.name}} {
   }
 
   template <typename UserType>
-  static bool Deserialize(const {{serialization_result_type}}& input,
+  static bool Deserialize(base::span<const uint8_t> input,
                           UserType* output) {
     return {{struct.name}}::Deserialize(
-        input.size() == 0 ? nullptr : &input.front(), input.size(), output);
+        input.empty() ? nullptr : input.data(), input.size(), output);
   }
 
   template <typename UserType>

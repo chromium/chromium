@@ -44,9 +44,9 @@ function pageScaleFactor() {
   return visualViewport.scale;
 }
 
-function pageZoomFactor() {
-  const scale = internals.pageZoomFactor();
-  assert_greater_than(scale, 0, "internals.pageZoomFactor() error");
+function layoutZoomFactor() {
+  const scale = internals.layoutZoomFactor();
+  assert_greater_than(scale, 0, "internals.layoutZoomFactor() error");
   return scale;
 }
 
@@ -55,13 +55,13 @@ function pageZoomFactor() {
 */
 function scaleCssToBlinkPixels(point) {
   // Note that:
-  // window.devicePixelRatio = "deviceScaleFactor" * pageZoomFactor()
+  // window.devicePixelRatio = "deviceScaleFactor" * layoutZoomFactor()
   const scale = window.devicePixelRatio;
   return {x: point.x * scale, y: point.y * scale}
 }
 
 function scaleCssToDIPixels(point) {
-  const scale = pageScaleFactor() * pageZoomFactor();
+  const scale = pageScaleFactor() * layoutZoomFactor();
   return {x: point.x * scale, y: point.y * scale};
 }
 

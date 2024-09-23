@@ -39,7 +39,6 @@ class SendTabToSelfToolbarIconController
   // BrowserListObserver implementation
   void OnBrowserSetLastActive(Browser* browser) override;
 
-  void ShowToolbarButton(const SendTabToSelfEntry& entry);
 
   void AddDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
 
@@ -51,13 +50,23 @@ class SendTabToSelfToolbarIconController
 
   void LogNotificationDismissed();
 
+  void ClearDelegateListForTesting() { delegate_list_.clear(); }
+
  private:
+  void StorePendingEntry(
+      const SendTabToSelfEntry* new_entry_pending_notification);
+
+  void ShowToolbarButton(const SendTabToSelfEntry& entry,
+                         Browser* browser = nullptr);
+
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  std::unique_ptr<SendTabToSelfEntry> entry_;
+  // In the case that we cannot immediately display a new entry
+  // (e.g. the active browser is incognito or a different profile), we store it
+  // here and wait until an appropriate browser becomes active to display it.
+  std::unique_ptr<SendTabToSelfEntry> pending_entry_;
 
-  std::vector<
-      raw_ptr<SendTabToSelfToolbarIconControllerDelegate, VectorExperimental>>
+  std::vector<raw_ptr<SendTabToSelfToolbarIconControllerDelegate>>
       delegate_list_;
 
   SendTabToSelfToolbarIconControllerDelegate* GetActiveDelegate();

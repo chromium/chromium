@@ -122,7 +122,7 @@ WrappedSkImageBacking::WrappedSkImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     scoped_refptr<SharedContextState> context_state,
     const bool thread_safe)
@@ -203,8 +203,8 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
   }
   context_state_->set_need_context_state_reset(true);
 
-  auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? skgpu::Mipmapped::kYes
-                                                    : skgpu::Mipmapped::kNo;
+  auto mipmap = usage().Has(SHARED_IMAGE_USAGE_MIPMAP) ? skgpu::Mipmapped::kYes
+                                                       : skgpu::Mipmapped::kNo;
 
   int num_planes = format().NumberOfPlanes();
   textures_.resize(num_planes);
@@ -225,12 +225,20 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
     // Filling blue causes slight pixel difference, so linux-ref and
     // linux-blink-ref bots cannot share the same baseline for webtest.
     // So remove this color for this call for dcheck on build for now.
-    // TODO(crbug.com/1330278): add it back.
+    // TODO(crbug.com/40227119): add it back.
     texture.backend_texture =
         context_state_->gr_context()->createBackendTexture(
             plane_size.width(), plane_size.height(), GetSkColorType(plane),
             fallback_color, mipmap, is_renderable, is_protected, nullptr,
             nullptr, GetLabel(debug_label));
+
+    // Call above has write operation to clear the texture, so it requires the
+    // submit before texture can be accessed on the different thread.
+    if (is_thread_safe()) {
+      auto* gr_context = context_state_->gr_context();
+      gr_context->submit();
+    }
+
 #else
     texture.backend_texture =
         context_state_->gr_context()->createBackendTexture(
@@ -327,7 +335,7 @@ SharedImageBackingType WrappedSkImageBacking::GetType() const {
 }
 
 void WrappedSkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool WrappedSkImageBacking::UploadFromMemory(
@@ -370,41 +378,55 @@ std::vector<sk_sp<SkSurface>> WrappedSkImageBacking::GetSkSurfaces(
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
     scoped_refptr<SharedContextState> context_state) {
-  // This method should only be called on the same thread on which this
-  // backing is created on. Hence adding a dcheck on context_state to ensure
-  // this.
-  DCHECK_EQ(context_state_, context_state);
-  if (context_state_->context_lost()) {
+  if (context_state->context_lost()) {
     return {};
   }
-  DCHECK(context_state_->IsCurrent(nullptr));
+  DCHECK(context_state->IsCurrent(nullptr));
 
   std::vector<sk_sp<SkSurface>> surfaces;
   surfaces.reserve(textures_.size());
-  for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
-    auto& texture = textures_[plane];
-    // Note that we are using |promise_texture| as a key to the cache below
-    // since it is safe to do so. |promise_texture| is not destroyed until we
-    // remove the entry from the cache.
-    DCHECK(texture.promise_texture);
-    auto surface =
-        context_state_->GetCachedSkSurface(texture.promise_texture.get());
-    if (!surface || final_msaa_count != surface_msaa_count_ ||
-        surface_props != surface->props()) {
-      surface = SkSurfaces::WrapBackendTexture(
-          context_state_->gr_context(), texture.backend_texture,
+
+  if (context_state == context_state_) {
+    for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
+      auto& texture = textures_[plane];
+      // Note that we are using |promise_texture| as a key to the cache below
+      // since it is safe to do so. |promise_texture| is not destroyed until we
+      // remove the entry from the cache.
+      DCHECK(texture.promise_texture);
+      auto surface =
+          context_state_->GetCachedSkSurface(texture.promise_texture.get());
+      if (!surface || final_msaa_count != surface_msaa_count_ ||
+          surface_props != surface->props()) {
+        surface = SkSurfaces::WrapBackendTexture(
+            context_state_->gr_context(), texture.backend_texture,
+            surface_origin(), final_msaa_count, GetSkColorType(plane),
+            color_space().ToSkColorSpace(), &surface_props);
+        if (!surface) {
+          LOG(ERROR) << "MakeFromBackendTexture() failed.";
+          context_state_->EraseCachedSkSurface(texture.promise_texture.get());
+          return {};
+        }
+        context_state_->CacheSkSurface(texture.promise_texture.get(), surface);
+      }
+      surfaces.push_back(std::move(surface));
+    }
+    surface_msaa_count_ = final_msaa_count;
+  } else {
+    // If we're are going to use surface on a SharedContextState that is
+    // different from the one we used to create textures, we can't cache
+    // SkSurfaces, so just create them always.
+    for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
+      auto surface = SkSurfaces::WrapBackendTexture(
+          context_state->gr_context(), textures_[plane].backend_texture,
           surface_origin(), final_msaa_count, GetSkColorType(plane),
           color_space().ToSkColorSpace(), &surface_props);
       if (!surface) {
         LOG(ERROR) << "MakeFromBackendTexture() failed.";
-        context_state_->EraseCachedSkSurface(texture.promise_texture.get());
         return {};
       }
-      context_state_->CacheSkSurface(texture.promise_texture.get(), surface);
+      surfaces.push_back(std::move(surface));
     }
-    surfaces.push_back(std::move(surface));
   }
-  surface_msaa_count_ = final_msaa_count;
   return surfaces;
 }
 

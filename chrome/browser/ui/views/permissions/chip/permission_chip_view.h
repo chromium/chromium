@@ -28,7 +28,7 @@ class PermissionChipView : public views::MdTextButton {
   METADATA_HEADER(PermissionChipView, views::MdTextButton)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChipElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementIdForTesting);
   explicit PermissionChipView(PressedCallback callback);
   PermissionChipView(const PermissionChipView& button) = delete;
   PermissionChipView& operator=(const PermissionChipView& button) = delete;
@@ -39,6 +39,7 @@ class PermissionChipView : public views::MdTextButton {
     virtual void OnChipVisibilityChanged(bool is_visible) {}
     virtual void OnExpandAnimationEnded() {}
     virtual void OnCollapseAnimationEnded() {}
+    virtual void OnMousePressed() {}
   };
 
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
@@ -56,7 +57,9 @@ class PermissionChipView : public views::MdTextButton {
   void AnimationProgressed(const gfx::Animation* animation) override;
 
   // views::MdTextButton:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
   void UpdateBackgroundColor() override;
 
@@ -76,12 +79,19 @@ class PermissionChipView : public views::MdTextButton {
   PermissionPromptStyle GetPermissionPromptStyle() const {
     return prompt_style_;
   }
-  PermissionChipTheme GetPermissionChipTheme() const { return theme_; }
-  PermissionChipTheme get_theme_for_testing() { return theme_; }
+  PermissionChipTheme theme() const { return theme_; }
+
+  // Returns whether the theme describes a request state (true) or indicator
+  // state (false).
+  bool GetIsRequestForTesting() const;
 
   // Add/remove observer.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  void UpdateForDividerVisibility(bool is_divider_visible,
+                                  int divider_arc_width = 0);
+  int GetIconViewWidth() const;
 
  protected:
   MultiImageContainer* multi_image_container();
@@ -112,6 +122,9 @@ class PermissionChipView : public views::MdTextButton {
   int GetIconSize() const;
 
   int GetCornerRadius() const;
+  gfx::RoundedCornersF GetCornerRadii() const;
+
+  gfx::Insets GetPadding() const;
 
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
@@ -138,6 +151,7 @@ class PermissionChipView : public views::MdTextButton {
   // If chip is collapsed. In the collapsed state, only an icon is visible,
   // without text.
   bool fully_collapsed_ = false;
+  bool is_divider_visible_ = false;
 
   raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
 

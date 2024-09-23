@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -23,13 +24,20 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
+
+namespace content {
+class WebContents;
+}
+
+namespace url {
+class Origin;
+}
 
 namespace performance_manager {
 
@@ -102,17 +110,16 @@ class PerformanceManagerImpl : public PerformanceManager {
       int render_frame_id,
       const blink::LocalFrameToken& frame_token,
       content::BrowsingInstanceId browsing_instance_id,
-      content::SiteInstanceId site_instance_id,
+      content::SiteInstanceGroupId site_instance_group_id,
       bool is_current,
       FrameNodeCreationCallback creation_callback =
           FrameNodeCreationCallback());
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
-      const WebContentsProxy& contents_proxy,
+      base::WeakPtr<content::WebContents> web_contents,
       const std::string& browser_context_id,
       const GURL& visible_url,
       PagePropertyFlags initial_properties,
-      base::TimeTicks visibility_change_time,
-      PageNode::PageState page_state);
+      base::TimeTicks visibility_change_time);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
       BrowserProcessNodeTag tag);
   static std::unique_ptr<ProcessNodeImpl> CreateProcessNode(
@@ -125,7 +132,8 @@ class PerformanceManagerImpl : public PerformanceManager {
       const std::string& browser_context_id,
       WorkerNode::WorkerType worker_type,
       ProcessNodeImpl* process_node,
-      const blink::WorkerToken& worker_token);
+      const blink::WorkerToken& worker_token,
+      const url::Origin& origin);
 
   // Destroys a node returned from the creation functions above. May be called
   // from any sequence.

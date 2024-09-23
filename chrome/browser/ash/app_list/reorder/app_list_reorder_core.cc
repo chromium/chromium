@@ -30,7 +30,7 @@ struct SubsequenceStatus {
 bool IsIncreasingOrder(ash::AppListSortOrder order) {
   switch (order) {
     case ash::AppListSortOrder::kCustom:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case ash::AppListSortOrder::kNameAlphabetical:
       return true;
@@ -506,7 +506,7 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kCustom:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::vector<reorder::ReorderParam>();
   }
 }
@@ -536,7 +536,7 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kCustom:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::vector<reorder::ReorderParam>();
   }
 }
@@ -615,7 +615,7 @@ float CalculateEntropyForTest(ash::AppListSortOrder order,
     case ash::AppListSortOrder::kCustom:
     case ash::AppListSortOrder::kColor:
     case ash::AppListSortOrder::kAlphabeticalEphemeralAppFirst:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0.f;
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical:

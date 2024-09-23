@@ -42,7 +42,8 @@ class HoldingSpaceClientImpl : public HoldingSpaceClient {
                 holding_space_metrics::EventSource event_source) override;
   void PinItems(const std::vector<const HoldingSpaceItem*>& items,
                 holding_space_metrics::EventSource event_source) override;
-  void RemoveFileSuggestions(
+  void RefreshSuggestions() override;
+  void RemoveSuggestions(
       const std::vector<base::FilePath>& absolute_file_paths) override;
   void ShowItemInFolder(const HoldingSpaceItem& item,
                         holding_space_metrics::EventSource event_source,

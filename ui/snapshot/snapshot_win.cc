@@ -98,17 +98,17 @@ void GrabNativeWindowSnapshot(gfx::NativeWindow native_window,
 
 }  // namespace
 
-void GrabWindowSnapshotAsync(gfx::NativeWindow window,
-                             const gfx::Rect& source_rect,
-                             GrabSnapshotImageCallback callback) {
+void GrabWindowSnapshot(gfx::NativeWindow window,
+                        const gfx::Rect& source_rect,
+                        GrabSnapshotImageCallback callback) {
   gfx::Image image;
   GrabNativeWindowSnapshot(window, source_rect, &image);
   std::move(callback).Run(image);
 }
 
-void GrabViewSnapshotAsync(gfx::NativeView view,
-                           const gfx::Rect& source_rect,
-                           GrabSnapshotImageCallback callback) {
+void GrabViewSnapshot(gfx::NativeView view,
+                      const gfx::Rect& source_rect,
+                      GrabSnapshotImageCallback callback) {
   gfx::Image image;
   GrabNativeWindowSnapshot(view, source_rect, &image);
   std::move(callback).Run(image);

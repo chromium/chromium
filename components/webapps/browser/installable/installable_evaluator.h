@@ -19,6 +19,13 @@ namespace webapps {
 // for installing the web app.
 class InstallableEvaluator {
  public:
+  // Gets the installable error on the display fields for the manifest. This is
+  // public so this can be checked in FetchManifestAndInstallCommand after using
+  // the `kValidManifestIgnoreDisplay` criteria.
+  static InstallableStatusCode GetDisplayError(
+      const blink::mojom::Manifest& manifest,
+      InstallableCriteria criteria);
+
   InstallableEvaluator(content::WebContents* web_contents,
                        const InstallablePageData& data,
                        InstallableCriteria criteria);

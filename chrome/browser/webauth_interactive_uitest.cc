@@ -30,8 +30,7 @@ class WebAuthFocusTest : public InProcessBrowserTest,
                          public AuthenticatorRequestDialogModel::Observer {
  protected:
   WebAuthFocusTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-        permission_requested_(false) {}
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   WebAuthFocusTest(const WebAuthFocusTest&) = delete;
   WebAuthFocusTest& operator=(const WebAuthFocusTest&) = delete;
@@ -47,8 +46,6 @@ class WebAuthFocusTest : public InProcessBrowserTest,
     return https_server_.GetURL(hostname, relative_url);
   }
 
-  bool permission_requested() { return permission_requested_; }
-
   raw_ptr<AuthenticatorRequestDialogModel> dialog_model_;
 
  private:
@@ -56,26 +53,12 @@ class WebAuthFocusTest : public InProcessBrowserTest,
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
-  // AuthenticatorRequestDialogModel::Observer:
-  void OnStepTransition() override {
-    if (dialog_model_->current_step() !=
-        AuthenticatorRequestDialogModel::Step::kAttestationPermissionRequest)
-      return;
-
-    // Simulate accepting the permission request.
-    dialog_model_->OnAttestationPermissionResponse(true);
-    permission_requested_ = true;
-  }
-
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {}
 
   net::EmbeddedTestServer https_server_;
-
-  // Set to true when the permission sheet is triggered.
-  bool permission_requested_;
 };
 
-// TODO(crbug.com/1222768): Disabled for being flaky.
+// TODO(crbug.com/40774271): Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
   // Web Authentication requests will often trigger machine-wide indications,
   // such as a Security Key flashing for a touch. If background tabs were able
@@ -168,13 +151,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   EXPECT_EQ("OK", content::EvalJs(initial_web_contents, register_script));
 
-  // Requesting "direct" attestation will trigger a permissions prompt.
+  // Try with "direct" attestation.
   virtual_device_factory->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting([&](device::VirtualFidoDevice* device) {
         dialog_model_ = AuthenticatorRequestScheduler::GetRequestDelegate(
                             initial_web_contents)
                             ->dialog_model();
-        dialog_model_->AddObserver(this);
+        dialog_model_->observers.AddObserver(this);
         return true;
       });
 
@@ -183,8 +166,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthFocusTest, DISABLED_Focus) {
           kRegisterTemplate, std::vector<std::string>{"direct"}, nullptr);
   EXPECT_EQ("OK", content::EvalJs(initial_web_contents,
                                   get_assertion_with_attestation_script));
-
-  EXPECT_TRUE(permission_requested());
 }
 
 }  // anonymous namespace

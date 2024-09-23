@@ -55,9 +55,8 @@ def RunCommand(command: List[str], msg: str) -> str:
   return out
 
 
-# TODO(crbug.com/848465): replace with --test-launcher-filter-file directly
-def ParseFilterFile(filepath: str,
-                    p_filts: List[str],
+# TODO(crbug.com/41392149): replace with --test-launcher-filter-file directly
+def ParseFilterFile(filepath: str, p_filts: List[str],
                     n_filts: List[str]) -> str:
   """Takes a path to a filter file, parses it, and constructs a gtest_filter
   string for test execution.
@@ -260,7 +259,7 @@ def RunGnForDirectory(dir_name: str, target_os: str, is_debug: bool) -> None:
     args_file.write("is_debug = {}\n".format(debug_str))
     args_file.write("dcheck_always_on = false\n")
     args_file.write("is_component_build = false\n")
-    args_file.write("use_goma = true\n")
+    args_file.write("use_remoteexec = true\n")
     args_file.write("target_os = \"{}\"\n".format(target_os))
 
   subprocess.run(["gn", "gen", dir_name]).check_returncode()

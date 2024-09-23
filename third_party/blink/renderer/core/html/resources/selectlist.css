@@ -114,7 +114,9 @@ selectlist option:checked:disabled {
 }
 
 selectlist::-internal-selectlist-listbox,
-selectlist::-internal-selectlist-preview,
+/* The [popover] part is added to increase specificity to make the border below
+   override the border set by the [popover] rule in html.css */
+selectlist::-internal-selectlist-preview[popover],
 selectlist > listbox {
   box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
@@ -145,85 +147,96 @@ selectlist [behavior=listbox],
 selectlist::-internal-selectlist-listbox,
 selectlist > listbox {
   min-block-size: 1lh;
-  position-fallback: -internal-selectlist-listbox-default-fallbacks;
+  inset-block-start: anchor(self-end);
+  inset-inline-start: anchor(self-start);
+  position-try:
+    -internal-selectlist-listbox-reverse-block,
+    -internal-selectlist-listbox-reverse-inline,
+    -internal-selectlist-listbox-reverse-both,
+    -internal-selectlist-listbox-default-fill,
+    -internal-selectlist-listbox-reverse-block-fill,
+    -internal-selectlist-listbox-reverse-inline-fill,
+    -internal-selectlist-listbox-reverse-both-fill;
 }
 
 /* TODO(crbug.com/40279608): Use automatic fallbacks */
-@position-fallback -internal-selectlist-listbox-default-fallbacks {
-  /* Fallbacks without vertical scrolling */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-start: anchor(self-start);
-  }
+/* Fallbacks without vertical scrolling */
+@position-try -internal-selectlist-listbox-reverse-block {
+  inset: auto;
   /* Reverse block axis */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-start: anchor(self-start);
-  }
+  inset-block-end: anchor(self-start);
+  inset-inline-start: anchor(self-start);
+}
+@position-try -internal-selectlist-listbox-reverse-inline {
+  inset: auto;
   /* Reverse inline axis */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-end: anchor(self-end);
-  }
+  inset-block-start: anchor(self-end);
+  inset-inline-end: anchor(self-end);
+}
+@position-try -internal-selectlist-listbox-reverse-both {
+  inset: auto;
   /* Reverse both axes */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-end: anchor(self-end);
-  }
-
-  /* Fallbacks with vertical scrolling */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-start: anchor(self-start);
-    block-size: -webkit-fill-available;
-  }
+  inset-block-end: anchor(self-start);
+  inset-inline-end: anchor(self-end);
+}
+/* Fallbacks with vertical scrolling */
+@position-try -internal-selectlist-listbox-default-fill {
+  inset: auto;
+  inset-block-start: anchor(self-end);
+  inset-inline-start: anchor(self-start);
+  block-size: -webkit-fill-available;
+}
+@position-try -internal-selectlist-listbox-reverse-block-fill {
+  inset: auto;
   /* Reverse block axis */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-start: anchor(self-start);
-    block-size: -webkit-fill-available;
-  }
+  inset-block-end: anchor(self-start);
+  inset-inline-start: anchor(self-start);
+  block-size: -webkit-fill-available;
+}
+@position-try -internal-selectlist-listbox-reverse-inline-fill {
+  inset: auto;
   /* Reverse inline axis */
-  @try {
-    inset-block-start: anchor(self-end);
-    inset-inline-end: anchor(self-end);
-    block-size: -webkit-fill-available;
-  }
+  inset-block-start: anchor(self-end);
+  inset-inline-end: anchor(self-end);
+  block-size: -webkit-fill-available;
+}
+@position-try -internal-selectlist-listbox-reverse-both-fill {
+  inset: auto;
   /* Reverse both axes */
-  @try {
-    inset-block-end: anchor(self-start);
-    inset-inline-end: anchor(self-end);
-    block-size: -webkit-fill-available;
-  }
+  inset-block-end: anchor(self-start);
+  inset-inline-end: anchor(self-end);
+  block-size: -webkit-fill-available;
 }
 
 selectlist::-internal-selectlist-preview {
   min-block-size: anchor-size(self-block);
-  position-fallback: -internal-selectlist-preview-default-fallbacks;
+  inset-block-start: anchor(self-start);
+  inset-inline-start: anchor(self-start);
+  position-try:
+    -internal-selectlist-preview-reverse-block,
+    -internal-selectlist-preview-reverse-inline,
+    -internal-selectlist-preview-reverse-both;
   background-color: light-dark(#E8F0FE, rgba(70, 90, 126, 0.4));
 }
 
 /* TODO(crbug.com/40279608): Use automatic fallbacks */
-@position-fallback -internal-selectlist-preview-default-fallbacks {
-  @try {
-    inset-block-start: anchor(self-start);
-    inset-inline-start: anchor(self-start);
-  }
+@position-try -internal-selectlist-preview-reverse-block {
+  inset: auto;
   /* Reverse block axis */
-  @try {
-    inset-block-end: anchor(self-end);
-    inset-inline-start: anchor(self-start);
-  }
+  inset-block-end: anchor(self-end);
+  inset-inline-start: anchor(self-start);
+}
+@position-try -internal-selectlist-preview-reverse-inline {
+  inset: auto;
   /* Reverse inline axis */
-  @try {
-    inset-block-start: anchor(self-start);
-    inset-inline-end: anchor(self-end);
-  }
+  inset-block-start: anchor(self-start);
+  inset-inline-end: anchor(self-end);
+}
+@position-try -internal-selectlist-preview-reverse-both {
+  inset: auto;
   /* Reverse both axes */
-  @try {
-    inset-block-end: anchor(self-end);
-    inset-inline-end: anchor(self-end);
-  }
+  inset-block-end: anchor(self-end);
+  inset-inline-end: anchor(self-end);
 }
 
 /* this is a copy of the [popover] styles from html.css. When this gets
@@ -231,7 +244,6 @@ selectlist::-internal-selectlist-preview {
 selectlist::-internal-selectlist-listbox,
 selectlist > listbox {
   position: fixed;
-  inset: auto;
   width: fit-content;
   height: fit-content;
   margin: 0;

@@ -68,15 +68,6 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
   }
 
  protected:
-  network::TestURLLoaderFactory url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
-  data_decoder::test::InProcessDataDecoder decoder_;
-  base::ScopedTempDir temp_directory_;
-  std::unique_ptr<InterestGroupManagerImpl> manager_;
-
   std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
   GetDBStoredKeysWithExpiration(const url::Origin& coordinator) {
     std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
@@ -101,8 +92,18 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
   }
 
   content::BiddingAndAuctionServerKeyFetcher CreateFetcher() {
-    return BiddingAndAuctionServerKeyFetcher(manager_.get());
+    return BiddingAndAuctionServerKeyFetcher(manager_.get(),
+                                             shared_url_loader_factory_);
   }
+
+  network::TestURLLoaderFactory url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
+  data_decoder::test::InProcessDataDecoder decoder_;
+  base::ScopedTempDir temp_directory_;
+  std::unique_ptr<InterestGroupManagerImpl> manager_;
 };
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, UnknownCoordinator) {
@@ -116,7 +117,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, UnknownCoordinator) {
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, url::Origin(),
+      url::Origin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
@@ -136,7 +137,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoURL) {
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
@@ -173,17 +174,18 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, BadResponses) {
   for (const auto& response : bad_responses) {
     SCOPED_TRACE(response);
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    // AddResponse overwrites the previous response.
+    url_loader_factory_.AddResponse(kDefaultGCPKeyURL, response);
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
                                 EXPECT_FALSE(maybe_key.has_value());
                                 run_loop.Quit();
                               }));
-    EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
-        kDefaultGCPKeyURL, response));
     run_loop.Run();
   }
+  EXPECT_EQ(bad_responses.size(), url_loader_factory_.total_requests());
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, FailsAll) {
@@ -192,24 +194,24 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, FailsAll) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
         completed++;
       }));
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
         completed++;
         run_loop.Quit();
       }));
-  EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
-      kDefaultGCPKeyURL, "", net::HTTP_NOT_FOUND));
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL, "", net::HTTP_NOT_FOUND);
   run_loop.Run();
   EXPECT_EQ(2, completed);
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
@@ -218,12 +220,12 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
         completed++;
-        fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+        fetcher.GetOrFetchKey(CoordinatorOrigin(),
                               base::BindLambdaForTesting(
                                   [&](base::expected<BiddingAndAuctionServerKey,
                                                      std::string> maybe_key) {
@@ -232,47 +234,53 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
                                     run_loop.Quit();
                                   }));
       }));
-  EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
-      kDefaultGCPKeyURL, "", net::HTTP_NOT_FOUND));
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL, "", net::HTTP_NOT_FOUND);
   run_loop.Run();
   EXPECT_EQ(2, completed);
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponse) {
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
+
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
         key = *maybe_key;
         run_loop.Quit();
       }));
-  EXPECT_TRUE(
-      url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                            R"({ "keys": [{
-      "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-      "id": "12345678-9abc-def0-1234-56789abcdef0"
-      }]})"));
   run_loop.Run();
   EXPECT_EQ(0x12, key.id);
   EXPECT_EQ(std::string(32, '\0'), key.key);
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+      "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+      "id": "12345678-9abc-def0-1234-56789abcdef0"
+      }]})");
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
         completed++;
-        fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+        fetcher.GetOrFetchKey(CoordinatorOrigin(),
                               base::BindLambdaForTesting(
                                   [&](base::expected<BiddingAndAuctionServerKey,
                                                      std::string> maybe_key) {
@@ -281,23 +289,23 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
                                     run_loop.Quit();
                                   }));
       }));
-  EXPECT_TRUE(
-      url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                            R"({ "keys": [{
-      "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-      "id": "12345678-9abc-def0-1234-56789abcdef0"
-      }]})"));
   run_loop.Run();
   EXPECT_EQ(2, completed);
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
 
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -305,21 +313,16 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
                                 key = *maybe_key;
                                 run_loop.Quit();
                               }));
-    EXPECT_TRUE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-        "id": "12345678-9abc-def0-1234-56789abcdef0"
-        }]})"));
     run_loop.Run();
     EXPECT_EQ(0x12, key.id);
     EXPECT_EQ(std::string(32, '\0'), key.key);
+    EXPECT_EQ(1u, url_loader_factory_.total_requests());
   }
 
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -327,22 +330,22 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
                                 key = *maybe_key;
                                 run_loop.Quit();
                               }));
-    // Shouldn't use this response (it should still be cached).
-    EXPECT_FALSE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE\u003d",
-        "id": "23456789-abcd-ef01-2345-6789abcdef01"
-        }]})"));
     run_loop.Run();
     EXPECT_EQ(0x12, key.id);
     EXPECT_EQ(std::string(32, '\0'), key.key);
+    // The response was cached so there was still only 1 request.
+    EXPECT_EQ(1u, url_loader_factory_.total_requests());
   }
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFledgeStoreBandAKeysInDB);
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
 
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
   std::vector<BiddingAndAuctionServerKey> keys;
@@ -356,7 +359,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
   {
     content::BiddingAndAuctionServerKey returned_key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -364,17 +367,12 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
                                 returned_key = *maybe_key;
                                 run_loop.Quit();
                               }));
-    // Shouldn't use this response (it should have been retrieved from the
-    // database).
-    EXPECT_FALSE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE\u003d",
-        "id": "23456789-abcd-ef01-2345-6789abcdef01"
-        }]})"));
     run_loop.Run();
     EXPECT_EQ(key.id, returned_key.id);
     EXPECT_EQ(key.key, returned_key.key);
+    // Values should have been retrieved from the database, not the
+    // url_loader_factory_.
+    EXPECT_EQ(0u, url_loader_factory_.total_requests());
   }
 
   // Fast forward past the expiration time stored in the database to make sure
@@ -385,7 +383,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
     // This should make a new request to the network now.
     content::BiddingAndAuctionServerKey returned_key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -394,13 +392,10 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
                                 run_loop.Quit();
                               }));
     task_environment_.RunUntilIdle();
-    EXPECT_TRUE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE\u003d",
-        "id": "23456789-abcd-ef01-2345-6789abcdef01"
-        }]})"));
     run_loop.Run();
+    EXPECT_EQ(1u, url_loader_factory_.total_requests());
+    EXPECT_EQ(0x12, returned_key.id);
+    EXPECT_EQ(std::string(32, '\0'), returned_key.key);
   }
 }
 
@@ -408,12 +403,18 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, WritesValuesToDBIfEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFledgeStoreBandAKeysInDB);
 
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
+
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
   content::BiddingAndAuctionServerKey key;
   {
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -421,19 +422,10 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, WritesValuesToDBIfEnabled) {
                                 key = *maybe_key;
                                 run_loop.Quit();
                               }));
-    // Make sure the task environment runs past the database fetch.
-    while (!url_loader_factory_.IsPending(kDefaultGCPKeyURL)) {
-      // IsPending calls RunUntilIdle().
-    }
-    EXPECT_TRUE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-        "id": "12345678-9abc-def0-1234-56789abcdef0"
-        }]})"));
     run_loop.Run();
     EXPECT_EQ(0x12, key.id);
     EXPECT_EQ(std::string(32, '\0'), key.key);
+    EXPECT_EQ(1u, url_loader_factory_.total_requests());
   }
   task_environment_.RunUntilIdle();
   std::pair<base::Time, std::vector<content::BiddingAndAuctionServerKey>>
@@ -453,12 +445,13 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
 
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
-  fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+  fetcher.MaybePrefetchKeys();
 
   {
+    url_loader_factory_.AddResponse(kDefaultGCPKeyURL, "", net::HTTP_NOT_FOUND);
     bool completed = false;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -466,8 +459,6 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
                                 completed = true;
                                 run_loop.Quit();
                               }));
-    EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
-        kDefaultGCPKeyURL, "", net::HTTP_NOT_FOUND));
     run_loop.Run();
     EXPECT_TRUE(completed);
   }
@@ -475,9 +466,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
   // The following GetOrFetchKey after the prefetch failure should be
   // successful.
   {
+    url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                    R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -485,12 +481,6 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
                                 key = *maybe_key;
                                 run_loop.Quit();
                               }));
-    EXPECT_TRUE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-        "id": "12345678-9abc-def0-1234-56789abcdef0"
-        }]})"));
     run_loop.Run();
     EXPECT_EQ(0x12, key.id);
     EXPECT_EQ(std::string(32, '\0'), key.key);
@@ -503,7 +493,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
 
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
-  fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+  fetcher.MaybePrefetchKeys();
   task_environment_.RunUntilIdle();
   // MaybePrefetchKeys will try to fetch all keys in the
   // FledgeBiddingAndAuctionKeyConfig.
@@ -521,7 +511,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -542,7 +532,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
   }
 
   // Keys should not be fetched a second time.
-  fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+  fetcher.MaybePrefetchKeys();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
   EXPECT_FALSE(
@@ -558,12 +548,18 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFledgePrefetchBandAKeys);
 
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
+
   // Get a key that we will let expire.
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -571,22 +567,19 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
                                 key = *maybe_key;
                                 run_loop.Quit();
                               }));
-    EXPECT_TRUE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-        "id": "12345678-9abc-def0-1234-56789abcdef0"
-        }]})"));
+
     run_loop.Run();
     EXPECT_EQ(0x12, key.id);
     EXPECT_EQ(std::string(32, '\0'), key.key);
+    EXPECT_EQ(1u, url_loader_factory_.total_requests());
   }
 
   // Let the key expire.
   task_environment_.RunUntilIdle();
   task_environment_.FastForwardBy(base::Days(7) + base::Seconds(1));
+  url_loader_factory_.ClearResponses();
 
-  fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+  fetcher.MaybePrefetchKeys();
   task_environment_.RunUntilIdle();
   // We should still try fetching all the keys, including for kDefaultGCPKeyURL.
   EXPECT_TRUE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
@@ -608,7 +601,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
     feature_list.InitAndDisableFeature(features::kFledgePrefetchBandAKeys);
 
     content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
-    fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+    fetcher.MaybePrefetchKeys();
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
     EXPECT_FALSE(url_loader_factory_.IsPending(kCoordinator1KeyURL));
@@ -623,7 +616,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
         {features::kFledgePrefetchBandAKeys},
         {blink::features::kFledgeBiddingAndAuctionServer});
     content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
-    fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+    fetcher.MaybePrefetchKeys();
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
     EXPECT_FALSE(url_loader_factory_.IsPending(kCoordinator1KeyURL));
@@ -634,17 +627,23 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
+
   {
     content::BiddingAndAuctionServerKey key1, key2;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
                                 EXPECT_TRUE(maybe_key.has_value());
                                 key1 = *maybe_key;
                               }));
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -652,28 +651,32 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {
                                 EXPECT_TRUE(maybe_key.has_value());
                                 run_loop.Quit();
                               }));
-    EXPECT_TRUE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-        "id": "12345678-9abc-def0-1234-56789abcdef0"
-        }]})"));
     run_loop.Run();
     EXPECT_EQ(0x12, key1.id);
     EXPECT_EQ(std::string(32, '\0'), key1.key);
 
     EXPECT_EQ(0x12, key2.id);
     EXPECT_EQ(std::string(32, '\0'), key2.key);
+
+    EXPECT_EQ(1u, url_loader_factory_.total_requests());
   }
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
+  url_loader_factory_.AddResponse(kDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }, {
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=",
+        "id": "23456789-abcd-ef01-2345-6789abcdef01"
+        }]})");
 
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -681,15 +684,6 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
                                 key = *maybe_key;
                                 run_loop.Quit();
                               }));
-    EXPECT_TRUE(
-        url_loader_factory_.SimulateResponseForPendingRequest(kDefaultGCPKeyURL,
-                                                              R"({ "keys": [{
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-        "id": "12345678-9abc-def0-1234-56789abcdef0"
-        }, {
-        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=",
-        "id": "23456789-abcd-ef01-2345-6789abcdef01"
-        }]})"));
     run_loop.Run();
   }
 
@@ -697,7 +691,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
   while (ids.size() < 2) {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -729,25 +723,26 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, OverridesConfig) {
       /*disabled_features=*/{});
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
+  url_loader_factory_.AddResponse(kOtherDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
+
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
         key = *maybe_key;
         run_loop.Quit();
       }));
-  EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
-      kOtherDefaultGCPKeyURL,
-      R"({ "keys": [{
-      "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-      "id": "12345678-9abc-def0-1234-56789abcdef0"
-      }]})"));
   run_loop.Run();
   EXPECT_EQ(0x12, key.id);
   EXPECT_EQ(std::string(32, '\0'), key.key);
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoConfigOnlyURL) {
@@ -759,25 +754,26 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoConfigOnlyURL) {
       /*disabled_features=*/{});
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
+  url_loader_factory_.AddResponse(kOtherDefaultGCPKeyURL,
+                                  R"({ "keys": [{
+      "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+      "id": "12345678-9abc-def0-1234-56789abcdef0"
+      }]})");
+
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
         key = *maybe_key;
         run_loop.Quit();
       }));
-  EXPECT_TRUE(url_loader_factory_.SimulateResponseForPendingRequest(
-      kOtherDefaultGCPKeyURL,
-      R"({ "keys": [{
-      "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-      "id": "12345678-9abc-def0-1234-56789abcdef0"
-      }]})"));
   run_loop.Run();
   EXPECT_EQ(0x12, key.id);
   EXPECT_EQ(std::string(32, '\0'), key.key);
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
 class BiddingAndAuctionServerKeyFetcherCoordinatorTest
@@ -794,7 +790,7 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
       case 2:
         return url::Origin::Create(GURL(kCoordinator2));
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::string GetURL() {
@@ -806,32 +802,33 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
       case 2:
         return kCoordinator2KeyURL;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
 TEST_P(BiddingAndAuctionServerKeyFetcherCoordinatorTest, GoodResponse) {
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
+  url_loader_factory_.AddResponse(GetURL(),
+                                  R"({ "keys": [{
+        "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
+        "id": "12345678-9abc-def0-1234-56789abcdef0"
+        }]})");
+
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, GetCoordinator(),
+      GetCoordinator(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
         key = *maybe_key;
         run_loop.Quit();
       }));
-  EXPECT_TRUE(
-      url_loader_factory_.SimulateResponseForPendingRequest(GetURL(),
-                                                            R"({ "keys": [{
-      "key": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\u003d",
-      "id": "12345678-9abc-def0-1234-56789abcdef0"
-      }]})"));
   run_loop.Run();
   EXPECT_EQ(0x12, key.id);
   EXPECT_EQ(std::string(32, '\0'), key.key);
+  EXPECT_EQ(1u, url_loader_factory_.total_requests());
 }
 
 INSTANTIATE_TEST_SUITE_P(

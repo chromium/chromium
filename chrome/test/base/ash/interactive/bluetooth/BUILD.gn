@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [
+    "pair_with_ui_interactive_uitest.cc",
+    "rename_bluetooth_device_interactive_uitest.cc",
+    "warn_before_disconnecting_bluetooth_interactive_uitest.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":test_support",
+    "//ash",
+    "//ash/strings:strings_grit",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/bluetooth",
+    "//chrome/test:test_support",
+    "//chrome/test/base/ash/interactive:test_support",
+    "//chrome/test/base/ash/interactive/settings:test_support",
+    "//chrome/test/base/ash/interactive/webui:test_support",
+    "//chromeos/ash/services/bluetooth_config:bluetooth_config",
+    "//device/bluetooth",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/events/devices:test_support",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "bluetooth_power_state_observer.cc",
+    "bluetooth_power_state_observer.h",
+    "bluetooth_util.cc",
+    "bluetooth_util.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//device/bluetooth",
+    "//ui/base:test_support",
+  ]
+}

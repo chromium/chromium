@@ -1,0 +1,120 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "unit_conversion_coordinator.h",
+    "unit_conversion_coordinator.mm",
+    "unit_conversion_mediator.h",
+    "unit_conversion_mediator.mm",
+  ]
+  deps = [
+    ":constants",
+    ":ui",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/unit_conversion",
+    "//ios/chrome/browser/unit_conversion:unit_conversion_factory",
+    "//ios/chrome/browser/web/model/annotations",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
+    "//ui/base",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "unit_conversion_consumer.h",
+    "unit_conversion_mutator.h",
+    "unit_conversion_view_controller.h",
+    "unit_conversion_view_controller.mm",
+    "unit_conversion_view_controller_delegate.h",
+    "unit_type_cell.h",
+    "unit_type_cell.mm",
+    "unit_type_value_field_cell.h",
+    "unit_type_value_field_cell.mm",
+  ]
+  deps = [
+    ":constants",
+    "//components/crash/core/common",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/unit_conversion:unit_conversion_api",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "unit_conversion_constants.h",
+    "unit_conversion_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "unit_conversion_mediator_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":coordinator",
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/providers/unit_conversion",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "unit_conversion_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "unit_conversion_app_interface.h",
+    "unit_conversion_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "unit_conversion_app_interface.h",
+    "unit_conversion_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}

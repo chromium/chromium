@@ -9,11 +9,13 @@ build_webui_tests("build") {
     "about_page_test.ts",
     "advanced_page_test.ts",
     "ai_page_test.ts",
+    "ai_subpage_test.ts",
     "all_sites_test.ts",
     "anti_abuse_page_test.ts",
     "appearance_fonts_page_test.ts",
     "appearance_page_test.ts",
     "autofill_page_test.ts",
+    "autofill_prediction_improvements_section_test.ts",
     "autofill_section_address_validation_test.ts",
     "autofill_section_test_utils.ts",
     "autofill_section_test.ts",
@@ -29,6 +31,7 @@ build_webui_tests("build") {
     "controlled_button_test.ts",
     "controlled_radio_button_test.ts",
     "cookies_page_test.ts",
+    "cr_policy_pref_indicator_test.ts",
     "do_not_track_toggle_test.ts",
     "downloads_page_test.ts",
     "dropdown_menu_test.ts",
@@ -37,8 +40,11 @@ build_webui_tests("build") {
     "file_system_site_entry_test.ts",
     "file_system_site_entry_item_test.ts",
     "file_system_site_list_test.ts",
+    "fingerprint_progress_arc_test.ts",
     "help_page_test.ts",
     "idle_load_test.ts",
+    "memory_page_test.ts",
+    "offer_writing_help_page_test.ts",
     "on_startup_page_test.ts",
     "autofill_fake_data.ts",
     "payments_section_card_rows_test.ts",
@@ -54,6 +60,8 @@ build_webui_tests("build") {
     "people_page_test.ts",
     "performance_page_test.ts",
     "personalization_options_test.ts",
+    "privacy_guide_ad_topics_fragment_test.ts",
+    "privacy_guide_completion_fragment_test.ts",
     "privacy_guide_fragments_test.ts",
     "privacy_guide_integration_test.ts",
     "privacy_guide_page_test.ts",
@@ -77,6 +85,7 @@ build_webui_tests("build") {
     "safety_hub_extensions_module_test.ts",
     "safety_hub_page_test.ts",
     "safety_hub_unused_site_permissions_module_test.ts",
+    "scrollable_mixin_test.ts",
     "search_engine_entry_test.ts",
     "search_engines_page_test.ts",
     "search_page_test.ts",
@@ -97,6 +106,9 @@ build_webui_tests("build") {
     "settings_menu_test.ts",
     "settings_page_test_util.ts",
     "settings_performance_menu_test.ts",
+    "settings_prefs_test_cases.ts",
+    "settings_prefs_test.ts",
+    "settings_pref_util_test.ts",
     "settings_section_test.ts",
     "settings_slider_test.ts",
     "settings_subpage_test.ts",
@@ -117,7 +129,6 @@ build_webui_tests("build") {
     "storage_access_static_site_list_entry_test.ts",
     "storage_access_site_list_entry_test.ts",
     "storage_access_site_list_test.ts",
-    "sync_account_control_test.ts",
     "sync_test_util.ts",
     "tab_discard_exception_dialog_test.ts",
     "test_about_page_browser_proxy.ts",
@@ -130,6 +141,7 @@ build_webui_tests("build") {
     "test_password_manager_proxy.ts",
     "test_performance_browser_proxy.ts",
     "test_performance_metrics_proxy.ts",
+    "test_privacy_guide_browser_proxy.ts",
     "test_privacy_page_browser_proxy.ts",
     "test_privacy_sandbox_browser_proxy.ts",
     "test_profile_info_browser_proxy.ts",
@@ -158,6 +170,7 @@ build_webui_tests("build") {
       "relaunch_confirmation_dialog_test.ts",
       "spell_check_page_metrics_test_browser.ts",
       "spell_check_page_test.ts",
+      "sync_account_control_test.ts",
       "test_languages_browser_proxy.ts",
       "test_languages_settings_metrics_proxy.ts",
       "translate_page_metrics_test_browser.ts",
@@ -191,7 +204,7 @@ build_webui_tests("build") {
   if (is_win || is_mac || is_linux) {
     files += [
       "a11y_page_test.ts",
-      "pdf_ocr_toggle_test.ts",
+      "ax_annotations_section_test.ts",
     ]
   }
 
@@ -199,13 +212,6 @@ build_webui_tests("build") {
     files += [ "incompatible_applications_page_test.ts" ]
   }
 
-  if (is_chrome_branded) {
-    files += [ "get_most_chrome_page_test.ts" ]
-  }
-
-  # Using custom config to turn off useDefineForClassFields TS compiler flag
-  # which is necessary when defining Polymer elements.
-  ts_tsconfig_base = "tsconfig_base.json"
   ts_path_mappings = [
     # Settings tests should only be importing from one of the URLs below, so
     # that tests work both in optimize_webui=true/false modes.
@@ -219,10 +225,14 @@ build_webui_tests("build") {
     "chrome://settings/lazy_load.js|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/settings/tsc/lazy_load.d.ts",
             target_gen_dir),
+    "chrome://webui-test/cr_elements/cr_policy_strings.js|" + rebase_path(
+            "$root_gen_dir/chrome/test/data/webui/cr_elements/tsc/cr_policy_strings.d.ts",
+            target_gen_dir),
   ]
 
   ts_definitions = [
     "//tools/typescript/definitions/autofill_private.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/language_settings_private.d.ts",
     "//tools/typescript/definitions/management.d.ts",
@@ -237,6 +247,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//chrome/browser/resources/settings:build_ts",
+    "//chrome/test/data/webui/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
   ]

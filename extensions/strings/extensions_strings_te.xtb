@@ -19,7 +19,6 @@
 <translation id="3115238746683532089"><ph name="VENDOR_ID" /> విక్రేత నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">crx ఫైల్ భర్తీ విఫలమైంది. ఫైల్ వినియోగంలో ఉందా అని చెక్ చేయండి.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> నుండి <ph name="PRODUCT_ID" /> తెలియని ఉత్పత్తి</translation>
-<translation id="3369521687965833290">ఎక్స్‌టెన్షన్‌ను అన్‌ప్యాక్ చేయడం సాధ్యపడలేదు. ఒక ఎక్స్‌టెన్షన్‌‌ను సురక్షితంగా అన్‌ప్యాక్ చేయడానికి, మీ ప్రొఫైల్ డైరెక్టరీకి ఒక డ్రైవ్ అక్షరంతో ప్రారంభమయ్యే మరియు జంక్షన్, మౌంట్ పాయింట్ లేదా సింలింక్ ఉండని పాత్ తప్పనిసరిగా ఉండాలి. మీ ప్రొఫైల్‌కు అటువంటి పాత్ లేదు.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> విక్రేత నుండి <ph name="PRODUCT_NAME" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ప్రైవేట్ కీ కోసం ఇన్‌పుట్ విలువ తప్పనిసరిగా చెల్లుబాటు అయ్యే పాథ్‌గా ఉండాలి.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692"><ph name="EXTENSION_NAME" />ని ఇన్‌స్టాల్ చేయడం ఈ మెషిన్‌ నిర్వాహకుడికి అవసరం. ఇది అన్ఇన్‌స్టాల్ చేయబడదు.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> నుండి తెలియని ఉత్పత్తి <ph name="PRODUCT_ID" /> (క్రమ సంఖ్య <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> విక్రేత నుండి <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">ఎక్స్‌టెన్షన్‌ను అన్‌ప్యాక్ చేయడం సాధ్యపడలేదు. ఒక ఎక్స్‌టెన్షన్‌‌ను సురక్షితంగా అన్‌ప్యాక్ చేయడానికి, మీ ప్రొఫైల్ డైరెక్టరీకి సింలింక్ ఉండని పాత్ తప్పనిసరిగా ఉండాలి. మీ ప్రొఫైల్‌కు అటువంటి పాత్ లేదు.</translation>
 <translation id="6322279351188361895">ప్రైవేట్ కీని చదవడంలో విఫలమైంది.</translation>
 <translation id="6391538222494443604">ఇన్‌పుట్ డైరెక్టరీ తప్పనిసరిగా ఉనికిలో ఉండాలి.</translation>
 <translation id="641087317769093025">ఎక్స్‌టెన్షన్‌ అన్‌జిప్ చేయబడదు</translation>

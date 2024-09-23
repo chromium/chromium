@@ -25,7 +25,18 @@
         },
         "prefs": {
           "browser.relaunch_window": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": {
+              "entries": [
+                {
+                  "duration_mins": 240,
+                  "start": {
+                    "hour": 2,
+                    "minute": 15
+                  }
+                }
+              ]
+            }
           }
         }
       }

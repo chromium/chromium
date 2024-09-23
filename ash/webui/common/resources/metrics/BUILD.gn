@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(is_chromeos_ash, "WebUI Structured Metrics supported in ash-chrome only")
+
+# Copies mojo files and code generated files to target directory.
+copy("copy_files") {
+  deps = [
+    "//chromeos/crosapi/mojom:structured_metrics_service_ts__generator",
+    "//components/metrics/structured:gen_structured_events_ts",
+    "//components/metrics/structured/mojom:mojom_ts__generator",
+  ]
+  sources = [
+    "$root_gen_dir/chromeos/crosapi/mojom/structured_metrics_service.mojom-webui.ts",
+    "$root_gen_dir/components/metrics/structured/mojom/event.mojom-webui.ts",
+    "$root_gen_dir/components/metrics/structured/structured_events.ts",
+  ]
+  outputs = [ "$root_gen_dir/ash/webui/common/resources/preprocessed/metrics/{{source_file_part}}" ]
+}

@@ -89,7 +89,7 @@ bool SubtreeSet::erase(const base::FilePath& subtree_root) {
 
     auto found = inclusive_ancestors_of_subtree_roots_.find(path.value());
     if (found == inclusive_ancestors_of_subtree_roots_.end()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 

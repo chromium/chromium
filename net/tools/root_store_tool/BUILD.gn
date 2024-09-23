@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(https://crbug.com/1216547): add unit tests
+# TODO(crbug.com/40770548): add unit tests
 executable("root_store_tool") {
   sources = [ "root_store_tool.cc" ]
   deps = [

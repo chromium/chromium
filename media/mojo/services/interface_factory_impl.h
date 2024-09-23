@@ -56,6 +56,11 @@ class InterfaceFactoryImpl final
       mojo::PendingReceiver<mojom::VideoDecoder> receiver,
       mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
           dst_video_decoder) final;
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  void CreateStableVideoDecoder(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+          video_decoder) final;
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   void CreateAudioEncoder(
       mojo::PendingReceiver<mojom::AudioEncoder> receiver) final;
@@ -93,7 +98,7 @@ class InterfaceFactoryImpl final
 
   void CreateCdm(const CdmConfig& cdm_config, CreateCdmCallback callback) final;
 
-  // DeferredDestroy<mojom::InterfaceFactory> implemenation.
+  // DeferredDestroy<mojom::InterfaceFactory> implementation.
   void OnDestroyPending(base::OnceClosure destroy_cb) final;
 
  private:
@@ -117,7 +122,7 @@ class InterfaceFactoryImpl final
   void OnCdmServiceInitialized(MojoCdmService* raw_mojo_cdm_service,
                                CreateCdmCallback callback,
                                mojom::CdmContextPtr cdm_context,
-                               const std::string& error_message);
+                               CreateCdmStatus status);
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

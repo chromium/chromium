@@ -41,8 +41,8 @@ class DataPipeReader : public mojo::DataPipeDrainer::Client {
   DataPipeReader(std::string* data_out, base::OnceClosure done_callback)
       : data_out_(data_out), done_callback_(std::move(done_callback)) {}
 
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
-    data_out_->append(static_cast<const char*>(data), num_bytes);
+  void OnDataAvailable(base::span<const uint8_t> data) override {
+    data_out_->append(base::as_string_view(data));
   }
 
   void OnDataComplete() override { std::move(done_callback_).Run(); }

@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -19,14 +20,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/compositor/image_transport_factory.h"
 #include "content/browser/device_posture/device_posture_platform_provider.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -39,6 +38,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/window_types.h"
@@ -68,6 +68,10 @@ class Point;
 class Rect;
 }
 
+namespace input {
+class CursorManager;
+}  // namespace input
+
 namespace ui {
 enum class DomCode : uint32_t;
 class InputMethod;
@@ -84,7 +88,6 @@ class LegacyRenderWidgetHostHWND;
 class DirectManipulationBrowserTestBase;
 #endif
 
-class CursorManager;
 class DelegatedFrameHost;
 class DelegatedFrameHostClient;
 class MouseWheelPhaseHandler;
@@ -133,6 +136,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
   bool IsHTMLFormPopup() const override;
+  void ResetGestureDetection() override;
 
   // Overridden from RenderWidgetHostViewBase:
   void InitAsPopup(RenderWidgetHostView* parent_host_view,
@@ -141,7 +145,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void Focus() override;
   void UpdateCursor(const ui::Cursor& cursor) override;
   void DisplayCursor(const ui::Cursor& cursor) override;
-  CursorManager* GetCursorManager() override;
+  input::CursorManager* GetCursorManager() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) final;
@@ -163,10 +167,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void WheelEventAck(const blink::WebMouseWheelEvent& event,
                      blink::mojom::InputEventResultState ack_result) override;
   void GestureEventAck(const blink::WebGestureEvent& event,
+                       blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result) override;
   void DidOverscroll(const ui::DidOverscrollParams& params) override;
   void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
+      const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override;
   std::unique_ptr<SyntheticGestureTarget> CreateSyntheticGestureTarget()
       override;
@@ -197,27 +202,31 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   const viz::LocalSurfaceId& GetLocalSurfaceId() const override;
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override;
   viz::FrameSinkId GetRootFrameSinkId() override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
+  bool ShouldInitiateStylusWriting() override;
+  void OnStartStylusWriting() override;
+  void OnEditElementFocusedForStylusWriting(
+      const gfx::Rect& focused_edit_bounds,
+      const gfx::Rect& caret_bounds) override;
+  void OnEditElementFocusClearedForStylusWriting() override;
   void OnSynchronizedDisplayPropertiesChanged(bool rotation = false) override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
   void DidNavigate() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool CanSynchronizeVisualProperties() override;
-  std::vector<std::unique_ptr<ui::TouchEvent>> ExtractAndCancelActiveTouches()
-      override;
-  void TransferTouches(
-      const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) override;
   // TODO(lanwei): Use TestApi interface to write functions that are used in
   // tests and remove FRIEND_TEST_ALL_PREFIXES.
   void SetLastPointerType(ui::EventPointerType last_pointer_type) override;
+  viz::SurfaceId GetFallbackSurfaceIdForTesting() const override;
 
   // Overridden from ui::TextInputClient:
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const ui::CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -250,7 +259,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 #if BUILDFLAG(IS_CHROMEOS)
   void ExtendSelectionAndReplace(size_t before,
                                  size_t after,
-                                 base::StringPiece16 replacement_text) override;
+                                 std::u16string_view replacement_text) override;
 #endif
   void EnsureCaretNotInRect(const gfx::Rect& rect) override;
   bool IsTextEditCommandEnabled(ui::TextEditCommand command) const override;
@@ -340,7 +349,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  base::StringPiece GetLogContext() const override;
+  std::string_view GetLogContext() const override;
 
   // Overridden from wm::ActivationDelegate:
   bool ShouldActivate() const override;
@@ -397,9 +406,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 
   // RenderWidgetHostViewEventHandler::Delegate:
   gfx::Rect ConvertRectToScreen(const gfx::Rect& rect) const override;
-  void ForwardKeyboardEventWithLatencyInfo(const NativeWebKeyboardEvent& event,
-                                           const ui::LatencyInfo& latency,
-                                           bool* update_event) override;
+  void ForwardKeyboardEventWithLatencyInfo(
+      const input::NativeWebKeyboardEvent& event,
+      const ui::LatencyInfo& latency,
+      bool* update_event) override;
   RenderFrameHostImpl* GetFocusedFrame() const;
   bool NeedsMouseCapture() override;
   void SetTooltipsEnabled(bool enable) override;
@@ -418,10 +428,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   MouseWheelPhaseHandler* GetMouseWheelPhaseHandler() override;
 
   ui::Compositor* GetCompositor() override;
-
-  void AllocateLocalSurfaceIdOnNextShow() {
-    allocate_local_surface_id_on_next_show_ = true;
-  }
 
   DelegatedFrameHost* GetDelegatedFrameHostForTesting() const {
     return delegated_frame_host_.get();
@@ -444,6 +450,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   std::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
+  void EnsurePlatformVisibility(PageVisibilityState page_visibility) override;
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       final;
@@ -784,7 +791,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // equals to the FrameSinkId of that widget.
   const viz::FrameSinkId frame_sink_id_;
 
-  std::unique_ptr<CursorManager> cursor_manager_;
+  std::unique_ptr<input::CursorManager> cursor_manager_;
 
   // Latest capture sequence number which is incremented when the caller
   // requests surfaces be synchronized via
@@ -826,8 +833,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 #endif
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
-
-  bool allocate_local_surface_id_on_next_show_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewAura> weak_ptr_factory_{this};
 };

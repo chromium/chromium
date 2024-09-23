@@ -46,7 +46,7 @@ void ImeLoggerBridge(int severity, const char* message) {
     default:
       // There's no LOGGING_VERBOSE level in absl logging. Nothing should reach
       // here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -92,9 +92,17 @@ ImeSharedLibraryWrapperImpl::MaybeLoadThenReturnEntryPoints() {
       .mojo_mode_is_input_method_connected =
           reinterpret_cast<IsInputMethodConnectedFn>(
               library.GetFunctionPointer(kIsInputMethodConnectedFnName)),
+      .init_user_data_service = reinterpret_cast<InitUserDataServiceFn>(
+          library.GetFunctionPointer(kInitUserDataServiceFnName)),
+      .process_user_data_request = reinterpret_cast<ProcessUserDataRequestFn>(
+          library.GetFunctionPointer(kProcessUserDataRequestFnName)),
+      .delete_serialized_proto = reinterpret_cast<DeleteSerializedProtoFn>(
+          library.GetFunctionPointer(kDeleteSerializedProtoFnName)),
   };
 
   // Checking if entry_points are loaded.
+  // TODO(b/328997024): Add .init_user_data_service check once implemented in
+  // sharedlib.
   if (!entry_points.init_proto_mode || !entry_points.close_proto_mode ||
       !entry_points.proto_mode_supports ||
       !entry_points.proto_mode_activate_ime ||

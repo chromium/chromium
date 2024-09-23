@@ -10,10 +10,10 @@ rust_static_library("test_serde_json_lenient_rs") {
   allow_unsafe = true
   sources = [ "lib.rs" ]
   cxx_bindings = [ "lib.rs" ]
-  deps = [ "//third_party/rust/serde_json_lenient/v0_1:lib" ]
+  deps = [ "//third_party/rust/serde_json_lenient/v0_2:lib" ]
 }
 
-# TODO(https://crbug.com/1278030) - convert to a pure-
+# TODO(crbug.com/40809974) - convert to a pure-
 # Rust unit test when that's supported on all platforms.
 test("test_serde_json_lenient") {
   sources = [ "unittests.cc" ]

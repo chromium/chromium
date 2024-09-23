@@ -3,15 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/python.gni")
+import("//components/metrics/structured/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # Structured metrics is subcomponent of UMA that gathers and reports structured
 # events with several attached metrics.
-static_library("structured") {
+source_set("structured") {
   sources = [
-    "event_storage.cc",
-    "event_storage.h",
     "key_data_prefs_delegate.cc",
     "key_data_prefs_delegate.h",
     "key_data_provider_file.cc",
@@ -24,8 +23,6 @@ static_library("structured") {
     "reporting/structured_metrics_reporting_service.h",
     "structured_metrics_prefs.cc",
     "structured_metrics_prefs.h",
-    "structured_metrics_provider.cc",
-    "structured_metrics_provider.h",
     "structured_metrics_recorder.cc",
     "structured_metrics_recorder.h",
     "structured_metrics_scheduler.cc",
@@ -34,10 +31,20 @@ static_library("structured") {
     "structured_metrics_service.h",
   ]
 
+  if (is_chromeos_ash) {
+    sources += [
+      "flushed_map.cc",
+      "flushed_map.h",
+      "storage_manager.cc",
+      "storage_manager.h",
+    ]
+  }
+
   public_deps = [
     ":common",
     ":events",
     ":proto",
+    "//components/metrics/structured/buildflags",
     "//components/metrics/structured/lib:proto",
     "//third_party/metrics_proto",
   ]
@@ -57,7 +64,7 @@ static_library("structured") {
 }
 
 if (is_chromeos_ash) {
-  static_library("external_metrics") {
+  source_set("external_metrics") {
     sources = [
       "external_metrics.cc",
       "external_metrics.h",
@@ -71,7 +78,10 @@ if (is_chromeos_ash) {
   }
 }
 
-static_library("events") {
+component("events") {
+  output_name = "metrics_structured"
+  defines = [ "IS_METRICS_STRUCTURED_IMPL" ]
+
   sources = [
     "enums.h",
     "event.cc",
@@ -79,7 +89,10 @@ static_library("events") {
     "structured_metrics_client.cc",
     "structured_metrics_client.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+  ]
 }
 
 proto_library("proto") {
@@ -98,7 +111,7 @@ proto_library("proto") {
   link_deps = [ "//third_party/metrics_proto" ]
 }
 
-# Sources used by all static libraries in this BUILD file.
+# Sources used by all source sets in this BUILD file.
 source_set("common") {
   sources = [
     "delegating_events_processor.cc",
@@ -125,7 +138,7 @@ source_set("common") {
   ]
 }
 
-static_library("structured_metrics_features") {
+source_set("structured_metrics_features") {
   sources = [
     "structured_metrics_features.cc",
     "structured_metrics_features.h",
@@ -134,12 +147,14 @@ static_library("structured_metrics_features") {
   public_deps = [ "//base" ]
 }
 
-action("gen_structured_events") {
+action("gen_structured_events_cpp") {
   script = "//tools/metrics/structured/gen_events.py"
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
-    "//tools/metrics/structured/codegen.py",
+    "//tools/metrics/structured/code_generator_cpp.py",
+    "//tools/metrics/structured/code_generator.py",
+    "//tools/metrics/structured/codegen_util.py",
     "//tools/metrics/structured/gen_events.py",
     "//tools/metrics/structured/sync/model.py",
     "//tools/metrics/structured/sync/model_util.py",
@@ -159,17 +174,51 @@ action("gen_structured_events") {
     rebase_path(sources[0], root_build_dir),
     "--output",
     rebase_path(outdir, root_build_dir),
+    "--target",
+    "chromium",
+  ]
+}
+
+action("gen_structured_events_ts") {
+  script = "//tools/metrics/structured/gen_events.py"
+
+  # Re-generate the outputs if the codegen code changes:
+  inputs = [
+    "//tools/metrics/structured/code_generator_ts.py",
+    "//tools/metrics/structured/code_generator.py",
+    "//tools/metrics/structured/codegen_util.py",
+    "//tools/metrics/structured/gen_events.py",
+    "//tools/metrics/structured/sync/model.py",
+    "//tools/metrics/structured/sync/model_util.py",
+    "//tools/metrics/structured/templates_events.py",
+  ]
+  sources = [ "//tools/metrics/structured/sync/structured.xml" ]
+
+  outdir = "$target_gen_dir"
+
+  outputs = [ outdir + "/structured_events.ts" ]
+
+  args = [
+    "--input",
+    rebase_path(sources[0], root_build_dir),
+    "--output",
+    rebase_path(outdir, root_build_dir),
+    "--target",
+    "webui",
   ]
 }
 
 # TODO(b/309122738): Generate the events by platform.
-static_library("structured_events") {
-  sources = get_target_outputs(":gen_structured_events")
+source_set("structured_events") {
+  sources = get_target_outputs(":gen_structured_events_cpp")
 
-  public_deps = [ ":events" ]
+  public_deps = [
+    ":events",
+    "//components/metrics/structured/buildflags",
+  ]
 
   deps = [
-    ":gen_structured_events",
+    ":gen_structured_events_cpp",
     "//base",
   ]
 }
@@ -179,7 +228,8 @@ action("gen_structured_metrics_validator") {
 
   # Re-generate the outputs if the codegen code changes:
   inputs = [
-    "//tools/metrics/structured/codegen.py",
+    "//tools/metrics/structured/code_generator_cpp.py",
+    "//tools/metrics/structured/codegen_util.py",
     "//tools/metrics/structured/gen_validator.py",
     "//tools/metrics/structured/sync/model.py",
     "//tools/metrics/structured/sync/model_util.py",
@@ -200,9 +250,18 @@ action("gen_structured_metrics_validator") {
     "--output",
     rebase_path(outdir, root_build_dir),
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "//tools/metrics/structured/sync/structured_chromiumos.xml" ]
+
+    args += [
+      "--cros_input",
+      rebase_path(sources[1], root_build_dir),
+    ]
+  }
 }
 
-static_library("structured_metrics_validator") {
+source_set("structured_metrics_validator") {
   sources = get_target_outputs(":gen_structured_metrics_validator") + [
               "event_validator.cc",
               "event_validator.h",
@@ -218,7 +277,7 @@ static_library("structured_metrics_validator") {
   ]
 }
 
-static_library("test_support") {
+source_set("test_support") {
   testonly = true
   sources = [
     "test/test_event_storage.cc",
@@ -227,7 +286,10 @@ static_library("test_support") {
     "test/test_key_data_provider.h",
     "test/test_structured_metrics_provider.cc",
     "test/test_structured_metrics_provider.h",
+    "test/test_structured_metrics_recorder.cc",
+    "test/test_structured_metrics_recorder.h",
   ]
+
   deps = [
     ":structured",
     ":structured_metrics_validator",
@@ -242,10 +304,13 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "key_data_prefs_delegate_unittest.cc",
-    "structured_metrics_provider_unittest.cc",
     "structured_metrics_recorder_unittest.cc",
     "structured_metrics_service_unittest.cc",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [ "flushed_map_unittest.cc" ]
+  }
 
   deps = [
     ":events",

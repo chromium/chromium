@@ -1,6 +1,6 @@
 {
   "name": "Shared Module Test With Allowlist",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "1.0",
   "export": {
     "allowlist": [

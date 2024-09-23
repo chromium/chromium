@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -199,8 +200,9 @@ void MediaStreamAudioSource::SetFormat(const media::AudioParameters& params) {
 
 void MediaStreamAudioSource::DeliverDataToTracks(
     const media::AudioBus& audio_bus,
-    base::TimeTicks reference_time) {
-  deliverer_.OnData(audio_bus, reference_time);
+    base::TimeTicks reference_time,
+    const media::AudioGlitchInfo& glitch_info) {
+  deliverer_.OnData(audio_bus, reference_time, glitch_info);
 }
 
 void MediaStreamAudioSource::DoStopSource() {

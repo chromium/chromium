@@ -5,8 +5,9 @@
 #ifndef UI_DISPLAY_TYPES_DISPLAY_MODE_H_
 #define UI_DISPLAY_TYPES_DISPLAY_MODE_H_
 
+#include <iosfwd>
 #include <memory>
-#include <ostream>
+#include <optional>
 #include <string>
 
 #include "ui/display/types/display_types_export.h"
@@ -30,30 +31,31 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   DisplayMode(const gfx::Size& size,
               bool interlaced,
               float refresh_rate,
-              int htotal,
-              int vtotal,
-              int clock);
+              const std::optional<float>& vsync_rate_min);
+
+  DisplayMode(const gfx::Size& size, bool interlaced, float refresh_rate);
 
   DisplayMode(const DisplayMode&) = delete;
   DisplayMode& operator=(const DisplayMode&) = delete;
 
   ~DisplayMode();
   std::unique_ptr<DisplayMode> Clone() const;
+  std::unique_ptr<DisplayMode> CopyWithSize(const gfx::Size& size) const;
 
   const gfx::Size& size() const { return size_; }
   bool is_interlaced() const { return is_interlaced_; }
   float refresh_rate() const { return refresh_rate_; }
+  const std::optional<float>& vsync_rate_min() const { return vsync_rate_min_; }
 
   bool operator<(const DisplayMode& other) const;
   bool operator>(const DisplayMode& other) const;
   bool operator==(const DisplayMode& other) const;
 
-  // Computes the precise minimum vsync rate using the mode's timing details.
-  // The value obtained from the EDID has a loss of precision due to being an
-  // integer. The precise rate must correspond to an integer valued vtotal.
-  float GetVSyncRateMin(int vsync_rate_min_from_edid) const;
-
   std::string ToString() const;
+  // Returns a string representation of this mode's properties excluding those
+  // which may change during a configuration request. This is convenient for
+  // test expectations which only need to verify the non-changing properties.
+  std::string ToStringForTest() const;
 
  private:
   friend struct mojo::StructTraits<display::mojom::DisplayModeDataView,
@@ -65,12 +67,10 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
   const float refresh_rate_;
   // True if the mode is interlaced.
   const bool is_interlaced_;
-  // Total horizontal size of the mode.
-  const int htotal_;
-  // Total vertical size of the mode.
-  const int vtotal_;
-  // Pixel clock in kHz.
-  const int clock_;
+  // Precise minimum vsync rate achievable by this mode in Hz. May be nullopt if
+  // display range limits are not specified by the EDID or if this object is
+  // being used in a configuration request.
+  const std::optional<float> vsync_rate_min_;
 };
 
 // Used by gtest to print readable errors.

@@ -24,6 +24,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
@@ -40,6 +41,7 @@
 #include "content/common/skia_utils.h"
 #include "content/gpu/gpu_child_thread.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
@@ -56,6 +58,7 @@
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "media/gpu/buildflags.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"
@@ -71,8 +74,9 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <dwmapi.h>
 #include <windows.h>
+
+#include <dwmapi.h>
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -102,7 +106,6 @@
 #include "base/message_loop/message_pump_apple.h"
 #include "components/metal_util/device_removal.h"
 #include "gpu/ipc/service/built_in_shader_cache_loader.h"
-#include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #include "sandbox/mac/seatbelt.h"
 #endif
 
@@ -162,13 +165,6 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #endif  // BUILDFLAG(USE_VAAPI)
 #if BUILDFLAG(IS_WIN)
     media::PreSandboxMediaFoundationInitialization();
-#endif
-
-#if BUILDFLAG(IS_MAC)
-    {
-      TRACE_EVENT0("gpu", "Initialize VideoToolbox");
-      media::InitializeVideoToolbox();
-    }
 #endif
 
     // On Linux, reading system memory doesn't work through the GPU sandbox.
@@ -241,9 +237,6 @@ int GpuMain(MainFunctionParams parameters) {
 
 #if BUILDFLAG(IS_WIN)
   base::win::EnableHighDPISupport();
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  base::trace_event::TraceEventETWExport::EnableETWExport();
-#endif
 
   // Prevent Windows from displaying a modal dialog on failures like not being
   // able to load a DLL.
@@ -256,8 +249,9 @@ int GpuMain(MainFunctionParams parameters) {
   base::win::ScopedCOMInitializer com_initializer(
       base::win::ScopedCOMInitializer::kMTA);
 
-  if (base::FeatureList::IsEnabled(features::kGpuProcessHighPriorityWin))
-    ::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
+  // A higher priority class is used for the GPU process so that it remains at
+  // a higher priority than renderer processes.
+  ::SetPriorityClass(::GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS);
 #endif
 
   // Installs a base::LogMessageHandlerFunction which ensures messages are sent
@@ -302,7 +296,7 @@ int GpuMain(MainFunctionParams parameters) {
             base::MessagePumpType::NS_RUNLOOP);
     // As part of the migration to DoWork(), this policy is required to keep
     // previous behavior and avoid regressions.
-    // TODO(crbug.com/1041853): Consider updating the policy.
+    // TODO(crbug.com/40668161): Consider updating the policy.
     main_thread_task_executor->SetWorkBatchSize(2);
 #else
     main_thread_task_executor =
@@ -312,9 +306,24 @@ int GpuMain(MainFunctionParams parameters) {
   }
 
   base::PlatformThread::SetName("CrGpuMain");
+  mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("GpuMain");
 
-  // Set thread priority before sandbox initialization.
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kCompositing);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Thread type delegate of the process should be registered before
+  // thread type change below for the main thread and for thread pool in
+  // ChildProcess constructor.
+  // It also needs to be registered before the process has multiple threads,
+  // which may race with application of the sandbox. InitializeAndStartSandbox()
+  // sandboxes the process and starts threads so this has to happen first.
+  if (base::FeatureList::IsEnabled(
+          features::kHandleChildThreadTypeChangesInBrowser) ||
+      base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
+    SandboxedProcessThreadTypeHandler::Create();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  base::PlatformThread::SetCurrentThreadType(
+      base::ThreadType::kDisplayCritical);
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
   ContentSandboxHelper sandbox_helper;
@@ -327,18 +336,6 @@ int GpuMain(MainFunctionParams parameters) {
   // Since GPU initialization calls into skia, it's important to initialize skia
   // before it.
   InitializeSkia();
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Thread type delegate of the process should be registered before
-  // first thread type change in ChildProcess constructor.
-  // It also needs to be registered before the process has multiple threads,
-  // which may race with application of the sandbox. InitializeAndStartSandbox()
-  // sandboxes the process and starts threads so this has to happen first.
-  if (base::FeatureList::IsEnabled(
-          features::kHandleChildThreadTypeChangesInBrowser)) {
-    SandboxedProcessThreadTypeHandler::Create();
-  }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // The ThreadPool must have been created before invoking |gpu_init| as it
   // needs the ThreadPool (in angle::InitializePlatform()). Do not start it
@@ -356,6 +353,9 @@ int GpuMain(MainFunctionParams parameters) {
   // message from the browser (through mojom::VizMain::CreateGpuService()).
   const bool init_success = gpu_init->InitializeAndStartSandbox(
       const_cast<base::CommandLine*>(&command_line), gpu_preferences);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  LOG(WARNING) << "gpu initialization completed init_success:" << init_success;
+#endif
   const bool dead_on_arrival = !init_success;
 
   auto* client = GetContentClient()->gpu();
@@ -365,13 +365,7 @@ int GpuMain(MainFunctionParams parameters) {
 
   GetContentClient()->SetGpuInfo(gpu_init->gpu_info());
 
-  base::ThreadType io_thread_type = base::ThreadType::kCompositing;
-#if BUILDFLAG(IS_MAC)
-  // Increase the thread priority to get more reliable values in performance
-  // test of mac_os.
-  if (command_line.HasSwitch(switches::kUseHighGPUThreadPriorityForPerfTests))
-    io_thread_type = base::ThreadType::kRealtimeAudio;
-#endif
+  base::ThreadType io_thread_type = base::ThreadType::kDisplayCritical;
   // ChildProcess will start the ThreadPoolInstance now that the sandbox is
   // initialized.
   ChildProcess gpu_process(io_thread_type);
@@ -425,6 +419,15 @@ int GpuMain(MainFunctionParams parameters) {
       switches::kGpuProcess);
 
   base::HighResolutionTimerManager hi_res_timer_manager;
+
+  // Adds support of wall-time based TimerKeeper metrics for the main GPU thread
+  // when command-line flag is set. CrGpuMain will be used as suffix for each
+  // metric.
+  if (command_line.HasSwitch(switches::kEnableGpuMainTimeKeeperMetrics)) {
+    base::CurrentThread::Get()->EnableMessagePumpTimeKeeperMetrics(
+        "CrGpuMain",
+        /*wall_time_based_metrics_enabled_for_testing=*/true);
+  }
 
   {
     TRACE_EVENT0("gpu", "Run Message Loop");

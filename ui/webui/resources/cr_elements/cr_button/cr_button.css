@@ -1,0 +1,189 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_hidden_style_lit.css.js
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-button-background-color: transparent;
+  --cr-button-border-color:  var(--color-button-border,
+      var(--cr-fallback-color-tonal-outline));
+  --cr-button-text-color: var(--color-button-foreground,
+      var(--cr-fallback-color-primary));
+  --cr-button-ripple-opacity: 1;
+  --cr-button-ripple-color: var(--cr-active-background-color);
+
+  --cr-button-disabled-background-color: transparent;
+  --cr-button-disabled-border-color: var(--color-button-border-disabled,
+      var(--cr-fallback-color-disabled-background));
+  --cr-button-disabled-text-color: var(--color-button-foreground-disabled,
+      var(--cr-fallback-color-disabled-foreground));
+}
+
+:host(.action-button) {
+  --cr-button-background-color: var(--color-button-background-prominent,
+      var(--cr-fallback-color-primary));
+  --cr-button-text-color: var(--color-button-foreground-prominent,
+      var(--cr-fallback-color-on-primary));
+  --cr-button-ripple-color: var(--cr-active-on-primary-background-color);
+  --cr-button-border: none;
+
+  --cr-button-disabled-background-color: var(
+      --color-button-background-prominent-disabled,
+      var(--cr-fallback-color-disabled-background));
+  --cr-button-disabled-text-color: var(--color-button-foreground-disabled,
+      var(--cr-fallback-color-disabled-foreground));
+  --cr-button-disabled-border: none;
+}
+
+:host(.tonal-button),
+:host(.floating-button) {
+  --cr-button-background-color: var(--color-button-background-tonal,
+      var(--cr-fallback-color-secondary-container));
+  --cr-button-text-color: var(--color-button-foreground-tonal,
+      var(--cr-fallback-color-on-tonal-container));
+  --cr-button-border: none;
+
+  --cr-button-disabled-background-color: var(
+      --color-button-background-tonal-disabled,
+      var(--cr-fallback-color-disabled-background));
+  --cr-button-disabled-text-color: var(--color-button-foreground-disabled,
+      var(--cr-fallback-color-disabled-foreground));
+  --cr-button-disabled-border: none;
+}
+
+:host {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 5.14em;
+  height: var(--cr-button-height);
+  padding: 8px 16px;
+  outline-width: 0;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: var(--cr-button-border, 1px solid var(--cr-button-border-color));
+  border-radius: 100px;
+  background: var(--cr-button-background-color);
+  color: var(--cr-button-text-color);
+  font-weight: 500;
+  line-height: 20px;
+  isolation: isolate;
+}
+
+@media (forced-colors: active) {
+  :host {
+    /* Color pipeline colors automatically provide high-contrast colors in
+    * high-contrast mode, and fallbackvars have high-contrast fallbacks
+    * for critically important states such as disabled state. */
+    forced-color-adjust: none;
+  }
+}
+
+:host(.floating-button) {
+  border-radius: 8px;
+  height: 40px;
+  transition: box-shadow 80ms linear;
+}
+
+:host(.floating-button:hover) {
+  box-shadow: var(--cr-elevation-3);
+}
+
+:host([has-prefix-icon_]),
+:host([has-suffix-icon_]) {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  --icon-block-padding-large: 16px;
+  --icon-block-padding-small: 12px;
+  gap: 8px;
+  padding-block-end: 8px;
+  padding-block-start: 8px;
+}
+
+:host([has-prefix-icon_]) {
+  padding-inline-end: var(--icon-block-padding-large);
+  padding-inline-start: var(--icon-block-padding-small);
+}
+
+:host([has-suffix-icon_]) {
+  padding-inline-end: var(--icon-block-padding-small);
+  padding-inline-start: var(--icon-block-padding-large);
+}
+
+:host-context(.focus-outline-visible):host(:focus) {
+  box-shadow: none;
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: 2px;
+}
+
+#background {
+  border-radius: inherit;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+#content {
+  display: inline;
+}
+
+#hoverBackground {
+  content: '';
+  display: none;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+:host(:hover) #hoverBackground {
+  background: var(--cr-hover-background-color);
+  display: block;
+}
+
+:host(.action-button:hover) #hoverBackground {
+  background: var(--cr-hover-on-prominent-background-color);
+}
+
+:host([disabled]) {
+  background: var(--cr-button-disabled-background-color);
+  border: var(--cr-button-disabled-border,
+      1px solid var(--cr-button-disabled-border-color));
+  color: var(--cr-button-disabled-text-color);
+  cursor: auto;
+  pointer-events: none;
+}
+
+/* cancel-button is meant to be used within a cr-dialog */
+:host(.cancel-button) {
+  margin-inline-end: 8px;
+}
+
+:host(.action-button),
+:host(.cancel-button) {
+  line-height: 154%;
+}
+
+#ink {
+  color: var(--cr-button-ripple-color);
+  --paper-ripple-opacity: var(--cr-button-ripple-opacity);
+}
+
+/* Layering */
+#background { z-index: 0; }
+#hoverBackground,
+cr-ripple { z-index: 1; }
+#content,
+::slotted(*) { z-index: 2; }

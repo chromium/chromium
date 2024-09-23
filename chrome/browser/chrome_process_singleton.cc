@@ -78,8 +78,8 @@ bool ChromeProcessSingleton::IsSingletonInstance() {
 }
 
 bool ChromeProcessSingleton::NotificationCallback(
-    const base::CommandLine& command_line,
+    base::CommandLine command_line,
     const base::FilePath& current_directory) {
   DCHECK(notification_callback_);
-  return notification_callback_.Run(command_line, current_directory);
+  return notification_callback_.Run(std::move(command_line), current_directory);
 }

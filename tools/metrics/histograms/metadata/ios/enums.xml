@@ -41,15 +41,49 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Not In Fullscreen"/>
 </enum>
 
+<!-- TODO(crbug.com/339262105): Clean up the old password promo methods after
+the generic promo launch. -->
+
 <enum name="DesktopIOSPasswordPromoAction">
   <int value="0" label="Dismissed"/>
   <int value="1" label="ExplicitlyClosed"/>
   <int value="2" label="GetStartedClicked"/>
 </enum>
 
+<!-- TODO(crbug.com/339262105): Clean up the old password promo methods after
+the generic promo launch. -->
+
 <enum name="DesktopIOSPasswordPromoImpression">
   <int value="0" label="FirstImpression"/>
   <int value="1" label="SecondImpression"/>
+</enum>
+
+<enum name="DesktopIOSPromoAction">
+  <int value="0" label="Dismissed"/>
+  <int value="1" label="ExplicitlyClosed"/>
+</enum>
+
+<enum name="DesktopIOSPromoImpression">
+  <int value="0" label="FirstImpression"/>
+  <int value="1" label="SecondImpression"/>
+  <int value="2" label="ThirdImpression"/>
+</enum>
+
+<enum name="DocumentDownloadConflictResolution">
+  <int value="0" label="No Conflict"/>
+  <int value="1" label="Previous Download Complete"/>
+  <int value="2" label="Previous Download Cancelled"/>
+  <int value="3" label="Previous Download Not Finished"/>
+</enum>
+
+<enum name="DocumentDownloadState">
+  <int value="0" label="Not Started"/>
+  <int value="1" label="In Progress"/>
+  <int value="2"
+      label="Cancelled (includes termination of tab and application)"/>
+  <int value="3" label="Complete"/>
+  <int value="4" label="Failed"/>
+  <int value="5" label="Failed Not Resumable"/>
 </enum>
 
 <enum name="ExperienceKitCalendarTypes">
@@ -61,11 +95,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Apple Calendar"/>
 </enum>
 
-<enum name="FormInputAccessoryAction">
-  <int value="0" label="PreviousElement"/>
-  <int value="1" label="NextElement"/>
-  <int value="2" label="Done"/>
-  <int value="3" label="Unkown"/>
+<enum name="GeolocationAPI">
+  <int value="0" label="Clear Watch"/>
+  <int value="1" label="Get Current Position"/>
+  <int value="2" label="Watch Position"/>
 </enum>
 
 <enum name="InactiveTabsThresholdSettingType">
@@ -90,6 +123,17 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="Enabled"/>
   <int value="2" label="Disabled"/>
+</enum>
+
+<enum name="IOSAnnotationType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Date"/>
+  <int value="2" label="Address"/>
+  <int value="3" label="Phone"/>
+  <int value="4" label="Link"/>
+  <int value="5" label="Measurement"/>
+  <int value="6" label="ParcelTracking"/>
+  <int value="7" label="ParcelCarrier"/>
 </enum>
 
 <enum name="IOSBringAndroidTabsPromptActionType">
@@ -132,8 +176,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="IOSCredentialProviderPromoSource">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Password Copied"/>
-  <int value="2" label="Password Saved"/>
+  <int value="1" label="Password Copied (deprecated)"/>
+  <int value="2" label="Password Saved (deprecated)"/>
   <int value="3" label="Autofill Used"/>
   <int value="4" label="Set Up List"/>
 </enum>
@@ -160,10 +204,27 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="All Tabs"/>
 </enum>
 
+<enum name="IOSDefaultBrowserSettingsPageUsage">
+  <summary>
+    The action taken by the user after they landed on the Default Browser
+    Settings page.
+  </summary>
+  <int value="0" label="Open iOS Settings"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Displayed"/>
+</enum>
+
 <enum name="IOSDefaultBrowserVideoPromoAction">
   <int value="0" label="Primary Action Button"/>
   <int value="1" label="Secondary Action Button"/>
   <int value="2" label="Swipe Down"/>
+</enum>
+
+<enum name="IOSDockingPromoAction">
+  <int value="0" label="Toggle appearance"/>
+  <int value="1" label="Primary Action Button (Got It)"/>
+  <int value="2" label="Secondary Action Button (Remind Me Later)"/>
+  <int value="3" label="Dismiss via Swipe"/>
 </enum>
 
 <enum name="IOSEditMenuActions">
@@ -215,6 +276,8 @@ chromium-metrics-reviews@google.com.
   <int value="45" label="Autofill passwords"/>
   <int value="46" label="Autofill contacts"/>
   <int value="47" label="Autofill others"/>
+  <int value="48" label="StartWritingTools"/>
+  <int value="49" label="ShowTextFormattingOptions"/>
 </enum>
 
 <enum name="IOSEditMenuError">
@@ -249,6 +312,11 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="More Than Ten"/>
 </enum>
 
+<enum name="IOSEnhancedSafeBrowseringInfobarInteraction">
+  <int value="0" label="Viewed"/>
+  <int value="1" label="Tapped"/>
+</enum>
+
 <enum name="IOSErrorPagePresentationFailed">
   <int value="0" label="Unknown"/>
   <int value="1" label="Web View Released Error"/>
@@ -266,14 +334,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Skipped Default Browser Settings For NTP"/>
 </enum>
 
-<enum name="IOSExternalActionDefaultBrowserPromoUsage">
-  <summary>
-    The action taken by the user after they landed on the Default Browser Promo
-    from an External Action (URL passed to Chrome with
-    &quot;ChromeExternalAction&quot; as host).
-  </summary>
-  <int value="0" label="Open iOS Settings"/>
-  <int value="1" label="Dismissed"/>
+<enum name="IOSFilePickerInstallError">
+  <int value="0" label="The file picker was not found"/>
+  <int value="1" label="The file picker configuration was not found"/>
+  <int value="2" label="The file picker cannot submit the selection"/>
+  <int value="3" label="The file picker cannot present a sub menu"/>
 </enum>
 
 <enum name="IOSHomeActionType">
@@ -281,12 +346,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Shortcuts"/>
   <int value="2" label="Return to Recent Tab tile"/>
   <int value="3" label="Feed Card"/>
-  <int value="4" label="Fake Omnibox tap"/>
+  <int value="4" label="Obsolete in M124 - Fake Omnibox tap"/>
   <int value="5" label="Set Up List"/>
   <int value="6" label="Omnibox navigation"/>
   <int value="7" label="Safety Check tile"/>
   <int value="8" label="Parcel Tracking tile"/>
   <int value="9" label="Distant tab resumption tile"/>
+</enum>
+
+<enum name="IOSHomeCustomizationEntrypoint">
+  <int value="0" label="Main entrypoint"/>
+  <int value="1" label="Magic Stack entrypoint"/>
 </enum>
 
 <enum name="IOSJavascriptContentBlockType">
@@ -311,6 +381,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="IOSMagicStackModuleType">
+  <int value="-1" label="Invalid"/>
   <int value="0" label="Most Visited Tiles"/>
   <int value="1" label="Shortcuts"/>
   <int value="2" label="Set Up List Sync"/>
@@ -326,19 +397,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Obsolete in M123 - Parcel Tracking See More"/>
   <int value="13" label="Set Up List Notifications"/>
   <int value="14" label="Placeholder"/>
-</enum>
-
-<enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">
-  <int value="0" label="After Breakpad Ref">
-    Freeze detection stopped after obtaining the breakpad lock.
-  </int>
-  <int value="1" label="After FileManager UTE move">
-    Freeze detection stopped after moving the hang report out of the Breakpad
-    directory and into the |UTE| directory.
-  </int>
-  <int value="2" label="After Crashpad DumpWithoutCrash">
-    Freeze detection stopped after calling DumpWithCrash from Crashpad.
-  </int>
+  <int value="15" label="Price Tracking Promo"/>
 </enum>
 
 <enum name="IOSMiniMapConsentOutcome">
@@ -366,6 +425,29 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Standard beside Compact with Slideover"/>
   <int value="12" label="Compact beside Compact"/>
   <int value="13" label="Compact beside Compact with Slideover"/>
+</enum>
+
+<enum name="IOSNotificationsOptInActionOnPrompt">
+  <int value="0" label="Swiped to dismiss"/>
+  <int value="1" label="No thanks tapped"/>
+  <int value="2" label="Enable notifications tapped"/>
+</enum>
+
+<enum name="IOSNTPImpressionCustomizationState">
+  <int value="0" label="All components enabled"/>
+  <int value="1"
+      label="Most Visited Tiles and Magic Stack enabled; Feed disabled"/>
+  <int value="2"
+      label="Most Visited Tiles and Feed enabled; Magic Stack disabled"/>
+  <int value="3"
+      label="Magic Stack and Feed enabled; Most Visited Tiles disabled"/>
+  <int value="4"
+      label="Most Visited Tiles enabled; Magic Stack and Feed disabled"/>
+  <int value="5"
+      label="Magic Stack enabled; Most Visited Tiles and Feed disabled"/>
+  <int value="6"
+      label="Feed enabled; Most Visited Tiles and Magic Stack disabled"/>
+  <int value="7" label="All components disabled"/>
 </enum>
 
 <enum name="IOSNTPImpressionType">
@@ -486,6 +568,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SwipeToDismiss"/>
 </enum>
 
+<enum name="IOSParcelTrackingOptInStatus">
+  <int value="0" label="Never Track"/>
+  <int value="1" label="Always Track"/>
+  <int value="2" label="Ask To Track"/>
+  <int value="3" label="Status Not Set"/>
+</enum>
+
 <enum name="IOSPermissionEvent">
   <int value="0" label="Camera permission disabled"/>
   <int value="1" label="Camera permission enabled"/>
@@ -557,13 +646,6 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Stay Safe default browser promo"/>
 </enum>
 
-<enum name="IOSPromosManagerPromoImpressionLimitEvaluationType">
-  <int value="0" label="Valid"/>
-  <int value="1" label="Invalid (Promo-specific limit triggered)"/>
-  <int value="2" label="Invalid (Promo-agnostic limit triggered)"/>
-  <int value="3" label="Invalid (Global limit triggered)"/>
-</enum>
-
 <enum name="IOSPromosManagerPromoType">
   <int value="0" label="StandardPromoViewProvider"/>
   <int value="1" label="BanneredPromoViewProvider"/>
@@ -579,6 +661,46 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="No Active Tabs"/>
   <int value="5" label="Not Android Switcher"/>
   <int value="6" label="Success"/>
+</enum>
+
+<enum name="IOSSafetyCheckFreshnessTrigger">
+  <int value="0" label="Password Check - State Changed"/>
+  <int value="1" label="Update Chrome Check - State Changed"/>
+</enum>
+
+<enum name="IOSSafetyCheckHiddenReason">
+  <int value="0" label="Manually disabled"/>
+  <int value="1" label="No issues"/>
+</enum>
+
+<!-- LINT.IfChange(IOSSafetyCheckNotificationType) -->
+
+<enum name="IOSSafetyCheckNotificationType">
+  <int value="0" label="Update Chrome"/>
+  <int value="1" label="Passwords"/>
+  <int value="2" label="Safe Browsing"/>
+  <int value="3" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/safety_check_notifications/utils/constants.h:SafetyCheckNotificationType) -->
+
+<enum name="IOSSaveToDriveOutcomeType">
+  <int value="0" label="Failure - WebState Hidden"/>
+  <int value="1" label="Failure - WebState Destroyed"/>
+  <int value="2" label="Failure - Download Destroyed"/>
+  <int value="3" label="Failure - Canceled (Files Selected)"/>
+  <int value="4" label="Failure - Canceled (Drive Selected)"/>
+  <int value="5" label="Success - Selected Files"/>
+  <int value="6" label="Success - Selected Drive"/>
+  <int value="7" label="Success - Opted to Manage Storage"/>
+</enum>
+
+<enum name="IOSSaveToDriveUploadTaskStateType">
+  <int value="0" label="Not Started"/>
+  <int value="1" label="In Progress"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Complete"/>
+  <int value="4" label="Failed"/>
 </enum>
 
 <enum name="IOSSaveToPhotosAccountPickerType">
@@ -632,6 +754,9 @@ chromium-metrics-reviews@google.com.
       label="Success - StoreKit opened and app not installed (maybe dismissed
              before full installation)"/>
   <int value="8" label="Success - StoreKit opened and app installed"/>
+  <int value="9" label="Failure - User out-of-storage and DID manage storage"/>
+  <int value="10"
+      label="Failure - User out-of-storage and did NOT manage storage"/>
 </enum>
 
 <enum name="IOSSearchExtensionAction">
@@ -732,19 +857,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Open tab"/>
 </enum>
 
-<enum name="IOSStorageCapacity">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="0 GB"/>
-  <int value="2" label="16 GB"/>
-  <int value="3" label="32 GB"/>
-  <int value="4" label="64 GB"/>
-  <int value="5" label="128 GB"/>
-  <int value="6" label="256 GB"/>
-  <int value="7" label="512 GB"/>
-  <int value="8" label="1 TB"/>
-  <int value="9" label="2 TB"/>
-</enum>
-
 <enum name="IOSTabSwitcherDragDropTabs">
   <int value="0" label="A tab is dragged."/>
   <int value="1" label="A tab is dropped at the same index position."/>
@@ -767,6 +879,29 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Page Control Drag"/>
   <int value="4" label="Item Drag"/>
   <int value="5" label="Voice Over Swipe"/>
+</enum>
+
+<enum name="IOSTipsNotificationType">
+  <int value="0" label="Default Browser"/>
+  <int value="1" label="What's New"/>
+  <int value="2" label="Sign In"/>
+  <int value="3" label="Error"/>
+  <int value="4" label="SetUpList Continuation"/>
+  <int value="5" label="Docking"/>
+  <int value="6" label="Omnibox Position"/>
+  <int value="7" label="Lens"/>
+  <int value="8" label="Enhanced Safe Browsing"/>
+</enum>
+
+<enum name="IOSTipsNotificationUserType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Less Engaged"/>
+  <int value="2" label="Active Seeker"/>
+</enum>
+
+<enum name="IOSUpgradeCenterFailureReason">
+  <int value="0" label="Invalid URL"/>
+  <int value="1" label="Invalid Version"/>
 </enum>
 
 <enum name="IOSWebFileInputAttributes">
@@ -850,6 +985,13 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Success, with lower certainty"/>
 </enum>
 
+<enum name="MediaAPIParams">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Audio Only"/>
+  <int value="2" label="Video Only"/>
+  <int value="3" label="Audio and Video"/>
+</enum>
+
 <enum name="MetricKitExitData">
   <int value="0" label="App exited normally"/>
   <int value="1" label="App exited abnormally"/>
@@ -917,6 +1059,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Used password suggestion"/>
   <int value="2" label="Accessed Password Manager through the long press menu"/>
   <int value="3" label="Accessed Password Details through the long press menu"/>
+  <int value="4" label="The suggestion provider's type was incorrect"/>
+  <int value="5"
+      label="Bottom Sheet couldn't be presented for various reasons"/>
 </enum>
 
 <enum name="PaymentsSuggestionBottomSheetExitReason">
@@ -925,12 +1070,27 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Accessed Payment Methods through the long press menu"/>
   <int value="3" label="Accessed Payment Details through the long press menu"/>
   <int value="4" label="The suggestion provider's type was incorrect"/>
+  <int value="5"
+      label="Bottom Sheet couldn't be presented for various reasons"/>
 </enum>
 
 <enum name="PromoWithInstructionsAction">
   <int value="0" label="Close"/>
   <int value="1" label="Open Instructions"/>
 </enum>
+
+<!-- LINT.IfChange(PushNotificationClientId) -->
+
+<enum name="PushNotificationClientId">
+  <int value="1" label="Commerce"/>
+  <int value="2" label="Content"/>
+  <int value="3" label="Tips"/>
+  <int value="4" label="Sports"/>
+  <int value="5" label="Safety Check"/>
+  <int value="6" label="Send Tab"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/push_notification_client_id.h:PushNotificationClientId) -->
 
 <enum name="PushNotificationLifecycleEvent">
   <int value="0" label="Notification received on device"/>
@@ -947,7 +1107,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PushNotificationPermissionProvisionalStatus">
   <int value="0" label="Accepted"/>
-  <int value="1" label="Notifications previously authorized"/>
+  <int value="1" label="Notifications previously authorized or ineligible"/>
   <int value="2" label="Error"/>
 </enum>
 
@@ -1027,10 +1187,19 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Calendar Event"/>
   <int value="10" label="Chrome Actions"/>
   <int value="11" label="Mini Maps"/>
+  <int value="12" label="Lens Search"/>
+  <int value="13" label="Bottom Omnibox"/>
+  <int value="14" label="Enhanced Safe Browsing"/>
+  <int value="15" label="Password Manager Widget"/>
+  <int value="16" label="Pinned Tabs"/>
+  <int value="17" label="Inactive Tabs"/>
+  <int value="18" label="Package Tracking"/>
+  <int value="19" label="Password Sharing"/>
+  <int value="20" label="Customizable Overflow Menu"/>
 </enum>
 
 <enum name="WindowActivityOrigin">
-  <int value="0" label="WindowActivityUnknwonOrigin"/>
+  <int value="0" label="WindowActivityUnknownOrigin"/>
   <int value="1" label="WindowActivityExternalOrigin"/>
   <int value="2" label="WindowActivityRestoredOrigin"/>
   <int value="3" label="WindowActivityContextMenuOrigin"/>

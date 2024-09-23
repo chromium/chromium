@@ -1,0 +1,7 @@
+monorail: {
+  component: "Blink>Identity>DigitalCredentials"
+}
+team_email: "digital-credentials@google.com"
+buganizer_public: {
+  component_id: 1518527
+}

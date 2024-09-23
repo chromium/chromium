@@ -140,13 +140,19 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // another display, a display was removed or the game window of the
   // `kGameDashboard` session was moved to another display. Moves the capture
   // mode widgets to `new_root` depending on the capture mode source and whether
-  // it was a display removal.
-  virtual void MaybeChangeRoot(aura::Window* new_root) = 0;
+  // it was a display removal (`root_window_will_shutdown` will be true in this
+  // case).
+  virtual void MaybeChangeRoot(aura::Window* new_root,
+                               bool root_window_will_shutdown) = 0;
 
   // Helper function for `GetTopMostCapturableWindowAtPoint()`. Returns the
   // native windows of the widgets associated with the session (bar widget,
   // label widget, etc.) that should be ignored as the topmost window.
   virtual std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() = 0;
+
+  // Shows (if the underlying session type supports it) the results panel with
+  // the captured region as `image`.
+  virtual void ShowSearchResultsPanel(const gfx::ImageSkia& image) = 0;
 
   // ShellObserver:
   void OnRootWindowWillShutdown(aura::Window* root_window) override;

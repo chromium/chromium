@@ -133,7 +133,7 @@ void V4L2DevicePoller::DevicePollTask() {
     bool event_pending = false;
     DVLOGF(4) << "Polling device.";
     if (!device_->Poll(true, &event_pending)) {
-      VLOGF(1) << "An error occured while polling, calling error callback";
+      VLOGF(1) << "An error occurred while polling, calling error callback";
       client_task_runner_->PostTask(FROM_HERE, error_callback_);
       return;
     }

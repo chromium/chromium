@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/browser/json_file_sanitizer.h"
 
 #include "base/files/file_util.h"
@@ -26,10 +31,9 @@ std::tuple<std::string, bool, bool> ReadAndDeleteTextFile(
   return std::make_tuple(contents, read_success, delete_success);
 }
 
-int WriteStringToFile(const std::string& contents,
-                      const base::FilePath& file_path) {
-  int size = static_cast<int>(contents.length());
-  return base::WriteFile(file_path, contents.data(), size);
+bool WriteStringToFile(const std::string& contents,
+                       const base::FilePath& file_path) {
+  return base::WriteFile(file_path, contents);
 }
 
 }  // namespace
@@ -112,18 +116,16 @@ void JsonFileSanitizer::JsonParsingDone(
     return;
   }
 
-  int size = static_cast<int>(json_string.length());
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&WriteStringToFile, std::move(json_string), file_path),
       base::BindOnce(&JsonFileSanitizer::JsonFileWritten,
-                     weak_factory_.GetWeakPtr(), file_path, size));
+                     weak_factory_.GetWeakPtr(), file_path));
 }
 
 void JsonFileSanitizer::JsonFileWritten(const base::FilePath& file_path,
-                                        int expected_size,
-                                        int actual_size) {
-  if (expected_size != actual_size) {
+                                        bool success) {
+  if (!success) {
     ReportError(Status::kFileWriteError, std::string());
     return;
   }

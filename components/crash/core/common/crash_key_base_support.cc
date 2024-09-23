@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
@@ -62,7 +63,7 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
   }
 
   void Set(base::debug::CrashKeyString* crash_key,
-           base::StringPiece value) override {
+           std::string_view value) override {
     SIZE_CLASS_OPERATION(crash_key->size,
                          reinterpret_cast<, *>(crash_key)->impl.Set(value));
   }
@@ -73,7 +74,10 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
   }
 
   void OutputCrashKeysToStream(std::ostream& out) override {
-#if BUILDFLAG(USE_CRASHPAD_ANNOTATION)
+#if defined(OFFICIAL_BUILD)
+    out << "Crash key dumping is inherently thread-unsafe so it's disabled in "
+           "official builds.";
+#elif BUILDFLAG(USE_CRASHPAD_ANNOTATION)
     // TODO(lukasza): If phasing out breakpad takes a long time, then consider
     // a better way to abstract away difference between crashpad and breakpad.
     // For example, maybe the code below should be moved into
@@ -81,6 +85,8 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
     // implementation-agnostic way) via CrashKeyString.  This would allow
     // avoiding using the BUILDFLAG(...) macros here.
 
+    // Note that iterating over this list while other threads are executing is
+    // inherently racy.
     auto* annotations = crashpad::AnnotationList::Get();
     if (!annotations || annotations->begin() == annotations->end())
       return;
@@ -92,8 +98,8 @@ class CrashKeyBaseSupport : public base::debug::CrashKeyImplementation {
 
       if (annotation->type() != crashpad::Annotation::Type::kString)
         continue;
-      base::StringPiece value(static_cast<const char*>(annotation->value()),
-                              annotation->size());
+      std::string_view value(static_cast<const char*>(annotation->value()),
+                             annotation->size());
 
       out << "  \"" << annotation->name() << "\" = \"" << value << "\"\n";
     }

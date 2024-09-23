@@ -33,9 +33,16 @@ class ASH_EXPORT FakeVideoConferenceTrayEffectsManager
       const FakeVideoConferenceTrayEffectsManager&) = delete;
   ~FakeVideoConferenceTrayEffectsManager() override;
 
+  // Associates `effect_id` with a list of DLC ids, which may be different from
+  // the list of DLC ids returned by
+  // `VideoConferenceTrayEffectsManager::GetDlcIdsForEffectId()`.
+  void SetDlcIdsForEffectId(VcEffectId effect_id,
+                            std::vector<std::string> dlc_ids);
+
   // VideoConferenceTrayEffectsManager:
   video_conference::VcTileUiController* GetUiControllerForEffectId(
       VcEffectId effect_id) override;
+  std::vector<std::string> GetDlcIdsForEffectId(VcEffectId effect_id) override;
   void UnregisterDelegate(VcEffectsDelegate* delegate) override;
 
  private:
@@ -52,6 +59,10 @@ class ASH_EXPORT FakeVideoConferenceTrayEffectsManager
   // of this vector's range. Owned by `this`.
   std::vector<std::unique_ptr<video_conference::VcTileUiController>>
       tile_ui_controllers_;
+
+  // A map from effect id to list of DLC id. Populate this via calls to
+  // `SetDlcIdsForEffectId()`.
+  std::map<VcEffectId, std::vector<std::string>> dlc_ids_for_effect_id_;
 };
 
 }  // namespace ash

@@ -15,9 +15,12 @@
 // recover its properties when the user navigates back to it.
 @interface NewTabPageState : NSObject
 
-// Initializes an NTP state with a given scroll position and feed type.
+// Initializes an NTP state with a given scroll position, feed type and sort
+// type.
 - (instancetype)initWithScrollPosition:(CGFloat)scrollPosition
-                          selectedFeed:(FeedType)selectedFeed;
+                          selectedFeed:(FeedType)selectedFeed
+                 followingFeedSortType:
+                     (FollowingFeedSortType)followingFeedSortType;
 
 // The saved content offset in the NTP.
 @property(nonatomic, assign) CGFloat scrollPosition;
@@ -27,6 +30,9 @@
 
 // Whether the NTP should be scrolled to the top of the feed.
 @property(nonatomic, assign) BOOL shouldScrollToTopOfFeed;
+
+// The current sort type of the Following feed.
+@property(nonatomic, assign) FollowingFeedSortType followingFeedSortType;
 
 @end
 

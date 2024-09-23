@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/editing/state_machines/backspace_state_machine.h"
 
-#include <ostream>  // NOLINT
+#include <ostream>
+
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -194,12 +200,13 @@ TextSegmentationMachineState BackspaceStateMachine::FeedPrecedingCodeUnit(
       code_units_to_be_deleted_ -= 2;  // Code units of RIS
       return MoveToNextState(BackspaceState::kOddNumberedRIS);
     case BackspaceState::kFinished:
-      NOTREACHED() << "Do not call feedPrecedingCodeUnit() once it finishes.";
+      NOTREACHED_IN_MIGRATION()
+          << "Do not call feedPrecedingCodeUnit() once it finishes.";
       break;
     default:
-      NOTREACHED() << "Unhandled state: " << state_;
+      NOTREACHED_IN_MIGRATION() << "Unhandled state: " << state_;
   }
-  NOTREACHED() << "Unhandled state: " << state_;
+  NOTREACHED_IN_MIGRATION() << "Unhandled state: " << state_;
   return TextSegmentationMachineState::kInvalid;
 }
 
@@ -214,7 +221,7 @@ TextSegmentationMachineState BackspaceStateMachine::TellEndOfPrecedingText() {
 
 TextSegmentationMachineState BackspaceStateMachine::FeedFollowingCodeUnit(
     UChar code_unit) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return TextSegmentationMachineState::kInvalid;
 }
 

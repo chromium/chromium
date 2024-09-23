@@ -30,9 +30,9 @@
 namespace {
 
 // Returns the storage of a test hook for `ShowSSLClientCertificateSelector()`.
-chrome::ShowSSLClientCertificateSelectorTestingHook&
+ShowSSLClientCertificateSelectorTestingHook&
 GetShowSSLClientCertificateSelectorTestingHook() {
-  static base::NoDestructor<chrome::ShowSSLClientCertificateSelectorTestingHook>
+  static base::NoDestructor<ShowSSLClientCertificateSelectorTestingHook>
       instance;
   return *instance;
 }
@@ -158,8 +158,6 @@ base::OnceClosure SSLClientCertificateSelector::GetCancellationCallback() {
                         weak_factory_.GetWeakPtr());
 }
 
-namespace chrome {
-
 base::OnceClosure ShowSSLClientCertificateSelector(
     content::WebContents* contents,
     net::SSLCertRequestInfo* cert_request_info,
@@ -200,5 +198,3 @@ void SetShowSSLClientCertificateSelectorHookForTest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   GetShowSSLClientCertificateSelectorTestingHook() = std::move(hook);
 }
-
-}  // namespace chrome

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 
-#include "base/notreached.h"
+#include <memory>
+
+#include "chrome/browser/ash/login/users/avatar/user_image_loader_delegate.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_loader_delegate_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
@@ -22,7 +25,15 @@ UserImageManagerRegistry* UserImageManagerRegistry::Get() {
 
 UserImageManagerRegistry::UserImageManagerRegistry(
     user_manager::UserManager* user_manager)
-    : user_manager_(user_manager) {
+    : UserImageManagerRegistry(
+          user_manager,
+          std::make_unique<UserImageLoaderDelegateImpl>()) {}
+
+UserImageManagerRegistry::UserImageManagerRegistry(
+    user_manager::UserManager* user_manager,
+    std::unique_ptr<UserImageLoaderDelegate> user_image_loader_delegate)
+    : user_image_loader_delegate_(std::move(user_image_loader_delegate)),
+      user_manager_(user_manager) {
   CHECK(!g_instance);
   g_instance = this;
   observation_.Observe(user_manager);
@@ -33,12 +44,13 @@ UserImageManagerRegistry::~UserImageManagerRegistry() {
   g_instance = nullptr;
 }
 
-UserImageManager* UserImageManagerRegistry::GetManager(
+UserImageManagerImpl* UserImageManagerRegistry::GetManager(
     const AccountId& account_id) {
   auto it = map_.find(account_id);
   if (it == map_.end()) {
     it = map_.emplace(account_id, std::make_unique<UserImageManagerImpl>(
-                                      account_id, user_manager_.get()))
+                                      account_id, user_manager_.get(),
+                                      user_image_loader_delegate_.get()))
              .first;
   }
   return it->second.get();
@@ -83,7 +95,6 @@ void UserImageManagerRegistry::OnUserLoggedIn(const user_manager::User& user) {
       break;
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kArcKioskApp:
     case user_manager::UserType::kWebKioskApp:
       // Ignore these users.
       return;

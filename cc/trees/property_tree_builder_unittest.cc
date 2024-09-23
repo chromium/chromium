@@ -29,7 +29,8 @@ namespace {
 class PropertyTreeBuilderTest : public LayerTreeImplTestBase,
                                 public testing::Test {
  public:
-  PropertyTreeBuilderTest() : LayerTreeImplTestBase(LayerTreeSettings()) {}
+  PropertyTreeBuilderTest()
+      : LayerTreeImplTestBase(CommitToPendingTreeLayerTreeSettings()) {}
 
   void UpdateMainDrawProperties(float device_scale_factor = 1.0f) {
     SetDeviceScaleAndUpdateViewportRect(host(), device_scale_factor);
@@ -52,8 +53,8 @@ class PropertyTreeBuilderTest : public LayerTreeImplTestBase,
     UpdateMainDrawProperties(device_scale_factor);
     if (!host_impl()->pending_tree())
       host_impl()->CreatePendingTree();
-    host()->CommitAndCreatePendingTree();
-    // TODO(https://crbug.com/939968) This call should be handled by
+    host()->CommitToPendingTree();
+    // TODO(crbug.com/40617417) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
     // layer tree host to the pending tree.
     host_impl()->pending_tree()->PullLayerTreePropertiesFrom(
@@ -1233,7 +1234,7 @@ TEST_F(PropertyTreeBuilderTest, RoundedCornerBounds) {
   // The net offset from the origin of the render target is [41, 51]. However,
   // this also has transform scale that must be applied separately (1.6 *
   // transform_scale = 3.2) thus giving [67.2, 91.2]. The corner radius is also
-  // scaled by a factor of 3.2. These values are ceiled - see crbug.com/1443413.
+  // scaled by a factor of 3.2.
   const gfx::RRectF actual_rrect_4 =
       rounded_corner_layer_4_impl->draw_properties()
           .mask_filter_info.rounded_corner_bounds();
@@ -1242,8 +1243,7 @@ TEST_F(PropertyTreeBuilderTest, RoundedCornerBounds) {
   bounds_in_target_space = kRoundedCornerLayer4Bound;
   bounds_in_target_space.Scale(kDeviceScale * kRoundedCorner3Scale);
   bounds_in_target_space += layer3_bounds_in_target_space.OffsetFromOrigin();
-  EXPECT_EQ(actual_rrect_4.rect(),
-            gfx::RectF(gfx::ToEnclosingRect(bounds_in_target_space)));
+  EXPECT_RECTF_EQ(actual_rrect_4.rect(), bounds_in_target_space);
   EXPECT_FLOAT_EQ(actual_rrect_4.GetSimpleRadius(),
                   kRoundedCorner4Radius * kDeviceScale * kRoundedCorner3Scale);
 }
@@ -1580,8 +1580,7 @@ TEST_F(PropertyTreeBuilderTest, RoundedCornerBoundsSiblingRenderTarget) {
           .mask_filter_info.rounded_corner_bounds();
   bounds_in_target_space = kRoundedCornerLayer4Bound;
   bounds_in_target_space.Scale(kDeviceScale);
-  EXPECT_EQ(actual_rrect_4.rect(),
-            gfx::RectF(gfx::ToEnclosingRect(bounds_in_target_space)));
+  EXPECT_RECTF_EQ(actual_rrect_4.rect(), bounds_in_target_space);
   EXPECT_FLOAT_EQ(actual_rrect_4.GetSimpleRadius(),
                   kRoundedCorner4Radius * kDeviceScale);
 }
@@ -2046,8 +2045,7 @@ TEST_F(PropertyTreeBuilderTest,
           .mask_filter_info.rounded_corner_bounds();
   bounds_in_target_space = kRoundedCornerLayer6Bound;
   bounds_in_target_space.Scale(kDeviceScale);
-  EXPECT_EQ(actual_self_rrect_6.rect(),
-            gfx::RectF(gfx::ToEnclosingRect(bounds_in_target_space)));
+  EXPECT_RECTF_EQ(actual_self_rrect_6.rect(), bounds_in_target_space);
   EXPECT_FLOAT_EQ(actual_self_rrect_6.GetSimpleRadius(),
                   kRoundedCorner6Radius * kDeviceScale);
 }
@@ -2300,16 +2298,14 @@ TEST_F(PropertyTreeBuilderTest,
   // The render target for this layer is |root|.
   // The offset from the origin of the render target is [60, 8] and the device
   // scale factor is 1.6 thus giving the target space origin of [96, 12.8]. The
-  // corner radius is also scaled by a factor of 1.6. These values are ceiled -
-  // see crbug.com/1443413.
+  // corner radius is also scaled by a factor of 1.6.
   const gfx::RRectF actual_self_rrect_3 =
       rounded_corner_layer_impl_3->draw_properties()
           .mask_filter_info.rounded_corner_bounds();
   bounds_in_target_space = kRoundedCornerLayer3Bound;
   bounds_in_target_space += kRoundedCornerLayer2Bound.OffsetFromOrigin();
   bounds_in_target_space.Scale(kDeviceScale);
-  EXPECT_EQ(actual_self_rrect_3.rect(),
-            gfx::RectF(gfx::ToEnclosingRect(bounds_in_target_space)));
+  EXPECT_EQ(actual_self_rrect_3.rect(), bounds_in_target_space);
   EXPECT_FLOAT_EQ(actual_self_rrect_3.GetSimpleRadius(),
                   kRoundedCorner3Radius * kDeviceScale);
 

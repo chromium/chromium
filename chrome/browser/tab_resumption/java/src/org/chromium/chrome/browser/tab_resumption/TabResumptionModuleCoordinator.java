@@ -5,68 +5,115 @@
 package org.chromium.chrome.browser.tab_resumption;
 
 import android.content.Context;
-import android.view.ViewStub;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
+import org.chromium.chrome.browser.magic_stack.ModuleProvider;
+import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.TabResumptionDataProviderFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
 
 /**
  * The Coordinator for the tab resumption module, which can be embedded by surfaces like NTP or
  * Start surface.
  */
-public class TabResumptionModuleCoordinator {
+public class TabResumptionModuleCoordinator implements ModuleProvider {
     protected final Context mContext;
-    protected final TabResumptionDataProvider mDataProvider;
+    protected final ModuleDelegate mModuleDelegate;
+    protected final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    protected final TabResumptionDataProviderFactory mDataProviderFactory;
     protected final UrlImageProvider mUrlImageProvider;
     protected final PropertyModel mModel;
-    protected final TabResumptionModuleView mModuleView;
-    protected PropertyModelChangeProcessor mPropertyModelChangeProcessor;
-    protected final TabResumptionModuleMediator mMediator;
+
+    protected TabResumptionDataProvider mDataProvider;
+    protected TabResumptionModuleMediator mMediator;
 
     public TabResumptionModuleCoordinator(
-            Context context,
-            TabResumptionDataProvider dataProvider,
-            UrlImageProvider urlImageProvider,
-            SuggestionClickCallback suggestionClickCallback,
-            ViewStub viewStub) {
+            @NonNull Context context,
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            @NonNull TabResumptionDataProviderFactory dataProviderFactory,
+            @NonNull UrlImageProvider urlImageProvider) {
         mContext = context;
-        mDataProvider = dataProvider;
+        mModuleDelegate = moduleDelegate;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mDataProviderFactory = dataProviderFactory;
         mUrlImageProvider = urlImageProvider;
         mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
-        mModuleView = (TabResumptionModuleView) viewStub.inflate();
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mModuleView, new TabResumptionModuleViewBinder());
-        SuggestionClickCallback wrappedClickCallback =
-                (GURL url) -> {
-                    suggestionClickCallback.onSuggestionClick(url);
-                    // TODO(crbug.com/1515325): Record metrics here.
+        SuggestionClickCallback suggstionClickCallback =
+                (SuggestionEntry entry) -> {
+                    if (entry.isLocalTab()) {
+                        mModuleDelegate.onTabClicked(entry.getLocalTabId(), getModuleType());
+                    } else {
+                        if (entry.type == SuggestionEntryType.FOREIGN_TAB) {
+                            RecordUserAction.record("MobileCrossDeviceTabJourney");
+                        }
+                        mModuleDelegate.onUrlClicked(entry.url, getModuleType());
+                    }
                 };
         mMediator =
                 new TabResumptionModuleMediator(
-                        mContext, mModel, mDataProvider, mUrlImageProvider, wrappedClickCallback);
-        mDataProvider.setStatusChangedCallback(this::reload);
+                        /* context= */ mContext,
+                        /* moduleDelegate= */ mModuleDelegate,
+                        /* tabModelSelectorSupplier= */ mTabModelSelectorSupplier,
+                        /* model= */ mModel,
+                        /* urlImageProvider= */ mUrlImageProvider,
+                        /* reloadSessionCallback= */ this::updateModule,
+                        /* statusChangedCallback= */ this::showModule,
+                        /* seeMoreLinkClickCallback= */ this::onSeeMoreClicked,
+                        suggstionClickCallback);
+        mMediator.startSession(mDataProviderFactory.make());
     }
 
     public void destroy() {
-        mDataProvider.setStatusChangedCallback(null);
+        mMediator.endSession();
         mMediator.destroy();
-        mPropertyModelChangeProcessor.destroy();
-        mModuleView.destroy();
-
         mUrlImageProvider.destroy();
-        mDataProvider.destroy();
     }
 
-    /** Show tab resumption module. */
+    /** Shows tab resumption module. */
+    @Override
     public void showModule() {
         mMediator.loadModule();
     }
 
-    /** Reloads tab resumption module in response to UI or data updates. */
-    public void reload() {
+    /** Loads the Mediator with new Data Provider, and re-shows tab resumption module. */
+    @Override
+    public void updateModule() {
+        mMediator.endSession();
+        mMediator.startSession(mDataProviderFactory.make());
         mMediator.loadModule();
+    }
+
+    @Override
+    public int getModuleType() {
+        return mMediator.getModuleType();
+    }
+
+    @Override
+    public void hideModule() {
+        destroy();
+    }
+
+    @Override
+    public String getModuleContextMenuHideText(Context context) {
+        return mMediator.getModuleContextMenuHideText(context);
+    }
+
+    @Override
+    public void onContextMenuCreated() {}
+
+    PropertyModel getModelForTesting() {
+        return mModel;
+    }
+
+    void onSeeMoreClicked() {
+        mModuleDelegate.onUrlClicked(new GURL(UrlConstants.RECENT_TABS_URL), getModuleType());
     }
 }

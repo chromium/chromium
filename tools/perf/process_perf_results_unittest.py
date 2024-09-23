@@ -9,6 +9,7 @@ import os
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 import six
 
@@ -16,11 +17,6 @@ from core import path_util
 path_util.AddTelemetryToPath()
 
 from telemetry import decorators
-
-if six.PY2:
-  import mock
-else:
-  import unittest.mock as mock  # pylint: disable=no-name-in-module,import-error,wrong-import-order
 
 import process_perf_results as ppr_module
 

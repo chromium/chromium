@@ -20,7 +20,6 @@
 #include "chrome/browser/image_editor/image_editor_component_info.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -34,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -65,7 +65,7 @@ ScreenshotCapturedBubble::ScreenshotCapturedBubble(
       image_(image),
       web_contents_(web_contents->GetWeakPtr()),
       profile_(profile) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_BROWSER_SHARING_SCREENSHOT_POST_CAPTURE_TITLE);
 }
 
@@ -187,7 +187,7 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
   content::DownloadManager* download_manager =
       browser->profile()->GetDownloadManager();
-  // TODO(crbug.com/1186839): Update the annotation's |setting| and
+  // TODO(crbug.com/40753957): Update the annotation's |setting| and
   // |chrome_policy| fields once the Sharing Hub is landed.
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("desktop_screenshot_save", R"(

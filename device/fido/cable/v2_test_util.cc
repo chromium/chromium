@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/cable/v2_test_util.h"
 
 #include <string>
@@ -11,9 +16,11 @@
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cbor/reader.h"
@@ -25,11 +32,13 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/websocket_adapter.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/network_context_factory.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_network_context.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -52,7 +61,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
-      bool has_storage_access,
+      net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
@@ -299,18 +308,13 @@ class TestNetworkContext : public network::TestNetworkContext {
     }
 
     void OnInPipeReady(MojoResult, const mojo::HandleSignalsState&) {
-      const size_t todo = buffer_.size() - buffer_i_;
-      CHECK_GT(todo, 0u);
-
-      // We CHECK that the message fits into Mojo's 32-bit lengths because we
-      // don't expect anything that large in unittests.
-      uint32_t todo_32 = todo;
-      CHECK_LE(todo, std::numeric_limits<decltype(todo_32)>::max());
-
-      const MojoResult result = in_->ReadData(
-          &buffer_.data()[buffer_i_], &todo_32, MOJO_READ_DATA_FLAG_NONE);
+      size_t actually_read_bytes = 0;
+      const MojoResult result =
+          in_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                        base::as_writable_byte_span(buffer_).subspan(buffer_i_),
+                        actually_read_bytes);
       if (result == MOJO_RESULT_OK) {
-        buffer_i_ += todo_32;
+        buffer_i_ += actually_read_bytes;
         CHECK_LE(buffer_i_, buffer_.size());
 
         if (peer_ && buffer_i_ > 0) {
@@ -330,24 +334,24 @@ class TestNetworkContext : public network::TestNetworkContext {
     }
 
     void OnOutPipeReady(MojoResult, const mojo::HandleSignalsState&) {
-      const size_t todo = peer_->buffer_.size();
-      if (todo == 0) {
+      if (peer_->buffer_.empty()) {
         return;
       }
 
-      uint32_t todo_32 = todo;
-      const MojoResult result = out_->WriteData(peer_->buffer_.data(), &todo_32,
-                                                MOJO_WRITE_DATA_FLAG_NONE);
+      size_t actually_written_bytes = 0;
+      const MojoResult result = out_->WriteData(
+          peer_->buffer_, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
       if (result == MOJO_RESULT_OK) {
-        if (todo_32 == todo) {
+        if (actually_written_bytes == peer_->buffer_.size()) {
           peer_->buffer_.clear();
           peer_->buffer_i_ = 0;
         } else {
-          const size_t new_length = todo - todo_32;
-          memmove(peer_->buffer_.data(), &peer_->buffer_.data()[todo_32],
-                  new_length);
+          const size_t new_length =
+              peer_->buffer_.size() - actually_written_bytes;
+          memmove(peer_->buffer_.data(),
+                  &peer_->buffer_.data()[actually_written_bytes], new_length);
           peer_->buffer_.resize(new_length);
-          peer_->buffer_i_ -= todo_32;
+          peer_->buffer_i_ -= actually_written_bytes;
         }
 
         if (!peer_->buffer_.empty()) {
@@ -645,12 +649,12 @@ class LateLinkingDevice : public authenticator::Transaction {
  public:
   LateLinkingDevice(CtapDeviceResponseCode ctap_error,
                     std::unique_ptr<Platform> platform,
-                    network::mojom::NetworkContext* network_context,
+                    NetworkContextFactory network_context_factory,
                     base::span<const uint8_t> qr_secret,
                     base::span<const uint8_t, kP256X962Length> peer_identity)
       : ctap_error_(ctap_error),
         platform_(std::move(platform)),
-        network_context_(network_context),
+        network_context_factory_(std::move(network_context_factory)),
         tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
             qr_secret,
             base::span<uint8_t>(),
@@ -670,9 +674,9 @@ class LateLinkingDevice : public authenticator::Transaction {
     const GURL target = device::cablev2::tunnelserver::GetNewTunnelURL(
         kTunnelServer, tunnel_id_);
 
-    network_context_->CreateWebSocket(
+    network_context_factory_.Run()->CreateWebSocket(
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
-        /*has_storage_access=*/false, net::IsolationInfo(),
+        net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
         url::Origin::Create(target),
         network::mojom::kWebSocketOptionBlockAllCookies,
@@ -781,6 +785,9 @@ class LateLinkingDevice : public authenticator::Transaction {
             break;
           }
 
+          case MessageType::kJSON:
+            NOTREACHED();
+
           case MessageType::kShutdown:
             state_ = State::kShutdownReceived;
             base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -850,7 +857,7 @@ class LateLinkingDevice : public authenticator::Transaction {
 
   const CtapDeviceResponseCode ctap_error_;
   const std::unique_ptr<Platform> platform_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
+  const NetworkContextFactory network_context_factory_;
   const std::array<uint8_t, kTunnelIdSize> tunnel_id_;
   const std::array<uint8_t, kEIDKeySize> eid_key_;
   const std::array<uint8_t, kP256X962Length> peer_identity_;
@@ -867,10 +874,10 @@ class LateLinkingDevice : public authenticator::Transaction {
 class HandshakeErrorDevice : public authenticator::Transaction {
  public:
   HandshakeErrorDevice(std::unique_ptr<Platform> platform,
-                       network::mojom::NetworkContext* network_context,
+                       NetworkContextFactory network_context_factory,
                        base::span<const uint8_t> qr_secret)
       : platform_(std::move(platform)),
-        network_context_(network_context),
+        network_context_factory_(std::move(network_context_factory)),
         tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
             qr_secret,
             base::span<uint8_t>(),
@@ -889,9 +896,9 @@ class HandshakeErrorDevice : public authenticator::Transaction {
     const GURL target = device::cablev2::tunnelserver::GetNewTunnelURL(
         kTunnelServer, tunnel_id_);
 
-    network_context_->CreateWebSocket(
+    network_context_factory_.Run()->CreateWebSocket(
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
-        /*has_storage_access=*/false, net::IsolationInfo(),
+        net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
         url::Origin::Create(target),
         network::mojom::kWebSocketOptionBlockAllCookies,
@@ -938,7 +945,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
   }
 
   const std::unique_ptr<Platform> platform_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
+  const NetworkContextFactory network_context_factory_;
   const std::array<uint8_t, kTunnelIdSize> tunnel_id_;
   const std::array<uint8_t, kEIDKeySize> eid_key_;
   const std::vector<uint8_t> secret_;
@@ -974,20 +981,20 @@ std::unique_ptr<authenticator::Platform> NewMockPlatform(
 std::unique_ptr<Transaction> NewLateLinkingDevice(
     CtapDeviceResponseCode ctap_error,
     std::unique_ptr<Platform> platform,
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     base::span<const uint8_t> qr_secret,
     base::span<const uint8_t, kP256X962Length> peer_identity) {
   return std::make_unique<LateLinkingDevice>(ctap_error, std::move(platform),
-                                             network_context, qr_secret,
-                                             peer_identity);
+                                             std::move(network_context_factory),
+                                             qr_secret, peer_identity);
 }
 
 std::unique_ptr<Transaction> NewHandshakeErrorDevice(
     std::unique_ptr<Platform> platform,
-    network::mojom::NetworkContext* network_context,
+    NetworkContextFactory network_context_factory,
     base::span<const uint8_t> qr_secret) {
-  return std::make_unique<HandshakeErrorDevice>(std::move(platform),
-                                                network_context, qr_secret);
+  return std::make_unique<HandshakeErrorDevice>(
+      std::move(platform), std::move(network_context_factory), qr_secret);
 }
 
 }  // namespace authenticator

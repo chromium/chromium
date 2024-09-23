@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_save_manager_impl.h"
 
 namespace password_manager {
 
@@ -57,7 +58,8 @@ class PasswordGenerationManager {
   // synchronously passed to |driver|. Otherwise, the UI on the client is
   // invoked to ask for overwrite permission. There is one corner case that is
   // still not covered. The user had the current password saved with empty
-  // username.
+  // username. |store_for_saving| indicates into which store the generated
+  // password will be pre-saved.
   // - The change password form has no username.
   // - The user generates a password and sees the bubble with an empty username.
   // - The user clicks 'Update'.
@@ -68,6 +70,7 @@ class PasswordGenerationManager {
           non_federated_matches,
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
           federated_matches,
+      PasswordForm::Store store_for_saving,
       base::WeakPtr<PasswordManagerDriver> driver);
 
   // Called when generated password is accepted or changed by user.
@@ -82,12 +85,12 @@ class PasswordGenerationManager {
 
   // Finish the generation flow by saving the final credential |generated|.
   // |matches| and |old_password| have the same meaning as in FormSaver.
-  void CommitGeneratedPassword(
-      PasswordForm generated,
-      const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
-          matches,
-      const std::u16string& old_password,
-      FormSaver* form_saver);
+  void CommitGeneratedPassword(PasswordForm generated,
+                               base::span<const PasswordForm> matches,
+                               const std::u16string& old_password,
+                               PasswordForm::Store store_to_save,
+                               FormSaver* profile_store_form_saver,
+                               FormSaver* account_store_form_saver);
 
  private:
   void OnPresaveBubbleResult(const base::WeakPtr<PasswordManagerDriver>& driver,

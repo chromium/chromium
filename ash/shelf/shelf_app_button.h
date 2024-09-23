@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/shadow_value.h"
@@ -29,8 +30,9 @@ class ShelfView;
 class ASH_EXPORT ShelfAppButton : public ShelfButton,
                                   public views::InkDropObserver,
                                   public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(ShelfAppButton, ShelfButton)
+
  public:
-  static const char kViewClassName[];
 
   // Used to indicate the current state of the button.
   enum State {
@@ -127,7 +129,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   bool ShouldEnterPushedState(const ui::Event& event) override;
 
   // views::View overrides:
-  const char* GetClassName() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
@@ -266,6 +267,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // Called when the app button completes animating in from a promise app state.
   void OnAnimatedInFromPromiseApp(base::RepeatingClosure callback);
+
+  void UpdateAccessibleDescription();
 
   // The icon part of a button can be animated independently of the rest.
   raw_ptr<views::ImageView> icon_view_ = nullptr;

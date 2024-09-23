@@ -29,12 +29,12 @@ PowerObserverHelper::PowerObserverHelper(
   // TODO(grunell): We could be suspending when adding this as observer, and
   // we won't be notified about that. See if we can add
   // PowerMonitorSource::IsSuspending() so that this can be checked here.
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 }
 
 PowerObserverHelper::~PowerObserverHelper() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 bool PowerObserverHelper::IsSuspending() const {

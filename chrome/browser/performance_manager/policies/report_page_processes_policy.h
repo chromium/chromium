@@ -26,19 +26,13 @@ namespace performance_manager::policies {
 class ReportPageProcessesPolicy : public GraphOwned,
                                   public PageNode::ObserverDefaultImpl {
  public:
-  struct PageProcess {
-    PageProcess(base::ProcessId pid,
-                bool host_protected_page,
-                bool host_visible_page,
-                bool host_focused_page)
-        : pid(pid),
-          host_protected_page(host_protected_page),
-          host_visible_page(host_visible_page),
-          host_focused_page(host_focused_page) {}
-    base::ProcessId pid;
+  struct PageState {
     bool host_protected_page;
     bool host_visible_page;
     bool host_focused_page;
+    base::TimeTicks last_visible;
+
+    friend bool operator==(const PageState&, const PageState&) = default;
   };
 
   ReportPageProcessesPolicy();
@@ -67,7 +61,8 @@ class ReportPageProcessesPolicy : public GraphOwned,
   // from Chrome or VMs or containers.
   //
   // It's virtual for testing.
-  virtual void ReportPageProcesses(std::vector<PageProcess> processes);
+  virtual void ReportPageProcesses(
+      base::flat_map<base::ProcessId, PageState> processes);
 
  private:
   // ReportPageProcessesPolicy is active when receiving page node events.
@@ -87,7 +82,7 @@ class ReportPageProcessesPolicy : public GraphOwned,
   // reporting.
   base::RetainingOneShotTimer delayed_report_timer_;
 
-  raw_ptr<Graph> graph_ = nullptr;
+  base::flat_map<base::ProcessId, PageState> previously_reported_pages_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

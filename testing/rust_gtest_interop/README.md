@@ -70,15 +70,15 @@ To write a unit test, you simply write a function an decorate it with the
 `#[gtest]` macro. The macro takes 2 arguments, which are the test suite name and
 the test name, just like the C++ `TEST()` macro.
 
-The `#[gtest]` macro is provided by the `rust_gtest_interop_rs` crate, and is
+The `#[gtest]` macro is provided by the `rust_gtest_interop` crate, and is
 exported in the `prelude` module. Typically a unit test file would start with
-`use rust_gtest_interop_rs::prelude::*;` which includes all of the available
+`use rust_gtest_interop::prelude::*;` which includes all of the available
 gtest macros. This is similar to writing `#include
 "testing/gtest/include/gtest/gtest.h"` in C++.
 
 A Rust test:
 ```rs
-use rust_gtest_interop_rs::prelude::*;  // Provides all the gtest macros.
+use rust_gtest_interop::prelude::*;  // Provides all the gtest macros.
 
 #[gtest(MyTestSuite, MyTestOfThing)]
 fn test() {
@@ -150,8 +150,8 @@ helpers should be placed in a separate GN target, typically named with a
 
 #### Example
 The `starship_unittests` test() target would include any unit test files, such as
-`starship_unittest.rs`. And the `starship_test_support` static_library() target
-would include the files in the `test/` subdirectory, such as
+`starship_unittest.rs`. And the `starship_test_support` `rust_static_library()`
+GN target would include the files in the `test/` subdirectory, such as
 `starship_test_helper.rs` and `starship_test_things.rs`.
 ```
 src/

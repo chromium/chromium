@@ -5,30 +5,25 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_SERVICE_LACROS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_APP_INSTALL_SERVICE_LACROS_H_
 
-#include "base/memory/raw_ref.h"
-#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
+#include <optional>
 
-namespace crosapi::mojom {
-class AppServiceProxy;
-}
+#include "base/memory/raw_ref.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 
 namespace apps {
 
-class PackageId;
-
 class AppInstallServiceLacros : public AppInstallService {
  public:
-  AppInstallServiceLacros(
-      crosapi::mojom::AppServiceProxy& remote_crosapi_app_service_proxy);
+  AppInstallServiceLacros();
   ~AppInstallServiceLacros() override;
 
   // AppInstallService:
-  void InstallApp(AppInstallSurface surface,
-                  PackageId package_id,
-                  base::OnceClosure callback) override;
-
- private:
-  raw_ref<crosapi::mojom::AppServiceProxy> remote_crosapi_app_service_proxy_;
+  void InstallAppWithFallback(
+      AppInstallSurface surface,
+      std::string serialized_package_id,
+      std::optional<base::UnguessableToken> anchor_window,
+      base::OnceClosure callback) override;
 };
 
 }  // namespace apps

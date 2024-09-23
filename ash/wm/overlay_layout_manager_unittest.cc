@@ -23,7 +23,8 @@ TEST_F(OverlayLayoutManagerTest, FullscreenWidgetWithDisplayRotation) {
 
   // Create a fullscreen widget in the overlay container.
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, kShellWindowId_OverlayContainer);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, kShellWindowId_OverlayContainer);
   widget->SetFullscreen(true);
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), widget->GetWindowBoundsInScreen());
 

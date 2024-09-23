@@ -91,6 +91,13 @@ class DeviceStateTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetFlashing(bool flashing) {
+    helper_.device_test()->SetDeviceProperty(
+        kTestCellularDevicePath, shill::kFlashingProperty,
+        base::Value(flashing), /*notify_changed=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetSimSlotInfos() {
     helper_.device_test()->SetDeviceProperty(
         kTestCellularDevicePath, shill::kSIMSlotInfoProperty,
@@ -125,6 +132,13 @@ TEST_F(DeviceStateTest, SimSlotInfo_Cellular) {
   EXPECT_EQ(kTestCellularESimIccid, infos[1].iccid);
   EXPECT_EQ(kTestCellularEid, infos[1].eid);
   EXPECT_FALSE(infos[1].primary);
+}
+
+TEST_F(DeviceStateTest, Flashing_Cellular) {
+  SetFlashing(true);
+  EXPECT_TRUE(GetCellularDevice()->flashing());
+  SetFlashing(false);
+  EXPECT_FALSE(GetCellularDevice()->flashing());
 }
 
 TEST_F(DeviceStateTest, SimSlotInfo_Wifi) {

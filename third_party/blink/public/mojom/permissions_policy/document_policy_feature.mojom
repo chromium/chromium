@@ -8,35 +8,41 @@ module blink.mojom;
 enum DocumentPolicyFeature {
   kDefault = 0,
   // Controls access to font-display attribute in @font-face CSS rule
-  kFontDisplay = 1,
+  // kFontDisplay = 1, // Removed.
   // Takes a parameter, |bpp|, i.e. byte-per-pixel ratio, that images
   // needs to obey.
-  kLosslessImagesMaxBpp = 2,
+  // kLosslessImagesMaxBpp = 2, // Removed.
   // Controls whether the browser should allow navigations that cause the page to scroll.
   kForceLoadAtTop = 3,
   // Takes a parameter, |bpp|, i.e. byte-per-pixel ratio, that images
   // needs to obey.
-  kLosslessImagesStrictMaxBpp = 4,
-  kLossyImagesMaxBpp = 5,
+  // kLosslessImagesStrictMaxBpp = 4, // Removed.
+  // kLossyImagesMaxBpp = 5, // Removed.
   // Takes a parameter, |scale_ratio|, and restricts source image sizes to be
   // no more than |scale_ratio| x larger than the image's containing block.
-  kOversizedImages = 6,
+  // kOversizedImages = 6, // Removed.
   // Controls the layout size of intrinsically sized images and videos. When
   // disabled, default size (300 x 150) is used to prevent relayout.
-  kUnsizedMedia = 7,
+  // kUnsizedMedia = 7, // Removed.
   // Restricts the usage of layout-causing animations in a document.
-  kLayoutAnimations = 8,
+  // kLayoutAnimations = 8, // Removed.
   // Controls the ability of the document to use several dynamic markup API
   // which interfere with document's input stream (document.write(),
   // document.close(), etc.).
-  kDocumentWrite = 9,
+  // kDocumentWrite = 9, // Removed.
   // Controls whether synchronous script elements will run.
-  kSyncScript = 10,
+  // kSyncScript = 10, // Removed.
   // Controls whether or not the JS Self-Profiling API is enabled.
   kJSProfiling = 11,
   // Controls use of synchronous XMLHTTPRequest API.
   kSyncXHR = 12,
   // Slot 13 (kDocumentDomain) was removed. Do not re-use its number.
+  // Controls whether or not to include javascript stack traces in crash reports
+  // from the Reporting API.
+  kIncludeJSCallStacksInCrashReports = 14,
+  // Hints if the document is not expecting linked resources.
+  // https://github.com/explainers-by-googlers/expect-no-linked-resources
+  kExpectNoLinkedResources = 15,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

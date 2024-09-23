@@ -13,6 +13,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
@@ -47,8 +49,11 @@
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_sync_bridge.h"
 #include "components/desks_storage/core/desk_sync_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/local_device_info_provider_impl.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -113,9 +118,7 @@ FloatingWorkspaceService::FloatingWorkspaceService(
       initialization_time_(base::Time::Now()) {}
 
 FloatingWorkspaceService::~FloatingWorkspaceService() {
-  if (timer_.IsRunning()) {
-    StopCaptureAndUploadActiveDesk();
-  }
+  StopCaptureAndUploadActiveDesk();
   ShutDownServicesAndObservers();
   if (ash::SessionController::Get()) {
     ash::SessionController::Get()->RemoveObserver(this);
@@ -138,10 +141,42 @@ void FloatingWorkspaceService::OnShuttingDown() {
   }
 }
 
+void FloatingWorkspaceService::OnDeviceInfoShutdown() {
+  if (device_info_sync_service_ &&
+      device_info_sync_service_->GetDeviceInfoTracker()) {
+    device_info_sync_service_->GetDeviceInfoTracker()->RemoveObserver(this);
+  }
+  device_info_sync_service_ = nullptr;
+}
+
+void FloatingWorkspaceService::InitiateSigninTask() {
+  if (!floating_workspace_util::IsInternetConnected()) {
+    SendNotification(kNotificationForNoNetworkConnection);
+  } else {
+    syncer::LocalDeviceInfoProviderImpl* local_device_info_provider =
+        static_cast<syncer::LocalDeviceInfoProviderImpl*>(
+            device_info_sync_service_->GetLocalDeviceInfoProvider());
+
+    local_device_info_ready_subscription_ =
+        local_device_info_provider->RegisterOnInitializedCallback(
+            base::BindRepeating(
+                &FloatingWorkspaceService::OnLocalDeviceInfoProviderReady,
+                weak_pointer_factory_.GetWeakPtr()));
+  }
+
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &FloatingWorkspaceService::MaybeStartProgressBarNotification,
+            weak_pointer_factory_.GetWeakPtr()),
+        kMinTimeToWait);
+}
+
 // TODO(b/309137462): Clean up params to not need to be passed in.
 void FloatingWorkspaceService::Init(
     syncer::SyncService* sync_service,
-    desks_storage::DeskSyncService* desk_sync_service) {
+    desks_storage::DeskSyncService* desk_sync_service,
+    syncer::DeviceInfoSyncService* device_info_sync_service) {
   if (ash::SessionController::Get()) {
     ash::SessionController::Get()->AddObserver(this);
   }
@@ -157,7 +192,7 @@ void FloatingWorkspaceService::Init(
   if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
                       kFloatingWorkspaceV2Enabled &&
       floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
-    InitForV2(sync_service, desk_sync_service);
+    InitForV2(sync_service, desk_sync_service, device_info_sync_service);
   }
   LOG(WARNING) << "Floating workspace V2 init (not a warning)";
 }
@@ -243,37 +278,44 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
   if (!sync_service_->IsSyncFeatureActive()) {
     return;
   }
-  switch (sync->GetDownloadStatusFor(syncer::ModelType::WORKSPACE_DESK)) {
-    case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates: {
-      // Floating Workspace Service needs to wait until workspace desks are up
-      // to date.
+  if (!should_run_restore_) {
+    MaybeSignOutOfCurrentSession();
+    return;
+  }
+  if (download_status_cache_.has_value() &&
+      download_status_cache_.value() ==
+          sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK)) {
+    return;
+  }
+  download_status_cache_ =
+      sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK);
+  switch (sync->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK)) {
+    case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates: {
+      // Floating Workspace Service needs to wait until workspace desks are
+      // up to date.
       break;
     }
-    case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate: {
-      if (!should_run_restore_) {
-        MaybeSignOutOfCurrentSession();
-        return;
-      }
+    case syncer::SyncService::DataTypeDownloadStatus::kUpToDate: {
       if (!first_uptodate_download_timeticks_.has_value()) {
         first_uptodate_download_timeticks_ = base::TimeTicks::Now();
       }
       if (!is_cache_ready_) {
         should_launch_on_ready_ = true;
-        VLOG(1)
-            << "App cache is not ready. Don't restore floating workspace yet.";
+        VLOG(1) << "App cache is not ready. Don't restore floating "
+                   "workspace yet.";
         return;
       }
       StopProgressBarAndRestoreFloatingWorkspace();
       break;
     }
-    case syncer::SyncService::ModelTypeDownloadStatus::kError: {
+    case syncer::SyncService::DataTypeDownloadStatus::kError: {
       // Sync is not expected to deliver the data, let user decide.
       // TODO: send notification to user asking if restore local.
       if (!should_run_restore_) {
         return;
       }
       StopProgressBarNotification();
-      HandleSyncEror();
+      HandleSyncError();
       break;
     }
   }
@@ -293,9 +335,12 @@ void FloatingWorkspaceService::OnNetworkStateOrSyncServiceStateChanged() {
   if (!floating_workspace_util::IsInternetConnected() ||
       (sync_service_ && !sync_service_->IsSyncFeatureActive())) {
     // Only send notification if there's no notification currently or the
-    // current notification is the same one that we want to display.
-    if (notification_ == nullptr ||
-        notification_->id() != kNotificationForNoNetworkConnection) {
+    // current notification is the same one that we want to display. If the
+    // restore should not run, then there's no need to display the notification
+    // either.
+    if (should_run_restore_ &&
+        (notification_ == nullptr ||
+         notification_->id() != kNotificationForNoNetworkConnection)) {
       StopProgressBarNotification();
       SendNotification(kNotificationForNoNetworkConnection);
     }
@@ -360,6 +405,17 @@ void FloatingWorkspaceService::MaybeCloseNotification() {
   notification_ = nullptr;
 }
 
+void FloatingWorkspaceService::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  timestamp_before_suspend_ = base::Time::Now();
+}
+
+void FloatingWorkspaceService::SuspendDone(base::TimeDelta sleep_duration) {
+  restore_upon_wake_ = true;
+}
+
+void FloatingWorkspaceService::OnDeviceInfoChange() {}
+
 void FloatingWorkspaceService::InitForV1() {
   session_sync_service_ =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
@@ -367,7 +423,8 @@ void FloatingWorkspaceService::InitForV1() {
 
 void FloatingWorkspaceService::InitForV2(
     syncer::SyncService* sync_service,
-    desks_storage::DeskSyncService* desk_sync_service) {
+    desks_storage::DeskSyncService* desk_sync_service,
+    syncer::DeviceInfoSyncService* device_info_sync_service) {
   // Disable floating workspace action in safe mode.
   if (floating_workspace_util::IsSafeMode()) {
     LOG(WARNING) << "Floating workspace disabled in safe mode.";
@@ -376,17 +433,9 @@ void FloatingWorkspaceService::InitForV2(
   }
   floating_workspace_metrics_util::
       RecordFloatingWorkspaceV2InitializedHistogram();
-  SetUpServiceAndObservers(sync_service, desk_sync_service);
-  if (!floating_workspace_util::IsInternetConnected()) {
-    SendNotification(kNotificationForNoNetworkConnection);
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &FloatingWorkspaceService::MaybeStartProgressBarNotification,
-            weak_pointer_factory_.GetWeakPtr()),
-        kMinTimeToWait);
-  }
+  SetUpServiceAndObservers(sync_service, desk_sync_service,
+                           device_info_sync_service);
+  InitiateSigninTask();
 }
 
 const sync_sessions::SyncedSession*
@@ -453,7 +502,9 @@ void FloatingWorkspaceService::StartCaptureAndUploadActiveDesk() {
 }
 
 void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
-  timer_.Stop();
+  if (timer_.IsRunning()) {
+    timer_.Stop();
+  }
 }
 
 void FloatingWorkspaceService::MaybeStartProgressBarNotification() {
@@ -487,6 +538,31 @@ void FloatingWorkspaceService::HandleProgressBarStatus() {
   SendNotification(kNotificationForProgressStatus);
 }
 
+bool FloatingWorkspaceService::ShouldExcludeTemplate(
+    const DeskTemplate* floating_workspace_template) {
+  if (!floating_workspace_template) {
+    return true;
+  }
+  // We only consider remote entries if the device has woken up from suspend and
+  // we are going through a restore flow. In this case, we only want to consider
+  // restoring floating workspaces from other devices and if those templates
+  // were after the device went to suspend mode. `timestamp_before_suspend_` is
+  // only set if the user has gone to suspend, otherwise it is a nullopt.
+  // Therefore, if it is set and we're getting entries for restore, we only want
+  // to consider remote entries.
+  bool should_only_consider_remote_entries =
+      timestamp_before_suspend_.has_value();
+  if (!should_only_consider_remote_entries) {
+    return false;
+  }
+  bool is_remote_entry = floating_workspace_template->client_cache_guid() !=
+                         desk_sync_service_->GetDeskModel()->GetCacheGuid();
+  bool is_uploaded_after_suspend =
+      floating_workspace_template->GetLastUpdatedTime() >
+      timestamp_before_suspend_.value();
+  return !(is_remote_entry && is_uploaded_after_suspend);
+}
+
 const DeskTemplate*
 FloatingWorkspaceService::GetLatestFloatingWorkspaceTemplate() {
   const DeskTemplate* floating_workspace_template = nullptr;
@@ -494,7 +570,7 @@ FloatingWorkspaceService::GetLatestFloatingWorkspaceTemplate() {
       GetFloatingWorkspaceTemplateEntries();
   VLOG(1) << "Found " << fws_entries.size() << " floating workspace entries";
   for (const DeskTemplate* entry : fws_entries) {
-    if (!entry) {
+    if (ShouldExcludeTemplate(entry)) {
       continue;
     }
     if (!floating_workspace_template ||
@@ -548,9 +624,11 @@ void FloatingWorkspaceService::StopProgressBarAndRestoreFloatingWorkspace() {
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
   if (desk_template == nullptr) {
-    LOG(WARNING) << "No floating workspace entry found. Won't "
-                    "restore. This is only possible if this is the first time "
-                    "a user is using Floating Workspace.";
+    LOG(WARNING)
+        << "No floating workspace entry found. Won't "
+           "restore. This is only possible if this is the first time "
+           "a user is using Floating Workspace or we are attempting to restore "
+           "from a suspend mode and there are no remote entries to restore.";
     should_run_restore_ = false;
     floating_workspace_metrics_util::
         RecordFloatingWorkspaceV2TemplateNotFound();
@@ -592,12 +670,34 @@ void FloatingWorkspaceService::LaunchFloatingWorkspaceTemplate(
   RemoveAllPreviousDesksExceptActiveDesk(
       /*exclude_desk_uuid=*/active_desk_uuid);
 
+  // Close all windows between waking up from sleep and restore operation.
+  // TODO: b/331420684 - Remove apps and windows in place without having to
+  // launch a new desk.
+  if (launch_on_new_desk_) {
+    GetDesksClient()->LaunchDeskTemplate(
+        desk_template->uuid(),
+        base::BindOnce(&FloatingWorkspaceService::OnTemplateLaunched,
+                       weak_pointer_factory_.GetWeakPtr()),
+        desk_template->template_name());
+    return;
+  }
   VLOG(1) << "Combining Floating Workspace apps to current desk.";
   std::unique_ptr<DeskTemplate> template_copy = desk_template->Clone();
   // Open the apps from the floating workspace on top of existing windows.
   saved_desk_util::UpdateTemplateActivationIndicesRelativeOrder(*template_copy);
   GetDesksClient()->LaunchAppsFromTemplate(std::move(template_copy));
   RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
+}
+
+void FloatingWorkspaceService::OnTemplateLaunched(
+    std::optional<DesksClient::DeskActionError> error,
+    const base::Uuid& desk_uuid) {
+  if (error) {
+    HandleTemplateLaunchErrors(error.value());
+    return;
+  }
+  RecordLaunchSavedDeskHistogram(DeskTemplateType::kFloatingWorkspace);
+  RemoveAllPreviousDesksExceptActiveDesk(/*exclude_desk_uuid=*/desk_uuid);
 }
 
 DesksClient* FloatingWorkspaceService::GetDesksClient() {
@@ -689,6 +789,51 @@ void FloatingWorkspaceService::HandleTemplateCaptureErrors(
   }
 }
 
+void FloatingWorkspaceService::HandleTemplateLaunchErrors(
+    DesksClient::DeskActionError error) {
+  switch (error) {
+    case DesksClient::DeskActionError::kUnknownError:
+      floating_workspace_metrics_util::
+          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
+              floating_workspace_metrics_util::LaunchTemplateFailureType::
+                  kUnknownError);
+      LOG(WARNING) << "Failed to launch template: unknown error.";
+      return;
+    case DesksClient::DeskActionError::kStorageError:
+      floating_workspace_metrics_util::
+          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
+              floating_workspace_metrics_util::LaunchTemplateFailureType::
+                  kStorageError);
+      LOG(WARNING) << "Failed to launch template: storage error.";
+      return;
+    case DesksClient::DeskActionError::kDesksCountCheckFailedError:
+      floating_workspace_metrics_util::
+          RecordFloatingWorkspaceV2TemplateLaunchFailureType(
+              floating_workspace_metrics_util::LaunchTemplateFailureType::
+                  kDesksCountCheckFailedError);
+      LOG(WARNING) << "Failed to launch template: max number of desks open.";
+      return;
+    // No need to record metrics for the below desk action errors since they
+    // do not relate to template launch.
+    case DesksClient::DeskActionError::kNoCurrentUserError:
+      LOG(WARNING) << "Failed to launch template: no active user.";
+      return;
+    case DesksClient::DeskActionError::kBadProfileError:
+      LOG(WARNING) << "Failed to launch template: bad profile.";
+      return;
+    case DesksClient::DeskActionError::kResourceNotFoundError:
+      LOG(WARNING) << "Failed to launch template: resource not found.";
+      return;
+    case DesksClient::DeskActionError::kInvalidIdError:
+      LOG(WARNING) << "Failed to launch template: desk id is invalid.";
+      return;
+    case DesksClient::DeskActionError::kDesksBeingModifiedError:
+      LOG(WARNING)
+          << "Failed to launch template: desk is currently being modified.";
+      return;
+  }
+}
+
 void FloatingWorkspaceService::OnTemplateCaptured(
     std::optional<DesksClient::DeskActionError> error,
     std::unique_ptr<DeskTemplate> desk_template) {
@@ -701,11 +846,12 @@ void FloatingWorkspaceService::OnTemplateCaptured(
     return;
   }
   // Check if there's an associated floating workspace uuid from the desk
-  // sync bridge. If there is, use that one. The `floating_workspace_uuid_
-  // is populated once during the first capture of the session if there is
-  // known information from the sync bridge and the info may be outdated for
-  // the sync bridge. However, the sync bridge does not need to know the new
-  // uuid since the current service will handle it. Ignore for testing.
+  // sync bridge. If there is, use that one. The
+  // `floating_workspace_uuid_ is populated once during the first capture
+  // of the session if there is known information from the sync bridge
+  // and the info may be outdated for the sync bridge. However, the sync
+  // bridge does not need to know the new uuid since the current service
+  // will handle it. Ignore for testing.
   if (!floating_workspace_uuid_.has_value()) {
     std::optional<base::Uuid> floating_workspace_uuid_from_desk_model =
         GetFloatingWorkspaceUuidForCurrentDevice();
@@ -769,11 +915,16 @@ FloatingWorkspaceService::GetFloatingWorkspaceUuidForCurrentDevice() {
   return std::nullopt;
 }
 
-void FloatingWorkspaceService::HandleSyncEror() {
+void FloatingWorkspaceService::HandleSyncError() {
   SendNotification(kNotificationForSyncErrorOrTimeOut);
 }
 
 void FloatingWorkspaceService::MaybeHandleDownloadTimeOut() {
+  if (download_status_cache_.has_value() &&
+      download_status_cache_.value() ==
+          syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
+    should_run_restore_ = false;
+  }
   if (!should_run_restore_) {
     return;
   }
@@ -917,23 +1068,71 @@ void FloatingWorkspaceService::RemoveAllPreviousDesksExceptActiveDesk(
 }
 
 void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
+  base::TimeDelta time_delta =
+      ui::UserActivityDetector::Get()->last_activity_time() -
+      initialization_timeticks_;
+  if (sync_service_->GetDownloadStatusFor(syncer::DataType::DEVICE_INFO) ==
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
+    std::vector<const syncer::DeviceInfo*> all_devices =
+        device_info_sync_service_->GetDeviceInfoTracker()->GetAllDeviceInfo();
+
+    // Sort the DeviceInfo vector so the most recently modified devices are
+    // first.
+    std::sort(
+        all_devices.begin(), all_devices.end(),
+        [](const syncer::DeviceInfo* device1,
+           const syncer::DeviceInfo* device2) {
+          return device1->floating_workspace_last_signin_timestamp().value_or(
+                     base::Time()) >
+                 device2->floating_workspace_last_signin_timestamp().value_or(
+                     base::Time());
+        });
+    // Checks if the most recently modified devices are after this device's last
+    // active timestamp.
+    for (const syncer::DeviceInfo* device : all_devices) {
+      // If the timestamp is older than the current timestamp or the entry is
+      // nullopt, then any other devices afterwards are older, so we can stop
+      // here.
+      if (!device->floating_workspace_last_signin_timestamp().has_value() ||
+          device->floating_workspace_last_signin_timestamp().value() <
+              initialization_time_ +
+                  (time_delta.is_positive() ? time_delta : base::Seconds(0)) +
+                  kMinTimeToWait) {
+        break;
+      }
+      // Skip current device info.
+      if (device_info_sync_service_->GetDeviceInfoTracker()
+              ->IsRecentLocalCacheGuid(device->guid())) {
+        continue;
+      }
+      // We log out if we reach this part of the loop. We only reach here when:
+      // 1) the device info is not for the current device and 2) the last active
+      // timestamp is after the last user activity on this device.
+      ash::Shell::Get()->session_controller()->RequestSignOut();
+    }
+  }
+
+  // As a final resort, if we could not logout via the device info, or
+  // floating workspace entries came first before the device info, use
+  // floating workspace entries to determine if we should logout.
+  if (sync_service_->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK) !=
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
+    return;
+  }
   auto* latest_floating_workspace = GetLatestFloatingWorkspaceTemplate();
+
   if (latest_floating_workspace == nullptr) {
     return;
   }
   // Checks if the latest uploaded floating workspace template is a captured
-  // template from this device and sign out of this session if it is not. Note:
-  // we are comparing the last activity time for the user here with the template
-  // that we just got. Since `last_activity_time` is in timeticks and the
-  // template time is in time, we need to do some manually conversion with
+  // template from this device and sign out of this session if it is not.
+  // Note: we are comparing the last activity time for the user here with the
+  // template that we just got. Since `last_activity_time` is in timeticks and
+  // the template time is in time, we need to do some manually conversion with
   // Time. Note: this time_delta is strictly > 0 but can be smaller than wall
-  // clock time difference. Some additional time buffer (using the 30s from the
-  // periodic capture job) is added to account for clock drifts from device to
-  // device.
-  base::TimeDelta time_delta =
-      ui::UserActivityDetector::Get()->last_activity_time() -
-      initialization_timeticks_;
-
+  // clock time difference. Some additional time buffer (using the 30s from
+  // the periodic capture job) is added to account for clock drifts from
+  // device to device.
   if (latest_floating_workspace->client_cache_guid() !=
           desk_sync_service_->GetDeskModel()->GetCacheGuid() &&
       latest_floating_workspace->GetLastUpdatedTime() >
@@ -941,8 +1140,7 @@ void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
               (time_delta.is_positive() ? time_delta : base::Seconds(0)) +
               ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds
                   .Get()) {
-    VLOG(1) << "Another device uploaded a template, logging out.";
-    chrome::AttemptUserExit();
+    ash::Shell::Get()->session_controller()->RequestSignOut();
   }
 }
 
@@ -1014,8 +1212,24 @@ void FloatingWorkspaceService::OnActiveUserSessionChanged(
   if (active_profile != profile_) {
     ShutDownServicesAndObservers();
   } else {
-    SetUpServiceAndObservers(SyncServiceFactory::GetForProfile(profile_),
-                             DeskSyncServiceFactory::GetForProfile(profile_));
+    SetUpServiceAndObservers(
+        SyncServiceFactory::GetForProfile(profile_),
+        DeskSyncServiceFactory::GetForProfile(profile_),
+        DeviceInfoSyncServiceFactory::GetForProfile(profile_));
+  }
+}
+
+void FloatingWorkspaceService::OnLockStateChanged(bool locked) {
+  // The user has signed in the device via the lock screen and has woken up from
+  // sleep mode. Reset initialization times and start the flow as if the user
+  // has just logged in.
+  if (!locked && restore_upon_wake_) {
+    should_run_restore_ = true;
+    launch_on_new_desk_ = true;
+    restore_upon_wake_ = false;
+    initialization_time_ = base::Time::Now();
+    initialization_timeticks_ = base::TimeTicks::Now();
+    InitiateSigninTask();
   }
 }
 
@@ -1025,12 +1239,34 @@ void FloatingWorkspaceService::OnSystemTrayBubbleShown() {
   CaptureAndUploadActiveDesk();
 }
 
+void FloatingWorkspaceService::OnLocalDeviceInfoProviderReady() {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FloatingWorkspaceService::UpdateLocalDeviceInfo,
+                     weak_pointer_factory_.GetWeakPtr()));
+}
+
+void FloatingWorkspaceService::UpdateLocalDeviceInfo() {
+  if (!device_info_sync_service_ ||
+      !device_info_sync_service_->GetLocalDeviceInfoProvider() ||
+      !device_info_sync_service_->GetLocalDeviceInfoProvider()
+           ->GetLocalDeviceInfo()) {
+    return;
+  }
+  syncer::LocalDeviceInfoProviderImpl* local_device_info_provider =
+      static_cast<syncer::LocalDeviceInfoProviderImpl*>(
+          device_info_sync_service_->GetLocalDeviceInfoProvider());
+  local_device_info_provider->UpdateRecentSignInTime(initialization_time_);
+  device_info_sync_service_->RefreshLocalDeviceInfo();
+}
+
 void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   // Remove `this` service as an observer so we do not run into an issue where
   // chrome sync data is downloaded and the capture is kicked started after we
   // stopped the capture timer below.
   OnSyncShutdown(sync_service_);
   OnShuttingDown();
+  OnDeviceInfoShutdown();
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
   if (app_cache_obs_.IsObserving()) {
@@ -1039,19 +1275,22 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   if (app_cache_wrapper_obs_.IsObserving()) {
     app_cache_wrapper_obs_.Reset();
   }
-  if (timer_.IsRunning()) {
-    StopCaptureAndUploadActiveDesk();
-  }
+  StopCaptureAndUploadActiveDesk();
   if (Shell::HasInstance() && Shell::Get()->system_tray_notifier()) {
     Shell::Get()->system_tray_notifier()->RemoveSystemTrayObserver(this);
+  }
+  if (chromeos::PowerManagerClient::Get()) {
+    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
   }
 }
 
 void FloatingWorkspaceService::SetUpServiceAndObservers(
     syncer::SyncService* sync_service,
-    desks_storage::DeskSyncService* desk_sync_service) {
+    desks_storage::DeskSyncService* desk_sync_service,
+    syncer::DeviceInfoSyncService* device_info_sync_service) {
   sync_service_ = sync_service;
   desk_sync_service_ = desk_sync_service;
+  device_info_sync_service_ = device_info_sync_service;
   if (ash::NetworkHandler::IsInitialized()) {
     auto* network_handler = NetworkHandler::Get();
     if (!network_handler->network_state_handler()->HasObserver(this)) {
@@ -1063,6 +1302,13 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
   }
   if (sync_service_ && !sync_service_->HasObserver(this)) {
     sync_service_->AddObserver(this);
+  }
+  if (chromeos::PowerManagerClient::Get()) {
+    chromeos::PowerManagerClient::Get()->AddObserver(this);
+  }
+  if (device_info_sync_service_ &&
+      device_info_sync_service_->GetDeviceInfoTracker()) {
+    device_info_sync_service_->GetDeviceInfoTracker()->AddObserver(this);
   }
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.

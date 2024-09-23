@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -97,6 +96,11 @@ struct CONTENT_EXPORT CdmFileIdAndContents {
   const CdmFileId file;
   const std::vector<uint8_t> data;
 };
+
+// Called in CdmStorageDatabase and CdmStorageManager to get
+// CdmStorageManager* metric names.
+std::string GetCdmStorageManagerHistogramName(const std::string& operation,
+                                              bool in_memory);
 
 }  // namespace content
 

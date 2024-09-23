@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -38,7 +39,6 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
@@ -73,18 +73,6 @@ public class SearchEngineSettingsRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderWithSecFeature() throws Exception {
-        testRender("search_engine_settings", true);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testRenderWithoutSecFeature() throws Exception {
-        testRender("search_engine_settings_flag_off", false);
-    }
-
-    private void testRender(String screenshotId, boolean shouldShowUpdatedSettings)
-            throws Exception {
         TemplateUrl engine1 = buildTemplateUrl("Custom Engine", 0);
         GURL engine1Gurl = new GURL("https://gurl1.example.com");
         TemplateUrl engine2 = buildTemplateUrl("Prepopulated Engine", 2);
@@ -94,9 +82,6 @@ public class SearchEngineSettingsRenderTest {
         doReturn(new ArrayList<>(templateUrls)).when(mMockTemplateUrlService).getTemplateUrls();
         doReturn(engine1).when(mMockTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         doReturn(true).when(mMockTemplateUrlService).isEeaChoiceCountry();
-        doReturn(shouldShowUpdatedSettings)
-                .when(mMockTemplateUrlService)
-                .shouldShowUpdatedSettings();
         doReturn(true).when(mMockTemplateUrlService).isLoaded();
         String engine1Keyword = engine1.getKeyword();
         doReturn(engine1Gurl.getSpec())
@@ -114,7 +99,7 @@ public class SearchEngineSettingsRenderTest {
         TestLargeIconBridge largeIconBridge = new TestLargeIconBridge(mProfile);
 
         View view =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             FragmentManager fragmentManager =
                                     mActivityTestRule.getActivity().getSupportFragmentManager();
@@ -146,22 +131,20 @@ public class SearchEngineSettingsRenderTest {
                             return fragment.getView();
                         });
 
-        if (shouldShowUpdatedSettings) {
-            // Wait for icons to be requested.
-            CriteriaHelper.pollUiThread(() -> largeIconBridge.getCallbackCount() == 2);
+        // Wait for icons to be requested.
+        CriteriaHelper.pollUiThread(() -> largeIconBridge.getCallbackCount() == 2);
 
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        Bitmap bitmap1 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
-                        bitmap1.eraseColor(Color.GREEN);
-                        largeIconBridge.provideFaviconForUrl(engine1Gurl, bitmap1);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Bitmap bitmap1 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
+                    bitmap1.eraseColor(Color.GREEN);
+                    largeIconBridge.provideFaviconForUrl(engine1Gurl, bitmap1);
 
-                        Bitmap bitmap2 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
-                        bitmap2.eraseColor(Color.BLUE);
-                        largeIconBridge.provideFaviconForUrl(engine2Gurl, bitmap2);
-                    });
-        }
-        mRenderTestRule.render(view, screenshotId);
+                    Bitmap bitmap2 = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
+                    bitmap2.eraseColor(Color.BLUE);
+                    largeIconBridge.provideFaviconForUrl(engine2Gurl, bitmap2);
+                });
+        mRenderTestRule.render(view, "search_engine_settings");
     }
 
     private static TemplateUrl buildTemplateUrl(String shortName, int prepopulatedId) {
@@ -201,7 +184,6 @@ public class SearchEngineSettingsRenderTest {
         @Override
         public void getLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
                 GURL pageUrl,
-                boolean mayPageUrlBePrivate,
                 boolean shouldTrimPageUrlPath,
                 NetworkTrafficAnnotationTag trafficAnnotation,
                 GoogleFaviconServerCallback callback) {

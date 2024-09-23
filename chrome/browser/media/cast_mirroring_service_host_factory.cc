@@ -19,7 +19,8 @@ CastMirroringServiceHostFactory::GetInstance() {
 }
 
 std::unique_ptr<MirroringServiceHost>
-CastMirroringServiceHostFactory::GetForTab(int32_t frame_tree_node_id) {
+CastMirroringServiceHostFactory::GetForTab(
+    content::FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* target_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
@@ -44,7 +45,7 @@ std::unique_ptr<MirroringServiceHost>
 CastMirroringServiceHostFactory::GetForOffscreenTab(
     const GURL& presentation_url,
     const std::string& presentation_id,
-    int32_t frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);

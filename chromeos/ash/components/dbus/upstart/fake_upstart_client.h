@@ -59,8 +59,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
       chromeos::VoidDBusMethodCallback callback) override;
   void StopMediaAnalytics() override;
   void StopMediaAnalytics(chromeos::VoidDBusMethodCallback callback) override;
-  void StartWilcoDtcService(chromeos::VoidDBusMethodCallback callback) override;
-  void StopWilcoDtcService(chromeos::VoidDBusMethodCallback callback) override;
 
   void set_start_job_cb(const StartJobCallback& cb) { start_job_cb_ = cb; }
   void set_stop_job_cb(const StopJobCallback& cb) { stop_job_cb_ = cb; }

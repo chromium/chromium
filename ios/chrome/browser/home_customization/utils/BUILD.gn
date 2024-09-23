@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "home_customization_constants.h",
+    "home_customization_constants.mm",
+    "home_customization_helper.h",
+    "home_customization_helper.mm",
+    "home_customization_metrics_recorder.h",
+    "home_customization_metrics_recorder.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

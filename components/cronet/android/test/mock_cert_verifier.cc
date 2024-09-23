@@ -3,22 +3,25 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/test/test_support_android.h"
-#include "components/cronet/android/cronet_test_apk_jni/MockCertVerifier_jni.h"
 #include "crypto/sha2.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_verifier.h"
-#include "net/cert/cert_verify_result.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/cert/cert_verify_result.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/cronet/android/cronet_test_apk_jni/MockCertVerifier_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -31,7 +34,7 @@ namespace {
 static bool CalculatePublicKeySha256(const net::X509Certificate& cert,
                                      net::HashValue* out_hash_value) {
   // Extract the public key from the cert.
-  base::StringPiece spki_bytes;
+  std::string_view spki_bytes;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(cert.cert_buffer()),
           &spki_bytes)) {

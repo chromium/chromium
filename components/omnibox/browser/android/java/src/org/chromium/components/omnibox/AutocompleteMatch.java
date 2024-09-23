@@ -12,13 +12,17 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 import androidx.core.util.ObjectsCompat;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
+import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
+import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.action.OmniboxAction;
-import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -31,24 +35,6 @@ import java.util.Set;
 public class AutocompleteMatch {
     public static final int INVALID_GROUP = GroupId.GROUP_INVALID_VALUE;
     public static final int INVALID_TYPE = -1;
-
-    /** Specifies an individual tile for TILE_NAVSUGGEST suggestions. */
-    public static class SuggestTile {
-        /** Title of the website the tile points to. */
-        public final String title;
-
-        /** URL of the website the tile points to. */
-        public final GURL url;
-
-        /** Whether the tile is a Search tile. */
-        public final boolean isSearch;
-
-        public SuggestTile(String title, GURL url, boolean isSearch) {
-            this.title = title;
-            this.url = url;
-            this.isSearch = isSearch;
-        }
-    }
 
     /**
      * Specifies the style of portions of the suggestion text.
@@ -87,6 +73,8 @@ public class AutocompleteMatch {
     private String mDescription;
     private List<MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
+    private @Nullable RichAnswerTemplate mAnswerTemplate;
+    private AnswerType mAnswerType;
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
@@ -97,12 +85,13 @@ public class AutocompleteMatch {
     private String mPostContentType;
     private byte[] mPostData;
     private final int mGroupId;
-    private final List<QueryTile> mQueryTiles;
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
-    private final @Nullable List<SuggestTile> mSuggestTiles;
     private long mNativeMatch;
     private final @NonNull List<OmniboxAction> mActions;
+    private final boolean mAllowedToBeDefaultMatch;
+    private final String mInlineAutocompletion;
+    private final String mAdditionalText;
 
     public AutocompleteMatch(
             int nativeType,
@@ -115,6 +104,8 @@ public class AutocompleteMatch {
             String description,
             List<MatchClassification> descriptionClassifications,
             SuggestionAnswer answer,
+            byte[] serializedAnswerTemplate,
+            int answerType,
             String fillIntoEdit,
             GURL url,
             GURL imageUrl,
@@ -123,11 +114,12 @@ public class AutocompleteMatch {
             String postContentType,
             byte[] postData,
             int groupId,
-            List<QueryTile> queryTiles,
             byte[] clipboardImageData,
             boolean hasTabMatch,
-            List<SuggestTile> suggestTiles,
-            @Nullable List<OmniboxAction> actions) {
+            @Nullable List<OmniboxAction> actions,
+            boolean allowedToBeDefaultMatch,
+            String inlineAutocompletion,
+            String additionalText) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -141,6 +133,14 @@ public class AutocompleteMatch {
         mDescription = description;
         mDescriptionClassifications = descriptionClassifications;
         mAnswer = answer;
+        if (serializedAnswerTemplate != null) {
+            try {
+                mAnswerTemplate = RichAnswerTemplate.parseFrom(serializedAnswerTemplate);
+            } catch (InvalidProtocolBufferException e) {
+                // When parsing error occurs, leave template as null.
+            }
+        }
+        mAnswerType = AnswerType.forNumber(answerType);
         mFillIntoEdit = TextUtils.isEmpty(fillIntoEdit) ? displayText : fillIntoEdit;
         assert url != null;
         mUrl = url;
@@ -151,11 +151,12 @@ public class AutocompleteMatch {
         mPostContentType = postContentType;
         mPostData = postData;
         mGroupId = groupId;
-        mQueryTiles = queryTiles;
         mClipboardImageData = clipboardImageData;
         mHasTabMatch = hasTabMatch;
-        mSuggestTiles = suggestTiles;
         mActions = actions != null ? actions : Arrays.asList();
+        mAllowedToBeDefaultMatch = allowedToBeDefaultMatch;
+        mInlineAutocompletion = inlineAutocompletion;
+        mAdditionalText = additionalText;
     }
 
     @CalledByNative
@@ -173,6 +174,8 @@ public class AutocompleteMatch {
             int[] descriptionClassificationOffsets,
             int[] descriptionClassificationStyles,
             SuggestionAnswer answer,
+            byte[] serializedAnswerTemplate,
+            int answerType,
             String fillIntoEdit,
             GURL url,
             GURL imageUrl,
@@ -181,28 +184,18 @@ public class AutocompleteMatch {
             String postContentType,
             byte[] postData,
             int groupId,
-            List<QueryTile> tiles,
             byte[] clipboardImageData,
             boolean hasTabMatch,
-            String[] suggestTileTitles,
-            GURL[] suggestTileUrls,
-            int[] suggestTileTypes,
-            @Nullable OmniboxAction[] actions) {
+            @JniType("std::vector") List<OmniboxAction> actions,
+            boolean allowedToBeDefaultMatch,
+            String inlineAutocompletion,
+            String additionalText) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
             contentClassifications.add(
                     new MatchClassification(
                             contentClassificationOffsets[i], contentClassificationStyles[i]));
-        }
-
-        assert suggestTileUrls.length == suggestTileTitles.length;
-        assert suggestTileTypes.length == suggestTileTitles.length;
-        List<SuggestTile> suggestTiles = new ArrayList<>();
-        for (int i = 0; i < suggestTileTitles.length; i++) {
-            suggestTiles.add(
-                    new SuggestTile(
-                            suggestTileTitles[i], suggestTileUrls[i], suggestTileTypes[i] != 0));
         }
 
         Set<Integer> subtypes = new ArraySet(nativeSubtypes.length);
@@ -222,6 +215,8 @@ public class AutocompleteMatch {
                         description,
                         new ArrayList<>(),
                         answer,
+                        serializedAnswerTemplate,
+                        answerType,
                         fillIntoEdit,
                         url,
                         imageUrl,
@@ -230,11 +225,12 @@ public class AutocompleteMatch {
                         postContentType,
                         postData,
                         groupId,
-                        tiles,
                         clipboardImageData,
                         hasTabMatch,
-                        suggestTiles,
-                        actions == null ? null : Arrays.asList(actions));
+                        actions,
+                        allowedToBeDefaultMatch,
+                        inlineAutocompletion,
+                        additionalText);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
@@ -292,6 +288,22 @@ public class AutocompleteMatch {
     }
 
     @CalledByNative
+    private void setAnswerTemplate(byte[] serializedAnswerTemplate) {
+        if (serializedAnswerTemplate != null) {
+            try {
+                mAnswerTemplate = RichAnswerTemplate.parseFrom(serializedAnswerTemplate);
+            } catch (InvalidProtocolBufferException e) {
+                mAnswerTemplate = null;
+            }
+        }
+    }
+
+    @CalledByNative
+    private void setAnswerType(int answerType) {
+        mAnswerType = AnswerType.forNumber(answerType);
+    }
+
+    @CalledByNative
     private void setDescription(
             String description,
             int[] descriptionClassificationOffsets,
@@ -320,7 +332,7 @@ public class AutocompleteMatch {
         return mTransition;
     }
 
-    public String getDisplayText() {
+    public @NonNull String getDisplayText() {
         return mDisplayText;
     }
 
@@ -344,15 +356,24 @@ public class AutocompleteMatch {
         return mAnswer != null;
     }
 
-    public String getFillIntoEdit() {
+    public @Nullable RichAnswerTemplate getAnswerTemplate() {
+        return mAnswerTemplate;
+    }
+
+    public AnswerType getAnswerType() {
+        return mAnswerType;
+    }
+
+    public @NonNull String getFillIntoEdit() {
         return mFillIntoEdit;
     }
 
-    public GURL getUrl() {
+    public @NonNull GURL getUrl() {
         return mUrl;
     }
 
-    public GURL getImageUrl() {
+    public @NonNull GURL getImageUrl() {
+        assert mImageUrl != null;
         return mImageUrl;
     }
 
@@ -374,10 +395,6 @@ public class AutocompleteMatch {
         return mPostContentType;
     }
 
-    public List<QueryTile> getQueryTiles() {
-        return mQueryTiles;
-    }
-
     public byte[] getPostData() {
         return mPostData;
     }
@@ -389,6 +406,18 @@ public class AutocompleteMatch {
     @NonNull
     public List<OmniboxAction> getActions() {
         return mActions;
+    }
+
+    public boolean allowedToBeDefaultMatch() {
+        return mAllowedToBeDefaultMatch;
+    }
+
+    public String getInlineAutocompletion() {
+        return mInlineAutocompletion;
+    }
+
+    public String getAdditionalText() {
+        return mAdditionalText;
     }
 
     /**
@@ -430,6 +459,10 @@ public class AutocompleteMatch {
         }
 
         AutocompleteMatch suggestion = (AutocompleteMatch) obj;
+        boolean answer_template_is_equal =
+                mAnswerTemplate != null && suggestion.mAnswerTemplate != null
+                        ? mAnswerTemplate.equals(suggestion.mAnswerTemplate)
+                        : mAnswerTemplate == null && suggestion.mAnswerTemplate == null;
         return mType == suggestion.mType
                 && mNativeMatch == suggestion.mNativeMatch
                 && ObjectsCompat.equals(mSubtypes, suggestion.mSubtypes)
@@ -446,7 +479,8 @@ public class AutocompleteMatch {
                 && TextUtils.equals(mPostContentType, suggestion.mPostContentType)
                 && Arrays.equals(mPostData, suggestion.mPostData)
                 && mGroupId == suggestion.mGroupId
-                && ObjectsCompat.equals(mQueryTiles, suggestion.mQueryTiles);
+                && mAnswerType == suggestion.mAnswerType
+                && answer_template_is_equal;
     }
 
     /**
@@ -456,11 +490,6 @@ public class AutocompleteMatch {
      */
     public int getGroupId() {
         return mGroupId;
-    }
-
-    /** @return List of tiles for TILE_NAVSUGGEST suggestion. */
-    public @Nullable List<SuggestTile> getSuggestTiles() {
-        return mSuggestTiles;
     }
 
     /**
@@ -500,7 +529,8 @@ public class AutocompleteMatch {
                         "mGroupId=" + mGroupId,
                         "mDisplayTextClassifications=" + mDisplayTextClassifications,
                         "mDescriptionClassifications=" + mDescriptionClassifications,
-                        "mAnswer=" + mAnswer);
+                        "mAnswer=" + mAnswer,
+                        "mAnswerTemplate=" + mAnswerTemplate);
         return pieces.toString();
     }
 

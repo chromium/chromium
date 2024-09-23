@@ -7,16 +7,18 @@
 
 #include "chrome/installer/setup/install_worker.h"
 
+#include <windows.h>
+
 #include <oaidl.h>
 #include <shlobj.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <time.h>
-#include <windows.h>
 #include <wrl/client.h>
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -40,6 +42,7 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/installer/setup/configure_app_container_sandbox.h"
 #include "chrome/installer/setup/downgrade_cleanup.h"
 #include "chrome/installer/setup/install_params.h"
 #include "chrome/installer/setup/installer_state.h"
@@ -57,6 +60,7 @@
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installation_state.h"
+#include "chrome/installer/util/installer_util_strings.h"
 #include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/set_reg_value_work_item.h"
 #include "chrome/installer/util/shell_util.h"
@@ -73,13 +77,6 @@ using base::win::RegKey;
 namespace installer {
 
 namespace {
-
-constexpr wchar_t kChromeInstallFilesCapabilitySid[] =
-    L"S-1-15-3-1024-3424233489-972189580-2057154623-747635277-1604371224-"
-    L"316187997-3786583170-1043257646";
-constexpr wchar_t kLpacChromeInstallFilesCapabilitySid[] =
-    L"S-1-15-3-1024-2302894289-466761758-1166120688-1039016420-2430351297-"
-    L"4240214049-4028510897-3317428798";
 
 void AddInstallerCopyTasks(const InstallParams& install_params,
                            WorkItemList* install_list) {
@@ -312,8 +309,10 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
 
   WorkItem* install_service_work_item = new InstallServiceWorkItem(
       install_static::GetElevationServiceName(),
-      install_static::GetElevationServiceDisplayName(), SERVICE_DEMAND_START,
-      base::CommandLine(elevation_service_path),
+      install_static::GetElevationServiceDisplayName(),
+      GetLocalizedStringF(IDS_ELEVATION_SERVICE_DESCRIPTION_BASE,
+                          {install_static::GetBaseAppName()}),
+      SERVICE_DEMAND_START, base::CommandLine(elevation_service_path),
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(),
       {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
@@ -608,7 +607,7 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
     }
     if (result == ERROR_SUCCESS && dtype == REG_BINARY && size != 0) {
       std::string dmtoken_value(base::TrimWhitespaceASCII(
-          base::StringPiece(raw_value.data(), size), base::TRIM_ALL));
+          std::string_view(raw_value.data(), size), base::TRIM_ALL));
       if (dmtoken_value.compare("INVALID_DM_TOKEN")) {
         has_valid_dm_token = true;
       }
@@ -616,7 +615,7 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
   }
 
   bool is_cbcm_enrolled =
-      !InstallUtil::GetCloudManagementEnrollmentToken().empty() &&
+      !InstallUtil::GetCloudManagementEnrollmentToken().empty() ||
       has_valid_dm_token;
   std::wstring cbcm_brand =
       TransformCloudManagementBrandCode(brand, /*to_cbcm=*/is_cbcm_enrolled);
@@ -867,20 +866,8 @@ void AddInstallWorkItems(const InstallParams& install_params,
       base::BindOnce(
           [](const base::FilePath& target_path, const base::FilePath& temp_path,
              const CallbackWorkItem& work_item) {
-            auto sids = base::win::Sid::FromSddlStringVector(
-                {kChromeInstallFilesCapabilitySid,
-                 kLpacChromeInstallFilesCapabilitySid});
-            bool success = false;
-            if (sids) {
-              bool success_target = base::win::GrantAccessToPath(
-                  target_path, *sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
-                  CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
-              bool success_temp = base::win::GrantAccessToPath(
-                  temp_path, *sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
-                  CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
-              success = success_target && success_temp;
-            }
-            return success;
+            return ConfigureAppContainerSandbox(
+                std::array<const base::FilePath*, 2>{&target_path, &temp_path});
           },
           target_path, temp_path),
       base::DoNothing());

@@ -11,7 +11,7 @@
 namespace media {
 
 DecoderBufferQueue::DecoderBufferQueue()
-    : earliest_valid_timestamp_(kNoTimestamp), data_size_(0) {}
+    : earliest_valid_timestamp_(kNoTimestamp) {}
 
 DecoderBufferQueue::~DecoderBufferQueue() = default;
 
@@ -21,7 +21,7 @@ void DecoderBufferQueue::Push(scoped_refptr<DecoderBuffer> buffer) {
   DCHECK(!buffer->end_of_stream());
 
   queue_.push_back(buffer);
-  data_size_ += buffer->data_size();
+  memory_usage_in_bytes_ += buffer->GetMemoryUsage();
 
   // TODO(scherkus): FFmpeg returns some packets with no timestamp after
   // seeking. Fix and turn this into CHECK(). See http://crbug.com/162192
@@ -49,9 +49,9 @@ scoped_refptr<DecoderBuffer> DecoderBufferQueue::Pop() {
   scoped_refptr<DecoderBuffer> buffer = std::move(queue_.front());
   queue_.pop_front();
 
-  size_t buffer_data_size = buffer->data_size();
-  DCHECK_LE(buffer_data_size, data_size_);
-  data_size_ -= buffer_data_size;
+  size_t buffer_data_size = buffer->GetMemoryUsage();
+  DCHECK_LE(buffer_data_size, memory_usage_in_bytes_);
+  memory_usage_in_bytes_ -= buffer_data_size;
 
   if (!in_order_queue_.empty() && in_order_queue_.front() == buffer)
     in_order_queue_.pop_front();
@@ -61,7 +61,7 @@ scoped_refptr<DecoderBuffer> DecoderBufferQueue::Pop() {
 
 void DecoderBufferQueue::Clear() {
   queue_.clear();
-  data_size_ = 0;
+  memory_usage_in_bytes_ = 0;
   in_order_queue_.clear();
   earliest_valid_timestamp_ = kNoTimestamp;
 }

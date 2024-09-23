@@ -98,7 +98,7 @@ class TestHitTestAggregator final : public HitTestAggregator {
                           local_surface_id_lookup_delegate,
                           frame_sink_id),
         frame_sink_id_(frame_sink_id) {}
-  ~TestHitTestAggregator() = default;
+  ~TestHitTestAggregator() override = default;
 
   int GetRegionCount() const { return hit_test_data_size_; }
   int GetHitTestRegionListCapacity() { return hit_test_data_capacity_; }

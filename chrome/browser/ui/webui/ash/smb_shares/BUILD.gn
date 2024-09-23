@@ -1,0 +1,77 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("smb_shares") {
+  sources = [
+    "smb_credentials_dialog.cc",
+    "smb_credentials_dialog.h",
+    "smb_handler.cc",
+    "smb_handler.h",
+    "smb_share_dialog.cc",
+    "smb_share_dialog.h",
+    "smb_shares_localized_strings_provider.cc",
+    "smb_shares_localized_strings_provider.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+  ]
+
+  deps = [
+    "//ash/webui/common:trusted_types_util",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/smb_client",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//chromeos/constants",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/base",
+    "//ui/web_dialogs",
+    "//ui/webui",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/smb_client" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "smb_credentials_dialog_browsertest.cc" ]
+
+  deps = [
+    ":smb_shares",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "smb_handler_unittest.cc" ]
+
+  deps = [
+    ":smb_shares",
+    "//base/test:test_support",
+    "//chrome/browser/ash/smb_client:test_support",
+    "//content/test:test_support",
+  ]
+}

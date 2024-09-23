@@ -23,10 +23,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -50,7 +53,7 @@ CardUnmaskPromptViews::CardUnmaskPromptViews(
     : controller_(controller), web_contents_(web_contents->GetWeakPtr()) {
   UpdateButtons();
 
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }
@@ -213,12 +216,12 @@ std::u16string CardUnmaskPromptViews::GetWindowTitle() const {
 }
 
 bool CardUnmaskPromptViews::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_CANCEL) {
+    ui::mojom::DialogButton button) const {
+  if (button == ui::mojom::DialogButton::kCancel) {
     return true;
   }
 
-  DCHECK_EQ(ui::DIALOG_BUTTON_OK, button);
+  DCHECK_EQ(ui::mojom::DialogButton::kOk, button);
 
   return cvc_input_->GetEnabled() &&
          controller_->InputCvcIsValid(cvc_input_->GetText()) &&
@@ -332,13 +335,13 @@ void CardUnmaskPromptViews::InitIfNecessary() {
   auto month_input = std::make_unique<views::Combobox>(&month_combobox_model_);
   month_input->SetCallback(base::BindRepeating(
       &CardUnmaskPromptViews::DateChanged, base::Unretained(this)));
-  month_input->SetAccessibleName(
+  month_input->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_MONTH));
   month_input_ = input_row->AddChildView(std::move(month_input));
   auto year_input = std::make_unique<views::Combobox>(&year_combobox_model_);
   year_input->SetCallback(base::BindRepeating(
       &CardUnmaskPromptViews::DateChanged, base::Unretained(this)));
-  year_input->SetAccessibleName(
+  year_input->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_UNMASK_EXPIRATION_YEAR));
   year_input_ = input_row->AddChildView(std::move(year_input));
   if (!controller_->ShouldRequestExpirationDate()) {
@@ -355,7 +358,7 @@ void CardUnmaskPromptViews::InitIfNecessary() {
     cvc_input->SetPlaceholderText(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_CVC));
   }
-  cvc_input->SetAccessibleName(l10n_util::GetStringUTF16(
+  cvc_input->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DIALOG_ACCESSIBLE_NAME_SECURITY_CODE));
   cvc_input->SetDefaultWidthInChars(8);
   cvc_input->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_NUMBER);
@@ -436,18 +439,17 @@ void CardUnmaskPromptViews::ClosePrompt() {
 
 void CardUnmaskPromptViews::UpdateButtons() {
   // In permanent error state, only the "close" button is shown.
-  AutofillClient::PaymentsRpcResult result =
-      controller_->GetVerificationResult();
-  bool has_ok =
-      result != AutofillClient::PaymentsRpcResult::kPermanentFailure &&
-      result != AutofillClient::PaymentsRpcResult::kNetworkError &&
-      result !=
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure &&
-      result != AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
+  using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+  PaymentsRpcResult result = controller_->GetVerificationResult();
+  bool has_ok = result != PaymentsRpcResult::kPermanentFailure &&
+                result != PaymentsRpcResult::kNetworkError &&
+                result != PaymentsRpcResult::kVcnRetrievalPermanentFailure &&
+                result != PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
 
-  SetButtons(has_ok ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
-                    : ui::DIALOG_BUTTON_CANCEL);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
+  SetButtons(has_ok ? static_cast<int>(ui::mojom::DialogButton::kOk) |
+                          static_cast<int>(ui::mojom::DialogButton::kCancel)
+                    : static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
 }
 
 void CardUnmaskPromptViews::LinkClicked() {

@@ -21,6 +21,11 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_
 
@@ -69,6 +74,15 @@ enum TextCaseSensitivity {
   // features.
   kTextCaseUnicodeInsensitive
 };
+
+// Computes a standard StringHasher string for the given buffer,
+// with the caveat that the buffer may contain 8-bit data only.
+// In that case, it is converted from UChar to LChar on the fly,
+// so that we return the same hash as if we hashed the string as
+// LChar to begin with. This ensures that the same code points
+// are hashed to the same value, even if someone called e.g.
+// Ensure16Bit() on the string at some point.
+WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str, unsigned length);
 
 enum StripBehavior { kStripExtraWhiteSpace, kDoNotStripWhiteSpace };
 
@@ -137,9 +151,7 @@ class WTF_EXPORT StringImpl {
 
   static void InitStatics();
 
-  static StringImpl* CreateStatic(const char* string,
-                                  wtf_size_t length,
-                                  wtf_size_t hash);
+  static StringImpl* CreateStatic(const char* string, wtf_size_t length);
   static void ReserveStaticStringsCapacityForSize(wtf_size_t size);
   static void FreezeStaticStrings();
   static const StaticStringsTable& AllStaticStrings();
@@ -147,6 +159,8 @@ class WTF_EXPORT StringImpl {
     return highest_static_string_length_;
   }
 
+  static scoped_refptr<StringImpl> Create(base::span<const UChar>);
+  static scoped_refptr<StringImpl> Create(base::span<const LChar>);
   static scoped_refptr<StringImpl> Create(const UChar*, wtf_size_t length);
   static scoped_refptr<StringImpl> Create(const LChar*, wtf_size_t length);
   static scoped_refptr<StringImpl> Create(
@@ -170,8 +184,18 @@ class WTF_EXPORT StringImpl {
     return Create(reinterpret_cast<const LChar*>(s));
   }
 
+  // Create a StringImpl with space for `length` LChar characters. `data` will
+  // be the character data allocated, and _must_be_completely_filled_in_ by the
+  // caller.
+  static scoped_refptr<StringImpl> CreateUninitialized(size_t length,
+                                                       base::span<LChar>& data);
   static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
                                                        LChar*& data);
+  // Create a StringImpl with space for `length` UChar characters. `data` will
+  // be the character data allocated, and _must_be_completely_filled_in_ by the
+  // caller.
+  static scoped_refptr<StringImpl> CreateUninitialized(size_t length,
+                                                       base::span<UChar>& data);
   static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
                                                        UChar*& data);
 
@@ -198,6 +222,10 @@ class WTF_EXPORT StringImpl {
   }
   ALWAYS_INLINE const void* Bytes() const {
     return reinterpret_cast<const void*>(this + 1);
+  }
+  ALWAYS_INLINE base::span<const uint8_t> RawByteSpan() const {
+    return {reinterpret_cast<const uint8_t*>(this + 1),
+            CharactersSizeInBytes()};
   }
 
   template <typename CharType>
@@ -234,10 +262,10 @@ class WTF_EXPORT StringImpl {
   void SetHash(wtf_size_t hash) const {
     // Multiple clients assume that StringHasher is the canonical string
     // hash function.
-    DCHECK(hash == (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
-                                   Characters8(), length_)
-                             : StringHasher::ComputeHashAndMaskTop8Bits(
-                                   Characters16(), length_)));
+    DCHECK_EQ(hash,
+              (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
+                              (const char*)Characters8(), length_)
+                        : ComputeHashForWideString(Characters16(), length_)));
     DCHECK(hash);  // Verify that 0 is a valid sentinel hash value.
     SetHashRaw(hash);
   }
@@ -433,6 +461,7 @@ class WTF_EXPORT StringImpl {
   bool StartsWith(UChar) const;
   bool StartsWith(const StringView&) const;
   bool StartsWithIgnoringCase(const StringView&) const;
+  bool StartsWithIgnoringCaseAndAccents(const StringView&) const;
   bool StartsWithIgnoringASCIICase(const StringView&) const;
 
   bool EndsWith(UChar) const;
@@ -589,6 +618,8 @@ class WTF_EXPORT StringImpl {
   // a bitfield with those 2 values.
   unsigned ComputeASCIIFlags() const;
 
+  std::u16string ToU16String() const;
+
 #if DCHECK_IS_ON()
   std::string AsciiForDebugging() const;
 #endif
@@ -599,7 +630,7 @@ class WTF_EXPORT StringImpl {
   void AssertHashIsCorrect() {
     DCHECK(HasHash());
     DCHECK_EQ(ExistingHash(), StringHasher::ComputeHashAndMaskTop8Bits(
-                                  Characters8(), length()));
+                                  (const char*)Characters8(), length()));
   }
 #endif
 
@@ -934,9 +965,9 @@ inline void StringImpl::AppendTo(BufferType& result,
   if (!number_of_characters_to_copy)
     return;
   if (Is8Bit())
-    result.Append(Characters8() + start, number_of_characters_to_copy);
+    result.AppendSpan(Span8().subspan(start, number_of_characters_to_copy));
   else
-    result.Append(Characters16() + start, number_of_characters_to_copy);
+    result.AppendSpan(Span16().subspan(start, number_of_characters_to_copy));
 }
 
 template <typename BufferType>
@@ -962,14 +993,14 @@ struct HashTraits<scoped_refptr<StringImpl>>;
 
 }  // namespace WTF
 
-using WTF::StringImpl;
-using WTF::kTextCaseASCIIInsensitive;
-using WTF::kTextCaseUnicodeInsensitive;
-using WTF::kTextCaseSensitive;
-using WTF::TextCaseSensitivity;
 using WTF::Equal;
 using WTF::EqualNonNull;
+using WTF::kTextCaseASCIIInsensitive;
+using WTF::kTextCaseSensitive;
+using WTF::kTextCaseUnicodeInsensitive;
 using WTF::LengthOfNullTerminatedString;
 using WTF::ReverseFind;
+using WTF::StringImpl;
+using WTF::TextCaseSensitivity;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_IMPL_H_

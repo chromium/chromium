@@ -16,8 +16,8 @@ from pathlib import Path
 _HERE_DIR = Path(__file__).parent.resolve()
 _SOURCE_MAP_MERGER = (_HERE_DIR.parent / 'merge_js_source_maps.js').resolve()
 
-# TODO(crbug/1337530): Move common sourcemap build rules and tests into a more
-# generic location.
+# TODO(crbug.com/40229311): Move common sourcemap build rules and tests into a
+# more generic location.
 _SOURCE_MAP_TRANSLATOR = (_HERE_DIR.parent.parent / 'create_js_source_maps' /
                           'test' / 'translate_source_map.js').resolve()
 

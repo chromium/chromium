@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build_webui_tests") {
+  ts_path_mappings =
+      [ "chrome://sanitize/*|" +
+        rebase_path("$root_gen_dir/ash/webui/sanitize_ui/resources/tsc/*",
+                    target_gen_dir) ]
+  files = [ "sanitize_ui_test.ts" ]
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//ash/webui/sanitize_ui/resources:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

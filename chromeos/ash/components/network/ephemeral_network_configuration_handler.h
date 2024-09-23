@@ -33,11 +33,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) EphemeralNetworkConfigurationHandler
       public NetworkPolicyObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
+  // Attempts to create an EphemeralNetworkConfigurationHandler.
+  // Can return nullptr in tests if dependencies are not initialized.
   // `managed_network_configuration_handler` must outlive the lifetime of this
   // object.
   // `was_enterprise_managed_at_startup` should be true if the device was
   // already enterprise-enrolled at ash-chrome startup time.
-  explicit EphemeralNetworkConfigurationHandler(
+  static std::unique_ptr<EphemeralNetworkConfigurationHandler> TryCreate(
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
       bool was_enterprise_managed_at_startup);
 
@@ -51,6 +53,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) EphemeralNetworkConfigurationHandler
   void TriggerPoliciesChangedForTesting(const std::string& userhash);
 
  private:
+  EphemeralNetworkConfigurationHandler(
+      ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
+      bool was_enterprise_managed_at_startup);
+
   // Re-evaluates if this EphemeralNetworkConfigurationHandler should be active
   // and call Active/Deactivate accordingly.
   void ReevaluateIsActive();

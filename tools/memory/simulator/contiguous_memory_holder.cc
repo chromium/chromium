@@ -6,10 +6,10 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/memory/page_size.h"
+#include "partition_alloc/page_allocator.h"
 
 namespace memory_simulator {
 

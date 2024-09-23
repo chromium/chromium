@@ -6,24 +6,29 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -49,14 +54,17 @@
 #include "net/socket/client_socket_factory.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/is_google_email.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/service_urls.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/base/util.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/host_exit_codes.h"
@@ -65,8 +73,11 @@
 #include "remoting/host/branding.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
+#include "remoting/host/cloud_heartbeat_service_client.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/config_watcher.h"
+#include "remoting/host/corp_heartbeat_service_client.h"
+#include "remoting/host/corp_host_status_logger.h"
 #include "remoting/host/crash_process.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_session_connector.h"
@@ -82,6 +93,7 @@
 #include "remoting/host/ipc_desktop_environment.h"
 #include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/me2me_desktop_environment.h"
+#include "remoting/host/me2me_heartbeat_service_client.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
@@ -90,25 +102,23 @@
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_extension.h"
+#include "remoting/host/session_policies_from_dict.h"
 #include "remoting/host/shutdown_watchdog.h"
 #include "remoting/host/test_echo_extension.h"
-#include "remoting/host/third_party_auth_config.h"
-#include "remoting/host/token_validator_factory_impl.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "remoting/host/zombie_host_detector.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
-#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/pairing_registry.h"
-#include "remoting/protocol/port_range.h"
-#include "remoting/protocol/token_validator.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/remoting_log_to_server.h"
+#include "remoting/signaling/signaling_id_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/rtc_base/event_tracer.h"
 
@@ -162,7 +172,6 @@
 #include "remoting/host/linux/wayland_utils.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
-using remoting::protocol::NetworkSettings;
 using remoting::protocol::PairingRegistry;
 
 #if BUILDFLAG(IS_APPLE)
@@ -224,6 +233,16 @@ const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
 // File to write webrtc trace events to. If not specified, webrtc trace events
 // will not be enabled.
 const char kWebRtcTraceEventFile[] = "webrtc-trace-event-file";
+
+// Helper to check if a string value is in a Policy allowlist.
+bool IsInAllowlist(std::string_view value,
+                   const std::vector<std::string> allowlist) {
+  return std::find_if(allowlist.begin(), allowlist.end(),
+                      [&value](const std::string& allowed_value) {
+                        return base::EqualsCaseInsensitiveASCII(value,
+                                                                allowed_value);
+                      }) != allowlist.end();
+}
 
 }  // namespace
 
@@ -321,6 +340,12 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Called on the UI thread to start monitoring the configuration file.
   void StartWatchingConfigChanges();
 
+  // Indicates whether |user_email| is allowed to access this machine based on
+  // |host_owner_emails_| and the client domain policies that are set.
+  // Provided as a Callback to Me2MeHostAuthenticatorFactory and is called for
+  // every connection attempt.
+  bool CheckAccessPermission(std::string_view user_email);
+
   // Called on the network thread to set the host's Authenticator factory.
   void CreateAuthenticatorFactory();
 
@@ -344,19 +369,12 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool OnClientDomainListPolicyUpdate(const base::Value::Dict& policies);
   bool OnHostDomainListPolicyUpdate(const base::Value::Dict& policies);
   bool OnUsernamePolicyUpdate(const base::Value::Dict& policies);
-  bool OnNatPolicyUpdate(const base::Value::Dict& policies);
-  bool OnRelayPolicyUpdate(const base::Value::Dict& policies);
-  bool OnUdpPortPolicyUpdate(const base::Value::Dict& policies);
   bool OnCurtainPolicyUpdate(const base::Value::Dict& policies);
-  bool OnHostTokenUrlPolicyUpdate(const base::Value::Dict& policies);
   bool OnPairingPolicyUpdate(const base::Value::Dict& policies);
   bool OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies);
-  bool OnFileTransferPolicyUpdate(const base::Value::Dict& policies);
   bool OnEnableUserInterfacePolicyUpdate(const base::Value::Dict& policies);
   bool OnAllowRemoteAccessConnections(const base::Value::Dict& policies);
-  bool OnMaxSessionDurationPolicyUpdate(const base::Value::Dict& policies);
-  bool OnMaxClipboardSizePolicyUpdate(const base::Value::Dict& policies);
-  bool OnUrlForwardingPolicyUpdate(const base::Value::Dict& policies);
+  bool OnAllowPinAuthenticationUpdate(const base::Value::Dict& policies);
 
   void InitializeSignaling();
 
@@ -365,6 +383,8 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // HeartbeatSender::Delegate implementation.
   void OnFirstHeartbeatSuccessful() override;
+  void OnUpdateHostOwner(const std::string& host_owner) override;
+  void OnUpdateRequireSessionAuthorization(bool require_session_auth) override;
   void OnHostNotFound() override;
   void OnAuthFailed() override;
 
@@ -415,28 +435,27 @@ class HostProcess : public ConfigWatcher::Delegate,
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string oauth_refresh_token_;
   std::string service_account_email_;
+  std::string cloud_api_key_;
   base::Value::Dict config_;
-  std::string host_owner_;
-  bool is_googler_ = false;
-  std::optional<size_t> max_clipboard_size_;
+  std::set<std::string> host_owner_emails_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
   PolicyState policy_state_ = POLICY_INITIALIZING;
   std::vector<std::string> client_domain_list_;
   std::vector<std::string> host_domain_list_;
   bool host_username_match_required_ = false;
-  bool allow_nat_traversal_ = true;
-  bool allow_relay_ = true;
-  PortRange udp_port_range_;
   bool allow_pairing_ = true;
   bool enable_user_interface_ = true;
   bool allow_remote_access_connections_ = true;
+  std::optional<bool> allow_pin_auth_;
+  bool is_cloud_host_ = false;
+  bool is_corp_host_ = false;
+  bool require_session_authorization_ = false;
+  LocalSessionPoliciesProvider local_session_policies_provider_;
 
   DesktopEnvironmentOptions desktop_environment_options_;
-  ThirdPartyAuthConfig third_party_auth_config_;
   bool security_key_auth_policy_enabled_ = false;
   bool security_key_extension_supported_ = true;
-  std::optional<int> max_session_duration_minutes_;
 
   // Allows us to override field trials which are causing issues for chromoting.
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
@@ -468,6 +487,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::unique_ptr<HostUTMPLogger> host_utmp_logger_;
 #endif
   std::unique_ptr<HostPowerSaveBlocker> power_save_blocker_;
+
+  // Only set if |is_corp_host_| is true.
+  std::unique_ptr<CorpHostStatusLogger> corp_host_status_logger_;
 
   std::unique_ptr<ChromotingHost> host_;
 
@@ -606,12 +628,7 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
 
     // Read config from stdin if necessary.
     if (host_config_path_ == base::FilePath(kStdinConfigPath)) {
-      const size_t kBufferSize = 4096;
-      std::unique_ptr<char[]> buf(new char[kBufferSize]);
-      size_t len;
-      while ((len = fread(buf.get(), 1, kBufferSize, stdin)) > 0) {
-        host_config_.append(buf.get(), len);
-      }
+      base::ReadStreamToString(stdin, &host_config_);
     }
   } else {
     base::FilePath default_config_dir = remoting::GetConfigDir();
@@ -737,7 +754,6 @@ void HostProcess::SetState(HostState target_state) {
     case HOST_STOPPED:  // HOST_STOPPED is a terminal state.
     default:
       NOTREACHED() << state_ << " -> " << target_state;
-      break;
   }
   state_ = target_state;
 }
@@ -787,6 +803,35 @@ void HostProcess::SigTermHandler(int signal_number) {
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
+bool HostProcess::CheckAccessPermission(std::string_view user_email_view) {
+  // |user_email_view| may already be in a canonical form but we transform it
+  // just in case so that it matches the format we use in |host_owner_emails_|.
+  // TODO: joedow - Add an overload for GetCanonicalEmail() which takes a
+  // std::string_view.
+  auto canonical_email = GetCanonicalEmail(std::string(user_email_view));
+  auto email_parts = base::SplitStringOnce(canonical_email, '@');
+  if (!email_parts) {
+    LOG(ERROR) << "Unexpected email address format: " << user_email_view;
+    return false;
+  }
+
+  if (!host_owner_emails_.contains(canonical_email)) {
+    LOG(ERROR) << canonical_email << " does not have access to this machine.";
+    return false;
+  }
+
+  // Verify the remote user is not disallowed based on the client domain policy.
+  if (client_domain_list_.empty()) {
+    return true;
+  }
+
+  auto [_, domain] = *email_parts;
+  bool allowed_by_policy = IsInAllowlist(domain, client_domain_list_);
+  LOG_IF(ERROR, !allowed_by_policy) << canonical_email << " has a domain which "
+                                    << "is not in the client domain allowlist.";
+  return allowed_by_policy;
+}
+
 void HostProcess::CreateAuthenticatorFactory() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
@@ -801,9 +846,31 @@ void HostProcess::CreateAuthenticatorFactory() {
     return;
   }
 
-  std::unique_ptr<protocol::AuthenticatorFactory> factory;
+  auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
+      local_certificate, key_pair_);
+  if (is_cloud_host_) {
+    CHECK(require_session_authorization_);
 
-  if (third_party_auth_config_.is_null()) {
+    // TODO: joedow - Implement SessionAuthz for Cloud hosts.
+    NOTIMPLEMENTED() << "SessionAuthz not yet implemented for Cloud hosts";
+  } else if (require_session_authorization_ ||
+             (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
+    auth_config->AddSessionAuthzAuth(
+        base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
+            context_->url_loader_factory(), service_account_email_,
+            oauth_refresh_token_));
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    if (!cert_watcher_) {
+      cert_watcher_ = std::make_unique<CertificateWatcher>(
+          base::BindRepeating(&HostProcess::ShutdownHost,
+                              base::Unretained(this), kSuccessExitCode),
+          context_->file_task_runner());
+      cert_watcher_->Start();
+    }
+    cert_watcher_->SetMonitor(host_->status_monitor());
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  } else {
     scoped_refptr<PairingRegistry> pairing_registry;
     if (allow_pairing_) {
       // On Windows |pairing_registry_| is initialized in
@@ -823,35 +890,19 @@ void HostProcess::CreateAuthenticatorFactory() {
       pairing_registry = pairing_registry_;
     }
 
-    factory = protocol::Me2MeHostAuthenticatorFactory::CreateWithPin(
-        host_owner_, local_certificate, key_pair_, client_domain_list_,
-        pin_hash_, pairing_registry);
-
+    auth_config->AddPairingAuth(pairing_registry);
+    auth_config->AddSharedSecretAuth(pin_hash_);
     host_->set_pairing_registry(pairing_registry);
-  } else {
-    // ThirdPartyAuthConfig::Parse() leaves the config in a valid state, so
-    // these URLs are both valid.
-    DCHECK(third_party_auth_config_.token_url.is_valid());
-    DCHECK(third_party_auth_config_.token_validation_url.is_valid());
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    if (!cert_watcher_) {
-      cert_watcher_ = std::make_unique<CertificateWatcher>(
-          base::BindRepeating(&HostProcess::ShutdownHost,
-                              base::Unretained(this), kSuccessExitCode),
-          context_->file_task_runner());
-      cert_watcher_->Start();
-    }
-    cert_watcher_->SetMonitor(host_->status_monitor());
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-    scoped_refptr<protocol::TokenValidatorFactory> token_validator_factory =
-        new TokenValidatorFactoryImpl(third_party_auth_config_, key_pair_,
-                                      context_->url_request_context_getter());
-    factory = protocol::Me2MeHostAuthenticatorFactory::CreateWithThirdPartyAuth(
-        host_owner_, local_certificate, key_pair_, client_domain_list_,
-        token_validator_factory);
   }
+  HOST_LOG << "Host's supported authentication methods: ";
+  for (const auto& method : auth_config->GetSupportedMethods()) {
+    HOST_LOG << "  "
+             << protocol::HostAuthenticationConfig::MethodToString(method);
+  }
+  std::unique_ptr<protocol::AuthenticatorFactory> factory =
+      std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
+          base::BindRepeating(&HostProcess::CheckAccessPermission, this),
+          std::move(auth_config));
 
 #if BUILDFLAG(IS_POSIX)
   // On Linux and Mac, perform a PAM authorization step after authentication.
@@ -863,7 +914,6 @@ void HostProcess::CreateAuthenticatorFactory() {
 // IPC::Listener implementation.
 bool HostProcess::OnMessageReceived(const IPC::Message& message) {
   NOTREACHED() << "Received unexpected IPC type: " << message.type();
-  return false;
 }
 
 void HostProcess::OnChannelError() {
@@ -1001,10 +1051,11 @@ void HostProcess::StartOnUiThread() {
           context_->network_task_runner(), std::move(remote));
   desktop_session_connector_ = desktop_environment_factory;
 #else   // !defined(REMOTING_MULTI_PROCESS)
-  BasicDesktopEnvironmentFactory* desktop_environment_factory;
-  desktop_environment_factory = new Me2MeDesktopEnvironmentFactory(
-      context_->network_task_runner(), context_->video_capture_task_runner(),
-      context_->input_task_runner(), context_->ui_task_runner());
+  BasicDesktopEnvironmentFactory* desktop_environment_factory =
+      new Me2MeDesktopEnvironmentFactory(context_->network_task_runner(),
+                                         context_->video_capture_task_runner(),
+                                         context_->input_task_runner(),
+                                         context_->ui_task_runner());
 #endif  // !defined(REMOTING_MULTI_PROCESS)
 
   desktop_environment_factory_.reset(desktop_environment_factory);
@@ -1027,6 +1078,10 @@ void HostProcess::ShutdownOnUiThread() {
   daemon_channel_.reset();
   desktop_session_connector_ = nullptr;
 #endif  // defined(REMOTING_MULTI_PROCESS)
+
+  // Release the remotes after the daemon channel has been closed.
+  remoting_host_control_.reset();
+  worker_process_control_.reset();
 
   // It is now safe for the HostProcess to be deleted.
   self_ = nullptr;
@@ -1063,6 +1118,32 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
     signal_parent_ = false;
   }
 #endif
+}
+
+void HostProcess::OnUpdateHostOwner(const std::string& owner_email) {
+  DCHECK(!owner_email.empty());
+
+  // Use a canonical email form here for martching against FTL signaling IDs.
+  auto new_owner_email = GetCanonicalEmail(owner_email);
+  if (host_owner_emails_.contains(new_owner_email)) {
+    return;
+  }
+
+  LOG(INFO) << "Adding '" << new_owner_email << "' to host owner emails.";
+  host_owner_emails_.emplace(std::move(new_owner_email));
+
+  ApplyHostDomainListPolicy();
+  ApplyUsernamePolicy();
+}
+
+void HostProcess::OnUpdateRequireSessionAuthorization(bool require) {
+  if (require == require_session_authorization_) {
+    return;
+  }
+
+  LOG(INFO) << "Updating require_session_authorization from "
+            << require_session_authorization_ << " to " << require;
+  require_session_authorization_ = require;
 }
 
 void HostProcess::OnHostDeleted() {
@@ -1184,26 +1265,49 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
                << kHostOwnerConfigPath << "`";
     return false;
   }
-  host_owner_ = *host_owner;
+  // TODO: joedow - Remove the email check once all Corp hosts have a hint set.
+  bool has_google_email = IsGoogleEmail(*host_owner);
+  OnUpdateHostOwner(*host_owner);
 
-  // Check if the host owner's email is Google-internal.
-  is_googler_ = IsGoogleEmail(host_owner_);
+  auto* host_type_hint = config.FindString(kHostTypeHintPath);
+  is_cloud_host_ = (host_type_hint && *host_type_hint == kCloudHostTypeHint);
+  // TODO: joedow - Remove the !is_cloud_host override here when all Corp hosts
+  // have a hint set. This is used to allow Googlers to test with Cloud hosts.
+  is_corp_host_ = (host_type_hint && *host_type_hint == kCorpHostTypeHint) ||
+                  (has_google_email && !is_cloud_host_);
+
+  require_session_authorization_ =
+      config.FindBool(kRequireSessionAuthorizationPath).value_or(false);
 
   const std::string* host_secret_hash =
       config.FindString(kHostSecretHashConfigPath);
-  if (host_secret_hash) {
+  if (require_session_authorization_) {
+    HOST_LOG << "Host config specifies that Session Authorization is required.";
+    HOST_LOG << "PIN authentication is disabled.";
+  } else if (host_secret_hash) {
     if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
       LOG(ERROR) << "Host config has an invalid value for path: `"
                  << kHostSecretHashConfigPath << "`";
       return false;
     }
-  } else if (is_googler_) {
+  } else if (is_corp_host_) {
+    // TODO: joedow - Remove this codepath once all Corp host configs include
+    // the kRequireSessionAuthorizationPath attribute.
     HOST_LOG << "No value store for: " << kHostSecretHashConfigPath << ". PIN "
              << "authentication is disabled.";
   } else {
     LOG(ERROR) << "Host config is missing a required path: `"
                << kHostSecretHashConfigPath << "`";
     return false;
+  }
+
+  if (is_cloud_host_) {
+    const std::string* cloud_api_key = config.FindString(kCloudApiKeyPath);
+    if (!cloud_api_key || cloud_api_key->empty()) {
+      LOG(ERROR) << "Host config is missing the cloud_api_key.";
+      return false;
+    }
+    cloud_api_key_ = *cloud_api_key;
   }
 
   return true;
@@ -1217,28 +1321,32 @@ void HostProcess::OnPolicyUpdate(base::Value::Dict policies) {
     return;
   }
 
+  // Use the platform policies instead of `policies`, since the latter only has
+  // incremental changes.
+  std::optional<SessionPolicies> local_session_policies =
+      SessionPoliciesFromDict(policy_watcher_->GetPlatformPolicies());
+  if (!local_session_policies.has_value()) {
+    OnPolicyError();
+    return;
+  }
+  local_session_policies_provider_.set_local_policies(*local_session_policies);
+
   bool restart_required = false;
   restart_required |= OnClientDomainListPolicyUpdate(policies);
   restart_required |= OnHostDomainListPolicyUpdate(policies);
   restart_required |= OnCurtainPolicyUpdate(policies);
   // Note: UsernamePolicyUpdate must run after OnCurtainPolicyUpdate.
   restart_required |= OnUsernamePolicyUpdate(policies);
-  restart_required |= OnNatPolicyUpdate(policies);
-  restart_required |= OnRelayPolicyUpdate(policies);
-  restart_required |= OnUdpPortPolicyUpdate(policies);
-  restart_required |= OnHostTokenUrlPolicyUpdate(policies);
   restart_required |= OnPairingPolicyUpdate(policies);
   restart_required |= OnGnubbyAuthPolicyUpdate(policies);
-  restart_required |= OnFileTransferPolicyUpdate(policies);
   restart_required |= OnEnableUserInterfacePolicyUpdate(policies);
   restart_required |= OnAllowRemoteAccessConnections(policies);
-  restart_required |= OnMaxSessionDurationPolicyUpdate(policies);
-  restart_required |= OnMaxClipboardSizePolicyUpdate(policies);
-  restart_required |= OnUrlForwardingPolicyUpdate(policies);
+  restart_required |= OnAllowPinAuthenticationUpdate(policies);
 
   policy_state_ = POLICY_LOADED;
 
   if (state_ == HOST_STARTING) {
+    DCHECK(!host_);
     StartHostIfReady();
   } else if (state_ == HOST_STARTED) {
     if (restart_required) {
@@ -1281,19 +1389,24 @@ void HostProcess::ApplyHostDomainListPolicy() {
 
   HOST_LOG << "Policy sets host domains: "
            << base::JoinString(host_domain_list_, ", ");
+  if (host_domain_list_.empty()) {
+    return;
+  }
 
-  if (!host_domain_list_.empty()) {
-    bool matched = false;
-    for (const std::string& domain : host_domain_list_) {
-      if (base::EndsWith(host_owner_, std::string("@") + domain,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-        matched = true;
-      }
+  std::set<std::string> allowed_emails;
+  for (const std::string& owner_email : host_owner_emails_) {
+    auto [_, domain] = *base::SplitStringOnce(owner_email, '@');
+    bool allowed_by_policy = IsInAllowlist(domain, host_domain_list_);
+    if (allowed_by_policy) {
+      allowed_emails.emplace(owner_email);
+    } else {
+      LOG(WARNING) << owner_email << " is not allowed by host domain policy";
     }
-    if (!matched) {
-      LOG(ERROR) << "The host domain does not match the policy.";
-      ShutdownHost(kInvalidHostDomainExitCode);
-    }
+  }
+  host_owner_emails_.swap(allowed_emails);
+  if (host_owner_emails_.empty()) {
+    LOG(ERROR) << "No owner emails are allowed based on host domain policy.";
+    ShutdownHost(kInvalidHostDomainExitCode);
   }
 }
 
@@ -1353,21 +1466,20 @@ void HostProcess::ApplyUsernamePolicy() {
     return;
   }
 
-  if (host_username_match_required_) {
-    HOST_LOG << "Policy requires host username match.";
+  if (!host_username_match_required_) {
+    HOST_LOG << "Policy does not require host username match.";
+    return;
+  }
 
-    std::string username = GetUsername();
-    bool shutdown = username.empty() ||
-                    !base::StartsWith(host_owner_, username + std::string("@"),
-                                      base::CompareCase::INSENSITIVE_ASCII);
+  HOST_LOG << "Policy requires host username match.";
 
 #if BUILDFLAG(IS_APPLE)
     // On Mac, we run as root at the login screen, so the username won't match.
     // However, there's no need to enforce the policy at the login screen, as
     // the client will have to reconnect if a login occurs.
-    if (shutdown && getuid() == 0) {
-      shutdown = false;
-    }
+  if (getuid() == 0) {
+    return;
+  }
 #endif
 
     // Curtain-mode on Windows presents the standard OS login prompt to the user
@@ -1379,17 +1491,25 @@ void HostProcess::ApplyUsernamePolicy() {
     }
 #endif  // BUILDFLAG(IS_WIN) && defined(REMOTING_RDP_SESSION)
 
-    // Shutdown the host if the username does not match.
-    if (shutdown) {
-      LOG(ERROR) << "\n Policy error: username and host owner(ignoring domain) "
-                 << "don't match:\n"
-                 << "   username:   `" << username << "`\n"
-                 << "   host owner: `" << host_owner_ << "`";
+    std::string username = GetUsername();
+    LOG(INFO) << "Current local username is '" << username << "'";
+    std::set<std::string> allowed_emails;
+    for (const std::string& owner_email : host_owner_emails_) {
+      auto [owner_username, _] = *base::SplitStringOnce(owner_email, '@');
+      if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
+        LOG(INFO) << owner_email << " matches the local username";
+        allowed_emails.emplace(owner_email);
+      } else {
+        LOG(WARNING) << owner_email << " does not match the local username";
+      }
+    }
+
+    host_owner_emails_.swap(allowed_emails);
+    if (host_owner_emails_.empty()) {
+      LOG(ERROR)
+          << "No owner emails are allowed based on match username policy.";
       ShutdownHost(kUsernameMismatchExitCode);
     }
-  } else {
-    HOST_LOG << "Policy does not require host username match.";
-  }
 }
 
 bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
@@ -1407,62 +1527,6 @@ bool HostProcess::OnUsernamePolicyUpdate(const base::Value::Dict& policies) {
   ApplyUsernamePolicy();
 #endif
   return false;
-}
-
-bool HostProcess::OnNatPolicyUpdate(const base::Value::Dict& policies) {
-  // Returns true if the host has to be restarted after this policy update.
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<bool> allow_nat_traversal =
-      policies.FindBool(policy::key::kRemoteAccessHostFirewallTraversal);
-  if (!allow_nat_traversal.has_value()) {
-    return false;
-  }
-
-  allow_nat_traversal_ = allow_nat_traversal.value();
-  if (allow_nat_traversal_) {
-    HOST_LOG << "Policy enables NAT traversal.";
-  } else {
-    HOST_LOG << "Policy disables NAT traversal.";
-  }
-  return true;
-}
-
-bool HostProcess::OnRelayPolicyUpdate(const base::Value::Dict& policies) {
-  // Returns true if the host has to be restarted after this policy update.
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<bool> allow_relay =
-      policies.FindBool(policy::key::kRemoteAccessHostAllowRelayedConnection);
-  if (!allow_relay.has_value()) {
-    return false;
-  }
-
-  allow_relay_ = allow_relay.value();
-  if (allow_relay_) {
-    HOST_LOG << "Policy enables use of relay server.";
-  } else {
-    HOST_LOG << "Policy disables use of relay server.";
-  }
-  return true;
-}
-
-bool HostProcess::OnUdpPortPolicyUpdate(const base::Value::Dict& policies) {
-  // Returns true if the host has to be restarted after this policy update.
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  const std::string* string_value =
-      policies.FindString(policy::key::kRemoteAccessHostUdpPortRange);
-  if (!string_value) {
-    return false;
-  }
-
-  if (!PortRange::Parse(*string_value, &udp_port_range_)) {
-    // PolicyWatcher verifies that the value is formatted correctly.
-    LOG(FATAL) << "Invalid port range: " << *string_value;
-  }
-  HOST_LOG << "Policy restricts UDP port range to: " << udp_port_range_;
-  return true;
 }
 
 bool HostProcess::OnCurtainPolicyUpdate(const base::Value::Dict& policies) {
@@ -1506,25 +1570,6 @@ bool HostProcess::OnCurtainPolicyUpdate(const base::Value::Dict& policies) {
   return true;
 }
 
-bool HostProcess::OnHostTokenUrlPolicyUpdate(
-    const base::Value::Dict& policies) {
-  switch (ThirdPartyAuthConfig::Parse(policies, &third_party_auth_config_)) {
-    case ThirdPartyAuthConfig::NoPolicy:
-      return false;
-    case ThirdPartyAuthConfig::ParsingSuccess:
-      HOST_LOG << "Policy sets third-party token URLs: "
-               << third_party_auth_config_;
-      return true;
-    case ThirdPartyAuthConfig::InvalidPolicy:
-    default:
-      // Unreachable, because PolicyWatcher::OnPolicyUpdated() enforces that
-      // the policy is well-formed (including checks specific to
-      // ThirdPartyAuthConfig), before notifying of policy updates.
-      NOTREACHED();
-      return false;
-  }
-}
-
 bool HostProcess::OnPairingPolicyUpdate(const base::Value::Dict& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
@@ -1562,50 +1607,29 @@ bool HostProcess::OnGnubbyAuthPolicyUpdate(const base::Value::Dict& policies) {
   return true;
 }
 
-bool HostProcess::OnFileTransferPolicyUpdate(
+bool HostProcess::OnAllowPinAuthenticationUpdate(
     const base::Value::Dict& policies) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
-  std::optional<bool> file_transfer_enabled =
-      policies.FindBool(policy::key::kRemoteAccessHostAllowFileTransfer);
-  if (!file_transfer_enabled.has_value()) {
+  const base::Value* allow_pin_auth =
+      policies.Find(policy::key::kRemoteAccessHostAllowPinAuthentication);
+  if (!allow_pin_auth) {
     return false;
   }
 
-  desktop_environment_options_.set_enable_file_transfer(
-      file_transfer_enabled.value());
-
-  if (file_transfer_enabled.value()) {
-    HOST_LOG << "Policy enables file transfer.";
+  // Save the value until we have parsed the host config since the default
+  // behavior depends on whether the user is a googler.
+  if (allow_pin_auth->is_none()) {
+    // The policy has been unset.
+    allow_pin_auth_.reset();
   } else {
-    HOST_LOG << "Policy disables file transfer.";
-  }
-
-  // Restart required.
-  return true;
-}
-
-bool HostProcess::OnUrlForwardingPolicyUpdate(
-    const base::Value::Dict& policies) {
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<bool> url_forwarding_enabled =
-      policies.FindBool(policy::key::kRemoteAccessHostAllowUrlForwarding);
-  if (!url_forwarding_enabled.has_value()) {
-    return false;
-  }
-
-  // Always enable remote open URL when the platform supports it and the policy
-  // does not disable it. There is an additional IsRemoteOpenUrlSupported()
-  // check which ensures the capability won't be advertised if the machine is
-  // not properly configured.
-  desktop_environment_options_.set_enable_remote_open_url(
-      url_forwarding_enabled.value());
-
-  if (url_forwarding_enabled.value()) {
-    HOST_LOG << "Policy allows URL forwarding.";
-  } else {
-    HOST_LOG << "Policy disallows URL forwarding.";
+    allow_pin_auth_ = allow_pin_auth->GetIfBool();
+    DCHECK(allow_pin_auth_.has_value());
+    if (*allow_pin_auth_) {
+      HOST_LOG << "Policy allows PIN and pairing authentication methods.";
+    } else {
+      HOST_LOG << "Policy disallows PIN or pairing authentication methods.";
+    }
   }
 
   // Restart required.
@@ -1635,52 +1659,6 @@ bool HostProcess::OnEnableUserInterfacePolicyUpdate(
   return true;
 }
 
-bool HostProcess::OnMaxSessionDurationPolicyUpdate(
-    const base::Value::Dict& policies) {
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<int> value = policies.FindInt(
-      policy::key::kRemoteAccessHostMaximumSessionDurationMinutes);
-  if (!value) {
-    return false;
-  }
-
-  max_session_duration_minutes_ = *value;
-
-  if (max_session_duration_minutes_ > 0) {
-    HOST_LOG << "Policy sets maximum session duration to "
-             << max_session_duration_minutes_.value() << " minutes.";
-  } else {
-    HOST_LOG << "Policy does not set a maximum session duration.";
-  }
-
-  // Restart required.
-  return true;
-}
-
-bool HostProcess::OnMaxClipboardSizePolicyUpdate(
-    const base::Value::Dict& policies) {
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
-  std::optional<int> max_clipboard_size =
-      policies.FindInt(policy::key::kRemoteAccessHostClipboardSizeBytes);
-  if (!max_clipboard_size) {
-    return false;
-  }
-
-  if (*max_clipboard_size >= 0) {
-    max_clipboard_size_ = *max_clipboard_size;
-    HOST_LOG << "Policy sets maximum clipboard size to "
-             << max_clipboard_size_.value() << " bytes.";
-  } else {
-    max_clipboard_size_.reset();
-    HOST_LOG << "Policy does not set a maximum clipboard size.";
-  }
-
-  // Restart required.
-  return true;
-}
-
 bool HostProcess::OnAllowRemoteAccessConnections(
     const base::Value::Dict& policies) {
   // Returns false: never restart the host after this policy update.
@@ -1700,7 +1678,6 @@ bool HostProcess::OnAllowRemoteAccessConnections(
 
 void HostProcess::InitializeSignaling() {
   DCHECK(!host_id_.empty());  // ApplyConfig() should already have been run.
-
   DCHECK(!signal_strategy_);
   DCHECK(!oauth_token_getter_);
   DCHECK(!ftl_signaling_connector_);
@@ -1734,9 +1711,28 @@ void HostProcess::InitializeSignaling() {
       base::BindOnce(&HostProcess::OnAuthFailed, base::Unretained(this)));
   ftl_signaling_connector_->Start();
 
+  // Create the appropriate API service client (corp, cloud, or me2me) for the
+  // HeartbeatSender.
+  std::unique_ptr<HeartbeatServiceClient> service_client;
+  if (is_cloud_host_) {
+    service_client = std::make_unique<CloudHeartbeatServiceClient>(
+        host_id_, cloud_api_key_, oauth_token_getter_.get(),
+        context_->url_loader_factory());
+    // TODO: joedow - Implement CorpHeartbeatServiceClient.
+    // } else if (is_corp_host_) {
+    //   service_client = std::make_unique<CorpHeartbeatServiceClient>(
+    //       host_id_, oauth_token_getter_.get(),
+    //       context_->url_loader_factory());
+  } else {
+    service_client = std::make_unique<Me2MeHeartbeatServiceClient>(
+        host_id_, is_corp_host_, oauth_token_getter_.get(),
+        context_->url_loader_factory());
+  }
+
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
       this, host_id_, ftl_signal_strategy.get(), oauth_token_getter_.get(),
-      zombie_host_detector_.get(), context_->url_loader_factory(), is_googler_);
+      std::move(service_client), zombie_host_detector_.get(),
+      context_->url_loader_factory(), is_corp_host_);
   signal_strategy_ = std::move(ftl_signal_strategy);
 
   zombie_host_detector_->Start();
@@ -1766,46 +1762,28 @@ void HostProcess::StartHost() {
   // This thread is used as a network thread in WebRTC.
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
-  // Initialize global field trials.
-  field_trial_list_ = std::make_unique<base::FieldTrialList>();
+  // Initialize global field trials. In case this code runs a second time,
+  // check for any previous instance - see crbug.com/349062464.
+  if (!field_trial_list_) {
+    field_trial_list_ = std::make_unique<base::FieldTrialList>();
 
-  // Override LossBasedBweV2 trial.
-  // TODO(b/266103942): Remove this override once we figure out why the BWE is
-  // crashing for some users and have a fix available.
-  base::FieldTrialList::CreateTrialsFromString(
-      "WebRTC-Bwe-LossBasedBweV2/Enabled:false/");
+    // Override LossBasedBweV2 trial.
+    // TODO(b/266103942): Remove this override once we figure out why the BWE is
+    // crashing for some users and have a fix available.
+    base::FieldTrialList::CreateTrialsFromString(
+        "WebRTC-Bwe-LossBasedBweV2/Enabled:false/");
+  }
 
   SetState(HOST_STARTED);
 
   InitializeSignaling();
-
-  uint32_t network_flags = 0;
-  if (allow_nat_traversal_) {
-    network_flags = NetworkSettings::NAT_TRAVERSAL_STUN |
-                    NetworkSettings::NAT_TRAVERSAL_OUTGOING;
-    if (allow_relay_) {
-      network_flags |= NetworkSettings::NAT_TRAVERSAL_RELAY;
-    }
-  }
-
-  NetworkSettings network_settings(network_flags);
-
-  if (!udp_port_range_.is_null()) {
-    network_settings.port_range = udp_port_range_;
-  } else if (!allow_nat_traversal_) {
-    // For legacy reasons we have to restrict the port range to a set of default
-    // values when nat traversal is disabled, even if the port range was not
-    // set in policy.
-    network_settings.port_range.min_port = NetworkSettings::kDefaultMinPort;
-    network_settings.port_range.max_port = NetworkSettings::kDefaultMaxPort;
-  }
 
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
           webrtc::ThreadWrapper::current()->SocketServer(),
           context_->url_loader_factory(), oauth_token_getter_.get(),
-          network_settings, protocol::TransportRole::SERVER);
+          protocol::TransportRole::SERVER);
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(signal_strategy_.get()));
 
@@ -1817,33 +1795,29 @@ void HostProcess::StartHost() {
   protocol_config->set_webrtc_supported(true);
   session_manager->set_protocol_config(std::move(protocol_config));
 
-  if (is_googler_) {
+  if (is_corp_host_) {
     // Enabling this policy means that a local user sitting at a host would not
     // see any UI or indication that a remote user was connected.  We do have a
     // few use cases for this internally where we know for a fact that there
     // will not be a local user.  Since that isn't something we can control
-    // externally, we don't want to apply this policy for non-Googlers.
+    // externally, we don't want to apply this policy for non-Corp machines.
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
+    corp_host_status_logger_ = std::make_unique<CorpHostStatusLogger>(
+        context_->url_loader_factory(), &local_session_policies_provider_,
+        service_account_email_, oauth_refresh_token_);
+    corp_host_status_logger_->StartObserving(*session_manager);
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  desktop_environment_options_.set_enable_remote_webauthn(is_googler_);
+  desktop_environment_options_.set_enable_remote_webauthn(is_corp_host_);
 #endif
-
-  if (max_clipboard_size_.has_value()) {
-    desktop_environment_options_.set_clipboard_size(
-        max_clipboard_size_.value());
-  } else if (desktop_environment_options_.clipboard_size().has_value()) {
-    // If we've transitioned from having a policy value to no value then make
-    // sure the value stored in desktop_environment_options has been cleared.
-    desktop_environment_options_.set_clipboard_size(std::optional<size_t>());
-  }
 
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
       transport_context, context_->audio_task_runner(),
-      context_->video_encode_task_runner(), desktop_environment_options_);
+      context_->video_encode_task_runner(), desktop_environment_options_,
+      &local_session_policies_provider_);
 
   if (security_key_auth_policy_enabled_ && security_key_extension_supported_) {
     host_->AddExtension(
@@ -1851,11 +1825,6 @@ void HostProcess::StartHost() {
   }
 
   host_->AddExtension(std::make_unique<TestEchoExtension>());
-
-  if (max_session_duration_minutes_ && max_session_duration_minutes_ > 0) {
-    host_->SetMaximumSessionDuration(
-        base::Minutes(max_session_duration_minutes_.value()));
-  }
 
   host_status_logger_ = std::make_unique<HostStatusLogger>(
       host_->status_monitor(), log_to_server_.get());
@@ -1877,7 +1846,8 @@ void HostProcess::StartHost() {
           this, signal_strategy_.get());
 
   ftl_echo_message_listener_ = std::make_unique<FtlEchoMessageListener>(
-      host_owner_, signal_strategy_.get());
+      base::BindRepeating(&HostProcess::CheckAccessPermission, this),
+      signal_strategy_.get());
 
   // Set up reporting the host status notifications.
 #if defined(REMOTING_MULTI_PROCESS)
@@ -1890,7 +1860,10 @@ void HostProcess::StartHost() {
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
 #endif  // !defined(REMOTING_MULTI_PROCESS)
 
-  host_->Start(host_owner_);
+  // The email provided here is only used for logging via OnHostStarted().
+  // TODO: joedow - Update host observer interface to handle multiple email
+  // addresses.
+  host_->Start(*host_owner_emails_.begin());
 
 #if BUILDFLAG(IS_LINUX)
   // For Windows, ChromotingHostServices connections are handled by the daemon
@@ -1955,6 +1928,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
   host_event_logger_.reset();
   host_status_logger_.reset();
   power_save_blocker_.reset();
+  corp_host_status_logger_.reset();
   ftl_host_change_notification_listener_.reset();
 
   // Before shutting down HostSignalingManager, send the |host_offline_reason|

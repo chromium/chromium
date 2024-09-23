@@ -62,14 +62,16 @@ TEST(OutlineRectCollectorTest, CombineWithOffset) {
   u.AddRect(PhysicalRect(10, 20, 30, 40));
   v.AddRect(PhysicalRect(10, 20, 30, 40));
 
-  OutlineRectCollector* u_descendant = u.ForDescendantCollector();
-  OutlineRectCollector* v_descendant = v.ForDescendantCollector();
+  std::unique_ptr<OutlineRectCollector> u_descendant =
+      u.ForDescendantCollector();
+  std::unique_ptr<OutlineRectCollector> v_descendant =
+      v.ForDescendantCollector();
 
   u_descendant->AddRect(PhysicalRect(10, 20, 30, 40));
   v_descendant->AddRect(PhysicalRect(10, 20, 30, 40));
 
-  u.Combine(u_descendant, PhysicalOffset(15, -25));
-  v.Combine(v_descendant, PhysicalOffset(15, -25));
+  u.Combine(u_descendant.get(), PhysicalOffset(15, -25));
+  v.Combine(v_descendant.get(), PhysicalOffset(15, -25));
 
   PhysicalRect union_result = u.Rect();
   VectorOf<PhysicalRect> vector_result = v.TakeRects();
@@ -110,13 +112,15 @@ TEST_F(OutlineRectCollectorRenderingTest, CombineWithAncestor) {
   u.AddRect(PhysicalRect(10, 20, 30, 40));
   v.AddRect(PhysicalRect(10, 20, 30, 40));
 
-  OutlineRectCollector* u_descendant = u.ForDescendantCollector();
-  OutlineRectCollector* v_descendant = v.ForDescendantCollector();
+  std::unique_ptr<OutlineRectCollector> u_descendant =
+      u.ForDescendantCollector();
+  std::unique_ptr<OutlineRectCollector> v_descendant =
+      v.ForDescendantCollector();
 
   u_descendant->AddRect(PhysicalRect(10, 20, 30, 40));
   v_descendant->AddRect(PhysicalRect(10, 20, 30, 40));
 
-  u.Combine(u_descendant, *child, parent, PhysicalOffset(15, -25));
+  u.Combine(u_descendant.get(), *child, parent, PhysicalOffset(15, -25));
   // The mapped rect should be:
   // x:
   // 10 (physical rect in add rect)
@@ -131,7 +135,7 @@ TEST_F(OutlineRectCollectorRenderingTest, CombineWithAncestor) {
   // = 20
   //
   // width and height should be unchanged.
-  v.Combine(v_descendant, *child, parent, PhysicalOffset(15, -25));
+  v.Combine(v_descendant.get(), *child, parent, PhysicalOffset(15, -25));
 
   PhysicalRect union_result = u.Rect();
   VectorOf<PhysicalRect> vector_result = v.TakeRects();

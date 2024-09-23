@@ -40,9 +40,10 @@ ImagePaintTimingInfo ComputeImagePaintTimingInfo(
 
 void SVGImagePainter::Paint(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground ||
-      layout_svg_image_.StyleRef().Visibility() != EVisibility::kVisible ||
-      !layout_svg_image_.ImageResource()->HasImage())
+      layout_svg_image_.StyleRef().UsedVisibility() != EVisibility::kVisible ||
+      !layout_svg_image_.ImageResource()->HasImage()) {
     return;
+  }
 
   if (SVGModelObjectPainter::CanUseCullRect(layout_svg_image_.StyleRef())) {
     if (!paint_info.GetCullRect().IntersectsTransformed(

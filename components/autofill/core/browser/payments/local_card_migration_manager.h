@@ -14,17 +14,17 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
 
 namespace autofill {
 
 class CreditCard;
-class PersonalDataManager;
+class PaymentsDataManager;
 
 // Server-side response can return SUCCESS, TEMPORARY_FAILURE, or
 // PERMANENT_FAILURE (see SaveResult enum). Use these to extract migration
@@ -87,11 +87,9 @@ class LocalCardMigrationManager {
     virtual void OnReceivedMigrateCardsResponse() = 0;
   };
 
-  // The parameters should outlive the LocalCardMigrationManager.
-  LocalCardMigrationManager(
-      AutofillClient* client,
-      const std::string& app_locale,
-      PersonalDataManager* personal_data_manager);
+  // `client` must outlive the LocalCardMigrationManager.
+  LocalCardMigrationManager(AutofillClient* client,
+                            const std::string& app_locale);
 
   LocalCardMigrationManager(const LocalCardMigrationManager&) = delete;
   LocalCardMigrationManager& operator=(const LocalCardMigrationManager&) =
@@ -165,7 +163,7 @@ class LocalCardMigrationManager {
   // directly. If not, trigger the intermediate prompt. Exposed for testing.
   virtual void OnDidGetUploadDetails(
       bool is_from_settings_page,
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
@@ -175,11 +173,12 @@ class LocalCardMigrationManager {
   // trigger a window showing the migration result together with display text to
   // the user.
   void OnDidMigrateLocalCards(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
       const std::string& display_text);
 
-  const raw_ptr<AutofillClient> client_;
+  PaymentsDataManager& payments_data_manager();
+  const PaymentsDataManager& payments_data_manager() const;
 
  private:
   friend class LocalCardMigrationBrowserTest;
@@ -220,15 +219,12 @@ class LocalCardMigrationManager {
     observer_for_testing_ = observer;
   }
 
-  // The parsed lines from the legal message return from GetUploadDetails.
-  LegalMessageLines legal_message_lines_;
+  const raw_ref<AutofillClient> client_;
 
   std::string app_locale_;
 
-  // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the BrowserAutofillManagerTest.
-  // Weak reference.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  // The parsed lines from the legal message return from GetUploadDetails.
+  LegalMessageLines legal_message_lines_;
 
   // The imported credit card number from the form submission.
   std::optional<std::u16string> extracted_credit_card_number_;
@@ -242,7 +238,7 @@ class LocalCardMigrationManager {
 
   // The local credit cards to be uploaded. Owned by LocalCardMigrationManager.
   // The order of cards should not be changed.
-  // TODO(crbug.com/867194): Currently we will not handle the case of local
+  // TODO(crbug.com/40586517): Currently we will not handle the case of local
   // cards added/deleted during migration.
   std::vector<MigratableCreditCard> migratable_credit_cards_;
 

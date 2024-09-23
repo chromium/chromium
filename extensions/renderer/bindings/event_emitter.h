@@ -67,6 +67,17 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // HasListeners() instead.
   size_t GetNumListeners() const;
 
+  // Saves a given filter in an internal filter_id based mapping. This is
+  // needed in order to allow asynchronous usage of filters.
+  // Returns this filter's filter_id, which may be kInvalidFilterId if
+  // `filter` is empty.
+  int PushFilter(mojom::EventFilteringInfoPtr filter);
+
+  // Fetches a given filter by it's filter_id and removes it from the internal
+  // storage. In case of a kInvalidFilterId, an empty
+  // mojom::EventFilteringInfoPtr is returned.
+  mojom::EventFilteringInfoPtr PopFilter(int filter_id);
+
  private:
   // Bound methods for the Event JS object.
   void AddListener(gin::Arguments* arguments);

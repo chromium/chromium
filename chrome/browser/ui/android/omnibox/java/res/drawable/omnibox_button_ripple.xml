@@ -9,6 +9,6 @@ found in the LICENSE file.
     android:color="?android:attr/colorControlHighlight">
   <item
       android:id="@android:id/content"
-      android:drawable="@drawable/omnibox_button_highlight_layer_list">
+      android:drawable="@drawable/omnibox_button_highlight_background">
   </item>
 </ripple>

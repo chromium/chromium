@@ -19,7 +19,7 @@ class XRSession;
 // type T (for example XRPlane, XRAnchor). The type T has to have a
 // NativeOrigin() method, returning a
 // device::mojom::blink::XRNativeOriginInformationPtr, a MojoFromObject()
-// method, returning a absl::Optional<gfx::Transform>, and IsStationary()
+// method, returning a std::optional<gfx::Transform>, and IsStationary()
 // method returning true if the object is supposed to be treated as stationary
 // for the purposes of anchor creation.
 //

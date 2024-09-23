@@ -1,0 +1,43 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "PromptApi";
+
+enum PromptApiRole {
+  PROMPT_API_ROLE_UNSPECIFIED = 0;
+  PROMPT_API_ROLE_SYSTEM = 1;
+  PROMPT_API_ROLE_ASSISTANT = 2;
+  PROMPT_API_ROLE_USER = 3;
+}
+
+message PromptApiPrompt {
+  PromptApiRole role = 1;
+  string content = 2;
+}
+
+// A request from PromptApi for prompt execution call.
+message PromptApiRequest {
+  // The values passed as initialPrompts for the session.
+  repeated PromptApiPrompt initial_prompts = 1;
+
+  // Previously executed prompts, and their responses.
+  repeated PromptApiPrompt prompt_history = 2;
+
+  // The new prompts for the current execution request.
+  repeated PromptApiPrompt current_prompts = 3;
+}
+
+// Type for OnDeviceModelExecutionFeatureConfig::feature_metadata.
+message PromptApiMetadata {
+  // A version for config changes that require implementor updates.
+  // Version 0->1 Changes from using StringValue -> PromptApiRequest.
+  uint32 version = 1;
+}

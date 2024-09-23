@@ -45,7 +45,7 @@ void AppListTestBase::SetUp(bool guest_mode) {
   ASSERT_TRUE(
       params.ConfigureByTestDataDirectory(data_dir().AppendASCII("app_list")));
   params.profile_is_guest = guest_mode;
-  InitializeExtensionService(params);
+  InitializeExtensionService(std::move(params));
   service_->Init();
 
   ConfigureWebAppProvider();

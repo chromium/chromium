@@ -4,6 +4,8 @@
 
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -76,13 +78,13 @@ NoCopyUrl::NoCopyUrl(const GURL& original) : original_(original) {
   if (int_port != url::PORT_UNSPECIFIED) {
     port_suffix = base::StrCat({":", base::NumberToString(int_port)});
     base::ReplaceSubstringsAfterOffset(&spec_without_port_, 0, port_suffix,
-                                       base::StringPiece());
+                                       std::string_view());
   }
 
   host_and_port_ = base::StrCat({original.host(), port_suffix});
 }
 
-Rule::Rule(base::StringPiece original_rule)
+Rule::Rule(std::string_view original_rule)
     : priority_(original_rule.size()),
       inverted_(base::StartsWith(original_rule, "!")) {}
 

@@ -88,7 +88,7 @@ class FakeDisplayDelegate : public NativeDisplayDelegate,
   void Configure(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       ConfigureCallback callback,
-      uint32_t modeset_flag) override;
+      display::ModesetFlags modeset_flags) override;
   void SetHdcpKeyProp(int64_t display_id,
                       const std::string& key,
                       SetHdcpKeyPropCallback callback) override;
@@ -105,14 +105,12 @@ class FakeDisplayDelegate : public NativeDisplayDelegate,
                            const ColorCalibration& calibration) override;
   void SetGammaAdjustment(int64_t display_id,
                           const GammaAdjustment& gamma) override;
-  bool SetColorMatrix(int64_t display_id,
-                      const std::vector<float>& color_matrix) override;
-  bool SetGammaCorrection(int64_t display_id,
-                          const display::GammaCurve& degamma,
-                          const display::GammaCurve& gamma) override;
   void SetPrivacyScreen(int64_t display_id,
                         bool enabled,
                         SetPrivacyScreenCallback callback) override;
+  void GetSeamlessRefreshRates(
+      int64_t display_id,
+      GetSeamlessRefreshRatesCallback callback) const override;
   void AddObserver(NativeDisplayObserver* observer) override;
   void RemoveObserver(NativeDisplayObserver* observer) override;
   FakeDisplayController* GetFakeDisplayController() override;

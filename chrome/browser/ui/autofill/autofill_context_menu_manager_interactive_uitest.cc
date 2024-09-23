@@ -12,6 +12,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,9 +29,9 @@
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
-#if !BUILDFLAG(IS_CHROMEOS)
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Generates a ContextMenuParams for the Autofill context menu options.
 content::ContextMenuParams CreateContextMenuParams(
     std::optional<autofill::FormRendererId> form_renderer_id = std::nullopt,
@@ -48,8 +49,8 @@ content::ContextMenuParams CreateContextMenuParams(
 
 class TestAutofillManager : public BrowserAutofillManager {
  public:
-  TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-      : BrowserAutofillManager(driver, client, "en-US") {}
+  explicit TestAutofillManager(ContentAutofillDriver* driver)
+      : BrowserAutofillManager(driver, "en-US") {}
 
   testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
     return forms_seen_waiter_.Wait(min_num_awaited_calls);
@@ -60,7 +61,6 @@ class TestAutofillManager : public BrowserAutofillManager {
       *this,
       {AutofillManagerEvent::kFormsSeen}};
 };
-}  // namespace
 
 class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
@@ -172,8 +172,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   Browser* other_browser = CreateBrowser(browser()->profile());
 
   // Move the tab to the other browser.
-  other_browser->tab_strip_model()->InsertWebContentsAt(
-      0, browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0),
+  other_browser->tab_strip_model()->InsertDetachedTabAt(
+      0, browser()->tab_strip_model()->DetachTabAtForInsertion(0),
       AddTabTypes::ADD_ACTIVE);
   ASSERT_EQ(other_browser->tab_strip_model()->count(), 2);
 
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   // Set up context menu params with the correct trigger form and field.
   autofill_context_menu_manager_->set_params_for_testing(
       CreateContextMenuParams(form.global_id().renderer_id,
-                              form.fields[0].global_id().renderer_id));
+                              form.fields()[0].global_id().renderer_id));
   // Display feedback dialog.
   autofill_context_menu_manager_->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
@@ -255,4 +255,5 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+}  // namespace
 }  // namespace autofill

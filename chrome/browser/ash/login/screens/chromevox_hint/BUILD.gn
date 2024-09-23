@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("chromevox_hint") {
+  sources = [
+    "chromevox_hint_detector.cc",
+    "chromevox_hint_detector.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//ash/constants",
+    "//chromeos/ash/experiences/idle_detector",
+    "//chromeos/dbus/constants",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "chromevox_hint_detector_unittest.cc" ]
+
+  deps = [
+    ":chromevox_hint",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/dbus/constants",
+    "//testing/gmock",
+    "//ui/base",
+  ]
+}

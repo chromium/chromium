@@ -30,7 +30,7 @@ MojomKeyStatus EnumTraits<MojomKeyStatus, NativeKeyStatus>::ToMojom(
     case NativeKeyStatus::RELEASED:
       return MojomKeyStatus::RELEASED;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -60,7 +60,7 @@ bool EnumTraits<MojomKeyStatus, NativeKeyStatus>::FromMojom(
       *out = NativeKeyStatus::RELEASED;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

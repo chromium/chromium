@@ -130,7 +130,7 @@ void OfflineItemModel::OpenDownload() {
 
   offline_items_collection::OpenParams open_params(
       offline_items_collection::LaunchLocation::DOWNLOAD_SHELF);
-  // TODO(crbug.com/1058475): Determine if we ever need to open in incognito.
+  // TODO(crbug.com/40121163): Determine if we ever need to open in incognito.
   GetProvider()->OpenItem(open_params, offline_item_->id);
 }
 
@@ -181,7 +181,7 @@ download::DownloadItem::DownloadState OfflineItemModel::GetState() const {
     case OfflineItemState::CANCELLED:
       return download::DownloadItem::CANCELLED;
     case OfflineItemState::NUM_ENTRIES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return download::DownloadItem::CANCELLED;
   }
 }
@@ -225,7 +225,7 @@ bool OfflineItemModel::IsDone() const {
     case OfflineItemState::CANCELLED:
       return true;
     case OfflineItemState::NUM_ENTRIES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -299,6 +299,8 @@ bool OfflineItemModel::IsCommandEnabled(
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       NOTIMPLEMENTED();
       return false;
     case DownloadCommands::PAUSE:
@@ -320,7 +322,7 @@ bool OfflineItemModel::IsCommandEnabled(
     case DownloadCommands::CANCEL_DEEP_SCAN:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -352,6 +354,8 @@ bool OfflineItemModel::IsCommandChecked(
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       return false;
   }
   return false;
@@ -383,6 +387,8 @@ void OfflineItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::REVIEW:
     case DownloadCommands::RETRY:
     case DownloadCommands::CANCEL_DEEP_SCAN:
+    case DownloadCommands::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::EDIT_WITH_MEDIA_APP:
       DownloadUIModel::ExecuteCommand(download_commands, command);
       break;
   }

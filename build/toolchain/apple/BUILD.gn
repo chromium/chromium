@@ -7,7 +7,7 @@ import("//build/toolchain/concurrent_links.gni")
 declare_args() {
   # Reduce the number of tasks using the copy_bundle_data and compile_xcassets
   # tools as they can cause lots of I/O contention when invoking ninja with a
-  # large number of parallel jobs (e.g. when using distributed build like goma).
+  # large number of parallel jobs (e.g. when using distributed build like rbe).
   bundle_pool_depth = -1
 }
 

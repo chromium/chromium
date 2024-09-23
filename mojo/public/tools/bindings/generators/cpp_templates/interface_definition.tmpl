@@ -33,7 +33,11 @@
 
 {%- macro pass_params(parameters) %}
 {%-   for param in parameters %}
+{%- if param.kind|is_non_const_ref_kind %}
+p_{{param.name}}
+{%- else %}
 std::move(p_{{param.name}})
+{%- endif %}
 {%-     if not loop.last %}, {% endif %}
 {%-   endfor %}
 {%- endmacro %}
@@ -98,9 +102,9 @@ constexpr {{constant.kind|cpp_pod_type}} {{interface.name}}::{{constant.name}};
 {{interface.name}}::IPCStableHashFunction {{interface.name}}::MessageToMethodInfo_(mojo::Message& message) {
 #if !BUILDFLAG(IS_FUCHSIA)
 {%- if interface.methods %}
-  switch (message.name()) {
+  switch (static_cast<messages::{{interface.name}}>(message.name())) {
 {%-   for method in interface.methods %}
-    case internal::k{{interface.name}}_{{method.name}}_Name: {
+    case messages::{{interface.name}}::k{{method.name}}: {
       return &{{interface.name}}::{{method.name}}_Sym::IPCStableHash;
     }
 {%-   endfor %}
@@ -116,16 +120,16 @@ const char* {{interface.name}}::MessageToMethodName_(mojo::Message& message) {
 {%- if interface.methods %}
   bool is_response = message.has_flag(mojo::Message::kFlagIsResponse);
   if (!is_response) {
-    switch (message.name()) {
+    switch (static_cast<messages::{{interface.name}}>(message.name())) {
 {%-   for method in interface.methods %}
-      case internal::k{{interface.name}}_{{method.name}}_Name:
+      case messages::{{interface.name}}::k{{method.name}}:
             return "Receive {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
 {%-   endfor %}
     }
   } else {
-    switch (message.name()) {
+    switch (static_cast<messages::{{interface.name}}>(message.name())) {
 {%-   for method in interface.methods %}
-      case internal::k{{interface.name}}_{{method.name}}_Name:
+      case messages::{{interface.name}}::k{{method.name}}:
             return "Receive reply {{namespace_as_string}}::{{interface.name}}::{{method.name}}";
 {%-   endfor %}
     }
@@ -168,7 +172,6 @@ uint32_t {{interface.name}}::{{method.name}}_Sym::IPCStableHash() {
 {%-   if method.sync %}
 bool {{class_name}}::{{method.name}}({{interface_macros.declare_sync_method_params("", method)}}) {
   NOTREACHED();
-  return false;
 }
 {%-   endif %}
 {%- endfor %}
@@ -224,23 +227,28 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 
 {{proxy_name}}::{{proxy_name}}(mojo::MessageReceiverWithResponder* receiver)
     : receiver_(receiver) {
+{%- if interface|has_estimate_size_methods %}
+  if (base::FeatureList::IsEnabled(mojo::features::kMojoPredictiveAllocation)) {
+{%-   for method in interface.methods %}
+{%-     if method.estimate_message_size %}
+{%-       set message_name =
+              "base::to_underlying(messages::%s::k%s)"|format(interface.name, method.name) %}
+    size_estimator_.EnablePredictiveAllocation({{message_name}});
+{%-     endif %}
+{%-   endfor %}
+  }
+{%- endif %}
 }
 
 {#--- Proxy definitions #}
 
 {%- for method in interface.methods %}
 {%-   set message_name =
-          "internal::k%s_%s_Name"|format(interface.name, method.name) %}
+          "base::to_underlying(messages::%s::k%s)"|format(interface.name, method.name) %}
 {%-   set params_struct = method.param_struct %}
 {%-   set params_description =
           "%s.%s request"|format(interface.name, method.name) %}
 {%-   set message_typename = "%s_%s_Message"|format(proxy_name, method.name) %}
-
-{%-   if method|method_supports_lazy_serialization %}
-{{interface_macros.define_message_type(
-    interface, message_typename, message_name, False, method, method.parameters,
-    params_struct, params_description)}}
-{%-   endif %}
 
 {%-   if method.sync %}
 bool {{proxy_name}}::{{method.name}}(
@@ -268,21 +276,12 @@ bool {{proxy_name}}::{{method.name}}(
 {%    else %}
   const bool is_urgent = false;
 {%-   endif %}
-{%-   if method|method_supports_lazy_serialization %}
-  const bool kSerialize = receiver_->PrefersSerializedMessages();
-  auto message = {{message_typename}}::Build(
-      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt, is_urgent
-{%-     for param in method.parameters -%}
-      , std::move(param_{{param.name}})
-{%-     endfor %});
-{%-   else %}  {#- if method|method_supports_lazy_serialization #}
-  {{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
-                                          "is_urgent", "kExpectsResponse",
-                                          "kFlags")}}
-  {{interface_macros.build_serialized_message(
-      message_name, method, "param_%s", params_struct, params_description,
-      "kFlags", "message")}}
-{%-   endif %}  {#- if method|method_supports_lazy_serialization #}
+{{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
+                                        "is_urgent", "kExpectsResponse",
+                                        "kFlags")}}
+{{interface_macros.build_serialized_message(
+    message_name, method, "param_%s", params_struct, params_description,
+    "kFlags", "message")}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -332,26 +331,21 @@ void {{proxy_name}}::{{method.name}}(
 {%    else %}
   const bool is_urgent = false;
 {%-   endif %}
-{%-   if method|method_supports_lazy_serialization %}
-  const bool kSerialize = receiver_->PrefersSerializedMessages();
-  auto message = {{message_typename}}::Build(
-      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt, is_urgent
-{%-     for param in method.parameters -%}
-      , std::move(in_{{param.name}})
-{%-     endfor %});
-{%-   else %}
-  {{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
-                                         "is_urgent", "kExpectsResponse",
-                                         "kFlags")}}
-  {{interface_macros.build_serialized_message(
-      message_name, method, "in_%s", params_struct, params_description,
-      "kFlags", "message")}}
-{%-   endif %}
+{{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
+                                       "is_urgent", "kExpectsResponse",
+                                       "kFlags")}}
+{{interface_macros.build_serialized_message(
+    message_name, method, "in_%s", params_struct, params_description,
+    "kFlags", "message", True)}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
   message.set_method_name("{{method.name}}");
 #endif
+
+{%- if method.estimate_message_size %}
+  size_estimator_.TrackPayloadSize({{message_name}}, message.payload_num_bytes());
+{%- endif %}
 
 {%- if method.response_parameters != None %}
   std::unique_ptr<mojo::MessageReceiver> responder(
@@ -370,7 +364,7 @@ void {{proxy_name}}::{{method.name}}(
 {%- for method in interface.methods -%}
 {%-   if method.response_parameters != None %}
 {%-     set message_name =
-            "internal::k%s_%s_Name"|format(interface.name, method.name) %}
+            "base::to_underlying(messages::%s::k%s)"|format(interface.name, method.name) %}
 {%-     set response_params_struct = method.response_param_struct %}
 {%-     set params_description =
             "%s.%s response"|format(interface.name, method.name) %}
@@ -425,31 +419,8 @@ class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal:
       {{interface_macros.declare_params("in_", method.response_parameters)}});
 };
 
-{%-     if method|method_supports_lazy_serialization %}
-{{interface_macros.define_message_type(
-    interface, response_message_typename, message_name, True, method,
-    method.response_parameters, response_params_struct, params_description)}}
-{%-     endif %}
-
 bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
     mojo::Message* message) {
-{%-     if method|method_supports_lazy_serialization %}
-  if (!message->is_serialized()) {
-    auto context =
-        message->TakeUnserializedContext<{{response_message_typename}}>();
-    if (!context) {
-      // The Message was not of the expected type. It may be a valid message
-      // which was build using a different variant of these bindings. Force
-      // serialization before dispatch in this case.
-      message->SerializeIfNecessary();
-    } else {
-      if (!callback_.is_null())
-        context->Dispatch(message, &callback_);
-      return true;
-    }
-  }
-{%-     endif %}
-
   DCHECK(message->is_serialized());
   internal::{{class_name}}_{{method.name}}_ResponseParams_Data* params =
       reinterpret_cast<
@@ -474,20 +445,11 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
                                  parameter_group="async_response_parameters",
                                  dereference_parameters=False)}}
 #endif
-{%-   if method|method_supports_lazy_serialization %}
-  const bool kSerialize = responder_->PrefersSerializedMessages();
-  auto message = {{response_message_typename}}::Build(kSerialize, is_sync_,
-      true, false
-{%-     for param in method.response_parameters -%}
-      , std::move(in_{{param.name}})
-{%-     endfor %});
-{%-   else %}
-  {{interface_macros.build_message_flags(True, "is_sync_", "true", "false",
-                                         "false", "kFlags")}}
-  {{interface_macros.build_serialized_message(
-      message_name, method, "in_%s", response_params_struct,
-      response_params_description, "kFlags", "message")}}
-{%-   endif %}
+{{interface_macros.build_message_flags(True, "is_sync_", "true", "false",
+                                       "false", "kFlags")}}
+{{interface_macros.build_serialized_message(
+    message_name, method, "in_%s", response_params_struct,
+    response_params_description, "kFlags", "message")}}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
@@ -510,27 +472,6 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 {%-   if method.sync %}
 bool {{class_name}}_{{method.name}}_HandleSyncResponse::Accept(
     mojo::Message* message) {
-{%-     if method|method_supports_lazy_serialization %}
-  if (!message->is_serialized()) {
-    auto context =
-        message->TakeUnserializedContext<{{response_message_typename}}>();
-    if (!context) {
-      // The Message was not of the expected type. It may be a valid message
-      // which was built using a different variant of these bindings. Force
-      // serialization before dispatch in this case.
-      message->SerializeIfNecessary();
-    } else {
-      context->HandleSyncResponse(
-          message
-{%-       for param in method.response_parameters %},
-          out_{{param.name}}_
-{%-       endfor %});
-      *result_ = true;
-      return true;
-    }
-  }
-{%-     endif %}
-
   DCHECK(message->is_serialized());
   internal::{{class_name}}_{{method.name}}_ResponseParams_Data* params =
       reinterpret_cast<internal::{{class_name}}_{{method.name}}_ResponseParams_Data*>(
@@ -556,26 +497,18 @@ bool {{class_name}}StubDispatch::Accept(
     {{interface.name}}* impl,
     mojo::Message* message) {
 {%- if interface.methods %}
-  switch (message->header()->name) {
+{%-   if interface.dispatch_debug_alias %}
+  const uint64_t kDebugAliasSentinel0 = 0xC0FFEE42;
+  const uint64_t kMessageName = message->header()->name;
+  const uint64_t kDebugAliasSentinel1 = 0xDECAFBAD;
+  base::debug::Alias(&kDebugAliasSentinel0);
+  base::debug::Alias(&kMessageName);
+  base::debug::Alias(&kDebugAliasSentinel1);
+{%-   endif %}
+  switch (static_cast<messages::{{class_name}}>(message->header()->name)) {
 {%-   for method in interface.methods %}
-    case internal::k{{class_name}}_{{method.name}}_Name: {
+    case messages::{{class_name}}::k{{method.name}}: {
 {%-     if method.response_parameters == None %}
-{%-       if method|method_supports_lazy_serialization %}
-      if (!message->is_serialized()) {
-        auto context = message->TakeUnserializedContext<
-            {{proxy_name}}_{{method.name}}_Message>();
-        if (!context) {
-          // The Message was not of the expected type. It may be a valid message
-          // which was serialized using a different variant of these bindings.
-          // Force serialization before dispatch in this case.
-          message->SerializeIfNecessary();
-        } else {
-          context->Dispatch(message, impl);
-          return true;
-        }
-      }
-{%-       endif %}
-
       DCHECK(message->is_serialized());
       internal::{{class_name}}_{{method.name}}_Params_Data* params =
           reinterpret_cast<internal::{{class_name}}_{{method.name}}_Params_Data*>(
@@ -607,29 +540,10 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
   [[maybe_unused]] const bool message_is_sync =
       message->has_flag(mojo::Message::kFlagIsSync);
   [[maybe_unused]] const uint64_t request_id = message->request_id();
-  switch (message->header()->name) {
+  switch (static_cast<messages::{{class_name}}>(message->header()->name)) {
 {%-   for method in interface.methods %}
-    case internal::k{{class_name}}_{{method.name}}_Name: {
+    case messages::{{class_name}}::k{{method.name}}: {
 {%-     if method.response_parameters != None %}
-{%-       if method|method_supports_lazy_serialization %}
-      if (!message->is_serialized()) {
-        auto context = message->TakeUnserializedContext<
-            {{proxy_name}}_{{method.name}}_Message>();
-        if (!context) {
-          // The Message was not of the expected type. It may be a valid message
-          // which was built using a different variant of these bindings. Force
-          // serialization before dispatch in this case.
-          message->SerializeIfNecessary();
-        } else {
-          {{class_name}}::{{method.name}}Callback callback =
-              {{class_name}}_{{method.name}}_ProxyToResponder::CreateCallback(
-                  *message, std::move(responder));
-          context->Dispatch(message, impl, std::move(callback));
-          return true;
-        }
-      }
-{%-       endif %}
-
       internal::{{class_name}}_{{method.name}}_Params_Data* params =
           reinterpret_cast<
               internal::{{class_name}}_{{method.name}}_Params_Data*>(
@@ -687,7 +601,7 @@ static const mojo::internal::GenericValidationInfo k{{class_name}}ValidationInfo
 {%- elif interface.methods %}
 static const std::pair<uint32_t, mojo::internal::GenericValidationInfo> k{{class_name}}ValidationInfo[] = {
 {%-   for method in interface.methods %}
-    {internal::k{{class_name}}_{{method.name}}_Name,
+    {base::to_underlying(messages::{{class_name}}::k{{method.name}}),
      { {{request_validator(class_name, method)}},
 {%-     if method.response_parameters != None %}
       &internal::{{class_name}}_{{method.name}}_ResponseParams_Data::Validate}},

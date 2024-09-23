@@ -32,21 +32,21 @@
 
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
-#include "third_party/blink/renderer/core/html/html_meter_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
-#include "third_party/blink/renderer/core/html/html_progress_element.h"
+#include "third_party/blink/renderer/core/html/media/html_audio_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
@@ -54,6 +54,15 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
+namespace {
+String MaybeRemoveCSSImportant(String string) {
+  const StringView kImportantSuffix(" !important");
+  return string.EndsWith(kImportantSuffix)
+             ? string.Substring(0, string.length() - kImportantSuffix.length())
+             : string;
+}
+}  // namespace
 
 namespace blink {
 
@@ -120,6 +129,10 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
 }
 
 void CSSDefaultStyleSheets::PrepareForLeakDetection() {
+  Reset();
+}
+
+void CSSDefaultStyleSheets::Reset() {
   // Clear the optional style sheets.
   svg_style_sheet_.Clear();
   mathml_style_sheet_.Clear();
@@ -128,9 +141,10 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
   selectlist_style_sheet_.Clear();
+  customizable_select_style_sheet_.Clear();
+  customizable_select_forced_colors_style_sheet_.Clear();
   marker_style_sheet_.Clear();
-  form_controls_not_vertical_style_sheet_.Clear();
-  form_controls_not_vertical_style_text_sheet_.Clear();
+  permission_element_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
@@ -194,6 +208,7 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_fullscreen_style_ = MakeGarbageCollected<RuleSet>();
   default_forced_color_style_.Clear();
   default_pseudo_element_style_.Clear();
+  default_forced_colors_media_controls_style_.Clear();
 
   default_html_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval());
   default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
@@ -218,7 +233,6 @@ RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
 }
 
 RuleSet* CSSDefaultStyleSheets::DefaultJSONDocumentStyle() {
-  CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
   if (!default_json_document_style_) {
     StyleSheetContents* stylesheet = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_JSON_DOCUMENT_CSS));
@@ -258,7 +272,20 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
   // Add to print and forced color for all namespaces.
   default_print_style_->AddRulesFromSheet(rules, PrintEval());
   if (default_forced_color_style_) {
-    default_forced_color_style_->AddRulesFromSheet(rules, ForcedColorsEval());
+    switch (type) {
+      case NamespaceType::kMediaControls:
+        if (!default_forced_colors_media_controls_style_) {
+          default_forced_colors_media_controls_style_ =
+              MakeGarbageCollected<RuleSet>();
+        }
+        default_forced_colors_media_controls_style_->AddRulesFromSheet(
+            rules, ForcedColorsEval());
+        break;
+      default:
+        default_forced_color_style_->AddRulesFromSheet(rules,
+                                                       ForcedColorsEval());
+        break;
+    }
   }
   VerifyUniversalRuleCount();
 }
@@ -295,7 +322,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   }
 
   if (!permission_element_style_sheet_ && IsA<HTMLPermissionElement>(element)) {
-    CHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
+    CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
+        element.GetExecutionContext()));
     permission_element_style_sheet_ = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_PERMISSION_ELEMENT_CSS));
     AddRulesToDefaultStyleSheets(permission_element_style_sheet_,
@@ -306,15 +334,30 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
   if (!text_track_style_sheet_ && IsA<HTMLVideoElement>(element)) {
     Settings* settings = element.GetDocument().GetSettings();
     if (settings) {
+      // Rules below override rules from html.css and other UA sheets regardless
+      // of specificity. See comment in StyleResolver::MatchUARules().
       StringBuilder builder;
-      builder.Append("video::-webkit-media-text-track-display { ");
-      AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
-                                settings->GetTextTrackWindowColor());
-      AddTextTrackCSSProperties(&builder, CSSPropertyID::kBorderRadius,
-                                settings->GetTextTrackWindowRadius());
-      builder.Append(" } video::cue { ");
-      AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
-                                settings->GetTextTrackBackgroundColor());
+      Color color;
+      // Use the text track window color if it is set and non-transparent,
+      // otherwise use the background color. This is only applicable to caption
+      // settings on MacOS, which allows users to specify a window color in
+      // addition to a background color. The WebVTT spec does not have a concept
+      // of a window background, so this workaround allows the default caption
+      // styles on MacOS to render as expected.
+      builder.Append("video::cue { ");
+      if (CSSParser::ParseColor(
+              color,
+              MaybeRemoveCSSImportant(settings->GetTextTrackWindowColor()),
+              /*strict=*/true) &&
+          color.Alpha() > 0) {
+        AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
+                                  settings->GetTextTrackWindowColor());
+        AddTextTrackCSSProperties(&builder, CSSPropertyID::kBorderRadius,
+                                  settings->GetTextTrackWindowRadius());
+      } else {
+        AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
+                                  settings->GetTextTrackBackgroundColor());
+      }
       AddTextTrackCSSProperties(&builder, CSSPropertyID::kFontFamily,
                                 settings->GetTextTrackFontFamily());
       AddTextTrackCSSProperties(&builder, CSSPropertyID::kFontStyle,
@@ -345,37 +388,20 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  // TODO(crbug.com/681917, crbug.com/484651): We enable vertical writing mode
-  // on form controls using features FormControlsVerticalWritingModeSupport
-  // and FormControlsVerticalWritingModeTextSupport. When it is *disabled*,
-  // we need to force horizontal writing mode.
-  const auto* input = DynamicTo<HTMLInputElement>(element);
-  if (!RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeSupportEnabled() &&
-      !form_controls_not_vertical_style_sheet_ &&
-      (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element) ||
-       IsA<HTMLButtonElement>(element) || IsA<HTMLSelectElement>(element) ||
-       (input && !input->IsTextField()))) {
-    form_controls_not_vertical_style_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(
-            IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS));
-    AddRulesToDefaultStyleSheets(form_controls_not_vertical_style_sheet_,
-                                 NamespaceType::kHTML);
-    changed_default_style = true;
-  }
-  if (!RuntimeEnabledFeatures::
-          FormControlsVerticalWritingModeTextSupportEnabled() &&
-      !form_controls_not_vertical_style_text_sheet_ &&
-      (IsA<HTMLTextAreaElement>(element) || (input && input->IsTextField()))) {
-    form_controls_not_vertical_style_text_sheet_ =
-        ParseUASheet(UncompressResourceAsASCIIString(
-            IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS_TEXT));
-    AddRulesToDefaultStyleSheets(form_controls_not_vertical_style_text_sheet_,
+  if (!customizable_select_style_sheet_ && IsA<HTMLSelectElement>(element) &&
+      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+    // TODO(crbug.com/1511354): Merge customizable_select.css into html.css and
+    // remove this code.
+    customizable_select_style_sheet_ = ParseUASheet(
+        UncompressResourceAsASCIIString(IDR_UASTYLE_CUSTOMIZABLE_SELECT_CSS));
+    AddRulesToDefaultStyleSheets(customizable_select_style_sheet_,
                                  NamespaceType::kHTML);
     changed_default_style = true;
   }
 
-  DCHECK(!default_html_style_->Features().HasIdsInSelectors());
+  DCHECK(!default_html_style_->Features()
+              .GetRuleInvalidationData()
+              .HasIdsInSelectors());
   return changed_default_style;
 }
 
@@ -447,10 +473,18 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     return false;
   }
 
-  String forced_colors_rules =
-      RuntimeEnabledFeatures::ForcedColorsEnabled()
-          ? UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_FORCED_COLORS_CSS)
-          : String();
+  String forced_colors_rules = String();
+  if (RuntimeEnabledFeatures::ForcedColorsEnabled()) {
+    forced_colors_rules =
+        forced_colors_rules +
+        UncompressResourceAsASCIIString(IDR_UASTYLE_THEME_FORCED_COLORS_CSS);
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      forced_colors_rules =
+          forced_colors_rules +
+          UncompressResourceAsASCIIString(
+              IDR_UASTYLE_CUSTOMIZABLE_SELECT_FORCED_COLORS_CSS);
+    }
+  }
   forced_colors_style_sheet_ = ParseUASheet(forced_colors_rules);
 
   if (!default_forced_color_style_) {
@@ -464,9 +498,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     default_forced_color_style_->AddRulesFromSheet(SvgStyleSheet(),
                                                    ForcedColorsEval());
   }
+
   if (media_controls_style_sheet_) {
-    default_forced_color_style_->AddRulesFromSheet(MediaControlsStyleSheet(),
-                                                   ForcedColorsEval());
+    CHECK(!default_forced_colors_media_controls_style_);
+    default_forced_colors_media_controls_style_ =
+        MakeGarbageCollected<RuleSet>();
+    default_forced_colors_media_controls_style_->AddRulesFromSheet(
+        MediaControlsStyleSheet(), ForcedColorsEval());
   }
 
   return true;
@@ -489,8 +527,7 @@ void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
   if (document.IsViewSource() && DefaultViewSourceStyle()) {
     features.Merge(DefaultViewSourceStyle()->Features());
   }
-  if (RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
-      document.IsJSONDocument() && DefaultJSONDocumentStyle()) {
+  if (document.IsJSONDocument() && DefaultJSONDocumentStyle()) {
     features.Merge(DefaultJSONDocumentStyle()->Features());
   }
 }
@@ -516,10 +553,16 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(selectlist_style_sheet_);
+  visitor->Trace(customizable_select_style_sheet_);
+  visitor->Trace(customizable_select_forced_colors_style_sheet_);
   visitor->Trace(marker_style_sheet_);
-  visitor->Trace(form_controls_not_vertical_style_sheet_);
-  visitor->Trace(form_controls_not_vertical_style_text_sheet_);
   visitor->Trace(default_json_document_style_);
+  visitor->Trace(default_forced_colors_media_controls_style_);
+}
+
+CSSDefaultStyleSheets::TestingScope::TestingScope() = default;
+CSSDefaultStyleSheets::TestingScope::~TestingScope() {
+  Instance().Reset();
 }
 
 }  // namespace blink

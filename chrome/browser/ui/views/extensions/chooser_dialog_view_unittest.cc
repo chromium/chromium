@@ -11,6 +11,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/permissions/fake_bluetooth_chooser_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/table/table_view.h"
@@ -39,7 +40,8 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
 #if BUILDFLAG(IS_MAC)
     // We need a native view parent for the dialog to avoid a DCHECK
     // on Mac.
-    parent_widget_ = CreateTestWidget();
+    parent_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     parent = parent_widget_->GetNativeView();
 #endif
     widget_ = views::DialogDelegate::CreateDialogWidget(dialog_, GetContext(),
@@ -92,41 +94,42 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
 
 TEST_F(ChooserDialogViewTest, ButtonState) {
   // Cancel button is always enabled.
-  EXPECT_TRUE(dialog_->IsDialogButtonEnabled(ui::DIALOG_BUTTON_CANCEL));
+  EXPECT_TRUE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kCancel));
 
   // Selecting a device enables the OK button.
-  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   AddDevice();
-  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   table_view()->Select(0);
-  EXPECT_TRUE(dialog_->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   // Changing state disables the OK button.
   controller_->SetBluetoothStatus(
       FakeBluetoothChooserController::BluetoothStatus::UNAVAILABLE);
-  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   controller_->SetBluetoothStatus(
       FakeBluetoothChooserController::BluetoothStatus::SCANNING);
-  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   table_view()->Select(0);
-  EXPECT_TRUE(dialog_->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_TRUE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
   controller_->SetBluetoothStatus(
       FakeBluetoothChooserController::BluetoothStatus::IDLE);
-  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  EXPECT_FALSE(dialog_->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 }
 
 TEST_F(ChooserDialogViewTest, CancelButtonFocusedWhenReScanIsPressed) {
-  EXPECT_CALL(*controller_, RefreshOptions()).WillOnce(testing::Invoke([=]() {
-    controller_->SetBluetoothStatus(
-        FakeBluetoothChooserController::BluetoothStatus::SCANNING);
-  }));
+  EXPECT_CALL(*controller_, RefreshOptions())
+      .WillOnce(testing::Invoke([=, this]() {
+        controller_->SetBluetoothStatus(
+            FakeBluetoothChooserController::BluetoothStatus::SCANNING);
+      }));
   AddDevice();
   table_view()->RequestFocus();
   controller_->RemoveDevice(0);
 
   // Click the re-scan button.
   const gfx::Point point(10, 10);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
+  const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   re_scan_button()->OnMousePressed(event);

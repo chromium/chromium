@@ -46,7 +46,7 @@ class MetricsProvider {
   // server.
   // 2. You will not override ProvideCurrentSessionData(),
   // OnDidCreateMetricsLog(), or ProvideStabilityMetrics().
-  // TODO(crbug/1427219): Refactor the code to remove requirement 2.
+  // TODO(crbug.com/40899764): Refactor the code to remove requirement 2.
   virtual bool ProvideHistograms();
 
   // Called when a new MetricsLog is created.
@@ -103,12 +103,16 @@ class MetricsProvider {
   // Provides additional metrics into the system profile. This is a convenience
   // method over ProvideSystemProfileMetricsWithLogCreationTime() without the
   // |log_creation_time| param. Should not be called directly by services.
+  // Do not log histograms within this function; they will not necessarily be
+  // added to the UMA record that this system profile is part of.
   virtual void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto);
 
   // Provides additional metrics into the system profile. The log creation
   // time param provides a timestamp of when the log was opened, which is needed
   // for some metrics providers.
+  // Do not log histograms within this function; they will not necessarily be
+  // added to the UMA record that this system profile is part of.
   virtual void ProvideSystemProfileMetricsWithLogCreationTime(
       base::TimeTicks log_creation_time,
       SystemProfileProto* system_profile_proto);

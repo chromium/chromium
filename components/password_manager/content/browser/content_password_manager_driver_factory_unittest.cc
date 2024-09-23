@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory_test_api.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -15,6 +17,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content_password_manager_driver_factory_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -68,9 +71,15 @@ TEST_F(ContentPasswordManagerDriverFactoryFencedFramesTest,
   content::RenderFrameHost* fenced_frame_subframe =
       content::RenderFrameHostTester::For(fenced_frame_root)
           ->AppendChild("iframe");
-  EXPECT_NE(nullptr, factory().GetDriverForFrame(main_rfh()));
-  EXPECT_NE(nullptr, factory().GetDriverForFrame(fenced_frame_root));
-  EXPECT_NE(nullptr, factory().GetDriverForFrame(fenced_frame_subframe));
+  EXPECT_NE(nullptr,
+            ContentPasswordManagerDriverFactoryTestApi::GetDriverForFrame(
+                &factory(), main_rfh()));
+  EXPECT_NE(nullptr,
+            ContentPasswordManagerDriverFactoryTestApi::GetDriverForFrame(
+                &factory(), fenced_frame_root));
+  EXPECT_NE(nullptr,
+            ContentPasswordManagerDriverFactoryTestApi::GetDriverForFrame(
+                &factory(), fenced_frame_subframe));
 }
 
 }  // namespace password_manager

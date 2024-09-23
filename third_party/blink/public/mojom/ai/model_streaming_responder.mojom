@@ -1,0 +1,59 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The status of the ModelStreamingResponder response.
+// TODO(leimy): return more information about the erroneous case.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ModelStreamingResponseStatus)
+enum ModelStreamingResponseStatus {
+  // There response is not fully streamed back yet, and the interface will
+  // remain open.
+  kOngoing = 0,
+  // The ModelStreamingResponder completes and closes.
+  kComplete = 1,
+  // The following enums are for the case when the ModelStreamingResponder closes with some errors.
+  kErrorUnknown = 2,
+  // The request was invalid.
+  kErrorInvalidRequest = 3,
+  // The request was throttled.
+  kErrorRequestThrottled = 4,
+  // User permission errors such as not signed-in or not allowed to execute
+  // model.
+  kErrorPermissionDenied = 5,
+  // Other generic failures.
+  kErrorGenericFailure = 6,
+  // Retryable error occurred in server.
+  kErrorRetryableError = 7,
+  // Non-retryable error occurred in server.
+  kErrorNonRetryableError = 8,
+  // Unsupported language.
+  kErrorUnsupportedLanguage = 9,
+  // Request was filtered.
+  kErrorFiltered = 10,
+  // Response was disabled.
+  kErrorDisabled = 11,
+  // The request was cancelled.
+  kErrorCancelled = 12,
+  // The session has been destroyed.
+  kErrorSessionDestroyed = 13,
+  // Append new items here.
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIModelStreamingResponseStatus)
+
+// The responder provides methods for the session to return the execution
+// response in a streaming manner.
+interface ModelStreamingResponder {
+  // This is called when there is a new chunk of data available for
+  // streaming, or when the response is fully streamed, or when there are
+  // some errors.
+  // When `status` is `kComplete`, the `current_tokens` field might be set to
+  // the latest number of existing tokens, and the renderer should update the
+  // information accordingly. Otherwise, the `current_tokens` will be null.
+  OnResponse(
+    ModelStreamingResponseStatus status, string? text, uint64? current_tokens);
+};

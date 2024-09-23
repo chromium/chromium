@@ -4,7 +4,8 @@
 
 #include "components/history/core/browser/sync/test_history_backend_for_sync.h"
 
-#include "base/containers/cxx20_erase_vector.h"
+#include <vector>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
@@ -58,10 +59,10 @@ void TestHistoryBackendForSync::AddOrReplaceContentAnnotation(
 }
 
 void TestHistoryBackendForSync::RemoveURLAndVisits(URLID url_id) {
-  base::EraseIf(visits_, [url_id](const VisitRow& visit) {
+  std::erase_if(visits_, [url_id](const VisitRow& visit) {
     return visit.url_id == url_id;
   });
-  base::EraseIf(urls_,
+  std::erase_if(urls_,
                 [url_id](const URLRow& url) { return url.id() == url_id; });
 }
 

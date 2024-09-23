@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/memory_internals_ui.h"
 
 #include <iterator>
@@ -10,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,6 +37,7 @@
 #include "chrome/grit/memory_internals_resources_map.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
+#include "components/services/heap_profiling/public/mojom/heap_profiling_service.mojom.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -44,6 +49,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+#include "partition_alloc/buildflags.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -55,7 +61,7 @@ namespace {
 
 // Returns the string to display at the top of the page for help.
 std::string GetMessageString() {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   Mode mode = Mode::kNone;
   if (heap_profiling::Supervisor::GetInstance()->HasStarted()) {
     mode = heap_profiling::Supervisor::GetInstance()->GetMode();
@@ -162,17 +168,15 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
   // Sends a request for a process list, and posts the result to
   // ReturnProcessListOnUIThread(). Takes ownership of `callback_id` so it can
   // be bound to the posted task without copying.
-  void RequestProcessList(base::Value callback_id);
+  void RequestProcessList(base::Value callback_id, bool success);
 
   void ReturnProcessListOnUIThread(const base::Value& callback_id,
                                    std::vector<base::Value::List> children,
                                    std::vector<base::ProcessId> profiled_pids);
 
   // SelectFileDialog::Listener implementation:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   void SaveTraceFinished(bool success);
 
@@ -218,7 +222,7 @@ void MemoryInternalsDOMHandler::HandleRequestProcessList(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(args.size(), 1u);
-  RequestProcessList(args[0].Clone());
+  RequestProcessList(args[0].Clone(), /*success=*/true);
 }
 
 void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List&) {
@@ -253,7 +257,7 @@ void MemoryInternalsDOMHandler::HandleSaveDump(const base::Value::List&) {
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), default_file,
       nullptr, 0, FILE_PATH_LITERAL(".json.gz"),
-      web_ui_->GetWebContents()->GetTopLevelNativeWindow(), nullptr);
+      web_ui_->GetWebContents()->GetTopLevelNativeWindow());
 #endif
 }
 
@@ -266,9 +270,10 @@ void MemoryInternalsDOMHandler::HandleStartProfiling(
 
   // Refresh to get the updated state of the profiled process after profiling
   // starts.
-  base::OnceClosure refresh_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&MemoryInternalsDOMHandler::RequestProcessList,
-                     weak_factory_.GetWeakPtr(), callback_id.Clone()));
+  heap_profiling::mojom::ProfilingService::AddProfilingClientCallback
+      refresh_callback = base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&MemoryInternalsDOMHandler::RequestProcessList,
+                         weak_factory_.GetWeakPtr(), callback_id.Clone()));
 
   heap_profiling::Supervisor* supervisor =
       heap_profiling::Supervisor::GetInstance();
@@ -286,7 +291,12 @@ void MemoryInternalsDOMHandler::OnJavascriptDisallowed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void MemoryInternalsDOMHandler::RequestProcessList(base::Value callback_id) {
+void MemoryInternalsDOMHandler::RequestProcessList(base::Value callback_id,
+                                                   bool success) {
+  if (!success) {
+    return;
+  }
+
   std::vector<base::Value::List> result;
 
   // The only non-renderer child processes that currently support out-of-process
@@ -371,8 +381,7 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
 }
 
 void MemoryInternalsDOMHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                             int index,
-                                             void* params) {
+                                             int index) {
   base::Value result("Saving...");
   FireWebUIListener("save-dump-progress", result);
 
@@ -384,7 +393,7 @@ void MemoryInternalsDOMHandler::FileSelected(const ui::SelectedFileInfo& file,
   select_file_dialog_ = nullptr;
 }
 
-void MemoryInternalsDOMHandler::FileSelectionCanceled(void* params) {
+void MemoryInternalsDOMHandler::FileSelectionCanceled() {
   select_file_dialog_ = nullptr;
 }
 

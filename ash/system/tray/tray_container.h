@@ -52,7 +52,6 @@ class TrayContainer : public views::View {
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
-  const char* GetClassName() const override;
 
  private:
   struct LayoutInputs {

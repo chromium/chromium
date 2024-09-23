@@ -138,11 +138,18 @@ void ModelExecutorImpl::ExecuteModel(
     return;
   }
 
+  base::Time prediction_time = clock_->Now();
+  if (segment_info->model_metadata().has_fixed_prediction_timestamp() &&
+      segment_info->model_metadata().fixed_prediction_timestamp() > 0) {
+    prediction_time = base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
+        segment_info->model_metadata().fixed_prediction_timestamp()));
+  }
+
   state->upload_tensors =
       SegmentationUkmHelper::GetInstance()->IsUploadRequested(*segment_info);
   feature_list_query_processor_->ProcessFeatureList(
       segment_info->model_metadata(), request->input_context, segment_id,
-      clock_->Now(), base::Time(),
+      prediction_time, base::Time(),
       FeatureListQueryProcessor::ProcessOption::kInputsOnly,
       base::BindOnce(&ModelExecutorImpl::OnProcessingFeatureListComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(state)));
@@ -208,11 +215,18 @@ void ModelExecutorImpl::OnModelExecutionComplete(
 
     const SegmentInfo* latest_info = segment_db_->GetCachedSegmentInfo(
         state->segment_id, state->model_source);
-    if (latest_info->model_version() != state->model_version) {
-      // The version could have changed if new model is downloaded during
-      // execution. This should not affect the metrics recording below.
-      LOG(ERROR) << "Model version changed during execution";
+    // The version could have changed if new model is downloaded during
+    // execution, or if the model was deleted.
+    if (!latest_info || latest_info->model_version() != state->model_version) {
+      VLOG(1) << "Segmentation model was updated during execution "
+              << proto::SegmentId_Name(state->segment_id);
+      RunModelExecutionCallback(
+          *state, std::move(state->callback),
+          std::make_unique<ModelExecutionResult>(
+              ModelExecutionStatus::kSkippedModelNotReady));
+      return;
     }
+
 
     const proto::SegmentationModelMetadata& model_metadata =
         latest_info->model_metadata();

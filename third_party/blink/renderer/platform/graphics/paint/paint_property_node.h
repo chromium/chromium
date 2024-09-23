@@ -10,8 +10,9 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "base/memory/scoped_refptr.h"
 #include "cc/trees/property_tree.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -19,16 +20,11 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #if DCHECK_IS_ON()
-#include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #endif
 
 namespace blink {
-
-class ClipPaintPropertyNodeOrAlias;
-class EffectPaintPropertyNodeOrAlias;
-class ScrollPaintPropertyNode;
-class TransformPaintPropertyNodeOrAlias;
 
 // Used to report whether and how paint properties have changed. The order is
 // important - it must go from no change to the most significant change.
@@ -65,70 +61,17 @@ enum class PaintPropertyChangeType : unsigned char {
 PLATFORM_EXPORT const char* PaintPropertyChangeTypeToString(
     PaintPropertyChangeType);
 
-PLATFORM_EXPORT const ClipPaintPropertyNodeOrAlias&
-LowestCommonAncestorInternal(const ClipPaintPropertyNodeOrAlias&,
-                             const ClipPaintPropertyNodeOrAlias&);
-PLATFORM_EXPORT const EffectPaintPropertyNodeOrAlias&
-LowestCommonAncestorInternal(const EffectPaintPropertyNodeOrAlias&,
-                             const EffectPaintPropertyNodeOrAlias&);
-PLATFORM_EXPORT const ScrollPaintPropertyNode& LowestCommonAncestorInternal(
-    const ScrollPaintPropertyNode&,
-    const ScrollPaintPropertyNode&);
-PLATFORM_EXPORT const TransformPaintPropertyNodeOrAlias&
-LowestCommonAncestorInternal(const TransformPaintPropertyNodeOrAlias&,
-                             const TransformPaintPropertyNodeOrAlias&);
-
-template <typename NodeTypeOrAlias, typename NodeType>
-struct PaintPropertyNodeRefCountedTraits {
-  static void Destruct(const NodeTypeOrAlias* node) {
-    if (node->IsParentAlias())
-      delete node;
-    else
-      delete static_cast<const NodeType*>(node);
-  }
-};
-
-template <typename NodeTypeOrAlias, typename NodeType>
-class PaintPropertyNode
-    : public RefCounted<
-          NodeTypeOrAlias,
-          PaintPropertyNodeRefCountedTraits<NodeTypeOrAlias, NodeType>> {
-  USING_FAST_MALLOC(PaintPropertyNode);
-
+class PLATFORM_EXPORT PaintPropertyNode
+    : public GarbageCollected<PaintPropertyNode> {
  public:
-  // Parent property node, or nullptr if this is the root node.
-  const NodeTypeOrAlias* Parent() const { return parent_.get(); }
+  PaintPropertyNode(const PaintPropertyNode&) = delete;
+  PaintPropertyNode& operator=(const PaintPropertyNode&) = delete;
+
+  virtual ~PaintPropertyNode() = default;
+
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(parent_); }
+
   bool IsRoot() const { return !parent_; }
-
-  bool IsAncestorOf(const NodeTypeOrAlias& other) const {
-    for (const auto* node = &other; node != this; node = node->Parent()) {
-      if (!node)
-        return false;
-    }
-    return true;
-  }
-
-  // Clear changed flags along the path to the root, and set sequence number.
-  // If a subclass needs to clear changed flags along additional paths, the
-  // subclass must override this.
-  // For information about |sequence_number|, see: |changed_sequence_number_|.
-  void ClearChangedToRoot(int sequence_number) const {
-    for (auto* n = this; n && n->changed_sequence_number_ != sequence_number;
-         n = n->Parent())
-      n->ClearChanged(sequence_number);
-  }
-
-  PaintPropertyChangeType SetParent(const NodeTypeOrAlias& parent) {
-    DCHECK(!IsRoot());
-    DCHECK_NE(&parent, this);
-    if (&parent == parent_) {
-      return PaintPropertyChangeType::kUnchanged;
-    }
-    parent_ = &parent;
-    static_cast<NodeTypeOrAlias*>(this)->AddChanged(
-        PaintPropertyChangeType::kChangedOnlyValues);
-    return PaintPropertyChangeType::kChangedOnlyValues;
-  }
 
   // Returns true if this node is an alias for its parent. A parent alias is a
   // node which on its own does not contribute to the rendering output, and only
@@ -137,38 +80,14 @@ class PaintPropertyNode
   // value is used. See Unalias().
   bool IsParentAlias() const { return is_parent_alias_; }
 
-  // Returns the first node up the parent chain that is not an alias; return the
-  // root node if every node is an alias.
-  const NodeType& Unalias() const {
-    const auto* node = static_cast<const NodeTypeOrAlias*>(this);
-    while (node->Parent() && node->IsParentAlias())
-      node = node->Parent();
-    return *static_cast<const NodeType*>(node);
-  }
-
-  const NodeType* UnaliasedParent() const {
-    return Parent() ? &Parent()->Unalias() : nullptr;
-  }
-
   void CompositorSimpleValuesUpdated() const {
     if (changed_ == PaintPropertyChangeType::kChangedOnlySimpleValues)
       changed_ = PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
 
-  String ToString() const {
-    String s = ToJSON()->ToJSONString();
-#if DCHECK_IS_ON()
-    return debug_name_ + String::Format(" %p ", this) + s;
-#else
-    return s;
-#endif
-  }
+  String ToString() const;
 
-  std::unique_ptr<JSONObject> ToJSON() const {
-    if (IsParentAlias())
-      return ToJSONBase();
-    return static_cast<const NodeType*>(this)->ToJSON();
-  }
+  virtual std::unique_ptr<JSONObject> ToJSON() const;
 
   int CcNodeId(int sequence_number) const {
     return cc_sequence_number_ == sequence_number ? cc_node_id_
@@ -185,21 +104,6 @@ class PaintPropertyNode
            changed_ != PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
   }
 
-  // Returns the lowest common ancestor in the paint property tree.
-  const NodeTypeOrAlias& LowestCommonAncestor(const NodeTypeOrAlias& b) const {
-    // Fast path of common cases.
-    const auto& a = *static_cast<const NodeTypeOrAlias*>(this);
-    if (&a == &b || !a.Parent() || b.Parent() == &a) {
-      DCHECK(IsAncestorOf(b));
-      return a;
-    }
-    if (!b.Parent() || a.Parent() == &b) {
-      DCHECK(b.IsAncestorOf(a));
-      return b;
-    }
-    return LowestCommonAncestorInternal(a, b);
-  }
-
 #if DCHECK_IS_ON()
   String ToTreeString() const;
 
@@ -208,56 +112,111 @@ class PaintPropertyNode
 #endif
 
  protected:
-  explicit PaintPropertyNode(const NodeTypeOrAlias* parent)
-      : changed_(parent ? PaintPropertyChangeType::kNodeAddedOrRemoved
-                        : PaintPropertyChangeType::kUnchanged),
-        parent_(parent) {}
-
-  // A parent alias node must have a parent, so ensure that we can always find
-  // a unaliased ancestor for any node.
+  // The tags have the following purposes:
+  // 1. Distinguish the constructors in parent alias subclasses from the copy
+  //    constructors (deleted in this class);
+  // 2. Prevent the subclass constructors (which are public required by
+  //    MakeGarbageCollected) from being called from outside (which is required
+  //    by 1 for parent alias subclasses, and for consistency for
+  //    non-parent-alias subclasses).
+  enum RootTag { kRoot };
   enum ParentAliasTag { kParentAlias };
-  PaintPropertyNode(const NodeTypeOrAlias& parent, ParentAliasTag)
+  enum NonParentAliasTag { kNonParentAlias };
+
+  explicit PaintPropertyNode(RootTag)
+      : is_parent_alias_(false),
+        changed_(PaintPropertyChangeType::kUnchanged),
+        parent_(nullptr) {}
+  PaintPropertyNode(ParentAliasTag, const PaintPropertyNode& parent)
       : is_parent_alias_(true),
         changed_(PaintPropertyChangeType::kNodeAddedOrRemoved),
-        parent_(&parent) {}
+        parent_(parent) {}
+  PaintPropertyNode(NonParentAliasTag, const PaintPropertyNode& parent)
+      : is_parent_alias_(false),
+        changed_(PaintPropertyChangeType::kNodeAddedOrRemoved),
+        parent_(parent) {}
 
-  void AddChanged(PaintPropertyChangeType changed) {
+  PaintPropertyChangeType SetParent(const PaintPropertyNode& parent) {
+    DCHECK(!IsRoot());
+    DCHECK_NE(&parent, this);
+    if (&parent == parent_) {
+      return PaintPropertyChangeType::kUnchanged;
+    }
+    parent_ = &parent;
+    AddChanged(PaintPropertyChangeType::kChangedOnlyValues);
+    return PaintPropertyChangeType::kChangedOnlyValues;
+  }
+
+  // Parent property node, or nullptr if this is the root node.
+  const PaintPropertyNode* Parent() const { return parent_.Get(); }
+
+  // Returns the first node up the parent chain that is not an alias; return the
+  // root node if every node is an alias.
+  const PaintPropertyNode& Unalias() const {
+    const auto* node = this;
+    while (node->Parent() && node->IsParentAlias()) {
+      node = node->Parent();
+    }
+    return *node;
+  }
+
+  const PaintPropertyNode* UnaliasedParent() const {
+    return Parent() ? &Parent()->Unalias() : nullptr;
+  }
+
+  bool IsAncestorOf(const PaintPropertyNode& other) const {
+    for (const auto* node = &other; node != this; node = node->Parent()) {
+      if (!node) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  const PaintPropertyNode& LowestCommonAncestor(
+      const PaintPropertyNode& other) const {
+    // Fast path of common cases.
+    if (this == &other || !Parent() || other.Parent() == this) {
+      DCHECK(IsAncestorOf(other));
+      return *this;
+    }
+    if (!other.Parent() || Parent() == &other) {
+      DCHECK(other.IsAncestorOf(*this));
+      return other;
+    }
+    return LowestCommonAncestorInternal(other);
+  }
+
+  virtual void AddChanged(PaintPropertyChangeType changed) {
     DCHECK(!IsRoot());
     changed_ = std::max(changed_, changed);
   }
 
+  // The following two functions are for subclasses to implement
+  // ClearChangedToRoot() which should clear changed flags along the path to
+  // the root, and set sequence number.
   // For information about |sequence_number|, see: |changed_sequence_number_|.
   void ClearChanged(int sequence_number) const {
     DCHECK_NE(changed_sequence_number_, sequence_number);
     changed_ = PaintPropertyChangeType::kUnchanged;
     changed_sequence_number_ = sequence_number;
   }
-
   int ChangedSequenceNumber() const { return changed_sequence_number_; }
-
-  std::unique_ptr<JSONObject> ToJSONBase() const {
-    auto json = std::make_unique<JSONObject>();
-    json->SetString("this", String::Format("%p", this));
-    if (Parent()) {
-      json->SetString("parent", String::Format("%p", Parent()));
-    }
-    if (IsParentAlias()) {
-      json->SetBoolean("is_alias", true);
-    }
-    if (NodeChanged() != PaintPropertyChangeType::kUnchanged) {
-      json->SetString("changed",
-                      PaintPropertyChangeTypeToString(NodeChanged()));
-    }
-    return json;
-  }
 
  private:
   friend class PaintPropertyNodeTest;
+  friend class PropertyTreePrinter;
+
+  // Returns -1 if `maybe_ancestor` is found in the ancestor chain, or returns
+  // the depth of the node from the root.
+  int NodeDepthOrFoundAncestor(const PaintPropertyNode& maybe_ancestor) const;
+  const PaintPropertyNode& LowestCommonAncestorInternal(
+      const PaintPropertyNode& other) const;
 
   // Indicates whether this node is an alias for its parent. Parent aliases are
   // nodes that do not affect rendering and are ignored for the purposes of
   // display item list generation.
-  bool is_parent_alias_ = false;
+  bool is_parent_alias_;
 
   // Indicates that the paint property value changed in the last update in the
   // prepaint lifecycle step. This is used for raster invalidation and damage
@@ -275,79 +234,69 @@ class PaintPropertyNode
   mutable int cc_node_id_ = cc::kInvalidPropertyNodeId;
   mutable int cc_sequence_number_ = 0;
 
-  scoped_refptr<const NodeTypeOrAlias> parent_;
+  Member<const PaintPropertyNode> parent_;
 
 #if DCHECK_IS_ON()
   String debug_name_;
 #endif
 };
 
+template <typename NodeTypeOrAlias, typename NodeType>
+class PaintPropertyNodeBase : public PaintPropertyNode {
+ public:
+  PaintPropertyChangeType SetParent(const NodeTypeOrAlias& parent) {
+    return PaintPropertyNode::SetParent(parent);
+  }
+
+  const NodeTypeOrAlias* Parent() const {
+    return static_cast<const NodeTypeOrAlias*>(PaintPropertyNode::Parent());
+  }
+
+  const NodeType& Unalias() const {
+    return static_cast<const NodeType&>(PaintPropertyNode::Unalias());
+  }
+
+  const NodeType* UnaliasedParent() const {
+    return static_cast<const NodeType*>(PaintPropertyNode::UnaliasedParent());
+  }
+
+  bool IsAncestorOf(const NodeTypeOrAlias& other) const {
+    return PaintPropertyNode::IsAncestorOf(other);
+  }
+
+  const NodeTypeOrAlias& LowestCommonAncestor(
+      const NodeTypeOrAlias& other) const {
+    return static_cast<const NodeTypeOrAlias&>(
+        PaintPropertyNode::LowestCommonAncestor(other));
+  }
+
+ protected:
+  using PaintPropertyNode::PaintPropertyNode;
+};
+
 #if DCHECK_IS_ON()
 
-template <typename NodeType>
-class PropertyTreePrinter {
+class PLATFORM_EXPORT PropertyTreePrinter {
   STACK_ALLOCATED();
 
  public:
-  void AddNode(const NodeType* node) {
-    if (node)
-      nodes_.insert(node);
-  }
-
-  String NodesAsTreeString() {
-    if (nodes_.empty())
-      return "";
-    StringBuilder string_builder;
-    BuildTreeString(string_builder, RootNode(), 0);
-    return string_builder.ToString();
-  }
-
-  String PathAsString(const NodeType& last_node) {
-    for (const auto* n = &last_node; n; n = n->Parent())
-      AddNode(n);
-    return NodesAsTreeString();
-  }
+  void AddNode(const PaintPropertyNode* node);
+  String NodesAsTreeString();
+  String PathAsString(const PaintPropertyNode& last_node);
 
  private:
   void BuildTreeString(StringBuilder& string_builder,
-                       const NodeType& node,
-                       unsigned indent) {
-    for (unsigned i = 0; i < indent; i++)
-      string_builder.Append(' ');
-    string_builder.Append(node.ToString());
-    string_builder.Append("\n");
+                       const PaintPropertyNode& node,
+                       unsigned indent);
+  const PaintPropertyNode& RootNode();
 
-    for (const auto* child_node : nodes_) {
-      if (child_node->Parent() == &node)
-        BuildTreeString(string_builder, *child_node, indent + 2);
-    }
-  }
-
-  const NodeType& RootNode() {
-    const auto* node = nodes_.back();
-    while (!node->IsRoot())
-      node = node->Parent();
-    if (node->DebugName().empty())
-      const_cast<NodeType*>(node)->SetDebugName("root");
-    nodes_.insert(node);
-    return *node;
-  }
-
-  LinkedHashSet<const NodeType*> nodes_;
+  HeapLinkedHashSet<Member<const PaintPropertyNode>> nodes_;
 };
-
-template <typename NodeTypeOrAlias, typename NodeType>
-String PaintPropertyNode<NodeTypeOrAlias, NodeType>::ToTreeString() const {
-  return PropertyTreePrinter<NodeTypeOrAlias>().PathAsString(
-      *static_cast<const NodeTypeOrAlias*>(this));
-}
 
 #endif  // DCHECK_IS_ON()
 
-template <typename NodeTypeOrAlias, typename NodeType>
-std::ostream& operator<<(
-    std::ostream& os,
-    const PaintPropertyNode<NodeTypeOrAlias, NodeType>& node) {
+inline std::ostream& operator<<(std::ostream& os,
+                                const PaintPropertyNode& node) {
   return os << node.ToString().Utf8();
 }
 

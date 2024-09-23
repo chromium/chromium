@@ -29,13 +29,14 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.ui.R;
+import org.chromium.ui.base.LocalizationUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * UI component that handles showing a {@link PopupWindow}. Positioning this popup happens through
- * a {@link RectProvider} provided during construction.
+ * UI component that handles showing a {@link PopupWindow}. Positioning this popup happens through a
+ * {@link RectProvider} provided during construction.
  */
 public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observer {
     private static final int MINIMAL_POPUP_HEIGHT_DIP = 50; // 48dp touch target plus 1dp margin.
@@ -78,7 +79,11 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /** HorizontalOrientation preferences for the popup */
-    @IntDef({HorizontalOrientation.MAX_AVAILABLE_SPACE, HorizontalOrientation.CENTER})
+    @IntDef({
+        HorizontalOrientation.MAX_AVAILABLE_SPACE,
+        HorizontalOrientation.CENTER,
+        HorizontalOrientation.LAYOUT_DIRECTION
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface HorizontalOrientation {
         /**
@@ -92,6 +97,12 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
          * screen.
          */
         int CENTER = 1;
+
+        /**
+         * Horizontally position to side as defined by @{@link LocalizationUtils#isLayoutRtl()}. The
+         * popup will be sized to ensure it fits on screen.
+         */
+        int LAYOUT_DIRECTION = 2;
     }
 
     /**
@@ -137,7 +148,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 int oldRight,
                 int oldBottom) {
             cacheWindowVisibleDisplayFrameRect();
-            // TODO(crbug.com/1408360): call notifyRectChanged() if consumers don't do it.
+            // TODO(crbug.com/40253505): call notifyRectChanged() if consumers don't do it.
         }
 
         private void cacheWindowVisibleDisplayFrameRect() {
@@ -669,6 +680,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 allowHorizontalOverlap = true;
                 allowVerticalOverlap = false;
             }
+        } else if (preferredHorizontalOrientation == HorizontalOrientation.LAYOUT_DIRECTION) {
+            isPositionToLeft = LocalizationUtils.isLayoutRtl();
         }
 
         // Height adjustment based on anchorRect and settings.
@@ -693,7 +706,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
         // Position the popup in the largest available space where it can fit.  This will bias the
         // popups to show below the anchor if it will not fit in either place.
-        // TODO(https://crbug.com/1311849): Address cases where spaceBelowAnchor = 0, popup is still
+        // TODO(crbug.com/40831291): Address cases where spaceBelowAnchor = 0, popup is still
         // biased to anchored below the rect.
         boolean isPositionBelow =
                 (idealFitsBelow && spaceBelowAnchor >= spaceAboveAnchor) || !idealFitsAbove;
@@ -829,7 +842,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         return clamp(x, marginPx, windowRect.right - popupWidth - marginPx);
     }
 
-    // TODO(https://crbug.com/1311850): Account margin when position above the anchor.
+    // TODO(crbug.com/40831293): Account margin when position above the anchor.
     @VisibleForTesting
     static int getPopupY(
             Rect anchorRect, int popupHeight, boolean overlapAnchor, boolean positionBelow) {
@@ -855,7 +868,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         if (mDismissOnTouchInteraction) {
             // Pass down the touch event to child views. If the content view has clickable children,
             // make sure we give them the opportunity to trigger.
-            // TODO(crbug.com/1273021): Revisit handling touches on content when
+            // TODO(crbug.com/40806699): Revisit handling touches on content when
             // mDismissOnTouchInteraction is true.
             boolean touchInterceptedByChild =
                     !touchInterceptedByClient

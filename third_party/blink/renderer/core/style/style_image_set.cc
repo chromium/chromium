@@ -32,8 +32,11 @@
 namespace blink {
 
 StyleImageSet::StyleImageSet(StyleImage* best_fit_image,
-                             CSSImageSetValue* image_set_value)
-    : best_fit_image_(best_fit_image), image_set_value_(image_set_value) {
+                             CSSImageSetValue* image_set_value,
+                             bool is_origin_clean)
+    : best_fit_image_(best_fit_image),
+      image_set_value_(image_set_value),
+      is_origin_clean_(is_origin_clean) {
   is_image_resource_set_ = true;
 }
 
@@ -61,8 +64,10 @@ CSSValue* StyleImageSet::CssValue() const {
 }
 
 CSSValue* StyleImageSet::ComputedCSSValue(const ComputedStyle& style,
-                                          bool allow_visited_style) const {
-  return StyleImageComputedCSSValueBuilder(style, allow_visited_style)
+                                          bool allow_visited_style,
+                                          CSSValuePhase value_phase) const {
+  return StyleImageComputedCSSValueBuilder(style, allow_visited_style,
+                                           value_phase)
       .Build(image_set_value_);
 }
 

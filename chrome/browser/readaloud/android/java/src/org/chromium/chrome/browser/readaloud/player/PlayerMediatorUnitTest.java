@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.readaloud.player;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +29,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNO
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,6 +47,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefsJni;
@@ -79,6 +84,7 @@ public class PlayerMediatorUnitTest {
     private ObservableSupplierImpl<String> mSelectedVoiceIdSupplier;
     private ObservableSupplierImpl<Boolean> mHighlightingEnabledSupplier;
     @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
+    public UserActionTester mUserActionTester;
 
     private PropertyModel mModel;
     private FakeClock mClock;
@@ -178,6 +184,12 @@ public class PlayerMediatorUnitTest {
         mMediator = new PlayerMediator(mPlayerCoordinator, mDelegate, mModel);
         mMediator.setClockForTesting(mClock);
         mOnSeekBarChangeListener = mMediator.getSeekBarChangeListener();
+        mUserActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mUserActionTester.tearDown();
     }
 
     @Test
@@ -376,6 +388,35 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testPlayClicked_restoresPlayback() {
+        mMediator.setPlayback(null);
+        mMediator.setPlaybackState(STOPPED);
+        mModel.set(PlayerProperties.RESTORABLE_PLAYBACK, true);
+
+        mMediator.onPlayPauseClick();
+        verify(mDelegate).restorePlayback();
+    }
+
+    @Test
+    public void testPlayClicked_restoresPlayback_false() {
+        mMediator.setPlayback(null);
+        mMediator.setPlaybackState(STOPPED);
+        mModel.set(PlayerProperties.RESTORABLE_PLAYBACK, false);
+
+        mMediator.onPlayPauseClick();
+        verify(mDelegate, never()).restorePlayback();
+    }
+
+    @Test
+    public void testSetPlayerRestorable() {
+        mMediator.setPlayerRestorable(true);
+        verify(mModel).set(eq(PlayerProperties.RESTORABLE_PLAYBACK), eq(true));
+
+        mMediator.setPlayerRestorable(false);
+        verify(mModel).set(eq(PlayerProperties.RESTORABLE_PLAYBACK), eq(false));
+    }
+
+    @Test
     public void testPauseClicked() {
         mMediator.setPlayback(mPlayback);
         mMediator.setPlaybackState(PLAYING);
@@ -393,6 +434,7 @@ public class PlayerMediatorUnitTest {
     @Test
     public void testOnPublisherClick() {
         mMediator.onPublisherClick();
+        verify(mPlayerCoordinator).hideExpandedPlayer();
         verify(mDelegate).navigateToPlayingTab();
     }
 
@@ -408,6 +450,18 @@ public class PlayerMediatorUnitTest {
         mMediator.setPlayback(mPlayback);
         mMediator.onSeekBackClick();
         verify(mPlayback).seekRelative(-10 * 1_000_000_000L);
+    }
+
+    @Test
+    public void testBackClickActionRecords() {
+        mMediator.onSeekBackClick();
+        assertThat(mUserActionTester.getActions(), hasItems("ReadAloud.SeekBackward"));
+    }
+
+    @Test
+    public void testForwardClickActionRecords() {
+        mMediator.onSeekForwardClick();
+        assertThat(mUserActionTester.getActions(), hasItems("ReadAloud.SeekForward"));
     }
 
     @Test
@@ -490,6 +544,45 @@ public class PlayerMediatorUnitTest {
         // Should set playback state to initial state
         mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
         assertEquals(mModel.get(PlayerProperties.PLAYBACK_STATE), initialState);
+    }
+
+    @Test
+    public void testScrubbingSeekbarHistogramRecords() {
+        // should record only the duration scrubbed forwards on the seekbar
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.DURATION_SCRUBBING_FORWARDS_SEEKBAR, 20000);
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        mPlaybackData.mState = PLAYING;
+
+        mPlaybackData.mAbsolutePositionNanos = 0L;
+        mPlaybackData.mTotalDurationNanos = 40 * 1_000_000_000L;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
+        mPlaybackData.mAbsolutePositionNanos = 20 * 1_000_000_000L;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
+
+        histogram.assertExpected();
+
+        // should record only the duration scrubbed backwards on the seekbar
+        histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ReadAloudMetrics.DURATION_SCRUBBING_BACKWARDS_SEEKBAR, 20000);
+
+        mPlaybackData.mAbsolutePositionNanos = 40 * 1_000_000_000L;
+        mPlaybackData.mTotalDurationNanos = 40 * 1_000_000_000L;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        mOnSeekBarChangeListener.onStartTrackingTouch(mSeekbar);
+        mPlaybackData.mAbsolutePositionNanos = 20 * 1_000_000_000L;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+        mOnSeekBarChangeListener.onStopTrackingTouch(mSeekbar);
+
+        histogram.assertExpected();
     }
 
     @Test
@@ -616,6 +709,25 @@ public class PlayerMediatorUnitTest {
     public void testShouldRestoreMiniPlayer_null() {
         mMediator.onShouldRestoreMiniPlayer();
         verify(mPlayerCoordinator, never()).restoreMiniPlayer();
+    }
+
+    @Test
+    public void testShouldRestoreMiniPlayer_error() {
+        // Set playback state through playback update, as if the error happened during playback.
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        mPlaybackData.mState = ERROR;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        assertEquals(ERROR, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+
+        // Clear playback.
+        mMediator.setPlayback(null);
+
+        // The mini player should restore.
+        mMediator.onShouldRestoreMiniPlayer();
+        verify(mPlayerCoordinator).restoreMiniPlayer();
     }
 
     @Test

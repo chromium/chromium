@@ -14,9 +14,12 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
+import androidx.activity.ComponentDialog;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.LayoutInflaterUtils;
@@ -63,8 +66,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                 if (model.get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE)) {
                     mDialogContainer.setOnClickListener(
                             (v) -> {
-                                dismissCurrentDialog(
-                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                                dismissCurrentDialog(DialogDismissalCause.TOUCH_OUTSIDE);
                             });
                 } else {
                     mDialogContainer.setOnClickListener(null);
@@ -72,6 +74,15 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
             } else if (ModalDialogProperties.FOCUS_DIALOG == propertyKey) {
                 if (model.get(ModalDialogProperties.FOCUS_DIALOG)) {
                     mFocusDialog = true;
+                }
+            } else if (ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE == propertyKey) {
+                if (model.get(ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE)) {
+                    view.setOnEscapeCallback(
+                            () -> {
+                                dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK);
+                            });
+                } else {
+                    view.setOnEscapeCallback(null);
                 }
             } else {
                 super.bind(model, view, propertyKey);
@@ -115,12 +126,15 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
     }
 
     @Override
-    protected void addDialogView(PropertyModel model) {
+    protected void addDialogView(
+            PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
         if (mDialogContainer == null) mDialogContainer = createDialogContainer();
 
+        model.set(ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE, true);
         int style = R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton;
         int buttonStyles = model.get(ModalDialogProperties.BUTTON_STYLES);
-        if (buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
+        if (buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE
+                || buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE) {
             style = R.style.ThemeOverlay_BrowserUI_ModalDialog_FilledPrimaryButton;
         } else if (buttonStyles
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
@@ -129,6 +143,9 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
         mDialogView = loadDialogView(style);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(model, mDialogView, new ViewBinder());
+        if (onDialogCreatedCallback != null) {
+            onDialogCreatedCallback.onResult(null);
+        }
 
         setBrowserControlsAccess(true);
 

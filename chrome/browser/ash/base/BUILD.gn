@@ -1,0 +1,52 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("base") {
+  sources = [
+    "locale_util.cc",
+    "locale_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/prefs",
+    "//components/translate/core/browser",
+    "//content/public/browser",
+    "//extensions/common",
+    "//ui/base",
+    "//ui/base/ime/ash",
+    "//ui/gfx",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "locale_util_browsertest.cc" ]
+
+  deps = [
+    ":base",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/common",
+  ]
+}

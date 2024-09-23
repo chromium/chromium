@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_metrics.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -186,7 +187,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 @synthesize destinationCustomizationModel = _destinationCustomizationModel;
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _isIncognito = isIncognito;
   }
   return self;
@@ -851,9 +852,26 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
                       true);
   }
 
-  // Iterate over the list of destinations with badges twice, inserting them
-  // into the ranking. First, add items with new badges, then add items with
-  // error badges, so items with error badges appear first.
+  // Iterate over the list of destinations with badges three times, inserting
+  // them into the ranking. First, add items with new badges that aren't feature
+  // driven, then add items with new badges that are feature driven, then add
+  // items with error badges, so the final order is: error badges -> new feature
+  // driven badges -> new items.
+  for (auto& pair : _destinationBadgeData) {
+    if (!remainingDestinations.contains(pair.first)) {
+      continue;
+    }
+
+    if (pair.second.isFeatureDrivenBadge) {
+      continue;
+    }
+
+    if (pair.second.badgeType == BadgeTypeNew ||
+        pair.second.badgeType == BadgeTypePromo) {
+      InsertDestination(pair.first, remainingDestinations,
+                        newDestinationRanking, false);
+    }
+  }
   for (auto& pair : _destinationBadgeData) {
     if (!remainingDestinations.contains(pair.first)) {
       continue;

@@ -16,7 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 class PrefRegistrySimple;
@@ -143,8 +143,8 @@ class StatusCollector {
 
   // Task runner in the creation thread where responses are sent to.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  // TODO(crbug.com/827386): check if it is possible to use the SequenceChecker
-  // instead.
+  // TODO(crbug.com/40569404): check if it is possible to use the
+  // SequenceChecker instead.
   base::ThreadChecker thread_checker_;
 };
 

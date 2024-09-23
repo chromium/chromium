@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
+#include "third_party/blink/renderer/core/svg/svg_path_element.h"
 
 namespace blink {
 
@@ -125,15 +126,6 @@ void LayoutSVGPath::UpdateMarkerPositions() {
   }
   SVGElementResourceClient* client = SVGResources::GetClient(*this);
   if (!client) {
-    return;
-  }
-  auto* marker_start = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, style.MarkerStartResource());
-  auto* marker_mid = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, style.MarkerMidResource());
-  auto* marker_end = GetSVGResourceAsType<LayoutSVGResourceMarker>(
-      *client, style.MarkerEndResource());
-  if (!(marker_start || marker_mid || marker_end)) {
     return;
   }
   SVGMarkerDataBuilder builder(marker_positions_);

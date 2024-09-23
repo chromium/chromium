@@ -17,8 +17,12 @@
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "media/base/simple_sync_token_client.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
@@ -75,15 +79,15 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
     if (!sii) {
       return nullptr;
     }
     auto client_shared_image = sii->CreateSharedImage(
-        si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
-        alpha_type, usage, "WebRTCVideoFramePool",
+        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+         alpha_type, usage, "WebRTCVideoFramePool"},
         gpu_memory_buffer->CloneHandle());
     CHECK(client_shared_image);
     sync_token = sii->GenVerifiedSyncToken();
@@ -91,31 +95,44 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      gfx::BufferPlane plane,
+      const gfx::Size& size,
+      gfx::BufferUsage buffer_usage,
+      const viz::SharedImageFormat& si_format,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
-    if (!sii)
+    if (!sii) {
       return nullptr;
-    auto client_shared_image = sii->CreateSharedImage(
-        gpu_memory_buffer, GpuMemoryBufferManager(), plane, color_space,
-        surface_origin, alpha_type, usage, "WebRTCVideoFramePool");
-    CHECK(client_shared_image);
+    }
+    auto client_shared_image =
+        sii->CreateSharedImage({si_format, size, color_space, surface_origin,
+                                alpha_type, usage, "WebRTCVideoFramePool"},
+                               gpu::kNullSurfaceHandle, buffer_usage);
+    if (!client_shared_image) {
+      return nullptr;
+    }
+#if BUILDFLAG(IS_MAC)
+    client_shared_image->SetColorSpaceOnNativeBuffer(color_space);
+#endif
     sync_token = sii->GenVerifiedSyncToken();
     return client_shared_image;
   }
 
-  void DestroySharedImage(
-      const gpu::SyncToken& sync_token,
-      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
+  void DestroySharedImage(const gpu::SyncToken& sync_token,
+                          scoped_refptr<gpu::ClientSharedImage> shared_image,
+                          const bool is_mappable_si_enabled) override {
     auto* sii = SharedImageInterface();
     if (!sii)
       return;
-    sii->DestroySharedImage(sync_token, std::move(shared_image));
+    CHECK(shared_image);
+    if (is_mappable_si_enabled) {
+      shared_image->UpdateDestructionSyncToken(sync_token);
+    } else {
+      sii->DestroySharedImage(sync_token, std::move(shared_image));
+    }
   }
 
  private:
@@ -129,8 +146,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return manager;
   }
 
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 };
 
@@ -193,13 +209,29 @@ bool CanUseGpuMemoryBufferReadback(
   // Since ConvertToWebRtcVideoFrameBuffer will always produce an opaque frame
   // (unless the input is already I420A), we allow using GMB readback from
   // ABGR/ARGB to NV12.
-  return gpu_factories &&
-         (format == media::PIXEL_FORMAT_XBGR ||
-          format == media::PIXEL_FORMAT_XRGB ||
-          format == media::PIXEL_FORMAT_ABGR ||
-          format == media::PIXEL_FORMAT_ARGB) &&
-         WebGraphicsContext3DVideoFramePool::
-             IsGpuMemoryBufferReadbackFromTextureEnabled();
+  if (format != media::PIXEL_FORMAT_XBGR &&
+      format != media::PIXEL_FORMAT_XRGB &&
+      format != media::PIXEL_FORMAT_ABGR &&
+      format != media::PIXEL_FORMAT_ARGB) {
+    return false;
+  }
+  if (!gpu_factories) {
+    return false;
+  }
+  if (!gpu_factories->SharedImageInterface()) {
+    return false;
+  }
+#if BUILDFLAG(IS_WIN)
+  // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
+  if (!gpu_factories->SharedImageInterface()
+           ->GetCapabilities()
+           .shared_image_d3d) {
+    DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";
+    return false;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  return WebGraphicsContext3DVideoFramePool::
+      IsGpuMemoryBufferReadbackFromTextureEnabled();
 }
 
 scoped_refptr<media::VideoFrame>
@@ -246,6 +278,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     }
 
     if (dst_frame) {
+      CHECK(dst_frame->HasTextures());
       const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
           raster_context_provider.get(), format, source_frame->coded_size(),
           source_frame->ColorSpace(), origin, source_frame->mailbox_holder(0),
@@ -267,11 +300,40 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         dst_frame->set_timestamp(source_frame->timestamp());
         dst_frame->set_metadata(source_frame->metadata());
 
+        auto* ri = raster_context_provider->RasterInterface();
+        DCHECK(ri);
+
+#if BUILDFLAG(IS_WIN)
+        // For shared memory GMBs on Windows we needed to explicitly request a
+        // copy from the shared image GPU texture to the GMB.
+        CHECK(dst_frame->HasMappableGpuBuffer());
+        CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
+        gpu::SyncToken blit_done_sync_token;
+        ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
+
+        auto* sii = raster_context_provider->SharedImageInterface();
+
+        const auto& mailbox = dst_frame->mailbox_holder(/*plane=*/0).mailbox;
+        sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
+
+        // Synchronize RasterInterface with SharedImageInterface.
+        auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
+        ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
+#endif  // BUILDFLAG(IS_WIN)
+
         // RI::Finish() makes sure that CopyRGBATextureToVideoFrame() finished
         // texture copy before we call ConstructVideoFrameFromGpu(). It's not
         // the best way to wait for completion, but it's the only sync way
         // to wait, and making this function async is currently impractical.
-        raster_context_provider->RasterInterface()->Finish();
+        ri->Finish();
+
+        // We can just clear the sync token from the video frame now that we've
+        // synchronized with the GPU.
+        gpu::SyncToken empty_sync_token;
+        media::SimpleSyncTokenClient simple_client(empty_sync_token);
+        dst_frame->UpdateMailboxHolderSyncToken(&simple_client);
+        dst_frame->UpdateReleaseSyncToken(&simple_client);
+
         auto vf = ConstructVideoFrameFromGpu(std::move(dst_frame));
         return vf;
       }
@@ -283,15 +345,13 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
   }
 
   auto* ri = scoped_context.RasterInterface();
-  auto* gr_context = raster_context_provider->GrContext();
-
   if (!ri) {
     return nullptr;
   }
 
   return media::ReadbackTextureBackedFrameToMemorySync(
-      *source_frame, ri, gr_context,
-      raster_context_provider->ContextCapabilities(), &pool_for_mapped_frames_);
+      *source_frame, ri, raster_context_provider->ContextCapabilities(),
+      &pool_for_mapped_frames_);
 }
 
 scoped_refptr<media::VideoFrame>
@@ -400,6 +460,11 @@ WebRtcVideoFrameAdapter::ScaledBuffer::CropAndScale(int offset_x,
           parent_,
           size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
                              scaled_width, scaled_height)));
+}
+
+std::string WebRtcVideoFrameAdapter::ScaledBuffer::storage_representation()
+    const {
+  return "ScaledBuffer(" + parent_->storage_representation() + ")";
 }
 
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
@@ -533,6 +598,13 @@ WebRtcVideoFrameAdapter::GetAdaptedVideoBufferForTesting(
       return adapted_frame.video_frame;
   }
   return nullptr;
+}
+
+std::string WebRtcVideoFrameAdapter::storage_representation() const {
+  std::string result = media::VideoPixelFormatToString(frame_->format());
+  result.append(" ");
+  result.append(media::VideoFrame::StorageTypeToString(frame_->storage_type()));
+  return result;
 }
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/animation/interpolable_dynamic_range_limit.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 

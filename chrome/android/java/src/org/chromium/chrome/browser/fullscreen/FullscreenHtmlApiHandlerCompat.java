@@ -156,7 +156,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         getWindowInsetsController().hide(WindowInsetsCompat.Type.navigationBars());
     }
 
-    // TODO(crbug.com/1519669): Coordinate usage of #setDecorFitsSystemWindows
+    // TODO(crbug.com/41492646): Coordinate usage of #setDecorFitsSystemWindows
     @Override
     void setLayoutFullscreen(View contentView) {
         // Avoid setting this on automotive, as automotive devices are inconsistent in their
@@ -164,14 +164,14 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         if (BuildInfo.getInstance().isAutomotive) {
             return;
         }
-        // TODO(https://crbug.com/1519954): Account for floating windows.
+        // TODO(crbug.com/41492929): Account for floating windows.
         WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), false);
     }
 
-    // TODO(crbug.com/1519669): Coordinate usage of #setDecorFitsSystemWindows
+    // TODO(crbug.com/41492646): Coordinate usage of #setDecorFitsSystemWindows
     @Override
     void unsetLayoutFullscreen(View contentView) {
-        // TODO(https://crbug.com/1519954): Account for floating windows.
+        // TODO(crbug.com/41492929): Account for floating windows.
         WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), true);
     }
 

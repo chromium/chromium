@@ -1,5 +1,5 @@
 battre@chromium.org
+kelvinjiang@chromium.org
 
 # WebRequest + Network Service glue.
 per-file web_request_proxying*=cduvall@chromium.org
-per-file web_request_proxying*=jam@chromium.org

@@ -31,7 +31,7 @@ bool PredictionModelExecutor::Preprocess(
       request_type_ = RequestType::kGeolocation;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (!tflite::task::core::PopulateTensor<float>(

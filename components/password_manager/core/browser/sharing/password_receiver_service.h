@@ -10,7 +10,7 @@
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace syncer {
@@ -32,7 +32,7 @@ class PasswordReceiverService : public KeyedService {
       sync_pb::IncomingPasswordSharingInvitationSpecifics invitation) = 0;
 
   // Used to wire sync data type.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 
   virtual void OnSyncServiceInitialized(syncer::SyncService* service) = 0;

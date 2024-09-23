@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace base {
 
@@ -18,7 +18,7 @@ std::string SysWideToUTF8(const std::wstring& wide) {
 }
 
 // Do not assert in this function since it is used by the asssertion code!
-std::wstring SysUTF8ToWide(StringPiece utf8) {
+std::wstring SysUTF8ToWide(std::string_view utf8) {
   return SysMultiByteToWide(utf8, CP_UTF8);
 }
 
@@ -26,12 +26,12 @@ std::string SysWideToNativeMB(const std::wstring& wide) {
   return SysWideToMultiByte(wide, CP_ACP);
 }
 
-std::wstring SysNativeMBToWide(StringPiece native_mb) {
+std::wstring SysNativeMBToWide(std::string_view native_mb) {
   return SysMultiByteToWide(native_mb, CP_ACP);
 }
 
 // Do not assert in this function since it is used by the asssertion code!
-std::wstring SysMultiByteToWide(StringPiece mb, uint32_t code_page) {
+std::wstring SysMultiByteToWide(std::string_view mb, uint32_t code_page) {
   if (mb.empty())
     return std::wstring();
 

@@ -1,7 +1,7 @@
 # Defines the configuration of siso (next-gen build system)
 
 declare_args() {
-  # Placeholder to allow having use_siso in args.gn files and to disable
-  # precompiled headers in siso builds.
+  # Placeholder to allow having use_siso in args.gn file.
+  # autoninja switches from Ninja to Siso when use_siso=true.
   use_siso = false
 }

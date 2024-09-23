@@ -11,8 +11,9 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_process.h"
-#include "android_webview/browser_jni_headers/AwBrowserContextStore_jni.h"
+#include "android_webview/common/aw_features.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -26,6 +27,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwBrowserContextStore_jni.h"
 
 namespace android_webview {
 
@@ -35,6 +40,10 @@ constexpr char kProfileNameKey[] = "name";
 constexpr char kProfilePathKey[] = "path";
 
 bool g_initialized = false;
+
+const base::FeatureParam<bool> kCreateSpareRendererForDefaultIfMultiProfile{
+    &features::kCreateSpareRendererOnBrowserContextCreation,
+    "create_spare_renderer_for_default_if_multi_profile", true};
 
 }  // namespace
 
@@ -101,6 +110,16 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
     const bool is_default = name == kDefaultContextName;
     entry->instance =
         std::make_unique<AwBrowserContext>(name, entry->path, is_default);
+    // Ensure this code path is only taken if the IO thread is already running,
+    // as it's needed for launching processes.
+    if (base::FeatureList::IsEnabled(
+            features::kCreateSpareRendererOnBrowserContextCreation) &&
+        content::BrowserThread::IsThreadInitialized(
+            content::BrowserThread::IO) &&
+        (!is_default || kCreateSpareRendererForDefaultIfMultiProfile.Get())) {
+      content::RenderProcessHost::WarmupSpareRenderProcessHost(
+          entry->instance.get());
+    }
   }
   return entry->instance.get();
 }
@@ -128,14 +147,14 @@ AwBrowserContextStore::DeletionResult AwBrowserContextStore::Delete(
       const std::string* cur_path = dict.FindString(kProfilePathKey);
       CHECK(cur_path);
       CHECK_EQ(*cur_path, entry->path.value());
-      // TODO(crbug.com/1446913): Make this async and backgroundable.
+      // TODO(crbug.com/40268809): Make this async and backgroundable.
       AwBrowserContext::DeleteContext(entry->path);
       profiles.erase(profile_it);
       contexts_.erase(context_it);
       return DeletionResult::kDeleted;
     }
   }
-  NOTREACHED_NORETURN() << "Profile exists in memory but not in prefs";
+  NOTREACHED() << "Profile exists in memory but not in prefs";
 }
 
 base::FilePath AwBrowserContextStore::GetRelativePathForTesting(

@@ -30,3 +30,4 @@ supported_on:
 - chrome_os:73-100
 tags: []
 type: int-enum
+generate_device_proto: False

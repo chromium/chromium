@@ -1,0 +1,118 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("crd") {
+  sources = [
+    "crd_admin_session_controller.cc",
+    "crd_admin_session_controller.h",
+    "crd_logging.h",
+    "crd_oauth_token_fetcher.cc",
+    "crd_oauth_token_fetcher.h",
+    "crd_remote_command_utils.cc",
+    "crd_remote_command_utils.h",
+    "crd_session_observer.h",
+    "crd_support_host_observer_proxy.cc",
+    "crd_support_host_observer_proxy.h",
+    "crd_uma_logger.cc",
+    "crd_uma_logger.h",
+    "device_command_fetch_crd_availability_info_job.cc",
+    "device_command_fetch_crd_availability_info_job.h",
+    "device_command_start_crd_session_job.cc",
+    "device_command_start_crd_session_job.h",
+    "remote_activity_notification_controller.cc",
+    "remote_activity_notification_controller.h",
+    "start_crd_session_job_delegate.cc",
+    "start_crd_session_job_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/common:constants",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//components/policy/core/common",
+    "//components/policy/proto:",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//remoting/host:common",
+    "//remoting/host:enterprise_params",
+    "//remoting/host/chromeos:features",
+    "//remoting/host/chromeos:remoting_service",
+    "//remoting/host/mojom",
+    "//remoting/protocol:errors",
+    "//ui/base",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_start_crd_session_job_delegate.cc",
+    "fake_start_crd_session_job_delegate.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/policy/remote_commands/crd",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "crd_admin_session_controller_unittest.cc",
+    "device_command_fetch_crd_availability_info_job_unittest.cc",
+    "device_command_start_crd_session_job_unittest.cc",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode/web_app",
+    "//chrome/browser/ash/policy/remote_commands:test_support",
+    "//chrome/browser/ash/policy/remote_commands/crd",
+    "//chrome/browser/ash/policy/remote_commands/crd:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ui/ash/login:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/policy/proto:",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//remoting/host/chromeos:features",
+    "//remoting/host/mojom",
+    "//remoting/protocol:errors",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

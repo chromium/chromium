@@ -19,9 +19,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
@@ -314,9 +316,9 @@ TEST_F(LocalStorageImplTest, Basic) {
 
   RunUntilIdle();
 
-  // Should have three rows of data, one for the version, one for the actual
-  // data and one for metadata.
-  EXPECT_EQ(3u, GetDatabaseContents().size());
+  // Should have four rows of data, one for the version, one for the actual
+  // data and two for metadata.
+  EXPECT_EQ(4u, GetDatabaseContents().size());
 }
 
 TEST_F(LocalStorageImplTest, StorageKeysAreIndependent) {
@@ -339,7 +341,7 @@ TEST_F(LocalStorageImplTest, StorageKeysAreIndependent) {
   area.reset();
 
   RunUntilIdle();
-  EXPECT_EQ(5u, GetDatabaseContents().size());
+  EXPECT_EQ(7u, GetDatabaseContents().size());
 }
 
 TEST_F(LocalStorageImplTest, WrapperOutlivesMojoConnection) {
@@ -480,6 +482,94 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
   EXPECT_GT(info[0]->total_size_bytes, info[1]->total_size_bytes);
 }
 
+TEST_F(LocalStorageImplTest, CheckAccessMetaData) {
+  base::Time before_metadata = base::Time::Now();
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foo.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://bar.com");
+  blink::StorageKey storage_key3 =
+      blink::StorageKey::CreateFromStringForTesting("http://qux.com");
+  mojo::Remote<blink::mojom::StorageArea> area;
+
+  // storage_key1 has no content in its area.
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
+  area.reset();
+  RunUntilIdle();
+
+  // storage_key2 has content in its area.
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  RunUntilIdle();
+
+  // storage_key3 has content in its area but is purged on shutdown.
+  context()->BindStorageArea(storage_key3, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  std::vector<mojom::StoragePolicyUpdatePtr> updates;
+  updates.emplace_back(mojom::StoragePolicyUpdate::New(
+      storage_key3.origin(), /*purge_on_shutdown=*/true));
+  context()->ApplyPolicyUpdates(std::move(updates));
+  RunUntilIdle();
+
+  // After shutdown, we should just see data for storage_key2.
+  ResetStorage(storage_path());
+  RunUntilIdle();
+  base::Time after_metadata = base::Time::Now();
+  auto contents = GetDatabaseContents();
+  EXPECT_EQ(4u, contents.size());
+  bool did_see_access_metadata = false;
+  for (const auto& entry : contents) {
+    if (entry.first.find("ACCESS") != std::string::npos &&
+        entry.first.find(storage_key2.origin().Serialize()) !=
+            std::string::npos) {
+      storage::LocalStorageAreaAccessMetaData metadata;
+      if (metadata.ParseFromArray(entry.second.data(), entry.second.size())) {
+        base::Time last_accessed =
+            base::Time::FromInternalValue(metadata.last_accessed());
+        EXPECT_LE(before_metadata, last_accessed);
+        EXPECT_GE(after_metadata, last_accessed);
+        did_see_access_metadata = true;
+      }
+    }
+  }
+  EXPECT_TRUE(did_see_access_metadata);
+
+  // If we re-bind storage_key2 and then shutdown, the last_accessed time should
+  // be updated.
+  before_metadata = base::Time::Now();
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
+  mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
+  std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
+  area->GetAll(std::move(unused_observer), base::DoNothing());
+  area.reset();
+  RunUntilIdle();
+  ResetStorage(storage_path());
+  RunUntilIdle();
+  after_metadata = base::Time::Now();
+  contents = GetDatabaseContents();
+  EXPECT_EQ(4u, contents.size());
+  did_see_access_metadata = false;
+  for (const auto& entry : contents) {
+    if (entry.first.find("ACCESS") != std::string::npos &&
+        entry.first.find(storage_key2.origin().Serialize()) !=
+            std::string::npos) {
+      storage::LocalStorageAreaAccessMetaData metadata;
+      if (metadata.ParseFromArray(entry.second.data(), entry.second.size())) {
+        base::Time last_accessed =
+            base::Time::FromInternalValue(metadata.last_accessed());
+        EXPECT_LE(before_metadata, last_accessed);
+        EXPECT_GE(after_metadata, last_accessed);
+        did_see_access_metadata = true;
+      }
+    }
+  }
+  EXPECT_TRUE(did_see_access_metadata);
+}
+
 TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -506,7 +596,7 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -544,7 +634,7 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDeleteAll) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -596,7 +686,7 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithoutConnection) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -644,7 +734,7 @@ TEST_F(LocalStorageImplTest, DeleteStorageNotifiesWrapper) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -696,7 +786,7 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -753,7 +843,7 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
   // of storage_key1, which is set to purge on shutdown.
   ResetStorage(storage_path());
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -1132,6 +1222,303 @@ TEST_F(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   // Should still be connected after all that.
   RunUntilIdle();
   EXPECT_TRUE(area.is_connected());
+}
+
+class LocalStorageImplStaleDeletionTest
+    : public LocalStorageImplTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  LocalStorageImplStaleDeletionTest() {
+    feature_list_.InitWithFeatureStates(
+        {{kDeleteStaleLocalStorageOnStartup,
+          ShouldDeleteStaleLocalStorageOnStartup()},
+         {kDeleteOrphanLocalStorageOnStartup,
+          ShouldDeleteOrphanLocalStorageOnStartup()}});
+  }
+
+  bool ShouldDeleteStaleLocalStorageOnStartup() {
+    return std::get<0>(GetParam());
+  }
+
+  bool ShouldDeleteOrphanLocalStorageOnStartup() {
+    return std::get<1>(GetParam());
+  }
+
+  void UpdateAccessMetaData(const blink::StorageKey& storage_key,
+                            const base::Time& last_accessed) {
+    storage::LocalStorageAreaAccessMetaData data;
+    data.set_last_accessed(last_accessed.ToInternalValue());
+    SetDatabaseEntry("METAACCESS:" + storage_key.SerializeForLocalStorage(),
+                     data.SerializeAsString());
+  }
+
+  void UpdateWriteMetaData(const blink::StorageKey& storage_key,
+                           const base::Time& last_modified,
+                           uint64_t size_bytes) {
+    storage::LocalStorageAreaWriteMetaData data;
+    data.set_last_modified(last_modified.ToInternalValue());
+    data.set_size_bytes(size_bytes);
+    SetDatabaseEntry("META:" + storage_key.SerializeForLocalStorage(),
+                     data.SerializeAsString());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    LocalStorageImplStaleDeletionTest,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_P(LocalStorageImplStaleDeletionTest, StaleStorageAreaDeletion) {
+  const auto storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foo.com");
+  const auto storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://bar.com");
+  const auto storage_key3 =
+      blink::StorageKey::CreateFromStringForTesting("http://baz.com");
+  const auto storage_key4 =
+      blink::StorageKey::CreateFromStringForTesting("http://qux.com");
+  const auto storage_key5 =
+      blink::StorageKey::CreateFromStringForTesting("http://cor.com");
+  mojo::Remote<blink::mojom::StorageArea> area;
+
+  // Load data into all storage areas.
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  context()->BindStorageArea(storage_key3, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  context()->BindStorageArea(storage_key4, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  context()->BindStorageArea(storage_key5, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  RunUntilIdle();
+  auto contents = GetDatabaseContents();
+  EXPECT_EQ(16u, contents.size());
+
+  // Backdate metadata accessed and modified times so that storage_key3 and
+  // storage_key4 should be purged, while storage_key1 and storage_key2 should
+  // not. storage_key5 is left alone to test the default codepath.
+  UpdateAccessMetaData(storage_key1, base::Time::Now() - base::Days(401));
+  UpdateWriteMetaData(storage_key2, base::Time::Now() - base::Days(401), 0);
+  UpdateAccessMetaData(storage_key3, base::Time::Now() - base::Days(401));
+  UpdateWriteMetaData(storage_key3, base::Time::Now() - base::Days(401), 0);
+  UpdateAccessMetaData(storage_key4, base::Time::Now() - base::Days(401));
+  UpdateWriteMetaData(storage_key4, base::Time::Now() - base::Days(401), 0);
+  RunUntilIdle();
+
+  // Restart local storage, force bind area for storage_key3, and trigger stale
+  // storage area purging.
+  ResetStorage(storage_path());
+  context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+  context()->ForceFakeOpenStorageAreaForTesting(storage_key3);
+  WaitForDatabaseOpen();
+  RunUntilIdle();
+
+  // We should see that only the data for storage_key4 was cleared.
+  contents = GetDatabaseContents();
+  if (ShouldDeleteStaleLocalStorageOnStartup()) {
+    EXPECT_EQ(13u, contents.size());
+    for (const auto& entry : contents) {
+      EXPECT_EQ(entry.first.find(storage_key4.origin().Serialize()),
+                std::string::npos);
+    }
+  } else {
+    EXPECT_EQ(16u, contents.size());
+  }
+}
+
+TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
+  // Nothing should be orphaned initially.
+  mojo::Remote<blink::mojom::StorageArea> area;
+  {
+    base::HistogramTester histograms;
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+  }
+
+  // First party bucket doesn't qualify, even if it's old.
+  const auto first_party_key =
+      blink::StorageKey::CreateFromStringForTesting("http://firstparty/");
+  context()->BindStorageArea(first_party_key,
+                             area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.FlushForTesting();
+  area.reset();
+  RunUntilIdle();
+  {
+    base::HistogramTester histograms;
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(4u, GetDatabaseContents().size());
+
+    UpdateAccessMetaData(first_party_key, base::Time::Now() - base::Days(2));
+    UpdateWriteMetaData(first_party_key, base::Time::Now() - base::Days(2), 0);
+    context()->FlushStorageKeyForTesting(first_party_key);
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(4u, GetDatabaseContents().size());
+  }
+
+  // First party nonce bucket does qualify, but only if it's old.
+  const auto first_party_nonce_key = blink::StorageKey::CreateWithNonce(
+      url::Origin::Create(GURL("http://firstpartynonce/")),
+      base::UnguessableToken::Create());
+  context()->BindStorageArea(first_party_nonce_key,
+                             area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.FlushForTesting();
+  area.reset();
+  RunUntilIdle();
+  {
+    base::HistogramTester histograms;
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ(7u, GetDatabaseContents().size());
+
+    UpdateAccessMetaData(first_party_nonce_key,
+                         base::Time::Now() - base::Days(2));
+    UpdateWriteMetaData(first_party_nonce_key,
+                        base::Time::Now() - base::Days(2), 0);
+    context()->FlushStorageKeyForTesting(first_party_nonce_key);
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 1
+                  : 0,
+              histograms.GetTotalSum(
+                  "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 4u
+                  : 7u,
+              GetDatabaseContents().size());
+  }
+
+  // Third party bucket doesn't qualify, even if it's old.
+  const auto third_party_key = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://thirdparty/")),
+      net::SchemefulSite(GURL("https://thirdparty2/")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  context()->BindStorageArea(third_party_key,
+                             area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.FlushForTesting();
+  area.reset();
+  RunUntilIdle();
+  {
+    base::HistogramTester histograms;
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 7u
+                  : 10u,
+              GetDatabaseContents().size());
+
+    UpdateAccessMetaData(third_party_key, base::Time::Now() - base::Days(2));
+    UpdateWriteMetaData(third_party_key, base::Time::Now() - base::Days(2), 0);
+    context()->FlushStorageKeyForTesting(third_party_key);
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 7u
+                  : 10u,
+              GetDatabaseContents().size());
+  }
+
+  // Third party nonce bucket does qualify, but only if it's old.
+  const auto third_party_nonce_key = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://thirdparty/")),
+      net::SchemefulSite(url::Origin::Create(GURL("http://thirdparty2/"))
+                             .DeriveNewOpaqueOrigin()),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  context()->BindStorageArea(third_party_nonce_key,
+                             area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.FlushForTesting();
+  area.reset();
+  RunUntilIdle();
+  {
+    base::HistogramTester histograms;
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ(0, histograms.GetTotalSum(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 10u
+                  : 13u,
+              GetDatabaseContents().size());
+
+    UpdateAccessMetaData(third_party_nonce_key,
+                         base::Time::Now() - base::Days(2));
+    UpdateWriteMetaData(third_party_nonce_key,
+                        base::Time::Now() - base::Days(2), 0);
+    context()->FlushStorageKeyForTesting(third_party_nonce_key);
+    ResetStorage(storage_path());
+    context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
+    WaitForDatabaseOpen();
+    RunUntilIdle();
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 1
+                  : 0,
+              histograms.GetTotalSum(
+                  "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_EQ((ShouldDeleteStaleLocalStorageOnStartup() &&
+               ShouldDeleteOrphanLocalStorageOnStartup())
+                  ? 7u
+                  : 13u,
+              GetDatabaseContents().size());
+  }
 }
 
 }  // namespace storage

@@ -1,0 +1,83 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_icon/cr_icon.js
+ * #import=./cr_radio_button_style_lit.css.js
+ * #import=../cr_shared_vars.css.js
+ * #import=../icons_lit.html.js
+ * #scheme=relative
+ * #include=cr-radio-button-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  background-color: var(--cr-card-background-color);
+  border-radius: 8px;
+  box-shadow: var(--cr-elevation-1);
+  margin: var(--cr-card-radio-button-margin, 8px);
+  width: var(--cr-card-radio-button-width, 200px);
+  --focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
+  --hover-bg-color: rgba(var(--google-blue-500-rgb), .04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --focus-shadow-color: rgba(var(--google-blue-300-rgb), .5);
+    --hover-bg-color: rgba(var(--google-blue-300-rgb), .08);
+  }
+}
+
+/* Overwrite paper-ripple defined in cr-radio-button-style-lit
+ * to ensure it extends to the entire button. */
+.disc-wrapper,
+#ink {
+  border-radius: inherit; /* Defined in :host above. */
+}
+
+#ink {
+  height: var(--paper-ripple-height);
+  /* Fallback to 0 to match the values in paper-ripple.html. Falls back
+   * to auto without this. */
+  left: var(--paper-ripple-left, 0);
+  top: var(--paper-ripple-top, 0);
+  width: var(--paper-ripple-width);
+}
+
+#button {
+  height: var(--cr-card-radio-button-height, auto);
+  padding: var(--cr-card-radio-button-padding, 24px);
+  position: relative;
+  width: 100%;
+}
+
+:host-context(.focus-outline-visible) #button:focus {
+  box-shadow: 0 0 0 2px var(--focus-shadow-color);
+}
+
+#button:hover {
+  background-color: var(--hover-bg-color);
+}
+
+#checkMark {
+  fill: var(--cr-checked-color);
+  left: var(--cr-card-radio-button-checkmark-left, auto);
+  position: absolute;
+  right: var(--cr-card-radio-button-checkmark-right, var(--cr-button-edge-spacing));
+  top: var(--cr-card-radio-button-checkmark-top, var(--cr-button-edge-spacing));
+}
+
+:host-context([dir=rtl]) #checkMark {
+  left: var(--cr-card-radio-button-checkmark-right,
+            var(--cr-button-edge-spacing));
+  right: var(--cr-card-radio-button-checkmark-left, auto);
+}
+
+:host(:not([checked])) #checkMark {
+  display: none;
+}
+
+#slottedContent {
+  padding: var(--cr-card-radio-button-slotted-content-padding);
+}

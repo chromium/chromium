@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] expand float32 0D scalar to 1D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 0D scalar to 2D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 0D scalar to 3D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 0D scalar to 4D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 0D scalar to 5D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 1D constant tensor to 1D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 1D tensor to 2D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 1D tensor to 3D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 1D tensor to 4D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 1D tensor to 5D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 2D tensor to 3D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual 4.96484375 should be close enough to expected 4.965915679931641 by the acceptable 0 ULP distance, but they have 2248 ULP distance expected true got false
+[FAIL] expand float32 2D tensor to 4D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual 10.8984375 should be close enough to expected 10.898762702941895 by the acceptable 0 ULP distance, but they have 341 ULP distance expected true got false
+[FAIL] expand float32 2D tensor to 5D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual -6.4609375 should be close enough to expected -6.461850643157959 by the acceptable 0 ULP distance, but they have 1915 ULP distance expected true got false
+[FAIL] expand float32 3D tensor to 4D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual 21.6875 should be close enough to expected 21.694129943847656 by the acceptable 0 ULP distance, but they have 3476 ULP distance expected true got false
+[FAIL] expand float32 3D tensor to 5D
+  assert_true: assert_array_approx_equals_ulp: test expand float32 actual 21.6875 should be close enough to expected 21.694129943847656 by the acceptable 0 ULP distance, but they have 3476 ULP distance expected true got false
+Harness: the test ran to completion.
+

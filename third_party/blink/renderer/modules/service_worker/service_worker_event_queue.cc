@@ -253,8 +253,8 @@ void ServiceWorkerEventQueue::SetIdleDelay(base::TimeDelta idle_delay) {
   idle_callback_handle_.Cancel();
 
   // Calculate the updated time of when the |idle_callback_| should be invoked.
-  DCHECK(!last_no_inflight_event_.is_null());
-  auto new_idle_callback_time = last_no_inflight_event_ + idle_delay;
+  DCHECK(!last_no_inflight_event_time_.is_null());
+  auto new_idle_callback_time = last_no_inflight_event_time_ + idle_delay;
   base::TimeDelta delta_until_idle =
       new_idle_callback_time - tick_clock_->NowTicks();
 
@@ -352,7 +352,7 @@ void ServiceWorkerEventQueue::OnNoInflightEvent() {
     ProcessEvents();
     return;
   }
-  last_no_inflight_event_ = tick_clock_->NowTicks();
+  last_no_inflight_event_time_ = tick_clock_->NowTicks();
   ScheduleIdleCallback(idle_delay_);
 }
 
@@ -365,7 +365,7 @@ bool ServiceWorkerEventQueue::HasInflightEvent() const {
 }
 
 void ServiceWorkerEventQueue::ResetIdleTimeout() {
-  last_no_inflight_event_ = base::TimeTicks();
+  last_no_inflight_event_time_ = base::TimeTicks();
   idle_callback_handle_.Cancel();
   did_idle_timeout_ = false;
 }

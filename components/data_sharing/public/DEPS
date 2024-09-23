@@ -1,4 +1,0 @@
-include_rules = [
-  "+net/android",
-  "+net/traffic_annotation",
-]

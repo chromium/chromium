@@ -1,0 +1,111 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("tracing") {
+  sources = [
+    "arc_app_performance_tracing.cc",
+    "arc_app_performance_tracing.h",
+    "arc_app_performance_tracing_session.cc",
+    "arc_app_performance_tracing_session.h",
+    "arc_cpu_event.cc",
+    "arc_cpu_event.h",
+    "arc_graphics_jank_detector.cc",
+    "arc_graphics_jank_detector.h",
+    "arc_system_model.cc",
+    "arc_system_model.h",
+    "arc_system_stat_collector.cc",
+    "arc_system_stat_collector.h",
+    "arc_tracing_bridge.cc",
+    "arc_tracing_bridge.h",
+    "arc_tracing_event.cc",
+    "arc_tracing_event.h",
+    "arc_tracing_event_matcher.cc",
+    "arc_tracing_event_matcher.h",
+    "arc_tracing_graphics_model.cc",
+    "arc_tracing_graphics_model.h",
+    "arc_tracing_model.cc",
+    "arc_tracing_model.h",
+    "arc_value_event.cc",
+    "arc_value_event.h",
+    "arc_value_event_trimmer.cc",
+    "arc_value_event_trimmer.h",
+    "overview_tracing_handler.cc",
+    "overview_tracing_handler.h",
+    "present_frames_tracer.cc",
+    "present_frames_tracer.h",
+    "uma_perf_reporting.cc",
+    "uma_perf_reporting.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:factories",
+    "//components/app_restore",
+    "//components/exo",
+    "//components/keyed_service/core",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//content/public/browser",
+    "//mojo/public/cpp/system",
+    "//services/tracing/public/cpp",
+    "//services/tracing/public/mojom",
+    "//ui/aura",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/wm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_app_performance_tracing_unittest.cc",
+    "arc_cpu_event_unittest.cc",
+    "arc_graphics_jank_detector_unittest.cc",
+    "arc_system_model_unittest.cc",
+    "arc_system_stat_collector_unittest.cc",
+    "arc_tracing_bridge_unittest.cc",
+    "arc_tracing_event_matcher_unittest.cc",
+    "arc_tracing_graphics_model_unittest.cc",
+    "arc_tracing_model_unittest.cc",
+    "arc_value_event_unittest.cc",
+    "overview_tracing_handler_unittest.cc",
+  ]
+
+  deps = [
+    ":tracing",
+    "//ash",
+    "//ash:test_support",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/arc/tracing/test:test_support",
+    "//chrome/browser/ash/arc/window_predictor",
+    "//chrome/browser/sync",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//components/app_restore",
+    "//components/exo",
+    "//components/sync:test_support",
+    "//testing/gtest",
+    "//ui/display:test_support",
+  ]
+}

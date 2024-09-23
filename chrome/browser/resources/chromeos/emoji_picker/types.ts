@@ -62,6 +62,11 @@ export interface EmojiVariants {
   groupedGender?: boolean;
 }
 
+export interface EmojiHistoryItem extends EmojiVariants {
+  // Timestamp is in milliseconds since unix epoch.
+  timestamp?: number;
+}
+
 export interface EmojiGroup {
   category: CategoryEnum;
   group: string;
@@ -73,8 +78,9 @@ export type EmojiGroupData = EmojiGroup[];
 
 export interface VisualContent {
   id: string;
-  url: {full: Url, preview: Url};
+  url: {full: Url, preview: Url, previewImage: Url};
   previewSize: Size;
+  // `fullSize` is currently unused by Emoji Picker.
 }
 
 export interface SubcategoryData {

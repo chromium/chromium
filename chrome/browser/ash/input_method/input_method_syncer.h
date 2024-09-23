@@ -38,8 +38,7 @@ class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
   ~InputMethodSyncer() override;
 
   // Registers the syncable input method prefs.
-  static void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Must be called after InputMethodSyncer is created.
   void Initialize();
@@ -53,10 +52,9 @@ class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
   // For the given input method pref, adds unique values from |synced_pref| to
   // values in |pref|. The new values are converted from legacy engine IDs to
   // input method IDs if necessary.
-  std::string AddSupportedInputMethodValues(
-      const std::string& pref,
-      const std::string& synced_pref,
-      const char* pref_name);
+  std::string AddSupportedInputMethodValues(const std::string& pref,
+                                            const std::string& synced_pref,
+                                            const char* pref_name);
 
   // Sets language::prefs::kPreferredLanguages and sets |merging_| to false.
   void FinishMerge(const std::string& languages);

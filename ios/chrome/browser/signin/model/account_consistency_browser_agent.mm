@@ -39,7 +39,7 @@ AccountConsistencyBrowserAgent::~AccountConsistencyBrowserAgent() {}
 void AccountConsistencyBrowserAgent::InstallDependency(
     web::WebState* web_state) {
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               browser_->GetBrowserState())) {
     accountConsistencyService->SetWebStateHandler(web_state, this);
   }
@@ -48,7 +48,7 @@ void AccountConsistencyBrowserAgent::InstallDependency(
 void AccountConsistencyBrowserAgent::UninstallDependency(
     web::WebState* web_state) {
   if (AccountConsistencyService* accountConsistencyService =
-          ios::AccountConsistencyServiceFactory::GetForBrowserState(
+          ios::AccountConsistencyServiceFactory::GetForProfile(
               browser_->GetBrowserState())) {
     accountConsistencyService->RemoveWebStateHandler(web_state);
   }
@@ -56,8 +56,7 @@ void AccountConsistencyBrowserAgent::UninstallDependency(
 
 void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForBrowserState(
-          browser_->GetBrowserState())
+      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
           ->GetState());
   [application_handler_
       showSigninAccountNotificationFromViewController:base_view_controller_];
@@ -65,8 +64,7 @@ void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
 
 void AccountConsistencyBrowserAgent::OnManageAccounts() {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForBrowserState(
-          browser_->GetBrowserState())
+      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
           ->GetState());
   [settings_handler_
       showAccountsSettingsFromViewController:base_view_controller_
@@ -77,8 +75,7 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
     const GURL& url,
     web::WebState* web_state) {
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForBrowserState(
-          browser_->GetBrowserState())
+      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
           ->GetState());
   web::WebState* current_web_state =
       browser_->GetWebStateList()->GetActiveWebState();

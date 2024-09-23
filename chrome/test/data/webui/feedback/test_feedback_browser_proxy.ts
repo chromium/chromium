@@ -8,6 +8,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
     FeedbackBrowserProxy {
   private dialogArugments_: string = '';
+  private systemLogs_: chrome.feedbackPrivate.LogsMapEntry[] = [];
   private userEmail_: string = '';
   private userMedia_: Promise<MediaStream|undefined> =
       Promise.resolve(undefined);
@@ -17,15 +18,16 @@ export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
       'closeDialog', 'getSystemInformation', 'getUserEmail',
       'getDialogArguments', 'getUserMedia', 'sendFeedback',
       'showAutofillMetadataInfo', 'showDialog', 'showMetrics', 'showSystemInfo',
-      // <if expr="chromeos_ash">
-      'showAssistantLogsInfo', 'showBluetoothLogsInfo',
-      // </if>
     ]);
   }
 
   getSystemInformation(): Promise<chrome.feedbackPrivate.LogsMapEntry[]> {
     this.methodCalled('getSystemInformation');
-    return Promise.resolve([]);
+    return Promise.resolve(this.systemLogs_);
+  }
+
+  setSystemInfomation(value: chrome.feedbackPrivate.LogsMapEntry[]) {
+    this.systemLogs_ = value;
   }
 
   getUserEmail(): Promise<string> {
@@ -73,15 +75,6 @@ export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
   closeDialog() {
     this.methodCalled('closeDialog');
   }
-
-  // <if expr="chromeos_ash">
-  showAssistantLogsInfo() {
-    this.methodCalled('showAssistantLogsInfo');
-  }
-  showBluetoothLogsInfo() {
-    this.methodCalled('showBluetoothLogsInfo');
-  }
-  // </if>
 
   showSystemInfo() {
     this.methodCalled('showSystemInfo');

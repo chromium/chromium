@@ -115,8 +115,8 @@ const char kInternalErrorGettingDynamicRules[] =
     "Internal error while getting dynamic rules.";
 const char kDynamicRuleCountExceeded[] = "Dynamic rule count exceeded.";
 
-// TODO(crbug.com/1485747): Once the documentation is updated, add a link to the
-// page detailing what safe/unsafe rules are.
+// TODO(crbug.com/40282671): Once the documentation is updated, add a link to
+// the page detailing what safe/unsafe rules are.
 const char kDynamicUnsafeRuleCountExceeded[] =
     "Dynamic unsafe rule count exceeded.";
 const char kDynamicRegexRuleCountExceeded[] =
@@ -124,8 +124,8 @@ const char kDynamicRegexRuleCountExceeded[] =
 
 const char kSessionRuleCountExceeded[] = "Session rule count exceeded.";
 
-// TODO(crbug.com/1485747): Once the documentation is updated, add a link to the
-// page detailing what safe/unsafe rules are.
+// TODO(crbug.com/40282671): Once the documentation is updated, add a link to
+// the page detailing what safe/unsafe rules are.
 const char kSessionUnsafeRuleCountExceeded[] =
     "Session unsafe rule count exceeded.";
 const char kSessionRegexRuleCountExceeded[] =
@@ -154,6 +154,11 @@ const char kIncrementActionCountWithoutUseAsBadgeTextError[] =
 const char kInvalidTestURLError[] = "Invalid test request URL.";
 const char kInvalidTestInitiatorError[] = "Invalid test request initiator.";
 const char kInvalidTestTabIdError[] = "Invalid test request tab ID.";
+const char kInvalidResponseHeaderObjectError[] =
+    R"(Values for header "*" must be specified as a list.)";
+const char kInvalidResponseHeaderNameError[] = R"(Invalid header name "*".)";
+const char kInvalidResponseHeaderValueError[] =
+    R"(Invalid header value for header "*".)";
 
 const char kIndexAndPersistRulesTimeHistogram[] =
     "Extensions.DeclarativeNetRequest.IndexAndPersistRulesTime";

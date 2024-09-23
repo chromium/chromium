@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/calculator/size_calculator.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 
 namespace ash::settings {
 
@@ -26,8 +27,8 @@ class TotalDiskSpaceTestAPI {
     total_disk_space_calculator_.OnGetRootDeviceSize(reply);
   }
 
-  void SimulateOnGetTotalDiskSpace(int64_t* total_bytes) {
-    total_disk_space_calculator_.OnGetTotalDiskSpace(total_bytes);
+  void SimulateOnGetTotalDiskSpace(int64_t total_bytes) {
+    total_disk_space_calculator_.NotifySizeCalculated(total_bytes);
   }
 
  private:
@@ -47,8 +48,8 @@ class FreeDiskSpaceTestAPI {
     free_disk_space_calculator_.OnGetUserFreeDiskSpace(reply);
   }
 
-  void SimulateOnGetFreeDiskSpace(int64_t* available_bytes) {
-    free_disk_space_calculator_.OnGetFreeDiskSpace(available_bytes);
+  void SimulateOnGetFreeDiskSpace(int64_t available_bytes) {
+    free_disk_space_calculator_.NotifySizeCalculated(available_bytes);
   }
 
  private:
@@ -65,7 +66,7 @@ class DriveOfflineSizeTestAPI {
   void StartCalculation() { drive_offline_size_calculator_.StartCalculation(); }
 
   void SimulateOnGetOfflineItemsSize(int64_t offline_bytes) {
-    drive_offline_size_calculator_.OnGetOfflineItemsSize(offline_bytes);
+    drive_offline_size_calculator_.NotifySizeCalculated(offline_bytes);
   }
 
  private:

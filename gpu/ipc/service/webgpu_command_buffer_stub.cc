@@ -11,13 +11,11 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 #include "gpu/command_buffer/service/gl_state_restorer_impl.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -71,7 +69,7 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
     const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
 #if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/707031): Implement this.
+  // TODO(crbug.com/40513405): Implement this.
   NOTIMPLEMENTED();
   LOG(ERROR) << "ContextResult::kFatalFailure: no fuchsia support";
   return gpu::ContextResult::kFatalFailure;
@@ -156,6 +154,10 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
 
 MemoryTracker* WebGPUCommandBufferStub::GetContextGroupMemoryTracker() const {
   return nullptr;
+}
+
+base::WeakPtr<CommandBufferStub> WebGPUCommandBufferStub::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WebGPUCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}

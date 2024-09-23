@@ -63,6 +63,7 @@ WebViewPasswordReuseManagerFactory::BuildServiceInstanceFor(
 
   reuse_manager->Init(
       browser_state->GetPrefs(),
+      ios_web_view::ApplicationContext::GetInstance()->GetLocalState(),
       WebViewProfilePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),

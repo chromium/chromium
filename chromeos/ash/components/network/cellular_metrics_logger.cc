@@ -35,14 +35,13 @@ const char kESimUMAFeatureName[] = "ESim";
 const char kEnterpriseESimUMAFeatureName[] = "EnterpriseESim";
 
 // Checks whether the current logged in user type is an owner or regular.
-bool IsLoggedInUserOwnerOrRegular() {
+bool IsLoggedInUserRegular() {
   if (!LoginState::IsInitialized())
     return false;
 
   LoginState::LoggedInUserType user_type =
       LoginState::Get()->GetLoggedInUserType();
-  return user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER ||
-         user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR;
+  return user_type == LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR;
 }
 
 SimType GetSimType(const NetworkState* network) {
@@ -193,7 +192,7 @@ void CellularMetricsLogger::RecordSimLockNotificationLockType(
     base::UmaHistogramEnumeration(kSimLockNotificationLockType,
                                   SimPinLockType::kCarrierLocked);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -648,8 +647,7 @@ void CellularMetricsLogger::Init(
 
   esim_feature_usage_metrics_ =
       std::make_unique<ESimFeatureUsageMetrics>(network_state_handler_);
-  if (ash::features::IsSmdsSupportEnabled() &&
-      InstallAttributes::IsInitialized() &&
+  if (InstallAttributes::IsInitialized() &&
       InstallAttributes::Get()->IsEnterpriseManaged()) {
     enterprise_esim_feature_usage_metrics_ =
         std::make_unique<EnterpriseESimFeatureUsageMetrics>(
@@ -720,11 +718,13 @@ void CellularMetricsLogger::OnInitializationTimeout() {
   CheckForESimProfileStatusMetric();
   CheckForCellularUsageMetrics();
   CheckForCellularServiceCountMetric();
+  CheckForApnPolicyMetric();
 }
 
 void CellularMetricsLogger::LoggedInStateChanged() {
-  if (!IsLoggedInUserOwnerOrRegular())
+  if (!IsLoggedInUserRegular()) {
     return;
+  }
 
   // This flag enures that activation state is only logged once when
   // the user logs in.
@@ -740,6 +740,11 @@ void CellularMetricsLogger::LoggedInStateChanged() {
   // the user logs in.
   is_service_count_logged_ = false;
   CheckForCellularServiceCountMetric();
+
+  // This flag ensures that the APN policy information is only logged
+  // when the user logs in.
+  is_apn_policy_logged_ = false;
+  CheckForApnPolicyMetric();
 }
 
 void CellularMetricsLogger::NetworkConnectionStateChanged(
@@ -788,7 +793,7 @@ void CellularMetricsLogger::CheckForSIMStatusMetric(
   } else if (sim_lock_type.empty()) {
     lock_type = SimPinLockType::kUnlocked;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   if (managed_network_configuration_handler_->AllowCellularSimLock()) {
@@ -985,7 +990,7 @@ void CellularMetricsLogger::CheckForConnectionStateMetric(
 
 void CellularMetricsLogger::CheckForESimProfileStatusMetric() {
   if (!cellular_esim_profile_handler_ || !is_cellular_available_ ||
-      is_esim_profile_status_logged_ || !IsLoggedInUserOwnerOrRegular()) {
+      is_esim_profile_status_logged_ || !IsLoggedInUserRegular()) {
     return;
   }
 
@@ -1027,8 +1032,9 @@ void CellularMetricsLogger::CheckForESimProfileStatusMetric() {
 
 void CellularMetricsLogger::CheckForPSimActivationStateMetric() {
   if (!is_cellular_available_ || is_psim_activation_state_logged_ ||
-      !IsLoggedInUserOwnerOrRegular())
+      !IsLoggedInUserRegular()) {
     return;
+  }
 
   NetworkStateHandler::NetworkStateList network_list;
   network_state_handler_->GetVisibleNetworkListByType(
@@ -1054,7 +1060,7 @@ void CellularMetricsLogger::CheckForPSimActivationStateMetric() {
 
 void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
   if (!is_cellular_available_ || is_service_count_logged_ ||
-      !IsLoggedInUserOwnerOrRegular()) {
+      !IsLoggedInUserRegular()) {
     return;
   }
 
@@ -1079,21 +1085,37 @@ void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
 
   if (managed_network_configuration_handler_->AllowCellularSimLock()) {
     UMA_HISTOGRAM_COUNTS_100(
-        "Network.Cellular.Unrestricted.PSim.ServiceAtLogin.Count",
+        "Network.Cellular.PSim.ServiceAtLoginCount.SimLockAllowedByPolicy",
         psim_networks);
     UMA_HISTOGRAM_COUNTS_100(
-        "Network.Cellular.Unrestricted.ESim.ServiceAtLogin.Count",
+        "Network.Cellular.ESim.ServiceAtLoginCount.SimLockAllowedByPolicy",
         esim_profiles);
   } else {
     UMA_HISTOGRAM_COUNTS_100(
-        "Network.Cellular.Restricted.PSim.ServiceAtLogin.Count", psim_networks);
+        "Network.Cellular.PSim.ServiceAtLoginCount.SimLockProhibitedByPolicy",
+        psim_networks);
     UMA_HISTOGRAM_COUNTS_100(
-        "Network.Cellular.Restricted.ESim.ServiceAtLogin.Count", esim_profiles);
+        "Network.Cellular.ESim.ServiceAtLoginCount.SimLockProhibitedByPolicy",
+        esim_profiles);
   }
+
+  UMA_HISTOGRAM_COUNTS_100("Network.Cellular.ESim.ServiceAtLoginCount",
+                           esim_profiles);
 
   UMA_HISTOGRAM_COUNTS_100("Network.Cellular.ESim.Policy.ServiceAtLogin.Count",
                            esim_policy_profiles);
   is_service_count_logged_ = true;
+}
+
+void CellularMetricsLogger::CheckForApnPolicyMetric() {
+  if (is_apn_policy_logged_) {
+    return;
+  }
+
+  base::UmaHistogramBoolean(
+      "Network.Ash.Cellular.Apn.Login.AllowApnModification",
+      managed_network_configuration_handler_->AllowApnModification());
+  is_apn_policy_logged_ = true;
 }
 
 void CellularMetricsLogger::CheckForCellularUsageMetrics() {

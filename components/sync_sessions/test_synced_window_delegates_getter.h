@@ -68,8 +68,8 @@ class TestSyncedTabDelegate : public SyncedTabDelegate {
   int64_t GetTaskIdForNavigationId(int nav_id) const override;
   int64_t GetParentTaskIdForNavigationId(int nav_id) const override;
   int64_t GetRootTaskIdForNavigationId(int nav_id) const override;
-  std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
-      override;
+  std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
+      SyncSessionsClient* sessions_client) override;
 
  private:
   const SessionID window_id_;
@@ -103,8 +103,8 @@ class PlaceholderTabDelegate : public SyncedTabDelegate {
   // SyncedTabDelegate overrides.
   SessionID GetSessionId() const override;
   bool IsPlaceholderTab() const override;
-  std::unique_ptr<SyncedTabDelegate> CreatePlaceholderTabSyncedTabDelegate()
-      override;
+  std::unique_ptr<SyncedTabDelegate> ReadPlaceholderTabSnapshotIfItShouldSync(
+      SyncSessionsClient* sessions_client) override;
   // Everything else is invalid to invoke as it depends on a valid WebContents.
   SessionID GetWindowId() const override;
   bool IsBeingDestroyed() const override;
@@ -196,10 +196,10 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
   const SyncedWindowDelegate* FindById(SessionID session_id) override;
 
  private:
-  class DummyRouter : public LocalSessionEventRouter {
+  class TestRouter : public LocalSessionEventRouter {
    public:
-    DummyRouter();
-    ~DummyRouter() override;
+    TestRouter();
+    ~TestRouter() override;
     void StartRoutingTo(LocalSessionEventHandler* handler) override;
     void Stop() override;
     void NotifyNav(SyncedTabDelegate* tab);
@@ -212,7 +212,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
   SyncedWindowDelegateMap delegates_;
   std::vector<std::unique_ptr<TestSyncedWindowDelegate>> windows_;
   std::vector<std::unique_ptr<TestSyncedTabDelegate>> tabs_;
-  DummyRouter router_;
+  TestRouter router_;
 };
 
 }  // namespace sync_sessions

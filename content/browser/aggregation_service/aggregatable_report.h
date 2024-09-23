@@ -8,19 +8,23 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
+#include "base/notreached.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
+#include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -38,17 +42,22 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
     kHistogram,
   };
 
+  static constexpr size_t kMaximumFilteringIdMaxBytes = 8;
+
   // The default aggregation coordinator origin will be used if
   // `aggregation_coordinator_origin` is `std::nullopt`.
   // `max_contributions_allowed` specifies the maximum number of contributions
-  // per report for use in padding.
+  // per report for use in padding. `filtering_id_bit_size` specifies how many
+  // bits should be used for the filtering ID encoding; if `std::nullopt`, the
+  // filtering ID must be omitted from the payload.
   AggregationServicePayloadContents(
       Operation operation,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
       blink::mojom::AggregationServiceMode aggregation_mode,
       std::optional<url::Origin> aggregation_coordinator_origin,
-      int max_contributions_allowed);
+      base::StrictNumeric<size_t> max_contributions_allowed,
+      std::optional<size_t> filtering_id_max_bytes);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -64,7 +73,8 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
       contributions;
   blink::mojom::AggregationServiceMode aggregation_mode;
   std::optional<url::Origin> aggregation_coordinator_origin;
-  int max_contributions_allowed;
+  size_t max_contributions_allowed;
+  std::optional<size_t> filtering_id_max_bytes;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -185,7 +195,7 @@ class CONTENT_EXPORT AggregatableReport {
   // protocol unless the ciphertexts are intended to be compatible. This ensures
   // that, even if public keys are reused, the same ciphertext cannot be (i.e.
   // no cross-protocol attacks).
-  static constexpr base::StringPiece kDomainSeparationPrefix =
+  static constexpr std::string_view kDomainSeparationPrefix =
       "aggregation_service";
 
   AggregatableReport(std::vector<AggregationServicePayload> payloads,
@@ -202,7 +212,7 @@ class CONTENT_EXPORT AggregatableReport {
   const std::vector<AggregationServicePayload>& payloads() const {
     return payloads_;
   }
-  const std::string& shared_info() const { return shared_info_; }
+  std::string_view shared_info() const { return shared_info_; }
   std::optional<uint64_t> debug_key() const { return debug_key_; }
   const base::flat_map<std::string, std::string>& additional_fields() const {
     return additional_fields_;
@@ -245,7 +255,7 @@ class CONTENT_EXPORT AggregatableReport {
   // fields specified in `additional_fields_`.
   base::Value::Dict GetAsJson() const;
 
-  // TODO(crbug.com/1247409): Expose static method to validate that a
+  // TODO(crbug.com/40196851): Expose static method to validate that a
   // base::Value appears to represent a valid report.
 
   // Returns whether `number` is a valid number of processing URLs for the
@@ -259,6 +269,13 @@ class CONTENT_EXPORT AggregatableReport {
   static bool IsNumberOfHistogramContributionsValid(
       size_t number,
       blink::mojom::AggregationServiceMode aggregation_mode);
+
+  static std::optional<std::vector<uint8_t>> SerializeTeeBasedPayloadForTesting(
+      const AggregationServicePayloadContents& payload_contents);
+
+  static std::optional<size_t> ComputeTeeBasedPayloadLengthInBytesForTesting(
+      size_t num_contributions,
+      std::optional<size_t> filtering_id_max_bytes);
 
  private:
   // This vector should have an entry for each processing URL specified in
@@ -282,37 +299,76 @@ class CONTENT_EXPORT AggregatableReport {
 // processing URL.
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
-  // Returns `std::nullopt` if `payload_contents.contributions.size()` is not
-  // valid for the `payload_contents.aggregation_mode` (see
-  // `IsNumberOfHistogramContributionsValid()` above). Also returns
-  // `std::nullopt` if any contribution has a negative value, if
-  // `shared_info.report_id` is not valid, or if `debug_key.has_value()` but
-  // `shared_info.debug_mode` is `kDisabled`. Also returns `std::nullopt` if
-  // `failed_send_attempts` is negative or if
-  // `payload_contents.max_contributions_allowed` is less than the number of
-  // contributions.
-  // TODO(alexmt): Add validation for scheduled_report_time being non-null/inf.
+  // Rough categories of report scheduling delays used for metrics. Keep this
+  // synchronized with `proto::AggregatableReportRequest::DelayType`. Do not
+  // remove or renumber enumerators because protos containing these values are
+  // persisted to disk.
+  enum class DelayType : uint8_t {
+    ScheduledWithReducedDelay = 0,
+    ScheduledWithFullDelay = 1,
+    Unscheduled = 2,
+
+    kMinValue = ScheduledWithReducedDelay,
+    kMaxValue = Unscheduled,
+  };
+
+  static constexpr std::string_view DelayTypeToString(DelayType delay_type) {
+    switch (delay_type) {
+      case DelayType::ScheduledWithReducedDelay:
+        return "ScheduledWithReducedDelay";
+      case DelayType::ScheduledWithFullDelay:
+        return "ScheduledWithFullDelay";
+      case DelayType::Unscheduled:
+        return "Unscheduled";
+    }
+    NOTREACHED();
+  }
+
+  // Returns `std::nullopt` if any of the following are true:
+  //
+  //   * The number of contributions within `payload_contents` is invalid for
+  //     the `payload_contents.aggregation_mode` (see
+  //     `IsNumberOfHistogramContributionsValid()`).
+  //
+  //   * `payload_contents.max_contributions_allowed` is less than the number of
+  //     contributions.
+  //
+  //   * Any contribution in `payload_contents` has a negative value.
+  //
+  //   * Any contribution's filtering ID does not fit in the given
+  //     `payload_contents.filtering_id_max_bytes`. (If the given max bytes is
+  //     null, only null filtering IDs are considered to 'fit'.)
+  //
+  //   * `payload_contents.filtering_id_max_bytes` contains a value that is
+  //     either non-positive or greater than `kMaximumFilteringIdMaxBytes`.
+  //
+  //   * `shared_info.report_id` is invalid.
+  //
+  //   * `shared_info.debug_mode == kDisabled` and `debug_key` contains a value.
+  //
+  //   * `failed_send_attempts` is negative.
+  //
+  // TODO(alexmt): Add validation for `payload_contents.scheduled_report_time`
+  // being non-null/inf.
   static std::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
+      std::optional<AggregatableReportRequest::DelayType> delay_type =
+          std::nullopt,
       std::string reporting_path = std::string(),
       std::optional<uint64_t> debug_key = std::nullopt,
       base::flat_map<std::string, std::string> additional_fields = {},
       int failed_send_attempts = 0);
 
-  // Returns `std::nullopt` if `payload_contents.contributions.size()` or
-  // `processing_url.size()` is not valid for the
-  // `payload_contents.aggregation_mode` (see
-  // `IsNumberOfHistogramContributionsValid()` and
-  // `IsNumberOfProcessingUrlsValid`, respectively). Also returns
-  // `std::nullopt` if any contribution has a negative value, if
-  // `shared_info.report_id` is not valid, or if `debug_key.has_value()` but
-  // `shared_info.debug_mode` is `kDisabled`. Also returns `std::nullopt` if
-  // `failed_send_attempts` is negative
+  // Returns `std:nullopt` whenever `Create()` would for that condition too.
+  // Also returns `std::nullopt` if `processing_url.size()` is not valid for the
+  // `payload_contents.aggregation_mode` (see `IsNumberOfProcessingUrlsValid`).
   static std::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
+      std::optional<AggregatableReportRequest::DelayType> delay_type =
+          std::nullopt,
       std::string reporting_path = std::string(),
       std::optional<uint64_t> debug_key = std::nullopt,
       base::flat_map<std::string, std::string> additional_fields = {},
@@ -335,26 +391,29 @@ class CONTENT_EXPORT AggregatableReportRequest {
   const AggregatableReportSharedInfo& shared_info() const {
     return shared_info_;
   }
-  const std::string& reporting_path() const { return reporting_path_; }
+  std::string_view reporting_path() const { return reporting_path_; }
   std::optional<uint64_t> debug_key() const { return debug_key_; }
   const base::flat_map<std::string, std::string>& additional_fields() const {
     return additional_fields_;
   }
   int failed_send_attempts() const { return failed_send_attempts_; }
+  std::optional<DelayType> delay_type() const { return delay_type_; }
 
   // Returns the URL this report should be sent to. The return value is invalid
   // if the reporting_path is empty.
   GURL GetReportingUrl() const;
 
-  // Serializes the report request to a binary protobuf encoding. Returns an
-  // empty vector in case of an error.
-  std::vector<uint8_t> Serialize();
+  // Serializes the report request to a binary protobuf encoding. Crashes when
+  // `delay_type()` is empty or equals `DelayType::Unscheduled`. Returns an
+  // empty vector when proto serialization fails.
+  std::vector<uint8_t> Serialize() const;
 
  private:
   static std::optional<AggregatableReportRequest> CreateInternal(
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
+      std::optional<AggregatableReportRequest::DelayType> delay_type,
       std::string reporting_path,
       std::optional<uint64_t> debug_key,
       base::flat_map<std::string, std::string> additional_fields,
@@ -364,6 +423,7 @@ class CONTENT_EXPORT AggregatableReportRequest {
       std::vector<GURL> processing_urls,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info,
+      std::optional<AggregatableReportRequest::DelayType> delay_type,
       std::string reporting_path,
       std::optional<uint64_t> debug_key,
       base::flat_map<std::string, std::string> additional_fields,
@@ -388,9 +448,23 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // this attempt. The value in this class is not incremented if this attempt
   // fails (until a new object is requested from storage)
   int failed_send_attempts_ = 0;
+
+  // The rough category of report scheduling delay selected when this report
+  // request was first created. This field should be set to `std::nullopt` for
+  // requests that do not pass through the scheduler or network sender.
+  // `Deserialize()` will set this to `std::nullopt` when parsing a protobuf
+  // that was serialized before the addition of this field.
+  std::optional<AggregatableReportRequest::DelayType> delay_type_;
 };
 
 CONTENT_EXPORT GURL GetAggregationServiceProcessingUrl(const url::Origin&);
+
+// Encrypts the `report_payload_plaintext` with HPKE using the processing url's
+// `public_key`. Returns empty vector if the encryption fails.
+CONTENT_EXPORT std::vector<uint8_t> EncryptAggregatableReportPayloadWithHpke(
+    base::span<const uint8_t> report_payload_plaintext,
+    base::span<const uint8_t> public_key,
+    base::span<const uint8_t> report_authenticated_info);
 
 }  // namespace content
 

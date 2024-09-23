@@ -63,28 +63,33 @@ struct AccountInfo : public CoreAccountInfo {
   AccountInfo& operator=(const AccountInfo& other);
   AccountInfo& operator=(AccountInfo&& other) noexcept;
 
+  // Mandatory fields for `IsValid()` to return true:
   std::string full_name;
   std::string given_name;
   std::string hosted_domain;
-  std::string locale;
   std::string picture_url;
+
+  // Available once the account image is downloaded:
   std::string last_downloaded_image_url_with_size;
   gfx::Image account_image;
 
-  // For metrics. This field is not consistently set on all platforms.
-  // Not persisted to disk. Resets to `ACCESS_POINT_UNKNOWN` on restart.
+  // Access point used to add the account, is also updated on reauth.
+  // The access point is not updated when signing in to Chrome, only when the
+  // token is updated or refreshed. This field is not consistently set on all
+  // platforms.
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
 
   AccountCapabilities capabilities;
   signin::Tribool is_child_account = signin::Tribool::kUnknown;
+  std::string locale;
 
   // Returns true if all fields in the account info are empty.
   bool IsEmpty() const;
 
   // Returns true if all non-optional fields in this account info are filled.
-  // Note: IsValid() does not check if `access_point`, `is_child_account` or
-  // `capabilities` are filled.
+  // Note: IsValid() does not check if `access_point`, `is_child_account`,
+  // `capabilities` or `locale` are filled.
   bool IsValid() const;
 
   // Updates the empty fields of |this| with |other|. Returns whether at least
@@ -103,6 +108,8 @@ struct AccountInfo : public CoreAccountInfo {
 
   bool IsManaged() const;
 
+  bool IsEduAccount() const;
+
   // Returns true if the account email can be used in display fields.
   // If `capabilities.can_have_email_address_displayed()` is unknown at the time
   // this function is called, the email address will be considered displayable.
@@ -110,7 +117,6 @@ struct AccountInfo : public CoreAccountInfo {
 };
 
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);
-bool operator!=(const CoreAccountInfo& l, const CoreAccountInfo& r);
 std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account);
 
 // Comparing `AccountInfo`s is likely a mistake. You should compare either

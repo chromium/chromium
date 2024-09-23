@@ -6,14 +6,18 @@
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_NAVIGATION_THROTTLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/navigation_throttle.h"
+
+class Profile;
 
 class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
  public:
@@ -34,16 +38,20 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:
   SupervisedUserNavigationThrottle(
       content::NavigationHandle* navigation_handle);
 
-  // Checks the current URL for the navigation. If called from
+  // Triggers the checks of the current URL for the navigation. If called from
   // WillRedirectRequest, checks the URL being redirected to, not the original
   // URL.
-  ThrottleCheckResult CheckURL();
+  void CheckURL();
+
+  // Wraps up common procedure for throttling new requests or redirects.
+  ThrottleCheckResult ProcessRequest();
 
   void ShowInterstitial(const GURL& url,
                         supervised_user::FilteringBehaviorReason reason);
@@ -63,6 +71,13 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   bool deferred_;
   supervised_user::FilteringBehaviorReason reason_;
   supervised_user::FilteringBehavior behavior_;
+
+  // See the ParallelNavigationThrottle. Since this throttle is always deferring
+  // navigation if check is asynchronous, it can only end up in 0 or positive
+  // delay.
+  std::optional<base::ElapsedTimer> waiting_for_decision_;
+  base::TimeDelta total_delay_;
+
   base::WeakPtrFactory<SupervisedUserNavigationThrottle> weak_ptr_factory_{
       this};
 };

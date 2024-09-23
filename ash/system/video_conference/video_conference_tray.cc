@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -27,11 +28,11 @@
 #include "ash/system/video_conference/bubble/linux_apps_bubble_view.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/session_manager/session_manager_types.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -43,6 +44,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_utils.h"
@@ -161,7 +163,7 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
 
   SetToggledVectorIcon(*toggled_icon);
 
-  SetAccessibleRole(ax::mojom::Role::kToggleButton);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
 
   // Reduce the focus ring padding which is installed by default by
   // `IconButton`. The default padding results in the focus ring being painted
@@ -194,8 +196,7 @@ void VideoConferenceTrayButton::UpdateCapturingState() {
 
   // Always call `UpdateTooltip()` because even if `show_privacy_indicator_`
   // doesn't change, `is_capturing_` may have.
-  base::ScopedClosureRunner scoped_closure(base::BindOnce(
-      &VideoConferenceTrayButton::UpdateTooltip, base::Unretained(this)));
+  absl::Cleanup scoped_tooltip_update = [this] { UpdateTooltip(); };
 
   if (show_privacy_indicator_ == show_privacy_indicator) {
     return;
@@ -322,7 +323,7 @@ VideoConferenceTray::~VideoConferenceTray() {
   VideoConferenceTrayController::Get()->RemoveObserver(this);
 }
 
-void VideoConferenceTray::CloseBubble() {
+void VideoConferenceTray::CloseBubbleInternal() {
   bubble_open_ = false;
   toggle_bubble_button_->SetToggled(false);
   bubble_.reset();
@@ -358,7 +359,7 @@ void VideoConferenceTray::HideBubble(const TrayBubbleView* bubble_view) {
   }
 }
 
-void VideoConferenceTray::ClickedOutsideBubble() {
+void VideoConferenceTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 
@@ -410,6 +411,17 @@ void VideoConferenceTray::OnScreenSharingStateChange(bool is_capturing_screen) {
     screen_share_icon_->SetIsCapturing(
         /*is_capturing=*/is_capturing_screen);
   }
+}
+
+void VideoConferenceTray::OnDlcDownloadStateChanged(
+    bool add_warning,
+    const std::u16string& feature_tile_title) {
+  auto* bubble_view = GetBubbleView();
+  if (!bubble_view) {
+    return;
+  }
+  views::AsViewClass<video_conference::BubbleView>(bubble_view)
+      ->OnDLCDownloadStateInError(add_warning, feature_tile_title);
 }
 
 void VideoConferenceTray::OnCameraCapturingStateChange(bool is_capturing) {
@@ -482,6 +494,10 @@ void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
 
   VideoConferenceTrayController::Get()->CloseAllVcNudges();
 
+  VideoConferenceTrayController::Get()
+      ->GetEffectsManager()
+      .NotifyVideoConferenceBubbleOpened();
+
   // If we are already in the process of getting the media apps, we don't need
   // to get it again.
   if (!getting_media_apps_) {
@@ -525,6 +541,8 @@ void VideoConferenceTray::ConstructBubbleWithMediaApps(MediaApps apps) {
 
   std::unique_ptr<TrayBubbleView> bubble_view;
   auto init_params = CreateInitParamsForTrayBubble(/*tray=*/this);
+  init_params.preferred_width = kWideTrayMenuWidth;
+  init_params.corner_radius = kUpdatedBubbleCornerRadius;
 
   // If all of the apps are Linux apps, we will just use `LinuxAppsBubbleView`
   // specifically for this situation.

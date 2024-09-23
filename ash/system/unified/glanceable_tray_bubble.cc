@@ -9,7 +9,6 @@
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
-#include "ash/system/unified/tasks_bubble_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -54,7 +53,7 @@ views::View* GlanceableTrayBubble::GetTasksView() {
   return GetGlanceableTrayBubbleView()->GetTasksView();
 }
 
-ClassroomBubbleStudentView* GlanceableTrayBubble::GetClassroomStudentView() {
+views::View* GlanceableTrayBubble::GetClassroomStudentView() {
   return GetGlanceableTrayBubbleView()->GetClassroomStudentView();
 }
 

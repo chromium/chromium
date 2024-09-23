@@ -95,15 +95,19 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
   TRACE_EVENT0("gpu", "gl::init::CreateGLContext");
   switch (GetGLImplementation()) {
     case kGLImplementationMockGL:
-      return scoped_refptr<GLContext>(new GLContextStub(share_group));
     case kGLImplementationStubGL: {
       scoped_refptr<GLContextStub> stub_context =
-          new GLContextStub(share_group);
-      stub_context->SetUseStubApi(true);
+          MakeRefCounted<GLContextStub>(share_group);
+      if (GetGLImplementation() == kGLImplementationStubGL) {
+        stub_context->SetUseStubApi(true);
+      }
+      // The stub ctx needs to be initialized so that the gl::GLContext can
+      // store the |compatible_surface|.
+      stub_context->Initialize(compatible_surface, attribs);
       return stub_context;
     }
     case kGLImplementationDisabled:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
     default:
       if (compatible_surface->GetHandle() ||
@@ -132,7 +136,7 @@ scoped_refptr<GLSurface> CreateViewGLSurface(GLDisplay* display,
         return InitializeGLSurface(new GLSurfaceStub());
       }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -156,7 +160,7 @@ scoped_refptr<GLSurface> CreateOffscreenGLSurface(GLDisplay* display,
     case kGLImplementationStubGL:
       return InitializeGLSurface(new GLSurfaceStub());
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -173,7 +177,7 @@ void SetDisabledExtensionsPlatform(const std::string& disabled_extensions) {
     case kGLImplementationStubGL:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -189,7 +193,7 @@ bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
     case kGLImplementationStubGL:
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

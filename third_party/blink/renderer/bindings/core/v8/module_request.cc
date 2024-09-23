@@ -8,10 +8,10 @@
 namespace blink {
 
 String ModuleRequest::GetModuleTypeString() const {
-  for (const ImportAssertion& import_assertion : import_assertions) {
-    if (import_assertion.key == "type") {
-      DCHECK(!import_assertion.value.IsNull());
-      return import_assertion.value;
+  for (const ImportAttribute& import_attribute : import_attributes) {
+    if (import_attribute.key == "type") {
+      DCHECK(!import_attribute.value.IsNull());
+      return import_attribute.value;
     }
   }
   return String();
@@ -22,7 +22,7 @@ bool ModuleRequest::HasInvalidImportAttributeKey(String* invalid_key) const {
     return false;
   }
 
-  for (const ImportAssertion& attr : import_assertions) {
+  for (const ImportAttribute& attr : import_attributes) {
     if (attr.key != "type") {
       *invalid_key = attr.key;
       return true;

@@ -201,7 +201,7 @@ def Main():
   shutil.rmtree(corpus_dir)
 
   if args.isolated_script_test_output:
-    # TODO(crbug.com/913827): Actually comply with the isolated script contract
+    # TODO(crbug.com/41431115): Actually comply with the isolated script contract
     # on src/testing/scripts/common.
     with open(args.isolated_script_test_output, 'w') as f:
       json.dump({

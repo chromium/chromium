@@ -20,7 +20,7 @@
 #include "media/gpu/vaapi/test/h265_dpb.h"
 #include "media/gpu/vaapi/test/h265_vaapi_wrapper.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 

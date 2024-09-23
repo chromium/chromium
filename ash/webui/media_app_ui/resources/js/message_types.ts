@@ -28,6 +28,7 @@ export enum Message {
   RENAME_FILE = 'rename-file',
   REQUEST_SAVE_FILE = 'request-save-file',
   SAVE_AS = 'save-as',
+  SUBMIT_FORM = 'submit-form',
   TOGGLE_BROWSER_FULLSCREEN_MODE = 'toggle-browser-fullscreen-mode',
 }
 

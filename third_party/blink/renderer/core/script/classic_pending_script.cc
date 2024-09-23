@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -103,10 +102,14 @@ ClassicPendingScript* ClassicPendingScript::Fetch(
     compile_hints_producer = &page->GetV8CrowdsourcedCompileHintsProducer();
     compile_hints_consumer = &page->GetV8CrowdsourcedCompileHintsConsumer();
   }
+  const bool v8_compile_hints_magic_comment_runtime_enabled =
+      RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
+          element_document.GetExecutionContext());
 
   ScriptResource::Fetch(params, element_document.Fetcher(), pending_script,
                         context->GetIsolate(), ScriptResource::kAllowStreaming,
-                        compile_hints_producer, compile_hints_consumer);
+                        compile_hints_producer, compile_hints_consumer,
+                        v8_compile_hints_magic_comment_runtime_enabled);
   pending_script->CheckState();
   return pending_script;
 }
@@ -189,42 +192,48 @@ void ClassicPendingScript::RecordThirdPartyRequestWithCookieIfNeeded(
   if (response.IsNull())
     return;
 
-  ExecutionContext* execution_context = OriginalExecutionContext();
-  Document* element_document = OriginalElementDocument();
-  if (!execution_context || !element_document)
-    return;
-
-  scoped_refptr<SecurityOrigin> script_origin =
-      SecurityOrigin::Create(response.ResponseUrl());
-  const SecurityOrigin* doc_origin = execution_context->GetSecurityOrigin();
-  scoped_refptr<const SecurityOrigin> top_frame_origin =
-      element_document->TopFrameOrigin();
-
-  // The use counter is meant to gather data for prerendering: how often do
-  // pages make credentialed requests to third parties from first-party frames,
-  // that cannot be delayed during prerendering until the page is navigated to.
-  // Therefore...
-
-  // Ignore third-party frames.
-  if (!top_frame_origin || top_frame_origin->RegistrableDomain() !=
-                               doc_origin->RegistrableDomain()) {
+  // Ignore cookie-less requests.
+  if (!response.WasCookieInRequest()) {
     return;
   }
-
-  // Ignore first-party requests.
-  if (doc_origin->RegistrableDomain() == script_origin->RegistrableDomain())
-    return;
-
-  // Ignore cookie-less requests.
-  if (!response.WasCookieInRequest())
-    return;
 
   // Ignore scripts that can be delayed. This is only async scripts currently.
   // kDefer and kForceDefer don't count as delayable since delaying them
   // artificially further while prerendering would prevent the page from making
   // progress.
-  if (GetSchedulingType() == ScriptSchedulingType::kAsync)
+  if (GetSchedulingType() == ScriptSchedulingType::kAsync) {
     return;
+  }
+
+  ExecutionContext* execution_context = OriginalExecutionContext();
+  Document* element_document = OriginalElementDocument();
+  if (!execution_context || !element_document) {
+    return;
+  }
+
+  scoped_refptr<const SecurityOrigin> top_frame_origin =
+      element_document->TopFrameOrigin();
+  if (!top_frame_origin) {
+    return;
+  }
+
+  // The use counter is meant to gather data for prerendering: how often do
+  // pages make credentialed requests to third parties from first-party frames,
+  // that cannot be delayed during prerendering until the page is navigated to.
+  // Therefore...
+  String doc_registrable_domain =
+      execution_context->GetSecurityOrigin()->RegistrableDomain();
+  // Ignore third-party frames.
+  if (top_frame_origin->RegistrableDomain() != doc_registrable_domain) {
+    return;
+  }
+
+  scoped_refptr<SecurityOrigin> script_origin =
+      SecurityOrigin::Create(response.ResponseUrl());
+  // Ignore first-party requests.
+  if (doc_registrable_domain == script_origin->RegistrableDomain()) {
+    return;
+  }
 
   execution_context->CountUse(
       mojom::blink::WebFeature::
@@ -251,12 +260,12 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
 
   // Most LCP elements are provided by the main frame, and delaying subframe's
   // resources seems not to improve LCP.
-  static const bool main_frame_only =
+  const bool main_frame_only =
       features::kLowPriorityAsyncScriptExecutionMainFrameOnlyParam.Get();
   if (main_frame_only && !element_document->IsInOutermostMainFrame())
     return false;
 
-  static const base::TimeDelta feature_limit =
+  const base::TimeDelta feature_limit =
       features::kLowPriorityAsyncScriptExecutionFeatureLimitParam.Get();
   if (!feature_limit.is_zero() &&
       element_document->GetStartTime().Elapsed() > feature_limit) {
@@ -273,7 +282,7 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
   }
 
   // Check if LCP influencing scripts are to be excluded.
-  static const bool exclude_lcp_influencers =
+  const bool exclude_lcp_influencers =
       features::kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam
           .Get();
   if (exclude_lcp_influencers && LcppScriptObserverEnabled()) {
@@ -284,7 +293,7 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
     }
   }
 
-  static const bool disable_when_lcp_not_in_html =
+  const bool disable_when_lcp_not_in_html =
       features::kLowPriorityAsyncScriptExecutionDisableWhenLcpNotInHtmlParam
           .Get();
   if (disable_when_lcp_not_in_html && !top_document.IsLcpElementFoundInHtml()) {
@@ -293,7 +302,7 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
     return false;
   }
 
-  static const bool cross_site_only =
+  const bool cross_site_only =
       features::kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam.Get();
   if (cross_site_only && GetResource() &&
       element_document->GetExecutionContext()) {
@@ -334,13 +343,26 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
       break;
   }
 
-  static const bool opt_out_low =
+  const bool exclude_non_parser_inserted =
+      features::kLowPriorityAsyncScriptExecutionExcludeNonParserInsertedParam
+          .Get();
+  if (exclude_non_parser_inserted && !parser_inserted()) {
+    return false;
+  }
+
+  const bool exclude_scripts_via_document_write =
+      features::kLowPriorityAsyncScriptExecutionExcludeDocumentWriteParam.Get();
+  if (exclude_scripts_via_document_write && is_in_document_write()) {
+    return false;
+  }
+
+  const bool opt_out_low =
       features::kLowPriorityAsyncScriptExecutionOptOutLowFetchPriorityHintParam
           .Get();
-  static const bool opt_out_auto =
+  const bool opt_out_auto =
       features::kLowPriorityAsyncScriptExecutionOptOutAutoFetchPriorityHintParam
           .Get();
-  static const bool opt_out_high =
+  const bool opt_out_high =
       features::kLowPriorityAsyncScriptExecutionOptOutHighFetchPriorityHintParam
           .Get();
 
@@ -580,7 +602,7 @@ void ClassicPendingScript::AdvanceReadyState(ReadyState new_ready_state) {
       break;
     case kReady:
     case kErrorOccurred:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

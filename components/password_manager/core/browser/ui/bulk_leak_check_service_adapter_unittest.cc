@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/ui/bulk_leak_check_service_adapter.h"
 
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -12,12 +13,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
@@ -69,9 +69,9 @@ MATCHER_P(SavedPasswordsAre, passwords, "") {
       });
 }
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 username,
-                               base::StringPiece16 password) {
+PasswordForm MakeSavedPassword(std::string_view signon_realm,
+                               std::u16string_view username,
+                               std::u16string_view password) {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(username);
@@ -79,8 +79,8 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
   return form;
 }
 
-LeakCheckCredential MakeLeakCheckCredential(base::StringPiece16 username,
-                                            base::StringPiece16 password) {
+LeakCheckCredential MakeLeakCheckCredential(std::u16string_view username,
+                                            std::u16string_view password) {
   return LeakCheckCredential(std::u16string(username),
                              std::u16string(password));
 }
@@ -129,7 +129,7 @@ class BulkLeakCheckServiceAdapterTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   BulkLeakCheckService service_{

@@ -313,7 +313,7 @@ def _RunOnAndroidTarget(binary_dir, test, android_device, extra_command_line):
 
 
 def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
-    """Runs the given iOS |test| app on iPhone 8 with the default OS version."""
+    """Runs the given iOS |test| app on a simulator with the default OS version."""
 
     def xctest(binary_dir, test, gtest_filter=None):
         """Returns a dict containing the xctestrun data needed to run an
@@ -333,7 +333,9 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
             }
         }
         if gtest_filter:
-            module_data['CommandLineArguments'] = ['--gtest_filter='+gtest_filter]
+            module_data['CommandLineArguments'] = [
+                '--gtest_filter=' + gtest_filter
+            ]
         return {test: module_data}
 
     def xcuitest(binary_dir, test):
@@ -347,6 +349,7 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
         target_app_path = os.path.join(test_path, test + '.app')
         module_data = {
             'IsUITestBundle': True,
+            'SystemAttachmentLifetime': 'deleteOnSuccess',
             'IsXCTRunnerHostedTestBundle': True,
             'TestBundlePath': bundle_path,
             'TestHostPath': runner_path,
@@ -368,11 +371,15 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
     with tempfile.NamedTemporaryFile() as f:
         import plistlib
 
-        xctestrun_path = f.name
+        xctestrun_path = f.name + ".xctestrun"
         print(xctestrun_path)
         command = [
-            'xcodebuild', 'test-without-building', '-xctestrun', xctestrun_path,
-            '-destination', 'platform=iOS Simulator,name=iPhone 8',
+            'xcodebuild',
+            'test-without-building',
+            '-xctestrun',
+            xctestrun_path,
+            '-destination',
+            'platform=iOS Simulator,OS=17.4,name=iPhone 15',
         ]
         with open(xctestrun_path, 'wb') as fp:
             if is_xcuitest:

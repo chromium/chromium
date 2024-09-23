@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -116,9 +115,9 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     ~NetworkStateObserverHandle();
 
    private:
-    raw_ptr<NetworkStateNotifier, ExperimentalRenderer> notifier_;
+    raw_ptr<NetworkStateNotifier> notifier_;
     ObserverType type_;
-    raw_ptr<NetworkStateObserver, ExperimentalRenderer> observer_;
+    raw_ptr<NetworkStateObserver> observer_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   };
 
@@ -216,7 +215,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
       case kWebConnectionTypeUnknown:
         return false;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

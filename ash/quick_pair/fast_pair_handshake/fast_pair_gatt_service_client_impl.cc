@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
 
 #include "ash/constants/ash_features.h"
@@ -10,7 +15,6 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -19,7 +23,6 @@
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
-
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace {
@@ -91,7 +94,6 @@ constexpr const char* ErrorCodeToString(
       return "GATT_ERROR_NOT_SUPPORTED";
     default:
       NOTREACHED();
-      return "";
   }
 }
 
@@ -140,7 +142,6 @@ constexpr const char* ErrorCodeToString(
       return "ERROR_UNSUPPORTED_DEVICE";
     default:
       NOTREACHED();
-      return "";
   }
 }
 
@@ -200,7 +201,7 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
       request[kDataIdOrSizeIndex] = data_id_or_size.value();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Fill unused trailing bytes with random (salt) values.

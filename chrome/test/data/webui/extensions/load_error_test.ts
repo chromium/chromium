@@ -9,6 +9,7 @@ import 'chrome://extensions/extensions.js';
 import type {ExtensionsLoadErrorElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {isElementVisible} from './test_util.js';
@@ -64,7 +65,7 @@ suite('ExtensionLoadErrorTests', function() {
     assertFalse(isElementVisible(dialogElement));
   });
 
-  test('CodeSection', function() {
+  test('CodeSection', async () => {
     assertTrue(loadError.$.code.shadowRoot!
                    .querySelector<HTMLElement>('#scroll-container')!.hidden);
     const loadErrorWithSource = {
@@ -79,6 +80,7 @@ suite('ExtensionLoadErrorTests', function() {
     };
 
     loadError.loadError = loadErrorWithSource;
+    await microtasksFinished();
     assertFalse(loadError.$.code.shadowRoot!
                     .querySelector<HTMLElement>('#scroll-container')!.hidden);
   });

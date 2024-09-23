@@ -151,11 +151,14 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, PRE_EditProfile_NotLoaded) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile& secondary_profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  ui_test_utils::BrowserChangeObserver secondary_profile_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::NewEmptyWindow(&secondary_profile);
-  // Let the browser window fully open before closing it.
-  if (chrome::GetBrowserCount(&secondary_profile) == 0) {
-    ui_test_utils::WaitForBrowserToOpen();
-  }
+  // Wait for secondary profile browser window open and becomes the last active
+  // one.
+  ui_test_utils::WaitForBrowserSetLastActive(
+      secondary_profile_browser_observer.Wait());
+
   // Close all browsers to avoid restoring profiles on the next startup.
   CloseAllBrowsers();
 }
@@ -178,6 +181,15 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, Guest) {
 
   profiles::SwitchToGuestProfile();
   Browser* guest_browser = ui_test_utils::WaitForBrowserToOpen();
+
+  // ProfileManager will switch active profile upon observing
+  // BrowserList::OnBrowserSetLastActive(), which may happen asynchronously
+  // with Lacros Wayland UI flow. Wait until the event is observed if needed.
+  bool wait_for_set_last_active_observed =
+      !ProfileManager::GetLastUsedProfileIfLoaded()->IsGuestSession();
+  ui_test_utils::WaitForBrowserSetLastActive(guest_browser,
+                                             wait_for_set_last_active_observed);
+
   ASSERT_TRUE(guest_browser);
   ASSERT_TRUE(guest_browser->profile()->IsGuestSession());
   // This should not crash.

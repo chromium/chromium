@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/archived_tabs_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/tab_list_editor_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/archived_tabs_dialog_bottom_button_container_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/close_all_tabs_button_container" />
+
+    <org.chromium.components.browser_ui.widget.FadingShadowView
+        android:id="@+id/close_all_tabs_button_container_shadow"
+        app:layout_constraintBottom_toTopOf="@id/close_all_tabs_button_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_shadow_height" />
+
+    <FrameLayout
+        android:id="@+id/close_all_tabs_button_container"
+        android:background="@macro/default_bg_color"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/archived_tabs_dialog_bottom_button_container_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/close_all_tabs_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_gravity="center_vertical"
+        android:focusable="true"
+        style="@style/FilledButton"
+        android:text="@string/archived_tabs_dialog_close_all_button"/>
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/snackbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

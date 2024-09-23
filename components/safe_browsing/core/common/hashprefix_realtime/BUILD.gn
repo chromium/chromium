@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("hash_realtime_utils") {
+  sources = [
+    "hash_realtime_utils.cc",
+    "hash_realtime_utils.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base:base",
+    "//build:branding_buildflags",
+    "//components/prefs",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+    "//components/variations",
+    "//components/variations/service",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "hash_realtime_utils_unittest.cc" ]
+  deps = [
+    ":hash_realtime_utils",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
+    "//testing/gtest",
+  ]
+}

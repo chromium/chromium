@@ -15,6 +15,7 @@
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 
 namespace storage {
@@ -25,6 +26,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
     : public blink::mojom::BlobURLStore {
  public:
   BlobURLStoreImpl(const blink::StorageKey& storage_key,
+                   const url::Origin& renderer_origin,
+                   int render_process_host_id,
                    base::WeakPtr<BlobUrlRegistry> registry,
                    BlobURLValidityCheckBehavior validity_check_options =
                        BlobURLValidityCheckBehavior::DEFAULT);
@@ -37,12 +40,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   void Register(
       mojo::PendingRemote<blink::mojom::Blob> blob,
       const GURL& url,
-      // TODO(https://crbug.com/1224926): Remove these once experiment is over.
+      // TODO(crbug.com/40775506): Remove these once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
       const std::optional<net::SchemefulSite>& unsafe_top_level_site,
       RegisterCallback callback) override;
   void Revoke(const GURL& url) override;
-  void Resolve(const GURL& url, ResolveCallback callback) override;
   void ResolveAsURLLoaderFactory(
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -60,6 +62,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   bool BlobUrlIsValid(const GURL& url, const char* method) const;
 
   const blink::StorageKey storage_key_;
+  // The origin used by the worker/document associated with this BlobURLStore on
+  // the renderer side. This will almost always be the same as `storage_key_`'s
+  // origin, except in the case of data: URL workers, as described in the linked
+  //  bug.
+  // TODO(crbug.com/40051700): Make the storage key's origin always match this.
+  const url::Origin renderer_origin_;
+  const int render_process_host_id_;
 
   base::WeakPtr<BlobUrlRegistry> registry_;
 

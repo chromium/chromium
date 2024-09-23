@@ -35,7 +35,7 @@ void AddWebUIConfig(std::unique_ptr<WebUIConfig> webui_config) {
     return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

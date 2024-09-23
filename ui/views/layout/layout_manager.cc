@@ -6,7 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
-#include "base/notimplemented.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -17,14 +16,6 @@ void LayoutManager::Installed(View* host) {}
 
 void LayoutManager::InvalidateLayout() {}
 
-gfx::Size LayoutManager::GetPreferredSize(
-    const View* host,
-    const SizeBounds& available_size) const {
-  NOTIMPLEMENTED() << "Subclasses of LayoutManager should implement "
-                      "GetPreferredSize(const View*, const SizeBounds&)";
-  return gfx::Size();
-}
-
 gfx::Size LayoutManager::GetMinimumSize(const View* host) const {
   // Fall back to using preferred size if no minimum size calculation is
   // available (e.g. legacy layout managers).
@@ -34,7 +25,7 @@ gfx::Size LayoutManager::GetMinimumSize(const View* host) const {
   // to call GetPreferredSize() on the host view instead. The default
   // views::View behavior will be to call GetPreferredSize() on this layout
   // manager, so the fallback behavior in all other cases is as expected.
-  return host->GetPreferredSize();
+  return host->GetPreferredSize({});
 }
 
 int LayoutManager::GetPreferredHeightForWidth(const View* host,
@@ -67,7 +58,7 @@ void LayoutManager::ViewVisibilitySet(View* host,
 void LayoutManager::SetViewVisibility(View* view, bool visible) {
   DCHECK(!view->parent() || view->parent()->GetLayoutManager() == this ||
          view->parent()->GetLayoutManager() == nullptr);
-  base::AutoReset<View*> setter(&view_setting_visibility_on_, view);
+  base::AutoReset<raw_ptr<View>> setter(&view_setting_visibility_on_, view);
   view->SetVisible(visible);
 }
 

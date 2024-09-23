@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -44,6 +45,64 @@ BruschettaInstallerView* g_bruschetta_installer_view = nullptr;
 constexpr auto kButtonRowInsets = gfx::Insets::TLBR(0, 64, 32, 64);
 constexpr int kWindowWidth = 768;
 constexpr int kWindowHeight = 636;
+
+std::u16string GetDetailedErrorMessage(
+    bruschetta::BruschettaInstallResult error) {
+  switch (error) {
+    case bruschetta::BruschettaInstallResult::kInstallationProhibited:
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_PROHIBITED_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
+    case bruschetta::BruschettaInstallResult::kDownloadError:
+    case bruschetta::BruschettaInstallResult::kInvalidBootDisk:
+    case bruschetta::BruschettaInstallResult::kInvalidPflash:
+    case bruschetta::BruschettaInstallResult::kUnableToOpenImages:
+      // These are all probably download or disk errors.
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_DOWNLOAD_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
+    case bruschetta::BruschettaInstallResult::kToolsDlcOfflineError:
+    case bruschetta::BruschettaInstallResult::kFirmwareDlcOfflineError:
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_DOWNLOAD_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
+    case bruschetta::BruschettaInstallResult::kToolsDlcDiskFullError:
+    case bruschetta::BruschettaInstallResult::kFirmwareDlcDiskFullError:
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_DISK_FULL_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
+    case bruschetta::BruschettaInstallResult::kToolsDlcNeedUpdateError:
+    case bruschetta::BruschettaInstallResult::kFirmwareDlcNeedUpdateError:
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_DLC_NEED_UPDATE_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
+    case bruschetta::BruschettaInstallResult::kToolsDlcNeedRebootError:
+    case bruschetta::BruschettaInstallResult::kFirmwareDlcNeedRebootError:
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_NEED_REBOOT_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
+    case bruschetta::BruschettaInstallResult::kToolsDlcBusyError:
+    case bruschetta::BruschettaInstallResult::kToolsDlcUnknownError:
+    case bruschetta::BruschettaInstallResult::kFirmwareDlcBusyError:
+    case bruschetta::BruschettaInstallResult::kFirmwareDlcUnknownError:
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_GENERIC_DLC_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+
+    default:
+      // Everything else gets a generic error, they can get dedicated error
+      // messages later if it's useful.
+      return l10n_util::GetStringFUTF16(
+          IDS_BRUSCHETTA_INSTALLER_GENERIC_ERROR_MESSAGE,
+          bruschetta::BruschettaInstallResultString(error));
+  }
+}
 
 }  // namespace
 
@@ -80,16 +139,11 @@ class BruschettaInstallerView::TitleLabel : public views::Label {
  public:
   using Label::Label;
 
-  TitleLabel() = default;
+  TitleLabel() { GetViewAccessibility().SetRole(ax::mojom::Role::kStatus); }
   ~TitleLabel() override = default;
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kStatus;
-    node_data->SetNameChecked(GetText());
-  }
 };
 
-BEGIN_METADATA(BruschettaInstallerView, TitleLabel, views::Label)
+BEGIN_METADATA(BruschettaInstallerView, TitleLabel)
 END_METADATA
 
 BruschettaInstallerView::BruschettaInstallerView(Profile* profile,
@@ -211,6 +265,11 @@ BruschettaInstallerView::~BruschettaInstallerView() {
     installer_->Cancel();
   }
   observation_.Reset();
+  ash::DarkLightModeController* dark_light_controller =
+      ash::DarkLightModeController::Get();
+  if (dark_light_controller) {
+    dark_light_controller->RemoveObserver(this);
+  }
   g_bruschetta_installer_view = nullptr;
 }
 
@@ -302,7 +361,8 @@ bool BruschettaInstallerView::ShouldShowWindowTitle() const {
   return false;
 }
 
-gfx::Size BruschettaInstallerView::CalculatePreferredSize() const {
+gfx::Size BruschettaInstallerView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   return gfx::Size(kWindowWidth, kWindowHeight);
 }
 
@@ -344,6 +404,7 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
         case InstallerState::kInstallPflash:
         case InstallerState::kStartVm:
         case InstallerState::kLaunchTerminal:
+        case InstallerState::kClearVek:
           return l10n_util::GetStringUTF16(
               IDS_BRUSCHETTA_INSTALLER_STARTING_VM_MESSAGE);
       }
@@ -351,9 +412,7 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
       return l10n_util::GetStringUTF16(
           IDS_BRUSCHETTA_INSTALLER_CLEANING_UP_MESSAGE);
     case State::kFailed:
-      return l10n_util::GetStringFUTF16(
-          IDS_BRUSCHETTA_INSTALLER_ERROR_MESSAGE,
-          bruschetta::BruschettaInstallResultString(error_));
+      return GetDetailedErrorMessage(error_);
     case State::kFailedCleanup:
       return l10n_util::GetStringFUTF16(
           IDS_BRUSCHETTA_INSTALLER_ERROR_CLEANUP_MESSAGE,
@@ -364,37 +423,40 @@ std::u16string BruschettaInstallerView::GetSecondaryMessage() const {
 int BruschettaInstallerView::GetCurrentDialogButtons() const {
   switch (state_) {
     case State::kInstalling:
-      return ui::DIALOG_BUTTON_CANCEL;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel);
     case State::kConfirmInstall:
       // Cancel | Start installing
-      return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk);
     case State::kCleaningUp:
       return 0;
     case State::kFailedCleanup:
     case State::kFailed:
       // Quit | Retry
-      return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk);
   }
 }
 
 std::u16string BruschettaInstallerView::GetCurrentDialogButtonLabel(
-    ui::DialogButton button) const {
+    ui::mojom::DialogButton button) const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK
+          button == ui::mojom::DialogButton::kOk
               ? IDS_BRUSCHETTA_INSTALLER_INSTALL_BUTTON
               : IDS_APP_CANCEL);
     case State::kInstalling:
-      DCHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
+      DCHECK_EQ(button, ui::mojom::DialogButton::kCancel);
       return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
     case State::kCleaningUp:
       return {};
     case State::kFailed:
     case State::kFailedCleanup:
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK ? IDS_BRUSCHETTA_INSTALLER_RETRY_BUTTON
-                                         : IDS_APP_CLOSE);
+          button == ui::mojom::DialogButton::kOk
+              ? IDS_BRUSCHETTA_INSTALLER_RETRY_BUTTON
+              : IDS_APP_CLOSE);
   }
 }
 
@@ -408,25 +470,27 @@ void BruschettaInstallerView::OnStateUpdated() {
 
   int buttons = GetCurrentDialogButtons();
   SetButtons(buttons);
-  if (buttons & ui::DIALOG_BUTTON_OK) {
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                   GetCurrentDialogButtonLabel(ui::DIALOG_BUTTON_OK));
-    SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  if (buttons & static_cast<int>(ui::mojom::DialogButton::kOk)) {
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
+                   GetCurrentDialogButtonLabel(ui::mojom::DialogButton::kOk));
+    SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
   } else {
-    SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+    SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kNone));
   }
-  if (buttons & ui::DIALOG_BUTTON_CANCEL) {
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                   GetCurrentDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+  if (buttons & static_cast<int>(ui::mojom::DialogButton::kCancel)) {
+    SetButtonLabel(
+        ui::mojom::DialogButton::kCancel,
+        GetCurrentDialogButtonLabel(ui::mojom::DialogButton::kCancel));
   }
 
   const bool progress_bar_visible =
       (state_ == State::kInstalling || state_ == State::kCleaningUp);
   progress_bar_->SetVisible(progress_bar_visible);
-  secondary_message_label_->GetViewAccessibility().OverrideIsIgnored(
+  secondary_message_label_->GetViewAccessibility().SetIsIgnored(
       progress_bar_visible);
   if (progress_bar_visible) {
-    progress_bar_->SetAccessibleDescription(secondary_message_label_);
+    progress_bar_->GetViewAccessibility().SetDescription(
+        *secondary_message_label_);
     progress_bar_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                             true);
   }

@@ -28,12 +28,6 @@ class PasswordGenerationPopupController
   // Called by the view when the password was cleared.
   virtual void SelectionCleared() = 0;
 
-  // Called by the view when the edit password row was clicked.
-  virtual void EditPasswordClicked() = 0;
-
-  // Called by the view when the edit password hovered state changes.
-  virtual void EditPasswordHovered(bool hovered) = 0;
-
 // Only on Desktop, the password generation promo contains an indicator of which
 // Google account passwords are saved to. Therefore, the following method isn't
 // relevant for Android.
@@ -50,7 +44,6 @@ class PasswordGenerationPopupController
   // Accessors
   virtual GenerationUIState state() const = 0;
   virtual bool password_selected() const = 0;
-  virtual bool edit_password_selected() const = 0;
   virtual bool accept_button_selected() const = 0;
   virtual bool cancel_button_selected() const = 0;
   virtual const std::u16string& password() const = 0;

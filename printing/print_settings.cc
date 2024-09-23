@@ -267,7 +267,6 @@ std::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
       return false;
     case mojom::ColorModel::kUnknownColorModel:
       NOTREACHED();
-      return std::nullopt;
   }
   // The default case is excluded from the above switch statement to ensure that
   // all ColorModel values are determinantly handled.

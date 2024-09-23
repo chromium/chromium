@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -26,6 +27,7 @@
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/common/bindings_policy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "url/origin.h"
 
@@ -160,7 +162,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void GrantRequestOrigin(int child_id, const url::Origin& origin) override;
   void GrantRequestScheme(int child_id, const std::string& scheme) override;
   bool CanRequestURL(int child_id, const GURL& url) override;
-  bool CanCommitURL(int child_id, const GURL& url) override;
   bool CanReadFile(int child_id, const base::FilePath& file) override;
   bool CanCreateReadWriteFile(int child_id,
                               const base::FilePath& file) override;
@@ -176,8 +177,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void GrantSendMidiMessage(int child_id) override;
   void GrantSendMidiSysExMessage(int child_id) override;
   bool CanAccessDataForOrigin(int child_id, const url::Origin& origin) override;
+  bool HostsOrigin(int child_id, const url::Origin& origin) override;
   void AddFutureIsolatedOrigins(
-      base::StringPiece origins_list,
+      std::string_view origins_list,
       IsolatedOriginSource source,
       BrowserContext* browser_context = nullptr) override;
   void AddFutureIsolatedOrigins(
@@ -192,6 +194,39 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                 IsolatedOriginSource source) override;
   void ClearIsolatedOriginsForTesting() override;
 
+  // Centralized internal implementation of site isolation enforcements,
+  // including CanAccessDataForOrigin and HostsOrigin. It supports the following
+  // types of access checks, in order of increasing strictness:
+  enum class AccessType {
+    // Whether the process can commit a navigation to an origin, allowing a
+    // document with that origin to be hosted in this process. This is
+    // specifically about whether a particular new origin may be introduced
+    // into a given process.
+    kCanCommitNewOrigin,
+    // Whether the process has previously committed a document or instantiated a
+    // worker with the particular origin. This can be used to verify whether a
+    // particular origin can be used as an initiator or source origin, e.g. in
+    // postMessage or other IPCs sent from this process. Unlike
+    // kCanCommitNewOrigin, this check assumes that the origin must already
+    // exist in the process. Because a document/worker destruction may race with
+    // processing legitimate IPCs on behalf of `origin`, this check also allows
+    // the case where an origin has been hosted by the process in the past, but
+    // not necessarily now.
+    kHostsOrigin,
+    // Whether the process can access data belonging to an origin already
+    // committed in the process, such as passwords, localStorage, or cookies.
+    // Similarly to kHostsOrigin, this check assumes that the origin must
+    // already
+    // exist in the process, but it is more strict for certain kinds of
+    // processes that aren't supposed to access any data. For example, sandboxed
+    // frame processes (which contain only opaque origins) or PDF processes
+    // cannot access data for any origin.
+    kCanAccessDataForCommittedOrigin,
+  };
+  bool CanAccessOrigin(int child_id,
+                       const url::Origin& origin,
+                       AccessType access_type);
+
   // Determines if the combination of origin, url and web_exposed_isolation_info
   // bundled in `url_info` are safe to commit to the process associated with
   // `child_id`.
@@ -204,6 +239,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       int child_id,
       const IsolationContext& isolation_context,
       const UrlInfo& url_info);
+
+  // Whether the process is allowed to commit a document from the given URL.
+  // This is more restrictive than CanRequestURL, since CanRequestURL allows
+  // requests that might lead to cross-process navigations or external protocol
+  // handlers. Used primarily as a helper for CanCommitOriginAndUrl and thus not
+  // exposed publicly.
+  bool CanCommitURL(int child_id, const GURL& url);
 
   // This function will check whether |origin| requires process isolation
   // within |isolation_context|, and if so, it will return true and put the
@@ -377,15 +419,36 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Revokes all permissions granted to the given file.
   void RevokeAllPermissionsForFile(int child_id, const base::FilePath& file);
 
-  // Grant the child process the ability to use Web UI Bindings where |bindings|
-  // is either BINDINGS_POLICY_WEB_UI or BINDINGS_POLICY_MOJO_WEB_UI or both.
-  void GrantWebUIBindings(int child_id, int bindings);
+  // Grant the child process the ability to use Web UI Bindings.
+  void GrantWebUIBindings(int child_id, BindingsPolicySet bindings);
 
   // Grant the child process the ability to read raw cookies.
   void GrantReadRawCookies(int child_id);
 
   // Revoke read raw cookies permission.
   void RevokeReadRawCookies(int child_id);
+
+  // Some APIs for Android WebView and <webview> tags allow bypassing some
+  // security checks, such as which URLs are allowed to commit. This method
+  // grants that ability to any document with an origin used with these APIs,
+  // because the exemption is needed for about:blank frames that inherit the
+  // same origin.
+  //
+  // For safety, this is limited to opaque origins used with LoadDataWithBaseURL
+  // in unlocked processes, as well as file origins used with
+  // allow_universal_access_from_file_urls.
+  //
+  // Note that LoadDataWithBaseURL can be used with non-opaque origins as well,
+  // but in that case the bypass is only allowed for the document and not the
+  // entire origin, to prevent other code in the origin from bypassing checks.
+  void GrantOriginCheckExemptionForWebView(int child_id,
+                                           const url::Origin& origin);
+
+  // Returns whether the given opaque or file origin was granted an exemption
+  // due to Android WebView and <webview> APIs, allowing its documents to bypass
+  // certain URL and origin checks.
+  bool HasOriginCheckExemptionForWebView(int child_id,
+                                         const url::Origin& origin);
 
   // Explicit permissions checks for FileSystemURL specified files.
   bool CanReadFileSystemFile(int child_id,
@@ -569,10 +632,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                            IsolatedOriginsRemovedWhenBrowserContextDestroyed);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
                            IsolateAllSuborigins);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           WildcardAndNonWildcardOrigins);
-  FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
-                           WildcardAndNonWildcardEmbedded);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+      WildcardAndNonWildcardOrigins);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChildProcessSecurityPolicyTest_NoOriginKeyedProcessesByDefault,
+      WildcardAndNonWildcardEmbedded);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest,
                            ParseIsolatedOrigins);
   FRIEND_TEST_ALL_PREFIXES(ChildProcessSecurityPolicyTest, WildcardDefaultPort);
@@ -762,7 +827,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // two into IsolatedOriginPatterns, suitable for addition via
   // AddFutureIsolatedOrigins().
   static std::vector<IsolatedOriginPattern> ParseIsolatedOrigins(
-      base::StringPiece pattern_list);
+      std::string_view pattern_list);
 
   void AddFutureIsolatedOrigins(
       const std::vector<IsolatedOriginPattern>& patterns,
@@ -795,11 +860,22 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   static std::string GetKilledProcessOriginLock(
       const SecurityState* security_state);
 
-  // Helper for public CanAccessDataForOrigin overloads.
-  bool CanAccessDataForMaybeOpaqueOrigin(
-      int child_id,
-      const GURL& url,
-      bool url_is_precursor_of_opaque_origin);
+  // Helper for public CanAccessOrigin overloads.
+  bool CanAccessMaybeOpaqueOrigin(int child_id,
+                                  const GURL& url,
+                                  bool url_is_precursor_of_opaque_origin,
+                                  AccessType access_type);
+
+  // Helper used by CanAccessOrigin to impose additional restrictions on a
+  // sandboxed process locked to `process_lock`.
+  bool IsAccessAllowedForSandboxedProcess(const ProcessLock& process_lock,
+                                          const GURL& url,
+                                          bool url_is_for_opaque_origin,
+                                          AccessType access_type);
+
+  // Helper used by CanAccessOrigin to impose additional restrictions on a
+  // process that only hosts PDF documents.
+  bool IsAccessAllowedForPdfProcess(AccessType access_type);
 
   // Utility function to simplify lookups for OriginAgentClusterOptInEntry
   // values by origin.
@@ -809,20 +885,22 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       EXCLUSIVE_LOCKS_REQUIRED(origins_isolation_opt_in_lock_);
 
   // You must acquire this lock before reading or writing any members of this
-  // class, except for isolated_origins_ which uses its own lock.  You must not
-  // block while holding this lock.
+  // class, except for isolated_origins_, schemes_okay_to_*, and
+  // pseudo_schemes_, which use their own locks.  You must not block while
+  // holding this lock.
   base::Lock lock_;
 
-  // These schemes are white-listed for all child processes in various contexts.
-  // These sets are protected by |lock_|.
-  SchemeSet schemes_okay_to_commit_in_any_process_ GUARDED_BY(lock_);
-  SchemeSet schemes_okay_to_request_in_any_process_ GUARDED_BY(lock_);
-  SchemeSet schemes_okay_to_appear_as_origin_headers_ GUARDED_BY(lock_);
+  // These schemes are allow-listed for all child processes in various contexts.
+  // These sets are protected by |schemes_lock_| rather than |lock_|.
+  base::Lock schemes_lock_;
+  SchemeSet schemes_okay_to_commit_in_any_process_ GUARDED_BY(schemes_lock_);
+  SchemeSet schemes_okay_to_request_in_any_process_ GUARDED_BY(schemes_lock_);
+  SchemeSet schemes_okay_to_appear_as_origin_headers_ GUARDED_BY(schemes_lock_);
 
   // These schemes do not actually represent retrievable URLs.  For example,
   // the the URLs in the "about" scheme are aliases to other URLs.  This set is
-  // protected by |lock_|.
-  SchemeSet pseudo_schemes_ GUARDED_BY(lock_);
+  // protected by |schemes_lock_|.
+  SchemeSet pseudo_schemes_ GUARDED_BY(schemes_lock_);
 
   // This map holds a SecurityState for each child process.  The key for the
   // map is the ID of the ChildProcessHost.  The SecurityState objects are

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<body style="content-visibility: auto">
+<script src="../resources/runner.js"></script>
+
+<style>
+  tr { height: 5px; font-size: 4px; }
+</style>
+<table id="testElement">
+  <tr>
+    <th>Sender</th>
+    <td>Message</td>
+  </tr>
+</table>
+
+<script>
+var isDone = false;
+var startTime;
+
+// Before the test starts, add 5000 rows to the table, something like a
+// message board with lots of replies on a long thread.
+// Ensure test content is generated before page load, so that the test
+// construction is not part of the collected traces.
+let table = document.getElementById('testElement');
+for (let i = 0; i < 5000; i++) {
+    let tr = document.createElement('tr');
+    table.appendChild(tr);
+    let sender = document.createElement('td');
+    sender.innerHTML = 'user' + Math.floor(10000*Math.random());
+    tr.appendChild(sender);
+    let message = document.createElement('td');
+    message.innerHTML = '<div style="display:inline-block">Message content ' +
+        Math.floor(10000*Math.random()) + '</div> ';
+    let link = document.createElement('a');
+    link.href = '#';
+    link.id = 'link' + i;
+    link.innerHTML = 'Reply';
+    message.appendChild(link);
+    tr.appendChild(message);
+    let moreStuff = document.createElement('td');
+    moreStuff.innerHTML = '<a href="#"><img> Copy</a> <a href="3"><img> Remind me!</a> <a href="#"><img> Mute</a>';
+    tr.appendChild(moreStuff);
+    let evenMoreStuff = document.createElement('td');
+    evenMoreStuff.innerHTML = '<code>The</code> <code>quick</code> <code>brown</code> <code>fox</code> <code>jumps</code> <code>over</code> <code>the</code> <code>lazy</code> <code>dog</code>... <i><label>Name of dog: <span contenteditable role=textbox><b>fido</b></span></label></i><span><span><span><span>x</span><span>y</span><span>z</span></span?</span></span>';
+    tr.appendChild(evenMoreStuff);
+    tr.appendChild(evenMoreStuff.cloneNode(/*deep*/ true));
+    tr.appendChild(evenMoreStuff.cloneNode(/*deep*/ true));
+}
+
+function runTest() {
+    if (startTime) {
+        PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+        PerfTestRunner.addRunTestEndMarker();
+    }
+    if (!isDone) {
+        PerfTestRunner.addRunTestStartMarker();
+        startTime = PerfTestRunner.now();
+
+        let scrollTimes = 0;
+
+        window.scrollTo(0, 0);
+
+        let scrollInProcess = false;
+        let scroll = () => {
+            if (scrollInProcess)
+              return;
+            scrollInProcess = true;
+
+            if (scrollTimes == 10) {
+              // Wait to allow the asynchronous accessibility code that's
+              // covered by traceEventsToMeasure to have a chance to run.
+              return setTimeout(runTest, 2500);
+            }
+
+            requestAnimationFrame(() => {
+                scrollTimes ++;
+                document.addEventListener("scrollend", () => {
+                    scrollInProcess = false;
+                    setTimeout(scroll, 300);
+                }, { once: true });
+                window.scrollBy({
+                    top: 3000,
+                    behavior: 'smooth'
+                });
+            });
+        };
+
+        scroll();
+    }
+}
+
+PerfTestRunner.startMeasureValuesAsync({
+  description: 'Test accessibility performance when scrolling some divs',
+  unit: 'ms',
+  done: function () {
+    isDone = true;
+  },
+  run: function() {
+    runTest();
+  },
+  iterationCount: 3,
+  warmUpCount: 3, // Give time for a11y events coming from page
+                  // construction to pass.
+  tracingCategories: 'accessibility',
+  traceEventsToMeasure: [
+      'TotalAccessibilityCleanLayoutLifecycleStages',
+      'ProcessDeferredUpdatesLifecycleStage',
+      'FinalizingTreeLifecycleStage',
+      'SerializeLifecycleStage',
+      'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
+      'BrowserAccessibilityManager::OnAccessibilityEvents',
+      'SerializeLocationChanges',
+      "BrowserAccessibilityManager::OnLocationChanges"
+  ]
+});
+</script>
+
+</html>

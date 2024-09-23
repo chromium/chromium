@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/common/mojom/message_port.mojom.h"
@@ -171,8 +172,7 @@ class OneTimeMessageHandler {
                     std::optional<base::Value> result);
 
   // The associated bindings system. Outlives this object.
-  const raw_ptr<NativeExtensionBindingsSystem, ExperimentalRenderer>
-      bindings_system_;
+  const raw_ptr<NativeExtensionBindingsSystem> bindings_system_;
 
   base::WeakPtrFactory<OneTimeMessageHandler> weak_factory_{this};
 };

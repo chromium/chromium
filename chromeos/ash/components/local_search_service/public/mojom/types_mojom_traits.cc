@@ -25,7 +25,7 @@ EnumTraits<ash::local_search_service::mojom::IndexId,
     case ash::local_search_service::IndexId::kShortcutsApp:
       return ash::local_search_service::mojom::IndexId::kShortcutsApp;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::local_search_service::mojom::IndexId::kCrosSettings;
 }
 
@@ -51,7 +51,7 @@ bool EnumTraits<ash::local_search_service::mojom::IndexId,
       *output = ash::local_search_service::IndexId::kShortcutsApp;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -66,7 +66,7 @@ EnumTraits<ash::local_search_service::mojom::Backend,
     case ash::local_search_service::Backend::kInvertedIndex:
       return ash::local_search_service::mojom::Backend::kInvertedIndex;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::local_search_service::mojom::Backend::kLinearMap;
 }
 
@@ -83,7 +83,7 @@ bool EnumTraits<ash::local_search_service::mojom::Backend,
       *output = ash::local_search_service::Backend::kInvertedIndex;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -175,7 +175,7 @@ EnumTraits<ash::local_search_service::mojom::ResponseStatus,
     case ash::local_search_service::ResponseStatus::kEmptyIndex:
       return ash::local_search_service::mojom::ResponseStatus::kEmptyIndex;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ash::local_search_service::mojom::ResponseStatus::kUnknownError;
 }
 
@@ -198,7 +198,7 @@ bool EnumTraits<ash::local_search_service::mojom::ResponseStatus,
       *output = ash::local_search_service::ResponseStatus::kEmptyIndex;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

@@ -10,11 +10,12 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "remoting/protocol/errors.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -37,16 +38,13 @@ const ash::KioskAppManagerBase* GetKioskAppManager(
   if (user_manager.IsLoggedInAsKioskApp()) {
     return ash::KioskChromeAppManager::Get();
   }
-  if (user_manager.IsLoggedInAsArcKioskApp()) {
-    return ash::ArcKioskAppManager::Get();
-  }
   if (user_manager.IsLoggedInAsWebKioskApp()) {
     return ash::WebKioskAppManager::Get();
   }
 
   // This method should only be invoked when we know we're in a kiosk
   // environment, so one of these app managers must exist.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -159,8 +157,13 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
     // commercial CRD.
     case ErrorCode::ELEVATION_ERROR:
       return ExtendedStartCrdSessionResultCode::kFailureUnknownError;
+    case ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
+      return ExtendedStartCrdSessionResultCode::
+          kFailureReauthzPolicyCheckFailed;
+    case ErrorCode::NO_COMMON_AUTH_METHOD:
+      return ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 StartCrdSessionResultCode ToStartCrdSessionResultCode(
@@ -204,12 +207,14 @@ StartCrdSessionResultCode ToStartCrdSessionResultCode(
     case ExtendedStartCrdSessionResultCode::kFailureHostPolicyError:
     case ExtendedStartCrdSessionResultCode::kFailureHostInvalidDomainError:
     case ExtendedStartCrdSessionResultCode::kHostSessionDisconnected:
+    case ExtendedStartCrdSessionResultCode::kFailureReauthzPolicyCheckFailed:
+    case ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod:
       // The server side is not interested in a lot of the different CRD host
       // failures, which is why most of them are simply mapped to
       // 'FAILURE_CRD_HOST_ERROR`.
       return StartCrdSessionResultCode::FAILURE_CRD_HOST_ERROR;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 base::TimeDelta GetDeviceIdleTime() {
@@ -284,6 +289,18 @@ bool UserSessionSupportsRemoteSupport(UserSessionType user_session) {
     case UserSessionType::USER_SESSION_TYPE_UNKNOWN:
       return false;
   }
+}
+
+bool IsRemoteAccessAllowedByPolicy(const PrefService& prefs) {
+  return prefs.GetBoolean(
+             prefs::kDeviceAllowEnterpriseRemoteAccessConnections) &&
+         prefs.GetBoolean(
+             prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
+}
+
+bool IsRemoteSupportAllowedByPolicy(const PrefService& prefs) {
+  return prefs.GetBoolean(
+      prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
 }
 
 const char* UserSessionTypeToString(UserSessionType value) {

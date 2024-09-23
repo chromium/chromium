@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -66,12 +68,6 @@ const SkBitmap create_bitmap(int width, int height, int r, int g, int b) {
   return bitmap;
 }
 
-void WaitForHostClassification() {
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-     FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
-  run_loop.Run();
-}
 }  // namespace
 
 class VisualQueryClassifierHostTest : public ChromeRenderViewHostTestHarness {
@@ -125,6 +121,32 @@ class VisualQueryClassifierHostTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  void StartClassification() {
+    visual_query_host_->set_model_loaded_callback_for_testing(
+        model_succeeded_loop_.QuitClosure());
+    service_->set_model_load_failure_callback_for_testing(
+        model_failed_loop_.QuitClosure());
+    visual_query_host_->StartClassification(
+        web_contents()->GetPrimaryMainFrame(), url_,
+        base::BindLambdaForTesting(
+            [&](const VisualSuggestionsResults out_results,
+                const VisualSuggestionsMetrics out_metrics) {
+              results_ = out_results;
+              metrics_ = out_metrics;
+              results_loop_.Quit();
+            }));
+  }
+
+  void WaitForModelLoaded() { model_succeeded_loop_.Run(); }
+
+  void WaitForModelLoadFailure() { model_failed_loop_.Run(); }
+
+  std::pair<VisualSuggestionsResults&, VisualSuggestionsMetrics&>
+  WaitForClassification() {
+    results_loop_.Run();
+    return std::tie(results_, metrics_);
+  }
+
  protected:
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       test_model_provider_;
@@ -135,16 +157,18 @@ class VisualQueryClassifierHostTest : public ChromeRenderViewHostTestHarness {
       visual_query_host_;
   const GURL url_;
   base::HistogramTester histogram_tester_;
+
+  base::RunLoop model_succeeded_loop_;
+  base::RunLoop model_failed_loop_;
+  base::RunLoop results_loop_;
+  VisualSuggestionsResults results_;
+  VisualSuggestionsMetrics metrics_;
 };
 
 TEST_F(VisualQueryClassifierHostTest, StartClassification) {
   SetModelPath();
-  VisualQueryClassifierHost::ResultCallback callback =
-      base::BindOnce([](const VisualSuggestionsResults results,
-                        const VisualSuggestionsMetrics stats) {});
-  visual_query_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
-  WaitForHostClassification();
+  StartClassification();
+  WaitForModelLoaded();
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassifierModelAvailable", true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -158,12 +182,9 @@ TEST_F(VisualQueryClassifierHostTest, StartClassification) {
 }
 
 TEST_F(VisualQueryClassifierHostTest, StartClassification_NoModelSet) {
-  VisualQueryClassifierHost::ResultCallback callback =
-      base::BindOnce([](const VisualSuggestionsResults results,
-                        const VisualSuggestionsMetrics stats) {});
-  visual_query_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
-  WaitForHostClassification();
+  StartClassification();
+  // In this case, no model is present at all, so model loading can neither
+  // succeed nor fail. We wait for nothing.
 
   // ModelFileSuccess is never called because the |OnModelUpdate| is never
   // called by the |service_| since we never setup the model path.
@@ -179,12 +200,8 @@ TEST_F(VisualQueryClassifierHostTest, StartClassification_NoModelSet) {
 
 TEST_F(VisualQueryClassifierHostTest, StartClassification_WithInvalidModel) {
   SetInvalidModelPath();
-  VisualQueryClassifierHost::ResultCallback callback =
-      base::BindOnce([](const VisualSuggestionsResults results,
-                        const VisualSuggestionsMetrics stats) {});
-  visual_query_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
-  WaitForHostClassification();
+  StartClassification();
+  WaitForModelLoadFailure();
 
   // We expect empty result right away since we don't have a good model.
   EXPECT_EQ(visual_query_host_->GetVisualResult(url_).value().size(), 0U);
@@ -202,14 +219,10 @@ TEST_F(VisualQueryClassifierHostTest, StartClassification_WithInvalidModel) {
 
 TEST_F(VisualQueryClassifierHostTest, StartClassification_WithCancellation) {
   SetModelPath();
-  VisualQueryClassifierHost::ResultCallback callback =
-      base::BindOnce([](const VisualSuggestionsResults results,
-                        const VisualSuggestionsMetrics stats) {});
-  visual_query_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
+  StartClassification();
   GURL url("https://foo.bar");
   visual_query_host_->CancelClassification(url);
-  WaitForHostClassification();
+  WaitForModelLoaded();
 
   histogram_tester_.ExpectBucketCount(
       "Companion.VisualQuery.ClassificationInitStatus",
@@ -224,14 +237,8 @@ TEST_F(VisualQueryClassifierHostTest, StartClassification_WithCancellation) {
 
 TEST_F(VisualQueryClassifierHostTest, HandleClassification) {
   SetModelPath();
-  VisualQueryClassifierHost::ResultCallback callback =
-      base::BindOnce([](const VisualSuggestionsResults results,
-                        const VisualSuggestionsMetrics stats) {
-        EXPECT_EQ(results.size(), 1U);
-      });
-  visual_query_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
-  WaitForHostClassification();
+  StartClassification();
+  WaitForModelLoaded();
 
   std::vector<mojom::VisualQuerySuggestionPtr> results;
   SkBitmap result = create_bitmap(1000, 1000, 128, 128, 255);
@@ -241,7 +248,8 @@ TEST_F(VisualQueryClassifierHostTest, HandleClassification) {
       mojom::ClassificationStats::New(mojom::ClassificationStats());
   visual_query_host_->HandleClassification(std::move(results),
                                             std::move(stats));
-  WaitForHostClassification();
+  auto [out_results, _] = WaitForClassification();
+  EXPECT_EQ(out_results.size(), 1U);
 
   // We expect last result to have size of 1 for given url.
   EXPECT_EQ(visual_query_host_->GetVisualResult(url_).value().size(), 1U);

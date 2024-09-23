@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 
 #include "base/memory/scoped_refptr.h"
@@ -46,7 +51,7 @@ scoped_refptr<SerializedScriptValue> BuildSerializedScriptValue(
     Transferables& transferables) {
   SerializedScriptValue::SerializeOptions options;
   options.transferables = &transferables;
-  ExceptionState exceptionState(isolate, ExceptionContextType::kOperationInvoke,
+  ExceptionState exceptionState(isolate, v8::ExceptionContext::kOperation,
                                 "MessageChannel", "postMessage");
   return SerializedScriptValue::Serialize(isolate, value, options,
                                           exceptionState);
@@ -221,7 +226,7 @@ TEST(BlinkTransferableMessageStructTraitsTest,
 class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
  public:
   void SetUp() override {
-    auto sii = base::MakeRefCounted<viz::TestSharedImageInterface>();
+    auto sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     sii_ = sii.get();
     context_provider_ = viz::TestContextProvider::Create(std::move(sii));
     InitializeSharedGpuContextGLES2(context_provider_.get());
@@ -229,7 +234,7 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
 
   void TearDown() override {
     sii_ = nullptr;
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
 
   gpu::SyncToken GenTestSyncToken(GLbyte id) {
@@ -241,11 +246,11 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
   ImageBitmap* CreateAcceleratedStaticImageBitmap() {
-    auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+    auto client_si = gpu::ClientSharedImage::CreateForTesting();
 
     return MakeGarbageCollected<ImageBitmap>(
-        AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-            mailbox, GenTestSyncToken(100), 0,
+        AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+            std::move(client_si), GenTestSyncToken(100), 0,
             SkImageInfo::MakeN32Premul(100, 100), GL_TEXTURE_2D, true,
             SharedGpuContext::ContextProviderWrapper(),
             base::PlatformThread::CurrentRef(),
@@ -262,7 +267,7 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
  protected:
-  viz::TestSharedImageInterface* sii_;
+  gpu::TestSharedImageInterface* sii_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
 
   bool image_destroyed_ = false;

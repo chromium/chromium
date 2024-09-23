@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
 
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "content/public/test/test_utils.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -24,15 +27,22 @@ views::Widget* OmniboxPopupViewViewsTest::CreatePopupForTestQuery() {
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(GetPopupWidget());
 
-  edit_model()->SetUserText(u"foo");
-  AutocompleteInput input(
-      u"foo", metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  input.set_omit_asynchronous_matches(true);
-  controller()->StartAutocomplete(input);
+  // Verify that the on-shown callback is called at the correct time.
+  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, popup_callback);
+  const auto subscription = popup_view()->AddOpenListener(popup_callback.Get());
 
-  EXPECT_FALSE(autocomplete_controller->result().empty());
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_CALL_IN_SCOPE(popup_callback, Run, {
+    edit_model()->SetUserText(u"foo");
+    AutocompleteInput input(
+        u"foo", metrics::OmniboxEventProto::BLANK,
+        ChromeAutocompleteSchemeClassifier(browser()->profile()));
+    input.set_omit_asynchronous_matches(true);
+    controller()->StartAutocomplete(input);
+
+    EXPECT_FALSE(autocomplete_controller->result().empty());
+    EXPECT_TRUE(popup_view()->IsOpen());
+  });
+
   views::Widget* popup = GetPopupWidget();
   EXPECT_TRUE(popup);
   return popup;
@@ -45,7 +55,7 @@ void OmniboxPopupViewViewsTest::UseDefaultTheme() {
   // However BrowserThemeProvider::GetColorProviderColor() currently does not
   // pass an aura::Window to LinuxUI::GetNativeTheme() - which means that the
   // NativeThemeGtk instance will always be returned.
-  // TODO(crbug.com/1304441): Remove this once GTK passthrough is fully
+  // TODO(crbug.com/40217733): Remove this once GTK passthrough is fully
   // supported.
   ui::LinuxUiGetter::set_instance(nullptr);
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();

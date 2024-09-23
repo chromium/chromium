@@ -15,8 +15,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/tcp_socket.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
@@ -37,9 +36,9 @@ class IPEndPoint;
 }  // namespace net
 
 namespace blink {
-
-class TCPSocketOptions;
 class SocketCloseOptions;
+class TCPSocketOpenInfo;
+class TCPSocketOptions;
 
 // TCPSocket interface from tcp_socket.idl
 class MODULES_EXPORT TCPSocket final
@@ -58,7 +57,8 @@ class MODULES_EXPORT TCPSocket final
                            ExceptionState&);
 
   // Socket:
-  ScriptPromise close(ScriptState*, ExceptionState&) override;
+  ScriptPromise<TCPSocketOpenInfo> opened(ScriptState*) const;
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&) override;
 
  public:
   // Constructor for use from TCPServerSocket.
@@ -126,6 +126,8 @@ class MODULES_EXPORT TCPSocket final
   HeapMojoRemote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
   HeapMojoReceiver<network::mojom::blink::SocketObserver, TCPSocket>
       socket_observer_;
+
+  Member<ScriptPromiseProperty<TCPSocketOpenInfo, DOMException>> opened_;
 
   Member<TCPReadableStreamWrapper> readable_stream_wrapper_;
   Member<TCPWritableStreamWrapper> writable_stream_wrapper_;

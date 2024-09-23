@@ -7,8 +7,6 @@
 
 #include "base/win/atl.h"
 
-#include <atlcomcli.h>
-
 namespace credential_provider {
 
 namespace testing {

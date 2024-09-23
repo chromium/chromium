@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/tabs/organization/tab_organization.h"
+
 #include <memory>
 #include <string>
 
@@ -11,13 +13,13 @@
 #include "chrome/browser/ui/tabs/organization/logging_util.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/tabs/test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -38,7 +40,8 @@ class FakeModelQualityLogEntry
  public:
   FakeModelQualityLogEntry()
       : optimization_guide::ModelQualityLogEntry(
-            std::make_unique<optimization_guide::proto::LogAiDataRequest>()) {}
+            std::make_unique<optimization_guide::proto::LogAiDataRequest>(),
+            nullptr) {}
 };
 
 }  // anonymous namespace
@@ -112,7 +115,7 @@ class TabOrganizationTest : public testing::Test {
   }
 
   std::unique_ptr<TabOrganizationSession> CreateSessionWithValidOrganization(
-      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::NONE) {
+      TabOrganizationEntryPoint entrypoint = TabOrganizationEntryPoint::kNone) {
     std::unique_ptr<TabOrganizationRequest> request =
         std::make_unique<TabOrganizationRequest>();
     TabOrganizationRequest* request_ptr = request.get();
@@ -148,6 +151,7 @@ class TabOrganizationTest : public testing::Test {
 
   const std::unique_ptr<TestTabStripModelDelegate> delegate_;
   const std::unique_ptr<TabStripModel> tab_strip_model_;
+  tabs::PreventTabFeatureInitialization prevent_;
 };
 
 class SessionObserver : public TabOrganizationSession::Observer {
@@ -188,8 +192,8 @@ TEST_F(TabOrganizationTest, TabDataTabStripModelConstructor) {
   EXPECT_EQ(tab_strip_model(), tab_data.original_tab_strip_model());
   EXPECT_EQ(web_contents->GetLastCommittedURL(), tab_data.original_url());
 
-  // TODO(1476012) Add a check for TabID once TabStripModel::Tab has the new
-  // handle.
+  // TODO(crbug.com/40070608) Add a check for TabID once TabStripModel::Tab has
+  // the new handle.
 }
 
 // Check that TabData isn't updated when the tabstrip updates.
@@ -244,7 +248,7 @@ TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsReplaceUpdatesContents) {
   std::unique_ptr<content::WebContents> new_contents = CreateWebContents();
   content::WebContents* new_contents_ptr = new_contents.get();
   EXPECT_EQ(tab_data->web_contents(), old_contents);
-  tab_strip_model()->ReplaceWebContentsAt(
+  tab_strip_model()->DiscardWebContentsAt(
       tab_strip_model()->GetIndexOfWebContents(old_contents),
       std::move(new_contents));
   EXPECT_EQ(tab_data->web_contents(), new_contents_ptr);
@@ -330,7 +334,7 @@ TEST_F(TabOrganizationTest, TabDataObserverTest) {
   // replace the contents which should result in an update call.
   std::unique_ptr<content::WebContents> new_contents = CreateWebContents();
   content::WebContents* new_contents_ptr = new_contents.get();
-  tab_strip_model()->ReplaceWebContentsAt(
+  tab_strip_model()->DiscardWebContentsAt(
       tab_strip_model()->GetIndexOfWebContents(old_contents),
       std::move(new_contents));
   EXPECT_EQ(observer.update_call_count, 1);
@@ -458,7 +462,8 @@ TEST_F(TabOrganizationTest, TabOrganizationReject) {
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationCHECKOnChangingUserChoiceTwice) {
-  TabOrganization organization({}, {u"default_name"}, /*current_name*/ 0u,
+  TabOrganization organization({}, {u"default_name"}, /*first_new_tab_index=*/0,
+                               /*current_name=*/0u,
                                TabOrganization::UserChoice::kAccepted);
 
   EXPECT_DEATH(organization.Reject(), "");
@@ -491,6 +496,27 @@ TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
       std::make_unique<TabData>(tab_strip_model(), tab_3);
   organization.AddTabData(std::move(tab_data_3));
   EXPECT_FALSE(organization.IsValidForOrganizing());
+
+  TabOrganization pre_existing_organization({}, {u"default_name"}, 2);
+
+  content::WebContents* grouped_tab_1 = AddTab();
+  std::unique_ptr<TabData> grouped_tab_data_1 =
+      std::make_unique<TabData>(tab_strip_model(), grouped_tab_1);
+  pre_existing_organization.AddTabData(std::move(grouped_tab_data_1));
+
+  content::WebContents* grouped_tab_2 = AddTab();
+  std::unique_ptr<TabData> grouped_tab_data_2 =
+      std::make_unique<TabData>(tab_strip_model(), grouped_tab_2);
+  pre_existing_organization.AddTabData(std::move(grouped_tab_data_2));
+  // The minimum number of tabs is met, but there are no tabs new to the group.
+  EXPECT_FALSE(pre_existing_organization.IsValidForOrganizing());
+
+  content::WebContents* grouped_tab_3 = AddTab();
+  std::unique_ptr<TabData> grouped_tab_data_3 =
+      std::make_unique<TabData>(tab_strip_model(), grouped_tab_3);
+  pre_existing_organization.AddTabData(std::move(grouped_tab_data_3));
+  // There is one tab new to the group.
+  EXPECT_TRUE(pre_existing_organization.IsValidForOrganizing());
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationNoUniqueTabDatas) {
@@ -1422,7 +1448,7 @@ TEST_F(TabOrganizationTest,
   base::HistogramTester histogram_tester;
   std::unique_ptr<TabOrganizationSession> session =
       CreateSessionWithValidOrganization(
-          TabOrganizationEntryPoint::TAB_CONTEXT_MENU);
+          TabOrganizationEntryPoint::kTabContextMenu);
 
   ASSERT_NE(session->GetNextTabOrganization(), nullptr);
   session->GetNextTabOrganization()->Accept();
@@ -1442,7 +1468,7 @@ TEST_F(TabOrganizationTest,
   base::HistogramTester histogram_tester;
   std::unique_ptr<TabOrganizationSession> session =
       CreateSessionWithValidOrganization(
-          TabOrganizationEntryPoint::THREE_DOT_MENU);
+          TabOrganizationEntryPoint::kThreeDotMenu);
 
   ASSERT_NE(session->GetNextTabOrganization(), nullptr);
   session->GetNextTabOrganization()->Reject();
@@ -1461,7 +1487,7 @@ TEST_F(TabOrganizationTest,
        HistogramLogNoChoiceOrganizationProactiveEntryPoint) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<TabOrganizationSession> session =
-      CreateSessionWithValidOrganization(TabOrganizationEntryPoint::PROACTIVE);
+      CreateSessionWithValidOrganization(TabOrganizationEntryPoint::kProactive);
   ASSERT_NE(session->GetNextTabOrganization(), nullptr);
 
   session.reset();

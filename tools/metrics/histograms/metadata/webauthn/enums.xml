@@ -26,6 +26,21 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ChangePinEvent">
+  <int value="0" label="A PIN change request is triggered in settings."/>
+  <int value="1" label="A PIN change request is triggered in PIN dialog."/>
+  <int value="2" label="GAIA reauth succeeded and a RAPT is retrieved."/>
+  <int value="3" label="GAIA reauth is cancelled by closing the window."/>
+  <int value="4" label="A new PIN is entered in the GPM PIN dialog."/>
+  <int value="5"
+      label="Change PIN request is cancelled by dismissing the new PIN
+             dialog."/>
+  <int value="6" label="Change PIN request succeeded in enclave."/>
+  <int value="7"
+      label="Change PIN request failed in enclave. This does not include
+             cancellations."/>
+</enum>
+
 <enum name="CredManCreateRequestEnum">
   <int value="0" label="A createCredential request was sent to the platform."/>
   <int value="1"
@@ -57,6 +72,25 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="prepareGetCredential request succeeded but there are no results."/>
   <int value="4" label="prepareGetCredential request failed."/>
+</enum>
+
+<enum name="SignalAllAcceptedCredentialsResult">
+  <int value="0" label="No passkeys were removed"/>
+  <int value="1" label="A passkey was removed"/>
+</enum>
+
+<enum name="SignalCurrentUserDetailsResult">
+  <int value="0"
+      label="The website exceeded the quota, so the request was dropped."/>
+  <int value="1"
+      label="A passkey matching the user ID was found and had changed, so it
+             was updated."/>
+  <int value="2" label="No passkeys were updated."/>
+</enum>
+
+<enum name="SignalUnknownCredentialResult">
+  <int value="0" label="The passkey ID was not found, so nothing was removed."/>
+  <int value="1" label="The passkey ID was found and removed."/>
 </enum>
 
 <enum name="WebAuthenticationAOADiscoveryEvent">
@@ -180,16 +214,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Canceled"/>
 </enum>
 
-<enum name="WebAuthenticationFidoTransport">
-  <int value="0" label="USB HID"/>
-  <int value="1" label="Near Field Communication"/>
-  <int value="2" label="Bluetooth Low Energy"/>
-  <int value="3" label="Cloud-assisted BLE"/>
-  <int value="4" label="Internal"/>
-  <int value="5" label="Android Accessory"/>
-</enum>
-
-<enum name="WebAuthenticationGetAssertionResult">
+<enum name="WebAuthenticationCredentialRequestResult">
   <int value="0" label="Timeout"/>
   <int value="1" label="User cancelled"/>
   <int value="2" label="Native Windows API success"/>
@@ -206,6 +231,51 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Enclave failure"/>
   <int value="14" label="Other device success"/>
   <int value="15" label="Other device error"/>
+</enum>
+
+<enum name="WebAuthenticationEnclaveEvent">
+  <int value="0" label="Onboarding sheet was shown to the user"/>
+  <int value="1"
+      label="User rejected the onboarding sheet by requesting to save the
+             passkey in a different authenticator"/>
+  <int value="2" label="User accepted the onboarding sheet"/>
+  <int value="3" label="A MagicArch window was shown"/>
+  <int value="4" label="MagicArch provided the security domain secret"/>
+  <int value="5" label="A create() request was sent to the enclave"/>
+  <int value="6" label="A get() request was sent to the enclave"/>
+  <int value="7"
+      label="The enclave create passkey dialog was shown as the priority
+             mechanism"/>
+  <int value="8"
+      label="User backed out of create passkey priority mechanism screen"/>
+  <int value="9" label="User recovered from an iCloud Keychain recovery key"/>
+</enum>
+
+<enum name="WebAuthenticationFidoTransport">
+  <int value="0" label="USB HID"/>
+  <int value="1" label="Near Field Communication"/>
+  <int value="2" label="Bluetooth Low Energy"/>
+  <int value="3" label="Cloud-assisted BLE"/>
+  <int value="4" label="Internal"/>
+  <int value="5" label="Android Accessory"/>
+</enum>
+
+<enum name="WebAuthenticationGetAssertionOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Security Error"/>
+  <int value="2" label="User Cancellation"/>
+  <int value="3" label="Credential Not Recognized"/>
+  <int value="4" label="Invalid Response From Authenticator"/>
+  <int value="5" label="RK Not Supported"/>
+  <int value="6" label="UV Not Supported"/>
+  <int value="7" label="Soft PIN Block"/>
+  <int value="8" label="Hard PIN Block"/>
+  <int value="9" label="Platform Not Allowed Error"/>
+  <int value="10" label="Hybrid Transport Error"/>
+  <int value="11" label="Blocked By Filter"/>
+  <int value="12" label="Enclave Authenticator Error"/>
+  <int value="13" label="Timeout Occurred"/>
+  <int value="14" label="Other Failure"/>
 </enum>
 
 <enum name="WebAuthenticationMacOSPasskeysPermission">
@@ -252,6 +322,51 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Successful get() from iCloud Keychain"/>
 </enum>
 
+<enum name="WebAuthenticationMakeCredentialOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Security Error"/>
+  <int value="2" label="User Cancellation"/>
+  <int value="3" label="Credential Excluded"/>
+  <int value="4" label="Invalid Response From Authenticator"/>
+  <int value="5" label="RK Not Supported"/>
+  <int value="6" label="UV Not Supported"/>
+  <int value="7" label="Large Blob Not Supported"/>
+  <int value="8" label="Algorithm Not Supported"/>
+  <int value="9" label="Soft PIN Block"/>
+  <int value="10" label="Hard PIN Block"/>
+  <int value="11" label="Storage Full"/>
+  <int value="12" label="Platform Not Allowed Error"/>
+  <int value="13" label="Hybrid Transport Error"/>
+  <int value="14" label="Blocked By Filter"/>
+  <int value="15" label="Enclave Authenticator Error"/>
+  <int value="16" label="Timeout Occurred"/>
+  <int value="17" label="Other Failure"/>
+</enum>
+
+<enum name="WebAuthenticationRequestMode">
+  <int value="0" label="WebAuthn Modal Request"/>
+  <int value="1" label="WebAuthn Conditional UI Request"/>
+  <int value="2" label="Payment Request"/>
+</enum>
+
+<enum name="WindowsForegroundedHelloDialog">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="SetForegroundWindow failed"/>
+  <int value="2" label="Window not found"/>
+  <int value="3" label="Polling cancelled before finding window"/>
+</enum>
+
+<enum name="WindowsKeyCredentialCreateResult">
+  <int value="0" label="Operation succeeded"/>
+  <int value="1" label="System operation returned an error"/>
+  <int value="2" label="ActivationFactory Not Available"/>
+  <int value="3" label="RequestCreateAsync Call Failed"/>
+  <int value="4" label="PostAsyncHandlers Call Failed"/>
+  <int value="5" label="Invalid status returned"/>
+  <int value="6" label="Invalid result returned"/>
+  <int value="7" label="Invalid credential returned"/>
+</enum>
+
 <enum name="WindowsKeyCredentialManagerSupportResults">
   <int value="0" label="KeyCredentialManager Available"/>
   <int value="1" label="KeyCredentialManager Not Available"/>
@@ -259,6 +374,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="IsSupportedAsync Call Failed"/>
   <int value="4" label="PostAsyncHandlers Call Failed"/>
   <int value="5" label="Async Operation Failed"/>
+</enum>
+
+<enum name="WindowsKeyCredentialSignResult">
+  <int value="0" label="Operation succeeded"/>
+  <int value="1" label="System operation returned an error"/>
+  <int value="2" label="RequestSignAsync call failed"/>
+  <int value="3" label="PostAsyncHandlers call failed"/>
+  <int value="4" label="IBuffer creation failed"/>
+  <int value="5" label="Invalid status returned"/>
+  <int value="6" label="Invalid result returned"/>
+  <int value="7" label="Invalid signature buffer returned"/>
 </enum>
 
 </enums>

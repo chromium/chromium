@@ -64,7 +64,8 @@ class V8CrowdsourcedCompileHintsProducer
   bool SendDataToUkm();
   static void AddNoise(unsigned* data);
 
-  HeapVector<v8::TracedReference<v8::Script>> scripts_;
+  HeapVector<v8::TracedReference<v8::CompileHintsCollector>>
+      compile_hints_collectors_;
   WTF::Vector<uint32_t> script_name_hashes_;
 
   enum class State {

@@ -36,6 +36,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
@@ -87,6 +88,7 @@ namespace {
 // Formatting constants
 static constexpr int kLineHeightDip = 24;
 static constexpr int kLiveTranslateLabelLineHeightDip = 18;
+static constexpr int kLiveTranslateImageWidthDip = 16;
 static constexpr int kLanguageButtonImageLabelSpacing = 4;
 static constexpr int kNumLinesCollapsed = 2;
 static constexpr int kNumLinesExpanded = 8;
@@ -164,7 +166,7 @@ bool ParseNonTransparentRGBACSSColorString(
 #if BUILDFLAG(IS_MAC)
   // On Mac, any opacity lower than 90% leaves rendering artifacts which make
   // it appear like there is a layer of faint text beneath the actual text.
-  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // TODO(crbug.com/40177817): Fix the rendering issue and then remove this
   // workaround.
   a_int = std::max(static_cast<uint16_t>(SkColorGetA(color_provider->GetColor(
                        ui::kColorLiveCaptionBubbleBackgroundDefault))),
@@ -183,8 +185,8 @@ class CaptionBubbleEventObserver : public ui::EventObserver {
     CHECK(widget);
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, widget->GetNativeWindow(),
-        {ui::ET_MOUSE_MOVED, ui::ET_MOUSE_EXITED, ui::ET_KEY_PRESSED,
-         ui::ET_KEY_RELEASED});
+        {ui::EventType::kMouseMoved, ui::EventType::kMouseExited,
+         ui::EventType::kKeyPressed, ui::EventType::kKeyReleased});
   }
 
   CaptionBubbleEventObserver(const CaptionBubbleEventObserver&) = delete;
@@ -224,10 +226,15 @@ class CaptionBubbleEventObserver : public ui::EventObserver {
 
 namespace captions {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsCaptionBubbleKey, false)
+#endif
+
 #if BUILDFLAG(IS_WIN)
 class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
+  METADATA_HEADER(MediaFoundationRendererErrorMessageView, views::StyledLabel)
+
  public:
-  METADATA_HEADER(MediaFoundationRendererErrorMessageView);
   explicit MediaFoundationRendererErrorMessageView(
       CaptionBubble* caption_bubble)
       : caption_bubble_(caption_bubble) {}
@@ -248,7 +255,7 @@ class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
   const raw_ptr<CaptionBubble> caption_bubble_;  // Not owned.
 };
 
-BEGIN_METADATA(MediaFoundationRendererErrorMessageView, views::StyledLabel)
+BEGIN_METADATA(MediaFoundationRendererErrorMessageView)
 END_METADATA
 
 #endif
@@ -256,8 +263,9 @@ END_METADATA
 // CaptionBubble implementation of BubbleFrameView. This class takes care
 // of making the caption draggable.
 class CaptionBubbleFrameView : public views::BubbleFrameView {
+  METADATA_HEADER(CaptionBubbleFrameView, views::BubbleFrameView)
+
  public:
-  METADATA_HEADER(CaptionBubbleFrameView);
   explicit CaptionBubbleFrameView(
       std::vector<raw_ptr<views::View, VectorExperimental>> buttons,
       ResetInactivityTimerCallback reset_inactivity_timer_cb)
@@ -278,7 +286,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
     reset_inactivity_timer_cb_.Run();
   }
 
-  // TODO(crbug.com/1055150): This does not work on Linux because the bubble is
+  // TODO(crbug.com/40119836): This does not work on Linux because the bubble is
   // not a top-level view, so it doesn't receive events. See crbug.com/1074054
   // for more about why it doesn't work.
   int NonClientHitTest(const gfx::Point& point) override {
@@ -315,7 +323,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   ResetInactivityTimerCallback reset_inactivity_timer_cb_;
 };
 
-BEGIN_METADATA(CaptionBubbleFrameView, views::BubbleFrameView)
+BEGIN_METADATA(CaptionBubbleFrameView)
 END_METADATA
 
 class CaptionBubbleLabelAXModeObserver;
@@ -328,35 +336,31 @@ class CaptionBubbleLabelAXModeObserver;
 // braille display so that a braille user can read the caption text line by
 // line.
 class CaptionBubbleLabel : public views::Label {
+  METADATA_HEADER(CaptionBubbleLabel, views::Label)
+
  public:
-  METADATA_HEADER(CaptionBubbleLabel);
-#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
   CaptionBubbleLabel() {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kDocument);
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    GetViewAccessibility().SetReadOnly(true);
+#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
     ax_mode_observer_ =
         std::make_unique<CaptionBubbleLabelAXModeObserver>(this);
     SetFocusBehaviorForAccessibility();
-  }
-#else
-  CaptionBubbleLabel() = default;
 #endif
+  }
   ~CaptionBubbleLabel() override = default;
   CaptionBubbleLabel(const CaptionBubbleLabel&) = delete;
   CaptionBubbleLabel& operator=(const CaptionBubbleLabel&) = delete;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // Views are not supposed to be documents (see
-    // `ViewAccessibility::IsValidRoleForViews` for more information) but we
-    // make an exception here. The CaptionBubbleLabel is designed to be
-    // interacted with by a braille display in virtual buffer mode. In order to
-    // activate the virtual buffer in NVDA, we set the CaptionBubbleLabel to be
-    // a readonly document.
-    node_data->role = ax::mojom::Role::kDocument;
-    node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
-#if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
-    // Focusable nodes generally must have a name, but the purpose of focusing
-    // this document is to let the user read the static text nodes inside.
-    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-#endif
+  void SetMinimumHeight(int height) {
+    if (minimum_height_ == height) {
+      return;
+    }
+
+    minimum_height_ = height;
+    PreferredSizeChanged();
   }
 
   void SetText(const std::u16string& text) override {
@@ -429,12 +433,23 @@ class CaptionBubbleLabel : public views::Label {
     }
   }
 
+  // Label:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size preferred_size =
+        views::Label::CalculatePreferredSize(available_size);
+    preferred_size.set_height(
+        std::max(minimum_height_, preferred_size.height()));
+    return preferred_size;
+  }
+
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
   std::unique_ptr<CaptionBubbleLabelAXModeObserver> ax_mode_observer_;
 #endif
+  int minimum_height_ = 0;
 };
 
-BEGIN_METADATA(CaptionBubbleLabel, views::Label)
+BEGIN_METADATA(CaptionBubbleLabel)
 END_METADATA
 
 class LanguageLabelButton : public views::LabelButton {
@@ -490,13 +505,13 @@ class LanguageLabelButton : public views::LabelButton {
   views::Label* GetLabel() { return label(); }
 };
 
-BEGIN_METADATA(LanguageLabelButton, views::LabelButton)
+BEGIN_METADATA(LanguageLabelButton)
 END_METADATA
 
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
 // A helper class to the CaptionBubbleLabel which observes AXMode changes and
 // updates the CaptionBubbleLabel focus behavior in response.
-// TODO(crbug.com/1191091): Implement a ui::AXModeObserver::OnAXModeRemoved
+// TODO(crbug.com/40756389): Implement a ui::AXModeObserver::OnAXModeRemoved
 // method which observes the removal of AXModes. Without that, the caption
 // bubble label will remain focusable once accessibility is enabled, even if
 // accessibility is later disabled.
@@ -528,7 +543,11 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
 CaptionBubble::CaptionBubble(PrefService* profile_prefs,
                              const std::string& application_locale,
                              base::OnceClosure destroyed_callback)
-    : profile_prefs_(profile_prefs),
+    : views::BubbleDialogDelegateView(nullptr,
+                                      views::BubbleBorder::TOP_LEFT,
+                                      views::BubbleBorder::DIALOG_SHADOW,
+                                      true),
+      profile_prefs_(profile_prefs),
       destroyed_callback_(std::move(destroyed_callback)),
       application_locale_(application_locale),
       is_expanded_(
@@ -539,7 +558,7 @@ CaptionBubble::CaptionBubble(PrefService* profile_prefs,
   // Bubbles that use transparent colors should not paint their ClientViews to a
   // layer as doing so could result in visual artifacts.
   SetPaintClientToLayer(false);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   // While not shown, the title is still used to identify the window in the
   // window switcher.
   SetShowTitle(false);
@@ -569,6 +588,7 @@ CaptionBubble::CaptionBubble(PrefService* profile_prefs,
                           base::Unretained(this)),
       tick_clock_);
   inactivity_timer_->Stop();
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 CaptionBubble::~CaptionBubble() {
@@ -634,7 +654,7 @@ void CaptionBubble::Init() {
   title->SetBackgroundColor(SK_ColorTRANSPARENT);
   title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title->SetText(l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_TITLE));
-  title->GetViewAccessibility().OverrideIsIgnored(true);
+  title->GetViewAccessibility().SetIsIgnored(true);
 
   // Define an error message that will be displayed in the caption bubble if a
   // generic error is encountered.
@@ -675,7 +695,7 @@ void CaptionBubble::Init() {
       views::style::CONTEXT_DIALOG_BODY_TEXT);
 
   // Make the whole text view behave as a link for accessibility.
-  media_foundation_renderer_error_text->GetViewAccessibility().OverrideRole(
+  media_foundation_renderer_error_text->GetViewAccessibility().SetRole(
       ax::mojom::Role::kLink);
 
   const std::u16string link =
@@ -733,17 +753,15 @@ void CaptionBubble::Init() {
   title_ = content_container->AddChildView(std::move(title));
   label_ = content_container->AddChildView(std::move(label));
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    auto download_progress_label = std::make_unique<views::Label>();
-    download_progress_label->SetBackgroundColor(SK_ColorTRANSPARENT);
-    download_progress_label->SetHorizontalAlignment(
-        gfx::HorizontalAlignment::ALIGN_CENTER);
-    download_progress_label->SetVerticalAlignment(
-        gfx::VerticalAlignment::ALIGN_MIDDLE);
-    download_progress_label->SetVisible(false);
-    download_progress_label_ =
-        content_container->AddChildView(std::move(download_progress_label));
-  }
+  auto download_progress_label = std::make_unique<views::Label>();
+  download_progress_label->SetBackgroundColor(SK_ColorTRANSPARENT);
+  download_progress_label->SetHorizontalAlignment(
+      gfx::HorizontalAlignment::ALIGN_CENTER);
+  download_progress_label->SetVerticalAlignment(
+      gfx::VerticalAlignment::ALIGN_MIDDLE);
+  download_progress_label->SetVisible(false);
+  download_progress_label_ =
+      content_container->AddChildView(std::move(download_progress_label));
 
   generic_error_icon_ =
       generic_error_message->AddChildView(std::move(generic_error_icon));
@@ -776,13 +794,14 @@ void CaptionBubble::Init() {
   collapse_button_ =
       content_container->AddChildView(std::move(collapse_button));
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     auto language_label = std::make_unique<LanguageLabelButton>(
         base::BindRepeating(&CaptionBubble::CaptionSettingsButtonPressed,
                             base::Unretained(this)));
     language_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
-    language_label->GetViewAccessibility().OverrideIsIgnored(true);
+    language_label->GetViewAccessibility().SetIsIgnored(true);
 
     source_language_code_ =
         profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
@@ -822,7 +841,8 @@ void CaptionBubble::Init() {
   header_container_ = AddChildView(std::move(header_container));
   AddChildView(std::move(content_container));
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     std::vector<raw_ptr<views::View, VectorExperimental>> buttons =
         GetButtons();
     for (views::View* button : buttons) {
@@ -832,13 +852,16 @@ void CaptionBubble::Init() {
     }
 
     language_label_->layer()->SetFillsBoundsOpaquely(false);
-
     download_progress_label_->SetPaintToLayer();
     download_progress_label_->layer()->SetFillsBoundsOpaquely(false);
     download_progress_label_->layer()->SetOpacity(0);
   }
 
   UpdateContentSize();
+  UpdateAccessibleName();
+  title_text_changed_callback_ =
+      title_->AddTextChangedCallback(base::BindRepeating(
+          &CaptionBubble::OnTitleTextChanged, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptionBubble::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
@@ -847,6 +870,9 @@ void CaptionBubble::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
   params->z_order = ui::ZOrderLevel::kFloatingWindow;
   params->visible_on_all_workspaces = true;
   params->name = "LiveCaptionWindow";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  params->init_properties_container.SetProperty(kIsCaptionBubbleKey, true);
+#endif
 }
 
 bool CaptionBubble::ShouldShowCloseButton() const {
@@ -858,7 +884,8 @@ bool CaptionBubble::ShouldShowCloseButton() const {
 std::unique_ptr<views::NonClientFrameView>
 CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
   std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     caption_bubble_event_observer_ =
         std::make_unique<CaptionBubbleEventObserver>(this, widget);
   }
@@ -888,7 +915,8 @@ void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
     active = true;
   }
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     UpdateControlsVisibility(active);
   }
 
@@ -922,11 +950,6 @@ void CaptionBubble::OnLiveTranslateTargetLanguageChanged() {
   OnLanguageChanged();
   SetTextColor();
   Redraw();
-}
-
-void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetNameChecked(title_->GetText());
 }
 
 std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
@@ -1006,21 +1029,21 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
   if (model_) {
     model_->SetObserver(this);
     back_to_tab_button_->SetVisible(model_->GetContext()->IsActivatable());
+    UpdateLanguageLabelText();
   } else {
     UpdateBubbleVisibility();
   }
 }
 
 void CaptionBubble::AnimationProgressed(const gfx::Animation* animation) {
-  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (!media::IsLiveTranslateEnabled() &&
+      !base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     return;
   }
-
   std::vector<raw_ptr<views::View, VectorExperimental>> buttons = GetButtons();
   for (views::View* button : buttons) {
     button->layer()->SetOpacity(animation->GetCurrentValue());
   }
-
   language_label_->layer()->SetOpacity(animation->GetCurrentValue());
   download_progress_label_->layer()->SetOpacity(animation->GetCurrentValue());
 }
@@ -1036,7 +1059,7 @@ void CaptionBubble::OnTextChanged() {
 }
 
 void CaptionBubble::OnDownloadProgressTextChanged() {
-  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (!media::IsLiveTranslateEnabled()) {
     return;
   }
 
@@ -1047,6 +1070,8 @@ void CaptionBubble::OnDownloadProgressTextChanged() {
   // Do not display captions while language packs are downloading.
   label_->SetVisible(false);
 
+  UpdateBubbleAndTitleVisibility();
+
   if (GetWidget()->IsVisible()) {
     ResetInactivityTimer();
     UpdateControlsVisibility(true);
@@ -1054,14 +1079,16 @@ void CaptionBubble::OnDownloadProgressTextChanged() {
 }
 
 void CaptionBubble::OnLanguagePackInstalled() {
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     download_progress_label_->SetVisible(false);
     label_->SetVisible(true);
   }
 }
 
 void CaptionBubble::OnAutoDetectedLanguageChanged() {
-  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (!media::IsLiveTranslateEnabled() &&
+      !base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     return;
   }
 
@@ -1186,7 +1213,7 @@ void CaptionBubble::UpdateBubbleVisibility() {
 
   // Show the widget if it has text or an error or download progress to display.
   if (!model_->GetFullText().empty() || model_->HasError() ||
-      (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+      (media::IsLiveTranslateEnabled() &&
        download_progress_label_->GetVisible())) {
     ShowInactive();
     return;
@@ -1256,7 +1283,8 @@ void CaptionBubble::SetTextSizeAndFontFamily() {
   label_->SetLineHeight(kLineHeightDip * textScaleFactor);
   label_->SetMaximumWidth(kMaxWidthDip * textScaleFactor - kSidePaddingDip * 2);
   title_->SetLineHeight(kLineHeightDip * textScaleFactor);
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     download_progress_label_->SetLineHeight(kLiveTranslateLabelLineHeightDip *
                                             textScaleFactor);
     download_progress_label_->SetFontList(
@@ -1291,22 +1319,22 @@ void CaptionBubble::SetTextColor() {
 
   // Update Live Translate label style with the default colors before parsing
   // the CSS color string.
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    SkColor secondary_color = color_provider->GetColor(
-        ui::kColorLiveCaptionBubbleForegroundSecondary);
-    download_progress_label_->SetEnabledColor(secondary_color);
+  download_progress_label_->SetEnabledColor(primary_color);
 
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     language_label_->SetBaseColor();
     language_label_->SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(
-            vector_icons::kTranslateChromeRefreshIcon, secondary_color));
+        ui::ImageModel::FromVectorIcon(vector_icons::kTranslateIcon, icon_color,
+                                       kLiveTranslateImageWidthDip));
     language_label_->SetImageModel(
         views::Button::ButtonState::STATE_HOVERED,
-        ui::ImageModel::FromVectorIcon(
-            vector_icons::kTranslateChromeRefreshIcon, primary_color));
+        ui::ImageModel::FromVectorIcon(vector_icons::kTranslateIcon,
+                                       primary_color,
+                                       kLiveTranslateImageWidthDip));
     language_label_->SetTextColor(views::Button::ButtonState::STATE_NORMAL,
-                                  secondary_color);
+                                  icon_color);
     language_label_->SetTextColor(views::Button::ButtonState::STATE_HOVERED,
                                   primary_color);
   }
@@ -1408,11 +1436,17 @@ void CaptionBubble::OnLanguageChanged() {
 }
 
 void CaptionBubble::UpdateLanguageLabelText() {
-  if (!base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  const bool live_translate_enabled = media::IsLiveTranslateEnabled();
+  // We update the language text and set it whenever live translate OR
+  // multilingual live captions are enabled. We early out when both are
+  // disabled.
+  if (!live_translate_enabled &&
+      !base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     return;
   }
 
-  if (profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
+  if (live_translate_enabled &&
+      profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
       l10n_util::GetLanguage(source_language_code_) !=
           l10n_util::GetLanguage(target_language_code_)) {
     language_label_->SetText(l10n_util::GetStringFUTF16(
@@ -1422,6 +1456,7 @@ void CaptionBubble::UpdateLanguageLabelText() {
         source_language_text_, target_language_text_));
     language_label_->SetTranslateIconVisible(true);
   } else {
+    CHECK(language_label_ != nullptr);
     if (auto_detected_source_language_) {
       language_label_->SetText(l10n_util::GetStringFUTF16(
           IDS_LIVE_CAPTION_CAPTION_LANGUAGE_AUTODETECTED,
@@ -1429,7 +1464,6 @@ void CaptionBubble::UpdateLanguageLabelText() {
     } else {
       language_label_->SetText(source_language_text_);
     }
-
     language_label_->SetTranslateIconVisible(false);
   }
 }
@@ -1471,17 +1505,16 @@ void CaptionBubble::UpdateContentSize() {
   int label_height = title_->GetVisible()
                          ? content_height - kLineHeightDip * text_scale_factor
                          : content_height;
-  label_->SetPreferredSize(gfx::Size(width - kSidePaddingDip, label_height));
-  auto button_size = close_button_->GetPreferredSize();
+  label_->SetMinimumHeight(label_height);
+  auto button_size = close_button_->GetPreferredSize({});
   auto left_header_width = width - 3 * button_size.width();
   left_header_container_->SetPreferredSize(
       gfx::Size(left_header_width, button_size.height()));
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    download_progress_label_->SetPreferredSize(
-        gfx::Size(width, content_height));
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     language_label_->SetPreferredSize(
-        language_label_->CalculatePreferredSize());
+        language_label_->CalculatePreferredSize({}));
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1489,22 +1522,23 @@ void CaptionBubble::UpdateContentSize() {
   // user's caption style preference.
   if (HasMediaFoundationError()) {
     width = kMaxWidthDip;
-    content_height =
-        media_foundation_renderer_error_message_->GetPreferredSize().height();
+    content_height = media_foundation_renderer_error_message_
+                         ->GetPreferredSize(
+                             views::SizeBounds(width - kSidePaddingDip * 2, {}))
+                         .height();
   }
 #endif
 
   // The header height is the same as the close button height. The footer height
   // is the same as the expand button height.
   SetPreferredSize(gfx::Size(
-      width, content_height + close_button_->GetPreferredSize().height() +
-                 expand_button_->GetPreferredSize().height()));
+      width, content_height + close_button_->GetPreferredSize({}).height() +
+                 expand_button_->GetPreferredSize({}).height()));
 }
 
 void CaptionBubble::Redraw() {
   UpdateBubbleAndTitleVisibility();
   UpdateContentSize();
-  SizeToContents();
 }
 
 void CaptionBubble::ShowInactive() {
@@ -1586,7 +1620,8 @@ CaptionBubble::GetButtons() {
       back_to_tab_button_.get(), close_button_.get(), expand_button_.get(),
       collapse_button_.get(),    pin_button_.get(),   unpin_button_.get()};
 
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+  if (media::IsLiveTranslateEnabled() ||
+      base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     buttons.push_back(language_label_.get());
   }
 
@@ -1597,7 +1632,7 @@ bool CaptionBubble::HasActivity() {
   return model_ &&
          ((inactivity_timer_ && inactivity_timer_->IsRunning()) || HasFocus() ||
           !model_->GetFullText().empty() || model_->HasError() || is_pinned_ ||
-          (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+          (media::IsLiveTranslateEnabled() &&
            download_progress_label_->GetVisible()));
 }
 
@@ -1642,7 +1677,15 @@ views::View* CaptionBubble::GetHeaderForTesting() {
   return header_container_.get();
 }
 
-BEGIN_METADATA(CaptionBubble, views::BubbleDialogDelegateView)
+void CaptionBubble::OnTitleTextChanged() {
+  UpdateAccessibleName();
+}
+
+void CaptionBubble::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(title_->GetText());
+}
+
+BEGIN_METADATA(CaptionBubble)
 END_METADATA
 
 }  // namespace captions

@@ -14,7 +14,7 @@
  * </settings-lock-screen-subpage>
  */
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
@@ -162,6 +162,18 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
           Setting.kDataRecovery,
         ]),
       },
+
+      /**
+       * Whether switch from Gaia password factor to local password factor are
+       * allowed by the feature flag.
+       */
+      changePasswordFactorSetupEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('changePasswordFactorSetupEnabled');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -178,6 +190,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private showPasswordSettings_: boolean;
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
+  private changePasswordFactorSetupEnabled_: boolean;
 
   static get observers() {
     return [
@@ -204,7 +217,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   override ready(): void {
     super.ready();
     // Register observer for auth factor updates.
-    // TODO(crbug/1321440): Are we leaking |this| here because we never remove
+    // TODO(crbug.com/40223898): Are we leaking |this| here because we never remove
     // the observer? We could close the pipe with |$.close()|, but not clear
     // whether that removes all references to |receiver| and then eventually to
     // |this|.
@@ -432,10 +445,15 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     }
     assert(authToken === this.authToken);
 
-    this.showPasswordSettings_ =
-        (await this.authFactorConfig.isConfigured(
-             this.authToken, AuthFactor.kLocalPassword))
-            .configured;
+    const [{configured: hasGaiaPassword}, {configured: hasLocalPassword}] =
+        await Promise.all([
+          this.authFactorConfig.isConfigured(
+              this.authToken, AuthFactor.kGaiaPassword),
+          this.authFactorConfig.isConfigured(
+              this.authToken, AuthFactor.kLocalPassword),
+        ]);
+    this.showPasswordSettings_ = hasLocalPassword ||
+        (this.changePasswordFactorSetupEnabled_ && hasGaiaPassword);
   }
 
   /**

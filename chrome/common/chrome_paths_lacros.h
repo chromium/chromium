@@ -21,6 +21,7 @@ void SetLacrosDefaultPaths(
     const base::FilePath& documents_dir,
     const base::FilePath& downloads_dir,
     const base::FilePath& drivefs,
+    const base::FilePath& onedrive,
     const base::FilePath& removable_media_dir,
     const base::FilePath& android_files_dir,
     const base::FilePath& linux_files_dir,
@@ -43,6 +44,16 @@ void SetDriveFsMountPointPath(const base::FilePath& drivefs);
 // contain the trailing '/root'; this is the 'MyDrive' directory specifically.
 // Returns false if Drive is not enabled in Ash.
 bool GetDriveFsMountPointPath(base::FilePath* result);
+
+// The OneDrive mount point path is sent by ash-chrome, `onedrive` may be
+// empty in case OneDrive is not mounted in Ash. `SetOneDriveMountPointPath()`
+// is triggered when OneDrive mount point in Ash changes.
+void SetOneDriveMountPointPath(const base::FilePath& onedrive);
+
+// Sets `result` to the the OneDrive mount point path, which is passed in by Ash
+// and continually updated as it changes in Ash.
+// Returns false if OneDrive is not mounted in Ash.
+bool GetOneDriveMountPointPath(base::FilePath* result);
 
 // These paths are sent by ash-chrome at Lacros startup. These return false if
 // the value was not sent (eg. due to API version skew).

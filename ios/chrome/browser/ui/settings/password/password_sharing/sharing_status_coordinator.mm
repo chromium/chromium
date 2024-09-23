@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -89,18 +89,10 @@
   self.mediator.consumer = self.viewController;
   self.viewController.imageDataSource = self.mediator;
   self.viewController.presentationController.delegate = self;
-
-  if (@available(iOS 16, *)) {
-    self.viewController.sheetPresentationController.detents = @[
-      self.viewController.preferredHeightDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  } else {
-    self.viewController.sheetPresentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  }
+  self.viewController.sheetPresentationController.detents = @[
+    self.viewController.preferredHeightDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
 
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES

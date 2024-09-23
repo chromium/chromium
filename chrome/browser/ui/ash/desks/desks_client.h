@@ -146,7 +146,7 @@ class DesksClient : public ash::SessionObserver {
   // generated name.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
-  void LaunchDeskTemplate(
+  virtual void LaunchDeskTemplate(
       const base::Uuid& template_uuid,
       LaunchDeskCallback callback,
       const std::u16string& customized_desk_name = std::u16string());

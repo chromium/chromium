@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="../../resources/js-test.js"></script>
+<body>
+<script>
+  description("Test that inserting an empty iframe doesn't force a style-recalc/layout");
+
+  var jsTestIsAsync = true;
+  window.addEventListener("load", () => {
+    window.iframe = document.createElement("iframe");
+    window.div = document.createElement("div");
+    document.body.appendChild(div);
+    shouldBe("internals.nodeNeedsStyleRecalc(div)", "true");
+    window.layoutCountBefore = internals.layoutCountForTesting();
+    document.body.appendChild(iframe);
+    shouldBe("internals.layoutCountForTesting()", "layoutCountBefore");
+    shouldBe("internals.nodeNeedsStyleRecalc(div)", "true");
+    shouldBe("internals.nodeNeedsStyleRecalc(iframe)", "true");
+    finishJSTest();
+  });
+</script>

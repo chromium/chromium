@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/screen_details/screen_details.h"
 
 #include "base/containers/contains.h"
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -34,9 +35,9 @@ ScreenDetailed* ScreenDetails::currentScreen() const {
   if (screens_.empty())
     return nullptr;
 
-  auto* it = base::ranges::find(screens_, current_display_id_,
-                                &ScreenDetailed::DisplayId);
-  DCHECK(it != screens_.end());
+  auto it = base::ranges::find(screens_, current_display_id_,
+                               &ScreenDetailed::DisplayId);
+  CHECK(it != screens_.end(), base::NotFatalUntil::M130);
   return it->Get();
 }
 
@@ -129,10 +130,6 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
 
     // Enqueue a change event if screens were added or removed.
     if (added_or_removed) {
-      // Allow fullscreen requests shortly after user-generated screens changes.
-      // TODO(enne): consider doing this only when screens have been added.
-      window->GetFrame()->ActivateTransientAllowFullscreen();
-
       EnqueueEvent(*Event::Create(event_type_names::kScreenschange),
                    TaskType::kMiscPlatformAPI);
     }
@@ -144,7 +141,7 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
       auto id = screen->DisplayId();
       auto new_it = base::ranges::find(new_infos.screen_infos, id,
                                        &display::ScreenInfo::display_id);
-      DCHECK(new_it != new_infos.screen_infos.end());
+      CHECK(new_it != new_infos.screen_infos.end(), base::NotFatalUntil::M130);
       auto old_it = base::ranges::find(prev_screen_infos_.screen_infos, id,
                                        &display::ScreenInfo::display_id);
       if (old_it != prev_screen_infos_.screen_infos.end() &&

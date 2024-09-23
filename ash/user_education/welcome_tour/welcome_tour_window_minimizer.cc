@@ -5,7 +5,6 @@
 #include "ash/user_education/welcome_tour/welcome_tour_window_minimizer.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
@@ -13,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 
 namespace ash {
 namespace {
@@ -39,7 +39,7 @@ void Minimize(aura::Window* window) {
 void MaybeMinimize(aura::WindowTracker* window_tracker) {
   for (aura::Window* window : window_tracker->windows()) {
     if (ShouldMinimizeChildren(window->parent())) {
-      ScopedAnimationDisabler animation_disabler(window);
+      wm::ScopedAnimationDisabler animation_disabler(window);
       Minimize(window);
     }
   }

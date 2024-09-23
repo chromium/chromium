@@ -4,8 +4,11 @@
 
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 
+#include <vector>
+
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
@@ -18,6 +21,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
@@ -29,6 +33,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/env.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -150,6 +155,23 @@ SplitViewMetricsController::DeviceOrientation GetDeviceOrientation(
   return display.is_landscape()
              ? SplitViewMetricsController::DeviceOrientation::kLandscape
              : SplitViewMetricsController::DeviceOrientation::kPortrait;
+}
+
+// Records the pref value of `kSnapWindowSuggestions` at the time a window is
+// snapped.
+void MaybeRecordSnapWindowSuggestions(
+    WindowSnapActionSource snap_action_source) {
+  if (!CanSnapActionSourceStartFasterSplitView(snap_action_source)) {
+    return;
+  }
+  PrefService* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!pref_service) {
+    return;
+  }
+  base::UmaHistogramBoolean(
+      BuildSnapWindowSuggestionsHistogramName(snap_action_source),
+      pref_service->GetBoolean(prefs::kSnapWindowSuggestions));
 }
 
 }  // namespace
@@ -346,6 +368,11 @@ void SplitViewMetricsController::OnPostWindowStateTypeChange(
 
   // We only care if a window is snapped or unsnapped.
   bool is_snapped = window_state->IsSnapped();
+  if (is_snapped) {
+    MaybeRecordSnapWindowSuggestions(
+        window_state->snap_action_source().value_or(
+            WindowSnapActionSource::kNotSpecified));
+  }
   bool was_snapped = chromeos::IsSnappedWindowStateType(old_type);
   if (is_snapped == was_snapped)
     return;
@@ -527,7 +554,7 @@ void SplitViewMetricsController::RemoveObservedWindow(aura::Window* window) {
     }
     first_minimized_window_state_ = nullptr;
   }
-  if (base::Erase(observed_windows_, window)) {
+  if (std::erase(observed_windows_, window)) {
     WindowState::Get(window)->RemoveObserver(this);
     window->RemoveObserver(this);
   }
@@ -671,7 +698,7 @@ void SplitViewMetricsController::MaybeStartOrEndRecordSnapTwoWindowsDuration(
     if (first_snapped_window_ && !first_snapped_time_.is_null() &&
         window_state->window() != first_snapped_window_ &&
         window_state->GetStateType() ==
-            GetOppositeSnapType(first_snapped_window_)) {
+            ToWindowStateType(GetOppositeSnapType(first_snapped_window_))) {
       // If this is a different window that got snapped on the opposite side,
       // record the duration since `first_snapped_time_`.
       RecordSnapTwoWindowsDuration(base::TimeTicks::Now() -
@@ -724,7 +751,8 @@ void SplitViewMetricsController::MaybeStartOrEndRecordCloseTwoWindowsDuration(
     }
     // If `window` has the opposite state type of `first_closed_state_type_`,
     // record the duration.
-    if (GetOppositeSnapType(window) == first_closed_state_type_ &&
+    if (ToWindowStateType(GetOppositeSnapType(window)) ==
+            first_closed_state_type_ &&
         !first_closed_time_.is_null()) {
       RecordCloseTwoWindowsDuration(base::TimeTicks::Now() -
                                     first_closed_time_);

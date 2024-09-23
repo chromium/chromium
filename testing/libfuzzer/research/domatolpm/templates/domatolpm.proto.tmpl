@@ -1,0 +1,35 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package {{proto_ns}};
+
+{% for import in imports %}
+import "{{import}}";
+{% endfor %}
+
+{% for message in messages %}
+message {{message.name}} {
+    {% for field in message.fields %}
+    {{field.type.name}} {{field.name}} = {{field.proto_id}};
+    {% endfor %}
+}
+{% endfor %}
+
+{% for message in oneofmessages %}
+message {{message.name}} {
+    oneof {{message.oneofname}} {
+        {% for field in message.fields[:-1] %}
+        {{field.type.name}} {{field.name}} = {{field.proto_id}};
+        {% endfor %}
+    }
+    {{message.fields[-1].type.name}} {{message.fields[-1].name}} = {{message.fields[-1].proto_id}};
+}
+{% endfor %}
+
+{% if generate_repeated_lines %}
+message lines {
+    repeated line lines_v = 1;
+}
+{% endif %}

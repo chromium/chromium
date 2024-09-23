@@ -101,8 +101,7 @@ class GetAPINatives : public ObjectBackedNativeHandler {
   }
 
  private:
-  raw_ptr<NativeExtensionBindingsSystem, ExperimentalRenderer>
-      bindings_system_ = nullptr;
+  raw_ptr<NativeExtensionBindingsSystem> bindings_system_ = nullptr;
 };
 
 }  // namespace
@@ -164,6 +163,7 @@ ModuleSystemTestEnvironment::ModuleSystemTestEnvironment(
         context_holder_->context(),
         nullptr,  // WebFrame
         GenerateHostIdFromExtensionId(extension_->id()), extension_.get(),
+        /*blink_isolated_world_id=*/std::nullopt,
         mojom::ContextType::kPrivilegedExtension, extension_.get(),
         mojom::ContextType::kPrivilegedExtension);
     context_ = context.get();

@@ -24,6 +24,7 @@ class FormDataBytesConsumer final : public BytesConsumer {
   explicit CORE_EXPORT FormDataBytesConsumer(const String&);
   explicit CORE_EXPORT FormDataBytesConsumer(DOMArrayBuffer*);
   explicit CORE_EXPORT FormDataBytesConsumer(DOMArrayBufferView*);
+  explicit CORE_EXPORT FormDataBytesConsumer(SegmentedBuffer&&);
   CORE_EXPORT FormDataBytesConsumer(const void* data, wtf_size_t);
   CORE_EXPORT FormDataBytesConsumer(ExecutionContext*,
                                     scoped_refptr<EncodedFormData>);

@@ -1,0 +1,7 @@
+Document
+++ProgressBar RangeValue.IsReadOnly=true RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=37.00 RangeValue.Minimum=1.00 RangeValue.Value=3.00 Value.Value='3'
+++ProgressBar RangeValue.IsReadOnly=true RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=96.00 RangeValue.Minimum=1.00 RangeValue.Value=3.00 Value.Value='three'
+++ProgressBar RangeValue.IsReadOnly=true RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=10.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
+++ProgressBar RangeValue.IsReadOnly=true RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=10.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00 Value.Value='5 chickens'
+++ProgressBar RangeValue.IsReadOnly=true RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=100.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
+++ProgressBar Name='Test label' RangeValue.IsReadOnly=true RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=100.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00

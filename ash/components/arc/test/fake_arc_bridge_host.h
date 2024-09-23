@@ -33,6 +33,8 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       override;
   void OnAppfuseInstanceReady(
       mojo::PendingRemote<mojom::AppfuseInstance> appfuse_remote) override;
+  void OnArcWifiInstanceReady(
+      mojo::PendingRemote<mojom::ArcWifiInstance> arc_wifi_remote) override;
   void OnAudioInstanceReady(
       mojo::PendingRemote<mojom::AudioInstance> audio_remote) override;
   void OnAuthInstanceReady(
@@ -50,8 +52,6 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnChromeFeatureFlagsInstanceReady(
       mojo::PendingRemote<mojom::ChromeFeatureFlagsInstance>
           chrome_feature_flags_remote) override;
-  void OnClipboardInstanceReady(
-      mojo::PendingRemote<mojom::ClipboardInstance> clipboard_remote) override;
   void OnCompatibilityModeInstanceReady(
       mojo::PendingRemote<mojom::CompatibilityModeInstance>
           compatibility_mode_remote) override;
@@ -61,11 +61,14 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnDigitalGoodsInstanceReady(
       mojo::PendingRemote<mojom::DigitalGoodsInstance> digital_goods_remote)
       override;
-  void OnDiskQuotaInstanceReady(
-      mojo::PendingRemote<mojom::DiskQuotaInstance> disk_quota_remote) override;
+  void OnDiskSpaceInstanceReady(
+      mojo::PendingRemote<mojom::DiskSpaceInstance> disk_space_remote) override;
   void OnEnterpriseReportingInstanceReady(
       mojo::PendingRemote<mojom::EnterpriseReportingInstance>
           enterprise_reporting_remote) override;
+  void OnErrorNotificationInstanceReady(
+      mojo::PendingRemote<mojom::ErrorNotificationInstance>
+          error_notification_remote) override;
   void OnFileSystemInstanceReady(mojo::PendingRemote<mojom::FileSystemInstance>
                                      file_system_remote) override;
   void OnIioSensorInstanceReady(
@@ -86,8 +89,6 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnKeyMintInstanceReady(
       mojo::PendingRemote<mojom::keymint::KeyMintInstance> keymint_remote)
       override;
-  void OnKioskInstanceReady(
-      mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) override;
   void OnMediaSessionInstanceReady(
       mojo::PendingRemote<mojom::MediaSessionInstance> media_session_remote)
       override;
@@ -126,16 +127,11 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       override;
   void OnProcessInstanceReady(
       mojo::PendingRemote<mojom::ProcessInstance> process_remote) override;
-  void OnPropertyInstanceReady(
-      mojo::PendingRemote<mojom::PropertyInstance> property_remote) override;
   void OnScreenCaptureInstanceReady(
       mojo::PendingRemote<mojom::ScreenCaptureInstance> screen_capture_remote)
       override;
   void OnSharesheetInstanceReady(mojo::PendingRemote<mojom::SharesheetInstance>
                                      sharesheet_remote) override;
-  void OnStorageManagerInstanceReady(
-      mojo::PendingRemote<mojom::StorageManagerInstance> storage_manager_remote)
-      override;
   void OnSystemStateInstanceReady(
       mojo::PendingRemote<mojom::SystemStateInstance> system_state_remote)
       override;

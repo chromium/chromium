@@ -4,15 +4,18 @@
 
 #include "device/fido/ble_adapter_manager.h"
 
-#include <map>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -20,7 +23,6 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,6 +32,7 @@ namespace {
 
 using base::test::RunOnceClosure;
 using ::testing::_;
+using BleStatus = FidoRequestHandlerBase::BleStatus;
 
 constexpr char kTestBluetoothDeviceAddress[] = "test_device_address";
 constexpr char kTestBluetoothDisplayName[] = "device_name";
@@ -47,7 +50,7 @@ class MockObserver : public FidoRequestHandlerBase::Observer {
                void(FidoRequestHandlerBase::TransportAvailabilityInfo data));
   MOCK_METHOD1(EmbedderControlsAuthenticatorDispatch,
                bool(const FidoAuthenticator& authenticator));
-  MOCK_METHOD1(BluetoothAdapterPowerChanged, void(bool is_powered_on));
+  MOCK_METHOD1(BluetoothAdapterStatusChanged, void(BleStatus ble_status));
   MOCK_METHOD1(FidoAuthenticatorAdded,
                void(const FidoAuthenticator& authenticator));
   MOCK_METHOD1(FidoAuthenticatorRemoved, void(std::string_view device_id));
@@ -100,7 +103,7 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
   FidoBleAdapterManagerTest() {
     BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     bluetooth_config_ =
-        BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
+        BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
     bluetooth_config_->SetLESupported(true);
     fido_discovery_factory_->ForgeNextCableDiscovery(
         test::FakeFidoDiscovery::StartMode::kAutomatic);
@@ -126,6 +129,27 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
     return fake_request_handler_.get();
   }
 
+  FidoRequestHandlerBase::TransportAvailabilityInfo
+  WaitForTransportAvailabilityInfo() {
+    FidoRequestHandlerBase::TransportAvailabilityInfo data;
+    base::RunLoop run_loop;
+    EXPECT_CALL(*observer(), OnTransportAvailabilityEnumerated(_))
+        .WillOnce([&](auto transport_availability) {
+          data = transport_availability;
+          run_loop.Quit();
+        });
+    run_loop.Run();
+    return data;
+  }
+
+  void SetAdapterPermissions(BluetoothAdapter::PermissionStatus status) {
+    EXPECT_CALL(*adapter(), RequestSystemPermission)
+        .WillOnce([status](MockBluetoothAdapter::RequestSystemPermissionCallback
+                               callback) { std::move(callback).Run(status); });
+    EXPECT_CALL(*adapter(), GetOsPermissionStatus)
+        .WillOnce(::testing::Return(status));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockBluetoothAdapter> adapter_ =
@@ -136,7 +160,7 @@ class FidoBleAdapterManagerTest : public ::testing::Test {
       std::make_unique<test::FakeFidoDiscoveryFactory>();
 
   std::unique_ptr<FakeFidoRequestHandlerBase> fake_request_handler_;
-  std::unique_ptr<BluetoothAdapterFactory::GlobalValuesForTesting>
+  std::unique_ptr<BluetoothAdapterFactory::GlobalOverrideValues>
       bluetooth_config_;
   FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_calls_;
 };
@@ -146,13 +170,9 @@ TEST_F(FidoBleAdapterManagerTest, AdapterNotPresent) {
   EXPECT_CALL(*adapter(), IsPowered()).WillOnce(::testing::Return(false));
   EXPECT_CALL(*adapter(), CanPower()).WillOnce(::testing::Return(false));
 
-  FidoRequestHandlerBase::TransportAvailabilityInfo data;
-  EXPECT_CALL(*observer(), OnTransportAvailabilityEnumerated(_))
-      .WillOnce(::testing::SaveArg<0>(&data));
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_FALSE(data.is_ble_powered);
+  FidoRequestHandlerBase::TransportAvailabilityInfo data =
+      WaitForTransportAvailabilityInfo();
+  EXPECT_EQ(data.ble_status, BleStatus::kOff);
   EXPECT_FALSE(data.can_power_on_ble_adapter);
 }
 
@@ -161,13 +181,9 @@ TEST_F(FidoBleAdapterManagerTest, AdapaterPresentAndPowered) {
   EXPECT_CALL(*adapter(), IsPowered()).WillOnce(::testing::Return(true));
   EXPECT_CALL(*adapter(), CanPower()).WillOnce(::testing::Return(false));
 
-  FidoRequestHandlerBase::TransportAvailabilityInfo data;
-  EXPECT_CALL(*observer(), OnTransportAvailabilityEnumerated(_))
-      .WillOnce(::testing::SaveArg<0>(&data));
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_TRUE(data.is_ble_powered);
+  FidoRequestHandlerBase::TransportAvailabilityInfo data =
+      WaitForTransportAvailabilityInfo();
+  EXPECT_EQ(data.ble_status, BleStatus::kOn);
   EXPECT_FALSE(data.can_power_on_ble_adapter);
 }
 
@@ -176,13 +192,35 @@ TEST_F(FidoBleAdapterManagerTest, AdapaterPresentAndCanBePowered) {
   EXPECT_CALL(*adapter(), IsPowered).WillOnce(::testing::Return(false));
   EXPECT_CALL(*adapter(), CanPower).WillOnce(::testing::Return(true));
 
-  FidoRequestHandlerBase::TransportAvailabilityInfo data;
-  EXPECT_CALL(*observer(), OnTransportAvailabilityEnumerated(_))
-      .WillOnce(::testing::SaveArg<0>(&data));
+  FidoRequestHandlerBase::TransportAvailabilityInfo data =
+      WaitForTransportAvailabilityInfo();
+  EXPECT_EQ(data.ble_status, BleStatus::kOff);
+  EXPECT_TRUE(data.can_power_on_ble_adapter);
+}
 
-  task_environment_.RunUntilIdle();
+TEST_F(FidoBleAdapterManagerTest, AdapaterPresentButChromeDisallowed) {
+  EXPECT_CALL(*adapter(), IsPresent).WillOnce(::testing::Return(true));
+  EXPECT_CALL(*adapter(), CanPower).WillOnce(::testing::Return(true));
+  EXPECT_CALL(*adapter(), GetOsPermissionStatus)
+      .WillOnce(::testing::Return(BluetoothAdapter::PermissionStatus::kDenied));
 
-  EXPECT_FALSE(data.is_ble_powered);
+  FidoRequestHandlerBase::TransportAvailabilityInfo data =
+      WaitForTransportAvailabilityInfo();
+  EXPECT_EQ(data.ble_status, BleStatus::kPermissionDenied);
+  EXPECT_TRUE(data.can_power_on_ble_adapter);
+}
+
+TEST_F(FidoBleAdapterManagerTest, AdapaterPresentButPermissionUndetermined) {
+  EXPECT_CALL(*adapter(), IsPresent).WillOnce(::testing::Return(true));
+  EXPECT_CALL(*adapter(), CanPower).WillOnce(::testing::Return(true));
+  EXPECT_CALL(*adapter(), GetOsPermissionStatus)
+      .WillOnce(
+          ::testing::Return(BluetoothAdapter::PermissionStatus::kUndetermined));
+  EXPECT_CALL(*adapter(), IsPowered).Times(0);
+
+  FidoRequestHandlerBase::TransportAvailabilityInfo data =
+      WaitForTransportAvailabilityInfo();
+  EXPECT_EQ(data.ble_status, BleStatus::kPendingPermissionRequest);
   EXPECT_TRUE(data.can_power_on_ble_adapter);
 }
 
@@ -194,6 +232,43 @@ TEST_F(FidoBleAdapterManagerTest, SetBluetoothPowerOn) {
   EXPECT_CALL(*adapter(), SetPowered(true, _, _));
   power_manager->SetAdapterPower(/*set_power_on=*/true);
   power_manager.reset();
+}
+
+TEST_F(FidoBleAdapterManagerTest, RequestBluetoothPermissionAllowed) {
+  task_environment_.RunUntilIdle();
+  SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kAllowed);
+  EXPECT_CALL(*adapter(), IsPowered).WillOnce(::testing::Return(true));
+
+  base::test::TestFuture<BleStatus> future;
+  fake_request_handler_->RequestBluetoothPermission(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), BleStatus::kOn);
+}
+
+TEST_F(FidoBleAdapterManagerTest, RequestBluetoothPermissionDenied) {
+  task_environment_.RunUntilIdle();
+  SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kDenied);
+  EXPECT_CALL(*adapter(), IsPowered).Times(0);
+
+  base::test::TestFuture<BleStatus> future;
+  fake_request_handler_->RequestBluetoothPermission(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), BleStatus::kPermissionDenied);
+}
+
+// Tests that if the Bluetooth API happens to report the OS permission status as
+// "undetermined" after requesting permissions, the adapter manager reports is
+// as available to let Chrome at least try to use it.
+TEST_F(FidoBleAdapterManagerTest,
+       RequestBluetoothPermissionHandlesUndetermined) {
+  task_environment_.RunUntilIdle();
+  SetAdapterPermissions(BluetoothAdapter::PermissionStatus::kUndetermined);
+  EXPECT_CALL(*adapter(), IsPowered).WillOnce(::testing::Return(true));
+
+  base::test::TestFuture<BleStatus> future;
+  fake_request_handler_->RequestBluetoothPermission(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), BleStatus::kOn);
 }
 
 }  // namespace device

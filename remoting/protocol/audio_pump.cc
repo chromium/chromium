@@ -77,7 +77,6 @@ media::ChannelLayout RetrieveLayout(const remoting::AudioPacket& packet) {
       return media::CHANNEL_LAYOUT_7_1;
   }
   NOTREACHED() << "Invalid AudioPacket::Channels";
-  return media::CHANNEL_LAYOUT_UNSUPPORTED;
 }
 
 }  // namespace
@@ -208,7 +207,8 @@ std::unique_ptr<AudioPacket> AudioPump::Core::Downmix(
   if (!mixer_ || mixer_input_layout_ != input_layout) {
     mixer_input_layout_ = input_layout;
     mixer_ = std::make_unique<media::ChannelMixer>(
-        input_layout, media::CHANNEL_LAYOUT_STEREO);
+        input_layout, packet->channels(), media::CHANNEL_LAYOUT_STEREO,
+        ChannelLayoutToChannelCount(media::CHANNEL_LAYOUT_STEREO));
   }
 
   std::unique_ptr<media::AudioBus> input = AudioPacketToAudioBus(*packet);

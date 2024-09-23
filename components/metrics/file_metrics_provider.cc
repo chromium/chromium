@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/metrics/file_metrics_provider.h"
 
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -25,7 +31,6 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/ranges_manager.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -178,7 +183,7 @@ struct FileMetricsProvider::SourceInfo {
 FileMetricsProvider::Params::Params(const base::FilePath& path,
                                     SourceType type,
                                     SourceAssociation association,
-                                    base::StringPiece prefs_key)
+                                    std::string_view prefs_key)
     : path(path), type(type), association(association), prefs_key(prefs_key) {}
 
 FileMetricsProvider::Params::~Params() = default;
@@ -191,11 +196,28 @@ FileMetricsProvider::FileMetricsProvider(PrefService* local_state)
 
 FileMetricsProvider::~FileMetricsProvider() = default;
 
-void FileMetricsProvider::RegisterSource(const Params& params) {
+void FileMetricsProvider::RegisterSource(const Params& params,
+                                         bool metrics_reporting_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ensure that kSourceOptions has been filled for this type.
   DCHECK_GT(std::size(kSourceOptions), static_cast<size_t>(params.type));
+
+  if (!metrics_reporting_enabled) {
+    // When metrics reporting is not enabled, existing files should be deleted,
+    // since they won't be getting deleted as part of the upload flow.
+    if (params.type == SOURCE_HISTOGRAMS_ATOMIC_DIR ||
+        params.type == SOURCE_HISTOGRAMS_ATOMIC_FILE) {
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+          params.type == SOURCE_HISTOGRAMS_ATOMIC_DIR
+              ? base::GetDeletePathRecursivelyCallback(params.path)
+              : base::GetDeleteFileCallback(params.path));
+    }
+    return;
+  }
 
   std::unique_ptr<SourceInfo> source(new SourceInfo(params));
 
@@ -223,7 +245,7 @@ void FileMetricsProvider::RegisterSource(const Params& params) {
 // static
 void FileMetricsProvider::RegisterSourcePrefs(
     PrefRegistrySimple* prefs,
-    const base::StringPiece prefs_key) {
+    const std::string_view prefs_key) {
   prefs->RegisterInt64Pref(
       metrics::prefs::kMetricsLastSeenPrefix + std::string(prefs_key), 0);
 }
@@ -265,8 +287,9 @@ bool FileMetricsProvider::LocateNextFileInDirectory(SourceInfo* source) {
       found_file.info = file_iter.GetInfo();
 
       // Ignore directories.
-      if (found_file.info.IsDirectory())
+      if (found_file.info.IsDirectory()) {
         continue;
+      }
 
       // Ignore temporary files.
       base::FilePath::CharType first_character =
@@ -286,9 +309,7 @@ bool FileMetricsProvider::LocateNextFileInDirectory(SourceInfo* source) {
       total_size_kib += found_file.info.GetSize() >> 10;
       base::Time modified = found_file.info.GetLastModifiedTime();
       if (modified > source->last_seen) {
-        // This file hasn't been read. Remember it (unless from the future).
-        if (modified <= now_time)
-          source->found_files->emplace(modified, std::move(found_file));
+        source->found_files->emplace(modified, std::move(found_file));
         ++file_count;
       } else {
         // This file has been read. Try to delete it. Ignore any errors because
@@ -333,8 +354,9 @@ bool FileMetricsProvider::LocateNextFileInDirectory(SourceInfo* source) {
     }
 
     // Record the result. Success will be recorded by the caller.
-    if (result != ACCESS_RESULT_THIS_PID)
+    if (result != ACCESS_RESULT_THIS_PID) {
       RecordAccessResult(result);
+    }
   }
 
   return have_file;
@@ -524,7 +546,7 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
   // Map the file and validate it.
   std::unique_ptr<base::FilePersistentMemoryAllocator> memory_allocator =
       std::make_unique<base::FilePersistentMemoryAllocator>(
-          std::move(mapped), 0, 0, base::StringPiece(),
+          std::move(mapped), 0, 0, std::string_view(),
           read_only ? base::FilePersistentMemoryAllocator::kReadOnly
                     : base::FilePersistentMemoryAllocator::kReadWriteExisting);
   if (memory_allocator->GetMemoryState() ==
@@ -666,7 +688,7 @@ FileMetricsProvider::AccessResult FileMetricsProvider::HandleFilterSource(
 
   // Code never gets here but some compilers don't realize that and so complain
   // that "not all control paths return a value".
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ACCESS_RESULT_SUCCESS;
 }
 
@@ -679,7 +701,7 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
   // Include various crash keys about the file/allocator being read so that if
   // there is ever a crash report being dumped while reading its contents, we
   // have some info about its state.
-  // TODO(crbug.com/1432981): Clean this up.
+  // TODO(crbug.com/40064026): Clean this up.
 
   // Useful to know the metadata version of the source (e.g. to know if some
   // fields like memory_state below are up to date).
@@ -992,7 +1014,7 @@ void FileMetricsProvider::MergeHistogramDeltas(
     bool async,
     base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1293026): Consider if this work can be done asynchronously.
+  // TODO(crbug.com/40213327): Consider if this work can be done asynchronously.
   for (std::unique_ptr<SourceInfo>& source : sources_mapped_) {
     MergeHistogramDeltasFromSource(source.get());
   }

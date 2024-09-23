@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='red'",
+      "name": "LayoutBlockFlow (positioned) DIV id='red'",
       "position": [-400, 0],
       "bounds": [256, 256],
       "contentsOpaque": true,
@@ -15,7 +15,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='green'",
+      "name": "LayoutBlockFlow (positioned) DIV id='green'",
       "bounds": [300, 300],
       "contentsOpaque": true,
       "backgroundColor": "#008000"

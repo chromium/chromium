@@ -45,6 +45,10 @@ component("soda") {
       "//ui/base",
     ]
   }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup:startup" ]
+  }
 }
 
 source_set("constants") {
@@ -59,10 +63,35 @@ source_set("constants") {
     "//base",
     "//components/component_updater:component_updater_paths",
     "//components/crx_file",
+    "//components/language/core/browser",
+    "//components/prefs:prefs",
     "//components/strings/",
     "//media",
     "//ui/base",
   ]
+}
+
+source_set("utils") {
+  sources = [
+    "soda_util.cc",
+    "soda_util.h",
+  ]
+
+  deps = [
+    ":constants",
+    ":soda",
+    "//base",
+    "//media",
+    "//ui/base",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants:constants" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup:startup" ]
+  }
 }
 
 source_set("unit_tests") {

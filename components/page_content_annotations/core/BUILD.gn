@@ -1,0 +1,127 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/optimization_guide/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+component("features") {
+  sources = [
+    "page_content_annotations_enums.h",
+    "page_content_annotations_features.cc",
+    "page_content_annotations_features.h",
+    "page_content_annotations_switches.cc",
+    "page_content_annotations_switches.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//ui/base" ]
+  defines = [ "IS_PAGE_CONTENT_ANNOTATIONS_FEATURES_IMPL" ]
+}
+
+static_library("core") {
+  sources = [
+    "page_content_annotation_job.cc",
+    "page_content_annotation_job.h",
+    "page_content_annotation_type.cc",
+    "page_content_annotation_type.h",
+    "page_content_annotations_common.cc",
+    "page_content_annotations_common.h",
+    "page_content_annotations_service.cc",
+    "page_content_annotations_service.h",
+    "page_content_annotations_validator.cc",
+    "page_content_annotations_validator.h",
+    "page_content_annotator.h",
+  ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "page_content_annotation_job_executor.cc",
+      "page_content_annotation_job_executor.h",
+      "page_content_annotations_model_manager.cc",
+      "page_content_annotations_model_manager.h",
+      "page_visibility_model_executor.cc",
+      "page_visibility_model_executor.h",
+      "page_visibility_model_handler.cc",
+      "page_visibility_model_handler.h",
+      "page_visibility_op_resolver.cc",
+      "page_visibility_op_resolver.h",
+    ]
+  }
+  public_deps = [
+    ":features",
+    "//base",
+    "//components/continuous_search/common",
+    "//components/continuous_search/common/public/mojom",
+    "//components/google/core/common",
+    "//components/history/core/browser",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:model_executor",
+    "//components/search",
+    "//components/search_engines",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+
+  if (build_with_tflite_lib) {
+    deps = [ "//third_party/tensorflow_models:tflite_custom_ops" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test_page_content_annotations_service.cc",
+    "test_page_content_annotations_service.h",
+    "test_page_content_annotator.cc",
+    "test_page_content_annotator.h",
+  ]
+  deps = [
+    ":core",
+    ":features",
+    "//components/history/core/test",
+    "//components/optimization_guide/core:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "page_content_annotation_job_unittest.cc",
+    "page_content_annotations_service_unittest.cc",
+    "page_content_annotations_validator_unittest.cc",
+  ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "page_content_annotation_job_executor_unittest.cc",
+      "page_visibility_model_handler_unittest.cc",
+    ]
+  }
+
+  # crbug.com/1279884 Flaky on CrOS
+  if (!is_chromeos && build_with_tflite_lib) {
+    sources += [ "page_content_annotations_model_manager_unittest.cc" ]
+  }
+  deps = [
+    ":core",
+    ":features",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/search_engines:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (build_with_tflite_lib) {
+  fuzzer_test("optimization_guide_page_visibility_model_fuzzer") {
+    sources = [ "page_visibility_model_fuzzer.cc" ]
+    deps = [
+      ":core",
+      "//base:base",
+      "//base/test:test_support",
+    ]
+  }
+}

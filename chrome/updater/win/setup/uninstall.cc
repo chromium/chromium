@@ -4,14 +4,16 @@
 
 #include "chrome/updater/win/setup/uninstall.h"
 
-#include <shlobj.h>
 #include <windows.h>
+
+#include <shlobj.h>
 
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -21,6 +23,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat_win.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -99,7 +102,12 @@ void DeleteClientStateKey(UpdaterScope scope) {
   base::win::RegKey client_state;
   if (client_state.Open(UpdaterScopeToHKeyRoot(scope), CLIENT_STATE_KEY,
                         Wow6432(KEY_QUERY_VALUE)) == ERROR_SUCCESS) {
-    client_state.DeleteKey(L"", base::win::RegKey::RecursiveDelete(true));
+    // Delete the entire `ClientState` key only if all the apps are uninstalled
+    // already, as evidenced by the `--uninstall-if-unused` switch.
+    client_state.DeleteKey(base::CommandLine::ForCurrentProcess()->HasSwitch(
+                               kUninstallIfUnusedSwitch)
+                               ? L""
+                               : base::UTF8ToWide(kUpdaterAppId).c_str());
   }
 }
 
@@ -183,6 +191,20 @@ int UninstallImpl(UpdaterScope scope, bool uninstall_all) {
 
   if (!IsSystemInstall(scope)) {
     UnregisterUserRunAtStartup(GetTaskNamePrefix(scope));
+  }
+
+  if (uninstall_all) {
+    // Preserve the log file in the temp (`SystemTemp` for system installs)
+    // directory.
+    base::FilePath temp_dir;
+    if (std::optional<base::FilePath> log_file = GetLogFilePath(scope);
+        log_file &&
+        base::PathService::Get(IsSystemInstall(scope)
+                                   ? static_cast<int>(base::DIR_SYSTEM_TEMP)
+                                   : static_cast<int>(base::DIR_TEMP),
+                               &temp_dir)) {
+      base::CopyFile(*log_file, temp_dir.Append(log_file->BaseName()));
+    }
   }
 
   return RunUninstallScript(scope, uninstall_all);

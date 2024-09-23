@@ -146,6 +146,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
   rich_data.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
   rich_data.image_path = base::FilePath("dummy/path");
+  rich_data.settings_button_handler =
+      message_center::SettingsButtonHandler::INLINE;
 
   // Create badge and icon with both low DPI and high DPI versions.
   gfx::Image badge = gfx::test::CreateImage(1, 2);
@@ -190,6 +192,8 @@ TEST_F(NotificationPlatformBridgeLacrosTest, SerializationSimple) {
             last_notification->fullscreen_visibility);
   EXPECT_EQ(last_notification->image_path,
             ui_notification.rich_notification_data().image_path);
+  EXPECT_EQ(crosapi::mojom::SettingsButtonHandler::kInline,
+            last_notification->settings_button_handler);
 
   ASSERT_FALSE(last_notification->badge.isNull());
   EXPECT_TRUE(last_notification->badge_needs_additional_masking_has_value);

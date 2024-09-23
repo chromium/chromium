@@ -156,6 +156,27 @@
 // Button for the primary action string.
 @property(nonatomic, readonly) UIButton* primaryActionButton;
 
+// Color used for the activity indicator on the primary button when in the
+// loading state. Defaults to kSolidWhiteColor.
+@property(nonatomic, strong) UIColor* activityIndicatorColor;
+
+// Color used for the confirmation checkmark on the primary button when in the
+// confirmation state. Defaults to kBlue700Color.
+@property(nonatomic, strong) UIColor* confirmationCheckmarkColor;
+
+// Color used for the background on the primary button when in the confirmation
+// state. Defaults to kBlue100Color.
+@property(nonatomic, strong) UIColor* confirmationButtonColor;
+
+// Indicates whether this view shows itself in a loading state: The primary
+// button is disabled and shows an activity indicator instead of the primary
+// action string; and other action buttons are disabled.
+@property(nonatomic, assign) BOOL isLoading;
+
+// Shows a checkmark on the primary action button instead of the primary action
+// text, and shows the primary action button in a disabled state.
+@property(nonatomic, assign) BOOL isConfirmed;
+
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

@@ -4,9 +4,10 @@
 
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
@@ -20,7 +21,7 @@ const char kToken[] = "%s";
 
 URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(
     const GURL& full_url,
-    const base::StringPiece& user_url) {
+    const std::string_view& user_url) {
   // The specification requires that it is a SyntaxError if the "%s" token is
   // not present.
   int index = user_url.find(kToken);
@@ -35,7 +36,7 @@ URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(
   return URLSyntaxErrorCode::kNoError;
 }
 
-bool IsValidCustomHandlerScheme(const base::StringPiece scheme,
+bool IsValidCustomHandlerScheme(const std::string_view scheme,
                                 ProtocolHandlerSecurityLevel security_level,
                                 bool* has_custom_scheme_prefix) {
   bool allow_scheme_prefix =

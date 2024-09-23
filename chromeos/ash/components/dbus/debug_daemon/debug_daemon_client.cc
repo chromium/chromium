@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 
 #include <fcntl.h>
@@ -16,6 +21,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
@@ -38,6 +44,7 @@
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
 namespace ash {
 
@@ -280,6 +287,35 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
         base::BindOnce(&DebugDaemonClientImpl::OnFeedbackLogsResponse,
                        weak_ptr_factory_.GetWeakPtr(),
                        pipe_reader->AsWeakPtr()));
+  }
+
+  void GetFeedbackBinaryLogs(
+      const cryptohome::AccountIdentifier& id,
+      const std::map<debugd::FeedbackBinaryLogType, base::ScopedFD>&
+          log_type_fds,
+      chromeos::VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kGetFeedbackBinaryLogs);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendString(id.account_id());
+
+    dbus::MessageWriter array_writer(nullptr);
+    // Write map of log_type and fd.
+    writer.OpenArray("{ih}", &array_writer);
+    for (const auto& log_type : log_type_fds) {
+      dbus::MessageWriter dict_entry_writer(nullptr);
+      array_writer.OpenDictEntry(&dict_entry_writer);
+      dict_entry_writer.AppendInt32(log_type.first);
+      dict_entry_writer.AppendFileDescriptor(log_type.second.get());
+      array_writer.CloseContainer(&dict_entry_writer);
+    }
+    writer.CloseContainer(&array_writer);
+
+    DVLOG(1) << "Requesting feedback binary logs";
+    debugdaemon_proxy_->CallMethodWithErrorResponse(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnFeedbackBinaryLogsResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
@@ -651,6 +687,28 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void BluetoothStartBtsnoop(BluetoothBtsnoopCallback callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kBluetoothStartBtsnoop);
+    debugdaemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnBluetoothStartBtsnoop,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+  void BluetoothStopBtsnoop(int fd,
+                            BluetoothBtsnoopCallback callback) override {
+    dbus::MethodCall method_call(debugd::kDebugdInterface,
+                                 debugd::kBluetoothStopBtsnoop);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendFileDescriptor(fd);
+
+    debugdaemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DebugDaemonClientImpl::OnBluetoothStopBtsnoop,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void StopPacketCapture(const std::string& handle) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kPacketCaptureStop);
@@ -747,6 +805,17 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       // pipe reader is still waiting on read.
       pipe_reader->TerminateStream();
     }
+  }
+
+  void OnFeedbackBinaryLogsResponse(chromeos::VoidDBusMethodCallback callback,
+                                    dbus::Response* response,
+                                    dbus::ErrorResponse* err_response) {
+    bool succeeded = !err_response;
+    if (!succeeded) {
+      LOG(ERROR) << "Failed to GetFeedbackBinaryLogs. Error: "
+                 << err_response->GetErrorName();
+    }
+    std::move(callback).Run(succeeded);
   }
 
   // Called when a response for a simple start is received.
@@ -1034,6 +1103,22 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     }
 
     std::move(callback).Run(std::move(flags));
+  }
+
+  void OnBluetoothStartBtsnoop(BluetoothBtsnoopCallback callback,
+                               dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to read debugd response";
+    }
+    std::move(callback).Run(response != nullptr);
+  }
+
+  void OnBluetoothStopBtsnoop(BluetoothBtsnoopCallback callback,
+                              dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to read debugd response";
+    }
+    std::move(callback).Run(response != nullptr);
   }
 
   // Called when a D-Bus signal is initially connected.

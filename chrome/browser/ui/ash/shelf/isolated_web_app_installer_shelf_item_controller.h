@@ -52,6 +52,7 @@ class IsolatedWebAppInstallerShelfItemController
 
   // LacrosShelfItemController overrides:
   void AddWindow(aura::Window* window) override;
+  std::u16string GetTitle() override;
 
   // aura::WindowObserver
   void OnWindowDestroying(aura::Window* window) override;

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_CONSTANTS_H_
 
 #import <string>
+#import <vector>
 
 namespace overflow_menu {
 // LINT.IfChange(destination)
@@ -45,6 +46,7 @@ enum class ActionType {
   Help,
   ShareChrome,
   EditActions,
+  LensOverlay,
 };
 // LINT.ThenChange(overflow_menu_metrics.h:actionType)
 

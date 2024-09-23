@@ -49,7 +49,7 @@ class Clipboard {
   virtual std::vector<std::string> ReadMimeTypes() = 0;
 
   // Synchronously reads and returns clipboard content with |mime_type| format.
-  // TODO(crbug.com/443355): Drop once Clipboard API becomes async.
+  // TODO(crbug.com/40398800): Drop once Clipboard API becomes async.
   virtual ui::PlatformClipboard::Data Read(const std::string& mime_type) = 0;
 
   // Synchronously stores and announces |data| as available from this clipboard.
@@ -189,8 +189,9 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
     auto it = offered_data_.find(mime_type);
     if (it == offered_data_.end() && mime_type == ui::kMimeTypeTextUtf8)
       it = offered_data_.find(ui::kMimeTypeText);
-    if (it != offered_data_.end())
-      contents->assign(it->second->data().begin(), it->second->data().end());
+    if (it != offered_data_.end()) {
+      *contents = base::as_string_view(*it->second);
+    }
   }
 
   // The device manager used to access data device and create data sources.
@@ -305,7 +306,8 @@ wl::Clipboard* WaylandClipboard::GetClipboard(ClipboardBuffer buffer) {
     return nullptr;
   }
 
-  NOTREACHED() << "Unsupported clipboard buffer: " << static_cast<int>(buffer);
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported clipboard buffer: " << static_cast<int>(buffer);
   return nullptr;
 }
 

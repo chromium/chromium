@@ -1,29 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
-<translation id="1088086359088493902">سیکنڈ</translation>
-<translation id="1142001580032786438">ہفتہ منتخب کرنے والا دکھائيں</translation>
+<translation id="1012241361789814178">ڈیبگر کو دوسرے ٹیب میں روک دیا گیا، اس ٹیب پر سوئچ کرنے کے لیے کلک کریں۔</translation>
 <translation id="1171774979989969504">براہ کرم ایک ای میل پتہ درج کریں۔</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1306460908038601864">آف</translation>
 <translation id="1311894908970423688">قدر <ph name="VALUE_DATE_OR_TIME" /> ہونی چاہیے۔</translation>
-<translation id="1480676835519562650">متعدد قابل انتخاب، <ph name="COUNT" /> میں سے <ph name="SELECTED" /> کو منتخب کیا گیا۔</translation>
 <translation id="1588438908519853928">حسب معمول</translation>
 <translation id="1591562245178063882">اس مہینے</translation>
 <translation id="1637811476055996098">فائلوں کا انتخاب کریں</translation>
-<translation id="1681022320378710418">موجودہ وقت</translation>
-<translation id="1727839386348365796">آئی ڈراپر</translation>
+<translation id="1680090928918677457">کیمرا استعمال کریں</translation>
 <translation id="1729654308190250600">براہ کرم ایک غیر خالی ای میل پتہ درج کریں</translation>
 <translation id="1758486001363313524">دیگر…</translation>
-<translation id="1787192514241997742">کل وقت: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">کیمرے کی اجازت دیں</translation>
-<translation id="1822429046913737220">AM/PM</translation>
-<translation id="1832974991323546415">ریموٹ آلہ پر چلائیں</translation>
 <translation id="1921819250265091946">dd</translation>
 <translation id="1938124657309484470">قدر <ph name="MAXIMUM_DATE_OR_TIME" /> یا اس سے پہلے ہونا ضروری ہے۔</translation>
-<translation id="1946271899482435442">تاریخ منتخب کنندہ دکھائیں</translation>
 <translation id="1993104285338243655">مررنگ میں سوئچ ہو گیا</translation>
-<translation id="2031987842108996681">سرخ چینل</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' کا استعمال '<ph name="INVALIDDOMAIN" />' میں ایک غلط پوزیشن پر ہوا ہے۔</translation>
 <translation id="2068711044993563745">کم از کم قدر (<ph name="MINIMUM" />) زیادہ سے زیادہ قدر (<ph name="MAXIMUM" />) سے کم ہونی چاہیے۔</translation>
 <translation id="2148716181193084225">آج</translation>
@@ -31,29 +22,16 @@
 <translation id="2247351761944213033">ہفتہ <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" /> کو ٹریک کریں</translation>
 <translation id="2353297238722298836">کیمرا اور مائیکروفون اجازت یافتہ ہے</translation>
-<translation id="2393030564806080191">رنگ کی ہیگسا ڈیسیمل قدر</translation>
-<translation id="2398813069815436052">ڈائیلاگ کھولا گیا۔</translation>
-<translation id="245932805758469625">ویڈیو کے باقی بچے سیکنڈز کی تعداد</translation>
-<translation id="248395913932153421">دن</translation>
 <translation id="2507943997699731163">براہ کرم یہ فیلڈ پُر کریں۔</translation>
-<translation id="2530182415807757784">متعدد قابل انتخاب، کوئی بھی منتخب نہیں کیا گیا۔</translation>
-<translation id="2561842179657104141">مزید میڈیا کنٹرولز دکھائیں</translation>
-<translation id="2572483411312390101">چلائیں</translation>
 <translation id="2613802280814924224">براہ کرم ایک درست قدر درج کریں۔ قریب ترین درست قدر <ph name="VALID_VALUE" /> ہے۔</translation>
-<translation id="2634240155926812724">سبز چینل</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
-<translation id="2723001399770238859">آڈیو</translation>
 <translation id="2746543609216772311">قدر <ph name="MINIMUM_DATE_OR_TIME" /> یا اس کے بعد کی ہونا ضروری ہے۔</translation>
 <translation id="2761667185364618470">اگر آپ آگے بڑھنا چاہتے ہیں تو براہ کرم یہ باکس نشان زد کریں۔</translation>
 <translation id="2908441821576996758">براہ کرم کوما سے الگ کردہ ای میل پتوں کی ایک فہرست درج کریں۔</translation>
 <translation id="3049748772180311791">‎<ph name="QUANTITY" /> MB</translation>
-<translation id="3053226512517284904">آڈیو کی تفصیلات کا مینیو دکھائیں</translation>
 <translation id="3075154866155599887">براہ کرم ایک درست قدر درج کریں۔ فیلڈ نامکمل ہے یا اس میں غلط تاریخ ہے۔</translation>
 <translation id="310520048233152454">‏براہ کرم ایک URL درج کریں۔</translation>
-<translation id="3220661731597678625">موجودہ قدم</translation>
 <translation id="3321030238473337787">پلے بیک کی رفتار</translation>
-<translation id="3329013043687509092">سیرابی</translation>
-<translation id="3377518164566272702">مائیکروفون اور کیمرے کی اجازت دیں</translation>
 <translation id="3450233048674729344">قدر <ph name="MAXIMUM" /> سے کم یا اس کے برابر ہونی چاہیے۔</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">تصویر میں تصویر سے باہر نکلیں</translation>
@@ -62,132 +40,71 @@
 <translation id="383465348367842624">'<ph name="ATSIGN" />' کے بعد ایک حصہ میں علامت '<ph name="INVALIDCHARACTER" />' شامل نہیں ہونی چاہیے۔</translation>
 <translation id="3846214748874656680">پوری اسکرین سے باہر نکلیں</translation>
 <translation id="4031179711345676612">مائیکروفون اجازت یافتہ ہے</translation>
-<translation id="4103419683916926126">ملی سیکنڈز</translation>
-<translation id="4201051445878709314">پچھلا مہینہ دکھائیں</translation>
 <translation id="4360991593054037559">براہ کرم ایک درست قدر درج کریں۔ دو قریب ترین درست اقدار <ph name="VALID_VALUE_LOW" /> اور <ph name="VALID_VALUE_HIGHER" /> ہیں۔</translation>
 <translation id="4522570452068850558">تفصیلات</translation>
 <translation id="4663373278480897665">کیمرا اجازت یافتہ ہے</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' کے بعد کے حصہ میں علامت '<ph name="INVALIDCHARACTER" />' شامل نہیں ہونی چاہیے۔</translation>
 <translation id="4718048029184481307">تصویر میں تصویر چلائی جا رہی ہے</translation>
-<translation id="4748357248530471599">ڈسپلے کٹ آؤٹ فل اسکرین ٹوگل کریں</translation>
-<translation id="4763480195061959176">ویڈیو</translation>
 <translation id="4792862212177489858">مقام کا اشتراک کریں</translation>
 <translation id="4812940957355064477">براہ کرم ایک نمبر درج کریں۔</translation>
-<translation id="4912200001568447310">موجودہ آئٹم</translation>
-<translation id="4915360478455618802">وقت منتخب کرنے والا دکھائیں</translation>
-<translation id="4924138096460353083">غیر متعین</translation>
-<translation id="4950364064308314478">مقامی تاریخ اور وقت منتخب کرنے والا دکھائيں</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" /> منتخب کیا گيا</translation>
+<translation id="49269513399674318">مائیکروفون کا استعمال کریں</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> منتخب کر لیا گیا</translation>
 <translation id="4992066212339426712">آواز چلائیں</translation>
 <translation id="49969490063480558">براہ کرم '<ph name="ATSIGN" />' کے بعد ایک حصہ درج کریں۔ '<ph name="INVALIDADDRESS" />' نامکمل ہے۔</translation>
-<translation id="5037575921016181960">مضبوط پاس ورڈ</translation>
-<translation id="5090250355906949916">ویڈیو ٹائم اسکربر</translation>
-<translation id="509897012892853729">نیلا چینل</translation>
-<translation id="5117590920725113268">اگلا مہینہ دکھائیں</translation>
 <translation id="5164977714490026579">قدر <ph name="MINIMUM" /> سے زیادہ یا اس کے برابر ہونا ضروری ہے۔</translation>
 <translation id="5196716972587102051">2</translation>
-<translation id="5199514351668672591">اختیارات پر واپس جائیں</translation>
 <translation id="520299402983819650">‎<ph name="QUANTITY" /> PB</translation>
-<translation id="5272594226096532950">نشان زد نہیں کیا گیا۔ گروپ میں، <ph name="COUNT" /> میں سے <ph name="INDEX" /> اختیار</translation>
 <translation id="5307600278924710095">براہ کرم '<ph name="ATSIGN" />' کے بعد ایک حصہ درج کریں۔ '<ph name="INVALIDADDRESS" />' نامکمل ہے۔</translation>
 <translation id="5334352251556557839">میڈیا چلانے سے قاصر۔</translation>
 <translation id="537648784377940524">کم سے کم تاریخ (<ph name="MIN_DATE_OR_TIME" />) زیادہ سے زیادہ تاریخ (<ph name="MAX_DATE_OR_TIME" />) سے پہلے آنی چاہیے۔</translation>
-<translation id="5378437566635403538">پھیلایا گیا، ڈائیلاگ کھولا گیا۔</translation>
-<translation id="5425179576310518467">موجودہ تاریخ</translation>
 <translation id="5466621249238537318">براہ کرم ایک یا مزید فائلیں منتخب کریں۔</translation>
-<translation id="5468998798572797635">پوری اسکرین سے خارج ہوں</translation>
 <translation id="5514612371225420585">آپ کے آلے پر موجود فائل</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">کاسٹ کریں</translation>
-<translation id="5546461542133609677">آواز چلائیں</translation>
 <translation id="5630795885300617244">10 سیکنڈ آگے/پیچھے کرنے کے لیے بائیں یا دائیں دوبار تھپتھپائیں</translation>
-<translation id="5677946354068040947">مزید اختیارات</translation>
 <translation id="57838592816432529">آواز بند کریں</translation>
-<translation id="5786442179789148008">پلے بیک اسپیڈ مینیو دکھائیں</translation>
-<translation id="5787939484346677755">پھیلایا گیا، خود کار تکمیل کے اختیارات دستیاب ہیں۔</translation>
-<translation id="5860033963881614850">آف</translation>
 <translation id="588258955323874662">پوری اسکرین</translation>
 <translation id="5888666972993069672">اب <ph name="DEVICE_FRIENDLY_NAME" /> پر کاسٹ ہو رہی ہے</translation>
-<translation id="5916664084637901428">آن</translation>
 <translation id="5939518447894949180">دوبارہ ترتیب دیں</translation>
 <translation id="5966707198760109579">ہفتہ</translation>
 <translation id="5985507339671257014">0.5</translation>
-<translation id="6011459053400940133">والیوم سلائیڈر</translation>
-<translation id="6015796118275082299">سال</translation>
-<translation id="6165053282446038410">پھیلایا گیا، خود کار تکمیل کے <ph name="COUNT" /> اختیارات دستیاب ہیں۔</translation>
-<translation id="6212595056017402527">موجودہ صفحہ</translation>
-<translation id="6281588256137006900">روشن</translation>
 <translation id="6310801910862476708">'تصویر میں تصویر' سے باہر نکلیں</translation>
-<translation id="6398862346408813489">مہینہ کے انتخاب کا پینل دکھائیں</translation>
-<translation id="6404546809543547843">آڈیو ٹائم اسکربر</translation>
-<translation id="6443871981718447451">سب ٹائٹلز کا مینیو دکھائیں</translation>
 <translation id="6484738902856791350">خوبصورت پرنٹ</translation>
 <translation id="6550675742724504774">اختیارات</translation>
-<translation id="6572309429103589720">غلط گرامر</translation>
-<translation id="658823671542763450">پوری اسکرین میں داخل ہوں</translation>
-<translation id="6606094904835912297">سسٹم کے رنگ</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="668171684555832681">دیگر…</translation>
 <translation id="6709093583001123835">قدر <ph name="VALUE" /> ہونی چاہیے۔</translation>
 <translation id="6709570249143506788">پلے بیک کا خراب معیار</translation>
-<translation id="6719914554879143100">نشان زد کر دیا گیا۔ گروپ میں، <ph name="COUNT" /> میں سے <ph name="INDEX" /> اختیار</translation>
 <translation id="6790428901817661496">چلائیں</translation>
 <translation id="6820355525329141109">پلگ ان لوڈ نہیں ہو سکا۔</translation>
-<translation id="6831465880655513317">سیچوریشن اور روشن کو منتخب کرنے کے ليے دو جہتی سلائیڈر والا کلر ویل</translation>
-<translation id="6843725295806269523">خاموش کریں</translation>
 <translation id="6919891270253167948">1.5</translation>
-<translation id="6941933287844615239">میڈیا ڈاؤن لوڈ کریں</translation>
-<translation id="698788488269350478">پھیلایا گیا۔</translation>
 <translation id="6989848892321993519">براہ کرم اس متن کو <ph name="MIN_CHARACTERS" /> حروف یا اس سے زیادہ تک بڑھائیں (آپ فی الحال 1 حرف استعمال کر رہے ہیں)۔</translation>
 <translation id="7080893216867146095">مقام کے اشتراک کی اجازت ہے</translation>
 <translation id="709897737746224366">براہ کرم مطلوبہ فارمیٹ کا مماثل بنائیں۔</translation>
-<translation id="7102274145889307184">موجودہ مقام</translation>
+<translation id="7134810312945846184">مائیکروفون اور کیمرا استعمال کریں</translation>
 <translation id="7263440858009898357">براہ کرم فہرست میں ایک آئٹم منتخب کریں۔</translation>
-<translation id="7320576522385648310">بفر کر رہا ہے</translation>
-<translation id="7341556277900466204">رنگین پہیہ</translation>
 <translation id="7364796246159120393">فائل کا انتخاب کریں</translation>
 <translation id="739024184232394898">دیگر…</translation>
 <translation id="7460907917090416791">‎<ph name="QUANTITY" /> TB</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
-<translation id="7673697353781729403">گھنٹے</translation>
 <translation id="7750228210027921155">تصویر میں تصویر</translation>
-<translation id="775297008183122718">غلط اندراج</translation>
 <translation id="7782515065589691344">1.25</translation>
-<translation id="7789962463072032349">موقوف کریں</translation>
-<translation id="7852167693871241274">رنگین سلائیڈر</translation>
 <translation id="7888071071722539607">براہ کرم ای میل پتہ میں ایک '<ph name="ATSIGN" />' شامل کریں۔ '<ph name="INVALIDADDRESS" />' میں '<ph name="ATSIGN" />' غائب ہے۔</translation>
 <translation id="795667975304826397">کوئی فائل منتخب نہیں کی گئی</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" /> منتخب کردہ نہیں ہے</translation>
 <translation id="8117451130807776954">یہ ہفتہ</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
-<translation id="8261464734335370856">غلط املا</translation>
 <translation id="8284326494547611709">کیپشنز</translation>
 <translation id="835897206747267392">غلط قدر۔</translation>
 <translation id="839593075537728968">قدر <ph name="MINIMUM_TIME" /> اور <ph name="MAXIMUM_TIME" /> کے درمیان ہونی چاہیے۔</translation>
-<translation id="8403857369060869934">گزرا ہوا وقت: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> فائلیں</translation>
 <translation id="8451268428117625855">براہ کرم ایک فائل منتخب کریں۔</translation>
-<translation id="8534579021159131403">منٹ</translation>
-<translation id="8541249477527128034">میڈیا کنٹرول</translation>
-<translation id="8613126697340063924">ریموٹ پلے بیک کو کنٹرول کریں</translation>
-<translation id="8634971699417195529">مہینہ منتخب کرنے والا دکھائیں</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">لائن رَیپ کریں | لائن ملفوف کریں</translation>
 <translation id="8750798805984357768">براہ کرم ان اختیارات میں سے ایک کو منتخب کریں۔</translation>
 <translation id="8845239796550121995">‏اب آپ کی TV پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="8875657656876809964">ویڈیو پلے بیک کی خرابی</translation>
-<translation id="8889402386540077796">ہیو</translation>
 <translation id="8901569739625249689">‎<ph name="QUANTITY" /> KB</translation>
-<translation id="894736920926684893">فارمیٹ ٹوگلر</translation>
-<translation id="8987927404178983737">ماہ</translation>
-<translation id="901493112792887934">موجودہ وقت سیکنڈ میں ہے</translation>
-<translation id="9093215626363556771">'تصویر میں تصویر' سے باہر نکلیں</translation>
 <translation id="9132465097189459683">دیگر…</translation>
-<translation id="9155987714137265666"><ph name="WEEK" />، <ph name="WEEK_START_DATE" /> سے</translation>
 <translation id="916607977885256133">تصویر میں تصویر</translation>
-<translation id="918430632320614861">مائیکروفون کی اجازت دیں</translation>
-<translation id="945780513535800434">جزوی طور پر نشان زد</translation>
-<translation id="954003015749068518">'تصویر میں تصویر' میں داخل ہوں</translation>
 </translationbundle>

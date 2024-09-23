@@ -1,0 +1,93 @@
+<style include="shared-style cr-icons">
+  #link {
+    cursor: pointer;
+    width: fit-content;
+    overflow: hidden;
+    margin-inline-start: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #item-container {
+    align-items: center;
+    display: flex;
+    min-height: var(--item-height);
+    padding-inline-start: 14px;
+    pointer-events: auto;
+  }
+
+  #checkbox {
+    margin: 0 10px;
+  }
+
+  /* Visually hide the label but still allow the screen reader to
+    pick it up. */
+  cr-checkbox::part(label-container) {
+    clip: rect(0,0,0,0);
+    display: block;
+    position: fixed;
+  }
+
+  #link-container{
+    align-items: center;
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    height: var(--item-height);
+    margin-inline-end: auto;
+    overflow: hidden;
+  }
+
+  #history-icon {
+    margin-inline-end: 6px;
+    height: 16px;
+    width: 16px;
+    --iron-icon-fill-color: var(--cr-fallback-color-on-surface-subtle);
+  }
+
+  #menu {
+    align-items: center;
+    display: flex;
+    --cr-icon-button-margin-end: 20px;
+    --cr-icon-button-margin-start: 12px;
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+  }
+
+  #url {
+    color: var(--cr-secondary-text-color);
+    display: block;
+    font-size: 12px;
+    margin-inline-start: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+
+<div role="row" on-mousedown="onRowPointerDown_">
+  <div id="item-container">
+    <cr-checkbox id="checkbox" checked="{{checked}}"
+        on-pointerdown="onCheckboxPointerDown_"
+        on-change="onCheckboxChange_">
+    </cr-checkbox>
+    <div id="link-container">
+      <div id="link" on-click="onLinkClick_"
+          on-keydown="onLinkKeydown_"
+          role="link" tabindex="0">
+        <cr-icon id="history-icon" class="website-icon"
+            icon="history:table-chart-organize"></cr-icon>
+        <history-searched-label class="website-title"
+            title="[[getItemTitle_(item)]]"
+            search-term="[[searchTerm]]">
+        </history-searched-label>
+      </div>
+      <div id="url" class="website-link">
+        [[getUrl_(item)]]
+      </div>
+    </div>
+    <cr-icon-button id="menu" iron-icon="cr:more-vert"
+        on-click="onMenuButtonClick_"
+        aria-label="[[getMenuAriaLabel_(item)]]"></cr-icon-button>
+  </div>
+</div>

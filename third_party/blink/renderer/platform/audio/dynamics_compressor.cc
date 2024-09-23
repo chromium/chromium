@@ -26,9 +26,16 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/audio/dynamics_compressor.h"
+
 #include <algorithm>
 #include <cmath>
+
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -137,7 +144,7 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       break;
     default:
       // FIXME : support other number of channels.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       destination_bus->Zero();
       return;
   }

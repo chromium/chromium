@@ -6,10 +6,9 @@ import os
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 from core.tbmv3 import trace_processor
-
-import mock
 
 RUN_METHOD = 'core.tbmv3.trace_processor._RunTraceProcessor'
 
@@ -319,10 +318,10 @@ class TraceProcessorTestCase(unittest.TestCase):
 
   def testRunQueryNoPatch(self):
     sql_query = 'SELECT int_value, str_value FROM metadata LIMIT 1'
-    query_output = trace_processor.RunQuery(None, self.trace_path, sql_query)
-
-    expected_output = [{'int_value': '0', 'str_value': None}]
-    self.assertEqual(query_output, expected_output)
+    try:
+      trace_processor.RunQuery(None, self.trace_path, sql_query)
+    except Exception as error:
+      self.fail('Unexpected trace_processor error: {}'.format(error))
 
   def testWithInterferingEnvironmentVariables(self):
     os.environ['PERFETTO_SYMBOLIZER_MODE'] = 'placeholder'

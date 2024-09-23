@@ -140,7 +140,7 @@ class MediaRoute {
 
   // |true| if the presentation associated with this route is a local
   // presentation.
-  // TODO(crbug.com/1309770): Remove |is_local_presentation_|.
+  // TODO(crbug.com/40219575): Remove |is_local_presentation_|.
   bool is_local_presentation_ = false;
 
   // |true| if the route is created by the MRP but is waiting for receivers'

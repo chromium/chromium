@@ -116,6 +116,12 @@ public class PiiEliderTest {
     }
 
     @Test
+    public void testDontElideChromeApkName() {
+        String original = "at Z94.e(chromium-TrichromeChromeGoogle6432.aab-canary-651000033:14)";
+        assertEquals(original, PiiElider.elideUrl(original));
+    }
+
+    @Test
     public void testDontElideAndroidPermission() {
         String original =
                 "java.lang.SecurityException: get package info: Neither user 1210041 nor current"

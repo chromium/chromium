@@ -30,10 +30,11 @@ class SkpicturePrinter(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--page-set-name',  action='store', type='string')
-    parser.add_option('--page-set-base-dir', action='store', type='string')
-    parser.add_option('-s', '--skp-outdir',
-                      help='Output directory for the SKP files')
+    parser.add_argument('--page-set-name')
+    parser.add_argument('--page-set-base-dir')
+    parser.add_argument('-s',
+                        '--skp-outdir',
+                        help='Output directory for the SKP files')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -67,9 +68,9 @@ class SkpicturePrinterCT(perf_benchmark.PerfBenchmark):
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
     ct_benchmarks_util.AddBenchmarkCommandLineArgs(parser)
-    parser.add_option('-s', '--skp-outdir',
-                      default=None,
-                      help='Output directory for the SKP files')
+    parser.add_argument('-s',
+                        '--skp-outdir',
+                        help='Output directory for the SKP files')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

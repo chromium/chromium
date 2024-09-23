@@ -1,4 +1,3 @@
-lqu@google.com
 file://chrome/browser/ash/borealis/OWNERS
 
 per-file *.mojom=set noparent

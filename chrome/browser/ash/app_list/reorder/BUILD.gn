@@ -1,0 +1,48 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("reorder") {
+  sources = [
+    "app_list_reorder_core.cc",
+    "app_list_reorder_core.h",
+    "app_list_reorder_delegate.h",
+    "app_list_reorder_util.cc",
+    "app_list_reorder_util.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//base",
+    "//base:i18n",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ui/ash/app_icon_color_cache",
+    "//components/sync/model",
+    "//third_party/icu",
+    "//ui/base",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "app_list_reorder_core_unittest.cc" ]
+
+  deps = [
+    ":reorder",
+    "//ash/public/cpp",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ui",
+    "//components/crx_file",
+    "//testing/gtest",
+  ]
+}

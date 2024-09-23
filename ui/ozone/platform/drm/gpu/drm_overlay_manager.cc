@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_candidates.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
@@ -18,6 +19,11 @@
 namespace ui {
 
 namespace {
+
+// The amount of time during which the manager cannot skip drm testing of
+// fullscreen overlays if overlay swap failure handling is enabled.
+constexpr base::TimeDelta kDisallowSkipFullscreenOverlaysDRMTestTime =
+    base::Hours(2);
 
 // Maximum number of overlay configurations to keep in MRU cache.
 constexpr size_t kMaxCacheSize = 100;
@@ -42,7 +48,9 @@ std::vector<OverlaySurfaceCandidate> ToCacheKey(
 }  // namespace
 
 DrmOverlayManager::DrmOverlayManager(
-    bool allow_sync_and_real_buffer_page_flip_testing) {
+    bool handle_overlays_swap_failure,
+    bool allow_sync_and_real_buffer_page_flip_testing)
+    : handle_overlays_swap_failure_(handle_overlays_swap_failure) {
   allow_sync_and_real_buffer_page_flip_testing_ =
       allow_sync_and_real_buffer_page_flip_testing;
   DETACH_FROM_THREAD(thread_checker_);
@@ -135,7 +143,16 @@ void DrmOverlayManager::CheckOverlaySupport(
     }
   }
 
+  // Check if we can skip fullscreen overlay drm test in case if it was
+  // disallowed some time ago because of a failure.
+  if (!allow_skip_fullscreen_overlay_drm_test_ &&
+      base::TimeTicks::Now() >= disallow_fullscreen_overlays_end_time_) {
+    allow_skip_fullscreen_overlay_drm_test_ = true;
+    disallow_fullscreen_overlays_end_time_ = base::TimeTicks();
+  }
+
   std::vector<OverlaySurfaceCandidate> result_candidates;
+  bool can_skip_fullscreen_overlay_drm_test = false;
   for (size_t i = 0; i < candidates->size(); i++) {
     auto& candidate = (*candidates)[i];
     bool can_handle =
@@ -145,12 +162,34 @@ void DrmOverlayManager::CheckOverlaySupport(
     // the primary plane.
     DCHECK(can_handle || candidate.plane_z_order != 0);
 
+    // Also verify if hardware supports required buffer format. It can happen,
+    // that a system doesn't support overlays for certain buffer formats. Thus,
+    // doing IPC below to do validation is just waste of resources given |this|
+    // is aware of that limitation.
+    can_handle &= IsBufferFormatSupported(candidate.format, widget);
+
     // If we can't handle the candidate in an overlay replace it with default
     // value. The quad might have a non-integer display rect which hits a
     // DCHECK when converting to gfx::Rect in the comparator.
     result_candidates.push_back(can_handle ? candidate
                                            : OverlaySurfaceCandidate());
     result_candidates.back().overlay_handled = can_handle;
+
+    can_skip_fullscreen_overlay_drm_test =
+        handle_overlays_swap_failure_ &&
+        allow_skip_fullscreen_overlay_drm_test_ &&
+        result_candidates.back().overlay_type == gfx::OverlayType::kFullScreen;
+  }
+
+  // This is a fast path for the fullscreen overlays, which avoids drm page flip
+  // test and relies on a real swap. If swap fails, fullscreen overlays are
+  // again drm tested for |kDisallowSkipFullscreenOverlaysDRMTestTime|.
+  if (can_skip_fullscreen_overlay_drm_test) {
+    // Fullscreen candidates are tested individually. Other candidates are not
+    // expected here.
+    DCHECK_EQ(1U, candidates->size());
+    candidates->front().overlay_handled = true;
+    return;
   }
 
   if (allow_sync_and_real_buffer_page_flip_testing_ &&
@@ -216,6 +255,63 @@ void DrmOverlayManager::RegisterOverlayRequirement(
     widgets_with_required_overlays_.erase(widget);
 }
 
+void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
+  DCHECK(!in_flight_overlay_types_.empty());
+  auto committed_overlay_types = std::move(in_flight_overlay_types_.front());
+  in_flight_overlay_types_.pop_front();
+
+  // If it's a fullscreen, it is a single instance.
+  const bool is_fullscreen_overlay =
+      committed_overlay_types.size() == 1U &&
+      committed_overlay_types.front() == gfx::kFullScreen;
+
+  const bool allow_skip_fullscreen_overlay_drm_test_prev =
+      allow_skip_fullscreen_overlay_drm_test_;
+  if (swap_result == gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED) {
+    LOG_IF(FATAL, !handle_overlays_swap_failure_)
+        << "Handling non-simple overlays' swap failure requires the "
+           "kHandleOverlaysSwapFailure feature to be enabled.";
+
+    if (is_fullscreen_overlay) {
+      if (allow_skip_fullscreen_overlay_drm_test_) {
+        allow_skip_fullscreen_overlay_drm_test_ = false;
+        disallow_fullscreen_overlays_end_time_ =
+            base::TimeTicks::Now() + kDisallowSkipFullscreenOverlaysDRMTestTime;
+      } else {
+        NOTREACHED() << "It's not expected to receive swap failures for "
+                        "fullscreen overlays as they are drm tested.";
+      }
+    } else {
+      NOTREACHED() << "Only fullscreen overlays are treated specially.";
+    }
+  }
+
+  if (is_fullscreen_overlay && handle_overlays_swap_failure_ &&
+      allow_skip_fullscreen_overlay_drm_test_prev &&
+      (swap_result == gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED ||
+       swap_result == gfx::SwapResult::SWAP_ACK)) {
+    // Record how many times fullscreen overlays failed if skipping drm test was
+    // allowed.
+    UMA_HISTOGRAM_BOOLEAN(
+        "Compositing.Display.DrmOverlayManager.FullscreenOverlayFailed",
+        swap_result == gfx::SwapResult::SWAP_NON_SIMPLE_OVERLAYS_FAILED);
+  }
+}
+
+void DrmOverlayManager::SetSupportedBufferFormats(
+    gfx::AcceleratedWidget widget,
+    base::flat_set<gfx::BufferFormat> supported_buffer_formats) {
+  per_widget_overlay_supported_buffer_formats_.insert_or_assign(
+      widget, std::move(supported_buffer_formats));
+}
+
+void DrmOverlayManager::OnPromotedOverlayTypes(
+    std::vector<gfx::OverlayType> promoted_overlay_types) {
+  // Hold promoted overlay types so that it's possible to distinguish swap
+  // buffers completion calls.
+  in_flight_overlay_types_.push_back(std::move(promoted_overlay_types));
+}
+
 bool DrmOverlayManager::CanHandleCandidate(
     const OverlaySurfaceCandidate& candidate,
     gfx::AcceleratedWidget widget) const {
@@ -260,6 +356,25 @@ bool DrmOverlayManager::CanHandleCandidate(
   }
 
   return true;
+}
+
+bool DrmOverlayManager::IsBufferFormatSupported(
+    gfx::BufferFormat required_overlay_buffer_format,
+    gfx::AcceleratedWidget widget) const {
+  auto supported_formats_it =
+      per_widget_overlay_supported_buffer_formats_.find(widget);
+  if (supported_formats_it ==
+      per_widget_overlay_supported_buffer_formats_.end()) {
+    // Supported formats are unknown.
+    return false;
+  }
+
+  auto format_it = base::ranges::find_if(
+      supported_formats_it->second,
+      [required_overlay_buffer_format](const auto& supported_format) {
+        return required_overlay_buffer_format == supported_format;
+      });
+  return format_it != supported_formats_it->second.end();
 }
 
 void DrmOverlayManager::UpdateCacheForOverlayCandidates(

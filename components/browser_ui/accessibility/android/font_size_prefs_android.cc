@@ -8,12 +8,14 @@
 
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "components/browser_ui/accessibility/android/accessibility_jni_headers/FontSizePrefs_jni.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/browser_ui/accessibility/android/accessibility_jni_headers/FontSizePrefs_jni.h"
 
 namespace browser_ui {
 

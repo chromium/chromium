@@ -44,7 +44,7 @@ cast_source_set("processing") {
   # Use fastest possible float math.
   configs -= [ "//build/config/compiler:default_optimization" ]
   configs += [ "//build/config/compiler:optimize_speed" ]
-  cflags = [ "-ffast-math" ]
+  cflags = [ "-Wno-nan-infinity-disabled" ]
 }
 
 cast_source_set("playback_rate_shifter") {
@@ -129,7 +129,7 @@ cast_source_set("audio_renderer") {
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//net",
-    "//third_party/blink/public/common",
+    "//third_party/blink/public:blink_headers",
   ]
 }
 

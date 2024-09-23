@@ -8,6 +8,15 @@ module ash.mojom.status_area_internals;
 // is only bound on non-official builds since the webUI that uses this is
 // only available on non-official builds.
 interface PageHandler {
+  // Defines the badge icon options for the battery
+  enum BatteryIcon {
+    kDefault,
+    kXIcon,
+    kUnreliableIcon,
+    kBoltIcon,
+    kBatterySaverPlusIcon,
+  };
+
   // Toggles the visibility of the IME tray.
   ToggleImeTray(bool visible);
 
@@ -26,11 +35,8 @@ interface PageHandler {
   // Toggles the visibility of the video conference tray.
   ToggleVideoConferenceTray(bool visible);
 
-  // Toggles the visibility of the projector tray.
-  ToggleProjectorTray(bool visible);
-
-  // Sets whether the active directory is being managed or not.
-  SetActiveDirectoryManaged(bool managed);
+  // Toggles the visibility of the annotation tray.
+  ToggleAnnotationTray(bool visible);
 
   // Sets whether user is in a child session or not.
   SetIsInUserChildSession(bool in_child_session);
@@ -38,4 +44,14 @@ interface PageHandler {
   // Triggers the privacy indicators in the status area.
   TriggerPrivacyIndicators(string app_id, string app_name, bool is_camera_used,
     bool is_microphone_used);
+
+  // Resets Help Me Write consent status.
+  // Used to validate the Help Me Write's opt-in flow.
+  ResetHmrConsentStatus();
+
+  // Sets the badge icon for the battery
+  SetBatteryIcon(BatteryIcon icon);
+
+  // Updates battery percentage
+  SetBatteryPercent(double percent);
 };

@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Анкета</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">Проверава се интернет веза</translation>
+<translation id="2359808026110333948">Настави</translation>
 <translation id="2388990488038464401">Желите ли да позовете овај број са телефона?</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">НОВО</translation>
 <translation id="2666092431469916601">Врх</translation>
 <translation id="2701330563083355633">Дељено са: <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Ново</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Пре годину дана}one{Пре # годину}few{Пре # године}other{Пре # година}}</translation>
 <translation id="2878511608894704031">Избриши све</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{за 1 д}one{за # д}few{за # д}other{за # д}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> систем</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Стрелица налево</translation>
+<translation id="5633029987065897167">Празно</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}one{# мин}few{# мин}other{# мин}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Последња активност: данас}=1{Последња активност: пре 1 дан}one{Последња активност: пре # дан}few{Последња активност: пре # дана}other{Последња активност: пре # дана}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 дан и }one{# дан и }few{# дана и }other{# дана и }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF садржај</translation>
 <translation id="6539092367496845964">Дошло је до грешке. Пробајте поново касније.</translation>
 <translation id="654149438358937226">Блокирај сва обавештења</translation>
-<translation id="6612467943526193239">Да бисте изашли из калибрације, притисните Esc.</translation>
 <translation id="6620110761915583480">Чување датотеке</translation>
 <translation id="6699343763173986273">Следећа песма медија</translation>
 <translation id="6808150112686056157">Заустављање медија</translation>

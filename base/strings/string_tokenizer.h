@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef BASE_STRINGS_STRING_TOKENIZER_H_
 #define BASE_STRINGS_STRING_TOKENIZER_H_
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -26,12 +31,12 @@ namespace base {
 // EXAMPLE 1:
 //
 //   char input[] = "this is a test";
-//   CStringTokenizer t(input, input + strlen(input), " ");
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   CStringTokenizer t(input, " ");
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   this
 //   is
@@ -44,11 +49,11 @@ namespace base {
 //   std::string input = "no-cache=\"foo, bar\", private";
 //   StringTokenizer t(input, ", ");
 //   t.set_quote_chars("\"");
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   no-cache="foo, bar"
 //   private
@@ -60,9 +65,9 @@ namespace base {
 //   std::string input = "text/html; charset=UTF-8; foo=bar";
 //   StringTokenizer t(input, "; =");
 //   t.set_options(StringTokenizer::RETURN_DELIMS);
-//   while (t.GetNext()) {
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
 //     if (t.token_is_delim()) {
-//       switch (*t.token_begin()) {
+//       switch (token.value().front()) {
 //         case ';':
 //           next_is_option = true;
 //           break;
@@ -81,7 +86,7 @@ namespace base {
 //       } else {
 //         label = "mime-type";
 //       }
-//       printf("%s: %s\n", label, t.token().c_str());
+//       LOG(ERROR) << label << " " << token.value();
 //     }
 //   }
 //
@@ -91,11 +96,11 @@ namespace base {
 //   std::string input = "this, \t is, \t a, \t test";
 //   StringTokenizer t(input, ",",
 //       StringTokenizer::WhitespacePolicy::kSkipOver);
-//   while (t.GetNext()) {
-//     printf("%s\n", t.token().c_str());
+//   while (std::optional<std::string_view> token = t.GetNextTokenView()) {
+//     LOG(ERROR) << token.value();
 //   }
 //
-// Output:
+// Output sans logging metadata:
 //
 //   this
 //   is
@@ -103,10 +108,17 @@ namespace base {
 //   test
 //
 //
+// TODO(danakj): This class is templated on the container and the iterator type,
+// but it strictly only needs to care about the `CharType`. However many users
+// expect to work with string and string::iterator for historical reasons. When
+// they are all working with `string_view`, then this class can be made to
+// unconditionally use `std::basic_string_view<CharType>` and vend iterators of
+// that type, and we can drop the `str` and `const_iterator` aliases.
 template <class str, class const_iterator>
 class StringTokenizerT {
  public:
-  typedef typename str::value_type char_type;
+  using char_type = typename str::value_type;
+  using owning_str = std::basic_string<char_type>;
 
   // Options that may be pass to set_options()
   enum {
@@ -139,7 +151,7 @@ class StringTokenizerT {
   // the constructor), but caution must still be exercised.
   StringTokenizerT(
       const str& string,
-      const str& delims,
+      const owning_str& delims,
       WhitespacePolicy whitespace_policy = WhitespacePolicy::kIncludeInTokens) {
     Init(string.begin(), string.end(), delims, whitespace_policy);
   }
@@ -151,7 +163,7 @@ class StringTokenizerT {
   StringTokenizerT(
       const_iterator string_begin,
       const_iterator string_end,
-      const str& delims,
+      const owning_str& delims,
       WhitespacePolicy whitespace_policy = WhitespacePolicy::kIncludeInTokens) {
     Init(string_begin, string_end, delims, whitespace_policy);
   }
@@ -164,7 +176,17 @@ class StringTokenizerT {
   // it ignores delimiters that it finds.  It switches out of this mode once it
   // finds another instance of the quote char.  If a backslash is encountered
   // within a quoted string, then the next character is skipped.
-  void set_quote_chars(const str& quotes) { quotes_ = quotes; }
+  void set_quote_chars(const owning_str& quotes) { quotes_ = quotes; }
+
+  // Advance the tokenizer to the next delimiter and return the token value. If
+  // the tokenizer is complete, this returns std::nullopt.
+  std::optional<std::basic_string_view<char_type>> GetNextTokenView() {
+    if (!GetNext()) {
+      return std::nullopt;
+    }
+
+    return token_piece();
+  }
 
   // Call this method to advance the tokenizer to the next delimiter.  This
   // returns false if the tokenizer is complete.  This method must be called
@@ -199,7 +221,7 @@ class StringTokenizerT {
  private:
   void Init(const_iterator string_begin,
             const_iterator string_end,
-            const str& delims,
+            const owning_str& delims,
             WhitespacePolicy whitespace_policy) {
     start_pos_ = string_begin;
     token_begin_ = string_begin;
@@ -309,9 +331,13 @@ class StringTokenizerT {
     return false;
   }
 
-  bool IsDelim(char_type c) const { return delims_.find(c) != str::npos; }
+  bool IsDelim(char_type c) const {
+    return delims_.find(c) != owning_str::npos;
+  }
 
-  bool IsQuote(char_type c) const { return quotes_.find(c) != str::npos; }
+  bool IsQuote(char_type c) const {
+    return quotes_.find(c) != owning_str::npos;
+  }
 
   struct AdvanceState {
     bool in_quote;
@@ -343,8 +369,8 @@ class StringTokenizerT {
   const_iterator token_begin_;
   const_iterator token_end_;
   const_iterator end_;
-  str delims_;
-  str quotes_;
+  owning_str delims_;
+  owning_str quotes_;
   int options_;
   bool token_is_delim_;
   WhitespacePolicy whitespace_policy_;
@@ -352,6 +378,8 @@ class StringTokenizerT {
 
 typedef StringTokenizerT<std::string, std::string::const_iterator>
     StringTokenizer;
+typedef StringTokenizerT<std::string_view, std::string_view::const_iterator>
+    StringViewTokenizer;
 typedef StringTokenizerT<std::u16string, std::u16string::const_iterator>
     String16Tokenizer;
 typedef StringTokenizerT<std::string, const char*> CStringTokenizer;

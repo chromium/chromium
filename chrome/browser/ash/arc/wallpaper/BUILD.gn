@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("wallpaper") {
+  sources = [
+    "arc_wallpaper_service.cc",
+    "arc_wallpaper_service.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/image_decoder",
+    "//components/account_id",
+    "//components/keyed_service/core",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_wallpaper_service_unittest.cc" ]
+
+  deps = [
+    ":wallpaper",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/wallpaper_handlers:test_support",
+    "//chrome/browser/image_decoder",
+    "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/browser/ui/ash/wallpaper:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

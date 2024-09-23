@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
@@ -125,7 +126,7 @@ class MEDIA_EXPORT AudioConverter {
   void CreateUnmixedAudioIfNecessary(int frames);
 
   // Set of inputs for Convert().
-  typedef std::list<InputCallback*> InputCallbackSet;
+  typedef std::list<raw_ptr<InputCallback, CtnExperimental>> InputCallbackSet;
   InputCallbackSet transform_inputs_;
 
   // Used to buffer data between the client and the output device in cases where

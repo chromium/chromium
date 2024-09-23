@@ -10,11 +10,9 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "chrome/installer/setup/buildflags.h"
 #include "chrome/installer/util/lzma_util.h"
 #include "components/zucchini/zucchini.h"
 #include "components/zucchini/zucchini_integration.h"
-#include "courgette/courgette.h"
 #include "third_party/bspatch/mbspatch.h"
 
 namespace installer {
@@ -41,7 +39,7 @@ bool ArchivePatchHelper::UncompressAndPatch(
     UnPackConsumer consumer) {
   ArchivePatchHelper instance(working_directory, compressed_archive,
                               patch_source, target, consumer);
-  return (instance.Uncompress(nullptr) && instance.ApplyPatch());
+  return (instance.Uncompress(nullptr) && instance.ApplyAndDeletePatch());
 }
 
 bool ArchivePatchHelper::Uncompress(base::FilePath* last_uncompressed_file) {
@@ -62,34 +60,12 @@ bool ArchivePatchHelper::Uncompress(base::FilePath* last_uncompressed_file) {
   return true;
 }
 
-bool ArchivePatchHelper::ApplyPatch() {
-#if BUILDFLAG(ZUCCHINI)
-  if (ZucchiniEnsemblePatch())
-    return true;
-#endif  // BUILDFLAG(ZUCCHINI)
-  return CourgetteEnsemblePatch() || BinaryPatch();
-}
-
-bool ArchivePatchHelper::CourgetteEnsemblePatch() {
-  if (last_uncompressed_file_.empty()) {
-    LOG(ERROR) << "No patch file found in compressed archive.";
-    return false;
+bool ArchivePatchHelper::ApplyAndDeletePatch() {
+  const bool succeeded = ZucchiniEnsemblePatch() || BinaryPatch();
+  if (!last_uncompressed_file_.empty()) {
+    base::DeleteFile(last_uncompressed_file_);
   }
-
-  courgette::Status result = courgette::ApplyEnsemblePatch(
-      patch_source_.value().c_str(), last_uncompressed_file_.value().c_str(),
-      target_.value().c_str());
-  if (result == courgette::C_OK)
-    return true;
-
-  LOG(ERROR) << "Failed to apply patch " << last_uncompressed_file_.value()
-             << " to file " << patch_source_.value() << " and generating file "
-             << target_.value() << " using Courgette. err=" << result;
-
-  // Ensure a partial output is not left behind.
-  base::DeleteFile(target_);
-
-  return false;
+  return succeeded;
 }
 
 bool ArchivePatchHelper::ZucchiniEnsemblePatch() {

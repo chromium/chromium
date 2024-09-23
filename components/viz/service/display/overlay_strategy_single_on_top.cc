@@ -10,6 +10,7 @@
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_candidate_factory.h"
 #include "components/viz/service/display/overlay_proposed_candidate.h"
 #include "ui/gfx/buffer_types.h"
@@ -35,24 +36,22 @@ bool CalculateOcclusionByRoundedDisplayMaskCandidate(
     OverlayProposedCandidateIndex single_on_top_candidates_end) {
   DCHECK(candidate_with_display_masks.candidate.has_rounded_display_masks);
 
-  auto mask_bounds = OverlayProposedCandidate::GetRoundedDisplayMasksBounds(
-      candidate_with_display_masks);
+  const auto mask_bounds =
+      TextureDrawQuad::RoundedDisplayMasksInfo::GetRoundedDisplayMasksBounds(
+          *candidate_with_display_masks.quad_iter);
 
   bool intersects_candidate = false;
   for (OverlayProposedCandidateIndex i = single_on_top_candidates_begin;
        i < single_on_top_candidates_end; i++) {
     auto& overlap_candidate = candidates->at(i);
 
-    // The rects are rounded as they're snapped by the compositor to pixel
-    // unless it is AA'ed, in which case, it won't be overlaid.
-    gfx::Rect overlap_rect =
-        gfx::ToRoundedRect(OverlayCandidate::DisplayRectInTargetSpace(
-            overlap_candidate.candidate));
+    gfx::RectF overlap_rect =
+        OverlayCandidate::DisplayRectInTargetSpace(overlap_candidate.candidate);
 
     // Check that no candidate overlaps with any of painted masks. Quads
     // that have rounded-display masks, are all transparent except for the drawn
     // masks.
-    for (const gfx::Rect& mask_bound : mask_bounds) {
+    for (const gfx::RectF& mask_bound : mask_bounds) {
       if (mask_bound.Intersects(overlap_rect)) {
         intersects_candidate = true;
 
@@ -61,19 +60,13 @@ bool CalculateOcclusionByRoundedDisplayMaskCandidate(
         overlap_candidate.occluding_mask_keys.insert(
             OverlayProposedCandidate::ToProposeKey(
                 candidate_with_display_masks));
+
+        break;
       }
     }
   }
 
   return intersects_candidate;
-}
-
-bool HasRoundedDisplayMasks(const DrawQuad* quad) {
-  if (const auto* texture_quad = quad->DynamicCast<TextureDrawQuad>()) {
-    return !texture_quad->rounded_display_masks_info.IsEmpty();
-  }
-
-  return false;
 }
 
 }  // namespace
@@ -91,7 +84,7 @@ void OverlayStrategySingleOnTop::Propose(
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,
@@ -100,8 +93,11 @@ void OverlayStrategySingleOnTop::Propose(
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
 
-  const OverlayCandidateFactory::OverlayContext context = {
-      .supports_rounded_display_masks = true, .supports_mask_filter = false};
+  OverlayCandidateFactory::OverlayContext context;
+  context.supports_rounded_display_masks = true;
+  context.supports_mask_filter = false;
+  context.supports_flip_rotate_transform =
+      capability_checker_->SupportsFlipRotateTransform();
 
   // Build a list of candidates with the associated quad.
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
@@ -119,18 +115,20 @@ void OverlayStrategySingleOnTop::Propose(
 
   for (auto quad_it = quad_list->begin(); quad_it != quad_list->end();
        ++quad_it) {
-    bool is_first_non_mask_candidate =
-        !HasRoundedDisplayMasks(*quad_it) && !seen_non_mask_quad;
+    const bool is_first_non_mask_candidate =
+        !OverlayCandidate::QuadHasRoundedDisplayMasks(*quad_it) &&
+        !seen_non_mask_quad;
     if (is_first_non_mask_candidate) {
       seen_non_mask_quad = true;
       first_non_mask_quad_it = quad_it;
     }
 
     OverlayCandidate candidate;
+    candidate.overlay_type = gfx::OverlayType::kSingleOnTop;
     if (candidate_factory.FromDrawQuad(*quad_it, candidate) !=
         OverlayCandidate::CandidateStatus::kSuccess) {
       // Quads with display masks should always be valid overlay candidates.
-      DCHECK(!HasRoundedDisplayMasks(*quad_it));
+      DCHECK(!OverlayCandidate::QuadHasRoundedDisplayMasks(*quad_it));
       continue;
     }
 
@@ -178,7 +176,7 @@ bool OverlayStrategySingleOnTop::Attempt(
     const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
-    DisplayResourceProvider* resource_provider,
+    const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,

@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
@@ -71,6 +73,9 @@ struct KeyValuePairExtractor {
 // allowed; for integer keys 0 or -1 can't be used as a key. You can change
 // the restriction with a custom key hash traits. See hash_traits.h for how to
 // define hash traits.
+// Commonly used key types define their key hash traits separately from the
+// class itself, so e.g if you want a `WTF::HashMap<WTF::String, ...>` you must
+// include `string_hash.h`.
 template <typename KeyArg,
           typename MappedArg,
           typename KeyTraitsArg = HashTraits<KeyArg>,
@@ -108,16 +113,7 @@ class HashMap {
   class HashMapValuesProxy;
 
  public:
-  HashMap() {
-    static_assert(Allocator::kIsGarbageCollected ||
-                      !IsPointerToGarbageCollectedType<KeyArg>::value,
-                  "Cannot put raw pointers to garbage-collected classes into "
-                  "an off-heap HashMap.  Use HeapHashMap<> instead.");
-    static_assert(Allocator::kIsGarbageCollected ||
-                      !IsPointerToGarbageCollectedType<MappedArg>::value,
-                  "Cannot put raw pointers to garbage-collected classes into "
-                  "an off-heap HashMap.  Use HeapHashMap<> instead.");
-  }
+  HashMap() = default;
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   void DumpStats() { impl_.DumpStats(); }
@@ -139,8 +135,8 @@ class HashMap {
 
   void swap(HashMap& ref) { impl_.swap(ref.impl_); }
 
-  unsigned size() const;
-  unsigned Capacity() const;
+  wtf_size_t size() const;
+  wtf_size_t Capacity() const;
   void ReserveCapacityForSize(unsigned size) {
     impl_.ReserveCapacityForSize(size);
   }
@@ -222,6 +218,22 @@ class HashMap {
   AddResult InlineAdd(IncomingKeyType&&, IncomingMappedType&&);
 
   HashTableType impl_;
+
+  struct TypeConstraints {
+    constexpr TypeConstraints() {
+      static_assert(!IsStackAllocatedType<KeyArg>);
+      static_assert(!IsStackAllocatedType<MappedArg>);
+      static_assert(Allocator::kIsGarbageCollected ||
+                        !IsPointerToGarbageCollectedType<KeyArg>::value,
+                    "Cannot put raw pointers to garbage-collected classes into "
+                    "an off-heap HashMap.  Use HeapHashMap<> instead.");
+      static_assert(Allocator::kIsGarbageCollected ||
+                        !IsPointerToGarbageCollectedType<MappedArg>::value,
+                    "Cannot put raw pointers to garbage-collected classes into "
+                    "an off-heap HashMap.  Use HeapHashMap<> instead.");
+    }
+  };
+  NO_UNIQUE_ADDRESS TypeConstraints type_constraints_;
 };
 
 template <typename KeyArg,
@@ -330,8 +342,13 @@ struct HashMapTranslator {
   }
 };
 
-template <typename T, typename U, typename V, typename W, typename X>
-HashMap<T, U, V, W, X>::HashMap(std::initializer_list<ValueType> elements) {
+template <typename KeyArg,
+          typename MappedArg,
+          typename KeyTraitsArg,
+          typename MappedTraitsArg,
+          typename Allocator>
+HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::HashMap(
+    std::initializer_list<ValueType> elements) {
   if (elements.size()) {
     impl_.ReserveCapacityForSize(
         base::checked_cast<wtf_size_t>(elements.size()));
@@ -348,12 +365,12 @@ auto HashMap<T, U, V, W, X>::operator=(
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-inline unsigned HashMap<T, U, V, W, X>::size() const {
+inline wtf_size_t HashMap<T, U, V, W, X>::size() const {
   return impl_.size();
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
-inline unsigned HashMap<T, U, V, W, X>::Capacity() const {
+inline wtf_size_t HashMap<T, U, V, W, X>::Capacity() const {
   return impl_.Capacity();
 }
 

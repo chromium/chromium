@@ -63,7 +63,6 @@ std::unique_ptr<::media::Renderer> CastMojoMediaClient::CreateRenderer(
   // ENABLE_CAST_RENDERER is set. We can get rid of a number of related macros
   // and the [[maybe_unused]].
   NOTREACHED();
-  return nullptr;
 }
 
 std::unique_ptr<::media::CdmFactory> CastMojoMediaClient::CreateCdmFactory(

@@ -33,11 +33,9 @@ class UrlCheckerDelegateImpl : public UrlCheckerDelegate {
       const security_interstitials::UnsafeResource& resource,
       const std::string& method,
       const net::HttpRequestHeaders& headers,
-      bool is_main_frame,
       bool has_user_gesture) override;
   void StartObservingInteractionsForDelayedBlockingPageHelper(
-      const security_interstitials::UnsafeResource& resource,
-      bool is_main_frame) override;
+      const security_interstitials::UnsafeResource& resource) override;
 
   bool IsUrlAllowlisted(const GURL& url) override;
   void SetPolicyAllowlistDomains(
@@ -49,6 +47,10 @@ class UrlCheckerDelegateImpl : public UrlCheckerDelegate {
       base::optional_ref<const base::UnguessableToken> render_frame_token,
       bool originated_from_service_worker) override;
   void NotifySuspiciousSiteDetected(
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
+  void SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+      std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) override;
   const SBThreatTypeSet& GetThreatTypes() override;

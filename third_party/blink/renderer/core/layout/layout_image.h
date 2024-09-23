@@ -52,7 +52,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   ~LayoutImage() override;
   void Trace(Visitor*) const override;
 
-  static LayoutImage* CreateAnonymous(PseudoElement&);
+  static LayoutImage* CreateAnonymous(Document&);
 
   void SetImageResource(LayoutImageResource*);
 
@@ -104,8 +104,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
     NOT_DESTROYED();
     return "LayoutImage";
   }
-
-  void UpdateAfterLayout() override;
 
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
@@ -171,11 +169,6 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   void InvalidatePaintAndMarkForLayoutIfNeeded(CanDeferInvalidation);
   void UpdateIntrinsicSizeIfNeeded(const PhysicalSize&);
   bool NeedsLayoutOnIntrinsicSizeChange() const;
-  // Override intrinsic sizing info to default if "unsized-media"
-  // is disabled and the element has no sizing info.
-  bool OverrideIntrinsicSizingInfo(IntrinsicSizingInfo&) const;
-  bool HasOverriddenIntrinsicSize() const;
-  gfx::SizeF ImageSizeOverriddenByIntrinsicSize(float multiplier) const;
 
   // This member wraps the associated decoded image.
   //

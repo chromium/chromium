@@ -135,7 +135,7 @@ public class PkpTest {
             reason =
                     "Requires the use of subdomains. This can currently only be done through"
                             + " HostResolverRules, which fakes hostname resultion."
-                            + " TODO(crbug/1501033): Enable for HttpEngine once we have"
+                            + " TODO(crbug.com/40941277): Enable for HttpEngine once we have"
                             + " hostname resolution")
     public void testIncludeSubdomainsFlagEqualTrue() throws Exception {
         String fakeUrl = "https://test.example.com:8443";
@@ -174,7 +174,7 @@ public class PkpTest {
             reason =
                     "Requires the use of subdomains. This can currently only be done through"
                             + " HostResolverRules, which fakes hostname resultion."
-                            + " TODO(crbug/1501033): Enable for HttpEngine once we have"
+                            + " TODO(crbug.com/40941277): Enable for HttpEngine once we have"
                             + " hostname resolution")
     public void testIncludeSubdomainsFlagEqualFalse() throws Exception {
         String fakeUrl = "https://test.example.com:8443";
@@ -550,7 +550,7 @@ public class PkpTest {
             boolean useMockCertVerifier)
             throws Exception {
         builder.enablePublicKeyPinningBypassForLocalTrustAnchors(bypassPinningForLocalAnchors);
-        // TODO(crbug/1490552): When not explicitly enabled, fall back to MockCertVerifier if
+        // TODO(crbug.com/40284777): When not explicitly enabled, fall back to MockCertVerifier if
         // custom CAs are not supported.
         if (useMockCertVerifier || Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
             enableMockCertVerifier(builder);

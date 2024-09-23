@@ -127,6 +127,7 @@ export class AddPrinterManufacturerModelDialogElement extends PolymerElement {
   }
 
   private onPrinterAddedSucceeded_(result: PrinterSetupResult): void {
+    this.recordAddPrinterResult(/*success=*/ true);
     const showCupsPrinterToastEvent =
         new CustomEvent('show-cups-printer-toast', {
           bubbles: true,
@@ -142,6 +143,7 @@ export class AddPrinterManufacturerModelDialogElement extends PolymerElement {
    * Handler for addCupsPrinter failure.
    */
   private onPrinterAddedFailed_(result: PrinterSetupResult): void {
+    this.recordAddPrinterResult(/*success=*/ false);
     this.addPrinterInProgress_ = false;
     this.errorText_ = getErrorText(result);
   }
@@ -249,6 +251,11 @@ export class AddPrinterManufacturerModelDialogElement extends PolymerElement {
     return !addPrinterInProgress &&
         isPPDInfoValid(ppdManufacturer, ppdModel, printerPPDPath) &&
         !isManufacturerInvalid && !isModelInvalid;
+  }
+
+  private recordAddPrinterResult(success: boolean): void {
+    chrome.metricsPrivate.recordBoolean(
+        'Printing.CUPS.AddPrinterManuallyResult', success);
   }
 }
 

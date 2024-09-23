@@ -15,23 +15,39 @@ build_webui("build") {
     "images/no_downloads.svg",
   ]
 
-  # Files holding a Polymer element definition and have an equivalent .html file.
-  web_component_files = [
-    "bypass_warning_confirmation_dialog.ts",
-    "item.ts",
-    "manager.ts",
-    "toolbar.ts",
-  ]
-
   non_web_component_files = [
     "browser_proxy.ts",
+    "bypass_warning_confirmation_dialog.html.ts",
+    "bypass_warning_confirmation_dialog.ts",
+    "dangerous_download_interstitial.html.ts",
+    "dangerous_download_interstitial.ts",
     "data.ts",
     "downloads.ts",
     "icon_loader.ts",
+    "item.html.ts",
+    "item.ts",
+    "manager.html.ts",
+    "manager.ts",
     "search_service.ts",
+    "toolbar.html.ts",
+    "toolbar.ts",
+  ]
+
+  css_files = [
+    "bypass_warning_confirmation_dialog.css",
+    "dangerous_download_interstitial.css",
+    "item.css",
+    "manager.css",
+    "toolbar.css",
   ]
 
   icons_html_files = [ "icons.html" ]
+
+  if (is_chrome_branded) {
+    icons_html_files += [ "internal/icons.html" ]
+  }
+
+  html_to_wrapper_template = "detect"
 
   mojo_files_deps =
       [ "//chrome/browser/ui/webui/downloads:mojo_bindings_ts__generator" ]
@@ -42,13 +58,14 @@ build_webui("build") {
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "downloads"

@@ -8,6 +8,8 @@
 
 #include "base/check.h"
 #include "ui/gl/android/surface_texture.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gl/surface_jni_headers/Surface_jni.h"
 
 using base::android::ScopedJavaLocalRef;

@@ -30,6 +30,10 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 
+#ifdef ENABLE_BLUETOOTH_EMULATION
+#include "content/browser/devtools/protocol/bluetooth_emulation_handler.h"
+#endif
+
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
 #include "content/browser/devtools/protocol/visual_debugger_handler.h"
 #endif
@@ -192,6 +196,9 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
   if (only_discovery_)
     return true;
 
+#ifdef ENABLE_BLUETOOTH_EMULATION
+  session->CreateAndAddHandler<protocol::BluetoothEmulationHandler>();
+#endif
   session->CreateAndAddHandler<protocol::BrowserHandler>(
       session->GetClient()->MayWriteLocalFiles());
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
@@ -203,8 +210,7 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
       base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); }));
   session->CreateAndAddHandler<protocol::MemoryHandler>();
   session->CreateAndAddHandler<protocol::SecurityHandler>();
-  session->CreateAndAddHandler<protocol::StorageHandler>(
-      session->GetClient()->IsTrusted());
+  session->CreateAndAddHandler<protocol::StorageHandler>(session->GetClient());
   session->CreateAndAddHandler<protocol::SystemInfoHandler>(
       /* is_browser_sessoin= */ true);
   if (tethering_task_runner_) {

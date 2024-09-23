@@ -26,7 +26,9 @@ PrivateMemoryFootprintProvider::PrivateMemoryFootprintProvider(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* clock)
     : task_runner_(std::move(task_runner)), clock_(clock) {
-  MemoryUsageMonitor::Instance().AddObserver(this);
+  auto& monitor = MemoryUsageMonitor::Instance();
+  monitor.AddObserver(this);
+  OnMemoryPing(monitor.GetCurrentMemoryUsage());
 }
 
 void PrivateMemoryFootprintProvider::OnMemoryPing(MemoryUsage usage) {

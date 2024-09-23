@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -12,11 +13,14 @@
 #include "components/safe_browsing/content/browser/client_report_util.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 
 namespace safe_browsing {
+
+using enum ExtendedReportingLevel;
 
 DownloadUrlSBClient::DownloadUrlSBClient(
     download::DownloadItem* item,
@@ -57,12 +61,10 @@ void DownloadUrlSBClient::OnDownloadDestroyed(
 }
 
 void DownloadUrlSBClient::StartCheck() {
-  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
-                          ? content::BrowserThread::UI
-                          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!database_manager_.get() ||
       database_manager_->CheckDownloadUrl(url_chain_, this)) {
-    CheckDone(SB_THREAT_TYPE_SAFE);
+    CheckDone(SBThreatType::SB_THREAT_TYPE_SAFE);
   } else {
     // Add a reference to this object to prevent it from being destroyed
     // before url checking result is returned.
@@ -71,7 +73,7 @@ void DownloadUrlSBClient::StartCheck() {
 }
 
 bool DownloadUrlSBClient::IsDangerous(SBThreatType threat_type) const {
-  return threat_type == SB_THREAT_TYPE_URL_BINARY_MALWARE;
+  return threat_type == SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE;
 }
 
 // Implements SafeBrowsingDatabaseManager::Client.
@@ -93,7 +95,7 @@ void DownloadUrlSBClient::CheckDone(SBThreatType threat_type) {
                                    ? DownloadCheckResult::DANGEROUS
                                    : DownloadCheckResult::SAFE;
   UpdateDownloadCheckStats(total_type_);
-  if (threat_type != SB_THREAT_TYPE_SAFE) {
+  if (threat_type != SBThreatType::SB_THREAT_TYPE_SAFE) {
     UpdateDownloadCheckStats(dangerous_type_);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -145,8 +147,23 @@ void DownloadUrlSBClient::IdentifyReferrerChain() {
   if (!item_)
     return;
 
+  std::unique_ptr<ReferrerChainData> data =
+      safe_browsing::IdentifyReferrerChain(
+          *item_,
+          DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
+              item_));
+  if (!data) {
+    return;
+  }
+
+  // TODO(drubery): Add a kMaxValue to AttributionResult so we don't need the
+  // explicit max value.
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ReferrerAttributionResult.DownloadAttribution",
+      data->attribution_result(),
+      ReferrerChainProvider::AttributionResult::ATTRIBUTION_FAILURE_TYPE_MAX);
   item_->SetUserData(ReferrerChainData::kDownloadReferrerChainDataKey,
-                     service_->IdentifyReferrerChain(*item_));
+                     std::move(data));
 }
 
 void DownloadUrlSBClient::UpdateDownloadCheckStats(SBStatsType stat_type) {

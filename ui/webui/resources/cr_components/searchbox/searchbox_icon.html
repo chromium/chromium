@@ -1,0 +1,132 @@
+<style>
+  :host {
+    --cr-searchbox-icon-border-radius: 8px;
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    width: 32px;
+  }
+
+  :host(:not([is-lens-searchbox_])) {
+    --cr-searchbox-icon-border-radius: 4px;
+  }
+
+  #container {
+    align-items: center;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--cr-searchbox-icon-border-radius);
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  /* Entities may feature a dominant color background until image loads. */
+  :host-context(cr-searchbox-match[has-image]):host(:not([is-weather-answer])) #container {
+    background-color: var(--color-searchbox-results-icon-container-background,
+        var(--container-bg-color));
+  }
+
+  /* Calculator answer and suggestion answer icons feature a blue background. */
+  :host-context(cr-searchbox-match[is-rich-suggestion]:not([has-image])):host(:not([has-icon-container-background])) #container {
+    background-color: var(--google-blue-600);
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+  }
+
+  /* If icon is for a pedal or AiS, and it is not in the search box, apply background. */
+  :host([has-icon-container-background]:not([in-searchbox])) #container {
+    background-color: var(--color-searchbox-answer-icon-background);
+  }
+
+  :host([is-weather-answer]:not([in-searchbox])) #container {
+    background-color: var(--color-searchbox-results-background);
+  }
+
+  #image {
+    display: none;
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
+  }
+
+  :host-context(cr-searchbox-match[has-image]) #image {
+    display: initial;
+  }
+
+  :host([is-answer]) #image {
+    max-height: 24px;
+    max-width: 24px;
+  }
+
+  #imageOverlay {
+    display: none;
+  }
+
+  /* Put a black scrim over the image for entity suggestions in case the images
+   * have a background color that matches the background color of the dropdown.
+   * This makes it clearer where the boundary of the image is. */
+  :host-context(cr-searchbox-match[is-entity-suggestion][has-image])
+      #imageOverlay {
+    background: black;
+    display: block;
+    inset: 0;
+    opacity: .05;
+    position: absolute;
+  }
+
+  #icon {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 16px;
+    background-color: var(--color-searchbox-search-icon-background);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    height: 24px;
+    width: 24px;
+  }
+
+  :host-context(cr-searchbox-match[has-image]) #icon {
+    display: none;
+  }
+
+  :host-context(cr-searchbox-match[is-rich-suggestion]) #icon {
+    background-color: white;
+  }
+
+  :host([in-searchbox][background-image*='//resources/cr_components/omnibox/icons/google_g.svg']) #icon {
+    background-size: 24px;
+  }
+
+  :host([in-searchbox]) #icon {
+    -webkit-mask-size: var(--cr-searchbox-icon-size-in-searchbox);
+    background-size: var(--cr-searchbox-icon-size-in-searchbox);
+  }
+
+  :host([has-icon-container-background]:not([in-searchbox])) #icon {
+    background-color: var(--color-searchbox-answer-icon-foreground);
+  }
+
+  /* TODO(b/343732131): Switch color token once UX direction is set. */
+  :host(:not([in-searchbox])[is-lens-searchbox_]) #container {
+    background-color: #F1F3F4;
+    border-radius: 4000px;
+  }
+
+  :host-context([dark-mode]):host(:not([in-searchbox])[is-lens-searchbox_]) #container {
+    background-color: #303134;
+  }
+
+</style>
+<div id="container" style="--container-bg-color:
+    [[containerBgColor_(match.imageDominantColor, imageLoading_)]];">
+  <img id="image" src="[[imageSrc_]]" on-load="onImageLoad_"></img>
+  <div id="imageOverlay"></div>
+  <!--Note: Do not remove the '$' in '$=' below, otherwise the 'style' attribute
+      is erroneously removed by the HTML minifier. -->
+  <div id="icon" style$="[[iconStyle_]]"></div>
+</div>

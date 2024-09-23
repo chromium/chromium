@@ -12,11 +12,17 @@
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/android/sys_utils.h"
 #include "base/at_exit.h"
-#include "base/base_jni/LibraryLoader_jni.h"
 #include "base/base_switches.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/robolectric_buildflags.h"
+
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/LibraryLoader_jni.h"  // nogncheck
+#else
+#include "base/library_loader_jni/LibraryLoader_jni.h"
+#endif
 
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
 #include "base/android/orderfile/orderfile_instrumentation.h"

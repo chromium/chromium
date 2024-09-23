@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/tracing/chrome_tracing_delegate.h"
+
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
@@ -16,10 +20,10 @@
 #include "base/strings/pattern.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/named_trigger.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -29,7 +33,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/pref_names.h"
-#include "components/tracing/common/trace_startup_config.h"
 #include "components/variations/variations_params_manager.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
@@ -39,6 +42,7 @@
 #include "content/public/test/background_tracing_test_support.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "services/tracing/public/cpp/trace_startup_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
 namespace {
@@ -84,25 +88,18 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
     PrefService* local_state = g_browser_process->local_state();
     DCHECK(local_state);
     local_state->SetBoolean(metrics::prefs::kMetricsReportingEnabled, true);
-    tracing::BackgroundTracingStateManager::GetInstance()
-        .SetPrefServiceForTesting(local_state);
     content::TracingController::GetInstance();  // Create tracing agents.
-  }
-
-  void TearDownOnMainThread() override {
-    tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
   }
 
   bool StartPreemptiveScenario(
       content::BackgroundTracingManager::DataFiltering data_filtering,
-      base::StringPiece scenario_name = "TestScenario",
+      std::string_view scenario_name = "TestScenario",
       bool with_crash_scenario = false) {
     base::Value::Dict dict;
 
     dict.Set("scenario_name", scenario_name);
     dict.Set("mode", "PREEMPTIVE_TRACING_MODE");
-    dict.Set("custom_categories",
-             tracing::TraceStartupConfig::kDefaultStartupCategories);
+    dict.Set("custom_categories", "toplevel");
 
     base::Value::List rules_list;
     {
@@ -136,7 +133,7 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   }
 
   void TriggerPreemptiveScenario(const std::string& trigger_name = "test") {
-    content::BackgroundTracingManager::EmitNamedTrigger(trigger_name);
+    base::trace_event::EmitNamedTrigger(trigger_name);
   }
 
   void TriggerPreemptiveScenarioWithCrash() {
@@ -154,13 +151,18 @@ std::string GetSessionStateJson() {
   return json;
 }
 
+void SetSessionState(base::Value::Dict dict) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->Set(tracing::kBackgroundTracingSessionState,
+                   base::Value(std::move(dict)));
+}
+
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        BackgroundTracingUnexpectedSessionEnd) {
-  std::string state = GetSessionStateJson();
-  EXPECT_EQ(state, "{}");
-
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::STARTED);
+  base::Value::Dict dict;
+  dict.Set("state", static_cast<int>(tracing::BackgroundTracingState::STARTED));
+  SetSessionState(std::move(dict));
+  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
 
   EXPECT_FALSE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
@@ -168,11 +170,11 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        BackgroundTracingSessionRanLong) {
-  std::string state = GetSessionStateJson();
-  EXPECT_EQ(state, "{}");
-
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::RAN_30_SECONDS);
+  base::Value::Dict dict;
+  dict.Set("state",
+           static_cast<int>(tracing::BackgroundTracingState::RAN_30_SECONDS));
+  SetSessionState(std::move(dict));
+  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
 
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
@@ -180,29 +182,14 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        BackgroundTracingFinalizationStarted) {
-  std::string state = GetSessionStateJson();
-  EXPECT_EQ(state, "{}");
-
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::FINALIZATION_STARTED);
+  base::Value::Dict dict;
+  dict.Set("state", static_cast<int>(
+                        tracing::BackgroundTracingState::FINALIZATION_STARTED));
+  SetSessionState(std::move(dict));
+  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
 
   EXPECT_TRUE(StartPreemptiveScenario(
       content::BackgroundTracingManager::NO_DATA_FILTERING));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
-                       BackgroundTracingFinalizationBefore30Seconds) {
-  std::string state = GetSessionStateJson();
-  EXPECT_EQ(state, "{}");
-
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::FINALIZATION_STARTED);
-
-  // State does not update from finalization started to ran 30 seconds.
-  tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      tracing::BackgroundTracingState::RAN_30_SECONDS);
-  state = GetSessionStateJson();
-  EXPECT_EQ(state, R"({"state":2})");
 }
 
 // If we need a PII-stripped trace, any existing OTR session should block the
@@ -284,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
-  EXPECT_EQ(GetSessionStateJson(), R"({"state":1})");
+  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":true,"state":1})");
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
@@ -294,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestOnStartup,
   EXPECT_FALSE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 0 = NOT_ACTIVATED, current session is inactive.
-  EXPECT_EQ(GetSessionStateJson(), R"({"state":0})");
+  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":true,"state":0})");
 }
 
 class ChromeTracingDelegateBrowserTestFromCommandLine
@@ -310,15 +297,19 @@ class ChromeTracingDelegateBrowserTestFromCommandLine
     command_line->AppendSwitchPath("enable-legacy-background-tracing",
                                    config_path);
 
-    output_path_ = base::FilePath(
-        temp_dir_.GetPath().Append(FILE_PATH_LITERAL("output.perfetto.gz")));
-    command_line->AppendSwitchPath("background-tracing-output-file",
+    output_path_ = temp_dir_.GetPath();
+    command_line->AppendSwitchPath("background-tracing-output-path",
                                    output_path_);
   }
 
-  bool OutputPathExists() const {
+  bool OutputFileExists() const {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    return base::PathExists(output_path_);
+    base::FileEnumerator e(output_path_, false, base::FileEnumerator::FILES,
+                           FILE_PATH_LITERAL("*.perfetto.gz"));
+    for (base::FilePath name = e.Next(); !name.empty();) {
+      return true;
+    }
+    return false;
   }
 
   void TriggerScenarioAndWaitForOutput() {
@@ -328,10 +319,13 @@ class ChromeTracingDelegateBrowserTestFromCommandLine
     // (which just means the data is ready to write).
     base::FilePathWatcher output_watcher;
     base::RunLoop run_loop;
-    output_watcher.Watch(
-        output_path_, base::FilePathWatcher::Type::kNonRecursive,
-        base::BindLambdaForTesting(
-            [&run_loop](const base::FilePath&, bool) { run_loop.Quit(); }));
+    output_watcher.Watch(output_path_, base::FilePathWatcher::Type::kRecursive,
+                         base::BindLambdaForTesting(
+                             [&run_loop, this](const base::FilePath&, bool) {
+                               if (OutputFileExists()) {
+                                 run_loop.Quit();
+                               }
+                             }));
     TriggerPreemptiveScenario();
     run_loop.Run();
   }
@@ -343,32 +337,32 @@ class ChromeTracingDelegateBrowserTestFromCommandLine
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
                        ScenarioFromCommandLine) {
-  ASSERT_FALSE(OutputPathExists());
+  ASSERT_FALSE(OutputFileExists());
 
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
-  EXPECT_EQ(GetSessionStateJson(), R"({"state":1})");
+  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":true,"state":1})");
 
   // The scenario should also be "uploaded" (actually written to the output
   // file).
   TriggerScenarioAndWaitForOutput();
-  EXPECT_TRUE(OutputPathExists());
+  EXPECT_TRUE(OutputFileExists());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
                        PRE_IgnoreThrottle) {
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
-  EXPECT_EQ(GetSessionStateJson(), R"({"state":1})");
+  EXPECT_EQ(GetSessionStateJson(), R"({"privacy_filter":true,"state":1})");
 
   // This updates the upload time for the test scenario to the current time,
   // even though the output is actually written to a file.
   TriggerScenarioAndWaitForOutput();
-  EXPECT_TRUE(OutputPathExists());
+  EXPECT_TRUE(OutputFileExists());
 
   std::string state = GetSessionStateJson();
-  EXPECT_TRUE(base::MatchPattern(state, R"({"state":3})"))
+  EXPECT_TRUE(base::MatchPattern(state, R"({"privacy_filter":true,"state":3})"))
       << "Actual: " << state;
 }
 
@@ -376,19 +370,19 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTestFromCommandLine,
                        IgnoreThrottle) {
   // The scenario from the command-line should be started even though not
   // enough time has elapsed since the last upload (set in the PRE_ above).
-  ASSERT_FALSE(OutputPathExists());
+  ASSERT_FALSE(OutputFileExists());
 
   EXPECT_TRUE(
       content::BackgroundTracingManager::GetInstance().HasActiveScenario());
   // State 1 = STARTED.
   std::string state = GetSessionStateJson();
-  EXPECT_TRUE(base::MatchPattern(state, R"({"state":1})"))
+  EXPECT_TRUE(base::MatchPattern(state, R"({"privacy_filter":true,"state":1})"))
       << "Actual: " << state;
 
   // The scenario should also be "uploaded" (actually written to the output
   // file).
   TriggerScenarioAndWaitForOutput();
-  EXPECT_TRUE(OutputPathExists());
+  EXPECT_TRUE(OutputFileExists());
 }
 
 }  // namespace tracing

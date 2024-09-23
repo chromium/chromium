@@ -28,7 +28,8 @@ class MockCertProvisioningWorkerFactory : public CertProvisioningWorkerFactory {
 
   MOCK_METHOD(std::unique_ptr<CertProvisioningWorker>,
               Create,
-              (CertScope cert_scope,
+              (std::string process_id,
+               CertScope cert_scope,
                Profile* profile,
                PrefService* pref_service,
                const CertProfile& cert_profile,

@@ -6,8 +6,8 @@
 
 #include <limits>
 #include <utility>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -111,7 +111,7 @@ void MicroBenchmarkController::DidUpdateLayers() {
 }
 
 void MicroBenchmarkController::CleanUpFinishedBenchmarks() {
-  base::EraseIf(benchmarks_,
+  std::erase_if(benchmarks_,
                 [](const std::unique_ptr<MicroBenchmark>& benchmark) {
                   return benchmark->IsDone();
                 });

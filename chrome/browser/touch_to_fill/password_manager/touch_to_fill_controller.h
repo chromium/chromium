@@ -26,6 +26,7 @@ namespace webauthn {
 class WebAuthnCredManDelegate;
 }  // namespace webauthn
 
+class Profile;
 class TouchToFillControllerDelegate;
 
 class TouchToFillController final {
@@ -40,6 +41,7 @@ class TouchToFillController final {
   };
 
   explicit TouchToFillController(
+      Profile* profile,
       base::WeakPtr<
           password_manager::KeyboardReplacingSurfaceVisibilityController>
           visibility_controller);
@@ -88,6 +90,9 @@ class TouchToFillController final {
   // invoked repeatedly.
   void OnDismiss();
 
+  // The Profile associated with the credentials.
+  Profile* GetProfile();
+
   // The web page view containing the focused field.
   gfx::NativeView GetNativeView();
 
@@ -133,6 +138,8 @@ class TouchToFillController final {
   std::unique_ptr<TouchToFillView> view_;
 
   std::unique_ptr<NoPasskeysBottomSheetBridge> no_passkeys_bridge_;
+
+  raw_ptr<Profile> profile_;
 
   base::WeakPtr<password_manager::KeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;

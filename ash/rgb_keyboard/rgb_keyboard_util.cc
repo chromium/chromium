@@ -36,7 +36,6 @@ SkColor ConvertBacklightColorToSkColor(
       return SkColorSetRGB(/*r=*/132, /*g=*/32, /*b=*/180);
     case personalization_app::mojom::BacklightColor::kRainbow:
       NOTREACHED();
-      return kDefaultColor;
   }
 }
 
@@ -69,7 +68,6 @@ SkColor ConvertBacklightColorToIconBackgroundColor(
           personalization_app::mojom::BacklightColor::kWallpaper);
     case personalization_app::mojom::BacklightColor::kRainbow:
       NOTREACHED();
-      return kDefaultColor;
   }
 }
 

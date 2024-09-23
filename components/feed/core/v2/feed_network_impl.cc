@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/feed_network_impl.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -36,9 +37,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "components/supervised_user/core/browser/proto/get_discover_feed_request.pb.h"
-#include "components/supervised_user/core/browser/proto/get_discover_feed_response.pb.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/isolation_info.h"
@@ -152,34 +150,6 @@ void ParseAndForwardQueryResponse(
   std::move(result_callback).Run(std::move(result));
 }
 
-void ParseAndForwardKidFriendlyQueryResponse(
-    base::OnceCallback<void(FeedNetwork::KidFriendlyQueryRequestResult)>
-        result_callback,
-    RawResponse raw_response) {
-  MetricsReporter::NetworkRequestComplete(NetworkRequestType::kSupervisedFeed,
-                                          raw_response.response_info);
-  FeedNetwork::KidFriendlyQueryRequestResult result;
-  result.response_info = raw_response.response_info;
-  result.response_info.fetch_time_ticks = base::TimeTicks::Now();
-  if (result.response_info.status_code == 200) {
-    ::google::protobuf::io::CodedInputStream input_stream(
-        reinterpret_cast<const uint8_t*>(raw_response.response_bytes.data()),
-        raw_response.response_bytes.size());
-
-    // The first few bytes of the body are a varint containing the size of the
-    // message. We need to skip over them.
-    int message_size;
-    input_stream.ReadVarintSizeAsInt(&message_size);
-
-    auto response_message =
-        std::make_unique<supervised_user::GetDiscoverFeedResponse>();
-    if (response_message->ParseFromCodedStream(&input_stream)) {
-      result.response_body = std::move(response_message);
-    }
-  }
-  std::move(result_callback).Run(std::move(result));
-}
-
 void AddMothershipPayloadQueryParams(const std::string& payload,
                                      const std::string& language_tag,
                                      GURL& url) {
@@ -219,7 +189,7 @@ GURL OverrideUrlSchemeHostPort(const GURL& url,
 class FeedNetworkImpl::NetworkFetch {
  public:
   NetworkFetch(const GURL& url,
-               base::StringPiece request_method,
+               std::string_view request_method,
                std::string request_body,
                FeedNetworkImpl::Delegate* delegate,
                signin::IdentityManager* identity_manager,
@@ -432,7 +402,7 @@ class FeedNetworkImpl::NetworkFetch {
 
     variations::SignedIn signed_in_status = variations::SignedIn::kNo;
     if (!access_token_.empty()) {
-      base::StringPiece token = access_token_;
+      std::string_view token = access_token_;
       std::string token_override =
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               "feed-token-override");
@@ -612,7 +582,7 @@ void FeedNetworkImpl::SendQueryRequest(
       // Allow the host override to also add a prefix for the path. Ignore
       // trailing slashes if they are provided, as the path part of |url| will
       // always include "/".
-      base::StringPiece trimmed_path_prefix = base::TrimString(
+      std::string_view trimmed_path_prefix = base::TrimString(
           override_host_url.path_piece(), "/", base::TRIM_TRAILING);
       std::string replacement_path =
           base::StrCat({trimmed_path_prefix, url.path_piece()});
@@ -639,7 +609,7 @@ void FeedNetworkImpl::CancelRequests() {
 }
 
 void FeedNetworkImpl::Send(const GURL& url,
-                           base::StringPiece request_method,
+                           std::string_view request_method,
                            std::string request_body,
                            bool allow_bless_auth,
                            const AccountInfo& account_info,
@@ -662,44 +632,10 @@ void FeedNetworkImpl::Send(const GURL& url,
                                       std::move(callback)));
 }
 
-void FeedNetworkImpl::SendKidFriendlyApiRequest(
-    const supervised_user::GetDiscoverFeedRequest& request,
-    const AccountInfo& account_info,
-    base::OnceCallback<void(FeedNetwork::KidFriendlyQueryRequestResult)>
-        callback) {
-  std::string binary_proto;
-  request.SerializeToString(&binary_proto);
-  std::string base64proto;
-  base::Base64UrlEncode(
-      binary_proto, base::Base64UrlEncodePolicy::INCLUDE_PADDING, &base64proto);
-
-  GURL url(supervised_user::kKidFriendlyContentFeedEndpoint.Get());
-  bool host_overriden = false;
-
-  // Overrides with a custom endpoint if available.
-  std::string host_override =
-      pref_service_->GetString(feed::prefs::kDiscoverAPIEndpointOverride);
-  if (!host_override.empty()) {
-    GURL override_url(host_override);
-    if (override_url.is_valid()) {
-      url = override_url;
-      host_overriden = true;
-    }
-  }
-
-  AddMothershipPayloadQueryParams(base64proto, "", url);
-  Send(url, "GET", /*request_body=*/{},
-       /*allow_bless_auth=*/host_overriden, account_info,
-       net::HttpRequestHeaders(),
-       /*is_feed_query=*/false,
-       base::BindOnce(&ParseAndForwardKidFriendlyQueryResponse,
-                      std::move(callback)));
-}
-
 void FeedNetworkImpl::SendDiscoverApiRequest(
     NetworkRequestType request_type,
-    base::StringPiece request_path,
-    base::StringPiece method,
+    std::string_view request_path,
+    std::string_view method,
     std::string request_body,
     const AccountInfo& account_info,
     std::optional<RequestMetadata> request_metadata,
@@ -721,7 +657,7 @@ void FeedNetworkImpl::SendDiscoverApiRequest(
 
 void FeedNetworkImpl::SendAsyncDataRequest(
     const GURL& url,
-    base::StringPiece request_method,
+    std::string_view request_method,
     net::HttpRequestHeaders request_headers,
     std::string request_body,
     const AccountInfo& account_info,

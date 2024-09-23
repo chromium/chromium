@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+[FAIL] CaptureController interface: existence and properties of interface object
+  assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
+[FAIL] CaptureController interface object length
+  assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
+[FAIL] CaptureController interface object name
+  assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
+[FAIL] CaptureController interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
+[FAIL] CaptureController interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
+[FAIL] CaptureController interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
+[FAIL] CaptureController interface: operation setFocusBehavior(CaptureStartFocusBehavior)
+  assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
+[FAIL] CaptureController interface: attribute oncapturedmousechange
+  assert_own_property: self does not have own property "CaptureController" expected property "CaptureController" missing
+[FAIL] CapturedMouseEvent interface: existence and properties of interface object
+  assert_own_property: self does not have own property "CapturedMouseEvent" expected property "CapturedMouseEvent" missing
+[FAIL] CapturedMouseEvent interface object length
+  assert_own_property: self does not have own property "CapturedMouseEvent" expected property "CapturedMouseEvent" missing
+[FAIL] CapturedMouseEvent interface object name
+  assert_own_property: self does not have own property "CapturedMouseEvent" expected property "CapturedMouseEvent" missing
+[FAIL] CapturedMouseEvent interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "CapturedMouseEvent" expected property "CapturedMouseEvent" missing
+[FAIL] CapturedMouseEvent interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "CapturedMouseEvent" expected property "CapturedMouseEvent" missing
+[FAIL] CapturedMouseEvent interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "CapturedMouseEvent" expected property "CapturedMouseEvent" missing
+[FAIL] CapturedMouseEvent interface: attribute surfaceX
+  assert_own_property: self does not have own property "CapturedMouseEvent" expected property "CapturedMouseEvent" missing
+[FAIL] CapturedMouseEvent interface: attribute surfaceY
+  assert_own_property: self does not have own property "CapturedMouseEvent" expected property "CapturedMouseEvent" missing
+Harness: the test ran to completion.

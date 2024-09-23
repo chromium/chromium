@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/cable/fido_ble_frames.h"

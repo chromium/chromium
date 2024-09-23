@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 
@@ -24,7 +25,8 @@ namespace arc {
 // frameworks/base/mime/java-res/android.mime.types.
 //
 // The comment for each extension shows its corresponding MIME type in T.
-const char* kAndroidSupportedMediaExtensions[] = {
+constexpr auto kAndroidSupportedMediaExtensions = base::MakeFixedFlatSet<
+    std::string_view>({
     ".323",       // text/h323
     ".3g2",       // video/3gpp2
     ".3ga",       // audio/3gpp
@@ -326,10 +328,7 @@ const char* kAndroidSupportedMediaExtensions[] = {
     ".xspf",  // application/xspf+xml
     ".xwd",   // image/x-xwindowdump
     ".yt",    // video/vnd.youtube.yt
-};
-
-const int kAndroidSupportedMediaExtensionsSize =
-    std::size(kAndroidSupportedMediaExtensions);
+});
 
 bool AppendRelativePathForRemovableMedia(const base::FilePath& cros_path,
                                          base::FilePath* android_path) {
@@ -374,18 +373,8 @@ base::FilePath GetAndroidPath(const base::FilePath& cros_path,
 }
 
 bool HasAndroidSupportedMediaExtension(const base::FilePath& path) {
-  const std::string extension = base::ToLowerASCII(path.Extension());
-  const auto less_comparator = [](const char* a, const char* b) {
-    return strcmp(a, b) < 0;
-  };
-  DCHECK(std::is_sorted(
-      kAndroidSupportedMediaExtensions,
-      kAndroidSupportedMediaExtensions + kAndroidSupportedMediaExtensionsSize,
-      less_comparator));
-  return std::binary_search(
-      kAndroidSupportedMediaExtensions,
-      kAndroidSupportedMediaExtensions + kAndroidSupportedMediaExtensionsSize,
-      extension.c_str(), less_comparator);
+  return kAndroidSupportedMediaExtensions.contains(
+      base::ToLowerASCII(path.Extension()));
 }
 
 }  // namespace arc

@@ -44,7 +44,7 @@ class WebThreadImpl : public WebThread {
 
   // Creates and registers a TaskExecutor that facilitates posting tasks to a
   // WebThread via //base/task/post_task.h.
-  // TODO(crbug.com/1026641): Remove this now that post_task.h is deprecated.
+  // TODO(crbug.com/40108370): Remove this now that post_task.h is deprecated.
   static void CreateTaskExecutor();
 
   // Unregister and delete the TaskExecutor after a test.

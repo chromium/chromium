@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -14,7 +15,6 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -30,6 +30,7 @@
 #include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
 #include "components/named_mojo_ipc_server/testing.test-mojom.h"
 #include "components/test/test_switches.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -79,7 +80,7 @@ class NamedMojoIpcServerTest
 
  protected:
   void CreateIpcServer();
-  base::Process LaunchClientProcess(base::StringPiece extra_switch = {});
+  base::Process LaunchClientProcess(std::string_view extra_switch = {});
   int WaitForProcessExit(base::Process& process);
   void WaitForServerEndpointCreated();
 
@@ -162,7 +163,7 @@ void NamedMojoIpcServerTest::WaitForServerEndpointCreated() {
 }
 
 base::Process NamedMojoIpcServerTest::LaunchClientProcess(
-    base::StringPiece extra_switch) {
+    std::string_view extra_switch) {
   base::CommandLine cmd_line = base::GetMultiProcessTestChildBaseCommandLine();
   cmd_line.AppendSwitchNative(kClientProcessServerNameSwitch,
                               test_server_name_);
@@ -173,8 +174,10 @@ base::Process NamedMojoIpcServerTest::LaunchClientProcess(
     cmd_line.AppendSwitch(kClientProcessUseIsolatedConnectionSwitch);
 
     // Make sure the new process is a broker, because isolated connections are
-    // only supported between two brokers.
-    cmd_line.AppendSwitch(switches::kInitializeMojoAsBroker);
+    // only supported between two brokers when ipcz is enabled.
+    if (mojo::core::IsMojoIpczEnabled()) {
+      cmd_line.AppendSwitch(switches::kInitializeMojoAsBroker);
+    }
   }
   return base::SpawnMultiProcessTestChild(kEchoClientName, cmd_line,
                                           /* options= */ {});

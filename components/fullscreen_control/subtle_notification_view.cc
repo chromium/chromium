@@ -16,13 +16,13 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
-
 namespace {
 
 // Space between the site info label.
@@ -56,8 +56,9 @@ constexpr char16_t kKeyNameDelimiter[] = u"|";
 // Class containing the instruction text. Contains fancy styling on the keyboard
 // key (not just a simple label).
 class SubtleNotificationView::InstructionView : public views::View {
+  METADATA_HEADER(InstructionView, views::View)
+
  public:
-  METADATA_HEADER(InstructionView);
   // Creates an InstructionView with specific text. |text| may contain one or
   // more segments delimited by a pair of pipes ('|'); each of these segments
   // will be displayed as a keyboard key. e.g., "Press |Alt|+|Q| to exit" will
@@ -70,6 +71,9 @@ class SubtleNotificationView::InstructionView : public views::View {
   void SetText(const std::u16string& text);
   void SetTextAndImages(const std::u16string& text,
                         std::vector<std::unique_ptr<views::View>> key_images);
+
+  base::CallbackListSubscription AddTextChangedCallback(
+      views::PropertyChangedCallback callback);
 
  private:
   // Adds a label to the end of the notification text. If |format_as_key|,
@@ -143,6 +147,7 @@ void SubtleNotificationView::InstructionView::SetTextAndImages(
   }
 
   text_ = text;
+  OnPropertyChanged(&text_, views::kPropertyEffectsPaint);
 }
 
 void SubtleNotificationView::InstructionView::AddTextSegment(
@@ -166,7 +171,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(0, kKeyNamePaddingPx), kKeyNameImageSpacingPx);
   key_name_layout->set_minimum_cross_axis_size(
-      label->GetPreferredSize().height() + kKeyNamePaddingPx * 2);
+      label->GetPreferredSize({}).height() + kKeyNamePaddingPx * 2);
   key->SetLayoutManager(std::move(key_name_layout));
   if (key_image)
     key->AddChildView(std::move(key_image));
@@ -178,7 +183,13 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   AddChildView(key);
 }
 
-BEGIN_METADATA(SubtleNotificationView, InstructionView, views::View)
+base::CallbackListSubscription
+SubtleNotificationView::InstructionView::AddTextChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&text_, std::move(callback));
+}
+
+BEGIN_METADATA(SubtleNotificationView, InstructionView)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 END_METADATA
 
@@ -199,6 +210,12 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(outer_padding_vert, outer_padding_horiz),
       kMiddlePaddingPx));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+  UpdateAccessibleName();
+  text_changed_callback_ = instruction_view_->AddTextChangedCallback(
+      base::BindRepeating(&SubtleNotificationView::OnInstructionViewTextChanged,
+                          base::Unretained(this)));
 }
 
 SubtleNotificationView::~SubtleNotificationView() {}
@@ -224,16 +241,22 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
     std::unique_ptr<SubtleNotificationView> view) {
   // Initialize the popup.
   views::Widget* popup = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-#if !BUILDFLAG(IS_WIN)
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
+#if BUILDFLAG(IS_WIN)
   // On Windows, this widget isn't parented on purpose to avoid it being
-  // obscured by other topmost widgets. See crbug.com/1431043.
-  // TODO(crbug.com/1459121): Aura should respect the fine-grained levels of
+  // obscured by other topmost widgets. See crbug.com/1431043. Setting
+  // `parent_view` as the context instead of the parent to meet Aura's
+  // requirement for widgets to have either a parent_view or a context.
+  // TODO(crbug.com/40066609): Aura should respect the fine-grained levels of
   // topmost windows defined in ZOrderLevel.
+  params.context = parent_view;
+#else
   params.parent = parent_view;
 #endif
+
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.z_order = ui::ZOrderLevel::kSecuritySurface;
   params.accept_events = false;
   popup->Init(std::move(params));
@@ -249,13 +272,20 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
   return popup;
 }
 
-void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kAlert;
+void SubtleNotificationView::OnInstructionViewTextChanged() {
+  UpdateAccessibleName();
+}
+
+void SubtleNotificationView::UpdateAccessibleName() {
   std::u16string accessible_name;
   base::RemoveChars(instruction_view_->GetText(), kKeyNameDelimiter,
                     &accessible_name);
-  node_data->SetNameChecked(accessible_name);
+  GetViewAccessibility().SetName(accessible_name);
 }
 
-BEGIN_METADATA(SubtleNotificationView, views::View)
+std::u16string SubtleNotificationView::GetInstructionTextForTest() const {
+  return instruction_view_->GetText();
+}
+
+BEGIN_METADATA(SubtleNotificationView)
 END_METADATA

@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/buildflag.h"
@@ -151,8 +150,8 @@ VariationsCrashKeys::VariationsCrashKeys() {
   // a different thread after starting to observe, but before the call to
   // GetActiveFieldTrialGroups() below. However, this is addressed with the use
   // of |active_trials_|.
-  // TODO(crbug/1440498): This would not be necessary to do assuming this is
-  // called while Chrome is still in single-threaded mode. While this is true
+  // TODO(crbug.com/40266142): This would not be necessary to do assuming this
+  // is called while Chrome is still in single-threaded mode. While this is true
   // for the browser process, child processes call this relatively late (and
   // possibly other platforms as well). Remove |active_trials_| when this is
   // fixed.

@@ -57,6 +57,10 @@ class TesterBrowsingTopicsSiteDataManager
 
   void SetQueryFailureOverride() { query_failure_override_ = true; }
 
+  void SetQueryResultDelay(base::TimeDelta query_result_delay) {
+    query_result_delay_ = query_result_delay;
+  }
+
   // Return a default/failed `ApiUsageContextQueryResult` if
   // `query_failure_override_` is true; otherwise, sse the default handling from
   // `BrowsingTopicsSiteDataManagerImpl`.
@@ -74,6 +78,7 @@ class TesterBrowsingTopicsSiteDataManager
   std::unique_ptr<BrowsingTopicsSiteDataManagerImpl> manager_impl_;
 
   bool query_failure_override_ = false;
+  base::TimeDelta query_result_delay_;
 };
 
 }  // namespace content

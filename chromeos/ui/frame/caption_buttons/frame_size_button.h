@@ -33,9 +33,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
     : public views::FrameCaptionButton,
       public display::DisplayObserver {
- public:
-  METADATA_HEADER(FrameSizeButton);
+  METADATA_HEADER(FrameSizeButton, views::FrameCaptionButton)
 
+ public:
   FrameSizeButton(PressedCallback callback, FrameSizeButtonDelegate* delegate);
 
   FrameSizeButton(const FrameSizeButton&) = delete;

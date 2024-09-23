@@ -29,8 +29,6 @@ enum class MatchFlag {
   kAffectedByActive = 1 << 3,
   // @starting-style
   kAffectedByStartingStyle = 1 << 4,
-  // :active-view-transition
-  kAffectedByActiveViewTransition = 1 << 5,
 };
 
 using MatchFlags = uint8_t;

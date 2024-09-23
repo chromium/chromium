@@ -199,7 +199,8 @@ void ExecutionContextCSPDelegate::PostViolationReport(
 
   for (const auto& report_endpoint : report_endpoints) {
     PingLoader::SendViolationReport(execution_context_.Get(),
-                                    KURL(report_endpoint), report);
+                                    KURL(report_endpoint), report,
+                                    is_frame_ancestors_violation);
   }
 }
 
@@ -242,7 +243,7 @@ void ExecutionContextCSPDelegate::DidAddContentSecurityPolicies(
 
   // Record what source was used to find main frame CSP. Do not record
   // this for fence frame roots since they will never become an
-  // outermost main frame, but we do wish to record this for portals.
+  // outermost main frame.
   if (frame->IsMainFrame() && !frame->IsInFencedFrameTree()) {
     for (const auto& policy : policies) {
       switch (policy->header->source) {

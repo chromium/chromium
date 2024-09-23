@@ -44,8 +44,7 @@ class PLATFORM_EXPORT MainThreadSchedulerHelper : public SchedulerHelper {
   void ShutdownAllQueues() override;
 
  private:
-  raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer>
-      main_thread_scheduler_;  // NOT OWNED
+  raw_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
 
   const scoped_refptr<MainThreadTaskQueue> default_task_queue_;
   const scoped_refptr<MainThreadTaskQueue> control_task_queue_;

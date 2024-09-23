@@ -61,12 +61,12 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
         return Fourcc(NV21);
       case PIXEL_FORMAT_I422:
         return Fourcc(YU16);
-      case PIXEL_FORMAT_P016LE:
+      case PIXEL_FORMAT_P010LE:
         return Fourcc(P010);
       case PIXEL_FORMAT_ARGB:
         return Fourcc(AR24);
       case PIXEL_FORMAT_UYVY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case PIXEL_FORMAT_ABGR:
       case PIXEL_FORMAT_XRGB:
@@ -77,6 +77,10 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_RGB24:
       case PIXEL_FORMAT_MJPEG:
       case PIXEL_FORMAT_NV12A:
+      case PIXEL_FORMAT_NV16:
+      case PIXEL_FORMAT_NV24:
+      case PIXEL_FORMAT_P210LE:
+      case PIXEL_FORMAT_P410LE:
       case PIXEL_FORMAT_YUV420P9:
       case PIXEL_FORMAT_YUV420P10:
       case PIXEL_FORMAT_YUV422P9:
@@ -111,7 +115,7 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_NV21:
         return Fourcc(NM21);
       case PIXEL_FORMAT_UYVY:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         [[fallthrough]];
       case PIXEL_FORMAT_I420A:
       case PIXEL_FORMAT_I444:
@@ -121,6 +125,10 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_RGB24:
       case PIXEL_FORMAT_MJPEG:
       case PIXEL_FORMAT_NV12A:
+      case PIXEL_FORMAT_NV16:
+      case PIXEL_FORMAT_NV24:
+      case PIXEL_FORMAT_P210LE:
+      case PIXEL_FORMAT_P410LE:
       case PIXEL_FORMAT_YUV420P9:
       case PIXEL_FORMAT_YUV420P10:
       case PIXEL_FORMAT_YUV422P9:
@@ -133,7 +141,7 @@ std::optional<Fourcc> Fourcc::FromVideoPixelFormat(
       case PIXEL_FORMAT_Y16:
       case PIXEL_FORMAT_ABGR:
       case PIXEL_FORMAT_XBGR:
-      case PIXEL_FORMAT_P016LE:
+      case PIXEL_FORMAT_P010LE:
       case PIXEL_FORMAT_XR30:
       case PIXEL_FORMAT_XB30:
       case PIXEL_FORMAT_BGRA:
@@ -185,9 +193,9 @@ VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
     case MM21:
       return PIXEL_FORMAT_NV12;
     case P010:
-      return PIXEL_FORMAT_P016LE;
+      return PIXEL_FORMAT_P010LE;
     case MT2T:
-      return PIXEL_FORMAT_P016LE;
+      return PIXEL_FORMAT_P010LE;
     case AR24:
       return PIXEL_FORMAT_ARGB;
     // V4L2_PIX_FMT_QC08C is a proprietary Qualcomm compressed format that can
@@ -199,11 +207,11 @@ VideoPixelFormat Fourcc::ToVideoPixelFormat() const {
     // V4L2_PIX_FMT_QC10C is similar to V4L2_PIX_FMT_QC08C, but has the same
     // bitdepth and internal layout as P010.
     case Q10C:
-      return PIXEL_FORMAT_P016LE;
+      return PIXEL_FORMAT_P010LE;
     case UNDEFINED:
       break;
   }
-  NOTREACHED() << "Unmapped Fourcc: " << ToString();
+  NOTREACHED_IN_MIGRATION() << "Unmapped Fourcc: " << ToString();
   return PIXEL_FORMAT_UNKNOWN;
 }
 
@@ -276,7 +284,7 @@ std::optional<uint32_t> Fourcc::ToVAFourCC() const {
       DVLOGF(3) << "Fourcc not convertible to VaFourCC: " << ToString();
       return std::nullopt;
   }
-  NOTREACHED() << "Unmapped Fourcc: " << ToString();
+  NOTREACHED_IN_MIGRATION() << "Unmapped Fourcc: " << ToString();
   return std::nullopt;
 }
 

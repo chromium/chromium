@@ -11,8 +11,11 @@ struct BackgroundTracingRule {
 
 // This interface is used to receive callbacks from BackgroundTracingAgent.
 interface BackgroundTracingAgentClient {
+  // Called once the BackgroundTracingAgent implementation is initialized.
   OnInitialized();
-  OnTriggerBackgroundTrace(BackgroundTracingRule rule);
+  // Called when a monitored histogram trigger is hit. Histograms are monitored
+  // by calling BackgroundTracingAgent::SetUMACallback().
+  OnTriggerBackgroundTrace(BackgroundTracingRule rule, int32? histogram_value);
 };
 
 // This interface is used to allow clients (the browser process) to monitor for

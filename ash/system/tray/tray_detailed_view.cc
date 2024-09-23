@@ -46,6 +46,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -165,15 +166,18 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
 
 void TrayDetailedView::CreateScrollableList() {
   DCHECK(!scroller_);
-  auto scroll_content = std::make_unique<views::BoxLayoutView>();
-  scroll_content->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  scroller_ = AddChildView(std::make_unique<views::ScrollView>());
+  scroller_ = AddChildView(std::make_unique<views::ScrollView>(
+      views::ScrollView::ScrollWithLayers::kEnabled));
   scroller_->SetDrawOverflowIndicator(false);
-  scroll_content_ = scroller_->SetContents(std::move(scroll_content));
+  scroll_content_ = scroller_->SetContents(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .Build());
 
   auto vertical_scroll = std::make_unique<RoundedScrollBar>(
       views::ScrollBar::Orientation::kVertical);
   vertical_scroll->SetInsets(kScrollBarInsets);
+  vertical_scroll->SetAlwaysShowThumb(true);
   scroller_->SetVerticalScrollBar(std::move(vertical_scroll));
   scroller_->SetProperty(views::kMarginsKey, delegate_->GetScrollViewMargin());
   scroller_->SetPaintToLayer();
@@ -210,6 +214,16 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
   return item;
 }
 
+void TrayDetailedView::CreateZeroStateView(
+    std::unique_ptr<ZeroStateView> view) {
+  CHECK(!zero_state_view_);
+  CHECK(scroller());
+  zero_state_view_ =
+      AddChildViewAt(std::move(view), GetIndexOf(scroller_).value());
+  box_layout()->SetFlexForView(zero_state_view_, 1);
+  zero_state_view_->SetVisible(false);
+}
+
 HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
     views::View* container,
     const gfx::VectorIcon& icon,
@@ -218,7 +232,7 @@ HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
     bool enterprise_managed) {
   HoverHighlightView* item = AddScrollListItem(container, icon, text);
   if (enterprise_managed) {
-    item->SetAccessibleName(l10n_util::GetStringFUTF16(
+    item->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED, text));
   }
   TrayPopupUtils::InitializeAsCheckableRow(item, checked, enterprise_managed);
@@ -232,6 +246,7 @@ void TrayDetailedView::Reset() {
   progress_bar_ = nullptr;
   back_button_ = nullptr;
   tri_view_ = nullptr;
+  zero_state_view_ = nullptr;
 }
 
 void TrayDetailedView::ShowProgress(double value, bool visible) {
@@ -240,9 +255,10 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
     progress_bar_ = AddChildViewAt(std::make_unique<views::ProgressBar>(),
                                    kTitleRowProgressBarIndex + 1);
     progress_bar_->SetPreferredHeight(kTitleRowProgressBarHeight);
-    progress_bar_->GetViewAccessibility().OverrideName(
+    progress_bar_->GetViewAccessibility().SetName(
         progress_bar_accessible_name_.value_or(l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME)));
+            IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME)),
+        ax::mojom::NameFrom::kAttribute);
     progress_bar_->SetVisible(false);
     progress_bar_->SetForegroundColor(
         AshColorProvider::Get()->GetContentLayerColor(
@@ -252,6 +268,12 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
   progress_bar_->SetValue(value);
   progress_bar_->SetVisible(visible);
   children()[size_t{kTitleRowProgressBarIndex}]->SetVisible(!visible);
+}
+
+void TrayDetailedView::SetZeroStateViewVisibility(bool visible) {
+  CHECK(zero_state_view_);
+  zero_state_view_->SetVisible(visible);
+  scroller_->SetVisible(!visible);
 }
 
 views::Button* TrayDetailedView::CreateInfoButton(
@@ -321,15 +343,18 @@ void TrayDetailedView::Layout(PassKey) {
   }
 }
 
-int TrayDetailedView::GetHeightForWidth(int width) const {
+gfx::Size TrayDetailedView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size preferred_size =
+      views::View::CalculatePreferredSize(available_size);
   if (bounds().IsEmpty()) {
-    return views::View::GetHeightForWidth(width);
+    return preferred_size;
   }
 
   // The height of the bubble that contains this detailed view is set to
   // the preferred height of the default view, and that determines the
   // initial height of |this|. Always request to stay the same height.
-  return height();
+  return gfx::Size(preferred_size.width(), height());
 }
 
 BEGIN_METADATA(TrayDetailedView)

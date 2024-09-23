@@ -4,9 +4,10 @@
 
 module remote_cocoa.mojom;
 
+import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/base/accelerators/mojom/accelerator.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/dialog_button.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/display/mojom/display.mojom";
 import "ui/events/mojom/event.mojom";
@@ -104,8 +105,7 @@ interface NativeWidgetNSWindowHost {
   GetIsDraggableBackgroundAt(gfx.mojom.Point location_in_content) =>
       (bool is_draggable_background);
 
-  // Synchronously query the tooltip text for |location_in_content|.
-  [Sync]
+  // Asynchronously query the tooltip text for |location_in_content|.
   GetTooltipTextAt(gfx.mojom.Point location_in_content) =>
       (mojo_base.mojom.String16 new_tooltip_text);
 
@@ -163,9 +163,6 @@ interface NativeWidgetNSWindowHost {
   // state has changed.
   OnWindowStateRestorationDataChanged(array<uint8> data);
 
-  // Called when this widget is reparented to another window.
-  OnWindowParentChanged(uint64 new_parent_id);
-
   // Called when the toolbar reveal status changes. The toolbar is visible
   // either because there are outstanding reveal locks or the mouse is
   // hovering over the upper border of the screen.
@@ -174,7 +171,7 @@ interface NativeWidgetNSWindowHost {
   // Called when the menubar reveal status changes.
   // `reveal_amount` ranges in [0, 1]. This is the opacity of the menubar
   // and the browser window traffic lights.
-  OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount);
+  OnImmersiveFullscreenMenuBarRevealChanged(double reveal_amount);
 
   // Returns height of the menubar if the menubar autohides, otherwise 0.
   OnAutohidingMenuBarHeightChanged(int32 menu_bar_height);
@@ -233,7 +230,7 @@ interface NativeWidgetNSWindowHost {
   // view and in |host_pid| the pid for the host process.
   [Sync]
   GetRootViewAccessibilityToken() =>
-      (int64 host_pid, array<uint8> element_token);
+      (mojo_base.mojom.ProcessId host_pid, array<uint8> element_token);
 
   // Return the result for -[NSUserInterfaceValidations
   // validateUserInterfaceItem] for a given command, along with any state for

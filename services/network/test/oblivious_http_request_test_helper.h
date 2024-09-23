@@ -37,4 +37,4 @@ class ObliviousHttpRequestTestHelper {
 }  // namespace test
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_TEST_OBLIVIOUS_HTTP_REQUEST_SERVER_H_
+#endif  // SERVICES_NETWORK_TEST_OBLIVIOUS_HTTP_REQUEST_TEST_HELPER_H_

@@ -4,17 +4,21 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 enum ViewTransitionPropertyId {
   kBackdropFilter,
   kColorScheme,
   kMixBlendMode,
   kTextOrientation,
-  kWritingMode
+  kWritingMode,
+  kOpacity,
+  kClipPath,
+  kFilter,
+  kMask
 };
 
 // This represents the necessary information for a shared element to
@@ -45,6 +49,10 @@ struct ViewTransitionElement {
   // The class-list needs to be serialized between documents, because exit transitions
   // would use the class list from the old document.
   array<string> class_list;
+
+  // The old containing group name is used for nested exit animations.
+  // See https://github.com/w3c/csswg-drafts/pull/10629
+  string containing_group_name;
 };
 
 // This represents a document state necessary to initiate a view transition for
@@ -64,12 +72,22 @@ struct ViewTransitionState {
   // The shared element state for elements participating in the transition.
   array<ViewTransitionElement> elements;
 
-  // The navigation id. It is used to identify this transition when retrieving
-  // captured pixel state in viz.
-  mojo_base.mojom.UnguessableToken navigation_id;
+  // The transition token. It is used to preserve the identity of the transition
+  // between old and new documents so they can share captured pixel state in
+  // viz.
+  blink.mojom.ViewTransitionToken transition_token;
 
   // Geometry information for the root capture.
   gfx.mojom.Size snapshot_root_size_at_capture;
   float device_pixel_ratio;
-  // TODO(khushalsagar): Add opaque blob from old Document.
+
+  // The next resource id that the new document should use for generating
+  // resources. This ensures the new document uses a sequence that doesn't
+  // collide with ids already used for resources from the old document.
+  uint32 next_element_resource_id;
+
+  // An ID referencing the texture with the complete content of the old
+  // Document. This is used for paint holding during a LocalFrame<->LocalFrame
+  // subframe navigation, i.e., a navigation in an in-process iframe.
+  viz.mojom.ViewTransitionElementResourceId subframe_snapshot_id;
 };

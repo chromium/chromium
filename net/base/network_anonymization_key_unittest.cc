@@ -27,58 +27,7 @@ class NetworkAnonymizationKeyTest : public testing::Test {
   const base::UnguessableToken kNonce = base::UnguessableToken::Create();
 };
 
-class NetworkAnonymizationKeyTestWithNikMode
-    : public NetworkAnonymizationKeyTest,
-      public testing::WithParamInterface<NetworkIsolationKey::Mode> {
- public:
-  NetworkAnonymizationKeyTestWithNikMode() {
-    switch (GetParam()) {
-      case net::NetworkIsolationKey::Mode::kFrameSiteEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {},
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey,
-             net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
-        break;
-
-      case net::NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey},
-            {
-                net::features::kEnableCrossSiteFlagNetworkIsolationKey,
-            });
-        break;
-
-      case net::NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-        scoped_feature_list_.InitWithFeatures(
-            {net::features::kEnableCrossSiteFlagNetworkIsolationKey},
-            {net::features::kEnableFrameSiteSharedOpaqueNetworkIsolationKey});
-        break;
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    Tests,
-    NetworkAnonymizationKeyTestWithNikMode,
-    testing::ValuesIn(
-        {NetworkIsolationKey::Mode::kFrameSiteEnabled,
-         NetworkIsolationKey::Mode::kCrossSiteFlagEnabled,
-         NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled}),
-    [](const testing::TestParamInfo<NetworkIsolationKey::Mode>& info) {
-      switch (info.param) {
-        case NetworkIsolationKey::Mode::kFrameSiteEnabled:
-          return "FrameSiteEnabled";
-        case NetworkIsolationKey::Mode::kCrossSiteFlagEnabled:
-          return "CrossSiteFlagEnabled";
-        case NetworkIsolationKey::Mode::kFrameSiteWithSharedOpaqueEnabled:
-          return "FrameSiteSharedOpaqueEnabled";
-      }
-    });
-
-TEST_P(NetworkAnonymizationKeyTestWithNikMode, CreateFromNetworkIsolationKey) {
+TEST_F(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
   SchemefulSite site_a = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site_b = SchemefulSite(GURL("http://b.test/"));
   SchemefulSite opaque = SchemefulSite(url::Origin());
@@ -160,7 +109,8 @@ TEST_F(NetworkAnonymizationKeyTest, CreateCrossSite) {
 TEST_F(NetworkAnonymizationKeyTest, CreateFromFrameSite) {
   SchemefulSite site_a = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site_b = SchemefulSite(GURL("http://b.test/"));
-  SchemefulSite opaque = SchemefulSite(url::Origin());
+  SchemefulSite opaque_1 = SchemefulSite(url::Origin());
+  SchemefulSite opaque_2 = SchemefulSite(url::Origin());
   base::UnguessableToken nonce = base::UnguessableToken::Create();
 
   NetworkAnonymizationKey nak_from_same_site =
@@ -168,26 +118,32 @@ TEST_F(NetworkAnonymizationKeyTest, CreateFromFrameSite) {
   NetworkAnonymizationKey nak_from_cross_site =
       NetworkAnonymizationKey::CreateFromFrameSite(site_a, site_b, nonce);
   NetworkAnonymizationKey nak_from_same_site_opaque =
-      NetworkAnonymizationKey::CreateFromFrameSite(opaque, opaque, nonce);
+      NetworkAnonymizationKey::CreateFromFrameSite(opaque_1, opaque_1, nonce);
+  NetworkAnonymizationKey nak_from_cross_site_opaque =
+      NetworkAnonymizationKey::CreateFromFrameSite(opaque_1, opaque_2, nonce);
 
   // Top site should be populated correctly.
   EXPECT_EQ(nak_from_same_site.GetTopFrameSite(), site_a);
   EXPECT_EQ(nak_from_cross_site.GetTopFrameSite(), site_a);
-  EXPECT_EQ(nak_from_same_site_opaque.GetTopFrameSite(), opaque);
+  EXPECT_EQ(nak_from_same_site_opaque.GetTopFrameSite(), opaque_1);
+  EXPECT_EQ(nak_from_cross_site_opaque.GetTopFrameSite(), opaque_1);
 
   // Nonce should be populated correctly.
   EXPECT_EQ(nak_from_same_site.GetNonce(), nonce);
   EXPECT_EQ(nak_from_cross_site.GetNonce(), nonce);
   EXPECT_EQ(nak_from_same_site_opaque.GetNonce(), nonce);
+  EXPECT_EQ(nak_from_cross_site_opaque.GetNonce(), nonce);
 
   // Is cross site boolean should be populated correctly.
   EXPECT_TRUE(nak_from_same_site.IsSameSite());
   EXPECT_TRUE(nak_from_cross_site.IsCrossSite());
   EXPECT_TRUE(nak_from_same_site_opaque.IsSameSite());
+  EXPECT_TRUE(nak_from_cross_site_opaque.IsCrossSite());
 
-  // Double-keyed + cross site bit NAKs created from different third party
-  // cross site contexts should be the different.
-  EXPECT_FALSE(nak_from_same_site == nak_from_cross_site);
+  // NAKs created from different third party cross site contexts should be
+  // different.
+  EXPECT_NE(nak_from_same_site, nak_from_cross_site);
+  EXPECT_NE(nak_from_same_site_opaque, nak_from_cross_site_opaque);
 }
 
 TEST_F(NetworkAnonymizationKeyTest, IsEmpty) {
@@ -427,8 +383,8 @@ TEST(NetworkAnonymizationKeyFeatureShiftTest,
   EXPECT_FALSE(NetworkAnonymizationKey::FromValue(double_key_value,
                                                   &expected_failure_nak));
 
-  // Check that deserializing a triple keyed value (a 2-element list
-  // containing two sites) fails.
+  // Check that deserializing a triple keyed value (a 2-element list containing
+  // two sites) fails.
   base::Value::List triple_key_list;
   triple_key_list.Append(serialized_site.Clone());
   triple_key_list.Append(std::move(serialized_site));

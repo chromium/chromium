@@ -27,9 +27,11 @@
         "fuchsia.kernel.VmexResource",
         "fuchsia.logger.LogSink",
         "fuchsia.media.ProfileProvider",
+        "fuchsia.scheduler.RoleManager",
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
+        "fuchsia.sysmem2.Allocator",
 
         // CastRunner sets ContextFeatureFlags::NETWORK by default.
         "fuchsia.net.interfaces.State",
@@ -49,7 +51,7 @@
         // Used by the test UI stack.
         "fuchsia.scheduler.ProfileProvider",
 
-        // TODO(crbug.com/1364196) Remove once not needed to avoid log spam.
+        // TODO(crbug.com/42050521) Remove once not needed to avoid log spam.
         "fuchsia.tracing.perfetto.ProducerConnector",
       ],
       from: "parent",

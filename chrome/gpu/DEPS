@@ -6,6 +6,7 @@ include_rules = [
   "+components/arc/mojom",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
   "+components/metrics",
+  "+components/sampling_profiler",
   "+content/public/child",
   "+content/public/gpu",
   "+media/cdm",

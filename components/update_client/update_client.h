@@ -171,12 +171,21 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
   struct Result {
     Result() = default;
     explicit Result(int error, int extended_error = 0)
-        : error(error), extended_error(extended_error) {}
+        : result({.category_ = error == 0 ? ErrorCategory::kNone
+                                          : ErrorCategory::kInstall,
+                  .code_ = error,
+                  .extra_ = extended_error}) {}
     explicit Result(InstallError error, int extended_error = 0)
-        : error(static_cast<int>(error)), extended_error(extended_error) {}
+        : result({.category_ = error == InstallError::NONE
+                                   ? ErrorCategory::kNone
+                                   : ErrorCategory::kInstall,
+                  .code_ = static_cast<int>(error),
+                  .extra_ = extended_error}) {}
+    explicit Result(CategorizedError error) : result(error) {}
 
-    int error = 0;  // 0 indicates that install has been successful.
-    int extended_error = 0;
+    // The install is successful if and only if result.category_ is kNone.
+    // result.code_ may be non-zero for a successful install.
+    CategorizedError result;
 
     // Localized text displayed to the user, if applicable.
     std::string installer_text;
@@ -184,23 +193,6 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
     // Shell command run at the end of the install, if applicable. This string
     // must be escaped to be a command line.
     std::string installer_cmd_line;
-
-    // A `CrxInstaller` instance that runs other application installers needs
-    // the ability to report error codes that `update_client` should not
-    // interpret. For instance:
-    //   * the application installer error code may be an OS error code that
-    //   overlaps with the error codes in `update_client::InstallError`. Error
-    //   code `2` could mean `FINGERPRINT_WRITE_FAILED = 2` or the windows error
-    //   `ERROR_FILE_NOT_FOUND`.
-    //   * the application installer may report a non-zero success code.
-    //   `update_client` views any error code other than `0` as an error.
-    //   `ERROR_SUCCESS_REBOOT_INITIATED`, `ERROR_SUCCESS_REBOOT_REQUIRED`, and
-    //   `ERROR_SUCCESS_RESTART_REQUIRED` are examples of non-zero success
-    //   codes.
-    // In these cases, the `CrxInstaller` may choose to store the application
-    // installer result in `original_error`, and use a zero/non-zero `error`
-    // only to indicate a success/error.
-    int original_error = 0;
   };
 
   struct InstallParams {
@@ -240,12 +232,11 @@ class CrxInstaller : public base::RefCountedThreadSafe<CrxInstaller> {
                        ProgressCallback progress_callback,
                        Callback callback) = 0;
 
-  // Sets |installed_file| to the full path to the installed |file|. |file| is
-  // the filename of the file in this CRX. Returns false if this is
-  // not possible (the file has been removed or modified, or its current
-  // location is unknown). Otherwise, it returns true.
-  virtual bool GetInstalledFile(const std::string& file,
-                                base::FilePath* installed_file) = 0;
+  // Returns the path to the installed `file`. If there is no such path (for
+  // example because no version of the item is installed), returns nullopt.
+  // Called on the main sequence, can't block.
+  virtual std::optional<base::FilePath> GetInstalledFile(
+      const std::string& file) = 0;
 
   // Called when a CRX has been unregistered and all versions should
   // be uninstalled from disk. Returns true if uninstallation is supported,
@@ -326,10 +317,6 @@ struct CrxComponent {
   // ^[-_a-zA-Z0-9]{1,256}$ and valid values the value part of an attribute
   // match ^[-.,;+_=$a-zA-Z0-9]{0,256}$ .
   InstallerAttributes installer_attributes;
-
-  // Specifies that the CRX can be background-downloaded in some cases.
-  // The default for this value is |true|.
-  bool allows_background_download = true;
 
   // Specifies that the update checks and pings associated with this component
   // require confidentiality. The default for this value is |true|. As a side
@@ -458,6 +445,16 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
     virtual void OnEvent(Events event, const std::string& id) = 0;
   };
 
+  // Packs the parameters for sending a ping.
+  struct PingParams {
+    int event_type = 0;
+    int result = 0;
+    ErrorCategory error_category = ErrorCategory::kNone;
+    int error_code = 0;
+    int extra_code1 = 0;
+    std::string app_command_id;
+  };
+
   // Adds an observer for this class. An observer should not be added more
   // than once. The caller retains the ownership of the observer object.
   virtual void AddObserver(Observer* observer) = 0;
@@ -510,22 +507,12 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
                       bool is_foreground,
                       Callback callback) = 0;
 
-  // Sends an uninstall ping for `crx_component`. `reason` is sent to the server
-  // to indicate the cause of the uninstallation. The current implementation of
-  // this function only sends a best-effort ping. It has no other side effects
+  // Sends a ping for `crx_component`. The current implementation of this
+  // function only sends a best-effort ping. It has no other side effects
   // regarding installs or updates done through an instance of this class.
-  virtual void SendUninstallPing(const CrxComponent& crx_component,
-                                 int reason,
-                                 Callback callback) = 0;
-
-  // Sends an install ping for `crx_component`. The current implementation of
-  // this function only sends a best-effort ping. It has no other side effects
-  // regarding installs or updates done through an instance of this class.
-  virtual void SendInstallPing(const CrxComponent& crx_component,
-                               bool success,
-                               int error_code,
-                               int extra_code1,
-                               Callback callback) = 0;
+  virtual void SendPing(const CrxComponent& crx_component,
+                        PingParams ping_params,
+                        Callback callback) = 0;
 
   // Returns status details about a CRX update. The function returns true in
   // case of success and false in case of errors, such as |id| was

@@ -1,0 +1,57 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("extensions") {
+  sources = [
+    "arc_support_message_host.cc",
+    "arc_support_message_host.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//extensions/browser/api/messaging",
+    "//extensions/browser/api/messaging:native_messaging",
+
+    # TODO(b/354839582): Use targets having headers included from
+    # chrome/browser/ash/arc/extensions/arc_support_message_host.cc.
+    "//chromeos/ash/components/dbus/concierge:concierge_proto_lib",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_arc_support.cc",
+    "fake_arc_support.h",
+  ]
+
+  deps = [
+    ":extensions",
+    "//base",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/profiles:profile",
+    "//extensions/browser/api/messaging",
+    "//extensions/browser/api/messaging:native_messaging",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_support_message_host_unittest.cc" ]
+
+  deps = [
+    ":extensions",
+    "//base",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gtest",
+  ]
+}

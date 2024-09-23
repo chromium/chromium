@@ -12,20 +12,26 @@
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
-PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider()
+PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider(
+    bool meta_experiment_active)
     : blocked_surfaces_(
           DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceSet>(
               features::kIdentifiabilityStudyBlockedMetrics.Get())),
       blocked_types_(
           DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceTypeSet>(
               features::kIdentifiabilityStudyBlockedTypes.Get())),
-      enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)) {}
+      enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)),
+      meta_experiment_active_(meta_experiment_active) {}
 
 PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider(
     const PrivacyBudgetSettingsProvider&) = default;
 PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider(
     PrivacyBudgetSettingsProvider&&) = default;
 PrivacyBudgetSettingsProvider::~PrivacyBudgetSettingsProvider() = default;
+
+bool PrivacyBudgetSettingsProvider::IsMetaExperimentActive() const {
+  return meta_experiment_active_;
+}
 
 bool PrivacyBudgetSettingsProvider::IsActive() const {
   return enabled_;

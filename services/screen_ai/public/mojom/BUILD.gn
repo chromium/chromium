@@ -1,0 +1,27 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//services/screen_ai/buildflags/features.gni")
+
+assert(enable_screen_ai_service)
+
+mojom("mojom") {
+  sources = [ "screen_ai_service.mojom" ]
+
+  public_deps = [
+    "//media/mojo/mojom",
+    "//ui/accessibility:ax_features_mojo",
+    "//ui/accessibility/mojom",
+  ]
+}
+
+mojom("factory") {
+  disable_variants = true
+  sources = [ "screen_ai_factory.mojom" ]
+  public_deps = [
+    ":mojom",
+    "//sandbox/policy/mojom",
+  ]
+}

@@ -13,6 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace aura {
@@ -37,7 +39,8 @@ class WindowCycleItemView;
 
 // A view that shows a collection of windows the user can cycle through.
 class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
-                                   public ui::ImplicitAnimationObserver {
+                                   public ui::ImplicitAnimationObserver,
+                                   public views::ViewObserver {
   METADATA_HEADER(WindowCycleView, views::WidgetDelegateView)
 
  public:
@@ -128,7 +131,8 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   int CalculateMaxWidth() const;
 
   // views::WidgetDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
   // ui::ImplicitAnimationObserver:
@@ -142,6 +146,10 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   cycle_views_for_testing() const {
     return cycle_views_;
   }
+
+ protected:
+  // ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
 
  private:
   friend class WindowCycleListTestApi;
@@ -166,20 +174,18 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>> cycle_views_;
 
   // A container that hosts and lays out all the `WindowMiniViewBase`s.
-  raw_ptr<views::View, DanglingUntriaged> mirror_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> mirror_container_ = nullptr;
 
   // Tells users that there are no app windows on the active desk. It only shows
   // when there're more than 1 desk.
-  raw_ptr<views::Label, DanglingUntriaged> no_recent_items_label_ = nullptr;
+  raw_ptr<views::Label> no_recent_items_label_ = nullptr;
 
   // The `tab_slider_` only shows when there're more than 1 desk. It contains
   // `all_desks_tab_slider_button_` and `current_desk_tab_slider_button_` which
   // user can tab through or toggle between.
-  raw_ptr<TabSlider, DanglingUntriaged> tab_slider_ = nullptr;
-  raw_ptr<LabelSliderButton, DanglingUntriaged> all_desks_tab_slider_button_ =
-      nullptr;
-  raw_ptr<LabelSliderButton, DanglingUntriaged>
-      current_desk_tab_slider_button_ = nullptr;
+  raw_ptr<TabSlider> tab_slider_ = nullptr;
+  raw_ptr<LabelSliderButton> all_desks_tab_slider_button_ = nullptr;
+  raw_ptr<LabelSliderButton> current_desk_tab_slider_button_ = nullptr;
 
   // The |target_window_| is the window that has the focus ring. When the user
   // completes cycling the |target_window_| is activated.

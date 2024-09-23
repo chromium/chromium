@@ -4,7 +4,6 @@
 
 #include <windows.h>
 
-#include <conio.h>
 #include <devguid.h>
 #include <setupapi.h>
 #include <swdevice.h>

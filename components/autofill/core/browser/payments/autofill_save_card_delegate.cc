@@ -5,14 +5,16 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
 AutofillSaveCardDelegate::AutofillSaveCardDelegate(
-    absl::variant<AutofillClient::LocalSaveCardPromptCallback,
-                  AutofillClient::UploadSaveCardPromptCallback>
+    absl::variant<
+        payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+        payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
         save_card_callback,
-    AutofillClient::SaveCreditCardOptions options)
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options)
     : options_(options),
       had_user_interaction_(false),
       save_card_callback_(std::move(save_card_callback)) {}
@@ -28,10 +30,9 @@ void AutofillSaveCardDelegate::OnUiAccepted(base::OnceClosure callback) {
   // Credit card save acceptance can be logged immediately if:
   // 1. the user is accepting card local save.
   // 2. or when we don't need more info in order to upload.
-  if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly &&
-      (!is_for_upload() ||
-       !(options_.should_request_name_from_user ||
-         options_.should_request_expiration_date_from_user))) {
+  if (options_.card_save_type !=
+          payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly &&
+      (!is_for_upload() || !requires_fix_flow())) {
     LogSaveCreditCardPromptResult(
         autofill_metrics::SaveCreditCardPromptResult::kAccepted,
         is_for_upload(), options_);
@@ -41,17 +42,19 @@ void AutofillSaveCardDelegate::OnUiAccepted(base::OnceClosure callback) {
 }
 
 void AutofillSaveCardDelegate::OnUiUpdatedAndAccepted(
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   LogInfoBarAction(AutofillMetrics::INFOBAR_ACCEPTED);
   GatherAdditionalConsentIfApplicable(user_provided_details);
 }
 
 void AutofillSaveCardDelegate::OnUiCanceled() {
   RunSaveCardPromptCallback(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
   LogInfoBarAction(AutofillMetrics::INFOBAR_DENIED);
-  if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
+  if (options_.card_save_type !=
+      payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly) {
     LogSaveCreditCardPromptResult(
         autofill_metrics::SaveCreditCardPromptResult::kDenied, is_for_upload(),
         options_);
@@ -61,10 +64,11 @@ void AutofillSaveCardDelegate::OnUiCanceled() {
 void AutofillSaveCardDelegate::OnUiIgnored() {
   if (!had_user_interaction_) {
     RunSaveCardPromptCallback(
-        AutofillClient::SaveCardOfferUserDecision::kIgnored,
+        payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kIgnored,
         /*user_provided_details=*/{});
     LogInfoBarAction(AutofillMetrics::INFOBAR_IGNORED);
-    if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
+    if (options_.card_save_type !=
+        payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly) {
       LogSaveCreditCardPromptResult(
           autofill_metrics::SaveCreditCardPromptResult::kIgnored,
           is_for_upload(), options_);
@@ -73,8 +77,9 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
 }
 
 void AutofillSaveCardDelegate::OnFinishedGatheringConsent(
-    AutofillClient::SaveCardOfferUserDecision user_decision,
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   RunSaveCardPromptCallback(user_decision, user_provided_details);
   if (!on_finished_gathering_consent_callback_.is_null()) {
     std::move(on_finished_gathering_consent_callback_).Run();
@@ -82,30 +87,33 @@ void AutofillSaveCardDelegate::OnFinishedGatheringConsent(
 }
 
 void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
-    AutofillClient::SaveCardOfferUserDecision user_decision,
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   if (is_for_upload()) {
-    absl::get<AutofillClient::UploadSaveCardPromptCallback>(
+    absl::get<payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>(
         std::move(save_card_callback_))
         .Run(user_decision, user_provided_details);
   } else {
-    absl::get<AutofillClient::LocalSaveCardPromptCallback>(
+    absl::get<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback>(
         std::move(save_card_callback_))
         .Run(user_decision);
   }
 }
 
 void AutofillSaveCardDelegate::GatherAdditionalConsentIfApplicable(
-    AutofillClient::UserProvidedCardDetails user_provided_details) {
+    payments::PaymentsAutofillClient::UserProvidedCardDetails
+        user_provided_details) {
   OnFinishedGatheringConsent(
-      AutofillClient::SaveCardOfferUserDecision::kAccepted,
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision::kAccepted,
       user_provided_details);
 }
 
 void AutofillSaveCardDelegate::LogInfoBarAction(
     AutofillMetrics::InfoBarMetric action) {
   CHECK(!had_user_interaction_);
-  if (options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
+  if (options_.card_save_type ==
+      payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly) {
     autofill_metrics::LogCvcInfoBarMetric(action, is_for_upload());
   } else {
     AutofillMetrics::LogCreditCardInfoBarMetric(action, is_for_upload(),

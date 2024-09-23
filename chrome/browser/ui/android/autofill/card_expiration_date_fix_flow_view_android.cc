@@ -7,13 +7,15 @@
 
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 
-#include "chrome/android/chrome_jni_headers/AutofillExpirationDateFixFlowBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/AutofillExpirationDateFixFlowBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -28,10 +30,9 @@ CardExpirationDateFixFlowViewAndroid::CardExpirationDateFixFlowViewAndroid(
 void CardExpirationDateFixFlowViewAndroid::OnUserAccept(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& month,
-    const JavaParamRef<jstring>& year) {
-  controller_->OnAccepted(base::android::ConvertJavaStringToUTF16(env, month),
-                          base::android::ConvertJavaStringToUTF16(env, year));
+    const std::u16string& month,
+    const std::u16string& year) {
+  controller_->OnAccepted(month, year);
 }
 
 void CardExpirationDateFixFlowViewAndroid::OnUserDismiss(
@@ -54,19 +55,11 @@ void CardExpirationDateFixFlowViewAndroid::Show() {
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  ScopedJavaLocalRef<jstring> dialog_title =
-      base::android::ConvertUTF16ToJavaString(env, controller_->GetTitleText());
-
-  ScopedJavaLocalRef<jstring> confirm = base::android::ConvertUTF16ToJavaString(
-      env, controller_->GetSaveButtonLabel());
-
-  ScopedJavaLocalRef<jstring> card_label =
-      base::android::ConvertUTF16ToJavaString(env, controller_->GetCardLabel());
-
   java_object_.Reset(Java_AutofillExpirationDateFixFlowBridge_create(
-      env, reinterpret_cast<intptr_t>(this), dialog_title, confirm,
+      env, reinterpret_cast<intptr_t>(this), controller_->GetTitleText(),
+      controller_->GetSaveButtonLabel(),
       ResourceMapper::MapToJavaDrawableId(controller_->GetIconId()),
-      card_label));
+      controller_->GetCardLabel()));
 
   Java_AutofillExpirationDateFixFlowBridge_show(
       env, java_object_,

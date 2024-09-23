@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "components/webapps/common/web_app_id.h"
@@ -204,6 +203,11 @@ class AppShimManager
     notification_permission_result_for_testing_ = result;
   }
 
+  // Opens the given app in the given profile in response to the user picking
+  // said profile in the Profiles menu.
+  void LaunchAppInProfile(const webapps::AppId& app_id,
+                          const base::FilePath& profile_path);
+
   // AppShimHostBootstrap::Client:
   void OnShimProcessConnected(
       std::unique_ptr<AppShimHostBootstrap> bootstrap) override;
@@ -228,6 +232,10 @@ class AppShimManager
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
                                     const GURL& override_url) override;
   void OnShimWillTerminate(AppShimHost* host) override;
+  void OnNotificationPermissionStatusChanged(
+      AppShimHost* host,
+      mac_notifications::mojom::PermissionStatus status) override;
+
   // AppLifetimeMonitor::Observer overrides:
   void OnAppStart(content::BrowserContext* context,
                   const std::string& app_id) override;
@@ -259,12 +267,16 @@ class AppShimManager
 
   class AppShimObserver {
    public:
-    virtual void OnShimProcessConnected(base::ProcessId pid) = 0;
+    virtual void OnShimProcessConnected(base::ProcessId pid) {}
     virtual void OnShimProcessConnectedAndAllLaunchesDone(
         base::ProcessId pid,
-        chrome::mojom::AppShimLaunchResult result) = 0;
-    virtual void OnShimReopen(base::ProcessId pid) = 0;
-    virtual void OnShimOpenedURLs(base::ProcessId pid) = 0;
+        chrome::mojom::AppShimLaunchResult result) {}
+    virtual void OnShimReopen(base::ProcessId pid) {}
+    virtual void OnShimOpenedURLs(base::ProcessId pid) {}
+    // If this is overridden to return false, the regular notification action
+    // code path is bypassed.
+    virtual bool OnNotificationAction(
+        mac_notifications::mojom::NotificationActionInfoPtr& info);
   };
   void SetAppShimObserverForTesting(AppShimObserver* observer) {
     app_shim_observer_ = observer;
@@ -277,7 +289,7 @@ class AppShimManager
   typedef std::set<Browser*> BrowserSet;
 
   // Virtual for tests.
-  virtual bool IsAcceptablyCodeSigned(pid_t pid) const;
+  virtual bool IsAcceptablyCodeSigned(audit_token_t audit_token) const;
 
   // Return the profile for |path|, only if it is already loaded.
   virtual Profile* ProfileForPath(const base::FilePath& path);
@@ -488,8 +500,16 @@ class AppShimManager
   // and this class to make sure notification actions can be handled even if the
   // browser process has never tried to connect to the notification service
   // in an app shim.
-  mojo::ReceiverSet<mac_notifications::mojom::MacNotificationActionHandler>
+  mojo::ReceiverSet<mac_notifications::mojom::MacNotificationActionHandler,
+                    webapps::AppId>
       notification_action_handler_receivers_;
+
+  // This contains `AppShimHostBootstrap` instances, keyed by the `ReceiverId`
+  // for the corresponding `MacNotificationActionHandler` receiver in
+  // `notification_action_handler_receivers_`, for app shims that were launched
+  // by the OS to handle notification actions.
+  std::map<mojo::ReceiverId, std::unique_ptr<AppShimHostBootstrap>>
+      bootstraps_pending_notification_actions_;
 
   // Set in some tests to short-circuit ShowNotificationPermissionRequest.
   std::optional<mac_notifications::mojom::RequestPermissionResult>

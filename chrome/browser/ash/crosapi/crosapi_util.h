@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_CROSAPI_UTIL_H_
 #define CHROME_BROWSER_ASH_CROSAPI_CROSAPI_UTIL_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/token.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
+#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
@@ -30,7 +32,7 @@ namespace browser_util {
 bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile);
 
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
-base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
+const base::flat_map<base::Token, uint32_t>& GetInterfaceVersions();
 
 // Represents how to launch Lacros Chrome.
 struct InitialBrowserAction {
@@ -56,10 +58,9 @@ struct InitialBrowserAction {
 // with all the parameters, including the ones that are only
 // available after login.
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
-    EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
     bool include_post_login_params = true);
 
 // Creates a memory backed file containing the serialized |params|,
@@ -68,15 +69,13 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 // with all the parameters, including the ones that are only
 // available after login.
 base::ScopedFD CreateStartupData(
-    EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
-    std::optional<browser_util::LacrosSelection> lacros_selection,
+    std::optional<ash::standalone_browser::LacrosSelection> lacros_selection,
     bool include_post_login_params = true);
 
 // Serializes and writes post-login parameters into the given FD.
 bool WritePostLoginData(base::PlatformFile fd,
-                        EnvironmentProvider* environment_provider,
                         InitialBrowserAction initial_browser_action);
 
 // Returns the device settings needed for Lacros.
@@ -89,6 +88,9 @@ policy::CloudPolicyCore* GetCloudPolicyCoreForUser(
 // Returns the ComponentCloudPolicyService for the given user.
 policy::ComponentCloudPolicyService* GetComponentCloudPolicyServiceForUser(
     const user_manager::User& user);
+
+// Returns the list of Ash capabilities to publish to Lacros.
+base::span<const std::string_view> GetAshCapabilities();
 
 }  // namespace browser_util
 }  // namespace crosapi

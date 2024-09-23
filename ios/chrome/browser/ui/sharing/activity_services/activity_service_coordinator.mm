@@ -4,15 +4,18 @@
 
 #import "ios/chrome/browser/ui/sharing/activity_services/activity_service_coordinator.h"
 
+#import <LinkPresentation/LinkPresentation.h>
+
 #import "components/bookmarks/browser/bookmark_model.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -34,8 +37,6 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
-
-#import <LinkPresentation/LinkPresentation.h>
 
 namespace {
 
@@ -70,8 +71,8 @@ constexpr CGFloat kAppIconPointSize = 80;
                                    browser:(Browser*)browser
                                     params:(SharingParams*)params {
   DCHECK(params);
-  if (self = [super initWithBaseViewController:baseViewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:baseViewController
+                                        browser:browser])) {
     _params = params;
   }
   return self;
@@ -93,10 +94,11 @@ constexpr CGFloat kAppIconPointSize = 80;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.incognito = browserState->IsOffTheRecord();
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-          browserState);
+      ios::BookmarkModelFactory::GetForBrowserState(browserState);
   id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
+  id<HelpCommands> helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   WebNavigationBrowserAgent* agent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   ReadingListBrowserAgent* readingListBrowserAgent =
@@ -104,6 +106,7 @@ constexpr CGFloat kAppIconPointSize = 80;
   self.mediator =
       [[ActivityServiceMediator alloc] initWithHandler:self.handler
                                       bookmarksHandler:bookmarksHandler
+                                           helpHandler:helpHandler
                                    qrGenerationHandler:self.scopedHandler
                                            prefService:browserState->GetPrefs()
                                          bookmarkModel:bookmarkModel

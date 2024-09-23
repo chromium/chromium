@@ -383,7 +383,8 @@ class ChromeRenderProcessHostBackgroundingTest
   void VerifyProcessPriority(content::RenderProcessHost* process,
                              bool expected_is_backgrounded) {
     EXPECT_TRUE(process->IsInitializedAndNotDead());
-    EXPECT_EQ(expected_is_backgrounded, process->IsProcessBackgrounded());
+    EXPECT_EQ(expected_is_backgrounded,
+              process->GetPriority() == base::Process::Priority::kBestEffort);
 
     if (base::Process::CanSetPriority()) {
       base::Process p = ProcessFromHandle(process->GetProcess().Handle());

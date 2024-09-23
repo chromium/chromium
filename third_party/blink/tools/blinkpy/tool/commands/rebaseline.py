@@ -37,6 +37,7 @@ from typing import (
     ClassVar,
     Collection,
     Dict,
+    Iterator,
     List,
     NamedTuple,
     Optional,
@@ -63,10 +64,11 @@ from blinkpy.tool.commands.command import (
     check_file_option,
 )
 from blinkpy.tool.grammar import pluralize
-from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models import test_failures, testharness_results
 from blinkpy.web_tests.models.test_expectations import SystemConfigurationEditor, TestExpectations
 from blinkpy.web_tests.models.typ_types import RESULT_TAGS, ResultType
 from blinkpy.web_tests.port import factory
+from blinkpy.web_tests.port.base import Port
 
 _log = logging.getLogger(__name__)
 
@@ -146,8 +148,10 @@ class AbstractRebaseliningCommand(Command):
     def _host_port(self):
         # TODO(crbug.com/1498195): This may be changed to `--no-wdspec`.
         return self._tool.port_factory.get(options=optparse.Values({
-            'test_types':
-            ['testharness', 'reftest', 'wdspec', 'crashtest', 'print-reftest']
+            'test_types': [
+                'testharness', 'reftest', 'wdspec', 'crashtest',
+                'print-reftest', 'manual'
+            ]
         }))
 
     def _file_name_for_actual_result(self, test_name, suffix):
@@ -176,14 +180,11 @@ class AbstractRebaseliningCommand(Command):
         return not wpt_type
 
     def _get_wpt_type(self, test_name: str) -> Optional[str]:
-        for wpt_dir, url_base in self._host_port.WPT_DIRS.items():
-            if test_name.startswith(wpt_dir):
-                manifest = self._host_port.wpt_manifest(wpt_dir)
-                file_path = manifest.file_path_for_test_url(
-                    test_name[len(f'{wpt_dir}/'):])
-                assert file_path, f'{test_name!r} not in the {url_base!r} manifest'
-                return manifest.get_test_type(file_path)
-        return None  # Not a WPT.
+        wpt_dir, url_from_wpt_dir = self._host_port.split_wpt_dir(test_name)
+        if not wpt_dir:
+            return None  # Not a WPT.
+        manifest = self._host_port.wpt_manifest(wpt_dir)
+        return manifest.get_test_type(url_from_wpt_dir)
 
 
 class ChangeSet(object):
@@ -296,22 +297,12 @@ class TestBaselineSet(collections.abc.Set):
             build: A Build object. Along with the step name, this specifies
                 where to fetch baselines from.
             step_name: The name of the build step this test was run for.
-            port_name: This specifies what platform the baseline is for.
+            port_name: This specifies what platform the baseline is for. It's
+                usually deduced from the builder name, but can be overridden.
         """
         if not port_name:
-            # TODO(crbug.com/1512219): Remove this special logic by either:
-            #  1. Making port a per-suite, not per-builder, property in
-            #     `BuilderList` (e.g., `linux-blink-rel` is `chrome` for
-            #     `webdriver_wpt_tests` or `linux` for `blink_wpt_tests`).
-            #  2. Replace the `chrome` port with regular platform ports with
-            #     chrome-specific logic (detected via the `driver_name` option).
-            product = self._builders.product_for_build_step(
-                build.builder_name, step_name)
-            if product == 'content_shell':
-                port_name = self._builders.port_name_for_builder_name(
-                    build.builder_name)
-            else:
-                port_name = product
+            port_name = self._builders.port_name_for_builder_name(
+                build.builder_name)
         self._build_steps.add((build.builder_name, step_name))
         build_step = (build, step_name, port_name)
         self._test_map[test].append(build_step)
@@ -321,15 +312,31 @@ class TestBaselineSet(collections.abc.Set):
         return self._build_steps
 
 
-class RebaselineFailureReason(enum.Enum):
-    TIMEOUT_OR_CRASH = 'May not run to completion'
-    REFTEST_IMAGE_FAILURE = 'Reftest image failure'
-    FLAKY_OUTPUT = 'Flaky output'
-    LOCAL_BASELINE_NOT_FOUND = 'Missing from local results directory'
+class RebaselineFailureReason(enum.Flag):
+    TIMEOUT_OR_CRASH = enum.auto()
+    REFTEST_IMAGE_FAILURE = enum.auto()
+    FLAKY_OUTPUT = enum.auto()
+    LOCAL_BASELINE_NOT_FOUND = enum.auto()
+
+    def __iter__(self) -> Iterator['RebaselineFailureReason']:
+        # TODO(crbug.com/40209595): Remove this handcrafted `__iter__` after
+        # python3.11+ when `enum.Flag` instances become iterable over their
+        # members.
+        for reason in self.__class__:
+            if reason in self:
+                yield reason
 
 
 RebaselineGroup = Dict[RebaselineTask, WebTestResult]
 RebaselineFailures = Dict[RebaselineTask, RebaselineFailureReason]
+RebaselineFailureReason.DESCRIPTIONS = {
+    RebaselineFailureReason.REFTEST_IMAGE_FAILURE:
+    'reftest image failure',
+    RebaselineFailureReason.FLAKY_OUTPUT:
+    'flaky output',
+    RebaselineFailureReason.LOCAL_BASELINE_NOT_FOUND:
+    'missing from local results directory',
+}
 
 
 class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
@@ -369,9 +376,12 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             if (build.builder_name,
                     step_name) not in build_steps_to_fetch_from:
                 continue
-            suffixes = self._suffixes_for_actual_failures(
-                test, build, step_name)
-            if suffixes:
+            result = self._result_for_test(test, build, step_name)
+            if result and set(result.actual_results()) & {
+                    ResultType.Failure,
+                    ResultType.Crash,
+                    ResultType.Timeout,
+            }:
                 rebaselinable_set.add(test, build, step_name, port_name)
         return rebaselinable_set
 
@@ -588,6 +598,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         rebaselinable_set = self._filter_baseline_set(test_baseline_set)
         test_count = len(rebaselinable_set.all_tests())
         if test_count == 0:
+            _log.info('No tests to rebaseline.')
             return 0
 
         _log.info('Rebaselining %s.', pluralize('test', test_count))
@@ -654,17 +665,31 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return tasks_by_exp_file
 
     def _format_line(self, task: RebaselineTask) -> str:
-        result = self._result_for_test(task.test, task.build, task.step_name)
+        results = set(
+            self._result_for_test(task.test, task.build,
+                                  task.step_name).actual_results())
         # This assertion holds because we only request unexpected non-PASS
         # results from ResultDB. This precondition ensures `result_tags` is not
         # `[ Pass ]` or empty.
-        assert set(result.actual_results()) - {ResultType.Pass}
+        assert results - {ResultType.Pass}
         specifier = self._tool.builders.version_specifier_for_port_name(
             task.port_name)
-        results = sorted(set(result.actual_results()))
-        result_tags = ' '.join(RESULT_TAGS[result] for result in results)
-        reason = self._rebaseline_failures[task].value
-        line = f'{task.test} [ {result_tags} ]  # {reason}'
+        reasons = self._rebaseline_failures[task]
+        if (reasons == RebaselineFailureReason.TIMEOUT_OR_CRASH
+                and ResultType.Failure in results):
+            # If no other rebaseline failure reason is present, the test failure
+            # was successfully rebaselined and will pass going forward.
+            results.remove(ResultType.Failure)
+            results.add(ResultType.Pass)
+        result_tags = ' '.join(RESULT_TAGS[result]
+                               for result in sorted(results))
+        line = f'{task.test} [ {result_tags} ]'
+        descriptions = list(
+            filter(None, map(RebaselineFailureReason.DESCRIPTIONS.get,
+                             reasons)))
+        if descriptions:
+            comment = ', '.join(descriptions).capitalize()
+            line += f'  # {comment}'
         return f'[ {specifier} ] {line}' if specifier else line
 
     def unstaged_baselines(self):
@@ -821,9 +846,10 @@ class BaselineLoader:
      2. Finding a "good" baseline for fuzzy-matched pixel tests according to
         some heuristics. See `choose_valid_baseline(...)` for details.
     """
-    def __init__(self, host: Host):
+
+    def __init__(self, host: Host, default_port: Port):
         self._host = host
-        self._default_port = host.port_factory.get()
+        self._default_port = default_port
         self._digests_to_contents = {}
         # Image diff statistics are commutative. By canonicalizing the
         # (expected, actual) argument order and caching the result, we can
@@ -990,8 +1016,10 @@ class Worker:
     def start(self):
         self._copier = BaselineCopier(self._connection.host)
         self._host = self._connection.host
+        self._default_port = self._host.port_factory.get()
+        self._default_port.set_option_default('manifest_update', False)
         self._fs = self._connection.host.filesystem
-        self._baseline_loader = BaselineLoader(self._host)
+        self._baseline_loader = BaselineLoader(self._host, self._default_port)
 
     def stop(self):
         if hasattr(self, '_baseline_loader'):
@@ -1010,14 +1038,20 @@ class Worker:
                         group: TestBaselineSet):
         copies = list(
             self._copier.find_baselines_to_copy(test_name, suffix, group))
+        copies.sort(key=lambda copy: copy[1])
         if self._dry_run:
-            for source, dest in sorted(copies, key=lambda copy: copy[1]):
-                assert source or suffix == 'txt', (
-                    'non-txt baselines cannot be all-pass')
-                _log.debug('Would have copied %s -> %s', source
-                           or '<all-pass>', dest)
+            for source, dest in copies:
+                _log.debug('Would have copied %s -> %s', source or '<extra>',
+                           dest)
         else:
-            self._copier.write_copies(copies)
+            # The placeholder is the contents of an "extra baseline" (as
+            # defined by `ResultDigest`) that replicates omitting an explicit
+            # baseline.
+            if self._default_port.is_testharness_test(test_name):
+                placeholder = testharness_results.ABBREVIATED_ALL_PASS
+            else:
+                placeholder = ''
+            self._copier.write_copies(copies, placeholder)
         return test_name, suffix
 
     def _download_baselines(self, base_test: str,
@@ -1025,6 +1059,12 @@ class Worker:
         self._baseline_loader.clear()
         rebaseline_failures = {}
         for task, result in group.items():
+            failure_reason = RebaselineFailureReason(0)
+            if set(result.actual_results()) & {
+                    ResultType.Crash,
+                    ResultType.Timeout,
+            }:
+                failure_reason |= RebaselineFailureReason.TIMEOUT_OR_CRASH
             for suffix, artifacts in result.baselines_by_suffix().items():
                 try:
                     contents = self._baseline_loader.choose_valid_baseline(
@@ -1032,7 +1072,9 @@ class Worker:
                     self._write_baseline(task, suffix, artifacts[0].url,
                                          contents)
                 except RebaselineFailure as error:
-                    rebaseline_failures[task] = error.reason
+                    failure_reason |= error.reason
+            if failure_reason:
+                rebaseline_failures[task] = failure_reason
         return base_test, rebaseline_failures
 
     def _write_baseline(self, task: RebaselineTask, suffix: BaselineSuffix,

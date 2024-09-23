@@ -1,0 +1,42 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_client_platform.proto";
+import "lens_overlay_filters.proto";
+import "lens_overlay_selection_type.proto";
+
+// Log data for a Lens Overlay visual search interaction.
+message LensOverlayVisualSearchInteractionLogData {
+  // Filter related metadata.
+  FilterData filter_data = 1;
+
+  // User Selection metadata.
+  UserSelectionData user_selection_data = 2;
+
+  // Whether the query is a parent query.
+  bool is_parent_query = 3;
+
+  // The client platform this query was originated from.
+  ClientPlatform client_platform = 4;
+}
+
+// Filter data.
+// Next ID: 2
+message FilterData {
+  // The filter type associated with this interaction (auto, translate, etc.).
+  LensOverlayFilterType filter_type = 1;
+}
+
+// User selection data.
+// Next ID: 2
+message UserSelectionData {
+  // The selection type associated with this interaction (e.g. region search).
+  LensOverlaySelectionType selection_type = 1;
+}

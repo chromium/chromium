@@ -197,7 +197,7 @@ class MediaRouter : public KeyedService {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
-  // TODO(https://crbug.com/1198580): remove message observer classes and API.
+  // TODO(crbug.com/40177419): remove message observer classes and API.
   friend class IssuesObserver;
   friend class MediaSinksObserver;
   friend class MediaRoutesObserver;

@@ -51,6 +51,7 @@ class CertDatabaseAsh : public mojom::CertDatabase, ash::LoginState::Observer {
       const std::string& extension_id,
       const chromeos::certificate_provider::CertificateInfoList&
           certificate_infos) override;
+  void OnPkcs12CertDualWritten() override;
 
   // Notifies observers that were added with `AddAshCertDatabaseObserver` about
   // cert changes in Ash.

@@ -12,6 +12,7 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -209,12 +210,12 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // Currently applied connection options.
   mojom::SerialConnectionOptions options_;
 
-  base::span<uint8_t> pending_read_buffer_;
+  base::raw_span<uint8_t> pending_read_buffer_;
   ReadCompleteCallback pending_read_callback_;
   mojom::SerialReceiveError read_cancel_reason_;
   bool read_canceled_;
 
-  base::span<const uint8_t> pending_write_buffer_;
+  base::raw_span<const uint8_t> pending_write_buffer_;
   WriteCompleteCallback pending_write_callback_;
   mojom::SerialSendError write_cancel_reason_;
   bool write_canceled_;

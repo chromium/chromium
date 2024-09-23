@@ -78,7 +78,7 @@ void PowerSaveBlocker::Delegate::ApplyBlock() {
       level = kIOPMAssertionTypeNoDisplaySleep;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (level) {

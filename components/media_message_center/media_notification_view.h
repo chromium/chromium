@@ -46,6 +46,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationView
   virtual void UpdateWithMediaPosition(
       const media_session::MediaPosition& position) = 0;
   virtual void UpdateWithMediaArtwork(const gfx::ImageSkia& image) = 0;
+  virtual void UpdateWithChapterArtwork(int index,
+                                        const gfx::ImageSkia& image) = 0;
   // Updates the background color to match that of the favicon.
   virtual void UpdateWithFavicon(const gfx::ImageSkia& icon) = 0;
   // Sets the icon to be displayed in the notification's header section.

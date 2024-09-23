@@ -5,31 +5,31 @@
 #include "base/fuchsia/mem_buffer_util.h"
 
 #include <lib/fdio/io.h>
-
 #include <lib/zx/vmo.h>
+
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace base {
 
-absl::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
+std::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
     const fuchsia::mem::Buffer& buffer) {
-  absl::optional<std::string> output_utf8 = StringFromMemBuffer(buffer);
+  std::optional<std::string> output_utf8 = StringFromMemBuffer(buffer);
   if (!output_utf8)
-    return absl::nullopt;
+    return std::nullopt;
   std::u16string output;
-  return UTF8ToUTF16(&output_utf8->front(), output_utf8->size(), &output)
-             ? absl::optional<std::u16string>(std::move(output))
-             : absl::nullopt;
+  return UTF8ToUTF16(output_utf8->data(), output_utf8->size(), &output)
+             ? std::optional<std::u16string>(std::move(output))
+             : std::nullopt;
 }
 
-zx::vmo VmoFromString(StringPiece data, StringPiece name) {
+zx::vmo VmoFromString(std::string_view data, std::string_view name) {
   zx::vmo vmo;
 
   // The `ZX_PROP_VMO_CONTENT_SIZE` property is automatically set on VMO
@@ -45,29 +45,30 @@ zx::vmo VmoFromString(StringPiece data, StringPiece name) {
   return vmo;
 }
 
-fuchsia::mem::Buffer MemBufferFromString(StringPiece data, StringPiece name) {
+fuchsia::mem::Buffer MemBufferFromString(std::string_view data,
+                                         std::string_view name) {
   fuchsia::mem::Buffer buffer;
   buffer.vmo = VmoFromString(data, name);
   buffer.size = data.size();
   return buffer;
 }
 
-fuchsia::mem::Buffer MemBufferFromString16(StringPiece16 data,
-                                           StringPiece name) {
+fuchsia::mem::Buffer MemBufferFromString16(std::u16string_view data,
+                                           std::string_view name) {
   return MemBufferFromString(
-      StringPiece(reinterpret_cast<const char*>(data.data()),
-                  data.size() * sizeof(char16_t)),
+      std::string_view(reinterpret_cast<const char*>(data.data()),
+                       data.size() * sizeof(char16_t)),
       name);
 }
 
-absl::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
+std::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
   std::string result;
 
   size_t size;
   zx_status_t status = vmo.get_prop_content_size(&size);
   if (status != ZX_OK) {
     ZX_LOG(ERROR, status) << "zx::vmo::get_prop_content_size";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (size == 0)
@@ -79,10 +80,10 @@ absl::optional<std::string> StringFromVmo(const zx::vmo& vmo) {
     return result;
 
   ZX_LOG(ERROR, status) << "zx_vmo_read";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> StringFromMemBuffer(
+std::optional<std::string> StringFromMemBuffer(
     const fuchsia::mem::Buffer& buffer) {
   std::string result;
 
@@ -95,10 +96,10 @@ absl::optional<std::string> StringFromMemBuffer(
     return result;
 
   ZX_LOG(ERROR, status) << "zx_vmo_read";
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string> StringFromMemData(const fuchsia::mem::Data& data) {
+std::optional<std::string> StringFromMemData(const fuchsia::mem::Data& data) {
   switch (data.Which()) {
     case fuchsia::mem::Data::kBytes: {
       const std::vector<uint8_t>& bytes = data.bytes();
@@ -112,7 +113,7 @@ absl::optional<std::string> StringFromMemData(const fuchsia::mem::Data& data) {
       break;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 fuchsia::mem::Buffer MemBufferFromFile(File file) {
@@ -134,7 +135,7 @@ fuchsia::mem::Buffer MemBufferFromFile(File file) {
 }
 
 fuchsia::mem::Buffer CloneBuffer(const fuchsia::mem::Buffer& buffer,
-                                 StringPiece name) {
+                                 std::string_view name) {
   fuchsia::mem::Buffer output;
   output.size = buffer.size;
   zx_status_t status = buffer.vmo.create_child(

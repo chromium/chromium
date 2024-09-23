@@ -19,7 +19,7 @@ config("libunwind_config") {
   ]
 }
 
-# TODO(crbug.com/1458042): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
+# TODO(crbug.com/40273848): Move this build file to third_party/libc++/BUILD.gn once submodule migration is done
 source_set("libunwind") {
   visibility = [ "//buildtools/third_party/libc++abi" ]
   if (is_android) {

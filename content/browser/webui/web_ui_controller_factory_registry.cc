@@ -8,7 +8,6 @@
 
 #include "base/lazy_instance.h"
 #include "content/browser/renderer_host/debug_urls.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -98,12 +97,13 @@ void WebUIControllerFactory::UnregisterFactoryForTesting(
       return;
     }
   }
-  NOTREACHED() << "Tried to unregister a factory but it wasn't found. Tip: if "
-                  "trying to unregister a global like "
-                  "ChromeWebUIControllerFactory::GetInstance(), create the "
-                  "ScopedWebUIControllerFactoryRegistration in the "
-                  "setup method instead of the constructor, to ensure the "
-                  "global exists.";
+  NOTREACHED_IN_MIGRATION()
+      << "Tried to unregister a factory but it wasn't found. Tip: if "
+         "trying to unregister a global like "
+         "ChromeWebUIControllerFactory::GetInstance(), create the "
+         "ScopedWebUIControllerFactoryRegistration in the "
+         "setup method instead of the constructor, to ensure the "
+         "global exists.";
 }
 
 }  // namespace content

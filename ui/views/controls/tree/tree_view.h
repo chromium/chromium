@@ -117,7 +117,7 @@ class VIEWS_EXPORT TreeView : public View,
   // Marks the specified node as active, scrolls it into view, and reports a
   // keyboard focus update to ATs. Active node should be synced to the selected
   // node and should be nullptr when the tree is empty.
-  // TODO(crbug.com/1080944): Decouple active node from selected node by adding
+  // TODO(crbug.com/40691087): Decouple active node from selected node by adding
   // new keyboard affordances.
   void SetActiveNode(ui::TreeModelNode* model_node);
 
@@ -170,7 +170,8 @@ class VIEWS_EXPORT TreeView : public View,
 
   // View overrides:
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -259,8 +260,9 @@ class VIEWS_EXPORT TreeView : public View,
     AXVirtualView* accessibility_view() const { return accessibility_view_; }
 
     // Whether the node is expanded.
-    void set_is_expanded(bool expanded) { is_expanded_ = expanded; }
+    void set_is_expanded(bool expanded);
     bool is_expanded() const { return is_expanded_; }
+    void SetAccessibleIsExpanded(bool expanded);
 
     // Whether children have been loaded.
     void set_loaded_children(bool value) { loaded_children_ = value; }
@@ -272,6 +274,8 @@ class VIEWS_EXPORT TreeView : public View,
 
     // Returns the total number of descendants (including this node).
     size_t NumExpandedNodes() const;
+
+    void UpdateAccessibleName();
 
     // Returns the max width of all descendants (including this node). |indent|
     // is how many pixels each child is indented and |depth| is the depth of
@@ -323,6 +327,10 @@ class VIEWS_EXPORT TreeView : public View,
   // Loads the children of the specified node.
   void LoadChildren(InternalNode* node);
 
+  void UpdateAccessiblePositionalProperties(InternalNode* node);
+  void UpdateAccessiblePositionalPropertiesForNodeAndChildren(
+      InternalNode* node);
+
   // Configures an InternalNode from a node from the model. This is used
   // when a node changes as well as when loading.
   void ConfigureInternalNode(ui::TreeModelNode* model_node, InternalNode* node);
@@ -341,10 +349,7 @@ class VIEWS_EXPORT TreeView : public View,
   std::unique_ptr<AXVirtualView> CreateAndSetAccessibilityView(
       InternalNode* node);
 
-  // Populates the accessibility data for a tree item. This is data that can
-  // dynamically change, such as whether a tree item is expanded, and if it's
-  // visible.
-  void PopulateAccessibilityData(InternalNode* node, ui::AXNodeData* data);
+  void SetAccessibleSelectionForNode(InternalNode* node, bool selected);
 
   // Invoked when the set of drawn nodes changes.
   void DrawnNodesChanged();
@@ -457,9 +462,8 @@ class VIEWS_EXPORT TreeView : public View,
   // The model, may be null.
   raw_ptr<ui::TreeModel> model_ = nullptr;
 
-  // Default icons for closed/open.
-  ui::ImageModel closed_icon_;
-  ui::ImageModel open_icon_;
+  // Default folder icon.
+  ui::ImageModel folder_icon_;
 
   // Icons from the model.
   std::vector<ui::ImageModel> icons_;

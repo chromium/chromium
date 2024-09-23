@@ -37,7 +37,7 @@ GeneratedPermissionPromptingBehaviorPref::
       cpss_pref_name_ = prefs::kEnableGeolocationCPSS;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   user_prefs_registrar_.Init(profile->GetPrefs());
   user_prefs_registrar_.Add(
@@ -122,16 +122,15 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
   pref_object.key = generated_pref_name_;
   pref_object.type = settings_api::PrefType::kNumber;
 
-  std::string content_setting_provider;
+  content_settings::ProviderType content_setting_provider;
   const auto content_setting =
       host_content_settings_map_->GetDefaultContentSetting(
           content_settings_type_, &content_setting_provider);
   auto content_setting_source =
-      HostContentSettingsMap::GetSettingSourceFromProviderName(
+      content_settings::GetSettingSourceFromProviderType(
           content_setting_provider);
   const bool content_setting_managed =
-      content_setting_source !=
-      content_settings::SettingSource::SETTING_SOURCE_USER;
+      content_setting_source != content_settings::SettingSource::kUser;
 
   if (content_setting == CONTENT_SETTING_ASK && !content_setting_managed) {
     if (is_quiet_ui_enabled) {
@@ -155,7 +154,7 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
   if (content_setting_managed) {
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
     GeneratedPref::ApplyControlledByFromContentSettingSource(
-        &pref_object, SETTING_SOURCE_POLICY);
+        &pref_object, SettingSource::kPolicy);
   }
   return pref_object;
 }

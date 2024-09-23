@@ -102,7 +102,7 @@ class ContextProviderObserver : viz::ContextLostObserver {
             base::BindPostTaskToCurrentDefault(on_gpu_capabilities_fetched)) {
     DETACH_FROM_SEQUENCE(main_sequence_checker_);
 
-    content::GetUIThreadTaskRunner({})->PostTask(
+    GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
             &ContextProviderObserver::GetContextProviderOnMainSequence,
@@ -174,7 +174,7 @@ FrameSinkVideoCaptureDevice::~FrameSinkVideoCaptureDevice() {
 bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1518528): Determine if we actually need to know the format
+  // TODO(crbug.com/41491504): Determine if we actually need to know the format
   // client-side (which is what this method is used for) beyond sending it over
   // to the service side. If not, compute this information service-side. If yes,
   // port all of the below code to be a check on SharedImageCapabilities once
@@ -355,7 +355,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStart(
   // FrameSinkVideoCaptureDevice does not use a
   // VideoCaptureDevice::Client. Instead, it provides frames to a
   // VideoFrameReceiver directly.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FrameSinkVideoCaptureDevice::RestartCapturerIfNeeded() {

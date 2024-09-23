@@ -55,7 +55,7 @@ class PepperWebPluginImpl : public blink::WebPlugin {
       const blink::WebCoalescedInputEvent& event,
       ui::Cursor* cursor) override;
   void DidReceiveResponse(const blink::WebURLResponse& response) override;
-  void DidReceiveData(const char* data, size_t data_length) override;
+  void DidReceiveData(base::span<const char> data) override;
   void DidFinishLoading() override;
   void DidFailLoading(const blink::WebURLError&) override;
   bool HasSelection() const override;
@@ -67,7 +67,6 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   void PrintPage(int page_number, cc::PaintCanvas* canvas) override;
   void PrintEnd() override;
 
-  bool IsPlaceholder() override;
   void DidLoseMouseLock() override;
   void DidReceiveMouseLockResult(bool success) override;
 
@@ -104,7 +103,7 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   scoped_refptr<PepperPluginInstanceImpl> instance_;
   gfx::Rect plugin_rect_;
   PP_Var instance_object_;
-  raw_ptr<blink::WebPluginContainer, ExperimentalRenderer> container_;
+  raw_ptr<blink::WebPluginContainer> container_;
 };
 
 }  // namespace content

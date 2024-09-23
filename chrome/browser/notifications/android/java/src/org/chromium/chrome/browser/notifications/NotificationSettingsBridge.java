@@ -6,11 +6,9 @@ package org.chromium.chrome.browser.notifications;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -29,32 +27,23 @@ public class NotificationSettingsBridge {
      *     as blocked.
      * @return The channel created for this origin.
      */
-    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     static SiteChannel createChannel(String origin, long creationTime, boolean enabled) {
         return SiteChannelsManager.getInstance().createSiteChannel(origin, creationTime, enabled);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
-    static @NotificationChannelStatus int getChannelStatus(String channelId) {
-        return SiteChannelsManager.getInstance().getChannelStatus(channelId);
+    private static void getSiteChannels(final long callbackId) {
+        SiteChannel[] channels = SiteChannelsManager.getInstance().getSiteChannels();
+        NotificationSettingsBridgeJni.get().onGetSiteChannelsDone(callbackId, channels);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    @CalledByNative
-    static SiteChannel[] getSiteChannels() {
-        return SiteChannelsManager.getInstance().getSiteChannels();
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     static void deleteChannel(String channelId) {
         SiteChannelsManager.getInstance().deleteSiteChannel(channelId);
     }
 
     /** Helper type for passing site channel objects across the JNI. */
-    @RequiresApi(Build.VERSION_CODES.O)
     public static class SiteChannel {
         private final String mId;
         private final String mOrigin;
@@ -104,5 +93,10 @@ public class NotificationSettingsBridge {
             channel.setGroup(ChromeChannelDefinitions.ChannelGroupId.SITES);
             return channel;
         }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onGetSiteChannelsDone(long callbackId, SiteChannel[] channels);
     }
 }

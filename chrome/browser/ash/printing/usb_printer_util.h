@@ -48,6 +48,16 @@ using GetDeviceIdCallback = base::OnceCallback<void(chromeos::UsbPrinterId)>;
 void GetDeviceId(mojo::Remote<device::mojom::UsbDevice> device,
                  GetDeviceIdCallback cb);
 
+// Create a USB printer display name that incorporates any non-empty values from
+// |make| and |model|.
+std::string MakeDisplayName(const std::string& make, const std::string& model);
+
+// Add device info from `device_id` to the PPD search information in `printer`.
+// If `printer` contains generic USB strings, replace the default search data
+// from `device_id` entirely.
+void UpdateSearchDataFromDeviceId(const chromeos::UsbPrinterId& device_id,
+                                  PrinterDetector::DetectedPrinter* printer);
+
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_UTIL_H_

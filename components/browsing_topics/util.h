@@ -11,6 +11,25 @@
 
 namespace browsing_topics {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CalculatorResultStatus {
+  kSuccess = 0,
+  kFailurePermissionDenied = 1,
+  kFailureApiUsageContextQueryError = 2,
+  kFailureAnnotationExecutionError = 3,
+  kFailureTaxonomyVersionNotSupportedInBinary = 4,
+  kHangingAfterApiUsageRequested = 5,
+  kHangingAfterHistoryRequested = 6,
+  kHangingAfterModelRequested = 7,
+  kHangingAfterAnnotationRequested = 8,
+  kTerminated = 9,
+
+  kMaxValue = kTerminated,
+};
+
+bool DoesCalculationFailDueToHanging(CalculatorResultStatus status);
+
 using HmacKey = std::array<uint8_t, 32>;
 using ReadOnlyHmacKey = base::span<const uint8_t, 32>;
 

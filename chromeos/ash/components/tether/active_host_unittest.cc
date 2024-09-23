@@ -15,9 +15,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
@@ -66,7 +64,7 @@ class ActiveHostTest : public testing::Test {
     test_pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     fake_tether_host_fetcher_ =
-        std::make_unique<FakeTetherHostFetcher>(test_devices_);
+        std::make_unique<FakeTetherHostFetcher>(test_devices_[0]);
 
     ActiveHost::RegisterPrefs(test_pref_service_->registry());
     active_host_ = std::make_unique<ActiveHost>(fake_tether_host_fetcher_.get(),
@@ -216,6 +214,4 @@ TEST_F(ActiveHostTest, TestObserverCalls) {
             test_observer_->host_changed_updates()[2]);
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

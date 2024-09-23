@@ -53,7 +53,7 @@ TEST_F(PreloadAppDefinitionTest, GetPlatformWhenNotSet) {
   proto::AppPreloadListResponse_App app;
 
   auto app_def = PreloadAppDefinition(app);
-  ASSERT_EQ(app_def.GetPlatform(), AppType::kUnknown);
+  ASSERT_EQ(app_def.GetPlatform(), PackageType::kUnknown);
 }
 
 TEST_F(PreloadAppDefinitionTest, GetPlatformMalformedPackageId) {
@@ -61,7 +61,7 @@ TEST_F(PreloadAppDefinitionTest, GetPlatformMalformedPackageId) {
   app.set_package_id(":");
 
   auto app_def = PreloadAppDefinition(app);
-  ASSERT_EQ(app_def.GetPlatform(), AppType::kUnknown);
+  ASSERT_EQ(app_def.GetPlatform(), PackageType::kUnknown);
 }
 
 TEST_F(PreloadAppDefinitionTest, GetPlatformWeb) {
@@ -69,7 +69,7 @@ TEST_F(PreloadAppDefinitionTest, GetPlatformWeb) {
   app.set_package_id("web:https://example.com/");
 
   auto app_def = PreloadAppDefinition(app);
-  ASSERT_EQ(app_def.GetPlatform(), AppType::kWeb);
+  ASSERT_EQ(app_def.GetPlatform(), PackageType::kWeb);
 }
 
 TEST_F(PreloadAppDefinitionTest, IsOemAppWhenNotSet) {
@@ -209,15 +209,6 @@ TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
             "https://example.com/path/of/manifest_id");
 }
 
-TEST_F(PreloadAppDefinitionTest, GetWebAppId) {
-  proto::AppPreloadListResponse_App app;
-  app.set_package_id("web:https://example.com/path/of/manifest_id");
-
-  PreloadAppDefinition app_def(app);
-
-  ASSERT_EQ(app_def.GetWebAppId(), "pckfllnaogmpbmijcjpenfdglaikbiea");
-}
-
 TEST_F(PreloadAppDefinitionTest, ToAppInstallData) {
   proto::AppPreloadListResponse_App app;
   app.set_name("Example App");
@@ -229,7 +220,7 @@ TEST_F(PreloadAppDefinitionTest, ToAppInstallData) {
   web_extras->set_manifest_url("https://cdn.com/manifest.json");
 
   AppInstallData expectation(
-      PackageId(AppType::kWeb, "https://www.example.com/index.html"));
+      PackageId(PackageType::kWeb, "https://www.example.com/index.html"));
   expectation.name = "Example App";
   WebAppInstallData& web_app_expecatation =
       expectation.app_type_data.emplace<WebAppInstallData>();

@@ -97,14 +97,14 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--suite', type="string",
-                      help="Only runs suites that match regex provided")
-    parser.add_option('--enable-rcs',
-                      action="store_true",
-                      help="Enables runtime call stats")
-    parser.add_option('--iteration-count',
-                      type="int",
-                      help="Override the default number of iterations")
+    parser.add_argument('--suite',
+                        help='Only runs suites that match regex provided')
+    parser.add_argument('--enable-rcs',
+                        action='store_true',
+                        help='Enables runtime call stats')
+    parser.add_argument('--iteration-count',
+                        type=int,
+                        help='Override the default number of iterations')
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -194,7 +194,7 @@ class V8Speedometer2Future(Speedometer2):
 @benchmark.Info(emails=['omerkatz@chromium.org'],
                 component='Blink>JavaScript>GarbageCollection',
                 documentation_url='https://browserbench.org/Speedometer2.1')
-class Speedometer2NoMinorMS(Speedometer2):
+class Speedometer2MinorMS(Speedometer2):
   """The latest Speedometer2 benchmark without the MinorMS flag.
 
   Shows the performance of Scavenger young generation GC in V8.
@@ -202,7 +202,24 @@ class Speedometer2NoMinorMS(Speedometer2):
 
   @classmethod
   def Name(cls):
-    return 'speedometer2-nominorms'
+    return 'speedometer2-minorms'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+
+
+@benchmark.Info(emails=['agarwaltushar@google.com', 'wnwen@google.com'],
+                component='Blink>JavaScript',
+                documentation_url='https://browserbench.org/Speedometer2.1')
+class Speedometer2Predictable(Speedometer2):
+  """The latest Speedometer2 benchmark with V8's `predictable` mode.
+
+  This should (hopefully) help reduce variance in the score.
+  """
+
+  @classmethod
+  def Name(cls):
+    return 'speedometer2-predictable'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--js-flags=--predictable')

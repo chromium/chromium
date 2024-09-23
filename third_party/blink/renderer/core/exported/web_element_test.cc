@@ -180,6 +180,34 @@ TEST_F(WebElementTest, SelectedTextEmptyDocument) {
   EXPECT_EQ(test_element.SelectedText().Utf8(), "");
 }
 
+// Tests SelectText() with a textarea.
+TEST_F(WebElementTest, SelectTextOfTextArea) {
+  InsertHTML(
+      R"(<div>Foo</div>
+      <textarea id=testElement>Some plain text here.</textarea>
+      <div>Bar</div>)");
+
+  TestElement().SelectText(/*select_all=*/false);
+  EXPECT_EQ(Selection().SelectedText(), "");
+
+  TestElement().SelectText(/*select_all=*/true);
+  EXPECT_EQ(Selection().SelectedText(), "Some plain text here.");
+}
+
+// Tests SelectText() with a contenteditable.
+TEST_F(WebElementTest, SelectTextOfContentEditable) {
+  InsertHTML(
+      R"(<div>Foo</div>
+      <div id=testElement contenteditable>Some <b>rich text</b> here.</div>
+      <textarea>Some plain text here.</textarea>)");
+
+  TestElement().SelectText(/*select_all=*/false);
+  EXPECT_EQ(Selection().SelectedText(), "");
+
+  TestElement().SelectText(/*select_all=*/true);
+  EXPECT_EQ(Selection().SelectedText(), "Some rich text here.");
+}
+
 TEST_F(WebElementTest, PasteTextIntoContentEditable) {
   InsertHTML(
       "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>"
@@ -275,7 +303,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
     auto* element = GetDocument().getElementById(AtomicString("testElement"));
-    element->AttachShadowRootForTesting(ShadowRootType::kOpen);
+    element->AttachShadowRootForTesting(ShadowRootMode::kOpen);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 open ShadowRoot.";
   }
@@ -285,7 +313,7 @@ TEST_F(WebElementTest, ShadowRoot) {
     EXPECT_TRUE(TestElement().ShadowRoot().IsNull())
         << "No ShadowRoot initially.";
     auto* element = GetDocument().getElementById(AtomicString("testElement"));
-    element->AttachShadowRootForTesting(ShadowRootType::kClosed);
+    element->AttachShadowRootForTesting(ShadowRootMode::kClosed);
     EXPECT_FALSE(TestElement().ShadowRoot().IsNull())
         << "Should return V1 closed ShadowRoot.";
   }

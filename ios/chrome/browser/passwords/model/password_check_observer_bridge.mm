@@ -4,15 +4,23 @@
 
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 
+#import "base/check.h"
+
 PasswordCheckObserverBridge::PasswordCheckObserverBridge(
     id<PasswordCheckObserver> delegate,
     IOSChromePasswordCheckManager* manager)
-    : delegate_(delegate) {
-  DCHECK(manager);
+    : delegate_(delegate), password_check_manager_(manager) {
+  CHECK(delegate_);
+  CHECK(password_check_manager_);
+
   password_check_manager_observation_.Observe(manager);
 }
 
-PasswordCheckObserverBridge::~PasswordCheckObserverBridge() = default;
+PasswordCheckObserverBridge::~PasswordCheckObserverBridge() {
+  if (password_check_manager_) {
+    password_check_manager_->RemoveObserver(this);
+  }
+}
 
 void PasswordCheckObserverBridge::PasswordCheckStatusChanged(
     PasswordCheckState status) {
@@ -26,4 +34,9 @@ void PasswordCheckObserverBridge::PasswordCheckStatusChanged(
 
 void PasswordCheckObserverBridge::InsecureCredentialsChanged() {
   [delegate_ insecureCredentialsDidChange];
+}
+
+void PasswordCheckObserverBridge::ManagerWillShutdown(
+    IOSChromePasswordCheckManager* password_check_manager) {
+  [delegate_ passwordCheckManagerWillShutdown];
 }

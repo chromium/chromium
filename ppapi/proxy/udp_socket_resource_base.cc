@@ -118,7 +118,6 @@ int32_t UDPSocketResourceBase::SetOptionImpl(
     }
     default: {
       NOTREACHED();
-      return PP_ERROR_BADARGUMENT;
     }
   }
 

@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/system/time/calendar_event_list_view.h"
+
 #include <memory>
 
 #include "ash/bubble/bubble_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
@@ -49,8 +51,14 @@ constexpr auto kOpenGoogleCalendarContainerInsets = gfx::Insets::VH(20, 60);
 // Border thickness for `CalendarEmptyEventListView`.
 constexpr int kOpenGoogleCalendarBorderThickness = 1;
 
+constexpr auto kDeprecatedEventListViewCornerRadius =
+    gfx::RoundedCornersF(24,
+                         24,
+                         kDeprecatedBubbleCornerRadius,
+                         kDeprecatedBubbleCornerRadius);
+
 constexpr auto kEventListViewCornerRadius =
-    gfx::RoundedCornersF(24, 24, kBubbleCornerRadius, kBubbleCornerRadius);
+    gfx::RoundedCornersF(kUpdatedBubbleCornerRadius);
 
 constexpr int kScrollViewGradientSize = 16;
 
@@ -74,15 +82,10 @@ class CalendarEmptyEventListView : public PillButton {
                        &CalendarEmptyEventListView::OpenCalendarDefault,
                        base::Unretained(this))),
                    l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
-                   chromeos::features::IsJellyEnabled()
-                       ? PillButton::Type::kSecondaryWithoutIcon
-                       : PillButton::Type::kFloatingWithoutIcon,
+                   PillButton::Type::kSecondaryWithoutIcon,
                    /*icon=*/nullptr),
         controller_(controller) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    if (!chromeos::features::IsJellyEnabled()) {
-      label()->SetTextContext(CONTEXT_CALENDAR_DATE);
-    }
 
     SetBorder(views::CreateThemedRoundedRectBorder(
         kOpenGoogleCalendarBorderThickness, GetPreferredSize().height() / 2,
@@ -99,6 +102,8 @@ class CalendarEmptyEventListView : public PillButton {
   // in an empty event list.
   void OpenCalendarDefault() {
     controller_->OnCalendarEventWillLaunch();
+
+    calendar_metrics::RecordCalendarLaunchedFromEmptyEventList();
 
     GURL finalized_url;
     bool opened_pwa = false;
@@ -132,7 +137,9 @@ CalendarEventListView::CalendarEventListView(
   layer()->SetFillsBoundsOpaquely(false);
   // Set the bottom corners to be rounded so that `CalendarEventListView` is
   // contained in `CalendarView`.
-  layer()->SetRoundedCornerRadius(kEventListViewCornerRadius);
+  layer()->SetRoundedCornerRadius(features::IsBubbleCornerRadiusUpdateEnabled()
+                                      ? kEventListViewCornerRadius
+                                      : kDeprecatedEventListViewCornerRadius);
 
   views::BoxLayout* button_layout = close_button_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
@@ -252,8 +259,7 @@ void CalendarEventListView::OnSelectedDateUpdated() {
 
 void CalendarEventListView::OnEventsFetched(
     const CalendarModel::FetchingStatus status,
-    const base::Time start_time,
-    const google_apis::calendar::EventList* events) {
+    const base::Time start_time) {
   if (status == CalendarModel::kSuccess &&
       start_time == calendar_utils::GetStartOfMonthUTC(
                         calendar_view_controller_->selected_date_midnight())) {
@@ -357,7 +363,7 @@ void CalendarEventListView::UpdateListItems() {
   if (!calendar_view_controller_->selected_date().has_value()) {
     return;
   }
-  empty_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+  empty_button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION,
       calendar_utils::GetMonthNameAndDayOfMonth(
           calendar_view_controller_->selected_date().value())));

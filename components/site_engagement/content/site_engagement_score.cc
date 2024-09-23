@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/site_engagement/content/site_engagement_score.h"
 
 #include <algorithm>
@@ -318,6 +323,14 @@ void SiteEngagementScore::Reset(double points,
 
   // This must be set in order to prevent the score from decaying when read.
   last_engagement_time_ = last_engagement_time;
+}
+
+void SiteEngagementScore::SetLastEngagementTime(const base::Time& time) {
+  if (!last_engagement_time_.is_null() &&
+      time.LocalMidnight() != last_engagement_time_.LocalMidnight()) {
+    points_added_today_ = 0;
+  }
+  last_engagement_time_ = time;
 }
 
 bool SiteEngagementScore::UpdateScoreDict(base::Value::Dict& score_dict) {

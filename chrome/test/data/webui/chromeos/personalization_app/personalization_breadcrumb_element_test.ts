@@ -43,10 +43,15 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       assertEquals(breadcrumbEl!.textContent, breadcrumb);
 
       if (i < breadcrumbs.length - 1) {
-        // Breadcrumbs are separated by a chevron icon.
-        const chevronEl = breadcrumbEl!.nextElementSibling;
-        assertEquals(chevronEl!.tagName, 'IRON-ICON');
-        assertEquals(chevronEl!.getAttribute('icon'), 'cr:chevron-right');
+        let nextSiblingEl = breadcrumbEl!.nextElementSibling;
+        while (nextSiblingEl &&
+               (nextSiblingEl as HTMLElement).style.display === 'none') {
+          nextSiblingEl = nextSiblingEl.nextElementSibling;
+        }
+        // The first visible sibling should be a chevron icon. Breadcrumbs are
+        // separated by a chevron icon.
+        assertEquals(nextSiblingEl!.tagName, 'IRON-ICON');
+        assertEquals(nextSiblingEl!.getAttribute('icon'), 'cr:chevron-right');
       }
     }
   }
@@ -412,6 +417,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       });
 
   test('show breadcrumbs for SeaPen templates', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_COLLECTION,
     });
@@ -425,7 +431,25 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     ]);
   });
 
+  test(
+      'show breadcrumbs for SeaPen templates with freeform enabled',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+          'path': Paths.SEA_PEN_COLLECTION,
+        });
+
+        const breadcrumbContainer =
+            breadcrumbElement.shadowRoot!.getElementById('selector');
+        assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+        assertBreadcrumbs(breadcrumbContainer, [
+          breadcrumbElement.i18n('wallpaperLabel'),
+          breadcrumbElement.i18n('seaPenFreeformWallpaperTemplatesLabel'),
+        ]);
+      });
+
   test('show breadcrumbs for SeaPen results content', async () => {
+    loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_RESULTS,
       'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
@@ -460,6 +484,60 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.SEA_PEN_COLLECTION, path);
     assertDeepEquals({}, queryParams);
+  });
+
+  test(
+      'show breadcrumbs for SeaPen results content with freeform enabled',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+          'path': Paths.SEA_PEN_RESULTS,
+          'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
+        });
+
+        const breadcrumbContainer =
+            breadcrumbElement.shadowRoot!.getElementById('selector');
+        assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+        assertBreadcrumbs(breadcrumbContainer, [
+          breadcrumbElement.i18n('wallpaperLabel'),
+          breadcrumbElement.i18n('seaPenFreeformWallpaperTemplatesLabel'),
+          'Airbrushed',
+        ]);
+
+        const original = PersonalizationRouterElement.instance;
+        const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
+          PersonalizationRouterElement.instance = () => {
+            return {
+              goToRoute(path: Paths, queryParams: Object = {}) {
+                resolve([path, queryParams]);
+                PersonalizationRouterElement.instance = original;
+              },
+            } as PersonalizationRouterElement;
+          };
+        });
+
+        // current breadcrumbs: Home > Wallpaper > Sea Pen > Park
+        // navigate to Sea Pen subpage when Sea Pen breadcrumb is clicked on.
+        const seaPenBreadcrumb =
+            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+        seaPenBreadcrumb!.click();
+        const [path, queryParams] = await goToRoutePromise;
+        assertEquals(Paths.SEA_PEN_COLLECTION, path);
+        assertDeepEquals({}, queryParams);
+      });
+
+  test('show breadcrumbs for SeaPen freeform', async () => {
+    breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
+      'path': Paths.SEA_PEN_FREEFORM,
+    });
+
+    const breadcrumbContainer =
+        breadcrumbElement.shadowRoot!.getElementById('selector');
+    assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
+    assertBreadcrumbs(breadcrumbContainer, [
+      breadcrumbElement.i18n('wallpaperLabel'),
+      breadcrumbElement.i18n('seaPenLabel'),
+    ]);
   });
 
   test('hide dropdown icon for sea pen templates', async () => {
@@ -506,7 +584,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const allMenuItems = dropdownMenu.querySelectorAll('button');
     assertTrue(allMenuItems.length > 1);
     const selectedElement =
-        dropdownMenu.querySelectorAll('button[aria-selected=\'true\']');
+        dropdownMenu.querySelectorAll('button[aria-checked=\'true\']');
     assertEquals(1, selectedElement.length);
     assertEquals('Airbrushed', (selectedElement[0] as HTMLElement)!.innerText);
   });
@@ -523,7 +601,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
     const template =
-        (dropdownMenu!.querySelectorAll('button[aria-selected=\'false\']')[0] as
+        (dropdownMenu!.querySelectorAll('button[aria-checked=\'false\']')[0] as
          HTMLElement);
 
     const original = PersonalizationRouterElement.instance;
@@ -575,7 +653,9 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertEquals('0', allBreadcrumbs[0]!.getAttribute('tabindex'));
     assertNotEquals('0', allBreadcrumbs[1]!.getAttribute('tabindex'));
     assertNotEquals('0', allBreadcrumbs[2]!.getAttribute('tabindex'));
-    assertNotEquals('0', allBreadcrumbs[3]!.getAttribute('tabindex'));
+    // The last breadcrumb which is a button to open the template menu dropdown
+    // list should have tabindex 0.
+    assertEquals('0', allBreadcrumbs[3]!.getAttribute('tabindex'));
 
     // Press 'left' to select the sea pen template breadcrumb.
     const homeBreadcrumb = allBreadcrumbs[0]!;

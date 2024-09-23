@@ -6,12 +6,12 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace i18n {
 namespace addressinput {
@@ -25,7 +25,7 @@ base::Value::Dict Parse(const std::string& json, bool* parser_error) {
 
   // |json| is converted to a |c_str()| here because rapidjson and other parts
   // of the standalone library use char* rather than std::string.
-  absl::optional<base::Value> parsed(base::JSONReader::Read(json.c_str()));
+  std::optional<base::Value> parsed(base::JSONReader::Read(json.c_str()));
   *parser_error = !parsed || !parsed->is_dict();
 
   if (*parser_error)

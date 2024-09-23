@@ -12,32 +12,27 @@
 
 namespace blink {
 
-SubCaptureTarget::SubCaptureTarget(Type type, String id)
-    : type_(type), id_(std::move(id)) {
-  CHECK(!id_.empty());
-}
-
-ScriptPromise SubCaptureTarget::fromElement(ScriptState* script_state,
-                                            Element* element,
-                                            ExceptionState& exception_state,
-                                            Type type) {
+MediaDevices* SubCaptureTarget::GetMediaDevices(
+    ScriptState* script_state,
+    Element* element,
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
 #if BUILDFLAG(IS_ANDROID)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Unsupported.");
-  return ScriptPromise();
+  return nullptr;
 #else
   if (!script_state || !script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid state.");
-    return ScriptPromise();
+    return nullptr;
   }
 
   if (!element) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Invalid state.");
-    return ScriptPromise();
+    return nullptr;
   }
 
   ExecutionContext* const context = ExecutionContext::From(script_state);
@@ -46,35 +41,37 @@ ScriptPromise SubCaptureTarget::fromElement(ScriptState* script_state,
       element->GetExecutionContext() != context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid state.");
-    return ScriptPromise();
+    return nullptr;
   }
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(context);
   if (!window || !window->GetFrame() || !window->isSecureContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid state.");
-    return ScriptPromise();
+    return nullptr;
   }
 
   Navigator* const navigator = window->navigator();
   if (!navigator) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid state.");
-    return ScriptPromise();
+    return nullptr;
   }
 
   MediaDevices* const media_devices = MediaDevices::mediaDevices(*navigator);
   if (!media_devices) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid state.");
-    return ScriptPromise();
+    return nullptr;
   }
 
-  // TODO(crbug.com/1332628): Perform the following clean-up steps:
-  // * Move some of the error-testing here, leaving MediaDevices with DCHECKs.
-  return media_devices->ProduceSubCaptureTarget(script_state, element,
-                                                exception_state, type);
+  return media_devices;
 #endif
+}
+
+SubCaptureTarget::SubCaptureTarget(Type type, String id)
+    : type_(type), id_(std::move(id)) {
+  CHECK(!id_.empty());
 }
 
 }  // namespace blink

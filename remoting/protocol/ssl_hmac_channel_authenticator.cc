@@ -109,20 +109,11 @@ class NetStreamSocketAdapter : public net::StreamSocket {
                           traffic_annotation);
   }
 
-  int SetReceiveBufferSize(int32_t size) override {
-    NOTREACHED();
-    return net::ERR_FAILED;
-  }
+  int SetReceiveBufferSize(int32_t size) override { NOTREACHED(); }
 
-  int SetSendBufferSize(int32_t size) override {
-    NOTREACHED();
-    return net::ERR_FAILED;
-  }
+  int SetSendBufferSize(int32_t size) override { NOTREACHED(); }
 
-  int Connect(net::CompletionOnceCallback callback) override {
-    NOTREACHED();
-    return net::ERR_FAILED;
-  }
+  int Connect(net::CompletionOnceCallback callback) override { NOTREACHED(); }
   void Disconnect() override { socket_.reset(); }
   bool IsConnected() const override { return true; }
   bool IsConnectedAndIdle() const override { return true; }
@@ -131,23 +122,11 @@ class NetStreamSocketAdapter : public net::StreamSocket {
     *address = net::IPEndPoint(net::IPAddress::IPv4AllZeros(), 0);
     return net::OK;
   }
-  int GetLocalAddress(net::IPEndPoint* address) const override {
-    NOTREACHED();
-    return net::ERR_FAILED;
-  }
+  int GetLocalAddress(net::IPEndPoint* address) const override { NOTREACHED(); }
   const net::NetLogWithSource& NetLog() const override { return net_log_; }
-  bool WasEverUsed() const override {
-    NOTREACHED();
-    return true;
-  }
-  net::NextProto GetNegotiatedProtocol() const override {
-    NOTREACHED();
-    return net::kProtoUnknown;
-  }
-  bool GetSSLInfo(net::SSLInfo* ssl_info) override {
-    NOTREACHED();
-    return false;
-  }
+  bool WasEverUsed() const override { NOTREACHED(); }
+  net::NextProto GetNegotiatedProtocol() const override { NOTREACHED(); }
+  bool GetSSLInfo(net::SSLInfo* ssl_info) override { NOTREACHED(); }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;
@@ -425,9 +404,8 @@ bool SslHmacChannelAuthenticator::HandleAuthBytesRead(int read_result) {
     return true;
   }
 
-  if (!VerifyAuthBytes(
-          std::string(auth_read_buf_->StartOfBuffer(),
-                      auth_read_buf_->StartOfBuffer() + kAuthDigestLength))) {
+  if (!VerifyAuthBytes(std::string(base::as_string_view(
+          auth_read_buf_->everything().first(kAuthDigestLength))))) {
     LOG(WARNING) << "Mismatched authentication";
     NotifyError(net::ERR_FAILED);
     return false;

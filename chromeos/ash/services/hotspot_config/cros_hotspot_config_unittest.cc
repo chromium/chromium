@@ -4,10 +4,8 @@
 
 #include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -50,7 +48,6 @@ class CrosHotspotConfigTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kHotspot);
     LoginState::Initialize();
     LoginState::Get()->set_always_logged_in(false);
 
@@ -206,7 +203,6 @@ class CrosHotspotConfigTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<CrosHotspotConfig> cros_hotspot_config_;
   std::unique_ptr<CrosHotspotConfigTestObserver> observer_;
@@ -222,9 +218,9 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
   EXPECT_EQ(hotspot_info->state, mojom::HotspotState::kDisabled);
   EXPECT_EQ(hotspot_info->client_count, 0u);
   EXPECT_EQ(hotspot_info->allow_status,
-            mojom::HotspotAllowStatus::kDisallowedNoCellularUpstream);
-  EXPECT_EQ(hotspot_info->allowed_wifi_security_modes.size(), 0u);
-  EXPECT_FALSE(hotspot_info->config);
+            mojom::HotspotAllowStatus::kDisallowedNoMobileData);
+  EXPECT_EQ(hotspot_info->allowed_wifi_security_modes.size(), 1u);
+  EXPECT_TRUE(hotspot_info->config);
 
   SetReadinessCheckResultReady();
   SetValidHotspotCapabilities();
@@ -235,7 +231,7 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
   EXPECT_EQ(hotspot_info->allow_status,
             mojom::HotspotAllowStatus::kDisallowedNoMobileData);
   EXPECT_EQ(hotspot_info->allowed_wifi_security_modes.size(), 2u);
-  EXPECT_FALSE(hotspot_info->config);
+  EXPECT_TRUE(hotspot_info->config);
   EXPECT_EQ(observer()->hotspot_info_changed_count(), 2u);
 
   AddActiveCellularService();
@@ -260,12 +256,15 @@ TEST_F(CrosHotspotConfigTest, GetHotspotInfo) {
 
 TEST_F(CrosHotspotConfigTest, SetHotspotConfig) {
   SetupObserver();
+  EXPECT_EQ(observer()->hotspot_info_changed_count(), 1u);
   // Verifies that set hotspot config return failed when the user is not login.
   EXPECT_EQ(mojom::SetHotspotConfigResult::kFailedNotLogin,
             SetHotspotConfig(GenerateTestConfig()));
-  EXPECT_FALSE(GetHotspotInfo()->config);
+  // FakeShillManager return valid hotspot config regardless login or not.
+  EXPECT_TRUE(GetHotspotInfo()->config);
 
   LoginToRegularUser();
+  EXPECT_EQ(observer()->hotspot_info_changed_count(), 2u);
   EXPECT_EQ(mojom::SetHotspotConfigResult::kSuccess,
             SetHotspotConfig(GenerateTestConfig()));
   auto hotspot_info = GetHotspotInfo();
@@ -275,12 +274,13 @@ TEST_F(CrosHotspotConfigTest, SetHotspotConfig) {
   EXPECT_EQ(hotspot_info->config->security, mojom::WiFiSecurityMode::kWpa2);
   EXPECT_EQ(hotspot_info->config->ssid, kHotspotConfigSSID);
   EXPECT_EQ(hotspot_info->config->passphrase, kHotspotConfigPassphrase);
-  EXPECT_EQ(observer()->hotspot_info_changed_count(), 2u);
+  EXPECT_EQ(observer()->hotspot_info_changed_count(), 3u);
 }
 
 TEST_F(CrosHotspotConfigTest, EnableHotspot) {
   SetupObserver();
-  EXPECT_EQ(mojom::HotspotControlResult::kNotAllowed, EnableHotspot());
+  EXPECT_EQ(mojom::HotspotControlResult::kReadinessCheckFailed,
+            EnableHotspot());
 
   SetReadinessCheckResultReady();
   SetValidHotspotCapabilities();
@@ -298,6 +298,7 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
       /*readiness_status=*/std::string());
   base::RunLoop().RunUntilIdle();
 
+  SetHotspotStateInShill(shill::kTetheringStateIdle);
   EXPECT_EQ(mojom::HotspotControlResult::kReadinessCheckFailed,
             EnableHotspot());
 }

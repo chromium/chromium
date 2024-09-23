@@ -66,9 +66,10 @@ class LoginHandler : public content::LoginDelegate {
   // This function can be called from either thread.
   void SetAuth(const std::u16string& username, const std::u16string& password);
 
-  // Display the error page without asking for credentials again.
+  // Display the error page without asking for credentials again. Setting
+  // `notify_others` to `true` will close all other login handlers as well.
   // This function can be called from either thread.
-  void CancelAuth();
+  void CancelAuth(bool notify_others);
 
   // Who/where/what asked for the authentication.
   const net::AuthChallengeInfo& auth_info() const { return auth_info_; }

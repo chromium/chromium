@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>crbug.com/354270543 divisio-by-zero with a negative margin</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<ruby>
+<rt>cWOr9pyb3Xog2ZheYSxAmfZqk</rt>
+<rt><rp></rp>
+M9VUAgFxfsSnPIZzNHqFAiork4rT4PjobLIjBc1TFW2g3ZfHbZAaji34jWtzqrpdwsa6qkZVyjrqDwaXWITN9jNTUU6tD3ZMy
+<dt style="margin-right:-655533735%; "></dt>
+<rt><object data="#G" ></object></rt>
+</rt>
+</ruby>
+<script>
+test(() => {}, 'Pass if no crash');
+</script>
+</body>

@@ -1,0 +1,101 @@
+<style include="shared-style cr-shared-style">
+  /* Hide the default icon element.*/
+  cr-link-row[hide-icon]::part(icon) {
+    display: none;
+  }
+
+  cr-icon {
+    --iron-icon-width: var(--cr-icon-size);
+    --iron-icon-height: var(--cr-icon-size);
+  }
+
+  #warningContainer {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 8px;
+    border-radius: 8px;
+    padding: 8px 12px;
+    background-color: var(--sys-color-error-container);
+    color: var(--sys-color-on-error-container);
+  }
+
+  #detailsContainer {
+    display: grid;
+    row-gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .counter-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 16px;
+  }
+
+  .counter-summary {
+    font-size: 105%;
+    font-weight: 500;
+    margin: 0;
+    color: var(--cr-primary-text-color);
+  }
+
+  .counter-details {
+    color: var(--cr-primary-text-color);
+  }
+
+  #warningIcon {
+    color: var(--sys-color-on-error-container);
+  }
+</style>
+
+<cr-link-row class="cr-row" non-clickable hide-icon
+    label="$i18n{fullResetTitle}"
+    sub-label="$i18n{fullResetRowDescription}">
+    <cr-button id="deleteAllButton" class="cr-row-action-button"
+        on-click="onDeleteAllClick_" aria-label="[[getAriaLabel_()]]">
+      $i18n{fullResetDeleteAll}
+    </cr-button>
+</cr-link-row>
+
+<cr-dialog id="dialog">
+  <div slot="title" class="dialog-title" id="confirmationDialogTitle">
+    [[getConfirmationDialogTitle_(isSyncingPasswords, isAccountStoreUser)]]
+  </div>
+  <div slot="body">
+    <div id="detailsContainer">
+      <div class="counter-row">
+        <cr-icon icon="passwords-icon:password">
+        </cr-icon>
+        <div>
+          <h3 class="counter-summary">[[passwordsCount_]]</h3>
+          <div class="counter-details">[[passwordsCountDetails_]]</div>
+        </div>
+      </div>
+      <div class="counter-row">
+        <cr-icon icon="passwords-icon:passkey-filled">
+        </cr-icon>
+        <div>
+          <h3 class="counter-summary">[[passkeysCount_]]</h3>
+          <div class="counter-details">[[passkeysCountDetails_]]</div>
+        </div>
+      </div>
+    </div>
+    <div id="warningContainer">
+      <cr-icon id="warningIcon" icon="passwords-icon:outlined-warning">
+      </cr-icon>
+      <div>$i18n{fullResetConfirmationDescription}</div>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancel_" id="cancelButton"
+        autofocus>
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onConfirm_" id="confirmButton">
+      $i18n{fullResetConfirm}
+    </cr-button>
+  </div>
+</cr-dialog>
+
+<cr-toast id="successToast" duration="5000">
+  <span id="toast-message">$i18n{fullResetSuccessToast}</span>
+</cr-toast>

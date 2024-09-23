@@ -53,6 +53,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//base/test:test_support",
+    "//components/language_detection/core:language_detection",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/translate/core/browser:translate_pref_names",

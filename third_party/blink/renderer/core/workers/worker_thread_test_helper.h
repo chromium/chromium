@@ -102,7 +102,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       const v8_inspector::V8StackTraceId& stack_id) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void FetchAndRunModuleScript(
       const KURL& module_url_record,
@@ -113,7 +113,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       network::mojom::CredentialsMode,
       RejectCoepUnsafeNone reject_coep_unsafe_none) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   bool IsOffMainThreadScriptFetchDisabled() override { return true; }
 
@@ -146,7 +146,6 @@ class WorkerThreadForTest : public WorkerThread {
   WorkerBackingThread& GetWorkerBackingThread() override {
     return *worker_backing_thread_;
   }
-  void ClearWorkerBackingThread() override { worker_backing_thread_.reset(); }
 
   void StartWithSourceCode(const SecurityOrigin* security_origin,
                            const String& source,

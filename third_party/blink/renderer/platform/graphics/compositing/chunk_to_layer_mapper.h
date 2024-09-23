@@ -18,20 +18,28 @@ struct PaintChunk;
 // It provides higher performance than GeometryMapper by reusing computed
 // transforms and clips for unchanged states within or across paint chunks.
 class PLATFORM_EXPORT ChunkToLayerMapper {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   ChunkToLayerMapper(const PropertyTreeState& layer_state,
                      const gfx::Vector2dF& layer_offset);
 
+  const PropertyTreeState& LayerState() const { return layer_state_; }
+  gfx::Vector2dF LayerOffset() const { return layer_offset_; }
+
   // This class can map from multiple chunks. Before mapping from a chunk, this
   // method must be called to prepare for the chunk.
   void SwitchToChunk(const PaintChunk&);
+  void SwitchToChunkWithState(const PaintChunk&, const PropertyTreeState&);
 
   const PropertyTreeState& ChunkState() const { return chunk_state_; }
 
   // Maps a visual rectangle in the current chunk space into the layer space.
   gfx::Rect MapVisualRect(const gfx::Rect&) const;
+
+  // Maps a visual rectangle from the give state into the layer space.
+  gfx::Rect MapVisualRectFromState(const gfx::Rect&,
+                                   const PropertyTreeState&) const;
 
   // Returns the combined transform from the current chunk to the layer.
   const gfx::Transform& Transform() const { return transform_; }

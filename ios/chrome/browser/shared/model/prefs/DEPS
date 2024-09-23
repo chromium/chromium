@@ -1,8 +1,10 @@
 include_rules = [
   "+ios/chrome/browser/first_run/model/first_run.h",
+  "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h",
   "+ios/chrome/browser/memory/model/memory_debugger_manager.h",
   "+ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h",
   "+ios/chrome/browser/ntp/model/set_up_list_prefs.h",
+  "+ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h",
   "+ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h",
   "+ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
@@ -13,16 +15,21 @@ include_rules = [
   "+ios/chrome/browser/voice/model/voice_search_prefs_registration.h",
   "+ios/chrome/browser/web/model/font_size/font_size_tab_helper.h",
   "+ios/chrome/browser/photos/model/photos_policy.h",
+  "+ios/chrome/browser/drive/model/drive_policy.h",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
+  "+ios/chrome/browser/parcel_tracking",
+  "+components/saved_tab_groups/pref_names.h",
+  "+components/lens/lens_overlay_permission_utils.h",
+  "+components/sharing_message/sharing_sync_preference.h",
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
+  # TODO(crbug.com/40820398): Remove this dependency.
   "^browser_prefs.mm": [
+    "+ios/chrome/browser/bookmarks/ui_bundled",
     "+ios/chrome/browser/ui",
-    "+components/ntp_snippets",
+    "-ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h",
     "+ios/chrome/browser/metrics/model/constants.h",
     "+ios/chrome/browser/upgrade/model/upgrade_constants.h",
   ],
 }
-

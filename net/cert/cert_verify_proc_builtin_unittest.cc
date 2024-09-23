@@ -4,6 +4,7 @@
 
 #include "net/cert/cert_verify_proc_builtin.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -14,11 +15,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/network_time/time_tracker/time_tracker.h"
 #include "net/base/features.h"
+#include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"
@@ -47,6 +49,10 @@
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "base/version_info/version_info.h"  // nogncheck
+#endif
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -108,13 +114,12 @@ int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
                          const std::string& sct_list,
                          int flags,
                          CertVerifyResult* verify_result,
-                         NetLogSource* out_source,
-                         std::optional<base::Time> time_now) {
+                         NetLogSource* out_source) {
   base::ScopedAllowBaseSyncPrimitivesForTesting scoped_allow_blocking;
   NetLogWithSource net_log(NetLogWithSource::Make(
       net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_TASK));
   int error = verify_proc->Verify(cert.get(), hostname, ocsp_response, sct_list,
-                                  flags, verify_result, net_log, time_now);
+                                  flags, verify_result, net_log);
   *out_source = net_log.source();
   return error;
 }
@@ -136,12 +141,40 @@ class MockSystemTrustStore : public SystemTrustStore {
   }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  net::PlatformTrustStore* GetPlatformTrustStore() override { return nullptr; }
+
+  void SetMockIsLocallyTrustedRoot(bool is_locally_trusted_root) {
+    mock_is_locally_trusted_root_ = is_locally_trusted_root;
+  }
+
+  bool IsLocallyTrustedRoot(
+      const bssl::ParsedCertificate* trust_anchor) override {
+    return mock_is_locally_trusted_root_;
+  }
+
   int64_t chrome_root_store_version() const override { return 0; }
+
+  base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
+      const bssl::ParsedCertificate* cert) const override {
+    return mock_chrome_root_constraints_;
+  }
+
+  void SetMockChromeRootConstraints(
+      std::vector<StaticChromeRootCertConstraints> chrome_root_constraints) {
+    mock_chrome_root_constraints_.clear();
+    for (const auto& constraint : chrome_root_constraints) {
+      mock_chrome_root_constraints_.emplace_back(constraint);
+    }
+  }
 #endif
 
  private:
   bssl::TrustStoreCollection trust_store_;
   bool mock_is_known_root_ = false;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  bool mock_is_locally_trusted_root_ = false;
+  std::vector<ChromeRootCertConstraints> mock_chrome_root_constraints_;
+#endif
 };
 
 class BlockingTrustStore : public bssl::TrustStore {
@@ -166,20 +199,25 @@ class BlockingTrustStore : public bssl::TrustStore {
 
 class MockCTVerifier : public CTVerifier {
  public:
-  MOCK_CONST_METHOD5(Verify,
+  MOCK_CONST_METHOD6(Verify,
                      void(X509Certificate*,
                           std::string_view,
                           std::string_view,
+                          base::Time current_time,
                           SignedCertificateTimestampAndStatusList*,
                           const NetLogWithSource&));
 };
 
 class MockCTPolicyEnforcer : public CTPolicyEnforcer {
  public:
-  MOCK_CONST_METHOD3(CheckCompliance,
+  MOCK_CONST_METHOD4(CheckCompliance,
                      ct::CTPolicyCompliance(X509Certificate* cert,
                                             const ct::SCTList&,
+                                            base::Time,
                                             const NetLogWithSource&));
+  MOCK_CONST_METHOD1(GetLogDisqualificationTime,
+                     std::optional<base::Time>(std::string_view log_id));
+  MOCK_CONST_METHOD0(IsCtEnabled, bool());
 
  protected:
   ~MockCTPolicyEnforcer() override = default;
@@ -229,16 +267,23 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   }
 
   void InitializeVerifyProc(
-      const CertVerifyProc::InstanceParams& instance_params) {
+      const CertVerifyProc::InstanceParams& instance_params,
+      std::optional<base::Time> current_time = std::nullopt) {
     auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
     mock_system_trust_store_ = mock_system_trust_store.get();
     auto mock_ct_verifier = std::make_unique<MockCTVerifier>();
     mock_ct_verifier_ = mock_ct_verifier.get();
     mock_ct_policy_enforcer_ = base::MakeRefCounted<MockCTPolicyEnforcer>();
+    std::optional<network_time::TimeTracker> time_tracker;
+    if (current_time.has_value()) {
+      time_tracker =
+          network_time::TimeTracker(base::Time::Now(), base::TimeTicks::Now(),
+                                    current_time.value(), base::TimeDelta());
+    }
     verify_proc_ = CreateCertVerifyProcBuiltin(
         cert_net_fetcher_, CRLSet::EmptyCRLSetForTesting(),
         std::move(mock_ct_verifier), mock_ct_policy_enforcer_,
-        std::move(mock_system_trust_store), instance_params);
+        std::move(mock_system_trust_store), instance_params, time_tracker);
   }
 
   void Verify(scoped_refptr<X509Certificate> cert,
@@ -246,16 +291,14 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
               int flags,
               CertVerifyResult* verify_result,
               NetLogSource* out_source,
-              CompletionOnceCallback callback,
-              std::optional<base::Time> time_now = std::nullopt) {
+              CompletionOnceCallback callback) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&VerifyOnWorkerThread, verify_proc_, std::move(cert),
-                       hostname,
-                       /*ocsp_response=*/std::string(),
-                       /*sct_list=*/std::string(), flags, verify_result,
-                       out_source, time_now),
+        base::BindOnce(
+            &VerifyOnWorkerThread, verify_proc_, std::move(cert), hostname,
+            /*ocsp_response=*/std::string(),
+            /*sct_list=*/std::string(), flags, verify_result, out_source),
         std::move(callback));
   }
 
@@ -272,7 +315,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
         base::BindOnce(&VerifyOnWorkerThread, verify_proc_, std::move(cert),
                        hostname, ocsp_response, sct_list, flags, verify_result,
-                       out_source, std::nullopt),
+                       out_source),
         std::move(callback));
   }
 
@@ -303,6 +346,19 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   void SetMockIsKnownRoot(bool is_known_root) {
     mock_system_trust_store_->SetMockIsKnownRoot(is_known_root);
   }
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  void SetMockIsLocallyTrustedRoot(bool is_locally_trusted_root) {
+    mock_system_trust_store_->SetMockIsLocallyTrustedRoot(
+        is_locally_trusted_root);
+  }
+
+  void SetMockChromeRootConstraints(
+      std::vector<StaticChromeRootCertConstraints> chrome_root_constraints) {
+    mock_system_trust_store_->SetMockChromeRootConstraints(
+        std::move(chrome_root_constraints));
+  }
+#endif
 
   net::URLRequestContext* context() { return context_.get(); }
 
@@ -374,7 +430,6 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -383,9 +438,6 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
 
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Net.CertVerifier.PathBuilderIterationCount"),
-              testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
 }
 
 TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
@@ -404,16 +456,15 @@ TEST_F(CertVerifyProcBuiltinTest, CallsCtVerifierAndReturnsSctStatus) {
   sct_and_status.status = kSctVerifyStatus;
   SignedCertificateTimestampAndStatusList sct_and_status_list;
   sct_and_status_list.push_back(sct_and_status);
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, kOcspResponse, kSctList, _, _))
-      .WillOnce(testing::SetArgPointee<3>(sct_and_status_list));
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, kOcspResponse, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -442,15 +493,14 @@ TEST_F(CertVerifyProcBuiltinTest, EVCertStatusMaintainedForCompliantCert) {
   InitializeVerifyProc(CreateParams(
       /*additional_trust_anchors=*/{root->GetX509Certificate()}));
 
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _));
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _))
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _, _));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
       .WillRepeatedly(
           testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -465,28 +515,6 @@ TEST_F(CertVerifyProcBuiltinTest, EVCertStatusMaintainedForCompliantCert) {
 }
 #endif
 
-TEST_F(CertVerifyProcBuiltinTest, DoesNotCallsCtVerifierOnFailedPaths) {
-  // Chain where the root is not trusted.
-  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-
-  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _)).Times(0);
-  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _)).Times(0);
-
-  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
-  ASSERT_TRUE(chain.get());
-
-  base::HistogramTester histogram_tester;
-  CertVerifyResult verify_result;
-  NetLogSource verify_net_log_source;
-  TestCompletionCallback callback;
-  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
-         &verify_net_log_source, callback.callback());
-
-  int error = callback.WaitForResult();
-  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-  EXPECT_EQ(verify_result.scts.size(), 0u);
-}
-
 TEST_F(CertVerifyProcBuiltinTest, DistrustedIntermediate) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   InitializeVerifyProc(CreateParams(
@@ -498,7 +526,6 @@ TEST_F(CertVerifyProcBuiltinTest, DistrustedIntermediate) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -508,9 +535,6 @@ TEST_F(CertVerifyProcBuiltinTest, DistrustedIntermediate) {
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   EXPECT_EQ(1u, verify_result.verified_cert->intermediate_buffers().size());
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Net.CertVerifier.PathBuilderIterationCount"),
-              testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
 }
 
 TEST_F(CertVerifyProcBuiltinTest, AddedRootWithConstraints) {
@@ -526,7 +550,6 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithConstraints) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -550,7 +573,6 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithConstraintsNotEnforced) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -560,6 +582,137 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithConstraintsNotEnforced) {
   int error = callback.WaitForResult();
   // Constraint isn't enforced.
   EXPECT_THAT(error, IsOk());
+}
+
+TEST_F(CertVerifyProcBuiltinTest, AddedRootWithOutsideDNSConstraints) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  CertVerifyProc::InstanceParams instance_params;
+
+  std::shared_ptr<const bssl::ParsedCertificate> root_cert =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root_cert);
+  CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+  cert_with_constraints.certificate = std::move(root_cert);
+  cert_with_constraints.permitted_dns_names.push_back("example.com");
+
+  instance_params.additional_trust_anchors_with_constraints.push_back(
+      cert_with_constraints);
+
+  InitializeVerifyProc(instance_params);
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       AddedRootWithOutsideDNSConstraintsNotMatched) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  CertVerifyProc::InstanceParams instance_params;
+
+  std::shared_ptr<const bssl::ParsedCertificate> root_cert =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root_cert);
+  CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+  cert_with_constraints.certificate = std::move(root_cert);
+  cert_with_constraints.permitted_dns_names.push_back("foobar.com");
+
+  instance_params.additional_trust_anchors_with_constraints.push_back(
+      cert_with_constraints);
+
+  InitializeVerifyProc(instance_params);
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
+}
+
+TEST_F(CertVerifyProcBuiltinTest, AddedRootWithOutsideCIDRConstraints) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  CertVerifyProc::InstanceParams instance_params;
+
+  std::shared_ptr<const bssl::ParsedCertificate> root_cert =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root_cert);
+  CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+  cert_with_constraints.certificate = std::move(root_cert);
+  cert_with_constraints.permitted_cidrs.push_back(
+      {net::IPAddress(192, 168, 1, 104), net::IPAddress(255, 255, 255, 0)});
+
+  instance_params.additional_trust_anchors_with_constraints.push_back(
+      cert_with_constraints);
+
+  InitializeVerifyProc(instance_params);
+
+  leaf->SetSubjectAltNames(/*dns_names=*/{"www.example.com"},
+                           /*ip_addresses=*/{net::IPAddress(192, 168, 1, 254)});
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       AddedRootWithOutsideCIDRConstraintsNotMatched) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  CertVerifyProc::InstanceParams instance_params = CreateParams({});
+
+  std::shared_ptr<const bssl::ParsedCertificate> root_cert =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(root->GetX509Certificate()->cert_buffer()),
+          net::x509_util::DefaultParseCertificateOptions(), nullptr);
+  ASSERT_TRUE(root_cert);
+  CertVerifyProc::CertificateWithConstraints cert_with_constraints;
+  cert_with_constraints.certificate = std::move(root_cert);
+  cert_with_constraints.permitted_cidrs.push_back(
+      {net::IPAddress(192, 168, 1, 1), net::IPAddress(255, 255, 255, 0)});
+
+  instance_params.additional_trust_anchors_with_constraints.push_back(
+      cert_with_constraints);
+
+  InitializeVerifyProc(instance_params);
+
+  leaf->SetSubjectAltNames(/*dns_names=*/{"www.example.com"},
+                           /*ip_addresses=*/{net::IPAddress(10, 2, 2, 2)});
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
+         &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
 }
 
 TEST_F(CertVerifyProcBuiltinTest, AddedRootWithBadTime) {
@@ -575,7 +728,6 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithBadTime) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -599,7 +751,6 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithBadTimeButNotEnforced) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -611,57 +762,95 @@ TEST_F(CertVerifyProcBuiltinTest, AddedRootWithBadTimeButNotEnforced) {
   EXPECT_THAT(error, IsOk());
 }
 
-TEST_F(CertVerifyProcBuiltinTest, CustomTime) {
+TEST_F(CertVerifyProcBuiltinTest, TimeTracker) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(10),
                     /*not_after=*/base::Time::Now() - base::Days(5));
-  InitializeVerifyProc(CreateParams(
-      /*additional_trust_anchors=*/{},
-      /*additional_trust_anchors_with_enforced_constraints=*/
-      {root->GetX509Certificate()},
-      /*additional_distrusted_certificates=*/{}));
+  InitializeVerifyProc(
+      CreateParams(
+          /*additional_trust_anchors=*/{},
+          /*additional_trust_anchors_with_enforced_constraints=*/
+          {root->GetX509Certificate()},
+          /*additional_distrusted_certificates=*/{}),
+      base::Time::Now() - base::Days(7));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
   Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
-         &verify_net_log_source, callback.callback(),
-         base::Time::Now() - base::Days(7));
+         &verify_net_log_source, callback.callback());
 
   int error = callback.WaitForResult();
   // Root is expired when compared to base::Time::Now, but is valid in the
-  // custom time passed to Verify.
+  // time provided by the time tracker.
   EXPECT_THAT(error, IsOk());
 }
 
-TEST_F(CertVerifyProcBuiltinTest, CustomTimeFailureIsRetriedWithSystemTime) {
+TEST_F(CertVerifyProcBuiltinTest, TimeTrackerFailureIsRetriedWithSystemTime) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(10),
                     /*not_after=*/base::Time::Now() + base::Days(10));
-  InitializeVerifyProc(CreateParams(
-      /*additional_trust_anchors=*/{},
-      /*additional_trust_anchors_with_enforced_constraints=*/
-      {root->GetX509Certificate()},
-      /*additional_distrusted_certificates=*/{}));
+  InitializeVerifyProc(
+      CreateParams(
+          /*additional_trust_anchors=*/{},
+          /*additional_trust_anchors_with_enforced_constraints=*/
+          {root->GetX509Certificate()},
+          /*additional_distrusted_certificates=*/{}),
+      base::Time::Now() + base::Days(20));
 
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
   Verify(chain.get(), "www.example.com", /*flags=*/0, &verify_result,
-         &verify_net_log_source, callback.callback(),
-         base::Time::Now() + base::Days(20));
+         &verify_net_log_source, callback.callback());
 
   int error = callback.WaitForResult();
-  // Root is expired when compared to the custom time, but valid when compared
-  // to base::Time::Now.
+  // Root is expired when compared to the time tracker time, but valid when
+  // compared to base::Time::Now.
+  EXPECT_THAT(error, IsOk());
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       TimeTrackerRevocationFailureIsRetriedWithSystemTime) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  root->SetValidity(/*not_before=*/base::Time::Now() - base::Days(3),
+                    /*not_after=*/base::Time::Now() + base::Days(2));
+  // The CRL DP sets its this_update time to base::Time::Now() - 1 day. Use two
+  // days before now as the current time to cause checks to fail with
+  // UNABLE_TO_CHECK_REVOCATION, which then should be retried with the system
+  // time and succeed.
+  InitializeVerifyProc(
+      CreateParams(
+          /*additional_trust_anchors=*/{},
+          /*additional_trust_anchors_with_enforced_constraints=*/
+          {root->GetX509Certificate()},
+          /*additional_distrusted_certificates=*/{}),
+      base::Time::Now() - base::Days(2));
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(test_server.InitializeAndListen());
+  // Valid CRL that does not mark the leaf as revoked.
+  leaf->SetCrlDistributionPointUrl(
+      CreateAndServeCrl(&test_server, root.get(), {1234}));
+  test_server.StartAcceptingConnections();
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com",
+         CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS,
+         &verify_result, &verify_net_log_source, callback.callback());
+
+  int error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());
 }
 
@@ -699,7 +888,6 @@ TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
   {
     // Pretend the root is a known root.
     SetMockIsKnownRoot(true);
-    base::HistogramTester histogram_tester;
     CertVerifyResult verify_result;
     TestCompletionCallback verify_callback;
     Verify(chain.get(), "www.example.com",
@@ -711,9 +899,6 @@ TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
     // should be successful.
     EXPECT_THAT(error, IsOk());
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
-    EXPECT_THAT(histogram_tester.GetAllSamples(
-                    "Net.CertVerifier.PathBuilderIterationCount"),
-                testing::ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
   }
 }
 
@@ -765,7 +950,6 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
-  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
@@ -788,9 +972,6 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
   // Soft-fail revocation checking was used, therefore verification result
   // should be OK even though none of the CRLs could be retrieved.
   EXPECT_THAT(error, IsOk());
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Net.CertVerifier.PathBuilderIterationCount"),
-              testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
 }
 
 // Tests that if the verification deadline is exceeded during revocation
@@ -948,6 +1129,646 @@ TEST_F(CertVerifyProcBuiltinTest, EVNoOCSPRevocationChecks) {
   EXPECT_EQ(true, event->params.FindBool("has_valid_path"));
 }
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+
+scoped_refptr<ct::SignedCertificateTimestamp> MakeSct(base::Time t,
+                                                      std::string_view log_id) {
+  auto sct = base::MakeRefCounted<ct::SignedCertificateTimestamp>();
+  sct->timestamp = t;
+  sct->log_id = log_id;
+  return sct;
+}
+
+// Test SCT constraints fail-open if CT is disabled.
+TEST_F(CertVerifyProcBuiltinTest,
+       ChromeRootStoreConstraintSctConstraintsWithCtDisabled) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, _, _, _, _)).Times(2);
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  SetMockChromeRootConstraints(
+      {{.sct_not_after = base::Time::Now() - base::Days(365)}});
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    ASSERT_EQ(verify_result.scts.size(), 0u);
+  }
+
+  SetMockChromeRootConstraints(
+      {{.sct_all_after = base::Time::Now() + base::Days(365)}});
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           /*sct_list=*/std::string(), /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    ASSERT_EQ(verify_result.scts.size(), 0u);
+  }
+}
+
+// Test SctNotAfter constraint only requires 1 valid SCT that satisfies the
+// constraint.
+// Set a SctNotAfter constraint at time t1.
+// Mock that there are two SCTs, one of which is at t1 and thus satisfies the
+// constraint. The second is at t2 and does not satisfy the constraint, but
+// this is ok as only one valid SCT that meets the constraint is needed.
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctNotAfter) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  const std::string kSctList = "SCT list";
+  const std::string kLog1 = "log1";
+  const std::string kLog2 = "log2";
+  base::Time now = base::Time::Now();
+  base::Time t1 = now - base::Days(2);
+  base::Time t2 = now - base::Days(1);
+  SignedCertificateTimestampAndStatusList sct_and_status_list;
+  sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
+  sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
+
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillRepeatedly(testing::SetArgPointee<4>(sct_and_status_list));
+
+  SetMockChromeRootConstraints({{.sct_not_after = t1}});
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
+      .WillRepeatedly(testing::Return(std::nullopt));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
+      .WillRepeatedly(testing::Return(std::nullopt));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    ASSERT_EQ(verify_result.scts.size(), 2u);
+  }
+
+  // Try again with the SctNotAfter set to before both SCTs. Verification should
+  // fail.
+  SetMockChromeRootConstraints({{.sct_not_after = t1 - base::Seconds(1)}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    ASSERT_EQ(verify_result.scts.size(), 2u);
+  }
+}
+
+// Test SctNotAfter constraint is only satisfied by successfully verified SCTs.
+// Set a SctNotAfter constraint at time t1.
+// Mock that there are two SCTs. One SCT for time t1 but from an unknown log,
+// thus should not be usable for the SctNotAfter constraint. The second CT is
+// from a known log but is at time t2 which is after t1, so does not satisfy
+// the constraint. Therefore the certificate should fail verification.
+TEST_F(CertVerifyProcBuiltinTest,
+       ChromeRootStoreConstraintSctNotAfterLogUnknown) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  const std::string kSctList = "SCT list";
+  const std::string kLog1 = "log1";
+  const std::string kLog2 = "log2";
+  base::Time now = base::Time::Now();
+  base::Time t1 = now - base::Days(2);
+  base::Time t2 = now - base::Days(1);
+  SignedCertificateTimestampAndStatusList sct_and_status_list;
+  sct_and_status_list.emplace_back(MakeSct(t1, kLog1),
+                                   ct::SCT_STATUS_LOG_UNKNOWN);
+  sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
+
+  SetMockChromeRootConstraints({{.sct_not_after = t1}});
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+         kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+         callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  ASSERT_EQ(verify_result.scts.size(), 2u);
+}
+
+// Test SctNotAfter constraint is not satisfied by a SCT from a disqualified
+// log even if the SCT timestamp is before the log was disqualified. Once a log
+// is disqualified we assume it can not be trusted and could sign SCTs for any
+// timestamp.
+// SCT #1 is from a disqualified log and the timestamp is before the log was
+// disqualified.
+// SCT #2 is from a valid log but is after the SctNotAfter constraint, so does
+// not satisfy the constraint.
+TEST_F(
+    CertVerifyProcBuiltinTest,
+    ChromeRootStoreConstraintSctNotAfterFromDisqualifiedLogBeforeDisqualification) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  const std::string kSctList = "SCT list";
+  const std::string kLog1 = "log1";
+  const std::string kLog2 = "log2";
+  base::Time now = base::Time::Now();
+  base::Time t1 = now - base::Days(2);
+  base::Time t2 = now - base::Days(1);
+  SignedCertificateTimestampAndStatusList sct_and_status_list;
+  sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
+  sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
+
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
+
+  SetMockChromeRootConstraints({{.sct_not_after = t1}});
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
+      .WillRepeatedly(testing::Return(t2));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
+      .WillRepeatedly(testing::Return(std::nullopt));
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+         kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+         callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+}
+
+// Test SctNotAfter constraint is not satisfied by a SCT from a disqualified
+// log if the SCT timestamp is after the log was disqualified.
+// SCT #1 is from a disqualified log and the timestamp is after the log was
+// disqualified.
+// SCT #2 is from a valid log but is after the SctNotAfter constraint, so does
+// not satisfy the constraint.
+TEST_F(
+    CertVerifyProcBuiltinTest,
+    ChromeRootStoreConstraintSctNotAfterFromDisqualifiedLogAfterDisqualification) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  const std::string kSctList = "SCT list";
+  const std::string kLog1 = "log1";
+  const std::string kLog2 = "log2";
+  base::Time now = base::Time::Now();
+  base::Time t1 = now - base::Days(2);
+  base::Time t2 = now - base::Days(1);
+  SignedCertificateTimestampAndStatusList sct_and_status_list;
+  sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
+  sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
+
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
+
+  SetMockChromeRootConstraints({{.sct_not_after = t1}});
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
+      .WillRepeatedly(testing::Return(t1));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
+      .WillRepeatedly(testing::Return(std::nullopt));
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+         kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+         callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+}
+
+// Test SctNotAfter constraint is satisfied by a SCT from a disqualified
+// log if the log disqualification time is in the future.
+TEST_F(CertVerifyProcBuiltinTest,
+       ChromeRootStoreConstraintSctNotAfterFromFutureDisqualifiedLog) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  const std::string kSctList = "SCT list";
+  const std::string kLog1 = "log1";
+  const std::string kLog2 = "log2";
+  base::Time now = base::Time::Now();
+  base::Time t1 = now - base::Days(2);
+  base::Time future_t = now + base::Days(1);
+  SignedCertificateTimestampAndStatusList sct_and_status_list;
+  sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
+
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
+
+  SetMockChromeRootConstraints({{.sct_not_after = t1}});
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
+      .WillRepeatedly(testing::Return(future_t));
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+         kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+         callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+}
+
+// Test SctAllAfter constraint requires all valid SCTs to satisfy the
+// constraint.
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintSctAllAfter) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  const std::string kSctList = "SCT list";
+  const std::string kLog1 = "log1";
+  const std::string kLog2 = "log2";
+  base::Time now = base::Time::Now();
+  base::Time t0 = now - base::Days(3);
+  base::Time t1 = now - base::Days(2);
+  base::Time t2 = now - base::Days(1);
+  SignedCertificateTimestampAndStatusList sct_and_status_list;
+  sct_and_status_list.emplace_back(MakeSct(t1, kLog1), ct::SCT_STATUS_OK);
+  sct_and_status_list.emplace_back(MakeSct(t2, kLog2), ct::SCT_STATUS_OK);
+
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillRepeatedly(testing::SetArgPointee<4>(sct_and_status_list));
+
+  // Set a SctAllAfter constraint before the timestamp of either SCT.
+  SetMockChromeRootConstraints({{.sct_all_after = t0}});
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
+      .WillRepeatedly(testing::Return(std::nullopt));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog2))
+      .WillRepeatedly(testing::Return(std::nullopt));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    ASSERT_EQ(verify_result.scts.size(), 2u);
+  }
+
+  // Try again with the SctAllAfter set to the same time as one of the SCTs.
+  // Verification should now fail.
+  SetMockChromeRootConstraints({{.sct_all_after = t1}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+           kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    ASSERT_EQ(verify_result.scts.size(), 2u);
+  }
+}
+
+std::string CurVersionString() {
+  return version_info::GetVersion().GetString();
+}
+std::string NextVersionString() {
+  const std::vector<uint32_t>& components =
+      version_info::GetVersion().components();
+  return base::Version(
+             {components[0], components[1], components[2], components[3] + 1})
+      .GetString();
+}
+std::string PrevVersionString() {
+  const std::vector<uint32_t>& components =
+      version_info::GetVersion().components();
+  if (components[3] > 0) {
+    return base::Version(
+               {components[0], components[1], components[2], components[3] - 1})
+        .GetString();
+  } else {
+    return base::Version(
+               {components[0], components[1], components[2] - 1, UINT32_MAX})
+        .GetString();
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintMinVersion) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  SetMockChromeRootConstraints({{.min_version = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  SetMockChromeRootConstraints({{.min_version = CurVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintMaxVersion) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  SetMockChromeRootConstraints({{.max_version_exclusive = CurVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  SetMockChromeRootConstraints(
+      {{.max_version_exclusive = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreConstraintMinAndMaxVersion) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  // min_version satisfied, max_version_exclusive not satisfied = not trusted.
+  SetMockChromeRootConstraints({{.min_version = PrevVersionString(),
+                                 .max_version_exclusive = CurVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  // min_version not satisfied, max_version_exclusive satisfied = not trusted.
+  SetMockChromeRootConstraints(
+      {{.min_version = NextVersionString(),
+        .max_version_exclusive = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  // min_version satisfied, max_version_exclusive satisfied = trusted.
+  SetMockChromeRootConstraints(
+      {{.min_version = CurVersionString(),
+        .max_version_exclusive = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
+// Tests multiple constraint objects in the constraints vector. The CRS
+// constraints are satisfied if at least one of the constraint objects is
+// satisfied.
+//
+// The first constraint has a SctNotAfter that is before the SCT and thus is
+// not satisfied.
+// The second constraint has a SctAllAfter set to the same time, which is
+// before the certificate SCT, and thus the certificate verification succeeds.
+//
+// TODO(https://crbug.com/40941039): This test isn't very interesting right
+// now. Once more constraint types are added change the test to be more
+// realistic of how multiple constraint sets is expected to be used.
+TEST_F(CertVerifyProcBuiltinTest,
+       ChromeRootStoreConstraintMultipleConstraints) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+
+  const std::string kSctList = "SCT list";
+  const std::string kLog1 = "log1";
+  base::Time now = base::Time::Now();
+  base::Time t1 = now - base::Days(2);
+  base::Time t2 = now - base::Days(1);
+  SignedCertificateTimestampAndStatusList sct_and_status_list;
+  sct_and_status_list.emplace_back(MakeSct(t2, kLog1), ct::SCT_STATUS_OK);
+
+  EXPECT_CALL(*mock_ct_policy_enforcer(), IsCtEnabled())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_ct_verifier(), Verify(_, _, kSctList, _, _, _))
+      .WillOnce(testing::SetArgPointee<4>(sct_and_status_list));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), GetLogDisqualificationTime(kLog1))
+      .WillRepeatedly(testing::Return(std::nullopt));
+  EXPECT_CALL(*mock_ct_policy_enforcer(), CheckCompliance(_, _, _, _))
+      .WillRepeatedly(
+          testing::Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
+
+  SetMockChromeRootConstraints({{.sct_not_after = t1}, {.sct_all_after = t1}});
+
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
+         kSctList, /*flags=*/0, &verify_result, &verify_net_log_source,
+         callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       ChromeRootStoreConstraintNotEnforcedIfAnchorLocallyTrusted) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  ScopedTestRoot scoped_root(root->GetX509Certificate());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  SetMockChromeRootConstraints({{.min_version = NextVersionString()}});
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  // If the anchor is trusted locally, the Chrome Root Store constraints should
+  // not be enforced.
+  SetMockIsLocallyTrustedRoot(true);
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(chain.get(), "www.example.com",
+           /*flags=*/0, &verify_result, &verify_net_log_source,
+           callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest,
+       ChromeRootStoreConstraintNotEnforcedIfAnchorAdditionallyTrusted) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  // The anchor is trusted through additional_trust_anchors, so the Chrome Root
+  // Store constraints should not be enforced.
+  InitializeVerifyProc(CreateParams(
+      /*additional_trust_anchors=*/{root->GetX509Certificate()}));
+  scoped_refptr<X509Certificate> chain = leaf->GetX509Certificate();
+  ASSERT_TRUE(chain.get());
+
+  SetMockChromeRootConstraints({{.min_version = NextVersionString()}});
+
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com",
+         /*flags=*/0, &verify_result, &verify_net_log_source,
+         callback.callback());
+
+  int error = callback.WaitForResult();
+  EXPECT_THAT(error, IsOk());
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 TEST_F(CertVerifyProcBuiltinTest, DeadlineExceededDuringSyncGetIssuers) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
@@ -1176,27 +1997,7 @@ TEST_F(CertVerifyProcBuiltinTest,
   EXPECT_THAT(error, IsOk());
 }
 
-class CertVerifyProcBuiltinIterationTest
-    : public CertVerifyProcBuiltinTest,
-      public testing::WithParamInterface<bool> {
- public:
-  CertVerifyProcBuiltinIterationTest() {
-    if (new_iteration_limit()) {
-      feature_list_.InitAndEnableFeature(
-          features::kNewCertPathBuilderIterationLimit);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kNewCertPathBuilderIterationLimit);
-    }
-  }
-
-  bool new_iteration_limit() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_P(CertVerifyProcBuiltinIterationTest, IterationLimit) {
+TEST_F(CertVerifyProcBuiltinTest, IterationLimit) {
   // Create a chain which will require many iterations in the path builder.
   std::vector<std::unique_ptr<CertBuilder>> builders =
       CertBuilder::CreateSimpleChain(6);
@@ -1257,20 +2058,10 @@ TEST_P(CertVerifyProcBuiltinIterationTest, IterationLimit) {
   });
   ASSERT_NE(event, events.end());
 
-  if (new_iteration_limit()) {
-    // The path builder gives up before it finishes all the invalid paths.
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
-    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-    EXPECT_EQ(true, event->params.FindBool("exceeded_iteration_limit"));
-  } else {
-    // After exploring many dead ends, the path builder finds the valid path.
-    EXPECT_THAT(error, IsOk());
-    EXPECT_FALSE(event->params.Find("exceeded_iteration_limit"));
-  }
+  // The path builder gives up before it finishes all the invalid paths.
+  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
+  EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  EXPECT_EQ(true, event->params.FindBool("exceeded_iteration_limit"));
 }
-
-INSTANTIATE_TEST_SUITE_P(NewLimit,
-                         CertVerifyProcBuiltinIterationTest,
-                         testing::Bool());
 
 }  // namespace net

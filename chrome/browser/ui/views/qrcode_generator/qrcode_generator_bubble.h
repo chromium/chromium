@@ -8,12 +8,10 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
+#include "components/qr_code_generator/bitmap_generator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -62,21 +60,12 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   // e.g.: www.foo.com may suggest qrcode_foo.png.
   static const std::u16string GetQRCodeFilenameForURL(const GURL& url);
 
-  // Given an image |image| of a QR code, adds the required "quiet zone" padding
-  // around the outside of it. The |size| size is given in QR code tiles, not in
-  // pixels or dips. Both |image| and |size| must be square, and the resulting
-  // image is also square.
-  static gfx::ImageSkia AddQRCodeQuietZone(const gfx::ImageSkia& image,
-                                           const gfx::Size& size,
-                                           SkColor background_color);
-
   views::ImageView* image_for_testing() { return qr_code_image_; }
   views::Textfield* textfield_for_testing() { return textfield_url_; }
   views::Label* error_label_for_testing() { return bottom_error_label_; }
   views::LabelButton* download_button_for_testing() { return download_button_; }
 
-  void SetQRCodeErrorForTesting(
-      std::optional<qrcode_generator::mojom::QRCodeGeneratorError> error);
+  void SetQRCodeErrorForTesting(std::optional<qr_code_generator::Error> error);
 
  private:
   // Updates and formats QR code, text, and controls.
@@ -89,7 +78,7 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   void DisplayPlaceholderImage();
 
   // Shows an error message.
-  void DisplayError(mojom::QRCodeGeneratorError error);
+  void DisplayError(qr_code_generator::Error error);
 
   // Hides all error messages and enables or disables download button.
   void HideErrors(bool enable_download_button);
@@ -122,22 +111,15 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
 
   void BackButtonPressed();
 
-  // Callback for the request to the OOP service to generate a new image.
-  void OnCodeGeneratorResponse(const mojom::GenerateQRCodeResponsePtr response);
-
-  // TODO(https://crbug.com/1431991): Remove this field once there is no
-  // internal state (e.g. no `mojo::Remote`) that needs to be maintained by the
-  // `QRImageGenerator` class.
-  std::unique_ptr<QRImageGenerator> qrcode_service_;
-
   // Unit tests can set `qr_code_error_override_` to inject QR code
   // generation errors.
-  std::optional<qrcode_generator::mojom::QRCodeGeneratorError>
-      qrcode_error_override_;
+  std::optional<qr_code_generator::Error> qrcode_error_override_;
 
   // URL for which the QR code is being generated.
   // Used for validation.
   GURL url_;
+
+  raw_ptr<actions::ActionItem> qrcode_action_item_ = nullptr;
 
   // Pointers to subviews that we need to update the contents or visibility of
   // after creation.

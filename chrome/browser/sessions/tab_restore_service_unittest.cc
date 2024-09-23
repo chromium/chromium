@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -51,10 +52,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
-typedef sessions::TabRestoreService::Entry Entry;
-typedef sessions::TabRestoreService::Tab Tab;
-typedef sessions::TabRestoreService::Window Window;
+typedef sessions::tab_restore::Entry Entry;
+typedef sessions::tab_restore::Tab Tab;
+typedef sessions::tab_restore::Window Window;
 typedef std::map<std::string, std::string> ExtraData;
 
 using content::NavigationEntry;
@@ -77,8 +79,9 @@ class MockLiveTab : public sessions::LiveTab {
   MOCK_METHOD1(GetEntryAtIndex, sessions::SerializedNavigationEntry(int index));
   MOCK_METHOD0(GetPendingEntry, sessions::SerializedNavigationEntry());
   MOCK_METHOD0(GetEntryCount, int());
-  MOCK_METHOD0(GetPlatformSpecificTabData,
-               std::unique_ptr<sessions::PlatformSpecificTabData>());
+  MOCK_METHOD0(
+      GetPlatformSpecificTabData,
+      std::unique_ptr<sessions::tab_restore::PlatformSpecificTabData>());
   MOCK_METHOD0(GetUserAgentOverride, sessions::SerializedUserAgentOverride());
 };
 
@@ -105,41 +108,27 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_CONST_METHOD1(GetVisualDataForGroup,
                      const tab_groups::TabGroupVisualData*(
                          const tab_groups::TabGroupId& group));
+  MOCK_CONST_METHOD1(
+      GetSavedTabGroupIdForGroup,
+      const std::optional<base::Uuid>(const tab_groups::TabGroupId& group));
   MOCK_CONST_METHOD1(IsTabPinned, bool(int index));
   MOCK_METHOD2(SetVisualDataForGroup,
                void(const tab_groups::TabGroupId& group,
                     const tab_groups::TabGroupVisualData& visual_data));
   MOCK_CONST_METHOD0(GetRestoredBounds, const gfx::Rect());
-  MOCK_CONST_METHOD0(GetRestoredState, ui::WindowShowState());
+  MOCK_CONST_METHOD0(GetRestoredState, ui::mojom::WindowShowState());
   MOCK_CONST_METHOD0(GetWorkspace, std::string());
-
   MOCK_METHOD(sessions::LiveTab*,
               AddRestoredTab,
-              ((const std::vector<SerializedNavigationEntry>&),
+              ((const sessions::tab_restore::Tab&),
                int,
-               int,
-               (const std::string&),
-               std::optional<tab_groups::TabGroupId>,
-               (const tab_groups::TabGroupVisualData&),
                bool,
-               bool,
-               const sessions::PlatformSpecificTabData*,
-               (const sessions::SerializedUserAgentOverride&),
-               (const std::map<std::string, std::string>&),
-               (const SessionID*)),
+               sessions::tab_restore::Type),
               (override));
-
   MOCK_METHOD(sessions::LiveTab*,
               ReplaceRestoredTab,
-              ((const std::vector<SerializedNavigationEntry>&),
-               std::optional<tab_groups::TabGroupId>,
-               int,
-               (const std::string&),
-               (const sessions::PlatformSpecificTabData*),
-               (const sessions::SerializedUserAgentOverride&),
-               (const std::map<std::string, std::string>&)),
+              ((const sessions::tab_restore::Tab&)),
               (override));
-
   MOCK_METHOD0(CloseTab, void());
 };
 
@@ -154,7 +143,7 @@ class MockTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
                    sessions::SessionWindow::WindowType type,
                    const std::string& app_name,
                    const gfx::Rect& bounds,
-                   ui::WindowShowState show_state,
+                   ui::mojom::WindowShowState show_state,
                    const std::string& workspace,
                    const std::string& user_title,
                    const std::map<std::string, std::string>& extra_data));
@@ -175,7 +164,7 @@ class MockTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
 
 // Create subclass that overrides TimeNow so that we can control the time used
 // for closed tabs and windows.
-class TabRestoreTimeFactory : public sessions::TabRestoreService::TimeFactory {
+class TabRestoreTimeFactory : public sessions::tab_restore::TimeFactory {
  public:
   TabRestoreTimeFactory() : time_(base::Time::Now()) {}
 
@@ -376,7 +365,7 @@ TEST_F(TabRestoreServiceImplTest, Basic) {
 
   // Make sure the entry matches.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   EXPECT_FALSE(tab->pinned);
   EXPECT_TRUE(tab->extension_app_id.empty());
@@ -404,7 +393,7 @@ TEST_F(TabRestoreServiceImplTest, Basic) {
 
   // Make sure the entry matches.
   entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   tab = static_cast<Tab*>(entry);
   EXPECT_FALSE(tab->pinned);
   ASSERT_EQ(3U, tab->navigations.size());
@@ -452,7 +441,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   ASSERT_EQ(1U, service_->entries().size());
   // Make sure the entry data matches.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   ASSERT_EQ(1U, tab->navigations.size());
   EXPECT_EQ(url1_, tab->navigations[0].virtual_url());
@@ -484,7 +473,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, WindowRestore) {
   ON_CALL(mock_live_tab_context, GetRestoredBounds)
       .WillByDefault(Return(gfx::Rect(10, 20, 30, 40)));
   ON_CALL(mock_live_tab_context, GetRestoredState)
-      .WillByDefault(Return(ui::SHOW_STATE_MAXIMIZED));
+      .WillByDefault(Return(ui::mojom::WindowShowState::kMaximized));
   ON_CALL(mock_live_tab_context, GetWorkspace)
       .WillByDefault(Return("workspace"));
   ON_CALL(mock_live_tab_context, GetTabCount).WillByDefault(Return(1));
@@ -497,14 +486,14 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, WindowRestore) {
   auto validate = [&]() {
     ASSERT_EQ(1u, service_->entries().size());
     Entry* entry = service_->entries().front().get();
-    EXPECT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
+    EXPECT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
     Window* window = static_cast<Window*>(entry);
     EXPECT_EQ(sessions::SessionWindow::TYPE_APP_POPUP, window->type);
     EXPECT_EQ(0, window->selected_tab_index);
     EXPECT_EQ("app-name", window->app_name);
     EXPECT_EQ("user-title", window->user_title);
     EXPECT_EQ(gfx::Rect(10, 20, 30, 40), window->bounds);
-    EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED, window->show_state);
+    EXPECT_EQ(ui::mojom::WindowShowState::kMaximized, window->show_state);
     EXPECT_EQ("workspace", window->workspace);
   };
   validate();
@@ -537,7 +526,7 @@ TEST_F(TabRestoreServiceImplTest, Restore) {
 
   // And verify the entry.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   EXPECT_FALSE(tab->pinned);
   ASSERT_EQ(3U, tab->navigations.size());
@@ -567,7 +556,7 @@ TEST_F(TabRestoreServiceImplTest, RestoreManyNavigations) {
 
   // And verify the entry.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   // Only gMaxPersistNavigationCount + 1 (current navigation) are persisted.
   ASSERT_EQ(7U, tab->navigations.size());
@@ -590,7 +579,7 @@ TEST_F(TabRestoreServiceImplTest, RestorePinnedAndApp) {
   // We have to explicitly mark the tab as pinned as there is no browser for
   // these tests.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   tab->pinned = true;
   const std::string extension_app_id("test");
@@ -604,7 +593,7 @@ TEST_F(TabRestoreServiceImplTest, RestorePinnedAndApp) {
 
   // And verify the entry.
   entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   tab = static_cast<Tab*>(entry);
   EXPECT_TRUE(tab->pinned);
   ASSERT_EQ(3U, tab->navigations.size());
@@ -625,7 +614,7 @@ TEST_F(TabRestoreServiceImplTest, DontCreateRestoredEntry) {
 
   // Record the tab's id.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   SessionID first_id = entry->id;
 
   // Service record the second tab.
@@ -634,7 +623,7 @@ TEST_F(TabRestoreServiceImplTest, DontCreateRestoredEntry) {
 
   // Record the tab's id.
   entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   SessionID second_id = entry->id;
 
   service_->Shutdown();
@@ -650,7 +639,7 @@ TEST_F(TabRestoreServiceImplTest, DontCreateRestoredEntry) {
 
   // And verify the entry.
   entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   ASSERT_EQ(first_id, entry->original_id);
 }
 
@@ -670,7 +659,7 @@ TEST_F(TabRestoreServiceImplTest, DeleteNavigationEntries) {
   // The entry should still exist but url2_ was removed and indices adjusted.
   ASSERT_EQ(1U, service_->entries().size());
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   ASSERT_EQ(2U, tab->navigations.size());
   EXPECT_EQ(url1_, tab->navigations[0].virtual_url());
@@ -721,7 +710,7 @@ TEST_F(TabRestoreServiceImplTest, DeleteEntriesAndRecreate) {
   // The entry should still exist but url2_ was removed and indices adjusted.
   ASSERT_EQ(1U, service_->entries().size());
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   ASSERT_EQ(2U, tab->navigations.size());
   EXPECT_EQ(url1_, tab->navigations[0].virtual_url());
@@ -757,7 +746,7 @@ TEST_F(TabRestoreServiceImplTest, DontPersistPostData) {
   ASSERT_EQ(1U, service_->entries().size());
 
   const Entry* restored_entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, restored_entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, restored_entry->type);
 
   const Tab* restored_tab = static_cast<const Tab*>(restored_entry);
   // There should be 3 navs.
@@ -800,9 +789,9 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSession) {
   // Make sure we get back one entry with one tab whose url is url1.
   ASSERT_EQ(1U, service_->entries().size());
   Entry* entry2 = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry2->type);
-  sessions::TabRestoreService::Window* window =
-      static_cast<sessions::TabRestoreService::Window*>(entry2);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry2->type);
+  sessions::tab_restore::Window* window =
+      static_cast<sessions::tab_restore::Window*>(entry2);
   EXPECT_EQ(sessions::SessionWindow::TYPE_NORMAL, window->type);
   ASSERT_EQ(1U, window->tabs.size());
   EXPECT_EQ(0, window->timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -890,10 +879,10 @@ TEST_F(TabRestoreServiceImplTest, WindowShowStateIsSet) {
   // default.
   bool got_window = false;
   for (auto& entry : service_->entries()) {
-    if (entry->type == sessions::TabRestoreService::WINDOW) {
+    if (entry->type == sessions::tab_restore::Type::WINDOW) {
       got_window = true;
       Window* window = static_cast<Window*>(entry.get());
-      EXPECT_EQ(window->show_state, ui::SHOW_STATE_DEFAULT);
+      EXPECT_EQ(window->show_state, ui::mojom::WindowShowState::kDefault);
     }
   }
   EXPECT_TRUE(got_window);
@@ -916,9 +905,9 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSessionAndTabs) {
   ASSERT_EQ(2U, service_->entries().size());
   // The first entry should come from the session service.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  sessions::TabRestoreService::Window* window =
-      static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  sessions::tab_restore::Window* window =
+      static_cast<sessions::tab_restore::Window*>(entry);
   ASSERT_EQ(1U, window->tabs.size());
   EXPECT_EQ(0, window->selected_tab_index);
   EXPECT_EQ(0, window->timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -931,7 +920,7 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSessionAndTabs) {
 
   // Then the closed tab.
   entry = (++service_->entries().begin())->get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   ASSERT_FALSE(tab->pinned);
   ASSERT_EQ(3U, tab->navigations.size());
@@ -948,7 +937,8 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSessionAndTabs) {
 // service.
 TEST_F(TabRestoreServiceImplTest, LoadWindowBoundsAndWorkspace) {
   constexpr gfx::Rect kBounds(10, 20, 640, 480);
-  constexpr ui::WindowShowState kShowState = ui::SHOW_STATE_MINIMIZED;
+  constexpr ui::mojom::WindowShowState kShowState =
+      ui::mojom::WindowShowState::kMinimized;
   constexpr char kWorkspace[] = "workspace";
 
   CreateSessionServiceWithOneWindow(false);
@@ -973,9 +963,9 @@ TEST_F(TabRestoreServiceImplTest, LoadWindowBoundsAndWorkspace) {
 
   // The first entry should come from the session service.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  sessions::TabRestoreService::Window* window =
-      static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  sessions::tab_restore::Window* window =
+      static_cast<sessions::tab_restore::Window*>(entry);
   ASSERT_EQ(kBounds, window->bounds);
   ASSERT_EQ(kShowState, window->show_state);
   ASSERT_EQ(kWorkspace, window->workspace);
@@ -988,7 +978,7 @@ TEST_F(TabRestoreServiceImplTest, LoadWindowBoundsAndWorkspace) {
 
   // Then the closed tab.
   entry = (++service_->entries().begin())->get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   ASSERT_FALSE(tab->pinned);
   ASSERT_EQ(3U, tab->navigations.size());
@@ -1016,9 +1006,9 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSessionAndTabsPinned) {
   ASSERT_EQ(2U, service_->entries().size());
   // The first entry should come from the session service.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  sessions::TabRestoreService::Window* window =
-      static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  sessions::tab_restore::Window* window =
+      static_cast<sessions::tab_restore::Window*>(entry);
   ASSERT_EQ(1U, window->tabs.size());
   EXPECT_EQ(0, window->selected_tab_index);
   EXPECT_TRUE(window->tabs[0]->pinned);
@@ -1028,7 +1018,7 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSessionAndTabsPinned) {
 
   // Then the closed tab.
   entry = (++service_->entries().begin())->get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
   Tab* tab = static_cast<Tab*>(entry);
   ASSERT_FALSE(tab->pinned);
   ASSERT_EQ(3U, tab->navigations.size());
@@ -1061,9 +1051,9 @@ TEST_F(TabRestoreServiceImplTest, ManyWindowsInSessionService) {
 
   // The first entry should come from the session service.
   Entry* entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  sessions::TabRestoreService::Window* window =
-      static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  sessions::tab_restore::Window* window =
+      static_cast<sessions::tab_restore::Window*>(entry);
   ASSERT_EQ(1U, window->tabs.size());
   EXPECT_EQ(0, window->selected_tab_index);
   EXPECT_EQ(0, window->timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -1093,7 +1083,7 @@ TEST_F(TabRestoreServiceImplTest, TimestampSurvivesRestore) {
   {
     // |entry|/|tab| doesn't survive after RecreateService().
     Entry* entry = service_->entries().front().get();
-    ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+    ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
     Tab* tab = static_cast<Tab*>(entry);
     tab->timestamp = tab_timestamp;
     old_navigations = tab->navigations;
@@ -1115,7 +1105,7 @@ TEST_F(TabRestoreServiceImplTest, TimestampSurvivesRestore) {
 
   // And verify the entry.
   Entry* restored_entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, restored_entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, restored_entry->type);
   Tab* restored_tab = static_cast<Tab*>(restored_entry);
   EXPECT_EQ(
       tab_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds(),
@@ -1142,7 +1132,7 @@ TEST_F(TabRestoreServiceImplTest, StatusCodesSurviveRestore) {
   {
     // |entry|/|tab| doesn't survive after RecreateService().
     Entry* entry = service_->entries().front().get();
-    ASSERT_EQ(sessions::TabRestoreService::TAB, entry->type);
+    ASSERT_EQ(sessions::tab_restore::Type::TAB, entry->type);
     Tab* tab = static_cast<Tab*>(entry);
     old_navigations = tab->navigations;
   }
@@ -1163,7 +1153,7 @@ TEST_F(TabRestoreServiceImplTest, StatusCodesSurviveRestore) {
 
   // And verify the entry.
   Entry* restored_entry = service_->entries().front().get();
-  ASSERT_EQ(sessions::TabRestoreService::TAB, restored_entry->type);
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, restored_entry->type);
   Tab* restored_tab = static_cast<Tab*>(restored_entry);
   ASSERT_EQ(old_navigations.size(), restored_tab->navigations.size());
   for (size_t i = 0; i < restored_tab->navigations.size(); ++i) {
@@ -1312,11 +1302,11 @@ TEST_F(TabRestoreServiceImplTest, TabGroupsRestoredFromSessionData) {
 
   ASSERT_EQ(2u, service_->entries().size());
   Entry* entry = service_->entries().back().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  auto* window = static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  auto* window = static_cast<sessions::tab_restore::Window*>(entry);
   ASSERT_EQ(1u, window->tabs.size());
   EXPECT_EQ(group, window->tabs[0]->group);
-  EXPECT_EQ(group_visual_data, window->tab_groups[group]);
+  EXPECT_EQ(group_visual_data, window->tab_groups[group]->visual_data);
 }
 
 // Ensures tab extra data is restored from previous session.
@@ -1339,8 +1329,8 @@ TEST_F(TabRestoreServiceImplTest, TabExtraDataRestoredFromSessionData) {
 
   ASSERT_EQ(2U, service_->entries().size());
   Entry* entry = service_->entries().back().get();
-  ASSERT_EQ(sessions::TabRestoreService::WINDOW, entry->type);
-  auto* window = static_cast<sessions::TabRestoreService::Window*>(entry);
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  auto* window = static_cast<sessions::tab_restore::Window*>(entry);
   ASSERT_EQ(1U, window->tabs.size());
   ASSERT_EQ(1U, window->tabs[0]->extra_data.size());
   EXPECT_EQ(kSampleData, window->tabs[0]->extra_data[kSampleKey]);

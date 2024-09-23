@@ -21,7 +21,7 @@ EnumTraits<mac_notifications::mojom::NotificationOperation,
       // This is not supported in macOS notifications.
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mac_notifications::mojom::NotificationOperation::kClick;
 }
 
@@ -41,7 +41,7 @@ bool EnumTraits<mac_notifications::mojom::NotificationOperation,
       *output = NotificationOperation::kSettings;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

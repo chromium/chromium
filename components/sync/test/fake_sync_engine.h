@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_status.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -38,6 +39,10 @@ class FakeSyncEngine final : public SyncEngine {
     return authenticated_account_id_;
   }
 
+  ConfigureReason last_configure_reason() const {
+    return last_configure_reason_;
+  }
+
   bool started_handling_invalidations() {
     return started_handling_invalidations_;
   }
@@ -55,7 +60,7 @@ class FakeSyncEngine final : public SyncEngine {
 
   bool IsInitialized() const override;
 
-  void TriggerRefresh(const ModelTypeSet& types) override;
+  void TriggerRefresh(const DataTypeSet& types) override;
 
   void UpdateCredentials(const SyncCredentials& credentials) override;
 
@@ -89,19 +94,16 @@ class FakeSyncEngine final : public SyncEngine {
 
   void ConfigureDataTypes(ConfigureParams params) override;
 
-  void ConnectDataType(ModelType type,
+  void ConnectDataType(DataType type,
                        std::unique_ptr<DataTypeActivationResponse>) override;
-  void DisconnectDataType(ModelType type) override;
+  void DisconnectDataType(DataType type) override;
 
   const SyncStatus& GetDetailedStatus() const override;
-
-  void GetTypesWithUnsyncedData(
-      base::OnceCallback<void(ModelTypeSet)> cb) const override;
 
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
   void GetThrottledDataTypesForTest(
-      base::OnceCallback<void(ModelTypeSet)> cb) const override;
+      base::OnceCallback<void(DataTypeSet)> cb) const override;
 
   void RequestBufferedProtocolEventsAndEnableForwarding() override;
   void DisableProtocolEventForwarding() override;
@@ -128,6 +130,7 @@ class FakeSyncEngine final : public SyncEngine {
   CoreAccountId authenticated_account_id_;
   bool started_handling_invalidations_ = false;
   bool is_next_poll_time_in_the_past_ = false;
+  ConfigureReason last_configure_reason_ = CONFIGURE_REASON_UNKNOWN;
   base::WeakPtrFactory<FakeSyncEngine> weak_ptr_factory_{this};
 };
 

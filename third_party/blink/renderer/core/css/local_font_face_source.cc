@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
+#include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
@@ -52,25 +53,24 @@ bool LocalFontFaceSource::IsLocalFontAvailable(
   return font_available;
 }
 
-scoped_refptr<SimpleFontData>
-LocalFontFaceSource::CreateLoadingFallbackFontData(
+const SimpleFontData* LocalFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
   FontCachePurgePreventer font_cache_purge_preventer;
-  scoped_refptr<SimpleFontData> temporary_font =
-      FontCache::Get().GetLastResortFallbackFont(font_description,
-                                                 kDoNotRetain);
+  const SimpleFontData* temporary_font =
+      FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
-  scoped_refptr<CSSCustomFontData> css_font_data =
-      CSSCustomFontData::Create(this, CSSCustomFontData::kVisibleFallback);
-  return SimpleFontData::Create(temporary_font->PlatformData(), css_font_data);
+  CSSCustomFontData* css_font_data = MakeGarbageCollected<CSSCustomFontData>(
+      this, CSSCustomFontData::kVisibleFallback);
+  return MakeGarbageCollected<SimpleFontData>(&temporary_font->PlatformData(),
+                                              css_font_data);
 }
 
-scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
+const SimpleFontData* LocalFontFaceSource::CreateFontData(
     const FontDescription& font_description,
-    const FontSelectionCapabilities&) {
+    const FontSelectionCapabilities& font_selection_capabilities) {
   if (!IsValid()) {
     ReportFontLookup(font_description, nullptr);
     return nullptr;
@@ -85,9 +85,9 @@ scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
   }
 
   if (IsValid() && IsLoading()) {
-    scoped_refptr<SimpleFontData> fallback_font_data =
+    const SimpleFontData* fallback_font_data =
         CreateLoadingFallbackFontData(font_description);
-    ReportFontLookup(font_description, fallback_font_data.get(),
+    ReportFontLookup(font_description, fallback_font_data,
                      true /* is_loading_fallback */);
     return fallback_font_data;
   }
@@ -109,13 +109,46 @@ scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
   unstyled_description.SetStyle(kNormalSlopeValue);
   unstyled_description.SetWeight(kNormalWeightValue);
 #endif
-  // TODO(https://crbug.com/1302264): Enable passing down of font-palette
-  // information here (font_description.GetFontPalette()).
-  scoped_refptr<SimpleFontData> font_data = FontCache::Get().GetFontData(
+  // We're using the FontCache here to perform local unique lookup, including
+  // potentially doing GMSCore lookups for fonts available through that, mainly
+  // to retrieve and get access to the SkTypeface.
+  const SimpleFontData* unique_lookup_result = FontCache::Get().GetFontData(
       unstyled_description, font_name_, AlternateFontName::kLocalUniqueFace);
-  histograms_.Record(font_data.get());
-  ReportFontLookup(unstyled_description, font_data.get());
-  return font_data;
+
+  sk_sp<SkTypeface> typeface(unique_lookup_result->PlatformData().TypefaceSp());
+
+  // From the SkTypeface, here we're reusing the FontCustomPlatformData code
+  // which performs application of font-variation-settings, optical sizing and
+  // mapping of style (stretch, style, weight) to canonical variation axes. (See
+  // corresponding code in RemoteFontFaceSource). For the size argument,
+  // specifying 0, as the font instances returned from the font cache are
+  // usually memory-mapped, and not kept and decoded in memory as in
+  // RemoteFontFaceSource.
+  FontCustomPlatformData* custom_platform_data =
+      FontCustomPlatformData::Create(typeface, 0);
+  SimpleFontData* font_data_variations_palette_applied =
+      MakeGarbageCollected<SimpleFontData>(
+          custom_platform_data->GetFontPlatformData(
+              font_description.EffectiveFontSize(),
+              font_description.AdjustedSpecifiedSize(),
+              font_description.IsSyntheticBold() &&
+                  font_description.SyntheticBoldAllowed(),
+              font_description.IsSyntheticItalic() &&
+                  font_description.SyntheticItalicAllowed(),
+              font_description.GetFontSelectionRequest(),
+              font_selection_capabilities, font_description.FontOpticalSizing(),
+              font_description.TextRendering(),
+              font_description.GetFontVariantAlternates()
+                  ? font_description.GetFontVariantAlternates()
+                        ->GetResolvedFontFeatures()
+                  : ResolvedFontFeatures(),
+              font_description.Orientation(),
+              font_description.VariationSettings(),
+              font_description.GetFontPalette()));
+
+  histograms_.Record(font_data_variations_palette_applied);
+  ReportFontLookup(unstyled_description, font_data_variations_palette_applied);
+  return font_data_variations_palette_applied;
 }
 
 void LocalFontFaceSource::BeginLoadIfNeeded() {
@@ -133,7 +166,7 @@ void LocalFontFaceSource::BeginLoadIfNeeded() {
 }
 
 void LocalFontFaceSource::NotifyFontUniqueNameLookupReady() {
-  PruneTable();
+  ClearTable();
 
   if (face_->FontLoaded(this)) {
     font_selector_->FontFaceInvalidated(
@@ -169,7 +202,7 @@ void LocalFontFaceSource::Trace(Visitor* visitor) const {
 
 void LocalFontFaceSource::ReportFontLookup(
     const FontDescription& font_description,
-    SimpleFontData* font_data,
+    const SimpleFontData* font_data,
     bool is_loading_fallback) {
   font_selector_->ReportFontLookupByUniqueNameOnly(
       font_name_, font_description, font_data, is_loading_fallback);

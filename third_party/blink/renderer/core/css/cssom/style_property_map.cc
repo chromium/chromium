@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
@@ -35,7 +36,7 @@ CSSValueList* CssValueListForPropertyID(CSSPropertyID property_id) {
     case '/':
       return CSSValueList::CreateSlashSeparated();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -64,6 +65,16 @@ const CSSValue* StyleValueToCSSValue(
   // TODO(https://crbug.com/545324): Move this into a method on
   // CSSProperty when there are more of these cases.
   switch (property_id) {
+    case CSSPropertyID::kAnchorScope: {
+      // The 'all' keyword is tree-scoped.
+      if (const auto* ident =
+              DynamicTo<CSSIdentifierValue>(style_value.ToCSSValue());
+          ident && ident->GetValueID() == CSSValueID::kAll) {
+        return MakeGarbageCollected<cssvalue::CSSScopedKeywordValue>(
+            ident->GetValueID());
+      }
+      break;
+    }
     case CSSPropertyID::kBorderBottomLeftRadius:
     case CSSPropertyID::kBorderBottomRightRadius:
     case CSSPropertyID::kBorderTopLeftRadius:
@@ -235,7 +246,7 @@ const CSSValue* CoerceStyleValueOrString(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

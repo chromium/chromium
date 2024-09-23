@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Ružovohnedá</translation>
 <translation id="249330843868392562">Otvoriť nastavenia prevodu textu na reč</translation>
 <translation id="2497706219848005458">Zelenožltá</translation>
+<translation id="2512979179176933762">zobrazenie okien</translation>
 <translation id="2523609930580546572">Príručka rozšírenia ChromeVox</translation>
 <translation id="2525706221823668172">Klávesové stkratky Chromebooku</translation>
 <translation id="2553108862507765288">gramatická chyba</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Ak chcete prejsť na predchádzajúcu položku, môžete tiež potiahnuť prstom sprava doľava. Vyskúšajte to.</translation>
 <translation id="280499067616661124">Vyhľadávanie ChromeVox na stránke</translation>
-<translation id="2811019999044652585">Ak chcete preskočiť na ďalšie časti obrazovky, napríklad na panel s nástrojmi alebo oblasť oznámení, stlačte kombináciu klávesov Ctrl + Dopredu. Kláves Dopredu sa na Chromebooku nachádza priamo nad klávesom s číslicou 2.</translation>
 <translation id="2811204574343810641">Riadok</translation>
 <translation id="2816868829355607410">Oblasť na precvičovanie: príkazy na preskočenie</translation>
 <translation id="2841013758207633010">Čas</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Oceľovomodrá</translation>
 <translation id="4253168017788158739">Poznámka</translation>
 <translation id="4254798249533888099">Strom</translation>
+<translation id="4259220820964911921">Chcete povoliť ovládanie tvárou?</translation>
 <translation id="4271220233568730077">Ďalší matematický výraz</translation>
 <translation id="4275397969489577657">Povoliť zápis streamovania udalosti do denníka</translation>
 <translation id="4278486392851938658">Žiadny predchádzajúci navštívený odkaz</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Indiánska červená</translation>
 <translation id="4432896207833262240">Označený obsah</translation>
 <translation id="4437615272777527928">Zadajte výraz a vyhľadajte ho tak v ponukách. Výsledkami prechádzajte šípkami nahor a nadol. Ľavou a pravou šípkou upravte textový kurzor a presúvajte sa medzi ponukami</translation>
+<translation id="4453530046591759283">Ak chcete preskočiť na ďalšie časti obrazovky, napríklad na panely s nástrojmi alebo oblasť oznámení, stlačte Ctrl + F1. F1 je prvý kláves napravo od klávesa Escape.</translation>
 <translation id="4457472090507035117">Vybrať aktuálny hlas:</translation>
 <translation id="4476183483923481720">nový riadok</translation>
 <translation id="4479068155583208887">Ohnivá tehlová</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Príloha</translation>
 <translation id="5761219715606611783">Výborne! Naučili ste sa základy dotykového ovládania čítačky ChromeVox. Tento návod si môžete prejsť znova alebo ho pomocou tlačidiel nižšie ukončiť.</translation>
 <translation id="5776001898637896684">Rozšírenie na prevod textu na reč služby Google Enhanced Network</translation>
+<translation id="5783252477644995371">Ovládanie tvárou vám umožňuje ovládať kurzor pohybmi tváre a pohľadom a vykonávať akcie (ako je kliknutie ľavým tlačidlom) gestami tváre, napríklad úsmevom</translation>
 <translation id="5805940204952508776">Klepnite dvoma prstami</translation>
 <translation id="5819072574982403430">Položka stromu</translation>
 <translation id="5822819874379903994">Tmavotyrkysová</translation>
@@ -853,7 +856,7 @@
 <translation id="6910211073230771657">Odstránené</translation>
 <translation id="6910969481785184048">Zapnutie, vypnutie a zastavenie</translation>
 <translation id="6919104639734799681">Zobraziť zoznam tabuliek</translation>
-<translation id="692135145298539227">odstrániť</translation>
+<translation id="692135145298539227">delete (vymazať)</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6949846980769640811">Stredne sýta akvamarínová</translation>
 <translation id="6951482098621102657">Žiadny ďalší nadpis piatej úrovne</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Svetlá krémová</translation>
 <translation id="7095834689119144465">Úprava iba numerického textu</translation>
 <translation id="7096001299300236431">Predchádzajúce médiá</translation>
+<translation id="7096668131290451939">Režim učenia ukončíte opätovným stlačením klávesa Escape</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">zvuková odozva na slová</translation>
 <translation id="7137397390322864165">Lososová</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">Žiadne ďalšie začiarkavacie políčko</translation>
 <translation id="8473540203671727883">Čítať text pod kurzorom myši</translation>
 <translation id="8476408756881832830">Pri hlasovej odozve ChromeVox pozastaviť prehrávanie</translation>
-<translation id="8476508772960940536">prehľad okien</translation>
 <translation id="8480873377842220259">Teraz si preberieme základnú navigáciu. Po obrazovke môžete prechádzať pridržaním klávesa vyhľadávania a stláčaním šípok. Pokračujte stlačením kombinácie klávesa vyhľadávania + šípky doprava.</translation>
 <translation id="8503360654911991865">Znížiť podrobnosť navigácie</translation>
 <translation id="8520472399088452386">Tlačidlo otáčania</translation>

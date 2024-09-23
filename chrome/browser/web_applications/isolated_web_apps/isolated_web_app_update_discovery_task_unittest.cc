@@ -17,8 +17,10 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -27,12 +29,12 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -49,6 +51,7 @@ using base::test::ValueIs;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::VariantWith;
 
 class IsolatedWebAppUpdateDiscoveryTaskTest : public WebAppTest {
  public:
@@ -80,9 +83,10 @@ class IsolatedWebAppUpdateDiscoveryTaskTest : public WebAppTest {
 
   GURL update_manifest_url_ = GURL("https://example.com/update_manifest.json");
 
-  GURL url_ = GURL(base::StrCat(
-      {chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-       kTestEd25519WebBundleId, "/.well-known/_generated_install_page.html"}));
+  GURL url_ = GURL(
+      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    test::GetDefaultEd25519WebBundleId().id(),
+                    "/.well-known/_generated_install_page.html"}));
   IsolatedWebAppUrlInfo url_info_ = *IsolatedWebAppUrlInfo::Create(url_);
 };
 
@@ -186,8 +190,10 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, AppIsNotIwa) {
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest, NoUpdateFound) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
-                            base::Version("3.0.0")));
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"some_folder", /*dev_mode=*/false},
+          base::Version("3.0.0"))
+          .Build());
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
     {
@@ -211,12 +217,13 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
        UpdateAlreadyPending) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
-                            base::Version("1.0.0"),
-                            /*controlled_frame_partitions=*/{},
-                            WebApp::IsolationData::PendingUpdateInfo(
-                                InstalledBundle{.path = base::FilePath()},
-                                base::Version("2.0.0"))));
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"some_folder", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
+              IwaStorageOwnedBundle{"another_folder", /*dev_mode=*/false},
+              base::Version("2.0.0")))
+          .Build());
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
     {
@@ -242,10 +249,10 @@ using IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest =
 TEST_F(IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest, NotFound) {
   AddDummyIsolatedAppToRegistry(
       profile(), url_info_.origin().GetURL(), "installed iwa",
-      WebApp::IsolationData(
-          InstalledBundle{.path = base::FilePath(
-                              FILE_PATH_LITERAL("/foo/bar/old-version.swbn"))},
-          base::Version("1.0.0")));
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"old_folder", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
 
   profile_url_loader_factory().AddResponse(update_manifest_url_.spec(), R"(
       {
@@ -273,18 +280,20 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
  protected:
   void SetUp() override {
     IsolatedWebAppUpdateDiscoveryTaskWebBundleDownloadTest::SetUp();
-
     SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
   }
 
   void InstallIwa(const base::Version installed_version,
-                  const std::optional<WebApp::IsolationData::PendingUpdateInfo>&
+                  const std::optional<IsolationData::PendingUpdateInfo>&
                       pending_update_info = std::nullopt) {
-    AddDummyIsolatedAppToRegistry(
-        profile(), url_info_.origin().GetURL(), "installed iwa",
-        WebApp::IsolationData(installed_bundle_location_, installed_version,
-                              /*controlled_frame_partitions=*/{},
-                              pending_update_info));
+    IsolationData::Builder builder(installed_bundle_location_,
+                                   installed_version);
+    if (pending_update_info) {
+      builder.SetPendingUpdateInfo(*pending_update_info);
+    }
+
+    AddDummyIsolatedAppToRegistry(profile(), url_info_.origin().GetURL(),
+                                  "installed iwa", std::move(builder).Build());
   }
 
   FakeWebContentsManager::FakePageState& CreateUpdateManifesteAndBundle(
@@ -310,12 +319,12 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
 
     auto& page_state =
         fake_web_contents_manager().GetOrCreatePageState(install_url_);
-    page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
     page_state.manifest_url =
         url_info_.origin().GetURL().Resolve("manifest.webmanifest");
     page_state.valid_manifest_for_web_app = true;
-    page_state.opt_manifest =
+    page_state.manifest_before_default_processing =
         CreateDefaultManifest(url_info_.origin().GetURL(), available_version);
 
     return page_state;
@@ -334,12 +343,13 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
     return manifest;
   }
 
-  IsolatedWebAppLocation installed_bundle_location_ = InstalledBundle{
-      .path = base::FilePath(FILE_PATH_LITERAL("/foo/bar/old-version.swbn"))};
+  IsolatedWebAppStorageLocation installed_bundle_location_ =
+      IwaStorageOwnedBundle{"old_folder", /*dev_mode=*/false};
 
-  GURL install_url_ = GURL(base::StrCat(
-      {chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-       kTestEd25519WebBundleId, "/.well-known/_generated_install_page.html"}));
+  GURL install_url_ = GURL(
+      base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    test::GetDefaultEd25519WebBundleId().id(),
+                    "/.well-known/_generated_install_page.html"}));
   IsolatedWebAppUrlInfo url_info_ =
       *IsolatedWebAppUrlInfo ::Create(install_url_);
 };
@@ -362,13 +372,13 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Fails) {
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app,
-              test::IwaIs(Eq("installed iwa"),
-                          test::IsolationDataIs(
-                              Eq(installed_bundle_location_),
-                              Eq(base::Version("1.0.0")),
-                              /*controlled_frame_partitions=*/_,
-                              /*pending_update_info=*/Eq(std::nullopt))))
+  EXPECT_THAT(web_app, test::IwaIs(Eq("installed iwa"),
+                                   test::IsolationDataIs(
+                                       Eq(installed_bundle_location_),
+                                       Eq(base::Version("1.0.0")),
+                                       /*controlled_frame_partitions=*/_,
+                                       /*pending_update_info=*/Eq(std::nullopt),
+                                       /*integrity_block_data=*/_)))
       << task.AsDebugValue();
 }
 
@@ -396,10 +406,10 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Succeeds) {
               Eq(installed_bundle_location_), Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
-                  VariantWith<InstalledBundle>(
-                      Field("path", &InstalledBundle::path,
-                            test::IsInIwaRandomDir(profile()->GetPath()))),
-                  base::Version("3.0.0")))))
+                  Property("variant", &IsolatedWebAppStorageLocation::variant,
+                           VariantWith<IwaStorageOwnedBundle>(_)),
+                  base::Version("3.0.0"), /*integrity_block_data=*/_),
+              /*integrity_block_data=*/_)))
       << task.AsDebugValue();
 }
 
@@ -411,8 +421,9 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
   // point before that update had a chance to be applied).
   InstallIwa(
       base::Version("1.0.0"),
-      WebApp::IsolationData::PendingUpdateInfo(
-          InstalledBundle{.path = base::FilePath()}, base::Version("3.0.0")));
+      IsolationData::PendingUpdateInfo(
+          IwaStorageOwnedBundle{"some_path", /*dev_mode=*/false},
+          base::Version("3.0.0"), /*integrity_block_data=*/std::nullopt));
   CreateUpdateManifesteAndBundle(base::Version("2.0.0"));
 
   Task task(update_manifest_url_, url_info_, fake_provider().scheduler(),
@@ -435,10 +446,11 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
               Eq(installed_bundle_location_), Eq(base::Version("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
-                  VariantWith<InstalledBundle>(
-                      Field("path", &InstalledBundle::path,
-                            test::IsInIwaRandomDir(profile()->GetPath()))),
-                  base::Version("2.0.0")))))
+                  Property("variant", &IsolatedWebAppStorageLocation::variant,
+                           VariantWith<IwaStorageOwnedBundle>(_)),
+                  base::Version("2.0.0"),
+                  /*integrity_block_data=*/_),
+              /*integrity_block_data=*/_)))
       << task.AsDebugValue();
 }
 

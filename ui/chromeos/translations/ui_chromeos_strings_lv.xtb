@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS saimniekdators</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, bloķēja jūsu administrators, detalizēta informācija</translation>
-<translation id="3113153474486991170">Nevarēja atvērt failu “<ph name="PATH" />” šajā atrašanās vietā. Lūdzu, pārkopējiet to uz mapi “Mani faili”, lai to atvērtu.</translation>
 <translation id="3113592018909187986">Atlicis viens mēģinājums. Šo tīklu nevarēsiet lietot, kamēr netiks iestatīts jauns PIN.</translation>
 <translation id="3124404833828281817">Aizsapņojusies persona</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -331,13 +330,14 @@
 <translation id="3619115746895587757">Kapučīno</translation>
 <translation id="3619593063686672873">Nav nesenu videoklipu</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, pārvalda jūsu administrators, informācija</translation>
-<translation id="36451918667380448">Mobilā tīkla nodrošinātājs ir bloķēts. Lai saņemtu atbalstu, sazinieties ar savu nodrošinātāju.</translation>
+<translation id="36451918667380448">Mobilā tīkla operators ir bloķēts. Lai saņemtu atbalstu, sazinieties ar savu nodrošinātāju.</translation>
 <translation id="3645233063072417428">Pārvietoti vienumi: <ph name="NUMBER_OF_ITEMS" />.</translation>
 <translation id="3658269352872031728">Atlasīto failu skaits: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Izmantojot mobilos datus, Google diska sinhronizācija pēc noklusējuma ir atspējota.</translation>
 <translation id="3689865792480713551">Atcelt: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Tīkls numur <ph name="NETWORK_INDEX" /> no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nav aktivizēts, <ph name="CONNECTION_STATUS" />, signāla stiprums procentos ir <ph name="SIGNAL_STRENGTH" />, detalizēta informācija</translation>
 <translation id="3691184985318546178">Singāļu</translation>
+<translation id="3702842351052426940">Iespējams, jūsu SIM karte vai eSIM profils ir deaktivizēts. Mēģiniet nomainīt SIM karti vai eSIM profilu.</translation>
 <translation id="3722341589402358578">Radās kļūda. Iespējams, daži vienumi netika ievietoti atkritnē.</translation>
 <translation id="3726463242007121105">Šo ierīci nevar atvērt, jo tās failu sistēma netiek atbalstīta.</translation>
 <translation id="3727148787322499904">Nomainot šo iestatījumu, tiks ietekmēti visi koplietotie tīkli.</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Šo starpniekserveri ievieš jūsu administrators.</translation>
 <translation id="3830674330436234648">Atskaņošana nav pieejama</translation>
 <translation id="383652340667548381">Serbu valoda</translation>
+<translation id="3839045880592694915">Jūsu mobilo sakaru operators neļauj izveidot savienojumu ar modemu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
-<translation id="3851491607336266896">Savienojums izveidots, ierobežota savienojamība</translation>
 <translation id="3855472144336161447">Vācu Neo 2</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
 <translation id="3866249974567520381">Apraksts</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Nesen atvērtie Microsoft faili ir pārvietoti uz pakalpojumu OneDrive.</translation>
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4017788180641807848">Angļu (ASV), ar Workman tastatūru</translation>
-<translation id="4019998208269143058">Piespraust sadaļai “Ātrā piekļuve failiem”</translation>
 <translation id="4040753847560036377">Nepareizs PUK kods</translation>
 <translation id="4057991113334098539">Notiek aktivizācija...</translation>
 <translation id="4092890906744441904">Īru</translation>
+<translation id="4101601646343868113">Pierakstieties savā mobilajā tīklā un apstipriniet, ka mobilo datu plāns ir aktīvs</translation>
 <translation id="4124731372776320263">Notiek 1 Diska faila sinhronizēšana</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
 <translation id="4131235941541910880">Varat pārvietot nevajadzīgus vienumus uz atkritni</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamilu, ar Tamil99 tastatūru</translation>
 <translation id="5633226425545095130">Pārvietojot šo failu, tas tiks kopīgots ar ikvienu, kas var skatīt kopīgoto mapi “<ph name="DESTINATION_NAME" />”.</translation>
 <translation id="5649768706273821470">Klausīties</translation>
+<translation id="5650895901941743674">Pārbaudiet savu APN konfigurāciju</translation>
 <translation id="5669691691057771421">Ievadiet jauno PIN.</translation>
 <translation id="5678784840044122290">Linux lietojumprogramma būs pieejama jūsu terminālī, un programmā Palaidējs var būt redzama arī tās ikona.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nevar pārtraukt savienojumu ar arhīvu vai virtuālo disku<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" />%, savienojums</translation>
 <translation id="6269630227984243955">Malajiešu</translation>
 <translation id="6271903698064569429">Failus nevar augšupielādēt, jo kopīgā diska “<ph name="SHARED_DRIVE_NAME" />” krātuvē nav pietiekami daudz vietas.</translation>
+<translation id="6279140785485544797">Iespējams, ir beidzies jūsu mobilo datu plāna derīguma termiņš. Sazinieties ar savu mobilo sakaru operatoru, lai saņemtu palīdzību.</translation>
 <translation id="6287852322318138013">Lietotnes atlasīšana šī faila atvēršanai</translation>
 <translation id="6295542640242147836">Bloķēt SIM karti</translation>
 <translation id="6296410173147755564">PUK kods nav derīgs</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arhīvs</translation>
 <translation id="6321303798550928047">Mājoša roka</translation>
 <translation id="6327785803543103246">Tīmekļa starpniekservera automātiskā atklāšana</translation>
-<translation id="6337014272874260727">Atspraust no sadaļas “Ātrā piekļuve failiem”</translation>
 <translation id="6339145975392024142">ASV starptautiskā (PC) tastatūra</translation>
 <translation id="6356685157277930264">Failu atsauksmju logs</translation>
 <translation id="6358884629796491903">Pūķis</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Pašreizējais direktorijs</translation>
 <translation id="6751256176799620176">Atlasīta 1 mape</translation>
 <translation id="6755827872271341378">Chrome OS Flex ierīce</translation>
+<translation id="6777029074498310250">Plašāku informāciju skatiet vietnē <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" />.</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6794539005637808366">Atjaunojiet vienumu vai velciet to uz jaunu mapi ārpus atkritnes.</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamilu, ar InScript tastatūru</translation>
 <translation id="7088615885725309056">Vecāka</translation>
 <translation id="7103992300314999525">Maķedoniešu</translation>
+<translation id="7104338189998813914">Piekļūstot jūsu OneDrive kontam, radās problēma</translation>
 <translation id="7106346894903675391">Iegādāties papildu vietu krātuvē...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' — &lt;em&gt;meklēt Diskā&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannadu, fonētiskā</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Mirkli uzgaidiet!</translation>
 <translation id="7600126690270271294">Serbu</translation>
 <translation id="7603724359189955920">Režģi</translation>
+<translation id="7624010287655004652">Bloķējis cits mobilo sakaru operators.</translation>
 <translation id="7627790789328695202">Diemžēl fails <ph name="FILE_NAME" /> jau pastāv. Pārdēvējiet to un mēģiniet vēlreiz.</translation>
 <translation id="7628656427739290098">Pabeigts: <ph name="PERCENT" />%</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Failu saraksts ir mainīts uz sīktēlu skatu.</translation>
 <translation id="8601932370724196034">Crostini attēla fails</translation>
 <translation id="8609695766746872526">Islandiešu</translation>
+<translation id="8630384863424041081">Ievadiet SIM kartes PIN vai noklusējuma PIN, ko nodrošina mobilo sakaru operators. Sazinieties ar savu mobilo sakaru operatoru, lai saņemtu palīdzību.</translation>
 <translation id="863903787380594467">Nepareizs PIN. Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> — ports</translation>
 <translation id="8656407365183407932">Bija jānoņem jūsu bezsaistes faili</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Šis fails ir konfidenciāls, un uz to attiecas administratora politikā noteikti ierobežojumi.</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8713112442029511308">Maltiešu</translation>
-<translation id="8714138378966541668">Pakalpojumu sniedzēja bloķēts</translation>
 <translation id="8714406895390098252">Velosipēds</translation>
 <translation id="8719721339511222681">Atlasīts vienums “<ph name="ENTRY_NAME" />”.</translation>
 <translation id="872537912056138402">Horvātu valoda</translation>

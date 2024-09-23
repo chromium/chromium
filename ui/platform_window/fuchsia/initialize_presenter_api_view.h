@@ -25,8 +25,8 @@ using FlatlandPresentViewCallback =
         ::fuchsia::ui::views::ViewportCreationToken)>;
 
 // Register and exposes an API that let OzonePlatformScenic present new views.
-// TODO(1241868): Once workstation offers the right FIDL API to open new
-// windows, this can be removed.
+// TODO(crbug.com/42050332): Once workstation offers the right FIDL API to open
+// new windows, this can be removed.
 COMPONENT_EXPORT(PLATFORM_WINDOW)
 void SetScenicViewPresenter(ScenicPresentViewCallback view_presenter);
 

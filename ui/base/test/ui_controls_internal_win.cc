@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/test/ui_controls_internal_win.h"
 
 #include <windows.h>
@@ -574,7 +579,6 @@ bool SendMouseEventsImpl(MouseButton type,
 
     default:
       NOTREACHED();
-      return false;
   }
 
   std::vector<INPUT> input;

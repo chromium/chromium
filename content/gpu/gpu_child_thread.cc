@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/allocator_extension.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -85,7 +84,7 @@ ChildThreadImpl::Options GetOptions(
 
 viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
   viz::VizMainImpl::ExternalDependencies deps;
-  if (!base::PowerMonitor::IsInitialized()) {
+  if (!base::PowerMonitor::GetInstance()->IsInitialized()) {
     deps.power_monitor_source =
         std::make_unique<base::PowerMonitorDeviceSource>();
   }
@@ -239,7 +238,6 @@ void GpuChildThread::OnMemoryPressure(
   if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
     return;
 
-  base::allocator::ReleaseFreeMemory();
   if (viz_main_.discardable_shared_memory_manager())
     viz_main_.discardable_shared_memory_manager()->ReleaseFreeMemory();
   SkGraphics::PurgeAllCaches();

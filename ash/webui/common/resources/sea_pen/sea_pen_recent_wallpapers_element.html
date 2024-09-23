@@ -1,5 +1,6 @@
 <style include="wallpaper common sea-pen">
   :host {
+    display: block;
     overflow: hidden;
   }
 
@@ -40,28 +41,29 @@
   .menu-icon-container-inner {
     align-items: flex-end;
     background-color: var(--cros-bg-color);
-    border-bottom-right-radius: var(--personalization-app-grid-item-border-radius);
+    /* Ensure container does not overlay the focus outline. */
+    border-bottom-right-radius: 12px;
     border-top-left-radius: 50%;
     bottom: 0;
     display: flex;
-    height: 26px;
+    height: 28px;
     justify-content: flex-end;
     position: absolute;
     right: 0;
-    width: 26px;
+    width: 28px;
   }
 
   div[class^="menu-icon-container-shadow"] {
-    height: 12px;
+    height: 10px;
     overflow: hidden;
     position: absolute;
-    width: 12px;
+    width: 10px;
   }
 
   div[class^="menu-icon-container-shadow"]::before {
     border-bottom-right-radius: 100%;
     bottom: 0;
-    box-shadow: 0px 12px 0px 12px var(--cros-bg-color);
+    box-shadow: 0px 10px 0px 10px var(--cros-bg-color);
     content: '';
     height: 100%;
     position: absolute;
@@ -70,44 +72,95 @@
   }
 
   .menu-icon-container-shadow-left {
-    right: 26px;
+    bottom: 0;
+    right: 28px;
   }
 
   .menu-icon-container-shadow-top {
-    bottom: 26px;
+    bottom: 28px;
+    right: 0;
   }
 
   .menu-icon-button {
     --cr-icon-button-size: 20px;
     background-color: var(--cros-bg-color);
-    bottom: 1px;
+    bottom: 2px;
     margin-inline: 0;
     position: absolute;
+    right: 2px;
+  }
+
+  .menu-icon-button:focus-visible:focus {
+    box-shadow: none;
+    outline: 2px solid var(--cros-sys-focus_ring);
+    outline-offset: 1px;
   }
 
   .dropdown-item > iron-icon {
-    margin-inline-end: 8px;
+    --iron-icon-fill-color: var(--cros-sys-on_surface);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    margin-inline-end: 16px;
   }
 
-  .more-like-this-option,
-  .wallpaper-info-option {
-    display: none;
+  #wallpaperInfoDialog::part(dialog) {
+    border-radius: 20px;
+    /* Info dialog should not scroll with the page. This keeps the dialog
+     * centered in the screen. */
+    position: fixed;
+  }
+
+  @media (max-width: 671px) {
+    #wallpaperInfoDialog::part(dialog) {
+      width: 440px;
+    }
+  }
+
+  #wallpaperInfoTitle {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-display-7-font);
+    padding: 32px 32px 16px;
+  }
+
+  #wallpaperInfoBody {
+    padding: 0 32px;
+  }
+
+  #wallpaperInfoBody:focus {
+    outline: none;
+  }
+
+  #wallpaperInfoBody p {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-1-font);
+    margin: 0 0 16px;
+  }
+
+  #wallpaperInfoButtonContainer {
+    padding: 16px 32px 28px;
+  }
+
+  #wallpaperInfoCloseButton {
+    border-radius: 16px;
   }
 </style>
-<template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImages_)]]">
-  <h2 class="wallpaper-collections-heading">[[i18n('seaPenRecentWallpapersHeading')]]</h2>
+<template is="dom-if" if="[[shouldShowRecentlyUsedWallpapers_(recentImagesToDisplay_)]]">
+  <h2 id="recentImagesHeading" class="wallpaper-collections-heading">[[getRecentPoweredByGoogleMessage_()]]</h2>
   <iron-list id="grid"
       items="[[recentImagesToDisplay_]]"
       as="image"
       grid
+      aria-labelledby="recentImagesHeading"
       aria-setsize$="[[recentImagesToDisplay_.length]]"
       role="listbox">
     <template>
       <div class="recent-image-container">
         <wallpaper-grid-item
-            class="sea-pen-image"
+            class="sea-pen-image recent-used-image"
+            disabled="[[isRecentImageLoading_(image, recentImageDataLoading_)]]"
             index="[[index]]"
             data-sea-pen-image
+            aria-label$="[[getAriaLabel_(image, recentImageData_, recentImageDataLoading_)]]"
             aria-posinset$="[[getAriaIndex_(index)]]"
             on-wallpaper-grid-item-selected="onRecentImageSelected_"
             role="option"
@@ -117,42 +170,56 @@
         </wallpaper-grid-item>
         <div class="menu-icon-container">
           <div class="menu-icon-container-inner">
-            <cr-icon-button class="menu-icon-button" data-id$="[[index]]" iron-icon="cr:more-vert"
-              role="button" on-click="onClickMenuIcon_">
+            <cr-icon-button
+                class="menu-icon-button"
+                data-id$="[[index]]"
+                iron-icon="cr:more-vert"
+                aria-label$="[[i18n('seaPenRecentImageMenuButton')]]"
+                aria-description$="[[getAriaLabel_(image, recentImageData_, recentImageDataLoading_)]]"
+                role="button"
+                on-click="onClickMenuIcon_"
+                tabindex$="[[tabIndex]]">
             </cr-icon-button>
           </div>
           <div class="menu-icon-container-shadow-left"></div>
           <div class="menu-icon-container-shadow-top"></div>
         </div>
-        <cr-action-menu class="action-menu-container">
-          <button data-id$="[[index]]" class="dropdown-item more-like-this-option"
-              on-click="onClickMoreLikeThis_">
-            <iron-icon icon="cr:add"></iron-icon>
-            [[i18n('seaPenCreateMore')]]
-          </button>
+        <cr-action-menu
+            class="action-menu-container"
+            accessibility-label="[[i18n('seaPenRecentImageMenuButton')]]"
+            role-description="[[i18n('seaPenMenuRoleDescription')]]">
+          <template is="dom-if" if="[[shouldShowCreateMoreButton_(image, recentImageData_, recentImageDataLoading_)]]" restamp>
+            <button data-id$="[[index]]" class="dropdown-item create-more-option"
+                on-click="onClickCreateMore_">
+              <iron-icon icon="cr:add"></iron-icon>
+              [[i18n('seaPenCreateMore')]]
+            </button>
+          </template>
           <button class="dropdown-item delete-wallpaper-option"
               on-click="onClickDeleteWallpaper_">
             <iron-icon icon="sea-pen:delete"></iron-icon>
             [[i18n('seaPenDeleteWallpaper')]]
           </button>
-          <button data-id$="[[index]]" class="dropdown-item wallpaper-info-option"
-              on-click="onClickWallpaperInfo_">
-            <iron-icon icon="cr:info-outline"></iron-icon>
-            [[i18n('seaPenAbout')]]
-          </button>
+          <template is="dom-if" if="[[shouldShowWallpaperInfoButton_(image, recentImageData_, recentImageDataLoading_)]]" restamp>
+            <button data-id$="[[index]]" class="dropdown-item wallpaper-info-option"
+                on-click="onClickWallpaperInfo_">
+              <iron-icon icon="cr:info-outline"></iron-icon>
+              [[i18n('seaPenAbout')]]
+            </button>
+          </template>
         </cr-action-menu>
         <template is="dom-if" if="[[shouldShowWallpaperInfoDialog_(index, currentShowWallpaperInfoDialog_)]]" restamp>
           <cr-dialog id="wallpaperInfoDialog" data-id$="[[index]]" on-close="onCloseDialog_" show-on-attach>
-            <div slot="body">
-              <h2>[[i18n('seaPenAboutDialogTitle')]]</h2>
-              <p>
+            <div id="wallpaperInfoTitle" slot="title">[[getAboutDialogTitle_()]]</div>
+            <div id="wallpaperInfoBody" slot="body">
+              <p class="about-prompt-info">
                 [[getWallpaperInfoPromptMessage_(image, recentImageData_, recentImageDataLoading_)]]
               </p>
-              <p>
+              <p class="about-date-info">
                 [[getWallpaperInfoDateMessage_(image, recentImageData_, recentImageDataLoading_)]]
               </p>
             </div>
-            <div slot="button-container">
+            <div id="wallpaperInfoButtonContainer" slot="button-container">
               <cr-button id="wallpaperInfoCloseButton" class="action-button primary" on-click="onCloseDialog_">
                 [[i18n('seaPenAboutDialogClose')]]
               </cr-button>

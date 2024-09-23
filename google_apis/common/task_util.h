@@ -72,7 +72,7 @@ base::RepeatingCallback<void(Args...)> CreateComposedCallback(
 //
 // TODO(tzik): Take FROM_HERE from the caller, and propagate it to the runner.
 //
-// TODO(crbug.com/1411753): Replace with base::BindPostTaskToCurrentDefault.
+// TODO(crbug.com/40254958): Replace with base::BindPostTaskToCurrentDefault.
 template <typename Sig>
 base::OnceCallback<Sig> CreateRelayCallback(base::OnceCallback<Sig> callback) {
   return CreateComposedCallback(

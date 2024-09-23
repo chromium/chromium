@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited flipped'",
+      "name": "LayoutBlockFlow DIV class='composited flipped'",
       "bounds": [250, 200],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited box'",
+      "name": "LayoutBlockFlow DIV class='composited box'",
       "position": [-95, 0],
       "bounds": [195, 100],
       "backgroundColor": "#0000FF",

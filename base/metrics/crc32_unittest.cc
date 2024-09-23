@@ -6,31 +6,26 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
-// Table was generated similarly to sample code for CRC-32 given on:
-// http://www.w3.org/TR/PNG/#D-CRCAppendix.
-TEST(Crc32Test, TableTest) {
-  for (int i = 0; i < 256; ++i) {
-    uint32_t checksum = i;
-    for (int j = 0; j < 8; ++j) {
-      const uint32_t kReversedPolynomial = 0xEDB88320L;
-      if (checksum & 1)
-        checksum = kReversedPolynomial ^ (checksum >> 1);
-      else
-        checksum >>= 1;
-    }
-    EXPECT_EQ(kCrcTable[i], checksum);
-  }
-}
-
-// A CRC of nothing should always be zero.
 TEST(Crc32Test, ZeroTest) {
   span<const uint8_t> empty_data;
   EXPECT_EQ(0U, Crc32(0, empty_data));
+}
+
+TEST(Crc32Test, EmptyNonzeroTest) {
+  span<const uint8_t> empty_data;
+  EXPECT_EQ(99U, Crc32(99, empty_data));
+}
+
+TEST(Crc32Test, NonemptyTest) {
+  std::array<uint8_t, 5> arr = {1, 2, 3, 4, 5};
+  EXPECT_EQ(0x81296ee9U, Crc32(0, arr));
 }
 
 }  // namespace base

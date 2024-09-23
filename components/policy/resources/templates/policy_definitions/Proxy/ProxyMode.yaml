@@ -40,7 +40,7 @@ items:
   name: ProxyUseSystem
   value: system
 owners:
-- pmarko@chromium.org
+- acostinas@google.com
 - file://components/proxy_config/OWNERS
 schema:
   enum:

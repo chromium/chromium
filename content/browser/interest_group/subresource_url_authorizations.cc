@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
@@ -43,11 +44,11 @@ void SubresourceUrlAuthorizations::AuthorizeSubresourceUrls(
     // which is per frame, so as long as the page doesn't alter the <script
     // type="webbundle"> for the subresource, the bundle_url should be the same.
     //
-    // TODO(crbug.com/1380462): Once we have shared-ownership handles to bundle
+    // TODO(crbug.com/40876285): Once we have shared-ownership handles to bundle
     // subresources, allow sites to alter their <script> tags after calling
     // runAdAuction().
     //
-    // TODO(crbug.com/1320908): If the tokens match, but the bundle URLs don't,
+    // TODO(crbug.com/40223695): If the tokens match, but the bundle URLs don't,
     // report a bad mojo message from the renderer.
     ++it->second.count;
 
@@ -61,11 +62,13 @@ void SubresourceUrlAuthorizations::AuthorizeSubresourceUrls(
 void SubresourceUrlAuthorizations::OnWorkletHandleDestruction(
     const AuctionWorkletManager::WorkletHandle* worklet_handle) {
   auto per_handle_it = subresource_urls_per_handle_.find(worklet_handle);
-  DCHECK(per_handle_it != subresource_urls_per_handle_.end());
+  CHECK(per_handle_it != subresource_urls_per_handle_.end(),
+        base::NotFatalUntil::M130);
   for (const GURL& subresource_url : per_handle_it->second) {
     auto authorized_urls_it =
         authorized_subresource_urls_.find(subresource_url);
-    DCHECK(authorized_urls_it != authorized_subresource_urls_.end());
+    CHECK(authorized_urls_it != authorized_subresource_urls_.end(),
+          base::NotFatalUntil::M130);
     if (--authorized_urls_it->second.count <= 0)
       authorized_subresource_urls_.erase(authorized_urls_it);
   }

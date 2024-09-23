@@ -3,6 +3,10 @@
     overflow: hidden;
   }
 
+  #templateHeading {
+    margin-top: 18px;
+  }
+
   iron-list {
     width: 100%;
   }
@@ -21,18 +25,30 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 4px;
+    text-wrap: wrap;
   }
 
   wallpaper-grid-item[data-sea-pen-image]::part(text) {
     position: unset;
   }
+
+  wallpaper-grid-item:hover::part(image) {
+    filter: brightness(55%);
+  }
+
+  wallpaper-grid-item::part(textShadow) {
+    background: linear-gradient(rgba(var(--google-grey-900-rgb), 0),
+        rgba(var(--google-grey-900-rgb), 40%));
+    height: 100%;
+  }
 </style>
 <!-- TODO(b/308200616): Add real text -->
-<h2 class="wallpaper-collections-heading">[[i18n('seaPenTemplateHeading')]]</h2>
+<h2 id="templateHeading" class="wallpaper-collections-heading">[[i18n('seaPenTemplateHeading')]]</h2>
 <iron-list id="grid"
     items="[[seaPenTemplates_]]"
     as="template"
     grid
+    aria-labelledby="templateHeading"
     aria-setsize$="[[seaPenTemplates_.length]]"
     role="listbox">
   <template>
@@ -68,5 +84,6 @@
           </template>
         </div>
       </template>
+    </wallpaper-grid-item>
   </template>
 </iron-list>

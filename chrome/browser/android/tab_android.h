@@ -16,10 +16,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
+#include "chrome/browser/android/tab_android_data_provider.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/sessions/core/session_id.h"
+#include "tab_android_data_provider.h"
 
 class GURL;
 class Profile;
@@ -37,7 +39,8 @@ class DevToolsAgentHost;
 class WebContents;
 }  // namespace content
 
-class TabAndroid : public base::SupportsUserData {
+class TabAndroid : public TabAndroidDataProvider,
+                   public base::SupportsUserData {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -65,13 +68,19 @@ class TabAndroid : public base::SupportsUserData {
 
   TabAndroid(JNIEnv* env,
              const base::android::JavaRef<jobject>& obj,
-             const base::android::JavaRef<jobject>& profile,
+             Profile* profile,
              int tab_id);
 
   TabAndroid(const TabAndroid&) = delete;
   TabAndroid& operator=(const TabAndroid&) = delete;
 
   ~TabAndroid() override;
+
+  // TabAndroidDataProvider
+  SessionID GetWindowId() const override;
+  int GetAndroidId() const override;
+  std::unique_ptr<WebContentsStateByteBuffer> GetWebContentsByteBuffer()
+      override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -88,10 +97,6 @@ class TabAndroid : public base::SupportsUserData {
   // the Tab object held by caller is likely also not valid.
   Profile* profile() const { return profile_.get(); }
 
-  // Return specific id information regarding this TabAndroid.
-  SessionID window_id() const { return session_window_id_; }
-
-  int GetAndroidId() const;
   bool IsNativePage() const;
   int GetLaunchType() const;
   int GetUserAgent() const;
@@ -131,6 +136,8 @@ class TabAndroid : public base::SupportsUserData {
   bool IsCustomTab();
   bool IsHidden();
 
+  bool IsTrustedWebActivity();
+
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.
@@ -148,6 +155,7 @@ class TabAndroid : public base::SupportsUserData {
       const base::android::JavaParamRef<jobject>& jweb_contents_delegate,
       const base::android::JavaParamRef<jobject>&
           jcontext_menu_populator_factory);
+  void InitializeAutofillIfNecessary(JNIEnv* env);
   void UpdateDelegates(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jweb_contents_delegate,
@@ -172,10 +180,6 @@ class TabAndroid : public base::SupportsUserData {
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
 
-  // This should never return null, unless it is called in a state where no
-  // tabs exist (such as on FRE), which should never happen. If it is called
-  // then, a nullptr will be returned and must be handled accordingly.
-  std::unique_ptr<WebContentsStateByteBuffer> GetWebContentsByteBuffer();
   base::WeakPtr<TabAndroid> GetWeakPtr();
 
  private:

@@ -6,8 +6,7 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter1.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -24,8 +23,7 @@
         "timestamp": "1",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -41,7 +39,6 @@
       {
         "timestamp": "1000",
         "registration_request": {
-          "attribution_src_url": "https://reporter1.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -62,7 +59,6 @@
       {
         "timestamp": "1001",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -83,7 +79,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
       {
         "payload": {

@@ -105,13 +105,15 @@ void PartialMagnifierController::OnLocatedEvent(
   const bool palette_contains_point =
       palette_utils::PaletteContainsPointInScreen(screen_point);
   // If the stylus is pressed on the palette icon or widget, do not activate.
-  if (event->type() == ui::ET_TOUCH_PRESSED && !palette_contains_point) {
+  if (event->type() == ui::EventType::kTouchPressed &&
+      !palette_contains_point) {
     SetActive(true);
   }
 
-  if (event->type() == ui::ET_TOUCH_RELEASED ||
-      event->type() == ui::ET_TOUCH_CANCELLED)
+  if (event->type() == ui::EventType::kTouchReleased ||
+      event->type() == ui::EventType::kTouchCancelled) {
     SetActive(false);
+  }
 
   if (!is_active_)
     return;

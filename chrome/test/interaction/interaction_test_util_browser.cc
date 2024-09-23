@@ -50,8 +50,8 @@ class PixelTestUi : public TestBrowserUi {
   ~PixelTestUi() override = default;
 
   // TestBrowserUi:
-  void ShowUi(const std::string& name) override { NOTREACHED(); }
-  void WaitForUserDismissal() override { NOTREACHED(); }
+  void ShowUi(const std::string& name) override { NOTREACHED_IN_MIGRATION(); }
+  void WaitForUserDismissal() override { NOTREACHED_IN_MIGRATION(); }
 
   bool VerifyUi() override {
     return VerifyUiWithResult() != ui::test::ActionResult::kFailed;
@@ -74,6 +74,38 @@ class PixelTestUi : public TestBrowserUi {
   std::string screenshot_name_;
   std::string baseline_;
 };
+
+views::View* GetScreenshotTargetView(ui::TrackedElement* element) {
+  if (auto* const view_el = element->AsA<views::TrackedElementViews>()) {
+    return view_el->view();
+  } else if (auto* const page_el = element->AsA<TrackedElementWebContents>()) {
+    return page_el->owner()->GetWebView();
+  }
+  return nullptr;
+}
+
+ui::test::ActionResult CompareScreenshotCommon(
+    views::View* view,
+    const std::string& screenshot_name,
+    const std::string& baseline_cl) {
+  // pixel_browser_tests and pixel_interactive_ui_tests specify this command
+  // line, which is checked by TestBrowserUi before attempting any screen
+  // capture; otherwise screenshotting is a silent no-op.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kVerifyPixels)) {
+    LOG(WARNING)
+        << "Cannot take screenshot: pixel test command line not set. This is "
+           "normal for non-pixel-test jobs such as vanilla browser_tests.";
+    return ui::test::ActionResult::kKnownIncompatible;
+  }
+
+  PixelTestUi pixel_test_ui(view, screenshot_name, baseline_cl);
+  ui::test::ActionResult result = pixel_test_ui.VerifyUiWithResult();
+  if (result == ui::test::ActionResult::kKnownIncompatible) {
+    LOG(WARNING) << "Current platform does not support pixel tests.";
+  }
+  return result;
+}
 
 // Special handler for browsers and browser tab strips that enables SelectTab().
 class InteractionTestUtilSimulatorBrowser
@@ -235,9 +267,11 @@ class InteractionTestUtilSimulatorBrowser
       return ui::test::ActionResult::kNotAttempted;
     auto* const view = element->AsA<views::TrackedElementViews>()->view();
     if (auto* const omnibox = views::AsViewClass<OmniboxViewViews>(view)) {
-      ui::KeyEvent press(ui::ET_KEY_PRESSED, ui::VKEY_RETURN, ui::EF_NONE);
+      ui::KeyEvent press(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                         ui::EF_NONE);
       omnibox->OnKeyEvent(&press);
-      ui::KeyEvent release(ui::ET_KEY_RELEASED, ui::VKEY_RETURN, ui::EF_NONE);
+      ui::KeyEvent release(ui::EventType::kKeyReleased, ui::VKEY_RETURN,
+                           ui::EF_NONE);
       omnibox->OnKeyEvent(&release);
       return ui::test::ActionResult::kSucceeded;
     }
@@ -273,32 +307,23 @@ Browser* InteractionTestUtilBrowser::GetBrowserFromContext(
 ui::test::ActionResult InteractionTestUtilBrowser::CompareScreenshot(
     ui::TrackedElement* element,
     const std::string& screenshot_name,
-    const std::string& baseline) {
-  views::View* view = nullptr;
-  if (auto* const view_el = element->AsA<views::TrackedElementViews>()) {
-    view = view_el->view();
-  } else if (auto* const page_el = element->AsA<TrackedElementWebContents>()) {
-    view = page_el->owner()->GetWebView();
-  }
+    const std::string& baseline_cl) {
+  views::View* const view = GetScreenshotTargetView(element);
   if (!view) {
     return ui::test::ActionResult::kNotAttempted;
   }
+  return CompareScreenshotCommon(view, screenshot_name, baseline_cl);
+}
 
-  // pixel_browser_tests and pixel_interactive_ui_tests specify this command
-  // line, which is checked by TestBrowserUi before attempting any screen
-  // capture; otherwise screenshotting is a silent no-op.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kVerifyPixels)) {
-    LOG(WARNING)
-        << "Cannot take screenshot: pixel test command line not set. This is "
-           "normal for non-pixel-test jobs such as vanilla browser_tests.";
-    return ui::test::ActionResult::kKnownIncompatible;
+// static
+ui::test::ActionResult InteractionTestUtilBrowser::CompareSurfaceScreenshot(
+    ui::TrackedElement* element_in_surface,
+    const std::string& screenshot_name,
+    const std::string& baseline_cl) {
+  views::View* const view = GetScreenshotTargetView(element_in_surface);
+  if (!view || !view->GetWidget()) {
+    return ui::test::ActionResult::kNotAttempted;
   }
-
-  PixelTestUi pixel_test_ui(view, screenshot_name, baseline);
-  ui::test::ActionResult result = pixel_test_ui.VerifyUiWithResult();
-  if (result == ui::test::ActionResult::kKnownIncompatible) {
-    LOG(WARNING) << "Current platform does not support pixel tests.";
-  }
-  return result;
+  return CompareScreenshotCommon(view->GetWidget()->GetRootView(),
+                                 screenshot_name, baseline_cl);
 }

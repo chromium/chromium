@@ -118,17 +118,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   // Applies the wake-on-wifi-allowed feature flag to WiFi devices.
   void ApplyWakeOnWifiAllowedToShill();
 
-  // Applies the passpoint-arc-support feature flag to WiFi devices.
-  void ApplyPasspointInterworkingSelectEnabledToShill();
-
   // Applies the current value of |usb_ethernet_mac_address_source_| to primary
   // enabled USB Ethernet device. Does nothing if MAC address source is not
   // specified yet.
   void ApplyUsbEthernetMacAddressSourceToShill();
-
-  // Applies the current value of the |cellular-use-attach-apn| flag to all
-  // existing cellular devices of Shill.
-  void ApplyUseAttachApnToShill();
 
   // Utility function for applying enabled setting of WiFi features that needs
   // to check if the feature is supported first.
@@ -196,8 +189,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
   WifiFeatureSupport wake_on_wifi_supported_ =
       WifiFeatureSupport::NOT_REQUESTED;
   bool wake_on_wifi_allowed_ = false;
-  WifiFeatureSupport passpoint_supported_ = WifiFeatureSupport::SUPPORTED;
-  bool passpoint_allowed_ = false;
 
   std::string usb_ethernet_mac_address_source_;
   std::string primary_enabled_usb_ethernet_device_path_;

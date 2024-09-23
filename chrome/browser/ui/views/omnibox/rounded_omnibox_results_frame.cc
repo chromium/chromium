@@ -45,6 +45,59 @@ struct WidgetEventPair {
   std::unique_ptr<ui::MouseEvent> event;
 };
 
+#if BUILDFLAG(IS_MAC)
+views::Widget* GetImmersiveFullscreenWidgetForEvent(
+    views::View* this_view,
+    const ui::MouseEvent* this_event) {
+  views::Widget* parent_widget = this_view->GetWidget()->parent();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      parent_widget->GetNativeWindow());
+
+  // If the results window is not a child of the overlay widget we are not in
+  // immersive fullscreen.
+  if (browser_view->overlay_widget() != parent_widget) {
+    return nullptr;
+  }
+
+  {
+    // If the event is located in the location bar send the event to the overlay
+    // widget to handle text selection.
+    gfx::Point event_location = this_event->location();
+    views::View::ConvertPointToScreen(this_view, &event_location);
+    views::View::ConvertPointFromScreen(browser_view->GetLocationBarView(),
+                                        &event_location);
+    if (browser_view->GetLocationBarView()->HitTestPoint(event_location)) {
+      return browser_view->overlay_widget();
+    }
+  }
+
+  {
+    // If the event is located in the content view send the event to the browser
+    // widget.
+    gfx::Point event_location = this_event->location();
+    views::View::ConvertPointToScreen(this_view, &event_location);
+    views::View::ConvertPointFromScreen(browser_view->contents_container(),
+                                        &event_location);
+    if (browser_view->contents_container()->HitTestPoint(event_location)) {
+      return browser_view->GetWidget();
+    }
+  }
+
+  // In immersive fullscreen with tabs enabled the floating results shadow
+  // spreads into the tab strip area which is hosted in yet another separate
+  // widget, the tab widget. Send the rest of the events to the tab widget. This
+  // will allow for tab strip interaction in the area covered by the shadow and
+  // accurate tab hover card dismissal.
+  if (browser_view->tab_overlay_widget()) {
+    return browser_view->tab_overlay_widget();
+  }
+
+  // If immersive fullscreen with tabs is not enabled, send events to the
+  // overlay widget for tab strip interaction in the area covered by the shadow.
+  return browser_view->overlay_widget();
+}
+#endif
+
 WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
                                         const ui::MouseEvent* this_event) {
   // Note that the floating results view is a top-level widget, so hop up a
@@ -62,29 +115,10 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
 // handle the event.
 // TODO(http://crbug.com/1462791): Remove custom event handling.
 #if BUILDFLAG(IS_MAC)
-  views::Widget* top_level = nullptr;
-  BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-      parent_widget->GetNativeWindow());
-  if (browser_view->overlay_widget() == parent_widget) {
-    // In immersive fullscreen the floating results shadow spreads into the tab
-    // strip area which is hosted in a separate widget. Decide where to send the
-    // event. This will allow for accurate tab hover card dismissal when the
-    // results window is on screen.
-    top_level = browser_view->overlay_widget();
-    if (browser_view->tab_overlay_widget()) {
-      gfx::Point event_location = this_event->location();
-      views::View::ConvertPointToScreen(this_view, &event_location);
-      views::View::ConvertPointFromScreen(
-          browser_view->tab_overlay_widget()->GetRootView(), &event_location);
-      if (browser_view->tab_overlay_widget()->GetRootView()->HitTestPoint(
-              event_location)) {
-        top_level = browser_view->tab_overlay_widget();
-      }
-    }
-  } else {
-    top_level = parent_widget->GetTopLevelWidgetForNativeView(
-        parent_widget->GetNativeView());
-  }
+  views::Widget* top_level =
+      GetImmersiveFullscreenWidgetForEvent(this_view, this_event)
+          ?: parent_widget->GetTopLevelWidgetForNativeView(
+                 parent_widget->GetNativeView());
 #else
   views::Widget* top_level = parent_widget->GetTopLevelWidgetForNativeView(
       parent_widget->GetNativeView());
@@ -194,16 +228,8 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 
   // Use rounded corners.
-  bool cr23_expanded_shape =
-      base::FeatureList::IsEnabled(omnibox::kExpandedStateShape) ||
-      features::GetChromeRefresh2023Level() ==
-          features::ChromeRefresh2023Level::kLevel2;
-  int corner_radius =
-      cr23_expanded_shape
-          ? views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::ShapeContextTokens::kOmniboxExpandedRadius)
-          : views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                views::Emphasis::kHigh);
+  int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kOmniboxExpandedRadius);
   contents_host_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(corner_radius));
   contents_host_->layer()->SetIsFastRoundedCorner(true);
@@ -256,12 +282,8 @@ int RoundedOmniboxResultsFrame::GetNonResultSectionHeight() {
 gfx::Insets RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets() {
   if (ui::TouchUiController::Get()->touch_ui()) {
     return gfx::Insets::TLBR(6, 1, 5, 1);
-  } else if (base::FeatureList::IsEnabled(omnibox::kExpandedStateHeight) ||
-             features::GetChromeRefresh2023Level() ==
-                 features::ChromeRefresh2023Level::kLevel2) {
-    return gfx::Insets::VH(5, 6);
   }
-  return gfx::Insets::VH(4, 6);
+  return gfx::Insets::VH(5, 6);
 }
 
 // static

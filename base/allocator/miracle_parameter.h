@@ -14,7 +14,7 @@
 // dependency cycle of (base->miracle_parameter->base).
 // Eventually the miracle_parameter component will have a public interface in
 // //base/ and this could be removed.
-// TODO(crbug.com/1475915): remove miracle_parameter from
+// TODO(crbug.com/40279826): remove miracle_parameter from
 // //base/allocator/.
 
 namespace base {

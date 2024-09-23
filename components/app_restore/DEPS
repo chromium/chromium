@@ -1,6 +1,6 @@
 include_rules = [
   "+ash/constants",
-  "+chromeos/ui/base/window_state_type.h",
+  "+chromeos/ui/base",
   "+components/app_constants/constants.h",
   "+components/account_id/account_id.h",
   "+components/services/app_service/public",

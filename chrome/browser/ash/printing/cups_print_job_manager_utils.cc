@@ -47,7 +47,7 @@ CupsPrintJob::State ConvertState(::printing::CupsJob::JobState state) {
       break;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 
   return CupsPrintJob::State::STATE_NONE;
 }

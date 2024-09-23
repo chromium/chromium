@@ -59,4 +59,8 @@ void OfflineLoginScreenHandler::ShowPasswordMismatchMessage() {
   CallExternalAPI("showPasswordMismatchMessage");
 }
 
+base::WeakPtr<OfflineLoginView> OfflineLoginScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

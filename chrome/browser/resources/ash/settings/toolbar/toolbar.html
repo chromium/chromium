@@ -1,0 +1,158 @@
+<style include="cr-icons cr-hidden-style settings-shared">
+  :host {
+    align-items: center;
+    background-color: var(--settings-base-bg-color);
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    height: var(--settings-toolbar-height);
+    padding-top: var(--settings-toolbar-padding-top);
+  }
+
+  h1 {
+    flex: 1;
+    font-size: 123%;
+    font-weight: 500;
+    letter-spacing: .25px;
+    line-height: normal;
+    margin-inline-start: 8px;
+    padding-inline-end: 12px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) h1 {
+    color: var(--cros-sys-primary);
+    font: var(--cros-title-1-font);
+  }
+
+  #leftContent {
+    position: relative;
+    transition: opacity 100ms;
+  }
+
+  #leftSpacer {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    padding-inline-start: var(--settings-toolbar-padding-inline-start);
+    width: var(--settings-menu-width);
+  }
+
+  :host([narrow]) #leftSpacer {
+    width: 20px;
+    padding-inline-start: var(--settings-toolbar-padding-inline-start-narrow);
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: currentColor;
+    --cr-icon-button-size: 32px;
+    min-width: 32px;
+  }
+
+  #centeredContent {
+    display: flex;
+    flex: 1 1 0;
+    justify-content: center;
+  }
+
+  #rightSpacer {
+    padding-inline-end: 8px;
+  }
+
+  :host([narrow]) #centeredContent {
+    position: absolute;
+    width: 100%;
+    /* #centeredContent should always be below #leftContent */
+    z-index: -1;
+  }
+
+  :host([narrow]:not([showing-search_])) #centeredContent {
+    justify-content: flex-end;
+  }
+
+  :host([has-overlay]) {
+    transition: visibility var(--cr-toolbar-overlay-animation-duration);
+    visibility: hidden;
+  }
+
+  #settingsTitle {
+    white-space: nowrap;
+  }
+
+  :host([narrow][showing-search_]) #settingsTitle {
+    display: none;
+  }
+
+  :host([showing-search_][is-search-box-cutoff_]) os-settings-search-box {
+    --cr-toolbar-field-width: min(80vw,
+      var(--settings-toolbar-search-box-width));
+    /* No overlap with #leftContent. */
+    margin-inline-start: 48px;
+  }
+
+  :host([showing-search_][is-search-box-cutoff_][narrow]) os-settings-search-box {
+    --cr-toolbar-field-width: min(80vw,
+      var(--settings-toolbar-narrow-search-box-width));
+  }
+
+  :host([showing-search_][narrow]:not([is-search-box-cutoff_]))
+      os-settings-search-box {
+    --cr-toolbar-field-width: var(--settings-toolbar-narrow-search-box-width);
+  }
+
+  :host(:not([narrow]):not([is-search-box-cutoff_]))
+      os-settings-search-box {
+    --cr-toolbar-field-width: var(--settings-toolbar-search-box-width);
+  }
+
+  :host(:not([narrow])) #leftContent {
+    flex: 1 1 0;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled):host(:not([narrow]))
+      #leftContent {
+    flex-grow: 0;
+  }
+
+  :host(:not([narrow])) #centeredContent {
+    flex-basis: var(--settings-main-basis);
+  }
+
+  :host([narrow][showing-search_]) #rightContent {
+    display: none;
+  }
+
+  :host(:not([narrow])) #rightContent {
+    flex: 1 1 0;
+    text-align: end;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #rightContent {
+    display: none;
+  }
+</style>
+<iron-media-query query="(max-width: 780px)"
+    query-matches="{{isSearchBoxCutoff_}}">
+</iron-media-query>
+<div id="leftContent">
+  <div id="leftSpacer">
+    <template is="dom-if" if="[[showMenu]]">
+      <cr-icon-button id="menuButton" class="no-overlap"
+          iron-icon="cr20:menu" on-click="onMenuClick_"
+          aria-label="$i18n{menuButtonLabel}"
+          title="$i18n{menuButtonLabel}">
+      </cr-icon-button>
+    </template>
+    <h1 id="settingsTitle">$i18n{settings}</h1>
+  </div>
+</div>
+
+<div id="centeredContent" hidden$="[[!showSearch]]">
+  <os-settings-search-box id="searchBox" narrow="[[narrow]]"
+      showing-search="{{showingSearch_}}">
+  </os-settings-search-box>
+</div>
+
+<div id="rightContent">
+  <div id="rightSpacer">
+    <slot></slot>
+  </div>
+</div>

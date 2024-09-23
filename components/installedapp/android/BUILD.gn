@@ -54,6 +54,7 @@ android_library("unit_device_javatests") {
     "//base:base_java_test_support",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",

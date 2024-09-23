@@ -39,7 +39,8 @@ class PeerConnectionDependencyFactoryTest : public ::testing::Test {
     config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
     handler->InitializeForTest(config,
                                /*peer_connection_tracker=*/nullptr,
-                               exception_state);
+                               exception_state,
+                               /*rtp_transport=*/nullptr);
     return handler;
   }
 

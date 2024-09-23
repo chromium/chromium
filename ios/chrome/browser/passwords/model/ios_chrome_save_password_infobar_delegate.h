@@ -75,7 +75,7 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   void InfoBarDismissed() override;
 
   // Updates the credentials being saved with `username` and `password`.
-  // TODO(crbug.com/1040653): This function is only virtual so it can be mocked
+  // TODO(crbug.com/40667480): This function is only virtual so it can be mocked
   // for testing purposes.  It should become non-virtual once this test is
   // refactored for testability.
   virtual void UpdateCredentials(NSString* username, NSString* password);
@@ -83,16 +83,16 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Informs the delegate that the Infobar has been presented. If `automatic`
   // YES the Infobar was presented automatically (e.g. The banner was
   // presented), if NO the user triggered it  (e.g. Tapped on the badge).
-  // TODO(crbug.com/1040653): This function is only virtual so it can be mocked
+  // TODO(crbug.com/40667480): This function is only virtual so it can be mocked
   // for testing purposes.  It should become non-virtual once this test is
   // refactored for testability.
   virtual void InfobarPresenting(bool automatic);
 
   // Informs the delegate that the Infobar view is gone.
-  // TODO(crbug.com/1040653): This function is only virtual so it can be mocked
+  // TODO(crbug.com/40667480): This function is only virtual so it can be mocked
   // for testing purposes.  It should become non-virtual once this test is
   // refactored for testability.
-  // TODO(crbug.com/1394793): Fix dismissal handlers.
+  // TODO(crbug.com/40248770): Fix dismissal handlers.
   virtual void InfobarGone();
 
   // True if password is being updated at the moment the InfobarModal is

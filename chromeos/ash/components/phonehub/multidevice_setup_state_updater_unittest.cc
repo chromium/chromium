@@ -91,11 +91,11 @@ class MultideviceSetupStateUpdaterTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<MultideviceSetupStateUpdater> updater_;
 
   TestingPrefServiceSimple pref_service_;
   multidevice_setup::FakeMultiDeviceSetupClient fake_multidevice_setup_client_;
   FakeMultideviceFeatureAccessManager fake_multidevice_feature_access_manager_;
+  std::unique_ptr<MultideviceSetupStateUpdater> updater_;
 };
 
 TEST_F(MultideviceSetupStateUpdaterTest, EnablePhoneHub) {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_ANDROID_OPTIMIZATION_GUIDE_BRIDGE_H_
 
 #include <jni.h>
+
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -13,6 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
+#include "third_party/jni_zero/jni_zero.h"
+#include "url/gurl.h"
 
 class OptimizationGuideKeyedService;
 
@@ -37,22 +40,25 @@ class OptimizationGuideBridge {
       OptimizationGuideKeyedService* optimization_guide_keyed_service);
   OptimizationGuideBridge(const OptimizationGuideBridge&) = delete;
   OptimizationGuideBridge& operator=(const OptimizationGuideBridge&) = delete;
-  void Destroy(JNIEnv* env);
+  ~OptimizationGuideBridge();
+
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+
   void RegisterOptimizationTypes(
       JNIEnv* env,
       const base::android::JavaParamRef<jintArray>& joptimization_types);
   void CanApplyOptimization(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_gurl,
+      GURL& url,
       jint optimization_type,
       const base::android::JavaParamRef<jobject>& java_callback);
   void CanApplyOptimizationOnDemand(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& java_gurls,
+      std::vector<GURL>& urls,
       const base::android::JavaParamRef<jintArray>& joptimization_types,
       jint request_context,
       const base::android::JavaParamRef<jobject>& java_callback,
-      jbyteArray request_context_metadata_serialized);
+      jni_zero::ByteArrayView& request_context_metadata_serialized);
   void OnNewPushNotification(
       JNIEnv* env,
       const base::android::JavaRef<jbyteArray>& j_encoded_notification);
@@ -60,6 +66,7 @@ class OptimizationGuideBridge {
 
  private:
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
+  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
 
 }  // namespace android

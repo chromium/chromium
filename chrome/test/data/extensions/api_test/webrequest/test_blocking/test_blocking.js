@@ -444,12 +444,12 @@ function modifyRequestHeaders() {
     {urls: ["<all_urls>"]}, ["blocking"]);
   // Check the page content for our modified User-Agent string.
   navigateAndWait(getURLEchoUserAgent(), function() {
-    chrome.test.listenOnce(chrome.extension.onRequest, function(request) {
+    chrome.test.listenOnce(chrome.runtime.onMessage, function(request) {
       chrome.test.assertTrue(request.pass, "Request header was not set.");
     });
     chrome.tabs.executeScript(tabId,
       {
-        code: "chrome.extension.sendRequest(" +
+        code: "chrome.runtime.sendMessage(" +
             "{pass: document.body.innerText.indexOf('FoobarUA') >= 0});"
       });
   });
@@ -526,12 +526,12 @@ function modifyBinaryRequestHeaders() {
     {urls: ["<all_urls>"]}, ["blocking"]);
   // Check the page content for our modified User-Agent string.
   navigateAndWait(getURLEchoUserAgent(), function() {
-    chrome.test.listenOnce(chrome.extension.onRequest, function(request) {
+    chrome.test.listenOnce(chrome.runtime.onMessage, function(request) {
       chrome.test.assertTrue(request.pass, "Request header was not set.");
     });
     chrome.tabs.executeScript(tabId,
       {
-        code: "chrome.extension.sendRequest(" +
+        code: "chrome.runtime.sendMessage(" +
             "{pass: document.body.innerText.indexOf('FoobarUA') >= 0});"
       });
   });
@@ -1360,7 +1360,7 @@ var slowTests = [
   dataUrlJavaScriptExecution
 ];
 
-// TODO(crbug.com/1093066): The first test is incompatible with
+// TODO(crbug.com/40698663): The first test is incompatible with
 // service workers, but the other tests should be fine. Investigate
 // why those tests are failing.
 var nonServiceWorkerTests = [
@@ -1388,8 +1388,9 @@ const scriptUrl = '_test_resources/api_test/webrequest/framework.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
 function getFilteredTests(tests) {
-  if (!isServiceWorker)
+  if (!isServiceWorker) {
     return tests;
+  }
   return tests.filter(function(op) {
     return !nonServiceWorkerTests.includes(op);
   });

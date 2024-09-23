@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("calculator") {
+  sources = [
+    "size_calculator.cc",
+    "size_calculator.h",
+  ]
+
+  public_deps = [
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session:connection_holder",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/crostini",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//components/user_manager",
+  ]
+
+  deps = [
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//components/browsing_data/content",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [ "size_calculator_test_api.h" ]
+
+  public_deps = [
+    ":calculator",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+  ]
+}

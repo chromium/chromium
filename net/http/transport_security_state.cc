@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/http/transport_security_state.h"
 
 #include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -55,11 +61,6 @@ const TransportSecurityStateSource* const kDefaultHSTSSource = nullptr;
 #endif
 
 const TransportSecurityStateSource* g_hsts_source = kDefaultHSTSSource;
-
-// Override for CheckCTRequirements() for unit tests. Possible values:
-//   false: Use the default implementation (e.g. production)
-//   true: Unless a delegate says otherwise, require CT.
-bool g_ct_required_for_testing = false;
 
 TransportSecurityState::HashedHost HashHost(
     base::span<const uint8_t> canonicalized_host) {
@@ -120,18 +121,18 @@ struct PreloadResult {
   bool has_pins = false;
 };
 
-using net::extras::PreloadDecoder;
+using extras::PreloadDecoder;
 
 // Extracts the current PreloadResult entry from the given Huffman encoded trie.
 // If an "end of string" matches a period in the hostname then the information
 // is remembered because, if no more specific node is found, then that
 // information applies to the hostname.
-class HSTSPreloadDecoder : public net::extras::PreloadDecoder {
+class HSTSPreloadDecoder : public extras::PreloadDecoder {
  public:
-  using net::extras::PreloadDecoder::PreloadDecoder;
+  using extras::PreloadDecoder::PreloadDecoder;
 
-  // net::extras::PreloadDecoder:
-  bool ReadEntry(net::extras::PreloadDecoder::BitReader* reader,
+  // extras::PreloadDecoder:
+  bool ReadEntry(extras::PreloadDecoder::BitReader* reader,
                  const std::string& search,
                  size_t current_search_offset,
                  bool* out_found) override {
@@ -233,11 +234,6 @@ bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
 
 }  // namespace
 
-// static
-BASE_FEATURE(kCertificateTransparencyEnforcement,
-             "CertificateTransparencyEnforcement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 void SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source) {
   g_hsts_source = source ? source : kDefaultHSTSSource;
@@ -281,14 +277,36 @@ base::Value::Dict TransportSecurityState::NetLogUpgradeToSSLParam(
   return dict;
 }
 
-bool TransportSecurityState::ShouldUpgradeToSSL(
+SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
     const std::string& host,
     const NetLogWithSource& net_log) {
-  STSState sts_state;
   net_log.AddEvent(
       NetLogEventType::TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL,
       [&] { return NetLogUpgradeToSSLParam(host); });
-  return GetSTSState(host, &sts_state) && sts_state.ShouldUpgradeToSSL();
+  STSState sts_state;
+  if (GetDynamicSTSState(host, &sts_state)) {
+    if (sts_state.ShouldUpgradeToSSL()) {
+      // If the static state also requires an upgrade, the dynamic state didn't
+      // need to be used in the decision.
+      STSState static_sts_state;
+      if (GetStaticSTSState(host, &static_sts_state) &&
+          static_sts_state.ShouldUpgradeToSSL()) {
+        return SSLUpgradeDecision::kStaticUpgrade;
+      }
+      return SSLUpgradeDecision::kDynamicUpgrade;
+    }
+    return SSLUpgradeDecision::kNoUpgrade;
+  }
+  if (GetStaticSTSState(host, &sts_state) && sts_state.ShouldUpgradeToSSL()) {
+    return SSLUpgradeDecision::kStaticUpgrade;
+  }
+  return SSLUpgradeDecision::kNoUpgrade;
+}
+
+bool TransportSecurityState::ShouldUpgradeToSSL(
+    const std::string& host,
+    const NetLogWithSource& net_log) {
+  return GetSSLUpgradeDecision(host, net_log) != SSLUpgradeDecision::kNoUpgrade;
 }
 
 TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
@@ -311,7 +329,7 @@ bool TransportSecurityState::HasPublicKeyPins(const std::string& host) {
 
 TransportSecurityState::CTRequirementsStatus
 TransportSecurityState::CheckCTRequirements(
-    const net::HostPortPair& host_port_pair,
+    const HostPortPair& host_port_pair,
     bool is_issued_by_known_root,
     const HashValueVector& public_key_hashes,
     const X509Certificate* validated_certificate_chain,
@@ -319,18 +337,16 @@ TransportSecurityState::CheckCTRequirements(
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
 
-  // If CT is emergency disabled, either through a component updater set flag or
-  // through the feature flag, we don't require CT for any host.
-  if (ct_emergency_disable_ ||
-      !base::FeatureList::IsEnabled(kCertificateTransparencyEnforcement)) {
+  // If CT is emergency disabled, we don't require CT for any host.
+  if (ct_emergency_disable_) {
     return CT_NOT_REQUIRED;
   }
 
   // CT is not required if the certificate does not chain to a publicly
-  // trusted root certificate. Testing can override this, as certain tests
-  // rely on using a non-publicly-trusted root.
-  if (!is_issued_by_known_root && !g_ct_required_for_testing)
+  // trusted root certificate.
+  if (!is_issued_by_known_root) {
     return CT_NOT_REQUIRED;
+  }
 
   // A connection is considered compliant if it has sufficient SCTs or if the
   // build is outdated. Other statuses are not considered compliant; this
@@ -341,9 +357,7 @@ TransportSecurityState::CheckCTRequirements(
            ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS ||
        policy_compliance == ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY);
 
-  CTRequirementLevel ct_required = g_ct_required_for_testing
-                                       ? CTRequirementLevel::REQUIRED
-                                       : CTRequirementLevel::NOT_REQUIRED;
+  CTRequirementLevel ct_required = CTRequirementLevel::NOT_REQUIRED;
   if (require_ct_delegate_) {
     // Allow the delegate to override the CT requirement state.
     ct_required = require_ct_delegate_->IsCTRequiredForHost(
@@ -589,11 +603,6 @@ void TransportSecurityState::AddHPKP(const std::string& host,
   AddHPKPInternal(host, base::Time::Now(), expiry, include_subdomains, hashes);
 }
 
-// static
-void TransportSecurityState::SetRequireCTForTesting(bool required) {
-  g_ct_required_for_testing = required;
-}
-
 size_t TransportSecurityState::num_sts_entries() const {
   return enabled_sts_hosts_.size();
 }
@@ -665,7 +674,7 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
     normalized_host.erase(trailing_dot_found + 1);
     normalized_host = base::ToLowerASCII(normalized_host);
 
-    base::StringPiece search_hostname = normalized_host;
+    std::string_view search_hostname = normalized_host;
     while (true) {
       auto iter = host_pins_->find(search_hostname);
       // Only consider this a match if either include_subdomains is set, or

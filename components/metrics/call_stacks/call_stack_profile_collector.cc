@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "components/metrics/call_stacks/call_stack_profile_encoding.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -29,7 +28,7 @@ void CallStackProfileCollector::Collect(base::TimeTicks start_timestamp,
                                         mojom::SampledProfilePtr profile) {
   CallStackProfileMetricsProvider::ReceiveSerializedProfile(
       start_timestamp, profile_type == mojom::ProfileType::kHeap,
-      std::move(profile->contents));
+      std::move(profile));
 }
 
 }  // namespace metrics

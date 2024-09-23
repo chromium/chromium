@@ -28,7 +28,7 @@
 
 #pragma mark - View Lifecycle
 
-// TODO(crbug.com/1372916): PLACEHOLDER UI for the modal ViewController.
+// TODO(crbug.com/40061288): PLACEHOLDER UI for the modal ViewController.
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];

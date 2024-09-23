@@ -5,7 +5,7 @@
 #define ATTRIBUTE_DESTRUCTOR __attribute__((destructor))
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
-#define HAVE_ARPA_INET_H 1
+/* #undef HAVE_ARPA_INET_H */
 
 /* Define if __attribute__((destructor)) is accepted */
 #define HAVE_ATTRIBUTE_DESTRUCTOR 1
@@ -22,10 +22,13 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
 
-/* Define to 1 if you have the `ftime' function. */
+/* Define to 1 if you have the 'ftime' function. */
 #define HAVE_FTIME 1
 
-/* Define to 1 if you have the `gettimeofday' function. */
+/* Define to 1 if you have the 'getentropy' function. */
+#define HAVE_GETENTROPY 1
+
+/* Define to 1 if you have the 'gettimeofday' function. */
 #define HAVE_GETTIMEOFDAY 1
 
 /* Define to 1 if you have the <glob.h> header file. */
@@ -33,9 +36,6 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
-
-/* Define to 1 if you have the `isascii' function. */
-#define HAVE_ISASCII 1
 
 /* Define if history library is there (-lhistory) */
 /* #undef HAVE_LIBHISTORY */
@@ -46,10 +46,10 @@
 /* Define to 1 if you have the <lzma.h> header file. */
 /* #undef HAVE_LZMA_H */
 
-/* Define to 1 if you have the `mmap' function. */
+/* Define to 1 if you have the 'mmap' function. */
 #define HAVE_MMAP 1
 
-/* Define to 1 if you have the `munmap' function. */
+/* Define to 1 if you have the 'munmap' function. */
 #define HAVE_MUNMAP 1
 
 /* mmap() is no good without munmap() */
@@ -58,13 +58,13 @@
 #endif
 
 /* Define to 1 if you have the <netdb.h> header file. */
-#define HAVE_NETDB_H 1
+/* #undef HAVE_NETDB_H */
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
-#define HAVE_NETINET_IN_H 1
+/* #undef HAVE_NETINET_IN_H */
 
 /* Define to 1 if you have the <poll.h> header file. */
-#define HAVE_POLL_H 1
+/* #undef HAVE_POLL_H */
 
 /* Define to 1 if you have the <pthread.h> header file. */
 #define HAVE_PTHREAD_H /**/
@@ -72,7 +72,7 @@
 /* Have shl_load based dso */
 /* #undef HAVE_SHLLOAD */
 
-/* Define to 1 if you have the `stat' function. */
+/* Define to 1 if you have the 'stat' function. */
 #define HAVE_STAT 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
@@ -93,11 +93,14 @@
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #define HAVE_SYS_MMAN_H 1
 
+/* Define to 1 if you have the <sys/random.h> header file. */
+#define HAVE_SYS_RANDOM_H 1
+
 /* Define to 1 if you have the <sys/select.h> header file. */
-#define HAVE_SYS_SELECT_H 1
+/* #undef HAVE_SYS_SELECT_H */
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
-#define HAVE_SYS_SOCKET_H 1
+/* #undef HAVE_SYS_SOCKET_H */
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
@@ -130,7 +133,7 @@
 #define PACKAGE_NAME "libxml2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libxml2 2.13.0"
+#define PACKAGE_STRING "libxml2 2.14.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libxml2"
@@ -139,9 +142,9 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.13.0"
+#define PACKAGE_VERSION "2.14.0"
 
-/* Define to 1 if all of the C90 standard headers exist (not just the ones
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
    backward compatibility; new code need not use it. */
 #define STDC_HEADERS 1
@@ -150,19 +153,10 @@
 /* #undef SUPPORT_IP6 */
 
 /* Version number of package */
-#define VERSION "2.13.0"
+#define VERSION "2.14.0"
 
 /* Determine what socket length (socklen_t) data type is */
 /* #undef XML_SOCKLEN_T */
 
 /* TLS specifier */
 /* #undef XML_THREAD_LOCAL */
-
-/* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
-   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
-   #define below would cause a syntax error. */
-/* #undef _UINT32_T */
-
-/* Define to the type of an unsigned integer type of width exactly 32 bits if
-   such a type exists and the standard includes do not define it. */
-/* #undef uint32_t */

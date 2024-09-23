@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
 class EntityMetadata;
@@ -42,15 +42,15 @@ class MetadataBatch {
   void AddMetadata(const std::string& storage_key,
                    std::unique_ptr<sync_pb::EntityMetadata> metadata);
 
-  // Get the ModelTypeState for this batch.
-  const sync_pb::ModelTypeState& GetModelTypeState() const;
+  // Get the DataTypeState for this batch.
+  const sync_pb::DataTypeState& GetDataTypeState() const;
 
-  // Set the ModelTypeState for this batch.
-  void SetModelTypeState(const sync_pb::ModelTypeState& state);
+  // Set the DataTypeState for this batch.
+  void SetDataTypeState(const sync_pb::DataTypeState& state);
 
  private:
   EntityMetadataMap metadata_map_;
-  sync_pb::ModelTypeState state_;
+  sync_pb::DataTypeState state_;
 };
 
 }  // namespace syncer

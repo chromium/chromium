@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/audio/public/cpp/output_device.h"
 
 #include <utility>
@@ -148,7 +153,7 @@ struct DataFlowTestEnvironment {
     time_stamp = base::TimeTicks::Now();
 
 #if BUILDFLAG(IS_FUCHSIA)
-    // TODO(https://crbug.com/838367): Fuchsia bots use nested virtualization,
+    // TODO(crbug.com/40574274): Fuchsia bots use nested virtualization,
     // which can result in unusually long scheduling delays, so allow a longer
     // timeout.
     reader->set_max_wait_timeout_for_test(base::Milliseconds(250));

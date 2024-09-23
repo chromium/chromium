@@ -96,7 +96,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         ChannelId.PRICE_DROP,
         ChannelId.PRICE_DROP_DEFAULT,
         ChannelId.SECURITY_KEY,
-        ChannelId.CHROME_TIPS,
         ChannelId.BLUETOOTH,
         ChannelId.USB
     })
@@ -109,7 +108,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String SCREEN_CAPTURE = "screen_capture";
         String CONTENT_SUGGESTIONS = "content_suggestions";
         String WEBAPP_ACTIONS = "webapp_actions";
-        // TODO(crbug.com/700377): Deprecate the 'sites' channel.
+        // TODO(crbug.com/40510194): Deprecate the 'sites' channel.
         String SITES = "sites";
         String VR = "vr";
         String SHARING = "sharing";
@@ -121,7 +120,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String WEBAPPS = "twa_disclosure_initial";
         String WEBAPPS_QUIET = "twa_disclosure_subsequent";
         String WEBRTC_CAM_AND_MIC = "webrtc_cam_and_mic";
-        // TODO(crbug.com/1380966): This PRICE_DROP channel is initialized with IMPORTANCE_LOW in
+        // TODO(crbug.com/40244973): This PRICE_DROP channel is initialized with IMPORTANCE_LOW in
         // M107. To update the initial importance level to DEFAULT, we have to introduce a new
         // channel PRICE_DROP_DEFAULT and deprecate this one. Since we want to initialize the new
         // channel based on this old channel's status to keep users' experience consistent, this old
@@ -129,7 +128,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String PRICE_DROP = "shopping_price_drop_alerts";
         String PRICE_DROP_DEFAULT = "shopping_price_drop_alerts_default";
         String SECURITY_KEY = "security_key";
-        String CHROME_TIPS = "chrome_tips";
         String BLUETOOTH = "bluetooth";
         String USB = "usb";
     }
@@ -225,7 +223,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             ChannelGroupId.GENERAL));
             // Not adding sites channel to startup channels because notifications may be posted to
             // this channel if no site-specific channel could be found.
-            // TODO(crbug.com/802380) Stop using this channel as a fallback and fully deprecate it.
+            // TODO(crbug.com/40558363) Stop using this channel as a fallback and fully deprecate
+            // it.
             map.put(
                     ChannelId.SITES,
                     PredefinedChannel.create(
@@ -315,7 +314,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             R.string.notification_category_price_drop,
                             NotificationManager.IMPORTANCE_DEFAULT,
                             ChannelGroupId.GENERAL));
-            // TODO(crbug.com/1380966): Make the new channel's behavior consistent with the old
+            // TODO(crbug.com/40244973): Make the new channel's behavior consistent with the old
             // channel's if it's created and modified by the user. Clean this up after one or two
             // milestones.
             int priceDropDefaultChannelImportance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -347,16 +346,6 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                     PredefinedChannel.create(
                             ChannelId.SECURITY_KEY,
                             R.string.notification_category_security_key,
-                            NotificationManager.IMPORTANCE_HIGH,
-                            ChannelGroupId.GENERAL));
-
-            // The chrome tips notification channel will only appear for users
-            // who are targeted for this feature.
-            map.put(
-                    ChannelId.CHROME_TIPS,
-                    PredefinedChannel.create(
-                            ChannelId.CHROME_TIPS,
-                            R.string.notification_category_feature_guide,
                             NotificationManager.IMPORTANCE_HIGH,
                             ChannelGroupId.GENERAL));
 

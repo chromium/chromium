@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/file_system_provider/fileapi/buffering_file_stream_writer.h"
 
 #include <algorithm>
@@ -53,7 +58,7 @@ int BufferingFileStreamWriter::Write(net::IOBuffer* buffer,
   const int buffer_bytes =
       std::min(intermediate_buffer_length_ - buffered_bytes_, buffer_length);
 
-  CopyToIntermediateBuffer(base::WrapRefCounted(buffer), 0 /* buffer_offset */,
+  CopyToIntermediateBuffer(base::WrapRefCounted(buffer), /*buffer_offset=*/0,
                            buffer_bytes);
   const int bytes_left = buffer_length - buffer_bytes;
 

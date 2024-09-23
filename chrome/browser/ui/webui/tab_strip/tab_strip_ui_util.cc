@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
@@ -65,9 +67,8 @@ void MoveTabAcrossWindows(Browser* source_browser,
       source_browser->tab_strip_model()->active_index() == from_index;
   bool was_pinned = source_browser->tab_strip_model()->IsTabPinned(from_index);
 
-  std::unique_ptr<content::WebContents> detached_contents =
-      source_browser->tab_strip_model()->DetachWebContentsAtForInsertion(
-          from_index);
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      source_browser->tab_strip_model()->DetachTabAtForInsertion(from_index);
 
   int add_types = AddTabTypes::ADD_NONE;
   if (was_active) {
@@ -77,25 +78,29 @@ void MoveTabAcrossWindows(Browser* source_browser,
     add_types |= AddTabTypes::ADD_PINNED;
   }
 
-  target_browser->tab_strip_model()->InsertWebContentsAt(
-      to_index, std::move(detached_contents), add_types, to_group_id);
+  target_browser->tab_strip_model()->InsertDetachedTabAt(
+      to_index, std::move(detached_tab), add_types, to_group_id);
 }
 
 bool IsDraggedTab(const ui::OSExchangeData& drop_data) {
-  base::Pickle pickle;
-  drop_data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                           &pickle);
-  base::PickleIterator iter(pickle);
-
-  uint32_t entry_count = 0;
-  if (!iter.ReadUInt32(&entry_count))
+  std::optional<base::Pickle> pickle = drop_data.GetPickledData(
+      ui::ClipboardFormatType::DataTransferCustomType());
+  if (!pickle.has_value()) {
     return false;
+  }
+
+  base::PickleIterator iter(pickle.value());
+  uint32_t entry_count = 0;
+  if (!iter.ReadUInt32(&entry_count)) {
+    return false;
+  }
 
   for (uint32_t i = 0; i < entry_count; ++i) {
-    base::StringPiece16 type;
-    base::StringPiece16 data;
-    if (!iter.ReadStringPiece16(&type) || !iter.ReadStringPiece16(&data))
+    std::u16string_view type;
+    std::u16string_view data;
+    if (!iter.ReadStringPiece16(&type) || !iter.ReadStringPiece16(&data)) {
       return false;
+    }
 
     if (type == kWebUITabIdDataType || type == kWebUITabGroupIdDataType) {
       return true;
@@ -123,7 +128,7 @@ bool DropTabsInNewBrowser(Browser* new_browser,
   gfx::Range tab_indices_to_move;
   std::optional<tab_groups::TabGroupId> source_group_id;
 
-  // TODO(https://crbug.com/1069869): de-duplicate with
+  // TODO(crbug.com/40126106): de-duplicate with
   // TabStripUIHandler::HandleMoveTab and
   // TabStripUIHandler::HandleMoveGroup.
 
@@ -180,19 +185,21 @@ bool ExtractTabData(const ui::OSExchangeData& drop_data,
   DCHECK(tab_id_str);
   DCHECK(group_id_str);
 
-  base::Pickle pickle;
-  drop_data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                           &pickle);
+  std::optional<base::Pickle> pickle = drop_data.GetPickledData(
+      ui::ClipboardFormatType::DataTransferCustomType());
+  if (!pickle.has_value()) {
+    return false;
+  }
 
   if (std::optional<std::u16string> maybe_tab_id =
-          ui::ReadCustomDataForType(pickle, kWebUITabIdDataType);
+          ui::ReadCustomDataForType(pickle.value(), kWebUITabIdDataType);
       maybe_tab_id && !maybe_tab_id->empty()) {
     *tab_id_str = std::move(*maybe_tab_id);
     return true;
   }
 
   if (std::optional<std::u16string> maybe_group_id =
-          ui::ReadCustomDataForType(pickle, kWebUITabGroupIdDataType);
+          ui::ReadCustomDataForType(pickle.value(), kWebUITabGroupIdDataType);
       maybe_group_id && !maybe_group_id->empty()) {
     *group_id_str = std::move(*maybe_group_id);
     return true;

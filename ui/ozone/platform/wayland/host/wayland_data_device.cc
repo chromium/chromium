@@ -76,6 +76,13 @@ void WaylandDataDevice::SetSelectionSource(WaylandDataSource* source,
   connection()->Flush();
 }
 
+bool WaylandDataDevice::IsDragInProgress() const {
+  // Starting wayland drag sessions require clients to provide a drag delegate.
+  // The delegate is explicitly reset by the client when the wayland drag
+  // session has ended.
+  return !!drag_delegate_;
+}
+
 // static
 void WaylandDataDevice::OnDataOffer(void* data,
                                     wl_data_device* data_device,
@@ -151,10 +158,14 @@ void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
   // There are buggy Exo versions, which send 'drop' event (even for
   // unsuccessful drops) without a subsequent 'leave'. In order to mitigate
   // potential leaks and/or UAFs, forcibly call corresponding delegate callback
-  // here, in Lacros. TODO(crbug.com/1293415): Remove once Exo bug is fixed.
+  // here, in Lacros. TODO(crbug.com/40819972): Remove once Exo bug is fixed.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  self->drag_delegate_->OnDragLeave(timestamp);
-  self->ResetDragDelegateIfNotDragSource();
+  // Delegate might have been reset already if the drag was cancelled in
+  // response to the drop event.
+  if (self->drag_delegate_) {
+    self->drag_delegate_->OnDragLeave(timestamp);
+    self->ResetDragDelegateIfNotDragSource();
+  }
 #endif
 }
 

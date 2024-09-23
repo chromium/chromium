@@ -11,6 +11,7 @@
 // Specific cases utils
 // ********************
 
+// The normal font for the LocationBarSteadyView.
 UIFont* LocationBarSteadyViewFont(UIContentSizeCategory currentCategory);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_DYNAMIC_TYPE_UTIL_H_

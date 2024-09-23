@@ -98,7 +98,7 @@ class StrikeDatabase : public StrikeDatabaseBase {
                            GetIdForCreditCardSaveTest);
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveStrikeDatabaseTest,
                            RemoveExpiredStrikesOnLoadTest);
-  friend class SaveCardInfobarEGTestHelper;
+  friend class FakeCreditCardServer;
   friend class StrikeDatabaseTest;
   friend class StrikeDatabaseTester;
 

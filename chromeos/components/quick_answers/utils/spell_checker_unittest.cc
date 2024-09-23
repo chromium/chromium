@@ -82,8 +82,11 @@ TEST_F(SpellCheckerTest, ShouldNotSetupIfFeatureDisabled) {
   EXPECT_FALSE(spell_checker()->GetSpellcheckLanguagesForTesting().size());
 
   fake_quick_answers_state()->OnPrefsInitialized();
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kAccepted);
+  // `SetSettingsEnabled` must be after `AsyncSetConsentStatus` as
+  // `AsyncSetConsentStatus` changes enabled state.
   fake_quick_answers_state()->SetSettingsEnabled(false);
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
   fake_quick_answers_state()->SetApplicationLocale("en");
   fake_quick_answers_state()->SetPreferredLanguages("en,es");
 
@@ -96,7 +99,8 @@ TEST_F(SpellCheckerTest, ShouldResetOnFeatureDisabled) {
 
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(true);
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kAccepted);
   fake_quick_answers_state()->SetApplicationLocale("en");
   fake_quick_answers_state()->SetPreferredLanguages("en,es");
 
@@ -114,7 +118,8 @@ TEST_F(SpellCheckerTest, ShouldSetupIfShouldShowUserConsent) {
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(false);
   // We should show user consent UI if consent status is kUnknown.
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kUnknown);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kUnknown);
   fake_quick_answers_state()->SetApplicationLocale("en");
   fake_quick_answers_state()->SetPreferredLanguages("en,es");
 
@@ -128,13 +133,15 @@ TEST_F(SpellCheckerTest, ShouldResetOnUserConsentRejected) {
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(false);
   // We should show user consent UI if consent status is kUnknown.
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kUnknown);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kUnknown);
   fake_quick_answers_state()->SetApplicationLocale("en");
   fake_quick_answers_state()->SetPreferredLanguages("en,es");
 
   EXPECT_TRUE(spell_checker()->GetSpellcheckLanguagesForTesting().size());
 
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kRejected);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kRejected);
 
   EXPECT_FALSE(spell_checker()->GetSpellcheckLanguagesForTesting().size());
 }
@@ -145,7 +152,8 @@ TEST_F(SpellCheckerTest, ShouldNotSetupWithUnsupportedApplicationLocale) {
 
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(true);
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kAccepted);
   fake_quick_answers_state()->SetApplicationLocale("zh");
   fake_quick_answers_state()->SetPreferredLanguages("zh,en");
 
@@ -158,7 +166,8 @@ TEST_F(SpellCheckerTest, ShouldSetupWithSupportedApplicationLocale) {
 
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(true);
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kAccepted);
   fake_quick_answers_state()->SetApplicationLocale("en");
   fake_quick_answers_state()->SetPreferredLanguages("en,es");
 
@@ -171,7 +180,8 @@ TEST_F(SpellCheckerTest, ShouldFilterCountryCodeOfApplicationLocale) {
 
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(true);
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kAccepted);
   fake_quick_answers_state()->SetApplicationLocale("en-US");
   fake_quick_answers_state()->SetPreferredLanguages("en-US,en-GB");
 
@@ -186,7 +196,8 @@ TEST_F(SpellCheckerTest, ShouldSetupWithPreferredLanguages) {
 
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(true);
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kAccepted);
   fake_quick_answers_state()->SetApplicationLocale("en");
   fake_quick_answers_state()->SetPreferredLanguages("en,es");
 
@@ -213,7 +224,8 @@ TEST_F(SpellCheckerTest, ShouldFilterUnsupportedPreferredLanguages) {
 
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(true);
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kAccepted);
   fake_quick_answers_state()->SetApplicationLocale("en");
   fake_quick_answers_state()->SetPreferredLanguages("en,zh,es");
 
@@ -237,7 +249,8 @@ TEST_F(SpellCheckerTest, ShouldUseQuickAnswersDictionaryDirectory) {
 
   fake_quick_answers_state()->OnPrefsInitialized();
   fake_quick_answers_state()->SetSettingsEnabled(true);
-  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
+  fake_quick_answers_state()->AsyncSetConsentStatus(
+      prefs::ConsentStatus::kAccepted);
   fake_quick_answers_state()->SetApplicationLocale("en");
   fake_quick_answers_state()->SetPreferredLanguages("en,es,it");
 

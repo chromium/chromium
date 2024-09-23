@@ -334,7 +334,7 @@ class ResponsivenessWatcherRealIOThreadTest : public testing::Test {
 
 TEST_F(ResponsivenessWatcherRealIOThreadTest, MessageLoopObserver) {
   // Post a do-nothing task onto the UI thread.
-  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
+  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
 
   // Post a do-nothing task onto the IO thread.
   content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::DoNothing());
@@ -345,7 +345,7 @@ TEST_F(ResponsivenessWatcherRealIOThreadTest, MessageLoopObserver) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::OnceClosure quit_closure) {
-                       content::GetUIThreadTaskRunner({})->PostTask(
+                       GetUIThreadTaskRunner({})->PostTask(
                            FROM_HERE, std::move(quit_closure));
                      },
                      run_loop.QuitClosure()));

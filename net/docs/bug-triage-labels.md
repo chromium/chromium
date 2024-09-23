@@ -49,7 +49,7 @@ they fall largely outside the purview of the network stack team:
     the description.  Issues with the HTTP server for the Chrome binaries are
     not downloads bugs.
 
-* **UI>Browser>SafeBrowsing**
+* **Services>Safebrowsing**
 
     Bugs that have to do with the process by which a URL or file is determined
     to be dangerous based on our databases, or the resulting interstitials.

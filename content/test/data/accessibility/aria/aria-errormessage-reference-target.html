@@ -1,0 +1,34 @@
+<!--
+@BLINK-ALLOW:error*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <div>
+      <input aria-label="Invalid is true" aria-invalid="true" aria-errormessage="error1">
+      <input aria-label="Invalid is true with multiple errors" aria-invalid="true" aria-errormessage="error1 error2">
+      <input aria-label="Invalid is false" aria-invalid="false" aria-errormessage="error3">
+      <input aria-label="Invalid is not set" aria-errormessage="error4">
+    </div>
+    <x-error id="error1">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <p id="target">Error for invalid input</p>
+      </template>
+    </x-error>
+    <x-error id="error2">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <p id="target">Another error for invalid input</p>
+      </template>
+    </x-error>
+    <x-error id="error3">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <p id="target">Error for input which is not invalid</p>
+      </template>
+    </x-error>
+    <x-error id="error4">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <p id="target">Error for input with invalid not set</p>
+      </template>
+    </x-error>
+  </body>
+</html>

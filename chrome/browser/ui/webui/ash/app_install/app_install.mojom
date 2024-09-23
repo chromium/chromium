@@ -4,18 +4,58 @@
 
 module ash.app_install.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-struct DialogArgs {
-  url.mojom.Url url;
+union DialogArgs {
+  AppInfoArgs app_info_args;
+  NoAppErrorArgs no_app_error_args;
+  pending_remote<ConnectionErrorActions> connection_error_actions;
+};
 
+struct AppInfoArgs {
+  AppInfoData data;
+  pending_remote<AppInfoActions> actions;
+};
+
+struct AppInfoData {
   string name;
+
+  url.mojom.Url url;
 
   string description;
 
   url.mojom.Url icon_url;
 
-  // TODO(crbug.com/1488697): Add screenshots.
+  array<Screenshot> screenshots;
+
+  bool is_already_installed;
+};
+
+struct Screenshot {
+  url.mojom.Url url;
+
+  gfx.mojom.Size size;
+};
+
+// Lives in the browser process, provides actions the dialog can perform when
+// displaying app info to the user.
+interface AppInfoActions {
+  // Runs the callback to install the app and returns whether the app was
+  // successfully installed.
+  InstallApp() => (bool installed);
+
+  // Opens the app that was just installed.
+  LaunchApp();
+};
+
+struct NoAppErrorArgs {};
+
+// Lives in the browser process, provides actions the dialog can perform when
+// displaying an error to the user.
+interface ConnectionErrorActions {
+  // Retries the install dialog flow.
+  TryAgain();
 };
 
 // Lives in the browser process. A renderer uses this to create a page handler
@@ -29,15 +69,9 @@ interface PageHandlerFactory {
 // are implemented in the browser process.
 interface PageHandler {
   // Returns arguments passed to the dialog on creation.
-  GetDialogArgs() => (DialogArgs args);
+  // Union sub type determines what kind of dialog to show.
+  GetDialogArgs() => (DialogArgs dialog_args);
 
   // Closes the dialog.
   CloseDialog();
-
-  // Runs the callback to install the app and returns whether the app was
-  // successfully installed.
-  InstallApp() => (bool installed);
-
-  // Opens the app that was just installed, then closes the dialog.
-  LaunchApp();
 };

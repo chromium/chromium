@@ -7,12 +7,12 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited container-box'",
+      "name": "LayoutBlockFlow DIV class='composited container-box'",
       "bounds": [100, 100],
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='composited container-box'",
+      "name": "LayoutBlockFlow DIV class='composited container-box'",
       "bounds": [100, 100],
       "transform": 2
     }

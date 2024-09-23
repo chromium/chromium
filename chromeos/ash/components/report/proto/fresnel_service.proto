@@ -51,10 +51,10 @@ message DeviceMetadata {
   // See: go/gvc-g3/logs/chromeos-metrics.md
   optional string hardware_id = 1;
 
-  // Represent the current release milestone of the ChromeOS device.
+  // Represent the Chrome major milestone of the ChromeOS device.
   // See chrome://version -> Google Chrome:
   // i.e. 96.0.4664.55 (Official Build) (x86_64) would set field as "96".
-  optional string chromeos_version = 2;
+  optional string chrome_milestone = 2;
 
   // Country code is represented by a 2-letter string (aka ISO 3166-1).
   // i.e. US for United States of America, CA for Canada.
@@ -66,7 +66,7 @@ message DeviceMetadata {
 
   // ChromeOS channel is used to determine the breakdown of devices that are
   // coming from canary, dev, beta, stable, or unknown channels.
-  // This can be used with the ChromeOS version in order to determine
+  // This can be used with the chrome milestone in order to determine
   // questions like, what percentage of devices are in the M100 stable channel.
   optional Channel chromeos_channel = 5;
 }
@@ -94,6 +94,13 @@ message ChurnCohortMetadata {
   // Compare the first active weeks obtained from the VPD to determine if the
   // device is new during the cohort month.
   optional bool is_first_active_in_cohort = 2;
+
+  // Device ActivateDate, read from VPD. In YYYY-WW ISO8601 format.
+  // Value exists after first OOBE completion and device restart.
+  // Statistics provider loads VPD file in the chrome browser preloop,
+  // before ActivateDate may be first written.
+  // Field is only set if ActivateDate is <= 5 weeks old.
+  optional string first_active_week = 4;
 }
 
 // The metadata which is related to Churn Observation request.

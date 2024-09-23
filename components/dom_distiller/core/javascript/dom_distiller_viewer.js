@@ -115,7 +115,7 @@ function maybeSetWebFont() {
   document.head.appendChild(e);
 }
 
-// TODO(https://crbug.com/1027612): Consider making this a custom HTML element.
+// TODO(crbug.com/40108835): Consider making this a custom HTML element.
 class FontSizeSlider {
   constructor() {
     this.element = $('font-size-selection');

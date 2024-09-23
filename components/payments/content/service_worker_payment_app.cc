@@ -222,7 +222,7 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
 
 void ServiceWorkerPaymentApp::CallValidateCanMakePaymentCallback(
     ValidateCanMakePaymentCallback callback) {
-  std::move(callback).Run(weak_ptr_factory_.GetWeakPtr(), true);
+  std::move(callback).Run(weak_ptr_factory_.GetWeakPtr());
 }
 
 void ServiceWorkerPaymentApp::InvokePaymentApp(
@@ -398,7 +398,7 @@ bool ServiceWorkerPaymentApp::CanPreselect() const {
 }
 
 std::u16string ServiceWorkerPaymentApp::GetMissingInfoLabel() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 

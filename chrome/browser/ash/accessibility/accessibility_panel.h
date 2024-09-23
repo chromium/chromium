@@ -29,8 +29,8 @@ class AccessibilityPanel : public views::WidgetDelegate,
                            public content::WebContentsDelegate {
  public:
   explicit AccessibilityPanel(content::BrowserContext* browser_context,
-                              std::string content_url,
-                              std::string widget_name);
+                              const std::string& content_url,
+                              const std::string& widget_name);
 
   AccessibilityPanel(const AccessibilityPanel&) = delete;
   AccessibilityPanel& operator=(const AccessibilityPanel&) = delete;

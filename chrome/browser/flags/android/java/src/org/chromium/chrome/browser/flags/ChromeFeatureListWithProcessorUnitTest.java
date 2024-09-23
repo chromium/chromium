@@ -10,16 +10,13 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Sets;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.cached_flags.CachedFlag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 
@@ -29,14 +26,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Tests the behavior of {@link ChromeFeatureList} in Robolectric unit tests when the rule
- * Features.JUnitProcessor is present.
- */
+/** Tests the behavior of {@link ChromeFeatureList}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeFeatureListWithProcessorUnitTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     /** In unit tests, all flags checked must have their value specified. */
     @Test(expected = IllegalArgumentException.class)

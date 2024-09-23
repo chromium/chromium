@@ -55,7 +55,7 @@ async function testWithIframe() {
     }
     if (numAllFramesMessages == 3 && numTopFrameOnlyMessages == 2) {
       // Navigate to the pre-rendered page.
-      // TODO(https://crbug.com/1278141): `chrome.tabs.update` can not activate
+      // TODO(crbug.com/40208062): `chrome.tabs.update` can not activate
       // the pre-rendered page, but takes a new navigation instead.
       const url = getUrl('test_file_with_iframe.html');
       chrome.tabs.executeScript({code: `location.href = '${url}';`});
@@ -117,7 +117,7 @@ async function testWithAboutBlankIframe(details) {
     if (numAllFramesMessages == expectedNumAllFramesMessages &&
         numTopFrameOnlyMessages == expectedNumTopFrameOnlyMessages) {
       // Navigate to the pre-rendered page.
-      // TODO(https://crbug.com/1278141): `chrome.tabs.update` can not activate
+      // TODO(crbug.com/40208062): `chrome.tabs.update` can not activate
       // the pre-rendered page, but takes a new navigation instead.
       const url = getUrl('test_file_with_about_blank_iframe.html', details);
       chrome.tabs.executeScript({code: `location.href = '${url}';`});
@@ -136,7 +136,7 @@ chrome.test.getConfig(async config => {
   // `match_origin_as_fallback` and manifest v3.
   chrome.test.runTests([
     testWithIframe,
-    // TODO(crbug.com/1344548): These two tests are flaky and time out.
+    // TODO(crbug.com/40853029): These two tests are flaky and time out.
     // testWithAboutBlankIframe,
     // testWithAboutBlankIframe.bind(this, {matchAboutBlank: true}),
   ]);

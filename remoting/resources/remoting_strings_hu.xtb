@@ -28,7 +28,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="2329392777730037872">Nem sikerült megnyitni a következő URL-t az ügyfélnél: <ph name="URL" />.</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2366718077645204424">A gazdagép nem érhető el. Ez valószínűleg az Ön által használt hálózat konfigurációja miatt van.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Legutóbb észlelve az interneten: <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Az „Accessibility” (Kisegítő lehetőségek) engedély megadása a következőnek: <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Csatlakozva a következőhöz: <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Meg szeretné osztani a számítógép megtekintését és vezérlését egy másik felhasználóval?</translation>
@@ -53,7 +52,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="3423542133075182604">Biztonsági hardverkulcs távoli elérési folyamata</translation>
 <translation id="3581045510967524389">Nem sikerült kapcsolódni a hálózathoz. Kérjük, ellenőrizze, hogy eszköze online állapotban van-e.</translation>
 <translation id="3596628256176442606">Ez a szolgáltatás engedélyezi a bejövő kapcsolatokat a Chromoting klienseitől.</translation>
-<translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Tudnivalók</translation>
 <translation id="3776024066357219166">A Chrome távoliasztal-szolgáltatás munkamenet véget ért.</translation>
 <translation id="3858860766373142691">Név</translation>
@@ -105,7 +103,6 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="5601503069213153581">PIN-kód</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Az asztalt jelenleg ezzel a felhasználóval osztja meg: <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Bejelentkezve mint <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Újrakapcsolódás</translation>
 <translation id="5810269635982033450">A képernyő érintőpadként viselkedik</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> hozzáférési engedélyt kért az Ön képernyője megtekintésére illetve az egér és a billentyűzet vezérlésére. Nyomja meg a(z) „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />” gombot, ha nem várta ezt a kérelmet. A „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />” megnyomásával engedélyezheti a kapcsolatot, ha erre készen áll.</translation>

@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h",
+  "+ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h",
+]

@@ -6,7 +6,6 @@
 
 #include <cmath>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
@@ -27,8 +26,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "ui/aura/client/aura_constants.h"
 
@@ -104,16 +106,18 @@ bool ShouldUseLacrosFeatures() {
         ash::Shell::Get()->mru_window_tracker()->BuildMruWindowList(
             ash::kActiveDesk);
     for (aura::Window* window : mru_windows) {
-      if (!window->IsVisible())
+      if (!window->IsVisible()) {
         continue;
+      }
 
-      ash::AppType app_type = static_cast<ash::AppType>(
-          window->GetProperty(aura::client::kAppType));
+      chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
 
-      if (app_type == ash::AppType::BROWSER)
+      if (app_type == chromeos::AppType::BROWSER) {
         return false;
-      if (app_type == ash::AppType::LACROS)
+      }
+      if (app_type == chromeos::AppType::LACROS) {
         return true;
+      }
     }
   }
 
@@ -156,12 +160,10 @@ UserActivityManager::UserActivityManager(
     ui::UserActivityDetector* detector,
     chromeos::PowerManagerClient* power_manager_client,
     session_manager::SessionManager* session_manager,
-    mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
-    const ChromeUserManager* user_manager)
+    mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver)
     : ukm_logger_(ukm_logger),
       session_manager_(session_manager),
       receiver_(this, std::move(receiver)),
-      user_manager_(user_manager),
       power_manager_client_(power_manager_client) {
   DCHECK(ukm_logger_);
 
@@ -519,16 +521,10 @@ void UserActivityManager::ExtractFeatures(
         *external_power_ == power_manager::PowerSupplyProperties::DISCONNECTED);
   }
 
-  if (user_manager_) {
-    if (user_manager_->IsEnterpriseManaged()) {
-      features_.set_device_management(UserActivityEvent::Features::MANAGED);
-    } else {
-      features_.set_device_management(UserActivityEvent::Features::UNMANAGED);
-    }
-  } else {
-    features_.set_device_management(
-        UserActivityEvent::Features::UNKNOWN_MANAGEMENT);
-  }
+  features_.set_device_management(
+      ash::InstallAttributes::Get()->IsEnterpriseManaged()
+          ? UserActivityEvent::Features::MANAGED
+          : UserActivityEvent::Features::UNMANAGED);
 
   features_.set_screen_dimmed_initially(screen_dimmed_);
   features_.set_screen_off_initially(screen_off_);

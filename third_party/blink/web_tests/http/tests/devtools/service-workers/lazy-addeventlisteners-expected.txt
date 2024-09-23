@@ -4,10 +4,10 @@ Message count: 1
 Message count: 2
 service-worker-lazy-…deventlistener.js:2 Event handler of 'install' event must be added on the initial evaluation of worker script.
 (anonymous) @ service-worker-lazy-…deventlistener.js:2
-setTimeout (async)
+setTimeout
 (anonymous) @ service-worker-lazy-…deventlistener.js:1
 service-worker-lazy-…deventlistener.js:2 Event handler of 'fetch' event must be added on the initial evaluation of worker script.
 (anonymous) @ service-worker-lazy-…deventlistener.js:2
-setTimeout (async)
+setTimeout
 (anonymous) @ service-worker-lazy-…deventlistener.js:1
 

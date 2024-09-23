@@ -5,22 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_TEMPLATE_URL_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class TemplateURLService;
 
 namespace ios {
 // Singleton that owns all TemplateURLServices and associates them with
-// ChromeBrowserState.
+// Profile.
 class TemplateURLServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static TemplateURLService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static TemplateURLService* GetForBrowserState(ProfileIOS* profile);
 
+  static TemplateURLService* GetForProfile(ProfileIOS* profile);
   static TemplateURLServiceFactory* GetInstance();
 
   // Returns the default factory used to build TemplateURLServices. Can be

@@ -80,9 +80,6 @@ class PageAgentViewsTest : public views::ViewsTestBase {
  protected:
   PageAgentViews* page_agent() { return page_agent_.get(); }
   DOMAgentViews* dom_agent() { return dom_agent_.get(); }
-  bool devtools_dismiss_override() const {
-    return page_agent_->GetDevtoolsDismissOverrideForTesting();
-  }
 
  private:
   std::unique_ptr<PageAgentViews> page_agent_;
@@ -90,64 +87,6 @@ class PageAgentViewsTest : public views::ViewsTestBase {
   std::unique_ptr<FakeFrontendChannel> frontend_channel_;
   std::unique_ptr<protocol::UberDispatcher> uber_dispatcher_;
 };
-
-TEST_F(PageAgentViewsTest, ToggleBubbleLock) {
-  DCHECK(!devtools_dismiss_override());
-
-  // Enable bubble locking.
-  page_agent()->reload(true);
-
-  // Check that |devtools_dismiss_override_| is set to true.
-  EXPECT_TRUE(devtools_dismiss_override());
-
-  // Call again to disable bubble locking.
-  page_agent()->reload(true);
-
-  // Check that |devtools_dismiss_override_| set back to false.
-  EXPECT_FALSE(devtools_dismiss_override());
-}
-
-TEST_F(PageAgentViewsTest, ToggleViewDebugRects) {
-  std::unique_ptr<protocol::DOM::Node> root;
-  dom_agent()->getDocument(&root);
-
-  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-      views::switches::kDrawViewBoundsRects));
-
-  // Enable debug rectangles.
-  page_agent()->reload(false);
-
-  // Check that debug rectangles switch is present.
-  EXPECT_TRUE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      views::switches::kDrawViewBoundsRects));
-
-  // Disable debug rectangles.
-  page_agent()->reload(false);
-
-  // Check that the debug rectangles switch is removed.
-  EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      views::switches::kDrawViewBoundsRects));
-}
-
-TEST_F(PageAgentViewsTest, ResetOnDisable) {
-  std::unique_ptr<protocol::DOM::Node> root;
-  dom_agent()->getDocument(&root);
-
-  // Enable both debug rectangles and bubble locking.
-  page_agent()->reload(false);
-  page_agent()->reload(true);
-  DCHECK(devtools_dismiss_override());
-  DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      views::switches::kDrawViewBoundsRects));
-
-  // Disable PageAgentViews, as is done on UI DevTools closing.
-  page_agent()->disable();
-
-  // Check that both bubble locking and debug rectangles are off.
-  EXPECT_FALSE(devtools_dismiss_override());
-  EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      views::switches::kDrawViewBoundsRects));
-}
 
 TEST_F(PageAgentViewsTest, GetResourceTree) {
   std::unique_ptr<protocol::Page::FrameResourceTree> resource_tree;

@@ -100,17 +100,15 @@ attention or the expected file needs updating.
 
 #### Option B: Update expected files with a local build
 
-1. Ensure that your args.gn contain:
+1. Ensure that your args.gn contains just:
 
    ```
-   # For arm32:
-   is_debug = false
+   use_remoteexec = true
+   target_os = "android"
    enable_chrome_android_internal = false
+   target_cpu = "arm64"
    android_channel = "stable"
-
-   # For arm64:
-   is_debug = false
-   enable_chrome_android_internal = false
+   is_official_build = true
    ```
 
 2. Run:

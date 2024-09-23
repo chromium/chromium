@@ -10,6 +10,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -39,8 +40,7 @@ enum class TextEditCommand;
 // An interface implemented by a View that needs text input support.
 // All strings related to IME operations should be UTF-16 encoded and all
 // indices/ranges relative to those strings should be UTF-16 code units.
-class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
-    : public base::SupportsWeakPtr<TextInputClient> {
+class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
  public:
   // The reason the control was focused, used by the virtual keyboard to detect
   // pen input.
@@ -67,6 +67,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
 #endif
 
   virtual ~TextInputClient();
+
+  // This should be implemented by the most concrete class.
+  virtual base::WeakPtr<TextInputClient> AsWeakPtr() = 0;
 
   // Input method result -------------------------------------------------------
 
@@ -238,7 +241,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
   virtual void ExtendSelectionAndReplace(
       size_t length_before_selection,
       size_t length_after_selection,
-      base::StringPiece16 replacement_string);
+      std::u16string_view replacement_string);
 #endif
 
   // Ensure the caret is not in |rect|.  |rect| is in screen coordinates in

@@ -11,8 +11,10 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 class ShelfControllerHelper;
 class PrefService;
@@ -41,6 +43,9 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
 
   // All prefs must be registered early in the process lifecycle.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Cleanup multiple values of 'preload' added to ShelfDefaultPinLayoutRolls.
+  static void CleanupPreloadPrefs(PrefService* profile_prefs);
 
   // Init a local pref from a synced pref, if the local pref has no user
   // setting. This is used to init shelf alignment and auto-hide on the first
@@ -79,11 +84,6 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
                       base::span<const ash::ShelfID> shelf_ids_after,
                       bool pinned_by_policy);
 
-  // Makes GetPinnedAppsFromSync() return an empty list. Avoids test failures
-  // due to an untitled Play Store icon in the shelf.
-  // https://crbug.com/1085597
-  static void SetSkipPinnedAppsFromSyncForTest(bool value);
-
   // Makes ShouldAddDefaultApps() return true if set to true.
   static void SetShouldAddDefaultAppsForTest(bool value);
 
@@ -102,6 +102,9 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, AddDefaultApps);
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, ProfileChanged);
   FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, LacrosOnlyPinnedApp);
+  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, PinPreloadApps);
+  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, PinPreloadRepeats);
+  FRIEND_TEST_ALL_PREFIXES(ChromeShelfPrefsTest, PinPreloadEmpty);
 
   // Sync is the source of truth. However, the data from sync can be
   // nonsensical, either because the user nuked all sync data, corruption, or
@@ -143,8 +146,18 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // default apps to be shown in the shelf.
   void AddDefaultApps();
 
+  // Whether App Preload Service apps have already been added.
+  bool DidAddPreloadApps() const;
+
+  // Pin preload apps received along with desired order via OnAppPreloadReady().
+  void PinPreloadApps();
+
   // app_list::AppListSyncableService::Observer:
   void OnSyncModelUpdated() override;
+
+  // Receives Pin preload apps when AppPreloadService is ready.
+  void OnGetPinPreloadApps(const std::vector<apps::PackageId>& pin_apps,
+                           const std::vector<apps::PackageId>& pin_order);
 
   // Migrations are performed in several situations:
   //   (1) On first launch
@@ -154,6 +167,13 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // be idempotent.
   bool needs_consistency_migrations_ = true;
 
+  // List of preload apps to pin once they are installed.
+  std::vector<apps::PackageId> pending_preload_apps_;
+
+  // Desired order to pin preload apps, includes default apps (e.g. chrome) to
+  // show where preload apps should be pinned.
+  std::vector<apps::PackageId> preload_pin_order_;
+
   base::ScopedObservation<app_list::AppListSyncableService,
                           app_list::AppListSyncableService::Observer>
       sync_service_observer_{this};
@@ -161,6 +181,8 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // The owner of this class is responsible for ensuring the validity of this
   // pointer.
   raw_ptr<Profile> profile_ = nullptr;
+
+  base::WeakPtrFactory<ChromeShelfPrefs> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_PREFS_H_

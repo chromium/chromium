@@ -52,6 +52,17 @@
     default_value_behind_flag: {
       default: [],
       valid_type: "list",
+    },
+
+    // "visibility" specifies which contexts a feature should be visible to. If
+    // a features is not visibile to a document, it cannot be granted, but also
+    // will not be exposed in `document.featurePolicy.features()`.
+    visibility: {
+      default: "All",
+      valid_values: [
+        "All",
+        "IsolatedContext"
+      ]
     }
   },
 
@@ -59,6 +70,12 @@
     {
       name: "Accelerometer",
       permissions_policy_name: "accelerometer",
+    },
+    {
+      name: "AllScreensCapture",
+      permissions_policy_name: "all-screens-capture",
+      depends_on: ["GetAllScreensMedia"],
+      visibility: "IsolatedContext",
     },
     {
       name: "AmbientLightSensor",
@@ -152,8 +169,8 @@
       permissions_policy_name: "ch-ua-bitness",
     },
     {
-      name: "ClientHintUAFormFactor",
-      permissions_policy_name: "ch-ua-form-factor",
+      name: "ClientHintUAFormFactors",
+      permissions_policy_name: "ch-ua-form-factors",
     },
     {
       name: "ClientHintUAPlatform",
@@ -212,13 +229,36 @@
       depends_on: ["ComputePressure"],
     },
     {
+      name: "ControlledFrame",
+      permissions_policy_name: "controlled-frame",
+      depends_on: ["ControlledFrame"],
+      visibility: "IsolatedContext",
+    },
+    {
       name: "CrossOriginIsolated",
       permissions_policy_name: "cross-origin-isolated",
+    },
+    {
+      name: "DeferredFetch",
+      permissions_policy_name: "deferred-fetch",
+      depends_on: ["FetchLaterAPI"],
+    },
+    {
+      name: "DigitalCredentialsGet",
+      permissions_policy_name: "digital-credentials-get",
+      depends_on: ["WebIdentityDigitalCredentials"],
     },
     {
       name: "DirectSockets",
       permissions_policy_name: "direct-sockets",
       depends_on: ["DirectSockets"],
+      visibility: "IsolatedContext",
+    },
+    {
+      name: "DirectSocketsPrivate",
+      permissions_policy_name: "direct-sockets-private",
+      depends_on: ["DirectSockets"],
+      visibility: "IsolatedContext",
     },
     {
       name: "DisplayCapture",
@@ -304,6 +344,12 @@
       permissions_policy_name: "magnetometer",
     },
     {
+      name: "MediaPlaybackWhileNotVisible",
+      permissions_policy_name: "media-playback-while-not-visible",
+      feature_default: "EnableForAll",
+      depends_on: ["MediaPlaybackWhileNotVisiblePermissionPolicy"],
+    },
+    {
       name: "Microphone",
       permissions_policy_name: "microphone",
     },
@@ -315,6 +361,12 @@
       name: "OTPCredentials",
       permissions_policy_name: "otp-credentials",
       depends_on: ["WebOTPAssertionFeaturePolicy"],
+    },
+    {
+      name: "PartitionedPopins",
+      permissions_policy_name: "popins",
+      feature_default: "EnableForSelf",
+      depends_on: ["PartitionedPopins"],
     },
     {
       name: "Payment",
@@ -340,7 +392,6 @@
     {
       name: "PublicKeyCredentialsCreate",
       permissions_policy_name: "publickey-credentials-create",
-      depends_on: ["WebAuthAllowCreateInCrossOriginFrame"],
     },
     {
       name: "PublicKeyCredentialsGet",
@@ -386,6 +437,12 @@
       name: "SmartCard",
       permissions_policy_name: "smart-card",
       depends_on: ["SmartCard"],
+      visibility: "IsolatedContext",
+    },
+    {
+      name: "SpeakerSelection",
+      permissions_policy_name: "speaker-selection",
+      depends_on: ["SpeakerSelection"],
     },
     {
       name: "StorageAccessAPI",
@@ -396,6 +453,7 @@
       name: "SubApps",
       permissions_policy_name: "sub-apps",
       depends_on: ["DesktopPWAsSubApps"],
+      visibility: "IsolatedContext",
     },
     {
       name: "SyncXHR",
@@ -416,6 +474,7 @@
       name: "UsbUnrestricted",
       permissions_policy_name: "usb-unrestricted",
       depends_on: ["UnrestrictedUsb"],
+      visibility: "IsolatedContext",
     },
     {
       // Unload is special and can default to being disabled by default based
@@ -431,9 +490,15 @@
       depends_on: ["ExperimentalPolicies"],
     },
     {
+      name: "WebAppInstallation",
+      permissions_policy_name: "web-app-installation",
+      depends_on: ["WebAppInstallation"],
+    },
+    {
       name: "WebPrinting",
       permissions_policy_name: "web-printing",
       depends_on: ["WebPrinting"],
+      visibility: "IsolatedContext",
     },
     {
       name: "WebShare",
@@ -447,7 +512,6 @@
     },
     {
       name: "WindowManagement",
-      // Parser also accepts "window-placement" alias (crbug.com/1328581).
       permissions_policy_name: "window-management",
     },
   ],

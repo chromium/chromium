@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -70,8 +71,6 @@ class HeaderView : public views::Label {
   HeaderView(HeaderView&) = delete;
   HeaderView operator=(HeaderView&) = delete;
 
-  // views::View:
-  const char* GetClassName() const override { return "HeaderView"; }
 };
 
 BEGIN_METADATA(HeaderView)
@@ -123,7 +122,8 @@ void CameraRollView::CameraRollItemsView::Reset() {
 }
 
 // views::View:
-gfx::Size CameraRollView::CameraRollItemsView::CalculatePreferredSize() const {
+gfx::Size CameraRollView::CameraRollItemsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto item_size = GetCameraRollItemSize();
   int width = item_size.width() * kCameraRollItemsInRow +
               kCameraRollItemHorizontalSpacing * (kCameraRollItemsInRow - 1) +
@@ -165,7 +165,7 @@ void CameraRollView::CameraRollItemsView::CalculateIdealBounds() {
   }
 }
 
-BEGIN_METADATA(CameraRollView, CameraRollItemsView, views::View)
+BEGIN_METADATA(CameraRollView, CameraRollItemsView)
 END_METADATA
 
 void CameraRollView::Update() {
@@ -192,7 +192,7 @@ void CameraRollView::Update() {
             IDS_ASH_PHONE_HUB_CAMERA_ROLL_THUMBNAIL_ACCESSIBLE_NAME,
             base::NumberToString16(index + 1),
             base::NumberToString16(camera_roll_items.size()));
-        item_thumbnail->SetAccessibleName(accessible_name);
+        item_thumbnail->GetViewAccessibility().SetName(accessible_name);
         item_thumbnail->SetTooltipText(accessible_name);
         items_view_->AddCameraRollItem(item_thumbnail);
       }

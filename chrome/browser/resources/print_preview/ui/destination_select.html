@@ -2,12 +2,12 @@
     cr-hidden-style">
 </style>
 <print-preview-settings-section>
-  <span slot="title">$i18n{destinationLabel}</span>
+  <span id="destination-label" slot="title">$i18n{destinationLabel}</span>
   <div slot="controls">
     <div class="throbber-container" hidden$="[[loaded]]">
       <div class="throbber"></div>
     </div>
-    <select class="md-select" aria-label$="[[i18n(destinationLabel)]]"
+    <select class="md-select" aria-labelledby="destination-label"
         hidden$="[[!loaded]]"
         style="background-image:
             [[getBackgroundImages_(selectedValue, destination,

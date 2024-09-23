@@ -45,6 +45,11 @@ class Group {
   // the count for the `GroupId` of the match. `CanAdd()` should be verified by
   // the caller.
   void Add(const AutocompleteMatch& match);
+  // Performs semantic grouping by Search vs URL.
+  // TODO(ender): investigate whether we should split `Group` into ZPS and
+  // non-ZPS specific subclasses. If this proves valuable, move the call below
+  // to the non-ZPS subclass.
+  void GroupMatchesBySearchVsUrl();
 
   size_t limit() const { return limit_; }
   void set_limit(size_t limit) { limit_ = limit; }

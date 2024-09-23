@@ -8,6 +8,8 @@ import("//build/config/mac/rules.gni")
 import("//build/config/python.gni")
 import("//build/symlink.gni")
 import("//build/util/process_version.gni")
+import("//chrome/enterprise_companion/branding.gni")
+import("//chrome/enterprise_companion/buildflags.gni")
 import("//chrome/updater/branding.gni")
 import("//chrome/updater/mac/signing/signing_sources.gni")
 import("//chrome/updater/zip.gni")
@@ -49,19 +51,19 @@ mac_app_bundle("updater_bundle") {
       [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
 
   sources = [ "main.cc" ]
-  deps = [
+  public_deps = [
     ":keystone_agent_bundle_resource_executable",
     ":keystone_agent_bundle_resource_plist",
+    ":ksadmin",
+    ":ksadmin_link",
     ":updater_bundle_helpers",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers_ksinstall",
     ":updater_bundle_keystone_plist",
+  ]
+  deps = [
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
-  ]
-  public_deps = [
-    ":ksadmin",
-    ":ksadmin_link",
   ]
 }
 
@@ -72,20 +74,23 @@ mac_app_bundle("updater_bundle_test") {
       [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
 
   sources = [ "main.cc" ]
-  deps = [
+  public_deps = [
     ":keystone_agent_bundle_resource_executable_test",
     ":keystone_agent_bundle_resource_plist",
+    ":ksadmin_test_copy",
     ":updater_bundle_helpers_test",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers_ksinstall",
     ":updater_bundle_keystone_plist",
+  ]
+  if (is_asan) {
+    public_deps +=
+        [ ":keystone_agent_bundle_resource_executable_test_asan_dylib" ]
+  }
+  deps = [
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
   ]
-  if (is_asan) {
-    deps += [ ":keystone_agent_bundle_resource_executable_test_asan_dylib" ]
-  }
-  public_deps = [ ":ksadmin_test_copy" ]
 }
 
 source_set("privileged_helper_sources") {
@@ -516,6 +521,12 @@ bundle_data("updater_bundle_helpers") {
   outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
   public_deps = [ ":launcher" ]
+
+  if (include_enterprise_companion_in_installer) {
+    sources += [ "$root_out_dir/$enterprise_companion_product_full_name.app" ]
+    public_deps +=
+        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
+  }
 }
 
 bundle_data("updater_bundle_helpers_test") {
@@ -537,7 +548,8 @@ if (!is_component_build && enable_dsyms) {
   action_foreach("syms") {
     script = "//build/redirect_stdout.py"
     sources = _symbols_sources
-    dump_syms = "//third_party/breakpad:dump_syms($host_toolchain)"
+    dump_syms =
+        "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)"
     public_deps = [
       ":updater_bundle",
       dump_syms,
@@ -606,8 +618,8 @@ artifact_zip("updater_zip") {
     "$root_build_dir/Updater Packaging/signing/pkg-dmg",
     "$root_build_dir/Updater Packaging/signing/pkg/postinstall",
     "$root_build_dir/chrome/updater/.install",
-    "$root_build_dir/UpdaterSetup",
     "$root_build_dir/qualification_app",
+    "$root_build_dir/${updater_product_full_name}Util",
   ]
   inputs += rebase_path(get_path_info(updater_signing_sources, "file"),
                         "",
@@ -616,8 +628,8 @@ artifact_zip("updater_zip") {
     ":updater_bundle",
     ":updater_bundle_test",
     ":updater_install_script",
-    "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
     "//chrome/updater/test/qualification_app",
+    "//chrome/updater/tools:${updater_product_full_name}Util",
   ]
 }

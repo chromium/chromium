@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/test/values_test_util.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/browser/media_sinks_observer.h"

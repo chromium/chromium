@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package tab_groups.proto;
+
+// Restriction on a URL shared across devices.
+message UrlRestriction {
+  // whether this URL should be blocked for synced tab groups.
+  optional bool block_for_sync = 1;
+
+  // Whether this URL should be blocked for shared tab groups.
+  optional bool block_for_share = 2;
+
+  // Whether the URL should be blocked if it is similar to last synced URL.
+  optional bool block_if_similar_to_last_synced_url = 3;
+
+  // Whether download should be blocked on this URL.
+  optional bool block_download = 4;
+}

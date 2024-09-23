@@ -1,6 +1,7 @@
 Name: libbrlapi
-URL: http://brltty.app
+URL: https://github.com/brltty/brltty
 Version: 0.8
+Revision: 4e5618edae97a9381cd58cad3f14f10ffb0e37c7
 License: LGPL 2.1
 License File: LICENSE
 Security Critical: yes
@@ -19,3 +20,7 @@ api.
 
 The libbrlapi.h header is imported because we need to keep it in sync with the
 libbrlapi so in Chrome OS.
+
+Local Modifications:
+brlapi_brldefs.h, brlapi_constants.h, and brlapi.h were generated via Autoconf
+for Chrome OS.

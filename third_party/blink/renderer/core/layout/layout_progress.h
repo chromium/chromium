@@ -23,20 +23,20 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
 class HTMLProgressElement;
 
-class CORE_EXPORT LayoutProgress : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutProgress : public LayoutBlockFlow {
  public:
   explicit LayoutProgress(HTMLProgressElement&);
   ~LayoutProgress() override;
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(animation_timer_);
-    LayoutNGBlockFlow::Trace(visitor);
+    LayoutBlockFlow::Trace(visitor);
   }
 
   double GetPosition() const {

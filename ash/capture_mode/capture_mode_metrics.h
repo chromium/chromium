@@ -42,7 +42,8 @@ enum class EndRecordingReason {
   kKeyboardShortcut,
   kGameDashboardStopRecordingButton,
   kGameToolbarStopRecordingButton,
-  kMaxValue = kGameToolbarStopRecordingButton,
+  kGameDashboardTabletMode,
+  kMaxValue = kGameDashboardTabletMode,
 };
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.
@@ -86,7 +87,8 @@ enum class CaptureModeEntryType {
   kProjector,
   kCaptureGivenWindow,
   kGameDashboard,
-  kMaxValue = kGameDashboard,
+  kSunfish,
+  kMaxValue = kSunfish,
 };
 
 // Enumeration of quick actions on screenshot notification. Note that these
@@ -96,7 +98,8 @@ enum class CaptureQuickAction {
   kBacklight,
   kFiles,
   kDelete,
-  kMaxValue = kDelete,
+  kOpenDefault,
+  kMaxValue = kOpenDefault,
 };
 
 // Enumeration of user's selection on save-to locations. Note that these values
@@ -107,7 +110,9 @@ enum class CaptureModeSaveToLocation {
   kDrive,
   kDriveFolder,
   kCustomizedFolder,
-  kMaxValue = kCustomizedFolder,
+  kOneDrive,
+  kOneDriveFolder,
+  kMaxValue = kOneDriveFolder,
 };
 
 // Enumeration of reasons for which the capture folder is switched to default

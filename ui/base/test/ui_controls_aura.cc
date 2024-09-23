@@ -94,7 +94,7 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
 
 // static
 bool SendMouseMove(int x, int y, gfx::NativeWindow) {
-  // TODO(crbug.com/1396661): Maybe use the window hint on other platforms.
+  // TODO(crbug.com/40249511): Maybe use the window hint on other platforms.
   CHECK(g_ui_controls_enabled);
   return instance_->SendMouseMove(x, y);
 }
@@ -104,7 +104,7 @@ bool SendMouseMoveNotifyWhenDone(int x,
                                  int y,
                                  base::OnceClosure task,
                                  gfx::NativeWindow) {
-  // TODO(crbug.com/1396661): Maybe use the window hint on other platforms.
+  // TODO(crbug.com/40249511): Maybe use the window hint on other platforms.
   CHECK(g_ui_controls_enabled);
   return instance_->SendMouseMoveNotifyWhenDone(x, y, std::move(task));
 }
@@ -114,7 +114,7 @@ bool SendMouseEvents(MouseButton type,
                      int button_state,
                      int accelerator_state,
                      gfx::NativeWindow) {
-  // TODO(crbug.com/1396661): Maybe use the window hint on other platforms.
+  // TODO(crbug.com/40249511): Maybe use the window hint on other platforms.
   CHECK(g_ui_controls_enabled);
   return instance_->SendMouseEvents(type, button_state, accelerator_state);
 }
@@ -125,7 +125,7 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
                                    base::OnceClosure task,
                                    int accelerator_state,
                                    gfx::NativeWindow) {
-  // TODO(crbug.com/1396661): Maybe use the window hint on other platforms.
+  // TODO(crbug.com/40249511): Maybe use the window hint on other platforms.
   CHECK(g_ui_controls_enabled);
   return instance_->SendMouseEventsNotifyWhenDone(
       type, button_state, std::move(task), accelerator_state);
@@ -133,7 +133,7 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
 
 // static
 bool SendMouseClick(MouseButton type, gfx::NativeWindow) {
-  // TODO(crbug.com/1396661): Do any Aura platforms need to use the hint?
+  // TODO(crbug.com/40249511): Do any Aura platforms need to use the hint?
   CHECK(g_ui_controls_enabled);
   return instance_->SendMouseClick(type);
 }

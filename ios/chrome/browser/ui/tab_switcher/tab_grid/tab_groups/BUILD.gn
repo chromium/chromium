@@ -1,0 +1,338 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_groups") {
+  sources = [
+    "tab_group_coordinator.h",
+    "tab_group_coordinator.mm",
+    "tab_group_mediator.h",
+    "tab_group_mediator.mm",
+    "tab_group_positioner.h",
+    "tab_group_sync_service_observer_bridge.h",
+    "tab_group_sync_service_observer_bridge.mm",
+    "tab_groups_panel_coordinator.h",
+    "tab_groups_panel_coordinator.mm",
+    "tab_groups_panel_mediator.h",
+    "tab_groups_panel_mediator.mm",
+    "tab_groups_panel_mediator_delegate.h",
+  ]
+  deps = [
+    ":tab_group_consumer",
+    ":tab_group_mutator",
+    ":tab_groups_ui",
+    "//base",
+    "//components/saved_tab_groups:core",
+    "//components/saved_tab_groups:string_utils",
+    "//components/tab_groups",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_activity_observer",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_idle_status_handler",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_page_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:tab_group_grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/web/public",
+  ]
+}
+
+source_set("tab_group_creation") {
+  sources = [
+    "create_or_edit_tab_group_coordinator_delegate.h",
+    "create_tab_group_coordinator.h",
+    "create_tab_group_coordinator.mm",
+    "create_tab_group_mediator.h",
+    "create_tab_group_mediator.mm",
+    "create_tab_group_mediator_delegate.h",
+  ]
+  deps = [
+    ":tab_group_consumer",
+    ":tab_group_creation_ui",
+    ":tab_group_mutator",
+    ":tab_groups_ui",
+    "//base",
+    "//components/tab_groups",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:group_tab_info",
+    "//ios/web/public",
+  ]
+}
+
+source_set("tab_groups_ui") {
+  sources = [
+    "create_or_edit_tab_group_view_controller_delegate.h",
+    "tab_group_view_controller.h",
+    "tab_group_view_controller.mm",
+    "tab_groups_panel_cell.h",
+    "tab_groups_panel_cell.mm",
+    "tab_groups_panel_consumer.h",
+    "tab_groups_panel_favicon_grid.h",
+    "tab_groups_panel_favicon_grid.mm",
+    "tab_groups_panel_item.h",
+    "tab_groups_panel_item.mm",
+    "tab_groups_panel_item_data.h",
+    "tab_groups_panel_item_data.mm",
+    "tab_groups_panel_item_data_source.h",
+    "tab_groups_panel_mutator.h",
+    "tab_groups_panel_view_controller.h",
+    "tab_groups_panel_view_controller.mm",
+  ]
+  deps = [
+    ":tab_group_consumer",
+    ":tab_group_mutator",
+    ":tab_groups_constant",
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_view_delegate",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:tab_group_grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/modals:modals_api",
+    "//ui/base",
+  ]
+}
+
+source_set("tab_group_creation_ui") {
+  sources = [
+    "create_tab_group_transition_delegate.h",
+    "create_tab_group_transition_delegate.mm",
+    "create_tab_group_view_controller.h",
+    "create_tab_group_view_controller.mm",
+  ]
+  deps = [
+    ":snapshots_view",
+    ":tab_group_consumer",
+    ":tab_group_mutator",
+    ":tab_groups_constant",
+    ":tab_groups_ui",
+    "//base",
+    "//components/strings",
+    "//components/tab_groups",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:group_tab_info",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("snapshots_view") {
+  sources = [
+    "group_tab_view.h",
+    "group_tab_view.mm",
+    "tab_group_snapshots_view.h",
+    "tab_group_snapshots_view.mm",
+  ]
+  deps = [
+    ":tab_groups_constant",
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:group_tab_info",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("tab_group_consumer") {
+  sources = [
+    "tab_group_consumer.h",
+    "tab_group_creation_consumer.h",
+  ]
+
+  deps = [ "//components/tab_groups" ]
+}
+
+source_set("tab_groups_constant") {
+  sources = [
+    "tab_groups_constants.h",
+    "tab_groups_constants.mm",
+  ]
+}
+
+source_set("tab_group_mutator") {
+  sources = [
+    "tab_group_creation_mutator.h",
+    "tab_group_mutator.h",
+  ]
+  deps = [ "//components/tab_groups" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "create_tab_group_mediator_unittest.mm",
+    "tab_group_coordinator_unittest.mm",
+    "tab_group_mediator_unittest.mm",
+    "tab_groups_panel_coordinator_unittest.mm",
+    "tab_groups_panel_item_unittest.mm",
+    "tab_groups_panel_mediator_unittest.mm",
+  ]
+  deps = [
+    ":tab_group_consumer",
+    ":tab_group_creation",
+    ":tab_groups",
+    ":tab_groups_ui",
+    "//base/test:test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs:test_support",
+    "//components/saved_tab_groups:fake_tab_group_sync_service",
+    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/tab_groups",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_mode",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:test_fixture",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test:fakes",
+    "//ios/chrome/browser/ui/tab_switcher/test:fakes",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "tab_group_sync_egtest.mm",
+    "tab_group_sync_signin_egtest.mm",
+    "tab_groups_eg_utils.h",
+    "tab_groups_eg_utils.mm",
+    "tab_groups_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    ":tab_groups_constant",
+    "//base/test:test_support",
+    "//components/sync/base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_constants",
+    "//ios/chrome/browser/ui/tab_switcher/test:utils",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/public/provider/chrome/browser/modals:modals_api",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "tab_group_sync_earl_grey_app_interface.h",
+    "tab_group_sync_earl_grey_app_interface.mm",
+  ]
+  visibility = [
+    "//ios/chrome/test/earl_grey:eg_app_support+eg2",
+    "//ios/chrome/test/earl_grey:hooks",
+  ]
+  deps = [
+    "//components/saved_tab_groups:fake_tab_group_sync_service",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "tab_group_sync_earl_grey.h",
+    "tab_group_sync_earl_grey.mm",
+    "tab_group_sync_earl_grey_app_interface.h",
+    "tab_group_sync_earl_grey_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}

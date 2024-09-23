@@ -70,17 +70,8 @@ class BackgroundTracingActiveScenario::TracingSession {
                  const TraceConfig& chrome_config,
                  const BackgroundTracingConfigImpl* config)
       : parent_scenario_(parent_scenario) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    // TODO(crbug.com/941318): Re-enable startup tracing for Android once all
-    // Perfetto-related deadlocks are resolved and we also handle concurrent
-    // system tracing for startup tracing.
     // TODO(khokhlov): Re-enable startup tracing in SDK build. Make sure that
     // startup tracing config exactly matches non-startup tracing config.
-    if (!TracingControllerImpl::GetInstance()->IsTracing()) {
-      tracing::EnableStartupTracingForProcess(
-          chrome_config, config->requires_anonymized_data());
-    }
-#endif
     perfetto::TraceConfig perfetto_config;
     perfetto_config.mutable_incremental_state_config()->set_clear_period_ms(
         config->interning_reset_interval_ms());
@@ -283,15 +274,6 @@ bool BackgroundTracingActiveScenario::StartTracing() {
   DCHECK_NE(config_->tracing_mode(), BackgroundTracingConfigImpl::SYSTEM);
   TraceConfig chrome_config = config_->GetTraceConfig();
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // If the tracing controller is tracing, i.e. DevTools or about://tracing,
-  // we don't start background tracing to not interfere with the user activity.
-  if (TracingControllerImpl::GetInstance()->IsTracing()) {
-    // No member access after this point, aborting might delete |this|.
-    AbortScenario();
-    return false;
-  }
-#endif
 
   // Activate the categories immediately. StartTracing eventually does this
   // itself, but asynchronously via Mojo, and in the meantime events will be
@@ -343,8 +325,8 @@ void BackgroundTracingActiveScenario::OnProtoDataComplete(
     std::string&& serialized_trace) {
   BackgroundTracingManagerImpl::GetInstance().OnProtoDataComplete(
       std::move(serialized_trace), config_->scenario_name(),
-      last_triggered_rule_->rule_id(), last_triggered_rule_->is_crash(),
-      base::Token::CreateRandom());
+      last_triggered_rule_->rule_id(), config_->requires_anonymized_data(),
+      last_triggered_rule_->is_crash(), base::Token::CreateRandom());
   tracing_session_.reset();
   SetState(State::kIdle);
 
@@ -368,13 +350,8 @@ void BackgroundTracingActiveScenario::AbortScenario() {
     // We can't 'abort' system tracing since we aren't the consumer. Instead we
     // send a trigger into the system tracing so that we can tell the time the
     // scenario stopped.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     perfetto::Tracing::ActivateTriggers(
         {"org.chromium.background_tracing.scenario_aborted"}, /*ttl_ms=*/0);
-#else
-    tracing::PerfettoTracedProcess::Get()->ActivateSystemTriggers(
-        {"org.chromium.background_tracing.scenario_aborted"});
-#endif
   } else {
     // Setting the kAborted state will cause |this| to be destroyed.
     SetState(State::kAborted);
@@ -406,13 +383,8 @@ bool BackgroundTracingActiveScenario::OnRuleTriggered(
       break;
     case BackgroundTracingConfigImpl::SYSTEM:
       BackgroundTracingManagerImpl::RecordMetric(Metrics::SYSTEM_TRIGGERED);
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
       perfetto::Tracing::ActivateTriggers({triggered_rule->rule_id()},
                                           /*ttl_ms=*/0);
-#else
-      tracing::PerfettoTracedProcess::Get()->ActivateSystemTriggers(
-          {triggered_rule->rule_id()});
-#endif
       if (!rule_triggered_callback_for_testing_.is_null()) {
         rule_triggered_callback_for_testing_.Run();
       }

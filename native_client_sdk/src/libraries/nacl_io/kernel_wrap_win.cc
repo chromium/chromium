@@ -7,16 +7,18 @@
 #if defined(WIN32)
 
 #include "nacl_io/kernel_wrap.h"
+
+#include <windows.h>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>  // This must be included before <sys/stat.h>.
 #include <sys/stat.h>
-#include "nacl_io/kernel_intercept.h"
+#include <sys/types.h>
 
-#include <windows.h>
+#include "nacl_io/kernel_intercept.h"
 
 namespace {
 

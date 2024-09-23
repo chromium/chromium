@@ -6,15 +6,15 @@
  * @fileoverview 'certificate-provisioning-list' is an element that displays a
  * list of certificate provisioning processes.
  */
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './certificate_provisioning_details_dialog.js';
 import './certificate_provisioning_entry.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import type {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';

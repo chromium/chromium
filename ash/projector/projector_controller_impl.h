@@ -37,7 +37,6 @@ namespace ash {
 class ProjectorClient;
 class ProjectorUiController;
 class ProjectorMetadataController;
-struct AnnotatorTool;
 
 // A controller to handle projector functionalities.
 class ASH_EXPORT ProjectorControllerImpl
@@ -78,11 +77,6 @@ class ASH_EXPORT ProjectorControllerImpl
   void OnTranscriptionError() override;
   void OnSpeechRecognitionStopped(bool forced) override;
   NewScreencastPrecondition GetNewScreencastPrecondition() const override;
-  void OnUndoRedoAvailabilityChanged(bool undo_available,
-                                     bool redo_available) override;
-  void OnCanvasInitialized(bool success) override;
-  bool GetAnnotatorAvailability() override;
-  void ToggleAnnotationTray() override;
 
   // Create the screencast container directory. If there is an error, the
   // callback will be triggered with an empty FilePath.
@@ -92,15 +86,6 @@ class ASH_EXPORT ProjectorControllerImpl
   // then be synced to Drive by DriveFS. DriveFS only supports primary account.
   void CreateScreencastContainerFolder(
       CreateScreencastContainerFolderCallback callback);
-
-  // Enables the annotator tool.
-  void EnableAnnotatorTool();
-  // Sets the annotator tool.
-  void SetAnnotatorTool(const AnnotatorTool& tool);
-  // Reset and disable the the annotator tools.
-  void ResetTools();
-  // Returns true if annotator is active.
-  bool IsAnnotatorEnabled();
 
   // Notifies the ProjectorClient if the Projector SWA can trigger a
   // new Projector session. The preconditions are calculated in
@@ -112,8 +97,6 @@ class ASH_EXPORT ProjectorControllerImpl
   // 3. Whether DriveFS is mounted or not.
   void OnNewScreencastPreconditionChanged();
 
-  void SetProjectorUiControllerForTest(
-      std::unique_ptr<ProjectorUiController> ui_controller);
   void SetProjectorMetadataControllerForTest(
       std::unique_ptr<ProjectorMetadataController> metadata_controller);
   void SetOnPathDeletedCallbackForTest(OnPathDeletedCallback callback);
@@ -121,10 +104,6 @@ class ASH_EXPORT ProjectorControllerImpl
 
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
   ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
-
-  void set_canvas_initialized_callback_for_test(base::OnceClosure callback) {
-    on_canvas_initialized_callback_for_test_ = std::move(callback);
-  }
 
   // CrasAudioHandler::AudioObserver:
   void OnAudioNodesChanged() override;
@@ -214,9 +193,6 @@ class ASH_EXPORT ProjectorControllerImpl
   // directory deleted.
   OnPathDeletedCallback on_path_deleted_callback_;
   OnFileSavedCallback on_file_saved_callback_;
-
-  // If set, will be called when the canvas is initialized.
-  base::OnceClosure on_canvas_initialized_callback_for_test_;
 
   // There is a delay on completing speech recognition session. We enforce a 90
   // second timeout from the recording stopped signal to force end the speech

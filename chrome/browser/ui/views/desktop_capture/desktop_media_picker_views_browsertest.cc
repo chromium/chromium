@@ -22,6 +22,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -94,15 +95,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
 
 // Invokes a dialog that allows the user to select what view of their desktop
 // they would like to share.
-// TODO(crbug.com/1238879): Test is flaky on Win.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-
-IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
-                       MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_default) {
   after_show_callback_ =
       base::BindOnce([](const std::vector<FakeDesktopMediaList*>& sources) {
         sources[0]->AddSource(0);
@@ -127,14 +120,7 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
 
 // Show the picker UI with only one source type: TYPE_WEB_CONTENTS, aka the
 // tab picker.
-// crbug.com/1261820: flaky on Win
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_tabs DISABLED_InvokeUi_tabs
-#else
-#define MAYBE_InvokeUi_tabs InvokeUi_tabs
-#endif
-IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
-                       MAYBE_InvokeUi_tabs) {
+IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_tabs) {
   after_show_callback_ =
       base::BindOnce([](const std::vector<FakeDesktopMediaList*>& sources) {
         sources[0]->AddSource(0);
@@ -157,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
   EXPECT_EQ(dialog->GetOkButton(),
             dialog->DialogDelegate::GetInitiallyFocusedView());
   EXPECT_FALSE(picker_->GetDialogViewForTesting()->IsDialogButtonEnabled(
-      ui::DIALOG_BUTTON_OK));
+      ui::mojom::DialogButton::kOk));
 }
 
 // Validate that the dialog title changes to match the source type when there's

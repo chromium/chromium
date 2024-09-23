@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -98,9 +105,7 @@ void FontLoaded(content::WebUIDataSource::GotDataCallback got_data_callback,
                 bool did_load_file) {
   if (font_data->size() && did_load_file) {
     std::move(got_data_callback)
-        .Run(new base::RefCountedBytes(
-            reinterpret_cast<const unsigned char*>(font_data->data()),
-            font_data->size()));
+        .Run(new base::RefCountedBytes(base::as_byte_span(*font_data)));
   } else {
     std::move(got_data_callback).Run(nullptr);
   }
@@ -176,7 +181,7 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
   // so allow resources in the guest to be loaded cross-origin.
   source->OverrideCrossOriginResourcePolicy("cross-origin");
 
-  // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
+  // TODO(crbug.com/40137141): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
   return source;
 }
@@ -204,16 +209,18 @@ MediaAppGuestUI::MediaAppGuestUI(
 }
 
 MediaAppGuestUI::~MediaAppGuestUI() {
-  if (app_navigation_committed_)
+  if (app_navigation_committed_) {
     MediaAppMetricsHelper::OnUiDestroyedAfterNavigation();
+  }
 }
 
 void MediaAppGuestUI::ReadyToCommitNavigation(
     content::NavigationHandle* handle) {
   // Force-enable autoplay support.
   const std::string allowed_resource = "app.html";
-  if (handle->GetURL() != GURL(kChromeUIMediaAppGuestURL + allowed_resource))
+  if (handle->GetURL() != GURL(kChromeUIMediaAppGuestURL + allowed_resource)) {
     return;
+  }
 
   if (!app_navigation_committed_) {
     app_navigation_committed_ = true;
@@ -267,10 +274,6 @@ void MediaAppGuestUI::BindInterface(
 void MediaAppGuestUI::BindInterface(
     mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
         receiver) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
-    return;
-  }
-
   if (untrusted_page_handler_factory_.is_bound()) {
     untrusted_page_handler_factory_.reset();
   }
@@ -281,9 +284,24 @@ void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
     mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) {
-  ocr_handler_ = delegate_->CreateAndBindOcrHandler(
-      *web_ui()->GetWebContents()->GetBrowserContext(), std::move(receiver),
-      std::move(page));
+  delegate_->CreateAndBindOcrHandler(
+      *web_ui()->GetWebContents()->GetBrowserContext(),
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow(),
+      std::move(receiver), std::move(page));
+}
+
+void MediaAppGuestUI::CreateMahiUntrustedPageHandler(
+    mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedPageHandler>
+        receiver,
+    mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
+    const std::string& file_name) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
+    return;
+  }
+
+  delegate_->CreateAndBindMahiHandler(
+      std::move(receiver), std::move(page), file_name,
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {

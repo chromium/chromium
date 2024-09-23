@@ -16,7 +16,7 @@ namespace blink {
 
 // static
 PermissionStatus* PermissionStatus::Take(PermissionStatusListener* listener,
-                                         ScriptPromiseResolver* resolver) {
+                                         ScriptPromiseResolverBase* resolver) {
   ExecutionContext* execution_context = resolver->GetExecutionContext();
   PermissionStatus* permission_status =
       MakeGarbageCollected<PermissionStatus>(listener, execution_context);

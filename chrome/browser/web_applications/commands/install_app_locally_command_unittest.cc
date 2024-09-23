@@ -9,22 +9,22 @@
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -36,9 +36,7 @@
 namespace web_app {
 namespace {
 
-class InstallAppLocallyCommandTest
-    : public WebAppTest,
-      public ::testing::WithParamInterface<OsIntegrationSubManagersState> {
+class InstallAppLocallyCommandTest : public WebAppTest {
  public:
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
   InstallAppLocallyCommandTest() = default;
@@ -48,8 +46,7 @@ class InstallAppLocallyCommandTest
     WebAppTest::SetUp();
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
-      test_override_ =
-          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
+      test_override_ = OsIntegrationTestOverrideImpl::OverrideForTesting();
     }
     provider_ = FakeWebAppProvider::Get(profile());
 
@@ -57,25 +54,9 @@ class InstallAppLocallyCommandTest
         std::make_unique<WebAppFileHandlerManager>(profile());
     auto protocol_handler_manager =
         std::make_unique<WebAppProtocolHandlerManager>(profile());
-    auto shortcut_manager = std::make_unique<WebAppShortcutManager>(
-        profile(), file_handler_manager.get(), protocol_handler_manager.get());
     auto os_integration_manager = std::make_unique<OsIntegrationManager>(
-        profile(), std::move(shortcut_manager), std::move(file_handler_manager),
-        std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
-
-    if (GetParam() == OsIntegrationSubManagersState::kSaveStateToDB) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kOsIntegrationSubManagers, {{"stage", "write_config"}});
-    } else if (GetParam() ==
-               OsIntegrationSubManagersState::kSaveStateAndExecute) {
-      scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          features::kOsIntegrationSubManagers,
-          {{"stage", "execute_and_write_config"}});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kOsIntegrationSubManagers});
-    }
+        profile(), std::move(file_handler_manager),
+        std::move(protocol_handler_manager));
 
     provider_->SetOsIntegrationManager(std::move(os_integration_manager));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -95,8 +76,7 @@ class InstallAppLocallyCommandTest
   webapps::AppId InstallNonLocallyInstalledAppWithIcons(
       std::map<SquareSizePx, SkBitmap> icon_map) {
     std::unique_ptr<WebAppInstallInfo> info =
-        std::make_unique<WebAppInstallInfo>();
-    info->start_url = kWebAppUrl;
+        WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);
@@ -104,7 +84,7 @@ class InstallAppLocallyCommandTest
         result;
 
     web_app::WebAppInstallParams params;
-    params.locally_installed = false;
+    params.install_state = proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
     params.add_to_applications_menu = false;
     params.add_to_desktop = false;
     params.add_to_quick_launch_bar = false;
@@ -174,19 +154,18 @@ class InstallAppLocallyCommandTest
     EXPECT_TRUE(icon_color.has_value());
     return icon_color.value();
 #else
-    NOTREACHED() << "Shortcuts not supported for other OS";
+    NOTREACHED_IN_MIGRATION() << "Shortcuts not supported for other OS";
     return SK_ColorTRANSPARENT;
 #endif
   }
 
  private:
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 
-TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
+TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   // Create an app that is not locally installed, i.e. has the
   // is_locally_installed bit set to false and there is no OS integration
   // defined for it.
@@ -217,11 +196,10 @@ TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
   ASSERT_TRUE(updated_state.has_value());
   const proto::WebAppOsIntegrationState& updated_os_states =
       updated_state.value();
+  ASSERT_TRUE(updated_os_states.has_shortcut());
 
   // OS integration should be triggered now.
   if (HasShortcutsOsIntegration()) {
-    ASSERT_EQ(AreOsIntegrationSubManagersEnabled(),
-              updated_os_states.has_shortcut());
     ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsShortcutCreated(
         profile(), app_id,
         provider().registrar_unsafe().GetAppShortName(app_id)));
@@ -236,22 +214,16 @@ TEST_P(InstallAppLocallyCommandTest, BasicBehavior) {
   }
 }
 
-TEST_P(InstallAppLocallyCommandTest, AppNotInRegistrar) {
+TEST_F(InstallAppLocallyCommandTest, AppNotInRegistrar) {
   const webapps::AppId app_id = "abcde";
 
   base::test::TestFuture<void> test_future;
   provider().scheduler().InstallAppLocally(app_id, test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-  EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::INSTALLED_WITH_OS_INTEGRATION}));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    InstallAppLocallyCommandTest,
-    ::testing::Values(OsIntegrationSubManagersState::kDisabled,
-                      OsIntegrationSubManagersState::kSaveStateToDB,
-                      OsIntegrationSubManagersState::kSaveStateAndExecute),
-    test::GetOsIntegrationSubManagersTestName);
 
 }  // namespace
 }  // namespace web_app

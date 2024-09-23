@@ -35,7 +35,7 @@ private:
  std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
      agent_group_scheduler_;
  raw_ptr<blink::WebView, DanglingUntriaged> view_;
- raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
+ raw_ptr<blink::WebLocalFrame> frame_;
 };
 
 }  // namespace extensions

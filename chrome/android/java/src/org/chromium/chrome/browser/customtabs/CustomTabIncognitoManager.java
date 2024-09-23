@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
+
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
@@ -18,6 +20,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
@@ -59,7 +62,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
 
     @Override
     public void onFinishNativeInitialization() {
-        if (mIntentDataProvider.isIncognito()) {
+        if (mIntentDataProvider.getCustomTabMode() == INCOGNITO) {
             initializeIncognito();
         }
     }
@@ -71,10 +74,10 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
         }
 
         if (mProfileProviderSupplier.get().hasOffTheRecordProfile()) {
-            mProfileProviderSupplier
-                    .get()
-                    .getOffTheRecordProfile(/* createIfNeeded= */ false)
-                    .destroyWhenAppropriate();
+            ProfileManager.destroyWhenAppropriate(
+                    mProfileProviderSupplier
+                            .get()
+                            .getOffTheRecordProfile(/* createIfNeeded= */ false));
         }
     }
 
@@ -95,7 +98,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
         if (!CommandLine.getInstance()
                 .hasSwitch(ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
             new IncognitoCustomTabSnapshotController(
-                    mActivity.getWindow(), () -> mIntentDataProvider.isIncognito());
+                    mActivity, () -> mIntentDataProvider.getCustomTabMode() == INCOGNITO);
         }
     }
 

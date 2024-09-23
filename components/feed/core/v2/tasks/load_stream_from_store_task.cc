@@ -38,7 +38,7 @@ LoadStreamFromStoreTask::LoadStreamFromStoreTask(
     bool is_web_feed_subscriber,
     base::OnceCallback<void(Result)> callback)
     : load_type_(load_type),
-      feed_stream_(*feed_stream),
+      feed_stream_(feed_stream),
       stream_type_(stream_type),
       store_(store),
       missed_last_refresh_(missed_last_refresh),

@@ -11,8 +11,7 @@
 
 namespace web_app {
 
-sync_pb::WebAppSpecifics::UserDisplayMode
-ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
+sync_pb::WebAppSpecifics::UserDisplayMode ToWebAppSpecificsUserDisplayMode(
     mojom::UserDisplayMode user_display_mode) {
   switch (user_display_mode) {
     case mojom::UserDisplayMode::kBrowser:
@@ -24,7 +23,7 @@ ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
   }
 }
 
-mojom::UserDisplayMode CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+mojom::UserDisplayMode ToMojomUserDisplayMode(
     sync_pb::WebAppSpecifics::UserDisplayMode display_mode) {
   switch (display_mode) {
     case sync_pb::WebAppSpecifics::BROWSER:
@@ -38,24 +37,39 @@ mojom::UserDisplayMode CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
   }
 }
 
-mojom::UserDisplayMode ResolvePlatformSpecificUserDisplayMode(
+sync_pb::WebAppSpecifics::UserDisplayMode
+ResolvePlatformSpecificUserDisplayMode(
     const sync_pb::WebAppSpecifics& sync_proto) {
-  if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-    return CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-        sync_proto.user_display_mode_non_cros());
-  }
-
-  sync_pb::WebAppSpecifics_UserDisplayMode user_display_mode;
+  sync_pb::WebAppSpecifics_UserDisplayMode resolved_default_udm =
+      sync_proto.has_user_display_mode_default()
+          ? sync_proto.user_display_mode_default()
+          : sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE;
 #if BUILDFLAG(IS_CHROMEOS)
-  user_display_mode = sync_proto.has_user_display_mode_cros()
-                          ? sync_proto.user_display_mode_cros()
-                          : sync_proto.user_display_mode_non_cros();
+  return sync_proto.has_user_display_mode_cros()
+             ? sync_proto.user_display_mode_cros()
+             : resolved_default_udm;
 #else
-  // Defaults to UNSPECIFIED, which will be converted to kStandalone.
-  user_display_mode = sync_proto.user_display_mode_non_cros();
+  return resolved_default_udm;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-      user_display_mode);
+}
+
+void SetPlatformSpecificUserDisplayMode(
+    sync_pb::WebAppSpecifics::UserDisplayMode user_display_mode,
+    sync_pb::WebAppSpecifics* sync_proto) {
+#if BUILDFLAG(IS_CHROMEOS)
+  sync_proto->set_user_display_mode_cros(user_display_mode);
+#else
+  sync_proto->set_user_display_mode_default(user_display_mode);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+bool HasCurrentPlatformUserDisplayMode(
+    const sync_pb::WebAppSpecifics& sync_proto) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return sync_proto.has_user_display_mode_cros();
+#else
+  return sync_proto.has_user_display_mode_default();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace web_app

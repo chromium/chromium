@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/prefs/pref_watcher.h"
 
 #include "base/functional/bind.h"
@@ -17,6 +22,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
@@ -68,6 +74,7 @@ const char* const kWebPrefsToObserve[] = {
 #else
     prefs::kAccessibilityFocusHighlightEnabled,
 #endif
+    prefs::kPageColorsBlockList,
 };
 
 const int kWebPrefsToObserveLength = std::size(kWebPrefsToObserve);
@@ -84,6 +91,7 @@ PrefWatcher::PrefWatcher(Profile* profile)
   CHECK(tracking_protection_settings_);
   tracking_protection_settings_observation_.Observe(
       tracking_protection_settings_);
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
 
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
 
@@ -95,6 +103,8 @@ PrefWatcher::PrefWatcher(Profile* profile)
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kEnableEncryptedMedia,
                                      renderer_callback);
+  profile_pref_change_registrar_.Add(
+      prefs::kPrefixedVideoFullscreenApiAvailability, renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCIPHandlingPolicy,
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCUDPPortRange,
@@ -143,8 +153,15 @@ void PrefWatcher::RegisterRendererPreferenceWatcher(
 }
 
 void PrefWatcher::Shutdown() {
+  tracking_protection_settings_ = nullptr;
+  tracking_protection_settings_observation_.Reset();
   profile_pref_change_registrar_.RemoveAll();
   local_state_pref_change_registrar_.RemoveAll();
+}
+
+void PrefWatcher::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
+  UpdateRendererPreferences();
 }
 
 void PrefWatcher::OnDoNotTrackEnabledChanged() {
@@ -184,9 +201,12 @@ PrefWatcherFactory::PrefWatcherFactory()
           "PrefWatcher",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }

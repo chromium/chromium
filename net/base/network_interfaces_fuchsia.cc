@@ -24,9 +24,9 @@ namespace {
 IPAddress FuchsiaIpAddressToIPAddress(const fuchsia::net::IpAddress& address) {
   switch (address.Which()) {
     case fuchsia::net::IpAddress::kIpv4:
-      return IPAddress(address.ipv4().addr.data(), address.ipv4().addr.size());
+      return IPAddress(address.ipv4().addr);
     case fuchsia::net::IpAddress::kIpv6:
-      return IPAddress(address.ipv6().addr.data(), address.ipv6().addr.size());
+      return IPAddress(address.ipv6().addr);
     default:
       return IPAddress();
   }

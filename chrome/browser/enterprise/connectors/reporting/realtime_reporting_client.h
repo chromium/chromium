@@ -10,9 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 
@@ -26,10 +27,6 @@ class BrowserContext;
 
 namespace signin {
 class IdentityManager;
-}
-
-namespace policy {
-class DeviceManagementService;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -129,16 +126,6 @@ class RealtimeReportingClient : public KeyedService,
       const std::string& dm_token);
 #endif
 
-  // Called whenever the real-time reporting policy changes.
-  void RealtimeReportingPrefChanged(const std::string& pref);
-
-  // Create a privately owned cloud policy client for events routing.
-  void CreatePrivateCloudPolicyClient(
-      const std::string& policy_client_desc,
-      policy::DeviceManagementService* device_management_service,
-      const std::string& client_id,
-      const std::string& dm_token);
-
   // Handle the availability of a cloud policy client.
   void OnCloudPolicyClientAvailable(const std::string& policy_client_desc,
                                     policy::CloudPolicyClient* client);
@@ -150,12 +137,6 @@ class RealtimeReportingClient : public KeyedService,
   static const user_manager::User* GetChromeOSUser();
 
 #endif
-
-  // Determines if real-time reporting is available based on platform and user.
-  static bool IsRealtimeReportingAvailable();
-
-  // Removes any path information and returns just the basename.
-  static std::string GetBaseName(const std::string& filename);
 
   void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
 

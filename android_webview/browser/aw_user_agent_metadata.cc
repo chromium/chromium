@@ -6,10 +6,12 @@
 
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_user_agent_metadata.h"
-#include "android_webview/browser_jni_headers/AwUserAgentMetadata_jni.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwUserAgentMetadata_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::Java2dStringArrayTo2dStringVector;
@@ -92,8 +94,8 @@ blink::UserAgentMetadata FromJavaAwUserAgentMetadata(
   ua_metadata.wow64 = Java_AwUserAgentMetadata_isWow64(env, java_ua_metadata);
 
   base::android::AppendJavaStringArrayToStringVector(
-      env, Java_AwUserAgentMetadata_getFormFactor(env, java_ua_metadata),
-      &ua_metadata.form_factor);
+      env, Java_AwUserAgentMetadata_getFormFactors(env, java_ua_metadata),
+      &ua_metadata.form_factors);
 
   return ua_metadata;
 }
@@ -130,14 +132,14 @@ ScopedJavaLocalRef<jobject> ToJavaAwUserAgentMetadata(
   ScopedJavaLocalRef<jstring> java_bitness =
       ConvertUTF8ToJavaString(env, ua_metadata.bitness);
   jboolean java_wow64 = ua_metadata.wow64;
-  ScopedJavaLocalRef<jobjectArray> java_form_factor =
-      ToJavaArrayOfStrings(env, ua_metadata.form_factor);
+  ScopedJavaLocalRef<jobjectArray> java_form_factors =
+      ToJavaArrayOfStrings(env, ua_metadata.form_factors);
 
   return Java_AwUserAgentMetadata_create(
       env, java_brand_version_list, java_brand_full_version_lis,
       java_full_version, java_platform, java_platform_version,
       java_architecture, java_model, java_mobile, java_bitness, java_wow64,
-      java_form_factor);
+      java_form_factors);
 }
 
 }  // namespace android_webview

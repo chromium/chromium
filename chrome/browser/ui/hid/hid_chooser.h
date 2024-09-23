@@ -16,10 +16,18 @@ class HidChooser : public content::HidChooser {
   HidChooser(const HidChooser&) = delete;
   HidChooser& operator=(const HidChooser&) = delete;
 
-  ~HidChooser() override = default;
+  ~HidChooser() override;
+
+  // Sets `close_closure` as the closure to be run when the chooser
+  // dialog is closed. The previous closure is discarded without
+  // running it.
+  void SetCloseClosure(base::OnceClosure close_closure);
+
+  base::WeakPtr<HidChooser> GetWeakPtr();
 
  private:
   base::ScopedClosureRunner closure_runner_;
+  base::WeakPtrFactory<HidChooser> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_HID_HID_CHOOSER_H_

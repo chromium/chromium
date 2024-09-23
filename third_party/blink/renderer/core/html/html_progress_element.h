@@ -61,6 +61,7 @@ class CORE_EXPORT HTMLProgressElement final : public HTMLElement {
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   LayoutProgress* GetLayoutProgress() const;
 
+  void DidRecalcStyle(const StyleRecalcChange) override;
   void ParseAttribute(const AttributeModificationParams&) override;
 
   void AttachLayoutTree(AttachContext&) override;

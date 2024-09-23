@@ -6,7 +6,7 @@
 #define COMPONENTS_AGGREGATION_SERVICE_PARSING_UTILS_H_
 
 #include <optional>
-#include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 
@@ -19,7 +19,7 @@ namespace aggregation_service {
 // Parses aggregation coordinator identifier. Returns `kDefault` if `str` is
 // nullptr or is not a pre-defined value.
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
-std::optional<url::Origin> ParseAggregationCoordinator(const std::string& str);
+std::optional<url::Origin> ParseAggregationCoordinator(std::string_view str);
 
 }  // namespace aggregation_service
 

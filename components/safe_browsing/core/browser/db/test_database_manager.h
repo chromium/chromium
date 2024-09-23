@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace safe_browsing {
 
@@ -22,14 +21,11 @@ namespace safe_browsing {
 // non-abstract methods in the base class are not overridden.
 class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
-  TestSafeBrowsingDatabaseManager(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  explicit TestSafeBrowsingDatabaseManager(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // SafeBrowsingDatabaseManager implementation:
   void CancelCheck(Client* client) override;
-  bool CanCheckRequestDestination(
-      network::mojom::RequestDestination request_destination) const override;
   bool CanCheckUrl(const GURL& url) const override;
   bool CheckBrowseUrl(
       const GURL& url,
@@ -41,11 +37,9 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
-  bool CheckResourceUrl(const GURL& url, Client* client) override;
   void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
-      const std::string& metric_variation,
-      base::OnceCallback<void(bool)> callback) override;
+      CheckUrlForHighConfidenceAllowlistCallback callback) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   void MatchDownloadAllowlistUrl(
       const GURL& url,
@@ -53,11 +47,10 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   safe_browsing::ThreatSource GetBrowseUrlThreatSource(
       CheckBrowseUrlType check_type) const override;
   safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
-  bool IsDownloadProtectionEnabled() const override;
-  void StartOnSBThread(
+  void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
-  void StopOnSBThread(bool shutdown) override;
+  void StopOnUIThread(bool shutdown) override;
   bool IsDatabaseReady() const override;
 
  protected:

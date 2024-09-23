@@ -112,7 +112,6 @@ test("libphonenumber_unittests") {
     ":libphonenumber_without_metadata",
     "//base",
     "//base/test:run_all_unittests",
-    "//base/third_party/dynamic_annotations",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/icu",

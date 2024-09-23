@@ -7,6 +7,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/embedder/binders.h"
@@ -54,7 +55,7 @@ PerformanceManagerRegistryImpl::~PerformanceManagerRegistryImpl() {
   DCHECK(render_process_hosts_.empty());
   DCHECK(pm_owned_.empty());
   DCHECK(pm_registered_.empty());
-  // TODO(crbug.com/1084611): |observers_| and |mechanisms_| should also be
+  // TODO(crbug.com/40131811): |observers_| and |mechanisms_| should also be
   // empty by now!
 }
 
@@ -181,7 +182,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(
 
   // Create an adapter for the service worker context.
   auto insertion_result = service_worker_context_adapters_.emplace(
-      browser_context, std::make_unique<ServiceWorkerContextAdapter>(
+      browser_context, std::make_unique<ServiceWorkerContextAdapterImpl>(
                            storage_partition->GetServiceWorkerContext()));
   DCHECK(insertion_result.second);
   ServiceWorkerContextAdapter* service_worker_context_adapter =
@@ -225,7 +226,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextRemoved(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = worker_watchers_.find(browser_context);
-  DCHECK(it != worker_watchers_.end());
+  CHECK(it != worker_watchers_.end(), base::NotFatalUntil::M130);
   it->second->TearDown();
   worker_watchers_.erase(it);
 
@@ -258,7 +259,7 @@ void PerformanceManagerRegistryImpl::TearDown() {
 
   service_worker_context_adapters_.clear();
 
-  for (auto* web_contents : web_contents_) {
+  for (content::WebContents* web_contents : web_contents_) {
     PerformanceManagerTabHelper* tab_helper =
         PerformanceManagerTabHelper::FromWebContents(web_contents);
     DCHECK(tab_helper);
@@ -270,7 +271,8 @@ void PerformanceManagerRegistryImpl::TearDown() {
   }
   web_contents_.clear();
 
-  for (auto* render_process_host : render_process_hosts_) {
+  for (content::RenderProcessHost* render_process_host :
+       render_process_hosts_) {
     RenderProcessUserData* user_data =
         RenderProcessUserData::GetForRenderProcessHost(render_process_host);
     DCHECK(user_data);
@@ -290,7 +292,7 @@ void PerformanceManagerRegistryImpl::TearDown() {
 
   DCHECK(pm_owned_.empty());
   DCHECK(pm_registered_.empty());
-  // TODO(crbug.com/1084611): |observers_| and |mechanisms_| should also be
+  // TODO(crbug.com/40131811): |observers_| and |mechanisms_| should also be
   // empty by now!
 }
 

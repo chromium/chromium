@@ -1,0 +1,196 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  -webkit-tap-highlight-color: transparent;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  outline: none;
+  user-select: none;
+
+  /* Sizes. */
+  --cr-checkbox-border-size: 2px;
+  --cr-checkbox-size: 16px;
+  --cr-checkbox-ripple-size: 32px;
+
+  /* Derived sizes (offsets). */
+  --cr-checkbox-ripple-offset: 50%;
+
+  /* --cr-checked-color automatically flips for light/dark mode. */
+  --cr-checkbox-checked-box-color: var(--cr-checked-color);
+  --cr-checkbox-ripple-checked-color: var(--cr-active-background-color);
+  --cr-checkbox-ripple-opacity: 1;
+
+  /* Colors. */
+  --cr-checkbox-mark-color: var(
+      --color-checkbox-check,
+      var(--cr-fallback-color-on-primary));
+  --cr-checkbox-ripple-unchecked-color: var(--cr-active-background-color);
+  --cr-checkbox-unchecked-box-color: var(
+      --color-checkbox-foreground-unchecked,
+      var(--cr-fallback-color-outline));
+
+  /* Light mode colors. */
+  --cr-checkbox-checked-ripple-opacity: .2;
+  --cr-checkbox-unchecked-ripple-opacity: .15;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    /* Dark mode colors. */
+    --cr-checkbox-checked-ripple-opacity: .4;
+    --cr-checkbox-unchecked-ripple-opacity: .4;
+  }
+}
+
+:host([disabled]) {
+  cursor: initial;
+  opacity: 1;
+  pointer-events: none;
+  --cr-checkbox-checked-box-color: var(
+      --color-checkbox-container-disabled,
+      var(--cr-fallback-color-disabled-background));
+  --cr-checkbox-unchecked-box-color: var(
+      --color-checkbox-outline-disabled,
+      var(--cr-fallback-color-disabled-background));
+  --cr-checkbox-mark-color: var(--color-checkbox-check-disabled,
+      var(--cr-fallback-color-disabled-foreground));
+}
+
+#checkbox {
+  background: none;
+  border: var(--cr-checkbox-border-size) solid
+      var(--cr-checkbox-unchecked-box-color);
+  border-radius: 2px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: block;
+  flex-shrink: 0;
+  height: var(--cr-checkbox-size);
+  isolation: isolate;
+  margin: 0;
+  outline: none;
+  padding: 0;
+  position: relative;
+  transform: none;  /* Checkboxes shouldn't flip even in RTL. */
+  width: var(--cr-checkbox-size);
+}
+
+:host([disabled][checked]) #checkbox {
+  border-color: transparent;
+}
+
+#hover-layer {
+  display: none;
+}
+
+#checkbox:hover #hover-layer {
+  background-color: var(--cr-hover-background-color);
+  border-radius: 50%;
+  display: block;
+  height: 32px;
+  left: 50%;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+}
+
+@media (forced-colors: active) {
+  /* paper-ripple is not showing in Windows HCM. Use outline instead. */
+  :host(:focus) #checkbox {
+    outline: var(--cr-focus-outline-hcm);
+  }
+}
+
+#checkbox:focus-visible {
+  outline: var(--cr-checkbox-focus-outline,
+      2px solid var(--cr-focus-outline-color));
+  outline-offset: 2px;
+}
+
+#checkmark {
+  display: block;
+  /* Automatically adjust color of the checkmark SVG in forced colors mode.
+   * Otherwise, this property defaults to preserve-parent-color.
+   * https://www.w3.org/TR/css-color-adjust-1/#forced-color-adjust-prop */
+  forced-color-adjust: auto;
+  position: relative;
+  transform: scale(0);
+  z-index: 1;
+}
+
+#checkmark path {
+  fill: var(--cr-checkbox-mark-color);
+}
+
+:host([checked]) #checkmark {
+  transform: scale(1);
+  /* Only animate when showing checkmark. */
+  transition: transform 140ms ease-out;
+}
+
+:host([checked]) #checkbox {
+  background: var(--cr-checkbox-checked-box-background-color,
+      var(--cr-checkbox-checked-box-color));
+  border-color: var(--cr-checkbox-checked-box-color);
+}
+
+#ink {
+  --paper-ripple-opacity: var(--cr-checkbox-ripple-opacity,
+      var(--cr-checkbox-unchecked-ripple-opacity));
+  color: var(--cr-checkbox-ripple-unchecked-color);
+  height: var(--cr-checkbox-ripple-size);
+  left: var(--cr-checkbox-ripple-offset);
+  outline: var(--cr-checkbox-ripple-ring, none);
+  pointer-events: none;
+  top: var(--cr-checkbox-ripple-offset);
+  transform: translate(-50%, -50%);
+  transition: color linear 80ms;
+  width: var(--cr-checkbox-ripple-size);
+}
+
+:host([checked]) #ink {
+  --paper-ripple-opacity: var(--cr-checkbox-ripple-opacity,
+      var(--cr-checkbox-checked-ripple-opacity));
+  color: var(--cr-checkbox-ripple-checked-color);
+}
+
+:host-context([dir=rtl]) #ink {
+  left: auto;
+  right: var(--cr-checkbox-ripple-offset);
+  transform: translate(50%, -50%);
+}
+
+#labelContainer {
+  color: var(--cr-checkbox-label-color, var(--cr-primary-text-color));
+  padding-inline-start: var(--cr-checkbox-label-padding-start, 20px);
+  white-space: normal;
+}
+
+:host(.label-first) #labelContainer {
+  order: -1;
+  padding-inline-end: var(--cr-checkbox-label-padding-end, 20px);
+  padding-inline-start: 0;
+}
+
+:host(.no-label) #labelContainer {
+  display: none;
+}
+
+/* Hidden from UI, but not screen readers. */
+#ariaDescription {
+  height: 0;
+  overflow: hidden;
+  width: 0;
+}

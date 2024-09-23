@@ -54,7 +54,6 @@ import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {getTemplate} from './cups_printers.html.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
-import {SettingsCupsSavedPrintersElement} from './cups_saved_printers.js';
 import {SettingsCupsAddPrinterDialogElement} from './cups_settings_add_printer_dialog.js';
 
 /**
@@ -227,18 +226,6 @@ export class SettingsCupsPrintersElement extends
         reflectToAttribute: true,
       },
 
-      /**
-       * True when the "printer-settings-revamp" feature flag is enabled.
-       */
-      isPrinterSettingsRevampEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
-        },
-        readOnly: true,
-        reflectToAttribute: true,
-      },
-
       isRevampWayfindingEnabled_: {
         type: Boolean,
         value: () => {
@@ -274,7 +261,6 @@ export class SettingsCupsPrintersElement extends
   private showCupsEditPrinterDialog_: boolean;
   private nearbyPrintersExpanded_: boolean;
   private nearbyPrintersEmpty_: boolean;
-  private isPrinterSettingsRevampEnabled_: boolean;
 
   constructor() {
     super();
@@ -289,17 +275,12 @@ export class SettingsCupsPrintersElement extends
 
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
 
-    if (this.isPrinterSettingsRevampEnabled_) {
-      // This request is made in the constructor to fetch the # of saved
-      // printers for determining whether the nearby printers section should
-      // start open or closed.
-      this.browserProxy_.getCupsSavedPrintersList().then(
-          savedPrinters => this.nearbyPrintersExpanded_ =
-              savedPrinters.printerList.length === 0);
-    } else {
-      // Nearby printers should always show when the revamp flag is disabled.
-      this.nearbyPrintersExpanded_ = true;
-    }
+    // This request is made in the constructor to fetch the # of saved
+    // printers for determining whether the nearby printers section should
+    // start open or closed.
+    this.browserProxy_.getCupsSavedPrintersList().then(
+        savedPrinters => this.nearbyPrintersExpanded_ =
+            savedPrinters.printerList.length === 0);
   }
 
   override connectedCallback(): void {
@@ -376,9 +357,6 @@ export class SettingsCupsPrintersElement extends
         this.onPrintersChangedListener_ = null;
       }
       this.entryManager_.removeWebUiListeners();
-      this.shadowRoot!
-          .querySelector<SettingsCupsSavedPrintersElement>('#savedPrinters')
-          ?.removeFocusListener();
       return;
     }
 
@@ -390,9 +368,6 @@ export class SettingsCupsPrintersElement extends
         this.onEnterprisePrintersChanged_.bind(this));
     this.updateCupsPrintersList_();
     this.attemptDeepLink();
-    this.shadowRoot!
-        .querySelector<SettingsCupsSavedPrintersElement>('#savedPrinters')
-        ?.addFocusListener();
   }
 
   /**
@@ -488,10 +463,12 @@ export class SettingsCupsPrintersElement extends
   }
 
   private onAddPrinterDialogClose_(): void {
-    const icon = this.shadowRoot!.querySelector<CrIconButtonElement>(
-        '#addManualPrinterIcon');
-    assert(icon);
-    focusWithoutInk(icon);
+    afterNextRender(this, () => {
+      const icon = this.shadowRoot!.querySelector<CrIconButtonElement>(
+          '#addManualPrinterButton');
+      assert(icon);
+      focusWithoutInk(icon);
+    });
   }
 
   private onShowCupsEditPrinterDialog_(): void {
@@ -519,11 +496,6 @@ export class SettingsCupsPrintersElement extends
   private addPrinterButtonActive_(
       connectedToNetwork: boolean, userPrintersAllowed: boolean): boolean {
     return connectedToNetwork && userPrintersAllowed;
-  }
-
-  private showSavedPrintersSection_(): boolean {
-    return this.isPrinterSettingsRevampEnabled_ ||
-        this.doesAccountHaveSavedPrinters_();
   }
 
   private doesAccountHaveSavedPrinters_(): boolean {
@@ -571,7 +543,6 @@ export class SettingsCupsPrintersElement extends
   }
 
   private toggleClicked_(): void {
-    assert(this.isPrinterSettingsRevampEnabled_);
     this.nearbyPrintersExpanded_ = !this.nearbyPrintersExpanded_;
 
     // The iron list containing nearby printers does not get rendered while
@@ -593,11 +564,6 @@ export class SettingsCupsPrintersElement extends
 
   private computeNearbyPrintersEmpty_(): boolean {
     return this.nearbyPrinterCount_ === 0;
-  }
-
-  private showNearbyPrintersRevampSection_(): boolean {
-    return this.isPrinterSettingsRevampEnabled_ &&
-        this.hasActiveNetworkConnection;
   }
 
   private onClickPrintManagement_(): void {

@@ -6,10 +6,12 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
-#include "components/policy/android/jni_headers/PolicyCacheUpdater_jni.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/android/policy_map_android.h"
 #include "components/policy/core/common/policy_namespace.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/policy/android/jni_headers/PolicyCacheUpdater_jni.h"
 
 namespace policy {
 namespace android {

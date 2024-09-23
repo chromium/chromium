@@ -51,6 +51,7 @@ class CORE_EXPORT WorkerReportingProxy {
   virtual ~WorkerReportingProxy() = default;
 
   virtual void CountFeature(WebFeature) {}
+  virtual void CountWebDXFeature(mojom::blink::WebDXFeature) {}
   virtual void ReportException(const String& error_message,
                                std::unique_ptr<SourceLocation>,
                                int exception_id) {}

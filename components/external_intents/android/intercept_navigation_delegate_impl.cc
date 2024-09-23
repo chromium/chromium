@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/external_intents/android/jni_headers/InterceptNavigationDelegateImpl_jni.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/external_intents/android/jni_headers/InterceptNavigationDelegateImpl_jni.h"
 
 namespace external_intents {
 

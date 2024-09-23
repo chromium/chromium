@@ -8,9 +8,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
-#include "components/payments/content/android/minimal_jni/PaymentHandlerHost_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/payments/payment_handler_host.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/minimal_jni/PaymentHandlerHost_jni.h"
 
 namespace payments {
 namespace android {
@@ -57,7 +59,7 @@ void PaymentHandlerHost::UpdateWith(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& response_buffer) {
   mojom::PaymentRequestDetailsUpdatePtr response;
-  auto span = base::android::JavaByteBufferToSpan(env, response_buffer.obj());
+  auto span = base::android::JavaByteBufferToSpan(env, response_buffer);
   bool success = mojom::PaymentRequestDetailsUpdate::Deserialize(
       span.data(), span.size(), &response);
   DCHECK(success);

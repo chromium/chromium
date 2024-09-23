@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -40,9 +40,9 @@ constexpr char kLocalhostRoot[] = "http://localhost:7002/";
 std::string PrependServingRoot(const std::string& name,
                                bool use_localhost_as_root) {
   if (use_localhost_as_root) {
-    return base::StrCat({base::StringPiece(kLocalhostRoot), name});
+    return base::StrCat({kLocalhostRoot, name});
   }
-  return base::StrCat({base::StringPiece(kServingRoot), name});
+  return base::StrCat({kServingRoot, name});
 }
 
 // Accepts a relative |path| to a value in the Chrome OS Printing

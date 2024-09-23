@@ -26,7 +26,6 @@ generate_grd("build_static_grdp") {
     "foreground/css/list.css",
     "foreground/css/menu.css",
     "foreground/css/table.css",
-    "foreground/css/tree.css",
 
     # Images:
     "foreground/images/common/dragger.svg",
@@ -65,6 +64,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/ms365.svg",
     "foreground/images/files/ui/nudge_star_icon.svg",
     "foreground/images/files/ui/offline.svg",
+    "foreground/images/files/ui/odfs_frozen_account.svg",
     "foreground/images/files/ui/odfs_reauthentication_required.svg",
     "foreground/images/files/ui/photos_logo.svg",
     "foreground/images/files/ui/quickview_star.svg",
@@ -79,6 +79,7 @@ generate_grd("build_static_grdp") {
     "foreground/images/files/ui/shortcut.svg",
     "foreground/images/files/ui/sort_desc.svg",
     "foreground/images/files/ui/sorting_ng.svg",
+    "foreground/images/files/ui/star.svg",
     "foreground/images/files/ui/state_banner_icon.svg",
     "foreground/images/files/ui/view_list.svg",
     "foreground/images/files/ui/view_thumbnail.svg",

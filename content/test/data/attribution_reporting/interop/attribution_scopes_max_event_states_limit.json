@@ -1,0 +1,92 @@
+{
+  "description": "Event source exceeding defined max event states",
+  "api_config": {
+    "needs_aggregatable_debug": true,
+    "needs_attribution_scopes": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "event-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "debug_reporting": true,
+                "max_event_reports": 3,
+                "event_report_windows": {
+                  "start_time": 0,
+                  "end_times": [21600, 43200]
+                },
+                "attribution_scopes": {
+                  "limit": 3,
+                  "max_event_states": 3,
+                  "values": [
+                    "1"
+                  ]
+                },
+                "aggregatable_debug_reporting": {
+                  "budget": 65536,
+                  "key_piece": "0x15",
+                  "debug_data": [
+                    {
+                      "types": ["source-max-event-states-limit"],
+                      "key_piece": "0x2",
+                      "value": 456
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": "3",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "source-max-event-states-limit"
+          }
+        ],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x17",
+            "value": 456
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          }
+        },
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      }
+    ]
+  }
+}

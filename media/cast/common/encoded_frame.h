@@ -8,11 +8,12 @@
 #include <cstdint>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/common/frame_id.h"
 #include "media/cast/common/rtp_time.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -24,11 +25,9 @@ struct EncodedFrame {
   virtual ~EncodedFrame();
 
   // Convenience accessors to data as an array of uint8_t elements.
-  const uint8_t* bytes() const {
-    return reinterpret_cast<const uint8_t*>(std::data(data));
-  }
-  uint8_t* mutable_bytes() {
-    return reinterpret_cast<uint8_t*>(std::data(data));
+  base::span<const uint8_t> bytes() const { return base::as_byte_span(data); }
+  base::span<uint8_t> mutable_bytes() {
+    return base::as_writable_byte_span(data);
   }
 
   // Copies all data members except |data| to |dest|.

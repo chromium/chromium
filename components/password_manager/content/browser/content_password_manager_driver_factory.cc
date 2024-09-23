@@ -42,7 +42,7 @@ void ContentPasswordManagerDriverFactory::BindPasswordManagerDriver(
   // the request will be just dropped, this would cause closing the message pipe
   // which would raise connection error to peer side.
   // Peer side could reconnect later when needed.
-  // TODO(https://crbug.com/1286342): WebContents should never be null here; the
+  // TODO(crbug.com/40815551): WebContents should never be null here; the
   // helper function above only returns a null WebContents if
   // `render_frame_host` is null, but that should never be the case here.
   if (!web_contents)

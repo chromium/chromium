@@ -241,6 +241,11 @@ found in the LICENSE file.
       <message name="IDS_RESTORE_TABS_DEVICE_SCREEN_NOT_SELECTED_DESCRIPTION" desc="Accessibility string describing that no icon exists that indicates that a device is the currently selected one.">
         Not selected
       </message>
+
+      <!-- Cross Device Pane Strings-->
+      <message name="IDS_ACCESSIBILITY_CROSS_DEVICE_TABS" desc="Content description for the button to show the cross device tabs UI.">
+        Tabs from other devices
+      </message>
     </messages>
   </release>
 </grit>

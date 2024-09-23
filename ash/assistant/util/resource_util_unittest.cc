@@ -6,6 +6,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "ash/assistant/util/test_support/macros.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -26,16 +27,12 @@ std::string GetParamValue(const GURL& url, const std::string& param_key) {
   if (!url.has_query())
     return std::string();
 
-  auto ToString = [&url](const url::Component& component) {
-    if (component.len <= 0)
-      return std::string();
-    return std::string(url.query(), component.begin, component.len);
-  };
-
-  url::Component query(0, url.query().length()), key, value;
-  while (url::ExtractQueryKeyValue(url.query().c_str(), &query, &key, &value)) {
-    if (ToString(key) == param_key)
-      return ToString(value);
+  const std::string_view query_piece = url.query_piece();
+  url::Component query(0, query_piece.length()), key, value;
+  while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
+    if (query_piece.substr(key.begin, key.len) == param_key) {
+      return std::string(query_piece.substr(value.begin, value.len));
+    }
   }
 
   return std::string();

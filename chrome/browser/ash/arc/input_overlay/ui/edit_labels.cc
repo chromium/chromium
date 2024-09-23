@@ -54,7 +54,7 @@ void EditLabels::Init() {
       InitForActionMoveKeyboard();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   UpdateNameTag();
@@ -119,7 +119,7 @@ std::u16string EditLabels::CalculateActionName() {
       control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   if (all_unassigned) {
@@ -140,6 +140,11 @@ std::u16string EditLabels::CalculateKeyListForA11yLabel() const {
   }
 
   return base::JoinString(keys, u", ");
+}
+
+bool EditLabels::IsFirstLabelUnassigned() const {
+  DCHECK_GE(labels_.size(), 1u);
+  return labels_[0]->IsInputUnbound();
 }
 
 void EditLabels::PerformPulseAnimationOnFirstLabel() {
@@ -184,6 +189,7 @@ void EditLabels::InitForActionMoveKeyboard() {
     if (i == 0 || i == 2) {
       AddChildView(std::make_unique<views::View>());
     } else {
+      DCHECK_LT(labels_.size(), size_t(Direction::kMaxValue) + 1);
       labels_.emplace_back(AddChildView(std::make_unique<EditLabel>(
           controller_, action_, for_editing_list_, labels_.size())));
     }

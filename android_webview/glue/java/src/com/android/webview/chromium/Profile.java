@@ -7,6 +7,7 @@ package com.android.webview.chromium;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
+import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
 import androidx.annotation.NonNull;
@@ -16,8 +17,8 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 
 /**
- * An abstraction of {@link AwBrowserContext}, this class reflects
- * the state needed for the multi-profile public API.
+ * An abstraction of {@link AwBrowserContext}, this class reflects the state needed for the
+ * multi-profile public API.
  */
 @Lifetime.Profile
 public class Profile {
@@ -75,5 +76,20 @@ public class Profile {
     @NonNull
     public ServiceWorkerController getServiceWorkerController() {
         return mServiceWorkerController;
+    }
+
+    public void prefetchUrl(
+            String url,
+            PrefetchParams params,
+            ValueCallback<PrefetchOperationResult> resultCallback) {
+        // TODO(334016945): do the actual implementation
+    }
+
+    public void clearPrefetch(String url, ValueCallback<PrefetchOperationResult> resultCallback) {
+        // TODO(334016945): do the actual implementation
+    }
+
+    public void cancelPrefetch(String url) {
+        // TODO(334016945): do the actual implementation
     }
 }

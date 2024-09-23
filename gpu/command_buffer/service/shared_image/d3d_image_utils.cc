@@ -4,86 +4,18 @@
 
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
 
+#include <dawn/native/D3D11Backend.h>
+#include <dawn/native/D3D12Backend.h>
+
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 
-#if BUILDFLAG(USE_DAWN)
-using dawn::native::ExternalImageDescriptor;
-using dawn::native::d3d::ExternalImageDescriptorD3D11Texture;
-using dawn::native::d3d::ExternalImageDescriptorDXGISharedHandle;
-using dawn::native::d3d::ExternalImageDXGI;
-#endif
+using dawn::native::d3d11::SharedTextureMemoryD3D11Texture2DDescriptor;
+using dawn::native::d3d12::SharedBufferMemoryD3D12ResourceDescriptor;
 
 namespace gpu {
-
-#if BUILDFLAG(USE_DAWN)
-namespace {
-
-wgpu::TextureFormat DXGIToWGPUFormat(DXGI_FORMAT dxgi_format) {
-  switch (dxgi_format) {
-    case DXGI_FORMAT_R8G8B8A8_UNORM:
-      return wgpu::TextureFormat::RGBA8Unorm;
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-      return wgpu::TextureFormat::BGRA8Unorm;
-    case DXGI_FORMAT_R8_UNORM:
-      return wgpu::TextureFormat::R8Unorm;
-    case DXGI_FORMAT_R8G8_UNORM:
-      return wgpu::TextureFormat::RG8Unorm;
-    case DXGI_FORMAT_R16_UNORM:
-      return wgpu::TextureFormat::R16Unorm;
-    case DXGI_FORMAT_R16G16_UNORM:
-      return wgpu::TextureFormat::RG16Unorm;
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return wgpu::TextureFormat::RGBA16Float;
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-      return wgpu::TextureFormat::RGB10A2Unorm;
-    case DXGI_FORMAT_NV12:
-      return wgpu::TextureFormat::R8BG8Biplanar420Unorm;
-    case DXGI_FORMAT_P010:
-      return wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
-    default:
-      NOTREACHED();
-      return wgpu::TextureFormat::Undefined;
-  }
-}
-
-wgpu::TextureUsage GetAllowedDawnUsages(
-    const wgpu::Device& device,
-    const D3D11_TEXTURE2D_DESC& d3d11_texture_desc,
-    const wgpu::TextureFormat wgpu_format) {
-  DCHECK_EQ(wgpu_format, DXGIToWGPUFormat(d3d11_texture_desc.Format));
-  if (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
-      wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
-    if (d3d11_texture_desc.BindFlags & D3D11_BIND_RENDER_TARGET &&
-        device.HasFeature(wgpu::FeatureName::MultiPlanarRenderTargets)) {
-      return wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding |
-             wgpu::TextureUsage::RenderAttachment;
-    } else {
-      return wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
-    }
-  }
-
-  wgpu::TextureUsage wgpu_usage =
-      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;
-  if (d3d11_texture_desc.BindFlags & D3D11_BIND_RENDER_TARGET) {
-    wgpu_usage |= wgpu::TextureUsage::RenderAttachment;
-  }
-  if (d3d11_texture_desc.BindFlags & D3D11_BIND_SHADER_RESOURCE) {
-    wgpu_usage |= wgpu::TextureUsage::TextureBinding;
-  }
-  if (d3d11_texture_desc.BindFlags & D3D11_BIND_UNORDERED_ACCESS) {
-    if (wgpu_format != wgpu::TextureFormat::BGRA8Unorm ||
-        device.HasFeature(wgpu::FeatureName::BGRA8UnormStorage)) {
-      wgpu_usage |= wgpu::TextureUsage::StorageBinding;
-    }
-  }
-
-  return wgpu_usage;
-}
-
-}  // namespace
-#endif  // BUILDFLAG(USE_DAWN)
 
 bool ClearD3D11TextureToColor(
     const Microsoft::WRL::ComPtr<ID3D11Texture2D>& d3d11_texture,
@@ -110,91 +42,134 @@ bool ClearD3D11TextureToColor(
   return true;
 }
 
-#if BUILDFLAG(USE_DAWN)
-std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
-    const wgpu::Device& device,
-    uint32_t shared_image_usage,
-    const D3D11_TEXTURE2D_DESC& d3d11_texture_desc,
-    absl::variant<HANDLE, Microsoft::WRL::ComPtr<ID3D11Texture2D>>
-        handle_or_texture,
+wgpu::Texture CreateDawnSharedTexture(
+    const wgpu::SharedTextureMemory& shared_texture_memory,
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     base::span<wgpu::TextureFormat> view_formats) {
-  const wgpu::TextureFormat wgpu_format =
-      DXGIToWGPUFormat(d3d11_texture_desc.Format);
-  if (wgpu_format == wgpu::TextureFormat::Undefined) {
-    LOG(ERROR) << "Unsupported DXGI_FORMAT found: "
-               << d3d11_texture_desc.Format;
-    return nullptr;
-  }
-
-  // The below usages are not supported for multiplanar formats in Dawn.
-  // TODO(crbug.com/1451784): Use read/write intent instead of format to get
-  // correct usages. This needs support in Skia to loosen TextureUsage
-  // validation. Alternatively, add support in Dawn for multiplanar formats to
-  // be Renderable.
-  wgpu::TextureUsage wgpu_allowed_usage =
-      GetAllowedDawnUsages(device, d3d11_texture_desc, wgpu_format);
-  if (wgpu_allowed_usage == wgpu::TextureUsage::None) {
-    LOG(ERROR)
-        << "Allowed wgpu::TextureUsage is unknown for wgpu::TextureFormat: "
-        << static_cast<int>(wgpu_format);
-    return nullptr;
-  }
-
-  if (shared_image_usage & SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE &&
-      !(wgpu_allowed_usage & wgpu::TextureUsage::StorageBinding)) {
-    LOG(ERROR) << "Storage binding is not allowed for wgpu::TextureFormat: "
-               << static_cast<int>(wgpu_format);
-    return nullptr;
-  }
+  wgpu::SharedTextureMemoryProperties properties;
+  shared_texture_memory.GetProperties(&properties);
 
   wgpu::TextureDescriptor wgpu_texture_desc;
-  wgpu_texture_desc.format = wgpu_format;
-  wgpu_texture_desc.usage = wgpu_allowed_usage;
+  wgpu_texture_desc.format = properties.format;
   wgpu_texture_desc.dimension = wgpu::TextureDimension::e2D;
-  wgpu_texture_desc.size = {d3d11_texture_desc.Width, d3d11_texture_desc.Height,
-                            1};
+  wgpu_texture_desc.size = properties.size;
   wgpu_texture_desc.mipLevelCount = 1;
   wgpu_texture_desc.sampleCount = 1;
+
+  wgpu_texture_desc.usage = usage;
   wgpu_texture_desc.viewFormatCount =
       static_cast<uint32_t>(view_formats.size());
   wgpu_texture_desc.viewFormats = view_formats.data();
 
-  // We need to have internal usages of CopySrc for copies,
-  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
-  // if texture format allows these usages.
   wgpu::DawnTextureInternalUsageDescriptor wgpu_internal_usage_desc;
-  wgpu_internal_usage_desc.internalUsage = wgpu_allowed_usage;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    wgpu_internal_usage_desc.internalUsage = internal_usage;
+  } else {
+    // We need to have internal usages of CopySrc for copies,
+    // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
+    // if texture format allows these usages.
+    wgpu_internal_usage_desc.internalUsage = properties.usage;
+  }
   wgpu_texture_desc.nextInChain = &wgpu_internal_usage_desc;
 
-  std::unique_ptr<ExternalImageDXGI> external_image;
-  if (absl::holds_alternative<HANDLE>(handle_or_texture)) {
-    ExternalImageDescriptorDXGISharedHandle external_image_desc;
-    external_image_desc.cTextureDescriptor =
-        reinterpret_cast<WGPUTextureDescriptor*>(&wgpu_texture_desc);
-    external_image_desc.sharedHandle = absl::get<HANDLE>(handle_or_texture);
+  return shared_texture_memory.CreateTexture(&wgpu_texture_desc);
+}
 
-    external_image =
-        ExternalImageDXGI::Create(device.Get(), &external_image_desc);
-  } else {
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
-        absl::get<Microsoft::WRL::ComPtr<ID3D11Texture2D>>(handle_or_texture);
-    ExternalImageDescriptorD3D11Texture external_image_desc;
-    external_image_desc.cTextureDescriptor =
-        reinterpret_cast<WGPUTextureDescriptor*>(&wgpu_texture_desc);
-    external_image_desc.texture = std::move(texture);
+wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
+    const wgpu::Device& device,
+    bool use_keyed_mutex,
+    HANDLE handle) {
+  wgpu::SharedTextureMemory shared_texture_memory;
+  wgpu::SharedTextureMemoryDXGISharedHandleDescriptor shared_handle_desc;
+  shared_handle_desc.handle = handle;
+  shared_handle_desc.useKeyedMutex = use_keyed_mutex;
 
-    external_image =
-        ExternalImageDXGI::Create(device.Get(), &external_image_desc);
-  }
+  wgpu::SharedTextureMemoryDescriptor desc;
+  desc.nextInChain = &shared_handle_desc;
+  desc.label = "SharedImageD3D_SharedTextureMemory_SharedHandle";
 
-  if (!external_image) {
-    LOG(ERROR) << "Failed to create external image";
+  shared_texture_memory = device.ImportSharedTextureMemory(&desc);
+
+  if (!shared_texture_memory || shared_texture_memory.IsDeviceLost()) {
+    LOG(ERROR) << "Failed to create shared texture memory";
     return nullptr;
   }
 
-  DCHECK(external_image->IsValid());
-  return external_image;
+  return shared_texture_memory;
 }
-#endif  // BUILDFLAG(USE_DAWN)
 
+wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
+    const wgpu::Device& device,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture) {
+  wgpu::SharedTextureMemory shared_texture_memory;
+  SharedTextureMemoryD3D11Texture2DDescriptor texture2d_desc;
+  texture2d_desc.texture = texture;
+
+  wgpu::SharedTextureMemoryDescriptor desc;
+  desc.nextInChain = &texture2d_desc;
+  desc.label = "SharedImageD3D_SharedTextureMemory_Texture2D";
+  shared_texture_memory = device.ImportSharedTextureMemory(&desc);
+
+  if (!shared_texture_memory || shared_texture_memory.IsDeviceLost()) {
+    LOG(ERROR) << "Failed to create shared texture memory";
+    return nullptr;
+  }
+
+  return shared_texture_memory;
+}
+
+wgpu::Buffer CreateDawnSharedBuffer(
+    const wgpu::SharedBufferMemory& shared_buffer_memory,
+    wgpu::BufferUsage usage) {
+  wgpu::SharedBufferMemoryProperties properties;
+  shared_buffer_memory.GetProperties(&properties);
+
+  wgpu::BufferDescriptor wgpu_buffer_desc;
+  wgpu_buffer_desc.size = properties.size;
+  wgpu_buffer_desc.usage = usage;
+
+  return shared_buffer_memory.CreateBuffer(&wgpu_buffer_desc);
+}
+
+wgpu::SharedBufferMemory CreateDawnSharedBufferMemory(
+    const wgpu::Device& device,
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource) {
+  wgpu::SharedBufferMemory shared_buffer_memory;
+  SharedBufferMemoryD3D12ResourceDescriptor d3d12_resource_desc;
+  d3d12_resource_desc.resource = std::move(resource);
+
+  wgpu::SharedBufferMemoryDescriptor desc;
+  desc.nextInChain = &d3d12_resource_desc;
+  desc.label = "SharedBufferD3D_SharedBufferMemory_Resource";
+  shared_buffer_memory = device.ImportSharedBufferMemory(&desc);
+
+  if (!shared_buffer_memory) {
+    LOG(ERROR) << "Failed to create shared buffer memory";
+    return nullptr;
+  }
+
+  DCHECK(!shared_buffer_memory.IsDeviceLost());
+  return shared_buffer_memory;
+}
+
+wgpu::SharedFence CreateDawnSharedFence(
+    const wgpu::Device& device,
+    scoped_refptr<gfx::D3DSharedFence> fence) {
+  wgpu::SharedFence shared_fence;
+  wgpu::SharedFenceDXGISharedHandleDescriptor dxgi_desc;
+  dxgi_desc.handle = fence->GetSharedHandle();
+  wgpu::SharedFenceDescriptor fence_desc;
+  fence_desc.nextInChain = &dxgi_desc;
+
+  shared_fence = device.ImportSharedFence(&fence_desc);
+
+  if (!shared_fence) {
+    LOG(ERROR) << "Failed to create shared fence.";
+    return nullptr;
+  }
+
+  return shared_fence;
+}
 }  // namespace gpu

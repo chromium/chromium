@@ -85,6 +85,9 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
   // platform's proposed surface size.
   virtual bool SupportsOverridePlatformSize() const;
 
+  // Copy and return the contents of |surface_|.
+  SkBitmap ReadbackForTesting();
+
  protected:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<SoftwareOutputDeviceClient> client_ = nullptr;

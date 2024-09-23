@@ -570,7 +570,7 @@ TEST_F(UserNoteServiceTest, OnFrameNavigated) {
 // After a navigation to a document that has user notes in the foreground, the
 // service should request the notes UI to show itself and fetch the notes
 // metadata.
-// TODO(crbug.com/1313967): This test will need to be changed when notes UI is
+// TODO(crbug.com/40832588): This test will need to be changed when notes UI is
 // no longer automatically shown on navigation.
 TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationSomeNotes) {
   // Initial setup.
@@ -631,7 +631,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationSomeNotes) {
 
 // After a navigation to a document that has user notes, but isn't in the
 // foreground, the service should not request the notes UI to show itself.
-// TODO(crbug.com/1313967): This test will need to be changed when notes UI is
+// TODO(crbug.com/40832588): This test will need to be changed when notes UI is
 // no longer automatically shown on navigation.
 TEST_F(UserNoteServiceTest,
        OnNoteMetadataFetchedForNavigationSomeNotesBackground) {
@@ -683,7 +683,7 @@ TEST_F(UserNoteServiceTest,
 // After a navigation to a document that doesn't have user notes but is in the
 // active tab, the service should not request the notes UI to show itself, but
 // should Invalidate the notes displayed in the UI.
-// TODO(crbug.com/1313967): This test will need to be changed when notes UI is
+// TODO(crbug.com/40832588): This test will need to be changed when notes UI is
 // no longer automatically shown on navigation.
 TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationNoNotes) {
   // Initial setup.
@@ -746,7 +746,7 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetchedForNavigationNoNotes) {
 // After a navigation to a document that doesn't have user notes, but isn't in
 // the foreground, the service should not request the notes UI to show itself
 // nor to Invalidate the notes.
-// TODO(crbug.com/1313967): This test will need to be changed when notes UI is
+// TODO(crbug.com/40832588): This test will need to be changed when notes UI is
 // no longer automatically shown on navigation.
 TEST_F(UserNoteServiceTest,
        OnNoteMetadataFetchedForNavigationNoNotesBackground) {

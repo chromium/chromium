@@ -9,7 +9,9 @@
           "UserPrintersAllowed": true
         },
         "prefs": {
-          "native_printing.user_native_printers_allowed": {}
+          "native_printing.user_native_printers_allowed": {
+            "value": true
+          }
         }
       }
     ]

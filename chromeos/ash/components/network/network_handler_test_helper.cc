@@ -17,7 +17,7 @@ namespace ash {
 
 NetworkHandlerTestHelper::NetworkHandlerTestHelper() {
   if (!NetworkHandler::IsInitialized()) {
-    NetworkHandler::Initialize();
+    NetworkHandler::InitializeFake();
     network_handler_initialized_ = true;
   }
 }

@@ -17,6 +17,8 @@ Interceptor& GetMutableInterceptor() {
   return *s_callback;
 }
 
+bool s_has_interceptor = false;
+
 }  // namespace
 
 const Interceptor& GetTestingInterceptor() {
@@ -33,6 +35,18 @@ void SetInterceptorForTesting(const Interceptor& interceptor) {
   GetMutableInterceptor() = interceptor;
 }
 
+bool HasInterceptorOnIOThreadForTesting() {
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO) ||
+        BrowserThread::CurrentlyOn(BrowserThread::IO));
+  return s_has_interceptor;
+}
+
+void SetHasInterceptorOnIOThreadForTesting(bool has_interceptor) {
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO) ||
+        BrowserThread::CurrentlyOn(BrowserThread::IO));
+  s_has_interceptor = has_interceptor;
+}
+
 TerminalParams::TerminalParams(
     network::mojom::NetworkContext* network_context,
     network::mojom::URLLoaderFactoryParamsPtr factory_params,
@@ -40,14 +54,16 @@ TerminalParams::TerminalParams(
     FactoryOverrideOption factory_override_option,
     DisableSecureDnsOption disable_secure_dns_option,
     StoragePartitionImpl* storage_partition,
-    std::optional<URLLoaderFactoryTypes> url_loader_factory)
+    std::optional<URLLoaderFactoryTypes> url_loader_factory,
+    int process_id)
     : network_context_(network_context),
       factory_params_(std::move(factory_params)),
       header_client_option_(header_client_option),
       factory_override_option_(factory_override_option),
       disable_secure_dns_option_(disable_secure_dns_option),
       storage_partition_(storage_partition),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+      url_loader_factory_(std::move(url_loader_factory)),
+      process_id_(process_id) {}
 
 TerminalParams::~TerminalParams() = default;
 TerminalParams::TerminalParams(TerminalParams&&) = default;
@@ -62,10 +78,12 @@ TerminalParams TerminalParams::ForNetworkContext(
     DisableSecureDnsOption disable_secure_dns_option) {
   CHECK(network_context);
   CHECK(factory_params);
-  return TerminalParams(
-      network_context, std::move(factory_params), header_client_option,
-      factory_override_option, disable_secure_dns_option,
-      /*storage_partition=*/nullptr, /*url_loader_factory=*/std::nullopt);
+  int process_id = factory_params->process_id;
+  return TerminalParams(network_context, std::move(factory_params),
+                        header_client_option, factory_override_option,
+                        disable_secure_dns_option,
+                        /*storage_partition=*/nullptr,
+                        /*url_loader_factory=*/std::nullopt, process_id);
 }
 
 // static
@@ -77,17 +95,19 @@ TerminalParams TerminalParams::ForBrowserProcess(
                         storage_partition->CreateURLLoaderFactoryParams(),
                         header_client_option, FactoryOverrideOption::kDisallow,
                         DisableSecureDnsOption::kDisallow, storage_partition,
-                        /*url_loader_factory=*/std::nullopt);
+                        /*url_loader_factory=*/std::nullopt,
+                        network::mojom::kBrowserProcessId);
 }
 
 // static
 TerminalParams TerminalParams::ForNonNetwork(
-    URLLoaderFactoryTypes url_loader_factory) {
+    URLLoaderFactoryTypes url_loader_factory,
+    int process_id) {
   return TerminalParams(
       /*network_context=*/nullptr, /*factory_params=*/nullptr,
       HeaderClientOption::kDisallow, FactoryOverrideOption::kDisallow,
       DisableSecureDnsOption::kDisallow,
-      /*storage_partition=*/nullptr, std::move(url_loader_factory));
+      /*storage_partition=*/nullptr, std::move(url_loader_factory), process_id);
 }
 
 network::mojom::NetworkContext* TerminalParams::network_context() const {
@@ -105,6 +125,9 @@ DisableSecureDnsOption TerminalParams::disable_secure_dns_option() const {
 StoragePartitionImpl* TerminalParams::storage_partition() const {
   return storage_partition_.get();
 }
+int TerminalParams::process_id() const {
+  return process_id_;
+}
 network::mojom::URLLoaderFactoryParamsPtr TerminalParams::TakeFactoryParams() {
   return std::move(factory_params_);
 }
@@ -118,6 +141,7 @@ ContentClientParams::ContentClientParams(
     RenderFrameHost* frame,
     int render_process_id,
     const url::Origin& request_initiator,
+    const net::IsolationInfo& isolation_info,
     ukm::SourceIdObj ukm_source_id,
     bool* bypass_redirect_checks,
     std::optional<int64_t> navigation_id,
@@ -126,6 +150,7 @@ ContentClientParams::ContentClientParams(
       frame_(frame),
       render_process_id_(render_process_id),
       request_initiator_(request_initiator),
+      isolation_info_(isolation_info),
       ukm_source_id_(ukm_source_id),
       bypass_redirect_checks_(bypass_redirect_checks),
       navigation_id_(navigation_id),
@@ -146,10 +171,10 @@ void ContentClientParams::Run(
     network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       browser_context_.get(), frame_.get(), render_process_id_, type,
-      request_initiator_.get(), std::move(navigation_id_),
-      std::move(ukm_source_id_), factory_builder, header_client,
-      bypass_redirect_checks_.get(), disable_secure_dns, factory_override,
-      std::move(navigation_response_task_runner_));
+      request_initiator_.get(), isolation_info_.get(),
+      std::move(navigation_id_), std::move(ukm_source_id_), factory_builder,
+      header_client, bypass_redirect_checks_.get(), disable_secure_dns,
+      factory_override, std::move(navigation_response_task_runner_));
 }
 
 namespace {
@@ -172,12 +197,12 @@ std::tuple<bool, bool> GetIsNavigationAndDownload(
 
     // The following cases are not reached just because `devtools_params` is
     // always `std::nullopt` for the current `Create*` callers.
-    // TODO(crbug.com/1506871): Return proper values once non-nullopt
+    // TODO(crbug.com/40947547): Return proper values once non-nullopt
     // `devtools_params` is given.
     case ContentBrowserClient::URLLoaderFactoryType::kPrefetch:
     case ContentBrowserClient::URLLoaderFactoryType::kDevTools:
     case ContentBrowserClient::URLLoaderFactoryType::kEarlyHints:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -224,8 +249,7 @@ template <typename OutType, typename... FinishArgs>
   if (auto terminal_url_loader_factory =
           terminal_params.TakeURLLoaderFactory()) {
     if (GetTestingInterceptor()) {
-      // TODO(crbug.com/324458368): Plumb a process ID here.
-      GetTestingInterceptor().Run(network::mojom::kInvalidProcessId,
+      GetTestingInterceptor().Run(terminal_params.process_id(),
                                   factory_builder);
     }
 
@@ -258,7 +282,7 @@ template <typename OutType, typename... FinishArgs>
   factory_params->disable_secure_dns = disable_secure_dns;
 
   if (GetTestingInterceptor()) {
-    GetTestingInterceptor().Run(factory_params->process_id, factory_builder);
+    GetTestingInterceptor().Run(terminal_params.process_id(), factory_builder);
   }
 
   return std::move(factory_builder)

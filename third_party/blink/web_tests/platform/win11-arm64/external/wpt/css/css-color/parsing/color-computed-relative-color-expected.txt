@@ -1,0 +1,38 @@
+This is a testharness.js-based test.
+Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'color-mix(in srgb, rgb(from rebeccapurple none g b), rebeccapurple)'
+  Colors do not match.\nActual:   color(srgb 0.2 0.2 0.6)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.2
+[FAIL] Property color value 'color-mix(in hsl, hsl(from rebeccapurple none s l), rebeccapurple)'
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 0.5)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.6
+[FAIL] Property color value 'color-mix(in hwb, hwb(from rebeccapurple none w b), rebeccapurple)'
+  Colors do not match.\nActual:   color(srgb 0.6 0.2 0.5)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.6
+[FAIL] Property color value 'color(from rgb(from color(xyz-d50 0.99 0.88 0.77) r g b) xyz-d50 x y z)'
+  Colors do not match.\nActual:   color(xyz-d50 0.989872 0.879877 0.769926)\nExpected: color(xyz-d50 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989872
+[FAIL] Property color value 'color(from hsl(from color(xyz-d50 0.99 0.88 0.77) h s l) xyz-d50 x y z)'
+  Colors do not match.\nActual:   color(xyz-d50 0.989872 0.879877 0.769926)\nExpected: color(xyz-d50 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989872
+[FAIL] Property color value 'color(from color(from color(xyz-d50 0.99 0.88 0.77) srgb r g b) xyz-d50 x y z)'
+  Colors do not match.\nActual:   color(xyz-d50 0.989872 0.879877 0.769926)\nExpected: color(xyz-d50 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989872
+[FAIL] Property color value 'color(from color(from color(xyz-d50 0.99 0.88 0.77) display-p3 r g b) xyz-d50 x y z)'
+  Colors do not match.\nActual:   color(xyz-d50 0.989831 0.879845 0.769913)\nExpected: color(xyz-d50 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989831
+[FAIL] Property color value 'color(from color(from color(xyz-d50 0.99 0.88 0.77) a98-rgb r g b) xyz-d50 x y z)'
+  Colors do not match.\nActual:   color(xyz-d50 0.989614 0.879695 0.769795)\nExpected: color(xyz-d50 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989614
+[FAIL] Property color value 'color(from color(from color(xyz-d50 0.99 0.88 0.77) prophoto-rgb r g b) xyz-d50 x y z)'
+  Colors do not match.\nActual:   color(xyz-d50 0.989682 0.879725 0.769775)\nExpected: color(xyz-d50 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989682
+[FAIL] Property color value 'color(from color(from color(xyz-d50 0.99 0.88 0.77) rec2020 r g b) xyz-d50 x y z)'
+  Colors do not match.\nActual:   color(xyz-d50 0.98984 0.879861 0.769847)\nExpected: color(xyz-d50 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.98984
+[FAIL] Property color value 'color(from rgb(from color(xyz-d65 0.99 0.88 0.77) r g b) xyz-d65 x y z)'
+  Colors do not match.\nActual:   color(xyz-d65 0.989888 0.879886 0.769923)\nExpected: color(xyz-d65 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989888
+[FAIL] Property color value 'color(from hsl(from color(xyz-d65 0.99 0.88 0.77) h s l) xyz-d65 x y z)'
+  Colors do not match.\nActual:   color(xyz-d65 0.989888 0.879886 0.769923)\nExpected: color(xyz-d65 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989888
+[FAIL] Property color value 'color(from color(from color(xyz-d65 0.99 0.88 0.77) srgb r g b) xyz-d65 x y z)'
+  Colors do not match.\nActual:   color(xyz-d65 0.989888 0.879886 0.769923)\nExpected: color(xyz-d65 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989888
+[FAIL] Property color value 'color(from color(from color(xyz-d65 0.99 0.88 0.77) display-p3 r g b) xyz-d65 x y z)'
+  Colors do not match.\nActual:   color(xyz-d65 0.989874 0.879875 0.76992)\nExpected: color(xyz-d65 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989874
+[FAIL] Property color value 'color(from color(from color(xyz-d65 0.99 0.88 0.77) a98-rgb r g b) xyz-d65 x y z)'
+  Colors do not match.\nActual:   color(xyz-d65 0.989656 0.879729 0.769826)\nExpected: color(xyz-d65 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989656
+[FAIL] Property color value 'color(from color(from color(xyz-d65 0.99 0.88 0.77) prophoto-rgb r g b) xyz-d65 x y z)'
+  Colors do not match.\nActual:   color(xyz-d65 0.989647 0.879721 0.769892)\nExpected: color(xyz-d65 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989647
+[FAIL] Property color value 'color(from color(from color(xyz-d65 0.99 0.88 0.77) rec2020 r g b) xyz-d65 x y z)'
+  Colors do not match.\nActual:   color(xyz-d65 0.989824 0.879848 0.769848)\nExpected: color(xyz-d65 0.99 0.88 0.77).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.99 +/- 0.0001, expected 0.99 but got 0.989824
+Harness: the test ran to completion.
+

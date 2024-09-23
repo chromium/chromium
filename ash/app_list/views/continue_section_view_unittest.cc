@@ -254,7 +254,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
       ui::test::EventGenerator* generator = GetEventGenerator();
       generator->set_current_screen_location(location);
       generator->PressTouch();
-      ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
+      ui::GestureEventDetails event_details(ui::EventType::kGestureLongPress);
       ui::GestureEvent long_press(location.x(), location.y(), 0,
                                   base::TimeTicks::Now(), event_details);
       generator->Dispatch(&long_press);
@@ -1411,7 +1411,7 @@ TEST_F(ContinueSectionViewTabletModeTest, PrivacyNoticeIsShownInBackground) {
   // Activate the search box. The privacy notice will become inactive but the
   // view still exists.
   auto* search_box = GetAppListTestHelper()->GetSearchBoxView();
-  search_box->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
+  search_box->SetSearchBoxActive(true, ui::EventType::kMousePressed);
 
   EXPECT_TRUE(IsPrivacyNoticeVisible());
   EXPECT_EQ(GetAppListNudgeController()->current_nudge(),
@@ -1432,8 +1432,8 @@ TEST_F(ContinueSectionViewTabletModeTest, PrivacyNoticeIsShownInBackground) {
             AppListNudgeController::NudgeType::kPrivacyNotice);
 
   // Activate the search box and then deactivate it.
-  search_box->SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
-  search_box->SetSearchBoxActive(false, ui::ET_MOUSE_PRESSED);
+  search_box->SetSearchBoxActive(true, ui::EventType::kMousePressed);
+  search_box->SetSearchBoxActive(false, ui::EventType::kMousePressed);
 
   // The privacy notice timer should be restarted after the search box becomes
   // inactive.

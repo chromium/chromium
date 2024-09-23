@@ -1,0 +1,93 @@
+<style include="cr-shared-style">
+  :host {
+    --cr-url-list-item-padding: 0;
+    --iron-icon-gap: 8px;
+    --iron-icon-width: 16px;
+    --product-selector-border-radius: 10px;
+    --product-selector-height: 42px;
+    --product-selector-empty-state-padding: 6px;
+    --product-selector-padding: 8px;
+    --product-selector-width: 220px;
+    text-align: start;
+  }
+
+  #currentProduct {
+    --cr-url-list-item-icon-margin-end: 8px;
+    --cr-url-list-item-container-width: 16px;
+    --cr-url-list-item-container-height: 16px;
+    --cr-url-list-item-metadata-gap: 0;
+    --color-list-item-url-favicon-background: transparent;
+    pointer-events: none;
+    width: calc(var(--product-selector-width)
+        - 2 * var(--product-selector-padding)
+        - var(--iron-icon-width)
+        - var(--iron-icon-gap));
+  }
+
+  #currentProductContainer {
+    box-sizing: border-box;
+    overflow: clip;
+    width: var(--product-selector-width);
+  }
+
+  #currentProductContainer {
+    align-items: center;
+    background: var(--color-product-specifications-button-background);
+    border-radius: var(--product-selector-border-radius);
+    display: flex;
+    gap: var(--iron-icon-gap);
+    height: var(--product-selector-height);
+    padding: var(--product-selector-padding);
+    position: relative;
+  }
+
+  #emptyState {
+    flex: 1;
+    font-weight: 500;
+    padding-inline-start: var(--product-selector-empty-state-padding);
+  }
+
+  cr-icon {
+    right: 4px;
+  }
+
+  #hoverLayer {
+    display: none;
+  }
+
+  #currentProductContainer:active > #hoverLayer,
+  #currentProductContainer:focus-within > #hoverLayer,
+  #currentProductContainer:hover > #hoverLayer,
+  #currentProductContainer.showing-menu > #hoverLayer {
+    background-color: var(--cr-hover-background-color);
+    border-radius: var(--product-selector-border-radius);
+    display: block;
+    height: var(--product-selector-height);
+    position: absolute;
+    transform: translateX(calc(-1 * var(--product-selector-padding)));
+    width: var(--product-selector-width);
+  }
+</style>
+
+<div id="currentProductContainer"
+    on-click="showMenu_"
+    on-keydown="onCurrentProductContainerKeyDown_"
+    tabindex="0">
+  <template is="dom-if" if="[[selectedItem]]" restamp>
+    <cr-url-list-item id="currentProduct" size="medium"
+      url="[[selectedItem.url]]" title="[[selectedItem.title]]"
+      description="[[getUrl_(selectedItem)]]" tabindex="-1">
+    </cr-url-list-item>
+  </template>
+  <template is="dom-if" if="[[!selectedItem]]" restamp>
+    <div id="emptyState">$i18n{emptyProductSelector}</div>
+  </template>
+  <cr-icon icon="cr:expand-more"></cr-icon>
+  <div id="hoverLayer"></div>
+</div>
+
+<product-selection-menu id="productSelectionMenu"
+    selected-url="[[getSelectedUrl_(selectedItem)]]"
+    excluded-urls="[[excludedUrls]]"
+    on-close-menu="onCloseMenu_">
+</product-selection-menu>

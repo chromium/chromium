@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -31,7 +32,9 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/types/event_type.h"
 
 namespace exo {
 namespace {
@@ -447,7 +450,7 @@ TEST_F(SeatTest, SetSelectionWebCustomData) {
   RunReadingTask();
 
   std::u16string result;
-  ui::Clipboard::GetForCurrentThread()->ReadCustomData(
+  ui::Clipboard::GetForCurrentThread()->ReadDataTransferCustomData(
       ui::ClipboardBuffer::kCopyPaste, u"text/uri-list", /*data_dst=*/nullptr,
       &result);
   EXPECT_EQ(result, u"data");
@@ -648,24 +651,28 @@ TEST_F(SeatTest, SetSelection_ClientOutOfFocus) {
 
 TEST_F(SeatTest, PressedKeys) {
   TestSeat seat;
-  ui::KeyEvent press_a(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0);
-  ui::KeyEvent release_a(ui::ET_KEY_RELEASED, ui::VKEY_A, ui::DomCode::US_A, 0);
-  ui::KeyEvent press_b(ui::ET_KEY_PRESSED, ui::VKEY_B, ui::DomCode::US_B, 0);
-  ui::KeyEvent release_b(ui::ET_KEY_RELEASED, ui::VKEY_B, ui::DomCode::US_B, 0);
+  ui::KeyEvent press_a(ui::EventType::kKeyPressed, ui::VKEY_A,
+                       ui::DomCode::US_A, 0);
+  ui::KeyEvent release_a(ui::EventType::kKeyReleased, ui::VKEY_A,
+                         ui::DomCode::US_A, 0);
+  ui::KeyEvent press_b(ui::EventType::kKeyPressed, ui::VKEY_B,
+                       ui::DomCode::US_B, 0);
+  ui::KeyEvent release_b(ui::EventType::kKeyReleased, ui::VKEY_B,
+                         ui::DomCode::US_B, 0);
 
   // Press A, it should be in the map.
   seat.WillProcessEvent(&press_a);
   seat.OnKeyEvent(press_a.AsKeyEvent());
   seat.DidProcessEvent(&press_a);
-  base::flat_map<ui::DomCode, KeyState> pressed_keys;
-  pressed_keys[ui::CodeFromNative(&press_a)] = KeyState{press_a.code(), false};
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
+  pressed_keys[ui::CodeFromNative(&press_a)].emplace(press_a.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Press B, then A & B should be in the map.
   seat.WillProcessEvent(&press_b);
   seat.OnKeyEvent(press_b.AsKeyEvent());
   seat.DidProcessEvent(&press_b);
-  pressed_keys[ui::CodeFromNative(&press_b)] = KeyState{press_b.code(), false};
+  pressed_keys[ui::CodeFromNative(&press_b)].emplace(press_b.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Release A, with the normal order where DidProcessEvent is after OnKeyEvent,
@@ -673,7 +680,7 @@ TEST_F(SeatTest, PressedKeys) {
   seat.WillProcessEvent(&release_a);
   seat.OnKeyEvent(release_a.AsKeyEvent());
   seat.DidProcessEvent(&release_a);
-  pressed_keys.erase(ui::CodeFromNative(&press_a));
+  pressed_keys.erase(PhysicalCode(ui::CodeFromNative(&press_a)));
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Release B, do it out of order so DidProcessEvent is before OnKeyEvent, the
@@ -701,6 +708,127 @@ TEST_F(SeatTest, DragDropAbort) {
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
   seat.AbortPendingDragOperation();
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
+}
+
+TEST_F(SeatTest, MultiRewriteEventsFromInvalidSource) {
+  TestSeat seat;
+
+  ui::KeyEvent press_a(ui::EventType::kKeyPressed, ui::VKEY_A,
+                       ui::DomCode::US_A, 0);
+  ui::KeyEvent release_a(ui::EventType::kKeyReleased, ui::VKEY_A,
+                         ui::DomCode::US_A, 0);
+  ui::KeyEvent press_b(ui::EventType::kKeyPressed, ui::VKEY_B,
+                       ui::DomCode::US_B, 0);
+  ui::KeyEvent release_b(ui::EventType::kKeyReleased, ui::VKEY_B,
+                         ui::DomCode::US_B, 0);
+
+  // Press A, it should be in the map.
+  seat.WillProcessEvent(&press_a);
+  seat.OnKeyEvent(press_a.AsKeyEvent());
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
+  pressed_keys[ui::CodeFromNative(&press_a)].emplace(press_a.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Press A, but it was remapped to B. Should not be added to pressed_keys map.
+  seat.OnKeyEvent(press_b.AsKeyEvent());
+  seat.DidProcessEvent(&press_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Release B -> A from the same physical "A" event. Entry should be removed
+  // after first event.
+  seat.WillProcessEvent(&release_a);
+  seat.OnKeyEvent(release_b.AsKeyEvent());
+  pressed_keys.erase(PhysicalCode(ui::CodeFromNative(&press_a)));
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  seat.OnKeyEvent(release_a.AsKeyEvent());
+  seat.DidProcessEvent(&release_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+}
+
+TEST_F(SeatTest, MultiRewriteEventsFromValidSource) {
+  TestSeat seat;
+
+  ui::KeyEvent press_a(ui::EventType::kKeyPressed, ui::VKEY_A,
+                       ui::DomCode::US_A, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_a(ui::EventType::kKeyReleased, ui::VKEY_A,
+                         ui::DomCode::US_A, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_b(ui::EventType::kKeyPressed, ui::VKEY_B,
+                       ui::DomCode::US_B, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_b(ui::EventType::kKeyReleased, ui::VKEY_B,
+                         ui::DomCode::US_B, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+
+  // Press A, it should be in the map.
+  seat.WillProcessEvent(&press_a);
+  seat.OnKeyEvent(press_a.AsKeyEvent());
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
+  auto& key_state_set = pressed_keys[ui::CodeFromNative(&press_a)];
+  key_state_set.emplace(press_a.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Press A, but it was remapped to B. Should be added to pressed_keys map
+  // since it is explicitly allowlisted.
+  seat.OnKeyEvent(press_b.AsKeyEvent());
+  seat.DidProcessEvent(&press_a);
+  key_state_set.emplace(press_b.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Release B -> A from the same physical "A" event. Entry should be removed
+  // after first event.
+  seat.WillProcessEvent(&release_a);
+  seat.OnKeyEvent(release_b.AsKeyEvent());
+  pressed_keys.erase(PhysicalCode(ui::CodeFromNative(&press_a)));
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  seat.OnKeyEvent(release_a.AsKeyEvent());
+  seat.DidProcessEvent(&release_a);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+}
+
+TEST_F(SeatTest, MouseMultiRewriteEventsFromValidSource) {
+  TestSeat seat;
+
+  ui::MouseEvent press_back(ui::EventType::kMousePressed, gfx::PointF{},
+                            gfx::PointF{}, base::TimeTicks(),
+                            ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
+  ui::MouseEvent release_back(
+      ui::EventType::kMouseReleased, gfx::PointF{}, gfx::PointF{},
+      base::TimeTicks(), ui::EF_BACK_MOUSE_BUTTON, ui::EF_BACK_MOUSE_BUTTON);
+
+  ui::KeyEvent press_a(ui::EventType::kKeyPressed, ui::VKEY_A,
+                       ui::DomCode::US_A, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_a(ui::EventType::kKeyReleased, ui::VKEY_A,
+                         ui::DomCode::US_A, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent press_b(ui::EventType::kKeyPressed, ui::VKEY_B,
+                       ui::DomCode::US_B, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+  ui::KeyEvent release_b(ui::EventType::kKeyReleased, ui::VKEY_B,
+                         ui::DomCode::US_B, ui::EF_IS_CUSTOMIZED_FROM_BUTTON);
+
+  // Press Back remapped to "A", it should be in the map.
+  seat.WillProcessEvent(&press_back);
+  seat.OnKeyEvent(press_a.AsKeyEvent());
+  base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
+  auto& key_state_set = pressed_keys[ash::mojom::CustomizableButton::kBack];
+  key_state_set.emplace(press_a.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Press B remapped within the same Back mouse button. Should also be added to
+  // the map.
+  seat.OnKeyEvent(press_b.AsKeyEvent());
+  seat.DidProcessEvent(&press_back);
+  key_state_set.emplace(press_b.code(), false);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  // Release B then A from the same physical mouse button release. Both should
+  // be instantly removed from the map.
+  seat.WillProcessEvent(&press_back);
+  seat.OnKeyEvent(release_b.AsKeyEvent());
+  pressed_keys.erase(PhysicalCode(ash::mojom::CustomizableButton::kBack));
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
+
+  seat.OnKeyEvent(release_a.AsKeyEvent());
+  seat.DidProcessEvent(&press_back);
+  EXPECT_EQ(pressed_keys, seat.pressed_keys());
 }
 
 }  // namespace

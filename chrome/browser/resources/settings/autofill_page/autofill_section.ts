@@ -7,7 +7,7 @@
  * addresses for use in autofill and payments APIs.
  */
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
@@ -20,20 +20,20 @@ import '../controls/settings_toggle_button.js';
 import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './passwords_shared.css.js';
-import '../i18n_setup.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 
 import type {AutofillManagerProxy, PersonalDataChangedListener} from './autofill_manager_proxy.js';
 import {AutofillManagerImpl} from './autofill_manager_proxy.js';
@@ -83,6 +83,11 @@ export class SettingsAutofillSectionElement extends
 
       showAddressDialog_: Boolean,
       showAddressRemoveConfirmationDialog_: Boolean,
+
+      isPlusAddressEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('plusAddressEnabled'),
+      },
     };
   }
 
@@ -243,8 +248,8 @@ export class SettingsAutofillSectionElement extends
   private isCloudOffVisible_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
-    if (address.metadata?.source ===
-        chrome.autofillPrivate.AddressSource.ACCOUNT) {
+    if (address.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT) {
       return false;
     }
 
@@ -291,6 +296,11 @@ export class SettingsAutofillSectionElement extends
         this.accountInfo_ && this.accountInfo_.isAutofillSyncToggleAvailable);
     this.autofillManager_.setAutofillSyncToggleEnabled(
         this.$.autofillSyncToggle.checked);
+  }
+
+  private onPlusAddressClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('plusAddressManagementUrl'));
   }
 }
 

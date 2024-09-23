@@ -162,13 +162,8 @@ void LogSigninAccountReconciliationDuration(base::TimeDelta duration,
   }
 }
 
-void LogSignout(ProfileSignout source_metric, SignoutDelete delete_metric) {
+void LogSignout(ProfileSignout source_metric) {
   base::UmaHistogramEnumeration("Signin.SignoutProfile", source_metric);
-  if (delete_metric != SignoutDelete::kIgnoreMetric) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Signin.SignoutDeleteProfile",
-        delete_metric == SignoutDelete::kDeleted ? true : false);
-  }
 }
 
 void LogExternalCcResultFetches(
@@ -278,25 +273,26 @@ void RecordRefreshTokenRevokedFromSource(
 }
 
 #if BUILDFLAG(IS_IOS)
-void RecordSigninAccountType(signin::ConsentLevel consent_level,
-                             bool is_managed_account) {
-  SigninAccountType account_type = is_managed_account
-                                       ? SigninAccountType::kManaged
-                                       : SigninAccountType::kRegular;
-  switch (consent_level) {
-    case signin::ConsentLevel::kSignin:
-      base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
-                                    account_type);
+void RecordSignoutConfirmationFromDataLossAlert(
+    SignoutDataLossAlertReason reason,
+    bool signout_confirmed) {
+  const char* histogram;
+  switch (reason) {
+    case SignoutDataLossAlertReason::kSignoutWithUnsyncedData:
+      histogram = "Sync.SignoutWithUnsyncedData";
       break;
-    // TODO(crbug.com/40066949): Remove kSync usage after phase 3 migration. See
-    // ConsentLevel::kSync documentation for more details.
-    case signin::ConsentLevel::kSync:
-      base::UmaHistogramEnumeration("Signin.AccountType.SyncConsent",
-                                    account_type);
+    case SignoutDataLossAlertReason::kSignoutWithClearDataForManagedUser:
+      histogram = "Signin.SignoutAndClearDataFromManagedAccount";
       break;
   }
+  base::UmaHistogramBoolean(histogram, signout_confirmed);
 }
-#endif
+
+void RecordSignoutForceClearDataChoice(bool force_clear_data) {
+  base::UmaHistogramBoolean("Signin.UserRequestedWipeDataOnSignout",
+                            force_clear_data);
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 // --------------------------------------------------------------
 // User actions
@@ -369,10 +365,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromAutofillDropdown"));
       break;
-    case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signin_FromNTPContentSuggestions"));
-      break;
     case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromReSigninInfobar"));
@@ -402,10 +394,11 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
           base::UserMetricsAction("Signin_Signin_FromNTPFeedTopPromo"));
       break;
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
-      NOTREACHED() << "Access point " << static_cast<int>(access_point)
-                   << " is only used to trigger non-sync sign-in and this"
-                   << " action should only be triggered for sync-enabled"
-                   << " sign-ins.";
+      NOTREACHED_IN_MIGRATION()
+          << "Access point " << static_cast<int>(access_point)
+          << " is only used to trigger non-sync sign-in and this"
+          << " action should only be triggered for sync-enabled"
+          << " sign-ins.";
       break;
     case AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
@@ -417,8 +410,13 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
     case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
-      NOTREACHED() << "Access point " << static_cast<int>(access_point)
-                   << " is not supposed to log signin user actions.";
+    case AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
+    case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+      NOTREACHED_IN_MIGRATION()
+          << "Access point " << static_cast<int>(access_point)
+          << " is not supposed to log signin user actions.";
       break;
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
       VLOG(1) << "Signin_Signin_From* user action is not recorded "
@@ -492,8 +490,36 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromNotificationsOptInScreenContentToggle"));
       break;
+    case AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromNtpIdentityDisc"));
+      break;
+    case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromOidcRedirectionInterception"));
+      break;
+    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Signin_FromAvatarBubbleSigninWithSyncPromo"));
+      break;
+    case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAccountMenu"));
+      break;
+    case AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromProductSpecifications"));
+      break;
+    case AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAccountMenuFailedSwitch"));
+      break;
+    case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAddressBubble"));
+      break;
     case AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -557,10 +583,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromAutofillDropdown"));
-      break;
-    case AccessPoint::ACCESS_POINT_NTP_CONTENT_SUGGESTIONS:
-      base::RecordAction(base::UserMetricsAction(
-          "Signin_Impression_FromNTPContentSuggestions"));
       break;
     case AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
       base::RecordAction(
@@ -630,6 +652,14 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromNotificationsOptInScreenContentToggle"));
       break;
+    case AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
+      base::RecordAction(base::UserMetricsAction(
+          "Signin_Impression_FromProductSpecifications"));
+      break;
+    case AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromAddressBubble"));
+      break;
     case AccessPoint::ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
     case AccessPoint::ACCESS_POINT_EXTENSIONS:
     case AccessPoint::ACCESS_POINT_SUPERVISED_USER:
@@ -639,6 +669,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
@@ -648,15 +679,23 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
     case AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
     case AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
-    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
-    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+    case AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+    case AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
     case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
     case AccessPoint::ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case AccessPoint::ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
+    case AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
+    case AccessPoint::ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
+    case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
+    case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case AccessPoint::ACCESS_POINT_MAX:
-      NOTREACHED() << "Signin_Impression_From* user actions"
-                   << " are not recorded for access point "
-                   << static_cast<int>(access_point);
+      NOTREACHED_IN_MIGRATION() << "Signin_Impression_From* user actions"
+                                << " are not recorded for access point "
+                                << static_cast<int>(access_point);
       break;
   }
 }
@@ -752,6 +791,13 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
       histogram =
           "Signin.AccountConsistencyPromoAction."
           "AddAccountStartedWithNoDeviceAccount";
+      break;
+    case AccountConsistencyPromoAction::CONFIRM_MANAGEMENT_SHOWN:
+      histogram = "Signin.AccountConsistencyPromoAction.ConfirmManagementShown";
+      break;
+    case AccountConsistencyPromoAction::CONFIRM_MANAGEMENT_ACCEPTED:
+      histogram =
+          "Signin.AccountConsistencyPromoAction.ConfirmManagementAccepted";
       break;
   }
 

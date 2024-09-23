@@ -28,6 +28,8 @@ class STUB_WINDOW_EXPORT StubWindow : public PlatformWindow {
 
   void InitDelegate(PlatformWindowDelegate* delegate,
                     bool use_default_accelerated_widget = true);
+  void InitDelegateWithWidget(PlatformWindowDelegate* delegate,
+                              gfx::AcceleratedWidget widget);
 
  protected:
   PlatformWindowDelegate* delegate() { return delegate_; }

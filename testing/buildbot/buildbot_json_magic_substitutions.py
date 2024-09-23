@@ -15,6 +15,8 @@ the differentiation can be done programmatically.
 
 import collections
 
+# LINT.IfChange
+
 MAGIC_SUBSTITUTION_PREFIX = '$$MAGIC_SUBSTITUTION_'
 
 GpuDevice = collections.namedtuple('GpuDevice', ['vendor', 'device'])
@@ -29,12 +31,22 @@ VENDOR_SUBSTITUTIONS = {
 DEVICE_SUBSTITUTIONS = {
     'm1': '0',
     'm2': '0',
-    # Qualcomm Adreno 690 on Windows arm64. The approach swarming uses to find
-    # GPUs (looking for all Win32_VideoController WMI objects) results in
-    # different output than what Chrome does.
+    # Qualcomm Adreno 680/685/690 and 741 on Windows arm64. The approach
+    # swarming uses to find GPUs (looking for all Win32_VideoController WMI
+    # objects) results in different output than what Chrome sees.
+    # 043a = Adreno 680/685/690 GPU (such as Surface Pro X, Dell trybots)
+    # 0636 = Adreno 690 GPU (such as Surface Pro 9 5G)
+    # 0c36 = Adreno 741 GPU (such as Surface Pro 11th Edition)
     '043a': '41333430',
+    '0636': '36333630',
+    '0c36': '36334330',
 }
-
+ANDROID_VULKAN_DEVICES = {
+    # Pixel 6 phones map to multiple GPU models.
+    'oriole': GpuDevice('13b5', '92020010,92020000'),
+    'dm1q': GpuDevice('5143', '43050a01'),
+    'a23': GpuDevice('5143', '6010001'),
+}
 
 def ChromeOSTelemetryRemote(test_config, _, tester_config):
   """Substitutes the correct CrOS remote Telemetry arguments.
@@ -71,6 +83,10 @@ def ChromeOSGtestFilterFile(test_config, _, tester_config):
   else:
     board = _GetChromeOSBoardName(test_config)
   test_name = test_config['name']
+  # Strip off the variant suffix if it's present.
+  if 'variant_id' in test_config:
+    test_name = test_name.replace(test_config['variant_id'], '')
+    test_name = test_name.strip()
   filter_file = 'chromeos.%s.%s.filter' % (board, test_name)
   return [
       '--test-launcher-filter-file=../../testing/buildbot/filters/' +
@@ -111,6 +127,10 @@ def _IsSkylabBot(tester_config):
           and not tester_config.get('use_swarming', True))
 
 
+def _IsAndroid(tester_config):
+  return 'os_type' in tester_config and tester_config['os_type'] == 'android'
+
+
 def GPUExpectedVendorId(test_config, _, tester_config):
   """Substitutes the correct expected GPU vendor for certain GPU tests.
 
@@ -133,6 +153,10 @@ def GPUExpectedVendorId(test_config, _, tester_config):
   # being used.
   if 'gpu' in dimensions:
     gpus.extend(dimensions['gpu'].split('|'))
+  elif _IsAndroid(tester_config) and 'device_type' in dimensions:
+    vulkan_device = ANDROID_VULKAN_DEVICES.get(dimensions['device_type'])
+    if vulkan_device:
+      return ['--expected-vendor-id', vulkan_device.vendor]
 
   # We don't specify GPU on things like Android and certain CrOS devices, so
   # default to 0.
@@ -179,6 +203,15 @@ def GPUExpectedDeviceId(test_config, _, tester_config):
   # being used.
   if 'gpu' in dimensions:
     gpus.extend(dimensions['gpu'].split('|'))
+  elif _IsAndroid(tester_config) and 'device_type' in dimensions:
+    vulkan_device = ANDROID_VULKAN_DEVICES.get(dimensions['device_type'])
+    if vulkan_device:
+      device_ids = vulkan_device.device.split(',')
+      commands = []
+      for index, device_id in enumerate(device_ids):
+        commands.append('--expected-device-id')
+        commands.append(device_ids[index])
+      return commands
 
   # We don't specify GPU on things like Android/CrOS devices, so default to 0.
   if not gpus:
@@ -244,7 +277,7 @@ def GPUParallelJobs(test_config, tester_name, tester_config):
   # These bots can't handle parallel tests. See crbug.com/1353938.
   # The load can also negatively impact WebGL tests, so reduce the number of
   # jobs there.
-  # TODO(crbug.com/1349828): Try removing the Windows/Intel special casing once
+  # TODO(crbug.com/40233910): Try removing the Windows/Intel special casing once
   # we swap which machines we're using.
   is_webgpu_cts = test_name.startswith('webgpu_cts') or test_config.get(
       'telemetry_test_name') == 'webgpu_cts'
@@ -299,7 +332,12 @@ def GPUTelemetryNoRootForUnrootedDevices(test_config, _, tester_config):
   if os_type != 'android':
     return []
 
-  unrooted_devices = {'a13', 'a23'}
+  unrooted_devices = {
+      'a13',
+      'a23',
+      'dm1q',  # Samsung S23.
+      'devonn',  # Motorola Moto G Power 5G.
+  }
   dimensions = test_config.get('swarming', {}).get('dimensions')
   assert dimensions is not None
   device_type = dimensions.get('device_type')
@@ -332,6 +370,7 @@ def GPUWebGLRuntimeFile(test_config, _, tester_config):
       f'../../content/test/data/gpu/{suite}_{chosen_os}_runtimes.json')
   return [f'--read-abbreviated-json-results-from={runtime_filepath}']
 
+# LINT.ThenChange(//infra/config/lib/targets-internal/magic_args.star)
 
 def TestOnlySubstitution(_, __, ___):
   """Magic substitution used for unittests."""

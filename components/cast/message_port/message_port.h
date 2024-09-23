@@ -6,9 +6,9 @@
 #define COMPONENTS_CAST_MESSAGE_PORT_MESSAGE_PORT_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/cast/cast_component_export.h"
 
 namespace cast_api_bindings {
@@ -24,7 +24,7 @@ class CAST_COMPONENT_EXPORT MessagePort {
     virtual ~Receiver();
 
     // Receives a |message| and ownership of |ports|.
-    virtual bool OnMessage(base::StringPiece message,
+    virtual bool OnMessage(std::string_view message,
                            std::vector<std::unique_ptr<MessagePort>> ports) = 0;
 
     // Receives an error.
@@ -34,11 +34,11 @@ class CAST_COMPONENT_EXPORT MessagePort {
   virtual ~MessagePort();
 
   // Sends a |message| from the port.
-  virtual bool PostMessage(base::StringPiece message) = 0;
+  virtual bool PostMessage(std::string_view message) = 0;
 
   // Sends a |message| from the port along with transferable |ports|.
   virtual bool PostMessageWithTransferables(
-      base::StringPiece message,
+      std::string_view message,
       std::vector<std::unique_ptr<MessagePort>> ports) = 0;
 
   // Sets the |receiver| for messages arriving to this port. May only be set

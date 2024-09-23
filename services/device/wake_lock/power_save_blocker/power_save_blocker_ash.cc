@@ -72,7 +72,7 @@ class PowerSaveBlocker::Delegate
                                                description_);
         break;
       default:
-        NOTREACHED() << "Unhandled block type " << type_;
+        NOTREACHED_IN_MIGRATION() << "Unhandled block type " << type_;
     }
   }
 

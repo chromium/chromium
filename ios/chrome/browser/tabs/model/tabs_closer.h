@@ -5,10 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_TABS_MODEL_TABS_CLOSER_H_
 #define IOS_CHROME_BROWSER_TABS_MODEL_TABS_CLOSER_H_
 
+#include <map>
 #include <memory>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
+#include "components/saved_tab_groups/types.h"
 
+namespace base {
+class Uuid;
+}
 class Browser;
 
 // TabsCloser implements the "close all tabs" operation with support for undo.
@@ -29,30 +34,30 @@ class TabsCloser {
 
   ~TabsCloser();
 
-  // Closes all regular tabs, returning the number of closed tabs.
-  // It is an error to call this method if `CanCloseTabs()` returns false.
-  int CloseTabs();
-
-  // Undo closing regular tabs, returning the number of restored tabs.
-  // It is an error to call this method if `CanUndoCloseTabs()` returns false.
-  int UndoCloseTabs();
-
-  // Drop undo information, returning the number of deletion confirmed.
-  // It is an error to call this method if `CanUndoCloseTabs()` returns false.
-  int ConfirmDeletion();
-
-  // Returns true if there are tabs that can be closed (pinned tabs are
-  // considered as non-closable).
+  // Returns true if there are tabs that can be closed, according to the policy.
   bool CanCloseTabs() const;
+
+  // Closes all tabs according to the policy, returning the number of closed
+  // tabs. It is an error to call this method if `CanCloseTabs()` is `false`.
+  int CloseTabs();
 
   // Returns whether there are tabs that can be restored.
   bool CanUndoCloseTabs() const;
+
+  // Reopens closed tabs, returning the number of restored tabs. It is an error
+  // to call this method if `CanUndoCloseTabs()` is `false`.
+  int UndoCloseTabs();
+
+  // Drops undo information, returning the number of deletions confirmed.
+  // It is an error to call this method if `CanUndoCloseTabs()` is `false`.
+  int ConfirmDeletion();
 
  private:
   class UndoStorage;
 
   raw_ptr<Browser> browser_ = nullptr;
   std::unique_ptr<UndoStorage> state_;
+  std::map<tab_groups::LocalTabGroupID, base::Uuid> local_to_saved_group_ids_;
   const ClosePolicy close_policy_;
 };
 

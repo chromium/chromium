@@ -7,19 +7,17 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BrowserDownloadService;
 
-namespace web {
-class BrowserState;
-}  // namespace web
-
 // Singleton that creates BrowserDownloadService and associates that service
-// with web::BrowserState.
+// with a Profile.
 class BrowserDownloadServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static BrowserDownloadService* GetForBrowserState(
-      web::BrowserState* browser_state);
+  static BrowserDownloadService* GetForProfile(ProfileIOS* profile);
+  // Deprecated: use GetForProfile(...).
+  static BrowserDownloadService* GetForBrowserState(ProfileIOS* profile);
   static BrowserDownloadServiceFactory* GetInstance();
 
   BrowserDownloadServiceFactory(const BrowserDownloadServiceFactory&) = delete;

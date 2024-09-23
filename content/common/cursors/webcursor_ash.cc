@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/cursors/webcursor.h"
-
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "content/common/cursors/webcursor.h"
+#include "ui/display/screen.h"
 
 namespace content {
 
-void WebCursor::SetDisplayInfo(const display::Display& display) {
+void WebCursor::UpdateDisplayInfoForWindow(aura::Window* window) {
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+
   if (rotation_ == display.panel_rotation() &&
       device_scale_factor_ == display.device_scale_factor() &&
       maximum_cursor_size_ == display.maximum_cursor_size())

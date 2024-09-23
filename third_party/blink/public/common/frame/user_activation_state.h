@@ -111,6 +111,10 @@ class BLINK_COMMON_EXPORT UserActivationState {
   // |is_restricted| as a parameter here.
   void Activate(mojom::UserActivationNotificationType notification_type);
 
+  // Used when propagating user activation state across cross-process
+  // navigations.
+  void SetHasBeenActive();
+
   void Clear();
 
   // Returns the sticky activation state, which is |true| if the frame has ever

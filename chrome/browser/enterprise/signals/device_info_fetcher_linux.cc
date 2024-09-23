@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

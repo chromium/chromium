@@ -24,12 +24,11 @@ v8::Local<v8::Object> CallbackMethodRetriever::GetPrototypeObject(
   // https://html.spec.whatwg.org/C/custom-elements.html#element-definition
   // step 10.1. Let prototype be Get(constructor, "prototype"). Rethrow any
   //   exceptions.
-  v8::TryCatch try_catch(isolate_);
+  TryRethrowScope rethrow_scope(isolate_, exception_state);
   v8::Local<v8::Value> prototype;
   if (!constructor_->CallbackObject()
            ->Get(current_context_, V8AtomicString(isolate_, "prototype"))
            .ToLocal(&prototype)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return v8::Local<v8::Object>();
   }
   // step 10.2. If Type(prototype) is not Object, then throw a TypeError
@@ -48,11 +47,10 @@ v8::Local<v8::Value> CallbackMethodRetriever::GetFunctionOrUndefined(
     ExceptionState& exception_state) {
   DCHECK(prototype_object_->IsObject());
 
-  v8::TryCatch try_catch(isolate_);
+  TryRethrowScope rethrow_scope(isolate_, exception_state);
   v8::Local<v8::Value> value;
   if (!object->Get(current_context_, V8AtomicString(isolate_, property))
            .ToLocal(&value)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return v8::Local<v8::Function>();
   }
   if (!value->IsUndefined() && !value->IsFunction()) {

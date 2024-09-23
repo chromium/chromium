@@ -6,6 +6,7 @@
 #define COMPONENTS_INVALIDATION_IMPL_INVALIDATOR_REGISTRAR_WITH_MEMORY_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -15,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_handler.h"
-#include "components/invalidation/public/topic_data.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -72,7 +72,7 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // unsubscribe from the topics which were not registered since browser
   // startup.
   [[nodiscard]] bool UpdateRegisteredTopics(InvalidationHandler* handler,
-                                            const std::set<TopicData>& topics);
+                                            const TopicMap& topics);
 
   // Returns all topics currently registered to |handler|.
   TopicMap GetRegisteredTopics(InvalidationHandler* handler) const;
@@ -87,8 +87,9 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
 
   // Dispatches incoming invalidation to the corresponding handler based on its
   // topic.
-  // Invalidations for topics with no corresponding handler are dropped.
-  void DispatchInvalidationToHandlers(const Invalidation& invalidation);
+  // Invalidations for topics with no corresponding handler are returned.
+  std::optional<Invalidation> DispatchInvalidationToHandlers(
+      const Invalidation& invalidation);
 
   // Dispatches a notification that the client has successfully subscribed to
   // `topic` to handlers.
@@ -105,13 +106,10 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   InvalidatorState GetInvalidatorState() const;
 
  private:
-  // Checks if any of the |topics| is already registered for a *different*
+  // Checks if any of the |new_topics| is already registered for a *different*
   // handler than the given one.
   bool HasDuplicateTopicRegistration(InvalidationHandler* handler,
-                                     const std::set<TopicData>& topics) const;
-
-  void RemoveSubscribedTopics(const InvalidationHandler* handler,
-                              const std::set<TopicData>& topics_to_unsubscribe);
+                                     const TopicMap& new_topics) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -119,10 +117,9 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // Note: When a handler is unregistered, its entry is removed from
   // |registered_handler_to_topics_map_| but NOT from
   // |handler_name_to_subscribed_topics_map_|.
-  std::map<InvalidationHandler*, std::set<TopicData>, std::less<>>
+  std::map<InvalidationHandler*, TopicMap, std::less<>>
       registered_handler_to_topics_map_;
-  std::map<std::string, std::set<TopicData>>
-      handler_name_to_subscribed_topics_map_;
+  std::map<std::string, TopicMap> handler_name_to_subscribed_topics_map_;
 
   InvalidatorState state_;
 

@@ -230,10 +230,8 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                     const std::string& eula_url);
 
   // ui::SelectFileDialog::Listener override:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   // Used by FileSelected() in order to verify whether the beginning contents of
   // the selected file contain the magic number present in all PPD files. |path|

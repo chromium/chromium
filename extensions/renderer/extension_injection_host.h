@@ -39,7 +39,7 @@ class ExtensionInjectionHost : public InjectionHost {
       int tab_id,
       bool is_declarative) const override;
 
-  raw_ptr<const Extension, ExperimentalRenderer> extension_;
+  raw_ptr<const Extension, DanglingUntriaged> extension_;
 };
 
 }  // namespace extesions

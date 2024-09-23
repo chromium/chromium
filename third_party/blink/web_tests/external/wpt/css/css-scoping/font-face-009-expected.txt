@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] @font-face from shadow applies to to :host::before/::after.
+  assert_greater_than: expected a number greater than 160 but got 84
+Harness: the test ran to completion.
+

@@ -7,7 +7,7 @@
 #
 # Usage:
 #
-# Ensure that gomacc or rewrapper, llvm-objdump, and llvm-dwarfdump are in your
+# Ensure that rewrapper, llvm-objdump, and llvm-dwarfdump are in your
 # PATH.
 # Then run:
 #
@@ -108,11 +108,11 @@ class RemoteLinkIntegrationTest(unittest.TestCase):
       ])
       with open('main.rsp', 'w') as f:
         f.write('obj/main.obj\n' 'obj/foobar.lib\n')
-      with open('my_goma.sh', 'w') as f:
-        f.write('#! /bin/sh\n\ngomacc "$@"\n')
-      os.chmod('my_goma.sh', 0o755)
+      with open('my_reclient.sh', 'w') as f:
+        f.write('#! /bin/sh\n\nrewrapper "$@"\n')
+      os.chmod('my_reclient.sh', 0o755)
       rc = remote_link.RemoteLinkWindows().main([
-          'remote_link.py', '--wrapper', './my_goma.sh', '--ar-path',
+          'remote_link.py', '--wrapper', './my_reclient.sh', '--ar-path',
           self.llvmar(), '--',
           self.lld_link(), '-nodefaultlib', '-entry:main', '-out:main.exe',
           '@main.rsp'
@@ -126,7 +126,7 @@ class RemoteLinkIntegrationTest(unittest.TestCase):
                                   re.MULTILINE | re.DOTALL)
         self.assertIsNotNone(codegen_match)
         codegen_text = codegen_match.group(0)
-        self.assertIn('my_goma.sh', codegen_text)
+        self.assertIn('my_reclient.sh', codegen_text)
         self.assertNotIn('-flto', codegen_text)
         self.assertIn('build common_objs/obj/main.obj.stamp : codegen ',
                       buildrules)
@@ -166,7 +166,7 @@ class RemoteLinkIntegrationTest(unittest.TestCase):
       with open('main.rsp', 'w') as f:
         f.write('obj/main.obj\n' 'obj/foobar.lib\n')
       rc = RemoteLinkWindowsAllowMain().main([
-          'remote_link.py', '--wrapper', 'gomacc', '--ar-path',
+          'remote_link.py', '--wrapper', 'rewrapper', '--ar-path',
           self.llvmar(), '--',
           self.lld_link(), '-nodefaultlib', '-entry:main', '-machine:X86',
           '-opt:lldlto=2', '-mllvm:-import-instr-limit=10', '-out:main.exe',
@@ -181,7 +181,7 @@ class RemoteLinkIntegrationTest(unittest.TestCase):
                                   re.MULTILINE | re.DOTALL)
         self.assertIsNotNone(codegen_match)
         codegen_text = codegen_match.group(0)
-        self.assertIn('gomacc', codegen_text)
+        self.assertIn('rewrapper', codegen_text)
         self.assertIn('-m32', codegen_text)
         self.assertIn('-mllvm -import-instr-limit=10', codegen_text)
         self.assertNotIn('-flto', codegen_text)
@@ -253,7 +253,7 @@ class RemoteLdIntegrationTest(unittest.TestCase):
       subprocess.check_call(
           [self.clangxx(), '-c', '-Os', 'foo.cpp', '-o', 'foo.o'])
       rc = RemoteLinkUnixAllowMain().main([
-          'remote_ld.py', '--wrapper', 'gomacc', '--ar-path',
+          'remote_ld.py', '--wrapper', 'rewrapper', '--ar-path',
           self.llvmar(), '--',
           self.clangxx(), '-fuse-ld=lld', 'main.o', 'foo.o', '-o', 'main'
       ])
@@ -277,7 +277,7 @@ class RemoteLdIntegrationTest(unittest.TestCase):
       subprocess.check_call(
           [self.clangxx(), '-c', '-Os', '-flto=thin', 'foo.cpp', '-o', 'foo.o'])
       rc = remote_ld.RemoteLinkUnix().main([
-          'remote_ld.py', '--wrapper', 'gomacc', '--ar-path',
+          'remote_ld.py', '--wrapper', 'rewrapper', '--ar-path',
           self.llvmar(), '--',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', 'main.o', 'foo.o', '-o',
           'main'
@@ -309,10 +309,10 @@ class RemoteLdIntegrationTest(unittest.TestCase):
       ])
       # Should succeed.
       self.assertEqual(rc, 0)
-      # build.ninja file should have gomacc invocations in it.
+      # build.ninja file should have rewrapper invocations in it.
       with open(os.path.join(d, 'lto.main', 'build.ninja')) as f:
         buildrules = f.read()
-        self.assertIn('gomacc ', buildrules)
+        self.assertIn('rewrapper ', buildrules)
         self.assertIn('build lto.main/main.o.stamp : codegen ', buildrules)
         self.assertIn('build lto.main/foo.o.stamp : codegen ', buildrules)
       # Check that main does not call foo.
@@ -342,10 +342,10 @@ class RemoteLdIntegrationTest(unittest.TestCase):
       ])
       # Should succeed.
       self.assertEqual(rc, 0)
-      # build.ninja file should have gomacc invocations in it.
+      # build.ninja file should have rewrapper invocations in it.
       with open(os.path.join(d, 'lto.main', 'build.ninja')) as f:
         buildrules = f.read()
-        self.assertIn('gomacc ', buildrules)
+        self.assertIn('rewrapper ', buildrules)
         self.assertIn('build lto.main/main.o.stamp : codegen ', buildrules)
         self.assertIn('build lto.main/foo.o.stamp : codegen ', buildrules)
       # Check that main does not call foo.
@@ -424,10 +424,10 @@ class RemoteLdIntegrationTest(unittest.TestCase):
       # Should succeed.
       self.assertEqual(rc, 0)
       if bitcode_main or bitcode_archive:
-        # build.ninja file should have gomacc invocations in it.
+        # build.ninja file should have rewrapper invocations in it.
         with open(os.path.join(d, 'lto.main', 'build.ninja')) as f:
           buildrules = f.read()
-          self.assertIn('gomacc ', buildrules)
+          self.assertIn('rewrapper ', buildrules)
           if bitcode_main:
             self.assertIn('build lto.main/obj/main.o.stamp : codegen ',
                           buildrules)
@@ -516,7 +516,7 @@ class RemoteLdIntegrationTest(unittest.TestCase):
                                   re.MULTILINE | re.DOTALL)
         self.assertIsNotNone(codegen_match)
         codegen_text = codegen_match.group(0)
-        self.assertIn('gomacc', codegen_text)
+        self.assertIn('rewrapper', codegen_text)
         self.assertIn('-m32', codegen_text)
         self.assertIn('-mllvm -generate-type-units', codegen_text)
         self.assertNotIn('-flto', codegen_text)
@@ -534,7 +534,7 @@ class RemoteLdIntegrationTest(unittest.TestCase):
       main_disasm = disasm[main_idx:after_main_idx]
       self.assertNotIn(b'foo', main_disasm)
 
-  def test_no_gomacc(self):
+  def test_no_rewrapper(self):
     with named_directory() as d, working_directory(d):
       _create_inputs(d)
       subprocess.check_call([
@@ -550,10 +550,10 @@ class RemoteLdIntegrationTest(unittest.TestCase):
       ])
       # Should succeed.
       self.assertEqual(rc, 0)
-      # build.ninja file should not have gomacc invocations in it.
+      # build.ninja file should not have rewrapper invocations in it.
       with open(os.path.join(d, 'lto.main', 'build.ninja')) as f:
         buildrules = f.read()
-        self.assertNotIn('gomacc ', buildrules)
+        self.assertNotIn('rewrapper ', buildrules)
         self.assertIn('build lto.main/main.o.stamp : codegen ', buildrules)
         self.assertIn('build lto.main/foo.o.stamp : codegen ', buildrules)
       # Check that main does not call foo.

@@ -88,6 +88,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Video Conference Tray"/>
 </enum>
 
+<enum name="CalibrationResult">
+  <int value="0" label="CalibFailedUsePreviousValue">
+    Use the previous calibration value due to boot time calibration failed.
+  </int>
+  <int value="1" label="NewCalibrationValue">
+    Use the new calibration value.
+  </int>
+  <int value="2" label="LargeCalibrationDiff">
+    Calibration value is not within the speaker acceptance range and use the
+    previous calibration value
+  </int>
+  <int value="3" label="UsePreviousValue">
+    Use the previous calibration value as the diff is small
+  </int>
+</enum>
+
 <enum name="CrasA2dpExitCode">
   <summary>
     List of codes to indicate why Bluetooth A2DP audio session exits the
@@ -910,6 +926,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CRAS_METRICS_DLC_STATUS_AVAILABLE"/>
 </enum>
 
+<enum name="CrasEffectStartStatus">
+  <summary/>
+  <int value="0" label="CRAS_EFFECT_REQUESTED_FAILED"/>
+  <int value="1" label="CRAS_EFFECT_REQUESTED_SUCCEEDED"/>
+</enum>
+
 <enum name="CrasHfpBatteryIndicator">
   <summary>
     List of known battery indicator supports in Bluetooth Hands-free profile.
@@ -961,6 +983,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="SKT_OPEN_ERROR"/>
   <int value="3" label="SKT_POLL_TIMEOUT"/>
   <int value="4" label="SKT_POLL_ERR_HUP"/>
+</enum>
+
+<enum name="CrasHfpTelephonyEvent">
+  <summary>
+    List of Bluetooth hfp telephony events from Floss sent to CRAS. CRAS side
+    definition in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="HFP_TELEPHONY_UHID_OPEN">
+    uhid device is opened. This event usually happens when the user enables a
+    Bluetooth telephony HID device from WebHID to start using call control.
+  </int>
 </enum>
 
 <enum name="CrasNoiseCancellationStatus">
@@ -1031,6 +1065,25 @@ chromium-metrics-reviews@google.com.
 <enum name="InternalSoundcardStatus">
   <int value="0" label="Not detected"/>
   <int value="1" label="Detected"/>
+</enum>
+
+<enum name="SoundCardInitResult">
+  <int value="0" label="OK">amp.boot_time_calibration() returns ok.</int>
+  <int value="1" label="AlsaCardError"/>
+  <int value="2" label="AlsaControlError"/>
+  <int value="3" label="AlsaControlTLVError"/>
+  <int value="4" label="Cs35l41Error"/>
+  <int value="5" label="DSMError"/>
+  <int value="6" label="Max98373Error"/>
+  <int value="7" label="Max98390Error"/>
+  <int value="8" label="SerdeJsonError"/>
+  <int value="9" label="SerdeYamlError"/>
+  <int value="10" label="UnsupportedAmp"/>
+</enum>
+
+<enum name="SoundCardInitWaitForSpeaker">
+  <int value="0" label="OK">OK.</int>
+  <int value="1" label="Error">Error.</int>
 </enum>
 
 <enum name="StreamEffectState">

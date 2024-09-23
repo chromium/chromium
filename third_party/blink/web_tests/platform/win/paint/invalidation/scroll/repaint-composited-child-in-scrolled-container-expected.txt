@@ -6,12 +6,25 @@
       "contentsOpaque": true,
       "backgroundColor": "#7F7FFF",
       "invalidations": [
-        [8, 8, 285, 285],
-        [8, 293, 285, 15]
+        [8, 8, 285, 285]
       ]
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "name": "HorizontalScrollbar",
+      "position": [0, 285],
+      "bounds": [285, 15],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [285, 0],
+      "bounds": [15, 285],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
       "bounds": [600, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000",

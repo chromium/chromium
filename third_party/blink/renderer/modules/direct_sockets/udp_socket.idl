@@ -11,12 +11,14 @@
     RuntimeEnabled=DirectSockets,
     IsolatedContext
 ] interface UDPSocket {
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=UDPSocketConstructor]
   constructor(UDPSocketOptions options);
 
-  [CallWith=ScriptState] readonly attribute Promise<UDPSocketOpenInfo> opened;
-  [CallWith=ScriptState] readonly attribute Promise<void> closed;
+  [CallWith=ScriptState, MeasureAs=UDPSocketOpenedAttribute]
+  readonly attribute Promise<UDPSocketOpenInfo> opened;
+  [CallWith=ScriptState, MeasureAs=UDPSocketClosedAttribute]
+  readonly attribute Promise<undefined> closed;
 
-  [CallWith=ScriptState, RaisesException, Measure]
-  Promise<void> close();
+  [CallWith=ScriptState, RaisesException, MeasureAs=UDPSocketCloseFunction]
+  Promise<undefined> close();
 };

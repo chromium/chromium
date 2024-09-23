@@ -130,7 +130,7 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(
       prefs->GetUserPrefValue(prefs::kTouchpadScrollSensitivity);
   settings->scroll_sensitivity = scroll_sensitivity_preference
                                      ? scroll_sensitivity_preference->GetInt()
-                                     : kDefaultSensitivity;
+                                     : kDefaultScrollSensitivity;
   force_persistence.scroll_sensitivity =
       scroll_sensitivity_preference != nullptr;
 
@@ -138,7 +138,7 @@ mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(
       prefs->GetUserPrefValue(prefs::kTouchpadScrollAcceleration);
   settings->scroll_acceleration =
       scroll_acceleration_preference ? scroll_acceleration_preference->GetBool()
-                                     : kDefaultScrollAcceleration;
+                                     : kDefaultScrollAccelerationEnabled;
   force_persistence.scroll_acceleration =
       scroll_acceleration_preference != nullptr;
 
@@ -189,10 +189,10 @@ mojom::TouchpadSettingsPtr RetrieveTouchpadSettings(
           .value_or(kDefaultTapDraggingEnabled);
   settings->scroll_sensitivity =
       settings_dict.FindInt(prefs::kTouchpadSettingScrollSensitivity)
-          .value_or(kDefaultSensitivity);
+          .value_or(kDefaultScrollSensitivity);
   settings->scroll_acceleration =
       settings_dict.FindBool(prefs::kTouchpadSettingScrollAcceleration)
-          .value_or(kDefaultScrollAcceleration);
+          .value_or(kDefaultScrollAccelerationEnabled);
 
   if (touchpad.is_haptic) {
     settings->haptic_sensitivity =
@@ -263,16 +263,17 @@ base::Value::Dict ConvertSettingsToDict(
   if (ShouldPersistSetting(
           prefs::kTouchpadSettingScrollSensitivity,
           static_cast<int>(touchpad.settings->scroll_sensitivity),
-          kDefaultSensitivity, force_persistence.scroll_sensitivity,
+          kDefaultScrollSensitivity, force_persistence.scroll_sensitivity,
           existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingScrollSensitivity,
                       touchpad.settings->scroll_sensitivity);
   }
 
-  if (ShouldPersistSetting(
-          prefs::kTouchpadSettingScrollAcceleration,
-          touchpad.settings->scroll_acceleration, kDefaultScrollAcceleration,
-          force_persistence.scroll_acceleration, existing_settings_dict)) {
+  if (ShouldPersistSetting(prefs::kTouchpadSettingScrollAcceleration,
+                           touchpad.settings->scroll_acceleration,
+                           kDefaultScrollAccelerationEnabled,
+                           force_persistence.scroll_acceleration,
+                           existing_settings_dict)) {
     settings_dict.Set(prefs::kTouchpadSettingScrollAcceleration,
                       touchpad.settings->scroll_acceleration);
   }
@@ -427,14 +428,9 @@ void InitializeSettingsUpdateMetricInfo(
                         std::move(updated_metric_info));
 }
 
-}  // namespace
-
-TouchpadPrefHandlerImpl::TouchpadPrefHandlerImpl() = default;
-TouchpadPrefHandlerImpl::~TouchpadPrefHandlerImpl() = default;
-
-void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
-    PrefService* pref_service,
-    mojom::Touchpad* touchpad) {
+void InitializeTouchpadSettingsImpl(PrefService* pref_service,
+                                    mojom::Touchpad* touchpad,
+                                    bool force_initialize_to_default_settings) {
   if (!pref_service) {
     touchpad->settings = GetDefaultTouchpadSettings(pref_service, *touchpad);
     return;
@@ -450,6 +446,12 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
     const auto& devices_dict =
         pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
     settings_dict = devices_dict.FindDict(touchpad->device_key);
+  }
+
+  // Do not lookup settings dict if we are force refreshing back to default
+  // settings.
+  if (force_initialize_to_default_settings) {
+    settings_dict = nullptr;
   }
 
   ForceTouchpadSettingPersistence force_persistence;
@@ -474,6 +476,19 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
   InitializeSettingsUpdateMetricInfo(pref_service, *touchpad, category);
 
   UpdateTouchpadSettingsImpl(pref_service, *touchpad, force_persistence);
+}
+
+}  // namespace
+
+TouchpadPrefHandlerImpl::TouchpadPrefHandlerImpl() = default;
+TouchpadPrefHandlerImpl::~TouchpadPrefHandlerImpl() = default;
+
+void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
+    PrefService* pref_service,
+    mojom::Touchpad* touchpad) {
+  InitializeTouchpadSettingsImpl(
+      pref_service, touchpad,
+      /*force_initialize_to_default_settings=*/false);
 }
 
 void TouchpadPrefHandlerImpl::UpdateTouchpadSettings(
@@ -542,6 +557,13 @@ void TouchpadPrefHandlerImpl::UpdateDefaultTouchpadSettings(
                             /*existing_settings_dict=*/nullptr);
   pref_service->SetDict(prefs::kTouchpadDefaultSettings,
                         std::move(settings_dict));
+}
+
+void TouchpadPrefHandlerImpl::ForceInitializeWithDefaultSettings(
+    PrefService* pref_service,
+    mojom::Touchpad* touchpad) {
+  InitializeTouchpadSettingsImpl(pref_service, touchpad,
+                                 /*force_initialize_to_default_settings=*/true);
 }
 
 }  // namespace ash

@@ -59,6 +59,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Cookie canonical form check failed"/>
   <int value="3" label="Could not open or initialize database"/>
   <int value="4" label="Attempt to delete broken (and related) rows failed"/>
+  <int value="5"
+      label="Attempt to delete cookies with matching top_frame_site_keys
+             failed"/>
+  <int value="6" label="Hash verification of encrypted value failed"/>
+  <int value="7"
+      label="Cookie was encrypted but no crypto delegate was passed"/>
+  <int value="8"
+      label="Cookie had values in both the plaintext and encrypted fields"/>
 </enum>
 
 <enum name="CookiePrefix">
@@ -145,6 +153,16 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Chrome Extension Scheme"/>
 </enum>
 
+<enum name="CookieSourceType">
+  <summary>
+    The source type of a cookie when its added to the cookie store.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="HTTP"/>
+  <int value="2" label="Script"/>
+  <int value="3" label="Other"/>
+</enum>
+
 <enum name="CookieType">
   <summary>The type of a cookie when its added to the cookie store.</summary>
   <int value="0" label="Default"/>
@@ -155,6 +173,14 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="First-Party-Only, Secure"/>
   <int value="6" label="HttpOnly, Secure"/>
   <int value="7" label="First-Party-Only, HttpOnly, Secure"/>
+  <int value="8" label="Persistent"/>
+  <int value="9" label="First-Party-Only, Persistent"/>
+  <int value="10" label="HttpOnly, Persistent"/>
+  <int value="11" label="First-Party-Only, HttpOnly, Persistent"/>
+  <int value="12" label="Secure, Persistent"/>
+  <int value="13" label="First-Party-Only, Secure, Persistent"/>
+  <int value="14" label="HttpOnly, Secure, Persistent"/>
+  <int value="15" label="First-Party-Only, HttpOnly, Secure, Persistent"/>
 </enum>
 
 <enum name="HttpMethods">
@@ -262,13 +288,6 @@ chromium-metrics-reviews@google.com.
   <int value="88" label="Port 9093"/>
   <int value="89" label="Port 9094"/>
   <int value="90" label="Port 9095"/>
-</enum>
-
-<enum name="TruncatingCharacterInCookieStringType">
-  <int value="0" label="No truncating character"/>
-  <int value="1" label="NULL (\x0)"/>
-  <int value="2" label="New Line (\xD)"/>
-  <int value="3" label="Line Feed (\xA)"/>
 </enum>
 
 </enums>

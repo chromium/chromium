@@ -28,7 +28,6 @@
  *  --cr-checkbox-size
  *  --cr-checkbox-unchecked-box-color
  */
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../cr_shared_vars.css.js';
 
 import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
@@ -84,7 +83,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
 
   checked: boolean;
   disabled: boolean;
-  ariaDescription: string;
+  override ariaDescription: string|null;
   ariaLabelOverride: string;
   override tabIndex: number;
 
@@ -203,7 +202,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     const ripple = super._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle', 'toggle-ink');
+    ripple.classList.add('circle');
     return ripple;
   }
 }

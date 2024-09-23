@@ -1,0 +1,7 @@
+android.webkit.WebView focusable focused
+++android.widget.ListView role_description='list box' clickable collection multiselectable state_description='multiselectable, 2 of 5 selected.' item_count=5 row_count=5 column_count=1
+++++android.view.View collection_item focusable name='Item 1' row_span=1 column_span=1
+++++android.view.View collection_item focusable name='Item 2' item_index=1 row_index=1 row_span=1 column_span=1
+++++android.view.View collection_item focusable name='Item 3' item_index=2 row_index=2 row_span=1 column_span=1
+++++android.view.View collection_item focusable selected name='Item 4' item_index=3 row_index=3 row_span=1 column_span=1
+++++android.view.View collection_item focusable selected name='Item 5' item_index=4 row_index=4 row_span=1 column_span=1

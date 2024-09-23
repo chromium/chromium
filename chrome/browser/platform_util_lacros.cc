@@ -21,7 +21,7 @@ void OnOpenResult(const base::FilePath& path,
                   crosapi::mojom::OpenResult result) {
   if (result == crosapi::mojom::OpenResult::kSucceeded)
     return;
-  // TODO(https://crbug.com/1144316): Show error messages. This will require
+  // TODO(crbug.com/40728776): Show error messages. This will require
   // refactoring the existing file manager string files, or introducing new
   // lacros strings.
   LOG(ERROR) << "Unable to open " << path.AsUTF8Unsafe() << " " << result;

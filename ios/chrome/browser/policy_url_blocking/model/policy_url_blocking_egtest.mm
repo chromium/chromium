@@ -4,11 +4,16 @@
 
 #import <string>
 
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/json/json_reader.h"
+#import "base/json/json_writer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -30,6 +35,23 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
                            [PolicyAppInterface isURLBlocked:nsurl] == blocked;
                      }),
                  @"Waiting for policy url blocklist to update.");
+}
+
+// Sets the policy value for controlling a list of URLs. Sets the blocklist
+// policy when `block_url` is true or sets the allowlist policy otherwise.
+[[nodiscard]] bool SetPolicyValue(const base::Value& value, bool block_url) {
+  const std::optional<std::string> json_value = base::WriteJson(value);
+  if (!json_value) {
+    return false;
+  }
+  const char* policy_key =
+      block_url ? policy::key::kURLBlocklist : policy::key::kURLAllowlist;
+  policy_test_utils::SetPolicy(*json_value, policy_key);
+  return base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+    std::optional<base::Value> probed_value = base::JSONReader::Read(
+        policy_test_utils::GetValueForPlatformPolicy(policy_key));
+    return probed_value && value == *probed_value;
+  });
 }
 
 }  // namespace
@@ -65,9 +87,9 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that pages are not blocked when the blocklist exists, but is empty.
 - (void)testEmptyBlocklist {
-  [PolicyAppInterface
-      setPolicyValue:@"[]"
-              forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+  GREYAssertTrue(
+      SetPolicyValue(base::Value(base::Value::List()), /*block_url=*/true),
+      @"policy value couldn't be set");
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
 
@@ -76,10 +98,11 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that a page load is blocked when the URLBlocklist policy is set to
 // block all URLs.
-- (void)testWildcardBlocklist {
-  [PolicyAppInterface
-      setPolicyValue:@"[\"*\"]"
-              forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
+- (void)FormDatatestWildcardBlocklist {
+  GREYAssertTrue(SetPolicyValue(base::Value(base::Value::List().Append("*")),
+                                /*block_url=*/true),
+                 @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
@@ -90,10 +113,11 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 }
 
 // Tests that the NTP is not blocked by the wildcard blocklist.
-- (void)testNTPIsNotBlocked {
-  [PolicyAppInterface
-      setPolicyValue:@"[\"*\"]"
-              forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
+- (void)FormDatatestNTPIsNotBlocked {
+  GREYAssertTrue(SetPolicyValue(base::Value(base::Value::List().Append("*")),
+                                /*block_url=*/true),
+                 @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
@@ -102,10 +126,12 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 
 // Tests that a page is blocked when the URLBlocklist policy is set to block a
 // specific URL.
-- (void)testExplicitBlocklist {
-  [PolicyAppInterface
-      setPolicyValue:@"[\"*/echo\"]"
-              forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
+- (void)FormDatatestExplicitBlocklist {
+  GREYAssertTrue(
+      SetPolicyValue(base::Value(base::Value::List().Append("*/echo")),
+                     /*block_url=*/true),
+      @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), true);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
@@ -116,18 +142,21 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
 }
 
 // Tests that pages are loaded when explicitly listed in the URLAllowlist.
+// TODO(crbug.com/356495438): Re-enable when fixed when building with Xcode 16.
 - (void)testAllowlist {
   // The URLBlocklistPolicyHandler will discard policy updates that occur while
   // it is already computing a new blocklist, so wait between calls to set new
   // policy values.
-  [PolicyAppInterface
-      setPolicyValue:@"[\"*\"]"
-              forKey:base::SysUTF8ToNSString(policy::key::kURLBlocklist)];
+  GREYAssertTrue(SetPolicyValue(base::Value(base::Value::List().Append("*")),
+                                /*block_url=*/true),
+                 @"policy value couldn't be set");
+
   WaitForURLBlockedStatus(self.testServer->GetURL("/testpage"), true);
 
-  [PolicyAppInterface
-      setPolicyValue:@"[\"*/echo\"]"
-              forKey:base::SysUTF8ToNSString(policy::key::kURLAllowlist)];
+  GREYAssertTrue(
+      SetPolicyValue(base::Value(base::Value::List().Append("*/echo")),
+                     /*block_url=*/false),
+      @"policy value couldn't be set");
   WaitForURLBlockedStatus(self.testServer->GetURL("/echo"), false);
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];

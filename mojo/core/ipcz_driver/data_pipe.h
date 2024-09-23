@@ -30,7 +30,7 @@ class Transport;
 // wrapping a shared memory ring buffer and using ipcz portals to communicate
 // read and write quantities end-to-end.
 //
-// TODO(https://crbug.com/1299283): Once everything is transitioned to mojo-ipcz
+// TODO(crbug.com/40058840): Once everything is transitioned to mojo-ipcz
 // this object (and builtin data pipe bindings support in general) can be
 // deprecated in favor of a mojom-based library implementation of data pipes,
 // built directly on ipcz portals. For now they're implemented as ipcz driver

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/shim/winheap_stubs_win.h"
 
@@ -37,7 +37,7 @@ void SetCallNewHandlerOnMallocFailure(bool value);
 #include "partition_alloc/shim/allocator_shim_override_ucrt_symbols_win.h"
 
 // Cross-checks.
-#if !defined(COMPONENT_BUILD) || !BUILDFLAG(IS_WIN)
+#if !defined(COMPONENT_BUILD) || !PA_BUILDFLAG(IS_WIN)
 #error This code is only for Windows component build.
 #endif
 

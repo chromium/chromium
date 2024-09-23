@@ -15,8 +15,8 @@ namespace privacy_sandbox {
 PrivacySandboxAttestationsMixin::PrivacySandboxAttestationsMixin(
     InProcessBrowserTestMixinHost* host)
     : InProcessBrowserTestMixin(host) {
-  // TODO(crbug/1511336): Once Privacy Sandbox is back to default-deny behavior,
-  // remove feature `kDefaultAllowPrivacySandboxAttestations`.
+  // TODO(crbug.com/41483922): Once Privacy Sandbox is back to default-deny
+  // behavior, remove feature `kDefaultAllowPrivacySandboxAttestations`.
   scoped_feature_list_.InitAndDisableFeature(
       kDefaultAllowPrivacySandboxAttestations);
 }

@@ -5,4 +5,4 @@ rootWebArea
 ++++++paragraph ignored invisible
 ++++++++genericContainer ignored invisible
 ++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='oranges'
+++++++++++++staticText ignored invisible

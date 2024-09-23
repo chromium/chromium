@@ -1,7 +1,8 @@
 include_rules = [
   "+ios/chrome/browser/passwords/model",
-  "+ios/chrome/browser/upgrade/model",
+  "+ios/chrome/browser/upgrade/model/upgrade_recommended_details.h",
+  "+ios/chrome/browser/upgrade/model/upgrade_utils.h",
   "+ios/chrome/browser/omaha/model",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h",
-  "+ios/chrome/browser/ui/ntp/metrics/home_metrics.h",
+  "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
 ]

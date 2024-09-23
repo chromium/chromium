@@ -7,7 +7,7 @@
 #include <type_traits>
 
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
+#include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "components/cross_device/logging/logging.h"
 

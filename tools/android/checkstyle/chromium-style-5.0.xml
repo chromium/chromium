@@ -104,6 +104,12 @@
       <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
+    <module name="AbbreviationAsWordInName">
+      <!-- https://source.android.com/docs/setup/contribute/code-style#treat-acronyms-as-words -->
+      <property name="severity" value="warning"/>
+      <property name="allowedAbbreviationLength" value="0"/>
+      <property name="allowedAbbreviations" value="GURL"/>
+    </module>
     <module name="FallThrough">
       <property name="severity" value="error"/>
       <property name="reliefPattern" value=".*"/>
@@ -197,7 +203,8 @@
       <property name="id" value="CollectionSubclass"/>
       <property name="severity" value="warning"/>
       <!-- E.g., matches "new HashSet<>() {" -->
-      <property name="format" value="new \w+(?:List|Set|Map)\b.*\{"/>
+      <!-- Careful to not match "for (String s : new HashSet<>(input)) {" -->
+      <property name="format" value="new \w+(?:List|Set|Map)\b[^()]*\([^()]*\)[^()]*\{"/>
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Subclassing collections is uncommon. If you are not doing so, please ignore. If you are subclassing in order to call add()/put(), use List.of() / Set.of() / Map.of() instead, or use multiple statements."/>
     </module>
@@ -231,6 +238,18 @@
       <property name="severity" value="warning"/>
       <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/"/>
       <property name="message" value="Parameter comments should use the ErrorProne-aware syntax: /* paramName= */."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="RemoveObserverMethodReference"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="removeObserver\([a-zA-Z]+::"/>
+      <property name="message"  value="Each method reference creates a new instance. The instance given to addObserver needs to be remembered and supplied to removeObserver."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="MockitoInitMocks"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="MockitoAnnotations.initMocks"/>
+      <property name="message" value="Prefer to use MockitoJUnit.Rule for consistency unless timing of when exactly mocks are initialized is required."/>
     </module>
   </module>
   <module name="RegexpMultiline">

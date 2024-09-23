@@ -1,0 +1,52 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module data_sharing.mojom;
+
+// Note: Keep these data structures in sync with
+// components/data_sharing/public/protocol/group_data.proto.
+
+import "url/mojom/url.mojom";
+
+// Type of group membership role.
+enum MemberRole {
+  kUnspecified,
+  kOwner,
+  kMember,
+  kInvitee,
+};
+
+// Data representing a member in a group.
+struct GroupMember {
+  // Gaia id of this member.
+  string gaia_id;
+
+  // Display name.
+  string display_name;
+
+  // Email address.
+  string email;
+
+  // Role of this member.
+  MemberRole role;
+
+  // URL of the avatar of this member.
+  url.mojom.Url avatar_url;
+};
+
+// Data representing a group of users.
+struct GroupData {
+  // ID of the group.
+  string group_id;
+
+  // Name of the group
+  string display_name;
+
+   // A list of members in this group.
+  array<GroupMember> members;
+
+  // Access token to join the group. It could be empty if the token is expired
+  // and not regenerated.
+  string access_token;
+};

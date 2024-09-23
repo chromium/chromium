@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 
 #include <iomanip>
@@ -327,7 +332,7 @@ bool Progress::IsError() const {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+  NOTREACHED() << "Unexpected Stage " << Quote(stage);
 }
 
 bool InProgress(const Stage stage) {
@@ -348,7 +353,7 @@ bool InProgress(const Stage stage) {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+  NOTREACHED() << "Unexpected Stage " << Quote(stage);
 }
 
 bool IsPaused(const Stage stage) {
@@ -369,7 +374,7 @@ bool IsPaused(const Stage stage) {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+  NOTREACHED() << "Unexpected Stage " << Quote(stage);
 }
 
 bool IsPausedOrInProgress(const Stage stage) {
@@ -390,7 +395,7 @@ bool IsPausedOrInProgress(const Stage stage) {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+  NOTREACHED() << "Unexpected Stage " << Quote(stage);
 }
 
 bool IsSuccessfulDocsOfflineEnablement(DocsOfflineEnableStatus status) {
@@ -903,8 +908,7 @@ void PinningManager::OnSearchResult(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
-  if (error != drive::FILE_ERROR_OK &&
-      error != drive::FILE_ERROR_OK_WITH_MORE_RESULTS) {
+  if (!drive::IsFileErrorOk(error)) {
     LOG(ERROR) << "Cannot visit " << dir_id << " " << Quote(dir_path) << ": "
                << error;
     switch (error) {

@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
+
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_save_file_paths_provider.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_test_util.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -23,6 +22,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,39 +40,31 @@ using ::testing::Eq;
 
 // Filter to determine if a record is a crash event as required by the browser
 // tests.
-bool IsRecordCrashEvent(const ::reporting::Record& record) {
+bool IsRecordCrashEvent(Destination destination,
+                        const ::reporting::Record& record) {
   MetricData record_data;
   EXPECT_TRUE(record_data.ParseFromString(record.data()));
   return
-      // Destination must be CRASH_EVENTS.
-      record.has_destination() &&
-      record.destination() == Destination::CRASH_EVENTS &&
+      // Destination should either be CHROME_CRASH_EVENTS or CRASH_EVENTS (if
+      // kernel or e.c. crash)
+      record.has_destination() && record.destination() == destination &&
       // Event type must be FATAL_CRASH.
       record_data.has_event_data() && record_data.event_data().has_type() &&
       record_data.event_data().type() == MetricEventType::FATAL_CRASH;
 }
 
-// Browser test environment for fatal crash events.
-class [[maybe_unused]] BrowserTestEnvironment final
-    : public FatalCrashEventsObserver::TestEnvironment::SaveFilePathsProvider {
- public:
-  BrowserTestEnvironment() = default;
-  ~BrowserTestEnvironment() override = default;
-  BrowserTestEnvironment(const BrowserTestEnvironment&) = delete;
-  BrowserTestEnvironment& operator=(const BrowserTestEnvironment&) = delete;
-
- private:
-  // Reset g_default_save_file_paths_provider_ during the test.
-  base::AutoReset<decltype(g_default_save_file_paths_provider_)> auto_reset_{
-      &g_default_save_file_paths_provider_, this};
-};
-
+// Verifies both Chrome and Non-chrome (i.e kernel and embedded controller)
+// crashes are reported.
 class FatalCrashEventsBrowserTest
     : public ::policy::DevicePolicyCrosBrowserTest,
       public ::testing::WithParamInterface</*uploaded=*/bool> {
  protected:
   FatalCrashEventsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(kEnableFatalCrashEventsObserver);
+    scoped_feature_list_.InitWithFeatures(
+        {kEnableFatalCrashEventsObserver,
+         kEnableChromeFatalCrashEventsObserver},
+        /*disabled_features=*/{});
+
     ::policy::SetDMTokenForTesting(
         ::policy::DMToken::CreateValidToken("token"));
   }
@@ -91,10 +83,11 @@ class FatalCrashEventsBrowserTest
   }
 
   // healthd emits a crash.
-  static void EmitCrash(bool is_uploaded) {
+  static void EmitCrash(bool is_uploaded,
+                        CrashEventInfo::CrashType crash_type) {
     auto crash_event_info = CrashEventInfo::New();
     crash_event_info->local_id = kTestLocalId;
-    crash_event_info->crash_type = CrashEventInfo::CrashType::kKernel;
+    crash_event_info->crash_type = crash_type;
     if (is_uploaded) {
       crash_event_info->upload_info = CrashUploadInfo::New();
       crash_event_info->upload_info->crash_report_id = kTestCrashReportId;
@@ -108,7 +101,6 @@ class FatalCrashEventsBrowserTest
   }
 
  private:
-  BrowserTestEnvironment fatal_crash_events_browser_test_environment_;
   ::policy::DevicePolicyCrosTestHelper test_helper_;
   // Set up device affiliation. No need to set up or log in as an affiliated
   // user, because reporting fatal crash events is controlled by a device
@@ -119,16 +111,17 @@ class FatalCrashEventsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,
-                       CrashOccursAndPolicyEnabled) {
+                       ChromeCrashOccursAndPolicyEnabled) {
   EnablePolicy();
   chromeos::MissiveClientTestObserver missive_event_observer(
-      base::BindRepeating(IsRecordCrashEvent));
+      base::BindRepeating(IsRecordCrashEvent,
+                          Destination::CHROME_CRASH_EVENTS));
 
-  EmitCrash(is_uploaded());
+  EmitCrash(is_uploaded(), CrashEventInfo::CrashType::kChrome);
 
   const auto [priority, record] =
       missive_event_observer.GetNextEnqueuedRecord();
-  EXPECT_THAT(priority, Eq(Priority::IMMEDIATE));
+  EXPECT_THAT(priority, Eq(Priority::FAST_BATCH));
   ASSERT_TRUE(record.has_source_info());
   EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
 
@@ -154,11 +147,47 @@ IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,
-                       CrashOccursAndPolicyDefault) {
+                       KernelCrashOccursAndPolicyEnabled) {
+  EnablePolicy();
+  chromeos::MissiveClientTestObserver missive_event_observer(
+      base::BindRepeating(IsRecordCrashEvent, Destination::CRASH_EVENTS));
+
+  EmitCrash(is_uploaded(), CrashEventInfo::CrashType::kKernel);
+
+  const auto [priority, record] =
+      missive_event_observer.GetNextEnqueuedRecord();
+  EXPECT_THAT(priority, Eq(Priority::FAST_BATCH));
+  ASSERT_TRUE(record.has_source_info());
+  EXPECT_THAT(record.source_info().source(), Eq(SourceInfo::ASH));
+
+  MetricData metric_data;
+  ASSERT_TRUE(metric_data.ParseFromString(record.data()));
+
+  // Testing event found successfully. It is sufficient to test,
+  // local ID (present in both uploaded and unuploaded crashes) and crash report
+  // ID (uploaded crash only) in browser tests. Detailed tests of fields are
+  // covered in unit tests.
+  ASSERT_TRUE(metric_data.has_telemetry_data());
+  ASSERT_TRUE(metric_data.telemetry_data().has_fatal_crash_telemetry());
+  const auto& fatal_crash_telemetry =
+      metric_data.telemetry_data().fatal_crash_telemetry();
+
+  ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
+  EXPECT_EQ(fatal_crash_telemetry.local_id(), kTestLocalId);
+
+  if (is_uploaded()) {
+    ASSERT_TRUE(fatal_crash_telemetry.has_crash_report_id());
+    EXPECT_EQ(fatal_crash_telemetry.crash_report_id(), kTestCrashReportId);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(FatalCrashEventsBrowserTest,
+                       KernelCrashOccursAndPolicyDefault) {
   // Not enabling policy here.
   chromeos::MissiveClientTestObserver missive_event_observer(
-      base::BindRepeating(IsRecordCrashEvent));
-  EmitCrash(is_uploaded());
+      base::BindRepeating(IsRecordCrashEvent, Destination::CRASH_EVENTS));
+
+  EmitCrash(is_uploaded(), CrashEventInfo::CrashType::kKernel);
 
   ::content::RunAllTasksUntilIdle();
   EXPECT_FALSE(missive_event_observer.HasNewEnqueuedRecord());
@@ -168,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(FatalCrashEventsBrowserTest,
                        CrashNotOccurAndPolicyEnabled) {
   EnablePolicy();
   chromeos::MissiveClientTestObserver missive_event_observer(
-      base::BindRepeating(IsRecordCrashEvent));
+      base::BindRepeating(IsRecordCrashEvent, Destination::CRASH_EVENTS));
   // Not emitting crashes here.
 
   ::content::RunAllTasksUntilIdle();

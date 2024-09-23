@@ -11,6 +11,10 @@ namespace ash {
 inline constexpr static char kOOBELocaleSwitchNotificationId[] =
     "oobe.locale-switch-notification";
 
+// ID of the Gnubbby press notification that could be shown during the OOBE.
+inline constexpr static char kOOBEGnubbyNotificationId[] =
+    "gnubby_notification";
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_MESSAGE_CENTER_OOBE_NOTIFICATION_CONSTANTS_H_

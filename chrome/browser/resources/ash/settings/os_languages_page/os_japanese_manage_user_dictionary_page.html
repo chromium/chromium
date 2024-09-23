@@ -1,10 +1,26 @@
-<style include="settings-shared">
+<style include="settings-shared md-select">
   :host {
     display: flex;
     flex-direction: column;
   }
 </style>
 <div class="cr-row continuation">
-  TODO(b/234790486): Add the correct contents here.
+  <div>status: [[status]]</div>
+  <cr-icon-button class="icon-refresh" on-click="getDictionaries_"
+      title="DebugDictionaryLoad">
+  </cr-icon-button>
+</div>
+<template is="dom-repeat" items="[[dictionaries_]]">
+  <os-japanese-dictionary-expand
+    dict="[[item]]" synced-entries-count="[[getLastIndex_(item.entries)]]">
+  </os-japanese-dictionary-expand>
+</template>
+<div class="cr-row">
+  <cr-button on-click="addDictionary_" class="add-button">
+    <span>
+      Add dictionary
+    </span>
+    <iron-icon icon="cr:add" slot="suffix-icon"></iron-icon>
+  </cr-button>
 </div>
 

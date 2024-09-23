@@ -24,8 +24,6 @@
 
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -49,45 +47,46 @@ ScopedSVGPaintState::~ScopedSVGPaintState() {
 }
 
 void ScopedSVGPaintState::ApplyEffects() {
+  // LayoutSVGRoot works like a normal CSS replaced element and its effects are
+  // applied as stacking context effects by PaintLayerPainter.
+  DCHECK(!object_.IsSVGRoot());
 #if DCHECK_IS_ON()
   DCHECK(!apply_effects_called_);
   apply_effects_called_ = true;
 #endif
 
   const auto* properties = object_.FirstFragment().PaintProperties();
-  if (properties)
-    ApplyPaintPropertyState(*properties);
+  if (!properties) {
+    return;
+  }
+  ApplyPaintPropertyState(*properties);
 
   // When rendering clip paths as masks, only geometric operations should be
   // included so skip non-geometric operations such as compositing, masking,
   // and filtering.
   if (paint_info_.IsRenderingClipPathAsMaskImage()) {
-    DCHECK(!object_.IsSVGRoot());
-    if (properties && properties->ClipPathMask())
+    if (properties->ClipPathMask())
       should_paint_clip_path_as_mask_image_ = true;
     return;
   }
 
-  // LayoutSVGRoot and LayoutSVGForeignObject always have a self-painting
-  // PaintLayer (hence comments below about PaintLayerPainter).
-  bool is_svg_root_or_foreign_object =
-      object_.IsSVGRoot() || object_.IsSVGForeignObject();
-  if (is_svg_root_or_foreign_object) {
-    // PaintLayerPainter takes care of clip path.
-    DCHECK(object_.HasLayer() || !properties || !properties->ClipPathMask());
-  } else if (properties && properties->ClipPathMask()) {
-    should_paint_clip_path_as_mask_image_ = true;
+  // LayoutSVGForeignObject always have a self-painting PaintLayer, and thus
+  // PaintLayerPainter takes care of clip path and mask.
+  if (object_.IsSVGForeignObject()) {
+    DCHECK(object_.HasLayer() || !properties->ClipPathMask());
+    return;
   }
 
-  ApplyMaskIfNecessary();
+  if (properties->ClipPathMask()) {
+    should_paint_clip_path_as_mask_image_ = true;
+  }
+  if (properties->Mask()) {
+    should_paint_mask_ = true;
+  }
 }
 
 void ScopedSVGPaintState::ApplyPaintPropertyState(
     const ObjectPaintProperties& properties) {
-  // SVGRoot works like normal CSS replaced element and its effects are
-  // applied as stacking context effect by PaintLayerPainter.
-  if (object_.IsSVGRoot())
-    return;
   auto& paint_controller = paint_info_.context.GetPaintController();
   auto state = paint_controller.CurrentPaintChunkProperties();
   if (const auto* filter = properties.Filter()) {
@@ -106,22 +105,6 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
   scoped_paint_chunk_properties_.emplace(
       paint_controller, state, display_item_client_,
       DisplayItem::PaintPhaseToSVGEffectType(paint_info_.phase));
-}
-
-void ScopedSVGPaintState::ApplyMaskIfNecessary() {
-  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    if (!(object_.IsSVGRoot() || object_.IsSVGForeignObject()) &&
-        object_.StyleRef().HasMask()) {
-      should_paint_mask_ = true;
-    }
-    return;
-  }
-  SVGResourceClient* client = SVGResources::GetClient(object_);
-  if (!client)
-    return;
-  if (GetSVGResourceAsType<LayoutSVGResourceMasker>(
-          *client, object_.StyleRef().MaskerResource()))
-    should_paint_mask_ = true;
 }
 
 }  // namespace blink

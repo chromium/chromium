@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
+
 #include <memory>
+
 #include "base/functional/bind.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -22,7 +24,7 @@ GeneratedPasswordSavedMessageDelegate::GeneratedPasswordSavedMessageDelegate()
           []() { return std::make_unique<AddUsernameDialogBridge>(); })) {}
 
 GeneratedPasswordSavedMessageDelegate::GeneratedPasswordSavedMessageDelegate(
-    base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>,
+    base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>,
     CreateAddUsernameDialogBridge add_username_dialog_factory)
     : add_username_dialog_factory_(std::move(add_username_dialog_factory)) {}
 
@@ -57,9 +59,7 @@ void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
   saved_form_ = std::move(saved_form);
   const std::u16string& username =
       saved_form_->GetPendingCredentials().username_value;
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationBottomSheet) &&
-      username.empty()) {
+  if (username.empty()) {
     ShowAddUsernameDialog(web_contents);
   } else {
     ShowPasswordSavedMessage(web_contents);

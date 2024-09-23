@@ -1,0 +1,85 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 6
+
+module arc.mojom;
+
+// Represents total storage usage of Android applications.
+struct ApplicationsSize {
+  // Usage for APK and OBB.
+  uint64 total_code_bytes;
+  // Usage for data and media.
+  uint64 total_data_bytes;
+  // Usage for applications' cache.
+  uint64 total_cache_bytes;
+};
+
+struct DiskSpace {
+  uint64 space_in_bytes;
+};
+
+struct QuotaSpaces {
+  array<int64> curspaces_for_uids;
+  array<int64> curspaces_for_gids;
+  array<int64> curspaces_for_project_ids;
+};
+
+// Next Method ID: 7
+// Deprecated method ID: 4
+interface DiskSpaceHost {
+  // Whether cryptohome supports quota-based stats.
+  IsQuotaSupported@0() => (bool supported);
+
+  // Get the current quota-based disk space usage for a uid. Returns -1 for
+  // failure.
+  GetQuotaCurrentSpaceForUid@1(uint32 uid) => (int64 cur_space);
+
+  // Get the current quota-based disk space usage for a gid. Returns -1 for
+  // failure.
+  GetQuotaCurrentSpaceForGid@2(uint32 gid) => (int64 cur_space);
+
+  // Get the current quota-based disk space usage for a project ID. Returns -1
+  // for failure.
+  [MinVersion=1] GetQuotaCurrentSpaceForProjectId@3(uint32 project_id) =>
+      (int64 cur_space);
+
+  // Returns lists of disk space currently used by each of the given IDs, by
+  // translating the given ARC-side IDs to CrOS-side IDs and calling spaced's
+  // GetQuotaCurrentSpacesForIds D-Bus method.
+  // A null value is returned when this method itself fails (e.g. when there is
+  // an invalid ID in the arguments, the D-Bus call to spaced fails, etc.)
+  // An empty list is returned (for each ID type) when spaced does not return
+  // results for all requested IDs, which can happen when it fails to get the
+  // device path for the directory to query quota on.
+  // When this method itself succeeds but fails to retrieve the space for a
+  // particular ID due to a quotactl failure, its value is set to -1 in the
+  // corresponding element in the list.
+  [MinVersion=5] GetQuotaCurrentSpacesForIds@6(array<uint32> uids,
+                                               array<uint32> gids,
+                                               array<uint32> project_ids) =>
+      (QuotaSpaces? quota_spaces);
+
+  // Get free disk space in the stateful partition.
+  [MinVersion=2] GetFreeDiskSpace@5() => (DiskSpace? free_space);
+};
+
+// Next Method ID: 3
+interface DiskSpaceInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<DiskSpaceHost> host_remote) => ();
+
+  // Retrieves storage usage (code, data, and cache) of all applications.
+  // Returns the combined usage on internal and external storage.
+  // The `succeeded` value indicates whether there is any error on ARC side.
+  // When `succeeded` is false, `applications_size` is null.
+  [MinVersion=3] GetApplicationsSize@1()
+      => (bool succeeded, ApplicationsSize? applications_size);
+
+  // Requests ARC to resize storage balloon so that the free space in ARC
+  // becomes `free_space_bytes`. If `free_space_bytes` is larger than the total
+  // disk size minus the space used by ARC, the balloon just becomes its minimum
+  // size.
+  [MinVersion=4] ResizeStorageBalloon@2(int64 free_space_bytes);
+};

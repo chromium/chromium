@@ -26,6 +26,22 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AndroidAutofillAvailabilityStatus">
+  <summary>
+    Describes whether Android Autofill was available. If not, it splits the
+    reasons why. Only one reason is recorded (e.g. the pref isn't checked if a
+    policy makes it impossible to set the pref).
+  </summary>
+  <int value="0" label="Available and turned on in Chrome settings"/>
+  <int value="1" label="Not allowed by policy"/>
+  <int value="2" label="Android OS version is too old"/>
+  <int value="3" label="The system's AutofillManager is not available"/>
+  <int value="4" label="The system does not support autofill"/>
+  <int value="5" label="The system's AutofillService cannot be determined."/>
+  <int value="6" label="The user chose Google to as AutofillService"/>
+  <int value="7" label="The user turned the Chrome setting off"/>
+</enum>
+
 <enum name="AndroidAutofillPrefillRequestState">
   <summary>
     Describes the state of a prefill request for a given, cacheable, form.
@@ -57,6 +73,14 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Suggestions Shown"/>
   <int value="1" label="Suggestion Selected"/>
   <int value="2" label="Suggestion Deleted"/>
+</enum>
+
+<enum name="AutofillAddNewAddressPromptOutcome">
+  <summary>
+    Describes the user's decision on the 'And new address' prompt.
+  </summary>
+  <int value="0" label="Accepted and saved a new address."/>
+  <int value="1" label="Canceled explicitly or ignored"/>
 </enum>
 
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
@@ -195,7 +219,7 @@ chromium-metrics-reviews@google.com.
   <int value="7"
       label="(Obsolete) Payments integration user setting is disabled (Never
              recorded)."/>
-  <int value="8" label="User email is empty"/>
+  <int value="8" label="(Obsolete) User email is empty"/>
   <int value="9"
       label="(Obsolete) User is logged into an unsupported domain (Deprecated
              by an M117 launch)."/>
@@ -218,6 +242,16 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="Only kAccount profiles originating from outside Chrome were used"/>
   <int value="4" label="Profiles from different categories were used."/>
+</enum>
+
+<enum name="AutofillCategoryResolvedFillingReadiness">
+  <int value="0" label="No profiles available"/>
+  <int value="1" label="Only kLocalOrSyncable profiles available"/>
+  <int value="2"
+      label="Only kAccount profiles originating from Chrome available"/>
+  <int value="3"
+      label="Only kAccount profiles originating from outside Chrome available"/>
+  <int value="4" label="Profiles from different categories available."/>
 </enum>
 
 <enum name="AutofillCreditCardAuthenticationEvents">
@@ -263,6 +297,27 @@ chromium-metrics-reviews@google.com.
       label="Interacted then ignored (user didn't explicitly cancel/accept)"/>
 </enum>
 
+<enum name="AutofillCreditCardSeamlessnessBitmask">
+  <summary>
+    A bitmask indicating which credit card field types were autofilled.
+  </summary>
+  <int value="1" label=":-( -name, -num, -exp, +cvc"/>
+  <int value="2" label=":-( -name, -num, +exp, -cvc"/>
+  <int value="3" label=":-( -name, -num, +exp, +cvc"/>
+  <int value="4" label=":-( -name, +num, -exp, -cvc"/>
+  <int value="5" label=":-( -name, +num, -exp, +cvc"/>
+  <int value="6" label=":-) -name, +num, +exp, -cvc"/>
+  <int value="7" label=":-) -name, +num, +exp, +cvc"/>
+  <int value="8" label=":-( +name, -num, -exp, -cvc"/>
+  <int value="9" label=":-( +name, -num, -exp, +cvc"/>
+  <int value="10" label=":-( +name, -num, +exp, -cvc"/>
+  <int value="11" label=":-( +name, -num, +exp, +cvc"/>
+  <int value="12" label=":-( +name, +num, -exp, -cvc"/>
+  <int value="13" label=":-| +name, +num, -exp, +cvc"/>
+  <int value="14" label=":-) +name, +num, +exp, -cvc"/>
+  <int value="15" label=":-D +name, +num, +exp, +cvc"/>
+</enum>
+
 <enum name="AutofillCreditCardUnmaskDecisionMetric">
   <int value="0" label="WebAuthn only"/>
   <int value="1" label="CVC followed by WebAuthn"/>
@@ -303,10 +358,388 @@ chromium-metrics-reviews@google.com.
       label="CVC auth temporarily failed due to the card being expired"/>
 </enum>
 
+<enum name="AutofillDataUtilization">
+  <int value="0" label="Not autofilled"/>
+  <int value="1" label="Autofilled"/>
+</enum>
+
+<enum name="AutofillDataUtilizationByFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0"
+      label="NO_SERVER_DATA: Not autofilled or autofilled value edited"/>
+  <int value="1" label="NO_SERVER_DATA: Autofilled value accepted"/>
+  <int value="64"
+      label="UNKNOWN_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="65" label="UNKNOWN_TYPE: Autofilled value accepted"/>
+  <int value="128"
+      label="EMPTY_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="129" label="EMPTY_TYPE: Autofilled value accepted"/>
+  <int value="192"
+      label="NAME_FIRST: Not autofilled or autofilled value edited"/>
+  <int value="193" label="NAME_FIRST: Autofilled value accepted"/>
+  <int value="256"
+      label="NAME_MIDDLE: Not autofilled or autofilled value edited"/>
+  <int value="257" label="NAME_MIDDLE: Autofilled value accepted"/>
+  <int value="320"
+      label="NAME_LAST: Not autofilled or autofilled value edited"/>
+  <int value="321" label="NAME_LAST: Autofilled value accepted"/>
+  <int value="384"
+      label="NAME_MIDDLE_INITIAL: Not autofilled or autofilled value edited"/>
+  <int value="385" label="NAME_MIDDLE_INITIAL: Autofilled value accepted"/>
+  <int value="448"
+      label="NAME_FULL: Not autofilled or autofilled value edited"/>
+  <int value="449" label="NAME_FULL: Autofilled value accepted"/>
+  <int value="512"
+      label="NAME_SUFFIX: Not autofilled or autofilled value edited"/>
+  <int value="513" label="NAME_SUFFIX: Autofilled value accepted"/>
+  <int value="576"
+      label="EMAIL_ADDRESS: Not autofilled or autofilled value edited"/>
+  <int value="577" label="EMAIL_ADDRESS: Autofilled value accepted"/>
+  <int value="640"
+      label="PHONE_HOME_NUMBER: Not autofilled or autofilled value edited"/>
+  <int value="641" label="PHONE_HOME_NUMBER: Autofilled value accepted"/>
+  <int value="704"
+      label="PHONE_HOME_CITY_CODE: Not autofilled or autofilled value edited"/>
+  <int value="705" label="PHONE_HOME_CITY_CODE: Autofilled value accepted"/>
+  <int value="768"
+      label="PHONE_HOME_COUNTRY_CODE: Not autofilled or autofilled value
+             edited"/>
+  <int value="769" label="PHONE_HOME_COUNTRY_CODE: Autofilled value accepted"/>
+  <int value="832"
+      label="PHONE_HOME_CITY_AND_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="833"
+      label="PHONE_HOME_CITY_AND_NUMBER: Autofilled value accepted"/>
+  <int value="896"
+      label="PHONE_HOME_WHOLE_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="897" label="PHONE_HOME_WHOLE_NUMBER: Autofilled value accepted"/>
+  <int value="1920"
+      label="ADDRESS_HOME_LINE1: Not autofilled or autofilled value edited"/>
+  <int value="1921" label="ADDRESS_HOME_LINE1: Autofilled value accepted"/>
+  <int value="1984"
+      label="ADDRESS_HOME_LINE2: Not autofilled or autofilled value edited"/>
+  <int value="1985" label="ADDRESS_HOME_LINE2: Autofilled value accepted"/>
+  <int value="2048"
+      label="ADDRESS_HOME_APT_NUM: Not autofilled or autofilled value edited"/>
+  <int value="2049" label="ADDRESS_HOME_APT_NUM: Autofilled value accepted"/>
+  <int value="2112"
+      label="ADDRESS_HOME_CITY: Not autofilled or autofilled value edited"/>
+  <int value="2113" label="ADDRESS_HOME_CITY: Autofilled value accepted"/>
+  <int value="2176"
+      label="ADDRESS_HOME_STATE: Not autofilled or autofilled value edited"/>
+  <int value="2177" label="ADDRESS_HOME_STATE: Autofilled value accepted"/>
+  <int value="2240"
+      label="ADDRESS_HOME_ZIP: Not autofilled or autofilled value edited"/>
+  <int value="2241" label="ADDRESS_HOME_ZIP: Autofilled value accepted"/>
+  <int value="2304"
+      label="ADDRESS_HOME_COUNTRY: Not autofilled or autofilled value edited"/>
+  <int value="2305" label="ADDRESS_HOME_COUNTRY: Autofilled value accepted"/>
+  <int value="3264"
+      label="CREDIT_CARD_NAME_FULL: Not autofilled or autofilled value edited"/>
+  <int value="3265" label="CREDIT_CARD_NAME_FULL: Autofilled value accepted"/>
+  <int value="3328"
+      label="CREDIT_CARD_NUMBER: Not autofilled or autofilled value edited"/>
+  <int value="3329" label="CREDIT_CARD_NUMBER: Autofilled value accepted"/>
+  <int value="3392"
+      label="CREDIT_CARD_EXP_MONTH: Not autofilled or autofilled value edited"/>
+  <int value="3393" label="CREDIT_CARD_EXP_MONTH: Autofilled value accepted"/>
+  <int value="3456"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Not autofilled or autofilled value
+             edited"/>
+  <int value="3457"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Autofilled value accepted"/>
+  <int value="3520"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Not autofilled or autofilled value
+             edited"/>
+  <int value="3521"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Autofilled value accepted"/>
+  <int value="3584"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Not autofilled or autofilled
+             value edited"/>
+  <int value="3585"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Autofilled value accepted"/>
+  <int value="3648"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Not autofilled or autofilled
+             value edited"/>
+  <int value="3649"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Autofilled value accepted"/>
+  <int value="3712"
+      label="CREDIT_CARD_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="3713" label="CREDIT_CARD_TYPE: Autofilled value accepted"/>
+  <int value="3776"
+      label="CREDIT_CARD_VERIFICATION_CODE: Not autofilled or autofilled
+             value edited"/>
+  <int value="3777"
+      label="CREDIT_CARD_VERIFICATION_CODE: Autofilled value accepted"/>
+  <int value="3840"
+      label="COMPANY_NAME: Not autofilled or autofilled value edited"/>
+  <int value="3841" label="COMPANY_NAME: Autofilled value accepted"/>
+  <int value="3904"
+      label="FIELD_WITH_DEFAULT_VALUE: Not autofilled or autofilled value
+             edited"/>
+  <int value="3905"
+      label="FIELD_WITH_DEFAULT_VALUE: Autofilled value accepted"/>
+  <int value="4672"
+      label="MERCHANT_EMAIL_SIGNUP: Not autofilled or autofilled value edited"/>
+  <int value="4673" label="MERCHANT_EMAIL_SIGNUP: Autofilled value accepted"/>
+  <int value="4736"
+      label="MERCHANT_PROMO_CODE: Not autofilled or autofilled value edited"/>
+  <int value="4737" label="MERCHANT_PROMO_CODE: Autofilled value accepted"/>
+  <int value="4800"
+      label="PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="4801" label="PASSWORD: Autofilled value accepted"/>
+  <int value="4864"
+      label="ACCOUNT_CREATION_PASSWORD: Not autofilled or autofilled value
+             edited"/>
+  <int value="4865"
+      label="ACCOUNT_CREATION_PASSWORD: Autofilled value accepted"/>
+  <int value="4928"
+      label="ADDRESS_HOME_STREET_ADDRESS: Not autofilled or autofilled value
+             edited"/>
+  <int value="4929"
+      label="ADDRESS_HOME_STREET_ADDRESS: Autofilled value accepted"/>
+  <int value="5056"
+      label="ADDRESS_HOME_SORTING_CODE: Not autofilled or autofilled value
+             edited"/>
+  <int value="5057"
+      label="ADDRESS_HOME_SORTING_CODE: Autofilled value accepted"/>
+  <int value="5184"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Not autofilled or autofilled
+             value edited"/>
+  <int value="5185"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Autofilled value accepted"/>
+  <int value="5312"
+      label="ADDRESS_HOME_LINE3: Not autofilled or autofilled value edited"/>
+  <int value="5313" label="ADDRESS_HOME_LINE3: Autofilled value accepted"/>
+  <int value="5440"
+      label="NOT_ACCOUNT_CREATION_PASSWORD: Not autofilled or autofilled
+             value edited"/>
+  <int value="5441"
+      label="NOT_ACCOUNT_CREATION_PASSWORD: Autofilled value accepted"/>
+  <int value="5504"
+      label="USERNAME: Not autofilled or autofilled value edited"/>
+  <int value="5505" label="USERNAME: Autofilled value accepted"/>
+  <int value="5568"
+      label="USERNAME_AND_EMAIL_ADDRESS: Not autofilled or autofilled value
+             edited"/>
+  <int value="5569"
+      label="USERNAME_AND_EMAIL_ADDRESS: Autofilled value accepted"/>
+  <int value="5632"
+      label="NEW_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="5633" label="NEW_PASSWORD: Autofilled value accepted"/>
+  <int value="5696"
+      label="PROBABLY_NEW_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="5697" label="PROBABLY_NEW_PASSWORD: Autofilled value accepted"/>
+  <int value="5760"
+      label="NOT_NEW_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="5761" label="NOT_NEW_PASSWORD: Autofilled value accepted"/>
+  <int value="5824"
+      label="CREDIT_CARD_NAME_FIRST: Not autofilled or autofilled value
+             edited"/>
+  <int value="5825" label="CREDIT_CARD_NAME_FIRST: Autofilled value accepted"/>
+  <int value="5888"
+      label="CREDIT_CARD_NAME_LAST: Not autofilled or autofilled value edited"/>
+  <int value="5889" label="CREDIT_CARD_NAME_LAST: Autofilled value accepted"/>
+  <int value="5952"
+      label="PHONE_HOME_EXTENSION: Not autofilled or autofilled value edited"/>
+  <int value="5953" label="PHONE_HOME_EXTENSION: Autofilled value accepted"/>
+  <int value="6080"
+      label="CONFIRMATION_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="6081" label="CONFIRMATION_PASSWORD: Autofilled value accepted"/>
+  <int value="6144"
+      label="AMBIGUOUS_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="6145" label="AMBIGUOUS_TYPE: Autofilled value accepted"/>
+  <int value="6208"
+      label="SEARCH_TERM: Not autofilled or autofilled value edited"/>
+  <int value="6209" label="SEARCH_TERM: Autofilled value accepted"/>
+  <int value="6272" label="PRICE: Not autofilled or autofilled value edited"/>
+  <int value="6273" label="PRICE: Autofilled value accepted"/>
+  <int value="6336"
+      label="NOT_PASSWORD: Not autofilled or autofilled value edited"/>
+  <int value="6337" label="NOT_PASSWORD: Autofilled value accepted"/>
+  <int value="6400"
+      label="SINGLE_USERNAME: Not autofilled or autofilled value edited"/>
+  <int value="6401" label="SINGLE_USERNAME: Autofilled value accepted"/>
+  <int value="6464"
+      label="NOT_USERNAME: Not autofilled or autofilled value edited"/>
+  <int value="6465" label="NOT_USERNAME: Autofilled value accepted"/>
+  <int value="6592"
+      label="ADDRESS_HOME_STREET_NAME: Not autofilled or autofilled value
+             edited"/>
+  <int value="6593"
+      label="ADDRESS_HOME_STREET_NAME: Autofilled value accepted"/>
+  <int value="6656"
+      label="ADDRESS_HOME_HOUSE_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="6657"
+      label="ADDRESS_HOME_HOUSE_NUMBER: Autofilled value accepted"/>
+  <int value="6720"
+      label="ADDRESS_HOME_SUBPREMISE: Not autofilled or autofilled value
+             edited"/>
+  <int value="6721" label="ADDRESS_HOME_SUBPREMISE: Autofilled value accepted"/>
+  <int value="6784"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: Not autofilled or autofilled value
+             edited"/>
+  <int value="6785"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: Autofilled value accepted"/>
+  <int value="6848"
+      label="NAME_LAST_FIRST: Not autofilled or autofilled value edited"/>
+  <int value="6849" label="NAME_LAST_FIRST: Autofilled value accepted"/>
+  <int value="6912"
+      label="NAME_LAST_CONJUNCTION: Not autofilled or autofilled value edited"/>
+  <int value="6913" label="NAME_LAST_CONJUNCTION: Autofilled value accepted"/>
+  <int value="6976"
+      label="NAME_LAST_SECOND: Not autofilled or autofilled value edited"/>
+  <int value="6977" label="NAME_LAST_SECOND: Autofilled value accepted"/>
+  <int value="7040"
+      label="NAME_HONORIFIC_PREFIX: Not autofilled or autofilled value edited"/>
+  <int value="7041" label="NAME_HONORIFIC_PREFIX: Autofilled value accepted"/>
+  <int value="7296"
+      label="ADDRESS_HOME_ADDRESS: Not autofilled or autofilled value edited"/>
+  <int value="7297" label="ADDRESS_HOME_ADDRESS: Autofilled value accepted"/>
+  <int value="7360"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: Not autofilled or autofilled
+             value edited"/>
+  <int value="7361"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: Autofilled value accepted"/>
+  <int value="7424"
+      label="ADDRESS_HOME_FLOOR: Not autofilled or autofilled value edited"/>
+  <int value="7425" label="ADDRESS_HOME_FLOOR: Autofilled value accepted"/>
+  <int value="7744"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Not autofilled or
+             autofilled value edited"/>
+  <int value="7745"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Autofilled value
+             accepted"/>
+  <int value="7808"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Not autofilled
+             or autofilled value edited"/>
+  <int value="7809"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Autofilled
+             value accepted"/>
+  <int value="7872"
+      label="PHONE_HOME_NUMBER_PREFIX: Not autofilled or autofilled value
+             edited"/>
+  <int value="7873"
+      label="PHONE_HOME_NUMBER_PREFIX: Autofilled value accepted"/>
+  <int value="7936"
+      label="PHONE_HOME_NUMBER_SUFFIX: Not autofilled or autofilled value
+             edited"/>
+  <int value="7937"
+      label="PHONE_HOME_NUMBER_SUFFIX: Autofilled value accepted"/>
+  <int value="8000"
+      label="IBAN_VALUE: Not autofilled or autofilled value edited"/>
+  <int value="8001" label="IBAN_VALUE: Autofilled value accepted"/>
+  <int value="8064"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Not autofilled or
+             autofilled value edited"/>
+  <int value="8065"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Autofilled value
+             accepted"/>
+  <int value="8192"
+      label="NUMERIC_QUANTITY: Not autofilled or autofilled value edited"/>
+  <int value="8193" label="NUMERIC_QUANTITY: Autofilled value accepted"/>
+  <int value="8256"
+      label="ONE_TIME_CODE: Not autofilled or autofilled value edited"/>
+  <int value="8257" label="ONE_TIME_CODE: Autofilled value accepted"/>
+  <int value="8512"
+      label="DELIVERY_INSTRUCTIONS: Not autofilled or autofilled value edited"/>
+  <int value="8513" label="DELIVERY_INSTRUCTIONS: Autofilled value accepted"/>
+  <int value="8640"
+      label="ADDRESS_HOME_OVERFLOW: Not autofilled or autofilled value edited"/>
+  <int value="8641" label="ADDRESS_HOME_OVERFLOW: Autofilled value accepted"/>
+  <int value="8704"
+      label="ADDRESS_HOME_LANDMARK: Not autofilled or autofilled value edited"/>
+  <int value="8705" label="ADDRESS_HOME_LANDMARK: Autofilled value accepted"/>
+  <int value="8960"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Not autofilled or autofilled
+             value edited"/>
+  <int value="8961"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Autofilled value accepted"/>
+  <int value="9024"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: Not autofilled or autofilled value
+             edited"/>
+  <int value="9025"
+      label="ADDRESS_HOME_ADMIN_LEVEL2: Autofilled value accepted"/>
+  <int value="9088"
+      label="ADDRESS_HOME_STREET_LOCATION: Not autofilled or autofilled value
+             edited"/>
+  <int value="9089"
+      label="ADDRESS_HOME_STREET_LOCATION: Autofilled value accepted"/>
+  <int value="9152"
+      label="ADDRESS_HOME_BETWEEN_STREETS: Not autofilled or autofilled value
+             edited"/>
+  <int value="9153"
+      label="ADDRESS_HOME_BETWEEN_STREETS: Autofilled value accepted"/>
+  <int value="9216"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Not autofilled or
+             autofilled value edited"/>
+  <int value="9217"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Autofilled value
+             accepted"/>
+  <int value="9280"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Not autofilled or
+             autofilled value edited"/>
+  <int value="9281"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Autofilled value
+             accepted"/>
+  <int value="9344"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Not autofilled or
+             autofilled value edited"/>
+  <int value="9345"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Autofilled value
+             accepted"/>
+  <int value="9600"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Not autofilled or
+             autofilled value edited"/>
+  <int value="9601"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Autofilled value
+             accepted"/>
+  <int value="9664"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1: Not autofilled or autofilled
+             value edited"/>
+  <int value="9665"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1: Autofilled value accepted"/>
+  <int value="9728"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2: Not autofilled or autofilled
+             value edited"/>
+  <int value="9729"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2: Autofilled value accepted"/>
+  <int value="9792"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Not autofilled or autofilled
+             value edited"/>
+  <int value="9793"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Autofilled value accepted"/>
+  <int value="9856"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: Not autofilled or autofilled
+             value edited"/>
+  <int value="9857"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: Autofilled value accepted"/>
+  <int value="9984"
+      label="ADDRESS_HOME_APT: Not autofilled or autofilled value edited"/>
+  <int value="9985" label="ADDRESS_HOME_APT: Autofilled value accepted"/>
+  <int value="10048"
+      label="ADDRESS_HOME_APT_TYPE: Not autofilled or autofilled value edited"/>
+  <int value="10049" label="ADDRESS_HOME_APT_TYPE: Autofilled value accepted"/>
+  <int value="10240"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Not autofilled or
+             autofilled value edited"/>
+  <int value="10241"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Autofilled value
+             accepted"/>
+  <int value="10368"
+      label="IMPROVED_PREDICTION: Not autofilled or autofilled value edited"/>
+  <int value="10369" label="IMPROVED_PREDICTION: Autofilled value accepted"/>
+</enum>
+
 <enum name="AutofillDeveloperEngagement">
   <int value="0" label="Fillable form parsed without type hints"/>
   <int value="1" label="Fillable form parsed with type hints"/>
-  <int value="2" label="Includes UPI-VPA type hint"/>
+  <int value="2"
+      label="(Obsolete) Includes UPI-VPA type hint (removed 04/2024)"/>
 </enum>
 
 <enum name="AutofilledFieldUserEditingStatus">
@@ -456,6 +889,12 @@ Called by update_autofill_enums.py.-->
   <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: accepted"/>
   <int value="1856" label="ADDRESS_HOME_FLOOR: edited"/>
   <int value="1857" label="ADDRESS_HOME_FLOOR: accepted"/>
+  <int value="1888" label="BIRTHDATE_DAY: edited"/>
+  <int value="1889" label="BIRTHDATE_DAY: accepted"/>
+  <int value="1904" label="BIRTHDATE_MONTH: edited"/>
+  <int value="1905" label="BIRTHDATE_MONTH: accepted"/>
+  <int value="1920" label="BIRTHDATE_4_DIGIT_YEAR: edited"/>
+  <int value="1921" label="BIRTHDATE_4_DIGIT_YEAR: accepted"/>
   <int value="1936" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: edited"/>
   <int value="1937" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: accepted"/>
   <int value="1952"
@@ -504,6 +943,8 @@ Called by update_autofill_enums.py.-->
   <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: accepted"/>
   <int value="2432" label="ADDRESS_HOME_BETWEEN_STREETS_2: edited"/>
   <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: accepted"/>
+  <int value="2448" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: edited"/>
+  <int value="2449" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: accepted"/>
   <int value="2464" label="SINGLE_USERNAME_FORGOT_PASSWORD: edited"/>
   <int value="2465" label="SINGLE_USERNAME_FORGOT_PASSWORD: accepted"/>
   <int value="2496" label="ADDRESS_HOME_APT: edited"/>
@@ -512,6 +953,8 @@ Called by update_autofill_enums.py.-->
   <int value="2513" label="ADDRESS_HOME_APT_TYPE: accepted"/>
   <int value="2560" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: edited"/>
   <int value="2561" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: accepted"/>
+  <int value="2592" label="IMPROVED_PREDICTION: edited"/>
+  <int value="2593" label="IMPROVED_PREDICTION: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -519,6 +962,12 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="VIRTUAL_CARD_PERMANENT_ERROR"/>
   <int value="2" label="VIRTUAL_CARD_NOT_ELIGIBLE_ERROR"/>
   <int value="3" label="UNKNOWN"/>
+  <int value="4"
+      label="MASKED_SERVER_CARD_RISK_BASED_UNMASKING_PERMANENT_ERROR"/>
+  <int value="5" label="MASKED_SERVER_CARD_RISK_BASED_UNMASKING_NETWORK_ERROR"/>
+  <int value="6" label="MASKED_SERVER_IBAN_UNMASKING_TEMPORARY_ERROR"/>
+  <int value="7" label="CREDIT_CARD_UPLOAD_ERROR"/>
+  <int value="8" label="VIRTUAL_CARD_ENROLLMENT_TEMPORARY_ERROR"/>
 </enum>
 
 <enum name="AutofillExpirationDateFixFlowPromptEvent">
@@ -940,6 +1389,16 @@ Called by update_autofill_enums.py.-->
   <int value="8199" label="UNKNOWN_TYPE: False Positive (Empty)"/>
   <int value="8200" label="UNKNOWN_TYPE: False Negative (Mismatch)"/>
   <int value="8201" label="UNKNOWN_TYPE: False Negative (Unknown)"/>
+  <int value="8448" label="BIRTHDATE: True Positive"/>
+  <int value="8449" label="BIRTHDATE: True Negative (Ambiguous)"/>
+  <int value="8450" label="BIRTHDATE: True Negative (Unknown)"/>
+  <int value="8451" label="BIRTHDATE: True Negative (Empty)"/>
+  <int value="8452" label="BIRTHDATE: False Positive (Mismatch)"/>
+  <int value="8453" label="BIRTHDATE: False Positive (Ambiguous)"/>
+  <int value="8454" label="BIRTHDATE: False Positive (Unknown)"/>
+  <int value="8455" label="BIRTHDATE: False Positive (Empty)"/>
+  <int value="8456" label="BIRTHDATE: False Negative (Mismatch)"/>
+  <int value="8457" label="BIRTHDATE: False Negative (Unknown)"/>
   <int value="8704" label="IBAN: True Positive"/>
   <int value="8705" label="IBAN: True Negative (Ambiguous)"/>
   <int value="8706" label="IBAN: True Negative (Unknown)"/>
@@ -1165,6 +1624,151 @@ Called by update_autofill_enums.py.-->
   <int value="11529"
       label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: False Negative
              (Unknown)"/>
+  <int value="11776" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: True Positive"/>
+  <int value="11777"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: True Negative (Ambiguous)"/>
+  <int value="11778"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: True Negative (Unknown)"/>
+  <int value="11779"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: True Negative (Empty)"/>
+  <int value="11780"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Positive (Mismatch)"/>
+  <int value="11781"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Positive (Ambiguous)"/>
+  <int value="11782"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Positive (Unknown)"/>
+  <int value="11783"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Positive (Empty)"/>
+  <int value="11784"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Negative (Mismatch)"/>
+  <int value="11785"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Negative (Unknown)"/>
+  <int value="12032"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: True Positive"/>
+  <int value="12033"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: True Negative (Ambiguous)"/>
+  <int value="12034"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: True Negative (Unknown)"/>
+  <int value="12035"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: True Negative (Empty)"/>
+  <int value="12036"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Positive (Mismatch)"/>
+  <int value="12037"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Positive (Ambiguous)"/>
+  <int value="12038"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Positive (Unknown)"/>
+  <int value="12039"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Positive (Empty)"/>
+  <int value="12040"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Mismatch)"/>
+  <int value="12041"
+      label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Unknown)"/>
+</enum>
+
+<enum name="AutofillFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0" label="NO_SERVER_DATA"/>
+  <int value="1" label="UNKNOWN_TYPE"/>
+  <int value="2" label="EMPTY_TYPE"/>
+  <int value="3" label="NAME_FIRST"/>
+  <int value="4" label="NAME_MIDDLE"/>
+  <int value="5" label="NAME_LAST"/>
+  <int value="6" label="NAME_MIDDLE_INITIAL"/>
+  <int value="7" label="NAME_FULL"/>
+  <int value="8" label="NAME_SUFFIX"/>
+  <int value="9" label="EMAIL_ADDRESS"/>
+  <int value="10" label="PHONE_HOME_NUMBER"/>
+  <int value="11" label="PHONE_HOME_CITY_CODE"/>
+  <int value="12" label="PHONE_HOME_COUNTRY_CODE"/>
+  <int value="13" label="PHONE_HOME_CITY_AND_NUMBER"/>
+  <int value="14" label="PHONE_HOME_WHOLE_NUMBER"/>
+  <int value="30" label="ADDRESS_HOME_LINE1"/>
+  <int value="31" label="ADDRESS_HOME_LINE2"/>
+  <int value="32" label="ADDRESS_HOME_APT_NUM"/>
+  <int value="33" label="ADDRESS_HOME_CITY"/>
+  <int value="34" label="ADDRESS_HOME_STATE"/>
+  <int value="35" label="ADDRESS_HOME_ZIP"/>
+  <int value="36" label="ADDRESS_HOME_COUNTRY"/>
+  <int value="51" label="CREDIT_CARD_NAME_FULL"/>
+  <int value="52" label="CREDIT_CARD_NUMBER"/>
+  <int value="53" label="CREDIT_CARD_EXP_MONTH"/>
+  <int value="54" label="CREDIT_CARD_EXP_2_DIGIT_YEAR"/>
+  <int value="55" label="CREDIT_CARD_EXP_4_DIGIT_YEAR"/>
+  <int value="56" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR"/>
+  <int value="57" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR"/>
+  <int value="58" label="CREDIT_CARD_TYPE"/>
+  <int value="59" label="CREDIT_CARD_VERIFICATION_CODE"/>
+  <int value="60" label="COMPANY_NAME"/>
+  <int value="61" label="FIELD_WITH_DEFAULT_VALUE"/>
+  <int value="73" label="MERCHANT_EMAIL_SIGNUP"/>
+  <int value="74" label="MERCHANT_PROMO_CODE"/>
+  <int value="75" label="PASSWORD"/>
+  <int value="76" label="ACCOUNT_CREATION_PASSWORD"/>
+  <int value="77" label="ADDRESS_HOME_STREET_ADDRESS"/>
+  <int value="79" label="ADDRESS_HOME_SORTING_CODE"/>
+  <int value="81" label="ADDRESS_HOME_DEPENDENT_LOCALITY"/>
+  <int value="83" label="ADDRESS_HOME_LINE3"/>
+  <int value="85" label="NOT_ACCOUNT_CREATION_PASSWORD"/>
+  <int value="86" label="USERNAME"/>
+  <int value="87" label="USERNAME_AND_EMAIL_ADDRESS"/>
+  <int value="88" label="NEW_PASSWORD"/>
+  <int value="89" label="PROBABLY_NEW_PASSWORD"/>
+  <int value="90" label="NOT_NEW_PASSWORD"/>
+  <int value="91" label="CREDIT_CARD_NAME_FIRST"/>
+  <int value="92" label="CREDIT_CARD_NAME_LAST"/>
+  <int value="93" label="PHONE_HOME_EXTENSION"/>
+  <int value="95" label="CONFIRMATION_PASSWORD"/>
+  <int value="96" label="AMBIGUOUS_TYPE"/>
+  <int value="97" label="SEARCH_TERM"/>
+  <int value="98" label="PRICE"/>
+  <int value="99" label="NOT_PASSWORD"/>
+  <int value="100" label="SINGLE_USERNAME"/>
+  <int value="101" label="NOT_USERNAME"/>
+  <int value="102" label="UPI_VPA"/>
+  <int value="103" label="ADDRESS_HOME_STREET_NAME"/>
+  <int value="104" label="ADDRESS_HOME_HOUSE_NUMBER"/>
+  <int value="105" label="ADDRESS_HOME_SUBPREMISE"/>
+  <int value="106" label="ADDRESS_HOME_OTHER_SUBUNIT"/>
+  <int value="107" label="NAME_LAST_FIRST"/>
+  <int value="108" label="NAME_LAST_CONJUNCTION"/>
+  <int value="109" label="NAME_LAST_SECOND"/>
+  <int value="110" label="NAME_HONORIFIC_PREFIX"/>
+  <int value="114" label="ADDRESS_HOME_ADDRESS"/>
+  <int value="115" label="ADDRESS_HOME_ADDRESS_WITH_NAME"/>
+  <int value="116" label="ADDRESS_HOME_FLOOR"/>
+  <int value="118" label="BIRTHDATE_DAY"/>
+  <int value="119" label="BIRTHDATE_MONTH"/>
+  <int value="120" label="BIRTHDATE_4_DIGIT_YEAR"/>
+  <int value="121" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX"/>
+  <int value="122" label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
+  <int value="123" label="PHONE_HOME_NUMBER_PREFIX"/>
+  <int value="124" label="PHONE_HOME_NUMBER_SUFFIX"/>
+  <int value="125" label="IBAN_VALUE"/>
+  <int value="126" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE"/>
+  <int value="128" label="NUMERIC_QUANTITY"/>
+  <int value="129" label="ONE_TIME_CODE"/>
+  <int value="133" label="DELIVERY_INSTRUCTIONS"/>
+  <int value="135" label="ADDRESS_HOME_OVERFLOW"/>
+  <int value="136" label="ADDRESS_HOME_LANDMARK"/>
+  <int value="140" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK"/>
+  <int value="141" label="ADDRESS_HOME_ADMIN_LEVEL2"/>
+  <int value="142" label="ADDRESS_HOME_STREET_LOCATION"/>
+  <int value="143" label="ADDRESS_HOME_BETWEEN_STREETS"/>
+  <int value="144" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK"/>
+  <int value="145" label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY"/>
+  <int value="146" label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK"/>
+  <int value="150" label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK"/>
+  <int value="151" label="ADDRESS_HOME_BETWEEN_STREETS_1"/>
+  <int value="152" label="ADDRESS_HOME_BETWEEN_STREETS_2"/>
+  <int value="153" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT"/>
+  <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
+  <int value="156" label="ADDRESS_HOME_APT"/>
+  <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
+  <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
+  <int value="161" label="SERVER_RESPONSE_PENDING"/>
+  <int value="162" label="IMPROVED_PREDICTION"/>
 </enum>
 
 <enum name="AutofillFillingMethodMetric">
@@ -1181,14 +1785,16 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Suggestions shown"/>
   <int value="2" label="Suggestions shown (once)"/>
   <int value="3" label="Local suggestion filled"/>
-  <int value="4" label="Server suggestion filled"/>
+  <int value="4" label="(Obsolete) Full server card suggestion filled"/>
   <int value="5" label="Masked server card suggestion filled"/>
   <int value="6" label="Local suggestion filled (once)"/>
-  <int value="7" label="Server suggestion filled (once)"/>
+  <int value="7" label="(Obsolete) Full server card suggestion filled (once)"/>
   <int value="8" label="Masked server card suggestion filled (once)"/>
   <int value="9" label="Submitted with no suggestion filled (once)"/>
   <int value="10" label="Submitted with local suggestion filled (once)"/>
-  <int value="11" label="Submitted with server suggestion filled (once)"/>
+  <int value="11"
+      label="(Obsolete) Submitted with full server card suggestion filled
+             (once)"/>
   <int value="12"
       label="Submitted with masked server card suggestion filled (once)"/>
   <int value="13"
@@ -1207,7 +1813,8 @@ Called by update_autofill_enums.py.-->
   <int value="16"
       label="About to be submitted with local suggestion filled (once)"/>
   <int value="17"
-      label="About to be submitted with server suggestion filled (once)"/>
+      label="(Obsolete) About to be submitted with full server card
+             suggestion filled (once)"/>
   <int value="18"
       label="About to be submitted with masked server card suggestion filled
              (once)"/>
@@ -1333,15 +1940,65 @@ Called by update_autofill_enums.py.-->
              (once)"/>
   <int value="87" label="Masked server card suggestion selected"/>
   <int value="88" label="Masked server card suggestion selected (once)"/>
-</enum>
-
-<enum name="AutofillFormSubmittedState">
-  <int value="0" label="Non fillable form or new data"/>
-  <int value="1" label="Fillable form, autofilled all"/>
-  <int value="2" label="Fillable form, autofilled some"/>
-  <int value="3" label="Fillable form, autofilled none, did show suggestions"/>
-  <int value="4"
-      label="Fillable form, autofilled none, did not show suggestions"/>
+  <int value="89"
+      label="Suggestions containing cards with a benefit available were shown"/>
+  <int value="90"
+      label="(DEPRECATED) Suggestions were shown, and no card had a benefit
+             available"/>
+  <int value="91"
+      label="Suggestions containing cards with a benefit available were shown
+             (once)"/>
+  <int value="92"
+      label="(DEPRECATED) Suggestions were shown, and no card had a benefit
+             available (once)"/>
+  <int value="93"
+      label="Suggestion for a masked server card with a benefit available was
+             selected"/>
+  <int value="94"
+      label="(DEPRECATED) Suggestion for a masked server card with no benefit
+             available was selected"/>
+  <int value="95"
+      label="Suggestion for a masked server card with a benefit available was
+             selected (once)"/>
+  <int value="96"
+      label="(DEPRECATED) Suggestion for a masked server card with no benefit
+             available was selected (once)"/>
+  <int value="97"
+      label="Suggestion for a masked server card with a benefit available was
+             filled"/>
+  <int value="98"
+      label="(DEPRECATED) Suggestion for a masked server card with no benefit
+             available was filled"/>
+  <int value="99"
+      label="Suggestion for a masked server card with a benefit available was
+             filled (once)"/>
+  <int value="100"
+      label="(DEPRECATED) Suggestion for a masked server card with no benefit
+             available was filled (once)"/>
+  <int value="101"
+      label="(DEPRECATED) Form was about to be submitted after a suggestion
+             for a masked server card with a benefit available was filled
+             (once)"/>
+  <int value="102"
+      label="(DEPRECATED) Form was about to be submitted after a suggestion
+             for masked server card with no benefit available was filled
+             (once)"/>
+  <int value="103"
+      label="Form was submitted after a suggestion for a masked server card
+             with a benefit available was filled (once)"/>
+  <int value="104"
+      label="(DEPRECATED) Form was submitted after a suggestion for a masked
+             server card with no benefit available was filled (once)"/>
+  <int value="105"
+      label="Suggestion for a masked server card was selected after
+             suggestions containing cards with a benefit available were shown
+             (once)"/>
+  <int value="106"
+      label="Suggestion for a masked server card was filled after suggestions
+             containing cards with a benefit available were shown (once)"/>
+  <int value="107"
+      label="Form was submitted after suggestions containing cards with a
+             benefit available were shown (once)"/>
 </enum>
 
 <enum name="AutofillGetRealPanResult">
@@ -1351,6 +2008,21 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Network error"/>
   <int value="4" label="Virtual card retriable failure"/>
   <int value="5" label="Virtual card non-retriable failure"/>
+  <int value="6" label="Client-side timeout"/>
+</enum>
+
+<enum name="AutofillInDevtoolsAvailableTestAddressesCountries">
+  <int value="0" label="United States test address selected"/>
+  <int value="1" label="Brazil test address selected"/>
+  <int value="2" label="Mexico test address selected"/>
+  <int value="3" label="Japan test address selected"/>
+  <int value="4" label="India test address selected"/>
+  <int value="5" label="Germany test address selected"/>
+</enum>
+
+<enum name="AutofillInDevtoolsTestAddressesEvents">
+  <int value="0" label="Suggestion shown"/>
+  <int value="1" label="Suggestion Selected"/>
 </enum>
 
 <enum name="AutofillLocalCardMigrationBubbleOffer">
@@ -1408,17 +2080,21 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Manage cards button pressed"/>
 </enum>
 
+<enum name="AutofillManuallyAddedAddressSurface">
+  <summary>
+    Describes the surface used by the user for adding a new address.
+  </summary>
+  <int value="0"
+      label="Context menu, after trigger manual fallback and having no
+             addresses stored."/>
+  <int value="1" label="Settings page."/>
+</enum>
+
 <enum name="AutofillOfferNotificationBubbleResult">
   <int value="0" label="User closed bubble via OK button"/>
   <int value="1" label="User closed bubble via corner X"/>
   <int value="2" label="User did not interact with the bubble"/>
   <int value="3" label="Bubble lost focus and was deactivated"/>
-</enum>
-
-<enum name="AutofillOfferNotificationInfoBarResult">
-  <int value="0" label="User closed infobar via OK button"/>
-  <int value="1" label="User closed infobar via corner X"/>
-  <int value="2" label="User did not interact with the infobar"/>
 </enum>
 
 <enum name="AutofillOptionsReferrer">
@@ -1466,62 +2142,10 @@ Called by update_autofill_enums.py.-->
              response"/>
 </enum>
 
-<enum name="AutofillPopupHidingReason">
-  <int value="0" label="A suggestion was accepted."/>
-  <int value="1" label="An interstitial page displaces the popup."/>
-  <int value="2"
-      label="A field isn't edited anymore but remains focused for now."/>
-  <int value="3" label="Focus removed from field. Follows kEndEditing."/>
-  <int value="4"
-      label="Scrolling or zooming into the page displaces the popup."/>
-  <int value="5" label="A navigation on the page or frame level."/>
-  <int value="6" label="The popup is or would become empty."/>
-  <int value="7" label="The renderer explicitly requested closing the popup."/>
-  <int value="8"
-      label="The tab with the popup is destroyed, hidden or has become
-             inactive."/>
-  <int value="9" label="The popup contains stale data."/>
-  <int value="10"
-      label="The user explicitly dismissed the popup (e.g. ESC key)."/>
-  <int value="11"
-      label="The popup view (or its controller) goes out of scope."/>
-  <int value="12" label="The platform-native UI changed (e.g. window resize)."/>
-  <int value="13"
-      label="Not enough space in the content area to display at least one row
-             of the popup within the bounds of the content area."/>
-  <int value="14"
-      label="The popup would overlap with another open prompt, and may hide
-             sensitive information in the prompt."/>
-  <int value="15"
-      label="The anchor element for which the popup would be shown is not
-             visible in the content area."/>
-  <int value="16" label="The frame holds a pointer lock."/>
-  <int value="17"
-      label="The password generation popup would overlap and hide autofill
-             popup."/>
-  <int value="18"
-      label="The Touch To Fill surface is shown instead of autofill
-             suggestions."/>
-  <int value="19"
-      label="The context menu is shown instead of the autofill suggestions."/>
-  <int value="20"
-      label="The Fast Checkout surface is shown instead of autofill
-             suggestions."/>
-  <int value="21"
-      label="The Picture-in-picture window overlaps with the autofill
-             suggestion."/>
-  <int value="22"
-      label="The context menu was open after the autofill popup, which could
-             overlap with the autofill popup."/>
-  <int value="23"
-      label="No frame currently has focus. This case is caught for safety
-             because it might be reachable due to race conditions."/>
-  <int value="24"
-      label="The sub-popup was closed, e.g. because the mouse was moved to a
-             different suggestion in the parent popup."/>
-  <int value="25"
-      label="The user edited the field. Currently applied only to Compose
-             suggestions."/>
+<enum name="AutofillPopupInteraction">
+  <int value="0" label="The popup was shown."/>
+  <int value="1" label="A suggestion was selected."/>
+  <int value="2" label="A suggestion was accepted."/>
 </enum>
 
 <enum name="AutofillPredictionsComparisonResult">
@@ -2600,6 +3224,51 @@ Called by update_autofill_enums.py.-->
   <int value="702"
       label="ADDRESS_HOME_FLOOR - Predictions different - Value agrees with
              both predictions"/>
+  <int value="709" label="BIRTHDATE_DAY - Predictions equal - Value agrees"/>
+  <int value="710" label="BIRTHDATE_DAY - Predictions equal - Value disagrees"/>
+  <int value="711"
+      label="BIRTHDATE_DAY - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="712"
+      label="BIRTHDATE_DAY - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="713"
+      label="BIRTHDATE_DAY - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="714"
+      label="BIRTHDATE_DAY - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="715" label="BIRTHDATE_MONTH - Predictions equal - Value agrees"/>
+  <int value="716"
+      label="BIRTHDATE_MONTH - Predictions equal - Value disagrees"/>
+  <int value="717"
+      label="BIRTHDATE_MONTH - Predictions different - Value agrees with old
+             prediction"/>
+  <int value="718"
+      label="BIRTHDATE_MONTH - Predictions different - Value agrees with new
+             prediction"/>
+  <int value="719"
+      label="BIRTHDATE_MONTH - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="720"
+      label="BIRTHDATE_MONTH - Predictions different - Value agrees with both
+             predictions"/>
+  <int value="721"
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions equal - Value agrees"/>
+  <int value="722"
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions equal - Value disagrees"/>
+  <int value="723"
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="724"
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="725"
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="726"
+      label="BIRTHDATE_4_DIGIT_YEAR - Predictions different - Value agrees
+             with both predictions"/>
   <int value="727"
       label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX - Predictions equal -
              Value agrees"/>
@@ -2953,6 +3622,24 @@ Called by update_autofill_enums.py.-->
   <int value="918"
       label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
              agrees with both predictions"/>
+  <int value="919"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions equal - Value
+             agrees"/>
+  <int value="920"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions equal - Value
+             disagrees"/>
+  <int value="921"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
+             Value agrees with old prediction"/>
+  <int value="922"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
+             Value agrees with new prediction"/>
+  <int value="923"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
+             Value agrees with neither prediction"/>
+  <int value="924"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT - Predictions different -
+             Value agrees with both predictions"/>
   <int value="925"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions equal - Value
              agrees"/>
@@ -3020,11 +3707,346 @@ Called by update_autofill_enums.py.-->
   <int value="966"
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES - Predictions different
              - Value agrees with both predictions"/>
+  <int value="973"
+      label="IMPROVED_PREDICTION - Predictions equal - Value agrees"/>
+  <int value="974"
+      label="IMPROVED_PREDICTION - Predictions equal - Value disagrees"/>
+  <int value="975"
+      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
+             old prediction"/>
+  <int value="976"
+      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
+             new prediction"/>
+  <int value="977"
+      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
+             neither prediction"/>
+  <int value="978"
+      label="IMPROVED_PREDICTION - Predictions different - Value agrees with
+             both predictions"/>
 </enum>
 
-<enum name="AutofillPreFilledFields">
+<enum name="AutofillPreferenceSetter">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User Setting"/>
+  <int value="2" label="Standalone Browser (ChromeOS-only)"/>
+  <int value="3" label="Extension"/>
+  <int value="4" label="Custodian"/>
+  <int value="5" label="Admin Policy"/>
+</enum>
+
+<enum name="AutofillPreFilledFieldClassifications">
+  <int value="0" label="Had placeholder classification"/>
+  <int value="1" label="No placeholder classification"/>
+</enum>
+
+<enum name="AutofillPreFilledFieldClassificationsQuality">
+  <int value="0" label="Placeholder, value not changed"/>
+  <int value="1" label="Placeholder, value changed"/>
+  <int value="2" label="Meaningfully pre-filled, value not changed"/>
+  <int value="3" label="Meaningfully pre-filled, value changed"/>
+</enum>
+
+<enum name="AutofillPreFilledFieldStatus">
   <int value="0" label="Pre-filled on page load"/>
   <int value="1" label="Empty on page load"/>
+</enum>
+
+<enum name="AutofillPreFilledFieldStatusByFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0" label="NO_SERVER_DATA: Pre-filled on page load"/>
+  <int value="1" label="NO_SERVER_DATA: Empty on page load"/>
+  <int value="16" label="UNKNOWN_TYPE: Pre-filled on page load"/>
+  <int value="17" label="UNKNOWN_TYPE: Empty on page load"/>
+  <int value="32" label="EMPTY_TYPE: Pre-filled on page load"/>
+  <int value="33" label="EMPTY_TYPE: Empty on page load"/>
+  <int value="48" label="NAME_FIRST: Pre-filled on page load"/>
+  <int value="49" label="NAME_FIRST: Empty on page load"/>
+  <int value="64" label="NAME_MIDDLE: Pre-filled on page load"/>
+  <int value="65" label="NAME_MIDDLE: Empty on page load"/>
+  <int value="80" label="NAME_LAST: Pre-filled on page load"/>
+  <int value="81" label="NAME_LAST: Empty on page load"/>
+  <int value="96" label="NAME_MIDDLE_INITIAL: Pre-filled on page load"/>
+  <int value="97" label="NAME_MIDDLE_INITIAL: Empty on page load"/>
+  <int value="112" label="NAME_FULL: Pre-filled on page load"/>
+  <int value="113" label="NAME_FULL: Empty on page load"/>
+  <int value="128" label="NAME_SUFFIX: Pre-filled on page load"/>
+  <int value="129" label="NAME_SUFFIX: Empty on page load"/>
+  <int value="144" label="EMAIL_ADDRESS: Pre-filled on page load"/>
+  <int value="145" label="EMAIL_ADDRESS: Empty on page load"/>
+  <int value="160" label="PHONE_HOME_NUMBER: Pre-filled on page load"/>
+  <int value="161" label="PHONE_HOME_NUMBER: Empty on page load"/>
+  <int value="176" label="PHONE_HOME_CITY_CODE: Pre-filled on page load"/>
+  <int value="177" label="PHONE_HOME_CITY_CODE: Empty on page load"/>
+  <int value="192" label="PHONE_HOME_COUNTRY_CODE: Pre-filled on page load"/>
+  <int value="193" label="PHONE_HOME_COUNTRY_CODE: Empty on page load"/>
+  <int value="208" label="PHONE_HOME_CITY_AND_NUMBER: Pre-filled on page load"/>
+  <int value="209" label="PHONE_HOME_CITY_AND_NUMBER: Empty on page load"/>
+  <int value="224" label="PHONE_HOME_WHOLE_NUMBER: Pre-filled on page load"/>
+  <int value="225" label="PHONE_HOME_WHOLE_NUMBER: Empty on page load"/>
+  <int value="480" label="ADDRESS_HOME_LINE1: Pre-filled on page load"/>
+  <int value="481" label="ADDRESS_HOME_LINE1: Empty on page load"/>
+  <int value="496" label="ADDRESS_HOME_LINE2: Pre-filled on page load"/>
+  <int value="497" label="ADDRESS_HOME_LINE2: Empty on page load"/>
+  <int value="512" label="ADDRESS_HOME_APT_NUM: Pre-filled on page load"/>
+  <int value="513" label="ADDRESS_HOME_APT_NUM: Empty on page load"/>
+  <int value="528" label="ADDRESS_HOME_CITY: Pre-filled on page load"/>
+  <int value="529" label="ADDRESS_HOME_CITY: Empty on page load"/>
+  <int value="544" label="ADDRESS_HOME_STATE: Pre-filled on page load"/>
+  <int value="545" label="ADDRESS_HOME_STATE: Empty on page load"/>
+  <int value="560" label="ADDRESS_HOME_ZIP: Pre-filled on page load"/>
+  <int value="561" label="ADDRESS_HOME_ZIP: Empty on page load"/>
+  <int value="576" label="ADDRESS_HOME_COUNTRY: Pre-filled on page load"/>
+  <int value="577" label="ADDRESS_HOME_COUNTRY: Empty on page load"/>
+  <int value="816" label="CREDIT_CARD_NAME_FULL: Pre-filled on page load"/>
+  <int value="817" label="CREDIT_CARD_NAME_FULL: Empty on page load"/>
+  <int value="832" label="CREDIT_CARD_NUMBER: Pre-filled on page load"/>
+  <int value="833" label="CREDIT_CARD_NUMBER: Empty on page load"/>
+  <int value="848" label="CREDIT_CARD_EXP_MONTH: Pre-filled on page load"/>
+  <int value="849" label="CREDIT_CARD_EXP_MONTH: Empty on page load"/>
+  <int value="864"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="865" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Empty on page load"/>
+  <int value="880"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="881" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Empty on page load"/>
+  <int value="896"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="897"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Empty on page load"/>
+  <int value="912"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="913"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Empty on page load"/>
+  <int value="928" label="CREDIT_CARD_TYPE: Pre-filled on page load"/>
+  <int value="929" label="CREDIT_CARD_TYPE: Empty on page load"/>
+  <int value="944"
+      label="CREDIT_CARD_VERIFICATION_CODE: Pre-filled on page load"/>
+  <int value="945" label="CREDIT_CARD_VERIFICATION_CODE: Empty on page load"/>
+  <int value="960" label="COMPANY_NAME: Pre-filled on page load"/>
+  <int value="961" label="COMPANY_NAME: Empty on page load"/>
+  <int value="976" label="FIELD_WITH_DEFAULT_VALUE: Pre-filled on page load"/>
+  <int value="977" label="FIELD_WITH_DEFAULT_VALUE: Empty on page load"/>
+  <int value="1168" label="MERCHANT_EMAIL_SIGNUP: Pre-filled on page load"/>
+  <int value="1169" label="MERCHANT_EMAIL_SIGNUP: Empty on page load"/>
+  <int value="1184" label="MERCHANT_PROMO_CODE: Pre-filled on page load"/>
+  <int value="1185" label="MERCHANT_PROMO_CODE: Empty on page load"/>
+  <int value="1200" label="PASSWORD: Pre-filled on page load"/>
+  <int value="1201" label="PASSWORD: Empty on page load"/>
+  <int value="1216" label="ACCOUNT_CREATION_PASSWORD: Pre-filled on page load"/>
+  <int value="1217" label="ACCOUNT_CREATION_PASSWORD: Empty on page load"/>
+  <int value="1232"
+      label="ADDRESS_HOME_STREET_ADDRESS: Pre-filled on page load"/>
+  <int value="1233" label="ADDRESS_HOME_STREET_ADDRESS: Empty on page load"/>
+  <int value="1264" label="ADDRESS_HOME_SORTING_CODE: Pre-filled on page load"/>
+  <int value="1265" label="ADDRESS_HOME_SORTING_CODE: Empty on page load"/>
+  <int value="1296"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Pre-filled on page load"/>
+  <int value="1297"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Empty on page load"/>
+  <int value="1328" label="ADDRESS_HOME_LINE3: Pre-filled on page load"/>
+  <int value="1329" label="ADDRESS_HOME_LINE3: Empty on page load"/>
+  <int value="1360"
+      label="NOT_ACCOUNT_CREATION_PASSWORD: Pre-filled on page load"/>
+  <int value="1361" label="NOT_ACCOUNT_CREATION_PASSWORD: Empty on page load"/>
+  <int value="1376" label="USERNAME: Pre-filled on page load"/>
+  <int value="1377" label="USERNAME: Empty on page load"/>
+  <int value="1392"
+      label="USERNAME_AND_EMAIL_ADDRESS: Pre-filled on page load"/>
+  <int value="1393" label="USERNAME_AND_EMAIL_ADDRESS: Empty on page load"/>
+  <int value="1408" label="NEW_PASSWORD: Pre-filled on page load"/>
+  <int value="1409" label="NEW_PASSWORD: Empty on page load"/>
+  <int value="1424" label="PROBABLY_NEW_PASSWORD: Pre-filled on page load"/>
+  <int value="1425" label="PROBABLY_NEW_PASSWORD: Empty on page load"/>
+  <int value="1440" label="NOT_NEW_PASSWORD: Pre-filled on page load"/>
+  <int value="1441" label="NOT_NEW_PASSWORD: Empty on page load"/>
+  <int value="1456" label="CREDIT_CARD_NAME_FIRST: Pre-filled on page load"/>
+  <int value="1457" label="CREDIT_CARD_NAME_FIRST: Empty on page load"/>
+  <int value="1472" label="CREDIT_CARD_NAME_LAST: Pre-filled on page load"/>
+  <int value="1473" label="CREDIT_CARD_NAME_LAST: Empty on page load"/>
+  <int value="1488" label="PHONE_HOME_EXTENSION: Pre-filled on page load"/>
+  <int value="1489" label="PHONE_HOME_EXTENSION: Empty on page load"/>
+  <int value="1520" label="CONFIRMATION_PASSWORD: Pre-filled on page load"/>
+  <int value="1521" label="CONFIRMATION_PASSWORD: Empty on page load"/>
+  <int value="1536" label="AMBIGUOUS_TYPE: Pre-filled on page load"/>
+  <int value="1537" label="AMBIGUOUS_TYPE: Empty on page load"/>
+  <int value="1552" label="SEARCH_TERM: Pre-filled on page load"/>
+  <int value="1553" label="SEARCH_TERM: Empty on page load"/>
+  <int value="1568" label="PRICE: Pre-filled on page load"/>
+  <int value="1569" label="PRICE: Empty on page load"/>
+  <int value="1584" label="NOT_PASSWORD: Pre-filled on page load"/>
+  <int value="1585" label="NOT_PASSWORD: Empty on page load"/>
+  <int value="1600" label="SINGLE_USERNAME: Pre-filled on page load"/>
+  <int value="1601" label="SINGLE_USERNAME: Empty on page load"/>
+  <int value="1616" label="NOT_USERNAME: Pre-filled on page load"/>
+  <int value="1617" label="NOT_USERNAME: Empty on page load"/>
+  <int value="1648" label="ADDRESS_HOME_STREET_NAME: Pre-filled on page load"/>
+  <int value="1649" label="ADDRESS_HOME_STREET_NAME: Empty on page load"/>
+  <int value="1664" label="ADDRESS_HOME_HOUSE_NUMBER: Pre-filled on page load"/>
+  <int value="1665" label="ADDRESS_HOME_HOUSE_NUMBER: Empty on page load"/>
+  <int value="1680" label="ADDRESS_HOME_SUBPREMISE: Pre-filled on page load"/>
+  <int value="1681" label="ADDRESS_HOME_SUBPREMISE: Empty on page load"/>
+  <int value="1696"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: Pre-filled on page load"/>
+  <int value="1697" label="ADDRESS_HOME_OTHER_SUBUNIT: Empty on page load"/>
+  <int value="1712" label="NAME_LAST_FIRST: Pre-filled on page load"/>
+  <int value="1713" label="NAME_LAST_FIRST: Empty on page load"/>
+  <int value="1728" label="NAME_LAST_CONJUNCTION: Pre-filled on page load"/>
+  <int value="1729" label="NAME_LAST_CONJUNCTION: Empty on page load"/>
+  <int value="1744" label="NAME_LAST_SECOND: Pre-filled on page load"/>
+  <int value="1745" label="NAME_LAST_SECOND: Empty on page load"/>
+  <int value="1760" label="NAME_HONORIFIC_PREFIX: Pre-filled on page load"/>
+  <int value="1761" label="NAME_HONORIFIC_PREFIX: Empty on page load"/>
+  <int value="1824" label="ADDRESS_HOME_ADDRESS: Pre-filled on page load"/>
+  <int value="1825" label="ADDRESS_HOME_ADDRESS: Empty on page load"/>
+  <int value="1840"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: Pre-filled on page load"/>
+  <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: Empty on page load"/>
+  <int value="1856" label="ADDRESS_HOME_FLOOR: Pre-filled on page load"/>
+  <int value="1857" label="ADDRESS_HOME_FLOOR: Empty on page load"/>
+  <int value="1888" label="BIRTHDATE_DAY: Pre-filled on page load"/>
+  <int value="1889" label="BIRTHDATE_DAY: Empty on page load"/>
+  <int value="1904" label="BIRTHDATE_MONTH: Pre-filled on page load"/>
+  <int value="1905" label="BIRTHDATE_MONTH: Empty on page load"/>
+  <int value="1920" label="BIRTHDATE_4_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="1921" label="BIRTHDATE_4_DIGIT_YEAR: Empty on page load"/>
+  <int value="1936"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Pre-filled on page load"/>
+  <int value="1937"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Empty on page load"/>
+  <int value="1952"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Pre-filled on
+             page load"/>
+  <int value="1953"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Empty on page
+             load"/>
+  <int value="1968" label="PHONE_HOME_NUMBER_PREFIX: Pre-filled on page load"/>
+  <int value="1969" label="PHONE_HOME_NUMBER_PREFIX: Empty on page load"/>
+  <int value="1984" label="PHONE_HOME_NUMBER_SUFFIX: Pre-filled on page load"/>
+  <int value="1985" label="PHONE_HOME_NUMBER_SUFFIX: Empty on page load"/>
+  <int value="2000" label="IBAN_VALUE: Pre-filled on page load"/>
+  <int value="2001" label="IBAN_VALUE: Empty on page load"/>
+  <int value="2016"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Pre-filled on page
+             load"/>
+  <int value="2017"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Empty on page load"/>
+  <int value="2048" label="NUMERIC_QUANTITY: Pre-filled on page load"/>
+  <int value="2049" label="NUMERIC_QUANTITY: Empty on page load"/>
+  <int value="2064" label="ONE_TIME_CODE: Pre-filled on page load"/>
+  <int value="2065" label="ONE_TIME_CODE: Empty on page load"/>
+  <int value="2128" label="DELIVERY_INSTRUCTIONS: Pre-filled on page load"/>
+  <int value="2129" label="DELIVERY_INSTRUCTIONS: Empty on page load"/>
+  <int value="2160" label="ADDRESS_HOME_OVERFLOW: Pre-filled on page load"/>
+  <int value="2161" label="ADDRESS_HOME_OVERFLOW: Empty on page load"/>
+  <int value="2176" label="ADDRESS_HOME_LANDMARK: Pre-filled on page load"/>
+  <int value="2177" label="ADDRESS_HOME_LANDMARK: Empty on page load"/>
+  <int value="2240"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Pre-filled on page load"/>
+  <int value="2241"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Empty on page load"/>
+  <int value="2256" label="ADDRESS_HOME_ADMIN_LEVEL2: Pre-filled on page load"/>
+  <int value="2257" label="ADDRESS_HOME_ADMIN_LEVEL2: Empty on page load"/>
+  <int value="2272"
+      label="ADDRESS_HOME_STREET_LOCATION: Pre-filled on page load"/>
+  <int value="2273" label="ADDRESS_HOME_STREET_LOCATION: Empty on page load"/>
+  <int value="2288"
+      label="ADDRESS_HOME_BETWEEN_STREETS: Pre-filled on page load"/>
+  <int value="2289" label="ADDRESS_HOME_BETWEEN_STREETS: Empty on page load"/>
+  <int value="2304"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Pre-filled on page
+             load"/>
+  <int value="2305"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Empty on page load"/>
+  <int value="2320"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Pre-filled on page
+             load"/>
+  <int value="2321"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Empty on page load"/>
+  <int value="2336"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Pre-filled on page
+             load"/>
+  <int value="2337"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Empty on page load"/>
+  <int value="2400"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Pre-filled on page
+             load"/>
+  <int value="2401"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Empty on page load"/>
+  <int value="2416"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1: Pre-filled on page load"/>
+  <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: Empty on page load"/>
+  <int value="2432"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2: Pre-filled on page load"/>
+  <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: Empty on page load"/>
+  <int value="2448"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Pre-filled on page load"/>
+  <int value="2449"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Empty on page load"/>
+  <int value="2464"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: Pre-filled on page load"/>
+  <int value="2465"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: Empty on page load"/>
+  <int value="2496" label="ADDRESS_HOME_APT: Pre-filled on page load"/>
+  <int value="2497" label="ADDRESS_HOME_APT: Empty on page load"/>
+  <int value="2512" label="ADDRESS_HOME_APT_TYPE: Pre-filled on page load"/>
+  <int value="2513" label="ADDRESS_HOME_APT_TYPE: Empty on page load"/>
+  <int value="2560"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Pre-filled on page
+             load"/>
+  <int value="2561"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Empty on page load"/>
+  <int value="2592" label="IMPROVED_PREDICTION: Pre-filled on page load"/>
+  <int value="2593" label="IMPROVED_PREDICTION: Empty on page load"/>
+</enum>
+
+<enum name="AutofillPreFilledValueStatus">
+  <int value="0" label="Not changed"/>
+  <int value="1" label="Pre-filled value manually restored after Autofill"/>
+  <int value="2" label="Pre-filled value restored by Autofill"/>
+  <int value="3" label="Changed to empty"/>
+  <int value="4" label="Manually changed to what would have been filled"/>
+  <int value="5"
+      label="Changed to another value of the corresponding field type"/>
+  <int value="6" label="Changed to a value of a different or unknown type"/>
+</enum>
+
+<enum name="AutofillProfileImportDecision">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="UserNotAsked"/>
+  <int value="2" label="Accepted"/>
+  <int value="3" label="Declined"/>
+  <int value="4" label="EditAccepted"/>
+  <int value="5" label="EditDeclined"/>
+  <int value="6" label="Never"/>
+  <int value="7" label="Ignored"/>
+  <int value="8" label="MessageTimeout"/>
+  <int value="9" label="MessageDeclined"/>
+  <int value="10" label="AutoDeclined"/>
+</enum>
+
+<enum name="AutofillProfileImportType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="NewProfile"/>
+  <int value="2" label="DuplicateImport"/>
+  <int value="3" label="SilentUpdate"/>
+  <int value="4" label="ConfirmableMerge"/>
+  <int value="5" label="SuppressedNewProfile"/>
+  <int value="6" label="ConfirmableMergeAndSilentUpdate"/>
+  <int value="7" label="SuppressedConfirmableMerge"/>
+  <int value="8" label="SuppressedConfirmableMergeAndSilentUpdate"/>
+  <int value="9" label="SilentUpdateForIncompleteProfile"/>
+  <int value="10" label="UnusableIncompleteProfile"/>
+  <int value="11" label="ProfileMigration"/>
+  <int value="12" label="ProfileMigrationAndSilentUpdate"/>
+</enum>
+
+<enum name="AutofillProfileRecordType">
+  <int value="0" label="The profile is saved to local store."/>
+  <int value="1" label="The profile is saved to account store."/>
+  <int value="2" label="The profile is saved to account store as HOME."/>
+  <int value="3" label="The profile is saved to account store as WORK."/>
 </enum>
 
 <enum name="AutofillProfileTokenQualityObservationType">
@@ -3199,6 +4221,7 @@ Called by update_autofill_enums.py.-->
   <int value="8" label="StreetAddress"/>
   <int value="9" label="DependentLocality"/>
   <int value="11" label="Company"/>
+  <int value="12" label="AdminLevel2"/>
 </enum>
 
 <enum name="AutofillSharedStorageServerCardDataSetResult">
@@ -3240,6 +4263,15 @@ Called by update_autofill_enums.py.-->
              confirmed"/>
 </enum>
 
+<enum name="AutofillSubmissionSource">
+  <int value="0" label="Same document navigation"/>
+  <int value="1" label="XHR succeeded"/>
+  <int value="2" label="Frame detached"/>
+  <int value="3" label="DOM mutation after XHR"/>
+  <int value="4" label="Probably form submission"/>
+  <int value="5" label="Form submission"/>
+</enum>
+
 <enum name="AutofillSubmissionSource2">
   <int value="0" label="No source"/>
   <int value="1" label="Same document navigation"/>
@@ -3257,18 +4289,73 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <enum name="AutofillSubmittedServerCardExpirationStatus">
-  <int value="0" label="Expiration date matched, full server card"/>
-  <int value="1" label="Expiration date did not match, full server card"/>
+  <int value="0"
+      label="(Deprecated) Expiration date matched, full server card"/>
+  <int value="1"
+      label="(Deprecated) Expiration date did not match, full server card"/>
   <int value="2" label="Expiration date matched, masked server card"/>
   <int value="3" label="Expiration date did not match, masked server card"/>
 </enum>
 
-<enum name="AutofillSuggestionManageType">
-  <int value="0" label="Other"/>
-  <int value="1" label="(Obsolete) Personal Information. Deprecated in M122"/>
-  <int value="2" label="Addresses"/>
-  <int value="3" label="Payment Methods: Credit Cards"/>
-  <int value="4" label="Payment Methods: IBANs"/>
+<enum name="AutofillSuggestionHidingReason">
+  <int value="0" label="A suggestion was accepted."/>
+  <int value="1" label="An interstitial page displaces the popup."/>
+  <int value="2"
+      label="A field isn't edited anymore but remains focused for now."/>
+  <int value="3" label="Focus removed from field. Follows kEndEditing."/>
+  <int value="4"
+      label="Scrolling or zooming into the page displaces the popup."/>
+  <int value="5" label="A navigation on the page or frame level."/>
+  <int value="6" label="The popup is or would become empty."/>
+  <int value="7" label="The renderer explicitly requested closing the popup."/>
+  <int value="8"
+      label="The tab with the popup is destroyed, hidden or has become
+             inactive."/>
+  <int value="9" label="The popup contains stale data."/>
+  <int value="10"
+      label="The user explicitly dismissed the popup (e.g. ESC key)."/>
+  <int value="11"
+      label="The popup view (or its controller) goes out of scope."/>
+  <int value="12" label="The platform-native UI changed (e.g. window resize)."/>
+  <int value="13"
+      label="Not enough space in the content area to display at least one row
+             of the popup within the bounds of the content area."/>
+  <int value="14"
+      label="The popup would overlap with another open prompt, and may hide
+             sensitive information in the prompt."/>
+  <int value="15"
+      label="The anchor element for which the popup would be shown is not
+             visible in the content area."/>
+  <int value="16" label="The frame holds a pointer lock."/>
+  <int value="17"
+      label="The password generation popup would overlap and hide autofill
+             popup."/>
+  <int value="18"
+      label="The Touch To Fill surface is shown instead of autofill
+             suggestions."/>
+  <int value="19"
+      label="The context menu is shown instead of the autofill suggestions."/>
+  <int value="20"
+      label="The Fast Checkout surface is shown instead of autofill
+             suggestions."/>
+  <int value="21"
+      label="The Picture-in-picture window overlaps with the autofill
+             suggestion."/>
+  <int value="22"
+      label="The context menu was open after the autofill popup, which could
+             overlap with the autofill popup."/>
+  <int value="23"
+      label="No frame currently has focus. This case is caught for safety
+             because it might be reachable due to race conditions."/>
+  <int value="24"
+      label="The sub-popup was closed, e.g. because the mouse was moved to a
+             different suggestion in the parent popup."/>
+  <int value="25"
+      label="The user edited the field. Currently applied only to Compose
+             suggestions."/>
+  <int value="26"
+      label="The popup has faded due to an expired timer. Currently applied
+             only to Compose suggestions."/>
 </enum>
 
 <enum name="AutofillSyncState">
@@ -3297,28 +4384,6 @@ Called by update_autofill_enums.py.-->
   <int value="9" label="Did opt out of local save"/>
   <int value="10" label="Local save stayed enabled"/>
   <int value="11" label="Closed, abandon unmasking"/>
-</enum>
-
-<enum name="AutofillUserHappiness">
-  <summary>
-    These metrics track the user happiness about Autofill on address and credit
-    card forms. Starting from M63, these metrics are also split between
-    Autofill.UserHappiness.Address and Autofill.UserHappiness.CreditCard.
-  </summary>
-  <int value="0" label="Forms loaded"/>
-  <int value="1" label="Deprecated 1"/>
-  <int value="2" label="Deprecated 2"/>
-  <int value="3" label="Deprecated 3"/>
-  <int value="4" label="Deprecated 4"/>
-  <int value="5" label="User did type"/>
-  <int value="6" label="Suggestions shown"/>
-  <int value="7" label="Suggestions shown (once)"/>
-  <int value="8" label="User triggered autofill"/>
-  <int value="9" label="User triggered autofill (once)"/>
-  <int value="10" label="User edited autofilled field"/>
-  <int value="11" label="User edited autofilled field (once)"/>
-  <int value="12" label="User entered a UPI VPA into a form"/>
-  <int value="13" label="A field was populated by autofill"/>
 </enum>
 
 <enum name="AutofillValuePatterns">
@@ -3375,727 +4440,12 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Declined after accepting"/>
 </enum>
 
-<enum name="AutofillWebViewEventsBitmask">
-  <summary>
-    A bitmask indicating which fields differed during a FormDataAndroid
-    similarity check.
-  </summary>
-  <int value="0" label="None"/>
-  <int value="1" label="Structure sent"/>
-  <int value="2" label="Suggestion shown"/>
-  <int value="3" label="Structure sent, suggestion shown"/>
-  <int value="4" label="Autofilled"/>
-  <int value="5" label="Structure sent, autofilled"/>
-  <int value="6" label="Suggestion shown, autofilled"/>
-  <int value="7" label="Structure sent, suggestion shown, autofilled"/>
-  <int value="8" label="Changed field"/>
-  <int value="9" label="Structure sent, changed field"/>
-  <int value="10" label="Suggestion shown, changed field"/>
-  <int value="11" label="Structure sent, suggestion shown, changed field"/>
-  <int value="12" label="Autofilled, changed field"/>
-  <int value="13" label="Structure sent, autofilled, changed field"/>
-  <int value="14" label="Suggestion shown, autofilled, changed field"/>
-  <int value="15"
-      label="Structure sent, suggestion shown, autofilled, changed field"/>
-  <int value="16" label="Changed autofilled field"/>
-  <int value="17" label="Structure sent, changed autofilled field"/>
-  <int value="18" label="Suggestion shown, changed autofilled field"/>
-  <int value="19"
-      label="Structure sent, suggestion shown, changed autofilled field"/>
-  <int value="20" label="Autofilled, changed autofilled field"/>
-  <int value="21" label="Structure sent, autofilled, changed autofilled field"/>
-  <int value="22"
-      label="Suggestion shown, autofilled, changed autofilled field"/>
-  <int value="23"
-      label="Structure sent, suggestion shown, autofilled, changed autofilled
-             field"/>
-  <int value="24" label="Changed field, changed autofilled field"/>
-  <int value="25"
-      label="Structure sent, changed field, changed autofilled field"/>
-  <int value="26"
-      label="Suggestion shown, changed field, changed autofilled field"/>
-  <int value="27"
-      label="Structure sent, suggestion shown, changed field, changed
-             autofilled field"/>
-  <int value="28" label="Autofilled, changed field, changed autofilled field"/>
-  <int value="29"
-      label="Structure sent, autofilled, changed field, changed autofilled
-             field"/>
-  <int value="30"
-      label="Suggestion shown, autofilled, changed field, changed autofilled
-             field"/>
-  <int value="31"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed autofilled field"/>
-  <int value="32" label="Changed visibility"/>
-  <int value="33" label="Structure sent, changed visibility"/>
-  <int value="34" label="Suggestion shown, changed visibility"/>
-  <int value="35" label="Structure sent, suggestion shown, changed visibility"/>
-  <int value="36" label="Autofilled, changed visibility"/>
-  <int value="37" label="Structure sent, autofilled, changed visibility"/>
-  <int value="38" label="Suggestion shown, autofilled, changed visibility"/>
-  <int value="39"
-      label="Structure sent, suggestion shown, autofilled, changed visibility"/>
-  <int value="40" label="Changed field, changed visibility"/>
-  <int value="41" label="Structure sent, changed field, changed visibility"/>
-  <int value="42" label="Suggestion shown, changed field, changed visibility"/>
-  <int value="43"
-      label="Structure sent, suggestion shown, changed field, changed
-             visibility"/>
-  <int value="44" label="Autofilled, changed field, changed visibility"/>
-  <int value="45"
-      label="Structure sent, autofilled, changed field, changed visibility"/>
-  <int value="46"
-      label="Suggestion shown, autofilled, changed field, changed visibility"/>
-  <int value="47"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed visibility"/>
-  <int value="48" label="Changed autofilled field, changed visibility"/>
-  <int value="49"
-      label="Structure sent, changed autofilled field, changed visibility"/>
-  <int value="50"
-      label="Suggestion shown, changed autofilled field, changed visibility"/>
-  <int value="51"
-      label="Structure sent, suggestion shown, changed autofilled field,
-             changed visibility"/>
-  <int value="52"
-      label="Autofilled, changed autofilled field, changed visibility"/>
-  <int value="53"
-      label="Structure sent, autofilled, changed autofilled field, changed
-             visibility"/>
-  <int value="54"
-      label="Suggestion shown, autofilled, changed autofilled field, changed
-             visibility"/>
-  <int value="55"
-      label="Structure sent, suggestion shown, autofilled, changed autofilled
-             field, changed visibility"/>
-  <int value="56"
-      label="Changed field, changed autofilled field, changed visibility"/>
-  <int value="57"
-      label="Structure sent, changed field, changed autofilled field, changed
-             visibility"/>
-  <int value="58"
-      label="Suggestion shown, changed field, changed autofilled field,
-             changed visibility"/>
-  <int value="59"
-      label="Structure sent, suggestion shown, changed field, changed
-             autofilled field, changed visibility"/>
-  <int value="60"
-      label="Autofilled, changed field, changed autofilled field, changed
-             visibility"/>
-  <int value="61"
-      label="Structure sent, autofilled, changed field, changed autofilled
-             field, changed visibility"/>
-  <int value="62"
-      label="Suggestion shown, autofilled, changed field, changed autofilled
-             field, changed visibility"/>
-  <int value="63"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed autofilled field, changed visibility"/>
-  <int value="64" label="Submitted"/>
-  <int value="65" label="Structure sent, submitted"/>
-  <int value="66" label="Suggestion shown, submitted"/>
-  <int value="67" label="Structure sent, suggestion shown, submitted"/>
-  <int value="68" label="Autofilled, submitted"/>
-  <int value="69" label="Structure sent, autofilled, submitted"/>
-  <int value="70" label="Suggestion shown, autofilled, submitted"/>
-  <int value="71"
-      label="Structure sent, suggestion shown, autofilled, submitted"/>
-  <int value="72" label="Changed field, submitted"/>
-  <int value="73" label="Structure sent, changed field, submitted"/>
-  <int value="74" label="Suggestion shown, changed field, submitted"/>
-  <int value="75"
-      label="Structure sent, suggestion shown, changed field, submitted"/>
-  <int value="76" label="Autofilled, changed field, submitted"/>
-  <int value="77" label="Structure sent, autofilled, changed field, submitted"/>
-  <int value="78"
-      label="Suggestion shown, autofilled, changed field, submitted"/>
-  <int value="79"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             submitted"/>
-  <int value="80" label="Changed autofilled field, submitted"/>
-  <int value="81" label="Structure sent, changed autofilled field, submitted"/>
-  <int value="82"
-      label="Suggestion shown, changed autofilled field, submitted"/>
-  <int value="83"
-      label="Structure sent, suggestion shown, changed autofilled field,
-             submitted"/>
-  <int value="84" label="Autofilled, changed autofilled field, submitted"/>
-  <int value="85"
-      label="Structure sent, autofilled, changed autofilled field, submitted"/>
-  <int value="86"
-      label="Suggestion shown, autofilled, changed autofilled field,
-             submitted"/>
-  <int value="87"
-      label="Structure sent, suggestion shown, autofilled, changed autofilled
-             field, submitted"/>
-  <int value="88" label="Changed field, changed autofilled field, submitted"/>
-  <int value="89"
-      label="Structure sent, changed field, changed autofilled field,
-             submitted"/>
-  <int value="90"
-      label="Suggestion shown, changed field, changed autofilled field,
-             submitted"/>
-  <int value="91"
-      label="Structure sent, suggestion shown, changed field, changed
-             autofilled field, submitted"/>
-  <int value="92"
-      label="Autofilled, changed field, changed autofilled field, submitted"/>
-  <int value="93"
-      label="Structure sent, autofilled, changed field, changed autofilled
-             field, submitted"/>
-  <int value="94"
-      label="Suggestion shown, autofilled, changed field, changed autofilled
-             field, submitted"/>
-  <int value="95"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed autofilled field, submitted"/>
-  <int value="96" label="Changed visibility, submitted"/>
-  <int value="97" label="Structure sent, changed visibility, submitted"/>
-  <int value="98" label="Suggestion shown, changed visibility, submitted"/>
-  <int value="99"
-      label="Structure sent, suggestion shown, changed visibility, submitted"/>
-  <int value="100" label="Autofilled, changed visibility, submitted"/>
-  <int value="101"
-      label="Structure sent, autofilled, changed visibility, submitted"/>
-  <int value="102"
-      label="Suggestion shown, autofilled, changed visibility, submitted"/>
-  <int value="103"
-      label="Structure sent, suggestion shown, autofilled, changed
-             visibility, submitted"/>
-  <int value="104" label="Changed field, changed visibility, submitted"/>
-  <int value="105"
-      label="Structure sent, changed field, changed visibility, submitted"/>
-  <int value="106"
-      label="Suggestion shown, changed field, changed visibility, submitted"/>
-  <int value="107"
-      label="Structure sent, suggestion shown, changed field, changed
-             visibility, submitted"/>
-  <int value="108"
-      label="Autofilled, changed field, changed visibility, submitted"/>
-  <int value="109"
-      label="Structure sent, autofilled, changed field, changed visibility,
-             submitted"/>
-  <int value="110"
-      label="Suggestion shown, autofilled, changed field, changed visibility,
-             submitted"/>
-  <int value="111"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed visibility, submitted"/>
-  <int value="112"
-      label="Changed autofilled field, changed visibility, submitted"/>
-  <int value="113"
-      label="Structure sent, changed autofilled field, changed visibility,
-             submitted"/>
-  <int value="114"
-      label="Suggestion shown, changed autofilled field, changed visibility,
-             submitted"/>
-  <int value="115"
-      label="Structure sent, suggestion shown, changed autofilled field,
-             changed visibility, submitted"/>
-  <int value="116"
-      label="Autofilled, changed autofilled field, changed visibility,
-             submitted"/>
-  <int value="117"
-      label="Structure sent, autofilled, changed autofilled field, changed
-             visibility, submitted"/>
-  <int value="118"
-      label="Suggestion shown, autofilled, changed autofilled field, changed
-             visibility, submitted"/>
-  <int value="119"
-      label="Structure sent, suggestion shown, autofilled, changed autofilled
-             field, changed visibility, submitted"/>
-  <int value="120"
-      label="Changed field, changed autofilled field, changed visibility,
-             submitted"/>
-  <int value="121"
-      label="Structure sent, changed field, changed autofilled field, changed
-             visibility, submitted"/>
-  <int value="122"
-      label="Suggestion shown, changed field, changed autofilled field,
-             changed visibility, submitted"/>
-  <int value="123"
-      label="Structure sent, suggestion shown, changed field, changed
-             autofilled field, changed visibility, submitted"/>
-  <int value="124"
-      label="Autofilled, changed field, changed autofilled field, changed
-             visibility, submitted"/>
-  <int value="125"
-      label="Structure sent, autofilled, changed field, changed autofilled
-             field, changed visibility, submitted"/>
-  <int value="126"
-      label="Suggestion shown, autofilled, changed field, changed autofilled
-             field, changed visibility, submitted"/>
-  <int value="127"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed autofilled field, changed visibility, submitted"/>
-  <int value="128" label="Bottom sheet"/>
-  <int value="129" label="Structure sent, bottom sheet"/>
-  <int value="130" label="Suggestion shown, bottom sheet"/>
-  <int value="131" label="Structure sent, suggestion shown, bottom sheet"/>
-  <int value="132" label="Autofilled, bottom sheet"/>
-  <int value="133" label="Structure sent, autofilled, bottom sheet"/>
-  <int value="134" label="Suggestion shown, autofilled, bottom sheet"/>
-  <int value="135"
-      label="Structure sent, suggestion shown, autofilled, bottom sheet"/>
-  <int value="136" label="Changed field, bottom sheet"/>
-  <int value="137" label="Structure sent, changed field, bottom sheet"/>
-  <int value="138" label="Suggestion shown, changed field, bottom sheet"/>
-  <int value="139"
-      label="Structure sent, suggestion shown, changed field, bottom sheet"/>
-  <int value="140" label="Autofilled, changed field, bottom sheet"/>
-  <int value="141"
-      label="Structure sent, autofilled, changed field, bottom sheet"/>
-  <int value="142"
-      label="Suggestion shown, autofilled, changed field, bottom sheet"/>
-  <int value="143"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             bottom sheet"/>
-  <int value="144" label="Changed autofilled field, bottom sheet"/>
-  <int value="145"
-      label="Structure sent, changed autofilled field, bottom sheet"/>
-  <int value="146"
-      label="Suggestion shown, changed autofilled field, bottom sheet"/>
-  <int value="147"
-      label="Structure sent, suggestion shown, changed autofilled field,
-             bottom sheet"/>
-  <int value="148" label="Autofilled, changed autofilled field, bottom sheet"/>
-  <int value="149"
-      label="Structure sent, autofilled, changed autofilled field, bottom
-             sheet"/>
-  <int value="150"
-      label="Suggestion shown, autofilled, changed autofilled field, bottom
-             sheet"/>
-  <int value="151"
-      label="Structure sent, suggestion shown, autofilled, changed autofilled
-             field, bottom sheet"/>
-  <int value="152"
-      label="Changed field, changed autofilled field, bottom sheet"/>
-  <int value="153"
-      label="Structure sent, changed field, changed autofilled field, bottom
-             sheet"/>
-  <int value="154"
-      label="Suggestion shown, changed field, changed autofilled field,
-             bottom sheet"/>
-  <int value="155"
-      label="Structure sent, suggestion shown, changed field, changed
-             autofilled field, bottom sheet"/>
-  <int value="156"
-      label="Autofilled, changed field, changed autofilled field, bottom
-             sheet"/>
-  <int value="157"
-      label="Structure sent, autofilled, changed field, changed autofilled
-             field, bottom sheet"/>
-  <int value="158"
-      label="Suggestion shown, autofilled, changed field, changed autofilled
-             field, bottom sheet"/>
-  <int value="159"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed autofilled field, bottom sheet"/>
-  <int value="160" label="Changed visibility, bottom sheet"/>
-  <int value="161" label="Structure sent, changed visibility, bottom sheet"/>
-  <int value="162" label="Suggestion shown, changed visibility, bottom sheet"/>
-  <int value="163"
-      label="Structure sent, suggestion shown, changed visibility, bottom
-             sheet"/>
-  <int value="164" label="Autofilled, changed visibility, bottom sheet"/>
-  <int value="165"
-      label="Structure sent, autofilled, changed visibility, bottom sheet"/>
-  <int value="166"
-      label="Suggestion shown, autofilled, changed visibility, bottom sheet"/>
-  <int value="167"
-      label="Structure sent, suggestion shown, autofilled, changed
-             visibility, bottom sheet"/>
-  <int value="168" label="Changed field, changed visibility, bottom sheet"/>
-  <int value="169"
-      label="Structure sent, changed field, changed visibility, bottom sheet"/>
-  <int value="170"
-      label="Suggestion shown, changed field, changed visibility, bottom
-             sheet"/>
-  <int value="171"
-      label="Structure sent, suggestion shown, changed field, changed
-             visibility, bottom sheet"/>
-  <int value="172"
-      label="Autofilled, changed field, changed visibility, bottom sheet"/>
-  <int value="173"
-      label="Structure sent, autofilled, changed field, changed visibility,
-             bottom sheet"/>
-  <int value="174"
-      label="Suggestion shown, autofilled, changed field, changed visibility,
-             bottom sheet"/>
-  <int value="175"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed visibility, bottom sheet"/>
-  <int value="176"
-      label="Changed autofilled field, changed visibility, bottom sheet"/>
-  <int value="177"
-      label="Structure sent, changed autofilled field, changed visibility,
-             bottom sheet"/>
-  <int value="178"
-      label="Suggestion shown, changed autofilled field, changed visibility,
-             bottom sheet"/>
-  <int value="179"
-      label="Structure sent, suggestion shown, changed autofilled field,
-             changed visibility, bottom sheet"/>
-  <int value="180"
-      label="Autofilled, changed autofilled field, changed visibility, bottom
-             sheet"/>
-  <int value="181"
-      label="Structure sent, autofilled, changed autofilled field, changed
-             visibility, bottom sheet"/>
-  <int value="182"
-      label="Suggestion shown, autofilled, changed autofilled field, changed
-             visibility, bottom sheet"/>
-  <int value="183"
-      label="Structure sent, suggestion shown, autofilled, changed autofilled
-             field, changed visibility, bottom sheet"/>
-  <int value="184"
-      label="Changed field, changed autofilled field, changed visibility,
-             bottom sheet"/>
-  <int value="185"
-      label="Structure sent, changed field, changed autofilled field, changed
-             visibility, bottom sheet"/>
-  <int value="186"
-      label="Suggestion shown, changed field, changed autofilled field,
-             changed visibility, bottom sheet"/>
-  <int value="187"
-      label="Structure sent, suggestion shown, changed field, changed
-             autofilled field, changed visibility, bottom sheet"/>
-  <int value="188"
-      label="Autofilled, changed field, changed autofilled field, changed
-             visibility, bottom sheet"/>
-  <int value="189"
-      label="Structure sent, autofilled, changed field, changed autofilled
-             field, changed visibility, bottom sheet"/>
-  <int value="190"
-      label="Suggestion shown, autofilled, changed field, changed autofilled
-             field, changed visibility, bottom sheet"/>
-  <int value="191"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed autofilled field, changed visibility, bottom sheet"/>
-  <int value="192" label="Submitted, bottom sheet"/>
-  <int value="193" label="Structure sent, submitted, bottom sheet"/>
-  <int value="194" label="Suggestion shown, submitted, bottom sheet"/>
-  <int value="195"
-      label="Structure sent, suggestion shown, submitted, bottom sheet"/>
-  <int value="196" label="Autofilled, submitted, bottom sheet"/>
-  <int value="197" label="Structure sent, autofilled, submitted, bottom sheet"/>
-  <int value="198"
-      label="Suggestion shown, autofilled, submitted, bottom sheet"/>
-  <int value="199"
-      label="Structure sent, suggestion shown, autofilled, submitted, bottom
-             sheet"/>
-  <int value="200" label="Changed field, submitted, bottom sheet"/>
-  <int value="201"
-      label="Structure sent, changed field, submitted, bottom sheet"/>
-  <int value="202"
-      label="Suggestion shown, changed field, submitted, bottom sheet"/>
-  <int value="203"
-      label="Structure sent, suggestion shown, changed field, submitted,
-             bottom sheet"/>
-  <int value="204" label="Autofilled, changed field, submitted, bottom sheet"/>
-  <int value="205"
-      label="Structure sent, autofilled, changed field, submitted, bottom
-             sheet"/>
-  <int value="206"
-      label="Suggestion shown, autofilled, changed field, submitted, bottom
-             sheet"/>
-  <int value="207"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             submitted, bottom sheet"/>
-  <int value="208" label="Changed autofilled field, submitted, bottom sheet"/>
-  <int value="209"
-      label="Structure sent, changed autofilled field, submitted, bottom
-             sheet"/>
-  <int value="210"
-      label="Suggestion shown, changed autofilled field, submitted, bottom
-             sheet"/>
-  <int value="211"
-      label="Structure sent, suggestion shown, changed autofilled field,
-             submitted, bottom sheet"/>
-  <int value="212"
-      label="Autofilled, changed autofilled field, submitted, bottom sheet"/>
-  <int value="213"
-      label="Structure sent, autofilled, changed autofilled field, submitted,
-             bottom sheet"/>
-  <int value="214"
-      label="Suggestion shown, autofilled, changed autofilled field,
-             submitted, bottom sheet"/>
-  <int value="215"
-      label="Structure sent, suggestion shown, autofilled, changed autofilled
-             field, submitted, bottom sheet"/>
-  <int value="216"
-      label="Changed field, changed autofilled field, submitted, bottom sheet"/>
-  <int value="217"
-      label="Structure sent, changed field, changed autofilled field,
-             submitted, bottom sheet"/>
-  <int value="218"
-      label="Suggestion shown, changed field, changed autofilled field,
-             submitted, bottom sheet"/>
-  <int value="219"
-      label="Structure sent, suggestion shown, changed field, changed
-             autofilled field, submitted, bottom sheet"/>
-  <int value="220"
-      label="Autofilled, changed field, changed autofilled field, submitted,
-             bottom sheet"/>
-  <int value="221"
-      label="Structure sent, autofilled, changed field, changed autofilled
-             field, submitted, bottom sheet"/>
-  <int value="222"
-      label="Suggestion shown, autofilled, changed field, changed autofilled
-             field, submitted, bottom sheet"/>
-  <int value="223"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed autofilled field, submitted, bottom sheet"/>
-  <int value="224" label="Changed visibility, submitted, bottom sheet"/>
-  <int value="225"
-      label="Structure sent, changed visibility, submitted, bottom sheet"/>
-  <int value="226"
-      label="Suggestion shown, changed visibility, submitted, bottom sheet"/>
-  <int value="227"
-      label="Structure sent, suggestion shown, changed visibility, submitted,
-             bottom sheet"/>
-  <int value="228"
-      label="Autofilled, changed visibility, submitted, bottom sheet"/>
-  <int value="229"
-      label="Structure sent, autofilled, changed visibility, submitted,
-             bottom sheet"/>
-  <int value="230"
-      label="Suggestion shown, autofilled, changed visibility, submitted,
-             bottom sheet"/>
-  <int value="231"
-      label="Structure sent, suggestion shown, autofilled, changed
-             visibility, submitted, bottom sheet"/>
-  <int value="232"
-      label="Changed field, changed visibility, submitted, bottom sheet"/>
-  <int value="233"
-      label="Structure sent, changed field, changed visibility, submitted,
-             bottom sheet"/>
-  <int value="234"
-      label="Suggestion shown, changed field, changed visibility, submitted,
-             bottom sheet"/>
-  <int value="235"
-      label="Structure sent, suggestion shown, changed field, changed
-             visibility, submitted, bottom sheet"/>
-  <int value="236"
-      label="Autofilled, changed field, changed visibility, submitted, bottom
-             sheet"/>
-  <int value="237"
-      label="Structure sent, autofilled, changed field, changed visibility,
-             submitted, bottom sheet"/>
-  <int value="238"
-      label="Suggestion shown, autofilled, changed field, changed visibility,
-             submitted, bottom sheet"/>
-  <int value="239"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed visibility, submitted, bottom sheet"/>
-  <int value="240"
-      label="Changed autofilled field, changed visibility, submitted, bottom
-             sheet"/>
-  <int value="241"
-      label="Structure sent, changed autofilled field, changed visibility,
-             submitted, bottom sheet"/>
-  <int value="242"
-      label="Suggestion shown, changed autofilled field, changed visibility,
-             submitted, bottom sheet"/>
-  <int value="243"
-      label="Structure sent, suggestion shown, changed autofilled field,
-             changed visibility, submitted, bottom sheet"/>
-  <int value="244"
-      label="Autofilled, changed autofilled field, changed visibility,
-             submitted, bottom sheet"/>
-  <int value="245"
-      label="Structure sent, autofilled, changed autofilled field, changed
-             visibility, submitted, bottom sheet"/>
-  <int value="246"
-      label="Suggestion shown, autofilled, changed autofilled field, changed
-             visibility, submitted, bottom sheet"/>
-  <int value="247"
-      label="Structure sent, suggestion shown, autofilled, changed autofilled
-             field, changed visibility, submitted, bottom sheet"/>
-  <int value="248"
-      label="Changed field, changed autofilled field, changed visibility,
-             submitted, bottom sheet"/>
-  <int value="249"
-      label="Structure sent, changed field, changed autofilled field, changed
-             visibility, submitted, bottom sheet"/>
-  <int value="250"
-      label="Suggestion shown, changed field, changed autofilled field,
-             changed visibility, submitted, bottom sheet"/>
-  <int value="251"
-      label="Structure sent, suggestion shown, changed field, changed
-             autofilled field, changed visibility, submitted, bottom sheet"/>
-  <int value="252"
-      label="Autofilled, changed field, changed autofilled field, changed
-             visibility, submitted, bottom sheet"/>
-  <int value="253"
-      label="Structure sent, autofilled, changed field, changed autofilled
-             field, changed visibility, submitted, bottom sheet"/>
-  <int value="254"
-      label="Suggestion shown, autofilled, changed field, changed autofilled
-             field, changed visibility, submitted, bottom sheet"/>
-  <int value="255"
-      label="Structure sent, suggestion shown, autofilled, changed field,
-             changed autofilled field, changed visibility, submitted, bottom
-             sheet"/>
-</enum>
-
-<enum name="AutofillWebViewFormSimilarityCheckResult">
-  <summary>
-    A bitmask indicating which fields differed during a FormDataAndroid
-    similarity check.
-  </summary>
-  <int value="0" label="None"/>
-  <int value="1" label="global_id"/>
-  <int value="2" label="name"/>
-  <int value="4" label="id_attribute"/>
-  <int value="6" label="name, id_attribute"/>
-  <int value="8" label="name_attribute"/>
-  <int value="10" label="name, name_attribute"/>
-  <int value="12" label="id_attribute, name_attribute"/>
-  <int value="14" label="name, id_attribute, name_attribute"/>
-  <int value="16" label="url"/>
-  <int value="18" label="name, url"/>
-  <int value="20" label="id_attribute, url"/>
-  <int value="22" label="name, id_attribute, url"/>
-  <int value="24" label="name_attribute, url"/>
-  <int value="26" label="name, name_attribute, url"/>
-  <int value="28" label="id_attribute, name_attribute, url"/>
-  <int value="30" label="name, id_attribute, name_attribute, url"/>
-  <int value="32" label="action"/>
-  <int value="34" label="name, action"/>
-  <int value="36" label="id_attribute, action"/>
-  <int value="38" label="name, id_attribute, action"/>
-  <int value="40" label="name_attribute, action"/>
-  <int value="42" label="name, name_attribute, action"/>
-  <int value="44" label="id_attribute, name_attribute, action"/>
-  <int value="46" label="name, id_attribute, name_attribute, action"/>
-  <int value="48" label="url, action"/>
-  <int value="50" label="name, url, action"/>
-  <int value="52" label="id_attribute, url, action"/>
-  <int value="54" label="name, id_attribute, url, action"/>
-  <int value="56" label="name_attribute, url, action"/>
-  <int value="58" label="name, name_attribute, url, action"/>
-  <int value="60" label="id_attribute, name_attribute, url, action"/>
-  <int value="62" label="name, id_attribute, name_attribute, url, action"/>
-  <int value="64" label="is_form_tag"/>
-  <int value="66" label="name, is_form_tag"/>
-  <int value="68" label="id_attribute, is_form_tag"/>
-  <int value="70" label="name, id_attribute, is_form_tag"/>
-  <int value="72" label="name_attribute, is_form_tag"/>
-  <int value="74" label="name, name_attribute, is_form_tag"/>
-  <int value="76" label="id_attribute, name_attribute, is_form_tag"/>
-  <int value="78" label="name, id_attribute, name_attribute, is_form_tag"/>
-  <int value="80" label="url, is_form_tag"/>
-  <int value="82" label="name, url, is_form_tag"/>
-  <int value="84" label="id_attribute, url, is_form_tag"/>
-  <int value="86" label="name, id_attribute, url, is_form_tag"/>
-  <int value="88" label="name_attribute, url, is_form_tag"/>
-  <int value="90" label="name, name_attribute, url, is_form_tag"/>
-  <int value="92" label="id_attribute, name_attribute, url, is_form_tag"/>
-  <int value="94" label="name, id_attribute, name_attribute, url, is_form_tag"/>
-  <int value="96" label="action, is_form_tag"/>
-  <int value="98" label="name, action, is_form_tag"/>
-  <int value="100" label="id_attribute, action, is_form_tag"/>
-  <int value="102" label="name, id_attribute, action, is_form_tag"/>
-  <int value="104" label="name_attribute, action, is_form_tag"/>
-  <int value="106" label="name, name_attribute, action, is_form_tag"/>
-  <int value="108" label="id_attribute, name_attribute, action, is_form_tag"/>
-  <int value="110"
-      label="name, id_attribute, name_attribute, action, is_form_tag"/>
-  <int value="112" label="url, action, is_form_tag"/>
-  <int value="114" label="name, url, action, is_form_tag"/>
-  <int value="116" label="id_attribute, url, action, is_form_tag"/>
-  <int value="118" label="name, id_attribute, url, action, is_form_tag"/>
-  <int value="120" label="name_attribute, url, action, is_form_tag"/>
-  <int value="122" label="name, name_attribute, url, action, is_form_tag"/>
-  <int value="124"
-      label="id_attribute, name_attribute, url, action, is_form_tag"/>
-  <int value="126"
-      label="name, id_attribute, name_attribute, url, action, is_form_tag"/>
-  <int value="128" label="Fields"/>
-  <int value="130" label="name, Fields"/>
-  <int value="132" label="id_attribute, Fields"/>
-  <int value="134" label="name, id_attribute, Fields"/>
-  <int value="136" label="name_attribute, Fields"/>
-  <int value="138" label="name, name_attribute, Fields"/>
-  <int value="140" label="id_attribute, name_attribute, Fields"/>
-  <int value="142" label="name, id_attribute, name_attribute, Fields"/>
-  <int value="144" label="url, Fields"/>
-  <int value="146" label="name, url, Fields"/>
-  <int value="148" label="id_attribute, url, Fields"/>
-  <int value="150" label="name, id_attribute, url, Fields"/>
-  <int value="152" label="name_attribute, url, Fields"/>
-  <int value="154" label="name, name_attribute, url, Fields"/>
-  <int value="156" label="id_attribute, name_attribute, url, Fields"/>
-  <int value="158" label="name, id_attribute, name_attribute, url, Fields"/>
-  <int value="160" label="action, Fields"/>
-  <int value="162" label="name, action, Fields"/>
-  <int value="164" label="id_attribute, action, Fields"/>
-  <int value="166" label="name, id_attribute, action, Fields"/>
-  <int value="168" label="name_attribute, action, Fields"/>
-  <int value="170" label="name, name_attribute, action, Fields"/>
-  <int value="172" label="id_attribute, name_attribute, action, Fields"/>
-  <int value="174" label="name, id_attribute, name_attribute, action, Fields"/>
-  <int value="176" label="url, action, Fields"/>
-  <int value="178" label="name, url, action, Fields"/>
-  <int value="180" label="id_attribute, url, action, Fields"/>
-  <int value="182" label="name, id_attribute, url, action, Fields"/>
-  <int value="184" label="name_attribute, url, action, Fields"/>
-  <int value="186" label="name, name_attribute, url, action, Fields"/>
-  <int value="188" label="id_attribute, name_attribute, url, action, Fields"/>
-  <int value="190"
-      label="name, id_attribute, name_attribute, url, action, Fields"/>
-  <int value="192" label="is_form_tag, Fields"/>
-  <int value="194" label="name, is_form_tag, Fields"/>
-  <int value="196" label="id_attribute, is_form_tag, Fields"/>
-  <int value="198" label="name, id_attribute, is_form_tag, Fields"/>
-  <int value="200" label="name_attribute, is_form_tag, Fields"/>
-  <int value="202" label="name, name_attribute, is_form_tag, Fields"/>
-  <int value="204" label="id_attribute, name_attribute, is_form_tag, Fields"/>
-  <int value="206"
-      label="name, id_attribute, name_attribute, is_form_tag, Fields"/>
-  <int value="208" label="url, is_form_tag, Fields"/>
-  <int value="210" label="name, url, is_form_tag, Fields"/>
-  <int value="212" label="id_attribute, url, is_form_tag, Fields"/>
-  <int value="214" label="name, id_attribute, url, is_form_tag, Fields"/>
-  <int value="216" label="name_attribute, url, is_form_tag, Fields"/>
-  <int value="218" label="name, name_attribute, url, is_form_tag, Fields"/>
-  <int value="220"
-      label="id_attribute, name_attribute, url, is_form_tag, Fields"/>
-  <int value="222"
-      label="name, id_attribute, name_attribute, url, is_form_tag, Fields"/>
-  <int value="224" label="action, is_form_tag, Fields"/>
-  <int value="226" label="name, action, is_form_tag, Fields"/>
-  <int value="228" label="id_attribute, action, is_form_tag, Fields"/>
-  <int value="230" label="name, id_attribute, action, is_form_tag, Fields"/>
-  <int value="232" label="name_attribute, action, is_form_tag, Fields"/>
-  <int value="234" label="name, name_attribute, action, is_form_tag, Fields"/>
-  <int value="236"
-      label="id_attribute, name_attribute, action, is_form_tag, Fields"/>
-  <int value="238"
-      label="name, id_attribute, name_attribute, action, is_form_tag, Fields"/>
-  <int value="240" label="url, action, is_form_tag, Fields"/>
-  <int value="242" label="name, url, action, is_form_tag, Fields"/>
-  <int value="244" label="id_attribute, url, action, is_form_tag, Fields"/>
-  <int value="246"
-      label="name, id_attribute, url, action, is_form_tag, Fields"/>
-  <int value="248" label="name_attribute, url, action, is_form_tag, Fields"/>
-  <int value="250"
-      label="name, name_attribute, url, action, is_form_tag, Fields"/>
-  <int value="252"
-      label="id_attribute, name_attribute, url, action, is_form_tag, Fields"/>
-  <int value="254"
-      label="name, id_attribute, name_attribute, url, action, is_form_tag,
-             Fields"/>
-</enum>
-
 <enum name="BooleanAutofillDeleteAddress">
   <int value="0" label="Canceled"/>
   <int value="1" label="Confirmed"/>
 </enum>
 
-<enum name="BooleanAutofillExtendedMenuEditAddress">
+<enum name="BooleanAutofillEditAddress">
   <int value="0" label="Canceled"/>
   <int value="1" label="Saved"/>
 </enum>
@@ -4160,14 +4510,14 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Shown"/>
 </enum>
 
+<enum name="BooleanFieldClassificationType">
+  <int value="0" label="Unclassified."/>
+  <int value="1" label="Classified."/>
+</enum>
+
 <enum name="BooleanHadPredictions">
   <int value="0" label="No predictions"/>
   <int value="1" label="Has predictions"/>
-</enum>
-
-<enum name="BooleanHiddenPresentationalAutofilled">
-  <int value="0" label="Skipped"/>
-  <int value="1" label="Autofilled"/>
 </enum>
 
 <enum name="BooleanPreviouslyShown">
@@ -4196,10 +4546,34 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Checked"/>
 </enum>
 
+<enum name="CreditCardSeamlessFill">
+  <int value="0" label=":-D Full fill"/>
+  <int value="1" label=":-) Optional name missing"/>
+  <int value="2" label=":-) Optional CVC missing"/>
+  <int value="3" label=":-) Optional name and CVC missing"/>
+  <int value="4" label=":-| Full fill but exp. date missing"/>
+  <int value="5" label=":-( Partial fill"/>
+</enum>
+
 <enum name="CvcFillingFlowType">
   <int value="0" label="CVC filled without any interactive authentication"/>
   <int value="1" label="CVC filled by FIDO authentication"/>
   <int value="2" label="CVC filed by mandatory re-auth"/>
+</enum>
+
+<enum name="EmailPredictionConfusionMatrix">
+  <int value="0"
+      label="TruePositive: overall_type=email, submitted text matches email
+             format"/>
+  <int value="1"
+      label="FalsePositive: overall_type=email, submitted text is non-empty
+             and does not match email"/>
+  <int value="2"
+      label="TrueNegative: overall_type=not email, submitted text is
+             non-empty and does not match email"/>
+  <int value="3"
+      label="FalseNegative: overall_type=not email, submitted text matches
+             email"/>
 </enum>
 
 <enum name="FastCheckoutCacheStateForIsTriggerFormSupported">
@@ -4225,6 +4599,17 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Success: Parsing was successful."/>
 </enum>
 
+<enum name="FastCheckoutRunOutcome">
+  <summary>Defines possible outcomes of a Fast Checkout run.</summary>
+  <int value="0"
+      label="Failure: Script did not run because the user has declined
+             onboarding."/>
+  <int value="1"
+      label="Failure: Script run did not complete or never started."/>
+  <int value="2" label="Failure: Script run failed."/>
+  <int value="3" label="Success: Script ran successfully."/>
+</enum>
+
 <enum name="FastCheckoutTriggerOutcome">
   <summary>
     Classifies different outcomes of the attempt to trigger showing a
@@ -4244,6 +4629,106 @@ Called by update_autofill_enums.py.-->
   <int value="10" label="Failure: Unsuported country."/>
 </enum>
 
+<enum name="FieldClassificationType">
+  <int value="0" label="Classified with recognized autocomplete."/>
+  <int value="1" label="Classified with unrecognized autocomplete."/>
+  <int value="2" label="Unclassified."/>
+</enum>
+
+<enum name="FieldFillingStatus">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="CorrectedToSameType"/>
+  <int value="2" label="CorrectedToDifferentType"/>
+  <int value="3" label="CorrectedToUnkownType"/>
+  <int value="4" label="CorrectedToEmpty"/>
+  <int value="5" label="ManuallyFilledToSameType"/>
+  <int value="6" label="ManuallyFilledToDifferentType"/>
+  <int value="7" label="ManuallyFilledToUnknownType"/>
+  <int value="8" label="LeftEmpty"/>
+</enum>
+
+<enum name="IbanCountry">
+  <int value="0" label="Unsupport"/>
+  <int value="1" label="AD (Andorra)"/>
+  <int value="2" label="AE (United Arab Emirates)"/>
+  <int value="3" label="AL (Albania)"/>
+  <int value="4" label="AT (Austria)"/>
+  <int value="5" label="AZ (Azerbaijan)"/>
+  <int value="6" label="BA (Bosnia and Herzegovina)"/>
+  <int value="7" label="BE (Belgium)"/>
+  <int value="8" label="BG (Bulgaria)"/>
+  <int value="9" label="BH (Bahrain)"/>
+  <int value="10" label="BR (Brazil)"/>
+  <int value="11" label="BY (Belarus)"/>
+  <int value="12" label="CH (Switzerland)"/>
+  <int value="13" label="CR (Costa Rica)"/>
+  <int value="14" label="CY (Cyprus)"/>
+  <int value="15" label="CZ (Czech Republic)"/>
+  <int value="16" label="DE (Germany)"/>
+  <int value="17" label="DK (Denmark)"/>
+  <int value="18" label="DO (Dominican Republic)"/>
+  <int value="19" label="EE (Estonia)"/>
+  <int value="20" label="EG (Egypt)"/>
+  <int value="21" label="ES (Spain)"/>
+  <int value="22" label="FI (Finland)"/>
+  <int value="23" label="FO (Faroe Islands)"/>
+  <int value="24" label="FR (France)"/>
+  <int value="25" label="GB (United Kingdom)"/>
+  <int value="26" label="GE (Georgia)"/>
+  <int value="27" label="GI (Gibraltar)"/>
+  <int value="28" label="GL (Greenland)"/>
+  <int value="29" label="GR (Greece)"/>
+  <int value="30" label="GT (Guatemala)"/>
+  <int value="31" label="HR (Croatia)"/>
+  <int value="32" label="HU (Hungary)"/>
+  <int value="33" label="IL (Israel)"/>
+  <int value="34" label="IQ (Iraq)"/>
+  <int value="35" label="IS (Iceland)"/>
+  <int value="36" label="IT (Italy)"/>
+  <int value="37" label="JO (Jordan)"/>
+  <int value="38" label="KW (Kuwait)"/>
+  <int value="39" label="KZ (Kazakhstan)"/>
+  <int value="40" label="LB (Lebanon)"/>
+  <int value="41" label="LC (Saint Lucia)"/>
+  <int value="42" label="LI (Liechtenstein)"/>
+  <int value="43" label="LT (Lithuania)"/>
+  <int value="44" label="LU (Luxembourg)"/>
+  <int value="45" label="LV (Latvia)"/>
+  <int value="46" label="LY (Libya)"/>
+  <int value="47" label="MC (Monaco)"/>
+  <int value="48" label="MD (Moldova)"/>
+  <int value="49" label="ME (Montenegro)"/>
+  <int value="50" label="MK (North Macedonia)"/>
+  <int value="51" label="MR (Mauritania)"/>
+  <int value="52" label="MT (Malta)"/>
+  <int value="53" label="MU (Mauritius)"/>
+  <int value="54" label="NL (Netherlands)"/>
+  <int value="55" label="PK (Pakistan)"/>
+  <int value="56" label="PL (Poland)"/>
+  <int value="57" label="PS (Palestinian territories)"/>
+  <int value="58" label="PT (Portugal)"/>
+  <int value="59" label="QA (Qatar)"/>
+  <int value="60" label="RO (Romania)"/>
+  <int value="61" label="RS (Serbia)"/>
+  <int value="62" label="RU (Russia)"/>
+  <int value="63" label="SA (Saudi Arabia)"/>
+  <int value="64" label="SC (Seychelles)"/>
+  <int value="65" label="SD (Sudan)"/>
+  <int value="66" label="SE (Sweden)"/>
+  <int value="67" label="SI (Slovenia)"/>
+  <int value="68" label="SK (Slovakia)"/>
+  <int value="69" label="SM (San Marino)"/>
+  <int value="70" label="ST (São Tomé and Príncipe)"/>
+  <int value="71" label="SV (El Salvador)"/>
+  <int value="72" label="TL (East Timor)"/>
+  <int value="73" label="TN (Tunisia)"/>
+  <int value="74" label="TR (Turkey)"/>
+  <int value="75" label="UA (Ukraine)"/>
+  <int value="76" label="VA (Vatican City)"/>
+  <int value="77" label="VG (Virgin Islands, British)"/>
+  <int value="78" label="XK (Kosovo)"/>
+</enum>
+
 <enum name="IbanSuggestionBlockListStatus">
   <int value="0" label="Allowed"/>
   <int value="1" label="Blocked"/>
@@ -4253,8 +4738,10 @@ Called by update_autofill_enums.py.-->
 <enum name="IbanSuggestionsEvent">
   <int value="0" label="IBAN suggestions shown"/>
   <int value="1" label="IBAN suggestions shown (once)"/>
-  <int value="2" label="IBAN suggestion selected"/>
-  <int value="3" label="IBAN suggestion selected (once)"/>
+  <int value="2" label="Local IBAN suggestion selected"/>
+  <int value="3" label="Local IBAN suggestion selected (once)"/>
+  <int value="4" label="Server IBAN suggestion selected"/>
+  <int value="5" label="Server IBAN suggestion selected (once)"/>
 </enum>
 
 <enum name="IbanUploadEnabledStatus">
@@ -4279,8 +4766,19 @@ Called by update_autofill_enums.py.-->
   <int value="8" label="aria-label attribute"/>
   <int value="9" label="Text node sibling (includes &lt;b&gt;, etc)"/>
   <int value="10" label="value attribute"/>
-  <int value="11" label="&lt;label&gt; for attribute"/>
-  <int value="12" label="Succeeding DOM node overlaying the input"/>
+  <int value="11"
+      label="&lt;label&gt; for attribute linked to a control element via its
+             id attribute"/>
+  <int value="12"
+      label="&lt;label&gt; for attribute linked to a control element via its
+             name attribute"/>
+  <int value="13"
+      label="&lt;label&gt; for attribute linked to a control element inside a
+             shadow DOM via its id attribute"/>
+  <int value="14"
+      label="&lt;label&gt; for attribute linked to a control element inside a
+             shadow DOM via its name attribute"/>
+  <int value="15" label="Succeeding DOM node overlaying the input"/>
 </enum>
 
 <enum name="LocalCardMigrationPrompt">
@@ -4349,10 +4847,43 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Suggestions popup shown (once)"/>
 </enum>
 
-<enum name="OnDidFillAutofillFormDataEarlyReturnReason">
-  <int value="0" label="Different AndroidAutofillManager was passed"/>
-  <int value="1"
-      label="Form passed is different from the one that initiated the session"/>
+<enum name="PaymentsWindowUserConsentDialogResult">
+  <int value="0" label="The tab or browser was closed"/>
+  <int value="1" label="The escape key was pressed, closing the dialog"/>
+  <int value="2" label="The cancel button was pressed, closing the dialog"/>
+  <int value="3" label="The accept button was pressed, closing the dialog"/>
+</enum>
+
+<enum name="PhoneCollectionState">
+  <int value="0" label="Phone Not Collected, WebOTP Not Used, OTC Not Used"/>
+  <int value="1" label="Phone Not Collected, WebOTP Not Used, OTC Used"/>
+  <int value="2" label="Phone Not Collected, WebOTP Used, OTC Not Used"/>
+  <int value="3" label="Phone Not Collected, WebOTP Used, OTC Used"/>
+  <int value="4" label="Phone Collected, WebOTP Not Used, OTC Not Used"/>
+  <int value="5" label="Phone Collected, WebOTP Not Used, OTC Used"/>
+  <int value="6" label="Phone Collected, WebOTP Used, OTC Not Used"/>
+  <int value="7" label="Phone Collected, WebOTP Used, OTC Used"/>
+</enum>
+
+<enum name="PhoneNumberGrammarUsage2">
+  <int value="0"
+      label="Country code: [cc] Area Code: [ac] Prefix: [phone] Suffix:
+             [suffix]"/>
+  <int value="1" label="Country code: [cc] Area Code: [ac] Phone: [phone]"/>
+  <int value="2" label="Phone: [cc] [ac]:3 - [phone]:3 - [suffix]:4"/>
+  <int value="3" label="Phone: [cc]:3 [ac]:3 [phone]:3 [suffix]:4"/>
+  <int value="4" label="Area Code: [ac] Phone: [phone] - [suffix]"/>
+  <int value="5" label="Area Code: [ac] Phone: [phone] Suffix [suffix]"/>
+  <int value="6" label="Area Code: [ac] Phone: [phone]"/>
+  <int value="7" label="Phone: [ac] [phone]:3 [suffix]:4"/>
+  <int value="8"
+      label="Area code: [ac]:3 Prefix: [prefix]:3 Suffix: [suffix]:4"/>
+  <int value="9" label="Phone: [ac] Prefix: [phone] Suffix: [suffix]"/>
+  <int value="10" label="Phone: [ac] - [phone]:3 - [suffix]:4"/>
+  <int value="11" label="Phone: [cc] - [ac] - [phone]"/>
+  <int value="12" label="Phone: [cc]:3 - [phone]"/>
+  <int value="13" label="Phone: [ac] - [phone]"/>
+  <int value="14" label="Phone: [phone]"/>
 </enum>
 
 <enum name="PlusAddressModalEvent">
@@ -4393,10 +4924,87 @@ Called by update_autofill_enums.py.-->
   <int value="14" label="Server and heuristic type, autocomplete=off"/>
 </enum>
 
+<enum name="RelativePosition">
+  <int value="0" label="Ranked higher"/>
+  <int value="1" label="Ranked lower"/>
+  <int value="2" label="Ranked same"/>
+</enum>
+
+<enum name="RendererFillSkipReason">
+  <int value="0" label="Unfillable"/>
+  <int value="1" label="No value to fill"/>
+  <int value="2" label="Previously autofilled"/>
+  <int value="3" label="User-edited text field"/>
+  <int value="4" label="User-edited select field"/>
+</enum>
+
 <enum name="ShowCardsFromGoogleAccountButtonEvent">
   <int value="0" label="Button shown"/>
   <int value="1" label="Button shown (once)"/>
   <int value="2" label="Button clicked"/>
+</enum>
+
+<enum name="SuggestionType">
+  <int value="0" label="Autocomplete entry"/>
+  <int value="1" label="Address entry"/>
+  <int value="2" label="Fill full address"/>
+  <int value="3" label="Fill full name"/>
+  <int value="4" label="Fill everything"/>
+  <int value="5" label="Fill full phone number"/>
+  <int value="6" label="Fill full email"/>
+  <int value="7" label="Address field-by-field filling"/>
+  <int value="8" label="Edit address profile"/>
+  <int value="9" label="Delete address profile"/>
+  <int value="10" label="Manage address"/>
+  <int value="11" label="Manage credit card"/>
+  <int value="12" label="Manage IBAN"/>
+  <int value="13" label="Manage plus address"/>
+  <int value="14" label="Compose proactive nudge"/>
+  <int value="15" label="Compose resume nudge"/>
+  <int value="16" label="Compose saved state notification"/>
+  <int value="17" label="Compose disable"/>
+  <int value="18" label="Compose go to settings"/>
+  <int value="19" label="Compose never show on this site again"/>
+  <int value="20" label="Datalist entry"/>
+  <int value="21" label="Password entry"/>
+  <int value="22" label="All saved passwords entry"/>
+  <int value="23" label="Generate password entry"/>
+  <int value="24" label="Show account cards"/>
+  <int value="25" label="Password account storage opt-in"/>
+  <int value="26" label="Password account storage opt-in and generate"/>
+  <int value="27" label="Account storage password entry"/>
+  <int value="28" label="Password account storage re-sign-in"/>
+  <int value="29" label="Password account storage empty"/>
+  <int value="30" label="Password field-by-field filling"/>
+  <int value="31" label="Fill password"/>
+  <int value="32" label="View password details"/>
+  <int value="33" label="Credit card entry"/>
+  <int value="34" label="Insecure context payment disabled message"/>
+  <int value="35" label="Scan credit card"/>
+  <int value="36" label="Virtual credit card entry"/>
+  <int value="37" label="Credit card field-by-field filling"/>
+  <int value="38" label="Iban entry"/>
+  <int value="39" label="Create new plus address"/>
+  <int value="40" label="Fill existing plus address"/>
+  <int value="41" label="Merchant promo code entry"/>
+  <int value="42" label="See promo code details"/>
+  <int value="43" label="Webauthn credential"/>
+  <int value="44" label="Webauthn sign-in with another device"/>
+  <int value="45" label="Title"/>
+  <int value="46" label="Separator"/>
+  <int value="47" label="Undo or clear"/>
+  <int value="48" label="Mixed form message"/>
+  <int value="49" label="Devtools test addresses"/>
+  <int value="50" label="Devtools test address entry"/>
+  <int value="51" label="Devtools test address by country entry"/>
+  <int value="52" label="Create new plus address inline"/>
+  <int value="53" label="Retrieve prediction improvements"/>
+  <int value="54" label="Prediction improvements loading state"/>
+  <int value="55" label="Fill prediction improvements"/>
+  <int value="56" label="Prediction improvements feedback"/>
+  <int value="57" label="Plus address error"/>
+  <int value="58" label="Prediction improvements details"/>
+  <int value="59" label="Prediction improvements error"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">
@@ -4408,10 +5016,10 @@ Called by update_autofill_enums.py.-->
   <int value="4" label="Bottom sheet dismissed"/>
 </enum>
 
-<enum name="TouchToFill.CreditCard.TriggerOutcome">
+<enum name="TouchToFill.PaymentMethod.TriggerOutcome">
   <int value="0" label="Shown"/>
   <int value="1" label="Not shown: clicked field not focusable or not empty"/>
-  <int value="2" label="Not shown: no valid cards to display"/>
+  <int value="2" label="Not shown: no valid payment methods to display"/>
   <int value="3" label="Not shown: form or client not secure"/>
   <int value="4" label="Not shown: was shown before"/>
   <int value="5" label="Not shown: could not show Autofill UI"/>
@@ -4431,6 +5039,27 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Upload was for newly-seen payment method"/>
 </enum>
 
+<enum name="Vcn3dsFlowEvents">
+  <int value="0"
+      label="The flow has started, and the consent dialog or a pop-up are
+             about to be shown"/>
+  <int value="1" label="The consent dialog was skipped"/>
+  <int value="2" label="The consent dialog was accepted"/>
+  <int value="3" label="The consent dialog was declined"/>
+  <int value="4"
+      label="The pop-up was not able to be shown when a show was attempted"/>
+  <int value="5"
+      label="The user cancelled the flow by closing the pop-up before
+             authentication has finished"/>
+  <int value="6" label="The authentication inside of the pop-up failed"/>
+  <int value="7"
+      label="The user cancelled the progress dialog while retrieving the VCN"/>
+  <int value="8"
+      label="The flow failed after pop-up closed while retrieving the VCN"/>
+  <int value="9"
+      label="The flow has successfully completed and retrieved a VCN"/>
+</enum>
+
 <enum name="VirtualCardStandaloneCvcSuggestionFormEvent">
   <int value="0" label="Suggestions shown"/>
   <int value="1" label="Suggestions shown (once)"/>
@@ -4441,25 +5070,6 @@ Called by update_autofill_enums.py.-->
   <int value="6"
       label="Form about to be submitted after suggestion filled (once)"/>
   <int value="7" label="Form submitted after suggestion filled (once)"/>
-</enum>
-
-<enum name="VoteForSelecteOptionValuesEvents">
-  <int value="0" label="ClassifiedAnyField">
-    A form had a non-empty list of determined field types.
-  </int>
-  <int value="1" label="ClassifiedMoreFields">
-    The form of the first bucket had more field types classified due to the
-    AutofillVoteForSelectOptionValues experiment.
-  </int>
-  <int value="2" label="ClassifiedFieldAsCountryField">
-    The form of the first bucket had at least one country field (as in
-    &quot;country name&quot;, not as in a &quot;phone country code field&quot;).
-  </int>
-  <int value="3" label="SwitchedFromCountryToPhoneCountryCode">
-    A form in the &quot;ClassifiedFieldAsCountryField&quot; bucket hat at least
-    one country field flipped to a &quot;phone country code field&quot; due to
-    the AutofillVoteForSelectOptionValues experiment.
-  </int>
 </enum>
 
 <enum name="WebauthnOptInPromoNotOfferedReason">

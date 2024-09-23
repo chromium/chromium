@@ -31,7 +31,7 @@ enum class FlushPolicy;
 enum class FlushMode;
 
 // A delegate class for recursive copy or move operations.
-class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
+class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate final
     : public RecursiveOperationDelegate {
  public:
   class CopyOrMoveImpl;
@@ -115,8 +115,31 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
                         StatusCallback callback) override;
   void PostProcessDirectory(const FileSystemURL& url,
                             StatusCallback callback) override;
+  base::WeakPtr<RecursiveOperationDelegate> AsWeakPtr() override;
 
-  void PostTask(base::OnceClosure closure);
+  // Posts a closure to run later but will not be run if `this` object is
+  // destroyed.
+  template <typename Functor, typename... Args>
+  void RunCopyOrMoveHookDelegateCallbackLater(Functor&& functor,
+                                              Args&&... args) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<CopyOrMoveOperationDelegate> delegate,
+               base::OnceClosure closure) {
+              if (!delegate) {
+                return;
+              }
+              // Do not run the closure if delegate is gone as the
+              // parameters to the closure are bound to the lifecycle
+              // of delegate.
+              std::move(closure).Run();
+            },
+            weak_factory_.GetWeakPtr(),
+            base::BindOnce(std::forward<Functor>(functor),
+                           base::Unretained(copy_or_move_hook_delegate_.get()),
+                           std::forward<Args>(args)...)));
+  }
 
   // Force a given source URL to produce an error for a copy or a
   // cross-filesystem move.

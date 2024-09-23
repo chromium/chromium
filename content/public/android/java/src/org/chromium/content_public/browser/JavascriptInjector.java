@@ -12,23 +12,22 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
- * Interface that provides API used to inject user-defined objects that allow
- * custom Javascript interfaces.
+ * Interface that provides API used to inject user-defined objects that allow custom Javascript
+ * interfaces.
  */
 public interface JavascriptInjector {
     /**
      * @param webContents {@link WebContents} object.
-     * @param useMojo Whether to use {@link RemoteObjectInjector} methods
-     * @return {@link JavascriptInjector} object used for the give WebContents.
-     *         Creates one if not present.
+     * @return {@link JavascriptInjector} object used for the give WebContents. Creates one if not
+     *     present.
      */
-    static JavascriptInjector fromWebContents(WebContents webContents, boolean useMojo) {
-        return JavascriptInjectorImpl.fromWebContents(webContents, useMojo);
+    static JavascriptInjector fromWebContents(WebContents webContents) {
+        return JavascriptInjectorImpl.fromWebContents(webContents);
     }
 
     /**
-     * Returns Javascript interface objects previously injected via
-     * {@link #addPossiblyUnsafeInterface(Object, String)}.
+     * Returns Javascript interface objects previously injected via {@link
+     * #addPossiblyUnsafeInterface(Object, String)}.
      *
      * @return the mapping of names to interface objects and corresponding annotation classes
      */

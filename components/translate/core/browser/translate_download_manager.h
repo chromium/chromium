@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "components/translate/core/browser/translate_language_list.h"
 #include "components/translate/core/browser/translate_script.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -67,6 +67,9 @@ class TranslateDownloadManager {
   static void GetSupportedLanguages(bool translate_allowed,
                                     std::vector<std::string>* languages);
 
+  // Refresh the language list if needed.
+  static void RequestLanguageList();
+
   // Returns the last-updated time when Chrome received a language list from a
   // Translate server. Returns null time if Chrome hasn't received any lists.
   static base::Time GetSupportedLanguagesLastUpdated();
@@ -74,10 +77,10 @@ class TranslateDownloadManager {
   // Returns the language code that can be used with the Translate method for a
   // specified |language|. (ex. GetLanguageCode("en-US") will return "en", and
   // GetLanguageCode("zh-CN") returns "zh-CN")
-  static std::string GetLanguageCode(base::StringPiece language);
+  static std::string GetLanguageCode(std::string_view language);
 
   // Returns true if |language| is supported by the translation server.
-  static bool IsSupportedLanguage(base::StringPiece language);
+  static bool IsSupportedLanguage(std::string_view language);
 
   // Must be called to shut Translate down. Cancels any pending fetches.
   void Shutdown();

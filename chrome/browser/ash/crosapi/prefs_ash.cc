@@ -5,19 +5,19 @@
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -33,13 +33,13 @@ namespace {
 
 // List of all mojom::PrefPaths associated with profile prefs, and their
 // corresponding paths in the prefstore.
-base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
+std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
   static constexpr auto kProfilePrefPathToName =
-      base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>({
+      base::MakeFixedFlatMap<mojom::PrefPath, std::string_view>({
           {mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
-          {mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
-           ::prefs::kAccessibilityPdfOcrAlwaysActive},
+          {mojom::PrefPath::kAccessibilityReducedAnimationsEnabled,
+           ash::prefs::kAccessibilityReducedAnimationsEnabled},
           {mojom::PrefPath::kUserGeolocationAccessLevel,
            ash::prefs::kUserGeolocationAccessLevel},
           {mojom::PrefPath::kQuickAnswersEnabled,
@@ -73,17 +73,25 @@ base::StringPiece GetProfilePrefNameForPref(mojom::PrefPath path) {
            DefaultSearchManager::kDefaultSearchProviderDataPrefName},
           {mojom::PrefPath::kIsolatedWebAppsEnabled,
            ash::prefs::kIsolatedWebAppsEnabled},
+          {mojom::PrefPath::kHmrEnabled, ash::prefs::kHmrEnabled},
+          {mojom::PrefPath::kUserCameraAllowed, ash::prefs::kUserCameraAllowed},
+          {mojom::PrefPath::kUserMicrophoneAllowed,
+           ash::prefs::kUserMicrophoneAllowed},
+          {mojom::PrefPath::kHMRConsentStatus, ash::prefs::kHMRConsentStatus},
+          {mojom::PrefPath::kHMRConsentWindowDismissCount,
+           ash::prefs::kHMRConsentWindowDismissCount},
+
       });
-  auto* pref_name = kProfilePrefPathToName.find(path);
+  auto pref_name = kProfilePrefPathToName.find(path);
   DCHECK(pref_name != kProfilePrefPathToName.end());
   return pref_name->second;
 }
 
 // List of all mojom::PrefPaths associated with extension controlled prefs,
 // and their corresponding paths in the prefstore.
-base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
+std::string_view GetExtensionPrefNameForPref(mojom::PrefPath path) {
   static constexpr auto kExtensionPrefPathToName =
-      base::MakeFixedFlatMap<mojom::PrefPath, base::StringPiece>(
+      base::MakeFixedFlatMap<mojom::PrefPath, std::string_view>(
           {{mojom::PrefPath::kDockedMagnifierEnabled,
             ash::prefs::kDockedMagnifierEnabled},
            {mojom::PrefPath::kAccessibilityAutoclickEnabled,
@@ -115,7 +123,7 @@ base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
            {mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled,
             ash::prefs::kAccessibilityVirtualKeyboardEnabled},
            {mojom::PrefPath::kProxy, ash::prefs::kProxy}});
-  auto* pref_name = kExtensionPrefPathToName.find(path);
+  auto pref_name = kExtensionPrefPathToName.find(path);
   DCHECK(pref_name != kExtensionPrefPathToName.end());
   return pref_name->second;
 }
@@ -271,6 +279,11 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   switch (path) {
     case mojom::PrefPath::kUnknown:
     case mojom::PrefPath::kProtectedContentDefaultDeprecated:
+    case mojom::PrefPath::kDnsOverHttpsTemplates:
+    case mojom::PrefPath::kDnsOverHttpsTemplatesWithIdentifiers:
+    case mojom::PrefPath::kDnsOverHttpsSalt:
+    case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActiveDeprecated:
+    case mojom::PrefPath::kMahiEnabledDeprecated:
       LOG(WARNING) << "Unknown pref path: " << path;
       return std::nullopt;
     case mojom::PrefPath::kMetricsReportingEnabled:
@@ -294,17 +307,13 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessCodeCastDevices:
     case mojom::PrefPath::kAccessCodeCastDeviceAdditionTime:
     case mojom::PrefPath::kDefaultSearchProviderDataPrefName:
-    case mojom::PrefPath::kIsolatedWebAppsEnabled: {
-      if (!profile_prefs_registrar_) {
-        LOG(WARNING) << "Primary profile is not yet initialized";
-        return std::nullopt;
-      }
-      std::string pref_name(GetProfilePrefNameForPref(path));
-      return State{profile_prefs_registrar_->prefs(),
-                   profile_prefs_registrar_.get(), AshPrefSource::kNormal,
-                   pref_name};
-    }
-    case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive: {
+    case mojom::PrefPath::kIsolatedWebAppsEnabled:
+    case mojom::PrefPath::kAccessibilityReducedAnimationsEnabled:
+    case mojom::PrefPath::kHmrEnabled:
+    case mojom::PrefPath::kUserCameraAllowed:
+    case mojom::PrefPath::kUserMicrophoneAllowed:
+    case mojom::PrefPath::kHMRConsentStatus:
+    case mojom::PrefPath::kHMRConsentWindowDismissCount: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return std::nullopt;
@@ -321,16 +330,14 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kDnsOverHttpsMode:
       return State{local_state_, &local_state_registrar_,
                    AshPrefSource::kNormal, prefs::kDnsOverHttpsMode};
-    case mojom::PrefPath::kDnsOverHttpsSalt:
-      return State{local_state_, &local_state_registrar_,
-                   AshPrefSource::kNormal, prefs::kDnsOverHttpsSalt};
-    case mojom::PrefPath::kDnsOverHttpsTemplates:
-      return State{local_state_, &local_state_registrar_,
-                   AshPrefSource::kNormal, prefs::kDnsOverHttpsTemplates};
-    case mojom::PrefPath::kDnsOverHttpsTemplatesWithIdentifiers:
+    case mojom::PrefPath::kDnsOverHttpsEffectiveTemplatesChromeOS:
       return State{local_state_, &local_state_registrar_,
                    AshPrefSource::kNormal,
-                   prefs::kDnsOverHttpsTemplatesWithIdentifiers};
+                   prefs::kDnsOverHttpsEffectiveTemplatesChromeOS};
+    case mojom::PrefPath::kOverscrollHistoryNavigationEnabled:
+      return State{local_state_, &local_state_registrar_,
+                   AshPrefSource::kNormal,
+                   prefs::kOverscrollHistoryNavigationEnabled};
     case mojom::PrefPath::kDockedMagnifierEnabled:
     case mojom::PrefPath::kAccessibilityAutoclickEnabled:
     case mojom::PrefPath::kAccessibilityCaretHighlightEnabled:

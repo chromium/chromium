@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/user_education/common/feature_promo_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -32,6 +34,9 @@ class Profile;
 class ScopedProfileKeepAlive;
 class ProfileManagementFlowController;
 class ProfilePickerFlowController;
+class Browser;
+class ProfilePickerFeaturePromoController;
+class ForceSigninUIError;
 
 namespace content {
 struct ContextMenuParams;
@@ -44,7 +49,10 @@ class WebContents;
 class ProfilePickerView : public views::WidgetDelegateView,
                           public ProfilePickerWebContentsHost,
                           public content::WebContentsDelegate,
-                          public web_modal::WebContentsModalDialogHost {
+                          public web_modal::WebContentsModalDialogHost,
+                          public ui::AcceleratorProvider {
+  METADATA_HEADER(ProfilePickerView, views::WidgetDelegateView)
+
  public:
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
@@ -72,6 +80,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
   content::WebContentsDelegate* GetWebContentsDelegate() override;
+  void Reset(StepSwitchFinishedCallback callback) override;
+  void ShowForceSigninErrorDialog(const ForceSigninUIError& error,
+                                  bool success) override;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SetNativeToolbarVisible(bool visible) override;
@@ -80,9 +91,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 #endif
 
   // content::WebContentsDelegate:
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
@@ -98,9 +108,14 @@ class ProfilePickerView : public views::WidgetDelegateView,
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* GetContentsView() override;
   std::u16string GetAccessibleWindowTitle() const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
+  // ui::AcceleratorProvider
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override;
 
   // Exposed for testing
   enum State {
@@ -178,6 +193,31 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // first time `ShowScreen()`.
   void FinishInit();
 
+  // Switch to the flow that comes when the user decides to create a profile
+  // without signing in.
+  // `profile_color` is the profile's color. It is undefined for the default
+  // theme.
+  // `profile_picked_time_on_startup` is the time when the user picked a
+  // profile to open, to measure browser startup performance. It is only set
+  // when the picker is shown on startup.
+  void SwitchToSignedOutPostIdentityFlow(
+      std::optional<SkColor> profile_color,
+      base::TimeTicks profile_picked_time_on_startup,
+      base::OnceCallback<void(bool)> switch_finished_callback);
+
+  // Callback used when the profile is created in the signed out flow.
+  void OnLocalProfileInitialized(
+      std::optional<SkColor> profile_color,
+      base::TimeTicks profile_picked_time_on_startup,
+      base::OnceCallback<void(bool)> switch_finished_callback,
+      Profile* profile);
+
+  // Callback used when the browser is launched after finishing the signed out
+  // flow.
+  void ShowLocalProfileCustomization(
+      base::TimeTicks profile_picked_time_on_startup,
+      Browser* browser);
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Switches the layout to the sign-in screen (and creates a new profile or
   // load an existing one based on the `profile_info` content).
@@ -202,7 +242,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // `on_error_callback`.
   void SwitchToReauth(
       Profile* profile,
-      base::OnceCallback<void(ReauthUIError)> on_error_callback);
+      base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -252,6 +292,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void NotifyAccountSelected(const std::string& gaia_id);
 #endif
 
+  // Create the feature promo that manages the IPH logic that can be displayed
+  // through the Profile Picker.
+  void InitializeFeaturePromo(Profile* system_profile);
+
   ScopedKeepAlive keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
@@ -298,6 +342,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Hosts dialog displayed when a locked profile is selected in ProfilePicker.
   ProfilePickerForceSigninDialogHost dialog_host_;
+
+  // Manages IPH promos displayed through the Profile Picker.
+  std::unique_ptr<ProfilePickerFeaturePromoController> feature_promo_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };

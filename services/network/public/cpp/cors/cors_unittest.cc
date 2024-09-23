@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/network/public/cpp/cors/cors.h"
 
 #include <limits.h>
@@ -296,9 +301,9 @@ TEST_F(CorsTest, SafelistedSecCHPrefersReducedTransparency) {
                                      "\"Prefers-Reduced-Transparency!\""));
 }
 
-TEST_F(CorsTest, SafelistedSecCHUAFormFactor) {
+TEST_F(CorsTest, SafelistedSecCHUAFormFactors) {
   EXPECT_TRUE(
-      IsCorsSafelistedHeader("Sec-CH-UA-Form-Factor", "\"Form Factor!\""));
+      IsCorsSafelistedHeader("Sec-CH-UA-Form-Factors", "\"Form Factors!\""));
 }
 
 TEST_F(CorsTest, SafelistedSecCHUA) {

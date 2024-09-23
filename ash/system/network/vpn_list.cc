@@ -67,7 +67,6 @@ void VpnList::OnGetVpnProviders(std::vector<VpnProviderPtr> providers) {
       case VpnType::kWireGuard:
         // Only third party VpnProvider instances should exist.
         NOTREACHED();
-        break;
       case VpnType::kExtension:
         extension_vpn_providers_.push_back(std::move(provider));
         break;

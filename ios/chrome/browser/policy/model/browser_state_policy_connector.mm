@@ -45,8 +45,8 @@ void BrowserStatePolicyConnector::Init(
         browser_policy_connector->local_test_policy_provider();
   }
 
-  policy_service_ =
-      std::make_unique<policy::PolicyServiceImpl>(policy_providers_);
+  policy_service_ = std::make_unique<policy::PolicyServiceImpl>(
+      policy_providers_, policy::PolicyServiceImpl::ScopeForMetrics::kMachine);
 }
 
 void BrowserStatePolicyConnector::UseLocalTestPolicyProvider() {

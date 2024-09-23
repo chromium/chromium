@@ -40,6 +40,7 @@ public class IPHCommandBuilder {
     @Nullable private HighlightParams mHighlightParams;
     private Rect mAnchorRect;
     private boolean mRemoveArrow;
+    private boolean mShowTextBubble = true;
 
     @AnchoredPopupWindow.VerticalOrientation
     private int mPreferredVerticalOrientation =
@@ -212,6 +213,14 @@ public class IPHCommandBuilder {
     }
 
     /**
+     * @param showTextBubble Whether to show the text bubble (tooltip)
+     */
+    public IPHCommandBuilder setShowTextBubble(boolean showTextBubble) {
+        mShowTextBubble = showTextBubble;
+        return this;
+    }
+
+    /**
      *
      * @param params Defines how to draw the Highlight within the view. If  set to null,
      *               IPH without a highlight will requested.
@@ -267,6 +276,7 @@ public class IPHCommandBuilder {
                     mHighlightParams,
                     mAnchorRect,
                     mRemoveArrow,
+                    mShowTextBubble,
                     mPreferredVerticalOrientation,
                     mInsetRect);
         }

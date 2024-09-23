@@ -4,32 +4,24 @@
 
 import {DialogType, type ElementObject} from '../prod/file_manager/shared_types.js';
 import {ExecuteScriptError} from '../remote_call.js';
-import {ENTRIES, EntryType, RootPath, TestEntryInfo, addEntries, getCaller, getHistogramCount, pending, repeatUntil, sanitizeDate, sendTestMessage, wait} from '../test_util.js';
+import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 
-import {mountCrostini, mountGuestOs, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
 
-/**
- * The tag used to create a safe environment to display the preview.
- */
+/** The tag used to create a safe environment to display the preview. */
 const previewTag = 'iframe';
 
-/**
- * The JS code used to query the content window for preview.
- */
+/** The JS code used to query the content window for preview. */
 const contentWindowQuery = 'document.querySelector("iframe").contentWindow';
 
-/**
- * The name of the UMA emitted to track how Quick View is opened.
- * @const {string}
- */
+/** The name of the UMA emitted to track how Quick View is opened. */
 const QuickViewUmaWayToOpenHistogramName = 'FileBrowser.QuickView.WayToOpen';
 
 /**
- * The UMA's enumeration values (must be consistent with enums.xml,
- * previously histograms.xml).
- * @enum {number}
+ * The UMA's enumeration values (must be consistent with enums.xml, previously
+ * histograms.xml).
  */
 const QuickViewUmaWayToOpenHistogramValues = {
   CONTEXT_MENU: 0,
@@ -38,13 +30,21 @@ const QuickViewUmaWayToOpenHistogramValues = {
 };
 
 /**
- * Checks if dark mode has been turned on or not.
- *
- * @return enabled or not.
+ * Check the background color for the content inside the quick view is one of
+ * the 2 allowed colors
  */
-async function isDarkModeEnabled(): Promise<boolean> {
-  const isDarkModeEnabled = await sendTestMessage({name: 'isDarkModeEnabled'});
-  return isDarkModeEnabled === 'true';
+async function checkBackgroundColor(backgroundColor: string): Promise<void> {
+  const validBackground = [
+    // Dark mode:
+    'rgb(0, 0, 0)',
+    // Light mode: the preview body backgroundColor should be transparent black.
+    'rgba(0, 0, 0, 0)',
+  ];
+  // b/361293031: Accept either value, it was flaking between the values due to
+  // issues outside the Files app.
+  chrome.test.assertTrue(
+      validBackground.includes(backgroundColor),
+      `Unexepcted background color: ${backgroundColor}`);
 }
 
 /**
@@ -152,14 +152,14 @@ async function openQuickViewViaContextMenu(appId: string, name: string) {
  */
 async function openQuickViewMultipleSelection(appId: string, names: string[]) {
   // Get the file-list rows that are check-selected (multi-selected).
-  const selectedRows = await remoteCall.callRemoteTestUtil(
+  const selectedRows = await remoteCall.callRemoteTestUtil<ElementObject[]>(
       'deepQueryAllElements', appId, ['#file-list li[selected]']);
 
   // Check: the selection should contain the given file names.
   chrome.test.assertEq(names.length, selectedRows.length);
   for (let i = 0; i < names.length; i++) {
     chrome.test.assertTrue(
-        selectedRows[i].attributes['file-name'].includes(names[i]));
+        selectedRows[i]?.attributes['file-name']?.includes(names[i]!)!);
   }
 
   // Open Quick View via its keyboard shortcut.
@@ -180,7 +180,7 @@ async function mountAndSelectUsb(appId: string) {
   await sendTestMessage({name: 'mountFakeUsb'});
 
   // Wait for the USB volume to mount and click to open the USB volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('removable');
 
   // Check: the USB files should appear in the file list.
@@ -284,10 +284,10 @@ async function getQuickViewMetadataBoxField(
  * @param statement Javascript statement to be executed within the
  *     <preview-tag>.
  */
-async function executeJsInPreviewTagAndCatchErrors(
-    appId: string, query: string[], statement: string): Promise<unknown> {
+async function executeJsInPreviewTagAndCatchErrors<T>(
+    appId: string, query: string[], statement: string): Promise<T|undefined> {
   try {
-    return await remoteCall.executeJsInPreviewTag(appId, query, statement);
+    return await remoteCall.executeJsInPreviewTag<T>(appId, query, statement);
   } catch (e) {
     if (e instanceof ExecuteScriptError) {
       return undefined;
@@ -302,8 +302,8 @@ async function executeJsInPreviewTagAndCatchErrors(
  */
 export async function openQuickView() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -318,7 +318,7 @@ export async function openQuickView() {
  */
 export async function openQuickViewDialog() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.hello], [],
       {type: DialogType.SELECT_OPEN_FILE});
 
@@ -335,7 +335,7 @@ export async function openQuickViewDialog() {
  */
 export async function openQuickViewViaContextMenuSingleSelection() {
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Select the file in the file list.
@@ -351,7 +351,7 @@ export async function openQuickViewViaContextMenuSingleSelection() {
  */
 export async function openQuickViewViaContextMenuCheckSelections() {
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Ctrl+A to select all files in the file-list.
@@ -366,8 +366,8 @@ export async function openQuickViewViaContextMenuCheckSelections() {
  */
 export async function closeQuickView() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -381,8 +381,8 @@ export async function closeQuickView() {
  */
 export async function openQuickViewDrive() {
   // Open Files app on Drive containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.hello]);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -402,8 +402,8 @@ export async function openQuickViewDrive() {
  */
 export async function openQuickViewSmbfs() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Populate Smbfs with some files.
   await addEntries(['smbfs'], BASIC_LOCAL_ENTRY_SET);
@@ -412,7 +412,7 @@ export async function openQuickViewSmbfs() {
   await sendTestMessage({name: 'mountSmbfs'});
 
   // Wait for the Smbfs volume to mount and click to open the Smbfs volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('smb');
 
   const files = TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET);
@@ -427,8 +427,8 @@ export async function openQuickViewSmbfs() {
  */
 export async function openQuickViewUsb() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Open a USB file in Quick View.
   await mountAndSelectUsb(appId);
@@ -440,14 +440,14 @@ export async function openQuickViewUsb() {
  */
 export async function openQuickViewRemovablePartitions() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Mount USB device containing partitions.
   await sendTestMessage({name: 'mountUsbWithPartitions'});
 
   // Wait for the USB root to be available.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemByLabel('Drive Label');
   await directoryTree.navigateToPath('/Drive Label');
 
@@ -471,7 +471,7 @@ export async function openQuickViewRemovablePartitions() {
  * instead of the current file location.
  */
 export async function openQuickViewTrash() {
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Select hello.txt.
@@ -484,7 +484,7 @@ export async function openQuickViewTrash() {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Navigate to /Trash and ensure the file is shown.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/Trash');
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]');
@@ -509,11 +509,11 @@ export async function openQuickViewLastModifiedMetaData() {
   await addEntries(['documents_provider'], MODIFIED_ENTRY_SET);
 
   // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount and then click to open
   // DocumentsProvider Volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToHaveChildrenByType(
       documentsProviderVolumeType, /* hasChildren= */ true);
   await directoryTree.selectItemByType(documentsProviderVolumeType);
@@ -545,14 +545,14 @@ export async function openQuickViewLastModifiedMetaData() {
  */
 export async function openQuickViewMtp() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Mount a non-empty MTP volume.
   await sendTestMessage({name: 'mountFakeMtp'});
 
   // Wait for the MTP volume to mount and click to open the MTP volume.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.selectItemByType('mtp');
 
   // Check: the MTP files should appear in the file list.
@@ -568,11 +568,11 @@ export async function openQuickViewMtp() {
  */
 export async function openQuickViewCrostini() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Open a Crostini file in Quick View.
-  await mountCrostini(appId);
+  await remoteCall.mountCrostini(appId);
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
 }
 
@@ -581,11 +581,11 @@ export async function openQuickViewCrostini() {
  */
 export async function openQuickViewGuestOs() {
   // Open Files app on Downloads containing ENTRIES.photos.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Open a GuestOS file in Quick View.
-  await mountGuestOs(appId, BASIC_LOCAL_ENTRY_SET);
+  await remoteCall.mountGuestOs(appId, BASIC_LOCAL_ENTRY_SET);
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
 }
 
@@ -594,7 +594,7 @@ export async function openQuickViewGuestOs() {
  */
 export async function openQuickViewAndroid() {
   // Open Files app on Android files.
-  const appId = await openNewWindow(RootPath.ANDROID_FILES);
+  const appId = await remoteCall.openNewWindow(RootPath.ANDROID_FILES);
 
   // Add files to the Android files volume.
   const entrySet = BASIC_ANDROID_ENTRY_SET.concat([ENTRIES.documentsText]);
@@ -608,7 +608,7 @@ export async function openQuickViewAndroid() {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Navigate to the Android files '/Documents' directory.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Play files/Documents');
 
   // Check: the 'android.txt' file should appear in the file list.
@@ -625,7 +625,7 @@ export async function openQuickViewAndroid() {
  */
 export async function openQuickViewAndroidGuestOs() {
   // Open Files app on Android files.
-  const appId = await openNewWindow(RootPath.ANDROID_FILES);
+  const appId = await remoteCall.openNewWindow(RootPath.ANDROID_FILES);
 
   // Add files to the Android files volume.
   const entrySet = BASIC_ANDROID_ENTRY_SET.concat([ENTRIES.documentsText]);
@@ -639,7 +639,7 @@ export async function openQuickViewAndroidGuestOs() {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Navigate to the Android files '/Documents' directory.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.navigateToPath('/My files/Play files/Documents');
 
   // Check: the 'android.txt' file should appear in the file list.
@@ -661,10 +661,10 @@ export async function openQuickViewDocumentsProvider() {
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
 
   // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.waitForItemToHaveChildrenByType(
       DOCUMENTS_PROVIDER_VOLUME_TYPE, /* hasChildren= */ true);
 
@@ -735,8 +735,8 @@ export async function openQuickViewSniffedText() {
   const preview = ['#quick-view', `#dialog[open] ${previewTag}.text-content`];
 
   // Open Files app on Downloads containing ENTRIES.plainText.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.plainText], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.plainText], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.plainText.nameText);
@@ -776,8 +776,8 @@ export async function openQuickViewTextFileWithUnknownMimeType() {
   const preview = ['#quick-view', `#dialog[open] ${previewTag}.text-content`];
 
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -816,8 +816,8 @@ export async function openQuickViewUtf8Text() {
   const preview = ['#quick-view', `#dialog[open] ${previewTag}.text-content`];
 
   // Open Files app on Downloads containing ENTRIES.utf8Text.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.utf8Text], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.utf8Text], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.utf8Text.nameText);
@@ -884,8 +884,8 @@ export async function openQuickViewScrollText() {
   }
 
   // Open Files app on Downloads containing ENTRIES.tallText.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tallText], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tallText], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallText.nameText);
@@ -921,9 +921,9 @@ export async function openQuickViewScrollText() {
 
   // Scroll the preview and verify that it scrolled.
   await repeatUntil(async () => {
-    const scrollY =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getScrollY);
-    return checkQuickViewTextScrollY(scrollY);
+    const scrollY = await remoteCall.executeJsInPreviewTag<string>(
+        appId, preview, getScrollY);
+    return checkQuickViewTextScrollY(scrollY!);
   });
 }
 
@@ -940,8 +940,8 @@ export async function openQuickViewPdf() {
   const preview = ['#quick-view', `#dialog[open] ${previewTag}.content`];
 
   // Open Files app on Downloads containing ENTRIES.tallPdf.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tallPdf], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tallPdf], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallPdf.nameText);
@@ -999,8 +999,8 @@ export async function openQuickViewPdfPopup() {
   const preview = ['#quick-view', `#dialog[open] ${previewTag}.content`];
 
   // Open Files app on Downloads containing ENTRIES.popupPdf.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.popupPdf], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.popupPdf], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.popupPdf.nameText);
@@ -1062,8 +1062,8 @@ export async function openQuickViewPdfPreviewsDisabled() {
   await sendTestMessage({name: 'setPdfPreviewEnabled', enabled: false});
 
   // Open Files app on Downloads containing ENTRIES.tallPdf.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tallPdf], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tallPdf], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallPdf.nameText);
@@ -1101,8 +1101,8 @@ export async function openQuickViewMhtml() {
   const preview = ['#quick-view', 'files-safe-media[type="html"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.plainText.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.mHtml], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.mHtml], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.mHtml.nameText);
@@ -1159,8 +1159,8 @@ export async function openQuickViewScrollHtml() {
   }
 
   // Open Files app on Downloads containing ENTRIES.tallHtml.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tallHtml], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tallHtml], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallHtml.nameText);
@@ -1186,8 +1186,8 @@ export async function openQuickViewScrollHtml() {
 
   // The initial preview scrollY should be 0.
   await repeatUntil(async () => {
-    const scrollY =
-        await executeJsInPreviewTagAndCatchErrors(appId, preview, getScrollY);
+    const scrollY = await executeJsInPreviewTagAndCatchErrors<string>(
+        appId, preview, getScrollY);
     if (String(scrollY) !== '0') {
       return pending(caller, `Waiting for preview text to load.`);
     }
@@ -1196,9 +1196,9 @@ export async function openQuickViewScrollHtml() {
 
   // Scroll the preview and verify that it scrolled.
   await repeatUntil(async () => {
-    const scrollY =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getScrollY);
-    return checkQuickViewHtmlScrollY(scrollY);
+    const scrollY = await remoteCall.executeJsInPreviewTag<string>(
+        appId, preview, getScrollY);
+    return checkQuickViewHtmlScrollY(scrollY!);
   });
 
   // Check: the mimeType field should not be displayed.
@@ -1221,8 +1221,8 @@ export async function openQuickViewBackgroundColorHtml() {
   const preview = ['#quick-view', 'files-safe-media[type="html"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.tallHtml.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tallHtml], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tallHtml], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallHtml.nameText);
@@ -1246,8 +1246,9 @@ export async function openQuickViewBackgroundColorHtml() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
+  chrome.test.assertTrue(!!backgroundColor);
 
   chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
 }
@@ -1271,8 +1272,8 @@ export async function openQuickViewAudio() {
   const albumArtworkPreview = ['#quick-view', '#audio-artwork'];
 
   // Open Files app on Downloads containing ENTRIES.beautiful song.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.beautiful.nameText);
@@ -1303,17 +1304,10 @@ export async function openQuickViewAudio() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
-
-  if (await isDarkModeEnabled()) {
-    // Check: the preview body backgroundColor should be black.
-    chrome.test.assertEq('rgb(0, 0, 0)', backgroundColor[0]);
-  } else {
-    // Check: the preview body backgroundColor should be transparent black.
-    chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
-  }
+  chrome.test.assertTrue(!!backgroundColor);
+  await checkBackgroundColor(backgroundColor[0]!);
 
   // Check: the correct mimeType should be displayed.
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
@@ -1333,8 +1327,8 @@ export async function openQuickViewAudioOnDrive() {
   const preview = ['#quick-view', 'files-safe-media[type="audio"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.beautiful song.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.beautiful]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.beautiful]);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.beautiful.nameText);
@@ -1358,16 +1352,10 @@ export async function openQuickViewAudioOnDrive() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
-
-  if (await isDarkModeEnabled()) {
-    // Check: the preview body backgroundColor should be black.
-    chrome.test.assertEq('rgb(0, 0, 0)', backgroundColor[0]);
-  } else {
-    // Check: the preview body backgroundColor should be transparent black.
-    chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
-  }
+  chrome.test.assertTrue(!!backgroundColor);
+  await checkBackgroundColor(backgroundColor[0]!);
 }
 
 /**
@@ -1396,8 +1384,8 @@ export async function openQuickViewAudioWithImageMetadata() {
   const albumArtWebView = ['#quick-view', '#audio-artwork', previewTag];
 
   // Open Files app on Downloads containing the audio test file.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [id3Audio], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [id3Audio], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, id3Audio.nameText);
@@ -1442,8 +1430,8 @@ export async function openQuickViewImageJpg() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.smallJpeg.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.smallJpeg], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.smallJpeg], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.smallJpeg.nameText);
@@ -1467,16 +1455,10 @@ export async function openQuickViewImageJpg() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
-
-  if (await isDarkModeEnabled()) {
-    // Check: the preview body backgroundColor should be black.
-    chrome.test.assertEq('rgb(0, 0, 0)', backgroundColor[0]);
-  } else {
-    // Check: the preview body backgroundColor should be transparent black.
-    chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
-  }
+  chrome.test.assertTrue(!!backgroundColor);
+  await checkBackgroundColor(backgroundColor[0]!);
 
   // Check: the correct mimeType should be displayed.
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
@@ -1496,7 +1478,7 @@ export async function openQuickViewImageJpeg() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.sampleJpeg.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.sampleJpeg], []);
 
   // Open the file in Quick View.
@@ -1521,16 +1503,10 @@ export async function openQuickViewImageJpeg() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
-
-  if (await isDarkModeEnabled()) {
-    // Check: the preview body backgroundColor should be black.
-    chrome.test.assertEq('rgb(0, 0, 0)', backgroundColor[0]);
-  } else {
-    // Check: the preview body backgroundColor should be transparent black.
-    chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
-  }
+  chrome.test.assertTrue(!!backgroundColor);
+  await checkBackgroundColor(backgroundColor[0]!);
 
   // Check: the correct mimeType should be displayed.
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
@@ -1551,8 +1527,8 @@ export async function openQuickViewImageExif() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.exifImage.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.exifImage], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.exifImage], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.exifImage.nameText);
@@ -1604,8 +1580,8 @@ export async function openQuickViewImageRaw() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.rawImage.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.rawImage], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.rawImage], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.rawImage.nameText);
@@ -1654,8 +1630,8 @@ export async function openQuickViewImageRawWithOrientation() {
   const filesSafeMedia = ['#quick-view', 'files-safe-media[type="image"]'];
 
   // Open Files app on Downloads containing ENTRIES.rawNef.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.nefImage], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.nefImage], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.nefImage.nameText);
@@ -1721,8 +1697,8 @@ export async function openQuickViewImageWebp() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.rawImage.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.webpImage], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.webpImage], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.webpImage.nameText);
@@ -1767,7 +1743,7 @@ export async function openQuickViewImageClick() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   // Open Files app on Downloads containing two images.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.desktop, ENTRIES.image3], []);
 
   // Open the first image in Quick View.
@@ -1833,7 +1809,7 @@ export async function openQuickViewBrokenImage() {
   ];
 
   // Open Files app on Downloads containing ENTRIES.brokenJpeg.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.brokenJpeg], []);
 
   // Open the file in Quick View.
@@ -1871,8 +1847,8 @@ export async function openQuickViewVideo() {
   const preview = ['#quick-view', 'files-safe-media[type="video"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.webm video.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.webm], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.webm], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.webm.nameText);
@@ -1896,16 +1872,10 @@ export async function openQuickViewVideo() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
-
-  if (await isDarkModeEnabled()) {
-    // Check: the preview body backgroundColor should be black.
-    chrome.test.assertEq('rgb(0, 0, 0)', backgroundColor[0]);
-  } else {
-    // Check: the preview body backgroundColor should be transparent black.
-    chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
-  }
+  chrome.test.assertTrue(!!backgroundColor);
+  await checkBackgroundColor(backgroundColor[0]!);
 
   // Check: the correct mimeType should be displayed.
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
@@ -1932,8 +1902,8 @@ export async function openQuickViewVideoOnDrive() {
   const preview = ['#quick-view', 'files-safe-media[type="video"]', previewTag];
 
   // Open Files app on Downloads containing ENTRIES.webm video.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.webm]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.webm]);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.webm.nameText);
@@ -1957,16 +1927,10 @@ export async function openQuickViewVideoOnDrive() {
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =
       'window.getComputedStyle(document.body).backgroundColor';
-  const backgroundColor = await remoteCall.executeJsInPreviewTag(
+  const backgroundColor = await remoteCall.executeJsInPreviewTag<string[]>(
       appId, preview, getBackgroundStyle);
-
-  if (await isDarkModeEnabled()) {
-    // Check: the preview body backgroundColor should be black.
-    chrome.test.assertEq('rgb(0, 0, 0)', backgroundColor[0]);
-  } else {
-    // Check: the preview body backgroundColor should be transparent black.
-    chrome.test.assertEq('rgba(0, 0, 0, 0)', backgroundColor[0]);
-  }
+  chrome.test.assertTrue(!!backgroundColor);
+  await checkBackgroundColor(backgroundColor[0]!);
 
   // Check: the correct mimeType should be displayed.
   const mimeType = await getQuickViewMetadataBoxField(appId, 'Type');
@@ -1995,7 +1959,8 @@ export async function openQuickViewKeyboardUpDownChangesView() {
 
   // Open Files app on Downloads containing two text files.
   const files = [ENTRIES.hello, ENTRIES.tallText];
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
 
   // Open the last file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallText.nameText);
@@ -2064,7 +2029,8 @@ export async function openQuickViewKeyboardLeftRightChangesView() {
 
   // Open Files app on Downloads containing two text files.
   const files = [ENTRIES.hello, ENTRIES.tallText];
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
 
   // Open the last file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallText.nameText);
@@ -2124,8 +2090,8 @@ export async function openQuickViewKeyboardLeftRightChangesView() {
  */
 export async function openQuickViewToggleInfoButtonKeyboard() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -2161,8 +2127,8 @@ export async function openQuickViewToggleInfoButtonKeyboard() {
  */
 export async function openQuickViewToggleInfoButtonClick() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -2204,7 +2170,7 @@ export async function openQuickViewWithMultipleFiles() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Add item 3 to the check-selection, ENTRIES.desktop.
@@ -2270,7 +2236,8 @@ export async function openQuickViewWithMultipleFilesText() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   const files = [ENTRIES.tallText, ENTRIES.hello, ENTRIES.smallJpeg];
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
 
   // Add item 1 to the check-selection, ENTRIES.smallJpeg.
   const downKey = ['#file-list', 'ArrowDown', false, false, false];
@@ -2362,7 +2329,8 @@ export async function openQuickViewWithMultipleFilesPdf() {
   const preview = ['#quick-view', 'files-safe-media[type="image"]', previewTag];
 
   const files = [ENTRIES.tallPdf, ENTRIES.desktop, ENTRIES.smallJpeg];
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
 
   // Add item 1 to the check-selection, ENTRIES.smallJpeg.
   const downKey = ['#file-list', 'ArrowDown', false, false, false];
@@ -2455,7 +2423,8 @@ export async function openQuickViewWithMultipleFilesKeyboardUpDown() {
 
   // Open Files app on Downloads containing three text files.
   const files = [ENTRIES.hello, ENTRIES.tallText, ENTRIES.plainText];
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
 
   // Add item 1 to the check-selection, ENTRIES.tallText.
   const downKey = ['#file-list', 'ArrowDown', false, false, false];
@@ -2547,7 +2516,8 @@ export async function openQuickViewWithMultipleFilesKeyboardLeftRight() {
 
   // Open Files app on Downloads containing three text files.
   const files = [ENTRIES.hello, ENTRIES.tallText, ENTRIES.plainText];
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
+  const appId =
+      await remoteCall.setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
 
   // Add item 1 to the check-selection, ENTRIES.tallText.
   const downKey = ['#file-list', 'ArrowDown', false, false, false];
@@ -2614,8 +2584,8 @@ export async function openQuickViewWithMultipleFilesKeyboardLeftRight() {
   // Wait until the preview displays that file's content.
   await repeatUntil(async () => {
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text = await executeJsInPreviewTagAndCatchErrors(
-                     appId, preview, getTextContent) as string[];
+    const text = await executeJsInPreviewTagAndCatchErrors<string>(
+        appId, preview, getTextContent);
     // Check: the content of ENTRIES.tallText should be shown.
     if (!text || !text[0] || !text[0].includes('42 tall text')) {
       return pending(caller, 'Waiting for preview content.');
@@ -2630,8 +2600,8 @@ export async function openQuickViewWithMultipleFilesKeyboardLeftRight() {
  */
 export async function openQuickViewAndEscape() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -2658,11 +2628,11 @@ export async function openQuickViewAndEscape() {
  */
 export async function openQuickViewFromDirectoryTree() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Focus Directory Tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   await directoryTree.focusTree();
 
   // Ctrl+A to select the only file.
@@ -2710,8 +2680,8 @@ export async function openQuickViewTabIndexImage() {
   ];
 
   // Open Files app on Downloads containing ENTRIES.smallJpeg.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.smallJpeg], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.smallJpeg], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.smallJpeg.nameText);
@@ -2748,8 +2718,8 @@ export async function openQuickViewTabIndexText() {
   ];
 
   // Open Files app on Downloads containing ENTRIES.tallText.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tallText], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tallText], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallText.nameText);
@@ -2784,8 +2754,8 @@ export async function openQuickViewTabIndexHtml() {
   ];
 
   // Open Files app on Downloads containing ENTRIES.tallHtml.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.tallHtml], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.tallHtml], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.tallHtml.nameText);
@@ -2812,8 +2782,8 @@ export async function openQuickViewTabIndexHtml() {
  */
 export async function openQuickViewTabIndexAudio() {
   // Open Files app on Downloads containing ENTRIES.beautiful song.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.beautiful.nameText);
@@ -2855,8 +2825,9 @@ export async function openQuickViewTabIndexAudio() {
 
     // Check: back should eventually get the focus again.
     const activeElement =
-        await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
-    if (activeElement.attributes['aria-label'] === 'Back') {
+        await remoteCall.callRemoteTestUtil<ElementObject|null>(
+            'deepGetActiveElement', appId, []);
+    if (activeElement && activeElement.attributes['aria-label'] === 'Back') {
       break;
     }
   }
@@ -2868,8 +2839,8 @@ export async function openQuickViewTabIndexAudio() {
  */
 export async function openQuickViewTabIndexVideo() {
   // Open Files app on Downloads containing ENTRIES.webm video.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.webm], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.webm], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.webm.nameText);
@@ -2911,8 +2882,9 @@ export async function openQuickViewTabIndexVideo() {
 
     // Check: back should eventually get the focus again.
     const activeElement =
-        await remoteCall.callRemoteTestUtil('deepGetActiveElement', appId, []);
-    if (activeElement.attributes['aria-label'] === 'Back') {
+        await remoteCall.callRemoteTestUtil<ElementObject|null>(
+            'deepGetActiveElement', appId, []);
+    if (activeElement && activeElement.attributes['aria-label'] === 'Back') {
       break;
     }
   }
@@ -2923,8 +2895,8 @@ export async function openQuickViewTabIndexVideo() {
  */
 export async function openQuickViewTabIndexDeleteDialog() {
   // Open Files app.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.photos], []);
 
   // Open a USB file in Quick View. USB delete never uses trash and always
   // shows the delete dialog.
@@ -2970,8 +2942,8 @@ export async function openQuickViewTabIndexDeleteDialog() {
  */
 export async function openQuickViewAndDeleteSingleSelection() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -2998,7 +2970,7 @@ export async function openQuickViewAndDeleteSingleSelection() {
  */
 export async function openQuickViewAndDeleteCheckSelection() {
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   const caller = getCaller();
@@ -3063,7 +3035,7 @@ export async function openQuickViewDeleteEntireCheckSelection() {
   const caller = getCaller();
 
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Check-select Beautiful Song.ogg and My Desktop Background.png.
@@ -3166,8 +3138,8 @@ export async function openQuickViewDeleteEntireCheckSelection() {
  */
 export async function openQuickViewClickDeleteButton() {
   // Open Files app on Downloads containing ENTRIES.hello.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.hello.nameText);
@@ -3190,7 +3162,7 @@ export async function openQuickViewClickDeleteButton() {
  */
 export async function openQuickViewDeleteButtonNotShown() {
   // Open Files app on My Files
-  const appId = await openNewWindow('');
+  const appId = await remoteCall.openNewWindow('');
 
   // Wait for the file list to appear.
   await remoteCall.waitForElement(appId, '#file-list');
@@ -3218,7 +3190,7 @@ export async function openQuickViewDeleteButtonNotShown() {
  */
 export async function openQuickViewUmaViaContextMenu() {
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Record the UMA value's bucket count before we use the menu option.
@@ -3255,7 +3227,7 @@ export async function openQuickViewUmaViaContextMenu() {
  */
 export async function openQuickViewUmaForCheckSelectViaContextMenu() {
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Record the UMA value's bucket count before we use the menu option.
@@ -3296,7 +3268,7 @@ export async function openQuickViewUmaForCheckSelectViaContextMenu() {
  */
 export async function openQuickViewUmaViaSelectionMenu() {
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Ctrl+A to select all files in the file-list.
@@ -3381,7 +3353,7 @@ export async function openQuickViewUmaViaSelectionMenuKeyboard() {
   const caller = getCaller();
 
   // Open Files app on Downloads containing BASIC_LOCAL_ENTRY_SET.
-  const appId = await setupAndWaitUntilReady(
+  const appId = await remoteCall.setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Ctrl+A to select all files in the file-list.
@@ -3418,8 +3390,8 @@ export async function openQuickViewUmaViaSelectionMenuKeyboard() {
     chrome.test.assertEq(
         'tabKeyDispatched', result, 'Tab key dispatch failure');
 
-    const element =
-        await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+    const element = await remoteCall.callRemoteTestUtil<ElementObject|null>(
+        'getActiveElement', appId, []);
 
     if (element && element.attributes['id'] === 'selection-menu-button') {
       return true;
@@ -3435,8 +3407,8 @@ export async function openQuickViewUmaViaSelectionMenuKeyboard() {
     chrome.test.assertTrue(
         await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, keyDown));
 
-    const element =
-        await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+    const element = await remoteCall.callRemoteTestUtil<ElementObject|null>(
+        'getActiveElement', appId, []);
 
     if (element && element.attributes['command'] === '#get-info') {
       return true;
@@ -3489,8 +3461,8 @@ export async function openQuickViewEncryptedFile() {
    */
   const contentPanel = ['#quick-view', '#dialog[open] #innerContentPanel'];
 
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
   // Open the file in Quick View.
   await openQuickViewEx(appId, ENTRIES.testCSEFile.nameText);

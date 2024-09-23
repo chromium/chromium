@@ -54,8 +54,6 @@ const int kPrivacyIndicatorsViewExpandedLongerSideSize = 50;
 const int kPrivacyIndicatorsViewExpandedWithScreenShareSize = 68;
 const int kPrivacyIndicatorsViewSize = 8;
 
-constexpr auto kRepeatedShowTimerInterval = base::Milliseconds(100);
-
 constexpr auto kDwellInExpandDuration = base::Milliseconds(3000);
 constexpr auto kShorterSizeShrinkAnimationDelay =
     kDwellInExpandDuration + base::Milliseconds(133);
@@ -151,12 +149,7 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
       shorter_side_shrink_animation_(std::make_unique<gfx::LinearAnimation>(
           kSizeChangeAnimationDuration,
           gfx::LinearAnimation::kDefaultFrameRate,
-          this)),
-      repeated_shows_timer_(
-          FROM_HERE,
-          kRepeatedShowTimerInterval,
-          this,
-          &PrivacyIndicatorsTrayItemView::RecordRepeatedShows) {
+          this)) {
   SetVisible(false);
 
   auto container_view = std::make_unique<views::View>();
@@ -174,6 +167,7 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kPrivacyIndicatorsViewExpandedShorterSideSize / 2});
+  layer()->SetIsFastRoundedCorner(true);
 
   auto add_icon_to_container = [&container_view]() {
     auto icon = std::make_unique<views::ImageView>();
@@ -270,14 +264,14 @@ std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
   auto* controller = PrivacyIndicatorsController::Get();
   auto cam_and_mic_status = std::u16string();
   if (controller->IsCameraUsed() && controller->IsMicrophoneUsed()) {
-    cam_and_mic_status = l10n_util::GetStringUTF16(
-        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
+    cam_and_mic_status =
+        l10n_util::GetStringUTF16(IDS_PRIVACY_INDICATORS_STATUS_CAMERA_AND_MIC);
   } else if (controller->IsCameraUsed()) {
     cam_and_mic_status =
-        l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
+        l10n_util::GetStringUTF16(IDS_PRIVACY_INDICATORS_STATUS_CAMERA);
   } else if (controller->IsMicrophoneUsed()) {
     cam_and_mic_status =
-        l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
+        l10n_util::GetStringUTF16(IDS_PRIVACY_INDICATORS_STATUS_MIC);
   }
 
   auto screen_share_status =
@@ -323,12 +317,6 @@ void PrivacyIndicatorsTrayItemView::UpdateVisibility() {
   }
 
   ++count_visible_per_session_;
-
-  // Keep incrementing the count to track the number of times the view flickers.
-  // When the delay of `kRepeatedShowTimerInterval` has reached, record that
-  // count.
-  ++count_repeated_shows_;
-  repeated_shows_timer_.Reset();
 }
 
 void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
@@ -342,7 +330,8 @@ void PrivacyIndicatorsTrayItemView::HandleLocaleChange() {
   TooltipTextChanged();
 }
 
-gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize() const {
+gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int shorter_side;
   int longer_side;
 
@@ -396,10 +385,6 @@ void PrivacyIndicatorsTrayItemView::OnBoundsChanged(
 views::View* PrivacyIndicatorsTrayItemView::GetTooltipHandlerForPoint(
     const gfx::Point& point) {
   return GetLocalBounds().Contains(point) ? this : nullptr;
-}
-
-const char* PrivacyIndicatorsTrayItemView::GetClassName() const {
-  return "PrivacyIndicatorsTrayItemView";
 }
 
 void PrivacyIndicatorsTrayItemView::AnimationProgressed(
@@ -476,8 +461,8 @@ void PrivacyIndicatorsTrayItemView::PerformAnimation() {
   // 3. kOnlyLongerSideShrink: After that, collapses the long side first.
   // 4. kBothSideShrink: Before the long side shrinks completely, collapses the
   //    short side to the final size (a green dot).
-  expand_animation_->Start();
   animation_state_ = AnimationState::kExpand;
+  expand_animation_->Start();
   StartRecordAnimationSmoothness(GetWidget(), throughput_tracker_);
 
   // At the same time, fade in icons.
@@ -609,20 +594,6 @@ void PrivacyIndicatorsTrayItemView::RecordPrivacyIndicatorsType() {
         "Ash.PrivacyIndicators.NumberOfAppsAccessingMicrophone",
         controller->apps_using_microphone().size());
   }
-}
-
-void PrivacyIndicatorsTrayItemView::RecordRepeatedShows() {
-  // Only records in primary display. Note that we also record the metric when
-  // `count_repeated_shows_` is one even though this is not a bad signal. This
-  // is because we want to record proper shows so we can analyze the repeated
-  // shows in context.
-  if (count_repeated_shows_ == 0 || !IsInPrimaryDisplay(GetWidget())) {
-    return;
-  }
-
-  base::UmaHistogramCounts100("Ash.PrivacyIndicators.NumberOfRepeatedShows",
-                              count_repeated_shows_);
-  count_repeated_shows_ = 0;
 }
 
 BEGIN_METADATA(PrivacyIndicatorsTrayItemView)

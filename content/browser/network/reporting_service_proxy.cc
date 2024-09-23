@@ -180,7 +180,7 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       return;
     rph->GetStoragePartition()->GetNetworkContext()->QueueReport(
         type, group, url, reporting_source_, network_anonymization_key_,
-        /*user_agent=*/std::nullopt, std::move(body));
+        std::move(body));
   }
 
   const int render_process_id_;

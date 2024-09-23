@@ -15,12 +15,14 @@ include_rules = [
   "+components/cdm/browser",
   "+components/component_updater/android",
   "+components/component_updater/installer_policies",
+  "+components/content_relationship_verification",
   "+components/crash/content/browser",
   "+components/crash/core",
   "+components/download/public/common",
   "+components/embedder_support",
   "+components/favicon_base",
   "+components/flags_ui",
+  "+components/grit",
   "+components/heap_profiling",
   "+components/history/core/browser",
   "+components/keyed_service/core",
@@ -30,7 +32,9 @@ include_rules = [
   "+components/network_hints/browser",
   "+components/optimization_guide/core/bloom_filter.h",
   "+components/origin_trials",
+  "+components/os_crypt/async",
   "+components/page_load_metrics/browser",
+  "+components/page_load_metrics/google/browser",
   "+components/permissions",
   "+components/policy/core/browser",
   "+components/policy/core/common",
@@ -45,6 +49,7 @@ include_rules = [
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/security_interstitials",
+  "+components/sensitive_content",
   "+components/services/heap_profiling",
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
@@ -74,6 +79,7 @@ include_rules = [
   "+media/base/android",
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/buildflags.h",
+  "+media/mojo/mojom",
 
   "+components/policy/policy_constants.h",
   "+components/embedder_support/android",
@@ -83,6 +89,8 @@ include_rules = [
   "+services/cert_verifier/public/mojom",
 
   "+services/metrics/public/cpp/ukm_source_id.h",
+
+  "+services/data_decoder/public/cpp/data_decoder.h",
 
   "+services/network/public",
   # This is needed for the CookieManager to configure the CookieStore directly.
@@ -97,6 +105,7 @@ include_rules = [
   # network service related unit tests
   "+services/network/test",
   "+mojo/core/embedder/embedder.h",
+  "+mojo/public/cpp/base",
   "+mojo/public/cpp/system",
 
   # Background tracing support
@@ -107,6 +116,7 @@ include_rules = [
 
   "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
   "+third_party/blink/public/common/features.h",
+  "+third_party/blink/public/common/navigation/navigation_params.h",
   "+third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h",
   "+third_party/blink/public/common/origin_trials/trial_token_validator.h",
   "+third_party/blink/public/common/page_state/page_state.h",
@@ -114,8 +124,10 @@ include_rules = [
   "+third_party/blink/public/common/storage_key/storage_key.h",
   "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
+  "+third_party/blink/public/common/web_preferences/web_preferences.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
   "+third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+  "+third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h",
   "+third_party/blink/public/platform/resource_request_blocked_reason.h",
   "+third_party/crashpad/crashpad/client",
   "+third_party/crashpad/crashpad/util",
@@ -155,4 +167,9 @@ include_rules = [
   "+third_party/blink/public/mojom/input",
   # For background tracing setup.
   "+third_party/metrics_proto",
+  # For Android WebView Media Integrity
+  "+third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h",
+  # For Chrome's API keys in WebView.
+  "+google_apis/common/api_key_request_util.h",
+  "+google_apis/google_api_keys.h",
 ]

@@ -35,29 +35,31 @@ void PrefChangeRegistrar::Reset() {
   service_ = nullptr;
 }
 
-void PrefChangeRegistrar::Add(const std::string& path,
+void PrefChangeRegistrar::Add(std::string_view path,
                               const base::RepeatingClosure& obs) {
   Add(path,
       base::BindRepeating(&PrefChangeRegistrar::InvokeUnnamedCallback, obs));
 }
 
-void PrefChangeRegistrar::Add(const std::string& path,
+void PrefChangeRegistrar::Add(std::string_view path,
                               const NamedChangeCallback& obs) {
   if (!service_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   DCHECK(!IsObserved(path)) << "Already had pref, \"" << path
                             << "\", registered.";
 
   service_->AddPrefObserver(path, this);
-  observers_[path] = obs;
+  observers_.insert_or_assign(std::string(path), obs);
 }
 
-void PrefChangeRegistrar::Remove(const std::string& path) {
+void PrefChangeRegistrar::Remove(std::string_view path) {
   DCHECK(IsObserved(path));
 
-  observers_.erase(path);
+  // Use std::map::erase directly once C++23 is supported.
+  auto it = observers_.find(path);
+  observers_.erase(it);
   service_->RemovePrefObserver(path, this);
 }
 
@@ -74,14 +76,17 @@ bool PrefChangeRegistrar::IsEmpty() const {
   return observers_.empty();
 }
 
-bool PrefChangeRegistrar::IsObserved(const std::string& pref) {
+bool PrefChangeRegistrar::IsObserved(std::string_view pref) {
   return observers_.find(pref) != observers_.end();
 }
 
 void PrefChangeRegistrar::OnPreferenceChanged(PrefService* service,
-                                              const std::string& pref) {
-  if (IsObserved(pref))
-    observers_[pref].Run(pref);
+                                              std::string_view pref) {
+  if (auto it = observers_.find(pref); it != observers_.end()) {
+    // TODO: crbug.com/349741884 - Consider changing the callback to accept a
+    // string_view.
+    it->second.Run(std::string(pref));
+  }
 }
 
 void PrefChangeRegistrar::InvokeUnnamedCallback(

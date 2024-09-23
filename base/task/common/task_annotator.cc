@@ -5,8 +5,10 @@
 #include "base/task/common/task_annotator.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <array>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
@@ -15,13 +17,11 @@
 #include "base/debug/alias.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/ranges/algorithm.h"
-#include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
-#include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_mojo_event_info.pbzero.h"  // nogncheck
@@ -36,15 +36,15 @@ TaskAnnotator::ObserverForTesting* g_task_annotator_observer = nullptr;
 // The PendingTask currently in progress on each thread. Used to allow creating
 // a breadcrumb of program counters on the stack to help identify a task's
 // origin in crashes.
-ABSL_CONST_INIT thread_local PendingTask* current_pending_task = nullptr;
+constinit thread_local PendingTask* current_pending_task = nullptr;
 
 // Scoped IPC-related data (IPC hash and/or IPC interface name). IPC hash or
 // interface name can be known before the associated task object is created;
 // thread-local so that this data can be affixed to the associated task.
-ABSL_CONST_INIT thread_local TaskAnnotator::ScopedSetIpcHash*
+constinit thread_local TaskAnnotator::ScopedSetIpcHash*
     current_scoped_ipc_hash = nullptr;
 
-ABSL_CONST_INIT thread_local TaskAnnotator::LongTaskTracker*
+constinit thread_local TaskAnnotator::LongTaskTracker*
     current_long_task_tracker = nullptr;
 
 // These functions can be removed, and the calls below replaced with direct
@@ -200,26 +200,6 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
       g_task_annotator_observer->BeforeRunTask(&pending_task);
     }
     std::move(pending_task.task).Run();
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_FAMILY)
-    // Some tasks on some machines clobber the non-volatile XMM registers in
-    // violation of the Windows ABI. This empty assembly language block with
-    // clobber directives tells the compiler to assume that these registers
-    // may have lost their values. This ensures that this function will not rely
-    // on the registers retaining their values, and it ensures that it will
-    // restore the values when this function ends. This is needed because the
-    // code-gen for at least one caller of this function in official builds
-    // relies on an XMM register (usually XMM7, cleared to zero) maintaining its
-    // value as multiple tasks are run, which causes crashes if it is corrupted,
-    // since "zeroed" variables end up not being zeroed. The third-party issue
-    // is believed to be fixed but will take a while to propagate to users which
-    // is why this mitigation is needed. For details see
-    // https://crbug.com/1218384.
-    asm(""
-        :
-        :
-        : "%xmm6", "%xmm7", "%xmm8", "%xmm9", "%xmm10", "%xmm11", "%xmm12",
-          "%xmm13", "%xmm14", "%xmm15");
-#endif
   }
 
   // Stomp the markers. Otherwise they can stick around on the unused parts of
@@ -313,13 +293,8 @@ TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
 
 // Static
 uint32_t TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
-    base::StringPiece name) {
-  base::MD5Digest digest;
-  base::MD5Sum(base::as_byte_span(name), &digest);
-  uint32_t value;
-  DCHECK_GE(sizeof(digest.a), sizeof(value));
-  memcpy(&value, digest.a, sizeof(value));
-  return base::NetToHost32(value);
+    std::string_view name) {
+  return HashMetricNameAs32Bits(name);
 }
 
 TaskAnnotator::ScopedSetIpcHash::~ScopedSetIpcHash() {
@@ -390,7 +365,7 @@ void TaskAnnotator::LongTaskTracker::EmitReceivedIPCDetails(
   // base::ModuleCache::CreateModuleForAddress is not implemented for it.
   // Thus the below code must be included on a conditional basis.
   const auto ipc_method_address = reinterpret_cast<uintptr_t>(ipc_method_info_);
-  const absl::optional<size_t> location_iid =
+  const std::optional<size_t> location_iid =
       base::trace_event::InternedUnsymbolizedSourceLocation::Get(
           &ctx, ipc_method_address);
   if (location_iid) {

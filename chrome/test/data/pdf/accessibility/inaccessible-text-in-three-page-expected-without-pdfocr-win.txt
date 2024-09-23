@@ -1,0 +1,13 @@
+pdfRoot 'PDF document containing 3 pages'
+  banner
+    status 'This PDF is inaccessible. Couldn't download text extraction files. Please try again later.'
+      staticText 'This PDF is inaccessible. Couldn't download text extraction files. Please try again later.'
+  region 'Page 1'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 2'
+    paragraph
+      image 'Unlabeled graphic'
+  region 'Page 3'
+    paragraph
+      image 'Unlabeled graphic'

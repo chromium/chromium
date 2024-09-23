@@ -32,28 +32,30 @@ FormData GenerateWithProto(const ::form_data_fuzzer::Form& form_proto) {
     return result;
   }
 
-  result.id_attribute = UTF8ToUTF16(form_proto.id());
-  result.name_attribute = UTF8ToUTF16(form_proto.name());
-  result.name = UTF8ToUTF16(form_proto.name());
-  result.action = GURL(form_proto.action());
-  result.url = GURL(form_proto.origin());
-  result.main_frame_origin =
-      url::Origin::Create(GURL(form_proto.main_frame_origin()));
+  result.set_id_attribute(UTF8ToUTF16(form_proto.id()));
+  result.set_name_attribute(UTF8ToUTF16(form_proto.name()));
+  result.set_name(UTF8ToUTF16(form_proto.name()));
+  result.set_action(GURL(form_proto.action()));
+  result.set_url(GURL(form_proto.origin()));
+  result.set_main_frame_origin(
+      url::Origin::Create(GURL(form_proto.main_frame_origin())));
 
-  result.fields.resize(form_proto.fields_size());
-  for (int i = 0; i < form_proto.fields_size(); ++i) {
-    const ::form_data_fuzzer::FormField& form_data_proto = form_proto.fields(i);
-    result.fields[i].id_attribute = UTF8ToUTF16(form_data_proto.id());
-    result.fields[i].name_attribute = UTF8ToUTF16(form_data_proto.name());
-    result.fields[i].is_focusable = form_data_proto.is_focusable();
-    result.fields[i].form_control_type = static_cast<autofill::FormControlType>(
-        form_data_proto.form_control_type());
-    result.fields[i].autocomplete_attribute =
-        form_data_proto.autocomplete_attribute();
-    result.fields[i].label = UTF8ToUTF16(form_data_proto.label());
-    result.fields[i].name = UTF8ToUTF16(form_data_proto.name());
-    result.fields[i].value = UTF8ToUTF16(form_data_proto.value());
+  std::vector<FormFieldData> fields;
+  fields.reserve(form_proto.fields_size());
+  for (const ::form_data_fuzzer::FormField& form_data_proto :
+       form_proto.fields()) {
+    FormFieldData& field = fields.emplace_back();
+    field.set_id_attribute(UTF8ToUTF16(form_data_proto.id()));
+    field.set_name_attribute(UTF8ToUTF16(form_data_proto.name()));
+    field.set_is_focusable(form_data_proto.is_focusable());
+    field.set_form_control_type(static_cast<autofill::FormControlType>(
+        form_data_proto.form_control_type()));
+    field.set_autocomplete_attribute(form_data_proto.autocomplete_attribute());
+    field.set_label(UTF8ToUTF16(form_data_proto.label()));
+    field.set_name(UTF8ToUTF16(form_data_proto.name()));
+    field.set_value(UTF8ToUTF16(form_data_proto.value()));
   }
+  result.set_fields(std::move(fields));
 
   return result;
 }

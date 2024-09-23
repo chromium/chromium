@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:orientation="vertical">
+
+  <!-- CheckBoxWithDescription - With checkbox unchecked and primary, without description. -->
+  <org.chromium.components.browser_ui.widget.CheckBoxWithDescription
+      android:id="@+id/checkbox_primary_only"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+
+  <!-- CheckBoxWithDescription - With checkbox unchecked, primary, and description. -->
+  <org.chromium.components.browser_ui.widget.CheckBoxWithDescription
+      android:id="@+id/checkbox_primary_description_short"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+
+  <!-- CheckBoxWithDescription - With checkbox unchecked, primary, and long description. -->
+  <org.chromium.components.browser_ui.widget.CheckBoxWithDescription
+      android:id="@+id/checkbox_primary_description_long"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+
+  <!-- CheckBoxWithDescription - With checkbox checked and primary, without description. -->
+  <org.chromium.components.browser_ui.widget.CheckBoxWithDescription
+      android:id="@+id/checkbox_checked_primary_only"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+
+  <!-- CheckBoxWithDescription - With checkbox checked, primary, and description. -->
+  <org.chromium.components.browser_ui.widget.CheckBoxWithDescription
+      android:id="@+id/checkbox_checked_primary_description_short"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+
+  <!-- CheckBoxWithDescription - With checkbox checked, primary, and long description. -->
+  <org.chromium.components.browser_ui.widget.CheckBoxWithDescription
+      android:id="@+id/checkbox_checked_primary_description_long"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+
+</LinearLayout>

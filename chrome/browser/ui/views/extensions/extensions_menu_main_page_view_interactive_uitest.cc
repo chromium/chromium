@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 
-#include "chrome/browser/extensions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
@@ -16,10 +18,13 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
@@ -28,6 +33,7 @@
 namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
+using ScriptingPermissionsModifier = extensions::ScriptingPermissionsModifier;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
 }  // namespace
@@ -137,7 +143,7 @@ ExtensionsMenuMainPageViewInteractiveUITest::menu_items() {
 
 void ExtensionsMenuMainPageViewInteractiveUITest::ShowUi(
     const std::string& name) {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // The extensions menu can appear offscreen on Linux, so verifying bounds
@@ -292,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 // Test that running an extension's action, when site permission were withheld,
 // sets the extension's site access toggle on. It also tests that the menu's
 // message section and the toolbar's request access button are properly
-// updated with the extension requesting access.
+// updated.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
                        SiteAccessToggle_RunAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -303,8 +309,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   extensions::ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
 
+  // Navigate to a.com and add a site access request for the extension.
   GURL urlA = embedded_test_server()->GetURL("a.com", "/title1.html");
   NavigateTo(urlA);
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  AddSiteAccessRequest(*extension, web_contents);
 
   ShowUi("");
   views::View* text_container = main_page()->GetTextContainerForTesting();
@@ -321,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   ASSERT_EQ(permissions_manager->GetUserSiteAccess(*extension.get(), urlA),
             PermissionsManager::UserSiteAccess::kOnClick);
 
-  // When extension has withheld site access:
+  // When extension has added a site access request:
   //   - site access toggle is visible and off.
   //   - message section only shows request access container and includes
   //   extension.
@@ -336,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   EXPECT_THAT(GetExtensionsInRequestAccessButton(),
               testing::ElementsAre(extension_id));
 
-  // When extension has granted site access, after toggling ON site access:
+  // When extension has granted site access, after running the extension action:
   //   - site access toggle is visible and on.
   //   - message section is hidden, meaning all containers are not visible.
   //   - request access button, in the toolbar, does not include extension.
@@ -357,39 +366,23 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   NavigateTo(urlB);
   NavigateTo(urlA);
   ShowMenu();
+
   text_container = main_page()->GetTextContainerForTesting();
   reload_container = main_page()->GetReloadContainerForTesting();
   requests_access_container =
       main_page()->GetRequestsAccessContainerForTesting();
-
   menu_item = GetOnlyMenuItem();
 
-  // When navigating back to the original site:
+  // When navigating back to the original site, after a cross-origin navigation:
   //   - site access toggle is visible and off.
-  //   - message section only shows request access container and includes
-  //   extension.
-  //   - request access button, in the toolbar, includes extension.
+  //   - message section is hidden, meaning all containers are not visible.
+  //   - request access button, in the toolbar, does not include extension.
   EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_FALSE(text_container->GetVisible());
   EXPECT_FALSE(reload_container->GetVisible());
-  EXPECT_TRUE(requests_access_container->GetVisible());
-  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
-              testing::ElementsAre(extension_id));
-  EXPECT_THAT(GetExtensionsInRequestAccessButton(),
-              testing::ElementsAre(extension_id));
-
-  // When extension has withheld site access but cannot show requests in
-  // toolbar:
-  //   - site access toggle is visible and off.
-  //   - message section includes extension.
-  //   - request access button, in the toolbar, does not include extension.
-  SitePermissionsHelper(profile()).SetShowAccessRequestsInToolbar(extension_id,
-                                                                  false);
-  EXPECT_TRUE(menu_item->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_item->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
-              testing::ElementsAre(extension_id));
+  EXPECT_FALSE(requests_access_container->GetVisible());
+  EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
   EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
 }
 
@@ -408,8 +401,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   browser()->tab_strip_model()->ActivateTabAt(1);
 
   ShowUi("");
-  EXPECT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(),
-            u"chrome://extensions");
+  // TODO(crbug.com/40879945): This label should be 'No extensions need access
+  // to chrome://extensions'. Change once such label is moved from the message
+  // to the site settings label.
+  EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
+            u"Allow extensions on chrome://extensions");
 
   // Update the title of the unfocused tab.
   browser()->set_update_ui_immediately_for_testing();
@@ -427,7 +423,86 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // Verify extensions menu content wasn't affected by checking the site
   // displayed on the menu's subtitle.
+  // TODO(crbug.com/40879945): This label should be 'No extensions need access
+  // to chrome://extensions'. Change once such label is moved from the message
+  // to the site settings label.
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
-  EXPECT_EQ(main_page()->GetSubheaderSubtitleTextForTesting(),
-            u"chrome://extensions");
+  EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
+            u"Allow extensions on chrome://extensions");
+}
+
+// Verifies extensions can add site access requests on active and inactive tabs,
+// but the menu only shows extension's requests for the current tab.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
+                       SiteAccessRequestsForMultipleTabs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install two extensions and withhold their host permissions.
+  auto extensionA =
+      InstallExtensionWithHostPermissions("Extension A", "<all_urls>");
+  auto extensionB =
+      InstallExtensionWithHostPermissions("Extension B", "<all_urls>");
+  ScriptingPermissionsModifier(profile(), extensionA)
+      .SetWithholdHostPermissions(true);
+  ScriptingPermissionsModifier(profile(), extensionB)
+      .SetWithholdHostPermissions(true);
+
+  // Open two tabs.
+  int tab1_index = 0;
+  int tab2_index = 1;
+  const GURL tab1_url =
+      embedded_test_server()->GetURL("first.com", "/title1.html");
+  const GURL tab2_url =
+      embedded_test_server()->GetURL("second.com", "/title1.html");
+  ASSERT_TRUE(AddTabAtIndex(tab1_index, tab1_url, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(AddTabAtIndex(tab2_index, tab1_url, ui::PAGE_TRANSITION_TYPED));
+
+  // Retrieve tab's information.
+  content::WebContents* tab1_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(tab1_index);
+  content::WebContents* tab2_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(tab2_index);
+  int tab1_id = extensions::ExtensionTabUtil::GetTabId(tab1_web_contents);
+  int tab2_id = extensions::ExtensionTabUtil::GetTabId(tab2_web_contents);
+
+  // Activate the first tab and open the menu. Verify there are no site access
+  // requests on the menu.
+  browser()->tab_strip_model()->ActivateTabAt(tab1_index);
+  ShowUi("");
+  views::View* requests_access_container =
+      main_page()->GetRequestsAccessContainerForTesting();
+  EXPECT_FALSE(requests_access_container->GetVisible());
+
+  // Add a site access request for extension A on the (active) first tab.
+  // Verify  extension A site access request is visible on the menu.
+  auto* permissions_manager = PermissionsManager::Get(browser()->profile());
+  permissions_manager->AddSiteAccessRequest(tab1_web_contents, tab1_id,
+                                            *extensionA);
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extensionA->id()));
+
+  // Add a site access request for extension B on the (inactive) second tab.
+  // Verify only extension A site access request is visible on the menu.
+  permissions_manager->AddSiteAccessRequest(tab2_web_contents, tab2_id,
+                                            *extensionB);
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extensionA->id()));
+
+  // Add a site access request for extension A on the (inactive) second tab.
+  // Verify only extension A site access request is visible on the menu.
+  permissions_manager->AddSiteAccessRequest(tab2_web_contents, tab2_id,
+                                            *extensionA);
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extensionA->id()));
+
+  // Remove the site access request for extension A on the (inactive) second
+  // tab. Verify extension A site access request is still visible on the menu,
+  // since request is still active for the first tab.
+  permissions_manager->RemoveSiteAccessRequest(tab2_id, extensionA->id());
+  EXPECT_TRUE(requests_access_container->GetVisible());
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extensionA->id()));
 }

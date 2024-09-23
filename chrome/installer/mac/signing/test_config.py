@@ -50,6 +50,10 @@ class TestConfig(config.CodeSignConfig):
     def run_spctl_assess(self):
         return True
 
+    @property
+    def main_executable_pinned_geometry(self):
+        return None
+
 
 class TestConfigNonChromeBranded(TestConfig):
 

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ViewerAttachmentBarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-attachment-bar.js';
+import type {ViewerAttachmentBarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer_attachment_bar.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 function createAttachmentBar(): ViewerAttachmentBarElement {
   document.body.innerHTML = '';
@@ -13,12 +14,13 @@ function createAttachmentBar(): ViewerAttachmentBarElement {
 
 // Unit tests for the viewer-attachment-bar element.
 const tests = [
-  function testWithRegularAttachment() {
+  async function testWithRegularAttachment() {
     const attachmentBar = createAttachmentBar();
     attachmentBar.attachments = [
       {name: 'attachment1', size: 10, readable: true},
       {name: 'attachment2', size: 1, readable: true},
     ];
+    await microtasksFinished();
 
     // No warning message is displayed.
     const warning = attachmentBar.shadowRoot!.querySelector('#warning')!;
@@ -26,12 +28,13 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testWithOversizeAttachment() {
+  async function testWithOversizeAttachment() {
     const attachmentBar = createAttachmentBar();
     attachmentBar.attachments = [
       {name: 'attachment1', size: 10, readable: true},
       {name: 'attachment2', size: -1, readable: true},
     ];
+    await microtasksFinished();
 
     // A warning message is displayed because `attachment2` is oversized.
     const warning = attachmentBar.shadowRoot!.querySelector('#warning')!;

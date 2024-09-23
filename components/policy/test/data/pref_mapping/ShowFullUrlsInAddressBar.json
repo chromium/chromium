@@ -15,7 +15,9 @@
           "ShowFullUrlsInAddressBar": true
         },
         "prefs": {
-          "omnibox.prevent_url_elisions": {}
+          "omnibox.prevent_url_elisions": {
+            "value": true
+          }
         }
       }
     ]

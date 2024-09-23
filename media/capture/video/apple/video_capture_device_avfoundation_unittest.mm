@@ -27,6 +27,7 @@ using testing::_;
 using testing::Gt;
 using testing::Ne;
 using testing::Return;
+using testing::WithArg;
 
 namespace media {
 
@@ -55,8 +56,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
     base::RunLoop first_frame_received(
         base::RunLoop::Type::kNestableTasksAllowed);
     EXPECT_CALL(frame_receiver, ReceiveExternalGpuMemoryBufferFrame)
-        .WillRepeatedly(testing::Invoke(
-            [&](CapturedExternalVideoBuffer frame, base::TimeDelta timestamp) {
+        .WillRepeatedly(
+            testing::Invoke(WithArg<0>([&](CapturedExternalVideoBuffer frame) {
               if (has_received_first_frame) {
                 // Ignore subsequent frames.
                 return;
@@ -64,7 +65,7 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
               EXPECT_EQ(frame.format.pixel_format, PIXEL_FORMAT_NV12);
               has_received_first_frame = true;
               first_frame_received.Quit();
-            }));
+            })));
     first_frame_received.Run();
 
     [captureDevice stopCapture];
@@ -94,7 +95,6 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, DISABLED_TakePhoto) {
 
         base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
         EXPECT_CALL(frame_receiver, OnPhotoTaken)
-
             .WillOnce([&run_loop](const uint8_t* image_data,
                                   size_t image_length,
                                   const std::string& mime_type) {
@@ -289,15 +289,16 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
     std::unique_ptr<ByteArrayPixelBuffer> buffer =
         CreateYuvsPixelBufferFromSingleRgbColor(size.width(), size.height(), 0,
                                                 0, 0);
-    [captureDevice
-        callLocked:base::BindLambdaForTesting([&] {
-          EXPECT_CALL(frame_receiver,
-                      ReceiveFrame(_, _, format, _, _, _, _, _));
-          [captureDevice processPixelBufferPlanes:buffer->pixel_buffer.get()
+    [captureDevice callLocked:base::BindLambdaForTesting([&] {
+                     EXPECT_CALL(frame_receiver,
+                                 ReceiveFrame(_, _, format, _, _, _, _, _, _));
+                     [captureDevice
+                         processPixelBufferPlanes:buffer->pixel_buffer.get()
                                     captureFormat:format
                                        colorSpace:gfx::ColorSpace::CreateSRGB()
-                                        timestamp:base::TimeDelta()];
-        })];
+                                        timestamp:base::TimeDelta()
+                               capture_begin_time:std::nullopt];
+                   })];
   }));
 }
 

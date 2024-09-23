@@ -10,17 +10,20 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/shell.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/compositor/compositor.h"
@@ -51,12 +54,6 @@ constexpr char kSearchResultRemovalDialogDecisionHistogram[] =
 // The base UMA histogram that logs app launches within the HomeLauncher (tablet
 // mode AppList) and the Shelf.
 constexpr char kAppListAppLaunched[] = "Apps.AppListAppLaunchedV2";
-
-// UMA histograms that log app launches within the app list, and the shelf.
-// Split depending on whether tablet mode is active or not.
-constexpr char kAppLaunchInTablet[] = "Apps.AppList.AppLaunched.TabletMode";
-constexpr char kAppLaunchInClamshell[] =
-    "Apps.AppList.AppLaunched.ClamshellMode";
 
 // UMA histograms that log launcher workflow actions (launching an app, search
 // result, or a continue section task) in the app list UI. Split depending on
@@ -141,7 +138,7 @@ std::string GetCategoryString(AppListSearchControlCategory category) {
     case AppListSearchControlCategory::kWeb:
       return "Web";
     case AppListSearchControlCategory::kCannotToggle:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -164,24 +161,23 @@ void AppListRecordPageSwitcherSourceByEventType(ui::EventType type) {
   AppListPageSwitcherSource source;
 
   switch (type) {
-    case ui::ET_MOUSEWHEEL:
+    case ui::EventType::kMousewheel:
       source = kMouseWheelScroll;
       break;
-    case ui::ET_SCROLL:
+    case ui::EventType::kScroll:
       source = kMousePadScroll;
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       source = kSwipeAppGrid;
       break;
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       source = kFlingAppGrid;
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       source = kMouseDrag;
       break;
     default:
       NOTREACHED();
-      return;
   }
   RecordPageSwitcherSource(source);
 }
@@ -270,18 +266,33 @@ void RecordPeriodicAppListMetrics() {
                            number_of_apps_in_non_system_folders);
 }
 
+void RecordAppListByCollectionLaunched(AppCollection collection,
+                                       bool is_apps_collections_page) {
+  AppEntity app_entity = collection == AppCollection::kUnknown
+                             ? AppEntity::kThirdPartyApp
+                             : AppEntity::kDefaultApp;
+
+  const std::string apps_collections_state =
+      ash::AppsCollectionsController::Get()
+          ->GetUserExperimentalArmAsHistogramSuffix();
+  const std::string app_list_page =
+      is_apps_collections_page ? "AppsCollectionsPage" : "AppsPage";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Apps.AppListBubble.", app_list_page,
+                    ".AppLaunchesByEntity", apps_collections_state}),
+      app_entity);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Apps.AppListBubble.", app_list_page,
+                    ".AppLaunchesByCategory", apps_collections_state}),
+      collection);
+}
+
 void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                               AppListViewState app_list_state,
                               bool is_tablet_mode,
                               bool app_list_shown) {
   UMA_HISTOGRAM_ENUMERATION(kAppListAppLaunched, launched_from);
-
-  if (is_tablet_mode) {
-    base::UmaHistogramEnumeration(kAppLaunchInTablet, launched_from);
-
-  } else {
-    base::UmaHistogramEnumeration(kAppLaunchInClamshell, launched_from);
-  }
 
   if (!is_tablet_mode) {
     if (!app_list_shown) {
@@ -415,6 +426,7 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::REORDER_BY_NAME_REVERSE_ALPHABETICAL:
     case CommandId::REORDER_BY_COLOR:
     case CommandId::SHUTDOWN_GUEST_OS:
+    case CommandId::SHUTDOWN_BRUSCHETTA_OS:
     case CommandId::EXTENSIONS_CONTEXT_CUSTOM_FIRST:
     case CommandId::EXTENSIONS_CONTEXT_CUSTOM_LAST:
     case CommandId::COMMAND_ID_COUNT:
@@ -434,10 +446,8 @@ bool IsCommandIdAnAppLaunch(int command_id_number) {
     case CommandId::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case CommandId::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       NOTREACHED();
-      return false;
   }
   NOTREACHED();
-  return false;
 }
 
 void ReportPaginationSmoothness(int smoothness) {

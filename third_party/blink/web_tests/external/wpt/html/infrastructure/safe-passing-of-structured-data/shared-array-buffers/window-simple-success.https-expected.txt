@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] postMessaging to a dedicated worker allows them to see each others' modifications with Float16Array
+  promise_test: Unhandled rejection with value: object "TypeError: self[type] is not a constructor"
+Harness: the test ran to completion.
+

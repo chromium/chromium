@@ -4,7 +4,7 @@
 
 import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createBookmarksForTest} from './test_util.js';
 
@@ -75,7 +75,7 @@ const tests = [
    * Test that viewer-bookmarks-content creates a bookmark tree with the correct
    * structure and behaviour.
    */
-  function testBookmarkStructure() {
+  async function testBookmarkStructure() {
     document.body.innerHTML = '';
     const bookmarkContent = createBookmarksForTest();
     bookmarkContent.bookmarks = [{
@@ -88,8 +88,8 @@ const tests = [
     }];
     document.body.appendChild(bookmarkContent);
 
-    // Force templates to render.
-    flush();
+    // Wait for templates to render.
+    await microtasksFinished();
 
     const rootBookmarks =
         bookmarkContent.shadowRoot!.querySelectorAll('viewer-bookmark');
@@ -97,7 +97,7 @@ const tests = [
     const rootBookmark = rootBookmarks[0]!;
     rootBookmark.$.expand.click();
 
-    flush();
+    await microtasksFinished();
 
     const subBookmarks =
         rootBookmark.shadowRoot!.querySelectorAll('viewer-bookmark');
@@ -111,9 +111,11 @@ const tests = [
     });
 
     rootBookmark.$.item.click();
+    await microtasksFinished();
     chrome.test.assertEq(1, lastPageChange);
 
     subBookmarks[1]!.$.item.click();
+    await microtasksFinished();
     chrome.test.assertEq(3, lastPageChange);
 
     chrome.test.succeed();

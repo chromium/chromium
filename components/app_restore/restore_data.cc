@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/app_constants/constants.h"
@@ -276,7 +277,7 @@ int32_t RestoreData::FetchRestoreWindowId(const std::string& app_id) {
 
   // Move to the next window_id.
   auto data_it = it->second.find(window_id);
-  DCHECK(data_it != it->second.end());
+  CHECK(data_it != it->second.end(), base::NotFatalUntil::M130);
   ++data_it;
   if (data_it == it->second.end())
     chrome_app_id_to_current_window_id_.erase(app_id);

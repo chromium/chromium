@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <algorithm>
 #include <numeric>
 #include <vector>
@@ -21,8 +26,11 @@
 #include "media/gpu/test/video_player/decoder_wrapper.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "media/gpu/test/video_player/video_player_test_environment.h"
-#include "sandbox/linux/services/resource_limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#include "sandbox/linux/services/resource_limits.h"
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 namespace media {
 namespace test {
@@ -406,11 +414,13 @@ TEST_F(VideoDecoderTest, MeasureCappedPerformance) {
 // then decide how to aggregate/report those metrics.
 // Play multiple videos simultaneously from start to finish.
 TEST_F(VideoDecoderTest, MeasureUncappedPerformance_TenConcurrentDecoders) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // Set RLIMIT_NOFILE soft limit to its hard limit value.
   if (sandbox::ResourceLimits::AdjustCurrent(
           RLIMIT_NOFILE, std::numeric_limits<long long int>::max())) {
     DPLOG(ERROR) << "Unable to increase soft limit of RLIMIT_NOFILE";
   }
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
   constexpr size_t kNumConcurrentDecoders = 10;
 
@@ -529,10 +539,10 @@ int main(int argc, char** argv) {
   feature_list->InitFromCommandLine(
       cmd_line->GetSwitchValueASCII(switches::kEnableFeatures),
       cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
-  if (feature_list->IsFeatureOverridden("V4L2FlatStatelessVideoDecoder")) {
-    enabled_features.push_back(media::kV4L2FlatStatelessVideoDecoder);
-  }
   if (feature_list->IsFeatureOverridden("V4L2FlatStatefulVideoDecoder")) {
+    enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
+  }
+  if (feature_list->IsFeatureOverridden("V4L2FlatVideoDecoder")) {
     enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
   }
 #endif

@@ -9,7 +9,10 @@ aggregate_vector_icons("plus_addresses_vector_icons") {
   icon_directory = "."
   sources = []
   if (is_chrome_branded) {
-    sources += [ "internal/plus_addresses_logo.icon" ]
+    sources += [
+      "internal/plus_address_logo_large.icon",
+      "internal/plus_address_logo_small.icon",
+    ]
   }
 }
 

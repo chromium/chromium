@@ -20,6 +20,7 @@ source_set("tailored_security_service") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/google/core/common",
     "//components/query_parser",
     "//components/safe_browsing/core/common:common",
     "//components/safe_browsing/core/common:safe_browsing_policy_handler",

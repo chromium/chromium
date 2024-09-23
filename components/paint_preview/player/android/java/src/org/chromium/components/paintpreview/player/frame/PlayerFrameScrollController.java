@@ -157,7 +157,7 @@ public class PlayerFrameScrollController {
         // Ignore if there is no active overscroll and the direction is down.
         if (!mIsOverscrolling && distanceY <= 0) return false;
 
-        // TODO(crbug/1100338): Propagate this state to child mediators to
+        // TODO(crbug.com/40137904): Propagate this state to child mediators to
         // support easing.
         mOverscrollAmount += distanceY;
 

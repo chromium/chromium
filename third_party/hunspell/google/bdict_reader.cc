@@ -5,8 +5,12 @@
 #include "third_party/hunspell/google/bdict_reader.h"
 
 #include <stdint.h>
+#include <cstdint>
+#include <cstring>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace hunspell {
 
@@ -29,8 +33,9 @@ class NodeReader {
 
   // The default constructor makes an invalid reader.
   NodeReader();
-  NodeReader(const unsigned char* bdict_data, size_t bdict_length,
-             size_t node_offset, int node_depth);
+  NodeReader(base::span<const unsigned char> bdict_data,
+             size_t node_offset,
+             int node_depth);
 
   // Returns true if the reader is valid. False means you shouldn't use it.
   bool is_valid() const { return is_valid_; }
@@ -63,8 +68,9 @@ class NodeReader {
     // Leaf nodes with additional strings start with bits "01" in the ID byte.
     if ((id_byte() & BDict::LEAF_NODE_ADDITIONAL_MASK) ==
       BDict::LEAF_NODE_ADDITIONAL_VALUE) {
-      if (node_offset_ < (bdict_length_ - 2))
+      if (node_offset_ < (bdict_data_.size() - 2)) {
         return &bdict_data_[node_offset_ + 2];  // Starts after the 2 byte ID.
+      }
       // Otherwise the dictionary is corrupt.
       is_valid_ = false;
     }
@@ -76,7 +82,7 @@ class NodeReader {
   // additional affix IDs following the node when leaf_has_following is set,
   // but this will not handle those.
   inline int affix_id_for_leaf() const {
-    if (node_offset_ >= bdict_length_ - 1) {
+    if (node_offset_ >= bdict_data_.size() - 1) {
       is_valid_ = false;
       return 0;
     }
@@ -136,7 +142,7 @@ class NodeReader {
   }
 
   inline int lookup_first_char() const {
-    if (node_offset_ >= bdict_length_ - 1) {
+    if (node_offset_ >= bdict_data_.size() - 1) {
       is_valid_ = false;
       return 0;
     }
@@ -144,7 +150,7 @@ class NodeReader {
   }
 
   inline int lookup_num_chars() const {
-    if (node_offset_ >= bdict_length_ - 2) {
+    if (node_offset_ >= bdict_data_.size() - 2) {
       is_valid_ = false;
       return 0;
     }
@@ -193,12 +199,18 @@ class NodeReader {
   inline unsigned char id_byte() const {
     if (!is_valid_)
       return 0;  // Don't continue with a corrupt node.
-    if (node_offset_ >= bdict_length_) {
+    if (node_offset_ >= bdict_data_.size()) {
       // Return zero if out of bounds; we'll check is_valid_ in caller.
       is_valid_ = false;
       return 0;
     }
     return bdict_data_[node_offset_];
+  }
+
+  inline const uint8_t* bdict_end() const {
+    // TODO(crbug.com/40284755): Replace callers with span-based APIs and remove
+    // this.
+    return UNSAFE_TODO(bdict_data_.data() + bdict_data_.size());
   }
 
   // Checks the given leaf node to see if it's a match for the given word.
@@ -212,11 +224,8 @@ class NodeReader {
   int FindInList(const unsigned char* word,
                  int affix_indices[BDict::MAX_AFFIXES_PER_WORD]) const;
 
-  // The entire bdict file. This will be NULL if it is invalid.
-  const unsigned char* bdict_data_;
-  size_t bdict_length_;
-  // Points to the end of the file (for length checking convenience).
-  const unsigned char* bdict_end_;
+  // The entire bdict file. This will be empty if it is invalid.
+  base::span<const unsigned char> bdict_data_;
 
   // Absolute offset within |bdict_data_| of the beginning of this node.
   size_t node_offset_;
@@ -228,30 +237,22 @@ class NodeReader {
   mutable bool is_valid_;
 };
 
-NodeReader::NodeReader()
-    : bdict_data_(NULL),
-      bdict_length_(0),
-      bdict_end_(NULL),
-      node_offset_(0),
-      node_depth_(0),
-      is_valid_(false) {
-}
+NodeReader::NodeReader() : node_offset_(0), node_depth_(0), is_valid_(false) {}
 
-NodeReader::NodeReader(const unsigned char* bdict_data, size_t bdict_length,
-                       size_t node_offset, int node_depth)
+NodeReader::NodeReader(base::span<const unsigned char> bdict_data,
+                       size_t node_offset,
+                       int node_depth)
     : bdict_data_(bdict_data),
-      bdict_length_(bdict_length),
-      bdict_end_(bdict_data + bdict_length),
       node_offset_(node_offset),
       node_depth_(node_depth),
-      is_valid_(bdict_data != NULL && node_offset < bdict_length) {
-}
+      is_valid_(!bdict_data.empty() && node_offset < bdict_data.size()) {}
 
 int NodeReader::FindWord(const unsigned char* word,
                          int affix_indices[BDict::MAX_AFFIXES_PER_WORD]) const {
   // Return 0 if the dictionary is corrupt as BDictReader::FindWord() does.
-  if (!bdict_data_ || node_offset_ > bdict_length_)
+  if (bdict_data_.empty() || node_offset_ > bdict_data_.size()) {
     return 0;
+  }
 
   if (is_leaf())
     return CompareLeafNode(word, affix_indices);
@@ -296,13 +297,13 @@ int NodeReader::CompareLeafNode(
 
   // Check the additional string.
   int cur = 0;
-  while (&additional[cur] < bdict_end_ && additional[cur]) {
+  while (&additional[cur] < bdict_end() && additional[cur]) {
     if (word[node_depth_ + cur] != additional[cur])
       return 0;  // Not a match.
     cur++;
   }
 
-  if (&additional[cur] == bdict_end_) {
+  if (&additional[cur] == bdict_end()) {
     is_valid_ = false;
     return 0;
   }
@@ -332,21 +333,20 @@ int NodeReader::FillAffixesForLeafMatch(
   if (affix_indices[0] == BDict::FIRST_AFFIX_IS_UNUSED)
     list_offset = 0;
 
-  // Save the end pointer (accounting for an odd number of bytes).
   size_t array_start = node_offset_ + additional_bytes + 2;
-  const uint16_t* const bdict_short_end = reinterpret_cast<const uint16_t*>(
-      &bdict_data_[((bdict_length_ - array_start) & -2) + array_start]);
-  // Process all remaining matches.
-  const uint16_t* following_array =
-      reinterpret_cast<const uint16_t*>(&bdict_data_[array_start]);
+  base::span<const uint8_t> following_array = bdict_data_.subspan(array_start);
   for (int i = 0; i < BDict::MAX_AFFIXES_PER_WORD - list_offset; i++) {
-    if (&following_array[i] >= bdict_short_end) {
+    if (following_array.size() < 2u) {
       is_valid_ = false;
       return 0;
     }
-    if (following_array[i] == BDict::LEAF_NODE_FOLLOWING_LIST_TERMINATOR)
+    auto [affix_id_bytes, rest] = following_array.split_at<2u>();
+    uint16_t affix_id = base::numerics::U16FromLittleEndian(affix_id_bytes);
+    following_array = rest;
+    if (affix_id == BDict::LEAF_NODE_FOLLOWING_LIST_TERMINATOR) {
       return i + list_offset;  // Found the end of the list.
-    affix_indices[i + list_offset] = following_array[i];
+    }
+    affix_indices[i + list_offset] = affix_id;
   }
   return BDict::MAX_AFFIXES_PER_WORD;
 }
@@ -384,23 +384,23 @@ NodeReader::FindResult NodeReader::ReaderForLookup0th(
     NodeReader* result) const {
   size_t child_offset;
   if (is_lookup_32()) {
-    child_offset = *reinterpret_cast<const unsigned int*>(
-        &bdict_data_[zeroth_entry_offset()]);
+    child_offset = base::numerics::U32FromLittleEndian(
+        bdict_data_.subspan(zeroth_entry_offset()).first<4>());
   } else {
-    child_offset = *reinterpret_cast<const unsigned short*>(
-        &bdict_data_[zeroth_entry_offset()]);
+    child_offset = base::numerics::U16FromLittleEndian(
+        bdict_data_.subspan(zeroth_entry_offset()).first<2>());
     child_offset += node_offset_;
   }
 
   // Range check the offset;
-  if (child_offset >= bdict_length_) {
+  if (child_offset >= bdict_data_.size()) {
     is_valid_ = false;
     return FIND_DONE;
   }
 
   // Now recurse into that child node. We don't advance to the next character
   // here since the 0th element will be a leaf (see ReaderForLookupAt).
-  *result = NodeReader(bdict_data_, bdict_length_, child_offset, node_depth_);
+  *result = NodeReader(bdict_data_, child_offset, node_depth_);
   return FIND_NODE;
 }
 
@@ -408,29 +408,33 @@ NodeReader::FindResult NodeReader::ReaderForLookupAt(
     size_t index,
     char* found_char,
     NodeReader* result) const {
-  const unsigned char* table_begin = &bdict_data_[lookup_table_offset()];
+  size_t table_offset = lookup_table_offset();
 
   if (index >= static_cast<size_t>(lookup_num_chars()) || !is_valid_)
     return FIND_DONE;
 
-  size_t child_offset;
+  size_t child_offset = 0;
   if (is_lookup_32()) {
     // Table contains 32-bit absolute offsets.
-    child_offset =
-        reinterpret_cast<const unsigned int*>(table_begin)[index];
-    if (!child_offset)
+    child_offset = base::numerics::U32FromLittleEndian(
+        bdict_data_.subspan(table_offset + index * sizeof(uint32_t))
+            .first<4>());
+    if (!child_offset) {
       return FIND_NOTHING;  // This entry in the table is empty.
+    }
   } else {
     // Table contains 16-bit offsets relative to the current node.
-    child_offset =
-        reinterpret_cast<const unsigned short*>(table_begin)[index];
-    if (!child_offset)
+    child_offset = base::numerics::U16FromLittleEndian(
+        bdict_data_.subspan(table_offset + index * sizeof(uint16_t))
+            .first<2>());
+    if (!child_offset) {
       return FIND_NOTHING;  // This entry in the table is empty.
+    }
     child_offset += node_offset_;
   }
 
   // Range check the offset;
-  if (child_offset >= bdict_length_) {
+  if (child_offset >= bdict_data_.size()) {
     is_valid_ = false;
     return FIND_DONE;  // Error.
   }
@@ -452,8 +456,7 @@ NodeReader::FindResult NodeReader::ReaderForLookupAt(
     return FIND_DONE;
   int char_advance = *found_char == 0 ? 0 : 1;
 
-  *result = NodeReader(bdict_data_, bdict_length_,
-                       child_offset, node_depth_ + char_advance);
+  *result = NodeReader(bdict_data_, child_offset, node_depth_ + char_advance);
   return FIND_NODE;
 }
 
@@ -470,7 +473,7 @@ int NodeReader::FindInList(
 
   for (size_t i = 0; i < list_count; i++) {
     const unsigned char* list_current = &list_begin[i * bytes_per_index];
-    if (list_current >= bdict_end_) {
+    if (list_current >= bdict_end()) {
       is_valid_ = false;
       return 0;
     }
@@ -498,29 +501,28 @@ NodeReader::FindResult NodeReader::ReaderForListAt(
 
   size_t offset;
   if (is_list_16()) {
-    const unsigned char* list_item_begin = bdict_data_ + list_begin + index * 3;
-    *found_char = static_cast<char>(list_item_begin[0]);
+    auto list_item = bdict_data_.subspan(list_begin + index * 3).first<3>();
+    *found_char = list_item[0];
 
     // The children begin right after the list.
     size_t children_begin = list_begin + list_item_count() * 3;
-    offset = children_begin + *reinterpret_cast<const unsigned short*>(
-        &list_item_begin[1]);
+    offset = children_begin +
+             base::numerics::U16FromLittleEndian(list_item.subspan<1>());
   } else {
-    const unsigned char* list_item_begin = bdict_data_ + list_begin + index * 2;
-    *found_char = list_item_begin[0];
+    auto list_item = bdict_data_.subspan(list_begin + index * 2).first<2>();
+    *found_char = list_item[0];
 
     size_t children_begin = list_begin + list_item_count() * 2;
-    offset = children_begin + list_item_begin[1];
+    offset = children_begin + list_item[1];
   }
 
-  if (offset == 0 || node_offset_ >= bdict_length_) {
+  if (offset == 0 || node_offset_ >= bdict_data_.size()) {
     is_valid_ = false;
     return FIND_DONE;  // Error, should not happen except for corruption.
   }
 
   int char_advance = *found_char == 0 ? 0 : 1;  // See ReaderForLookupAt.
-  *result = NodeReader(bdict_data_, bdict_length_,
-                       offset, node_depth_ + char_advance);
+  *result = NodeReader(bdict_data_, offset, node_depth_ + char_advance);
   return FIND_NODE;
 }
 
@@ -552,18 +554,12 @@ WordIterator::WordIterator(const NodeReader& reader) {
   stack_.push_back(info);
 }
 
-WordIterator::WordIterator(const WordIterator& other) {
-  operator=(other);
-}
+WordIterator::WordIterator(const WordIterator& other) = default;
 
-WordIterator::~WordIterator() {
-  // Can't be in the header for the NodeReader destructor.
-}
+// Can't be in the header for the NodeReader destructor.
+WordIterator::~WordIterator() = default;
 
-WordIterator& WordIterator::operator=(const WordIterator& other) {
-  stack_ = other.stack_;
-  return *this;
-}
+WordIterator& WordIterator::operator=(const WordIterator& other) = default;
 
 int WordIterator::Advance(char* output_buffer, size_t output_len,
                           int affix_ids[BDict::MAX_AFFIXES_PER_WORD]) {
@@ -634,19 +630,16 @@ int WordIterator::FoundLeaf(const NodeReader& reader, char cur_char,
 
 // LineIterator ----------------------------------------------------------------
 
-LineIterator::LineIterator(
-    const unsigned char* bdict_data,
-    size_t bdict_length,
-    size_t first_offset)
-    : bdict_data_(bdict_data),
-      bdict_length_(bdict_length),
-      cur_offset_(first_offset) {
-}
+LineIterator::LineIterator() : cur_offset_(0) {}
+
+LineIterator::LineIterator(base::span<const unsigned char> bdict_data,
+                           size_t first_offset)
+    : bdict_data_(bdict_data), cur_offset_(first_offset) {}
 
 // Returns true when all data has been read. We're done when we reach a
 // double-NULL or a the end of the input (shouldn't happen).
 bool LineIterator::IsDone() const {
-  return cur_offset_ >= bdict_length_ || bdict_data_[cur_offset_] == 0;
+  return cur_offset_ >= bdict_data_.size() || bdict_data_[cur_offset_] == 0;
 }
 
 const char* LineIterator::Advance() {
@@ -656,34 +649,12 @@ const char* LineIterator::Advance() {
   const char* begin = reinterpret_cast<const char*>(&bdict_data_[cur_offset_]);
 
   // Advance over this word to find the end.
-  while (cur_offset_ < bdict_length_ && bdict_data_[cur_offset_])
+  while (cur_offset_ < bdict_data_.size() && bdict_data_[cur_offset_]) {
     cur_offset_++;
+  }
   cur_offset_++;  // Advance over the NULL terminator.
 
   return begin;
-}
-
-bool LineIterator::AdvanceAndCopy(char* buf, size_t buf_len) {
-  if (IsDone())
-    return false;
-
-  const char* begin = reinterpret_cast<const char*>(&bdict_data_[cur_offset_]);
-
-  // Advance over this word to find the end.
-  size_t i;
-  for (i = 0;
-       i < buf_len && cur_offset_ < bdict_length_ && bdict_data_[cur_offset_];
-       i++, cur_offset_++) {
-    buf[i] = bdict_data_[cur_offset_];
-  }
-  // Handle the NULL terminator.
-  cur_offset_++;  // Consume in the input
-  if (i < buf_len)
-    buf[i] = 0;  // Save in the output.
-  else
-    buf[buf_len - 1] = 0;  // Overflow, make sure it's terminated.
-
-  return !!buf[0];
 }
 
 // ReplacementIterator ---------------------------------------------------------
@@ -700,99 +671,101 @@ bool ReplacementIterator::GetNext(const char** first, const char** second) {
 
 // BDictReader -----------------------------------------------------------------
 
-BDictReader::BDictReader()
-    : bdict_data_(NULL),
-      bdict_length_(0),
-      header_(NULL) {
-}
+BDictReader::BDictReader() = default;
 
-bool BDictReader::Init(const unsigned char* bdict_data, size_t bdict_length) {
-  if (bdict_length < sizeof(BDict::Header))
+bool BDictReader::Init(base::span<const unsigned char> bdict_data) {
+  if (bdict_data.size() < sizeof(BDict::Header)) {
     return false;
+  }
 
-  // Check header.
-  header_ = reinterpret_cast<const BDict::Header*>(bdict_data);
-  if (header_->signature != BDict::SIGNATURE ||
-      header_->major_version > BDict::MAJOR_VERSION ||
-      header_->dic_offset > bdict_length)
+  // `header_` is serialized in little-endian and we assume a little-endian
+  // platform.
+  base::byte_span_from_ref(header_).copy_from(
+      bdict_data.first<sizeof(header_)>());
+  if (header_.signature != BDict::SIGNATURE ||
+      header_.major_version > BDict::MAJOR_VERSION ||
+      header_.dic_offset > bdict_data.size()) {
     return false;
+  }
 
   // Get the affix header, make sure there is enough room for it.
-  if (header_->aff_offset + sizeof(BDict::AffHeader) > bdict_length)
+  if (header_.aff_offset + sizeof(BDict::AffHeader) > bdict_data.size()) {
     return false;
-  aff_header_ = reinterpret_cast<const BDict::AffHeader*>(
-      &bdict_data[header_->aff_offset]);
+  }
+
+  // `aff_header_` is serialized in little-endian and we assume a little-endian
+  // platform.
+  base::byte_span_from_ref(aff_header_)
+      .copy_from(
+          bdict_data.subspan(header_.aff_offset).first<sizeof(aff_header_)>());
 
   // Make sure there is enough room for the affix group count dword.
-  if (aff_header_->affix_group_offset > bdict_length - sizeof(uint32_t))
+  if (aff_header_.affix_group_offset > bdict_data.size() - sizeof(uint32_t)) {
     return false;
+  }
 
   // This function is called from SpellCheck::SpellCheckWord(), which blocks
   // WebKit. To avoid blocking WebKit for a long time, we do not check the MD5
   // digest here. Instead we check the MD5 digest when Chrome finishes
   // downloading a dictionary.
 
-  // Don't set these until the end. This way, NULL bdict_data_ will indicate
+  // Don't set these until the end. This way, empty bdict_data_ will indicate
   // failure.
   bdict_data_ = bdict_data;
-  bdict_length_ = bdict_length;
   return true;
 }
 
 int BDictReader::FindWord(
     const char* word,
     int affix_indices[BDict::MAX_AFFIXES_PER_WORD]) const {
-  if (!bdict_data_ ||
-      header_->dic_offset >= bdict_length_) {
+  if (header_.dic_offset >= bdict_data_.size()) {
     // When the dictionary is corrupt, we return 0 which means the word is valid
     // and has no rules. This means when there is some problem, we'll default
     // to no spellchecking rather than marking everything as misspelled.
     return 0;
   }
-  NodeReader reader(bdict_data_, bdict_length_, header_->dic_offset, 0);
+  NodeReader reader(bdict_data_, header_.dic_offset, 0);
   return reader.FindWord(reinterpret_cast<const unsigned char*>(word),
                          affix_indices);
 }
 
 LineIterator BDictReader::GetAfLineIterator() const {
-  if (!bdict_data_ ||
-      aff_header_->affix_group_offset == 0 ||
-      aff_header_->affix_group_offset >= bdict_length_)
-    return LineIterator(bdict_data_, 0, 0);  // Item is empty or invalid.
-  return LineIterator(bdict_data_, bdict_length_,
-                      aff_header_->affix_group_offset);
+  if (!IsValid() || aff_header_.affix_group_offset == 0 ||
+      aff_header_.affix_group_offset >= bdict_data_.size()) {
+    return LineIterator();
+  }
+  return LineIterator(bdict_data_, aff_header_.affix_group_offset);
 }
 
 LineIterator BDictReader::GetAffixLineIterator() const {
-  if (!bdict_data_ ||
-      aff_header_->affix_rule_offset == 0 ||
-      aff_header_->affix_rule_offset >= bdict_length_)
-    return LineIterator(bdict_data_, 0, 0);  // Item is empty or invalid.
-  return LineIterator(bdict_data_, bdict_length_,
-                      aff_header_->affix_rule_offset);
+  if (!IsValid() || aff_header_.affix_rule_offset == 0 ||
+      aff_header_.affix_rule_offset >= bdict_data_.size()) {
+    return LineIterator();
+  }
+  return LineIterator(bdict_data_, aff_header_.affix_rule_offset);
 }
 
 LineIterator BDictReader::GetOtherLineIterator() const {
-  if (!bdict_data_ ||
-      aff_header_->other_offset == 0 ||
-      aff_header_->other_offset >= bdict_length_)
-    return LineIterator(bdict_data_, 0, 0);  // Item is empty or invalid.
-  return LineIterator(bdict_data_, bdict_length_,
-                      aff_header_->other_offset);
+  if (!IsValid() || aff_header_.other_offset == 0 ||
+      aff_header_.other_offset >= bdict_data_.size()) {
+    return LineIterator();
+  }
+  return LineIterator(bdict_data_, aff_header_.other_offset);
 }
 
 ReplacementIterator BDictReader::GetReplacementIterator() const {
-  if (!bdict_data_ ||
-      aff_header_->rep_offset == 0 ||
-      aff_header_->rep_offset >= bdict_length_)
-    return ReplacementIterator(bdict_data_, 0, 0);  // Item is empty or invalid.
-  return ReplacementIterator(bdict_data_, bdict_length_,
-                             aff_header_->rep_offset);
+  if (!IsValid() || aff_header_.rep_offset == 0 ||
+      aff_header_.rep_offset >= bdict_data_.size()) {
+    return ReplacementIterator();
+  }
+  return ReplacementIterator(bdict_data_, aff_header_.rep_offset);
 }
 
-
 WordIterator BDictReader::GetAllWordIterator() const {
-  NodeReader reader(bdict_data_, bdict_length_, header_->dic_offset, 0);
+  NodeReader reader;
+  if (IsValid()) {
+    reader = NodeReader(bdict_data_, header_.dic_offset, 0);
+  }
   return WordIterator(reader);
 }
 

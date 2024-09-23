@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("activities") {
+  sources = [
+    "open_downloads_folder_activity.h",
+    "open_downloads_folder_activity.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/download/ui_bundled/activities/resources",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/popup_menu/public:popup_menu_ui",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/fake_video_capture_device.h"
 
 #include <stddef.h>
@@ -12,6 +17,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
@@ -44,6 +51,8 @@ namespace {
 
 class ImageCaptureClient : public base::RefCounted<ImageCaptureClient> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // GMock doesn't support move-only arguments, so we use this forward method.
   void DoOnGetPhotoState(mojom::PhotoStatePtr state) {
     state_ = std::move(state);
@@ -82,7 +91,7 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
  protected:
   FakeVideoCaptureDeviceTestBase()
       : client_(CreateClient()),
-        image_capture_client_(new ImageCaptureClient()),
+        image_capture_client_(base::MakeRefCounted<ImageCaptureClient>()),
         video_capture_device_factory_(new FakeVideoCaptureDeviceFactory()) {}
 
   void SetUp() override { EXPECT_CALL(*client_, OnError(_, _, _)).Times(0); }
@@ -366,6 +375,16 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
   EXPECT_EQ(1, base::ranges::count(*state->supported_background_blur_modes,
                                    mojom::BackgroundBlurMode::BLUR));
   EXPECT_EQ(mojom::BackgroundBlurMode::OFF, state->background_blur_mode);
+
+  ASSERT_TRUE(state->supported_background_segmentation_mask_states);
+  EXPECT_EQ(2u, state->supported_background_segmentation_mask_states->size());
+  EXPECT_EQ(1,
+            base::ranges::count(
+                *state->supported_background_segmentation_mask_states, false));
+  EXPECT_EQ(1,
+            base::ranges::count(
+                *state->supported_background_segmentation_mask_states, true));
+  EXPECT_FALSE(state->current_background_segmentation_mask_state);
 
   ASSERT_TRUE(state->supported_eye_gaze_correction_modes);
   EXPECT_EQ(2u, state->supported_eye_gaze_correction_modes->size());

@@ -59,7 +59,7 @@ const double kLocatedEventEpsilonSquared = 1.0 / (2000.0 * 2000.0);
 
 bool SameLocation(const gfx::PointF& location_in_target,
                   const gfx::PointF& location) {
-  // TODO(crbug.com/1354573): This is no longer necessary.  Switch to
+  // TODO(crbug.com/40859165): This is no longer necessary.  Switch to
   // std::numeric_limits<float>::eplison().
   gfx::Vector2dF offset = location_in_target - location;
   return offset.LengthSquared() < (2 * kLocatedEventEpsilonSquared);
@@ -106,9 +106,13 @@ Pointer::Pointer(PointerDelegate* delegate,
   for (aura::Window* root : ash::Shell::GetAllRootWindows()) {
     root->AddPreTargetHandler(this);
   }
+
+  ash::DesksController::Get()->AddObserver(this);
 }
 
 Pointer::~Pointer() {
+  ash::DesksController::Get()->RemoveObserver(this);
+
   ash::Shell::Get()->RemoveShellObserver(this);
   for (aura::Window* root : ash::Shell::GetAllRootWindows()) {
     root->RemovePreTargetHandler(this);
@@ -353,9 +357,12 @@ bool Pointer::EnablePointerCapture(Surface* capture_surface) {
   capture_window_ = window;
 
   // Add a pre-target handler that can consume all mouse events before it gets
-  // sent to other targets.
-  aura::Env::GetInstance()->AddPreTargetHandler(
-      this, ui::EventTarget::Priority::kSystem);
+  // sent to other targets. If there's an ongoing animation, the pre-target
+  // handler will be added once `OnDeskSwitchAnimationFinished` is triggered.
+  if (!ash::DesksController::Get()->animation()) {
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        this, ui::EventTarget::Priority::kSystem);
+  }
 
   location_when_pointer_capture_enabled_ =
       gfx::ToRoundedPoint(location_in_root_);
@@ -474,8 +481,9 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
 
   // Nothing to report to a client nor have to update the pointer when capture
   // changes.
-  if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
+  if (event->type() == ui::EventType::kMouseCaptureChanged) {
     return;
+  }
 
   // TODO(crbug.com/1395073, crbug.com/1395256): Currently, due to a bug in
   // multi-display implementation, mouse move event sent to hide cursor is
@@ -496,8 +504,8 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   // touchpad. Since it's not directly supported by the delegate, we want
   // limit this event to only right after a fling start has been generated
   // to prevent erronous behavior.
-  if (event->type() == ui::ET_SCROLL_FLING_CANCEL &&
-      last_event_type_ != ui::ET_SCROLL_FLING_START) {
+  if (event->type() == ui::EventType::kScrollFlingCancel &&
+      last_event_type_ != ui::EventType::kScrollFlingStart) {
     // Should we update this for above cases?
     last_event_type_ = event->type();
     return;
@@ -564,7 +572,8 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
           MoveCursorToCenterOfActiveDisplay();
         location_in_root_ = location_in_root;
         location_in_surface_ = location_in_target;
-      } else if (event->type() != ui::ET_MOUSE_EXITED && !ignore_motion) {
+      } else if (event->type() != ui::EventType::kMouseExited &&
+                 !ignore_motion) {
         delegate_->OnPointerMotion(event->time_stamp(), location_in_target);
         needs_frame |= true;
         location_in_root_ = location_in_root;
@@ -573,10 +582,10 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     }
   }
   switch (event->type()) {
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       seat_->AbortPendingDragOperation();
       [[fallthrough]];
-    case ui::ET_MOUSE_PRESSED: {
+    case ui::EventType::kMousePressed: {
       if (!capture_permitted_) {
         // Clicking any surface with a constraint delegate permits capture
         auto it = constraints_.find(focus_surface_);
@@ -588,11 +597,11 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       }
       delegate_->OnPointerButton(event->time_stamp(),
                                  event->changed_button_flags(),
-                                 event->type() == ui::ET_MOUSE_PRESSED);
+                                 event->type() == ui::EventType::kMousePressed);
       needs_frame |= true;
       break;
     }
-    case ui::ET_SCROLL: {
+    case ui::EventType::kScroll: {
       ui::ScrollEvent* scroll_event = static_cast<ui::ScrollEvent*>(event);
 
       // Scrolling with 3+ fingers should not be handled since it will be used
@@ -606,21 +615,21 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       needs_frame |= true;
       break;
     }
-    case ui::ET_MOUSEWHEEL: {
+    case ui::EventType::kMousewheel: {
       delegate_->OnPointerScroll(
           event->time_stamp(),
           static_cast<ui::MouseWheelEvent*>(event)->offset(), true);
       needs_frame |= true;
       break;
     }
-    case ui::ET_SCROLL_FLING_START: {
+    case ui::EventType::kScrollFlingStart: {
       // Fling start in chrome signals the lifting of fingers after scrolling.
       // In wayland terms this signals the end of a scroll sequence.
       delegate_->OnFingerScrollStop(event->time_stamp());
       needs_frame |= true;
       break;
     }
-    case ui::ET_SCROLL_FLING_CANCEL: {
+    case ui::EventType::kScrollFlingCancel: {
       // We emulate fling cancel by starting a new scroll sequence that
       // scrolls by 0 pixels, effectively stopping any kinetic scroll motion.
       delegate_->OnPointerScroll(event->time_stamp(), gfx::Vector2dF(), false);
@@ -629,13 +638,13 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
       delegate_->OnPointerFrame();
       break;
     }
-    case ui::ET_MOUSE_MOVED:
-    case ui::ET_MOUSE_DRAGGED:
-    case ui::ET_MOUSE_ENTERED:
-    case ui::ET_MOUSE_EXITED:
+    case ui::EventType::kMouseMoved:
+    case ui::EventType::kMouseDragged:
+    case ui::EventType::kMouseEntered:
+    case ui::EventType::kMouseExited:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -689,17 +698,17 @@ void Pointer::OnGestureEvent(ui::GestureEvent* event) {
   TRACE_EXO_INPUT_EVENT(event);
 
   switch (event->type()) {
-    case ui::ET_GESTURE_PINCH_BEGIN:
+    case ui::EventType::kGesturePinchBegin:
       pinch_delegate_->OnPointerPinchBegin(event->unique_touch_event_id(),
                                            event->time_stamp(), focus_surface_);
       delegate_->OnPointerFrame();
       break;
-    case ui::ET_GESTURE_PINCH_UPDATE:
+    case ui::EventType::kGesturePinchUpdate:
       pinch_delegate_->OnPointerPinchUpdate(event->time_stamp(),
                                             event->details().scale());
       delegate_->OnPointerFrame();
       break;
-    case ui::ET_GESTURE_PINCH_END:
+    case ui::EventType::kGesturePinchEnd:
       pinch_delegate_->OnPointerPinchEnd(event->unique_touch_event_id(),
                                          event->time_stamp());
       delegate_->OnPointerFrame();
@@ -793,6 +802,15 @@ void Pointer::OnRootWindowAdded(aura::Window* root_window) {
 
 void Pointer::OnRootWindowWillShutdown(aura::Window* root_window) {
   root_window->RemovePreTargetHandler(this);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ash::DesksController::Observer:
+void Pointer::OnDeskSwitchAnimationFinished() {
+  if (capture_window_) {
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        this, ui::EventTarget::Priority::kSystem);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -53,7 +53,7 @@ void DeviceSensorEntry::Start(
     // to set the sensor state to be State::INITIALIZING again.
     state_ = State::kInitializing;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

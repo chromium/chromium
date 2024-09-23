@@ -1,0 +1,17 @@
+<style include="print-preview-cros-shared">
+  .control-container {
+    align-items: flex-end;
+  }
+</style>
+<span id="sheetsUsed">[[sheetsUsedText]]</span>
+<div class="flex-container control-container">
+  <!-- TODO(b/323585997): Replace label localized string. -->
+  <cros-button id="cancel" label="Cancel" button-style="secondary"
+      on-click="onCancelClicked">
+  </cros-button>
+  <!-- TODO(b/323585997): Replace label localized string. -->
+  <cros-button id="print" label="Print" button-style="primary"
+      on-click="onPrintClicked"
+      disabled="[[printButtonDisabled]]">
+  </cros-button>
+</div>

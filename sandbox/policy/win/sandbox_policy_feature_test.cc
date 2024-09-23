@@ -84,7 +84,7 @@ void SandboxFeatureTest::ValidateAppContainerSettings(TargetConfig* config) {
     EXPECT_EQ(config->GetAppContainer()->GetCapabilities(),
               GetExpectedCapabilities());
   } else {
-    EXPECT_EQ(config->GetAppContainer().get(), nullptr);
+    EXPECT_EQ(config->GetAppContainer(), nullptr);
   }
 }
 }  // namespace policy

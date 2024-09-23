@@ -26,11 +26,16 @@ class CORE_EXPORT V8LocalCompileHintsProducer
     : public GarbageCollected<V8LocalCompileHintsProducer> {
  public:
   explicit V8LocalCompileHintsProducer(LocalFrame* frame);
+
+  V8LocalCompileHintsProducer(const V8LocalCompileHintsProducer&) = delete;
+  V8LocalCompileHintsProducer& operator=(const V8LocalCompileHintsProducer&) =
+      delete;
+
   ~V8LocalCompileHintsProducer() = default;
   void RecordScript(ExecutionContext* execution_context,
                     const v8::Local<v8::Script> script,
                     ClassicScript* classic_script);
-  void GenerateData();
+  void GenerateData(bool final_data);
 
   void Trace(Visitor* visitor) const;
 
@@ -40,7 +45,8 @@ class CORE_EXPORT V8LocalCompileHintsProducer
 
  private:
   HeapVector<Member<CachedMetadataHandler>> cache_handlers_;
-  WTF::Vector<v8::Global<v8::Script>> v8_scripts_;
+  HeapVector<v8::TracedReference<v8::CompileHintsCollector>>
+      compile_hints_collectors_;
   bool should_generate_data_;
   Member<LocalFrame> frame_;
 };

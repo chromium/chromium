@@ -16,6 +16,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -73,6 +74,10 @@ PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(
 }
 
 PrivacySandboxSettingsDelegate::~PrivacySandboxSettingsDelegate() = default;
+
+bool PrivacySandboxSettingsDelegate::IsRestrictedNoticeEnabled() const {
+  return privacy_sandbox::IsRestrictedNoticeRequired();
+}
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
   if (privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
@@ -132,7 +137,7 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxCurrentlyUnrestricted()
 
 bool PrivacySandboxSettingsDelegate::IsSubjectToM1NoticeRestricted() const {
   // If the feature is deactivated, the notice shouldn't be shown.
-  if (!privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+  if (!privacy_sandbox::IsRestrictedNoticeRequired()) {
     return false;
   }
   return PrivacySandboxRestrictedNoticeRequired();
@@ -145,7 +150,7 @@ bool PrivacySandboxSettingsDelegate::IsIncognitoProfile() const {
 bool PrivacySandboxSettingsDelegate::HasAppropriateTopicsConsent() const {
   // If the profile doesn't require a release 4 consent, then it always has
   // an appropriate (i.e. not required) Topics consent.
-  if (!privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+  if (!privacy_sandbox::IsConsentRequired()) {
     return true;
   }
 
@@ -328,12 +333,8 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationLabelAllowed() const {
           kIneligible:
         return false;
       case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-          kOffboarded:
-      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
           kEligible:
         return !tpcd::experiment::kNeedOnboardingForLabel.Get();
-      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-          kOnboardingRequested:
       case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
           kOnboarded:
         return true;
@@ -381,10 +382,6 @@ bool PrivacySandboxSettingsDelegate::
         kIneligible:
     case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
         kEligible:
-    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-        kOffboarded:
-    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-        kOnboardingRequested:
       return false;
     case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
         kOnboarded:
@@ -406,6 +403,7 @@ bool PrivacySandboxSettingsDelegate::
 
   switch (cookie_controls_mode) {
     case content_settings::CookieControlsMode::kBlockThirdParty:
+    case content_settings::CookieControlsMode::kLimited:
       return false;
     case content_settings::CookieControlsMode::kIncognitoOnly:
     case content_settings::CookieControlsMode::kOff:

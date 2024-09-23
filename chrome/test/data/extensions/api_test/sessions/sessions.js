@@ -16,7 +16,7 @@ var assertFalse = chrome.test.assertFalse;
 var assertTrue = chrome.test.assertTrue;
 
 function pageUrl(letter) {
-  return chrome.extension.getURL(letter + ".html");
+  return chrome.runtime.getURL(letter + ".html");
 }
 
 // Creates one window with tabs set to the urls in the array |tabUrls|.
@@ -120,7 +120,7 @@ chrome.test.runTests([
         windowIds.push(winId);
       },
       function done() {
-        chrome.tabs.getAllInWindow(windowIds[0], callbackPass(function(tabs) {
+        chrome.tabs.query({windowId:windowIds[0]}, callbackPass(function(tabs) {
           assertEq(pages.length, tabs.length);
           tabs.forEach(function(tab) {
             firstWindowTabIds.push(tab.id);

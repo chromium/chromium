@@ -1,0 +1,50 @@
+caption: Allow JavaScript optimization on these sites
+desc: |-
+  Allows you to set a list of site url patterns that specify sites for which
+  advanced JavaScript optimizations are enabled.
+
+  For detailed information on valid site url patterns, please see
+  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+  JavaScript optimization policy exceptions will only be enforced at a site
+  granularity (eTLD+1). A policy set for only subdomain.site.com will not
+  correctly apply to site.com or subdomain.site.com since they both resolve to
+  the same eTLD+1 (site.com) for which there is no policy. In this case, policy
+  must be set on site.com to apply correctly for both site.com and
+  subdomain.site.com.
+
+  This policy applies on a frame-by-frame basis and not based on top level
+  origin url alone, so e.g. if site-one.com is listed in the <ph
+  name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME">
+  JavaScriptOptimizerAllowedForSites</ph> policy but site-one.com loads a frame   containing site-two.com then site-one.com will have JavaScript optimizations
+  enabled, but site-two.com will use the policy from <ph
+  name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME">
+  DefaultJavaScriptOptimizerSetting</ph>, if set, or default to JavaScript
+  optimizations enabled. Blocklist entries have higher priority than allowlist
+  entries, which in turn have higher priority than the configured default value.
+
+  If this policy is not set for a site then the policy from <ph
+  name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME">
+  DefaultJavaScriptOptimizerSetting</ph> applies to the site, if set, otherwise
+  Javascript optimization is enabled for the site.
+example_value:
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- android
+- chrome.*
+- chrome_os
+- fuchsia
+owners:
+- ellyjones@chromium.org
+- wfh@chromium.org
+- nasko@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+tags: []
+type: list

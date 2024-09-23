@@ -50,21 +50,14 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:primaryText="@string/privacy_guide_safe_browsing_enhanced_title"
-                app:descriptionText="@string/privacy_guide_safe_browsing_enhanced_description" />
+                app:descriptionText="@string/safe_browsing_enhanced_protection_summary" />
 
-            <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
                 android:id="@+id/standard_option"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:primaryText="@string/privacy_guide_safe_browsing_standard_title"
-                app:descriptionText="@string/privacy_guide_safe_browsing_standard_description" />
-
-            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
-                android:id="@+id/standard_option_friendlier"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:primaryText="@string/privacy_guide_safe_browsing_standard_title"
-                app:descriptionText="@string/safe_browsing_standard_protection_summary_updated" />
+                app:descriptionText="@string/safe_browsing_standard_protection_summary" />
 
         </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 

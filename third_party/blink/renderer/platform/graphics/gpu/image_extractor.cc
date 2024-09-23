@@ -109,7 +109,7 @@ ImageExtractor::ImageExtractor(Image* image,
       // Decode the image here on the main thread.
       std::unique_ptr<ImageDecoder> decoder(ImageDecoder::Create(
           image->Data(), data_complete, alpha_option, bit_depth, color_behavior,
-          Platform::GetMaxDecodedImageBytes()));
+          cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes()));
       if (!decoder || !decoder->FrameCount()) {
         return;
       }

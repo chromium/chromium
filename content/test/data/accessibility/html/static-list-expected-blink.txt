@@ -4,16 +4,16 @@ rootWebArea
 ++++++list
 ++++++++listItem
 ++++++++++listMarker name='1. '
-++++++++++++staticText ignored name='1. '
+++++++++++++staticText ignored
 ++++++++++staticText name='Kirk'
 ++++++++++++inlineTextBox name='Kirk'
 ++++++++listItem
 ++++++++++listMarker name='2. '
-++++++++++++staticText ignored name='2. '
+++++++++++++staticText ignored
 ++++++++++staticText name='Picard'
 ++++++++++++inlineTextBox name='Picard'
 ++++++++listItem
 ++++++++++listMarker name='3. '
-++++++++++++staticText ignored name='3. '
+++++++++++++staticText ignored
 ++++++++++staticText name='Janeway'
 ++++++++++++inlineTextBox name='Janeway'

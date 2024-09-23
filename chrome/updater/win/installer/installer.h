@@ -32,7 +32,7 @@ struct ProcessExitResult {
   bool IsSuccess() const { return exit_code == SUCCESS_EXIT_CODE; }
 };
 
-inline constexpr size_t kInstallerMaxCommandString = MAX_PATH * 4;
+inline constexpr size_t kInstallerMaxCommandString = 8191;
 
 // A stack-based string large enough to hold an executable to run
 // (which is a path), plus a few extra arguments.
@@ -50,7 +50,7 @@ ProcessExitResult BuildInstallerCommandLineArguments(
 ProcessExitResult HandleRunElevated(const base::CommandLine& command_line);
 
 // Main function for the installer.
-ProcessExitResult WMain(HMODULE module);
+int WMain(HMODULE module);
 
 }  // namespace updater
 

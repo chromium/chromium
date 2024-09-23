@@ -32,8 +32,9 @@ Clipboard* Clipboard::Create() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   NOTREACHED() << "System clipboard integration should be in place.";
-#endif
+#else
   return new ClipboardNonBacked;
+#endif
 }
 
 }  // namespace ui

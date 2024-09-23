@@ -45,6 +45,7 @@ export class ISearchUI {
   }
 
   private onKeyDown_(evt: KeyboardEvent): boolean {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     switch (evt.key) {
       case 'ArrowUp':
         this.dir_ = Dir.BACKWARD;
@@ -53,13 +54,13 @@ export class ISearchUI {
         this.dir_ = Dir.FORWARD;
         break;
       case 'Escape':
-        PanelInterface.instance.closeMenusAndRestoreFocus();
+        PanelInterface.instance!.closeMenusAndRestoreFocus();
         return false;
       case 'Enter':
-        PanelInterface.instance.setPendingCallback(
+        PanelInterface.instance!.setPendingCallback(
             async () =>
                 await BackgroundBridge.PanelBackground.setRangeToISearchNode());
-        PanelInterface.instance.closeMenusAndRestoreFocus();
+        PanelInterface.instance!.closeMenusAndRestoreFocus();
         return false;
       default:
         return false;

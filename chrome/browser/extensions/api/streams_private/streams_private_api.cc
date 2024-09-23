@@ -16,11 +16,11 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "extensions/common/constants.h"
 #include "pdf/pdf_features.h"
@@ -29,10 +29,10 @@
 namespace extensions {
 
 void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& stream_id,
     bool embedded,
-    int frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
     const GURL& original_url,
     const std::string& internal_id) {
@@ -71,24 +71,13 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   GURL handler_url(Extension::GetBaseURLFromExtensionId(extension_id).spec() +
                    handler->handler_url());
 
-  // If this is an inner contents, then (a) it's a guest view and doesn't have a
-  // tab id anyway, or (b) it's a portal. In the portal case, providing a
-  // distinct tab id breaks the pdf viewer / extension APIs. For now we just
-  // indicate that a portal contents has no tab id. Unfortunately, this will
-  // still be broken in subtle ways once the portal is activated (e.g. some
-  // forms of zooming won't work).
-  // TODO(1042323): Present a coherent representation of a tab id for portal
-  // contents.
-  int tab_id = web_contents->GetOuterWebContents()
-                   ? SessionID::InvalidValue().id()
-                   : ExtensionTabUtil::GetTabId(web_contents);
-
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   std::unique_ptr<StreamContainer> stream_container(
       new StreamContainer(tab_id, embedded, handler_url, extension_id,
                           std::move(transferrable_loader), original_url));
 
 #if BUILDFLAG(ENABLE_PDF)
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+  if (chrome_pdf::features::IsOopifPdfEnabled() &&
       extension_id == extension_misc::kPdfExtensionId) {
     pdf::PdfViewerStreamManager::Create(web_contents);
     pdf::PdfViewerStreamManager::FromWebContents(web_contents)

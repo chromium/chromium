@@ -27,12 +27,15 @@ import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.net.NetId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /** Base class for model classes which parse incoming intent for customization data. */
 public abstract class BrowserServicesIntentDataProvider {
@@ -43,7 +46,8 @@ public abstract class BrowserServicesIntentDataProvider {
         CustomTabsUiType.INFO_PAGE,
         CustomTabsUiType.READER_MODE,
         CustomTabsUiType.MINIMAL_UI_WEBAPP,
-        CustomTabsUiType.OFFLINE_PAGE
+        CustomTabsUiType.OFFLINE_PAGE,
+        CustomTabsUiType.AUTH_TAB
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsUiType {
@@ -54,6 +58,7 @@ public abstract class BrowserServicesIntentDataProvider {
         int MINIMAL_UI_WEBAPP = 4;
         int OFFLINE_PAGE = 5;
         int READ_LATER = 6;
+        int AUTH_TAB = 7;
     }
 
     // The type of Disclosure for TWAs to use.
@@ -77,9 +82,25 @@ public abstract class BrowserServicesIntentDataProvider {
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActivitySideSheetSlideInBehavior {}
 
+    // The type of Profile and UI that is used by the custom tab.
+    @IntDef({
+        CustomTabProfileType.REGULAR,
+        CustomTabProfileType.INCOGNITO,
+        CustomTabProfileType.EPHEMERAL
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CustomTabProfileType {
+        // The normal user profile.
+        int REGULAR = 0;
+        // An off-the-record profile with incognito UI.
+        int INCOGNITO = 1;
+        // An off-the-record profile without references to incognito mode.
+        int EPHEMERAL = 2;
+    }
+
     /**
-     * Side sheet's default slide-in behavior. Same as
-     * {@link ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE}.
+     * Side sheet's default slide-in behavior. Same as {@link
+     * ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE}.
      */
     public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT = 0;
 
@@ -132,8 +153,16 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return The resource id for enter animation, which is used in
-     *         {@link Activity#overridePendingTransition(int, int)}.
+     * @return The package name of the client app provided via identity sharing API introduced in
+     *     Android U.
+     */
+    public @Nullable String getClientPackageNameIdentitySharing() {
+        return null;
+    }
+
+    /**
+     * @return The resource id for enter animation, which is used in {@link
+     *     Activity#overridePendingTransition(int, int)}.
      */
     public int getAnimationEnterRes() {
         return 0;
@@ -147,12 +176,7 @@ public abstract class BrowserServicesIntentDataProvider {
         return 0;
     }
 
-    /**
-     * Checks whether or not the Intent is from Chrome or other trusted first party.
-     *
-     * @deprecated This method is not reliable, see https://crbug.com/832124
-     */
-    @Deprecated
+    /** Checks whether or not the Intent is from Chrome or other trusted first party. */
     public boolean isTrustedIntent() {
         return false;
     }
@@ -234,8 +258,15 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * @return The list of params representing the custom buttons on the Google Bottom Bar.
+     */
+    public List<CustomButtonParams> getCustomButtonsOnGoogleBottomBar() {
+        return Collections.emptyList();
+    }
+
+    /**
      * @return The {@link RemoteViews} to show on the bottom bar, or null if the extra is not
-     *         specified.
+     *     specified.
      */
     public @Nullable RemoteViews getBottomBarRemoteViews() {
         return null;
@@ -323,10 +354,25 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return Whether the Activity should be opened in incognito mode.
+     * @return Whether the Activity uses an off-the-record profile.
      */
-    public boolean isIncognito() {
+    public boolean isOffTheRecord() {
+        switch (getCustomTabMode()) {
+            case CustomTabProfileType.EPHEMERAL:
+            case CustomTabProfileType.INCOGNITO:
+                return true;
+            case CustomTabProfileType.REGULAR:
+                return false;
+        }
+        assert false; // NOTREACHED
         return false;
+    }
+
+    /**
+     * @return Whether the Activity is a regular, incognito or ephemeral custom tab.
+     */
+    public @CustomTabProfileType int getCustomTabMode() {
+        return CustomTabProfileType.REGULAR;
     }
 
     /**
@@ -385,8 +431,17 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return ISO 639 code of target language the page should be translated to.
-     * This method requires native.
+     * @return All origins associated with a TrustedWebActivity client app, including the initially
+     *     loaded origin.
+     */
+    @Nullable
+    public Set<Origin> getAllTrustedWebActivityOrigins() {
+        return null;
+    }
+
+    /**
+     * @return ISO 639 code of target language the page should be translated to. This method
+     *     requires native.
      */
     public @Nullable String getTranslateLanguage() {
         return null;
@@ -584,5 +639,38 @@ public abstract class BrowserServicesIntentDataProvider {
     /** Return the default position. */
     public int getSideSheetPosition() {
         return ACTIVITY_SIDE_SHEET_POSITION_END;
+    }
+
+    /** Return whether calling package should be allowed to present an interactive Omnibox. */
+    public boolean isInteractiveOmniboxAllowed() {
+        return false;
+    }
+
+    /**
+     * Return the target network that should be used from this intent, the default value to be used
+     * when a network has not been explicitly set via intent.
+     */
+    public long getTargetNetwork() {
+        return NetId.INVALID;
+    }
+
+    /** Return {@code true} if the service was launched for authentication. */
+    public boolean isAuthTab() {
+        return false;
+    }
+
+    /** Return the custom redirect scheme for AuthTab. */
+    public String getAuthRedirectScheme() {
+        return null;
+    }
+
+    /** Return the https redirect URL host (origin) for AuthTab. */
+    public String getAuthRedirectHost() {
+        return null;
+    }
+
+    /** Return the https redirect URL path for AuthTab. */
+    public String getAuthRedirectPath() {
+        return null;
     }
 }

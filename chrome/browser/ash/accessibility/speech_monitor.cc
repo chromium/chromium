@@ -5,12 +5,15 @@
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 
 #include "base/containers/contains.h"
+#include "base/run_loop.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
+#include "content/public/test/test_utils.h"
 
 namespace ash {
 namespace test {

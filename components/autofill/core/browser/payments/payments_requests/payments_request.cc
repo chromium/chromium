@@ -15,6 +15,16 @@
 
 namespace autofill::payments {
 
+PaymentsRequest::PaymentsRequest() {
+  // Enforce the invariant: if you have a client-side timeout set, you must
+  // provide a name for the associated histogram.
+  if (GetTimeout().has_value()) {
+    CHECK(!GetHistogramName().empty())
+        << "If a PaymentsRequest subclass sets a client-side timeout, it must "
+           "also provide a GetHistogram implementation.";
+  }
+}
+
 PaymentsRequest::~PaymentsRequest() = default;
 
 bool PaymentsRequest::IsRetryableFailure(const std::string& error_code) {
@@ -27,6 +37,14 @@ bool PaymentsRequest::IsRetryableFailure(const std::string& error_code) {
   // authentication flow, we want to set result to kTryAgainFailure if a flow
   // status is present in the response.
   return base::EqualsCaseInsensitiveASCII(error_code, "internal");
+}
+
+std::string PaymentsRequest::GetHistogramName() const {
+  return "";
+}
+
+std::optional<base::TimeDelta> PaymentsRequest::GetTimeout() const {
+  return std::nullopt;
 }
 
 base::Value::Dict PaymentsRequest::BuildRiskDictionary(
@@ -125,9 +143,9 @@ base::Value::Dict PaymentsRequest::BuildCreditCardDictionary(
   card.Set("unique_id", credit_card.guid());
 
   const std::u16string exp_month =
-      credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale);
-  const std::u16string exp_year = credit_card.GetInfo(
-      AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale);
+      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
+  const std::u16string exp_year =
+      credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
   int value = 0;
   if (base::StringToInt(exp_month, &value))
     card.Set("expiration_month", value);
@@ -159,7 +177,7 @@ void PaymentsRequest::SetStringIfNotEmpty(const AutofillDataModel& profile,
                                           const std::string& app_locale,
                                           const std::string& path,
                                           base::Value::Dict& dictionary) {
-  std::u16string value = profile.GetInfo(AutofillType(type), app_locale);
+  std::u16string value = profile.GetInfo(type, app_locale);
   if (!value.empty())
     dictionary.Set(path, std::move(value));
 }

@@ -7,7 +7,10 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/values.h"
+#include "pdf/draw_utils/coordinates.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -29,18 +32,7 @@ int GetWidestPageWidth(const std::vector<gfx::Size>& page_sizes) {
   return widest_page_width;
 }
 
-gfx::Rect InsetRect(const gfx::Rect& rect,
-                    const draw_utils::PageInsetSizes& inset_sizes) {
-  gfx::Rect inset_rect(rect);
-  inset_rect.Inset(gfx::Insets::TLBR(inset_sizes.top, inset_sizes.left,
-                                     inset_sizes.bottom, inset_sizes.right));
-  return inset_rect;
-}
-
 }  // namespace
-
-const draw_utils::PageInsetSizes DocumentLayout::kSingleViewInsets{
-    /*left=*/5, /*top=*/3, /*right=*/5, /*bottom=*/7};
 
 DocumentLayout::Options::Options() = default;
 
@@ -112,6 +104,7 @@ void DocumentLayout::ComputeLayout(const std::vector<gfx::Size>& page_sizes) {
     case PageSpread::kTwoUpOdd:
       return ComputeTwoUpOddLayout(page_sizes);
   }
+  NOTREACHED();
 }
 
 void DocumentLayout::ComputeOneUpLayout(
@@ -134,8 +127,8 @@ void DocumentLayout::ComputeOneUpLayout(
     gfx::Rect page_rect =
         draw_utils::GetRectForSingleView(page_size, document_size);
     CopyRectIfModified(page_rect, page_layouts_[i].outer_rect);
-    CopyRectIfModified(InsetRect(page_rect, kSingleViewInsets),
-                       page_layouts_[i].inner_rect);
+    page_rect.Inset(kSingleViewInsets);
+    CopyRectIfModified(page_rect, page_layouts_[i].inner_rect);
 
     draw_utils::ExpandDocumentSize(page_size, &document_size);
   }
@@ -157,9 +150,8 @@ void DocumentLayout::ComputeTwoUpOddLayout(
   }
 
   for (size_t i = 0; i < page_sizes.size(); ++i) {
-    draw_utils::PageInsetSizes page_insets =
-        draw_utils::GetPageInsetsForTwoUpView(
-            i, page_sizes.size(), kSingleViewInsets, kHorizontalSeparator);
+    gfx::Insets page_insets = draw_utils::GetPageInsetsForTwoUpView(
+        i, page_sizes.size(), kSingleViewInsets, kHorizontalSeparator);
     const gfx::Size& page_size = page_sizes[i];
 
     gfx::Rect page_rect;
@@ -173,8 +165,8 @@ void DocumentLayout::ComputeTwoUpOddLayout(
           0, std::max(page_size.height(), page_sizes[i - 1].height()));
     }
     CopyRectIfModified(page_rect, page_layouts_[i].outer_rect);
-    CopyRectIfModified(InsetRect(page_rect, page_insets),
-                       page_layouts_[i].inner_rect);
+    page_rect.Inset(page_insets);
+    CopyRectIfModified(page_rect, page_layouts_[i].inner_rect);
   }
 
   if (page_sizes.size() % 2 == 1) {

@@ -76,17 +76,7 @@ InlineItem::InlineItem(InlineItemType type,
       // Use atomic construction to allow for concurrently marking InlineItem.
       layout_object_(layout_object,
                      Member<LayoutObject>::AtomicInitializerTag{}),
-      type_(type),
-      text_type_(static_cast<unsigned>(TextItemType::kNormal)),
-      style_variant_(static_cast<unsigned>(StyleVariant::kStandard)),
-      end_collapse_type_(kNotCollapsible),
-      bidi_level_(UBIDI_LTR),
-      segment_data_(0),
-      is_empty_item_(false),
-      is_block_level_(false),
-      is_end_collapsible_newline_(false),
-      is_generated_for_line_break_(false),
-      is_unsafe_to_reuse_shape_result_(false) {
+      type_(type) {
   DCHECK_GE(end, start);
   ComputeBoxProperties();
 }
@@ -97,8 +87,8 @@ InlineItem::InlineItem(const InlineItem& other,
                        const ShapeResult* shape_result)
     : start_offset_(start),
       end_offset_(end),
-      shape_result_(shape_result),
       // Use atomic construction to allow for concurrently marking InlineItem.
+      shape_result_(shape_result, Member<ShapeResult>::AtomicInitializerTag{}),
       layout_object_(other.layout_object_,
                      Member<LayoutObject>::AtomicInitializerTag{}),
       type_(other.type_),
@@ -115,13 +105,22 @@ InlineItem::InlineItem(const InlineItem& other,
   DCHECK_GE(end, start);
 }
 
+InlineItem::InlineItem(const InlineItem& other)
+    : InlineItem(other,
+                 other.start_offset_,
+                 other.end_offset_,
+                 other.shape_result_.Get()) {}
+
 InlineItem::~InlineItem() = default;
 
 void InlineItem::ComputeBoxProperties() {
   DCHECK(!is_empty_item_);
 
   if (type_ == InlineItem::kText || type_ == InlineItem::kAtomicInline ||
-      type_ == InlineItem::kControl || UNLIKELY(type_ == kInitialLetterBox)) {
+      type_ == InlineItem::kControl) {
+    return;
+  }
+  if (type_ == kInitialLetterBox) [[unlikely]] {
     return;
   }
 
@@ -173,8 +172,14 @@ const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
       return "ListMarker";
     case kBidiControl:
       return "BidiControl";
+    case kOpenRubyColumn:
+      return "OpenRubyColumn";
+    case kCloseRubyColumn:
+      return "CloseRubyColumn";
+    case kRubyLinePlaceholder:
+      return "RubyLinePlaceholder";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void InlineItem::SetSegmentData(const RunSegmenter::RunSegmenterRange& range,
@@ -238,7 +243,7 @@ String InlineItem::ToString() const {
   String object_info;
   if (const auto* layout_text = DynamicTo<LayoutText>(GetLayoutObject())) {
     object_info = layout_text->TransformedText().EncodeForDebugging();
-  } else {
+  } else if (GetLayoutObject()) {
     object_info = GetLayoutObject()->ToString();
   }
   return String::Format("InlineItem %s. %s", InlineItemTypeToString(Type()),

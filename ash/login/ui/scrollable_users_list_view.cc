@@ -122,7 +122,6 @@ LayoutParams BuildLayoutForStyle(LoginDisplayStyle style) {
     }
     default: {
       NOTREACHED();
-      return LayoutParams();
     }
   }
 }
@@ -138,10 +137,7 @@ ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
       SkColor dark_muted_color = view->GetColorProvider()->GetColor(
           kColorAshLoginScrollableUserListBackground);
 
-      ui::ColorId tint_color_id =
-          chromeos::features::IsJellyEnabled()
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
-              : kColorAshShieldAndBase80;
+      ui::ColorId tint_color_id = cros_tokens::kCrosSysScrim2;
 
       SkColor tint_color = color_utils::GetResultingPaintColor(
           view->GetColorProvider()->GetColor(tint_color_id),
@@ -160,7 +156,6 @@ ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
     }
     default: {
       NOTREACHED();
-      return GradientParams();
     }
   }
 }
@@ -214,10 +209,13 @@ ScrollableUsersListView::ScrollableUsersListView(
   // |user_view_host_| cannot be set as |contents()| directly because it needs
   // to be vertically centered when non-scrollable.
   auto ensure_min_height = std::make_unique<EnsureMinHeightView>();
-  ensure_min_height
-      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical))
-      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  auto* ensure_min_height_layout =
+      ensure_min_height->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  ensure_min_height_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  ensure_min_height_layout->set_cross_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
   ensure_min_height->AddChildView(user_view_host_.get());
   SetContents(std::move(ensure_min_height));
   SetBackgroundColor(std::nullopt);
@@ -324,10 +322,7 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
 
-    ui::ColorId background_color_id =
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
-            : kColorAshShieldAndBase80;
+    ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
     flags.setColor(GetColorProvider()->GetColor(background_color_id));
     canvas->DrawRoundRect(render_bounds,
                           login::kNonBlurredWallpaperBackgroundRadiusDp, flags);

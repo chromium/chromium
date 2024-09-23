@@ -1,5 +1,5 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
+++genericContainer ignored
 ++++genericContainer htmlTag='body'
 ++++++svgRoot htmlTag='svg' name='Text descendants'
 ++++++++genericContainer htmlTag='text'
@@ -11,4 +11,3 @@ rootWebArea htmlTag='#document'
 ++++++++++++inlineTextBox name='not focusable'
 ++++++svgRoot htmlTag='svg' name='Not text descendants'
 ++++++++group htmlTag='a'
-++++++++group ignored htmlTag='a'

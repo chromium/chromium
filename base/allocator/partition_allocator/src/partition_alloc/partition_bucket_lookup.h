@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_BUCKET_LOOKUP_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_BUCKET_LOOKUP_H_
+#ifndef PARTITION_ALLOC_PARTITION_BUCKET_LOOKUP_H_
+#define PARTITION_ALLOC_PARTITION_BUCKET_LOOKUP_H_
 
-#include <bit>
+#include <array>
 #include <cstdint>
+#include <utility>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
 
@@ -42,67 +43,28 @@ constexpr size_t OrderSubIndexMask(uint8_t order) {
          (kNumBucketsPerOrderBits + 1);
 }
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
-#define PA_BITS_PER_SIZE_T 64
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 static_assert(kBitsPerSizeT == 64, "");
 #else
-#define PA_BITS_PER_SIZE_T 32
 static_assert(kBitsPerSizeT == 32, "");
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-inline constexpr uint8_t kOrderIndexShift[PA_BITS_PER_SIZE_T + 1] = {
-    OrderIndexShift(0),  OrderIndexShift(1),  OrderIndexShift(2),
-    OrderIndexShift(3),  OrderIndexShift(4),  OrderIndexShift(5),
-    OrderIndexShift(6),  OrderIndexShift(7),  OrderIndexShift(8),
-    OrderIndexShift(9),  OrderIndexShift(10), OrderIndexShift(11),
-    OrderIndexShift(12), OrderIndexShift(13), OrderIndexShift(14),
-    OrderIndexShift(15), OrderIndexShift(16), OrderIndexShift(17),
-    OrderIndexShift(18), OrderIndexShift(19), OrderIndexShift(20),
-    OrderIndexShift(21), OrderIndexShift(22), OrderIndexShift(23),
-    OrderIndexShift(24), OrderIndexShift(25), OrderIndexShift(26),
-    OrderIndexShift(27), OrderIndexShift(28), OrderIndexShift(29),
-    OrderIndexShift(30), OrderIndexShift(31), OrderIndexShift(32),
-#if PA_BITS_PER_SIZE_T == 64
-    OrderIndexShift(33), OrderIndexShift(34), OrderIndexShift(35),
-    OrderIndexShift(36), OrderIndexShift(37), OrderIndexShift(38),
-    OrderIndexShift(39), OrderIndexShift(40), OrderIndexShift(41),
-    OrderIndexShift(42), OrderIndexShift(43), OrderIndexShift(44),
-    OrderIndexShift(45), OrderIndexShift(46), OrderIndexShift(47),
-    OrderIndexShift(48), OrderIndexShift(49), OrderIndexShift(50),
-    OrderIndexShift(51), OrderIndexShift(52), OrderIndexShift(53),
-    OrderIndexShift(54), OrderIndexShift(55), OrderIndexShift(56),
-    OrderIndexShift(57), OrderIndexShift(58), OrderIndexShift(59),
-    OrderIndexShift(60), OrderIndexShift(61), OrderIndexShift(62),
-    OrderIndexShift(63), OrderIndexShift(64)
-#endif
-};
+// Orders range from 0 to `kBitsPerSizeT`, inclusive.
+inline constexpr uint8_t kNumOrders = kBitsPerSizeT + 1;
 
-inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
-    OrderSubIndexMask(0),  OrderSubIndexMask(1),  OrderSubIndexMask(2),
-    OrderSubIndexMask(3),  OrderSubIndexMask(4),  OrderSubIndexMask(5),
-    OrderSubIndexMask(6),  OrderSubIndexMask(7),  OrderSubIndexMask(8),
-    OrderSubIndexMask(9),  OrderSubIndexMask(10), OrderSubIndexMask(11),
-    OrderSubIndexMask(12), OrderSubIndexMask(13), OrderSubIndexMask(14),
-    OrderSubIndexMask(15), OrderSubIndexMask(16), OrderSubIndexMask(17),
-    OrderSubIndexMask(18), OrderSubIndexMask(19), OrderSubIndexMask(20),
-    OrderSubIndexMask(21), OrderSubIndexMask(22), OrderSubIndexMask(23),
-    OrderSubIndexMask(24), OrderSubIndexMask(25), OrderSubIndexMask(26),
-    OrderSubIndexMask(27), OrderSubIndexMask(28), OrderSubIndexMask(29),
-    OrderSubIndexMask(30), OrderSubIndexMask(31), OrderSubIndexMask(32),
-#if PA_BITS_PER_SIZE_T == 64
-    OrderSubIndexMask(33), OrderSubIndexMask(34), OrderSubIndexMask(35),
-    OrderSubIndexMask(36), OrderSubIndexMask(37), OrderSubIndexMask(38),
-    OrderSubIndexMask(39), OrderSubIndexMask(40), OrderSubIndexMask(41),
-    OrderSubIndexMask(42), OrderSubIndexMask(43), OrderSubIndexMask(44),
-    OrderSubIndexMask(45), OrderSubIndexMask(46), OrderSubIndexMask(47),
-    OrderSubIndexMask(48), OrderSubIndexMask(49), OrderSubIndexMask(50),
-    OrderSubIndexMask(51), OrderSubIndexMask(52), OrderSubIndexMask(53),
-    OrderSubIndexMask(54), OrderSubIndexMask(55), OrderSubIndexMask(56),
-    OrderSubIndexMask(57), OrderSubIndexMask(58), OrderSubIndexMask(59),
-    OrderSubIndexMask(60), OrderSubIndexMask(61), OrderSubIndexMask(62),
-    OrderSubIndexMask(63), OrderSubIndexMask(64)
-#endif
-};
+template <typename SizeClass, SizeClass... Index>
+constexpr auto MakeOrderArray(SizeClass (*order_function)(uint8_t),
+                              std::integer_sequence<SizeClass, Index...> seq) {
+  return std::array{order_function(Index)...};
+}
+
+inline constexpr auto kOrderIndexShift =
+    MakeOrderArray(OrderIndexShift,
+                   std::make_integer_sequence<uint8_t, kNumOrders>{});
+
+inline constexpr auto kOrderSubIndexMask =
+    MakeOrderArray(OrderSubIndexMask,
+                   std::make_integer_sequence<size_t, kNumOrders>{});
 
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
@@ -208,11 +170,17 @@ class BucketIndexLookup final {
       bucket_index_lookup_[((kBitsPerSizeT + 1) * kNumBucketsPerOrder) + 1]{};
 };
 
+PA_ALWAYS_INLINE constexpr size_t RoundUpToPowerOfTwo(size_t size) {
+  const size_t n = 1 << base::bits::Log2Ceiling(static_cast<uint32_t>(size));
+  PA_CHECK(size <= n);
+  return n;
+}
+
 PA_ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
-  const size_t next_power = std::bit_ceil(size);
+  const size_t next_power = RoundUpToPowerOfTwo(size);
   const size_t prev_power = next_power >> 1;
-  PA_DCHECK(size <= next_power);
-  PA_DCHECK(prev_power < size);
+  PA_CHECK(size <= next_power);
+  PA_CHECK(prev_power < size);
   if (size <= prev_power * 5 / 4) {
     return prev_power * 5 / 4;
   } else {
@@ -231,7 +199,7 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
   // materialized in the binary.
   constexpr BucketIndexLookup lookup{};
   const size_t order =
-      kBitsPerSizeT - static_cast<size_t>(std::countl_zero(size));
+      kBitsPerSizeT - static_cast<size_t>(base::bits::CountlZero(size));
   // The order index is simply the next few bits after the most significant
   // bit.
   const size_t order_index =
@@ -294,4 +262,4 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_BUCKET_LOOKUP_H_
+#endif  // PARTITION_ALLOC_PARTITION_BUCKET_LOOKUP_H_

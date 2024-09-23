@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -312,7 +313,7 @@ std::u16string GetFirefoxImporterName(const base::FilePath& app_path) {
 
     const std::string name_attr("Name=");
     bool in_app_section = false;
-    for (const base::StringPiece& line : base::SplitStringPiece(
+    for (std::string_view line : base::SplitStringPiece(
              content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       if (line == "[App]") {
         in_app_section = true;

@@ -6,6 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_AW_DRAW_FN_IMPL_H_
 
 #include <optional>
+
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/compositor_frame_consumer.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
@@ -21,6 +22,10 @@ class AwDrawFnImpl {
  public:
   // Safe to call even on versions where draw_fn functor is not supported.
   static bool IsUsingVulkan();
+
+  static void ReportRenderingThreads(int functor,
+                                     const pid_t* thread_ids,
+                                     size_t size);
 
   AwDrawFnImpl();
 

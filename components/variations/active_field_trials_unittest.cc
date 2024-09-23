@@ -6,7 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "components/variations/hashing.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,7 +41,7 @@ TEST(ActiveFieldTrialsTest, GetFieldTrialActiveGroups) {
   expected_groups.insert(name_group_id);
 
   std::vector<ActiveGroupId> active_group_ids;
-  testing::TestGetFieldTrialActiveGroupIds(base::StringPiece(), active_groups,
+  testing::TestGetFieldTrialActiveGroupIds(std::string_view(), active_groups,
                                            &active_group_ids);
   EXPECT_EQ(2U, active_group_ids.size());
   for (size_t i = 0; i < active_group_ids.size(); ++i) {
@@ -84,7 +85,7 @@ TEST(ActiveFieldTrialsTest,
   active_group.is_overridden = true;
 
   std::vector<ActiveGroupId> active_group_ids;
-  testing::TestGetFieldTrialActiveGroupIds(base::StringPiece(), {active_group},
+  testing::TestGetFieldTrialActiveGroupIds(std::string_view(), {active_group},
                                            &active_group_ids);
   ASSERT_EQ(1U, active_group_ids.size());
   EXPECT_EQ(active_group_ids[0].name, HashName(trial_one));

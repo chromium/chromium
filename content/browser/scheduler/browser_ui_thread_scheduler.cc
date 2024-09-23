@@ -237,7 +237,7 @@ bool BrowserUIThreadScheduler::Policy::IsQueueEnabled(
     case BrowserTaskQueues::QueueType::kBeforeUnloadBrowserResponse:
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void BrowserUIThreadScheduler::DidEndUserInput() {

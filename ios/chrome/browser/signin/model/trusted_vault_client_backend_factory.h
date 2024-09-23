@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_TRUSTED_VAULT_CLIENT_BACKEND_FACTORY_H_
 #define IOS_CHROME_BROWSER_SIGNIN_MODEL_TRUSTED_VAULT_CLIENT_BACKEND_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class TrustedVaultClientBackend;
 
 // Singleton that owns all TrustedVaultClientBackends and associates them with
@@ -18,8 +18,10 @@ class TrustedVaultClientBackend;
 class TrustedVaultClientBackendFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static TrustedVaultClientBackend* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static TrustedVaultClientBackend* GetForBrowserState(ProfileIOS* profile);
+
+  static TrustedVaultClientBackend* GetForProfile(ProfileIOS* profile);
   static TrustedVaultClientBackendFactory* GetInstance();
 
  private:

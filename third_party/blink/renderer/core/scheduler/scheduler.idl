@@ -1,0 +1,24 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/scheduling-apis/#sec-scheduler
+//
+// currentTaskSignal:
+// https://github.com/WICG/scheduling-apis/blob/main/explainers/post-task-propagation.md
+
+// https://docs.google.com/document/d/1_m-h9_KgDMddTS2OFP0CShr4zjU-C-up64DwCrCfBo4
+enum AncestorStatus {
+    "ancestor",
+    "not ancestor",
+    "unknown"
+};
+
+[
+    Exposed=(Window,Worker),
+    ImplementedAs=DOMScheduler
+] interface Scheduler {
+    [CallWith=ScriptState, MeasureAs=SchedulerPostTask, RaisesException] Promise<any> postTask(SchedulerPostTaskCallback callback, optional SchedulerPostTaskOptions options = {});
+    [RuntimeEnabled=SchedulerYield, MeasureAs=SchedulerYield, CallWith=ScriptState, RaisesException] Promise<undefined> yield();
+    [RuntimeEnabled=UnexposedTaskIds, CallWith=ScriptState, Exposed=Window] attribute unsigned long taskId;
+};

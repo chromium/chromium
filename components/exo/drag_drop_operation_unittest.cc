@@ -123,8 +123,7 @@ TEST_F(DragDropOperationTest, DeleteDataSourceDuringDragging) {
   ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
 
   gfx::Size buffer_size(100, 100);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -202,8 +201,7 @@ TEST_F(DragDropOperationTestWithWebUITabStripTest,
   auto* origin_surface = shell_surface->surface_for_testing();
 
   gfx::Size buffer_size(100, 100);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -255,8 +253,7 @@ TEST_F(DragDropOperationTest, DragDropFromPopup) {
   origin_surface->Commit();
 
   gfx::Size buffer_size(32, 32);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -319,8 +316,7 @@ TEST_F(DragDropOperationTest, DragDropFromNestedPopup) {
   origin_surface->Commit();
 
   gfx::Size buffer_size(32, 32);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -378,9 +374,10 @@ class MockDataTransferPolicyController
            absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
            content::RenderFrameHost* rfh,
            base::OnceCallback<void(bool)> callback));
-  MOCK_METHOD3(DropIfAllowed,
-               void(const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+  MOCK_METHOD4(DropIfAllowed,
+               void(std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb));
 };
 
@@ -414,18 +411,17 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromLacros) {
   ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
 
   gfx::Size buffer_size(100, 100);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
   // Expect the encoded endpoint from Lacros to be correctly parsed.
   EXPECT_CALL(*dlp_controller, DropIfAllowed)
-      .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb) {
-        ASSERT_TRUE(drag_data);
-        auto* data_src = drag_data->GetSource();
+        ASSERT_TRUE(data_src.has_value());
         ASSERT_TRUE(data_src->IsUrlType());
         EXPECT_EQ(data_src->GetURL()->spec(), "https://www.google.com/");
         std::move(drop_cb).Run();
@@ -479,18 +475,17 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromNonLacros) {
   ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
 
   gfx::Size buffer_size(100, 100);
-  std::unique_ptr<Buffer> buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
   // Expect the encoded endpoint from non-Lacros to be ignored.
   EXPECT_CALL(*dlp_controller, DropIfAllowed)
-      .WillOnce([&](const ui::OSExchangeData* drag_data,
-                    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      .WillOnce([&](std::optional<ui::DataTransferEndpoint> data_src,
+                    std::optional<ui::DataTransferEndpoint> data_dst,
+                    std::optional<std::vector<ui::FileInfo>> filenames,
                     base::OnceClosure drop_cb) {
-        ASSERT_TRUE(drag_data);
-        auto* data_src = drag_data->GetSource();
+        ASSERT_TRUE(data_src.has_value());
         EXPECT_FALSE(data_src->IsUrlType());
         EXPECT_EQ(data_src->type(), ui::EndpointType::kCrostini);
         std::move(drop_cb).Run();

@@ -53,7 +53,7 @@ void CastCdmFactory::Create(
   if (!cast_cdm) {
     LOG(INFO) << "No matching key system found: " << cast_key_system;
     std::move(bound_cdm_created_cb)
-        .Run(nullptr, "No matching key system found.");
+        .Run(nullptr, ::media::CreateCdmStatus::kUnsupportedKeySystem);
     return;
   }
 
@@ -71,7 +71,8 @@ void CastCdmFactory::Create(
           base::BindPostTaskToCurrentDefault(session_closed_cb),
           base::BindPostTaskToCurrentDefault(session_keys_change_cb),
           base::BindPostTaskToCurrentDefault(session_expiration_update_cb)));
-  std::move(bound_cdm_created_cb).Run(cast_cdm, "");
+  std::move(bound_cdm_created_cb)
+      .Run(cast_cdm, ::media::CreateCdmStatus::kSuccess);
 }
 
 scoped_refptr<CastCdm> CastCdmFactory::CreatePlatformBrowserCdm(

@@ -19,14 +19,13 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "chrome/android/chrome_jni_headers/CompositorView_jni.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/child_process_data.h"
-#include "content/public/browser/peak_gpu_memory_tracker.h"
+#include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -35,6 +34,9 @@
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/CompositorView_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -230,8 +232,8 @@ void CompositorView::SetLayoutBounds(JNIEnv* env,
 }
 
 void CompositorView::SetBackground(bool visible, SkColor color) {
-  // TODO(crbug.com/770911): Set the background color on the compositor.
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/41347744): Set the background color on the compositor.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   root_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
   root_layer_->SetIsDrawable(visible);
 }
@@ -293,7 +295,7 @@ void CompositorView::SetSceneLayer(JNIEnv* env,
 
   if (overlay_immersive_ar_mode_) {
     // Suppress the scene background's default background which breaks
-    // transparency. TODO(https://crbug.com/1002270): Remove this workaround
+    // transparency. TODO(crbug.com/40098084): Remove this workaround
     // once the issue with StaticTabSceneLayer's unexpected background is
     // resolved.
     bool should_show_background = scene_layer->ShouldShowBackground();
@@ -377,12 +379,12 @@ void CompositorView::OnTabChanged(
   if (!compositor_) {
     return;
   }
-  std::unique_ptr<content::PeakGpuMemoryTracker> tracker =
-      content::PeakGpuMemoryTracker::Create(
-          content::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
+  std::unique_ptr<input::PeakGpuMemoryTracker> tracker =
+      content::PeakGpuMemoryTrackerFactory::Create(
+          input::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
   compositor_->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-      [](std::unique_ptr<content::PeakGpuMemoryTracker> tracker,
-         base::TimeTicks presentation_timestamp) {
+      [](std::unique_ptr<input::PeakGpuMemoryTracker> tracker,
+         const viz::FrameTimingDetails& frame_timing_details) {
         // This callback will be ran once the content::Compositor presents the
         // next frame. The destruction of |tracker| will get the peak GPU memory
         // and record a histogram.

@@ -25,6 +25,15 @@ TEST_F(ChromeURLUtilTest, TestIsExternalFileReference) {
   EXPECT_FALSE(UrlIsExternalFileReference(still_not_external_url));
 }
 
+TEST_F(ChromeURLUtilTest, TestUrlIsDownloadedFile) {
+  GURL downloaded_file_url("chrome://downloads/fileName");
+  GURL external_file_url("chrome://external-file/fileName");
+  GURL not_downloaded_file_url("http://downloads/fileName");
+  EXPECT_TRUE(UrlIsDownloadedFile(downloaded_file_url));
+  EXPECT_FALSE(UrlIsDownloadedFile(external_file_url));
+  EXPECT_FALSE(UrlIsDownloadedFile(not_downloaded_file_url));
+}
+
 const char* kSchemeTestData[] = {
     "http://foo.com", "https://foo.com",   "data:text/html;charset=utf-8,Hello",
     "about:blank",    "chrome://settings",

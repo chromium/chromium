@@ -7,6 +7,7 @@ desc: |-
   Android apps by their package name, such as com.google.android.gm;
   web apps by the URL used in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME">WebAppInstallForceList</ph>, such as https://google.com/maps;
   System Web Apps by their snake case name, such as <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE">camera</ph>.
+  Isolated Web Apps by their web bundle ID, such as <ph name="PINNED_LAUNCHER_APPS_POLICY_ISOLATED_WEB_APP_EXAMPLE">egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic</ph>.
 
   Leaving it unset lets users change the list of pinned apps in the launcher.
 example_value:
@@ -14,6 +15,7 @@ example_value:
 - com.google.android.gm
 - https://google.com/maps
 - camera
+- egoxo6biqdjrk62rman4vvr5cbq2ozsyydig7jmdxcmohdob2ecaaaic
 features:
   can_be_recommended: true
   dynamic_refresh: true

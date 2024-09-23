@@ -172,7 +172,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   // Adds a new ShellLinkItem for |tab| to the JumpList data provided that doing
   // so will not exceed |max_items|. If |cmd_line_profile_dir| is not empty,
   // it will be added to the command line switch --profile-directory.
-  bool AddTab(const sessions::TabRestoreService::Tab& tab,
+  bool AddTab(const sessions::tab_restore::Tab& tab,
               const base::FilePath& cmd_line_profile_dir,
               size_t max_items);
 
@@ -180,7 +180,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   // provided that doing so will not exceed |max_items|. If
   // |cmd_line_profile_dir| is not empty, it will be added to the command line
   // switch --profile-directory.
-  void AddWindow(const sessions::TabRestoreService::Window& window,
+  void AddWindow(const sessions::tab_restore::Window& window,
                  const base::FilePath& cmd_line_profile_dir,
                  size_t max_items);
 
@@ -188,7 +188,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
   // provided that doing so will not exceed |max_items|. If
   // |cmd_line_profile_dir| is not empty, it will be added to the command line
   // switch --profile-directory.
-  void AddGroup(const sessions::TabRestoreService::Group& group,
+  void AddGroup(const sessions::tab_restore::Group& group,
                 const base::FilePath& cmd_line_profile_dir,
                 size_t max_items);
 

@@ -6,14 +6,19 @@ package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.app.Activity;
@@ -21,6 +26,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
@@ -31,11 +37,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -54,11 +65,16 @@ public class HubToolbarViewUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock Runnable mOnButton;
+    @Mock Callback<PaneButtonLookup> mPaneButtonLookupCallback;
+
+    @Captor ArgumentCaptor<PaneButtonLookup> mPaneButtonLookupCaptor;
 
     private Activity mActivity;
     private HubToolbarView mToolbar;
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
+    private FrameLayout mMenuButtonContainer;
+    private View mSearchBox;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -74,6 +90,8 @@ public class HubToolbarViewUnitTest {
         mToolbar = (HubToolbarView) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
         mActionButton = mToolbar.findViewById(R.id.toolbar_action_button);
         mPaneSwitcher = mToolbar.findViewById(R.id.pane_switcher);
+        mMenuButtonContainer = mToolbar.findViewById(R.id.menu_button_container);
+        mSearchBox = mToolbar.findViewById(R.id.search_box);
         mActivity.setContentView(mToolbar);
 
         mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
@@ -185,5 +203,55 @@ public class HubToolbarViewUnitTest {
 
         mPropertyModel.set(PANE_SWITCHER_INDEX, 1);
         assertEquals(1, mPaneSwitcher.getSelectedTabPosition());
+    }
+
+    @Test
+    @MediumTest
+    public void testMenuButtonVisibility() {
+        mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
+        assertEquals(View.INVISIBLE, mMenuButtonContainer.getVisibility());
+
+        mPropertyModel.set(MENU_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mMenuButtonContainer.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void testPaneButtonLookupCallback() {
+        FullButtonData buttonData1 = makeTestButtonData();
+        FullButtonData buttonData2 = makeTestButtonData();
+        mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, Arrays.asList(buttonData1, buttonData2));
+        mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, mPaneButtonLookupCallback);
+
+        verify(mPaneButtonLookupCallback).onResult(mPaneButtonLookupCaptor.capture());
+        PaneButtonLookup lookup = mPaneButtonLookupCaptor.getValue();
+
+        assertEquals(lookup.get(0), lookup.get(0));
+        assertEquals(lookup.get(1), lookup.get(1));
+        assertNotEquals(lookup.get(0), lookup.get(1));
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchBoxVisibility() {
+        // GONE by default (defined in the xml).
+        assertEquals(View.GONE, mSearchBox.getVisibility());
+        mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
+        assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void testSearchBoxListener() {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        Runnable testListener =
+                () -> {
+                    callbackHelper.notifyCalled();
+                };
+
+        assertEquals(0, callbackHelper.getCallCount());
+        mPropertyModel.set(SEARCH_BOX_LISTENER, testListener);
+        mSearchBox.performClick();
+        assertEquals(1, callbackHelper.getCallCount());
     }
 }

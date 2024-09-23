@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
-
 #import <AVFoundation/AVFoundation.h>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/media_authorization_wrapper_test.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
@@ -61,8 +61,7 @@ class ContentSettingMediaImageModelTest
 
     PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 
     permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
@@ -71,10 +70,14 @@ class ContentSettingMediaImageModelTest
 };
 
 TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
-      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-          web_contents()));
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
   auto* content_settings = PageSpecificContentSettings::GetForFrame(
       web_contents()->GetPrimaryMainFrame());
   const GURL kTestOrigin("https://www.example.com");
@@ -82,7 +85,7 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
       ContentSettingImageModel::CreateForContentType(
           ContentSettingImageModel::ImageType::MEDIASTREAM);
   MediaAuthorizationWrapperTest auth_wrapper;
-  system_media_permissions::SetMediaAuthorizationWrapperForTesting(
+  system_permission_settings::SetMediaAuthorizationWrapperForTesting(
       &auth_wrapper);
 
   // Camera allowed per site: Test for system level permissions.
@@ -97,9 +100,10 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
     auth_wrapper.SetMockMediaPermissionStatus(AVAuthorizationStatusDenied);
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
-        *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
-        l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED), IDS_CAMERA_TURNED_OFF,
-        &vector_icons::kBlockedBadgeIcon);
+        *content_setting_image_model, /*is_visible=*/true,
+        /*has_icon=*/true,
+        l10n_util::GetStringUTF16(IDS_CAMERA_TURNED_OFF_IN_MACOS),
+        IDS_CAMERA_TURNED_OFF, &gfx::kNoneIcon);
     auth_wrapper.SetMockMediaPermissionStatus(
         AVAuthorizationStatusNotDetermined);
     content_setting_image_model->Update(web_contents());
@@ -117,10 +121,11 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
         l10n_util::GetStringUTF16(IDS_MICROPHONE_ACCESSED), 0, &gfx::kNoneIcon);
     auth_wrapper.SetMockMediaPermissionStatus(AVAuthorizationStatusDenied);
     content_setting_image_model->Update(web_contents());
-    ExpectImageModelState(*content_setting_image_model, /*is_visible=*/true,
-                          /*has_icon=*/true,
-                          l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED),
-                          IDS_MIC_TURNED_OFF, &vector_icons::kBlockedBadgeIcon);
+    ExpectImageModelState(
+        *content_setting_image_model, /*is_visible=*/true,
+        /*has_icon=*/true,
+        l10n_util::GetStringUTF16(IDS_MIC_TURNED_OFF_IN_MACOS),
+        IDS_MIC_TURNED_OFF, &gfx::kNoneIcon);
     auth_wrapper.SetMockMediaPermissionStatus(
         AVAuthorizationStatusNotDetermined);
     content_setting_image_model->Update(web_contents());
@@ -144,8 +149,8 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
     content_setting_image_model->Update(web_contents());
     ExpectImageModelState(
         *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
-        l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED),
-        IDS_CAMERA_TURNED_OFF, &vector_icons::kBlockedBadgeIcon);
+        l10n_util::GetStringUTF16(IDS_CAMERA_MIC_TURNED_OFF_IN_MACOS),
+        IDS_CAMERA_TURNED_OFF, &gfx::kNoneIcon);
     auth_wrapper.SetMockMediaPermissionStatus(
         AVAuthorizationStatusNotDetermined);
     auth_wrapper.SetMockMediaPermissionStatus(
@@ -168,10 +173,11 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
           kTestOrigin, {PageSpecificContentSettings::kCameraAccessed,
                         PageSpecificContentSettings::kCameraBlocked});
       content_setting_image_model->Update(web_contents());
-      ExpectImageModelState(*content_setting_image_model, /*is_visible=*/true,
+      ExpectImageModelState(*content_setting_image_model,
+                            /*is_visible=*/true,
                             /*has_icon=*/true,
                             l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED), 0,
-                            &vector_icons::kBlockedBadgeIcon);
+                            &gfx::kNoneIcon);
     }
 
     // Microphone blocked per site.
@@ -180,10 +186,11 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
           kTestOrigin, {PageSpecificContentSettings::kMicrophoneAccessed,
                         PageSpecificContentSettings::kMicrophoneBlocked});
       content_setting_image_model->Update(web_contents());
-      ExpectImageModelState(*content_setting_image_model, /*is_visible=*/true,
+      ExpectImageModelState(*content_setting_image_model,
+                            /*is_visible=*/true,
                             /*has_icon=*/true,
                             l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED),
-                            0, &vector_icons::kBlockedBadgeIcon);
+                            0, &gfx::kNoneIcon);
     }
 
     // Microphone & camera blocked per site
@@ -195,9 +202,10 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
                         PageSpecificContentSettings::kMicrophoneBlocked});
       content_setting_image_model->Update(web_contents());
       ExpectImageModelState(
-          *content_setting_image_model, /*is_visible=*/true, /*has_icon=*/true,
+          *content_setting_image_model, /*is_visible=*/true,
+          /*has_icon=*/true,
           l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED), 0,
-          &vector_icons::kBlockedBadgeIcon);
+          &gfx::kNoneIcon);
     }
   }
 }

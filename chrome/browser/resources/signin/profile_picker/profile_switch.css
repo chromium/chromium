@@ -1,0 +1,95 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./profile_picker_shared.css.js
+ * #scheme=relative
+ * #include=profile-picker-shared
+ * #css_wrapper_metadata_end */
+
+#outerContainer {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+#profileCardContainer {
+  align-items: center;
+  align-self: center;
+  border: 1px solid var(--google-grey-300);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  height: var(--profile-item-height);
+  justify-content: center;
+  margin: 200px 0 37px;
+  position: relative;
+  width: var(--profile-item-width);
+}
+
+#avatarContainer {
+  height: var(--profile-card-avatar-icon-size);
+  position: relative;
+}
+
+#profileName {
+  top: 0;
+}
+
+#gaiaName {
+  bottom: 0;
+}
+
+#iconContainer {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  --domain-icon-size: 24px;
+  --domain-icon-border-size: 2px;
+  align-items: center;
+  background-color: white;
+  border:
+    var(--domain-icon-border-size) solid var(--profile-card-hover-color);
+  border-radius: 50%;
+  box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+  display: flex;
+  height: var(--domain-icon-size);
+  inset-inline-end: -6px;
+  justify-content: center;
+  position: absolute;
+  top: calc(var(--profile-card-avatar-icon-size) - var(--domain-icon-size)
+    - var(--domain-icon-border-size));
+  width: var(--domain-icon-size);
+}
+
+cr-icon {
+  --iron-icon-fill-color: var(--google-grey-700);
+}
+
+#titleContainer {
+  text-align: center;
+}
+
+.title {
+  margin-block-start: 0;
+}
+
+#actionContainer {
+  margin: auto 40px 40px auto;
+}
+
+cr-button {
+  margin-inline-start: 8px;
+  min-width: 111px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #iconContainer {
+    background-color: var(--md-background-color);
+  }
+
+  cr-icon {
+    --iron-icon-fill-color: var(--google-grey-500);
+  }
+}

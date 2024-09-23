@@ -21,17 +21,6 @@ extern "C" {
 #ifndef GL_MAILBOX_SIZE_CHROMIUM
 #define GL_MAILBOX_SIZE_CHROMIUM 16
 #endif
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY glProduceTextureDirectCHROMIUM(GLuint texture,
-                                                           GLbyte* mailbox);
-GL_APICALL GLuint GL_APIENTRY
-glCreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox);
-#endif
-typedef void (GL_APIENTRYP PFNGLGENMAILBOXCHROMIUMPROC) (GLbyte* mailbox);
-typedef void (GL_APIENTRYP PFNGLPRODUCETEXTUREDIRECTCHROMIUMPROC) (
-    GLuint texture, GLenum target, const GLbyte* mailbox);
-typedef GLuint(GL_APIENTRYP PFNGLCREATEANDCONSUMETEXTURECHROMIUMPROC)(
-    const GLbyte* mailbox);
 #endif  /* GL_CHROMIUM_texture_mailbox */
 
 /* GL_CHROMIUM_pixel_transfer_buffer_object */
@@ -62,18 +51,6 @@ typedef GLboolean (GL_APIENTRY PFNGLUNMAPBUFFERCHROMIUM) (GLuint target);
 #define GL_STREAM_READ 0x88E1
 #endif
 #endif  /* GL_CHROMIUM_pixel_transfer_buffer_object */
-
-#ifndef GL_RGB_YCRCB_420_CHROMIUM
-#define GL_RGB_YCRCB_420_CHROMIUM 0x78FA
-#endif
-
-#ifndef GL_RGB_YCBCR_420V_CHROMIUM
-#define GL_RGB_YCBCR_420V_CHROMIUM 0x78FC
-#endif
-
-#ifndef GL_RGB_YCBCR_P010_CHROMIUM
-#define GL_RGB_YCBCR_P010_CHROMIUM 0x78FD
-#endif
 
 /* GL_CHROMIUM_deschedule */
 #ifndef GL_CHROMIUM_deschedule

@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Уреди Chromebit</translation>
 <translation id="3085752524577180175">Хост на SOCKS</translation>
 <translation id="3104793765551262433">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
-<translation id="3113153474486991170">Не можеше да се отвори „<ph name="PATH" />“ од локацијава. Копирајте ја во „Мои датотеки“ за да ја отворите.</translation>
 <translation id="3113592018909187986">Имате уште 1 обид. Нема да може да ја користите мрежава додека не поставите нов PIN.</translation>
 <translation id="3124404833828281817">Замислен човек</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Откажете <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, <ph name="CONNECTION_STATUS" />, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
 <translation id="3691184985318546178">синхалски</translation>
+<translation id="3702842351052426940">SIM-картичката или профилот на eSIM можеби е деактивиран. Обидете се со друга SIM-картичка или друг профил на eSIM.</translation>
 <translation id="3722341589402358578">Се појави грешка. Некои ставки можеби се во корпата.</translation>
 <translation id="3726463242007121105">Уредот не може да се отвори затоа што не го поддржува системот со датотеки.</translation>
 <translation id="3727148787322499904">Менувањето на оваа поставка ќе влијае на сите споделени мрежи</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Ова прокси го наметнува администраторот</translation>
 <translation id="3830674330436234648">Не е достапна репродукција</translation>
 <translation id="383652340667548381">српска</translation>
+<translation id="3839045880592694915">Вашиот модем не може да се поврзе поради забрана од операторот. За повеќе детали, контактирајте со операторот.</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3851491607336266896">Поврзан, ограничена поврзливост</translation>
 <translation id="3855472144336161447">Германска Neo 2</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3866249974567520381">Опис</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Неодамна отворените датотеки на Microsoft се преместени на OneDrive</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4017788180641807848">англиски (САД) со тастатура Workman</translation>
-<translation id="4019998208269143058">Закачи на „Брзи датотеки“</translation>
 <translation id="4040753847560036377">Погрешен PUK</translation>
 <translation id="4057991113334098539">Се активира…</translation>
 <translation id="4092890906744441904">ирски</translation>
+<translation id="4101601646343868113">Најавете се на вашата мобилна мрежа и потврдете дека е активен вашиот пакет за мобилен интернет</translation>
 <translation id="4124731372776320263">Се синхронизира 1 датотека на Drive</translation>
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="4131235941541910880">Преместете ги ставките што не ви требаат во корпата.</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">тамилски со тастатура Tamil99</translation>
 <translation id="5633226425545095130">Ако ја преместите ставкава, таа ќе биде споделена со сите кои можат да ја видат споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Слушај</translation>
+<translation id="5650895901941743674">Проверете ја вашата APN-конфигурација</translation>
 <translation id="5669691691057771421">Внесете го новиот PIN</translation>
 <translation id="5678784840044122290">Апликацијата за Linux ќе биде достапна во вашиот терминал, а може да се прикаже икона и во „Стартерот“.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Не може да се исклучи од архива или виртуелен диск<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6271903698064569429">Датотеките не може да се прикачат бидејќи нема доволно капацитет на „<ph name="SHARED_DRIVE_NAME" />“.</translation>
+<translation id="6279140785485544797">Вашиот пакет за мобилен интернет можеби е истечен. За поддршка, контактирајте со операторот.</translation>
 <translation id="6287852322318138013">Изберете апликација за да ја отворите оваа датотека</translation>
 <translation id="6295542640242147836">Заклучи SIM</translation>
 <translation id="6296410173147755564">Погрешен PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-архива</translation>
 <translation id="6321303798550928047">Мавтање</translation>
 <translation id="6327785803543103246">Автоматско откривање прокси на Интернет</translation>
-<translation id="6337014272874260727">Откачи од „Брзи датотеки“</translation>
 <translation id="6339145975392024142">САД, меѓународна (PC)</translation>
 <translation id="6356685157277930264">Прозорец со информации за датотеките</translation>
 <translation id="6358884629796491903">Змеј</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Тековен директориум</translation>
 <translation id="6751256176799620176">Избрана е 1 папка</translation>
 <translation id="6755827872271341378">Уред со ChromeOS Flex</translation>
+<translation id="6777029074498310250">Одете на <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> за повеќе информации</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6794539005637808366">Вратете ја ставката или повлечете ја во нова папка надвор од корпата</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">тамилски со тастатура InScript</translation>
 <translation id="7088615885725309056">Постара</translation>
 <translation id="7103992300314999525">македонски</translation>
+<translation id="7104338189998813914">Се јави проблем со пристапувањето до вашата сметка на OneDrive</translation>
 <translation id="7106346894903675391">Купете поголем простор за складирање...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;пребарај Диск&lt;/em&gt;</translation>
 <translation id="7135561821015524160">фонетски канада</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Почекајте малку</translation>
 <translation id="7600126690270271294">српски</translation>
 <translation id="7603724359189955920">Мрежи</translation>
+<translation id="7624010287655004652">Заклучено од друг мобилен оператор</translation>
 <translation id="7627790789328695202">Упс, <ph name="FILE_NAME" /> веќе постои. Преименувајте и обидете се повторно.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" /> % завршени.</translation>
 <translation id="7649070708921625228">Помош</translation>
@@ -976,7 +980,7 @@
 <translation id="8425213833346101688">Промени</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> папки се споделени со <ph name="VM_NAME" /></translation>
-<translation id="8431909052837336408">Променете PIN на SIM-картичката</translation>
+<translation id="8431909052837336408">Променете PIN за SIM-картичката</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">Недостасува SIM-картичка</translation>
 <translation id="8456681095658380701">Неважечко име</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Списокот со датотеки се смени во преглед на сликички.</translation>
 <translation id="8601932370724196034">Датотека со слика Crostini</translation>
 <translation id="8609695766746872526">исландски</translation>
+<translation id="8630384863424041081">Внесете го PIN-кодот за вашата SIM-картичка или стандардниот PIN од операторот. За поддршка, контактирајте со операторот.</translation>
 <translation id="863903787380594467">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Порта</translation>
 <translation id="8656407365183407932">Мораше да се отстранат вашите офлајн датотеки</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Датотекава е доверлива и подлежи на ограничувања според правилата на администраторот.</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8713112442029511308">малтешки</translation>
-<translation id="8714138378966541668">Заклучено од операторот</translation>
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Избрано е <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">хрватска</translation>
@@ -1086,7 +1090,7 @@
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="947144732524271678">Избравте опсег од <ph name="ENTRY_COUNT" /> записи од <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Администраторското правило спречува:</translation>
-<translation id="965477715979482472">англиски (Јужна Африка)</translation>
+<translation id="965477715979482472">англиски (Јужноафриканска Република)</translation>
 <translation id="976666271385981812">Се преместуваат <ph name="NUMBER_OF_ITEMS" /> ставки во корпата</translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="988685240266037636">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Дали сакате да ја замените?</translation>

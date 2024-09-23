@@ -163,6 +163,7 @@ void PrintedDocument::RemovePage(const PrintedPage* page) {
   base::AutoLock lock(lock_);
   PrintedPages::const_iterator it =
       mutable_.pages_.find(page->page_number() - 1);
+  CHECK(it != mutable_.pages_.end());
   DCHECK_EQ(page, it->second.get());
   mutable_.pages_.erase(it);
 }

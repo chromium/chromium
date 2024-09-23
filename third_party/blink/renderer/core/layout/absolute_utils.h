@@ -59,6 +59,7 @@ struct LogicalAlignment {
 
 LogicalAlignment ComputeAlignment(
     const ComputedStyle& style,
+    bool is_containing_block_scrollable,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction);
 
@@ -70,18 +71,16 @@ struct LogicalAnchorCenterPosition {
 };
 
 LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
+    const ComputedStyle& style,
     const LogicalAlignment& alignment,
     WritingDirectionMode writing_direction,
-    LogicalSize available_size,
-    AnchorEvaluatorImpl* anchor_evaluator);
+    LogicalSize available_size);
 
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
                        const LogicalAlignment&,
-                       WritingDirectionMode container_writing_direction,
-                       WritingDirectionMode self_writing_direction,
-                       AnchorEvaluatorImpl* anchor_evaluator);
+                       WritingDirectionMode self_writing_direction);
 
 struct CORE_EXPORT InsetModifiedContainingBlock {
   // The original containing block size that the insets refer to.
@@ -108,8 +107,14 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   // If safe alignment is specified (e.g. "align-self: safe end") and the
   // object overflows its containing block it'll become start aligned instead.
   // This field indicates the "start" edge of the containing block.
-  std::optional<InsetBias> safe_inline_inset_bias;
-  std::optional<InsetBias> safe_block_inset_bias;
+  std::optional<InsetBias> inline_safe_inset_bias;
+  std::optional<InsetBias> block_safe_inset_bias;
+
+  // If non-normal alignment is specified (e.g. "align-self: center") we'll
+  // adjust the position so that it doesn't overflow the containing block.
+  // This field indicates the "start" edge of the containing block.
+  std::optional<InsetBias> inline_default_inset_bias;
+  std::optional<InsetBias> block_default_inset_bias;
 
   LayoutUnit InlineEndOffset() const {
     return available_size.inline_size - inline_end;
@@ -135,7 +140,6 @@ CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
     const LogicalAlignment&,
     const LogicalOofInsets&,
     const LogicalStaticPosition&,
-    const LogicalAnchorCenterPosition&,
     WritingDirectionMode container_writing_direction,
     WritingDirectionMode self_writing_direction);
 
@@ -170,11 +174,12 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
+    const LogicalAnchorCenterPosition&,
     const LogicalAlignment&,
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
+    const BoxStrut& container_insets,
     WritingDirectionMode container_writing_direction,
-    const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
 // If layout was performed to determine the position, this will be returned
@@ -184,11 +189,12 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
+    const LogicalAnchorCenterPosition&,
     const LogicalAlignment&,
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
+    const BoxStrut& container_insets,
     WritingDirectionMode container_writing_direction,
-    const AnchorEvaluatorImpl* anchor_evaluator,
     LogicalOofDimensions* dimensions);
 
 }  // namespace blink

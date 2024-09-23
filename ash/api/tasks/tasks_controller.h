@@ -25,6 +25,8 @@ class ASH_EXPORT TasksController : public SessionObserver {
 
   static TasksController* Get();
 
+  TasksDelegate* tasks_delegate() { return tasks_delegate_.get(); }
+
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
@@ -34,4 +36,4 @@ class ASH_EXPORT TasksController : public SessionObserver {
 
 }  // namespace ash::api
 
-#endif  // ASH_API_TASKS_TASKS_DELEGATE_H_
+#endif  // ASH_API_TASKS_TASKS_CONTROLLER_H_

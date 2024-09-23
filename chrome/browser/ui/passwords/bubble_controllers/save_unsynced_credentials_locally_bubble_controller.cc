@@ -34,8 +34,9 @@ void SaveUnsyncedCredentialsLocallyBubbleController::OnSaveClicked(
   DCHECK(was_credential_selected.size() == unsynced_credentials_.size());
   std::vector<password_manager::PasswordForm> credentials_to_save;
   for (size_t i = 0; i < unsynced_credentials_.size(); i++) {
-    if (was_credential_selected[i])
+    if (was_credential_selected[i]) {
       credentials_to_save.push_back(unsynced_credentials_[i]);
+    }
   }
   delegate_->SaveUnsyncedCredentialsInProfileStore(credentials_to_save);
 }
@@ -47,8 +48,9 @@ void SaveUnsyncedCredentialsLocallyBubbleController::OnCancelClicked() {
 void SaveUnsyncedCredentialsLocallyBubbleController::ReportInteractions() {
   metrics_util::LogGeneralUIDismissalReason(dismissal_reason_);
   // Record UKM statistics on dismissal reason.
-  if (metrics_recorder_)
+  if (metrics_recorder_) {
     metrics_recorder_->RecordUIDismissalReason(dismissal_reason_);
+  }
 }
 
 std::u16string SaveUnsyncedCredentialsLocallyBubbleController::GetTitle()

@@ -22,9 +22,6 @@ class GraphicsContext;
 // Represents foreign content (produced outside Blink) which draws to a layer.
 // A client supplies a layer which can be unwrapped and inserted into the full
 // layer tree.
-//
-// Before CAP, this content is not painted, but is instead inserted into the
-// GraphicsLayer tree.
 class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
  public:
   ForeignLayerDisplayItem(DisplayItemClientId client_id,
@@ -49,23 +46,6 @@ class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
   scoped_refptr<cc::Layer> layer_;
 };
 
-// When a foreign layer's debug name is a literal string, define a instance of
-// LiteralDebugNameClient with DEFINE_STATIC_LOCAL() and pass the instance as
-// client to RecordForeignLayer().
-class LiteralDebugNameClient : public GarbageCollected<LiteralDebugNameClient>,
-                               public DisplayItemClient {
- public:
-  LiteralDebugNameClient(const char* name) : name_(name) {}
-
-  String DebugName() const override { return name_; }
-  void Trace(Visitor* visitor) const override {
-    DisplayItemClient::Trace(visitor);
-  }
-
- private:
-  const char* name_;
-};
-
 template <>
 struct DowncastTraits<ForeignLayerDisplayItem> {
   static bool AllowFrom(const DisplayItem& i) {
@@ -75,8 +55,8 @@ struct DowncastTraits<ForeignLayerDisplayItem> {
 
 // Records a foreign layer into a GraphicsContext.
 // Use this where you would use a recorder class.
-// |client| provides DebugName and optionally DOMNodeId, while VisualRect will
-// be calculated automatically based on layer bounds and offset.
+// DisplayItem::Id of a foreign layer doesn't need to be unique, so the client
+// can be defined with DEFINE_STATIC_DISPLAY_ITEM_CLIENT.
 PLATFORM_EXPORT void RecordForeignLayer(
     GraphicsContext& context,
     const DisplayItemClient& client,

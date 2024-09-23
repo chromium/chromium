@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/layer.h"
 #include "components/viz/common/features.h"
@@ -1048,28 +1047,14 @@ class RenderWidgetHostViewAndroidRotationKillswitchTest
     : public RenderWidgetHostViewAndroidRotationTest,
       public testing::WithParamInterface<bool> {
  public:
-  RenderWidgetHostViewAndroidRotationKillswitchTest();
+  RenderWidgetHostViewAndroidRotationKillswitchTest() = default;
   ~RenderWidgetHostViewAndroidRotationKillswitchTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-RenderWidgetHostViewAndroidRotationKillswitchTest::
-    RenderWidgetHostViewAndroidRotationKillswitchTest() {
-  if (GetParam()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSurfaceSyncFullscreenKillswitch);
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kSurfaceSyncFullscreenKillswitch);
-  }
-}
 
 // Tests that when a rotation occurs, that we only advance the
 // viz::LocalSurfaceId once, and that no other visual changes occurring during
 // this time can separately trigger SurfaceSync. (https://crbug.com/1203804)
-TEST_P(RenderWidgetHostViewAndroidRotationKillswitchTest,
+TEST_F(RenderWidgetHostViewAndroidRotationKillswitchTest,
        RotationOnlyAdvancesSurfaceSyncOnce) {
   // Android default host and views initialize as visible.
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
@@ -1336,7 +1321,7 @@ void RenderWidgetHostViewAndroidMixedOrientationStartupTest::SetUp() {
 
 // Tests that when we EnterFullscreenMode and the PhysicalBacking changes to
 // match the Portrait ScreenInfo, that we do not block syncing.
-TEST_P(RenderWidgetHostViewAndroidMixedOrientationStartupTest,
+TEST_F(RenderWidgetHostViewAndroidMixedOrientationStartupTest,
        EnterFullscreenMode) {
   RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
@@ -1347,9 +1332,7 @@ TEST_P(RenderWidgetHostViewAndroidMixedOrientationStartupTest,
   // fullscreen mode prevents syncing until we get a non-rotation change to
   // sizes.
   EnterFullscreenMode();
-  if (GetParam()) {
-    EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
-  }
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
 
   // This is a rotation compared to the initial physical backing, however by
   // matching the orientation of the ScreenInfo, we should sync and no longer
@@ -1358,14 +1341,5 @@ TEST_P(RenderWidgetHostViewAndroidMixedOrientationStartupTest,
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
   GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
 }
-
-// Tests Rotation improvements that launched with
-// features::kSurfaceSyncThrottling flag, and now only exist behind the
-// kSurfaceSyncFullscreenKillswitch flag. When off they should directly compare
-// visual properties to make throttling determination
-INSTANTIATE_TEST_SUITE_P(,
-                         RenderWidgetHostViewAndroidMixedOrientationStartupTest,
-                         ::testing::Bool(),
-                         &PostTestCaseName);
 
 }  // namespace content

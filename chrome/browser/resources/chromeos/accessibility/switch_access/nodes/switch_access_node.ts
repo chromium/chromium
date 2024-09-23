@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {RectUtil} from '/common/rect_util.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {FocusRingManager} from '../focus_ring_manager.js';
 import {SwitchAccess} from '../switch_access.js';
 import {ActionResponse, ErrorType} from '../switch_access_constants.js';
@@ -108,7 +110,11 @@ export abstract class SAChildNode {
     if (!this.isFocused_) {
       return;
     }
-    this.performAction(MenuAction.SELECT);
+    if (this.isGroup()) {
+      this.performAction(MenuAction.DRILL_DOWN);
+    } else {
+      this.performAction(MenuAction.SELECT);
+    }
   }
 
   /** Given a menu action, returns whether it can be performed on this node. */
@@ -282,7 +288,7 @@ export class SARootNode {
     return null;
   }
 
-  isEquivalentTo(node: AutomationNode | SARootNode | SAChildNode): boolean {
+  isEquivalentTo(node: AutomationNode|SARootNode|SAChildNode|null): boolean {
     if (node instanceof SARootNode) {
       return this.equals(node);
     }
@@ -377,4 +383,6 @@ export class SARootNode {
   }
 }
 
-export type SANode = SAChildNode | SARootNode;
+export type SANode = SAChildNode|SARootNode;
+
+TestImportManager.exportForTesting(SARootNode);

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentManager;
@@ -19,22 +18,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.ui.base.TestActivity;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /** Unit tests for {@link HomeModulesConfigSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -44,7 +38,7 @@ public class HomeModulesConfigSettingsUnitTest {
     private ActivityScenario<TestActivity> mActivityScenario;
     private TestActivity mActivity;
     @Mock private Profile mProfile;
-    @Mock private ModuleRegistry mMockModuleRegistry;
+    private HomeModulesConfigManager mHomeModulesConfigManager;
 
     @Before
     public void setUp() {
@@ -53,6 +47,7 @@ public class HomeModulesConfigSettingsUnitTest {
                 activity -> {
                     mActivity = activity;
                 });
+        mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
     }
 
     @After
@@ -63,22 +58,17 @@ public class HomeModulesConfigSettingsUnitTest {
     @Test
     @SmallTest
     public void testLaunchHomeModulesConfigSettings() {
-        mMockModuleRegistry = mock(ModuleRegistry.class);
-        Set<Integer> moduleTypeRegisteredForTest = new HashSet<>(Arrays.asList(0, 1));
-        when(mMockModuleRegistry.getRegisteredModuleTypes())
-                .thenReturn(moduleTypeRegisteredForTest);
-        when(mMockModuleRegistry.isModuleConfigurable(ModuleType.SINGLE_TAB)).thenReturn(false);
-        when(mMockModuleRegistry.isModuleEligibleToBuild(ModuleType.SINGLE_TAB)).thenReturn(true);
-        when(mMockModuleRegistry.isModuleEligibleToBuild(ModuleType.PRICE_CHANGE)).thenReturn(true);
-        when(mMockModuleRegistry.isModuleConfigurable(ModuleType.PRICE_CHANGE)).thenReturn(true);
-        ModuleRegistry.setInstanceForTesting(mMockModuleRegistry);
+        registerModuleConfigChecker(3);
 
         String singleTabNotExistedPreferenceKey =
-                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(0));
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.SINGLE_TAB));
         String priceChangePreferenceKey =
-                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(1));
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        sharedPreferencesManager.writeBoolean(priceChangePreferenceKey, true);
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.PRICE_CHANGE));
+        String tabResumptionPreferenceKey =
+                ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                        String.valueOf(ModuleType.TAB_RESUMPTION));
 
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         HomeModulesConfigSettings fragment =
@@ -98,7 +88,14 @@ public class HomeModulesConfigSettingsUnitTest {
 
         ChromeSwitchPreference switchExisted = fragment.findPreference(priceChangePreferenceKey);
         Assert.assertEquals(
-                mActivity.getString(R.string.price_change_module_context_menu_item),
+                mActivity.getString(R.string.price_change_module_name), switchExisted.getTitle());
+        Assert.assertTrue(switchExisted.isChecked());
+
+        switchExisted = fragment.findPreference(tabResumptionPreferenceKey);
+        Assert.assertEquals(
+                mActivity
+                        .getResources()
+                        .getQuantityString(R.plurals.home_modules_tab_resumption_title, 1),
                 switchExisted.getTitle());
         Assert.assertTrue(switchExisted.isChecked());
     }
@@ -106,16 +103,9 @@ public class HomeModulesConfigSettingsUnitTest {
     @Test
     @SmallTest
     public void testLaunchHomeModulesConfigSettingsWithBlankPage() {
-        mMockModuleRegistry = mock(ModuleRegistry.class);
-        Set<Integer> moduleTypeRegisteredForTest = new HashSet<>(Arrays.asList(0, 1));
-        when(mMockModuleRegistry.getRegisteredModuleTypes())
-                .thenReturn(moduleTypeRegisteredForTest);
-        when(mMockModuleRegistry.isModuleEligibleToBuild(ModuleType.SINGLE_TAB)).thenReturn(true);
-        when(mMockModuleRegistry.isModuleConfigurable(ModuleType.SINGLE_TAB)).thenReturn(false);
-        when(mMockModuleRegistry.isModuleEligibleToBuild(ModuleType.PRICE_CHANGE))
-                .thenReturn(false);
-        when(mMockModuleRegistry.isModuleConfigurable(ModuleType.PRICE_CHANGE)).thenReturn(true);
-        ModuleRegistry.setInstanceForTesting(mMockModuleRegistry);
+        ModuleConfigChecker moduleConfigChecker = Mockito.mock(ModuleConfigChecker.class);
+        when(moduleConfigChecker.isEligible()).thenReturn(false);
+        mHomeModulesConfigManager.registerModuleEligibilityChecker(0, moduleConfigChecker);
 
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         HomeModulesConfigSettings fragment =
@@ -130,5 +120,14 @@ public class HomeModulesConfigSettingsUnitTest {
         mActivityScenario.moveToState(State.STARTED);
 
         Assert.assertTrue(fragment.isHomeModulesConfigSettingsEmptyForTesting());
+    }
+
+    private void registerModuleConfigChecker(int size) {
+        size = Math.min(size, ModuleType.NUM_ENTRIES);
+        for (int i = 0; i < size; i++) {
+            ModuleConfigChecker moduleConfigChecker = Mockito.mock(ModuleConfigChecker.class);
+            when(moduleConfigChecker.isEligible()).thenReturn(true);
+            mHomeModulesConfigManager.registerModuleEligibilityChecker(i, moduleConfigChecker);
+        }
     }
 }

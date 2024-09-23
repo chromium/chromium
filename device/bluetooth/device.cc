@@ -130,6 +130,7 @@ void Device::GetCharacteristics(const std::string& service_id,
     characteristic_info->id = characteristic->GetIdentifier();
     characteristic_info->uuid = characteristic->GetUUID();
     characteristic_info->properties = characteristic->GetProperties();
+    characteristic_info->permissions = characteristic->GetPermissions();
 
     characteristics.push_back(std::move(characteristic_info));
   }

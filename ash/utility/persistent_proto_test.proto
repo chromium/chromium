@@ -1,0 +1,14 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash;
+
+// A proto used with the PersistentProto class in unit tests.
+message TestProto {
+  optional int64 value = 1;
+}

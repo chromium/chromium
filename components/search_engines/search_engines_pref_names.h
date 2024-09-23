@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_PREF_NAMES_H_
 #define COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_PREF_NAMES_H_
 
+#include "build/build_config.h"
+
 namespace prefs {
 
 // The GUID of the locally saved default search provider. Note that this acts
@@ -26,15 +28,6 @@ inline constexpr char kDefaultSearchProviderGUID[] =
 inline constexpr char kSyncedDefaultSearchProviderGUID[] =
     "default_search_provider.synced_guid";
 
-// Whether this profile should potentially show the search engine choice
-// dialog before the user can proceed. Actual eligiblity is still determined
-// by the `SearchEngineChoiceDialogService`.
-// Note that this has effect only if the `kSearchEngineChoiceTrigger` feature
-// is enabled and if its `kSearchEngineChoiceTriggerForTaggedProfilesOnly`
-// param is set to `true`.
-inline constexpr char kDefaultSearchProviderChoicePending[] =
-    "default_search_provider.choice_pending";
-
 // Epoch timestamp in seconds of when the user chose a search engine in
 // the choice screen.
 // The timestamp and the version indicate that the user has already made a
@@ -48,6 +41,24 @@ inline constexpr char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
 // search engine choice in the choice screen or in settings.
 inline constexpr char kDefaultSearchProviderChoiceScreenCompletionVersion[] =
     "default_search_provider.choice_screen_completion_version";
+
+// Prepopulated id of the search engine chosen in a guest session if the user
+// decides to propagate the default search engine to all guest sessions. The
+// prepopulated id indicates that the search engine choice dialog should not be
+// displayed in the next guest sessions and should be used to set the guest
+// sessions default search engine.
+// Defaults to 0;
+inline constexpr char kDefaultSearchProviderGuestModePrepopulatedId[] =
+    "default_search_provider.guest_mode_prepopulated_id";
+
+// Display state of the choice screen from which the user selected their
+// default search engine. It is stored for logging purposes, only for a limited
+// time, and cleared when that time runs out, or when we are able to report
+// the choice screen display state.
+// The preference is stored as a dictionary, see
+// `ChoiceScreenDisplayState::FromDict()`.
+inline constexpr char kDefaultSearchProviderPendingChoiceScreenDisplayState[] =
+    "default_search_provider.pending_choice_screen_display_state";
 
 // Random number to use as a profile-constant seed for the random shuffling of
 // the choice screen elements.
@@ -83,12 +94,6 @@ inline constexpr char kSearchProviderOverrides[] = "search_provider_overrides";
 inline constexpr char kSearchProviderOverridesVersion[] =
     "search_provider_overrides_version";
 
-// Path to the profile selected to show the search engine choice prompt.
-// NOTE: Unlike most of the other preferences here, this one is stored in the
-// local state, not the profile prefs.
-inline constexpr char kSearchEnginesChoiceProfile[] =
-    "search_engines.choice_profile";
-
 // String that refers to the study group in which this install was enrolled.
 // Used to implement the first run experiment tracking.
 // NOTE: Unlike most of the other preferences here, this one is stored in the
@@ -96,6 +101,13 @@ inline constexpr char kSearchEnginesChoiceProfile[] =
 // TODO(b/313067383): Clean up experiment setup.
 inline constexpr char kSearchEnginesStudyGroup[] =
     "search_engines.client_side_study_group";
+
+#if BUILDFLAG(IS_IOS)
+// Number of time the search engine choice screen was skipped because the app
+// was started via an external intent.
+inline constexpr char kDefaultSearchProviderChoiceScreenSkippedCount[] =
+    "default_search_provider.skip_count";
+#endif
 
 }  // namespace prefs
 

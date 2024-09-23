@@ -67,6 +67,9 @@ content::BrowserContext* ChromeMediaRouterFactory::GetBrowserContextToUse(
           .WithRegular(ProfileSelection::kOwnInstance)
           .WithGuest(ProfileSelection::kOwnInstance)
           .WithSystem(ProfileSelection::kNone)
+          // TODO(crbug.com/41488885): Check if this service is needed for
+          // Ash Internals.
+          .WithAshInternals(ProfileSelection::kOwnInstance)
           .Build();
   return profile_selections.ApplyProfileSelection(
       Profile::FromBrowserContext(context));

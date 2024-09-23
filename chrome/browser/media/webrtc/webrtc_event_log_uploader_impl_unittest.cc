@@ -371,7 +371,7 @@ TEST_F(WebRtcEventLogUploaderImplTest,
   EXPECT_EQ(info.last_modified, last_modified);
 }
 
-// TODO(crbug.com/775415): Add a unit test that shows that files with
+// TODO(crbug.com/40545136): Add a unit test that shows that files with
 // non-ASCII filenames are discard. (Or, alternatively, add support for them.)
 
 }  // namespace webrtc_event_logging

@@ -128,7 +128,7 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
     BOOL fill_username,
     const std::string& username,
     const std::string& password,
-    base::OnceCallback<void(BOOL)> callback) {
+    base::OnceCallback<void(const base::Value*)> callback) {
   DCHECK(!callback.is_null());
 
   base::Value::Dict form_value = SerializeFillData(fill_data, fill_username);
@@ -137,7 +137,7 @@ void PasswordManagerJavaScriptFeature::FillPasswordForm(
                              .Append(std::move(form_value))
                              .Append(username)
                              .Append(password),
-                         CreateBoolCallback(std::move(callback)),
+                         std::move(callback),
                          base::Seconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 

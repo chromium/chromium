@@ -83,8 +83,7 @@ void ReportingUserTracker::OnUserRemoved(
 
 void ReportingUserTracker::AddReportingUser(const AccountId& account_id) {
   ScopedListPrefUpdate users_update(local_state_, ::prefs::kReportingUsers);
-  // TODO(b/267685577): Email should be canonicalized.
-  base::Value email_value(account_id.GetUserEmail());
+  base::Value email_value(FullyCanonicalize(account_id.GetUserEmail()));
   if (!base::Contains(users_update.Get(), email_value)) {
     users_update->Append(std::move(email_value));
   }

@@ -229,7 +229,7 @@ CompositorRenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
         break;
       }
       case proto::DrawQuad::QUAD_NOT_SET: {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -237,7 +237,7 @@ CompositorRenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
   return data_.frame.render_pass_list.back()->id;
 }
 
-// TODO(crbug.com/1308932): Move proto::DrawQuad to SkColor4f
+// TODO(crbug.com/40219248): Move proto::DrawQuad to SkColor4f
 void FuzzedCompositorFrameBuilder::AddSolidColorDrawQuad(
     CompositorRenderPass* pass,
     const gfx::Rect& rect,
@@ -271,9 +271,9 @@ void FuzzedCompositorFrameBuilder::TryAddTileDrawQuad(
   FuzzedBitmap* fuzzed_bitmap = AllocateFuzzedBitmap(
       tile_size, GetColorFromProtobuf(quad_spec.tile_quad().texture_color()));
   TransferableResource transferable_resource =
-      TransferableResource::MakeSoftware(fuzzed_bitmap->id, gpu::SyncToken(),
-                                         fuzzed_bitmap->size,
-                                         SinglePlaneFormat::kRGBA_8888);
+      TransferableResource::MakeSoftwareSharedBitmap(
+          fuzzed_bitmap->id, gpu::SyncToken(), fuzzed_bitmap->size,
+          SinglePlaneFormat::kRGBA_8888);
 
   auto* shared_quad_state = pass->CreateAndAppendSharedQuadState();
   ConfigureSharedQuadState(shared_quad_state, quad_spec);

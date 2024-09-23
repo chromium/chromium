@@ -24,7 +24,7 @@ class SCTReportingServiceFactory : public ProfileKeyedServiceFactory {
   static SCTReportingServiceFactory* GetInstance();
 
   // Returns the reporting service associated with |context|.
-  // TODO(crbug.com/1106798): Determine if we need to explicitly handle
+  // TODO(crbug.com/40706546): Determine if we need to explicitly handle
   // Incognito, or if relying on SBER is sufficient.
   static SCTReportingService* GetForBrowserContext(
       content::BrowserContext* context);

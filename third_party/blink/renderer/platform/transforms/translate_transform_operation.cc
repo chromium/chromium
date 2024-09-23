@@ -57,7 +57,7 @@ TransformOperation::OperationType GetTypeForTranslate(const Length& x,
 }
 }  // namespace
 
-scoped_refptr<TransformOperation> TranslateTransformOperation::Accumulate(
+TransformOperation* TranslateTransformOperation::Accumulate(
     const TransformOperation& other) {
   DCHECK(other.CanBlendWith(*this));
 
@@ -65,11 +65,11 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Accumulate(
   Length new_x = AddLengths(x_, other_op.x_);
   Length new_y = AddLengths(y_, other_op.y_);
   double new_z = z_ + other_op.z_;
-  return TranslateTransformOperation::Create(
+  return MakeGarbageCollected<TranslateTransformOperation>(
       new_x, new_y, new_z, GetTypeForTranslate(new_x, new_y, new_z));
 }
 
-scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
+TransformOperation* TranslateTransformOperation::Blend(
     const TransformOperation* from,
     double progress,
     bool blend_to_identity) {
@@ -77,7 +77,7 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
 
   const Length zero_length = Length::Fixed(0);
   if (blend_to_identity) {
-    return TranslateTransformOperation::Create(
+    return MakeGarbageCollected<TranslateTransformOperation>(
         zero_length.Blend(x_, progress, Length::ValueRange::kAll),
         zero_length.Blend(y_, progress, Length::ValueRange::kAll),
         blink::Blend(z_, 0., progress), type_);
@@ -91,15 +91,16 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
 
   CommonPrimitiveForInterpolation(from, type);
 
-  return TranslateTransformOperation::Create(
+  return MakeGarbageCollected<TranslateTransformOperation>(
       x_.Blend(from_x, progress, Length::ValueRange::kAll),
       y_.Blend(from_y, progress, Length::ValueRange::kAll),
       blink::Blend(from_z, z_, progress), type);
 }
 
-scoped_refptr<TranslateTransformOperation>
-TranslateTransformOperation::ZoomTranslate(double factor) {
-  return Create(x_.Zoom(factor), y_.Zoom(factor), z_ * factor, type_);
+TranslateTransformOperation* TranslateTransformOperation::ZoomTranslate(
+    double factor) {
+  return MakeGarbageCollected<TranslateTransformOperation>(
+      x_.Zoom(factor), y_.Zoom(factor), z_ * factor, type_);
 }
 
 void TranslateTransformOperation::CommonPrimitiveForInterpolation(

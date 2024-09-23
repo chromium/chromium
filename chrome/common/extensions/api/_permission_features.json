@@ -294,13 +294,12 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    // TODO(b/303379531): Add support for Lacros
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "session_types": ["kiosk"],
     "allowlist": [
-      "E62CAB6E5341E96208DA8E0E6896770907FFA00C",  // https://b/303379761
-      "36139D0E820CE4B911D38D10D8C23448431D098B",  // https://b/303379761
-      "51DC616F82F8E8B3FA5185A83699F0E5CDACFF41"   // https://b/303379761
+      "E62CAB6E5341E96208DA8E0E6896770907FFA00C",  // http://b/303379761
+      "36139D0E820CE4B911D38D10D8C23448431D098B",  // http://b/303379761
+      "51DC616F82F8E8B3FA5185A83699F0E5CDACFF41"   // http://b/303379761
     ],
     // TODO(b/307230150): Clean up API flag
     "feature_flag": "ApiEnterpriseKioskInput"
@@ -358,7 +357,9 @@
       "349E89FE0296161007623C0B4096B617D7CECD54",  // https://crbug.com/882461 SecureConnect
       "18B761AA5B58FA89E596EB7996B4C92C86775C7F",  // https://crbug.com/882461 SecureConnect
       "2012C0122892D332325339998251D1CC3CAE396A",  // https://crbug.com/882461 SecureConnect
-      "C8F4673FC69965390BC376C0761EC341492F9D87"   // Contact Center Insights
+      "C8F4673FC69965390BC376C0761EC341492F9D87",  // Contact Center Insights
+      "31367E6C4D69B90D866289492A307C205AF8A32F", // b/361094242 Secure Enterprise Browser Extension
+      "50B8ECD18A36937668D1FCA9CEEE668BC25C39CC" // b/361094242 Beyondcorp Enterprise Extension
     ]
   },
   "experimental": {
@@ -367,6 +368,11 @@
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
     ]
+  },
+  "experimentalAiData": {
+    "extension_types": ["extension"],
+    "channel": "dev",
+    "command_line_switch": "extension-ai-data-collection"
   },
   "favicon": {
     "channel": "stable",
@@ -449,9 +455,9 @@
   "input": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"],
-    "platforms": ["chromeos", "win", "linux"]
+    "platforms": ["chromeos"]
   },
-  "imageLoaderPrivate": {
+  "imageLoaderPrivate": [{
     "channel": "stable",
     "component_extensions_auto_granted": false,
     "extension_types": ["extension"],
@@ -460,7 +466,12 @@
     "allowlist": [
       "74E2D32A61B08D29521A8C4E360F581DE78F5CA5"  // Image loader
     ]
-  },
+  }, {
+    "channel": "trunk",
+    "platforms": ["chromeos"],
+    "extension_types": ["extension"],
+    "location": "component"
+  }],
   "inputMethodPrivate": [{
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
@@ -518,9 +529,18 @@
     "location": "policy",
     "platforms": ["chromeos", "lacros"],
     "allowlist": [
-      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Badge Based Auth Extension
+      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
-      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-session test extension
+      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
+      "8ECFC754A70BE499325FA4BB705E62EFEEC1BC80"  // b/314208017
+    ]
+  }, {
+    "channel": "stable",
+    "extension_types": ["platform_app"],
+    "location": "policy",
+    "platforms": ["chromeos", "lacros"],
+    "allowlist": [
+      "ECD28F2B60BDB3B4E566D6C60BD88BE0774044C1"  // b/314208017
     ]
   }],
   "loginScreenStorage": [{
@@ -544,7 +564,7 @@
     "location": "policy",
     "platforms": ["chromeos", "lacros"],
     "allowlist": [
-      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03" // Badge Based Auth Extension
+      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03" // Identity Card Connector
     ]
   }],
   "loginScreenUi": [{
@@ -573,7 +593,7 @@
     "location": "policy",
     "platforms": ["chromeos"],
     "allowlist": [
-      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03",   // Badge Based Auth Extension
+      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03",   // Identity Card Connector
       "EC3DE21E048B67319893889529354DFBFA96FD23",   // https://crbug.com/1233881
       "A19608AC34215B127FF9D7C006D67F5C8ED8146D",   // https://crbug.com/1233881
       // https://crbug.com/1194693
@@ -657,7 +677,7 @@
       "location": "policy",
       "platforms": ["chromeos"],
       "allowlist": [
-        "93B7178E8C275515C38D4F43D9DF4648F0EA9B03" // Badge Based Auth Extension
+        "93B7178E8C275515C38D4F43D9DF4648F0EA9B03" // Identity Card Connector
       ]
     }
   ],
@@ -672,7 +692,9 @@
     "extension_types": ["extension"],
     "allowlist": [
       "1BFB3A47AA4A1E1C4714D919217602685CDD0FA7",  // http://crbug.com/574600
-      "DD87C93131FF8D3DE4E483DC1EB298D73C7223A6"   // http://crbug.com/1328114
+      "DD87C93131FF8D3DE4E483DC1EB298D73C7223A6",  // http://crbug.com/1328114
+      "13E3107CEF097680EF38F4C405F0014ECC2428C6",  // https://crbug.com/333576806
+      "F14B6BF9F5B9205222E568B3C838D9E99C3F5032"   // https://crbug.com/333576806
     ]
   },
   {
@@ -906,12 +928,9 @@
       "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/1220107
     ]
   },
-  // For now, systemLog API is private to avoid 3rd party logs being sent to
-  // Google in feedback reports. More info: http://crbug.com/1264234
   "systemLog": [{
     "channel": "stable",
-    "dependencies": ["behavior:imprivata_extension"],
-    "extension_types": ["extension", "login_screen_extension"],
+    "extension_types": ["extension", "login_screen_extension", "platform_app"],
     "location": "policy",
     "platforms": ["chromeos", "lacros"]
   }, {

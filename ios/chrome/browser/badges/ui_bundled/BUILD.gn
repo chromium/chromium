@@ -1,0 +1,111 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "badge_constants.h",
+    "badge_constants.mm",
+    "badge_item.h",
+    "badge_type.h",
+    "badges_histograms.h",
+    "badges_histograms.mm",
+  ]
+  deps = [ "//ios/chrome/browser/infobars/model:badge_state_public" ]
+}
+
+source_set("util") {
+  sources = [
+    "badge_overflow_menu_util.h",
+    "badge_overflow_menu_util.mm",
+    "badge_type_util.h",
+    "badge_type_util.mm",
+  ]
+  deps = [
+    ":public",
+    "//base",
+    "//components/password_manager/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+  ]
+}
+
+source_set("ui_bundled") {
+  sources = [
+    "badge_button.h",
+    "badge_button.mm",
+    "badge_button_factory.h",
+    "badge_button_factory.mm",
+    "badge_consumer.h",
+    "badge_delegate.h",
+    "badge_mediator.h",
+    "badge_mediator.mm",
+    "badge_static_item.h",
+    "badge_static_item.mm",
+    "badge_tappable_item.h",
+    "badge_tappable_item.mm",
+    "badge_view_controller.h",
+    "badge_view_controller.mm",
+    "badge_view_visibility_delegate.h",
+  ]
+  deps = [
+    ":public",
+    ":util",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/password_manager/core/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:badge",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/overlays",
+    "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/ui/fullscreen:ui",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+    "//ios/web/public/permissions",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "badge_mediator_unittest.mm" ]
+  deps = [
+    ":public",
+    ":ui_bundled",
+    ":util",
+    "//base/test:test_support",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:badge",
+    "//ios/chrome/browser/infobars/model:badge_state_public",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/ui/infobars:test_support",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

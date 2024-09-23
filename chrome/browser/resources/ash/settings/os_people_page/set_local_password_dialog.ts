@@ -41,11 +41,16 @@ export class SettingsSetLocalPasswordDialogElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+      password_: {
+        type: String,
+        value: null,
+      },
     };
   }
 
   authToken: string|null;
   private showError_: boolean;
+  private password_: string|null;
 
   override ready(): void {
     super.ready();
@@ -85,8 +90,9 @@ export class SettingsSetLocalPasswordDialogElement extends PolymerElement {
       return;
     }
 
-    const {result} = await PasswordFactorEditor.getRemote().updateLocalPassword(
-        authToken, value);
+    const {result} =
+        await PasswordFactorEditor.getRemote().updateOrSetLocalPassword(
+            authToken, value);
     switch (result) {
       case ConfigureResult.kSuccess:
         this.$.dialog.close();

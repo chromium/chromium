@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, SettingsSectionIdentifier) {
   SettingsSectionIdentifierInfo,
   SettingsSectionIdentifierDebug,
   SettingsSectionIdentifierDefaults,
+  SettingsSectionIdentifierESBPromo
 };
 
 // Item types used per Setting section.
@@ -51,6 +52,9 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeDefaultBrowser,
   SettingsItemTypeSigninDisabled,
   SettingsItemTypeTabs,
+  SettingsItemTypePlusAddresses,
+  SettingsItemTypeSwitchProfile,
+  SettingsItemTypeESBPromo
 };
 
 // The accessibility identifier of the settings TableView.
@@ -193,13 +197,13 @@ extern NSString* const kSettingsTabsCellId;
 // The accessibility identifier of the move inactive tabs settings cell.
 extern NSString* const kSettingsMoveInactiveTabsCellId;
 
-// The accessibility identifier of the tab pickup settings cell.
-extern NSString* const kSettingsTabPickupCellId;
-
 // The accessibility identifier of the Privacy Guide settings cell.
 extern NSString* const kSettingsPrivacyGuideCellId;
 
 // The accessibility identifier of the Detect Units cell.
 extern NSString* const kSettingsDetectUnitsCellId;
+
+// The accessibility identifier of the plus addresses setting.
+extern NSString* const kSettingsPlusAddressesId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SETTINGS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

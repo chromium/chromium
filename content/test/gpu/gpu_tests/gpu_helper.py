@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import enum
 import os
 import re
-import sys
 from typing import Dict, FrozenSet, List, Match, Optional, Tuple, Union
 import unittest.mock as mock
+
+from gpu_tests import constants
+from gpu_tests.util import host_information
 
 from telemetry.internal.platform import gpu_info as tgi
 
@@ -19,8 +20,11 @@ from telemetry.internal.platform import gpu_info as tgi
 EXPECTATIONS_DRIVER_TAGS = frozenset([
     'mesa_lt_19.1',
     'mesa_ge_21.0',
+    'mesa_ge_23.2',
     'nvidia_ge_31.0.15.4601',
     'nvidia_lt_31.0.15.4601',
+    'nvidia_ge_535.183.01',
+    'nvidia_lt_535.183.01',
 ])
 
 # Driver tag format: VENDOR_OPERATION_VERSION
@@ -46,14 +50,6 @@ ENTIRE_TAG_REPLACEMENTS = {
     re.compile('google-vulkan.*swiftshader-device.*', re.IGNORECASE):
     'google-vulkan',
 }
-
-
-class GpuVendors(enum.IntEnum):
-  AMD = 0x1002
-  INTEL = 0x8086
-  NVIDIA = 0x10DE
-  # ACPI ID as opposed to a PCI-E ID like other vendors.
-  QUALCOMM = 0x4D4F4351
 
 
 INTEL_DEVICE_ID_MASK = 0xFF00
@@ -94,7 +90,7 @@ def GetGpuVendorString(gpu_info: Optional[tgi.GPUInfo], index: int) -> str:
           primary_gpu.device_string)
       vendor_id = primary_gpu.vendor_id
       try:
-        vendor_id = GpuVendors(vendor_id)
+        vendor_id = constants.GpuVendor(vendor_id)
         return vendor_id.name.lower()
       except ValueError:
         # Hit if vendor_id is not a known vendor.
@@ -118,7 +114,7 @@ def GetGpuDeviceId(gpu_info: Optional[tgi.GPUInfo],
 
 
 def IsIntel(vendor_id: int) -> bool:
-  return vendor_id == GpuVendors.INTEL
+  return vendor_id == constants.GpuVendor.INTEL
 
 
 # Intel GPU architectures
@@ -183,8 +179,7 @@ def GetSkiaGraphiteStatus(gpu_info: Optional[tgi.GPUInfo]) -> str:
   return 'graphite-disabled'
 
 
-def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo],
-                    extra_browser_args: List[str]) -> str:
+def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo]) -> str:
   retval = 'renderer-software'
   if gpu_info:
     gpu_feature_status = gpu_info.feature_status
@@ -192,9 +187,7 @@ def GetSkiaRenderer(gpu_info: Optional[tgi.GPUInfo],
         gpu_feature_status
         and gpu_feature_status.get('gpu_compositing') == 'enabled')
     if skia_renderer_enabled:
-      if HasDawnSkiaRenderer(extra_browser_args):
-        retval = 'renderer-skia-dawn'
-      elif HasVulkanSkiaRenderer(gpu_feature_status):
+      if HasVulkanSkiaRenderer(gpu_feature_status):
         retval = 'renderer-skia-vulkan'
       # The check for GL must come after Vulkan since the 'opengl' feature can
       # be enabled for WebGL and interop even if SkiaRenderer is using Vulkan.
@@ -209,7 +202,7 @@ def GetDisplayServer(browser_type: str) -> Optional[str]:
   # display server.
   if browser_type in REMOTE_BROWSER_TYPES:
     return None
-  if sys.platform.startswith('linux'):
+  if host_information.IsLinux():
     if 'WAYLAND_DISPLAY' in os.environ:
       return 'display-server-wayland'
     return 'display-server-x'
@@ -240,15 +233,6 @@ def GetClangCoverage(gpu_info: Optional[tgi.GPUInfo]) -> str:
   if gpu_info and gpu_info.aux_attributes.get('is_clang_coverage', False):
     return 'clang-coverage'
   return 'no-clang-coverage'
-
-
-# TODO(rivr): Use GPU feature status for Dawn instead of command line.
-def HasDawnSkiaRenderer(extra_browser_args: List[str]) -> bool:
-  if extra_browser_args:
-    for arg in extra_browser_args:
-      if arg.startswith('--enable-features') and 'SkiaDawn' in arg:
-        return True
-  return False
 
 
 def HasGlSkiaRenderer(gpu_feature_status: Dict[str, str]) -> bool:
@@ -313,12 +297,12 @@ def GetMockArgs(webgl_version: str = '1.0.0') -> mock.MagicMock:
   args.expected_vendor_id = 0
   args.expected_device_id = 0
   args.browser_options = []
+  args.use_worker = 'none'
   return args
 
 
-def MatchDriverTag(tag: str) -> Match[str]:
+def MatchDriverTag(tag: str) -> Optional[Match[str]]:
   return DRIVER_TAG_MATCHER.match(tag.lower())
-
 
 # No good way to reduce the number of local variables, particularly since each
 # argument is also considered a local. Also no good way to reduce the number of
@@ -400,11 +384,13 @@ def IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
     return True
 
   match = MatchDriverTag(driver_tag1)
+  assert match is not None
   vendor1 = match.group(1)
   operation1 = match.group(2)
   version1 = match.group(3)
 
   match = MatchDriverTag(driver_tag2)
+  assert match is not None
   vendor2 = match.group(1)
   operation2 = match.group(2)
   version2 = match.group(3)

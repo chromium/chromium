@@ -92,7 +92,7 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
       primary_rfh.GetGlobalId();
 
   security_interstitials::UnsafeResource resource;
-  resource.threat_type = SB_THREAT_TYPE_SUSPICIOUS_SITE;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE;
   resource.url = primary_rfh.GetLastCommittedURL();
   resource.render_process_id = primary_rfh_id.child_id;
   resource.render_frame_token = primary_rfh.GetFrameToken().value();

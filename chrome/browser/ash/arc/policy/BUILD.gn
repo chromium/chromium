@@ -1,0 +1,107 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("policy") {
+  sources = [
+    "arc_android_management_checker.cc",
+    "arc_android_management_checker.h",
+    "arc_policy_bridge.cc",
+    "arc_policy_bridge.h",
+    "arc_policy_handler.cc",
+    "arc_policy_handler.h",
+    "arc_policy_util.cc",
+    "arc_policy_util.h",
+    "managed_configuration_variables.cc",
+    "managed_configuration_variables.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/components/arc/session:connection_holder",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/arc/enterprise/cert_store",
+    "//chrome/browser/ash/arc/intent_helper",
+    "//chrome/browser/ash/policy/arc",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/policy/remote_commands",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/system",
+    "//chromeos/components/onc",
+    "//components/onc",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings_grit",
+    "//components/user_manager",
+    "//services/data_decoder/public/cpp",
+    "//third_party/re2",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/arc/enterprise/cert_store",
+    "//chrome/browser/ash/arc/intent_helper",
+    "//chrome/browser/ash/policy/remote_commands",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_android_management_checker_unittest.cc",
+    "arc_policy_bridge_unittest.cc",
+    "arc_policy_handler_unittest.cc",
+    "arc_policy_util_unittest.cc",
+    "managed_configuration_variables_unittest.cc",
+  ]
+
+  deps = [
+    ":policy",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/arc/enterprise/cert_store",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/arc:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/system",
+    "//components/account_id",
+    "//components/keyed_service/core",
+    "//components/session_manager/core",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

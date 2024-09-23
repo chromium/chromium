@@ -12,75 +12,55 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/tether/host_connection.h"
 #include "chromeos/ash/components/tether/message_wrapper.h"
 #include "chromeos/ash/components/tether/proto/tether.pb.h"
-#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/client_channel.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt.h"
-#include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/ash/components/tether/tether_host.h"
 
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
-
-namespace cross_device {
+namespace ash::timer_factory {
 class TimerFactory;
-}  // namespace cross_device
+}  // namespace ash::timer_factory
 
 namespace ash::tether {
 
 // Abstract base class used for operations which send and/or receive messages
 // from remote devices.
-class MessageTransferOperation {
+class MessageTransferOperation : public HostConnection::PayloadListener {
  public:
   MessageTransferOperation(
-      const multidevice::RemoteDeviceRefList& devices_to_connect,
-      secure_channel::ConnectionPriority connection_priority,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client);
+      const TetherHost& tether_host,
+      HostConnection::Factory::ConnectionPriority connection_priority,
+      raw_ptr<HostConnection::Factory> host_connection_factory);
 
   MessageTransferOperation(const MessageTransferOperation&) = delete;
   MessageTransferOperation& operator=(const MessageTransferOperation&) = delete;
 
-  virtual ~MessageTransferOperation();
+  ~MessageTransferOperation() override;
 
   // Initializes the operation by registering device connection listeners with
   // SecureChannel.
   void Initialize();
 
  protected:
-  // Unregisters |remote_device| for the MessageType returned by
-  // GetMessageTypeForConnection().
-  void UnregisterDevice(multidevice::RemoteDeviceRef remote_device);
+  // Manually ends the operation.
+  void StopOperation();
 
-  // Sends |message_wrapper|'s message to |remote_device| and returns the
-  // associated message's sequence number.
-  int SendMessageToDevice(multidevice::RemoteDeviceRef remote_device,
-                          std::unique_ptr<MessageWrapper> message_wrapper);
-
-  // Callback executed whena device is authenticated (i.e., it is in a state
+  // Callback executed when a host is authenticated (i.e., it is in a state
   // which allows messages to be sent/received). Should be overridden by derived
-  // classes which intend to send a message to |remote_device| as soon as an
-  // authenticated channel has been established to that device.
-  virtual void OnDeviceAuthenticated(
-      multidevice::RemoteDeviceRef remote_device) {}
+  // classes which intend to send a message to |tether_host_| as soon as an
+  // authenticated channel has been established to that host.
+  virtual void OnDeviceAuthenticated() {}
 
-  // Callback executed when a tether protocol message is received. Should be
-  // overriden by derived classes which intend to handle messages received from
-  // |remote_device|.
-  virtual void OnMessageReceived(
-      std::unique_ptr<MessageWrapper> message_wrapper,
-      multidevice::RemoteDeviceRef remote_device) {}
+  void SendMessage(std::unique_ptr<MessageWrapper> message_wrapper,
+                   HostConnection::OnMessageSentCallback on_message_sent);
 
-  // Callback executed when any message is received on the "magic_tether"
-  // feature.
-  virtual void OnMessageReceived(const std::string& device_id,
-                                 const std::string& payload);
+  // HostConnection::PayloadListener:
+  void OnMessageReceived(
+      std::unique_ptr<MessageWrapper> message_wrapper) override {}
 
-  // Callback executed a tether protocol message is sent. |sequence_number| is
-  // the value returned by SendMessageToDevice().
-  virtual void OnMessageSent(int sequence_number) {}
+  void OnConnectionAttemptComplete(
+      std::unique_ptr<HostConnection> host_connection);
+  void OnDisconnected();
 
   // Callback executed when the operation has started (i.e., in Initialize()).
   virtual void OnOperationStarted() {}
@@ -98,55 +78,14 @@ class MessageTransferOperation {
   // ShouldOperationUseTimeout() returns false, this method is never used.
   virtual uint32_t GetMessageTimeoutSeconds();
 
-  multidevice::RemoteDeviceRefList& remote_devices() { return remote_devices_; }
+  const std::string GetDeviceId(bool truncate_for_logs) const;
 
  private:
   friend class ConnectTetheringOperationTest;
   friend class DisconnectTetheringOperationTest;
-  friend class HostScannerOperationTest;
+  friend class TetherAvailabilityOperationTest;
   friend class KeepAliveOperationTest;
   friend class MessageTransferOperationTest;
-
-  class ConnectionAttemptDelegate
-      : public secure_channel::ConnectionAttempt::Delegate {
-   public:
-    ConnectionAttemptDelegate(
-        MessageTransferOperation* operation,
-        multidevice::RemoteDeviceRef remote_device,
-        std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt);
-    ~ConnectionAttemptDelegate() override;
-
-    // secure_channel::ConnectionAttempt::Delegate:
-    void OnConnectionAttemptFailure(
-        secure_channel::mojom::ConnectionAttemptFailureReason reason) override;
-    void OnConnection(
-        std::unique_ptr<secure_channel::ClientChannel> channel) override;
-
-   private:
-    raw_ptr<MessageTransferOperation> operation_;
-    multidevice::RemoteDeviceRef remote_device_;
-    std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
-  };
-
-  class ClientChannelObserver : public secure_channel::ClientChannel::Observer {
-   public:
-    ClientChannelObserver(
-        MessageTransferOperation* operation,
-        multidevice::RemoteDeviceRef remote_device,
-        std::unique_ptr<secure_channel::ClientChannel> client_channel);
-    ~ClientChannelObserver() override;
-
-    // secure_channel::ClientChannel::Observer:
-    void OnDisconnected() override;
-    void OnMessageReceived(const std::string& payload) override;
-
-    secure_channel::ClientChannel* channel() { return client_channel_.get(); }
-
-   private:
-    raw_ptr<MessageTransferOperation> operation_;
-    multidevice::RemoteDeviceRef remote_device_;
-    std::unique_ptr<secure_channel::ClientChannel> client_channel_;
-  };
 
   // The maximum expected time to connect to a remote device, if it can be
   // connected to. This number has been determined by examining metrics.
@@ -159,54 +98,33 @@ class MessageTransferOperation {
   // duration.
   static constexpr const uint32_t kDefaultMessageTimeoutSeconds = 10;
 
-  void OnConnectionAttemptFailure(
-      multidevice::RemoteDeviceRef remote_device,
-      secure_channel::mojom::ConnectionAttemptFailureReason reason);
-  void OnConnection(multidevice::RemoteDeviceRef remote_device,
-                    std::unique_ptr<secure_channel::ClientChannel> channel);
-  void OnDisconnected(multidevice::RemoteDeviceRef remote_device);
-
   // Start the timer while waiting for a connection to |remote_device|. See
   // |kConnectionTimeoutSeconds|.
-  void StartConnectionTimerForDevice(
-      multidevice::RemoteDeviceRef remote_device);
+  void StartConnectionTimerForDevice();
 
   // Start the timer while waiting for messages to be sent to and received by
   // |remote_device|. See |kDefaultMessageTimeoutSeconds|.
-  void StartMessageTimerForDevice(multidevice::RemoteDeviceRef remote_device);
+  void StartMessageTimerForDevice();
 
-  void StartTimerForDevice(multidevice::RemoteDeviceRef remote_device,
-                           uint32_t timeout_seconds);
-  void StopTimerForDeviceIfRunning(multidevice::RemoteDeviceRef remote_device);
-  void OnTimeout(multidevice::RemoteDeviceRef remote_device);
-  std::optional<multidevice::RemoteDeviceRef> GetRemoteDevice(
-      const std::string& device_id);
+  void StartTimerForDevice(uint32_t timeout_seconds);
+  void StopTimerForDeviceIfRunning();
+  void OnTimeout();
 
   void SetTimerFactoryForTest(
-      std::unique_ptr<cross_device::TimerFactory> timer_factory_for_test);
+      std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory_for_test);
 
-  multidevice::RemoteDeviceRefList remote_devices_;
-  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
-  const secure_channel::ConnectionPriority connection_priority_;
+  TetherHost tether_host_;
+  const HostConnection::Factory::ConnectionPriority connection_priority_;
+  std::unique_ptr<HostConnection> host_connection_;
+  raw_ptr<HostConnection::Factory> host_connection_factory_;
 
-  std::unique_ptr<cross_device::TimerFactory> timer_factory_;
+  std::unique_ptr<ash::timer_factory::TimerFactory> timer_factory_;
 
   bool initialized_ = false;
   bool shutting_down_ = false;
   MessageType message_type_for_connection_;
 
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 std::unique_ptr<ConnectionAttemptDelegate>>
-      remote_device_to_connection_attempt_delegate_map_;
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 std::unique_ptr<ClientChannelObserver>>
-      remote_device_to_client_channel_observer_map_;
-  int next_message_sequence_number_ = 0;
-
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 std::unique_ptr<base::OneShotTimer>>
-      remote_device_to_timer_map_;
+  std::unique_ptr<base::OneShotTimer> remote_device_timer_;
   base::WeakPtrFactory<MessageTransferOperation> weak_ptr_factory_{this};
 };
 

@@ -678,6 +678,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
                                  'os-settings:accessibility';
       case SearchResultIcon.kAndroid:
         return 'os-settings:android';
+      case SearchResultIcon.kAppsParentalControls:
+        return 'os-settings:apps-parental-controls';
       case SearchResultIcon.kAppsGrid:
         return 'os-settings:apps';
       case SearchResultIcon.kAssistant:
@@ -747,6 +749,10 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:a11y-hearing';
       case SearchResultIcon.kHelp:
         return 'os-settings:about-help';
+      case SearchResultIcon.kHelpMeRead:
+        return 'os-settings:help-me-read';
+      case SearchResultIcon.kHelpMeWrite:
+        return 'os-settings:help-me-write';
       case SearchResultIcon.kHotspot:
         return 'os-settings:hotspot';
       case SearchResultIcon.kInstantTethering:
@@ -761,6 +767,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:laptop-chromebook';
       case SearchResultIcon.kLock:
         return isRevampEnabled ? 'os-settings:lock-revamp' : 'os-settings:lock';
+      case SearchResultIcon.kMagicBoost:
+        return 'os-settings:magic-boost';
       case SearchResultIcon.kMicrophone:
         return 'os-settings:microphone';
       case SearchResultIcon.kMouse:
@@ -784,6 +792,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
                                  'os-settings:paint-brush';
       case SearchResultIcon.kPenguin:
         return 'os-settings:crostini-mascot';
+      case SearchResultIcon.kPersonalization:
+        return 'os-settings:personalization';
       case SearchResultIcon.kPhone:
         return isRevampEnabled ?
             'os-settings:connected-devices-android-phone' :
@@ -799,6 +809,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
                                  'os-settings:print';
       case SearchResultIcon.kPrivacyControls:
         return 'os-settings:privacy-controls';
+      case SearchResultIcon.kReducedAnimations:
+        return 'os-settings:reduced-animations';
       case SearchResultIcon.kReleaseNotes:
         return 'os-settings:about-release-notes';
       case SearchResultIcon.kReset:

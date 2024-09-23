@@ -78,10 +78,12 @@ interface WebAppProviderBridge {
   [MinVersion=5]
   GetSubAppToParentMap@6() => (map<string, string> parent_apps);
 
-  // Called when a web app described by |preload_install_info| is preloaded and
-  // installs this web app in the primary profile of Lacros.
+  // Called when a web app described by |install_info| is installed via
+  // App Install Service and installs this web app in the primary profile of
+  // Lacros.
   [MinVersion=6]
-  InstallPreloadWebApp@7(PreloadWebAppInstallInfo preload_install_info)
+  InstallWebAppFromVerifiedManifest@7(
+    WebAppVerifiedManifestInstallInfo install_info)
     => (string app_id, WebAppInstallResultCode install_result);
 
   // Requests that Lacros launch the Isolated Web App installation UI for the

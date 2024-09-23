@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/command_line.h"
@@ -30,18 +31,17 @@
 
 namespace {
 
-web_app::WebAppInstallInfo MakeInstallInfoFromApp(
-    const web_app::WebApp* web_app) {
-  web_app::WebAppInstallInfo install_info;
-  install_info.title = base::UTF8ToUTF16(web_app->untranslated_name());
-  install_info.description =
-      base::UTF8ToUTF16(web_app->untranslated_description());
-  install_info.start_url = web_app->start_url();
-  install_info.manifest_id = web_app->manifest_id();
-  install_info.manifest_url = web_app->manifest_url();
-  install_info.scope = web_app->scope();
-  install_info.manifest_icons = web_app->manifest_icons();
-  install_info.display_mode = web_app->display_mode();
+std::unique_ptr<web_app::WebAppInstallInfo> MakeInstallInfoFromApp(
+    const web_app::WebApp& web_app) {
+  auto install_info = std::make_unique<web_app::WebAppInstallInfo>(
+      web_app.manifest_id(), web_app.start_url());
+  install_info->title = base::UTF8ToUTF16(web_app.untranslated_name());
+  install_info->description =
+      base::UTF8ToUTF16(web_app.untranslated_description());
+  install_info->manifest_url = web_app.manifest_url();
+  install_info->scope = web_app.scope();
+  install_info->manifest_icons = web_app.manifest_icons();
+  install_info->display_mode = web_app.display_mode();
   return install_info;
 }
 
@@ -106,7 +106,7 @@ void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
     // if it's already launched.
     Browser* launched_app =
         web_app::AppBrowserController::FindForWebApp(*new_profile_, app_id_);
-    debug_value.Set("launched_app", launched_app ? true : false);
+    debug_value.Set("launched_app", !!launched_app);
     if (launched_app) {
       launched_app->window()->Activate();
       RunCompletionCallback();
@@ -118,7 +118,7 @@ void WebAppProfileSwitcher::InstallOrOpenWebAppWindowForProfile(
   }
   // Fetch app icons from the already installed app prior to
   // installation.
-  // TODO(crbug/1414331) Use the icon loading command once it's available.
+  // TODO(crbug.com/40256076) Use the icon loading command once it's available.
   web_app::WebAppProvider::GetForWebApps(&active_profile_.get())
       ->icon_manager()
       .ReadAllIcons(app_id_, base::BindOnce(
@@ -138,8 +138,7 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(
   const web_app::WebApp* web_app =
       active_profile_provider->registrar_unsafe().GetAppById(app_id_);
   DCHECK(web_app);
-  auto install_info = std::make_unique<web_app::WebAppInstallInfo>(
-      MakeInstallInfoFromApp(web_app));
+  auto install_info = MakeInstallInfoFromApp(*web_app);
   install_info->icon_bitmaps = std::move(icon_bitmaps);
 
   web_app::WebAppInstallParams install_params;
@@ -163,7 +162,7 @@ void WebAppProfileSwitcher::InstallAndLaunchWebApp(
 void WebAppProfileSwitcher::LaunchAppWithId(
     const webapps::AppId& app_id,
     webapps::InstallResultCode install_result) {
-  // TODO(crbug/1414331): Record metrics for installation failures.
+  // TODO(crbug.com/40256076): Record metrics for installation failures.
   if (!IsSuccess(install_result)) {
     RunCompletionCallback();
     return;

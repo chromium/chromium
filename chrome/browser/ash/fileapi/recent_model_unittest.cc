@@ -28,6 +28,8 @@ namespace ash {
 
 namespace {
 
+namespace fmp = extensions::api::file_manager_private;
+
 base::Time ModifiedTime(int64_t seconds_since_unix_epoch) {
   return base::Time::FromSecondsSinceUnixEpoch(seconds_since_unix_epoch);
 }
@@ -93,16 +95,14 @@ std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
 }
 
 std::vector<RecentFile> GetRecentFiles(RecentModel* model,
-                                       base::TimeDelta now_delta,
-                                       RecentModel::FileType file_type,
-                                       bool invalidate_cache) {
+                                       const RecentModelOptions& options) {
   std::vector<RecentFile> files;
 
   base::RunLoop run_loop;
 
   model->GetRecentFiles(
       /*file_system_context=*/nullptr, /*origin=*/GURL(),
-      /*query=*/"", now_delta, file_type, invalidate_cache,
+      /*query=*/"", options,
       base::BindOnce(
           [](base::RunLoop* run_loop, std::vector<RecentFile>* files_out,
              const std::vector<RecentFile>& files) {
@@ -123,23 +123,28 @@ class RecentModelTest : public testing::Test {
   RecentModelTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  void SetUp() override {
+    source_specs_.emplace_back(
+        RecentSourceSpec{.volume_type = fmp::VolumeType::kTesting});
+  }
+
+  void TearDown() override { source_specs_.clear(); }
+
  protected:
   using RecentSourceList = std::vector<std::unique_ptr<RecentSource>>;
   using RecentSourceListFactory = base::RepeatingCallback<RecentSourceList()>;
 
-  RecentModel* CreateRecentModel(RecentSourceListFactory source_list_factory,
-                                 size_t max_files) {
+  RecentModel* CreateRecentModel(RecentSourceListFactory source_list_factory) {
     return static_cast<RecentModel*>(
         RecentModelFactory::GetInstance()->SetTestingFactoryAndUse(
             &profile_,
             base::BindRepeating(
                 [](const RecentSourceListFactory& source_list_factory,
-                   size_t max_files, content::BrowserContext* context)
+                   content::BrowserContext* context)
                     -> std::unique_ptr<KeyedService> {
-                  return RecentModel::CreateForTest(source_list_factory.Run(),
-                                                    max_files);
+                  return RecentModel::CreateForTest(source_list_factory.Run());
                 },
-                std::move(source_list_factory), max_files)));
+                std::move(source_list_factory))));
   }
 
   std::vector<RecentFile> BuildModelAndGetRecentFiles(
@@ -148,12 +153,19 @@ class RecentModelTest : public testing::Test {
       const base::TimeDelta& cutoff_delta,
       RecentModel::FileType file_type,
       bool invalidate_cache) {
-    RecentModel* model = CreateRecentModel(source_list_factory, max_files);
-    model->SetScanTimeout(base::Milliseconds(500));
+    RecentModel* model = CreateRecentModel(source_list_factory);
+    RecentModelOptions options;
+    options.scan_timeout = base::Milliseconds(500);
+    options.max_files = max_files;
+    options.file_type = file_type;
+    options.invalidate_cache = invalidate_cache;
+    options.now_delta = cutoff_delta;
+    options.source_specs = source_specs_;
 
-    return GetRecentFiles(model, cutoff_delta, file_type, invalidate_cache);
+    return GetRecentFiles(model, options);
   }
 
+  std::vector<RecentSourceSpec> source_specs_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
@@ -297,7 +309,7 @@ TEST_F(RecentModelTest, GetRecentFiles_AllSourcesAreLate) {
 TEST_F(RecentModelTest, MultipleRequests) {
   // Creates laggy sources, so that we can call GetRecentFiles twice.
   RecentModel* model = CreateRecentModel(
-      base::BindRepeating(&BuildDefaultSourcesWithLag, 500, 500), 10);
+      base::BindRepeating(&BuildDefaultSourcesWithLag, 500, 500));
 
   std::vector<RecentFile> files_1;
   std::vector<RecentFile> files_2;
@@ -305,9 +317,12 @@ TEST_F(RecentModelTest, MultipleRequests) {
   int calls_completed_count = 0;
 
   // First request; fills files_1. We use query "aaa"
+  RecentModelOptions options;
+  options.max_files = 10;
+  options.source_specs = source_specs_;
   model->GetRecentFiles(
       /*file_system_context=*/nullptr, /*origin=*/GURL(),
-      /*query=*/"aaa", base::Days(30), RecentModel::FileType::kAll, false,
+      /*query=*/"aaa", options,
       base::BindLambdaForTesting([&](const std::vector<RecentFile>& files) {
         files_1 = files;
         if (++calls_completed_count == 2) {
@@ -318,7 +333,7 @@ TEST_F(RecentModelTest, MultipleRequests) {
   // Use a different query, expect different results.
   model->GetRecentFiles(
       /*file_system_context=*/nullptr, /*origin=*/GURL(),
-      /*query=*/"bbb", base::Days(30), RecentModel::FileType::kAll, false,
+      /*query=*/"bbb", options,
       base::BindLambdaForTesting([&](const std::vector<RecentFile>& files) {
         files_2 = files;
         if (++calls_completed_count == 2) {
@@ -340,10 +355,14 @@ TEST_F(RecentModelTest, MultipleRequests) {
 TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<RecentModel> model =
-      RecentModel::CreateForTest(BuildDefaultSources(), 10);
+      RecentModel::CreateForTest(BuildDefaultSources());
 
-  std::vector<RecentFile> files1 = GetRecentFiles(
-      model.get(), base::TimeDelta::Max(), RecentModel::FileType::kAll, false);
+  RecentModelOptions options;
+  options.max_files = 10;
+  options.now_delta = base::TimeDelta::Max();
+  options.source_specs.emplace_back(
+      RecentSourceSpec{.volume_type = fmp::VolumeType::kTesting});
+  std::vector<RecentFile> files1 = GetRecentFiles(model.get(), options);
   ASSERT_EQ(4u, files1.size());
 
   // Shutdown() will clear all sources.
@@ -351,14 +370,33 @@ TEST(RecentModelCacheTest, GetRecentFiles_InvalidateCache) {
 
   // The returned file list should still has 4 files even though all sources has
   // been cleared in Shutdown(), because it hits cache.
-  std::vector<RecentFile> files2 = GetRecentFiles(
-      model.get(), base::TimeDelta::Max(), RecentModel::FileType::kAll, false);
+  std::vector<RecentFile> files2 = GetRecentFiles(model.get(), options);
   ASSERT_EQ(4u, files2.size());
 
   // Inalidate cache and query again.
-  std::vector<RecentFile> files3 = GetRecentFiles(
-      model.get(), base::Days(30), RecentModel::FileType::kAll, true);
+  options.invalidate_cache = true;
+  std::vector<RecentFile> files3 = GetRecentFiles(model.get(), options);
   ASSERT_EQ(0u, files3.size());
+}
+
+TEST(RecentModelSourceRestrictions, QueryNonexistingSources) {
+  content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<RecentModel> model =
+      RecentModel::CreateForTest(BuildDefaultSources());
+
+  RecentModelOptions options;
+  options.max_files = 10;
+  options.now_delta = base::TimeDelta::Max();
+  options.source_specs.emplace_back(
+      RecentSourceSpec{.volume_type = fmp::VolumeType::kDrive});
+  options.source_specs.emplace_back(
+      RecentSourceSpec{.volume_type = fmp::VolumeType::kDownloads});
+  std::vector<RecentFile> files = GetRecentFiles(model.get(), options);
+  // Test sources have kTesting as the volume type; thus fetching files from
+  // other volumes should result in empty recent files vector.
+  EXPECT_TRUE(files.empty());
+  // Manual shutdown to clear sources_ vector in the model.
+  model->Shutdown();
 }
 
 }  // namespace ash

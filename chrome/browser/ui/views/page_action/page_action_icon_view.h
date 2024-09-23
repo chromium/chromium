@@ -18,8 +18,8 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/image_view.h"
 
+class Browser;
 class CommandUpdater;
-class OmniboxView;
 class PageActionIconLoadingIndicatorView;
 class PageActionIconViewObserver;
 
@@ -72,7 +72,8 @@ class PageActionIconView : public IconLabelBubbleView {
     // Delegate should return true if the page action icons should be hidden.
     virtual bool ShouldHidePageActionIcons() const;
 
-    virtual const OmniboxView* GetOmniboxView() const;
+    // Returns whether or not the given page action icon should be hidden.
+    virtual bool ShouldHidePageActionIcon(PageActionIconView* icon_view) const;
   };
 
   PageActionIconView(const PageActionIconView&) = delete;
@@ -83,6 +84,8 @@ class PageActionIconView : public IconLabelBubbleView {
   void RemovePageIconViewObserver(PageActionIconViewObserver* observer);
 
   // Updates the color of the icon, this must be set before the icon is drawn.
+  // TODO(crbug.com/352245808): Color overrides should be moved into the
+  // IconLabelBubbleView superclass.
   void SetIconColor(SkColor icon_color);
   SkColor GetIconColor() const;
 
@@ -104,13 +107,14 @@ class PageActionIconView : public IconLabelBubbleView {
 
   SkColor GetLabelColorForTesting() const;
 
+  std::optional<actions::ActionId> action_id() { return action_id_; }
   const char* name_for_histograms() const { return name_for_histograms_; }
   bool ephemeral() const { return ephemeral_; }
 
   void ExecuteForTesting();
 
   // Creates and updates the loading indicator.
-  // TODO(crbug.com/964127): Ideally this should be lazily initialized in
+  // TODO(crbug.com/40627870): Ideally this should be lazily initialized in
   // SetIsLoading(), but local card migration icon has a weird behavior that
   // doing so will cause the indicator being invisible. Investigate and fix.
   void InstallLoadingIndicatorForTesting();
@@ -134,6 +138,8 @@ class PageActionIconView : public IconLabelBubbleView {
                      IconLabelBubbleView::Delegate* parent_delegate,
                      Delegate* delegate,
                      const char* name_for_histograms,
+                     std::optional<actions::ActionId> action_id = std::nullopt,
+                     Browser* browser = nullptr,
                      bool ephemeral = true,
                      const gfx::FontList& = gfx::FontList());
 
@@ -198,6 +204,8 @@ class PageActionIconView : public IconLabelBubbleView {
   // state.
   virtual void UpdateImpl() = 0;
 
+  Browser* browser() { return browser_; }
+
  private:
   void InstallLoadingIndicator();
 
@@ -213,6 +221,10 @@ class PageActionIconView : public IconLabelBubbleView {
   // The command ID executed when the user clicks this icon.
   const int command_id_;
 
+  // The ID for the associated ActionItem for this icon.
+  // This should eventually replace the above |command_id_|.
+  std::optional<actions::ActionId> action_id_;
+
   // String that represents the page action type for metrics purposes.
   const char* const name_for_histograms_;
 
@@ -224,10 +236,13 @@ class PageActionIconView : public IconLabelBubbleView {
   // the web page.
   bool active_ = false;
 
+  raw_ptr<Browser> browser_;
+
   // The loading indicator, showing a throbber animation on top of the icon.
   raw_ptr<PageActionIconLoadingIndicatorView> loading_indicator_ = nullptr;
 
-  base::ObserverList<PageActionIconViewObserver>::Unchecked observer_list_;
+  base::ObserverList<PageActionIconViewObserver>::UncheckedAndDanglingUntriaged
+      observer_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_VIEW_H_

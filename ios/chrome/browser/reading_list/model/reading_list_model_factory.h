@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_MODEL_FACTORY_H_
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_MODEL_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class ReadingListModel;
 
 namespace reading_list {
@@ -18,15 +18,15 @@ class DualReadingListModel;
 }  // namespace reading_list
 
 // Singleton that creates the ReadingListModel and associates that service with
-// ChromeBrowserState.
+// a profile.
 class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ReadingListModel* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  // Returns nullptr if ReadingListEnableDualReadingListModel flag is not
-  // enabled.
+  // TODO(crbug.com/358301380): remove this method.
+  static ReadingListModel* GetForBrowserState(ProfileIOS* profile);
+
+  static ReadingListModel* GetForProfile(ProfileIOS* profile);
   static reading_list::DualReadingListModel*
-  GetAsDualReadingListModelForBrowserState(ChromeBrowserState* browser_state);
+  GetAsDualReadingListModelForProfile(ProfileIOS* profile);
   static ReadingListModelFactory* GetInstance();
 
   ReadingListModelFactory(const ReadingListModelFactory&) = delete;

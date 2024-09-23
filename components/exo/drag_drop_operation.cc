@@ -86,17 +86,17 @@ DndAction DragOperationToDndAction(DragOperation op) {
     case DragOperation::kLink:
       return DndAction::kAsk;
     default:
-      NOTREACHED() << op;
+      NOTREACHED_IN_MIGRATION() << op;
       return DndAction::kNone;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace
 
 // Internal representation of a drag icon surface. Used when a non-null surface
 // is passed in wl_data_device::start_drag requests.
-// TODO(crbug.com/1119385): Rework icon implementation to avoid frame copies.
+// TODO(crbug.com/40145458): Rework icon implementation to avoid frame copies.
 class DragDropOperation::IconSurface final : public SurfaceTreeHost,
                                              public ScopedSurface {
  public:
@@ -204,7 +204,7 @@ DragDropOperation::DragDropOperation(
 
   int num_additional_callbacks = 0;
 
-  // TODO(crbug.com/1371493): Remove this once the issue is fixed.
+  // TODO(crbug.com/40061238): Remove this once the issue is fixed.
   std::string callbacks;
 
   // TODO(crbug.com/1298033): Move DTE retrieval into
@@ -228,7 +228,7 @@ DragDropOperation::DragDropOperation(
       base::BindOnce(&DragDropOperation::ScheduleStartDragDropOperation,
                      weak_ptr_factory_.GetWeakPtr());
 
-  // TODO(crbug.com/1371493): Remove these when the issue is fixed.
+  // TODO(crbug.com/40061238): Remove these when the issue is fixed.
   start_drag_drop_timer_.Start(FROM_HERE, base::Seconds(2), this,
                                &DragDropOperation::DragDataReadTimeout);
   LOG(ERROR) << "Starting data read for drag operation: additonal callbacks:"
@@ -321,7 +321,7 @@ void DragDropOperation::OnFilenamesRead(
     const std::string& mime_type,
     const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  os_exchange_data_->SetFilenames(data_exchange_delegate->GetFilenames(
+  os_exchange_data_->SetFilenames(source_->get()->GetFilenames(
       data_exchange_delegate->GetDataTransferEndpointType(source), data));
   mime_type_ = mime_type;
   counter_.Run();
@@ -340,9 +340,9 @@ void DragDropOperation::OnFileContentsRead(const std::string& mime_type,
 void DragDropOperation::OnWebCustomDataRead(const std::string& mime_type,
                                             const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  base::Pickle pickle(reinterpret_cast<const char*>(data.data()), data.size());
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(data);
   os_exchange_data_->SetPickledData(
-      ui::ClipboardFormatType::WebCustomDataType(), pickle);
+      ui::ClipboardFormatType::DataTransferCustomType(), pickle);
   mime_type_ = mime_type;
   counter_.Run();
 }

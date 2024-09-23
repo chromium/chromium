@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-usage-flags</h1>
+
+<p>transferToGPUTexture() creates a texture honoring the requested usage flags.
+</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_transferToGPUTexture_usage_flags(adapter, adapterInfo, device,
+                                                document.getElementById('c'));
+    });
+  },
+  'transferToGPUTexture() should create a texture which honors the requested ' +
+  'usage flags.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_transferToGPUTexture_usage_flags(adapter, adapterInfo, device,
+                                                new OffscreenCanvas(50, 50));
+    });
+  },
+  'transferToGPUTexture() on an offscreen canvas should create a texture ' +
+  'which honors the requested usage flags.'
+);
+
+</script>

@@ -6,7 +6,6 @@
 #define CHROMECAST_SYSTEM_REBOOT_FUCHSIA_COMPONENT_RESTART_REASON_H_
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "chromecast/public/reboot_shlib.h"
 
 namespace chromecast {

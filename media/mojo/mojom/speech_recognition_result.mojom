@@ -1,0 +1,31 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// A single hypothesis indicating what the recognition service thinks a
+// particular speech segment means.
+[Stable]
+struct SpeechRecognitionHypothesis {
+  // Transcript of spoken text.
+  mojo_base.mojom.String16 utterance;
+
+  // A numeric estimate between 0 and 1 that represents how confident the
+  // recognition system is that the recognition is correct.
+  double confidence;
+};
+
+// Group of recognition hypotheses for a particular speech segment.
+[Stable]
+struct WebSpeechRecognitionResult {
+  // An N-best list of hypotheses.
+  array<media.mojom.SpeechRecognitionHypothesis> hypotheses;
+
+  // False if this is the final time the speech service will return this
+  // particular result. If true, then this represents an interim result that
+  // could still be changed.
+  bool is_provisional;
+};

@@ -29,8 +29,8 @@ def _copy_files_to_staging_dir(files_to_copy, make_staging_path):
 
 
 def _generate_resource_sizes(to_resource_sizes_py, make_chromium_output_path,
-                             make_staging_path):
-  """Creates results-chart.json file in staging_dir"""
+                             make_staging_path, filename):
+  """Creates results-chart.json as $staging_dir/$filename"""
   cmd = [
       _RESOURCE_SIZES_PATH,
       make_chromium_output_path(to_resource_sizes_py['apk_name']),
@@ -49,12 +49,13 @@ def _generate_resource_sizes(to_resource_sizes_py, make_chromium_output_path,
     if key in to_resource_sizes_py:
       cmd += [switch, fun(to_resource_sizes_py[key])]
   subprocess.run(cmd, check=True)
+  os.rename(make_staging_path('results-chart.json'),
+            make_staging_path(filename))
 
 
 def _generate_supersize_archive(supersize_input_file, make_chromium_output_path,
                                 make_staging_path):
   """Creates a .size file for the given .apk or .minimal.apks"""
-  subprocess.run([_CLANG_UPDATE_PATH, '--package=objdump'], check=True)
   supersize_input_path = make_chromium_output_path(supersize_input_file)
   size_path = make_staging_path(supersize_input_file) + '.size'
 
@@ -108,7 +109,6 @@ def main():
 
   with open(args.size_config_json, 'rt') as fh:
     config = json.load(fh)
-  to_resource_sizes_py = config['to_resource_sizes_py']
   mapping_files = config['mapping_files']
   supersize_input_file = config['supersize_input_file']
   # TODO(agrieve): Remove fallback to mapping_files once archive_files is added
@@ -133,8 +133,14 @@ def main():
     files_to_copy.append(args.size_config_json)
   _copy_files_to_staging_dir(files_to_copy, make_staging_path)
 
-  _generate_resource_sizes(to_resource_sizes_py, make_chromium_output_path,
-                           make_staging_path)
+  config_32 = config['to_resource_sizes_py']
+  _generate_resource_sizes(config_32, make_chromium_output_path,
+                           make_staging_path, 'resource_sizes_32.json')
+  config_64 = config.get('to_resource_sizes_py_64')
+  if config_64:
+    _generate_resource_sizes(config_64, make_chromium_output_path,
+                             make_staging_path, 'resource_sizes_64.json')
+
   _generate_supersize_archive(supersize_input_file, make_chromium_output_path,
                               make_staging_path)
 

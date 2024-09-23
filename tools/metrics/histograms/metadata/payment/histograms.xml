@@ -22,8 +22,33 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="PaymentRequest.AddressEditorTrigerred"
+    enum="PaymentRequestAddressEditorMode" expires_after="2025-08-28">
+  <owner>vykochko@chromium.org</owner>
+  <owner>smcgruer@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Android specific metric. Recorded every time the address editor is opened
+    from the Payment Request UI for either adding a new address or editing
+    existing.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.CanMakePayment.CallAllowedByPref"
+    enum="Boolean" expires_after="2025-01-26">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Whether or not a call to the PaymentRequest.canMakePayment() API was allowed
+    by the kCanMakePaymentEnabled user preference. This histogram does not
+    reflect what the outcome of the canMakePayment call would have been, only if
+    it was allowed or blocked by the preference. It is recorded once per
+    PaymentRequest.canMakePayment call.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.CheckoutFunnel"
-    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2024-06-30">
+    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2025-03-09">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -51,23 +76,88 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.Events" units="bitfield value"
-    expires_after="2023-08-27">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    A bitfield representing the different events that happened during the
-    Payment Request.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.Events2" units="bitfield value"
-    expires_after="2024-05-19">
+    expires_after="2025-05-19">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
     The 2.0 version of Events. A bitfield representing the different events that
     happened during the Payment Request.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.HasEnrolledInstrument.CallAllowedByPref"
+    enum="Boolean" expires_after="2025-02-10">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Whether or not a call to the PaymentRequest.hasEnrolledInstrument() API was
+    allowed by the kCanMakePaymentEnabled user preference. This histogram does
+    not reflect what the outcome of the hasEnrolledInstrument call would have
+    been, only if it was allowed or blocked by the preference. It is recorded
+    once per PaymentRequest.hasEnrolledInstrument call.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once"
+    enum="Boolean" expires_after="2024-11-27">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Whether or not the 'payments.can_make_payment_enabled' pref is enabled when
+    a PaymentRequest object is constructed. Recorded only when a PaymentRequest
+    object is first constructed, and approximately once per startup
+    (specifically, once per BrowserContext).
+
+    The difference between this histogram and
+    PaymentRequest.IsCanMakePaymentAllowedByPref.Startup is that this histogram
+    is only recorded if/when the user visits a page that constructs a
+    PaymentRequest object, which means that it sub-selects for users who are
+    likely to be in a payment context.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once.DisabledReason"
+    enum="CanMakePaymentPreferenceSetter" expires_after="2025-02-02">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    When the 'payments.can_make_payment_enabled' pref is disabled, this records
+    the reason why (e.g., by the user, an extension, etc). Recorded only when a
+    PaymentRequest object is first constructed, and approximately once per
+    startup (specifically, once per BrowserContext).
+
+    The difference between this histogram and
+    PaymentRequest.IsCanMakePaymentAllowedByPref.Startup.DisabledReason is that
+    this histogram is only recorded if/when the user visits a page that
+    constructs a PaymentRequest object, which means that it sub-selects for
+    users who are likely to be in a payment context.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup"
+    enum="Boolean" expires_after="2025-01-26">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Whether or not the 'payments.can_make_payment_enabled' pref is enabled.
+    Recorded once per profile load/creation (approximately once per start-up for
+    a normal browsing session).
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup.DisabledReason"
+    enum="CanMakePaymentPreferenceSetter" expires_after="2025-01-26">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    When the 'payments.can_make_payment_enabled' pref is disabled, this records
+    the reason why (e.g., by the user, an extension, etc). Recorded once per
+    profile load/creation (approximately once per start-up for a normal browsing
+    session).
   </summary>
 </histogram>
 
@@ -86,37 +176,6 @@ chromium-metrics-reviews@google.com.
   <owner>web-payments-team@google.com</owner>
   <summary>
     When a journey logger attempts to record multiple events bit fields.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.ManifestVerifierCacheHitPaymentMethod"
-    enum="Boolean" expires_after="2024-03-24">
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records whether the payment ManifestVerifier found the payment method
-    manifest in the browser cache.
-  </summary>
-</histogram>
-
-<histogram
-    name="PaymentRequest.ManifestVerifierCheckCachePaymentMethodDuration"
-    units="ms" expires_after="2024-03-24">
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records how long it takes to check the browser cache for the payment method
-    manifest.
-  </summary>
-</histogram>
-
-<histogram
-    name="PaymentRequest.ManifestVerifierDownloadAndParseMethodManifestDuration"
-    units="ms" expires_after="2024-03-24">
-  <owner>pkotwicz@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records how long it takes to download the payment method manifest.
   </summary>
 </histogram>
 
@@ -139,8 +198,75 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.PaymentDetailsUpdateService.Bind"
+    enum="Boolean" expires_after="2025-03-03">
+  <owner>rouslan@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Recorded when an Android app binds to Chrome's service for updating payment
+    details, e.g., when an Android payment app supports the feature of dynamic
+    price updates based different shipping addresses.
+
+    All service connections are recorded, even if there are no ongoing payment
+    flows.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
+    enum="Boolean" expires_after="2025-03-03">
+  <owner>rouslan@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Recorded when an invoked Android payment app sends updated payment method
+    details to the merchant website that invoked the PaymentRequest API for this
+    app.
+
+    Only authorized service calls are recorded. If an app that is not being
+    invoked for payment invokes this service, the metric is not recorded.
+
+    The metric is recorded even if the invoked Android payment app sends an
+    invalid payment method data bundle.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingAddress"
+    enum="Boolean" expires_after="2025-03-03">
+  <owner>rouslan@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Recorded when an Android payment app sends updated shipping address to the
+    merchant website that invoked the PaymentRequest API for this app.
+
+    Only authorized service calls are recorded. If an app that is not being
+    invoked for payment invokes this service, the metric is not recorded.
+
+    The metric is recorded even if the invoked Android payment app sends an
+    invalid shipping address.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingOption"
+    enum="Boolean" expires_after="2025-03-03">
+  <owner>rouslan@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Recorded when an Android payment app sends updated shipping option (e.g.,
+    &quot;standard&quot; or &quot;express&quot;) to the merchant website that
+    invoked the PaymentRequest API for this app.
+
+    Only authorized service calls are recorded. If an app that is not being
+    invoked for payment invokes this service, the metric is not recorded.
+
+    The metric is recorded even if the invoked Android payment app sends an
+    invalid shipping option.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.PaymentHandlerInstallSuccess"
-    enum="BooleanSuccess" expires_after="2024-05-19">
+    enum="BooleanSuccess" expires_after="2025-02-23">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -169,6 +295,29 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the size of Credential ID for secure-payment-confirmation method in
     bytes.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.Show.TryShowOutcome"
+    enum="PaymentRequestTryShowOutcome" expires_after="2025-01-22">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    The outcome of trying to show the PaymentRequest UI in response to
+    PaymentRequest.show(), with regards only to whether the call is blocked due
+    to an existing PaymentRequest.show() call being underway either in the same
+    or another tab.
+
+    Recorded per 'valid' call to PaymentRequest.show() - that is, does not
+    include calls where show() was called twice on the same object, or the
+    PaymentRequest wasn't initialized first, etc.
+
+    Whether this metric records the show being allowed or not, it is important
+    to note that there are subsequent steps in actually showing the
+    PaymentRequest that may or could still fail. For example, the request could
+    be being made from a background tab, which is checked later after this
+    metric is recorded. As such, interpret this metric with care - it cannot be
+    read as &quot;these calls succeed and these calls do not&quot;!
   </summary>
 </histogram>
 

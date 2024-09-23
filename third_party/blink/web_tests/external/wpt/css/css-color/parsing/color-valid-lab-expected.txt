@@ -1,0 +1,84 @@
+This is a testharness.js-based test.
+Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['color'] = "lab(calc(50 * 3) calc(0.5 - 1) calc(1.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "lab(calc(150) calc(-0.5) calc(1.5) / calc(0.5))" but got "lab(100 -0.5 1.5 / 0.5)"
+[FAIL] e.style['color'] = "lab(calc(-50 * 3) calc(0.5 + 1) calc(-1.5) / calc(-0.5 * 2))" should set the property value
+  assert_equals: serialization should be canonical expected "lab(calc(-150) calc(1.5) calc(-1.5) / calc(-1))" but got "lab(0 1.5 -1.5 / 0)"
+[FAIL] e.style['color'] = "lab(calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "lab(calc(50%) 62.5 0.5)" but got "lab(50 62.5 0.5)"
+[FAIL] e.style['color'] = "lab(200 calc(50%) 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "lab(100 calc(50%) 0.5)" but got "lab(100 62.5 0.5)"
+[FAIL] e.style['color'] = "lab(-200 calc(50%) 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "lab(0 calc(50%) 0.5)" but got "lab(0 62.5 0.5)"
+[FAIL] e.style['color'] = "lab(none 20 calc(0.5))" should set the property value
+  assert_equals: serialization should be canonical expected "lab(none 20 calc(0.5))" but got "lab(none 20 0.5)"
+[FAIL] e.style['color'] = "lab(calc(infinity) 0 0)" should set the property value
+  assert_equals: serialization should be canonical expected "lab(calc(infinity) 0 0)" but got "lab(100 0 0)"
+[FAIL] e.style['color'] = "oklab(calc(0.5 * 3) calc(0.5 - 1) calc(1.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(calc(1.5) calc(-0.5) calc(1.5) / calc(0.5))" but got "oklab(1 -0.5 1.5 / 0.5)"
+[FAIL] e.style['color'] = "oklab(calc(-0.5 * 3) calc(0.5 + 1) calc(-1.5) / calc(-0.5 * 2))" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(calc(-1.5) calc(1.5) calc(-1.5) / calc(-1))" but got "oklab(0 1.5 -1.5 / 0)"
+[FAIL] e.style['color'] = "oklab(calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(calc(50%) 0.2 0.5)" but got "oklab(0.5 0.2 0.5)"
+[FAIL] e.style['color'] = "oklab(200 calc(50%) 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(1 calc(50%) 0.5)" but got "oklab(1 0.2 0.5)"
+[FAIL] e.style['color'] = "oklab(-200 calc(50%) 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(0 calc(50%) 0.5)" but got "oklab(0 0.2 0.5)"
+[FAIL] e.style['color'] = "oklab(none 0.2 calc(0.5))" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(none 0.2 calc(0.5))" but got "oklab(none 0.2 0.5)"
+[FAIL] e.style['color'] = "oklab(calc(infinity) 0 0)" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(calc(infinity) 0 0)" but got "oklab(1 0 0)"
+[FAIL] e.style['color'] = "lch(calc(50 * 3) calc(0.5 - 1) calc(20deg * 2) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "lch(calc(150) calc(-0.5) calc(40deg) / calc(0.5))" but got "lch(100 0 40 / 0.5)"
+[FAIL] e.style['color'] = "lch(calc(-50 * 3) calc(0.5 + 1) calc(-20deg * 2) / calc(-0.5 * 2))" should set the property value
+  assert_equals: serialization should be canonical expected "lch(calc(-150) calc(1.5) calc(-40deg) / calc(-1))" but got "lch(0 1.5 320 / 0)"
+[FAIL] e.style['color'] = "lch(calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "lch(calc(50%) 75 0.5)" but got "lch(50 75 0.5)"
+[FAIL] e.style['color'] = "lch(200 calc(50%) 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "lch(100 calc(50%) 0.5)" but got "lch(100 75 0.5)"
+[FAIL] e.style['color'] = "lch(-200 calc(50%) 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "lch(0 calc(50%) 0.5)" but got "lch(0 75 0.5)"
+[FAIL] e.style['color'] = "lch(calc(50%) -100 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "lch(calc(50%) 0 0.5)" but got "lch(50 0 0.5)"
+[FAIL] e.style['color'] = "lch(none 20 calc(0.5))" should set the property value
+  assert_equals: serialization should be canonical expected "lch(none 20 calc(0.5))" but got "lch(none 20 0.5)"
+[FAIL] e.style['color'] = "lch(calc(infinity) 0 0)" should set the property value
+  assert_equals: serialization should be canonical expected "lch(calc(infinity) 0 0)" but got "lch(100 0 0)"
+[FAIL] e.style['color'] = "lch(50 calc(-infinity) 0)" should set the property value
+  assert_equals: serialization should be canonical expected "lch(50 calc(-infinity) 0)" but got "lch(50 0 0)"
+[FAIL] e.style['color'] = "oklch(calc(0.5 * 3) calc(0.5 - 1) calc(20deg * 2) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(calc(1.5) calc(-0.5) calc(40deg) / calc(0.5))" but got "oklch(1 0 40 / 0.5)"
+[FAIL] e.style['color'] = "oklch(calc(-0.5 * 3) calc(0.5 + 1) calc(-20deg * 2) / calc(-0.5 * 2))" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(calc(-1.5) calc(1.5) calc(-40deg) / calc(-1))" but got "oklch(0 1.5 320 / 0)"
+[FAIL] e.style['color'] = "oklch(calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(calc(50%) 0.2 0.5)" but got "oklch(0.5 0.2 0.5)"
+[FAIL] e.style['color'] = "oklch(200 calc(50%) 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(1 calc(50%) 0.5)" but got "oklch(1 0.2 0.5)"
+[FAIL] e.style['color'] = "oklch(-200 calc(50%) 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(0 calc(50%) 0.5)" but got "oklch(0 0.2 0.5)"
+[FAIL] e.style['color'] = "oklch(calc(50%) -100 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(calc(50%) 0 0.5)" but got "oklch(0.5 0 0.5)"
+[FAIL] e.style['color'] = "oklch(none 0.2 calc(0.5))" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(none 0.2 calc(0.5))" but got "oklch(none 0.2 0.5)"
+[FAIL] e.style['color'] = "oklch(calc(infinity) 0 0)" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(calc(infinity) 0 0)" but got "oklch(1 0 0)"
+[FAIL] e.style['color'] = "oklch(0.5 calc(-infinity) 0)" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(0.5 calc(-infinity) 0)" but got "oklch(0.5 0 0)"
+[FAIL] e.style['color'] = "lab(calc(50 + (sign(1em - 10px) * 10)) 30 50 / 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "lab(calc(50 + (10 * sign(1em - 10px))) 30 50 / 0.5)" but got "lab(40 30 50 / 0.5)"
+[FAIL] e.style['color'] = "oklab(calc(0.5 + (sign(1em - 10px) * 0.1)) 0.3 0.5 / 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(calc(0.5 + (0.1 * sign(1em - 10px))) 0.3 0.5 / 0.5)" but got "oklab(0.4 0.3 0.5 / 0.5)"
+[FAIL] e.style['color'] = "lab(60 30 50 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "lab(60 30 50 / calc(50% + (10% * sign(1em - 10px))))" but got "lab(60 30 50 / 0.4)"
+[FAIL] e.style['color'] = "oklab(0.6 0.3 0.5 / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "oklab(0.6 0.3 0.5 / calc(50% + (10% * sign(1em - 10px))))" but got "oklab(0.6 0.3 0.5 / 0.4)"
+[FAIL] e.style['color'] = "lch(calc(50 + (sign(1em - 10px) * 10)) 30 50deg / 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "lch(calc(50 + (10 * sign(1em - 10px))) 30 50 / 0.5)" but got "lch(40 30 50 / 0.5)"
+[FAIL] e.style['color'] = "oklch(calc(0.5 + (sign(1em - 10px) * 0.1)) 0.3 50deg / 50%)" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(calc(0.5 + (0.1 * sign(1em - 10px))) 0.3 50 / 0.5)" but got "oklch(0.4 0.3 50 / 0.5)"
+[FAIL] e.style['color'] = "lch(60 30 50deg / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "lch(60 30 50 / calc(50% + (10% * sign(1em - 10px))))" but got "lch(60 30 50 / 0.4)"
+[FAIL] e.style['color'] = "oklch(0.6 0.3 50deg / calc(50% + (sign(1em - 10px) * 10%)))" should set the property value
+  assert_equals: serialization should be canonical expected "oklch(0.6 0.3 50 / calc(50% + (10% * sign(1em - 10px))))" but got "oklch(0.6 0.3 50 / 0.4)"
+Harness: the test ran to completion.
+

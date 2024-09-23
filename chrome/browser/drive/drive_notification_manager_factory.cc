@@ -7,7 +7,9 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_notification_manager.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/profile_invalidation_provider.h"
+#include "components/invalidation/public/invalidation_service.h"
 
 namespace drive {
 namespace {
@@ -15,13 +17,21 @@ namespace {
 constexpr char kDriveFcmSenderId[] = "947318989803";
 
 invalidation::InvalidationService* GetInvalidationService(Profile* profile) {
-  if (!invalidation::ProfileInvalidationProviderFactory::GetForProfile(
-          profile)) {
+  auto* profile_invalidation_factory =
+      invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile);
+  if (!profile_invalidation_factory) {
     return nullptr;
   }
-  return invalidation::ProfileInvalidationProviderFactory::GetForProfile(
-             profile)
-      ->GetInvalidationServiceForCustomSender(kDriveFcmSenderId);
+  auto invalidation_service_or_listener =
+      profile_invalidation_factory->GetInvalidationServiceOrListener(
+          kDriveFcmSenderId, /*project_id=*/"");
+  CHECK(std::holds_alternative<invalidation::InvalidationService*>(
+      invalidation_service_or_listener))
+      << "Drive does not support InvalidationListener and must be used with "
+         "InvalidationService";
+
+  return std::get<invalidation::InvalidationService*>(
+      invalidation_service_or_listener);
 }
 
 }  // namespace
@@ -35,8 +45,7 @@ DriveNotificationManagerFactory::FindForBrowserContext(
 }
 
 // static
-DriveNotificationManager*
-DriveNotificationManagerFactory::GetForBrowserContext(
+DriveNotificationManager* DriveNotificationManagerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
   if (!GetInvalidationService(Profile::FromBrowserContext(context))) {
     // Do not create a DriveNotificationManager for |context|s that do not
@@ -60,9 +69,12 @@ DriveNotificationManagerFactory::DriveNotificationManagerFactory()
           "DriveNotificationManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }

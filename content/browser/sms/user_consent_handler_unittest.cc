@@ -45,12 +45,13 @@ class PromptBasedUserConsentHandlerTest : public RenderViewHostTestHarness {
                              const std::string& one_time_code) {
     EXPECT_CALL(delegate_,
                 CreateSmsPrompt(rfh, origin_list, one_time_code, _, _))
-        .WillOnce(Invoke([=](RenderFrameHost*, const OriginList& origin_list,
+        .WillOnce(
+            Invoke([=, this](RenderFrameHost*, const OriginList& origin_list,
                              const std::string&, base::OnceClosure on_confirm,
                              base::OnceClosure on_cancel) {
-          confirm_callback_ = std::move(on_confirm);
-          dismiss_callback_ = std::move(on_cancel);
-        }));
+              confirm_callback_ = std::move(on_confirm);
+              dismiss_callback_ = std::move(on_cancel);
+            }));
   }
 
   void ExpectNoSmsPrompt() {

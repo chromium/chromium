@@ -48,8 +48,6 @@ struct TestCase {
 
   TestCase& Offline();
 
-  TestCase& FilesExperimental();
-
   TestCase& EnableConflictDialog();
 
   TestCase& DisableNativeSmb();
@@ -62,7 +60,7 @@ struct TestCase {
 
   TestCase& EnableSinglePartitionFormat();
 
-  TestCase& NewDirectoryTree();
+  TestCase& EnableMaterializedViews();
 
   // Show the startup browser. Some tests invoke the file picker dialog during
   // the test. Requesting a file picker from a background page is forbidden by
@@ -96,13 +94,11 @@ struct TestCase {
 
   TestCase& EnableLocalImageSearch();
 
-  TestCase& EnableFSPsInRecents();
-
   TestCase& EnableOsFeedback();
 
-  TestCase& EnableGoogleOneOfferFilesBanner();
-
   TestCase& DisableGoogleOneOfferFilesBanner();
+
+  TestCase& DisableGoogleOneOfferFilesBannerWithG1Nudge();
 
   TestCase& FeatureIds(const std::vector<std::string>& ids);
 
@@ -115,6 +111,8 @@ struct TestCase {
   TestCase& SetTestAccountType(TestAccountType test_account_type);
 
   TestCase& EnableCrosComponents();
+
+  TestCase& EnableSkyVault();
 
   std::string GetFullName() const;
 

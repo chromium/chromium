@@ -52,11 +52,23 @@ void FakeDiagnosticRoutineControl::Start() {
   SetState(std::move(running_state));
 }
 
+void FakeDiagnosticRoutineControl::ReplyToInquiry(
+    crosapi::TelemetryDiagnosticRoutineInquiryReplyPtr reply) {
+  if (on_reply_to_inquiry_called_) {
+    on_reply_to_inquiry_called_.Run(std::move(reply));
+  }
+}
+
 void FakeDiagnosticRoutineControl::SetState(
     crosapi::TelemetryDiagnosticRoutineStatePtr state) {
   get_state_response_ = std::move(state);
 
   NotifyObserverAboutCurrentState();
+}
+
+void FakeDiagnosticRoutineControl::SetOnReplyToInquiryCalled(
+    OnReplyToInquiryCalled callback) {
+  on_reply_to_inquiry_called_ = callback;
 }
 
 void FakeDiagnosticRoutineControl::NotifyObserverAboutCurrentState() {

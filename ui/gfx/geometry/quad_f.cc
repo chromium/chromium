@@ -164,6 +164,23 @@ QuadF operator-(const QuadF& lhs, const Vector2dF& rhs) {
 }
 
 bool QuadF::IntersectsRect(const RectF& rect) const {
+  // Start by checking this quad against the potential separating axes of the
+  // rectangle. Since the rectangle is axis-aligned, we can just check for
+  // intersection between the bounding boxes - if they don't intersect one of
+  // the edges of the rectangle is a separating axis.
+  const auto [min, max] = Extents();
+  if (min.y() > rect.bottom() || rect.y() > max.y()) {
+    return false;
+  }
+  if (min.x() > rect.right() || rect.x() > max.x()) {
+    return false;
+  }
+  // None of the edges of the rectangle are a separating axis - test the edges
+  // of this quad.
+  return IntersectsRectPartial(rect);
+}
+
+bool QuadF::IntersectsRectPartial(const RectF& rect) const {
   // For each side of the quad clockwise we check if the rectangle is to the
   // left of it since only content on the right can overlap with the quad.
   // This only works if the quad is convex.
@@ -201,6 +218,63 @@ bool QuadF::IntersectsRect(const RectF& rect) const {
   // If not all of the rectangle is outside one of the quad's four sides, then
   // that means at least a part of the rectangle is overlapping the quad.
   return true;
+}
+
+bool QuadF::IsToTheLeftOfOrTouchingLine(const PointF& base,
+                                        const Vector2dF& vector) const {
+  if (CrossProduct(vector, p1_ - base) >= 0) {
+    return false;
+  }
+  if (CrossProduct(vector, p2_ - base) >= 0) {
+    return false;
+  }
+  if (CrossProduct(vector, p3_ - base) >= 0) {
+    return false;
+  }
+  if (CrossProduct(vector, p4_ - base) >= 0) {
+    return false;
+  }
+  return true;
+}
+
+bool QuadF::FullyOutsideOneEdge(const QuadF& quad) const {
+  // For each side of the quad clockwise we check if the quad is to the left of
+  // it since only content on the right can overlap with the quad. This only
+  // works if the quads are convex.
+  Vector2dF v1, v2, v3, v4;
+
+  // Ensure we use clockwise vectors.
+  if (IsCounterClockwise()) {
+    v1 = p4_ - p1_;
+    v2 = p1_ - p2_;
+    v3 = p2_ - p3_;
+    v4 = p3_ - p4_;
+  } else {
+    v1 = p2_ - p1_;
+    v2 = p3_ - p2_;
+    v3 = p4_ - p3_;
+    v4 = p1_ - p4_;
+  }
+
+  if (quad.IsToTheLeftOfOrTouchingLine(p1_, v1)) {
+    return true;
+  }
+  if (quad.IsToTheLeftOfOrTouchingLine(p2_, v2)) {
+    return true;
+  }
+  if (quad.IsToTheLeftOfOrTouchingLine(p3_, v3)) {
+    return true;
+  }
+  if (quad.IsToTheLeftOfOrTouchingLine(p4_, v4)) {
+    return true;
+  }
+  return false;
+}
+
+bool QuadF::IntersectsQuad(const QuadF& quad) const {
+  // Check if |quad| is fully outside one of the edges of this quad or vice
+  // versa.
+  return !FullyOutsideOneEdge(quad) && !quad.FullyOutsideOneEdge(*this);
 }
 
 bool QuadF::IntersectsCircle(const PointF& center, float radius) const {

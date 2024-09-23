@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -52,31 +51,15 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
 
   std::set<int64_t> ids_assigned_to_account_nodes;
 
-  // Decode local-or-syncable bookmarks.
-  {
-    std::string sync_metadata_str;
-    int64_t max_node_id = 0;
-    std::optional<base::Value::Dict> root_dict =
-        LoadFileToDict(local_or_syncable_file_path);
-    BookmarkCodec codec;
-    if (root_dict.has_value() &&
-        codec.Decode(*root_dict, /*already_assigned_ids=*/{},
-                     details->bb_node(), details->other_folder_node(),
-                     details->mobile_folder_node(), &max_node_id,
-                     &sync_metadata_str)) {
-      ids_assigned_to_account_nodes = codec.release_assigned_ids();
-
-      details->set_local_or_syncable_sync_metadata_str(
-          std::move(sync_metadata_str));
-      details->set_max_id(std::max(max_node_id, details->max_id()));
-      details->set_ids_reassigned(details->ids_reassigned() ||
-                                  codec.ids_reassigned());
-      details->set_required_recovery(details->required_recovery() ||
-                                     codec.required_recovery());
-    }
-  }
-
-  // Decode account bookmarks (if any).
+  // Decode account bookmarks (if any). Doing this before decoding
+  // local-or-syncable ones is interesting because, in case there are ID
+  // collisions, it will lead to ID reassignments on the local-or-syncable part,
+  // which is usually harmless. Doing the opposite would imply that account
+  // bookmarks need to be redownloaded from the server (because ID reassignment
+  // leads to invalidating sync metadata). This is particularly interesting on
+  // iOS, in case the files were written by two independent BookmarkModel
+  // instances (and hence the two files are prone to ID collisions) and later
+  // loaded into a single BookmarkModel instance.
   if (!account_file_path.empty()) {
     std::string sync_metadata_str;
     int64_t max_node_id = 0;
@@ -92,10 +75,12 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
         LoadFileToDict(account_file_path);
     BookmarkCodec codec;
     if (root_dict.has_value() &&
-        codec.Decode(*root_dict, std::move(ids_assigned_to_account_nodes),
+        codec.Decode(*root_dict, /*already_assigned_ids=*/{},
                      account_bb_node.get(), account_other_folder_node.get(),
                      account_mobile_folder_node.get(), &max_node_id,
                      &sync_metadata_str)) {
+      ids_assigned_to_account_nodes = codec.release_assigned_ids();
+
       // A successful decoding must have set proper IDs.
       CHECK_NE(0, account_bb_node->id());
       CHECK_NE(0, account_other_folder_node->id());
@@ -111,6 +96,45 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
                                   codec.ids_reassigned());
       details->set_required_recovery(details->required_recovery() ||
                                      codec.required_recovery());
+
+      // Record metrics that indicate whether or not IDs were reassigned for
+      // account bookmarks.
+      metrics::RecordIdsReassignedOnProfileLoad(
+          metrics::StorageFileForUma::kAccount, codec.ids_reassigned());
+    } else {
+      // In the failure case, it is still possible that sync metadata was
+      // decoded, which includes legit scenarios like sync metadata indicating
+      // that there were too many bookmarks in sync, server-side.
+      details->set_account_sync_metadata_str(std::move(sync_metadata_str));
+    }
+  }
+
+  // Decode local-or-syncable bookmarks.
+  {
+    std::string sync_metadata_str;
+    int64_t max_node_id = 0;
+    std::optional<base::Value::Dict> root_dict =
+        LoadFileToDict(local_or_syncable_file_path);
+    BookmarkCodec codec;
+    if (root_dict.has_value() &&
+        codec.Decode(*root_dict, std::move(ids_assigned_to_account_nodes),
+                     details->bb_node(), details->other_folder_node(),
+                     details->mobile_folder_node(), &max_node_id,
+                     &sync_metadata_str)) {
+      details->set_local_or_syncable_sync_metadata_str(
+          std::move(sync_metadata_str));
+      details->set_max_id(std::max(max_node_id, details->max_id()));
+      details->set_ids_reassigned(details->ids_reassigned() ||
+                                  codec.ids_reassigned());
+      details->set_required_recovery(details->required_recovery() ||
+                                     codec.required_recovery());
+      details->set_local_or_syncable_reassigned_ids_per_old_id(
+          codec.release_reassigned_ids_per_old_id());
+
+      // Record metrics that indicate whether or not IDs were reassigned for
+      // local-or-syncable bookmarks.
+      metrics::RecordIdsReassignedOnProfileLoad(
+          metrics::StorageFileForUma::kLocalOrSyncable, codec.ids_reassigned());
     }
   }
 

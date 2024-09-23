@@ -12,7 +12,9 @@
           "ShowAppsShortcutInBookmarkBar": false
         },
         "prefs": {
-          "bookmark_bar.show_apps_shortcut": {}
+          "bookmark_bar.show_apps_shortcut": {
+            "value": false
+          }
         }
       }
     ]

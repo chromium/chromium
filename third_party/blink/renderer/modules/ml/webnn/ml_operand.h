@@ -8,9 +8,9 @@
 #include <optional>
 
 #include "base/types/expected.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -18,42 +18,33 @@
 
 namespace blink {
 
+class MLConstantOperand;
 class MLGraphBuilder;
 class MLOperator;
 
-DOMArrayBufferView::ViewType GetArrayBufferViewType(
-    V8MLOperandDataType::Enum operand_type);
-
-class MODULES_EXPORT MLOperand final : public ScriptWrappable {
+class MODULES_EXPORT MLOperand : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum class OperandKind { kInput, kConstant, kOutput };
-
   // Validate and create different kinds of operand if there are no errors.
-  // Otherwise return nullptr and set the corresponding error message.
+  // Otherwise return an error message which may be used
+  // to throw a TypeError if the inputs are not valid.
   static base::expected<MLOperand*, String> ValidateAndCreateInput(
       MLGraphBuilder* builder,
-      const V8MLOperandDataType::Enum data_type,
-      Vector<uint32_t> dimensions,
+      V8MLOperandDataType::Enum data_type,
+      Vector<uint32_t> shape,
       String name);
-  static base::expected<MLOperand*, String> ValidateAndCreateConstant(
-      MLGraphBuilder* builder,
-      const V8MLOperandDataType::Enum data_type,
-      Vector<uint32_t> dimensions,
-      const DOMArrayBufferView* array_buffer_view);
-  static base::expected<MLOperand*, String> ValidateAndCreateOutput(
-      MLGraphBuilder* builder,
-      const V8MLOperandDataType::Enum data_type,
-      Vector<uint32_t> dimensions,
-      const MLOperator* ml_operator);
+  // Similar to the methods above, but since we're passed `descriptor` we can
+  // skip the validation.
+  static MLOperand* CreateOutput(MLGraphBuilder* builder,
+                                 webnn::OperandDescriptor descriptor,
+                                 const MLOperator* ml_operator);
 
   // The constructor shouldn't be called directly. The callers should use
   // Create* methods instead.
   MLOperand(MLGraphBuilder* builder,
-            OperandKind kind,
-            const V8MLOperandDataType::Enum data_type,
-            Vector<uint32_t> dimensions);
+            webnn::mojom::blink::Operand::Kind kind,
+            webnn::OperandDescriptor descriptor);
 
   MLOperand(const MLOperand&) = delete;
   MLOperand& operator=(const MLOperand&) = delete;
@@ -63,41 +54,45 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   MLGraphBuilder* Builder() const;
-  OperandKind Kind() const;
-  V8MLOperandDataType::Enum DataType() const;
-  const Vector<uint32_t>& Dimensions() const;
+  webnn::mojom::blink::Operand::Kind Kind() const;
   const String& Name() const;
-  const DOMArrayBufferView* ArrayBufferView() const;
   const MLOperator* Operator() const;
 
+  // Convenience methods for accessing native types, which avoid a copy
+  // compared to using the corresponding methods which return blink types.
+  const webnn::OperandDescriptor& Descriptor() const;
+  webnn::OperandDataType DataType() const;
+  const std::vector<uint32_t>& Shape() const;
+
   // The total number of elements in the operand. Its value is the product of
-  // all values of the dimensions. For scalar operand, the number of elements
-  // is 1.
+  // all values of the shape. For scalar operand, the number of elements is 1.
   size_t NumberOfElements() const;
 
   // The byte length of the oprand. It is defined by WebNN spec as:
   // https://www.w3.org/TR/webnn/#mloperanddescriptor-byte-length
   size_t ByteLength() const;
 
+  wtf_size_t Rank() const;
+
   // IDL interface:
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
 
- private:
+  MLConstantOperand const* AsConstantOperand() const;
+
+ protected:
   Member<MLGraphBuilder> builder_;
-  OperandKind kind_;
-  V8MLOperandDataType::Enum data_type_;
-  // The dimensions of the operand. For scalar value, set {1}.
-  Vector<uint32_t> dimensions_;
+
+  const webnn::mojom::blink::Operand::Kind kind_;
+
+  // Represents a valid MLOperandDescriptor.
+  // https://www.w3.org/TR/webnn/#dictdef-mloperanddescriptor
+  const webnn::OperandDescriptor descriptor_;
+
   // The name of input operand. According to
   // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-input, only input operand
   // is created with a name.
   String name_;
-  // The buffer view of constant operand. According to
-  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-constant, only constant
-  // operand is associated with an array buffer view that contains the
-  // user-supplied constant data.
-  Member<const DOMArrayBufferView> array_buffer_view_;
   // The operator that produces the output operand. Only output operand has an
   // operator that produces the operand by an operator build method of
   // MLGraphBuilder interface.

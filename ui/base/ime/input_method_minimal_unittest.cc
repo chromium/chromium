@@ -65,13 +65,13 @@ TEST_F(InputMethodMinimalTest, StopPropagationTest) {
   input_method_minimal_->SetFocusedTextInputClient(client.get());
   input_method_minimal_->OnTextInputTypeChanged(client.get());
 
-  KeyEvent key(ET_KEY_PRESSED, VKEY_TAB, 0);
+  KeyEvent key(EventType::kKeyPressed, VKEY_TAB, 0);
   input_method_minimal_->DispatchKeyEvent(&key);
 
   EXPECT_EQ(1, client->insert_char_count());
   EXPECT_EQ(9, client->last_insert_char());
 
-  KeyEvent key_a(ET_KEY_PRESSED, VKEY_A, 0);
+  KeyEvent key_a(EventType::kKeyPressed, VKEY_A, 0);
   input_method_minimal_->DispatchKeyEvent(&key_a);
 
   EXPECT_EQ(2, client->insert_char_count());

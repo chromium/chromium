@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/public/platform/web_string.h"
 
 #include "base/strings/string_util.h"
@@ -37,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 STATIC_ASSERT_ENUM(WTF::kLenientUTF8Conversion,
                    blink::WebString::UTF8ConversionMode::kLenient);
@@ -90,7 +96,7 @@ WebString WebString::Substring(size_t pos, size_t len) const {
 }
 
 WebString WebString::FromUTF8(std::string_view s) {
-  return String::FromUTF8(s.data(), s.length());
+  return String::FromUTF8(s);
 }
 
 WebString WebString::FromUTF16(std::optional<std::u16string_view> s) {
@@ -140,6 +146,22 @@ bool WebString::Equals(const WebString& s) const {
 bool WebString::Equals(std::string_view characters) const {
   return Equal(impl_.get(), characters.data(),
                base::checked_cast<wtf_size_t>(characters.length()));
+}
+
+size_t WebString::Find(const WebString& s) const {
+  if (!impl_) {
+    return std::string::npos;
+  }
+  wtf_size_t pos = impl_->Find(s.impl_.get());
+  return pos != WTF::kNotFound ? pos : std::string::npos;
+}
+
+size_t WebString::Find(std::string_view characters) const {
+  if (!impl_) {
+    return std::string::npos;
+  }
+  wtf_size_t pos = impl_->Find(characters.data());
+  return pos != WTF::kNotFound ? pos : std::string::npos;
 }
 
 bool WebString::operator<(const WebString& other) const {

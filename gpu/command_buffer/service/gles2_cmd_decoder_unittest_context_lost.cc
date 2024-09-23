@@ -18,84 +18,6 @@ using ::testing::SetArgPointee;
 namespace gpu {
 namespace gles2 {
 
-class GLES2DecoderDrawOOMTest : public GLES2DecoderManualInitTest {
- protected:
-  void Init(bool has_robustness) {
-    InitState init;
-    init.lose_context_when_out_of_memory = true;
-    if (has_robustness)
-      init.extensions = "GL_ARB_robustness";
-    InitDecoder(init);
-    SetupDefaultProgram();
-  }
-
-  void Draw(GLenum reset_status,
-            error::ContextLostReason expected_other_reason) {
-    const GLsizei kFakeLargeCount = 0x1234;
-    SetupTexture();
-    if (context_->HasRobustness()) {
-      EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
-          .WillOnce(Return(reset_status));
-    }
-    AddExpectationsForSimulatedAttrib0WithError(kFakeLargeCount, 0,
-                                                GL_OUT_OF_MEMORY);
-    EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0).RetiresOnSaturation();
-    // Other contexts in the group should be lost also.
-    EXPECT_CALL(*mock_decoder_, MarkContextLost(expected_other_reason))
-        .Times(1)
-        .RetiresOnSaturation();
-    cmds::DrawArrays cmd;
-    cmd.Init(GL_TRIANGLES, 0, kFakeLargeCount);
-    EXPECT_EQ(error::kLostContext, ExecuteCmd(cmd));
-  }
-};
-
-// Test that we lose context.
-TEST_P(GLES2DecoderDrawOOMTest, ContextLostReasonOOM) {
-  Init(false);  // without robustness
-  const error::ContextLostReason expected_reason_for_other_contexts =
-      error::kOutOfMemory;
-  Draw(GL_NO_ERROR, expected_reason_for_other_contexts);
-  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
-  EXPECT_TRUE(decoder_->WasContextLost());
-  EXPECT_EQ(error::kOutOfMemory, GetContextLostReason());
-}
-
-TEST_P(GLES2DecoderDrawOOMTest, ContextLostReasonWhenStatusIsNoError) {
-  Init(true);  // with robustness
-  // If the reset status is NO_ERROR, we should be signaling kOutOfMemory.
-  const error::ContextLostReason expected_reason_for_other_contexts =
-      error::kOutOfMemory;
-  Draw(GL_NO_ERROR, expected_reason_for_other_contexts);
-  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
-  EXPECT_TRUE(decoder_->WasContextLost());
-  EXPECT_EQ(error::kOutOfMemory, GetContextLostReason());
-}
-
-TEST_P(GLES2DecoderDrawOOMTest, ContextLostReasonWhenStatusIsGuilty) {
-  Init(true);
-  // If there was a reset, it should override kOutOfMemory.
-  const error::ContextLostReason expected_reason_for_other_contexts =
-      error::kUnknown;
-  Draw(GL_GUILTY_CONTEXT_RESET_ARB, expected_reason_for_other_contexts);
-  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
-  EXPECT_TRUE(decoder_->WasContextLost());
-  EXPECT_EQ(error::kGuilty, GetContextLostReason());
-}
-
-TEST_P(GLES2DecoderDrawOOMTest, ContextLostReasonWhenStatusIsUnknown) {
-  Init(true);
-  // If there was a reset, it should override kOutOfMemory.
-  const error::ContextLostReason expected_reason_for_other_contexts =
-      error::kUnknown;
-  Draw(GL_UNKNOWN_CONTEXT_RESET_ARB, expected_reason_for_other_contexts);
-  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
-  EXPECT_TRUE(decoder_->WasContextLost());
-  EXPECT_EQ(error::kUnknown, GetContextLostReason());
-}
-
-INSTANTIATE_TEST_SUITE_P(Service, GLES2DecoderDrawOOMTest, ::testing::Bool());
-
 class GLES2DecoderLostContextTest : public GLES2DecoderManualInitTest {
  protected:
   void Init(bool has_robustness) {
@@ -205,8 +127,8 @@ TEST_P(GLES2DecoderLostContextTest, TextureDestroyAfterLostFromMakeCurrent) {
 
 TEST_P(GLES2DecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
   InitState init;
-  init.extensions = "GL_EXT_occlusion_query_boolean GL_ARB_sync";
-  init.gl_version = "2.0";
+  init.extensions = "GL_EXT_occlusion_query_boolean";
+  init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
   init.bind_generates_resource = true;

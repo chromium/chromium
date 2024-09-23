@@ -15,6 +15,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -45,6 +46,12 @@ constexpr int kLabelButtonHeight = 32;
 constexpr int kLabelButtonMinWidth = 80;
 constexpr gfx::Insets kLabelButtonBorderInsets = gfx::Insets::VH(6, 16);
 
+// Icon + label buttons' layout parameters.
+constexpr gfx::Insets kIconLabelButtonVerticalMargins = gfx::Insets(8);
+constexpr gfx::Insets kIconLabelButtonHorizontalMargins =
+    gfx::Insets::VH(8, 16);
+constexpr int kIconLabelSpacing = 6;
+
 }  // namespace
 
 //------------------------------------------------------------------------------
@@ -71,6 +78,10 @@ TabSliderButton::TabSliderButton(PressedCallback callback,
   views::InstallPillHighlightPathGenerator(this);
 
   SetTooltipText(tooltip_text);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 TabSliderButton::~TabSliderButton() = default;
@@ -86,6 +97,9 @@ void TabSliderButton::SetSelected(bool selected) {
   }
 
   selected_ = selected;
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   if (selected_ && tab_slider_) {
     tab_slider_->OnButtonSelected(this);
   }
@@ -98,15 +112,6 @@ SkColor TabSliderButton::GetColorIdOnButtonState() {
   return selected()
              ? (enabled ? kSelectedColorId : kDisabledSelectedColorId)
              : (enabled ? kUnselectedColorId : kDisabledUnselectedColorId);
-}
-
-void TabSliderButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-  const std::u16string tooltip = GetTooltipText(gfx::Point());
-  node_data->role = ax::mojom::Role::kToggleButton;
-  node_data->SetName(tooltip);
-  node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
-                                       : ax::mojom::CheckedState::kFalse);
 }
 
 void TabSliderButton::NotifyClick(const ui::Event& event) {
@@ -196,16 +201,20 @@ void LabelSliderButton::OnSelectedChanged() {
   UpdateLabelColor();
 }
 
-int LabelSliderButton::GetHeightForWidth(int w) const {
-  return kLabelButtonHeight;
-}
-
-gfx::Size LabelSliderButton::CalculatePreferredSize() const {
+gfx::Size LabelSliderButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Insets insets = GetInsets();
   // The width of the container equals to the label width with horizontal
   // padding.
+  views::SizeBound label_available_width = std::max<views::SizeBound>(
+      kLabelButtonMinWidth, available_size.width() - insets.width());
+
   return gfx::Size(
-      std::max(label_->GetPreferredSize().width() + GetInsets().width(),
-               kLabelButtonMinWidth),
+      std::max(
+          label_->GetPreferredSize(views::SizeBounds(label_available_width, {}))
+                  .width() +
+              GetInsets().width(),
+          kLabelButtonMinWidth),
       kLabelButtonHeight);
 }
 
@@ -228,15 +237,19 @@ END_METADATA
 IconLabelSliderButton::IconLabelSliderButton(PressedCallback callback,
                                              const gfx::VectorIcon* icon,
                                              const std::u16string& text,
-                                             const std::u16string& tooltip_text)
+                                             const std::u16string& tooltip_text,
+                                             bool horizontal)
     : TabSliderButton(std::move(callback),
                       tooltip_text.empty() ? text : tooltip_text),
       image_view_(AddChildView(std::make_unique<views::ImageView>())),
       label_(AddChildView(std::make_unique<views::Label>(text))) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      /*inside_border_insets=*/gfx::Insets::VH(8, 16),
-      /*between_child_spacing=*/8));
+  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      horizontal ? views::BoxLayout::Orientation::kHorizontal
+                 : views::BoxLayout::Orientation::kVertical,
+      /*inside_border_insets=*/
+      (horizontal ? kIconLabelButtonHorizontalMargins
+                  : kIconLabelButtonVerticalMargins),
+      /*between_child_spacing=*/kIconLabelSpacing));
 
   DCHECK(icon);
   image_view_->SetImage(ui::ImageModel::FromImageGenerator(
@@ -254,6 +267,16 @@ IconLabelSliderButton::IconLabelSliderButton(PressedCallback callback,
   // Force the label to use requested colors.
   label_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
+
+  if (horizontal) {
+    layout_manager->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+
+    // Keep `image_view_` to the left side of `label_` in RTL.
+    if (base::i18n::IsRTL()) {
+      ReorderChildView(label_, 0);
+    }
+  }
 }
 
 IconLabelSliderButton::~IconLabelSliderButton() = default;

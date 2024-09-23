@@ -6,6 +6,7 @@
 #define UI_COMPOSITOR_TEST_IN_PROCESS_CONTEXT_FACTORY_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <unordered_map>
 
@@ -15,8 +16,9 @@
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
-#include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
+#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -39,7 +41,7 @@ class InProcessContextFactory : public ContextFactory {
  public:
   // Both |host_frame_sink_manager| and |frame_sink_manager| must outlive the
   // ContextFactory.
-  // TODO(crbug.com/657959): |frame_sink_manager| should go away and we should
+  // TODO(crbug.com/40489946): |frame_sink_manager| should go away and we should
   // use the LayerTreeFrameSink from the HostFrameSinkManager.
   // The default for |output_to_window| will create an OutputSurface that does
   // not display anything. Set to true if you want to see results on the screen.
@@ -67,8 +69,6 @@ class InProcessContextFactory : public ContextFactory {
   // ContextFactory implementation.
   void CreateLayerTreeFrameSink(base::WeakPtr<Compositor> compositor) override;
 
-  scoped_refptr<viz::ContextProvider> SharedMainThreadContextProvider()
-      override;
   scoped_refptr<viz::RasterContextProvider>
   SharedMainThreadRasterContextProvider() override;
 
@@ -83,8 +83,9 @@ class InProcessContextFactory : public ContextFactory {
   gfx::DisplayColorSpaces GetDisplayColorSpaces(Compositor* compositor) const;
   base::TimeTicks GetDisplayVSyncTimeBase(Compositor* compositor) const;
   base::TimeDelta GetDisplayVSyncTimeInterval(Compositor* compositor) const;
-  std::optional<base::TimeDelta> GetMaxVrrInterval(
+  std::optional<base::TimeDelta> GetMaxVSyncInterval(
       Compositor* compositor) const;
+  display::VariableRefreshRateState GetVrrState(Compositor* compositor) const;
   void ResetDisplayOutputParameters(Compositor* compositor);
 
  private:
@@ -98,7 +99,8 @@ class InProcessContextFactory : public ContextFactory {
   viz::TestSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
-  viz::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
+  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
+  gpu::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   cc::TestTaskGraphRunner task_graph_runner_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
   viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;

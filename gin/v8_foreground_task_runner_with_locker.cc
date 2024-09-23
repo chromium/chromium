@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "gin/converter.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-locker.h"
 
@@ -53,32 +54,38 @@ class IdleTaskWithLocker : public v8::IdleTask {
 
 }  // namespace
 
-void V8ForegroundTaskRunnerWithLocker::PostTask(
-    std::unique_ptr<v8::Task> task) {
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(RunWithLocker, base::Unretained(isolate_),
-                                std::move(task)));
-}
-
-void V8ForegroundTaskRunnerWithLocker::PostNonNestableTask(
-    std::unique_ptr<v8::Task> task) {
-  task_runner_->PostNonNestableTask(
-      FROM_HERE, base::BindOnce(RunWithLocker, base::Unretained(isolate_),
-                                std::move(task)));
-}
-
-void V8ForegroundTaskRunnerWithLocker::PostDelayedTask(
+void V8ForegroundTaskRunnerWithLocker::PostTaskImpl(
     std::unique_ptr<v8::Task> task,
-    double delay_in_seconds) {
+    const v8::SourceLocation& location) {
+  task_runner_->PostTask(
+      V8ToBaseLocation(location),
+      base::BindOnce(RunWithLocker, base::Unretained(isolate_),
+                     std::move(task)));
+}
+
+void V8ForegroundTaskRunnerWithLocker::PostNonNestableTaskImpl(
+    std::unique_ptr<v8::Task> task,
+    const v8::SourceLocation& location) {
+  task_runner_->PostNonNestableTask(
+      V8ToBaseLocation(location),
+      base::BindOnce(RunWithLocker, base::Unretained(isolate_),
+                     std::move(task)));
+}
+
+void V8ForegroundTaskRunnerWithLocker::PostDelayedTaskImpl(
+    std::unique_ptr<v8::Task> task,
+    double delay_in_seconds,
+    const v8::SourceLocation& location) {
   task_runner_->PostDelayedTask(
-      FROM_HERE,
+      V8ToBaseLocation(location),
       base::BindOnce(RunWithLocker, base::Unretained(isolate_),
                      std::move(task)),
       base::Seconds(delay_in_seconds));
 }
 
-void V8ForegroundTaskRunnerWithLocker::PostIdleTask(
-    std::unique_ptr<v8::IdleTask> task) {
+void V8ForegroundTaskRunnerWithLocker::PostIdleTaskImpl(
+    std::unique_ptr<v8::IdleTask> task,
+    const v8::SourceLocation& location) {
   DCHECK(IdleTasksEnabled());
   idle_task_runner()->PostIdleTask(
       std::make_unique<IdleTaskWithLocker>(isolate_, std::move(task)));

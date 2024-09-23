@@ -24,93 +24,101 @@ String MakeUTF16(const char* str) {
 TEST(TextSearcherICUTest, FindSubstring) {
   TextSearcherICU searcher;
   const String& pattern = MakeUTF16("substring");
-  searcher.SetPattern(pattern, 0);
+  searcher.SetPattern(pattern, FindOptions());
 
   const String& text = MakeUTF16("Long text with substring content.");
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
-  MatchResultICU result;
+  std::optional<MatchResultICU> result = searcher.NextMatchResult();
+  EXPECT_TRUE(result);
+  EXPECT_NE(0u, result->start);
+  EXPECT_NE(0u, result->length);
+  ASSERT_LT(result->length, text.length());
+  EXPECT_EQ(pattern, text.Substring(result->start, result->length));
 
-  EXPECT_TRUE(searcher.NextMatchResult(result));
-  EXPECT_NE(0u, result.start);
-  EXPECT_NE(0u, result.length);
-  ASSERT_LT(result.length, text.length());
-  EXPECT_EQ(pattern, text.Substring(result.start, result.length));
-
-  EXPECT_FALSE(searcher.NextMatchResult(result));
-  EXPECT_EQ(0u, result.start);
-  EXPECT_EQ(0u, result.length);
+  EXPECT_FALSE(searcher.NextMatchResult());
 }
 
 TEST(TextSearcherICUTest, FindIgnoreCaseSubstring) {
   TextSearcherICU searcher;
   const String& pattern = MakeUTF16("substring");
-  searcher.SetPattern(pattern, kCaseInsensitive);
+  searcher.SetPattern(pattern, FindOptions().SetCaseInsensitive(true));
 
   const String& text = MakeUTF16("Long text with SubStrinG content.");
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
-  MatchResultICU result;
-  EXPECT_TRUE(searcher.NextMatchResult(result));
-  EXPECT_NE(0u, result.start);
-  EXPECT_NE(0u, result.length);
-  ASSERT_LT(result.length, text.length());
+  std::optional<MatchResultICU> result = searcher.NextMatchResult();
+  EXPECT_TRUE(result);
+  EXPECT_NE(0u, result->start);
+  EXPECT_NE(0u, result->length);
+  ASSERT_LT(result->length, text.length());
   EXPECT_EQ(pattern,
-            text.Substring(result.start, result.length).DeprecatedLower());
+            text.Substring(result->start, result->length).DeprecatedLower());
 
-  searcher.SetPattern(pattern, 0);
+  searcher.SetPattern(pattern, FindOptions());
   searcher.SetOffset(0u);
-  EXPECT_FALSE(searcher.NextMatchResult(result));
-  EXPECT_EQ(0u, result.start);
-  EXPECT_EQ(0u, result.length);
+  EXPECT_FALSE(searcher.NextMatchResult());
 }
 
 TEST(TextSearcherICUTest, FindSubstringWithOffset) {
   TextSearcherICU searcher;
   const String& pattern = MakeUTF16("substring");
-  searcher.SetPattern(pattern, 0);
+  searcher.SetPattern(pattern, FindOptions());
 
   const String& text =
       MakeUTF16("Long text with substring content. Second substring");
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
-  MatchResultICU first_result;
+  std::optional<MatchResultICU> first_result = searcher.NextMatchResult();
+  EXPECT_TRUE(first_result);
+  EXPECT_NE(0u, first_result->start);
+  EXPECT_NE(0u, first_result->length);
 
-  EXPECT_TRUE(searcher.NextMatchResult(first_result));
-  EXPECT_NE(0u, first_result.start);
-  EXPECT_NE(0u, first_result.length);
+  std::optional<MatchResultICU> second_result = searcher.NextMatchResult();
+  EXPECT_TRUE(second_result);
+  EXPECT_NE(0u, second_result->start);
+  EXPECT_NE(0u, second_result->length);
 
-  MatchResultICU second_result;
-  EXPECT_TRUE(searcher.NextMatchResult(second_result));
-  EXPECT_NE(0u, second_result.start);
-  EXPECT_NE(0u, second_result.length);
+  searcher.SetOffset(first_result->start + first_result->length);
 
-  searcher.SetOffset(first_result.start + first_result.length);
+  std::optional<MatchResultICU> offset_result = searcher.NextMatchResult();
+  EXPECT_TRUE(offset_result);
+  EXPECT_EQ(offset_result->start, second_result->start);
+  EXPECT_EQ(offset_result->length, second_result->length);
 
-  MatchResultICU offset_result;
-  EXPECT_TRUE(searcher.NextMatchResult(offset_result));
-  EXPECT_EQ(offset_result.start, second_result.start);
-  EXPECT_EQ(offset_result.length, second_result.length);
+  searcher.SetOffset(first_result->start);
 
-  searcher.SetOffset(first_result.start);
-
-  EXPECT_TRUE(searcher.NextMatchResult(offset_result));
-  EXPECT_EQ(offset_result.start, first_result.start);
-  EXPECT_EQ(offset_result.length, first_result.length);
+  offset_result = searcher.NextMatchResult();
+  EXPECT_TRUE(offset_result);
+  EXPECT_EQ(offset_result->start, first_result->start);
+  EXPECT_EQ(offset_result->length, first_result->length);
 }
 
 TEST(TextSearcherICUTest, FindControlCharacter) {
   TextSearcherICU searcher;
   const String& pattern = MakeUTF16("\u0080");
-  searcher.SetPattern(pattern, 0);
+  searcher.SetPattern(pattern, FindOptions());
 
   const String& text = MakeUTF16("some text");
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
-  MatchResultICU result;
-  EXPECT_FALSE(searcher.NextMatchResult(result));
-  EXPECT_EQ(0u, result.start);
-  EXPECT_EQ(0u, result.length);
+  EXPECT_FALSE(searcher.NextMatchResult());
+}
+
+// Find-ruby-in-page relies on this behavior.
+// crbug.com/40755728
+TEST(TextSearcherICUTest, IgnoreNull) {
+  TextSearcherICU searcher;
+  const String pattern = MakeUTF16("substr");
+  searcher.SetPattern(pattern, FindOptions());
+
+  const String text(u" sub\0\0string ", 13u);
+  searcher.SetText(text.Span16());
+
+  std::optional<MatchResultICU> result = searcher.NextMatchResult();
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(1u, result->start);
+  EXPECT_EQ(8u, result->length);  // Longer than "substr".
 }
 
 // For http://crbug.com/1138877
@@ -119,20 +127,17 @@ TEST(TextSearcherICUTest, BrokenSurrogate) {
   UChar one[1];
   one[0] = 0xDB00;
   const String pattern(one, 1u);
-  searcher.SetPattern(pattern, kWholeWord);
+  searcher.SetPattern(pattern, FindOptions().SetWholeWord(true));
 
   UChar two[2];
   two[0] = 0x0022;
   two[1] = 0xDB00;
   const String text(two, 2u);
-  searcher.SetText(text.Characters16(), text.length());
+  searcher.SetText(text.Span16());
 
   // Note: Because even if ICU find U+DB00 but ICU doesn't think U+DB00 as
   // word, we consider it doesn't match whole word.
-  MatchResultICU result;
-  EXPECT_FALSE(searcher.NextMatchResult(result));
-  EXPECT_EQ(0u, result.start);
-  EXPECT_EQ(0u, result.length);
+  EXPECT_FALSE(searcher.NextMatchResult());
 }
 
 }  // namespace blink

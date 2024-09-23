@@ -41,7 +41,7 @@ mojom::SessionState ToMojo(session_manager::SessionState state) {
     case session_manager::SessionState::RMA:
       return mojom::SessionState::kInRmaScreen;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::SessionState::kUnknown;
 }
 

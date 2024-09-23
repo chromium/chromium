@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/chrome_paths_internal.h"
-
+#include <shobjidl.h>
 #include <windows.h>
+
 #include <knownfolders.h>
 #include <shellapi.h>
 #include <shlobj.h>
-#include <shobjidl.h>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/win/scoped_co_mem.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_util.h"
 #include "components/nacl/common/nacl_switches.h"

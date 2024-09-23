@@ -40,6 +40,7 @@ class AbortSignal;
 class ExceptionState;
 class ExecutionContext;
 class FetchRequestData;
+class Response;
 class ScriptState;
 class FetchLaterResult;
 
@@ -49,10 +50,10 @@ class CORE_EXPORT FetchManager final
  public:
   explicit FetchManager(ExecutionContext*);
 
-  ScriptPromise Fetch(ScriptState*,
-                      FetchRequestData*,
-                      AbortSignal*,
-                      ExceptionState&);
+  ScriptPromise<Response> Fetch(ScriptState*,
+                                FetchRequestData*,
+                                AbortSignal*,
+                                ExceptionState&);
 
   // ExecutionContextLifecycleObserver overrides:
   void ContextDestroyed() override;

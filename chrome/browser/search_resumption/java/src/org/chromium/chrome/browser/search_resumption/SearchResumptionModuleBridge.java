@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.search_resumption;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,13 +46,15 @@ public class SearchResumptionModuleBridge {
     }
 
     @CalledByNative
-    void onSuggestionsReceived(String[] suggestionTexts, GURL[] suggestionUrls) {
+    void onSuggestionsReceived(
+            @JniType("std::vector<const std::u16string*>") String[] suggestionTexts,
+            @JniType("std::vector<const GURL*>") GURL[] suggestionUrls) {
         mCallback.onSuggestionsReceived(suggestionTexts, suggestionUrls);
     }
 
     @NativeMethods
     interface Natives {
-        long create(SearchResumptionModuleBridge caller, Profile profile);
+        long create(SearchResumptionModuleBridge caller, @JniType("Profile*") Profile profile);
 
         void fetchSuggestions(
                 long nativeSearchResumptionModuleBridge,

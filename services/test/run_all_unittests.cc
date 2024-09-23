@@ -54,6 +54,10 @@ class ServiceTestSuite : public base::TestSuite {
         path.Append(FILE_PATH_LITERAL("bluetooth_test_strings.pak"));
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         bluetooth_test_strings, ui::kScaleFactorNone);
+    base::FilePath services_test_strings =
+        path.Append(FILE_PATH_LITERAL("services_test_strings.pak"));
+    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+        services_test_strings, ui::kScaleFactorNone);
 #endif  // !BUILDFLAG(IS_IOS)
 
     // base::TestSuite and ViewsInit both try to load icu. That's ok for tests.

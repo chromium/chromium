@@ -60,6 +60,7 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
       blink::mojom::SharedWorkerInfoPtr info,
       const blink::SharedWorkerToken& token,
       const blink::StorageKey& constructor_key,
+      const url::Origin& origin,
       bool is_constructor_secure_context,
       const std::string& user_agent,
       const blink::UserAgentMetadata& ua_metadata,
@@ -82,6 +83,7 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
       ukm::SourceId ukm_source_id,
+      bool require_cross_site_request_for_cookies,
       const std::vector<std::string>& cors_exempt_header_list);
 
   EmbeddedSharedWorkerStub(const EmbeddedSharedWorkerStub&) = delete;
@@ -104,7 +106,8 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
       const blink::RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           preference_watcher_receiver,
-      const std::vector<std::string>& cors_exempt_header_list);
+      const std::vector<std::string>& cors_exempt_header_list,
+      bool require_cross_site_request_for_cookies);
 
   mojo::Receiver<blink::mojom::SharedWorker> receiver_;
   std::unique_ptr<blink::WebSharedWorker> impl_;

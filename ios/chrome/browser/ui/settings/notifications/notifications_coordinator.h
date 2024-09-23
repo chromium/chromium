@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
-#import "ios/chrome/browser/ui/settings/notifications/tips_notifications_alert_presenter.h"
 
 @class NotificationsCoordinator;
 
@@ -24,8 +23,7 @@
 
 // The coordinator for the Notifications screen.
 @interface NotificationsCoordinator
-    : ChromeCoordinator <NotificationsAlertPresenter,
-                         TipsNotificationsAlertPresenter>
+    : ChromeCoordinator <NotificationsAlertPresenter>
 
 @property(nonatomic, weak) id<NotificationsCoordinatorDelegate> delegate;
 
@@ -36,6 +34,9 @@
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
     NS_DESIGNATED_INITIALIZER;
+
+// Show Price Trackinhg Notifications settings.
+- (void)showTrackingPrice;
 
 @end
 

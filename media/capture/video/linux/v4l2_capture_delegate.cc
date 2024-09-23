@@ -17,6 +17,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -169,6 +171,8 @@ bool IsNonEmptyRange(const mojom::RangePtr& range) {
 class V4L2CaptureDelegate::BufferTracker
     : public base::RefCounted<BufferTracker> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   explicit BufferTracker(V4L2CaptureDevice* v4l2);
 
   // Abstract method to mmap() given |fd| according to |buffer|.
@@ -1082,7 +1086,8 @@ void V4L2CaptureDelegate::DoCapture() {
           }
           break;
         default:
-          NOTREACHED() << "Unexpected event type dequeued: " << event.type;
+          NOTREACHED_IN_MIGRATION()
+              << "Unexpected event type dequeued: " << event.type;
           break;
       }
     } while (event.pending > 0u);
@@ -1161,7 +1166,7 @@ void V4L2CaptureDelegate::DoCapture() {
         client_->OnIncomingCapturedData(
             buffer_tracker->start(), buffer_tracker->payload_size(),
             capture_format_, gfx::ColorSpace(), rotation_, false /* flip_y */,
-            now, timestamp);
+            now, timestamp, std::nullopt);
     }
 
     while (!take_photo_callbacks_.empty()) {
@@ -1336,12 +1341,10 @@ gfx::ColorSpace V4L2CaptureDelegate::BuildColorSpaceFromv4l2() {
     case V4L2_YCBCR_ENC_BT2020:
       matrix = gfx::ColorSpace::MatrixID::BT2020_NCL;
       break;
-    case V4L2_YCBCR_ENC_BT2020_CONST_LUM:
-      matrix = gfx::ColorSpace::MatrixID::BT2020_CL;
-      break;
     case V4L2_YCBCR_ENC_SMPTE240M:
       matrix = gfx::ColorSpace::MatrixID::SMPTE240M;
       break;
+    case V4L2_YCBCR_ENC_BT2020_CONST_LUM:
     case V4L2_YCBCR_ENC_XV601:
     case V4L2_YCBCR_ENC_XV709:
     case V4L2_YCBCR_ENC_SYCC:

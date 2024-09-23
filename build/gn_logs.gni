@@ -2,7 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/compiler/compiler.gni")
 import("//build/toolchain/concurrent_links.gni")
 
 # Log lines for gn_logs.txt that originate from within //build.
-build_gn_logs = [ "#### get_concurrent_links.py ####" ] + concurrent_links_logs
+build_gn_logs = [ "### compiler.gni ###" ] + compiler_logs
+build_gn_logs += [ "" ]
+
+if (target_os == "ios") {
+  import("//build/config/ios/ios_sdk.gni")
+  import("//build/config/mac/mac_sdk.gni")
+  build_gn_logs += [ "### ios_sdk.gni ###" ] + ios_sdk_logs
+  build_gn_logs += [ "" ]
+  build_gn_logs += [ "### mac_sdk.gni ###" ] + mac_sdk_logs
+  build_gn_logs += [ "" ]
+}
+
+build_gn_logs += [ "#### get_concurrent_links.py ####" ] + concurrent_links_logs

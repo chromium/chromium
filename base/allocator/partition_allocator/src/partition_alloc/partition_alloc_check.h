@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_
 
 #include <cstdint>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 
 // When PartitionAlloc is used as the default allocator, we cannot use the
 // regular (D)CHECK() macros, as they allocate internally. When an assertion is
@@ -25,19 +24,17 @@
 // As a consequence:
 // - When PartitionAlloc is not malloc(), use the regular macros
 // - Otherwise, crash immediately. This provides worse error messages though.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !PA_BASE_CHECK_WILL_STREAM()
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !PA_BASE_CHECK_WILL_STREAM()
 
 // For official build discard log strings to reduce binary bloat.
 // See base/check.h for implementation details.
-#define PA_CHECK(condition)                        \
-  PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
-                            : PA_EAT_CHECK_STREAM_PARAMS()
+#define PA_CHECK(condition) PA_BASE_CHECK(condition)
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #define PA_DCHECK(condition) PA_CHECK(condition)
 #else
 #define PA_DCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #define PA_PCHECK(condition)                                 \
   if (!(condition)) {                                        \
@@ -47,25 +44,25 @@
   }                                                          \
   static_assert(true)
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #define PA_DPCHECK(condition) PA_PCHECK(condition)
 #else
 #define PA_DPCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
-#else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+#else  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
        // !PA_BASE_CHECK_WILL_STREAM()
 #define PA_CHECK(condition) PA_BASE_CHECK(condition)
 #define PA_DCHECK(condition) PA_BASE_DCHECK(condition)
 #define PA_PCHECK(condition) PA_BASE_PCHECK(condition)
 #define PA_DPCHECK(condition) PA_BASE_DPCHECK(condition)
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // !PA_BASE_CHECK_WILL_STREAM()
 
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.
 #if !defined(NDEBUG)
-#define PA_SCAN_DCHECK_IS_ON() BUILDFLAG(PA_DCHECK_IS_ON)
+#define PA_SCAN_DCHECK_IS_ON() PA_BUILDFLAG(DCHECKS_ARE_ON)
 #else
 #define PA_SCAN_DCHECK_IS_ON() 0
 #endif
@@ -99,8 +96,8 @@
 
 // alignas(16) DebugKv causes breakpad_unittests and sandbox_linux_unittests
 // failures on android-marshmallow-x86-rel because of SIGSEGV.
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY) && \
-    defined(ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY) && \
+    PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
 #define PA_DEBUGKV_ALIGN alignas(8)
 #else
 #define PA_DEBUGKV_ALIGN alignas(16)
@@ -163,4 +160,4 @@ struct PA_DEBUGKV_ALIGN DebugKv {
   ::partition_alloc::internal::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
   ::partition_alloc::internal::base::debug::Alias(&PA_DEBUG_UNIQUE_NAME)
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_

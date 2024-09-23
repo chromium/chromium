@@ -90,7 +90,6 @@ const char* PageTransitionGetCoreTransitionString(PageTransition type) {
     case PAGE_TRANSITION_KEYWORD_GENERATED: return "keyword_generated";
     default:
       NOTREACHED();
-      return nullptr;
   }
 }
 

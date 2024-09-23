@@ -17,6 +17,14 @@ ShadowRealmGlobalScope::ShadowRealmGlobalScope(
                        initiator_execution_context->GetAgent()),
       initiator_execution_context_(initiator_execution_context) {}
 
+ExecutionContext* ShadowRealmGlobalScope::GetRootInitiatorExecutionContext()
+    const {
+  return initiator_execution_context_->IsShadowRealmGlobalScope()
+             ? To<ShadowRealmGlobalScope>(initiator_execution_context_.Get())
+                   ->GetRootInitiatorExecutionContext()
+             : initiator_execution_context_.Get();
+}
+
 void ShadowRealmGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(initiator_execution_context_);
   EventTarget::Trace(visitor);
@@ -46,36 +54,38 @@ void ShadowRealmGlobalScope::CountUse(mojom::blink::WebFeature feature) {}
 void ShadowRealmGlobalScope::CountDeprecation(
     mojom::blink::WebFeature feature) {}
 
+void ShadowRealmGlobalScope::CountWebDXFeature(
+    mojom::blink::WebDXFeature feature) {}
+
 bool ShadowRealmGlobalScope::IsShadowRealmGlobalScope() const {
   return true;
 }
 
 const KURL& ShadowRealmGlobalScope::Url() const {
-  NOTREACHED();
-  return url_;
+  return GetRootInitiatorExecutionContext()->Url();
 }
 
 const KURL& ShadowRealmGlobalScope::BaseURL() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return url_;
 }
 
 KURL ShadowRealmGlobalScope::CompleteURL(const String& url) const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return url_;
 }
 
 void ShadowRealmGlobalScope::DisableEval(const String& error_message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ShadowRealmGlobalScope::SetWasmEvalErrorMessage(
     const String& error_message) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 String ShadowRealmGlobalScope::UserAgent() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 
@@ -84,20 +94,19 @@ HttpsState ShadowRealmGlobalScope::GetHttpsState() const {
 }
 
 ResourceFetcher* ShadowRealmGlobalScope::Fetcher() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 void ShadowRealmGlobalScope::ExceptionThrown(ErrorEvent* error_event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ShadowRealmGlobalScope::AddInspectorIssue(AuditsIssue issue) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 EventTarget* ShadowRealmGlobalScope::ErrorEventTarget() {
-  NOTREACHED();
   return nullptr;
 }
 
@@ -114,12 +123,12 @@ bool ShadowRealmGlobalScope::IsIsolatedContext() const {
 }
 
 ukm::UkmRecorder* ShadowRealmGlobalScope::UkmRecorder() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 ukm::SourceId ShadowRealmGlobalScope::UkmSourceID() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ukm::kInvalidSourceId;
 }
 
@@ -129,7 +138,7 @@ ExecutionContextToken ShadowRealmGlobalScope::GetExecutionContextToken() const {
 
 void ShadowRealmGlobalScope::AddConsoleMessageImpl(ConsoleMessage* message,
                                                    bool discard_duplicates) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

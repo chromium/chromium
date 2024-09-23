@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_bus_pool.h"
 #include "media/base/audio_converter.h"
@@ -41,9 +41,6 @@ ConvertingAudioFifo::ConvertingAudioFifo(
 ConvertingAudioFifo::~ConvertingAudioFifo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   converter_->RemoveInput(this);
-  base::UmaHistogramCounts100(
-      "Media.Audio.ConvertingAudioFifo.MaxOutputQueueSize",
-      max_output_queue_size_);
 }
 
 void ConvertingAudioFifo::Push(std::unique_ptr<AudioBus> input_bus) {
@@ -61,6 +58,8 @@ void ConvertingAudioFifo::Push(std::unique_ptr<AudioBus> input_bus) {
 
 void ConvertingAudioFifo::Convert() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("audio"),
+              "ConvertingAudioFifo::Convert");
 
   DCHECK(total_frames_ >= min_input_frames_needed_ || is_flushing_)
       << "total_frames_=" << total_frames_
@@ -70,9 +69,6 @@ void ConvertingAudioFifo::Convert() {
   auto output_dest = output_pool_->GetAudioBus();
   converter_->Convert(output_dest.get());
   pending_outputs_.push_back(std::move(output_dest));
-
-  max_output_queue_size_ =
-      std::max(max_output_queue_size_, pending_outputs_.size());
 }
 
 void ConvertingAudioFifo::Flush() {
@@ -96,6 +92,9 @@ void ConvertingAudioFifo::Flush() {
 double ConvertingAudioFifo::ProvideInput(AudioBus* audio_bus,
                                          uint32_t frames_delayed,
                                          const AudioGlitchInfo& glitch_info) {
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("audio"),
+              "ConvertingAudioFifo::ProvideInput", "delay (frames)",
+              frames_delayed);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int frames_needed = audio_bus->frames();
@@ -181,6 +180,11 @@ const AudioBus* ConvertingAudioFifo::PeekOutput() {
 
 void ConvertingAudioFifo::PopOutput() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("audio"),
+              "ConvertingAudioFifo::PopOutput", "layover_delay (ms)",
+              (inputs_.size() * input_params_.GetBufferDuration() +
+               pending_outputs_.size() * converted_params_.GetBufferDuration())
+                  .InMillisecondsF());
   CHECK(HasOutput());
   output_pool_->InsertAudioBus(std::move(pending_outputs_.front()));
   pending_outputs_.pop_front();

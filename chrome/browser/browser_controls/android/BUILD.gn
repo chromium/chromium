@@ -6,6 +6,8 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsLayer.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStacker.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsSizer.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsStateProvider.java",
@@ -26,12 +28,17 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/browser_controls/BrowserStateBrowserControlsVisibilityDelegateTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStackerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BrowserStateBrowserControlsVisibilityDelegateTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//cc:cc_java",
+    "//chrome/browser/flags:java",
     "//content/public/android:content_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

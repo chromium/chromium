@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 
@@ -23,12 +20,6 @@ using testing::NiceMock;
 class SingleClientPasswordSharingPolicyTest : public SyncTest {
  public:
   SingleClientPasswordSharingPolicyTest() : SyncTest(SINGLE_CLIENT) {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/
-        {password_manager::features::kPasswordManagerEnableReceiverService,
-         password_manager::features::kPasswordManagerEnableSenderService,
-         syncer::kSharingOfferKeyPairBootstrap},
-        /*disabled_features=*/{});
   }
   ~SingleClientPasswordSharingPolicyTest() override = default;
 
@@ -50,7 +41,6 @@ class SingleClientPasswordSharingPolicyTest : public SyncTest {
   }
 
  private:
-  base::test::ScopedFeatureList override_features_;
   NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 

@@ -26,6 +26,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -140,6 +141,10 @@ int64_t URLRequestJob::GetTotalSentBytes() const {
   return 0;
 }
 
+int64_t URLRequestJob::GetReceivedBodyBytes() const {
+  return 0;
+}
+
 LoadState URLRequestJob::GetLoadState() const {
   return LOAD_STATE_IDLE;
 }
@@ -205,34 +210,34 @@ bool URLRequestJob::NeedsAuth() {
 std::unique_ptr<AuthChallengeInfo> URLRequestJob::GetAuthChallengeInfo() {
   // This will only be called if NeedsAuth() returns true, in which
   // case the derived class should implement this!
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 void URLRequestJob::SetAuth(const AuthCredentials& credentials) {
   // This will only be called if NeedsAuth() returns true, in which
   // case the derived class should implement this!
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void URLRequestJob::CancelAuth() {
   // This will only be called if NeedsAuth() returns true, in which
   // case the derived class should implement this!
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void URLRequestJob::ContinueWithCertificate(
     scoped_refptr<X509Certificate> client_cert,
     scoped_refptr<SSLPrivateKey> client_private_key) {
   // The derived class should implement this!
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void URLRequestJob::ContinueDespiteLastError() {
   // Implementations should know how to recover from errors they generate.
   // If this code was reached, we are trying to recover from an error that
   // we don't know how to recover from.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void URLRequestJob::FollowDeferredRedirect(
@@ -275,6 +280,10 @@ ConnectionAttempts URLRequestJob::GetConnectionAttempts() const {
 }
 
 void URLRequestJob::CloseConnectionOnDestruction() {}
+
+bool URLRequestJob::NeedsRetryWithStorageAccess() {
+  return false;
+}
 
 namespace {
 
@@ -384,8 +393,12 @@ GURL URLRequestJob::ComputeReferrerForPolicy(
       return GURL();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GURL();
+}
+
+cookie_util::StorageAccessStatus URLRequestJob::StorageAccessStatus() const {
+  return cookie_util::StorageAccessStatus::kNone;
 }
 
 int URLRequestJob::NotifyConnected(const TransportInfo& info,
@@ -429,8 +442,28 @@ void URLRequestJob::NotifyHeadersComplete() {
   int http_status_code;
   bool insecure_scheme_was_upgraded;
 
+  if (NeedsAuth()) {
+    CHECK(!IsRedirectResponse(&new_location, &http_status_code,
+                              &insecure_scheme_was_upgraded));
+    std::unique_ptr<AuthChallengeInfo> auth_info = GetAuthChallengeInfo();
+    // Need to check for a NULL auth_info because the server may have failed
+    // to send a challenge with the 401 response.
+    if (auth_info) {
+      request_->NotifyAuthRequired(std::move(auth_info));
+      // Wait for SetAuth or CancelAuth to be called.
+      return;
+    }
+  }
+
+  if (NeedsRetryWithStorageAccess()) {
+    DoneReadingRetryResponse();
+    request_->RetryWithStorageAccess();
+    return;
+  }
+
   if (IsRedirectResponse(&new_location, &http_status_code,
                          &insecure_scheme_was_upgraded)) {
+    CHECK(!NeedsAuth());
     // Redirect response bodies are not read. Notify the transaction
     // so it does not treat being stopped as an error.
     DoneReadingRedirectResponse();
@@ -473,17 +506,6 @@ void URLRequestJob::NotifyHeadersComplete() {
                      std::nullopt /* modified_headers */);
     }
     return;
-  }
-
-  if (NeedsAuth()) {
-    std::unique_ptr<AuthChallengeInfo> auth_info = GetAuthChallengeInfo();
-    // Need to check for a NULL auth_info because the server may have failed
-    // to send a challenge with the 401 response.
-    if (auth_info) {
-      request_->NotifyAuthRequired(std::move(auth_info));
-      // Wait for SetAuth or CancelAuth to be called.
-      return;
-    }
   }
 
   NotifyFinalHeadersReceived();
@@ -647,6 +669,8 @@ void URLRequestJob::DoneReading() {
 
 void URLRequestJob::DoneReadingRedirectResponse() {
 }
+
+void URLRequestJob::DoneReadingRetryResponse() {}
 
 std::unique_ptr<SourceStream> URLRequestJob::SetUpSourceStream() {
   return std::make_unique<URLRequestJobSourceStream>(this);

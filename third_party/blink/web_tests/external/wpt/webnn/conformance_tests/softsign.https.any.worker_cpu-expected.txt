@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] softsign positive float32 1D constant tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (softsign) is not supported."
+[FAIL] softsign positive float32 1D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (softsign) is not supported."
+[FAIL] softsign negative float32 1D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (softsign) is not supported."
+[FAIL] softsign float32 2D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (softsign) is not supported."
+[FAIL] softsign float32 3D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (softsign) is not supported."
+[FAIL] softsign float32 4D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (softsign) is not supported."
+[FAIL] softsign float32 5D tensor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (softsign) is not supported."
+Harness: the test ran to completion.
+

@@ -14,13 +14,13 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import './setup_fingerprint_dialog.js';
 import '../settings_shared.css.js';
 
-import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {castExists} from '../assert_extras.js';
+import {assertExists, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -50,7 +50,7 @@ export class SettingsFingerprintListSubpageElement extends
        */
       authToken: {
         type: String,
-        value: '',
+        notify: true,
         observer: 'onAuthTokenChanged_',
       },
 
@@ -81,7 +81,7 @@ export class SettingsFingerprintListSubpageElement extends
     };
   }
 
-  authToken: string;
+  authToken: string|undefined;
   private fingerprints_: string[];
   private showSetupFingerprintDialog_: boolean;
   private allowAddAnotherFinger_: boolean;
@@ -141,6 +141,7 @@ export class SettingsFingerprintListSubpageElement extends
   }
 
   private onFingerprintDeleteTapped_(e: DomRepeatEvent<number>): void {
+    assertExists(this.authToken);
     this.browserProxy_.removeEnrollment(e.model.index, this.authToken)
         .then(success => {
           if (success) {

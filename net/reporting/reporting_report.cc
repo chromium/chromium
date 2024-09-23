@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/network_isolation_key.h"
+#include "net/reporting/reporting_target_type.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -25,7 +26,8 @@ ReportingReport::ReportingReport(
     base::Value::Dict body,
     int depth,
     base::TimeTicks queued,
-    int attempts)
+    int attempts,
+    ReportingTargetType target_type)
     : reporting_source(reporting_source),
       network_anonymization_key(network_anonymization_key),
       id(base::UnguessableToken::Create()),
@@ -36,7 +38,8 @@ ReportingReport::ReportingReport(
       body(std::move(body)),
       depth(depth),
       queued(queued),
-      attempts(attempts) {
+      attempts(attempts),
+      target_type(target_type) {
   // If |reporting_source| is present, it must not be empty.
   DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
 }
@@ -47,8 +50,15 @@ ReportingReport& ReportingReport::operator=(ReportingReport&& other) = default;
 ReportingReport::~ReportingReport() = default;
 
 ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
-  return ReportingEndpointGroupKey(network_anonymization_key, reporting_source,
-                                   url::Origin::Create(url), group);
+  // Enterprise reports do not have an origin.
+  if (target_type == ReportingTargetType::kEnterprise) {
+    return ReportingEndpointGroupKey(
+        network_anonymization_key, /*origin=*/std::nullopt, group, target_type);
+  } else {
+    return ReportingEndpointGroupKey(network_anonymization_key,
+                                     reporting_source, url::Origin::Create(url),
+                                     group, target_type);
+  }
 }
 
 bool ReportingReport::IsUploadPending() const {

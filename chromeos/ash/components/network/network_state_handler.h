@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -128,10 +129,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   using Observer = NetworkStateHandlerObserver;
 
   void AddObserver(Observer* observer, const base::Location& from_here);
-  void AddObserver(Observer* observer);
+  virtual void AddObserver(Observer* observer);
 
   void RemoveObserver(Observer* observer, const base::Location& from_here);
-  void RemoveObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
 
   bool HasObserver(Observer* observer) {
     return observers_.HasObserver(observer);
@@ -531,6 +532,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // test observers.
   void InitShillPropertyHandler();
 
+  // Observer list
+  base::ObserverList<Observer, true>::Unchecked observers_;
+
  private:
   typedef std::map<std::string, std::string> SpecifierGuidMap;
   friend class DeviceStateTest;
@@ -746,11 +750,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Determines whether the user is logged in and sets |is_user_logged_in_|.
   void ProcessIsUserLoggedIn(const base::Value::List& profile_list);
 
+  // Requests an update for an existing DeviceState. This is a no-op if
+  // there's no device state for the given `device_path`.
+  void RequestUpdateForDevice(const std::string& device_path);
+
   // Shill property handler instance, owned by this class.
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
-
-  // Observer list
-  base::ObserverList<Observer, true>::Unchecked observers_;
 
   // List of managed network states
   ManagedStateList network_list_;
@@ -828,6 +833,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // user's saved networks are done updating.
   bool is_profile_networks_loaded_ = false;
   bool is_user_logged_in_ = false;
+
+  // A set of device or network service paths that need to request another
+  // GetProperties to get latest properties. Shill may send a device property
+  // update after Chrome sends a GetProperties request to Shill and before
+  // completing Shill's response. If this occurs, the initial response may not
+  // include the latest changed property value and we will need to store the
+  // device or service paths to issue another round of GetProperties.
+  std::set<std::string> device_paths_with_stale_properties_;
+  std::set<std::string> network_service_paths_with_stale_properties_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -24,6 +24,7 @@
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/browser/url_request_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/shell/browser/api/runtime/shell_runtime_api_delegate.h"
 #include "extensions/shell/browser/delegates/shell_kiosk_delegate.h"
@@ -140,7 +141,7 @@ bool ShellExtensionsBrowserClient::IsGuestSession(
 }
 
 bool ShellExtensionsBrowserClient::IsExtensionIncognitoEnabled(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::BrowserContext* context) const {
   return false;
 }
@@ -166,7 +167,7 @@ void ShellExtensionsBrowserClient::LoadResourceFromResourceBundle(
     int resource_id,
     scoped_refptr<net::HttpResponseHeaders> headers,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  NOTREACHED() << "Load resources from bundles not supported.";
+  NOTREACHED_IN_MIGRATION() << "Load resources from bundles not supported.";
 }
 
 bool ShellExtensionsBrowserClient::AllowCrossRendererResourceLoad(
@@ -177,11 +178,12 @@ bool ShellExtensionsBrowserClient::AllowCrossRendererResourceLoad(
     bool is_incognito,
     const Extension* extension,
     const ExtensionSet& extensions,
-    const ProcessMap& process_map) {
+    const ProcessMap& process_map,
+    const GURL& upstream_url) {
   bool allowed = false;
   if (url_request_util::AllowCrossRendererResourceLoad(
           request, destination, page_transition, child_id, is_incognito,
-          extension, extensions, process_map, &allowed)) {
+          extension, extensions, process_map, upstream_url, &allowed)) {
     return allowed;
   }
 
@@ -206,7 +208,8 @@ ShellExtensionsBrowserClient::GetProcessManagerDelegate() const {
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 ShellExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
-    int frame_tree_node_id,
+    const url::Origin& app_origin,
+    content::FrameTreeNodeId frame_tree_node_id,
     content::BrowserContext* browser_context) {
   return mojo::PendingRemote<network::mojom::URLLoaderFactory>();
 }
@@ -304,6 +307,11 @@ bool ShellExtensionsBrowserClient::IsMinBrowserVersionSupported(
 void ShellExtensionsBrowserClient::SetAPIClientForTest(
     ExtensionsAPIClient* api_client) {
   api_client_.reset(api_client);
+}
+
+void ShellExtensionsBrowserClient::CreateExtensionWebContentsObserver(
+    content::WebContents* web_contents) {
+  ShellExtensionWebContentsObserver::CreateForWebContents(web_contents);
 }
 
 ExtensionWebContentsObserver*

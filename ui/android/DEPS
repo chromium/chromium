@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/input/overscroll_behavior.h",
+  "+cc/input/browser_controls_offset_tags_info.h",
   "+cc/layers/deadline_policy.h",
   "+cc/slim",
   "+cc/resources",
@@ -12,6 +13,7 @@ include_rules = [
   "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test",
   "+services/viz/public/mojom",
   "+skia/ext",
+  "+third_party/android_opengl/etc1",
   "+third_party/skia",
   "+ui/accessibility",
   "+ui/android/ui_android_jni_headers",
@@ -20,6 +22,7 @@ include_rules = [
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
+  "+ui/strings/grit/ui_strings.h",
   "+ui/touch_selection/touch_handle.h",
 ]
 

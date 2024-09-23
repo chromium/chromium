@@ -7,7 +7,6 @@
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/test/fullscreen_test_util.h"
 #include "chrome/browser/ui/test/popup_test_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -95,7 +94,7 @@ class FullscreenInteractiveBrowserTest : public InProcessBrowserTest {
 };
 
 // https://crbug.com/1087875: Flaky on Linux, Mac and Windows.
-// TODO(crbug.com/1278361): Flaky on Chrome OS.
+// TODO(crbug.com/40810181): Flaky on Chrome OS.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_WIN)
 #define MAYBE_NotifyFullscreenAcquired DISABLED_NotifyFullscreenAcquired
@@ -198,8 +197,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenInteractiveBrowserTest,
       kFullscreenDurationMetricKeyRequestFullscreen, 1);
 }
 
-// TODO(crbug.com/1278361): Flaky on Chrome OS.
-// TODO(crbug.com/1087875): Flaky on Linux.
+// TODO(crbug.com/40810181): Flaky on Chrome OS.
+// TODO(crbug.com/40133132): Flaky on Linux.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_FullscreenDurationUmaLoggedCrossProcess \
   DISABLED_FullscreenDurationUmaLoggedCrossProcess

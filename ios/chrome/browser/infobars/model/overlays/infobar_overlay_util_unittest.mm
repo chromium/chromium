@@ -77,6 +77,7 @@ TEST_F(InfobarOverlayUtilTest, GetInfobarOverlayRequestIndex) {
   FakeInfobarIOS infobar2;
   FakeInfobarIOS infobar4;
 
+  OverlayRequestQueue::CreateForWebState(&web_state);
   OverlayRequestQueue* queue =
       OverlayRequestQueue::FromWebState(&web_state, OverlayModality::kTesting);
   queue->AddRequest(

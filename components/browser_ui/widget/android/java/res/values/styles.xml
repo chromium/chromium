@@ -8,7 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- AlertDialog styles -->
     <!-- |Theme.BrowserUI.AlertDialog.NoActionBar| should have all the attributes this has. -->
-    <style name="ThemeOverlay.BrowserUI.AlertDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+    <style name="ThemeOverlay.BrowserUI.AlertDialog" parent="ThemeOverlay.Material3.Dialog.Alert">
         <item name="android:textColorPrimary">@macro/default_text_color</item>
         <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
@@ -61,10 +61,6 @@ found in the LICENSE file.
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_marginStart">@dimen/list_item_default_margin</item>
     </style>
-    <style name="ListItemContainerV2" parent="ListItemContainer">
-        <item name="android:layout_marginTop">@dimen/list_item_v2_margin</item>
-        <item name="android:layout_marginBottom">@dimen/list_item_v2_margin</item>
-    </style>
     <style name="ListItemStartIcon">
         <item name="android:layout_width">@dimen/list_item_start_icon_width</item>
         <item name="android:layout_height">@dimen/list_item_start_icon_width</item>
@@ -73,23 +69,21 @@ found in the LICENSE file.
         <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@null</item>
     </style>
-    <style name="ListItemStartIconV2" parent="ListItemStartIcon">
-        <item name="android:layout_width">@dimen/list_item_v2_start_icon_width_compact</item>
-        <item name="android:layout_height">@dimen/list_item_v2_start_icon_width_compact</item>
-    </style>
     <style name="ListItemEndIcon">
         <item name="android:layout_width">@dimen/list_item_end_icon_width</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@null</item>
         <item name="android:scaleType">center</item>
     </style>
-    <style name="ListItemEndIconV2">
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@null</item>
-        <item name="android:scaleType">center</item>
+    <style name="ListItemSmallIconContainer" parent="ListItemContainer">
+        <item name="android:minHeight">@dimen/min_touch_target_size</item>
     </style>
-
+    <style name="ListItemSmallStartIcon" parent="ListItemStartIcon">
+        <item name="android:layout_width">@dimen/list_item_start_icon_small_width</item>
+        <item name="android:layout_height">@dimen/list_item_start_icon_small_width</item>
+        <item name="android:layout_marginEnd">@dimen/list_item_start_icon_small_right_margin</item>
+        <item name="android:minHeight">@dimen/min_touch_target_size</item>
+    </style>
     <!-- Promo dialogs -->
     <style name="PromoDialog" >
         <item name="android:background">@android:color/transparent</item>
@@ -158,6 +152,19 @@ found in the LICENSE file.
     </style>
     <style name="AssistiveChip" parent="Chip">
         <item name="cornerRadius">@dimen/chip_default_height</item>
+    </style>
+    <style name="HistoryAppChip" parent="Chip">
+        <item name="android:minHeight">18dp</item>
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+        <item name="iconWidth">16dp</item>
+        <item name="iconHeight">16dp</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.TextMedium.Primary</item>
+        <item name="solidColorChip">true</item>
+        <item name="chipColor">@macro/history_chip_bg_color</item>
+        <item name="verticalInset">0dp</item>
+    </style>
+    <style name="TabResumptionAppChip" parent="HistoryAppChip">
+        <item name="primaryTextAppearance">@style/TextAppearance.TextSmall.Primary</item>
     </style>
     <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
         <item name="iconWidth">28dp</item>

@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/display/manager/display_manager_observer.h"
 
 namespace aura {
 class Window;
@@ -29,9 +30,8 @@ class WindowUserData;
 // developing an education app to support high stakes assessment requirements on
 // Android, or a single-purpose or kiosk application."
 // https://developer.android.com/about/versions/android-5.0.html#ScreenPinning
-// See also ArcKioskAppLauncher::CheckAndPinWindow().
 class ASH_EXPORT ScreenPinningController
-    : public WindowTreeHostManager::Observer,
+    : public display::DisplayManagerObserver,
       aura::WindowObserver {
  public:
   ScreenPinningController();
@@ -40,6 +40,13 @@ class ASH_EXPORT ScreenPinningController
   ScreenPinningController& operator=(const ScreenPinningController&) = delete;
 
   ~ScreenPinningController() override;
+
+  // Set the `allow_window_stacking_with_pinned_window_` to allow window to
+  // stack on top of pinned window. This is only used for OnTask locked session
+  // where we still want to surface some popups on top of the pinned window.
+  void SetAllowWindowStackingWithPinnedWindow(bool val) {
+    allow_window_stacking_with_pinned_window_ = val;
+  }
 
   // Sets a pinned window. It is not allowed to call this when there already
   // is a pinned window.
@@ -92,8 +99,8 @@ class ASH_EXPORT ScreenPinningController
   // disappears.
   void ResetWindowPinningState();
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
@@ -113,6 +120,11 @@ class ASH_EXPORT ScreenPinningController
 
   // Set true only when restacking done by this controller.
   bool in_restacking_ = false;
+
+  // Set true to allow windows to stack on top of the pinned window. This is
+  // only used for OnTask locked session where we still want to surface some
+  // popups on top of the pinned window.
+  bool allow_window_stacking_with_pinned_window_ = false;
 
   // Window observers to translate events for the window to this controller.
   std::unique_ptr<PinnedContainerWindowObserver>

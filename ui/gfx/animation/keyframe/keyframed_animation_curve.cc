@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve-inl.h"
@@ -53,7 +54,7 @@ std::unique_ptr<AnimationCurve> RetargettedCurve(
   // Ensure that `t` happens between the last two keyframes.
   DCHECK_GE(keyframes[keyframes.size() - 1]->Time() * scaled_duration, t);
 
-  // TODO(crbug.com/1198305): This can be changed to a different / special
+  // TODO(crbug.com/40177284): This can be changed to a different / special
   // interpolation curve type to maintain c2 continuity.
   auto curve = AnimationTraits<ValueType>::KeyframedCurveType::Create();
   curve->set_scaled_duration(scaled_duration);
@@ -264,28 +265,28 @@ std::unique_ptr<AnimationCurve> KeyframedColorAnimationCurve::Clone() const {
 }
 
 SkColor KeyframedColorAnimationCurve::GetValue(base::TimeDelta t) const {
-  if (t <= (keyframes_.front()->Time() * scaled_duration()))
-    return keyframes_.front()->Value();
+  // Use GetTransformedValue instead.
+  NOTREACHED();
+}
 
-  if (t >= (keyframes_.back()->Time() * scaled_duration()))
-    return keyframes_.back()->Value();
-
-  t = TransformedAnimationTime(keyframes_, timing_function_, scaled_duration(),
-                               t);
-  size_t i = GetActiveKeyframe(keyframes_, scaled_duration(), t);
-  double progress =
-      TransformedKeyframeProgress(keyframes_, scaled_duration(), t, i);
-
-  return gfx::Tween::ColorValueBetween(progress, keyframes_[i]->Value(),
-                                       keyframes_[i + 1]->Value());
+SkColor KeyframedColorAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  KeyframesAndProgress values = GetKeyframesAndProgress(
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
+  return gfx::Tween::ColorValueBetween(values.progress,
+                                       keyframes_[values.from]->Value(),
+                                       keyframes_[values.to]->Value());
 }
 
 std::unique_ptr<AnimationCurve> KeyframedColorAnimationCurve::Retarget(
     base::TimeDelta t,
     SkColor new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 std::unique_ptr<KeyframedFloatAnimationCurve>
@@ -330,25 +331,25 @@ std::unique_ptr<AnimationCurve> KeyframedFloatAnimationCurve::Retarget(
     base::TimeDelta t,
     float new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 float KeyframedFloatAnimationCurve::GetValue(base::TimeDelta t) const {
-  if (t <= (keyframes_.front()->Time() * scaled_duration()))
-    return keyframes_.front()->Value();
+  // Use GetTransformedValue instead.
+  NOTREACHED();
+}
 
-  if (t >= (keyframes_.back()->Time() * scaled_duration()))
-    return keyframes_.back()->Value();
-
-  t = TransformedAnimationTime(keyframes_, timing_function_, scaled_duration(),
-                               t);
-  size_t i = GetActiveKeyframe(keyframes_, scaled_duration(), t);
-  double progress =
-      TransformedKeyframeProgress(keyframes_, scaled_duration(), t, i);
-
-  return keyframes_[i]->Value() +
-         (keyframes_[i + 1]->Value() - keyframes_[i]->Value()) * progress;
+float KeyframedFloatAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  KeyframesAndProgress values = GetKeyframesAndProgress(
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
+  double from = keyframes_[values.from]->Value();
+  double to = keyframes_[values.to]->Value();
+  return from + (to - from) * values.progress;
 }
 
 std::unique_ptr<KeyframedTransformAnimationCurve>
@@ -392,19 +393,17 @@ std::unique_ptr<AnimationCurve> KeyframedTransformAnimationCurve::Clone()
 
 gfx::TransformOperations KeyframedTransformAnimationCurve::GetValue(
     base::TimeDelta t) const {
-  if (t <= (keyframes_.front()->Time() * scaled_duration()))
-    return keyframes_.front()->Value();
+  // Use GetTransformedValue instead.
+  NOTREACHED();
+}
 
-  if (t >= (keyframes_.back()->Time() * scaled_duration()))
-    return keyframes_.back()->Value();
-
-  t = TransformedAnimationTime(keyframes_, timing_function_, scaled_duration(),
-                               t);
-  size_t i = GetActiveKeyframe(keyframes_, scaled_duration(), t);
-  double progress =
-      TransformedKeyframeProgress(keyframes_, scaled_duration(), t, i);
-
-  return keyframes_[i + 1]->Value().Blend(keyframes_[i]->Value(), progress);
+gfx::TransformOperations KeyframedTransformAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  KeyframesAndProgress values = GetKeyframesAndProgress(
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
+  return keyframes_[values.to]->Value().Blend(keyframes_[values.from]->Value(),
+                                              values.progress);
 }
 
 bool KeyframedTransformAnimationCurve::PreservesAxisAlignment() const {
@@ -431,8 +430,10 @@ std::unique_ptr<AnimationCurve> KeyframedTransformAnimationCurve::Retarget(
     base::TimeDelta t,
     const gfx::TransformOperations& new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 std::unique_ptr<KeyframedSizeAnimationCurve>
@@ -474,28 +475,28 @@ std::unique_ptr<AnimationCurve> KeyframedSizeAnimationCurve::Clone() const {
 }
 
 gfx::SizeF KeyframedSizeAnimationCurve::GetValue(base::TimeDelta t) const {
-  if (t <= (keyframes_.front()->Time() * scaled_duration()))
-    return keyframes_.front()->Value();
+  // Use GetTransformedValue instead.
+  NOTREACHED();
+}
 
-  if (t >= (keyframes_.back()->Time() * scaled_duration()))
-    return keyframes_.back()->Value();
-
-  t = TransformedAnimationTime(keyframes_, timing_function_, scaled_duration(),
-                               t);
-  size_t i = GetActiveKeyframe(keyframes_, scaled_duration(), t);
-  double progress =
-      TransformedKeyframeProgress(keyframes_, scaled_duration(), t, i);
-
-  return gfx::Tween::SizeFValueBetween(progress, keyframes_[i]->Value(),
-                                       keyframes_[i + 1]->Value());
+gfx::SizeF KeyframedSizeAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  KeyframesAndProgress values = GetKeyframesAndProgress(
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
+  return gfx::Tween::SizeFValueBetween(values.progress,
+                                       keyframes_[values.from]->Value(),
+                                       keyframes_[values.to]->Value());
 }
 
 std::unique_ptr<AnimationCurve> KeyframedSizeAnimationCurve::Retarget(
     base::TimeDelta t,
     const gfx::SizeF& new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 std::unique_ptr<KeyframedRectAnimationCurve>
@@ -537,28 +538,28 @@ std::unique_ptr<AnimationCurve> KeyframedRectAnimationCurve::Clone() const {
 }
 
 gfx::Rect KeyframedRectAnimationCurve::GetValue(base::TimeDelta t) const {
-  if (t <= (keyframes_.front()->Time() * scaled_duration()))
-    return keyframes_.front()->Value();
+  // Use GetTransformedValue instead.
+  NOTREACHED();
+}
 
-  if (t >= (keyframes_.back()->Time() * scaled_duration()))
-    return keyframes_.back()->Value();
-
-  t = TransformedAnimationTime(keyframes_, timing_function_, scaled_duration(),
-                               t);
-  size_t i = GetActiveKeyframe(keyframes_, scaled_duration(), t);
-  double progress =
-      TransformedKeyframeProgress(keyframes_, scaled_duration(), t, i);
-
-  return gfx::Tween::RectValueBetween(progress, keyframes_[i]->Value(),
-                                      keyframes_[i + 1]->Value());
+gfx::Rect KeyframedRectAnimationCurve::GetTransformedValue(
+    base::TimeDelta t,
+    gfx::TimingFunction::LimitDirection limit_direction) const {
+  KeyframesAndProgress values = GetKeyframesAndProgress(
+      keyframes_, timing_function_, scaled_duration(), t, limit_direction);
+  return gfx::Tween::RectValueBetween(values.progress,
+                                      keyframes_[values.from]->Value(),
+                                      keyframes_[values.to]->Value());
 }
 
 std::unique_ptr<AnimationCurve> KeyframedRectAnimationCurve::Retarget(
     base::TimeDelta t,
     const gfx::Rect& new_target) {
   DCHECK(!keyframes_.empty());
-  return RetargettedCurve(keyframes_, t, GetValue(t), new_target,
-                          scaled_duration(), target(), timing_function_.get());
+  return RetargettedCurve(
+      keyframes_, t,
+      GetTransformedValue(t, gfx::TimingFunction::LimitDirection::RIGHT),
+      new_target, scaled_duration(), target(), timing_function_.get());
 }
 
 bool SufficientlyEqual(float lhs, float rhs) {
@@ -567,7 +568,7 @@ bool SufficientlyEqual(float lhs, float rhs) {
 
 bool SufficientlyEqual(const TransformOperations& lhs,
                        const TransformOperations& rhs) {
-  return lhs.ApproximatelyEqual(rhs, kTolerance);
+  return lhs.Apply().ApproximatelyEqual(rhs.Apply(), kTolerance);
 }
 
 bool SufficientlyEqual(const SizeF& lhs, const SizeF& rhs) {

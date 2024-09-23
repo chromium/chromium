@@ -4,9 +4,10 @@
 
 #include "chromeos/ash/components/nearby/presence/credentials/local_device_data_provider_impl.h"
 
+#include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/rand_util.h"
-#include "base/strings/string_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
@@ -14,22 +15,23 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "crypto/random.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace {
 
-// Using the alphanumeric characters below, this provides 36^10 unique device
-// IDs. Note that the uniqueness requirement is not global; the IDs are only
-// used to differentiate between devices associated with a single GAIA account.
-const size_t kDeviceIdLength = 10;
+// The device ID stored in `::nearby::internal::DeviceIdentityMetaData`
+// is a 128-bit integer, represented by a byte (8-bits) array.
+// This length of 16 is thus derived by dividing 128 by 8.
+const size_t kDeviceIdLength = 16;
 
-// Possible characters used in a randomly generated device ID.
-constexpr std::array<char, 36> kAlphaNumericChars = {
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-    'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+std::string GenerateDeviceId() {
+  std::vector<uint8_t> device_id_bytes =
+      crypto::RandBytesAsVector(kDeviceIdLength);
+  return std::string(device_id_bytes.begin(), device_id_bytes.end());
+}
 
 }  // namespace
 
@@ -50,9 +52,7 @@ void LocalDeviceDataProviderImpl::UpdatePersistedSharedCredentials(
         new_shared_credentials) {
   base::Value::List list;
   for (const auto& credential : new_shared_credentials) {
-    // Hex encoding converts the secret_id blob to a UTF-8 compatible string.
-    list.Append(base::HexEncode(std::vector<uint8_t>(
-        credential.secret_id().begin(), credential.secret_id().end())));
+    list.Append(base::NumberToString(credential.id()));
   }
   pref_service_->SetList(prefs::kNearbyPresenceSharedCredentialIdListPrefName,
                          std::move(list));
@@ -70,55 +70,25 @@ bool LocalDeviceDataProviderImpl::HaveSharedCredentialsChanged(
 
   std::set<std::string> new_shared_credential_ids;
   for (const auto& credential : new_shared_credentials) {
-    // Hex encode the blobs for correct comparison with the IDs encoded in
-    // UpdatePersistedSharedCredentials().
-    new_shared_credential_ids.insert(base::HexEncode(std::vector<uint8_t>(
-        credential.secret_id().begin(), credential.secret_id().end())));
+    new_shared_credential_ids.insert(base::NumberToString(credential.id()));
   }
 
   return new_shared_credential_ids != persisted_shared_credential_ids;
 }
 
 std::string LocalDeviceDataProviderImpl::GetDeviceId() {
-  std::string id =
-      pref_service_->GetString(prefs::kNearbyPresenceDeviceIdPrefName);
+  auto decoded_device_id = FetchAndDecodeDeviceId();
 
-  // If the local device ID has already been generated, then return it. If this
-  // this is the first time `GetDeviceID` has been called, then generate the
-  // local device ID, persist it, and return it to callers.
-  if (!id.empty()) {
-    return id;
+  if (!decoded_device_id) {
+    decoded_device_id = GenerateDeviceId();
+    EncodeAndPersistDeviceId(decoded_device_id.value());
   }
 
-  for (size_t i = 0; i < kDeviceIdLength; ++i) {
-    id += kAlphaNumericChars[base::RandGenerator(kAlphaNumericChars.size())];
-  }
-
-  pref_service_->SetString(prefs::kNearbyPresenceDeviceIdPrefName, id);
-  return id;
+  return decoded_device_id.value();
 }
 
-std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
-  // TODO(b/283987579): When NP Settings page is implemented, check for any
-  // changes to the user set device name.
-  std::u16string device_type = ui::GetChromeOSDeviceName();
-
-  const CoreAccountInfo account_info =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  std::string given_name =
-      identity_manager_->FindExtendedAccountInfo(account_info).given_name;
-
-  if (given_name.empty()) {
-    return base::UTF16ToUTF8(device_type);
-  }
-
-  std::string device_name =
-      l10n_util::GetStringFUTF8(IDS_NEARBY_PRESENCE_DEVICE_NAME,
-                                base::UTF8ToUTF16(given_name), device_type);
-  return device_name;
-}
-
-::nearby::internal::Metadata LocalDeviceDataProviderImpl::GetDeviceMetadata() {
+::nearby::internal::DeviceIdentityMetaData
+LocalDeviceDataProviderImpl::GetDeviceMetadata() {
   std::string user_name =
       pref_service_->GetString(prefs::kNearbyPresenceUserNamePrefName);
   std::string profile_url =
@@ -136,11 +106,9 @@ std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
   // broadcasting is not supported.
   return proto::BuildMetadata(
       /*device_type=*/::nearby::internal::DeviceType::DEVICE_TYPE_CHROMEOS,
-      /*account_name=*/GetAccountName(),
       /*device_name=*/GetDeviceName(),
-      /*user_name=*/user_name,
-      /*profile_url=*/profile_url,
-      /*mac_address=*/std::string());
+      /*mac_address=*/std::string(),
+      /*device_id=*/GetDeviceId());
 }
 
 std::string LocalDeviceDataProviderImpl::GetAccountName() {
@@ -177,6 +145,54 @@ bool LocalDeviceDataProviderImpl::IsRegistrationCompleteAndUserInfoSaved() {
 void LocalDeviceDataProviderImpl::SetRegistrationComplete(bool completed) {
   pref_service_->SetBoolean(prefs::kNearbyPresenceFirstTimeRegistrationComplete,
                             completed);
+}
+
+std::string LocalDeviceDataProviderImpl::GetDeviceName() const {
+  // TODO(b/283987579): When NP Settings page is implemented, check for any
+  // changes to the user set device name.
+  std::u16string device_type = ui::GetChromeOSDeviceName();
+
+  const CoreAccountInfo account_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  std::string given_name =
+      identity_manager_->FindExtendedAccountInfo(account_info).given_name;
+
+  if (given_name.empty()) {
+    return base::UTF16ToUTF8(device_type);
+  }
+
+  std::string device_name =
+      l10n_util::GetStringFUTF8(IDS_NEARBY_PRESENCE_DEVICE_NAME,
+                                base::UTF8ToUTF16(given_name), device_type);
+  return device_name;
+}
+
+std::optional<std::string>
+LocalDeviceDataProviderImpl::FetchAndDecodeDeviceId() {
+  std::string encoded_device_id =
+      pref_service_->GetString(prefs::kNearbyPresenceDeviceIdPrefName);
+  if (encoded_device_id.empty()) {
+    return std::nullopt;
+  }
+
+  std::string decoded_device_id;
+  if (!base::Base64UrlDecode(encoded_device_id,
+                             base::Base64UrlDecodePolicy::REQUIRE_PADDING,
+                             &decoded_device_id)) {
+    return std::nullopt;
+  }
+
+  return decoded_device_id;
+}
+
+void LocalDeviceDataProviderImpl::EncodeAndPersistDeviceId(
+    std::string raw_device_id_bytes) {
+  std::string encoded_device_id;
+  base::Base64UrlEncode(raw_device_id_bytes,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &encoded_device_id);
+  pref_service_->SetString(prefs::kNearbyPresenceDeviceIdPrefName,
+                           encoded_device_id);
 }
 
 }  // namespace ash::nearby::presence

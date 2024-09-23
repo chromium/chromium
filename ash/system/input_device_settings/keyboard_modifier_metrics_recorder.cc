@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 
 #include <cstdint>
@@ -66,9 +71,10 @@ constexpr int kNumModifiers =
 // 32-bit int will fit without any overflow or UB.
 // Modifier hash is limited to 32 bits as metrics can only handle 32 bit ints.
 static_assert((sizeof(int32_t) * 8) >= (kModifierHashWidth * kNumModifiers));
-// `kIsoLevel5ShiftMod3` is not a valid modifier for the purposes of these
-// metrics so there is 1 less modifier than the max value.
-static_assert(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) - 1 <=
+// `kIsoLevel5ShiftMod3`, `kRightAlt`, and `kFunction` are not valid modifiers
+// for this metric. Therefore there are 3 less values here than are contained in
+// the enum.
+static_assert(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) - 3 <=
               kMaxModifierValue);
 
 constexpr ui::mojom::ModifierKey GetDefaultModifier(size_t index) {
@@ -216,8 +222,7 @@ void KeyboardModifierMetricsRecorder::RecordModifierRemappingHash() {
   // If the computed hash matches the hash when settings are in a default state,
   // the metric should not be published.
   if (hash != kDefaultModifierHash) {
-    base::UmaHistogramSparse(std::string(kModifierMetricHash),
-                             static_cast<int>(hash));
+    base::UmaHistogramSparse(kModifierMetricHash, static_cast<int>(hash));
   }
 }
 

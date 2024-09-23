@@ -8,16 +8,13 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
+#include "base/containers/span_reader.h"
 #include "base/strings/string_util.h"
 #include "net/base/net_export.h"
-
-namespace base {
-class BigEndianReader;
-}  // namespace base
 
 // Various utilities for converting, validating, and comparing DNS names.
 namespace net::dns_names_util {
@@ -32,14 +29,13 @@ namespace net::dns_names_util {
 // As explained by RFC 2181, commonly cited rules for such characters are not
 // DNS restrictions, but actually restrictions for Internet hostnames. For such
 // validation, see IsCanonicalizedHostCompliant().
-NET_EXPORT_PRIVATE bool IsValidDnsName(base::StringPiece dotted_form_name);
+NET_EXPORT_PRIVATE bool IsValidDnsName(std::string_view dotted_form_name);
 
 // Like IsValidDnsName() but further validates `dotted_form_name` is not an IP
 // address (with or without surrounding []) or localhost, as such names would
 // not be suitable for DNS queries or for use as DNS record names or alias
 // target names.
-NET_EXPORT_PRIVATE bool IsValidDnsRecordName(
-    base::StringPiece dotted_form_name);
+NET_EXPORT_PRIVATE bool IsValidDnsRecordName(std::string_view dotted_form_name);
 
 // Convert a dotted-form DNS name to network wire format. Returns nullopt if
 // input is not valid for conversion (equivalent validity can be checked using
@@ -47,7 +43,7 @@ NET_EXPORT_PRIVATE bool IsValidDnsRecordName(
 // nullopt if input is not a valid internet hostname (equivalent validity can be
 // checked using net::IsCanonicalizedHostCompliant()).
 NET_EXPORT_PRIVATE std::optional<std::vector<uint8_t>> DottedNameToNetwork(
-    base::StringPiece dotted_form_name,
+    std::string_view dotted_form_name,
     bool require_valid_internet_hostname = false);
 
 // Converts a domain in DNS format to a dotted string. Excludes the dot at the
@@ -61,27 +57,42 @@ NET_EXPORT_PRIVATE std::optional<std::vector<uint8_t>> DottedNameToNetwork(
 // considered malformed. To handle a potentially compressed name, in a
 // DnsResponse object, use DnsRecordParser::ReadName().
 NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
-    base::span<const uint8_t> dns_network_wire_name,
+    base::SpanReader<const uint8_t>& reader,
     bool require_complete = false);
 NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
-    base::StringPiece dns_network_wire_name,
+    base::span<const uint8_t> span,
     bool require_complete = false);
-NET_EXPORT_PRIVATE std::optional<std::string> NetworkToDottedName(
-    base::BigEndianReader& reader,
-    bool require_complete = false);
+
+// Reads a length-prefixed region:
+// 1. reads a big-endian length L from the buffer of a size determined by the
+//    function (e.g. ReadU8 reads an 8-bit length);
+// 2. sets `*out` to a span over the next L many bytes of the buffer (beyond
+//    the end of the bytes encoding the length); and
+// 3. skips the main reader past this L-byte substring.
+//
+// Fails if reading the length L fails, or if the parsed length is greater
+// than the number of bytes remaining in the input span.
+//
+// On failure, leaves the stream at the same position
+// as before the call.
+NET_EXPORT_PRIVATE bool ReadU8LengthPrefixed(
+    base::SpanReader<const uint8_t>& reader,
+    base::span<const uint8_t>* out);
+NET_EXPORT_PRIVATE bool ReadU16LengthPrefixed(
+    base::SpanReader<const uint8_t>& reader,
+    base::span<const uint8_t>* out);
 
 // Canonicalize `name` as a URL hostname if able. If unable (typically if a name
 // is not a valid URL hostname), returns `name` without change because such a
 // name could still be a valid DNS name.
-NET_EXPORT_PRIVATE std::string UrlCanonicalizeNameIfAble(
-    base::StringPiece name);
+NET_EXPORT_PRIVATE std::string UrlCanonicalizeNameIfAble(std::string_view name);
 
 // std::map-compliant Compare for two domain names. Works for any valid
 // dotted-format or network-wire-format names. Returns true iff `lhs` is before
 // `rhs` in strict weak ordering.
 class NET_EXPORT_PRIVATE DomainNameComparator {
  public:
-  bool operator()(base::StringPiece lhs, base::StringPiece rhs) const {
+  bool operator()(std::string_view lhs, std::string_view rhs) const {
     // This works for dotted format or network-wire format as long as the names
     // are valid because valid network-wire names have labels of max 63 bytes
     // and thus will never have label length prefixes high enough to be

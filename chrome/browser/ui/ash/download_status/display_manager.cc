@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -16,14 +17,24 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ui/ash/download_status/display_client.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/holding_space_display_client.h"
 #include "chrome/browser/ui/ash/download_status/notification_display_client.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
+#include "net/base/mime_util.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/file_info.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash::download_status {
 
@@ -32,7 +43,7 @@ namespace {
 // Constants -------------------------------------------------------------------
 
 // Indicates an unknown total bytes count of `crosapi::mojom::DownloadStatus`.
-constexpr int64_t kUnknownTotalBytes = -1;
+constexpr int64_t kUnknownTotalBytes = 0;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -41,6 +52,21 @@ constexpr int64_t kUnknownTotalBytes = -1;
 bool CanDisplay(const crosapi::mojom::DownloadStatus& download_status) {
   const std::optional<base::FilePath>& file_path = download_status.full_path;
   return file_path.has_value() && !file_path->empty();
+}
+
+// Returns valid icons from `download_status` if any.
+// NOTE: Returns a non-null only if both dark and light mode icons are valid.
+crosapi::mojom::DownloadStatusIconsPtr GetIcons(
+    const crosapi::mojom::DownloadStatus& download_status) {
+  auto is_image_valid = [](const gfx::ImageSkia& image) {
+    return !image.size().IsEmpty();
+  };
+
+  const crosapi::mojom::DownloadStatusIconsPtr& icons = download_status.icons;
+  return icons && is_image_valid(icons->dark_mode) &&
+                 is_image_valid(icons->light_mode)
+             ? icons.Clone()
+             : nullptr;
 }
 
 std::string GetPrintString(const std::optional<int64_t>& data) {
@@ -75,18 +101,17 @@ Progress GetProgress(const crosapi::mojom::DownloadStatus& download_status) {
 
   if (total_bytes && total_bytes < kUnknownTotalBytes) {
     LOG(ERROR) << "The total bytes count is invalid: expected to be a non "
-                  "negative value or -1 that indicates an unknown total bytes "
+                  "negative value or 0 that indicates an unknown total bytes "
                   "count; the actual value is "
                << GetPrintString(total_bytes);
   }
 
-  // `Progress` does not accept a negative total bytes count.
-  if (updated_total_bytes < 0) {
+  // Use `std::nullopt` to indicate an indeterminate total bytes count.
+  if (updated_total_bytes <= kUnknownTotalBytes) {
     updated_total_bytes = std::nullopt;
   }
 
-  const bool is_determinate =
-      received_bytes && total_bytes && total_bytes != kUnknownTotalBytes;
+  const bool is_determinate = updated_received_bytes && updated_total_bytes;
 
   if (is_determinate && received_bytes > total_bytes) {
     LOG(ERROR) << "For a download that is determinate, its received bytes "
@@ -104,8 +129,7 @@ Progress GetProgress(const crosapi::mojom::DownloadStatus& download_status) {
     updated_received_bytes = updated_total_bytes =
         base::ranges::max({updated_received_bytes, updated_total_bytes,
                            std::optional<int64_t>(0)});
-  } else if (updated_total_bytes >= 0 &&
-             updated_received_bytes > updated_total_bytes) {
+  } else if (is_determinate && updated_received_bytes > updated_total_bytes) {
     updated_total_bytes = updated_received_bytes;
   }
 
@@ -165,7 +189,6 @@ DisplayManager::DisplayManager(
     Profile* profile,
     crosapi::DownloadStatusUpdaterAsh* download_status_updater)
     : profile_(profile), download_status_updater_(download_status_updater) {
-  CHECK(features::IsSysUiDownloadsIntegrationV2Enabled());
   CHECK(download_status_updater_);
 
   CHECK(profile_);
@@ -239,23 +262,72 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
         &kResumeIcon, IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME,
         CommandType::kResume);
   }
+  const base::FilePath& full_path = *download_status.full_path;
   switch (download_status.state) {
-    case crosapi::mojom::DownloadState::kComplete:
+    case crosapi::mojom::DownloadState::kComplete: {
+      const base::FilePath::StringType ext = full_path.Extension();
+      std::string mime_type;
+      const bool has_mime_type = ext.empty()
+                                     ? false
+                                     : net::GetWellKnownMimeTypeFromExtension(
+                                           ext.substr(1), &mime_type);
+
       // NOTE: `kOpenFile` is not shown so it doesn't require an icon/text_id.
       command_infos.emplace_back(
-          base::BindRepeating(
-              &DisplayManager::PerformCommand, weak_ptr_factory_.GetWeakPtr(),
-              CommandType::kOpenFile, *download_status.full_path),
+          base::BindRepeating(&DisplayManager::PerformCommand,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              CommandType::kOpenFile, full_path),
           /*icon=*/nullptr, /*text_id=*/-1, CommandType::kOpenFile);
+
+      std::optional<std::pair<CommandType, /*text_id=*/int>>
+          media_app_command_metadata;
+
+      if (mime_type == "application/pdf") {
+        media_app_command_metadata =
+            std::make_pair(CommandType::kEditWithMediaApp,
+                           IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT);
+      } else if (base::StartsWith(mime_type, "audio/",
+                                  base::CompareCase::SENSITIVE) ||
+                 base::StartsWith(mime_type, "video/",
+                                  base::CompareCase::SENSITIVE)) {
+        media_app_command_metadata =
+            std::make_pair(CommandType::kOpenWithMediaApp,
+                           IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN);
+      }
+
+      if (media_app_command_metadata) {
+        command_infos.emplace_back(
+            base::BindRepeating(&DisplayManager::PerformCommand,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                media_app_command_metadata->first, full_path),
+            /*icon=*/nullptr, media_app_command_metadata->second,
+            media_app_command_metadata->first);
+      }
 
       // NOTE: The `kShowInFolder` button does not have an icon.
       command_infos.emplace_back(
-          base::BindRepeating(
-              &DisplayManager::PerformCommand, weak_ptr_factory_.GetWeakPtr(),
-              CommandType::kShowInFolder, *download_status.full_path),
+          base::BindRepeating(&DisplayManager::PerformCommand,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              CommandType::kShowInFolder, full_path),
           /*icon=*/nullptr, IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER,
           CommandType::kShowInFolder);
+
+      // Add a command to copy the download file to clipboard if:
+      // 1. `download_status` has a valid image; AND
+      // 2. The download file is an image.
+      // NOTE: The `kCopyToClipboard` button does not require an icon.
+      if (const gfx::ImageSkia& image = download_status.image;
+          !image.isNull() && !image.size().IsEmpty() && has_mime_type &&
+          blink::IsSupportedImageMimeType(mime_type)) {
+        command_infos.emplace_back(
+            base::BindRepeating(&DisplayManager::PerformCommand,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                CommandType::kCopyToClipboard, full_path),
+            /*icon=*/nullptr, IDS_ASH_DOWNLOAD_COMMAND_TEXT_COPY_TO_CLIPBOARD,
+            CommandType::kCopyToClipboard);
+      }
       break;
+    }
     case crosapi::mojom::DownloadState::kInProgress:
       // NOTE: `kShowInBrowser` is not shown so doesn't require an icon/text_id.
       command_infos.emplace_back(
@@ -263,6 +335,18 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
               &DisplayManager::PerformCommand, weak_ptr_factory_.GetWeakPtr(),
               CommandType::kShowInBrowser, download_status.guid),
           /*icon=*/nullptr, /*text_id=*/-1, CommandType::kShowInBrowser);
+
+      if (!download_status.cancellable.value_or(false) &&
+          !download_status.pausable.value_or(false) &&
+          !download_status.resumable.value_or(false)) {
+        command_infos.emplace_back(
+            base::BindRepeating(
+                &DisplayManager::PerformCommand, weak_ptr_factory_.GetWeakPtr(),
+                CommandType::kViewDetailsInBrowser, download_status.guid),
+            &kOpenInBrowserIcon,
+            IDS_ASH_DOWNLOAD_COMMAND_TEXT_VIEW_DETAILS_IN_BROWSER,
+            CommandType::kViewDetailsInBrowser);
+      }
       break;
     case crosapi::mojom::DownloadState::kCancelled:
     case crosapi::mojom::DownloadState::kInterrupted:
@@ -271,7 +355,8 @@ DisplayMetadata DisplayManager::CalculateDisplayMetadata(
   }
   display_metadata.command_infos = std::move(command_infos);
 
-  display_metadata.file_path = *download_status.full_path;
+  display_metadata.file_path = full_path;
+  display_metadata.icons = GetIcons(download_status);
   display_metadata.image = download_status.image;
   display_metadata.progress = GetProgress(download_status);
   display_metadata.secondary_text = download_status.status_text;
@@ -288,6 +373,21 @@ void DisplayManager::PerformCommand(
       download_status_updater_->Cancel(/*guid=*/std::get<std::string>(param),
                                        /*callback=*/base::DoNothing());
       break;
+    case CommandType::kCopyToClipboard: {
+      ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+      scw.WriteFilenames(ui::FileInfosToURIList(
+          /*filenames=*/{ui::FileInfo(std::get<base::FilePath>(param),
+                                      /*display_name=*/base::FilePath())}));
+      break;
+    }
+    case CommandType::kEditWithMediaApp:
+    case CommandType::kOpenWithMediaApp: {
+      SystemAppLaunchParams app_launch_params;
+      app_launch_params.launch_paths.push_back(std::get<base::FilePath>(param));
+      LaunchSystemWebAppAsync(profile_, SystemWebAppType::MEDIA,
+                              app_launch_params);
+      break;
+    }
     case CommandType::kOpenFile:
       OpenFile(profile_, std::get<base::FilePath>(param));
       break;
@@ -306,6 +406,11 @@ void DisplayManager::PerformCommand(
       break;
     case CommandType::kShowInFolder:
       ShowInFolder(profile_, std::get<base::FilePath>(param));
+      break;
+    case CommandType::kViewDetailsInBrowser:
+      download_status_updater_->ShowInBrowser(
+          /*guid=*/std::get<std::string>(param),
+          /*callback=*/base::DoNothing());
       break;
   }
 }

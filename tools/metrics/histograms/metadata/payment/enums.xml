@@ -1,0 +1,72 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+        You DON'T need an OWNER review to submit changes to this file.
+
+This file describes the enumerations used in metrics data.  It is used
+along with histograms.xml to describe the histogram data collected by Chrome.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please pretty-print and validate your edits by running the pretty_print.py
+and validate_format.py scripts in the same directory as this file before
+uploading your change for review.  These are checked by presubmit scripts.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="CanMakePaymentPreferenceSetter">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User Setting"/>
+  <int value="2" label="Standalone Browser (ChromeOS-only)"/>
+  <int value="3" label="Extension"/>
+  <int value="4" label="Custodian"/>
+  <int value="5" label="Admin Policy"/>
+</enum>
+
+<enum name="PaymentRequestAddressEditorMode">
+  <int value="0" label="Add new address"/>
+  <int value="1" label="Edit existing address"/>
+</enum>
+
+<enum name="PaymentRequestCheckoutFunnelSteps">
+  <int value="0" label="Initiated"/>
+  <int value="1" label="Show() called"/>
+  <int value="2" label="Payment request triggered (shown + skipped show)"/>
+  <int value="3" label="Payment handler invoked"/>
+  <int value="4" label="Completed"/>
+</enum>
+
+<enum name="PaymentRequestPrePurchaseQuery">
+  <int value="0" label="Other type of query"/>
+  <int value="1" label="Service Worker event"/>
+  <int value="2" label="Android intent"/>
+</enum>
+
+<!-- LINT.IfChange(PaymentRequestTryShowOutcome) -->
+
+<enum name="PaymentRequestTryShowOutcome">
+  <int value="0" label="Able to show"/>
+  <int value="1" label="Cannot show due to an unknown reason"/>
+  <int value="2" label="Cannot show due to null delegate"/>
+  <int value="3"
+      label="Cannot show due to existing PaymentRequest in same tab"/>
+  <int value="4"
+      label="Cannot show due to existing PaymentRequest in different tab"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/payments/content/payment_request_display_manager.h:PaymentRequestTryShowOutcome) -->
+
+</enums>
+
+</histogram-configuration>

@@ -47,6 +47,10 @@ class FakeMojomRenderer : public mojom::Renderer {
               SetCdm,
               (const std::optional<base::UnguessableToken>&, SetCdmCallback),
               (override));
+  MOCK_METHOD(void,
+              SetLatencyHint,
+              (std::optional<base::TimeDelta>),
+              (override));
 };
 
 class FakeMediaFoundationRendererExtension
@@ -201,8 +205,8 @@ class MediaFoundationRendererClientTest
         /*video_overlay_factory*/ nullptr,
         /*video_renderer_sink*/ nullptr, std::move(renderer_remote));
 
-    frame_server_mailbox_ = gpu::Mailbox::GenerateForSharedImage();
-    dcomp_mailbox_ = gpu::Mailbox::GenerateForSharedImage();
+    frame_server_mailbox_ = gpu::Mailbox::Generate();
+    dcomp_mailbox_ = gpu::Mailbox::Generate();
     dcomp_texture_wrapper_ = std::make_unique<FakeDCOMPTextureWrapper>(
         frame_server_mailbox_, dcomp_mailbox_);
 
@@ -235,7 +239,7 @@ class MediaFoundationRendererClientTest
       dcomp_on_state_change_cb_ = cb;
     } else {
       // Unexpected
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     return std::make_unique<MockOverlayStateObserverSubscription>();

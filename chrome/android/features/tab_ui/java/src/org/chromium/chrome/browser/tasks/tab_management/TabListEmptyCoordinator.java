@@ -7,11 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.base.Callback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -20,7 +19,7 @@ import org.chromium.ui.modelutil.ListObservable.ListObserver;
  * Empty coordinator that is responsible for showing an empty state view in tab switcher when we are
  * in no tab state.
  */
-// @TODO(crbug.com/1442335) Add instrumentation test for TabListEmptyCoordinator class.
+// @TODO(crbug.com/40910476) Add instrumentation test for TabListEmptyCoordinator class.
 class TabListEmptyCoordinator {
     private ViewGroup mRootView;
     private View mEmptyView;
@@ -30,20 +29,18 @@ class TabListEmptyCoordinator {
     private Context mContext;
     private TabListModel mModel;
     private ListObserver<Void> mListObserver;
+    private Callback<Runnable> mRunOnItemAnimatorFinished;
     private boolean mIsTabSwitcherShowing;
     private boolean mIsListObserverAttached;
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     public TabListEmptyCoordinator(
-            ViewGroup rootView,
-            TabListModel model,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            ViewGroup rootView, TabListModel model, Callback<Runnable> runOnItemAnimatorFinished) {
         mRootView = rootView;
         mContext = rootView.getContext();
+        mRunOnItemAnimatorFinished = runOnItemAnimatorFinished;
 
         // Observe TabListModel to determine when to add / remove empty state view.
         mModel = model;
-        mBrowserControlsStateProvider = browserControlsStateProvider;
         mListObserver =
                 new ListObserver<Void>() {
                     @Override
@@ -87,13 +84,24 @@ class TabListEmptyCoordinator {
         mImageView.setImageResource(imageResId);
     }
 
-    private void updateEmptyView() {
-        boolean isInEmptyState = mModel.size() == 0 && mIsTabSwitcherShowing;
-        boolean isEmptyViewAttached = mEmptyView != null && mEmptyView.getParent() != null;
+    private boolean isEmptyViewAttached() {
+        return mEmptyView != null && mEmptyView.getParent() != null;
+    }
 
-        if (isEmptyViewAttached) {
-            if (isInEmptyState) {
-                setEmptyViewVisibility(View.VISIBLE);
+    private boolean isInEmptyState() {
+        return mModel.size() == 0 && mIsTabSwitcherShowing;
+    }
+
+    private void updateEmptyView() {
+        if (isEmptyViewAttached()) {
+            if (isInEmptyState()) {
+                mRunOnItemAnimatorFinished.onResult(
+                        () -> {
+                            // Re-check requirements since this is now async.
+                            if (isEmptyViewAttached() && isInEmptyState()) {
+                                setEmptyViewVisibility(View.VISIBLE);
+                            }
+                        });
             } else {
                 setEmptyViewVisibility(View.GONE);
             }
@@ -128,11 +136,6 @@ class TabListEmptyCoordinator {
     public void attachEmptyView() {
         if (mEmptyView != null && mEmptyView.getParent() == null) {
             mRootView.addView(mEmptyView);
-            int toolbarHeightPx = mBrowserControlsStateProvider.getTopControlsHeight();
-            FrameLayout.LayoutParams emptyViewParams =
-                    (FrameLayout.LayoutParams) mEmptyView.getLayoutParams();
-            emptyViewParams.topMargin = toolbarHeightPx;
-            mEmptyView.setLayoutParams(emptyViewParams);
         }
         setEmptyViewVisibility(View.GONE);
     }

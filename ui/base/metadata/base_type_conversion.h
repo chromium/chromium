@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/ranges/ranges.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -151,7 +151,7 @@ struct EnumStringsMap;
                                                                             \
     static const auto& Get() {                                              \
       static constexpr auto kMap =                                          \
-          base::MakeFixedFlatMap<T, base::StringPiece16>({__VA_ARGS__});    \
+          base::MakeFixedFlatMap<T, std::u16string_view>({__VA_ARGS__});    \
       return kMap;                                                          \
     }                                                                       \
   };                                                                        \
@@ -160,7 +160,7 @@ struct EnumStringsMap;
   std::u16string ui::metadata::TypeConverter<T>::ToString(                  \
       ui::metadata::ArgType<T> source_value) {                              \
     const auto& map = EnumStringsMap<T>::Get();                             \
-    auto* it = map.find(source_value);                                      \
+    auto it = map.find(source_value);                                       \
     return it != map.end() ? std::u16string(it->second) : std::u16string(); \
   }                                                                         \
                                                                             \
@@ -169,7 +169,7 @@ struct EnumStringsMap;
       const std::u16string& str) {                                          \
     const auto& map = EnumStringsMap<T>::Get();                             \
     using Pair = base::ranges::range_value_t<decltype(map)>;                \
-    auto* it = base::ranges::find(map, str, &Pair::second);                 \
+    auto it = base::ranges::find(map, str, &Pair::second);                  \
     return it != map.end() ? std::make_optional(it->first) : std::nullopt;  \
   }                                                                         \
                                                                             \
@@ -358,7 +358,7 @@ struct COMPONENT_EXPORT(UI_BASE_METADATA)
   // SkColor by assuming the pieces are split from a string like
   // "rgba(r,g,b,a)". Returns nullopt if conversion was unsuccessful.
   static std::optional<SkColor> RgbaPiecesToSkColor(
-      const std::vector<base::StringPiece16>& pieces,
+      const std::vector<std::u16string_view>& pieces,
       size_t start_piece);
 
  private:

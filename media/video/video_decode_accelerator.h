@@ -32,13 +32,7 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace gpu {
-class SharedImageStub;
-}
-
 namespace media {
-
-class CommandBufferHelper;
 
 // Video decoder interface.
 // This interface is extended by the various components that ultimately
@@ -209,22 +203,11 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // |format| indicates what format the decoded frames will be produced in
     // by the VDA, or PIXEL_FORMAT_UNKNOWN if the underlying platform handles
     // this transparently.
-    virtual void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
-                                       VideoPixelFormat format,
-                                       const gfx::Size& dimensions,
-                                       uint32_t texture_target) = 0;
-
-    // This is the same as ProvidePictureBuffers() except that |visible_rect| is
-    // also included. The default implementation calls ProvidePictureBuffers()
-    // setting |dimensions| = GetRectSizeFromOrigin(|visible_rect|) when
-    // |texture_target| is GL_TEXTURE_EXTERNAL_OES; otherwise, it passes along
-    // all parameters to ProvidePictureBuffers() as they are.
     virtual void ProvidePictureBuffersWithVisibleRect(
         uint32_t requested_num_of_buffers,
         VideoPixelFormat format,
         const gfx::Size& dimensions,
-        const gfx::Rect& visible_rect,
-        uint32_t texture_target);
+        const gfx::Rect& visible_rect) = 0;
 
     // Callback to dismiss picture buffer that was assigned earlier.
     virtual void DismissPictureBuffer(int32_t picture_buffer_id) = 0;
@@ -251,14 +234,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // Initialize() will not be reported here, but will instead be indicated by
     // a false return value there.
     virtual void NotifyError(Error error) = 0;
-
-    // Return the SharedImageStub through which SharedImages may be created.
-    // Default implementation returns nullptr.
-    virtual gpu::SharedImageStub* GetSharedImageStub() const;
-
-    // Return the CommandBufferHelper through which GL passthrough textures may
-    // be created. Default implementation returns nullptr.
-    virtual CommandBufferHelper* GetCommandBufferHelper() const;
 
    protected:
     virtual ~Client() {}
@@ -304,7 +279,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   virtual void Decode(scoped_refptr<DecoderBuffer> buffer,
                       int32_t bitstream_id);
 
-  // Assigns a set of texture-backed picture buffers to the video decoder.
+  // Assigns a set of picture buffers to the video decoder.
   //
   // Ownership of each picture buffer remains with the client, but the client
   // is not allowed to deallocate the buffer before the DismissPictureBuffer
@@ -407,24 +382,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   virtual bool TryToSetupDecodeOnSeparateSequence(
       const base::WeakPtr<Client>& decode_client,
       const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner);
-
-  // Windows creates a BGRA texture.
-  // TODO(dshwang): after moving to D3D11, remove this. crbug.com/438691
-  virtual GLenum GetSurfaceInternalFormat() const;
-
-  // Returns true if the decoder supports SharedImage backed picture buffers.
-  // May be called on any thread at any time.
-  virtual bool SupportsSharedImagePictureBuffers() const;
-
-  // NOTE: `kAllocateGLTextures` is not supported on Apple platforms.
-  enum class TextureAllocationMode {
-    kDoNotAllocateGLTextures,
-    kAllocateGLTextures
-  };
-
-  // Returns an enum used to allocate GL textures for shared images.
-  // May be called on any thread at any time.
-  TextureAllocationMode GetSharedImageTextureAllocationMode() const;
 
  protected:
   // Do not delete directly; use Destroy() or own it with a scoped_ptr, which

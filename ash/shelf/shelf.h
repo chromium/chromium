@@ -69,7 +69,6 @@ T SelectValueByShelfAlignment(ShelfAlignment alignment,
       return right;
   }
   NOTREACHED();
-  return bottom;
 }
 
 bool IsHorizontalAlignment(ShelfAlignment alignment);

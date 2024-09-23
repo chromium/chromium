@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+proto_library("proto") {
+  proto_in_dir = "//"
+
+  sources = [ "oobe.proto" ]
+
+  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+}

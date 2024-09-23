@@ -46,7 +46,7 @@
 <translation id="1363028406613469049">டிராக் எண்</translation>
 <translation id="1378727793141957596">Google இயக்ககத்திற்கு வருக!</translation>
 <translation id="1379911846207762492">இணைய இணைப்பு இல்லாதபோதும் ஆஃப்லைனில் கோப்புகளை அணுகும் வகையில் அமைக்கலாம்.</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">தேடுக</translation>
 <translation id="1388045380422025115">அனைத்து வகைகளும்</translation>
 <translation id="1395262318152388157">தேடுவதற்கான ஸ்லைடர்</translation>
 <translation id="1399511500114202393">பயனர் சான்றிதழ் இல்லை</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS ஹோஸ்ட்</translation>
 <translation id="3104793765551262433">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி தடுத்துள்ளார், விவரங்கள்</translation>
-<translation id="3113153474486991170">"<ph name="PATH" />" காப்பகத்தை இந்தத் தடத்தில் திறக்க முடியவில்லை. அதைத் திறக்க "எனது ஃபைல்கள் " என்பதற்கு நகலெடுக்கவும்.</translation>
 <translation id="3113592018909187986">ஒரு முயற்சி மீதமுள்ளது. புதிய பின்னை (PIN) அமைக்காத வரை இந்த நெட்வொர்க்கைப் பயன்படுத்த முடியாது.</translation>
 <translation id="3124404833828281817">பகல் கனவு காணும் நபர்</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ரத்துசெய்யப்படும்.</translation>
 <translation id="3690128548376345212">நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, இயக்கப்படவில்லை, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
 <translation id="3691184985318546178">சிங்களம்</translation>
+<translation id="3702842351052426940">உங்கள் சிம் கார்டு அல்லது eSIM சுயவிவரம் முடக்கப்பட்டிருக்கலாம். சிம் கார்டை மாற்றவும் அல்லது வேறு eSIM சுயவிவரங்களுக்கு மாறவும்.</translation>
 <translation id="3722341589402358578">பிழை ஏற்பட்டது. இதில் சில நீக்கப்படாமல் இருக்கக்கூடும்.</translation>
 <translation id="3726463242007121105">இந்த சாதனத்தின் கோப்புமுறைமை ஆதரிக்கப்படாததால், இந்த சாதனத்தை திறக்க முடியவில்லை.</translation>
 <translation id="3727148787322499904">இந்த அமைப்பை மாற்றினால், பகிர்ந்த எல்லா நெட்வொர்க்குகளும் பாதிக்கப்படும்</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">உங்கள் நிர்வாகி இந்த ப்ராக்ஸியைச் செயல்படுத்தியுள்ளார்</translation>
 <translation id="3830674330436234648">பிளேபேக் இல்லை</translation>
 <translation id="383652340667548381">செர்பியன்</translation>
+<translation id="3839045880592694915">உங்கள் மோடத்துடன் இணைக்க மொபைல் நிறுவனம் அனுமதிக்கவில்லை. மேலும் விவரங்களுக்கு மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="385051799172605136">திரும்பு</translation>
-<translation id="3851491607336266896">இணைக்கப்பட்டது, வரம்பிற்கு உட்பட்ட இணைப்புநிலை</translation>
 <translation id="3855472144336161447">ஜெர்மன் நியோ 2</translation>
 <translation id="3858860766373142691">பெயர்</translation>
 <translation id="3866249974567520381">விவரம்</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">சமீபத்தில் திறக்கப்பட்ட Microsoft ஃபைல்கள் OneDriveக்கு நகர்த்தப்பட்டுள்ளன</translation>
 <translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4017788180641807848">ஆங்கிலம் (யூஎஸ்) - வொர்க்மேன் கீபோர்டு</translation>
-<translation id="4019998208269143058">'துரித ஃபைல்கள்' பிரிவில் பின் செய்</translation>
 <translation id="4040753847560036377">தவறான PUK</translation>
 <translation id="4057991113334098539">செயலாக்குகிறது...</translation>
 <translation id="4092890906744441904">ஐரிஷ்</translation>
+<translation id="4101601646343868113">உங்கள் மொபைல் நெட்வொர்க்கில் உள்நுழைந்து, மொபைல் டேட்டா பிளான் செயலில் இருப்பதை உறுதிப்படுத்திக்கொள்ளுங்கள்</translation>
 <translation id="4124731372776320263">1 Drive ஃபைலை ஒத்திசைக்கிறது</translation>
 <translation id="4124935795427217608">கொம்புக் குதிரை</translation>
 <translation id="4131235941541910880">தேவைப்படாதவற்றை நீக்கவும்</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">தமிழ் - Tamil99 கீபோர்டு</translation>
 <translation id="5633226425545095130">இந்த ஃபைலை நகர்த்தினால் '<ph name="DESTINATION_NAME" />' என்ற பகிரப்பட்ட ஃபோல்டரைப் பார்க்கக்கூடிய அனைவருடனும் இது பகிரப்படும்.</translation>
 <translation id="5649768706273821470">கேள்</translation>
+<translation id="5650895901941743674">உங்கள் APN உள்ளமைவைச் சரிபார்க்கவும்</translation>
 <translation id="5669691691057771421">புதிய பின்னை உள்ளிடவும்</translation>
 <translation id="5678784840044122290">இந்த Linux ஆப்ஸ் உங்கள் முனையத்திற்குள் இருக்கும், அத்துடன் உங்கள் தொடக்கியிலும் ஒரு ஐகான் காண்பிக்கப்படலாம்.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />காப்பகம் அல்லது விர்ச்சுவல் வட்டிலிருந்து இணைப்பை நீக்க முடியவில்லை<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" />%, இணை</translation>
 <translation id="6269630227984243955">மலாய்</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" இல் போதிய சேமிப்பகம் இல்லாததால் ஃபைல்களைப் பதிவேற்ற முடியவில்லை.</translation>
+<translation id="6279140785485544797">உங்களின் மொபைல் டேட்டா திட்டம் காலாவதியாகியிருக்கலாம். உதவிக்கு மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="6287852322318138013">இந்த ஃபைலைத் திறக்க பயன்பாட்டைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6295542640242147836">சிம்மைப் பூட்டு</translation>
 <translation id="6296410173147755564">தவறான PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> காப்பக ஃபைல்</translation>
 <translation id="6321303798550928047">கை அசைத்தல்</translation>
 <translation id="6327785803543103246">இணைய ப்ராக்ஸியைத் தானாகக் கண்டறி</translation>
-<translation id="6337014272874260727">'துரித ஃபைல்கள்' பிரிவிலிருந்து பிரித்தெடு</translation>
 <translation id="6339145975392024142">யுஎஸ் சர்வதேச கீபோர்டு (PC)</translation>
 <translation id="6356685157277930264">ஃபைல்களின் கருத்துச் சாளரம்</translation>
 <translation id="6358884629796491903">டிராகன்</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">தற்போதைய டைரக்டரி</translation>
 <translation id="6751256176799620176">1 ஃபோல்டர் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="6755827872271341378">ChromeOS Flex சாதனம்</translation>
+<translation id="6777029074498310250">கூடுதல் தகவல்களுக்கு <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> தளத்தைப் பாருங்கள்</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
 <translation id="6794539005637808366">ஃபைலை மீட்டெடுக்கவும் அல்லது ‘நீக்கியவை’ ஃபோல்டரில் இருந்து புதிய ஃபோல்டருக்கு இழுத்து விடவும்</translation>
 <translation id="6795884519221689054">பாண்டா</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">தமிழ் - இன்ஸ்கிரிப்ட் கீபோர்டு</translation>
 <translation id="7088615885725309056">பழையவை</translation>
 <translation id="7103992300314999525">மாஸிடோனியன்</translation>
+<translation id="7104338189998813914">உங்கள் OneDrive கணக்கை அணுகுவதில் சிக்கல் உள்ளது</translation>
 <translation id="7106346894903675391">கூடுதல் சேமிப்பிடத்தை வாங்கு...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;இயக்ககத்தில் தேடு&lt;/em&gt;</translation>
 <translation id="7135561821015524160">கன்னட ஒலிப்புமுறை</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">ஒரு வினாடி காத்திருக்கவும்</translation>
 <translation id="7600126690270271294">செர்பியன்</translation>
 <translation id="7603724359189955920">கட்டங்கள்</translation>
+<translation id="7624010287655004652">வேறொரு மொபைல் சேவை வழங்குநரால் லாக் செய்யப்பட்டுள்ளது</translation>
 <translation id="7627790789328695202">அடடா, <ph name="FILE_NAME" /> ஏற்கனவே உள்ளது. இதற்கு மறுபெயரிட்டு மீண்டும் முயற்சிக்கவும்.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% முடிந்தது.</translation>
 <translation id="7649070708921625228">உதவி</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">ஃபைல் பட்டியல் சிறுபடக் காட்சிக்கு மாறியுள்ளது.</translation>
 <translation id="8601932370724196034">Crostini பட ஃபைல்</translation>
 <translation id="8609695766746872526">ஐஸ்லாண்டிக்</translation>
+<translation id="8630384863424041081">உங்கள் மொபைல் நிறுவனம் வழங்கிய உங்கள் சிம் கார்டின் பின் அல்லது இயல்புப் பின்னை டைப் செய்யவும். உதவிக்கு உங்களின் மொபைல் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="863903787380594467">தவறான பின். <ph name="RETRIES" /> முயற்சிகள் மீதமுள்ளன.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - போர்ட்</translation>
 <translation id="8656407365183407932">உங்கள் ஆஃப்லைன் ஃபைல்கள் அகற்றப்பட்டன</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">இந்த ஃபைல் ரகசியமானது, அத்துடன் நிர்வாகிக் கொள்கையின் வரம்புகளுக்கும் உட்பட்டது.</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8713112442029511308">மால்டீஸ்</translation>
-<translation id="8714138378966541668">மொபைல் நிறுவனம் பூட்டியுள்ளது</translation>
 <translation id="8714406895390098252">சைக்கிள்</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
 <translation id="872537912056138402">குரோஷியன்</translation>

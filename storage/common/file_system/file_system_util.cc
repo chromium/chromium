@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "storage/common/file_system/file_system_util.h"
 
 #include <stddef.h>
@@ -223,8 +228,6 @@ GURL GetFileSystemRootURI(const GURL& origin_url, FileSystemType type) {
     default:
       NOTREACHED();
   }
-  NOTREACHED();
-  return GURL();
 }
 
 std::string GetFileSystemName(const GURL& origin_url, FileSystemType type) {
@@ -278,12 +281,10 @@ std::string GetFileSystemTypeString(FileSystemType type) {
     case kFileSystemInternalTypeEnumStart:
     case kFileSystemInternalTypeEnumEnd:
       NOTREACHED();
-      [[fallthrough]];
     case kFileSystemTypeUnknown:
       return "Unknown";
   }
   NOTREACHED();
-  return std::string();
 }
 
 std::string FilePathToString(const base::FilePath& file_path) {
@@ -324,7 +325,6 @@ bool GetFileSystemPublicType(const std::string type_string,
     return true;
   }
   NOTREACHED();
-  return false;
 }
 
 std::string GetIsolatedFileSystemName(const GURL& origin_url,
@@ -413,6 +413,8 @@ base::File::Error NetErrorToFileError(int error) {
       return base::File::FILE_ERROR_NOT_FOUND;
     case net::ERR_ACCESS_DENIED:
       return base::File::FILE_ERROR_ACCESS_DENIED;
+    case net::ERR_INSUFFICIENT_RESOURCES:
+      return base::File::FILE_ERROR_TOO_MANY_OPENED;
     case net::ERR_OUT_OF_MEMORY:
       return base::File::FILE_ERROR_NO_MEMORY;
     case net::ERR_FILE_NO_SPACE:

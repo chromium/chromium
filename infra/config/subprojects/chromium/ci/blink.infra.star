@@ -75,7 +75,7 @@ ci.builder(
 
 ci.builder(
     name = "blink-flake-suppressor",
-    description_html = "Runs Flake Suppressor on all sheriff builders to generate test suppression cl.",
+    description_html = "Runs Flake Suppressor on all gardened builders to generate test suppression cl.",
     executable = "recipe:chromium_expectation_files/expectation_file_scripts",
     # Run once at 4 PM Pacific on weekdays.
     schedule = "0 0 * * 1-5",
@@ -99,7 +99,7 @@ ci.builder(
                 },
                 "cl_title": "Blink web tests suppression",
                 "args": [
-                    # TODO(crbug.com/1358735): Create a new project to avoid
+                    # TODO(crbug.com/40237087): Create a new project to avoid
                     # capacity issue.
                     "--project",
                     "chrome-unexpected-pass-data",
@@ -145,7 +145,7 @@ ci.builder(
                     "--project",
                     "chrome-unexpected-pass-data",
                     "--sample-period",
-                    "3",
+                    "7",
                     "--check-bugs-only",
                     "--attach-analysis-result",
                 ],
@@ -157,10 +157,33 @@ ci.builder(
                     "--project",
                     "chrome-unexpected-pass-data",
                     "--sample-period",
-                    "3",
+                    "7",
                     "--check-bugs-only",
                     "--attach-analysis-result",
                 ],
+            },
+        ],
+    },
+    service_account = "chromium-automated-expectation@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+ci.builder(
+    name = "blink-virtual-test-suites-notifier",
+    description_html = "Sends notifications for expired Virtual Test Suites",
+    executable = "recipe:chromium/generic_script_runner",
+    # Run once daily at 12 PM Pacific/7 PM UTC.
+    schedule = "0 19 * * *",
+    triggered_by = [],
+    cores = 8,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "vts-notify",
+    ),
+    contact_team_email = "chrome-experience-engprod@google.com",
+    properties = {
+        "scripts": [
+            {
+                "step_name": "notify_vts",
+                "script": "third_party/blink/tools/notify_vts.py",
             },
         ],
     },

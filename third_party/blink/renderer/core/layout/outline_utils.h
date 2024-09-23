@@ -14,4 +14,4 @@ bool HasPaintedOutline(const ComputedStyle& style, const Node* node);
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUTLINE_UTILS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OUTLINE_UTILS_H_

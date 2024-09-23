@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -24,6 +25,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -66,7 +68,18 @@ ManagePasswordsBubbleController::ManagePasswordsBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
     : PasswordBubbleControllerBase(
           std::move(delegate),
-          /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS) {}
+          /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS),
+      bubble_mode_(
+          delegate_ &&
+                  delegate_
+                      ->GetManagePasswordsSingleCredentialDetailsModeCredential()
+              ? BubbleMode::kSingleCredentialDetails
+              : BubbleMode::kCredentialList),
+      details_bubble_credential_(
+          delegate_
+              ? delegate_
+                    ->GetManagePasswordsSingleCredentialDetailsModeCredential()
+              : std::nullopt) {}
 
 ManagePasswordsBubbleController::~ManagePasswordsBubbleController() {
   OnBubbleClosing();
@@ -82,12 +95,23 @@ std::u16string ManagePasswordsBubbleController::GetTitle() const {
       return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/false);
     case password_manager::ui::UPDATE_CONFIRMATION_STATE:
       return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/true);
-    case password_manager::ui::MANAGE_STATE:
-      return GetManagePasswordsDialogTitleText(
-          GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
-          !delegate_->GetCurrentForms().empty());
+    case password_manager::ui::MANAGE_STATE: {
+      switch (bubble_mode_) {
+        case BubbleMode::kCredentialList:
+          return GetManagePasswordsDialogTitleText(
+              GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
+              !delegate_->GetCurrentForms().empty());
+        case BubbleMode::kSingleCredentialDetails:
+          const std::vector<password_manager::CredentialUIEntry::DomainInfo>&
+              affiliated_domains = password_manager::CredentialUIEntry(
+                                       *details_bubble_credential_)
+                                       .GetAffiliatedDomains();
+          CHECK(!affiliated_domains.empty());
+          return base::UTF8ToUTF16(affiliated_domains[0].name);
+      }
+    }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -96,6 +120,23 @@ void ManagePasswordsBubbleController::OnManageClicked(
   dismissal_reason_ = metrics_util::CLICKED_MANAGE;
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(referrer);
+  }
+}
+
+void ManagePasswordsBubbleController::OnManagePasswordClicked(
+    password_manager::ManagePasswordsReferrer referrer) {
+  CHECK(details_bubble_credential_.has_value());
+  dismissal_reason_ = metrics_util::CLICKED_MANAGE_PASSWORD;
+  if (delegate_) {
+    std::vector<password_manager::CredentialUIEntry::DomainInfo>
+        affiliated_domains = password_manager::CredentialUIEntry(
+                                 details_bubble_credential_.value())
+                                 .GetAffiliatedDomains();
+    CHECK(!affiliated_domains.empty());
+    // Any `affiliated_domains[i].name` can used to navigate to the credential
+    // details page.
+    delegate_->NavigateToPasswordDetailsPageInPasswordManager(
+        affiliated_domains[0].name, referrer);
   }
 }
 
@@ -125,7 +166,7 @@ ManagePasswordsBubbleController::GetPasswordSyncState() const {
                  ? SyncState::kActiveWithSyncFeatureEnabled
                  : SyncState::kActiveWithAccountPasswords;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string ManagePasswordsBubbleController::GetPrimaryAccountEmail() {
@@ -151,11 +192,11 @@ void ManagePasswordsBubbleController::OnGooglePasswordManagerLinkClicked() {
 }
 
 void ManagePasswordsBubbleController::OnMovePasswordLinkClicked() {
-  CHECK(currently_selected_password_.has_value());
+  CHECK(details_bubble_credential_.has_value());
   password_manager::metrics_util::LogUserInteractionsInPasswordManagementBubble(
       PasswordManagementBubbleInteractions::kMovePasswordLinkClicked);
   if (delegate_) {
-    delegate_->ShowMovePasswordBubble(currently_selected_password_.value());
+    delegate_->ShowMovePasswordBubble(details_bubble_credential_.value());
   }
 }
 
@@ -167,29 +208,37 @@ ManagePasswordsBubbleController::GetCredentials() const {
   return base::make_span(delegate_->GetCurrentForms());
 }
 
-void ManagePasswordsBubbleController::UpdateSelectedCredentialInPasswordStore(
-    password_manager::PasswordForm updated_form) {
-  DCHECK(currently_selected_password_.has_value());
+const password_manager::PasswordForm&
+ManagePasswordsBubbleController::GetSingleCredentialDetailsModeCredential()
+    const {
+  CHECK_EQ(bubble_mode_, BubbleMode::kSingleCredentialDetails);
+  return *delegate_->GetManagePasswordsSingleCredentialDetailsModeCredential();
+}
+
+void ManagePasswordsBubbleController::
+    UpdateDetailsBubbleCredentialInPasswordStore(
+        password_manager::PasswordForm updated_form) {
+  DCHECK(details_bubble_credential_.has_value());
   Profile* profile = GetProfile();
   if (!profile) {
     return;
   }
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      PasswordStoreForForm(currently_selected_password_.value());
+      PasswordStoreForForm(details_bubble_credential_.value());
 
   LogNoteChangesInPasswordManagementBubble(
-      currently_selected_password_->GetNoteWithEmptyUniqueDisplayName(),
+      details_bubble_credential_->GetNoteWithEmptyUniqueDisplayName(),
       updated_form.GetNoteWithEmptyUniqueDisplayName());
 
-  if (currently_selected_password_.value().username_value ==
+  if (details_bubble_credential_.value().username_value ==
       updated_form.username_value) {
     password_store->UpdateLogin(updated_form);
-    currently_selected_password_ = updated_form;
+    details_bubble_credential_ = updated_form;
     return;
   }
   if (updated_form.username_value.empty()) {
     // The UI doesn't allow clearing the username.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // The UI allows updating the username for credentials with an empty username.
@@ -200,9 +249,9 @@ void ManagePasswordsBubbleController::UpdateSelectedCredentialInPasswordStore(
   // Weak and reused issues are still relevant.
   updated_form.password_issues.erase(password_manager::InsecureType::kPhished);
   updated_form.password_issues.erase(password_manager::InsecureType::kLeaked);
-  password_store->UpdateLoginWithPrimaryKey(
-      updated_form, currently_selected_password_.value());
-  currently_selected_password_ = updated_form;
+  password_store->UpdateLoginWithPrimaryKey(updated_form,
+                                            details_bubble_credential_.value());
+  details_bubble_credential_ = updated_form;
 
   metrics_util::LogUserInteractionsInPasswordManagementBubble(
       metrics_util::PasswordManagementBubbleInteractions::kUsernameAdded);
@@ -232,9 +281,9 @@ void ManagePasswordsBubbleController::AuthenticateUserAndDisplayDetailsOf(
       weak_ptr_factory_.GetWeakPtr(), std::move(password_form),
       std::move(completion));
   delegate_->AuthenticateUserWithMessage(
-      message, metrics_util::TimeCallback(
+      message, metrics_util::TimeCallbackMediumTimes(
                    std::move(on_reath_complete),
-                   "PasswordManager.ManagementBubble.AuthenticationTime"));
+                   "PasswordManager.ManagementBubble.AuthenticationTime2"));
 }
 
 bool ManagePasswordsBubbleController::UsernameExists(
@@ -287,7 +336,7 @@ void ManagePasswordsBubbleController::OnUserAuthenticationCompleted(
     base::OnceCallback<void(bool)> completion,
     bool authentication_result) {
   if (authentication_result) {
-    currently_selected_password_ = std::move(password_form);
+    details_bubble_credential_ = std::move(password_form);
   }
   std::move(completion).Run(authentication_result);
 }

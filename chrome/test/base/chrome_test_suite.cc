@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/test/base/chrome_test_suite.h"
 
 #include "build/build_config.h"
@@ -77,9 +82,7 @@ void ChromeTestSuite::Initialize() {
 
   if (!browser_dir_.empty()) {
     base::PathService::Override(base::DIR_EXE, browser_dir_);
-#if !BUILDFLAG(IS_FUCHSIA)
     base::PathService::Override(base::DIR_MODULE, browser_dir_);
-#endif  // !BUILDFLAG(IS_FUCHSIA)
   }
 
   // Disable external libraries load if we are under python process in
@@ -120,6 +123,7 @@ void ChromeTestSuite::Initialize() {
       /*documents_dir=*/temp_path,
       /*downloads_dir=*/temp_path,
       /*drivefs=*/base::FilePath(),
+      /*onedrive=*/base::FilePath(),
       /*removable_media_dir=*/base::FilePath(),
       /*android_files_dir=*/base::FilePath(),
       /*linux_files_dir=*/base::FilePath(),

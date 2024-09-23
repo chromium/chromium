@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <sstream>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "components/user_education/common/feature_promo_controller.h"
@@ -20,12 +22,11 @@ namespace {
 DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kNoticeId);
 }
 
-class ProductMessagingControllerUiTest : public InteractiveBrowserTest {
+class ProductMessagingControllerUiTest : public InteractiveFeaturePromoTest {
  public:
-  ProductMessagingControllerUiTest() {
-    feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHTabSearchFeature});
-  }
+  ProductMessagingControllerUiTest()
+      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHTabSearchFeature})) {}
 
   ~ProductMessagingControllerUiTest() override = default;
 
@@ -37,7 +38,7 @@ class ProductMessagingControllerUiTest : public InteractiveBrowserTest {
 
   void TearDownOnMainThread() override {
     notice_handle_.Release();
-    InProcessBrowserTest::TearDownOnMainThread();
+    InteractiveFeaturePromoTest::TearDownOnMainThread();
   }
 
  protected:
@@ -48,18 +49,6 @@ class ProductMessagingControllerUiTest : public InteractiveBrowserTest {
           base::BindOnce(&ProductMessagingControllerUiTest::OnNoticeShown,
                          base::Unretained(this)));
     });
-  }
-
-  auto CheckShowPromo(user_education::FeaturePromoResult expected_result) {
-    std::ostringstream oss;
-    oss << "CheckShowPromo(" << expected_result << ")";
-    return std::move(CheckResult(
-                         [this]() {
-                           return browser()->window()->MaybeShowFeaturePromo(
-                               feature_engagement::kIPHTabSearchFeature);
-                         },
-                         expected_result)
-                         .SetDescription(oss.str().c_str()));
   }
 
   auto EnsureHandle() {
@@ -80,16 +69,13 @@ class ProductMessagingControllerUiTest : public InteractiveBrowserTest {
   }
 
   user_education::RequiredNoticePriorityHandle notice_handle_;
-
- private:
-  feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ProductMessagingControllerUiTest, NoticeBlocksIPH) {
   RunTestSequence(
-      ObserveState(kFeatureEngagementInitializedState, browser()),
-      WaitForState(kFeatureEngagementInitializedState, true), QueueNotice(),
-      CheckShowPromo(user_education::FeaturePromoResult::kBlockedByPromo),
-      FlushEvents(), EnsureHandle(), ReleaseHandle(),
-      CheckShowPromo(user_education::FeaturePromoResult::Success()));
+      QueueNotice(),
+      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature,
+                     user_education::FeaturePromoResult::kBlockedByPromo),
+      EnsureHandle(), ReleaseHandle(),
+      MaybeShowPromo(feature_engagement::kIPHTabSearchFeature));
 }

@@ -32,9 +32,9 @@ static void SigUSR1Handler(int signal) {}
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-
 #include <windows.h>
+
+#include "base/win/windows_version.h"
 #endif
 
 namespace content {
@@ -43,7 +43,7 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 
-std::wstring ToNativeString(base::StringPiece string) {
+std::wstring ToNativeString(std::string_view string) {
   return base::ASCIIToWide(string);
 }
 
@@ -130,7 +130,7 @@ std::vector<std::string> FeaturesFromSwitch(
     const base::CommandLine& command_line,
     const char* switch_name) {
   using NativeString = base::CommandLine::StringType;
-  using NativeStringPiece = base::CommandLine::StringPieceType;
+  using NativeStringView = base::CommandLine::StringViewType;
 
   std::vector<std::string> features;
   if (!command_line.HasSwitch(switch_name))
@@ -140,7 +140,7 @@ std::vector<std::string> FeaturesFromSwitch(
   // (No string copies for the args that don't match the prefix.)
   NativeString prefix =
       ToNativeString(base::StringPrintf("--%s=", switch_name));
-  for (NativeStringPiece arg : command_line.argv()) {
+  for (NativeStringView arg : command_line.argv()) {
     // Switch names are case insensitive on Windows, but base::CommandLine has
     // already made them lowercase when building argv().
     if (!base::StartsWith(arg, prefix, base::CompareCase::SENSITIVE)) {

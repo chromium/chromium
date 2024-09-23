@@ -4,9 +4,14 @@
 
 #include "net/http/http_no_vary_search_data.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/types/expected.h"
+#include "net/base/features.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -142,19 +147,24 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   static constexpr const char* kKeyOrder = "key-order";
   static constexpr const char* kParams = "params";
   static constexpr const char* kExcept = "except";
-  constexpr base::StringPiece kValidKeys[] = {kKeyOrder, kParams, kExcept};
+  constexpr std::string_view kValidKeys[] = {kKeyOrder, kParams, kExcept};
 
   base::flat_set<std::string> no_vary_params;
   base::flat_set<std::string> vary_params;
   bool vary_on_key_order = true;
   bool vary_by_default = true;
 
-  // If the dictionary contains unknown keys, fail parsing.
-  for (const auto& [key, value] : dict) {
-    // We don't recognize any other key. So this is an authoring error.
-    if (!base::Contains(kValidKeys, key)) {
-      return base::unexpected(ParseErrorEnum::kUnknownDictionaryKey);
-    }
+  // If the dictionary contains unknown keys, maybe fail parsing.
+  const bool has_unrecognized_keys = !base::ranges::all_of(
+      dict,
+      [&](const auto& pair) { return base::Contains(kValidKeys, pair.first); });
+
+  UMA_HISTOGRAM_BOOLEAN("Net.HttpNoVarySearch.HasUnrecognizedKeys",
+                        has_unrecognized_keys);
+  if (has_unrecognized_keys &&
+      !base::FeatureList::IsEnabled(
+          features::kNoVarySearchIgnoreUnrecognizedKeys)) {
+    return base::unexpected(ParseErrorEnum::kUnknownDictionaryKey);
   }
 
   // Populate `vary_on_key_order` based on the `key-order` key.

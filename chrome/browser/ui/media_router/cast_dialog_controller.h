@@ -71,7 +71,7 @@ class CastDialogController {
   // provided closure must destroy |this| or otherwise ensure it is never used
   // again. This method can only be called once.
   //
-  // TODO(https://crbug.com/1408494): It's awkward that CastDialogController has
+  // TODO(crbug.com/40253570): It's awkward that CastDialogController has
   // a state where it exists but is unsafe to use, and doubly awkward that we
   // have to paper over that with this callback. Can that be fixed?
   virtual void RegisterDestructor(base::OnceClosure destructor) = 0;

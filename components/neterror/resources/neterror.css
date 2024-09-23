@@ -601,12 +601,12 @@ html[subframe] body {
 #sub-frame-error-details {
   margin: 0 10px;
   text-align: center;
-  visibility: hidden;
+  opacity: 0;
 }
 
 /* Show details only when hovering. */
 #sub-frame-error:hover #sub-frame-error-details {
-  visibility: visible;
+  opacity: 1;
 }
 
 /* If the iframe is too small, always hide the error code. */

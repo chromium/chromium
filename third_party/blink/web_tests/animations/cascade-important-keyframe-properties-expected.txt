@@ -1,4 +1,0 @@
-PASS - "background-color" property for "test" element at 0s saw something close to: rgb(0, 128, 0)
-PASS - "background-color" property for "test" element at 5s saw something close to: rgb(0, 128, 0)
-PASS - "background-color" property for "test" element at 10s saw something close to: rgb(0, 128, 0)
-

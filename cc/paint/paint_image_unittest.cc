@@ -113,9 +113,9 @@ TEST(PaintImageTest, BuildPaintWorkletImage) {
       base::MakeRefCounted<TestPaintWorkletInput>(size);
   PaintImage paint_image = PaintImageBuilder::WithDefault()
                                .set_id(1)
-                               .set_paint_worklet_input(std::move(input))
+                               .set_deferred_paint_record(std::move(input))
                                .TakePaintImage();
-  EXPECT_TRUE(paint_image.paint_worklet_input());
+  EXPECT_TRUE(paint_image.deferred_paint_record());
   EXPECT_EQ(paint_image.width(), size.width());
   EXPECT_EQ(paint_image.height(), size.height());
   EXPECT_EQ(paint_image.GetContentColorUsage(), gfx::ContentColorUsage::kSRGB);

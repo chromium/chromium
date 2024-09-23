@@ -6,6 +6,9 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INPUT_EVENT_TRACKER_ANDROID_H_
 
 #include <jni.h>
+#include <stdint.h>
+
+#include <optional>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
@@ -28,6 +31,15 @@ class CONTENT_EXPORT AttributionInputEventTrackerAndroid
  public:
   static constexpr base::TimeDelta kEventExpiry = base::Seconds(5);
 
+  struct InputEvent {
+    std::optional<uint32_t> id;
+    base::android::ScopedJavaGlobalRef<jobject> event;
+
+    InputEvent(std::optional<uint32_t> id,
+               base::android::ScopedJavaGlobalRef<jobject> event);
+    ~InputEvent();
+  };
+
   explicit AttributionInputEventTrackerAndroid(WebContents* web_contents);
 
   AttributionInputEventTrackerAndroid(
@@ -44,7 +56,7 @@ class CONTENT_EXPORT AttributionInputEventTrackerAndroid
 
   // Returns the most recent input event. The input event expires `kEventExpiry`
   // after it was pushed, and expired event may be dropped.
-  base::android::ScopedJavaGlobalRef<jobject> GetMostRecentEvent();
+  InputEvent GetMostRecentEvent();
 
   void RemoveObserverForTesting(WebContents* web_contents);
 
@@ -57,6 +69,7 @@ class CONTENT_EXPORT AttributionInputEventTrackerAndroid
   void PushEvent(const ui::MotionEventAndroid& event);
 
   base::android::ScopedJavaGlobalRef<jobject> most_recent_event_;
+  std::optional<uint32_t> most_recent_event_id_;
 
   // The time that the most recent event was pushed and cached.
   base::TimeTicks most_recent_event_cache_time_;

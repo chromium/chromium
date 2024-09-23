@@ -53,7 +53,8 @@ public class TestChildProcessService extends Service {
         }
 
         @Override
-        public void onConnectionSetup(Bundle connectionBundle, List<IBinder> clientInterfaces) {
+        public void onConnectionSetup(
+                Bundle connectionBundle, List<IBinder> clientInterfaces, IBinder binderBox) {
             if (clientInterfaces != null && !clientInterfaces.isEmpty()) {
                 mIChildProcessTest = IChildProcessTest.Stub.asInterface(clientInterfaces.get(0));
             }
@@ -79,7 +80,7 @@ public class TestChildProcessService extends Service {
         @Override
         public void loadNativeLibrary(Context hostContext) {
             // Store the command line before loading the library to avoid an assert in CommandLine.
-            mCommandLine = CommandLine.getJavaSwitchesOrNull();
+            mCommandLine = CommandLine.getJavaSwitchesForTesting();
 
             LibraryLoader.getInstance().loadNow();
             LibraryLoader.getInstance().ensureInitialized();

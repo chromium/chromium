@@ -13,9 +13,9 @@ namespace blink {
 enum class ContainerStuckLogical {
   // Not stuck
   kNo,
-  // Stuck to inset-inline-start, or inset-block-start
+  // Stuck to inline-start, or block-start
   kStart,
-  // Stuck to inset-inline-end, or inset-block-end
+  // Stuck to inline-end, or block-end
   kEnd,
 };
 
@@ -42,8 +42,8 @@ inline ContainerStuckLogical Flip(ContainerStuckLogical stuck) {
 // its scroll container in a given direction.
 enum class ContainerSnapped {
   kNone = 0,
-  kBlock = 1 << 0,
-  kInline = 1 << 1,
+  kX = 1 << 0,
+  kY = 1 << 1,
 };
 
 using ContainerSnappedFlags = unsigned;

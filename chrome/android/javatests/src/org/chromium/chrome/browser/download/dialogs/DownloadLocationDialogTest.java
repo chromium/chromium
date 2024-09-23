@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.dialogs;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
@@ -28,7 +29,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.StrictModeContext;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -49,7 +50,6 @@ import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
@@ -95,31 +95,28 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
 
         mAppModalPresenter = new AppModalPresenter(getActivity());
         mModalDialogManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return new ModalDialogManager(
                                     mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
                         });
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.SMART_SUGGESTION_FOR_LARGE_DOWNLOADS, false);
-        features.put(ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING, true);
         FeatureList.setTestFeatures(features);
 
         setDownloadPromptStatus(DownloadPromptStatus.SHOW_INITIAL);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Create fake directory options.
                     ArrayList<DirectoryOption> dirs = new ArrayList<>();
-                    try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                        dirs.add(
-                                buildDirectoryOption(
-                                        DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
-                                        PRIMARY_STORAGE_PATH));
-                        dirs.add(
-                                buildDirectoryOption(
-                                        DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
-                                        SECONDARY_STORAGE_PATH));
-                    }
+                    dirs.add(
+                            buildDirectoryOption(
+                                    DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
+                                    PRIMARY_STORAGE_PATH));
+                    dirs.add(
+                            buildDirectoryOption(
+                                    DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
+                                    SECONDARY_STORAGE_PATH));
                     DownloadDirectoryProvider.getInstance()
                             .setDirectoryProviderForTesting(
                                     new TestDownloadDirectoryProvider(dirs));
@@ -147,7 +144,7 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
             @DownloadLocationDialogType int dialogType,
             String suggestedPath,
             Profile profile) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDialogCoordinator.showDialog(
                             getActivity(),
@@ -160,11 +157,13 @@ public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
     }
 
     private void assertTitle(@StringRes int titleId) {
-        onView(withText(getActivity().getString(titleId))).check(matches(isDisplayed()));
+        onView(withText(getActivity().getString(titleId)))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     private void assertSubtitle(String subtitle) {
-        onView(withText(subtitle)).check(matches(isDisplayed()));
+        onView(withText(subtitle)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 
     /**

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
 
 #include <utility>
@@ -15,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
@@ -65,7 +71,7 @@ discards::mojom::LifecycleUnitVisibility GetLifecycleUnitVisibility(
       return discards::mojom::LifecycleUnitVisibility::VISIBLE;
   }
 #if defined(COMPILER_MSVC)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return discards::mojom::LifecycleUnitVisibility::VISIBLE;
 #endif
 }
@@ -146,7 +152,7 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
       info->discard_count = lifecycle_unit->GetDiscardCount();
       info->utility_rank = rank++;
       const base::TimeTicks last_focused_time =
-          lifecycle_unit->GetLastFocusedTime();
+          lifecycle_unit->GetLastFocusedTimeTicks();
       const base::TimeDelta elapsed =
           (last_focused_time == base::TimeTicks::Max())
               ? base::TimeDelta()
@@ -158,11 +164,11 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
       info->site_engagement_score = GetSiteEngagementScore(contents);
       info->state_change_time =
           lifecycle_unit->GetStateChangeTime() - base::TimeTicks::UnixEpoch();
-      // TODO(crbug.com/876340): The focus is used to compute the page lifecycle
-      // state. This should be replaced with the actual page lifecycle state
-      // information from Blink, but this depends on implementing the passive
-      // state and plumbing it to the browser.
-      info->has_focus = lifecycle_unit->GetLastFocusedTime().is_max();
+      // TODO(crbug.com/41409267): The focus is used to compute the page
+      // lifecycle state. This should be replaced with the actual page lifecycle
+      // state information from Blink, but this depends on implementing the
+      // passive state and plumbing it to the browser.
+      info->has_focus = lifecycle_unit->GetLastFocusedTimeTicks().is_max();
 
       infos.push_back(std::move(info));
     }
@@ -237,6 +243,11 @@ class DiscardsDetailsProviderImpl : public discards::mojom::DetailsProvider {
                                    BatterySaverModeState::kDisabled));
   }
 
+  void RefreshPerformanceTabCpuMeasurements() override {
+    performance_manager::user_tuning::PerformanceDetectionManager::GetInstance()
+        ->ForceTabCpuDataRefresh();
+  }
+
  private:
   mojo::Receiver<discards::mojom::DetailsProvider> receiver_;
 };
@@ -248,6 +259,11 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIDiscardsHost);
+
+  source->AddBoolean(
+      "isPerformanceInterventionDemoModeEnabled",
+      base::FeatureList::IsEnabled(
+          performance_manager::features::kPerformanceInterventionDemoMode));
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kDiscardsResources, kDiscardsResourcesSize),

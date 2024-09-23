@@ -6,9 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/url_matcher/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -188,7 +188,8 @@ AnalysisServiceSettings::GetPatternSettings(
 }
 
 AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
-    std::map<std::string, TagSettings> tags) const {
+    std::map<std::string, TagSettings> tags,
+    DataRegion data_region) const {
   DCHECK(IsValid());
 
   AnalysisSettings settings;
@@ -199,7 +200,8 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   settings.block_large_files = block_large_files_;
   if (is_cloud_analysis()) {
     CloudAnalysisSettings cloud_settings;
-    cloud_settings.analysis_url = GURL(analysis_config_->url);
+    cloud_settings.analysis_url =
+        GetRegionalizedEndpoint(analysis_config_->region_urls, data_region);
     // We assume all support_tags structs have the same max file size.
     cloud_settings.max_file_size =
         analysis_config_->supported_tags[0].max_file_size;
@@ -226,7 +228,8 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
 }
 
 std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
-    const GURL& url) const {
+    const GURL& url,
+    DataRegion data_region) const {
   if (!IsValid())
     return std::nullopt;
 
@@ -239,14 +242,15 @@ std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
   if (tags.empty())
     return std::nullopt;
 
-  return GetAnalysisSettingsWithTags(std::move(tags));
+  return GetAnalysisSettingsWithTags(std::move(tags), data_region);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     content::BrowserContext* context,
     const storage::FileSystemURL& source_url,
-    const storage::FileSystemURL& destination_url) const {
+    const storage::FileSystemURL& destination_url,
+    DataRegion data_region) const {
   if (!IsValid())
     return std::nullopt;
   DCHECK(source_destination_matcher_);
@@ -260,7 +264,7 @@ std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
   if (tags.empty())
     return std::nullopt;
 
-  return GetAnalysisSettingsWithTags(std::move(tags));
+  return GetAnalysisSettingsWithTags(std::move(tags), data_region);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

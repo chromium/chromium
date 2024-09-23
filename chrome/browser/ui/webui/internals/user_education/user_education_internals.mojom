@@ -39,6 +39,34 @@ struct FeaturePromoDemoPageInfo {
   array<FeaturePromoDemoPageData> data;
 };
 
+// What's New Module data.
+struct WhatsNewModuleDemoPageInfo {
+  // The name of the module, to be presented to the user.
+  string display_title;
+  // The actual module name.
+  string module_name;
+  // Whether the module has an attached browser command.
+  bool has_browser_command;
+  // Whether the features associated with this module is enabled.
+  bool is_feature_enabled;
+  // The position of the modules in the enabled-queue.
+  int32 queue_position;
+};
+
+// What's New Edition data.
+struct WhatsNewEditionDemoPageInfo {
+  // The name of the edition, to be presented to the user.
+  string display_title;
+  // The actual edition name.
+  string edition_name;
+  // Whether the features associated with this edition is enabled.
+  bool is_feature_enabled;
+  // Whether this edition has been shown to the user.
+  bool has_been_used;
+  // The major version of chrome this edition was shown.
+  int32 version_used;
+};
+
 // Provides access to browser-side user education data for
 // chrome://internals/user-education
 interface UserEducationInternalsPageHandler {
@@ -46,8 +74,8 @@ interface UserEducationInternalsPageHandler {
   // since the browser-side list is static and does not change.
   GetTutorials() => (array<FeaturePromoDemoPageInfo> tutorial_infos);
 
-  // Start a tutorial listed in the `GetTutorials` result; the resulting string
-  // is an error message or empty string if no error occurred.
+  // Start a tutorial listed in the `GetTutorials` result.
+  // Returns an error message if the operation fails; empty string on success.
   StartTutorial(string tutorial_id) => (string error_message);
 
   // Returns a set of data about the current session state.
@@ -57,13 +85,36 @@ interface UserEducationInternalsPageHandler {
   GetFeaturePromos() => (array<FeaturePromoDemoPageInfo> feature_promos);
 
   // Start a feature promo from the list of available feature promos using the
-  // `feature_name`; the resulting string is an error message or empty string if
-  // no error occurred.
+  // `feature_name`.
+  // Returns an error message if the operation fails; empty string on success.
   ShowFeaturePromo(string feature_name) => (string error_message);
 
   // Clears the data (snooze, show count, etc.) associated with a promo.
+  // Returns an error message if the operation fails; empty string on success.
   ClearFeaturePromoData(string feature_name) => (string error_message);
 
   // Clears all session-related User Education data.
+  // Returns an error message if the operation fails; empty string on success.
   ClearSessionData() => (string error_message);
+
+  // Retrieves "New" Badge data.
+  GetNewBadges() => (array<FeaturePromoDemoPageInfo> new_badges);
+
+  // Retrieves What's New module data.
+  GetWhatsNewModules() => (array<WhatsNewModuleDemoPageInfo> whats_new_modules);
+
+  // Retrieves What's New edition data.
+  GetWhatsNewEditions() =>
+    (array<WhatsNewEditionDemoPageInfo> whats_new_editions);
+
+  // Clears "New" Badge data associated with a particular feature.
+  // Returns an error message if the operation fails; empty string on success.
+  ClearNewBadgeData(string feature_name) => (string error_message);
+
+  // Clears What's New data.
+  // Returns an error message if the operation fails; empty string on success.
+  ClearWhatsNewData() => (string error_message);
+
+  // Launches What's New page with for the staging environment.
+  LaunchWhatsNewStaging();
 };

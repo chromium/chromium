@@ -343,6 +343,12 @@ class ProfileManager : public Profile::Delegate {
     return has_updated_last_opened_profiles_;
   }
 
+  // Sets the last-used profile to `last_active`, and also sets that profile's
+  // last-active time to now. If the profile has a primary account, this also
+  // sets its last-active time to now.
+  // Public so that `ProfileManagerAndroid` can call it.
+  void SetProfileAsLastUsed(Profile* last_active);
+
  protected:
   // Creates a new profile by calling into the profile's profile creation
   // method. Virtual so that unittests can return a TestingProfile instead
@@ -455,12 +461,6 @@ class ProfileManager : public Profile::Delegate {
   // The profile used can be overridden by using --login-profile on cros.
   Profile* GetActiveUserOrOffTheRecordProfile();
 
-  // Adds a pre-existing Profile object to the set managed by this
-  // ProfileManager.
-  // The Profile should not already be managed by this ProfileManager.
-  // Returns true if the profile was added, false otherwise.
-  bool AddProfile(std::unique_ptr<Profile> profile);
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Unloads the `Profile` at `profile_dir` from the manager and destroys the
   // `Profile` C++ object. If it's an ephemeral profile, also deletes the
@@ -471,7 +471,10 @@ class ProfileManager : public Profile::Delegate {
   // Synchronously creates and returns a profile. This handles both the full
   // creation and adds it to the set managed by this ProfileManager. Returns
   // null if creation fails.
-  Profile* CreateAndInitializeProfile(const base::FilePath& profile_dir);
+  Profile* CreateAndInitializeProfile(
+      const base::FilePath& profile_dir,
+      base::OnceCallback<std::unique_ptr<Profile>(const base::FilePath&)>
+          factory);
 
   // Registers profile with given info. Returns pointer to created ProfileInfo
   // entry.
@@ -506,12 +509,6 @@ class ProfileManager : public Profile::Delegate {
 #if !BUILDFLAG(IS_ANDROID)
   void OnBrowserOpened(Browser* browser);
   void OnBrowserClosed(Browser* browser);
-
-  // Updates the last active user of the current session.
-  // On Chrome OS updating this user will have no effect since when browser is
-  // restored after crash there's another preference that is taken into account.
-  // See kLastActiveUser in UserManagerBase.
-  void UpdateLastUser(Profile* last_active);
 
   class BrowserListObserver : public ::BrowserListObserver {
    public:

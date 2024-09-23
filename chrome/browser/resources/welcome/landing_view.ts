@@ -3,19 +3,20 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shared/action_link_style.css.js';
 import './shared/onboarding_background.js';
 import './shared/splash_pages_shared.css.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './landing_view.html.js';
+import {getCss} from './landing_view.css.js';
+import {getHtml} from './landing_view.html.js';
 import type {LandingViewProxy} from './landing_view_proxy.js';
 import {LandingViewProxyImpl} from './landing_view_proxy.js';
-import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
+import {NavigationMixin} from './navigation_mixin.js';
+import {navigateTo, Routes} from './router.js';
 import type {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
@@ -25,7 +26,7 @@ export interface LandingViewElement {
   };
 }
 
-const LandingViewElementBase = NavigationMixin(PolymerElement);
+const LandingViewElementBase = NavigationMixin(CrLitElement);
 
 /** @polymer */
 export class LandingViewElement extends LandingViewElementBase {
@@ -33,19 +34,23 @@ export class LandingViewElement extends LandingViewElementBase {
     return 'landing-view';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      signinAllowed_: Boolean,
+      signinAllowed_: {type: Boolean},
     };
   }
 
   private landingViewProxy_: LandingViewProxy;
   private finalized_: boolean = false;
-  private signinAllowed_: boolean;
+  protected signinAllowed_: boolean;
 
   constructor() {
     super();
@@ -72,7 +77,7 @@ export class LandingViewElement extends LandingViewElementBase {
     this.landingViewProxy_.recordNavigatedAway();
   }
 
-  private onExistingUserClick_() {
+  protected onExistingUserClick_() {
     this.finalized_ = true;
     this.landingViewProxy_.recordExistingUser();
     if (this.signinAllowed_) {
@@ -83,10 +88,11 @@ export class LandingViewElement extends LandingViewElementBase {
     }
   }
 
-  private onNewUserClick_() {
+  protected onNewUserClick_() {
     this.finalized_ = true;
     this.landingViewProxy_.recordNewUser();
     navigateTo(Routes.NEW_USER, 1);
   }
 }
+
 customElements.define(LandingViewElement.is, LandingViewElement);

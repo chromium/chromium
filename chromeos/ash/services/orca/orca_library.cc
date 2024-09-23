@@ -27,7 +27,7 @@ logging::LogSeverity ConvertLogSeverity(OrcaLogSeverity severity) {
     case OrcaLogSeverity::ORCA_LOG_SEVERITY_ERROR:
       return logging::LOGGING_ERROR;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DefaultLogSink(logging::LogSeverity severity, std::string_view message) {
@@ -39,7 +39,7 @@ void DefaultLogSink(logging::LogSeverity severity, std::string_view message) {
       LOG(ERROR) << message;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

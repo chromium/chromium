@@ -8,9 +8,10 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
+#include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
-#include "components/performance_manager/graph/graph_impl_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context_registry.h"
@@ -35,7 +36,7 @@ content::ProcessType ValidateBrowserChildProcessType(
 void FireBackgroundTracingTriggerOnUI(const std::string& trigger_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::BackgroundTracingManager::EmitNamedTrigger(
+  base::trace_event::EmitNamedTrigger(
       content::BackgroundTracingManager::kContentTriggerConfig);
 }
 
@@ -90,11 +91,9 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
 ProcessNodeImpl::~ProcessNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Crash if this process node is destroyed while still hosting a worker node.
-  // TODO(https://crbug.com/1058705): Turn this into a DCHECK once the issue is
+  // TODO(crbug.com/40051698): Turn this into a DCHECK once the issue is
   //                                  resolved.
   CHECK(worker_nodes_.empty());
-  DCHECK(!frozen_frame_data_);
-  DCHECK(!process_priority_data_);
 }
 
 void ProcessNodeImpl::Bind(
@@ -271,16 +270,17 @@ ProcessNode::ContentTypes ProcessNodeImpl::GetHostedContentTypes() const {
   return hosted_content_types_;
 }
 
-const base::flat_set<FrameNodeImpl*>& ProcessNodeImpl::frame_nodes() const {
+ProcessNode::NodeSetView<FrameNodeImpl*> ProcessNodeImpl::frame_nodes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return frame_nodes_;
+  return NodeSetView<FrameNodeImpl*>(frame_nodes_);
 }
 
-const base::flat_set<WorkerNodeImpl*>& ProcessNodeImpl::worker_nodes() const {
+ProcessNode::NodeSetView<WorkerNodeImpl*> ProcessNodeImpl::worker_nodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return worker_nodes_;
+  return NodeSetView<WorkerNodeImpl*>(worker_nodes_);
 }
 
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
@@ -392,45 +392,24 @@ void ProcessNodeImpl::SetProcessImpl(base::Process process,
   process_.SetAndNotify(this, std::move(process));
 }
 
-bool ProcessNodeImpl::VisitFrameNodes(const FrameNodeVisitor& visitor) const {
+ProcessNode::NodeSetView<const FrameNode*> ProcessNodeImpl::GetFrameNodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (auto* frame_impl : frame_nodes()) {
-    const FrameNode* frame = frame_impl;
-    if (!visitor(frame)) {
-      return false;
-    }
-  }
-  return true;
+  return NodeSetView<const FrameNode*>(frame_nodes_);
 }
 
-bool ProcessNodeImpl::VisitWorkerNodes(const WorkerNodeVisitor& visitor) const {
+ProcessNode::NodeSetView<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (auto* worker_impl : worker_nodes_) {
-    const WorkerNode* worker = worker_impl;
-    if (!visitor(worker)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-base::flat_set<const FrameNode*> ProcessNodeImpl::GetFrameNodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpcastNodeSet<FrameNode>(frame_nodes());
-}
-
-base::flat_set<const WorkerNode*> ProcessNodeImpl::GetWorkerNodes() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return UpcastNodeSet<WorkerNode>(worker_nodes_);
+  return NodeSetView<const WorkerNode*>(worker_nodes_);
 }
 
 void ProcessNodeImpl::OnAllFramesInProcessFrozen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  for (auto* observer : GetObservers())
-    observer->OnAllFramesInProcessFrozen(this);
+  for (auto& observer : GetObservers()) {
+    observer.OnAllFramesInProcessFrozen(this);
+  }
 }
 
 void ProcessNodeImpl::OnJoiningGraph() {
@@ -440,6 +419,8 @@ void ProcessNodeImpl::OnJoiningGraph() {
   // thread in the constructor, can only be dereferenced on the graph sequence.
   weak_factory_.BindToCurrentSequence(
       base::subtle::BindWeakPtrFactoryPassKey());
+
+  NodeAttachedDataStorage::Create(this);
 }
 
 void ProcessNodeImpl::OnBeforeLeavingGraph() {
@@ -456,8 +437,7 @@ void ProcessNodeImpl::OnBeforeLeavingGraph() {
 
 void ProcessNodeImpl::RemoveNodeAttachedData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  frozen_frame_data_.Reset();
-  process_priority_data_.reset();
+  DestroyNodeInlineDataStorage();
 }
 
 }  // namespace performance_manager

@@ -5,25 +5,25 @@
 #include "partition_alloc/page_allocator.h"
 
 #include <atomic>
-#include <bit>
 #include <cstdint>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_space_randomization.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/page_allocator_internal.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_lock.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include "partition_alloc/page_allocator_internals_win.h"
-#elif BUILDFLAG(IS_POSIX)
+#elif PA_BUILDFLAG(IS_POSIX)
 #include "partition_alloc/page_allocator_internals_posix.h"
-#elif BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_FUCHSIA)
 #include "partition_alloc/page_allocator_internals_fuchsia.h"
 #else
 #error Platform not supported.
@@ -79,7 +79,7 @@ uintptr_t TrimMapping(uintptr_t base_address,
                       uintptr_t alignment_offset,
                       PageAccessibilityConfiguration accessibility) {
   PA_DCHECK(base_length >= trim_length);
-  PA_DCHECK(std::has_single_bit(alignment));
+  PA_DCHECK(internal::base::bits::HasSingleBit(alignment));
   PA_DCHECK(alignment_offset < alignment);
   uintptr_t new_base =
       NextAlignedWithOffset(base_address, alignment, alignment_offset);
@@ -108,7 +108,7 @@ uintptr_t TrimMapping(uintptr_t base_address,
 uintptr_t NextAlignedWithOffset(uintptr_t address,
                                 uintptr_t alignment,
                                 uintptr_t requested_offset) {
-  PA_DCHECK(std::has_single_bit(alignment));
+  PA_DCHECK(internal::base::bits::HasSingleBit(alignment));
   PA_DCHECK(requested_offset < alignment);
 
   uintptr_t actual_offset = address & (alignment - 1);
@@ -183,7 +183,7 @@ uintptr_t AllocPagesWithAlignOffset(
   PA_DCHECK(!(length & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(align >= internal::PageAllocationGranularity());
   // Alignment must be power of 2 for masking math to work.
-  PA_DCHECK(std::has_single_bit(align));
+  PA_DCHECK(internal::base::bits::HasSingleBit(align));
   PA_DCHECK(align_offset < align);
   PA_DCHECK(!(align_offset & internal::PageAllocationGranularityOffsetMask()));
   PA_DCHECK(!(address & internal::PageAllocationGranularityOffsetMask()));
@@ -197,7 +197,7 @@ uintptr_t AllocPagesWithAlignOffset(
   }
 
   // First try to force an exact-size, aligned allocation from our random base.
-#if defined(ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
   // On 32 bit systems, first try one random aligned address, and then try an
   // aligned address derived from the value of |ret|.
   constexpr int kExactSizeTries = 2;
@@ -224,13 +224,13 @@ uintptr_t AllocPagesWithAlignOffset(
       }
     }
 
-#if defined(ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
     // For small address spaces, try the first aligned address >= |ret|. Note
     // |ret| may be null, in which case |address| becomes null. If
     // |align_offset| is non-zero, this calculation may get us not the first,
     // but the next matching address.
     address = ((ret + align_offset_mask) & align_base_mask) + align_offset;
-#else  // defined(ARCH_CPU_64_BITS)
+#else  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
     // Keep trying random addresses on systems that have a large address space.
     address = NextAlignedWithOffset(GetRandomPageBase(), align, align_offset);
 #endif
@@ -363,6 +363,14 @@ void DiscardSystemPages(void* address, size_t length) {
   DiscardSystemPages(reinterpret_cast<uintptr_t>(address), length);
 }
 
+bool SealSystemPages(uintptr_t address, size_t length) {
+  PA_DCHECK(!(length & internal::SystemPageOffsetMask()));
+  return internal::SealSystemPagesInternal(address, length);
+}
+bool SealSystemPages(void* address, size_t length) {
+  return SealSystemPages(reinterpret_cast<uintptr_t>(address), length);
+}
+
 bool ReserveAddressSpace(size_t size) {
   // To avoid deadlock, call only SystemAllocPages.
   internal::ScopedGuard guard(GetReserveLock());
@@ -409,7 +417,7 @@ size_t GetTotalMappedSize() {
   return g_total_mapped_address_space;
 }
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 namespace {
 bool g_retry_on_commit_failure = false;
 }

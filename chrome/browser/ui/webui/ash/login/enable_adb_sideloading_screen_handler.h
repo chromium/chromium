@@ -11,8 +11,7 @@
 namespace ash {
 
 // Interface between enable adb sideloading screen and its representation.
-class EnableAdbSideloadingScreenView
-    : public base::SupportsWeakPtr<EnableAdbSideloadingScreenView> {
+class EnableAdbSideloadingScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "adb-sideloading", "EnableAdbSideloadingScreen"};
@@ -27,11 +26,13 @@ class EnableAdbSideloadingScreenView
 
   virtual void Show() = 0;
   virtual void SetScreenState(UIState value) = 0;
+  virtual base::WeakPtr<EnableAdbSideloadingScreenView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of EnableAdbSideloadingScreenView.
-class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
-                                          public BaseScreenHandler {
+class EnableAdbSideloadingScreenHandler final
+    : public EnableAdbSideloadingScreenView,
+      public BaseScreenHandler {
  public:
   using TView = EnableAdbSideloadingScreenView;
 
@@ -47,10 +48,14 @@ class EnableAdbSideloadingScreenHandler : public EnableAdbSideloadingScreenView,
   // EnableAdbSideloadingScreenView implementation:
   void Show() override;
   void SetScreenState(UIState value) override;
+  base::WeakPtr<EnableAdbSideloadingScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+
+ private:
+  base::WeakPtrFactory<EnableAdbSideloadingScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

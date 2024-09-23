@@ -202,7 +202,6 @@ bool Equals(const PP_Var& expected,
     }
   }
   NOTREACHED();
-  return false;
 }
 
 }  // namespace

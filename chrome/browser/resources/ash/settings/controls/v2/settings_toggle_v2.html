@@ -1,0 +1,19 @@
+<style include="cros-color-overrides">
+  :host {
+    align-items: center;
+    display: flex;
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: 32px;
+  }
+</style>
+
+<template is="dom-if" if="[[isPrefEnforced]]" restamp>
+  <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
+</template>
+<cr-toggle id="control"
+    checked="[[checked]]"
+    disabled$="[[disabled]]"
+    on-change="onChange_">
+</cr-toggle>

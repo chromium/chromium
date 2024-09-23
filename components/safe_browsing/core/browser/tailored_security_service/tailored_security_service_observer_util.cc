@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
 
+#include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
@@ -16,7 +17,11 @@
 namespace safe_browsing {
 
 bool CanQueryTailoredSecurityForUrl(GURL url) {
-  return url.DomainIs("google.com") || url.DomainIs("youtube.com");
+  return google_util::IsGoogleDomainUrl(
+             url, google_util::ALLOW_SUBDOMAIN,
+             google_util::ALLOW_NON_STANDARD_PORTS) ||
+         google_util::IsYoutubeDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
+                                         google_util::ALLOW_NON_STANDARD_PORTS);
 }
 
 bool CanShowUnconsentedTailoredSecurityDialog(syncer::SyncService* sync_service,

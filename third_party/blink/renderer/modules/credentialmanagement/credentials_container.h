@@ -5,76 +5,35 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIALS_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIALS_CONTAINER_H_
 
-#include <optional>
-
-#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_options.h"
-#include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class Credential;
 class CredentialCreationOptions;
 class CredentialRequestOptions;
-class IdentityCredentialRequestOptions;
 class ExceptionState;
-class Navigator;
-class ScriptPromise;
 class ScriptState;
 
-class MODULES_EXPORT CredentialsContainer final : public ScriptWrappable,
-                                                  public Supplement<Navigator> {
+class MODULES_EXPORT CredentialsContainer : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static const char kSupplementName[];
-  static CredentialsContainer* credentials(Navigator&);
-  explicit CredentialsContainer(Navigator&);
+  ~CredentialsContainer() override = default;
 
-  // CredentialsContainer.idl
-  ScriptPromise get(ScriptState*,
-                    const CredentialRequestOptions*,
-                    ExceptionState&);
-  ScriptPromise store(ScriptState*, Credential* = nullptr);
-  ScriptPromise create(ScriptState*,
-                       const CredentialCreationOptions*,
-                       ExceptionState&);
-  ScriptPromise preventSilentAccess(ScriptState*);
-
-  ScriptPromise requestIdentity(ScriptState*,
-                                const blink::IdentityRequestOptions*,
-                                ExceptionState&);
+  // credentials_container.idl
+  virtual ScriptPromise<IDLNullable<Credential>>
+  get(ScriptState*, const CredentialRequestOptions*, ExceptionState&) = 0;
+  virtual ScriptPromise<Credential> store(ScriptState*,
+                                          Credential*,
+                                          ExceptionState&) = 0;
+  virtual ScriptPromise<IDLNullable<Credential>>
+  create(ScriptState*, const CredentialCreationOptions*, ExceptionState&) = 0;
+  virtual ScriptPromise<IDLUndefined> preventSilentAccess(ScriptState*) = 0;
 
   void Trace(Visitor*) const override;
-
- private:
-  // get() implementation for FedCM and WebIdentityDigitalCredential.
-  ScriptPromise GetForIdentity(ScriptState*,
-                               ScriptPromiseResolver* resolver,
-                               const ScriptPromise& promise,
-                               const CredentialRequestOptions&,
-                               const IdentityCredentialRequestOptions&,
-                               ExceptionState&);
-
-  // get() implementation for WebIdentityDigitalCredential.
-  // Returns std::nullopt if the passed-in CredentialRequestOptions are not for
-  // a WebIdentityDigitalCredential.
-  std::optional<ScriptPromise> GetForDigitalCredential(
-      ScriptState*,
-      ScriptPromiseResolver*,
-      const ScriptPromise&,
-      const CredentialRequestOptions&,
-      const IdentityProviderRequestOptions& first_identity_provider,
-      size_t num_identity_providers,
-      ExceptionState&);
-
-  class OtpRequestAbortAlgorithm;
-  class PublicKeyRequestAbortAlgorithm;
-
-  Member<WebIdentityRequester> web_identity_requester_;
 };
 
 }  // namespace blink

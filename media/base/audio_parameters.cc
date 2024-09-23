@@ -220,7 +220,9 @@ std::string AudioParameters::AsHumanReadableString() const {
       << hardware_capabilities_->max_frames_per_buffer
       << ", bitstream_formats:" << hardware_capabilities_->bitstream_formats
       << ", require_encapsulation:"
-      << hardware_capabilities_->require_encapsulation;
+      << hardware_capabilities_->require_encapsulation
+      << ", require_audio_offload:"
+      << hardware_capabilities_->require_audio_offload;
   }
   return s.str();
 }
@@ -278,6 +280,11 @@ void AudioParameters::SetChannelLayoutConfig(ChannelLayout layout,
 bool AudioParameters::RequireEncapsulation() const {
   return hardware_capabilities_.has_value() &&
          hardware_capabilities_->require_encapsulation;
+}
+
+bool AudioParameters::RequireOffload() const {
+  return hardware_capabilities_.has_value() &&
+         hardware_capabilities_->require_audio_offload;
 }
 
 // static

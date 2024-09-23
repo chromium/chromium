@@ -16,7 +16,8 @@ class FakeOAuthTokenGetter : public OAuthTokenGetter {
  public:
   FakeOAuthTokenGetter(Status status,
                        const std::string& user_email,
-                       const std::string& access_token);
+                       const std::string& access_token,
+                       const std::string& scopes);
   ~FakeOAuthTokenGetter() override;
 
   // OAuthTokenGetter interface.
@@ -27,6 +28,7 @@ class FakeOAuthTokenGetter : public OAuthTokenGetter {
   Status status_;
   std::string user_email_;
   std::string access_token_;
+  std::string scopes_;
 };
 
 }  // namespace remoting

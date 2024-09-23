@@ -95,12 +95,9 @@
 )
 
 ; For V8 to use in thread calculations.
-(if (>= os-version 1014)
-  (begin
-    (allow sysctl-read (sysctl-name "kern.tcsm_enable"))
-    (allow sysctl-write (sysctl-name "kern.tcsm_enable"))
-    (allow sysctl-read (sysctl-name "kern.tcsm_available"))
-))
+(allow sysctl-read (sysctl-name "kern.tcsm_enable"))
+(allow sysctl-write (sysctl-name "kern.tcsm_enable"))
+(allow sysctl-read (sysctl-name "kern.tcsm_available"))
 
 ; This is available in 10.15+, and rolled out as a Finch experiment.
 (if (param-true? filter-syscalls)

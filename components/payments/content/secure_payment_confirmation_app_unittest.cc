@@ -9,7 +9,6 @@
 
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -43,7 +42,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
                                          public PaymentApp::Delegate {
  protected:
   SecurePaymentConfirmationAppTest()
-      : label_(u"test instrument"),
+      : payment_instrument_label_(u"test instrument"),
         web_contents_(web_contents_factory_.CreateWebContents(&context_)) {
     mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
     details->total = mojom::PaymentItem::New();
@@ -91,7 +90,7 @@ class SecurePaymentConfirmationAppTest : public testing::Test,
     on_instrument_details_error_called_ = true;
   }
 
-  std::u16string label_;
+  std::u16string payment_instrument_label_;
   std::unique_ptr<PaymentRequestSpec> spec_;
   std::string challenge_bytes_;
   std::string credential_id_bytes_;
@@ -116,10 +115,13 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
   webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
 
   SecurePaymentConfirmationApp app(
-      web_contents_, "effective_rp.example",
-      /*Icon=*/std::make_unique<SkBitmap>(), label_, std::move(credential_id),
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      std::move(credential_id),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      MakeRequest(), std::move(authenticator));
+      MakeRequest(), std::move(authenticator),
+      /*network_label=*/u"", /*network_icon=*/SkBitmap(),
+      /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
 
   std::vector<uint8_t> expected_bytes =
       std::vector<uint8_t>(challenge_bytes_.begin(), challenge_bytes_.end());
@@ -157,10 +159,13 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
   webauthn::MockInternalAuthenticator* mock_authenticator = authenticator.get();
 
   SecurePaymentConfirmationApp app(
-      web_contents_, "effective_rp.example",
-      /*Icon=*/std::make_unique<SkBitmap>(), label_, std::move(credential_id),
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      std::move(credential_id),
       url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
-      MakeRequest(), std::move(authenticator));
+      MakeRequest(), std::move(authenticator),
+      /*network_label=*/u"", /*network_icon=*/SkBitmap(),
+      /*issuer_label=*/u"", /*issuer_icon=*/SkBitmap());
 
   EXPECT_CALL(*mock_authenticator, GetAssertion(_, _))
       .WillOnce(RunOnceCallback<1>(

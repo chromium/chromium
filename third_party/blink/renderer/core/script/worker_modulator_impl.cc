@@ -31,7 +31,7 @@ ModuleScriptFetcher* WorkerModulatorImpl::CreateModuleScriptFetcher(
       return MakeGarbageCollected<InstalledServiceWorkerModuleScriptFetcher>(
           global_scope, pass_key);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

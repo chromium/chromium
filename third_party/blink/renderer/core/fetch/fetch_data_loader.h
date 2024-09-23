@@ -38,29 +38,33 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
 
     // The method corresponding to createLoaderAs... is called on success.
     virtual void DidFetchDataLoadedBlobHandle(scoped_refptr<BlobDataHandle>) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     virtual void DidFetchDataLoadedArrayBuffer(DOMArrayBuffer*) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
-    virtual void DidFetchDataLoadedFormData(FormData*) { NOTREACHED(); }
-    virtual void DidFetchDataLoadedString(const String&) { NOTREACHED(); }
+    virtual void DidFetchDataLoadedFormData(FormData*) {
+      NOTREACHED_IN_MIGRATION();
+    }
+    virtual void DidFetchDataLoadedString(const String&) {
+      NOTREACHED_IN_MIGRATION();
+    }
     // This is called synchronously from FetchDataLoader::Start() to provide
     // the target data pipe.  This may be a pipe extracted from the consumer
     // or a new pipe that data will be copied into.
     virtual void DidFetchDataStartedDataPipe(
         mojo::ScopedDataPipeConsumerHandle handle) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     // This is called after all data are read from |handle| and written
     // to |out_data_pipe|, and |out_data_pipe| is closed or aborted.
     // This may be called synchronously from FetchDataLoader::Start() or
     // delayed to a later task.
-    virtual void DidFetchDataLoadedDataPipe() { NOTREACHED(); }
+    virtual void DidFetchDataLoadedDataPipe() { NOTREACHED_IN_MIGRATION(); }
 
     // This function is called when a "custom" FetchDataLoader (none of the
     // ones listed above) finishes loading.
-    virtual void DidFetchDataLoadedCustomFormat() { NOTREACHED(); }
+    virtual void DidFetchDataLoadedCustomFormat() { NOTREACHED_IN_MIGRATION(); }
 
     virtual void DidFetchDataLoadFailed() = 0;
 

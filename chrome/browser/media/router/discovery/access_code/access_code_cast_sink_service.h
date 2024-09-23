@@ -45,9 +45,18 @@ class AccessCodeCastSinkService : public KeyedService,
       access_code_cast::mojom::AddSinkResultCode add_sink_result,
       std::optional<MediaSink::Id> sink_id)>;
 
-  // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
+  // Use `AccessCodeCastSinkServiceFactory::GetForProfile(..)` to get
   // an instance of this service.
   explicit AccessCodeCastSinkService(Profile* profile);
+
+  // Dependency injection constructor used for testing.
+  AccessCodeCastSinkService(
+      Profile* profile,
+      MediaRouter* media_router,
+      CastMediaSinkServiceImpl* cast_media_sink_service_impl,
+      DiscoveryNetworkMonitor* network_monitor,
+      PrefService* prefs,
+      std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater);
 
   AccessCodeCastSinkService(const AccessCodeCastSinkService&) = delete;
   AccessCodeCastSinkService& operator=(const AccessCodeCastSinkService&) =
@@ -57,17 +66,17 @@ class AccessCodeCastSinkService : public KeyedService,
 
   base::WeakPtr<AccessCodeCastSinkService> GetWeakPtr();
 
-  // With the given |access_code|, make a call to the discovery server to
+  // With the given `access_code`, make a call to the discovery server to
   // validate the device.
-  // |access_code|: the access code that is sent to the discovery server.
-  // |callback|: a callback sent that returns a discovery device and the status
+  // `access_code`: the access code that is sent to the discovery server.
+  // `callback`: a callback sent that returns a discovery device and the status
   // of that device.
   virtual void DiscoverSink(const std::string& access_code,
                             AddSinkResultCallback callback);
 
   // Attempts to add a sink to the Media Router.
-  // |sink|: the sink that is added to the router.
-  // |callback|: a callback that tracks the status of opening a cast channel to
+  // `sink`: the sink that is added to the router.
+  // `callback`: a callback that tracks the status of opening a cast channel to
   // the given media sink.
   virtual void AddSinkToMediaRouter(const MediaSinkInternal& sink,
                                     AddSinkResultCallback add_sink_callback);
@@ -86,10 +95,73 @@ class AccessCodeCastSinkService : public KeyedService,
   // that require expiration before the default kExpirationTimerDelay.
   void CheckMediaSinkForExpiration(const MediaSink::Id& sink_id);
 
-  void SetTaskRunnerForTest(
+  // Testing methods, do not use these outside of tests.
+  // TODO(b/340579614) Re-factor tests so we can hide these methods again.
+  void SetTaskRunnerForTesting(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
     task_runner_ = task_runner;
   }
+
+  void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
+
+  AccessCodeCastPrefUpdater* GetPrefUpdaterForTesting() {
+    return pref_updater_.get();
+  }
+
+  const std::map<MediaSink::Id, std::unique_ptr<base::OneShotTimer>>&
+  GetCurrentSessionExpirationTimersForTesting() {
+    return current_session_expiration_timers_;
+  }
+
+  bool IsAccessCodeCastLacrosSyncEnabledForTesting();
+
+  void ResetPrefUpdaterForTesting();
+
+  void ShutdownForTesting();
+
+  void StoreSinkInPrefsForTesting(base::OnceClosure on_sink_stored_callback,
+                                  const MediaSinkInternal* sink);
+
+  void SetExpirationTimerForTesting(const MediaSink::Id& sink_id);
+
+  void OpenChannelIfNecessaryForTesting(const MediaSinkInternal& sink,
+                                        AddSinkResultCallback add_sink_callback,
+                                        bool has_sink);
+
+  void HandleMediaRouteAddedForTesting(const MediaRoute::Id route_id,
+                                       const bool is_route_local,
+                                       const MediaSource media_source,
+                                       const MediaSinkInternal* sink);
+
+  void HandleMediaRouteRemovedByAccessCodeForTesting(
+      const MediaSinkInternal* sink);
+
+  void OnAccessCodeValidatedForTesting(
+      AddSinkResultCallback add_sink_callback,
+      std::optional<DiscoveryDevice> discovery_device,
+      AddSinkResultCode result_code);
+
+  void OnChannelOpenedResultForTesting(AddSinkResultCallback add_sink_callback,
+                                       const MediaSinkInternal& sink,
+                                       bool channel_opened);
+
+  void InitializePrefUpdaterForTesting();
+
+  void InitAllStoredDevicesForTesting();
+
+  void CalculateDurationTillExpirationForTesting(
+      const MediaSink::Id& sink_id,
+      base::OnceCallback<void(base::TimeDelta)>
+          on_duration_calculated_callback);
+
+  // Testing methods that reach into the owned observer.  This is done in order
+  // To keep the AccessCodeMediaRoutesObserver interface private.  Assumes
+  // media_routes_observer_ is not null.
+  const MediaRoute::Id& GetObserverRemovedRouteIdForTesting() {
+    return media_routes_observer_->GetRemovedRouteIdForTest();
+  }
+
+  void OnObserverRoutesUpdatedForTesting(const std::vector<MediaRoute>& routes);
 
  private:
   class AccessCodeMediaRoutesObserver : public MediaRoutesObserver {
@@ -105,13 +177,14 @@ class AccessCodeCastSinkService : public KeyedService,
 
     ~AccessCodeMediaRoutesObserver() override;
 
+    // Teting methods, do not use these outside of tests.
+    void OnRoutesUpdatedForTesting(const std::vector<MediaRoute>& routes);
+
+    const MediaRoute::Id& GetRemovedRouteIdForTest() {
+      return removed_route_id_;
+    }
+
    private:
-    friend class AccessCodeCastSinkServiceTest;
-
-    FRIEND_TEST_ALL_PREFIXES(
-        AccessCodeCastSinkServiceTest,
-        AccessCodeCastDeviceRemovedAfterRouteEndsExpirationEnabled);
-
     // media_router::MediaRoutesObserver:
     void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
 
@@ -126,64 +199,6 @@ class AccessCodeCastSinkService : public KeyedService,
     base::WeakPtrFactory<AccessCodeMediaRoutesObserver> weak_ptr_factory_{this};
   };
   friend class AccessCodeCastSinkServiceFactory;
-  friend class AccessCodeCastSinkServiceTest;
-  friend class AccessCodeCastHandlerTest;
-  friend class AccessCodeCastIntegrationBrowserTest;
-  friend class MockAccessCodeCastSinkService;
-  FRIEND_TEST_ALL_PREFIXES(
-      AccessCodeCastSinkServiceTest,
-      AccessCodeCastDeviceRemovedAfterRouteEndsExpirationEnabled);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           SinkDoesntExistForPrefs);
-  FRIEND_TEST_ALL_PREFIXES(
-      AccessCodeCastSinkServiceTest,
-      AccessCodeCastDeviceRemovedAfterRouteEndsExpirationDisabled);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           DiscoveryDeviceMissingWithOk);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           ValidDiscoveryDeviceAndCode);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           InvalidDiscoveryDevice);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest, NonOKResultCode);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           OnChannelOpenedSuccess);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           OnChannelOpenedFailure);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestFetchAndAddStoredDevices);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestChangeNetworksNoExpiration);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestChangeNetworksExpiration);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestAddInvalidDevicesNoMediaSinkInternal);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestCalculateDurationTillExpiration);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestResetExpirationTimersShutdown);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestChangeDurationPref);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           DiscoverSinkWithNoMediaRouter);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           RefreshStoredDeviceTimer);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           HandleMediaRouteAdded);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           RestartExpirationTimerDoesntResetTimer);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           InitializePrefUpdater);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           ValidateStoredDevices);
-
-  // Constructor used for testing.
-  AccessCodeCastSinkService(
-      Profile* profile,
-      MediaRouter* media_router,
-      CastMediaSinkServiceImpl* cast_media_sink_service_impl,
-      DiscoveryNetworkMonitor* network_monitor,
-      PrefService* prefs,
-      std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater);
 
   void OnAccessCodeValidated(AddSinkResultCallback add_sink_callback,
                              std::optional<DiscoveryDevice> discovery_device,
@@ -214,7 +229,7 @@ class AccessCodeCastSinkService : public KeyedService,
                              base::OnceCallback<void(bool)> channel_opened_cb,
                              cast_channel::CastSocketOpenParams open_params);
 
-  // Returns a MediaRoute if the given |sink_id| corresponds to a route
+  // Returns a MediaRoute if the given `sink_id` corresponds to a route
   // currently active in the media router.
   std::optional<const MediaRoute> GetActiveRoute(const MediaSink::Id& sink_id);
 
@@ -275,7 +290,7 @@ class AccessCodeCastSinkService : public KeyedService,
   void AddStoredDevicesToMediaRouter(
       const std::vector<MediaSinkInternal>& cast_sinks);
 
-  // Removes the given |sink_id| from all entries in the AccessCodeCast pref
+  // Removes the given `sink_id` from all entries in the AccessCodeCast pref
   // service.
   void RemoveSinkIdFromAllEntries(const MediaSink::Id& sink_id);
   // Removes the media sink from the MediaSinkServiceBase AND closes the cast
@@ -324,8 +339,6 @@ class AccessCodeCastSinkService : public KeyedService,
   GetCastMediaSinkServiceImpl() {
     return cast_media_sink_service_impl_;
   }
-
-  void SetIdentityManagerForTesting(signin::IdentityManager* identity_manager);
 
   // Owns us via the KeyedService mechanism.
   const raw_ptr<Profile> profile_;

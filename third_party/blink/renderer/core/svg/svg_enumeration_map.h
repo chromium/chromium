@@ -2,13 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ENUMERATION_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ENUMERATION_MAP_H_
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -44,7 +52,7 @@ class CORE_EXPORT SVGEnumerationMap {
     DCHECK_EQ(entries_[value - 1].value, value);
     return entries_[value - 1].name;
   }
-  uint16_t ValueFromName(const String&) const;
+  uint16_t ValueFromName(const WTF::String&) const;
 
   uint16_t ValueOfLast() const { return entries_[num_entries_ - 1].value; }
   uint16_t MaxExposedValue() const { return max_exposed_value_; }

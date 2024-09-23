@@ -41,8 +41,8 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   ~DesktopMediaTabList() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
 
   // DesktopMediaListController::ListView:

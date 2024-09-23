@@ -31,18 +31,8 @@
         await waitForCompositorCommit();
       }
 
-      let expected_scroll = distance / window.visualViewport.scale;
-
-      // If fractional scroll offsets are enabled, the expected scroll offset
-      // should be the actuall fractional distance we scrolled. Otherwise the
-      // offset should be truncated.
-      if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
-        assert_not_equals(expected_scroll,
-                          Math.round(expected_scroll),
-                          'Expected scroll should be fractional');
-      } else {
-        expected_scroll = Math.floor(expected_scroll);
-      }
+      // We always truncate the scroll offset.
+      let expected_scroll = Math.floor(distance / window.visualViewport.scale);
 
       // Scroll Vertically
       await smoothScroll(distance,

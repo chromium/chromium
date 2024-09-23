@@ -25,6 +25,7 @@
 #include <iosfwd>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
@@ -74,6 +75,8 @@ class WTF_EXPORT AtomicString {
       AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
   explicit AtomicString(const UChar* chars);
 
+  explicit AtomicString(const StringView& view);
+
   // Constructing an AtomicString from a String / StringImpl can be expensive if
   // the StringImpl is not already atomic.
   explicit AtomicString(StringImpl* impl) : string_(Add(impl)) {}
@@ -90,6 +93,8 @@ class WTF_EXPORT AtomicString {
   const LChar* Characters8() const { return string_.Characters8(); }
   const UChar* Characters16() const { return string_.Characters16(); }
   wtf_size_t length() const { return string_.length(); }
+  base::span<const LChar> Span8() const { return string_.Span8(); }
+  base::span<const UChar> Span16() const { return string_.Span16(); }
 
   UChar operator[](wtf_size_t i) const { return string_[i]; }
 
@@ -199,6 +204,7 @@ class WTF_EXPORT AtomicString {
   // NOTE: Passing a zero size means use the whole string.
   static AtomicString FromUTF8(const char*, size_t length);
   static AtomicString FromUTF8(const char*);
+  static AtomicString FromUTF8(std::string_view);
 
   std::string Ascii() const { return string_.Ascii(); }
   std::string Latin1() const { return string_.Latin1(); }
@@ -295,13 +301,14 @@ struct HashTraits<AtomicString>;
 // double-quotes, and escapes characters other than ASCII printables.
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const AtomicString&);
 
-inline StringView::StringView(const AtomicString& string,
+inline StringView::StringView(const AtomicString& string LIFETIME_BOUND,
                               unsigned offset,
                               unsigned length)
     : StringView(string.Impl(), offset, length) {}
-inline StringView::StringView(const AtomicString& string, unsigned offset)
+inline StringView::StringView(const AtomicString& string LIFETIME_BOUND,
+                              unsigned offset)
     : StringView(string.Impl(), offset) {}
-inline StringView::StringView(const AtomicString& string)
+inline StringView::StringView(const AtomicString& string LIFETIME_BOUND)
     : StringView(string.Impl()) {}
 
 }  // namespace WTF

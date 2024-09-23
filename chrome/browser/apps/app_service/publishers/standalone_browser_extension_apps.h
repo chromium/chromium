@@ -141,7 +141,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
   // Used to send chrome app publisher actions to Lacros.
   mojo::Remote<crosapi::mojom::AppController> controller_;
 
-  std::unique_ptr<crosapi::BrowserManager::ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<crosapi::BrowserManagerScopedKeepAlive> keep_alive_;
 
   base::ScopedObservation<ash::LoginState, ash::LoginState::Observer>
       login_observation_{this};

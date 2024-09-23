@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/chromevox_hint/chromevox_hint_detector.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -24,6 +23,7 @@ namespace ash {
 
 class InputEventsBlocker;
 class WelcomeView;
+struct AccessibilityStatusEventDetails;
 
 namespace locale_util {
 struct LanguageSwitchResult;
@@ -194,6 +194,10 @@ class WelcomeScreen : public BaseScreen,
 
   // The exact language code selected by user in the menu.
   std::string selected_language_code_;
+
+  // Whether the QuickStart entry point visibility has already been determined.
+  // This flag prevents duplicate histogram entries.
+  bool has_emitted_quick_start_visible = false;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

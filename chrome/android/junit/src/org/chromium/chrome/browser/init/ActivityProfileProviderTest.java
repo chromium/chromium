@@ -38,7 +38,7 @@ public class ActivityProfileProviderTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        Profile.setLastUsedProfileForTesting(mOriginalProfile);
+        ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
         mLifecycleDispatcher = new TestActivityLifecycleDispatcherImpl(mActivity);
     }
 

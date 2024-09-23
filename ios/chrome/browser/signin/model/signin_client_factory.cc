@@ -9,14 +9,18 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 #include "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/ios_chrome_signin_client.h"
 
 // static
-SigninClient* SigninClientFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+SigninClient* SigninClientFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+SigninClient* SigninClientFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<SigninClient*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -41,7 +45,7 @@ std::unique_ptr<KeyedService> SigninClientFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<IOSChromeSigninClient>(
       chrome_browser_state,
-      ios::CookieSettingsFactory::GetForBrowserState(chrome_browser_state),
+      ios::CookieSettingsFactory::GetForProfile(chrome_browser_state),
       ios::HostContentSettingsMapFactory::GetForBrowserState(
           chrome_browser_state));
 }

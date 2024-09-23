@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
@@ -19,17 +20,16 @@
 #include "base/types/expected.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
+#include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "services/network/public/cpp/trigger_verification.h"
 
 namespace content {
 
 ConfigurableStorageDelegate::ConfigurableStorageDelegate()
-    : AttributionStorageDelegate([]() {
+    : AttributionResolverDelegate([]() {
         AttributionConfig c;
         c.max_sources_per_origin = std::numeric_limits<int>::max(),
         c.max_destinations_per_source_site_reporting_site =
@@ -96,7 +96,7 @@ base::Uuid ConfigurableStorageDelegate::NewReportID() const {
   return DefaultExternalReportID();
 }
 
-std::optional<AttributionStorageDelegate::OfflineReportDelayConfig>
+std::optional<AttributionResolverDelegate::OfflineReportDelayConfig>
 ConfigurableStorageDelegate::GetOfflineReportDelayConfig() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return offline_report_delay_config_;
@@ -110,46 +110,33 @@ void ConfigurableStorageDelegate::ShuffleReports(
   }
 }
 
-void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
-    std::vector<network::TriggerVerification>& verifications) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (reverse_verifications_on_shuffle_) {
-    base::ranges::reverse(verifications);
-  }
-}
-
-double ConfigurableStorageDelegate::GetRandomizedResponseRate(
+std::optional<double> ConfigurableStorageDelegate::GetRandomizedResponseRate(
     const attribution_reporting::TriggerSpecs&,
-    attribution_reporting::MaxEventLevelReports,
     attribution_reporting::EventLevelEpsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_rate_;
 }
 
-AttributionStorageDelegate::GetRandomizedResponseResult
+AttributionResolverDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::TriggerSpecs&,
-    attribution_reporting::MaxEventLevelReports,
     attribution_reporting::EventLevelEpsilon,
-    base::Time source_time) const {
+    const std::optional<attribution_reporting::AttributionScopesData>&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (exceeds_channel_capacity_limit_) {
-    return base::unexpected(ExceedsChannelCapacityLimit());
+    return base::unexpected(attribution_reporting::RandomizedResponseError::
+                                kExceedsChannelCapacityLimit);
   }
-  double channel_capacity = 0;  // Not used by downstream code.
-  return RandomizedResponseData(randomized_response_rate_, channel_capacity,
-                                randomized_response_);
+  return attribution_reporting::RandomizedResponseData(
+      randomized_response_rate_, randomized_response_);
 }
 
-std::vector<AttributionStorageDelegate::NullAggregatableReport>
-ConfigurableStorageDelegate::GetNullAggregatableReports(
-    const AttributionTrigger& trigger,
-    base::Time trigger_time,
-    std::optional<base::Time> attributed_source_time) const {
+bool ConfigurableStorageDelegate::GenerateNullAggregatableReportForLookbackDay(
+    int lookback_day,
+    attribution_reporting::mojom::SourceRegistrationTimeConfig) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return null_aggregatable_reports_;
+  return null_aggregatable_reports_lookback_days_.contains(lookback_day);
 }
 
 void ConfigurableStorageDelegate::set_max_sources_per_origin(int max) {
@@ -169,7 +156,7 @@ void ConfigurableStorageDelegate::set_max_reports_per_destination(
       config_.aggregate_limit.max_reports_per_destination = max;
       break;
     case AttributionReport::Type::kNullAggregatable:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -191,6 +178,13 @@ void ConfigurableStorageDelegate::set_destination_rate_limit(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Intentionally allows `limit` to be invalid for testing.
   config_.destination_rate_limit = limit;
+}
+
+void ConfigurableStorageDelegate::set_aggregatable_debug_rate_limit(
+    AttributionConfig::AggregatableDebugRateLimit limit) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Intentionally allows `limit` to be invalid for testing.
+  config_.aggregatable_debug_rate_limit = std::move(limit);
 }
 
 void ConfigurableStorageDelegate::set_delete_expired_sources_frequency(
@@ -221,11 +215,6 @@ void ConfigurableStorageDelegate::set_reverse_reports_on_shuffle(bool reverse) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   reverse_reports_on_shuffle_ = reverse;
 }
-void ConfigurableStorageDelegate::set_reverse_verifications_on_shuffle(
-    bool reverse) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  reverse_verifications_on_shuffle_ = reverse;
-}
 
 void ConfigurableStorageDelegate::set_randomized_response_rate(double rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -233,7 +222,7 @@ void ConfigurableStorageDelegate::set_randomized_response_rate(double rate) {
 }
 
 void ConfigurableStorageDelegate::set_randomized_response(
-    RandomizedResponse randomized_response) {
+    attribution_reporting::RandomizedResponse randomized_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   randomized_response_ = std::move(randomized_response);
 }
@@ -244,10 +233,11 @@ void ConfigurableStorageDelegate::set_exceeds_channel_capacity_limit(
   exceeds_channel_capacity_limit_ = exceeds;
 }
 
-void ConfigurableStorageDelegate::set_null_aggregatable_reports(
-    std::vector<NullAggregatableReport> null_aggregatable_reports) {
+void ConfigurableStorageDelegate::set_null_aggregatable_reports_lookback_days(
+    base::flat_set<int> null_aggregatable_reports_lookback_days) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  null_aggregatable_reports_ = std::move(null_aggregatable_reports);
+  null_aggregatable_reports_lookback_days_ =
+      std::move(null_aggregatable_reports_lookback_days);
 }
 
 void ConfigurableStorageDelegate::use_realistic_report_times() {

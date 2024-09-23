@@ -76,7 +76,7 @@ void AccountInvestigator::Initialize() {
   previously_authenticated_ =
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
 
-  // TODO(crbug.com/1121923): Refactor to use signin::PersistentRepeatingTimer
+  // TODO(crbug.com/40715763): Refactor to use signin::PersistentRepeatingTimer
   // instead.
   Time previous = Time::FromSecondsSinceUnixEpoch(
       pref_service_->GetDouble(prefs::kGaiaCookiePeriodicReportTime));

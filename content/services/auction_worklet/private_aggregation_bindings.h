@@ -17,11 +17,7 @@
 namespace auction_worklet {
 
 class AuctionV8Helper;
-
-// Reserved event types for aggregatable report's for-event contribution.
-CONTENT_EXPORT extern const char kReservedAlways[];
-CONTENT_EXPORT extern const char kReservedWin[];
-CONTENT_EXPORT extern const char kReservedLoss[];
+class AuctionV8Logger;
 
 // Class to manage bindings for the Private Aggregation API. Expected to be used
 // for a context managed by `ContextRecycler`. Throws exceptions when invalid
@@ -30,7 +26,9 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
  public:
   explicit PrivateAggregationBindings(
       AuctionV8Helper* v8_helper,
-      bool private_aggregation_permissions_policy_allowed);
+      AuctionV8Logger* v8_logger,
+      bool private_aggregation_permissions_policy_allowed,
+      bool reserved_once_allowed);
   PrivateAggregationBindings(const PrivateAggregationBindings&) = delete;
   PrivateAggregationBindings& operator=(const PrivateAggregationBindings&) =
       delete;
@@ -52,8 +50,16 @@ class CONTENT_EXPORT PrivateAggregationBindings : public Bindings {
   static void EnableDebugMode(const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
+  const raw_ptr<AuctionV8Logger> v8_logger_;
 
-  bool private_aggregation_permissions_policy_allowed_;
+  const bool private_aggregation_permissions_policy_allowed_;
+  const bool enforce_permission_policy_for_on_event_;
+  const bool additional_extensions_allowed_;
+
+  // This is true if the binding is used for functions where reserved.once is
+  // permitted; it's irrelevant if reserved.once is turned off by
+  // `additional_extensions_allowed_` being false.
+  const bool reserved_once_allowed_;
 
   // Defaults to debug mode being disabled.
   blink::mojom::DebugModeDetails debug_mode_details_;

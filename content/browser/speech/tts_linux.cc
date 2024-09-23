@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <math.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 
@@ -559,10 +565,8 @@ void TtsPlatformImplLinux::ProcessSpeech(
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   // Speech dispatcher's speech params are around 3x at either limit.
-  float rate = params.rate > 3 ? 3 : params.rate;
-  rate = params.rate < 0.334 ? 0.334 : rate;
-  float pitch = params.pitch > 3 ? 3 : params.pitch;
-  pitch = params.pitch < 0.334 ? 0.334 : pitch;
+  float rate = std::clamp(static_cast<float>(params.rate), 0.334f, 3.0f);
+  float pitch = std::clamp(static_cast<float>(params.pitch), 0.334f, 3.0f);
 
   SPDChromeVoice matched_voice;
   auto it = voices_.find(voice.name);

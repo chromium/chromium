@@ -8,73 +8,82 @@
   },
   "branch_configs": [
     {
-      "name": "standard branch",
-      "platforms": [
-        "android",
-        "cros",
-        "fuchsia",
-        "ios",
-        "linux",
-        "mac",
-        "windows"
-      ],
-      "sheriff_rotation": "chrome_browser_release"
+      "initialize": {},
+      "name": "standard branch"
     },
     {
       "name": "desktop extended stable branch",
-      "platforms": [
-        "mac",
-        "windows"
-      ],
-      "sheriff_rotation": "chrome_browser_release"
+      "platform_set": {
+        "gardener_rotation": "chrome_browser_release",
+        "platforms": [
+          "mac",
+          "windows"
+        ]
+      }
     },
     {
       "name": "android",
-      "platforms": [
-        "android"
-      ]
+      "platform_set": {
+        "platforms": [
+          "android"
+        ]
+      }
     },
     {
       "name": "cros",
-      "platforms": [
-        "cros"
-      ]
+      "platform_set": {
+        "platforms": [
+          "cros"
+        ]
+      }
     },
     {
       "name": "cros-lts",
-      "platforms": [
-        "cros-lts"
-      ]
+      "platform_set": {
+        "platforms": [
+          "cros-lts"
+        ]
+      }
     },
     {
       "name": "fuchsia",
-      "platforms": [
-        "fuchsia"
-      ]
+      "platform_set": {
+        "platforms": [
+          "fuchsia"
+        ]
+      }
     },
     {
       "name": "ios",
-      "platforms": [
-        "ios"
-      ]
+      "platform_set": {
+        "platforms": [
+          "ios"
+        ]
+      }
     },
     {
       "name": "linux",
-      "platforms": [
-        "linux"
-      ]
+      "platform_set": {
+        "platforms": [
+          "linux"
+        ]
+      }
     },
     {
       "name": "mac",
-      "platforms": [
-        "mac"
-      ]
+      "platform_set": {
+        "platforms": [
+          "mac"
+        ]
+      }
     },
     {
       "name": "windows",
-      "platforms": [
-        "windows"
-      ]
+      "platform_set": {
+        "platforms": [
+          "windows"
+        ]
+      }
     }
   ],
   "branch_script": "infra/config/scripts/branch.py",

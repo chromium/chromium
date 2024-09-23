@@ -31,8 +31,8 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
  private:
   // mojom::FacilitatedPaymentsAgent:
   void TriggerPixCodeDetection(
-      base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback)
-      override;
+      base::OnceCallback<void(mojom::PixCodeDetectionResult,
+                              const std::string&)> callback) override;
 
   // content::RenderFrameObserver:
   void OnDestruct() override;

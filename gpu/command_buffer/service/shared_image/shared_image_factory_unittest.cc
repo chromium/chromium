@@ -4,10 +4,10 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -36,10 +36,25 @@ class SharedImageFactoryTest : public testing::Test {
     bool result = context_->MakeCurrent(surface_.get());
     ASSERT_TRUE(result);
 
+    context_state_ = base::MakeRefCounted<SharedContextState>(
+        base::MakeRefCounted<gl::GLShareGroup>(), surface_, context_,
+        /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+        GrContextType::kGL);
+
     GpuPreferences preferences;
     GpuDriverBugWorkarounds workarounds;
+
+    bool initialize_gl = context_state_->InitializeGL(
+        preferences, base::MakeRefCounted<gles2::FeatureInfo>(
+                         workarounds, GpuFeatureInfo()));
+    ASSERT_TRUE(initialize_gl);
+
+    bool initialize_skia =
+        context_state_->InitializeSkia(preferences, workarounds);
+    ASSERT_TRUE(initialize_skia);
+
     factory_ = std::make_unique<SharedImageFactory>(
-        preferences, workarounds, GpuFeatureInfo(), nullptr,
+        preferences, workarounds, GpuFeatureInfo(), context_state_.get(),
         &shared_image_manager_, nullptr,
         /*is_for_display_compositor=*/false);
   }
@@ -52,17 +67,18 @@ class SharedImageFactoryTest : public testing::Test {
  protected:
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
+  scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;
   SharedImageManager shared_image_manager_;
 };
 
 TEST_F(SharedImageFactoryTest, Basic) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
   EXPECT_TRUE(factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
@@ -70,12 +86,12 @@ TEST_F(SharedImageFactoryTest, Basic) {
 }
 
 TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
   EXPECT_TRUE(factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, surface_handle, usage, "TestLabel"));
@@ -86,7 +102,7 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   GpuPreferences preferences;
   GpuDriverBugWorkarounds workarounds;
   auto other_factory = std::make_unique<SharedImageFactory>(
-      preferences, workarounds, GpuFeatureInfo(), nullptr,
+      preferences, workarounds, GpuFeatureInfo(), context_state_.get(),
       &shared_image_manager_, nullptr,
       /*is_for_display_compositor=*/false);
   EXPECT_FALSE(other_factory->CreateSharedImage(
@@ -95,7 +111,7 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
 }
 
 TEST_F(SharedImageFactoryTest, DestroyInexistentMailbox) {
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   EXPECT_FALSE(factory_->DestroySharedImage(mailbox));
 }
 

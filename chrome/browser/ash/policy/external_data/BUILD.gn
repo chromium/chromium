@@ -1,0 +1,145 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("external_data") {
+  sources = [
+    "cloud_external_data_manager_base.cc",
+    "cloud_external_data_manager_base.h",
+    "cloud_external_data_policy_observer.cc",
+    "cloud_external_data_policy_observer.h",
+    "device_cloud_external_data_policy_observer.cc",
+    "device_cloud_external_data_policy_observer.h",
+    "device_local_account_external_data_manager.cc",
+    "device_local_account_external_data_manager.h",
+    "device_local_account_external_data_service.cc",
+    "device_local_account_external_data_service.h",
+    "device_policy_cloud_external_data_manager.cc",
+    "device_policy_cloud_external_data_manager.h",
+    "user_cloud_external_data_manager.cc",
+    "user_cloud_external_data_manager.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/settings",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//services/network/public/cpp",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "cloud_external_data_manager_base_test_util.cc",
+    "cloud_external_data_manager_base_test_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//crypto",
+    "//net:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cloud_external_data_manager_base_unittest.cc",
+    "cloud_external_data_policy_observer_unittest.cc",
+  ]
+
+  deps = [
+    ":external_data",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/invalidation:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto:",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//crypto",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "device_cloud_external_data_policy_observer_browsertest.cc",
+    "device_policy_cloud_external_data_manager_browsertest.cc",
+    "user_cloud_external_data_manager_browsertest.cc",
+  ]
+
+  deps = [
+    ":external_data",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/login:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:constants",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/settings",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

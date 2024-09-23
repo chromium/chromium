@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("multi_identity") {
+  sources = [
+    "switch_profile_settings_coordinator.h",
+    "switch_profile_settings_coordinator.mm",
+    "switch_profile_settings_mediator.h",
+    "switch_profile_settings_mediator.mm",
+  ]
+  deps = [
+    ":multi_identity_ui",
+    "//components/prefs",
+    "//ios/chrome/browser/profile/model:constants",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
+  ]
+}
+
+source_set("multi_identity_ui") {
+  sources = [
+    "switch_profile_settings_consumer.h",
+    "switch_profile_settings_delegate.h",
+    "switch_profile_settings_item.h",
+    "switch_profile_settings_item.mm",
+    "switch_profile_settings_view_controller.h",
+    "switch_profile_settings_view_controller.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells:cells",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ui/base",
+  ]
+}

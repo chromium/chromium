@@ -39,7 +39,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -117,28 +116,6 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
         int BOTTOM_SHEET = 1;
         int SIDE_SHEET = 2;
         int FULL_SIZE = 3;
-
-        // Number of elements in the enum
-        int COUNT = 4;
-    }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    // This should be kept in sync with the definition |CustomTabsResizeType2|
-    // in tools/metrics/histograms/enums.xml.
-    @IntDef({
-        ResizeType.MANUAL_EXPANSION,
-        ResizeType.MANUAL_MINIMIZATION,
-        ResizeType.AUTO_EXPANSION,
-        ResizeType.AUTO_MINIMIZATION,
-        ResizeType.COUNT
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ResizeType {
-        int MANUAL_EXPANSION = 0;
-        int MANUAL_MINIMIZATION = 1;
-        int AUTO_EXPANSION = 2;
-        int AUTO_MINIMIZATION = 3;
 
         // Number of elements in the enum
         int COUNT = 4;
@@ -354,12 +331,10 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
     protected void maybeInvokeResizeCallback() {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
 
-        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
-            // onActivityLayout should be called before onResized and only when the PCCT is created
-            // or its size has changed.
-            if (mHeight != attrs.height || mWidth != attrs.width) {
-                invokeActivityLayoutCallback();
-            }
+        // onActivityLayout should be called before onResized and only when the PCCT is created
+        // or its size has changed.
+        if (mHeight != attrs.height || mWidth != attrs.width) {
+            invokeActivityLayoutCallback();
         }
 
         if (isFullHeight() || isFullscreen()) {

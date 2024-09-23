@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/client/gl_helper.h"
 
 #include <stddef.h>
@@ -203,9 +208,9 @@ class GLHelper::CopyTextureToImpl final {
           bytes_per_pixel(bytes_per_pixel_),
           bytes_per_row(bytes_per_row_),
           row_stride_bytes(row_stride_bytes_),
-          pixels(pixels_),
           flip_y(flip_y_),
-          callback(std::move(callback_)) {}
+          callback(std::move(callback_)),
+          pixels(pixels_) {}
 
     bool done = false;
     bool result = false;
@@ -213,9 +218,9 @@ class GLHelper::CopyTextureToImpl final {
     size_t bytes_per_pixel;
     size_t bytes_per_row;
     size_t row_stride_bytes;
-    raw_ptr<unsigned char> pixels;
     bool flip_y;
     base::OnceCallback<void(bool)> callback;
+    raw_ptr<unsigned char> pixels;
     GLuint buffer = 0;
     GLuint query = 0;
   };
@@ -242,7 +247,7 @@ class GLHelper::CopyTextureToImpl final {
     void Add(Request* r) { requests_.push(r); }
 
    private:
-    base::queue<Request*> requests_;
+    base::queue<raw_ptr<Request, CtnExperimental>> requests_;
   };
 
   // A readback pipeline that also converts the data to YUV before
@@ -317,7 +322,7 @@ class GLHelper::CopyTextureToImpl final {
   // this object is destroyed. Must be declared before other Scoped* fields.
   ScopedFlush flush_;
 
-  base::queue<Request*> request_queue_;
+  base::queue<raw_ptr<Request, CtnExperimental>> request_queue_;
 
   // Lazily set by IsBGRAReadbackSupported().
   enum {

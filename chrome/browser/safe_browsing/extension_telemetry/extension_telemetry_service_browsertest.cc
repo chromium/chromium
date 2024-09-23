@@ -2,21 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -27,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -42,10 +47,15 @@ constexpr const char kExtensionVersion[] = "0.0.1";
 constexpr const char kExtensionContactedHost[] = "example.com";
 
 }  // namespace
+
+using ::base::test::EqualsProto;
+using JSCallStack = ExtensionTelemetryReportRequest_SignalInfo_JSCallStack;
 using CookiesGetAllInfo =
     ExtensionTelemetryReportRequest_SignalInfo_CookiesGetAllInfo;
 using DeclarativeNetRequestInfo =
     ExtensionTelemetryReportRequest_SignalInfo_DeclarativeNetRequestInfo;
+using DeclarativeNetRequestActionInfo =
+    ExtensionTelemetryReportRequest_SignalInfo_DeclarativeNetRequestActionInfo;
 using GetAllArgsInfo =
     ExtensionTelemetryReportRequest_SignalInfo_CookiesGetAllInfo_GetAllArgsInfo;
 using CookiesGetInfo =
@@ -65,50 +75,97 @@ class ExtensionTelemetryServiceBrowserTest
   ExtensionTelemetryServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {kExtensionTelemetryReportContactedHosts,
+        {kExtensionTelemetryForEnterprise,
+         kExtensionTelemetryReportContactedHosts,
          kExtensionTelemetryReportHostsContactedViaWebSocket,
-         kExtensionTelemetryTabsApiSignal},
+         kExtensionTelemetryTabsApiSignal,
+         kExtensionTelemetryTabsApiSignalCaptureVisibleTab,
+         kExtensionTelemetryDeclarativeNetRequestActionSignal,
+         extensions_features::kIncludeJSCallStackInExtensionApiRequest},
         /*disabled_features=*/
         {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));
     test_extension_dir_ =
         test_extension_dir_.AppendASCII("safe_browsing/extension_telemetry");
   }
+
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    // Helper to set up enterprise reporting and enable by default.
+    event_report_validator_helper_ = std::make_unique<
+        enterprise_connectors::test::EventReportValidatorHelper>(
+        browser()->profile(), /*browser_test=*/true);
+    // Enable enterprise policy.
+    enterprise_connectors::test::SetOnSecurityEventReporting(
+        /*prefs=*/prefs(),
+        /*enabled=*/true,
+        /*enabled_event_names=*/{},
+        /*enabled_opt_in_events=*/
+        {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  }
+
+  void TearDownOnMainThread() override {
+    extensions::ExtensionApiTest::TearDownOnMainThread();
+    event_report_validator_helper_.reset();
   }
 
  protected:
-  bool IsTelemetryServiceEnabled(ExtensionTelemetryService* telemetry_service) {
-    return telemetry_service->enabled() &&
-           !telemetry_service->signal_processors_.empty() &&
-           telemetry_service->timer_.IsRunning();
+  content::WebContents* web_contents(Browser* browser) const {
+    return browser->tab_strip_model()->GetActiveWebContents();
   }
 
-  bool IsExtensionStoreEmpty(ExtensionTelemetryService* telemetry_service) {
-    return telemetry_service->extension_store_.empty();
+  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
+
+  ExtensionTelemetryService* telemetry_service() {
+    return ExtensionTelemetryServiceFactory::GetForProfile(
+        browser()->profile());
+  }
+
+  bool IsTelemetryServiceEnabledForESB() {
+    return telemetry_service()->esb_enabled_ &&
+           !telemetry_service()->signal_processors_.empty() &&
+           telemetry_service()->timer_.IsRunning();
+  }
+
+  bool IsTelemetryServiceEnabledForEnterprise() {
+    return telemetry_service()->enterprise_enabled_ &&
+           !telemetry_service()->enterprise_signal_processors_.empty() &&
+           telemetry_service()->enterprise_timer_.IsRunning();
+  }
+
+  bool IsExtensionStoreEmpty() {
+    return telemetry_service()->extension_store_.empty();
+  }
+
+  bool IsEnterpriseExtensionStoreEmpty() {
+    return telemetry_service()->enterprise_extension_store_.empty();
   }
 
   using ExtensionInfo = ExtensionTelemetryReportRequest_ExtensionInfo;
   const ExtensionInfo* GetExtensionInfoFromExtensionStore(
-      ExtensionTelemetryService* telemetry_service,
       const extensions::ExtensionId& extension_id) {
-    auto iter = telemetry_service->extension_store_.find(extension_id);
-    if (iter == telemetry_service->extension_store_.end()) {
+    auto iter = telemetry_service()->extension_store_.find(extension_id);
+    if (iter == telemetry_service()->extension_store_.end()) {
       return nullptr;
     }
     return iter->second.get();
   }
 
   using TelemetryReport = ExtensionTelemetryReportRequest;
-  std::unique_ptr<TelemetryReport> GetTelemetryReport(
-      ExtensionTelemetryService* telemetry_service) {
-    return telemetry_service->CreateReport();
+  std::unique_ptr<TelemetryReport> GetTelemetryReport() {
+    return telemetry_service()->CreateReport();
+  }
+
+  std::unique_ptr<TelemetryReport> GetTelemetryReportForEnterprise() {
+    return telemetry_service()->CreateReportForEnterprise();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath test_extension_dir_;
+  std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
+      event_report_validator_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
@@ -116,77 +173,81 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
+
   extensions::ResultCatcher result_catcher;
   // Load extension from the test extension directory.
   const auto* extension =
       LoadExtension(test_extension_dir_.AppendASCII("basic_crx"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult());
-  // Retrieve extension telemetry service instance.
-  auto* telemetry_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(profile());
+
   // Successfully retrieve the extension telemetry instance.
-  ASSERT_NE(telemetry_service, nullptr);
-  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
   // Process signal.
   {
     // Verify that the registered extension information is saved in the
     // telemetry service's extension store.
     const ExtensionInfo* info =
-        GetExtensionInfoFromExtensionStore(telemetry_service, extension->id());
+        GetExtensionInfoFromExtensionStore(extension->id());
     EXPECT_EQ(extension->name(), kExtensionName);
     EXPECT_EQ(extension->id(), extension->id());
     EXPECT_EQ(info->version(), kExtensionVersion);
   }
-  // Generate telemetry report and verify.
-  {
-    // Verify the contents of telemetry report generated.
-    std::unique_ptr<TelemetryReport> telemetry_report_pb =
-        GetTelemetryReport(telemetry_service);
-    ASSERT_NE(telemetry_report_pb, nullptr);
-    // Retrieve the report corresponding to the test extension.
-    int report_index = -1;
-    for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
-      if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
-        report_index = i;
-      }
+  // Generate ESB telemetry report and verify the contents.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+  // Retrieve the report corresponding to the test extension.
+  int report_index = -1;
+  for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
+    if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
+      report_index = i;
     }
-    ASSERT_NE(report_index, -1);
-    const auto& extension_report = telemetry_report_pb->reports(report_index);
-    EXPECT_EQ(extension_report.extension().id(), extension->id());
-    EXPECT_EQ(extension_report.extension().name(), kExtensionName);
-    EXPECT_EQ(extension_report.extension().version(), kExtensionVersion);
-    // Verify the designated test extension's report has signal data.
-    ASSERT_EQ(extension_report.signals().size(), 1);
-    // Verify that extension store has been cleared after creating a telemetry
-    // report.
-    EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
-    // Verify signal proto from the reports.
-    const ExtensionTelemetryReportRequest_SignalInfo& signal =
-        extension_report.signals()[0];
-    const RemoteHostContactedInfo& remote_host_contacted_info =
-        signal.remote_host_contacted_info();
-    ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 2);
-    EXPECT_FALSE(remote_host_contacted_info.collected_from_new_interception());
-
-    const RemoteHostInfo& remote_host_info =
-        remote_host_contacted_info.remote_host(0);
-    EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(1));
-    EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
-    EXPECT_EQ(remote_host_info.connection_protocol(),
-              RemoteHostInfo::HTTP_HTTPS);
-    EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::EXTENSION);
-    const RemoteHostInfo& remote_host_contacted_info_websocket =
-        remote_host_contacted_info.remote_host(1);
-    EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(),
-              static_cast<uint32_t>(1));
-    EXPECT_EQ(remote_host_contacted_info_websocket.url(),
-              kExtensionContactedHost);
-    EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
-              RemoteHostInfo::WEBSOCKET);
-    EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
-              RemoteHostInfo::EXTENSION);
   }
+  ASSERT_NE(report_index, -1);
+  const auto& extension_report = telemetry_report_pb->reports(report_index);
+  EXPECT_EQ(extension_report.extension().id(), extension->id());
+  EXPECT_EQ(extension_report.extension().name(), kExtensionName);
+  EXPECT_EQ(extension_report.extension().version(), kExtensionVersion);
+  // Verify the designated test extension's report has signal data.
+  ASSERT_EQ(extension_report.signals().size(), 1);
+  // Verify that extension store has been cleared after creating a telemetry
+  // report.
+  EXPECT_TRUE(IsExtensionStoreEmpty());
+  // Verify signal proto from the reports.
+  const ExtensionTelemetryReportRequest_SignalInfo& signal =
+      extension_report.signals()[0];
+  const RemoteHostContactedInfo& remote_host_contacted_info =
+      signal.remote_host_contacted_info();
+  ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 2);
+  EXPECT_FALSE(remote_host_contacted_info.collected_from_new_interception());
+
+  const RemoteHostInfo& remote_host_info =
+      remote_host_contacted_info.remote_host(0);
+  EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(1));
+  EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
+  EXPECT_EQ(remote_host_info.connection_protocol(), RemoteHostInfo::HTTP_HTTPS);
+  EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::EXTENSION);
+  const RemoteHostInfo& remote_host_contacted_info_websocket =
+      remote_host_contacted_info.remote_host(1);
+  EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(),
+            static_cast<uint32_t>(1));
+  EXPECT_EQ(remote_host_contacted_info_websocket.url(),
+            kExtensionContactedHost);
+  EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
+            RemoteHostInfo::WEBSOCKET);
+  EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
+            RemoteHostInfo::EXTENSION);
+
+  // Verify enterprise telemetry reporting.
+  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+  std::unique_ptr<TelemetryReport> enterprise_telemetry_report_pb =
+      GetTelemetryReportForEnterprise();
+  const auto& enterprise_extension_report =
+      enterprise_telemetry_report_pb->reports(0);
+
+  EXPECT_THAT(extension_report, EqualsProto(enterprise_extension_report));
+  EXPECT_TRUE(IsEnterpriseExtensionStoreEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
@@ -195,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
          "name": "Simple Cookies Extension",
          "version": "0.1",
@@ -204,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
          "permissions": ["cookies"],
          "host_permissions": ["<all_urls>"]
        })";
-  constexpr char kBackground[] =
+  static constexpr char kBackground[] =
       R"(
         var TEST_DOMAIN = 'cookies.com';
         var TEST_BASIC_COOKIE = {
@@ -236,15 +297,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult());
 
-  // Retrieve extension telemetry service instance.
-  auto* telemetry_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(profile());
-  ASSERT_NE(telemetry_service, nullptr);
-  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
 
-  // Verify the contents of telemetry report generated.
-  std::unique_ptr<TelemetryReport> telemetry_report_pb =
-      GetTelemetryReport(telemetry_service);
+  // Verify the contents of telemetry report generated for ESB users.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
   ASSERT_NE(telemetry_report_pb, nullptr);
   // Retrieve the report corresponding to the test extension.
   int report_index = -1;
@@ -263,19 +320,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   ASSERT_EQ(extension_report.signals().size(), 1);
   // Verify that extension store has been cleared after creating a telemetry
   // report.
-  EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
+  EXPECT_TRUE(IsExtensionStoreEmpty());
 
   // Verify signal proto from the reports.
   const ExtensionTelemetryReportRequest_SignalInfo& signal =
       extension_report.signals()[0];
   const CookiesGetAllInfo& cookies_get_all_info = signal.cookies_get_all_info();
   ASSERT_EQ(cookies_get_all_info.get_all_args_info_size(), 1);
-  ASSERT_EQ(cookies_get_all_info.max_exceeded_args_count(),
-            static_cast<uint32_t>(0));
+  ASSERT_EQ(cookies_get_all_info.max_exceeded_args_count(), 0u);
 
   const GetAllArgsInfo& get_all_args_info =
       cookies_get_all_info.get_all_args_info(0);
-  EXPECT_EQ(get_all_args_info.count(), static_cast<uint32_t>(2));
+  EXPECT_EQ(get_all_args_info.count(), 2u);
   EXPECT_EQ(get_all_args_info.domain(), "cookies.com");
   EXPECT_EQ(get_all_args_info.name(), "test_basic_cookie");
   EXPECT_EQ(get_all_args_info.path(), "");
@@ -283,6 +339,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   EXPECT_EQ(get_all_args_info.store_id(), "0");
   EXPECT_EQ(get_all_args_info.url(), "https://extensions.cookies.com/");
   EXPECT_FALSE(get_all_args_info.has_is_session());
+  // Check the JS call stack information.
+  ASSERT_EQ(get_all_args_info.js_callstacks_size(), 1);
+  const JSCallStack& callstack = get_all_args_info.js_callstacks(0);
+  ASSERT_GE(callstack.frames_size(), 1);
+  EXPECT_EQ(callstack.frames(0).script_name(), "/background.js");
+  EXPECT_EQ(callstack.frames(0).function_name(), "getCookies");
+
+  // Verify enterprise telemetry reporting.
+  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+  std::unique_ptr<TelemetryReport> enterprise_telemetry_report_pb =
+      GetTelemetryReportForEnterprise();
+  const auto& enterprise_extension_report =
+      enterprise_telemetry_report_pb->reports(0);
+
+  EXPECT_THAT(extension_report, EqualsProto(enterprise_extension_report));
+  EXPECT_TRUE(IsEnterpriseExtensionStoreEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
@@ -291,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  constexpr char kManifest[] =
+  static constexpr char kManifest[] =
       R"({
          "name": "Simple Cookies Extension",
          "version": "0.1",
@@ -300,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
          "permissions": ["cookies"],
          "host_permissions": ["<all_urls>"]
        })";
-  constexpr char kBackground[] =
+  static constexpr char kBackground[] =
       R"(
         var TEST_BASIC_COOKIE = {
           url: 'https://extensions.cookies.com',
@@ -330,23 +402,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult());
 
-  // Retrieve extension telemetry service instance.
-  auto* telemetry_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(profile());
-  ASSERT_NE(telemetry_service, nullptr);
-  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
-  {
-    // Verify the contents of telemetry report generated.
-    std::unique_ptr<TelemetryReport> telemetry_report_pb =
-        GetTelemetryReport(telemetry_service);
-    ASSERT_NE(telemetry_report_pb, nullptr);
-    // Retrieve the report corresponding to the test extension.
-    int report_index = -1;
-    for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
-      if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
-        report_index = i;
-      }
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
+
+  // Verify the contents of telemetry report generated for ESB users.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+  // Retrieve the report corresponding to the test extension.
+  int report_index = -1;
+  for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
+    if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
+      report_index = i;
     }
+  }
     ASSERT_NE(report_index, -1);
 
     const auto& extension_report = telemetry_report_pb->reports(report_index);
@@ -357,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     ASSERT_EQ(extension_report.signals().size(), 1);
     // Verify that extension store has been cleared after creating a telemetry
     // report.
-    EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
+    EXPECT_TRUE(IsExtensionStoreEmpty());
 
     // Verify signal proto from the reports.
     const ExtensionTelemetryReportRequest_SignalInfo& signal =
@@ -372,7 +440,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(get_args_info.name(), "test_basic_cookie");
     EXPECT_EQ(get_args_info.store_id(), "0");
     EXPECT_EQ(get_args_info.url(), "https://extensions.cookies.com/");
-  }
+    // Check the JS call stack information.
+    ASSERT_EQ(get_args_info.js_callstacks_size(), 1);
+    const JSCallStack& callstack = get_args_info.js_callstacks(0);
+    ASSERT_GE(callstack.frames_size(), 1);
+    EXPECT_EQ(callstack.frames(0).script_name(), "/background.js");
+    EXPECT_EQ(callstack.frames(0).function_name(), "getCookies");
+
+    // Verify enterprise telemetry reporting.
+    ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+    std::unique_ptr<TelemetryReport> enterprise_telemetry_report_pb =
+        GetTelemetryReportForEnterprise();
+    const auto& enterprise_extension_report =
+        enterprise_telemetry_report_pb->reports(0);
+
+    EXPECT_THAT(extension_report, EqualsProto(enterprise_extension_report));
+    EXPECT_TRUE(IsEnterpriseExtensionStoreEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
@@ -381,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        SafeBrowsingState::ENHANCED_PROTECTION);
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  constexpr char kManifest[] = R"(
+  static constexpr char kManifest[] = R"(
     {
       "name": "Simple DeclarativeNetRequest Extension",
       "version": "0.1",
@@ -390,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
       "permissions": ["declarativeNetRequest"],
       "host_permissions": ["<all_urls>"]
     })";
-  constexpr char kBackground[] = R"(
+  static constexpr char kBackground[] = R"(
     const modifyHeadersRule = {
       id: 1,
       priority: 1,
@@ -432,15 +515,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult());
 
-  // Retrieve extension telemetry service instance.
-  auto* telemetry_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(profile());
-  ASSERT_NE(telemetry_service, nullptr);
-  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
   {
     // Verify the contents of telemetry report generated.
-    std::unique_ptr<TelemetryReport> telemetry_report_pb =
-        GetTelemetryReport(telemetry_service);
+    std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
     ASSERT_NE(telemetry_report_pb, nullptr);
     // Retrieve the report corresponding to the test extension.
     int report_index = -1;
@@ -491,6 +570,115 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       DetectsAndReportsDeclarativeNetRequestActionSignal) {
+  UseHttpsTestServer();
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] = R"(
+    {
+      "name": "DeclarativeNetRequest Action Extension",
+      "version": "0.1",
+      "manifest_version": 3,
+      "background": { "service_worker": "background.js" },
+      "permissions": ["declarativeNetRequest"],
+      "host_permissions": ["<all_urls>"]
+    })";
+  static constexpr char kBackground[] = R"(
+    const redirectRule = {
+      id: 1,
+      priority: 1,
+      condition: {urlFilter: 'example.com', resourceTypes: ['main_frame'] },
+      action: {type: 'redirect', redirect: {'url' : 'http://google.com/pages/index.html' }},
+    };
+    chrome.test.runTests([
+      async function updateSessionRules() {
+        await chrome.declarativeNetRequest.updateSessionRules(
+          {addRules: [redirectRule]}, () => {
+            chrome.test.assertNoLastError();
+            chrome.test.sendMessage('done');
+            chrome.test.succeed();
+          });
+        },
+    ]);)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  ExtensionTestMessageListener listener("done");
+  extensions::ResultCatcher result_catcher;
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Load a url on "example.com". It should be redirected.
+  GURL url = embedded_test_server()->GetURL("example.com", "/pages/page.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  GURL final_url = web_contents(browser())->GetLastCommittedURL();
+  EXPECT_EQ(GURL("http://google.com/pages/index.html"), final_url);
+
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
+
+  // Verify the contents of telemetry report generated.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+  // Retrieve the report corresponding to the test extension.
+  int report_index = -1;
+  for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
+    if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
+      report_index = i;
+    }
+  }
+  ASSERT_NE(report_index, -1);
+
+  const auto& extension_report = telemetry_report_pb->reports(report_index);
+  EXPECT_EQ(extension_report.extension().id(), extension->id());
+  EXPECT_EQ(extension_report.extension().name(),
+            "DeclarativeNetRequest Action Extension");
+  EXPECT_EQ(extension_report.extension().version(), "0.1");
+  // Verify the designated test extension's report has signal data. Telemetry
+  // report has 2 signals: declarativeNetRequest and declarativeNetRequest
+  // action.
+  ASSERT_EQ(extension_report.signals().size(), 2);
+  // Verify that extension store has been cleared after creating a telemetry
+  // report.
+  EXPECT_TRUE(IsExtensionStoreEmpty());
+
+  // Verify the first signal proto from the report is the declarativeNetRequest
+  // signal, which was created when the updateSessionRules method was invoked to
+  // configure the redirect rule.
+  const ExtensionTelemetryReportRequest_SignalInfo& dnr_signal =
+      extension_report.signals()[0];
+  const DeclarativeNetRequestInfo& dnr_info =
+      dnr_signal.declarative_net_request_info();
+  EXPECT_EQ(dnr_info.rules_size(), 1);
+
+  // Verify the second signal proto from the report is the
+  // declarativeNetRequest action signal, which was created when the web request
+  // was redirected as a result of the request URL matching that in the
+  // declarativeNetRequest action.
+  const ExtensionTelemetryReportRequest_SignalInfo& dnr_action_signal =
+      extension_report.signals()[1];
+  const DeclarativeNetRequestActionInfo& dnr_action_info =
+      dnr_action_signal.declarative_net_request_action_info();
+  EXPECT_EQ(dnr_action_info.action_details_size(), 1);
+
+  // Verify redirect action info.
+  const DeclarativeNetRequestActionInfo::ActionDetails& action_detail =
+      dnr_action_info.action_details(0);
+  EXPECT_EQ(action_detail.count(), 1u);
+  EXPECT_EQ(action_detail.type(), DeclarativeNetRequestActionInfo::REDIRECT);
+  GURL request_url = embedded_test_server()->GetURL("example.com", "/pages/");
+  EXPECT_EQ(action_detail.request_url(), request_url);
+  EXPECT_EQ(action_detail.redirect_url(), "http://google.com/pages/");
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
                        DetectsAndReportsTabsApiSignal) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION);
@@ -502,10 +690,36 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
          "version": "0.1",
          "manifest_version": 3,
          "permissions":["tabs"],
+         "host_permissions": ["<all_urls>"],
          "background": { "service_worker" : "background.js" }
        })";
   static constexpr char kBackground[] =
       R"(
+        var pass = chrome.test.callbackPass;
+        function waitForAllTabs(callback) {
+          // Wait for all tabs to load.
+          function waitForTabs() {
+            chrome.windows.getAll({"populate": true}, function(windows) {
+              var ready = true;
+              for (var i in windows) {
+                for (var j in windows[i].tabs) {
+                  if (windows[i].tabs[j].status != "complete") {
+                    ready = false;
+                    break;
+                  }
+                }
+                if (!ready)
+                  break;
+              }
+              if (ready)
+                callback();
+              else
+                setTimeout(waitForTabs, 30);
+            });
+          }
+          waitForTabs();
+        }
+
         chrome.test.runTests([
           async function tabOps() {
             await chrome.tabs.create({url: 'http://www.google.com'});
@@ -514,6 +728,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
             await chrome.tabs.update({url:'http://www.example.com'});
             await chrome.tabs.remove(second_tab.id);
             chrome.test.succeed();
+          },
+          async function captureVisibleTabOp() {
+            await chrome.windows.create({url: 'http://www.google.com'},
+              pass(function(newWindow) {
+                waitForAllTabs(pass(function() {
+                  chrome.tabs.captureVisibleTab(newWindow.id, function() {
+                    chrome.test.succeed();
+                  });
+                }));
+              }));
           },
         ]);
       )";
@@ -527,14 +751,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult());
 
-  // Retrieve extension telemetry service instance.
-  auto* telemetry_service = ExtensionTelemetryService::Get(profile());
-  ASSERT_NE(telemetry_service, nullptr);
-  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
 
-  // Verify the contents of telemetry report generated.
-  std::unique_ptr<TelemetryReport> telemetry_report_pb =
-      GetTelemetryReport(telemetry_service);
+  // Verify the contents of telemetry report generated for ESB users.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
   ASSERT_NE(telemetry_report_pb, nullptr);
   // Retrieve the report corresponding to the test extension.
   int report_index = -1;
@@ -553,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   ASSERT_EQ(extension_report.signals().size(), 1);
   // Verify that extension store has been cleared after creating a telemetry
   // report.
-  EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
+  EXPECT_TRUE(IsExtensionStoreEmpty());
 
   // Verify signal proto from the reports.
   const ExtensionTelemetryReportRequest_SignalInfo& signal =
@@ -562,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   // Verify the number of unique call details.
   using TabsApiInfo = ExtensionTelemetryReportRequest_SignalInfo_TabsApiInfo;
   const TabsApiInfo& tabs_api_info = signal.tabs_api_info();
-  ASSERT_EQ(tabs_api_info.call_details_size(), 3);
+  ASSERT_EQ(tabs_api_info.call_details_size(), 4);
 
   // Verify the contents of each call details.
   {
@@ -572,6 +793,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(call_details.method(), TabsApiInfo::CREATE);
     EXPECT_EQ(call_details.current_url(), "");
     EXPECT_EQ(call_details.new_url(), "http://www.google.com/");
+
+    // Check the JS call stack information.
+    EXPECT_EQ(call_details.js_callstacks_size(), 2);
+    const JSCallStack& callstack0 = call_details.js_callstacks(0);
+    ASSERT_GE(callstack0.frames_size(), 1);
+    EXPECT_EQ(callstack0.frames(0).script_name(), "/background.js");
+    EXPECT_EQ(callstack0.frames(0).function_name(), "tabOps");
+
+    const JSCallStack& callstack1 = call_details.js_callstacks(1);
+    ASSERT_GE(callstack1.frames_size(), 1);
+    EXPECT_EQ(callstack1.frames(0).script_name(), "/background.js");
+    EXPECT_EQ(callstack1.frames(0).function_name(), "tabOps");
   }
   {
     const TabsApiInfo::CallDetails& call_details =
@@ -580,6 +813,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(call_details.method(), TabsApiInfo::UPDATE);
     EXPECT_EQ(call_details.current_url(), "http://www.google.com/");
     EXPECT_EQ(call_details.new_url(), "http://www.example.com/");
+    EXPECT_EQ(call_details.js_callstacks_size(), 1);
+
+    // Check the JS call stack information.
+    EXPECT_EQ(call_details.js_callstacks_size(), 1);
+    const JSCallStack& callstack = call_details.js_callstacks(0);
+    ASSERT_GE(callstack.frames_size(), 1);
+    EXPECT_EQ(callstack.frames(0).script_name(), "/background.js");
+    EXPECT_EQ(callstack.frames(0).function_name(), "tabOps");
   }
   {
     const TabsApiInfo::CallDetails& call_details =
@@ -588,38 +829,60 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(call_details.method(), TabsApiInfo::REMOVE);
     EXPECT_EQ(call_details.current_url(), "http://www.example.com/");
     EXPECT_EQ(call_details.new_url(), "");
+    EXPECT_EQ(call_details.js_callstacks_size(), 1);
+
+    // Check the JS call stack information.
+    EXPECT_EQ(call_details.js_callstacks_size(), 1);
+    const JSCallStack& callstack = call_details.js_callstacks(0);
+    ASSERT_GE(callstack.frames_size(), 1);
+    EXPECT_EQ(callstack.frames(0).script_name(), "/background.js");
+    EXPECT_EQ(callstack.frames(0).function_name(), "tabOps");
   }
+  {
+    const TabsApiInfo::CallDetails& call_details =
+        tabs_api_info.call_details(3);
+    EXPECT_EQ(call_details.count(), 1u);
+    EXPECT_EQ(call_details.method(), TabsApiInfo::CAPTURE_VISIBLE_TAB);
+    EXPECT_EQ(call_details.current_url(), "http://www.google.com/");
+    EXPECT_EQ(call_details.new_url(), "");
+
+    // Check the JS call stack information.
+    EXPECT_EQ(call_details.js_callstacks_size(), 1);
+    const JSCallStack& callstack = call_details.js_callstacks(0);
+    ASSERT_GE(callstack.frames_size(), 1);
+    EXPECT_EQ(callstack.frames(0).script_name(), "/background.js");
+    EXPECT_EQ(callstack.frames(0).function_name(), "<anonymous>");
+  }
+
+  // Verify enterprise telemetry reporting.
+  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+  std::unique_ptr<TelemetryReport> enterprise_telemetry_report_pb =
+      GetTelemetryReportForEnterprise();
+  const auto& enterprise_extension_report =
+      enterprise_telemetry_report_pb->reports(0);
+
+  EXPECT_THAT(extension_report, EqualsProto(enterprise_extension_report));
+  EXPECT_TRUE(IsEnterpriseExtensionStoreEmpty());
 }
 
 // Test fixture with kExtensionTelemetryInterceptRemoteHostsContactedInRenderer
 // enabled.
 class
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled
-    : public ExtensionTelemetryServiceBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public ExtensionTelemetryServiceBrowserTest {
  public:
   ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled() {
     scoped_feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
-        kExtensionTelemetryReportContactedHosts,
-        kExtensionTelemetryReportHostsContactedViaWebSocket};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    if (GetParam()) {
-      enabled_features.push_back(kSafeBrowsingSkipSubresources2);
-    } else {
-      disabled_features.push_back(kSafeBrowsingSkipSubresources2);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
+         kExtensionTelemetryReportContactedHosts,
+         kExtensionTelemetryReportHostsContactedViaWebSocket},
+        /*disabled_features=*/{});
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
-    testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
     InterceptsRemoteHostContactedSignalInRenderer) {
   base::HistogramTester histogram_tester;
@@ -632,18 +895,15 @@ IN_PROC_BROWSER_TEST_P(
       LoadExtension(test_extension_dir_.AppendASCII("basic_crx"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(result_catcher.GetNextResult());
-  // Retrieve extension telemetry service instance.
-  auto* telemetry_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(profile());
-  // Successfully retrieve the extension telemetry instance.
-  ASSERT_NE(telemetry_service, nullptr);
-  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
   // Process signal.
   {
     // Verify that the registered extension information is saved in the
     // telemetry service's extension store.
     const ExtensionInfo* info =
-        GetExtensionInfoFromExtensionStore(telemetry_service, extension->id());
+        GetExtensionInfoFromExtensionStore(extension->id());
     EXPECT_EQ(extension->name(), kExtensionName);
     EXPECT_EQ(extension->id(), extension->id());
     EXPECT_EQ(info->version(), kExtensionVersion);
@@ -651,8 +911,7 @@ IN_PROC_BROWSER_TEST_P(
   // Generate telemetry report and verify.
   {
     // Verify the contents of telemetry report generated.
-    std::unique_ptr<TelemetryReport> telemetry_report_pb =
-        GetTelemetryReport(telemetry_service);
+    std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
     ASSERT_NE(telemetry_report_pb, nullptr);
     auto extension_report = base::ranges::find_if(
         telemetry_report_pb->reports(), [&](const auto& report) {
@@ -665,7 +924,7 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_EQ(extension_report->signals().size(), 1);
     // Verify that extension store has been cleared after creating a telemetry
     // report.
-    EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
+    EXPECT_TRUE(IsExtensionStoreEmpty());
 
     // Verify signal proto from the reports.
     const ExtensionTelemetryReportRequest_SignalInfo& signal =
@@ -705,7 +964,7 @@ IN_PROC_BROWSER_TEST_P(
       true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
     DetectsWebRequestFromContentScript) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),
@@ -760,18 +1019,14 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
-  // Retrieve extension telemetry service instance.
-  auto* telemetry_service =
-      ExtensionTelemetryServiceFactory::GetForProfile(profile());
   // Successfully retrieve the extension telemetry instance.
-  ASSERT_NE(telemetry_service, nullptr);
-  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+  ASSERT_NE(telemetry_service(), nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabledForESB());
 
   // Generate telemetry report and verify.
   {
     // Verify the contents of telemetry report generated.
-    std::unique_ptr<TelemetryReport> telemetry_report_pb =
-        GetTelemetryReport(telemetry_service);
+    std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
     ASSERT_NE(telemetry_report_pb, nullptr);
     auto extension_report = base::ranges::find_if(
         telemetry_report_pb->reports(), [&](const auto& report) {
@@ -784,7 +1039,7 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_EQ(extension_report->signals().size(), 1);
     // Verify that extension store has been cleared after creating a telemetry
     // report.
-    EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
+    EXPECT_TRUE(IsExtensionStoreEmpty());
 
     // Verify signal proto from the reports.
     const ExtensionTelemetryReportRequest_SignalInfo& signal =

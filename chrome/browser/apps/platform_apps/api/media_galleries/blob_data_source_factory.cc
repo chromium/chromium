@@ -52,14 +52,15 @@ class BlobMediaDataSource : public chrome::mojom::MediaDataSource {
   }
 
   void OnBlobReaderDone(chrome::mojom::MediaDataSource::ReadCallback callback,
-                        std::unique_ptr<std::string> data,
-                        int64_t size) {
+                        std::string data,
+                        int64_t /*size*/) {
     callback_.Run(std::move(callback), std::move(data));
   }
 
   mojo::Receiver<chrome::mojom::MediaDataSource> receiver_;
 
-  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<content::BrowserContext, LeakedDanglingUntriaged>
+      browser_context_;
   std::string blob_uuid_;
 
   BlobDataSourceFactory::MediaDataCallback callback_;

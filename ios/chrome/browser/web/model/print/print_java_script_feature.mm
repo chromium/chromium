@@ -43,7 +43,7 @@ void PrintJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  PrintTabHelper* helper = PrintTabHelper::FromWebState(web_state);
+  PrintTabHelper* helper = PrintTabHelper::GetOrCreateForWebState(web_state);
   if (!helper) {
     return;
   }

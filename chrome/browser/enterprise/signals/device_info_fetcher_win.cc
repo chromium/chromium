@@ -2,14 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/enterprise/signals/device_info_fetcher_win.h"
 
-#include <Windows.h>
+#include <windows.h>
 // SECURITY_WIN32 must be defined in order to get
 // EXTENDED_NAME_FORMAT enumeration.
 #define SECURITY_WIN32 1
 #include <security.h>
 #undef SECURITY_WIN32
+#include <shobjidl.h>
+
+#include <DSRole.h>
+#include <iphlpapi.h>
+#include <powersetting.h>
+#include <propsys.h>
 #include <wincred.h>
 
 #include "base/files/file_path.h"
@@ -21,18 +32,10 @@
 #include "base/system/sys_info.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_types.h"
 #include "base/win/windows_version.h"
 #include "base/win/wmi.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
-
-// Those headers need defines from windows_types.h, thus have to come after it.
-#include <DSRole.h>        // NOLINT(build/include_order)
-#include <iphlpapi.h>      // NOLINT(build/include_order)
-#include <powersetting.h>  // NOLINT(build/include_order)
-#include <propsys.h>       // NOLINT(build/include_order)
-#include <shobjidl.h>      // NOLINT(build/include_order)
 
 namespace enterprise_signals {
 
@@ -69,17 +72,21 @@ std::string GetSerialNumber() {
   return base::WideToUTF8(sys_info.serial_number());
 }
 
-// Retrieves the FQDN of the comeputer and if this fails reverts to the hostname
+// Retrieves the FQDN of the computer and if this fails reverts to the hostname
 // as known to the net subsystem.
 std::string GetComputerName() {
   DWORD size = 1024;
-  std::string result(size, '\0');
+  std::wstring result_wstr(size, L'\0');
 
-  if (!::GetComputerNameExA(ComputerNameDnsFullyQualified, &result[0], &size))
-    return net::GetHostName();
-  result.resize(size);
+  if (::GetComputerNameExW(ComputerNameDnsFullyQualified, &result_wstr[0],
+                           &size)) {
+    std::string result;
+    if (base::WideToUTF8(result_wstr.data(), size, &result)) {
+      return result;
+    }
+  }
 
-  return result;
+  return net::GetHostName();
 }
 
 // Retrieves the state of the screen locking feature from the screen saver

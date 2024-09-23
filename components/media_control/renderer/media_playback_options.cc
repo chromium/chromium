@@ -28,7 +28,7 @@ MediaPlaybackOptions::MediaPlaybackOptions(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<MediaPlaybackOptions>(render_frame),
       render_frame_action_blocked_(false) {
-  // TODO(https://crbug.com/1057860): Extract to callers and remove
+  // TODO(crbug.com/40120884): Extract to callers and remove
   // renderer_media_playback_options_.
   // Override default content MediaPlaybackOptions
   renderer_media_playback_options_

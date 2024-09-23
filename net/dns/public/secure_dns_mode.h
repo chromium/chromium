@@ -5,8 +5,9 @@
 #ifndef NET_DNS_PUBLIC_SECURE_DNS_MODE_H_
 #define NET_DNS_PUBLIC_SECURE_DNS_MODE_H_
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 
 namespace net {
 
@@ -25,7 +26,7 @@ enum class SecureDnsMode : int {
 };
 
 inline constexpr auto kSecureDnsModes =
-    base::MakeFixedFlatMap<SecureDnsMode, base::StringPiece>(
+    base::MakeFixedFlatMap<SecureDnsMode, std::string_view>(
         {{SecureDnsMode::kOff, "Off"},
          {SecureDnsMode::kAutomatic, "Automatic"},
          {SecureDnsMode::kSecure, "Secure"}});

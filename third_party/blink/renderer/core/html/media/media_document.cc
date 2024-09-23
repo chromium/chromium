@@ -56,7 +56,7 @@ class MediaDocumentParser : public RawDataDocumentParser {
       : RawDataDocumentParser(document) {}
 
  private:
-  void AppendBytes(const char*, size_t) override {}
+  void AppendBytes(base::span<const uint8_t>) override {}
   void Finish() override;
 
   void CreateDocumentStructure();

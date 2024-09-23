@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/extras/preload_data/decoder.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -82,7 +87,7 @@ bool PreloadDecoder::BitReader::DecodeSize(size_t* out) {
     case 0b000:
     case 0b001:
       // This should have been handled in the if (bits == 0) check.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
     case 0b010:
       // A specialization of the 0b01 prefix for unary-like even numbers.
@@ -107,7 +112,7 @@ bool PreloadDecoder::BitReader::DecodeSize(size_t* out) {
       break;
     default:
       // All cases should be covered above.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   size_t bit_length = 3;
@@ -303,7 +308,7 @@ bool PreloadDecoder::Decode(const std::string& search, bool* out_found) {
       }
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace net::extras

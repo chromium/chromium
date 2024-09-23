@@ -84,13 +84,16 @@ std::string ToString(ItemAction action) {
       return "Remove";
     case ItemAction::kResume:
       return "Resume";
+    case ItemAction::kShowInBrowser:
+      return "ShowInBrowser";
     case ItemAction::kShowInFolder:
       return "ShowInFolder";
     case ItemAction::kUnpin:
       return "Unpin";
+    case ItemAction::kViewDetailsInBrowser:
+      return "ViewDetailsInBrowser";
   }
   NOTREACHED();
-  return std::string();
 }
 
 // Records the counts of the specified holding space `items` to the item count
@@ -176,7 +179,7 @@ size_t FilePathToExtension(const base::FilePath& file_path) {
     return kEmptyExtension;
   }
 
-  const char* const* it = base::ranges::find(kKnownExtensions, extension);
+  const auto it = base::ranges::find(kKnownExtensions, extension);
   if (it == kKnownExtensions.end()) {
     return kOtherExtension;
   }

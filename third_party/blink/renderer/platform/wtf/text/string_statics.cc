@@ -23,6 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
@@ -58,16 +63,37 @@ std::aligned_storage_t<sizeof(String) *
     g_canonical_whitespace_table_storage;
 }
 
+WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str,
+                                             unsigned length) {
+  bool is_all_latin1 = true;
+  for (unsigned i = 0; i < length; ++i) {
+    if (str[i] & 0xff00) {
+      is_all_latin1 = false;
+      break;
+    }
+  }
+  if (is_all_latin1) {
+    return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+        (char*)str, length);
+  } else {
+    return StringHasher::ComputeHashAndMaskTop8Bits((char*)str, length * 2);
+  }
+}
+
 WTF_EXPORT const String (&NewlineThenWhitespaceStringsTable::g_table_)
     [NewlineThenWhitespaceStringsTable::kTableSize] = *reinterpret_cast<
         String (*)[NewlineThenWhitespaceStringsTable::kTableSize]>(
         &g_canonical_whitespace_table_storage);
 
 NOINLINE unsigned StringImpl::HashSlowCase() const {
-  if (Is8Bit())
-    SetHash(StringHasher::ComputeHashAndMaskTop8Bits(Characters8(), length_));
-  else
-    SetHash(StringHasher::ComputeHashAndMaskTop8Bits(Characters16(), length_));
+  if (Is8Bit()) {
+    // This is the common case, so we take the size penalty
+    // of the inlining here.
+    SetHash(StringHasher::ComputeHashAndMaskTop8BitsInline((char*)Characters8(),
+                                                           length_));
+  } else {
+    SetHash(ComputeHashForWideString(Characters16(), length_));
+  }
   return ExistingHash();
 }
 
@@ -82,9 +108,7 @@ template <unsigned charactersCount>
 scoped_refptr<StringImpl> AddStaticASCIILiteral(
     const char (&characters)[charactersCount]) {
   unsigned length = charactersCount - 1;
-  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
-      reinterpret_cast<const LChar*>(characters), length);
-  return base::AdoptRef(StringImpl::CreateStatic(characters, length, hash));
+  return base::AdoptRef(StringImpl::CreateStatic(characters, length));
 }
 
 void NewlineThenWhitespaceStringsTable::Init() {
@@ -94,10 +118,8 @@ void NewlineThenWhitespaceStringsTable::Init() {
 
   // Keep g_table_[0] uninitialized.
   for (size_t length = 1; length < kTableSize; ++length) {
-    const unsigned hash =
-        StringHasher::ComputeHashAndMaskTop8Bits(whitespace_buffer, length);
     auto* string_impl = StringImpl::CreateStatic(
-        reinterpret_cast<const char*>(whitespace_buffer), length, hash);
+        reinterpret_cast<const char*>(whitespace_buffer), length);
     new (NotNullTag::kNotNull, (void*)(&g_table_[length]))
         String(AtomicString(string_impl).GetString());
   }

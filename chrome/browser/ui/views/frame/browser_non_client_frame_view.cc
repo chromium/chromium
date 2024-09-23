@@ -202,24 +202,25 @@ void BrowserNonClientFrameView::VisibilityChanged(views::View* starting_from,
     OnProfileAvatarChanged(base::FilePath());
 }
 
-TabSearchBubbleHost* BrowserNonClientFrameView::GetTabSearchBubbleHost() {
-  return nullptr;
-}
-
-gfx::Insets BrowserNonClientFrameView::MirroredFrameBorderInsets() const {
-  NOTREACHED_NORETURN();
+gfx::Insets BrowserNonClientFrameView::RestoredMirroredFrameBorderInsets()
+    const {
+  NOTREACHED();
 }
 
 gfx::Insets BrowserNonClientFrameView::GetInputInsets() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SkRRect BrowserNonClientFrameView::GetRestoredClipRegion() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int BrowserNonClientFrameView::GetTranslucentTopAreaHeight() const {
   return 0;
+}
+
+void BrowserNonClientFrameView::SetFrameBounds(const gfx::Rect& bounds) {
+  frame_->SetBounds(bounds);
 }
 
 void BrowserNonClientFrameView::PaintAsActiveChanged() {
@@ -297,7 +298,7 @@ void BrowserNonClientFrameView::OnGestureEvent(ui::GestureEvent* event) {
   // This opens the title bar system context menu on long press in the titlebar.
   // NonClientHitTest returns HTCAPTION if `event_loc` is in the empty space on
   // the titlebar.
-  if (event->type() == ui::ET_GESTURE_LONG_TAP &&
+  if (event->type() == ui::EventType::kGestureLongTap &&
       NonClientHitTest(event_loc) == HTCAPTION) {
     views::View::ConvertPointToScreen(this, &event_loc);
     event_loc = display::win::ScreenWin::DIPToScreenPoint(event_loc);

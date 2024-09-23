@@ -4,6 +4,7 @@
 
 #include "ui/events/android/key_event_utils.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/events/keyevent_jni_headers/KeyEvent_jni.h"
 
 namespace ui {

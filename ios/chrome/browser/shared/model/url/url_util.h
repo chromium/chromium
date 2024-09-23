@@ -15,6 +15,9 @@ class HostContentSettingsMap;
 // Returns whether `url` is an external file reference.
 bool UrlIsExternalFileReference(const GURL& url);
 
+// Returns YES if `url` matches the format `chrome://downloads/fileName`
+bool UrlIsDownloadedFile(const GURL& url);
+
 // Returns true if the scheme has a chrome scheme.
 bool UrlHasChromeScheme(const GURL& url);
 bool UrlHasChromeScheme(NSURL* url);

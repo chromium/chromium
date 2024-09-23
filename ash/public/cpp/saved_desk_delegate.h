@@ -69,6 +69,10 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
   // Returns whether `window` is persistable.  If true the window should be
   // tracked and saved as part of the desk.  If false, this window should
   // be ignored.
+  // TODO(sammiequon|minch) : Move and rename this or add a new function
+  // `IsNonRegularProfileWindow` inside shell delegate to check whether the
+  // `window` is an incognito ash browser window or a lacros window with the
+  // non-regular profile.
   virtual bool IsWindowPersistable(aura::Window* window) const = 0;
 
   // Returns the corresponding icon for `icon_identifier` if it's a special
@@ -80,9 +84,12 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
       const ui::ColorProvider* color_provider) const = 0;
 
   // Fetches the favicon for `page_url` and returns it via the provided
-  // `callback`. `callback` may be called synchronously.
+  // `callback`. When lacros is active, the profile identified by
+  // `lacros_profile_id` is used to get the favicon. `callback` may be called
+  // synchronously.
   virtual void GetFaviconForUrl(
       const std::string& page_url,
+      uint64_t lacros_profile_id,
       base::OnceCallback<void(const gfx::ImageSkia&)> callback,
       base::CancelableTaskTracker* tracker) const = 0;
 

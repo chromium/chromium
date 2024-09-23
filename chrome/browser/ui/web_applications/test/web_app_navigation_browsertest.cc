@@ -199,31 +199,31 @@ void WebAppNavigationBrowserTest::SetUp() {
   https_server_.AddDefaultHandlers(GetChromeTestDataDir());
   // Register a request handler that will return empty pages. Tests are
   // responsible for adding elements and firing events on these empty pages.
-  https_server_.RegisterRequestHandler(
-      base::BindRepeating([](const net::test_server::HttpRequest& request) {
+  https_server_.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
         // Let the default request handlers handle redirections.
         if (request.GetURL().path() == "/server-redirect" ||
             request.GetURL().path() == "/client-redirect") {
-          return std::unique_ptr<net::test_server::HttpResponse>();
+          return {};
         }
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_content_type("text/html");
         response->AddCustomHeader("Access-Control-Allow-Origin", "*");
         response->AddCustomHeader("Supports-Loading-Mode", "fenced-frame");
-        return static_cast<std::unique_ptr<net::test_server::HttpResponse>>(
-            std::move(response));
+        return response;
       }));
 
-  WebAppControllerBrowserTest::SetUp();
+  WebAppBrowserTestBase::SetUp();
 }
 
 void WebAppNavigationBrowserTest::SetUpInProcessBrowserTestFixture() {
-  WebAppControllerBrowserTest::SetUpInProcessBrowserTestFixture();
+  WebAppBrowserTestBase::SetUpInProcessBrowserTestFixture();
   cert_verifier_.SetUpInProcessBrowserTestFixture();
 }
 
 void WebAppNavigationBrowserTest::TearDownInProcessBrowserTestFixture() {
-  WebAppControllerBrowserTest::TearDownInProcessBrowserTestFixture();
+  WebAppBrowserTestBase::TearDownInProcessBrowserTestFixture();
   cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
 
@@ -237,7 +237,7 @@ void WebAppNavigationBrowserTest::SetUpCommandLine(
 }
 
 void WebAppNavigationBrowserTest::SetUpOnMainThread() {
-  WebAppControllerBrowserTest::SetUpOnMainThread();
+  WebAppBrowserTestBase::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   // By default, all SSL cert checks are valid. Can be overridden in tests.
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
@@ -258,10 +258,10 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
     apps::AppReadinessWaiter app_readiness_waiter(
         profile(), app_id, apps::Readiness::kUninstalledByUser);
     base::RunLoop run_loop;
-    provider->scheduler().UninstallWebApp(
+    provider->scheduler().RemoveUserUninstallableManagements(
         app_id, webapps::WebappUninstallSource::kAppsPage,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-          EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
+          EXPECT_EQ(code, webapps::UninstallResultCode::kAppRemoved);
           run_loop.Quit();
         }));
     run_loop.Run();
@@ -269,7 +269,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
   }
 #endif
 
-  WebAppControllerBrowserTest::TearDownOnMainThread();
+  WebAppBrowserTestBase::TearDownOnMainThread();
 }
 
 Profile* WebAppNavigationBrowserTest::profile() {
@@ -287,8 +287,9 @@ webapps::AppId WebAppNavigationBrowserTest::InstallTestWebApp(
     CHECK(https_server_.Start());
   }
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = https_server_.GetURL(app_host, GetAppUrlPath());
+  GURL start_url = https_server_.GetURL(app_host, GetAppUrlPath());
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = https_server_.GetURL(app_host, app_scope);
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
   web_app_info->description = u"Test description";

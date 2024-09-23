@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <map>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -128,7 +128,7 @@ int ConfigureSpdySessionMaxQueuedCappedFrames(
 }
 
 void ConfigureHttp2Params(const base::CommandLine& command_line,
-                          base::StringPiece http2_trial_group,
+                          std::string_view http2_trial_group,
                           const VariationParameters& http2_trial_params,
                           net::HttpNetworkSessionParams* params) {
   if (GetVariationParam(http2_trial_params, "http2_enabled") == "false") {
@@ -156,7 +156,7 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
     const uint8_t type = 0x0b + 0x1f * base::RandGenerator(8);
 
     uint8_t flags;
-    base::RandBytes(&flags, /* output_length = */ sizeof(flags));
+    base::RandBytes(base::byte_span_from_ref(flags));
 
     const size_t length = base::RandGenerator(7);
     // RandBytesAsString() does not support zero length.
@@ -179,7 +179,7 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
                                                 http2_trial_params);
 }
 
-bool ShouldDisableQuic(base::StringPiece quic_trial_group,
+bool ShouldDisableQuic(std::string_view quic_trial_group,
                        const VariationParameters& quic_trial_params,
                        bool is_quic_force_disabled) {
   if (is_quic_force_disabled)
@@ -313,6 +313,13 @@ bool ShouldQuicUseNewAlpsCodepoint(
   return GetVariationBoolParamOrFeatureSetting(
       quic_trial_params, "use_new_alps_codepoint",
       base::FeatureList::IsEnabled(net::features::kUseNewAlpsCodepointQUIC));
+}
+
+bool ShouldQuicReportEcn(
+    const VariationParameters& quic_trial_params) {
+  return GetVariationBoolParamOrFeatureSetting(
+      quic_trial_params, "report_ecn",
+      base::FeatureList::IsEnabled(net::features::kReportEcn));
 }
 
 bool ShouldQuicMigrateSessionsEarlyV2(
@@ -467,6 +474,25 @@ bool DelayMainJobWithAvailableSpdySession(
       "true");
 }
 
+bool IsOriginFrameEnabled(const VariationParameters& quic_trial_params) {
+  return base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params, "enable_origin_frame"), "true");
+}
+
+bool IsDnsSkippedWithOriginFrame(const VariationParameters& quic_trial_params) {
+  return base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params, "skip_dns_with_origin_frame"),
+      "true");
+}
+
+bool IgnoreIpMatchingWhenFindingExistingSessions(
+    const VariationParameters& quic_trial_params) {
+  return base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params,
+                        "ignore_ip_matching_when_finding_existing_sessions"),
+      "true");
+}
+
 void SetQuicFlags(const VariationParameters& quic_trial_params) {
   std::string flags_list =
       GetVariationParam(quic_trial_params, "set_quic_flags");
@@ -512,7 +538,7 @@ quic::ParsedQuicVersionVector GetQuicVersions(
 }
 
 bool AreQuicParamsValid(const base::CommandLine& command_line,
-                        base::StringPiece quic_trial_group,
+                        std::string_view quic_trial_group,
                         const VariationParameters& quic_trial_params) {
   if (command_line.HasSwitch(variations::switches::kForceFieldTrialParams)) {
     // Skip validation of params from the command line.
@@ -549,7 +575,7 @@ bool AreQuicParamsValid(const base::CommandLine& command_line,
 }
 
 void ConfigureQuicParams(const base::CommandLine& command_line,
-                         base::StringPiece quic_trial_group,
+                         std::string_view quic_trial_group,
                          const VariationParameters& quic_trial_params,
                          bool is_quic_force_disabled,
                          net::HttpNetworkSessionParams* params,
@@ -680,6 +706,12 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     if (DelayMainJobWithAvailableSpdySession(quic_trial_params)) {
       quic_params->delay_main_job_with_available_spdy_session = true;
     }
+    quic_params->report_ecn = ShouldQuicReportEcn(quic_trial_params);
+    quic_params->enable_origin_frame = IsOriginFrameEnabled(quic_trial_params);
+    quic_params->skip_dns_with_origin_frame =
+        IsDnsSkippedWithOriginFrame(quic_trial_params);
+    quic_params->ignore_ip_matching_when_finding_existing_sessions =
+        IgnoreIpMatchingWhenFindingExistingSessions(quic_trial_params);
     SetQuicFlags(quic_trial_params);
   }
 

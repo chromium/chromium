@@ -4,14 +4,7 @@
 
 GEN_INCLUDE(['dictation_test_base.js']);
 
-DictationLocaleInfoTest = class extends DictationE2ETestBase {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule(
-        'LocaleInfo', '/accessibility_common/dictation/locale_info.js');
-  }
-};
+DictationLocaleInfoTest = class extends DictationE2ETestBase {};
 
 AX_TEST_F('DictationLocaleInfoTest', 'AllowSmartCapAndSpacing', function() {
   // Restrict behavior to English + FIGS (French, Italian, German, Spanish).

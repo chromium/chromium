@@ -114,7 +114,8 @@ class CORE_EXPORT V8ScriptRunner final {
       const ClassicScript&,
       v8::ScriptOrigin,
       v8::ScriptCompiler::CompileOptions,
-      v8::ScriptCompiler::NoCacheReason);
+      v8::ScriptCompiler::NoCacheReason,
+      bool can_use_crowdsourced_compile_hints = false);
   static v8::MaybeLocal<v8::Module> CompileModule(
       v8::Isolate*,
       const ModuleScriptCreationParams&,

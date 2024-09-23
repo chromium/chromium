@@ -105,14 +105,32 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
   mutable uint8_t marked_for_validation_ : 1;
 };
 
-inline bool operator==(const DisplayItemClient& client1,
-                       const DisplayItemClient& client2) {
-  return &client1 == &client2;
-}
-inline bool operator!=(const DisplayItemClient& client1,
-                       const DisplayItemClient& client2) {
-  return &client1 != &client2;
-}
+class StaticDisplayItemClient
+    : public GarbageCollected<StaticDisplayItemClient>,
+      public DisplayItemClient {
+ public:
+  explicit StaticDisplayItemClient(const char* name) : name_(name) {}
+
+  String DebugName() const override { return name_; }
+  void Trace(Visitor* visitor) const override {
+    DisplayItemClient::Trace(visitor);
+  }
+
+ private:
+  const char* name_;
+};
+
+// Defines a StaticDisplayItemClient instance which can be used where a
+// DisplayItemClient is needed but DisplayItem::Id uniqueness is guaranteed
+// or not required, e.g.
+// - when recording a a foreign layer,
+// - when recording a DisplayItem that appears only once in the painted result,
+// - when painting with a transient PaintController.
+// Note: debug_name must be a literal string.
+#define DEFINE_STATIC_DISPLAY_ITEM_CLIENT(name, debug_name) \
+  DEFINE_STATIC_LOCAL(                                      \
+      Persistent<StaticDisplayItemClient>, name,            \
+      (MakeGarbageCollected<StaticDisplayItemClient>(debug_name)))
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,
                                          const DisplayItemClient*);

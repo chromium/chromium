@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -90,7 +91,7 @@ LoginCameraTimeoutView::LoginCameraTimeoutView(
   // Create arrow button.
   auto arrow_button = std::make_unique<ArrowButtonView>(std::move(callback),
                                                         kArrowButtonSizeDp);
-  arrow_button->SetAccessibleName(base::JoinString(
+  arrow_button->GetViewAccessibility().SetName(base::JoinString(
       {l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_CAMERA_TIME_OUT_TITLE,
                                   ui::GetChromeOSDeviceName()),
        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_CAMERA_TIME_OUT_SUBTITLE)},

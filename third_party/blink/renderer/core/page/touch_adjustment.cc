@@ -17,6 +17,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -30,6 +35,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/input/touch_action_util.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -104,7 +110,7 @@ bool NodeRespondsToTapGesture(Node* node) {
     // Tapping on a text field or other focusable item should trigger
     // adjustment, except that iframe elements are hard-coded to support focus
     // but the effect is often invisible so they should be excluded.
-    if (element->IsFocusable() && !IsA<HTMLIFrameElement>(element)) {
+    if (element->IsMouseFocusable() && !IsA<HTMLIFrameElement>(element)) {
       return true;
     }
     // Accept nodes that has a CSS effect when touched.
@@ -190,10 +196,9 @@ static inline void AppendQuadsToSubtargetList(
     Vector<gfx::QuadF>& quads,
     Node* node,
     SubtargetGeometryList& subtargets) {
-  Vector<gfx::QuadF>::const_iterator it = quads.begin();
-  const Vector<gfx::QuadF>::const_iterator end = quads.end();
-  for (; it != end; ++it)
-    subtargets.push_back(SubtargetGeometry(node, *it));
+  for (const auto& quad : quads) {
+    subtargets.push_back(SubtargetGeometry(node, quad));
+  }
 }
 
 static inline void AppendBasicSubtargetsForNode(
@@ -497,21 +502,20 @@ bool FindNodeWithLowestDistanceMetric(Node*& adjusted_node,
                                       DistanceFunction distance_function) {
   adjusted_node = nullptr;
   float best_distance_metric = std::numeric_limits<float>::infinity();
-  SubtargetGeometryList::const_iterator it = subtargets.begin();
-  const SubtargetGeometryList::const_iterator end = subtargets.end();
   gfx::Point snapped_point;
 
-  for (; it != end; ++it) {
-    Node* node = it->GetNode();
-    float distance_metric = distance_function(touch_hotspot, touch_area, *it);
+  for (const auto& subtarget : subtargets) {
+    Node* node = subtarget.GetNode();
+    float distance_metric =
+        distance_function(touch_hotspot, touch_area, subtarget);
     if (distance_metric < best_distance_metric) {
-      if (SnapTo(*it, touch_hotspot, touch_area, snapped_point)) {
+      if (SnapTo(subtarget, touch_hotspot, touch_area, snapped_point)) {
         adjusted_point = snapped_point;
         adjusted_node = node;
         best_distance_metric = distance_metric;
       }
     } else if (distance_metric - best_distance_metric < kZeroTolerance) {
-      if (SnapTo(*it, touch_hotspot, touch_area, snapped_point)) {
+      if (SnapTo(subtarget, touch_hotspot, touch_area, snapped_point)) {
         if (node->IsDescendantOf(adjusted_node)) {
           // Try to always return the inner-most element.
           adjusted_point = snapped_point;
@@ -522,7 +526,8 @@ bool FindNodeWithLowestDistanceMetric(Node*& adjusted_node,
   }
 
   // As for HitTestResult.innerNode, we skip over pseudo elements.
-  if (adjusted_node && adjusted_node->IsPseudoElement()) {
+  if (adjusted_node && adjusted_node->IsPseudoElement() &&
+      !adjusted_node->IsScrollMarkerPseudoElement()) {
     adjusted_node = adjusted_node->ParentOrShadowHostNode();
   }
 

@@ -1,0 +1,19 @@
+{
+  "gn_args": {
+    "archive_seed_corpus": false,
+    "dcheck_always_on": false,
+    "ffmpeg_branding": "ChromeOS",
+    "high_end_fuzzer_targets": true,
+    "is_asan": true,
+    "is_component_build": true,
+    "is_debug": false,
+    "optimize_for_fuzzing": true,
+    "pdf_enable_xfa": true,
+    "proprietary_codecs": true,
+    "target_cpu": "x64",
+    "target_os": "linux",
+    "use_centipede": true,
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

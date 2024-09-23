@@ -38,7 +38,6 @@ from typing import (
     FrozenSet,
     Iterator,
     List,
-    NamedTuple,
     Optional,
     Set,
     Tuple,
@@ -55,34 +54,9 @@ from blinkpy.web_tests.models.testharness_results import (
 )
 from blinkpy.web_tests.models.test_expectations import TestExpectationsCache
 from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.port.base import BaselineLocation, Port
 
 _log = logging.getLogger(__name__)
-
-
-class BaselineLocation(NamedTuple):
-    """A representation of a baseline that may exist on disk."""
-    virtual_suite: str = ''
-    platform: str = ''
-    flag_specific: str = ''
-
-    @property
-    def root(self) -> bool:
-        # Also check that this baseline is not flag-specific. A flag-specific
-        # suite implies a platform, even without `platform/*/` in its path.
-        return not self.platform and not self.flag_specific
-
-    def __str__(self) -> str:
-        parts = []
-        if self.virtual_suite:
-            parts.append('virtual/%s' % self.virtual_suite)
-        if self.platform:
-            parts.append(self.platform)
-        elif self.flag_specific:
-            parts.append(self.flag_specific)
-        if not parts:
-            parts.append('(generic)')
-        return ':'.join(parts)
 
 
 # Sentinel node to force removal of all-pass nonvirtual baselines without
@@ -394,24 +368,9 @@ class BaselineOptimizer:
 
     @memoized
     def location(self, filename: str) -> BaselineLocation:
-        """Guess a baseline location's parameters from a path.
-
-        Arguments:
-            filename: Either a baseline or test filename. Must be an absolute
-                path.
-        """
-        parts = self._filesystem.relpath(
-            filename,
-            self._default_port.web_tests_dir()).split(self._filesystem.sep)
-        platform = flag_specific = virtual_suite = ''
-        if len(parts) >= 2:
-            if parts[0] == 'platform':
-                platform, parts = parts[1], parts[2:]
-            elif parts[0] == 'flag-specific':
-                flag_specific, parts = parts[1], parts[2:]
-        if len(parts) >= 2 and parts[0] == 'virtual':
-            virtual_suite = parts[1]
-        return BaselineLocation(virtual_suite, platform, flag_specific)
+        """Guess a baseline location's parameters from a path."""
+        location, _ = self._default_port.parse_output_filename(filename)
+        return location
 
     def _baseline_root(self) -> str:
         """Returns the name of the root (generic) baseline directory."""

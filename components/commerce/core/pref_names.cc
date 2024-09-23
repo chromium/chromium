@@ -18,6 +18,13 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kShoppingListBookmarkLastUpdateTime, base::Time());
 
   registry->RegisterBooleanPref(kShoppingListEnabledPrefName, true);
+
+  registry->RegisterTimePref(kProductSpecificationsEntryPointLastDismissedTime,
+                             base::Time());
+  registry->RegisterIntegerPref(
+      kProductSpecificationsEntryPointShowIntervalInDays, 0);
+  registry->RegisterIntegerPref(kProductSpecificationsAcceptedDisclosureVersion,
+                                0 /* UNKNOWN */);
 }
 
 }  // namespace commerce

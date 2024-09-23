@@ -21,6 +21,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -65,12 +66,32 @@ void SetupThroughputTrackerForAnimationSmoothness(
 
 }  // namespace
 
-void IconizedLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (custom_accessible_name_.empty())
-    return Label::GetAccessibleNodeData(node_data);
+void IconizedLabel::SetCustomAccessibleName(const std::u16string& name) {
+  custom_accessible_name_ = name;
 
-  node_data->role = ax::mojom::Role::kStaticText;
-  node_data->SetNameChecked(custom_accessible_name_);
+  UpdateAccessibleRole();
+  GetViewAccessibility().SetName(custom_accessible_name_);
+}
+
+void IconizedLabel::AdjustAccessibleName(std::u16string& new_name,
+                                         ax::mojom::NameFrom& name_from) {
+  if (!custom_accessible_name_.empty()) {
+    new_name = custom_accessible_name_;
+    name_from = ax::mojom::NameFrom::kAttribute;
+  } else {
+    views::Label::AdjustAccessibleName(new_name, name_from);
+  }
+}
+
+void IconizedLabel::UpdateAccessibleRole() {
+  if (!custom_accessible_name_.empty()) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  } else {
+    GetViewAccessibility().SetRole(GetTextContext() ==
+                                           views::style::CONTEXT_DIALOG_TITLE
+                                       ? ax::mojom::Role::kTitleBar
+                                       : ax::mojom::Role::kStaticText);
+  }
 }
 
 BEGIN_METADATA(IconizedLabel)
@@ -229,14 +250,15 @@ void TrayItemView::ImmediatelyUpdateVisibility() {
   views::View::SetVisible(target_visible_);
 }
 
-gfx::Size TrayItemView::CalculatePreferredSize() const {
+gfx::Size TrayItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   DCHECK_EQ(1u, children().size());
-  gfx::Size size = views::View::CalculatePreferredSize();
+  gfx::Size size = views::View::CalculatePreferredSize(available_size);
   if (image_view_) {
     size = gfx::Size(kUnifiedTrayIconSize, kUnifiedTrayIconSize);
     // Some TrayItemViews have slightly larger icons (e.g. Ethernet with VPN
     // badge).
-    size.SetToMax(image_view_->CalculatePreferredSize());
+    size.SetToMax(image_view_->CalculatePreferredSize({}));
   }
 
   if (!animation_.get() || !animation_->is_animating() ||
@@ -253,14 +275,6 @@ gfx::Size TrayItemView::CalculatePreferredSize() const {
     size.set_height(std::max(1, static_cast<int>(size.height() * progress)));
   }
   return size;
-}
-
-int TrayItemView::GetHeightForWidth(int width) const {
-  return GetPreferredSize().height();
-}
-
-const char* TrayItemView::GetClassName() const {
-  return "TrayItemView";
 }
 
 void TrayItemView::ChildPreferredSizeChanged(views::View* child) {

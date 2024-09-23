@@ -102,7 +102,7 @@ size_t TimeToSampleFrame(double time,
       frame = ceil(frame);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // Just return the largest possible size_t value if necessary.
@@ -111,6 +111,12 @@ size_t TimeToSampleFrame(double time,
   }
 
   return static_cast<size_t>(frame);
+}
+
+base::TimeDelta FramesToTime(int64_t frames, float sample_rate) {
+  CHECK_GT(sample_rate, 0.f);
+  return base::Microseconds(static_cast<int64_t>(
+      frames * base::Time::kMicrosecondsPerSecond / sample_rate));
 }
 
 bool IsValidAudioBufferSampleRate(float sample_rate) {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -16,8 +17,8 @@ class AutofillManager;
 class FormStructure;
 
 // An interface for interaction with the bottom sheet UI controller, which is
-// `TouchToFillCreditCardController` on Android. The delegate will supply the
-// data to show and will be notified of events by the controller.
+// `TouchToFillPaymentMethodController` on Android. The delegate will supply
+// the data to show and will be notified of events by the controller.
 class TouchToFillDelegate {
  public:
   virtual ~TouchToFillDelegate() = default;
@@ -45,8 +46,14 @@ class TouchToFillDelegate {
   virtual bool ShouldShowScanCreditCard() = 0;
   virtual void ScanCreditCard() = 0;
   virtual void OnCreditCardScanned(const CreditCard& card) = 0;
-  virtual void ShowCreditCardSettings() = 0;
-  virtual void SuggestionSelected(std::string unique_id, bool is_virtual) = 0;
+  virtual void ShowPaymentMethodSettings() = 0;
+  virtual void CreditCardSuggestionSelected(std::string unique_id,
+                                            bool is_virtual) = 0;
+  // Called when an IBAN suggestion was selected.
+  // An Iban::Guid is passed in case of a locally stored IBAN and an
+  // Iban::InstrumentId for server IBANs.
+  virtual void IbanSuggestionSelected(
+      absl::variant<Iban::Guid, Iban::InstrumentId> backend_id) = 0;
   virtual void OnDismissed(bool dismissed_by_user) = 0;
 
   virtual void LogMetricsAfterSubmission(

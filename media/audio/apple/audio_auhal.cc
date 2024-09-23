@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/apple/audio_auhal.h"
 
 #include <CoreServices/CoreServices.h>
@@ -224,9 +229,9 @@ bool AUHALStream::Open() {
 #if BUILDFLAG(IS_MAC)
     hardware_latency_ = core_audio_mac::GetHardwareLatency(
         audio_unit_->audio_unit(), device_, kAudioObjectPropertyScopeOutput,
-        params_.sample_rate());
+        params_.sample_rate(), /*is_input=*/false);
 #else
-    // TODO(crbug.com/1413450): Implement me.
+    // TODO(crbug.com/40255660): Implement me.
     hardware_latency_ = base::TimeDelta();
 #endif
   }
@@ -581,7 +586,7 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
         });
     glitch_reporter_.UpdateStats(lost_audio_duration);
     if (!lost_audio_duration.is_zero()) {
-      glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedGlitch(
+      glitch_info_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
           lost_audio_duration, AudioGlitchInfo::Direction::kRender));
     }
   }

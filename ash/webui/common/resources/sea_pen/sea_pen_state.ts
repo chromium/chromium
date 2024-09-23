@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-
-import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {RecentSeaPenData} from './constants.js';
+import {SeaPenImageId} from './constants.js';
+import {MantaStatusCode, RecentSeaPenThumbnailData, SeaPenQuery, SeaPenThumbnail, TextQueryHistoryEntry} from './sea_pen.mojom-webui.js';
 
 export interface SeaPenLoadingState {
-  recentImageData: Record<FilePath['path'], boolean>;
+  recentImageData: Record<SeaPenImageId, boolean>;
   recentImages: boolean;
   thumbnails: boolean;
   currentSelected: boolean;
@@ -17,13 +15,16 @@ export interface SeaPenLoadingState {
 
 export interface SeaPenState {
   loading: SeaPenLoadingState;
-  recentImageData: Record<FilePath['path'], RecentSeaPenData>;
-  recentImages: FilePath[]|null;
+  recentImageData: Record<SeaPenImageId, RecentSeaPenThumbnailData|null>;
+  recentImages: SeaPenImageId[]|null;
   thumbnails: SeaPenThumbnail[]|null;
-  currentSelected: string|null;
-  pendingSelected: FilePath|SeaPenThumbnail|null;
+  currentSeaPenQuery: SeaPenQuery|null;
+  currentSelected: SeaPenImageId|null;
+  pendingSelected: SeaPenImageId|SeaPenThumbnail|null;
   thumbnailResponseStatusCode: MantaStatusCode|null;
-  shouldShowSeaPenTermsOfServiceDialog: boolean;
+  shouldShowSeaPenIntroductionDialog: boolean;
+  error: string|null;
+  textQueryHistory: TextQueryHistoryEntry[]|null;
 }
 
 export function emptyState(): SeaPenState {
@@ -39,8 +40,11 @@ export function emptyState(): SeaPenState {
     recentImages: null,
     thumbnailResponseStatusCode: null,
     thumbnails: null,
+    currentSeaPenQuery: null,
     currentSelected: null,
     pendingSelected: null,
-    shouldShowSeaPenTermsOfServiceDialog: false,
+    shouldShowSeaPenIntroductionDialog: false,
+    error: null,
+    textQueryHistory: null,
   };
 }

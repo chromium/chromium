@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_LITERAL_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_LITERAL_BUFFER_H_
 
@@ -62,8 +67,9 @@ class LiteralBufferBase {
   ALWAYS_INLINE void ClearImpl() { end_ = begin_; }
 
   ALWAYS_INLINE void AddCharImpl(T val) {
-    if (UNLIKELY(end_ == end_of_storage_))
+    if (end_ == end_of_storage_) [[unlikely]] {
       end_ = Grow();
+    }
     *end_++ = val;
   }
 
@@ -193,7 +199,7 @@ class LCharLiteralBuffer : public LiteralBufferBase<LChar, kInlineSize> {
 
   ALWAYS_INLINE void AddChar(LChar val) { this->AddCharImpl(val); }
 
-  String AsString() const { return String(this->data(), this->size()); }
+  String AsString() const { return String(*this); }
 };
 
 template <wtf_size_t kInlineSize>
@@ -250,13 +256,13 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
 
   String AsString() const {
     if (Is8Bit()) {
-      return String::Make8BitFrom16BitSource(this->data(), this->size());
+      return String::Make8BitFrom16BitSource(base::span(*this));
     }
     return String(this->data(), this->size());
   }
 
   String AsString8() const {
-    return String::Make8BitFrom16BitSource(this->data(), this->size());
+    return String::Make8BitFrom16BitSource(base::span(*this));
   }
 
   AtomicString AsAtomicString() const {

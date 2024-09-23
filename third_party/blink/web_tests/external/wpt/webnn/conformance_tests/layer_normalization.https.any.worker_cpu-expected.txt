@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] layerNormalization float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 3D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 4D tensor options.scale
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 4D tensor options.bias
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 4D tensor options.axes=[2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 4D tensor options.epsilon
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 4D tensor options.scale and options.axes=[0, 2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 4D tensor options.bias and options.axes=[3, 1, 2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+[FAIL] layerNormalization float32 4D tensor all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (layerNormalization) is not supported."
+Harness: the test ran to completion.
+

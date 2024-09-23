@@ -76,7 +76,7 @@ class MEDIA_EXPORT Decoder {
 
   // Returns true if the implementation supports decoding configs with
   // encryption.
-  // TODO(crbug.com/1099488): Sometimes it's not possible to give a definitive
+  // TODO(crbug.com/40137516): Sometimes it's not possible to give a definitive
   // yes or no answer unless more context is given. While this doesn't pose any
   // problems, it does allow incompatible decoders to pass the filtering step in
   // |DecoderSelector| potentially slowing down the selection process.

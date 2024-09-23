@@ -23,7 +23,7 @@ class MEDIA_EXPORT SysmemBufferStream {
    public:
     // Called to set BufferCollectionToken for the output buffer collection.
     virtual void OnSysmemBufferStreamBufferCollectionToken(
-        fuchsia::sysmem::BufferCollectionTokenPtr token) = 0;
+        fuchsia::sysmem2::BufferCollectionTokenPtr token) = 0;
 
     // Called when a packet has been processed. The client should drop the
     // |packet| only after it's finished using it.

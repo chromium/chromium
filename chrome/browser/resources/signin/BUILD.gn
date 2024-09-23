@@ -26,6 +26,13 @@ build_webui("build") {
     "sync_confirmation/sync_confirmation.html",
     "sync_confirmation/sync_disabled_confirmation.html",
     "sync_confirmation/sync_loading_confirmation.html",
+    "managed_user_profile_notice/images/data_handling.svg",
+    "managed_user_profile_notice/images/enrollment_failure.svg",
+    "managed_user_profile_notice/images/enrollment_success.svg",
+    "managed_user_profile_notice/images/enrollment_timeout.svg",
+    "managed_user_profile_notice/images/enrollment_failure_dark.svg",
+    "managed_user_profile_notice/images/enrollment_success_dark.svg",
+    "managed_user_profile_notice/images/enrollment_timeout_dark.svg",
   ]
   if (!is_chromeos_ash) {
     static_files += [
@@ -46,42 +53,49 @@ build_webui("build") {
     ]
   }
 
-  web_component_files = [
+  non_web_component_files = [
+    "sync_confirmation/sync_confirmation_app.html.ts",
     "sync_confirmation/sync_confirmation_app.ts",
+    "sync_confirmation/sync_confirmation_browser_proxy.ts",
+    "sync_confirmation/sync_confirmation.ts",
+    "sync_confirmation/sync_disabled_confirmation_app.html.ts",
     "sync_confirmation/sync_disabled_confirmation_app.ts",
   ]
 
   if (!is_chromeos_ash) {
-    web_component_files += [
-      "managed_user_profile_notice/managed_user_profile_notice_app.ts",
-      "profile_customization/profile_customization_app.ts",
-      "signin_email_confirmation/signin_email_confirmation_app.ts",
-      "signin_error/signin_error_app.ts",
-      "signin_reauth/signin_reauth_app.ts",
-    ]
-  }
-  if (enable_dice_support) {
-    web_component_files += [
-      "dice_web_signin_intercept/chrome_signin/chrome_signin_app.ts",
-      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
-    ]
-  }
-
-  non_web_component_files = [
-    "sync_confirmation/sync_confirmation_browser_proxy.ts",
-    "sync_confirmation/sync_confirmation.ts",
-  ]
-
-  if (!is_chromeos_ash) {
     non_web_component_files += [
+      "managed_user_profile_notice/legacy_managed_user_profile_notice_app.html.ts",
+      "managed_user_profile_notice/legacy_managed_user_profile_notice_app.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_app.html.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_app.ts",
       "managed_user_profile_notice/managed_user_profile_notice_browser_proxy.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_data_handling.html.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_data_handling.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_disclosure.html.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_disclosure.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_value_prop.html.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_value_prop.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_state.html.ts",
+      "managed_user_profile_notice/managed_user_profile_notice_state.ts",
+      "profile_customization/profile_customization_app.html.ts",
+      "profile_customization/profile_customization_app.ts",
       "profile_customization/profile_customization_browser_proxy.ts",
+      "signin_email_confirmation/signin_email_confirmation_app.html.ts",
+      "signin_email_confirmation/signin_email_confirmation_app.ts",
+      "signin_error/signin_error_app.html.ts",
+      "signin_error/signin_error_app.ts",
       "signin_error/signin_error.ts",
+      "signin_reauth/signin_reauth_app.html.ts",
+      "signin_reauth/signin_reauth_app.ts",
       "signin_reauth/signin_reauth_browser_proxy.ts",
     ]
   }
   if (enable_dice_support) {
     non_web_component_files += [
+      "dice_web_signin_intercept/chrome_signin/chrome_signin_app.html.ts",
+      "dice_web_signin_intercept/chrome_signin/chrome_signin_app.ts",
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.html.ts",
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
       "dice_web_signin_intercept/dice_web_signin_intercept_browser_proxy.ts",
     ]
   }
@@ -91,16 +105,53 @@ build_webui("build") {
   css_files = [
     "signin_shared.css",
     "signin_vars.css",
+    "sync_confirmation/sync_confirmation_app.css",
+    "sync_confirmation/sync_disabled_confirmation_app.css",
     "tangible_sync_style_shared.css",
+    "tangible_sync_style_shared_lit.css",
   ]
+
+  if (!is_chromeos_ash) {
+    css_files += [
+      "managed_user_profile_notice/legacy_managed_user_profile_notice_app.css",
+      "managed_user_profile_notice/managed_user_profile_notice_app.css",
+      "managed_user_profile_notice/managed_user_profile_notice_data_handling.css",
+      "managed_user_profile_notice/managed_user_profile_notice_disclosure.css",
+      "managed_user_profile_notice/managed_user_profile_notice_state.css",
+      "managed_user_profile_notice/managed_user_profile_notice_value_prop.css",
+      "profile_customization/profile_customization_app.css",
+      "signin_email_confirmation/signin_email_confirmation_app.css",
+      "signin_error/signin_error_app.css",
+      "signin_reauth/signin_reauth_app.css",
+    ]
+  }
+  if (enable_dice_support) {
+    css_files += [
+      "dice_web_signin_intercept/chrome_signin/chrome_signin_app.css",
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.css",
+    ]
+  }
+
+  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  ts_path_mappings = [
+    "/signin_shared.css.js|" +
+        rebase_path("$target_gen_dir/preprocessed/signin_shared.css.ts",
+                    target_gen_dir),
+    "/tangible_sync_style_shared_lit.css.js|" + rebase_path(
+            "$target_gen_dir/preprocessed/tangible_sync_style_shared_lit.css.ts",
+            target_gen_dir),
+  ]
+
+  webui_context_type = "trusted"
 }

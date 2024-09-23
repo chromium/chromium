@@ -10,7 +10,10 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/list_item_default_margin">
+    android:paddingHorizontal="@dimen/list_item_default_margin"
+    android:layout_marginTop="18dp"
+    android:layout_marginBottom="8dp"
+    android:accessibilityHeading="true">
 
     <TextView
         android:id="@+id/title"

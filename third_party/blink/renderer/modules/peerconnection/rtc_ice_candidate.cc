@@ -67,7 +67,8 @@ RTCIceCandidate* RTCIceCandidate::Create(
   return MakeGarbageCollected<RTCIceCandidate>(
       MakeGarbageCollected<RTCIceCandidatePlatform>(
           candidate_init->candidate(), sdp_mid, std::move(sdp_m_line_index),
-          candidate_init->usernameFragment()));
+          candidate_init->usernameFragment(),
+          /*url can not be reconstruncted*/ std::nullopt));
 }
 
 RTCIceCandidate* RTCIceCandidate::Create(
@@ -141,6 +142,14 @@ std::optional<uint16_t> RTCIceCandidate::relatedPort() const {
 
 String RTCIceCandidate::usernameFragment() const {
   return platform_candidate_->UsernameFragment();
+}
+
+std::optional<String> RTCIceCandidate::url() const {
+  return platform_candidate_->Url();
+}
+
+std::optional<String> RTCIceCandidate::relayProtocol() const {
+  return platform_candidate_->RelayProtocol();
 }
 
 ScriptValue RTCIceCandidate::toJSONForBinding(ScriptState* script_state) {

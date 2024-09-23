@@ -283,12 +283,21 @@ public class MediaSessionHelper implements MediaImageCallback {
         };
     }
 
-    public void setWebContents(@NonNull WebContents webContents) {
+    public void setWebContents(@Nullable WebContents webContents) {
         if (mWebContents == webContents) return;
 
         mWebContents = webContents;
 
         if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+
+        mMediaImageManager.setWebContents(mWebContents);
+
+        if (webContents == null) {
+            mWebContentsObserver = null;
+            cleanupMediaSessionObserver();
+            return;
+        }
+
         mWebContentsObserver =
                 new WebContentsObserver(webContents) {
                     @Override
@@ -335,16 +344,24 @@ public class MediaSessionHelper implements MediaImageCallback {
                     public void wasShown() {
                         mDelegate.activateAndroidMediaSession();
                     }
+
+                    @Override
+                    public void mediaSessionCreated(MediaSession mediaSession) {
+                        setUpMediaSessionObserver(mediaSession);
+                    }
                 };
 
         MediaSession mediaSession = getMediaSession(webContents);
+        setUpMediaSessionObserver(mediaSession);
+    }
+
+    private void setUpMediaSessionObserver(MediaSession mediaSession) {
         if (mMediaSessionObserver != null
                 && mediaSession == mMediaSessionObserver.getMediaSession()) {
             return;
         }
 
         cleanupMediaSessionObserver();
-        mMediaImageManager.setWebContents(webContents);
         if (mediaSession != null) {
             mMediaSessionObserver = createMediaSessionObserver(mediaSession);
         }
@@ -443,7 +460,8 @@ public class MediaSessionHelper implements MediaImageCallback {
     }
 
     private Activity getActivity() {
-        assert mWebContents != null;
+        if (mWebContents == null) return null;
+
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return null;
 

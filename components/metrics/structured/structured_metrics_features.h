@@ -19,23 +19,15 @@ BASE_DECLARE_FEATURE(kStructuredMetrics);
 
 namespace metrics::structured {
 
-// Controls whether event sequence logging is enabled or not.
-BASE_DECLARE_FEATURE(kEventSequenceLogging);
-
-BASE_DECLARE_FEATURE(kBluetoothSessionizedMetrics);
-
-// Controls whether fast pair logging is enabled or not.
-BASE_DECLARE_FEATURE(kFastPairMetrics);
-
-// Controls whether nearby share logging is enabled or not.
-BASE_DECLARE_FEATURE(kNearbyShareMetrics);
-
 // Controls whether the structured metrics service is recorder instead of the
 // provider.
 BASE_DECLARE_FEATURE(kEnabledStructuredMetricsService);
 
 // Controls whether Phone Hub Structured Metrics is enabled or not.
 BASE_DECLARE_FEATURE(kPhoneHubStructuredMetrics);
+
+// Controls whether the new storage manager is used to manage events.
+BASE_DECLARE_FEATURE(kEventStorageManager);
 
 // Controls the minimum number of logs to be stored.
 extern const base::FeatureParam<int> kMinLogQueueCount;
@@ -45,17 +37,6 @@ extern const base::FeatureParam<int> kMinLogQueueSizeBytes;
 
 // Controls the maximum size of a single log in bytes.
 extern const base::FeatureParam<int> kMaxLogSizeBytes;
-
-// TODO(crbug.com/1148168): This is a temporary switch to revert structured
-// metrics upload to its old behaviour. Old behaviour:
-// - all metrics are uploaded in the main UMA upload
-//
-// New behaviour:
-// - Projects with id type 'uma' are uploaded in the main UMA uploaded
-// - Projects with id type 'project-id' or 'none' are uploaded independently.
-//
-// Once we are comfortable with this change, this parameter can be removed.
-bool IsIndependentMetricsUploadEnabled();
 
 // Returns the parameter used to control how many files will be read into memory
 // before events start being discarded.
@@ -86,6 +67,18 @@ int GetUploadInterval();
 // Retrieves the collection interval for external metrics (defaults to 10
 // minutes).
 base::TimeDelta GetExternalMetricsCollectionInterval();
+
+// Retrieves the interval in which events are periodically backed up to disk
+// while still available in-memory.
+base::TimeDelta GetBackupTimeDelta();
+
+// Returns the percentage of memory size that can be used for storing in-memory
+// events.
+double GetMaxBufferSizeRatio();
+
+// Returns the percentage of writable disk space that can be used for storing
+// flushed events.
+double GetMaxDiskSizeRatio();
 
 }  // namespace metrics::structured
 

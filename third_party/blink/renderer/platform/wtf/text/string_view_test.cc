@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -373,6 +378,16 @@ TEST(StringViewTest, ConstructionLiteral16) {
   EXPECT_EQ(2u, StringView(kChars16, 2u).length());
   EXPECT_EQ(String("12"), StringView(kChars16, 2u));
 }
+
+#if ENABLE_SECURITY_ASSERT
+TEST(StringViewTest, OverflowInConstructor) {
+  EXPECT_DEATH_IF_SUPPORTED(StringView(StringView("12"), 2, -1), "");
+}
+
+TEST(StringViewTest, OverflowInSet) {
+  EXPECT_DEATH_IF_SUPPORTED(StringView(String("12"), 2, -1), "");
+}
+#endif  // ENABLE_SECURITY_ASSERT
 
 TEST(StringViewTest, IsEmpty) {
   EXPECT_FALSE(StringView(kChars).empty());

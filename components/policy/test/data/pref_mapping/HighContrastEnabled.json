@@ -9,7 +9,9 @@
           "HighContrastEnabled": true
         },
         "prefs": {
-          "settings.a11y.high_contrast_enabled": {}
+          "settings.a11y.high_contrast_enabled": {
+            "value": true
+          }
         }
       }
     ]

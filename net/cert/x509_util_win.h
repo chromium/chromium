@@ -5,11 +5,12 @@
 #ifndef NET_CERT_X509_UTIL_WIN_H_
 #define NET_CERT_X509_UTIL_WIN_H_
 
+#include <windows.h>
+
 #include <memory>
 #include <vector>
 
-#include <windows.h>
-
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
@@ -18,6 +19,9 @@
 #include "net/cert/x509_certificate.h"
 
 namespace net::x509_util {
+
+// Returns a span containing the DER encoded certificate data for `os_cert`.
+NET_EXPORT base::span<const uint8_t> CertContextAsSpan(PCCERT_CONTEXT os_cert);
 
 // Creates an X509Certificate representing |os_cert| with intermediates
 // |os_chain|.

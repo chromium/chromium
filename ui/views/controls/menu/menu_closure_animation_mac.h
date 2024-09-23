@@ -32,9 +32,8 @@ class SubmenuView;
 // This class also supports animating a menu away without animating the
 // selection effect, which is achieved by passing nullptr for the item to
 // animate. In this case, the animation skips straight to step 3 above.
-class VIEWS_EXPORT MenuClosureAnimationMac
-    : public gfx::AnimationDelegate,
-      public base::SupportsWeakPtr<MenuClosureAnimationMac> {
+class VIEWS_EXPORT MenuClosureAnimationMac final
+    : public gfx::AnimationDelegate {
  public:
   // After this closure animation is done, |callback| is run to finish
   // dismissing the menu. If |item| is given, this will animate the item being
@@ -87,6 +86,7 @@ class VIEWS_EXPORT MenuClosureAnimationMac
   raw_ptr<MenuItemView> item_;
   raw_ptr<SubmenuView> menu_;
   AnimationStep step_ = AnimationStep::kStart;
+  base::WeakPtrFactory<MenuClosureAnimationMac> weak_ptr_factory_{this};
 };
 
 }  // namespace views

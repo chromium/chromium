@@ -747,7 +747,8 @@ TEST_F(APIBindingUnittest, TestProperties) {
       "  'notLinuxOrLacros': {"
       "    'value': 'nonlinux',"
       "    'type': 'string',"
-      "    'platforms': ['win', 'mac', 'chromeos', 'fuchsia']"
+      "    'platforms': ["
+      "       'win', 'mac', 'chromeos', 'fuchsia', 'desktop_android']"
       "  }"
       "}");
   InitializeBinding();
@@ -760,7 +761,7 @@ TEST_F(APIBindingUnittest, TestProperties) {
   EXPECT_EQ(R"({"subprop1":"some value","subprop2":true})",
             GetStringPropertyFromObject(binding_object, context, "prop2"));
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_EQ("\"lacros\"",
@@ -1345,9 +1346,9 @@ TEST_F(APIBindingUnittest, TestHandleRequestFailureCallback) {
 }
 
 // Tests that a JS handle request hook that calls the resolver callback more
-// than once will cause a crash on a DCHECK build, but fail gracefully on a
-// release build. Regression test for https://crbug.com/1298409.
-TEST_F(APIBindingDeathTest, TestHandleRequestFailureCallback) {
+// than once will fail gracefully on a release build. Regression test for
+// https://crbug.com/1298409.
+TEST_F(APIBindingUnittest, TestHandleRequestHookCalledTwiceGracefulRegression) {
   bool context_allows_promises = true;
   SetPromiseAvailabilityFlag(&context_allows_promises);
 
@@ -1379,23 +1380,14 @@ TEST_F(APIBindingDeathTest, TestHandleRequestFailureCallback) {
 
   // Calling supportsPromises will trigger the HandleRequest hook which attempts
   // to resolve the request twice by calling the success callback twice. This
-  // should cause a crash if DCHECKs are on, but otherwise should gracefully
-  // fail without a crash and still result in the request resolving as expected.
-#if DCHECK_IS_ON()
-  EXPECT_DEATH(
-      {
-        RunFunction(function, context, v8::Undefined(isolate()),
-                    std::size(args), args);
-      },
-      "Check failed: false. No callback found for the specified request ID.");
-#else
+  // should gracefully fail without a crash and still result in the request
+  // resolving as expected.
   v8::Local<v8::Value> result = RunFunction(
       function, context, v8::Undefined(isolate()), std::size(args), args);
   v8::Local<v8::Promise> promise;
   ASSERT_TRUE(GetValueAs(result, &promise));
   EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
   EXPECT_EQ(R"(42)", V8ToString(promise->Result(), context));
-#endif
 }
 
 // Tests that JS custom hooks correctly handle the context being invalidated.

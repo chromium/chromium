@@ -254,6 +254,12 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   // Evaluate() or SendEventOnStateChange().
   bool is_page_loaded() const { return current_element_ != nullptr; }
 
+  // Returns whether any non-empty paints have occurred on the current page.
+  // The first non-empty paint is required before a page can be screenshot or
+  // receive keyboard or accelerator input. Note that completely empty pages
+  // will not receive a paint.
+  bool HasPageBeenPainted() const;
+
   // Returns the instrumented WebView, or null if none.
   views::WebView* GetWebView();
 
@@ -377,33 +383,6 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
 
   // Miscellaneous Tools ///////////////////////////////////////////////////////
 
-  // Convenience method to wait on a state change when the element at `where`
-  // reaches `minimum_size`. If `must_already_exist` is false (recommended),
-  // Type::kExistsAndConditionTrue is used; if true, then Type::kConditionTrue
-  // is used instead.
-  void SendEventOnElementMinimumSize(ui::CustomElementEventType event_type,
-                                     const DeepQuery& where,
-                                     const gfx::Size& minimum_size,
-                                     bool must_already_exist);
-
-  // Sends an event on the instrumented WebView when its size exceeds some
-  // minimum, then checks that an element within the WebView is present and of
-  // minimum size. If no `element_to_check` is specified, the body element of
-  // the document is checked instead.
-  //
-  // Currently only supported for WebView instrumented with ForNonTabWebView().
-  //
-  // Useful when you expect a secondary UI to resize in response to loading data
-  // but that resize might not be synchronous (and you have some idea how large
-  // the surface should be).
-  //
-  // If the surface never reaches the minimum size, the current test will fail.
-  void SendEventOnWebViewMinimumSize(
-      const gfx::Size& minimum_webui_size,
-      ui::CustomElementEventType event_type,
-      const DeepQuery& element_to_check = DeepQuery({"body"}),
-      const gfx::Size& minimum_element_size = gfx::Size(1, 1));
-
  protected:
   // content::WebContentsObserver:
   void DidStopLoading() override;
@@ -412,6 +391,7 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
+  void DidFirstVisuallyNonEmptyPaint() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -431,7 +411,8 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
                                  std::optional<Browser*> browser,
                                  views::WebView* web_view);
 
-  void MaybeCreateElement(bool force = false);
+  void MaybeCreateElement();
+  void MaybeSendPaintEvent();
   void DiscardCurrentElement();
 
   void OnPollEvent(Poller* poller, ui::CustomElementEventType event);
@@ -446,6 +427,9 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   // When we force a page load, we might still get events for the old page.
   // We'll ignore those events.
   std::optional<GURL> navigating_away_from_;
+
+  // Whether a painted event was sent for the current page.
+  bool sent_paint_event_ = false;
 
   // Tracks the WebView that hosts a non-tab WebContents; null otherwise.
   std::unique_ptr<WebViewData> web_view_data_;

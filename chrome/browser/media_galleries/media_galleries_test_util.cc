@@ -35,6 +35,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -159,7 +160,7 @@ void EnsureMediaDirectoriesExists::Init() {
 base::FilePath MakeMediaGalleriesTestingPath(const std::string& dir) {
 #if BUILDFLAG(IS_WIN)
   return base::FilePath(FILE_PATH_LITERAL("C:\\")).AppendASCII(dir);
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
   return base::FilePath(FILE_PATH_LITERAL("/")).Append(dir);
 #else
 #error Unknown platform.

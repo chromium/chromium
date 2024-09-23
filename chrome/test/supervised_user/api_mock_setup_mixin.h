@@ -5,9 +5,10 @@
 #ifndef CHROME_TEST_SUPERVISED_USER_API_MOCK_SETUP_MIXIN_H_
 #define CHROME_TEST_SUPERVISED_USER_API_MOCK_SETUP_MIXIN_H_
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -20,7 +21,7 @@ namespace supervised_user {
 // KidsManagementApiServerMock.
 class KidsManagementApiMockSetupMixin : public InProcessBrowserTestMixin {
  public:
-  static void SetApiHostname(base::StringPiece hostname);
+  static void SetApiHostname(std::string_view hostname);
 
   KidsManagementApiMockSetupMixin() = delete;
   KidsManagementApiMockSetupMixin(InProcessBrowserTestMixinHost& host,

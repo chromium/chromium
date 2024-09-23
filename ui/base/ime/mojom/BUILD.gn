@@ -10,11 +10,14 @@ component("shared_mojom_traits") {
   sources = [
     "ime_types_mojom_traits.cc",
     "ime_types_mojom_traits.h",
+    "text_edit_command_mojom_traits.cc",
+    "text_edit_command_mojom_traits.h",
   ]
   public_deps = [
     ":mojom_shared",
     "//ipc:param_traits",
     "//ui/base/ime:ime_types",
+    "//ui/base/ime:text_edit_commands",
   ]
 }
 
@@ -22,6 +25,7 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "ime_types.mojom",
+    "text_edit_commands.mojom",
     "text_input_state.mojom",
     "virtual_keyboard_types.mojom",
   ]
@@ -56,6 +60,10 @@ mojom("mojom") {
           cpp = "::ui::TextInputAction"
         },
         {
+          mojom = "ui.mojom.TextEditCommand"
+          cpp = "::ui::TextEditCommand"
+        },
+        {
           mojom = "ui.mojom.TextInputMode"
           cpp = "::ui::TextInputMode"
         },
@@ -65,7 +73,10 @@ mojom("mojom") {
         },
       ]
 
-      traits_headers = [ "ime_types_mojom_traits.h" ]
+      traits_headers = [
+        "ime_types_mojom_traits.h",
+        "text_edit_command_mojom_traits.h",
+      ]
       traits_public_deps = [
         ":shared_mojom_traits",
         "//ui/gfx/range",

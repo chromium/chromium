@@ -68,7 +68,7 @@ class PepperMediaStreamTrackHostBase
   // Message handlers:
   int32_t OnHostMsgClose(ppapi::host::HostMessageContext* context);
 
-  raw_ptr<RendererPpapiHost, ExperimentalRenderer> host_;
+  raw_ptr<RendererPpapiHost> host_;
 
   ppapi::MediaStreamBufferManager buffer_manager_;
 };

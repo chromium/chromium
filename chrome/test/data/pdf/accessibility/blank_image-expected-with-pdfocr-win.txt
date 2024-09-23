@@ -1,0 +1,7 @@
+pdfRoot 'PDF document containing 1 page'
+  banner
+    status 'This PDF is inaccessible. No text extracted'
+      staticText 'This PDF is inaccessible. No text extracted'
+  region 'Page 1'
+    paragraph
+      image 'Unlabeled graphic'

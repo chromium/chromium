@@ -7,12 +7,18 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -20,6 +26,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -61,9 +68,6 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     Profile* profile = test_profile_manager()->CreateTestingProfile(
         test_profile, IdentityTestEnvironmentProfileAdaptor::
                           GetIdentityTestEnvironmentFactories());
-
-    EnableAccountCapabilitiesFetches(
-        IdentityManagerFactory::GetForProfile(profile));
     AccountInfo account = signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(profile), test_email,
         signin::ConsentLevel::kSignin);
@@ -77,6 +81,12 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
 
     if (is_subject_to_parental_controls) {
       supervised_user::EnableParentalControls(*profile->GetPrefs());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      // Set Family Link `Permissions` switch (and its dependencies) to the default value.
+      // Mimics the assignment by the `SupervisedUserPrefStore`.
+      supervised_user_test_util::
+          SetSupervisedUserExtensionsMayRequestPermissionsPref(profile, true);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     }
     return profile;
   }
@@ -92,6 +102,11 @@ class FamilyLinkUserMetricsProviderTest : public testing::Test {
     profile->GetPrefs()->SetBoolean(prefs::kSupervisedUserSafeSites, false);
   }
 
+  void SetPermissionsToggleForSupervisedUser(Profile* profile, bool enabled) {
+    supervised_user_test_util::
+        SetSupervisedUserGeolocationEnabledContentSetting(profile, enabled);
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   FamilyLinkUserMetricsProvider metrics_provider_;
@@ -103,8 +118,6 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
   Profile* profile = test_profile_manager()->CreateTestingProfile(
       kTestProfile, IdentityTestEnvironmentProfileAdaptor::
                         GetIdentityTestEnvironmentFactories());
-  EnableAccountCapabilitiesFetches(
-      IdentityManagerFactory::GetForProfile(profile));
   AccountInfo account = signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(profile), kTestEmail,
       signin::ConsentLevel::kSignin);
@@ -242,6 +255,146 @@ TEST_F(FamilyLinkUserMetricsProviderTest,
       supervised_user::WebFilterType::kMixed,
       /*expected_bucket_count=*/1);
 }
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       AdultProfileDoesNotHavePermissionLogged) {
+  CreateTestingProfile(kTestEmail1, kTestProfile1,
+                       /*is_subject_to_parental_controls=*/false,
+                       /*is_opted_in_to_parental_supervision=*/false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectBucketCount(
+      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
+      supervised_user::ToggleState::kDisabled,
+      /*expected_bucket_count=*/0);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       SupervisedProfileWithBlockedGeolocationLoggedAsPermissionsDisabled) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetPermissionsToggleForSupervisedUser(profile1, false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
+      supervised_user::ToggleState::kDisabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTest,
+       SupervisedProfileWithAllowedGeolocationLoggedAsPermissionsEnabled) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetPermissionsToggleForSupervisedUser(profile1, true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSitesMayRequestCameraMicLocationHistogramName,
+      supervised_user::ToggleState::kEnabled,
+      /*expected_bucket_count=*/1);
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled
+    : public FamilyLinkUserMetricsProviderTest {
+ protected:
+  FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled() {
+    feature_list_.InitWithFeatures(
+        {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+            supervised_user::
+                kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
+#endif
+            supervised_user::
+                kEnableSupervisedUserSkipParentApprovalToInstallExtensions},
+        {});
+  }
+
+  void SetExtensionToggleStateForSupervisedUser(Profile* profile,
+                                                bool toggle_state) {
+    supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+        profile, toggle_state);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
+       ProfileWithExtensionToggleStateUnsetLoggedAsDisabled) {
+  CreateTestingProfile(kTestEmail1, kTestProfile1,
+                       /*is_subject_to_parental_controls=*/true,
+                       /*is_opted_in_to_parental_supervision=*/false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
+      supervised_user::ToggleState::kDisabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
+       ProfileWithExtensionToggleStateOffLoggedAsDisabled) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetExtensionToggleStateForSupervisedUser(profile1, false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
+      supervised_user::ToggleState::kDisabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
+       ProfileWithExtensionToggleStateOnLoggedAsEnabled) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetExtensionToggleStateForSupervisedUser(profile1, true);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
+      supervised_user::ToggleState::kEnabled,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(FamilyLinkUserMetricsProviderTestWithExtensionsPermissionsEnabled,
+       ProfilesWithMixedExtensionToggleStateLoggedAsMixed) {
+  Profile* profile1 =
+      CreateTestingProfile(kTestEmail1, kTestProfile1,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetExtensionToggleStateForSupervisedUser(profile1, true);
+
+  Profile* profile2 =
+      CreateTestingProfile(kTestEmail2, kTestProfile2,
+                           /*is_subject_to_parental_controls=*/true,
+                           /*is_opted_in_to_parental_supervision=*/false);
+  SetExtensionToggleStateForSupervisedUser(profile2, false);
+
+  base::HistogramTester histogram_tester;
+  metrics_provider()->OnDidCreateMetricsLog();
+  histogram_tester.ExpectUniqueSample(
+      supervised_user::kSkipParentApprovalToInstallExtensionsHistogramName,
+      supervised_user::ToggleState::kMixed,
+      /*expected_bucket_count=*/1);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 TEST_F(FamilyLinkUserMetricsProviderTest,
        NoProfilesAddedShouldNotLogHistogram) {

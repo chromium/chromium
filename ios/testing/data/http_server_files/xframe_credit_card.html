@@ -1,0 +1,84 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!DOCTYPE html>
+
+<html>
+
+<!--
+Page for testing Autofill Across Iframes.
+-->
+
+<body>
+  Autofill Test - Xframe Credit Card<br>
+
+  <h3>Credit Card Info</h3>
+  <form name="cc1.1"
+        id="cc1"
+        action="destination.html"
+        method="POST">
+
+    <!-- Address Fields -->
+
+    <div>Name: <input type="text"
+             name="name_address"
+             autocomplete="name"></div>
+    <div>Address: <input type="text"
+             name="address"
+             autocomplete="address-line1"></div>
+    <div>City: <input type="text"
+             name="city"
+             autocomplete="address-level2"></div>
+    <div>State: <input type="text"
+             name="state"
+             autocomplete="address-level1"></div>
+    <div>Zip: <input type="text"
+             name="zip"
+             autocomplete="postal-code"></div>
+    <div>Country: <input type="text"
+             name="country"
+             autocomplete="country-name"></div>
+
+    <!-- Credit Card Fields -->
+
+    Name on card: <input type="text"
+           autocomplete="cc-name"
+           name="CCName"
+           id="CCName"><br><br>
+    Credit card number: <iframe id='cc-number-frame'
+            srcdoc='<input type="text" name="CCNo" id="CCNo" autocomplete="cc-number">'></iframe><br>
+    Expiry Date: <iframe id='cc-exp-frame'
+            srcdoc='<input type="text" name="CCExpiresMonth" id="CCExpiresMonth" autocomplete="cc-month-exp"> / <input type="text" name="CCExpiresYear" id="CCExpiresYear" autocomplete="cc-year-exp">'></iframe><br>
+    CVC: <iframe id='cc-cvc'
+            srcdoc='<input type="text" name="cvc" id="cvc" autocomplete="cc-csc">'></iframe><br><br>
+    <input type="reset"
+           value="Reset"
+           id="cc-form-reset">
+    <input type="submit"
+           value="Submit"
+           id="cc-form-submit">
+  </form><br>
+
+  <!-- Button to fill the address fields -->
+  <button id="fill-address-btn">Fill Form</button>
+
+  <script type="text/javascript">
+    // Fills the addesss fields in the form upon click.
+    document.getElementById("fill-address-btn").addEventListener(
+      "click",
+      function () {
+        document.getElementsByName("name_address")[0].value = "John Smith";
+        document.getElementsByName("address")[0].value = "123 Testing St.";
+        document.getElementsByName("city")[0].value = "Mountain View";
+        document.getElementsByName("state")[0].value = "California";
+        document.getElementsByName("zip")[0].value = "94043";
+        document.getElementsByName("country")[0].value = "US";
+      });
+  </script>
+
+</body>
+
+</html>

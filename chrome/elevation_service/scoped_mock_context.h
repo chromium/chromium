@@ -6,9 +6,10 @@
 #define CHROME_ELEVATION_SERVICE_SCOPED_MOCK_CONTEXT_H_
 
 #include <unknwn.h>
+
 #include <wrl/client.h>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 
 namespace elevation_service {
 
@@ -25,9 +26,7 @@ class ScopedMockContext {
 
  private:
   Microsoft::WRL::ComPtr<IUnknown> mock_call_context_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION IUnknown* original_call_context_ = nullptr;
+  raw_ptr<IUnknown> original_call_context_ = nullptr;
 };
 
 }  // namespace elevation_service

@@ -4,42 +4,44 @@
 
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
+#include "components/user_manager/user_manager.h"
 
 namespace crosapi {
 
 namespace {
 
-chrome::FeedbackSource FromMojo(mojom::LacrosFeedbackSource source) {
+feedback::FeedbackSource FromMojo(mojom::LacrosFeedbackSource source) {
   switch (source) {
     case mojom::LacrosFeedbackSource::kLacrosBrowserCommand:
-      return chrome::kFeedbackSourceBrowserCommand;
+      return feedback::kFeedbackSourceBrowserCommand;
     case mojom::LacrosFeedbackSource::kLacrosSettingsAboutPage:
-      return chrome::kFeedbackSourceMdSettingsAboutPage;
+      return feedback::kFeedbackSourceMdSettingsAboutPage;
     case mojom::LacrosFeedbackSource::kLacrosAutofillContextMenu:
-      return chrome::kFeedbackSourceAutofillContextMenu;
+      return feedback::kFeedbackSourceAutofillContextMenu;
     case mojom::LacrosFeedbackSource::kLacrosSadTabPage:
-      return chrome::kFeedbackSourceSadTabPage;
+      return feedback::kFeedbackSourceSadTabPage;
     case mojom::LacrosFeedbackSource::kLacrosChromeLabs:
-      return chrome::kFeedbackSourceChromeLabs;
+      return feedback::kFeedbackSourceChromeLabs;
     case mojom::LacrosFeedbackSource::kLacrosQuickAnswers:
-      return chrome::kFeedbackSourceQuickAnswers;
+      return feedback::kFeedbackSourceQuickAnswers;
     case mojom::LacrosFeedbackSource::kDeprecatedLacrosWindowLayoutMenu:
-      return chrome::kFeedbackSourceWindowLayoutMenu;
+      return feedback::kFeedbackSourceWindowLayoutMenu;
     case mojom::LacrosFeedbackSource::kFeedbackSourceCookieControls:
-      return chrome::kFeedbackSourceCookieControls;
+      return feedback::kFeedbackSourceCookieControls;
     case mojom::LacrosFeedbackSource::kFeedbackSourceSettingsPerformancePage:
-      return chrome::kFeedbackSourceSettingsPerformancePage;
+      return feedback::kFeedbackSourceSettingsPerformancePage;
     case mojom::LacrosFeedbackSource::kFeedbackSourceProfileErrorDialog:
-      return chrome::kFeedbackSourceProfileErrorDialog;
+      return feedback::kFeedbackSourceProfileErrorDialog;
     case mojom::LacrosFeedbackSource::kFeedbackSourceQuickOffice:
-      return chrome::kFeedbackSourceQuickOffice;
+      return feedback::kFeedbackSourceQuickOffice;
     case mojom::LacrosFeedbackSource::kFeedbackSourceAI:
-      return chrome::kFeedbackSourceAI;
+      return feedback::kFeedbackSourceAI;
+    case mojom::LacrosFeedbackSource::kFeedbackSourceLensOverlay:
+      return feedback::kFeedbackSourceLensOverlay;
     case mojom::LacrosFeedbackSource::kUnknown:
-      return chrome::kFeedbackSourceUnknownLacrosSource;
+      return feedback::kFeedbackSourceUnknownLacrosSource;
   }
 }
 

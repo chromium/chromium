@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_base_test.h"
 
+#include "chrome/browser/ui/browser.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 
 namespace {
@@ -13,7 +14,8 @@ const char kBasePath[] = "speech/speech_recognition_private/";
 namespace extensions {
 
 SpeechRecognitionPrivateBaseTest::SpeechRecognitionPrivateBaseTest()
-    : test_helper_(GetParam()) {}
+    : test_helper_(GetParam(), media::mojom::RecognizerClientType::kDictation) {
+}
 
 SpeechRecognitionPrivateBaseTest::~SpeechRecognitionPrivateBaseTest() = default;
 

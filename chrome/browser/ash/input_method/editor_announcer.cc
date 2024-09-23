@@ -21,9 +21,17 @@ gfx::NativeView GetParentViewFromRootWindow() {
 
 }  // namespace
 
+EditorLiveRegionAnnouncer::EditorLiveRegionAnnouncer(std::u16string_view name)
+    : live_region_(name) {}
+
 void EditorLiveRegionAnnouncer::Announce(const std::u16string& message) {
   live_region_.Announce(message);
 }
+
+EditorLiveRegionAnnouncer::LiveRegion::LiveRegion(std::u16string_view name)
+    : announcement_view_name_(name) {}
+
+EditorLiveRegionAnnouncer::LiveRegion::~LiveRegion() = default;
 
 void EditorLiveRegionAnnouncer::LiveRegion::Announce(
     const std::u16string& message) {
@@ -37,7 +45,7 @@ void EditorLiveRegionAnnouncer::LiveRegion::OnWidgetDestroying(
     views::Widget* widget) {
   if (announcement_view_ != nullptr &&
       widget == announcement_view_->GetWidget()) {
-    widget->RemoveObserver(this);
+    obs_.Reset();
     announcement_view_ = nullptr;
   }
 }
@@ -45,9 +53,9 @@ void EditorLiveRegionAnnouncer::LiveRegion::OnWidgetDestroying(
 void EditorLiveRegionAnnouncer::LiveRegion::CreateAnnouncementView() {
   // This view's lifetime is handled by DialogDelegateView which it inherits
   // from and thus will not leak here without a corresponding delete.
-  announcement_view_ =
-      new ui::ime::AnnouncementView(GetParentViewFromRootWindow());
-  announcement_view_->GetWidget()->AddObserver(this);
+  announcement_view_ = new ui::ime::AnnouncementView(
+      GetParentViewFromRootWindow(), announcement_view_name_);
+  obs_.Observe(announcement_view_->GetWidget());
 }
 
 }  // namespace ash::input_method

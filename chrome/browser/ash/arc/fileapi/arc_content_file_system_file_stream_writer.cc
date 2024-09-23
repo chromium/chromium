@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_file_stream_writer.h"
 
 #include <sys/types.h>
@@ -12,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,11 +31,12 @@ namespace arc {
 namespace {
 
 // Calls base::File::WriteAtCurrentPosNoBestEffort with the given buffer.
-// Returns the number of bytes written, or -1 on error.
-int WriteFile(base::File* file,
-              scoped_refptr<net::IOBuffer> buffer,
-              int buffer_length) {
-  return file->WriteAtCurrentPosNoBestEffort(buffer->data(), buffer_length);
+// Returns the number of bytes written, or std::nullopt on error.
+std::optional<size_t> WriteFile(base::File* file,
+                                scoped_refptr<net::IOBuffer> buffer,
+                                int buffer_length) {
+  return file->WriteAtCurrentPosNoBestEffort(
+      buffer->span().first(base::checked_cast<size_t>(buffer_length)));
 }
 
 // Seeks the file, returns 0 on success, or errno on an error.
@@ -151,18 +158,20 @@ void ArcContentFileSystemFileStreamWriter::WriteInternal(
 
 void ArcContentFileSystemFileStreamWriter::OnWrite(
     net::CompletionOnceCallback callback,
-    int result) {
+    std::optional<size_t> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(has_pending_operation_);
 
-  if (CancelIfRequested())
+  if (CancelIfRequested()) {
     return;
-
-  has_pending_operation_ = false;
-  if (result < 0) {
-    CloseInternal(CloseStatus::kStatusError);
   }
-  std::move(callback).Run(result < 0 ? net::ERR_FAILED : result);
+  has_pending_operation_ = false;
+  if (!result.has_value()) {
+    CloseInternal(CloseStatus::kStatusError);
+    std::move(callback).Run(net::ERR_FAILED);
+    return;
+  }
+  std::move(callback).Run(result.value());
 }
 
 void ArcContentFileSystemFileStreamWriter::OnOpenFileSession(

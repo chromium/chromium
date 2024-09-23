@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/sub_capture_target_id_web_contents_helper.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -23,14 +24,14 @@
 
 namespace content {
 
-// TODO(crbug.com/1264849): Remove this protected static function.
+// TODO(crbug.com/40203554): Remove this protected static function.
 // See header for more details.
 base::Token SubCaptureTargetIdWebContentsHelper::GUIDToToken(
     const base::Uuid& guid) {
   std::string lowercase = guid.AsLowercaseString();
 
   // |lowercase| is either empty, or follows the expected pattern.
-  // TODO(crbug.com/1260380): Resolve open question of correct treatment
+  // TODO(crbug.com/40201847): Resolve open question of correct treatment
   // of an invalid GUID.
   if (lowercase.empty()) {
     return base::Token();
@@ -40,7 +41,7 @@ base::Token SubCaptureTargetIdWebContentsHelper::GUIDToToken(
   base::RemoveChars(lowercase, "-", &lowercase);
   DCHECK_EQ(lowercase.length(), 32u);  // 32 hex-chars; 0 hyphens.
 
-  base::StringPiece string_piece(lowercase);
+  std::string_view string_piece(lowercase);
 
   uint64_t high = 0;
   bool success = base::HexStringToUInt64(string_piece.substr(0, 16), &high);
@@ -57,7 +58,7 @@ WebContents* SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
     GlobalRenderFrameHostId rfh_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1499083): Remove this redundant check.
+  // TODO(crbug.com/40287690): Remove this redundant check.
   if (rfh_id == GlobalRenderFrameHostId()) {
     return nullptr;
   }
@@ -66,7 +67,7 @@ WebContents* SubCaptureTargetIdWebContentsHelper::GetRelevantWebContents(
   if (!rfhi || !rfhi->IsActive()) {
     return nullptr;
   }
-  rfhi = rfhi->GetMainFrame();  // TODO(crbug.com/1499083): Remove this line.
+  rfhi = rfhi->GetMainFrame();  // TODO(crbug.com/40287690): Remove this line.
 
   if (GetContentClient()
           ->browser()

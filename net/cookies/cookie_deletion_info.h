@@ -31,7 +31,7 @@ struct NET_EXPORT CookieDeletionInfo {
   // single time) where |end| is inclusive. This special case is for iOS that
   // will be removed in the future.
   //
-  // TODO(crbug.com/830689): Delete the start=end special case.
+  // TODO(crbug.com/40570811): Delete the start=end special case.
   class NET_EXPORT TimeRange {
    public:
     // Default constructor matches any non-null time.

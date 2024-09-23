@@ -6,6 +6,7 @@
 #define CC_MOJOM_RENDER_FRAME_METADATA_MOJOM_TRAITS_H_
 
 #include <optional>
+
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
@@ -96,6 +97,11 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
   static viz::VerticalScrollDirection new_vertical_scroll_direction(
       const cc::RenderFrameMetadata& metadata) {
     return metadata.new_vertical_scroll_direction;
+  }
+
+  static int64_t primary_main_frame_item_sequence_number(
+      const cc::RenderFrameMetadata& metadata) {
+    return metadata.primary_main_frame_item_sequence_number;
   }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

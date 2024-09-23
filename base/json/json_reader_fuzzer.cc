@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
+
+#include <optional>
+#include <string_view>
+
+#include "base/containers/heap_array.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -14,14 +18,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < 2)
     return 0;
 
+  // SAFETY: LibFuzzer provides a valid data/size pair.
+  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
+
   // Create a copy of input buffer, as otherwise we don't catch
   // overflow that touches the last byte (which is used in options).
-  std::unique_ptr<char[]> input(new char[size - 1]);
-  memcpy(input.get(), data, size - 1);
+  auto input = base::HeapArray<unsigned char>::Uninit(size - 1);
+  input.copy_from(data_span.first(size - 1u));
 
-  StringPiece input_string(input.get(), size - 1);
+  std::string_view input_string = base::as_string_view(input);
 
-  const int options = data[size - 1];
+  const int options = data_span.back();
 
   auto json_val =
       JSONReader::ReadAndReturnValueWithError(input_string, options);
@@ -32,8 +39,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     std::string serialized;
     CHECK(JSONWriter::Write(value, &serialized));
 
-    absl::optional<Value> deserialized =
-        JSONReader::Read(StringPiece(serialized));
+    std::optional<Value> deserialized =
+        JSONReader::Read(std::string_view(serialized));
     CHECK(deserialized);
     CHECK_EQ(value, deserialized.value());
   }

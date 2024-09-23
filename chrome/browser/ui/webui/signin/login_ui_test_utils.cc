@@ -152,7 +152,7 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
 };
 
 void RunLoopFor(base::TimeDelta duration) {
-  base::RunLoop run_loop;
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), duration);
   run_loop.Run();
@@ -192,7 +192,7 @@ bool ElementExistsByIdInSigninFrame(content::WebContents* web_contents,
   });
 }
 
-enum class SyncConfirmationDialogAction { kConfirm, kCancel };
+enum class SyncConfirmationDialogAction { kConfirm, kCancel, kSettings };
 
 enum class ReauthDialogAction { kConfirm, kCancel };
 
@@ -204,6 +204,8 @@ std::string GetButtonIdForSyncConfirmationDialogAction(
       return "confirmButton";
     case SyncConfirmationDialogAction::kCancel:
       return "notNowButton";
+    case SyncConfirmationDialogAction::kSettings:
+      return "settingsButton";
   }
 }
 
@@ -273,7 +275,7 @@ class SigninViewControllerTestUtil {
       Browser* browser,
       SyncConfirmationDialogAction action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     SigninViewController* signin_view_controller =
@@ -304,7 +306,7 @@ class SigninViewControllerTestUtil {
       Browser* browser,
       SigninEmailConfirmationDialog::Action action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     SigninViewController* signin_view_controller =
@@ -339,7 +341,7 @@ class SigninViewControllerTestUtil {
   static bool TryCompleteReauthConfirmationDialog(Browser* browser,
                                                   ReauthDialogAction action) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     SigninViewController* signin_view_controller =
@@ -369,7 +371,7 @@ class SigninViewControllerTestUtil {
 
   static bool TryCompleteProfileCustomizationDialog(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     SigninViewController* signin_view_controller =
@@ -397,7 +399,7 @@ class SigninViewControllerTestUtil {
 
   static bool ShowsModalDialog(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
 #else
     return browser->signin_view_controller()->ShowsModalDialog();
@@ -473,7 +475,7 @@ bool SignInWithUI(Browser* browser,
                   const std::string& password,
                   signin::ConsentLevel consent_level) {
 #if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 #else
   SignInObserver signin_observer;
@@ -545,6 +547,12 @@ bool DismissSyncConfirmationDialog(Browser* browser,
 bool ConfirmSyncConfirmationDialog(Browser* browser, base::TimeDelta timeout) {
   return DismissSyncConfirmationDialog(browser, timeout,
                                        SyncConfirmationDialogAction::kConfirm);
+}
+
+bool GoToSettingsSyncConfirmationDialog(Browser* browser,
+                                        base::TimeDelta timeout) {
+  return DismissSyncConfirmationDialog(browser, timeout,
+                                       SyncConfirmationDialogAction::kSettings);
 }
 
 bool CancelSyncConfirmationDialog(Browser* browser, base::TimeDelta timeout) {

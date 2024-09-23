@@ -46,4 +46,8 @@ void SignInFatalErrorScreenHandler::Show(SignInFatalErrorScreen::Error error,
   ShowInWebUI(std::move(screen_data));
 }
 
+base::WeakPtr<SignInFatalErrorView> SignInFatalErrorScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

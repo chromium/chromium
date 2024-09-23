@@ -25,7 +25,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/draggable_regions.mojom.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
@@ -34,6 +33,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_utils.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/optimization_guide/content/renderer/page_text_agent.h"
 #include "components/translate/content/renderer/translate_agent.h"
@@ -49,7 +49,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -71,7 +71,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/renderer/accessibility/read_anything_app_controller.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
-#include "ui/accessibility/accessibility_features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -244,6 +243,13 @@ void ChromeRenderFrameObserver::ReadyToCommitNavigation(
       render_frame()->GetWebFrame()->GetDocument().Url());
 }
 
+void ChromeRenderFrameObserver::DidSetPageLifecycleState(
+    bool restoring_from_bfcache) {
+  if (restoring_from_bfcache && translate_agent_) {
+    translate_agent_->RenewPageRegistration();
+  }
+}
+
 void ChromeRenderFrameObserver::DidFinishLoad() {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   // Don't do anything for subframes.
@@ -254,7 +260,7 @@ void ChromeRenderFrameObserver::DidFinishLoad() {
   if (!osdd_url.is_empty()) {
     mojo::Remote<chrome::mojom::OpenSearchDescriptionDocumentHandler>
         osdd_handler;
-    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+    render_frame()->GetBrowserInterfaceBroker().GetInterface(
         osdd_handler.BindNewPipeAndPassReceiver());
     osdd_handler->PageHasOpenSearchDescriptionDocument(
         frame->GetDocument().Url(), osdd_url);
@@ -304,8 +310,8 @@ void ChromeRenderFrameObserver::DidCommitProvisionalLoad(
   view_count_key.Set(base::NumberToString(blink::WebView::GetWebViewCount()));
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (render_frame()->GetEnabledBindings() &
-      content::kWebUIBindingsPolicyMask) {
+  if (render_frame()->GetEnabledBindings().HasAny(
+          content::kWebUIBindingsPolicySet)) {
     for (const auto& script : webui_javascript_)
       render_frame()->ExecuteJavaScript(script);
     webui_javascript_.clear();
@@ -324,9 +330,8 @@ void ChromeRenderFrameObserver::DidClearWindowObject() {
   // url, which is chrome-untrusted. ReadAnythingAppController installs v8
   // bindings in the chrome.readingMode namespace which are consumed by
   // read_anything/app.ts, the resource of the Read Anything WebUI.
-  if (features::IsReadAnythingEnabled() &&
-      render_frame()->GetWebFrame()->GetDocument().Url() ==
-          chrome::kChromeUIUntrustedReadAnythingSidePanelURL) {
+  if (render_frame()->GetWebFrame()->GetDocument().Url() ==
+      chrome::kChromeUIUntrustedReadAnythingSidePanelURL) {
     ReadAnythingAppController::Install(render_frame());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -346,33 +351,6 @@ void ChromeRenderFrameObserver::WillDetach(blink::DetachReason detach_reason) {
   base::AutoLock auto_lock(GetFrameHeaderMapLock());
   GetFrameHeaderMap().erase(
       render_frame()->GetWebFrame()->GetLocalFrameToken());
-#endif
-}
-
-void ChromeRenderFrameObserver::DraggableRegionsChanged() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  // Only the main frame is allowed to control draggable regions, to avoid other
-  // frames manipulate the regions in the browser process.
-  if (!render_frame()->IsMainFrame())
-    return;
-
-  blink::WebVector<blink::WebDraggableRegion> web_regions =
-      render_frame()->GetWebFrame()->GetDocument().DraggableRegions();
-  auto regions = std::vector<chrome::mojom::DraggableRegionPtr>();
-  for (blink::WebDraggableRegion& web_region : web_regions) {
-    render_frame()->ConvertViewportToWindow(&web_region.bounds);
-
-    auto region = chrome::mojom::DraggableRegion::New();
-    region->bounds = web_region.bounds;
-    region->draggable = web_region.draggable;
-    regions.emplace_back(std::move(region));
-  }
-
-  mojo::Remote<chrome::mojom::DraggableRegions> remote;
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
-      remote.BindNewPipeAndPassReceiver());
-  remote->UpdateDraggableRegions(std::move(regions));
 #endif
 }
 
@@ -530,6 +508,56 @@ void ChromeRenderFrameObserver::RequestBitmapForContextNode(
   std::move(callback).Run(image);
 }
 
+void ChromeRenderFrameObserver::RequestBitmapForContextNodeWithBoundsHint(
+    RequestBitmapForContextNodeWithBoundsHintCallback callback) {
+  WebNode context_node = render_frame()->GetWebFrame()->ContextMenuImageNode();
+  SkBitmap image;
+  gfx::Rect bounds;
+  if (context_node.IsNull() || !context_node.IsElementNode()) {
+    std::move(callback).Run(image, bounds);
+    return;
+  }
+
+  WebElement web_element = context_node.To<WebElement>();
+  image = web_element.ImageContents();
+  bounds = web_element.BoundsInWidget();
+  std::move(callback).Run(image, bounds);
+}
+
+void ChromeRenderFrameObserver::RequestBoundsHintForAllImages(
+    RequestBoundsHintForAllImagesCallback callback) {
+  std::vector<blink::WebElement> image_elements;
+  std::vector<gfx::Rect> all_bounds;
+  const blink::WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
+  if (doc.IsNull() || doc.Body().IsNull()) {
+    return;
+  }
+  FindImageElements(doc.Body(), image_elements);
+
+  for (auto& element : image_elements) {
+    all_bounds.emplace_back(
+        render_frame()->ConvertViewportToWindow(element.BoundsInWidget()));
+  }
+  std::move(callback).Run(all_bounds);
+}
+
+// Depth-first search for recursively traversing DOM elements and pulling out
+// references for images.
+void ChromeRenderFrameObserver::FindImageElements(
+    blink::WebElement element,
+    std::vector<blink::WebElement>& images) {
+  if (element.ImageContents().isNull()) {
+    for (blink::WebNode child = element.FirstChild(); !child.IsNull();
+         child = child.NextSibling()) {
+      if (child.IsElementNode()) {
+        FindImageElements(child.To<blink::WebElement>(), images);
+      }
+    }
+  } else {
+    images.emplace_back(element);
+  }
+}
+
 void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   // TODO(dglazkov): This code is clearly in the wrong place. Need
@@ -574,8 +602,14 @@ void ChromeRenderFrameObserver::LoadBlockedPlugins(
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
-void ChromeRenderFrameObserver::SetSupportsAppRegion(bool supports_app_region) {
-  render_frame()->GetWebView()->SetSupportsAppRegion(supports_app_region);
+void ChromeRenderFrameObserver::SetSupportsDraggableRegions(
+    bool supports_draggable_regions) {
+  render_frame()->GetWebView()->SetSupportsDraggableRegions(
+      supports_draggable_regions);
+}
+
+void ChromeRenderFrameObserver::SetShouldDeferMediaLoad(bool should_defer) {
+  prerender::SetShouldDeferMediaLoad(render_frame(), should_defer);
 }
 
 void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
@@ -677,13 +711,14 @@ void ChromeRenderFrameObserver::CapturePageText(
   }
   DCHECK_GT(capture_max_size, 0U);
 
-  std::u16string contents;
+  scoped_refptr<const base::RefCountedString16> contents;
+
   {
     TRACE_EVENT0("renderer", "ChromeRenderFrameObserver::CapturePageText");
-
-    contents = WebFrameContentDumper::DumpFrameTreeAsText(
-                   render_frame()->GetWebFrame(), capture_max_size)
-                   .Utf16();
+    contents = base::MakeRefCounted<const base::RefCountedString16>(
+        WebFrameContentDumper::DumpFrameTreeAsText(
+            render_frame()->GetWebFrame(), capture_max_size)
+            .Utf16());
   }
 
   // Language detection should run only once. Parsing finishes before the page
@@ -701,7 +736,7 @@ void ChromeRenderFrameObserver::CapturePageText(
   // Will swap out the string.
   if (phishing_classifier_) {
     phishing_classifier_->PageCaptured(
-        &contents, layout_type == blink::WebMeaningfulLayout::kFinishedParsing);
+        contents, layout_type == blink::WebMeaningfulLayout::kFinishedParsing);
   }
   if (phishing_image_embedder_) {
     phishing_image_embedder_->PageCaptured(
@@ -773,7 +808,7 @@ bool ChromeRenderFrameObserver::NeedsEncodeImage(
   }
 
   // Should never hit this code since all cases were handled above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 

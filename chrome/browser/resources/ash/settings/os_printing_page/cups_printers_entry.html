@@ -15,10 +15,6 @@
   }
 
   .entry-icon {
-    flex-basis: 40px;
-  }
-
-  :host([is-printer-settings-revamp-enabled_]) .entry-icon {
     flex-basis: 20px;
     padding-inline: 20px 16px;
   }
@@ -59,25 +55,23 @@
       aria-label$="[[getAriaLabel_(printerEntry.printerInfo.printerId,
           numPrinters, focusRowIndex)]]">
     <div class="printer-name text-elide" aria-hidden="true">
-      <span class="entry-icon"
-          hidden="[[!showAnyIcon_(printerEntry.printerType,
-              printerEntry.printerInfo)]]">
-          <iron-icon
-            hidden="[[!printerEntry.printerInfo.isManaged]]"
-            icon="cr20:domain">
-          </iron-icon>
-          <iron-icon id="printerStatusIcon"
-            hidden="[[!showPrinterIcon_(printerEntry.printerType)]]"
-            icon="[[getPrinterIcon_(printerEntry.printerType,
-                printerEntry.printerInfo.printerId)]]">
-          </iron-icon>
+      <span class="entry-icon">
+        <iron-icon
+          hidden="[[!printerEntry.printerInfo.isManaged]]"
+          icon="cr20:domain">
+        </iron-icon>
+        <iron-icon id="printerStatusIcon"
+          hidden="[[printerEntry.printerInfo.isManaged]]"
+          icon="[[getPrinterIcon_(printerEntry.printerType,
+              printerEntry.printerInfo.printerId)]]">
+        </iron-icon>
       </span>
       <span class="entry-text">
         <div>
           [[printerEntry.printerInfo.printerName]]
         </div>
         <div id="printerSubtext" class="secondary"
-            hidden="[[!showPrinterStatusIcon_(printerEntry.printerType)]]">
+            hidden="[[!isSavedPrinter_(printerEntry.printerType)]]">
           [[getStatusReasonString_(
               printerEntry.printerInfo.printerId)]]
         </div>
@@ -95,12 +89,12 @@
         if="[[isDiscoveredPrinter_(printerEntry.printerType)]]">
       <cr-button id="setupPrinterButton" class="row-button"
           on-click="onAddDiscoveredPrinterClick_"
-          aria-label$="[[getSetupButtonLabel_()]]"
+          aria-label="$i18n{savePrinter}"
           focus-row-control
           focus-type="setupPrinterButton"
           disabled="[[isConfigureDisabled_(userPrintersAllowed,
               savingPrinter)]]">
-        [[getSetupButtonLabel_()]]
+        $i18n{savePrinter}
       </cr-button>
     </template>
     <template is="dom-if"

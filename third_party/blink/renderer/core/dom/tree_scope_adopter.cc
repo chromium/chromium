@@ -61,14 +61,16 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
   Document& old_document = OldScope().GetDocument();
   Document& new_document = NewScope().GetDocument();
   bool will_move_to_new_document = old_document != new_document;
+  bool is_document_unmodified_and_uninteracted =
+      IsDocumentEligibleForFastAdoption(old_document);
 
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
     UpdateTreeScope(node);
 
     if (will_move_to_new_document) {
-      MoveNodeToNewDocument(node, old_document);
-    } else if (node.HasRareData()) {
-      NodeRareData* rare_data = node.RareData();
+      MoveNodeToNewDocument(node, old_document,
+                            is_document_unmodified_and_uninteracted);
+    } else if (NodeRareData* rare_data = node.RareData()) {
       if (rare_data->NodeLists())
         rare_data->NodeLists()->AdoptTreeScope();
     }
@@ -84,8 +86,10 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
 
     if (ShadowRoot* shadow = element->GetShadowRoot()) {
       shadow->SetParentTreeScope(NewScope());
-      if (will_move_to_new_document)
-        MoveShadowTreeToNewDocument(*shadow, old_document, new_document);
+      if (will_move_to_new_document) {
+        MoveShadowTreeToNewDocument(*shadow, old_document, new_document,
+                                    is_document_unmodified_and_uninteracted);
+      }
     }
   }
 }
@@ -93,7 +97,8 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
 void TreeScopeAdopter::MoveShadowTreeToNewDocument(
     ShadowRoot& shadow_root,
     Document& old_document,
-    Document& new_document) const {
+    Document& new_document,
+    bool is_document_unmodified_and_uninteracted) const {
   DCHECK_NE(old_document, new_document);
   if (old_document.TemplateDocumentHost() != &new_document &&
       new_document.TemplateDocumentHost() != &old_document) {
@@ -112,27 +117,34 @@ void TreeScopeAdopter::MoveShadowTreeToNewDocument(
     shadow_root.registry()->AssociatedWith(new_document);
   }
 
-  MoveTreeToNewDocument(shadow_root, old_document, new_document);
+  MoveTreeToNewDocument(shadow_root, old_document, new_document,
+                        is_document_unmodified_and_uninteracted);
 }
 
-void TreeScopeAdopter::MoveTreeToNewDocument(Node& root,
-                                             Document& old_document,
-                                             Document& new_document) const {
+void TreeScopeAdopter::MoveTreeToNewDocument(
+    Node& root,
+    Document& old_document,
+    Document& new_document,
+    bool is_document_unmodified_and_uninteracted) const {
   DCHECK_NE(old_document, new_document);
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
-    MoveNodeToNewDocument(node, old_document);
+    MoveNodeToNewDocument(node, old_document,
+                          is_document_unmodified_and_uninteracted);
 
     auto* element = DynamicTo<Element>(node);
     if (!element)
       continue;
 
     if (HeapVector<Member<Attr>>* attrs = element->GetAttrNodeList()) {
-      for (const auto& attr : *attrs)
-        MoveTreeToNewDocument(*attr, old_document, new_document);
+      for (const auto& attr : *attrs) {
+        MoveTreeToNewDocument(*attr, old_document, new_document,
+                              is_document_unmodified_and_uninteracted);
+      }
     }
 
     if (ShadowRoot* shadow_root = element->GetShadowRoot()) {
-      MoveShadowTreeToNewDocument(*shadow_root, old_document, new_document);
+      MoveShadowTreeToNewDocument(*shadow_root, old_document, new_document,
+                                  is_document_unmodified_and_uninteracted);
     }
   }
 }
@@ -181,24 +193,51 @@ inline void TreeScopeAdopter::UpdateTreeScope(Node& node) const {
 
 inline void TreeScopeAdopter::MoveNodeToNewDocument(
     Node& node,
-    Document& old_document) const {
+    Document& old_document,
+    bool is_document_unmodified_and_uninteracted) const {
   Document& new_document = node.GetDocument();
   DCHECK_NE(old_document, new_document);
   DCHECK_EQ(old_document, OldScope().GetDocument());
   DCHECK_EQ(new_document, NewScope().GetDocument());
 
-  if (node.HasRareData()) {
-    NodeRareData* rare_data = node.RareData();
-    if (rare_data->NodeLists())
-      rare_data->NodeLists()->AdoptDocument(old_document, new_document);
-  }
+  if (!is_document_unmodified_and_uninteracted) {
+    // fast adoption can skip all the checks below
+    if (NodeRareData* rare_data = node.RareData()) {
+      if (rare_data->NodeLists()) {
+        rare_data->NodeLists()->AdoptDocument(old_document, new_document);
+      }
+      if (old_document.HasMutationObservers()) {
+        node.MoveMutationObserversToNewDocument(new_document);
+      }
+    }
 
-  old_document.MoveNodeIteratorsToNewDocument(node, new_document);
-  if (auto* element = DynamicTo<Element>(node)) {
-    old_document.MoveElementExplicitlySetAttrElementsMapToNewDocument(
-        element, new_document);
-    old_document.MoveElementCachedAttrAssociatedElementsMapToNewDocument(
-        element, new_document);
+    if (old_document.HasNodeIterators()) {
+      old_document.MoveNodeIteratorsToNewDocument(node, new_document);
+    }
+
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (old_document.HasExplicitlySetAttrElements()) {
+        old_document.MoveElementExplicitlySetAttrElementsMapToNewDocument(
+            element, new_document);
+      }
+      if (old_document.HasCachedAttrAssociatedElements()) {
+        old_document.MoveElementCachedAttrAssociatedElementsMapToNewDocument(
+            element, new_document);
+      }
+    }
+
+    if (old_document.HasAnyNodeWithEventListeners()) {
+      node.MoveEventListenersToNewDocument(old_document, new_document);
+    }
+  } else {
+    // DCHECK all the fast adoption conditions
+    DCHECK(!old_document.HasNodeIterators());
+    DCHECK(!old_document.HasRanges());
+    DCHECK(!old_document.HasAnyNodeWithEventListeners());
+    DCHECK(!old_document.HasMutationObservers());
+    DCHECK(!old_document.ShouldInvalidateNodeListCaches());
+    DCHECK(!old_document.HasExplicitlySetAttrElements());
+    DCHECK(!old_document.HasCachedAttrAssociatedElements());
   }
 
   if (node.GetCustomElementState() == CustomElementState::kCustom) {
@@ -215,6 +254,16 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
 #if DCHECK_IS_ON()
   DCHECK(g_did_move_to_new_document_was_called);
 #endif
+}
+
+inline bool TreeScopeAdopter::IsDocumentEligibleForFastAdoption(
+    Document& old_document) const {
+  return !old_document.HasNodeIterators() && !old_document.HasRanges() &&
+         !old_document.HasAnyNodeWithEventListeners() &&
+         !old_document.HasMutationObservers() &&
+         !old_document.ShouldInvalidateNodeListCaches() &&
+         !old_document.HasExplicitlySetAttrElements() &&
+         !old_document.HasCachedAttrAssociatedElements();
 }
 
 }  // namespace blink

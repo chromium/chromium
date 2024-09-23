@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/domain_reliability/quic_error_mapping.h"
 
 namespace domain_reliability {
@@ -474,6 +479,10 @@ const struct QuicErrorMapping {
     // long.
     {quic::QUIC_HANDSHAKE_FAILED_PACKETS_BUFFERED_TOO_LONG,
      "quic.quic_handshake_failed_packets_buffered_too_long"},
+
+    // Client application lost network access.
+    {quic::QUIC_CLIENT_LOST_NETWORK_ACCESS,
+     "quic.quic_client_lost_network_access"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};

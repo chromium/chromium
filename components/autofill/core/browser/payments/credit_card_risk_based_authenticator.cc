@@ -8,10 +8,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
+namespace {
+
+using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+
+}  // namespace
 
 CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
     RiskBasedAuthenticationResponse() = default;
@@ -22,10 +27,10 @@ CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::operator=(
   result = other.result;
   error_dialog_context = other.error_dialog_context;
   card = other.card;
-  if (other.fido_request_options.has_value()) {
-    fido_request_options = other.fido_request_options->Clone();
+  if (other.fido_request_options.empty()) {
+    fido_request_options.clear();
   } else {
-    fido_request_options.reset();
+    fido_request_options = other.fido_request_options.Clone();
   }
   context_token = other.context_token;
   return *this;
@@ -60,15 +65,28 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
           autofill_client_->GetLastCommittedPrimaryMainFrameOrigin();
     }
   }
+
+  // Add appropriate ClientBehaviorConstants to the request based on the
+  // user experience.
   if (ShouldShowCardMetadata(unmask_request_details_->card)) {
     unmask_request_details_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
   }
+  if (DidDisplayBenefitForCard(unmask_request_details_->card,
+                               autofill_client_.get(),
+                               autofill_client_->GetPersonalDataManager()
+                                   ->payments_data_manager())) {
+    unmask_request_details_->client_behavior_signals.push_back(
+        ClientBehaviorConstants::kShowingCardBenefits);
+  }
+
   unmask_request_details_->billing_customer_number =
       payments::GetBillingCustomerId(
-          autofill_client_->GetPersonalDataManager());
+          &autofill_client_->GetPersonalDataManager()->payments_data_manager());
 
-  autofill_client_->GetPaymentsNetworkInterface()->Prepare();
+  autofill_client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->Prepare();
   autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
       base::BindOnce(&CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -79,16 +97,18 @@ void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
   unmask_request_details_->risk_data = risk_data;
   autofill_metrics::LogRiskBasedAuthAttempt(card_.record_type());
   unmask_card_request_timestamp_ = base::TimeTicks::Now();
-  autofill_client_->GetPaymentsNetworkInterface()->UnmaskCard(
-      *unmask_request_details_,
-      base::BindOnce(
-          &CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived,
-          weak_ptr_factory_.GetWeakPtr()));
+  autofill_client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->UnmaskCard(
+          *unmask_request_details_,
+          base::BindOnce(
+              &CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived,
+              weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
-    AutofillClient::PaymentsRpcResult result,
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails&
+    PaymentsRpcResult result,
+    const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
         response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
     autofill_metrics::LogRiskBasedAuthLatency(
@@ -109,7 +129,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
   }
 
   RiskBasedAuthenticationResponse response;
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
       // The Payments server indicates no further authentication is required.
       response.result =
@@ -125,8 +145,10 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
       // The Payments server indicates further authentication is required.
       response.result =
           RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
-      response.fido_request_options =
-          std::move(response_details.fido_request_options);
+      if (!response_details.fido_request_options.empty()) {
+        response.fido_request_options =
+            response_details.fido_request_options.Clone();
+      }
       response.context_token = response_details.context_token;
 
       autofill_metrics::LogRiskBasedAuthResult(
@@ -138,7 +160,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     response.result = RiskBasedAuthenticationResponse::Result::kError;
     CHECK(card_.record_type() == CreditCard::RecordType::kMaskedServerCard);
     response.error_dialog_context.type =
-        result == AutofillClient::PaymentsRpcResult::kNetworkError
+        result == PaymentsRpcResult::kNetworkError
             ? AutofillErrorDialogType::
                   kMaskedServerCardRiskBasedUnmaskingNetworkError
             : AutofillErrorDialogType::
@@ -168,7 +190,9 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskCancelled() {
 
 void CreditCardRiskBasedAuthenticator::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  autofill_client_->GetPaymentsNetworkInterface()->CancelRequest();
+  autofill_client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->CancelRequest();
   unmask_request_details_.reset();
   requester_.reset();
   unmask_card_request_timestamp_.reset();

@@ -7,14 +7,15 @@
 
 #include <stdint.h>
 #include <string.h>
+
 #include <compare>
 #include <iosfwd>
+#include <string_view>
 #include <tuple>
 
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/token.h"
 
 namespace base {
@@ -45,7 +46,7 @@ struct UnguessableTokenHash;
 // NOTE: It is illegal to send empty UnguessableTokens across processes, and
 // sending/receiving empty tokens should be treated as a security issue. If
 // there is a valid scenario for sending "no token" across processes, use
-// absl::optional instead of an empty token.
+// std::optional instead of an empty token.
 
 class BASE_EXPORT UnguessableToken {
  public:
@@ -61,20 +62,20 @@ class BASE_EXPORT UnguessableToken {
   // Return an UnguessableToken built from the high/low bytes provided.
   // It should only be used in deserialization scenarios.
   //
-  // NOTE: If the returned `absl::optional` does not have a value, it means that
+  // NOTE: If the returned `std::optional` does not have a value, it means that
   // `high` and `low` correspond to an `UnguesssableToken` that was never
   // initialized via Create(). This is a security issue, and should be handled.
-  static absl::optional<UnguessableToken> Deserialize(uint64_t high,
-                                                      uint64_t low);
+  static std::optional<UnguessableToken> Deserialize(uint64_t high,
+                                                     uint64_t low);
 
   // Returns an `UnguessableToken` built from its string representation. It
   // should only be used in deserialization scenarios.
   //
-  // NOTE: If the returned `absl::optional` does not have a value, it means that
+  // NOTE: If the returned `std::optional` does not have a value, it means that
   // the given string does not represent a valid serialized `UnguessableToken`.
   // This should be handled as a security issue.
-  static absl::optional<UnguessableToken> DeserializeFromString(
-      StringPiece string_representation);
+  static std::optional<UnguessableToken> DeserializeFromString(
+      std::string_view string_representation);
 
   // Creates an empty UnguessableToken.
   // Assign to it with Create() before using it.
@@ -115,7 +116,7 @@ class BASE_EXPORT UnguessableToken {
 
 #if defined(UNIT_TEST)
   static UnguessableToken CreateForTesting(uint64_t high, uint64_t low) {
-    absl::optional<UnguessableToken> token = Deserialize(high, low);
+    std::optional<UnguessableToken> token = Deserialize(high, low);
     DCHECK(token.has_value());
     return token.value();
   }

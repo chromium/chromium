@@ -54,7 +54,7 @@ class MockVideoEncoder : public VideoEncoder {
       : VideoEncoder(script_state, init, exception_state) {}
   ~MockVideoEncoder() override = default;
 
-  MOCK_METHOD(std::unique_ptr<media::VideoEncoder>,
+  MOCK_METHOD((media::EncoderStatus::Or<std::unique_ptr<media::VideoEncoder>>),
               CreateMediaVideoEncoder,
               (const ParsedConfig& config,
                media::GpuVideoAcceleratorFactories* gpu_factories,
@@ -105,11 +105,13 @@ MockVideoEncoder* CreateMockEncoder(ScriptState* script_state,
                                                 exception_state);
 }
 
-VideoEncoderInit* CreateInit(v8::Local<v8::Function> output_callback,
-                             v8::Local<v8::Function> error_callback) {
+VideoEncoderInit* CreateInit(ScriptFunction* output_callback,
+                             ScriptFunction* error_callback) {
   auto* init = MakeGarbageCollected<VideoEncoderInit>();
-  init->setOutput(V8EncodedVideoChunkOutputCallback::Create(output_callback));
-  init->setError(V8WebCodecsErrorCallback::Create(error_callback));
+  init->setOutput(
+      V8EncodedVideoChunkOutputCallback::Create(output_callback->V8Function()));
+  init->setError(
+      V8WebCodecsErrorCallback::Create(error_callback->V8Function()));
   return init;
 }
 
@@ -117,10 +119,8 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
                            int width,
                            int height,
                            int timestamp) {
-  std::vector<uint8_t> data;
-  data.resize(width * height * 4);
-  NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(
-      reinterpret_cast<const unsigned char*>(data.data()), data.size()));
+  std::vector<uint8_t> data(width * height * 4);
+  NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(data));
 
   ImageData* image_data =
       ImageData::Create(data_u8, width, IGNORE_EXCEPTION_FOR_TESTING);
@@ -225,7 +225,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
                           info.is_hardware_accelerated = true;
                           encoder->CallOnMediaEncoderInfoChanged(info);
                         }),
-                        Return(ByMove(std::move(media_encoder)))));
+                        Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+                            std::move(media_encoder))))));
     EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
         .WillOnce(Return(ByMove(
             std::make_unique<media::MockVideoEncoderMetricsProvider>())));
@@ -265,7 +266,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
                           info.is_hardware_accelerated = false;
                           encoder->CallOnMediaEncoderInfoChanged(info);
                         }),
-                        Return(ByMove(std::move(media_encoder)))));
+                        Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+                            std::move(media_encoder))))));
     EXPECT_CALL(*mock_media_encoder, Initialize(_, _, _, _, _))
         .WillOnce(WithArgs<4>(
             Invoke([quit_closure = run_loop.QuitWhenIdleClosure()](
@@ -318,7 +320,8 @@ TEST_F(
                         info.is_hardware_accelerated = false;
                         encoder->CallOnMediaEncoderInfoChanged(info);
                       }),
-                      Return(ByMove(std::move(media_encoder)))));
+                      Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+                          std::move(media_encoder))))));
   EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
   EXPECT_CALL(
@@ -343,8 +346,7 @@ TEST_F(
                 FROM_HERE, WTF::BindOnce(std::move(done_cb),
                                          media::EncoderStatus::Codes::kOk));
             media::VideoEncoderOutput out;
-            out.data = std::make_unique<uint8_t[]>(100);
-            out.size = 100;
+            out.data = base::HeapArray<uint8_t>::Uninit(100);
             out.key_frame = true;
             scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
                 FROM_HERE,
@@ -391,7 +393,8 @@ TEST_F(VideoEncoderTest,
                         info.is_hardware_accelerated = false;
                         encoder->CallOnMediaEncoderInfoChanged(info);
                       }),
-                      Return(ByMove(std::move(media_encoder)))));
+                      Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+                          std::move(media_encoder))))));
   EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
   EXPECT_CALL(
@@ -460,7 +463,8 @@ TEST_F(VideoEncoderTest,
                         info.is_hardware_accelerated = false;
                         encoder->CallOnMediaEncoderInfoChanged(info);
                       }),
-                      Return(ByMove(std::move(media_encoder)))));
+                      Return(ByMove(std::unique_ptr<media::VideoEncoder>(
+                          std::move(media_encoder))))));
   EXPECT_CALL(*encoder, CreateVideoEncoderMetricsProvider())
       .WillOnce(Return(ByMove(std::move(encoder_metrics_provider))));
   EXPECT_CALL(
@@ -481,6 +485,24 @@ TEST_F(VideoEncoderTest,
       .WillOnce(RunClosure(run_loop.QuitWhenIdleClosure()));
   encoder->configure(config, es);
   run_loop.Run();
+}
+
+TEST_F(VideoEncoderTest, NoAvailableMediaVideoEncoder) {
+  V8TestingScope v8_scope;
+  auto& es = v8_scope.GetExceptionState();
+  auto* script_state = v8_scope.GetScriptState();
+
+  MockFunctionScope mock_function(script_state);
+
+  // Create a video encoder.
+  auto* init =
+      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectCall());
+  auto* encoder = CreateMockEncoder(script_state, init, es);
+  auto* config = CreateConfig();
+  EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))
+      .WillOnce(Return(media::EncoderStatus(
+          media::EncoderStatus::Codes::kEncoderUnsupportedProfile)));
+  encoder->configure(config, es);
 }
 }  // namespace
 

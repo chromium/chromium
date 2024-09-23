@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 
 #include <optional>
@@ -15,10 +20,8 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/dawn_image_representation_unittest_common.h"
@@ -35,8 +38,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -133,7 +136,7 @@ class EGLImageBackingFactoryThreadSafeTest
 #if BUILDFLAG(IS_ANDROID)
     auto* command_line = base::CommandLine::ForCurrentProcess();
     if (gles2::UsePassthroughCommandDecoder(command_line)) {
-      // TODO(crbug.com/1472516): fix this tests to work with passthrough.
+      // TODO(crbug.com/40278643): fix this tests to work with passthrough.
       GTEST_SKIP();
     }
 #endif
@@ -217,6 +220,7 @@ class EGLImageBackingFactoryThreadSafeTest
   }
 
   void CheckDawnPixels(wgpu::Texture texture,
+                       const wgpu::Instance& instance,
                        const wgpu::Device& device,
                        const gfx::Size& size,
                        const std::vector<uint8_t>& expected_color) const {
@@ -240,22 +244,15 @@ class EGLImageBackingFactoryThreadSafeTest
     wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
-    WGPUBufferMapAsyncStatus map_status = WGPUBufferMapAsyncStatus_Unknown;
-    auto map_callback = [](WGPUBufferMapAsyncStatus status, void* userdata) {
-      WGPUBufferMapAsyncStatus* status_out =
-          reinterpret_cast<WGPUBufferMapAsyncStatus*>(userdata);
-      *status_out = status;
-    };
-    buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size, map_callback,
-                    &map_status);
-    // Tick device until async map operation completes.
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      if (map_status != WGPUBufferMapAsyncStatus_Unknown) {
-        return true;
-      }
-      device.Tick();
-      return false;
-    }));
+    wgpu::FutureWaitInfo wait_info{
+        buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
+                        wgpu::CallbackMode::WaitAnyOnly,
+                        [&](wgpu::MapAsyncStatus status, const char*) {
+                          ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+                        })};
+    wgpu::WaitStatus status =
+        instance.WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
+    DCHECK(status == wgpu::WaitStatus::Success);
 
     const uint8_t* dst_pixels =
         reinterpret_cast<const uint8_t*>(buffer.GetConstMappedRange());
@@ -276,7 +273,6 @@ class EGLImageBackingFactoryThreadSafeTest
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<EGLImageBackingFactory> backing_factory_;
-  gles2::MailboxManagerImpl mailbox_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
@@ -293,7 +289,6 @@ class CreateAndValidateSharedImageRepresentations {
       EGLImageBackingFactory* backing_factory,
       viz::SharedImageFormat format,
       bool is_thread_safe,
-      gles2::MailboxManagerImpl* mailbox_manager,
       SharedImageManager* shared_image_manager,
       MemoryTypeTracker* memory_type_tracker,
       SharedImageRepresentationFactory* shared_image_representation_factory,
@@ -305,7 +300,6 @@ class CreateAndValidateSharedImageRepresentations {
   Mailbox mailbox() { return mailbox_; }
 
  private:
-  raw_ptr<gles2::MailboxManagerImpl> mailbox_manager_;
   gfx::Size size_;
   Mailbox mailbox_;
   std::unique_ptr<SharedImageBacking> backing_;
@@ -317,9 +311,9 @@ class CreateAndValidateSharedImageRepresentations {
 TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
-      &mailbox_manager_, shared_image_manager_.get(),
-      memory_type_tracker_.get(), shared_image_representation_factory_.get(),
-      context_state_.get(), /*upload_initial_data=*/false);
+      shared_image_manager_.get(), memory_type_tracker_.get(),
+      shared_image_representation_factory_.get(), context_state_.get(),
+      /*upload_initial_data=*/false);
 }
 
 // Intent of this test is to create at thread safe backing with initial pixel
@@ -327,9 +321,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicThreadSafe) {
 TEST_P(EGLImageBackingFactoryThreadSafeTest, BasicInitialData) {
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
-      &mailbox_manager_, shared_image_manager_.get(),
-      memory_type_tracker_.get(), shared_image_representation_factory_.get(),
-      context_state_.get(), /*upload_initial_data=*/true);
+      shared_image_manager_.get(), memory_type_tracker_.get(),
+      shared_image_representation_factory_.get(), context_state_.get(),
+      /*upload_initial_data=*/true);
 }
 
 // Intent of this test is to use the shared image mailbox system by 2 different
@@ -340,9 +334,9 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   // Create it on 1st SharedContextState |context_state_|.
   CreateAndValidateSharedImageRepresentations shared_image(
       backing_factory_.get(), get_format(), /*is_thread_safe=*/true,
-      &mailbox_manager_, shared_image_manager_.get(),
-      memory_type_tracker_.get(), shared_image_representation_factory_.get(),
-      context_state_.get(), /*upload_initial_data=*/false);
+      shared_image_manager_.get(), memory_type_tracker_.get(),
+      shared_image_representation_factory_.get(), context_state_.get(),
+      /*upload_initial_data=*/false);
 
   auto mailbox = shared_image.mailbox();
   auto size = shared_image.size();
@@ -408,9 +402,11 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, OneWriterOneReader) {
   EXPECT_EQ(dst_pixels[3], 255);
 }
 
-#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+// TODO(crbug.com/332947916): fix these tests to run on Android/GLES
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES) && \
+    !BUILDFLAG(IS_ANDROID)
 // Test to check interaction between Dawn and skia GL representations.
-TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
+TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   // Find a Dawn GLES adapter
   dawn::native::Instance instance;
   wgpu::RequestAdapterOptions adapter_options;
@@ -432,20 +428,20 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
   dawnProcSetProcs(&procs);
 
   // Create a backing using mailbox.
-  const auto mailbox = Mailbox::GenerateForSharedImage();
+  const auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(1, 1);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
-  const uint32_t usage =
-      SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_DISPLAY_READ;
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_WEBGPU_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   // Note that this backing is always thread safe by default even if it is not
   // requested to be.
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
-      /* is_thread_safe=*/true);
+      /*is_thread_safe=*/true);
   ASSERT_NE(backing, nullptr);
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -502,9 +498,15 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
   DawnProcTable procs = dawn::native::GetProcs();
   dawnProcSetProcs(&procs);
 
-  // Create a Dawm OpenGLES device.
-  dawn::native::Instance instance;
+  WGPUInstanceDescriptor instance_desc = {
+      .features =
+          {
+              .timedWaitAnyEnable = true,
+          },
+  };
+  dawn::native::Instance instance(&instance_desc);
 
+  // Create a Dawn OpenGLES device.
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::OpenGLES;
   adapter_options.compatibilityMode = true;
@@ -523,17 +525,19 @@ TEST_P(EGLImageBackingFactoryThreadSafeTest, Dawn_SampledTexture) {
     wgpu::Device device = adapter.CreateDevice(&device_descriptor);
 
     // Create a backing using mailbox.
-    const auto mailbox = Mailbox::GenerateForSharedImage();
+    const auto mailbox = Mailbox::Generate();
     const auto format = viz::SinglePlaneFormat::kRGBA_8888;
     const gfx::Size size(1, 1);
     const auto color_space = gfx::ColorSpace::CreateSRGB();
-    const uint32_t usage = SHARED_IMAGE_USAGE_WEBGPU;
+    const gpu::SharedImageUsageSet usage =
+        SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
     std::vector<uint8_t> pixel_data = {0x80, 0x40, 0x20, 0x10};
 
     auto backing = backing_factory_->CreateSharedImage(
         mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, "Dawn_SampledTexture", pixel_data);
+        kPremul_SkAlphaType, usage, "Dawn_SampledTexture",
+        /*is_thread_safe=*/true, pixel_data);
     ASSERT_NE(backing, nullptr);
 
     std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
@@ -640,7 +644,7 @@ return textureSample(tex, smp, tex_coord);
     wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
-    CheckDawnPixels(attachment, device, size, pixel_data);
+    CheckDawnPixels(attachment, instance.Get(), device, size, pixel_data);
   }
 
   // Shut down Dawn
@@ -654,18 +658,17 @@ CreateAndValidateSharedImageRepresentations::
         EGLImageBackingFactory* backing_factory,
         viz::SharedImageFormat format,
         bool is_thread_safe,
-        gles2::MailboxManagerImpl* mailbox_manager,
         SharedImageManager* shared_image_manager,
         MemoryTypeTracker* memory_type_tracker,
         SharedImageRepresentationFactory* shared_image_representation_factory,
         SharedContextState* context_state,
         bool upload_initial_data)
-    : mailbox_manager_(mailbox_manager), size_(256, 256) {
+    : size_(256, 256) {
   // Make the context current.
   DCHECK(context_state);
   EXPECT_TRUE(
       context_state->MakeCurrent(context_state->surface(), true /* needs_gl*/));
-  mailbox_ = Mailbox::GenerateForSharedImage();
+  mailbox_ = Mailbox::Generate();
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
@@ -675,8 +678,8 @@ CreateAndValidateSharedImageRepresentations::
   // compositor and SHARED_IMAGE_USAGE_RASTER_WRITE for modeling skia write via
   // raster. Tests that use this class also write to the created SharedImage via
   // GL.
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2_WRITE |
-                   SHARED_IMAGE_USAGE_RASTER_WRITE;
+  gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE;
   if (!is_thread_safe)
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (upload_initial_data) {
@@ -684,7 +687,7 @@ CreateAndValidateSharedImageRepresentations::
         viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size_, format));
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, size_, color_space, surface_origin, alpha_type, usage,
-        "TestLabel", initial_data);
+        "TestLabel", /*is_thread_safe=*/true, initial_data);
   } else {
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, surface_handle, size_, color_space, surface_origin,
@@ -781,7 +784,6 @@ CreateAndValidateSharedImageRepresentations::
 CreateAndValidateSharedImageRepresentations::
     ~CreateAndValidateSharedImageRepresentations() {
   shared_image_.reset();
-  EXPECT_FALSE(mailbox_manager_->ConsumeTexture(mailbox_));
 }
 
 // High bit depth rendering is not supported on Android.

@@ -4,22 +4,13 @@
 
 #include "chrome/browser/enterprise/connectors/common.h"
 
-#include "base/notreached.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
-#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/download/public/common/download_danger_type.h"
-#include "components/download/public/common/download_item.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -32,22 +23,28 @@
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
+#include "components/prefs/pref_service.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+
 using safe_browsing::BinaryUploadService;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace enterprise_connectors {
 
-RequestHandlerResult::RequestHandlerResult() = default;
-RequestHandlerResult::~RequestHandlerResult() = default;
-RequestHandlerResult::RequestHandlerResult(RequestHandlerResult&&) = default;
-RequestHandlerResult& RequestHandlerResult::operator=(RequestHandlerResult&&) =
-    default;
-RequestHandlerResult::RequestHandlerResult(const RequestHandlerResult&) =
-    default;
-RequestHandlerResult& RequestHandlerResult::operator=(
-    const RequestHandlerResult&) = default;
-
 namespace {
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   switch (action) {
     case TriggeredRule::ACTION_UNSPECIFIED:
@@ -59,22 +56,44 @@ bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   }
 }
 
-ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
-    TriggeredRule::Action action) {
-  switch (action) {
-    case TriggeredRule::ACTION_UNSPECIFIED:
-      return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
-    case TriggeredRule::REPORT_ONLY:
-      return ContentAnalysisAcknowledgement::REPORT_ONLY;
-    case TriggeredRule::WARN:
-      return ContentAnalysisAcknowledgement::WARN;
-    case TriggeredRule::BLOCK:
-      return ContentAnalysisAcknowledgement::BLOCK;
-  }
+bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
+    BinaryUploadService::Result result,
+    bool block_large_files,
+    bool block_password_protected_files) {
+  return (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
+          !block_large_files) ||
+         (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
+          !block_password_protected_files);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+std::string EventResultToString(
+    extensions::api::enterprise_reporting_private::EventResult event_result) {
+  // Make sure the values returned by this function match the names in
+  // google3/chrome/cros/reporting/api/proto/browser_events.proto
+  if (event_result ==
+      extensions::api::enterprise_reporting_private::EventResult::kNone) {
+    return "EVENT_RESULT_UNKNOWN";
+  }
+  return ToString(event_result);
+}
+
+std::string DetectorTypeToString(
+    extensions::api::enterprise_reporting_private::DetectorType detector_type) {
+  // Make sure the values returned by this function match the names in
+  // google3/chrome/cros/reporting/api/proto/browser_events.proto
+  if (detector_type ==
+      extensions::api::enterprise_reporting_private::DetectorType::kNone) {
+    return "DETECTOR_TYPE_UNSPECIFIED";
+  }
+  return ToString(detector_type);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
                               BinaryUploadService::Result upload_result) {
   bool default_action_allow_data_use =
@@ -96,6 +115,7 @@ bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
     case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
     case BinaryUploadService::Result::TOO_MANY_REQUESTS:
     case BinaryUploadService::Result::UNKNOWN:
+    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
       DVLOG(1) << __func__
                << ": handled by fail-closed settings, "
                   "default_action_allow_data_use="
@@ -160,35 +180,6 @@ RequestHandlerResult CalculateRequestHandlerResult(
   return result;
 }
 
-std::u16string GetCustomRuleString(
-    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
-        custom_rule_message) {
-  std::u16string custom_message;
-  for (const auto& custom_segment : custom_rule_message.message_segments()) {
-    base::StrAppend(&custom_message,
-                    {base::UTF8ToUTF16(custom_segment.text())});
-  }
-  return custom_message;
-}
-
-std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
-    const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
-        custom_rule_message,
-    size_t offset) {
-  std::vector<std::pair<gfx::Range, GURL>> linked_ranges;
-  for (const auto& custom_segment : custom_rule_message.message_segments()) {
-    if (custom_segment.has_link()) {
-      GURL url(custom_segment.link());
-      if (url.is_valid()) {
-        linked_ranges.emplace_back(
-            gfx::Range(offset, offset + custom_segment.text().length()), url);
-      }
-    }
-    offset += custom_segment.text().length();
-  }
-  return linked_ranges;
-}
-
 safe_browsing::EventResult CalculateEventResult(
     const AnalysisSettings& settings,
     bool allowed_by_scan_result,
@@ -200,189 +191,7 @@ safe_browsing::EventResult CalculateEventResult(
              : (should_warn ? safe_browsing::EventResult::WARNED
                             : safe_browsing::EventResult::BLOCKED);
 }
-
-ContentAnalysisAcknowledgement::FinalAction GetAckFinalAction(
-    const ContentAnalysisResponse& response) {
-  auto final_action = ContentAnalysisAcknowledgement::ALLOW;
-  for (const auto& result : response.results()) {
-    if (!result.has_status() ||
-        result.status() != ContentAnalysisResponse::Result::SUCCESS) {
-      continue;
-    }
-
-    for (const auto& rule : result.triggered_rules()) {
-      final_action = GetHighestPrecedenceAction(
-          final_action, RuleActionToAckAction(rule.action()));
-    }
-  }
-
-  return final_action;
-}
-
-ReportingSettings::ReportingSettings() = default;
-ReportingSettings::ReportingSettings(GURL url,
-                                     const std::string& dm_token,
-                                     bool per_profile)
-    : reporting_url(url), dm_token(dm_token), per_profile(per_profile) {}
-ReportingSettings::ReportingSettings(ReportingSettings&&) = default;
-ReportingSettings::ReportingSettings(const ReportingSettings&) = default;
-ReportingSettings& ReportingSettings::operator=(ReportingSettings&&) = default;
-ReportingSettings::~ReportingSettings() = default;
-
-const char* ConnectorPref(AnalysisConnector connector) {
-  switch (connector) {
-    case AnalysisConnector::BULK_DATA_ENTRY:
-      return kOnBulkDataEntryPref;
-    case AnalysisConnector::FILE_DOWNLOADED:
-      return kOnFileDownloadedPref;
-    case AnalysisConnector::FILE_ATTACHED:
-      return kOnFileAttachedPref;
-    case AnalysisConnector::PRINT:
-      return kOnPrintPref;
-    case AnalysisConnector::FILE_TRANSFER:
-#if BUILDFLAG(IS_CHROMEOS)
-      return kOnFileTransferPref;
-#endif
-    case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED() << "Using unspecified analysis connector";
-      return "";
-  }
-}
-
-const char* ConnectorPref(ReportingConnector connector) {
-  switch (connector) {
-    case ReportingConnector::SECURITY_EVENT:
-      return kOnSecurityEventPref;
-  }
-}
-
-const char* ConnectorScopePref(AnalysisConnector connector) {
-  switch (connector) {
-    case AnalysisConnector::BULK_DATA_ENTRY:
-      return kOnBulkDataEntryScopePref;
-    case AnalysisConnector::FILE_DOWNLOADED:
-      return kOnFileDownloadedScopePref;
-    case AnalysisConnector::FILE_ATTACHED:
-      return kOnFileAttachedScopePref;
-    case AnalysisConnector::PRINT:
-      return kOnPrintScopePref;
-    case AnalysisConnector::FILE_TRANSFER:
-#if BUILDFLAG(IS_CHROMEOS)
-      return kOnFileTransferScopePref;
-#endif
-    case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
-      NOTREACHED() << "Using unspecified analysis connector";
-      return "";
-  }
-}
-
-const char* ConnectorScopePref(ReportingConnector connector) {
-  switch (connector) {
-    case ReportingConnector::SECURITY_EVENT:
-      return kOnSecurityEventScopePref;
-  }
-}
-
-TriggeredRule::Action GetHighestPrecedenceAction(
-    const ContentAnalysisResponse& response,
-    std::string* tag) {
-  auto action = TriggeredRule::ACTION_UNSPECIFIED;
-
-  for (const auto& result : response.results()) {
-    if (!result.has_status() ||
-        result.status() != ContentAnalysisResponse::Result::SUCCESS) {
-      continue;
-    }
-
-    for (const auto& rule : result.triggered_rules()) {
-      auto higher_precedence_action =
-          GetHighestPrecedenceAction(action, rule.action());
-      if (higher_precedence_action != action && tag != nullptr) {
-        *tag = result.tag();
-      }
-      action = higher_precedence_action;
-    }
-  }
-  return action;
-}
-
-TriggeredRule::Action GetHighestPrecedenceAction(
-    const TriggeredRule::Action& action_1,
-    const TriggeredRule::Action& action_2) {
-  // Don't use the enum's int values to determine precedence since that
-  // may introduce bugs for new actions later.
-  //
-  // The current precedence is BLOCK > WARN > REPORT_ONLY > UNSPECIFIED
-  if (action_1 == TriggeredRule::BLOCK || action_2 == TriggeredRule::BLOCK) {
-    return TriggeredRule::BLOCK;
-  }
-  if (action_1 == TriggeredRule::WARN || action_2 == TriggeredRule::WARN) {
-    return TriggeredRule::WARN;
-  }
-  if (action_1 == TriggeredRule::REPORT_ONLY ||
-      action_2 == TriggeredRule::REPORT_ONLY) {
-    return TriggeredRule::REPORT_ONLY;
-  }
-  if (action_1 == TriggeredRule::ACTION_UNSPECIFIED ||
-      action_2 == TriggeredRule::ACTION_UNSPECIFIED) {
-    return TriggeredRule::ACTION_UNSPECIFIED;
-  }
-  NOTREACHED();
-  return TriggeredRule::ACTION_UNSPECIFIED;
-}
-
-ContentAnalysisAcknowledgement::FinalAction GetHighestPrecedenceAction(
-    const ContentAnalysisAcknowledgement::FinalAction& action_1,
-    const ContentAnalysisAcknowledgement::FinalAction& action_2) {
-  // Don't use the enum's int values to determine precedence since that
-  // may introduce bugs for new actions later.
-  //
-  // The current precedence is BLOCK > WARN > REPORT_ONLY > ALLOW > UNSPECIFIED
-  if (action_1 == ContentAnalysisAcknowledgement::BLOCK ||
-      action_2 == ContentAnalysisAcknowledgement::BLOCK) {
-    return ContentAnalysisAcknowledgement::BLOCK;
-  }
-  if (action_1 == ContentAnalysisAcknowledgement::WARN ||
-      action_2 == ContentAnalysisAcknowledgement::WARN) {
-    return ContentAnalysisAcknowledgement::WARN;
-  }
-  if (action_1 == ContentAnalysisAcknowledgement::REPORT_ONLY ||
-      action_2 == ContentAnalysisAcknowledgement::REPORT_ONLY) {
-    return ContentAnalysisAcknowledgement::REPORT_ONLY;
-  }
-  if (action_1 == ContentAnalysisAcknowledgement::ALLOW ||
-      action_2 == ContentAnalysisAcknowledgement::ALLOW) {
-    return ContentAnalysisAcknowledgement::ALLOW;
-  }
-  if (action_1 == ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED ||
-      action_2 == ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED) {
-    return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
-  }
-  NOTREACHED();
-  return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
-}
-
-FileMetadata::FileMetadata(const std::string& filename,
-                           const std::string& sha256,
-                           const std::string& mime_type,
-                           int64_t size,
-                           const ContentAnalysisResponse& scan_response)
-    : filename(filename),
-      sha256(sha256),
-      mime_type(mime_type),
-      size(size),
-      scan_response(scan_response) {}
-FileMetadata::FileMetadata(FileMetadata&&) = default;
-FileMetadata::FileMetadata(const FileMetadata&) = default;
-FileMetadata& FileMetadata::operator=(const FileMetadata&) = default;
-FileMetadata::~FileMetadata() = default;
-
-const char ScanResult::kKey[] = "enterprise_connectors.scan_result_key";
-ScanResult::ScanResult() = default;
-ScanResult::ScanResult(FileMetadata metadata) {
-  file_metadata.push_back(std::move(metadata));
-}
-ScanResult::~ScanResult() = default;
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 const char SavePackageScanningData::kKey[] =
     "enterprise_connectors.save_package_scanning_key";
@@ -399,12 +208,6 @@ void RunSavePackageScanningCallback(download::DownloadItem* item,
       item->GetUserData(SavePackageScanningData::kKey));
   if (data && !data->callback.is_null())
     std::move(data->callback).Run(allowed);
-}
-
-bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
-  return base::ranges::any_of(response.results(), [](const auto& result) {
-    return result.tag() == kMalwareTag && !result.triggered_rules().empty();
-  });
 }
 
 bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
@@ -427,56 +230,8 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
 
   // A managed device can share its info with the profile if they are
   // affiliated.
-  return chrome::enterprise_util::IsProfileAffiliated(profile);
+  return enterprise_util::IsProfileAffiliated(profile);
 #endif
-}
-
-ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
-CreateSampleCustomRuleMessage(const std::u16string& msg,
-                              const std::string& url) {
-  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
-      custom_message;
-  auto* custom_segment = custom_message.add_message_segments();
-  custom_segment->set_text(base::UTF16ToUTF8(msg));
-  custom_segment->set_link(url);
-  return custom_message;
-}
-
-std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
-GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
-                              download::DownloadDangerType danger_type) {
-  if (!download_item) {
-    return std::nullopt;
-  }
-
-  // Custom rule message is currently only present for either warning or block
-  // danger types.
-  TriggeredRule::Action current_action;
-  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
-    current_action = TriggeredRule::WARN;
-  } else if (danger_type ==
-             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
-    current_action = TriggeredRule::BLOCK;
-  } else {
-    return std::nullopt;
-  }
-
-  enterprise_connectors::ScanResult* scan_result =
-      static_cast<enterprise_connectors::ScanResult*>(
-          download_item->GetUserData(enterprise_connectors::ScanResult::kKey));
-  if (!scan_result) {
-    return std::nullopt;
-  }
-  for (const auto& metadata : scan_result->file_metadata) {
-    for (const auto& result : metadata.scan_response.results()) {
-      for (const auto& rule : result.triggered_rules()) {
-        if (rule.action() == current_action && rule.has_custom_rule_message()) {
-          return rule.custom_rule_message();
-        }
-      }
-    }
-  }
-  return std::nullopt;
 }
 
 bool ShouldPromptReviewForDownload(
@@ -503,6 +258,35 @@ bool ShouldPromptReviewForDownload(
   return false;
 }
 
+std::string GetProfileEmail(Profile* profile) {
+  if (!profile) {
+    return std::string();
+  }
+
+  std::string email =
+      GetProfileEmail(IdentityManagerFactory::GetForProfile(profile));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (email.empty()) {
+    email = profile->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserEmail);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  return email;
+}
+
+std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
+  // If the profile is not signed in, GetPrimaryAccountInfo() returns an
+  // empty account info.
+  return identity_manager
+             ? identity_manager
+                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                   .email
+             : std::string();
+}
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void ShowDownloadReviewDialog(const std::u16string& filename,
                               Profile* profile,
                               download::DownloadItem* download_item,
@@ -555,8 +339,26 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
       /* file_count */ 1, state, download_item);
 }
 
-bool CloudResultIsFailure(BinaryUploadService::Result result) {
+bool IsResumableUpload(const BinaryUploadService::Request& request) {
+  // Currently resumable upload doesn't support paste or LBUS. If one day we do,
+  // we should update the logic here as well.
+  return !safe_browsing::IsConsumerScanRequest(request) &&
+         request.cloud_or_local_settings().is_cloud_analysis() &&
+         request.content_analysis_request().analysis_connector() !=
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY &&
+         IsResumableUploadEnabled();
+}
+
+bool CloudMultipartResultIsFailure(BinaryUploadService::Result result) {
   return result != BinaryUploadService::Result::SUCCESS;
+}
+
+bool CloudResumableResultIsFailure(BinaryUploadService::Result result,
+                                   bool block_large_files,
+                                   bool block_password_protected_files) {
+  return result != BinaryUploadService::Result::SUCCESS &&
+         !ShouldAllowDeepScanOnLargeOrEncryptedFiles(
+             result, block_large_files, block_password_protected_files);
 }
 
 bool LocalResultIsFailure(BinaryUploadService::Result result) {
@@ -570,8 +372,10 @@ bool ResultIsFailClosed(BinaryUploadService::Result result) {
          result == BinaryUploadService::Result::TIMEOUT ||
          result == BinaryUploadService::Result::FAILED_TO_GET_TOKEN ||
          result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-         result == BinaryUploadService::Result::UNKNOWN;
+         result == BinaryUploadService::Result::UNKNOWN ||
+         result == BinaryUploadService::Result::INCOMPLETE_RESPONSE;
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 Profile* GetMainProfileLacros() {
@@ -585,5 +389,64 @@ Profile* GetMainProfileLacros() {
   return *main_it;
 }
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void ReportDataMaskingEvent(
+    content::BrowserContext* browser_context,
+    extensions::api::enterprise_reporting_private::DataMaskingEvent
+        data_masking_event) {
+  CHECK(browser_context);
+
+  auto* reporting_client =
+      enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+          browser_context);
+  std::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client->GetReportingSettings();
+  if (!settings.has_value() ||
+      !base::Contains(settings->enabled_event_names,
+                      enterprise_connectors::kKeySensitiveDataEvent)) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyUrl,
+            data_masking_event.url);
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTabUrl,
+            std::move(data_masking_event.url));
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyEventResult,
+            EventResultToString(data_masking_event.event_result));
+
+  base::Value::List triggered_rule_info;
+  triggered_rule_info.reserve(data_masking_event.triggered_rule_info.size());
+  for (auto& rule : data_masking_event.triggered_rule_info) {
+    base::Value::Dict triggered_rule;
+    triggered_rule.Set(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
+        std::move(rule.rule_id));
+    triggered_rule.Set(
+        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
+        std::move(rule.rule_name));
+
+    base::Value::List matched_detectors;
+    for (auto& detector : rule.matched_detectors) {
+      base::Value::Dict detector_value;
+      detector_value.Set(kKeyDetectorId, std::move(detector.detector_id));
+      detector_value.Set(kKeyDisplayName, std::move(detector.display_name));
+      detector_value.Set(kKeyDetectorType,
+                         DetectorTypeToString(detector.detector_type));
+      matched_detectors.Append(std::move(detector_value));
+    }
+    triggered_rule.Set(kKeyMatchedDetectors, std::move(matched_detectors));
+
+    triggered_rule_info.Append(std::move(triggered_rule));
+  }
+  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo,
+            std::move(triggered_rule_info));
+
+  reporting_client->ReportRealtimeEvent(
+      enterprise_connectors::kKeySensitiveDataEvent,
+      std::move(settings.value()), std::move(event));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace enterprise_connectors

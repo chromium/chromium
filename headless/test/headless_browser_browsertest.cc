@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "headless/public/headless_browser.h"
+
 #include <memory>
 #include <string>
 #include <tuple>
@@ -14,12 +16,17 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/devtools/simple_devtools_protocol_client/simple_devtools_protocol_client.h"
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobars_switches.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -33,7 +40,6 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "headless/public/headless_browser.h"
 #include "headless/public/headless_web_contents.h"
 #include "headless/public/switches.h"
 #include "headless/test/headless_browser_test.h"
@@ -70,6 +76,8 @@ using simple_devtools_protocol_client::SimpleDevToolsProtocolClient;
 using testing::UnorderedElementsAre;
 
 namespace headless {
+
+namespace {
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, CreateAndDestroyBrowserContext) {
   HeadlessBrowserContext* browser_context =
@@ -234,9 +242,8 @@ class HeadlessBrowserTestWithProxy : public HeadlessBrowserTest {
   net::EmbeddedTestServer proxy_server_;
 };
 
-#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
-// TODO(crbug.com/1090933): Fix this test on Fuchsia and re-enable.
+#if BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/40697469): Fix this test on Fuchsia and re-enable.
 #define MAYBE_SetProxyConfig DISABLED_SetProxyConfig
 #else
 #define MAYBE_SetProxyConfig SetProxyConfig
@@ -251,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithProxy, MAYBE_SetProxyConfig) {
           .SetProxyConfig(std::move(proxy_config))
           .Build();
 
-  // Load a page which doesn't actually exist, but for which the our proxy
+  // Load a page which doesn't actually exist, but for which our proxy
   // returns valid content anyway.
   HeadlessWebContents* web_contents =
       browser_context->CreateWebContentsBuilder()
@@ -338,22 +345,61 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
   HeadlessBrowser::Options::Builder builder;
   const HeadlessBrowser::Options kDefaultOptions = builder.Build();
 
-#if !BUILDFLAG(IS_MAC)
-  // On Mac headless does not override the screen dimensions, so they are
-  // left with the actual screen values.
-  EXPECT_THAT(
-      EvaluateScript(web_contents, "screen.width"),
-      DictHasValue("result.result.value", kDefaultOptions.window_size.width()));
+  const int expected_width = kDefaultOptions.window_size.width();
+  const int expected_height = kDefaultOptions.window_size.height();
+
+  EXPECT_THAT(EvaluateScript(web_contents, "screen.width"),
+              DictHasValue("result.result.value", expected_width));
   EXPECT_THAT(EvaluateScript(web_contents, "screen.height"),
-              DictHasValue("result.result.value",
-                           kDefaultOptions.window_size.height()));
-#endif  // !BUILDFLAG(IS_MAC)
-  EXPECT_THAT(
-      EvaluateScript(web_contents, "window.innerWidth"),
-      DictHasValue("result.result.value", kDefaultOptions.window_size.width()));
+              DictHasValue("result.result.value", expected_height));
+
+  EXPECT_THAT(EvaluateScript(web_contents, "window.outerWidth"),
+              DictHasValue("result.result.value", expected_width));
+  EXPECT_THAT(EvaluateScript(web_contents, "window.outerHeight"),
+              DictHasValue("result.result.value", expected_height));
+
+  EXPECT_THAT(EvaluateScript(web_contents, "window.innerWidth"),
+              DictHasValue("result.result.value", expected_width));
   EXPECT_THAT(EvaluateScript(web_contents, "window.innerHeight"),
-              DictHasValue("result.result.value",
-                           kDefaultOptions.window_size.height()));
+              DictHasValue("result.result.value", expected_height));
+}
+
+class HeadlessBrowserWindowSizeTest : public HeadlessBrowserTest {
+ public:
+  static constexpr gfx::Size kWindowSize = {1920, 1080};
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kWindowSize,
+        base::StringPrintf("%u,%u", kWindowSize.width(), kWindowSize.height()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserWindowSizeTest, WindowSize) {
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder().Build();
+
+  const int expected_width = kWindowSize.width();
+  const int expected_height = kWindowSize.height();
+
+  EXPECT_THAT(EvaluateScript(web_contents, "screen.width"),
+              DictHasValue("result.result.value", expected_width));
+  EXPECT_THAT(EvaluateScript(web_contents, "screen.height"),
+              DictHasValue("result.result.value", expected_height));
+
+  EXPECT_THAT(EvaluateScript(web_contents, "window.outerWidth"),
+              DictHasValue("result.result.value", expected_width));
+  EXPECT_THAT(EvaluateScript(web_contents, "window.outerHeight"),
+              DictHasValue("result.result.value", expected_height));
+
+  EXPECT_THAT(EvaluateScript(web_contents, "window.innerWidth"),
+              DictHasValue("result.result.value", expected_width));
+  EXPECT_THAT(EvaluateScript(web_contents, "window.innerHeight"),
+              DictHasValue("result.result.value", expected_height));
 }
 
 // TODO(skyostil): This test currently relies on being able to run a shell
@@ -628,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserAllowInsecureLocalhostTest,
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1090933): Fix this test on Fuchsia and re-enable.
+// TODO(crbug.com/40697469): Fix this test on Fuchsia and re-enable.
 #define MAYBE_ServerWantsClientCertificate DISABLED_ServerWantsClientCertificate
 #else
 #define MAYBE_ServerWantsClientCertificate ServerWantsClientCertificate
@@ -845,7 +891,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogHeadlessBrowserTest, SelectFileDialog) {
   EXPECT_EQ(select_file_dialog_type_, expected_type());
 }
 
-// TODO(crbug.com/1493208): Flaky on all builders.
+// TODO(crbug.com/40285755): Flaky on all builders.
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DISABLED_NetworkServiceCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -876,5 +922,83 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DISABLED_NetworkServiceCrash) {
     nav_observer.Wait();
   } while (wc->GetController().GetLastCommittedEntry()->GetURL() != new_url);
 }
+
+// Infobar tests -------------------------------------------------------------
+
+class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
+ public:
+  explicit TestInfoBarDelegate(int buttons) : buttons_(buttons) {}
+
+  TestInfoBarDelegate(const TestInfoBarDelegate&) = delete;
+  TestInfoBarDelegate& operator=(const TestInfoBarDelegate&) = delete;
+
+  ~TestInfoBarDelegate() override = default;
+
+  static void Create(infobars::ContentInfoBarManager* infobar_manager,
+                     int buttons) {
+    infobar_manager->AddInfoBar(std::make_unique<infobars::InfoBar>(
+        std::make_unique<TestInfoBarDelegate>(buttons)));
+  }
+
+  // ConfirmInfoBarDelegate:
+  infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
+    return TEST_INFOBAR;
+  }
+  std::u16string GetMessageText() const override {
+    return buttons_ ? u"BUTTON" : u"";
+  }
+  int GetButtons() const override { return buttons_; }
+
+ private:
+  int buttons_;
+};
+
+class HeadlessInfobarBrowserTest : public HeadlessBrowserTest,
+                                   public testing::WithParamInterface<bool> {
+ public:
+  HeadlessInfobarBrowserTest() = default;
+  ~HeadlessInfobarBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessBrowserTest::SetUpCommandLine(command_line);
+    if (disable_infobars()) {
+      command_line->AppendSwitch(::switches::kDisableInfoBars);
+    }
+  }
+
+  bool disable_infobars() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         HeadlessInfobarBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(HeadlessInfobarBrowserTest, InfoBarsCanBeDisabled) {
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+
+  HeadlessWebContents* headless_web_contents =
+      browser_context->CreateWebContentsBuilder().Build();
+  ASSERT_TRUE(WaitForLoad(headless_web_contents));
+
+  content::WebContents* web_contents =
+      HeadlessWebContentsImpl::From(headless_web_contents)->web_contents();
+  ASSERT_TRUE(web_contents);
+
+  auto infobar_manager =
+      std::make_unique<infobars::ContentInfoBarManager>(web_contents);
+  ASSERT_THAT(infobar_manager->infobars(), testing::IsEmpty());
+
+  TestInfoBarDelegate::Create(infobar_manager.get(),
+                              ConfirmInfoBarDelegate::BUTTON_NONE);
+  TestInfoBarDelegate::Create(infobar_manager.get(),
+                              ConfirmInfoBarDelegate::BUTTON_OK);
+
+  // The infobar with a button should appear even if infobars are disabled.
+  EXPECT_THAT(infobar_manager->infobars(),
+              testing::SizeIs(disable_infobars() ? 1 : 2));
+}
+
+}  // namespace
 
 }  // namespace headless

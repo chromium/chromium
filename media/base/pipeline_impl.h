@@ -74,7 +74,7 @@ using AsyncCreateRendererCB =
 // out and we start playing the media.
 //
 // If Stop() is ever called, this object will transition to "Stopped" state.
-// Pipeline::Stop() is never called from withing PipelineImpl. It's |client_|'s
+// Pipeline::Stop() is never called from within PipelineImpl. It's |client_|'s
 // responsibility to call stop when appropriate.
 //
 // TODO(sandersd): It should be possible to pass through Suspended when going
@@ -111,8 +111,8 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void SetVolume(float volume) override;
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) override;
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) override;
   base::TimeDelta GetMediaTime() const override;
   Ranges<base::TimeDelta> GetBufferedTimeRanges() const override;
   base::TimeDelta GetMediaDuration() const override;
@@ -136,22 +136,6 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
  private:
   friend class MediaLog;
   class RendererWrapper;
-
-  // Pipeline states, as described above.
-  // TODO(alokp): Move this to RendererWrapper after removing the references
-  // from MediaLog.
-  enum State {
-    kCreated,
-    kStarting,
-    kSeeking,
-    kPlaying,
-    kStopping,
-    kStopped,
-    kSuspending,
-    kSuspended,
-    kResuming,
-  };
-  static const char* GetStateString(State state);
 
   // Create a Renderer asynchronously. Must be called on the main task runner
   // and the callback will be called on the main task runner as well.

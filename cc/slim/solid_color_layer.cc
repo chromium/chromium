@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "cc/layers/solid_color_layer.h"
-#include "cc/slim/features.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 
@@ -15,27 +13,13 @@ namespace cc::slim {
 
 // static
 scoped_refptr<SolidColorLayer> SolidColorLayer::Create() {
-  scoped_refptr<cc::SolidColorLayer> cc_layer;
-  if (!features::IsSlimCompositorEnabled()) {
-    cc_layer = cc::SolidColorLayer::Create();
-  }
-  return base::AdoptRef(new SolidColorLayer(std::move(cc_layer)));
+  return base::AdoptRef(new SolidColorLayer());
 }
 
-SolidColorLayer::SolidColorLayer(scoped_refptr<cc::SolidColorLayer> cc_layer)
-    : Layer(std::move(cc_layer)) {}
-
+SolidColorLayer::SolidColorLayer() = default;
 SolidColorLayer::~SolidColorLayer() = default;
 
-cc::SolidColorLayer* SolidColorLayer::cc_layer() const {
-  return static_cast<cc::SolidColorLayer*>(cc_layer_.get());
-}
-
 void SolidColorLayer::SetBackgroundColor(SkColor4f color) {
-  if (cc_layer()) {
-    cc_layer()->SetBackgroundColor(color);
-    return;
-  }
   SetContentsOpaque(color.isOpaque());
   Layer::SetBackgroundColor(color);
 }

@@ -170,10 +170,14 @@ chromium-metrics-reviews@google.com.
 
 <enum name="Cr50BoardIdFlags">
   <int value="-1" label="Unprogrammed (0xffffffff)"/>
-  <int value="127" label="Legacy pre-pvt (0x7f)"/>
+  <int value="16" label="test pre-pvt (0x10)"/>
+  <int value="127" label="Legacy pre-pvt1 (0x7f)"/>
+  <int value="16255" label="Whitelabel Pre-pvt (0x3f7f)"/>
+  <int value="16256" label="Whitelabel Prod (0x3f80)"/>
   <int value="32639" label="Pre-pvt (0x7f7f)"/>
   <int value="32640" label="Prod (0x7f80)"/>
   <int value="65280" label="Corrected (0xff00)"/>
+  <int value="65407" label="Legacy pre-pvt2 (0xff7f)"/>
 </enum>
 
 <enum name="Cr50CrosRlzCodes">
@@ -304,8 +308,9 @@ chromium-metrics-reviews@google.com.
     greatest set can be found in
     https://chromium.googlesource.com/chromiumos/platform/ec/+/refs/heads/main/include/flash_log.h
     (enum flash_event_type and enum nvmem_failure_type). Note that NVMEM errors
-    are logged as subevents of flash log event 5, we register them offset by
-    200.
+    and AP RO verification events are logged as subevents. AP RO verification
+    subevents are registered with an offset of 160. Nvmem subevents are
+    registered with an offset of 200.
   </summary>
   <int value="0" label="Start"/>
   <int value="1" label="Corrupted Log"/>
@@ -315,9 +320,20 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="TPM Wipe"/>
   <int value="7" label="TRNG Stall"/>
   <int value="8" label="Dcrypto Failure"/>
-  <int value="9" label="AP RO Verification Failure"/>
+  <int value="9" label="AP RO Verification Event"/>
   <int value="10" label="FIPS Failure"/>
   <int value="11" label="Invalid Board Properties"/>
+  <int value="163" label="AP RO Triggered"/>
+  <int value="164" label="AP RO Space Not Programmed"/>
+  <int value="165" label="AP RO Space Invalid"/>
+  <int value="166" label="AP RO Check Failed"/>
+  <int value="167" label="AP RO Check Succeeded"/>
+  <int value="168" label="AP RO Check Unsupported"/>
+  <int value="169" label="AP RO Fail Cleared"/>
+  <int value="170" label="AP RO Saved GBBD"/>
+  <int value="171" label="AP RO Fail - to Save GBBD"/>
+  <int value="172" label="AP RO Fail - Corrupted V1 Data"/>
+  <int value="173" label="AP RO Fail - Corrupted GBBD"/>
   <int value="200" label="Nvmem Malloc"/>
   <int value="201" label="Nvmem Page Header Size Mismatch"/>
   <int value="202" label="Nvmem Read Underrun"/>
@@ -414,31 +430,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="34" label="Crostini.OomEvent"/>
 </enum>
 
-<enum name="CrosHibernateAbortReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Not enough free memory"/>
-  <int value="2" label="Not enough free disk space"/>
-  <int value="3" label="Update Engine is active"/>
-  <int value="4" label="Hiberimage is not set up"/>
-  <int value="5" label="Prior user logout"/>
-</enum>
-
-<enum name="CrosHibernateCycleEvent">
-  <int value="0" label="SuspendAttempt"/>
-  <int value="1" label="SuspendSuccess"/>
-  <int value="2" label="SuspendFailure"/>
-  <int value="3" label="ResumeAttempt"/>
-  <int value="4" label="ResumeSuccess"/>
-  <int value="5" label="ResumeFailure"/>
-  <int value="6" label="ResumePending"/>
-  <int value="7" label="ResumeSkippedUserMismatch"/>
-</enum>
-
-<enum name="CrosHibernateFileSystemStatus">
-  <int value="0" label="Clean"/>
-  <int value="1" label="Has errors"/>
-</enum>
-
 <enum name="CrosTPMDictionaryAttackResetStatusEnum">
   <int value="0" label="Reset not necessary"/>
   <int value="1" label="Reset attempt succeeded"/>
@@ -447,6 +438,39 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="4" label="TPM owner delegate does not exist"/>
   <int value="5" label="Failed to query dictionary attack counter"/>
   <int value="6" label="PCR0 in wrong state"/>
+</enum>
+
+<enum name="DataLossErrorReason">
+  <summary>
+    Defined as DataLossErrorReason src/platform2/missive/util/reporting_errors.h
+  </summary>
+  <int value="0" label="FAILED_TO_CREATE_ENCRYPTION_KEY"/>
+  <int value="1" label="FAILED_TO_ENUMERATE_STORAGE_QUEUE_DIRECTORY"/>
+  <int value="2" label="FAILED_TO_GET_SIZE_OF_FILE"/>
+  <int value="3" label="FAILED_TO_OPEN_FILE"/>
+  <int value="4" label="FAILED_TO_OPEN_KEY_FILE"/>
+  <int value="5" label="FAILED_TO_OPEN_STORAGE_QUEUE_FILE"/>
+  <int value="6" label="FAILED_TO_PARSE_GENERATION_ID"/>
+  <int value="7" label="FAILED_TO_PARSE_RECORD"/>
+  <int value="8" label="FAILED_TO_READ_FILE"/>
+  <int value="9" label="FAILED_TO_READ_FILE_INFO"/>
+  <int value="10" label="FAILED_TO_READ_HEALTH_DATA"/>
+  <int value="11" label="FAILED_TO_READ_HEALTH_DATA_FILE_INFO"/>
+  <int value="12" label="FAILED_TO_READ_METADATA"/>
+  <int value="13" label="FAILED_TO_RESTORE_LAST_RECORD_DIGEST"/>
+  <int value="14" label="FAILED_TO_SERIALIZE_ENCRYPTED_RECORD"/>
+  <int value="15" label="FAILED_TO_SERIALIZE_KEY"/>
+  <int value="16" label="FAILED_TO_SERIALIZE_WRAPPED_RECORD"/>
+  <int value="17" label="FAILED_TO_WRITE_FILE"/>
+  <int value="18" label="FAILED_TO_WRITE_HEALTH_DATA"/>
+  <int value="19" label="FAILED_TO_WRITE_KEY_FILE"/>
+  <int value="20" label="FAILED_TO_WRITE_METADATA"/>
+  <int value="21" label="INVALID_GENERATION_GUID"/>
+  <int value="22" label="INVALID_GENERATION_ID"/>
+  <int value="23" label="METADATA_GENERATION_ID_MISMATCH"/>
+  <int value="24" label="METADATA_GENERATION_ID_OUT_OF_RANGE"/>
+  <int value="25" label="METADATA_LAST_RECORD_DIGEST_IS_CORRUPT"/>
+  <int value="26" label="MISSING_GENERATION_ID"/>
 </enum>
 
 <enum name="DetachableBasePairResult">
@@ -530,13 +554,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="285212672" label="NonZeroGbbFlags"/>
 </enum>
 
-<enum name="Exynos5250LotIdEnum">
-  <int value="0" label="Fused device"/>
-  <int value="1" label="Generic unfused device"/>
-  <int value="2" label="Unfused; lot ID NZVPU"/>
-  <int value="3" label="Unfused; lot ID NZVR7"/>
-</enum>
-
 <enum name="FeatureManagementScopeLevel">
   <int value="0" label="Regular">Device is a regular Chromebook.</int>
   <int value="1" label="Soft Braned">
@@ -545,6 +562,22 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Hard Braned">
     Device is a Hard Branded Chromebook Plus.
   </int>
+</enum>
+
+<enum name="FlexBootMethod">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Coreboot"/>
+  <int value="2" label="32-bit UEFI"/>
+  <int value="3" label="64-bit UEFI"/>
+  <int value="4" label="BIOS"/>
+</enum>
+
+<enum name="FlexCpuIsaLevel">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="x86-64-v1"/>
+  <int value="2" label="x86-64-v2"/>
+  <int value="3" label="x86-64-v3"/>
+  <int value="4" label="x86-64-v4"/>
 </enum>
 
 <enum name="FwupdReturnValue">
@@ -660,6 +693,10 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="7" label="AVX"/>
   <int value="8" label="AVX2"/>
   <int value="9" label="FMA3"/>
+  <int value="10" label="AVX_VNNI"/>
+  <int value="11" label="AVX512F"/>
+  <int value="12" label="AVX512BW"/>
+  <int value="13" label="AVX512_VNNI"/>
 </enum>
 
 <enum name="InternalStorageCapabilities">
@@ -708,6 +745,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="11" label="Failed on Install"/>
   <int value="12" label="Failed on GetDlcState"/>
   <int value="13" label="Unexpected empty DLC id"/>
+  <int value="14" label="dlcservice returned Internal error"/>
 </enum>
 
 <enum name="ModemfwdDlcUninstallResult">
@@ -733,6 +771,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="6" label="Failure returned by helper"/>
   <int value="7" label="Init journal failure"/>
   <int value="8" label="Non LTE SKU"/>
+  <int value="9" label="Failure returned by helper. Modem never seen"/>
 </enum>
 
 <enum name="ModemfwdFWUpdateLocation">
@@ -783,6 +822,72 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="0" label="Off"/>
   <int value="1" label="On"/>
   <int value="2" label="Error"/>
+</enum>
+
+<enum name="Platform.FbPreprocessor.CollectionAllowedStatus">
+  <summary>
+    Used to report if the collection of firmware dumps is allowed, and if not
+    why.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Allowed">Collection of firmware dumps is allowed</int>
+  <int value="2" label="DisallowedByPolicy">
+    Policy disallows the collection of firmware dumps,
+    UserFeedbackWithLowLevelDebugDataAllowed is not set
+  </int>
+  <int value="3" label="DisallowedByFinch">
+    Disabled by Finch kill-switch CrOSLateBootAllowFirmwareDumps
+  </int>
+  <int value="4" label="DisallowedForMultipleSessions">
+    Disabled because more than 1 user is logged in at the same time
+  </int>
+  <int value="5" label="DisallowedForUserDomain">
+    Collection not allowed for this domain
+  </int>
+</enum>
+
+<enum name="Platform.FbPreprocessor.FirmwareType">
+  <summary>
+    Lists the type of firmware debug dumps that can be collected in feedback
+    reports, as described in go/cros-fbpreprocessord-dd. Those types are defined
+    in fbpreprocessor.proto, enum DebugDump::Type.
+  </summary>
+  <int value="0" label="UnknownType"/>
+  <int value="1" label="WiFi"/>
+  <int value="2" label="Bluetooth"/>
+</enum>
+
+<enum name="Platform.FbPreprocessor.PseudonymizationResult">
+  <summary>
+    Used to report if the pseudonymization of firmware dumps succeeded, and if
+    not why.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">Pseudonymization completed successfully</int>
+  <int value="2" label="FailedToStart">
+    Failed to start the pseudonymization thread/process
+  </int>
+  <int value="3" label="NoOpFailedToMove">
+    The &quot;no-op&quot; pseudonymization failed to move the firmware dump
+  </int>
+</enum>
+
+<enum name="Platform.Memory.PsiPolicyError">
+  <int value="0" label="MemInfo"/>
+  <int value="1" label="Vmstat"/>
+  <int value="2" label="Cpuset"/>
+  <int value="3" label="CreatePsiMonitor"/>
+  <int value="4" label="MonitorPsi"/>
+</enum>
+
+<enum name="Platform.Memory.ReclaimReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="CriticalPressure"/>
+  <int value="2" label="SystemSlow"/>
+  <int value="3" label="ThrashingAnon"/>
+  <int value="4" label="ThrashingFile"/>
+  <int value="5" label="DirectReclaim"/>
+  <int value="6" label="Margin"/>
 </enum>
 
 <enum name="PlatformTPMHardwareAlerts">
@@ -2417,16 +2522,20 @@ Full version information for the fingerprint enum values:
   <int value="79646227" label="CROS Ti50 0.24.60"/>
   <int value="91611772" label="CROS Cr50 0.4.21"/>
   <int value="91664959" label="CROS Cr50 0.0.16"/>
+  <int value="100632617" label="CROS Ti50 0.23.81"/>
   <int value="113099773" label="CROS Cr50 0.0.23 Eve Flags 0x7f00(prod)"/>
   <int value="125416236" label="CROS Cr50 0.3.7"/>
+  <int value="129455924" label="CROS Cr50 0.5.215"/>
   <int value="137227137" label="CROS Cr50 0.6.92"/>
   <int value="157181839" label="IFX 9655 rev 41 fw 4.34 build 03f2"/>
+  <int value="168148402" label="CROS Ti50 0.23.112"/>
   <int value="189188535" label="CROS Cr50 0.4.19"/>
   <int value="228456405" label="CROS Cr50 0.3.11"/>
   <int value="230386903" label="CROS Cr50 0.0.24 Eve Flags 0x7f00(prod)"/>
   <int value="245471087" label="CROS Cr50 0.4.25"/>
   <int value="267286010" label="CROS Cr50 0.6.40"/>
   <int value="276176597" label="CROS Cr50 0.1.0 Flags 0x10(pre-pvt)"/>
+  <int value="293403010" label="CROS Ti50 0.24.2"/>
   <int value="297017579" label="CROS Cr50 0.6.60 aka 0.6.80"/>
   <int value="305524852" label="IFX 9655 rev 41 fw 4.32 build 036f"/>
   <int value="313962517" label="CROS Cr50 0.3.16"/>
@@ -2438,13 +2547,18 @@ Full version information for the fingerprint enum values:
   <int value="369007271" label="CROS Ti50 0.23.62"/>
   <int value="379654202" label="CROS Cr50 0.0.13"/>
   <int value="399636984" label="CROS Cr50 0.0.18"/>
+  <int value="403344126" label="CROS Ti50 0.23.72"/>
   <int value="404096389" label="CROS Cr50 0.5.152"/>
+  <int value="408634489" label="CROS Ti50 0.23.101"/>
   <int value="415762088" label="CROS Cr50 0.5.5"/>
   <int value="431107149" label="CROS Cr50 ro 0.0.11 rw 0.3.22"/>
   <int value="437666420" label="CROS Cr50 0.6.90"/>
+  <int value="453582094" label="CROS Ti50 0.24.11"/>
+  <int value="459604054" label="CROS Cr50 0.6.210"/>
   <int value="477307208" label="CROS Ti50 0.23.14"/>
   <int value="477803868" label="CROS Cr50 0.5.112"/>
   <int value="487001745" label="IFX 9655 rev 38 fw 4.34 build 03f2"/>
+  <int value="488674186" label="CROS Cr50 0.6.201"/>
   <int value="498251593" label="CROS Cr50 0.5.4"/>
   <int value="517482723" label="IFX 9655 rev 38 fw 4.32 build 036f"/>
   <int value="533446617" label="CROS Cr50 0.5.111"/>
@@ -2453,16 +2567,21 @@ Full version information for the fingerprint enum values:
   <int value="562513455" label="CROS Cr50 0.4.12"/>
   <int value="563952990" label="CROS Cr50 0.6.51"/>
   <int value="566085886" label="CROS Cr50 0.5.142"/>
+  <int value="602649060" label="CROS Ti50 0.22.5"/>
+  <int value="610267058" label="CROS Ti50 0.24.101"/>
   <int value="612889790" label="CROS Ti50 0.23.30"/>
   <int value="618235807" label="CROS Cr50 0.3.18"/>
   <int value="639195905" label="IFX 9655 rev 35 fw 4.32 build 036f"/>
   <int value="640048866" label="CROS Cr50 0.4.8"/>
   <int value="642527504" label="CROS Cr50 0.6.142"/>
+  <int value="666817951" label="CROS Cr50 0.6.211"/>
   <int value="679016111" label="CROS Cr50 0.5.60"/>
   <int value="691364586" label="CROS Cr50 0.0.22 Eve Flags 0xff00(unknown)"/>
+  <int value="698425188" label="CROS Ti50 0.24.90"/>
   <int value="704960859" label="CROS Ti50 0.24.3"/>
   <int value="705140733" label="CROS Cr50 0.6.111"/>
   <int value="707846933" label="CROS Cr50 0.1.1 Flags 0x10(pre-pvt)"/>
+  <int value="712981996" label="CROS Cr50 0.6.200"/>
   <int value="719751295" label="CROS Cr50 0.6.120"/>
   <int value="726525758" label="CROS Ti50 0.24.71"/>
   <int value="752842103" label="CROS Cr50 0.0.25 Flags 0x10(pre-pvt)"/>
@@ -2488,23 +2607,32 @@ Full version information for the fingerprint enum values:
   <int value="921986551" label="CROS Cr50 0.6.70"/>
   <int value="928190862" label="CROS Cr50 0.0.17"/>
   <int value="928401938" label="CROS Cr50 ro 0.0.11 rw w0.4.24"/>
+  <int value="941521429" label="CROS Ti50 0.24.112"/>
   <int value="946990224" label="CROS Ti50 0.23.71"/>
   <int value="961500628" label="CROS Cr50 0.5.11"/>
   <int value="969849518" label="CROS Cr50 0.4.9 Flags 0x10(pre-pvt)"/>
+  <int value="973237052" label="CROS Cr50 0.6.241"/>
   <int value="987235505" label="CROS Cr50 0.0.20"/>
   <int value="987973414" label="IFX 9670 rev 15 fw 6.40 build 00be"/>
   <int value="1001367086" label="CROS Cr50 0.3.15"/>
   <int value="1009763914" label="CROS Cr50 0.4.10"/>
   <int value="1013730596" label="CROS Cr50 0.0.26 Flags 0x10(pre-pvt)"/>
+  <int value="1013974746" label="CROS Ti50 0.24.100"/>
   <int value="1026059105" label="CROS Cr50 0.3.4"/>
   <int value="1039624416" label="CROS Cr50 0.3.10"/>
   <int value="1048372479" label="CROS Cr50 0.6.4"/>
+  <int value="1051360156" label="CROS Cr50 0.6.230"/>
+  <int value="1052367128" label="CROS Ti50 0.24.81"/>
   <int value="1053975981" label="CROS Cr50 0.5.141"/>
   <int value="1065916186" label="CROS Cr50 0.0.19"/>
   <int value="1069046756" label="CROS Cr50 0.5.51"/>
   <int value="1080347583" label="CROS Cr50 0.6.2"/>
+  <int value="1091661035" label="CROS Cr50 0.5.201"/>
+  <int value="1101087472" label="CROS Cr50 0.6.251"/>
   <int value="1123680979" label="CROS Cr50 0.3.4 (duplicate)"/>
   <int value="1131918398" label="CROS Cr50 0.5.160"/>
+  <int value="1154690950" label="CROS Cr50 0.6.250"/>
+  <int value="1172082999" label="CROS Cr50 0.5.205"/>
   <int value="1184698907" label="CROS Cr50 0.3.23"/>
   <int value="1190683265" label="CROS Cr50 0.0.14"/>
   <int value="1204349964" label="CROS Cr50 0.6.3"/>
@@ -2519,6 +2647,8 @@ Full version information for the fingerprint enum values:
   <int value="1311411160" label="WEC 345"/>
   <int value="1318849875" label="CROS Cr50 0.6.100"/>
   <int value="1332366315" label="CROS Cr50 0.5.151"/>
+  <int value="1338970508" label="CROS Ti50 0.24.80"/>
+  <int value="1349306733" label="CROS Cr50 0.6.222"/>
   <int value="1353576267" label="IFX 9635 fw 3.18 build 0009"/>
   <int value="1366252830" label="CROS Ti50 0.0.15"/>
   <int value="1374260250" label="CROS Cr50 0.6.7"/>
@@ -2535,8 +2665,10 @@ Full version information for the fingerprint enum values:
   <int value="1457492447" label="CROS Cr50 0.6.141"/>
   <int value="1462683392" label="CROS Ti50 0.24.21"/>
   <int value="1475426635" label="CROS Ti50 0.24.40"/>
+  <int value="1476635961" label="CROS Ti50 0.23.13"/>
   <int value="1478323543" label="CROS Cr50 0.5.120"/>
   <int value="1490841853" label="IFX 9645 rev 49 fw 133.32 build 0050"/>
+  <int value="1498375675" label="CROS Ti50 0.24.72"/>
   <int value="1514324233" label="CROS Cr50 0.5.1"/>
   <int value="1517782969" label="CROS Ti50 0.23.51"/>
   <int value="1520081310" label="CROS Cr50 0.0.22 variant"/>
@@ -2545,12 +2677,14 @@ Full version information for the fingerprint enum values:
   <int value="1539202511" label="CROS Ti50 0.0.12"/>
   <int value="1545098279" label="CROS Cr50 0.6.152"/>
   <int value="1567731004" label="CROS Cr50 0.5.9"/>
+  <int value="1590648297" label="CROS Cr50 0.5.230"/>
   <int value="1607230944" label="CROS Cr50 0.4.5 Flags 0x10(pre-pvt)"/>
   <int value="1632371059" label="CROS Cr50 0.0.22"/>
   <int value="1660111968" label="CROS Cr50 0.6.180"/>
   <int value="1660841977" label="CROS Cr50 0.6.160"/>
   <int value="1674290856" label="CROS Cr50 0.6.170"/>
   <int value="1684843946" label="CROS Ti50 0.23.1"/>
+  <int value="1689088657" label="CROS Cr50 0.6.215"/>
   <int value="1716634300" label="IFX 9645 rev 45 fw 133.32 build 0050"/>
   <int value="1716937628" label="CROS Cr50 0.6.190"/>
   <int value="1717226620" label="CROS Cr50 0.4.14 Flags 0x10(pre-pvt)"/>
@@ -2568,11 +2702,14 @@ Full version information for the fingerprint enum values:
   <int value="1820069194" label="CROS Cr50 0.6.10 aka 0.6.20"/>
   <int value="1828625721" label="IFX 9655 rev 32 fw 4.31 build 02c2"/>
   <int value="1841636222" label="CROS Cr50 0.5.7"/>
+  <int value="1843271842" label="CROS Cr50 0.6.221"/>
   <int value="1848357394" label="CROS Cr50 0.4.11 Flags 0x10(pre-pvt)"/>
   <int value="1861735666" label="CROS Cr50 0.2.1 Flags 0x10(pre-pvt)"/>
   <int value="1862442392" label="CROS Cr50 0.5.40"/>
   <int value="1865292977" label="CROS Cr50 0.0.24 aka 0.3.0"/>
+  <int value="1867843231" label="CROS Ti50 0.24.50"/>
   <int value="1875276519" label="CROS Cr50 0.6.171"/>
+  <int value="1878374913" label="CROS Ti50 0.22.8"/>
   <int value="1883956482" label="CROS Cr50 0.6.153"/>
   <int value="1887455524" label="CROS Cr50 0.0.21"/>
   <int value="1895760793" label="CROS Cr50 0.5.153"/>
@@ -2580,12 +2717,17 @@ Full version information for the fingerprint enum values:
   <int value="1902169266" label="CROS Cr50 0.4.16"/>
   <int value="1903933708" label="CROS Cr50 0.4.3 Flags 0x10(pre-pvt)"/>
   <int value="1911169399" label="CROS Ti50 0.23.70"/>
+  <int value="1912806644" label="CROS Ti50 0.23.74"/>
   <int value="1934507294" label="CROS Ti50 0.0.13"/>
   <int value="1935803215" label="CROS Cr50 0.3.25"/>
   <int value="1941011596" label="IFX 9655 rev 35 fw 4.34 build 03f2"/>
+  <int value="1944125174" label="CROS Cr50 0.5.241"/>
   <int value="1951490249" label="CROS Cr50 0.5.130"/>
   <int value="1953654937" label="IFX 9645 rev 45 fw 133.33 build 00e3"/>
+  <int value="1974285066" label="CROS Ti50 0.23.90"/>
   <int value="1994299966" label="CROS Cr50 0.4.27"/>
+  <int value="1996708318" label="CROS Ti50 0.24.20"/>
+  <int value="1999850232" label="CROS Cr50 0.6.240"/>
   <int value="2024714959" label="IFX 9655 rev 32 fw 4.34 build 03f2"/>
   <int value="2025600313" label="CROS Cr50 0.5.10 aka 0.5.20"/>
   <int value="2036182876" label="CROS Cr50 0.3.24"/>
@@ -2604,6 +2746,33 @@ Full version information for the fingerprint enum values:
   <int value="0" label="Error"/>
   <int value="1" label="Not active"/>
   <int value="2" label="Active"/>
+</enum>
+
+<enum name="UnavailableErrorReason">
+  <summary>
+    Defined as UnavailableErrorReason in
+    src/platform2/missive/util/reporting_errors.h
+  </summary>
+  <int value="0" label="CANNOT_CANCEL_A_JOB_THATS_ALREADY_RUNNING"/>
+  <int value="1" label="CANNOT_SCHEDULE_A_JOB_THATS_ALREADY_RUNNING"/>
+  <int value="2" label="CHROME_NOT_RESPONDING"/>
+  <int value="3" label="CLIENT_NOT_CONNECTED_TO_MISSIVE"/>
+  <int value="4" label="DAEMON_STILL_STARTING"/>
+  <int value="5" label="DBUS_ADAPTER_DESTRUCTED"/>
+  <int value="6" label="FAILED_TO_CREATE_STORAGE_QUEUE_DIRECTORY"/>
+  <int value="7" label="FILE_NOT_OPEN"/>
+  <int value="8" label="MISSIVE_CLIENT_NO_DBUS_RESPONSE"/>
+  <int value="9" label="MISSIVE_HAS_BEEN_SHUT_DOWN"/>
+  <int value="10" label="NO_DBUS_RESPONSE"/>
+  <int value="11" label="REPORT_QUEUE_DESTRUCTED"/>
+  <int value="12" label="REPORT_QUEUE_PROVIDER_DESTRUCTED"/>
+  <int value="13" label="STORAGE_DIRECTORY_DOESNT_EXIST"/>
+  <int value="14" label="STORAGE_OBJECT_DOESNT_EXIST"/>
+  <int value="15" label="STORAGE_QUEUE_SHUTDOWN"/>
+  <int value="16" label="UNABLE_TO_BUILD_REPORT_QUEUE"/>
+  <int value="17" label="UPLOAD_CLIENT_DESTRUCTED"/>
+  <int value="18" label="UPLOAD_CLIENT_NO_DBUS_RESPONSE"/>
+  <int value="19" label="MAX_VALUE"/>
 </enum>
 
 <enum name="WiFiPCIStatus">

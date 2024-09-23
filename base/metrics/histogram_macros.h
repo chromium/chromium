@@ -173,7 +173,7 @@
 // These should *not* be used if you are interested in exact counts, i.e. a
 // bucket range of 1. In these cases, you should use the ENUMERATION macros
 // defined later. These should also not be used to capture the number of some
-// event, i.e. "button X was clicked N times". In this cases, an enum should be
+// event, i.e. "button X was clicked N times". In this case, an enum should be
 // used, ideally with an appropriate baseline enum entry included.
 // All of these macros must be called with |name| as a runtime constant.
 
@@ -229,6 +229,14 @@
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Seconds(10), 50)
 
+// TODO(crbug.com/353712922): rename and reintroduce this function/macro
+// Warning: There is another UMA logging function with a very similar name
+// which buckets data differently than this one.
+// https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_functions.h?q=UmaHistogramMediumTimes
+// If you modify your logging to use that other function, you will be making a
+// meaningful semantic change to your data, and should change your histogram's
+// name, as per the guidelines at
+// https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
 // Medium timings - up to 3 minutes. Note this starts at 10ms (no good reason,
 // but not worth changing).
 #define UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)                   \
@@ -455,5 +463,40 @@ enum class ScopedHistogramTiming {
     STATIC_HISTOGRAM_POINTER_BLOCK(name, Add(sample),                          \
         base::CustomHistogram::FactoryGet(name, custom_ranges,                 \
             base::HistogramBase::kUmaTargetedHistogramFlag))
+
+// Helper to split `histogram_name` based on whether the reported sample was
+// sampled at a different (lower) priority than normal. Typically used for
+// timing-related histograms that can be affected by running at a lower priority
+// (e.g. in a best-effort renderer).
+//
+// Specifically, `histogram_name` is reported suffixed with ".BestEffort" if the
+// current process was running at `Process::Priority::kBestEffort` for any
+// portion of that range and as `histogram_name` directly by default otherwise.
+// This check is atomic and thus suitable for performance critical histogram
+// samples.
+//
+// A typical instantiation looks something like this:
+//     const TimeTicks start_time = TimeTicks::Now();
+//     DoSomething();
+//     const TimeTicks end_time = TimeTicks::Now();
+//     const TimeDelta sample_interval = end_time - start_time;
+//     // `value`is equal to `sample_interval` in this simple example but it
+//     // could differ.
+//     const TimeDelta value = end_time - start_time;
+//     UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY(
+//         UMA_HISTOGRAM_MEDIUM_TIMES, end_time, sample_interval, "MyHistogram",
+//         value);
+//
+// Note: While this can be called from any process, only renderer processes are
+// currently supported to detect best-effort priority.
+// TODO(crbug.com/334983411): Add support for other process types running at
+// lower priorities.
+#define UMA_HISTOGRAM_SPLIT_BY_PROCESS_PRIORITY(                               \
+    histogram_macro, sample_time, sample_interval, histogram_name, ...)        \
+  if (base::internal::OverlapsBestEffortRange(sample_time, sample_interval)) { \
+    histogram_macro(histogram_name ".BestEffort", __VA_ARGS__);                \
+  } else {                                                                     \
+    histogram_macro(histogram_name, __VA_ARGS__);                              \
+  }
 
 #endif  // BASE_METRICS_HISTOGRAM_MACROS_H_

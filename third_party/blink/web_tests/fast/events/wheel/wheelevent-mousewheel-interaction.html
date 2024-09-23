@@ -16,7 +16,6 @@
 </span>
 
 <script>
-var receivedMouseWheel = false;
 var testEvent;
 
 function wheelHandler(e) {
@@ -24,7 +23,7 @@ function wheelHandler(e) {
 }
 
 function mouseWheelHandler(e) {
-    receivedMouseWheel = true;
+    assert_unreached();
 }
 
 promise_test(async () => {
@@ -32,10 +31,17 @@ promise_test(async () => {
     div.addEventListener('wheel', wheelHandler);
     div.addEventListener('mousewheel', mouseWheelHandler);
     var center = elementCenter(div);
+    const wheelPromise = waitForEvent(div, "wheel");
     await wheelTick(-20, -20, center, 4000);
 
+    // Ensure that the wheel event has fired before checking its side effect.
+    await wheelPromise;
+
     assert_equals(testEvent.__proto__, WheelEvent.prototype, "Standard wheel event was fired.");
-    assert_false(receivedMouseWheel, "mousewheel event should not have fired.");
+    // Wait a little to allow the test to fail in case a mousewheel event
+    // (which should only fire if scrolling occurs) fires.
+    await raf();
+    await raf();
 }, "Tests the interaction between the standard and the non-standard 'mousewheel'.");
 
 </script>

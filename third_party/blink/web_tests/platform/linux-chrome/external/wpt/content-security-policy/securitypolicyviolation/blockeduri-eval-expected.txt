@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Eval violations have a blockedURI of 'eval'
-  assert_equals: expected 12 but got 13
-Harness: the test ran to completion.
-

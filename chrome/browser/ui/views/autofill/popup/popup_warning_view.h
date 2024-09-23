@@ -26,9 +26,6 @@ class PopupWarningView : public views::View {
   PopupWarningView(const PopupWarningView&) = delete;
   PopupWarningView& operator=(const PopupWarningView&) = delete;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
   const std::u16string text_value_;
 };

@@ -1,0 +1,27 @@
+ci/WebKit Win10
+ci/Win Builder
+ci/Win Builder (dbg)
+ci/Win x64 Builder
+ci/Win x64 Builder (dbg)
+ci/Win10 Tests x64
+ci/Win10 Tests x64 (dbg)
+ci/Win11 Tests x64
+ci/Windows deterministic
+ci/win-archive-rel
+ci/win-arm64-archive-rel
+ci/win-arm64-dbg
+ci/win-arm64-rel
+ci/win-official
+ci/win11-arm64-dbg-tests
+ci/win11-arm64-rel-tests
+ci/win32-archive-rel
+ci/win32-official
+try/win-arm64-clobber-rel
+try/win-arm64-compile-dbg
+try/win-arm64-dbg
+try/win-arm64-rel
+try/win-arm64-rel-compilator
+try/win-clobber-rel
+try/win11-23h2-rel
+try/win11-rel
+try/win32-clobber-rel

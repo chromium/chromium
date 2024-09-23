@@ -7,9 +7,10 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/scoped_refptr.h"
-#include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
+#import "base/run_loop.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 
-class SafeBrowsingService;
+class FakeSafeBrowsingService;
 
 // Fake implementation of SafeBrowsingClient.
 class FakeSafeBrowsingClient : public SafeBrowsingClient {
@@ -36,10 +37,38 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
     return main_frame_cancellation_decided_called_;
   }
 
-  // Whether `OnSubFrameUrlQueryCancellationDecided` was called.
-  bool sub_frame_cancellation_decided_called() {
-    return sub_frame_cancellation_decided_called_;
+  // Stores a sync callback in `sync_completion_callbacks_` to be ran at a later
+  // point.
+  void store_sync_callback(
+      base::OnceCallback<void()> sync_completion_callback) {
+    sync_completion_callbacks_.push_back(std::move(sync_completion_callback));
   }
+
+  // Runs all sync callbacks stored in `sync_completion_callbacks_`.
+  void run_sync_callbacks() {
+    for (auto& callback : sync_completion_callbacks_) {
+      std::move(callback).Run();
+    }
+    sync_completion_callbacks_.clear();
+  }
+
+  // Stores a async callback in `async_completion_callbacks_` to be ran at a
+  // later point.
+  void store_async_callback(
+      base::OnceCallback<void()> async_completion_callback) {
+    async_completion_callbacks_.push_back(std::move(async_completion_callback));
+  }
+
+  // Runs all async callbacks stored in `async_completion_callbacks_`.
+  void run_async_callbacks() {
+    for (auto& callback : async_completion_callbacks_) {
+      std::move(callback).Run();
+    }
+    async_completion_callbacks_.clear();
+  }
+
+  std::vector<base::OnceCallback<void()>> sync_completion_callbacks_;
+  std::vector<base::OnceCallback<void()>> async_completion_callbacks_;
 
  private:
   // SafeBrowsingClient implementation.
@@ -50,16 +79,13 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   variations::VariationsService* GetVariationsService() override;
   bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const override;
-  void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
+  bool OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
                                               const GURL& url) override;
-  bool OnSubFrameUrlQueryCancellationDecided(web::WebState* web_state,
-                                             const GURL& url) override;
 
-  scoped_refptr<SafeBrowsingService> safe_browsing_service_;
+  scoped_refptr<FakeSafeBrowsingService> safe_browsing_service_;
   bool should_block_unsafe_resource_ = false;
   raw_ptr<safe_browsing::RealTimeUrlLookupService> lookup_service_ = nullptr;
   bool main_frame_cancellation_decided_called_ = false;
-  bool sub_frame_cancellation_decided_called_ = false;
 
   // Must be last.
   base::WeakPtrFactory<FakeSafeBrowsingClient> weak_factory_{this};

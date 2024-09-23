@@ -15,7 +15,6 @@
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_image_generator.h"
 #include "cc/paint/paint_record.h"
-#include "cc/paint/paint_worklet_input.h"
 #include "cc/paint/skia_paint_image_generator.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -25,7 +24,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -68,7 +67,7 @@ bool PaintImage::IsSameForTesting(const PaintImage& other) const {
          completion_state_ == other.completion_state_ &&
          is_multipart_ == other.is_multipart_ &&
          texture_backing_ == other.texture_backing_ &&
-         paint_worklet_input_ == other.paint_worklet_input_;
+         deferred_paint_record_ == other.deferred_paint_record_;
   // Do not check may_be_lcp_candidate_ as it should not affect any rendering
   // operation, only metrics collection.
 }
@@ -157,8 +156,8 @@ SkImageInfo PaintImage::GetSkImageInfo(AuxImage aux_image) const {
         return texture_backing_->GetSkImageInfo();
       } else if (cached_sk_image_) {
         return cached_sk_image_->imageInfo();
-      } else if (paint_worklet_input_) {
-        auto size = paint_worklet_input_->GetSize();
+      } else if (deferred_paint_record_) {
+        auto size = deferred_paint_record_->GetSize();
         return SkImageInfo::MakeUnknown(base::ClampCeil(size.width()),
                                         base::ClampCeil(size.height()));
       }
@@ -176,7 +175,7 @@ gpu::Mailbox PaintImage::GetMailbox() const {
 
 bool PaintImage::IsOpaque() const {
   if (IsPaintWorklet())
-    return paint_worklet_input_->KnownToBeOpaque();
+    return deferred_paint_record_->KnownToBeOpaque();
   return GetSkImageInfo().isOpaque();
 }
 
@@ -310,8 +309,9 @@ gfx::ContentColorUsage PaintImage::GetContentColorUsage(bool* is_hlg) const {
     *is_hlg = false;
 
   // Right now, JS paint worklets can only be in sRGB
-  if (paint_worklet_input_)
+  if (IsPaintWorklet()) {
     return gfx::ContentColorUsage::kSRGB;
+  }
 
   // Gainmap images are always HDR.
   if (HasGainmap()) {
@@ -366,6 +366,10 @@ bool PaintImage::IsYuv(
              gainmap_paint_image_generator_->QueryYUVA(supported_data_types,
                                                        info);
   }
+}
+
+bool PaintImage::NeedsLayer() const {
+  return IsPaintWorklet() && deferred_paint_record_->NeedsLayer();
 }
 
 const std::vector<FrameMetadata>& PaintImage::GetFrameMetadata() const {

@@ -15,9 +15,9 @@
 #include <errno.h>
 
 #include <iomanip>
+#include <string_view>
 
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/platform_thread.h"
 
 namespace logging {
@@ -38,7 +38,7 @@ const char* GetProgramName() {
 // 2020-06-27T23:55:25.094701Z 1234 VERBOSE1 chrome[3816:3877]:
 // [drm_device_handle.cc(90)] Succeeded authenticating /dev/dri/card0 in 0 ms
 // with 1 attempt(s)
-void LogMessage::InitWithSyslogPrefix(base::StringPiece filename,
+void LogMessage::InitWithSyslogPrefix(std::string_view filename,
                                       int line,
                                       uint64_t tick_count,
                                       const char* log_severity_name_c_str,

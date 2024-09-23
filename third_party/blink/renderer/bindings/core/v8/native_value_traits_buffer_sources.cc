@@ -7,8 +7,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/typed_arrays/flexible_array_buffer_view.h"
-#include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 
 namespace blink {
 
@@ -35,7 +33,7 @@ bool DoesExceedSizeLimitSlow(v8::Isolate* isolate,
 inline bool DoesExceedSizeLimit(v8::Isolate* isolate,
                                 size_t byte_length,
                                 ExceptionState& exception_state) {
-  if (LIKELY(byte_length <= ::partition_alloc::MaxDirectMapped())) {
+  if (byte_length <= ::partition_alloc::MaxDirectMapped()) [[likely]] {
     return false;
   }
 
@@ -77,7 +75,7 @@ auto NativeValueImpl(v8::Isolate* isolate,
   }
 
   auto blink_value = ToBlinkValue(isolate, value);
-  if (LIKELY(RecipeTrait::IsNonNull(blink_value))) {
+  if (RecipeTrait::IsNonNull(blink_value)) [[likely]] {
     if constexpr (allow_resizable == ResizableAllowance::kDisallowResizable) {
       if (RecipeTrait::IsResizable(blink_value)) {
         exception_state.ThrowTypeError(
@@ -98,7 +96,7 @@ auto NativeValueImpl(v8::Isolate* isolate,
   }
 
   if constexpr (nullablity == Nullablity::kIsNullable) {
-    if (LIKELY(value->IsNullOrUndefined())) {
+    if (value->IsNullOrUndefined()) [[likely]] {
       return RecipeTrait::NullValue();
     }
   }
@@ -141,7 +139,7 @@ auto ArgumentValueImpl(v8::Isolate* isolate,
   }
 
   auto blink_value = ToBlinkValue(isolate, value);
-  if (LIKELY(RecipeTrait::IsNonNull(blink_value))) {
+  if (RecipeTrait::IsNonNull(blink_value)) [[likely]] {
     if constexpr (allow_resizable == ResizableAllowance::kDisallowResizable) {
       if (RecipeTrait::IsResizable(blink_value)) {
         exception_state.ThrowTypeError(
@@ -162,7 +160,7 @@ auto ArgumentValueImpl(v8::Isolate* isolate,
   }
 
   if constexpr (nullablity == Nullablity::kIsNullable) {
-    if (LIKELY(value->IsNullOrUndefined())) {
+    if (value->IsNullOrUndefined()) [[likely]] {
       return RecipeTrait::NullValue();
     }
   }
@@ -210,10 +208,8 @@ struct ABVTraitImpl {
 #define DEFINE_ABV_TRAIT(name)                                      \
   template <>                                                       \
   struct ABVTrait<DOM##name>                                        \
-      : ABVTraitImpl<DOM##name, v8::name, &v8::Value::Is##name> {}; \
-  template <>                                                       \
-  struct ABVTrait<Flexible##name>                                   \
       : ABVTraitImpl<DOM##name, v8::name, &v8::Value::Is##name> {};
+
 DEFINE_ABV_TRAIT(ArrayBufferView)
 DEFINE_ABV_TRAIT(Int8Array)
 DEFINE_ABV_TRAIT(Int16Array)
@@ -224,6 +220,7 @@ DEFINE_ABV_TRAIT(Uint16Array)
 DEFINE_ABV_TRAIT(Uint32Array)
 DEFINE_ABV_TRAIT(BigInt64Array)
 DEFINE_ABV_TRAIT(BigUint64Array)
+DEFINE_ABV_TRAIT(Float16Array)
 DEFINE_ABV_TRAIT(Float32Array)
 DEFINE_ABV_TRAIT(Float64Array)
 #undef DEFINE_ABV_TRAIT
@@ -279,37 +276,18 @@ struct RecipeTrait<MaybeShared<T>, void> : public RecipeTrait<T> {
   }
 };
 
-template <typename T>
-struct RecipeTrait<
-    T,
-    std::enable_if_t<std::is_base_of_v<FlexibleArrayBufferView, T>>> {
-  static bool IsNonNull(v8::Local<v8::Value> buffer) {
-    return ABVTrait<T>::IsV8ViewType(buffer);
-  }
-  static T NullValue() { return T(); }
-  static T ToReturnType(v8::Local<v8::Value> buffer) {
-    return T(buffer.As<typename ABVTrait<T>::V8ViewType>());
-  }
-  static size_t ByteLength(v8::Local<v8::Value> buffer) {
-    return buffer.As<typename ABVTrait<T>::V8ViewType>()->ByteLength();
-  }
-  static bool IsResizable(v8::Local<v8::Value> buffer) {
-    return buffer.As<typename ABVTrait<T>::V8ViewType>()
-        ->Buffer()
-        ->IsResizableByUserJavaScript();
-  }
-};
-
 // ToBlinkValue implementation for the recipe functions
 
 DOMArrayBuffer* ToDOMArrayBuffer(v8::Isolate* isolate,
                                  v8::Local<v8::Value> value) {
-  if (UNLIKELY(!value->IsArrayBuffer()))
+  if (!value->IsArrayBuffer()) [[unlikely]] {
     return nullptr;
+  }
 
   v8::Local<v8::ArrayBuffer> v8_array_buffer = value.As<v8::ArrayBuffer>();
-  if (ScriptWrappable* array_buffer = ToScriptWrappable(v8_array_buffer)) {
-    return array_buffer->ToImpl<DOMArrayBuffer>();
+  if (auto* array_buffer =
+          ToScriptWrappable<DOMArrayBuffer>(isolate, v8_array_buffer)) {
+    return array_buffer;
   }
 
   // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
@@ -324,14 +302,15 @@ DOMArrayBuffer* ToDOMArrayBuffer(v8::Isolate* isolate,
 
 DOMSharedArrayBuffer* ToDOMSharedArrayBuffer(v8::Isolate* isolate,
                                              v8::Local<v8::Value> value) {
-  if (UNLIKELY(!value->IsSharedArrayBuffer()))
+  if (!value->IsSharedArrayBuffer()) [[unlikely]] {
     return nullptr;
+  }
 
   v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
       value.As<v8::SharedArrayBuffer>();
-  if (ScriptWrappable* shared_array_buffer =
-          ToScriptWrappable(v8_shared_array_buffer)) {
-    return shared_array_buffer->ToImpl<DOMSharedArrayBuffer>();
+  if (auto* shared_array_buffer = ToScriptWrappable<DOMSharedArrayBuffer>(
+          isolate, v8_shared_array_buffer)) {
+    return shared_array_buffer;
   }
 
   // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
@@ -361,13 +340,14 @@ template <typename DOMViewType, bool allow_shared>
 DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
   using Trait = ABVTrait<DOMViewType>;
 
-  if (UNLIKELY(!Trait::IsV8ViewType(value)))
+  if (!Trait::IsV8ViewType(value)) [[unlikely]] {
     return nullptr;
+  }
 
   v8::Local<typename Trait::V8ViewType> v8_view =
       value.As<typename Trait::V8ViewType>();
-  if (ScriptWrappable* blink_view = ToScriptWrappable(v8_view)) {
-    return blink_view->ToImpl<DOMViewType>();
+  if (auto* blink_view = ToScriptWrappable<DOMViewType>(isolate, v8_view)) {
+    return blink_view;
   }
 
   v8::Local<v8::Object> v8_buffer = v8_view->Buffer();
@@ -378,10 +358,11 @@ DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
     else  // must be IsSharedArrayBuffer()
       blink_buffer = ToDOMSharedArrayBuffer(isolate, v8_buffer);
   } else {
-    if (LIKELY(v8_buffer->IsArrayBuffer()))
+    if (v8_buffer->IsArrayBuffer()) [[likely]] {
       blink_buffer = ToDOMArrayBuffer(isolate, v8_buffer);
-    else  // must be IsSharedArrayBuffer()
+    } else {  // must be IsSharedArrayBuffer()
       return nullptr;
+    }
   }
 
   DOMViewType* blink_view = Trait::CreateDOMViewType(blink_buffer, v8_view);
@@ -394,40 +375,57 @@ DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
 template <bool allow_shared>
 DOMArrayBufferView* ToDOMArrayBufferView(v8::Isolate* isolate,
                                          v8::Local<v8::Value> value) {
-  if (UNLIKELY(!value->IsArrayBufferView()))
+  if (!value->IsArrayBufferView()) [[unlikely]] {
     return nullptr;
-
-  v8::Local<v8::ArrayBufferView> v8_view = value.As<v8::ArrayBufferView>();
-  if (ScriptWrappable* blink_view = ToScriptWrappable(v8_view)) {
-    return blink_view->ToImpl<DOMArrayBufferView>();
   }
 
-  if (v8_view->IsInt8Array())
-    return ToDOMViewType<DOMInt8Array, allow_shared>(isolate, value);
-  if (v8_view->IsInt16Array())
-    return ToDOMViewType<DOMInt16Array, allow_shared>(isolate, value);
-  if (v8_view->IsInt32Array())
-    return ToDOMViewType<DOMInt32Array, allow_shared>(isolate, value);
-  if (v8_view->IsUint8Array())
-    return ToDOMViewType<DOMUint8Array, allow_shared>(isolate, value);
-  if (v8_view->IsUint8ClampedArray())
-    return ToDOMViewType<DOMUint8ClampedArray, allow_shared>(isolate, value);
-  if (v8_view->IsUint16Array())
-    return ToDOMViewType<DOMUint16Array, allow_shared>(isolate, value);
-  if (v8_view->IsUint32Array())
-    return ToDOMViewType<DOMUint32Array, allow_shared>(isolate, value);
-  if (v8_view->IsBigInt64Array())
-    return ToDOMViewType<DOMBigInt64Array, allow_shared>(isolate, value);
-  if (v8_view->IsBigUint64Array())
-    return ToDOMViewType<DOMBigUint64Array, allow_shared>(isolate, value);
-  if (v8_view->IsFloat32Array())
-    return ToDOMViewType<DOMFloat32Array, allow_shared>(isolate, value);
-  if (v8_view->IsFloat64Array())
-    return ToDOMViewType<DOMFloat64Array, allow_shared>(isolate, value);
-  if (v8_view->IsDataView())
-    return ToDOMViewType<DOMDataView, allow_shared>(isolate, value);
+  v8::Local<v8::ArrayBufferView> v8_view = value.As<v8::ArrayBufferView>();
+  if (auto* blink_view =
+          ToScriptWrappable<DOMArrayBufferView>(isolate, v8_view)) {
+    return blink_view;
+  }
 
-  NOTREACHED();
+  if (v8_view->IsInt8Array()) {
+    return ToDOMViewType<DOMInt8Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsInt16Array()) {
+    return ToDOMViewType<DOMInt16Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsInt32Array()) {
+    return ToDOMViewType<DOMInt32Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsUint8Array()) {
+    return ToDOMViewType<DOMUint8Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsUint8ClampedArray()) {
+    return ToDOMViewType<DOMUint8ClampedArray, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsUint16Array()) {
+    return ToDOMViewType<DOMUint16Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsUint32Array()) {
+    return ToDOMViewType<DOMUint32Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsBigInt64Array()) {
+    return ToDOMViewType<DOMBigInt64Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsBigUint64Array()) {
+    return ToDOMViewType<DOMBigUint64Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsFloat16Array()) {
+    return ToDOMViewType<DOMFloat16Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsFloat32Array()) {
+    return ToDOMViewType<DOMFloat32Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsFloat64Array()) {
+    return ToDOMViewType<DOMFloat64Array, allow_shared>(isolate, value);
+  }
+  if (v8_view->IsDataView()) {
+    return ToDOMViewType<DOMDataView, allow_shared>(isolate, value);
+  }
+
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -443,11 +441,6 @@ DOMArrayBufferView* ToDOMViewType<DOMArrayBufferView, kMaybeShared>(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value) {
   return ToDOMArrayBufferView<kMaybeShared>(isolate, value);
-}
-
-v8::Local<v8::Value> ToFlexibleArrayBufferView(v8::Isolate* isolate,
-                                               v8::Local<v8::Value> value) {
-  return value;
 }
 
 // ScriptWrappableOrBufferSourceTypeName implementation for the recipe functions
@@ -757,20 +750,6 @@ MaybeShared<T> NativeValueTraits<MaybeShared<T>>::ArgumentValue(
 
 template <typename T>
   requires std::derived_from<T, DOMArrayBufferView>
-MaybeShared<T>
-NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  return NativeValueImpl<
-      RecipeTrait<MaybeShared<T>>, ToDOMViewType<T, kMaybeShared>,
-      Nullablity::kIsNotNullable, BufferSizeCheck::kDoNotCheck,
-      ResizableAllowance::kDisallowResizable, T>(isolate, value,
-                                                 exception_state);
-}
-
-template <typename T>
-  requires std::derived_from<T, DOMArrayBufferView>
 MaybeShared<T> NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<
     MaybeShared<T>>>::ArgumentValue(v8::Isolate* isolate,
                                     int argument_index,
@@ -858,54 +837,6 @@ NativeValueTraits<IDLNullable<IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>>>::
                                                  exception_state);
 }
 
-// [AllowShared, FlexibleArrayBufferView] ArrayBufferView
-
-template <typename T>
-  requires std::derived_from<T, FlexibleArrayBufferView>
-T NativeValueTraits<T>::ArgumentValue(v8::Isolate* isolate,
-                                      int argument_index,
-                                      v8::Local<v8::Value> value,
-                                      ExceptionState& exception_state) {
-  return ArgumentValueImpl<RecipeTrait<T>, ToFlexibleArrayBufferView,
-                           Nullablity::kIsNotNullable, BufferSizeCheck::kCheck,
-                           ResizableAllowance::kDisallowResizable,
-                           typename ABVTrait<T>::DOMViewType>(
-      isolate, argument_index, value, exception_state);
-}
-
-// [AllowShared, BufferSourceTypeNoSizeLimit, FlexibleArrayBufferView]
-// ArrayBufferView
-
-template <typename T>
-  requires std::derived_from<T, FlexibleArrayBufferView>
-T NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<T>>::ArgumentValue(
-    v8::Isolate* isolate,
-    int argument_index,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  return ArgumentValueImpl<
-      RecipeTrait<T>, ToFlexibleArrayBufferView, Nullablity::kIsNotNullable,
-      BufferSizeCheck::kDoNotCheck, ResizableAllowance::kDisallowResizable,
-      typename ABVTrait<T>::DOMViewType>(isolate, argument_index, value,
-                                         exception_state);
-}
-
-// Nullable [AllowShared, FlexibleArrayBufferView] ArrayBufferView
-
-template <typename T>
-  requires std::derived_from<T, FlexibleArrayBufferView>
-T NativeValueTraits<IDLNullable<T>>::ArgumentValue(
-    v8::Isolate* isolate,
-    int argument_index,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  return ArgumentValueImpl<RecipeTrait<T>, ToFlexibleArrayBufferView,
-                           Nullablity::kIsNullable, BufferSizeCheck::kCheck,
-                           ResizableAllowance::kDisallowResizable,
-                           typename ABVTrait<T>::DOMViewType>(
-      isolate, argument_index, value, exception_state);
-}
-
 #define INSTANTIATE_NVT(type) \
   template struct CORE_EXPORT NativeValueTraits<type>;
 // NotShared<T>
@@ -973,37 +904,6 @@ INSTANTIATE_NVT(IDLNullable<MaybeShared<DOMDataView>>)
 INSTANTIATE_NVT(
     IDLNullable<
         IDLBufferSourceTypeNoSizeLimit<MaybeShared<DOMArrayBufferView>>>)
-// FlexibleArrayBufferView
-INSTANTIATE_NVT(FlexibleArrayBufferView)
-INSTANTIATE_NVT(FlexibleInt8Array)
-INSTANTIATE_NVT(FlexibleInt16Array)
-INSTANTIATE_NVT(FlexibleInt32Array)
-INSTANTIATE_NVT(FlexibleUint8Array)
-INSTANTIATE_NVT(FlexibleUint8ClampedArray)
-INSTANTIATE_NVT(FlexibleUint16Array)
-INSTANTIATE_NVT(FlexibleUint32Array)
-INSTANTIATE_NVT(FlexibleBigInt64Array)
-INSTANTIATE_NVT(FlexibleBigUint64Array)
-INSTANTIATE_NVT(FlexibleFloat32Array)
-INSTANTIATE_NVT(FlexibleFloat64Array)
-// IDLBufferSourceTypeNoSizeLimit<FlexibleArrayBufferView>
-INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<FlexibleArrayBufferView>)
-INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<FlexibleInt32Array>)
-INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<FlexibleUint32Array>)
-INSTANTIATE_NVT(IDLBufferSourceTypeNoSizeLimit<FlexibleFloat32Array>)
-// IDLNullable<FlexibleArrayBufferView>
-INSTANTIATE_NVT(IDLNullable<FlexibleArrayBufferView>)
-INSTANTIATE_NVT(IDLNullable<FlexibleInt8Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleInt16Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleInt32Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleUint8Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleUint8ClampedArray>)
-INSTANTIATE_NVT(IDLNullable<FlexibleUint16Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleUint32Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleBigInt64Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleBigUint64Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleFloat32Array>)
-INSTANTIATE_NVT(IDLNullable<FlexibleFloat64Array>)
 #undef INSTANTIATE_NVT
 
 }  // namespace blink

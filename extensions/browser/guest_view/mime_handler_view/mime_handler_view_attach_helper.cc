@@ -25,9 +25,19 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "components/grit/components_resources.h"
+#include "components/pdf/common/constants.h"
+#include "pdf/pdf_features.h"
+#include "ui/base/resource/resource_bundle.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -40,7 +50,7 @@ namespace extensions {
 
 namespace {
 
-// TODO(crbug.com/659750): Make this a proper resource.
+// TODO(crbug.com/40490789): Make this a proper resource.
 constexpr char kFullPageMimeHandlerViewHTML[] =
     "<!doctype html><html><body style='height: 100%%; width: 100%%; overflow: "
     "hidden; margin:0px; background-color: rgb(%d, %d, %d);'><embed "
@@ -80,8 +90,9 @@ MimeHandlerViewAttachHelper* MimeHandlerViewAttachHelper::Get(
   auto& map = *GetProcessIdToHelperMap();
   if (!base::Contains(map, render_process_id)) {
     auto* process_host = content::RenderProcessHost::FromID(render_process_id);
-    if (!process_host)
+    if (!process_host) {
       return nullptr;
+    }
     map[render_process_id] = base::WrapUnique<MimeHandlerViewAttachHelper>(
         new MimeHandlerViewAttachHelper(process_host));
   }
@@ -94,6 +105,21 @@ std::string MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
     const std::string& mime_type,
     const std::string& internal_id) {
   auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
+#if BUILDFLAG(ENABLE_PDF)
+  if (chrome_pdf::features::IsOopifPdfEnabled() &&
+      mime_type == pdf::kPDFMimeType) {
+    std::string pdf_embedder_html =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_PDF_EMBEDDER_HTML);
+    return base::ReplaceStringPlaceholders(
+        pdf_embedder_html,
+        {base::NumberToString(SkColorGetR(color)),
+         base::NumberToString(SkColorGetG(color)),
+         base::NumberToString(SkColorGetB(color)), internal_id, mime_type,
+         internal_id},
+        /*offsets=*/nullptr);
+  }
+#endif
   return base::StringPrintf(kFullPageMimeHandlerViewHTML, SkColorGetR(color),
                             SkColorGetG(color), SkColorGetB(color),
                             internal_id.c_str(), mime_type.c_str(),
@@ -102,7 +128,7 @@ std::string MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
 
 // static
 std::string MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
-    int32_t navigating_frame_tree_node_id,
+    content::FrameTreeNodeId navigating_frame_tree_node_id,
     const GURL& resource_url,
     const std::string& mime_type,
     const std::string& stream_id,
@@ -119,8 +145,9 @@ std::string MimeHandlerViewAttachHelper::OverrideBodyForInterceptedResponse(
 
 void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(
     content::RenderProcessHost* render_process_host) {
-  if (render_process_host != render_process_host_)
+  if (render_process_host != render_process_host_) {
     return;
+  }
   render_process_host->RemoveObserver(this);
   GetProcessIdToHelperMap()->erase(render_process_host_->GetID());
 }
@@ -140,7 +167,7 @@ void MimeHandlerViewAttachHelper::AttachToOuterWebContents(
 
 // static
 void MimeHandlerViewAttachHelper::CreateFullPageMimeHandlerView(
-    int32_t frame_tree_node_id,
+    content::FrameTreeNodeId frame_tree_node_id,
     const GURL& resource_url,
     const std::string& stream_id,
     const std::string& token) {
@@ -172,8 +199,9 @@ void MimeHandlerViewAttachHelper::ResumeAttachOrDestroy(
 
   DCHECK(!plugin_render_frame_host ||
          (plugin_render_frame_host->GetProcess() == render_process_host_));
-  if (!guest_view)
+  if (!guest_view) {
     return;
+  }
   if (!plugin_render_frame_host) {
     auto* embedder_frame = guest_view->GetEmbedderFrame();
     if (embedder_frame && embedder_frame->IsRenderFrameLive()) {

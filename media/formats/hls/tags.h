@@ -37,7 +37,7 @@ struct MEDIA_EXPORT XDefineTag {
 
   // Constructs an XDefineTag representing a variable definition.
   static XDefineTag CreateDefinition(types::VariableName name,
-                                     base::StringPiece value);
+                                     std::string_view value);
 
   // Constructs an XDefineTag representing an imported variable definition.
   static XDefineTag CreateImport(types::VariableName name);
@@ -47,7 +47,7 @@ struct MEDIA_EXPORT XDefineTag {
 
   // The value of the variable. If this is `nullopt`, then the value
   // is being IMPORT-ed and must be defined in the parent playlist.
-  std::optional<base::StringPiece> value;
+  std::optional<std::string_view> value;
 };
 
 // Represents the contents of the #EXT-X-INDEPENDENT-SEGMENTS tag
@@ -224,7 +224,7 @@ struct MEDIA_EXPORT XByteRangeTag {
   static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
   static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
 
-  types::ByteRangeExpression range;
+  types::parsing::ByteRangeExpression range;
 };
 
 // Represents the contents of the #EXT-X-DISCONTINUITY tag
@@ -275,7 +275,7 @@ struct MEDIA_EXPORT XMapTag {
 
   // This specifies a byte range into the resource containing the media
   // initialization section.
-  std::optional<types::ByteRangeExpression> byte_range;
+  std::optional<types::parsing::ByteRangeExpression> byte_range;
 };
 
 // Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
@@ -306,7 +306,7 @@ struct MEDIA_EXPORT XPartTag {
 
   // If this partial segment is a subrange of its resource, this defines the
   // subrange.
-  std::optional<types::ByteRangeExpression> byte_range;
+  std::optional<types::parsing::ByteRangeExpression> byte_range;
 
   // Whether the partial segment contains an independent frame.
   bool independent = false;
@@ -406,6 +406,144 @@ struct MEDIA_EXPORT XSkipTag {
   // EXT-X-DATERANGE tags. The quoted string MAY be empty.
   std::optional<std::vector<std::string>> recently_removed_dateranges =
       std::nullopt;
+};
+
+// A server MAY omit adding an attribute to an EXT-X-RENDITION-REPORT tag - even
+// a mandatory attribute - if its value is the same as that of the Rendition
+// Report of the Media Playlist to which the EXT-X-RENDITION-REPORT tag is being
+// added. Doing so reduces the size of the Rendition Report.
+struct MEDIA_EXPORT XRenditionReportTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXRenditionReport;
+  static ParseStatus::Or<XRenditionReportTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+
+  // Url for the media playlist of the specified rendition. It MUST be relative
+  // to the URI of the media playlist containing the EXT-X-RENDITION-REPORT tag.
+  std::optional<ResolvedSourceString> uri;
+
+  // The valid specifying the last media segment's sequence number in the
+  // rendition. if the rendition contains partial segments, then this value is
+  // the last partial segments media sequence number.
+  std::optional<types::DecimalInteger> last_msn;
+
+  // The value is a decimal-integer that indicates the Part Index of the last
+  // Partial Segment currently in the specified Rendition whose Media Sequence
+  // Number is equal to the LAST-MSN attribute value. This attribute is REQUIRED
+  // if the Rendition contains a Partial Segment.
+  std::optional<types::DecimalInteger> last_part;
+};
+
+// The EXT-X-PROGRAM-DATE-TIME tag associates the first sample of a Media
+// Segment with an absolute date and/or time. It applies only to the next
+// Media Segment.
+struct MEDIA_EXPORT XProgramDateTimeTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXProgramDateTime;
+  static ParseStatus::Or<XProgramDateTimeTag> Parse(TagItem);
+
+  base::Time time;
+};
+
+enum class XKeyTagMethod {
+  kNone,
+
+  // An encryption method of AES-128 signals that Media Segments are
+  // completely encrypted using the Advanced Encryption Standard (AES)
+  // [AES_128] with a 128-bit key, Cipher Block Chaining (CBC), and
+  // Public-Key Cryptography Standards #7 (PKCS7) padding [RFC5652].
+  // CBC is restarted on each segment boundary, using either the
+  // Initialization Vector (IV) attribute value or the Media Sequence
+  // Number as the IV. Sometimes AES-256 is used as well.
+  kAES128,
+  kAES256,
+
+  // With Sample Encryption, only media sample data - such as audio
+  // packets or video frames - is encrypted. The rest of the Media
+  // Segment is unencrypted. Sample Encryption allows parts of the
+  // Segment to be processed without (or before) decrypting the media
+  // itself.
+  kSampleAES,
+
+  // An encryption method of SAMPLE-AES-CTR is similar to SAMPLE-AES.
+  // However, fMP4 Media Segments are encrypted using the 'cenc' scheme
+  // of Common Encryption [COMMON_ENC]. Encryption of other Media
+  // Segment formats is not defined for SAMPLE-AES-CTR.  The IV
+  // attribute MUST NOT be present
+  kSampleAESCTR,
+  kSampleAESCENC,
+
+  // TODO: document why and when this is used. This shows up in some sample
+  // manifests I've seen.
+  kISO230017,
+};
+
+enum class XKeyTagKeyFormat {
+  kIdentity,
+  kClearKey,
+  kWidevine,
+  kUnsupported,
+};
+
+struct MEDIA_EXPORT XKeyTag {
+  using IVHex = types::parsing::HexRepr<128>;
+
+  static constexpr auto kName = MediaPlaylistTagName::kXKey;
+  static constexpr bool kAllowEmptyMethod = true;
+  static ParseStatus::Or<XKeyTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+
+  // If the encryption method is NONE, other attributes MUST NOT be
+  // present.
+  XKeyTagMethod method;
+
+  // The value is a quoted-string containing a URI that specifies how
+  // to obtain the key. This attribute is REQUIRED unless the METHOD
+  // is NONE.
+  std::optional<ResolvedSourceString> uri;
+
+  // The value is a hexadecimal-sequence that specifies a 128-bit
+  // unsigned integer Initialization Vector to be used with the key.
+  std::optional<IVHex::Container> iv;
+
+  // The value is a quoted-string that specifies how the key is
+  // represented in the resource identified by the URI; see Section 5
+  // for more detail. This attribute is OPTIONAL; its absence
+  // indicates an implicit value of "identity". Use of the KEYFORMAT
+  // attribute REQUIRES a compatibility version number of 5 or greater.
+  XKeyTagKeyFormat keyformat;
+
+  // The value is a quoted-string containing one or more positive
+  // integers separated by the "/" character (for example, "1", "1/2",
+  // or "1/2/5"). If more than one version of a particular KEYFORMAT
+  // is defined, this attribute can be used to indicate which
+  // version(s) this instance complies with. This attribute is
+  // OPTIONAL; if it is not present, its value is considered to be "1".
+  // Use of the KEYFORMATVERSIONS attribute REQUIRES a compatibility
+  // version number of 5 or greater.
+  std::optional<ResolvedSourceString> keyformat_versions;
+};
+
+struct MEDIA_EXPORT XSessionKeyTag {
+  static constexpr auto kName = MultivariantPlaylistTagName::kXSessionKey;
+  static constexpr bool kAllowEmptyMethod = false;
+  static ParseStatus::Or<XSessionKeyTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+
+  // the METHOD attribute MUST NOT be NONE.
+  XKeyTagMethod method;
+
+  // If an EXT-X-SESSION-KEY is used, the values of the METHOD, KEYFORMAT, and
+  // KEYFORMATVERSIONS attributes MUST match any EXT-X-KEY with the same URI
+  // value. These fields match the corresponding ones in XKeyTag.
+  ResolvedSourceString uri;
+  std::optional<XKeyTag::IVHex::Container> iv;
+  XKeyTagKeyFormat keyformat;
+  std::optional<ResolvedSourceString> keyformat_versions;
 };
 
 }  // namespace media::hls

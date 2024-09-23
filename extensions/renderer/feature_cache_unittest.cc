@@ -29,7 +29,7 @@ namespace {
 
 struct FakeContext {
   mojom::ContextType context_type;
-  raw_ptr<const Extension, ExperimentalRenderer> extension;
+  raw_ptr<const Extension> extension;
   const GURL url;
 };
 
@@ -50,7 +50,7 @@ TEST_F(FeatureCacheTest, Basic) {
   FeatureCache cache;
   scoped_refptr<const Extension> extension_a = ExtensionBuilder("a").Build();
   scoped_refptr<const Extension> extension_b =
-      ExtensionBuilder("b").AddPermission("storage").Build();
+      ExtensionBuilder("b").AddAPIPermission("storage").Build();
 
   FakeContext context_a = {mojom::ContextType::kPrivilegedExtension,
                            extension_a.get(), extension_a->url()};

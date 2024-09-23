@@ -76,9 +76,7 @@ bool TtsPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
                                    sandbox::syscall_broker::COMMAND_RENAME,
                                    sandbox::syscall_broker::COMMAND_UNLINK,
                                }),
-                               GetTtsFilePermissions(),
-                               sandbox::policy::SandboxLinux::PreSandboxHook(),
-                               options);
+                               GetTtsFilePermissions(), options);
 
   instance->EngageNamespaceSandboxIfPossible();
   return true;

@@ -14,7 +14,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 
 namespace {
 
@@ -65,9 +64,11 @@ void ScopedFDCloseTraits::Release(const ScopedFD& owner, int fd) {
 
 namespace subtle {
 
+#if !defined(COMPONENT_BUILD)
 void EnableFDOwnershipEnforcement(bool enabled) {
   g_is_ownership_enforced = enabled;
 }
+#endif  // !defined(COMPONENT_BUILD)
 
 void ResetFDOwnership() {
   std::fill(g_is_fd_owned.begin(), g_is_fd_owned.end(), false);
@@ -81,6 +82,7 @@ bool IsFDOwned(int fd) {
 
 }  // namespace base
 
+#if !defined(COMPONENT_BUILD)
 using LibcCloseFuncPtr = int (*)(int);
 
 // Load the libc close symbol to forward to from the close wrapper.
@@ -110,3 +112,4 @@ __attribute__((visibility("default"), noinline)) int close(int fd) {
 }
 
 }  // extern "C"
+#endif  // !defined(COMPONENT_BUILD)

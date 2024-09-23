@@ -13,7 +13,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -41,9 +41,15 @@ std::unique_ptr<KeyedService> BuildLargeIconService(
 
 // static
 favicon::LargeIconService* IOSChromeLargeIconServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+favicon::LargeIconService* IOSChromeLargeIconServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<favicon::LargeIconService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

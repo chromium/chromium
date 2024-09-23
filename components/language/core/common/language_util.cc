@@ -5,10 +5,11 @@
 #include "components/language/core/common/language_util.h"
 
 #include <stddef.h>
+
 #include <algorithm>
+#include <string_view>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "components/country_codes/country_codes.h"
 #include "components/language/core/common/locale_util.h"
 
@@ -80,7 +81,7 @@ OverrideLanguageModel GetOverrideLanguageModel() {
 
 void ToTranslateLanguageSynonym(std::string* language) {
   // Get the base language (e.g. "es" for "es-MX")
-  base::StringPiece main_part = language::SplitIntoMainAndTail(*language).first;
+  std::string_view main_part = language::SplitIntoMainAndTail(*language).first;
   if (main_part.empty()) {
     return;
   }

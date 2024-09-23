@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <map>
@@ -27,9 +32,7 @@ namespace {
 bool VerifyWords(const convert_dict::DicReader::WordList& org_words,
                  const std::string& serialized) {
   hunspell::BDictReader reader;
-  EXPECT_TRUE(
-      reader.Init(reinterpret_cast<const unsigned char*>(serialized.data()),
-      serialized.size()));
+  EXPECT_TRUE(reader.Init(base::as_byte_span(serialized)));
 
   hunspell::WordIterator iter = reader.GetAllWordIterator();
 

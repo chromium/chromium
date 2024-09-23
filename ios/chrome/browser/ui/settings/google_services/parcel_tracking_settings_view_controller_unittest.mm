@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/parcel_tracking_settings_view_controller.h"
 
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "testing/platform_test.h"

@@ -5,6 +5,7 @@
 #include "components/metrics/machine_id_provider.h"
 
 #include <windows.h>
+
 #include <stdint.h>
 #include <winioctl.h>
 
@@ -35,14 +36,14 @@ std::string MachineIdProvider::GetMachineId() {
   base::FilePath executable_path;
 
   if (!base::PathService::Get(base::FILE_EXE, &executable_path)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
 
   std::vector<base::FilePath::StringType> path_components =
       executable_path.GetComponents();
   if (path_components.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::string();
   }
   base::FilePath::StringType drive_name = L"\\\\.\\" + path_components[0];

@@ -21,7 +21,7 @@ namespace apps {
 // BrowserAppLauncher receives app launch requests and forwards them to
 // extensions or LaunchWebAppCommand, based on the app type.
 //
-// TODO(crbug.com/1061843): Remove BrowserAppLauncher and merge the interfaces
+// TODO(crbug.com/40122594): Remove BrowserAppLauncher and merge the interfaces
 // to AppServiceProxy when publishers(ExtensionApps and WebApps) can run on
 // Chrome.
 class BrowserAppLauncher {
@@ -37,7 +37,7 @@ class BrowserAppLauncher {
   //
   // This interface is deprecated, please use
   // AppServiceProxy::LaunchAppWithParams() in the future.
-  // TODO(crbug.com/1244506): Remove this interface in non-chrome OS platform.
+  // TODO(crbug.com/40787924): Remove this interface in non-chrome OS platform.
   void LaunchAppWithParams(
       AppLaunchParams params,
       base::OnceCallback<void(content::WebContents*)> callback);
@@ -52,7 +52,7 @@ class BrowserAppLauncher {
   // Deprecated. Prefer `LaunchAppWithParams()` or `LaunchAppWithIntent`.
   // This interface is deprecated in production code, as using it might cause
   // behaviour difference between the production code and test code.
-  // TODO(crbug.com/1289100): Remove this interface if all usages are removed.
+  // TODO(crbug.com/40211799): Remove this interface if all usages are removed.
   content::WebContents* LaunchAppWithParamsForTesting(AppLaunchParams params);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

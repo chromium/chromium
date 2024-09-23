@@ -15,6 +15,7 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/gpu.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
 
 // The XRSessionController lives in the xr runtime service, and corresponds to
 // a set of the XRSession bindings.  The client is the browser process, which
@@ -50,8 +51,9 @@ struct XRRuntimeSessionOptions {
 
   // The following options are used for permission requests and showing module
   // install UI.
-  // TODO(crbug.com/854655): Remove these fields, and do permission checks, show
-  // module install UI in the browser process before calling out to devices.
+  // TODO(crbug.com/41395699): Remove these fields, and do permission checks,
+  // show module install UI in the browser process before calling out to
+  // devices.
   int32 render_process_id;
   int32 render_frame_id;
 
@@ -80,6 +82,12 @@ struct XRRuntimeSessionResult {
   // to capture this FrameSinkId, and thus the XrSession, rather than only the
   // FrameSinkId of the main contents of the WebContents.
   viz.mojom.FrameSinkId? frame_sink_id;
+
+  // Provides a connection to the ImmersiveOverlay compositor. This is intended
+  // to be used by the browser process to drive a privileged rendering path to
+  // the device to show code that can be rendered on top of the page's content.
+  // In some cases, this may totally obscure the page content.
+  pending_remote<ImmersiveOverlay>? overlay;
 };
 
 // An XRRuntime may live in the browser process or a utility process.  The
@@ -103,7 +111,7 @@ interface XRRuntime {
 };
 
 // Information required for rendering, used by ImmersiveOverlay.
-// TODO(https://crbug.com/1126608): This struct currently contains subset of
+// TODO(crbug.com/40718594): This struct currently contains subset of
 // data contained by XRFrameData, move it to vr_service.mojom and refactor
 // XRFrameData so that it embeds this struct.
 struct XRRenderInfo
@@ -136,7 +144,7 @@ interface ImmersiveOverlay {
   // Submit a frame to show in the headset.  Only can be called when an overlay
   // is visible.  The frame will be composited on top of WebXR content.
   // |texture| should only be used after |sync_token| has passed.
-  SubmitOverlayTexture(int16 frame_id, handle<platform> texture,
+  SubmitOverlayTexture(int16 frame_id, gfx.mojom.GpuMemoryBufferHandle texture,
       gpu.mojom.SyncToken sync_token, gfx.mojom.RectF left_bounds,
       gfx.mojom.RectF right_bounds) => (bool success);
 
@@ -151,13 +159,6 @@ interface ImmersiveOverlay {
   // data to unblock rendering.  This allows frame-timeout UI to show while
   // still allowing a timed-out page to recover and start submitting frames.
   RequestNotificationOnWebXrSubmitted() => ();
-};
-
-// XRCompositorHost lives in the XRRuntime process, and allows the browser to
-// obtain an ImmersiveOverlay to show overlay UI.  The obtained overlay will
-// disconnect when presentation ends.
-interface XRCompositorHost {
-  CreateImmersiveOverlay(pending_receiver<ImmersiveOverlay> overlay);
 };
 
 // Information about a particular XR device that is available. All information
@@ -179,7 +180,6 @@ interface IsolatedXRRuntimeProviderClient {
   // Called when runtimes are initially enumerated, or when devices are later
   // attached and become available.
   OnDeviceAdded(pending_remote<XRRuntime> runtime,
-      pending_remote<XRCompositorHost> compositor_host,
       XRDeviceData device_data,
       device.mojom.XRDeviceId device_id);
 

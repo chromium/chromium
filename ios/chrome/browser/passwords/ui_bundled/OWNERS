@@ -1,0 +1,6 @@
+vsemeniuk@google.com
+tmartino@chromium.org
+
+# For anything related to password generation
+per-file BUILD.gn=vincb@google.com
+per-file password_suggestion_*=vincb@google.com

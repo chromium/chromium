@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
@@ -92,20 +93,13 @@ ViewTestBase::ViewTestBase()
 
 ViewTestBase::~ViewTestBase() = default;
 
-void ViewTestBase::InitWithFeature(
-    std::optional<base::test::FeatureRef> feature) {
-  if (feature) {
-    scoped_feature_list_.InitWithFeatures({*feature}, {});
-  }
-  Init();
-}
-
 void ViewTestBase::SetDisplayMode(DisplayMode display_mode) {
   input_mapping_view_->SetDisplayMode(display_mode);
 }
 
 void ViewTestBase::SetUp() {
   views::ViewsTestBase::SetUp();
+  Init();
 }
 
 void ViewTestBase::TearDown() {
@@ -117,6 +111,7 @@ void ViewTestBase::TearDown() {
 }
 
 void ViewTestBase::Init() {
+  scoped_feature_list_.InitAndDisableFeature(ash::features::kGameDashboard);
   root_window()->SetBounds(gfx::Rect(1000, 800));
   widget_ = CreateArcWindow(root_window(), gfx::Rect(200, 100, 600, 400));
   touch_injector_ = std::make_unique<TouchInjector>(

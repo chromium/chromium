@@ -131,7 +131,7 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
 
   switch (routine_enum_) {
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUnknown: {
-      NOTREACHED() << "This default value should not be used.";
+      NOTREACHED_IN_MIGRATION() << "This default value should not be used.";
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryCapacity: {
@@ -314,30 +314,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
               weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
-    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeWearLevel: {
-      constexpr char kWearLevelThresholdFieldName[] = "wearLevelThreshold";
-      std::optional<int> wear_level_threshold =
-          params_dict_.FindInt(kWearLevelThresholdFieldName);
-      ash::cros_healthd::mojom::NullableUint32Ptr routine_duration;
-      // The NVMe wear level routine expects one optional integer >= 0.
-      if (wear_level_threshold.has_value()) {
-        // If the optional integer parameter is specified, it must be >= 0.
-        int value = wear_level_threshold.value();
-        if (value < 0) {
-          SYSLOG(ERROR) << "Invalid parameters for NVMe wear level routine.";
-          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(std::move(result_callback), ResultType::kFailure,
-                             CreatePayload(MakeInvalidParametersResponse())));
-          break;
-        }
-        routine_duration = ash::cros_healthd::mojom::NullableUint32::New(value);
-      }
-      diagnostics_service->RunNvmeWearLevelRoutine(
-          std::move(routine_duration),
-          base::BindOnce(
-              &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
-              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+        DEPRECATED_kNvmeWearLevel: {
+      NOTIMPLEMENTED();
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest: {
@@ -604,7 +583,8 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
               weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
-    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kLedLitUp: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+        DEPRECATED_kLedLitUp: {
       NOTIMPLEMENTED();
       break;
     }

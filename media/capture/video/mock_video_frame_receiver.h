@@ -16,13 +16,7 @@ class MockVideoFrameReceiver : public VideoFrameReceiver {
   ~MockVideoFrameReceiver() override;
 
   MOCK_METHOD1(MockOnNewBufferHandle, void(int buffer_id));
-  MOCK_METHOD3(
-      MockOnFrameReadyInBuffer,
-      void(int buffer_id,
-           std::unique_ptr<
-               VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>*
-               buffer_read_permission,
-           const gfx::Size&));
+  MOCK_METHOD1(MockOnFrameReadyInBuffer, void(ReadyFrameInBuffer frame));
   MOCK_METHOD0(OnCaptureConfigurationChanged, void());
   MOCK_METHOD1(OnError, void(media::VideoCaptureError error));
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason reason));
@@ -40,8 +34,7 @@ class MockVideoFrameReceiver : public VideoFrameReceiver {
   }
 
   void OnFrameReadyInBuffer(ReadyFrameInBuffer frame) override {
-    MockOnFrameReadyInBuffer(frame.buffer_id, &frame.buffer_read_permission,
-                             frame.frame_info->coded_size);
+    MockOnFrameReadyInBuffer(std::move(frame));
   }
 };
 

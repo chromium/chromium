@@ -12,10 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 
@@ -55,7 +55,7 @@ class ExtensionInfoGenerator {
   // Creates and asynchronously returns an ExtensionInfo for the given
   // |extension_id|, if the extension can be found.
   // If the extension cannot be found, an empty vector is passed to |callback|.
-  void CreateExtensionInfo(const std::string& id,
+  void CreateExtensionInfo(const ExtensionId& id,
                            ExtensionInfosCallback callback);
 
   // Creates and asynchronously returns a collection of ExtensionInfos,
@@ -68,13 +68,6 @@ class ExtensionInfoGenerator {
   // another pattern in the list.
   static std::vector<URLPattern> GetDistinctHosts(
       const URLPatternSet& patterns);
-
-  // Construct the needed strings for the safety check on the
-  // extensions page.
-  static api::developer_private::SafetyCheckStrings
-  CreateSafetyCheckDisplayString(const CWSInfoService::CWSInfo& cws_info,
-                                 api::developer_private::ExtensionState state,
-                                 BitMapBlocklistState blocklist_state);
 
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
@@ -93,10 +86,18 @@ class ExtensionInfoGenerator {
   // Returns an icon url from the given image.
   std::string GetIconUrlFromImage(const gfx::Image& image);
 
+  // Construct the needed information for the Extension Safety Check and
+  // populate the relevant `extension_info` fields.
+  void PopulateSafetyCheckInfo(
+      const Extension& extension,
+      bool updates_from_webstore,
+      api::developer_private::ExtensionState state,
+      BitMapBlocklistState blocklist_state,
+      api::developer_private::ExtensionInfo& extension_info);
+
   // Various systems, cached for convenience.
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<CommandService> command_service_;
-  raw_ptr<CWSInfoService> cws_info_service_;
   raw_ptr<ExtensionSystem> extension_system_;
   raw_ptr<ExtensionPrefs> extension_prefs_;
   raw_ptr<ExtensionActionAPI> extension_action_api_;

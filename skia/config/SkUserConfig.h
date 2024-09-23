@@ -223,25 +223,23 @@ SK_API void SkDebugf_FileLine(const char* file,
 // Max. verb count for paths rendered by the edge-AA tessellating path renderer.
 #define GR_AA_TESSELLATOR_MAX_VERB_COUNT 100
 
-#define SK_FORCE_AAA
-
-#define SK_SUPPORT_LEGACY_DRAWLOOPER
-
 #define SK_USE_LEGACY_MIPMAP_BUILDER
 
 #define SK_SUPPORT_LEGACY_CONIC_CHOP
-
-#define SK_ENABLE_SKSL_IN_RASTER_PIPELINE
 
 #define SK_USE_PADDED_BLUR_UPSCALE
 
 #define SK_LEGACY_INITWITHPREV_LAYER_SIZING
 
-/* When --disable-skia-runtime-opts is set in Chrome (or when SkGraphics::Init
-   is not called), Skia will prefer precision over performance when computing
-   reciprocals and inverse-square roots.
-*/
-#define SK_IMPROVE_RASTER_PIPELINE_PRECISION
+#define SK_USE_LEGACY_BLUR_RASTER
+
+#define SK_USE_LEGACY_BLUR_GANESH
+
+#define SK_USE_LEGACY_BLUR_GRAPHITE
+
+#define SK_USE_LEGACY_CLIP_GRAPHITE
+
+#define SK_USE_SRCOVER_FOR_FILTERS
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
@@ -260,6 +258,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_USE_DISCARDABLE_SCALEDIMAGECACHE
 
 #define SK_ATTR_DEPRECATED          SK_NOTHING_ARG1
-#define GR_GL_CUSTOM_SETUP_HEADER   "GrGLConfig_chrome.h"
+
+// glGetError() forces a sync with gpu process on chrome
+#define GR_GL_CHECK_ERROR_START 0
 
 #endif  // SKIA_CONFIG_SKUSERCONFIG_H_

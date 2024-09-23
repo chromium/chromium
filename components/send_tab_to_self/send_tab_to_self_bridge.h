@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -17,13 +18,13 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 namespace base {
@@ -36,7 +37,7 @@ struct TargetDeviceInfo;
 
 // Interface for a persistence layer for send tab to self.
 // All interface methods have to be called on main thread.
-class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
+class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
                             public SendTabToSelfModel,
                             public syncer::DeviceInfoTracker::Observer,
                             public history::HistoryServiceObserver {
@@ -44,9 +45,9 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   // The caller should ensure that all raw pointers are not null and will
   // outlive this object. This is not guaranteed by this class.
   SendTabToSelfBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       base::Clock* clock,
-      syncer::OnceModelTypeStoreFactory create_store_callback,
+      syncer::OnceDataTypeStoreFactory create_store_callback,
       history::HistoryService* history_service,
       syncer::DeviceInfoTracker* device_info_tracker);
 
@@ -55,7 +56,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
 
   ~SendTabToSelfBridge() override;
 
-  // syncer::ModelTypeSyncBridge overrides.
+  // syncer::DataTypeSyncBridge overrides.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -64,8 +65,9 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
@@ -87,14 +89,14 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   std::vector<TargetDeviceInfo> GetTargetDeviceInfoSortedList() override;
 
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   // syncer::DeviceInfoTracker::Observer overrides.
   void OnDeviceInfoChange() override;
 
   // For testing only.
-  static std::unique_ptr<syncer::ModelTypeStore> DestroyAndStealStoreForTest(
+  static std::unique_ptr<syncer::DataTypeStore> DestroyAndStealStoreForTest(
       std::unique_ptr<SendTabToSelfBridge> bridge);
   void SetLocalDeviceNameForTest(const std::string& local_device_name);
 
@@ -122,7 +124,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
+                      std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllData(std::unique_ptr<SendTabToSelfEntries> initial_entries,
                      std::unique_ptr<std::string> local_device_name,
                      const std::optional<syncer::ModelError>& error);
@@ -131,7 +133,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   void OnCommit(const std::optional<syncer::ModelError>& error);
 
   // Persists the changes in the given aggregators
-  void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
+  void Commit(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch);
 
   // Returns a specific entry for editing. Returns null if the entry does not
   // exist.
@@ -145,15 +147,24 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   // Remove entry with |guid| from entries, but doesn't call Commit on provided
   // |batch|. This allows multiple for deletions without duplicate batch calls.
   void DeleteEntryWithBatch(const std::string& guid,
-                            syncer::ModelTypeStore::WriteBatch* batch);
+                            syncer::DataTypeStore::WriteBatch* batch);
 
   // Delete all of the entries that match the URLs provided.
   void DeleteEntries(const std::vector<GURL>& urls);
 
   void DeleteAllEntries();
 
+  void EraseEntryInBatch(const std::string& guid,
+                         syncer::DataTypeStore::WriteBatch* batch);
+
   // |entries_| is keyed by GUIDs.
   SendTabToSelfEntries entries_;
+
+  // Stores guids of entries that have been opened from a layer other than
+  // SendTabToSelfModel. Once the bridge receives the respective entries, they
+  // will be marked opened. Entries are in-memory only and will be lost on
+  // browser restart.
+  base::flat_set<std::string> unknown_opened_entries_;
 
   // |clock_| isn't owned.
   const raw_ptr<const base::Clock> clock_;
@@ -168,7 +179,7 @@ class SendTabToSelfBridge : public syncer::ModelTypeSyncBridge,
   std::string local_device_name_;
 
   // In charge of actually persisting changes to disk, or loading previous data.
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   // A pointer to the most recently used entry used for deduplication.
   raw_ptr<const SendTabToSelfEntry, DanglingUntriaged> mru_entry_;

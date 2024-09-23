@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -69,8 +70,10 @@ IsolatedWebAppInstallerCoordinator::IsolatedWebAppInstallerCoordinator(
     const base::FilePath& bundle_path,
     base::OnceClosure on_closed_callback,
     std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer)
-    : on_closed_callback_(std::move(on_closed_callback)),
-      model_(std::make_unique<IsolatedWebAppInstallerModel>(bundle_path)),
+    : profile_(profile),
+      on_closed_callback_(std::move(on_closed_callback)),
+      model_(std::make_unique<IsolatedWebAppInstallerModel>(
+          IwaSourceBundleDevMode(bundle_path))),
       controller_(std::make_unique<IsolatedWebAppInstallerViewController>(
           profile,
           WebAppProvider::GetForWebApps(profile),
@@ -82,11 +85,19 @@ IsolatedWebAppInstallerCoordinator::~IsolatedWebAppInstallerCoordinator() =
 
 void IsolatedWebAppInstallerCoordinator::Start(
     base::OnceCallback<void(std::optional<webapps::AppId>)> callback) {
+  // base::Unretained is safe here because `callback` owns `this`.
+  base::OnceClosure on_complete_callback =
+      base::BindOnce(&IsolatedWebAppInstallerCoordinator::OnDialogClosed,
+                     base::Unretained(this), std::move(callback));
+  if (!IsIwaUnmanagedInstallEnabled(profile_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete_callback));
+    return;
+  }
   controller_->Start(
       base::BindOnce(&IsolatedWebAppInstallerViewController::Show,
                      base::Unretained(controller_.get())),
-      base::BindOnce(&IsolatedWebAppInstallerCoordinator::OnDialogClosed,
-                     base::Unretained(this), std::move(callback)));
+      std::move(on_complete_callback));
 }
 
 void IsolatedWebAppInstallerCoordinator::FocusWindow() {

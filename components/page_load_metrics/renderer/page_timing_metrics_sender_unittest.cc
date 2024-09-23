@@ -43,13 +43,13 @@ class PageTimingMetricsSenderTest : public testing::Test {
   PageTimingMetricsSenderTest()
       : metrics_sender_(new TestPageTimingMetricsSender(
             std::make_unique<FakePageTimingSender>(&validator_),
-            mojom::PageLoadTiming::New(),
+            CreatePageLoadTiming(),
             PageTimingMetadataRecorder::MonotonicTiming())) {}
 
   mojom::SoftNavigationMetrics CreateEmptySoftNavigationMetrics() {
-    return mojom::SoftNavigationMetrics(
-        blink::kSoftNavigationCountDefaultValue, base::Milliseconds(0),
-        std::string(), mojom::LargestContentfulPaintTiming::New());
+    return mojom::SoftNavigationMetrics(blink::kSoftNavigationCountDefaultValue,
+                                        base::Milliseconds(0), std::string(),
+                                        CreateLargestContentfulPaintTiming());
   }
 
  protected:
@@ -207,6 +207,8 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeatures) {
       blink::mojom::UseCounterFeatureType::kCssProperty, 1};
   blink::UseCounterFeature feature_2 = {
       blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2};
+  blink::UseCounterFeature feature_3 = {
+      blink::mojom::UseCounterFeatureType::kWebDXFeature, 3};
 
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
@@ -222,6 +224,9 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeatures) {
   // Observe the third feature, update expected features sent across IPC.
   metrics_sender_->DidObserveNewFeatureUsage(feature_2);
   validator_.UpdateExpectPageLoadFeatures(feature_2);
+  // Observe the fourth feature, update expected features sent across IPC.
+  metrics_sender_->DidObserveNewFeatureUsage(feature_3);
+  validator_.UpdateExpectPageLoadFeatures(feature_3);
   // Fire the timer to trigger sending of features via an SendTiming call.
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedFeatures();
@@ -257,6 +262,8 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeaturesTwice) {
       blink::mojom::UseCounterFeatureType::kCssProperty, 1};
   blink::UseCounterFeature feature_2 = {
       blink::mojom::UseCounterFeatureType::kAnimatedCssProperty, 2};
+  blink::UseCounterFeature feature_3 = {
+      blink::mojom::UseCounterFeatureType::kWebDXFeature, 3};
 
   metrics_sender_->Update(timing.Clone(),
                           PageTimingMetadataRecorder::MonotonicTiming());
@@ -292,6 +299,8 @@ TEST_F(PageTimingMetricsSenderTest, SendMultipleFeaturesTwice) {
   // IPC.
   metrics_sender_->DidObserveNewFeatureUsage(feature_2);
   validator_.UpdateExpectPageLoadFeatures(feature_2);
+  metrics_sender_->DidObserveNewFeatureUsage(feature_3);
+  validator_.UpdateExpectPageLoadFeatures(feature_3);
   // Fire the timer to trigger another sending of features via the second
   // SendTiming call.
   metrics_sender_->mock_timer()->Fire();
@@ -356,6 +365,7 @@ TEST_F(PageTimingMetricsSenderTest, SendInteractions) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
   base::TimeDelta interaction_duration_1 = base::Milliseconds(90);
+
   base::TimeTicks interaction_start_1 = base::TimeTicks::Now();
   base::TimeTicks interaction_end_1 =
       interaction_start_1 + interaction_duration_1;
@@ -370,16 +380,18 @@ TEST_F(PageTimingMetricsSenderTest, SendInteractions) {
   validator_.ExpectPageLoadTiming(timing);
   validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
 
+  // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
-      interaction_start_1, interaction_end_1,
-      blink::UserInteractionType::kKeyboard, 0);
+      interaction_start_1, base::TimeTicks(), base::TimeTicks(),
+      interaction_end_1, blink::UserInteractionType::kKeyboard, 0);
   validator_.UpdateExpectedInteractionTiming(
       interaction_duration_1, mojom::UserInteractionType::kKeyboard, 0,
       interaction_start_1);
 
+  // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
-      interaction_start_2, interaction_end_2,
-      blink::UserInteractionType::kTapOrClick, 1);
+      interaction_start_2, base::TimeTicks(), base::TimeTicks(),
+      interaction_end_2, blink::UserInteractionType::kTapOrClick, 1);
   validator_.UpdateExpectedInteractionTiming(
       interaction_duration_2, mojom::UserInteractionType::kTapOrClick, 1,
       interaction_start_2);

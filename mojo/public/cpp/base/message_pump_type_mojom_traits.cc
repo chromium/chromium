@@ -30,7 +30,6 @@ EnumTraits<mojo_base::mojom::MessagePumpType, base::MessagePumpType>::ToMojom(
 #endif
   }
   NOTREACHED();
-  return mojo_base::mojom::MessagePumpType::kDefault;
 }
 
 // static

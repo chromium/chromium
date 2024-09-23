@@ -65,7 +65,6 @@ const char* GetCorporaString(FilesListCorpora corpora) {
       return kCorporaAllTeamDrives;
   }
   NOTREACHED();
-  return kCorporaDefault;
 }
 
 }  // namespace

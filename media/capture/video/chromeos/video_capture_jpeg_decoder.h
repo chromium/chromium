@@ -29,7 +29,7 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoder {
 
   virtual ~VideoCaptureJpegDecoder() {}
 
-  // Creates and intializes decoder asynchronously.
+  // Creates and initializes decoder asynchronously.
   virtual void Initialize() = 0;
 
   // Returns initialization status.

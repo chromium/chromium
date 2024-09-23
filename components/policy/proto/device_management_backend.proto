@@ -345,6 +345,10 @@ message DeviceRegisterRequest {
 
     // PSM terminated due to an error.
     PSM_RESULT_ERROR = 3;
+
+    // PSM check was skipped, as the device is going through Flex Auto
+    // Enrollment after legacy state determination.
+    PSM_SKIPPED_FOR_FLEX_AUTO_ENROLLMENT = 4;
   }
   optional PsmExecutionResult psm_execution_result = 19;
 
@@ -357,7 +361,11 @@ message DeviceRegisterRequest {
   // DeviceRegisterRequest.requisition == "cros-demo-mode".
   optional DemoModeDimensions demo_mode_dimensions = 21;
 
-  // Next id: 22.
+  // Contains encoded customer information relevant for the generic OIDC profile
+  // enrollment process.
+  optional string oidc_profile_enrollment_state = 22;
+
+  // Next id: 23.
 }
 
 // Identification of a device used during its registration.
@@ -556,16 +564,26 @@ message PolicyFetchRequest {
   //
   // Possible values for Chrome OS are:
   //   google/chromeos/device => ChromeDeviceSettingsProto
-  //   google/chromeos/user => ChromeSettingsProto
   //   google/chromeos/publicaccount => ChromeSettingsProto
+  //   google/chromeos/signinextension => ExternalPolicyData
+  //   google/chromeos/remotecommand => RemoteCommand (*)
+  //
+  // For users signed in to Chrome,
+  //   google/chromeos/user => ChromeSettingsProto
+  //   google/android/user => ChromeSettingsProto
+  //   google/chrome/user => ChromeSettingsProto
+  //   google/ios/user => ChromeSettingsProto
+  //   google/chrome/extension => ExternalPolicyData
+  //
+  // For Chrome Browser Cloud Management,
   //   google/chrome/machine-level-user => ChromeSettingsProto
   //   google/chrome/machine-level-user-android => ChromeSettingsProto
   //   google/chrome/machine-level-user-ios => ChromeSettingsProto
-  //   google/chrome/extension => ExternalPolicyData
   //   google/chrome/machine-level-extension => ExternalPolicyData
-  //   google/chromeos/signinextension => ExternalPolicyData
-  //   google/android/user => ChromeSettingsProto
-  //   google/chromeos/remotecommand => RemoteCommand (*)
+  //   google/machine-level-apps =>
+  //       Omaha policy fetch is translated into two policy types
+  //       google/chrome/machine-level-user => ChromeSettingsProto
+  //       google/machine-level-omaha => OmahaSettingsClientProto
   //
   // Types marked with an (*) are not policies, but data signed with the policy
   // key. It is illegal to try to fetch policies with those types.
@@ -2179,6 +2197,10 @@ message Policy {
 
   // The error message of policy.
   optional string error = 6;
+
+  // Other sources that set the same policy. Including the ones that are
+  // merged in or have the same value.
+  repeated Policy conflicts = 7;
 }
 
 // Extension policy information.
@@ -2193,10 +2215,39 @@ message ExtensionPolicy {
 // Cloud policy last fetch time.
 message PolicyFetchTimestamp {
   // The type of cloud policy.
+  // TODO(b/327655459): This field is deprecated, delete once server
+  // side references are all removed.
   optional string type = 1;
   // The last time the policies where fetched for the policy type.
   // [timestamp] is milliseconds since Epoch in UTC timezone (Java time).
   optional int64 timestamp = 2;
+}
+
+// Affiliation Information, with more deails about the reason of unaffiliation
+message AffiliationState {
+  // A boolean indicates whether the profile is affiliated with the device.
+  optional bool is_affiliated = 1;
+
+  // If profile is not affiliated, what's the reason.
+  enum UnaffiliationReason {
+    // Unknown
+    UNKNOWN = 0;
+
+    // User is not managed.
+    USER_UNMANAGED = 1;
+
+    // User is managed but device is not managed.
+    DEVICE_UNMANAGED = 2;
+
+    // User is managed but device is managed only by a platform source which
+    // doesn't have domain information.
+    DEVICE_MANAGED_BY_PLATFORM = 3;
+
+    // User and device are both managed by cloud service. But they use
+    // different domains.
+    DEVICE_MANANGED_DIFFERENT_DOMAIN = 4;
+  }
+  optional UnaffiliationReason unaffiliation_reason = 2;
 }
 
 // Chrome user profile level status, used by activated Profiles. Profile name is
@@ -2217,6 +2268,9 @@ message ChromeUserProfileInfo {
 
   // Gaia account information if the Profile is signed in.
   optional ChromeSignedInUser chrome_signed_in_user = 4;
+
+  // The state of affiliation.
+  optional AffiliationState affiliation = 11;
 
   // A list of extensions installed in the browser.
   repeated Extension extensions = 5;
@@ -2330,7 +2384,7 @@ message ChromeDesktopReportRequest {
   // A string contains OS user name.
   optional string os_user_name = 8;
   // Device identifier for helping identify non-Chrome OS devices.
-  // TODO(crbug.com/1105938): This will also replace the computer_name and
+  // TODO(crbug.com/40706071): This will also replace the computer_name and
   // serial_number fields.
   optional BrowserDeviceIdentifier browser_device_identifier = 9;
   // Public key that can be used for attesting the machine.
@@ -2479,6 +2533,18 @@ message PolicyValidationReportRequest {
   // |validation_result_type| is VALIDATION_RESULT_TYPE_VALUE_WARNING
   // or VALIDATION_RESULT_TYPE_VALUE_ERROR.
   repeated PolicyValueValidationIssue policy_value_validation_issues = 4;
+
+  // The action that trigger the validation.
+  enum Action {
+    // Action is not provided.
+    UNKNOWN = 0;
+    // Store policy to disk with recently downloaded proto.
+    STORE = 1;
+    // Load policy from disk cache.
+    LOAD = 2;
+  }
+
+  optional Action action = 5;
 }
 
 // Response from DMServer to a policy validation report.
@@ -2707,6 +2773,11 @@ message DeviceAutoEnrollmentResponse {
 // and secondary state enrollment. In this case, this request can also be sent
 // by brand new devices and the server would not know their serial number and
 // brand code, hence the values are supplied as part of the request.
+//
+// Another device state retrieval scenario is Flex Auto Enrollment initial
+// state determination, in which case the Flex enrollment token is included
+// (along with brand code and serial number) to retrieve token-keyed state
+// from the server.
 message DeviceStateRetrievalRequest {
   // Opaque, client-determined, unpredictable, stable and unique device
   // identifier to retrieve state for. This field contains 32 bytes of data that
@@ -2720,6 +2791,9 @@ message DeviceStateRetrievalRequest {
 
   // The 4-character brand code of the device.
   optional string brand_code = 3;
+
+  // The enrollment token for Flex Auto Enrollment.
+  optional string enrollment_token = 4;
 }
 
 // Sent by the client to the server when in registered state to update the
@@ -2782,6 +2856,9 @@ message DeviceInitialEnrollmentStateRequest {
 
   // The 4-character brand code of the device.
   optional string brand_code = 2;
+
+  // The enrollment token for Flex Auto Enrollment.
+  optional string enrollment_token = 3;
 }
 
 // Response from server DeviceInitialEnrollmentStateRequest.
@@ -2798,6 +2875,8 @@ message DeviceInitialEnrollmentStateResponse {
     // The device has been disabled by its owner. The device will show a warning
     // screen and prevent the user from proceeding further.
     INITIAL_ENROLLMENT_MODE_DISABLED = 3;
+    // Token-based enrollment is enforced and cannot be skipped.
+    INITIAL_ENROLLMENT_MODE_TOKEN_ENROLLMENT_ENFORCED = 4;
   }
 
   // The server-indicated initial enrollment mode.
@@ -3217,7 +3296,7 @@ message RegisterBrowserRequest {
   // Platform specific version number, e.g., 6.1.7601.0 or 10.12.6
   optional string os_version = 3;
   // Device identifier for helping identify non-Chrome OS devices.
-  // TODO(crbug.com/1105938): This will also replace the machine_name field.
+  // TODO(crbug.com/40706071): This will also replace the machine_name field.
   optional BrowserDeviceIdentifier browser_device_identifier = 4;
   // The device model, e.g., iPad6,11
   optional string device_model = 5;
@@ -4282,13 +4361,34 @@ message CertProvAuthorizeInstruction {
 // the private key.
 message CertProvProofOfPossessionInstruction {
   // Data to sign for CSR creation.
-  // The signing algorithm is currently RSA_PKCS1_V1_5. The client will perform
-  // PKCS#1 v1.5 padding on `data_to_sign`. `data_to_sign` is expected to
-  // already contain a PKCS#1 DigestInfo prefix - the client will not attempt to
-  // add such a prefix. Also `data_to_sign` must be shorter than (key_size-11)
-  // bytes. If no other key size was specified in the
-  // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
+  // Depending on the `signature_algorithm` this may either contain the PKCS#1
+  // DigestInfo in DER format (note that it must be shorter than (key_size-11)
+  // bytes) or unhashed data. The client must process `data_to_sign` according
+  // to the specified `signature_algorithm`, see comments in the
+  // `CertProvSignatureAlgorithm` enum for more details.
   optional bytes data_to_sign = 1;
+
+  // The signature algorithm that the client uses to process `data_to_sign`.
+  // This defines both the hashing and signing algorithm the client should use.
+  optional CertProvSignatureAlgorithm signature_algorithm = 2;
+}
+
+// The algorithm that the client should use / has used to sign data using its
+// private key for proof-of-posession.
+enum CertProvSignatureAlgorithm {
+  // Default value. This value is unused.
+  SIGNATURE_ALGORITHM_UNSPECIFIED = 0;
+
+  // The server-side builds the PKCS#1 DigestInfo, i.e., the SHA256 hash
+  // is constructed on the server-side. The client should sign using RSA
+  // with PKCS#1 v1.5 padding. If no other key size was specified in the
+  // RequiredClientCertificateFor{User,Device} policy, 2048 bits is assumed.
+  SIGNATURE_ALGORITHM_RSA_PKCS1_V1_5_NO_HASH = 1;
+
+  // The PKCS#1 digest info is built by the server-side and sent to the
+  // client unhashed. The client is responsible for signing and hashing.
+  // Uses the P-256 curve.
+  SIGNATURE_ALGORITHM_ECDSA_SHA256 = 2;
 }
 
 // The client should import an issued certificate.
@@ -4301,6 +4401,9 @@ message CertProvImportCertificateInstruction {
 // `cert_profile_id`.
 message ClientCertificateProvisioningRequest {
   reserved 9 to 11;
+  // The id that uniquely identifies a certificate provisioning process.
+  optional string certificate_provisioning_process_id = 16;
+
   // The scope of the certificate. Similar to policy_type in PolicyFetchRequest.
   //   google/chromeos/device => a certificate for a device is being requested.
   //   google/chromeos/user => a certificate for a user is being requested.
@@ -4345,6 +4448,13 @@ message ClientCertificateProvisioningRequest {
 // (see existing usage of HTTP error codes described in the
 // `DeviceManagementResponse` comment).
 message CertProvBackendError {
+  // If a new error code is added to the enum and used by the DM Server to
+  // propagate an error, ChromeOS clients running older versions
+  // will not be aware of the new error code. As proto2 is using closed enums,
+  // accessing such an unknown enum field returns the enum's default value
+  // which is the first defined enum value, i.e., `ERROR_UNSPECIFIED`. ChromeOS
+  // clients treat this error by marking the associated certificate provisioning
+  // process as failing.
   enum Error {
     ERROR_UNSPECIFIED = 0;
     // The attempted request is invalid in the current state of the certificate
@@ -4383,6 +4493,9 @@ message CertProvBackendError {
     // The Adapter uploaded a certificate that cannot be parsed or was issued
     // for a wrong public key.
     BAD_ADAPTER_CERTIFICATE_RECEIVED = 14;
+    // The requested certificate provisioning process cannot be found on
+    // Spanner.
+    CERTIFICATE_PROVISIONING_PROCESS_NOT_FOUND = 15;
   }
 
   // The specific error type.
@@ -4501,6 +4614,31 @@ message BrowserPublicKeyUploadResponse {
   // contain the X.509 client certificate in PEM format.
   optional string pem_encoded_certificate = 2;
 }
+
+// Upload request for Firebase Messaging token to communicate registration token
+// to the server. The response message will be
+// `FmRegistrationTokenUploadResponse`.
+// See go/cros-invalidation-with-direct-messaging.
+message FmRegistrationTokenUploadRequest {
+  // Scope of the uploaded token.
+  enum TokenType {
+    DEVICE = 0;
+    BROWSER = 1;
+    USER = 2;
+  }
+
+  optional string token = 1;
+  // Invalidation protocol version that uploader currently supports.
+  optional int64 protocol_version = 2;
+  // Scope of the uploaded token.
+  optional TokenType token_type = 3;
+  // Token's expiration timestamp in milliseconds since Epoch in UTC timezone
+  // (Java time).
+  optional int64 expiration_timestamp_ms = 4;
+}
+
+// Response to `FmRegistrationTokenUploadRequest`.
+message FmRegistrationTokenUploadResponse {}
 
 // Additional detail about the error which can be used to clarify user messaging
 // around the error or to influence Chrome's error-handling behavior.
@@ -4704,7 +4842,7 @@ message DeviceManagementRequest {
   optional RefreshAccountRequest refresh_account_request = 29;
 
   // Request from device to upload RSU lookup key.
-  // TODO(crbug/1284656): seems unused
+  // TODO(crbug.com/40210185): seems unused
   optional RsuLookupKeyUploadRequest rsu_lookup_key_upload_request = 31;
 
   // Request from device for SAML IdP URL address.
@@ -4721,7 +4859,7 @@ message DeviceManagementRequest {
       client_certificate_provisioning_request = 34;
 
   // A report on the status of extension install process.
-  // TODO(crbug/1284656): seems unused.
+  // TODO(crbug.com/40210185): seems unused.
   optional ExtensionInstallReportRequest extension_install_report_request = 35;
 
   // Request to check user account for smart enrollment.
@@ -4750,7 +4888,10 @@ message DeviceManagementRequest {
   optional TokenBasedDeviceRegisterRequest token_based_device_register_request =
       41;
 
-  // Next id: 42.
+  optional FmRegistrationTokenUploadRequest
+      fm_registration_token_upload_request = 42;
+
+  // Next id: 43.
 }
 
 // Response from server to device.
@@ -4910,7 +5051,10 @@ message DeviceManagementResponse {
   optional TokenBasedDeviceRegisterResponse
       token_based_device_register_response = 40;
 
-  // Next id: 41.
+  optional FmRegistrationTokenUploadResponse
+      fm_registration_token_upload_response = 41;
+
+  // Next id: 42.
 }
 
 // Device State Information stored in the server is retrieval at

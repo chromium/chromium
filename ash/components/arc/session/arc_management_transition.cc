@@ -21,9 +21,6 @@ std::ostream& operator<<(std::ostream& os,
   }
   NOTREACHED() << "Unexpected value for ArcManagementTransition: "
                << static_cast<int>(management_transition);
-
-  return os << "ArcManagementTransition("
-            << static_cast<int>(management_transition) << ")";
 }
 
 }  // namespace arc

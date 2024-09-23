@@ -195,7 +195,7 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
         if (title.length() > 0) {
             title = title + " ";
         }
-        // TODO(crbug/773717): Avoid string concatenation due to i18n.
+        // TODO(crbug.com/41349249): Avoid string concatenation due to i18n.
         return title + mContext.getString(R.string.bottom_bar_screen_position);
     }
 
@@ -244,9 +244,9 @@ public abstract class InfoBar implements InfoBarInteractionHandler, InfoBarUiIte
     protected void onStartedHiding() {}
 
     /**
-     * Returns pointer to native InfoBarAndroid instance.
-     * TODO(crbug/1056346): The function is used in subclasses typically to get Tab reference. When
-     * Tab is modularized, replace this function with the one that returns Tab reference.
+     * Returns pointer to native InfoBarAndroid instance. TODO(crbug.com/40120294): The function is
+     * used in subclasses typically to get Tab reference. When Tab is modularized, replace this
+     * function with the one that returns Tab reference.
      */
     protected long getNativeInfoBarPtr() {
         return mNativeInfoBarPtr;

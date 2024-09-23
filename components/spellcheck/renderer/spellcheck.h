@@ -226,8 +226,7 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
   // Custom dictionary spelling engine.
   CustomDictionaryEngine custom_dictionary_;
 
-  raw_ptr<service_manager::LocalInterfaceProvider, ExperimentalRenderer>
-      embedder_provider_;
+  raw_ptr<service_manager::LocalInterfaceProvider> embedder_provider_;
 
   // Remember state for spellchecking.
   bool spellcheck_enabled_;

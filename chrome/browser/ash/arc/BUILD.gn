@@ -1,0 +1,237 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/chromeos/crosier_tests.gni")
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("arc") {
+  sources = [
+    "arc_demo_mode_delegate_impl.cc",
+    "arc_demo_mode_delegate_impl.h",
+    "arc_migration_constants.h",
+    "arc_migration_guide_notification.cc",
+    "arc_migration_guide_notification.h",
+    "arc_mount_provider.cc",
+    "arc_mount_provider.h",
+    "arc_optin_uma.cc",
+    "arc_optin_uma.h",
+    "arc_support_host.cc",
+    "arc_support_host.h",
+    "arc_ui_availability_reporter.cc",
+    "arc_ui_availability_reporter.h",
+    "arc_util.cc",
+    "arc_util.h",
+    "icon_decode_request.cc",
+    "icon_decode_request.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/apps",
+    "//chrome/browser/ash/arc/app_shortcuts",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/arc/boot_phase_monitor",
+    "//chrome/browser/ash/arc/enterprise",
+    "//chrome/browser/ash/arc/extensions",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/arc/input_method_manager",
+    "//chrome/browser/ash/arc/input_overlay",
+    "//chrome/browser/ash/arc/instance_throttle",
+    "//chrome/browser/ash/arc/intent_helper",
+    "//chrome/browser/ash/arc/metrics",
+    "//chrome/browser/ash/arc/nearby_share",
+    "//chrome/browser/ash/arc/notification",
+    "//chrome/browser/ash/arc/optin",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/arc/print_spooler",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/arc",
+    "//chrome/browser/image_decoder",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources:component_extension_resources_grit",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//chromeos/ash/components/settings",
+    "//chromeos/components/mgs",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/consent_auditor",
+    "//components/embedder_support:browser_util",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/browser",
+    "//services/data_decoder/public/cpp",
+    "//storage/browser",
+    "//third_party/private_membership",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/gfx",
+    "//ui/message_center",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/apps",
+    "//chrome/browser/ash/arc/app_shortcuts",
+    "//chrome/browser/ash/arc/auth",
+    "//chrome/browser/ash/arc/boot_phase_monitor",
+    "//chrome/browser/ash/arc/enterprise",
+    "//chrome/browser/ash/arc/extensions",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/arc/input_method_manager",
+    "//chrome/browser/ash/arc/input_overlay",
+    "//chrome/browser/ash/arc/intent_helper",
+    "//chrome/browser/ash/arc/instance_throttle",
+    "//chrome/browser/ash/arc/metrics",
+    "//chrome/browser/ash/arc/nearby_share",
+    "//chrome/browser/ash/arc/notification",
+    "//chrome/browser/ash/arc/optin",
+    "//chrome/browser/ash/arc/print_spooler",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/exo",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_demo_mode_delegate_impl_unittest.cc",
+    "arc_migration_guide_notification_unittest.cc",
+    "arc_mount_provider_unittest.cc",
+    "arc_support_host_unittest.cc",
+    "arc_ui_availability_reporter_unittest.cc",
+    "arc_util_unittest.cc",
+  ]
+
+  deps = [
+    ":arc",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/arc/extensions:test_support",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/demo_mode:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui/ash/login:test_support",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/install_attributes",
+    "//components/arc:arc_test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+
+    # Gather unit tests from subdirectories.
+    "//chrome/browser/ash/arc/accessibility:unit_tests",
+    "//chrome/browser/ash/arc/adbd:unit_tests",
+    "//chrome/browser/ash/arc/app_shortcuts:unit_tests",
+    "//chrome/browser/ash/arc/bluetooth:unit_tests",
+    "//chrome/browser/ash/arc/boot_phase_monitor:unit_tests",
+    "//chrome/browser/ash/arc/enterprise:unit_tests",
+    "//chrome/browser/ash/arc/extensions:unit_tests",
+    "//chrome/browser/ash/arc/file_system_watcher:unit_tests",
+    "//chrome/browser/ash/arc/fileapi:unit_tests",
+    "//chrome/browser/ash/arc/idle_manager:unit_tests",
+    "//chrome/browser/ash/arc/input_method_manager:unit_tests",
+    "//chrome/browser/ash/arc/input_overlay:unit_tests",
+    "//chrome/browser/ash/arc/instance_throttle:unit_tests",
+    "//chrome/browser/ash/arc/intent_helper:unit_tests",
+    "//chrome/browser/ash/arc/memory_pressure:unit_tests",
+    "//chrome/browser/ash/arc/nearby_share:unit_tests",
+    "//chrome/browser/ash/arc/net:unit_tests",
+    "//chrome/browser/ash/arc/notification:unit_tests",
+    "//chrome/browser/ash/arc/optin:unit_tests",
+    "//chrome/browser/ash/arc/pip:unit_tests",
+    "//chrome/browser/ash/arc/policy:unit_tests",
+    "//chrome/browser/ash/arc/privacy_items:unit_tests",
+    "//chrome/browser/ash/arc/process:unit_tests",
+    "//chrome/browser/ash/arc/session:unit_tests",
+    "//chrome/browser/ash/arc/sharesheet:unit_tests",
+    "//chrome/browser/ash/arc/survey:unit_tests",
+    "//chrome/browser/ash/arc/tracing:unit_tests",
+    "//chrome/browser/ash/arc/tts:unit_tests",
+    "//chrome/browser/ash/arc/user_session:unit_tests",
+    "//chrome/browser/ash/arc/vmm:unit_tests",
+    "//chrome/browser/ash/arc/wallpaper:unit_tests",
+  ]
+}
+
+group("browser_tests") {
+  testonly = true
+
+  deps = [
+    # Gather browser tests from subdirectories.
+    "//chrome/browser/ash/arc/accessibility:browser_tests",
+    "//chrome/browser/ash/arc/auth:browser_tests",
+    "//chrome/browser/ash/arc/enterprise/cert_store:browser_tests",
+    "//chrome/browser/ash/arc/intent_helper:browser_tests",
+    "//chrome/browser/ash/arc/session:browser_tests",
+    "//chrome/browser/ash/arc/user_session:browser_tests",
+    "//chrome/browser/ash/arc/vmm:browser_tests",
+  ]
+}
+
+if (is_chromeos_device && is_chrome_branded) {
+  crosier_tests("integration_tests") {
+    sources = [ "arc_integration_test.cc" ]
+
+    sources_metadata = []  # Yaml file is missing.
+
+    deps = [
+      ":arc",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/test:ash_integration_test_support",
+      "//chrome/test:test_support",
+      "//chromeos/ui/base",
+      "//ui/aura",
+    ]
+  }
+}

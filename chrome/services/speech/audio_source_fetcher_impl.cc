@@ -127,7 +127,10 @@ void AudioSourceFetcherImpl::Start(
       audio::DeadStreamDetection::kEnabled, std::move(audio_log_remote));
   DCHECK(audio_capturer_source_);
 
-  // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
+  send_error_callback_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
+      &AudioSourceFetcherImpl::SendError, weak_factory_.GetWeakPtr()));
+
+  // TODO(crbug.com/40753481): Check implementation / sandbox policy on Mac and
   // Windows.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   is_started_ = true;
@@ -175,6 +178,7 @@ void AudioSourceFetcherImpl::Stop() {
 
 void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,
                                      base::TimeTicks audio_capture_time,
+                                     const media::AudioGlitchInfo& glitch_info,
                                      double volume,
                                      bool key_pressed) {
   audio_length_ += media::AudioTimestampHelper::FramesToTime(
@@ -198,19 +202,28 @@ void AudioSourceFetcherImpl::OnCaptureError(
     media::AudioCapturerSource::ErrorCode code,
     const std::string& message) {
   LOG(ERROR) << "Audio Capture Error" << message;
-  audio_consumer_->OnAudioCaptureError();
+  send_error_callback_.Run();
 }
 
 void AudioSourceFetcherImpl::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   audio_consumer_->AddAudio(std::move(buffer));
 }
 
 void AudioSourceFetcherImpl::SendAudioToResample(
     std::unique_ptr<media::AudioBus> audio_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  converter_->Push(std::move(audio_data));
-  DrainConverterOutput();
+  // `converter_` will be null if Stop() has been called.
+  if (converter_) {
+    converter_->Push(std::move(audio_data));
+    DrainConverterOutput();
+  }
+}
+
+void AudioSourceFetcherImpl::SendError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  audio_consumer_->OnAudioCaptureError();
 }
 
 media::AudioCapturerSource* AudioSourceFetcherImpl::GetAudioCapturerSource() {

@@ -33,7 +33,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_settings.h"
 #include "ash/rotator/screen_rotation_animator.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -52,7 +51,6 @@
 #include "ash/touch/touch_observer_hud.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/always_on_top_controller.h"
-#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -62,6 +60,10 @@
 #include "ash/wm/lock_layout_manager.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overlay_layout_manager.h"
+#include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
+#include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/root_window_layout_manager.h"
@@ -70,7 +72,6 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/system_modal_container_layout_manager.h"
-#include "ash/wm/system_wallpaper_controller.h"
 #include "ash/wm/window_parenting_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
@@ -202,12 +203,8 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
   gfx::Rect restore_bounds;
   const bool has_restore_bounds = state && state->HasRestoreBounds();
 
-  auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker();
-  // `WindowBoundsTracker` will handle the window's bounds on root window
-  // changes if the feature `kWindowBoundsTracker` is enabled.
   const bool update_bounds =
-      state && (state->IsNormalStateType() || state->IsMinimized()) &&
-      !window_bounds_tracker;
+      state && (state->IsNormalStateType() || state->IsMinimized());
   gfx::Rect work_area_in_new_parent =
       screen_util::GetDisplayWorkAreaBoundsInParent(new_parent);
 
@@ -222,10 +219,6 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
     restore_bounds = state->GetRestoreBoundsInParent();
     MoveOriginRelativeToSize(src_size, dst_size, &restore_bounds);
     restore_bounds.AdjustToFit(work_area_in_new_parent);
-  }
-
-  if (window_bounds_tracker) {
-    window_bounds_tracker->AddWindowDisplayIdOnDisplayRemoval(window);
   }
 
   new_parent->AddChild(window);
@@ -244,15 +237,16 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
 void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
   // Set of windows to move.
   constexpr int kContainerIdsToMove[] = {
+      kShellWindowId_UnparentedContainer,
       kShellWindowId_AlwaysOnTopContainer,
       kShellWindowId_FloatContainer,
       kShellWindowId_PipContainer,
       kShellWindowId_SystemModalContainer,
-      kShellWindowId_LockSystemModalContainer,
-      kShellWindowId_UnparentedContainer,
-      kShellWindowId_OverlayContainer,
       kShellWindowId_LockActionHandlerContainer,
+      kShellWindowId_LockSystemModalContainer,
       kShellWindowId_MenuContainer,
+      kShellWindowId_LiveCaptionContainer,
+      kShellWindowId_OverlayContainer,
   };
   constexpr int kExtraContainerIdsToMoveInUnifiedMode[] = {
       kShellWindowId_LockScreenContainer,
@@ -402,18 +396,18 @@ class RootWindowTargeter : public aura::WindowTargeter {
   // Returns true if the mouse event should be constrainted.
   bool ShouldConstrainMouseClick(ui::LocatedEvent* event,
                                  bool has_capture_target) {
-    if (event->type() == ui::ET_MOUSE_PRESSED && !has_capture_target) {
-      last_mouse_event_type_ = ui::ET_MOUSE_PRESSED;
+    if (event->type() == ui::EventType::kMousePressed && !has_capture_target) {
+      last_mouse_event_type_ = ui::EventType::kMousePressed;
       return true;
     }
-    if (last_mouse_event_type_ == ui::ET_MOUSE_PRESSED &&
-        event->type() == ui::ET_MOUSE_RELEASED && has_capture_target) {
-      last_mouse_event_type_ = ui::ET_UNKNOWN;
+    if (last_mouse_event_type_ == ui::EventType::kMousePressed &&
+        event->type() == ui::EventType::kMouseReleased && has_capture_target) {
+      last_mouse_event_type_ = ui::EventType::kUnknown;
       return true;
     }
     // For other cases, reset the state
-    if (event->type() != ui::ET_MOUSE_CAPTURE_CHANGED) {
-      last_mouse_event_type_ = ui::ET_UNKNOWN;
+    if (event->type() != ui::EventType::kMouseCaptureChanged) {
+      last_mouse_event_type_ = ui::EventType::kUnknown;
     }
     return false;
   }
@@ -423,16 +417,16 @@ class RootWindowTargeter : public aura::WindowTargeter {
                       std::clamp(p.y(), bounds.y(), bounds.bottom() - 1));
   }
 
-  ui::EventType last_mouse_event_type_ = ui::ET_UNKNOWN;
+  ui::EventType last_mouse_event_type_ = ui::EventType::kUnknown;
 };
 
-class RootWindowMenuModelAdapter : public AppMenuModelAdapter {
+class ShelfMenuModelAdapter : public AppMenuModelAdapter {
  public:
-  RootWindowMenuModelAdapter(std::unique_ptr<ui::SimpleMenuModel> model,
-                             views::Widget* widget_owner,
-                             ui::MenuSourceType source_type,
-                             base::OnceClosure on_menu_closed_callback,
-                             bool is_tablet_mode)
+  ShelfMenuModelAdapter(std::unique_ptr<ui::SimpleMenuModel> model,
+                        views::Widget* widget_owner,
+                        ui::MenuSourceType source_type,
+                        base::OnceClosure on_menu_closed_callback,
+                        bool is_tablet_mode)
       : AppMenuModelAdapter(std::string(),
                             std::move(model),
                             widget_owner,
@@ -440,11 +434,10 @@ class RootWindowMenuModelAdapter : public AppMenuModelAdapter {
                             std::move(on_menu_closed_callback),
                             is_tablet_mode) {}
 
-  RootWindowMenuModelAdapter(const RootWindowMenuModelAdapter&) = delete;
-  RootWindowMenuModelAdapter& operator=(const RootWindowMenuModelAdapter&) =
-      delete;
+  ShelfMenuModelAdapter(const ShelfMenuModelAdapter&) = delete;
+  ShelfMenuModelAdapter& operator=(const ShelfMenuModelAdapter&) = delete;
 
-  ~RootWindowMenuModelAdapter() override = default;
+  ~ShelfMenuModelAdapter() override = default;
 
  private:
   // AppMenuModelAdapter overrides:
@@ -657,7 +650,7 @@ aura::Window* RootWindowController::FindEventTarget(
   gfx::Point location_in_root(location_in_screen);
   aura::Window* root_window = GetRootWindow();
   ::wm::ConvertPointFromScreen(root_window, &location_in_root);
-  ui::MouseEvent test_event(ui::ET_MOUSE_MOVED, location_in_root,
+  ui::MouseEvent test_event(ui::EventType::kMouseMoved, location_in_root,
                             location_in_root, ui::EventTimeForNow(),
                             ui::EF_NONE, ui::EF_NONE);
   ui::EventTarget* event_handler =
@@ -696,13 +689,16 @@ ScreenRotationAnimator* RootWindowController::GetScreenRotationAnimator() {
 void RootWindowController::Shutdown(aura::Window* destination_root) {
   is_shutting_down_ = true;
 
+  // Moving root windows can cause an observer to be destroyed, i.e. if
+  // `SplitViewController::OnWindowRemovingFromRootWindow()` ends overview, the
+  // `screen_rotation_animator_` should be deleted first to avoid a dangling
+  // raw_ptr. Destroy the `screen_rotation_animator_` now to avoid this and any
+  // potential crashes if there's any ongoing animation. See http://b/293667233.
+  screen_rotation_animator_.reset();
+
   if (destination_root) {
     MoveWindowsTo(destination_root);
   }
-
-  // Destroy the `screen_rotation_animator_` now to avoid any potential crashes
-  // if there's any ongoing animation. See http://b/293667233.
-  screen_rotation_animator_.reset();
 
   aura::Window* root_window = GetRootWindow();
   auto targeter = root_window->SetEventTargeter(
@@ -722,7 +718,6 @@ void RootWindowController::Shutdown(aura::Window* destination_root) {
     ash_host_->PrepareForShutdown();
   }
   window_parenting_controller_.reset();
-  system_wallpaper_.reset();
   security_curtain_widget_controller_.reset();
   lock_screen_action_background_controller_.reset();
   aura::client::SetScreenPositionClient(root_window, nullptr);
@@ -844,66 +839,16 @@ void RootWindowController::SetTouchAccessibilityAnchorPoint(
 
 void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
                                            ui::MenuSourceType source_type) {
-  const int64_t display_id = display::Screen::GetScreen()
-                                 ->GetDisplayNearestWindow(GetRootWindow())
-                                 .id();
-
-  const bool tablet_mode = display::Screen::GetScreen()->InTabletMode();
-  root_window_menu_model_adapter_ =
-      std::make_unique<RootWindowMenuModelAdapter>(
-          std::make_unique<ShelfContextMenuModel>(nullptr, display_id,
-                                                  /*menu_in_shelf=*/false),
-          wallpaper_widget_controller()->GetWidget(), source_type,
-          base::BindOnce(&RootWindowController::OnMenuClosed,
-                         base::Unretained(this)),
-          tablet_mode);
-
-  // Appends the apps sort options in ShelfContextMenuModel in tablet mode. Note
-  // that the launcher UI is fullscreen in tablet mode, so the whole root window
-  // can be perceived by users to be part of the launcher.
-  auto* const app_list_controller = Shell::Get()->app_list_controller();
-  if (tablet_mode && app_list_controller->IsVisible(display_id) &&
-      app_list_controller->GetCurrentAppListPage() ==
-          AppListState::kStateApps) {
-    ui::SimpleMenuModel* menu_model = root_window_menu_model_adapter_->model();
-    sort_apps_submenu_ = std::make_unique<ui::SimpleMenuModel>(
-        static_cast<ShelfContextMenuModel*>(menu_model));
-    sort_apps_submenu_->AddItemWithIcon(
-        REORDER_BY_NAME_ALPHABETICAL,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME),
-        ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon,
-                                       ui::kColorAshSystemUIMenuIcon));
-    sort_apps_submenu_->AddItemWithIcon(
-        REORDER_BY_COLOR,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_COLOR),
-        ui::ImageModel::FromVectorIcon(kSortColorIcon,
-                                       ui::kColorAshSystemUIMenuIcon));
-    menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
-    menu_model->AddSubMenuWithIcon(
-        REORDER_SUBMENU,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE),
-        sort_apps_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(kReorderIcon,
-                                       ui::kColorAshSystemUIMenuIcon));
-
-    // Append the "Show all suggestions" / "Hide all suggestions" item.
-    menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
-    if (app_list_controller->ShouldHideContinueSection()) {
-      menu_model->AddItemWithIcon(
-          ShelfContextMenuModel::MENU_SHOW_CONTINUE_SECTION,
-          l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION),
-          ui::ImageModel::FromVectorIcon(kLauncherShowContinueSectionIcon,
-                                         ui::kColorAshSystemUIMenuIcon));
-    } else {
-      menu_model->AddItemWithIcon(
-          ShelfContextMenuModel::MENU_HIDE_CONTINUE_SECTION,
-          l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION),
-          ui::ImageModel::FromVectorIcon(kLauncherHideContinueSectionIcon,
-                                         ui::kColorAshSystemUIMenuIcon));
-    }
+  // Show birch bar context menu for the primary user in clamshell mode Overview
+  // without a partial split screen.
+  if (features::IsForestFeatureEnabled() &&
+      Shell::Get()->session_controller()->IsUserPrimary() &&
+      OverviewController::Get()->InOverviewSession() &&
+      !split_view_overview_session_) {
+    root_window_menu_model_adapter_ = BuildBirchMenuModelAdapter(source_type);
+    BirchPrivacyNudgeController::DidShowContextMenu();
+  } else {
+    root_window_menu_model_adapter_ = BuildShelfMenuModelAdapter(source_type);
   }
 
   root_window_menu_model_adapter_->Run(
@@ -912,29 +857,6 @@ void RootWindowController::ShowContextMenu(const gfx::Point& location_in_screen,
       views::MenuRunner::CONTEXT_MENU |
           views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
           views::MenuRunner::FIXED_ANCHOR);
-}
-
-void RootWindowController::HideContextMenu() {
-  if (root_window_menu_model_adapter_) {
-    root_window_menu_model_adapter_->Cancel();
-  }
-}
-
-void RootWindowController::HideContextMenuNoAnimation() {
-  if (!IsContextMenuShown()) {
-    return;
-  }
-
-  views::Widget* submenu_widget =
-      root_window_menu_model_adapter_->GetSubmenuWidget();
-  DCHECK(submenu_widget);
-  ScopedAnimationDisabler disable(submenu_widget->GetNativeWindow());
-  root_window_menu_model_adapter_->Cancel();
-}
-
-bool RootWindowController::IsContextMenuShown() const {
-  return root_window_menu_model_adapter_ &&
-         root_window_menu_model_adapter_->IsShowingMenu();
 }
 
 void RootWindowController::UpdateAfterLoginStatusChange(LoginStatus status) {
@@ -1030,6 +952,11 @@ void RootWindowController::SetScreenRotationAnimatorForTest(
   screen_rotation_animator_ = std::move(animator);
 }
 
+bool RootWindowController::IsContextMenuShownForTest() const {
+  return root_window_menu_model_adapter_ &&
+         root_window_menu_model_adapter_->IsShowingMenu();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // RootWindowController, private:
 
@@ -1088,7 +1015,6 @@ void RootWindowController::Init(RootWindowType root_window_type) {
   root_window_layout_manager_ = root_window_layout_manager.get();
 
   CreateContainers();
-  CreateSystemWallpaper(root_window_type);
 
   InitLayoutManagers(std::move(root_window_layout_manager));
   InitTouchHuds();
@@ -1265,9 +1191,17 @@ void RootWindowController::CreateContainers() {
   CreateContainer(kShellWindowId_UnparentedContainer, "UnparentedContainer",
                   non_lock_screen_containers);
 
+  aura::Window* shutdown_screenshot_container = non_lock_screen_containers;
+  if (features::IsForestFeatureEnabled()) {
+    shutdown_screenshot_container = CreateContainer(
+        kShellWindowId_ShutdownScreenshotContainer,
+        "ShutdownScreenshotContainer", non_lock_screen_containers);
+  }
+
   for (const auto& id : desks_util::GetDesksContainersIds()) {
-    aura::Window* container = CreateContainer(
-        id, desks_util::GetDeskContainerName(id), non_lock_screen_containers);
+    aura::Window* container =
+        CreateContainer(id, desks_util::GetDeskContainerName(id),
+                        shutdown_screenshot_container);
     ::wm::SetChildWindowVisibilityChangesAnimated(container);
     container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
     container->SetProperty(kForceVisibleInMiniViewKey, true);
@@ -1281,13 +1215,13 @@ void RootWindowController::CreateContainers() {
 
   aura::Window* always_on_top_container =
       CreateContainer(kShellWindowId_AlwaysOnTopContainer,
-                      "AlwaysOnTopContainer", non_lock_screen_containers);
+                      "AlwaysOnTopContainer", shutdown_screenshot_container);
   ::wm::SetChildWindowVisibilityChangesAnimated(always_on_top_container);
   always_on_top_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
 
   aura::Window* float_container =
       CreateContainer(kShellWindowId_FloatContainer, "FloatContainer",
-                      non_lock_screen_containers);
+                      shutdown_screenshot_container);
   wm::SetChildWindowVisibilityChangesAnimated(float_container);
   float_container->SetProperty(wm::kUsesScreenCoordinatesKey, true);
   window_util::SetChildrenUseExtendedHitRegionForWindow(float_container);
@@ -1363,6 +1297,11 @@ void RootWindowController::CreateContainers() {
   ::wm::SetChildWindowVisibilityChangesAnimated(settings_bubble_container);
   settings_bubble_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
   settings_bubble_container->SetProperty(kLockedToRootKey, true);
+
+  aura::Window* live_caption_container =
+      CreateContainer(kShellWindowId_LiveCaptionContainer,
+                      "LiveCaptionContainer", lock_screen_related_containers);
+  live_caption_container->SetProperty(wm::kUsesScreenCoordinatesKey, true);
 
   aura::Window* help_bubble_container =
       CreateContainer(kShellWindowId_HelpBubbleContainer, "HelpBubbleContainer",
@@ -1471,23 +1410,6 @@ aura::Window* RootWindowController::CreateContainer(int window_id,
   return window;
 }
 
-void RootWindowController::CreateSystemWallpaper(
-    RootWindowType root_window_type) {
-  SkColor color = SK_ColorBLACK;
-  // The splash screen appears on the primary display at boot. If this is a
-  // secondary monitor (either connected at boot or connected later) or if the
-  // browser restarted for a second login then don't use the boot color.
-  const bool is_boot_splash_screen =
-      root_window_type == RootWindowType::PRIMARY &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kFirstExecAfterBoot);
-  if (is_boot_splash_screen) {
-    color = kChromeOsBootColor;
-  }
-  system_wallpaper_ =
-      std::make_unique<SystemWallpaperController>(GetRootWindow(), color);
-}
-
 AccessibilityPanelLayoutManager*
 RootWindowController::GetAccessibilityPanelLayoutManager() const {
   aura::Window* container = const_cast<aura::Window*>(
@@ -1495,6 +1417,89 @@ RootWindowController::GetAccessibilityPanelLayoutManager() const {
   auto* layout_manager = static_cast<AccessibilityPanelLayoutManager*>(
       container->layout_manager());
   return layout_manager;
+}
+
+std::unique_ptr<AppMenuModelAdapter>
+RootWindowController::BuildBirchMenuModelAdapter(
+    ui::MenuSourceType source_type) {
+  const bool is_birch_bar_showing =
+      BirchBarController::Get()->GetShowBirchSuggestions();
+
+  return std::make_unique<BirchBarMenuModelAdapter>(
+      std::make_unique<BirchBarContextMenuModel>(
+          BirchBarController::Get(),
+          is_birch_bar_showing
+              ? BirchBarContextMenuModel::Type::kExpandedBarMenu
+              : BirchBarContextMenuModel::Type::kCollapsedBarMenu),
+      wallpaper_widget_controller()->GetWidget(), source_type,
+      base::BindOnce(&RootWindowController::OnMenuClosed,
+                     base::Unretained(this)),
+      display::Screen::GetScreen()->InTabletMode(), /*for_chip_menu=*/false);
+}
+
+std::unique_ptr<AppMenuModelAdapter>
+RootWindowController::BuildShelfMenuModelAdapter(
+    ui::MenuSourceType source_type) {
+  const bool tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const int64_t display_id = display::Screen::GetScreen()
+                                 ->GetDisplayNearestWindow(GetRootWindow())
+                                 .id();
+  auto shelf_menu_model_adapter = std::make_unique<ShelfMenuModelAdapter>(
+      std::make_unique<ShelfContextMenuModel>(nullptr, display_id,
+                                              /*menu_in_shelf=*/false),
+      wallpaper_widget_controller()->GetWidget(), source_type,
+      base::BindOnce(&RootWindowController::OnMenuClosed,
+                     base::Unretained(this)),
+      tablet_mode);
+
+  // Appends the apps sort options in ShelfContextMenuModel in tablet mode.
+  // Note that the launcher UI is fullscreen in tablet mode, so the whole root
+  // window can be perceived by users to be part of the launcher.
+  auto* const app_list_controller = Shell::Get()->app_list_controller();
+  if (tablet_mode && app_list_controller->IsVisible(display_id) &&
+      app_list_controller->GetCurrentAppListPage() ==
+          AppListState::kStateApps) {
+    ui::SimpleMenuModel* menu_model = shelf_menu_model_adapter->model();
+    sort_apps_submenu_ = std::make_unique<ui::SimpleMenuModel>(
+        static_cast<ShelfContextMenuModel*>(menu_model));
+    sort_apps_submenu_->AddItemWithIcon(
+        REORDER_BY_NAME_ALPHABETICAL,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME),
+        ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+    sort_apps_submenu_->AddItemWithIcon(
+        REORDER_BY_COLOR,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_COLOR),
+        ui::ImageModel::FromVectorIcon(kSortColorIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+    menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
+    menu_model->AddSubMenuWithIcon(
+        REORDER_SUBMENU,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE),
+        sort_apps_submenu_.get(),
+        ui::ImageModel::FromVectorIcon(kReorderIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+
+    // Append the "Show all suggestions" / "Hide all suggestions" item.
+    menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
+    if (app_list_controller->ShouldHideContinueSection()) {
+      menu_model->AddItemWithIcon(
+          ShelfContextMenuModel::MENU_SHOW_CONTINUE_SECTION,
+          l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_SHOW_CONTINUE_SECTION),
+          ui::ImageModel::FromVectorIcon(kLauncherShowContinueSectionIcon,
+                                         ui::kColorAshSystemUIMenuIcon));
+    } else {
+      menu_model->AddItemWithIcon(
+          ShelfContextMenuModel::MENU_HIDE_CONTINUE_SECTION,
+          l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_HIDE_CONTINUE_SECTION),
+          ui::ImageModel::FromVectorIcon(kLauncherHideContinueSectionIcon,
+                                         ui::kColorAshSystemUIMenuIcon));
+    }
+  }
+  return shelf_menu_model_adapter;
 }
 
 void RootWindowController::OnMenuClosed() {

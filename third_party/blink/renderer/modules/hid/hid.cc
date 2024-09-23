@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_device_filter.h"
@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
 #include "third_party/blink/renderer/modules/hid/hid_device.h"
@@ -33,6 +34,25 @@ const char kContextGone[] = "Script context has shut down.";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"hid\" is disallowed by permissions policy.";
 
+bool IsContextSupported(ExecutionContext* context) {
+  // Since WebHID on Web Workers is in the process of being implemented, we
+  // check here if the runtime flag for the appropriate worker is enabled.
+  // TODO(https://crbug.com/365932453): Remove this check once the feature has
+  // shipped.
+  if (!context) {
+    return false;
+  }
+
+  DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope() ||
+         context->IsServiceWorkerGlobalScope());
+  DCHECK(!context->IsDedicatedWorkerGlobalScope() ||
+         RuntimeEnabledFeatures::WebHIDOnDedicatedWorkersEnabled());
+  DCHECK(!context->IsServiceWorkerGlobalScope() ||
+         RuntimeEnabledFeatures::WebHIDOnServiceWorkersEnabled());
+
+  return true;
+}
+
 // Carries out basic checks for the web-exposed APIs, to make sure the minimum
 // requirements for them to be served are met. Returns true if any conditions
 // fail to be met, generating an appropriate exception as well. Otherwise,
@@ -40,7 +60,7 @@ const char kFeaturePolicyBlocked[] =
 bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
                                ExecutionContext* context,
                                ExceptionState* exception_state) {
-  if (!context) {
+  if (!IsContextSupported(context)) {
     if (exception_state) {
       exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                          kContextGone);
@@ -48,14 +68,21 @@ bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
     return true;
   }
 
-  // The security origin must match the one checked by the browser process.
-  // Service Workers do not use delegated permissions so we use their security
-  // origin directly.
-  DCHECK(context->IsWindow() || context->IsServiceWorkerGlobalScope());
-  auto* security_origin =
-      window
-          ? window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin()
-          : context->GetSecurityOrigin();
+  // For window and dedicated workers, reject the request if the top-level frame
+  // has an opaque origin. For Service Workers, we use their security origin
+  // directly as they do not use delegated permissions.
+  const SecurityOrigin* security_origin = nullptr;
+  if (context->IsWindow()) {
+    security_origin =
+        window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin();
+  } else if (context->IsDedicatedWorkerGlobalScope()) {
+    security_origin = static_cast<WorkerGlobalScope*>(context)
+                          ->top_level_frame_security_origin();
+  } else if (context->IsServiceWorkerGlobalScope()) {
+    security_origin = context->GetSecurityOrigin();
+  } else {
+    NOTREACHED();
+  }
   if (security_origin->IsOpaque()) {
     if (exception_state) {
       exception_state->ThrowSecurityError(
@@ -78,7 +105,7 @@ bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
 }
 
 void RejectWithTypeError(const String& message,
-                         ScriptPromiseResolver* resolver) {
+                         ScriptPromiseResolverBase* resolver) {
   ScriptState::Scope scope(resolver->GetScriptState());
   v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
   resolver->Reject(V8ThrowException::CreateTypeError(isolate, message));
@@ -182,14 +209,15 @@ void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
   DeviceAdded(std::move(device_info));
 }
 
-ScriptPromise HID::getDevices(ScriptState* script_state,
-                              ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<HIDDevice>> HID::getDevices(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (ShouldBlockHidServiceCall(GetSupplementable()->DomWindow(),
                                 GetExecutionContext(), &exception_state)) {
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<HIDDevice>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<HIDDeviceResolver>(
       script_state, exception_state.GetContext());
   get_devices_promises_.insert(resolver);
 
@@ -199,32 +227,33 @@ ScriptPromise HID::getDevices(ScriptState* script_state,
   return resolver->Promise();
 }
 
-ScriptPromise HID::requestDevice(ScriptState* script_state,
-                                 const HIDDeviceRequestOptions* options,
-                                 ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<HIDDevice>> HID::requestDevice(
+    ScriptState* script_state,
+    const HIDDeviceRequestOptions* options,
+    ExceptionState& exception_state) {
   // requestDevice requires a window to satisfy the user activation requirement
   // and to show a chooser dialog.
   auto* window = GetSupplementable()->DomWindow();
   if (!window) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       kContextGone);
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<HIDDevice>>();
   }
 
   if (ShouldBlockHidServiceCall(window, GetExecutionContext(),
                                 &exception_state)) {
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<HIDDevice>>();
   }
 
   if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<HIDDevice>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<HIDDeviceResolver>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   request_device_promises_.insert(resolver);
 
   Vector<mojom::blink::HidDeviceFilterPtr> mojo_filters;
@@ -246,7 +275,7 @@ ScriptPromise HID::requestDevice(ScriptState* script_state,
     if (options->exclusionFilters().size() == 0) {
       exception_state.ThrowTypeError(
           "'exclusionFilters', if present, must contain at least one filter.");
-      return ScriptPromise();
+      return ScriptPromise<IDLSequence<HIDDevice>>();
     }
     mojo_exclusion_filters.reserve(options->exclusionFilters().size());
     for (const auto& exclusion_filter : options->exclusionFilters()) {
@@ -297,7 +326,7 @@ HIDDevice* HID::GetOrCreateDevice(device::mojom::blink::HidDeviceInfoPtr info) {
 }
 
 void HID::FinishGetDevices(
-    ScriptPromiseResolver* resolver,
+    HIDDeviceResolver* resolver,
     Vector<device::mojom::blink::HidDeviceInfoPtr> device_infos) {
   DCHECK(get_devices_promises_.Contains(resolver));
   get_devices_promises_.erase(resolver);
@@ -310,7 +339,7 @@ void HID::FinishGetDevices(
 }
 
 void HID::FinishRequestDevice(
-    ScriptPromiseResolver* resolver,
+    HIDDeviceResolver* resolver,
     Vector<device::mojom::blink::HidDeviceInfoPtr> device_infos) {
   DCHECK(request_device_promises_.Contains(resolver));
   request_device_promises_.erase(resolver);
@@ -331,6 +360,8 @@ void HID::EnsureServiceConnection() {
   if (service_.is_bound())
     return;
 
+  DCHECK(IsContextSupported(GetExecutionContext()));
+
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
@@ -347,15 +378,17 @@ void HID::CloseServiceConnection() {
 
   // Script may execute during a call to Resolve(). Swap these sets to prevent
   // concurrent modification.
-  HeapHashSet<Member<ScriptPromiseResolver>> get_devices_promises;
+  HeapHashSet<Member<HIDDeviceResolver>> get_devices_promises;
   get_devices_promises_.swap(get_devices_promises);
-  for (ScriptPromiseResolver* resolver : get_devices_promises)
+  for (HIDDeviceResolver* resolver : get_devices_promises) {
     resolver->Resolve(HeapVector<Member<HIDDevice>>());
+  }
 
-  HeapHashSet<Member<ScriptPromiseResolver>> request_device_promises;
+  HeapHashSet<Member<HIDDeviceResolver>> request_device_promises;
   request_device_promises_.swap(request_device_promises);
-  for (ScriptPromiseResolver* resolver : request_device_promises)
+  for (HIDDeviceResolver* resolver : request_device_promises) {
     resolver->Resolve(HeapVector<Member<HIDDevice>>());
+  }
 }
 
 mojom::blink::HidDeviceFilterPtr HID::ConvertDeviceFilter(

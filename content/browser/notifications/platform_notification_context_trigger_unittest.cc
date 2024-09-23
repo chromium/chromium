@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -232,35 +233,37 @@ TEST_F(PlatformNotificationContextTriggerTest,
 TEST_F(PlatformNotificationContextTriggerTest,
        LimitsNumberOfScheduledNotificationsPerOrigin) {
   for (int i = 1; i <= kMaximumScheduledNotificationsPerOrigin; ++i) {
-    WriteNotificationData(std::to_string(i), Time::Now() + base::Seconds(i));
+    WriteNotificationData(base::NumberToString(i),
+                          Time::Now() + base::Seconds(i));
   }
 
   ASSERT_FALSE(TryWriteNotificationData(
       "https://example.com",
-      std::to_string(kMaximumScheduledNotificationsPerOrigin + 1),
+      base::NumberToString(kMaximumScheduledNotificationsPerOrigin + 1),
       Time::Now() +
           base::Seconds(kMaximumScheduledNotificationsPerOrigin + 1)));
 
   ASSERT_TRUE(TryWriteNotificationData(
       "https://example2.com",
-      std::to_string(kMaximumScheduledNotificationsPerOrigin + 1),
+      base::NumberToString(kMaximumScheduledNotificationsPerOrigin + 1),
       Time::Now() +
           base::Seconds(kMaximumScheduledNotificationsPerOrigin + 1)));
 }
 
 TEST_F(PlatformNotificationContextTriggerTest, EnforcesLimitOnUpdate) {
   for (int i = 1; i <= kMaximumScheduledNotificationsPerOrigin; ++i) {
-    WriteNotificationData(std::to_string(i), Time::Now() + base::Seconds(i));
+    WriteNotificationData(base::NumberToString(i),
+                          Time::Now() + base::Seconds(i));
   }
 
   ASSERT_TRUE(TryWriteNotificationData(
       "https://example.com",
-      std::to_string(kMaximumScheduledNotificationsPerOrigin + 1),
+      base::NumberToString(kMaximumScheduledNotificationsPerOrigin + 1),
       std::nullopt));
 
   ASSERT_FALSE(TryWriteNotificationData(
       "https://example.com",
-      std::to_string(kMaximumScheduledNotificationsPerOrigin + 1),
+      base::NumberToString(kMaximumScheduledNotificationsPerOrigin + 1),
       Time::Now() +
           base::Seconds(kMaximumScheduledNotificationsPerOrigin + 1)));
 }

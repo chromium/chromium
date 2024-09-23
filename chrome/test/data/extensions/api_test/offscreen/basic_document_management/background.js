@@ -18,6 +18,13 @@ async function hasOffscreenDocument() {
   return contexts.length == 1;
 }
 
+self.addEventListener('fetch', (e) => {
+  var url = new URL(e.request.url);
+  if (url.pathname == '/request_handled_by_sw.html') {
+    e.respondWith(new Response('<html>Hello, world!</html>'));
+  }
+});
+
 chrome.test.runTests([
   async function createDocumentAndEnsureItExistsAndThenClose() {
     chrome.test.assertFalse(await hasOffscreenDocument());
@@ -139,33 +146,46 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function nonexistentRelativePathIsAccepted() {
+  // Regression test for https://crbug.com/330570363.
+  async function nonExistentRelativePathThrowsAnError() {
+    // Try to create an offscreen with a nonexistent resource that results in
+    // an error page.
+    await chrome.test.assertPromiseRejects(
+        chrome.offscreen.createDocument(
+            {
+              url: 'nonexistent.html',
+              reasons: ['TESTING'],
+              justification: 'testing'
+            }),
+        'Error: Page failed to load.');
+    // There should be no corresponding offscreen context...
     chrome.test.assertFalse(await hasOffscreenDocument());
-    // Questionable behavior: A non-existent relative path is accepted and the
-    // document is created. In many cases, this could be an extension bug, but
-    // there are valid cases when extensions may do this (e.g., with custom
-    // service worker handling for a fetch event). Additionally, this matches
-    // our behavior with other contexts like tabs (where we will commit the URL,
-    // but show an error).
+    // ... and creating a new offscreen document should succeed.
     await chrome.offscreen.createDocument(
         {
-          url: 'non_extistent.html',
+          url: 'offscreen.html',
           reasons: ['TESTING'],
-          justification: 'ignored',
+          justification: 'testing'
         });
-
-    // However, the document is *not* associated with the extension (because it
-    // commits to an error page). Because of this, `runtime.getContexts()` does
-    // not return the context.
-    // TODO(devlin): That leads to a bit of a problem where an extension has an
-    // offscreen document (and thus trying to create a new one won't succeed),
-    // but the result isn't included in runtime.getContexts(), implying there
-    // isn't one. But, `offscreen.closeDocument()` would still work. Is that a
-    // big enough thorn that we need to fix it?
-    chrome.test.assertFalse(await hasOffscreenDocument());
 
     // Tidy up.
     await chrome.offscreen.closeDocument();
     chrome.test.succeed();
   },
-])
+
+  async function serviceWorkerServedDocumentSucceeds() {
+    // Create a document with a resource served by the service worker. This
+    // should succeed.
+    await chrome.offscreen.createDocument(
+        {
+          url: 'request_handled_by_sw.html',
+          reasons: ['TESTING'],
+          justification: 'testing'
+        });
+    chrome.test.assertTrue(await hasOffscreenDocument());
+
+    // Tidy up.
+    await chrome.offscreen.closeDocument();
+    chrome.test.succeed();
+  },
+]);

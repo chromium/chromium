@@ -23,9 +23,7 @@ def _GenerateSchema(filename, root, destdir, namespace):
   # Load in the feature permissions from the JSON file.
   schema = os.path.normpath(filename)
   schema_loader = SchemaLoader(os.path.dirname(os.path.relpath(schema, root)),
-                               os.path.dirname(schema),
-                               [],
-                               None)
+                               os.path.dirname(schema), [], None)
   schema_filename = os.path.splitext(schema)[0]
   feature_defs = schema_loader.LoadSchema(schema)
 
@@ -38,10 +36,8 @@ def _GenerateSchema(filename, root, destdir, namespace):
   relpath = os.path.relpath(os.path.normpath(source_file_dir), root)
   full_path = os.path.join(relpath, schema)
 
-  generators = [
-      ('%s.cc' % schema_filename, CCGenerator()),
-      ('%s.h' % schema_filename, HGenerator())
-  ]
+  generators = [('%s.cc' % schema_filename, CCGenerator()),
+                ('%s.h' % schema_filename, HGenerator())]
 
   # Generate and output the code for all features.
   output_code = []
@@ -59,12 +55,19 @@ if __name__ == '__main__':
   parser = optparse.OptionParser(
       description='Generates a C++ features model from JSON schema',
       usage='usage: %prog [option]... schema')
-  parser.add_option('-r', '--root', default='.',
+  parser.add_option(
+      '-r',
+      '--root',
+      default='.',
       help='logical include root directory. Path to schema files from '
-           'specified dir will be the include path.')
-  parser.add_option('-d', '--destdir',
-      help='root directory to output generated files.')
-  parser.add_option('-n', '--namespace', default='generated_features',
+      'specified dir will be the include path.')
+  parser.add_option('-d',
+                    '--destdir',
+                    help='root directory to output generated files.')
+  parser.add_option(
+      '-n',
+      '--namespace',
+      default='generated_features',
       help='C++ namespace for generated files. e.g extensions::api.')
   (opts, filenames) = parser.parse_args()
 

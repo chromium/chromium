@@ -136,7 +136,7 @@ class Kind:
             == (rhs.spec, rhs.parent_kind, rhs.is_nullable))
 
   def __hash__(self):
-    # TODO(crbug.com/1060471): Remove this and other __hash__ methods on Kind
+    # TODO(crbug.com/40122051): Remove this and other __hash__ methods on Kind
     # and its subclasses. This is to support existing generator code which uses
     # some primitive Kinds as dict keys. The default hash (object identity)
     # breaks these dicts when a pickled Module instance is unpickled and used
@@ -389,6 +389,8 @@ PRIMITIVES = (
 
 ATTRIBUTE_MIN_VERSION = 'MinVersion'
 ATTRIBUTE_DEFAULT = 'Default'
+ATTRIBUTE_DISPATCH_DEBUG_ALIAS = 'DispatchDebugAlias'
+ATTRIBUTE_ESTIMATE_SIZE = 'EstimateSize'
 ATTRIBUTE_EXTENSIBLE = 'Extensible'
 ATTRIBUTE_NO_INTERRUPT = 'NoInterrupt'
 ATTRIBUTE_STABLE = 'Stable'
@@ -1024,6 +1026,11 @@ class Method:
         if self.attributes else True
 
   @property
+  def estimate_message_size(self):
+    return self.attributes.get(ATTRIBUTE_ESTIMATE_SIZE) \
+        if self.attributes else False
+
+  @property
   def unlimited_message_size(self):
     return self.attributes.get(ATTRIBUTE_UNLIMITED_SIZE) \
         if self.attributes else False
@@ -1181,6 +1188,11 @@ class Interface(ReferenceKind):
                        'a UUID.'.format(self.mojom_name))
     return (int(u.hex[:16], 16), int(u.hex[16:], 16))
 
+  @property
+  def dispatch_debug_alias(self):
+    return self.attributes.get(ATTRIBUTE_DISPATCH_DEBUG_ALIAS) \
+           if self.attributes else None
+
   def __hash__(self):
     return id(self)
 
@@ -1232,7 +1244,7 @@ class Enum(ValueKind):
       spec = 'x:' + mojom_name
     else:
       spec = None
-    ValueKind.__init__(self, spec, False, module)
+    super().__init__(spec, False, module)
     self.mojom_name = mojom_name
     self.name = None
     self.native_only = False
@@ -1677,3 +1689,9 @@ def ContainsNativeTypes(kind):
     return False
 
   return Check(kind)
+
+
+def EnsureUnnullable(kind):
+  if IsNullableKind(kind):
+    return kind.MakeUnnullableKind()
+  return kind

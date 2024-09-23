@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
@@ -94,7 +95,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::NEW_BACKGROUND_TAB,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
+        browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
       }
 
@@ -102,7 +103,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::NEW_WINDOW,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
+        browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
       }
 
@@ -110,7 +111,7 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         content::OpenURLParams params(url_, content::Referrer(),
                                       WindowOpenDisposition::OFF_THE_RECORD,
                                       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
+        browser_->OpenURL(params, /*navigation_handle_callback=*/{});
         break;
       }
 
@@ -121,10 +122,10 @@ class ReadLaterItemContextMenu : public ui::SimpleMenuModel,
         reading_list_model_->SetReadStatusIfExists(url_, false);
         break;
       case kDelete:
-        reading_list_model_->RemoveEntryByURL(url_);
+        reading_list_model_->RemoveEntryByURL(url_, FROM_HERE);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -195,7 +196,7 @@ void ReadingListPageHandler::OpenURL(
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  browser->OpenURL(params);
+  browser->OpenURL(params, /*navigation_handle_callback=*/{});
 
   scoped_refptr<const ReadingListEntry> entry =
       reading_list_model_->GetEntryByURL(url);
@@ -241,7 +242,7 @@ void ReadingListPageHandler::AddCurrentTab() {
 }
 
 void ReadingListPageHandler::RemoveEntry(const GURL& url) {
-  reading_list_model_->RemoveEntryByURL(url);
+  reading_list_model_->RemoveEntryByURL(url, FROM_HERE);
   base::RecordAction(base::UserMetricsAction("DesktopReadingList.RemoveItem"));
 }
 

@@ -58,7 +58,7 @@ bool XRFrameTransport::DrawingIntoSharedBuffer() {
         DRAW_INTO_TEXTURE_MAILBOX:
       return true;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -99,7 +99,7 @@ void XRFrameTransport::FrameSubmitMissing(
   vr_presentation_provider->SubmitFrameMissing(vr_frame_id, sync_token);
 }
 
-void XRFrameTransport::FrameSubmit(
+bool XRFrameTransport::FrameSubmit(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     gpu::gles2::GLES2Interface* gl,
     gpu::SharedImageInterface* sii,
@@ -134,7 +134,7 @@ void XRFrameTransport::FrameSubmit(
       FrameSubmitMissing(vr_presentation_provider, gl, vr_frame_id);
       // We didn't actually submit anything, so don't set
       // the waiting_for_previous_frame_transfer_ and related state.
-      return;
+      return false;
     }
 
     // We decompose the cloned handle, and use it to create a
@@ -196,7 +196,7 @@ void XRFrameTransport::FrameSubmit(
     vr_presentation_provider->SubmitFrameDrawnIntoTexture(
         vr_frame_id, sync_token, frame_wait_time_);
   } else {
-    NOTREACHED() << "Unimplemented frame transport method";
+    NOTREACHED_IN_MIGRATION() << "Unimplemented frame transport method";
   }
 
   // Set the expected notifications the next frame should wait for.
@@ -205,12 +205,18 @@ void XRFrameTransport::FrameSubmit(
   waiting_for_previous_frame_render_ =
       transport_options_->wait_for_render_notification;
   waiting_for_previous_frame_fence_ = transport_options_->wait_for_gpu_fence;
+  return true;
 }
 
 void XRFrameTransport::OnSubmitFrameTransferred(bool success) {
   DVLOG(3) << __FUNCTION__;
   waiting_for_previous_frame_transfer_ = false;
   last_transfer_succeeded_ = success;
+}
+
+void XRFrameTransport::RegisterFrameRenderedCallback(
+    base::RepeatingClosure callback) {
+  on_submit_frame_rendered_callback_ = std::move(callback);
 }
 
 void XRFrameTransport::WaitForPreviousTransfer() {
@@ -228,6 +234,9 @@ void XRFrameTransport::WaitForPreviousTransfer() {
 void XRFrameTransport::OnSubmitFrameRendered() {
   DVLOG(3) << __FUNCTION__;
   waiting_for_previous_frame_render_ = false;
+  if (on_submit_frame_rendered_callback_) {
+    on_submit_frame_rendered_callback_.Run();
+  }
 }
 
 base::TimeDelta XRFrameTransport::WaitForPreviousRenderToFinish() {
@@ -248,6 +257,9 @@ void XRFrameTransport::OnSubmitFrameGpuFence(gfx::GpuFenceHandle handle) {
   // We just received a GpuFence, unblock WaitForGpuFenceReceived.
   waiting_for_previous_frame_fence_ = false;
   previous_frame_fence_ = std::make_unique<gfx::GpuFence>(std::move(handle));
+  if (on_submit_frame_rendered_callback_) {
+    on_submit_frame_rendered_callback_.Run();
+  }
 }
 
 base::TimeDelta XRFrameTransport::WaitForGpuFenceReceived() {

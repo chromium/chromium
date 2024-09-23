@@ -152,9 +152,9 @@ TEST_F(NativeViewHostMacTest, CheckNativeViewReferenceOnAttach) {
 
   // Create a second widget.
   auto second_widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.delegate = nullptr;
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   second_widget->Init(std::move(params));
 
   // No reference to its native view should exist currently.
@@ -195,9 +195,9 @@ TEST_F(NativeViewHostMacTest, CheckNoNativeViewReferenceOnDestruct) {
 
   // Create a second widget.
   auto second_widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   params.delegate = nullptr;
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   second_widget->Init(std::move(params));
 
   // No reference should to the native view should exist currently.
@@ -241,17 +241,11 @@ TEST_F(NativeViewHostMacTest, ContentViewPositionAndSize) {
   CreateHost();
   toplevel()->SetBounds(gfx::Rect(0, 0, 100, 100));
 
-  // The new visual style on macOS 11 (and presumably later) has slightly taller
-  // titlebars, which means the window rect has to leave a bit of extra space
-  // for the titlebar.
-  int titlebar_extra = base::mac::MacOSMajorVersion() >= 11 ? 6 : 0;
-
   native_host()->ShowWidget(5, 10, 100, 100, 200, 200);
-  EXPECT_NSEQ(NSMakeRect(5, -32 - titlebar_extra, 100, 100),
-              [native_view_ frame]);
+  EXPECT_NSEQ(NSMakeRect(5, -38, 100, 100), native_view_.frame);
 
   native_host()->ShowWidget(10, 25, 50, 50, 50, 50);
-  EXPECT_NSEQ(NSMakeRect(10, 3 - titlebar_extra, 50, 50), [native_view_ frame]);
+  EXPECT_NSEQ(NSMakeRect(10, -3, 50, 50), native_view_.frame);
 
   DestroyHost();
 }

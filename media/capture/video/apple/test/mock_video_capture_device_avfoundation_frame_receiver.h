@@ -25,12 +25,15 @@ class MockVideoCaptureDeviceAVFoundationFrameReceiver
                int aspect_numerator,
                int aspect_denominator,
                base::TimeDelta timestamp,
+               std::optional<base::TimeTicks> capture_begin_time,
                int rotation),
               (override));
 
   MOCK_METHOD(void,
               ReceiveExternalGpuMemoryBufferFrame,
-              (CapturedExternalVideoBuffer frame, base::TimeDelta timestamp),
+              (CapturedExternalVideoBuffer frame,
+               base::TimeDelta timestamp,
+               std::optional<base::TimeTicks> capture_begin_time),
               (override));
 
   MOCK_METHOD(void,
@@ -50,6 +53,8 @@ class MockVideoCaptureDeviceAVFoundationFrameReceiver
               (override));
 
   MOCK_METHOD(void, ReceiveCaptureConfigurationChanged, (), (override));
+
+  MOCK_METHOD(void, OnLog, (const std::string& message), (override));
 };
 
 }  // namespace media

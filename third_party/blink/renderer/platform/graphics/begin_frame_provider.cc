@@ -130,6 +130,12 @@ void BeginFrameProvider::OnBeginFrame(
 }
 
 void BeginFrameProvider::FinishBeginFrame(const viz::BeginFrameArgs& args) {
+  // It appears that we can lose our existing Mojo Connection, and previously
+  // posted tasks can attempt to use the unbounded `compositor_frame_sink_`.
+  // If that occurs return so that we don't crash.
+  if (!compositor_frame_sink_.is_bound()) {
+    return;
+  }
   compositor_frame_sink_->DidNotProduceFrame(viz::BeginFrameAck(args, false));
 }
 

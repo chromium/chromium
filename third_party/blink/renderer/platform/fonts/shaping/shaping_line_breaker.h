@@ -17,6 +17,7 @@
 
 namespace blink {
 
+class Font;
 class ShapeResult;
 class ShapeResultView;
 class Hyphenation;
@@ -39,7 +40,8 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   // Construct a ShapingLineBreaker.
   ShapingLineBreaker(const ShapeResult* result,
                      const LazyLineBreakIterator* break_iterator,
-                     const Hyphenation* hyphenation);
+                     const Hyphenation* hyphenation,
+                     const Font* font);
 
   // Represents details of the result of |ShapeLine()|.
   struct Result {
@@ -158,6 +160,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   const ShapeResult* result_;
   const LazyLineBreakIterator* break_iterator_;
   const Hyphenation* hyphenation_;
+  const Font* font_;
   unsigned line_start_ = 0;
   bool dont_reshape_end_if_at_space_ = false;
   bool no_result_if_overflow_ = false;

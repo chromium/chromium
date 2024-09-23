@@ -5,11 +5,12 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {FindShortcutManager, FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
+import {FindShortcutManager} from 'chrome://resources/cr_elements/find_shortcut_manager.js';
+import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -26,7 +27,7 @@ suite('find-shortcut', () => {
   }
 
   function pressSlash() {
-    pressAndReleaseKeyOn(document.documentElement, 191, '', '/');
+    pressAndReleaseKeyOn(document.documentElement, 191, [], '/');
   }
 
   /**

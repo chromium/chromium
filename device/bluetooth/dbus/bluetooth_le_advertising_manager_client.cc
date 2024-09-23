@@ -16,6 +16,17 @@
 
 namespace bluez {
 
+BluetoothLEAdvertisingManagerClient::Properties::Properties(
+    dbus::ObjectProxy* object_proxy,
+    const std::string& interface_name,
+    const PropertyChangedCallback& callback)
+    : dbus::PropertySet(object_proxy, interface_name, callback) {
+  RegisterProperty(bluetooth_advertising_manager::kSupportedFeatures,
+                   &supported_features);
+}
+
+BluetoothLEAdvertisingManagerClient::Properties::~Properties() = default;
+
 const char BluetoothLEAdvertisingManagerClient::kNoResponseError[] =
     "org.chromium.Error.NoResponse";
 
@@ -57,8 +68,14 @@ class BluetoothAdvertisementManagerClientImpl
       dbus::ObjectProxy* object_proxy,
       const dbus::ObjectPath& object_path,
       const std::string& interface_name) override {
-    return new dbus::PropertySet(object_proxy, interface_name,
-                                 dbus::PropertySet::PropertyChangedCallback());
+    return new Properties(object_proxy, interface_name, base::DoNothing());
+  }
+
+  // BluetoothAdvertisementManagerClient override.
+  Properties* GetProperties(const dbus::ObjectPath& object_path) override {
+    return static_cast<Properties*>(object_manager_->GetProperties(
+        object_path,
+        bluetooth_advertising_manager::kBluetoothAdvertisingManagerInterface));
   }
 
   // BluetoothAdvertisementManagerClient override.

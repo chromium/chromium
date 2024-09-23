@@ -4,12 +4,18 @@
 
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_handler.h"
 
+#include <fcntl.h>
+
+#include <optional>
 #include <string>
 
+#include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/bluetooth/adapter.h"
@@ -21,6 +27,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "chrome/browser/ash/bluetooth/debug_logs_manager.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "device/bluetooth/chromeos_platform_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -33,6 +41,30 @@ using content::WebContents;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using ash::bluetooth_config::mojom::BluetoothSystemState;
+
+constexpr char kBtsnoopFileName[] = "capture.btsnoop";
+// TODO(b/347880605): find a better way to query the actual downloads path
+constexpr char kDownloadsPath[] = "/home/chronos/user/Downloads/";
+constexpr char kDownloadsPathNew[] = "/home/chronos/user/MyFiles/Downloads/";
+
+class BluetoothBtsnoop : public mojom::BluetoothBtsnoop {
+ public:
+  explicit BluetoothBtsnoop(
+      mojo::PendingReceiver<mojom::BluetoothBtsnoop> receiver,
+      base::OnceCallback<void(StopCallback callback)> on_stop_callback)
+      : receiver_(this, std::move(receiver)),
+        on_stop_callback_(std::move(on_stop_callback)) {}
+
+  BluetoothBtsnoop(const BluetoothBtsnoop&) = delete;
+  BluetoothBtsnoop& operator=(const BluetoothBtsnoop&) = delete;
+  ~BluetoothBtsnoop() override = default;
+
+  void Stop(StopCallback callback) override;
+
+ private:
+  mojo::Receiver<mojom::BluetoothBtsnoop> receiver_;
+  base::OnceCallback<void(StopCallback callback)> on_stop_callback_;
+};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
@@ -205,5 +237,91 @@ void BluetoothInternalsHandler::OnPropertiesUpdated(
     turning_bluetooth_off_ = false;
     std::move(restart_system_bluetooth_callback_).Run();
   }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void BluetoothInternalsHandler::StartBtsnoop(StartBtsnoopCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::DebugDaemonClient::Get()->BluetoothStartBtsnoop(
+      base::BindOnce(&BluetoothInternalsHandler::OnStartBtsnoopResp,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+#else
+  std::move(callback).Run(mojo::NullRemote());
+#endif
+}
+
+void BluetoothInternalsHandler::IsBtsnoopFeatureEnabled(
+    IsBtsnoopFeatureEnabledCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool enabled = base::FeatureList::IsEnabled(
+      chromeos::bluetooth::features::kBluetoothBtsnoopInternals);
+  std::move(callback).Run(enabled);
+#else
+  std::move(callback).Run(false);
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void BluetoothInternalsHandler::OnStartBtsnoopResp(
+    StartBtsnoopCallback callback,
+    bool success) {
+  if (!success) {
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  mojo::PendingRemote<mojom::BluetoothBtsnoop> remote_btsnoop;
+  btsnoop_ = std::make_unique<BluetoothBtsnoop>(
+      remote_btsnoop.InitWithNewPipeAndPassReceiver(),
+      base::BindOnce(&BluetoothInternalsHandler::StopBtsnoop,
+                     base::Unretained(this)));
+  std::move(callback).Run(std::move(remote_btsnoop));
+}
+
+void BluetoothInternalsHandler::StopBtsnoop(
+    mojom::BluetoothBtsnoop::StopCallback callback) {
+  std::optional<base::FilePath> dir_path = GetDownloadsPath();
+  if (!dir_path.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Open the file for writing, then pass the fd via DBus.
+  base::FilePath file_path = dir_path.value().Append(kBtsnoopFileName);
+  base::ScopedFD fd(HANDLE_EINTR(
+      open(file_path.value().c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0644)));
+  if (!fd.is_valid()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  ash::DebugDaemonClient::Get()->BluetoothStopBtsnoop(
+      fd.get(),
+      base::BindOnce(&BluetoothInternalsHandler::OnStopBtsnoopResp,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BluetoothInternalsHandler::OnStopBtsnoopResp(
+    mojom::BluetoothBtsnoop::StopCallback callback,
+    bool success) {
+  std::move(callback).Run(success);
+  btsnoop_ = nullptr;
+}
+
+std::optional<base::FilePath> BluetoothInternalsHandler::GetDownloadsPath() {
+  // Check for both downloads paths. There ought to be a better way to do this,
+  // but we can iterate later.
+  base::FilePath dir_path = base::FilePath(kDownloadsPathNew);
+  if (!base::PathExists(dir_path)) {
+    dir_path = base::FilePath(kDownloadsPath);
+    if (!base::PathExists(dir_path)) {
+      return std::nullopt;
+    }
+  }
+  return std::optional<base::FilePath>(dir_path);
+}
+
+void BluetoothBtsnoop::Stop(StopCallback callback) {
+  std::move(on_stop_callback_).Run(std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

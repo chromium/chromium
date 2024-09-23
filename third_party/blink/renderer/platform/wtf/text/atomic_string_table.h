@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -46,6 +45,7 @@ class WTF_EXPORT AtomicStringTable final {
   scoped_refptr<StringImpl> Add(const UChar* chars,
                                 unsigned length,
                                 AtomicStringUCharEncoding encoding);
+  scoped_refptr<StringImpl> Add(const StringView& string_view);
 
   // Adding UTF8.
   // Returns null if the characters contain invalid utf8 sequences.
@@ -92,11 +92,13 @@ class WTF_EXPORT AtomicStringTable final {
 
   WeakResult WeakFindForTesting(const StringView& string) {
     // Mirror the empty logic in Add().
-    if (UNLIKELY(!string.length()))
+    if (!string.length()) [[unlikely]] {
       return WeakResult(StringImpl::empty_);
+    }
 
-    if (LIKELY(string.IsAtomic()))
+    if (string.IsAtomic()) [[likely]] {
       return WeakResult(string.SharedImpl());
+    }
 
     return WeakFindSlowForTesting(string);
   }

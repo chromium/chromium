@@ -88,7 +88,7 @@ v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
     return v8::EmbedderGraph::Node::Detachedness::kUnknown;
   }
   const auto& root_node = OpaqueRootForGC(
-      isolate, V8Node::ToWrappableUnsafe(v8_value.As<v8::Object>()));
+      isolate, V8Node::ToWrappableUnsafe(isolate, v8_value.As<v8::Object>()));
   if (root_node.isConnected() && root_node.GetExecutionContext()) {
     return v8::EmbedderGraph::Node::Detachedness::kAttached;
   }
@@ -135,11 +135,6 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
   V8PerIsolateData::From(isolate)->LeaveGC();
 
   ScriptForbiddenScope::Exit();
-
-  ThreadState* current_thread_state = ThreadState::Current();
-  if (current_thread_state) {
-    current_thread_state->NotifyGarbageCollection(type, flags);
-  }
 
   TRACE_EVENT_INSTANT1(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",

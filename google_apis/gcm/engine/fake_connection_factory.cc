@@ -28,8 +28,9 @@ void FakeConnectionFactory::Initialize(
     const ConnectionHandler::ProtoReceivedCallback& read_callback,
     const ConnectionHandler::ProtoSentCallback& write_callback) {
   request_builder_ = request_builder;
-  connection_handler_ =
-      std::make_unique<FakeConnectionHandler>(read_callback, write_callback);
+  connection_handler_ = std::make_unique<FakeConnectionHandler>(
+      read_callback, write_callback,
+      ConnectionHandler::ConnectionChangedCallback());
 }
 
 ConnectionHandler* FakeConnectionFactory::GetConnectionHandler() const {

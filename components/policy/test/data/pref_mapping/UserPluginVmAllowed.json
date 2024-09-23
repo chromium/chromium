@@ -9,7 +9,9 @@
           "UserPluginVmAllowed": true
         },
         "prefs": {
-          "plugin_vm.allowed": {}
+          "plugin_vm.allowed": {
+            "value": true
+          }
         }
       }
     ]

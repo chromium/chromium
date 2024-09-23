@@ -69,7 +69,7 @@ bool Deserialize(DataType&& input, InputUserType* output, Args&&... args) {
                                             ::mojo::DefaultConstruct::Tag>) {
         output->emplace(mojo::internal::DefaultConstructTag());
       } else {
-        output->emplace();
+        output->emplace(typename InputUserType::value_type());
       }
     }
     return Deserialize<MojomType>(std::forward<DataType>(input),

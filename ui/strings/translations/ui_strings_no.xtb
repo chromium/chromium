@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Undersøkelse</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB per sek</translation>
 <translation id="2353636109065292463">Sjekker internettilkoblingen din</translation>
+<translation id="2359808026110333948">Fortsett</translation>
 <translation id="2388990488038464401">Vil du ringe dette nummeret fra telefonen?</translation>
 <translation id="2435457462613246316">Vis passord</translation>
 <translation id="24452542372838207">Vis varselet</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NYHET</translation>
 <translation id="2666092431469916601">Topp</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Ny</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{for 1 år siden}other{for # år siden}}</translation>
 <translation id="2878511608894704031">Slett alle</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{om 1 d}other{om # d}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-systemet</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
 <translation id="5613020302032141669">Pil venstre</translation>
+<translation id="5633029987065897167">Tom</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktiv i dag}=1{Aktiv for én dag siden}other{Aktiv for # dager siden}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag og }other{# dager og }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF-innhold</translation>
 <translation id="6539092367496845964">Noe gikk galt. Prøv på nytt senere.</translation>
 <translation id="654149438358937226">Blokkér alle varsler</translation>
-<translation id="6612467943526193239">For å lukke kalibreringen, trykk på Esc.</translation>
 <translation id="6620110761915583480">Lagre fil</translation>
 <translation id="6699343763173986273">Media – neste spor</translation>
 <translation id="6808150112686056157">Media – stopp</translation>

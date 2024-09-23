@@ -11,3 +11,10 @@ include_rules = [
   "+ui/views",
   "+ui/wm",
 ]
+
+specific_include_rules = {
+  "constrained_window_views_browsertest.cc": [
+    "+content/public/test",
+    "+content/shell",
+  ]
+}

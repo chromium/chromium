@@ -12,7 +12,8 @@ import org.chromium.components.browser_ui.share.ShareParams;
 /** Interface to expose sharing to external classes. */
 public interface ShareDelegate {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
+    // should never be reused. Ensure new values are also added to ShareOrigin in
+    // //tools/metrics/histograms/enums.xml.
     @IntDef({
         ShareOrigin.OVERFLOW_MENU,
         ShareOrigin.TOP_TOOLBAR,
@@ -23,7 +24,8 @@ public interface ShareDelegate {
         ShareOrigin.TAB_GROUP,
         ShareOrigin.WEBAPP_NOTIFICATION,
         ShareOrigin.FEED,
-        ShareOrigin.PAGE_INSIGHTS,
+        ShareOrigin.GOOGLE_BOTTOM_BAR,
+        ShareOrigin.CUSTOM_TAB_SHARE_BUTTON,
         ShareOrigin.COUNT
     })
     public @interface ShareOrigin {
@@ -36,10 +38,11 @@ public interface ShareDelegate {
         int TAB_GROUP = 6;
         int WEBAPP_NOTIFICATION = 7;
         int FEED = 8;
-        int PAGE_INSIGHTS = 9;
+        int GOOGLE_BOTTOM_BAR = 10;
+        int CUSTOM_TAB_SHARE_BUTTON = 11;
 
         // Must be the last one.
-        int COUNT = 10;
+        int COUNT = 12;
     }
 
     /**

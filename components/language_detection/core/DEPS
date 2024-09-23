@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/optimization_guide/core",
+  "+components/translate/core/common",
+  "+third_party/smhasher",
+  "+third_party/flatbuffers",
+  "+third_party/tflite",
+  "+third_party/tflite_support",
+  "+third_party/utf",
+]

@@ -4,6 +4,7 @@
 
 #include "ash/frame/snap_controller_impl.h"
 
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
@@ -39,8 +40,9 @@ void SnapControllerImpl::ShowSnapPreview(aura::Window* window,
   const SnapViewType snap_type = snap == chromeos::SnapDirection::kPrimary
                                      ? SnapViewType::kPrimary
                                      : SnapViewType::kSecondary;
-  gfx::Rect phantom_bounds_in_screen =
-      GetDefaultSnappedWindowBoundsInParent(window, snap_type);
+  gfx::Rect phantom_bounds_in_screen = GetSnappedWindowBoundsInParent(
+      window, snap_type,
+      GetAutoSnapRatio(window, window->GetRootWindow(), snap_type));
   ::wm::ConvertRectToScreen(window->parent(), &phantom_bounds_in_screen);
 
   const bool need_haptic_feedback =

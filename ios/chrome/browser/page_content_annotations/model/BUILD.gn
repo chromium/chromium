@@ -1,0 +1,28 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "page_content_annotations_service_factory.h",
+    "page_content_annotations_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/optimization_guide/core",
+    "//components/page_content_annotations/core",
+    "//components/variations/service",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

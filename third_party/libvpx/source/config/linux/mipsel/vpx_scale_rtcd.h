@@ -1,3 +1,13 @@
+/*
+ *  Copyright (c) 2024 The WebM project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 // This file is generated. Do not edit.
 #ifndef VPX_SCALE_RTCD_H_
 #define VPX_SCALE_RTCD_H_
@@ -93,4 +103,4 @@ static void setup_rtcd_internal(void) {}
 }  // extern "C"
 #endif
 
-#endif
+#endif  // VPX_SCALE_RTCD_H_

@@ -6,8 +6,7 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -28,8 +27,7 @@
         "timestamp": "1",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://another-reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -50,8 +48,7 @@
         "timestamp": "2",
         "registration_request": {
           "context_origin": "https://another-source.test",
-          "attribution_src_url": "https://a.reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -71,7 +68,6 @@
       {
         "timestamp": "1000",
         "registration_request": {
-          "attribution_src_url": "https://another-reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -93,7 +89,6 @@
       {
         "timestamp": "1001",
         "registration_request": {
-          "attribution_src_url": "https://a.reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -116,8 +111,7 @@
         "timestamp": "86399999",
         "registration_request": {
           "context_origin": "https://b.source.test",
-          "attribution_src_url": "https://b.reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -139,8 +133,7 @@
         "timestamp": "86400000",
         "registration_request": {
           "context_origin": "https://b.source.test",
-          "attribution_src_url": "https://b.reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -160,7 +153,6 @@
       {
         "timestamp": "86401000",
         "registration_request": {
-          "attribution_src_url": "https://b.reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -181,7 +173,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
       {
         "payload": [
@@ -231,9 +222,10 @@
             "body": {
               "attribution_destination": "https://destination.test",
               "source_event_id": "444",
+              "limit": "1",
               "source_site": "https://source.test"
             },
-            "type": "source-success"
+            "type": "source-reporting-origin-per-site-limit"
           }
         ],
         "report_time": "86399999",

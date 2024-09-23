@@ -24,12 +24,14 @@ include_rules = [
   # as autofill or extensions, and chrome implementation details such as
   # settings, packaging details, installation or crash reporting.
 
+  "+components/app_launch_prefetch",
   "+components/attribution_reporting",
   "+components/browsing_topics/common",
+  "+components/input",
   "+components/memory_pressure",
-  "+components/ml/mojom",
   "+components/services/filesystem",
   "+components/services/font/public",
+  "+components/services/font_data/public",
   "+components/startup_metric_utils",
   "+components/variations",
   "+components/value_store",
@@ -121,6 +123,7 @@ include_rules = [
   "+storage/common",
 
   # For generated JNI includes.
+  "+content/public/android/common_jni",
   "+content/public/android/content_jni_headers",
   "+content/public/android/content_main_dex_jni",
   "+content/public/android/jar_jni",
@@ -131,5 +134,9 @@ specific_include_rules = {
     # content -> content/shell dependency is disallowed, except browser tests.
     "+content/shell/browser",
     "+content/shell/common",
+  ],
+  "content_(features|switches).h": [
+    # content -> tools dependency is disallowed, except buildflags for switches.
+    "+tools/v8_context_snapshot/buildflags.h",
   ],
 }

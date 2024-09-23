@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabGridDialogToolbarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tab_group_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:background="@drawable/tab_grid_dialog_background">
+    <LinearLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="@dimen/tab_grid_dialog_app_bar_padding"
+        android:paddingRight="@dimen/tab_grid_dialog_app_bar_padding"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <LinearLayout
+            android:id="@+id/first_row"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+            <include layout="@layout/toolbar_back_button"/>
+            <Space
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"/>
+            <FrameLayout
+                android:id="@+id/share_button_container"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/min_touch_target_size"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone">
+                <org.chromium.ui.widget.ButtonCompat
+                    android:id="@+id/share_button"
+                    style="@style/DialogShareButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/share_button_height"
+                    android:layout_gravity="center"
+                    android:minWidth="0dp"
+                    android:minHeight="@dimen/share_button_height"
+                    android:singleLine="true"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_group_add_16dp"
+                    android:text="@string/tab_grid_share_button_text"
+                    android:paddingStart="@dimen/share_button_padding_start_end"
+                    android:paddingEnd="@dimen/share_button_padding_start_end"
+                    android:paddingTop="@dimen/share_button_padding_top_bottom"
+                    android:paddingBottom="@dimen/share_button_padding_top_bottom"
+                    app:verticalInset="0dp" />
+            </FrameLayout>
+            <FrameLayout
+                android:id="@+id/image_tiles_container"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/min_touch_target_size"
+                android:minWidth="@dimen/min_touch_target_size"
+                android:layout_marginEnd="12dp"
+                android:visibility="gone"/>
+            <include layout="@layout/toolbar_new_tab_and_menu_button"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/second_row"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+            <FrameLayout
+                android:id="@+id/tab_group_color_icon_container"
+                android:layout_height="@dimen/min_touch_target_size"
+                android:layout_width="@dimen/min_touch_target_size">
+                <ImageView
+                    android:id="@+id/tab_group_color_icon"
+                    android:layout_gravity="center"
+                    android:layout_width="@dimen/tab_group_color_icon_item_size"
+                    android:layout_height="@dimen/tab_group_color_icon_item_size"
+                    android:importantForAccessibility="no"
+                    android:contentDescription="@null"
+                    android:background="@drawable/tab_group_dialog_color_icon" />
+            </FrameLayout>
+            <!-- This generic option should not have autofillHints (crbug.com/1073966#c3). -->
+            <EditText
+                tools:ignore="Autofill,LabelFor"
+                android:id="@+id/title"
+                android:cursorVisible="false"
+                android:layout_height="@dimen/min_touch_target_size"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                android:inputType="text|textNoSuggestions"
+                android:imeOptions="actionDone"
+                android:theme="@style/TabGridDialogTitleTheme"
+                android:gravity="start|center_vertical"
+                android:layout_marginEnd="8dp"
+                android:selectAllOnFocus="true"/>
+        </LinearLayout>
+    </LinearLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabGridDialogToolbarView>

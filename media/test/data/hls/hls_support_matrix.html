@@ -1,0 +1,381 @@
+<html>
+<head>
+  <style>
+    #player {
+      width:320px;
+      height:180px;
+      position:fixed;
+      top:0;
+      left:0;
+      overflow: hidden;
+    }
+    #support_list {
+      width:320px;
+      position:fixed;
+      top:180px;
+      left:0;
+      font-size:10px;
+      overflow:hidden;
+      white-space:nowrap;
+    }
+    #charts {
+      position:fixed;
+      top:0;
+      left:320px;
+    }
+    video {
+      width:320px;
+      height:180px;
+    }
+    ul {margin:0; padding:0;}
+    .green { background-color: green; }
+    .red { background-color: red; }
+    .chart {
+      display: grid;
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="player"></div>
+  <ul id="support_list"></ul>
+  <template id="entry">
+    <li class="entry"></li>
+  </template>
+  <div id="charts">
+    <div class="chart" id="istypesupported"></div>
+    <div class="chart" id="canplaytype"></div>
+  </div>
+</body>
+<script>
+  const ok_event = "canplaythrough";
+
+  const content_definitions = [
+    {
+      type: "audio",
+      name: "vod_aac_0AAC",
+      location: "vod_aac_0AAC/chunklist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0AAC",
+      location: "vod_fmp4_0AAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0AC3",
+      location: "vod_fmp4_0AC3/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0FLAC",
+      location: "vod_fmp4_0FLAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0H264",
+      location: "vod_fmp4_0H264/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0H265",
+      location: "vod_fmp4_0H265/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_fmp4_0VP9",
+      location: "vod_fmp4_0VP9/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0AAC",
+      location: "vod_mpegts_0AAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0AC3",
+      location: "vod_mpegts_0AC3/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0FLAC",
+      location: "vod_mpegts_0FLAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0H264",
+      location: "vod_mpegts_0H264/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_mpegts_0H265",
+      location: "vod_mpegts_0H265/playlist.m3u8"
+    },
+    {
+      type: "audio",
+      name: "vod_aac_0AAC",
+      location: "vod_aac_0AAC/playlist.m3u8"
+    },
+    {
+      type: "video",
+      name: "vod_aes128_mpegts_AAC_H264",
+      location: "https://bitmovin-a.akamaihd.net/content/art-of-motion_drm/m3u8s/11331.m3u8",
+    },
+    {
+      type: "video",
+      name: "vod_aes128_fmp4_AAC_H264",
+      location: "https://storage.googleapis.com/shaka-demo-assets/sintel-fmp4-aes/master.m3u8",
+    },
+    {
+      type: "video",
+      name: "vod_aes128rot_fmp4_AAC_H264",
+      location: "https://storage.googleapis.com/shaka-demo-assets/sintel-ts-aes-key-rotation/master.m3u8",
+    },
+    {
+      type: "video",
+      name: "vod_wv_fmp4_MP4A_H264",
+      location: "https://storage.googleapis.com/shaka-demo-assets/angel-one-widevine-hls/hls.m3u8",
+    },
+    {
+      type: "video",
+      name: "vod_ck_fmp4_MP4A_H264",
+      location: "https://storage.googleapis.com/shaka-demo-assets/angel-one-sample-aes-ctr-multiple-key/manifest.m3u8",
+    },
+  ];
+
+  function attach_listener(element, event, fn) {
+    if (element.listeners === undefined) {
+      element.listeners = {};
+    }
+    element.listeners[event] = fn;
+    element.addEventListener(event, fn);
+  }
+
+  function detach_listener(element, event) {
+    if (element.listeners === undefined) return;
+    if (!(event in element.listeners)) return;
+    element.removeEventListener(event, element.listeners[event]);
+  }
+
+  function create_video_element(name, src, element, done) {
+    const video = document.createElement(element);
+    attach_listener(video, "error", add_entry.bind(null, video, name, "red", done));
+    var on_seek = add_entry.bind(null, video, name, "green", done);
+    if (navigator.userAgent.match(/Android/i)) {
+      on_seek = attach_listener.bind(null, video, "durationchange", on_seek);
+    }
+    attach_listener(video, "seeked", on_seek);
+    video.src = src;
+    video.currentTime = 0.1;
+    return video;
+  }
+
+  function add_entry(video, name, color, done, error) {
+    detach_listener(video, "error");
+    detach_listener(video, "seeked");
+    detach_listener(video, "durationchange");
+    const template = document.getElementById("entry");
+    const clone = template.cloneNode(true);
+    const entry = clone.content.querySelector("li");
+    entry.textContent = name;
+    entry.classList.add(color);
+    document.getElementById("support_list").appendChild(entry);
+    setTimeout(done, 10);
+  }
+
+  function load_video(name, src, element, done) {
+    const container = document.getElementById("player");
+    container.innerHTML = '';
+    container.appendChild(create_video_element(name, src, element, done));
+  }
+
+  function load_sequential_video(content, done) {
+    if (content.length === 0) return done();
+    const spec = content.pop();
+    load_video(spec.name, spec.location, spec.type,
+               load_sequential_video.bind(null, content, done))
+  }
+
+  function load_videos() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const video_param = urlParams.get('video');
+    let videos = content_definitions;
+    if (video_param != null) {
+      videos = videos.filter((v) => {
+        return v.name == video_param;
+      });
+    }
+    load_sequential_video(videos, () => {
+      console.log('DONE!');
+    });
+  }
+
+  load_videos();
+
+  function genchart(element, spec) {
+      var columngap_px = 0;
+      var rowgap_px = 0;
+      const xlabel_count = spec["xaxis"]["labels"].length;
+      const ylabel_count = spec["yaxis"]["labels"].length;
+
+      const invisibox11 = document.createElement("div");
+      invisibox11.style.borderRight = "1px dashed #000";
+      invisibox11.style.borderBottom = "1px dashed #000";
+      invisibox11.style.borderLeft = "1px solid #444";
+      invisibox11.style.borderTop = "1px solid #444";
+      invisibox11.style.gridColumn = "2";
+      invisibox11.style.gridRow = "2";
+      invisibox11.style.textAlign = "center";
+      invisibox11.textContent = spec["title"];
+
+      const ytitle_box = document.createElement("span");
+      ytitle_box.textContent = spec["yaxis"]["title"];
+      ytitle_box.style.gridColumn = "1";
+      ytitle_box.style.gridRow = `3 / ${ylabel_count+3}`;
+      ytitle_box.style.writingMode = "vertical-lr";
+      ytitle_box.style.textAlign = "center";
+      ytitle_box.style.lineHeight = "2em";
+      ytitle_box.style.borderRight = "1px solid #444";
+
+      const xtitle_box = document.createElement("span");
+      xtitle_box.textContent = spec["xaxis"]["title"];
+      xtitle_box.style.gridColumn = `3 / ${xlabel_count+3}`;
+      xtitle_box.style.gridRow = "1";
+      xtitle_box.style.textAlign = "center";
+      xtitle_box.style.lineHeight = "2em";
+      xtitle_box.style.borderBottom = "1px solid #444";
+      xtitle_box.style.writingMode = "horizontal-tb";
+
+      element.appendChild(ytitle_box);
+      element.appendChild(xtitle_box);
+      element.appendChild(invisibox11);
+
+      for (var i = 0; i<spec["yaxis"]["labels"].length; i++) {
+        const ylabel = document.createElement("span");
+        ylabel.textContent = spec["yaxis"]["labels"][i];
+        ylabel.style.gridColumn = "2";
+        ylabel.style.gridRow = `${i+3}`;
+        ylabel.style.lineHeight = "2em";
+        ylabel.style.textAlign = "right";
+        ylabel.style.borderBottom = "1px dashed #000";
+        ylabel.style.borderRight = "1px dashed #000";
+        ylabel.style.textAlign = "center";
+        element.appendChild(ylabel);
+        columngap_px = Math.max(columngap_px, spec["yaxis"]["labels"][i].length * 1);
+      }
+
+      for (var i = 0; i<spec["xaxis"]["labels"].length; i++) {
+        const xlabel = document.createElement("span");
+        xlabel.textContent = spec["xaxis"]["labels"][i];
+        xlabel.style.gridRow = "2";
+        xlabel.style.gridColumn = `${i+3}`;
+        xlabel.style.lineHeight = "2em";
+        xlabel.style.textAlign = "right";
+        xlabel.style.writingMode = "vertical-lr";
+        xlabel.style.borderRight = "1px dashed #000";
+        xlabel.style.borderBottom = "1px dashed #000";
+        xlabel.style.textAlign = "center";
+        element.appendChild(xlabel);
+        rowgap_px = Math.max(rowgap_px, spec["xaxis"]["labels"][i].length * 1);
+      }
+
+      element.style.gridTemplateRows = `2em ${rowgap_px}ch repeat(${ylabel_count}, 2em)`;
+      element.style.gridTemplateColumns = `2em ${columngap_px}ch repeat(${xlabel_count}, 2em)`;
+
+      var element_grid_result = []
+
+      for (var x = 0; x<spec["xaxis"]["labels"].length; x++) {
+        var element_column_result = [];
+        for (var y = 0; y<spec["yaxis"]["labels"].length; y++) {
+          const box = document.createElement("div");
+          box.style.gridRow = `${y+3}`;
+          box.style.gridColumn = `${x+3}`;
+          box.style.borderBottom = "1px dashed #000";
+          box.style.borderRight = "1px dashed #000";
+
+          spec["test"](spec["xaxis"]["labels"][x], spec["yaxis"]["labels"][y],
+            (color="#3F5") => {
+              box.style.backgroundColor = color;
+            }, () => {
+              box.style.backgroundColor = "#F21";
+            })
+
+          element_column_result.push(box);
+          element.appendChild(box);
+        }
+        element_grid_result.push(element_column_result);
+      }
+
+      return element_grid_result;
+    }
+
+    const xaxis = {
+      "title": "codecs",
+      "labels": [
+        // Taken from https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StreamingMediaGuide/FrequentlyAskedQuestions/FrequentlyAskedQuestions.html
+        "mp4a.40",     // AAC indeterminate profile
+        "mp4a.40.2",   // AAC-LC
+        "mp4a.40.5",   // HE-AAC
+        "mp4a.40.34",  // MP3
+        "avc1",        // h264 indeterminate profile
+        "avc1.42001e", // h264 baseline 3.0
+        "avc1.66.30",
+        "avc1.42001f", // h264 baseline 3.1
+        "avc1.4d001e", // h264 main 3.0
+        "avc1.77.30",
+        "avc1.4d001f", // h264 main 3.1
+        "avc1.4d0028", // h264 main 4.0
+        "avc1.64001f", // h264 high 3.1
+        "avc1.640028", // h264 high 4.0
+        "avc1.640029", // h264 high 4.1
+        "avc1.42E01E", // h264 constrained 3.0
+        "hev1.1.6.L93.B0", // hevc (requires hardware support)
+      ],
+    };
+
+    const yaxis = {
+      "title": "container",
+      "labels": ["application/vnd.apple.mpegurl", "application/x-mpegURL", "vnd.apple.mpegURL", "video/hls", "video/m3u8", "video/mp4", "video/mp2t"]
+    };
+
+    genchart(document.getElementById("istypesupported"), {
+      "title": "MS::isTypeSupported",
+      "xaxis": xaxis,
+      "yaxis": yaxis,
+      "test": function(xcodec, ycontainer, pass, fail) {
+        const query = `${ycontainer};codecs="${xcodec}"`;
+        console.log(`isTypeSupported('${query}')`);
+        if (MediaSource.isTypeSupported(query)) {
+          pass();
+        } else {
+          fail();
+        }
+      }
+    });
+
+
+    genchart(document.getElementById("canplaytype"), {
+      "title": "CanPlayType",
+      "xaxis": xaxis,
+      "yaxis": yaxis,
+      "test": function(xcodec, ycontainer, pass, fail) {
+        const tester = document.createElement("video");
+        const query = `${ycontainer};codecs="${xcodec}"`;
+        console.log(`canPlayType('${query}')`);
+        switch (tester.canPlayType(query)) {
+          case "probably": {
+            pass();
+            break;
+          }
+          case "maybe": {
+            pass("#EF2");
+            break;
+          }
+          default: {
+            fail();
+          }
+        }
+      }
+    });
+</script>
+</html>

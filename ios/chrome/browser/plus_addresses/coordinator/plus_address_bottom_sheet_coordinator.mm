@@ -7,16 +7,19 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_setting_service_factory.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+
 namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;
 }  // namespace
@@ -34,15 +37,18 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   ChromeBrowserState* browserState =
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForBrowserState(browserState);
+      PlusAddressServiceFactory::GetForProfile(browserState);
+  plus_addresses::PlusAddressSettingService* plusAddressSettingService =
+      PlusAddressSettingServiceFactory::GetForProfile(browserState);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  // TODO(crbug.com/1467623): Move this to the mediator to reduce model
+  // TODO(crbug.com/40276862): Move this to the mediator to reduce model
   // dependencies in this class.
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(activeWebState);
   _mediator = [[PlusAddressBottomSheetMediator alloc]
       initWithPlusAddressService:plusAddressService
+       plusAddressSettingService:plusAddressSettingService
                        activeUrl:activeWebState->GetLastCommittedURL()
                 autofillCallback:bottomSheetTabHelper
                                      ->GetPendingPlusAddressFillCallback()
@@ -66,10 +72,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   ];
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
+  _mediator.consumer = _viewController;
+
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
-  _mediator.consumer = _viewController;
 }
 
 - (void)stop {

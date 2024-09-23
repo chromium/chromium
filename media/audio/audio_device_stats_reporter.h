@@ -94,4 +94,4 @@ class MEDIA_EXPORT AudioDeviceStatsReporter {
 
 }  // namespace media
 
-#endif
+#endif  // MEDIA_AUDIO_AUDIO_DEVICE_STATS_REPORTER_H_

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-[RuntimeEnabled=StorageAccessAPIBeyondCookies]
 interface StorageAccessHandle {
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage sessionStorage;
     [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage localStorage;
@@ -14,4 +13,5 @@ interface StorageAccessHandle {
     [LogActivity, RaisesException] DOMString createObjectURL(Blob blob);
     [LogActivity, RaisesException] void revokeObjectURL(DOMString url);
     [CallWith=ExecutionContext, LogActivity, RaisesException] BroadcastChannel BroadcastChannel(DOMString name);
+    [CallWith=ExecutionContext, LogActivity, RaisesException] SharedWorker SharedWorker(ScriptURLString scriptURL, optional (DOMString or SharedWorkerOptions) options = {});
 };

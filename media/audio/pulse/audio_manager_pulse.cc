@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/pulse/audio_manager_pulse.h"
 
 #include <algorithm>
@@ -268,10 +273,11 @@ AudioInputStream* AudioManagerPulse::MakeInputStream(
                               base::Unretained(this)),
           input_context_, input_mainloop_);
     }
-
+    bool should_mute_system_audio =
+        (device_id == AudioDeviceDescription::kLoopbackWithMuteDeviceId);
     if (loopback_manager_) {
-      return loopback_manager_->MakeLoopbackStream(params,
-                                                   std::move(log_callback));
+      return loopback_manager_->MakeLoopbackStream(
+          params, std::move(log_callback), should_mute_system_audio);
     }
 
     return nullptr;

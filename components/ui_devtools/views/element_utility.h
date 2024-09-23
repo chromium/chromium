@@ -16,7 +16,7 @@ class Layer;
 
 namespace ui_devtools {
 
-// TODO(https://crbug.com/757283): Remove this file when LayerElement exists
+// TODO(crbug.com/41340254): Remove this file when LayerElement exists
 
 // Appends Layer properties to ret (ex: layer-type, layer-mask, etc).
 // This is used to display information about the layer on devtools.

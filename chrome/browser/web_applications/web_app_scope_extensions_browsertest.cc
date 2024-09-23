@@ -4,25 +4,29 @@
 
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -44,8 +48,6 @@
 
 namespace web_app {
 
-#if BUILDFLAG(IS_CHROMEOS)
-
 class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
  public:
   WebAppScopeExtensionsBrowserTest()
@@ -53,8 +55,23 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
   explicit WebAppScopeExtensionsBrowserTest(bool enabled)
       : primary_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         secondary_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitWithFeatureState(
-        blink::features::kWebAppEnableScopeExtensions, enabled);
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        apps::test::GetFeaturesToEnableLinkCapturingUX();
+    enabled_features.emplace_back(
+        features::kPwaNavigationCapturingWithScopeExtensions,
+        base::FieldTrialParams());
+
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (enabled) {
+      enabled_features.emplace_back(
+          blink::features::kWebAppEnableScopeExtensions,
+          base::FieldTrialParams());
+    } else {
+      disabled_features.push_back(
+          blink::features::kWebAppEnableScopeExtensions);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
   ~WebAppScopeExtensionsBrowserTest() override = default;
 
@@ -128,12 +145,10 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
     // Turn on link capturing.
 #if BUILDFLAG(IS_CHROMEOS)
     apps::AppReadinessWaiter(browser()->profile(), app_id).Await();
-    apps_util::SetSupportedLinksPreferenceAndWait(browser()->profile(), app_id);
-#else
-    static_assert(
-        false,
-        "Support WML scope_extensions link capturing once it's implemented");
 #endif
+    EXPECT_THAT(
+        apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id),
+        base::test::HasValue());
   }
 
   bool WebAppCapturesUrl(const GURL& url) {
@@ -146,6 +161,9 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
+    // Note: The 'self' target will likely soon be not supported as capturable
+    // on non-CrOS, so this method & it's functionality will have to change
+    // slightly. https://crbug.com/339095686.
     WebAppNavigationBrowserTest::ClickLinkAndWaitForURL(
         web_contents,
         /*link_url=*/url,
@@ -185,7 +203,6 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
 
   base::test::ScopedFeatureList feature_list_;
   content::ContentMockCertVerifier cert_verifier_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
@@ -216,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
       testing::ElementsAre(ScopeExtensionInfo{.origin = secondary_origin_}));
   EXPECT_EQ(app_->scope_extensions(), app_->validated_scope_extensions());
 
-  ASSERT_TRUE(
+  EXPECT_TRUE(
       WebAppCapturesUrl(primary_server_.GetURL("/web_apps/basic.html")));
   EXPECT_TRUE(
       WebAppCapturesUrl(secondary_server_.GetURL("/web_apps/basic.html")));
@@ -350,10 +367,8 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsDisabledBrowserTest,
       WebAppCapturesUrl(secondary_server_.GetURL("/web_apps/basic.html")));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 class WebAppScopeExtensionsOriginTrialBrowserTest
-    : public WebAppControllerBrowserTest {
+    : public WebAppBrowserTestBase {
  public:
   WebAppScopeExtensionsOriginTrialBrowserTest() {
     feature_list_.InitAndDisableFeature(
@@ -361,7 +376,7 @@ class WebAppScopeExtensionsOriginTrialBrowserTest
   }
   ~WebAppScopeExtensionsOriginTrialBrowserTest() override = default;
 
-  // WebAppControllerBrowserTest:
+  // WebAppBrowserTestBase:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Using the test public key from docs/origin_trials_integration.md#Testing.
     command_line->AppendSwitchASCII(
@@ -369,7 +384,7 @@ class WebAppScopeExtensionsOriginTrialBrowserTest
         "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
   }
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    WebAppBrowserTestBase::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(browser()->profile()));
   }

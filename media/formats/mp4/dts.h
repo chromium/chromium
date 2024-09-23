@@ -67,4 +67,4 @@ class MEDIA_EXPORT DTS {
 }  // namespace mp4
 
 }  // namespace media
-#endif
+#endif  // MEDIA_FORMATS_MP4_DTS_H_

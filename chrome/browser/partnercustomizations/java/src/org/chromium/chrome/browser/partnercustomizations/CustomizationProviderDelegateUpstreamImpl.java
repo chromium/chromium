@@ -16,7 +16,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.version_info.VersionInfo;
-import org.chromium.chrome.browser.partnercustomizations.PartnerCustomizationsUma.DelegateUnusedReason;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Delegate used to retrieve information from the ContentProvider about partner customization. */
@@ -119,8 +118,6 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
                         .getPackageManager()
                         .resolveContentProvider(sProviderAuthority, 0);
         if (providerInfo == null) {
-            PartnerCustomizationsUma.logDelegateUnusedReason(
-                    DelegateUnusedReason.PRELOAD_APK_CANNOT_RESOLVE_PROVIDER);
             return false;
         }
         if ((providerInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
@@ -155,8 +152,6 @@ public class CustomizationProviderDelegateUpstreamImpl implements CustomizationP
         }
         // ProviderInfo was present, but flags don't indicate it was a System APK (above), and none
         // of our overrides apply.
-        PartnerCustomizationsUma.logDelegateUnusedReason(
-                DelegateUnusedReason.PRELOAD_APK_NOT_SYSTEM_PROVIDER);
         return false;
     }
 

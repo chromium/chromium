@@ -80,9 +80,64 @@ class CONTENT_EXPORT WebTransportThrottleContext final
   // explicitly suppressed.
   void MaybeQueueHandshakeFailurePenalty();
 
+  void OnPendingQueueReady();
+
   base::WeakPtr<WebTransportThrottleContext> GetWeakPtr();
 
  private:
+  class PenaltyManager final {
+   public:
+    explicit PenaltyManager(WebTransportThrottleContext*);
+    PenaltyManager(const PenaltyManager&) = delete;
+    PenaltyManager& operator=(const PenaltyManager&) = delete;
+    ~PenaltyManager();
+
+    // Queues a pending handshake to be considered complete after `after`.
+    void QueuePending(base::TimeDelta after);
+
+    // If there are handshakes in `pending_queue_` that can now be considered
+    // finished, remove them and decrement `pending_handshakes_`. Recalculates
+    // the delay for the head of `throttled_connections_` and may trigger it to
+    // start as a side-effect.
+    void MaybeDecrementPending();
+
+    // Start the timer based on the `pending_queue` top.
+    void ProcessPendingQueue();
+
+    void StopPendingQueueTimer();
+
+    int PendingHandshakes() const { return pending_handshakes_; }
+    void AddPendingHandshakes() { ++pending_handshakes_; }
+    void RemovePendingHandshakes() { --pending_handshakes_; }
+    bool PendingQueueTimerIsRunning() {
+      return pending_queue_timer_.IsRunning();
+    }
+    bool PendingQueueIsEmpty() { return pending_queue_.empty(); }
+
+   private:
+    // Start the timer for removing items from `pending_queue_timer_`, to fire
+    // after `after` has passed.
+    void StartPendingQueueTimer(base::TimeDelta after);
+
+    const raw_ptr<WebTransportThrottleContext> throttle_context_;
+
+    int pending_handshakes_ = 0;
+
+    // Sessions for which the handshake has completed but we are still counting
+    // as "pending" for the purposes of throttling. An items is added to this
+    // queue when the handshake completes, and removed when the timer expires.
+    // The "top" of the queue is the timer that will expire first.
+    std::priority_queue<base::TimeTicks,
+                        std::vector<base::TimeTicks>,
+                        std::greater<>>
+        pending_queue_;
+
+    // A timer that will fire the next time an entry should be removed from
+    // `pending_queue_`. The timer doesn't run when `throttled_connections_` is
+    // empty.
+    base::OneShotTimer pending_queue_timer_;
+  };
+
   // Starts a connection immediately if there are none pending, or sets a timer
   // to start one later.
   void ScheduleThrottledConnection();
@@ -95,44 +150,17 @@ class CONTENT_EXPORT WebTransportThrottleContext final
   // the next connection.
   void StartOneConnection();
 
-  // Queues a pending handshake to be considered complete after `after`.
-  void QueuePending(base::TimeDelta after);
-
-  // If there are handshakes in `pending_queue_` that can now be considered
-  // finished, remove them and decrement `pending_handshakes_`. Recalculates the
-  // delay for the head of `throttled_connections_` and may trigger it to start
-  // as a side-effect.
-  void MaybeDecrementPending();
-
-  // Start the timer for removing items from `pending_queue_timer_`, to fire
-  // after `after` has passed.
-  void StartPendingQueueTimer(base::TimeDelta after);
-
   // False when the `--webtransport-developer-mode` flag is specified, true
   // otherwise.
   const bool should_queue_handshake_failure_penalty_;
 
-  int pending_handshakes_ = 0;
-
-  // Sessions for which the handshake has completed but we are still counting as
-  // "pending" for the purposes of throttling. An items is added to this queue
-  // when the handshake completes, and removed when the timer expires. The "top"
-  // of the queue is the timer that will expire first.
-  std::priority_queue<base::TimeTicks,
-                      std::vector<base::TimeTicks>,
-                      std::greater<>>
-      pending_queue_;
+  PenaltyManager penalty_mgr_{this};
 
   base::queue<ThrottleDoneCallback> throttled_connections_;
 
   // The time that `throttled_connections_[0]` reached the front of the queue.
   // This is needed if it gets recheduled by ScheduleThrottledConnection().
   base::TimeTicks queue_head_time_;
-
-  // A timer that will fire the next time an entry should be removed from
-  // `pending_queue_`. The timer doesn't run when `throttled_connections_` is
-  // empty.
-  base::OneShotTimer pending_queue_timer_;
 
   // A timer that will fire the next time a throttled connection should be
   // allowed to proceed. This is a reset when pending_handshakes_ is

@@ -1,0 +1,465 @@
+<style>
+  #arrowRightIcon {
+    background-color: var(--color-surface-container-highest-dark);
+    display: block;
+    height: 16px;
+    flex-shrink: 0;
+    margin-block: auto;
+    mask-image: url('bidirectional_arrow.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 20px;
+  }
+
+  .button {
+    border: none;
+    padding: 0;
+    pointer-events: all;
+  }
+
+  .button-label {
+    color: var(--color-scrim);
+    font-family: inherit;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .checked-icon {
+    color: var(--color-primary);
+    display: none;
+    height: 20px;
+    inset-inline-start: 16px;
+    margin-block-start: 9px;
+    margin-block-end: 9px;
+    position: absolute;
+    width: 20px;
+  }
+
+  .checked-icon.selected {
+    display: block;
+  }
+
+  .language-picker-button {
+    background-color: var(--color-selection-element);
+    border-radius: 100px;
+    height: 38px;
+    flex-shrink: 1;
+    gap: 0px;
+    margin-block-start: 5px;
+    margin-block-end: 5px;
+    min-width: 0;
+    pointer-events: none;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0);
+    white-space: nowrap;
+  }
+
+  :host([is-translate-mode-enabled]) .language-picker-button {
+    max-width: 165px;
+    min-width: 77px;
+    pointer-events: all;
+    transform: scaleX(1);
+    transition-delay: 33ms;
+  }
+
+  .language-picker-label {
+    margin-block-start: 6px;
+    margin-block-end: 6px;
+    margin-inline-end: 16px;
+  }
+
+  .language-picker-menu {
+    background: white;
+    box-shadow: 0px 2px 6px 0px rgba(60, 64, 67, 0.16);
+    border-radius: 16px;
+    color: var(--color-scrim);
+    /* Needed to prevent mouse flicker on option hover. */
+    cursor: default;
+    display: none;
+    max-height: 468px;
+    overflow: auto;
+    padding: 16px 0;
+    pointer-events: all;
+    position: absolute;
+    width: 100%;
+  }
+
+  .language-picker-menu::-webkit-scrollbar {
+    width: 14px;
+  }
+
+  .language-picker-menu::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+  }
+
+  .language-picker-menu::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--color-scrim-rgb), 0.3);
+    border: 4px solid white;
+    border-radius: 10px;
+    min-height: 56px;
+  }
+
+  .language-picker-menu::-webkit-scrollbar-track {
+    margin: 12px;
+  }
+
+  .language-picker-menu-back-button {
+    margin: 2px 0px 2px 10px;
+  }
+
+  .language-picker-menu-button {
+    border-radius: 0;
+    color: var(--color-scrim);
+    justify-content: start;
+    padding-block-start: 8px;
+    padding-block-end: 8px;
+    padding-inline-start: 44px;
+    padding-inline-end: 16px;
+  }
+
+  .language-picker-menu-button-label {
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+  }
+
+  .language-picker-menu-detected-language {
+    color: var(--color-surface-container-highest-dark);
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .language-picker-menu-header {
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 26px;
+    margin: 0;
+    padding-block-start: 0px;
+    padding-block-end: 13px;
+    padding-inline-start: 16px;
+    padding-inline-end: 16px;
+  }
+
+  .language-picker-menu-section {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+  }
+
+  .language-picker-menu-title {
+    display: inline-block;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    margin: 8px 0;
+    padding-inline-end: 2px;
+  }
+
+  .language-picker-menu-title-section {
+    display: flex;
+  }
+
+  .translate-icon {
+    display: block;
+    height: 20px;
+    mask-image: url('translate.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 20px;
+  }
+
+  #languagePicker {
+    border-radius: 100px;
+    display: flex;
+    height: 48px;
+    gap: 6px;
+    min-width: 121px;
+    max-width: 121px;
+    opacity: 0;
+    transition: min-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
+                max-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
+                opacity 50ms linear;
+    pointer-events: none;
+  }
+
+  :host([is-translate-mode-enabled]) #languagePicker {
+    min-width: 197px;
+    max-width: 370px;
+    opacity: 1;
+    pointer-events: all;
+    transition: min-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
+                max-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
+                opacity 100ms linear 33ms;
+  }
+
+  #languagePickerMenuStarsIcon {
+    background-color: var(--color-scrim);
+    display: block;
+    height: 18px;
+    margin-block-start: 9px;
+    margin-block-end: 9px;
+    margin-inline-start: auto;
+    mask-image: url('stars.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 18px;
+  }
+
+  #sourceLanguageButton {
+    gap: 6px;
+    margin-inline-start: 5px;
+  }
+
+  :host(:not([should-show-stars-icon])) #sourceLanguageButton {
+    gap: 0px;
+  }
+
+  :host(:not([should-show-stars-icon])) #sourceLanguageLabel {
+    margin-inline-start: 16px;
+  }
+
+  #sourceAutoDetectButton {
+    padding-block-start: 20px;
+    padding-block-end: 24px;
+    padding-inline-start: 44px;
+    padding-inline-end: 16px;
+  }
+
+  #starsIcon {
+    background-color: var(--color-scrim);
+    display: block;
+    height: 16px;
+    margin-block-start: 9px;
+    margin-block-end: 9px;
+    margin-inline-start: 12px;
+    mask-image: url('stars.svg');
+    mask-position: center;
+    mask-repeat: no-repeat;
+    mask-size: 100%;
+    width: 16px;
+  }
+
+  #targetLanguageButton {
+    margin-inline-end: 6px;
+  }
+
+  #targetLanguageLabel {
+    margin-inline-start: 16px;
+  }
+
+  #translateDisableButton {
+    background-color: var(--color-surface-container-highest-dark);
+    gap: 0px;
+    height: 38px;
+    min-width: 0px;
+    opacity: 0;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: opacity 50ms linear,
+                transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0),
+                width 1ms linear 200ms;
+    width: 0px;
+  }
+
+  :host([is-translate-mode-enabled]) #translateDisableButton {
+    opacity: 1;
+    transform: scaleX(1);
+    transition: opacity 100ms linear 33ms,
+                transform 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms;
+    width: 38px;
+  }
+
+  #translateEnableButton {
+    background-color: var(--color-selection-element);
+    height: 48px;
+    left: 50%;
+    opacity: 1;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 150ms linear 50ms;
+    position: absolute;
+    width: 164px;
+    z-index: 1;
+  }
+
+  :host([is-translate-mode-enabled]) #translateEnableButton {
+    background-color: white;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 50ms linear;
+  }
+
+  #translateButtonLabel {
+    color: var(--color-scrim);
+    line-height: 50px;
+  }
+
+  #translateContainer {
+    background-color: var(--color-selection-element);
+    border-radius: 36px;
+    cursor: default;
+    display: flex;
+    flex-direction: row;
+    min-width: 164px;
+    overflow: hidden;
+    pointer-events: all;
+  }
+
+  :host([is-translate-mode-enabled]) #translateContainer {
+    background-color: white;
+  }
+
+  #translateDisableButtonContainer {
+    display: grid;
+    height: 38px;
+    margin-block-start: 5px;
+    margin-block-end: 5px;
+    margin-inline-end: 5px;
+    place-items: center;
+    width: 38px;
+  }
+
+  #translateDisableIcon {
+    background-color: var(--color-overlay-icon);
+    display: block;
+    pointer-events: none;
+    position: absolute;
+    opacity: 0;
+    transition: opacity 1ms linear 15ms;
+    width: 20px;
+  }
+
+  :host([is-translate-mode-enabled]) #translateDisableIcon {
+    display: block;
+    opacity: 1;
+    transition: opacity 1ms linear 33ms;
+  }
+
+  #translateEnableIcon {
+    background-color: var(--color-primary);
+  }
+
+  :host(:not([should-show-stars-icon])) #starsIcon {
+    display: none;
+  }
+
+  :host([target-language-menu-visible]) #targetLanguagePickerMenu,
+  :host([source-language-menu-visible]) #sourceLanguagePickerMenu {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+<div id="translateContainer">
+  <cr-button id="translateEnableButton" class="button"
+  on-click="onTranslateButtonClick">
+    <span id="translateEnableIcon" class="translate-icon" slot="prefix-icon">
+    </span>
+    <span id="translateButtonLabel" class="button-label">
+      $i18n{translateButtonLabel}
+    </span>
+  </cr-button>
+  <div id="languagePicker">
+    <cr-button id="sourceLanguageButton" class="button language-picker-button"
+        on-click="onSourceLanguageButtonClick">
+      <span id="starsIcon" slot="prefix-icon"></span>
+      <span id="sourceLanguageLabel"
+          class="button-label language-picker-label">
+        [[getSourceLanguageDisplayName(translateLanguageList,
+            sourceLanguage, contentLanguage)]]
+      </span>
+    </cr-button>
+    <span id="arrowRightIcon"></span>
+    <cr-button id="targetLanguageButton" class="button language-picker-button"
+        on-click="onTargetLanguageButtonClick">
+      <span id="targetLanguageLabel" class="button-label language-picker-label">
+        [[getTargetLanguageDisplayName(targetLanguage)]]
+      </span>
+    </cr-button>
+  </div>
+  <div id="translateDisableButtonContainer">
+    <cr-button id="translateDisableButton" class="button"
+    on-click="onTranslateButtonClick">
+    </cr-button>
+    <span id="translateDisableIcon" class="translate-icon"></span>
+  </div>
+  <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
+      aria-labelledby="sourceLanguageButton">
+    <div class="language-picker-menu-title-section">
+      <cr-icon-button iron-icon="cr:arrow-back"
+          class="language-picker-menu-back-button" role="button"
+          aria-label="$i18n{backButton}" title="$i18n{backButton}"
+          on-click="hideLanguagePickerMenus"></cr-icon-button>
+      <div class="language-picker-menu-title">$i18n{translateFrom}</div>
+    </div>
+    <div class="language-picker-menu-section">
+      <cr-button id="sourceAutoDetectButton"
+          class="button language-picker-menu-button"
+          on-click="onAutoDetectMenuItemClick">
+        <cr-icon icon="cr:check" slot="prefix-icon"
+            class$="checked-icon [[getAutoCheckedClass(sourceLanguage)]]">
+        </cr-icon>
+        <div class="language-picker-menu-button-label">
+          $i18n{detectLanguage}
+        </div>
+        <div id="menuDetectedLanguage"
+            class="language-picker-menu-detected-language">
+          [[getContentLanguageDisplayName(
+              translateLanguageList, contentLanguage)]]
+        </div>
+        <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
+      </cr-button>
+    </div>
+    <div class="language-picker-menu-section">
+      <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
+      <template id="sourceLanguagePickerContainer" is="dom-repeat"
+          items="[[translateLanguageList]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onSourceLanguageMenuItemClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getLanguageCheckedClass(
+              language, sourceLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.displayName]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+  </div>
+  <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
+      aria-labelledby="targetLanguageButton">
+    <div class="language-picker-menu-title-section">
+      <cr-icon-button iron-icon="cr:arrow-back"
+          class="language-picker-menu-back-button" role="button"
+          aria-label="$i18n{backButton}" title="$i18n{backButton}"
+          on-click="hideLanguagePickerMenus"></cr-icon-button>
+      <div class="language-picker-menu-title">$i18n{translateTo}</div>
+    </div>
+    <div class="language-picker-menu-section">
+      <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
+      <template id="targetLanguagePickerContainer" is="dom-repeat"
+          items="[[translateLanguageList]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onTargetLanguageMenuItemClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getLanguageCheckedClass(
+              language, targetLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.displayName]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+  </div>
+</div>

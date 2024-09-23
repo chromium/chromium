@@ -4,19 +4,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="support-tool-shared cr-input-style">
+<style include="support-tool-shared">
   :host {
     block-size: fit-content;
     display: block;
     margin-inline-start: 40px;
     margin-top: 72px;
     width: fit-content;
-  }
-
-  .data-collector-list {
-    /* Using negative margin to cancel out the padding of the top-most item if
-    the list to set the spacing between items to 8px.*/
-    margin-top: -8px;
   }
 
   #info-text {
@@ -28,10 +22,6 @@ found in the LICENSE file.
     margin-inline-start: 12px;
     margin-top: -8px;
   }
-
-  .select-all-button {
-    margin-bottom: 8px;
-  }
 </style>
 
 <h1 tabindex="0">$i18n{urlGeneratorPageTitle}</h1>
@@ -42,7 +32,14 @@ found in the LICENSE file.
 <div id="data-sources-title" class="support-tool-title" tabindex="0">
   $i18n{dataCollectorListTitle}
 </div>
-<div class="data-collector-list" aria-labelledby="data-sources-title">
+
+<cr-checkbox class="select-all-checkbox" id="selectAllCheckbox"
+  checked="{{selectAll_}}" tabindex="0">
+    $i18n{selectAll}
+</cr-checkbox>
+
+<div class="data-collector-list" role="group"
+     aria-labelledby="data-sources-title">
   <template is="dom-repeat" items="[[dataCollectors_]]">
     <cr-checkbox class="data-collector-checkbox" checked="{{item.isIncluded}}"
         on-change="onDataCollectorItemChange_" tabindex="0">
@@ -50,9 +47,6 @@ found in the LICENSE file.
     </cr-checkbox>
   </template>
 </div>
-<cr-button class="select-all-button" on-click="onSelectAllClick_">
-  [[getSelectAllButtonLabel_(selectAll_)]]
-</cr-button>
 
 <div class="support-tool-title" tabindex="0">$i18n{getLinkText}</div>
 <div>

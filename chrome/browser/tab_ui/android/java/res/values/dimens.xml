@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+  <dimen name="tab_grid_favicon_size">18dp</dimen>
+  <dimen name="tab_strip_favicon_inset">3dp</dimen>
+  <dimen name="tab_strip_favicon_size">14dp</dimen>
+  <dimen name="tab_thumbnail_placeholder_vertical_offset">2dp</dimen>
+  <dimen name="favicon_corner_radius_for_single_tab_switcher">1dp</dimen>
+
+  <!-- Elevation -->
+  <dimen name="tab_bg_elevation">@dimen/default_elevation_5</dimen>
+
+  <integer name="tab_thumbnail_placeholder_selected_color_alpha">38</integer>
+  <integer name="tab_thumbnail_placeholder_color_alpha">255</integer>
+</resources>

@@ -20,7 +20,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -30,7 +29,6 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -61,7 +59,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ShareSheetUsageRankingHelperTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
-    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
@@ -127,7 +124,7 @@ public class ShareSheetUsageRankingHelperTest {
                     resultPropertyModels.set(models);
                     helper.notifyCalled();
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
         List<PropertyModel> propertyModels = resultPropertyModels.get();
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
@@ -159,7 +156,7 @@ public class ShareSheetUsageRankingHelperTest {
                     resultPropertyModels.set(models);
                     helper.notifyCalled();
                 });
-        helper.waitForFirst();
+        helper.waitForOnly();
         List<PropertyModel> propertyModels = resultPropertyModels.get();
 
         View.OnClickListener onClickListener =

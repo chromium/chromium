@@ -77,7 +77,13 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   // value set here if |status_queue_| is empty.
   void set_default_status(const update_engine::StatusResult& status);
 
-  void set_eol_date(const base::Time& eol_date) { eol_date_ = eol_date; }
+  // Sets the whole EolInfo to be used when checking eol info.
+  void set_eol_info(const EolInfo& eol_info) { eol_info_ = eol_info; }
+
+  // Sets the eol date to be used when checking eol info.
+  void set_eol_date(const base::Time& eol_date) {
+    eol_info_.eol_date = eol_date;
+  }
 
   // Sets a value returned by RequestUpdateCheck().
   void set_update_check_result(
@@ -155,7 +161,7 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   int is_feature_enabled_count_ = 0;
   int apply_deferred_update_count_ = 0;
   std::map<std::string, std::optional<bool>> features_;
-  base::Time eol_date_;
+  EolInfo eol_info_;
 };
 
 }  // namespace ash

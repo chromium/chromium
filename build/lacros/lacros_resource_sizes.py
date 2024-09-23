@@ -41,8 +41,7 @@ DIR_SOURCE_ROOT = os.environ.get(
     os.path.abspath(
         os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)))
 
-BUILD_COMMON_PATH = os.path.join(DIR_SOURCE_ROOT, 'build', 'util', 'lib',
-                                 'common')
+BUILD_UTIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'build', 'util')
 
 TRACING_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult',
                             'tracing')
@@ -50,8 +49,8 @@ TRACING_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult',
 EU_STRIP_PATH = os.path.join(DIR_SOURCE_ROOT, 'buildtools', 'third_party',
                              'eu-strip', 'bin', 'eu-strip')
 
-with _SysPath(BUILD_COMMON_PATH):
-  import perf_tests_results_helper  # pylint: disable=import-error
+with _SysPath(BUILD_UTIL_PATH):
+  from lib.common import perf_tests_results_helper
 
 with _SysPath(TRACING_PATH):
   from tracing.value import convert_chart_json  # pylint: disable=import-error
@@ -124,6 +123,8 @@ _TRACKED_GROUPS = [
            title='Group: Other PAKs'),
     _Group(paths=['snapshot_blob.bin'], title='Group: Misc'),
     _Group(paths=['locales/'], title='Dir: locales'),
+    _Group(paths=['PrivacySandboxAttestationsPreloaded/'],
+           title='Dir: PrivacySandboxAttestationsPreloaded'),
     _Group(paths=['resources/accessibility/'],
            title='Dir: resources/accessibility'),
     _Group(paths=['WidevineCdm/'], title='Dir: WidevineCdm'),
@@ -310,7 +311,7 @@ def _run_resource_sizes(args):
     tracked_groups.append(
         _Group(paths=['nacl_helper_bootstrap'],
                title='File: nacl_helper_bootstrap'))
-  # TODO(https://crbug.com/1356761): remove the following part once nacl files
+  # TODO(crbug.com/40236427): remove the following part once nacl files
   # are available.
   elif args.arch == 'arm64':
     tracked_groups.remove(

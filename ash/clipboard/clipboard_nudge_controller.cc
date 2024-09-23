@@ -6,7 +6,6 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
-#include "ash/clipboard/clipboard_nudge.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -82,11 +81,10 @@ NudgeCatalogName GetCatalogName(ClipboardNudgeType type) {
       return NudgeCatalogName::kClipboardHistoryZeroState;
     case kScreenshotNotificationNudge:
       NOTREACHED();
-      break;
     case kDuplicateCopyNudge:
       return NudgeCatalogName::kClipboardHistoryDuplicateCopy;
   }
-  return NudgeCatalogName::kTestCatalogName;
+  NOTREACHED();
 }
 
 ui::ImageModel GetImage(ClipboardNudgeType type) {
@@ -130,7 +128,7 @@ const char* GetCappedNudgeShownCountPrefKey(ClipboardNudgeType type) {
       return kShownCountDuplicateCopyNudge;
     case kScreenshotNotificationNudge:
     case kZeroStateNudge:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -354,27 +352,15 @@ void ClipboardNudgeController::OnClipboardHistoryMenuShown(
   zero_state_nudge_recorder_.OnClipboardHistoryMenuShown();
   screenshot_nudge_recorder_.OnClipboardHistoryMenuShown();
 
-  if (features::IsSystemNudgeMigrationEnabled()) {
-    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-        NudgeCatalogName::kClipboardHistoryOnboarding);
-    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-        NudgeCatalogName::kClipboardHistoryZeroState);
-  } else {
-    SystemNudgeController::MaybeRecordNudgeAction(
-        NudgeCatalogName::kClipboardHistoryOnboarding);
-    SystemNudgeController::MaybeRecordNudgeAction(
-        NudgeCatalogName::kClipboardHistoryZeroState);
-  }
+  AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+      NudgeCatalogName::kClipboardHistoryOnboarding);
+  AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+      NudgeCatalogName::kClipboardHistoryZeroState);
 
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     duplicate_copy_nudge_recorder_.OnClipboardHistoryMenuShown();
-    if (features::IsSystemNudgeMigrationEnabled()) {
-      AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
-          NudgeCatalogName::kClipboardHistoryDuplicateCopy);
-    } else {
-      SystemNudgeController::MaybeRecordNudgeAction(
-          NudgeCatalogName::kClipboardHistoryDuplicateCopy);
-    }
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kClipboardHistoryDuplicateCopy);
   }
 }
 
@@ -391,20 +377,16 @@ void ClipboardNudgeController::OnClipboardHistoryPasted() {
 void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
   current_nudge_type_ = nudge_type;
 
-  if (features::IsSystemNudgeMigrationEnabled()) {
-    const std::u16string shortcut_key =
-        clipboard_history_util::GetShortcutKeyName();
-    const std::u16string body_text = l10n_util::GetStringFUTF16(
-        GetBodyTextStringId(current_nudge_type_), shortcut_key);
+  const std::u16string shortcut_key =
+      clipboard_history_util::GetShortcutKeyName();
+  const std::u16string body_text = l10n_util::GetStringFUTF16(
+      GetBodyTextStringId(current_nudge_type_), shortcut_key);
 
-    AnchoredNudgeData nudge_data(
-        kClipboardNudgeId, GetCatalogName(current_nudge_type_), body_text);
-    nudge_data.image_model = GetImage(current_nudge_type_);
+  AnchoredNudgeData nudge_data(kClipboardNudgeId,
+                               GetCatalogName(current_nudge_type_), body_text);
+  nudge_data.image_model = GetImage(current_nudge_type_);
 
-    AnchoredNudgeManager::Get()->Show(nudge_data);
-  } else {
-    SystemNudgeController::ShowNudge();
-  }
+  AnchoredNudgeManager::Get()->Show(nudge_data);
 
   switch (nudge_type) {
     case ClipboardNudgeType::kOnboardingNudge:
@@ -417,7 +399,7 @@ void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
       base::UmaHistogramBoolean(kClipboardHistoryZeroStateNudgeShowCount, true);
       break;
     case ClipboardNudgeType::kScreenshotNotificationNudge:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ClipboardNudgeType::kDuplicateCopyNudge:
       CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
       duplicate_copy_nudge_recorder_.OnNudgeShown();
@@ -448,11 +430,6 @@ void ClipboardNudgeController::OverrideClockForTesting(
 void ClipboardNudgeController::ClearClockOverrideForTesting() {
   DCHECK(g_clock_override);
   g_clock_override = nullptr;
-}
-
-std::unique_ptr<SystemNudge> ClipboardNudgeController::CreateSystemNudge() {
-  return std::make_unique<ClipboardNudge>(current_nudge_type_,
-                                          GetCatalogName(current_nudge_type_));
 }
 
 }  // namespace ash

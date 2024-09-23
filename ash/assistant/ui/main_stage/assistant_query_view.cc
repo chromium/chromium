@@ -51,17 +51,14 @@ std::unique_ptr<views::Label> CreateLabel() {
 AssistantQueryView::AssistantQueryView() {
   SetID(AssistantViewID::kQueryView);
   InitLayout();
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kHeading);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
 }
 
 AssistantQueryView::~AssistantQueryView() = default;
 
-gfx::Size AssistantQueryView::CalculatePreferredSize() const {
-  return gfx::Size(kMaxWidthDip, GetHeightForWidth(kMaxWidthDip));
-}
-
-int AssistantQueryView::GetHeightForWidth(int width) const {
-  return kHeightDip;
+gfx::Size AssistantQueryView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(kMaxWidthDip, kHeightDip);
 }
 
 void AssistantQueryView::OnThemeChanged() {

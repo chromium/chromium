@@ -10,9 +10,9 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
@@ -22,7 +22,7 @@ namespace net {
 // OPT record format (https://tools.ietf.org/html/rfc6891):
 class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
  public:
-  static std::unique_ptr<OptRecordRdata> Create(base::StringPiece data);
+  static std::unique_ptr<OptRecordRdata> Create(std::string_view data);
 
   class NET_EXPORT_PRIVATE Opt {
    public:
@@ -41,7 +41,7 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     bool operator!=(const Opt& other) const;
 
     virtual uint16_t GetCode() const = 0;
-    base::StringPiece data() const { return data_; }
+    std::string_view data() const { return data_; }
 
    private:
     bool IsEqual(const Opt& other) const;
@@ -101,7 +101,7 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
 
     uint16_t GetCode() const override;
     uint16_t info_code() const { return info_code_; }
-    base::StringPiece extra_text() const { return extra_text_; }
+    std::string_view extra_text() const { return extra_text_; }
 
     EdeInfoCode GetEnumFromInfoCode() const;
 
@@ -163,7 +163,7 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     uint16_t code_;
 
     friend std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
-        base::StringPiece data);
+        std::string_view data);
   };
 
   static constexpr uint16_t kOptsWithDedicatedClasses[] = {

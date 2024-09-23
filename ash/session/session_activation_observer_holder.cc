@@ -33,7 +33,6 @@ void SessionActivationObserverHolder::RemoveForAccountId(
   auto it = observer_map_.find(account_id);
   if (it == observer_map_.end()) {
     NOTREACHED();
-    return;
   }
   it->second->RemoveObserver(observer);
 }

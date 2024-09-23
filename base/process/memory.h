@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/base_export.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
+#include "partition_alloc/oom.h"
 
 namespace base {
 
@@ -75,7 +75,7 @@ using partition_alloc::win::kOomExceptionCode;
 
 // *Must* be used to free memory allocated with base::UncheckedMalloc() and
 // base::UncheckedCalloc().
-// TODO(crbug.com/1279371): Enforce it, when all callers are converted.
+// TODO(crbug.com/40208525): Enforce it, when all callers are converted.
 BASE_EXPORT void UncheckedFree(void* ptr);
 
 // Function object which invokes 'UncheckedFree' on its parameter, which should

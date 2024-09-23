@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -11,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_cryptohome.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_storage_prefs.h"
@@ -50,6 +53,13 @@ void PostResponse(PinBackend::BoolCallback result, bool value) {
       FROM_HERE, base::BindOnce(std::move(result), value));
 }
 
+void PostResponse(PinBackend::AvailabilityCallback result,
+                  bool enabled,
+                  cryptohome::PinLockAvailability available_at) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(result), enabled, available_at));
+}
+
 void PostResponse(AuthOperationCallback result,
                   std::unique_ptr<UserContext> user_context,
                   bool success) {
@@ -83,11 +93,9 @@ PinBackend* PinBackend::GetInstance() {
 std::string PinBackend::ComputeSalt() {
   // The salt needs to be base64 encoded because the pref service requires a
   // UTF8 string.
-  std::string salt;
-  crypto::RandBytes(base::WriteInto(&salt, kSaltByteSize + 1), kSaltByteSize);
-  salt = base::Base64Encode(salt);
-  DCHECK(!salt.empty());
-  return salt;
+  std::array<uint8_t, kSaltByteSize> bytes;
+  crypto::RandBytes(bytes);
+  return base::Base64Encode(bytes);
 }
 
 // static
@@ -177,7 +185,7 @@ void PinBackend::IsSet(const AccountId& account_id, BoolCallback result) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
-      NOTREACHED() << "IsSet called with invalid user";
+      NOTREACHED_IN_MIGRATION() << "IsSet called with invalid user";
       std::move(result).Run(false);
       return;
     }
@@ -248,8 +256,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
                                          BoolCallback did_set) {
   // Immediate false if the PIN length isn't supported, or when the feature
   // isdisabled.
-  if (!features::IsPinAutosubmitFeatureEnabled() ||
-      pin.length() > kPinAutosubmitMaxPinLength) {
+  if (pin.length() > kPinAutosubmitMaxPinLength) {
     PostResponse(std::move(did_set), false);
     return;
   }
@@ -274,7 +281,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user) {
-    NOTREACHED() << "IsSet called with invalid user";
+    NOTREACHED_IN_MIGRATION() << "IsSet called with invalid user";
     std::move(did_set).Run(false);
     return;
   }
@@ -331,11 +338,11 @@ void PinBackend::RemoveWithContext(const AccountId& account_id,
 
 void PinBackend::CanAuthenticate(const AccountId& account_id,
                                  Purpose purpose,
-                                 BoolCallback result) {
+                                 AvailabilityCallback result_callback) {
   if (resolving_backend_) {
     on_cryptohome_support_received_.push_back(
         base::BindOnce(&PinBackend::CanAuthenticate, base::Unretained(this),
-                       account_id, purpose, std::move(result)));
+                       account_id, purpose, std::move(result_callback)));
     return;
   }
 
@@ -343,19 +350,21 @@ void PinBackend::CanAuthenticate(const AccountId& account_id,
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     if (!user) {
-      NOTREACHED() << "CanAuthenticate called with invalid user";
-      std::move(result).Run(false);
+      NOTREACHED_IN_MIGRATION() << "CanAuthenticate called with invalid user";
+      std::move(result_callback).Run(false, std::nullopt);
       return;
     }
     auto user_context = std::make_unique<UserContext>(*user);
     cryptohome_backend_->CanAuthenticate(std::move(user_context), purpose,
-                                         std::move(result));
+                                         std::move(result_callback));
   } else {
     QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-    PostResponse(std::move(result),
-                 storage && storage->HasStrongAuth() &&
-                     storage->pin_storage_prefs()->IsPinAuthenticationAvailable(
-                         purpose));
+    // pref based pin should be immediately available.
+    PostResponse(
+        std::move(result_callback),
+        storage && storage->HasStrongAuth() &&
+            storage->pin_storage_prefs()->IsPinAuthenticationAvailable(purpose),
+        std::nullopt);
   }
 }
 
@@ -410,11 +419,6 @@ bool PinBackend::ShouldUseCryptohome(const AccountId& account_id) {
 
 int PinBackend::GetExposedPinLength(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  if (!features::IsPinAutosubmitFeatureEnabled()) {
-    // Clear the exposed length if the feature was disabled.
-    known_user.SetUserPinLength(account_id, 0);
-    return 0;
-  }
 
   // Clear the pin length in local state if auto-submit got disabled, for
   // example, via policy. Disabling auto submit through Settings clears it
@@ -497,9 +501,6 @@ PrefService* PinBackend::PrefService(const AccountId& account_id) {
 
 void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
                                           size_t pin_length) {
-  if (!features::IsPinAutosubmitFeatureEnabled())
-    return;
-
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // A PIN is being set when the auto submit feature is present. This user
   // does not need to be backfilled.
@@ -524,8 +525,6 @@ void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
 }
 
 void PinBackend::UpdatePinAutosubmitOnRemove(const AccountId& account_id) {
-  if (!features::IsPinAutosubmitFeatureEnabled())
-    return;
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetUserPinLength(account_id, 0);
   PrefService(account_id)->ClearPref(::prefs::kPinUnlockAutosubmitEnabled);
@@ -534,9 +533,6 @@ void PinBackend::UpdatePinAutosubmitOnRemove(const AccountId& account_id) {
 void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
     const AccountId& account_id,
     size_t pin_length) {
-  if (!features::IsPinAutosubmitFeatureEnabled())
-    return;
-
   // Backfill the auto submit preference if the PIN that was authenticated was
   // set before the auto submit feature existed.
   PinAutosubmitBackfill(account_id, pin_length);
@@ -552,8 +548,7 @@ void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
 
 void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
                                        size_t pin_length) {
-  if (!features::IsPinAutosubmitBackfillFeatureEnabled() ||
-      !features::IsPinAutosubmitFeatureEnabled()) {
+  if (!features::IsPinAutosubmitBackfillFeatureEnabled()) {
     return;
   }
 

@@ -1,0 +1,156 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=./profile_picker_shared.css.js
+ * #import=chrome://resources/cr_elements/action_link_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=profile-picker-shared cr-hidden-style-lit action-link-lit
+ * #css_wrapper_metadata_end */
+
+#moreActionsButton {
+  --cr-icon-button-icon-size: 14px;
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-size: 24px;
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+
+:host-context([dir='rtl']) #moreActionsButton {
+  left: 4px;
+  right: initial;
+}
+
+cr-action-menu {
+  font-weight: normal;
+}
+
+#actionMenu cr-icon {
+  --iron-icon-fill-color: var(--google-grey-700);
+  padding-inline-end: 14px;
+}
+
+#actionMenu button {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  color: var(--google-grey-800);
+  padding-inline-start: 14px;
+}
+
+cr-dialog::part(dialog) {
+  width: 448px;
+}
+
+#removeWarningHeader {
+  line-height: 20px;
+  padding: 4px 20px 20px 20px;
+}
+
+#userName {
+  overflow-wrap: break-word;
+}
+
+.key-text {
+  font-weight: 500;
+}
+
+#removeActionDialogBody {
+  align-items: center;
+  border: 1px solid var(--google-grey-100);
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+}
+
+#profileCardContainer {
+  align-items: center;
+  background-color: var(--profile-card-hover-color);
+  border-radius: 12px 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  height: var(--profile-item-height);
+  justify-content: center;
+  position: relative;
+  width: var(--profile-item-width);
+}
+
+#avatarContainer {
+  height: var(--profile-card-avatar-icon-size);
+  position: relative;
+}
+
+#profileName {
+  top: 0;
+}
+
+#gaiaName {
+  bottom: 0;
+}
+
+.statistics {
+  border-collapse: collapse;
+  flex-grow: 1;
+  margin: 20px;
+}
+
+.statistics td {
+  padding: 0;
+}
+
+.category {
+  align-self: center;
+  color: var(--cr-primary-text-color);
+  line-height: 24px;
+  text-align: start;
+}
+
+.count {
+  align-self: center;
+  color: var(--google-grey-500);
+  text-align: end;
+}
+
+#removeConfirmationButton {
+  --cr-button-background-color: var(--google-red-600);
+}
+
+#removeConfirmationButton:hover {
+  --cr-button-background-color: rgba(var(--google-red-600-rgb), .9);
+  --cr-button-border-color: var(--google-red-100);
+}
+
+@media (prefers-color-scheme: dark) {
+  #actionMenu button {
+    color: var(--google-grey-300);
+  }
+
+  #actionMenu cr-icon {
+    --iron-icon-fill-color: var(--google-grey-500);
+  }
+
+  .warning-message {
+    color: var(--google-grey-500);
+  }
+
+  #removeActionDialogBody {
+    border-color: var(--google-grey-700);
+  }
+
+  #removeConfirmationButton {
+    --cr-button-background-color: var(--google-red-300);
+    --cr-button-text-color: var(--google-grey-900);
+  }
+
+  #removeConfirmationButton:hover {
+    --cr-button-background-color: var(--google-red-300)
+        linear-gradient(rgba(0, 0, 0, .08), rgba(0, 0, 0, .08));
+    --cr-button-hover-on-prominent-background-color: transparent;
+  }
+}

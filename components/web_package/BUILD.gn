@@ -8,8 +8,15 @@ static_library("web_package") {
   sources = [
     "input_reader.cc",
     "input_reader.h",
+    "signed_web_bundles/attribute_map_parser.cc",
+    "signed_web_bundles/attribute_map_parser.h",
+    "signed_web_bundles/constants.h",
+    "signed_web_bundles/identity_validator.cc",
+    "signed_web_bundles/identity_validator.h",
     "signed_web_bundles/integrity_block_parser.cc",
     "signed_web_bundles/integrity_block_parser.h",
+    "signed_web_bundles/signature_entry_parser.cc",
+    "signed_web_bundles/signature_entry_parser.h",
     "signed_web_bundles/signed_web_bundle_id.cc",
     "signed_web_bundles/signed_web_bundle_id.h",
     "signed_web_bundles/signed_web_bundle_integrity_block.cc",
@@ -22,6 +29,7 @@ static_library("web_package") {
     "signed_web_bundles/signed_web_bundle_signature_verifier.h",
     "signed_web_bundles/signed_web_bundle_utils.cc",
     "signed_web_bundles/signed_web_bundle_utils.h",
+    "signed_web_bundles/types.h",
     "web_bundle_builder.cc",
     "web_bundle_builder.h",
     "web_bundle_parser.cc",
@@ -51,14 +59,23 @@ source_set("mojom_mapped_types") {
   visibility = [ "./*" ]
 
   sources = [
+    "signed_web_bundles/ecdsa_p256_public_key.cc",
+    "signed_web_bundles/ecdsa_p256_public_key.h",
+    "signed_web_bundles/ecdsa_p256_sha256_signature.cc",
+    "signed_web_bundles/ecdsa_p256_sha256_signature.h",
+    "signed_web_bundles/ecdsa_p256_utils.cc",
+    "signed_web_bundles/ecdsa_p256_utils.h",
     "signed_web_bundles/ed25519_public_key.cc",
     "signed_web_bundles/ed25519_public_key.h",
     "signed_web_bundles/ed25519_signature.cc",
     "signed_web_bundles/ed25519_signature.h",
+    "signed_web_bundles/integrity_block_attributes.cc",
+    "signed_web_bundles/integrity_block_attributes.h",
   ]
 
   deps = [
     "//base",
+    "//crypto",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -67,6 +84,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "mojom/web_bundle_parser_mojom_traits_unittest.cc",
+    "signed_web_bundles/ecdsa_p256_public_key_unittest.cc",
+    "signed_web_bundles/ecdsa_p256_utils_unittest.cc",
     "signed_web_bundles/ed25519_public_key_unittest.cc",
     "signed_web_bundles/ed25519_signature_unittest.cc",
     "signed_web_bundles/signed_web_bundle_id_unittest.cc",

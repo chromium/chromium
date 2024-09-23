@@ -31,6 +31,17 @@ namespace media {
 class BitstreamBuffer;
 class MediaLog;
 class VideoFrame;
+class CommandBufferHelper;
+
+// Metadata for a dropped frame.
+// BitstreamBufferMetadata has this data if and only if the frame is
+// dropped.
+// |spatial_idx|    indicates the spatial index for this frame.
+// |end_of_picture| is trueiff frame is last spatial layer frame of picture.
+struct MEDIA_EXPORT DropFrameMetadata final {
+  uint8_t spatial_idx = 0;
+  bool end_of_picture = true;
+};
 
 //  Metadata for a H264 bitstream buffer.
 //  |temporal_idx|  indicates the temporal index for this frame.
@@ -78,6 +89,8 @@ struct MEDIA_EXPORT Vp9Metadata final {
   bool referenced_by_upper_spatial_layers = false;
   // True iff frame is dependent on directly lower spatial layer frame.
   bool reference_lower_spatial_layers = false;
+  // True iff frame is last spatial layer frame of picture.
+  bool end_of_picture = true;
 
   // The temporal index for this frame.
   uint8_t temporal_idx = 0;
@@ -129,6 +142,9 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   BitstreamBufferMetadata(size_t payload_size_bytes,
                           bool key_frame,
                           base::TimeDelta timestamp);
+  static BitstreamBufferMetadata CreateForDropFrame(base::TimeDelta timestamp,
+                                                    uint8_t spatial_idx = 0,
+                                                    bool end_of_picture = true);
   ~BitstreamBufferMetadata();
 
   // If |payload_size_bytes| is zero, it indicates the frame corresponded to
@@ -137,16 +153,17 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   bool key_frame;
   base::TimeDelta timestamp;
   int32_t qp = -1;
-  // This is true if a frame is the last spatial layer frame in SVC encoding.
-  // This is useful, in SVC encoding, to represent it when a frame is dropped
-  // and thus the vp9 metadata is not filled.
-  bool end_of_picture = true;
 
+  // This is true if a frame is the last spatial layer frame in SVC encoding.
+  // This is always true in non-SVC encoding.
+  bool end_of_picture() const;
   bool dropped_frame() const;
   std::optional<uint8_t> spatial_idx() const;
 
-  // |h264|, |vp8| or |vp9| may be set, but not multiple of them. Presumably,
-  // it's also possible for none of them to be set.
+  // |drop|, |h264|, |vp8|, |vp9|, |av1| and |h265| may be set, but not multiple
+  // of them. Presumably, it's also possible for none of them to be set.
+  // |drop| is set if and only if the frame is dropped.
+  std::optional<DropFrameMetadata> drop;
   std::optional<H264Metadata> h264;
   std::optional<Vp8Metadata> vp8;
   std::optional<Vp9Metadata> vp9;
@@ -181,7 +198,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
         uint32_t max_framerate_numerator = 0u,
         uint32_t max_framerate_denominator = 1u,
         SupportedRateControlMode rc_modes = kConstantMode,
-        const std::vector<SVCScalabilityMode>& scalability_modes = {});
+        const std::vector<SVCScalabilityMode>& scalability_modes = {},
+        const std::vector<VideoPixelFormat>& gpu_suppoted_pixel_formats = {},
+        bool supports_shared_images = false);
     SupportedProfile(const SupportedProfile& other);
     SupportedProfile& operator=(const SupportedProfile& other) = default;
     ~SupportedProfile();
@@ -193,6 +212,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     SupportedRateControlMode rate_control_modes = kNoMode;
     std::vector<SVCScalabilityMode> scalability_modes;
     bool is_software_codec = false;
+    std::vector<VideoPixelFormat> gpu_supported_pixel_formats;
+    bool supports_gpu_shared_images = false;
   };
   using SupportedProfiles = std::vector<SupportedProfile>;
   using FlushCallback = base::OnceCallback<void(bool)>;
@@ -237,7 +258,10 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     Config(VideoPixelFormat input_format,
            const gfx::Size& input_visible_size,
            VideoCodecProfile output_profile,
-           const Bitrate& bitrate);
+           const Bitrate& bitrate,
+           uint32_t framerate,
+           StorageType storage_type,
+           ContentType content_type);
 
     ~Config();
 
@@ -261,10 +285,20 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // variable or constant) and target bitrate.
     Bitrate bitrate;
 
-    // Initial encoding framerate in frames per second. This is optional and
-    // VideoEncodeAccelerator should use |kDefaultFramerate| if not given.
-    std::optional<uint32_t> initial_framerate =
-        VideoEncodeAccelerator::kDefaultFramerate;
+    // The encoder frame rate in frames per second.
+    uint32_t framerate;
+
+    // The storage type of video frame provided on Encode().
+    // This is kShmem iff a video frame is mapped in user space.
+    // This is kDmabuf iff a video frame has dmabuf.
+    StorageType storage_type;
+
+    // Indicates captured video (from a camera) or generated (screen grabber).
+    // Screen content has a number of special properties such as lack of noise,
+    // burstiness of motion and requirements for readability of small text in
+    // bright colors. With this content hint the encoder may choose to optimize
+    // for the given use case.
+    ContentType content_type;
 
     // Group of picture length for encoded output stream, indicates the
     // distance between two key frames, i.e. IPPPIPPP would be represent as 4.
@@ -273,25 +307,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Codec level of encoded output stream for H264 only. This value should
     // be aligned to the H264 standard definition of SPS.level_idc.
     // If this is not given, VideoEncodeAccelerator selects one of proper H.264
-    // levels for |input_visible_size| and |initial_framerate|.
+    // levels for |input_visible_size| and |framerate|.
     std::optional<uint8_t> h264_output_level;
 
     // Indicates baseline profile or constrained baseline profile for H264 only.
     bool is_constrained_h264 = false;
-
-    // The storage type of video frame provided on Encode().
-    // If no value is set, VEA doesn't check the storage type of video frame on
-    // Encode().
-    // This is kShmem iff a video frame is mapped in user space.
-    // This is kDmabuf iff a video frame has dmabuf.
-    std::optional<StorageType> storage_type;
-
-    // Indicates captured video (from a camera) or generated (screen grabber).
-    // Screen content has a number of special properties such as lack of noise,
-    // burstiness of motion and requirements for readability of small text in
-    // bright colors. With this content hint the encoder may choose to optimize
-    // for the given use case.
-    ContentType content_type = ContentType::kCamera;
 
     // |drop_frame_thresh_percentage| is described as a percentage of the target
     // data buffer. When the data buffer falls below this percentage of
@@ -473,6 +493,13 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // to the size provided during encoder configuration.
   // This method must be called after VEA has been initialized.
   virtual bool IsGpuFrameResizeSupported();
+
+  // Provides a callback to acquire a CommandBufferStub, which may be used
+  // to access shared images.
+  virtual void SetCommandBufferHelperCB(
+      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+          get_command_buffer_helper_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner);
 
  protected:
   // Do not delete directly; use Destroy() or own it with a unique_ptr, which

@@ -36,34 +36,6 @@ TEST_F(DevToolsPageManifestTest, DevToolsExtensions) {
                   .HasEffectiveAccessToAllHosts());
 }
 
-TEST_F(DevToolsPageManifestTest, DevToolsPageAbsoluteUrl) {
-  auto manifest = base::Value::Dict()
-                      .Set("name", "test")
-                      .Set("version", "1")
-                      .Set("manifest_version", 3)
-                      .Set("devtools_page", "chrome-extension://someid/path");
-  std::string error;
-  base::ScopedTempDir dir;
-  ASSERT_TRUE(dir.CreateUniqueTempDir());
-  scoped_refptr<extensions::Extension> extension =
-      extensions::Extension::Create(
-          dir.GetPath(), extensions::mojom::ManifestLocation::kInternal,
-          manifest, extensions::Extension::NO_FLAGS, "someid", &error);
-  ASSERT_TRUE(extension.get());
-  EXPECT_TRUE(error.empty());
-
-  // Specifying an absolute URL for a different extension's resource should
-  // fail, similar to other remote sources.
-  extension = extensions::Extension::Create(
-      dir.GetPath(), extensions::mojom::ManifestLocation::kInternal, manifest,
-      extensions::Extension::NO_FLAGS, "otherid", &error);
-  ASSERT_FALSE(extension);
-  ASSERT_FALSE(error.empty());
-  EXPECT_EQ(
-      base::UTF16ToUTF8(extensions::manifest_errors::kInvalidDevToolsPage),
-      error);
-}
-
 namespace extensions {
 
 namespace {
@@ -79,6 +51,28 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
         .Set("version", "1")
         .Set("manifest_version", 3)
         .Set("devtools_page", devtools_page);
+  }
+
+  void LoadAndExpectSuccess(const std::string& id,
+                            const std::string& devtools_page,
+                            const std::string& parsed_devtools_page) {
+    base::ScopedTempDir dir;
+    std::string error;
+    base::Value::Dict manifest = CreateManifest(devtools_page);
+    ASSERT_TRUE(dir.CreateUniqueTempDir());
+    scoped_refptr<Extension> extension =
+        Extension::Create(dir.GetPath(), mojom::ManifestLocation::kInternal,
+                          manifest, Extension::NO_FLAGS, id, &error);
+    ASSERT_TRUE(extension.get());
+    EXPECT_TRUE(error.empty());
+    ASSERT_EQ(parsed_devtools_page,
+              extensions::chrome_manifest_urls::GetDevToolsPage(extension.get())
+                  .spec());
+  }
+
+  void LoadAndExpectSuccess(const std::string& id,
+                            const std::string& devtools_page) {
+    LoadAndExpectSuccess(id, devtools_page, devtools_page);
   }
 
   void LoadAndExpectError(const std::string& id,
@@ -127,7 +121,23 @@ class ManifestDevToolsPageHandlerTest : public ManifestTest {
 
 }  // namespace
 
+TEST_F(ManifestDevToolsPageHandlerTest, DevToolsPageImported) {
+  // Specifying an absolute URL for an imported resource should fail, similar
+  // to other remote sources.
+  LoadAndExpectError("someid",
+                     "chrome-extension://someid/_modules/"
+                     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/devtools.html",
+                     std::u16string(manifest_errors::kInvalidDevToolsPage));
+
+  // Specifying an absolute URL for a resouce with '_modules' in it but not
+  // actually an imported resource should be fine
+  LoadAndExpectSuccess("someid",
+                       "chrome-extension://someid/_modules1/devtools.html");
+}
+
 TEST_F(ManifestDevToolsPageHandlerTest, DevTools) {
+  LoadAndExpectSuccess("someid", "chrome-extension://someid/path");
+
   ValidateAndExpectWarning(
       "does-not-exist.html",
       ErrorUtils::FormatErrorMessage(manifest_errors::kFileNotFound,
@@ -145,6 +155,8 @@ TEST_F(ManifestDevToolsPageHandlerTest, DevTools) {
       ErrorUtils::FormatErrorMessage(manifest_errors::kFileNotFound,
                                      "does-not-exist.html"));
 
+  // Specifying an absolute URL for a different extension's resource should
+  // fail, similar to other remote sources.
   LoadAndExpectError("aaaa", "chrome-extension://bbbb/index.html",
                      std::u16string(manifest_errors::kInvalidDevToolsPage));
   LoadAndExpectError("wss://bad.example.com",

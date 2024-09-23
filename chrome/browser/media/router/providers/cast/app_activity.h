@@ -40,7 +40,8 @@ class AppActivity : public CastActivity {
 
   void SendMediaStatusToClients(const base::Value::Dict& media_status,
                                 std::optional<int> request_id) override;
-  void OnAppMessage(const cast::channel::CastMessage& message) override;
+  void OnAppMessage(
+      const openscreen::cast::proto::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
   void BindMediaController(
       mojo::PendingReceiver<mojom::MediaController> media_controller,
@@ -56,7 +57,7 @@ class AppActivity : public CastActivity {
   bool CanJoinSession(const CastMediaSource& cast_source) const;
   bool HasJoinableClient(AutoJoinPolicy policy,
                          const url::Origin& origin,
-                         int tab_id) const;
+                         content::FrameTreeNodeId frame_tree_node_id) const;
   void OnSessionSet(const CastSession& session) override;
   void OnSessionUpdated(const CastSession& session,
                         const std::string& hash_token) override;

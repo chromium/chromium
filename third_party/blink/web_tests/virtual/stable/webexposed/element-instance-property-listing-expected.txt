@@ -37,6 +37,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaChecked
     property ariaColCount
     property ariaColIndex
+    property ariaColIndexText
     property ariaColSpan
     property ariaCurrent
     property ariaDescription
@@ -62,6 +63,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaRoleDescription
     property ariaRowCount
     property ariaRowIndex
+    property ariaRowIndexText
     property ariaRowSpan
     property ariaSelected
     property ariaSetSize
@@ -97,6 +99,7 @@ namespace http://www.w3.org/1999/xhtml
     property computedStyleMap
     property contains
     property contentEditable
+    property currentCSSZoom
     property dataset
     property dir
     property dispatchEvent
@@ -118,6 +121,7 @@ namespace http://www.w3.org/1999/xhtml
     property getElementsByClassName
     property getElementsByTagName
     property getElementsByTagNameNS
+    property getHTML
     property getInnerHTML
     property getRootNode
     property hasAttribute
@@ -241,6 +245,8 @@ namespace http://www.w3.org/1999/xhtml
     property onresize
     property onscroll
     property onscrollend
+    property onscrollsnapchange
+    property onscrollsnapchanging
     property onsearch
     property onsecuritypolicyviolation
     property onseeked
@@ -310,6 +316,7 @@ namespace http://www.w3.org/1999/xhtml
     property setAttributeNS
     property setAttributeNode
     property setAttributeNodeNS
+    property setHTMLUnsafe
     property setPointerCapture
     property shadowRoot
     property showPopover
@@ -328,7 +335,9 @@ namespace http://www.w3.org/1999/xhtml
     property webkitMatchesSelector
     property webkitRequestFullScreen
     property webkitRequestFullscreen
+    property writingSuggestions
 html element a
+    property attributionSrc
     property charset
     property coords
     property download
@@ -551,6 +560,12 @@ html element embed
     property src
     property type
     property width
+html element fencedframe
+    property allow
+    property config
+    property height
+    property sandbox
+    property width
 html element fieldset
     property checkValidity
     property disabled
@@ -649,6 +664,7 @@ html element iframe
     property allow
     property allowFullscreen
     property allowPaymentRequest
+    property browsingTopics
     property contentDocument
     property contentWindow
     property credentialless
@@ -666,12 +682,14 @@ html element iframe
     property referrerPolicy
     property sandbox
     property scrolling
+    property sharedStorageWritable
     property src
     property srcdoc
     property width
 html element img
     property align
     property alt
+    property attributionSrc
     property border
     property complete
     property crossOrigin
@@ -689,6 +707,7 @@ html element img
     property naturalHeight
     property naturalWidth
     property referrerPolicy
+    property sharedStorageWritable
     property sizes
     property src
     property srcset
@@ -921,6 +940,7 @@ html element s
 html element samp
 html element script
     property async
+    property attributionSrc
     property blocking
     property charset
     property crossOrigin
@@ -1037,7 +1057,10 @@ html element td
     property width
 html element template
     property content
+    property shadowRootClonable
+    property shadowRootDelegatesFocus
     property shadowRootMode
+    property shadowRootSerializable
 html element textarea
     property autocomplete
     property checkValidity
@@ -1199,13 +1222,7 @@ html element video
     property volume
     property webkitAudioDecodedByteCount
     property webkitDecodedFrameCount
-    property webkitDisplayingFullscreen
     property webkitDroppedFrameCount
-    property webkitEnterFullScreen
-    property webkitEnterFullscreen
-    property webkitExitFullScreen
-    property webkitExitFullscreen
-    property webkitSupportsFullscreen
     property webkitVideoDecodedByteCount
     property width
 html element wbr
@@ -1245,6 +1262,7 @@ namespace http://www.w3.org/2000/svg
     property ariaChecked
     property ariaColCount
     property ariaColIndex
+    property ariaColIndexText
     property ariaColSpan
     property ariaCurrent
     property ariaDescription
@@ -1270,6 +1288,7 @@ namespace http://www.w3.org/2000/svg
     property ariaRoleDescription
     property ariaRowCount
     property ariaRowIndex
+    property ariaRowIndexText
     property ariaRowSpan
     property ariaSelected
     property ariaSetSize
@@ -1301,6 +1320,7 @@ namespace http://www.w3.org/2000/svg
     property compareDocumentPosition
     property computedStyleMap
     property contains
+    property currentCSSZoom
     property dataset
     property dispatchEvent
     property elementTiming
@@ -1318,6 +1338,7 @@ namespace http://www.w3.org/2000/svg
     property getElementsByClassName
     property getElementsByTagName
     property getElementsByTagNameNS
+    property getHTML
     property getInnerHTML
     property getRootNode
     property hasAttribute
@@ -1429,6 +1450,8 @@ namespace http://www.w3.org/2000/svg
     property onresize
     property onscroll
     property onscrollend
+    property onscrollsnapchange
+    property onscrollsnapchanging
     property onsearch
     property onsecuritypolicyviolation
     property onseeked
@@ -1497,6 +1520,7 @@ namespace http://www.w3.org/2000/svg
     property setAttributeNS
     property setAttributeNode
     property setAttributeNodeNS
+    property setHTMLUnsafe
     property setPointerCapture
     property shadowRoot
     property slot

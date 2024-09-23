@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module drivefs.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// All notification types here should be aligned with the ones defined in
+// google3/apps/drive/fs/common/notifications.h.
+
+[Extensible]
+union DriveFsNotification {
+  // Signifies an unknown notification being sent. When using extensible union
+  // structs, they may be out of sync so to avoid this notifications sent that
+  // are unknown degrade to this and will be uniformly discarded.
+  [Default] bool unknown;
+  // The remaining fields are individual notifications, please refer to the
+  // comments on their individual structs for explanation.
+  MirrorDownloadDeletedNotification mirror_download_deleted;
+};
+
+// Notification shown when a mirrored item that was deleted on the cloud has
+// also been deleted by DriveFs locally.
+struct MirrorDownloadDeletedNotification {
+  string parent_title;
+};

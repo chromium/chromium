@@ -56,6 +56,13 @@ struct WebAccessibleResourcesInfo : public Extension::ManifestData {
                                       const std::string& relative_path,
                                       const url::Origin* initiator_origin);
 
+  // Returns true if the specified resource is web accessible. For redirects.
+  static bool IsResourceWebAccessibleRedirect(
+      const Extension* extension,
+      const GURL& target_url,
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& upstream_url);
+
   // Returns true when 'web_accessible_resources' are defined for the extension.
   static bool HasWebAccessibleResources(const Extension* extension);
 

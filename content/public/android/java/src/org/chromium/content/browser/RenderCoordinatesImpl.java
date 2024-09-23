@@ -47,7 +47,7 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
         return ((WebContentsImpl) webContents).getRenderCoordinates();
     }
 
-    // TODO(https://crbug.com/1340593): Mocking |#fromWebContents()| may be a better option, when
+    // TODO(crbug.com/40850475): Mocking |#fromWebContents()| may be a better option, when
     // available.
     public static void setInstanceForTesting(RenderCoordinatesImpl instance) {
         sInstanceForTesting = instance;

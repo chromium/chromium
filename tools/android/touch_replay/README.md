@@ -10,6 +10,11 @@ Recording on one device and replaying on another is likely not going to work
 because of differences in the structure of touch events. The way the kernel
 drivers emit the events depends heavily on device type and OS version.
 
+Update: After creating the Touch Replay tool Android started supporting
+[a port of evemu](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/cmds/uinput/README.md)
+with more functionality like human readable format for dumps. We should
+eventually rewrite these instructions to describe the new tool.
+
 ## How to use
 
 Please use an optimized release build to minimize potential delays between

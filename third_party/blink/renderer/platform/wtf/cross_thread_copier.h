@@ -39,6 +39,8 @@
 
 namespace WTF {
 
+class String;
+
 template <typename T>
 struct CrossThreadCopierPassThrough {
   STATIC_ONLY(CrossThreadCopierPassThrough);

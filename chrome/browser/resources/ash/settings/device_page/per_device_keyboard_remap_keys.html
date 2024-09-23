@@ -33,6 +33,7 @@
 <div class="subsection">
   <template is="dom-if" if="[[!isAltClickAndSixPackCustomizationEnabled]]">
     <keyboard-remap-modifier-key-row
+        has-function-key="[[hasFunctionKey]]"
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kMeta]]" id="metaKey"
         meta-key="[[keyboard.metaKey]]"
@@ -41,6 +42,7 @@
         remove-top-border>
     </keyboard-remap-modifier-key-row>
     <keyboard-remap-modifier-key-row
+        has-function-key="[[hasFunctionKey]]"
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kControl]]" id="ctrlKey"
         meta-key="[[keyboard.metaKey]]"
@@ -48,6 +50,7 @@
         pref="{{fakeCtrlPref}}">
     </keyboard-remap-modifier-key-row>
     <keyboard-remap-modifier-key-row
+        has-function-key="[[hasFunctionKey]]"
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kAlt]]" id="altKey"
         meta-key="[[keyboard.metaKey]]"
@@ -55,6 +58,7 @@
         pref="{{fakeAltPref}}">
     </keyboard-remap-modifier-key-row>
     <keyboard-remap-modifier-key-row
+        has-function-key="[[hasFunctionKey]]"
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kEscape]]" id="escapeKey"
         meta-key="[[keyboard.metaKey]]"
@@ -62,6 +66,7 @@
         pref="{{fakeEscPref}}">
     </keyboard-remap-modifier-key-row>
     <keyboard-remap-modifier-key-row
+        has-function-key="[[hasFunctionKey]]"
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kBackspace]]" id="backspaceKey"
         meta-key="[[keyboard.metaKey]]"
@@ -70,6 +75,7 @@
     </keyboard-remap-modifier-key-row>
     <template is="dom-if" if="[[hasAssistantKey]]" restamp>
       <keyboard-remap-modifier-key-row
+          has-function-key="[[hasFunctionKey]]"
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kAssistant]]" id="assistantKey"
           meta-key="[[keyboard.metaKey]]"
@@ -79,6 +85,7 @@
     </template>
     <template is="dom-if" if="[[hasCapsLockKey]]" restamp>
       <keyboard-remap-modifier-key-row
+          has-function-key="[[hasFunctionKey]]"
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kCapsLock]]" id="capsLockKey"
           meta-key="[[keyboard.metaKey]]"
@@ -93,6 +100,7 @@
     </h2>
     <div class="subsection">
       <keyboard-remap-modifier-key-row
+          has-function-key="[[hasFunctionKey]]"
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kMeta]]" id="metaKey"
           meta-key="[[keyboard.metaKey]]"
@@ -101,6 +109,7 @@
           remove-top-border>
       </keyboard-remap-modifier-key-row>
       <keyboard-remap-modifier-key-row
+          has-function-key="[[hasFunctionKey]]"
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kControl]]" id="ctrlKey"
           meta-key="[[keyboard.metaKey]]"
@@ -108,6 +117,7 @@
           pref="{{fakeCtrlPref}}">
       </keyboard-remap-modifier-key-row>
       <keyboard-remap-modifier-key-row
+          has-function-key="[[hasFunctionKey]]"
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kAlt]]" id="altKey"
           meta-key="[[keyboard.metaKey]]"
@@ -115,6 +125,7 @@
           pref="{{fakeAltPref}}">
       </keyboard-remap-modifier-key-row>
       <keyboard-remap-modifier-key-row
+          has-function-key="[[hasFunctionKey]]"
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kEscape]]" id="escapeKey"
           meta-key="[[keyboard.metaKey]]"
@@ -122,6 +133,7 @@
           pref="{{fakeEscPref}}">
       </keyboard-remap-modifier-key-row>
       <keyboard-remap-modifier-key-row
+          has-function-key="[[hasFunctionKey]]"
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kBackspace]]" id="backspaceKey"
           meta-key="[[keyboard.metaKey]]"
@@ -130,6 +142,7 @@
       </keyboard-remap-modifier-key-row>
       <template is="dom-if" if="[[hasAssistantKey]]" restamp>
         <keyboard-remap-modifier-key-row
+            has-function-key="[[hasFunctionKey]]"
             default-remappings="[[defaultRemappings]]"
             key="[[modifierKey.kAssistant]]" id="assistantKey"
             meta-key="[[keyboard.metaKey]]"
@@ -137,8 +150,29 @@
             pref="{{fakeAssistantPref}}">
         </keyboard-remap-modifier-key-row>
       </template>
+      <template is="dom-if" if="[[hasRightAltKey]]" restamp>
+        <keyboard-remap-modifier-key-row
+            has-function-key="[[hasFunctionKey]]"
+            default-remappings="[[defaultRemappings]]"
+            key="[[modifierKey.kRightAlt]]" id="rightAltKey"
+            meta-key="[[keyboard.metaKey]]"
+            aria-label="$i18n{perDeviceKeyboardKeyRightAlt}"
+            pref="{{fakeRightAltPref}}">
+        </keyboard-remap-modifier-key-row>
+      </template>
+      <template is="dom-if" if="[[hasFunctionKey]]" restamp>
+        <keyboard-remap-modifier-key-row
+            has-function-key="[[hasFunctionKey]]"
+            default-remappings="[[defaultRemappings]]"
+            key="[[modifierKey.kFunction]]" id="functionKey"
+            meta-key="[[keyboard.metaKey]]"
+            aria-label="$i18n{perDeviceKeyboardKeyFunction}"
+            pref="{{fakeFunctionPref}}">
+        </keyboard-remap-modifier-key-row>
+      </template>
       <template is="dom-if" if="[[hasCapsLockKey]]" restamp>
         <keyboard-remap-modifier-key-row
+            has-function-key="[[hasFunctionKey]]"
             default-remappings="[[defaultRemappings]]"
             key="[[modifierKey.kCapsLock]]" id="capsLockKey"
             meta-key="[[keyboard.metaKey]]"
@@ -147,52 +181,59 @@
         </keyboard-remap-modifier-key-row>
       </template>
     </div>
-    <h2 class="subsection-header" id="otherKeysHeader">
-      $i18n{otherKeysLabel}
-    </h2>
+    <template is="dom-if" if="[[!hasFunctionKey]]">
+      <h2 class="subsection-header" id="otherKeysHeader">
+        $i18n{otherKeysLabel}
+      </h2>
+    </template>
     <div class="subsection">
-  <keyboard-six-pack-key-row
-      modifier="[[keyboard.sixPackKeyRemappings.del]]"
-      key="del"
-      pref="{{deletePref}}"
-      aria-label="$i18n{sixPackKeyLabelDelete}">
-  </keyboard-six-pack-key-row>
-  <keyboard-six-pack-key-row
-      modifier="[[keyboard.sixPackKeyRemappings.pageDown]]"
-      key="pageDown"
-      pref="{{pageDownPref}}"
-      aria-label="$i18n{sixPackKeyLabelPageDown}">
-  </keyboard-six-pack-key-row>
-  <keyboard-six-pack-key-row
-      modifier="[[keyboard.sixPackKeyRemappings.pageUp]]"
-      key="pageUp"
-      pref="{{pageUpPref}}"
-      aria-label="$i18n{sixPackKeyLabelPageUp}">
-  </keyboard-six-pack-key-row>
-  <keyboard-six-pack-key-row
-      modifier="[[keyboard.sixPackKeyRemappings.end]]"
-      key="end"
-      pref="{{endPref}}"
-      aria-label="$i18n{sixPackKeyLabelEnd}">
-  </keyboard-six-pack-key-row>
-  <keyboard-six-pack-key-row
-      modifier="[[keyboard.sixPackKeyRemappings.home]]"
-      key="home"
-      pref="{{homePref}}"
-      aria-label="$i18n{sixPackKeyLabelHome}">
-  </keyboard-six-pack-key-row>
-  <keyboard-six-pack-key-row
-      modifier="[[keyboard.sixPackKeyRemappings.insert]]"
-      key="insert"
-      pref="{{insertPref}}"
-      aria-label="$i18n{sixPackKeyLabelInsert}">
-  </keyboard-six-pack-key-row>
-  <template is="dom-if" if="[[shouldShowFkeys(keyboard.*)]]">
-    <fkey-row key="f11" aria-label="$i18n{f11KeyLabel}"
-        pref="{{f11KeyPref}}" keyboard="[[keyboard]]">
-    </fkey-row>
-    <fkey-row key="f12" aria-label="$i18n{f12KeyLabel}"
-        pref="{{f12KeyPref}}" keyboard="[[keyboard]]">
-    </fkey-row>
+      <template is="dom-if" if="[[!hasFunctionKey]]">
+        <keyboard-six-pack-key-row id="del"
+            modifier="[[keyboard.sixPackKeyRemappings.del]]"
+            key="del"
+            pref="{{deletePref}}"
+            aria-label="$i18n{sixPackKeyLabelDelete}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="pageDown"
+            modifier="[[keyboard.sixPackKeyRemappings.pageDown]]"
+            key="pageDown"
+            pref="{{pageDownPref}}"
+            aria-label="$i18n{sixPackKeyLabelPageDown}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="pageUp"
+            modifier="[[keyboard.sixPackKeyRemappings.pageUp]]"
+            key="pageUp"
+            pref="{{pageUpPref}}"
+            aria-label="$i18n{sixPackKeyLabelPageUp}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="end"
+            modifier="[[keyboard.sixPackKeyRemappings.end]]"
+            key="end"
+            pref="{{endPref}}"
+            aria-label="$i18n{sixPackKeyLabelEnd}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="home"
+            modifier="[[keyboard.sixPackKeyRemappings.home]]"
+            key="home"
+            pref="{{homePref}}"
+            aria-label="$i18n{sixPackKeyLabelHome}">
+        </keyboard-six-pack-key-row>
+        <keyboard-six-pack-key-row id="insert"
+            modifier="[[keyboard.sixPackKeyRemappings.insert]]"
+            key="insert"
+            pref="{{insertPref}}"
+            aria-label="$i18n{sixPackKeyLabelInsert}">
+        </keyboard-six-pack-key-row>
+      </template>
+      <template is="dom-if"
+          if="[[shouldShowFkeys(keyboard.*, hasFunctionKey)]]">
+        <fkey-row key="f11" aria-label="$i18n{f11KeyLabel}" id="f11"
+            pref="{{f11KeyPref}}" keyboard="[[keyboard]]">
+        </fkey-row>
+        <fkey-row key="f12" aria-label="$i18n{f12KeyLabel}" id="f12"
+            pref="{{f12KeyPref}}" keyboard="[[keyboard]]">
+        </fkey-row>
+      </template>
+    </div>
   </template>
 </div>

@@ -4,6 +4,7 @@
 //
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 
+#include <list>
 #include <memory>
 #include <utility>
 
@@ -17,6 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/reporting/resources/resource_manager.h"
@@ -29,6 +31,7 @@
 
 using ::base::test::EqualsProto;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::SizeIs;
@@ -45,11 +48,13 @@ class TestEncryptedReportingUploadProvider
     : public EncryptedReportingUploadProvider {
  public:
   TestEncryptedReportingUploadProvider(
-      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb)
+      ReportSuccessfulUploadCallback report_successful_upload_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      UpdateConfigInMissiveCallback update_config_in_missive_cb)
       : EncryptedReportingUploadProvider(
             report_successful_upload_cb,
             encryption_key_attached_cb,
+            update_config_in_missive_cb,
             /*upload_client_builder_cb=*/
             base::BindRepeating(&FakeUploadClient::Create)) {}
 };
@@ -58,18 +63,26 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
  public:
   MOCK_METHOD(void, ReportSuccessfulUpload, (SequenceInformation, bool), ());
   MOCK_METHOD(void, EncryptionKeyCallback, (SignedEncryptionInfo), ());
+  MOCK_METHOD(void,
+              UpdateConfigInMissiveCallback,
+              (ListOfBlockedDestinations),
+              ());
 
  protected:
   void SetUp() override {
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
+    test_env_ = std::make_unique<ReportingServerConnector::TestEnvironment>();
     service_provider_ = std::make_unique<TestEncryptedReportingUploadProvider>(
         base::BindRepeating(
             &EncryptedReportingUploadProviderTest::ReportSuccessfulUpload,
             base::Unretained(this)),
         base::BindRepeating(
             &EncryptedReportingUploadProviderTest::EncryptionKeyCallback,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        base::BindRepeating(&EncryptedReportingUploadProviderTest::
+                                UpdateConfigInMissiveCallback,
+                            base::Unretained(this)));
 
     record_.set_encrypted_wrapped_record("TEST_DATA");
 
@@ -80,24 +93,25 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    test_env_.reset();
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
-  Status CallRequestUploadEncryptedRecord(
+  StatusOr<std::list<int64_t>> CallRequestUploadEncryptedRecord(
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation) {
-    test::TestEvent<Status> result;
+    test::TestEvent<StatusOr<std::list<int64_t>>> enqueued_event;
     service_provider_->RequestUploadEncryptedRecords(
         need_encryption_key, std::move(records), std::move(scoped_reservation),
-        result.cb());
-    return result.result();
+        enqueued_event.cb());
+    return enqueued_event.result();
   }
 
   // Must be initialized before any other class member.
   content::BrowserTaskEnvironment task_environment_;
 
-  ReportingServerConnector::TestEnvironment test_env_;
+  std::unique_ptr<ReportingServerConnector::TestEnvironment> test_env_;
   EncryptedRecord record_;
 
   scoped_refptr<ResourceManager> memory_resource_;
@@ -119,17 +133,21 @@ TEST_F(EncryptedReportingUploadProviderTest,
   ScopedReservation record_reservation(records.back().ByteSizeLong(),
                                        memory_resource_);
   EXPECT_TRUE(record_reservation.reserved());
-  const auto status = CallRequestUploadEncryptedRecord(
+  const auto enqueued_result = CallRequestUploadEncryptedRecord(
       /*need_encryption_key=*/false, std::move(records),
       std::move(record_reservation));
-  EXPECT_OK(status) << status;
+
+  EXPECT_OK(enqueued_result) << enqueued_result.error();
+  EXPECT_THAT(enqueued_result.value(),
+              ElementsAre(record_.sequence_information().sequencing_id()));
+
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
-  base::Value::Dict request_body = test_env_.request_body(0);
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
+  base::Value::Dict request_body = test_env_->request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
-  test_env_.SimulateResponseForRequest(0);
+  test_env_->SimulateResponseForRequest(0);
 
   auto uploaded_result = uploaded_event.result();
   EXPECT_THAT(std::get<0>(uploaded_result),

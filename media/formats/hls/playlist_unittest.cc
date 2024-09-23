@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "media/formats/hls/playlist.h"
+
+#include <string_view>
+
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tag_name.h"
 #include "media/formats/hls/types.h"
@@ -15,7 +17,7 @@ namespace media::hls {
 
 TEST(HlsPlaylistTest, IdentifyPlaylist) {
   constexpr auto ok_test = [](types::DecimalInteger version,
-                              Playlist::Kind kind, base::StringPiece src,
+                              Playlist::Kind kind, std::string_view src,
                               const base::Location& from =
                                   base::Location::Current()) {
     auto result = Playlist::IdentifyPlaylist(src);
@@ -27,7 +29,7 @@ TEST(HlsPlaylistTest, IdentifyPlaylist) {
   };
 
   constexpr auto error_test =
-      [](ParseStatusCode expected_error, base::StringPiece src,
+      [](ParseStatusCode expected_error, std::string_view src,
          const base::Location& from = base::Location::Current()) {
         auto result = Playlist::IdentifyPlaylist(src);
         ASSERT_FALSE(result.has_value()) << from.ToString();
@@ -46,8 +48,10 @@ TEST(HlsPlaylistTest, IdentifyPlaylist) {
   ok_test(Playlist::kDefaultVersion, Playlist::Kind::kMultivariantPlaylist, "");
   ok_test(5, Playlist::Kind::kMultivariantPlaylist, "#EXT-X-VERSION:5\n");
 
-  // Playlists with invalid line endings should still be rejected
-  error_test(ParseStatusCode::kInvalidEOL, "#EXTINF");
+  // Playlists with invalid line endings should normally be rejected, however
+  // other implementations in certain browsers do accept manifests which are
+  // missing a trailing newline.
+  ok_test(Playlist::kDefaultVersion, Playlist::Kind::kMediaPlaylist, "#EXTINF");
 
   // Playlists with kind-specific tags should deduce to that kind of playlist.
   // These tags do not need to be valid.

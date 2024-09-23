@@ -1,0 +1,87 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("osauth") {
+  sources = [
+    "auth_factor_migration.h",
+    "auth_factor_migrator.cc",
+    "auth_factor_migrator.h",
+    "auth_factor_updater.cc",
+    "auth_factor_updater.h",
+    "auth_policy_enforcer.cc",
+    "auth_policy_enforcer.h",
+    "chrome_auth_parts.cc",
+    "chrome_auth_parts.h",
+    "knowledge_factor_hash_info_migration.cc",
+    "knowledge_factor_hash_info_migration.h",
+    "profile_prefs_auth_policy_connector.cc",
+    "profile_prefs_auth_policy_connector.h",
+    "profile_prefs_auth_policy_connector_factory.cc",
+    "profile_prefs_auth_policy_connector_factory.h",
+    "recovery_factor_hsm_pubkey_migration.cc",
+    "recovery_factor_hsm_pubkey_migration.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/osauth/impl",
+    "//chromeos/ash/components/osauth/public",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/prefs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/cryptohome",
+    "//components/user_manager",
+    "//content/public/browser",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "authhub_browsertest.cc" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/components/osauth/test_support",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "auth_factor_migrator_unittest.cc" ]
+
+  deps = [
+    ":osauth",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//testing/gtest",
+  ]
+}

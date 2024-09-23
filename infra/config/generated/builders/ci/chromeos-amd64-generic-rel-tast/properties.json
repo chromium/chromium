@@ -15,7 +15,8 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb"
+                  "mb",
+                  "shared_build_dir"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -32,7 +33,7 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "chromeos",
-                  "checkout_lacros_sdk"
+                  "chromium_with_telemetry_dependencies"
                 ],
                 "config": "chromium"
               }
@@ -66,8 +67,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos",
-                  "checkout_lacros_sdk"
+                  "chromeos"
                 ],
                 "config": "chromium"
               },
@@ -92,7 +92,8 @@
           "builder": "chromeos-amd64-generic-rel-gtest-and-tast",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -103,6 +104,9 @@
     ]
   },
   "builder_group": "chromium.chromiumos",
+  "gardener_rotations": [
+    "chromiumos"
+  ],
   "recipe": "chromium",
   "sheriff_rotations": [
     "chromiumos"

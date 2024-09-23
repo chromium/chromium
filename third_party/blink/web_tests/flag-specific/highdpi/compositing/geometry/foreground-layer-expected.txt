@@ -8,40 +8,40 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
+      "name": "LayoutBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [-45, -45],
       "bounds": [510, 510],
       "backgroundColor": "#FF0000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='negative child'",
+      "name": "LayoutBlockFlow (positioned) DIV class='negative child'",
       "bounds": [75, 75],
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
+      "name": "LayoutBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [60, 60],
       "bounds": [300, 306],
       "backgroundColor": "#008000",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
+      "name": "LayoutBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [-45, -45],
       "bounds": [510, 510],
       "backgroundColor": "#FF0000",
       "transform": 4
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='negative child'",
+      "name": "LayoutBlockFlow (positioned) DIV class='negative child'",
       "bounds": [75, 75],
       "drawsContent": false,
       "transform": 6
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
+      "name": "LayoutBlockFlow (relative positioned, inline, children-inline) DIV class='main box'",
       "position": [60, 60],
       "bounds": [300, 300],
       "contentsOpaque": true,

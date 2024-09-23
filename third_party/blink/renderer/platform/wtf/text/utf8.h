@@ -40,9 +40,9 @@ typedef enum {
 } ConversionResult;
 
 // These conversion functions take a "strict" argument. When this flag is set to
-// strict, both irregular sequences and isolated surrogates will cause an error.
-// When the flag is set to lenient, both irregular sequences and isolated
-// surrogates are converted.
+// true (i.e. strict), both irregular sequences and isolated surrogates will
+// cause an error.  When the flag is set to false (i.e. lenient), both irregular
+// sequences and isolated surrogates are converted.
 //
 // Whether the flag is strict or lenient, all illegal sequences will cause an
 // error return. This includes sequences such as: <F4 90 80 80>, <C0 80>, or
@@ -52,14 +52,17 @@ typedef enum {
 // When the flag is set to lenient, characters over 0x10FFFF are converted to
 // the replacement character; otherwise (when the flag is set to strict) they
 // constitute an error.
+// TODO(crbug.com/329702346): It is not clear how characters over 0x10FFFF can
+// be represented in the encodings that these functions claim to handle. In
+// UTF-16, surrogate pairs should not be able to encode codepoints higher than
+// 0x10FFFF; in UTF-8, the 4-byte form is similarly unable to encode codepoints
+// higher than 0x10FFFF.
 
-WTF_EXPORT ConversionResult
-ConvertUTF8ToUTF16(const char** source_start,
-                   const char* source_end,
-                   UChar** target_start,
-                   UChar* target_end,
-                   bool* is_source_all_ascii = nullptr,
-                   bool strict = true);
+WTF_EXPORT ConversionResult ConvertUTF8ToUTF16(const char** source_start,
+                                               const char* source_end,
+                                               UChar** target_start,
+                                               UChar* target_end,
+                                               bool strict = true);
 
 WTF_EXPORT ConversionResult ConvertLatin1ToUTF8(const LChar** source_start,
                                                 const LChar* source_end,
@@ -72,11 +75,11 @@ WTF_EXPORT ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
                                                char* target_end,
                                                bool strict = true);
 
-WTF_EXPORT unsigned CalculateStringHashAndLengthFromUTF8MaskingTop8Bits(
-    const char* data,
-    const char* data_end,
-    unsigned& data_length,
-    unsigned& utf16_length);
+// Returns the number of UTF-16 code points.
+WTF_EXPORT unsigned CalculateStringLengthFromUTF8(const char* data,
+                                                  const char*& data_end,
+                                                  bool& seen_non_ascii,
+                                                  bool& seen_non_latin1);
 
 WTF_EXPORT bool EqualUTF16WithUTF8(const UChar* a,
                                    const UChar* a_end,

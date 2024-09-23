@@ -63,5 +63,6 @@ bool XmlWriter::WriteElement(const std::string& element_name,
 }
 
 std::string XmlWriter::GetWrittenString() {
-  return buffer_ ? internal::XmlStringToStdString(buffer_->content) : "";
+  return buffer_ ? internal::XmlStringToStdString(xmlBufferContent(buffer_))
+                 : "";
 }

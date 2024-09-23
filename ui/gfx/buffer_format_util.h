@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -20,14 +21,17 @@
 
 namespace gfx {
 
-// Returns a vector containing all buffer formats.
-GFX_EXPORT std::vector<BufferFormat> GetBufferFormatsForTesting();
+// Returns a span containing all buffer formats.
+GFX_EXPORT base::span<const BufferFormat> GetBufferFormatsForTesting();
 
 // Returns the number of bits of alpha for the specified format.
 GFX_EXPORT size_t AlphaBitsForBufferFormat(BufferFormat format);
 
 // Returns the number of planes for |format|.
 GFX_EXPORT size_t NumberOfPlanesForLinearBufferFormat(BufferFormat format);
+
+// Returns whether |format| is multiplanar.
+GFX_EXPORT bool BufferFormatIsMultiplanar(BufferFormat format);
 
 // Returns the subsampling factor applied to the given zero-indexed |plane| of
 // |format| both horizontally and vertically.
@@ -76,9 +80,6 @@ GFX_EXPORT size_t BufferOffsetForBufferFormat(const Size& size,
 // Returns the name of |format| as a string.
 GFX_EXPORT const char* BufferFormatToString(BufferFormat format);
 
-// Returns the name of |plane| as a string.
-GFX_EXPORT const char* BufferPlaneToString(BufferPlane plane);
-
 // Multiplanar buffer formats (e.g, YUV_420_BIPLANAR, YVU_420, P010) can be
 // tricky when the size of the primary plane is odd, because the subsampled
 // planes will have a size that is not a divisor of the primary plane's size.
@@ -106,7 +107,7 @@ GFX_EXPORT constexpr VkFormat ToVkFormat(const BufferFormat format) {
     case gfx::BufferFormat::RGBA_F16:
       return VK_FORMAT_R16G16B16A16_SFLOAT;
     case gfx::BufferFormat::BGR_565:
-      return VK_FORMAT_B5G6R5_UNORM_PACK16;
+      return VK_FORMAT_R5G6B5_UNORM_PACK16;
     case gfx::BufferFormat::RG_88:
       return VK_FORMAT_R8G8_UNORM;
     case gfx::BufferFormat::RGBX_8888:

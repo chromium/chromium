@@ -22,7 +22,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_bits": 32,
+                "target_bits": 64,
                 "target_platform": "mac"
               },
               "legacy_gclient_config": {
@@ -44,9 +44,18 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
-    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

@@ -16,7 +16,7 @@ enum ImageCodec {
 };
 
 struct AnimationFrame {
-  // TODO(https://crbug.com/838706): Cnonsider replacing individual Bitmap
+  // TODO(crbug.com/40574433): Cnonsider replacing individual Bitmap
   // structs with a new type that uses a single BigBuffer for all frame data.
   skia.mojom.InlineBitmap bitmap;
   mojo_base.mojom.TimeDelta duration;

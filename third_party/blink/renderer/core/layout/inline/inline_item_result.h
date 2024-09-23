@@ -25,6 +25,7 @@ class InlineItem;
 class LayoutResult;
 class ShapeResult;
 class ShapeResultView;
+struct InlineItemResultRubyColumn;
 struct PositionedFloat;
 
 // The result of measuring InlineItem.
@@ -36,6 +37,34 @@ struct PositionedFloat;
 // LineBreaker produces, and InlineLayoutAlgorithm consumes.
 struct CORE_EXPORT InlineItemResult {
   DISALLOW_NEW();
+
+  // A wrapper around PositionedFloat that acts like an std::optional but traces
+  // the underlying value regardless of whether or not it was initialized. It is
+  // uni-directional in the sense that is never reset after being assigned to.
+  class OptionalPositionedFloat {
+    DISALLOW_NEW();
+
+   public:
+    OptionalPositionedFloat& operator=(PositionedFloat value) {
+      has_value_ = true;
+      value_ = value;
+      return *this;
+    }
+    explicit operator bool() const { return has_value_; }
+    PositionedFloat* operator->() {
+      DCHECK(has_value_);
+      return &value_;
+    }
+    const PositionedFloat* operator->() const {
+      return const_cast<OptionalPositionedFloat*>(this)->operator->();
+    }
+
+    void Trace(Visitor* visitor) const { visitor->Trace(value_); }
+
+   private:
+    bool has_value_ = false;
+    PositionedFloat value_;
+  };
 
  public:
   InlineItemResult() = default;
@@ -54,6 +83,10 @@ struct CORE_EXPORT InlineItemResult {
   InlineItemTextIndex Start() const { return {item_index, StartOffset()}; }
   InlineItemTextIndex End() const { return {item_index, EndOffset()}; }
 
+  // Return `true` if the InlineItem type is kOpenRubyColumn and this contains
+  // data for the base and annotation lines.
+  bool IsRubyColumn() const { return ruby_column; }
+
   // Compute/clear |hyphen_string| and |hyphen_shape_result|.
   void ShapeHyphen();
 
@@ -61,6 +94,10 @@ struct CORE_EXPORT InlineItemResult {
 #if DCHECK_IS_ON()
   void CheckConsistency(bool allow_null_shape_result = false) const;
 #endif
+  // `indent` is prepended to the content. If the content consists of multiple
+  // lines, `indent` is prepended to each of lines.
+  String ToString(const String& ifc_text_content,
+                  const String& indent = "") const;
 
   // The InlineItem and its index.
   const InlineItem* item = nullptr;
@@ -92,11 +129,13 @@ struct CORE_EXPORT InlineItemResult {
   // LayoutResult for atomic inline items.
   Member<const LayoutResult> layout_result;
 
+  // Data for kOpenRubyColumn type. This member is null for other types.
+  Member<InlineItemResultRubyColumn> ruby_column;
+
   // PositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed
   // within the BFC.
-  GC_PLUGIN_IGNORE("crbug.com/1146383")
-  std::optional<PositionedFloat> positioned_float;
+  OptionalPositionedFloat positioned_float;
   ExclusionSpace exclusion_space_before_position_float;
 
   // Margins, borders, and padding for open tags.

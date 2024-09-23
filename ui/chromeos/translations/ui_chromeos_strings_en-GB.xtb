@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS Host</translation>
 <translation id="3104793765551262433">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, blocked by your administrator, details</translation>
-<translation id="3113153474486991170">Could not open '<ph name="PATH" />' from this location. Please copy to 'My files' to open.</translation>
 <translation id="3113592018909187986">You have one remaining attempt. You won't be able to use this network until you set up a new PIN.</translation>
 <translation id="3124404833828281817">Person daydreaming</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Cancel <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, unactivated, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3702842351052426940">Your SIM card or eSIM profile may be deactivated. Try replacing your SIM card or switching eSIM profiles.</translation>
 <translation id="3722341589402358578">An error occurred. Some items may not have been deleted.</translation>
 <translation id="3726463242007121105">This device cannot be opened because its file system is not supported.</translation>
 <translation id="3727148787322499904">Changing this setting will affect all shared networks</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">This proxy is enforced by your administrator</translation>
 <translation id="3830674330436234648">No playback available.</translation>
 <translation id="383652340667548381">Serbian</translation>
+<translation id="3839045880592694915">Your modem isn't allowed to connect by your operator. Contact your operator for more details.</translation>
 <translation id="385051799172605136">Back</translation>
-<translation id="3851491607336266896">Connected, limited connectivity</translation>
 <translation id="3855472144336161447">German Neo 2</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3866249974567520381">Description</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Recently opened Microsoft files have moved to OneDrive</translation>
 <translation id="4002066346123236978">Title</translation>
 <translation id="4017788180641807848">English (US) with Workman keyboard</translation>
-<translation id="4019998208269143058">Pin to quick files</translation>
 <translation id="4040753847560036377">Incorrect PUK</translation>
 <translation id="4057991113334098539">Activating...</translation>
 <translation id="4092890906744441904">Irish</translation>
+<translation id="4101601646343868113">Sign in to your mobile network and confirm your mobile data plan is active</translation>
 <translation id="4124731372776320263">Syncing one Drive file</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Move items that you don't need to the bin</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamil with Tamil99 keyboard</translation>
 <translation id="5633226425545095130">Moving this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Listen</translation>
+<translation id="5650895901941743674">Check your APN configuration</translation>
 <translation id="5669691691057771421">Enter new PIN</translation>
 <translation id="5678784840044122290">The Linux application will be available within your Terminal and may also show an icon in your Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Can't disconnect from an archive or virtual disk<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, connect</translation>
 <translation id="6269630227984243955">Malay</translation>
 <translation id="6271903698064569429">Files can't be uploaded because '<ph name="SHARED_DRIVE_NAME" />' doesn't have enough storage.</translation>
+<translation id="6279140785485544797">Your mobile data plan may have expired. Contact your operator for support.</translation>
 <translation id="6287852322318138013">Select an app to open this file</translation>
 <translation id="6295542640242147836">Lock SIM</translation>
 <translation id="6296410173147755564">Invalid PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> archive</translation>
 <translation id="6321303798550928047">Waving</translation>
 <translation id="6327785803543103246">Web proxy auto-discovery</translation>
-<translation id="6337014272874260727">Unpin from quick files</translation>
 <translation id="6339145975392024142">US international (PC)</translation>
 <translation id="6356685157277930264">Files feedback window</translation>
 <translation id="6358884629796491903">Dragon</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Current directory</translation>
 <translation id="6751256176799620176">1 folder selected</translation>
 <translation id="6755827872271341378">Chrome OS Flex device</translation>
+<translation id="6777029074498310250">Visit <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> for more information</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6794539005637808366">Restore the item or drag it to a new folder outside the bin</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamil with InScript keyboard</translation>
 <translation id="7088615885725309056">Older</translation>
 <translation id="7103992300314999525">Macedonian</translation>
+<translation id="7104338189998813914">There is an issue accessing your OneDrive account</translation>
 <translation id="7106346894903675391">Buy more storage...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;search Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (phonetic)</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Wait just a sec</translation>
 <translation id="7600126690270271294">Serbian</translation>
 <translation id="7603724359189955920">Grids</translation>
+<translation id="7624010287655004652">Locked by another mobile provider</translation>
 <translation id="7627790789328695202">Whoops, <ph name="FILE_NAME" /> already exists. Rename it and try again.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% complete.</translation>
 <translation id="7649070708921625228">Help</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">File list has changed to thumbnail view.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8609695766746872526">Icelandic</translation>
+<translation id="8630384863424041081">Enter your SIM card PIN or the default PIN provided by your operator. Contact your network operator for support.</translation>
 <translation id="863903787380594467">Incorrect PIN. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
 <translation id="8656407365183407932">Your offline files had to be removed</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">This file is confidential and subject to restrictions by administrator policy.</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8713112442029511308">Maltese</translation>
-<translation id="8714138378966541668">Locked by provider</translation>
 <translation id="8714406895390098252">Bicycle</translation>
 <translation id="8719721339511222681">Selected <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croatian</translation>

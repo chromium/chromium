@@ -26,18 +26,18 @@ class MockSyncEngine : public SyncEngine {
   MockSyncEngine();
   ~MockSyncEngine() override;
 
-  // ModelTypeConfigurer:
+  // DataTypeConfigurer:
   MOCK_METHOD(void, ConfigureDataTypes, (ConfigureParams), (override));
   MOCK_METHOD(void,
               ConnectDataType,
-              (ModelType, std::unique_ptr<DataTypeActivationResponse>),
+              (DataType, std::unique_ptr<DataTypeActivationResponse>),
               (override));
-  MOCK_METHOD(void, DisconnectDataType, (ModelType), (override));
+  MOCK_METHOD(void, DisconnectDataType, (DataType), (override));
 
   // SyncEngine:
   MOCK_METHOD(void, Initialize, (InitParams), (override));
   MOCK_METHOD(bool, IsInitialized, (), (const override));
-  MOCK_METHOD(void, TriggerRefresh, (const ModelTypeSet&), (override));
+  MOCK_METHOD(void, TriggerRefresh, (const DataTypeSet&), (override));
   MOCK_METHOD(void, UpdateCredentials, (const SyncCredentials&), (override));
   MOCK_METHOD(void, InvalidateCredentials, (), (override));
   MOCK_METHOD(std::string, GetCacheGuid, (), (const override));
@@ -63,7 +63,7 @@ class MockSyncEngine : public SyncEngine {
   MOCK_METHOD(const SyncStatus&, GetDetailedStatus, (), (const override));
   MOCK_METHOD(void,
               GetTypesWithUnsyncedData,
-              (base::OnceCallback<void(ModelTypeSet)>),
+              (base::OnceCallback<void(DataTypeSet)>),
               (const override));
   MOCK_METHOD(void,
               HasUnsyncedItemsForTest,
@@ -71,7 +71,7 @@ class MockSyncEngine : public SyncEngine {
               (const override));
   MOCK_METHOD(void,
               GetThrottledDataTypesForTest,
-              (base::OnceCallback<void(ModelTypeSet)>),
+              (base::OnceCallback<void(DataTypeSet)>),
               (const override));
   MOCK_METHOD(void,
               RequestBufferedProtocolEventsAndEnableForwarding,

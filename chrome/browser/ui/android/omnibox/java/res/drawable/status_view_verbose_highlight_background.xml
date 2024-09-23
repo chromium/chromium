@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Background for the hovered and pressed state -->
+  <item
+      android:width="@dimen/status_view_verbose_highlight_width"
+      android:height="@dimen/status_view_verbose_highlight_height"
+      android:gravity="center">
+
+    <shape android:shape="rectangle">
+      <solid android:color="@color/toolbar_button_highlight_color" />
+      <corners android:radius="24dp"/>
+    </shape>
+  </item>
+</layer-list>

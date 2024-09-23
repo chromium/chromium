@@ -1,0 +1,6 @@
+include_rules = [
+  "+ios/chrome/browser/discover_feed/model",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h",
+]

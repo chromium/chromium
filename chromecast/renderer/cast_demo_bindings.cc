@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -139,10 +139,10 @@ void CastDemoBindings::OnGetRetailerName(
     const std::string& retailer_name) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = original_context.Get(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
 
   resolver.Get(isolate)
@@ -352,7 +352,7 @@ void CastDemoBindings::PersistLocalStorage() {
 }
 
 void CastDemoBindings::ReconnectMojo() {
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       cast_demo_.BindNewPipeAndPassReceiver());
   DCHECK(cast_demo_.is_bound());
   cast_demo_.set_disconnect_handler(base::BindOnce(

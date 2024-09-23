@@ -33,12 +33,6 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   enum class DeviceType { kMouse, kGraphicsTablet };
 
-  enum class PeripheralCustomizationMetricsType {
-    kMouse,
-    kGraphicsTablet,
-    kGraphicsTabletPen
-  };
-
   struct DeviceIdButton {
     int device_id;
     mojom::ButtonPtr button;
@@ -54,10 +48,13 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
 
   struct RemappingActionResult {
     raw_ref<mojom::RemappingAction> remapping_action;
-    PeripheralCustomizationMetricsType peripheral_kind;
+    InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType
+        peripheral_kind;
 
-    RemappingActionResult(mojom::RemappingAction& remapping_action,
-                          PeripheralCustomizationMetricsType peripheral_kind);
+    RemappingActionResult(
+        mojom::RemappingAction& remapping_action,
+        InputDeviceSettingsMetricsManager::PeripheralCustomizationMetricsType
+            peripheral_kind);
     RemappingActionResult(RemappingActionResult&& result);
     ~RemappingActionResult();
   };
@@ -144,6 +141,7 @@ class ASH_EXPORT PeripheralCustomizationEventRewriter
       mojom::ButtonPtr button,
       const ui::Event& original_event,
       const std::vector<std::unique_ptr<ui::Event>>& rewritten_event);
+  void UpdatePressedButtonMapFlags(const ui::KeyEvent& key_event);
 
   // Removes the set of remapped modifiers from the event that should be
   // discarded.

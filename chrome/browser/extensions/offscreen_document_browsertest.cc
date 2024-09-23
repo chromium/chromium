@@ -139,11 +139,11 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest,
         ProcessMap::Get(profile())->GetMostLikelyContextType(
             extension, contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
             &offscreen_url);
-    // TODO(https://crbug.com/1339382): The following check should be:
+    // TODO(crbug.com/40849649): The following check should be:
     //   EXPECT_EQ(mojom::ContextType::kOffscreenExtension, context_type);
     // However, currently the ProcessMap can't differentiate between a
-    // blessed extension context and an offscreen document, as both run in the
-    // primary extension process and have committed to the extension origin.
+    // privileged extension context and an offscreen document, as both run in
+    // the primary extension process and have committed to the extension origin.
     // This is okay (this boundary isn't a security boundary), but is
     // technically incorrect.
     // See also comment in ProcessMap::GetMostLikelyContextType().
@@ -225,8 +225,9 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
         R"("PlatformArch","PlatformNaclArch","PlatformOs",)"
         R"("RequestUpdateCheckStatus",)"
         // Methods and events.
-        R"("connect","getURL","id","onConnect","onConnectExternal",)"
-        R"("onMessage","onMessageExternal","sendMessage"])";
+        R"("connect","dynamicId","getURL","id","onConnect",)"
+        R"("onConnectExternal","onMessage","onMessageExternal",)"
+        R"("sendMessage"])";
     EXPECT_EQ(kExpectedProperties, EvalJs(contents, kScript));
   }
 }

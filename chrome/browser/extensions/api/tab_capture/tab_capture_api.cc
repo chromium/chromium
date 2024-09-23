@@ -269,7 +269,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
       return RespondNow(Error(kInvalidTabIdError));
     }
 
-    // TODO(https://crbug.com/1270878): Use url::Origin directly here and
+    // TODO(crbug.com/40805196): Use url::Origin directly here and
     // throughout this stack.
     origin =
         consumer_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
@@ -293,7 +293,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
           "manifest version 2."));
     }
 
-    // TODO(https://crbug.com/1270878): Use url::Origin directly here and
+    // TODO(crbug.com/40805196): Use url::Origin directly here and
     // throughout this stack.
     origin = extension()->url();
     content::RenderFrameHost* main_frame =
@@ -301,7 +301,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
     caller_process_id = main_frame->GetProcess()->GetID();
     restrict_to_render_frame_id = main_frame->GetRoutingID();
   } else {
-    // TODO(https://crbug.com/1270878): Use url::Origin directly here and
+    // TODO(crbug.com/40805196): Use url::Origin directly here and
     // throughout this stack.
     origin = extension()->url();
     caller_process_id = source_process_id();

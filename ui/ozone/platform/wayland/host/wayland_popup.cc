@@ -34,6 +34,15 @@ WaylandPopup::WaylandPopup(PlatformWindowDelegate* delegate,
                            WaylandWindow* parent)
     : WaylandWindow(delegate, connection) {
   set_parent_window(parent);
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/330384470): Whether the popup appear depends on whether
+  // anchor point is outside of the parent xdg_surface. On Mutter the popup will
+  // not show when outside.
+  LOG_IF(WARNING,
+         !parent->AsWaylandToplevelWindow() && !parent->AsWaylandPopup())
+      << "Popup's parent is a bubble. Wayland shell popup is not guaranteed to "
+         "show up.";
+#endif
 }
 
 WaylandPopup::~WaylandPopup() = default;
@@ -54,6 +63,14 @@ void WaylandPopup::TooltipHidden() {
 bool WaylandPopup::CreateShellPopup() {
   DCHECK(parent_window() && !shell_popup_);
 
+  // Use `xdg_parent_window` and do appropriate origin transformations when
+  // sending requests through Wayland.
+  // Use `parent_window()` in all other cases.
+  auto* xdg_parent_window = GetXdgParentWindow();
+  if (!xdg_parent_window) {
+    return false;
+  }
+
   if (applied_state().window_scale !=
       parent_window()->applied_state().window_scale) {
     // If scale changed while this was hidden (when WaylandPopup hides, parent
@@ -61,8 +78,9 @@ bool WaylandPopup::CreateShellPopup() {
     UpdateWindowScale(true);
   }
 
-  auto bounds_dip = wl::TranslateWindowBoundsToParentDIP(this, parent_window());
-  bounds_dip.Inset(GetDecorationInsetsInDIP());
+  auto bounds_dip =
+      wl::TranslateWindowBoundsToParentDIP(this, xdg_parent_window);
+  bounds_dip.Inset(delegate()->CalculateInsetsInDIP(GetPlatformWindowState()));
 
   ShellPopupParams params;
   params.bounds = bounds_dip;
@@ -72,8 +90,8 @@ bool WaylandPopup::CreateShellPopup() {
     // surface.  See https://crbug.com/1292486.
     params.anchor->anchor_rect =
         wl::TranslateBoundsToParentCoordinates(
-            params.anchor->anchor_rect, parent_window()->GetBoundsInDIP()) -
-        parent_window()->GetWindowGeometryOffsetInDIP();
+            params.anchor->anchor_rect, xdg_parent_window->GetBoundsInDIP()) -
+        xdg_parent_window->GetWindowGeometryOffsetInDIP();
 
     // If size is empty, set 1x1.
     if (params.anchor->anchor_rect.size().IsEmpty())
@@ -96,7 +114,7 @@ bool WaylandPopup::CreateShellPopup() {
     zaura_surface->set_delegate(AsWeakPtr());
   }
 
-  parent_window()->set_child_window(this);
+  parent_window()->set_child_popup(this);
   UpdateDecoration();
   return true;
 }
@@ -139,8 +157,9 @@ void WaylandPopup::Hide() {
   if (!shell_popup_)
     return;
 
-  if (child_window())
-    child_window()->Hide();
+  if (child_popup()) {
+    child_popup()->Hide();
+  }
   WaylandWindow::Hide();
   // Mutter compositor crashes if we don't reset subsurfaces when hiding.
   if (WaylandWindow::primary_subsurface()) {
@@ -152,7 +171,7 @@ void WaylandPopup::Hide() {
   }
 
   if (shell_popup_) {
-    parent_window()->set_child_window(nullptr);
+    parent_window()->set_child_popup(nullptr);
     shell_popup_.reset();
     decorated_via_aura_popup_ = false;
   }
@@ -165,6 +184,11 @@ bool WaylandPopup::IsVisible() const {
 }
 
 void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
+  auto* xdg_parent_window = GetXdgParentWindow();
+  if (!xdg_parent_window) {
+    return;
+  }
+
   auto old_bounds_dip = GetBoundsInDIP();
   WaylandWindow::SetBoundsInDIP(bounds_dip);
 
@@ -172,8 +196,9 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
   // the initialization. See WaylandPopup::CreateShellPopup.
   if (shell_popup_ && old_bounds_dip != bounds_dip) {
     auto bounds_dip_in_parent =
-        wl::TranslateWindowBoundsToParentDIP(this, parent_window());
-    bounds_dip_in_parent.Inset(GetDecorationInsetsInDIP());
+        wl::TranslateWindowBoundsToParentDIP(this, xdg_parent_window);
+    bounds_dip_in_parent.Inset(
+        delegate()->CalculateInsetsInDIP(GetPlatformWindowState()));
 
     // If Wayland moved the popup (for example, a dnd arrow icon), schedule
     // redraw as Aura doesn't do that for moved surfaces. If redraw has not been
@@ -198,6 +223,11 @@ void WaylandPopup::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
 }
 
 void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
+  auto* xdg_parent_window = GetXdgParentWindow();
+  if (!xdg_parent_window) {
+    return;
+  }
+
   gfx::Rect pending_bounds_dip(bounds_dip);
   if (pending_bounds_dip.IsEmpty())
     pending_bounds_dip.set_size(GetBoundsInDIP().size());
@@ -206,11 +236,15 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   // See https://crbug.com/1292486.
   pending_configure_state_.bounds_dip =
       wl::TranslateBoundsToTopLevelCoordinates(
-          pending_bounds_dip, parent_window()->GetBoundsInDIP()) +
-      parent_window()->GetWindowGeometryOffsetInDIP();
+          pending_bounds_dip, xdg_parent_window->GetBoundsInDIP()) +
+      xdg_parent_window->GetWindowGeometryOffsetInDIP();
 
-  // Bounds are in the geometry space. Need to add decoration insets backs.
-  const auto insets = GetDecorationInsetsInDIP();
+  // Bounds are in the geometry space. Need to add decoration insets backs. Note
+  // that the window state for WaylandPopup is always `kNormal` now, but we
+  // check `pending_configure_state_.window_state` to make it consistent.
+  const auto insets = delegate()->CalculateInsetsInDIP(
+      pending_configure_state_.window_state.value_or(
+          PlatformWindowState::kNormal));
   pending_configure_state_.bounds_dip->Inset(-insets);
   pending_configure_state_.size_px =
       delegate()->ConvertRectToPixels(pending_bounds_dip).size();
@@ -279,6 +313,10 @@ bool WaylandPopup::IsScreenCoordinatesEnabled() const {
   return parent_window()->IsScreenCoordinatesEnabled();
 }
 
+base::WeakPtr<WaylandWindow> WaylandPopup::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void WaylandPopup::OnCloseRequest() {
   // Before calling OnCloseRequest, the |shell_popup_| must become hidden and
   // only then call OnCloseRequest().
@@ -289,11 +327,16 @@ void WaylandPopup::OnCloseRequest() {
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
                                 PlatformWindowDelegate::State* state) {
   DCHECK(parent_window());
+
+  // `window_state` is always `kNormal` on WaylandPopup.
+  state->window_state = PlatformWindowState::kNormal;
+
   state->window_scale = parent_window()->applied_state().window_scale;
-  state->size_px =
-      ScaleToEnclosingRectIgnoringError(state->bounds_dip, state->window_scale)
-          .size();
-  set_ui_scale(parent_window()->ui_scale());
+
+  // See details in WaylandWindow::RequestState().
+  state->size_px = ScaleToEnclosingRectIgnoringError(
+                       gfx::Rect(state->bounds_dip.size()), state->window_scale)
+                       .size();
   shadow_type_ = properties.shadow_type;
   return true;
 }
@@ -306,13 +349,13 @@ bool WaylandPopup::IsSurfaceConfigured() {
   return shell_popup() ? shell_popup()->IsConfigured() : false;
 }
 
-void WaylandPopup::SetWindowGeometry(gfx::Size size_dip) {
+void WaylandPopup::SetWindowGeometry(
+    const PlatformWindowDelegate::State& state) {
   if (!shell_popup_) {
     return;
   }
-  const auto insets = GetDecorationInsetsInDIP();
-  gfx::Rect geometry_dip(size_dip);
-  geometry_dip.Inset(insets);
+  gfx::Rect geometry_dip(state.bounds_dip.size());
+  geometry_dip.Inset(delegate()->CalculateInsetsInDIP(state.window_state));
   shell_popup_->SetWindowGeometry(geometry_dip);
 }
 

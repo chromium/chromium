@@ -13,17 +13,22 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
+#include "base/not_fatal_until.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
+#include "extensions/browser/api/declarative_net_request/prefs_helper.h"
+#include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions::declarative_net_request {
@@ -155,8 +160,9 @@ std::ostream& operator<<(std::ostream& output, const RequestAction& action) {
 
 std::ostream& operator<<(std::ostream& output,
                          const std::optional<RequestAction>& action) {
-  if (!action)
+  if (!action) {
     return output << "empty Optional<RequestAction>";
+  }
   return output << *action;
 }
 
@@ -386,14 +392,17 @@ bool AreAllIndexedStaticRulesetsValid(
   std::vector<FileBackedRulesetSource> sources =
       FileBackedRulesetSource::CreateStatic(extension, ruleset_filter);
 
-  const ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
+  PrefsHelper helper(*prefs);
+
   for (const auto& source : sources) {
-    if (prefs->ShouldIgnoreDNRRuleset(extension.id(), source.id()))
+    if (helper.ShouldIgnoreRuleset(extension.id(), source.id())) {
       continue;
+    }
 
     int expected_checksum = -1;
-    if (!prefs->GetDNRStaticRulesetChecksum(extension.id(), source.id(),
-                                            &expected_checksum)) {
+    if (!helper.GetStaticRulesetChecksum(extension.id(), source.id(),
+                                         expected_checksum)) {
       return false;
     }
 
@@ -415,8 +424,9 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
 
   // Serialize |rules|.
   base::Value::List builder;
-  for (const auto& rule : rules)
+  for (const auto& rule : rules) {
     builder.Append(rule.ToValue());
+  }
   JSONFileValueSerializer(source.json_path()).Serialize(std::move(builder));
 
   // Index ruleset.
@@ -429,12 +439,14 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
     return false;
   }
 
-  if (!result.warnings.empty())
+  if (!result.warnings.empty()) {
     return false;
+  }
 
   DCHECK_EQ(IndexStatus::kSuccess, result.status);
-  if (expected_checksum)
+  if (expected_checksum) {
     *expected_checksum = result.ruleset_checksum;
+  }
 
   LoadRulesetResult load_result =
       source.CreateVerifiedMatcher(result.ruleset_checksum, matcher);
@@ -454,12 +466,18 @@ FileBackedRulesetSource CreateTemporarySource(RulesetID id,
 dnr_api::ModifyHeaderInfo CreateModifyHeaderInfo(
     dnr_api::HeaderOperation operation,
     std::string header,
-    std::optional<std::string> value) {
+    std::optional<std::string> value,
+    std::optional<std::string> regex_filter,
+    std::optional<std::string> regex_substitution,
+    std::optional<dnr_api::HeaderRegexOptions> regex_options) {
   dnr_api::ModifyHeaderInfo header_info;
 
   header_info.operation = std::move(operation);
   header_info.header = std::move(header);
   header_info.value = std::move(value);
+  header_info.regex_filter = std::move(regex_filter);
+  header_info.regex_substitution = std::move(regex_substitution);
+  header_info.regex_options = std::move(regex_options);
 
   return header_info;
 }
@@ -504,8 +522,9 @@ std::vector<GURL> RulesetManagerObserver::GetAndResetRequestSeen() {
 void RulesetManagerObserver::WaitForExtensionsWithRulesetsCount(size_t count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ASSERT_FALSE(expected_count_);
-  if (current_count_ == count)
+  if (current_count_ == count) {
     return;
+  }
 
   expected_count_ = count;
   run_loop_ = std::make_unique<base::RunLoop>();
@@ -515,8 +534,9 @@ void RulesetManagerObserver::WaitForExtensionsWithRulesetsCount(size_t count) {
 void RulesetManagerObserver::OnRulesetCountChanged(size_t count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_count_ = count;
-  if (expected_count_ != count)
+  if (expected_count_ != count) {
     return;
+  }
 
   ASSERT_TRUE(run_loop_.get());
 
@@ -544,8 +564,9 @@ void WarningServiceObserver::WaitForWarning() {
 
 void WarningServiceObserver::ExtensionWarningsChanged(
     const ExtensionIdSet& affected_extensions) {
-  if (!base::Contains(affected_extensions, extension_id_))
+  if (!base::Contains(affected_extensions, extension_id_)) {
     return;
+  }
 
   run_loop_.Quit();
 }
@@ -557,7 +578,7 @@ base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
   const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
       DNRManifestData::GetManifestIDToRulesetMap(extension);
   auto it = public_id_map.find(ruleset_id_string);
-  DCHECK(public_id_map.end() != it);
+  CHECK(public_id_map.end() != it, base::NotFatalUntil::M130);
   RulesetID ruleset_id = it->second->id;
 
   const CompositeMatcher* composite_matcher =
@@ -572,6 +593,13 @@ base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
     return matcher->GetDisabledRuleIdsForTesting();
   }
   return {};
+}
+
+RequestParams CreateRequestWithResponseHeaders(
+    const GURL& url,
+    const net::HttpResponseHeaders* headers) {
+  return RequestParams(url, url::Origin(), dnr_api::ResourceType::kSubFrame,
+                       dnr_api::RequestMethod::kGet, -1, headers);
 }
 
 }  // namespace extensions::declarative_net_request

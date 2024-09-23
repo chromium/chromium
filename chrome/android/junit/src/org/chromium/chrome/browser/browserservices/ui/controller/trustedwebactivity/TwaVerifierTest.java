@@ -17,9 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -28,7 +26,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -39,6 +36,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Collections;
+import java.util.HashSet;
 
 /** Tests for {@link TwaVerifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -47,8 +45,6 @@ public class TwaVerifierTest {
     private static final String INITIAL_URL = "https://www.initialurl.com/page.html";
     private static final String ADDITIONAL_ORIGIN = "https://www.otherverifiedorigin.com";
     private static final String OTHER_URL = "https://www.notverifiedurl.com/page2.html";
-
-    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock CustomTabIntentDataProvider mIntentDataProvider;
@@ -65,8 +61,10 @@ public class TwaVerifierTest {
         MockitoAnnotations.initMocks(this);
 
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(INITIAL_URL);
-        when(mIntentDataProvider.getTrustedWebActivityAdditionalOrigins())
-                .thenReturn(Collections.singletonList(ADDITIONAL_ORIGIN));
+        HashSet<Origin> trustedOrigins = new HashSet<Origin>();
+        Collections.addAll(
+                trustedOrigins, Origin.create(INITIAL_URL), Origin.create(ADDITIONAL_ORIGIN));
+        when(mIntentDataProvider.getAllTrustedWebActivityOrigins()).thenReturn(trustedOrigins);
 
         when(mOriginVerifierFactory.create(anyString(), anyInt(), any(), any()))
                 .thenReturn(mOriginVerifier);

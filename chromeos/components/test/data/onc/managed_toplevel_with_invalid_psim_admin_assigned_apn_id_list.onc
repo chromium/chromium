@@ -1,0 +1,21 @@
+{
+  "GlobalNetworkConfiguration": {
+    "AllowAPNModification": true,
+    "AllowCellularHotspot": true,
+    "AllowCellularSimLock": true,
+    "AllowOnlyPolicyCellularNetworks": false,
+    "AllowOnlyPolicyNetworksToAutoconnect": false,
+    "PSIMAdminAssignedAPNIds": [
+      "not-in-admin-apn-list-apn-id"
+    ]
+  },
+  "AdminAPNList": [
+    {
+      "Id": "admin-apn-id-y",
+      "AccessPointName": "test-apn-admin-y",
+      "Authentication": "",
+      "Username": "test-username-y",
+      "Password": "test-password-y"
+    },
+  ]
+}

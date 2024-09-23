@@ -15,8 +15,6 @@
 
 // The page for which this configuration is created.
 @property(nonatomic, assign, readonly) TabGridPage page;
-// The current mode for this configuration.
-@property(nonatomic, assign) TabGridMode mode;
 
 // NORMAL MODE ====================
 // YES if the button should be displayed.
@@ -45,7 +43,7 @@
 
 // SEARCH MODE =====================
 // The value of this buttons, do not have any impact yet.
-// TODO(crbug.com/1457146): Move the following button when their configuration
+// TODO(crbug.com/40273478): Move the following button when their configuration
 // is taken into account.
 @property(nonatomic) BOOL cancelSearchButton;
 @property(nonatomic) BOOL searchButton;

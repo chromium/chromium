@@ -89,6 +89,14 @@ std::u16string GetDeviceManagedUiWebUILabel();
 std::u16string GetManagementPageSubtitle(Profile* profile);
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+std::u16string GetManagementBubbleTitle(Profile* profile);
+#endif
+
+// Returns trus if the profile and browser are managed and both entities are
+// known and different.
+bool AreProfileAndBrowserManagedBySameEntity(Profile* profile);
+
 // Returns nullopt if the device is not managed, the UTF8-encoded string
 // representation of the manager identity if available and an empty string if
 // the device is managed but the manager is not known or if the policy store
@@ -111,7 +119,7 @@ std::optional<std::string> GetSessionManagerIdentity();
 // a domain name (ie foo.com). For FlexOrgs, this will be the email address of
 // the admin of the FlexOrg (ie user@foo.com). If DMServer does not provide this
 // information, this function defaults to the domain of the account.
-// TODO(crbug.com/1081272): Refactor localization hints for all strings that
+// TODO(crbug.com/40130449): Refactor localization hints for all strings that
 // depend on this function.
 std::optional<std::string> GetAccountManagerIdentity(Profile* profile);
 

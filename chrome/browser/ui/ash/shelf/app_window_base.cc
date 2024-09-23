@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 
 AppWindowBase::AppWindowBase(const ash::ShelfID& shelf_id,
@@ -28,17 +29,17 @@ bool AppWindowBase::IsActive() const {
 }
 
 bool AppWindowBase::IsMaximized() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool AppWindowBase::IsMinimized() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 bool AppWindowBase::IsFullscreen() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -47,17 +48,17 @@ gfx::NativeWindow AppWindowBase::GetNativeWindow() const {
 }
 
 gfx::Rect AppWindowBase::GetRestoredBounds() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Rect();
 }
 
-ui::WindowShowState AppWindowBase::GetRestoredState() const {
-  NOTREACHED();
-  return ui::SHOW_STATE_NORMAL;
+ui::mojom::WindowShowState AppWindowBase::GetRestoredState() const {
+  NOTREACHED_IN_MIGRATION();
+  return ui::mojom::WindowShowState::kNormal;
 }
 
 gfx::Rect AppWindowBase::GetBounds() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return gfx::Rect();
 }
 
@@ -66,15 +67,15 @@ void AppWindowBase::Show() {
 }
 
 void AppWindowBase::ShowInactive() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppWindowBase::Hide() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool AppWindowBase::IsVisible() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -87,11 +88,11 @@ void AppWindowBase::Activate() {
 }
 
 void AppWindowBase::Deactivate() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppWindowBase::Maximize() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppWindowBase::Minimize() {
@@ -99,22 +100,22 @@ void AppWindowBase::Minimize() {
 }
 
 void AppWindowBase::Restore() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppWindowBase::SetBounds(const gfx::Rect& bounds) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AppWindowBase::FlashFrame(bool flash) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ui::ZOrderLevel AppWindowBase::GetZOrderLevel() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::ZOrderLevel::kNormal;
 }
 
 void AppWindowBase::SetZOrderLevel(ui::ZOrderLevel level) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

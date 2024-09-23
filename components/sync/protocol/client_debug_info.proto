@@ -39,7 +39,7 @@ message SyncCycleCompletedEventInfo {
   reserved "num_non_blocking_conflicts";
 
   // These new conflict counters replace the ones above.
-  // TODO(crbug.com/1315573): Deprecated in M103.
+  // TODO(crbug.com/40833583): Deprecated in M103.
   optional int32 num_encryption_conflicts = 4 [deprecated = true];
   optional int32 num_hierarchy_conflicts = 5 [deprecated = true];
   optional int32 num_simple_conflicts = 6;  // No longer sent since M24.
@@ -47,7 +47,7 @@ message SyncCycleCompletedEventInfo {
 
   // Counts to track the effective usefulness of our GetUpdate requests.
   optional int32 num_updates_downloaded = 8;
-  // TODO(crbug.com/1315573): Deprecated in M103.
+  // TODO(crbug.com/40833583): Deprecated in M103.
   optional int32 num_reflected_updates_downloaded = 9 [deprecated = true];
 
   // |caller_info| was mostly replaced by |get_updates_origin|; now it only

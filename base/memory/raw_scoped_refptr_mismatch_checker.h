@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/template_util.h"
 
 // It is dangerous to post a task with a T* argument where T is a subtype of
 // RefCounted(Base|ThreadSafeBase), since by the time the parameter is used, the
@@ -41,7 +40,7 @@ struct NeedsScopedRefptrButGetsRawPtr {
   // std::reference_wrapper here too.
   static constexpr bool value =
       (base::IsRawRef<T>::value && IsRefCountedType<base::RemoveRawRefT<T>>) ||
-      (base::IsPointer<T>::value && IsRefCountedType<base::RemovePointerT<T>>);
+      (base::IsRawPointer<T> && IsRefCountedType<base::RemoveRawPointerT<T>>);
 };
 
 }  // namespace base::internal

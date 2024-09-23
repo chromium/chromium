@@ -159,7 +159,7 @@ const overlayUpdater = (() => {
     overlay.addEventListener('transitioncancel', transitionStop);
     // Update links that are loaded dynamically to ensure target is "_blank"
     // or "_top".
-    // TODO(crbug.com/1039913): remove after OneGoogleBar links are updated.
+    // TODO(crbug.com/40667075): remove after OneGoogleBar links are updated.
     overlay.parentElement.querySelectorAll('a').forEach(el => {
       if (el.target !== '_blank' && el.target !== '_top') {
         el.target = '_top';
@@ -290,7 +290,7 @@ window.addEventListener('click', () => {
 }, /*useCapture=*/ true);
 
 document.addEventListener('DOMContentLoaded', () => {
-  // TODO(crbug.com/1039913): remove after OneGoogleBar links are updated.
+  // TODO(crbug.com/40667075): remove after OneGoogleBar links are updated.
   // Updates <a>'s so they load on the top frame instead of the iframe.
   document.body.querySelectorAll('a').forEach(el => {
     if (el.target !== '_blank') {

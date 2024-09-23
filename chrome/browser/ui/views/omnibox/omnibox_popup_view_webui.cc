@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
-#include "chrome/browser/ui/webui/realbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -82,16 +82,20 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
       omnibox_view_->IsImeShowingPopup()) {
     presenter_->Hide();
   } else {
+    const bool was_visible = presenter_->IsShown();
     presenter_->Show();
+    if (!was_visible) {
+      NotifyOpenListeners();
+    }
   }
 }
 
 void OmniboxPopupViewWebUI::ProvideButtonFocusHint(size_t line) {
-  // TODO(crbug.com/1396174): Not implemented for WebUI omnibox popup yet.
+  // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
 }
 
 void OmniboxPopupViewWebUI::OnMatchIconUpdated(size_t match_index) {
-  // TODO(crbug.com/1396174): Not implemented for WebUI omnibox popup yet.
+  // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
 }
 
 void OmniboxPopupViewWebUI::OnDragCanceled() {}
@@ -101,7 +105,7 @@ void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
 
 void OmniboxPopupViewWebUI::AddPopupAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  // TODO(crbug.com/1396174): Not implemented for WebUI omnibox popup yet.
+  // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
 }
 
 std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(

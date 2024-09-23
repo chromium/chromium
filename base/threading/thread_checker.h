@@ -5,10 +5,11 @@
 #ifndef BASE_THREADING_THREAD_CHECKER_H_
 #define BASE_THREADING_THREAD_CHECKER_H_
 
+#include <string_view>
+
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/macros/uniquify.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker_impl.h"
 
@@ -136,7 +137,7 @@ class BASE_EXPORT SCOPED_LOCKABLE ScopedValidateThreadChecker {
   explicit ScopedValidateThreadChecker(const ThreadChecker& checker)
       EXCLUSIVE_LOCK_FUNCTION(checker);
   ScopedValidateThreadChecker(const ThreadChecker& checker,
-                              const StringPiece& msg)
+                              std::string_view msg)
       EXCLUSIVE_LOCK_FUNCTION(checker);
 
   ScopedValidateThreadChecker(const ScopedValidateThreadChecker&) = delete;

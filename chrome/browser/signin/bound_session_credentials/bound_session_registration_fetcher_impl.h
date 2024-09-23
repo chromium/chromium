@@ -93,7 +93,8 @@ class BoundSessionRegistrationFetcherImpl
           params_or_error);
 
   RegistrationErrorOr<bound_session_credentials::BoundSessionParams>
-  ParseJsonResponse(std::unique_ptr<std::string> response_body);
+  ParseJsonResponse(const GURL& request_url,
+                    std::unique_ptr<std::string> response_body);
 
   RegistrationErrorOr<std::vector<bound_session_credentials::Credential>>
   ParseCredentials(const base::Value::List& credentials_list);

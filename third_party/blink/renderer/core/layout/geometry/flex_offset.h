@@ -8,6 +8,10 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 struct LogicalOffset;
@@ -55,7 +59,7 @@ struct CORE_EXPORT FlexOffset {
 
   LogicalOffset ToLogicalOffset(bool is_column_flex_container) const;
 
-  String ToString() const;
+  WTF::String ToString() const;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const FlexOffset&);

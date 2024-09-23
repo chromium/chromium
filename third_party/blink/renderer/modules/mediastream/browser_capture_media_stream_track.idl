@@ -7,7 +7,7 @@ interface BrowserCaptureMediaStreamTrack : MediaStreamTrack {
   // https://w3c.github.io/mediacapture-region/
   [CallWith = ScriptState, RaisesException,
    RuntimeEnabled = RegionCapture, MeasureAs = RegionCapture]
-  Promise<void> cropTo(CropTarget? crop_id);
+  Promise<undefined> cropTo(CropTarget? crop_id);
 
   // https://screen-share.github.io/element-capture/
   [
@@ -15,5 +15,5 @@ interface BrowserCaptureMediaStreamTrack : MediaStreamTrack {
     RaisesException,
     RuntimeEnabled = ElementCapture,
     MeasureAs = ElementCapture
-  ] Promise<void> restrictTo(RestrictionTarget? target);
+  ] Promise<undefined> restrictTo(RestrictionTarget? target);
 };

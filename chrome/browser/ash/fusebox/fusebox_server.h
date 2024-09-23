@@ -16,6 +16,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/values.h"
 #include "chrome/browser/ash/fusebox/fusebox.pb.h"
+#include "chrome/browser/ash/fusebox/fusebox_histograms.h"
 #include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "chrome/browser/ash/system_web_apps/apps/files_internals_debug_json_provider.h"
 #include "storage/browser/file_system/async_file_util.h"
@@ -246,6 +247,7 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
             uint64_t fuse_handle);
 
     const scoped_refptr<storage::FileSystemContext> fs_context_;
+    const HistogramEnumFileSystemType histogram_enum_file_system_type_;
     const bool readable_;
     const bool writable_;
 

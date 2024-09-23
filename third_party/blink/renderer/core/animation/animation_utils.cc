@@ -32,7 +32,7 @@ void AnimationUtils::ForEachInterpolatedPropertyValue(
     Element* target,
     const PropertyHandleSet& properties,
     ActiveInterpolationsMap& interpolations,
-    base::RepeatingCallback<void(PropertyHandle, const CSSValue*)> callback) {
+    base::FunctionRef<void(PropertyHandle, const CSSValue*)> callback) {
   if (!target)
     return;
 
@@ -49,7 +49,7 @@ void AnimationUtils::ForEachInterpolatedPropertyValue(
     if (!value)
       continue;
 
-    callback.Run(property, value);
+    callback(property, value);
   }
 }
 

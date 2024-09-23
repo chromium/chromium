@@ -12,11 +12,9 @@ interface IMetricsUploadService {
     * Send the given UMA log to the clearcut service in GMS core on the device.
     *
     * @param serializedLog the serialized bytes of the ChromeUserMetricsExtension proto message.
-    * @param useDefaultUploadQos whether to use an experimental change that increases upload
-    *         frequency.
     *
     * @returns an integer HTTP status code indicating the success state of sending the log to the
     *       platform.
     */
-   int uploadMetricsLog(in byte[] serializedLog, boolean useDefaultUploadQos);
+   int uploadMetricsLog(in byte[] serializedLog);
 }

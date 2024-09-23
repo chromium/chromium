@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/web/web_navigation_params.h"
 
+#include "base/uuid.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
@@ -17,16 +18,19 @@ namespace blink {
 WebNavigationParams::WebNavigationParams()
     : http_method(http_names::kGET),
       devtools_navigation_token(base::UnguessableToken::Create()),
+      base_auction_nonce(base::Uuid::GenerateRandomV4()),
       content_settings(CreateDefaultRendererContentSettings()) {}
 
 WebNavigationParams::~WebNavigationParams() = default;
 
 WebNavigationParams::WebNavigationParams(
     const blink::DocumentToken& document_token,
-    const base::UnguessableToken& devtools_navigation_token)
+    const base::UnguessableToken& devtools_navigation_token,
+    const base::Uuid& base_auction_nonce)
     : http_method(http_names::kGET),
       document_token(document_token),
       devtools_navigation_token(devtools_navigation_token),
+      base_auction_nonce(base_auction_nonce),
       content_settings(CreateDefaultRendererContentSettings()) {}
 
 // static
@@ -41,9 +45,7 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(
   result->http_content_type =
       info.url_request.HttpHeaderField(http_names::kContentType);
   result->requestor_origin = info.url_request.RequestorOrigin();
-  if (features::IsNewBaseUrlInheritanceBehaviorEnabled()) {
-    result->fallback_base_url = info.requestor_base_url;
-  }
+  result->fallback_base_url = info.requestor_base_url;
   result->frame_load_type = info.frame_load_type;
   result->is_client_redirect = info.is_client_redirect;
   result->navigation_timings.input_start = info.input_start;
@@ -56,6 +58,12 @@ std::unique_ptr<WebNavigationParams> WebNavigationParams::CreateFromInfo(
 
 // static
 std::unique_ptr<WebNavigationParams>
+WebNavigationParams::CreateWithEmptyHTMLForTesting(const WebURL& base_url) {
+  return CreateWithHTMLStringForTesting(base::span<const char>(), base_url);
+}
+
+// static
+std::unique_ptr<WebNavigationParams>
 WebNavigationParams::CreateWithHTMLStringForTesting(base::span<const char> html,
                                                     const WebURL& base_url) {
   auto result = std::make_unique<WebNavigationParams>();
@@ -64,28 +72,12 @@ WebNavigationParams::CreateWithHTMLStringForTesting(base::span<const char> html,
   return result;
 }
 
-#if INSIDE_BLINK
-// static
-std::unique_ptr<WebNavigationParams>
-WebNavigationParams::CreateWithHTMLBufferForTesting(
-    scoped_refptr<SharedBuffer> buffer,
-    const KURL& base_url) {
-  auto result = std::make_unique<WebNavigationParams>();
-  result->url = base_url;
-  FillStaticResponse(result.get(), "text/html", "UTF-8",
-                     base::make_span(buffer->Data(), buffer->size()));
-  return result;
-}
-#endif
-
 // static
 void WebNavigationParams::FillBodyLoader(WebNavigationParams* params,
                                          base::span<const char> data) {
   params->response.SetExpectedContentLength(data.size());
-  auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-  body_loader->Write(data.data(), data.size());
-  body_loader->Finish();
-  params->body_loader = std::move(body_loader);
+  params->body_loader = StaticDataNavigationBodyLoader::CreateWithData(
+      SharedBuffer::Create(data));
   params->is_static_data = true;
 }
 
@@ -94,11 +86,8 @@ void WebNavigationParams::FillBodyLoader(WebNavigationParams* params,
                                          WebData data) {
   params->response.SetExpectedContentLength(data.size());
   auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-  scoped_refptr<SharedBuffer> buffer = data;
-  if (buffer)
-    body_loader->Write(*buffer);
-  body_loader->Finish();
-  params->body_loader = std::move(body_loader);
+  params->body_loader = StaticDataNavigationBodyLoader::CreateWithData(
+      scoped_refptr<SharedBuffer>(data));
   params->is_static_data = true;
 }
 
@@ -112,6 +101,18 @@ void WebNavigationParams::FillStaticResponse(WebNavigationParams* params,
   params->response.SetTextEncodingName(text_encoding);
   params->response.SetHttpStatusCode(params->http_status_code);
   FillBodyLoader(params, data);
+}
+
+// static
+void WebNavigationParams::FillStaticResponse(WebNavigationParams* params,
+                                             WebString mime_type,
+                                             WebString text_encoding,
+                                             SharedBuffer* data) {
+  params->response = WebURLResponse(params->url);
+  params->response.SetMimeType(mime_type);
+  params->response.SetTextEncodingName(text_encoding);
+  params->response.SetHttpStatusCode(params->http_status_code);
+  FillBodyLoader(params, WebData(data));
 }
 
 WebNavigationParams::PrefetchedSignedExchange::PrefetchedSignedExchange() =

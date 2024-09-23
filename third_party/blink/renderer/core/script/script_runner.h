@@ -70,9 +70,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
     kLoad = 1 << 0,
     // Milestone is reached as defined by https://crbug.com/1340837.
     kMilestone = 1 << 1,
-    // Delay async scripts until force-deferred scripts are evaluated
-    // https://crbug.com/1339112.
-    kForceDefer = 1 << 2,
 
     kTest1 = 1 << 6,
     kTest2 = 1 << 7,
@@ -86,12 +83,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
 
   void SetTaskRunnerForTesting(base::SingleThreadTaskRunner* task_runner) {
     task_runner_ = task_runner;
-  }
-
-  // Returns true until all async scripts are evaluated.
-  // pending_async_scripts_ can be empty a little earlier than that.
-  bool HasAsyncScripts() const {
-    return number_of_async_scripts_not_evaluated_yet_ > 0;
   }
 
   // Returns true until all force in-order scripts are evaluated.
@@ -128,11 +119,6 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   HeapHashMap<Member<PendingScript>, DelayReasons> pending_async_scripts_;
 
   Member<Document> document_;
-
-  // The number of async scripts that aren't yet evaluated. This is different
-  // from pending_async_scripts_.size() == the number of async scripts that
-  // aren't yet scheduled to evaluate.
-  wtf_size_t number_of_async_scripts_not_evaluated_yet_ = 0;
 
   HeapDeque<Member<PendingScript>> pending_force_in_order_scripts_;
   // The number of force in-order scripts that aren't yet evaluated. This is

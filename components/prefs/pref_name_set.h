@@ -8,9 +8,10 @@
 #include <functional>
 #include <set>
 #include <string>
+#include <string_view>
 
 // String set that allows transparent lookup by string-comparable types like
-// `base::StringPiece` without requiring conversion to `std::string`.
+// `std::string_view` without requiring conversion to `std::string`.
 using PrefNameSet = std::set<std::string, std::less<>>;
 
 #endif  // COMPONENTS_PREFS_PREF_NAME_SET_H_

@@ -198,7 +198,8 @@ var availableTests = [
       chrome.test.succeed();
     };
 
-    chrome.autofillPrivate.getCountryList(handler);
+    chrome.autofillPrivate.getCountryList(
+        /*forAccountAddressProfile=*/ false, handler);
   },
 
   function getAddressComponents() {
@@ -383,10 +384,19 @@ var availableTests = [
       });
     }
 
+    function filterForAddedCard(cards) {
+      return cards.filter(function (card) {
+        // Credit cards are considered the same if they have a
+        // matching card number, expiration month, and expiration
+        // year.
+        return card['cardNumber'] == MASKED_NUMBER &&
+        card['expirationMonth'] == EXP_MONTH &&
+        card['expirationYear'] == EXP_YEAR;
+      })
+    }
+
     chrome.autofillPrivate.getCreditCardList(
         chrome.test.callbackPass(function(cardList) {
-          chrome.test.assertEq([], cardList);
-
           // Set up the callback that verifies that the card was correctly
           // added.
           chrome.test.listenOnce(
@@ -401,7 +411,7 @@ var availableTests = [
                       nickname: NICKNAME,
                       cvc: MASKED_CVC
                     }],
-                    filterCardProperties(cardList));
+                    filterCardProperties(filterForAddedCard(cardList)));
               }));
 
           chrome.autofillPrivate.saveCreditCard({
@@ -719,6 +729,26 @@ var availableTests = [
     chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
+
+  function deleteAllUserAnnotationsEntries() {
+    chrome.autofillPrivate.deleteAllUserAnnotationsEntries();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+
+  function deleteUserAnnotationsEntry() {
+    chrome.autofillPrivate.deleteUserAnnotationsEntry(123);
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function getUserAnnotationsEntries() {
+    chrome.autofillPrivate.getUserAnnotationsEntries();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
 ];
 
 /** @const */
@@ -753,6 +783,9 @@ var TESTS_FOR_CONFIG = {
       ['authenticateUserAndFlipMandatoryAuthToggle'],
   'getLocalCard': ['addNewCreditCard', 'getLocalCard'],
   'bulkDeleteAllCvcs': ['bulkDeleteAllCvcs'],
+  'deleteAllUserAnnotationsEntries': ['deleteAllUserAnnotationsEntries'],
+  'deleteUserAnnotationsEntries': ['deleteUserAnnotationsEntries'],
+  'getUserAnnotationsEntries': ['getUserAnnotationsEntries'],
 };
 
 var testConfig = window.location.search.substring(1);

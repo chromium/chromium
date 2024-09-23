@@ -99,7 +99,7 @@ class DatabaseKey {
 //   is stored in a separate LevelDB, which is maintained by
 //   SandboxOriginDatabase. For per-type information, we use a small static
 //   mapping (e.g. 't' for Temporary type) for regular sandbox filesystems.
-//   NOTE/TODO(https://crbug.com/1349156): the goal is to eventually deprecate
+//   NOTE/TODO(crbug.com/40855748): the goal is to eventually deprecate
 //   SandboxOriginDatabase and rely entirely on Storage Buckets.
 // * For all other StorageKeys, we rely on quota management of Storage Buckets
 //   in addition to the same static mapping of per-type information described

@@ -114,17 +114,20 @@ TEST_F(FramePointerUnwinderTest, FPPointsOutsideOfStack) {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
   EXPECT_EQ(UnwindResult::kAborted,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({{kModuleStart, module()}}), stack);
 
   RegisterContextFramePointer(&context) = input.bottom() - sizeof(uintptr_t);
   EXPECT_EQ(UnwindResult::kAborted,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({{kModuleStart, module()}}), stack);
 
   RegisterContextFramePointer(&context) = input.top();
   EXPECT_EQ(UnwindResult::kAborted,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({{kModuleStart, module()}}), stack);
 }
 
@@ -146,7 +149,8 @@ TEST_F(FramePointerUnwinderTest, FPPointsToSelf) {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
   EXPECT_EQ(UnwindResult::kAborted,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({
                 {kModuleStart, module()},
             }),
@@ -175,7 +179,8 @@ TEST_F(FramePointerUnwinderTest, FPCycle) {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
   EXPECT_EQ(UnwindResult::kAborted,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({
                 {kModuleStart, module()},
                 {kModuleStart + 0x10, module()},
@@ -202,7 +207,8 @@ TEST_F(FramePointerUnwinderTest, NoModuleForIP) {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
   EXPECT_EQ(UnwindResult::kAborted,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(
       std::vector<Frame>({{kModuleStart, module()}, {not_in_module, nullptr}}),
       stack);
@@ -227,7 +233,8 @@ TEST_F(FramePointerUnwinderTest, FPAdditionOverflows) {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
   EXPECT_EQ(UnwindResult::kAborted,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({
                 {kModuleStart, module()},
             }),
@@ -257,7 +264,8 @@ TEST_F(FramePointerUnwinderTest, RegularUnwind) {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
   EXPECT_EQ(UnwindResult::kCompleted,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({
                 {kModuleStart, module()},
                 {kModuleStart + 0x20, module()},
@@ -294,7 +302,8 @@ TEST_F(FramePointerUnwinderTest, NonNativeFrame) {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
   EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
   EXPECT_EQ(std::vector<Frame>({
                 {kModuleStart, module()},
                 {kModuleStart + 0x20, module()},
@@ -329,7 +338,8 @@ TEST_F(FramePointerUnwinderTest, NonNativeUnaligned) {
       Frame(RegisterContextInstructionPointer(&context), module())};
 
   EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
-            unwinder()->TryUnwind(&context, input.top(), &stack));
+            unwinder()->TryUnwind(/*state_capture=*/nullptr, &context,
+                                  input.top(), &stack));
 }
 
 }  // namespace base

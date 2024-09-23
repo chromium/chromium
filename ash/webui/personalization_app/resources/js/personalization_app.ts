@@ -46,7 +46,6 @@ import './wallpaper/index.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {isPersonalizationJellyEnabled} from './load_time_booleans.js';
 import {emptyState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
 import {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
@@ -93,7 +92,7 @@ export {PersonalizationStore} from './personalization_store.js';
 export {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
 export {PersonalizationToastElement} from './personalization_toast_element.js';
 export {PersonalizationThemeElement} from './theme/personalization_theme_element.js';
-export {setDarkModeEnabledAction, SetDarkModeEnabledAction, SetGeolocationPermissionEnabledAction as SetGeolocationPermissionEnabledActionForTheme, setColorSchemeAction, setStaticColorAction, SetStaticColorAction, SetSampleColorSchemesAction, SetColorSchemeAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
+export {SetColorModeAutoScheduleAction, setDarkModeEnabledAction, SetDarkModeEnabledAction, setGeolocationPermissionEnabledAction, SetGeolocationPermissionEnabledAction as SetGeolocationPermissionEnabledActionForTheme, setGeolocationIsUserModifiableAction, SetGeolocationIsUserModifiableAction as SetGeolocationIsUserModifiableActionForTheme, setColorSchemeAction, setStaticColorAction, SetStaticColorAction, SetSampleColorSchemesAction, SetColorSchemeAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
 export {ColorSchemeIconSvgElement} from './theme/color_scheme_icon_svg_element.js';
 export {DynamicColorElement} from './theme/dynamic_color_element.js';
@@ -118,25 +117,35 @@ export {GooglePhotosSharedAlbumDialogElement, AcceptEvent} from './wallpaper/goo
 export {GooglePhotosZeroStateElement} from './wallpaper/google_photos_zero_state_element.js';
 export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
-export {RecentSeaPenData} from 'chrome://resources/ash/common/sea_pen/constants.js';
+export {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 export * from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
-export {getRecentSeaPenImages, selectRecentSeaPenImage, searchSeaPenThumbnails} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
-export {SeaPenImagesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_images_element.js';
+export {getRecentSeaPenImageIds, selectRecentSeaPenImage, getSeaPenThumbnails, selectSeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen_controller.js';
+export {SeaPenErrorElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_error_element.js';
+export {SeaPenFeedbackElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_feedback_element.js';
+export {SeaPenImageLoadingElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_image_loading_element.js';
+export {SeaPenHistoryPromptSelectedEvent, SeaPenImagesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_images_element.js';
 export {SeaPenInputQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_input_query_element.js';
-export {SeaPenRecentWallpapersElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_recent_wallpapers_element.js';
+export {SeaPenOptionsElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_options_element.js';
+export {SeaPenSamplesElement, SeaPenSampleSelectedEvent} from 'chrome://resources/ash/common/sea_pen/sea_pen_samples_element.js';
+export {SeaPenFreeformElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_freeform_element.js';
+export {SeaPenSuggestionsElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_suggestions_element.js';
+export {SeaPenRecentImageDeleteEvent, SeaPenRecentWallpapersElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_recent_wallpapers_element.js';
 export {SeaPenRouterElement, SeaPenPaths} from 'chrome://resources/ash/common/sea_pen/sea_pen_router_element.js';
 export {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
 export {getSeaPenStore, setSeaPenStore, SeaPenStoreInterface} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
 export {SeaPenTemplateQueryElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_template_query_element.js';
 export {SeaPenTemplatesElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_templates_element.js';
 export {setSeaPenProviderForTesting} from 'chrome://resources/ash/common/sea_pen/sea_pen_interface_provider.js';
-export {SeaPenTermsOfServiceDialogElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_terms_of_service_dialog_element.js';
+export {SeaPenIntroductionDialogElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_introduction_dialog_element.js';
+export {SeaPenToastElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_toast_element.js';
+export {SeaPenZeroStateSvgElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_zero_state_svg_element.js';
+export {CrTooltipIconElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 export {isDefaultImage, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_element.js';
 export {selectGooglePhotosAlbum, cancelPreviewWallpaper, confirmPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums, fetchLocalData, getDefaultImageThumbnail, getLocalImages, initializeBackdropData, fetchGooglePhotosEnabled, selectWallpaper, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper/wallpaper_controller.js';
 export {WallpaperErrorElement} from './wallpaper/wallpaper_error_element.js';
-export {WallpaperFullscreenElement} from './wallpaper/wallpaper_fullscreen_element.js';
+export {WallpaperFullscreenElement, setShouldWaitForFullscreenOpacityTransitionsForTesting} from './wallpaper/wallpaper_fullscreen_element.js';
 export {getImageTiles, WallpaperImagesElement} from './wallpaper/wallpaper_images_element.js';
 export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_provider.js';
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
@@ -145,6 +154,7 @@ export {WallpaperSelectedElement} from './wallpaper/wallpaper_selected_element.j
 export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js';
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';
 export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialogElement} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
+export {setTransitionsEnabled, maybeDoPageTransition} from 'chrome://resources/ash/common/sea_pen/transition.js';
 
 PersonalizationStore.getInstance().init(emptyState());
 SeaPenStoreAdapter.initSeaPenStore();
@@ -155,18 +165,4 @@ if (link) {
   link.href = '/hub_icon_192.png';
 }
 document.title = loadTimeData.getString('personalizationTitle');
-
-if (isPersonalizationJellyEnabled()) {
-  // After the Jelly experiment is launched, add the link directly to
-  // `index.html`.
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-  document.head.appendChild(link);
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'stylesheet';
-  fontLink.href = 'chrome://theme/typography.css';
-  document.head.appendChild(fontLink);
-  document.body.classList.add('jelly-enabled');
-  ColorChangeUpdater.forDocument().start();
-}
+ColorChangeUpdater.forDocument().start();

@@ -209,20 +209,22 @@ static void SetupOzone(base::WaitableEvent* done) {
   ui::OzonePlatform::InitializeForGPU(params);
   done->Signal();
 }
-#endif
 
-}  // namespace
-
-int main(int argc, char** argv) {
-#if BUILDFLAG(IS_OZONE)
+void InitFeatureList(int argc, char** argv) {
   base::CommandLine command_line(argc, argv);
   auto feature_list = std::make_unique<base::FeatureList>();
   feature_list->InitFromCommandLine(
       command_line.GetSwitchValueASCII(switches::kEnableFeatures),
       command_line.GetSwitchValueASCII(switches::kDisableFeatures));
   base::FeatureList::SetInstance(std::move(feature_list));
+}
+#endif
 
-  base::Thread rendering_thread("GLRenderingVEAClientThread");
+}  // namespace
+
+int main(int argc, char** argv) {
+#if BUILDFLAG(IS_OZONE)
+  InitFeatureList(argc, argv);
 #endif
 
   InitBase base(argc, argv);
@@ -234,14 +236,15 @@ int main(int argc, char** argv) {
   params.single_process = true;
   ui::OzonePlatform::InitializeForUI(params);
 
+  base::Thread rendering_thread("GLRenderingVEAClientThread");
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::UI;
   CHECK(rendering_thread.StartWithOptions(std::move(options)));
 
-  const bool use_gpu = command_line.HasSwitch(switches::kVizDemoUseGPU);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  const bool use_gpu = command_line->HasSwitch(switches::kVizDemoUseGPU);
   if (use_gpu) {
-    command_line.AppendSwitchASCII(switches::kUseGL,
-                                   gl::kGLImplementationEGLName);
+    command_line->AppendSwitchASCII(switches::kUseGL, gl::kGLImplementationEGLName);
     base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     rendering_thread.task_runner()->PostTask(

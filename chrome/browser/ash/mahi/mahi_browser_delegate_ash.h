@@ -63,7 +63,8 @@ class MahiBrowserDelegateAsh : public crosapi::mojom::MahiBrowserDelegate {
   void UnregisterClient(const base::UnguessableToken& client_id);
 
   // Requests the page content from a particular client.
-  void GetContentFromClient(
+  // Virtual so that it can be overridden in test.
+  virtual void GetContentFromClient(
       const base::UnguessableToken& client_id,
       const base::UnguessableToken& page_id,
       crosapi::mojom::MahiBrowserClient::GetContentCallback callback);

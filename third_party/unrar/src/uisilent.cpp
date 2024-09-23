@@ -1,5 +1,5 @@
 // Purely user interface function. Gets and returns user input.
-UIASKREP_RESULT uiAskReplace(wchar *Name,size_t MaxNameSize,int64 FileSize,RarTime *FileTime,uint Flags)
+UIASKREP_RESULT uiAskReplace(std::wstring &Name,int64 FileSize,RarTime *FileTime,uint Flags)
 {
   return UIASKREP_R_REPLACE;
 }
@@ -7,12 +7,12 @@ UIASKREP_RESULT uiAskReplace(wchar *Name,size_t MaxNameSize,int64 FileSize,RarTi
 
 
 
-void uiStartArchiveExtract(bool Extract,const wchar *ArcName)
+void uiStartArchiveExtract(bool Extract,const std::wstring &ArcName)
 {
 }
 
 
-bool uiStartFileExtract(const wchar *FileName,bool Extract,bool Test,bool Skip)
+bool uiStartFileExtract(const std::wstring &FileName,bool Extract,bool Test,bool Skip)
 {
   return true;
 }
@@ -33,7 +33,8 @@ void uiMsgStore::Msg()
 }
 
 
-bool uiGetPassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *Password)
+bool uiGetPassword(UIPASSWORD_TYPE Type,const std::wstring &FileName,
+                   SecPassword *Password,CheckPassword *CheckPwd)
 {
   return false;
 }
@@ -61,8 +62,19 @@ void uiGiveTick()
 }
 
 
+bool uiDictLimit(CommandData *Cmd,const std::wstring &FileName,uint64 DictSize,uint64 MaxDictSize)
+{
+#ifdef RARDLL
+  if (Cmd->Callback!=nullptr &&
+      Cmd->Callback(UCM_LARGEDICT,Cmd->UserData,(LPARAM)(DictSize/1024),(LPARAM)(MaxDictSize/1024))==1)
+    return true; // Continue extracting if unrar.dll callback permits it.
+#endif
+  return false; // Stop extracting.
+}
+
+
 #ifndef SFX_MODULE
-const wchar *uiGetMonthName(int Month)
+const wchar *uiGetMonthName(uint Month)
 {
   return L"";
 }

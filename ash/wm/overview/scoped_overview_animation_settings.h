@@ -39,6 +39,7 @@ class ScopedOverviewAnimationSettings {
       const ScopedOverviewAnimationSettings&) = delete;
 
   ~ScopedOverviewAnimationSettings();
+
   void AddObserver(ui::ImplicitAnimationObserver* observer);
   void CacheRenderSurface();
   void DeferPaint();

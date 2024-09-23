@@ -111,9 +111,9 @@ void LoopbackCrosapiAppServiceProxy::UninstallSilently(
   NOTIMPLEMENTED();
 }
 
-void LoopbackCrosapiAppServiceProxy::InstallApp(
+void LoopbackCrosapiAppServiceProxy::InstallAppWithFallback(
     crosapi::mojom::InstallAppParamsPtr params,
-    InstallAppCallback callback) {
+    InstallAppWithFallbackCallback callback) {
   // Implement this if needed.
   NOTIMPLEMENTED();
 }

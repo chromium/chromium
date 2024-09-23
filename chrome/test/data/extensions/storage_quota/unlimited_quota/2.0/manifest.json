@@ -1,7 +1,9 @@
 {
-   "name": "Storage_UnlimitedQuota",
-   "version": "2.0",
-   "manifest_version": 2,
-   "description": "An extension that asks for unlimited storage space.",
-   "permissions": ["unlimitedStorage"]
+  "name": "Storage_UnlimitedQuota",
+  "version": "2.0",
+  "manifest_version": 3,
+  "description": "An extension that asks for unlimited storage space.",
+  "permissions": [
+    "unlimitedStorage"
+  ]
 }

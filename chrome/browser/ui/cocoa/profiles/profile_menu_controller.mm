@@ -177,8 +177,8 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
       header = [[NSMenuItem alloc] initWithTitle:GetProfileMenuTitle()
                                           action:nil
                                    keyEquivalent:@""];
-      header.enabled = NO;
     }
+    header.enabled = NO;
     [menu insertItem:header atIndex:offset++];
   }
 

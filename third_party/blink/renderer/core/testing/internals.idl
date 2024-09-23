@@ -36,11 +36,11 @@ interface Internals {
     // Call this function with the URL of a resource.
     // It returns a promise that resolves with the initial priority
     // of the request, once it has been made.
-    [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriority(DOMString url, Document document);
+    [CallWith=ScriptState] Promise<long> getInitialResourcePriority(DOMString url, Document document);
 
     // Similar to getInitialResourcePriority, but doesn't query the priority of
     // an already loaded resource.
-    [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriorityOfNewLoad(DOMString url, Document document);
+    [CallWith=ScriptState] Promise<long> getInitialResourcePriorityOfNewLoad(DOMString url, Document document);
 
     DOMString getResourceHeader(DOMString url, DOMString header, Document document);
 
@@ -57,7 +57,7 @@ interface Internals {
 
     Node effectiveRootScroller(Document document);
 
-    [RaisesException] DOMString shadowRootType(Node root);
+    [RaisesException] DOMString ShadowRootMode(Node root);
     [RaisesException] unsigned long countElementShadow(Node Root);
     DOMString shadowPseudoId(Element element);
     Node treeScopeRootNode(Node node);
@@ -67,6 +67,7 @@ interface Internals {
     [RaisesException] unsigned long styleForElementCount();
     [RaisesException] unsigned long needsLayoutCount();
     [RaisesException] unsigned long layoutCountForTesting();
+    [RaisesException] boolean nodeNeedsStyleRecalc(Node node);
     [RaisesException] unsigned long hitTestCount(Document document);
     [RaisesException] unsigned long hitTestCacheHits(Document document);
     [RaisesException] Element? elementFromPoint(Document document, double x, double y, boolean ignoreClipping, boolean allowChildFrameContent);
@@ -91,7 +92,6 @@ interface Internals {
     [RaisesException] Node nextInFlatTree(Node node);
     [RaisesException] Node previousInFlatTree(Node node);
 
-    DOMString visiblePlaceholder(Element element);
     boolean isValidationMessageVisible(Element element);
     void selectColorInColorChooser(Element element, DOMString colorValue);
     void endColorChooser(Element element);
@@ -201,9 +201,7 @@ interface Internals {
 
     [RaisesException] DOMString layerTreeAsText(Document document, optional unsigned short flags);
 
-    DOMString scrollingStateTreeAsText(Document document);
     [RaisesException] DOMString mainThreadScrollingReasons(Document document);
-    [RaisesException] DOMRectList nonFastScrollableRects(Document document);
 
     void evictAllResources();
 
@@ -215,12 +213,11 @@ interface Internals {
     sequence<DOMString> shortcutIconURLs(Document document);
     sequence<DOMString> allIconURLs(Document document);
     [RaisesException] long numberOfPages(optional double pageWidthInPixels = 800, optional double pageHeightInPixels = 600);
-    [RaisesException] DOMString pageProperty(DOMString propertyName, unsigned long pageNumber);
     [RaisesException] float pageScaleFactor();
     [RaisesException] void setPageScaleFactor(float scaleFactor);
     [RaisesException] void setPageScaleFactorLimits(float minScaleFactor, float maxScaleFactor);
 
-    [RaisesException] float pageZoomFactor();
+    [RaisesException] float layoutZoomFactor();
 
     [RaisesException] void setIsCursorVisible(Document document, boolean isVisible);
     void setMaxNumberOfFramesToTen(boolean enable);
@@ -264,7 +261,7 @@ interface Internals {
     // Overrides default behavior to support the app-region CSS property.
     // Setting to true enables collection of draggable/non-draggable
     // app regions.
-    void SetSupportsAppRegion(boolean supports_app_regions);
+    void SetSupportsDraggableRegions(boolean supports_draggable_regionss);
 
     // Returns a string with information about the mouse cursor used at the specified client location.
     DOMString getCurrentCursorInfo();
@@ -303,6 +300,7 @@ interface Internals {
     [RaisesException] void forceCompositingUpdate(Document document);
 
     void setDarkPreferredColorScheme(Document document);
+    void setDarkPreferredRootScrollbarColorScheme(Document document);
     void setForcedColorsAndDarkPreferredColorScheme(Document document);
 
     [RaisesException] void setShouldRevealPassword(Element element, boolean reveal);
@@ -345,6 +343,7 @@ interface Internals {
     void setVisualViewportOffset(long x, long y);
 
     boolean isUseCounted(Document document, unsigned long feature);
+    boolean isWebDXFeatureUseCounted(Document document, unsigned long feature);
     boolean isCSSPropertyUseCounted(Document document, DOMString propertyName);
     boolean isAnimatedCSSPropertyUseCounted(Document document, DOMString propertyName);
     void clearUseCounter(Document document, unsigned long feature);
@@ -356,7 +355,7 @@ interface Internals {
     // Returns a promise that is resolved when |feature| is counted on
     // |document|'s UseCounter. When |feature| was already counted, it's
     // immediately resolved.
-    [CallWith=ScriptState] Promise<boolean> observeUseCounter(Document document, unsigned long feature);
+    [CallWith=ScriptState] Promise<undefined> observeUseCounter(Document document, unsigned long feature);
 
     readonly attribute unsigned long length;
     getter long (unsigned long index);
@@ -449,10 +448,18 @@ interface Internals {
 
     void setBackForwardCacheRestorationBufferSize(long maxSize);
 
+    void setEventTimingBufferSize(long maxSize);
+
+    void stopResponsivenessMetricsUkmSampling();
+
     sequence<DOMString> getCreatorScripts(HTMLImageElement img);
 
     // Wait until predicted LCP is painted. Never called if prediction is
     // failed. Returns element_locator format string.
     [CallWith=ScriptState] Promise<DOMString> LCPPrediction(Document document);
 
+    // Exempt `url` from fenced frames network revocation for the current
+    // NetworkContext. Intended to be used to allow remote context executors to
+    // continue functioning in fenced frame WPTs after network is revoked.
+    [CallWith=ScriptState] Promise<undefined> exemptUrlFromNetworkRevocation(USVString url);
 };

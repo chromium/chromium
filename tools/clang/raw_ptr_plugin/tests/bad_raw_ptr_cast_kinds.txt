@@ -1,0 +1,79 @@
+bad_raw_ptr_cast_kinds.cpp:56:9: error: cannot cast from type 'raw_ptr<int>' to pointer type 'int *'
+  (void)static_cast<int*>(ptr);
+        ^~~~~~~~~~~~~~~~~~~~~~
+bad_raw_ptr_cast_kinds.cpp:57:9: error: no matching conversion for static_cast from 'RawPtrWrapper' to 'raw_ptr<int>'
+  (void)static_cast<raw_ptr<int>>(wrapped);
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h:11:7: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'RawPtrWrapper' to 'const raw_ptr<int>' for 1st argument
+class raw_ptr {
+      ^~~~~~~
+./base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h:11:7: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'RawPtrWrapper' to 'raw_ptr<int>' for 1st argument
+class raw_ptr {
+      ^~~~~~~
+./base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h:11:7: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
+bad_raw_ptr_cast_kinds.cpp:58:9: error: cannot cast from type 'RawPtrWrapper' to pointer type 'int *'
+  (void)static_cast<int*>(wrapped);
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~
+bad_raw_ptr_cast_kinds.cpp:60:9: error: reinterpret_cast from 'raw_ptr<int>' to 'int *' is not allowed
+  (void)reinterpret_cast<int*>(ptr);
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+bad_raw_ptr_cast_kinds.cpp:61:9: error: reinterpret_cast from 'RawPtrWrapper' to 'raw_ptr<int>' is not allowed
+  (void)reinterpret_cast<raw_ptr<int>>(wrapped);
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bad_raw_ptr_cast_kinds.cpp:62:9: error: reinterpret_cast from 'RawPtrWrapper' to 'int *' is not allowed
+  (void)reinterpret_cast<int*>(wrapped);
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bad_raw_ptr_cast_kinds.cpp:21:50: error: [chromium-style] casting 'void *' to 'RawPtrWrapper * is not allowed.
+  (void)reinterpret_cast<RawPtrWrapper*>(void_ptr);
+                                                 ^
+bad_raw_ptr_cast_kinds.cpp:21:50: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_kinds.cpp:10:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_kinds.cpp:25:50: error: [chromium-style] casting 'void *' to 'RawPtrWrapper is not allowed.
+  ref = reinterpret_cast<RawPtrWrapper&>(void_ptr);
+                                                 ^
+bad_raw_ptr_cast_kinds.cpp:25:50: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_kinds.cpp:10:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_kinds.cpp:28:37: error: [chromium-style] casting 'raw_ptr<int>' to 'int * is not allowed.
+  (void)__builtin_bit_cast(int*, ptr);
+                                    ^
+bad_raw_ptr_cast_kinds.cpp:28:37: note: [chromium-style] 'raw_ptr<int>' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_kinds.cpp:29:49: error: [chromium-style] casting 'RawPtrWrapper' to 'raw_ptr<int> is not allowed.
+  (void)__builtin_bit_cast(raw_ptr<int>, wrapped);
+                                                ^
+bad_raw_ptr_cast_kinds.cpp:29:49: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_kinds.cpp:10:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_kinds.cpp:30:41: error: [chromium-style] casting 'RawPtrWrapper' to 'int * is not allowed.
+  (void)__builtin_bit_cast(int*, wrapped);
+                                        ^
+bad_raw_ptr_cast_kinds.cpp:30:41: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_kinds.cpp:10:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_kinds.cpp:33:53: error: [chromium-style] casting 'RawPtrWrapper *' to 'uintptr_t is not allowed.
+  uintptr_t i = reinterpret_cast<uintptr_t>(&wrapped);
+                                                    ^
+bad_raw_ptr_cast_kinds.cpp:33:53: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_kinds.cpp:10:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_kinds.cpp:36:48: error: [chromium-style] casting 'uintptr_t' to 'RawPtrWrapper * is not allowed.
+  wrapped = *reinterpret_cast<RawPtrWrapper*>(i);
+                                               ^
+bad_raw_ptr_cast_kinds.cpp:36:48: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_kinds.cpp:10:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+bad_raw_ptr_cast_kinds.cpp:44:14: error: [chromium-style] casting 'RawPtrWrapper *' to 'void * is not allowed.
+  void_ptr = arr;
+             ^
+bad_raw_ptr_cast_kinds.cpp:44:14: note: [chromium-style] 'RawPtrWrapper *' manages BackupRefPtr refcounts; bypassing its C++ interface or treating it as a POD will lead to memory safety errors.
+bad_raw_ptr_cast_kinds.cpp:10:3: note: [chromium-style] 'RawPtrWrapper' manages BackupRefPtr or its container here.
+  raw_ptr<int> ptr;
+  ^
+14 errors generated.

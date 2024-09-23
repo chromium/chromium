@@ -26,7 +26,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
-#include "device/fido/make_credential_request_handler.h"
 
 namespace device {
 
@@ -35,11 +34,60 @@ struct CtapGetAssertionOptions;
 struct CtapMakeCredentialRequest;
 struct MakeCredentialOptions;
 
+namespace cablev2 {
+class FidoTunnelDevice;
+}
+
 namespace pin {
 struct RetriesResponse;
 struct EmptyResponse;
 class TokenResponse;
 }  // namespace pin
+
+enum class GetAssertionStatus {
+  kSuccess,
+  kAuthenticatorResponseInvalid,
+  kUserConsentButCredentialNotRecognized,
+  kUserConsentDenied,
+  kAuthenticatorRemovedDuringPINEntry,
+  kSoftPINBlock,
+  kHardPINBlock,
+  kAuthenticatorMissingResidentKeys,
+  // TODO(agl): kAuthenticatorMissingUserVerification can
+  // also be returned when the authenticator supports UV, but
+  // there's no UI support for collecting a PIN. This could
+  // be clearer.
+  kAuthenticatorMissingUserVerification,
+  kWinNotAllowedError,
+  kHybridTransportError,
+  kICloudKeychainNoCredentials,
+  kEnclaveError,
+  kEnclaveCancel,
+};
+
+enum class MakeCredentialStatus {
+  kSuccess,
+  kAuthenticatorResponseInvalid,
+  kUserConsentButCredentialExcluded,
+  kUserConsentDenied,
+  kAuthenticatorRemovedDuringPINEntry,
+  kSoftPINBlock,
+  kHardPINBlock,
+  kAuthenticatorMissingResidentKeys,
+  // TODO(agl): kAuthenticatorMissingUserVerification can
+  // also be returned when the authenticator supports UV, but
+  // there's no UI support for collecting a PIN. This could
+  // be clearer.
+  kAuthenticatorMissingUserVerification,
+  kAuthenticatorMissingLargeBlob,
+  kNoCommonAlgorithms,
+  kStorageFull,
+  kWinInvalidStateError,
+  kWinNotAllowedError,
+  kHybridTransportError,
+  kEnclaveError,
+  kEnclaveCancel,
+};
 
 // FidoAuthenticator is an authenticator from the WebAuthn Authenticator model
 // (https://www.w3.org/TR/webauthn/#sctn-authenticator-model). It may be a
@@ -47,10 +95,10 @@ class TokenResponse;
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
  public:
   using MakeCredentialCallback = base::OnceCallback<void(
-      CtapDeviceResponseCode,
+      MakeCredentialStatus,
       std::optional<AuthenticatorMakeCredentialResponse>)>;
   using GetAssertionCallback =
-      base::OnceCallback<void(CtapDeviceResponseCode,
+      base::OnceCallback<void(GetAssertionStatus,
                               std::vector<AuthenticatorGetAssertionResponse>)>;
   using GetPlatformCredentialInfoForRequestCallback = base::OnceCallback<void(
       std::vector<DiscoverableCredentialMetadata> credentials,
@@ -288,6 +336,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
 
   // GetType returns the type of the authenticator.
   virtual AuthenticatorType GetType() const;
+
+  // Returns this object, as a tunnel device, or null if this object isn't of
+  // the correct type.
+  virtual cablev2::FidoTunnelDevice* GetTunnelDevice();
 
   // GetId returns a unique string representing this device. This string should
   // be distinct from all other devices concurrently discovered.

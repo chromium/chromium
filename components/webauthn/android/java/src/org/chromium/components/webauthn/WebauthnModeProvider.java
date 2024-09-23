@@ -4,56 +4,88 @@
 
 package org.chromium.components.webauthn;
 
-import androidx.annotation.IntDef;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 import org.chromium.components.webauthn.cred_man.AppCredManRequestDecorator;
 import org.chromium.components.webauthn.cred_man.BrowserCredManRequestDecorator;
 import org.chromium.components.webauthn.cred_man.CredManRequestDecorator;
 import org.chromium.components.webauthn.cred_man.GpmCredManRequestDecorator;
+import org.chromium.content_public.browser.WebContents;
 
+/**
+ * This class is responsible for returning the correct {@link WebauthnMode} for a given {@link
+ * WebContents}. It supports:
+ *
+ * <ul>
+ *   <li>1. A global {@link WebauthnMode} for the singleton. This is the preferred method. To set
+ *       the global state, use {@code setGlobalWebauthnMode} API. Chrome uses this API.
+ *   <li>2. Per-WebContents {@link WebauthnMode}. This method is used by WebView. In order to set
+ *       the mode, initialize a {@link WebauthnMode} using {@code WebauthnMode.setWebContents} and
+ *       use {@code WebauthnMode.setMode} API.
+ * </ul>
+ *
+ * <p>Note: if both methods are called, global mode has priority.
+ */
+@JNINamespace("webauthn")
 public class WebauthnModeProvider {
-    @IntDef({WebauthnMode.NONE, WebauthnMode.BROWSER, WebauthnMode.APP, WebauthnMode.CHROME})
-    public @interface WebauthnMode {
-        int NONE = 0;
-        int APP = 1;
-        int BROWSER = 2;
-        int CHROME = 3;
-    }
-
     private static WebauthnModeProvider sInstance;
-    private @WebauthnMode int mMode;
+    private @WebauthnMode int mGlobalMode;
 
-    public CredManRequestDecorator getCredManRequestDecorator() {
-        if (mMode == WebauthnMode.APP) {
+    public CredManRequestDecorator getCredManRequestDecorator(WebContents webContents) {
+        int mode = getWebauthnMode(webContents);
+        if (mode == WebauthnMode.APP) {
             return AppCredManRequestDecorator.getInstance();
-        } else if (mMode == WebauthnMode.BROWSER) {
+        } else if (mode == WebauthnMode.BROWSER || mode == WebauthnMode.CHROME_3PP_ENABLED) {
             return BrowserCredManRequestDecorator.getInstance();
-        } else if (mMode == WebauthnMode.CHROME) {
+        } else if (mode == WebauthnMode.CHROME) {
             return GpmCredManRequestDecorator.getInstance();
         } else {
-            assert false : "WebauthnMode not set! Please set using WebauthnModeProvider.setMode()";
+            assert false : "WebauthnMode not set! See this class's JavaDoc.";
         }
         return null;
     }
 
-    public Fido2ApiCallParams getFido2ApiCallParams() {
-        if (mMode == WebauthnMode.APP) {
+    public Fido2ApiCallParams getFido2ApiCallParams(WebContents webContents) {
+        int mode = getWebauthnMode(webContents);
+        if (mode == WebauthnMode.APP) {
             return Fido2ApiCall.APP_API;
-        } else if (mMode == WebauthnMode.BROWSER || mMode == WebauthnMode.CHROME) {
+        } else if (mode == WebauthnMode.BROWSER
+                || mode == WebauthnMode.CHROME
+                || mode == WebauthnMode.CHROME_3PP_ENABLED) {
             return Fido2ApiCall.BROWSER_API;
         } else {
-            assert false : "WebauthnMode not set! Please set using WebAuthnModeProvider.setMode()";
+            assert false : "WebauthnMode not set! See this class's JavaDoc.";
         }
         return null;
     }
 
-    public @WebauthnMode int getWebauthnMode() {
-        return mMode;
+    public @WebauthnMode int getWebauthnMode(WebContents webContents) {
+        if (mGlobalMode != WebauthnMode.NONE) return mGlobalMode;
+        return WebauthnModeProviderJni.get().getWebauthnModeForWebContents(webContents);
     }
 
-    public void setWebauthnMode(@WebauthnMode int mode) {
-        mMode = mode;
+    public @WebauthnMode int getGlobalWebauthnMode() {
+        return mGlobalMode;
+    }
+
+    public void setGlobalWebauthnMode(@WebauthnMode int mode) {
+        mGlobalMode = mode;
+    }
+
+    public void setWebauthnModeForWebContents(WebContents webContents, @WebauthnMode int mode) {
+        if (webContents == null) return;
+        WebauthnModeProviderJni.get().setWebauthnModeForWebContents(webContents, mode);
+    }
+
+    public static boolean isChrome(WebContents webContents) {
+        @WebauthnMode int mode = getInstance().getWebauthnMode(webContents);
+        return mode == WebauthnMode.CHROME || mode == WebauthnMode.CHROME_3PP_ENABLED;
+    }
+
+    public static boolean is(WebContents webContents, @WebauthnMode int expectedMode) {
+        return getInstance().getWebauthnMode(webContents) == expectedMode;
     }
 
     public static WebauthnModeProvider getInstance() {
@@ -67,4 +99,12 @@ public class WebauthnModeProvider {
     }
 
     private WebauthnModeProvider() {}
+
+    @NativeMethods
+    interface Natives {
+        long setWebauthnModeForWebContents(WebContents webContents, @WebauthnMode int mode);
+
+        @WebauthnMode
+        int getWebauthnModeForWebContents(WebContents webContents);
+    }
 }

@@ -35,7 +35,7 @@ proto::PrintSettings_DuplexMode DuplexModeToProto(
     case ::printing::mojom::DuplexMode::kShortEdge:
       return proto::PrintSettings_DuplexMode_TWO_SIDED_SHORT_EDGE;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return proto::PrintSettings_DuplexMode_ONE_SIDED;
 }
@@ -63,7 +63,7 @@ proto::PrintJobInfo_PrintJobSource PrintJobSourceToProto(
     case ::printing::PrintJob::Source::kIsolatedWebApp:
       return proto::PrintJobInfo_PrintJobSource_ISOLATED_WEB_APP;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW;
 }
@@ -80,7 +80,7 @@ proto::PrintJobInfo_PrintJobStatus PrintJobStateToProto(
     // Only completed print jobs are saved in the database so we shouldn't
     // handle other states.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return proto::PrintJobInfo_PrintJobStatus_CANCELED;
 }
@@ -93,7 +93,7 @@ proto::Printer_PrinterSource PrinterSourceToProto(
     case chromeos::Printer::Source::SRC_POLICY:
       return proto::Printer_PrinterSource_POLICY;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return proto::Printer_PrinterSource_USER;
 }
@@ -130,7 +130,7 @@ proto::PrintJobInfo_PrinterErrorCode PrinterErrorCodeToProto(
     default:
       // Be sure to update the above case statements whenever a new printer
       // error is introduced.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR;
 }

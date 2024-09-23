@@ -9,10 +9,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.RequestContext;
@@ -30,7 +30,7 @@ import java.util.List;
  * <p>An instance of this class must be created, used, and destroyed on the UI thread.
  */
 @JNINamespace("optimization_guide::android")
-public class OptimizationGuideBridge implements Destroyable {
+public class OptimizationGuideBridge {
     private long mNativeOptimizationGuideBridge;
 
     /** Interface to implement to receive decisions from the optimization guide. */
@@ -48,33 +48,12 @@ public class OptimizationGuideBridge implements Destroyable {
                 @Nullable Any metadata);
     }
 
-    /**
-     * Initializes the C++ side of this class, using the Optimization Guide Decider for the last
-     * used Profile.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public OptimizationGuideBridge() {
-        ThreadUtils.assertOnUiThread();
-
-        mNativeOptimizationGuideBridge = OptimizationGuideBridgeJni.get().init();
-    }
-
     @VisibleForTesting
+    @CalledByNative
     protected OptimizationGuideBridge(long nativeOptimizationGuideBridge) {
-        mNativeOptimizationGuideBridge = nativeOptimizationGuideBridge;
-    }
-
-    /**
-     * Deletes the C++ side of this class. This must be called when this object is no longer needed.
-     */
-    @Override
-    public void destroy() {
         ThreadUtils.assertOnUiThread();
 
-        if (mNativeOptimizationGuideBridge != 0) {
-            OptimizationGuideBridgeJni.get().destroy(mNativeOptimizationGuideBridge);
-            mNativeOptimizationGuideBridge = 0;
-        }
+        mNativeOptimizationGuideBridge = nativeOptimizationGuideBridge;
     }
 
     /**
@@ -318,25 +297,21 @@ public class OptimizationGuideBridge implements Destroyable {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        long init();
-
-        void destroy(long nativeOptimizationGuideBridge);
-
         void registerOptimizationTypes(long nativeOptimizationGuideBridge, int[] optimizationTypes);
 
         void canApplyOptimization(
                 long nativeOptimizationGuideBridge,
-                GURL url,
+                @JniType("GURL") GURL url,
                 int optimizationType,
                 OptimizationGuideCallback callback);
 
         void canApplyOptimizationOnDemand(
                 long nativeOptimizationGuideBridge,
-                GURL[] urls,
+                @JniType("std::vector<GURL>") GURL[] urls,
                 int[] optimizationTypes,
                 int requestContext,
                 OnDemandOptimizationGuideCallback callback,
-                byte[] requestContextMetadata);
+                @JniType("jni_zero::ByteArrayView") byte[] requestContextMetadata);
 
         void onNewPushNotification(long nativeOptimizationGuideBridge, byte[] encodedNotification);
 

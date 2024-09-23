@@ -231,10 +231,10 @@ TEST(AutofillStructuredAddressUtils, NormalizeValue) {
 }
 
 TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
-  EXPECT_EQ(NormalizeAndRewrite(u"us", u"unit #3",
+  EXPECT_EQ(NormalizeAndRewrite(AddressCountryCode("us"), u"unit #3",
                                 /*keep_white_space=*/true),
             u"u 3");
-  EXPECT_EQ(NormalizeAndRewrite(u"us", u"california",
+  EXPECT_EQ(NormalizeAndRewrite(AddressCountryCode("us"), u"california",
                                 /*keep_white_space=*/true),
             u"ca");
 }

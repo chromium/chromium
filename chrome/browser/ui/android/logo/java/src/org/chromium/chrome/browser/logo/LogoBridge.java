@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.logo;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,7 +32,8 @@ public class LogoBridge {
          */
         public final String animatedLogoUrl;
 
-        Logo(Bitmap image, String onClickUrl, String altText, String animatedLogoUrl) {
+        @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+        public Logo(Bitmap image, String onClickUrl, String altText, String animatedLogoUrl) {
             this.image = image;
             this.onClickUrl = onClickUrl;
             this.altText = altText;
@@ -89,7 +93,7 @@ public class LogoBridge {
 
     @NativeMethods
     public interface Natives {
-        long init(LogoBridge caller, Profile profile);
+        long init(LogoBridge caller, @JniType("Profile*") Profile profile);
 
         void getCurrentLogo(long nativeLogoBridge, LogoBridge caller, LogoObserver logoObserver);
 

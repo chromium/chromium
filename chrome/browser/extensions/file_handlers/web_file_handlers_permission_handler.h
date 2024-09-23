@@ -44,12 +44,12 @@ class WebFileHandlersPermissionHandler {
                            bool should_remember);
 
   // Get apps::FileHandlers, useful for automatically obtaining file extensions.
-  // TODO(crbug.com/1448893): Refactor CreateIntentFiltersForExtension.
-  // TODO(crbug.com/1448893): Store this in place of manifest `file_handlers`.
+  // TODO(crbug.com/40269541): Refactor CreateIntentFiltersForExtension.
+  // TODO(crbug.com/40269541): Store this in place of manifest `file_handlers`.
   const apps::FileHandlers GetAppsFileHandlers(const Extension& extension);
 
   // Remember the profile when this object is created.
-  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
 
   base::WeakPtrFactory<WebFileHandlersPermissionHandler> weak_factory_{this};
 };

@@ -1,0 +1,83 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "TabCompareSettings": 0
+        },
+        "prefs": {
+          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+              "value": 0,
+              "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "TabCompareSettings": 1
+        },
+        "prefs": {
+          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+              "value": 1,
+              "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "TabCompareSettings": 2
+        },
+        "prefs": {
+          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+              "value": 2,
+              "location": "user_profile"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "note": "The default is changed by default_for_enterprise_users only on Chrome OS",
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "note": "The default is changed by default_for_enterprise_users only on Chrome OS",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "optimization_guide.model_execution.tab_compare_settings_enterprise_policy": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

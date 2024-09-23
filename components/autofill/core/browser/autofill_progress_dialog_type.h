@@ -11,15 +11,14 @@ namespace autofill {
 enum class AutofillProgressDialogType {
   // Unspecified progress dialog type.
   kUnspecified = 0,
-  // Used when authenticating with FIDO.
-  // This progress dialog type applies to Android only.
-  kAndroidFIDOProgressDialog = 1,
-  // Used when unmasking virtual cards.
-  kVirtualCardUnmaskProgressDialog = 2,
+  kVirtualCardUnmaskProgressDialog,
   // Used when conducting a risk-based check for masked server card.
-  kServerCardUnmaskProgressDialog = 3,
+  kServerCardUnmaskProgressDialog,
   // Used when unmasking server IBANs.
-  kServerIbanUnmaskProgressDialog = 4
+  kServerIbanUnmaskProgressDialog,
+  // Used in the VCN 3DS authentication flow after closure of the pop-up, while
+  // a Payments server call is being made to fetch the resulting virtual card.
+  k3dsFetchVcnProgressDialog,
 };
 
 }  // namespace autofill

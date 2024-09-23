@@ -13,8 +13,6 @@ namespace gpu {
 // steps which bubble up to the final result. If any fatal error occurs, the
 // entire result should be fatal - as any attempt to retry is expected to get
 // the same fatal result.
-// Note: This enum is used to back an UMA histogram. Therefore these values
-// should never be reordered, renumbered, or reused.
 enum class ContextResult {
   // The context was created and initialized successfully.
   kSuccess,

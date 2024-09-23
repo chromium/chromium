@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/complex_tasks/model/ios_content_record_task_id.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -95,7 +95,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
         url.EqualsIgnoringRef(original_url)) {
       redirects.push_back(referrer_url);
     }
-    // TODO(crbug.com/703872): the redirect chain is not constructed the same
+    // TODO(crbug.com/40511880): the redirect chain is not constructed the same
     // way as desktop so this part needs to be revised.
     redirects.push_back(original_url);
     redirects.push_back(url);
@@ -155,7 +155,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
                                            : std::nullopt,
-      // TODO(crbug.com/1475717): due to WebKit constraints, iOS does not
+      // TODO(crbug.com/40279742): due to WebKit constraints, iOS does not
       // support triple-key partitioning. Once supported, we need to populate
       // `top_level_url` with the correct value. Until then, :visited history on
       // iOS is unpartitioned.
@@ -230,7 +230,7 @@ void HistoryTabHelper::DidFinishNavigation(
     return;
   }
 
-  // TODO(crbug.com/931841): Remove GetLastCommittedItem nil check once
+  // TODO(crbug.com/41441240): Remove GetLastCommittedItem nil check once
   // HasComitted has been fixed.
   if (!navigation_context->HasCommitted() ||
       !web_state_->GetNavigationManager()->GetLastCommittedItem()) {
@@ -243,8 +243,8 @@ void HistoryTabHelper::DidFinishNavigation(
   DCHECK(!last_committed_item->GetTimestamp().is_null());
 
   // Do not update the history database for back/forward navigations.
-  // TODO(crbug.com/661667): on iOS the navigation is not currently tagged with
-  // a ui::PAGE_TRANSITION_FORWARD_BACK transition.
+  // TODO(crbug.com/40491761): on iOS the navigation is not currently tagged
+  // with a ui::PAGE_TRANSITION_FORWARD_BACK transition.
   const ui::PageTransition transition =
       last_committed_item->GetTransitionType();
   if (transition & ui::PAGE_TRANSITION_FORWARD_BACK) {
@@ -333,13 +333,14 @@ void HistoryTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 history::HistoryService* HistoryTabHelper::GetHistoryService() {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  if (browser_state->IsOffTheRecord())
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
+  if (profile->IsOffTheRecord()) {
     return nullptr;
+  }
 
-  return ios::HistoryServiceFactory::GetForBrowserState(
-      browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+  return ios::HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::IMPLICIT_ACCESS);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(HistoryTabHelper)

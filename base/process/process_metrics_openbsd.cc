@@ -10,9 +10,32 @@
 #include <sys/sysctl.h>
 
 #include "base/memory/ptr_util.h"
-#include "base/process/process_metrics_iocounters.h"
+#include "base/types/expected.h"
 
 namespace base {
+
+namespace {
+
+base::expected<int, ProcessCPUUsageError> GetProcessCPU(pid_t pid) {
+  struct kinfo_proc info;
+  size_t length;
+  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid,
+                sizeof(struct kinfo_proc), 0 };
+
+  if (sysctl(mib, std::size(mib), NULL, &length, NULL, 0) < 0) {
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
+  }
+
+  mib[5] = (length / sizeof(struct kinfo_proc));
+
+  if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0) {
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
+  }
+
+  return base::ok(info.p_pctcpu);
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
@@ -20,47 +43,28 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
-bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  return false;
-}
-
-static int GetProcessCPU(pid_t pid) {
-  struct kinfo_proc info;
-  size_t length;
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, pid,
-                sizeof(struct kinfo_proc), 0 };
-
-  if (sysctl(mib, std::size(mib), NULL, &length, NULL, 0) < 0)
-    return -1;
-
-  mib[5] = (length / sizeof(struct kinfo_proc));
-
-  if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0)
-    return 0;
-
-  return info.p_pctcpu;
-}
-
-double ProcessMetrics::GetPlatformIndependentCPUUsage() {
+base::expected<double, ProcessCPUUsageError>
+ProcessMetrics::GetPlatformIndependentCPUUsage() {
   TimeTicks time = TimeTicks::Now();
 
   if (last_cpu_time_.is_zero()) {
     // First call, just set the last values.
     last_cpu_time_ = time;
-    return 0;
+    return base::ok(0.0);
   }
 
-  int cpu = GetProcessCPU(process_);
+  const base::expected<int, ProcessCPUUsageError> cpu = GetProcessCPU(process_);
+  if (!cpu.has_value()) {
+    return base::unexpected(cpu.error());
+  }
 
   last_cpu_time_ = time;
-  double percentage = static_cast<double>((cpu * 100.0) / FSCALE);
-
-  return percentage;
+  return base::ok(double{cpu.value()} / FSCALE * 100.0);
 }
 
-TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
+base::expected<TimeDelta, ProcessCPUUsageError>
+ProcessMetrics::GetCumulativeCPUUsage() {
   NOTREACHED();
-  return TimeDelta();
 }
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process)

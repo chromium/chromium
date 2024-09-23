@@ -28,7 +28,7 @@ class CONTENT_EXPORT KAnonymityServiceDelegate {
   // the same IDs, as there is no guarantee the implementer deduplicates calls.
   // The callback is called asynchronously when the join has completed or
   // failed. A value of 'true' passed to the callback indicates the join
-  // completed successfully.
+  // completed successfully. The ID is already hashed via SHA256.
   virtual void JoinSet(std::string id,
                        base::OnceCallback<void(bool)> callback) = 0;
 
@@ -38,7 +38,7 @@ class CONTENT_EXPORT KAnonymityServiceDelegate {
   // request is k-anonymous and `false` means that the ID isn't k-anonymous. In
   // the event of an error, an empty vector will be passed to the callback.
   // There is no requirement that a user has joined an ID or has not joined and
-  // ID to perform a query on that ID.
+  // ID to perform a query on that ID. The IDs are already hashed via SHA256.
   virtual void QuerySets(
       std::vector<std::string> ids,
       base::OnceCallback<void(std::vector<bool>)> callback) = 0;

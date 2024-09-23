@@ -9,7 +9,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/auto_reset.h"
+#include "base/functional/bind.h"
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_apple.h"
 #include "base/strings/sys_string_conversions.h"
@@ -20,6 +20,7 @@
 #import "content/app_shim_remote_cocoa/web_menu_runner_mac.h"
 #include "content/common/mac/attributed_string_type_converters.h"
 #import "skia/ext/skia_utils_mac.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #import "ui/base/cocoa/animation_utils.h"
@@ -42,6 +43,9 @@ RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
     : destroy_callback_(std::move(destroy_callback)) {
   cocoa_view_ = [[RenderWidgetHostViewCocoa alloc] initWithHost:host
                                                  withHostHelper:host_helper];
+  // Make the initial view visibility state in sync with that of
+  // `RenderWidgetHostViewMac::is_visible_`, which is false.
+  cocoa_view_.hidden = true;
 
   background_layer_ = [[CALayer alloc] init];
   display_ca_layer_tree_ =
@@ -236,7 +240,7 @@ void RenderWidgetHostNSViewBridge::OnDisplayAdded(const display::Display&) {
   [cocoa_view_ updateScreenProperties];
 }
 
-void RenderWidgetHostNSViewBridge::OnDisplayRemoved(const display::Display&) {
+void RenderWidgetHostNSViewBridge::OnDisplaysRemoved(const display::Displays&) {
   [cocoa_view_ updateScreenProperties];
 }
 
@@ -305,8 +309,32 @@ void RenderWidgetHostNSViewBridge::ShowSharingServicePicker(
     const std::string& url,
     const std::vector<std::string>& file_paths,
     ShowSharingServicePickerCallback callback) {
-  ShowSharingServicePickerForView(cocoa_view_, title, text, url, file_paths,
-                                  std::move(callback));
+  NSString* ns_title = base::SysUTF8ToNSString(title);
+  NSString* ns_url = base::SysUTF8ToNSString(url);
+  NSString* ns_text = base::SysUTF8ToNSString(text);
+
+  NSMutableArray* items = [@[ ns_title, ns_url, ns_text ] mutableCopy];
+
+  for (const auto& file_path : file_paths) {
+    NSString* ns_file_path = base::SysUTF8ToNSString(file_path);
+    NSURL* file_url = [NSURL fileURLWithPath:ns_file_path];
+    [items addObject:file_url];
+  }
+
+  sharing_service_picker_ = [[SharingServicePicker alloc]
+      initWithItems:items
+           callback:base::BindOnce(
+                        &RenderWidgetHostNSViewBridge::OnSharingServiceInvoked,
+                        weak_factory_.GetWeakPtr(), std::move(callback))
+               view:cocoa_view_];
+  [sharing_service_picker_ show];
+}
+
+void RenderWidgetHostNSViewBridge::OnSharingServiceInvoked(
+    ShowSharingServicePickerCallback callback,
+    blink::mojom::ShareError error) {
+  std::move(callback).Run(error);
+  sharing_service_picker_ = nil;
 }
 
 void RenderWidgetHostNSViewBridge::Destroy() {
@@ -375,9 +403,10 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
   }
 
   // Check if the underlying native window is headless and if so, return early
-  // to avoid showing the popup menu.
+  // to avoid showing the popup menu. In content_shell, the window is not a
+  // `NativeWidgetMacNSWindow`, so this doesn't use a strict cast.
   NativeWidgetMacNSWindow* ns_window =
-      base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(cocoa_view_.window);
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>(cocoa_view_.window);
   if (ns_window && ns_window.isHeadless) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -399,7 +428,14 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
                               rightAligned:menu->right_aligned];
 
   {
-    base::AutoReset<bool> running(&showing_popup_menu_, true);
+    // We can't use base::AutoReset to set and reset `showing_popup_menu_` as
+    // `this` might be destroyed by the time showing the menu finishes.
+    showing_popup_menu_ = true;
+    absl::Cleanup running([weak_self]() {
+      if (weak_self) {
+        weak_self->showing_popup_menu_ = false;
+      }
+    });
 
     PopupMenuRunner mojo_host(std::move(menu->receiver), runner);
 

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
+
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 
 namespace content {
@@ -24,54 +26,58 @@ void MockDirectManipulationContent::SetContentTransform(float scale,
   transforms_[5] = scroll_y;
 }
 
+UNSAFE_BUFFER_USAGE
+// Safety: This is a mock for a Win32 API[1] and the method signature cannot be
+// changed to take a span.
+// [1]https://learn.microsoft.com/en-us/windows/win32/api/directmanipulation/nf-directmanipulation-idirectmanipulationcontent-getcontenttransform
 HRESULT MockDirectManipulationContent::GetContentTransform(float* transforms,
                                                            DWORD point_count) {
   DCHECK_EQ(point_count, transforms_.size());
 
   for (size_t i = 0; i < transforms_.size(); ++i)
-    transforms[i] = transforms_[i];
+    UNSAFE_BUFFERS(transforms[i]) = transforms_[i];
   return S_OK;
 }
 
 // Other Overrides
 HRESULT MockDirectManipulationContent::GetContentRect(RECT* contentSize) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT
 MockDirectManipulationContent::SetContentRect(const RECT* contentSize) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT MockDirectManipulationContent::GetViewport(REFIID riid, void** object) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT MockDirectManipulationContent::GetTag(REFIID riid,
                                               void** object,
                                               UINT32* id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT MockDirectManipulationContent::SetTag(IUnknown* object, UINT32 id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT MockDirectManipulationContent::GetOutputTransform(float* matrix,
                                                           DWORD point_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 
 HRESULT
 MockDirectManipulationContent::SyncContentTransform(const float* matrix,
                                                     DWORD point_count) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 

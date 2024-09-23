@@ -99,6 +99,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   void MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override;
 
   // media_message_center::MediaNotificationItem:
   void SetView(media_message_center::MediaNotificationView* view) override;
@@ -138,6 +140,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   bool frozen() const { return frozen_; }
 
+  std::optional<std::string> device_name() const { return device_name_; }
+
   // Returns nullptr if `remote_playback_disabled` is true in `session_info_` or
   // the media duration is too short.
   media_session::mojom::RemotePlaybackMetadataPtr GetRemotePlaybackMetadata()
@@ -151,6 +155,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
                            GetSessionMetadata);
+#if !BUILDFLAG(IS_CHROMEOS)
+  FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
+                           GetSessionMetadataForUpdatedUI);
+#endif
   FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
                            GetMediaSessionActions);
   FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
@@ -172,11 +180,18 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   bool HasArtwork() const;
 
+  // Returns true if there's an image at the chapter `index`.
+  bool HasChapterArtwork(int index) const;
+
   void OnFreezeTimerFired();
 
   void MaybeHideOrShowNotification();
 
   void UpdateViewCommon();
+
+  // Returns true if we're currently frozen and the frozen view contains
+  // non-null artwork at any chapter index.
+  bool FrozenWithChapterArtwork();
 
   const raw_ptr<Delegate> delegate_;
 
@@ -219,6 +234,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   std::optional<gfx::ImageSkia> session_favicon_;
 
+  // This map carries the index as the key and the image at this chapter index
+  // as the value.
+  base::flat_map<int, gfx::ImageSkia> chapter_artwork_;
+
   // True if the metadata needs to be updated on |view_|. Used to prevent
   // updating |view_|'s metadata twice on a single change.
   bool view_needs_metadata_update_ = false;
@@ -239,6 +258,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   // artwork.
   bool frozen_with_artwork_ = false;
 
+  // The value is true if we're currently frozen and the frozen view contains
+  // non-null artwork at the chapter index.
+  base::flat_map<int, bool> frozen_with_chapter_artwork_;
+
   // The timer that will notify the controller to destroy this item after it
   // has been frozen for a certain period of time.
   base::OneShotTimer freeze_timer_;
@@ -254,6 +277,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   mojo::Receiver<media_session::mojom::MediaControllerImageObserver>
       favicon_observer_receiver_{this};
+
+  mojo::Receiver<media_session::mojom::MediaControllerImageObserver>
+      chapter_observer_receiver_{this};
 
   base::WeakPtrFactory<MediaSessionNotificationItem> weak_ptr_factory_{this};
 };

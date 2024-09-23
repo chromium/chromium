@@ -186,8 +186,8 @@ Or run for example the Wayland platform:
 ```
 
 It is also possible to choose an Ozone backend via the chrome://flags/#ozone-platform-hint.
-The following options are available - Default, X11, Wayland, and Auto. The default one is
-"X11". "Auto" selects Wayland if possible, X11 otherwise.
+The following options are available - Default, X11, Wayland, and Auto. "Auto"
+selects Wayland if possible, X11 otherwise.
 
 
 ### GN Configuration notes

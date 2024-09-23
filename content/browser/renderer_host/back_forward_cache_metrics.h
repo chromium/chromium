@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -44,91 +45,22 @@ struct BackForwardCacheCanStoreDocumentResultWithTree;
 class BackForwardCacheMetrics
     : public base::RefCounted<BackForwardCacheMetrics> {
  public:
-  // Please keep in sync with BackForwardCacheNotRestoredReason in
-  // tools/metrics/histograms/enums.xml. These values should not be renumbered.
-  enum class NotRestoredReason : uint8_t {
-    kMinValue = 0,
-    kNotPrimaryMainFrame = 0,
-    // BackForwardCache is disabled due to low memory device, base::Feature or
-    // command line. Note that the more specific NotRestoredReasons
-    // kBackForwardCacheDisabledByLowMemory and
-    // kBackForwardCacheDisabledByCommandLine will also be set as other reasons
-    // along with this when appropriate.
-    kBackForwardCacheDisabled = 1,
-    kRelatedActiveContentsExist = 2,
-    kHTTPStatusNotOK = 3,
-    kSchemeNotHTTPOrHTTPS = 4,
-    // DOMContentLoaded event has not yet fired. This means that deferred
-    // scripts have not run yet and pagehide/pageshow event handlers may not be
-    // installed yet.
-    kLoading = 5,
-    kWasGrantedMediaAccess = 6,
-    kBlocklistedFeatures = 7,
-    kDisableForRenderFrameHostCalled = 8,
-    kDomainNotAllowed = 9,
-    kHTTPMethodNotGET = 10,
-    kSubframeIsNavigating = 11,
-    kTimeout = 12,
-    kCacheLimit = 13,
-    kJavaScriptExecution = 14,
-    kRendererProcessKilled = 15,
-    kRendererProcessCrashed = 16,
-    // 17: Dialogs are no longer a reason to exclude from BackForwardCache
-    // 18: GrantedMediaStreamAccess is no longer blocking.
-    // 19: kSchedulerTrackedFeatureUsed is no longer used.
-    kConflictingBrowsingInstance = 20,
-    kCacheFlushed = 21,
-    kServiceWorkerVersionActivation = 22,
-    kSessionRestored = 23,
-    kUnknown = 24,
-    kServiceWorkerPostMessage = 25,
-    kEnteredBackForwardCacheBeforeServiceWorkerHostAdded = 26,
-    // 27: kRenderFrameHostReused_SameSite was removed.
-    // 28: kRenderFrameHostReused_CrossSite was removed.
-    kNotMostRecentNavigationEntry = 29,
-    kServiceWorkerClaim = 30,
-    kIgnoreEventAndEvict = 31,
-    kHaveInnerContents = 32,
-    kTimeoutPuttingInCache = 33,
-    // BackForwardCache is disabled due to low memory device.
-    kBackForwardCacheDisabledByLowMemory = 34,
-    // BackForwardCache is disabled due to command-line switch (may include
-    // cases where the embedder disabled it due to, e.g., enterprise policy).
-    kBackForwardCacheDisabledByCommandLine = 35,
-    // 36: kFrameTreeNodeStateReset was removed.
-    // 37: kNetworkRequestDatapipeDrained = 37 was removed and broken into 43
-    // and 44.
-    kNetworkRequestRedirected = 38,
-    kNetworkRequestTimeout = 39,
-    kNetworkExceedsBufferLimit = 40,
-    kNavigationCancelledWhileRestoring = 41,
-    // 42: kBackForwardCacheDisabledForPrerender was removed and merged into 0.
-    kUserAgentOverrideDiffers = 43,
-    // 44: kNetworkRequestDatapipeDrainedAsDatapipe was removed now that
-    // ScriptStreamer is supported.
-    kNetworkRequestDatapipeDrainedAsBytesConsumer = 45,
-    kForegroundCacheLimit = 46,
-    kBrowsingInstanceNotSwapped = 47,
-    kBackForwardCacheDisabledForDelegate = 48,
-    // 49: kOptInUnloadHeaderNotPresent was removed as the experiments ended.
-    kUnloadHandlerExistsInMainFrame = 50,
-    kUnloadHandlerExistsInSubFrame = 51,
-    kServiceWorkerUnregistration = 52,
-    kCacheControlNoStore = 53,
-    kCacheControlNoStoreCookieModified = 54,
-    kCacheControlNoStoreHTTPOnlyCookieModified = 55,
-    kNoResponseHead = 56,
-    // 57: kActivationNavigationsDisallowedForBug1234857 was fixed.
-    kErrorDocument = 58,
-    kFencedFramesEmbedder = 59,
-    kCookieDisabled = 60,
-    kHTTPAuthRequired = 61,
-    kCookieFlushed = 62,
-    kMaxValue = kCookieFlushed,
-  };
+  using NotRestoredReason = BackForwardCache::NotRestoredReason;
+  using NotRestoredReasons = base::EnumSet<NotRestoredReason,
+                                           NotRestoredReason::kMinValue,
+                                           NotRestoredReason::kMaxValue>;
 
-  using NotRestoredReasons =
-      std::bitset<static_cast<size_t>(NotRestoredReason::kMaxValue) + 1ul>;
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(HistoryNavigationDirection)
+  enum class HistoryNavigationDirection {
+    kBack = 0,
+    kForward = 1,
+    kSameEntry = 2,
+    kMaxValue = kSameEntry,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:HistoryNavigationDirection)
 
   // Please keep in sync with BackForwardCacheHistoryNavigationOutcome in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
@@ -347,7 +279,7 @@ class BackForwardCacheMetrics
   // Whether any document within the page that this BackForwardCacheMetrics
   // associated with has any form data. This state is not persisted and only
   // set in Android Custom tabs for now.
-  // TODO(crbug.com/1403292): Set this boolean for all platforms or gated with
+  // TODO(crbug.com/40251494): Set this boolean for all platforms or gated with
   // android build flag.
   bool had_form_data_associated_ = false;
 

@@ -52,7 +52,7 @@ base::FilePath ConvertDrivePathToAbsoluteFilePath(
     if (base::FilePath("/").AppendRelativePath(drive_path, &absolute_file_path))
       return absolute_file_path;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::FilePath();
 }
 
@@ -172,9 +172,8 @@ void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (!features::IsHoldingSpacePredictabilityEnabled()) {
-      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-        requirements.must_be_newer_than = kMaxFileAge;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
+      requirements.must_be_newer_than = kMaxFileAge;
     }
     ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }
@@ -331,9 +330,8 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (!features::IsHoldingSpacePredictabilityEnabled()) {
-      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-        requirements.must_be_newer_than = kMaxFileAge;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
+      requirements.must_be_newer_than = kMaxFileAge;
     }
     ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }
@@ -377,9 +375,8 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
       continue;
     }
     holding_space_util::ValidityRequirement requirements;
-    if (!features::IsHoldingSpacePredictabilityEnabled()) {
-      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-        requirements.must_be_newer_than = kMaxFileAge;
+    if (item->type() != HoldingSpaceItem::Type::kPinnedFile) {
+      requirements.must_be_newer_than = kMaxFileAge;
     }
     ScheduleFilePathValidityCheck({item->file().file_path, requirements});
   }
@@ -420,8 +417,7 @@ void HoldingSpaceFileSystemDelegate::OnFileCreatedFromShowSaveFilePicker(
   holding_space_metrics::RecordFileCreatedFromShowSaveFilePicker(
       file_picker_binding_context, url.path());
 
-  if (features::IsHoldingSpacePhotoshopWebIntegrationEnabled() &&
-      file_picker_binding_context.DomainIs("photoshop.adobe.com")) {
+  if (file_picker_binding_context.DomainIs("photoshop.adobe.com")) {
     service()->AddItemOfType(HoldingSpaceItem::Type::kPhotoshopWeb, url.path());
   }
 }
@@ -487,7 +483,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
     if (src.IsParent(item->file().file_path)) {
       base::FilePath target_path(dst);
       if (!src.AppendRelativePath(item->file().file_path, &target_path)) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
       items_to_move.push_back(std::make_pair(item->id(), target_path));

@@ -303,13 +303,28 @@ Ultimately this process results in parsing significantly simpler grammars. (PNG
 > language and still have such high performance, that'd be ideal. But that's
 > unlikely to happen soon.)
 
+### Exception: Protobuf
+
 While less preferable to Mojo, we also similarly trust Protobuf for
 deserializing messages at high privilege from potentially untrustworthy senders.
 For example, Protobufs are sometimes embedded in Mojo IPC messages. It is
 always preferable to use a Mojo message where possible, though sometimes
-external constraints require the use of Protobuf. Note that this only applies to
-Protobuf as a container format; the data contained within a Protobuf must be
-handled according to this rule as well.
+external constraints require the use of Protobuf.
+
+Protobuf's threat model does not include parsing a protobuf from shared
+memory. Always copy the proto buffer bytes from untrustworthy shared
+memory regions before deserializing to a Message.
+
+If you must pass protobuf bytes over mojo use
+[mojo_base::ProtoWrapper](https://chromium.googlesource.com/chromium/src/+/main/mojo/public/cpp/base/proto_wrapper.h)
+as this provides limited type safety for the top-level protobuf message and
+ensures copies are taken before deserializing.
+
+Note that this exception only applies to Protobuf as a container format;
+complex data contained within a Protobuf must be handled according to this
+rule as well.
+
+### Exception: RE2
 
 As another special case, we trust the
 [RE2](https://cs.chromium.org/chromium/src/third_party/re2/README.chromium)

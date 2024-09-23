@@ -4,13 +4,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_delegate.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_callback.h"
-#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
-#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 
 namespace blink {
 

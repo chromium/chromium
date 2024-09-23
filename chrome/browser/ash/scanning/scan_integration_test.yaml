@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "ScanIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "michaelcheco@google.com"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: True
+criteria: |
+  Perform a scan and verify the expected output using a golden file
+cases:
+  - id: "ScanWithDefaultSettings"
+    tags: ["crosier:crosierdemosuite", "crosier:cq", "group:hw_agnostic", "informational"]
+...

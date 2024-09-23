@@ -13,9 +13,9 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_frame_impl.h"
-#import "ios/web/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
@@ -149,7 +149,7 @@ std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
 CGRect GetBoundingRectOfElement(web::WebState* web_state,
                                 ElementSelector* selector) {
 #if !TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/1013714): Replace delay with improved JavaScript.
+  // TODO(crbug.com/40652803): Replace delay with improved JavaScript.
   // As of iOS 13.1, devices need additional time to stabalize the page before
   // getting the element location. Without this wait, the element's bounding
   // rect will be incorrect.

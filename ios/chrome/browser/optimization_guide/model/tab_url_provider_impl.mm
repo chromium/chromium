@@ -28,7 +28,8 @@ const std::vector<GURL> TabUrlProviderImpl::GetUrlsOfActiveTabs(
 
   // Get all URLs from regular tabs.
   std::map<base::Time, GURL> urls;
-  for (Browser* browser : browser_list_->AllRegularBrowsers()) {
+  for (Browser* browser : browser_list_->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndInactive)) {
     WebStateList* web_state_list = browser->GetWebStateList();
     DCHECK(web_state_list);
     for (int i = 0; i < web_state_list->count(); ++i) {

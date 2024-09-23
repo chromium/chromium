@@ -4,9 +4,10 @@
 
 #include "chrome/updater/win/installer/msi_custom_action.h"
 
+#include <windows.h>
+
 #include <msi.h>
 #include <msiquery.h>
-#include <windows.h>
 
 #include <optional>
 #include <string>
@@ -114,7 +115,7 @@ std::optional<std::wstring> GetLastInstallerResultUIString(
                  key->ReadValueDW(kRegValueLastInstallerResult,
                                   &last_installer_result) == ERROR_SUCCESS &&
                  last_installer_result ==
-                     static_cast<DWORD>(InstallerResult::kCustomError) &&
+                     static_cast<DWORD>(InstallerApiResult::kCustomError) &&
                  key->ReadValue(kRegValueLastInstallerResultUIString, &val) ==
                      ERROR_SUCCESS &&
                  !val.empty()

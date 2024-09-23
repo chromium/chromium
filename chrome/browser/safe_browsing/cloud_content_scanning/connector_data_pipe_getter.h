@@ -6,14 +6,17 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CONNECTOR_DATA_PIPE_GETTER_H_
 
 #include <stdint.h>
+
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/time/time.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
@@ -54,6 +57,14 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
     size_t length() const { return length_; }
     bool IsValid() const { return data_ != nullptr; }
     const uint8_t* data() const { return data_; }
+    base::span<const uint8_t> bytes() const {
+      // SAFETY: Class implementation maintains the invariant that `data_`
+      // points to `length_` bytes of data.
+      // TODO(https://crbug.com/40284755): Consider somehow reusing
+      // `base::MemoryMappedFile::bytes` instead having to reimplement it
+      // for the `#if BUILDFLAG(IS_POSIX)` fork of the class.
+      return UNSAFE_BUFFERS(base::span(data_, length_));
+    }
 
    private:
     bool DoInitialize();
@@ -154,7 +165,7 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   bool WriteMultipartRequestFormat(const std::string& str, int64_t offset);
   bool WriteFileData();
   bool WritePageData();
-  bool Write(const char* data, int64_t full_size, int64_t offset);
+  bool Write(base::span<const uint8_t> data);
   // Checks if `write_position_` is within the expected range.
   bool IsWritePositionInRange(int64_t range_start, int64_t range_end);
 
@@ -177,6 +188,8 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
 
   // Indicates if this data pipe streams a pipe. If false, it streams a page.
   bool file_data_pipe_;
+
+  std::unique_ptr<enterprise_obfuscation::DownloadObfuscator> deobfuscator_;
 
   mojo::ScopedDataPipeProducerHandle pipe_;
   std::unique_ptr<mojo::SimpleWatcher> watcher_;

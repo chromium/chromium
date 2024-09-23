@@ -18,18 +18,28 @@ namespace policy_test_utils {
 // CHROME policy namespace.
 std::string GetValueForPlatformPolicy(const std::string& policy_key);
 
-// Sets the value of the policy with the `policy_key` key to the given boolean
-// value.
+// Sets the boolean policy corresponding to `policy_key` to the given boolean
+// value, and removes previous policies.
 void SetPolicy(bool enabled, const std::string& policy_key);
+// Merges the boolean policy corresponding to `policy_key` to the existing
+// policies with its value sets to `enabled`.
+void MergePolicy(bool enabled, const std::string& policy_key);
 
-// Sets the value of the policy with the `policy_key` key to the given integer
-// value.
+// Sets the integer policy corresponding to `policy_key` to the given integer
+// value, and removes previous policies.
 void SetPolicy(int value, const std::string& policy_key);
+// Merges the integer policy corresponding to `policy_key` to the existing
+// policies with its value sets to `value`.
+void MergePolicy(int value, const std::string& policy_key);
 
-// Sets the value of the policy with the `policy_key` key to the given string
-// value.
+// Sets string policy corresponding to `policy_key` to the given string
+// value, and removes previous policies.
 void SetPolicyWithStringValue(const std::string& value,
                               const std::string& policy_key);
+// Merges the string policy corresponding to `policy_key` to the existing
+// policies with its value sets to `value`.
+void MergePolicyWithStringValue(const std::string& value,
+                                const std::string& policy_key);
 
 // Sets the value of the policy with the `policy_key` key to the given value.
 // The value must be serialized as a JSON string.

@@ -6,9 +6,10 @@
 #define GPU_CONFIG_VULKAN_INFO_H_
 
 #include <vulkan/vulkan_core.h>
+
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/extension_set.h"
 
@@ -49,7 +50,7 @@ class GPU_EXPORT VulkanInfo {
 
   void SetEnabledInstanceExtensions(const std::vector<const char*>& extensions);
   void SetEnabledInstanceExtensions(
-      const std::vector<base::StringPiece>& extensions);
+      const std::vector<std::string_view>& extensions);
 
   uint32_t api_version = VK_MAKE_VERSION(1, 0, 0);
   uint32_t used_api_version = VK_MAKE_VERSION(1, 0, 0);

@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "base/memory/raw_ptr.h"
 
 #include <cstdint>
 #include <iterator>
 #include <string>
 
+#include "base/functional/overloaded.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,30 +21,39 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/security_interstitials/core/pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -115,14 +125,16 @@ void VerifyFormGroupValues(const FormGroup& form_group,
   }
 }
 
-std::unique_ptr<PrefService> PrefServiceForTesting() {
-  scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
-      new user_prefs::PrefRegistrySyncable());
+std::unique_ptr<AutofillTestingPrefService> PrefServiceForTesting() {
+  auto pref_service = std::make_unique<AutofillTestingPrefService>();
+  user_prefs::PrefRegistrySyncable* registry = pref_service->registry();
+  signin::IdentityManager::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   registry->RegisterBooleanPref(::prefs::kMixedFormsWarningsEnabled, true);
   registry->RegisterStringPref(prefs::kAutofillStatesDataDir, "");
-  return PrefServiceForTesting(registry.get());
+  prefs::RegisterProfilePrefs(registry);
+  return pref_service;
 }
 
 std::unique_ptr<PrefService> PrefServiceForTesting(
@@ -136,41 +148,40 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 
 [[nodiscard]] FormData CreateTestAddressFormData(const char* unique_id) {
   FormData form;
-  form.host_frame = MakeLocalFrameToken();
-  form.renderer_id = MakeFormRendererId();
-  form.name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
-  form.button_titles = {std::make_pair(
-      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)};
-  form.url = GURL("https://myform.com/form.html");
-  form.action = GURL("https://myform.com/submit.html");
-  form.is_action_empty = true;
-  form.main_frame_origin =
-      url::Origin::Create(GURL("https://myform_root.com/form.html"));
-  form.submission_event =
-      mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
+  form.set_host_frame(MakeLocalFrameToken());
+  form.set_renderer_id(MakeFormRendererId());
+  form.set_name(u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : ""));
+  form.set_button_titles({std::make_pair(
+      u"Submit", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)});
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  form.set_is_action_empty(true);
+  form.set_main_frame_origin(
+      url::Origin::Create(GURL("https://myform_root.com/form.html")));
+  form.set_submission_event(
+      mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION);
 
-  form.fields.push_back(CreateTestFormField("First Name", "firstname", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Middle Name", "middlename", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Last Name", "lastname", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Address Line 1", "addr1", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Address Line 2", "addr2", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(
-      CreateTestFormField("City", "city", "", FormControlType::kInputText));
-  form.fields.push_back(
-      CreateTestFormField("State", "state", "", FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Postal Code", "zipcode", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Country", "country", "",
-                                            FormControlType::kInputText));
-  form.fields.push_back(CreateTestFormField("Phone Number", "phonenumber", "",
-                                            FormControlType::kInputTelephone));
-  form.fields.push_back(
-      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail));
+  form.set_fields(
+      {CreateTestFormField("First Name", "firstname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Middle Name", "middlename", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Last Name", "lastname", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address Line 1", "addr1", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address Line 2", "addr2", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("City", "city", "", FormControlType::kInputText),
+       CreateTestFormField("State", "state", "", FormControlType::kInputText),
+       CreateTestFormField("Postal Code", "zipcode", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Country", "country", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Phone Number", "phonenumber", "",
+                           FormControlType::kInputTelephone),
+       CreateTestFormField("Email", "email", "",
+                           FormControlType::kInputEmail)});
   return form;
 }
 
@@ -193,19 +204,19 @@ AutofillProfile GetFullValidProfileForCanada() {
   return profile;
 }
 
-AutofillProfile GetFullProfile() {
-  AutofillProfile profile(AddressCountryCode("US"));
+AutofillProfile GetFullProfile(AddressCountryCode country_code) {
+  AutofillProfile profile(country_code);
   SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
                  "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
-                 "91111", "US", "16502111111");
+                 "91111", country_code->c_str(), "16502111111");
   return profile;
 }
 
-AutofillProfile GetFullProfile2() {
-  AutofillProfile profile(AddressCountryCode("US"));
+AutofillProfile GetFullProfile2(AddressCountryCode country_code) {
+  AutofillProfile profile(country_code);
   SetProfileInfo(&profile, "Jane", "A.", "Smith", "jsmith@example.com", "ACME",
-                 "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
-                 "13105557889");
+                 "123 Main Street", "Unit 1", "Greensdale", "MI", "48838",
+                 country_code->c_str(), "13105557889");
   return profile;
 }
 
@@ -234,19 +245,20 @@ AutofillProfile GetIncompleteProfile2() {
 
 void SetProfileCategory(
     AutofillProfile& profile,
-    autofill_metrics::AutofillProfileSourceCategory category) {
+    autofill_metrics::AutofillProfileRecordTypeCategory category) {
   switch (category) {
-    case autofill_metrics::AutofillProfileSourceCategory::kLocalOrSyncable:
-      profile.set_source_for_testing(AutofillProfile::Source::kLocalOrSyncable);
+    case autofill_metrics::AutofillProfileRecordTypeCategory::kLocalOrSyncable:
+      test_api(profile).set_record_type(
+          AutofillProfile::RecordType::kLocalOrSyncable);
       break;
-    case autofill_metrics::AutofillProfileSourceCategory::kAccountChrome:
-    case autofill_metrics::AutofillProfileSourceCategory::kAccountNonChrome:
-      profile.set_source_for_testing(AutofillProfile::Source::kAccount);
+    case autofill_metrics::AutofillProfileRecordTypeCategory::kAccountChrome:
+    case autofill_metrics::AutofillProfileRecordTypeCategory::kAccountNonChrome:
+      test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
       // Any value that is not kInitialCreatorOrModifierChrome works.
       const int kInitialCreatorOrModifierNonChrome =
           AutofillProfile::kInitialCreatorOrModifierChrome + 1;
       profile.set_initial_creator_id(
-          category == autofill_metrics::AutofillProfileSourceCategory::
+          category == autofill_metrics::AutofillProfileRecordTypeCategory::
                           kAccountChrome
               ? AutofillProfile::kInitialCreatorOrModifierChrome
               : kInitialCreatorOrModifierNonChrome);
@@ -279,7 +291,6 @@ Iban GetServerIban() {
   Iban iban(Iban::InstrumentId(1234567));
   iban.set_prefix(u"FR76");
   iban.set_suffix(u"0189");
-  iban.set_length(27);
   iban.set_nickname(u"My doctor's IBAN");
   return iban;
 }
@@ -288,7 +299,6 @@ Iban GetServerIban2() {
   Iban iban(Iban::InstrumentId(1234568));
   iban.set_prefix(u"BE71");
   iban.set_suffix(u"8676");
-  iban.set_length(16);
   iban.set_nickname(u"My sister's IBAN");
   return iban;
 }
@@ -297,7 +307,6 @@ Iban GetServerIban3() {
   Iban iban(Iban::InstrumentId(1234569));
   iban.set_prefix(u"DE91");
   iban.set_suffix(u"6789");
-  iban.set_length(22);
   iban.set_nickname(u"My IBAN");
   return iban;
 }
@@ -431,12 +440,12 @@ CreditCard GetVirtualCard() {
   credit_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   credit_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
-  test_api(credit_card).set_network_for_virtual_card(kMasterCard);
+  test_api(credit_card).set_network_for_card(kMasterCard);
   return credit_card;
 }
 
 CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
-  static const char* const kNetworks[] = {
+  constexpr static std::array<std::string_view, 10> kNetworks = {
       kAmericanExpressCard,
       kDinersCard,
       kDiscoverCard,
@@ -448,7 +457,6 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
       kUnionPay,
       kVisaCard,
   };
-  constexpr size_t kNumNetworks = sizeof(kNetworks) / sizeof(kNetworks[0]);
   base::Time::Exploded now;
   AutofillClock::Now().LocalExplode(&now);
 
@@ -465,7 +473,7 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
       base::StringPrintf("%d", now.year + base::RandInt(1, 4)).c_str(), "1");
   if (record_type == CreditCard::RecordType::kMaskedServerCard) {
     credit_card.SetNetworkForMaskedCard(
-        kNetworks[base::RandInt(0, kNumNetworks - 1)]);
+        kNetworks[base::RandInt(0, kNetworks.size() - 1)]);
   }
 
   return credit_card;
@@ -603,51 +611,86 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
         challenge_option.id =
             CardUnmaskChallengeOption::ChallengeOptionId("456");
         challenge_option.type = type;
-        challenge_option.url_to_open = GURL("https://www.example.com");
+        Vcn3dsChallengeOptionMetadata metadata;
+        metadata.url_to_open = GURL("https://www.example.com");
+        metadata.success_query_param_name = "token";
+        metadata.failure_query_param_name = "failure";
+        challenge_option.vcn_3ds_metadata = std::move(metadata);
         challenge_options.emplace_back(std::move(challenge_option));
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
   return challenge_options;
 }
 
-std::unique_ptr<CreditCardFlatRateBenefit>
-GetActiveCreditCardFlatRateBenefit() {
-  return std::make_unique<CreditCardFlatRateBenefit>(
-      CreditCardBenefit::BenefitId("id1"),
-      CreditCardBenefit::LinkedCardInstrumentId(1234),
+CreditCardFlatRateBenefit GetActiveCreditCardFlatRateBenefit() {
+  return CreditCardFlatRateBenefit(
+      CreditCardBenefitBase::BenefitId("id1"),
+      CreditCardBenefitBase::LinkedCardInstrumentId(1234),
       /*benefit_description=*/u"Get 2% cashback on any purchase",
       /*start_time=*/GetArbitraryPastTime(),
       /*expiry_time=*/GetArbitraryFutureTime());
 }
 
-std::unique_ptr<CreditCardCategoryBenefit>
-GetActiveCreditCardCategoryBenefit() {
-  return std::make_unique<CreditCardCategoryBenefit>(
-      CreditCardBenefit::BenefitId("id2"),
-      CreditCardBenefit::LinkedCardInstrumentId(2234),
+CreditCardCategoryBenefit GetActiveCreditCardCategoryBenefit() {
+  return CreditCardCategoryBenefit(
+      CreditCardBenefitBase::BenefitId("id2"),
+      CreditCardBenefitBase::LinkedCardInstrumentId(2234),
       CreditCardCategoryBenefit::BenefitCategory::kSubscription,
       /*benefit_description=*/u"Get 2x points on purchases on this website",
       /*start_time=*/GetArbitraryPastTime(),
       /*expiry_time=*/GetArbitraryFutureTime());
 }
 
-std::unique_ptr<CreditCardMerchantBenefit>
-GetActiveCreditCardMerchantBenefit() {
-  base::flat_set<url::Origin> merchant_domains = {
-      url::Origin::Create(GURL("http://www.example.com")),
-      url::Origin::Create(GURL("http://www.example3.com"))};
-  return std::make_unique<CreditCardMerchantBenefit>(
-      CreditCardBenefit::BenefitId("id3"),
-      CreditCardBenefit::LinkedCardInstrumentId(3234),
+CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit() {
+  return CreditCardMerchantBenefit(
+      CreditCardBenefitBase::BenefitId("id3"),
+      CreditCardBenefitBase::LinkedCardInstrumentId(3234),
       /*benefit_description=*/u"Get 2x points on purchases on this website",
-      merchant_domains,
+      GetOriginsForMerchantBenefit(),
       /*start_time=*/GetArbitraryPastTime(),
       /*expiry_time=*/GetArbitraryFutureTime());
+}
+
+base::flat_set<url::Origin> GetOriginsForMerchantBenefit() {
+  return {url::Origin::Create(GURL("http://www.example.com")),
+          url::Origin::Create(GURL("http://www.example3.com"))};
+}
+
+void SetUpCreditCardAndBenefitData(
+    CreditCard& card,
+    const CreditCardBenefit& benefit,
+    const std::string& issuer_id,
+    TestPersonalDataManager& personal_data,
+    AutofillOptimizationGuide* optimization_guide) {
+  absl::visit(
+      base::Overloaded{
+          [&card](const CreditCardFlatRateBenefit& flat_rate_benefit) {
+            card.set_instrument_id(
+                *flat_rate_benefit.linked_card_instrument_id());
+          },
+          [&card](const CreditCardMerchantBenefit& merchant_benefit) {
+            card.set_instrument_id(
+                *merchant_benefit.linked_card_instrument_id());
+          },
+          [&card, &optimization_guide](
+              const CreditCardCategoryBenefit& category_benefit) {
+            card.set_instrument_id(
+                *category_benefit.linked_card_instrument_id());
+            ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                        optimization_guide),
+                    AttemptToGetEligibleCreditCardBenefitCategory)
+                .WillByDefault(testing::Return(
+                    CreditCardCategoryBenefit::BenefitCategory::kSubscription));
+          }},
+      benefit);
+  personal_data.payments_data_manager().AddCreditCardBenefitForTest(benefit);
+  card.set_issuer_id(issuer_id);
+  personal_data.test_payments_data_manager().AddServerCreditCard(card);
 }
 
 void SetProfileInfo(AutofillProfile* profile,
@@ -767,130 +810,61 @@ CreditCard CreateCreditCardWithInfo(const char* name_on_card,
   return credit_card;
 }
 
-void DisableSystemServices(PrefService* prefs) {
-  // Use a mock Keychain rather than the OS one to store credit card data.
-  OSCryptMocker::SetUp();
-}
-
-void ReenableSystemServices() {
-  OSCryptMocker::TearDown();
-}
-
 void SetServerCreditCards(PaymentsAutofillTable* table,
                           const std::vector<CreditCard>& cards) {
-  std::vector<CreditCard> as_masked_cards = cards;
-  for (CreditCard& card : as_masked_cards) {
-    card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-    card.SetNumber(card.LastFourDigits());
-    card.SetNetworkForMaskedCard(card.network());
-    card.set_instrument_id(card.instrument_id());
+  for (const CreditCard& card : cards) {
+    ASSERT_EQ(card.record_type(), CreditCard::RecordType::kMaskedServerCard);
     table->AddServerCvc({card.instrument_id(), card.cvc(),
                          /*last_updated_timestamp=*/AutofillClock::Now()});
   }
-  table->SetServerCreditCards(as_masked_cards);
-
-  for (const CreditCard& card : cards) {
-    if (card.record_type() != CreditCard::RecordType::kFullServerCard) {
-      continue;
-    }
-    ASSERT_TRUE(table->UnmaskServerCreditCard(card, card.number()));
-  }
+  table->SetServerCreditCards(cards);
 }
 
-void InitializePossibleTypesAndValidities(
-    std::vector<FieldTypeSet>& possible_field_types,
-    std::vector<FieldTypeValidityStatesMap>& possible_field_types_validities,
-    const std::vector<FieldType>& possible_types,
-    const std::vector<AutofillDataModel::ValidityState>& validity_states) {
-  possible_field_types.push_back(FieldTypeSet());
-  possible_field_types_validities.push_back(FieldTypeValidityStatesMap());
-
-  if (validity_states.empty()) {
-    for (const auto& possible_type : possible_types) {
-      possible_field_types.back().insert(possible_type);
-      possible_field_types_validities.back()[possible_type].push_back(
-          AutofillProfile::ValidityState::kUnvalidated);
-    }
-    return;
-  }
-
-  ASSERT_FALSE(possible_types.empty());
-  ASSERT_TRUE((possible_types.size() == validity_states.size()) ||
-              (possible_types.size() == 1 && validity_states.size() > 1));
-
-  FieldType possible_type = possible_types[0];
-  for (unsigned i = 0; i < validity_states.size(); ++i) {
-    if (possible_types.size() == validity_states.size()) {
-      possible_type = possible_types[i];
-    }
+void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
+                             const std::vector<FieldType>& possible_types) {
+  possible_field_types.emplace_back();
+  for (const auto& possible_type : possible_types) {
     possible_field_types.back().insert(possible_type);
-    possible_field_types_validities.back()[possible_type].push_back(
-        validity_states[i]);
   }
 }
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     unsigned autofill_type,
-                     unsigned validity_state) {
+                     unsigned autofill_type) {
   field->set_signature(signature);
   field->add_autofill_type(autofill_type);
-
-  auto* type_validities = field->add_autofill_type_validities();
-  type_validities->set_type(autofill_type);
-  type_validities->add_validity(validity_state);
 }
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     const std::vector<unsigned>& autofill_types,
-                     const std::vector<unsigned>& validity_states) {
+                     const std::vector<unsigned>& autofill_types) {
   field->set_signature(signature);
 
   for (unsigned i = 0; i < autofill_types.size(); ++i) {
     field->add_autofill_type(autofill_types[i]);
-
-    auto* type_validities = field->add_autofill_type_validities();
-    type_validities->set_type(autofill_types[i]);
-    if (i < validity_states.size()) {
-      type_validities->add_validity(validity_states[i]);
-    } else {
-      type_validities->add_validity(0);
-    }
   }
-}
-
-void FillUploadField(AutofillUploadContents::Field* field,
-                     unsigned signature,
-                     unsigned autofill_type,
-                     const std::vector<unsigned>& validity_states) {
-  field->set_signature(signature);
-  field->add_autofill_type(autofill_type);
-
-  auto* type_validities = field->add_autofill_type_validities();
-  type_validities->set_type(autofill_type);
-  for (unsigned i = 0; i < validity_states.size(); ++i)
-    type_validities->add_validity(validity_states[i]);
 }
 
 void GenerateTestAutofillPopup(
     AutofillExternalDelegate* autofill_external_delegate) {
   FormData form;
   FormFieldData field;
-  form.host_frame = MakeLocalFrameToken();
-  form.renderer_id = MakeFormRendererId();
-  field.host_frame = MakeLocalFrameToken();
-  field.renderer_id = MakeFieldRendererId();
-  field.is_focusable = true;
-  field.should_autocomplete = true;
+  form.set_host_frame(MakeLocalFrameToken());
+  form.set_renderer_id(MakeFormRendererId());
+  field.set_host_frame(MakeLocalFrameToken());
+  field.set_renderer_id(MakeFieldRendererId());
+  field.set_is_focusable(true);
+  field.set_should_autocomplete(true);
+  field.set_bounds(gfx::RectF(100.f, 100.f));
   autofill_external_delegate->OnQuery(
-      form, field, gfx::RectF(100.f, 100.f),
+      form, field, /*caret_bounds=*/gfx::Rect(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(u"Test suggestion"));
-  autofill_external_delegate->OnSuggestionsReturned(field.global_id(),
-                                                    suggestions);
+  autofill_metrics::SuggestionRankingContext context;
+  autofill_external_delegate->OnSuggestionsReturned(
+      field.global_id(), suggestions, std::move(context));
 }
 
 std::string ObfuscatedCardDigitsAsUTF8(const std::string& str,
@@ -1010,13 +984,23 @@ void AddFieldPredictionsToForm(
   }
 }
 
-Suggestion CreateAutofillSuggestion(PopupItemId popup_item_id,
+Suggestion CreateAutofillSuggestion(SuggestionType type,
                                     const std::u16string& main_text_value,
                                     const Suggestion::Payload& payload) {
   Suggestion suggestion;
-  suggestion.popup_item_id = popup_item_id;
+  suggestion.type = type;
   suggestion.main_text.value = main_text_value;
   suggestion.payload = payload;
+  return suggestion;
+}
+
+Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
+                                    const std::u16string& minor_text_value,
+                                    bool apply_deactivated_style) {
+  Suggestion suggestion;
+  suggestion.main_text.value = main_text_value;
+  suggestion.minor_text.value = minor_text_value;
+  suggestion.apply_deactivated_style = apply_deactivated_style;
   return suggestion;
 }
 
@@ -1025,6 +1009,47 @@ BankAccount CreatePixBankAccount(int64_t instrument_id) {
       instrument_id, u"nickname", GURL("http://www.example.com"), u"bank_name",
       u"account_number", BankAccount::AccountType::kChecking);
   return bank_account;
+}
+
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithBankAccount(
+    int64_t instrument_id) {
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(instrument_id);
+  sync_pb::BankAccountDetails* bank_account =
+      payment_instrument.mutable_bank_account();
+  bank_account->set_bank_name("bank_name");
+  bank_account->set_account_number_suffix("1234");
+  bank_account->set_account_type(
+      sync_pb::BankAccountDetails_AccountType_CHECKING);
+  return payment_instrument;
+}
+
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithIban(
+    int64_t instrument_id) {
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(instrument_id);
+  sync_pb::WalletMaskedIban* iban = payment_instrument.mutable_iban();
+  iban->set_instrument_id("instrument_id");
+  iban->set_prefix("FR76");
+  iban->set_suffix("0189");
+  iban->set_length(27);
+  iban->set_nickname("nickname");
+  return payment_instrument;
+}
+
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
+    int64_t instrument_id) {
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(instrument_id);
+  sync_pb::DeviceDetails* device_details =
+      payment_instrument.mutable_device_details();
+  device_details->set_is_fido_enrolled(true);
+  sync_pb::EwalletDetails* ewallet =
+      payment_instrument.mutable_ewallet_details();
+  ewallet->set_ewallet_name("ewallet_name");
+  ewallet->set_account_display_name("account_display_name");
+  ewallet->add_supported_payment_link_uris("supported_payment_link_uri_1");
+  return payment_instrument;
 }
 
 }  // namespace test

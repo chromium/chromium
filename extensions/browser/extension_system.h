@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -16,7 +17,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(ENABLE_EXTENSIONS) && \
+    !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 #error "Extensions must be enabled"
 #endif
 

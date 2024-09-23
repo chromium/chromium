@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<div role="group" title="Names a group">abc</div>
+<div role="group" aria-label="Has a name" title="Moved to description">def</div>
+<!-- Redundant title text is not used -->
+<div role="group" title="Redundant">Redundant</div>
+<!-- The title attribute is mapped to description if the role prohibits a name -->
+<div title="Description">Names are prohibited on generic</div>

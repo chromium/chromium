@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/trace_event/cfi_backtrace_android.h"
 
 #include <sys/mman.h>
@@ -10,7 +15,6 @@
 #include "base/android/apk_assets.h"
 #include "base/android/library_loader/anchor_functions.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 #if !defined(ARCH_CPU_ARMEL)
 #error This file should not be built for this architecture.
@@ -120,7 +124,7 @@ static_assert(
     sizeof(CFIUnwindDataRow) == 4,
     "The CFIUnwindDataRow struct must be exactly 4 bytes for searching.");
 
-ABSL_CONST_INIT thread_local CFIBacktraceAndroid::CFICache cfi_cache;
+constinit thread_local CFIBacktraceAndroid::CFICache cfi_cache;
 
 }  // namespace
 

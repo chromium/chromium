@@ -99,7 +99,6 @@ void CheckAce(PACL acl,
     } break;
     default:
       NOTREACHED();
-      break;
   }
 
   ASSERT_EQ(check_mask, mask);

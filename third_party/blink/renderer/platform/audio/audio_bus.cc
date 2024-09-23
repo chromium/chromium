@@ -26,6 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 
 #include <assert.h>
@@ -174,7 +179,7 @@ AudioChannel* AudioBus::ChannelByType(unsigned channel_type) {
       }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -501,7 +506,7 @@ void AudioBus::SumFromByDownMixing(const AudioBus& source_bus) {
 
 void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
   if (!TopologyMatches(source_bus)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     Zero();
     return;
   }
@@ -561,12 +566,12 @@ void AudioBus::CopyWithSampleAccurateGainValuesFrom(
   // Make sure we're processing from the same type of bus.
   // We *are* able to process from mono -> stereo
   if (source_bus.NumberOfChannels() != 1 && !TopologyMatches(source_bus)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
   if (!gain_values || number_of_gain_values > source_bus.length()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -691,7 +696,7 @@ scoped_refptr<AudioBus> AudioBus::CreateByMixingToMono(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -724,10 +729,10 @@ scoped_refptr<AudioBus> AudioBus::GetDataResource(int resource_id,
   // it's reasonable to (potentially) pay a one-time flat access cost.
   // If this becomes problematic, we'll have the refactor DecodeAudioFileData
   // to take WebData and use segmented access.
-  SharedBuffer::DeprecatedFlatData flat_data(
-      resource.operator scoped_refptr<SharedBuffer>());
+  SegmentedBuffer::DeprecatedFlatData flat_data(
+      resource.operator scoped_refptr<SharedBuffer>().get());
   scoped_refptr<AudioBus> audio_bus =
-      DecodeAudioFileData(flat_data.Data(), flat_data.size());
+      DecodeAudioFileData(flat_data.data(), flat_data.size());
 
   if (!audio_bus.get()) {
     return nullptr;

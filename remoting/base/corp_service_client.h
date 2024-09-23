@@ -6,9 +6,9 @@
 #define REMOTING_BASE_CORP_SERVICE_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/base/buildflags.h"
@@ -48,7 +48,7 @@ class CorpServiceClient {
   void ProvisionCorpMachine(const std::string& owner_email,
                             const std::string& fqdn,
                             const std::string& public_key,
-                            std::optional<std::string> existing_host_id,
+                            const std::optional<std::string>& existing_host_id,
                             ProvisionCorpMachineCallback callback);
 
   void ReportProvisioningError(const std::string& host_id,
@@ -70,4 +70,4 @@ class CorpServiceClient {
 
 }  // namespace remoting
 
-#endif  // REMOTING_BASE_DIRECTORY_SERVICE_CLIENT_H_
+#endif  // REMOTING_BASE_CORP_SERVICE_CLIENT_H_

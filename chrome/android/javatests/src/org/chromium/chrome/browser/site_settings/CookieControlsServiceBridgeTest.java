@@ -14,13 +14,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -30,7 +31,6 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Integration tests for CookieControlsServiceBridge. */
@@ -79,17 +79,19 @@ public class CookieControlsServiceBridgeTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.clearPref(PrefNames.COOKIE_CONTROLS_MODE);
                 });
     }
 
     private void setCookieControlsMode(@CookieControlsMode int mode) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setInteger(PrefNames.COOKIE_CONTROLS_MODE, mode);
                 });
     }
@@ -105,10 +107,10 @@ public class CookieControlsServiceBridgeTest {
 
         int currentCallCount = mCallbackHelper.getCallCount();
         // Create cookie settings bridge and wait for desired callbacks.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsServiceBridge =
-                            new CookieControlsServiceBridge(mCallbackHandler);
+                            new CookieControlsServiceBridge(tab.getProfile(), mCallbackHandler);
                     mCookieControlsServiceBridge.updateServiceIfNecessary();
                 });
         // Initial callback after the bridge is created.
@@ -155,17 +157,17 @@ public class CookieControlsServiceBridgeTest {
         mChecked = false;
         int currentCallCount = mCallbackHelper.getCallCount();
         // Create cookie controls service bridge and wait for desired callbacks.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsServiceBridge =
-                            new CookieControlsServiceBridge(mCallbackHandler);
+                            new CookieControlsServiceBridge(tab.getProfile(), mCallbackHandler);
                     mCookieControlsServiceBridge.updateServiceIfNecessary();
 
                     mCookieControlsServiceBridge.handleCookieControlsToggleChanged(true);
 
                     Assert.assertEquals(
                             "CookieControlsMode should be incognito_only",
-                            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                     .getInteger(PrefNames.COOKIE_CONTROLS_MODE),
                             CookieControlsMode.INCOGNITO_ONLY);
                 });

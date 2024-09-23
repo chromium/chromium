@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_badge_view.h"
 
+#include "chrome/browser/ui/views/editor_menu/editor_menu_strings.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -44,9 +44,9 @@ constexpr gfx::Insets kBadgeInsets = gfx::Insets::VH(4, 8);
 EditorMenuBadgeView::EditorMenuBadgeView() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto* label = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_EXPERIMENT_BADGE),
-      views::Label::CustomFont({kBadgeFont})));
+  auto* label = AddChildView(
+      std::make_unique<views::Label>(GetEditorMenuExperimentBadgeLabel(),
+                                     views::Label::CustomFont({kBadgeFont})));
   label->SetEnabledColorId(ui::kColorSysOnSurface);
   label->SetLineHeight(kBadgeLineHeight);
   label->SetBorder(views::CreateEmptyBorder(kBadgeInsets));

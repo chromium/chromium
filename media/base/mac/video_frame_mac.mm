@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/mac/video_frame_mac.h"
 
 #include <stddef.h>
@@ -124,8 +129,8 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
     }
 
     // If the frame has a GMB, yank out its IOSurface if possible.
-    if (frame->HasGpuMemoryBuffer()) {
-      auto handle = frame->GetGpuMemoryBuffer()->CloneHandle();
+    if (frame->HasMappableGpuBuffer()) {
+      auto handle = frame->GetGpuMemoryBufferHandle();
       if (handle.type == gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
         gfx::ScopedIOSurface io_surface = handle.io_surface;
         if (io_surface) {
@@ -153,7 +158,7 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
 
   // If the frame is backed by a GPU buffer, but needs cropping, map it and
   // and handle like a software frame. There is no memcpy here.
-  if (frame->HasGpuMemoryBuffer()) {
+  if (frame->HasMappableGpuBuffer()) {
     frame = ConvertToMemoryMappedFrame(std::move(frame));
   }
   if (!frame) {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 
 #include "base/files/file_path.h"
@@ -136,6 +141,7 @@ BooleanMediumSelector MediumSelectorFromMojom(
       .ble = allowed_mediums->ble,
       .web_rtc = allowed_mediums->web_rtc,
       .wifi_lan = allowed_mediums->wifi_lan,
+      .wifi_direct = allowed_mediums->wifi_direct,
   };
 }
 
@@ -149,6 +155,18 @@ mojom::BandwidthQuality BandwidthQualityToMojom(v3::Quality quality) {
       return mojom::BandwidthQuality::kMedium;
     case v3::Quality::kHigh:
       return mojom::BandwidthQuality::kHigh;
+  }
+}
+
+mojom::AuthenticationStatus AuthenticationStatusToMojom(
+    AuthenticationStatus status) {
+  switch (status) {
+    case AuthenticationStatus::kUnknown:
+      return mojom::AuthenticationStatus::kUnknown;
+    case AuthenticationStatus::kSuccess:
+      return mojom::AuthenticationStatus::kSuccess;
+    case AuthenticationStatus::kFailure:
+      return mojom::AuthenticationStatus::kFailure;
   }
 }
 

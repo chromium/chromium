@@ -19,7 +19,7 @@ from util import build_utils
 # Assume this is stored under build/android/gyp/
 BUNDLETOOL_DIR = os.path.abspath(os.path.join(
     __file__, '..', '..', '..', '..', 'third_party', 'android_build_tools',
-    'bundletool'))
+    'bundletool', 'cipd'))
 
 BUNDLETOOL_JAR_PATH = os.path.join(BUNDLETOOL_DIR, 'bundletool.jar')
 

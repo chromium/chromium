@@ -1,0 +1,75 @@
+<style include="settings-shared input-device-settings-shared">
+  .device-details {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .device-info {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    gap: 16px;
+    padding-bottom: var(--cr-section-vertical-padding);
+    padding-inline-start: 18px;
+    padding-top: var(--cr-section-vertical-padding);
+  }
+
+  .device-image {
+    border-radius: 20px;
+    height: 32px;
+    width: 32px;
+  }
+
+  #deviceIcon {
+    --iron-icon-fill-color: var(--cros-sys-primary);
+  }
+
+  .icon-container {
+    background-color: var(--cros-sys-primary_container);
+    border-radius: 50%;
+    height: 20px;
+    padding: 8px;
+    width: 20px;
+  }
+
+  .device-details {
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+<div role="region" aria-label="[[getAriaLabel(name, batteryInfo.*)]]">
+  <h2 aria-hidden="true" class="subsection-header bottom-divider"
+      id="deviceName">
+    [[name]]
+  </h2>
+  <template is="dom-if" if="[[isWelcomeExperienceEnabled]]">
+    <div aria-hidden="true" class="device-info bottom-divider">
+      <template is="dom-if" if="[[shouldShowPlaceholder(deviceDisplayState)]]">
+        <div class="icon-container"></div>
+      </template>
+      <template is="dom-if"
+          if="[[shouldShowDeviceIcon(deviceDisplayState)]]" restamp>
+        <iron-icon icon="[[icon]]" class="icon-container" id="deviceIcon">
+        </iron-icon>
+      </template>
+      <img
+          class="device-image"
+          src="[[deviceImageDataUrl]]"
+          hidden="[[!deviceImageDataUrl]]"
+          alt="">
+      <div class="device-details">
+        <div class="device-info-header" id="deviceInfoName">
+          [[name]]
+        </div>
+        <template is="dom-if" if="[[showBatteryInfo(batteryInfo.*)]]">
+          <bluetooth-battery-icon-percentage
+              id="batteryIcon"
+              device="[[bluetoothDevice]]"
+              battery-type="[[getDefaultBatteryType()]]">
+          </bluetooth-battery-icon-percentage>
+        </template>
+      </div>
+    </div>
+  </template>
+</div>

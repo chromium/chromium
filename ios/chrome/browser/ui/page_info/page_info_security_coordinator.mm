@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/page_info/page_info_security_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
@@ -17,16 +17,21 @@
 
 @implementation PageInfoSecurityCoordinator {
   PageInfoSecurityViewController* _viewController;
+  PageInfoSiteSecurityDescription* _siteSecurityDescription;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
-  if (self = [super initWithBaseViewController:navigationController
-                                       browser:browser]) {
+                                         browser:(Browser*)browser
+                         siteSecurityDescription:
+                             (PageInfoSiteSecurityDescription*)
+                                 siteSecurityDescription {
+  if ((self = [super initWithBaseViewController:navigationController
+                                        browser:browser])) {
     _baseNavigationController = navigationController;
+    _siteSecurityDescription = siteSecurityDescription;
   }
   return self;
 }
@@ -34,17 +39,13 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  web::WebState* webState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-
-  PageInfoSiteSecurityDescription* siteSecurityDescription =
-      [PageInfoSiteSecurityMediator configurationForWebState:webState];
-
   _viewController = [[PageInfoSecurityViewController alloc]
-      initWithSiteSecurityDescription:siteSecurityDescription];
+      initWithSiteSecurityDescription:_siteSecurityDescription];
 
   _viewController.pageInfoCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageInfoCommands);
+  _viewController.pageInfoPresentationHandler =
+      self.pageInfoPresentationHandler;
 
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
@@ -52,6 +53,8 @@
 
 - (void)stop {
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+  _viewController.pageInfoCommandsHandler = nil;
+  _viewController.pageInfoPresentationHandler = nil;
   _viewController = nil;
 }
 

@@ -84,6 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                      const base::Value::Dict*(const std::string userhash,
                                               const std::string& guid,
                                               ::onc::ONCSource* onc_source));
+  MOCK_METHOD1(ResetDNSProperties, void(const std::string& service_path));
   MOCK_CONST_METHOD1(HasAnyPolicyNetwork, bool(const std::string& userhash));
   MOCK_CONST_METHOD1(GetGlobalConfigFromPolicy,
                      const base::Value::Dict*(const std::string& userhash));
@@ -104,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MOCK_METHOD0(TriggerEphemeralNetworkConfigActions, void());
   MOCK_METHOD1(OnCellularPoliciesApplied, void(const NetworkProfile& profile));
   MOCK_CONST_METHOD0(OnEnterpriseMonitoredWebPoliciesApplied, void());
+  MOCK_CONST_METHOD0(AllowApnModification, bool());
   MOCK_CONST_METHOD0(AllowCellularSimLock, bool());
   MOCK_CONST_METHOD0(AllowCellularHotspot, bool());
   MOCK_CONST_METHOD0(AllowOnlyPolicyCellularNetworks, bool());

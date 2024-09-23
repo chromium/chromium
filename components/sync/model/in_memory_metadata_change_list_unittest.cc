@@ -19,10 +19,10 @@ MATCHER_P(EqualsProto, expected, "") {
 class MockMetadataChangeList : public MetadataChangeList {
  public:
   MOCK_METHOD(void,
-              UpdateModelTypeState,
-              (const sync_pb::ModelTypeState& model_type_state),
+              UpdateDataTypeState,
+              (const sync_pb::DataTypeState& data_type_state),
               (override));
-  MOCK_METHOD(void, ClearModelTypeState, (), (override));
+  MOCK_METHOD(void, ClearDataTypeState, (), (override));
   MOCK_METHOD(void,
               UpdateMetadata,
               (const std::string& storage_key,
@@ -42,25 +42,25 @@ TEST(InMemoryMetadataChangeListTest, ShouldTransferNothingIfEmptyChangeList) {
   cl.TransferChangesTo(&mock_change_list);
 }
 
-TEST(InMemoryMetadataChangeListTest, ShouldTransferUpdateModelTypeState) {
+TEST(InMemoryMetadataChangeListTest, ShouldTransferUpdateDataTypeState) {
   StrictMock<MockMetadataChangeList> mock_change_list;
   InMemoryMetadataChangeList cl;
 
-  sync_pb::ModelTypeState state;
+  sync_pb::DataTypeState state;
   state.set_encryption_key_name("ekn");
-  cl.UpdateModelTypeState(state);
+  cl.UpdateDataTypeState(state);
 
-  EXPECT_CALL(mock_change_list, UpdateModelTypeState(EqualsProto(state)));
+  EXPECT_CALL(mock_change_list, UpdateDataTypeState(EqualsProto(state)));
   cl.TransferChangesTo(&mock_change_list);
 }
 
-TEST(InMemoryMetadataChangeListTest, ShouldTransferClearModelTypeState) {
+TEST(InMemoryMetadataChangeListTest, ShouldTransferClearDataTypeState) {
   StrictMock<MockMetadataChangeList> mock_change_list;
   InMemoryMetadataChangeList cl;
 
-  cl.ClearModelTypeState();
+  cl.ClearDataTypeState();
 
-  EXPECT_CALL(mock_change_list, ClearModelTypeState());
+  EXPECT_CALL(mock_change_list, ClearDataTypeState());
   cl.TransferChangesTo(&mock_change_list);
 }
 
@@ -91,9 +91,9 @@ TEST(InMemoryMetadataChangeListTest, ShouldTransferMultipleChanges) {
   StrictMock<MockMetadataChangeList> mock_change_list;
   InMemoryMetadataChangeList cl;
 
-  sync_pb::ModelTypeState state;
+  sync_pb::DataTypeState state;
   state.set_encryption_key_name("ekn");
-  cl.UpdateModelTypeState(state);
+  cl.UpdateDataTypeState(state);
 
   sync_pb::EntityMetadata metadata1;
   metadata1.set_client_tag_hash("some_hash1");
@@ -103,7 +103,7 @@ TEST(InMemoryMetadataChangeListTest, ShouldTransferMultipleChanges) {
   metadata2.set_client_tag_hash("some_hash2");
   cl.UpdateMetadata("client_tag2", metadata2);
 
-  EXPECT_CALL(mock_change_list, UpdateModelTypeState(EqualsProto(state)));
+  EXPECT_CALL(mock_change_list, UpdateDataTypeState(EqualsProto(state)));
   EXPECT_CALL(mock_change_list,
               UpdateMetadata("client_tag1", EqualsProto(metadata1)));
   EXPECT_CALL(mock_change_list,
@@ -117,19 +117,19 @@ TEST(InMemoryMetadataChangeListTest, ShouldTransferClearDespitePriorUpdates) {
 
   // Updates that should be ignored due to the later clears.
   {
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_encryption_key_name("ekn");
-    cl.UpdateModelTypeState(state);
+    cl.UpdateDataTypeState(state);
 
     sync_pb::EntityMetadata metadata;
     metadata.set_client_tag_hash("some_hash");
     cl.UpdateMetadata("client_tag", metadata);
   }
 
-  cl.ClearModelTypeState();
+  cl.ClearDataTypeState();
   cl.ClearMetadata("client_tag");
 
-  EXPECT_CALL(mock_change_list, ClearModelTypeState());
+  EXPECT_CALL(mock_change_list, ClearDataTypeState());
   EXPECT_CALL(mock_change_list, ClearMetadata("client_tag"));
   cl.TransferChangesTo(&mock_change_list);
 }
@@ -138,9 +138,9 @@ TEST(InMemoryMetadataChangeListTest, ShouldDropMetadataChange) {
   StrictMock<MockMetadataChangeList> mock_change_list;
   InMemoryMetadataChangeList cl;
 
-  sync_pb::ModelTypeState state;
+  sync_pb::DataTypeState state;
   state.set_encryption_key_name("ekn");
-  cl.UpdateModelTypeState(state);
+  cl.UpdateDataTypeState(state);
 
   sync_pb::EntityMetadata metadata1;
   metadata1.set_client_tag_hash("some_hash1");
@@ -153,7 +153,7 @@ TEST(InMemoryMetadataChangeListTest, ShouldDropMetadataChange) {
   // client_tag1 is not transferred because it was dropped.
   cl.DropMetadataChangeForStorageKey("client_tag1");
 
-  EXPECT_CALL(mock_change_list, UpdateModelTypeState(EqualsProto(state)));
+  EXPECT_CALL(mock_change_list, UpdateDataTypeState(EqualsProto(state)));
   EXPECT_CALL(mock_change_list,
               UpdateMetadata("client_tag2", EqualsProto(metadata2)));
   cl.TransferChangesTo(&mock_change_list);

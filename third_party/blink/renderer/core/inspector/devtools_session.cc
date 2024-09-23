@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 
 #include <string>
@@ -107,8 +112,7 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
     // Post a task to the worker or main renderer thread that will interrupt V8
     // and be run immediately. Only methods that do not run JS code are safe.
     Vector<uint8_t> message_copy;
-    message_copy.Append(message.data(),
-                        base::checked_cast<wtf_size_t>(message.size()));
+    message_copy.AppendSpan(message);
     if (ShouldInterruptForMethod(method)) {
       inspector_task_runner_->AppendTask(CrossThreadBindOnce(
           &::blink::DevToolsSession::DispatchProtocolCommandImpl,
@@ -201,7 +205,7 @@ void DevToolsSession::Append(InspectorAgent* agent) {
 void DevToolsSession::Detach() {
   agent_->client_->DebuggerTaskStarted();
   agent_->client_->DetachSession(this);
-  agent_->sessions_.erase(this);
+  agent_->DetachDevToolsSession(this);
   receiver_.reset();
   host_remote_.reset();
   CHECK(io_session_);
@@ -316,7 +320,7 @@ void DevToolsSession::FallThrough(int call_id,
                                   crdtp::span<uint8_t> method,
                                   crdtp::span<uint8_t> message) {
   // There's no other layer to handle the command.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void DevToolsSession::sendResponse(

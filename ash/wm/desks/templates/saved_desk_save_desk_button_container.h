@@ -5,10 +5,10 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_SAVE_DESK_BUTTON_CONTAINER_H_
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_SAVE_DESK_BUTTON_CONTAINER_H_
 
+#include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
-#include "base/memory/raw_ptr.h"
-
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -43,21 +43,15 @@ class ASH_EXPORT SavedDeskSaveDeskButtonContainer
     return save_desk_for_later_button_;
   }
 
-  void UpdateButtonEnableStateAndTooltip(
-      SavedDeskSaveDeskButton::Type button_type,
-      int current_entry_count,
-      int max_entry_count,
-      int incognito_window_count,
-      int unsupported_window_count,
-      int window_count);
+  void UpdateButtonEnableStateAndTooltip(DeskTemplateType type,
+                                         SaveDeskOptionStatus status);
 
   void UpdateButtonContainerForAccessibilityState();
 
  private:
   class SaveDeskButtonContainerAccessibilityObserver;
 
-  SavedDeskSaveDeskButton* GetButtonFromType(
-      SavedDeskSaveDeskButton::Type type);
+  SavedDeskSaveDeskButton* GetButtonFromType(DeskTemplateType type);
 
   raw_ptr<SavedDeskSaveDeskButton> save_desk_as_template_button_ = nullptr;
   raw_ptr<SavedDeskSaveDeskButton> save_desk_for_later_button_ = nullptr;

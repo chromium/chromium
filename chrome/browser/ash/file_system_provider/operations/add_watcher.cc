@@ -40,15 +40,15 @@ bool AddWatcher::Execute(int request_id) {
           options));
 }
 
-void AddWatcher::OnSuccess(int /* request_id */,
-                           const RequestValue& /* result */,
+void AddWatcher::OnSuccess(/*request_id=*/int,
+                           /*result=*/const RequestValue&,
                            bool has_more) {
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void AddWatcher::OnError(int /* request_id */,
-                         const RequestValue& /* result */,
+void AddWatcher::OnError(/*request_id=*/int,
+                         /*result=*/const RequestValue&,
                          base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

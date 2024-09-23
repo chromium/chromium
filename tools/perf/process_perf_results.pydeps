@@ -17,8 +17,6 @@
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_proto_classes.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_trace_writer.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_time.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/encoder.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/wire_format.py
 ../../third_party/catapult/common/py_utils/py_utils/__init__.py
 ../../third_party/catapult/common/py_utils/py_utils/atexit_with_log.py
 ../../third_party/catapult/common/py_utils/py_utils/binary_manager.py
@@ -247,7 +245,6 @@
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/__init__.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/android_forwarder.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/do_nothing_forwarder.py
-../../third_party/catapult/telemetry/telemetry/internal/forwarders/forwarder_utils.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/fuchsia_forwarder.py
 ../../third_party/catapult/telemetry/telemetry/internal/image_processing/__init__.py
 ../../third_party/catapult/telemetry/telemetry/internal/image_processing/image_util_numpy_impl.py
@@ -360,7 +357,6 @@
 ../../third_party/catapult/telemetry/telemetry/web_perf/timeline_interaction_record.py
 ../../third_party/catapult/telemetry/telemetry/wpr/__init__.py
 ../../third_party/catapult/telemetry/telemetry/wpr/archive_info.py
-../../third_party/catapult/telemetry/third_party/mock/mock.py
 ../../third_party/catapult/telemetry/third_party/png/png.py
 ../../third_party/catapult/telemetry/third_party/websocket-client/websocket/__init__.py
 ../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_abnf.py
@@ -558,6 +554,12 @@ contrib/shared_storage/page_set.py
 contrib/shared_storage/pages.py
 contrib/shared_storage/shared_storage.py
 contrib/shared_storage/shared_storage_shared_page_state.py
+contrib/shared_storage/utils/__init__.py
+contrib/shared_storage/utils/file_util.py
+contrib/shared_storage/utils/histogram_list.py
+contrib/shared_storage/utils/process_results.py
+contrib/shared_storage/utils/util.py
+contrib/shared_storage/utils/xvfb.py
 contrib/system_health_scroll_jank/__init__.py
 contrib/system_health_scroll_jank/janky_story_set.py
 contrib/system_health_scroll_jank/system_health_scroll_jank.py
@@ -627,7 +629,6 @@ page_sets/desktop_ui/js_utils.py
 page_sets/desktop_ui/multitab_story.py
 page_sets/desktop_ui/new_tab_page_story.py
 page_sets/desktop_ui/omnibox_story.py
-page_sets/desktop_ui/side_search_story.py
 page_sets/desktop_ui/story_tags.py
 page_sets/desktop_ui/tab_search_story.py
 page_sets/desktop_ui/ui_devtools_utils.py

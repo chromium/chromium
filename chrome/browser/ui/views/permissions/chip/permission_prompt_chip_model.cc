@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_manager.h"
@@ -46,8 +47,20 @@ const gfx::VectorIcon& GetPermissionIconId(
 std::u16string GetQuietPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
-  auto quiet_request_text = delegate->Requests()[0]->GetRequestChipText(
-      permissions::PermissionRequest::QUIET_REQUEST);
+  DCHECK(delegate->ReasonForUsingQuietUi());
+  auto chip_text_type = permissions::PermissionRequest::QUIET_REQUEST;
+  const auto quiet_ui_reason = delegate->ReasonForUsingQuietUi();
+  if (quiet_ui_reason == permissions::PermissionRequestManager::QuietUiReason::
+                             kServicePredictedVeryUnlikelyGrant ||
+      quiet_ui_reason == permissions::PermissionRequestManager::QuietUiReason::
+                             kOnDevicePredictedVeryUnlikelyGrant) {
+    chip_text_type = base::FeatureList::IsEnabled(
+                         permissions::features::kCpssQuietChipTextUpdate)
+                         ? permissions::PermissionRequest::LOUD_REQUEST
+                         : permissions::PermissionRequest::QUIET_REQUEST;
+  }
+  auto quiet_request_text =
+      delegate->Requests()[0]->GetRequestChipText(chip_text_type);
   return quiet_request_text.value_or(u"");
 }
 
@@ -88,9 +101,21 @@ PermissionPromptChipModel::PermissionPromptChipModel(
   DCHECK(delegate_);
 
   if (delegate_->ShouldCurrentRequestUseQuietUI()) {
+    DCHECK(delegate_->ReasonForUsingQuietUi());
     prompt_style_ = PermissionPromptStyle::kQuietChip;
     should_bubble_start_open_ = false;
-    should_display_blocked_icon_ = true;
+    const auto quiet_ui_reason = delegate_->ReasonForUsingQuietUi();
+    if (quiet_ui_reason ==
+            permissions::PermissionRequestManager::QuietUiReason::
+                kOnDevicePredictedVeryUnlikelyGrant ||
+        quiet_ui_reason ==
+            permissions::PermissionRequestManager::QuietUiReason::
+                kServicePredictedVeryUnlikelyGrant) {
+      should_display_blocked_icon_ = !base::FeatureList::IsEnabled(
+          permissions::features::kCpssQuietChipTextUpdate);
+    } else {
+      should_display_blocked_icon_ = true;
+    }
     should_expand_ =
         ShouldPermissionBubbleExpand(delegate_.get(), prompt_style_) &&
         (should_bubble_start_open_ ||
@@ -174,7 +199,7 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
           IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT;
       break;
     case permissions::PermissionAction::NUM:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   chip_text_ = delegate_->Requests()[0]

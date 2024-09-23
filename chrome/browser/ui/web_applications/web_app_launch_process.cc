@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/values_equivalent.h"
@@ -29,7 +31,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/common/constants.h"
-#include "third_party/blink/public/common/features.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
 
@@ -122,7 +124,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
               *ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id))
           ->IsUrlInSystemAppScope(launch_url);
 
-  // TODO(crbug.com/1477991): Figure out why this is getting hit.
+  // TODO(crbug.com/40071115): Figure out why this is getting hit.
   if (!registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id) &&
       !is_url_in_system_web_app_scope) {
     SCOPED_CRASH_KEY_STRING256("crbug1477991", "launch_url", launch_url.spec());
@@ -133,9 +135,17 @@ content::WebContents* WebAppLaunchProcess::Run() {
                   << params_->app_id;
   }
 #else
-  // TODO(dmurph): Figure out why this is failing. https://crbug.com/2546057
-  DCHECK(registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id))
-      << launch_url.spec();
+  // TODO(crbug.com/338406726): Figure out why this is failing. If no longer
+  // failing, then we can reject the launch by returning a nullptr.
+  if (!registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id)) {
+    SCOPED_CRASH_KEY_STRING256("crbug338406726", "launch_url",
+                               launch_url.spec());
+    SCOPED_CRASH_KEY_STRING256("crbug338406726", "app_scope",
+                               web_app_->scope().spec());
+    base::debug::DumpWithoutCrashing();
+    DCHECK(false) << "Url " << launch_url.spec() << " not in scope for app "
+                  << params_->app_id;
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -159,6 +169,12 @@ content::WebContents* WebAppLaunchProcess::Run() {
   if (!web_contents) {
     return nullptr;
   }
+  // Because the browser could be a non-app browser, ensure that app launches
+  // always set 'acting_as_app' to true, to enable the app settings menu for
+  // the browser tab.
+  auto* helper = WebAppTabHelper::FromWebContents(web_contents);
+  CHECK(helper);
+  helper->set_acting_as_app(true);
 
   MaybeEnqueueWebLaunchParams(
       launch_url, is_file_handling, web_contents,
@@ -231,7 +247,7 @@ WindowOpenDisposition WebAppLaunchProcess::GetNavigationDisposition(
     // By opening a new window we've already performed part of a "disposition",
     // the only remaining thing for Navigate() to do is navigate the new window.
     return WindowOpenDisposition::CURRENT_TAB;
-    // TODO(crbug.com/1200944): Use NEW_FOREGROUND_TAB instead of CURRENT_TAB.
+    // TODO(crbug.com/40762104): Use NEW_FOREGROUND_TAB instead of CURRENT_TAB.
     // The window has no tabs so it doesn't make sense to open the "current"
     // tab. We use it anyway because it happens to work.
     // If NEW_FOREGROUND_TAB is used the the WindowCanOpenTabs() check fails
@@ -295,7 +311,8 @@ Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
     }
 #endif
     return chrome::FindTabbedBrowser(
-        &profile_.get(), /*match_original_profiles=*/false, display_id);
+        &profile_.get(), /*match_original_profiles=*/false, display_id,
+        /*ignore_closing_browsers=*/true);
   }
 
   if (params_->disposition == WindowOpenDisposition::NEW_WINDOW) {
@@ -320,8 +337,16 @@ Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
                                                  /*user_gesture=*/true));
   }
 
-  return CreateWebApplicationWindow(&*profile_, params_->app_id,
-                                    params_->disposition, params_->restore_id);
+  Browser::CreateParams browser_params = web_app::CreateParamsForApp(
+      params_->app_id,
+      /*is_popup=*/params_->disposition == WindowOpenDisposition::NEW_POPUP,
+      /*trusted_source=*/true, /*window_bounds=*/gfx::Rect(),
+      /*profile=*/&profile_.get(),
+      /*user_gesture*/ true);
+#if BUILDFLAG(IS_CHROMEOS)
+  browser_params.restore_id = params_->restore_id;
+#endif
+  return CreateWebAppWindowMaybeWithHomeTab(params_->app_id, browser_params);
 }
 
 WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
@@ -333,7 +358,7 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
       GetNavigationDisposition(is_new_browser);
 
   if (share_target) {
-    // TODO(crbug.com/1213776): Expose share target in the LaunchParams and
+    // TODO(crbug.com/40768956): Expose share target in the LaunchParams and
     // don't navigate if navigate_existing_client: never is in effect.
     NavigateParams nav_params = NavigateParamsForShareTarget(
         browser, *share_target, *params_->intent, params_->launch_files);
@@ -346,9 +371,12 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
   TabStripModel* const tab_strip = browser->tab_strip_model();
   if (tab_strip->empty() ||
       navigation_disposition != WindowOpenDisposition::CURRENT_TAB) {
-    return {.web_contents = NavigateWebApplicationWindow(
-                browser, params_->app_id, launch_url, navigation_disposition),
-            .did_navigate = true};
+    NavigateParams nav_params(browser, launch_url,
+                              ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+    nav_params.disposition = navigation_disposition;
+    return {
+        .web_contents = NavigateWebAppUsingParams(params_->app_id, nav_params),
+        .did_navigate = true};
   }
 
   content::WebContents* existing_tab = tab_strip->GetActiveWebContents();
@@ -379,20 +407,21 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
 
   const int tab_index = tab_strip->GetIndexOfWebContents(existing_tab);
 
-  existing_tab->OpenURL(content::OpenURLParams(
-      launch_url,
-      content::Referrer::SanitizeForRequest(
+  existing_tab->OpenURL(
+      content::OpenURLParams(
           launch_url,
-          content::Referrer(existing_tab->GetURL(),
-                            network::mojom::ReferrerPolicy::kDefault)),
-      navigation_disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-      /*is_renderer_initiated=*/false));
+          content::Referrer::SanitizeForRequest(
+              launch_url,
+              content::Referrer(existing_tab->GetURL(),
+                                network::mojom::ReferrerPolicy::kDefault)),
+          navigation_disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 
   content::WebContents* web_contents = tab_strip->GetActiveWebContents();
   tab_strip->ActivateTabAt(
       tab_index, TabStripUserGestureDetails(
                      TabStripUserGestureDetails::GestureType::kOther));
-  SetWebContentsActingAsApp(web_contents, params_->app_id);
   return {.web_contents = web_contents, .did_navigate = true};
 }
 
@@ -401,19 +430,15 @@ void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(
     bool is_file_handling,
     content::WebContents* web_contents,
     bool started_new_navigation) {
-  if (is_file_handling || web_app_->launch_handler().has_value() ||
-      base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableLaunchHandler)) {
-    WebAppLaunchParams launch_params;
-    launch_params.started_new_navigation = started_new_navigation;
-    launch_params.app_id = web_app_->app_id();
-    launch_params.target_url = launch_url;
-    launch_params.paths = is_file_handling ? params_->launch_files
-                                           : std::vector<base::FilePath>();
-    WebAppTabHelper::FromWebContents(web_contents)
-        ->EnsureLaunchQueue()
-        .Enqueue(std::move(launch_params));
-  }
+  WebAppLaunchParams launch_params;
+  launch_params.started_new_navigation = started_new_navigation;
+  launch_params.app_id = web_app_->app_id();
+  launch_params.target_url = launch_url;
+  launch_params.paths =
+      is_file_handling ? params_->launch_files : std::vector<base::FilePath>();
+  WebAppTabHelper::FromWebContents(web_contents)
+      ->EnsureLaunchQueue()
+      .Enqueue(std::move(launch_params));
 }
 
 }  // namespace web_app

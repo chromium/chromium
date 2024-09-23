@@ -19,7 +19,7 @@ class DeviceLocalAccountManagementPolicyProvider
     : public extensions::ManagementPolicy::Provider {
  public:
   explicit DeviceLocalAccountManagementPolicyProvider(
-      policy::DeviceLocalAccount::Type account_type);
+      policy::DeviceLocalAccountType account_type);
 
   DeviceLocalAccountManagementPolicyProvider(
       const DeviceLocalAccountManagementPolicyProvider&) = delete;
@@ -34,7 +34,7 @@ class DeviceLocalAccountManagementPolicyProvider
                    std::u16string* error) const override;
 
  private:
-  const policy::DeviceLocalAccount::Type account_type_;
+  const policy::DeviceLocalAccountType account_type_;
 };
 
 }  // namespace chromeos

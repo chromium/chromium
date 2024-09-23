@@ -44,8 +44,6 @@ public class AppLaunchDrawBlocker {
     private final Supplier<Intent> mIntentSupplier;
     private final Supplier<Boolean> mShouldIgnoreIntentSupplier;
     private final Supplier<Boolean> mIsTabletSupplier;
-    private final Supplier<Boolean> mShouldShowOverviewPageOnStartSupplier;
-    private final Supplier<Boolean> mIsInstantStartEnabledSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
 
     /**
@@ -67,17 +65,16 @@ public class AppLaunchDrawBlocker {
 
     /**
      * Constructor for AppLaunchDrawBlocker.
-     * @param activityLifecycleDispatcher {@link ActivityLifecycleDispatcher} for the
-     *        {@link ChromeTabbedActivity}.
+     *
+     * @param activityLifecycleDispatcher {@link ActivityLifecycleDispatcher} for the {@link
+     *     ChromeTabbedActivity}.
      * @param viewSupplier {@link Supplier<Boolean>} for the Activity's content view.
      * @param intentSupplier The {@link Intent} the app was launched with.
      * @param shouldIgnoreIntentSupplier {@link Supplier<Boolean>} for whether the ignore should be
-     *        ignored.
+     *     ignored.
      * @param isTabletSupplier {@link Supplier<Boolean>} for whether the device is a tablet.
-     * @param shouldShowTabSwitcherOnStartSupplier {@link Supplier<Boolean>} for whether the tab
-     *        switcher should be shown on start.
-     * @param incognitoRestoreAppLaunchDrawBlockerFactory Factory to create
-     *    {@link IncognitoRestoreAppLaunchDrawBlocker}.
+     * @param incognitoRestoreAppLaunchDrawBlockerFactory Factory to create {@link
+     *     IncognitoRestoreAppLaunchDrawBlocker}.
      */
     public AppLaunchDrawBlocker(
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -85,8 +82,6 @@ public class AppLaunchDrawBlocker {
             @NonNull Supplier<Intent> intentSupplier,
             @NonNull Supplier<Boolean> shouldIgnoreIntentSupplier,
             @NonNull Supplier<Boolean> isTabletSupplier,
-            @NonNull Supplier<Boolean> shouldShowTabSwitcherOnStartSupplier,
-            @NonNull Supplier<Boolean> isInstantStartEnabledSupplier,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull
                     IncognitoRestoreAppLaunchDrawBlockerFactory
@@ -119,8 +114,6 @@ public class AppLaunchDrawBlocker {
         mIntentSupplier = intentSupplier;
         mShouldIgnoreIntentSupplier = shouldIgnoreIntentSupplier;
         mIsTabletSupplier = isTabletSupplier;
-        mShouldShowOverviewPageOnStartSupplier = shouldShowTabSwitcherOnStartSupplier;
-        mIsInstantStartEnabledSupplier = isInstantStartEnabledSupplier;
         mProfileSupplier = profileSupplier;
         mIncognitoRestoreAppLaunchDrawBlocker =
                 incognitoRestoreAppLaunchDrawBlockerFactory.create(
@@ -143,7 +136,7 @@ public class AppLaunchDrawBlocker {
     }
 
     /** Should be called when the overview page is available. */
-    public void onOverviewPageAvailable(boolean isOverviewShownWithoutInstantStart) {
+    public void onOverviewPageAvailable() {
         mBlockDrawForOverviewPage = false;
     }
 
@@ -190,16 +183,6 @@ public class AppLaunchDrawBlocker {
 
     /** Only block the draw if we believe the initial tab will be the NTP. */
     private void maybeBlockDraw() {
-        if (mShouldShowOverviewPageOnStartSupplier.get()) {
-            if (!mIsInstantStartEnabledSupplier.get()) {
-                mTimeStartedBlockingDrawForInitialTab = SystemClock.elapsedRealtime();
-                mBlockDrawForOverviewPage = true;
-                ViewDrawBlocker.blockViewDrawUntilReady(
-                        mViewSupplier.get(), () -> !mBlockDrawForOverviewPage);
-            }
-            return;
-        }
-
         @ActiveTabState int tabState = TabPersistentStore.readLastKnownActiveTabStatePref();
         boolean searchEngineHasLogo =
                 ChromeSharedPreferences.getInstance()
@@ -213,7 +196,9 @@ public class AppLaunchDrawBlocker {
 
         boolean shouldBlockWithoutIntent =
                 shouldBlockDrawForNtpOnColdStartWithoutIntent(
-                        tabState, HomepageManager.isHomepageNonNtp(), singleUrlBarMode);
+                        tabState,
+                        HomepageManager.getInstance().isHomepageNonNtp(),
+                        singleUrlBarMode);
 
         if (shouldBlockDrawForNtpOnColdStartWithIntent(
                 hasValidIntentUrl,

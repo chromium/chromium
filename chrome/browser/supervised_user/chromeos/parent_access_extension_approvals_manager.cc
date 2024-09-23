@@ -23,10 +23,6 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 extensions::TestExtensionApprovalsManagerObserver* test_observer = nullptr;
 }  // namespace
@@ -38,19 +34,6 @@ ParentAccessExtensionApprovalsManager::ParentAccessExtensionApprovalsManager() =
 
 ParentAccessExtensionApprovalsManager::
     ~ParentAccessExtensionApprovalsManager() = default;
-
-// static
-bool ParentAccessExtensionApprovalsManager::ShouldShowExtensionApprovalsV2() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  int version = service->GetInterfaceVersion<crosapi::mojom::ParentAccess>();
-  if (version < int{crosapi::mojom::ParentAccess::MethodMinVersions::
-                        kGetExtensionParentApprovalMinVersion}) {
-    return false;
-  }
-#endif
-  return true;
-}
 
 void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
     const Extension& extension,
@@ -64,13 +47,7 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
   // Load permission strings.
   InstallPromptPermissions prompt_permissions;
   std::unique_ptr<const PermissionSet> permissions_to_display =
-      util::GetInstallPromptPermissionSetForExtension(
-          &extension, profile,
-          // Matches behavior of regular extension install prompt because this
-          // prompt is never used for delegated permissions, which is the only
-          // time optional permissions are shown.
-          false /* include_optional_permissions */
-      );
+      util::GetInstallPromptPermissionSetForExtension(&extension, profile);
   prompt_permissions.LoadFromPermissionSet(permissions_to_display.get(),
                                            extension.GetType());
   const size_t permissions_count = prompt_permissions.permissions.size();
@@ -87,6 +64,12 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
 
   done_callback_ = std::move(callback);
 
+  if (test_observer) {
+    test_observer->OnTestParentAccessDialogCreated();
+    OnParentAccessDialogClosed(test_observer->GetNextResult());
+    return;
+  }
+
   crosapi::mojom::ParentAccess* parent_access =
       supervised_user::GetParentAccessApi();
   CHECK(parent_access);
@@ -99,10 +82,6 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
       base::BindOnce(
           &ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed,
           weak_ptr_factory_.GetWeakPtr()));
-
-  if (test_observer) {
-    test_observer->OnTestParentAccessDialogCreated();
-  }
 }
 
 void ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed(
@@ -146,4 +125,15 @@ TestExtensionApprovalsManagerObserver::
     ~TestExtensionApprovalsManagerObserver() {
   test_observer = nullptr;
 }
+
+void TestExtensionApprovalsManagerObserver::SetParentAccessDialogResult(
+    crosapi::mojom::ParentAccessResultPtr result) {
+  next_result_ = std::move(result);
+}
+
+crosapi::mojom::ParentAccessResultPtr
+TestExtensionApprovalsManagerObserver::GetNextResult() {
+  return std::move(next_result_);
+}
+
 }  // namespace extensions

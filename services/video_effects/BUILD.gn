@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/mediapipe/features.gni")
+
+source_set("service") {
+  public = [
+    "video_effects_processor_impl.h",
+    "video_effects_service_impl.h",
+    "viz_gpu_channel_host_provider.h",
+  ]
+
+  sources = [
+    "video_effects_processor_impl.cc",
+    "video_effects_processor_webgpu.cc",
+    "video_effects_processor_webgpu.h",
+    "video_effects_service_impl.cc",
+    "viz_gpu_channel_host_provider.cc",
+  ]
+
+  visibility = [
+    "//content/utility:utility",
+    "//services/video_effects:tests",
+  ]
+
+  public_deps = [
+    "//services/video_effects/public/mojom:mojom",
+    "//services/viz/public/cpp/gpu:gpu",
+  ]
+
+  deps = [
+    "//gpu/command_buffer/client:raster_interface",
+    "//gpu/command_buffer/client:webgpu_interface",
+    "//gpu/webgpu:common",
+    "//third_party/dawn/include/dawn:cpp_headers",
+    "//third_party/dawn/src/dawn:proc",
+    "//third_party/dawn/src/dawn/wire",
+  ]
+
+  if (build_with_mediapipe_lib) {
+    deps += [ "//third_party/mediapipe" ]
+  }
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [
+    "test_gpu_channel_host_provider.cc",
+    "test_gpu_channel_host_provider.h",
+    "video_effects_processor_impl_unittest.cc",
+    "video_effects_service_impl_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//gpu/ipc/common:test_support",
+    "//media/capture/mojom:video_effects_manager",
+    "//services/video_effects:service",
+    "//testing/gtest",
+  ]
+}

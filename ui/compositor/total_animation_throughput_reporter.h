@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/compositor_observer.h"
@@ -63,7 +64,9 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
   };
 
   using ReportOnceCallback = base::OnceCallback<void(
-      const cc::FrameSequenceMetrics::CustomReportData& data)>;
+      const cc::FrameSequenceMetrics::CustomReportData& data,
+      base::TimeTicks first_animation_started_at,
+      base::TimeTicks last_animation_finished_at)>;
   using ReportRepeatingCallback = base::RepeatingCallback<void(
       const cc::FrameSequenceMetrics::CustomReportData& data)>;
 
@@ -118,6 +121,14 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;
   std::optional<ThroughputTracker> throughput_tracker_;
+
+  // These are always recorderd in pairs. Specifically,
+  // `timestamp_first_animation_started_at_` is recorded when
+  // `throughput_tracker_` is created/started, and
+  // `timestamp_last_animation_finished_at_` is recorded when the tracker is
+  // stopped/destructed.
+  base::TimeTicks timestamp_first_animation_started_at_;
+  base::TimeTicks timestamp_last_animation_finished_at_;
 
   // Number of active ScopedThroughputReporterBlocker objects.
   int scoped_blocker_count_ = 0;

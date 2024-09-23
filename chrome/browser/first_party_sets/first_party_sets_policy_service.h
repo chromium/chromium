@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -35,7 +37,9 @@ namespace first_party_sets {
 // This service always exists for a BrowserContext, regardless of whether the
 // First-Party Sets feature is enabled globally or for this particular
 // BrowserContext.
-class FirstPartySetsPolicyService : public KeyedService {
+class FirstPartySetsPolicyService
+    : public KeyedService,
+      public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:
   enum class ServiceState {
     // Related Website Sets is permanently disabled for this profile.
@@ -80,9 +84,8 @@ class FirstPartySetsPolicyService : public KeyedService {
       mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
           access_delegate);
 
-  // Triggers changes to `access_delegates` that should occur when the
-  // First-Party Sets enabled pref changes.
-  void OnFirstPartySetsEnabledChanged(bool enabled);
+  // PrivacySandboxSettings::Observer
+  void OnFirstPartySetsEnabledChanged(bool enabled) override;
 
   // Stores the callback to be invoked when this service is ready to do so. Must
   // not be called when FPS is not enabled or the service is already ready.
@@ -164,7 +167,7 @@ class FirstPartySetsPolicyService : public KeyedService {
 
   content::BrowserContext* browser_context() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return browser_context_;
+    return &*browser_context_;
   }
 
   base::WeakPtr<first_party_sets::FirstPartySetsPolicyService> GetWeakPtr() {
@@ -203,9 +206,8 @@ class FirstPartySetsPolicyService : public KeyedService {
   mojo::RemoteSet<network::mojom::FirstPartySetsAccessDelegate>
       access_delegates_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The BrowserContext with which this service is associated. Set to nullptr in
-  // `Shutdown()`.
-  raw_ptr<content::BrowserContext> browser_context_
+  // The BrowserContext with which this service is associated.
+  const raw_ref<content::BrowserContext> browser_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Whether FPS is enabled in this context. Note that this may be true even if
@@ -239,10 +241,11 @@ class FirstPartySetsPolicyService : public KeyedService {
   // not be reset in `ResetForTesting`.
   bool first_initialization_complete_for_testing_ = false;
 
-  // Tracks the number of queries to the First-Party Sets in the browser process
-  // are received before the `global_sets_` are initialized.
-  mutable int num_queries_before_sets_ready_
-      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  const raw_ref<privacy_sandbox::PrivacySandboxSettings>
+      privacy_sandbox_settings_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
+                          privacy_sandbox::PrivacySandboxSettings::Observer>
+      privacy_sandbox_settings_observer_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

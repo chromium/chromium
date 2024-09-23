@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_impl.h"
 
 #include <string>
+
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -28,10 +30,10 @@ CookieControlsBubbleViewImpl::CookieControlsBubbleViewImpl(
     views::View* anchor_view,
     content::WebContents* web_contents,
     OnCloseBubbleCallback callback)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor_view, web_contents,true),
       callback_(std::move(callback)) {
   SetShowCloseButton(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetProperty(views::kElementIdentifierKey, kCookieControlsBubble);
   SetSubtitleAllowCharacterBreak(true);
 }
@@ -64,7 +66,6 @@ void CookieControlsBubbleViewImpl::InitReloadingView(
 
 void CookieControlsBubbleViewImpl::UpdateTitle(const std::u16string& title) {
   SetTitle(title);
-  SizeToContents();
 }
 
 void CookieControlsBubbleViewImpl::UpdateSubtitle(
@@ -85,7 +86,7 @@ void CookieControlsBubbleViewImpl::SwitchToReloadingView() {
       base::UserMetricsAction("CookieControls.Bubble.ReloadingShown"));
   GetReloadingView()->SetVisible(true);
   GetContentView()->SetVisible(false);
-  SizeToContents();
+  InvalidateLayout();
 }
 
 CookieControlsContentView* CookieControlsBubbleViewImpl::GetContentView() {
@@ -106,8 +107,10 @@ CookieControlsBubbleViewImpl::RegisterOnUserClosedContentViewCallback(
   return on_user_closed_content_view_callback_list_.Add(std::move(callback));
 }
 
-gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize() const {
-  auto size = LocationBarBubbleDelegateView::CalculatePreferredSize();
+gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  auto size =
+      LocationBarBubbleDelegateView::CalculatePreferredSize(available_size);
 
   // Enforce a range of valid widths.
   auto* provider = ChromeLayoutProvider::Get();
@@ -117,11 +120,6 @@ gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize() const {
                      views::DistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH),
                  kMaxBubbleWidth);
   return gfx::Size(width, size.height());
-}
-
-void CookieControlsBubbleViewImpl::ChildPreferredSizeChanged(
-    views::View* child) {
-  SizeToContents();
 }
 
 void CookieControlsBubbleViewImpl::CloseBubble() {

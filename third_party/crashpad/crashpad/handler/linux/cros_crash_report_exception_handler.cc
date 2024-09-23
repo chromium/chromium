@@ -44,14 +44,13 @@ const std::string GetProcessNameFromPid(pid_t pid) {
   // Symlink to process binary is at /proc/###/exe.
   std::string link_path = "/proc/" + std::to_string(pid) + "/exe";
 
-  constexpr int kMaxSize = 4096;
-  std::unique_ptr<char[]> buf(new char[kMaxSize]);
-  ssize_t size = readlink(link_path.c_str(), buf.get(), kMaxSize);
-  std::string result;
+  std::string result(4096, '\0');
+  ssize_t size = readlink(link_path.c_str(), result.data(), result.size());
   if (size < 0) {
     PLOG(ERROR) << "Failed to readlink " << link_path;
+    result.clear();
   } else {
-    result.assign(buf.get(), size);
+    result.resize(size);
     size_t last_slash_pos = result.rfind('/');
     if (last_slash_pos != std::string::npos) {
       result = result.substr(last_slash_pos + 1);

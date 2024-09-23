@@ -218,4 +218,12 @@ const CGFloat kImageXCenterAlignmentOffset = 14;
   return self.textLabel.text;
 }
 
+- (NSArray<NSString*>*)accessibilityUserInputLabels {
+  // The name for Voice Control includes only `self.textLabel.text`.
+  if (!self.textLabel.text) {
+    return @[];
+  }
+  return @[ self.textLabel.text ];
+}
+
 @end

@@ -39,7 +39,6 @@
 #include "base/ranges/algorithm.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
@@ -76,7 +75,9 @@ network::mojom::LoadTimingInfo ToMojoLoadTiming(
       load_timing.push_end, load_timing.service_worker_start_time,
       load_timing.service_worker_ready_time,
       load_timing.service_worker_fetch_start,
-      load_timing.service_worker_respond_with_settled);
+      load_timing.service_worker_respond_with_settled,
+      load_timing.service_worker_router_evaluation_start,
+      load_timing.service_worker_cache_lookup_start);
 }
 
 // TODO(https://crbug.com/862940): Use KURL here.
@@ -114,7 +115,7 @@ void SetSecurityStyleAndDetails(const GURL& url,
   }
 
   if (!ssl_info.cert) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     response->SetSecurityStyle(SecurityStyle::kUnknown);
     return;
   }
@@ -209,7 +210,6 @@ WebURLResponse WebURLResponse::Create(
   response.SetWasInPrefetchCache(head.was_in_prefetch_cache);
   response.SetWasCookieInRequest(head.was_cookie_in_request);
   response.SetRecursivePrefetchToken(head.recursive_prefetch_token);
-  response.SetTriggerVerifications(head.trigger_verifications);
 
   SetSecurityStyleAndDetails(GURL(KURL(url)), head, &response,
                              report_security_info);
@@ -217,24 +217,7 @@ WebURLResponse WebURLResponse::Create(
   // If there's no received headers end time, don't set load timing.  This is
   // the case for non-HTTP requests, requests that don't go over the wire, and
   // certain error cases.
-  //
-  // https://crbug.com/1382255: Because the resource-fetching request of
-  // prefetch occurs before the navigation, both `requestStart` and
-  // `responseStart` are negative, measured with respect to `startTime` of the
-  // navigation. Do not set the `ResourceLoadTiming` for the prefetch navigation
-  // response; then `PerformanceResourceTiming` won't be able to retrieve the
-  // timing info, resulting in setting `requestStart` and `responseStart` to
-  // their respective previous timeline event.
-  //
-  // Not setting the `ResourceLoadTiming` does not affect the DNS and TCP
-  // timings (domainLookupStart, domainLookupEnd, connectStart,
-  // secureConnectionStart and connectEnd) because these values are null for the
-  // prefetch navigation. See
-  // https://docs.google.com/document/d/1XbLImIqGoHgxJZnscWoZIX8IlIiHOlXvBW81B_3HScc
-  // (Chromium org access) for the navigation timing events timeline.
-  if (!head.load_timing.receive_headers_end.is_null() &&
-      head.navigation_delivery_type !=
-          network::mojom::NavigationDeliveryType::kNavigationalPrefetch) {
+  if (!head.load_timing.receive_headers_end.is_null()) {
     response.SetLoadTiming(ToMojoLoadTiming(head.load_timing));
   }
 
@@ -336,6 +319,10 @@ void WebURLResponse::SetLoadTiming(
   timing->SetConnectStart(mojo_timing.connect_timing.connect_start);
   timing->SetConnectEnd(mojo_timing.connect_timing.connect_end);
   timing->SetWorkerStart(mojo_timing.service_worker_start_time);
+  timing->SetWorkerRouterEvaluationStart(
+      mojo_timing.service_worker_router_evaluation_start);
+  timing->SetWorkerCacheLookupStart(
+      mojo_timing.service_worker_cache_lookup_start);
   timing->SetWorkerReady(mojo_timing.service_worker_ready_time);
   timing->SetWorkerFetchStart(mojo_timing.service_worker_fetch_start);
   timing->SetWorkerRespondWithSettled(
@@ -352,15 +339,6 @@ void WebURLResponse::SetLoadTiming(
   timing->SetPushStart(mojo_timing.push_start);
   timing->SetPushEnd(mojo_timing.push_end);
   resource_response_->SetResourceLoadTiming(std::move(timing));
-}
-
-void WebURLResponse::SetTriggerVerifications(
-    const std::vector<network::TriggerVerification>& trigger_verifications) {
-  WTF::Vector<network::TriggerVerification> verifications;
-  for (const auto& verification : trigger_verifications) {
-    verifications.push_back(verification);
-  }
-  resource_response_->SetTriggerVerifications(std::move(verifications));
 }
 
 base::Time WebURLResponse::ResponseTime() const {
@@ -513,6 +491,11 @@ void WebURLResponse::SetServiceWorkerRouterInfo(
     const network::mojom::ServiceWorkerRouterInfo& value) {
   auto info = ServiceWorkerRouterInfo::Create();
   info->SetRuleIdMatched(value.rule_id_matched);
+  info->SetMatchedSourceType(value.matched_source_type);
+  info->SetActualSourceType(value.actual_source_type);
+  info->SetRouteRuleNum(value.route_rule_num);
+  info->SetEvaluationWorkerStatus(value.evaluation_worker_status);
+  info->SetRouterEvaluationTime(value.router_evaluation_time);
   resource_response_->SetServiceWorkerRouterInfo(std::move(info));
 }
 
@@ -571,8 +554,7 @@ WebVector<WebString> WebURLResponse::CorsExposedHeaderNames() const {
 void WebURLResponse::SetCorsExposedHeaderNames(
     const WebVector<WebString>& header_names) {
   Vector<String> exposed_header_names;
-  exposed_header_names.Append(
-      header_names.data(), base::checked_cast<wtf_size_t>(header_names.size()));
+  exposed_header_names.AppendSpan(base::span(header_names));
   resource_response_->SetCorsExposedHeaderNames(exposed_header_names);
 }
 

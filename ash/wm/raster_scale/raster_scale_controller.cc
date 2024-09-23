@@ -62,11 +62,17 @@ void ScopedSetRasterScale::OnWindowDestroying(aura::Window* window) {
 }
 
 ScopedPauseRasterScaleUpdates::ScopedPauseRasterScaleUpdates() {
-  Shell::Get()->raster_scale_controller()->Pause();
+  auto* rsc = Shell::Get()->raster_scale_controller();
+  if (rsc) {
+    rsc->Pause();
+  }
 }
 
 ScopedPauseRasterScaleUpdates::~ScopedPauseRasterScaleUpdates() {
-  Shell::Get()->raster_scale_controller()->Unpause();
+  auto* rsc = Shell::Get()->raster_scale_controller();
+  if (rsc) {
+    rsc->Unpause();
+  }
 }
 
 RasterScaleController::RasterScaleController() = default;
@@ -170,7 +176,7 @@ void RasterScaleController::Unpause() {
   pause_count_--;
   DCHECK_GE(pause_count_, 0);
   if (pause_count_ == 0) {
-    for (auto* window : pending_windows_) {
+    for (aura::Window* window : pending_windows_) {
       MaybeSetRasterScale(window);
 
       // If we kept observing a window since it had a pending change, we can

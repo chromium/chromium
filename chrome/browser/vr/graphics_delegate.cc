@@ -7,7 +7,8 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/numerics/math_constants.h"
+#include "base/notimplemented.h"
+#include "base/numerics/angle_conversions.h"
 #include "chrome/browser/vr/fov_rectangle.h"
 #include "chrome/browser/vr/frame_type.h"
 #include "chrome/browser/vr/model/camera_model.h"
@@ -16,6 +17,12 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/vr/graphics_delegate_win.h"
+#elif BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/vr/graphics_delegate_android.h"
+#endif
 
 namespace vr {
 
@@ -27,20 +34,17 @@ CameraModel CameraModelViewProjFromXRView(
     const device::mojom::XRViewPtr& view) {
   CameraModel model = {};
 
-  // TODO(https://crbug.com/1070380): mojo space is currently equivalent to
+  // TODO(crbug.com/40684534): mojo space is currently equivalent to
   // world space, so the view matrix is world_from_view.
   model.view_matrix = view->mojo_from_view;
 
   bool is_invertible = model.view_matrix.GetInverse(&model.view_matrix);
   DCHECK(is_invertible);
 
-  float up_tan = tanf(view->field_of_view->up_degrees * base::kPiFloat / 180.0);
-  float left_tan =
-      tanf(view->field_of_view->left_degrees * base::kPiFloat / 180.0);
-  float right_tan =
-      tanf(view->field_of_view->right_degrees * base::kPiFloat / 180.0);
-  float down_tan =
-      tanf(view->field_of_view->down_degrees * base::kPiFloat / 180.0);
+  float up_tan = tanf(base::DegToRad(view->field_of_view->up_degrees));
+  float left_tan = tanf(base::DegToRad(view->field_of_view->left_degrees));
+  float right_tan = tanf(base::DegToRad(view->field_of_view->right_degrees));
+  float down_tan = tanf(base::DegToRad(view->field_of_view->down_degrees));
   float x_scale = 2.0f / (left_tan + right_tan);
   float y_scale = 2.0f / (up_tan + down_tan);
   // clang-format off
@@ -56,6 +60,17 @@ CameraModel CameraModelViewProjFromXRView(
 }
 
 }  // namespace
+
+std::unique_ptr<GraphicsDelegate> GraphicsDelegate::Create() {
+#if BUILDFLAG(IS_WIN)
+  return std::make_unique<GraphicsDelegateWin>();
+#elif BUILDFLAG(IS_ANDROID)
+  return std::make_unique<GraphicsDelegateAndroid>();
+#else
+  NOTIMPLEMENTED();
+  return nullptr;
+#endif
+}
 
 GraphicsDelegate::GraphicsDelegate() = default;
 GraphicsDelegate::~GraphicsDelegate() = default;

@@ -8,7 +8,7 @@
 namespace history_clusters {
 
 // Returns the main History Clusters WebUI URL.
-// TODO(crbug.com/1473855): Change to a const char array when feature check is
+// TODO(crbug.com/40069898): Change to a const char array when feature check is
 //  no longer needed.
 const char* GetChromeUIHistoryClustersURL();
 

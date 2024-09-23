@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
@@ -28,28 +27,27 @@ import java.util.List;
  * of credentials and fills it into the focused form.
  */
 public class TouchToFillCoordinator implements TouchToFillComponent {
-    private final TouchToFillMediator mMediator =
-            new TouchToFillMediator(
-                    ImageFetcherFactory.createImageFetcher(
-                            ImageFetcherConfig.DISK_CACHE_ONLY,
-                            ProfileKey.getLastUsedRegularProfileKey()));
+    private final TouchToFillMediator mMediator = new TouchToFillMediator();
     private final PropertyModel mModel =
             TouchToFillProperties.createDefaultModel(mMediator::onDismissed);
 
     @Override
     public void initialize(
             Context context,
+            Profile profile,
             BottomSheetController sheetController,
             TouchToFillComponent.Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
-        // TODO(crbug.com/1472327): The touch_to_fill_list_item layout only supports
+        // TODO(crbug.com/40278589): The touch_to_fill_list_item layout only supports
         // favicons of size touch_to_fill_favicon_size, which is smaller than
         // touch_to_fill_favicon_size_modern. Figure out which size the layout should use.
         mMediator.initialize(
                 context,
                 delegate,
                 mModel,
-                new LargeIconBridge(Profile.getLastUsedRegularProfile()),
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey()),
+                new LargeIconBridge(profile),
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.touch_to_fill_favicon_size_modern),
                 bottomSheetFocusHelper);

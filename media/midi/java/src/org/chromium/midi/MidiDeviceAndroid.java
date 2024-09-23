@@ -81,7 +81,7 @@ class MidiDeviceAndroid {
     @CalledByNative
     String getProduct() {
         String product = getProperty(MidiDeviceInfo.PROPERTY_PRODUCT);
-        // TODO(crbug.com/636455): Following code to use PROPERTY_NAME is a
+        // TODO(crbug.com/40480119): Following code to use PROPERTY_NAME is a
         // workaround for a BLE MIDI device issue that Android does not provide
         // information for PROPERTY_MANUFACTURER, PROPERTY_PRODUCT, and
         // PROPERTY_VERSION. Confirmed on Android M and N.

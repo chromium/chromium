@@ -69,10 +69,15 @@
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "win-arm64-compile-dbg",
+          "group": "tryserver.chromium.win"
+        },
+        {
           "builder": "win-arm64-dbg",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

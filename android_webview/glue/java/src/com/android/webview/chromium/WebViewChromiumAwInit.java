@@ -20,12 +20,19 @@ import android.webkit.WebSettings;
 import android.webkit.WebStorage;
 import android.webkit.WebViewDatabase;
 
+import androidx.annotation.IntDef;
+
+import com.android.webview.chromium.WebViewChromium.ApiCall;
+
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserProcess;
+import org.chromium.android_webview.AwClassPreloader;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.AwCrashyClassUtils;
 import org.chromium.android_webview.AwDarkMode;
+import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.AwNetworkChangeNotifierRegistrationPolicy;
 import org.chromium.android_webview.AwProxyController;
@@ -33,9 +40,9 @@ import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.HttpAuthDatabase;
-import org.chromium.android_webview.ProductConfig;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
@@ -43,7 +50,6 @@ import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.variations.FastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
 import org.chromium.base.BuildInfo;
-import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FieldTrialList;
@@ -104,7 +110,35 @@ public class WebViewChromiumAwInit {
 
     private final WebViewChromiumFactoryProvider mFactory;
 
-    private boolean mIsPostedFromBackgroundThread;
+    // This enum must be kept in sync with WebViewStartup.CallSite in chrome_track_event.proto and
+    // WebViewStartupCallSite in enums.xml.
+    @IntDef({
+        CallSite.GET_AW_TRACING_CONTROLLER,
+        CallSite.GET_AW_PROXY_CONTROLLER,
+        CallSite.WEBVIEW_INSTANCE,
+        CallSite.GET_STATICS,
+        CallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS,
+        CallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER,
+        CallSite.GET_WEB_ICON_DATABASE,
+        CallSite.GET_DEFAULT_WEB_STORAGE,
+        CallSite.GET_DEFAULT_WEBVIEW_DATABASE,
+        CallSite.GET_TRACING_CONTROLLER,
+        CallSite.COUNT,
+    })
+    public @interface CallSite {
+        int GET_AW_TRACING_CONTROLLER = 0;
+        int GET_AW_PROXY_CONTROLLER = 1;
+        int WEBVIEW_INSTANCE = 2;
+        int GET_STATICS = 3;
+        int GET_DEFAULT_GEOLOCATION_PERMISSIONS = 4;
+        int GET_DEFAULT_SERVICE_WORKER_CONTROLLER = 5;
+        int GET_WEB_ICON_DATABASE = 6;
+        int GET_DEFAULT_WEB_STORAGE = 7;
+        int GET_DEFAULT_WEBVIEW_DATABASE = 8;
+        int GET_TRACING_CONTROLLER = 9;
+        // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
+        int COUNT = 10;
+    };
 
     WebViewChromiumAwInit(WebViewChromiumFactoryProvider factory) {
         mFactory = factory;
@@ -116,7 +150,7 @@ public class WebViewChromiumAwInit {
     public AwTracingController getAwTracingController() {
         synchronized (mLock) {
             if (mAwTracingController == null) {
-                ensureChromiumStartedLocked(true);
+                ensureChromiumStartedLocked(true, CallSite.GET_AW_TRACING_CONTROLLER);
             }
         }
         return mAwTracingController;
@@ -125,7 +159,7 @@ public class WebViewChromiumAwInit {
     public AwProxyController getAwProxyController() {
         synchronized (mLock) {
             if (mAwProxyController == null) {
-                ensureChromiumStartedLocked(true);
+                ensureChromiumStartedLocked(true, CallSite.GET_AW_PROXY_CONTROLLER);
             }
         }
         return mAwProxyController;
@@ -137,7 +171,7 @@ public class WebViewChromiumAwInit {
     // lives in the ui/ layer. See ui/base/ui_base_paths.h
     private static final int DIR_RESOURCE_PAKS_ANDROID = 3003;
 
-    protected void startChromiumLocked() {
+    protected void startChromiumLocked(@CallSite int callSite, boolean triggeredFromUIThread) {
         long startTime = SystemClock.uptimeMillis();
         try (ScopedSysTraceEvent event =
                 ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.startChromiumLocked")) {
@@ -157,8 +191,6 @@ public class WebViewChromiumAwInit {
 
             ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
 
-            BundleUtils.setIsBundle(ProductConfig.IS_BUNDLE);
-
             // We are rewriting Java resources in the background.
             // NOTE: Any reference to Java resources will cause a crash.
 
@@ -171,7 +203,8 @@ public class WebViewChromiumAwInit {
             PathService.override(DIR_RESOURCE_PAKS_ANDROID, "/system/framework/webview/paks");
 
             initPlatSupportLibrary();
-            doNetworkInitializations(context);
+            AwContentsStatics.setCheckClearTextPermitted(
+                    context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.O);
 
             waitUntilSetUpResources();
 
@@ -218,7 +251,12 @@ public class WebViewChromiumAwInit {
             }
 
             AwBrowserProcess.start();
+
+            // TODO(crbug.com/332706093): See if this can be moved before loading native.
+            AwClassPreloader.preloadClasses();
+
             AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
+            doNetworkInitializations(context);
 
             // This has to be done after variations are initialized, so components could be
             // registered or not depending on the variations flags.
@@ -263,19 +301,36 @@ public class WebViewChromiumAwInit {
                 logCommandLineAndActiveTrials();
             }
 
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT,
+                    () ->
+                            mFactory.setWebViewContextExperimentValue(
+                                    AwFeatureMap.isEnabled(
+                                            AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT)));
+
             // This runs all the pending tasks queued for after Chromium init is finished,
             // so should be the last thing that happens in startChromiumLocked.
             mFactory.getRunQueue().drainQueue();
+
+            AwCrashyClassUtils.maybeCrashIfEnabled();
         }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.Startup.CreationTime.InitReason", callSite, CallSite.COUNT);
+
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.CreationTime.StartChromiumLocked",
                 SystemClock.uptimeMillis() - startTime);
         TraceEvent.webViewStartupStartChromiumLocked(
-                startTime, SystemClock.uptimeMillis() - startTime);
+                startTime,
+                SystemClock.uptimeMillis() - startTime,
+                /* callSite= */ callSite,
+                /* fromUIThread= */ triggeredFromUIThread);
     }
 
     /**
      * Set up resources on a background thread.
+     *
      * @param context The context.
      */
     public void setUpResourcesOnBackgroundThread(int packageId, Context context) {
@@ -323,13 +378,14 @@ public class WebViewChromiumAwInit {
 
     void startYourEngines(boolean fromThreadSafeFunction) {
         synchronized (mLock) {
-            ensureChromiumStartedLocked(fromThreadSafeFunction);
+            ensureChromiumStartedLocked(fromThreadSafeFunction, CallSite.WEBVIEW_INSTANCE);
         }
     }
 
     // This method is not private only because the downstream subclass needs to access it,
     // it shouldn't be accessed from anywhere else.
-    /* package */ void ensureChromiumStartedLocked(boolean fromThreadSafeFunction) {
+    /* package */ void ensureChromiumStartedLocked(
+            boolean fromThreadSafeFunction, @CallSite int callSite) {
         assert Thread.holdsLock(mLock);
 
         if (mInitState == INIT_FINISHED) { // Early-out for the common case.
@@ -348,11 +404,9 @@ public class WebViewChromiumAwInit {
             // If we are currently running on the UI thread then we must do init now. If there was
             // already a task posted to the UI thread from another thread to do it, it will just
             // no-op when it runs.
-            startChromiumLocked();
+            startChromiumLocked(callSite, /* triggeredFromUIThread= */ true);
             return;
         }
-
-        mIsPostedFromBackgroundThread = true;
 
         // If we're not running on the UI thread (because init was triggered by a thread-safe
         // function), post init to the UI thread, since init is *not* thread-safe.
@@ -361,19 +415,26 @@ public class WebViewChromiumAwInit {
                     @Override
                     public void run() {
                         synchronized (mLock) {
-                            startChromiumLocked();
+                            startChromiumLocked(callSite, /* triggeredFromUIThread= */ false);
                         }
                     }
                 });
 
-        // Wait for the UI thread to finish init.
-        while (mInitState != INIT_FINISHED) {
-            try {
-                mLock.wait();
-            } catch (InterruptedException e) {
-                // Keep trying; we can't abort init as WebView APIs do not declare that they throw
-                // InterruptedException.
+        try (ScopedSysTraceEvent event =
+                ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.waitForUIThreadInit")) {
+            long startTime = SystemClock.uptimeMillis();
+            // Wait for the UI thread to finish init.
+            while (mInitState != INIT_FINISHED) {
+                try {
+                    mLock.wait();
+                } catch (InterruptedException e) {
+                    // Keep trying; we can't abort init as WebView APIs do not declare that they
+                    // throw InterruptedException.
+                }
             }
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.waitForUIThreadInit",
+                    SystemClock.uptimeMillis() - startTime);
         }
     }
 
@@ -411,6 +472,9 @@ public class WebViewChromiumAwInit {
     private void doNetworkInitializations(Context applicationContext) {
         try (ScopedSysTraceEvent e =
                 ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.doNetworkInitializations")) {
+            boolean forceUpdateNetworkState =
+                    !AwFeatureMap.isEnabled(
+                            AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP);
             if (applicationContext.checkPermission(
                             Manifest.permission.ACCESS_NETWORK_STATE,
                             Process.myPid(),
@@ -418,12 +482,8 @@ public class WebViewChromiumAwInit {
                     == PackageManager.PERMISSION_GRANTED) {
                 NetworkChangeNotifier.init();
                 NetworkChangeNotifier.setAutoDetectConnectivityState(
-                        new AwNetworkChangeNotifierRegistrationPolicy());
+                        new AwNetworkChangeNotifierRegistrationPolicy(), forceUpdateNetworkState);
             }
-
-            AwContentsStatics.setCheckClearTextPermitted(
-                    applicationContext.getApplicationInfo().targetSdkVersion
-                            >= Build.VERSION_CODES.O);
         }
     }
 
@@ -461,10 +521,10 @@ public class WebViewChromiumAwInit {
     public SharedStatics getStatics() {
         synchronized (mLock) {
             if (mSharedStatics == null) {
-                // TODO: Optimization potential: most these methods only need the native library
-                // loaded and initialized, not the entire browser process started.
-                // See also http://b/7009882
-                ensureChromiumStartedLocked(true);
+                // TODO: Optimization potential: most of the static methods only need the native
+                // library loaded and initialized, not the entire browser process started.
+                ensureChromiumStartedLocked(true, CallSite.GET_STATICS);
+                SharedStatics.setStartupTriggered();
             }
         }
         return mSharedStatics;
@@ -473,7 +533,7 @@ public class WebViewChromiumAwInit {
     public GeolocationPermissions getDefaultGeolocationPermissions() {
         synchronized (mLock) {
             if (mDefaultGeolocationPermissions == null) {
-                ensureChromiumStartedLocked(true);
+                ensureChromiumStartedLocked(true, CallSite.GET_DEFAULT_GEOLOCATION_PERMISSIONS);
             }
         }
         return mDefaultGeolocationPermissions;
@@ -492,7 +552,7 @@ public class WebViewChromiumAwInit {
     public AwServiceWorkerController getDefaultServiceWorkerController() {
         synchronized (mLock) {
             if (mDefaultServiceWorkerController == null) {
-                ensureChromiumStartedLocked(true);
+                ensureChromiumStartedLocked(true, CallSite.GET_DEFAULT_SERVICE_WORKER_CONTROLLER);
             }
         }
         return mDefaultServiceWorkerController;
@@ -500,7 +560,8 @@ public class WebViewChromiumAwInit {
 
     public android.webkit.WebIconDatabase getWebIconDatabase() {
         synchronized (mLock) {
-            ensureChromiumStartedLocked(true);
+            ensureChromiumStartedLocked(true, CallSite.GET_WEB_ICON_DATABASE);
+            WebViewChromium.recordWebViewApiCall(ApiCall.WEB_ICON_DATABASE_GET_INSTANCE);
             if (mWebIconDatabase == null) {
                 mWebIconDatabase = new WebIconDatabaseAdapter();
             }
@@ -511,7 +572,7 @@ public class WebViewChromiumAwInit {
     public WebStorage getDefaultWebStorage() {
         synchronized (mLock) {
             if (mDefaultWebStorage == null) {
-                ensureChromiumStartedLocked(true);
+                ensureChromiumStartedLocked(true, CallSite.GET_DEFAULT_WEB_STORAGE);
             }
         }
         return mDefaultWebStorage;
@@ -519,7 +580,7 @@ public class WebViewChromiumAwInit {
 
     public WebViewDatabase getDefaultWebViewDatabase(final Context context) {
         synchronized (mLock) {
-            ensureChromiumStartedLocked(true);
+            ensureChromiumStartedLocked(true, CallSite.GET_DEFAULT_WEBVIEW_DATABASE);
             if (mDefaultWebViewDatabase == null) {
                 mDefaultWebViewDatabase =
                         new WebViewDatabaseAdapter(

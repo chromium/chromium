@@ -87,12 +87,11 @@ export function traceWelcomeAnimationPlay(): void {
 }
 
 export function traceOobeLottieExecution(): void {
-  if (firstOobeLottieEventLogged) {
-    maybeTraceLastOobeLottieInitialization();
-  } else {
+  if (!firstOobeLottieEventLogged) {
     traceExecution(TraceEvent.FIRST_OOBE_LOTTIE_INITIALIZED);
     firstOobeLottieEventLogged = true;
   }
+  maybeTraceLastOobeLottieInitialization();
 }
 
 /**

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -16,8 +17,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
+#include "chrome/browser/ash/policy/remote_commands/affiliated_remote_commands_invalidator.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -30,13 +37,15 @@ namespace enterprise_management {
 class PolicyData;
 }  // namespace enterprise_management
 
+namespace user_manager {
+class UserManager;
+}  // namespace user_manager
+
 namespace policy {
 
 class AdbSideloadingAllowanceModePolicyHandler;
-class AffiliatedCloudPolicyInvalidator;
-class AffiliatedInvalidationServiceProvider;
-class AffiliatedRemoteCommandsInvalidator;
 class BluetoothPolicyHandler;
+class CloudExternalDataPolicyObserver;
 class CrdAdminSessionController;
 class DeviceCloudExternalDataPolicyHandler;
 class DeviceCloudPolicyInitializer;
@@ -48,6 +57,7 @@ class DeviceNetworkConfigurationUpdaterAsh;
 class DeviceScheduledRebootHandler;
 class DeviceScheduledUpdateChecker;
 class DeviceWiFiAllowedHandler;
+class FmRegistrationTokenUploader;
 class MinimumVersionPolicyHandler;
 class MinimumVersionPolicyHandlerDelegateImpl;
 class ProxyPolicyProvider;
@@ -212,6 +222,17 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Registers device refresh rate pref.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  // Called when UserManager instance is created.
+  void OnUserManagerCreated(user_manager::UserManager* user_manager);
+
+  // Called when UserManager instance is going to be shutdown soon.
+  // TODO(b/278643115): Consider to merge into OnUserManagerWillBeDestroyed()
+  // on resolving instance deletion timing issue.
+  void OnUserManagerShutdown();
+
+  // Called when UserManager instance will be destroyed soon.
+  void OnUserManagerWillBeDestroyed();
+
   // DeviceCloudPolicyManagerAsh::Observer:
   void OnDeviceCloudPolicyManagerConnected() override;
   void OnDeviceCloudPolicyManagerGotRegistry() override;
@@ -241,18 +262,27 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // Components of the device cloud policy implementation.
   std::unique_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
   std::unique_ptr<CrdAdminSessionController> crd_admin_session_controller_;
-  std::unique_ptr<AffiliatedInvalidationServiceProvider>
-      affiliated_invalidation_service_provider_;
+  std::unique_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
+  std::variant<std::unique_ptr<AffiliatedInvalidationServiceProvider>,
+               std::unique_ptr<invalidation::InvalidationListener>>
+      invalidation_service_provider_or_listener_ =
+          std::unique_ptr<AffiliatedInvalidationServiceProvider>{nullptr};
   raw_ptr<DeviceCloudPolicyManagerAsh> device_cloud_policy_manager_ = nullptr;
   raw_ptr<PrefService, DanglingUntriaged> local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
       device_cloud_policy_initializer_;
   std::unique_ptr<DeviceLocalAccountPolicyService>
       device_local_account_policy_service_;
-  std::unique_ptr<AffiliatedCloudPolicyInvalidator>
-      device_cloud_policy_invalidator_;
-  std::unique_ptr<AffiliatedRemoteCommandsInvalidator>
-      device_remote_commands_invalidator_;
+  std::variant<std::unique_ptr<AffiliatedCloudPolicyInvalidator>,
+               std::unique_ptr<CloudPolicyInvalidator>>
+      device_cloud_policy_invalidator_ =
+          std::unique_ptr<AffiliatedCloudPolicyInvalidator>{nullptr};
+  std::variant<std::unique_ptr<AffiliatedRemoteCommandsInvalidator>,
+               std::unique_ptr<RemoteCommandsInvalidator>>
+      device_remote_commands_invalidator_ =
+          std::unique_ptr<AffiliatedRemoteCommandsInvalidator>{nullptr};
+  std::unique_ptr<FmRegistrationTokenUploader>
+      device_fm_registration_token_uploader_;
 
   std::unique_ptr<BluetoothPolicyHandler> bluetooth_policy_handler_;
   std::unique_ptr<DeviceNamePolicyHandler> device_name_policy_handler_;
@@ -276,6 +306,9 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       device_scheduled_reboot_handler_;
   std::unique_ptr<DeviceDlcPredownloadListPolicyHandler>
       device_dlc_predownload_list_policy_handler_;
+
+  std::vector<std::unique_ptr<CloudExternalDataPolicyObserver>>
+      cloud_external_data_policy_observers_;
 
   // This policy provider is used on Chrome OS to feed user policy into the
   // global PolicyService instance. This works by installing the cloud policy

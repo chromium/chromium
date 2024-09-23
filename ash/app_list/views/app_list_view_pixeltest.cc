@@ -187,9 +187,6 @@ class AppListViewPixelRTLTest
   }
 
   bool IsRtl() const { return std::get<0>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL,
@@ -257,7 +254,7 @@ TEST_P(AppListViewPixelRTLTest, KeyboardShortcutSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_ks_search_results", /*revision_number=*/3,
+      "bubble_launcher_ks_search_results", /*revision_number=*/4,
       GetAppListTestHelper()->GetBubbleView()));
 }
 
@@ -322,9 +319,6 @@ class AppListViewLauncherSearchIphTest
     GetAppListTestHelper()->search_model()->SetWouldTriggerLauncherSearchIph(
         true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL,
@@ -376,9 +370,6 @@ class AppListViewTabletPixelTest
 
  protected:
   bool IsRtl() const { return std::get<0>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(RTL,
@@ -437,7 +428,7 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
 TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
   raw_ptr<SearchBoxView> search_box_view =
       GetAppListTestHelper()->GetSearchBoxView();
-  search_box_view->SetSearchBoxActive(true, ui::EventType::ET_UNKNOWN);
+  search_box_view->SetSearchBoxActive(true, ui::EventType::kUnknown);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "search_box_view_active", 7, search_box_view));
@@ -455,8 +446,8 @@ class AppListViewAssistantZeroStateTest
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        feature_engagement::kIPHLauncherSearchHelpUiFeature);
+    scoped_feature_list_.InitWithFeatures(
+        {feature_engagement::kIPHLauncherSearchHelpUiFeature}, {});
 
     AssistantAshTestBase::SetUp();
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
@@ -487,7 +478,7 @@ TEST_P(AppListViewAssistantZeroStateTest, Basic) {
       assistant_page_view->GetViewByID(AssistantViewID::kZeroStateView));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "app_list_view_assistant_zero_state", 7,
+      "app_list_view_assistant_zero_state", 9,
       assistant_page_view->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 

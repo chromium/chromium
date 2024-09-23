@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "content/browser/fenced_frame/automatic_beacon_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
-#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 
 namespace content {
@@ -41,13 +41,11 @@ class CONTENT_EXPORT FencedDocumentData
   void MaybeResetAutomaticBeaconData(
       blink::mojom::AutomaticBeaconType event_type);
 
-  network::AttributionReportingRuntimeFeatures features() const {
-    return features_;
+  void AddDisabledUntrustedNetworkCallback(base::OnceClosure callback) {
+    on_disabled_untrusted_network_callbacks_.push_back(std::move(callback));
   }
 
-  void SetFeatures(network::AttributionReportingRuntimeFeatures features) {
-    features_ = features;
-  }
+  void RunDisabledUntrustedNetworkCallbacks();
 
  private:
   // No public constructors to force going through static methods of
@@ -57,13 +55,23 @@ class CONTENT_EXPORT FencedDocumentData
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
 
-  network::AttributionReportingRuntimeFeatures features_;
-
   // Stores data registered by the document in a fenced frame tree using
   // the `fence.setReportEventDataForAutomaticBeacons` API. Maps an event type
   // to an AutomaticBeaconInfo object.
   std::map<blink::mojom::AutomaticBeaconType, AutomaticBeaconInfo>
       automatic_beacon_info_;
+
+  // Should be invoked when network access is cut off. This is stored as a
+  // vector to account for the web platform supporting multiple calls to
+  // disableUntrustedNetwork().
+  // Note: The callbacks must be run before FencedDocumentData is destroyed.
+  // Otherwise a check failure will crash the program, see check's error
+  // message: "LocalFrameHost::DisableUntrustedNetworkInFencedFrameCallback was
+  // destroyed without first either being run or its corresponding binding being
+  // closed. It is an error to drop response callbacks which still correspond to
+  // an open interface pipe."
+  // TODO(crbug.com/340606646): Add guards against the scenario above.
+  std::vector<base::OnceClosure> on_disabled_untrusted_network_callbacks_;
 };
 
 }  // namespace content

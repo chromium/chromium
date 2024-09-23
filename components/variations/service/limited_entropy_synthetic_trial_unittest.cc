@@ -23,52 +23,37 @@ class LimitedEntropySyntheticTrialTest : public ::testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(LimitedEntropySyntheticTrialTest, RandomizesWithExistingSeed_Enabled) {
-  local_state_.SetUint64(prefs::kVariationsLimitedEntropySyntheticTrialSeed,
-                         10);
-  LimitedEntropySyntheticTrial trial(&local_state_);
-  ASSERT_TRUE(trial.IsEnabled());
-  ASSERT_EQ(10u, local_state_.GetUint64(
-                     prefs::kVariationsLimitedEntropySyntheticTrialSeed));
-}
-
-TEST_F(LimitedEntropySyntheticTrialTest, RandomizesWithExistingSeed_Disabled) {
-  local_state_.SetUint64(prefs::kVariationsLimitedEntropySyntheticTrialSeed,
-                         90);
-  LimitedEntropySyntheticTrial trial(&local_state_);
-  ASSERT_FALSE(trial.IsEnabled());
-  ASSERT_EQ(90u, local_state_.GetUint64(
-                     prefs::kVariationsLimitedEntropySyntheticTrialSeed));
-}
-
-TEST_F(LimitedEntropySyntheticTrialTest, GeneratesAndRandomizesWithNewSeed) {
+TEST_F(LimitedEntropySyntheticTrialTest,
+       GeneratesAndRandomizesWithNewSeed_Stable) {
   ASSERT_FALSE(local_state_.HasPrefPath(
       prefs::kVariationsLimitedEntropySyntheticTrialSeed));
 
-  LimitedEntropySyntheticTrial trial(&local_state_);
+  LimitedEntropySyntheticTrial trial(&local_state_,
+                                     version_info::Channel::STABLE);
   auto group_name = trial.GetGroupName();
 
-  // The default group should not be activated when 50% of the population is in
-  // the enabled group.
-  ASSERT_NE(kLimitedEntropySyntheticTrialDefault, group_name);
-  auto is_enabled = group_name == kLimitedEntropySyntheticTrialEnabled;
-  auto is_control = group_name == kLimitedEntropySyntheticTrialControl;
-  ASSERT_TRUE(is_enabled || is_control);
+  // All stable clients must be in the enabled group.
+  EXPECT_EQ(kLimitedEntropySyntheticTrialEnabled, group_name);
+}
 
-  auto rand_seed = local_state_.GetUint64(
-      prefs::kVariationsLimitedEntropySyntheticTrialSeed);
-  if (rand_seed < 50u) {
-    ASSERT_TRUE(is_enabled);
-  } else {
-    ASSERT_LT(rand_seed, 100u);
-    ASSERT_TRUE(is_control);
-  }
+TEST_F(LimitedEntropySyntheticTrialTest,
+       GeneratesAndRandomizesWithNewSeed_Prestable) {
+  ASSERT_FALSE(local_state_.HasPrefPath(
+      prefs::kVariationsLimitedEntropySyntheticTrialSeed));
+
+  LimitedEntropySyntheticTrial trial(&local_state_,
+                                     version_info::Channel::BETA);
+  auto group_name = trial.GetGroupName();
+
+  // All pre-stable clients must be in the enabled group.
+  EXPECT_EQ(kLimitedEntropySyntheticTrialEnabled, group_name);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(LimitedEntropySyntheticTrialTest, TestSetSeedFromAsh) {
   LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u);
-  LimitedEntropySyntheticTrial trial(&local_state_);
+  LimitedEntropySyntheticTrial trial(&local_state_,
+                                     version_info::Channel::BETA);
 
   EXPECT_EQ(42u, trial.GetRandomizationSeed(&local_state_));
   histogram_tester_.ExpectUniqueSample(
@@ -77,7 +62,8 @@ TEST_F(LimitedEntropySyntheticTrialTest, TestSetSeedFromAsh) {
 
 TEST_F(LimitedEntropySyntheticTrialTest,
        TestSetSeedFromAsh_ExpectCheckIFailureIfRandomizedBeforeSyncingSeed) {
-  LimitedEntropySyntheticTrial trial(&local_state_);
+  LimitedEntropySyntheticTrial trial(&local_state_,
+                                     version_info::Channel::BETA);
   EXPECT_CHECK_DEATH(
       LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u));
 }
@@ -86,7 +72,8 @@ TEST_F(
     LimitedEntropySyntheticTrialTest,
     TestSetSeedFromAsh_ExpectCheckIFailureIfSettingSeedAgainAfterRandomization) {
   LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u);
-  LimitedEntropySyntheticTrial trial(&local_state_);
+  LimitedEntropySyntheticTrial trial(&local_state_,
+                                     version_info::Channel::BETA);
   EXPECT_CHECK_DEATH(
       LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 62u));
   histogram_tester_.ExpectUniqueSample(
@@ -96,7 +83,8 @@ TEST_F(
 TEST_F(LimitedEntropySyntheticTrialTest,
        TestSetSeedFromAsh_SyncingInvalidSeed) {
   LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 999u);
-  LimitedEntropySyntheticTrial trial(&local_state_);
+  LimitedEntropySyntheticTrial trial(&local_state_,
+                                     version_info::Channel::BETA);
   EXPECT_NE(999u, trial.GetRandomizationSeed(&local_state_));
   histogram_tester_.ExpectUniqueSample(
       kIsLimitedEntropySyntheticTrialSeedValidHistogram, false, 1);

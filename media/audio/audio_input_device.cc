@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/audio_input_device.h"
 
 #include <stdint.h>
@@ -81,6 +86,8 @@ class AudioInputDevice::AudioThreadCallback
 
   // Called whenever we receive notifications about pending data.
   void Process(uint32_t pending_data) override;
+
+  void OnSocketError() override;
 
  private:
   const bool enable_uma_;
@@ -319,7 +326,7 @@ void AudioInputDevice::OnError(AudioCapturerSource::ErrorCode code) {
         code, code == AudioCapturerSource::ErrorCode::kSystemPermissions
                   ? "Unable to open due to failing an OS Permissions check."
                   : "Maximum allowed input device limit reached or an OS "
-                    "failure occured.");
+                    "failure occurred.");
   } else {
     // Don't dereference the callback object if the audio thread
     // is stopped or stopping.  That could mean that the callback
@@ -483,8 +490,8 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   base::TimeDelta delay = now_time - capture_time;
   stats_reporter_.ReportCallback(delay, glitch_info);
 
-  capture_callback_->Capture(audio_bus, capture_time, buffer->params.volume,
-                             buffer->params.key_pressed);
+  capture_callback_->Capture(audio_bus, capture_time, glitch_info,
+                             buffer->params.volume, buffer->params.key_pressed);
 
   if (++current_segment_id_ >= total_segments_)
     current_segment_id_ = 0u;
@@ -492,7 +499,13 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   TRACE_EVENT_END2(
       "audio", "AudioInputDevice::AudioThreadCallback::Process",
       "capture_time (ms)", (capture_time - base::TimeTicks()).InMillisecondsF(),
-      "now_time (ms)", (now_time - base::TimeTicks()).InMillisecondsF());
+      "capture_delay (ms)", (now_time - capture_time).InMillisecondsF());
+}
+
+void AudioInputDevice::AudioThreadCallback::OnSocketError() {
+  capture_callback_->OnCaptureError(
+      AudioCapturerSource::ErrorCode::kSocketError,
+      "Socket closed unexpectedly");
 }
 
 }  // namespace media

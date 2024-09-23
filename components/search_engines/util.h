@@ -154,12 +154,12 @@ void ApplyActionsFromCurrentData(
 // if the latter is empty and the search engine choice feature is enabled.
 // Gets the value of the corresponding preference based on the search engine
 // choice feature flag.
-const std::string& GetDefaultSearchProviderPrefValue(PrefService& prefs);
+const std::string& GetDefaultSearchProviderGuidFromPrefs(PrefService& prefs);
 
 // Sets the corresponding default search provider preference based on the search
 // engine choice feature flag.
-void SetDefaultSearchProviderPrefValue(PrefService& prefs,
-                                       const std::string& value);
+void SetDefaultSearchProviderGuidToPrefs(PrefService& prefs,
+                                         const std::string& value);
 
 // Processes the results of KeywordWebDataService::GetKeywords, combining it
 // with prepopulated search providers to result in:

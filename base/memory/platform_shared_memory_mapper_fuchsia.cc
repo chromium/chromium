@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/memory/platform_shared_memory_mapper.h"
 
 #include "base/logging.h"
@@ -11,7 +16,7 @@
 
 namespace base {
 
-absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
+std::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
     subtle::PlatformSharedMemoryHandle handle,
     bool write_allowed,
     uint64_t offset,
@@ -24,7 +29,7 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryMapper::Map(
                                                   *handle, offset, size, &addr);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmar_map";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return make_span(reinterpret_cast<uint8_t*>(addr), size);

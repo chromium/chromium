@@ -1,0 +1,83 @@
+<style>
+  :host {
+    /*display: flex;
+    flex-direction: column;
+    width: fit-content;*/
+    --tabs-background-color: #fbfbfb;
+    --tabs-border-color: #c8c8c8;
+    --tabs-hover-text-color: black;
+    --tabs-unselected-text-color: #646464;
+  }
+
+  #tablist {
+    background: var(--tabs-background-color);
+    border-right: 1px solid var(--tabs-border-color);
+    border-bottom: 1px solid var(--tabs-border-color);
+    display: inline-block;
+    margin: 0;
+    padding-inline-start: 9px;
+    padding-top: 14px;
+    vertical-align: top;
+  }
+
+  :host([sticky-tabs]) #tablist {
+    position: sticky;
+    top: 0;
+    z-index: var(--cr-tab-box-tabs-z-index, 1);
+  }
+
+  #tablist ::slotted(*) {
+    background: var(--tabs-background-color);
+    border-bottom: 0;
+    border-radius: 0;
+    cursor: default;
+    display: block;
+    margin-inline-start: 0;
+    padding: 4px 9px 4px 10px;
+    transition: none;
+  }
+
+  #tablist ::slotted(:not([selected])) {
+    color: var(--tabs-unselected-text-color);
+  }
+
+  #tablist ::slotted(:not([selected]):hover) {
+    color: var(--tabs-hover-text-color);
+  }
+
+  #tablist ::slotted([selected]) {
+    font-weight: bold;
+    margin-bottom: -1px;
+    position: relative;
+    transition: none;
+    z-index: 0;
+  }
+
+  #tablist:focus {
+    outline: none;
+  }
+
+  #tabpanels {
+    box-shadow: none;
+    display: inline-block;
+    flex: 1;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  #tabpanels ::slotted(*) {
+    display: none;
+    flex: 1;
+  }
+
+  #tabpanels ::slotted([selected]) {
+    display: block;
+  }
+</style>
+
+<span id="tablist" role="tablist">
+  <slot name="tab"></slot>
+</span>
+<span id="tabpanels">
+  <slot name="panel"></slot>
+</span>

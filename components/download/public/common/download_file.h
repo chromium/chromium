@@ -59,7 +59,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
   // download sequence.
   typedef base::RepeatingCallback<void(int64_t offset)> CancelRequestCallback;
 
-  virtual ~DownloadFile() {}
+  virtual ~DownloadFile();
 
   // Upon completion, |initialize_callback| will be called on the UI
   // thread as per the comment above, passing DOWNLOAD_INTERRUPT_REASON_NONE
@@ -91,6 +91,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       RenameCompletionCallback callback) = 0;
 
@@ -119,6 +120,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
   // the final content URI.
   virtual void PublishDownload(RenameCompletionCallback callback) = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // Whether the file is an in-memory file.
+  virtual bool IsMemoryFile();
 };
 
 }  // namespace download

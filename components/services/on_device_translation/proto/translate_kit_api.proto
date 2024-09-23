@@ -1,0 +1,31 @@
+// WARNING: !DO NOT CHANGE THIS FILE!
+// This file should only be synced from its source by the owner.
+syntax = "proto2";
+
+package chrome.on_device_translation;
+
+// Optimize generated output for Lite, since it's going to be running on
+// end-user devices.
+option optimize_for = LITE_RUNTIME;
+option java_multiple_files = true;
+
+// The language package information of the TranslateKit library for Chrome's
+// use.
+// Next ID: 4
+message TranslateKitLanguagePackage {
+  // The first language code of the language pair. This can either be both
+  // source or target language.
+  optional string language1 = 1;
+  // The second language code of the language pair. This can either be both
+  // source or target language.
+  optional string language2 = 2;
+  // The path of the language package.
+  optional string package_path = 3;
+}
+
+// The list of language package information.
+// Next ID: 2
+message TranslateKitLanguagePackageConfig {
+  // The list of language packages.
+  repeated TranslateKitLanguagePackage packages = 1;
+}

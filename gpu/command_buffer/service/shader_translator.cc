@@ -17,7 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
-#include "ui/gl/gl_version_info.h"
 
 namespace gpu {
 namespace gles2 {
@@ -92,50 +91,6 @@ void GetInterfaceBlocks(ShHandle compiler, InterfaceBlockMap* var_map) {
 }
 
 }  // namespace
-
-ShShaderOutput ShaderTranslator::GetShaderOutputLanguageForContext(
-    const gl::GLVersionInfo& version_info) {
-  if (version_info.is_es) {
-    return SH_ESSL_OUTPUT;
-  }
-
-  // Determine the GLSL version based on OpenGL specification.
-
-  unsigned context_version =
-      version_info.major_version * 100 + version_info.minor_version * 10;
-  if (context_version >= 450) {
-    // OpenGL specs from 4.2 on specify that the core profile is "also
-    // guaranteed to support all previous versions of the OpenGL Shading
-    // Language back to version 1.40". For simplicity, we assume future
-    // specs do not unspecify this. If they did, they could unspecify
-    // glGetStringi(GL_SHADING_LANGUAGE_VERSION, k), too.
-    // Since current context >= 4.5, use GLSL 4.50 core.
-    return SH_GLSL_450_CORE_OUTPUT;
-  } else if (context_version == 440) {
-    return SH_GLSL_440_CORE_OUTPUT;
-  } else if (context_version == 430) {
-    return SH_GLSL_430_CORE_OUTPUT;
-  } else if (context_version == 420) {
-    return SH_GLSL_420_CORE_OUTPUT;
-  } else if (context_version == 410) {
-    return SH_GLSL_410_CORE_OUTPUT;
-  } else if (context_version == 400) {
-    return SH_GLSL_400_CORE_OUTPUT;
-  } else if (context_version == 330) {
-    return SH_GLSL_330_CORE_OUTPUT;
-  } else if (context_version == 320) {
-    return SH_GLSL_150_CORE_OUTPUT;
-  }
-
-  // Before OpenGL 3.2 we use the compatibility profile. Shading
-  // language version 130 restricted how sampler arrays can be indexed
-  // in loops, which causes problems like crbug.com/550487 .
-  //
-  // Also for any future specs that might be introduced between OpenGL
-  // 3.3 and OpenGL 4.0, at the time of writing, we use the
-  // compatibility profile.
-  return SH_GLSL_COMPATIBILITY_OUTPUT;
-}
 
 ShaderTranslator::DestructionObserver::DestructionObserver() = default;
 
@@ -314,4 +269,3 @@ ShaderTranslator::~ShaderTranslator() {
 
 }  // namespace gles2
 }  // namespace gpu
-

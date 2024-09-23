@@ -1,1 +1,11 @@
-file://chrome/browser/ash/app_mode/OWNERS
+# Primary owners
+bfranz@chromium.org
+edman@chromium.org
+jeroendh@google.com
+irfedorova@google.com
+pbond@chromium.org
+sbykov@google.com
+
+# Backup owners
+anqing@chromium.org
+poromov@chromium.org

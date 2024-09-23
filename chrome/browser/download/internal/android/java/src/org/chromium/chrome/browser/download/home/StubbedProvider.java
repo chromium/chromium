@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.download.home;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import android.os.Handler;
 import android.os.Looper;

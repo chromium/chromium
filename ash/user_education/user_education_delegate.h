@@ -14,20 +14,21 @@
 
 class AccountId;
 
+namespace apps {
+enum class LaunchSource;
+}  // namespace apps
+
 namespace ui {
 class ElementContext;
 class ElementIdentifier;
 }  // namespace ui
 
 namespace user_education {
-class HelpBubble;
-struct HelpBubbleParams;
 struct TutorialDescription;
 }  // namespace user_education
 
 namespace ash {
 
-enum class HelpBubbleId;
 enum class SystemWebAppType;
 enum class TutorialId;
 
@@ -36,19 +37,6 @@ enum class TutorialId;
 class ASH_EXPORT UserEducationDelegate {
  public:
   virtual ~UserEducationDelegate() = default;
-
-  // Attempts to create a help bubble, identified by `help_bubble_id`, with the
-  // specified `help_bubble_params` for the tracked element associated with the
-  // specified `element_id` in the specified `element_context`. A help bubble
-  // may not be created under certain circumstances, e.g. if there is an ongoing
-  // tutorial running.
-  // NOTE: Currently only the primary user profile is supported.
-  virtual std::unique_ptr<user_education::HelpBubble> CreateHelpBubble(
-      const AccountId& account_id,
-      HelpBubbleId help_bubble_id,
-      user_education::HelpBubbleParams help_bubble_params,
-      ui::ElementIdentifier element_id,
-      ui::ElementContext element_context) = 0;
 
   // Returns the identifier for an element associated with the specified
   // `app_id`, or an absent value if no such identifier exists. Note that
@@ -105,6 +93,7 @@ class ASH_EXPORT UserEducationDelegate {
   // NOTE: Currently only the primary user profile is supported.
   virtual void LaunchSystemWebAppAsync(const AccountId& account_id,
                                        SystemWebAppType system_web_app_type,
+                                       apps::LaunchSource launch_source,
                                        int64_t display_id) = 0;
 
   // Returns true if there is a currently running tutorial for the user

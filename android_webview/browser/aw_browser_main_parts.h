@@ -54,6 +54,8 @@ class AwBrowserMainParts : public content::BrowserMainParts {
 
   std::unique_ptr<metrics::MemoryMetricsLogger> metrics_logger_;
 
+  std::unique_ptr<content::SyntheticTrialSyncer> synthetic_trial_syncer_;
+
   std::unique_ptr<AwBrowserProcess> browser_process_;
   std::unique_ptr<crash_reporter::ChildExitObserver> child_exit_observer_;
 };

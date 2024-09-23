@@ -33,7 +33,8 @@ class P2PSocketClientDelegate {
   // Called when data is received on the socket.
   virtual void OnDataReceived(const net::IPEndPoint& address,
                               base::span<const uint8_t> data,
-                              const base::TimeTicks& timestamp) = 0;
+                              const base::TimeTicks& timestamp,
+                              rtc::EcnMarking ecn) = 0;
 };
 
 }  // namespace blink

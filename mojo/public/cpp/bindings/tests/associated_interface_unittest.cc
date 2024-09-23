@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -21,16 +26,19 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
+#include "mojo/public/cpp/bindings/tests/associated_interface_unittest.test-mojom.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/interfaces/bindings/tests/ping_service.mojom.h"
@@ -39,6 +47,7 @@
 
 namespace mojo {
 namespace test {
+namespace associated_interface_unittest {
 namespace {
 
 using mojo::internal::MultiplexRouter;
@@ -1170,6 +1179,50 @@ TEST_F(AssociatedInterfaceTest, AssociatedRemoteDedicatedPipe) {
   }
 }
 
+class ClumsyBinderImpl : public mojom::ClumsyBinder {
+ public:
+  explicit ClumsyBinderImpl(PendingReceiver<mojom::ClumsyBinder> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~ClumsyBinderImpl() override = default;
+
+  // mojom::ClumsyBinder:
+  void DropAssociatedBinder(
+      PendingAssociatedReceiver<mojom::AssociatedBinder> receiver) override {
+    // Nothing to do but drop the receiver so it's closed.
+  }
+
+ private:
+  Receiver<mojom::ClumsyBinder> receiver_;
+};
+
+TEST_F(AssociatedInterfaceTest, CloseSerializedAssociatedEndpoints) {
+  // Regression test for https://crbug.com/331636067. Verifies that endpoint
+  // lifetime is properly managed when associated endpoints are serialized into
+  // a message that gets dropped before transmission.
+
+  Remote<mojom::ClumsyBinder> binder;
+  ClumsyBinderImpl binder_impl(binder.BindNewPipeAndPassReceiver());
+
+  AssociatedRemote<mojom::AssociatedBinder> associated_binder;
+  binder->DropAssociatedBinder(
+      associated_binder.BindNewEndpointAndPassReceiver());
+
+  // Wait for disconnection to be observed. This way we know any subsequent
+  // outgoing messages on `associated_binder` will not be sent.
+  base::RunLoop loop1;
+  associated_binder.set_disconnect_handler(loop1.QuitClosure());
+  loop1.Run();
+
+  // Send another endpoint over. This receiver will be dropped, and the remote
+  // should be properly notified of peer closure to terminate this loop.
+  base::RunLoop loop2;
+  AssociatedRemote<mojom::AssociatedBinder> another_binder;
+  associated_binder->Bind(another_binder.BindNewEndpointAndPassReceiver());
+  another_binder.set_disconnect_handler(loop2.QuitClosure());
+  loop2.Run();
+}
+
 }  // namespace
+}  // namespace associated_interface_unittest
 }  // namespace test
 }  // namespace mojo

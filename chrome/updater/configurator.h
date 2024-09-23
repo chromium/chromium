@@ -95,9 +95,9 @@ class Configurator : public update_client::Configurator {
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdaterPrefs> prefs_;
-  scoped_refptr<PolicyService> policy_service_;
   scoped_refptr<ExternalConstants> external_constants_;
   scoped_refptr<PersistedData> persisted_data_;
+  scoped_refptr<PolicyService> policy_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;

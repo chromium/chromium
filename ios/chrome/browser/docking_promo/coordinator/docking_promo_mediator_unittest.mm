@@ -9,6 +9,7 @@
 #import "base/threading/thread_restrictions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
 #import "components/startup_metric_utils/browser/startup_metric_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
@@ -16,10 +17,13 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -95,6 +99,7 @@ class DockingPromoMediatorTest : public PlatformTest {
   void ClearUsageData() {
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kFirstRunRecencyKey];
+    ClearDefaultBrowserPromoData();
   }
 
   void WriteFirstRunSentinel() {
@@ -115,6 +120,7 @@ class DockingPromoMediatorTest : public PlatformTest {
   std::unique_ptr<MockPromosManager> promos_manager_;
   DockingPromoMediator* mediator_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   id consumer_;
 };
 
@@ -155,6 +161,42 @@ TEST_F(DockingPromoMediatorTest,
 // - The user is more than 14 days old
 TEST_F(DockingPromoMediatorTest,
        ShouldNotShowDockingPromoForUsersMoreThanTwoWeeksOld) {
+  CreateDockingPromoMediator(base::Days(3));
+  SetFirstRunRecency(18);
+
+  EXPECT_FALSE([mediator_ canShowDockingPromo]);
+}
+
+// Tests whether the docking promo should display when the user is eligible (met
+// criteria) and the eligibility feature is enabled.
+TEST_F(DockingPromoMediatorTest,
+       ShouldShowDockingPromoForEligibleUserWithFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kIOSDockingPromoForEligibleUsersOnly);
+
+  PrefService* local_pref_service =
+      TestingApplicationContext::GetGlobal()->GetLocalState();
+  local_pref_service->SetBoolean(prefs::kIosDockingPromoEligibilityMet, true);
+
+  CreateDockingPromoMediator(base::Days(3));
+  SetFirstRunRecency(18);
+
+  EXPECT_TRUE([mediator_ canShowDockingPromo]);
+}
+
+// Tests whether the docking promo should NOT display when the user is eligible
+// (met criteria) but the eligibility feature is disabled.
+TEST_F(DockingPromoMediatorTest,
+       ShouldNotShowDockingPromoForEligibleUserWithFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kIOSDockingPromoForEligibleUsersOnly);
+
+  PrefService* local_pref_service =
+      TestingApplicationContext::GetGlobal()->GetLocalState();
+  local_pref_service->SetBoolean(prefs::kIosDockingPromoEligibilityMet, true);
+
   CreateDockingPromoMediator(base::Days(3));
   SetFirstRunRecency(18);
 

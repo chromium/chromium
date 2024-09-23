@@ -96,14 +96,11 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 NativeThemeGtk::NativeThemeGtk()
     : NativeThemeBase(/*should_only_use_dark_colors=*/false,
                       ui::SystemTheme::kGtk) {
-  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
-      base::BindRepeating(AddGtkNativeColorMixer));
-
   OnThemeChanged(gtk_settings_get_default(), nullptr);
 }
 
 NativeThemeGtk::~NativeThemeGtk() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NativeThemeGtk::SetThemeCssOverride(ScopedCssProvider provider) {
@@ -135,20 +132,15 @@ void NativeThemeGtk::SetThemeCssOverride(ScopedCssProvider provider) {
 }
 
 void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
-  NativeTheme::NotifyOnNativeThemeUpdated();
-
-  // Update the preferred contrast settings for the NativeThemeAura instance and
-  // notify its observers about the change.
-  for (ui::NativeTheme* native_theme :
-       {ui::NativeTheme::GetInstanceForNativeUi(),
-        ui::NativeTheme::GetInstanceForWeb()}) {
-    native_theme->SetPreferredContrast(
-        UserHasContrastPreference()
-            ? ui::NativeThemeBase::PreferredContrast::kMore
-            : ui::NativeThemeBase::PreferredContrast::kNoPreference);
-    native_theme->set_prefers_reduced_transparency(UserHasContrastPreference());
-    native_theme->NotifyOnNativeThemeUpdated();
+  // NativeThemeGtk pulls information about contrast from NativeThemeAura. As
+  // such, Aura must be updated with this information before we call
+  // NotifyOnNativeThemeUpdated().
+  if (auto* native_theme_aura = ui::NativeTheme::GetInstanceForNativeUi();
+      native_theme_aura->UpdateContrastRelatedStates(*this)) {
+    native_theme_aura->NotifyOnNativeThemeUpdated();
   }
+
+  NativeTheme::NotifyOnNativeThemeUpdated();
 }
 
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,

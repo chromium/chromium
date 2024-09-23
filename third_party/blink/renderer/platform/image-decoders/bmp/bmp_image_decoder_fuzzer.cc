@@ -21,26 +21,24 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder_fuzzer_utils.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
+namespace blink {
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  using blink::BMPImageDecoder;
-  using blink::ColorBehavior;
-  using blink::ImageDecoder;
-  using WTF::SharedBuffer;
-
   static blink::BlinkFuzzerTestSupport test_support;
+  blink::test::TaskEnvironment task_environment;
 
-  scoped_refptr<SharedBuffer> buf = SharedBuffer::Create(data, size);
-
-  BMPImageDecoder decoder{ImageDecoder::kAlphaNotPremultiplied,
-                          ColorBehavior::kTransformToSRGB,
-                          ImageDecoder::kNoDecodedImageByteLimit};
-  decoder.SetData(buf, /*all_data_received=*/true);
-  decoder.DecodeFrameBufferAtIndex(0);
+  FuzzedDataProvider fdp(data, size);
+  FuzzDecoder(DecoderType::kBmpDecoder, fdp);
   return 0;
 }
+}  // namespace blink

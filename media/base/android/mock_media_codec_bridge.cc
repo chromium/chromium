@@ -45,6 +45,10 @@ bool MockMediaCodecBridge::IsDrained() const {
   return is_drained_;
 }
 
+std::string MockMediaCodecBridge::GetName() {
+  return name_;
+}
+
 CodecType MockMediaCodecBridge::GetCodecType() const {
   return codec_type_;
 }
@@ -52,8 +56,19 @@ CodecType MockMediaCodecBridge::GetCodecType() const {
 // static
 std::unique_ptr<MediaCodecBridge> MockMediaCodecBridge::CreateVideoDecoder(
     const VideoCodecConfig& config) {
+  return CreateMockVideoDecoder(config);
+}
+
+std::unique_ptr<MockMediaCodecBridge>
+MockMediaCodecBridge::CreateMockVideoDecoder(const VideoCodecConfig& config) {
   auto bridge = std::make_unique<MockMediaCodecBridge>();
   bridge->codec_type_ = config.codec_type;
+  bridge->name_ = base::StringPrintf(
+      "c2.%s.mock.codec.%s%s",
+      config.codec_type == CodecType::kSoftware ? "android" : "google",
+      GetCodecName(config.codec).c_str(),
+      config.codec_type == CodecType::kSecure ? ".secure" : "");
+
   return bridge;
 }
 

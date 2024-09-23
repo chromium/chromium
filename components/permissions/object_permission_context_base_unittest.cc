@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/features.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
@@ -23,6 +24,11 @@ namespace {
 
 const char* kRequiredKey1 = "key-1";
 const char* kRequiredKey2 = "key-2";
+
+using base::test::IsJson;
+using testing::ElementsAre;
+using testing::Field;
+using testing::Pointee;
 
 class TestObjectPermissionContext : public ObjectPermissionContextBase {
  public:

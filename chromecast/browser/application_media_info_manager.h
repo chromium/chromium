@@ -22,10 +22,9 @@ namespace media {
 
 class ApplicationMediaInfoManagerTest;
 
-class ApplicationMediaInfoManager
+class ApplicationMediaInfoManager final
     : public ::content::DocumentService<
-          ::media::mojom::CastApplicationMediaInfoManager>,
-      public base::SupportsWeakPtr<ApplicationMediaInfoManager> {
+          ::media::mojom::CastApplicationMediaInfoManager> {
  public:
   static void Create(
       content::RenderFrameHost* render_frame_host,
@@ -66,6 +65,7 @@ class ApplicationMediaInfoManager
   bool mixer_audio_enabled_;
   // Flag to determine if renderer can start.
   bool renderer_blocked_;
+  base::WeakPtrFactory<ApplicationMediaInfoManager> weak_ptr_factory_{this};
 };
 
 }  // namespace media

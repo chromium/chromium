@@ -16,10 +16,10 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TitleBitmapFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
@@ -39,7 +39,8 @@ public class LayerTitleCache {
     private final Context mContext;
     private TabModelSelector mTabModelSelector;
 
-    private final SparseArray<Title> mTitles = new SparseArray<Title>();
+    private final SparseArray<FaviconTitle> mTabTitles = new SparseArray<>();
+    private final SparseArray<Title> mGroupTitles = new SparseArray<>();
     private final int mFaviconSize;
 
     private long mNativeLayerTitleCache;
@@ -127,15 +128,15 @@ public class LayerTitleCache {
         TitleBitmapFactory titleBitmapFactory =
                 isDarkTheme ? mDarkTitleBitmapFactory : mStandardTitleBitmapFactory;
 
-        Title title = mTitles.get(tabId);
+        FaviconTitle title = mTabTitles.get(tabId);
         if (title == null) {
-            title = new Title();
-            mTitles.put(tabId, title);
+            title = new FaviconTitle();
+            mTabTitles.put(tabId, title);
             title.register();
         }
 
         title.set(
-                titleBitmapFactory.getTitleBitmap(mContext, titleString),
+                titleBitmapFactory.getTabTitleBitmap(titleString),
                 titleBitmapFactory.getFaviconBitmap(originalFavicon),
                 fetchFaviconFromHistory);
 
@@ -158,6 +159,74 @@ public class LayerTitleCache {
         return titleString;
     }
 
+    @CalledByNative
+    private void buildUpdatedGroupTitle(int groupRootId, boolean incognito) {
+        // TODO(crbug.com/331642736): Investigate if this can be called with a different width than
+        //  what is stored for the corresponding group title.
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(incognito);
+        if (!filter.tabGroupExistsForRootId(groupRootId)) return;
+
+        String titleString = filter.getTabGroupTitle(groupRootId);
+        getUpdatedGroupTitle(groupRootId, titleString, incognito);
+    }
+
+    public String getUpdatedGroupTitle(int groupRootId, String titleString, boolean incognito) {
+        if (TextUtils.isEmpty(titleString)) return null;
+
+        getUpdatedGroupTitleInternal(groupRootId, titleString, incognito);
+        return titleString;
+    }
+
+    private String getUpdatedGroupTitleInternal(int rootId, String titleString, boolean incognito) {
+        TitleBitmapFactory titleBitmapFactory =
+                incognito ? mDarkTitleBitmapFactory : mStandardTitleBitmapFactory;
+
+        Title title = mGroupTitles.get(rootId);
+        if (title == null) {
+            title = new Title();
+            mGroupTitles.put(rootId, title);
+            title.register();
+        }
+
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        Bitmap titleBitmap =
+                titleBitmapFactory.getGroupTitleBitmap(filter, mContext, rootId, titleString);
+        title.set(titleBitmap);
+
+        if (mNativeLayerTitleCache != 0) {
+            boolean isRtl =
+                    titleString != null
+                            && LocalizationUtils.getFirstStrongCharacterDirection(titleString)
+                                    == LocalizationUtils.RIGHT_TO_LEFT;
+            LayerTitleCacheJni.get()
+                    .updateGroupLayer(
+                            mNativeLayerTitleCache,
+                            LayerTitleCache.this,
+                            rootId,
+                            title.getTitleResId(),
+                            incognito,
+                            isRtl);
+        }
+        return titleString;
+    }
+
+    /**
+     * @param incognito Whether or not the tab group is from the Incognito model.
+     * @param titleString The title of the tab group.
+     * @return The width in px of the title.
+     */
+    public int getGroupTitleWidth(boolean incognito, String titleString) {
+        if (titleString == null) return 0;
+
+        TitleBitmapFactory titleBitmapFactory =
+                incognito ? mDarkTitleBitmapFactory : mStandardTitleBitmapFactory;
+        return titleBitmapFactory.getGroupTitleWidth(titleString);
+    }
+
     private void fetchFaviconForTab(final Tab tab) {
         fetchFaviconWithCallback(tab, (favicon, iconUrl) -> updateFaviconFromHistory(tab, favicon));
     }
@@ -170,15 +239,8 @@ public class LayerTitleCache {
      */
     public void fetchFaviconWithCallback(final Tab tab, FaviconImageCallback callback) {
         if (mFaviconHelper == null) mFaviconHelper = new FaviconHelper();
-
-        // Since tab#getProfile() is not available by this time, we will use tab#isIncognito boolean
-        // to get the correct profile.
-        Profile profile =
-                !tab.isIncognito()
-                        ? Profile.getLastUsedRegularProfile()
-                        : Profile.getLastUsedRegularProfile()
-                                .getPrimaryOTRProfile(/* createIfNeeded= */ true);
-        mFaviconHelper.getLocalFaviconImageForURL(profile, tab.getUrl(), mFaviconSize, callback);
+        mFaviconHelper.getLocalFaviconImageForURL(
+                tab.getProfile(), tab.getUrl(), mFaviconSize, callback);
     }
 
     /**
@@ -222,7 +284,7 @@ public class LayerTitleCache {
         if (!tab.isInitialized()) return;
 
         int tabId = tab.getId();
-        Title title = mTitles.get(tabId);
+        FaviconTitle title = mTabTitles.get(tabId);
         if (title == null) return;
         if (!title.updateFaviconFromHistory(faviconBitmap)) return;
 
@@ -236,46 +298,65 @@ public class LayerTitleCache {
         }
     }
 
-    public void remove(int tabId) {
-        Title title = mTitles.get(tabId);
+    public void removeTabTitle(int tabId) {
+        FaviconTitle title = mTabTitles.get(tabId);
         if (title == null) return;
         title.unregister();
-        mTitles.remove(tabId);
+        mTabTitles.remove(tabId);
         if (mNativeLayerTitleCache == 0) return;
         LayerTitleCacheJni.get()
                 .updateLayer(
                         mNativeLayerTitleCache, LayerTitleCache.this, tabId, -1, -1, false, false);
     }
 
-    public void clearExcept(int exceptId) {
-        Title title = mTitles.get(exceptId);
-        for (int i = 0; i < mTitles.size(); i++) {
-            Title toDelete = mTitles.get(mTitles.keyAt(i));
-            if (toDelete == title) continue;
-            toDelete.unregister();
-        }
-        mTitles.clear();
-        mDefaultFaviconHelper.clearCache();
-
-        if (title != null) mTitles.put(exceptId, title);
-
+    public void removeGroupTitle(int rootId) {
+        Title title = mGroupTitles.get(rootId);
+        if (title == null) return;
+        title.unregister();
+        mGroupTitles.remove(rootId);
         if (mNativeLayerTitleCache == 0) return;
         LayerTitleCacheJni.get()
-                .clearExcept(mNativeLayerTitleCache, LayerTitleCache.this, exceptId);
+                .updateGroupLayer(
+                        mNativeLayerTitleCache, LayerTitleCache.this, rootId, -1, false, false);
     }
 
     private class Title {
+        final BitmapDynamicResource mTitle = new BitmapDynamicResource(sNextResourceId++);
+
+        public Title() {}
+
+        public void set(Bitmap titleBitmap) {
+            mTitle.setBitmap(titleBitmap);
+        }
+
+        public void register() {
+            if (mResourceManager == null) return;
+            DynamicResourceLoader loader = mResourceManager.getBitmapDynamicResourceLoader();
+            loader.registerResource(mTitle.getResId(), mTitle);
+        }
+
+        public void unregister() {
+            if (mResourceManager == null) return;
+            DynamicResourceLoader loader = mResourceManager.getBitmapDynamicResourceLoader();
+            loader.unregisterResource(mTitle.getResId());
+        }
+
+        public int getTitleResId() {
+            return mTitle.getResId();
+        }
+    }
+
+    private class FaviconTitle extends Title {
         private final BitmapDynamicResource mFavicon = new BitmapDynamicResource(sNextResourceId++);
-        private final BitmapDynamicResource mTitle = new BitmapDynamicResource(sNextResourceId++);
 
         // We don't want to override updated favicon (e.g. from Tab#onFaviconAvailable) with one
         // fetched from history. You can set this to true / false to control that.
         private boolean mExpectUpdateFromHistory;
 
-        public Title() {}
+        public FaviconTitle() {}
 
         public void set(Bitmap titleBitmap, Bitmap faviconBitmap, boolean expectUpdateFromHistory) {
-            mTitle.setBitmap(titleBitmap);
+            set(titleBitmap);
             mFavicon.setBitmap(faviconBitmap);
             mExpectUpdateFromHistory = expectUpdateFromHistory;
         }
@@ -287,26 +368,24 @@ public class LayerTitleCache {
             return true;
         }
 
+        @Override
         public void register() {
+            super.register();
             if (mResourceManager == null) return;
             DynamicResourceLoader loader = mResourceManager.getBitmapDynamicResourceLoader();
             loader.registerResource(mFavicon.getResId(), mFavicon);
-            loader.registerResource(mTitle.getResId(), mTitle);
         }
 
+        @Override
         public void unregister() {
+            super.unregister();
             if (mResourceManager == null) return;
             DynamicResourceLoader loader = mResourceManager.getBitmapDynamicResourceLoader();
             loader.unregisterResource(mFavicon.getResId());
-            loader.unregisterResource(mTitle.getResId());
         }
 
         public int getFaviconResId() {
             return mFavicon.getResId();
-        }
-
-        public int getTitleResId() {
-            return mTitle.getResId();
         }
     }
 
@@ -315,7 +394,7 @@ public class LayerTitleCache {
         long init(
                 LayerTitleCache caller,
                 int fadeWidth,
-                int faviconStartlPadding,
+                int faviconStartPadding,
                 int faviconEndPadding,
                 int spinnerResId,
                 int spinnerIncognitoResId,
@@ -331,6 +410,14 @@ public class LayerTitleCache {
                 int tabId,
                 int titleResId,
                 int faviconResId,
+                boolean isIncognito,
+                boolean isRtl);
+
+        void updateGroupLayer(
+                long nativeLayerTitleCache,
+                LayerTitleCache caller,
+                int groupRootId,
+                int titleResId,
                 boolean isIncognito,
                 boolean isRtl);
 

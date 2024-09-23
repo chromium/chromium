@@ -1,0 +1,21 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/chromeos/extensions/odfs_config_private",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor chromeos codes in //chrome to break these dependencies; see
+  # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
+  # this list.
+  "+chrome/browser/chromeos/enterprise/cloud_storage",
+  "+chrome/browser/extensions/extension_apitest.h",
+  "+chrome/browser/extensions/extension_api_unittest.h",
+  "+chrome/browser/notifications",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/webui/ash/cloud_upload",
+  "+chrome/common",
+]

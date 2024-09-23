@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -42,7 +43,6 @@ import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.util.concurrent.Callable;
@@ -59,7 +59,7 @@ public class IncognitoNotificationServiceTest {
             new IncognitoCustomTabActivityTestRule();
 
     private void createTabOnUiThread() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable)
                         () ->
                                 mActivityTestRule
@@ -119,7 +119,7 @@ public class IncognitoNotificationServiceTest {
         pollUiThreadForChromeActivityIncognitoTabCount(2);
 
         final Profile incognitoProfile =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<Profile>() {
                             @Override
                             public Profile call() {
@@ -130,7 +130,7 @@ public class IncognitoNotificationServiceTest {
                                         .getProfile();
                             }
                         });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertTrue(incognitoProfile.isOffTheRecord());
                     assertTrue(incognitoProfile.isNativeInitialized());
@@ -217,7 +217,7 @@ public class IncognitoNotificationServiceTest {
                     Criteria.checkThat(actualNormalCount, Matchers.is(2));
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertFalse(LibraryLoader.getInstance().isInitialized()));
     }
 

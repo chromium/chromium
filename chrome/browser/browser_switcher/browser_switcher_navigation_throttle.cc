@@ -39,7 +39,7 @@ void OpenBrowserSwitchPage(base::WeakPtr<content::WebContents> web_contents,
   content::OpenURLParams params(about_url, content::Referrer(),
                                 WindowOpenDisposition::CURRENT_TAB,
                                 transition_type, false);
-  web_contents->OpenURL(params);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 bool MaybeLaunchAlternativeBrowser(
@@ -58,9 +58,8 @@ bool MaybeLaunchAlternativeBrowser(
   if (!should_switch)
     return false;
 
-  // Redirect top-level navigations only. This excludes iframes and webviews
-  // in particular. Since we can only navigate a guest after attaching to the
-  // outer WebContents, this check works for both guests and portals.
+  // This check is for GuestViews in particular. This works because we can only
+  // navigate a guest after attaching to the outer WebContents.
   if (navigation_handle->GetWebContents()->GetOuterWebContents())
     return false;
 

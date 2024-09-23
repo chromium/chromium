@@ -51,15 +51,13 @@ class WebMemoryAggregator {
   friend class WebMemoryAggregatorTest;
 
   // FrameNodeVisitor that recursively adds |frame_node| and its children to
-  // the aggregation using |ap_visitor|. Always returns true to continue
-  // traversal.
-  bool VisitFrame(AggregationPointVisitor* ap_visitor,
+  // the aggregation using |ap_visitor|.
+  void VisitFrame(AggregationPointVisitor* ap_visitor,
                   const FrameNode* frame_node);
 
   // WorkerNodeVisitor that recursively adds |worker_node| and its children to
-  // the aggregation using |ap_visitor|. Always returns true to continue
-  // traversal.
-  bool VisitWorker(AggregationPointVisitor* ap_visitor,
+  // the aggregation using |ap_visitor|.
+  void VisitWorker(AggregationPointVisitor* ap_visitor,
                    const WorkerNode* worker_node);
 
   // Creates a new breakdown entry with the given |scope| and |url|, and adds it

@@ -63,7 +63,7 @@ const gfx::VectorIcon& TypeToVectorIcon(CrosApiSearchResult::OmniboxType type) {
     case CrosApiSearchResult::OmniboxType::kHistory:
       return ash::kHistoryIcon;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ash::kOmniboxGenericIcon;
   }
 }
@@ -129,7 +129,7 @@ void OmniboxResult::UpdateRelevance() {
   double normalized_autocomplete_relevance =
       search_result_->relevance / kMaxOmniboxScore;
 
-  if (search_features::isLauncherFuzzyMatchForOmniboxEnabled()) {
+  if (search_features::IsLauncherFuzzyMatchForOmniboxEnabled()) {
     double title_relevance = CalculateTitleRelevance();
     if (title_relevance < kRelevanceThreshold) {
       scoring().set_filtered(true);
@@ -153,6 +153,10 @@ double OmniboxResult::CalculateTitleRelevance() const {
   FuzzyTokenizedStringMatch match;
   return match.Relevance(tokenized_query, tokenized_title, kUseWeightedRatio,
                          kStripDiacritics, kUseAcronymMatcher);
+}
+
+std::optional<GURL> OmniboxResult::url() const {
+  return search_result_->destination_url;
 }
 
 void OmniboxResult::Open(int event_flags) {

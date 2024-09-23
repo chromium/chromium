@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "android_webview/browser/metrics/android_metrics_provider.h"
-#include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
@@ -28,14 +27,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/android/channel_getter.h"
 
-namespace android_webview {
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 
-namespace prefs {
-const char kMetricsAppPackageNameLoggingRule[] =
-    "aw_metrics_app_package_name_logging_rule";
-const char kAppPackageNameLoggingRuleLastUpdateTime[] =
-    "aw_metrics_app_package_name_logging_rule_last_update";
-}  // namespace prefs
+namespace android_webview {
 
 namespace {
 
@@ -193,7 +188,7 @@ void AwMetricsServiceClient::OnAppStateChanged(
   if (app_in_foreground_) {
     GetMetricsService()->OnAppEnterForeground();
   } else {
-    // TODO(https://crbug.com/1052392): Turn on the background recording.
+    // TODO(crbug.com/40118864): Turn on the background recording.
     // Not recording in background, this matches Chrome's behavior.
     GetMetricsService()->OnAppEnterBackground(
         /* keep_recording_in_background = false */);
@@ -209,9 +204,6 @@ void AwMetricsServiceClient::RegisterAdditionalMetricsProviders(
 void AwMetricsServiceClient::RegisterMetricsPrefs(
     PrefRegistrySimple* registry) {
   RegisterPrefs(registry);
-  registry->RegisterDictionaryPref(prefs::kMetricsAppPackageNameLoggingRule);
-  registry->RegisterTimePref(prefs::kAppPackageNameLoggingRuleLastUpdateTime,
-                             base::Time());
   AndroidMetricsProvider::RegisterPrefs(registry);
 }
 

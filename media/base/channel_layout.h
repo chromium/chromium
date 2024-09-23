@@ -120,8 +120,14 @@ enum ChannelLayout {
   // kMaxConcurrentChannels
   CHANNEL_LAYOUT_5_1_4_DOWNMIX = 33,
 
+  // Front C, LFE
+  CHANNEL_LAYOUT_1_1 = 34,
+
+  // Front L, Front R, LFE, Back C
+  CHANNEL_LAYOUT_3_1_BACK = 35,
+
   // Max value, must always equal the largest entry ever logged.
-  CHANNEL_LAYOUT_MAX = CHANNEL_LAYOUT_5_1_4_DOWNMIX
+  CHANNEL_LAYOUT_MAX = CHANNEL_LAYOUT_3_1_BACK
 };
 
 // Note: Do not reorder or reassign these values; other code depends on their

@@ -383,7 +383,7 @@ GridSet::GridSet(wtf_size_t track_count,
     // Argument for 'fit-content' is a <percentage> that couldn't be resolved to
     // a definite <length>, normalize to 'minmax(auto, max-content)'.
     if (is_available_size_indefinite &&
-        track_size.FitContentTrackBreadth().IsPercent()) {
+        track_size.FitContentTrackBreadth().HasPercent()) {
       track_size = GridTrackSize(Length::Auto(), Length::MaxContent());
     }
   } else {
@@ -391,14 +391,14 @@ GridSet::GridSet(wtf_size_t track_count,
     // definitions from https://drafts.csswg.org/css-grid-2/#algo-terms.
     const auto normalized_min_track_sizing_function =
         ((is_available_size_indefinite &&
-          track_size.MinTrackBreadth().IsPercentOrCalc()) ||
+          track_size.MinTrackBreadth().HasPercent()) ||
          track_size.HasFlexMinTrackBreadth())
             ? Length::Auto()
             : track_size.MinTrackBreadth();
 
     const auto normalized_max_track_sizing_function =
         (is_available_size_indefinite &&
-         track_size.MaxTrackBreadth().IsPercentOrCalc())
+         track_size.MaxTrackBreadth().HasPercent())
             ? Length::Auto()
             : track_size.MaxTrackBreadth();
 
@@ -820,7 +820,7 @@ GridLayoutTrackCollection::CreateSubgridTrackCollection(
       std::swap(subgrid_baselines.major, subgrid_baselines.minor);
     }
 
-    subgrid_track_collection.baselines_ = std::move(subgrid_baselines);
+    subgrid_track_collection.baselines_.emplace(std::move(subgrid_baselines));
   }
 
   subgrid_track_collection.gutter_size_ = subgrid_gutter_size;
@@ -856,8 +856,9 @@ GridSizingTrackCollection::GridSizingTrackCollection(
     : GridLayoutTrackCollection(track_direction) {
   ranges_ = std::move(ranges);
 
-  if (must_create_baselines)
-    baselines_ = Baselines();
+  if (must_create_baselines) {
+    baselines_.emplace();
+  }
 
   wtf_size_t set_count = 0;
   for (const auto& range : ranges_) {
@@ -1126,7 +1127,7 @@ void GridSizingTrackCollection::InitializeSets(LayoutUnit grid_available_size) {
 
     if (track_size.IsFitContent()) {
       // Indefinite lengths cannot occur, as they must be normalized to 'auto'.
-      DCHECK(!track_size.FitContentTrackBreadth().IsPercentOrCalc() ||
+      DCHECK(!track_size.FitContentTrackBreadth().HasPercent() ||
              grid_available_size != kIndefiniteSize);
 
       LayoutUnit fit_content_argument = MinimumValueForLength(
@@ -1135,7 +1136,7 @@ void GridSizingTrackCollection::InitializeSets(LayoutUnit grid_available_size) {
     }
 
     if (track_size.HasFixedMaxTrackBreadth()) {
-      DCHECK(!track_size.MaxTrackBreadth().IsPercentOrCalc() ||
+      DCHECK(!track_size.MaxTrackBreadth().HasPercent() ||
              grid_available_size != kIndefiniteSize);
 
       // A fixed sizing function: Resolve to an absolute length and use that
@@ -1151,7 +1152,7 @@ void GridSizingTrackCollection::InitializeSets(LayoutUnit grid_available_size) {
     }
 
     if (track_size.HasFixedMinTrackBreadth()) {
-      DCHECK(!track_size.MinTrackBreadth().IsPercentOrCalc() ||
+      DCHECK(!track_size.MinTrackBreadth().HasPercent() ||
              grid_available_size != kIndefiniteSize);
 
       // A fixed sizing function: Resolve to an absolute length and use that

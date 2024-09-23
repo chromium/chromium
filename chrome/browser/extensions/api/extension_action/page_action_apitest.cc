@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
-#include "chrome/browser/extensions/extension_action_icon_factory.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -20,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_icon_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -46,7 +46,7 @@ class PageActionApiTest : public ExtensionApiTest,
     ExtensionAction* extension_action =
         ExtensionActionManager::Get(browser()->profile())
             ->GetExtensionAction(extension);
-    return extension_action->action_type() == ActionInfo::TYPE_PAGE
+    return extension_action->action_type() == ActionInfo::Type::kPage
                ? extension_action
                : nullptr;
   }
@@ -57,7 +57,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          PageActionApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -100,8 +100,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, Basic) {
 
   // We should not be creating icons asynchronously, so we don't need an
   // observer.
-  ExtensionActionIconFactory icon_factory(profile(), extension, action,
-                                          nullptr);
+  ExtensionActionIconFactory icon_factory(extension, action, nullptr);
 
   // Test that we received the changes.
   tab_id = sessions::SessionTabHelper::FromWebContents(

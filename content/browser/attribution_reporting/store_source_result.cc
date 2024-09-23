@@ -4,7 +4,11 @@
 
 #include "content/browser/attribution_reporting/store_source_result.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/functional/overloaded.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -14,10 +18,38 @@ namespace {
 using Status = ::attribution_reporting::mojom::StoreSourceResult;
 }  // namespace
 
+StoreSourceResult::StoreSourceResult(StorableSource source,
+                                     bool is_noised,
+                                     base::Time source_time,
+                                     std::optional<int> destination_limit,
+                                     Result result)
+    : source_(std::move(source)),
+      is_noised_(is_noised),
+      source_time_(source_time),
+      destination_limit_(destination_limit),
+      result_(std::move(result)) {
+  if (const auto* success = absl::get_if<Success>(&result_)) {
+    CHECK(!success->min_fake_report_time.has_value() || is_noised_);
+  }
+}
+
+StoreSourceResult::~StoreSourceResult() = default;
+
+StoreSourceResult::StoreSourceResult(const StoreSourceResult&) = default;
+
+StoreSourceResult& StoreSourceResult::operator=(const StoreSourceResult&) =
+    default;
+
+StoreSourceResult::StoreSourceResult(StoreSourceResult&&) = default;
+
+StoreSourceResult& StoreSourceResult::operator=(StoreSourceResult&&) = default;
+
 Status StoreSourceResult::status() const {
   return absl::visit(
       base::Overloaded{
-          [](Success) { return Status::kSuccess; },
+          [&](Success) {
+            return is_noised_ ? Status::kSuccessNoised : Status::kSuccess;
+          },
           [](InternalError) { return Status::kInternalError; },
           [](InsufficientSourceCapacity) {
             return Status::kInsufficientSourceCapacity;
@@ -31,7 +63,6 @@ Status StoreSourceResult::status() const {
           [](ProhibitedByBrowserPolicy) {
             return Status::kProhibitedByBrowserPolicy;
           },
-          [](SuccessNoised) { return Status::kSuccessNoised; },
           [](DestinationReportingLimitReached) {
             return Status::kDestinationReportingLimitReached;
           },
@@ -46,6 +77,18 @@ Status StoreSourceResult::status() const {
           },
           [](ExceedsMaxChannelCapacity) {
             return Status::kExceedsMaxChannelCapacity;
+          },
+          [](ExceedsMaxScopesChannelCapacity) {
+            return Status::kExceedsMaxScopesChannelCapacity;
+          },
+          [](ExceedsMaxTriggerStateCardinality) {
+            return Status::kExceedsMaxTriggerStateCardinality;
+          },
+          [](ExceedsMaxEventStatesLimit) {
+            return Status::kExceedsMaxEventStatesLimit;
+          },
+          [](DestinationPerDayReportingLimitReached) {
+            return Status::kDestinationPerDayReportingLimitReached;
           },
       },
       result_);

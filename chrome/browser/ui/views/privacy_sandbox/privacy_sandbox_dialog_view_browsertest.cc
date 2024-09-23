@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view.h"
+
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,9 +15,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -62,7 +65,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     auto* dialog_widget = static_cast<PrivacySandboxDialogView*>(
         waiter.WaitIfNeededAndGet()->widget_delegate()->GetContentsView());
 
-    // TODO(crbug.com/1510925): Waiting for the document to exist before
+    // TODO(crbug.com/41483512): Waiting for the document to exist before
     // performing the scroll action fixes the flakiness but we should try find a
     // better approach.
     ASSERT_TRUE(base::test::RunUntil([&] {
@@ -85,37 +88,51 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
   raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
 };
 
-// TODO(crbug.com/1511604): Re-enable the test.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_InvokeUi_Consent DISABLED_InvokeUi_Consent
-#else
-#define MAYBE_InvokeUi_Consent InvokeUi_Consent
-#endif
+// TODO(crbug.com/41484188): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       MAYBE_InvokeUi_Consent) {
+                       DISABLED_InvokeUi_Consent) {
   EXPECT_CALL(
       *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown));
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kConsentClosedNoDecision));
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown,
+                           PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(*mock_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
+                  PrivacySandboxService::SurfaceType::kDesktop));
   ShowAndVerifyUi();
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_InvokeUi_Notice DISABLED_InvokeUi_Notice
-#else
-#define MAYBE_InvokeUi_Notice InvokeUi_Notice
-#endif
+// TODO(crbug.com/325436918): Re-enable the test.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
-                       MAYBE_InvokeUi_Notice) {
+                       DISABLED_InvokeUi_Notice) {
   EXPECT_CALL(
       *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
+      PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown,
+                           PrivacySandboxService::SurfaceType::kDesktop));
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(
-          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction));
+          PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction,
+          PrivacySandboxService::SurfaceType::kDesktop));
+  ShowAndVerifyUi();
+}
+
+// TODO(crbug.com/333163287): Re-enable the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_InvokeUi_RestrictedNotice DISABLED_InvokeUi_RestrictedNotice
+#else
+#define MAYBE_InvokeUi_RestrictedNotice InvokeUi_RestrictedNotice
+#endif
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
+                       MAYBE_InvokeUi_RestrictedNotice) {
+  EXPECT_CALL(*mock_service(),
+              PromptActionOccurred(
+                  PrivacySandboxService::PromptAction::kRestrictedNoticeShown,
+                  PrivacySandboxService::SurfaceType::kDesktop));
+  EXPECT_CALL(
+      *mock_service(),
+      PromptActionOccurred(PrivacySandboxService::PromptAction::
+                               kRestrictedNoticeClosedNoInteraction,
+                           PrivacySandboxService::SurfaceType::kDesktop));
   ShowAndVerifyUi();
 }

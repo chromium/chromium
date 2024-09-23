@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/stack_allocated.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -15,36 +16,33 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 // Accepts information about changes to chunk properties as drawings are
 // accumulated, and produces a series of paint chunks: contiguous ranges of the
-// display list with identical properties.
+// display list with identical properties. Finish() must be called at end of
+// painting to ensure the last chunk is complete.
 class PLATFORM_EXPORT PaintChunker final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
-  explicit PaintChunker(Vector<PaintChunk>& chunks) { ResetChunks(&chunks); }
+  // If `clients_to_validate` is given, it will contain DisplayItemClients of
+  // newly created paint chunks on finish.
+  explicit PaintChunker(PaintChunks& chunks,
+                        HeapVector<Member<const DisplayItemClient>>*
+                            clients_to_validate = nullptr)
+      : chunks_(chunks), clients_to_validate_(clients_to_validate) {
+    DCHECK(chunks.empty());
+  }
   PaintChunker(const PaintChunker&) = delete;
   PaintChunker& operator=(const PaintChunker&) = delete;
 
-  // Finishes current chunks if any, and makes it ready to create chunks into
-  // the given vector if not null.
-  void ResetChunks(Vector<PaintChunk>*);
+  // Finishes current chunks if any. New function calls are disallowed.
+  void Finish();
 
-#if DCHECK_IS_ON()
-  bool IsInInitialState() const;
-#endif
-
-  void StartMarkingClientsForValidation(
-      HeapVector<Member<const DisplayItemClient>>& clients_to_validate);
   void MarkClientForValidation(const DisplayItemClient& client);
-  void StopMarkingClientsForValidation();
 
   const PropertyTreeStateOrAlias& CurrentPaintChunkProperties() const {
     return current_properties_;
@@ -54,13 +52,13 @@ class PLATFORM_EXPORT PaintChunker final {
                                          const DisplayItemClient&,
                                          const PropertyTreeStateOrAlias&);
 
-  // Sets the forcing new chunk status on or off. If the status is on, even the
+  // Sets the forcing new chunk status on. When the status is on, even the
   // properties haven't change, we'll force a new paint chunk for the next
   // display item and then automatically resets the status. Some special display
   // item (e.g. ForeignLayerDisplayItem) also automatically sets the status on
   // before and after the item to force a dedicated paint chunk.
-  void SetWillForceNewChunk(bool force) {
-    will_force_new_chunk_ = force;
+  void SetWillForceNewChunk() {
+    will_force_new_chunk_ = true;
     next_chunk_id_ = std::nullopt;
   }
   bool WillForceNewChunkForTesting() const { return will_force_new_chunk_; }
@@ -85,8 +83,9 @@ class PLATFORM_EXPORT PaintChunker final {
       const PaintChunk::Id&,
       const DisplayItemClient&,
       const TransformPaintPropertyNode* scroll_translation,
-      const gfx::Rect&,
-      cc::HitTestOpaqueness);
+      const gfx::Rect& scroll_hit_test_rect,
+      cc::HitTestOpaqueness,
+      const gfx::Rect& scrolling_contents_cull_rect);
 
   // The id will be used when we need to create a new current chunk.
   // Otherwise it's ignored. Returns true if a new chunk is added.
@@ -125,20 +124,26 @@ class PLATFORM_EXPORT PaintChunker final {
 
   void FinalizeLastChunkProperties();
 
-  Vector<PaintChunk>* chunks_ = nullptr;
-  WeakPersistent<HeapVector<Member<const DisplayItemClient>>>
-      clients_to_validate_ = nullptr;
+  void CheckNotFinished() const {
+#if DCHECK_IS_ON()
+    DCHECK(!finished_);
+#endif
+  }
+
+  PaintChunks& chunks_;
+  HeapVector<Member<const DisplayItemClient>>* const clients_to_validate_;
+
   // The id specified by UpdateCurrentPaintChunkProperties(). If it is not
   // nullopt, we will use it as the id of the next new chunk. Otherwise we will
   // use the id of the first display item of the new chunk as the id.
   // It's cleared when we create a new chunk with the id, or decide not to
   // create a chunk with it (e.g. when properties don't change and we are not
   // forced to create a new chunk).
-  typedef std::pair<PaintChunk::Id, const DisplayItemClient&> NextChunkId;
+  using NextChunkId = std::pair<PaintChunk::Id, const DisplayItemClient&>;
   std::optional<NextChunkId> next_chunk_id_;
 
-  PropertyTreeStateOrAlias current_properties_ =
-      PropertyTreeState::Uninitialized();
+  PropertyTreeStateOrAlias current_properties_{
+      PropertyTreeStateOrAlias::kUninitialized};
 
   // True when an item forces a new chunk (e.g., foreign display items), and for
   // the item following a forced chunk. PaintController also forces new chunks
@@ -146,6 +151,10 @@ class PLATFORM_EXPORT PaintChunker final {
   bool will_force_new_chunk_ = true;
 
   bool current_effectively_invisible_ = false;
+
+#if DCHECK_IS_ON()
+  bool finished_ = false;
+#endif
 };
 
 }  // namespace blink

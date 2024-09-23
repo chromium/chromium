@@ -11,7 +11,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
@@ -30,7 +29,6 @@ import org.chromium.base.test.util.Features;
 @Features.EnableFeatures({AwFeatures.WEBVIEW_ZOOM_KEYBOARD_SHORTCUTS})
 @Batch(Batch.PER_CLASS)
 public class AwKeyboardShortcutsTest extends AwParameterizedTest {
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @Rule public AwActivityTestRule mActivityTestRule;
 

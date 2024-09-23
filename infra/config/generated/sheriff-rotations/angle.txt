@@ -1,5 +1,5 @@
 ci/android-angle-chromium-arm64-builder
-ci/android-angle-chromium-arm64-nexus5x
+ci/android-angle-chromium-arm64-pixel2
 ci/fuchsia-angle-builder
 ci/ios-angle-builder
 ci/ios-angle-intel

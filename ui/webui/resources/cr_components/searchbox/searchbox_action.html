@@ -1,0 +1,54 @@
+<style import="cr-shared-style">
+  :host {
+    --action-height: 28px;
+    border: solid 1px var(--color-searchbox-results-action-chip);
+    border-radius: 8px;
+    display: flex;
+    height: var(--action-height);
+    min-width: 0;
+    outline: none;
+    padding-inline-end: 8px;
+    padding-inline-start: 8px;
+  }
+
+  :host(:hover) {
+    background-color: var(--color-searchbox-results-button-hover);
+  }
+
+  :host(:focus) {
+    margin: 2px;
+    border: solid 1px var(--color-searchbox-results-action-chip);
+    box-shadow: none;
+  }
+
+  .contents {
+    align-items: center;
+    display: flex;
+    min-width: 0;
+  }
+
+  #action-icon {
+    flex-shrink: 0;
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 15px;
+    background-color: var(--color-searchbox-results-action-chip-icon);
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 16px;
+    width: 16px;
+  }
+
+  #text {
+    overflow: hidden;
+    padding-inline-start: 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+</style>
+<div class="contents" title="[[tooltip_]]">
+  <div id="action-icon" style$="-webkit-mask-image: url([[action.iconUrl]])"></div>
+  <div id="text" inner-h-t-m-l="[[hintHtml_]]"></div>
+</div>
+

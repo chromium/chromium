@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] Declarative DOM Parts innerHTML <div><h1>content... (expect no parts)
+  document.getPartRoot is not a function
+[FAIL] Declarative DOM Parts innerHTML <div><h1 parseparts>content... (expect no parts)
+  document.getPartRoot is not a function
+[FAIL] Declarative DOM Parts innerHTML <div parseparts=""><h1>content... (expect no parts)
+  document.getPartRoot is not a function
+[FAIL] Declarative DOM Parts innerHTML <div parseparts=""><h1 parseparts>content... (expect no parts)
+  document.getPartRoot is not a function
+[FAIL] Declarative DOM Parts innerHTML <template><h1>content... (expect no parts)
+  contextEl.content.getPartRoot is not a function
+[FAIL] Declarative DOM Parts innerHTML <template><h1 parseparts>content... (expect no parts)
+  contextEl.content.getPartRoot is not a function
+[FAIL] Declarative DOM Parts innerHTML <template parseparts="" class="expect_success"><h1>content... (expect parts)
+  contextEl.content.getPartRoot is not a function
+[FAIL] Declarative DOM Parts innerHTML <template parseparts="" class="expect_success"><h1 parseparts>content... (expect parts)
+  contextEl.content.getPartRoot is not a function
+[FAIL] Basic NodePart parsing
+  tmpl.content.getPartRoot is not a function
+[FAIL] Basic AttributePart parsing with multiple attributes
+  tmpl.content.getPartRoot is not a function
+Harness: the test ran to completion.
+

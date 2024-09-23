@@ -30,40 +30,40 @@ common_tsc_dir =
 
 # TS files to compile.
 ts_modules = [
+  "action_manager.ts",
   "auto_scan_manager.ts",
   "cache.ts",
   "commands.ts",
   "focus_ring_manager.ts",
   "history.ts",
+  "item_scan_manager.ts",
   "menu_manager.ts",
   "metrics.ts",
   "navigator.ts",
   "navigator_interfaces.ts",
+  "nodes/back_button_node.ts",
+  "nodes/basic_node.ts",
+  "nodes/combo_box_node.ts",
+  "nodes/desktop_node.ts",
+  "nodes/group_node.ts",
+  "nodes/keyboard_node.ts",
   "nodes/switch_access_node.ts",
+  "nodes/window_node.ts",
   "point_scan_manager.ts",
   "settings_manager.ts",
   "switch_access.ts",
   "switch_access_constants.ts",
   "switch_access_loader.ts",
+  "switch_access_predicate.ts",
   "text_navigation_manager.ts",
 ]
 
 # JS files needed to compile TS.
 js_modules = [
-  "action_manager.js",
-  "item_scan_manager.js",
-  "nodes/back_button_node.js",
-  "nodes/basic_node.js",
-  "nodes/combo_box_node.js",
-  "nodes/desktop_node.js",
   "nodes/editable_text_node.js",
-  "nodes/group_node.js",
-  "nodes/keyboard_node.js",
   "nodes/modal_dialog_node.js",
   "nodes/slider_node.js",
   "nodes/tab_node.js",
-  "nodes/window_node.js",
-  "switch_access_predicate.js",
 ]
 
 # Root dir must be the parent directory so it can reach common.
@@ -90,8 +90,9 @@ ts_library("ts_build") {
     "../definitions/runtime.d.ts",
     "../definitions/settings_private_mv2.d.ts",
     "../definitions/tabs.d.ts",
+    "../definitions/windows.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
   ]
 
   in_files = ts_modules + js_modules
@@ -159,7 +160,10 @@ source_set("browser_tests") {
   testonly = true
   assert(enable_extensions)
 
-  deps = [ ":switch_access_extjs_tests" ]
+  deps = [
+    ":switch_access_extjs_tests",
+    ":switch_access_mv3_extjs_tests",
+  ]
 
   data = [
     "//chrome/browser/resources/chromeos/accessibility/common/",
@@ -168,10 +172,31 @@ source_set("browser_tests") {
   data += js2gtest_js_libraries
 }
 
-js2gtest("switch_access_extjs_tests") {
+test_includes = [
+  "../common/testing/accessibility_test_base.js",
+  "../common/testing/assert_additions.js",
+  "../common/testing/callback_helper.js",
+  "../common/testing/e2e_test_base.js",
+  "switch_access_e2e_test_base.js",
+  "test_utility.js",
+]
+
+# The test base classes generate C++ code with these deps.
+test_deps = [
+  "//ash",
+  "//ash/keyboard/ui",
+  "//base",
+  "//chrome/browser/ash/accessibility",
+  "//chrome/browser/ash/crosapi",
+  "//chrome/browser/ash/system_web_apps",
+  "//chrome/common",
+  "//chromeos",
+]
+
+js2gtest("switch_access_mv3_extjs_tests") {
   test_type = "extension"
+  parameterized = "true"
   sources = [
-    "auto_scan_manager_test.js",
     "focus_ring_manager_test.js",
     "item_scan_manager_test.js",
     "nodes/basic_node_test.js",
@@ -179,31 +204,19 @@ js2gtest("switch_access_extjs_tests") {
     "nodes/group_node_test.js",
     "nodes/tab_node_test.js",
     "point_scan_manager_test.js",
-
-    # TODO(1316408): Tests were broken at head. Re-enable tests when they pass.
-    # "saatlite/gen/saatlite_tests.js",
     "switch_access_predicate_test.js",
     "switch_access_test.js",
     "text_navigation_manager_test.js",
   ]
-  gen_include_files = [
-    "../common/testing/accessibility_test_base.js",
-    "../common/testing/assert_additions.js",
-    "../common/testing/callback_helper.js",
-    "../common/testing/e2e_test_base.js",
-    "switch_access_e2e_test_base.js",
-    "test_utility.js",
-  ]
+  gen_include_files = test_includes
+  deps = test_deps
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
 
-  # The test base classes generate C++ code with these deps.
-  deps = [
-    "//ash",
-    "//ash/keyboard/ui",
-    "//base",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash/crosapi",
-    "//chrome/common",
-    "//chromeos",
-  ]
+js2gtest("switch_access_extjs_tests") {
+  test_type = "extension"
+  sources = [ "auto_scan_manager_test.js" ]
+  gen_include_files = test_includes
+  deps = test_deps
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }

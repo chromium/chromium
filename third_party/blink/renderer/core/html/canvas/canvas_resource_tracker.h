@@ -21,7 +21,7 @@ class CanvasRenderingContextHost;
 class ExecutionContext;
 
 class CORE_EXPORT CanvasResourceTracker final
-    : public V8PerIsolateData::GarbageCollectedData {
+    : public V8PerIsolateData::UserData {
  public:
   using ResourceMap = HeapHashMap<WeakMember<CanvasRenderingContextHost>,
                                   WeakMember<ExecutionContext>>;

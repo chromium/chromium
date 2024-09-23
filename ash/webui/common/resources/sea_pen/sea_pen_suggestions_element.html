@@ -1,0 +1,64 @@
+<style include="common cros-button-style">
+  #container {
+    align-items: center;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    height: 32px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+
+  #container #suggestionSelector {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: start;
+    width: 100%;
+  }
+
+  #container cr-button {
+    background-color: transparent;
+    border: 1px solid var(--cros-sys-separator);
+    border-radius: 8px;
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-1-font);
+    height: 32px;
+    padding: 6px 12px;
+  }
+
+  #container cr-button:focus-visible {
+    outline-offset: -2px;
+  }
+
+  #container cr-button.shuffle {
+    border: none;
+  }
+</style>
+<div id="container">
+  <iron-a11y-keys id="keys" keys="left right"
+      on-keys-pressed="onSuggestionKeyPressed_">
+  </iron-a11y-keys>
+  <iron-selector
+      id="suggestionSelector"
+      selected="0"
+      selected-item="{{ironSelectedSuggestion_}}"
+      role="radiogroup">
+    <template is="dom-repeat" items="[[selectableSuggestions_]]" as="suggestion">
+      <cr-button
+          class="suggestion"
+          on-click="onClickSuggestion_"
+          role="radio"
+          tabindex$="[[getSuggestionTabIndex_(index)]]">
+        [[suggestion]]
+      </cr-button>
+    </template>
+  </iron-selector>
+  <cr-button id="shuffle"
+      class="shuffle"
+      on-click="onShuffleClicked_">
+    [[i18n('seaPenFreeformMoreSuggestionsButton')]]
+    <iron-icon icon="personalization-shared:refresh"></iron-icon>
+  </cr-button>
+</div>

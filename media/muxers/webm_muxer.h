@@ -24,7 +24,7 @@ class AudioParameters;
 // Trailer.
 // Clients will push encoded VPx or AV1 video frames and Opus or PCM audio
 // frames one by one via OnEncoded{Video|Audio}(). libwebm will eventually ping
-// the WriteDataCB passed on contructor with the wrapped encoded data.
+// the WriteDataCB passed on constructor with the wrapped encoded data.
 // WebmMuxer is designed for use on a single thread.
 // [1] http://www.webmproject.org/docs/container/
 // [2] http://www.matroska.org/technical/specs/index.html
@@ -129,7 +129,7 @@ class MEDIA_EXPORT WebmMuxer : public Muxer {
   // |duration| after the last write.
   // The maximum duration between forced clusters is internally limited to not
   // go below 100 ms.
-  // TODO(crbug.com/1381323): consider if cluster output should be based on
+  // TODO(crbug.com/40876732): consider if cluster output should be based on
   // media timestamps.
   base::TimeDelta max_data_output_interval_;
 

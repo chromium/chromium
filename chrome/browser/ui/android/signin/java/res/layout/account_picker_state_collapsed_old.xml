@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <include layout="@layout/account_picker_bottom_sheet_header_old" />
+
+    <View
+        style="@style/HorizontalDivider"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"/>
+
+    <LinearLayout
+        android:id="@+id/account_picker_selected_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <include layout="@layout/account_row" />
+
+        <ImageView
+            android:id="@+id/account_picker_selected_account_expand_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            app:srcCompat="@drawable/ic_expand_more_in_circle_24dp"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+
+    <include layout="@layout/account_picker_bottom_sheet_continue_button" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/account_picker_dismiss_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/signin_account_picker_dismiss_button" />
+
+    <!-- no-op counterpart for the Space with the same id in
+         account_picker_state_collapsed.xml. Will be removed along with this
+         layout file once UNO is launched -->
+    <Space
+        android:id="@+id/account_picker_dismiss_button_gone_margin_space"
+        android:visibility="gone"
+        android:layout_height="0dp"
+        android:layout_width="match_parent" />
+
+</LinearLayout>

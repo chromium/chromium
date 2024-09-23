@@ -10,8 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
@@ -38,21 +41,45 @@ class TestSyncService : public SyncService {
 
   ~TestSyncService() override;
 
-  void SetDisableReasons(DisableReasonSet disable_reasons);
-  void SetTransportState(TransportState transport_state);
+  // High-level setters that configure common scenarios. Passing
+  // ConsentLevel::kSync will also mark the first sync-the-feature setup as
+  // complete.
+  void SetSignedIn(signin::ConsentLevel consent_level);
+  void SetSignedIn(signin::ConsentLevel consent_level,
+                   const CoreAccountInfo& account_info);
+  void SetSignedOut();
+
+  // Mimics the user resetting Sync from the web dashboard. On ChromeOS Ash,
+  // this also flips SetSyncFeatureDisabledViaDashboard().
+  void MimicDashboardClear();
+
+  // Controls DISABLE_REASON_ENTERPRISE_POLICY and consequently
+  // GetTransportState(). The default is true.
+  void SetAllowedByEnterprisePolicy(bool allowed);
+
+  // Controls DISABLE_REASON_UNRECOVERABLE_ERROR and consequently
+  // GetTransportState(). The default is false.
+  void SetHasUnrecoverableError(bool has_error);
+
+  // The "max transport state" is the one yielded by GetTransportState() *if*
+  // there is no auth error set by SetPersistentAuthError() - in which the
+  // TransportState would be PAUSED - and no DisableReason - in which case it'd
+  // be DISABLED. The default "max transport state" is ACTIVE.
+  // Use this method only to test intermediate states like INITIALIZING or
+  // START_DEFERRED. Calling with DISABLED or PAUSED will crash.
+  void SetMaxTransportState(TransportState max_transport_state);
+
   void SetLocalSyncEnabled(bool local_sync_enabled);
-  void SetAccountInfo(const CoreAccountInfo& account_info);
-  void SetHasSyncConsent(bool has_consent);
-  void SetSetupInProgress(bool in_progress);
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().
+  // SetSignedOut() resets the auth error.
   void SetPersistentAuthError();
   void ClearAuthError();
 
   void SetInitialSyncFeatureSetupComplete(
       bool initial_sync_feature_setup_complete);
-  void SetFailedDataTypes(const ModelTypeSet& types);
+  void SetFailedDataTypes(const DataTypeSet& types);
 
   void SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot);
   // Convenience versions of the above, for when the caller doesn't care about
@@ -60,29 +87,33 @@ class TestSyncService : public SyncService {
   void SetEmptyLastCycleSnapshot();
   void SetNonEmptyLastCycleSnapshot();
   void SetDetailedSyncStatus(bool engine_available, SyncStatus status);
-  void SetPassphraseRequired(bool required);
-  void SetPassphraseRequiredForPreferredDataTypes(bool required);
+  void SetPassphraseRequired();
   void SetTrustedVaultKeyRequired(bool required);
-  void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingExplicitPassphrase(bool enabled);
-  void SetDownloadStatusFor(const ModelTypeSet& types,
-                            ModelTypeDownloadStatus download_status);
-  void SetTypesWithUnsyncedData(const ModelTypeSet& types);
+  void SetDownloadStatusFor(const DataTypeSet& types,
+                            DataTypeDownloadStatus download_status);
+  void SetTypesWithUnsyncedData(const DataTypeSet& types);
   void SetLocalDataDescriptions(
-      const std::map<ModelType, LocalDataDescription>& local_data_descriptions);
+      const std::map<DataType, LocalDataDescription>& local_data_descriptions);
 
-  // If the passed callback is non-null,
-  // SupportsExplicitPassphrasePlatformClient() will return true and every
+  // If the passed callback is non-null, every
   // SendExplicitPassphraseToPlatformClient() call will invoke it.
-  // Otherwise, SupportsExplicitPassphrasePlatformClient() will return false
-  // and SendExplicitPassphraseToPlatformClient() no-ops.
+  // Otherwise, the method no-ops.
   void SetPassphrasePlatformClientCallback(
       const base::RepeatingClosure& send_passphrase_to_platform_client_cb);
 
+  // The passed callback (if non-null) will be called on TriggerRefresh().
+  void SetTriggerRefreshCallback(
+      const base::RepeatingCallback<void(DataTypeSet)>& trigger_refresh_cb);
+
   void FireStateChanged();
-  void FirePaymentsIntegrationEnabledChanged();
   void FireSyncCycleCompleted();
+
+  // Similar to `GetSetupInProgressHandle()` but doesn't require the caller to
+  // handle the lifetime of `SyncSetupInProgressHandle`. It also means that it
+  // cannot be undone.
+  void SetSetupInProgress();
 
   // SyncService implementation.
 #if BUILDFLAG(IS_ANDROID)
@@ -106,13 +137,12 @@ class TestSyncService : public SyncService {
       override;
   bool IsSetupInProgress() const override;
 
-  ModelTypeSet GetPreferredDataTypes() const override;
-  ModelTypeSet GetActiveDataTypes() const override;
-  ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
-  void StopAndClear() override;
-  void OnDataTypeRequestsSyncStartup(ModelType type) override;
-  void TriggerRefresh(const ModelTypeSet& types) override;
-  void DataTypePreconditionChanged(ModelType type) override;
+  DataTypeSet GetPreferredDataTypes() const override;
+  DataTypeSet GetActiveDataTypes() const override;
+  DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
+  void OnDataTypeRequestsSyncStartup(DataType type) override;
+  void TriggerRefresh(const DataTypeSet& types) override;
+  void DataTypePreconditionChanged(DataType type) override;
 
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
@@ -124,7 +154,7 @@ class TestSyncService : public SyncService {
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
   base::Value::List GetTypeStatusMapForDebugging() const override;
   void GetEntityCountsForDebugging(
-      base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+      base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;
   const GURL& GetSyncServiceUrlForDebugging() const override;
   std::string GetUnrecoverableErrorMessageForDebugging() const override;
@@ -133,54 +163,58 @@ class TestSyncService : public SyncService {
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
-  ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
-  void RecordReasonIfWaitingForUpdates(
-      ModelType type,
-      const std::string& histogram_name) const override;
+  DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
-  bool SupportsExplicitPassphrasePlatformClient() override;
   void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
-      ModelTypeSet requested_types,
-      base::OnceCallback<void(ModelTypeSet)> cb) const override;
+      DataTypeSet requested_types,
+      base::OnceCallback<void(DataTypeSet)> cb) const override;
   void GetLocalDataDescriptions(
-      ModelTypeSet types,
-      base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+      DataTypeSet types,
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
-  void TriggerLocalDataMigration(ModelTypeSet types) override;
+  void TriggerLocalDataMigration(DataTypeSet types) override;
 
   // KeyedService implementation.
   void Shutdown() override;
 
  private:
-  TestSyncUserSettings user_settings_;
+  void OnSetupInProgressHandleDestroyed();
 
+  TestSyncUserSettings user_settings_;
   DisableReasonSet disable_reasons_;
-  TransportState transport_state_ = TransportState::ACTIVE;
+  TransportState max_transport_state_ = TransportState::ACTIVE;
+  bool has_persistent_auth_error_ = false;
   bool local_sync_enabled_ = false;
   CoreAccountInfo account_info_;
   bool has_sync_consent_ = true;
-  bool setup_in_progress_ = false;
+  int outstanding_setup_in_progress_handles_ = 0;
 
-  ModelTypeSet failed_data_types_;
+  DataTypeSet failed_data_types_;
 
-  std::map<ModelType, ModelTypeDownloadStatus> download_statuses_;
+  std::map<DataType, DataTypeDownloadStatus> download_statuses_;
 
   bool detailed_sync_status_engine_available_ = false;
   SyncStatus detailed_sync_status_;
 
   SyncCycleSnapshot last_cycle_snapshot_;
 
-  base::ObserverList<SyncServiceObserver>::Unchecked observers_;
+  base::ObserverList<SyncServiceObserver>::UncheckedAndDanglingUntriaged
+      observers_;
 
   GURL sync_service_url_;
 
-  ModelTypeSet unsynced_types_;
+  DataTypeSet unsynced_types_;
 
-  std::map<ModelType, LocalDataDescription> local_data_descriptions_;
+  std::map<DataType, LocalDataDescription> local_data_descriptions_;
 
   // Nullable.
   base::RepeatingClosure send_passphrase_to_platform_client_cb_;
+
+  // Nullable.
+  base::RepeatingCallback<void(syncer::DataTypeSet)> trigger_refresh_cb_;
+
+  base::WeakPtrFactory<TestSyncService> weak_factory_{this};
 };
 
 }  // namespace syncer

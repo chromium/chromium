@@ -202,9 +202,11 @@
           </cr-button>
         </div>
       </template>
-      <settings-multidevice-subpage tabindex="-1"
-          page-content-data="[[pageContentData]]">
-      </settings-multidevice-subpage>
+      <div id="settingsMultideviceSubpageWrapper" tabindex="-1">
+        <settings-multidevice-subpage
+            page-content-data="[[pageContentData]]">
+        </settings-multidevice-subpage>
+      </div>
     </os-settings-subpage>
   </template>
   <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>

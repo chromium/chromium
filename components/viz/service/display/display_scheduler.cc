@@ -48,8 +48,8 @@ class DisplayScheduler::BeginFrameObserver : public BeginFrameObserverBase {
   }
   // BeginFrameObserverBase implementation.
   void OnBeginFrameSourcePausedChanged(bool paused) override {
-    // TODO(1033847): DisplayScheduler doesn't handle BeginFrameSource pause but
-    // it can happen on WebXR.
+    // TODO(crbug.com/40663506): DisplayScheduler doesn't handle
+    // BeginFrameSource pause but it can happen on WebXR.
     if (paused) {
       NOTIMPLEMENTED();
     }
@@ -82,14 +82,8 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       pending_swap_params_(std::move(pending_swap_params)),
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
       observing_begin_frame_source_(false),
-      hint_session_factory_(hint_session_factory),
-      dynamic_cc_deadlines_percentile_(
-          features::IsDynamicSchedulerEnabledForClients()),
-      dynamic_scheduler_deadlines_percentile_(
-          features::IsDynamicSchedulerEnabledForDraw()) {
+      hint_session_factory_(hint_session_factory) {
   begin_frame_deadline_timer_.SetTaskRunner(task_runner);
-  if (dynamic_cc_deadlines_percentile_.has_value())
-    begin_frame_source_->SetDynamicBeginFrameDeadlineOffsetSource(this);
   begin_frame_deadline_closure_ = base::BindRepeating(
       &DisplayScheduler::OnBeginFrameDeadline, weak_ptr_factory_.GetWeakPtr());
 }
@@ -143,10 +137,6 @@ void DisplayScheduler::OnPendingSurfacesChanged() {
 
 base::TimeDelta DisplayScheduler::GetDeadlineOffset(
     base::TimeDelta interval) const {
-  if (client_ && dynamic_cc_deadlines_percentile_.has_value()) {
-    return client_->GetEstimatedDisplayDrawTime(
-        interval, dynamic_cc_deadlines_percentile_.value());
-  }
   return BeginFrameArgs::DefaultEstimatedDisplayDrawTime(interval);
 }
 
@@ -258,33 +248,44 @@ bool DisplayScheduler::OnBeginFrame(const BeginFrameArgs& args) {
   // it.
   missed_begin_frame_task_.Cancel();
 
+  // Although this always runs "in sequence" with the VizCompositorThread, it
+  // may run on another thread (see use of `RunOrPostTask` in
+  // `ExternalBeginFrameSourceWin`). To keep that other thread responsive, run
+  // the continuation on the VizCompositorThread if a potentially expensive call
+  // to `OnBeginFrameDeadline()` is needed.
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  if (inside_begin_frame_deadline_interval_ &&
+      !task_runner_->BelongsToCurrentThread()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DisplayScheduler::OnBeginFrameContinuation,
+                                  weak_ptr_factory_.GetWeakPtr(), save_args));
+  } else {
+    OnBeginFrameContinuation(save_args);
+  }
+
+  return true;
+}
+
+void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
   // If we get another BeginFrame before the previous deadline,
   // synchronously trigger the previous deadline before progressing.
-  if (inside_begin_frame_deadline_interval_)
+  if (inside_begin_frame_deadline_interval_) {
     OnBeginFrameDeadline();
+  }
 
   // Schedule the deadline.
-  current_begin_frame_args_ = save_args;
+  current_begin_frame_args_ = args;
   if (hint_session_) {
-    hint_session_->UpdateTargetDuration(ComputeAdpfTarget(save_args));
+    hint_session_->UpdateTargetDuration(ComputeAdpfTarget(args));
   }
 
-  base::TimeDelta delta;
-  if (client_ && dynamic_scheduler_deadlines_percentile_.has_value() &&
-      !dynamic_cc_deadlines_percentile_.has_value()) {
-    delta = client_->GetEstimatedDisplayDrawTime(
-        save_args.interval, dynamic_scheduler_deadlines_percentile_.value());
-  } else {
-    delta = BeginFrameArgs::DefaultEstimatedDisplayDrawTime(save_args.interval);
-  }
-  current_begin_frame_args_.deadline -= delta;
+  current_begin_frame_args_.deadline -=
+      BeginFrameArgs::DefaultEstimatedDisplayDrawTime(args.interval);
 
   inside_begin_frame_deadline_interval_ = true;
 
   UpdateHasPendingSurfaces();
   ScheduleBeginFrameDeadline();
-
-  return true;
 }
 
 int DisplayScheduler::MaxPendingSwaps() const {
@@ -378,7 +379,7 @@ base::TimeTicks DisplayScheduler::DesiredBeginFrameDeadlineTime(
     case BeginFrameDeadlineMode::kNone:
       return base::TimeTicks::Max();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::TimeTicks();
   }
 }
@@ -520,7 +521,7 @@ bool DisplayScheduler::AttemptDrawAndSwap() {
 }
 
 void DisplayScheduler::OnBeginFrameDeadline() {
-  TRACE_EVENT0("viz", "DisplayScheduler::OnBeginFrameDeadline");
+  TRACE_EVENT0("viz,input.scrolling", "DisplayScheduler::OnBeginFrameDeadline");
   DCHECK(inside_begin_frame_deadline_interval_);
 
   bool did_draw = AttemptDrawAndSwap();

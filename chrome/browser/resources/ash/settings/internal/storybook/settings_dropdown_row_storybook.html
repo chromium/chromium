@@ -1,0 +1,30 @@
+<style include="storybook-styles">
+</style>
+
+<h2>Basic</h2>
+<settings-dropdown-row
+    label="Lorem ipsum"
+    sublabel="Lorem ipsum dolor sit amet"
+    icon="os-settings:display"
+    learn-more-url="https://google.com"
+    value="[[basicDropdownValue_]]"
+    options="[[dropdownOptions_]]"
+    on-change="onBasicDropdownChange_"
+    disabled="[[basicDropdownDisabled_]]">
+</settings-dropdown-row>
+
+<cr-checkbox checked="{{basicDropdownDisabled_}}">Disabled</cr-checkbox>
+
+<code>
+  <div>Value: [[basicDropdownValue_]]</div>
+</code>
+
+<h2>Managed (via pref)</h2>
+<settings-dropdown-row
+    pref="[[virtualManagedPref_]]"
+    label="Lorem ipsum"
+    sublabel="Lorem ipsum dolor sit amet"
+    icon="os-settings:display"
+    learn-more-url="https://google.com"
+    options="[[dropdownOptions_]]">
+</settings-dropdown-row>

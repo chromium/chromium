@@ -38,7 +38,7 @@ void TrackedSplitPreference::OnNewValue(
     const base::Value* value,
     PrefHashStoreTransaction* transaction) const {
   if (value && !value->is_dict()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

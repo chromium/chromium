@@ -20,22 +20,20 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.webapps.WebApkInstallResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -47,8 +45,6 @@ public class WebApkInstallNotificationTest {
     private static final String URL = "https://test.com";
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private Context mContext;
@@ -68,7 +64,7 @@ public class WebApkInstallNotificationTest {
 
     @Test
     public void testInProgressNotification() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebApkInstallService.showInstallInProgressNotification(
                             MANIFEST_URL, SHORT_NAME, URL, mIcon, /* isIconMaskable= */ false);

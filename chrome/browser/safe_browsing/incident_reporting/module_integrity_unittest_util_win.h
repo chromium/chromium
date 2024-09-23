@@ -7,15 +7,17 @@
 
 #include <stddef.h>
 
+#include <array>
+
 namespace safe_browsing {
 
 // The test dlls used by module_integrity_verifier_win_unittest.cc and
 // environment_data_collection_win_unittest.cc.  The tests assume there exists
 // at least one entry.
-extern const wchar_t* const kTestDllNames[];
-
-// The number of names in |kTestDllNames|.
-extern const size_t kTestDllNamesCount;
+constexpr auto kTestDllNames = std::to_array({
+    L"verifier_test_dll_1.dll",
+    L"verifier_test_dll_2.dll",
+});
 
 // A function exported by the test dlls in |kTestDllNames|.
 extern const char kTestExportName[];

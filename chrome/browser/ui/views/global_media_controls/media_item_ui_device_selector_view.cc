@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,6 +40,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 
 using media_router::MediaRouterMetrics;
 using media_router::mojom::MediaRouteProviderId;
@@ -47,8 +49,8 @@ namespace {
 
 // Constants for the MediaItemUIDeviceSelectorView
 const int kExpandButtonStripWidth = 400;
+const int kExpandButtonStripHeight = 30;
 constexpr auto kExpandButtonStripInsets = gfx::Insets::VH(6, 15);
-constexpr gfx::Size kExpandButtonStripSize{kExpandButtonStripWidth, 30};
 constexpr auto kExpandButtonBorderInsets = gfx::Insets::VH(4, 8);
 
 // Constant for DropdownButton
@@ -102,7 +104,7 @@ ExpandDeviceSelectorLabel::ExpandDeviceSelectorLabel(
     SetText(l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_LABEL));
   }
   auto size = GetPreferredSize();
-  size.set_height(kExpandButtonStripSize.height());
+  size.set_height(kExpandButtonStripHeight);
   size.set_width(size.width() + kExpandButtonBorderInsets.width());
   SetPreferredSize(size);
 }
@@ -167,7 +169,7 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
       views::BoxLayout::Orientation::kVertical));
 
   // Do not create the expand button strip if this device selector view is used
-  // on Chrome OS ash with media::kGlobalMediaControlsCrOSUpdatedUI enabled.
+  // on Chrome OS ash.
   CreateExpandButtonStrip(
       /*show_expand_button=*/!media_color_theme_.has_value());
 
@@ -258,9 +260,9 @@ void MediaItemUIDeviceSelectorView::UpdateAvailableAudioDevices(
           : media::AudioDeviceDescription::kDefaultDeviceId);
 
   UpdateVisibility();
-  for (auto& observer : observers_) {
-    observer.OnMediaItemUIDeviceSelectorUpdated(device_entry_ui_map_);
-  }
+  observers_.Notify(
+      &MediaItemUIDeviceSelectorObserver::OnMediaItemUIDeviceSelectorUpdated,
+      device_entry_ui_map_);
   if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewDevicesChanged(
         device_entry_views_container_->children().size() > 0);
@@ -305,9 +307,8 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
   is_expanded_ = true;
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 
-  // When this device selector view is used on Chrome OS ash with
-  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, accessibility text will
-  // be handled by MediaItemUIDetailedView instead of here.
+  // When this device selector view is used on Chrome OS ash, accessibility text
+  // will be handled by MediaItemUIDetailedView instead of here.
   if (!media_color_theme_.has_value()) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_SHOW_DEVICE_LIST));
@@ -325,9 +326,8 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
   device_entry_views_container_->SetVisible(true);
   PreferredSizeChanged();
 
-  // When this device selector view is used on Chrome OS ash with
-  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, focus the first available
-  // device when the device list is shown for accessibility.
+  // When this device selector view is used on Chrome OS ash, focus the first
+  // available device when the device list is shown for accessibility.
   if (media_color_theme_.has_value() &&
       device_entry_views_container_->children().size() > 0) {
     device_entry_views_container_->children()[0]->RequestFocus();
@@ -339,9 +339,8 @@ void MediaItemUIDeviceSelectorView::HideDevices() {
   is_expanded_ = false;
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
 
-  // When this device selector view is used on Chrome OS ash with
-  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, accessibility text will
-  // be handled by MediaItemUIDetailedView instead of here.
+  // When this device selector view is used on Chrome OS ash, accessibility text
+  // will be handled by MediaItemUIDetailedView instead of here.
   if (!media_color_theme_.has_value()) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_HIDE_DEVICE_LIST));
@@ -360,7 +359,7 @@ void MediaItemUIDeviceSelectorView::UpdateVisibility() {
   }
 
   if (media_item_ui_) {
-    media_item_ui_->OnDeviceSelectorViewSizeChanged();
+    media_item_ui_->OnListViewSizeChanged();
   }
 }
 
@@ -391,16 +390,13 @@ bool MediaItemUIDeviceSelectorView::ShouldBeVisible() const {
 
 void MediaItemUIDeviceSelectorView::CreateExpandButtonStrip(
     bool show_expand_button) {
-  expand_button_strip_ = AddChildView(std::make_unique<views::View>());
-  auto* expand_button_strip_layout =
-      expand_button_strip_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          kExpandButtonStripInsets));
-  expand_button_strip_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
-  expand_button_strip_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  expand_button_strip_->SetPreferredSize(kExpandButtonStripSize);
+  expand_button_strip_ = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetInsideBorderInsets(kExpandButtonStripInsets)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .SetVisible(show_expand_button)
+          .Build());
 
   expand_label_ = expand_button_strip_->AddChildView(
       std::make_unique<ExpandDeviceSelectorLabel>(entry_point_));
@@ -416,13 +412,6 @@ void MediaItemUIDeviceSelectorView::CreateExpandButtonStrip(
                 base::Unretained(this)),
             foreground_color_));
   }
-
-  if (show_expand_button) {
-    SetPreferredSize(kExpandButtonStripSize);
-  } else {
-    expand_button_strip_->SetVisible(false);
-    SetPreferredSize(gfx::Size(kExpandButtonStripWidth, 0));
-  }
 }
 
 void MediaItemUIDeviceSelectorView::ShowOrHideDeviceList() {
@@ -436,7 +425,7 @@ void MediaItemUIDeviceSelectorView::ShowOrHideDeviceList() {
   }
 
   if (media_item_ui_) {
-    media_item_ui_->OnDeviceSelectorViewSizeChanged();
+    media_item_ui_->OnListViewSizeChanged();
   }
 }
 
@@ -467,7 +456,7 @@ void MediaItemUIDeviceSelectorView::RemoveDevicesOfType(
 DeviceEntryUI* MediaItemUIDeviceSelectorView::GetDeviceEntryUI(
     views::View* view) const {
   auto it = device_entry_ui_map_.find(static_cast<views::Button*>(view)->tag());
-  DCHECK(it != device_entry_ui_map_.end());
+  CHECK(it != device_entry_ui_map_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
@@ -505,9 +494,9 @@ void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
   device_entry_views_container_->DeprecatedLayoutImmediately();
 
   UpdateVisibility();
-  for (auto& observer : observers_) {
-    observer.OnMediaItemUIDeviceSelectorUpdated(device_entry_ui_map_);
-  }
+  observers_.Notify(
+      &MediaItemUIDeviceSelectorObserver::OnMediaItemUIDeviceSelectorUpdated,
+      device_entry_ui_map_);
   if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewDevicesChanged(
         device_entry_views_container_->children().size() > 0);
@@ -516,7 +505,7 @@ void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
 
 void MediaItemUIDeviceSelectorView::OnDeviceSelected(int tag) {
   auto it = device_entry_ui_map_.find(tag);
-  DCHECK(it != device_entry_ui_map_.end());
+  CHECK(it != device_entry_ui_map_.end(), base::NotFatalUntil::M130);
 
   if (it->second->GetType() == DeviceEntryUIType::kAudio) {
     delegate_->OnAudioSinkChosen(item_id_, it->second->raw_device_id());
@@ -539,6 +528,16 @@ bool MediaItemUIDeviceSelectorView::OnMousePressed(
   }
   // Stop the mouse click event from bubbling to parent views.
   return true;
+}
+
+gfx::Size MediaItemUIDeviceSelectorView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  int height = GetLayoutManager()->GetPreferredHeightForWidth(
+      this, kExpandButtonStripWidth);
+  int expand_button_strip_height =
+      expand_button_strip_->GetVisible() ? kExpandButtonStripHeight : 0;
+  return gfx::Size(kExpandButtonStripWidth,
+                   std::max(expand_button_strip_height, height));
 }
 
 void MediaItemUIDeviceSelectorView::AddObserver(

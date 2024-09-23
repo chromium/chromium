@@ -144,17 +144,19 @@ var tests = [
     listenOnce(
         chrome.declarativeNetRequest.onRuleMatchedDebug,
         function(fetchPromise, info) {
-          fetchPromise.then(function(response) {
-            chrome.test.fail('Request should be blocked by rule with ID 1');
-          }).catch(function(error) {
-            chrome.test.assertEq(1, info.rule.ruleId);
-            chrome.test.assertEq('rules1', info.rule.rulesetId);
+          fetchPromise
+              .then(function(response) {
+                chrome.test.fail('Request should be blocked by rule with ID 1');
+              })
+              .catch(function(error) {
+                chrome.test.assertEq(1, info.rule.ruleId);
+                chrome.test.assertEq('rules1', info.rule.rulesetId);
 
-            // Tab ID should be -1 since this request was made from a background
-            // page.
-            chrome.test.assertEq(-1, info.request.tabId);
-            chrome.test.succeed();
-          });
+                // Tab ID should be -1 since this request was made from a
+                // background page.
+                chrome.test.assertEq(-1, info.request.tabId);
+                chrome.test.succeed();
+              });
         }.bind(null, fetch(getServerURL('abc.com'), {method: 'GET'})));
   },
 
@@ -211,11 +213,11 @@ var tests = [
     resetMatchedRules();
 
     const baseUrl = getServerURL('a.com') +
-          'extensions/api_test/declarative_net_request/on_rules_matched_debug/';
+        'extensions/api_test/declarative_net_request/on_rules_matched_debug/';
     const url = baseUrl + 'sandbox_container.html';
     const innerFrameUrl = baseUrl + 'blocked_frame.html';
 
-    // Initator inside sandbox is opaque.
+    // Initiator inside sandbox is opaque.
     const kOpaqueInitiator = 'null';
 
     navigateTab(url, url, (tab) => {

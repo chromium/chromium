@@ -15,6 +15,7 @@ public final class WebApkMetaDataKeys {
             "org.chromium.webapk.shell_apk.loggedIntentUrlParam";
     public static final String NAME = "org.chromium.webapk.shell_apk.name";
     public static final String SHORT_NAME = "org.chromium.webapk.shell_apk.shortName";
+    public static final String HAS_CUSTOM_NAME = "org.chromium.webapk.shell_apk.hasCustomName";
     public static final String SCOPE = "org.chromium.webapk.shell_apk.scope";
     public static final String DISPLAY_MODE = "org.chromium.webapk.shell_apk.displayMode";
     public static final String ORIENTATION = "org.chromium.webapk.shell_apk.orientation";

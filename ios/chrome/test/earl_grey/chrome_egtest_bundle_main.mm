@@ -6,7 +6,10 @@
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
+#import <grpc/grpc.h>
+#import <grpcpp/grpcpp.h>
 #import <objc/runtime.h>
+
 #import <memory>
 
 #import "base/apple/bundle_locations.h"
@@ -16,12 +19,10 @@
 #import "base/debug/stack_trace.h"
 #import "base/i18n/icu_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/types/fixed_array.h"
 #import "ios/chrome/test/earl_grey/chrome_egtest_plugin_client.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
-
-#import <grpc/grpc.h>
-#import <grpcpp/grpcpp.h>
 
 using chrome_egtest_plugin::TestPluginClient;
 using grpc::Channel;
@@ -41,7 +42,7 @@ class TestMain {
 
     // Convert NSArray to the required input type of `base::CommandLine::Init`.
     int argc = arguments.count;
-    const char* argv[argc];
+    base::FixedArray<const char*> argv(argc);
     std::vector<std::string> argv_store;
     // Avoid using std::vector::push_back (or any other method that could cause
     // the vector to grow) as this will cause the std::string to be copied or
@@ -57,7 +58,7 @@ class TestMain {
 
     // Initialize the CommandLine with arguments. ResourceBundle requires
     // CommandLine to exist.
-    base::CommandLine::Init(argc, argv);
+    base::CommandLine::Init(argc, argv.data());
 
     // Configures the default framework bundle to point to the test module
     // bundle instead of the test runner app.
@@ -83,7 +84,7 @@ class TestMain {
  private:
   base::AtExitManager exit_manager_;
 };
-}
+}  // namespace
 
 @class XCTSourceCodeSymbolInfo;
 @protocol XCTSymbolInfoProviding <NSObject>

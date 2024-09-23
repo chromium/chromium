@@ -8,7 +8,7 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
+    android:padding="24dp"
     android:orientation="vertical">
 
     <TextView
@@ -28,14 +28,37 @@ found in the LICENSE file.
         android:id="@+id/option_install"
         android:clickable="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="2dp">
 
-        <ImageView
-            android:id="@+id/app_icon_install"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:importantForAccessibility="no" />
+        <FrameLayout
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_margin="6dp"
+            android:layout_gravity="center_vertical">
+
+            <ProgressBar
+                android:id="@+id/spinny_install"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center" />
+
+            <ImageView
+                android:id="@+id/app_icon_install"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/install_icon_overlay"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom|end"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -52,7 +75,7 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
             <TextView
-                android:id="@+id/option_text_open_instead"
+                android:id="@+id/option_text_install_explanation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
@@ -64,7 +87,7 @@ found in the LICENSE file.
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="28dp"
+            android:layout_gravity="center_vertical"
             android:importantForAccessibility="no" />
     </LinearLayout>
 
@@ -78,14 +101,37 @@ found in the LICENSE file.
         android:id="@+id/option_shortcut"
         android:clickable="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:padding="2dp">
 
-        <ImageView
-            android:id="@+id/app_icon_shortcut"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:importantForAccessibility="no" />
+        <FrameLayout
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_margin="6dp"
+            android:layout_gravity="center_vertical">
+
+            <ProgressBar
+                android:id="@+id/spinny_shortcut"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center" />
+
+            <ImageView
+                android:id="@+id/app_icon_shortcut"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/shortcut_icon_overlay"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom|end"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="0dp"
@@ -114,7 +160,7 @@ found in the LICENSE file.
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="28dp"
+            android:layout_gravity="center_vertical"
             android:importantForAccessibility="no" />
     </LinearLayout>
 </LinearLayout>

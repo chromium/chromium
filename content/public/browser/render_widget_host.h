@@ -15,9 +15,9 @@
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_sender.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -176,9 +176,9 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void ForwardWheelEvent(
       const blink::WebMouseWheelEvent& wheel_event) = 0;
   virtual void ForwardKeyboardEvent(
-      const NativeWebKeyboardEvent& key_event) = 0;
+      const input::NativeWebKeyboardEvent& key_event) = 0;
   virtual void ForwardKeyboardEventWithLatencyInfo(
-      const NativeWebKeyboardEvent& key_event,
+      const input::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency_info) = 0;
   virtual void ForwardGestureEvent(
       const blink::WebGestureEvent& gesture_event) = 0;
@@ -205,7 +205,7 @@ class CONTENT_EXPORT RenderWidgetHost {
 
   // Add/remove a callback that can handle key presses without requiring focus.
   using KeyPressEventCallback =
-      base::RepeatingCallback<bool(const NativeWebKeyboardEvent&)>;
+      base::RepeatingCallback<bool(const input::NativeWebKeyboardEvent&)>;
   virtual void AddKeyPressEventCallback(
       const KeyPressEventCallback& callback) = 0;
   virtual void RemoveKeyPressEventCallback(
@@ -217,13 +217,16 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void AddMouseEventCallback(const MouseEventCallback& callback) = 0;
   virtual void RemoveMouseEventCallback(const MouseEventCallback& callback) = 0;
 
-  // Add/remove a callback that, when it returns true, will suppress IME
+  // Adds a callback that, when it returns true, will suppress IME
   // display.
   using SuppressShowingImeCallback = base::RepeatingCallback<bool()>;
   virtual void AddSuppressShowingImeCallback(
       const SuppressShowingImeCallback& callback) = 0;
+  // Removes the callback to suppress IME display. If `trigger_ime` is set tu
+  // true, it will also try to show the IME display after the callback removal.
   virtual void RemoveSuppressShowingImeCallback(
-      const SuppressShowingImeCallback& callback) = 0;
+      const SuppressShowingImeCallback& callback,
+      bool trigger_ime) = 0;
 
   // Observer for WebInputEvents.
   class InputEventObserver {

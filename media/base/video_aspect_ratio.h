@@ -11,7 +11,16 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace mojo {
+template <typename DataViewType, typename T>
+struct StructTraits;
+}  // namespace mojo
+
 namespace media {
+
+namespace mojom {
+class VideoAspectRatioDataView;
+}  // namespace mojom
 
 class MEDIA_EXPORT VideoAspectRatio {
  public:
@@ -32,9 +41,11 @@ class MEDIA_EXPORT VideoAspectRatio {
   VideoAspectRatio() = default;
 
   // Create a VideoAspectRatio from a known |natural_size|.
-  // TODO(crbug.com/1214061): Remove.
+  // TODO(crbug.com/40769111): Remove.
   VideoAspectRatio(const gfx::Rect& visible_rect,
                    const gfx::Size& natural_size);
+
+  bool operator==(const VideoAspectRatio& other) const;
 
   // An aspect ratio is invalid if it was default constructed, had nonpositive
   // components, or exceeds implementation limits.
@@ -45,6 +56,9 @@ class MEDIA_EXPORT VideoAspectRatio {
   gfx::Size GetNaturalSize(const gfx::Rect& visible_rect) const;
 
  private:
+  friend struct mojo::StructTraits<mojom::VideoAspectRatioDataView,
+                                   VideoAspectRatio>;
+
   enum class Type {
     kDisplay,
     kPixel,

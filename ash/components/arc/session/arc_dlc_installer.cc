@@ -4,6 +4,8 @@
 
 #include "ash/components/arc/session/arc_dlc_installer.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
@@ -72,7 +74,7 @@ void ArcDlcInstaller::Install() {
 }
 
 void ArcDlcInstaller::OnDlcInstalled(
-    const std::string& dlc,
+    std::string_view dlc,
     const ash::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
     VLOG(1) << dlc << " is installed successfully.";
@@ -123,8 +125,8 @@ void ArcDlcInstaller::Uninstall() {
                      weak_ptr_factory_.GetWeakPtr(), kHoudiniRvcDlc));
 }
 
-void ArcDlcInstaller::OnDlcUninstalled(const std::string& dlc,
-                                       const std::string& err) {
+void ArcDlcInstaller::OnDlcUninstalled(std::string_view dlc,
+                                       std::string_view err) {
   if (err == dlcservice::kErrorNone) {
     VLOG(1) << dlc << " is uninstalled successfully.";
     state_ = InstallerState::kUninstalled;

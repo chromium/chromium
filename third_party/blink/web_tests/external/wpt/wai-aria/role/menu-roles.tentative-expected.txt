@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] orphaned menuitem outside the context of menu/menubar
+  assert_equals: <nav role="menuitem" data-testname="orphaned menuitem outside the context of menu/menubar" data-expectedrole="navigation" class="ex">x\n</nav> expected "navigation" but got "menuitem"
+[FAIL] orphaned menuitemradio outside the context of menu/menubar
+  assert_equals: <nav role="menuitemradio" data-testname="orphaned menuitemradio outside the context of menu/menubar" data-expectedrole="navigation" class="ex">x\n</nav> expected "navigation" but got "menuitemradio"
+[FAIL] orphaned menuitemcheckbox outside the context of menu/menubar
+  assert_equals: <nav role="menuitemcheckbox" data-testname="orphaned menuitemcheckbox outside the context of menu/menubar" data-expectedrole="navigation" class="ex">x\n</nav> expected "navigation" but got "menuitemcheckbox"
+[FAIL] orphan button with menuitem role
+  assert_equals: <button role="menuitem" data-testname="orphan button with menuitem role" data-expectedrole="button" class="ex">x</button> expected "button" but got "menuitem"
+[FAIL] orphan button with menuitemcheckbox role
+  assert_equals: <button role="menuitemcheckbox" data-testname="orphan button with menuitemcheckbox role" data-expectedrole="button" class="ex">x</button> expected "button" but got "menuitemcheckbox"
+[FAIL] orphan button with menuitemradio role
+  assert_equals: <button role="menuitemradio" data-testname="orphan button with menuitemradio role" data-expectedrole="button" class="ex">x</button> expected "button" but got "menuitemradio"
+[FAIL] orphan div with menuitem role
+  assert_false: Computed Role: "menuitem" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="menuitem" data-testname="orphan div with menuitem role" class="ex-generic">x</div> expected false got true
+[FAIL] orphan div with menuitemcheckbox role
+  assert_false: Computed Role: "menuitemcheckbox" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="menuitemcheckbox" data-testname="orphan div with menuitemcheckbox role" class="ex-generic">x</div> expected false got true
+[FAIL] orphan div with menuitemradio role
+  assert_false: Computed Role: "menuitemradio" does not match any of the acceptable role strings in ["generic", "", "none"]: <div role="menuitemradio" data-testname="orphan div with menuitemradio role" class="ex-generic">x</div> expected false got true
+Harness: the test ran to completion.
+

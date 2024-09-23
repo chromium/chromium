@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "crypto/rsa_private_key.h"
@@ -724,7 +725,7 @@ TEST(X509UtilTest, SignatureVerifierInitWithCertificate) {
   struct Test {
     const char* cert;
     crypto::SignatureVerifier::SignatureAlgorithm algorithm;
-    base::span<const uint8_t> signature;
+    base::raw_span<const uint8_t> signature;
     bool ok;
   } kTests[] = {
       // The certificate must support the digitalSignature key usage.

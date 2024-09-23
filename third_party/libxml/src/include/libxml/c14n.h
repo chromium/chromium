@@ -39,18 +39,7 @@ extern "C" {
  *  a) default attributes (if any) are added to all nodes
  *  b) all character and parsed entity references are resolved
  * In order to achieve this in libxml2 the document MUST be loaded with
- * following global settings:
- *
- *    xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
- *    xmlSubstituteEntitiesDefault(1);
- *
- * or corresponding parser context setting:
- *    xmlParserCtxtPtr ctxt;
- *
- *    ...
- *    ctxt->loadsubset = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
- *    ctxt->replaceEntities = 1;
- *    ...
+ * following options: XML_PARSE_DTDATTR | XML_PARSE_NOENT
  */
 
 /*

@@ -85,7 +85,7 @@ bool JavascriptErrorDetectingLogHandler(int severity,
   if (file == nullptr || std::string("CONSOLE") != file)
     return false;
 
-  // TODO(crbug.com/918871): Fix AppRTC and stop ignoring this error.
+  // TODO(crbug.com/40608140): Fix AppRTC and stop ignoring this error.
   if (str.find("Synchronous XHR in page dismissal") != std::string::npos)
     return false;
 

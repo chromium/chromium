@@ -24,7 +24,8 @@ void Badge::SetText(const std::u16string& text) {
   OnPropertyChanged(&text_, kPropertyEffectsPreferredSizeChanged);
 }
 
-gfx::Size Badge::CalculatePreferredSize() const {
+gfx::Size Badge::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   return BadgePainter::GetBadgeSize(text_, Label::GetDefaultFontList());
 }
 

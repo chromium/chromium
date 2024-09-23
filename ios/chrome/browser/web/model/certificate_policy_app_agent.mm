@@ -7,10 +7,12 @@
 #import "base/task/cancelable_task_tracker.h"
 #import "base/task/single_thread_task_runner.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
@@ -35,24 +37,25 @@ void UpdateCertificatePolicyCacheFromWebState(const web::WebState* web_state) {
 }
 
 // Populates the certificate policy cache based on all of the WebStates in
-// the `incognito` browsers of `weak_browser_state`. Because this is called
+// the `incognito` browsers of `weak_profile`. Because this is called
 // asynchronously, it needs to be resilient to shutdown having happened before
 // it is invoked.
 void RestoreCertificatePolicyCacheFromBrowsers(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state,
+    base::WeakPtr<ProfileIOS> weak_profile,
     bool incognito) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  // If the ChromeBrowserState is destroyed, it's too late to do anything.
-  ChromeBrowserState* browser_state = weak_browser_state.get();
-  if (!browser_state) {
+  // If the ProfileIOS is destroyed, it's too late to do anything.
+  ProfileIOS* profile = weak_profile.get();
+  if (!profile) {
     return;
   }
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
 
-  std::set<Browser*> browsers = incognito ? browser_list->AllIncognitoBrowsers()
-                                          : browser_list->AllRegularBrowsers();
+  const BrowserList::BrowserType browser_types =
+      incognito ? BrowserList::BrowserType::kIncognito
+                : BrowserList::BrowserType::kRegularAndInactive;
+  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();
@@ -64,14 +67,14 @@ void RestoreCertificatePolicyCacheFromBrowsers(
 }
 
 // Scrubs the certificate policy cache of all certificates policies except
-// those for the current `incognito` browsers in `weak_browser_state`.
+// those for the current `incognito` browsers in `weak_profile`.
 // Clearing the cache is done on the IO thread, and then cache repopulation is
 // done on the UI thread.
 void CleanCertificatePolicyCache(
     base::CancelableTaskTracker* task_tracker,
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
     const scoped_refptr<web::CertificatePolicyCache>& policy_cache,
-    base::WeakPtr<ChromeBrowserState> weak_browser_state,
+    base::WeakPtr<ProfileIOS> weak_profile,
     bool incognito) {
   DCHECK(policy_cache);
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
@@ -80,7 +83,7 @@ void CleanCertificatePolicyCache(
       base::BindOnce(&web::CertificatePolicyCache::ClearCertificatePolicies,
                      policy_cache),
       base::BindOnce(&RestoreCertificatePolicyCacheFromBrowsers,
-                     std::move(weak_browser_state), incognito));
+                     std::move(weak_profile), incognito));
 }
 
 }  // anonymous namespace
@@ -100,23 +103,23 @@ void CleanCertificatePolicyCache(
 }
 
 - (void)appDidEnterBackground {
-  ChromeBrowserState* browserState = self.appState.mainBrowserState;
-
-  // Evict all the certificate policies except for the current entries of the
-  // active sessions, for the regular and incognito browsers.
-  CleanCertificatePolicyCache(
-      &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
-      web::BrowserState::GetCertificatePolicyCache(browserState),
-      browserState->AsWeakPtr(),
-      /*incognito=*/false);
-
-  if (browserState->HasOffTheRecordChromeBrowserState()) {
-    ChromeBrowserState* incognitoBrowserState =
-        browserState->GetOffTheRecordChromeBrowserState();
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    // Evict all the certificate policies except for the current entries of the
+    // active sessions, for the regular and incognito browsers.
     CleanCertificatePolicyCache(
         &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
-        web::BrowserState::GetCertificatePolicyCache(incognitoBrowserState),
-        browserState->AsWeakPtr(), /*incognito=*/true);
+        web::BrowserState::GetCertificatePolicyCache(profile),
+        profile->AsWeakPtr(),
+        /*incognito=*/false);
+
+    if (profile->HasOffTheRecordProfile()) {
+      ProfileIOS* incognitoBrowserState = profile->GetOffTheRecordProfile();
+      CleanCertificatePolicyCache(
+          &_clearPoliciesTaskTracker, web::GetIOThreadTaskRunner({}),
+          web::BrowserState::GetCertificatePolicyCache(incognitoBrowserState),
+          profile->AsWeakPtr(), /*incognito=*/true);
+    }
   }
 }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/quic/crypto/proof_source_chromium.h"
 
 #include "base/strings/string_number_conversions.h"
@@ -23,8 +28,6 @@ ProofSourceChromium::~ProofSourceChromium() = default;
 bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
                                      const base::FilePath& key_path,
                                      const base::FilePath& sct_path) {
-  crypto::EnsureOpenSSLInit();
-
   std::string cert_data;
   if (!base::ReadFileToString(cert_path, &cert_data)) {
     DLOG(FATAL) << "Unable to read certificates.";

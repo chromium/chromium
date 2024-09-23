@@ -30,7 +30,7 @@ class DemoModeUntrustedPageHandler
   DemoModeUntrustedPageHandler& operator=(const UntrustedPageHandler&) = delete;
 
  private:
-  // Switch between fullscreen and not-fullscreen
+  // Switch between fullscreen and non-fullscreen (windowed mode).
   void ToggleFullscreen() override;
 
   // Launch an app by App Service app_id.

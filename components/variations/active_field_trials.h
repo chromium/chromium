@@ -8,12 +8,17 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 #include "base/process/launch.h"
-#include "base/strings/string_piece.h"
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#include "base/files/platform_file.h"
+#include "base/posix/global_descriptors.h"
+#endif
 
 namespace variations {
 
@@ -21,7 +26,7 @@ namespace variations {
 // command line flags or internals page. Using a suffix ensures that consumers
 // of these names (or hashes of the names) treat manually forced groups distinct
 // from non-forced groups.
-inline constexpr base::StringPiece kOverrideSuffix = "_MANUALLY_FORCED";
+inline constexpr std::string_view kOverrideSuffix = "_MANUALLY_FORCED";
 
 // The Unique ID of a trial and its active group, where the name and group
 // identifiers are hashes of the trial and group name strings.
@@ -32,11 +37,11 @@ struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupId {
 
 // Returns an ActiveGroupId struct for the given trial and group names.
 COMPONENT_EXPORT(VARIATIONS)
-ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
-                                base::StringPiece group_name);
+ActiveGroupId MakeActiveGroupId(std::string_view trial_name,
+                                std::string_view group_name);
 COMPONENT_EXPORT(VARIATIONS)
-ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
-                                base::StringPiece group_name,
+ActiveGroupId MakeActiveGroupId(std::string_view trial_name,
+                                std::string_view group_name,
                                 bool is_overridden);
 
 // We need to supply a Compare class for templates since ActiveGroupId is a
@@ -56,7 +61,7 @@ struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupIdCompare {
 // suffixed with |suffix| before hashing is executed.
 COMPONENT_EXPORT(VARIATIONS)
 void GetFieldTrialActiveGroupIdsForActiveGroups(
-    base::StringPiece suffix,
+    std::string_view suffix,
     const base::FieldTrial::ActiveGroups& active_groups,
     std::vector<ActiveGroupId>* name_group_ids);
 
@@ -70,7 +75,7 @@ void GetFieldTrialActiveGroupIdsForActiveGroups(
 // them can use the version of |GetFieldTrialActiveGroupIds()| below that takes
 // the active groups as an input.
 COMPONENT_EXPORT(VARIATIONS)
-void GetFieldTrialActiveGroupIds(base::StringPiece suffix,
+void GetFieldTrialActiveGroupIds(std::string_view suffix,
                                  std::vector<ActiveGroupId>* name_group_ids);
 
 // Fills the supplied vector |name_group_ids| (which must be empty when called)
@@ -78,7 +83,7 @@ void GetFieldTrialActiveGroupIds(base::StringPiece suffix,
 // Field trial names are suffixed with |suffix| before hashing is executed.
 COMPONENT_EXPORT(VARIATIONS)
 void GetFieldTrialActiveGroupIds(
-    base::StringPiece suffix,
+    std::string_view suffix,
     const base::FieldTrial::ActiveGroups& active_groups,
     std::vector<ActiveGroupId>* name_group_ids);
 
@@ -93,7 +98,7 @@ void GetFieldTrialActiveGroupIds(
 // them can use the version of |GetFieldTrialActiveGroupIdsAsStrings()| below
 // that takes the active groups as an input.
 COMPONENT_EXPORT(VARIATIONS)
-void GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece suffix,
+void GetFieldTrialActiveGroupIdsAsStrings(std::string_view suffix,
                                           std::vector<std::string>* output);
 
 // Fills the supplied vector |output| (which must be empty when called) with
@@ -104,7 +109,7 @@ void GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece suffix,
 // executed.
 COMPONENT_EXPORT(VARIATIONS)
 void GetFieldTrialActiveGroupIdsAsStrings(
-    base::StringPiece suffix,
+    std::string_view suffix,
     const base::FieldTrial::ActiveGroups& active_groups,
     std::vector<std::string>* output);
 
@@ -130,7 +135,7 @@ bool IsInSyntheticTrialGroup(const std::string& trial_name,
 
 // Sets the version of the seed that the current set of FieldTrials was
 // generated from.
-// TODO(crbug/507665): Move this to field_trials_provider once it moves
+// TODO(crbug.com/41187035): Move this to field_trials_provider once it moves
 // into components/variations
 COMPONENT_EXPORT(VARIATIONS)
 void SetSeedVersion(const std::string& seed_version);
@@ -139,7 +144,7 @@ void SetSeedVersion(const std::string& seed_version);
 // generated from.
 // Only works on the browser process; returns the empty string from other
 // processes.
-// TODO(crbug/507665): Move this to field_trials_provider once it moves
+// TODO(crbug.com/41187035): Move this to field_trials_provider once it moves
 // into components/variations
 COMPONENT_EXPORT(VARIATIONS)
 const std::string& GetSeedVersion();
@@ -150,6 +155,10 @@ const std::string& GetSeedVersion();
 // info.
 COMPONENT_EXPORT(VARIATIONS)
 void PopulateLaunchOptionsWithVariationsInfo(
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+    base::GlobalDescriptors::Key descriptor_key,
+    base::ScopedFD& descriptor_to_share,
+#endif
     base::CommandLine* command_line,
     base::LaunchOptions* launch_options);
 #endif  // !BUILDFLAG(USE_BLINK)
@@ -160,7 +169,7 @@ namespace testing {
 
 COMPONENT_EXPORT(VARIATIONS)
 void TestGetFieldTrialActiveGroupIds(
-    base::StringPiece suffix,
+    std::string_view suffix,
     const base::FieldTrial::ActiveGroups& active_groups,
     std::vector<ActiveGroupId>* name_group_ids);
 

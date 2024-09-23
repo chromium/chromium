@@ -17,20 +17,25 @@ _MIN_PYTHON_MINOR = 8
 
 
 def _add_io_args(parser, *, is_final=False, is_javap=False):
-  group = parser.add_argument_group(title='Inputs & Outputs')
+  inputs = parser.add_argument_group(title='Inputs')
+  outputs = parser.add_argument_group(title='Outputs')
   if is_final:
-    group.add_argument('--java-sources-file',
-                       required=True,
-                       help='A file which contains Java file paths, derived '
-                       'from java deps metadata.')
-    group.add_argument('--native-sources-file',
-                       help='A file which contains Java file paths, derived '
-                       'from native deps onto generate_jni.')
-    group.add_argument('--depfile',
-                       help='Path to depfile (for use with ninja build system)')
+    inputs.add_argument(
+        '--java-sources-file',
+        required=True,
+        help='Newline-separated file containing paths to .java or .jni.pickle '
+        'files, taken from Java dependency tree.')
+    inputs.add_argument(
+        '--priority-java-sources-file',
+        help='Same format as java-sources-file, only used by multiplexing to '
+        'pick certain methods to be the first N numbers in the switch table.')
+    inputs.add_argument(
+        '--native-sources-file',
+        help='Newline-separated file containing paths to .java or .jni.pickle '
+        'files, taken from Native dependency tree.')
   else:
     if is_javap:
-      group.add_argument(
+      inputs.add_argument(
           '--jar-file',
           help='Extract the list of input files from a specified jar file. '
           'Uses javap to extract the methods from a pre-compiled class.')
@@ -38,31 +43,39 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
       help_text = 'Paths within the .jar'
     else:
       help_text = 'Paths to .java files to parse.'
-    group.add_argument('--input-file',
-                       action='append',
-                       required=True,
-                       dest='input_files',
-                       help=help_text)
-    group.add_argument('--output-name',
-                       action='append',
-                       required=True,
-                       dest='output_names',
-                       help='Output filenames within output directory.')
-    group.add_argument('--output-dir',
-                       required=True,
-                       help='Output directory. '
-                       'Existing .h files in this directory will be assumed '
-                       'stale and removed.')
+    inputs.add_argument('--input-file',
+                        action='append',
+                        required=True,
+                        dest='input_files',
+                        help=help_text)
+    outputs.add_argument('--output-name',
+                         action='append',
+                         required=True,
+                         dest='output_names',
+                         help='Output filenames within output directory.')
+    outputs.add_argument('--output-dir',
+                         required=True,
+                         help='Output directory. '
+                         'Existing .h files in this directory will be assumed '
+                         'stale and removed.')
+    outputs.add_argument('--placeholder-srcjar-path',
+                         help='Path to output srcjar with placeholders for '
+                         'all referenced classes in |input_files|')
 
-  group.add_argument('--header-path', help='Path to output header file.')
+  outputs.add_argument('--header-path', help='Path to output header file.')
 
   if is_javap:
-    group.add_argument('--javap', help='The path to javap command.')
+    inputs.add_argument('--javap', help='The path to javap command.')
   else:
-    group.add_argument(
+    outputs.add_argument(
         '--srcjar-path',
         help='Path to output srcjar for GEN_JNI.java (and J/N.java if proxy'
         ' hash is enabled).')
+    outputs.add_argument('--jni-pickle',
+                         help='Path to write intermediate .jni.pickle file.')
+  if is_final:
+    outputs.add_argument(
+        '--depfile', help='Path to depfile (for use with ninja build system)')
 
 
 def _add_codegen_args(parser, *, is_final=False, is_javap=False):
@@ -113,6 +126,7 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
     group.add_argument(
         '--split-name',
         help='Split name that the Java classes should be loaded from.')
+    group.add_argument('--per-file-natives', action='store_true')
 
   if is_javap:
     group.add_argument('--unchecked-exceptions',
@@ -131,6 +145,10 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
         '--package-prefix',
         help='Adds a prefix to the classes fully qualified-name. Effectively '
         'changing a class name from foo.bar -> prefix.foo.bar')
+    group.add_argument(
+        '--package-prefix-filter',
+        help=
+        ': separated list of java packages to apply the --package-prefix to.')
 
   if not is_final:
     if is_javap:

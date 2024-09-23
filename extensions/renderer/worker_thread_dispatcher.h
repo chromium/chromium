@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
@@ -75,6 +76,7 @@ class WorkerThreadDispatcher :
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
       const std::optional<base::UnguessableToken>& activation_sequence,
+      const blink::ServiceWorkerToken& service_worker_token,
       ScriptContext* script_context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
   void RemoveWorkerData(int64_t service_worker_version_id);

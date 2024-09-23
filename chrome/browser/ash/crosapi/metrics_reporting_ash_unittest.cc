@@ -9,6 +9,7 @@
 #include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
@@ -118,10 +119,10 @@ TEST_F(MetricsReportingAshTest, SetMetricsReportingEnabled) {
 
   // Calling SetMetricsReportingEnabled() over mojo calls through to the metrics
   // reporting subsystem.
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> waiter;
   metrics_reporting_remote->SetMetricsReportingEnabled(true,
-                                                       run_loop.QuitClosure());
-  run_loop.Run();
+                                                       waiter.GetCallback());
+  EXPECT_TRUE(waiter.Wait());
   EXPECT_TRUE(test_delegate->metrics_enabled_);
 }
 

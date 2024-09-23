@@ -6,8 +6,8 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_CAST_RUNTIME_AUDIO_CHANNEL_BROKER_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/duration.pb.h"

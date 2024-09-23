@@ -43,9 +43,23 @@ class WizardContext {
     kChildSignin,
     kReauth,
     kSamlRedirect,
+    kQuickStartFallback,
+  };
+
+  // Reflects if Gaia screen first shows a Gaia page or a SAML IdP
+  // page. This has some UI implications for the screen.
+  enum GaiaScreenMode {
+    // Gaia page is the first one to be shown.
+    kDefault = 0,
+
+    // SAML IdP page is the first one to be shown.
+    kSamlRedirect = 1,
   };
 
   struct GaiaConfig {
+    GaiaConfig();
+    ~GaiaConfig();
+
     // GAIA path to be loaded the next time GAIA Sign-in screen is shown.
     // This is usually set just before showing the GAIA screen and reset
     // to the default value when hiding the screen.
@@ -58,6 +72,13 @@ class WizardContext {
     // The account ID to be used in the next loading of GAIA webview.
     // The value is reset to `EmptyAccountId()` when hiding the screen.
     AccountId prefilled_account = EmptyAccountId();
+
+    // The URL path and parameters to be used when showing the 'fallback' URL
+    // flow of QuickStart. Only exists when Gaia demands an extra verification.
+    std::optional<std::string> quick_start_fallback_path_contents;
+
+    // The type of Gaia screen to show.
+    GaiaScreenMode screen_mode = GaiaScreenMode::kDefault;
   };
 
   struct RecoverySetup {
@@ -184,8 +205,10 @@ class WizardContext {
 
   std::optional<OSAuthErrorKind> osauth_error;
 
-  // Same as above, but the actual context is stored in AuthSessionStorage,
-  // and the token can be used to retrieve it.
+  // Token used for retrieving the `UserContext` from `AuthSessionStorage`.
+  // Once authenticated, the `UserContext` is stored in `AuthSessionStorage` and
+  // this token is used for borrowing it in order to perform operations such as
+  // adding extra factors. See https://crrev.com/c/4729372 for history.
   std::optional<AuthProofToken> extra_factors_token;
 
   // If the onboarding flow wasn't completed by the user we will try to show
@@ -237,14 +260,18 @@ class WizardContext {
   // selected screen.
   bool return_to_choobe_screen = false;
 
-  // Information that is used during Cryptohome recovery or password changed
-  // flow.
+  // Information that is used during Cryptohome recovery, password changed
+  // or add user with cached credentials flow.
   std::unique_ptr<UserContext> user_context;
 
   // Configuration for GAIA screen. If the configs needs to be updated, it
   // should be updated before showing the GAIA screen. If the GAIA screen is
   // already shown, a call to reload GAIA webview may be necessary.
   GaiaConfig gaia_config;
+
+  // If this flag is true and the user_context contains cached credentials
+  // there will be an attempt to skip the GAIA screen and signin directly.
+  bool add_user_from_cached_credentials = false;
 };
 
 // Returns |true| if this is an OOBE flow after enterprise enrollment.

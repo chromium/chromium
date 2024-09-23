@@ -130,7 +130,6 @@ class HotseatWidgetAnimationMetricsReporter {
         break;
       case HotseatState::kNone:
         NOTREACHED();
-        break;
     }
   }
 
@@ -184,7 +183,6 @@ class ASH_EXPORT NavigationWidgetAnimationMetricsReporter {
         break;
       case HotseatState::kNone:
         NOTREACHED();
-        break;
     }
   }
 
@@ -240,10 +238,10 @@ class Shelf::AutoHideEventHandler : public ui::EventHandler {
     // state to give the shelf a chance to handle the touch event before it
     // being hidden.
     ShelfLayoutManager* shelf_layout_manager = shelf_->shelf_layout_manager();
-    if (event->type() == ui::ET_TOUCH_PRESSED && shelf_->IsVisible()) {
+    if (event->type() == ui::EventType::kTouchPressed && shelf_->IsVisible()) {
       shelf_layout_manager->LockAutoHideState(true);
-    } else if (event->type() == ui::ET_TOUCH_RELEASED ||
-               event->type() == ui::ET_TOUCH_CANCELLED) {
+    } else if (event->type() == ui::EventType::kTouchReleased ||
+               event->type() == ui::EventType::kTouchCancelled) {
       // Unlock auto hide (and eventually recompute auto hide state).
       shelf_layout_manager->LockAutoHideState(false);
     }
@@ -400,7 +398,7 @@ void Shelf::ActivateShelfItemOnDisplay(int item_index, int64_t display_id) {
   const ShelfItem& item = shelf_model->items()[item_index];
   ShelfItemDelegate* item_delegate = shelf_model->GetShelfItemDelegate(item.id);
   std::unique_ptr<ui::Event> event = std::make_unique<ui::KeyEvent>(
-      ui::ET_KEY_RELEASED, ui::VKEY_UNKNOWN, ui::EF_NONE);
+      ui::EventType::kKeyReleased, ui::VKEY_UNKNOWN, ui::EF_NONE);
   item_delegate->ItemSelected(std::move(event), display_id, LAUNCH_FROM_SHELF,
                               base::DoNothing(), base::NullCallback());
 }
@@ -554,7 +552,6 @@ bool IsHorizontalAlignment(ShelfAlignment alignment) {
       return false;
   }
   NOTREACHED();
-  return true;
 }
 
 bool Shelf::IsHorizontalAlignment() const {
@@ -635,8 +632,9 @@ void Shelf::ProcessMouseEvent(const ui::MouseEvent& event) {
 }
 
 void Shelf::ProcessScrollEvent(ui::ScrollEvent* event) {
-  if (event->finger_count() != 2 || event->type() != ui::ET_SCROLL)
+  if (event->finger_count() != 2 || event->type() != ui::EventType::kScroll) {
     return;
+  }
 
   if (!shelf_layout_manager_->is_active_session_state())
     return;
@@ -702,7 +700,6 @@ gfx::Rect Shelf::GetSystemTrayAnchorRect() const {
                        work_area.bottom() - kShelfDisplayOffset, 0, 0);
   }
   NOTREACHED();
-  return gfx::Rect();
 }
 
 bool Shelf::ShouldHideOnSecondaryDisplay(session_manager::SessionState state) {

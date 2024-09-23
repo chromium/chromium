@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_VALIDATION_MESSAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_VALIDATION_MESSAGE_H_
 
-#include "third_party/blink/renderer/modules/accessibility/ax_mock_object.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 
 namespace blink {
 
@@ -16,7 +16,7 @@ class ListedElement;
 // error message popup for an invalid HTML control, aka a validation message.
 // The alert is exposed with a name containing the text of the popup..
 
-class AXValidationMessage final : public AXMockObject {
+class AXValidationMessage final : public AXObject {
  public:
   explicit AXValidationMessage(AXObjectCacheImpl&);
 
@@ -25,12 +25,15 @@ class AXValidationMessage final : public AXMockObject {
 
   ~AXValidationMessage() override;
 
+  // AXObject overrides.
+  Document* GetDocument() const override;
+
  private:
   // AXObject:
   // Always a leaf.
   bool CanHaveChildren() const override { return false; }
   void AddChildren() override {}
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool ComputeIsIgnored(IgnoredReasons* = nullptr) const override;
   void GetRelativeBounds(AXObject** out_container,
                          gfx::RectF& out_bounds_in_container,
                          gfx::Transform& out_container_transform,

@@ -106,9 +106,9 @@ TEST_F(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
       .WillOnce(
           testing::InvokeWithoutArgs([&]() { swipe_control_view.reset(); }));
 
-  ui::MouseEvent press(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_NONE);
+  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::PointF(),
+                       gfx::PointF(), ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_NONE);
 
   // First click will do nothing, expect that to work.
   swipe_control_view->ShowButtons(

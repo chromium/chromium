@@ -15,20 +15,17 @@ import type {ChooserType,ContentSetting,ContentSettingsTypes,SiteSettingSource} 
 
 /**
  * The handler will send a policy source that is similar, but not exactly the
- * same as a ControlledBy value. If the ContentSettingProvider is omitted it
+ * same as a ControlledBy value. If the DefaultSettingSource is omitted it
  * should be treated as 'default'.
+ * Should be kept in sync with values returned by C++ function
+ * `ProviderToDefaultSettingSourceString`.
  */
-export enum ContentSettingProvider {
+export enum DefaultSettingSource {
   POLICY = 'policy',
   SUPERVISED_USER = 'supervised_user',
   EXTENSION = 'extension',
-  INSTALLED_WEBAPP_PROVIDER = 'installed_webapp_provider',
-  NOTIFICATION_ANDROID = 'notification_android',
-  EPHEMERAL = 'ephemeral',
   PREFERENCE = 'preference',
   DEFAULT = 'default',
-  TESTS = 'tests',
-  TESTS_OTHER = 'tests_other'
 }
 
 /**
@@ -66,9 +63,9 @@ export interface SiteGroup {
   numCookies: number;
   origins: OriginInfo[];
   etldPlus1?: string;
-  fpsOwner?: string;
-  fpsNumMembers?: number;
-  fpsEnterpriseManaged?: boolean;
+  rwsOwner?: string;
+  rwsNumMembers?: number;
+  rwsEnterpriseManaged?: boolean;
   hasInstalledPWA: boolean;
 }
 
@@ -172,19 +169,7 @@ export interface ChooserException {
 
 export interface DefaultContentSetting {
   setting: ContentSetting;
-  source: ContentSettingProvider;
-}
-
-/**
- * The primary cookie setting states that are possible. Must be kept in sync
- * with the C++ enum of the same name in
- * chrome/browser/content_settings/generated_cookie_prefs.h
- */
-export enum CookiePrimarySetting {
-  ALLOW_ALL = 0,
-  BLOCK_THIRD_PARTY_INCOGNITO = 1,
-  BLOCK_THIRD_PARTY = 2,
-  BLOCK_ALL = 3,
+  source: DefaultSettingSource;
 }
 
 export interface MediaPickerEntry {
@@ -199,12 +184,7 @@ export interface ZoomLevelEntry {
   zoom: string;
 }
 
-/**
- * TODO(crbug.com/1523673): Consider refactoring to remove the origin key from
- * the `FileSystemGrant` interface.
- */
 export interface FileSystemGrant {
-  origin: string;
   filePath: string;
   displayName: string;
   isDirectory: boolean;
@@ -368,18 +348,18 @@ export interface SiteSettingsPrefsBrowserProxy {
       Promise<IsValid>;
 
   /**
-   * Gets the list of default capture devices for a given type of media. List
-   * is returned through a JS call to updateDevicesMenu.
+   * Requests initialization of the capture device list. The list is returned
+   * through a JS call to updateDevicesMenu.
    * @param type The type to look up.
    */
-  getDefaultCaptureDevices(type: string): void;
+  initializeCaptureDevices(type: string): void;
 
   /**
-   * Sets a default devices for a given type of media.
+   * Sets a preferred device for the given type of media.
    * @param type The type of media to configure.
    * @param defaultValue The id of the media device to set.
    */
-  setDefaultCaptureDevice(type: string, defaultValue: string): void;
+  setPreferredCaptureDevice(type: string, defaultValue: string): void;
 
   /**
    * observes _all_ of the the protocol handler state, which includes a list
@@ -496,11 +476,11 @@ export interface SiteSettingsPrefsBrowserProxy {
   recordAction(action: number): void;
 
   /**
-   * Gets display string for FPS information of owner and member count.
-   * @param fpsNumMembers The number of members in the first party set.
-   * @param fpsOwner The eTLD+1 for the first party set owner.
+   * Gets display string for RWS information of owner and member count.
+   * @param rwsNumMembers The number of members in the related website set.
+   * @param rwsOwner The eTLD+1 for the related website set owner.
    */
-  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string):
+  getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string):
       Promise<string>;
 
   /**
@@ -508,6 +488,20 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param numCookies The number of cookies.
    */
   getNumCookiesString(numCookies: number): Promise<string>;
+
+  /**
+   * Gets the warning messages for the permissions types blocked at the OS
+   * level.
+   */
+  getSystemDeniedPermissions(): Promise<ContentSettingsTypes[]>;
+
+  /**
+   * Attempts to open a system setting page that allows to modify the system
+   * wide block for a given permission type. If this is not possible, the call
+   * will fail silently and no window will open.
+   * @param contentType The permission type.
+   */
+  openSystemPermissionSettings(contentType: string): void;
 }
 
 export class SiteSettingsPrefsBrowserProxyImpl implements
@@ -600,12 +594,12 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     return sendWithPromise('isPatternValidForType', pattern, category);
   }
 
-  getDefaultCaptureDevices(type: string) {
-    chrome.send('getDefaultCaptureDevices', [type]);
+  initializeCaptureDevices(type: string) {
+    chrome.send('initializeCaptureDevices', [type]);
   }
 
-  setDefaultCaptureDevice(type: string, defaultValue: string) {
-    chrome.send('setDefaultCaptureDevice', [type, defaultValue]);
+  setPreferredCaptureDevice(type: string, defaultValue: string) {
+    chrome.send('setPreferredCaptureDevice', [type, defaultValue]);
   }
 
   observeProtocolHandlers() {
@@ -672,12 +666,20 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('recordAction', [action]);
   }
 
-  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
-    return sendWithPromise('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
+  getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string) {
+    return sendWithPromise('getRwsMembershipLabel', rwsNumMembers, rwsOwner);
   }
 
   getNumCookiesString(numCookies: number) {
     return sendWithPromise('getNumCookiesString', numCookies);
+  }
+
+  getSystemDeniedPermissions() {
+    return sendWithPromise('getSystemDeniedPermissions');
+  }
+
+  openSystemPermissionSettings(contentType: string) {
+    chrome.send('openSystemPermissionSettings', [contentType]);
   }
 
   static getInstance(): SiteSettingsPrefsBrowserProxy {

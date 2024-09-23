@@ -12,14 +12,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/subresource_filter/content/browser/ruleset_service.h"
+#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "components/subresource_filter/core/common/constants.h"
 
 using component_updater::ComponentUpdateService;
 
@@ -104,7 +104,8 @@ bool SubresourceFilterComponentInstallerPolicy::VerifyInstallation(
 
 base::FilePath
 SubresourceFilterComponentInstallerPolicy::GetRelativeInstallDir() const {
-  return base::FilePath(subresource_filter::kTopLevelDirectoryName)
+  return base::FilePath(
+             subresource_filter::kSafeBrowsingRulesetConfig.top_level_directory)
       .Append(subresource_filter::kUnindexedRulesetBaseDirectoryName);
 }
 

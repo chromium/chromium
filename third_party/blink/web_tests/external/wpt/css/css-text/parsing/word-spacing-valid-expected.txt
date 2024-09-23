@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] e.style['word-spacing'] = "120%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-spacing'] = "-10%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-spacing'] = "calc(2ch - 30%)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['word-spacing'] = "calc(40% + 50px)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

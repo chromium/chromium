@@ -9,9 +9,10 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneDr
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -20,9 +21,9 @@ public class TabSwitcherPaneDrawableMediator {
     private final PropertyModel mModel;
     private final Callback<Integer> mTabCountSupplierObserver;
 
-    private TabModelSelector mTabModelSelector;
-    private TabModelSelectorObserver mTabModelSelectorObserver;
     private ObservableSupplier<Integer> mTabCountSupplier;
+
+    private CallbackController mCallbackController = new CallbackController();
 
     public TabSwitcherPaneDrawableMediator(
             @NonNull TabModelSelector tabModelSelector, @NonNull PropertyModel model) {
@@ -33,27 +34,14 @@ public class TabSwitcherPaneDrawableMediator {
                     mModel.set(TAB_COUNT, tabCount);
                 };
 
-        if (tabModelSelector.isTabStateInitialized()) {
-            onTabStateInitializedInternal(tabModelSelector);
-        } else {
-            mTabModelSelector = tabModelSelector;
-            mTabModelSelectorObserver =
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onTabStateInitialized() {
-                            if (mTabModelSelector == null) return;
-
-                            onTabStateInitializedInternal(mTabModelSelector);
-                            cleanupTabModelSelectorObserver();
-                        }
-                    };
-            tabModelSelector.addObserver(mTabModelSelectorObserver);
-        }
+        TabModelUtils.runOnTabStateInitialized(
+                tabModelSelector,
+                mCallbackController.makeCancelable(this::onTabStateInitializedInternal));
     }
 
     /** Destroys the mediator, removing observers if present. */
     public void destroy() {
-        cleanupTabModelSelectorObserver();
+        mCallbackController.destroy();
         if (mTabCountSupplier != null) {
             mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
             mTabCountSupplier = null;
@@ -63,15 +51,5 @@ public class TabSwitcherPaneDrawableMediator {
     private void onTabStateInitializedInternal(@NonNull TabModelSelector tabModelSelector) {
         mTabCountSupplier = tabModelSelector.getModel(false).getTabCountSupplier();
         mTabCountSupplier.addObserver(mTabCountSupplierObserver);
-    }
-
-    private void cleanupTabModelSelectorObserver() {
-        if (mTabModelSelector != null) {
-            if (mTabModelSelectorObserver != null) {
-                mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-                mTabModelSelectorObserver = null;
-            }
-            mTabModelSelector = null;
-        }
     }
 }

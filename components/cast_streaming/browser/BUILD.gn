@@ -61,7 +61,7 @@ source_set("browser") {
   # use it and all that depend on it behind a platform check.
   # TODO(crbug.com/1357085): Resolve this and remove this exception.
   if (!is_win) {
-    # TODO(crbug.com/1207718): Remove cast_message_port_impl code from this
+    # TODO(crbug.com/40181416): Remove cast_message_port_impl code from this
     # component and replace with a more general interface.
     sources += [
       "cast_message_port_impl.cc",
@@ -82,7 +82,7 @@ source_set("browser") {
   friend = [ ":unit_tests" ]
 }
 
-# TODO(crbug.com/1207721): Add more unit tests for code in this directory.
+# TODO(crbug.com/40765693): Add more unit tests for code in this directory.
 source_set("unit_tests") {
   testonly = true
   public = []

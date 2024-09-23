@@ -221,6 +221,11 @@ void HoldingSpaceImage::UpdateBackingFilePath(const base::FilePath& file_path) {
   backing_file_path_ = file_path;
 }
 
+bool HoldingSpaceImage::UsingPlaceholder() const {
+  return !async_bitmap_resolver_error_ ||
+         *async_bitmap_resolver_error_ != base::File::FILE_OK;
+}
+
 bool HoldingSpaceImage::FireInvalidateTimerForTesting() {
   if (!invalidate_timer_.IsRunning())
     return false;

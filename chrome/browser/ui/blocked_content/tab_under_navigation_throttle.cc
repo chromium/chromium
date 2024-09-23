@@ -12,24 +12,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/blocked_content/list_item_position.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -76,7 +69,7 @@ BASE_FEATURE(kBlockTabUnders,
 // static
 std::unique_ptr<content::NavigationThrottle>
 TabUnderNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
-  // TODO(crbug.com/1222367): TabUnderNavigationThrottle doesn't block
+  // TODO(crbug.com/40187173): TabUnderNavigationThrottle doesn't block
   // prerendering activations. However, currently prerender is same-origin only
   // so a prerendered activation could never be classified as a tab-under.
   // Otherwise, it should be safe to avoid creating a throttle in non primary

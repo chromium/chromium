@@ -26,3 +26,4 @@ supported_on:
 tags:
 - system-security
 type: int
+generate_device_proto: False

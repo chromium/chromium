@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -14,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -29,7 +35,9 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -39,6 +47,7 @@
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -178,7 +187,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   void EnsurePopupActive() {
     auto test_util = ExtensionActionTestHelper::Create(browser());
     EXPECT_TRUE(test_util->HasPopup());
-    EXPECT_TRUE(test_util->WaitForPopup());
+    ASSERT_NO_FATAL_FAILURE(test_util->WaitForPopup());
     EXPECT_TRUE(test_util->HasPopup());
   }
 
@@ -256,8 +265,13 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 // Tests opening a popup using the chrome.browserAction.openPopup API. This test
 // opens a popup in the starting window, closes the popup, creates a new window
 // and opens a popup in the new window. Both popups should succeed in opening.
-// TODO(crbug.com/1233996): Test flaking frequently.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
+// TODO(crbug.com/40781224): Test flaking frequently on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TestOpenPopup DISABLED_TestOpenPopup
+#else
+#define MAYBE_TestOpenPopup TestOpenPopup
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_TestOpenPopup) {
   auto browserActionBar = ExtensionActionTestHelper::Create(browser());
   // Setup extension message listener to wait for javascript to finish running.
   ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
@@ -275,7 +289,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
     new_browser = chrome::FindBrowserWithTab(browser()->OpenURL(
         content::OpenURLParams(GURL("about:blank"), content::Referrer(),
                                WindowOpenDisposition::NEW_WINDOW,
-                               ui::PAGE_TRANSITION_TYPED, false)));
+                               ui::PAGE_TRANSITION_TYPED, false),
+        /*navigation_handle_callback=*/{}));
     // Pin the extension to test that it opens when the action is on the
     // toolbar.
     ToolbarActionsModel::Get(profile())->SetActionVisibility(
@@ -298,7 +313,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DISABLED_TestOpenPopup) {
 }
 
 // Tests opening a popup in an incognito window.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
+// TODO(crbug.com/345091943): Extremely flaky on Mac release builds.
+#if BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_TestOpenPopupIncognito DISABLED_TestOpenPopupIncognito
+#else
+#define MAYBE_TestOpenPopupIncognito TestOpenPopupIncognito
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
+                       MAYBE_TestOpenPopupIncognito) {
   // The creation of the incognito window is the first WebContents.
   content::CreateAndLoadWebContentsObserver frame_observer(
       /*num_expected_contents=*/2);
@@ -404,8 +426,17 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, FocusLossClosesPopup2) {
   ClosePopupViaFocusLoss();
 }
 
+// TODO(crbug.com/330684964): Test flaking frequently on Linux MSan builder
+// and Mac release builders.
+#if (BUILDFLAG(IS_MAC) && defined(NDEBUG)) || \
+    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
+#define MAYBE_TabSwitchClosesPopup DISABLED_TabSwitchClosesPopup
+#else
+#define MAYBE_TabSwitchClosesPopup TabSwitchClosesPopup
+#endif
 // Test that the extension popup is closed on browser tab switches.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TabSwitchClosesPopup) {
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
+                       MAYBE_TabSwitchClosesPopup) {
   // Add a second tab to the browser and open an extension popup.
   chrome::NewTab(browser());
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
@@ -482,13 +513,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
       content::HostZoomMap::GetForWebContents(popup_contents)
           ->GetDefaultZoomLevel();
   double popup_zoom_level = content::HostZoomMap::GetZoomLevel(popup_contents);
-  EXPECT_TRUE(blink::PageZoomValuesEqual(popup_zoom_level, default_zoom_level))
+  EXPECT_TRUE(blink::ZoomValuesEqual(popup_zoom_level, default_zoom_level))
       << popup_zoom_level << " vs " << default_zoom_level;
 
   // Preventing the use of the per-origin zoom level in the popup should not
   // affect the zoom of the tab.
-  EXPECT_TRUE(blink::PageZoomValuesEqual(zoom_controller->GetZoomLevel(),
-                                         tab_new_zoom_level))
+  EXPECT_TRUE(blink::ZoomValuesEqual(zoom_controller->GetZoomLevel(),
+                                     tab_new_zoom_level))
       << zoom_controller->GetZoomLevel() << " vs " << tab_new_zoom_level;
 
   // Subsequent zooming in the tab should also be done independently of the
@@ -504,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   zoom_change_watcher2.Wait();
 
   popup_zoom_level = content::HostZoomMap::GetZoomLevel(popup_contents);
-  EXPECT_TRUE(blink::PageZoomValuesEqual(popup_zoom_level, default_zoom_level))
+  EXPECT_TRUE(blink::ZoomValuesEqual(popup_zoom_level, default_zoom_level))
       << popup_zoom_level << " vs " << default_zoom_level;
 
   EXPECT_TRUE(ClosePopup());
@@ -557,9 +588,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   EXPECT_EQ(TRUE, ::IsWindow(browser_hwnd));
 
   // Create a new browser window to prevent the message loop from terminating.
-  browser()->OpenURL(content::OpenURLParams(
-      GURL("chrome://version"), content::Referrer(),
-      WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_TYPED, false));
+  browser()->OpenURL(
+      content::OpenURLParams(GURL("chrome://version"), content::Referrer(),
+                             WindowOpenDisposition::NEW_WINDOW,
+                             ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
 
   // Forcibly closing the browser HWND should not cause a crash.
   EXPECT_EQ(TRUE, ::CloseWindow(browser_hwnd));
@@ -595,15 +628,15 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-// TODO(crbug.com/1249851): Test crashes on Windows
+// TODO(crbug.com/40791502): Test crashes on Windows
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #elif BUILDFLAG(IS_LINUX) && \
     (defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/1269076): Test is flaky for linux tsan and asan builds
+// TODO(crbug.com/40803969): Test is flaky for linux tsan and asan builds
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #elif BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1269076): Test is flaky on Mac as well.
+// TODO(crbug.com/40803969): Test is flaky on Mac as well.
 #define MAYBE_BrowserActionPopup DISABLED_BrowserActionPopup
 #else
 #define MAYBE_BrowserActionPopup BrowserActionPopup
@@ -721,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, OpenPopupOnPopup) {
   // The window isn't considered "active" on MacOSX for odd reasons. The more
   // important test is that it *is* considered the last active browser, since
   // that's what we check when we try to open the popup.
-  // TODO(crbug.com/1115237): Now that this is an interactive test, is this
+  // TODO(crbug.com/40711219): Now that this is an interactive test, is this
   // ifdef still necessary?
 #if !BUILDFLAG(IS_MAC)
   ui_test_utils::BrowserActivationWaiter waiter(popup_browser);

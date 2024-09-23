@@ -122,16 +122,6 @@ chromium-metrics-reviews@google.com.
              tracking a relevant committed load"/>
 </enum>
 
-<enum name="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Image is loaded from memory cache"/>
-  <int value="2"
-      label="Image is preloaded after receiving a 103 (Early Hints) response"/>
-  <int value="3"
-      label="Image is loaded from memory and preloaded after receiving a 103
-             (Early Hints) response"/>
-</enum>
-
 <enum name="LcppPredictResult">
   <int value="0" label="Success">Prediction is success.</int>
   <int value="1" label="Failure: No hit">
@@ -150,6 +140,12 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="LinkPreviewUsage">
+  <int value="0" label="Not used"/>
+  <int value="1" label="Used but not promited"/>
+  <int value="2" label="Used and promoted"/>
+</enum>
+
 <enum name="MhtmlLoadResult">
   <int value="0" label="Success">Archive loaded successfully</int>
   <int value="1" label="Empty file">
@@ -164,6 +160,84 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Missing main resource">
     Failed to load archive because it had no main resource
   </int>
+</enum>
+
+<!-- LINT.IfChange(NavigationAbandonReasonEnum) -->
+
+<enum name="NavigationAbandonReasonEnum">
+  <int value="0" label="kFrameRemoved"/>
+  <int value="1" label="kExplicitCancellation"/>
+  <int value="2" label="kInternalCancellation"/>
+  <int value="3" label="kRenderProcessGone"/>
+  <int value="4" label="kNeverStarted"/>
+  <int value="5" label="kFailedSecurityCheck"/>
+  <int value="6" label="kOther"/>
+  <int value="7" label="kHidden"/>
+  <int value="8" label="kErrorPage"/>
+  <int value="9" label="kAppBackgrounded"/>
+  <int value="10" label="kNewReloadNavigation"/>
+  <int value="11" label="kNewHistoryNavigation"/>
+  <int value="12" label="kNewOtherNavigationBrowserInitiated"/>
+  <int value="13" label="kNewOtherNavigationRendererInitiated"/>
+  <int value="14" label="kNewDuplicateNavigation"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:AbandonReason) -->
+
+<!-- LINT.IfChange(NavigationMilestoneEnum2) -->
+
+<enum name="NavigationMilestoneEnum2">
+  <int value="0" label="kNavigationStart"/>
+  <int value="1" label="kLoaderStart"/>
+  <int value="2" label="kFirstRedirectedRequestStart"/>
+  <int value="3" label="kFirstRedirectResponseStart"/>
+  <int value="4" label="kFirstRedirectResponseLoaderCallback"/>
+  <int value="5" label="kNonRedirectedRequestStart"/>
+  <int value="6" label="kNonRedirectResponseStart"/>
+  <int value="7" label="kNonRedirectResponseLoaderCallback"/>
+  <int value="8" label="kCommitSent"/>
+  <int value="9" label="kCommitReceived"/>
+  <int value="10" label="kDidCommit"/>
+  <int value="11" label="kParseStart"/>
+  <int value="12" label="kFirstContentfulPaint"/>
+  <int value="13" label="kDOMContentLoaded"/>
+  <int value="14" label="kLoadEventStarted"/>
+  <int value="15" label="kLargestContentfulPaint"/>
+  <int value="16" label="kAFTStart"/>
+  <int value="17" label="kAFTEnd"/>
+  <int value="18" label="kHeaderChunkStart"/>
+  <int value="19" label="kHeaderChunkEnd"/>
+  <int value="20" label="kBodyChunkStart"/>
+  <int value="21" label="kBodyChunkEnd"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
+
+<!-- LINT.IfChange(NavigationSourceTypeEnum) -->
+
+<enum name="NavigationSourceTypeEnum">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kFromNewTabPage"/>
+  <int value="2" label="kStartedInBackground"/>
+  <int value="3" label="kStartedInBackgroundFromNewTabPage"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:NavigationSourceType) -->
+
+<enum name="OriginTrialStatusChange">
+  <int value="0"
+      label="kDisabled: Origin-specific origin trial token was disabled (i.e.
+             removed from the top-level site's partition)"/>
+  <int value="1"
+      label="kDisabled_MatchesSubdomains: Subdomain-matching origin trial
+             token was disabled (i.e. removed from the top-level site's
+             partition)"/>
+  <int value="2"
+      label="kEnabled: Origin-specific token was used to enable the origin
+             trial"/>
+  <int value="3"
+      label="kEnabled_MatchesSubdomains: Subdomain-matching token was used to
+             enable the origin trial"/>
 </enum>
 
 <enum name="PageActionCTREvent">
@@ -185,8 +259,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Price Tracking"/>
   <int value="11" label="PWA Install"/>
   <int value="12" label="QR Code Generator"/>
-  <int value="13" label="Reader Mode"/>
-  <int value="14" label="Save Autofill Address"/>
+  <int value="13" label="(Deprecated) Reader Mode"/>
+  <int value="14" label="Autofill Address"/>
   <int value="15" label="Save Card"/>
   <int value="16" label="Send Tab to Self"/>
   <int value="17" label="Sharing Hub"/>
@@ -199,6 +273,9 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Save IBAN"/>
   <int value="25" label="Mandatory Reauth"/>
   <int value="26" label="Price Insights"/>
+  <int value="27" label="Read Anything"/>
+  <int value="28" label="Product Specifications"/>
+  <int value="29" label="Lens Overlay"/>
 </enum>
 
 <enum name="PageActionPageEvent">
@@ -217,24 +294,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Prerender Activation Navigation"/>
 </enum>
 
-<enum name="PageLoadPrerenderObserverEvent">
-  <int value="0" label="OnPrerenderStart"/>
-  <int value="1" label="DidActivatePrerenderedPage"/>
-  <int value="2" label="OnFirstPaintInPage"/>
-  <int value="3" label="OnFirstContentfulPaintInPage"/>
-  <int value="4" label="OnFirstInputInPage"/>
-  <int value="5" label="OnComplete"/>
-  <int value="6" label="FlushMetricsOnAppEnterBackground"/>
-  <int value="7" label="RecordSessionEndHistograms"/>
-  <int value="8" label="RecordLayoutShiftScoreMetrics"/>
-  <int value="9" label="RecordNormalizedResponsivenessMetrics"/>
-</enum>
-
-<enum name="PageLoadPrerenderVisibilityAtActivation">
-  <int value="0" label="Hidden"/>
-  <int value="1" label="Occluded"/>
-  <int value="2" label="Visible"/>
-</enum>
+<!-- LINT.IfChange(PageLoadTimingStatus) -->
 
 <enum name="PageLoadTimingStatus">
   <summary>Status of PageLoadTimings received from the render process</summary>
@@ -252,23 +312,26 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Invalid order - parse start / parse stop"/>
   <int value="9" label="Invalid order - parse stop / dom content loaded"/>
   <int value="10" label="Invalid order - dom content loaded / load"/>
-  <int value="11" label="Invalid order - parse start / first layout"/>
-  <int value="12" label="Invalid order - first layout / first paint"/>
-  <int value="13" label="Invalid order - first paint / first text paint"/>
-  <int value="14" label="Invalid order - first paint / first image paint"/>
-  <int value="15" label="Invalid order - first paint / first contentful paint"/>
-  <int value="16" label="Invalid order - first paint / first meaningful paint"/>
-  <int value="17" label="Invalid order - first meaningful paint / interactive"/>
-  <int value="18" label="First input delay without first input timestamp"/>
-  <int value="19" label="First input timestamp without first input delay"/>
-  <int value="20" label="Longest input delay without longest input timestamp"/>
-  <int value="21" label="Longest input timestamp without longest input delay"/>
-  <int value="22"
+  <int value="11" label="Invalid order - parse start / first paint"/>
+  <int value="12" label="Invalid order - first paint / first text paint"/>
+  <int value="13" label="Invalid order - first paint / first image paint"/>
+  <int value="14" label="Invalid order - first paint / first contentful paint"/>
+  <int value="15" label="Invalid order - first paint / first meaningful paint"/>
+  <int value="16" label="Invalid order - first meaningful paint / interactive"/>
+  <int value="17" label="First input delay without first input timestamp"/>
+  <int value="18" label="First input timestamp without first input delay"/>
+  <int value="19" label="Longest input delay without longest input timestamp"/>
+  <int value="20" label="Longest input timestamp without longest input delay"/>
+  <int value="21" label="First scroll delay without first scroll timestamp"/>
+  <int value="22" label="First scroll timestamp without first scroll delay"/>
+  <int value="23"
       label="Longest input timestamp earlier than first input timestamp"/>
-  <int value="23" label="Longest input delay less than first input delay"/>
-  <int value="24" label="Invalid order - parse start / activation start"/>
-  <int value="25" label="Invalid order - activation start / first paint"/>
+  <int value="24" label="Longest input delay less than first input delay"/>
+  <int value="25" label="Invalid order - parse start / activation start"/>
+  <int value="26" label="Invalid order - activation start / first paint"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h:PageLoadTimingStatus) -->
 
 <enum name="PageLoadTrackerPageType">
   <int value="0" label="Primary Page"/>
@@ -311,21 +374,65 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ThirdPartyCookieAllowMechanism">
-  <int value="0" label="No allow mechanism apply (Not recorded)"/>
+  <int value="0" label="kNone: No allow mechanism applied (Not recorded)."/>
   <int value="1"
-      label="Allow by explicit cookie content setting (e.g. UserBypass)"/>
+      label="kAllowByExplicitSetting: Allowed by explicit cookie content
+             setting (e.g. UserBypass)."/>
   <int value="2"
-      label="Allow by global 3p cookie setting setting (e.g. Enterprise
-             Policy: BlockThirdPartyCookies, UX, Default allow)"/>
+      label="kAllowByGlobalSetting: Allowed by global 3p cookie setting
+             setting (e.g. Enterprise Policy: BlockThirdPartyCookies, UX,
+             Default allow)."/>
   <int value="3"
-      label="Allow by 3PCD metadata grants content settings (Global
-             Allowlist)"/>
-  <int value="4" label="Allow by third-party deprecation trial"/>
-  <int value="5" label="Allow by 3PCD heuristics"/>
-  <int value="6" label="Allow by Storage access API"/>
-  <int value="7" label="Allow by top-level Storage access API"/>
-  <int value="8" label="Allow by opting into CORS protections"/>
-  <int value="9" label="Allow by Enterprise Policy: CookiesAllowedForUrls"/>
+      label="kAllowBy3PCDMetadata: (Deprecated) Allowed by 3PCD metadata
+             grants content settings (Global Allowlist)."/>
+  <int value="4"
+      label="kAllowBy3PCD: Allowed by third-party deprecation trial."/>
+  <int value="5" label="kAllowBy3PCDHeuristics: Allowed by 3PCD heuristics."/>
+  <int value="6" label="kAllowByStorageAccess: Allowed by Storage access API."/>
+  <int value="7"
+      label="kAllowByTopLevelStorageAccess: Allowed by top-level Storage
+             access API."/>
+  <int value="8"
+      label="kAllowByCORSException: Allowed by opting into CORS protections."/>
+  <int value="9"
+      label="kAllowByTopLevel3PCD: Allowed by top-level third-party
+             deprecation trial."/>
+  <int value="10"
+      label="kAllowByEnterprisePolicyCookieAllowedForUrls: Allowed by
+             CookiesAllowedForUrls Enterprise Policy."/>
+  <int value="11"
+      label="kAllowBy3PCDMetadataSourceUnspecified: Allowed by entries with
+             unspecified source within the 3PCD metadata grants content
+             settings (Global Allowlist)."/>
+  <int value="12"
+      label="kAllowBy3PCDMetadataSourceTest: Allowed by test entries within
+             the 3PCD metadata grants content settings (Global Allowlist)."/>
+  <int value="13"
+      label="kAllowBy3PCDMetadataSource1pDt: Allowed by 1P DT entries within
+             the 3PCD metadata grants content settings (Global Allowlist)."/>
+  <int value="14"
+      label="kAllowBy3PCDMetadataSource3pDt: Allowed by 3P DT entries within
+             the 3PCD metadata grants content settings (Global Allowlist)"/>
+  <int value="15"
+      label="kAllowBy3PCDMetadataSourceDogFood: Allowed by dogfood entries
+             within the 3PCD metadata grants content settings (Global
+             Allowlist)."/>
+  <int value="16"
+      label="kAllowBy3PCDMetadataSourceCriticalSector: Allowed by critical
+             sector entries within the 3PCD metadata grants content settings
+             (Global Allowlist)."/>
+  <int value="17"
+      label="kAllowBy3PCDMetadataSourceCuj: Allowed by critical user journey
+             entries within the 3PCD metadata grants content settings (Global
+             Allowlist)."/>
+  <int value="18"
+      label="kAllowBy3PCDMetadataSourceGovEduTld: Allowed by government and
+             education TLD entries within the 3PCD metadata grants content
+             settings (Global Allowlist)."/>
+  <int value="19" label="kAllowByScheme: Allowed by the top-level scheme."/>
+  <int value="20"
+      label="kAllowByTrackingProtectionException: Allowed by explicit
+             tracking protection content setting."/>
 </enum>
 
 </enums>

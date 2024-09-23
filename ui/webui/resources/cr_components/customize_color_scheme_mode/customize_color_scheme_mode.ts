@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button.js';
-import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button_option.js';
+import './segmented_button.js';
+import './segmented_button_option.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from '//resources/js/assert.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {CustomizeColorSchemeModeBrowserProxy} from './browser_proxy.js';
-import {getTemplate} from './customize_color_scheme_mode.html.js';
+import {getCss} from './customize_color_scheme_mode.css.js';
+import {getHtml} from './customize_color_scheme_mode.html.js';
 import type {CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerInterface} from './customize_color_scheme_mode.mojom-webui.js';
 import {ColorSchemeMode} from './customize_color_scheme_mode.mojom-webui.js';
 
@@ -35,7 +35,7 @@ export const colorSchemeModeOptions: ColorSchemeModeOption[] = [
   },
 ];
 
-const CustomizeColorSchemeModeElementBase = I18nMixin(PolymerElement);
+const CustomizeColorSchemeModeElementBase = I18nMixinLit(CrLitElement);
 
 export class CustomizeColorSchemeModeElement extends
     CustomizeColorSchemeModeElementBase {
@@ -43,24 +43,24 @@ export class CustomizeColorSchemeModeElement extends
     return 'customize-color-scheme-mode';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      currentMode_: {
-        type: Object,
-        value: colorSchemeModeOptions[0],
-      },
-      colorSchemeModeOptions_: {
-        type: Object,
-        value: colorSchemeModeOptions,
-      },
+      currentMode_: {type: Object, state: true},
+      colorSchemeModeOptions_: {type: Array, state: true},
     };
   }
 
-  private currentMode_: ColorSchemeModeOption|undefined;
+  protected currentMode_: ColorSchemeModeOption = colorSchemeModeOptions[0]!;
+  protected readonly colorSchemeModeOptions_: ColorSchemeModeOption[] =
+      colorSchemeModeOptions;
 
   private handler_: CustomizeColorSchemeModeHandlerInterface =
       CustomizeColorSchemeModeBrowserProxy.getInstance().handler;
@@ -74,8 +74,10 @@ export class CustomizeColorSchemeModeElement extends
     this.setColorSchemeModeListenerId_ =
         this.callbackRouter_.setColorSchemeMode.addListener(
             (colorSchemeMode: ColorSchemeMode) => {
-              this.currentMode_ = colorSchemeModeOptions.find(
+              const currentMode = colorSchemeModeOptions.find(
                   (mode) => colorSchemeMode === mode.value);
+              assert(!!currentMode);
+              this.currentMode_ = currentMode;
             });
     this.handler_.initializeColorSchemeMode();
   }
@@ -83,10 +85,14 @@ export class CustomizeColorSchemeModeElement extends
   override disconnectedCallback() {
     assert(this.setColorSchemeModeListenerId_);
     this.callbackRouter_.removeListener(this.setColorSchemeModeListenerId_);
+    this.setColorSchemeModeListenerId_ = null;
     super.disconnectedCallback();
   }
 
-  private onSelectedChanged_(e: CustomEvent<{value: string}>) {
+  protected onSelectedChanged_(e: CustomEvent<{value: string}>) {
+    if (!!this.currentMode_ && e.detail.value === this.currentMode_.id) {
+      return;
+    }
     const selected = colorSchemeModeOptions.find((option) => {
       return option.id === e.detail.value;
     });

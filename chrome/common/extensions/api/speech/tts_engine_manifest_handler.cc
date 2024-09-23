@@ -38,7 +38,6 @@ bool TtsVoices::Parse(const base::Value::List& tts_voices,
                       TtsVoices* out_voices,
                       std::u16string* error,
                       Extension* extension) {
-  bool added_gender_warning = false;
   for (const base::Value& one_tts_voice_val : tts_voices) {
     if (!one_tts_voice_val.is_dict()) {
       *error = errors::kInvalidTtsVoices;
@@ -64,15 +63,6 @@ bool TtsVoices::Parse(const base::Value::List& tts_voices,
         return false;
       }
       voice_data.lang = lang->GetString();
-    }
-    // TODO(katie): After M73, consider deprecating this installation warning,
-    // since the warning landed in M70 and gender was deprecated in M71.
-    if (one_tts_voice.contains(keys::kTtsVoicesGender) &&
-        !added_gender_warning) {
-      extension->AddInstallWarning(
-          InstallWarning(errors::kTtsGenderIsDeprecated));
-      // No need to add a warning for each voice, that's noisy.
-      added_gender_warning = true;
     }
 
     const base::Value* remote = one_tts_voice.Find(keys::kTtsVoicesRemote);

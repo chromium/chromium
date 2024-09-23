@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/common/quads/texture_draw_quad.h"
 
 #include <stddef.h>
-#include <algorithm>
 
 #include "base/check.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/quads/draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace viz {
 
@@ -44,6 +51,7 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              bool nearest,
                              bool secure_output,
                              gfx::ProtectedVideoType video_type) {
+  CHECK_NE(resource_id, kInvalidResourceId);
   this->needs_blending = needs_blending;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
@@ -73,6 +81,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              bool nearest,
                              bool secure_output,
                              gfx::ProtectedVideoType video_type) {
+  CHECK_NE(resource_id, kInvalidResourceId);
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resources.ids[kResourceIdIndex] = resource_id;
@@ -104,12 +113,6 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   value->SetString("background_color",
                    color_utils::SkColor4fToRgbaString(background_color));
 
-  value->BeginArray("vertex_opacity");
-  for (float i : vertex_opacity) {
-    value->AppendDouble(i);
-  }
-  value->EndArray();
-
   value->SetString(
       "rounded_display_masks_info",
       base::StringPrintf(
@@ -129,23 +132,6 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
                     static_cast<int>(protected_video_type));
 }
 
-void TextureDrawQuad::set_vertex_opacity(float opacity) {
-  if (opacity != 1.f) {
-    // We can never unset 'needs_blending' as it can be set manually.
-    needs_blending = true;
-  }
-  vertex_opacity.fill(opacity);
-}
-
-void TextureDrawQuad::set_vertex_opacity(base::span<const float, 4> opacity) {
-  if (std::any_of(opacity.begin(), opacity.end(),
-                  [](float opacity_value) { return opacity_value != 1.f; })) {
-    // We can never unset 'needs_blending' as it can be set manually.
-    needs_blending = true;
-  }
-  std::copy(opacity.begin(), opacity.end(), vertex_opacity.begin());
-}
-
 TextureDrawQuad::OverlayResources::OverlayResources() = default;
 
 TextureDrawQuad::RoundedDisplayMasksInfo::RoundedDisplayMasksInfo() = default;
@@ -163,6 +149,55 @@ TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
   info.is_horizontally_positioned = is_horizontally_positioned;
 
   return info;
+}
+
+// static
+std::array<
+    gfx::RectF,
+    TextureDrawQuad::RoundedDisplayMasksInfo::kMaxRoundedDisplayMasksCount>
+TextureDrawQuad::RoundedDisplayMasksInfo::GetRoundedDisplayMasksBounds(
+    const DrawQuad* quad) {
+  std::array<gfx::RectF, RoundedDisplayMasksInfo::kMaxRoundedDisplayMasksCount>
+      mask_rects;
+
+  const TextureDrawQuad* texture_quad = quad->DynamicCast<TextureDrawQuad>();
+  if (!texture_quad) {
+    return mask_rects;
+  }
+
+  TextureDrawQuad::RoundedDisplayMasksInfo mask_info =
+      texture_quad->rounded_display_masks_info;
+
+  if (mask_info.IsEmpty()) {
+    return mask_rects;
+  }
+
+  const gfx::Transform& transform =
+      quad->shared_quad_state->quad_to_target_transform;
+  const gfx::RectF target_rect = transform.MapRect(gfx::RectF(quad->rect));
+
+  const int16_t origin_mask_radius =
+      mask_info.radii[TextureDrawQuad::RoundedDisplayMasksInfo::
+                          kOriginRoundedDisplayMaskIndex];
+  mask_rects[RoundedDisplayMasksInfo::kOriginRoundedDisplayMaskIndex] =
+      gfx::RectF(target_rect.x(), target_rect.y(), origin_mask_radius,
+                 origin_mask_radius);
+
+  const int16_t other_mask_radius =
+      mask_info.radii[TextureDrawQuad::RoundedDisplayMasksInfo::
+                          kOtherRoundedDisplayMaskIndex];
+  if (mask_info.is_horizontally_positioned) {
+    mask_rects[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex] =
+        gfx::RectF(target_rect.x() + target_rect.width() - other_mask_radius,
+                   target_rect.y(), other_mask_radius, other_mask_radius);
+  } else {
+    mask_rects[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex] =
+        gfx::RectF(target_rect.x(),
+                   target_rect.y() + target_rect.height() - other_mask_radius,
+                   other_mask_radius, other_mask_radius);
+  }
+
+  return mask_rects;
 }
 
 bool TextureDrawQuad::RoundedDisplayMasksInfo::IsEmpty() const {

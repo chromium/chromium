@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const RECORD_FRAMES = 5
 var srcVideo;
 var dstVideo;
 let recorder = null;
@@ -23,6 +22,14 @@ function logOutput(s) {
   }
 }
 
+function sendResult(status) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
 function setVideoSize() {
   const width = '240';
   const height = '135';
@@ -38,12 +45,12 @@ function startPlayback() {
   var videoURL = window.URL.createObjectURL(blob);
   dstVideo.onended = function() {
     logOutput('Playback complete.');
-    domAutomationController.send('SUCCESS');
+    sendResult('SUCCESS');
   }
   dstVideo.onerror = e => {
     logOutput(`Test failed: ${e.message}`);
     abort = true;
-    domAutomationController.send('FAIL');
+    sendResult('FAIL');
   };
   dstVideo.src = videoURL;
   dstVideo.play();
@@ -55,26 +62,20 @@ function startRecording() {
   recorder = new MediaRecorder(stream, { mimeType });
   recorder.onstop = startPlayback;
   recorder.ondataavailable = (e) => {
+    logOutput(`Recorder data available. ${e.data.size}`);
     chunks.push(e.data);
+    if (e.data.size > 50) {
+      // We actually got a real encoded video data chunk.
+      recorder.ondataavailable = null;
+      stopRecording();
+    }
   };
 
-  recorder.start();
+  // Start recording and ask it to emit encoded data every 100 ms.
+  recorder.start(100);
   srcVideo.play();
 
-  stopRecordingAfterXFrames(RECORD_FRAMES);
-
   logOutput('Recording started.');
-}
-
-function stopRecordingAfterXFrames(x) {
-  if (x <= 0) {
-    stopRecording();
-  } else {
-    logOutput(`${x} frame(s) remaining.`);
-    srcVideo.requestVideoFrameCallback(()=>{
-      stopRecordingAfterXFrames(x-1);
-    })
-  }
 }
 
 function stopRecording() {
@@ -96,7 +97,7 @@ function main() {
   srcVideo.onerror = e => {
     logOutput(`Test failed: ${e.message}`);
     abort = true;
-    domAutomationController.send('FAIL');
+    sendResult('FAIL');
   };
   srcVideo.requestVideoFrameCallback(startRecording);
 }

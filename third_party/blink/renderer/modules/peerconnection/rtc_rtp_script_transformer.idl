@@ -1,0 +1,15 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webrtc-encoded-transform/#rtcrtpscripttransformer
+
+// TODO(crbug.com/354881878): implement the rest of the spec
+[Exposed=DedicatedWorker, RuntimeEnabled=RTCRtpScriptTransform]
+interface RTCRtpScriptTransformer : EventTarget {
+    readonly attribute ReadableStream readable;
+    [CallWith=ScriptState] Promise<undefined> sendKeyFrameRequest();
+    readonly attribute WritableStream writable;
+    // Additional context added by the application to configure its transform.
+    [CachedAttribute=IsOptionsDirty, CallWith=ScriptState] readonly attribute any options;
+};

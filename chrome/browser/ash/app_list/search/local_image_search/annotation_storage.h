@@ -74,6 +74,10 @@ class AnnotationStorage {
   // Searches the database for a desired `image_path`.
   std::vector<ImageInfo> FindImagePath(const base::FilePath& image_path);
 
+  // Get `last_modified_time` of the image by `image_path` from the database.
+  // If the image is not found in the database, return `base::Time()` instead.
+  const base::Time GetLastModifiedTime(const base::FilePath& image_path);
+
   // Search for a multi-term query. The results are sorted by `relevance`.
   std::vector<FileSearchResult> Search(const std::u16string& query,
                                        size_t max_num_results);

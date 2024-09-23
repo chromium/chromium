@@ -4,21 +4,26 @@
 
 #include "ash/picker/views/picker_category_type.h"
 
-#include "ash/picker/model/picker_category.h"
+#include "ash/picker/picker_category.h"
 
 namespace ash {
 
 ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
   switch (category) {
+    case PickerCategory::kEditorWrite:
+      return PickerCategoryType::kEditorWrite;
+    case PickerCategory::kEditorRewrite:
+      return PickerCategoryType::kEditorRewrite;
+    case PickerCategory::kLinks:
+    case PickerCategory::kEmojisGifs:
     case PickerCategory::kEmojis:
-    case PickerCategory::kSymbols:
-    case PickerCategory::kEmoticons:
-    case PickerCategory::kGifs:
-      return PickerCategoryType::kExpressions;
-    case PickerCategory::kOpenTabs:
-    case PickerCategory::kBrowsingHistory:
-    case PickerCategory::kBookmarks:
-      return PickerCategoryType::kLinks;
+    case PickerCategory::kClipboard:
+    case PickerCategory::kDriveFiles:
+    case PickerCategory::kLocalFiles:
+      return PickerCategoryType::kGeneral;
+    case PickerCategory::kDatesTimes:
+    case PickerCategory::kUnitsMaths:
+      return PickerCategoryType::kMore;
   }
 }
 

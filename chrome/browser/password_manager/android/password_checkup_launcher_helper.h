@@ -10,6 +10,8 @@
 #include "components/password_manager/core/browser/password_check_referrer_android.h"
 #include "ui/android/window_android.h"
 
+class Profile;
+
 // Helper class used to access the methods of the java class
 // `PasswordCheckupLauncher` from multiple native side locations.
 // This interface is provided as a convenience for testing.
@@ -37,6 +39,7 @@ class PasswordCheckupLauncherHelper {
   // UI for account passwords or for local passwords.
   virtual void LaunchCheckupOnDevice(
       JNIEnv* env,
+      Profile* profile,
       ui::WindowAndroid* windowAndroid,
       password_manager::PasswordCheckReferrerAndroid passwordCheckReferrer,
       std::string account_email) = 0;

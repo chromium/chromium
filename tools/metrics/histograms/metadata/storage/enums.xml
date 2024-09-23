@@ -26,20 +26,25 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AdProtoDecompressionOutcome) -->
+
+<enum name="AdProtoDecompressionOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:AdProtoDecompressionOutcome) -->
+
+<enum name="AutograntViaFedCmOutcome">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Denied by permissions policy"/>
+  <int value="2" label="Denied by permission"/>
+  <int value="3" label="Denied by preventSilentAccess"/>
+</enum>
+
 <enum name="BooleanInherited">
   <int value="0" label="Not inherited"/>
   <int value="1" label="Inherited"/>
-</enum>
-
-<enum name="ClearDataSiteBlacklistCrossedReason">
-  <int value="0" label="Durable"/>
-  <int value="1" label="Notifications"/>
-  <int value="2" label="Engagement"/>
-  <int value="3" label="Notifications and Engagement"/>
-  <int value="4" label="Durable and Engagement"/>
-  <int value="5" label="Notifications and Durable"/>
-  <int value="6" label="Notifications, Durable, and Engagement"/>
-  <int value="7" label="Unknown"/>
 </enum>
 
 <enum name="ClearSiteDataParameters">
@@ -105,6 +110,61 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Filenames"/>
 </enum>
 
+<!-- LINT.IfChange(FileErrorCode) -->
+
+<enum name="FileErrorCode">
+  <int value="0" label="kOK"/>
+  <int value="1" label="kNotFoundErr"/>
+  <int value="2" label="kSecurityErr"/>
+  <int value="3" label="kAbortErr"/>
+  <int value="4" label="kNotReadableErr"/>
+  <int value="5" label="kEncodingErr"/>
+  <int value="6" label="kNoModificationAllowedErr"/>
+  <int value="7" label="kInvalidStateErr"/>
+  <int value="8" label="kSyntaxErr"/>
+  <int value="9" label="kInvalidModificationErr"/>
+  <int value="10" label="kQuotaExceededErr"/>
+  <int value="11" label="kTypeMismatchErr"/>
+  <int value="12" label="kPathExistsErr"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/fileapi/file_error.h:FileErrorCode) -->
+
+<enum name="FileReaderLoaderFailureType">
+  <int value="0" label="Mojo pipe creation failed"/>
+  <int value="1" label="Data incomplete after synchronous reading"/>
+  <int value="2" label="OnComplete never called after synchronous reading"/>
+  <int value="3"
+      label="Backend read error, see Storage.Blob.FileReaderLoader.ReadError"/>
+  <int value="4" label="The size read does not match the size reported"/>
+  <int value="5"
+      label="The data pipe is not readable and there are bytes left to read"/>
+  <int value="6" label="The data pipe closed early"/>
+  <int value="7" label="Data pipe reading failed with an unexpected error"/>
+  <int value="8" label="File reader client reporter a problem"/>
+</enum>
+
+<enum name="FileReaderLoaderMojoResult">
+  <int value="0" label="MOJO_RESULT_OK"/>
+  <int value="1" label="MOJO_RESULT_CANCELLED"/>
+  <int value="2" label="MOJO_RESULT_UNKNOWN"/>
+  <int value="3" label="MOJO_RESULT_INVALID_ARGUMENT"/>
+  <int value="4" label="MOJO_RESULT_DEADLINE_EXCEEDED"/>
+  <int value="5" label="MOJO_RESULT_NOT_FOUND"/>
+  <int value="6" label="MOJO_RESULT_ALREADY_EXISTS"/>
+  <int value="7" label="MOJO_RESULT_PERMISSION_DENIED"/>
+  <int value="8" label="MOJO_RESULT_RESOURCE_EXHAUSTED"/>
+  <int value="9" label="MOJO_RESULT_FAILED_PRECONDITION"/>
+  <int value="10" label="MOJO_RESULT_ABORTED"/>
+  <int value="11" label="MOJO_RESULT_OUT_OF_RANGE"/>
+  <int value="12" label="MOJO_RESULT_UNIMPLEMENTED"/>
+  <int value="13" label="MOJO_RESULT_INTERNAL"/>
+  <int value="14" label="MOJO_RESULT_UNAVAILABLE"/>
+  <int value="15" label="MOJO_RESULT_DATA_LOSS"/>
+  <int value="16" label="MOJO_RESULT_BUSY"/>
+  <int value="17" label="MOJO_RESULT_SHOULD_WAIT"/>
+</enum>
+
 <enum name="FileSystemAccessPermissionRequestOutcome">
   <int value="0" label="Blocked by Content Setting"/>
   <int value="1" label="Blocked from invalid frame"/>
@@ -126,6 +186,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Dismissed by user"/>
 </enum>
 
+<enum name="FileSystemAccessWatchWithChangeInfoResult">
+  <int value="0" label="Successfully setup watch"/>
+  <int value="1" label="Linux, the OS inotify limit was reached"/>
+  <int value="2"
+      label="Windows, a fatal error occured when trying to open a file entry
+             to watch"/>
+  <int value="3"
+      label="Windows, reached the root directory and couldn't watch it"/>
+  <int value="4" label="Windows, error when calling CreateIoCompletionPort"/>
+  <int value="5" label="Windows, error when calling ReadDirectoryChangesW"/>
+  <int value="6" label="Mac, error when the resolved target path is empty"/>
+  <int value="7" label="Mac, error when starting the FSEvents event stream"/>
+</enum>
+
 <enum name="ImportantSitesReason">
   <int value="0" label="Engagement"/>
   <int value="1" label="Durable"/>
@@ -133,6 +207,73 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Home Screen"/>
   <int value="4" label="Notifications"/>
 </enum>
+
+<!-- LINT.IfChange(InterestGroupStorageInitializationResult) -->
+
+<enum name="InterestGroupStorageInitializationResult">
+  <int value="0" label="SuccessAlreadyCurrent"/>
+  <int value="1" label="SuccessUpgraded"/>
+  <int value="2" label="SuccessCreateSchema"/>
+  <int value="3" label="SuccessCreateSchemaAfterIncompatibleRaze"/>
+  <int value="4" label="SuccessCreateSchemaAfterNoMetaTableRaze"/>
+  <int value="5" label="FailedCreateInMemory"/>
+  <int value="6" label="FailedCreateDirectory"/>
+  <int value="7" label="FailedCreateFile"/>
+  <int value="8" label="FailedToRazeIncompatible"/>
+  <int value="9" label="FailedToRazeNoMetaTable"/>
+  <int value="10" label="FailedMetaTableInit"/>
+  <int value="11" label="FailedCreateSchema"/>
+  <int value="12" label="FailedCreateSchemaAfterIncompatibleRaze"/>
+  <int value="13" label="FailedCreateSchemaAfterNoMetaTableRaze"/>
+  <int value="14" label="FailedUpgradeDB"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageInitializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageJSONDeserializationResult) -->
+
+<enum name="InterestGroupStorageJSONDeserializationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageJSONDeserializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageJSONSerializationResult) -->
+
+<enum name="InterestGroupStorageJSONSerializationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageJSONSerializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageProtoDeserializationResult) -->
+
+<enum name="InterestGroupStorageProtoDeserializationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageProtoDeserializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageProtoSerializationResult) -->
+
+<enum name="InterestGroupStorageProtoSerializationResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageProtoSerializationResult) -->
+
+<!-- LINT.IfChange(InterestGroupStorageVacuumResult) -->
+
+<enum name="InterestGroupStorageVacuumResult">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageVacuumResult) -->
 
 <enum name="RequestStorageResult">
   <int value="0" label="Approved due to existing storage access"/>
@@ -197,6 +338,16 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="SharedStorageSelectUrlBudgetStatus">
+  <int value="0" label="SufficientBudget"/>
+  <int value="1" label="InsufficientSiteNavigationBudget"/>
+  <int value="2" label="InsufficientOverallPageloadBudget"/>
+  <int value="3" label="InsufficientSitePageloadBudget"/>
+  <int value="4" label="Other">
+    The budget was not checked or an error occurred.
+  </int>
+</enum>
+
 <enum name="SharedStorageWorkletDestroyedStatus">
   <int value="0" label="DidNotEnterKeepAlive"/>
   <int value="1" label="KeepAliveEndedDueToOperationsFinished"/>
@@ -208,29 +359,156 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SharedStorageWorkletErrorType">
   <int value="0" label="AddModuleWebVisible">
-    Errors in `addModule()` visible to the document.
+    Errors in `addModule()` or `createWorklet()` visible to the document.
   </int>
-  <int value="1" label="AddModuleNonWebVisible">
+  <int value="1" label="(Obsolete) AddModuleNonWebVisible">
     Errors in `addModule()` not visible to the document.
   </int>
   <int value="2" label="RunWebVisible">
     Errors in `run()` visible to the document.
   </int>
-  <int value="3" label="RunNonWebVisible">
+  <int value="3" label="(Obsolete) RunNonWebVisible">
     Errors in `run()` not visible to the document.
   </int>
-  <int value="4" label="kSelectURLWebVisible">
+  <int value="4" label="SelectURLWebVisible">
     Errors in `selectURL()` visible to the document.
   </int>
-  <int value="5" label="kSelectURLNonWebVisible">
+  <int value="5" label="(Obsolete) SelectURLNonWebVisible">
     Errors in `selectURL()` not visible to the document.
+  </int>
+  <int value="6" label="Success"/>
+  <int value="7" label="AddModuleNonWebVisibleMulipleWorkletsDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    browser received message from renderer trying to create multiple worklets
+    when &quot;SharedStorageAPIM125&quot; feature disabled.
+  </int>
+  <int value="8" label="AddModuleNonWebVisibleCrossOriginWorkletsDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    browser received message from renderer trying to cross-origin worklet when
+    &quot;SharedStorageAPIM125&quot; feature disabled.
+  </int>
+  <int value="9"
+      label="kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    cross-origin worklet cannot be created because shared storage is disabled
+    for the origin's site.
+  </int>
+  <int value="10" label="kAddModuleNonWebVisibleOther">
+    Other errors in `addModule()` or `createWorklet()` not visible to the
+    document.
+  </int>
+  <int value="11" label="RunNonWebVisibleInvalidContextId">
+    Error in `run()` not visible to the document: browser received message from
+    renderer with invalid context ID.
+  </int>
+  <int value="12" label="RunNonWebVisibleKeepAliveFalse">
+    Error in `run()` not visible to the document: browser received message from
+    renderer with keepAlive set to false.
+  </int>
+  <int value="13" label="RunNonWebVisibleCrossOriginSharedStorageDisabled">
+    Error in `run()` not visible to the document: cross-origin worklet operation
+    cannot be completed because shared storage is disabled for the origin's
+    site.
+  </int>
+  <int value="14" label="RunNonWebVisibleModuleScriptNotLoaded">
+    Error in `run()` not visible to the document: the module script hasn't been
+    loaded.
+  </int>
+  <int value="15" label="RunNonWebVisibleOperationNotFound">
+    Error in `run()` not visible to the document: cannot find operation name.
+  </int>
+  <int value="16" label="RunNonWebVisibleEmptyOperationDefinitionInstance">
+    Error in `run()` not visible to the document: the operation definition
+    instance was empty.
+  </int>
+  <int value="17" label="RunNonWebVisibleCannotDeserializeData">
+    Error in `run()` not visible to the document: cannot deserialize data.
+  </int>
+  <int value="18" label="RunNonWebVisibleEmptyScriptResult">
+    Error in `run()` not visible to the document: result of invoking script was
+    empty.
+  </int>
+  <int value="19" label="RunNonWebVisibleOther">
+    Other errors in `run()` not visible to the document.
+  </int>
+  <int value="20" label="SelectURLNonWebVisibleInvalidURLArrayLength">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with an invalid URL array length.
+  </int>
+  <int value="21" label="SelectURLNonWebVisibleInvalidFencedFrameURL">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with an invalid fenced frame URL.
+  </int>
+  <int value="22" label="SelectURLNonWebVisibleInvalidReportingURL">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with an invalid reporting URL.
+  </int>
+  <int value="23" label="SelectURLNonWebVisibleInvalidContextId">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with invalid context ID.
+  </int>
+  <int value="24" label="SelectURLNonWebVisibleKeepAliveFalse">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with keepAlive set to false.
+  </int>
+  <int value="25"
+      label="SelectURLNonWebVisibleCrossOriginSharedStorageDisabled">
+    Error in `selectURL()` not visible to the document: cross-origin worklet
+    operation cannot be completed because shared storage is disabled for the
+    origin's site.
+  </int>
+  <int value="26" label="SelectURLNonWebVisibleModuleScriptNotLoaded">
+    Error in `selectURL()` not visible to the document: the module script hasn't
+    been loaded.
+  </int>
+  <int value="27" label="SelectURLNonWebVisibleOperationNotFound">
+    Error in `selectURL()` not visible to the document: cannot find operation
+    name.
+  </int>
+  <int value="28"
+      label="SelectURLNonWebVisibleEmptyOperationDefinitionInstance">
+    Error in `selectURL()` not visible to the document: the operation definition
+    instance was empty.
+  </int>
+  <int value="29" label="SelectURLNonWebVisibleCannotDeserializeData">
+    Error in `selectURL()` not visible to the document: cannot deserialize data.
+  </int>
+  <int value="30" label="SelectURLNonWebVisibleEmptyScriptResult">
+    Error in `selectURL()` not visible to the document: result of invoking
+    script was empty.
+  </int>
+  <int value="31" label="SelectURLNonWebVisibleReturnValueToInt">
+    Error in `selectURL()` not visible to the document: promise did not resolve
+    to an uint32 number.
+  </int>
+  <int value="32" label="SelectURLNonWebVisibleReturnValueOutOfRange">
+    Error in `selectURL()` not visible to the document: promise resolved to a
+    number outside the length of the input urls.
+  </int>
+  <int value="33" label="SelectURLNonWebVisibleUnexpectedIndexReturned">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with unexpected index number returned.
+  </int>
+  <int value="34" label="SelectURLNonWebVisibleInsufficientBudget">
+    Error in `selectURL()` not visible to the document: insufficient budget.
+  </int>
+  <int value="35" label="SelectURLNonWebVisibleOther">
+    Other errors in `selectURL()` not visible to the document.
+  </int>
+  <int value="36" label="RunNonWebVisibleInvalidFilteringIdMaxBytes">
+    Error in `run()` not visible to the document: browser received message from
+    renderer with invalid filtering ID byte size.
+  </int>
+  <int value="37" label="SelectURLNonWebVisibleInvalidFilteringIdMaxBytes">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with invalid filtering ID byte size.
   </int>
 </enum>
 
 <enum name="SqlRecoveryResult">
   <summary>
-    Outcome of attempting to recover a database with sql::BuiltInRecovery. See
-    sql::BuiltInRecovery::Result for descriptions.
+    Outcome of attempting to recover a database with sql::Recovery. See
+    sql::Recovery::Result for descriptions.
   </summary>
   <int value="0" label="kUnknown"/>
   <int value="1" label="kSuccess"/>
@@ -267,6 +545,7 @@ chromium-metrics-reviews@google.com.
   <int value="13"
       label="Denied due to an abort by browser (e.g. RenderFrameHost was
              deleted)"/>
+  <int value="14" label="Allowed by FedCM connection"/>
 </enum>
 
 <enum name="StorageAccessResult">
@@ -304,6 +583,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="The user clicked on the positive button."/>
 </enum>
 
+<enum name="SyncFileSystemNotificationSource">
+  <int value="0" label="XMPP"/>
+  <int value="1" label="Polling"/>
+</enum>
+
+<enum name="SyncFileSystemSyncAction">
+  <int value="0" label="None"/>
+  <int value="1" label="Added"/>
+  <int value="2" label="Updated"/>
+  <int value="3" label="Deleted"/>
+</enum>
+
 <enum name="TopLevelStorageAccessRequestOutcome">
   <summary>
     Possible outcomes of a Top-Level Storage Access API permission request.
@@ -317,6 +608,7 @@ chromium-metrics-reviews@google.com.
       label="Denied by missing prerequisite (user gesture, feature enabled)"/>
   <int value="6" label="(Obsolete) Dismissed by user"/>
   <int value="7" label="(Obsolete) Reused previous decision (made by user)"/>
+  <int value="8" label="Access was denied through cookie settings"/>
 </enum>
 
 </enums>

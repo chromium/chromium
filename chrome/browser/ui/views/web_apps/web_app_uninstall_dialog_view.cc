@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -26,6 +27,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
@@ -75,7 +78,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
                               kIconSizeInDip, std::move(icon_bitmaps)),
                           image_size);
 
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -87,7 +90,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
           provider_->registrar_unsafe().GetAppShortName(app_id_))));
 
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON));
   SetAcceptCallback(
       base::BindOnce(&WebAppUninstallDialogDelegateView::OnDialogAccepted,
@@ -188,7 +191,6 @@ void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {
     case extensions::ScopedTestDialogAutoConfirm::NONE:
       break;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
-    case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       checkbox_->SetChecked(/*checked=*/true);
       AcceptDialog();
       break;
@@ -201,7 +203,7 @@ void WebAppUninstallDialogDelegateView::ProcessAutoConfirmValue() {
   }
 }
 
-BEGIN_METADATA(WebAppUninstallDialogDelegateView, views::DialogDelegateView)
+BEGIN_METADATA(WebAppUninstallDialogDelegateView)
 END_METADATA
 
 namespace web_app {

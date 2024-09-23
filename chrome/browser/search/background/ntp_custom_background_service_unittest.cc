@@ -9,6 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,10 +20,12 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
@@ -33,6 +36,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/http/http_status_code.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,7 +55,6 @@ class MockNtpCustomBackgroundServiceObserver
     : public NtpCustomBackgroundServiceObserver {
  public:
   MOCK_METHOD0(OnCustomBackgroundImageUpdated, void());
-  MOCK_METHOD0(OnNtpCustomBackgroundServiceShuttingDown, void());
 };
 
 class MockThemeService : public ThemeService {
@@ -145,9 +148,11 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
 
   void SetUp() override {
     custom_background_service_ =
-        std::make_unique<NtpCustomBackgroundService>(profile_.get());
-    custom_background_service_->AddObserver(&observer_);
+        NtpCustomBackgroundServiceFactory::GetForProfile(profile_.get());
+    scoped_observation_.Observe(custom_background_service_);
   }
+
+  void TearDown() override { scoped_observation_.Reset(); }
 
   void SetUpResponseWithNetworkError(const GURL& load_url) {
     test_url_loader_factory_.AddResponse(load_url.spec(), std::string(),
@@ -182,7 +187,11 @@ class NtpCustomBackgroundServiceTest : public testing::Test {
   raw_ptr<MockThemeService> mock_theme_service_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<NtpCustomBackgroundService> custom_background_service_;
+  raw_ptr<NtpCustomBackgroundService> custom_background_service_;
+  base::ScopedObservation<NtpCustomBackgroundService,
+                          NtpCustomBackgroundServiceObserver>
+      scoped_observation_{&observer_};
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(NtpCustomBackgroundServiceTest, SetCustomBackgroundURL) {
@@ -308,15 +317,19 @@ TEST_F(NtpCustomBackgroundServiceTest, UpdatingPrefUpdatesNtpTheme) {
 
   sync_preferences::TestingPrefServiceSyncable* pref_service =
       profile().GetTestingPrefService();
-  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
-                            GetBackgroundInfoAsDict(kUrlFoo, GURL()));
+  pref_service->SetUserPref(
+      std::string(GetThemePrefNameInMigration(
+          ThemePrefInMigration::kNtpCustomBackgroundDict)),
+      GetBackgroundInfoAsDict(kUrlFoo, GURL()));
 
   auto custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrlFoo, custom_background->custom_background_url);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 
-  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
-                            GetBackgroundInfoAsDict(kUrlBar, GURL()));
+  pref_service->SetUserPref(
+      std::string(GetThemePrefNameInMigration(
+          ThemePrefInMigration::kNtpCustomBackgroundDict)),
+      GetBackgroundInfoAsDict(kUrlBar, GURL()));
 
   custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrlBar, custom_background->custom_background_url);
@@ -375,8 +388,10 @@ TEST_F(NtpCustomBackgroundServiceTest, SyncPrefOverridesAndRemovesLocalImage) {
   EXPECT_TRUE(base::PathExists(path));
 
   // Update custom_background info via Sync.
-  pref_service->SetUserPref(prefs::kNtpCustomBackgroundDict,
-                            GetBackgroundInfoAsDict(kUrl, GURL()));
+  pref_service->SetUserPref(
+      std::string(GetThemePrefNameInMigration(
+          ThemePrefInMigration::kNtpCustomBackgroundDict)),
+      GetBackgroundInfoAsDict(kUrl, GURL()));
   task_environment_.RunUntilIdle();
 
   auto custom_background = custom_background_service_->GetCustomBackground();
@@ -696,11 +711,9 @@ TEST_F(NtpCustomBackgroundServiceTest, ConfirmBackgroundChanges) {
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 }
 
-TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColor) {
-  // TODO (crbug/1520873): Fix and re-enable or remove if no longer relevant.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO (crbug/1520873): Fix and re-enable or remove if no longer relevant.
+TEST_F(NtpCustomBackgroundServiceTest,
+       DISABLED_TestUpdateCustomBackgroundColor) {
   // Turn on Color Extraction feature.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -799,14 +812,9 @@ TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomLocalBackgroundColor) {
 }
 
 // Most of the color extraction pipeline is tested above. The only thing tested
-// here is that when kChromeWebuiRefresh2023 is enabled, we call
-// SetUserColorAndBrowserColorVariant() instead of
+// here is that we call SetUserColorAndBrowserColorVariant() instead of
 // BuildAutogeneratedThemeFromColor().
 TEST_F(NtpCustomBackgroundServiceTest, TestUpdateCustomBackgroundColorGM3) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kChromeRefresh2023, features::kChromeWebuiRefresh2023}, {});
-
   // Create image that is one color so that we know what the extracted color
   // will be.
   SkBitmap bitmap;

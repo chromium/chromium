@@ -32,7 +32,7 @@ public class MessageAutoDismissTimerTest {
         timer.startTimer(duration, callbackHelper::notifyCalled);
         // Not flushing will make the looper blocked.
         Robolectric.flushForegroundThreadScheduler();
-        callbackHelper.waitForFirst("Callback should be called by the active timer");
+        callbackHelper.waitForOnly("Callback should be called by the active timer");
     }
 
     /** Ensure Runnable has been set as null after cancellation. */

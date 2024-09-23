@@ -286,6 +286,8 @@ class CORE_EXPORT CSSAnimations final {
     const ComputedStyle& base_style;
     const ComputedStyle* before_change_style;
     const TransitionMap* active_transitions;
+    // If the performance of this HashSet shows up in profiles, we could
+    // convert any non-custom CSS properties in it to use CSSBitset instead.
     HashSet<PropertyHandle>* listed_properties;
     const CSSTransitionData* transition_data;
   };

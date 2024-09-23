@@ -10,9 +10,11 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
+#include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -111,11 +113,11 @@ bool UserScriptSet::UpdateUserScripts(
 
   // Unpickle scripts.
   uint32_t num_scripts = 0;
-  auto memory = shared_memory_mapping_.GetMemoryAsSpan<char>(pickle_size);
+  auto memory = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>(pickle_size);
   if (!memory.size())
     return false;
 
-  base::Pickle pickle(memory.data(), pickle_size);
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(memory);
   base::PickleIterator iter(pickle);
   base::debug::Alias(&pickle_size);
   CHECK(iter.ReadUInt32(&num_scripts));

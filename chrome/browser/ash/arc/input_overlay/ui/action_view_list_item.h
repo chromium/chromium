@@ -16,15 +16,13 @@ namespace arc::input_overlay {
 // | |Name tag|        |keys| |
 // ----------------------------
 class ActionViewListItem : public ActionEditView {
-  METADATA_HEADER(ActionViewListItem, views::View)
+  METADATA_HEADER(ActionViewListItem, ActionEditView)
 
  public:
   ActionViewListItem(DisplayOverlayController* controller, Action* action);
   ActionViewListItem(const ActionViewListItem&) = delete;
   ActionViewListItem& operator=(const ActionViewListItem&) = delete;
   ~ActionViewListItem() override;
-
-  void PerformPulseAnimation();
 
  private:
   friend class EditLabelTest;
@@ -37,6 +35,7 @@ class ActionViewListItem : public ActionEditView {
   void OnMouseExited(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnFocus() override;
+  void OnBlur() override;
 };
 
 }  // namespace arc::input_overlay

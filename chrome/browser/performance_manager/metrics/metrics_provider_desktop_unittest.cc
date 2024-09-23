@@ -6,13 +6,13 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
@@ -23,18 +23,15 @@ class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
     local_state()->SetInteger(
         performance_manager::user_tuning::prefs::kMemorySaverModeState,
         static_cast<int>(enabled ? performance_manager::user_tuning::prefs::
-                                       MemorySaverModeState::kEnabledOnTimer
+                                       MemorySaverModeState::kEnabled
                                  : performance_manager::user_tuning::prefs::
                                        MemorySaverModeState::kDisabled));
   }
 
   void SetBatterySaverEnabled(bool enabled) {
-    local_state()->SetInteger(
-        performance_manager::user_tuning::prefs::kBatterySaverModeState,
-        static_cast<int>(enabled ? performance_manager::user_tuning::prefs::
-                                       BatterySaverModeState::kEnabled
-                                 : performance_manager::user_tuning::prefs::
-                                       BatterySaverModeState::kDisabled));
+    performance_manager::user_tuning::
+        TestUserPerformanceTuningManagerEnvironment::SetBatterySaverMode(
+            &local_state_, enabled);
   }
 
   void ExpectSingleUniqueSample(
@@ -89,7 +86,7 @@ class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
     }
   }
 
-  base::test::TaskEnvironment task_environment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingPrefServiceSimple local_state_;
@@ -273,4 +270,50 @@ TEST_F(PerformanceManagerMetricsProviderDesktopTest,
                              /*battery_saver_percent=*/100,
                              /*memory_saver_percent=*/0);
   }
+}
+
+TEST_F(PerformanceManagerMetricsProviderDesktopTest,
+       TestCpuThrottlingMetricRecordedWhereAvailable) {
+  InitProvider();
+  base::HistogramTester tester;
+
+  FastForwardBy(base::Minutes(5));
+  tester.ExpectTotalCount(
+      "CPU.Experimental.EstimatedFrequencyAsPercentOfMax.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
+
+  tester.ExpectTotalCount(
+      "CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
+
+  tester.ExpectTotalCount(
+      "CPU.Experimental.CpuEstimationTaskQueuedTime.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
+  tester.ExpectTotalCount(
+      "CPU.Experimental.CpuEstimationTaskTotalTime.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
+  tester.ExpectTotalCount(
+      "CPU.Experimental.CpuEstimationTaskThreadTime.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
+  tester.ExpectTotalCount(
+      "CPU.Experimental.CpuEstimationTaskWallTime.Performance",
+      performance_manager::MetricsProviderDesktop::
+              ShouldCollectCpuFrequencyMetrics()
+          ? 1
+          : 0);
 }

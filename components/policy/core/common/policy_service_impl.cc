@@ -2,22 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/policy/core/common/policy_service_impl.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstddef>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -113,19 +124,64 @@ void AddPolicyMessages(PolicyMap& policies) {
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 }
 
+// Returns the list of histogram names to record depending on scope and number
+// of policies.
+std::vector<std::string> InitTimeHistogramsToRecord(
+    PolicyServiceImpl::ScopeForMetrics scope_for_metrics,
+    size_t policy_count) {
+  CHECK_NE(scope_for_metrics, PolicyServiceImpl::ScopeForMetrics::kUnspecified);
+
+  std::string name_with_scope =
+      scope_for_metrics == PolicyServiceImpl::ScopeForMetrics::kMachine
+          ? base::StrCat({PolicyServiceImpl::kInitTimeHistogramPrefix,
+                          PolicyServiceImpl::kMachineHistogramSuffix})
+          : base::StrCat({PolicyServiceImpl::kInitTimeHistogramPrefix,
+                          PolicyServiceImpl::kUserHistogramSuffix});
+
+  std::vector<std::string> histogram_names{name_with_scope};
+
+  if (policy_count == 0) {
+    histogram_names.push_back(base::StrCat(
+        {name_with_scope, PolicyServiceImpl::kWithoutPoliciesHistogramSuffix}));
+  } else {
+    histogram_names.push_back(base::StrCat(
+        {name_with_scope, PolicyServiceImpl::kWithPoliciesHistogramSuffix}));
+    if (policy_count <= 50u) {
+      histogram_names.push_back(
+          base::StrCat({name_with_scope,
+                        PolicyServiceImpl::kWith1to50PoliciesHistogramSuffix}));
+    } else if (policy_count <= 100u) {
+      histogram_names.push_back(base::StrCat(
+          {name_with_scope,
+           PolicyServiceImpl::kWith51to100PoliciesHistogramSuffix}));
+    } else {
+      histogram_names.push_back(base::StrCat(
+          {name_with_scope,
+           PolicyServiceImpl::kWith101PlusPoliciesHistogramSuffix}));
+    }
+  }
+
+  return histogram_names;
+}
+
 }  // namespace
 
-PolicyServiceImpl::PolicyServiceImpl(Providers providers, Migrators migrators)
+PolicyServiceImpl::PolicyServiceImpl(Providers providers,
+                                     ScopeForMetrics scope_for_metrics,
+                                     Migrators migrators)
     : PolicyServiceImpl(std::move(providers),
+                        scope_for_metrics,
                         std::move(migrators),
                         /*initialization_throttled=*/false) {}
 
 PolicyServiceImpl::PolicyServiceImpl(Providers providers,
+                                     ScopeForMetrics scope_for_metrics,
                                      Migrators migrators,
                                      bool initialization_throttled)
     : providers_(std::move(providers)),
       migrators_(std::move(migrators)),
-      initialization_throttled_(initialization_throttled) {
+      initialization_throttled_(initialization_throttled),
+      scope_for_metrics_(scope_for_metrics) {
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
     policy_domain_status_[domain] = PolicyDomainStatus::kUninitialized;
 
@@ -139,11 +195,13 @@ PolicyServiceImpl::PolicyServiceImpl(Providers providers,
 
 // static
 std::unique_ptr<PolicyServiceImpl>
-PolicyServiceImpl::CreateWithThrottledInitialization(Providers providers,
-                                                     Migrators migrators) {
-  return base::WrapUnique(
-      new PolicyServiceImpl(std::move(providers), std::move(migrators),
-                            /*initialization_throttled=*/true));
+PolicyServiceImpl::CreateWithThrottledInitialization(
+    Providers providers,
+    ScopeForMetrics scope_for_metrics,
+    Migrators migrators) {
+  return base::WrapUnique(new PolicyServiceImpl(
+      std::move(providers), scope_for_metrics, std::move(migrators),
+      /*initialization_throttled=*/true));
 }
 
 PolicyServiceImpl::~PolicyServiceImpl() {
@@ -372,6 +430,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // Swap first, so that observers that call GetPolicies() see the current
   // values.
   std::swap(policy_bundle_, bundle);
+  RecordUserAffiliationStatus();
   NotifyPoliciesUpdated(bundle);
 }
 
@@ -520,6 +579,19 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
       }
     }
   }
+
+  // Record the initialization time for the policy service once the Chrome
+  // domain status changes to ready. Ignore if scope is unspecified.
+  if (policy_domain_status_[POLICY_DOMAIN_CHROME] ==
+          PolicyDomainStatus::kPolicyReady &&
+      base::ranges::find(updated_domains, POLICY_DOMAIN_CHROME) !=
+          updated_domains.end()) {
+    RecordInitializationTime(
+        scope_for_metrics_,
+        GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+            .size(),
+        base::Time::Now() - creation_time_);
+  }
 }
 
 void PolicyServiceImpl::CheckRefreshComplete() {
@@ -536,6 +608,27 @@ void PolicyServiceImpl::CheckRefreshComplete() {
   }
 }
 
+void PolicyServiceImpl::RecordUserAffiliationStatus() {
+  auto& policies =
+      policy_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+  // All policy fetches seem to include a policy service with an unmanaged user,
+  // even if the only open profile is managed. As a result, only log policy
+  // fetches where a managed user is involved.
+  if (policies.GetUserAffiliationIds().empty()) {
+    return;
+  }
+
+  CloudUserAffiliationStatus status = CloudUserAffiliationStatus::kUserOnly;
+  if (policies.IsUserAffiliated()) {
+    status = CloudUserAffiliationStatus::kDeviceAndUserAffiliated;
+  } else if (!policies.GetDeviceAffiliationIds().empty()) {
+    status = CloudUserAffiliationStatus::kDeviceAndUserUnaffiliated;
+  }
+
+  base::UmaHistogramEnumeration("Enterprise.CloudUserAffiliationStatus",
+                                status);
+}
+
 // static
 void PolicyServiceImpl::IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
   for (auto* policy_name : metapolicy::kPrecedence) {
@@ -548,6 +641,21 @@ void PolicyServiceImpl::IgnoreUserCloudPrecedencePolicies(PolicyMap* policies) {
       policy_entry_mutable->AddMessage(PolicyMap::MessageType::kError,
                                        IDS_POLICY_IGNORED_CHROME_PROFILE);
     }
+  }
+}
+
+// static
+void PolicyServiceImpl::RecordInitializationTime(
+    PolicyServiceImpl::ScopeForMetrics scope_for_metrics,
+    size_t policy_count,
+    base::TimeDelta initialization_time) {
+  if (scope_for_metrics == ScopeForMetrics::kUnspecified) {
+    return;
+  }
+
+  for (const std::string& histogram_name :
+       InitTimeHistogramsToRecord(scope_for_metrics, policy_count)) {
+    base::UmaHistogramLongTimes(histogram_name, initialization_time);
   }
 }
 

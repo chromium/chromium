@@ -18,22 +18,17 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './theme_selection.html.js';
 
 const ThemeSelectionScreenElementBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 interface ThemeSelectionScreenData {
   selectedTheme: string;
@@ -86,14 +81,6 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
       selectedTheme: {type: String, value: 'auto', observer: 'onThemeChanged_'},
 
       /**
-       * Indicates if the device is used in tablet mode
-       */
-      isInTabletMode_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Whether the button to return to CHOOBE screen should be shown.
        */
       shouldShowReturn_: {
@@ -104,7 +91,6 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
   }
 
   private selectedTheme: string;
-  private isInTabletMode_: boolean;
   private shouldShowReturn_: boolean;
 
   override get UI_STEPS() {
@@ -116,15 +102,6 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     return ThemeSelectionStep.OVERVIEW;
   }
 
-  /**
-   * Updates "device in tablet mode" state when tablet mode is changed.
-   * Overridden from LoginScreenBehavior.
-   * @param isInTabletMode True when in tablet mode.
-   */
-  override setTabletModeState(isInTabletMode: boolean) {
-    this.isInTabletMode_ = isInTabletMode;
-  }
-
   override ready(): void {
     super.ready();
     this.initializeLoginScreen('ThemeSelectionScreen');
@@ -133,14 +110,15 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
   /**
    * @param data Screen init payload.
    */
-  private onBeforeShow(data: ThemeSelectionScreenData): void {
+  override onBeforeShow(data: ThemeSelectionScreenData): void {
+    super.onBeforeShow(data);
     this.selectedTheme = data.selectedTheme!;
     this.shouldShowReturn_ = data['shouldShowReturn'];
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.THEME_SELECTION;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.THEME_SELECTION;
   }
 
   private onNextClicked_(): void {

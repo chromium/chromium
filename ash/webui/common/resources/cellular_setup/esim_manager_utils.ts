@@ -2,22 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileState} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getESimManagerRemote} from './mojo_interface_provider.js';
-
-/**
- * Fetches the EUICC's eSIM profiles with status 'Pending'.
- */
-export async function getPendingESimProfiles(euicc: EuiccRemote):
-    Promise<ESimProfileRemote[]> {
-  const response = await euicc.getProfileList();
-
-  return filterByProfileProperties(response.profiles, properties => {
-    return properties.state === ProfileState.kPending;
-  });
-}
 
 /**
  * Fetches the EUICC's eSIM profiles with status not 'Pending'.

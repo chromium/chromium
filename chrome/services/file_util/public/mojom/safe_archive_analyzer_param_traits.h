@@ -107,6 +107,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(
 
 IPC_STRUCT_TRAITS_BEGIN(safe_browsing::EncryptionInfo)
   IPC_STRUCT_TRAITS_MEMBER(is_encrypted)
+  IPC_STRUCT_TRAITS_MEMBER(is_top_level_encrypted)
   IPC_STRUCT_TRAITS_MEMBER(password_status)
 IPC_STRUCT_TRAITS_END()
 

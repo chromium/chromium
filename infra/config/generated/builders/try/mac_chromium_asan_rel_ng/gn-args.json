@@ -4,6 +4,9 @@
     "is_asan": true,
     "is_component_build": false,
     "is_debug": false,
-    "use_remoteexec": true
+    "target_cpu": "x64",
+    "target_os": "mac",
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

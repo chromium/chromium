@@ -37,7 +37,8 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
 
   ~DawnOzoneImageRepresentation() override;
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) override;
 
   void EndAccess() override;
 
@@ -52,6 +53,7 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
   std::vector<wgpu::TextureFormat> view_formats_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   wgpu::Texture texture_;
+  bool is_readonly_ = false;
 };
 
 }  // namespace gpu

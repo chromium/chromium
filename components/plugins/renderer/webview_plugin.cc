@@ -25,6 +25,8 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
@@ -89,7 +91,7 @@ void WebViewPlugin::ReplayReceivedData(WebPlugin* plugin) {
   if (!response_.IsNull()) {
     plugin->DidReceiveResponse(response_);
     for (auto it = data_.begin(); it != data_.end(); ++it) {
-      plugin->DidReceiveData(it->c_str(), it->length());
+      plugin->DidReceiveData(*it);
     }
   }
   // We need to transfer the |focused_| to new plugin after it loaded.
@@ -121,8 +123,8 @@ bool WebViewPlugin::Initialize(WebPluginContainer* container) {
 
   old_title_ = container_->GetElement().GetAttribute("title");
 
-  web_view()->SetZoomLevel(
-      blink::PageZoomFactorToZoomLevel(container_->PageZoomFactor()));
+  web_view()->MainFrameWidget()->SetZoomLevel(
+      blink::ZoomFactorToZoomLevel(container_->LayoutZoomFactor()));
 
   return true;
 }
@@ -245,8 +247,8 @@ void WebViewPlugin::DidReceiveResponse(const WebURLResponse& response) {
   response_ = response;
 }
 
-void WebViewPlugin::DidReceiveData(const char* data, size_t data_length) {
-  data_.push_back(std::string(data, data_length));
+void WebViewPlugin::DidReceiveData(base::span<const char> data) {
+  data_.push_back(std::string(data.data(), data.size()));
 }
 
 void WebViewPlugin::DidFinishLoading() {
@@ -270,8 +272,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
   web_view_ = WebView::Create(
       /*client=*/this,
       /*is_hidden=*/false,
-      /*is_prerendering=*/false,
-      /*is_inside_portal=*/false,
+      /*prerender_param=*/nullptr,
       /*fenced_frame_mode=*/std::nullopt,
       /*compositing_enabled=*/false,
       /*widgets_never_composited=*/false,
@@ -279,7 +280,9 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
       *agent_group_scheduler_,
       /*session_storage_namespace_id=*/std::string(),
       /*page_base_background_color=*/std::nullopt,
-      blink::BrowsingContextGroupInfo::CreateUnique());
+      blink::BrowsingContextGroupInfo::CreateUnique(),
+      /*color_provider_colors=*/nullptr,
+      /*partitioned_popin_params=*/nullptr);
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
   // consistent view of our preferences.
   blink::WebView::ApplyWebPreferences(parent_web_preferences, web_view_);
@@ -290,7 +293,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
   web_view_->SetRendererPreferences(renderer_preferences);
 
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
-      web_view_, this, nullptr, blink::LocalFrameToken(),
+      web_view_, this, nullptr, mojo::NullRemote(), blink::LocalFrameToken(),
       blink::DocumentToken(), nullptr);
   blink::WebFrameWidget* frame_widget = web_frame->InitializeFrameWidget(
       blink::CrossVariantMojoAssociatedRemote<
@@ -409,8 +412,8 @@ void WebViewPlugin::WebViewHelper::FrameDetached() {
 
 void WebViewPlugin::OnZoomLevelChanged() {
   if (container_) {
-    web_view()->SetZoomLevel(
-        blink::PageZoomFactorToZoomLevel(container_->PageZoomFactor()));
+    web_view()->MainFrameWidget()->SetZoomLevel(
+        blink::ZoomFactorToZoomLevel(container_->LayoutZoomFactor()));
   }
 }
 

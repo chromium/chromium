@@ -85,7 +85,7 @@ bool FirstWebContentsProfiler::WasStartupInterrupted() {
 void BeginFirstWebContentsProfiling() {
   content::WebContents* visible_contents = nullptr;
   const BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
+  for (Browser* browser : browser_list->OrderedByActivation()) {
     visible_contents =
         FirstWebContentsProfilerBase::GetVisibleContents(browser);
     if (visible_contents)

@@ -22,7 +22,7 @@ features:
   dynamic_refresh: true
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
+- acostinas@google.com
 schema:
   items:
     type: string
@@ -32,3 +32,4 @@ supported_on:
 - chrome_os:12-100
 tags: []
 type: list
+generate_device_proto: False

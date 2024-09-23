@@ -14,10 +14,6 @@
 
 namespace crypto {
 
-// Fills the given buffer with `length` random bytes of cryptographically
-// secure random numbers.
-CRYPTO_EXPORT void RandBytes(void *bytes, size_t length);
-
 // Fills `bytes` with cryptographically-secure random bits.
 CRYPTO_EXPORT void RandBytes(base::span<uint8_t> bytes);
 

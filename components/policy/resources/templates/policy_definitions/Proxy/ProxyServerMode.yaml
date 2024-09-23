@@ -42,7 +42,7 @@ items:
   name: ProxyServerUseSystem
   value: 3
 owners:
-- pmarko@chromium.org
+- acostinas@google.com
 - file://components/proxy_config/OWNERS
 schema:
   $ref: ProxyServerMode

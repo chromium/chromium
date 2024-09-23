@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iosfwd>
 #include <limits>
-#include <ostream>
 #include <string>
 
 #include "base/numerics/safe_conversions.h"
@@ -63,6 +63,16 @@ class GFX_RANGE_EXPORT Range {
   // Checks if the range is valid through comparison to InvalidRange().  If this
   // is not valid, you must not call start()/end().
   constexpr bool IsValid() const { return *this != InvalidRange(); }
+
+  // Ensures that the direction of this range matches the direction of the
+  // provided range, reversing this range if necessary. Returns a reference to
+  // `this` to allow method chaining.
+  Range& MatchDirection(const Range& other) {
+    if (is_reversed() != other.is_reversed()) {
+      std::swap(start_, end_);
+    }
+    return *this;
+  }
 
   // Getters and setters.
   constexpr size_t start() const { return start_; }

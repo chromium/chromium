@@ -75,11 +75,11 @@ class FakeStorageFile final
 
   // ABI::Windows::Storage::IStorageFile
   IFACEMETHODIMP get_FileType(HSTRING* value) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_ContentType(HSTRING* value) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP OpenAsync(
@@ -113,45 +113,45 @@ class FakeStorageFile final
   }
   IFACEMETHODIMP OpenTransactedWriteAsync(
       IAsyncOperation<StorageStreamTransaction*>** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP CopyOverloadDefaultNameAndOptions(
       IStorageFolder* destination_folder,
       IAsyncOperation<StorageFile*>** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP CopyOverloadDefaultOptions(
       IStorageFolder* destination_folder,
       HSTRING desired_new_name,
       IAsyncOperation<StorageFile*>** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP CopyOverload(IStorageFolder* destination_folder,
                               HSTRING desired_new_name,
                               NameCollisionOption option,
                               IAsyncOperation<StorageFile*>** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   CopyAndReplaceAsync(IStorageFile* file_to_replace,
                       IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP MoveOverloadDefaultNameAndOptions(
       IStorageFolder* destination_folder,
       IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP MoveOverloadDefaultOptions(IStorageFolder* destination_folder,
                                             HSTRING desired_new_name,
                                             IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
@@ -159,13 +159,13 @@ class FakeStorageFile final
                HSTRING desired_new_name,
                NameCollisionOption option,
                IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   MoveAndReplaceAsync(IStorageFile* file_to_replace,
                       IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
 
@@ -173,29 +173,29 @@ class FakeStorageFile final
   IFACEMETHODIMP RenameAsyncOverloadDefaultOptions(
       HSTRING desired_name,
       IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   RenameAsync(HSTRING desired_name,
               NameCollisionOption option,
               IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP DeleteAsyncOverloadDefaultOptions(
       IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   DeleteAsync(StorageDeleteOption option, IAsyncAction** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP GetBasicPropertiesAsync(
       IAsyncOperation<BasicProperties*>** operation) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP get_Name(HSTRING* value) final {
@@ -204,22 +204,22 @@ class FakeStorageFile final
     return S_OK;
   }
   IFACEMETHODIMP get_Path(HSTRING* value) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   get_Attributes(FileAttributes* value) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   get_DateCreated(DateTime* value) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
   IFACEMETHODIMP
   IsOfType(StorageItemTypes type, boolean* value) final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return E_NOTIMPL;
   }
 
@@ -263,14 +263,14 @@ FakeStorageFileStatics::~FakeStorageFileStatics() = default;
 IFACEMETHODIMP FakeStorageFileStatics::GetFileFromPathAsync(
     HSTRING path,
     IAsyncOperation<StorageFile*>** operation) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return E_NOTIMPL;
 }
 
 IFACEMETHODIMP FakeStorageFileStatics::GetFileFromApplicationUriAsync(
     IUriRuntimeClass* uri,
     IAsyncOperation<StorageFile*>** operation) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return E_NOTIMPL;
 }
 
@@ -307,7 +307,7 @@ IFACEMETHODIMP FakeStorageFileStatics::ReplaceWithStreamedFileAsync(
     IStreamedFileDataRequestedHandler* data_requested,
     IRandomAccessStreamReference* thumbnail,
     IAsyncOperation<StorageFile*>** operation) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return E_NOTIMPL;
 }
 
@@ -316,7 +316,7 @@ IFACEMETHODIMP FakeStorageFileStatics::CreateStreamedFileFromUriAsync(
     IUriRuntimeClass* uri,
     IRandomAccessStreamReference* thumbnail,
     IAsyncOperation<StorageFile*>** operation) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return E_NOTIMPL;
 }
 
@@ -325,7 +325,7 @@ IFACEMETHODIMP FakeStorageFileStatics::ReplaceWithStreamedFileFromUriAsync(
     IUriRuntimeClass* uri,
     IRandomAccessStreamReference* thumbnail,
     IAsyncOperation<StorageFile*>** operation) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return E_NOTIMPL;
 }
 

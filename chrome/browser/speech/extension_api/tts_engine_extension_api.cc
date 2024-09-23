@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 
 #include <stddef.h>
@@ -516,9 +521,9 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(false);
   } else {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // TODO(crbug/1422469): Remove the workaround for enable lacros tts support
-    // for testing and call tts_crosapi_util::ShouldEnableLacrosTtsSupport()
-    // instead.
+    // TODO(crbug.com/40259646): Remove the workaround for enable lacros tts
+    // support for testing and call
+    // tts_crosapi_util::ShouldEnableLacrosTtsSupport() instead.
     if (content::TtsPlatform::GetInstance()->PlatformImplSupported()) {
       TtsClientLacros::GetForBrowserContext(browser_context())
           ->OnLacrosSpeechEngineTtsEvent(utterance_id, tts_event_type,
@@ -577,7 +582,7 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
   return RespondNow(NoArguments());
 #else
   // Given tts engine json api definition, we should never get here.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return RespondNow(Error("Unsupported on this platform."));
 #endif
 }

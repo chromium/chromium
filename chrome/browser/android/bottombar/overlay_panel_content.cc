@@ -12,32 +12,22 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
-#include "chrome/android/chrome_jni_headers/OverlayPanelContent_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/OverlayPanelContent_jni.h"
+
 using base::android::JavaParamRef;
 
-namespace {
-
-const int kHistoryDeletionWindowSeconds = 2;
-
-// Because we need a callback, this needs to exist.
-void OnHistoryDeletionDone() {
-}
-
-}  // namespace
 
 // This class manages the native behavior of the panel.
 // Instances of this class are owned by the Java OverlayPanelContentl.
@@ -66,35 +56,6 @@ void OverlayPanelContent::OnPhysicalBackingSizeChanged(
   gfx::Size size(width, height);
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(size);
   web_contents->GetNativeView()->OnSizeChanged(width, height);
-}
-
-void OverlayPanelContent::RemoveLastHistoryEntry(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& search_url,
-    jlong search_start_time_ms) {
-  // The deletion window is from the time a search URL was put in history, up
-  // to a short amount of time later.
-  base::Time begin_time =
-      base::Time::FromMillisecondsSinceUnixEpoch(search_start_time_ms);
-  base::Time end_time =
-      begin_time + base::Seconds(kHistoryDeletionWindowSeconds);
-
-  history::HistoryService* service = HistoryServiceFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile(),
-      ServiceAccessType::EXPLICIT_ACCESS);
-  if (service) {
-    // NOTE(mathp): We are only removing |search_url| from the local history
-    // because search results that are not promoted to a Tab do not make it to
-    // the web history, only local.
-    std::set<GURL> restrict_set;
-    restrict_set.insert(
-        GURL(base::android::ConvertJavaStringToUTF8(env, search_url)));
-    service->ExpireHistoryBetween(
-        restrict_set, history::kNoAppIdFilter, begin_time, end_time,
-        /*user_initiated*/ false, base::BindOnce(&OnHistoryDeletionDone),
-        &history_task_tracker_);
-  }
 }
 
 void OverlayPanelContent::SetWebContents(
@@ -164,7 +125,7 @@ void OverlayPanelContent::UpdateBrowserControlsState(
     state = cc::BrowserControlsState::kHidden;
 
   web_contents_->UpdateBrowserControlsState(
-      state, cc::BrowserControlsState::kBoth, false);
+      state, cc::BrowserControlsState::kBoth, false, std::nullopt);
 }
 
 jlong JNI_OverlayPanelContent_Init(JNIEnv* env,

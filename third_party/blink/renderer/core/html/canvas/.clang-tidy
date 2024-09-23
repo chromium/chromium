@@ -1,0 +1,3 @@
+InheritParentConfig: true
+Checks:
+- misc-unused-using-decls

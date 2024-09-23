@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/circular_deque.h"
@@ -218,7 +219,7 @@ class VideoRendererImplTest : public testing::Test {
   //   A clip that is four frames long: "0 10 20 30"
   //   A clip that has a decode error: "60 70 error"
   void QueueFrames(const std::string& str) {
-    for (base::StringPiece token : base::SplitString(
+    for (std::string_view token : base::SplitString(
              str, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       if (token == "abort") {
         scoped_refptr<VideoFrame> null_frame;
@@ -326,7 +327,7 @@ class VideoRendererImplTest : public testing::Test {
     EXPECT_CALL(demuxer_stream_, OnRead(_))
         .WillOnce(RunOnceCallback<0>(DemuxerStream::kOk, buffers));
 
-    // Satify pending |decode_cb_| to trigger a new DemuxerStream::Read().
+    // Satisfy pending |decode_cb_| to trigger a new DemuxerStream::Read().
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(decode_cb_), DecoderStatus::Codes::kOk));
@@ -1762,7 +1763,7 @@ TEST_F(VideoRendererLatencyHintTest,
        CantReadWithoutStallingOverridesLatencyHint) {
   Initialize();
 
-  // Let decoder indicate that it CANT read without stalling, meaning we should
+  // Let decoder indicate that it CAN'T read without stalling, meaning we should
   // enter HAVE_ENOUGH with just one effective frame (waiting for more frames
   // will stall the decoder).
   ON_CALL(*decoder_, CanReadWithoutStalling()).WillByDefault(Return(false));
@@ -1783,7 +1784,7 @@ TEST_F(VideoRendererLatencyHintTest,
   EXPECT_CALL(mock_cb_, OnStatisticsUpdate(_)).Times(AnyNumber());
 
   // Queue 1 frame. This is well short of what the latency hint would require,
-  // but we CANT READ WITHOUT STALLING, so expect a transition to HAVE_ENOUGH
+  // but we CAN'T READ WITHOUT STALLING, so expect a transition to HAVE_ENOUGH
   // after just 1 frame.
   EXPECT_CALL(mock_cb_, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH, _));
   QueueFrames("0");

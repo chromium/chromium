@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/date_tray.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -90,7 +89,7 @@ void DateTray::ShowBubble() {
   }
 }
 
-void DateTray::CloseBubble() {
+void DateTray::CloseBubbleInternal() {
   if (!is_active()) {
     return;
   }
@@ -114,7 +113,7 @@ void DateTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
 }
 
-void DateTray::ClickedOutsideBubble() {
+void DateTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   if (bubble_) {
     HideGlanceableBubble();
   }

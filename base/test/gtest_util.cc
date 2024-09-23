@@ -101,7 +101,7 @@ bool ReadTestNamesFromFile(const FilePath& path,
     if (!file || !IsStringASCII(*file))
       return false;
 
-    absl::optional<int> line = dict.FindInt("line");
+    std::optional<int> line = dict.FindInt("line");
     if (!line.has_value())
       return false;
 

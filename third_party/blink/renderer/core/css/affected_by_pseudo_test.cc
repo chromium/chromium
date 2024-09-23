@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -5448,6 +5454,72 @@ TEST_F(AffectedByPseudoTest, AffectedByPseudoInHasWithNestingParent) {
   ASSERT_EQ(2U, element_count);
   GetElementById("div4")->SetHovered(false);
   UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(AffectedByPseudoTest, AffectedByPseudoInHasWithNestingComplexParent) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .b .c {
+        .a:has(> &) { background-color: green; }
+      }
+    </style>
+    <div id=div1></div>
+    <div id=div2>
+      <div id=div3></div>
+      <div id=div4 class='a'>
+        <div id=div5 class='c'></div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  CheckAffectedByFlagsForHas(
+      "div1", {{kAffectedBySubjectHas, false},
+               {kAffectedByPseudoInHas, false},
+               {kAncestorsOrAncestorSiblingsAffectedByHas, false},
+               {kAffectedByLogicalCombinationsInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div2", {{kAffectedBySubjectHas, false},
+               {kAffectedByPseudoInHas, false},
+               {kAncestorsOrAncestorSiblingsAffectedByHas, false},
+               {kAffectedByLogicalCombinationsInHas, false}});
+  CheckAffectedByFlagsForHas(
+      "div3", {{kAffectedBySubjectHas, false},
+               {kAffectedByPseudoInHas, false},
+               {kAncestorsOrAncestorSiblingsAffectedByHas, false},
+               {kAffectedByLogicalCombinationsInHas, false}});
+  CheckAffectedByFlagsForHas("div4",
+                             {{kAffectedBySubjectHas, true},
+                              {kAffectedByPseudoInHas, true},
+                              {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                              {kAffectedByLogicalCombinationsInHas, true}});
+  CheckAffectedByFlagsForHas("div5",
+                             {{kAffectedBySubjectHas, false},
+                              {kAffectedByPseudoInHas, false},
+                              {kAncestorsOrAncestorSiblingsAffectedByHas, true},
+                              {kAffectedByLogicalCombinationsInHas, false}});
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div1")->setAttribute(html_names::kClassAttr,
+                                       AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div3")->setAttribute(html_names::kClassAttr,
+                                       AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div2")->setAttribute(html_names::kClassAttr,
+                                       AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(2U, element_count);
 }
 
 }  // namespace blink

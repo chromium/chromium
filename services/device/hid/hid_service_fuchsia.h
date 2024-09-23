@@ -9,7 +9,7 @@
 
 namespace device {
 
-// TODO(https://crbug.com/1311019): Implement this.
+// TODO(crbug.com/42050450): Implement this.
 class HidServiceFuchsia : public HidService {
  public:
   HidServiceFuchsia();

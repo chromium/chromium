@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 
-// TODO(https://crbug.com/1400723): This class is a noop now, so we should remove it.
+// TODO(crbug.com/40250394): This class is a noop now, so we should remove it.
 /** The dropdown popup window that decides what widget should be used for the popup. */
 public class DropdownPopupWindow {
     private DropdownPopupWindowInterface mPopup;

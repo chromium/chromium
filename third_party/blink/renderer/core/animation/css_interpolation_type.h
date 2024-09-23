@@ -47,7 +47,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
     // TODO(alancutter): Implement this for all subclasses and make this an
     // abstract declaration so the return type can be changed to
     // const CSSValue&.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -80,7 +80,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
   }
 
   InterpolationValue MaybeConvertUnderlyingValue(
-      const InterpolationEnvironment&) const final;
+      const InterpolationEnvironment&) const override;
   virtual InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const = 0;
 

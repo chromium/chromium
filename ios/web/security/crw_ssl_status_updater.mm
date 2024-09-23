@@ -56,7 +56,7 @@ using web::SecurityStyle;
                      (web::NavigationManagerImpl*)navigationManager {
   DCHECK(dataSource);
   DCHECK(navigationManager);
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _dataSource = dataSource;
     _navigationManager = navigationManager;
   }

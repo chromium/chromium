@@ -198,7 +198,7 @@ void ProfileActivityMetricsRecorder::OnProfileWillBeDestroyed(
   // The profile may be deleted without an OnSessionEnded call if, for
   // example, the browser shuts down.
   //
-  // TODO(crbug.com/1096145): explore having
+  // TODO(crbug.com/40700582): explore having
   // DesktopSessionDurationTracker call OnSessionEnded() when the
   // profile is destroyed. Remove this workaround if this is done.
   DCHECK(

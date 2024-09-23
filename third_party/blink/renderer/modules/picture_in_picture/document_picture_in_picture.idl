@@ -10,5 +10,5 @@
 partial interface Document {
     [Measure] readonly attribute boolean pictureInPictureEnabled;
 
-    [CallWith=ScriptState, RaisesException, Measure, NewObject] Promise<void> exitPictureInPicture();
+    [CallWith=ScriptState, RaisesException, Measure, NewObject] Promise<undefined> exitPictureInPicture();
 };

@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+
 #include "base/sequence_checker.h"
 #include "extensions/common/mojom/execution_world.mojom.h"
 #include "url/gurl.h"
@@ -59,26 +60,47 @@ class IsolatedWorldManager {
   // world data stored in blink so that any newly-created worlds will be
   // properly initialized.
   void SetUserScriptWorldProperties(const std::string& host_id,
+                                    const std::optional<std::string>& world_id,
                                     std::optional<std::string> csp,
                                     bool enable_messaging);
 
+  // Clears any properties associated with the given `host_id` and `world_id`.
+  // Note this does *not* update any existing worlds.
+  void ClearUserScriptWorldProperties(
+      const std::string& host_id,
+      const std::optional<std::string>& world_id);
+
   // Returns whether messaging APIs should be enabled in worlds for the given
   // `host_id`.
-  bool IsMessagingEnabledInUserScriptWorlds(const std::string& host_id);
+  bool IsMessagingEnabledInUserScriptWorld(int blink_world_id);
 
   // Returns the id of the isolated world associated with the given
   // `injection_host`.  If none exists, creates a new world for it associated
   // with the host's name and CSP.
-  int GetOrCreateIsolatedWorldForHost(const InjectionHost& injection_host,
-                                      mojom::ExecutionWorld execution_world);
+  int GetOrCreateIsolatedWorldForHost(
+      const InjectionHost& injection_host,
+      mojom::ExecutionWorld execution_world,
+      const std::optional<std::string>& world_id);
+
+  // Returns true if `blink_world_id` corresponds to the ID for an extension
+  // isolated world (either a content script world or user script world).
+  static bool IsExtensionIsolatedWorld(int blink_world_id);
 
  private:
-  // A structure to track existing isolated world information.
+  // A structure to track existing isolated world information, where an
+  // isolated world is any world other than the main world (including both
+  // "user script" worlds and default "isolated" worlds from extension content
+  // scripts). Presence in this map indicates there has been a world (i.e., v8
+  // context) created at the blink layer at least once in this process.
   struct IsolatedWorldInfo {
     // Defaults, to appease the Chromium clang plugin.
     IsolatedWorldInfo();
     ~IsolatedWorldInfo();
     IsolatedWorldInfo(IsolatedWorldInfo&&);
+
+    // The integer ID of the world, used to reference the world with the
+    // blink layer.
+    int blink_world_id;
 
     // The id of the injection host the world is associated with. For
     // extensions, this is the extension ID.
@@ -88,6 +110,10 @@ class IsolatedWorldManager {
     // to mojom::ExecutionWorld::kIsolated.
     mojom::ExecutionWorld execution_world;
 
+    // An optional extension-provided ID for the world. If omitted, refers to
+    // the "default" world of the given `exection_world` type.
+    std::optional<std::string> world_id;
+
     // A human-friendly name for the isolated world host.
     std::string name;
 
@@ -96,9 +122,14 @@ class IsolatedWorldManager {
 
     // CSP to use for the isolated world, if any.
     std::optional<std::string> csp;
+
+    // Whether messaging is enabled within this isolated world.
+    bool enable_messaging;
   };
 
-  // A set of data to store properties for newly-created isolated worlds.
+  // A set of data to store properties for user script worlds. There may or may
+  // not be a created world at the blink layer (i.e., a v8 context) for these
+  // entries.
   struct PendingWorldInfo {
     PendingWorldInfo();
     ~PendingWorldInfo();
@@ -111,6 +142,19 @@ class IsolatedWorldManager {
     bool enable_messaging = false;
   };
 
+  // Finds the stored `IsolatedWorldInfo` for the given `host_id`,
+  // `execution_world`, and `world_id`, if any.
+  IsolatedWorldInfo* FindIsolatedWorldInfo(
+      const std::string& host_id,
+      mojom::ExecutionWorld execution_world,
+      const std::optional<std::string>& world_id);
+
+  // Finds the stored `PendingWorldInfo` for the given `host_id`,
+  // `execution_world`, and `world_id`, if any.
+  PendingWorldInfo* FindPendingWorldInfo(
+      const std::string& host_id,
+      const std::optional<std::string>& world_id);
+
   void UpdateBlinkIsolatedWorldInfo(int world_id,
                                     const IsolatedWorldInfo& world_info);
 
@@ -118,8 +162,12 @@ class IsolatedWorldManager {
   using IsolatedWorldMap = std::map<int, IsolatedWorldInfo>;
   IsolatedWorldMap isolated_worlds_;
 
-  // A map of <host id, info> to use for newly-created isolated worlds.
-  std::map<std::string, PendingWorldInfo> pending_worlds_info_;
+  // A map of configuration properties for user script worlds. A user script
+  // world is unique based on the pairing of <host_id, world_id>, where the
+  // world ID may be optional (in which case, it indicates the default world of
+  // that type).
+  using PendingWorldKey = std::pair<std::string, std::optional<std::string>>;
+  std::map<PendingWorldKey, PendingWorldInfo> pending_worlds_info_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

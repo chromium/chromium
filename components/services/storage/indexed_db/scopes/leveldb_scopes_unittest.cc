@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 class LevelDBScopesStartupTest : public LevelDBScopesTestBase {
@@ -41,9 +41,7 @@ TEST_F(LevelDBScopesStartupTest, CleanupOnRecovery) {
   scopes.StartRecoveryAndCleanupTasks();
 
   // Wait until cleanup task runs.
-  base::RunLoop loop;
-  scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-  loop.Run();
+  task_env_.RunUntilIdle();
 
   EXPECT_TRUE(IsScopeCleanedUp(kScopeToCleanUp));
   EXPECT_FALSE(ScopeDataExistsOnDisk());
@@ -101,7 +99,7 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   bool lock_grabbed = false;
   PartitionedLockHolder locks_receiver;
   lock_manager.AcquireLocks(
-      {CreateSimpleExclusiveLock()}, locks_receiver.AsWeakPtr(),
+      {CreateSimpleExclusiveLock()}, locks_receiver,
       base::BindLambdaForTesting([&]() { lock_grabbed = true; }));
 
   scopes.StartRecoveryAndCleanupTasks();
@@ -109,11 +107,8 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   EXPECT_FALSE(lock_grabbed);
 
   // Wait until revert runs.
-  {
-    base::RunLoop loop;
-    scopes.RevertRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
+  base::RunLoop().RunUntilIdle();
+
   value_buffer_.clear();
   EXPECT_TRUE(leveldb_->db()
                   ->Get(leveldb::ReadOptions(), kUndoPutKey, &value_buffer_)
@@ -130,11 +125,8 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
   EXPECT_TRUE(lock_grabbed);
 
   // Wait until cleanup runs.
-  {
-    base::RunLoop loop;
-    scopes.CleanupRunnerForTesting()->PostTask(FROM_HERE, loop.QuitClosure());
-    loop.Run();
-  }
+  task_env_.RunUntilIdle();
+
   EXPECT_TRUE(IsScopeCleanedUp(kScopeToResumeRevert));
   EXPECT_FALSE(ScopeDataExistsOnDisk());
 
@@ -148,4 +140,4 @@ TEST_F(LevelDBScopesStartupTest, RevertWithLocksOnRecoveryWithNoCleanup) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

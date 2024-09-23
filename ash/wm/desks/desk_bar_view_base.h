@@ -14,18 +14,24 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
-#include "ash/wm/overview/overview_grid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace ash {
 
 class DeskBarHoverObserver;
+class OverviewGrid;
+class WindowOcclusionCalculator;
 
 // Base class for desk bar views, including desk bar view within overview and
 // desk bar view for the desk button.
@@ -64,7 +70,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   static int GetPreferredBarHeight(aura::Window* root, Type type, State state);
 
   // Return the preferred state for the desk bar given `type`.
-  static State GetPerferredState(Type type);
+  static State GetPreferredState(Type type);
 
   // Create and returns the widget that contains the desk bar view of `type`.
   // The returned widget has no contents view yet, and hasn't been shown yet.
@@ -95,10 +101,6 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   views::View* background_view() { return background_view_; }
 
-  const views::View* scroll_view_contents() const {
-    return scroll_view_contents_;
-  }
-
   DefaultDeskButton* default_desk_button() { return default_desk_button_; }
   const DefaultDeskButton* default_desk_button() const {
     return default_desk_button_;
@@ -107,17 +109,17 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   DeskIconButton* new_desk_button() { return new_desk_button_; }
   const DeskIconButton* new_desk_button() const { return new_desk_button_; }
 
+  // May return null. See comments above `GetOrCreateLibraryButton()`.
   DeskIconButton* library_button() { return library_button_; }
   const DeskIconButton* library_button() const { return library_button_; }
+  views::Label* library_button_label() { return library_button_label_; }
+  const views::Label* library_button_label() const {
+    return library_button_label_;
+  }
 
   views::Label* new_desk_button_label() { return new_desk_button_label_; }
   const views::Label* new_desk_button_label() const {
     return new_desk_button_label_;
-  }
-
-  views::Label* library_button_label() { return library_button_label_; }
-  const views::Label* library_button_label() const {
-    return library_button_label_;
   }
 
   void set_library_ui_visibility(LibraryUiVisibility library_ui_visibility) {
@@ -154,7 +156,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // If the focused `view` is outside of the scroll view's visible bounds,
   // scrolls the bar to make sure it can always be seen. Please note, `view`
-  // must be a child of `scroll_view_contents_`.
+  // must be a child of `contents_view_`.
   void ScrollToShowViewIfNecessary(const views::View* view);
 
   // Return the mini_view associated with `desk` or nullptr if no mini_view
@@ -170,20 +172,23 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Bring focus to the name view of the desk with `desk_index`.
   void NudgeDeskName(int desk_index);
 
-  // If in expanded state, updates the border color of the
-  // `expanded_state_library_button_` and the active desk's mini view
-  // after the saved desk library has been shown. If not in expanded state,
-  // updates the background color of the `zero_state_library_button_`
-  // and the `zero_state_default_desk_button_`.
+  // If in expanded state, updates the border color of the `library_button_` and
+  // the active desk's mini view`.
   void UpdateButtonsForSavedDeskGrid();
 
-  // Udate the visibility of the `default_desk_button_` on the desk bar's
+  // Update the visibility of the `default_desk_button_` on the desk bar's
   // state.
   void UpdateDeskButtonsVisibility();
 
   // Update the visibility of the saved desk library button based on whether
   // the saved desk feature is enabled and the user has any saved desks.
   void UpdateLibraryButtonVisibility();
+
+  // Updates visibility of the label under the new desk button to
+  // `new_visibility`. If `layout_if_changed` is true and the label's visibility
+  // changes, the desk bar get asynchronously laid out after this call.
+  void UpdateNewDeskButtonLabelVisibility(bool new_visibility,
+                                          bool layout_if_changed);
 
   // Called to update state of `button` and apply the scale animation to the
   // button. For the new desk button, this is called when the make the new desk
@@ -284,6 +289,12 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // done with its animation or when `desk_activation_timer_` fires.
   void OnUiUpdateDone();
 
+  // Accessors for UI elements that are lazily constructed for performance
+  // reasons. Creates them if they don't exist. Only use if they should be
+  // visible.
+  DeskIconButton& GetOrCreateLibraryButton();
+  views::Label& GetOrCreateNewDeskButtonLabel();
+
   // Gets full available bounds for the desk bar widget.
   virtual gfx::Rect GetAvailableBounds() const = 0;
 
@@ -294,8 +305,19 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
  protected:
   friend class DeskBarScrollViewLayout;
   friend class DesksTestApi;
+  class AddDeskAnimation;
+  class DeskIconButtonScaleAnimation;
+  class LibraryButtonVisibilityAnimation;
+  class NewDeskButtonPressedScroll;
+  class PostLayoutOperation;
+  class RemoveDeskAnimation;
+  class ReorderDeskAnimation;
+  class ScrollForActiveMiniView;
 
-  DeskBarViewBase(aura::Window* root, Type type);
+  DeskBarViewBase(
+      aura::Window* root,
+      Type type,
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
   ~DeskBarViewBase() override;
 
   // Return the X offset of the first mini_view on the left (if there's one),
@@ -336,8 +358,29 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   void OnLibraryButtonPressed();
 
   // This function cycles through `mini_views_` and updates the tooltip for each
-  // mini view's combine desks button.
-  void MaybeUpdateCombineDesksTooltips();
+  // mini view's desk action buttons.
+  void MaybeUpdateDeskActionButtonTooltips();
+
+  // Initializes `scroll_view_` if `IsScrollingRequired()`. No-op if
+  // `scroll_view_` is already initialized. Should be called any time the width
+  // of the desk bar may have increased, as that may necessitate scrolling.
+  void InitScrollingIfRequired();
+  // Initializes `scroll_view_` and re-parents `contents_view_` if it's
+  // set.
+  void InitScrolling();
+
+  // Whether scrolling is an actual possibility (i.e. the width of the
+  // `contents_view_` is close to, or exceeds the width of the screen). In
+  // practice, this happens when the user has many desks, which field metrics
+  // suggest is very rare.
+  bool IsScrollingRequired() const;
+
+  // Whether `scroll_view_` and all other scrolling UI elements are initialized.
+  bool IsScrollingInitialized() const;
+
+  // Parent view that holds all of the contents. Either the `scroll_view_` or
+  // the `contents_view_`, depending on whether scrolling is active.
+  views::View& GetTopLevelViewWithContents();
 
   // Scrollview callbacks.
   void OnContentsScrolled();
@@ -348,6 +391,9 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // scroll. Return true if the scroll is triggered. Return false if the scroll
   // is ended.
   bool MaybeScrollByDraggedDesk();
+
+  // Maybe refreshes `overview_grid_` bounds on desk bar `state_` changed.
+  void MaybeRefreshOverviewGridBounds();
 
   // Records UMA histograms on desk profile adoption.
   void RecordDeskProfileAdoption();
@@ -390,13 +436,16 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // animation.
   raw_ptr<views::View> background_view_ = nullptr;
 
-  // Put the contents in a `ScrollView` to support scrollable desks.
+  // Put the contents in a `ScrollView` to support scrollable desks. Due to
+  // `ScrollView`'s added latency even when scrolling is a non-factor, this is
+  // only initialized if `IsScrollingRequired()` is true. If that's not the
+  // case, `contents_view_` is a direct child of this view.
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
-  // Contents of `scroll_view_`, which includes `mini_views_`,
-  // `expanded_state_new_desk_button_` and optionally
-  // `expanded_state_library_button_` currently.
-  raw_ptr<views::View> scroll_view_contents_ = nullptr;
+  // Parent of the desk bar's primary contents (mainly mini views and buttons).
+  // Set as contents of `scroll_view_` if scrolling is enabled, otherwise a
+  // direct child of `DeskBarViewBase`. Always non-null.
+  raw_ptr<views::View> contents_view_ = nullptr;
 
   // The default desk button, the new desk button and the library button.
   raw_ptr<DefaultDeskButton> default_desk_button_ = nullptr;
@@ -432,6 +481,17 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // Test closure that runs after the UI has been updated asynchronously.
   base::OnceClosure on_update_ui_closure_for_testing_;
+
+  const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
+
+  const base::RepeatingClosure desk_icon_button_state_changed_cb_;
+
+  // Ordered list of operations to run after the next `Layout()` call ends.
+  // This is a short-lived "to-do" list of things that require a layout to
+  // complete first before they can be run. The list is cleared after the layout
+  // completes. In practice, there is usually 1 element in this list.
+  std::vector<std::unique_ptr<PostLayoutOperation>>
+      pending_post_layout_operations_;
 };
 
 }  // namespace ash

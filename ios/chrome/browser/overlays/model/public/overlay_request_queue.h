@@ -27,6 +27,9 @@ class OverlayRequestQueue {
   static OverlayRequestQueue* FromWebState(web::WebState* web_state,
                                            OverlayModality modality);
 
+  // Create the OverlayRequestQueue for `web_state`.
+  static void CreateForWebState(web::WebState* web_state);
+
   // Returns the number of requests in the queue.
   virtual size_t size() const = 0;
 

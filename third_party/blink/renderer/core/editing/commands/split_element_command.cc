@@ -55,6 +55,11 @@ void SplitElementCommand::ExecuteApply() {
   ContainerNode* parent = element2_->parentNode();
   if (!parent || !IsEditable(*parent))
     return;
+  if (RuntimeEnabledFeatures::NonEmptyBlockquotesOnOutdentingEnabled()) {
+    if (children.size() == 0) {
+      return;
+    }
+  }
   parent->InsertBefore(element1_.Get(), element2_.Get(), exception_state);
   if (exception_state.HadException())
     return;

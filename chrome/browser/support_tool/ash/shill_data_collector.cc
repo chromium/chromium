@@ -317,10 +317,12 @@ base::Value::Dict ShillDataCollector::ExpandProperties(
         *dict.FindString(shill::kNameProperty));
   } else if (base::StartsWith(object_path, kDevicePrefix,
                               base::CompareCase::SENSITIVE)) {
-    // Only detects "Address" in the top level Device dictionary, not globally
-    // (which would mask IPConfigs which get anonymized separately).
     pii_map_[redaction::PIIType::kSSID].insert(
         *dict.FindString(shill::kNameProperty));
+    // Only detects "Address" in the top level Device dictionary, not globally
+    // (which would mask IPConfigs which get anonymized separately).
+    pii_map_[redaction::PIIType::kMACAddress].insert(
+        *dict.FindString(shill::kAddressProperty));
   }
   std::set<redaction::PIIType> empty = {};
   DetectOrScrubPIIInDictionary(dict, /*scrub=*/false,

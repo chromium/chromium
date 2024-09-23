@@ -157,7 +157,9 @@ class ManagedConfigurationAPITest : public ManagedConfigurationAPITestBase,
                                     public ManagedConfigurationAPI::Observer {
  public:
   ManagedConfigurationAPITest() = default;
-
+  ManagedConfigurationAPITest(const ManagedConfigurationAPITest&) = delete;
+  ManagedConfigurationAPITest& operator=(const ManagedConfigurationAPITest&) =
+      delete;
   ~ManagedConfigurationAPITest() override = default;
 
   void SetUpOnMainThread() override {
@@ -186,7 +188,7 @@ class ManagedConfigurationAPITest : public ManagedConfigurationAPITestBase,
     }
   }
 
-  const url::Origin& GetOrigin() override { return origin(); }
+  const url::Origin& GetOrigin() const override { return origin(); }
 
  private:
   bool updated_ = false;
@@ -293,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
 // Test the API behavior in the Guest Session.
 class ManagedConfigurationAPIGuestTest
     : public ManagedConfigurationAPITestBase {
- protected:
+ public:
   ManagedConfigurationAPIGuestTest() {
     // Suppress the InProcessBrowserTest's default behavior of opening
     // about://blank pages and let the standard startup code open the
@@ -303,7 +305,12 @@ class ManagedConfigurationAPIGuestTest
   }
 
   ~ManagedConfigurationAPIGuestTest() override = default;
+  ManagedConfigurationAPIGuestTest(const ManagedConfigurationAPIGuestTest&) =
+      delete;
+  ManagedConfigurationAPIGuestTest& operator=(
+      const ManagedConfigurationAPIGuestTest&) = delete;
 
+ protected:
   // Returns the result of navigator.managed.getManagedConfiguration().
   content::EvalJsResult GetValuesFromJsApi(
       const std::vector<std::string>& keys) {

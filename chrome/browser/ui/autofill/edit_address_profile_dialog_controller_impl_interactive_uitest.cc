@@ -13,20 +13,20 @@
 #include "ui/views/window/dialog_client_view.h"
 
 namespace autofill {
-
 namespace {
+
 constexpr char kSuppressedScreenshotError[] =
     "Screenshot can only run in pixel_tests on Windows.";
-}  // namespace
 
-// TODO(crbug.com/1479563): Cover EditAddressProfileDialogControllerImpl with
+// TODO(crbug.com/40280921): Cover EditAddressProfileDialogControllerImpl with
 // more tests.
 class EditAddressProfileDialogControllerImplTest
     : public InteractiveBrowserTest {
  protected:
   EditAddressProfileDialogControllerImplTest() {
     local_profile_ = std::make_unique<AutofillProfile>(
-        AutofillProfile::Source::kLocalOrSyncable, AddressCountryCode("US"));
+        AutofillProfile::RecordType::kLocalOrSyncable,
+        AddressCountryCode("US"));
     local_profile_->SetRawInfoWithVerificationStatus(
         NAME_FULL, u"Mona J. Liza", VerificationStatus::kUserVerified);
     test::SetProfileInfo(local_profile_.get(), "", "", "", "email@example.com",
@@ -43,7 +43,7 @@ class EditAddressProfileDialogControllerImplTest
   }
 
   void OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillClient::AddressPromptUserDecision decision,
       base::optional_ref<const AutofillProfile> edited_profile) {
     user_decision_ = decision;
     if (edited_profile.has_value()) {
@@ -52,8 +52,7 @@ class EditAddressProfileDialogControllerImplTest
   }
 
   auto EnsureClosedWithDecisionAndProfile(
-      AutofillClient::SaveAddressProfileOfferUserDecision
-          expected_user_decision,
+      AutofillClient::AddressPromptUserDecision expected_user_decision,
       base::optional_ref<const AutofillProfile> expected_profile) {
     return Steps(
         CheckResult([this]() { return user_decision_; },
@@ -72,8 +71,7 @@ class EditAddressProfileDialogControllerImplTest
                   bool is_migration_to_account) {
     return Do([this, profile, original_profile, footer_message,
                is_migration_to_account]() {
-      user_decision_ =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined;
+      user_decision_ = AutofillClient::AddressPromptUserDecision::kUndefined;
 
       EditAddressProfileDialogControllerImpl::CreateForWebContents(
           web_contents());
@@ -82,11 +80,12 @@ class EditAddressProfileDialogControllerImplTest
               web_contents());
       ASSERT_THAT(controller, ::testing::NotNull());
       controller->OfferEdit(
-          profile, original_profile, footer_message,
+          profile, /*title_override=*/u"", footer_message,
+          /*is_editing_existing_address*/ original_profile != nullptr,
+          is_migration_to_account,
           base::BindOnce(
               &EditAddressProfileDialogControllerImplTest::OnUserDecision,
-              base::Unretained(this)),
-          is_migration_to_account);
+              base::Unretained(this)));
     });
   }
 
@@ -94,7 +93,7 @@ class EditAddressProfileDialogControllerImplTest
   // The latest user decisive interaction with the editor, e.g. Save or Cancel
   // the editor, it is set in the AddressProfileSavePromptCallback passed to the
   // prompt.
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision_;
+  AutofillClient::AddressPromptUserDecision user_decision_;
   std::unique_ptr<AutofillProfile> local_profile_;
   std::optional<AutofillProfile> edited_profile_;
 };
@@ -107,12 +106,14 @@ IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,
       InAnyContext(Steps(
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),
-          Screenshot(EditAddressProfileView::kTopViewId, "editor", "4846629"),
+          Screenshot(EditAddressProfileView::kTopViewId,
+                     /*screenshot_name=*/"editor", /*baseline_cl=*/"4846629"),
           PressButton(views::DialogClientView::kOkButtonElementId),
-          WaitForHide(EditAddressProfileView::kTopViewId), FlushEvents())),
+          WaitForHide(EditAddressProfileView::kTopViewId))),
       EnsureClosedWithDecisionAndProfile(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
+          AutofillClient::AddressPromptUserDecision::kEditAccepted,
           local_profile()));
 }
 
+}  // namespace
 }  // namespace autofill

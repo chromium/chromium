@@ -38,7 +38,8 @@ class ASH_EXPORT AnimatedAuthFactorsLabelWrapper : public views::View {
   views::Label* label() { return current_label_; }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
  private:
   int previous_label_id_ = 0;

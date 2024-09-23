@@ -16,16 +16,7 @@
  *         descendant of rootWebArea.
  */
 const TestUtility = {
-  async setup() {
-    await Promise.all([
-      importModule('SACommands', '/switch_access/commands.js'),
-      importModule('FocusRingManager', '/switch_access/focus_ring_manager.js'),
-      importModule('Navigator', '/switch_access/navigator.js'),
-      importModule('SwitchAccess', '/switch_access/switch_access.js'),
-      importModule(
-          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js'),
-    ]);
-
+  setup() {
     FocusRingManager.instance.observer_ = TestUtility.whenFocusChanges_;
   },
 

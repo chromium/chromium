@@ -21,6 +21,7 @@ import {
 } from '../../mojo/util.js';
 import {speak} from '../../spoken_msg.js';
 import * as util from '../../util.js';
+import * as state from '../../state.js';
 
 /**
  * Base length of line without scaling in px.
@@ -259,6 +260,7 @@ export class DocumentCornerOverlay {
     this.observer = null;
     this.hide();
     this.clearNoDocumentTimer();
+    state.set(state.State.ENABLE_SCAN_DOCUMENT, false);
   }
 
   isEnabled(): boolean {

@@ -42,17 +42,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.CheckinRequestStatusNetError" enum="NetErrorCodes"
-    expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Network error code for a GCM checkin request that failed because of a
-    network error.
-  </summary>
-</histogram>
-
-<histogram name="GCM.ClientStartDelay" units="ms" expires_after="2024-09-14">
+<histogram name="GCM.ClientStartDelay" units="ms" expires_after="2025-01-26">
   <owner>rushans@google.com</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -102,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.DelayedTaskControlledReadyTime" units="ms"
-    expires_after="2024-09-14">
+    expires_after="2025-01-19">
   <owner>rushans@google.com</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -112,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.DeliveredToAppHandler{AppHandler}" enum="BooleanDelivered"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>peter@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -138,15 +128,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.PendingConnectionEventsAtShutdown" units="events"
-    expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
+<histogram name="GCM.MessageValid" enum="BooleanSuccess"
+    expires_after="2025-02-16">
+  <owner>smaier@chromium.org</owner>
   <summary>
-    Number of connection events which have not been sent to GCM. This is
-    recorded only at the time of shutdown to capture the events which are being
-    lost due to shutdown. Because this is recorded at shutdown, this is not
-    guaranteed to be complete and should be treated as a best effort record.
+    Records whether or not a received GCM message is valid and will proceed to
+    running a background task.
   </summary>
 </histogram>
 
@@ -181,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="2024-06-30">
+    enum="GCMRegistrationRequestStatus" expires_after="2025-02-10">
   <owner>peter@chromium.org</owner>
   <summary>
     Status code of the outcome of a GCM registration request. The Unknown error
@@ -192,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2024-05-19">
+    expires_after="2025-03-09">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,22 +19,20 @@ import android.content.SharedPreferences;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.tab.Tab;
 
 /** Tests for {@link TabGroupTitleUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupTitleUtilsUnitTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
@@ -42,7 +40,6 @@ public class TabGroupTitleUtilsUnitTest {
     private static final String TAB_TITLE = "Tab";
 
     @Mock Context mContext;
-    @Mock Tab mTab;
     @Mock SharedPreferences mSharedPreferences;
     @Mock SharedPreferences.Editor mEditor;
     @Mock SharedPreferences.Editor mPutStringEditor;
@@ -50,8 +47,6 @@ public class TabGroupTitleUtilsUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         doReturn(mSharedPreferences)
                 .when(mContext)
                 .getSharedPreferences(TAB_GROUP_TITLES_FILE_NAME, Context.MODE_PRIVATE);
@@ -83,5 +78,21 @@ public class TabGroupTitleUtilsUnitTest {
 
         verify(mEditor).putString(eq(String.valueOf(TAB_ID)), eq(TAB_TITLE));
         verify(mPutStringEditor).apply();
+    }
+
+    @Test
+    public void testStoreTabGroupTitle_Empty() {
+        TabGroupTitleUtils.storeTabGroupTitle(TAB_ID, "");
+
+        verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
+        verify(mRemoveEditor).apply();
+    }
+
+    @Test
+    public void testStoreTabGroupTitle_Null() {
+        TabGroupTitleUtils.storeTabGroupTitle(TAB_ID, null);
+
+        verify(mEditor).remove(eq(String.valueOf(TAB_ID)));
+        verify(mRemoveEditor).apply();
     }
 }

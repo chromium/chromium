@@ -1,14 +1,26 @@
 include_rules = [
+    "+gpu/command_buffer/common",
+    "+media/base",
     "+services/metrics/public/cpp/ukm_recorder.h",
     "+third_party/skia/include",
+    "+ui/gfx/buffer_types.h",
 ]
 
 specific_include_rules = {
+    "canvas_rendering_context_2d.cc": [
+        "+cc/layers/texture_layer.h",
+    ],
+    "identifiability_study_helper.cc" : [
+        "+base/hash",
+    ],
     # Additional allowed includes for tests.
     ".*_test(_.*)?\.(cc|h)" : [
+        "+base/metrics/histogram_base.h",
+        "+base/pending_task.h",
         "+base/strings",
         "+components/viz",
         "+cc/test/paint_op_matchers.h",
+        "+gpu/command_buffer/client/test_shared_image_interface.h",
         "+ui/gfx/skia_util.h",
     ]
 }

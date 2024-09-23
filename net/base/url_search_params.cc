@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -46,13 +45,13 @@ void UrlSearchParams::Sort() {
 
 void UrlSearchParams::DeleteAllWithNames(
     const base::flat_set<std::string>& names) {
-  base::EraseIf(params_,
+  std::erase_if(params_,
                 [&](const auto& pair) { return names.contains(pair.first); });
 }
 
 void UrlSearchParams::DeleteAllExceptWithNames(
     const base::flat_set<std::string>& names) {
-  base::EraseIf(params_,
+  std::erase_if(params_,
                 [&](const auto& pair) { return !names.contains(pair.first); });
 }
 

@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 SimpleOverlayWindowImageButton::SimpleOverlayWindowImageButton(
     PressedCallback callback,
@@ -18,7 +19,7 @@ SimpleOverlayWindowImageButton::SimpleOverlayWindowImageButton(
   UpdateImage();
 
   // Accessibility.
-  SetAccessibleName(label);
+  GetViewAccessibility().SetName(label);
   SetTooltipText(label);
 }
 

@@ -21,6 +21,9 @@
 #include "third_party/blink/renderer/core/svg/svg_tspan_element.h"
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_tspan.h"
+#include "third_party/blink/renderer/core/svg/svg_a_element.h"
+#include "third_party/blink/renderer/core/svg/svg_text_element.h"
+#include "third_party/blink/renderer/core/svg/svg_text_path_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
 namespace blink {

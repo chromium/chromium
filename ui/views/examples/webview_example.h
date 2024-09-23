@@ -32,9 +32,8 @@ class WebViewExample : public ExampleBase, public content::WebContentsDelegate {
   void CreateExampleView(View* container) override;
 
   // content::WebContentsDelegate:
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
 
  private:
   raw_ptr<WebView> webview_;

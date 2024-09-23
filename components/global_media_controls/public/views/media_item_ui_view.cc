@@ -4,9 +4,7 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
@@ -18,10 +16,8 @@
 #include "media/audio/audio_device_description.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/compositor/layer.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/slide_out_controller.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -41,16 +37,12 @@ namespace global_media_controls {
 namespace {
 
 constexpr int kWidth = 400;
-constexpr gfx::Size kNormalSize = gfx::Size(kWidth, 100);
-constexpr gfx::Size kExpandedSize = gfx::Size(kWidth, 150);
 constexpr gfx::Size kDismissButtonSize = gfx::Size(30, 30);
 constexpr int kDismissButtonIconSize = 20;
 constexpr int kDismissButtonBackgroundRadius = 15;
 constexpr gfx::Size kCrOSDismissButtonSize = gfx::Size(20, 20);
 constexpr int kCrOSDismissButtonIconSize = 12;
-constexpr int kDeviceSelectorSeparatorHeight = 22;
-constexpr gfx::Insets kSwipeableContainerInsets =
-    gfx::Insets::TLBR(4, 16, 8, 16);
+constexpr gfx::Insets kCrOSContainerInsets = gfx::Insets::TLBR(4, 16, 8, 16);
 
 // The minimum number of enabled and visible user actions such that we should
 // force the MediaNotificationView to be expanded.
@@ -59,9 +51,9 @@ constexpr int kMinVisibleActionsForExpanding = 4;
 }  // anonymous namespace
 
 class MediaItemUIView::DismissButton : public views::ImageButton {
- public:
-  METADATA_HEADER(DismissButton);
+  METADATA_HEADER(DismissButton, views::ImageButton)
 
+ public:
   explicit DismissButton(PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
@@ -74,7 +66,7 @@ class MediaItemUIView::DismissButton : public views::ImageButton {
   ~DismissButton() override = default;
 };
 
-BEGIN_METADATA(MediaItemUIView, DismissButton, views::ImageButton)
+BEGIN_METADATA(MediaItemUIView, DismissButton)
 END_METADATA
 
 MediaItemUIView::MediaItemUIView(
@@ -96,23 +88,8 @@ MediaItemUIView::MediaItemUIView(
 #if BUILDFLAG(IS_CHROMEOS)
   // The updated UI requires media color theme to be set while the toolbar
   // media button does not provide it.
-  use_updated_ui_ =
-      base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI) &&
-      media_color_theme.has_value();
-#else
-  use_updated_ui_ =
-      base::FeatureList::IsEnabled(media::kGlobalMediaControlsUpdatedUI);
+  use_updated_ui_ = media_color_theme.has_value();
 #endif
-
-  auto swipeable_container = std::make_unique<views::View>();
-  swipeable_container->SetLayoutManager(std::make_unique<views::FillLayout>());
-  swipeable_container->SetPaintToLayer();
-  swipeable_container->layer()->SetFillsBoundsOpaquely(false);
-  if (use_updated_ui_) {
-    swipeable_container->SetBorder(
-        views::CreateEmptyBorder(kSwipeableContainerInsets));
-  }
-  swipeable_container_ = AddChildView(std::move(swipeable_container));
 
   // Pressing callback for the updated quick settings media view will be handled
   // in MediaItemUIDetailedView because it only wants to activate the original
@@ -129,7 +106,6 @@ MediaItemUIView::MediaItemUIView(
                                     /*activate_original_media=*/true));
   }
 
-  std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_updated_ui_) {
     CHECK(media_color_theme.has_value());
     if (footer_view) {
@@ -143,14 +119,13 @@ MediaItemUIView::MediaItemUIView(
     // Focus behavior will be set inside MediaItemUIDetailedView.
     SetFocusBehavior(views::View::FocusBehavior::NEVER);
 
-    SetPreferredSize(kCrOSMediaItemUpdatedUISize);
     SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetBorder(views::CreateEmptyBorder(kCrOSContainerInsets));
 
-    view_ = swipeable_container_->AddChildView(
-        std::make_unique<MediaItemUIDetailedView>(
-            this, std::move(item), std::move(footer_view),
-            std::move(device_selector_view), /*dismiss_button=*/nullptr,
-            media_color_theme.value(), media_display_page.value()));
+    view_ = AddChildView(std::make_unique<MediaItemUIDetailedView>(
+        this, std::move(item), std::move(footer_view),
+        std::move(device_selector_view), /*dismiss_button=*/nullptr,
+        media_color_theme.value(), media_display_page.value()));
   } else {
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -182,17 +157,12 @@ MediaItemUIView::MediaItemUIView(
         dismiss_button_container_->AddChildView(std::move(dismiss_button));
     UpdateDismissButtonIcon();
 
-    slide_out_controller_ =
-        std::make_unique<views::SlideOutController>(this, this);
-
-    view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
-        this, std::move(item), std::move(dismiss_button_placeholder),
-        std::u16string(), kWidth, /*should_show_icon=*/false,
-        notification_theme);
+    view_ = AddChildView(
+        std::make_unique<media_message_center::MediaNotificationViewImpl>(
+            this, std::move(item), std::move(dismiss_button_placeholder),
+            std::u16string(), kWidth, /*should_show_icon=*/false,
+            notification_theme));
     UpdateFooterView(std::move(footer_view));
-    SetPreferredSize(kNormalSize);
-
-    view_ = swipeable_container_->AddChildView(std::move(view));
     UpdateDeviceSelector(std::move(device_selector_view));
     ForceExpandedState();
   }
@@ -224,12 +194,18 @@ void MediaItemUIView::OnMouseExited(const ui::MouseEvent& event) {
 void MediaItemUIView::OnGestureEvent(ui::GestureEvent* event) {
   // Tap gesture event should have the same behavior as a button click event, so
   // the button callback may be triggered.
-  if (event->type() == ui::ET_GESTURE_TAP) {
+  if (event->type() == ui::EventType::kGestureTap) {
     views::Button::OnGestureEvent(event);
   }
   if (scroll_view_ && event->IsScrollGestureEvent()) {
     scroll_view_->OnGestureEvent(event);
   }
+}
+
+gfx::Size MediaItemUIView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(
+      kWidth, GetLayoutManager()->GetPreferredHeightForWidth(this, kWidth));
 }
 
 void MediaItemUIView::OnDidChangeFocus(views::View* focused_before,
@@ -327,32 +303,8 @@ void MediaItemUIView::OnDeviceSelectorViewDevicesChanged(bool has_devices) {
   view_->UpdateDeviceSelectorAvailability(has_devices);
 }
 
-void MediaItemUIView::OnDeviceSelectorViewSizeChanged() {
+void MediaItemUIView::OnListViewSizeChanged() {
   OnSizeChanged();
-}
-
-ui::Layer* MediaItemUIView::GetSlideOutLayer() {
-  return swipeable_container_->layer();
-}
-
-void MediaItemUIView::OnSlideChanged(bool in_progress) {
-  // Make sure we are only scrolling in one dimension.
-  if (scroll_view_ && in_progress && !is_sliding_ &&
-      slide_out_controller_->GetGestureAmount()) {
-    is_sliding_ = true;
-    scroll_view_->SetVerticalScrollBarMode(
-        views::ScrollView::ScrollBarMode::kDisabled);
-  }
-
-  if (!in_progress && scroll_view_ && is_sliding_) {
-    is_sliding_ = false;
-    scroll_view_->SetVerticalScrollBarMode(
-        views::ScrollView::ScrollBarMode::kEnabled);
-  }
-}
-
-void MediaItemUIView::OnSlideOut() {
-  DismissNotification();
 }
 
 void MediaItemUIView::AddObserver(
@@ -376,9 +328,7 @@ void MediaItemUIView::SetScrollView(views::ScrollView* scroll_view) {
 void MediaItemUIView::UpdateFooterView(
     std::unique_ptr<MediaItemUIFooter> footer_view) {
   if (footer_view_) {
-    RemoveChildView(footer_view_);
-    delete footer_view_;
-    footer_view_ = nullptr;
+    RemoveChildViewT(footer_view_.ExtractAsDangling());
   }
 
   if (footer_view) {
@@ -390,9 +340,7 @@ void MediaItemUIView::UpdateFooterView(
 void MediaItemUIView::UpdateDeviceSelector(
     std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view) {
   if (device_selector_view_) {
-    RemoveChildView(device_selector_view_);
-    delete device_selector_view_;
-    device_selector_view_ = nullptr;
+    RemoveChildViewT(device_selector_view_.ExtractAsDangling());
   }
 
   if (device_selector_view) {
@@ -468,36 +416,15 @@ void MediaItemUIView::ContainerClicked(bool activate_original_media) {
 }
 
 void MediaItemUIView::OnSizeChanged() {
-  gfx::Size new_size;
-  if (use_updated_ui_) {
-    new_size = kCrOSMediaItemUpdatedUISize;
-  } else {
-    new_size = is_expanded_ ? kExpandedSize : kNormalSize;
-  }
-
-  // |new_size| does not contain the height for the device selector view.
-  // If this view is present, we should query it for its preferred height and
-  // include that in |new_size|.
   if (device_selector_view_) {
-    auto device_selector_view_size = device_selector_view_->GetPreferredSize();
-    CHECK(device_selector_view_size.width() == kWidth);
-    if (device_selector_view_size.height() > 0) {
-      new_size.set_height(new_size.height() +
-                          device_selector_view_size.height());
-      if (use_updated_ui_) {
-        new_size.set_height(new_size.height() + kDeviceSelectorSeparatorHeight);
-      }
-    }
     view_->UpdateDeviceSelectorVisibility(device_selector_view_->GetVisible());
   }
-
-  SetPreferredSize(new_size);
 
   for (auto& observer : observers_)
     observer.OnMediaItemUISizeChanged();
 }
 
-BEGIN_METADATA(MediaItemUIView, views::Button)
+BEGIN_METADATA(MediaItemUIView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Title)
 END_METADATA
 

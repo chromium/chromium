@@ -1,0 +1,102 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("os_updates") {
+  sources = [
+    "os_updates_reporter.cc",
+    "os_updates_reporter.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/reporting",
+    "//chrome/browser/policy/messaging_layer/proto:os_events_proto",
+    "//chrome/common:channel_info",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/settings",
+    "//chromeos/version",
+    "//components/reporting/proto:record_constants",
+    "//components/user_manager",
+    "//components/version_info",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+
+    # Current implementation unnecessarily exposes dbus to client targets.
+    # TODO: consider to remove the dependency.
+    "//dbus",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/policy/core" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "os_updates_reporter_unittest.cc" ]
+
+  deps = [
+    ":os_updates",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/policy/reporting:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy/messaging_layer/proto:os_events_proto",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/dbus/power",
+    "//components/policy/proto:",
+    "//components/reporting/client:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/session_manager/core",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "os_updates_reporter_browsertest.cc" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/login/session:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy/messaging_layer/proto:os_events_proto",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/missive",
+    "//chromeos/dbus/missive:test_support",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/policy/test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -6,7 +6,6 @@
 
 #include "ash/picker/picker_asset_fetcher.h"
 #include "base/functional/callback.h"
-#include "url/gurl.h"
 
 namespace ash {
 
@@ -14,8 +13,9 @@ MockPickerAssetFetcher::MockPickerAssetFetcher() = default;
 
 MockPickerAssetFetcher::~MockPickerAssetFetcher() = default;
 
-void MockPickerAssetFetcher::FetchGifFromUrl(
-    const GURL& url,
-    PickerGifFetchedCallback callback) {}
+void MockPickerAssetFetcher::FetchFileThumbnail(
+    const base::FilePath& path,
+    const gfx::Size& size,
+    FetchFileThumbnailCallback callback) {}
 
 }  // namespace ash

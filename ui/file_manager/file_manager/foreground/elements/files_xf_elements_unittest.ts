@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './xf_button.js';
+import './xf_circular_progress.js';
+import './xf_display_panel.js';
+import './xf_panel_item.js';
+
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {mockPluralStringProxy} from '../../common/js/unittest_util.js';
 
-import {PanelButton} from './xf_button.js';
-import {CircularProgress} from './xf_circular_progress.js';
-import {DisplayPanel} from './xf_display_panel.js';
-import {PanelItem, PanelType} from './xf_panel_item.js';
+import type {PanelButton} from './xf_button.js';
+import type {CircularProgress} from './xf_circular_progress.js';
+import type {DisplayPanel} from './xf_display_panel.js';
+import type {PanelItem} from './xf_panel_item.js';
+import {PanelType} from './xf_panel_item.js';
 
 let displayPanel: DisplayPanel;
 

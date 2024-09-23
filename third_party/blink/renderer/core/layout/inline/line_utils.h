@@ -20,15 +20,11 @@ InlineCursor NGContainingLineBoxOf(const PositionWithAffinity&);
 bool InSameNGLineBox(const PositionWithAffinity&, const PositionWithAffinity&);
 
 // Given the expected line-height property of `line_height`, the metrics of the
-// font for a inline box `current_height`, and the text-box-trim property
-// `text_box_trim`, compute the half-leading height that should be added to the
-// ascent and descent directions separately.
+// font for a inline box `current_height`, compute the half-leading height that
+// should be added to the ascent and descent directions separately.
 // https://drafts.csswg.org/css2/#leading.
-// https://w3c.github.io/csswg-drafts/css-inline-3/#propdef-leading-trim
 FontHeight CalculateLeadingSpace(const LayoutUnit& line_height,
-                                 const FontHeight& current_height,
-                                 const ETextBoxTrim& text_box_trim,
-                                 WritingMode writing_mode);
+                                 const FontHeight& current_height);
 
 }  // namespace blink
 

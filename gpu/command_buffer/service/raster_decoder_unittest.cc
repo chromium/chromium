@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/raster_decoder.h"
 
 #include <limits>
@@ -184,7 +189,7 @@ TEST_P(RasterDecoderManualInitTest, GetCapabilitiesNorm16) {
   // R16 requires an ES3 context plus the extension to be available.
   InitState init;
   init.context_type = CONTEXT_TYPE_OPENGLES3;
-  init.gl_version = "3.0";
+  init.gl_version = "OpenGL ES 3.0";
   init.extensions.push_back("GL_EXT_texture_norm16");
   InitDecoder(init);
   AddExpectationsForGetCapabilities();
@@ -271,6 +276,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override {}
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
+  bool ShouldYield() override { return false; }
 
   std::unique_ptr<RasterDecoder> CreateDecoder() {
     command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
@@ -292,7 +298,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
                              GLsizei width,
                              GLsizei height,
                              bool cleared) {
-    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+    gpu::Mailbox mailbox = gpu::Mailbox::Generate();
     gfx::Size size(width, height);
     auto color_space = gfx::ColorSpace::CreateSRGB();
 

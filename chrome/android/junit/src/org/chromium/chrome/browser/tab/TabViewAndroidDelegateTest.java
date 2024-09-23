@@ -7,13 +7,18 @@ package org.chromium.chrome.browser.tab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.util.SparseArray;
+import android.view.View;
+import android.view.ViewStructure;
+import android.view.autofill.AutofillValue;
+
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -23,7 +28,6 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,8 +46,6 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 public class TabViewAndroidDelegateTest {
     private final ArgumentCaptor<TabObserver> mTabObserverCaptor =
             ArgumentCaptor.forClass(TabObserver.class);
-
-    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
     @Mock private TabImpl mTab;
 
@@ -133,5 +135,22 @@ public class TabViewAndroidDelegateTest {
         assertNull(
                 "DragAndDropBrowserDelegate should be removed once destroyed.",
                 mViewAndroidDelegate.getDragAndDropBrowserDelegateForTesting());
+    }
+
+    @Test
+    public void testForwardsAndroidAutofillRequests() {
+        when(mTab.providesAutofillStructure()).thenReturn(true);
+        assertTrue(mViewAndroidDelegate.providesAutofillStructure());
+
+        ViewStructure structure = mock(ViewStructure.class);
+        mViewAndroidDelegate.onProvideAutofillVirtualStructure(
+                structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
+        verify(mTab)
+                .onProvideAutofillVirtualStructure(
+                        structure, View.AUTOFILL_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS);
+
+        SparseArray<AutofillValue> values = new SparseArray();
+        mViewAndroidDelegate.autofill(values);
+        verify(mTab).autofill(values);
     }
 }

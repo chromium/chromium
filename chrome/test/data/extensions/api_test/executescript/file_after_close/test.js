@@ -4,7 +4,7 @@
 
 var server = 'http://b.com:PORT';
 var relativePath = '/extensions/api_test/executescript/file_after_close/';
-var extensionPage = chrome.extension.getURL('extension_page.html');
+var extensionPage = chrome.runtime.getURL('extension_page.html');
 var webPage1 = server + relativePath + 'web_page1.html';
 var webPage2 = server + relativePath + 'web_page2.html';
 var extensionPageOpened = false;

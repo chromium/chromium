@@ -255,8 +255,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 #pragma mark - Private
 
 - (CGFloat)detentForPreferredHeightInContext:
-    (id<UISheetPresentationControllerDetentResolutionContext>)context
-    API_AVAILABLE(ios(16)) {
+    (id<UISheetPresentationControllerDetentResolutionContext>)context {
   UIView* containerView = self.sheetPresentationController.containerView;
   CGFloat width = containerView.bounds.size.width;
   CGSize fittingSize = CGSizeMake(width, UILayoutFittingCompressedSize.height);
@@ -604,12 +603,10 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 
 // Calculates and sets detent based on the height of content.
 - (void)recalculatePreferredHeightDetent {
-  if (@available(iOS 16, *)) {
-    self.sheetPresentationController.detents = @[
-      [self preferredHeightDetent],
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  }
+  self.sheetPresentationController.detents = @[
+    [self preferredHeightDetent],
+    UISheetPresentationControllerDetent.largeDetent
+  ];
 }
 
 // Creates a UITextView with subtitle and footer defaults.
@@ -732,7 +729,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 }
 
 // Replaces text of the title label and adds a done button.
-// TODO(crbug.com/1463882): Add test.
+// TODO(crbug.com/40275395): Add test.
 - (void)displayCancelledStatus {
   self.titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_CANCELLED_TITLE);

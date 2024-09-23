@@ -6,6 +6,7 @@
 #define UI_AURA_HOST_FRAME_RATE_THROTTLER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "ui/aura/aura_export.h"
 
@@ -21,7 +22,10 @@ class AURA_EXPORT HostFrameRateThrottler {
   void AddHost(WindowTreeHost* host);
   void RemoveHost(WindowTreeHost* host);
 
-  const base::flat_set<WindowTreeHost*>& hosts() const { return hosts_; }
+  const base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>>& hosts()
+      const {
+    return hosts_;
+  }
 
  private:
   friend class base::NoDestructor<HostFrameRateThrottler>;
@@ -32,7 +36,7 @@ class AURA_EXPORT HostFrameRateThrottler {
   void UpdateHostFrameSinkManager();
 
   // Set of hosts that are currently throttled.
-  base::flat_set<WindowTreeHost*> hosts_;
+  base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>> hosts_;
 };
 
 }  // namespace aura

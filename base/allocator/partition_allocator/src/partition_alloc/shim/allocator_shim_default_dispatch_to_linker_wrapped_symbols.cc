@@ -4,7 +4,7 @@
 
 #include <malloc.h>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/shim/allocator_shim.h"
 
 // This translation unit defines a default dispatch for the allocator shim which
@@ -29,38 +29,27 @@ namespace {
 
 using allocator_shim::AllocatorDispatch;
 
-void* RealMalloc(const AllocatorDispatch*, size_t size, void* context) {
+void* RealMalloc(size_t size, void* context) {
   return __real_malloc(size);
 }
 
-void* RealCalloc(const AllocatorDispatch*,
-                 size_t n,
-                 size_t size,
-                 void* context) {
+void* RealCalloc(size_t n, size_t size, void* context) {
   return __real_calloc(n, size);
 }
 
-void* RealRealloc(const AllocatorDispatch*,
-                  void* address,
-                  size_t size,
-                  void* context) {
+void* RealRealloc(void* address, size_t size, void* context) {
   return __real_realloc(address, size);
 }
 
-void* RealMemalign(const AllocatorDispatch*,
-                   size_t alignment,
-                   size_t size,
-                   void* context) {
+void* RealMemalign(size_t alignment, size_t size, void* context) {
   return __real_memalign(alignment, size);
 }
 
-void RealFree(const AllocatorDispatch*, void* address, void* context) {
+void RealFree(void* address, void* context) {
   __real_free(address);
 }
 
-size_t RealSizeEstimate(const AllocatorDispatch*,
-                        void* address,
-                        void* context) {
+size_t RealSizeEstimate(void* address, void* context) {
   return __real_malloc_usable_size(address);
 }
 
@@ -72,6 +61,7 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &RealCalloc,       /* alloc_zero_initialized_function */
     &RealMemalign,     /* alloc_aligned_function */
     &RealRealloc,      /* realloc_function */
+    &RealRealloc,      /* realloc_unchecked_function */
     &RealFree,         /* free_function */
     &RealSizeEstimate, /* get_size_estimate_function */
     nullptr,           /* good_size_function */
@@ -81,7 +71,9 @@ const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     nullptr,           /* free_definite_size_function */
     nullptr,           /* try_free_default_function */
     nullptr,           /* aligned_malloc_function */
+    nullptr,           /* aligned_malloc_unchecked_function */
     nullptr,           /* aligned_realloc_function */
+    nullptr,           /* aligned_realloc_unchecked_function */
     nullptr,           /* aligned_free_function */
     nullptr,           /* next */
 };

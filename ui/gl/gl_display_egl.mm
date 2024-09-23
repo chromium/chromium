@@ -37,14 +37,9 @@ GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id, DisplayKey display_key)
 
 GLDisplayEGL::~GLDisplayEGL() = default;
 
-bool GLDisplayEGL::IsANGLEMetalSharedEventSyncSupported() {
-  return this->ext->b_EGL_ANGLE_metal_shared_event_sync;
-}
-
 bool GLDisplayEGL::CreateMetalSharedEvent(id<MTLSharedEvent>* shared_event_out,
                                           uint64_t* signal_value_out) {
-  DCHECK(g_driver_egl.fn.eglCreateSyncFn);
-  DCHECK(g_driver_egl.fn.eglGetSyncAttribFn);
+  CHECK(ext->b_EGL_ANGLE_metal_shared_event_sync);
   if (!objc_storage_->metal_shared_event) {
     std::vector<EGLAttrib> attribs;
     attribs.push_back(EGL_SYNC_METAL_SHARED_EVENT_SIGNAL_VALUE_LO_ANGLE);
@@ -99,6 +94,18 @@ bool GLDisplayEGL::CreateMetalSharedEvent(id<MTLSharedEvent>* shared_event_out,
 
 void GLDisplayEGL::WaitForMetalSharedEvent(id<MTLSharedEvent> shared_event,
                                            uint64_t signal_value) {
+  CHECK(objc_storage_);
+  if (objc_storage_->metal_shared_event.get() == shared_event) {
+    // If the event is owned by this display, skip the wait.
+    // Currently ANGLE/Metal is only single threaded. There is no need to issue
+    // a GPU wait for an event that was signaled by the same display. Because
+    // the works before and after the signal belong to the same metal queue
+    // hence they are already synchronized with each other implicitly.
+    CHECK_GE(objc_storage_->metal_signaled_value, signal_value);
+    return;
+  }
+
+  CHECK(ext->b_EGL_ANGLE_metal_shared_event_sync);
   EGLAttrib attribs[] = {
       // Pass the Metal shared event as an EGLAttrib.
       EGL_SYNC_METAL_SHARED_EVENT_OBJECT_ANGLE,
@@ -118,7 +125,6 @@ void GLDisplayEGL::WaitForMetalSharedEvent(id<MTLSharedEvent> shared_event,
       EGL_NONE,
   };
 
-  DCHECK(g_driver_egl.fn.eglCreateSyncFn);
   EGLSync sync =
       eglCreateSync(display_, EGL_SYNC_METAL_SHARED_EVENT_ANGLE, attribs);
   EGLBoolean res = eglWaitSync(display_, sync, 0);

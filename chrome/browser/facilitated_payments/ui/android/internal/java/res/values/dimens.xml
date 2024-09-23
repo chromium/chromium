@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <dimen name="facilitated_payments_drag_handlebar_vertical_margin">8dp</dimen>
+    <dimen name="facilitated_payments_gpay_icon_width">80dp</dimen>
+    <dimen name="facilitated_payments_gpay_icon_height">32dp</dimen>
+    <dimen name="facilitated_payments_bank_account_icon_padding_horizontal">11dp</dimen>
+    <dimen name="facilitated_payments_bank_account_icon_padding_vertical">3dp</dimen>
+    <dimen name="facilitated_payments_product_icon_height">32dp</dimen>
+    <dimen name="facilitated_payments_product_icon_margin_vertical">12dp</dimen>
+    <dimen name="facilitated_payments_horizontal_margin">8dp</dimen>
+    <dimen name="facilitated_payments_header_bottom_margin">24dp</dimen>
+    <dimen name="facilitated_payments_additional_info_margin_vertical">20dp</dimen>
+    <dimen name="facilitated_payments_footer_button_height">40dp</dimen>
+    <dimen name="facilitated_payments_footer_button_margin_vertical">10dp</dimen>
+    <dimen name="facilitated_payments_footer_drawable_padding">16dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_height">338dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_margin_top">12dp</dimen>
+    <dimen name="facilitated_payments_progress_bar_size">80dp</dimen>
+    <dimen name="facilitated_payments_progress_bar_track_thickness">4dp</dimen>
+    <dimen name="facilitated_payments_progress_screen_lock_size">32dp</dimen>
+    <dimen name="facilitated_payments_progress_message_margin_top">12dp</dimen>
+    <dimen name="facilitated_payments_error_icon_size">32dp</dimen>
+    <dimen name="facilitated_payments_error_icon_top_margin">18dp</dimen>
+    <dimen name="facilitated_payments_error_icon_bottom_margin">8dp</dimen>
+    <dimen name="facilitated_payments_error_screen_title_top_margin">16dp</dimen>
+    <dimen name="facilitated_payments_error_screen_description_top_margin">8dp</dimen>
+    <dimen name="facilitated_payments_error_screen_button_height">48dp</dimen>
+    <dimen name="facilitated_payments_error_screen_button_vertical_margin">18dp</dimen>
+    <dimen name="facilitated_payments_continue_button_height">40dp</dimen>
+    <dimen name="facilitated_payments_continue_button_margin_bottom">24dp</dimen>
+</resources>

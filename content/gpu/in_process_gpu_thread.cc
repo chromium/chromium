@@ -5,6 +5,7 @@
 #include "content/gpu/in_process_gpu_thread.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
@@ -25,6 +26,13 @@
 #endif
 
 namespace content {
+namespace {
+
+BASE_FEATURE(kInProcessGpuUseIOThread,
+             "InProcessGpuUseIOThread",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 InProcessGpuThread::InProcessGpuThread(
     const InProcessChildThreadParams& params,
@@ -57,7 +65,11 @@ void InProcessGpuThread::Init() {
   io_thread_type = base::ThreadType::kDisplayCritical;
 #endif
 
-  gpu_process_ = std::make_unique<ChildProcess>(io_thread_type);
+  if (base::FeatureList::IsEnabled(kInProcessGpuUseIOThread)) {
+    gpu_process_ = std::make_unique<ChildProcess>(params_.child_io_runner());
+  } else {
+    gpu_process_ = std::make_unique<ChildProcess>(io_thread_type);
+  }
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
   gpu_init->InitializeInProcess(base::CommandLine::ForCurrentProcess(),

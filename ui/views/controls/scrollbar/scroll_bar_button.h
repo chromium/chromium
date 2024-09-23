@@ -44,7 +44,8 @@ class VIEWS_EXPORT ScrollBarButton : public Button {
   ScrollBarButton& operator=(const ScrollBarButton&) = delete;
   ~ScrollBarButton() override;
 
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
 
  protected:
   // Button

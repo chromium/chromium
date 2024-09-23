@@ -7,9 +7,11 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
@@ -23,6 +25,9 @@ using ShowPasswordSuggestions =
     base::StrongAlias<class ShowPasswordSuggestionsTag, bool>;
 using ShowWebAuthnCredentials =
     base::StrongAlias<class ShowWebAuthnCredentialsTag, bool>;
+using IsTriggeredOnPasswordForm =
+    base::StrongAlias<class IsTriggeredOnPasswordFormTag, bool>;
+using IsCrossDomain = base::StrongAlias<class IsCrossDomainTag, bool>;
 
 // Helper class to generate password suggestions. Calls to the generation do not
 // modify the state of this class.
@@ -50,9 +55,29 @@ class PasswordSuggestionGenerator {
 
   // Generates suggestions shown when user triggers password Autofill from the
   // Chrome context menu. Every suggestion will have several sub suggestions to
-  // fill username, password and open credential details dialog.
+  // fill username, password and open credential details dialog. If both
+  // `suggested_credentials` and `all_credentials` are non-emtpy, the list of
+  // suggestions will have the following structure:
+  //
+  // Suggested
+  //   Suggested password 1
+  //   ...
+  // All passwords
+  //   Password 1
+  //   ...
+  // ----- separator ------
+  // Manage passwords...
+  //
+  // If either `suggested_credentials` or `all_credentials` is empty, the
+  // section titles won't be generated. If both `suggested_credentials` and
+  // `all_credentials` are empty, no suggestions will be generated.
+  // `suggested_credentials` contains the following types of passwords: exact,
+  // strongly affiliated, PSL and weakly affiliated matches. `all_credentials`
+  // contains all user passwords as displayed in settings.
   std::vector<autofill::Suggestion> GetManualFallbackSuggestions(
-      const std::vector<CredentialUIEntry>& credentials) const;
+      base::span<const PasswordForm> suggested_credentials,
+      base::span<const CredentialUIEntry> all_credentials,
+      IsTriggeredOnPasswordForm on_password_form) const;
 
  private:
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;

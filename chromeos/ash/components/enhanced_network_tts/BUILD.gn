@@ -1,0 +1,60 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("enhanced_network_tts") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS_IMPL" ]
+
+  sources = [
+    "enhanced_network_tts_constants.h",
+    "enhanced_network_tts_impl.cc",
+    "enhanced_network_tts_impl.h",
+    "enhanced_network_tts_utils.cc",
+    "enhanced_network_tts_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/enhanced_network_tts/mojom",
+    "//components/google/core/common",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//ui/accessibility",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "enhanced_network_tts_impl_unittest.cc",
+    "enhanced_network_tts_test_utils.cc",
+    "enhanced_network_tts_test_utils.h",
+    "enhanced_network_tts_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":enhanced_network_tts",
+    "//base",
+    "//base/test:test_support",
+    "//google_apis",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

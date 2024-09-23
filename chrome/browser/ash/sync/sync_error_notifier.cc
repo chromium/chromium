@@ -63,7 +63,7 @@ void ShowSyncSetup(Profile* profile) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile, chromeos::settings::mojom::kSyncSetupSubpagePath);
   } else {
-    // TODO(crbug.com/1286405): remove this once it's not possible to use ash
+    // TODO(crbug.com/40210838): remove this once it's not possible to use ash
     // as a primary browser.
     chrome::ShowSettingsSubPageForProfile(profile, chrome::kSyncSetupSubPage);
   }
@@ -76,7 +76,7 @@ void TriggerSyncKeyRetrieval(Profile* profile) {
     OpenDialogForSyncKeyRetrieval(
         profile, syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
   } else {
-    // TODO(crbug.com/1434656): clean up once not reachable.
+    // TODO(crbug.com/40264837): clean up once not reachable.
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     OpenTabForSyncKeyRetrieval(
         displayer.browser(),
@@ -91,7 +91,7 @@ void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
     OpenDialogForSyncKeyRecoverabilityDegraded(
         profile, syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
   } else {
-    // TODO(crbug.com/1434656): clean up once not reachable.
+    // TODO(crbug.com/40264837): clean up once not reachable.
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     OpenTabForSyncKeyRecoverabilityDegraded(
         displayer.browser(),

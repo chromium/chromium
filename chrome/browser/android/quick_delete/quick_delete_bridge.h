@@ -39,6 +39,11 @@ class QuickDeleteBridge {
       const jint time_period,
       const JavaParamRef<jobject>& j_callback);
 
+  // Attempt to trigger the HaTS survey if appropriate.
+  void ShowSurvey(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jweb_contents_android);
+
  private:
   raw_ptr<Profile> profile_;
 

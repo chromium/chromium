@@ -9,14 +9,10 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -25,6 +21,7 @@ namespace blink {
 class EffectPaintPropertyNode;
 class GeometryMapperClipCache;
 class PropertyTreeState;
+class TransformPaintPropertyNodeOrAlias;
 
 // A clip rect created by a css property such as "overflow" or "clip".
 // Along with a reference to the transform space the clip rect is based on,
@@ -35,8 +32,8 @@ class PropertyTreeState;
 class ClipPaintPropertyNode;
 
 class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
-    : public PaintPropertyNode<ClipPaintPropertyNodeOrAlias,
-                               ClipPaintPropertyNode> {
+    : public PaintPropertyNodeBase<ClipPaintPropertyNodeOrAlias,
+                                   ClipPaintPropertyNode> {
  public:
   // Checks if the accumulated clip from |this| to |relative_to_state.Clip()|
   // has changed, at least significance of |change|, in the space of
@@ -50,72 +47,62 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
       const PropertyTreeState& relative_to_state,
       const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
 
+  // See PaintPropertyNode::ChangedSequenceNumber().
   void ClearChangedToRoot(int sequence_number) const;
 
-  void AddChanged(PaintPropertyChangeType changed) {
+  void AddChanged(PaintPropertyChangeType changed) final {
     DCHECK_NE(PaintPropertyChangeType::kUnchanged, changed);
     GeometryMapperClipCache::ClearCache();
-    PaintPropertyNode::AddChanged(changed);
+    PaintPropertyNodeBase::AddChanged(changed);
   }
 
  protected:
-  using PaintPropertyNode::PaintPropertyNode;
-
- private:
-  template <bool (TransformPaintPropertyNodeOrAlias::*ChangedMethod)(
-      PaintPropertyChangeType,
-      const TransformPaintPropertyNodeOrAlias&) const>
-  bool ChangedInternal(
-      PaintPropertyChangeType change,
-      const PropertyTreeState& relative_to_state,
-      const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
+  using PaintPropertyNodeBase::PaintPropertyNodeBase;
 };
 
-class ClipPaintPropertyNodeAlias : public ClipPaintPropertyNodeOrAlias {
+class ClipPaintPropertyNodeAlias final : public ClipPaintPropertyNodeOrAlias {
  public:
-  static scoped_refptr<ClipPaintPropertyNodeAlias> Create(
+  static ClipPaintPropertyNodeAlias* Create(
       const ClipPaintPropertyNodeOrAlias& parent) {
-    return base::AdoptRef(new ClipPaintPropertyNodeAlias(parent));
+    return MakeGarbageCollected<ClipPaintPropertyNodeAlias>(kParentAlias,
+                                                            parent);
   }
 
- private:
-  explicit ClipPaintPropertyNodeAlias(
-      const ClipPaintPropertyNodeOrAlias& parent)
-      : ClipPaintPropertyNodeOrAlias(parent, kParentAlias) {}
+  // These are public required by MakeGarbageCollected, but the protected tags
+  // prevent these from being called from outside.
+  ClipPaintPropertyNodeAlias(ParentAliasTag,
+                             const ClipPaintPropertyNodeOrAlias& parent)
+      : ClipPaintPropertyNodeOrAlias(kParentAlias, parent) {}
 };
 
-class PLATFORM_EXPORT ClipPaintPropertyNode
+class PLATFORM_EXPORT ClipPaintPropertyNode final
     : public ClipPaintPropertyNodeOrAlias {
  public:
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct PLATFORM_EXPORT State {
     DISALLOW_NEW();
-
    public:
-    State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
-              local_transform_space,
+    State(const TransformPaintPropertyNodeOrAlias& local_transform_space,
           const gfx::RectF& layout_clip_rect,
           const FloatRoundedRect& paint_clip_rect)
-        : local_transform_space(std::move(local_transform_space)) {
+        : local_transform_space(&local_transform_space) {
       SetClipRect(layout_clip_rect, paint_clip_rect);
     }
-    State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
-              local_transform_space,
-          scoped_refptr<const EffectPaintPropertyNode> pixel_moving_filter)
-        : local_transform_space(std::move(local_transform_space)),
-          pixel_moving_filter(std::move(pixel_moving_filter)) {
+    State(const TransformPaintPropertyNodeOrAlias& local_transform_space,
+          const EffectPaintPropertyNode* pixel_moving_filter)
+        : local_transform_space(&local_transform_space),
+          pixel_moving_filter(pixel_moving_filter) {
       DCHECK(layout_clip_rect_.IsInfinite());
       paint_clip_rect_ = FloatRoundedRect(layout_clip_rect_.Rect());
     }
 
-    scoped_refptr<const TransformPaintPropertyNodeOrAlias>
-        local_transform_space;
+    Member<const TransformPaintPropertyNodeOrAlias> local_transform_space;
     std::optional<FloatClipRect> layout_clip_rect_excluding_overlay_scrollbars;
     std::optional<Path> clip_path;
     // If this is not nullptr, this clip node will generate a cc clip node to
     // expand clip rect for a pixel-moving filter.
-    scoped_refptr<const EffectPaintPropertyNode> pixel_moving_filter;
+    Member<const EffectPaintPropertyNode> pixel_moving_filter;
 
     void SetClipRect(const gfx::RectF& layout_clip_rect_arg,
                      const FloatRoundedRect& paint_clip_rect_arg) {
@@ -131,6 +118,8 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
       return (!clip_path && !p) || (clip_path && p && *clip_path == *p);
     }
 
+    void Trace(Visitor*) const;
+
    private:
     friend class ClipPaintPropertyNode;
     FloatClipRect layout_clip_rect_;
@@ -140,10 +129,17 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   // This node is really a sentinel, and does not represent a real clip space.
   static const ClipPaintPropertyNode& Root();
 
-  static scoped_refptr<ClipPaintPropertyNode> Create(
+  static ClipPaintPropertyNode* Create(
       const ClipPaintPropertyNodeOrAlias& parent,
       State&& state) {
-    return base::AdoptRef(new ClipPaintPropertyNode(&parent, std::move(state)));
+    return MakeGarbageCollected<ClipPaintPropertyNode>(kNonParentAlias, parent,
+                                                       std::move(state));
+  }
+
+  void Trace(Visitor* visitor) const final {
+    ClipPaintPropertyNodeOrAlias::Trace(visitor);
+    visitor->Trace(state_);
+    visitor->Trace(clip_cache_);
   }
 
   // The empty AnimationState struct is to meet the requirement of
@@ -190,37 +186,40 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   }
 
   const EffectPaintPropertyNode* PixelMovingFilter() const {
-    return state_.pixel_moving_filter.get();
+    return state_.pixel_moving_filter.Get();
   }
 
   const ClipPaintPropertyNode* NearestPixelMovingFilterClip() const {
     return GetClipCache().NearestPixelMovingFilterClip();
   }
 
-  std::unique_ptr<JSONObject> ToJSON() const;
+  std::unique_ptr<JSONObject> ToJSON() const final;
+
+  // These are public required by MakeGarbageCollected, but the protected tags
+  // prevent these from being called from outside.
+  explicit ClipPaintPropertyNode(RootTag);
+  ClipPaintPropertyNode(NonParentAliasTag,
+                        const ClipPaintPropertyNodeOrAlias& parent,
+                        State&& state)
+      : ClipPaintPropertyNodeOrAlias(kNonParentAlias, parent),
+        state_(std::move(state)) {}
 
  private:
-  friend class PaintPropertyNode<ClipPaintPropertyNodeOrAlias,
-                                 ClipPaintPropertyNode>;
-
-  ClipPaintPropertyNode(const ClipPaintPropertyNodeOrAlias* parent,
-                        State&& state)
-      : ClipPaintPropertyNodeOrAlias(parent), state_(std::move(state)) {}
-
   // For access to GetClipCache();
   friend class GeometryMapper;
   friend class GeometryMapperClipCache;
   friend class GeometryMapperTest;
 
   GeometryMapperClipCache& GetClipCache() const {
-    if (!clip_cache_)
-      clip_cache_ = std::make_unique<GeometryMapperClipCache>();
+    if (!clip_cache_) {
+      clip_cache_ = MakeGarbageCollected<GeometryMapperClipCache>();
+    }
     clip_cache_->UpdateIfNeeded(*this);
     return *clip_cache_;
   }
 
   State state_;
-  mutable std::unique_ptr<GeometryMapperClipCache> clip_cache_;
+  mutable Member<GeometryMapperClipCache> clip_cache_;
 };
 
 }  // namespace blink

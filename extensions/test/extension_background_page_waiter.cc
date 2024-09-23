@@ -72,7 +72,7 @@ void ExtensionBackgroundPageWaiter::WaitForBackgroundInitialized() {
 }
 
 void ExtensionBackgroundPageWaiter::WaitForBackgroundWorkerInitialized() {
-  // TODO(https://crbug.com/1284799): Currently, we request the content layer
+  // TODO(crbug.com/40210248): Currently, we request the content layer
   // start the worker each time an event comes in (even if the worker is
   // already running), and don't check first if it's active / ready. As a
   // result, we have no good way of *just* checking if it's ready (because

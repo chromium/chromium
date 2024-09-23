@@ -12,73 +12,73 @@ namespace blink {
 TEST(AxisTest, LogicalAxesOperators) {
   test::TaskEnvironment task_environment;
   // operator |
-  EXPECT_EQ(kLogicalAxisNone, (kLogicalAxisNone | kLogicalAxisNone));
-  EXPECT_EQ(kLogicalAxisInline, (kLogicalAxisNone | kLogicalAxisInline));
-  EXPECT_EQ(kLogicalAxisBoth, (kLogicalAxisInline | kLogicalAxisBlock));
+  EXPECT_EQ(kLogicalAxesNone, (kLogicalAxesNone | kLogicalAxesNone));
+  EXPECT_EQ(kLogicalAxesInline, (kLogicalAxesNone | kLogicalAxesInline));
+  EXPECT_EQ(kLogicalAxesBoth, (kLogicalAxesInline | kLogicalAxesBlock));
 
   // operator |=
   {
-    LogicalAxes axes(kLogicalAxisNone);
-    EXPECT_EQ(kLogicalAxisNone, axes);
-    axes |= kLogicalAxisInline;
-    EXPECT_EQ(kLogicalAxisInline, axes);
-    axes |= kLogicalAxisBlock;
-    EXPECT_EQ(kLogicalAxisBoth, axes);
+    LogicalAxes axes(kLogicalAxesNone);
+    EXPECT_EQ(kLogicalAxesNone, axes);
+    axes |= kLogicalAxesInline;
+    EXPECT_EQ(kLogicalAxesInline, axes);
+    axes |= kLogicalAxesBlock;
+    EXPECT_EQ(kLogicalAxesBoth, axes);
   }
 
   // operator &
-  EXPECT_EQ(kLogicalAxisNone, (kLogicalAxisBoth & kLogicalAxisNone));
-  EXPECT_EQ(kLogicalAxisInline, (kLogicalAxisInline & kLogicalAxisInline));
-  EXPECT_EQ(kLogicalAxisInline, (kLogicalAxisBoth & kLogicalAxisInline));
-  EXPECT_EQ(kLogicalAxisNone, (kLogicalAxisBlock & kLogicalAxisInline));
+  EXPECT_EQ(kLogicalAxesNone, (kLogicalAxesBoth & kLogicalAxesNone));
+  EXPECT_EQ(kLogicalAxesInline, (kLogicalAxesInline & kLogicalAxesInline));
+  EXPECT_EQ(kLogicalAxesInline, (kLogicalAxesBoth & kLogicalAxesInline));
+  EXPECT_EQ(kLogicalAxesNone, (kLogicalAxesBlock & kLogicalAxesInline));
 
   // operator &=
   {
-    LogicalAxes axes(kLogicalAxisBoth);
-    EXPECT_EQ(kLogicalAxisBoth, axes);
-    axes &= kLogicalAxisInline;
-    EXPECT_EQ(kLogicalAxisInline, axes);
-    axes &= kLogicalAxisBlock;
-    EXPECT_EQ(kLogicalAxisNone, axes);
+    LogicalAxes axes(kLogicalAxesBoth);
+    EXPECT_EQ(kLogicalAxesBoth, axes);
+    axes &= kLogicalAxesInline;
+    EXPECT_EQ(kLogicalAxesInline, axes);
+    axes &= kLogicalAxesBlock;
+    EXPECT_EQ(kLogicalAxesNone, axes);
   }
 }
 
 TEST(AxisTest, PhysicalAxesOperators) {
   test::TaskEnvironment task_environment;
   // operator |
-  EXPECT_EQ(kPhysicalAxisNone, (kPhysicalAxisNone | kPhysicalAxisNone));
-  EXPECT_EQ(kPhysicalAxisHorizontal,
-            (kPhysicalAxisNone | kPhysicalAxisHorizontal));
-  EXPECT_EQ(kPhysicalAxisBoth,
-            (kPhysicalAxisHorizontal | kPhysicalAxisVertical));
+  EXPECT_EQ(kPhysicalAxesNone, (kPhysicalAxesNone | kPhysicalAxesNone));
+  EXPECT_EQ(kPhysicalAxesHorizontal,
+            (kPhysicalAxesNone | kPhysicalAxesHorizontal));
+  EXPECT_EQ(kPhysicalAxesBoth,
+            (kPhysicalAxesHorizontal | kPhysicalAxesVertical));
 
   // operator |=
   {
-    PhysicalAxes axes(kPhysicalAxisNone);
-    EXPECT_EQ(kPhysicalAxisNone, axes);
-    axes |= kPhysicalAxisHorizontal;
-    EXPECT_EQ(kPhysicalAxisHorizontal, axes);
-    axes |= kPhysicalAxisVertical;
-    EXPECT_EQ(kPhysicalAxisBoth, axes);
+    PhysicalAxes axes(kPhysicalAxesNone);
+    EXPECT_EQ(kPhysicalAxesNone, axes);
+    axes |= kPhysicalAxesHorizontal;
+    EXPECT_EQ(kPhysicalAxesHorizontal, axes);
+    axes |= kPhysicalAxesVertical;
+    EXPECT_EQ(kPhysicalAxesBoth, axes);
   }
 
   // operator &
-  EXPECT_EQ(kPhysicalAxisNone, (kPhysicalAxisBoth & kPhysicalAxisNone));
-  EXPECT_EQ(kPhysicalAxisHorizontal,
-            (kPhysicalAxisHorizontal & kPhysicalAxisHorizontal));
-  EXPECT_EQ(kPhysicalAxisHorizontal,
-            (kPhysicalAxisBoth & kPhysicalAxisHorizontal));
-  EXPECT_EQ(kPhysicalAxisNone,
-            (kPhysicalAxisVertical & kPhysicalAxisHorizontal));
+  EXPECT_EQ(kPhysicalAxesNone, (kPhysicalAxesBoth & kPhysicalAxesNone));
+  EXPECT_EQ(kPhysicalAxesHorizontal,
+            (kPhysicalAxesHorizontal & kPhysicalAxesHorizontal));
+  EXPECT_EQ(kPhysicalAxesHorizontal,
+            (kPhysicalAxesBoth & kPhysicalAxesHorizontal));
+  EXPECT_EQ(kPhysicalAxesNone,
+            (kPhysicalAxesVertical & kPhysicalAxesHorizontal));
 
   // operator &=
   {
-    PhysicalAxes axes(kPhysicalAxisBoth);
-    EXPECT_EQ(kPhysicalAxisBoth, axes);
-    axes &= kPhysicalAxisHorizontal;
-    EXPECT_EQ(kPhysicalAxisHorizontal, axes);
-    axes &= kPhysicalAxisVertical;
-    EXPECT_EQ(kPhysicalAxisNone, axes);
+    PhysicalAxes axes(kPhysicalAxesBoth);
+    EXPECT_EQ(kPhysicalAxesBoth, axes);
+    axes &= kPhysicalAxesHorizontal;
+    EXPECT_EQ(kPhysicalAxesHorizontal, axes);
+    axes &= kPhysicalAxesVertical;
+    EXPECT_EQ(kPhysicalAxesNone, axes);
   }
 }
 
@@ -87,25 +87,25 @@ TEST(AxisTest, ToPhysicalAxes) {
   ASSERT_TRUE(IsHorizontalWritingMode(WritingMode::kHorizontalTb));
   ASSERT_FALSE(IsHorizontalWritingMode(WritingMode::kVerticalRl));
 
-  EXPECT_EQ(kPhysicalAxisNone,
-            ToPhysicalAxes(kLogicalAxisNone, WritingMode::kHorizontalTb));
-  EXPECT_EQ(kPhysicalAxisNone,
-            ToPhysicalAxes(kLogicalAxisNone, WritingMode::kVerticalRl));
+  EXPECT_EQ(kPhysicalAxesNone,
+            ToPhysicalAxes(kLogicalAxesNone, WritingMode::kHorizontalTb));
+  EXPECT_EQ(kPhysicalAxesNone,
+            ToPhysicalAxes(kLogicalAxesNone, WritingMode::kVerticalRl));
 
-  EXPECT_EQ(kPhysicalAxisBoth,
-            ToPhysicalAxes(kLogicalAxisBoth, WritingMode::kHorizontalTb));
-  EXPECT_EQ(kPhysicalAxisBoth,
-            ToPhysicalAxes(kLogicalAxisBoth, WritingMode::kVerticalRl));
+  EXPECT_EQ(kPhysicalAxesBoth,
+            ToPhysicalAxes(kLogicalAxesBoth, WritingMode::kHorizontalTb));
+  EXPECT_EQ(kPhysicalAxesBoth,
+            ToPhysicalAxes(kLogicalAxesBoth, WritingMode::kVerticalRl));
 
-  EXPECT_EQ(kPhysicalAxisHorizontal,
-            ToPhysicalAxes(kLogicalAxisInline, WritingMode::kHorizontalTb));
-  EXPECT_EQ(kPhysicalAxisVertical,
-            ToPhysicalAxes(kLogicalAxisInline, WritingMode::kVerticalRl));
+  EXPECT_EQ(kPhysicalAxesHorizontal,
+            ToPhysicalAxes(kLogicalAxesInline, WritingMode::kHorizontalTb));
+  EXPECT_EQ(kPhysicalAxesVertical,
+            ToPhysicalAxes(kLogicalAxesInline, WritingMode::kVerticalRl));
 
-  EXPECT_EQ(kPhysicalAxisVertical,
-            ToPhysicalAxes(kLogicalAxisBlock, WritingMode::kHorizontalTb));
-  EXPECT_EQ(kPhysicalAxisHorizontal,
-            ToPhysicalAxes(kLogicalAxisBlock, WritingMode::kVerticalRl));
+  EXPECT_EQ(kPhysicalAxesVertical,
+            ToPhysicalAxes(kLogicalAxesBlock, WritingMode::kHorizontalTb));
+  EXPECT_EQ(kPhysicalAxesHorizontal,
+            ToPhysicalAxes(kLogicalAxesBlock, WritingMode::kVerticalRl));
 }
 
 TEST(AxisTest, ToLogicalAxes) {
@@ -113,25 +113,25 @@ TEST(AxisTest, ToLogicalAxes) {
   ASSERT_TRUE(IsHorizontalWritingMode(WritingMode::kHorizontalTb));
   ASSERT_FALSE(IsHorizontalWritingMode(WritingMode::kVerticalRl));
 
-  EXPECT_EQ(kLogicalAxisNone,
-            ToLogicalAxes(kPhysicalAxisNone, WritingMode::kHorizontalTb));
-  EXPECT_EQ(kLogicalAxisNone,
-            ToLogicalAxes(kPhysicalAxisNone, WritingMode::kVerticalRl));
+  EXPECT_EQ(kLogicalAxesNone,
+            ToLogicalAxes(kPhysicalAxesNone, WritingMode::kHorizontalTb));
+  EXPECT_EQ(kLogicalAxesNone,
+            ToLogicalAxes(kPhysicalAxesNone, WritingMode::kVerticalRl));
 
-  EXPECT_EQ(kLogicalAxisBoth,
-            ToLogicalAxes(kPhysicalAxisBoth, WritingMode::kHorizontalTb));
-  EXPECT_EQ(kLogicalAxisBoth,
-            ToLogicalAxes(kPhysicalAxisBoth, WritingMode::kVerticalRl));
+  EXPECT_EQ(kLogicalAxesBoth,
+            ToLogicalAxes(kPhysicalAxesBoth, WritingMode::kHorizontalTb));
+  EXPECT_EQ(kLogicalAxesBoth,
+            ToLogicalAxes(kPhysicalAxesBoth, WritingMode::kVerticalRl));
 
-  EXPECT_EQ(kLogicalAxisInline,
-            ToLogicalAxes(kPhysicalAxisHorizontal, WritingMode::kHorizontalTb));
-  EXPECT_EQ(kLogicalAxisBlock,
-            ToLogicalAxes(kPhysicalAxisHorizontal, WritingMode::kVerticalRl));
+  EXPECT_EQ(kLogicalAxesInline,
+            ToLogicalAxes(kPhysicalAxesHorizontal, WritingMode::kHorizontalTb));
+  EXPECT_EQ(kLogicalAxesBlock,
+            ToLogicalAxes(kPhysicalAxesHorizontal, WritingMode::kVerticalRl));
 
-  EXPECT_EQ(kLogicalAxisBlock,
-            ToLogicalAxes(kPhysicalAxisVertical, WritingMode::kHorizontalTb));
-  EXPECT_EQ(kLogicalAxisInline,
-            ToLogicalAxes(kPhysicalAxisVertical, WritingMode::kVerticalRl));
+  EXPECT_EQ(kLogicalAxesBlock,
+            ToLogicalAxes(kPhysicalAxesVertical, WritingMode::kHorizontalTb));
+  EXPECT_EQ(kLogicalAxesInline,
+            ToLogicalAxes(kPhysicalAxesVertical, WritingMode::kVerticalRl));
 }
 
 }  // namespace blink

@@ -14,6 +14,11 @@
 - (void)passwordSharingCoordinatorDidRemove:
     (PasswordSharingCoordinator*)coordinator;
 
+// Called when recipients data is fetched from the backend in order to notify
+// the parent coordinator (password details) that the spinner button can be now
+// replaced back with the share button.
+- (void)shareDataFetched;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_COORDINATOR_DELEGATE_H_

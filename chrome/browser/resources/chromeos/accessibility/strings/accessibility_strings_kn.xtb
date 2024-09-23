@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">ಗುಲಾಬಿ ಕಂದು ಬಣ್ಣ</translation>
 <translation id="249330843868392562">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2497706219848005458">ಹಸಿರು ಹಳದಿ</translation>
+<translation id="2512979179176933762">ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2523609930580546572">ChromeVox ಟುಟೋರಿಯಲ್</translation>
 <translation id="2525706221823668172">Chromebook ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="2553108862507765288">ವ್ಯಾಕರಣ ದೋಷ</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ಹಿಂದಿನ ಐಟಂಗೆ ತೆರಳಲು, ನೀವು ಒಂದು ಬೆರಳನ್ನು ಬಲದಿಂದ ಎಡಕ್ಕೂ ಸಹ ಸ್ವೈಪ್ ಮಾಡಬಹುದು. ಇದನ್ನು ಈಗ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="280499067616661124">ChromeVox ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
-<translation id="2811019999044652585">ಪರಿಕರ ಪಟ್ಟಿ ಮತ್ತು ಸಿಸ್ಟಂ ಟ್ರೇನಂತಹ ಪರದೆಯ ಇತರೆ ಭಾಗಗಳಿಗೆ ಹೋಗಲು, Control+ಫಾರ್ವರ್ಡ್ ಒತ್ತಿ. Chromebook ನಲ್ಲಿ, ಸಂಖ್ಯೆ 2 ಕೀ ಮೇಲ್ಭಾಗದಲ್ಲಿಯೇ ಫಾರ್ವರ್ಡ್ ಕೀ ಇರುತ್ತದೆ.</translation>
 <translation id="2811204574343810641">ಸಾಲು</translation>
 <translation id="2816868829355607410">ಅಭ್ಯಾಸ ಪ್ರದೇಶ: ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳು</translation>
 <translation id="2841013758207633010">ಸಮಯ</translation>
@@ -351,7 +351,7 @@
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
 <translation id="3260949043575829030">ಅದೇ ರೀತಿಯ ಹಿಂದಿನ ಐಟಂ</translation>
 <translation id="3270069636408109001">ಯಾವುದೇ ಮುಂದಿನ ಟೇಬಲ್ ಇಲ್ಲ</translation>
-<translation id="3273791280096244679">ಲೇಬಲ್ ಉಳಿಸಿ</translation>
+<translation id="3273791280096244679">ಲೇಬಲ್ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3283583562490372694">ಗುರುತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3286372614333682499">ಪೋರ್ಟ್ರೇಟ್</translation>
 <translation id="3286390186030710347">ಸ್ಲೈಡರ್</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">ಗಾಢ ನೀಲಿ ಬೂದು</translation>
 <translation id="4253168017788158739">ಟಿಪ್ಪಣಿ</translation>
 <translation id="4254798249533888099">ಮರ</translation>
+<translation id="4259220820964911921">ಫೇಸ್ ಕಂಟ್ರೋಲ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಬೇಕೇ?</translation>
 <translation id="4271220233568730077">ಮುಂದಿನ ಗಣಿತ</translation>
 <translation id="4275397969489577657">ಈವೆಂಟ್ ಸ್ಟ್ರೀಮ್ ಲಾಗ್ ಇನ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4278486392851938658">ಯಾವುದೇ ಹಿಂದಿನ ಭೇಟಿ ನೀಡಿದ ಲಿಂಕ್ ಇಲ್ಲ</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">ಇಂಡಿಯನ್ ರೆಡ್</translation>
 <translation id="4432896207833262240">ಗುರುತಿಸಲಾದ ಕಂಟೆಂಟ್‌</translation>
 <translation id="4437615272777527928">ಮೆನುಗಳನ್ನು ಹುಡುಕಲು, ಟೈಪ್ ಮಾಡಿ. ಫಲಿತಾಂಶಗಳ ಮೂಲಕ ಸ್ಕ್ರಾಲ್ ಮಾಡಲು ಮೇಲಿನ ಮತ್ತು ಕೆಳಗಿನ ಬಾಣಗಳನ್ನು ಬಳಸಿ. ಪಠ್ಯ ಕೆರೆಟ್ ಅನ್ನು ಹೊಂದಿಸಲು ಮತ್ತು ಮೆನುಗಳ ನಡುವೆ ಸರಿಸಲು ಎಡ ಮತ್ತು ಬಲ ಬಾಣಗಳನ್ನು ಬಳಸಿ.</translation>
+<translation id="4453530046591759283">ಟೂಲ್‌ಬಾರ್‌ಗಳು ಅಥವಾ ಸಿಸ್ಟಮ್ ಟ್ರೇನಂತಹ ಸ್ಕ್ರೀನ್‌ನ ಇತರ ಭಾಗಗಳಿಗೆ ಹೋಗಲು, Control+F1 ಒತ್ತಿ. Escape ಕೀಯ ಬಲಕ್ಕೆ F1 ಮೊದಲ ಕೀಲಿಯಾಗಿದೆ.</translation>
 <translation id="4457472090507035117">ಪ್ರಸ್ತುತ ಧ್ವನಿಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ:</translation>
 <translation id="4476183483923481720">ಹೊಸ ಸಾಲು</translation>
 <translation id="4479068155583208887">ಫೈರ್ ಬ್ರಿಕ್</translation>
@@ -608,7 +610,7 @@
 <translation id="5054047268577924192">ಹಿಂದಿನ ಪಟ್ಟಿಯ ಐಟಂ</translation>
 <translation id="5085453135206054947">ತಿಳಿ ನೇರಳೆ ಕೆಂಪು</translation>
 <translation id="5087864757604726239">ಹಿಂದೆ</translation>
-<translation id="5102981729317424850">ಪರಿಕರ ಪಟ್ಟಿ</translation>
+<translation id="5102981729317424850">ಟೂಲ್‌ಬಾರ್</translation>
 <translation id="5105050547967751155">rq</translation>
 <translation id="5111640677200759579">ಕಾಲಮ್ ಶಿರೋನಾಮೆ</translation>
 <translation id="5115892389597951922">ChromeVox ಲಾಗ್</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">ಅನುಬಂಧ</translation>
 <translation id="5761219715606611783">ಚೆನ್ನಾಗಿ ಮಾಡಿದ್ದೀರಿ! ನೀವು ChromeVox ಸ್ಪರ್ಶದ ಮೂಲಭೂತಗಳನ್ನು ಕಲಿತಿದ್ದೀರಿ. ನೀವು ಮತ್ತೆ ಟುಟೋರಿಯಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಬಹುದು ಅಥವಾ ಕೆಳಗಿನ ಬಟನ್ ಬಳಸಿ ಈ ಟುಟೋರಿಯಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಬಹುದು.</translation>
 <translation id="5776001898637896684">Google ವರ್ಧಿತ ನೆಟ್‌ವರ್ಕ್ ಪಠ್ಯದಿಂದ ಧ್ವನಿ ವಿಸ್ತರಣೆ</translation>
+<translation id="5783252477644995371">ಫೇಸ್ ಕಂಟ್ರೋಲ್, ಫೇಸ್ ಪಾಯಿಂಟಿಂಗ್ ಹಾಗೂ ಕ್ರಿಯೆಗಳನ್ನು ಮಾಡುವ ಸಾಮರ್ಥ್ಯದ ಜೊತೆಗೆ ಕರ್ಸರ್ ಕಂಟ್ರೋಲ್ ಅನ್ನು ನಿಮಗೆ ನೀಡುತ್ತದೆ, ಉದಾಹರಣೆಗೆ ಸ್ಮೈಲ್‌ನಂತಹ ಫೇಶಿಯಲ್ ಗೆಸ್ಚರ್‌ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಎಡ-ಕ್ಲಿಕ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="5805940204952508776">ಎರಡು ಬೆರಳುಗಳಿಂದ ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="5819072574982403430">ಟ್ರೀ ಐಟಂ</translation>
 <translation id="5822819874379903994">ಗಾಢ ವೈಢೂರ್ಯನೀಲಿ</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">ನವಾಜೊ ಬಿಳಿ</translation>
 <translation id="7095834689119144465">ಪಠ್ಯ ಸಂಖ್ಯೆ ಮಾತ್ರ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="7096001299300236431">ಹಿಂದಿನ ಮಾಧ್ಯಮ</translation>
+<translation id="7096668131290451939">ಕಲಿಕೆಯ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಲು ಮತ್ತೊಮ್ಮೆ ಎಸ್ಕೇಪ್ ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">ಪದ ಎಕೋ</translation>
 <translation id="7137397390322864165">ಗುಲಾಬಿ ಕಿತ್ತಳೆ ಬಣ್ಣ</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">ಯಾವುದೇ ಮುಂದಿನ ಚೆಕ್‌ಬಾಕ್ಸ್ ಇಲ್ಲ</translation>
 <translation id="8473540203671727883">ಮೌಸ್ ಕರ್ಸರ್‌ನ ಕೆಳಗಿರುವ ಪಠ್ಯವನ್ನು ಓದಿ</translation>
 <translation id="8476408756881832830">ChromeVox ಮಾತನಾಡುತ್ತಿರುವಾಗ ಪ್ಲೇಬ್ಯಾಕ್ ಅನ್ನು ವಿರಾಮಗೊಳಿಸಿ</translation>
-<translation id="8476508772960940536">ವಿಂಡೋ ಸಮಗ್ರ ನೋಟ</translation>
 <translation id="8480873377842220259">ಈಗ ನೀವು ಕೆಲವು ಪ್ರಾಥಮಿಕ ನ್ಯಾವಿಗೇಶನ್ ಅನ್ನು ಕಲಿಯುವಿರಿ. ನೀವು ಸ್ಕ್ರೀನ್‌ನ ಸುತ್ತಲೂ ಚಲಿಸಲು "ಹುಡುಕಾಟ" ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದು ಬಾಣದ ಕೀಗಳನ್ನು ಒತ್ತಬಹುದು. ಮುಂದುವರಿಯಲು, ಹುಡುಕಾಟ + ಬಲ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8503360654911991865">ನ್ಯಾವಿಗೇಶನ್ ರಚನೆಯನ್ನು ಇಳಿಸಿ</translation>
 <translation id="8520472399088452386">ಸ್ಪಿನ್ ಬಟನ್</translation>

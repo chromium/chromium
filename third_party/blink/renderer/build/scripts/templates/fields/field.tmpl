@@ -273,26 +273,6 @@ const {{field.type_name}}&
 {% endfor %}
 {% endmacro %}
 
-{% macro fieldwise_pointer_compare_inherited_old(group, boolean_and=None) %}
-{% set boolean_and = boolean_and or joiner('&& ') %}
-{% for subgroup in group.subgroups %}
-  {# If every field in this subgroup is inherited, we directly compare the
-     group pointer instead. #}
-  {% set group_expression = group_getter_expression(subgroup) %}
-  {% if subgroup.all_fields|rejectattr("is_inherited")|list|length == 0 -%}
-    {{boolean_and()}}{{group_expression}}.Get() == o.{{group_expression}}.Get()
-  {# Otherwise, we would have to recursively generate comparison operations
-     on fields in the subgroup. #}
-  {% elif subgroup.all_fields|selectattr("is_inherited")|list|length > 0 -%}
-    {{boolean_and()}}({{group_expression}}.Get() == o.{{group_expression}}.Get()
-|| ({{fieldwise_pointer_compare_inherited_old(subgroup)}}))
-  {% endif %}
-{% endfor %}
-{% for field in group.fields if field.is_inherited -%}
-  {{boolean_and()}}{{getter_expression(field)}} == o.{{getter_expression(field)}}
-{% endfor %}
-{% endmacro %}
-
 {% macro diff_field(is_pointer_type, expr) %}
 {% if is_pointer_type -%}
 !base::ValuesEquivalent(a.{{expr}}, b.{{expr}})
@@ -301,22 +281,17 @@ a.{{expr}} != b.{{expr}}
 {%- endif %}
 {% endmacro %}
 
-{% macro fieldwise_diff(group_to_diff) %}
-{% for diff_group in group_to_diff.subgroups %}
-if (a.{{group_getter_expression(diff_group.group)}}.Get() != b.{{group_getter_expression(diff_group.group)}}.Get()) {
-{{fieldwise_diff(diff_group)|indent(2, true)}}
+{% macro field_invalidation_diff(group_to_diff) %}
+{% for subgroup in group_to_diff.subgroups|selectattr("needs_diff") %}
+if (a.{{group_getter_expression(subgroup)}}.Get() != b.{{group_getter_expression(subgroup)}}.Get()) {
+{{field_invalidation_diff(subgroup)|indent(2, true)}}
 }
 {% endfor %}
-{% for field in group_to_diff.fields %}
-if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}})
-  return true;
+{% for field in group_to_diff.fields|selectattr("needs_diff") %}
+if ({{diff_field(field.wrapper_pointer_name, getter_expression(field))}}) {
+{% for invalidate in field.invalidate %}
+  diff |= {{invalidate}};
 {% endfor %}
-{% for expression in group_to_diff.expressions %}
-if (a.{{expression}} != b.{{expression}})
-  return true;
-{% endfor %}
-{% for predicate in group_to_diff.predicates %}
-if (!{{predicate}})
-  return true;
+}
 {% endfor %}
 {% endmacro %}

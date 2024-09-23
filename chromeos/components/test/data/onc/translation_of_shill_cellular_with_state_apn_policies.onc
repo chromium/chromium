@@ -1,0 +1,97 @@
+{
+  "Type": "Cellular",
+  "Name": "Test Network",
+  "Cellular": {
+    "ActivationState": "Activated",
+    "ActivationType": "OTASP",
+    "AllowRoaming": true,
+    "AutoConnect": true,
+    "EID": "test_eid",
+    "ICCID": "test_iccid",
+    "HomeProvider": {
+      "Country": "us",
+      "Name": "cellular_provider"
+    },
+    "NetworkTechnology": "LTEAdvanced",
+    "PaymentPortal": {
+      "Method": "GET",
+      "Url": "http://test.com/payment"
+    },
+    "RoamingState": "Home",
+    "ServingOperator": {
+      "Code": "test-code",
+      "Country": "test-country",
+      "Name": "test-name"
+    },
+    "APN": {
+      "AccessPointName": "test-apn",
+      "ApnTypes": ["Default"],
+      "Name": "test-apn-name",
+      "Source": "Admin",
+      "Username": "test-username",
+      "Password": "test-password"
+    },
+    "LastConnectedAttachApnProperty": {
+      "AccessPointName": "test-apn-2",
+      "ApnTypes": ["Attach"],
+      "Authentication": "PAP",
+      "Source": "Admin",
+      "Name": "test-apn-name-2",
+      "Username": "test-username-2",
+      "Password": "test-password-2"
+    },
+    "LastConnectedDefaultApnProperty": {
+      "AccessPointName": "test-apn-3",
+      "ApnTypes": ["Default"],
+      "Authentication": "CHAP",
+      "IpType": "IPv6",
+      "Source": "Admin",
+      "Name": "test-apn-name-3",
+      "Username": "test-username-3",
+      "Password": "test-password-3"
+    },
+    "LastGoodAPN": {
+      "AccessPointName": "test-apn-4",
+      "ApnTypes": ["Default", "Attach"],
+      "Authentication": "PAP",
+      "IpType": "IPv4orIPv6",
+      "Source": "Admin",
+      "Name": "test-apn-name-4",
+      "Username": "test-username-4",
+      "Password": "test-password-4"
+    },
+    "APNList": [ {
+        "AccessPointName": "test-apn0",
+        "ApnTypes": ["Tether"],
+        "IpType": "IPv4",
+        "Source": "Admin",
+        "Password": "test-password0",
+        "Username": "test-username0"
+      }, {
+        "AccessPointName": "test-apn1",
+        "ApnTypes": ["Default"],
+        "Password": "test-password1",
+        "Username": "test-username1"
+      }, {
+        "AccessPointName": "test-apn2",
+        "ApnTypes": ["Default"],
+        "Password": "test-password2",
+        "Username": "test-username2"
+      }, {
+        "AccessPointName": "test-apn3",
+        "ApnTypes": ["Attach"],
+        "Password": "test-password3",
+        "Username": "test-username3",
+        "Attach": "attach"
+      }
+    ],
+    "SIMLockStatus": {
+      "LockType": "sim-pin",
+      "LockEnabled": true
+    },
+    "Scanning": true
+  },
+  "IPAddressConfigType":"DHCP",
+  "NameServersConfigType":"DHCP",
+  "Source":"Device"
+}

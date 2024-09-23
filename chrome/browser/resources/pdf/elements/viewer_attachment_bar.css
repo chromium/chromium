@@ -1,0 +1,21 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./pdf_shared.css.js
+ * #include=pdf-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  padding-inline-end: 20px;
+  padding-top: 20px;
+}
+
+#warning {
+  align-items: flex-start;
+  padding: 5px 28px 15px;
+  position: relative;
+}

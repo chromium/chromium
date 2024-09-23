@@ -64,7 +64,7 @@ base::Value SettingsPrivateDelegate::GetDefaultZoom() {
   // default value.
   if (profile_->IsOffTheRecord())
     return base::Value(0.0);
-  double zoom = blink::PageZoomLevelToZoomFactor(
+  double zoom = blink::ZoomLevelToZoomFactor(
       profile_->GetZoomLevelPrefs()->GetDefaultZoomLevelPref());
   return base::Value(zoom);
 }
@@ -74,7 +74,7 @@ settings_private::SetPrefResult SettingsPrivateDelegate::SetDefaultZoom(
   // See comment in GetDefaultZoom().
   if (profile_->IsOffTheRecord())
     return settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
-  double zoom_factor = blink::PageZoomFactorToZoomLevel(zoom);
+  double zoom_factor = blink::ZoomFactorToZoomLevel(zoom);
   profile_->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(zoom_factor);
   return settings_private::SetPrefResult::SUCCESS;
 }

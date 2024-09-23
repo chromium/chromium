@@ -9,6 +9,7 @@
 #include <zircon/types.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -17,7 +18,7 @@
 #include "fuchsia_web/common/test/test_realm_support.h"
 
 std::optional<int> RelaunchForWebInstanceHostIfParent(
-    base::StringPiece relative_component_url,
+    std::string_view relative_component_url,
     const base::CommandLine& command_line) {
   // Nothing to do if running from the context of a relaunched process.
   static constexpr char kNoRelaunch[] = "no-relaunch";

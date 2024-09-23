@@ -18,14 +18,13 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
+#include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 
 namespace blink {
 
-class BodyStreamBufferUnderlyingByteSource;
-class BodyStreamBufferUnderlyingSource;
 class EncodedFormData;
 class ExceptionState;
 class ReadableStream;
@@ -33,7 +32,7 @@ class ScriptState;
 class ScriptCachedMetadataHandler;
 
 class CORE_EXPORT BodyStreamBuffer final
-    : public GarbageCollected<BodyStreamBuffer>,
+    : public UnderlyingByteSourceBase,
       public ExecutionContextLifecycleObserver,
       public BytesConsumer::Client {
  public:
@@ -86,7 +85,13 @@ class CORE_EXPORT BodyStreamBuffer final
                     ExceptionState&);
   void Tee(BodyStreamBuffer**, BodyStreamBuffer**, ExceptionState&);
 
-  ScriptPromise Cancel(ScriptState*, ScriptValue reason, ExceptionState&);
+  // UnderlyingByteSourceBase
+  ScriptPromise<IDLUndefined> Pull(ReadableByteStreamController* controller,
+                                   ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Cancel(ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
+                                     ExceptionState&) override;
+  ScriptState* GetScriptState() override;
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
@@ -151,8 +156,6 @@ class CORE_EXPORT BodyStreamBuffer final
 
   Member<ScriptState> script_state_;
   Member<ReadableStream> stream_;
-  Member<BodyStreamBufferUnderlyingByteSource> underlying_byte_source_;
-  Member<BodyStreamBufferUnderlyingSource> underlying_source_;
   Member<BytesUploader> stream_uploader_;
   Member<BytesConsumer> consumer_;
   // We need this member to keep it alive while loading.

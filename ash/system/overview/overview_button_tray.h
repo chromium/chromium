@@ -44,7 +44,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   // Second taps within this time will be counted as double taps. Use this
   // instead of ui::Event's click_count and tap_count as those have a minimum
   // time bewtween events before the second tap counts as a double tap.
-  // TODO(crbug.com/817883): We should the gesture detector double tap time or
+  // TODO(crbug.com/40565331): We should the gesture detector double tap time or
   // overview enter animation time, once ux decides which one to match (both are
   // 300ms currently).
   static constexpr base::TimeDelta kDoubleTapThresholdMs =
@@ -76,7 +76,7 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void UpdateAfterLoginStatusChange() override;
-  void ClickedOutsideBubble() override;
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;

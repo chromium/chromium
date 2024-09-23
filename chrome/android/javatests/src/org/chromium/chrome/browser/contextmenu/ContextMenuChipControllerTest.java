@@ -22,10 +22,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder} */
@@ -61,7 +62,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
         MockitoAnnotations.initMocks(this);
         mMeasuredDeviceDensity = getActivity().getResources().getDisplayMetrics().density;
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(R.layout.context_menu_fullscreen_container);
                     mAnchorView = getActivity().findViewById(R.id.context_menu_chip_anchor_point);
@@ -73,7 +74,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     public void testDismissChipWhenNotShownBeforeClassificationReturned() {
         ContextMenuChipController chipController =
                 new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     chipController.dismissChipIfShowing();
                 });
@@ -89,7 +90,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     public void testDismissChipWhenShown() {
         ContextMenuChipController chipController =
                 new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChipRenderParams chipRenderParams = new ChipRenderParams();
                     chipRenderParams.titleResourceId =
@@ -116,7 +117,7 @@ public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     public void testClickChipWhenShown() {
         ContextMenuChipController chipController =
                 new ContextMenuChipController(getActivity(), mAnchorView, mMockDismissRunnable);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChipRenderParams chipRenderParams = new ChipRenderParams();
                     chipRenderParams.titleResourceId =

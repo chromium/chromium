@@ -28,6 +28,7 @@ import textwrap
 from xml.sax.saxutils import escape as xml_escape
 
 CHROME_POLICY_KEY = 'SOFTWARE\\\\Policies\\\\Google\\\\Chrome'
+CHROME_FOR_TESTING_POLICY_KEY = CHROME_POLICY_KEY + ' for Testing'
 CHROMIUM_POLICY_KEY = 'SOFTWARE\\\\Policies\\\\Chromium'
 PLATFORM_STRINGS = {
     'chrome_frame': ['win'],
@@ -92,6 +93,7 @@ class PolicyDetails:
     self.is_deprecated = policy.get('deprecated', False)
     self.is_device_only = policy.get('device_only', False)
     self.per_profile = features.get('per_profile', False)
+    self.is_user_only = features.get('user_only', False)
     self.schema = policy['schema']
     self.validation_schema = policy.get('validation_schema')
     self.has_enterprise_default = 'default_for_enterprise_users' in policy
@@ -171,6 +173,21 @@ class PolicyDetails:
         raise RuntimeError('Invalid Tag:' + tag + '!\n'
                            'Chose a valid tag from \'risk_tag_definitions\' (a '
                            'subproperty of root in policy_templates.json)!')
+
+  @property
+  def scope(self):
+    """Get policy scope string based on per_profile and user_only feature.
+       The string is defined in policy_details.h.
+    """
+    if self.is_device_only:
+      return 'kDevice'
+    if self.per_profile:
+      if self.is_user_only:
+        return 'kSingleProfile'
+      else:
+        return 'kProfile'
+    else:
+      return 'kBrowser'
 
   # Simplistic grit placeholder stripper.
   @staticmethod
@@ -417,7 +434,7 @@ def _GetSupportedChromeUserPolicies(policies, protobuf_type):
 # Ensure only windows supported policies are returned when building for windows.
 # Eventually only supported policies on every platforms will be returned.
 def _GetSupportedPolicies(policies, target_platform):
-  # TODO(crbug.com/1348959): Remove this special case once deprecated policies
+  # TODO(crbug.com/40855589): Remove this special case once deprecated policies
   # have been removed for fuchsia
   if target_platform == 'fuchsia':
     is_deprecated = lambda policy: len(policy.platforms) + len(
@@ -998,7 +1015,6 @@ class SchemaNodesGenerator:
 
     return has_sensitive_children or node.is_sensitive_value
 
-
 def _GenerateDefaultValue(value):
   """Converts a JSON object into a base::Value entry. Returns a tuple, the first
   entry being a list of declaration statements to define the variable, the
@@ -1070,10 +1086,10 @@ namespace policy {
   # Chrome schema, so that binary searching in the PropertyNode array gets the
   # right index on this array as well. See the implementation of
   # GetChromePolicyDetails() below.
-  # TODO(crbug.com/1074336): kChromePolicyDetails shouldn't be declare if there
+  # TODO(crbug.com/40127969): kChromePolicyDetails shouldn't be declare if there
   # is no policy.
   f.write('''[[maybe_unused]] const PolicyDetails kChromePolicyDetails[] = {
-// is_deprecated is_future is_device_policy id max_external_data_size, risk tags
+// is_deprecated is_future scope id max_external_data_size, risk tags
 ''')
   for policy in policies:
     if policy.is_supported:
@@ -1083,9 +1099,8 @@ namespace policy {
       f.write('  // %s\n' % policy.name)
       f.write('  { %-14s%-10s%-17s%4s,%22s, %s },\n' %
               ('true,' if policy.is_deprecated else 'false,',
-               'true,' if policy.is_future else 'false, ',
-               'true,' if policy.is_device_only else 'false,', policy.id,
-               policy.max_size, risk_tags.ToInitString(policy.tags)))
+               'true,' if policy.is_future else 'false, ', policy.scope + ",",
+               policy.id, policy.max_size, risk_tags.ToInitString(policy.tags)))
   f.write('};\n\n')
 
   schema_generator = SchemaNodesGenerator(shared_strings)
@@ -1118,6 +1133,9 @@ namespace policy {
     f.write('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n'
             'const wchar_t kRegistryChromePolicyKey[] = '
             'L"' + CHROME_POLICY_KEY + '";\n'
+            '#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)\n'
+            'const wchar_t kRegistryChromePolicyKey[] = '
+            'L"' + CHROME_FOR_TESTING_POLICY_KEY + '";\n'
             '#else\n'
             'const wchar_t kRegistryChromePolicyKey[] = '
             'L"' + CHROMIUM_POLICY_KEY + '";\n'

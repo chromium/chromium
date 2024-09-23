@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/resize_area_delegate.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -25,7 +26,8 @@
 namespace {
 // Constants used by the ResizeAreaTest.SuccessfulGestureDrag test to simulate
 // a gesture drag by |kGestureScrollDistance| resulting from
-// |kGestureScrollSteps| ui::ET_GESTURE_SCROLL_UPDATE events being delivered.
+// |kGestureScrollSteps| ui::EventType::kGestureScrollUpdate events being
+// delivered.
 const int kGestureScrollDistance = 100;
 const int kGestureScrollSteps = 4;
 const int kDistancePerGestureScrollUpdate =
@@ -90,14 +92,14 @@ class ResizeAreaTest : public ViewsTestBase {
   int resize_amount() { return delegate_->resize_amount(); }
   bool done_resizing() { return delegate_->done_resizing(); }
   bool on_resize_called() { return delegate_->on_resize_called(); }
-  views::Widget* widget() { return widget_; }
+  views::Widget* widget() { return widget_.get(); }
 
  private:
   std::unique_ptr<TestResizeAreaDelegate> delegate_;
-  raw_ptr<views::Widget> widget_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
-  // The number of ui::ET_GESTURE_SCROLL_UPDATE events seen by
+  // The number of ui::EventType::kGestureScrollUpdate events seen by
   // ProcessGesture().
   int gesture_scroll_updates_seen_ = 0;
 };
@@ -108,16 +110,16 @@ ResizeAreaTest::~ResizeAreaTest() = default;
 
 void ResizeAreaTest::ProcessGesture(ui::EventType type,
                                     const gfx::Vector2dF& delta) {
-  if (type == ui::ET_GESTURE_SCROLL_BEGIN) {
+  if (type == ui::EventType::kGestureScrollBegin) {
     EXPECT_FALSE(done_resizing());
     EXPECT_FALSE(on_resize_called());
-  } else if (type == ui::ET_GESTURE_SCROLL_UPDATE) {
+  } else if (type == ui::EventType::kGestureScrollUpdate) {
     gesture_scroll_updates_seen_++;
     EXPECT_EQ(kDistancePerGestureScrollUpdate * gesture_scroll_updates_seen_,
               resize_amount());
     EXPECT_FALSE(done_resizing());
     EXPECT_TRUE(on_resize_called());
-  } else if (type == ui::ET_GESTURE_SCROLL_END) {
+  } else if (type == ui::EventType::kGestureScrollEnd) {
     EXPECT_TRUE(done_resizing());
   }
 }
@@ -132,21 +134,22 @@ void ResizeAreaTest::SetUp() {
   resize_area->SetBounds(0, 0, size.width(), size.height());
 
   views::Widget::InitParams init_params(
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
   init_params.bounds = gfx::Rect(size);
 
-  widget_ = new views::Widget();
+  widget_ = std::make_unique<views::Widget>();
   widget_->Init(std::move(init_params));
   widget_->SetContentsView(std::move(resize_area));
   widget_->Show();
 
   event_generator_ =
-      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
+      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_.get()));
 }
 
 void ResizeAreaTest::TearDown() {
   if (widget_ && !widget_->IsClosed()) {
-    widget_.ExtractAsDangling()->Close();
+    widget_.reset();
   }
 
   views::ViewsTestBase::TearDown();
@@ -211,15 +214,17 @@ TEST_F(ResizeAreaTest, NoDragOnGestureTap) {
 TEST_F(ResizeAreaTest, AccessibleRole) {
   auto* resize_area = widget()->GetContentsView();
   ui::AXNodeData data;
-  resize_area->GetAccessibleNodeData(&data);
+  resize_area->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSplitter);
-  EXPECT_EQ(resize_area->GetAccessibleRole(), ax::mojom::Role::kSplitter);
+  EXPECT_EQ(resize_area->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kSplitter);
 
   data = ui::AXNodeData();
-  resize_area->SetAccessibleRole(ax::mojom::Role::kButton);
-  resize_area->GetAccessibleNodeData(&data);
+  resize_area->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  resize_area->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kButton);
-  EXPECT_EQ(resize_area->GetAccessibleRole(), ax::mojom::Role::kButton);
+  EXPECT_EQ(resize_area->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kButton);
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

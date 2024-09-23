@@ -32,7 +32,7 @@ BASE_FEATURE(kNoWorkerThreadReclaim,
 
 BASE_FEATURE(kDelayFirstWorkerWake,
              "DelayFirstWorkerWake",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAddTaskLeewayFeature,
              "AddTaskLeeway",
@@ -53,6 +53,14 @@ BASE_FEATURE(kExplicitHighResolutionTimerWin,
              "ExplicitHighResolutionTimerWin",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUIPumpImprovementsWin,
+             "UIPumpImprovementsWin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPumpFastToSleepAndroid,
+             "PumpFastToSleepAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRunTasksByBatches,
              "RunTasksByBatches",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
@@ -67,13 +75,6 @@ BASE_FEATURE(kThreadPoolCap2,
 
 const base::FeatureParam<int> kThreadPoolCapRestrictedCount{
     &kThreadPoolCap2, "restricted_count", 3};
-
-BASE_FEATURE(kMaxDelayedStarvationTasks,
-             "MaxDelayedStarvationTasks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kMaxDelayedStarvationTasksParam{
-    &kMaxDelayedStarvationTasks, "count", 3};
 
 BASE_FEATURE(kThreadGroupSemaphore,
              "ThreadGroupSemaphore",

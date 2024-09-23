@@ -4,13 +4,14 @@
 
 #include "ui/gfx/skia_paint_util.h"
 
+#include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_image_builder.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
-#include "third_party/skia/include/core/SkMaskFilter.h"
+#include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
-#include "third_party/skia/include/effects/SkLayerDrawLooper.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/shadow_value.h"
 #include "ui/gfx/switches.h"
 
 namespace gfx {
@@ -61,7 +62,7 @@ sk_sp<cc::PaintShader> CreateGradientShader(const gfx::Point& start_point,
                                             const gfx::Point& end_point,
                                             SkColor start_color,
                                             SkColor end_color) {
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   SkColor4f grad_colors[2] = {SkColor4f::FromColor(start_color),
                               SkColor4f::FromColor(end_color)};
   SkPoint grad_points[2] = {gfx::PointToSkPoint(start_point),
@@ -77,36 +78,23 @@ static SkScalar RadiusToSigma(double radius) {
   return radius > 0 ? SkDoubleToScalar(0.288675f * radius + 0.5f) : 0;
 }
 
-sk_sp<SkDrawLooper> CreateShadowDrawLooper(
+sk_sp<cc::DrawLooper> CreateShadowDrawLooper(
     const std::vector<ShadowValue>& shadows) {
   if (shadows.empty())
     return nullptr;
 
-  SkLayerDrawLooper::Builder looper_builder;
+  cc::DrawLooperBuilder looper_builder;
 
-  looper_builder.addLayer();  // top layer of the original.
+  looper_builder.AddUnmodifiedContent();  // top layer of the original.
 
-  SkLayerDrawLooper::LayerInfo layer_info;
-  layer_info.fPaintBits |= SkLayerDrawLooper::kMaskFilter_Bit;
-  layer_info.fPaintBits |= SkLayerDrawLooper::kColorFilter_Bit;
-  layer_info.fColorMode = SkBlendMode::kSrc;
-
-  for (size_t i = 0; i < shadows.size(); ++i) {
-    const ShadowValue& shadow = shadows[i];
-
-    layer_info.fOffset.set(SkIntToScalar(shadow.x()),
-                           SkIntToScalar(shadow.y()));
-
-    SkPaint* paint = looper_builder.addLayer(layer_info);
-    // Skia's blur radius defines the range to extend the blur from
-    // original mask, which is half of blur amount as defined in ShadowValue.
-    paint->setMaskFilter(SkMaskFilter::MakeBlur(
-        kNormal_SkBlurStyle, RadiusToSigma(shadow.blur() / 2)));
-    paint->setColorFilter(
-        SkColorFilters::Blend(shadow.color(), SkBlendMode::kSrcIn));
+  for (const ShadowValue& shadow : shadows) {
+    looper_builder.AddShadow(
+        {SkIntToScalar(shadow.x()), SkIntToScalar(shadow.y())},
+        RadiusToSigma(shadow.blur() / 2), SkColor4f::FromColor(shadow.color()),
+        cc::DrawLooper::kOverrideAlphaFlag);
   }
 
-  return looper_builder.detach();
+  return looper_builder.Detach();
 }
 
 }  // namespace gfx

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/compose/features.gni")
+
 static_library("default_model") {
   sources = [
     "android_home_module_ranker.cc",
@@ -22,6 +24,8 @@ static_library("default_model") {
     "ios_module_ranker.h",
     "low_user_engagement_model.cc",
     "low_user_engagement_model.h",
+    "metrics_clustering.cc",
+    "metrics_clustering.h",
     "most_visited_tiles_user.cc",
     "most_visited_tiles_user.h",
     "optimization_target_segmentation_dummy.cc",
@@ -36,9 +40,12 @@ static_library("default_model") {
     "shopping_user_model.h",
     "tab_resumption_ranker.cc",
     "tab_resumption_ranker.h",
+    "url_visit_resumption_ranker.cc",
+    "url_visit_resumption_ranker.h",
   ]
   deps = [
     "//base",
+    "//components/compose:buildflags",
     "//components/prefs:prefs",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
@@ -46,6 +53,7 @@ static_library("default_model") {
     "//components/segmentation_platform/public",
     "//components/sync/service",
     "//components/sync_device_info",
+    "//components/visited_url_ranking/public",
     "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
   ]
@@ -62,6 +70,13 @@ static_library("default_model") {
       "tablet_productivity_user_model.cc",
       "tablet_productivity_user_model.h",
     ]
+  }
+  if (enable_compose) {
+    sources += [
+      "compose_promotion.cc",
+      "compose_promotion.h",
+    ]
+    deps += [ "//components/compose/core/browser:browser" ]
   }
 }
 
@@ -80,6 +95,7 @@ source_set("unit_tests") {
     "feed_user_segment_unittest.cc",
     "ios_module_ranker_unittest.cc",
     "low_user_engagement_model_unittest.cc",
+    "metrics_clustering_unittest.cc",
     "most_visited_tiles_user_unittest.cc",
     "optimization_target_segmentation_dummy_unittest.cc",
     "password_manager_user_segment_unittest.cc",
@@ -87,6 +103,7 @@ source_set("unit_tests") {
     "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",
     "tab_resumption_ranker_unittest.cc",
+    "url_visit_resumption_ranker_unittest.cc",
   ]
 
   if (is_android) {
@@ -114,8 +131,14 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync_device_info",
     "//components/sync_device_info:test_support",
+    "//components/visited_url_ranking/public",
     "//testing/gtest",
   ]
+
+  if (enable_compose) {
+    sources += [ "compose_promotion_unittest.cc" ]
+    deps += [ "//components/compose/core/browser:browser" ]
+  }
 }
 
 source_set("default_model_test_base") {

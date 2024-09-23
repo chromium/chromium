@@ -40,6 +40,7 @@ public class SiteSettingsUtil {
         ContentSettingsType.BLUETOOTH_SCANNING,
         ContentSettingsType.VR,
         ContentSettingsType.AR,
+        ContentSettingsType.HAND_TRACKING,
         ContentSettingsType.IDLE_DETECTION,
         ContentSettingsType.FEDERATED_IDENTITY_API,
         ContentSettingsType.SENSORS,

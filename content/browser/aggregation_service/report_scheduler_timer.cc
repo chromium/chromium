@@ -22,7 +22,7 @@ namespace content {
 
 ReportSchedulerTimer::ReportSchedulerTimer(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+  CHECK(delegate_);
 
   network::NetworkConnectionTracker* tracker = GetNetworkConnectionTracker();
   obs_.Observe(tracker);

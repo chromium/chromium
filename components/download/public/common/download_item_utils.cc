@@ -70,9 +70,6 @@ crosapi::mojom::DownloadDangerType ConvertToMojoDownloadDangerType(
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypePromptForScanning;
-    case DownloadDangerType::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
-      return crosapi::mojom::DownloadDangerType::
-          kDownloadDangerTypeBlockedUnsupportedFiletype;
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypeDangerousAccountCompromise;
@@ -83,8 +80,11 @@ crosapi::mojom::DownloadDangerType ConvertToMojoDownloadDangerType(
         DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypePromptForLocalPasswordScanning;
+    case DownloadDangerType::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+      return crosapi::mojom::DownloadDangerType::
+          kDownloadDangerTypeBlockedScanFailed;
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::DownloadDangerType::kDownloadDangerTypeInvalid;
   }
 }
@@ -150,7 +150,7 @@ crosapi::mojom::DownloadState ConvertToMojoDownloadState(
     case DownloadItem::INTERRUPTED:
       return crosapi::mojom::DownloadState::kInterrupted;
     case DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

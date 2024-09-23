@@ -15,15 +15,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
@@ -32,6 +31,12 @@
 class SaveCardOfferObserver;
 
 namespace autofill {
+
+class AutofillClient;
+
+// Time in sec to wait before showing virtual card enrollment if save card
+// confirmation prompt is still visible.
+inline constexpr base::TimeDelta kVirtualCardEnrollDelaySec = base::Seconds(3);
 
 // Manages logic for determining whether upload credit card save to Google
 // Payments is available as well as actioning both local and upload credit card
@@ -97,11 +102,8 @@ class CreditCardSaveManager {
     virtual void OnStrikeChangeComplete() {}
   };
 
-  // The parameters should outlive the CreditCardSaveManager.
-  CreditCardSaveManager(
-      AutofillClient* client,
-      const std::string& app_locale,
-      PersonalDataManager* personal_data_manager);
+  // `client` must outlive the CreditCardSaveManager.
+  CreditCardSaveManager(AutofillClient* client, const std::string& app_locale);
 
   CreditCardSaveManager(const CreditCardSaveManager&) = delete;
   CreditCardSaveManager& operator=(const CreditCardSaveManager&) = delete;
@@ -121,7 +123,7 @@ class CreditCardSaveManager {
   // CVC-only save. If card is unknown we will offer to save the the card
   // including it's CVC. `credit_card_import_type` is the credit card type
   // extracted from the form.
-  // TODO(crbug.com/1450749): Update param after resolving duplicate local and
+  // TODO(crbug.com/40270301): Update param after resolving duplicate local and
   // server card issue.
   virtual bool ShouldOfferCvcSave(
       const CreditCard& card,
@@ -170,11 +172,11 @@ class CreditCardSaveManager {
 
  protected:
   // Returns the result of an upload request. If |result| ==
-  // |AutofillClient::PaymentsRpcResult::kSuccess|, clears strikes for the saved
-  // card. Additionally, |server_id| may, optionally, contain the opaque
-  // identifier for the card on the server. Exposed for testing.
+  // |PaymentsRpcResult::kSuccess|, clears strikes for the saved card.
+  // Additionally, |server_id| may, optionally, contain the opaque identifier
+  // for the card on the server. Exposed for testing.
   virtual void OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
           upload_card_response_details);
 
@@ -184,7 +186,7 @@ class CreditCardSaveManager {
   friend class LocalCardMigrationBrowserTest;
   friend class TestCreditCardSaveManager;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
-  friend class SaveCardInfobarEGTestHelper;
+  friend class FakeCreditCardServer;
   friend class ::SaveCardOfferObserver;
   FRIEND_TEST_ALL_PREFIXES(
       SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
@@ -193,6 +195,14 @@ class CreditCardSaveManager {
                            StrikeDatabase_Local_FullFlowTest);
   FRIEND_TEST_ALL_PREFIXES(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
                            Feedback_CardSavingAnimation);
+
+  // Starts upstream virtual card enrollment flow. Hides save card confirmation
+  // prompt before showing virtual card enrollment prompt.
+  void InitVirtualCardEnroll(
+      const CreditCard& credit_card,
+      std::optional<payments::PaymentsNetworkInterface::
+                        GetDetailsForEnrollmentResponseDetails>
+          get_details_for_enrollment_response_details);
 
   // Returns the CreditCardSaveStrikeDatabase for |client_|.
   CreditCardSaveStrikeDatabase* GetCreditCardSaveStrikeDatabase();
@@ -215,7 +225,7 @@ class CreditCardSaveManager {
   // are supported, with the first and second number in the pair being the start
   // and end of the range.
   void OnDidGetUploadDetails(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
@@ -255,14 +265,16 @@ class CreditCardSaveManager {
 
   // Called once the user makes a decision with respect to the local credit card
   // offer-to-save prompt. If accepted, clears strikes for the to-be-saved card
-  // and has |personal_data_manager_| save the card.
+  // and has `PaymentsDataManager` save the card.
   void OnUserDidDecideOnLocalSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision);
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision
+          user_decision);
 
   // Called once the user makes a decision with respect to the local CVC
   // offer-to-save prompt.
   void OnUserDidDecideOnCvcLocalSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision);
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision
+          user_decision);
 
   // Called once the user makes a decision with respect to the credit card
   // upload offer-to-save prompt.
@@ -276,15 +288,15 @@ class CreditCardSaveManager {
   // If rejected or ignored:
   //   Logs a strike against the current card to deter future offers to save.
   void OnUserDidDecideOnUploadSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
 
   // Called once the user makes a decision with respect to the server CVC
   // offer-to-save prompt.
   void OnUserDidDecideOnCvcUploadSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -303,7 +315,7 @@ class CreditCardSaveManager {
   // Helper function that calls SendUploadCardRequest by setting
   // UserProvidedCardDetails.
   void OnUserDidAcceptUploadHelper(
-      const AutofillClient::UserProvidedCardDetails&
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
 
   // Saves risk data in |uploading_risk_data_| and calls SendUploadCardRequest
@@ -346,14 +358,12 @@ class CreditCardSaveManager {
     observer_for_testing_ = observer;
   }
 
-  const raw_ptr<AutofillClient> client_;
+  PaymentsDataManager& payments_data_manager();
+  const PaymentsDataManager& payments_data_manager() const;
+
+  const raw_ref<AutofillClient> client_;
 
   std::string app_locale_;
-
-  // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the BrowserAutofillManagerTest.
-  // Weak reference.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // The credit card to be saved if local credit card or local or server CVC
   // save is accepted.

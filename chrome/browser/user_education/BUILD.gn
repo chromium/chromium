@@ -38,13 +38,17 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/user_education/IPHCommandBuilderUnitTest.java",
     "java/src/org/chromium/chrome/browser/user_education/IPHCommandUnitTest.java",
+    "java/src/org/chromium/chrome/browser/user_education/UserEducationHelperUnitTest.java",
   ]
   deps = [
     ":java",
     ":java_resources",
     "//base:base_java",
     "//base:base_junit_test_support",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/profiles/android:java",
     "//components/browser_ui/theme/android:java_resources",
+    "//components/feature_engagement/public:public_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

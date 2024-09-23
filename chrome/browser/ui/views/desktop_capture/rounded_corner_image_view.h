@@ -8,7 +8,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/image_view.h"
 
-// TODO(crbug.com/1458354): Add support for rounded image corners to ImageView
+// TODO(crbug.com/40273922): Add support for rounded image corners to ImageView
 class RoundedCornerImageView : public views::ImageView {
   METADATA_HEADER(RoundedCornerImageView, views::ImageView)
 

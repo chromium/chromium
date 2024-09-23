@@ -1,0 +1,17 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+proto_library("proto") {
+  sources = [
+    "fetch_japanese_legacy_config.proto",
+    "japanese_dictionary.proto",
+    "user_data_service.proto",
+  ]
+  cc_generator_options = "lite"
+}

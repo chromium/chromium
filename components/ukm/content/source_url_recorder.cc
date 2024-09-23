@@ -116,7 +116,8 @@ SourceUrlRecorderWebContentsObserver::SourceUrlRecorderWebContentsObserver(
       num_same_document_sources_for_full_navigation_source_(0) {}
 
 bool SourceUrlRecorderWebContentsObserver::ShouldRecordURLs() const {
-  // TODO(crbug/1078349): ensure we only record URLs for tabs in a tab strip.
+  // TODO(crbug.com/40689292): ensure we only record URLs for tabs in a tab
+  // strip.
 
   // If there is an outer WebContents, then this WebContents is embedded into
   // another one (e.g it is a portal or a Chrome App <webview>).
@@ -276,8 +277,8 @@ void SourceUrlRecorderWebContentsObserver::MaybeRecordUrl(
     const GURL& initial_url) {
   DCHECK(navigation_handle->IsInPrimaryMainFrame());
 
-  // TODO(crbug/1078355): If ShouldRecordURLs is false, we should still create a
-  // UKM source, but not add any URLs to it.
+  // TODO(crbug.com/40689295): If ShouldRecordURLs is false, we should still
+  // create a UKM source, but not add any URLs to it.
   if (!ShouldRecordURLs())
     return;
 
@@ -287,10 +288,10 @@ void SourceUrlRecorderWebContentsObserver::MaybeRecordUrl(
 
   UkmSource::NavigationData navigation_data;
   const GURL& final_url = navigation_handle->GetURL();
-  // TODO(crbug.com/869123): This check isn't quite correct, as self redirecting
-  // is possible. This may also be changed to include the entire redirect chain.
-  // Additionally, since same-document navigations don't have initial URLs,
-  // ignore empty initial URLs.
+  // TODO(crbug.com/40587196): This check isn't quite correct, as self
+  // redirecting is possible. This may also be changed to include the entire
+  // redirect chain. Additionally, since same-document navigations don't have
+  // initial URLs, ignore empty initial URLs.
   if (!initial_url.is_empty() && final_url != initial_url)
     navigation_data.urls = {initial_url};
   navigation_data.urls.push_back(final_url);

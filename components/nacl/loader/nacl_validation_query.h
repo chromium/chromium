@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "crypto/hmac.h"
 
 struct NaClValidationCache;
@@ -49,7 +49,7 @@ class NaClValidationQuery {
 
   void AddData(const char* data, size_t length);
   void AddData(const unsigned char* data, size_t length);
-  void AddData(const base::StringPiece& data);
+  void AddData(std::string_view data);
 
   int QueryKnownToValidate();
 

@@ -26,3 +26,15 @@ IN_PROC_BROWSER_TEST_F(FlagsUiBrowserTest, Url) {
                        "/#test-feature");
   RunTestWithoutTestLoader("flags/url_test.js", "mocha.run()");
 }
+
+class FlagsDeprecatedUiBrowserTest : public WebUIMochaBrowserTest {
+ protected:
+  FlagsDeprecatedUiBrowserTest() {
+    set_test_loader_host(chrome::kChromeUIFlagsHost +
+                         std::string("/deprecated"));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FlagsDeprecatedUiBrowserTest, App) {
+  RunTest("flags/deprecated_test.js", "mocha.run()");
+}

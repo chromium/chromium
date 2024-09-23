@@ -23,6 +23,7 @@ RUNNING TEST: extension_testAPI
         getWasmLocal : <function>
         getWasmOp : <function>
         registerLanguageExtensionPlugin : <function>
+        reportResourceLoad : <function>
         unregisterLanguageExtensionPlugin : <function>
     }
     network : {
@@ -57,6 +58,9 @@ RUNNING TEST: extension_testAPI
                 removeListener : <function>
             }
         }
+        network : {
+            show : <function>
+        }
         openResource : <function>
         setOpenResourceHandler : <function>
         setThemeChangeHandler : <function>
@@ -68,6 +72,16 @@ RUNNING TEST: extension_testAPI
             }
         }
         themeName : "themeNameForTest"
+    }
+    performance : {
+        onProfilingStarted : {
+            addListener : <function>
+            removeListener : <function>
+        }
+        onProfilingStopped : {
+            addListener : <function>
+            removeListener : <function>
+        }
     }
     recorder : {
         createView : <function>

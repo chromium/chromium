@@ -75,7 +75,8 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
   // Only use this function to construct. This ensures a Widget is properly
   // constructed and is set as the content view.
   static views::UniqueWidgetPtr Create(const display::Display& target_display,
-                                       bool is_primary_view);
+                                       bool is_primary_view,
+                                       bool is_all_displays_calibration);
 
   ~TouchCalibratorView() override;
 
@@ -114,11 +115,12 @@ class ASH_EXPORT TouchCalibratorView : public views::View,
 
  private:
   TouchCalibratorView(const display::Display& target_display,
-                      bool is_primary_view);
+                      bool is_primary_view,
+                      bool is_all_displays_calibration);
   TouchCalibratorView(const TouchCalibratorView&) = delete;
   TouchCalibratorView& operator=(const TouchCalibratorView&) = delete;
 
-  void InitViewContents();
+  void InitViewContents(bool is_for_touchscreen_mapping);
 
   // The target display on which this view is rendered on.
   const display::Display display_;

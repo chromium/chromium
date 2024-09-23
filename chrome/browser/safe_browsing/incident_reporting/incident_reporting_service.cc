@@ -7,6 +7,7 @@
 #include <math.h>
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/process/process.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -92,14 +94,14 @@ const int64_t kDefaultCallbackIntervalMs = 1000 * 20;
 // Logs the type of incident in |incident_data| to a user metrics histogram.
 void LogIncidentDataType(IncidentDisposition disposition,
                          const Incident& incident) {
-  static const char* const kHistogramNames[] = {
+  static auto const kHistogramNames = std::to_array({
       "SBIRS.ReceivedIncident",
       "SBIRS.DroppedIncident",
       "SBIRS.Incident",
       "SBIRS.PrunedIncident",
       "SBIRS.DiscardedIncident",
       "SBIRS.NoDownloadIncident",
-  };
+  });
   static_assert(std::size(kHistogramNames) == NUM_DISPOSITIONS,
                 "Keep kHistogramNames in sync with enum IncidentDisposition.");
   DCHECK_GE(disposition, 0);
@@ -487,7 +489,7 @@ void IncidentReportingService::OnProfileWillBeDestroyed(Profile* profile) {
   profile->RemoveObserver(this);
 
   auto it = profiles_.find(profile);
-  DCHECK(it != profiles_.end());
+  CHECK(it != profiles_.end(), base::NotFatalUntil::M130);
 
   // Take ownership of the context.
   std::unique_ptr<ProfileContext> context = std::move(it->second);
@@ -955,7 +957,7 @@ void IncidentReportingService::OnReportUploadResult(
   // the collection of outstanding uploads) in this scope.
   auto it = base::ranges::find(uploads_, context,
                                &std::unique_ptr<UploadContext>::get);
-  DCHECK(it != uploads_.end());
+  CHECK(it != uploads_.end(), base::NotFatalUntil::M130);
   std::unique_ptr<UploadContext> upload(std::move(*it));
   uploads_.erase(it);
 

@@ -8,7 +8,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/fuchsia/video/fuchsia_video_decoder.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 
 namespace media {
 
@@ -44,7 +44,7 @@ void FuchsiaDecoderFactory::CreateVideoDecoders(
     // instance, but there is no way to get it here. For now just don't add
     // FuchsiaVideoDecoder in that scenario.
     //
-    // TODO(crbug.com/995902) Handle lost context.
+    // TODO(crbug.com/42050657) Handle lost context.
     if (context_provider) {
       video_decoders->push_back(std::make_unique<FuchsiaVideoDecoder>(
           context_provider, resource_provider_, allow_overlays_));

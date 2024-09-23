@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_PREF_MODEL_ASSOCIATOR_H_
 #define COMPONENTS_SYNC_PREFERENCES_PREF_MODEL_ASSOCIATOR_H_
 
+#include <functional>
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
@@ -16,8 +18,9 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "components/prefs/transparent_unordered_string_map.h"
 #include "components/prefs/writeable_pref_store.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
@@ -40,9 +43,9 @@ class PrefModelAssociatorClient;
 class PrefServiceForAssociator {
  public:
   virtual base::Value::Type GetRegisteredPrefType(
-      const std::string& pref_name) const = 0;
+      std::string_view pref_name) const = 0;
   virtual void OnIsSyncingChanged() = 0;
-  virtual uint32_t GetWriteFlags(const std::string& pref_name) const = 0;
+  virtual uint32_t GetWriteFlags(std::string_view pref_name) const = 0;
 };
 
 // Contains all preference sync related logic.
@@ -53,7 +56,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // |user_prefs| is the PrefStore to be hooked up to Sync.
   PrefModelAssociator(scoped_refptr<PrefModelAssociatorClient> client,
                       scoped_refptr<WriteablePrefStore> user_prefs,
-                      syncer::ModelType type);
+                      syncer::DataType type);
 
   // The |client| is not owned and must outlive this object.
   // |user_prefs| is the PrefStore to be hooked up to Sync.
@@ -62,7 +65,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   PrefModelAssociator(
       scoped_refptr<PrefModelAssociatorClient> client,
       scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
-      syncer::ModelType type);
+      syncer::DataType type);
 
   PrefModelAssociator(const PrefModelAssociator&) = delete;
   PrefModelAssociator& operator=(const PrefModelAssociator&) = delete;
@@ -78,24 +81,24 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // Returns the mutable preference from |specifics| for a given model |type|.
   // Exposed for testing.
   static sync_pb::PreferenceSpecifics* GetMutableSpecifics(
-      syncer::ModelType type,
+      syncer::DataType type,
       sync_pb::EntitySpecifics* specifics);
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
-  void OnBrowserShutdown(syncer::ModelType type) override;
+  void StopSyncing(syncer::DataType type) override;
+  void OnBrowserShutdown(syncer::DataType type) override;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // PrefStore::Observer implementation.
-  void OnPrefValueChanged(const std::string& key) override;
+  void OnPrefValueChanged(std::string_view name) override;
   void OnInitializationCompleted(bool succeeded) override;
 
   // Register a preference with the specified name for syncing. We do not care
@@ -103,17 +106,17 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // syncer, we check if they can be applied and if not drop them.
   // Note: This should only be called at profile startup time (before sync
   // begins).
-  void RegisterPref(const std::string& name);
+  void RegisterPref(std::string_view name);
 
   // Fills |sync_data| with a sync representation of the preference data
   // provided.
   // Exposed for testing.
-  bool CreatePrefSyncData(const std::string& name,
+  bool CreatePrefSyncData(std::string_view name,
                           const base::Value& value,
                           syncer::SyncData* sync_data) const;
 
   // Returns true if the specified preference is registered for syncing.
-  bool IsPrefRegistered(const std::string& name) const;
+  bool IsPrefRegistered(std::string_view name) const;
 
   // Adds a SyncedPrefObserver to watch for changes to a specific pref.
   void AddSyncedPrefObserver(const std::string& name,
@@ -142,14 +145,14 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // controlled by policy (are not user modifiable) or have their default value
   // (are not user controlled).
   void InitPrefAndAssociate(const syncer::SyncData& sync_pref,
-                            const std::string& pref_name,
+                            std::string_view pref_name,
                             syncer::SyncChangeList* sync_changes);
 
-  void NotifySyncedPrefObservers(const std::string& path, bool from_sync) const;
+  void NotifySyncedPrefObservers(std::string_view path, bool from_sync) const;
 
   // Sets |pref_name| to |new_value| and returns true if |new_value| has an
   // appropriate type for this preference. Otherwise returns false.
-  bool SetPrefWithTypeCheck(const std::string& pref_name,
+  bool SetPrefWithTypeCheck(std::string_view pref_name,
                             const base::Value& new_value);
 
   // Notifies the synced pref observers that the pref for the given |path| is
@@ -160,7 +163,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
 
   // The datatype that this associator is responsible for, either PREFERENCES or
   // PRIORITY_PREFERENCES or OS_PREFERENCES or OS_PRIORITY_PREFERENCES.
-  const syncer::ModelType type_;
+  const syncer::DataType type_;
 
   scoped_refptr<PrefModelAssociatorClient> client_;
 
@@ -185,7 +188,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   bool processing_syncer_changes_ = false;
 
   // All preferences that have registered as being syncable with this profile.
-  std::set<std::string> registered_preferences_;
+  std::set<std::string, std::less<>> registered_preferences_;
 
   // The preferences that are currently synced (excludes those preferences
   // that have never had sync data and currently have default values).
@@ -193,7 +196,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // to eventually match `registered_preferences_` as more preferences are
   // synced. It determines whether a preference change should update an existing
   // sync node or create a new sync node.
-  std::set<std::string> synced_preferences_;
+  std::set<std::string, std::less<>> synced_preferences_;
 
   // Sync's handler for outgoing changes. Non-null between
   // MergeDataAndStartSyncing() and StopSyncing().
@@ -204,7 +207,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // from sync.
   using SyncedPrefObserverList =
       base::ObserverList<SyncedPrefObserver>::Unchecked;
-  std::unordered_map<std::string, std::unique_ptr<SyncedPrefObserverList>>
+  TransparentUnorderedStringMap<std::unique_ptr<SyncedPrefObserverList>>
       synced_pref_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);

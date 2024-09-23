@@ -6,6 +6,7 @@
 #define COMPONENTS_CROSS_DEVICE_LOGGING_LOGGING_H_
 
 #include <sstream>
+#include <string_view>
 
 #include "base/logging.h"
 #include "components/cross_device/logging/log_buffer.h"
@@ -14,8 +15,8 @@
 // the debug page can reflect all logs related to this feature in the internal
 // debug WebUI (chrome://nearby-internals).
 #define CD_LOG(severity, feature)                                              \
-  CrossDeviceScopedLogMessage(__FILE__, __LINE__, logging::LOGGING_##severity, \
-                              feature)                                         \
+  CrossDeviceScopedLogMessage(std::string_view(__FILE__, std::size(__FILE__)), \
+                              __LINE__, logging::LOGGING_##severity, feature)  \
       .stream()
 
 // An intermediate object used by the CD_LOG macro, wrapping a
@@ -24,7 +25,7 @@
 // specific log buffer.
 class CrossDeviceScopedLogMessage {
  public:
-  CrossDeviceScopedLogMessage(const char* file,
+  CrossDeviceScopedLogMessage(const std::string_view file,
                               int line,
                               logging::LogSeverity severity,
                               Feature feature);
@@ -36,7 +37,7 @@ class CrossDeviceScopedLogMessage {
   std::ostream& stream() { return stream_; }
 
  private:
-  const char* file_;
+  const std::string_view file_;
   Feature feature_;
   int line_;
   logging::LogSeverity severity_;

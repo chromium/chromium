@@ -1,0 +1,31 @@
+include_rules = [
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/ui/authentication",
+  "+ios/chrome/browser/ui/legacy_bookmarks",
+  "+ios/chrome/browser/ui/popup_menu/popup_menu_constants.h",
+  "+ios/chrome/browser/keyboard/ui_bundled",
+  "+ios/chrome/browser/incognito_reauth/ui_bundled",
+  "+ios/chrome/browser/ui/menu",
+  "+ios/chrome/browser/ui/sharing",
+  "+ios/chrome/browser/ntp/shared/metrics/home_metrics.h",
+  "+ios/chrome/browser/ui/settings",
+]
+
+specific_include_rules = {
+  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
+  # TODO:(crbug.com/891834) Remove this exception.
+  ".*egtest\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  "bookmark_earl_grey\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+  "bookmark_earl_grey_app_interface\.mm": [
+    "+ios/web/public/test/http_server",
+    "+ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h",
+  ],
+  "bookmark_earl_grey_utils\.mm": [
+    "+ios/web/public/test/http_server",
+  ],
+}

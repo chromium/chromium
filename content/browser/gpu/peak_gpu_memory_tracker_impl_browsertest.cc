@@ -8,6 +8,8 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,10 +17,12 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
@@ -108,11 +112,9 @@ class TestGpuService : public viz::mojom::GpuService {
       mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
           receiver) override {}
 
-#if !BUILDFLAG(IS_CHROMEOS)
   void BindWebNNContextProvider(
       mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver,
       int32_t client_id) override {}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   void CreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                              const gfx::Size& size,
@@ -120,7 +122,15 @@ class TestGpuService : public viz::mojom::GpuService {
                              gfx::BufferUsage usage,
                              int client_id,
                              gpu::SurfaceHandle surface_handle,
-                             CreateGpuMemoryBufferCallback callback) override {}
+                             CreateGpuMemoryBufferCallback callback) override {
+    // While executing these tests on Linux, HostGpuMemoryBufferManager may
+    // invoke this method and wait synchronously on the result to determine
+    // whether NV12 GMBs are supported. It is thus necessary to invoke the
+    // callback here. Passing an empty GMB handle is fine as it will simply
+    // signify that NV12 GMBs are not supported, which is not information that
+    // is relevant to these tests one way or the other.
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+  }
   void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                               int client_id) override {}
   void CopyGpuMemoryBuffer(::gfx::GpuMemoryBufferHandle buffer_handle,
@@ -169,7 +179,7 @@ class TestGpuService : public viz::mojom::GpuService {
 
 class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
  public:
-  PeakGpuMemoryTrackerImplTest() = default;
+  PeakGpuMemoryTrackerImplTest() : gpu_service_thread_("Gpu Service") {}
   ~PeakGpuMemoryTrackerImplTest() override = default;
 
   // Waits until all messages to the mojo::Remote<viz::mojom::GpuService> have
@@ -178,46 +188,83 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
     gpu_host_impl_test_api_->FlushRemoteForTesting();
   }
 
-  void SetTestingCallback(PeakGpuMemoryTracker* tracker,
+  // Initializes the TestGpuService. Must be done on the GPU process thread in
+  // order to support processing of synchronous Mojo messages that are
+  // dispatched on the UI thread.
+  void InitOnGpuServiceThread(
+      mojo::PendingReceiver<viz::mojom::GpuService> receiver,
+      base::RepeatingClosure quit_closure) {
+    gpu_service_thread_state_.test_gpu_service =
+        std::make_unique<TestGpuService>(std::move(quit_closure));
+    gpu_service_thread_state_.gpu_service_receiver =
+        std::make_unique<mojo::Receiver<viz::mojom::GpuService>>(
+            gpu_service_thread_state_.test_gpu_service.get(),
+            std::move(receiver));
+  }
+
+  void SetTestingCallback(input::PeakGpuMemoryTracker* tracker,
                           base::OnceClosure callback) {
     static_cast<PeakGpuMemoryTrackerImpl*>(tracker)
         ->post_gpu_service_callback_for_testing_ = std::move(callback);
   }
 
-  // Provides access to the TestGpuService on the Main Thread for test
-  // verifications. All mojo calls should be performed on the IO Thread.
-  TestGpuService* gpu_service() const { return test_gpu_service_.get(); }
-
   // Setup requires that we have the Browser threads still initialized.
   // ContentBrowserTest:
   void PreRunTestOnMainThread() override {
+    gpu_service_thread_.StartAndWaitForTesting();
+
     run_loop_for_start_ = std::make_unique<base::RunLoop>();
     ContentBrowserTest::PreRunTestOnMainThread();
 
-    // Initializes the TestGpuService, and installs it as the active service.
     gpu_host_impl_test_api_ = std::make_unique<viz::GpuHostImplTestApi>(
         GpuProcessHost::Get()->gpu_host());
-    test_gpu_service_ =
-        std::make_unique<TestGpuService>(run_loop_for_start_->QuitClosure());
     mojo::Remote<viz::mojom::GpuService> gpu_service_remote;
-    gpu_service_receiver_ =
-        std::make_unique<mojo::Receiver<viz::mojom::GpuService>>(
-            test_gpu_service_.get(),
-            gpu_service_remote.BindNewPipeAndPassReceiver());
+    auto receiver = gpu_service_remote.BindNewPipeAndPassReceiver();
     gpu_host_impl_test_api_->SetGpuService(std::move(gpu_service_remote));
+
+    PostTaskToGpuServiceThreadAndWait(
+        base::BindOnce(&PeakGpuMemoryTrackerImplTest::InitOnGpuServiceThread,
+                       base::Unretained(this), std::move(receiver),
+                       run_loop_for_start_->QuitClosure()));
   }
   void PostRunTestOnMainThread() override {
-    gpu_service_receiver_.reset();
+    PostTaskToGpuServiceThreadAndWait(
+        base::BindOnce([](GpuServiceThreadState gpu_service_thread_state) {},
+                       std::move(gpu_service_thread_state_)));
+    gpu_service_thread_.Stop();
+
     ContentBrowserTest::PostRunTestOnMainThread();
   }
 
   void WaitForStartPeakMemoryMonitor() { run_loop_for_start_->Run(); }
 
  private:
+  // Posts task to the GPU service thread and waits for it to complete.
+  void PostTaskToGpuServiceThreadAndWait(base::OnceClosure task) {
+    base::WaitableEvent completion_event;
+
+    gpu_service_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::OnceClosure task, base::WaitableEvent* wait_event) {
+              std::move(task).Run();
+              wait_event->Signal();
+            },
+            std::move(task), &completion_event));
+
+    completion_event.Wait();
+  }
+
+  struct GpuServiceThreadState {
+    std::unique_ptr<TestGpuService> test_gpu_service;
+    std::unique_ptr<mojo::Receiver<viz::mojom::GpuService>>
+        gpu_service_receiver;
+  };
+
+  base::Thread gpu_service_thread_;
   std::unique_ptr<base::RunLoop> run_loop_for_start_;
-  std::unique_ptr<TestGpuService> test_gpu_service_;
   std::unique_ptr<viz::GpuHostImplTestApi> gpu_host_impl_test_api_;
-  std::unique_ptr<mojo::Receiver<viz::mojom::GpuService>> gpu_service_receiver_;
+  GpuServiceThreadState gpu_service_thread_state_;
 };
 
 // Verifies that when a PeakGpuMemoryTracker is destroyed, that the browser's
@@ -225,8 +272,9 @@ class PeakGpuMemoryTrackerImplTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(PeakGpuMemoryTrackerImplTest, PeakGpuMemoryCallback) {
   base::HistogramTester histogram;
   base::RunLoop run_loop;
-  std::unique_ptr<PeakGpuMemoryTracker> tracker =
-      PeakGpuMemoryTracker::Create(PeakGpuMemoryTracker::Usage::PAGE_LOAD);
+  std::unique_ptr<input::PeakGpuMemoryTracker> tracker =
+      PeakGpuMemoryTrackerFactory::Create(
+          input::PeakGpuMemoryTracker::Usage::PAGE_LOAD);
   SetTestingCallback(tracker.get(), run_loop.QuitClosure());
   FlushRemoteForTesting();
   // No report in response to creation.
@@ -240,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(PeakGpuMemoryTrackerImplTest, PeakGpuMemoryCallback) {
   // the callback being a posted task.
   tracker.reset();
   FlushRemoteForTesting();
-  // Wait for callback to be ran on the IO thread, which will call the
+  // Wait for callback to be ran on the UI thread, which will call the
   // QuitClosure.
   run_loop.Run();
   histogram.ExpectUniqueSample("Memory.GPU.PeakMemoryUsage2.PageLoad",

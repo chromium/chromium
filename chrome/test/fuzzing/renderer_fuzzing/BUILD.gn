@@ -1,0 +1,126 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser_exposed_mojom_targets.gni")
+import("//chrome/test/fuzzing/in_process_fuzzer.gni")
+import("//chrome/test/fuzzing/renderer_fuzzing/in_process_renderer_fuzzing.gni")
+
+group("test") {
+  testonly = true
+}
+
+# We want to make sure to only enable this fuzzer on platforms that have a CQ
+# bot so that the mojom target list is maintained up-to-date.
+# Similarly, if something goes wrong with those targets, this will "only" break
+# fuzzer CQ bots, so we this allows for damage control.
+# crbug.com/343669713: enable this on Windows once the Linux version sticks in.
+renderer_ipc_fuzzing_enabled =
+    fuzzing_engine_supports_custom_main && is_linux && enable_mojom_fuzzer
+
+if (fuzzing_engine_supports_custom_main) {
+  source_set("renderer_in_process_fuzzer_runner") {
+    testonly = true
+    sources = [ "in_process_renderer_fuzzing.h" ]
+    deps = [
+      "//base",
+      "//chrome/test:test_support",
+      "//chrome/test/fuzzing:in_process_fuzzer_runner",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer:renderer_fuzzing",
+    ]
+  }
+}
+
+if (renderer_ipc_fuzzing_enabled) {
+  _mojolpm_deps = []
+  foreach(target, browser_exposed_mojom_targets) {
+    _mojolpm_deps += [ "${target}_mojolpm" ]
+  }
+
+  # This tool aims at replicating an environment similar to how
+  # in_process_fuzzer are running, so that we can fetch a list of mojom
+  # interfaces that make sense for `renderer_in_process_mojolpm_fuzzer`.
+  executable("ipc_interfaces_dumper") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "ipc_fuzzing/ipc_interfaces_dumper.cc" ]
+    deps = [
+      "//base",
+      "//chrome/test:browser_tests_runner",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+    ]
+  }
+  action("renderer_in_process_mojolpm_fuzzer_generator") {
+    testonly = true
+    deps = [ ":ipc_interfaces_dumper" ]
+    depfile = "$target_out_dir/$target_name.d"
+    inputs = []
+    foreach(target, browser_exposed_mojom_targets) {
+      inputs += [ get_label_info(target, "target_gen_dir") + "/" +
+                  get_label_info(target, "name") + ".build_metadata" ]
+      deps += [ target + "__build_metadata" ]
+    }
+
+    # We cannot use the GN `metadata` mechanism here, because our initial
+    # deps could depend on other mojom targets which would also generate some
+    # metadata, but we would actually not depend on their `mojolpm` variant.
+    # Doing things the current way allows for ensuring that we are only listing
+    # meta files for mojolpm targets we directly depend upon.
+    _metafiles = []
+    foreach(file, inputs) {
+      _metafiles += [ rebase_path(file, root_build_dir) ]
+    }
+    write_file("$target_gen_dir/metadata", _metafiles)
+
+    inputs +=
+        [ "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/testcase.h.tmpl" ]
+
+    script = "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/generate_testcase.py"
+    args = [
+      "-p",
+      rebase_path("${root_build_dir}/ipc_interfaces_dumper", root_build_dir),
+      "-i",
+      rebase_path("${target_gen_dir}/interfaces.json", root_build_dir),
+      "-r",
+      rebase_path(root_gen_dir, root_build_dir),
+      "-m",
+      rebase_path("$target_gen_dir/metadata", root_build_dir),
+      "-t",
+      rebase_path("${target_gen_dir}/testcase.h", root_build_dir),
+      "-d",
+      rebase_path("${target_gen_dir}/", root_gen_dir),
+      "-n",
+      "renderer_in_process_mojolpm_fuzzer",
+      "-f",
+      rebase_path(depfile, root_build_dir),
+    ]
+    outputs = [
+      "${target_gen_dir}/interfaces.json",
+      "${target_gen_dir}/testcase.h",
+    ]
+    deps += _mojolpm_deps
+  }
+  in_process_renderer_mojolpm_generated_fuzzer(
+      "renderer_in_process_mojolpm_fuzzer") {
+    sources = [ "renderer_in_process_mojolpm_fuzzer.cc" ]
+
+    interface_file = "${target_gen_dir}/interfaces.json"
+
+    deps = [
+      ":renderer_in_process_mojolpm_fuzzer_generator",
+      "//chrome/test:test_support",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//content/test/fuzzer:mojolpm_fuzzer_support",
+      "//testing/libfuzzer:renderer_fuzzing",
+      "//testing/libfuzzer/proto:url_proto_converter",
+      "//third_party/blink/public/common:storage_key_proto_converter",
+    ]
+
+    deps += _mojolpm_deps
+
+    proto_deps = [ ":renderer_in_process_mojolpm_fuzzer_generator" ]
+    proto_deps += _mojolpm_deps
+  }
+}

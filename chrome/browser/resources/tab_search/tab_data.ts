@@ -16,17 +16,17 @@ export enum TabItemType {
 }
 
 export class ItemData {
-  inActiveWindow: boolean;
-  type: TabItemType;
-  a11yTypeText: string;
+  inActiveWindow: boolean = false;
+  type: TabItemType = TabItemType.OPEN_TAB;
+  a11yTypeText: string = '';
   tabGroup?: TabGroup|RecentlyClosedTabGroup;
   highlightRanges: {[key: string]: Array<{start: number, length: number}>} = {};
 }
 
 /**
  * TabData contains tabSearch.mojom.Tab and data derived from it.
- * It makes tabSearch.mojom.Tab immutable and works well for closure compiler
- * type checking.
+ * It makes tabSearch.mojom.Tab immutable and works well for TypeScript type
+ * checking.
  */
 export class TabData extends ItemData {
   tab: Tab|RecentlyClosedTab;
@@ -41,7 +41,9 @@ export class TabData extends ItemData {
 }
 
 export class TabGroupData extends ItemData {
-  constructor(tabGroup: TabGroup|RecentlyClosedTabGroup) {
+  override tabGroup: RecentlyClosedTabGroup;
+
+  constructor(tabGroup: RecentlyClosedTabGroup) {
     super();
     this.tabGroup = tabGroup;
     this.type = TabItemType.RECENTLY_CLOSED_TAB_GROUP;
@@ -106,4 +108,32 @@ export function ariaLabel(itemData: ItemData): string {
   }
 
   throw new Error('Invalid data provided.');
+}
+
+export function normalizeURL(url: string): string {
+  // When a navigation is cancelled before completion, the tab's URL can be
+  // empty, which leads to errors when attempting to construct a URL object with
+  // it. To handle this, we substitute any empty URL with 'about:blank'. This is
+  // consistent with how the Omnibox handles empty URLs.
+  return url || 'about:blank';
+}
+
+export function getTitle(data: TabData|TabGroupData): string|undefined {
+  if (data.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
+    return undefined;
+  }
+
+  return (data as TabData).tab.title;
+}
+
+export function getHostname(data: TabData|TabGroupData): string|undefined {
+  if (data.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
+    return undefined;
+  }
+
+  return (data as TabData).hostname;
+}
+
+export function getTabGroupTitle(data: TabData|TabGroupData): string|undefined {
+  return data.tabGroup?.title;
 }

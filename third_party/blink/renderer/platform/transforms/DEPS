@@ -3,6 +3,7 @@ include_rules = [
     "-third_party/blink/renderer/platform",
 
     # Module.
+    "+third_party/blink/renderer/platform/heap",
     "+third_party/blink/renderer/platform/transforms",
 
     # Dependencies.

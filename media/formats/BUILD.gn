@@ -85,6 +85,7 @@ source_set("formats") {
     "//build:chromecast_buildflags",
     "//media:media_buildflags",
     "//media/base",
+    "//media/parsers",
     "//third_party/libwebm",
   ]
 
@@ -147,6 +148,8 @@ source_set("formats") {
     sources += [
       "mp4/ac3.cc",
       "mp4/ac3.h",
+      "mp4/ac3_constants.cc",
+      "mp4/ac3_constants.h",
       "mp4/eac3.cc",
       "mp4/eac3.h",
     ]
@@ -199,7 +202,7 @@ source_set("formats") {
     ]
   }
 
-  # TODO(https://crbug.com/1266991): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+  # TODO(crbug.com/40057824): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
     "hls/audio_rendition.cc",
     "hls/audio_rendition.h",
@@ -225,6 +228,8 @@ source_set("formats") {
     "hls/source_string.h",
     "hls/tag_name.cc",
     "hls/tag_name.h",
+    "hls/tag_recorder.cc",
+    "hls/tag_recorder.h",
     "hls/tags.cc",
     "hls/tags.h",
     "hls/types.cc",
@@ -234,7 +239,10 @@ source_set("formats") {
     "hls/variant_stream.cc",
     "hls/variant_stream.h",
   ]
-  deps += [ "//third_party/re2" ]
+  deps += [
+    "//crypto:crypto",
+    "//third_party/re2",
+  ]
   public_deps = [
     "//third_party/abseil-cpp:absl",
 
@@ -359,13 +367,14 @@ source_set("unit_tests") {
     }
   }
 
-  # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+  # TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
     "hls/common_playlist_unittest.cc",
     "hls/items_unittest.cc",
     "hls/media_playlist_test_builder.cc",
     "hls/media_playlist_test_builder.h",
     "hls/media_playlist_unittest.cc",
+    "hls/media_segment_unittest.cc",
     "hls/multivariant_playlist_test_builder.cc",
     "hls/multivariant_playlist_test_builder.h",
     "hls/multivariant_playlist_unittest.cc",
@@ -380,7 +389,7 @@ source_set("unit_tests") {
   ]
 }
 
-# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+# TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_items_fuzzer") {
   sources = [ "hls/items_fuzzer.cc" ]
   deps = [
@@ -389,7 +398,7 @@ fuzzer_test("hls_items_fuzzer") {
   ]
 }
 
-# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+# TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_attribute_list_fuzzer") {
   sources = [ "hls/attribute_list_fuzzer.cc" ]
   deps = [
@@ -398,7 +407,7 @@ fuzzer_test("hls_attribute_list_fuzzer") {
   ]
 }
 
-# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+# TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_media_playlist_fuzzer") {
   sources = [ "hls/media_playlist_fuzzer.cc" ]
   deps = [
@@ -408,7 +417,7 @@ fuzzer_test("hls_media_playlist_fuzzer") {
   ]
 }
 
-# TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
+# TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
 fuzzer_test("hls_multivariant_playlist_fuzzer") {
   sources = [ "hls/multivariant_playlist_fuzzer.cc" ]
   deps = [
@@ -440,17 +449,15 @@ if (enable_platform_dts_audio) {
   }
 }
 
-if (fuzztest_supported) {
-  test("ac3_util_fuzzer") {
-    sources = [ "ac3/ac3_util_fuzzer.cc" ]
-    fuzztests = [
-      "Ac3UtilTest.ParseTotalAc3SampleCountNeverCrashes",
-      "Ac3UtilTest.ParseTotalEac3SampleCountNeverCrashes",
-    ]
-    deps = [
-      "//base",
-      "//media",
-      "//third_party/fuzztest:fuzztest_gtest_main",
-    ]
-  }
+test("ac3_util_fuzzer") {
+  sources = [ "ac3/ac3_util_fuzzer.cc" ]
+  fuzztests = [
+    "Ac3UtilTest.ParseTotalAc3SampleCountNeverCrashes",
+    "Ac3UtilTest.ParseTotalEac3SampleCountNeverCrashes",
+  ]
+  deps = [
+    "//base",
+    "//media",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }

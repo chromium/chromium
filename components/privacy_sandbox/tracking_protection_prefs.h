@@ -35,15 +35,6 @@ inline constexpr char kTrackingProtectionNoticeLastShown[] =
 inline constexpr char kTrackingProtectionOnboardingAckedSince[] =
     "tracking_protection.tracking_protection_onboarding_acked_since";
 
-// Unsynced Pref that indicates when the notice was first requested.
-inline constexpr char kTrackingProtectionOnboardingNoticeFirstRequested[] =
-    "tracking_protection.tracking_protection_onboarding_notice_first_requested";
-
-// Unsynced Pref that indicates when the notice was last requested. This is only
-// being tracked until the profile is fully Onboarded.
-inline constexpr char kTrackingProtectionOnboardingNoticeLastRequested[] =
-    "tracking_protection.tracking_protection_onboarding_notice_last_requested";
-
 // Unsynced boolean that indicates whether or not the user has acknowledged the
 // onboarding message. This is kept separate from the onboardingStatus
 // intentionally.
@@ -54,22 +45,6 @@ inline constexpr char kTrackingProtectionOnboardingAcked[] =
 // Notice.
 inline constexpr char kTrackingProtectionOnboardingAckAction[] =
     "tracking_protection.tracking_protection_onboarding_ack_action";
-
-// Offboarding
-
-// Unsynced boolean that indicates whether or not the user has been offboarded
-// (After being onboarded previously).
-inline constexpr char kTrackingProtectionOffboarded[] =
-    "tracking_protection.tracking_protection_offboarded";
-
-// Unsynced pref that indicates when the profile was offboarded.
-inline constexpr char kTrackingProtectionOffboardedSince[] =
-    "tracking_protection.tracking_protection_offboarded_since";
-
-// Unsynced pref that indicates the action taken to acknowledge the Offboarding
-// Notice.
-inline constexpr char kTrackingProtectionOffboardingAckAction[] =
-    "tracking_protection.tracking_protection_offboarding_ack_action";
 
 // Silent onboarding
 
@@ -95,6 +70,12 @@ inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
 inline constexpr char kBlockAll3pcToggleEnabled[] =
     "tracking_protection.block_all_3pc_toggle_enabled";
 
+// Synced boolean that indicates whether 3PC are allowed for a user post-3PCD.
+// Can only be set via the BlockThirdPartyCookies enterprise policy.
+// Takes precedence over kBlockAll3pcToggleEnabled.
+inline constexpr char kAllowAll3pcToggleEnabled[] =
+    "tracking_protection.allow_all_3pc_toggle_enabled";
+
 // Synced enum that indicates the level of tracking protection the user has
 // selected on the tracking protection page.
 inline constexpr char kTrackingProtectionLevel[] =
@@ -105,27 +86,28 @@ inline constexpr char kTrackingProtectionLevel[] =
 inline constexpr char kTrackingProtection3pcdEnabled[] =
     "tracking_protection.tracking_protection_3pcd_enabled";
 
-// Synced boolean that indicates whether the user has enabled the IP protection
-// setting.
+// Synced boolean that indicates whether the user has enabled IP protection
+// using either the UI setting or enterprise policy.
 inline constexpr char kIpProtectionEnabled[] =
     "tracking_protection.ip_protection_enabled";
+
+// Synced boolean that indicates whether the user has had their IP protection
+// pref initialized. Used ONLY for Google dogfood.
+inline constexpr char kIpProtectionInitializedByDogfood[] =
+    "tracking_protection.ip_protection_initialized_by_dogfood";
+
+// Synced boolean that indicates whether the user has enabled the
+// fingerprinting protection setting.
+inline constexpr char kFingerprintingProtectionEnabled[] =
+    "tracking_protection.fingerprinting_protection_enabled";
 
 // Whether to send the DNT header.
 inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
 
-// Sentiment Survey Prefs
-
-// Indicates which group the profile belongs to.
-inline constexpr char kTrackingProtectionSentimentSurveyGroup[] =
-    "tracking_protection.tracking_protection_sentiment_survey_group";
-
-// Indicates the time the profile becomes eligible for surveying.
-inline constexpr char kTrackingProtectionSentimentSurveyStartTime[] =
-    "tracking_protection.tracking_protection_sentiment_survey_start_time";
-
-// Indicates the time the profile is no longer eligible for surveying.
-inline constexpr char kTrackingProtectionSentimentSurveyEndTime[] =
-    "tracking_protection.tracking_protection_sentiment_survey_end_time";
+// Whether User Bypass 3PC exceptions have been migrated to Tracking Protection
+// exceptions.
+inline constexpr char kUserBypass3pcExceptionsMigrated[] =
+    "tracking_protection.user_bypass_3pc_exceptions_migrated";
 
 }  // namespace prefs
 
@@ -164,26 +146,6 @@ enum class TrackingProtectionOnboardingAckAction {
   // Acked by clicking the close button/ESC/Swipe away.
   kClosed = 5,
   kMaxValue = kClosed,
-};
-
-// Different tracking protection sentiment survey groups stored in the pref
-// above.
-enum class TrackingProtectionSentimentSurveyGroup {
-  // No Group Set.
-  kNotSet = 0,
-  // Profile is to be surveyed shortly after being added to the Mode B Control
-  // Group.
-  kControlImmediate = 1,
-  // Profile is to be surveyed shortly after being added to the Mode B Treatment
-  // Group.
-  kTreatmentImmediate = 2,
-  // Profile is to be surveyed after a delay after being added to the Mode B
-  // Control Group.
-  kControlDelayed = 3,
-  // Profile is to be surveyed after a delay after being added to the Mode B
-  // Treatment Group.
-  kTreatmentDelayed = 4,
-  kMaxValue = kTreatmentDelayed,
 };
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

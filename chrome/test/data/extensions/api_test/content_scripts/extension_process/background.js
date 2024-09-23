@@ -5,7 +5,7 @@
 var numPings = 0;
 var base_url;
 
-chrome.extension.onRequest.addListener(function(data) {
+chrome.runtime.onMessage.addListener(function(data) {
   if (data != "ping")
     chrome.test.fail("Unexpected request: " + JSON.stringify(data));
 

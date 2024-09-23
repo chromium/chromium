@@ -7,18 +7,18 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
-import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
@@ -28,26 +28,22 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** Handles collecting and pushing state information to the UrlBar model. */
-class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.UrlTextChangeListener {
-    private final Context mContext;
-    private final PropertyModel mModel;
+class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
+    private final @NonNull Context mContext;
+    private final @NonNull PropertyModel mModel;
+    private final @NonNull Callback<Boolean> mOnFocusChangeCallback;
 
-    private Callback<Boolean> mOnFocusChangeCallback;
     private boolean mHasFocus;
 
-    private UrlBarData mUrlBarData;
+    private @NonNull UrlBarData mUrlBarData = UrlBarData.EMPTY;
     private @ScrollType int mScrollType = UrlBar.ScrollType.NO_SCROLL;
     private @SelectionState int mSelectionState = UrlBarCoordinator.SelectionState.SELECT_ALL;
 
-    private final List<UrlTextChangeListener> mUrlTextChangeListeners = new ArrayList<>();
     private int mPreviousBrandedColorScheme;
-    // For both Start Surface and NTP, when the surface polish flag is enabled, the search text hint
-    // color is fixed for the real search box and we couldn't change it by the branded color scheme.
-    private boolean mIsHintTextFixedForStartOrNtp;
+    // For NTP, when in un-focus state, the search text hint color is fixed for the real search box
+    // and we couldn't change it by the branded color scheme.
+    private boolean mIsHintTextFixedForNtp;
 
     /**
      * Creates a URLBarMediator.
@@ -58,7 +54,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
      *     UrlBar.
      */
     public UrlBarMediator(
-            Context context,
+            @NonNull Context context,
             @NonNull PropertyModel model,
             @NonNull Callback<Boolean> focusChangeCallback) {
         mContext = context;
@@ -68,19 +64,36 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         mModel.set(UrlBarProperties.FOCUS_CHANGE_CALLBACK, this::onUrlFocusChange);
         mModel.set(UrlBarProperties.SHOW_CURSOR, false);
         mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, this);
-        mModel.set(UrlBarProperties.URL_TEXT_CHANGE_LISTENER, this);
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, false);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
+        pushTextToModel();
     }
 
     public void destroy() {
-        mUrlTextChangeListeners.clear();
-        mOnFocusChangeCallback = (unused) -> {};
+        mModel.set(UrlBarProperties.FOCUS_CHANGE_CALLBACK, null);
+        mModel.set(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE, null);
+        mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, null);
     }
 
-    /** Adds a listener for url text changes. */
-    public void addUrlTextChangeListener(UrlTextChangeListener listener) {
-        mUrlTextChangeListeners.add(listener);
+    /** Sets a listener for url text changes. */
+    public void setTextChangeListener(Callback<String> listener) {
+        mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, listener);
+    }
+
+    /**
+     * Sets a listener for url key events. See the {@link
+     * UrlBarCoordinator#setKeyDownListener(View.OnKeyListener)}.
+     */
+    public void setKeyDownListener(View.OnKeyListener listener) {
+        mModel.set(UrlBarProperties.KEY_DOWN_LISTENER, listener);
+    }
+
+    /**
+     * Sets a listener called when user input begins. See the {@link
+     * UrlBarCoordinator#setTypingStartedListener(Runnable)}.
+     */
+    public void setTypingStartedListener(Runnable listener) {
+        mModel.set(UrlBarProperties.TYPING_STARTED_LISTENER, listener);
     }
 
     /**
@@ -92,7 +105,11 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
      * @return Whether this data differs from the previously passed in values.
      */
     public boolean setUrlBarData(
-            UrlBarData data, @ScrollType int scrollType, @SelectionState int selectionState) {
+            @NonNull UrlBarData data,
+            @ScrollType int scrollType,
+            @SelectionState int selectionState) {
+        assert data != null;
+
         if (data.originEndIndex == data.originStartIndex) {
             scrollType = UrlBar.ScrollType.SCROLL_TO_BEGINNING;
         }
@@ -120,6 +137,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         return true;
     }
 
+    @NonNull
     UrlBarData getUrlBarData() {
         return mUrlBarData;
     }
@@ -197,15 +215,20 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
      *
      * @param userText The existing user text.
      * @param autocompleteText The text to be appended to the user text.
+     * @param additionalText This string is displayed adjacent to the omnibox if this match is the
+     *     default. Will usually be URL when autocompleting a title, and empty otherwise.
      */
-    public void setAutocompleteText(String userText, String autocompleteText) {
+    public void setAutocompleteText(
+            @NonNull String userText,
+            @Nullable String autocompleteText,
+            @Nullable String additionalText) {
         if (!mHasFocus) {
             assert false : "Should not update autocomplete text when not focused";
             return;
         }
         mModel.set(
                 UrlBarProperties.AUTOCOMPLETE_TEXT,
-                new AutocompleteText(userText, autocompleteText));
+                new AutocompleteText(userText, autocompleteText, additionalText));
     }
 
     private void onUrlFocusChange(boolean focus) {
@@ -219,7 +242,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         mOnFocusChangeCallback.onResult(focus);
         boolean textChangedInFocusCallback =
                 mModel.get(UrlBarProperties.TEXT_STATE) != preCallbackState;
-        if (mUrlBarData != null && !textChangedInFocusCallback) {
+        if (!textChangedInFocusCallback) {
             pushTextToModel();
         }
     }
@@ -238,7 +261,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
                 OmniboxResourceProvider.getUrlBarHintTextColor(mContext, brandedColorScheme);
 
         mModel.set(UrlBarProperties.TEXT_COLOR, textColor);
-        if (!mIsHintTextFixedForStartOrNtp) {
+        if (!mIsHintTextFixedForNtp) {
             mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
         }
 
@@ -264,6 +287,11 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         }
     }
 
+    /** Sets whether the view should select all on focus. */
+    public void setSelectAllOnFocus(boolean selectAllOnFocus) {
+        mModel.set(UrlBarProperties.SELECT_ALL_ON_FOCUS, selectAllOnFocus);
+    }
+
     /** Set the listener to be notified for URL direction changes. */
     public void setUrlDirectionListener(Callback<Integer> listener) {
         mModel.set(UrlBarProperties.URL_DIRECTION_LISTENER, listener);
@@ -272,7 +300,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
     @Override
     public String getReplacementCutCopyText(
             String currentText, int selectionStart, int selectionEnd) {
-        if (mUrlBarData == null || mUrlBarData.url == null) return null;
+        if (mUrlBarData.url == null) return null;
 
         // Replace the cut/copy text only applies if the user selected from the beginning of the
         // display text.
@@ -364,53 +392,19 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
     }
 
     /**
-     * @see UrlTextChangeListener
-     */
-    @Override
-    public void onTextChanged(String textWithoutAutocomplete) {
-        for (int i = 0; i < mUrlTextChangeListeners.size(); i++) {
-            mUrlTextChangeListeners.get(i).onTextChanged(textWithoutAutocomplete);
-        }
-    }
-
-    /**
      * Sets search box hint text color to brandedColorScheme.
      *
      * @param brandedColorScheme The {@link @BrandedColorScheme}.
      */
     void setUrlBarHintTextColorForDefault(@BrandedColorScheme int brandedColorScheme) {
-        mIsHintTextFixedForStartOrNtp = false;
+        mIsHintTextFixedForNtp = false;
         setBrandedColorScheme(brandedColorScheme);
     }
 
-    /**
-     * Sets search box hint text color for Surface Polish. The color may be colorOnSurface or
-     * colorOnPrimaryContainer, depending on useColorfulOmniboxType.
-     *
-     * @param useColorfulOmniboxType True if the surface polish flag and omnibox color variant are
-     *     both enabled and we need to use the colorful type for the url bar hint color.
-     */
-    void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType) {
-        mIsHintTextFixedForStartOrNtp = true;
-        final @ColorInt int hintTextColor =
-                useColorfulOmniboxType
-                        ? SemanticColorUtils.getDefaultTextColorOnAccent1Container(mContext)
-                        : SemanticColorUtils.getDefaultTextColor(mContext);
+    /** Sets search box hint text color to be colorOnSurface for NTP's un-focus state. */
+    void setUrlBarHintTextColorForNtp() {
+        mIsHintTextFixedForNtp = true;
+        final @ColorInt int hintTextColor = SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
-    }
-
-    /**
-     * Updates the typeface and style of the search text in the search box.
-     *
-     * @param useDefaultUrlBarTypeface Whether to use the default typeface for the search text in
-     *     the search box. If not we will use medium Google sans typeface for surface polish.
-     */
-    void updateUrlBarTypeface(boolean useDefaultUrlBarTypeface) {
-        // TODO(crbug.com/1487760): Use TextAppearance style instead.
-        Typeface typeface =
-                useDefaultUrlBarTypeface
-                        ? Typeface.defaultFromStyle(Typeface.NORMAL)
-                        : Typeface.create("google-sans-medium", Typeface.NORMAL);
-        mModel.set(UrlBarProperties.TYPEFACE, typeface);
     }
 }

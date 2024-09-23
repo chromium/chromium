@@ -10,7 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/web/public/download/download_task_observer.h"
-#import "ios/web/public/web_state_user_data.h"
+#import "ios/web/public/lazy_web_state_user_data.h"
 
 @protocol ARQuickLookTabHelperDelegate;
 
@@ -48,9 +48,8 @@ enum class IOSDownloadARModelState {
 
 // TabHelper to download and preview USDZ format 3D models for AR.
 class ARQuickLookTabHelper
-    : public base::SupportsWeakPtr<ARQuickLookTabHelper>,
-      public web::DownloadTaskObserver,
-      public web::WebStateUserData<ARQuickLookTabHelper> {
+    : public web::DownloadTaskObserver,
+      public web::LazyWebStateUserData<ARQuickLookTabHelper> {
  public:
   ARQuickLookTabHelper(const ARQuickLookTabHelper&) = delete;
   ARQuickLookTabHelper& operator=(const ARQuickLookTabHelper&) = delete;
@@ -72,7 +71,7 @@ class ARQuickLookTabHelper
   explicit ARQuickLookTabHelper(web::WebState* web_state);
 
  private:
-  friend class web::WebStateUserData<ARQuickLookTabHelper>;
+  friend class web::LazyWebStateUserData<ARQuickLookTabHelper>;
 
   // Previews the downloaded file given by current download task.
   void DidFinishDownload();

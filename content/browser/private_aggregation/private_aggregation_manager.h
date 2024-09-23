@@ -5,12 +5,14 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -41,14 +43,16 @@ class CONTENT_EXPORT PrivateAggregationManager {
   // if the pipe closed after the timeout, regardless of when the disconnection
   // actually happens. `timeout` must be positive if set. If
   // `aggregation_coordinator_origin` is set, the origin must be on the
-  // allowlist.
+  // allowlist. `filtering_id_max_bytes` must be positive and no greater than
+  // `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
-      PrivateAggregationBudgetKey::Api api_for_budgeting,
+      PrivateAggregationCallerApi api_for_budgeting,
       std::optional<std::string> context_id,
       std::optional<base::TimeDelta> timeout,
       std::optional<url::Origin> aggregation_coordinator_origin,
+      size_t filtering_id_max_bytes,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver) = 0;
 

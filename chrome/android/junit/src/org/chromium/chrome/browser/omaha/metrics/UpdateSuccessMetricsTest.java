@@ -13,11 +13,9 @@ import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
@@ -28,9 +26,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Source;
@@ -46,16 +42,9 @@ public class UpdateSuccessMetricsTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-
     @Before
     public void setUp() {
         mMetrics = new UpdateSuccessMetrics(mProvider);
-    }
-
-    @After
-    public void tearDown() {
-        UmaRecorderHolder.resetForTesting();
     }
 
     /** Tests that StartTracking properly persists the right tracking information. */

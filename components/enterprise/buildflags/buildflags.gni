@@ -2,12 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/cast.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
-import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
   # Indicates support for content analysis against a cloud agent for Enterprise
@@ -20,14 +18,17 @@ declare_args() {
   enterprise_local_content_analysis = is_win || is_mac || is_linux
 
   # Indicates support for Data Control rules.
-  enterprise_data_controls = is_win || is_mac || is_linux || is_chromeos
+  enterprise_data_controls =
+      is_win || is_mac || is_linux || is_chromeos || is_android
 
   # Indicates support for client certificates provisioning.
-  enterprise_client_certificates = is_win || is_mac
+  enterprise_client_certificates = is_win || is_mac || is_linux
 
-  # The watermark is currently implemented using the views framework
+  # The watermark is currently implemented using the views framework.
   enterprise_watermark =
       toolkit_views && (is_win || is_mac || is_linux || is_chromeos)
+
+  enterprise_screenshot_protection = is_win || is_mac
 }
 
 declare_args() {
@@ -38,8 +39,3 @@ declare_args() {
   enterprise_content_analysis =
       enterprise_cloud_content_analysis || enterprise_local_content_analysis
 }
-
-# These two flags are equivalent, but `enable_print_content_analysis` still
-# needs to exist separately as it lives under //printing which cannot depend
-# on //components.
-assert(enterprise_content_analysis == enable_print_content_analysis)

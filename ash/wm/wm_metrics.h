@@ -5,6 +5,10 @@
 #ifndef ASH_WM_WM_METRICS_H_
 #define ASH_WM_WM_METRICS_H_
 
+#include <ostream>
+
+#include "ash/ash_export.h"
+
 namespace ash {
 
 // Used to record different ways to snap a window. Note this should be kept in
@@ -30,8 +34,12 @@ enum class WindowSnapActionSource {
   kSnapGroupWindowUpdate,
   kTest,
   kLacrosSnapButtonOrWindowLayoutMenu,
-  kMaxValue = kLacrosSnapButtonOrWindowLayoutMenu,
+  kSnapBySwapWindowsInSnapGroup,
+  kMaxValue = kSnapBySwapWindowsInSnapGroup,
 };
+
+ASH_EXPORT std::ostream& operator<<(std::ostream& out,
+                                    WindowSnapActionSource source);
 
 // Used to save histogram metrics about how the user initiates window snapping.
 constexpr char kWindowSnapActionSourceHistogram[] =

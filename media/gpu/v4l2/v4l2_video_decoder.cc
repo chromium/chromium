@@ -29,9 +29,9 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/v4l2/legacy/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_status.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
-#include "media/gpu/v4l2/v4l2_video_decoder_backend_stateful.h"
 #include "media/gpu/v4l2/v4l2_video_decoder_backend_stateless.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -58,7 +58,7 @@ constexpr int k480pArea = 720 * 480;
 constexpr int k1080pArea = 1920 * 1088;
 // We are aligning these with the Widevine spec for sample sizes for various
 // resolutions. 1MB for SD, 2MB for HD and 4MB for UHD.
-// Input bitstream buffer size fo rup to 480p streams.
+// Input bitstream buffer size for up to 480p streams.
 constexpr size_t kInputBuferMaxSizeFor480p = 1024 * 1024;
 // Input bitstream buffer size for up to 1080p streams.
 constexpr size_t kInputBufferMaxSizeFor1080p = 2 * kInputBuferMaxSizeFor480p;
@@ -220,7 +220,7 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
                                   bool /*low_delay*/,
                                   CdmContext* cdm_context,
                                   InitCB init_cb,
-                                  const OutputCB& output_cb,
+                                  const PipelineOutputCB& output_cb,
                                   const WaitingCB& /*waiting_cb*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(config.IsValidConfig());
@@ -273,8 +273,8 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
       LogAndRecordUMA(FROM_HERE,
                       V4l2VideoDecoderFunctions::kStopStreamV4L2Queue);
 
-      // TODO(crbug/1103510): Make StopStreamV4L2Queue return a StatusOr, and
-      // pipe that back instead.
+      // TODO(crbug.com/40139291): Make StopStreamV4L2Queue return a StatusOr,
+      // and pipe that back instead.
       std::move(init_cb).Run(
           DecoderStatus(DecoderStatus::Codes::kNotInitialized)
               .AddCause(
@@ -365,18 +365,18 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
 bool V4L2VideoDecoder::NeedsBitstreamConversion() const {
   DCHECK(output_cb_) << "V4L2VideoDecoder hasn't been initialized";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
          (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX);
 }
 
 bool V4L2VideoDecoder::CanReadWithoutStalling() const {
   NOTIMPLEMENTED();
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int V4L2VideoDecoder::GetMaxDecodeRequests() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 VideoDecoderType V4L2VideoDecoder::GetDecoderType() const {
@@ -515,7 +515,7 @@ void V4L2VideoDecoder::AllocateSecureBuffer(uint32_t size,
                   weak_this_for_callbacks_.GetWeakPtr(), std::move(callback))),
               mojo::PlatformHandle()));
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -648,6 +648,14 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   DVLOGF(3) << "size: " << size.ToString()
             << ", visible_rect: " << visible_rect.ToString();
 
+  if (bit_depth == 10u) {
+    VLOGF(1) << "10-bit format, need to set EXT_CTRLS first";
+    CroStatus ext_status = SetExtCtrls10Bit(size);
+    if (ext_status != CroStatus::Codes::kOk) {
+      return ext_status;
+    }
+  }
+
   const auto v4l2_pix_fmts = EnumerateSupportedPixFmts(
       base::BindRepeating(&V4L2Device::Ioctl, device_),
       V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
@@ -666,8 +674,7 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
     // P010 and NV12, and then down sample to NV12 if it is selected. This is
     // not desired, so drop the candidates that don't match the bit depth of the
     // stream.
-    const size_t candidate_bit_depth =
-        BitDepth(candidate->ToVideoPixelFormat());
+    size_t candidate_bit_depth = BitDepth(candidate->ToVideoPixelFormat());
     if (candidate_bit_depth != bit_depth) {
       DVLOGF(1) << "Enumerated format " << candidate->ToString()
                 << " with a bit depth of " << candidate_bit_depth
@@ -677,16 +684,8 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
       continue;
     }
 
-    std::optional<struct v4l2_format> format =
-        output_queue_->TryFormat(pixfmt, size, 0);
-    if (!format)
-      continue;
-
-    gfx::Size adjusted_size(format->fmt.pix_mp.width,
-                            format->fmt.pix_mp.height);
-
     candidates.emplace_back(
-        PixelLayoutCandidate{.fourcc = *candidate, .size = adjusted_size});
+        PixelLayoutCandidate{.fourcc = *candidate, .size = size});
   }
 
   // Ask the pipeline to pick the output format.
@@ -756,6 +755,83 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
         return CroStatus::Codes::kFailedToChangeResolution;
       }
     }
+  }
+
+  return CroStatus::Codes::kOk;
+}
+
+CroStatus V4L2VideoDecoder::SetExtCtrls10Bit(const gfx::Size& size) {
+  std::vector<struct v4l2_ext_control> ctrls;
+  struct v4l2_ctrl_hevc_sps v4l2_sps;
+  struct v4l2_ctrl_vp9_frame v4l2_vp9_frame;
+#if BUILDFLAG(IS_CHROMEOS)
+  struct v4l2_ctrl_av1_sequence v4l2_av1_sequence;
+#endif
+
+  struct v4l2_ext_control ctrl;
+  memset(&ctrl, 0, sizeof(ctrl));
+
+  // 10-bit formats require codec specific parameters be passed before the
+  // CAPTURE queue will report the proper decoded formats.
+  if (input_format_fourcc_ == V4L2_PIX_FMT_HEVC_SLICE) {
+    // For HEVC the SPS data is sent in to indicate 10-bit content. We also set
+    // the size and chroma format since that should be all the information
+    // needed in order to know the format.
+    VLOGF(1) << "Setting EXT_CTRLS for 10-bit HEVC";
+    memset(&v4l2_sps, 0, sizeof(v4l2_sps));
+    v4l2_sps.pic_width_in_luma_samples = size.width();
+    v4l2_sps.pic_height_in_luma_samples = size.height();
+    v4l2_sps.bit_depth_luma_minus8 = 2;
+    v4l2_sps.bit_depth_chroma_minus8 = 2;
+    v4l2_sps.chroma_format_idc = 1;  // 4:2:0
+
+    ctrl.id = V4L2_CID_STATELESS_HEVC_SPS;
+    ctrl.size = sizeof(v4l2_sps);
+    ctrl.ptr = &v4l2_sps;
+
+    ctrls.push_back(ctrl);
+  } else if (input_format_fourcc_ == V4L2_PIX_FMT_VP9_FRAME) {
+    // VP9 requires the profile (only profile 2), bit depth , and flags
+    VLOGF(1) << "Setting EXT_CTRLS for 10-bit VP9.2";
+    memset(&v4l2_vp9_frame, 0, sizeof(v4l2_vp9_frame));
+    v4l2_vp9_frame.bit_depth = 10;
+    v4l2_vp9_frame.profile = 2;
+    v4l2_vp9_frame.flags =
+        V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING | V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING;
+
+    ctrl.id = V4L2_CID_STATELESS_VP9_FRAME;
+    ctrl.size = sizeof(v4l2_vp9_frame);
+    ctrl.ptr = &v4l2_vp9_frame;
+
+    ctrls.push_back(ctrl);
+#if BUILDFLAG(IS_CHROMEOS)
+  } else if (input_format_fourcc_ == V4L2_PIX_FMT_AV1_FRAME) {
+    // AV1 only requires that the |bit_depth| parameter be set to enable
+    // 10 bit formats on the CAPTURE queue.
+    VLOGF(1) << "Setting EXT_CTRLS for 10-bit AV1";
+    memset(&v4l2_av1_sequence, 0, sizeof(v4l2_av1_sequence));
+    v4l2_av1_sequence.bit_depth = 10;
+
+    ctrl.id = V4L2_CID_STATELESS_AV1_SEQUENCE;
+    ctrl.size = sizeof(v4l2_av1_sequence);
+    ctrl.ptr = &v4l2_av1_sequence;
+
+    ctrls.push_back(ctrl);
+#endif
+  } else {
+    // TODO(b/): Add other 10-bit codecs
+    return CroStatus::Codes::kNoDecoderOutputFormatCandidates;
+  }
+
+  struct v4l2_ext_controls ext_ctrls;
+  memset(&ext_ctrls, 0, sizeof(ext_ctrls));
+  ext_ctrls.count = ctrls.size();
+  ext_ctrls.controls = ctrls.data();
+  ext_ctrls.which = V4L2_CTRL_WHICH_CUR_VAL;
+  ext_ctrls.request_fd = -1;
+  if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
+    VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
+    return CroStatus::Codes::kNoDecoderOutputFormatCandidates;
   }
 
   return CroStatus::Codes::kOk;
@@ -1199,7 +1275,7 @@ void V4L2VideoDecoder::ServiceDeviceTask(bool event) {
   }
 }
 
-void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
+void V4L2VideoDecoder::OutputFrame(scoped_refptr<FrameResource> frame,
                                    const gfx::Rect& visible_rect,
                                    const VideoColorSpace& color_space,
                                    base::TimeDelta timestamp) {
@@ -1217,8 +1293,8 @@ void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
   if (frame->visible_rect() != visible_rect ||
       frame->timestamp() != timestamp) {
     gfx::Size natural_size = aspect_ratio_.GetNaturalSize(visible_rect);
-    scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
-        frame, frame->format(), visible_rect, natural_size);
+    scoped_refptr<FrameResource> wrapped_frame =
+        frame->CreateWrappingFrame(visible_rect, natural_size);
     wrapped_frame->set_timestamp(timestamp);
 
     frame = std::move(wrapped_frame);

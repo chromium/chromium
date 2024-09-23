@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+
 #define PNG_INTERNAL
 #include "third_party/libpng/png.h"
 
@@ -63,8 +68,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_infop info_ptr = png_create_info_struct(png_ptr);
   assert(info_ptr);
 
-  base::ScopedClosureRunner struct_deleter(
-      base::BindOnce(&png_destroy_read_struct, &png_ptr, &info_ptr, nullptr));
+  absl::Cleanup struct_deleter = [&png_ptr, &info_ptr] {
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
+  };
 
   if (setjmp(png_jmpbuf(png_ptr))) {
     return 0;

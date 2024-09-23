@@ -136,7 +136,6 @@ crashpad::ProcessID ProcessSnapshotMinidump::ProcessID() const {
 crashpad::ProcessID ProcessSnapshotMinidump::ParentProcessID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   NOTREACHED();  // https://crashpad.chromium.org/bug/10
-  return 0;
 }
 
 void ProcessSnapshotMinidump::SnapshotTime(timeval* snapshot_time) const {
@@ -209,7 +208,6 @@ std::vector<UnloadedModuleSnapshot> ProcessSnapshotMinidump::UnloadedModules()
     const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   NOTREACHED();  // https://crashpad.chromium.org/bug/10
-  return unloaded_modules_;
 }
 
 const ExceptionSnapshot* ProcessSnapshotMinidump::Exception() const {
@@ -230,7 +228,6 @@ std::vector<const MemoryMapRegionSnapshot*> ProcessSnapshotMinidump::MemoryMap()
 std::vector<HandleSnapshot> ProcessSnapshotMinidump::Handles() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   NOTREACHED();  // https://crashpad.chromium.org/bug/10
-  return std::vector<HandleSnapshot>();
 }
 
 std::vector<const MemorySnapshot*> ProcessSnapshotMinidump::ExtraMemory()

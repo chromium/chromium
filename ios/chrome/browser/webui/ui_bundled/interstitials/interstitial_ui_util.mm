@@ -16,7 +16,7 @@
 #import "crypto/rsa_private_key.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ssl/model/ios_captive_portal_blocking_page.h"
 #import "ios/chrome/browser/ssl/model/ios_ssl_blocking_page.h"
@@ -144,10 +144,10 @@ CreateCaptivePortalBlockingPage(web::WebState* web_state) {
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
 CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
-  safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+  using enum safe_browsing::SBThreatType;
+
+  safe_browsing::SBThreatType threat_type = SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
-  GURL main_frame_url(request_url);
 
   // The SafeBrowsingBlockingPage requires the allow list to be instantiated.
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);
@@ -164,25 +164,25 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   if (net::GetValueForKeyInQuery(
           url, kChromeInterstitialSafeBrowsingTypeQueryKey, &type_param)) {
     if (type_param == kChromeInterstitialSafeBrowsingTypeMalwareValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type = SB_THREAT_TYPE_URL_MALWARE;
     } else if (type_param == kChromeInterstitialSafeBrowsingTypePhishingValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+      threat_type = SB_THREAT_TYPE_URL_PHISHING;
     } else if (type_param == kChromeInterstitialSafeBrowsingTypeUnwantedValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+      threat_type = SB_THREAT_TYPE_URL_UNWANTED;
     } else if (type_param ==
                kChromeInterstitialSafeBrowsingTypeClientsidePhishingValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+      threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     } else if (type_param == kChromeInterstitialSafeBrowsingTypeBillingValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
+      threat_type = SB_THREAT_TYPE_BILLING;
     }
   }
 
   security_interstitials::UnsafeResource resource;
   resource.url = request_url;
-  resource.is_subresource = request_url != main_frame_url;
-  resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.weak_web_state = web_state->GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
   return SafeBrowsingBlockingPage::Create(resource);
 }

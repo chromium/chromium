@@ -6,9 +6,9 @@
 #define CC_ANIMATION_WORKLET_ANIMATION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "cc/animation/animation.h"

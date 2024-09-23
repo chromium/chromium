@@ -256,7 +256,7 @@ class LinuxPort(base.Port):
         # Raise the Xvfb connection limit if the default limit (256 connections)
         # is in danger of being exceeded by 4 connections per test.
         if self._xvfb_supports_maxclients:
-            flags += ['-maxclients', '512']
+            flags += ['-maxclients', '1024']
         return flags
 
     def _find_display(self):

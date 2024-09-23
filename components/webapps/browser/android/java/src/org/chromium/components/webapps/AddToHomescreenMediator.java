@@ -57,10 +57,10 @@ class AddToHomescreenMediator implements AddToHomescreenViewDelegate {
     }
 
     @CalledByNative
-    void setWebAppInfo(String title, String url, boolean isWebApk) {
+    void setWebAppInfo(String title, String url, @AppType int appType) {
         mModel.set(AddToHomescreenProperties.TITLE, title);
         mModel.set(AddToHomescreenProperties.URL, url);
-        mModel.set(AddToHomescreenProperties.TYPE, isWebApk ? AppType.WEBAPK : AppType.SHORTCUT);
+        mModel.set(AddToHomescreenProperties.TYPE, appType);
     }
 
     @CalledByNative

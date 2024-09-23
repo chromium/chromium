@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -22,7 +23,7 @@ TEST(Mp4MuxerContextTest, Default) {
   auto output_position_tracker =
       std::make_unique<OutputPositionTracker>(base::BindRepeating(
           [](std::string* written_data, base::OnceClosure run_loop_quit,
-             base::StringPiece data) {
+             std::string_view data) {
             written_data->append(data);
             std::move(run_loop_quit).Run();
           },

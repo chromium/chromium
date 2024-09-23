@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "testing/perf/luci_test_result.h"
 
 #include <utility>
@@ -219,8 +224,7 @@ void LuciTestResult::AddTag(const std::string& key, const std::string& value) {
 
 void LuciTestResult::WriteToFile(const base::FilePath& result_file) const {
   const std::string json = ToJson(*this);
-  const int json_size = json.size();
-  CHECK(WriteFile(result_file, json.data(), json_size) == json_size);
+  CHECK(WriteFile(result_file, json));
 }
 
 }  // namespace perf_test

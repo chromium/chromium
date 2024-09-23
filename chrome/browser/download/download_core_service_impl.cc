@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/download/download_offline_content_provider.h"
 #include "chrome/browser/download/download_offline_content_provider_factory.h"
@@ -123,16 +124,22 @@ int DownloadCoreServiceImpl::BlockingShutdownCount() const {
   return profile_->GetDownloadManager()->BlockingShutdownCount();
 }
 
-void DownloadCoreServiceImpl::CancelDownloads() {
-  if (!download_manager_created_)
+void DownloadCoreServiceImpl::CancelDownloads(
+    DownloadCoreService::CancelDownloadsTrigger trigger) {
+  if (!download_manager_created_) {
     return;
+  }
 
   DownloadManager* download_manager = profile_->GetDownloadManager();
   DownloadManager::DownloadVector downloads;
   download_manager->GetAllDownloads(&downloads);
-  for (auto it = downloads.begin(); it != downloads.end(); ++it) {
-    if ((*it)->GetState() == download::DownloadItem::IN_PROGRESS)
-      (*it)->Cancel(false);
+  for (auto& download : downloads) {
+    if (download->GetState() == download::DownloadItem::IN_PROGRESS) {
+      download->Cancel(/*user_cancel=*/false);
+      if (trigger == DownloadCoreService::CancelDownloadsTrigger::kShutdown) {
+        manager_delegate_->OnDownloadCanceledAtShutdown(download);
+      }
+    }
   }
 }
 

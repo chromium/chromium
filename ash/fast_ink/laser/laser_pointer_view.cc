@@ -60,7 +60,8 @@ float LinearInterpolate(float initial_value,
 // tail(D), zero or more regular segments(C), one head(B) and a circle at the
 // end(A). They are meant to fit perfectly with the previous and next segments,
 // so that no whitespace/overlap is shown.
-// A more detailed version of this is located at https://goo.gl/qixdux.
+// A more detailed version of this is located at:
+// https://docs.google.com/document/d/1wqws7g5ra7MCFDaDdMPbTFj7hJ-eq6MLd0podA2y_i0/edit
 class LaserSegment {
  public:
   LaserSegment(const std::vector<gfx::PointF>& previous_points,

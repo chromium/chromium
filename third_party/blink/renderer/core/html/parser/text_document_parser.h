@@ -35,7 +35,7 @@ class TextDocumentParser final : public HTMLDocumentParser {
   ~TextDocumentParser() override;
 
  private:
-  void AppendBytes(const char*, size_t) override;
+  void AppendBytes(base::span<const uint8_t>) override;
   void InsertFakePreElement();
 
   bool have_inserted_fake_pre_element_;

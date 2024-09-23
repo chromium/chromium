@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "net/base/mime_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
@@ -39,6 +40,21 @@ namespace {
 constexpr FilenameToURLPolicy kFilenameToURLPolicy =
     FilenameToURLPolicy::CONVERT_FILENAMES;
 
+// Returns name parameter in application/octet-stream;name=<...>, or empty
+// string if parsing fails.
+std::string GetApplicationOctetStreamName(const std::string& mime_type) {
+  base::StringPairs params;
+  if (net::MatchesMimeType(std::string(ui::kMimeTypeOctetStream), mime_type) &&
+      net::ParseMimeType(mime_type, nullptr, &params)) {
+    for (const auto& kv : params) {
+      if (kv.first == "name") {
+        return kv.second;
+      }
+    }
+  }
+  return std::string();
+}
+
 // Converts mime type string to OSExchangeData::Format, if supported, otherwise
 // 0 is returned.
 int MimeTypeToFormat(const std::string& mime_type) {
@@ -51,10 +67,12 @@ int MimeTypeToFormat(const std::string& mime_type) {
   if (mime_type == ui::kMimeTypeHTML || mime_type == ui::kMimeTypeHTMLUtf8) {
     return OSExchangeData::HTML;
   }
-  if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream))
+  if (!GetApplicationOctetStreamName(mime_type).empty()) {
     return OSExchangeData::FILE_CONTENTS;
-  if (mime_type == ui::kMimeTypeWebCustomData)
+  }
+  if (mime_type == ui::kMimeTypeDataTransferCustomData) {
     return OSExchangeData::PICKLED_DATA;
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (mime_type == ui::kMimeTypeDataTransferEndpoint)
     return OSExchangeData::DATA_TRANSFER_ENDPOINT;
@@ -66,22 +84,28 @@ int MimeTypeToFormat(const std::string& mime_type) {
 template <typename StringType>
 StringType BytesTo(PlatformClipboard::Data bytes) {
   using ValueType = typename StringType::value_type;
-  if (bytes->size() % sizeof(ValueType) != 0U) {
+  const size_t bytes_size = bytes->size();
+  const size_t rounded_bytes_size =
+      bytes_size - (bytes_size % sizeof(ValueType));
+  if (bytes_size != rounded_bytes_size) {
     // This is suspicious.
     LOG(WARNING)
         << "Data is possibly truncated, or a wrong conversion is requested.";
   }
 
-  StringType result(bytes->front_as<ValueType>(),
-                    bytes->size() / sizeof(ValueType));
+  StringType result;
+  result.resize(rounded_bytes_size / sizeof(ValueType));
+  base::as_writable_byte_span(result).copy_from(
+      base::span(*bytes).first(rounded_bytes_size));
   return result;
 }
 
 void AddString(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   DCHECK(provider);
 
-  if (data->data().empty())
+  if (data->as_vector().empty()) {
     return;
+  }
 
   provider->SetString(base::UTF8ToUTF16(BytesTo<std::string>(data)));
 }
@@ -89,8 +113,9 @@ void AddString(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 void AddHtml(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   DCHECK(provider);
 
-  if (data->data().empty())
+  if (data->as_vector().empty()) {
     return;
+  }
 
   provider->SetHtml(base::UTF8ToUTF16(BytesTo<std::string>(data)), GURL());
 }
@@ -130,6 +155,19 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   provider->SetFilenames(filenames);
 }
 
+void AddFileContents(const std::string& filename,
+                     PlatformClipboard::Data data,
+                     OSExchangeDataProvider* provider) {
+  DCHECK(provider);
+
+  if (filename.empty()) {
+    return;
+  }
+
+  provider->SetFileContents(base::FilePath(filename),
+                            BytesTo<std::string>(data));
+}
+
 // Parses |data| as if it had text/x-moz-url format, which is basically
 // two lines separated with newline, where the first line is the URL and
 // the second one is page title.  The unpleasant feature of text/x-moz-url is
@@ -137,8 +175,9 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   DCHECK(provider);
 
-  if (data->data().empty())
+  if (data->as_vector().empty()) {
     return;
+  }
 
   std::u16string data_as_string16 = BytesTo<std::u16string>(data);
 
@@ -166,8 +205,9 @@ void AddUrl(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
 void AddSource(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
   DCHECK(provider);
 
-  if (data->data().empty())
+  if (data->as_vector().empty()) {
     return;
+  }
 
   std::string source_dte = BytesTo<std::string>(data);
   provider->SetSource(ConvertJsonToDataTransferEndpoint(source_dte));
@@ -210,11 +250,9 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
   }
 
   if (HasFileContents()) {
-    base::FilePath file_contents_filename;
-    std::string file_contents;
-    GetFileContents(&file_contents_filename, &file_contents);
+    std::optional<FileContentsInfo> file_contents = GetFileContents();
 
-    std::string filename = file_contents_filename.value();
+    std::string filename = file_contents->filename.value();
     base::ReplaceChars(filename, "\\", "\\\\", &filename);
     base::ReplaceChars(filename, "\"", "\\\"", &filename);
     const std::string mime_type =
@@ -234,7 +272,7 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
   return mime_types;
 }
 
-// TODO(crbug.com/1236708): Support custom formats/pickled data.
+// TODO(crbug.com/40192823): Support custom formats/pickled data.
 void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
                                           const std::string& mime_type) {
   DCHECK(data);
@@ -253,6 +291,9 @@ void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
     case OSExchangeData::FILE_NAME:
       AddFiles(data, this);
       break;
+    case OSExchangeData::FILE_CONTENTS:
+      AddFileContents(GetApplicationOctetStreamName(mime_type), data, this);
+      break;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     case OSExchangeData::DATA_TRANSFER_ENDPOINT:
       AddSource(data, this);
@@ -261,39 +302,35 @@ void WaylandExchangeDataProvider::AddData(PlatformClipboard::Data data,
   }
 }
 
-// TODO(crbug.com/1236708): Support custom formats/pickled data.
+// TODO(crbug.com/40192823): Support custom formats/pickled data.
 bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
                                               std::string* out_content) const {
   DCHECK(out_content);
   DCHECK(IsMimeTypeSupported(mime_type));
-  if (mime_type == ui::kMimeTypeMozillaURL && HasURL(kFilenameToURLPolicy)) {
-    GURL url;
-    std::u16string title;
-    GetURLAndTitle(kFilenameToURLPolicy, &url, &title);
-    out_content->append(url.spec());
+  if (std::optional<ui::OSExchangeData::UrlInfo> url_info;
+      mime_type == ui::kMimeTypeMozillaURL &&
+      (url_info = GetURLAndTitle(kFilenameToURLPolicy)).has_value()) {
+    out_content->append(url_info->url.spec());
     return true;
   }
   if ((mime_type == ui::kMimeTypeHTML || mime_type == ui::kMimeTypeHTMLUtf8) &&
       HasHtml()) {
-    std::u16string data;
-    GURL base_url;
-    GetHtml(&data, &base_url);
-    out_content->append(base::UTF16ToUTF8(data));
+    const std::optional<ui::OSExchangeData::HtmlInfo>& html_content = GetHtml();
+    out_content->append(base::UTF16ToUTF8(html_content->html));
     return true;
   }
   if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream) &&
       HasFileContents()) {
-    base::FilePath filename;
-    std::string file_contents;
-    GetFileContents(&filename, &file_contents);
-    out_content->append(file_contents);
+    std::optional<FileContentsInfo> file_contents = GetFileContents();
+    out_content->append(file_contents->file_contents);
     return true;
   }
-  if (HasCustomFormat(ui::ClipboardFormatType::WebCustomDataType())) {
-    base::Pickle pickle;
-    GetPickledData(ui::ClipboardFormatType::WebCustomDataType(), &pickle);
-    *out_content = std::string(reinterpret_cast<const char*>(pickle.data()),
-                               pickle.size());
+  if (mime_type == ui::kMimeTypeDataTransferCustomData &&
+      HasCustomFormat(ui::ClipboardFormatType::DataTransferCustomType())) {
+    std::optional<base::Pickle> pickle =
+        GetPickledData(ui::ClipboardFormatType::DataTransferCustomType());
+    *out_content = std::string(reinterpret_cast<const char*>(pickle->data()),
+                               pickle->size());
     return true;
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -308,10 +345,8 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   // condition otherwise, for data maps that contain both string and custom
   // data, for example, it may result in subtle issues, such as,
   // https://crbug.com/1271311.
-  if (HasString()) {
-    std::u16string data;
-    GetString(&data);
-    out_content->append(base::UTF16ToUTF8(data));
+  if (std::optional<std::u16string> data = GetString(); data.has_value()) {
+    out_content->append(base::UTF16ToUTF8(*data));
     return true;
   }
   return false;

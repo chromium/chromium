@@ -30,6 +30,7 @@
 *.proto text eol=lf
 *.rs text eol=lf
 *.sh text eol=lf
+*.spec text eol=lf
 *.sql   text eol=lf
 *.toml  text eol=lf
 *.txt   text eol=lf

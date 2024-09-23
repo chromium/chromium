@@ -24,9 +24,18 @@ class BASE_EXPORT PowerSuspendObserver {
 
 class BASE_EXPORT PowerStateObserver {
  public:
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base.power_monitor
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
+  enum class BatteryPowerStatus {
+    kUnknown = 0,
+    kBatteryPower = 1,
+    kExternalPower = 2,
+  };
+
   // Notification of a change in power status of the computer, such
   // as from switching between battery and A/C power.
-  virtual void OnPowerStateChange(bool on_battery_power) = 0;
+  virtual void OnBatteryPowerStatusChange(
+      BatteryPowerStatus battery_power_status) = 0;
 
  protected:
   virtual ~PowerStateObserver() = default;

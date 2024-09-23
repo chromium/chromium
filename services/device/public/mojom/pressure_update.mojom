@@ -7,7 +7,7 @@ module device.mojom;
 import "mojo/public/mojom/base/time.mojom";
 
 enum PressureSource {
-  // TODO(crbug.com/1342184): Consider other sources.
+  // TODO(crbug.com/40230901): Consider other sources.
   // For now, "cpu" is the only source.
   kCpu,
 };
@@ -32,5 +32,5 @@ enum PressureState {
 struct PressureUpdate {
   PressureSource source;
   PressureState state;
-  mojo_base.mojom.Time timestamp;
+  mojo_base.mojom.TimeTicks timestamp;
 };

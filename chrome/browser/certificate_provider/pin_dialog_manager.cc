@@ -4,8 +4,9 @@
 
 #include "chrome/browser/certificate_provider/pin_dialog_manager.h"
 
+#include <vector>
+
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 
@@ -180,7 +181,7 @@ void PinDialogManager::RemovePinDialogHost(
   if (active_dialog_state_ && active_dialog_state_->host == pin_dialog_host)
     CloseActiveDialog();
   DCHECK(base::Contains(added_dialog_hosts_, pin_dialog_host));
-  base::Erase(added_dialog_hosts_, pin_dialog_host);
+  std::erase(added_dialog_hosts_, pin_dialog_host);
 }
 
 PinDialogManager::SignRequestState::SignRequestState(

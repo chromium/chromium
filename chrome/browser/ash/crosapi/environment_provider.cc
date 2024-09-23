@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 
-#include <optional>
-
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -13,69 +11,25 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/policy_namespace.mojom.h"
-#include "components/account_id/account_id.h"
-#include "components/account_manager_core/account.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_type.h"
 #include "crypto/nss_util_internal.h"
 
 namespace crosapi {
 
+// static
+EnvironmentProvider* EnvironmentProvider::Get() {
+  static base::NoDestructor<EnvironmentProvider> provider;
+  return provider.get();
+}
+
 EnvironmentProvider::EnvironmentProvider() = default;
 EnvironmentProvider::~EnvironmentProvider() = default;
-
-mojom::SessionType EnvironmentProvider::GetSessionType() {
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  const Profile* const profile =
-      ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (profile->IsGuestSession()) {
-    return mojom::SessionType::kGuestSession;
-  }
-  if (chromeos::IsManagedGuestSession()) {
-    return mojom::SessionType::kPublicSession;
-  }
-  if (user->GetType() == user_manager::UserType::kWebKioskApp) {
-    return mojom::SessionType::kWebKioskSession;
-  }
-  if (user->GetType() == user_manager::UserType::kKioskApp) {
-    return mojom::SessionType::kAppKioskSession;
-  }
-  if (user->GetType() == user_manager::UserType::kChild) {
-    return mojom::SessionType::kChildSession;
-  }
-  return mojom::SessionType::kRegularSession;
-}
-
-mojom::DeviceMode EnvironmentProvider::GetDeviceMode() {
-  policy::DeviceMode mode = ash::InstallAttributes::Get()->GetMode();
-  switch (mode) {
-    case policy::DEVICE_MODE_PENDING:
-      // "Pending" is an internal detail of InstallAttributes and doesn't need
-      // its own mojom value.
-      return mojom::DeviceMode::kNotSet;
-    case policy::DEVICE_MODE_NOT_SET:
-      return mojom::DeviceMode::kNotSet;
-    case policy::DEVICE_MODE_CONSUMER:
-      return mojom::DeviceMode::kConsumer;
-    case policy::DEVICE_MODE_ENTERPRISE:
-      return mojom::DeviceMode::kEnterprise;
-    case policy::DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE:
-      return mojom::DeviceMode::kLegacyRetailMode;
-    case policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:
-      return mojom::DeviceMode::kConsumerKioskAutolaunch;
-    case policy::DEVICE_MODE_DEMO:
-      return mojom::DeviceMode::kDemo;
-  }
-}
 
 mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   mojom::DefaultPathsPtr default_paths = mojom::DefaultPaths::New();
@@ -101,6 +55,9 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
         integration_service->IsMounted()) {
       default_paths->drivefs = integration_service->GetMountPointPath();
     }
+    if (ash::cloud_upload::IsODFSMounted(profile)) {
+      default_paths->onedrive = ash::cloud_upload::GetODFSFuseboxMount(profile);
+    }
     default_paths->android_files =
         base::FilePath(file_manager::util::GetAndroidFilesPath());
     default_paths->linux_files =
@@ -116,6 +73,7 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
     default_paths->documents = home.Append("Documents");
     default_paths->downloads = home.Append("Downloads");
     default_paths->drivefs = home.Append("Drive");
+    default_paths->onedrive = home.Append("fsp");
     default_paths->android_files = home.Append("Android");
     default_paths->linux_files = home.Append("Crostini");
     default_paths->ash_resources = home.Append("Ash");
@@ -136,41 +94,6 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
       web_app::GetPreinstalledWebAppExtraConfigDirFromCommandLine(profile);
 
   return default_paths;
-}
-
-std::optional<account_manager::Account>
-EnvironmentProvider::GetDeviceAccount() {
-  // Lacros doesn't support Multi-Login. Get the Primary User.
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user)
-    return std::nullopt;
-
-  const AccountId& account_id = user->GetAccountId();
-  switch (account_id.GetAccountType()) {
-    case AccountType::ACTIVE_DIRECTORY:
-      return std::make_optional(account_manager::Account{
-          account_manager::AccountKey{
-              account_id.GetObjGuid(),
-              account_manager::AccountType::kActiveDirectory},
-          user->GetDisplayEmail()});
-    case AccountType::GOOGLE:
-      return std::make_optional(account_manager::Account{
-          account_manager::AccountKey{account_id.GetGaiaId(),
-                                      account_manager::AccountType::kGaia},
-          user->GetDisplayEmail()});
-    case AccountType::UNKNOWN:
-      return std::nullopt;
-  }
-}
-
-base::Time EnvironmentProvider::GetLastPolicyFetchAttemptTimestamp() {
-  return last_policy_fetch_attempt_;
-}
-
-void EnvironmentProvider::SetLastPolicyFetchAttemptTimestamp(
-    const base::Time& timestamp) {
-  last_policy_fetch_attempt_ = timestamp;
 }
 
 }  // namespace crosapi

@@ -57,7 +57,8 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
     const std::string& name) const {
   auto resource_iter = resource_map_.find(name);
   if (resource_iter == resource_map_.end()) {
-    NOTREACHED() << "No module is registered with name \"" << name << "\"";
+    NOTREACHED_IN_MIGRATION()
+        << "No module is registered with name \"" << name << "\"";
     return v8::Local<v8::String>();
   }
 
@@ -67,7 +68,7 @@ v8::Local<v8::String> ResourceBundleSourceMap::GetSource(
 
   std::string_view resource = resource_bundle_->GetRawDataResource(info.id);
   if (resource.empty()) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "Module resource registered as \"" << name << "\" not found";
     return v8::Local<v8::String>();
   }

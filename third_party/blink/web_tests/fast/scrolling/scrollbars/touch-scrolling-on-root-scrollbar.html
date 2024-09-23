@@ -63,7 +63,7 @@ window.onload = () => {
     position.y -= trackOffset;
     await touchTapScroll(position.x, position.y, document);
 
-    assert_true(Math.abs(window.scrollY - 512) < 1,
+    assert_true(Math.abs(window.scrollY - 512) <= 1,
                 "Pressing the down trackpart didn't scroll.");
 
     // Tap on the track part just below the up arrow.
@@ -77,7 +77,7 @@ window.onload = () => {
     position = rightArrow();
     position.x -= trackOffset;
     await touchTapScroll(position.x, position.y, document);
-    assert_true(Math.abs(window.scrollX - 687) < 1,
+    assert_true(Math.abs(window.scrollX - 687) <= 1,
                 "Pressing the right trackpart didn't scroll.");
 
     // Tap on the track part just to the right of the left arrow.

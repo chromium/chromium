@@ -23,6 +23,9 @@
 // Initializes the check start section with `item`.
 - (void)setCheckStartItem:(TableViewItem*)item;
 
+// Initializes the notification opt-in section with `item`.
+- (void)setNotificationsOptInItem:(TableViewItem*)item;
+
 // Initializes the footer with timestamp of last completed run.
 - (void)setTimestampFooterItem:(TableViewLinkHeaderFooterItem*)item;
 

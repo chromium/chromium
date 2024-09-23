@@ -22,133 +22,116 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="Completion">
-  <variant name="Aborted" summary="aborted"/>
-  <variant name="Completed" summary="completed"/>
-  <variant name="Counterfactual" summary="prevented counterfactually"/>
-</variants>
-
-<histogram name="Ash.HoldingSpaceWallpaperNudge.Duration" units="ms"
-    expires_after="2024-06-01">
-  <owner>angusmclean@google.com</owner>
+<histogram name="Ash.WelcomeTour.Aborted.Duration" units="ms"
+    expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
   <summary>
-    Records the duration the Holding Space wallpaper nudge was shown after the
-    nudge closes.
-  </summary>
-</histogram>
-
-<histogram name="Ash.HoldingSpaceWallpaperNudge.Eligible" enum="Boolean"
-    expires_after="2024-06-01">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records whether a user was deemed eligible to see the Holding Space
-    wallpaper nudge at first session start.
-  </summary>
-</histogram>
-
-<histogram name="Ash.HoldingSpaceWallpaperNudge.IneligibleReason"
-    enum="HoldingSpaceWallpaperNudgeIneligibleReason"
-    expires_after="2024-06-01">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records the reason a user was deemed ineligible to see the Holding Space
-    wallpaper nudge at first session start.
-  </summary>
-</histogram>
-
-<histogram name="Ash.HoldingSpaceWallpaperNudge.Interaction.Count"
-    enum="HoldingSpaceWallpaperNudgeInteraction" expires_after="2024-06-01">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Recorded each time the user performed the given interaction.
-  </summary>
-</histogram>
-
-<histogram
-    name="Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTime.{Interaction}"
-    units="seconds" expires_after="2024-06-01">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records how long after the start of the first eligible session the user
-    first {Interaction}.
-  </summary>
-  <token key="Interaction">
-    <variant name="DraggedFileOverWallpaper"
-        summary="dragged a file over the wallpper"/>
-    <variant name="DroppedFileOnHoldingSpace"
-        summary="dropped a file on the holding space tray"/>
-    <variant name="DroppedFileOnWallpaper"
-        summary="dropped a file on the wallpaper"/>
-    <variant name="OpenedHoldingSpace" summary="opened holding space"/>
-    <variant name="PinnedFileFromAnySource"
-        summary="pinned a file from any source"/>
-    <variant name="PinnedFileFromContextMenu"
-        summary="pinned a file from the context menu on a holding space chip"/>
-    <variant name="PinnedFileFromFilesApp"
-        summary="pinned a file from the Files app"/>
-    <variant name="PinnedFileFromHoldingSpaceDrop"
-        summary="pinned a file by dropping it on holding space"/>
-    <variant name="PinnedFileFromPinButton"
-        summary="pinned a file by clicking the pin button on a holding space
-                 chip"/>
-    <variant name="PinnedFileFromWallpaperDrop"
-        summary="pinned a file by dropping it on the wallpaper"/>
-    <variant name="UsedOtherItem"
-        summary="used a non-pinned item in holding space"/>
-    <variant name="UsedPinnedItem"
-        summary="used a pinned item in holding space"/>
-  </token>
-</histogram>
-
-<histogram name="Ash.HoldingSpaceWallpaperNudge.Shown" units="count"
-    expires_after="2024-06-01">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records the number of times the Holding Space wallpaper nudge was shown so
-    far, each time it is shown.
-  </summary>
-</histogram>
-
-<histogram name="Ash.HoldingSpaceWallpaperNudge.ShownBeforeFirstPin"
-    units="count" expires_after="2024-06-01">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records the number of times the Holding Space wallpaper nudge was shown
-    before the user pinned a file to the holding space for the first time.
-  </summary>
-</histogram>
-
-<histogram name="Ash.HoldingSpaceWallpaperNudge.SuppressedReason"
-    enum="HoldingSpaceWallpaperNudgeSuppressedReason"
-    expires_after="2024-06-01">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records the reason the Holding Space wallpaper nudge was suppressed when it
-    could have been shown.
+    Records the duration of the Welcome Tour when it has been aborted, starting
+    from when dialog shows.
   </summary>
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Aborted.Reason"
-    enum="WelcomeTourAbortedReason" expires_after="2024-08-04">
-  <owner>angusmclean@google.com</owner>
+    enum="WelcomeTourAbortedReason" expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
   <summary>
     Records the reason that the Welcome Tour was aborted after starting.
   </summary>
 </histogram>
 
-<histogram name="Ash.WelcomeTour.Prevented.Reason"
-    enum="WelcomeTourPreventedReason" expires_after="2024-08-04">
-  <owner>angusmclean@google.com</owner>
+<histogram name="Ash.WelcomeTour.ChangedExperimentalArm"
+    enum="WelcomeTourExperimentalArm" expires_after="2025-07-01">
+  <owner>wutao@google.com</owner>
+  <owner>llin@google.com</owner>
+  <summary>
+    Records the first run experimental arm when there is an change between the
+    first run experimental arm and the activated experimental arm in subsequent
+    sessions.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.ChromeVoxEnabled.When"
+    enum="WelcomeTourChromeVoxEnabled" expires_after="2025-07-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records when ChromeVox is enabled in the Welcome Tour. Only logged when the
+    feature flag is turned on and the tour is shown.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Completed.Duration" units="ms"
+    expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records the duration of the Welcome Tour when it has been completed,
+    starting from when dialog shows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.ExperimentalArm"
+    enum="WelcomeTourExperimentalArm" expires_after="2025-07-01">
+  <owner>wutao@google.com</owner>
+  <owner>llin@google.com</owner>
+  <summary>
+    Records in which experimental arm the user was active when an attempt was
+    made to show the Welcome Tour.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Interaction.Count"
+    enum="WelcomeTourInteraction" expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records each time the user performs the given interaction when the tour was
+    completed, aborted, or held back.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Interaction.FirstTime.{Interaction}"
+    units="ms" expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records the time it took the user to interact with {Interaction}, when the
+    tour was completed, aborted, or held back.
+  </summary>
+  <token key="Interaction">
+    <variant name="ExploreApp" summary="the Explore app"/>
+    <variant name="FilesApp" summary="the Files app"/>
+    <variant name="Launcher" summary="the Launcher"/>
+    <variant name="QuickSettings" summary="Quick Settings"/>
+    <variant name="Search" summary="the search box in the Launcher"/>
+    <variant name="SettingsApp" summary="the Settings app"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Interaction.FirstTimeBucket.{Interaction}"
+    enum="TimeBucket" expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
+  <summary>
+    Records the time it took the user to interact with {Interaction}, when the
+    tour was completed, aborted, or held back.
+  </summary>
+  <token key="Interaction">
+    <variant name="ExploreApp" summary="the Explore app"/>
+    <variant name="FilesApp" summary="the Files app"/>
+    <variant name="Launcher" summary="the Launcher"/>
+    <variant name="QuickSettings" summary="Quick Settings"/>
+    <variant name="Search" summary="the search box in the Launcher"/>
+    <variant name="SettingsApp" summary="the Settings app"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.WelcomeTour.Prevented.Reason"
+    enum="WelcomeTourPreventedReason" expires_after="2025-07-01">
+  <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
   <summary>
     Records the reason that the Welcome Tour was prevented from starting. Only
     logged when the feature flag is turned on, but the tour was not shown for
@@ -156,17 +139,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.WelcomeTour.Result" enum="WelcomeTourResult"
+    expires_after="2025-07-01">
+  <owner>wutao@google.com</owner>
+  <owner>llin@google.com</owner>
+  <summary>
+    Records the result for an attempt to show the Welcome Tour to the user.
+  </summary>
+</histogram>
+
 <histogram name="Ash.WelcomeTour.Step.Aborted" enum="WelcomeTourStep"
-    expires_after="2024-08-04">
-  <owner>angusmclean@google.com</owner>
+    expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
   <summary>Records that the Welcome Tour was aborted on a given step.</summary>
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Duration.{Step}" units="ms"
-    expires_after="2024-08-04">
-  <owner>angusmclean@google.com</owner>
+    expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
   <summary>
     Records the duration of the {Step} step of the Welcome Tour.
   </summary>
@@ -183,56 +175,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
-    expires_after="2024-08-04">
-  <owner>angusmclean@google.com</owner>
+    expires_after="2025-07-01">
   <owner>dmblack@google.com</owner>
+  <owner>teresachow@google.com</owner>
   <summary>
     Records that a step of the Welcome Tour was shown. Each step should be
     recorded either 0 or 1 times for any given user, depending on how far into
     the tour the user proceeds.
   </summary>
-</histogram>
-
-<histogram name="Ash.WelcomeTour.{Completion}.Duration" units="ms"
-    expires_after="2024-08-04">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records the duration of the Welcome Tour when it has been {Completion},
-    starting from when dialog shows.
-  </summary>
-  <token key="Completion" variants="Completion"/>
-</histogram>
-
-<histogram name="Ash.WelcomeTour.{Completion}.Interaction.Count"
-    enum="WelcomeTourInteraction" expires_after="2024-08-04">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records each time the user performs the given interaction when the tour was
-    {Completion}.
-  </summary>
-  <token key="Completion" variants="Completion"/>
-</histogram>
-
-<histogram
-    name="Ash.WelcomeTour.{Completion}.Interaction.FirstTime.{Interaction}"
-    units="ms" expires_after="2024-08-04">
-  <owner>angusmclean@google.com</owner>
-  <owner>dmblack@google.com</owner>
-  <summary>
-    Records the time it took the user to interact with {Interaction}, when the
-    tour was {Completion}.
-  </summary>
-  <token key="Completion" variants="Completion"/>
-  <token key="Interaction">
-    <variant name="ExploreApp" summary="the Explore app"/>
-    <variant name="FilesApp" summary="the Files app"/>
-    <variant name="Launcher" summary="the Launcher"/>
-    <variant name="QuickSettings" summary="Quick Settings"/>
-    <variant name="Search" summary="the search box in the Launcher"/>
-    <variant name="SettingsApp" summary="the Settings app"/>
-  </token>
 </histogram>
 
 </histograms>

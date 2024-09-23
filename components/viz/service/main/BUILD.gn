@@ -45,13 +45,6 @@ source_set("main") {
     deps += [ "//ui/ozone:ozone" ]
   }
 
-  if (use_dawn || skia_use_dawn) {
-    deps += [
-      "//third_party/dawn/src/dawn:proc",
-      "//third_party/dawn/src/dawn/native",
-    ]
-  }
-
   if (is_chromeos_ash) {
     deps += [ "//media/gpu" ]
   }

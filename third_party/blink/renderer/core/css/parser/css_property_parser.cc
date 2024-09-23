@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
@@ -9,8 +14,11 @@
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/hash_tools.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -30,19 +38,6 @@ class CSSIdentifierValue;
 
 namespace {
 
-const CSSValue* MaybeConsumeCSSWideKeyword(CSSParserTokenRange& range) {
-  CSSParserTokenRange original_range = range;
-
-  if (CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range)) {
-    if (range.AtEnd()) {
-      return value;
-    }
-  }
-
-  range = original_range;
-  return nullptr;
-}
-
 bool IsPropertyAllowedInRule(const CSSProperty& property,
                              StyleRule::RuleType rule_type) {
   // This function should be called only when parsing a property. Shouldn't
@@ -52,16 +47,17 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
     case StyleRule::kStyle:
       return true;
     case StyleRule::kPage:
+    case StyleRule::kPageMargin:
       // TODO(sesse): Limit the allowed properties here.
       // https://www.w3.org/TR/css-page-3/#page-property-list
       // https://www.w3.org/TR/css-page-3/#margin-property-list
       return true;
     case StyleRule::kKeyframe:
       return property.IsValidForKeyframe();
-    case StyleRule::kTry:
-      return property.IsValidForPositionFallback();
+    case StyleRule::kPositionTry:
+      return property.IsValidForPositionTry();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -69,37 +65,31 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
 }  // namespace
 
 CSSPropertyParser::CSSPropertyParser(
-    const CSSTokenizedValue& value,
+    CSSParserTokenStream& stream,
     const CSSParserContext* context,
     HeapVector<CSSPropertyValue, 64>* parsed_properties)
-    : value_(value), context_(context), parsed_properties_(parsed_properties) {
-  value_.range.ConsumeWhitespace();
-
-  wtf_size_t initial_whitespace_len = 0;
-  while (initial_whitespace_len < value.text.length() &&
-         IsHTMLSpace(value.text[initial_whitespace_len])) {
-    ++initial_whitespace_len;
-  }
-  value_.text = StringView(value_.text, initial_whitespace_len);
+    : stream_(stream),
+      context_(context),
+      parsed_properties_(parsed_properties) {
+  // Strip initial whitespace/comments from stream_.
+  stream_.ConsumeWhitespace();
 }
 
 bool CSSPropertyParser::ParseValue(
     CSSPropertyID unresolved_property,
-    bool important,
-    const CSSTokenizedValue& value,
+    bool allow_important_annotation,
+    CSSParserTokenStream& stream,
     const CSSParserContext* context,
     HeapVector<CSSPropertyValue, 64>& parsed_properties,
     StyleRule::RuleType rule_type) {
-  int parsed_properties_size = parsed_properties.size();
-
-  CSSPropertyParser parser(value, context, &parsed_properties);
+  CSSPropertyParser parser(stream, context, &parsed_properties);
   CSSPropertyID resolved_property = ResolveCSSPropertyID(unresolved_property);
   bool parse_success;
   if (rule_type == StyleRule::kFontFace) {
     parse_success = parser.ParseFontFaceDescriptor(resolved_property);
   } else {
-    parse_success =
-        parser.ParseValueStart(unresolved_property, rule_type, important);
+    parse_success = parser.ParseValueStart(
+        unresolved_property, allow_important_annotation, rule_type);
   }
 
   // This doesn't count UA style sheets
@@ -107,40 +97,46 @@ bool CSSPropertyParser::ParseValue(
     context->Count(context->Mode(), unresolved_property);
   }
 
-  if (!parse_success) {
-    parsed_properties.Shrink(parsed_properties_size);
-  }
-
   return parse_success;
 }
 
+// NOTE: “stream” cannot include !important; this is for setting properties
+// from CSSOM or similar.
 const CSSValue* CSSPropertyParser::ParseSingleValue(
     CSSPropertyID property,
-    CSSParserTokenRange range,
+    CSSParserTokenStream& stream,
     const CSSParserContext* context) {
   DCHECK(context);
-  range.ConsumeWhitespace();
+  stream.ConsumeWhitespace();
 
-  if (const CSSValue* value = MaybeConsumeCSSWideKeyword(range)) {
-    return value;
+  const CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
+  if (!value) {
+    value = ParseLonghand(property, CSSPropertyID::kInvalid, *context, stream);
   }
-
-  const CSSValue* value =
-      ParseLonghand(property, CSSPropertyID::kInvalid, *context, range);
-  if (!value || !range.AtEnd()) {
+  if (!value || !stream.AtEnd()) {
     return nullptr;
   }
   return value;
 }
 
+StringView StripInitialWhitespace(StringView value) {
+  wtf_size_t initial_whitespace_len = 0;
+  while (initial_whitespace_len < value.length() &&
+         IsHTMLSpace(value[initial_whitespace_len])) {
+    ++initial_whitespace_len;
+  }
+  return StringView(value, initial_whitespace_len);
+}
+
 bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
-                                        StyleRule::RuleType rule_type,
-                                        bool important) {
-  if (ConsumeCSSWideKeyword(unresolved_property, important, rule_type)) {
+                                        bool allow_important_annotation,
+                                        StyleRule::RuleType rule_type) {
+  if (ParseCSSWideKeyword(unresolved_property, rule_type)) {
     return true;
   }
 
-  CSSParserTokenRange original_range = value_.range;
+  CSSParserTokenStream::State savepoint = stream_.Save();
+
   CSSPropertyID property_id = ResolveCSSPropertyID(unresolved_property);
   const CSSProperty& property = CSSProperty::Get(property_id);
   // If a CSSPropertyID is only a known descriptor (@fontface, @property), not a
@@ -151,8 +147,15 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   if (!IsPropertyAllowedInRule(property, rule_type)) {
     return false;
   }
+  int parsed_properties_size = parsed_properties_->size();
+
   bool is_shorthand = property.IsShorthand();
   DCHECK(context_);
+
+  // NOTE: The first branch of the if here uses the tokenized form,
+  // and the second uses the streaming parser. This is only allowed
+  // since they start from the same place and we reset both below,
+  // so they cannot go out of sync.
   if (is_shorthand) {
     const auto local_context =
         CSSParserLocalContext()
@@ -160,16 +163,36 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
             .WithCurrentShorthand(property_id);
     // Variable references will fail to parse here and will fall out to the
     // variable ref parser below.
-    if (To<Shorthand>(property).ParseShorthand(important, value_.range,
-                                               *context_, local_context,
-                                               *parsed_properties_)) {
-      return true;
+    //
+    // NOTE: We call ParseShorthand() with important=false, since we don't know
+    // yet whether we have !important or not. We'll change the flag for all
+    // added properties below (ParseShorthand() makes its own calls to
+    // AddProperty(), since there may be more than one of them).
+    if (To<Shorthand>(property).ParseShorthand(
+            /*important=*/false, stream_, *context_, local_context,
+            *parsed_properties_)) {
+      bool important = css_parsing_utils::MaybeConsumeImportant(
+          stream_, allow_important_annotation);
+      if (stream_.AtEnd()) {
+        if (important) {
+          for (wtf_size_t property_idx = parsed_properties_size;
+               property_idx < parsed_properties_->size(); ++property_idx) {
+            (*parsed_properties_)[property_idx].SetImportant();
+          }
+        }
+        return true;
+      }
     }
+
+    // Remove any properties that may have been added by ParseShorthand()
+    // during a failing parse earlier.
+    parsed_properties_->Shrink(parsed_properties_size);
   } else {
-    if (const CSSValue* parsed_value =
-            ParseLonghand(unresolved_property, CSSPropertyID::kInvalid,
-                          *context_, value_.range)) {
-      if (value_.range.AtEnd()) {
+    if (const CSSValue* parsed_value = ParseLonghand(
+            unresolved_property, CSSPropertyID::kInvalid, *context_, stream_)) {
+      bool important = css_parsing_utils::MaybeConsumeImportant(
+          stream_, allow_important_annotation);
+      if (stream_.AtEnd()) {
         AddProperty(property_id, CSSPropertyID::kInvalid, *parsed_value,
                     important, IsImplicitProperty::kNotImplicit,
                     *parsed_properties_);
@@ -178,46 +201,41 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
     }
   }
 
-#if DCHECK_IS_ON()
-  // Due to this requirement, we can use StripTrailingWhitespaceAndComments()
-  // instead of having to also strip from the beginning.
-  if (value_.range.size() > 0) {
-    DCHECK_NE(value_.range.Peek().GetType(), kCommentToken);
-    DCHECK_NE(value_.range.Peek().GetType(), kWhitespaceToken);
-  }
-  if (!value_.text.empty()) {
-    DCHECK(!IsHTMLSpace(value_.text[0]));
-    DCHECK(!value_.text.ToString().StartsWith("/*"));
-  }
-#endif
+  // We did not parse properly without variable substitution,
+  // so rewind the stream, and see if parsing it as something
+  // containing variables will help.
+  //
+  // Note that if so, this needs the original text, so we need to take
+  // note of the original offsets so that we can see what we tokenized.
+  stream_.EnsureLookAhead();
+  stream_.Restore(savepoint);
 
-  if (CSSVariableParser::ContainsValidVariableReferences(original_range)) {
-    StringView text =
-        CSSVariableParser::StripTrailingWhitespaceAndComments(value_.text);
-    if (text.length() > CSSVariableData::kMaxVariableBytes) {
-      return false;
-    }
-
-    bool is_animation_tainted = false;
-    auto* variable = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-        CSSVariableData::Create({original_range, text}, is_animation_tainted,
-                                true),
-        context_);
-
-    if (is_shorthand) {
-      const cssvalue::CSSPendingSubstitutionValue& pending_value =
-          *MakeGarbageCollected<cssvalue::CSSPendingSubstitutionValue>(
-              property_id, variable);
-      css_parsing_utils::AddExpandedPropertyForValue(
-          property_id, pending_value, important, *parsed_properties_);
-    } else {
-      AddProperty(property_id, CSSPropertyID::kInvalid, *variable, important,
-                  IsImplicitProperty::kNotImplicit, *parsed_properties_);
-    }
-    return true;
+  bool important = false;
+  CSSVariableData* variable_data =
+      CSSVariableParser::ConsumeUnparsedDeclaration(
+          stream_,
+          /*allow_important_annotation=*/true,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/true,
+          /*restricted_value=*/true, /*comma_ends_declaration=*/false,
+          important, context_->GetExecutionContext());
+  if (!variable_data) {
+    return false;
   }
 
-  return false;
+  auto* variable = MakeGarbageCollected<CSSUnparsedDeclarationValue>(
+      variable_data, context_);
+  if (is_shorthand) {
+    const cssvalue::CSSPendingSubstitutionValue& pending_value =
+        *MakeGarbageCollected<cssvalue::CSSPendingSubstitutionValue>(
+            property_id, variable);
+    css_parsing_utils::AddExpandedPropertyForValue(
+        property_id, pending_value, important, *parsed_properties_);
+  } else {
+    AddProperty(property_id, CSSPropertyID::kInvalid, *variable, important,
+                IsImplicitProperty::kNotImplicit, *parsed_properties_);
+  }
+  return true;
 }
 
 static inline bool IsExposedInMode(const ExecutionContext* execution_context,
@@ -356,8 +374,9 @@ static CSSPropertyID UnresolvedCSSPropertyID(
 CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
                                       StringView string,
                                       CSSParserMode mode) {
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return UnresolvedCSSPropertyID(execution_context, chars, length, mode);
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    return UnresolvedCSSPropertyID(execution_context, chars.data(),
+                                   chars.size(), mode);
   });
 }
 
@@ -394,21 +413,37 @@ CSSValueID CssValueKeywordID(StringView string) {
                          : CssValueKeywordID(string.Characters16(), length);
 }
 
-bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
-                                              bool important,
-                                              StyleRule::RuleType rule_type) {
-  CSSParserTokenRange range_copy = value_.range;
+const CSSValue* CSSPropertyParser::ConsumeCSSWideKeyword(
+    CSSParserTokenStream& stream,
+    bool allow_important_annotation,
+    bool& important) {
+  CSSParserTokenStream::State savepoint = stream.Save();
 
-  const CSSValue* value = MaybeConsumeCSSWideKeyword(range_copy);
+  const CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(stream);
   if (!value) {
-    return false;
+    // No need to Restore(), we are at the right spot anyway.
+    // (We do this instead of relying on CSSParserTokenStream's
+    // Restore() optimization, as this path is so hot.)
+    return nullptr;
   }
 
-  if (value->IsRevertValue() || value->IsRevertLayerValue()) {
-    // Declarations in @try are not cascaded and cannot be reverted.
-    if (rule_type == StyleRule::kTry) {
-      return false;
-    }
+  important = css_parsing_utils::MaybeConsumeImportant(
+      stream, allow_important_annotation);
+  if (!stream.AtEnd()) {
+    stream.Restore(savepoint);
+    return nullptr;
+  }
+
+  return value;
+}
+
+bool CSSPropertyParser::ParseCSSWideKeyword(CSSPropertyID unresolved_property,
+                                            bool allow_important_annotation) {
+  bool important;
+  const CSSValue* value =
+      ConsumeCSSWideKeyword(stream_, allow_important_annotation, important);
+  if (!value) {
+    return false;
   }
 
   CSSPropertyID property = ResolveCSSPropertyID(unresolved_property);
@@ -423,7 +458,6 @@ bool CSSPropertyParser::ConsumeCSSWideKeyword(CSSPropertyID unresolved_property,
     css_parsing_utils::AddExpandedPropertyForValue(property, *value, important,
                                                    *parsed_properties_);
   }
-  value_.range = range_copy;
   return true;
 }
 
@@ -435,8 +469,9 @@ bool CSSPropertyParser::ParseFontFaceDescriptor(
   if (id == AtRuleDescriptorID::Invalid) {
     return false;
   }
+
   CSSValue* parsed_value =
-      AtRuleDescriptorParser::ParseFontFaceDescriptor(id, value_, *context_);
+      AtRuleDescriptorParser::ParseFontFaceDescriptor(id, stream_, *context_);
   if (!parsed_value) {
     return false;
   }

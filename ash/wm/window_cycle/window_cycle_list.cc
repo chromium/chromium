@@ -381,7 +381,8 @@ void WindowCycleList::InitWindowCycleView() {
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
       root_window->layer()->GetCompositor(),
       kEnterWindowCyclePresentationHistogramName, "",
-      kEnterPresentationMaxLatency);
+      ui::PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+          kEnterPresentationMaxLatency));
   presentation_time_recorder->RequestNext();
 
   // Close any tray bubbles that are opened before creating the cycle view.
@@ -410,9 +411,10 @@ void WindowCycleList::InitWindowCycleView() {
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
 
   views::Widget* widget = new views::Widget();
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.delegate = cycle_view_.get();
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.layer_type = ui::LAYER_NOT_DRAWN;
 
@@ -484,7 +486,7 @@ void WindowCycleList::Scroll(int offset) {
 
   // The windows should not shift position when selecting when there's enough
   // room to display all windows.
-  if (cycle_view_ && cycle_view_->CalculatePreferredSize().width() ==
+  if (cycle_view_ && cycle_view_->CalculatePreferredSize({}).width() ==
                          cycle_view_->CalculateMaxWidth()) {
     cycle_view_->ScrollToWindow(windows_[current_index_]);
   }

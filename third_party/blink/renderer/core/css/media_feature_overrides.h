@@ -15,6 +15,7 @@
 namespace blink {
 
 enum class ColorSpaceGamut;
+class Document;
 enum class ForcedColors;
 class MediaQueryExpValue;
 
@@ -22,7 +23,9 @@ class CORE_EXPORT MediaFeatureOverrides {
   USING_FAST_MALLOC(MediaFeatureOverrides);
 
  public:
-  void SetOverride(const AtomicString& feature, const String& value_string);
+  void SetOverride(const AtomicString& feature,
+                   const String& value_string,
+                   const Document*);
 
   std::optional<ColorSpaceGamut> GetColorGamut() const { return color_gamut_; }
   std::optional<mojom::blink::PreferredColorScheme> GetPreferredColorScheme()
@@ -55,7 +58,8 @@ class CORE_EXPORT MediaFeatureOverrides {
       const MediaQueryExpValue& value);
 
   static MediaQueryExpValue ParseMediaQueryValue(const AtomicString&,
-                                                 const String&);
+                                                 const String&,
+                                                 const Document*);
 
  private:
   std::optional<ColorSpaceGamut> color_gamut_;

@@ -6,13 +6,21 @@ import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
+mojom_component("features") {
+  sources = [ "features.mojom" ]
+  output_prefix = "services_viz_privileged_features_mojom"
+  macro_prefix = "SERVICES_VIZ_PRIVILEGED_FEATURES_MOJOM"
+}
+
 mojom("compositing") {
   sources = [
     "begin_frame_observer.mojom",
     "display_private.mojom",
     "external_begin_frame_controller.mojom",
     "frame_sink_manager.mojom",
+    "frame_sink_manager_test_api.mojom",  # test helpers
     "frame_sink_video_capture.mojom",
+    "frame_sinks_metrics_recorder.mojom",  # test helpers
     "layered_window_updater.mojom",
     "overlay_strategy.mojom",
     "renderer_settings.mojom",
@@ -20,6 +28,8 @@ mojom("compositing") {
   ]
 
   public_deps = [
+    ":features",
+    "//components/input:mojom",
     "//gpu/ipc/common:interfaces",
     "//gpu/ipc/common:surface_handle",
     "//media/capture/mojom:video_capture",
@@ -27,10 +37,16 @@ mojom("compositing") {
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom",
     "//skia/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/display/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/latency/mojom",
   ]
+
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+
+  component_deps = [ "//third_party/blink/public/common" ]
 
   traits_public_deps = [
     "//components/viz/common",
@@ -50,6 +66,9 @@ mojom("compositing") {
   if (enable_cast_overlay_strategy) {
     enabled_features += [ "enable_cast_overlay_strategy" ]
   }
+  if (is_android || is_chromeos_ash) {
+    enabled_features += [ "can_set_refresh_rate" ]
+  }
 
   cpp_typemaps = [
     {
@@ -63,8 +82,10 @@ mojom("compositing") {
           cpp = "::viz::DebugRendererSettings"
         },
       ]
-      traits_headers = [ "//services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.h" ]
-      traits_sources = [ "//services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.cc" ]
+      traits_headers =
+          [ "//services/viz/privileged/cpp/renderer_settings_mojom_traits.h" ]
+      traits_sources =
+          [ "//services/viz/privileged/cpp/renderer_settings_mojom_traits.cc" ]
       traits_public_deps += [ "//ui/gfx/geometry/mojom" ]
     },
   ]

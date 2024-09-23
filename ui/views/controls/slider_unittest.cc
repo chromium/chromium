@@ -26,7 +26,6 @@
 #include "ui/views/test/slider_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_utils.h"
@@ -149,7 +148,7 @@ class SliderTest : public views::ViewsTestBase,
   // The maximum y value within the bounds of the slider.
   int max_y_ = 0;
   // The widget container for the slider being tested.
-  views::UniqueWidgetPtr widget_;
+  std::unique_ptr<Widget> widget_;
   // An event generator.
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
@@ -177,16 +176,17 @@ void SliderTest::SetUp() {
       slider->SetAllowedValues(&values_);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  gfx::Size size = slider->GetPreferredSize();
+  gfx::Size size = slider->GetPreferredSize({});
   slider->SetSize(size);
   max_x_ = size.width() - 1;
   max_y_ = size.height() - 1;
   default_locale_ = base::i18n::GetConfiguredLocale();
 
   views::Widget::InitParams init_params(
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS));
   init_params.bounds = gfx::Rect(size);
 
   widget_ = std::make_unique<Widget>();
@@ -268,14 +268,12 @@ TEST_P(SliderTest, AccessibleRole) {
   ui::AXNodeData data;
   slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kSlider);
-  EXPECT_EQ(slider()->GetAccessibleRole(), ax::mojom::Role::kSlider);
 
-  slider()->SetAccessibleRole(ax::mojom::Role::kMeter);
+  slider()->GetViewAccessibility().SetRole(ax::mojom::Role::kMeter);
 
   data = ui::AXNodeData();
   slider()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kMeter);
-  EXPECT_EQ(slider()->GetAccessibleRole(), ax::mojom::Role::kMeter);
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.

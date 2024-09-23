@@ -13,23 +13,23 @@ namespace blink {
 PrivateAttribution::PrivateAttribution() = default;
 
 // static
-ScriptPromise PrivateAttribution::getEncryptedMatchKey(
-    ScriptState*,
-    String report_collector,
-    PrivateAttributionOptions* options,
-    ExceptionState& exception_state) {
+ScriptPromise<PrivateAttributionEncryptedMatchKey>
+PrivateAttribution::getEncryptedMatchKey(ScriptState*,
+                                         String report_collector,
+                                         PrivateAttributionOptions* options,
+                                         ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     "This function is not implemented.");
-  return ScriptPromise();
+  return EmptyPromise();
 }
 
 // static
-ScriptPromise PrivateAttribution::getHelperNetworks(
-    ScriptState*,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<PrivateAttributionNetwork>>
+PrivateAttribution::getHelperNetworks(ScriptState*,
+                                      ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     "This function is not implemented.");
-  return ScriptPromise();
+  return ScriptPromise<IDLSequence<PrivateAttributionNetwork>>();
 }
 
 void PrivateAttribution::Trace(Visitor* visitor) const {

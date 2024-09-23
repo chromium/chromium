@@ -50,7 +50,7 @@ class DeviceChooserContentViewTest : public ChromeViewsTestBase {
     table_observer_ = std::make_unique<MockTableViewObserver>();
     auto controller = std::make_unique<FakeBluetoothChooserController>();
     controller_ = controller.get();
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     content_view_ =
         widget_->SetContentsView(std::make_unique<DeviceChooserContentView>(
             table_observer_.get(), std::move(controller)));
@@ -240,6 +240,30 @@ TEST_F(DeviceChooserContentViewTest, BluetoothIsOff) {
   EXPECT_FALSE(table_parent()->GetVisible());
   EXPECT_FALSE(no_options_view()->GetVisible());
   EXPECT_TRUE(adapter_off_view()->GetVisible());
+  EXPECT_FALSE(adapter_unauthorized_view()->GetVisible());
+  EXPECT_FALSE(throbber()->GetVisible());
+  EXPECT_FALSE(throbber_label()->GetVisible());
+  EXPECT_TRUE(re_scan_button()->GetVisible());
+  EXPECT_FALSE(re_scan_button()->GetEnabled());
+}
+
+TEST_F(DeviceChooserContentViewTest, BluetoothIsOnThenOffNoDevices) {
+  controller()->SetBluetoothStatus(
+      FakeBluetoothChooserController::BluetoothStatus::IDLE);
+  content_view()->OnOptionsInitialized();
+  ExpectNoDevicesWithMessageVisible();
+  EXPECT_FALSE(adapter_off_view()->GetVisible());
+  EXPECT_FALSE(throbber()->GetVisible());
+  EXPECT_FALSE(throbber_label()->GetVisible());
+  EXPECT_TRUE(re_scan_button()->GetVisible());
+  EXPECT_TRUE(re_scan_button()->GetEnabled());
+
+  controller()->SetBluetoothStatus(
+      FakeBluetoothChooserController::BluetoothStatus::UNAVAILABLE);
+  EXPECT_FALSE(table_parent()->GetVisible());
+  EXPECT_FALSE(no_options_view()->GetVisible());
+  EXPECT_TRUE(adapter_off_view()->GetVisible());
+  EXPECT_FALSE(adapter_unauthorized_view()->GetVisible());
   EXPECT_FALSE(throbber()->GetVisible());
   EXPECT_FALSE(throbber_label()->GetVisible());
   EXPECT_TRUE(re_scan_button()->GetVisible());
@@ -324,7 +348,7 @@ TEST_F(DeviceChooserContentViewTest, ClickAdapterOffHelpLink) {
 TEST_F(DeviceChooserContentViewTest, ClickRescanButton) {
   EXPECT_CALL(*controller(), RefreshOptions()).Times(1);
   const gfx::Point point(10, 10);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
+  const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   views::test::ButtonTestApi(re_scan_button()).NotifyClick(event);
@@ -337,7 +361,7 @@ TEST_F(DeviceChooserContentViewTest, ClickHelpButton) {
   auto* help_button = static_cast<views::ImageButton*>(
       extra_views_container_->children().front());
   const gfx::Point point(10, 10);
-  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, point, point,
+  const ui::MouseEvent event(ui::EventType::kMousePressed, point, point,
                              ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   views::test::ButtonTestApi(help_button).NotifyClick(event);

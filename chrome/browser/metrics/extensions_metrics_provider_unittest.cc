@@ -195,7 +195,7 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     EXPECT_EQ(ExtensionInstallProto::INTERNAL, install.install_location());
 
     EXPECT_TRUE(install.has_manifest_version());
-    EXPECT_EQ(2, install.manifest_version());
+    EXPECT_EQ(3, install.manifest_version());
 
     EXPECT_TRUE(install.has_action_type());
     EXPECT_EQ(ExtensionInstallProto::NO_ACTION, install.action_type());
@@ -208,9 +208,6 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
 
     EXPECT_TRUE(install.has_updates_from_store());
     EXPECT_FALSE(install.updates_from_store());
-
-    EXPECT_TRUE(install.has_is_from_bookmark());
-    EXPECT_FALSE(install.is_from_bookmark());
 
     EXPECT_TRUE(install.has_is_converted_from_user_script());
     EXPECT_FALSE(install.is_converted_from_user_script());
@@ -268,7 +265,8 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("browser_action")
             .SetLocation(ManifestLocation::kInternal)
-            .SetAction(extensions::ActionInfo::TYPE_BROWSER)
+            .SetManifestVersion(2)
+            .SetAction(extensions::ActionInfo::Type::kBrowser)
             .Build();
     add_extension(extension.get());
     ExtensionInstallProto install = ConstructProto(*extension);
@@ -280,7 +278,8 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("page_action")
             .SetLocation(ManifestLocation::kInternal)
-            .SetAction(extensions::ActionInfo::TYPE_PAGE)
+            .SetManifestVersion(2)
+            .SetAction(extensions::ActionInfo::Type::kPage)
             .Build();
     add_extension(extension.get());
     ExtensionInstallProto install = ConstructProto(*extension);
@@ -318,15 +317,12 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
 
   {
     // Test that event pages are reported correctly.
-    auto background =
-        base::Value::Dict()
-            .Set("persistent", false)
-            .Set("scripts", base::Value::List().Append("script.js"));
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("event_page")
             .SetLocation(ManifestLocation::kInternal)
-            .MergeManifest(
-                base::Value::Dict().Set("background", std::move(background)))
+            .SetManifestVersion(2)
+            .SetBackgroundContext(
+                ExtensionBuilder::BackgroundContext::EVENT_PAGE)
             .Build();
     add_extension(extension.get());
     ExtensionInstallProto install = ConstructProto(*extension);
@@ -336,15 +332,12 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
 
   {
     // Test that persistent background pages are reported correctly.
-    auto background =
-        base::Value::Dict()
-            .Set("persistent", true)
-            .Set("scripts", base::Value::List().Append("script.js"));
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("persisent_background")
             .SetLocation(ManifestLocation::kInternal)
-            .MergeManifest(
-                base::Value::Dict().Set("background", std::move(background)))
+            .SetManifestVersion(2)
+            .SetBackgroundContext(
+                ExtensionBuilder::BackgroundContext::BACKGROUND_PAGE)
             .Build();
     add_extension(extension.get());
     ExtensionInstallProto install = ConstructProto(*extension);

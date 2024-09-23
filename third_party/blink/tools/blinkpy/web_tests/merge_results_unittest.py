@@ -1342,58 +1342,6 @@ class WebTestDirMergerTests(unittest.TestCase):
 """
 
     web_test_output_filesystem = {
-        '/out/layout-test-results/access_log.txt':
-        output_access_log,
-        '/out/layout-test-results/error_log.txt':
-        output_error_log,
-        '/out/layout-test-results/failing_results.json':
-        "ADD_RESULTS(" + output_output_json + ");",
-        '/out/layout-test-results/full_results.json':
-        output_output_json,
-        '/out/layout-test-results/stats.json':
-        output_stats_json,
-        '/out/layout-test-results/testdir1/test1-actual.png':
-        '1ap',
-        '/out/layout-test-results/testdir1/test1-diff.png':
-        '1dp',
-        '/out/layout-test-results/testdir1/test1-diffs.html':
-        '1dh',
-        '/out/layout-test-results/testdir1/test1-expected-stderr.txt':
-        '1est',
-        '/out/layout-test-results/testdir1/test1-expected.png':
-        '1ep',
-        '/out/layout-test-results/testdir2/testdir2.1/test3-actual.png':
-        '3ap',
-        '/out/layout-test-results/testdir2/testdir2.1/test3-diff.png':
-        '3dp',
-        '/out/layout-test-results/testdir2/testdir2.1/test3-diffs.html':
-        '3dh',
-        '/out/layout-test-results/testdir2/testdir2.1/test3-expected-stderr.txt':
-        '3est',
-        '/out/layout-test-results/testdir2/testdir2.1/test3-expected.png':
-        '3ep',
-        '/out/layout-test-results/testdir2/testdir2.1/test4-actual.png':
-        '4ap',
-        '/out/layout-test-results/testdir2/testdir2.1/test4-diff.png':
-        '4dp',
-        '/out/layout-test-results/testdir2/testdir2.1/test4-diffs.html':
-        '4dh',
-        '/out/layout-test-results/testdir2/testdir2.1/test4-expected-stderr.txt':
-        '4est',
-        '/out/layout-test-results/testdir2/testdir2.1/test4-expected.png':
-        '4ep',
-        '/out/layout-test-results/testdir3/test5-actual.png':
-        '5ap',
-        '/out/layout-test-results/testdir3/test5-diff.png':
-        '5dp',
-        '/out/layout-test-results/testdir3/test5-diffs.html':
-        '5dh',
-        '/out/layout-test-results/testdir3/test5-expected-stderr.txt':
-        '5est',
-        '/out/layout-test-results/testdir3/test5-expected.png':
-        '5ep',
-        '/out/layout-test-results/times_ms.json':
-        output_times_ms_json,
         '/out/output.json':
         output_output_json,
     }
@@ -1407,7 +1355,8 @@ class WebTestDirMergerTests(unittest.TestCase):
 
         for fname, expected_contents in self.web_test_output_filesystem.items(
         ):
-            self.assertTrue(fs.isfile(fname))
+            self.assertTrue(fs.isfile(fname),
+                            f'{fname} should be a regular file')
             if fname.endswith(".json"):
                 actual_json_str = fs.read_text_file(fname)
                 expected_json_str = expected_contents

@@ -3,28 +3,37 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import '../demo.css.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_checkbox_demo.html.js';
+import {getCss} from '../demo.css.js';
 
-class CrCheckboxDemoElement extends PolymerElement {
+import {getHtml} from './cr_checkbox_demo.html.js';
+
+export class CrCheckboxDemoElement extends CrLitElement {
   static get is() {
     return 'cr-checkbox-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      myValue_: Boolean,
+      myValue_: {type: Boolean},
     };
   }
 
-  private myValue_: boolean;
+  protected myValue_?: boolean;
+
+  protected onCheckedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.myValue_ = e.detail.value;
+  }
 }
 
 export const tagName = CrCheckboxDemoElement.is;

@@ -35,8 +35,9 @@ SystemEngine::~SystemEngine() {
 
 bool SystemEngine::BindConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> receiver) {
-  if (!decoder_entry_points_)
+  if (!decoder_entry_points_) {
     return false;
+  }
   auto receiver_pipe_handle = receiver.PassPipe().release().value();
   return decoder_entry_points_->mojo_mode_initialize_connection_factory(
       receiver_pipe_handle);

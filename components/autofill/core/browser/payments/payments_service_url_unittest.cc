@@ -5,8 +5,6 @@
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 
 #include "base/command_line.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -17,41 +15,6 @@ namespace payments {
 TEST(PaymentsServiceSandboxUrl, CheckSandboxUrls) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWalletServiceUseSandbox, "1");
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillUpdateChromeSettingsLinkToGPayWeb);
-
-  const char kExpectedSandboxURL[] =
-      "https://pay.sandbox.google.com/payments/"
-      "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
-      "paymentMethods";
-
-  EXPECT_EQ(kExpectedSandboxURL, GetManageInstrumentsUrl().spec());
-  EXPECT_EQ(kExpectedSandboxURL, GetManageAddressesUrl().spec());
-}
-
-TEST(PaymentsServiceSandboxUrl, CheckProdUrls) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kWalletServiceUseSandbox, "0");
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillUpdateChromeSettingsLinkToGPayWeb);
-
-  const char kExpectedURL[] =
-      "https://pay.google.com/payments/"
-      "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
-      "paymentMethods";
-
-  EXPECT_EQ(kExpectedURL, GetManageInstrumentsUrl().spec());
-  EXPECT_EQ(kExpectedURL, GetManageAddressesUrl().spec());
-}
-
-TEST(PaymentsServiceSandboxUrl,
-     CheckSandboxUrls_UpdateChromeSettingLinkToGPayWebEnabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kWalletServiceUseSandbox, "1");
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillUpdateChromeSettingsLinkToGPayWeb);
 
   const char kExpectedURL[] =
       "https://pay.sandbox.google.com/"
@@ -62,12 +25,9 @@ TEST(PaymentsServiceSandboxUrl,
   EXPECT_EQ(kExpectedURL, GetManageAddressesUrl().spec());
 }
 
-TEST(PaymentsServiceSandboxUrl,
-     CheckProdUrls_UpdateChromeSettingLinkToGPayWebEnabled) {
+TEST(PaymentsServiceSandboxUrl, CheckProdUrls) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWalletServiceUseSandbox, "0");
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillUpdateChromeSettingsLinkToGPayWeb);
 
   const char kExpectedURL[] =
       "https://pay.google.com/"
@@ -76,6 +36,15 @@ TEST(PaymentsServiceSandboxUrl,
 
   EXPECT_EQ(kExpectedURL, GetManageInstrumentsUrl().spec());
   EXPECT_EQ(kExpectedURL, GetManageAddressesUrl().spec());
+}
+
+TEST(PaymentsServiceUrl, UrlWithInstrumentId) {
+  const char kExpectedURL[] =
+      "https://pay.google.com/"
+      "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+      "payment_methods&id=123";
+
+  EXPECT_EQ(kExpectedURL, GetManageInstrumentUrl(/*instrument_id=*/123).spec());
 }
 
 }  // namespace payments

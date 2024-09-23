@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/config/gpu_control_list.h"
 
 #include <utility>
 
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -206,7 +212,7 @@ bool GpuControlList::Version::Contains(const std::string& version_string,
         return false;
       return Version::Compare(version, ref_version2, style) <= 0;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -372,8 +378,7 @@ bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
     return false;
   }
   if (gpu_count.IsSpecified()) {
-    size_t count = gpu_info.secondary_gpus.size() + 1;
-    if (!gpu_count.Contains(std::to_string(count))) {
+    if (!gpu_count.Contains(std::to_string(gpu_info.GpuCount()))) {
       return false;
     }
   }
@@ -431,6 +436,9 @@ bool GpuControlList::Conditions::Contains(OsType target_os_type,
       break;
     case kMultiGpuCategorySecondary:
       candidates = gpu_info.secondary_gpus;
+      break;
+    case kMultiGpuCategoryNpu:
+      candidates = gpu_info.npus;
       break;
     case kMultiGpuCategoryAny:
       candidates = gpu_info.secondary_gpus;
@@ -643,7 +651,7 @@ base::Value::List GpuControlList::Entry::GetFeatureNames(
   base::Value::List feature_names;
   for (size_t ii = 0; ii < feature_size; ++ii) {
     auto iter = feature_map.find(features[ii]);
-    DCHECK(iter != feature_map.end());
+    CHECK(iter != feature_map.end(), base::NotFatalUntil::M130);
     feature_names.Append(iter->second);
   }
   for (size_t ii = 0; ii < disabled_extension_size; ++ii) {

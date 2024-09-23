@@ -6,108 +6,43 @@
 
 #include "base/command_line.h"
 #include "base/environment.h"
-#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "ui/base/ozone_buildflags.h"
-#include "ui/ozone/public/ozone_switches.h"
-
-#if BUILDFLAG(IS_OZONE_WAYLAND)
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/nix/xdg_util.h"
-#include "base/threading/thread_restrictions.h"
-
-constexpr char kPlatformWayland[] = "wayland";
-
-bool HasWaylandDisplay(base::Environment* env) {
-  std::string wayland_display;
-  const bool has_wayland_display =
-      env->GetVar("WAYLAND_DISPLAY", &wayland_display) &&
-      !wayland_display.empty();
-  if (has_wayland_display)
-    return true;
-
-  std::string xdg_runtime_dir;
-  const bool has_xdg_runtime_dir =
-      env->GetVar("XDG_RUNTIME_DIR", &xdg_runtime_dir) &&
-      !xdg_runtime_dir.empty();
-  if (has_xdg_runtime_dir) {
-    auto wayland_server_pipe =
-        base::FilePath(xdg_runtime_dir).Append("wayland-0");
-    // Normally, this should happen exactly once, at the startup of the main
-    // process.
-    base::ScopedAllowBlocking allow_blocking;
-    return base::PathExists(wayland_server_pipe);
-  }
-
-  return false;
-}
-
-#endif  // BUILDFLAG(IS_OZONE_WAYLAND)
-
-#if BUILDFLAG(IS_OZONE_X11)
-constexpr char kPlatformX11[] = "x11";
-#endif
+#include "ui/linux/display_server_utils.h"
 
 namespace {
 
-// Evaluates the environment and returns the effective platform name for the
-// given |ozone_platform_hint|.
-// For the "auto" value, returns "wayland" if the XDG session type is "wayland",
-// "x11" otherwise.
-// For the "wayland" value, checks if the Wayland server is available, and
-// returns "x11" if it is not.
-// See https://crbug.com/1246928.
-std::string MaybeFixPlatformName(const std::string& ozone_platform_hint) {
-#if BUILDFLAG(IS_OZONE_WAYLAND)
-  // Wayland is selected if both conditions below are true:
-  // 1. The user selected either 'wayland' or 'auto'.
-  // 2. The XDG session type is 'wayland', OR the user has selected 'wayland'
-  //    explicitly and a Wayland server is running.
-  // Otherwise, fall back to X11.
-  if (ozone_platform_hint == kPlatformWayland ||
-      ozone_platform_hint == "auto") {
-    auto env(base::Environment::Create());
+// Do not change the values of these entries since they're recorded in UMA.
+enum class DisplayServerSupport {
+  // Chrome will fail to launch without a display server.
+  kNone = 0,
+  kX11 = 1,
+  // The primary display server is Wayland, but X11 is provided via XWayland.
+  kXWayland = 2,
+  kWaylandOnly = 3,
 
-    std::string xdg_session_type;
-    const bool has_xdg_session_type =
-        env->GetVar(base::nix::kXdgSessionTypeEnvVar, &xdg_session_type) &&
-        !xdg_session_type.empty();
+  kMaxValue = kWaylandOnly,
+};
 
-    if ((has_xdg_session_type && xdg_session_type == "wayland") ||
-        (ozone_platform_hint == kPlatformWayland &&
-         HasWaylandDisplay(env.get()))) {
-      return kPlatformWayland;
-    }
+DisplayServerSupport GetDisplayServerSupport(bool x11, bool wayland) {
+  if (x11 && wayland) {
+    return DisplayServerSupport::kXWayland;
   }
-#endif  // BUILDFLAG(IS_OZONE_WAYLAND)
-
-#if BUILDFLAG(IS_OZONE_X11)
-  if (ozone_platform_hint == kPlatformX11) {
-    return kPlatformX11;
+  if (x11) {
+    return DisplayServerSupport::kX11;
   }
-#if BUILDFLAG(IS_OZONE_WAYLAND)
-  if (ozone_platform_hint == kPlatformWayland ||
-      ozone_platform_hint == "auto") {
-    // We are here if:
-    // - The binary has both X11 and Wayland backends.
-    // - The user wanted Wayland but that did not work, otherwise it would have
-    //   been returned above.
-    if (ozone_platform_hint == kPlatformWayland) {
-      LOG(WARNING) << "No Wayland server is available. Falling back to X11.";
-    } else {
-      LOG(WARNING) << "This is not a Wayland session.  Falling back to X11. "
-                      "If you need to run Chrome on Wayland using some "
-                      "embedded compositor, e. g., Weston, please specify "
-                      "Wayland as your preferred Ozone platform, or use "
-                      "--ozone-platform=wayland.";
-    }
-    return kPlatformX11;
+  if (wayland) {
+    return DisplayServerSupport::kWaylandOnly;
   }
-#endif  // BUILDFLAG(IS_OZONE_WAYLAND)
-#endif  // BUILDFLAG(IS_OZONE_X11)
+  return DisplayServerSupport::kNone;
+}
 
-  return ozone_platform_hint;
+void RecordDisplayServerProtocolSupport() {
+  auto env = base::Environment::Create();
+  base::UmaHistogramEnumeration(
+      "Linux.DisplayServerSupport",
+      GetDisplayServerSupport(ui::HasX11Display(*env),
+                              ui::HasWaylandDisplay(*env)));
 }
 
 }  // namespace
@@ -116,25 +51,19 @@ ChromeBrowserMainExtraPartsLinux::ChromeBrowserMainExtraPartsLinux() = default;
 
 ChromeBrowserMainExtraPartsLinux::~ChromeBrowserMainExtraPartsLinux() = default;
 
-void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
-#if BUILDFLAG(IS_LINUX)
-  // On the desktop, we fix the platform name if necessary.
-  // See https://crbug.com/1246928.
-  auto* const command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kOzonePlatform)) {
-    const auto ozone_platform_hint =
-        command_line->GetSwitchValueASCII(switches::kOzonePlatformHint);
-    if (!ozone_platform_hint.empty()) {
-      command_line->AppendSwitchASCII(
-          switches::kOzonePlatform, MaybeFixPlatformName(ozone_platform_hint));
-    }
-  }
+void ChromeBrowserMainExtraPartsLinux::PostBrowserStart() {
+  RecordDisplayServerProtocolSupport();
+  ChromeBrowserMainExtraPartsOzone::PostBrowserStart();
+}
 
+// static
+void ChromeBrowserMainExtraPartsLinux::InitOzonePlatformHint() {
+#if BUILDFLAG(IS_LINUX)
+  auto* const command_line = base::CommandLine::ForCurrentProcess();
   auto env = base::Environment::Create();
   std::string desktop_startup_id;
-  if (env->GetVar("DESKTOP_STARTUP_ID", &desktop_startup_id))
+  if (env->GetVar("DESKTOP_STARTUP_ID", &desktop_startup_id)) {
     command_line->AppendSwitchASCII("desktop-startup-id", desktop_startup_id);
+  }
 #endif  // BUILDFLAG(IS_LINUX)
-
-  ChromeBrowserMainExtraPartsOzone::PreEarlyInitialization();
 }

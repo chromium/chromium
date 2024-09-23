@@ -39,9 +39,7 @@ ExtensionViewViews::~ExtensionViewViews() {
     parent()->RemoveChildView(this);
   }
 
-  for (auto& observer : observers_) {
-    observer.OnViewDestroying();
-  }
+  observers_.Notify(&Observer::OnViewDestroying);
 }
 
 void ExtensionViewViews::Init() {
@@ -96,7 +94,7 @@ void ExtensionViewViews::SetContainer(
 }
 
 ExtensionViewViews::Container* ExtensionViewViews::GetContainer() const {
-  return container_;
+  return container_.get();
 }
 
 void ExtensionViewViews::AddObserver(Observer* observer) {
@@ -131,7 +129,7 @@ void ExtensionViewViews::RenderFrameCreated(
 
 bool ExtensionViewViews::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }
@@ -150,12 +148,6 @@ void ExtensionViewViews::OnLoaded() {
 
 ui::Cursor ExtensionViewViews::GetCursor(const ui::MouseEvent& event) {
   return ui::Cursor();
-}
-
-void ExtensionViewViews::PreferredSizeChanged() {
-  View::PreferredSizeChanged();
-  if (container_)
-    container_->OnExtensionSizeChanged(this);
 }
 
 void ExtensionViewViews::OnWebContentsAttached(views::WebView*) {

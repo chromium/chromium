@@ -35,17 +35,16 @@ class VirtualTask {
   virtual bool Execute(Profile* profile,
                        const TaskDescriptor& task,
                        const std::vector<FileSystemURL>& file_urls) const = 0;
-  // Whether this task should be included in |FindVirtualTasks()|. This can be
+  // Whether this task should be included in |MatchVirtualTasks()|. This can be
   // used to disable tasks based on a flag or other runtime conditions.
   virtual bool IsEnabled(Profile* profile) const = 0;
   // Whether this task should be available to execute on the supplied files, if
   // enabled. |Matches()| can return true even if the task is disabled - in this
-  // case the task will not be found by |FindVirtualTasks()|. Note this has a
+  // case the task will not be found by |MatchVirtualTasks()|. Note this has a
   // default implementation which matches against file extensions and mime types
   // in |matcher_mime_types_| and |matcher_file_extensions_|.
   virtual bool Matches(const std::vector<extensions::EntryInfo>& entries,
-                       const std::vector<GURL>& file_urls,
-                       const std::vector<std::string>& dlp_source_urls) const;
+                       const std::vector<GURL>& file_urls) const;
 
   // The ID of this task, which is unique across all virtual tasks. Used for
   // storing in preferences, and referring to this task in a TaskDescriptor.
@@ -54,9 +53,15 @@ class VirtualTask {
   // The user-visible icon in Files app. This can be overridden in Files app
   // frontend in file_tasks.ts, based on action ID.
   virtual GURL icon_url() const = 0;
-  // The user-visible title in Files app - make sure it's translated. This can
-  // be overridden in Files app frontend in file_tasks.ts, based on action ID.
+  // The user-visible title in Files app - make sure it's translated.
   virtual std::string title() const = 0;
+  // Whether the execution of this task should be blocked by DLP (Data Leak
+  // Prevention). Files app will show the task as greyed out if it otherwise
+  // matches the file URLs and is enabled. |dlp_source_urls| represents the URLs
+  // from which the |entries| passed to |Matches()| were downloaded. The URLs
+  // are empty strings if not tracked by DLP.
+  virtual bool IsDlpBlocked(
+      const std::vector<std::string>& dlp_source_urls) const = 0;
 
  protected:
   std::vector<std::string> matcher_mime_types_;
@@ -66,11 +71,11 @@ class VirtualTask {
 
 // Appends any virtual tasks that are enabled and match |entries|/|file_urls| to
 // |result_list|.
-void FindVirtualTasks(Profile* profile,
-                      const std::vector<extensions::EntryInfo>& entries,
-                      const std::vector<GURL>& file_urls,
-                      const std::vector<std::string>& dlp_source_urls,
-                      std::vector<FullTaskDescriptor>* result_list);
+void MatchVirtualTasks(Profile* profile,
+                       const std::vector<extensions::EntryInfo>& entries,
+                       const std::vector<GURL>& file_urls,
+                       const std::vector<std::string>& dlp_source_urls,
+                       std::vector<FullTaskDescriptor>* result_list);
 
 // Run |task| by calling |Execute()| on the associated VirtualTask.
 bool ExecuteVirtualTask(Profile* profile,
@@ -80,6 +85,9 @@ bool ExecuteVirtualTask(Profile* profile,
 // Whether |task| is a virtual task and can be executed using
 // |ExecuteVirtualTask()|. Returns true for disabled tasks, too.
 bool IsVirtualTask(const TaskDescriptor& task);
+
+// Look up/get the VirtualTask for |task| if it exists, or nullptr.
+VirtualTask* FindVirtualTask(const TaskDescriptor& task);
 
 // Tests can insert into this vector and it will be used instead of the real
 // tasks if it's non-empty.

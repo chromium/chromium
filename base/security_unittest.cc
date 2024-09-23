@@ -14,11 +14,11 @@
 #include <limits>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/files/file_util.h"
 #include "base/memory/free_deleter.h"
 #include "base/sanitizer_buildflags.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -66,7 +66,7 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
 
 #if BUILDFLAG(IS_APPLE) || defined(ADDRESS_SANITIZER) ||      \
     defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    BUILDFLAG(IS_HWASAN) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    BUILDFLAG(IS_HWASAN) || PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #define MAYBE_NewOverflow DISABLED_NewOverflow
 #else
 #define MAYBE_NewOverflow NewOverflow
@@ -80,7 +80,7 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
 // - XSan aborts when operator new returns nullptr.
 // - PartitionAlloc crashes by design when size_t overflows.
 //
-// TODO(https://crbug.com/927179): Fix the test on Mac.
+// TODO(crbug.com/40611888): Fix the test on Mac.
 TEST(SecurityTest, MAYBE_NewOverflow) {
   const size_t kArraySize = 4096;
   // We want something "dynamic" here, so that the compiler doesn't

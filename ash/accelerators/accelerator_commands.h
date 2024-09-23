@@ -69,11 +69,9 @@ ASH_EXPORT bool CanLock();
 
 ASH_EXPORT bool CanMoveActiveWindowBetweenDisplays();
 
-ASH_EXPORT bool CanGroupOrUngroupWindows();
+ASH_EXPORT bool CanCreateSnapGroup();
 
-ASH_EXPORT void GroupOrUngroupWindowsInSnapGroup();
-
-ASH_EXPORT bool CanMinimizeSnapGroupWindows();
+ASH_EXPORT void CreateSnapGroup();
 
 ASH_EXPORT bool CanMinimizeTopWindowOnBack();
 
@@ -87,6 +85,8 @@ ASH_EXPORT bool CanStopScreenRecording();
 
 ASH_EXPORT bool CanSwapPrimaryDisplay();
 
+ASH_EXPORT bool CanTilingWindowResize();
+
 ASH_EXPORT bool CanToggleCalendar();
 
 ASH_EXPORT bool CanEnableOrToggleDictation();
@@ -98,6 +98,8 @@ ASH_EXPORT bool CanToggleGameDashboard();
 ASH_EXPORT bool CanToggleMultitaskMenu();
 
 ASH_EXPORT bool CanToggleOverview();
+
+ASH_EXPORT bool CanTogglePicker();
 
 ASH_EXPORT bool CanTogglePrivacyScreen();
 
@@ -112,6 +114,9 @@ ASH_EXPORT bool CanWindowSnap();
 //////////////////////////////////////////////////////////////////////////////
 // Accelerator commands.
 // Note: These functions should be independent and not depend on ui::Accelerator
+
+// Runs the assigned accessibility action.
+ASH_EXPORT void AccessibilityAction();
 
 // Activates desk on the left/right.
 ASH_EXPORT void ActivateDesk(bool activate_left);
@@ -241,6 +246,9 @@ ASH_EXPORT void OpenFileManager();
 // Opens the help/explore app.
 ASH_EXPORT void OpenHelp();
 
+// Resizes window as a tile.
+ASH_EXPORT void PerformTilingWindowResize(AcceleratorAction action);
+
 // Presses power button.
 ASH_EXPORT void PowerPressed(bool pressed);
 
@@ -273,9 +281,6 @@ ASH_EXPORT void ShiftPrimaryDisplay();
 // `accelerator_timestamp` is the timestamp associated with the accelerator that
 // triggered the emoji picker.
 ASH_EXPORT void ShowEmojiPicker(base::TimeTicks accelerator_timestamp);
-
-// Sees keyboard shortcut helper.
-ASH_EXPORT void ShowKeyboardShortcutViewer();
 
 // Opens Shortcut Customization.
 ASH_EXPORT void ShowShortcutCustomizationApp();
@@ -316,6 +321,15 @@ ASH_EXPORT void ToggleCapsLock();
 
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
+
+// Toggles Picker.
+// `accelerator_timestamp` is the timestamp associated with the accelerator that
+// triggered Picker.
+ASH_EXPORT void TogglePicker(base::TimeTicks accelerator_timestamp);
+
+// Enables Select to Speak if the feature is currently disabled. Does nothing if
+// the feature is currently enabled.
+ASH_EXPORT void EnableSelectToSpeak();
 
 // Enables Dictation if the feature is currently disabled. Toggles (either
 // starts or stops) Dictation if the feature is currently enabled.
@@ -358,8 +372,13 @@ ASH_EXPORT void ToggleMessageCenterBubble();
 // restored.
 ASH_EXPORT bool ToggleMinimized();
 
+// Turns on or off Mouse Keys.
+ASH_EXPORT void ToggleMouseKeys();
+
 // Minimizes the topmost unminimized snap groups. If there is no such snap
 // group, restores the most recently used minimized snap group.
+// TODO(b/333772909): Remove this API when the mojom conversion is disabled for
+// deprecated shortcuts.
 ASH_EXPORT void ToggleSnapGroupsMinimize();
 
 // Turns the mirror mode on or off.

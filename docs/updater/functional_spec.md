@@ -57,7 +57,21 @@ with the updater).
 
 #### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
-installing an application with `needsadmin=true` or `needsadmin=prefers`.
+it is being run at medium integrity with UAC on and installing an application
+with `needsadmin=true` or `needsadmin=prefers`.
+
+More information is in the
+[design document](design_doc.md#elevation)
+.
+
+#### De-elevation (Windows)
+The metainstaller parses its tag and re-launches itself at medium integrity if
+it is being run at high integrity with UAC on and installing an application with
+`needsadmin=false`.
+
+More information is in the
+[design document](design_doc.md#de_elevation)
+.
 
 #### Localization
 Metainstaller localization presents the metainstaller UI with the user's
@@ -65,7 +79,7 @@ preferred language on the current system. Every string shown in the UI is
 translated.
 
 ### Bundle Installer
-TODO(crbug.com/1035895): Implement bundle installers.
+TODO(crbug.com/40664480): Implement bundle installers.
 
 The bundle installer allows installation of more than one application. The
 bundle installer is typically used in software distribution scenarios.
@@ -220,7 +234,7 @@ The final manifest looks as follows:
 ```
 
 ### MSI Wrapper
-TODO(crbug.com/1327497) - Implement and document.
+TODO(crbug.com/40841203) - Implement and document.
 
 ### Scope
 The updater is installed in one of the following modes (or scopes):
@@ -243,23 +257,22 @@ Depending on the scope, the updater is installed at:
 The updater's functionality is split between several processes. The mode of a
 process is determined by command-line arguments:
 
-*   --install [--app-id=...]
+*   --install[=tag] [--app-id=...]
     *   Install and activate this version of the updater if there is no active
         updater.
+        *   If a tag argument is specified instead of `--app-id`, this supplies
+            the install metadata needed when installing an application.
+            Typically, a tagged metainstaller invokes the updater with the tag.
+            For example: `--install="appguid=foo&appname=Foo&needsadmin=False"`.
     *   --app-id=...
         *   Also install the given application.
-    *   --tag=...
-        *   Supplies the install metadata needed when installing an
-            application. Typically, a tagged metainstaller invokes the updater
-            with this command line argument.
-        *   If --tag is specified, --install is assumed.
-    *   --handoff=...
-        *   As --tag.
+    *   --handoff[=tag]
+        *   A tag argument can be specified, similar to `--install`.
     *   --appargs="appguid=...&installerdata=..."
         * Allows extra data (`installerdata`) to be communicated to the
           application installer. One per application.
         * `appguid` must be the first arg followed by the `installerdata`. The
-          same `appguid` must appear in `tag` value or `handoff` value.
+          same `appguid` must appear in `--install=` or `--handoff=`.
         * This is an alternative to using `installdataindex` in the tag. Where
           `installdataindex` selects from a pre-defined set of `installerdata`
           options, this value specifies the exact `installerdata` to use.
@@ -612,7 +625,7 @@ install. Legacy MSI installers read values such as the
 `LastInstallerResultUIString` from the `ClientState` key in the registry and
 display the string.
 
-TODO(crbug.com/1339454): Implement running installers at
+TODO(crbug.com/40229998): Implement running installers at
 BELOW_NORMAL_PRIORITY_CLASS if the update flow is a background flow.
 
 #### Updater UI behavior
@@ -737,7 +750,7 @@ treating "x64" the same as "x86_64".
 For more information, see the
 [protocol document](protocol_3_1.md#update-checks-body-update-check-response-objects-update-check-response-3).
 
-### MSI installers (work in progress)
+### MSI installers
 
 MSI installers package an offline/standalone installer, and can be built using
 [msi_from_standalone.py](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/signing/msi_from_standalone.py)
@@ -759,13 +772,14 @@ python3 chrome/updater/win/signing/msi_from_standalone.py
     --appid {8237E44A-0054-442C-B6B6-EA0509993955}
     --product_custom_params "&brand=GCEA"
     --product_uninstaller_additional_args=--force-uninstall
-    --product_installer_data "%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D"
+    --product_installer_data "%7B%22distribution%22%3A%7B%22msi%22%3Atrue%7D%7D"
     --standalone_installer_path ChromeBetaOfflineSetup.exe
     --custom_action_dll_path out/Default/msi_custom_action.dll
     --msi_base_name GoogleChromeBetaStandaloneEnterprise
     --enterprise_installer_dir chrome/updater/win/signing
     --company_name "Google"
     --company_full_name "Google LLC"
+    --architecture x64
     --output_dir out/Default
 ```
 
@@ -773,11 +787,11 @@ If this untagged MSI installer is run as-is, it will run the updater
 metainstaller with the following parameters:
 ```
 --silent
---tag=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=GoogleChromeBeta&
-      needsAdmin=True&brand=GCEA
---installsource enterprisemsi
+--install=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
+      appname=GoogleChromeBeta&needsAdmin=True&brand=GCEA
+--installsource=enterprisemsi
 --appargs=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
-          installerdata=%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D
+          installerdata=%7B%22distribution%22%3A%7B%22msi%22%3Atrue%7D%7D
 ```
 
 This MSI can be tagged using `tag.exe` as follows:
@@ -796,24 +810,29 @@ If this tagged MSI installer is run, it will run the updater metainstaller with
 the following parameters:
 ```
 --silent
---tag=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%20Chrome%20
-      Beta&needsAdmin=True&brand=GGLL
+--install=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
+      appname=Google%20Chrome%20Beta&needsAdmin=True&brand=GGLL
 --installsource enterprisemsi
 --appargs=appguid={8237E44A-0054-442C-B6B6-EA0509993955}&
-          installerdata=%7B%22dis%22%3A%7B%22msi%22%3Atrue%7D%7D
+          installerdata=%7B%22distribution%22%3A%7B%22msi%22%3Atrue%7D%7D
 ```
 
 ### Enterprise Enrollment
-The updater may be enrolled with a particular enterprise. Enrollment is
+The machine updater may be enrolled with a particular enterprise. Enrollment is
 coordinated with a device management server by means of an enrollment token and
 a device management token. The enrollment token is placed on the device by other
 programs or the enterprise administrator and serves as an indicator of which
-enterprise the device should attempt to enroll with. The updater sends the
-enrollment token, along with the device's machine name, os information, and
-(on Windows) BIOS serial number. If the server accepts the enrollment, it
-responds with a device-specific device management token, which is used in
-future requests to fetch device-specific policies from the device management
-server.
+enterprise the device should attempt to enroll with. On Windows platform,
+alternatively, an enrollment token can be tagged to the meta-installer by the
+key `etoken`. This is called runtime enrollment token and must be a GUID string.
+When the meta-installer runs, the tagged token is persisted to
+`CloudManagementEnrollmentToken` under registry key
+`{CLIENTSTATE}\{UpdaterAppID}`.  The updater searches the enrollment token from
+known places in order, sends it along with the device's machine name, os
+information, and (on Windows) BIOS serial number. If the server accepts the
+enrollment, it responds with a device-specific device management token, which is
+used in future requests to fetch device-specific policies from the device
+management server.
 
 By default, if enrollment fails, for example if the enrollment token is invalid
 or revoked, the updater will start in an unmanaged state. Instead, if you want
@@ -821,23 +840,35 @@ to prevent the updater from starting if enrollment fails, set
 `EnrollmentMandatory` to `1` (Windows only).
 
 After the updater sets itself up, the `FetchPolicies` RPC is invoked on the
-updater server to register with device management and fetch policies.
+updater server to register with device management and fetch policies. Concurrent
+calls of `FetchPolicies` will result in only a single policy fetch.
 
 The updater also checks for policy updates when the `RunPeriodicTasks` RPC is
 invoked at periodic intervals.
 
+The maximum size of the token is 4K (Windows only).
+
 #### Windows
 The enrollment token is searched in the order:
+
 * The `EnrollmentToken` REG_SZ value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`
 * The `CloudManagementEnrollmentToken` REG_SZ value from
   `HKLM\Software\Policies\{COMPANY_SHORTNAME}\{BROWSER_NAME}`
+* The `CloudManagementEnrollmentToken` REG_SZ value from
+  `{CLIENTSTATE}\{UpdaterAppID}` (the runtime enrollmen token)
+* The `CloudManagementEnrollmentToken` REG_SZ value from
+  `{CLIENTSTATE}\{430FD4D0-B729-4F61-AA34-91526481799D}` (the legacy runtime
+  enrollment token)
 
-The `EnrollmentMandatory` REG_DWORD value is also read from
+The `EnrollmentMandatory` `REG_DWORD` value is also read from
 `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.
 
 #### macOS
 The enrollment token is searched in the order:
+
+* Managed Preference value with key `CloudManagementEnrollmentToken` in domain
+ `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
 * Managed Preference value with key `EnrollmentToken` in domain
  `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
 * File
@@ -854,12 +885,53 @@ The enrollment token is stored in:
 The device management token is stored in:
 `/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/CloudManagement`
 
+### Enterprise DM token
+DM server sends back a DM token to the client device after the device
+enrollment. The client persists the DM token for the authorization purpose
+in the subsequent communication with the DM server.
+
+DM token is stored at:
+##### Windows
+- The `dmtoken` REG_BINARY value at path:
+  `HKLM\Software\WOW6432Node\{COMPANY_SHORTNAME}\Enrollment\`
+- The `dmtoken` REG_BINARY value at path:
+  `HKLM64\Software\{COMPANY_SHORTNAME}\{BROWSER_NAME}\Enrollment\`. This is
+  for backward compatibility.
+
+#### macOS
+- File `/Library/Application Support/{COMPANY_SHORTNAME}/CloudManagement`.
+
+#### Linux
+- File `/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/CloudManagement`.
+
+DM server can send back a response to delete the DM token or invalidate the DM
+token during policy fetch. If a DM token is deleted, the device could be
+re-enrolled into cloud management at the next `--wake` run provided there is a
+valid enrollment token. If a DM token is invalidated, a special DM token value
+`INVALID_DM_TOKEN` is persisted at the DM token location. The device won't
+re-enroll until the invalidated token is deleted externally.
+
+Note the device must have a valid DM token for the downloaded CBCM policies to
+be effective.
+
 ### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
-*   A per-application setting may specify whether an application is installable.
-*   If no per-application setting specifies otherwise, the default install
-    policy is used.
-*   If the default install policy is unset, the application may be installed.
+
+* A per-application setting may specify whether an application is installable.
+* If no per-application setting specifies otherwise, the default install
+  policy is used.
+* If the default install policy is unset, the application may be installed.
+
+Enterprise policies can control the updates of applications:
+
+* Update policy can be set to be always enabled, automatic updates only, manual
+  updates only or disabled.
+* Update policy can be set per-application.
+* If no per-application setting specifies otherwise, the default update
+  policy is used.
+* If the default update policy is unset, the application may be updated.
+* Updates and qualification are always enabled for the updater itself and can't
+  be disabled by policy.
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 
@@ -897,13 +969,22 @@ to a non-zero DWORD value, then the search order of `Group policy` and
 
 #### COM interfaces (Windows only)
 The updater exposes
-[IPolicyStatus3](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template;l=555?q=IPolicyStatus3&ss=chromium)
+[IPolicyStatus4](https://source.chromium.org/search?q=IPolicyStatus4%20file:updater_legacy_idl.template)
 and the corresponding `IDispatch` implementation to provide clients such as
 Chrome the ability to query the updater enterprise policies.
 
 A client can `CoCreateInstance` the `PolicyStatusUserClass` or the
 `PolicyStatusSystemClass` to get the corresponding policy status object and
-query it via the `IPolicyStatus3` methods.
+query it via the `IPolicyStatus4` methods.
+
+#### Enterprise policies ADM/ADMX files (Windows, Google-branded builds only)
+
+ADM/ADMX files for enterprise policies are generated with each build in
+`GoogleUpdateAdmx.zip` and `GoogleCloudManagementAdmx.zip` for enterprise
+customers.
+
+These ADM/ADMX files are generated using the scripts in
+[chrome/updater/enterprise/win/google/](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/enterprise/win/google/).
 
 #### Deploying enterprise applications via updater policy
 For each application that needs to be deployed via the updater, the policy for
@@ -912,6 +993,32 @@ installs (per user)`.
 
 The updater then downloads and installs the application on all machines where
 the policy is deployed, and where the application is not already installed.
+
+#### CBCM policy cache
+The updater fetches all machine level app CBCM policies and caches them in the
+file system.  The cached policy files are global readable for other apps to
+consume. Location of the policy cache folder:
+
+* **Windows**: `%PROGRAMFILESX86%\{COMPANY_SHORTNAME}\Policies`
+* **macOS**: `/Library/{COMPANY_SHORTNAME}/GoogleSoftwareUpdate/DeviceManagement`
+* **Linux**: `/opt/{COMPANY_SHORTNAME}/{PRODUCT_FULLNAME}/DeviceManagement`
+
+The policies are signed. The verification chain is:
+
+* A special file called `CachedPolicyInfo` contains a public signing key
+  with its verification data. This public key verification data is signed by
+  the pinned key always using `RSA_PKCS1_SHA256`.
+* Each type of policy is saved at
+  `base64_encoding{policy_type}/PolicyFetchResponse`. This file is signed by
+  the key in `CachedPolicyInfo` using the algorithm specified in this file.
+
+The cached policies are cleared:
+
+* before the device enrollment, to make sure the device management starts
+  from a clean state.
+* after policy fetch succeeds but receives no new policies. This means all
+  existing policies become stale and/or policy cache is in abnormal state that
+  fails all validations. Either way it's a good idea to reset the state.
 
 ### Dynamic Install Parameters
 
@@ -925,7 +1032,7 @@ install.
 
 For example, here is a command line for the Updater on Windows that includes:
 ```
-UpdaterSetup.exe --install --tag="appguid=YourAppID&needsadmin=False"
+UpdaterSetup.exe --install="appguid=YourAppID&needsadmin=False"
 ```
 
 In this case, the updater client understands that the application installer
@@ -1105,7 +1212,7 @@ The updater accepts updates packaged as CRX₃ files. All files are signed with 
 publisher key. The corresponding public key is hardcoded into the updater.
 
 ### Differential Updates
-TODO(crbug.com/1331030): Implement and document differential update support.
+TODO(crbug.com/40227383): Implement and document differential update support.
 
 ### Update Timing
 The updater runs periodic tasks every hour, checking its own status, detecting
@@ -1227,12 +1334,122 @@ counts.
     ~/Library/{Company}/{Company}SoftwareUpdate/Actives/{APPID}.
 *   The updater deletes the file when reporting active use.
 
-### EULA/ToS Acceptance
-Software can be installed or updated only if the user has agreed to the `Terms
-of Service`. The updater only runs if the user has accepted the ToS for at
-least one application.
+### OEM Features
 
-TODO(crbug.com/1035895): Document EULA signals.
+#### Background
+
+*   There are two types of OEM installs, which differ between OEMs and
+    geography:
+    *   Machine EULA covering the app and the updater
+        *   A machine EULA is an OEM-specific EULA displayed during the Windows
+            Out Of the Box Experience (OOBE). In some cases, the OEM's EULA
+            covers Google's products. App developers should consult with legal
+            counsel and make sure that the EULA also includes auto-updates and
+            the updater.
+    *   No Machine EULA
+        *   General rule: OEMs should use Windows Audit Mode to install and not
+            enter OOBE.
+*   Large OEMs prepare new computers in factories without network access.
+*   Some OEMs prepare one computer and replicate the image on many computers.
+
+#### Application Integration
+
+In most cases, the Technical Account Manager (TAM) will generate a wrapper
+around the installer that specifies the correct command line.
+
+##### All OEM Cases
+
+*   The app must support per-machine installs.
+*   The app must be installed using a standalone installer.
+*   The updater command line must include the "/oem" switch.
+*   The app installer must not generate unique IDs during \[OEM\] install.
+*   The app installer must not write to HKCU during install (this will be
+    deleted when the OEM exits audit mode). This is a general guideline, but
+    worth re-iterating.
+*   The app installer must not ping or attempt to use the network.
+*   The app installer must not launch the app. If the app uses the Installer API
+    to have the updater launch the app, the updater will not launch it when run
+    silently by the OEM.
+
+###### Detecting OEM Install From App Installer
+
+During an OEM install (/oem), the updater writes the registry value
+`OemInstallTime` \[REG_DWORD\] to
+`HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Google\Update\Clients`.
+The value of `OemInstallTime` is the value in minutes since the Windows Epoch.
+The presence of `OemInstallTime` should be considered an OEM install. The
+updater deletes this value on the next wake after 72 hours.
+
+##### Machine EULA Case
+
+This is the best case for the app (and users) because the updater will be able
+to update applications as soon as the end-user turns on the computer (post
+OOBE).
+
+*   The updater install command line must ***not*** include the "/eularequired"
+    switch if the OEM EULA encompasses the updater and the app.
+
+##### Non-Machine EULA Case
+
+*   The updater command line must include the "/eularequired" switch.
+*   Display a EULA on first run and do not allow the user to use the application
+    without accepting it.
+    *   Usage stats cannot be enabled when installed by the OEM, so you may wish
+        to offer the user the chance to opt-in on the EULA screen.
+*   When the EULA is accepted, notify the updater by writing eulaaccepted=1 in
+    the app's `ClientState` or `ClientStateMedium` key.
+*   See the section on `EULA/ToS Acceptance`.
+
+#### OEM Features
+
+The updater has the following features that support OEM installs.
+
+*   Supports standalone installers, which can install the app without a network
+    connection in the OEM factory.
+*   Supports silent installs and reports errors in any child processes as the
+    exit code, allowing the OEM to easily determine success (exit code 0) or
+    failure.
+*   Detects "OEM factory mode" and behaves correctly:
+    *   Does not ping or otherwise use the network in the OEM factory.
+    *   Does not create unique IDs in OEM factory.
+    *   Does not exit "OEM mode" if the OEM boots the system into non-audit
+        mode.
+*   Does not use the network (i.e for update checks) until application's EULA is
+    accepted when installed in the non-machine EULA case.
+
+### EULA/ToS Acceptance
+Most commonly, users accept relevant Terms of Service before downloading or
+installing the updater.
+
+The updater can be installed in "eula-required" mode by passing the install
+process the `--eularequired` switch. While in eula-required mode, the updater
+will not update software nor make any communications to the server, with the
+following exceptions:
+*   The updater will report its own uninstallation to the server, if the user
+    takes manual action to uninstall it.
+*   If the user has agreed to send usage stats / crash reports, the updater will
+    transmit those. (This case may be vacuous.)
+
+In eula-required mode, the updater will still perform offline installations and
+respond as necessary to requests about its version and product set. It will not
+check for device policies or domain enrollment.
+
+If a user installs an app using an online installer, the updater will transition
+out of eula-required mode and begin normal operation.
+
+On Windows, applications can signal the updater that the user has accepted Terms
+of Service by writing `HKCU\SOFTWARE\{Company}\Update\ClientState\{AppID}` →
+`usagestats` (DWORD): `1`. The updater will then transition out of eula-required
+mode and begin normal operation the next time it runs periodic tasks.
+
+Once operating normally, the updater only returns to eula-required mode when
+it is uninstalled and then reinstalled with `--eularequired`.
+
+### Windows: checking if EULA has already been accepted
+*   Applications can check if the EULA has already been accepted by checking
+    whether the value `eulaaccepted` does not exist at
+    `HKCU|HKLM\SOFTWARE\{Company}\Update`, or if it does exist, that it has a
+    value of `(DWORD): 1`.
 
 ### Usage Stats Acceptance
 The updater may upload its crash reports and send usage stats if and only if
@@ -1301,6 +1518,26 @@ use `%PROGRAMFILESX86%` if appropriate instead.)
 
 On Windows for user-scope updaters, `{UPDATER_DATA_DIR}` is
 `%LOCALAPPDATA%\{COMPANY_SHORTNAME}\{PRODUCT_FULLNAME}`.
+
+On Windows, when the updater uninstalls itself, and there are no other versions
+of the updater in existence for the scope, the updater saves a copy of the final
+log file to `Windows\SystemTemp\updater.log` for system installs, and
+`%TMP%\updater.log` for user installs.
+
+## Network
+
+#### Proxy detection and authentication (Windows)
+The updater uses the proxy configuration defined by cloud policy or Windows
+proxy settings, in this order of priority.
+
+Windows proxy settings are defined per-system or per-user. If no user is logged
+in when the updater is running, then WinHTTP per-system proxy settings are
+used. Otherwise, the updater impersonates one of the logged in users, and uses
+the corresponding proxy settings for that user.
+
+The proxy settings include a combination of auto-proxy (WPAD), proxy
+auto-configuration, or named proxy. The updater tries one of these mechanisms
+in the order described above.
 
 ## Services
 
@@ -1435,6 +1672,25 @@ the threat of a non-admin attacker. An Admin attacker would already be able to
 bypass any signature checking by binplanting a DLL, or just by performing
 whatever changes they like on the system, so is outside the threat model.
 
+#### Telemetry
+A ping with the value `kEventAppCommandComplete` = `41` is sent if usagestats
+are enabled after an app command completes execution.
+
+The app command id is reported in the `appcommandid` attribute in the ping. The
+`appcommandid` attribute is used along with the `appid` to uniquely identify the
+app command associated with the ping.
+
+If the app command launched successfully, the result returned by the app command
+process will be reported in `error` in the ping.
+
+If the app command fails to launch, code `kErrorAppCommandLaunchFailed ` is
+reported in the `extra_code1` in the ping, along with the actual error code that
+caused that launch failure in `error`.
+
+If the app command times out, code `kErrorAppCommandTimedOut` is reported in the
+`extra_code1` in the ping, along with the error code
+`HRESULT_FROM_WIN32(ERROR_TIMEOUT)` in `error`.
+
 ### Policy Status API
 The feature allows Chrome and other applications to query the policies that are
 currently in effect.
@@ -1449,10 +1705,12 @@ In addition there is a delay between when the GPO is set on the server and when
 the value is propagated on the client so being able to verify that the updater
 picks up the policy can help debug propagation issues as well.
 
-The IPolicyStatus/IPolicyStatus2/IPolicyStatus3 interfaces therefore expose this
-functionality that can be queried and shown in chrome://policy.
+The IPolicyStatus/IPolicyStatus2/IPolicyStatus3/IPolicyStatus4 interfaces
+therefore expose this functionality that can be queried and shown in
+chrome://policy.
 
-[IPolicyStatus/IPolicyStatus2/IPolicyStatus3 interface definition](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template?q=IPolicyStatus)
+[IPolicyStatus/IPolicyStatus2/IPolicyStatus3/IPolicyStatus4 interface definition]
+(https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template?q=IPolicyStatus)
 
 ## Uninstallation
 On Mac and Linux, if the application was registered with an existence path
@@ -1476,6 +1734,12 @@ The updater uninstaller removes all updater files, registry keys, RPC hooks,
 scheduled tasks, and so forth from the system, except that:
 *   it leaves a small log file in its data directory.
 *   it leaves the Clients registry key in Windows registry.
+
+Inactive instances of the updater uninstall themselves (but not the updater
+overall) once the active version of the updater is higher than the inactive
+instance's version. Additionally, as part of its periodic tasks, the active
+updater will trigger the uninstallation of old instances of the updater and
+clean up any files they leak.
 
 ## Associated Tools
 

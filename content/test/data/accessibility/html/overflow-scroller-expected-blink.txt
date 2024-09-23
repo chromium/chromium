@@ -1,10 +1,96 @@
-rootWebArea
+rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer description='1234' name='Example Paragraph 1 Example Paragraph 2' descriptionFrom=title
+++++++genericContainer focusable description='1234' name='Example Paragraph 1 Example Paragraph 2' descriptionFrom=title
 ++++++++paragraph
 ++++++++++staticText name='Example Paragraph 1'
-++++++++++++inlineTextBox name='Example Paragraph 1'
+++++++++++++inlineTextBox name='Example '
+++++++++++++inlineTextBox name='Paragraph '
+++++++++++++inlineTextBox name='1'
 ++++++++paragraph
 ++++++++++staticText name='Example Paragraph 2'
-++++++++++++inlineTextBox name='Example Paragraph 2'
+++++++++++++inlineTextBox name='Example '
+++++++++++++inlineTextBox name='Paragraph '
+++++++++++++inlineTextBox name='2'
+=== Start Continuation ===
+rootWebArea focusable name='overflow-auto'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable description='1234' name='Example Paragraph 1 Example Paragraph 2' descriptionFrom=title
+++++++++paragraph
+++++++++++staticText name='Example Paragraph 1'
+++++++++++++inlineTextBox name='Example '
+++++++++++++inlineTextBox name='Paragraph '
+++++++++++++inlineTextBox name='1'
+++++++++paragraph
+++++++++++staticText name='Example Paragraph 2'
+++++++++++++inlineTextBox name='Example '
+++++++++++++inlineTextBox name='Paragraph '
+++++++++++++inlineTextBox name='2'
+=== Start Continuation ===
+rootWebArea focusable name='only-small-content'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer description='1234' descriptionFrom=title
+++++++++blockquote
+++++++++++staticText name='small'
+++++++++++++inlineTextBox name='small'
+=== Start Continuation ===
+rootWebArea focusable name='large-content'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable description='1234' name='large content' descriptionFrom=title
+++++++++blockquote
+++++++++++staticText name='small'
+++++++++++++inlineTextBox name='small'
+++++++++paragraph
+++++++++++staticText name='large content'
+++++++++++++inlineTextBox name='large '
+++++++++++++inlineTextBox name='content'
+=== Start Continuation ===
+rootWebArea focusable name='p-font-small'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer description='1234' descriptionFrom=title
+++++++++blockquote
+++++++++++staticText name='small'
+++++++++++++inlineTextBox name='small'
+++++++++paragraph
+++++++++++staticText name='large content'
+++++++++++++inlineTextBox name='large content'
+=== Start Continuation ===
+rootWebArea focusable name='p-font-large'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable description='1234' name='large content' descriptionFrom=title
+++++++++blockquote
+++++++++++staticText name='small'
+++++++++++++inlineTextBox name='small'
+++++++++paragraph
+++++++++++staticText name='large content'
+++++++++++++inlineTextBox name='large '
+++++++++++++inlineTextBox name='content'
+=== Start Continuation ===
+rootWebArea focusable name='overflow-hidden'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer description='1234' descriptionFrom=title
+++++++++blockquote
+++++++++++staticText name='small'
+++++++++++++inlineTextBox name='small'
+++++++++paragraph
+++++++++++staticText name='large content'
+++++++++++++inlineTextBox name='large '
+++++++++++++inlineTextBox name='content'
+=== Start Continuation ===
+rootWebArea focusable name='finished'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer focusable description='1234' name='large content' descriptionFrom=title
+++++++++blockquote
+++++++++++staticText name='small'
+++++++++++++inlineTextBox name='small'
+++++++++paragraph
+++++++++++staticText name='large content'
+++++++++++++inlineTextBox name='large '
+++++++++++++inlineTextBox name='content'

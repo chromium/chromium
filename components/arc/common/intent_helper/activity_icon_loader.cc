@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -71,8 +72,9 @@ GetInstanceForRequestActivityIcons() {
 
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestActivityIcons);
-  if (!instance)
+  if (!instance) {
     return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
+  }
   return instance;
 }
 #else  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -157,7 +159,7 @@ scoped_refptr<base::RefCountedData<GURL>> GeneratePNGDataUrl(
   std::vector<unsigned char> output;
   gfx::PNGCodec::EncodeBGRASkBitmap(image.GetRepresentation(scale).GetBitmap(),
                                     false /* discard_transparency */, &output);
-  const std::string encoded = base::Base64Encode(base::StringPiece(
+  const std::string encoded = base::Base64Encode(std::string_view(
       reinterpret_cast<const char*>(output.data()), output.size()));
   return base::WrapRefCounted(
       new base::RefCountedData<GURL>(GURL(kPngDataUrlPrefix + encoded)));
@@ -198,8 +200,9 @@ std::unique_ptr<ActivityIconLoader::ActivityToIconsMap> ResizeAndEncodeIcons(
 
     SkBitmap bitmap;
     bitmap.allocPixels(SkImageInfo::MakeN32Premul(icon->width, icon->height));
-    if (!bitmap.getPixels())
+    if (!bitmap.getPixels()) {
       continue;
+    }
     DCHECK_GE(bitmap.computeByteSize(), icon->icon.size());
     memcpy(bitmap.getPixels(), &icon->icon.front(), icon->icon.size());
 
@@ -263,10 +266,11 @@ void ActivityIconLoader::SetAdaptiveIconDelegate(
 void ActivityIconLoader::InvalidateIcons(const std::string& package_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   for (auto it = cached_icons_.begin(); it != cached_icons_.end();) {
-    if (it->first.package_name == package_name)
+    if (it->first.package_name == package_name) {
       it = cached_icons_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 }
 
@@ -362,9 +366,9 @@ void ActivityIconLoader::OnIconsReady(
     return;
   }
 
-  // TODO(crbug.com/1083331): Remove when the adaptive icon feature is enabled
+  // TODO(crbug.com/40131344): Remove when the adaptive icon feature is enabled
   // by default.
-  // TODO(crbug.com/1272349): Adaptive Icon is not supported in Lacros now. Do
+  // TODO(crbug.com/40806186): Adaptive Icon is not supported in Lacros now. Do
   // not remove this until it's supported.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,

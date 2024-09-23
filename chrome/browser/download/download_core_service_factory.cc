@@ -32,9 +32,12 @@ DownloadCoreServiceFactory::DownloadCoreServiceFactory()
           "DownloadCoreService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(DownloadBubbleUpdateServiceFactory::GetInstance());

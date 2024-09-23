@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/app/variations_app_state_agent.h"
-#import "ios/chrome/app/variations_app_state_agent+testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/field_trial.h"
@@ -18,9 +17,10 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
+#import "ios/chrome/app/variations_app_state_agent+testing.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 
@@ -115,7 +115,7 @@ void ActivateFieldTrialForGroup(IOSChromeVariationsGroup group) {
   std::string group_name;
   switch (group) {
     case IOSChromeVariationsGroup::kNotAssigned:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case IOSChromeVariationsGroup::kNotFirstRun:
       // First run completed before the experiment is setup. Use group
@@ -205,7 +205,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
     // the scenario when a user relaunches after existing the app during FRE;
     // however, if the app crashes during FRE, the value will still be YES in
     // the subsequent launch.
-    // TODO(crbug.com/1372180): Import crash helper and take into account
+    // TODO(crbug.com/40241640): Import crash helper and take into account
     // previous crash statistics into account.
     BOOL firstRun = shouldPresentFRE && lastSeedFetchTime.is_null();
     _group = firstRun ? CreateOneTimeExperimentGroupAssignment(

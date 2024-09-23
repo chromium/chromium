@@ -5,8 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_MESH_2D_VERTEX_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_MESH_2D_VERTEX_BUFFER_H_
 
+#include <utility>
+
+#include "base/memory/scoped_refptr.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_buffer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/skia/include/core/SkPoint.h"
 
 namespace blink {

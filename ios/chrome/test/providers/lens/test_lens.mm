@@ -9,8 +9,10 @@
 
 #import "base/functional/bind.h"
 #import "base/notreached.h"
+#import "ios/chrome/test/providers/lens/test_lens_overlay_controller.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "url/url_constants.h"
 
 namespace ios {
@@ -36,6 +38,13 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
   return nil;
 }
 
+UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
+    UIImage* snapshot,
+    LensConfiguration* config,
+    NSArray<UIAction*>* additionalMenuItems) {
+  return [[TestLensOverlayController alloc] init];
+}
+
 bool IsLensSupported() {
   // Lens is not supported for tests.
   return false;
@@ -52,7 +61,7 @@ std::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url) {
 
 void GenerateLensLoadParamsAsync(LensQuery* query,
                                  LensWebParamsCallback completion) {
-  NOTREACHED() << "Lens is not supported.";
+  NOTREACHED_IN_MIGRATION() << "Lens is not supported.";
 }
 
 }  // namespace provider

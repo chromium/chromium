@@ -289,6 +289,8 @@ TEST(SyncNigoriTest, CreateByDerivationShouldReportPbkdf2DurationInHistogram) {
 }
 
 TEST(SyncNigoriTest, CreateByDerivationShouldReportScryptDurationInHistogram) {
+  Nigori::SetUseScryptCostParameterForTesting(true);
+
   FakeTickClock fake_tick_clock;
   base::HistogramTester histogram_tester;
 
@@ -302,6 +304,8 @@ TEST(SyncNigoriTest, CreateByDerivationShouldReportScryptDurationInHistogram) {
       "Sync.Crypto.NigoriKeyDerivationDuration.Scrypt8192",
       /*sample=*/FakeTickClock::kTicksAdvanceAfterEachCall.InMilliseconds(),
       /*expected_bucket_count=*/1);
+
+  Nigori::SetUseScryptCostParameterForTesting(false);
 }
 
 TEST(SyncNigoriTest, GenerateScryptSaltShouldReturnSaltOfCorrectSize) {

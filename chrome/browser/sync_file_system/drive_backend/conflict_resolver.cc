@@ -62,7 +62,7 @@ void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {
                                                       &trackers)) {
     DCHECK_LT(1u, trackers.size());
     if (!trackers.has_active()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
       return;
     }
@@ -75,7 +75,7 @@ void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {
     for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
       FileTracker tracker;
       if (!metadata_database()->FindTrackerByTrackerID(*itr, &tracker)) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
 
@@ -86,7 +86,7 @@ void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {
       bool should_success = metadata_database()->FindTrackerByTrackerID(
           tracker.parent_tracker_id(), &parent_tracker);
       if (!should_success) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
         return;
       }
@@ -103,7 +103,7 @@ void ConflictResolver::RunExclusive(std::unique_ptr<SyncTaskToken> token) {
     for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
       FileTracker tracker;
       if (!metadata_database()->FindTrackerByTrackerID(*itr, &tracker)) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
       if (tracker.file_id() != target_file_id_) {
@@ -165,14 +165,14 @@ std::string ConflictResolver::PickPrimaryFile(const TrackerIDSet& trackers) {
   for (auto itr = trackers.begin(); itr != trackers.end(); ++itr) {
     FileTracker tracker;
     if (!metadata_database()->FindTrackerByTrackerID(*itr, &tracker)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 
     std::unique_ptr<FileMetadata> file_metadata(new FileMetadata);
     if (!metadata_database()->FindFileByFileID(tracker.file_id(),
                                                file_metadata.get())) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 
@@ -304,7 +304,7 @@ void ConflictResolver::DidGetRemoteMetadata(
   }
 
   if (!entry) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
     return;
   }

@@ -51,12 +51,14 @@ source_set("tests") {
 
   sources = [
     "metrics_utils_unittest.cc",
+    "ukm_entry_builder_unittest.cc",
     "ukm_source_id_unittest.cc",
   ]
 
   deps = [
     ":metrics_cpp",
     "//base",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

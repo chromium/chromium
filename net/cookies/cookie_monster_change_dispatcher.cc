@@ -4,10 +4,11 @@
 
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "net/base/features.h"
@@ -24,10 +25,10 @@ namespace net {
 namespace {
 
 // Special key in GlobalDomainMap for global listeners.
-constexpr base::StringPiece kGlobalDomainKey = base::StringPiece("\0", 1);
+constexpr std::string_view kGlobalDomainKey = std::string_view("\0", 1);
 
 //
-constexpr base::StringPiece kGlobalNameKey = base::StringPiece("\0", 1);
+constexpr std::string_view kGlobalNameKey = std::string_view("\0", 1);
 
 }  // anonymous namespace
 
@@ -251,12 +252,14 @@ void CookieMonsterChangeDispatcher::UnlinkSubscription(
 
   auto cookie_domain_map_iterator =
       cookie_domain_map_.find(subscription->domain_key());
-  DCHECK(cookie_domain_map_iterator != cookie_domain_map_.end());
+  CHECK(cookie_domain_map_iterator != cookie_domain_map_.end(),
+        base::NotFatalUntil::M130);
 
   CookieNameMap& cookie_name_map = cookie_domain_map_iterator->second;
   auto cookie_name_map_iterator =
       cookie_name_map.find(subscription->name_key());
-  DCHECK(cookie_name_map_iterator != cookie_name_map.end());
+  CHECK(cookie_name_map_iterator != cookie_name_map.end(),
+        base::NotFatalUntil::M130);
 
   SubscriptionList& subscription_list = cookie_name_map_iterator->second;
   subscription->RemoveFromList();

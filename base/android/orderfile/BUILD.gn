@@ -4,27 +4,20 @@
 
 import("//build/config/android/config.gni")
 
-if (use_order_profiling &&
-    (target_cpu == "arm" || target_cpu == "arm64" || target_cpu == "x86")) {
+if (use_order_profiling && (target_cpu == "arm" || target_cpu == "arm64" ||
+                            target_cpu == "x86" || target_cpu == "x64")) {
   static_library("orderfile_instrumentation") {
-    sources = [ "orderfile_instrumentation.h" ]
-
-    if (use_call_graph) {
-      sources += [ "orderfile_call_graph_instrumentation.cc" ]
-    } else {
-      sources += [ "orderfile_instrumentation.cc" ]
-    }
+    sources = [
+      "orderfile_instrumentation.cc",
+      "orderfile_instrumentation.h",
+    ]
 
     deps = [ "//base" ]
   }
 
   executable("orderfile_instrumentation_perftest") {
     testonly = true
-    if (use_call_graph) {
-      sources = [ "orderfile_call_graph_instrumentation_perftest.cc" ]
-    } else {
-      sources = [ "orderfile_instrumentation_perftest.cc" ]
-    }
+    sources = [ "orderfile_instrumentation_perftest.cc" ]
     deps = [
       ":orderfile_instrumentation",
       "//base",

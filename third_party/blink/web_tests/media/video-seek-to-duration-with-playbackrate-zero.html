@@ -6,31 +6,29 @@
 <script>
 async_test(function(t) {
     var video = document.querySelector("video");
-
-    video.src = "content/test.ogv";
-    video.load();
-    video.onseeking = t.step_func(function() {});
-
     video.onloadedmetadata = t.step_func(function() {
         video.onloadedmetadata = null;
-        video.currentTime = video.duration;
         video.playbackRate = 0;
-        video.onended = t.step_func(function() {
+        video.currentTime = video.duration;
+        video.onseeked = t.step_func(function() {
             assert_equals(video.currentTime, video.duration);
-            // Seeking to the middle of the video.
-            video.currentTime = video.duration / 2;
             video.onseeked = t.step_func(function() {
-                // Setting loop to true and seeking to duration.
-                video.loop = true;
-                video.currentTime = video.duration;
                 video.onseeked = t.step_func(function() {
                     // Seek to duration completed. Waiting for a seek to the beginning.
                     video.onseeked = t.step_func_done(function() {
                         assert_equals(video.currentTime, 0);
                     });
+                    video.play();
                 });
+                // Setting loop to true and seeking to duration.
+                video.loop = true;
+                video.currentTime = video.duration;
             });
+
+            // Seeking to the middle of the video.
+            video.currentTime = video.duration / 2;
         });
     });
+    video.src = "content/test.ogv";
 });
 </script>

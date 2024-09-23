@@ -94,7 +94,7 @@ class CopyOrMoveIOTaskImpl {
   // different file systems or not. The entries are seen as being on different
   // filesystems if either:
   // - the entries are not on the same volume OR
-  // - one entry is in My files, and the other one in Downloads.
+  // - one entry is in MyFiles, and the other one in Downloads.
   // crbug.com/1200251
   static bool IsCrossFileSystemForTesting(
       Profile* profile,

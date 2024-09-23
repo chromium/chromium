@@ -13,6 +13,7 @@ from .code_node_cxx import CxxClassDefNode
 from .code_node_cxx import CxxFuncDeclNode
 from .code_node_cxx import CxxFuncDefNode
 from .code_node_cxx import CxxNamespaceNode
+from .codegen_accumulator import IncludeDefinition
 from .codegen_accumulator import CodeGenAccumulator
 from .codegen_context import CodeGenContext
 from .codegen_utils import component_export
@@ -355,7 +356,9 @@ def generate_enumeration(enumeration_identifier):
     ])
     header_node.accumulator.add_include_headers([
         component_export_header(api_component, for_testing),
-        "third_party/blink/renderer/platform/bindings/enumeration_base.h",
+        IncludeDefinition(
+            "third_party/blink/renderer/platform/bindings/enumeration_base.h",
+            "IWYU pragma: export")
     ])
     source_node.accumulator.add_include_headers([
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",

@@ -40,7 +40,8 @@ CBCMRemoteCommandsFactory::BuildJobForType(
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-  NOTREACHED() << "Received an unsupported remote command type: " << type;
+  NOTREACHED_IN_MIGRATION()
+      << "Received an unsupported remote command type: " << type;
   return nullptr;
 }
 

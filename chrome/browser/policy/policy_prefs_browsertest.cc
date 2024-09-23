@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_pref_mapping_test.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -45,17 +46,13 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/toolbar_manager_test_helper_android.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace policy {
 
 const size_t kNumChunks = 32;
 
 namespace {
 
-base::FilePath GetTestCasePath() {
+base::FilePath GetTestCaseDir() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
@@ -80,7 +77,7 @@ size_t GetNumChunks() {
 typedef PlatformBrowserTest PolicyPrefsTestCoverageTest;
 
 IN_PROC_BROWSER_TEST_F(PolicyPrefsTestCoverageTest, AllPoliciesHaveATestCase) {
-  VerifyAllPoliciesHaveATestCase(GetTestCasePath());
+  VerifyAllPoliciesHaveATestCase(GetTestCaseDir());
 }
 
 // Base class for tests that change policy.
@@ -145,7 +142,7 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
                                public ::testing::WithParamInterface<size_t> {
  public:
-  ChunkedPolicyPrefsTest();
+  ChunkedPolicyPrefsTest() = default;
   ChunkedPolicyPrefsTest(const ChunkedPolicyPrefsTest&) = delete;
   ChunkedPolicyPrefsTest& operator=(const ChunkedPolicyPrefsTest&) = delete;
   ~ChunkedPolicyPrefsTest() override = default;
@@ -154,15 +151,6 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
   PrefMappingChunkInfo chunk_info_{GetParam(), GetNumChunks()};
 };
 
-ChunkedPolicyPrefsTest::ChunkedPolicyPrefsTest() {
-#if BUILDFLAG(IS_ANDROID)
-  // Skips recreating the Android activity when homepage settings are changed.
-  // This happens when the feature chrome::android::kStartSurfaceAndroid is
-  // enabled.
-  toolbar_manager::setSkipRecreateForTesting(true);
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 // Verifies that policies make their corresponding preferences become managed,
 // and that the user can't override that setting.
 // README SHERIFFs: This test encapsulates a whole suite of individual browser
@@ -170,7 +158,13 @@ ChunkedPolicyPrefsTest::ChunkedPolicyPrefsTest() {
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
+// TODO(crbug.com/365426498): Flaky on linux-lacros-chrome.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
+#else
+#define MAYBE_PolicyToPrefsMapping PolicyToPrefsMapping
+#endif
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -183,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
                                 ->GetOriginalProfile()
                                 ->GetPrefs();
 
-  VerifyPolicyToPrefMappings(GetTestCasePath(), local_state, user_prefs,
+  VerifyPolicyToPrefMappings(GetTestCaseDir(), local_state, user_prefs,
                              /* signin_profile_prefs= */ nullptr,
                              GetMockPolicyProvider(), &chunk_info_);
 }
@@ -219,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(SigninPolicyPrefsTest, PolicyToPrefsMapping) {
 
   // Only checking signin_profile_prefs here since |local_state| is already
   // checked by PolicyPrefsTest.PolicyToPrefsMapping test.
-  VerifyPolicyToPrefMappings(GetTestCasePath(), /* local_state= */ nullptr,
+  VerifyPolicyToPrefMappings(GetTestCaseDir(), /* local_state= */ nullptr,
                              /* user_prefs= */ nullptr, signin_profile_prefs,
                              GetMockPolicyProvider());
 }

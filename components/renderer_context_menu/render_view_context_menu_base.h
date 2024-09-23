@@ -195,8 +195,8 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
       bool started_from_context_menu);
 
   content::ContextMenuParams params_;
-  const raw_ptr<content::WebContents> source_web_contents_;
-  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<content::WebContents, DanglingUntriaged> source_web_contents_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 
   ui::SimpleMenuModel menu_model_;
 
@@ -213,8 +213,8 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   scoped_refptr<content::SiteInstance> site_instance_;
 
   // Our observers.
-  mutable base::ObserverList<RenderViewContextMenuObserver>::Unchecked
-      observers_;
+  mutable base::ObserverList<
+      RenderViewContextMenuObserver>::UncheckedAndDanglingUntriaged observers_;
 
   // Whether a command has been executed. Used to track whether menu observers
   // should be notified of menu closing without execution.

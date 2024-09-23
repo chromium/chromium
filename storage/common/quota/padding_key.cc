@@ -46,7 +46,7 @@ bool ShouldPadResponseType(network::mojom::FetchResponseType type) {
 
 int64_t ComputeRandomResponsePadding() {
   uint64_t raw_random = 0;
-  crypto::RandBytes(&raw_random, sizeof(uint64_t));
+  crypto::RandBytes(base::byte_span_from_ref(raw_random));
   return raw_random % kPaddingRange;
 }
 

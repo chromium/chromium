@@ -1,0 +1,57 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sync_error") {
+  sources = [
+    "sync_error_infobar_banner_overlay_mediator.h",
+    "sync_error_infobar_banner_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
+    "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/common/ui/colors",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sync_error_infobar_banner_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":sync_error",
+    "//base/test:test_support",
+    "//components/infobars/core",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/settings/model/sync/utils/test",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/banners/test",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

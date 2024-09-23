@@ -14,7 +14,8 @@ public interface FirstRunFragment {
      * Notifies that the object returned by {@link #getPageDelegate()} and its dependencies have
      * been fully initialized, including native initialization.
      *
-     * TODO(https://crbug.com/1346301): Remove this method.
+     * <p>TODO(crbug.com/40232440): Remove this method.
+     *
      * @deprecated Use {@link FirstRunPageDelegate#getNativeInitializationPromise()} instead.
      */
     @Deprecated

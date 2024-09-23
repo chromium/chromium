@@ -30,7 +30,7 @@ const int kDownstreamEnrollBillableServiceNumber =
 GetDetailsForEnrollmentRequest::GetDetailsForEnrollmentRequest(
     const PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails&
         request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const PaymentsNetworkInterface::
                                 GetDetailsForEnrollmentResponseDetails&)>
         callback)
@@ -61,7 +61,7 @@ std::string GetDetailsForEnrollmentRequest::GetRequestContent() {
       billable_service_number = kDownstreamEnrollBillableServiceNumber;
       break;
     case VirtualCardEnrollmentSource::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   context.Set("billable_service", billable_service_number);
@@ -89,7 +89,7 @@ std::string GetDetailsForEnrollmentRequest::GetRequestContent() {
       request_dict.Set("channel_type", "CHROME_DOWNSTREAM");
       break;
     case VirtualCardEnrollmentSource::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -128,7 +128,7 @@ bool GetDetailsForEnrollmentRequest::IsResponseComplete() {
 }
 
 void GetDetailsForEnrollmentRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, response_details_);
 }
 

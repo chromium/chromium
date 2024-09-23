@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 
@@ -242,71 +247,20 @@ template <>
 struct ToV8Traits<IDLPromise> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(
       ScriptState* script_state,
-      const ScriptPromise& script_promise) {
+      const ScriptPromiseUntyped& script_promise) {
     DCHECK(!script_promise.IsEmpty());
     return script_promise.V8Value();
   }
 };
 
 // ScriptWrappable
-
-namespace bindings {
-
-// Helper function for ScriptWrappable
-[[nodiscard]] inline v8::Local<v8::Value> ToV8HelperScriptWrappable(
-    ScriptState* script_state,
-    ScriptWrappable* script_wrappable) {
-  CHECK(script_wrappable);
-  v8::Local<v8::Object> wrapper;
-  if (LIKELY(
-          DOMDataStore::GetWrapper(script_state->GetIsolate(), script_wrappable)
-              .ToLocal(&wrapper))) {
-    return wrapper;
-  }
-
-  return script_wrappable->Wrap(script_state);
-}
-
-// For optimization
-[[nodiscard]] inline v8::Local<v8::Value> ToV8HelperScriptWrappable(
-    v8::Isolate* isolate,
-    ScriptWrappable* script_wrappable,
-    v8::Local<v8::Object> creation_context_object) {
-  CHECK(script_wrappable);
-  v8::Local<v8::Object> wrapper;
-  if (LIKELY(DOMDataStore::GetWrapper(isolate, script_wrappable)
-                 .ToLocal(&wrapper))) {
-    return wrapper;
-  }
-
-  CHECK(!creation_context_object.IsEmpty());
-  ScriptState* script_state =
-      ScriptState::From(creation_context_object->GetCreationContextChecked());
-  return script_wrappable->Wrap(script_state);
-}
-
-}  // namespace bindings
-
 template <typename T>
 struct ToV8Traits<
     T,
     std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  T* script_wrappable) {
-    return bindings::ToV8HelperScriptWrappable(script_state, script_wrappable);
-  }
-
-  // This overload is used for the case when a ToV8 caller does not have
-  // |script_state| but has a receiver object (a creation context object)
-  // which is needed to create a wrapper. If a wrapper object corresponding to
-  // the receiver object exists, ToV8 can return it without a call to
-  // CreationContext() which is slow.
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      v8::Isolate* isolate,
-      T* script_wrappable,
-      v8::Local<v8::Object> creation_context_object) {
-    return bindings::ToV8HelperScriptWrappable(isolate, script_wrappable,
-                                               creation_context_object);
+    return script_wrappable->ToV8(script_state);
   }
 };
 
@@ -375,7 +329,7 @@ struct ToV8Traits<
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  const AtomicString& value) {
     DCHECK(!value.empty());
-    return V8String(script_state->GetIsolate(), value);
+    return V8String(script_state->GetIsolate(), value.GetString());
   }
 };
 
@@ -438,7 +392,7 @@ template <typename ElementIDLType, typename ContainerType>
 
 // Helper function for IDLSequence in order to reduce code size. This avoids
 // template instantiation of ToV8HelperSequence<T> where T is a subclass of
-// bindings::DictionaryBase, bindings::UnionBase, or ScriptWrappable.
+// bindings::DictionaryBase, or ScriptWrappable.
 // Since these base classes are the leftmost base class,
 // HeapVector<Member<TheBase>> has the same binary representation with
 // HeapVector<Member<T>>. We leverage this fact to reduce the APK size.
@@ -553,28 +507,8 @@ struct ToV8Traits<
 template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
-    std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<T>>& value) {
-    return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
-        script_state, value);
-  }
-
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const HeapVector<Member<const T>>& value) {
-    return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
-        script_state, value);
-  }
-};
-
-template <typename T>
-struct ToV8Traits<
-    IDLSequence<T>,
     std::enable_if_t<!std::is_base_of<bindings::DictionaryBase, T>::value &&
-                     !std::is_base_of<ScriptWrappable, T>::value &&
-                     !std::is_base_of<bindings::UnionBase, T>::value>> {
+                     !std::is_base_of<ScriptWrappable, T>::value>> {
   template <typename ContainerType>
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  const ContainerType& value) {
@@ -963,6 +897,15 @@ struct ToV8Traits<IDLOptional<T>> {
     return ToV8Traits<T>::ToV8(script_state, value);
   }
 };
+
+template <typename IDLType, typename BlinkType>
+ScriptPromise<IDLType> ToResolvedPromise(ScriptState* script_state,
+                                         BlinkType value) {
+  auto v8_value = ToV8Traits<IDLType>::ToV8(script_state, value);
+  return ScriptPromise<IDLType>(
+      script_state->GetIsolate(),
+      ScriptPromiseUntyped::ResolveRaw(script_state, v8_value));
+}
 
 }  // namespace blink
 

@@ -9,6 +9,8 @@ source_set("safe_browsing") {
   ]
   deps = [
     "//components/safe_browsing/core/common",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/safe_browsing/model:infobar_delegate",
     "//ios/chrome/browser/safe_browsing/model:model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_UTILS_ANDROID_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_UTILS_ANDROID_H_
 
+#include <string>
+
 // Utilities that interface with Java to support Sync testing on Android.
 
 namespace sync_test_utils_android {
@@ -19,22 +21,33 @@ void SetUpAccountAndSignInAndEnableSyncForTesting();
 // Signs out and clears the primary account.
 void SignOutForTesting();
 
-// Sets up the test authentication environment synchronously using a worker
+// Sets up the fake authentication environment synchronously using a worker
 // thread.
 //
 // We recommend calling this function from the SetUp() method of the test
 // fixture (e.g., CustomFixture::SetUp()) before calling the other SetUp()
 // function down the stack (e.g., PlatformBrowserTest::SetUp()).
-void SetUpAuthForTesting();
+void SetUpFakeAuthForTesting();
 
-// Tears down the test authentication environment synchronously using a worker
+// Tears down the fake authentication environment synchronously using a worker
 // thread.
 //
 // We recommend calling this function from the PostRunTestOnMainThread() method
 // of the test fixture, which allows multiple threads. See the following file
 // for an example:
 // chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc.
-void TearDownAuthForTesting();
+void TearDownFakeAuthForTesting();
+
+// Sets up an account with given username and password, signs in synchronously
+// on the live server.
+void SetUpLiveAccountAndSignInForTesting(const std::string& username,
+                                         const std::string& password);
+
+// Sets up an account with given username and password, signs in, and enable
+// Sync-the-feature synchronously on the live server.
+void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
+    const std::string& username,
+    const std::string& password);
 
 }  // namespace sync_test_utils_android
 

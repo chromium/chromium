@@ -1,0 +1,140 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("fileapi") {
+  sources = [
+    "arc_content_file_system_async_file_util.cc",
+    "arc_content_file_system_async_file_util.h",
+    "arc_content_file_system_backend_delegate.cc",
+    "arc_content_file_system_backend_delegate.h",
+    "arc_content_file_system_file_stream_reader.cc",
+    "arc_content_file_system_file_stream_reader.h",
+    "arc_content_file_system_file_stream_writer.cc",
+    "arc_content_file_system_file_stream_writer.h",
+    "arc_content_file_system_size_util.cc",
+    "arc_content_file_system_size_util.h",
+    "arc_content_file_system_url_util.cc",
+    "arc_content_file_system_url_util.h",
+    "arc_documents_provider_async_file_util.cc",
+    "arc_documents_provider_async_file_util.h",
+    "arc_documents_provider_backend_delegate.cc",
+    "arc_documents_provider_backend_delegate.h",
+    "arc_documents_provider_file_stream_reader.cc",
+    "arc_documents_provider_file_stream_reader.h",
+    "arc_documents_provider_file_stream_writer.cc",
+    "arc_documents_provider_file_stream_writer.h",
+    "arc_documents_provider_file_system_url_util.cc",
+    "arc_documents_provider_file_system_url_util.h",
+    "arc_documents_provider_root.cc",
+    "arc_documents_provider_root.h",
+    "arc_documents_provider_root_map.cc",
+    "arc_documents_provider_root_map.h",
+    "arc_documents_provider_root_map_factory.cc",
+    "arc_documents_provider_root_map_factory.h",
+    "arc_documents_provider_util.cc",
+    "arc_documents_provider_util.h",
+    "arc_documents_provider_watcher_manager.cc",
+    "arc_documents_provider_watcher_manager.h",
+    "arc_file_system_bridge.cc",
+    "arc_file_system_bridge.h",
+    "arc_file_system_mounter.cc",
+    "arc_file_system_mounter.h",
+    "arc_file_system_operation_runner.cc",
+    "arc_file_system_operation_runner.h",
+    "arc_file_system_operation_runner_util.cc",
+    "arc_file_system_operation_runner_util.h",
+    "arc_media_view_util.cc",
+    "arc_media_view_util.h",
+    "arc_select_files_handler.cc",
+    "arc_select_files_handler.h",
+    "arc_select_files_util.cc",
+    "arc_select_files_util.h",
+    "chrome_content_provider_url_util.cc",
+    "chrome_content_provider_url_util.h",
+    "file_stream_forwarder.cc",
+    "file_stream_forwarder.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/policy/dlp",
+    "//chrome/browser/chromeos/policy/dlp",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/dbus/virtual_file_provider",
+    "//content/public/browser",
+    "//extensions/browser/api/file_handlers",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//third_party/re2",
+    "//ui/shell_dialogs:shell_dialogs",
+    "//url",
+
+    # TODO(crbug.com/353449539): Use //chrome/browser/ui instead after cyclic dependency from
+    # obj/chrome/browser/ash/arc/fileapi/fileapi/arc_select_files_handler.o.
+    "//chrome/browser/apps/app_preload_service/proto",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_content_file_system_async_file_util_unittest.cc",
+    "arc_content_file_system_file_stream_reader_unittest.cc",
+    "arc_content_file_system_file_stream_writer_unittest.cc",
+    "arc_content_file_system_url_util_unittest.cc",
+    "arc_documents_provider_root_map_unittest.cc",
+    "arc_documents_provider_root_unittest.cc",
+    "arc_documents_provider_util_unittest.cc",
+    "arc_file_system_bridge_unittest.cc",
+    "arc_file_system_operation_runner_unittest.cc",
+    "arc_select_files_handler_unittest.cc",
+    "arc_select_files_util_unittest.cc",
+    "chrome_content_provider_url_util_unittest.cc",
+    "file_stream_forwarder_unittest.cc",
+  ]
+
+  deps = [
+    ":fileapi",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/file_system_provider:test_support",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ash/components/dbus/virtual_file_provider",
+    "//components/keyed_service/core",
+    "//content/test:test_support",
+    "//storage/browser:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

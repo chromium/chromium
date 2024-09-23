@@ -210,7 +210,7 @@ STDMETHODIMP CompleteStatusImpl::get_statusMessage(BSTR* message) {
 }
 
 HRESULT UpdaterImpl::RuntimeClassInitialize() {
-  return IsCOMCallerAllowed();
+  return S_OK;
 }
 
 HRESULT UpdaterImpl::GetVersion(BSTR* version) {
@@ -261,6 +261,10 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
                                  const wchar_t* version,
                                  const wchar_t* existence_checker_path,
                                  IUpdaterCallback* callback) {
+  if (FAILED(IsCOMCallerAllowed())) {
+    return E_ACCESSDENIED;
+  }
+
   if (!callback) {
     return E_INVALIDARG;
   }
@@ -416,29 +420,31 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  UpdateService::StateChangeCallback state_change_callback =
-      base::BindRepeating(
+  base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+      state_change_callback = base::BindRepeating(
           &StateChangeCallbackFilter::OnStateChange,
           base::Owned(new StateChangeCallbackFilter(task_runner, observer)));
-  UpdateService::Callback complete_callback = base::BindPostTask(
-      task_runner,
-      base::BindOnce(
-          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
-            HRESULT hr =
-                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
-                                         static_cast<int>(result), L"")
-                                         .Get());
-            VLOG(2) << "IUpdaterImpl::CheckForUpdate. "
-                    << "IUpdaterObserver::OnComplete returned " << std::hex
-                    << hr;
-          },
-          IUpdaterObserverPtr(observer)));
+  base::OnceCallback<void(UpdateService::Result)> complete_callback =
+      base::BindPostTask(
+          task_runner,
+          base::BindOnce(
+              [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+                HRESULT hr = observer->OnComplete(
+                    MakeComObjectOrCrash<CompleteStatusImpl>(
+                        static_cast<int>(result), L"")
+                        .Get());
+                VLOG(2) << "IUpdaterImpl::CheckForUpdate. "
+                        << "IUpdaterObserver::OnComplete returned " << std::hex
+                        << hr;
+              },
+              IUpdaterObserverPtr(observer)));
 
   AppServerWin::PostRpcTask(base::BindOnce(
       [](const std::string& app_id, UpdateService::Priority priority,
          bool same_version_update_allowed,
-         UpdateService::StateChangeCallback state_change_callback,
-         UpdateService::Callback complete_callback) {
+         base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+             state_change_callback,
+         base::OnceCallback<void(UpdateService::Result)> complete_callback) {
         scoped_refptr<UpdateService> update_service =
             GetAppServerWinInstance()->update_service();
         if (!update_service) {
@@ -476,29 +482,31 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  UpdateService::StateChangeCallback state_change_callback =
-      base::BindRepeating(
+  base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+      state_change_callback = base::BindRepeating(
           &StateChangeCallbackFilter::OnStateChange,
           base::Owned(new StateChangeCallbackFilter(task_runner, observer)));
-  UpdateService::Callback complete_callback = base::BindPostTask(
-      task_runner,
-      base::BindOnce(
-          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
-            HRESULT hr =
-                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
-                                         static_cast<int>(result), L"")
-                                         .Get());
-            VLOG(2) << "IUpdaterImpl::Update. "
-                    << "IUpdaterObserver::OnComplete returned " << std::hex
-                    << hr;
-          },
-          IUpdaterObserverPtr(observer)));
+  base::OnceCallback<void(UpdateService::Result)> complete_callback =
+      base::BindPostTask(
+          task_runner,
+          base::BindOnce(
+              [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+                HRESULT hr = observer->OnComplete(
+                    MakeComObjectOrCrash<CompleteStatusImpl>(
+                        static_cast<int>(result), L"")
+                        .Get());
+                VLOG(2) << "IUpdaterImpl::Update. "
+                        << "IUpdaterObserver::OnComplete returned " << std::hex
+                        << hr;
+              },
+              IUpdaterObserverPtr(observer)));
 
   AppServerWin::PostRpcTask(base::BindOnce(
       [](const std::string& app_id, const std::string& install_data_index,
          UpdateService::Priority priority, bool same_version_update_allowed,
-         UpdateService::StateChangeCallback state_change_callback,
-         UpdateService::Callback complete_callback) {
+         base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+             state_change_callback,
+         base::OnceCallback<void(UpdateService::Result)> complete_callback) {
         scoped_refptr<UpdateService> update_service =
             GetAppServerWinInstance()->update_service();
         if (!update_service) {
@@ -526,23 +534,24 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
     return E_INVALIDARG;
   }
 
-  UpdateService::Callback complete_callback = base::BindPostTask(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
-      base::BindOnce(
-          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
-            HRESULT hr =
-                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
-                                         static_cast<int>(result), L"")
-                                         .Get());
-            VLOG(2) << "IUpdaterImpl::UpdateAll. "
-                    << "IUpdaterObserver::OnComplete returned " << std::hex
-                    << hr;
-          },
-          IUpdaterObserverPtr(observer)));
+  base::OnceCallback<void(UpdateService::Result)> complete_callback =
+      base::BindPostTask(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+          base::BindOnce(
+              [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+                HRESULT hr = observer->OnComplete(
+                    MakeComObjectOrCrash<CompleteStatusImpl>(
+                        static_cast<int>(result), L"")
+                        .Get());
+                VLOG(2) << "IUpdaterImpl::UpdateAll. "
+                        << "IUpdaterObserver::OnComplete returned " << std::hex
+                        << hr;
+              },
+              IUpdaterObserverPtr(observer)));
 
   AppServerWin::PostRpcTask(base::BindOnce(
-      [](UpdateService::Callback complete_callback) {
+      [](base::OnceCallback<void(UpdateService::Result)> complete_callback) {
         scoped_refptr<UpdateService> update_service =
             GetAppServerWinInstance()->update_service();
         if (!update_service) {
@@ -567,6 +576,10 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                              const wchar_t* install_data_index,
                              LONG priority,
                              IUpdaterObserver* observer) {
+  if (FAILED(IsCOMCallerAllowed())) {
+    return E_ACCESSDENIED;
+  }
+
   if (!observer) {
     return E_INVALIDARG;
   }
@@ -614,31 +627,33 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  UpdateService::StateChangeCallback state_change_callback =
-      base::BindRepeating(
+  base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+      state_change_callback = base::BindRepeating(
           &StateChangeCallbackFilter::OnStateChange,
           base::Owned(new StateChangeCallbackFilter(task_runner, observer)));
-  UpdateService::Callback complete_callback = base::BindPostTask(
-      task_runner,
-      base::BindOnce(
-          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
-            HRESULT hr =
-                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
-                                         static_cast<int>(result), L"")
-                                         .Get());
-            VLOG(2) << "IUpdaterImpl::Install. "
-                    << "IUpdaterObserver::OnComplete returned " << std::hex
-                    << hr;
-          },
-          IUpdaterObserverPtr(observer)));
+  base::OnceCallback<void(UpdateService::Result)> complete_callback =
+      base::BindPostTask(
+          task_runner,
+          base::BindOnce(
+              [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+                HRESULT hr = observer->OnComplete(
+                    MakeComObjectOrCrash<CompleteStatusImpl>(
+                        static_cast<int>(result), L"")
+                        .Get());
+                VLOG(2) << "IUpdaterImpl::Install. "
+                        << "IUpdaterObserver::OnComplete returned " << std::hex
+                        << hr;
+              },
+              IUpdaterObserverPtr(observer)));
 
   AppServerWin::PostRpcTask(base::BindOnce(
       [](const RegistrationRequest& request,
          const std::string& client_install_data,
          const std::string& install_data_index,
          UpdateService::Priority priority,
-         UpdateService::StateChangeCallback state_change_callback,
-         UpdateService::Callback complete_callback) {
+         base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+             state_change_callback,
+         base::OnceCallback<void(UpdateService::Result)> complete_callback) {
         scoped_refptr<UpdateService> update_service =
             GetAppServerWinInstance()->update_service();
         if (!update_service) {
@@ -682,6 +697,10 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                                   const wchar_t* install_data,
                                   const wchar_t* install_settings,
                                   IUpdaterObserver* observer) {
+  if (FAILED(IsCOMCallerAllowed())) {
+    return E_ACCESSDENIED;
+  }
+
   VLOG(1) << __func__;
 
   if (!observer) {
@@ -725,30 +744,32 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
 
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  UpdateService::StateChangeCallback state_change_callback =
-      base::BindRepeating(
+  base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+      state_change_callback = base::BindRepeating(
           &StateChangeCallbackFilter::OnStateChange,
           base::Owned(new StateChangeCallbackFilter(task_runner, observer)));
-  UpdateService::Callback complete_callback = base::BindPostTask(
-      task_runner,
-      base::BindOnce(
-          [](IUpdaterObserverPtr observer, UpdateService::Result result) {
-            HRESULT hr =
-                observer->OnComplete(MakeComObjectOrCrash<CompleteStatusImpl>(
-                                         static_cast<int>(result), L"")
-                                         .Get());
-            VLOG(2) << "IUpdaterImpl::RunInstaller. "
-                    << "IUpdaterObserver::OnComplete returned " << std::hex
-                    << hr;
-          },
-          IUpdaterObserverPtr(observer)));
+  base::OnceCallback<void(UpdateService::Result)> complete_callback =
+      base::BindPostTask(
+          task_runner,
+          base::BindOnce(
+              [](IUpdaterObserverPtr observer, UpdateService::Result result) {
+                HRESULT hr = observer->OnComplete(
+                    MakeComObjectOrCrash<CompleteStatusImpl>(
+                        static_cast<int>(result), L"")
+                        .Get());
+                VLOG(2) << "IUpdaterImpl::RunInstaller. "
+                        << "IUpdaterObserver::OnComplete returned " << std::hex
+                        << hr;
+              },
+              IUpdaterObserverPtr(observer)));
 
   AppServerWin::PostRpcTask(base::BindOnce(
       [](const std::string& app_id, const base::FilePath& installer_path,
          const std::string& install_args, const std::string& install_data,
          const std::string& install_settings,
-         UpdateService::StateChangeCallback state_change_callback,
-         UpdateService::Callback complete_callback) {
+         base::RepeatingCallback<void(const UpdateService::UpdateState&)>
+             state_change_callback,
+         base::OnceCallback<void(UpdateService::Result)> complete_callback) {
         scoped_refptr<UpdateService> update_service =
             GetAppServerWinInstance()->update_service();
         if (!update_service) {
@@ -812,7 +833,7 @@ HRESULT UpdaterImpl::GetAppStates(IUpdaterAppStatesCallback* callback) {
 }
 
 HRESULT UpdaterInternalImpl::RuntimeClassInitialize() {
-  return IsCOMCallerAllowed();
+  return S_OK;
 }
 
 // See the comment for the UpdaterImpl::Update.

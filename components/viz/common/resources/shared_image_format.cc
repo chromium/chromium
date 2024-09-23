@@ -63,48 +63,10 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
     return "RGBA_1010102";
   } else if (format == SinglePlaneFormat::kBGRA_1010102) {
     return "BGRA_1010102";
-  } else if (format == LegacyMultiPlaneFormat::kYV12) {
-    return "YV12_LEGACY";
-  } else if (format == LegacyMultiPlaneFormat::kNV12) {
-    return "NV12_LEGACY";
-  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
-    return "NV12A_LEGACY";
-  } else if (format == LegacyMultiPlaneFormat::kP010) {
-    return "P010_LEGACY";
   } else if (format == SinglePlaneFormat::kR_F16) {
     return "R_F16";
   }
-  NOTREACHED_NORETURN();
-}
-
-int BitsPerPixelForTrueSinglePlaneFormat(SharedImageFormat format) {
-  CHECK(format.is_single_plane() && !format.IsLegacyMultiplanar());
-  if (format == SinglePlaneFormat::kRGBA_F16) {
-    return 64;
-  } else if (format == SinglePlaneFormat::kBGRA_8888 ||
-             format == SinglePlaneFormat::kRGBA_8888 ||
-             format == SinglePlaneFormat::kRGBX_8888 ||
-             format == SinglePlaneFormat::kBGRX_8888 ||
-             format == SinglePlaneFormat::kRGBA_1010102 ||
-             format == SinglePlaneFormat::kBGRA_1010102 ||
-             format == SinglePlaneFormat::kRG_1616) {
-    return 32;
-  } else if (format == SinglePlaneFormat::kRGBA_4444 ||
-             format == SinglePlaneFormat::kRGB_565 ||
-             format == SinglePlaneFormat::kLUMINANCE_F16 ||
-             format == SinglePlaneFormat::kR_F16 ||
-             format == SinglePlaneFormat::kR_16 ||
-             format == SinglePlaneFormat::kBGR_565 ||
-             format == SinglePlaneFormat::kRG_88) {
-    return 16;
-  } else if (format == SinglePlaneFormat::kALPHA_8 ||
-             format == SinglePlaneFormat::kLUMINANCE_8 ||
-             format == SinglePlaneFormat::kR_8) {
-    return 8;
-  } else if (format == SinglePlaneFormat::kETC1) {
-    return 4;
-  }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 uint64_t StorageBytesPerElement(SharedImageFormat::ChannelFormat channel) {
@@ -162,21 +124,6 @@ const char* PrefersExternalSamplerToString(SharedImageFormat format) {
   return format.PrefersExternalSampler() ? "ExtSamplerOn" : "ExtSamplerOff";
 }
 
-SharedImageFormat GetEquivalentMultiplanarFormat(SharedImageFormat format) {
-  if (format == LegacyMultiPlaneFormat::kYV12) {
-    return MultiPlaneFormat::kYV12;
-  } else if (format == LegacyMultiPlaneFormat::kNV12) {
-    return MultiPlaneFormat::kNV12;
-  } else if (format == LegacyMultiPlaneFormat::kNV12A) {
-    return MultiPlaneFormat::kNV12A;
-  } else if (format == LegacyMultiPlaneFormat::kP010) {
-    return MultiPlaneFormat::kP010;
-  }
-
-  NOTREACHED();
-  return SinglePlaneFormat::kRGBA_8888;
-}
-
 }  // namespace
 
 // Ensure that SharedImageFormat is suitable for passing around by value.
@@ -220,15 +167,9 @@ std::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
   DCHECK(!size.IsEmpty());
 
   if (is_single_plane()) {
-    if (IsLegacyMultiplanar()) {
-      return GetEquivalentMultiplanarFormat(*this)
-          .MaybeEstimatedPlaneSizeInBytes(plane_index, size);
-    }
-
     DCHECK_EQ(plane_index, 0);
 
-    base::CheckedNumeric<size_t> bits_per_row =
-        BitsPerPixelForTrueSinglePlaneFormat(*this);
+    base::CheckedNumeric<size_t> bits_per_row = BitsPerPixel();
     bits_per_row *= size.width();
     if (!bits_per_row.IsValid()) {
       return std::nullopt;
@@ -265,10 +206,6 @@ std::optional<size_t> SharedImageFormat::MaybeEstimatedSizeInBytes(
   DCHECK(!size.IsEmpty());
 
   if (is_single_plane()) {
-    if (IsLegacyMultiplanar()) {
-      return GetEquivalentMultiplanarFormat(*this).MaybeEstimatedSizeInBytes(
-          size);
-    }
     return MaybeEstimatedPlaneSizeInBytes(0, size);
   }
 
@@ -346,7 +283,7 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
     case PlaneConfig::kY_UV_A:
       return plane_index == 1 ? 2 : 1;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -361,7 +298,7 @@ int SharedImageFormat::MultiplanarBitDepth() const {
     case ChannelFormat::k16F:
       return 16;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -400,12 +337,11 @@ bool SharedImageFormat::HasAlpha() const {
     switch (singleplanar_format()) {
       case mojom::SingleplanarFormat::RGBA_8888:
       case mojom::SingleplanarFormat::RGBA_4444:
-      case mojom::SingleplanarFormat::RGBX_1010102:
+      case mojom::SingleplanarFormat::RGBA_1010102:
       case mojom::SingleplanarFormat::BGRA_8888:
-      case mojom::SingleplanarFormat::BGRX_1010102:
+      case mojom::SingleplanarFormat::BGRA_1010102:
       case mojom::SingleplanarFormat::ALPHA_8:
       case mojom::SingleplanarFormat::RGBA_F16:
-      case mojom::SingleplanarFormat::NV12A_LEGACY:
         return true;
       default:
         return false;
@@ -427,22 +363,6 @@ bool SharedImageFormat::IsCompressed() const {
          singleplanar_format() == mojom::SingleplanarFormat::ETC1;
 }
 
-bool SharedImageFormat::IsLegacyMultiplanar() const {
-  if (!is_single_plane()) {
-    return false;
-  }
-
-  switch (singleplanar_format()) {
-    case mojom::SingleplanarFormat::YV12_LEGACY:
-    case mojom::SingleplanarFormat::NV12_LEGACY:
-    case mojom::SingleplanarFormat::NV12A_LEGACY:
-    case mojom::SingleplanarFormat::P010_LEGACY:
-      return true;
-    default:
-      return false;
-  }
-}
-
 int SharedImageFormat::BitsPerPixel() const {
   CHECK(is_single_plane());
   switch (singleplanar_format()) {
@@ -452,32 +372,26 @@ int SharedImageFormat::BitsPerPixel() const {
     case mojom::SingleplanarFormat::RGBA_8888:
     case mojom::SingleplanarFormat::RGBX_8888:
     case mojom::SingleplanarFormat::BGRX_8888:
-    case mojom::SingleplanarFormat::RGBX_1010102:
-    case mojom::SingleplanarFormat::BGRX_1010102:
-    case mojom::SingleplanarFormat::RG16_EXT:
+    case mojom::SingleplanarFormat::RGBA_1010102:
+    case mojom::SingleplanarFormat::BGRA_1010102:
+    case mojom::SingleplanarFormat::RG_1616:
       return 32;
     case mojom::SingleplanarFormat::RGBA_4444:
     case mojom::SingleplanarFormat::RGB_565:
     case mojom::SingleplanarFormat::LUMINANCE_F16:
     case mojom::SingleplanarFormat::R_F16:
-    case mojom::SingleplanarFormat::R16_EXT:
+    case mojom::SingleplanarFormat::R_16:
     case mojom::SingleplanarFormat::BGR_565:
     case mojom::SingleplanarFormat::RG_88:
       return 16;
     case mojom::SingleplanarFormat::ALPHA_8:
     case mojom::SingleplanarFormat::LUMINANCE_8:
-    case mojom::SingleplanarFormat::RED_8:
+    case mojom::SingleplanarFormat::R_8:
       return 8;
     case mojom::SingleplanarFormat::ETC1:
       return 4;
-    case mojom::SingleplanarFormat::P010_LEGACY:
-    case mojom::SingleplanarFormat::NV12A_LEGACY:
-    case mojom::SingleplanarFormat::YV12_LEGACY:
-    case mojom::SingleplanarFormat::NV12_LEGACY:
-      // Legacy multiplanar formats are not supported.
-      CHECK(0);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool SharedImageFormat::operator==(const SharedImageFormat& o) const {

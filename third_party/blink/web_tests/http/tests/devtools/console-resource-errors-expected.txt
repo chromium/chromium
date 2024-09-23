@@ -7,11 +7,11 @@ console-resource-errors-iframe.html:8 GET http://127.0.0.1:8000/devtools/non-exi
 console-resource-errors.js:26 GET http://127.0.0.1:8000/devtools/non-existent-xhr 404 (Not Found)
 loadXHR @ console-resource-errors.js:26
 step2 @ console-resource-errors.js:18
-error (async)
+error
 performActions @ console-resource-errors.js:13
 (anonymous) @ console-resource-errors.js:37 console-message-wrapper console-error-level > console-message
 unknown-scheme://foo:1 GET unknown-scheme://foo net::ERR_UNKNOWN_URL_SCHEME
-Image (async)
+Image
 performActions @ console-resource-errors.js:14
 (anonymous) @ console-resource-errors.js:37 console-message-wrapper console-error-level > console-message
 

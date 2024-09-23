@@ -8,6 +8,7 @@
 #include <cmath>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
@@ -432,7 +433,7 @@ bool TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
     std::u16string::const_iterator& next_token) {
   static const auto open_paren = u'(';
   static const auto close_paren = u')';
-  static constexpr auto schemes = base::MakeFixedFlatSet<base::StringPiece16>(
+  static constexpr auto schemes = base::MakeFixedFlatSet<std::u16string_view>(
       {u"hsl", u"hsla", u"rgb", u"rgba"});
 
   base::String16Tokenizer tokenizer(
@@ -440,7 +441,7 @@ bool TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
   tokenizer.set_options(base::String16Tokenizer::RETURN_DELIMS);
   for (; tokenizer.GetNext();) {
     if (!tokenizer.token_is_delim()) {
-      base::StringPiece16 token = tokenizer.token_piece();
+      std::u16string_view token = tokenizer.token_piece();
       std::u16string::const_iterator start_color = tokenizer.token_begin();
       if (base::ranges::find(schemes.begin(), schemes.end(), token) !=
           schemes.end()) {
@@ -496,7 +497,7 @@ std::optional<SkColor> TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
 
 std::optional<SkColor>
 TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::RgbaPiecesToSkColor(
-    const std::vector<base::StringPiece16>& pieces,
+    const std::vector<std::u16string_view>& pieces,
     size_t start_piece) {
   int r, g, b;
   double a;

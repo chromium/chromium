@@ -11,8 +11,8 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources"
     android:id="@+id/price_change_module_layout"
-    android:layout_marginEnd="@dimen/mvt_container_lateral_margin_polish"
-    android:layout_marginStart="@dimen/mvt_container_lateral_margin_polish"
+    android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
+    android:layout_marginStart="@dimen/mvt_container_lateral_margin"
     android:layout_marginTop="@dimen/price_change_module_margin_top"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -31,15 +31,18 @@ found in the LICENSE file.
             android:layout_marginHorizontal="20dp"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
-        <RelativeLayout
+        <LinearLayout
+            android:baselineAligned="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_marginBottom="20dp"
             android:layout_marginHorizontal="20dp">
             <RelativeLayout
                 android:id="@+id/image_layout"
-                android:layout_height="@dimen/price_change_module_product_image_size"
-                android:layout_width="@dimen/price_change_module_product_image_size">
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:background="@drawable/price_change_module_image_background">
                 <org.chromium.components.browser_ui.widget.RoundedCornerImageView
                     android:id="@+id/product_image"
                     app:cornerRadiusBottomEnd="@dimen/price_change_module_product_image_corner_radius"
@@ -48,24 +51,24 @@ found in the LICENSE file.
                     app:cornerRadiusTopStart="@dimen/price_change_module_product_image_corner_radius"
                     android:layout_height="@dimen/price_change_module_product_image_size"
                     android:layout_width="@dimen/price_change_module_product_image_size"
+                    android:layout_margin="@dimen/price_change_module_product_image_margin"
                     android:scaleType="centerCrop" />
                 <org.chromium.ui.widget.ChromeImageView
                     android:id="@+id/favicon_image"
                     android:background="@drawable/price_change_module_favicon_background"
                     android:elevation="4dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
+                    android:layout_alignBottom="@id/product_image"
+                    android:layout_alignEnd="@id/product_image"
                     android:layout_height="@dimen/price_change_module_favicon_image_size"
                     android:layout_width="@dimen/price_change_module_favicon_image_size"
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
                     android:padding="4dp" />
             </RelativeLayout>
-            <RelativeLayout
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:layout_height="@dimen/price_change_module_product_image_size"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/image_layout"
                 android:orientation="vertical">
                 <LinearLayout
                     android:id="@+id/price_info_box"
@@ -101,24 +104,18 @@ found in the LICENSE file.
                     android:layout_height="wrap_content"
                     android:textAlignment="viewStart"
                     android:layout_marginTop="8dp"
-                    android:layout_below="@+id/price_info_box"
                     android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
                     android:maxLines="2"
                     android:ellipsize="end" />
-            </RelativeLayout>
-            <TextView
-                android:id="@+id/price_drop_domain"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_gravity="bottom"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/image_layout"
-                android:gravity="start"
-                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-                android:maxLines="1"
-                android:ellipsize="end" />
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/price_drop_domain"
+                    android:gravity="bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </org.chromium.chrome.browser.price_change.PriceChangeModuleView>

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/app_controller_mac.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/apple/scoped_objc_class_swizzler.h"
@@ -12,18 +14,22 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
-#import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/platform_test.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -88,71 +94,149 @@ class AppControllerKeyEquivalentTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    nsapp_target_for_action_swizzler_ =
+    _nsapp_target_for_action_swizzler =
         std::make_unique<base::apple::ScopedObjCClassSwizzler>(
             [NSApp class], [AppControllerKeyEquivalentTestHelper class],
             @selector(targetForAction:));
-    app_controller_swizzler_ =
+    _app_controller_swizzler =
         std::make_unique<base::apple::ScopedObjCClassSwizzler>(
             [AppController class], [AppControllerKeyEquivalentTestHelper class],
             @selector(windowHasBrowserTabs:));
 
-    app_controller_ = AppController.sharedController;
+    _app_controller = AppController.sharedController;
 
-    close_window_menu_item_ = [[NSMenuItem alloc] initWithTitle:@""
-                                                         action:nullptr
-                                                  keyEquivalent:@""];
-    [app_controller_ setCloseWindowMenuItemForTesting:close_window_menu_item_];
+    _cmdw_menu_item =
+        [[NSMenuItem alloc] initWithTitle:@""
+                                   action:@selector(commandDispatch:)
+                            keyEquivalent:@"w"];
+    _cmdw_menu_item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
+    _cmdw_menu_item.tag = IDC_CLOSE_TAB;
+    [_app_controller setCmdWMenuItemForTesting:_cmdw_menu_item];
 
-    close_tab_menu_item_ = [[NSMenuItem alloc] initWithTitle:@""
-                                                      action:nullptr
-                                               keyEquivalent:@""];
-    [app_controller_ setCloseTabMenuItemForTesting:close_tab_menu_item_];
+    _shift_cmdw_menu_item =
+        [[NSMenuItem alloc] initWithTitle:@""
+                                   action:@selector(performClose:)
+                            keyEquivalent:@"W"];
+    _shift_cmdw_menu_item.keyEquivalentModifierMask =
+        NSEventModifierFlagCommand;
+    _shift_cmdw_menu_item.tag = IDC_CLOSE_WINDOW;
+    [_app_controller setShiftCmdWMenuItemForTesting:_shift_cmdw_menu_item];
   }
 
   void CheckMenuItemsMatchBrowserWindow() {
     ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
               *TargetForAction());
 
-    [app_controller_ updateMenuItemKeyEquivalents];
+    [_app_controller updateMenuItemKeyEquivalents];
 
-    EXPECT_TRUE([[close_window_menu_item_ keyEquivalent] isEqualToString:@"W"]);
-    EXPECT_EQ([close_window_menu_item_ keyEquivalentModifierMask],
-              NSEventModifierFlagCommand);
-    EXPECT_TRUE([[close_tab_menu_item_ keyEquivalent] isEqualToString:@"w"]);
-    EXPECT_EQ([close_tab_menu_item_ keyEquivalentModifierMask],
-              NSEventModifierFlagCommand);
+    EXPECT_FALSE(_shift_cmdw_menu_item.hidden);
+    EXPECT_EQ(_shift_cmdw_menu_item.tag, IDC_CLOSE_WINDOW);
+    EXPECT_EQ(_shift_cmdw_menu_item.action, @selector(performClose:));
+    EXPECT_TRUE([_shift_cmdw_menu_item.title
+        isEqualToString:l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC)]);
+
+    EXPECT_FALSE(_cmdw_menu_item.hidden);
+    EXPECT_EQ(_cmdw_menu_item.tag, IDC_CLOSE_TAB);
+    EXPECT_EQ(_cmdw_menu_item.action, @selector(commandDispatch:));
+    EXPECT_TRUE([_cmdw_menu_item.title
+        isEqualToString:l10n_util::GetNSStringWithFixup(IDS_CLOSE_TAB_MAC)]);
   }
 
   void CheckMenuItemsMatchNonBrowserWindow() {
     ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
               *TargetForAction());
 
-    [app_controller_ updateMenuItemKeyEquivalents];
+    [_app_controller updateMenuItemKeyEquivalents];
 
-    EXPECT_TRUE([[close_window_menu_item_ keyEquivalent] isEqualToString:@"w"]);
-    EXPECT_EQ([close_window_menu_item_ keyEquivalentModifierMask],
+    EXPECT_TRUE(_shift_cmdw_menu_item.hidden);
+
+    EXPECT_FALSE(_cmdw_menu_item.hidden);
+    EXPECT_EQ(_cmdw_menu_item.tag, IDC_CLOSE_WINDOW);
+    EXPECT_EQ(_cmdw_menu_item.action, @selector(performClose:));
+    EXPECT_TRUE([_cmdw_menu_item.title
+        isEqualToString:l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC)]);
+  }
+
+  // Check that we don't perform any shortcut switching when there's a custom
+  // shortcut assigned to File->Close Window.
+  void VerifyMenuItemsForCustomCloseWindowShortcut() {
+    ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
+              *TargetForAction());
+
+    NSMenuItem* close_tab_menu_item = _cmdw_menu_item;
+    NSMenuItem* close_window_menu_item = _shift_cmdw_menu_item;
+
+    // Assign a custom shortcut to Close Window.
+    close_window_menu_item.keyEquivalent = @"w";
+    close_window_menu_item.keyEquivalentModifierMask =
+        NSEventModifierFlagCommand | NSEventModifierFlagControl;
+
+    [_app_controller updateMenuItemKeyEquivalents];
+
+    // Both menu items should be undisturbed from their original states.
+    EXPECT_FALSE(close_tab_menu_item.hidden);
+    EXPECT_EQ(close_tab_menu_item.tag, IDC_CLOSE_TAB);
+    EXPECT_EQ(close_tab_menu_item.action, @selector(commandDispatch:));
+    EXPECT_TRUE([close_tab_menu_item.keyEquivalent isEqualToString:@"w"]);
+    EXPECT_EQ(close_tab_menu_item.keyEquivalentModifierMask,
               NSEventModifierFlagCommand);
-    EXPECT_TRUE([[close_tab_menu_item_ keyEquivalent] isEqualToString:@""]);
-    EXPECT_EQ([close_tab_menu_item_ keyEquivalentModifierMask], 0UL);
+
+    EXPECT_FALSE(close_window_menu_item.hidden);
+    EXPECT_EQ(close_window_menu_item.tag, IDC_CLOSE_WINDOW);
+    EXPECT_EQ(close_window_menu_item.action, @selector(performClose:));
+    EXPECT_TRUE([close_window_menu_item.keyEquivalent isEqualToString:@"w"]);
+    EXPECT_EQ(close_window_menu_item.keyEquivalentModifierMask,
+              NSEventModifierFlagCommand | NSEventModifierFlagControl);
+  }
+
+  // Check that we don't perform any shortcut switching when there's a custom
+  // shortcut assigned to File->Close Tab.
+  void VerifyMenuItemsForCustomCloseTabShortcut() {
+    ASSERT_EQ([NSApp targetForAction:@selector(performClose:)],
+              *TargetForAction());
+
+    NSMenuItem* close_tab_menu_item = _cmdw_menu_item;
+    NSMenuItem* close_window_menu_item = _shift_cmdw_menu_item;
+
+    // Assign a custom shortcut to Close Tab.
+    close_tab_menu_item.keyEquivalent = @"w";
+    close_tab_menu_item.keyEquivalentModifierMask =
+        NSEventModifierFlagCommand | NSEventModifierFlagControl;
+
+    [_app_controller updateMenuItemKeyEquivalents];
+
+    // Both menu items should be undisturbed from their original states.
+    EXPECT_FALSE(close_tab_menu_item.hidden);
+    EXPECT_EQ(close_tab_menu_item.tag, IDC_CLOSE_TAB);
+    EXPECT_EQ(close_tab_menu_item.action, @selector(commandDispatch:));
+    EXPECT_TRUE([close_tab_menu_item.keyEquivalent isEqualToString:@"w"]);
+    EXPECT_EQ(close_tab_menu_item.keyEquivalentModifierMask,
+              NSEventModifierFlagCommand | NSEventModifierFlagControl);
+
+    EXPECT_FALSE(close_window_menu_item.hidden);
+    EXPECT_EQ(close_window_menu_item.tag, IDC_CLOSE_WINDOW);
+    EXPECT_EQ(close_window_menu_item.action, @selector(performClose:));
+    EXPECT_TRUE([close_window_menu_item.keyEquivalent isEqualToString:@"W"]);
+    EXPECT_EQ(close_window_menu_item.keyEquivalentModifierMask,
+              NSEventModifierFlagCommand);
   }
 
   void TearDown() override {
     PlatformTest::TearDown();
 
-    [app_controller_ setCloseWindowMenuItemForTesting:nil];
-    [app_controller_ setCloseTabMenuItemForTesting:nil];
+    [_app_controller setCmdWMenuItemForTesting:nil];
+    [_app_controller setShiftCmdWMenuItemForTesting:nil];
     *TargetForAction() = nil;
   }
 
  private:
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
-      nsapp_target_for_action_swizzler_;
+      _nsapp_target_for_action_swizzler;
   std::unique_ptr<base::apple::ScopedObjCClassSwizzler>
-      app_controller_swizzler_;
-  AppController* __strong app_controller_;
-  NSMenuItem* __strong close_window_menu_item_;
-  NSMenuItem* __strong close_tab_menu_item_;
+      _app_controller_swizzler;
+  AppController* __strong _app_controller;
+  NSMenuItem* __strong _cmdw_menu_item;
+  NSMenuItem* __strong _shift_cmdw_menu_item;
 };
 
 TEST_F(AppControllerTest, DockMenuProfileNotLoaded) {
@@ -279,6 +363,32 @@ TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForBrowserWindow) {
   CheckMenuItemsMatchBrowserWindow();
 }
 
+// Tests key equivalents for Close Window when target is a descendant of a
+// browser window.
+TEST_F(AppControllerKeyEquivalentTest,
+       UpdateMenuItemsForBrowserWindowDescendant) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImmersiveFullscreen);
+
+  // Set up the browser window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  NSWindow* browser_window =
+      [[FakeBrowserWindow alloc] initWithContentRect:kContentRect
+                                           styleMask:NSWindowStyleMaskClosable
+                                             backing:NSBackingStoreBuffered
+                                               defer:YES];
+
+  // Set up descendants.
+  NSWindow* child_window = [[NSWindow alloc] init];
+  [browser_window addChildWindow:child_window ordered:NSWindowAbove];
+  NSWindow* child_child_window = [[NSWindow alloc] init];
+  [child_window addChildWindow:child_child_window ordered:NSWindowAbove];
+
+  *TargetForAction() = child_child_window;
+
+  CheckMenuItemsMatchBrowserWindow();
+}
+
 // Tests key equivalents for Close Window when target is not a browser window.
 TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForNonBrowserWindow) {
   // Set up the window.
@@ -300,6 +410,63 @@ TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForNonWindow) {
   *TargetForAction() = non_window_object;
 
   CheckMenuItemsMatchNonBrowserWindow();
+}
+
+// Tests key equivalents for Close Window and Close Tab when we shift from one
+// browser window to no browser windows, and then back to one browser window.
+TEST_F(AppControllerKeyEquivalentTest, MenuItemsUpdateWithWindowChanges) {
+  // Set up the browser window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  NSWindow* browser_window =
+      [[FakeBrowserWindow alloc] initWithContentRect:kContentRect
+                                           styleMask:NSWindowStyleMaskClosable
+                                             backing:NSBackingStoreBuffered
+                                               defer:YES];
+
+  *TargetForAction() = browser_window;
+
+  CheckMenuItemsMatchBrowserWindow();
+
+  // "Close" it.
+  NSObject* non_window_object = [[NSObject alloc] init];
+  *TargetForAction() = non_window_object;
+
+  CheckMenuItemsMatchNonBrowserWindow();
+
+  // "New" window.
+  *TargetForAction() = browser_window;
+
+  CheckMenuItemsMatchBrowserWindow();
+}
+
+TEST_F(AppControllerKeyEquivalentTest,
+       DontChangeShortcutsWhenCustomCloseWindowShortcutAssigned) {
+  // Set up the window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  NSWindow* main_window =
+      [[NSWindow alloc] initWithContentRect:kContentRect
+                                  styleMask:NSWindowStyleMaskClosable
+                                    backing:NSBackingStoreBuffered
+                                      defer:YES];
+
+  *TargetForAction() = main_window;
+
+  VerifyMenuItemsForCustomCloseWindowShortcut();
+}
+
+TEST_F(AppControllerKeyEquivalentTest,
+       DontChangeShortcutsWhenCustomCloseTabShortcutAssigned) {
+  // Set up the window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  NSWindow* main_window =
+      [[NSWindow alloc] initWithContentRect:kContentRect
+                                  styleMask:NSWindowStyleMaskClosable
+                                    backing:NSBackingStoreBuffered
+                                      defer:YES];
+
+  *TargetForAction() = main_window;
+
+  VerifyMenuItemsForCustomCloseTabShortcut();
 }
 
 class AppControllerSafeProfileTest : public AppControllerTest {
@@ -385,15 +552,45 @@ TEST_F(AppControllerSafeProfileTest, SpecificProfileNotLoaded) {
   AppController* app_controller = AppController.sharedController;
   ASSERT_EQ(profile_, app_controller.lastProfileIfLoaded);
 
+  // Add a profile in the cache (simulate another profile on disk).
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage* profile_storage =
+      &profile_manager->GetProfileAttributesStorage();
+  const base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"New Profile 2";
+  profile_storage->AddProfile(std::move(params));
+
   base::RunLoop run_loop;
   app_controller_mac::RunInProfileSafely(
-      profile_manager_.profiles_dir().AppendASCII("New Profile 2"),
-      base::BindLambdaForTesting([&](Profile* profile) {
+      profile_path, base::BindLambdaForTesting([&](Profile* profile) {
         // This should run with the specific profile we asked for, rather than
         // the last-used profile.
         EXPECT_NE(profile, nullptr);
         EXPECT_NE(profile, profile_.get());
-        EXPECT_EQ(profile->GetBaseName().MaybeAsASCII(), "New Profile 2");
+        EXPECT_EQ(profile->GetPath(), profile_path);
+        run_loop.Quit();
+      }),
+      app_controller_mac::kIgnoreOnFailure);
+  run_loop.Run();
+}
+
+// Tests that RunInProfileSafely() returns nullptr if a profle doesn't exist.
+TEST_F(AppControllerSafeProfileTest, SpecificProfileDoesNotExist) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed,
+                         profile_->GetPath().BaseName().MaybeAsASCII());
+
+  AppController* app_controller = AppController.sharedController;
+  ASSERT_EQ(profile_, app_controller.lastProfileIfLoaded);
+
+  base::RunLoop run_loop;
+  app_controller_mac::RunInProfileSafely(
+      profile_manager_.profiles_dir().AppendASCII("Non-existent Profile"),
+      base::BindLambdaForTesting([&](Profile* profile) {
+        EXPECT_EQ(profile, nullptr);
         run_loop.Quit();
       }),
       app_controller_mac::kIgnoreOnFailure);

@@ -8,17 +8,16 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class UnitConversionService;
 
 // Singleton that owns all UnitConversionServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class UnitConversionServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  static UnitConversionService* GetForProfile(ProfileIOS* profile);
   static UnitConversionServiceFactory* GetInstance();
-  static UnitConversionService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
 
   UnitConversionServiceFactory(const UnitConversionServiceFactory&) = delete;
   UnitConversionServiceFactory& operator=(const UnitConversionServiceFactory&) =

@@ -8,11 +8,27 @@ static_library("browser") {
     "content_facilitated_payments_driver.h",
     "content_facilitated_payments_driver_factory.cc",
     "content_facilitated_payments_driver_factory.h",
+    "facilitated_payments_api_client_factory.h",
   ]
 
   public_deps = [
     "//base",
     "//components/facilitated_payments/core/browser",
+    "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_facilitated_payments_driver_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//components/optimization_guide/core:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

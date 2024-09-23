@@ -35,6 +35,14 @@ void CreateQuad(TracedValue* value, const char* name, const gfx::QuadF& quad) {
 
 }  // namespace
 
+PaintTimingVisualizer::PaintTimingVisualizer() {
+  trace_event::AddEnabledStateObserver(this);
+}
+
+PaintTimingVisualizer::~PaintTimingVisualizer() {
+  trace_event::RemoveEnabledStateObserver(this);
+}
+
 void PaintTimingVisualizer::RecordRects(const gfx::Rect& rect,
                                         std::unique_ptr<TracedValue>& value) {
   CreateQuad(value.get(), "rect", gfx::QuadF(gfx::RectF(rect)));
@@ -43,8 +51,7 @@ void PaintTimingVisualizer::RecordObject(const LayoutObject& object,
                                          std::unique_ptr<TracedValue>& value) {
   value->SetString("object_name", object.GetName());
   DCHECK(object.GetFrame());
-  value->SetString("frame",
-                   String::FromUTF8(GetFrameIdForTracing(object.GetFrame())));
+  value->SetString("frame", GetFrameIdForTracing(object.GetFrame()));
   value->SetBoolean("is_in_main_frame", object.GetFrame()->IsMainFrame());
   value->SetBoolean("is_in_outermost_main_frame",
                     object.GetFrame()->IsOutermostMainFrame());
@@ -98,6 +105,7 @@ void PaintTimingVisualizer::RecordMainFrameViewport(
 
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   CreateQuad(value.get(), "viewport_rect", gfx::QuadF(float_visual_rect));
+  value->SetDouble("dpr", frame_view.GetFrame().DevicePixelRatio());
   TRACE_EVENT_INSTANT1("loading", "PaintTimingVisualizer::Viewport",
                        TRACE_EVENT_SCOPE_THREAD, "data", std::move(value));
   need_recording_viewport = false;
@@ -109,5 +117,11 @@ bool PaintTimingVisualizer::IsTracingEnabled() {
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("loading", &enabled);
   return enabled;
 }
+
+void PaintTimingVisualizer::OnTraceLogEnabled() {
+  need_recording_viewport = true;
+}
+
+void PaintTimingVisualizer::OnTraceLogDisabled() {}
 
 }  // namespace blink

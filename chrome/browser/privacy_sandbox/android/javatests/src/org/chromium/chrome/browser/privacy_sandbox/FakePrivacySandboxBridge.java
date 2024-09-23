@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.profiles.Profile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Java implementation of PrivacySandboxBridge for testing. */
@@ -20,10 +23,12 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private final Set<Topic> mCurrentTopTopics = new LinkedHashSet<>();
     private final Set<Topic> mBlockedTopics = new LinkedHashSet<>();
     private final Set<Topic> mFirstLevelTopics = new LinkedHashSet<>();
+    private final Set<Topic> mChildTopics = new LinkedHashSet<>();
     private final Set<String> mCurrentFledgeSites = new LinkedHashSet<>();
     private final Set<String> mBlockedFledgeSites = new LinkedHashSet<>();
     private @PromptType int mPromptType = PromptType.NONE;
     private Integer mLastPromptAction;
+    private Integer mLastSurfaceType;
     private boolean mLastTopicsToggleValue;
 
     public void setCurrentTopTopics(String... topics) {
@@ -37,6 +42,20 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         mBlockedTopics.clear();
         for (String name : topics) {
             mBlockedTopics.add(getOrCreateTopic(name));
+        }
+    }
+
+    public void setFirstLevelTopics(String... topics) {
+        mFirstLevelTopics.clear();
+        for (String name : topics) {
+            mFirstLevelTopics.add(getOrCreateTopic(name));
+        }
+    }
+
+    public void setChildTopics(String... topics) {
+        mChildTopics.clear();
+        for (String name : topics) {
+            mChildTopics.add(getOrCreateTopic(name));
         }
     }
 
@@ -60,35 +79,35 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public boolean isPrivacySandboxRestricted() {
+    public boolean isPrivacySandboxRestricted(Profile profile) {
         return mIsPrivacySandboxRestricted;
     }
 
     @Override
-    public boolean isRestrictedNoticeEnabled() {
+    public boolean isRestrictedNoticeEnabled(Profile profile) {
         return mIsRestrictedNoticeEnabled;
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessEnabled() {
+    public boolean isFirstPartySetsDataAccessEnabled(Profile profile) {
         return false;
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessManaged() {
+    public boolean isFirstPartySetsDataAccessManaged(Profile profile) {
         return false;
     }
 
     @Override
-    public boolean isPartOfManagedFirstPartySet(String origin) {
+    public boolean isPartOfManagedFirstPartySet(Profile profile, String origin) {
         return false;
     }
 
     @Override
-    public void setFirstPartySetsDataAccessEnabled(boolean enabled) {}
+    public void setFirstPartySetsDataAccessEnabled(Profile profile, boolean enabled) {}
 
     @Override
-    public String getFirstPartySetOwner(String memberOrigin) {
+    public String getFirstPartySetOwner(Profile profile, String memberOrigin) {
         return null;
     }
 
@@ -101,22 +120,29 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public Topic[] getCurrentTopTopics() {
-        return mCurrentTopTopics.toArray(new Topic[] {});
+    public List<Topic> getCurrentTopTopics(Profile profile) {
+        return new ArrayList<>(mCurrentTopTopics);
     }
 
     @Override
-    public Topic[] getBlockedTopics() {
-        return mBlockedTopics.toArray(new Topic[] {});
+    public List<Topic> getBlockedTopics(Profile profile) {
+        return new ArrayList<>(mBlockedTopics);
     }
 
     @Override
-    public Topic[] getFirstLevelTopics() {
-        return mFirstLevelTopics.toArray(new Topic[] {});
+    public List<Topic> getFirstLevelTopics(Profile profile) {
+        return new ArrayList<>(mFirstLevelTopics);
     }
 
     @Override
-    public void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed) {
+    public List<Topic> getChildTopicsCurrentlyAssigned(
+            Profile profile, int topicId, int taxonomyVersion) {
+        return new ArrayList<>(mChildTopics);
+    }
+
+    @Override
+    public void setTopicAllowed(
+            Profile profile, int topicId, int taxonomyVersion, boolean allowed) {
         Topic topic = null;
         for (Topic t : mTopics.values()) {
             if (t.getTopicId() == topicId) {
@@ -133,16 +159,22 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public void getFledgeJoiningEtldPlusOneForDisplay(Callback<String[]> callback) {
+    public void getFledgeJoiningEtldPlusOneForDisplay(
+            Profile profile, Callback<String[]> callback) {
         callback.onResult(mCurrentFledgeSites.toArray(new String[0]));
     }
 
     @Override
-    public String[] getBlockedFledgeJoiningTopFramesForDisplay() {
-        return mBlockedFledgeSites.toArray(new String[0]);
+    public List<String> getBlockedFledgeJoiningTopFramesForDisplay(Profile profile) {
+        return new ArrayList<>(mBlockedFledgeSites);
     }
 
     @Override
+    public void setFledgeJoiningAllowed(
+            Profile profile, String topFrameEtldPlus1, boolean allowed) {
+        setFledgeJoiningAllowed(topFrameEtldPlus1, allowed);
+    }
+
     public void setFledgeJoiningAllowed(String topFrameEtldPlus1, boolean allowed) {
         if (allowed) {
             mCurrentFledgeSites.add(topFrameEtldPlus1);
@@ -157,18 +189,28 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         mPromptType = type;
     }
 
-    @Override
-    public int getRequiredPromptType() {
+    public int getRequiredPromptType(@SurfaceType int surfaceType) {
         return mPromptType;
     }
 
     @Override
-    public void promptActionOccurred(@PromptAction int action) {
+    public int getRequiredPromptType(Profile profile, @SurfaceType int surfaceType) {
+        return getRequiredPromptType(surfaceType);
+    }
+
+    @Override
+    public void promptActionOccurred(
+            Profile profile, @PromptAction int action, @SurfaceType int surfaceType) {
         mLastPromptAction = action;
+        mLastSurfaceType = surfaceType;
     }
 
     public Integer getLastPromptAction() {
         return mLastPromptAction;
+    }
+
+    public Integer getLastSurfaceType() {
+        return mLastSurfaceType;
     }
 
     public void resetLastPromptAction() {
@@ -176,7 +218,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public void topicsToggleChanged(boolean newValue) {
+    public void topicsToggleChanged(Profile profile, boolean newValue) {
         mLastTopicsToggleValue = newValue;
     }
 
@@ -185,5 +227,13 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public void setAllPrivacySandboxAllowedForTesting() {}
+    public void setAllPrivacySandboxAllowedForTesting(Profile profile) {}
+
+    @Override
+    public void recordActivityType(Profile profile, int activityType) {}
+
+    @Override
+    public boolean isConsentCountry() {
+        return false;
+    }
 }

@@ -376,8 +376,8 @@ TEST_F(InputMethodEngineTest, KeyEventHandledRecordsLatencyHistogram) {
 
   histogram_tester.ExpectTotalCount("InputMethod.KeyEventLatency", 0);
 
-  const ui::KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A, 0,
-                           ui::DomKey::FromCharacter('a'),
+  const ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A, 0, ui::DomKey::FromCharacter('a'),
                            ui::EventTimeForNow());
   engine_->ProcessKeyEvent(event, base::DoNothing());
 

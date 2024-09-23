@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -123,14 +124,15 @@ TEST_F(RequestSystemProxyCredentialsViewTest, TextfieldAccessibility) {
 
   ui::AXNodeData username_data;
   auto* username_field = system_proxy_dialog_->username_textfield_for_testing();
-  username_field->GetAccessibleNodeData(&username_data);
+  username_field->GetViewAccessibility().GetAccessibleNodeData(&username_data);
   EXPECT_EQ(username_data.role, ax::mojom::Role::kTextField);
-  EXPECT_EQ(username_field->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(username_field->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTextField);
   EXPECT_EQ(
       username_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_USERNAME_LABEL));
   EXPECT_EQ(
-      username_field->GetAccessibleName(),
+      username_field->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_USERNAME_LABEL));
   EXPECT_EQ(username_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_TRUE(username_data.HasIntListAttribute(
@@ -142,14 +144,15 @@ TEST_F(RequestSystemProxyCredentialsViewTest, TextfieldAccessibility) {
 
   ui::AXNodeData password_data;
   auto* password_field = system_proxy_dialog_->password_textfield_for_testing();
-  password_field->GetAccessibleNodeData(&password_data);
+  password_field->GetViewAccessibility().GetAccessibleNodeData(&password_data);
   EXPECT_EQ(password_data.role, ax::mojom::Role::kTextField);
-  EXPECT_EQ(password_field->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(password_field->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTextField);
   EXPECT_EQ(
       password_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_PASSWORD_LABEL));
   EXPECT_EQ(
-      password_field->GetAccessibleName(),
+      password_field->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_PASSWORD_LABEL));
   EXPECT_EQ(password_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_TRUE(password_data.HasIntListAttribute(

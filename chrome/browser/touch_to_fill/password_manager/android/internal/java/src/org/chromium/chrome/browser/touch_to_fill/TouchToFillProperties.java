@@ -151,7 +151,7 @@ class TouchToFillProperties {
      * payments.
      */
     static class FooterProperties {
-        // TODO(crbug.com/1247698): Use ReadableBooleanPropertyKey.
+        // TODO(crbug.com/40196949): Use ReadableBooleanPropertyKey.
         static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_CLICK_MANAGE =
                 new PropertyModel.WritableObjectPropertyKey<>("on_click_manage");
         static final PropertyModel.WritableObjectPropertyKey<String> MANAGE_BUTTON_TEXT =

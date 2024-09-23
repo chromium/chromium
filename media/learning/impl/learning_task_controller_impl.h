@@ -33,10 +33,9 @@ class LearningTaskControllerImplTest;
 // The idea is that one can create a LearningTask, give it to an LTCI, and the
 // LTCI will do the work of building / evaluating the model based on training
 // examples that are provided to it.
-class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerImpl
+class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerImpl final
     : public LearningTaskController,
-      public HasRandomNumberGenerator,
-      public base::SupportsWeakPtr<LearningTaskControllerImpl> {
+      public HasRandomNumberGenerator {
  public:
   LearningTaskControllerImpl(
       const LearningTask& task,
@@ -114,6 +113,8 @@ class COMPONENT_EXPORT(LEARNING_IMPL) LearningTaskControllerImpl
 
   // Number of features that we expect in each observation.
   size_t expected_feature_count_;
+
+  base::WeakPtrFactory<LearningTaskControllerImpl> weak_ptr_factory_{this};
 
   friend class LearningTaskControllerImplTest;
 };

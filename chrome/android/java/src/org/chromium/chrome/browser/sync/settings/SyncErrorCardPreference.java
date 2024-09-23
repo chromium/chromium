@@ -12,8 +12,13 @@ import android.view.View;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.ErrorUiAction;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -42,6 +47,7 @@ public class SyncErrorCardPreference extends Preference
     }
 
     private ProfileDataCache mProfileDataCache;
+    private Profile mProfile;
     private SyncService mSyncService;
     private IdentityManager mIdentityManager;
     private SyncErrorCardPreferenceListener mListener;
@@ -52,22 +58,23 @@ public class SyncErrorCardPreference extends Preference
 
         setLayoutResource(R.layout.sync_promo_view_settings);
         mSyncError = SyncError.NO_ERROR;
+        setVisible(false);
     }
 
     /**
      * Initialize the dependencies for the SyncErrorCardPreference.
      *
-     * Must be called before the preference is attached, which is called from the containing
+     * <p>Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
     public void initialize(
             ProfileDataCache profileDataCache,
-            SyncService syncService,
-            IdentityManager identityManager,
+            Profile profile,
             SyncErrorCardPreferenceListener listener) {
         mProfileDataCache = profileDataCache;
-        mSyncService = syncService;
-        mIdentityManager = identityManager;
+        mProfile = profile;
+        mSyncService = SyncServiceFactory.getForProfile(mProfile);
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
         mListener = listener;
     }
 
@@ -104,7 +111,11 @@ public class SyncErrorCardPreference extends Preference
     }
 
     private void update() {
-        mSyncError = SyncSettingsUtils.getSyncError(mSyncService);
+        if (mSyncError == SyncSettingsUtils.getSyncError(mProfile)) {
+            return;
+        }
+
+        mSyncError = SyncSettingsUtils.getSyncError(mProfile);
         boolean suppressSyncSetupIncompleteFromSigninPage =
                 (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE)
                         && mListener.shouldSuppressSyncSetupIncomplete();
@@ -113,6 +124,10 @@ public class SyncErrorCardPreference extends Preference
         } else {
             setVisible(true);
             notifyChanged();
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Sync.SyncErrorCard" + SyncSettingsUtils.getHistogramSuffixForError(mSyncError),
+                    ErrorUiAction.SHOWN,
+                    ErrorUiAction.NUM_ENTRIES);
         }
     }
 
@@ -148,7 +163,16 @@ public class SyncErrorCardPreference extends Preference
                 .setText(SyncSettingsUtils.getSyncErrorCardButtonLabel(getContext(), mSyncError));
         errorCardView
                 .getPrimaryButton()
-                .setOnClickListener(v -> mListener.onSyncErrorCardPrimaryButtonClicked());
+                .setOnClickListener(
+                        v -> {
+                            RecordHistogram.recordEnumeratedHistogram(
+                                    "Sync.SyncErrorCard"
+                                            + SyncSettingsUtils.getHistogramSuffixForError(
+                                                    mSyncError),
+                                    ErrorUiAction.BUTTON_CLICKED,
+                                    ErrorUiAction.NUM_ENTRIES);
+                            mListener.onSyncErrorCardPrimaryButtonClicked();
+                        });
         if (mSyncError == SyncError.SYNC_SETUP_INCOMPLETE) {
             errorCardView
                     .getSecondaryButton()

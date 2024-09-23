@@ -142,13 +142,13 @@ public class TabInteractionRecorder {
     }
 
     /**
-     * Whether there has been direct user interaction with the WebContents in the tab.
-     * For more detail see content/public/browser/web_contents_observer.h
+     * Whether there has been direct user interaction with the WebContents in the tab. For more
+     * detail see content/public/browser/web_contents_observer.h
      *
      * @return Whether there has been direct user interaction.
      */
     public boolean didGetUserInteraction() {
-        // TODO(https://crbug.com/1359540): Expose WebContentsObserver#didGetUserInteraction
+        // TODO(crbug.com/40237418): Expose WebContentsObserver#didGetUserInteraction
         return TabInteractionRecorderJni.get().didGetUserInteraction(mNativeTabInteractionRecorder);
     }
 

@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
-#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/mathml/mathml_operator_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_under_over_element.h"
@@ -177,7 +176,7 @@ void MathUnderOverLayoutAlgorithm::GatherChildren(BlockNode* base,
         *over = block_child;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 }
@@ -241,7 +240,7 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
     layout_remaining_items_with_zero_inline_stretch_size = false;
   }
 
-  if (UNLIKELY(layout_remaining_items_with_zero_inline_stretch_size)) {
+  if (layout_remaining_items_with_zero_inline_stretch_size) [[unlikely]] {
     // "If LNotToStretch is empty, perform layout with stretch size constraint 0
     // on all the items of LToStretch.
     for (LayoutInputNode child = Node().FirstChild(); child;
@@ -389,13 +388,13 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
 
   LayoutUnit intrinsic_block_size = ascent + descent;
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      constraint_space, Style(), BorderPadding(), intrinsic_block_size,
+      constraint_space, Node(), BorderPadding(), intrinsic_block_size,
       border_box_size.inline_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart(Node(), constraint_space, &container_builder_).Run();
+  container_builder_.HandleOofsAndSpecialDescendants();
 
   return container_builder_.ToBoxFragment();
 }

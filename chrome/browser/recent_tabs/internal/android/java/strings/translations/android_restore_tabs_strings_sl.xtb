@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Sinhronizirane naprave za obnovitev zavihkov, ki so na voljo za spreminjanje z dotikom. Pomaknite se, če si želite ogledati ali če želite obnoviti izbrane zavihke za trenutno napravo z dotikom. Tipkovnica je skrita.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Odpri <ph name="TABS_COUNT_ONE" /> zavihek}one{Odpri <ph name="TABS_COUNT_MANY" /> zavihek}two{Odpri <ph name="TABS_COUNT_MANY" /> zavihka}few{Odpri <ph name="TABS_COUNT_MANY" /> zavihke}other{Odpri <ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="4509609396389120020">Pridobivanje zavihkov iz drugih naprav</translation>
+<translation id="4619615317237390068">Zavihki iz drugih naprav</translation>
 <translation id="4811934403802581334">Vsi izbrani zavihki v trenutno izbrani napravi bodo obnovljeni.</translation>
 <translation id="5336031759968328813">Preglejte vse zavihke</translation>
 <translation id="5494920125229734069">Izberi vse</translation>

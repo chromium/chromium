@@ -41,7 +41,7 @@ using ::testing::NiceMock;
 
 void OnTextFieldDidChangeForAutofillManager(AutofillManager& autofill_manager) {
   FormData form = CreateTestAddressFormData();
-  autofill_manager.OnTextFieldDidChange(form, form.fields.front(), gfx::RectF(),
+  autofill_manager.OnTextFieldDidChange(form, form.fields().front().global_id(),
                                         base::TimeTicks::Now());
 }
 
@@ -49,7 +49,8 @@ void OnFormsSeenForAutofillManager(AutofillManager& autofill_manager,
                                    content::RenderFrameHost* rfh) {
   FormData form = CreateTestAddressFormData();
   if (rfh) {
-    form.host_frame = autofill::LocalFrameToken(rfh->GetFrameToken().value());
+    form.set_host_frame(
+        autofill::LocalFrameToken(rfh->GetFrameToken().value()));
   }
   autofill_manager.OnFormsSeen({form}, {});
 }
@@ -61,9 +62,9 @@ class AutofillObserverImplTest : public testing::Test {
 
   void SetUp() override {
     client_.SetPrefs(autofill::test::PrefServiceForTesting());
-    driver_ = std::make_unique<TestAutofillDriver>();
+    driver_ = std::make_unique<TestAutofillDriver>(&client_);
     driver_->set_autofill_manager(
-        std::make_unique<TestBrowserAutofillManager>(driver_.get(), &client_));
+        std::make_unique<TestBrowserAutofillManager>(driver_.get()));
   }
 
  protected:
@@ -127,9 +128,9 @@ class TabInteractionRecorderAndroidTest
     ChromeRenderViewHostTestHarness::SetUp();
 
     client_.SetPrefs(autofill::test::PrefServiceForTesting());
-    driver_ = std::make_unique<TestAutofillDriver>();
+    driver_ = std::make_unique<TestAutofillDriver>(&client_);
     driver_->set_autofill_manager(
-        std::make_unique<TestBrowserAutofillManager>(driver_.get(), &client_));
+        std::make_unique<TestBrowserAutofillManager>(driver_.get()));
   }
 
   std::unique_ptr<content::WebContents> CreateTestWebContents() {
@@ -274,7 +275,7 @@ TEST_F(TabInteractionRecorderAndroidTest, ResetInteractions) {
   EXPECT_FALSE(helper->HadFormInteractionInActivePage(env));
 }
 
-// TODO(crbug.com/1523245): Re-enable this test.
+// TODO(crbug.com/41496197): Re-enable this test.
 TEST_F(TabInteractionRecorderAndroidTest, DISABLED_TestFormSeen) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   OnFormsSeenForAutofillManager(autofill_manager(),

@@ -13,9 +13,9 @@ namespace gpu {
 
 ScopedPackState::ScopedPackState(int pack_row_length, int pack_alignment)
     : api_(gl::g_current_gl_context) {
-  bool is_es3_capable = gl::g_current_gl_version->is_es3_capable;
+  bool is_es3 = gl::g_current_gl_version->IsAtLeastGLES(3, 0);
 
-  if (is_es3_capable) {
+  if (is_es3) {
     // Need to unbind any GL_PIXEL_PACK_BUFFER for the nullptr in
     // glTexImage2D to mean "no pixels" (as opposed to offset 0 in the
     // buffer).
@@ -27,7 +27,7 @@ ScopedPackState::ScopedPackState(int pack_row_length, int pack_alignment)
 
   pack_alignment_.emplace(GL_PACK_ALIGNMENT, pack_alignment);
 
-  if (is_es3_capable) {
+  if (is_es3) {
     pack_row_length_.emplace(GL_PACK_ROW_LENGTH, pack_row_length);
     pack_skip_rows_.emplace(GL_PACK_SKIP_ROWS, 0);
     pack_skip_pixels_.emplace(GL_PACK_SKIP_PIXELS, 0);
@@ -47,9 +47,9 @@ ScopedUnpackState::ScopedUnpackState(bool uploading_data,
                                      int unpack_alignment)
     : api_(gl::g_current_gl_context) {
   const auto* version_info = gl::g_current_gl_version;
-  bool is_es3_capable = version_info->is_es3_capable;
+  bool is_es3 = version_info->IsAtLeastGLES(3, 0);
 
-  if (is_es3_capable) {
+  if (is_es3) {
     // Need to unbind any GL_PIXEL_UNPACK_BUFFER for the nullptr in
     // glTexImage2D to mean "no pixels" (as opposed to offset 0 in the
     // buffer).
@@ -61,8 +61,7 @@ ScopedUnpackState::ScopedUnpackState(bool uploading_data,
   if (uploading_data) {
     unpack_alignment_.emplace(GL_UNPACK_ALIGNMENT, unpack_alignment);
 
-    if (is_es3_capable ||
-        gl::g_current_gl_driver->ext.b_GL_EXT_unpack_subimage) {
+    if (is_es3 || gl::g_current_gl_driver->ext.b_GL_EXT_unpack_subimage) {
       unpack_row_length_.emplace(GL_UNPACK_ROW_LENGTH, unpack_row_length);
       unpack_skip_rows_.emplace(GL_UNPACK_SKIP_ROWS, 0);
       unpack_skip_pixels_.emplace(GL_UNPACK_SKIP_PIXELS, 0);
@@ -70,14 +69,9 @@ ScopedUnpackState::ScopedUnpackState(bool uploading_data,
       DCHECK_EQ(unpack_row_length, 0);
     }
 
-    if (is_es3_capable) {
+    if (is_es3) {
       unpack_skip_images_.emplace(GL_UNPACK_SKIP_IMAGES, 0);
       unpack_image_height_.emplace(GL_UNPACK_IMAGE_HEIGHT, 0);
-    }
-
-    if (!version_info->is_es) {
-      unpack_swap_bytes_.emplace(GL_UNPACK_SWAP_BYTES, GL_FALSE);
-      unpack_lsb_first_.emplace(GL_UNPACK_LSB_FIRST, GL_FALSE);
     }
   }
 }
@@ -120,8 +114,7 @@ GLuint MakeTextureAndSetParameters(
 bool IsTexStorage2DAvailable() {
   const auto* version_info = gl::g_current_gl_version;
   const auto& ext = gl::g_current_gl_driver->ext;
-  return ext.b_GL_EXT_texture_storage || ext.b_GL_ARB_texture_storage ||
-         version_info->is_es3 || version_info->IsAtLeastGL(4, 2);
+  return ext.b_GL_EXT_texture_storage || version_info->is_es3;
 }
 
 }  // namespace gpu

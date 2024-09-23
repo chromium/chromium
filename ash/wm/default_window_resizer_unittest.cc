@@ -159,6 +159,35 @@ TEST_F(DefaultWindowResizerTest, WindowDragWithAspectRatioVertical) {
   EXPECT_EQ("250,250 200x400", aspect_ratio_window_->bounds().ToString());
 }
 
+// Tests window dragging with a fixed aspect ratio, but without maximum limit.
+// This is a regression test for b/322282313.
+TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRationWithoutMaxLimit) {
+  // Remove the limit of the maximum size.
+  delegate_.set_maximum_size(gfx::Size(0, 0));
+
+  aspect_ratio_window_->SetProperty(aura::client::kAspectRatio,
+                                    new gfx::SizeF(1.0, 1.0));
+
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(1U, root_windows.size());
+  EXPECT_EQ(root_windows[0], aspect_ratio_window_->GetRootWindow());
+
+  aspect_ratio_window_->SetBoundsInScreen(
+      gfx::Rect(200, 200, 200, 200),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+  EXPECT_EQ("200,200 200x200", aspect_ratio_window_->bounds().ToString());
+
+  std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
+      aspect_ratio_window_.get(), gfx::PointF(), HTTOPLEFT));
+  ASSERT_TRUE(resizer.get());
+
+  // Move the mouse near the top left edge.
+  resizer->Drag(gfx::PointF(50, 50), 0);
+  resizer->CompleteDrag();
+  EXPECT_EQ(root_windows[0], aspect_ratio_window_->GetRootWindow());
+  EXPECT_EQ("250,250 150x150", aspect_ratio_window_->bounds().ToString());
+}
+
 TEST_F(DefaultWindowResizerTest, NoResizeHistogramOnMove) {
   std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
       &delegate_, aura::client::WINDOW_TYPE_NORMAL);

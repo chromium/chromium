@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabGridDialogToolbarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tab_group_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tab_grid_dialog_background">
+    <LinearLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:paddingLeft="@dimen/tab_grid_dialog_app_bar_padding"
+        android:paddingRight="@dimen/tab_grid_dialog_app_bar_padding"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <include layout="@layout/toolbar_back_button"/>
+        <FrameLayout
+            android:id="@+id/tab_group_color_icon_container"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:layout_width="40dp" >
+            <ImageView
+                android:id="@+id/tab_group_color_icon"
+                android:layout_gravity="center"
+                android:layout_width="@dimen/tab_group_color_icon_item_size"
+                android:layout_height="@dimen/tab_group_color_icon_item_size"
+                android:importantForAccessibility="no"
+                android:contentDescription="@null"
+                android:background="@drawable/tab_group_dialog_color_icon" />
+        </FrameLayout>
+        <!-- This generic option should not have autofillHints (crbug.com/1073966#c3). -->
+        <EditText
+            tools:ignore="Autofill,LabelFor"
+            android:id="@+id/title"
+            android:cursorVisible="false"
+            android:hint="@string/title"
+            android:layout_height="@dimen/bottom_sheet_peek_height"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/tab_group_toolbar_title_margin_start"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"
+            android:inputType="text|textNoSuggestions"
+            android:imeOptions="actionDone"
+            android:theme="@style/TabGridDialogTitleTheme"
+            android:gravity="start|center_vertical"
+            android:selectAllOnFocus="true"/>
+        <include layout="@layout/toolbar_new_tab_and_menu_button"/>
+   </LinearLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabGridDialogToolbarView>

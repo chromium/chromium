@@ -100,12 +100,12 @@ struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
 
   static uint32_t initial_framerate(
       const media::VideoEncodeAccelerator::Config& input) {
-    return input.initial_framerate.value_or(0);
+    return input.framerate;
   }
 
-  static bool has_initial_framerate(
+  static uint32_t has_initial_framerate_deprecated(
       const media::VideoEncodeAccelerator::Config& input) {
-    return input.initial_framerate.has_value();
+    return true;
   }
 
   static uint32_t gop_length(
@@ -130,9 +130,7 @@ struct StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
 
   static arc::mojom::VideoFrameStorageType storage_type(
       const media::VideoEncodeAccelerator::Config& input) {
-    auto storage_type = input.storage_type.value_or(
-        media::VideoEncodeAccelerator::Config::StorageType::kShmem);
-    switch (storage_type) {
+    switch (input.storage_type) {
       case media::VideoEncodeAccelerator::Config::StorageType::kShmem:
         return arc::mojom::VideoFrameStorageType::SHMEM;
       case media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer:

@@ -9,14 +9,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "cc/slim/features.h"
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/common/features.h"
-#include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
@@ -24,6 +22,9 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/point_conversions.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
@@ -57,8 +58,7 @@ bool IsOffsetAdjustValid(
 namespace {
 
 bool IsAndroidSurfaceControlMagnifierEnabled() {
-  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl() &&
-                        features::IsSlimCompositorEnabled();
+  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl();
   return enabled;
 }
 
@@ -130,6 +130,30 @@ void SelectionPopupController::SetTextHandlesTemporarilyHidden(
     jboolean hidden) {
   if (rwhva_)
     rwhva_->SetTextHandlesTemporarilyHidden(hidden);
+}
+
+ScopedJavaLocalRef<jobjectArray> SelectionPopupController::GetTouchHandleRects(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!rwhva_ || !rwhva_->touch_selection_controller()) {
+    return nullptr;
+  }
+  gfx::RectF start_handle =
+      rwhva_->touch_selection_controller()->GetStartHandleRect();
+  gfx::RectF end_handle =
+      rwhva_->touch_selection_controller()->GetEndHandleRect();
+  std::vector<ScopedJavaLocalRef<jobject>> handle_rects;
+  ScopedJavaLocalRef<jobject> start = ScopedJavaLocalRef<jobject>(
+      Java_SelectionPopupControllerImpl_createJavaRect(
+          env, start_handle.x(), start_handle.y(), start_handle.right(),
+          start_handle.bottom()));
+  ScopedJavaLocalRef<jobject> end = ScopedJavaLocalRef<jobject>(
+      Java_SelectionPopupControllerImpl_createJavaRect(
+          env, end_handle.x(), end_handle.y(), end_handle.right(),
+          end_handle.bottom()));
+  handle_rects.push_back(start);
+  handle_rects.push_back(end);
+  return base::android::ToJavaArrayOfObjects(env, handle_rects);
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>

@@ -58,21 +58,32 @@ Input before setting suggested values:
 |   <option>
 |     "CA"
 |     <shadow:root>
-|       "CA"
+|       <slot>
 |   <option>
 |     "TX"
 |     <shadow:root>
-|       "TX"
+|       <slot>
 |   <shadow:root>
-|     <slot>
-|       id="select-button"
-|       <div>
-|         aria-hidden="true"
-|         ""
-|     <slot>
-|       id="select-datalist"
+|     <div>
+|       aria-hidden="true"
+|       ""
 |     <slot>
 |       id="select-options"
+|     <slot>
+|       id="select-button"
+|     <div>
+|       popover="auto"
+|       pseudo="picker(select)"
+|       shadow:pseudoId="picker(select)"
+|       <slot>
+|         id="select-popover-options"
+|     <div>
+|       popover="manual"
+|       pseudo="-internal-select-autofill-preview"
+|       shadow:pseudoId="-internal-select-autofill-preview"
+|       <div>
+|         pseudo="-internal-select-autofill-preview-text"
+|         shadow:pseudoId="-internal-select-autofill-preview-text"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -154,21 +165,32 @@ Input after setting suggestedValue:
 |   <option>
 |     "CA"
 |     <shadow:root>
-|       "CA"
+|       <slot>
 |   <option>
 |     "TX"
 |     <shadow:root>
-|       "TX"
+|       <slot>
 |   <shadow:root>
-|     <slot>
-|       id="select-button"
-|       <div>
-|         aria-hidden="true"
-|         "TX"
-|     <slot>
-|       id="select-datalist"
+|     <div>
+|       aria-hidden="true"
+|       "TX"
 |     <slot>
 |       id="select-options"
+|     <slot>
+|       id="select-button"
+|     <div>
+|       popover="auto"
+|       pseudo="picker(select)"
+|       shadow:pseudoId="picker(select)"
+|       <slot>
+|         id="select-popover-options"
+|     <div>
+|       popover="manual"
+|       pseudo="-internal-select-autofill-preview"
+|       shadow:pseudoId="-internal-select-autofill-preview"
+|       <div>
+|         pseudo="-internal-select-autofill-preview-text"
+|         shadow:pseudoId="-internal-select-autofill-preview-text"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -248,21 +270,32 @@ After resetting suggestedValue value:
 |   <option>
 |     "CA"
 |     <shadow:root>
-|       "CA"
+|       <slot>
 |   <option>
 |     "TX"
 |     <shadow:root>
-|       "TX"
+|       <slot>
 |   <shadow:root>
-|     <slot>
-|       id="select-button"
-|       <div>
-|         aria-hidden="true"
-|         ""
-|     <slot>
-|       id="select-datalist"
+|     <div>
+|       aria-hidden="true"
+|       ""
 |     <slot>
 |       id="select-options"
+|     <slot>
+|       id="select-button"
+|     <div>
+|       popover="auto"
+|       pseudo="picker(select)"
+|       shadow:pseudoId="picker(select)"
+|       <slot>
+|         id="select-popover-options"
+|     <div>
+|       popover="manual"
+|       pseudo="-internal-select-autofill-preview"
+|       shadow:pseudoId="-internal-select-autofill-preview"
+|       <div>
+|         pseudo="-internal-select-autofill-preview-text"
+|         shadow:pseudoId="-internal-select-autofill-preview-text"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "

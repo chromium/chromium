@@ -3,7 +3,6 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Generate a dictionary for libFuzzer or AFL-based fuzzer.
 
 Invoked manually using a fuzzer binary and target format/protocol specification.
@@ -12,16 +11,13 @@ Works better for text formats or protocols. For binary ones may be useless.
 
 import argparse
 import HTMLParser
-import io
 import logging
 import os
 import re
 import shutil
-import string
 import subprocess
 import sys
 import tempfile
-
 
 ENCODING_TYPES = ['ascii', 'utf_16_be', 'utf_16_le', 'utf_32_be', 'utf_32_le']
 MIN_STRING_LENGTH = 4
@@ -38,7 +34,7 @@ def EscapeDictionaryElement(element):
   """Escape all unprintable and control characters in an element."""
   element_escaped = element.encode('string_escape')
   # Remove escaping for single quote because it breaks libFuzzer.
-  element_escaped = element_escaped.replace('\\\'', '\'')
+  element_escaped = element_escaped.replace("\\'", "'")
   # Add escaping for double quote.
   element_escaped = element_escaped.replace('"', '\\"')
   return element_escaped
@@ -85,7 +81,7 @@ def FindIndentedText(text):
   previous_number_of_spaces = 0
 
   # Go through every line and concatenate space-indented blocks into lines.
-  for i in xrange(0, len(lines), 1):
+  for i in range(0, len(lines), 1):
     if not lines[i]:
       # Ignore empty lines.
       continue
@@ -95,10 +91,10 @@ def FindIndentedText(text):
 
     if n > previous_number_of_spaces:
       # Beginning of a space-indented text block, start concatenation.
-      current_block = lines[i][n : ]
+      current_block = lines[i][n:]
     elif n == previous_number_of_spaces and current_block:
       # Or continuation of a space-indented text block, concatenate lines.
-      current_block += '\n' + lines[i][n : ]
+      current_block += '\n' + lines[i][n:]
 
     if n < previous_number_of_spaces and current_block:
       # Current line is not indented, save previously concatenated lines.
@@ -123,7 +119,7 @@ def GenerateDictionary(path_to_binary, path_to_spec, strategy, is_html=False):
   """Generate a dictionary for given pair of fuzzer binary and specification."""
   for filepath in [path_to_binary, path_to_spec]:
     if not os.path.exists(filepath):
-      logging.error('%s doesn\'t exist. Exit.', filepath)
+      logging.error("%s doesn't exist. Exit.", filepath)
       sys.exit(1)
 
   words_from_binary = ExtractWordsFromBinary(path_to_binary)
@@ -209,25 +205,32 @@ def WriteDictionary(dictionary_path, dictionary):
 
 
 def main():
-  parser = argparse.ArgumentParser(description="Generate fuzzer dictionary.")
-  parser.add_argument('--fuzzer', required=True,
+  parser = argparse.ArgumentParser(description='Generate fuzzer dictionary.')
+  parser.add_argument('--fuzzer',
+                      required=True,
                       help='Path to a fuzzer binary executable. It is '
                       'recommended to use a binary built with '
                       '"use_libfuzzer=false is_asan=false" to get a better '
                       'dictionary with fewer number of redundant elements.')
-  parser.add_argument('--spec', required=True,
+  parser.add_argument('--spec',
+                      required=True,
                       help='Path to a target specification (in textual form).')
-  parser.add_argument('--html', default=0,
+  parser.add_argument('--html',
+                      default=0,
                       help='Decode HTML [01] (0 is default value): '
                       '1 - if specification has HTML entities to be decoded.')
-  parser.add_argument('--out', required=True,
+  parser.add_argument('--out',
+                      required=True,
                       help='Path to a file to write a dictionary into.')
-  parser.add_argument('--strategy', default='iu',
+  parser.add_argument('--strategy',
+                      default='iu',
                       help='Generation strategy [iqu] ("iu" is default value): '
                       'i - intersection, q - quoted, u - uppercase.')
   args = parser.parse_args()
 
-  dictionary = GenerateDictionary(args.fuzzer, args.spec, args.strategy,
+  dictionary = GenerateDictionary(args.fuzzer,
+                                  args.spec,
+                                  args.strategy,
                                   is_html=bool(args.html))
   WriteDictionary(args.out, dictionary)
 

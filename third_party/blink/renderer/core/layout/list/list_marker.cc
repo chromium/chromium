@@ -82,7 +82,7 @@ LayoutObject* ListMarker::ListItem(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   LayoutObject* list_item = marker.GetNode()->parentNode()->GetLayoutObject();
   DCHECK(list_item);
-  DCHECK(list_item->IsListItemIncludingNG());
+  DCHECK(list_item->IsListItem());
   return list_item;
 }
 
@@ -93,7 +93,7 @@ int ListMarker::ListItemValue(const LayoutObject& list_item) const {
   if (auto* inline_list_item = DynamicTo<LayoutInlineListItem>(list_item)) {
     return inline_list_item->Value();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -211,7 +211,7 @@ ListMarker::MarkerTextType ListMarker::MarkerText(
       return kOrdinalValue;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kStatic;
 }
 
@@ -234,8 +234,23 @@ String ListMarker::TextAlternative(const LayoutObject& marker) const {
   DCHECK_NE(marker_text_type_, kUnresolved);
   // For accessibility, return the marker string in the logical order even in
   // RTL, reflecting speech order.
-  if (marker_text_type_ == kNotText)
-    return MarkerTextWithSuffix(marker);
+  if (marker_text_type_ == kNotText) {
+    String text = MarkerTextWithSuffix(marker);
+    if (!text.empty()) {
+      return text;
+    }
+
+    // Pseudo element list markers may return empty text as their text
+    // alternative, so obtain the text from its child as a fallback mechanism.
+    auto* text_child = GetContentChild(marker);
+    if (text_child && !text_child->NextSibling() &&
+        IsA<LayoutTextFragment>(text_child)) {
+      return GetTextChild(marker).PlainText();
+    }
+
+    // The fallback is not present, so return the original empty text.
+    return text;
+  }
 
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleSpeakAsDescriptorEnabled()) {
     StringBuilder text;
@@ -243,8 +258,10 @@ String ListMarker::TextAlternative(const LayoutObject& marker) const {
     return text.ToString();
   }
 
-  if (marker_text_type_ == kUnresolved)
+  if (marker_text_type_ == kUnresolved) {
     return MarkerTextWithSuffix(marker);
+  }
+
   return GetTextChild(marker).PlainText();
 }
 
@@ -266,7 +283,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
       if (!child->IsLayoutImage() ||
           To<LayoutImage>(child)->ImageResource()->ImagePtr() !=
               list_style_image->Data()) {
-        if (UNLIKELY(IsA<LayoutTextCombine>(child->Parent()))) {
+        if (IsA<LayoutTextCombine>(child->Parent())) [[unlikely]] {
           DestroyLayoutObject(child->Parent());
         } else {
           DestroyLayoutObject(child);
@@ -339,7 +356,7 @@ LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style,
   DCHECK(font_data);
   if (!font_data)
     return LayoutUnit();
-  if (UNLIKELY(style.SpecifiedFontSize() == 0)) {
+  if (style.SpecifiedFontSize() == 0) [[unlikely]] {
     // See http://crbug.com/1228157
     return LayoutUnit();
   }
@@ -446,10 +463,11 @@ PhysicalRect ListMarker::RelativeSymbolMarkerRect(
                                 LayoutUnit(3 * (ascent - ascent * 2 / 3) / 2),
                                 bullet_width, bullet_width);
   }
-  // TextDirection and the outer height don't matter here.
+  // TextDirection doesn't matter here.  Passing
+  // `relative_rect.size.inline_size` to get a correct result in sideways-lr.
   WritingModeConverter converter(
       {ToLineWritingMode(style.GetWritingMode()), TextDirection::kLtr},
-      PhysicalSize(width, LayoutUnit()));
+      PhysicalSize(width, relative_rect.size.inline_size));
   return converter.ToPhysical(relative_rect);
 }
 

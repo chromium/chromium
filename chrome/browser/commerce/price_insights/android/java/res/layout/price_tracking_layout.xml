@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height= "wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="@dimen/price_insights_content_top_margin"
+    android:padding="@dimen/price_insights_general_padding"
+    android:background="@drawable/price_insights_sheet_top_corner_background">
+
+    <!-- Price tracking title and description -->
+    <LinearLayout
+        android:id="@+id/price_tracking_title_and_description_layout"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/price_insights_general_padding"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/price_tracking_title"
+            android:focusable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMediumThick"
+            android:textAlignment="viewStart"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+        <TextView
+            android:id="@+id/price_tracking_description"
+            android:focusable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/price_insights_content_price_tracking_description"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+    </LinearLayout>
+
+    <!-- Price tracking button -->
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/price_tracking_button"
+        style="@style/FilledButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="@dimen/price_insights_price_tracking_button_drawable_padding"
+        android:textAppearance="@style/TextAppearance.TextMediumThick"
+        android:paddingStart="@dimen/price_tracking_button_padding_start"
+        android:paddingEnd="@dimen/price_tracking_button_padding_end"/>
+</LinearLayout>

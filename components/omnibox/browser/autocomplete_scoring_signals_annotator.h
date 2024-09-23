@@ -8,7 +8,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 
 class AutocompleteInput;
 class AutocompleteResult;
@@ -17,20 +17,7 @@ class AutocompleteResult;
 // signals for ML training and scoring.
 class AutocompleteScoringSignalsAnnotator {
  public:
-  using ScoringSignals =
-      ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
-
-  // Whether the autocomplete match is eligible to be annotated.
-  // Currently, includes only history and bookmark URLs.
-  static bool IsEligibleMatch(const AutocompleteMatch& match) {
-    const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
-    return match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-           match.type == AutocompleteMatchType::HISTORY_URL ||
-           match.type == AutocompleteMatchType::HISTORY_TITLE ||
-           match.type == AutocompleteMatchType::BOOKMARK_TITLE ||
-           (ml_config.shortcut_document_signals &&
-            match.type == AutocompleteMatchType::DOCUMENT_SUGGESTION);
-  }
+  using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
   AutocompleteScoringSignalsAnnotator() = default;
   AutocompleteScoringSignalsAnnotator(

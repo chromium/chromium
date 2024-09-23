@@ -1,7 +1,7 @@
 layer at (0,0)
   LayoutView at (0,0) size 800x600
 layer at (0,0)
-  LayoutNGBlockFlow {HTML} at (0,0) size 800x200
-    LayoutNGBlockFlow (children-inline) {BODY} at (0,0) size 800x200
+  LayoutBlockFlow {HTML} at (0,0) size 800x200
+    LayoutBlockFlow (children-inline) {BODY} at (0,0) size 800x200
 layer at (8,7)
   LayoutIFrame (positioned, block) {IFRAME} at (8,7) size 10x10 (display-locked)

@@ -640,8 +640,8 @@ TEST_F(AccountManagerTest, GetTokenHashReturnsSha1Hash) {
   base::test::TestFuture<const std::string&> future;
   account_manager()->GetTokenHash(kGaiaAccountKey, future.GetCallback());
 
-  const base::SHA1Digest token_hash = base::SHA1HashSpan(
-      base::as_bytes(base::make_span(std::string(kGaiaToken))));
+  const base::SHA1Digest token_hash =
+      base::SHA1Hash(base::as_byte_span(std::string(kGaiaToken)));
   const std::string token_hash_digest = base::HexEncode(token_hash);
   EXPECT_EQ(token_hash_digest, future.Get());
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/slim/frame_sink_impl.h"
 
 #include <string>
@@ -11,6 +16,7 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -27,10 +33,9 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 
@@ -172,22 +177,24 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   UploadedUIResource uploaded_resource;
   auto* sii = context_provider_->SharedImageInterface();
   constexpr gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
-  uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  gpu::SharedImageUsageSet shared_image_usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   uploaded_resource.shared_image = sii->CreateSharedImage(
-      format, resource_bitmap.GetSize(), color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, shared_image_usage, "SlimCompositorUIResource",
+      {format, resource_bitmap.GetSize(), color_space, shared_image_usage,
+       "SlimCompositorUIResource"},
       base::span<const uint8_t>(resource_bitmap.GetPixels(),
                                 resource_bitmap.SizeInBytes()));
   CHECK(uploaded_resource.shared_image);
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
-  GLenum texture_target = gpu::GetBufferTextureTarget(
-      gfx::BufferUsage::SCANOUT,
-      viz::SinglePlaneSharedImageFormatToBufferFormat(format), caps);
+  // NOTE: This resource will never be used as an overlay, as we we hardcode
+  // `is_overlay_candidate` to false. Hence, the texture target should always be
+  // GL_TEXTURE_2D (other texture targets are needed only for overlays).
   uploaded_resource.viz_resource_id = resource_provider_.ImportResource(
       viz::TransferableResource::MakeGpu(
-          uploaded_resource.shared_image, texture_target, sync_token,
-          resource_bitmap.GetSize(), format, /*is_overlay_candidate=*/false,
+          uploaded_resource.shared_image, /*texture_target=*/GL_TEXTURE_2D,
+          sync_token, resource_bitmap.GetSize(), format,
+          /*is_overlay_candidate=*/false,
           viz::TransferableResource::ResourceSource::kUI),
       base::BindOnce(&FrameSinkImpl::UIResourceReleased, base::Unretained(this),
                      resource_id));
@@ -202,7 +209,7 @@ void FrameSinkImpl::UIResourceReleased(cc::UIResourceId ui_resource_id,
                                        const gpu::SyncToken& sync_token,
                                        bool is_lost) {
   auto itr = uploaded_resources_.find(ui_resource_id);
-  DCHECK(itr != uploaded_resources_.end());
+  CHECK(itr != uploaded_resources_.end(), base::NotFatalUntil::M130);
   auto* sii = context_provider_->SharedImageInterface();
   sii->DestroySharedImage(sync_token, std::move(itr->second.shared_image));
   uploaded_resources_.erase(itr);
@@ -334,6 +341,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                              StepName::STEP_SUBMIT_COMPOSITOR_FRAME);
+          data->set_display_trace_id(begin_frame_args.trace_id);
         });
     frame_sink_->SubmitCompositorFrame(
         local_surface_id_, std::move(frame),
@@ -358,6 +366,7 @@ void FrameSinkImpl::SendDidNotProduceFrame(
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_DID_NOT_PRODUCE_FRAME);
+        data->set_display_trace_id(begin_frame_args.trace_id);
       });
   frame_sink_->DidNotProduceFrame(viz::BeginFrameAck(begin_frame_args, false));
 }

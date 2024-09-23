@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 
+#include <string_view>
+
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
@@ -258,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPrintersSyncTest, MakeAndModelMigration) {
   spec_printer = bridge->GetPrinter(spec_printer_id);
   ASSERT_TRUE(spec_printer);
 
-  base::StringPiece make_and_model = spec_printer->make_and_model();
+  std::string_view make_and_model = spec_printer->make_and_model();
   EXPECT_THAT(make_and_model, Not(IsEmpty()));
   EXPECT_THAT(make_and_model, StartsWith(kMake));
   EXPECT_THAT(make_and_model, EndsWith(kModel));

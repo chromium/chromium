@@ -4,7 +4,7 @@
 
 import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
-import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
+import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {MetadataStats} from '../../../common/js/shared_types.js';
 import {getStore} from '../../../state/store.js';
 
@@ -14,7 +14,7 @@ import {ExternalMetadataProvider} from './external_metadata_provider.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
 import {MetadataCacheSet, type MetadataModelMap} from './metadata_cache_set.js';
 import {MetadataItem, type MetadataKey} from './metadata_item.js';
-import {MetadataProvider} from './metadata_provider.js';
+import type {MetadataProvider} from './metadata_provider.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.js';
 
 export {MetadataStats} from '../../../common/js/shared_types.js';

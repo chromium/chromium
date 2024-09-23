@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_STRING_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_STRING_RESOURCE_H_
 
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -20,37 +22,46 @@ class StringResourceBase {
   USING_FAST_MALLOC(StringResourceBase);
 
  public:
-  explicit StringResourceBase(const String& string) : plain_string_(string) {
-    DCHECK(!string.IsNull());
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        string.CharactersSizeInBytes());
+  explicit StringResourceBase(String string)
+      : plain_string_(std::move(string)) {
+    DCHECK(!plain_string_.IsNull());
+    memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                               plain_string_.CharactersSizeInBytes());
   }
 
-  explicit StringResourceBase(const AtomicString& string)
-      : atomic_string_(string) {
-    DCHECK(!string.IsNull());
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        string.CharactersSizeInBytes());
+  explicit StringResourceBase(AtomicString string)
+      : atomic_string_(std::move(string)) {
+    DCHECK(!atomic_string_.IsNull());
+    memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                               atomic_string_.CharactersSizeInBytes());
   }
 
-  explicit StringResourceBase(const ParkableString& string)
+  explicit StringResourceBase(ParkableString string)
       : parkable_string_(string) {
     // TODO(lizeb): This is only true without compression.
-    DCHECK(!string.IsNull());
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        string.CharactersSizeInBytes());
+    DCHECK(!parkable_string_.IsNull());
+    memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                               parkable_string_.CharactersSizeInBytes());
   }
 
   StringResourceBase(const StringResourceBase&) = delete;
   StringResourceBase& operator=(const StringResourceBase&) = delete;
 
   virtual ~StringResourceBase() {
-    int64_t reduced_external_memory = plain_string_.CharactersSizeInBytes();
-    if (plain_string_.Impl() != atomic_string_.Impl() &&
-        !atomic_string_.IsNull())
-      reduced_external_memory += atomic_string_.CharactersSizeInBytes();
-    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-        -reduced_external_memory);
+    int64_t reduced_external_memory = 0;
+    if (!parkable_string_.IsNull()) {
+      DCHECK(plain_string_.IsNull());
+      DCHECK(atomic_string_.IsNull());
+      reduced_external_memory = parkable_string_.CharactersSizeInBytes();
+    } else {
+      reduced_external_memory = plain_string_.CharactersSizeInBytes();
+      if (plain_string_.Impl() != atomic_string_.Impl() &&
+          !atomic_string_.IsNull()) {
+        reduced_external_memory += atomic_string_.CharactersSizeInBytes();
+      }
+    }
+    memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
+                               reduced_external_memory);
   }
 
   String GetWTFString() {
@@ -72,8 +83,8 @@ class StringResourceBase {
       atomic_string_ = AtomicString(plain_string_);
       DCHECK(!atomic_string_.IsNull());
       if (plain_string_.Impl() != atomic_string_.Impl()) {
-        v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-            atomic_string_.CharactersSizeInBytes());
+        memory_accounter_.Increase(v8::Isolate::GetCurrent(),
+                                   atomic_string_.CharactersSizeInBytes());
       }
     }
     return atomic_string_;
@@ -89,6 +100,19 @@ class StringResourceBase {
 
   const ParkableString& GetParkableString() const { return parkable_string_; }
 
+  // Helper functions for derived constructors.
+  template <typename Str>
+  static inline Str Assert8Bit(Str&& str) {
+    DCHECK(str.Is8Bit());
+    return str;
+  }
+
+  template <typename Str>
+  static inline Str Assert16Bit(Str&& str) {
+    DCHECK(!str.Is8Bit());
+    return str;
+  }
+
  private:
   // If this StringResourceBase was initialized from a String then plain_string_
   // will be non-null. If the string becomes atomic later, the atomic version
@@ -103,6 +127,8 @@ class StringResourceBase {
   // If this string is parkable, its value is held here, and the other
   // members above are null.
   ParkableString parkable_string_;
+
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase memory_accounter_;
 };
 
 // Even though StringResource{8,16}Base are effectively empty in release mode,
@@ -113,20 +139,14 @@ class StringResourceBase {
 class StringResource16Base : public StringResourceBase,
                              public v8::String::ExternalStringResource {
  public:
-  explicit StringResource16Base(const String& string)
-      : StringResourceBase(string) {
-    DCHECK(!string.Is8Bit());
-  }
+  explicit StringResource16Base(String string)
+      : StringResourceBase(Assert16Bit(std::move(string))) {}
 
-  explicit StringResource16Base(const AtomicString& string)
-      : StringResourceBase(string) {
-    DCHECK(!string.Is8Bit());
-  }
+  explicit StringResource16Base(AtomicString string)
+      : StringResourceBase(Assert16Bit(std::move(string))) {}
 
-  explicit StringResource16Base(const ParkableString& parkable_string)
-      : StringResourceBase(parkable_string) {
-    DCHECK(!parkable_string.Is8Bit());
-  }
+  explicit StringResource16Base(ParkableString parkable_string)
+      : StringResourceBase(Assert16Bit(std::move(parkable_string))) {}
 
   StringResource16Base(const StringResource16Base&) = delete;
   StringResource16Base& operator=(const StringResource16Base&) = delete;
@@ -134,11 +154,11 @@ class StringResource16Base : public StringResourceBase,
 
 class StringResource16 final : public StringResource16Base {
  public:
-  explicit StringResource16(const String& string)
-      : StringResource16Base(string) {}
+  explicit StringResource16(String string)
+      : StringResource16Base(std::move(string)) {}
 
-  explicit StringResource16(const AtomicString& string)
-      : StringResource16Base(string) {}
+  explicit StringResource16(AtomicString string)
+      : StringResource16Base(std::move(string)) {}
 
   StringResource16(const StringResource16&) = delete;
   StringResource16& operator=(const StringResource16&) = delete;
@@ -151,8 +171,8 @@ class StringResource16 final : public StringResource16Base {
 
 class ParkableStringResource16 final : public StringResource16Base {
  public:
-  explicit ParkableStringResource16(const ParkableString& string)
-      : StringResource16Base(string) {}
+  explicit ParkableStringResource16(ParkableString string)
+      : StringResource16Base(std::move(string)) {}
 
   ParkableStringResource16(const ParkableStringResource16&) = delete;
   ParkableStringResource16& operator=(const ParkableStringResource16&) = delete;
@@ -176,20 +196,14 @@ class ParkableStringResource16 final : public StringResource16Base {
 class StringResource8Base : public StringResourceBase,
                             public v8::String::ExternalOneByteStringResource {
  public:
-  explicit StringResource8Base(const String& string)
-      : StringResourceBase(string) {
-    DCHECK(string.Is8Bit());
-  }
+  explicit StringResource8Base(String string)
+      : StringResourceBase(Assert8Bit(std::move(string))) {}
 
-  explicit StringResource8Base(const AtomicString& string)
-      : StringResourceBase(string) {
-    DCHECK(string.Is8Bit());
-  }
+  explicit StringResource8Base(AtomicString string)
+      : StringResourceBase(Assert8Bit(std::move(string))) {}
 
-  explicit StringResource8Base(const ParkableString& parkable_string)
-      : StringResourceBase(parkable_string) {
-    DCHECK(parkable_string.Is8Bit());
-  }
+  explicit StringResource8Base(ParkableString parkable_string)
+      : StringResourceBase(Assert8Bit(std::move(parkable_string))) {}
 
   StringResource8Base(const StringResource8Base&) = delete;
   StringResource8Base& operator=(const StringResource8Base&) = delete;
@@ -197,11 +211,11 @@ class StringResource8Base : public StringResourceBase,
 
 class StringResource8 final : public StringResource8Base {
  public:
-  explicit StringResource8(const String& string)
-      : StringResource8Base(string) {}
+  explicit StringResource8(String string)
+      : StringResource8Base(std::move(string)) {}
 
-  explicit StringResource8(const AtomicString& string)
-      : StringResource8Base(string) {}
+  explicit StringResource8(AtomicString string)
+      : StringResource8Base(std::move(string)) {}
 
   StringResource8(const StringResource8&) = delete;
   StringResource8& operator=(const StringResource8&) = delete;
@@ -214,8 +228,8 @@ class StringResource8 final : public StringResource8Base {
 
 class ParkableStringResource8 final : public StringResource8Base {
  public:
-  explicit ParkableStringResource8(const ParkableString& string)
-      : StringResource8Base(string) {}
+  explicit ParkableStringResource8(ParkableString string)
+      : StringResource8Base(std::move(string)) {}
 
   ParkableStringResource8(const ParkableStringResource8&) = delete;
   ParkableStringResource8& operator=(const ParkableStringResource8&) = delete;

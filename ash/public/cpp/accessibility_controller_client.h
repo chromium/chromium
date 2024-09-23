@@ -61,14 +61,6 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   // Cancels all current and queued speech immediately.
   virtual void SilenceSpokenFeedback() = 0;
 
-  // Called when we first detect two fingers are held down, which can be used to
-  // toggle spoken feedback on some touch-only devices.
-  virtual void OnTwoFingerTouchStart() = 0;
-
-  // Called when the user is no longer holding down two fingers (including
-  // releasing one, holding down three, or moving them).
-  virtual void OnTwoFingerTouchStop() = 0;
-
   // Whether or not to enable toggling spoken feedback via holding down two
   // fingers on the screen.
   virtual bool ShouldToggleSpokenFeedbackViaTouch() const = 0;

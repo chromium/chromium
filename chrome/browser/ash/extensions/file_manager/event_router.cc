@@ -50,7 +50,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
@@ -58,6 +57,8 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -179,7 +180,7 @@ fmp::IoTaskState GetIoTaskState(io_task::State state) {
     case io_task::State::kCancelled:
       return fmp::IoTaskState::kCancelled;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return fmp::IoTaskState::kError;
   }
 }
@@ -206,7 +207,7 @@ fmp::IoTaskType GetIoTaskType(io_task::OperationType type) {
     case io_task::OperationType::kZip:
       return fmp::IoTaskType::kZip;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return fmp::IoTaskType::kCopy;
   }
 }
@@ -224,7 +225,7 @@ fmp::PolicyErrorType GetPolicyErrorType(
     case io_task::PolicyErrorType::kDlpWarningTimeout:
       return fmp::PolicyErrorType::kDlpWarningTimeout;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return fmp::PolicyErrorType::kNone;
   }
 }
@@ -288,7 +289,7 @@ bool ShouldShowNotificationForVolume(
   // manager is opened only for the active user.
   if (ash::LoginDisplayHost::default_host() ||
       ash::ScreenLocker::default_screen_locker() ||
-      chrome::IsRunningInForcedAppMode() ||
+      IsRunningInForcedAppMode() ||
       profile != ProfileManager::GetActiveUserProfile()) {
     return false;
   }
@@ -601,6 +602,7 @@ EventRouter::EventRouter(Profile* profile)
       profile_(profile),
       notification_manager_(
           std::make_unique<SystemNotificationManager>(profile)),
+      office_tasks_(std::make_unique<OfficeTasks>()),
       device_event_router_(
           std::make_unique<DeviceEventRouterImpl>(notification_manager_.get(),
                                                   profile)),
@@ -735,7 +737,6 @@ void EventRouter::ObserveEvents() {
     pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, cb);
     pref_change_registrar_->Add(prefs::kOfficeFileMovedToOneDrive, cb);
     pref_change_registrar_->Add(prefs::kOfficeFileMovedToGoogleDrive, cb);
-    pref_change_registrar_->Add(prefs::kLocalUserFilesAllowed, cb);
   }
 
   {
@@ -1224,10 +1225,10 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   // progress UI is already displayed.
   if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     if (status.IsCompleted()) {
-      odfs_interactions_.erase(status.task_id);
+      office_tasks_->odfs_interactions.erase(status.task_id);
     } else {
-      auto it = odfs_interactions_.find(status.task_id);
-      if (it == odfs_interactions_.end()) {
+      auto it = office_tasks_->odfs_interactions.find(status.task_id);
+      if (it == office_tasks_->odfs_interactions.end()) {
         auto interaction = MaybeStartInteractionWithODFS(
             status.GetDestinationFolder(), profile_);
         if (!interaction) {
@@ -1239,7 +1240,8 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
           }
         }
         if (interaction) {
-          odfs_interactions_[status.task_id] = std::move(interaction);
+          office_tasks_->odfs_interactions[status.task_id] =
+              std::move(interaction);
         }
       }
     }
@@ -1568,6 +1570,21 @@ void EventRouter::OnConnectionChanged(
                      FILE_MANAGER_PRIVATE_ON_DEVICE_CONNECTION_STATUS_CHANGED,
                  fmp::OnDeviceConnectionStatusChanged::kEventName,
                  fmp::OnDeviceConnectionStatusChanged::Create(result));
+}
+
+void EventRouter::OnLocalUserFilesPolicyChanged() {
+  if (!base::FeatureList::IsEnabled(features::kSkyVault)) {
+    return;
+  }
+  OnFileManagerPrefsChanged();
+}
+
+bool EventRouter::AddCloudOpenTask(const storage::FileSystemURL& file_url) {
+  return office_tasks_->cloud_open_tasks.emplace(file_url.path()).second;
+}
+
+void EventRouter::RemoveCloudOpenTask(const storage::FileSystemURL& file_url) {
+  office_tasks_->cloud_open_tasks.erase(file_url.path());
 }
 
 }  // namespace file_manager

@@ -14,7 +14,7 @@
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 SystemGeolocationSourceLacros::SystemGeolocationSourceLacros()
@@ -29,9 +29,10 @@ SystemGeolocationSourceLacros::SystemGeolocationSourceLacros()
 SystemGeolocationSourceLacros::~SystemGeolocationSourceLacros() = default;
 
 // static
-std::unique_ptr<device::GeolocationManager>
-SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros() {
-  return std::make_unique<device::GeolocationManager>(
+std::unique_ptr<device::GeolocationSystemPermissionManager>
+SystemGeolocationSourceLacros::
+    CreateGeolocationSystemPermissionManagerOnLacros() {
+  return std::make_unique<device::GeolocationSystemPermissionManager>(
       std::make_unique<SystemGeolocationSourceLacros>());
 }
 

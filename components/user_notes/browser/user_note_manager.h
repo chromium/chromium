@@ -81,7 +81,7 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
   base::SafeRef<UserNoteService> service_;
 
   // The list of note instances displayed in this page, mapped by their note ID.
-  // TODO(crbug.com/1313967): Holding the instances in an ID -> Instance map
+  // TODO(crbug.com/40832588): Holding the instances in an ID -> Instance map
   // works while only top-level frames are supported, but won't always work if
   // subframes are supported. For example, if website A has notes and website B
   // embeds website A multiple times via iframes, then there will be multiple

@@ -11,7 +11,6 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/strings/string_piece.h"
 
 using ::fuchsia::intl::Profile;
 

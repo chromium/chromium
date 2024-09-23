@@ -18,6 +18,7 @@
 
 namespace content {
 class OriginTrialStateHostImpl;
+class RuntimeFeatureStateDocumentData;
 }
 
 namespace blink {
@@ -30,10 +31,6 @@ namespace blink {
 
 class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
  public:
-  // You probably don't want to instantiate this class directly, use
-  // RuntimeFeatureStateContext instead as it will initialize the override map.
-  RuntimeFeatureStateReadContext() = default;
-
   const base::flat_map<blink::mojom::RuntimeFeature, bool>&
   GetFeatureOverrides() const {
     return feature_overrides_;
@@ -49,10 +46,9 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
   // TODO(https://crbug.com/1410784): Validate the list of `third_party_origins`
   // against the ones the renderer process believes were active.
   {% for feature in browser_read_access_with_third_party_features %}
-  bool Is{{feature.name}}EnabledForThirdParty(const url::Origin& first_party_origin,
-                                              const base::span<url::Origin>& third_party_origins) const {
+  bool Is{{feature.name}}EnabledForThirdParty(const base::span<url::Origin>& third_party_origins) const {
     return IsEnabledForThirdParty(
-        blink::mojom::RuntimeFeature::k{{feature.name}}, first_party_origin, third_party_origins);
+        blink::mojom::RuntimeFeature::k{{feature.name}}, third_party_origins);
   }
   {% endfor %}
 
@@ -63,12 +59,11 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
       return override_it->second;
 
     auto initial_it = initial_values_.find(feature);
-    DCHECK(initial_it != initial_values_.end());
+    CHECK(initial_it != initial_values_.end());
     return initial_it->second;
   }
 
   bool IsEnabledForThirdParty(blink::mojom::RuntimeFeature feature,
-                              const url::Origin& first_party_origin,
                               const base::span<url::Origin>& third_party_origins) const {
     auto override_it = possible_third_party_feature_overrides_.find(feature);
     if (override_it == possible_third_party_feature_overrides_.end())
@@ -77,14 +72,20 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
     blink::TrialTokenValidator validator;
     for (const auto& token : override_it->second) {
       blink::TrialTokenResult result = validator.ValidateTokenAndTrial(
-          token, first_party_origin, third_party_origins, base::Time::Now());
-      if (result.Status() == blink::OriginTrialTokenStatus::kSuccess) {
+          token, origin(), third_party_origins, base::Time::Now());
+      if (result.Status() == blink::OriginTrialTokenStatus::kSuccess &&
+          result.ParsedToken()->is_third_party()) {
         return blink::origin_trials::IsTrialValid(result.ParsedToken()->feature_name()) &&
           blink::origin_trials::IsTrialEnabledForBrowserProcessReadAccess(
               result.ParsedToken()->feature_name());
       }
     }
     return false;
+  }
+
+  const url::Origin& origin() const {
+    CHECK(origin_.has_value());
+    return *origin_;
   }
 
   // Sparse map of overrides collected during initial navigation. This map
@@ -98,6 +99,15 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
 
   // Values for all read/write features on context creation.
   base::flat_map<blink::mojom::RuntimeFeature, bool> initial_values_;
+
+  // The last comitted origin from the RenderFrameHost this state is attached
+  // to via RuntimeFeatureStateDocumentData. Empty if not yet bound to one.
+  std::optional<url::Origin> origin_;
+
+ protected:
+  // This class shouldn't be instantiated directly. Use
+  // RuntimeFeatureStateContext.
+  RuntimeFeatureStateReadContext() = default;
 
  private:
   // Only OriginTrialStateHostImpl should be able to make changes
@@ -125,6 +135,18 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
       possible_third_party_feature_overrides_.insert_or_assign(feature.first,
                                                                feature.second);
     }
+  }
+
+  // RuntimeFeatureStateDocumentData should be able to update the origin used
+  // for token validation upon its construction.
+  friend class ::content::RuntimeFeatureStateDocumentData;
+
+  void set_origin_on_navigation(const url::Origin& origin,
+                                base::PassKey<content::RuntimeFeatureStateDocumentData>) {
+    // Ideally this would be set only once for a given
+    // RuntimeFeatureStateReadContext, but they are copied and re-used
+    // between frames so we have to depend on the function being private.
+    origin_ = origin;
   }
 };
 

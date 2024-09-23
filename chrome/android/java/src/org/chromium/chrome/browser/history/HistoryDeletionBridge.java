@@ -7,13 +7,17 @@ package org.chromium.chrome.browser.history;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 
 /** The JNI bridge for Android to receive notifications about history deletions. */
-public class HistoryDeletionBridge {
+public class HistoryDeletionBridge implements Destroyable {
     /**
      * Allows derived class to listen to history deletions that pass through this bridge. The
      * HistoryDeletionInfo passed as a parameter is only valid for the duration of the method.
@@ -22,25 +26,28 @@ public class HistoryDeletionBridge {
         void onURLsDeleted(HistoryDeletionInfo historyDeletionInfo);
     }
 
-    private static HistoryDeletionBridge sInstance;
+    private static ProfileKeyedMap<HistoryDeletionBridge> sProfileMap;
 
-    /**
-     * @return Singleton instance for this class.
-     */
-    public static HistoryDeletionBridge getInstance() {
+    /** Return the deletion bridge associated with the given {@link Profile}. */
+    public static HistoryDeletionBridge getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        if (sInstance == null) {
-            sInstance = new HistoryDeletionBridge();
+        assert !profile.isOffTheRecord();
+        if (sProfileMap == null) {
+            sProfileMap = ProfileKeyedMap.createMapOfDestroyables();
         }
-
-        return sInstance;
+        return sProfileMap.getForProfile(profile, HistoryDeletionBridge::new);
     }
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final long mNativeHistoryDeletionBridge;
 
-    HistoryDeletionBridge() {
-        // This object is a singleton and therefore will be implicitly destroyed.
-        HistoryDeletionBridgeJni.get().init(this);
+    HistoryDeletionBridge(Profile profile) {
+        mNativeHistoryDeletionBridge = HistoryDeletionBridgeJni.get().init(this, profile);
+    }
+
+    @Override
+    public void destroy() {
+        HistoryDeletionBridgeJni.get().destroy(mNativeHistoryDeletionBridge);
     }
 
     public void addObserver(Observer observer) {
@@ -59,6 +66,8 @@ public class HistoryDeletionBridge {
 
     @NativeMethods
     interface Natives {
-        long init(HistoryDeletionBridge self);
+        long init(HistoryDeletionBridge self, @JniType("Profile*") Profile profile);
+
+        void destroy(long nativeHistoryDeletionBridge);
     }
 }

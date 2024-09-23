@@ -12,10 +12,11 @@
 #include "base/logging.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
@@ -163,8 +164,8 @@ void SoftBindAttestationFlowImpl::Session::ReportSuccess(
 SoftBindAttestationFlowImpl::SoftBindAttestationFlowImpl()
     : attestation_client_(AttestationClient::Get()) {
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
-  attestation_flow_ =
-      std::make_unique<AttestationFlow>(std::move(attestation_ca_client));
+  attestation_flow_ = std::make_unique<AttestationFlowAdaptive>(
+      std::move(attestation_ca_client));
 }
 
 SoftBindAttestationFlowImpl::~SoftBindAttestationFlowImpl() = default;
@@ -436,7 +437,6 @@ bool SoftBindAttestationFlowImpl::GenerateLeafCert(
     base::Time not_valid_before,
     base::Time not_valid_after,
     std::string* der_encoded_cert) {
-  crypto::EnsureOpenSSLInit();
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   bssl::ScopedCBB cbb;
@@ -444,7 +444,7 @@ bool SoftBindAttestationFlowImpl::GenerateLeafCert(
   uint8_t* cert_bytes;
   size_t cert_len;
   uint64_t serial_number;
-  crypto::RandBytes(&serial_number, sizeof(serial_number));
+  crypto::RandBytes(base::byte_span_from_ref(serial_number));
   if (!CBB_init(cbb.get(), 64) ||
       !CBB_add_asn1(cbb.get(), &cert, CBS_ASN1_SEQUENCE) ||
       !CBB_add_asn1(&cert, &version,

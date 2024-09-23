@@ -26,10 +26,12 @@ String FontSizeAdjust::ToString(Metric metric) const {
       return "ch-width";
     case Metric::kIcWidth:
       return "ic-width";
+    case Metric::kIcHeight:
+      return "ic-height";
     case Metric::kExHeight:
       return "ex-height";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 String FontSizeAdjust::ToString() const {

@@ -30,14 +30,16 @@ void IdentityRegistry::NotifyClose(const url::Origin& notifier_origin) {
   delegate_->OnClose();
 }
 
-bool IdentityRegistry::NotifyResolve(const url::Origin& notifier_origin,
-                                     const std::string& token) {
+bool IdentityRegistry::NotifyResolve(
+    const url::Origin& notifier_origin,
+    const std::optional<std::string>& account_id,
+    const std::string& token) {
   url::Origin idp_origin(url::Origin::Create(idp_config_url_));
   if (!idp_origin.IsSameOriginWith(notifier_origin) || !delegate_) {
     return false;
   }
 
-  return delegate_->OnResolve(idp_config_url_, token);
+  return delegate_->OnResolve(idp_config_url_, account_id, token);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IdentityRegistry);

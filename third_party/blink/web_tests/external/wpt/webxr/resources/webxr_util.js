@@ -26,16 +26,19 @@ function xr_promise_test(name, func, properties, glContextType, glContextPropert
 
     // Only set up once.
     if (!navigator.xr.test) {
-      // Load test-only API helpers.
-      const script = document.createElement('script');
-      script.src = '/resources/test-only-api.js';
-      script.async = false;
-      const p = new Promise((resolve, reject) => {
-        script.onload = () => { resolve(); };
-        script.onerror = e => { reject(e); };
-      })
-      document.head.appendChild(script);
-      await p;
+
+      if (typeof isChromiumBased === 'undefined' || typeof isWebKitBased === 'undefined') {
+        // Load test-only API helpers.
+        const script = document.createElement('script');
+        script.src = '/resources/test-only-api.js';
+        script.async = false;
+        const p = new Promise((resolve, reject) => {
+          script.onload = () => { resolve(); };
+          script.onerror = e => { reject(e); };
+        });
+        document.head.appendChild(script);
+        await p;
+      }
 
       if (isChromiumBased) {
         // Chrome setup
@@ -158,19 +161,22 @@ function xr_session_promise_test(
         }));
   }
 
-  xr_promise_test(
-    name + ' - webgl',
-    runTest,
-    properties,
-    'webgl',
-    {alpha: false, antialias: false, ...glcontextProperties}
+  document.addEventListener('DOMContentLoaded', () => {
+    xr_promise_test(
+      name + ' - webgl',
+      runTest,
+      properties,
+      'webgl',
+      {alpha: false, antialias: false, ...glcontextProperties}
     );
-  xr_promise_test(
-    name + ' - webgl2',
-    runTest,
-    properties,
-    'webgl2',
-    {alpha: false, antialias: false, ...glcontextProperties});
+    xr_promise_test(
+      name + ' - webgl2',
+      runTest,
+      properties,
+      'webgl2',
+      {alpha: false, antialias: false, ...glcontextProperties}
+    );
+  });
 }
 
 

@@ -18,10 +18,11 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -38,6 +39,10 @@ constexpr char kEnrollmentUI[] = "enterprise-enrollment";
 
 const test::UIPath kWebview = {kEnrollmentUI, "step-signin", "signin-frame"};
 
+constexpr char kTestUserEmail[] = "testuser@test.com";
+constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr char kTestUserPassword[] = "test_user_password";
+
 }  // namespace
 
 class EnterpriseEnrollmentTestBase : public OobeBaseTest {
@@ -50,8 +55,15 @@ class EnterpriseEnrollmentTestBase : public OobeBaseTest {
 
   // Submits regular enrollment credentials.
   void SubmitEnrollmentCredentials() {
+    login::OnlineSigninArtifacts signin_artifacts;
+    signin_artifacts.email = kTestUserEmail;
+    signin_artifacts.gaia_id = kTestUserGaiaId;
+    signin_artifacts.password = kTestUserPassword;
+    signin_artifacts.using_saml = false;
+
     enrollment_screen()->OnLoginDone(
-        "testuser@test.com", static_cast<int>(policy::LicenseType::kEnterprise),
+        std::move(signin_artifacts),
+        static_cast<int>(policy::LicenseType::kEnterprise),
         test::EnrollmentHelperMixin::kTestAuthCode);
     ExecutePendingJavaScript();
   }
@@ -108,16 +120,8 @@ class EnterpriseEnrollmentTest : public EnterpriseEnrollmentTestBase {
 // attribute prompt screen. Verifies the attribute prompt screen is displayed.
 // Verifies that the data the user enters into the attribute prompt screen is
 // received by the enrollment helper.
-// TODO(crbug.com/1454755): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestAttributePromptPageGetsLoaded \
-  DISABLED_TestAttributePromptPageGetsLoaded
-#else
-#define MAYBE_TestAttributePromptPageGetsLoaded \
-  TestAttributePromptPageGetsLoaded
-#endif
 IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       MAYBE_TestAttributePromptPageGetsLoaded) {
+                       TestAttributePromptPageGetsLoaded) {
   ShowEnrollmentScreen();
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_MANUAL);

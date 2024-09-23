@@ -26,11 +26,20 @@ enum class TargetType {
   kAction,
 };
 
+// The type of share action, when |TargetType| is kAction.
+enum ShareActionType {
+  kExample = 0,
+  kNearbyShare = 1,
+  kDriveShare = 2,
+  kCopyToClipboardShare = 3,
+};
+
 struct TargetInfo {
   TargetInfo(TargetType type,
              const std::optional<gfx::ImageSkia> icon,
              const std::u16string& launch_name,
              const std::u16string& display_name,
+             const std::optional<ShareActionType>& share_action_type,
              const std::optional<std::u16string>& secondary_display_name,
              const std::optional<std::string>& activity_name,
              bool is_dlp_blocked);
@@ -59,6 +68,9 @@ struct TargetInfo {
   // The string shown to the user to identify this target in the sharesheet
   // bubble.
   std::u16string display_name;
+
+  // The enum that identifies the action type when |type| is kAction.
+  std::optional<ShareActionType> share_action_type;
 
   // A secondary string below the |display_name| shown to the user to provide
   // additional information for this target. This will be populated by showing

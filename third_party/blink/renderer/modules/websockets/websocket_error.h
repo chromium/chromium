@@ -35,12 +35,11 @@ class MODULES_EXPORT WebSocketError : public DOMException {
 
   // For creating a WebSocketError from C++. Attaches a stack trace to the
   // created object. Typically this will be immediately passed to
-  // ScriptPromiseResolver::Reject.
+  // ScriptPromiseResolverBase::Reject.
   static v8::Local<v8::Value> Create(v8::Isolate*,
                                      String message,
                                      std::optional<uint16_t> close_code,
-                                     String reason,
-                                     ExceptionState&);
+                                     String reason);
 
   // Use one of the Create() methods instead. This constructor has to be public
   // so that it can be used with MakeGarbageCollected<> inside the

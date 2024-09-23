@@ -8,8 +8,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/android/chrome_jni_headers/NativeStartupBridge_jni.h"
 #include "chrome/browser/browser_process.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/NativeStartupBridge_jni.h"
 
 namespace android_startup {
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/chrome_permissions_client.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -14,7 +15,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/important_sites_util.h"
@@ -28,9 +32,11 @@
 #include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
 #include "chrome/browser/permissions/pref_based_quiet_permission_ui_selector.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -42,7 +48,9 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
@@ -69,12 +77,10 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/browser/permissions/notification_blocked_message_delegate_android.h"
+#include "chrome/browser/permissions/permission_blocked_message_delegate_android.h"
 #include "chrome/browser/permissions/permission_infobar_delegate_android.h"
-#include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/messages/android/messages_feature.h"
 #include "components/permissions/permission_request_manager.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -83,8 +89,10 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -104,8 +112,11 @@ bool ShouldUseQuietUI(content::WebContents* web_contents,
                       ContentSettingsType type) {
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
-  return type == ContentSettingsType::NOTIFICATIONS &&
-         manager->ShouldCurrentRequestUseQuietUI();
+  if (type != ContentSettingsType::NOTIFICATIONS &&
+      type != ContentSettingsType::GEOLOCATION) {
+    return false;
+  }
+  return manager->ShouldCurrentRequestUseQuietUI();
 }
 #endif
 
@@ -158,7 +169,7 @@ ChromePermissionsClient::GetChooserContext(
       return BluetoothChooserContextFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -279,6 +290,9 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     std::optional<base::TimeDelta> prompt_display_duration,
     bool is_post_prompt,
     const GURL& gurl,
+    std::optional<permissions::feature_params::PermissionElementPromptPosition>
+        pepc_prompt_position,
+    ContentSetting initial_permission_status,
     base::OnceCallback<void()> hats_shown_callback) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -298,7 +312,7 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
           prompt_display_duration,
           permissions::PermissionHatsTriggerHelper::
               GetOneTimePromptsDecidedBucket(profile->GetPrefs()),
-          recorded_gurl);
+          recorded_gurl, pepc_prompt_position, initial_permission_status);
 
   if (!permissions::PermissionHatsTriggerHelper::
           ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
@@ -371,6 +385,9 @@ void ChromePermissionsClient::OnPromptResolved(
     permissions::PermissionRequestGestureType gesture_type,
     std::optional<QuietUiReason> quiet_ui_reason,
     base::TimeDelta prompt_display_duration,
+    std::optional<permissions::feature_params::PermissionElementPromptPosition>
+        pepc_prompt_position,
+    ContentSetting initial_permission_status,
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -391,6 +408,16 @@ void ChromePermissionsClient::OnPromptResolved(
       PermissionRevocationRequest::ExemptOriginFromFutureRevocations(profile,
                                                                      origin);
     }
+    if (action == permissions::PermissionAction::GRANTED) {
+      if (g_browser_process->safe_browsing_service()) {
+        g_browser_process->safe_browsing_service()
+            ->MaybeSendNotificationsAcceptedReport(
+                web_contents->GetPrimaryMainFrame(), profile,
+                web_contents->GetLastCommittedURL(),
+                web_contents->GetController().GetLastCommittedEntry()->GetURL(),
+                origin, prompt_display_duration);
+      }
+    }
   }
 
   auto content_setting_type = RequestTypeToContentSettingsType(request_type);
@@ -403,8 +430,9 @@ void ChromePermissionsClient::OnPromptResolved(
   TriggerPromptHatsSurveyIfEnabled(
       web_contents, request_type, std::make_optional(action),
       prompt_disposition, prompt_disposition_reason, gesture_type,
-      std::make_optional(prompt_display_duration), true,
-      web_contents->GetLastCommittedURL(), base::DoNothing());
+      std::make_optional(prompt_display_duration), /*is_post_prompt=*/true,
+      web_contents->GetLastCommittedURL(), pepc_prompt_position,
+      initial_permission_status, base::DoNothing());
 }
 
 std::optional<bool>
@@ -432,7 +460,8 @@ std::optional<bool> ChromePermissionsClient::HasPreviouslyAutoRevokedPermission(
                                                                      origin);
 }
 
-std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
+std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin(
+    content::BrowserContext* browser_context) {
   // In web kiosk mode, all permission requests are auto-approved for the origin
   // of the main app.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -446,6 +475,14 @@ std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
     DCHECK(app_data);
     return url::Origin::Create(app_data->install_url());
   }
+
+  // In Shimless RMA mode, permission requests are auto-approved during runtime
+  // since the app has requested all permissions during install time.
+  if (ash::features::IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled() &&
+      ash::IsShimlessRmaAppBrowserContext(browser_context)) {
+    return ash::shimless_rma::DiagnosticsAppProfileHelperDelegate::
+        GetInstalledDiagnosticsAppOrigin();
+  }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (profiles::IsWebKioskSession()) {
     return url::Origin::Create(
@@ -453,6 +490,32 @@ std::optional<url::Origin> ChromePermissionsClient::GetAutoApprovalOrigin() {
   }
 #endif
   return std::nullopt;
+}
+
+std::optional<permissions::PermissionAction>
+ChromePermissionsClient::GetAutoApprovalStatus(
+    content::BrowserContext* browser_context,
+    const GURL& origin) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kAllowMultipleOriginsForWebKioskPermissions)) {
+    Profile* profile = Profile::FromBrowserContext(browser_context);
+    if (IsWebKioskOriginAllowed(profile->GetPrefs(), origin)) {
+      return permissions::PermissionAction::GRANTED;
+    }
+  }
+
+  std::optional<url::Origin> auto_approval_origin =
+      GetAutoApprovalOrigin(browser_context);
+
+  if (!auto_approval_origin.has_value()) {
+    return std::nullopt;
+  }
+
+  if (url::Origin::Create(origin) == auto_approval_origin.value()) {
+    return permissions::PermissionAction::GRANTED;
+  }
+
+  return permissions::PermissionAction::IGNORED;
 }
 
 bool ChromePermissionsClient::CanBypassEmbeddingOriginCheck(
@@ -543,9 +606,9 @@ ChromePermissionsClient::MaybeCreateMessageUI(
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
   if (ShouldUseQuietUI(web_contents, type)) {
     auto delegate =
-        std::make_unique<NotificationBlockedMessageDelegate::Delegate>(
+        std::make_unique<PermissionBlockedMessageDelegate::Delegate>(
             std::move(prompt));
-    return std::make_unique<NotificationBlockedMessageDelegate>(
+    return std::make_unique<PermissionBlockedMessageDelegate>(
         web_contents, std::move(delegate));
   }
 
@@ -559,17 +622,11 @@ void ChromePermissionsClient::RepromptForAndroidPermissions(
     const std::vector<std::string>& required_permissions,
     const std::vector<std::string>& optional_permissions,
     PermissionsUpdatedCallback callback) {
-  if (messages::IsPermissionUpdateMessagesUiEnabled()) {
     PermissionUpdateMessageController::CreateForWebContents(web_contents);
     PermissionUpdateMessageController::FromWebContents(web_contents)
         ->ShowMessage(content_settings_types, filtered_content_settings_types,
                       required_permissions, optional_permissions,
                       std::move(callback));
-  } else {
-    PermissionUpdateInfoBarDelegate::Create(
-        web_contents, content_settings_types, filtered_content_settings_types,
-        required_permissions, optional_permissions, std::move(callback));
-  }
 }
 
 int ChromePermissionsClient::MapToJavaDrawableId(int resource_id) {
@@ -591,3 +648,21 @@ ChromePermissionsClient::CreatePrompt(
   return CreatePermissionPrompt(web_contents, delegate);
 }
 #endif
+
+bool ChromePermissionsClient::HasDevicePermission(
+    ContentSettingsType type) const {
+#if BUILDFLAG(IS_MAC)
+  return system_permission_settings::IsAllowed(type);
+#else
+  return PermissionsClient::HasDevicePermission(type);
+#endif
+}
+
+bool ChromePermissionsClient::CanRequestDevicePermission(
+    ContentSettingsType type) const {
+#if BUILDFLAG(IS_MAC)
+  return system_permission_settings::CanPrompt(type);
+#else
+  return PermissionsClient::CanRequestDevicePermission(type);
+#endif
+}

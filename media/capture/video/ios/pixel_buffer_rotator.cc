@@ -43,7 +43,7 @@ bool PixelBufferRotator::Rotate(CVPixelBufferRef source,
         rotation_angle = kVTRotation_CCW90;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     OSStatus error = VTSessionSetProperty(rotation_session_.get(),
                                           kVTPixelRotationPropertyKey_Rotation,

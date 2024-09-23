@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './app_management_shared_style.css.js';
 import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
@@ -10,10 +9,12 @@ import type {App} from 'chrome://resources/cr_components/app_management/app_mana
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement, type PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {AppManagementToggleRowElement} from './toggle_row.js';
-import {getTemplate} from './window_mode_item.html.js';
+import {getCss} from './app_management_shared_style.css.js';
+import type {ToggleRowElement} from './toggle_row.js';
+import {createDummyApp} from './web_app_settings_utils.js';
+import {getHtml} from './window_mode_item.html.js';
 
 function convertWindowModeToBool(windowMode: WindowMode): boolean {
   switch (windowMode) {
@@ -31,45 +32,55 @@ function getWindowModeBoolean(windowMode: WindowMode): boolean {
   return convertWindowModeToBool(windowMode);
 }
 
-export class AppManagementWindowModeElement extends PolymerElement {
+export class WindowModeItemElement extends CrLitElement {
   static get is() {
     return 'app-management-window-mode-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      windowModeLabel: String,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      app: Object,
+  static override get properties() {
+    return {
+      windowModeLabel: {type: String},
+
+      app: {type: Object},
 
       hidden: {
         type: Boolean,
-        computed: 'isHidden_(app)',
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  windowModeLabel: string;
-  app: App;
+  windowModeLabel: string = '';
+  app: App = createDummyApp();
+  override hidden: boolean = false;
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('app')) {
+      this.hidden = this.isHidden_();
+    }
+  }
+
+  override firstUpdated() {
     this.addEventListener('click', this.onClick_);
     this.addEventListener('change', this.toggleWindowMode_);
   }
 
-  private getValue_(): boolean {
+  protected getValue_(): boolean {
     return getWindowModeBoolean(this.app.windowMode);
   }
 
   private onClick_() {
-    this.shadowRoot!
-        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
+    this.shadowRoot!.querySelector<ToggleRowElement>('#toggle-row')!.click();
   }
 
   private toggleWindowMode_() {
@@ -98,9 +109,8 @@ export class AppManagementWindowModeElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-window-mode-item': AppManagementWindowModeElement;
+    'app-management-window-mode-item': WindowModeItemElement;
   }
 }
 
-customElements.define(
-    AppManagementWindowModeElement.is, AppManagementWindowModeElement);
+customElements.define(WindowModeItemElement.is, WindowModeItemElement);

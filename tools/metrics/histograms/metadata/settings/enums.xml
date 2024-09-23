@@ -26,6 +26,68 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AndroidSettingsFragmentHashes">
+  <int value="-2093401879" label="SafetyCheckSettingsFragment"/>
+  <int value="-2054907175" label="GroupedWebsitesSettings"/>
+  <int value="-1989639959" label="AdMeasurementFragment"/>
+  <int value="-1897035940" label="ThemeSettingsFragment"/>
+  <int value="-1768724911" label="HomepageSettings"/>
+  <int value="-1752194986" label="SingleWebsiteSettings"/>
+  <int value="-1696636734" label="EnhancedProtectionSettingsFragment"/>
+  <int value="-1467975767" label="StandardPreloadingSettingsFragment"/>
+  <int value="-1413642316" label="TopicsFragment"/>
+  <int value="-1285374344" label="TopicsBlockedFragment"/>
+  <int value="-1200678803" label="SearchEngineSettings"/>
+  <int value="-1035378917" label="PrivacySettingsFragment"/>
+  <int value="-988526347" label="RWSCookieSettings"/>
+  <int value="-980428258" label="FledgeAllSitesFragment"/>
+  <int value="-894030932" label="AutofillLocalIbanEditor"/>
+  <int value="-847585811" label="DeveloperSettings"/>
+  <int value="-745020245" label="AllSiteSettings"/>
+  <int value="-676399019" label="SecureDnsSettings"/>
+  <int value="-571101369" label="SafeBrowsingSettingsFragment"/>
+  <int value="-518410470" label="GoogleServicesSettings"/>
+  <int value="-475543757" label="IpProtectionSettingsFragment"/>
+  <int value="-275160283" label="ExtendedPreloadingSettingsFragment"/>
+  <int value="-273029950" label="PasswordCheckFragmentView"/>
+  <int value="-191422304" label="AccountManagementFragment"/>
+  <int value="-132150623" label="TracingCategoriesSettings"/>
+  <int value="-121335732" label="AutofillProfilesFragment"/>
+  <int value="-90603956" label="ChosenObjectSettings"/>
+  <int value="-67456740" label="MainSettings"/>
+  <int value="-45144853" label="DownloadSettings"/>
+  <int value="-27162861" label="FledgeFragment"/>
+  <int value="19814032" label="ClearBrowsingDataFragmentAdvanced"/>
+  <int value="51577713" label="AccessibilitySettings"/>
+  <int value="91451948" label="ContextualSearchSettingsFragment"/>
+  <int value="383093746" label="PrivacySandboxSettingsFragment"/>
+  <int value="406265787" label="LanguageSettings"/>
+  <int value="436870314" label="SiteSettings"/>
+  <int value="453432714" label="AboutChromeSettings"/>
+  <int value="460038414" label="PreloadPagesSettingsFragment"/>
+  <int value="493474121" label="StandardProtectionSettingsFragment"/>
+  <int value="513483078" label="DoNotTrackSettings"/>
+  <int value="590543987" label="StorageAccessSubpageSettings"/>
+  <int value="688926211" label="ManageSyncSettings"/>
+  <int value="690866195" label="SafetyHubFragment"/>
+  <int value="887082954" label="FingerprintingProtectionSettingsFragment"/>
+  <int value="894297033" label="SingleCategorySettings"/>
+  <int value="903277107" label="FledgeBlockedSitesFragment"/>
+  <int value="1118292269" label="HomeModulesConfigSettings"/>
+  <int value="1322563897" label="TopicsManageFragment"/>
+  <int value="1370078648" label="AdaptiveToolbarSettingsFragment"/>
+  <int value="1370406966" label="AutofillLocalCardEditor"/>
+  <int value="1421890558" label="PasswordSettings"/>
+  <int value="1505293227" label="PrivacySettings"/>
+  <int value="1603955025" label="SafetyHubPermissionsFragment"/>
+  <int value="1676521220" label="SelectLanguageFragment"/>
+  <int value="1849593145" label="AndroidPaymentAppsFragment"/>
+  <int value="1891640238" label="AutofillPaymentMethodsFragment"/>
+  <int value="1952237285" label="TracingSettings"/>
+  <int value="1968319616" label="ClearBrowsingDataFragmentBasic"/>
+  <int value="2070921964" label="ClearBrowsingDataTabsFragment"/>
+</enum>
+
 <enum name="BooleanRedirected">
   <int value="0" label="Not redirected"/>
   <int value="1" label="Redirected"/>
@@ -52,12 +114,13 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="DEFAULT_NTP"/>
 </enum>
 
-<enum name="IOSDefaultBrowserPromoSource">
+<enum name="IOSDefaultBrowserSettingsPageSource">
   <int value="0" label="Settings"/>
   <int value="1" label="Omnibox"/>
   <int value="2" label="External Intent"/>
   <int value="3" label="Set Up List"/>
   <int value="4" label="External Action"/>
+  <int value="5" label="Tips Notification"/>
 </enum>
 
 <enum name="LockScreenProgress">
@@ -149,12 +212,37 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="SAFE"/>
 </enum>
 
+<enum name="SafetyHubDashboardInteractions">
+  <int value="0" label="Open play store"/>
+  <int value="1" label="Go to safe browsing settings"/>
+  <int value="2" label="Open safety tools info"/>
+  <int value="3" label="Open incognito info"/>
+  <int value="4" label="Open safe browsing info"/>
+  <int value="5" label="Open help center"/>
+  <int value="6" label="Open password manager"/>
+  <int value="7" label="Show sign in promo"/>
+</enum>
+
 <enum name="SafetyHubEntryPoint">
   <int value="0" label="Privacy page (safe)"/>
   <int value="1" label="Privacy page (warning)"/>
   <int value="2" label="Site settings"/>
   <int value="3" label="Three-dot menu notification"/>
   <int value="4" label="Notification settings"/>
+</enum>
+
+<enum name="SafetyHubExternalInteractions">
+  <int value="0" label="Open Safety Hub (main settings)"/>
+  <int value="1" label="Open Safety Hub (magic stack)"/>
+  <int value="2" label="Open Safe Browsing (magic stack)"/>
+  <int value="3" label="Open Google Password Manager (magic stack)"/>
+</enum>
+
+<enum name="SafetyHubModuleState">
+  <int value="0" label="Warning"/>
+  <int value="1" label="Unavailable"/>
+  <int value="2" label="Info"/>
+  <int value="3" label="Safe"/>
 </enum>
 
 <enum name="SafetyHubModuleType">
@@ -177,6 +265,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Open URLs"/>
   <int value="5" label="Open new tab page"/>
   <int value="6" label="Restore the last session and open URLs"/>
+</enum>
+
+<enum name="SettingsClearBrowsingDataTimePeriod">
+  <int value="0" label="Last hour"/>
+  <int value="1" label="Last day"/>
+  <int value="2" label="Last week"/>
+  <int value="3" label="Four weeks"/>
+  <int value="4" label="All time"/>
+  <int value="5" label="Older than 30 days"/>
+  <int value="6" label="Last 15 minutes"/>
 </enum>
 
 <enum name="SettingsPrivacyElementInteractions">
@@ -205,6 +303,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Third-party cookies block all radio"/>
   <int value="23" label="Block all third-party cookies toggle"/>
   <int value="24" label="IP protection toggle"/>
+  <int value="25" label="Fingerprinting protection toggle"/>
 </enum>
 
 <enum name="SettingsPrivacyGuideInteractions">
@@ -219,6 +318,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="sWAA Completion Link"/>
   <int value="9" label="Privacy Sandbox Completion Link"/>
   <int value="10" label="Search Suggestions Next Button"/>
+  <int value="11" label="Tracking Protection Completion Link"/>
+  <int value="12" label="Ad Topics Next Button"/>
 </enum>
 
 <enum name="SettingsPrivacyGuideSettingsStates">
@@ -242,6 +343,10 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Search Suggestions Turned Off"/>
   <int value="18" label="Search Suggestions Turned On"/>
   <int value="19" label="Search Suggestions Remain Off"/>
+  <int value="20" label="Ad Topics Remain On"/>
+  <int value="21" label="Ad Topics Turned Off"/>
+  <int value="22" label="Ad Topics Turned On"/>
+  <int value="23" label="Ad Topics Remain Off"/>
 </enum>
 
 <enum name="SettingsPrivacyGuideStepsEligibleAndReached">
@@ -257,6 +362,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Completion card is reached"/>
   <int value="10" label="Search Suggestions card is eligible to be shown"/>
   <int value="11" label="Search Suggestions card is reached"/>
+  <int value="12" label="Ad Topics card is eligible to be shown"/>
+  <int value="13" label="Ad Topics card is reached"/>
 </enum>
 
 <enum name="SettingsPrivacySandboxDialogDisplayHostHash">
@@ -410,6 +517,8 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="kMediaStorageIdSalt"/>
   <int value="30" label="kModuleBlocklistCacheMD5Digest"/>
   <int value="32" label="kMediaCdmOriginData"/>
+  <int value="33" label="kGoogleServicesLastSignedInUsername"/>
+  <int value="34" label="kPolicyRecoveryToken"/>
 </enum>
 
 </enums>

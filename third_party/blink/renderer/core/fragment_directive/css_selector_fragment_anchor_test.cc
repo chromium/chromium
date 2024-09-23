@@ -79,9 +79,9 @@ class CssSelectorFragmentAnchorTest : public SimTest {
   const CSSValue* GetComputedValue(const CSSPropertyID& property_id,
                                    const Element& element) {
     return CSSProperty::Get(property_id)
-        .CSSValueFromComputedStyle(element.ComputedStyleRef(),
-                                   nullptr /* layout_object */,
-                                   false /* allow_visited_style */);
+        .CSSValueFromComputedStyle(
+            element.ComputedStyleRef(), nullptr /* layout_object */,
+            false /* allow_visited_style */, CSSValuePhase::kComputedValue);
   }
 
   bool IsElementOutlined(const Element& element) {

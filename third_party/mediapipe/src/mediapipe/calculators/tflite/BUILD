@@ -13,9 +13,9 @@
 # limitations under the License.
 #
 
-load("//mediapipe/framework/port:build_config.bzl", "mediapipe_proto_library")
-load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
 load("@bazel_skylib//lib:selects.bzl", "selects")
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
+load("//mediapipe/framework/port:build_config.bzl", "mediapipe_proto_library")
 
 licenses(["notice"])
 
@@ -240,6 +240,7 @@ cc_library(
             "@org_tensorflow//tensorflow/lite/delegates/nnapi:nnapi_delegate",
         ],
     }) + select({
+        "//mediapipe:emscripten": [],
         "//conditions:default": [
             "//mediapipe/util:cpu_util",
         ],
@@ -322,6 +323,8 @@ cc_library_with_tflite(
         "//mediapipe/framework:packet",
         "//mediapipe/framework/port:ret_check",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings:string_view",
+        "@com_google_absl//absl/types:span",
     ],
     alwayslink = 1,
 )
@@ -447,6 +450,9 @@ cc_library(
         "//mediapipe:ios": [
             "//mediapipe/util/android/file/base",
         ],
+        "//mediapipe:emscripten": [
+            "//mediapipe/util/android/file/base",
+        ],
         "//mediapipe:macos": [
             "//mediapipe/framework/port:file_helpers",
         ],
@@ -547,8 +553,25 @@ cc_test(
         "//mediapipe/calculators/util:local_file_contents_calculator",
         "//mediapipe/framework:calculator_framework",
         "//mediapipe/framework:calculator_runner",
+        "//mediapipe/framework/port:file_helpers",
         "//mediapipe/framework/port:gtest_main",
         "//mediapipe/framework/port:parse_text_proto",
+        "@com_google_absl//absl/types:span",
         "@org_tensorflow//tensorflow/lite:framework",
+        "@org_tensorflow//tensorflow/lite/schema:schema_fbs",
+    ],
+)
+
+cc_test(
+    name = "tflite_custom_op_resolver_calculator_test",
+    srcs = ["tflite_custom_op_resolver_calculator_test.cc"],
+    data = ["testdata/add.bin"],
+    deps = [
+        ":tflite_custom_op_resolver_calculator",
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:calculator_runner",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:parse_text_proto",
+        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
 )

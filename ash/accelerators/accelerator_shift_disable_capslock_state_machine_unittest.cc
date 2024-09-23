@@ -36,7 +36,9 @@ class MockInputController : public ui::InputController {
                          const base::TimeDelta& interval) override {}
   void GetAutoRepeatRate(base::TimeDelta* delay,
                          base::TimeDelta* interval) override {}
-  void SetCurrentLayoutByName(const std::string& layout_name) override {}
+  void SetCurrentLayoutByName(
+      const std::string& layout_name,
+      base::OnceCallback<void(bool)> callback) override {}
   void SetKeyboardKeyBitsMapping(
       base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
   std::vector<uint64_t> GetKeyboardKeyBits(int id) override {
@@ -118,6 +120,13 @@ class MockInputController : public ui::InputController {
                              bool right) override {}
   void SetPointingStickPrimaryButtonRight(std::optional<int> device_id,
                                           bool right) override {}
+  void BlockModifiersOnDevices(std::vector<int> device_ids) override {}
+  bool AreInputDevicesEnabled() const override { return true; }
+  std::unique_ptr<ui::ScopedDisableInputDevices> DisableInputDevices()
+      override {
+    return nullptr;
+  }
+  void DisableKeyboardImposterCheck() override {}
 };
 
 const bool kKeysPressed = true;
@@ -128,7 +137,7 @@ using ShiftDisableState =
     AcceleratorShiftDisableCapslockStateMachine::ShiftDisableState;
 
 ui::MouseEvent MousePress() {
-  return ui::MouseEvent(ui::ET_MOUSE_PRESSED,
+  return ui::MouseEvent(ui::EventType::kMousePressed,
                         /*location=*/gfx::PointF{},
                         /*root_location=*/gfx::PointF{},
                         /*time_stamp=*/{}, ui::EF_LEFT_MOUSE_BUTTON,
@@ -136,7 +145,7 @@ ui::MouseEvent MousePress() {
 }
 
 ui::MouseEvent MouseRelease() {
-  return ui::MouseEvent(ui::ET_MOUSE_RELEASED,
+  return ui::MouseEvent(ui::EventType::kMouseReleased,
                         /*location=*/gfx::PointF{},
                         /*root_location=*/gfx::PointF{},
                         /*time_stamp=*/{}, ui::EF_NONE,
@@ -144,11 +153,11 @@ ui::MouseEvent MouseRelease() {
 }
 
 ui::KeyEvent KeyPress(ui::KeyboardCode key_code) {
-  return ui::KeyEvent(ui::ET_KEY_PRESSED, key_code, ui::EF_NONE);
+  return ui::KeyEvent(ui::EventType::kKeyPressed, key_code, ui::EF_NONE);
 }
 
 ui::KeyEvent KeyRelease(ui::KeyboardCode key_code) {
-  return ui::KeyEvent(ui::ET_KEY_RELEASED, key_code, ui::EF_NONE);
+  return ui::KeyEvent(ui::EventType::kKeyReleased, key_code, ui::EF_NONE);
 }
 
 ui::Event& GetEventFromVariant(EventTypeVariant& event) {

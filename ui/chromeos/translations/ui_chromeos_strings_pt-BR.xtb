@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3104793765551262433">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bloqueada pelo administrador, detalhes</translation>
-<translation id="3113153474486991170">Não foi possível abrir "<ph name="PATH" />" nesse local. Copie-o para "Meus arquivos" para abrir.</translation>
 <translation id="3113592018909187986">Você tem 1 tentativa restante. Não será possível usar esta rede até que um novo PIN seja configurado.</translation>
 <translation id="3124404833828281817">Pessoa sonhadora</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Cancelar <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inativa, <ph name="CONNECTION_STATUS" />, intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="3691184985318546178">Cingalês</translation>
+<translation id="3702842351052426940">Seu chip ou perfil de eSIM pode estar desativado. Tente substituir o chip ou mudar de perfil de eSIM.</translation>
 <translation id="3722341589402358578">Ocorreu um erro. Alguns itens podem não ter sido descartados.</translation>
 <translation id="3726463242007121105">Não foi possível abrir este dispositivo porque seu sistema de arquivos não é suportado.</translation>
 <translation id="3727148787322499904">A alteração dessa configuração afetará todas as redes compartilhadas</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Este proxy é aplicado pelo seu administrador</translation>
 <translation id="3830674330436234648">Nenhuma reprodução disponível</translation>
 <translation id="383652340667548381">Sérvio</translation>
+<translation id="3839045880592694915">A operadora não permite que o modem se conecte. Entre em contato com a operadora para saber mais.</translation>
 <translation id="385051799172605136">Voltar</translation>
-<translation id="3851491607336266896">Conectada, conectividade limitada</translation>
 <translation id="3855472144336161447">Alemão (Neo 2)</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3866249974567520381">Descrição</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Os arquivos da Microsoft abertos recentemente foram movidos para o OneDrive</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4017788180641807848">Inglês (EUA) com teclado Workman</translation>
-<translation id="4019998208269143058">Fixar nos arquivos de acesso rápido</translation>
 <translation id="4040753847560036377">PUK incorreta</translation>
 <translation id="4057991113334098539">Ativando...</translation>
 <translation id="4092890906744441904">Irlandês</translation>
+<translation id="4101601646343868113">Faça login na sua rede móvel e confirme se o plano de dados móveis está ativo</translation>
 <translation id="4124731372776320263">Sincronizando 1 arquivo do Drive</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="4131235941541910880">Mova os itens desnecessários para a lixeira</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tâmil com teclado Tamil99</translation>
 <translation id="5633226425545095130">Se você mover esse item, ele será compartilhado com todos que podem ver a pasta compartilhada "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ouvir</translation>
+<translation id="5650895901941743674">Verifique a configuração do APN</translation>
 <translation id="5669691691057771421">Digite o novo PIN</translation>
 <translation id="5678784840044122290">O aplicativo Linux estará disponível no seu terminal e também poderá mostrar um ícone no acesso rápido.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Não é possível desconectar de um arquivo ou disco virtual<ph name="END_BOLD" />
@@ -626,7 +627,7 @@
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5788127256798019331">Arquivos do Google Play</translation>
 <translation id="5790193330357274855">Cazaque</translation>
-<translation id="5804245609861364054">Canará (transliteração)</translation>
+<translation id="5804245609861364054">Canarês (transliteração)</translation>
 <translation id="5814126672212206791">Tipo de conexão</translation>
 <translation id="5817397429773072584">Chinês tradicional</translation>
 <translation id="5818003990515275822">Coreano</translation>
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bateria do smartphone em <ph name="BATTERY_STATUS" />%, conectar</translation>
 <translation id="6269630227984243955">Malaio</translation>
 <translation id="6271903698064569429">Não é possível fazer upload dos arquivos porque "<ph name="SHARED_DRIVE_NAME" />" não tem espaço de armazenamento suficiente.</translation>
+<translation id="6279140785485544797">Seu plano de dados móveis pode ter expirado. Entre em contato com a operadora para receber ajuda.</translation>
 <translation id="6287852322318138013">Selecione um aplicativo para abrir este arquivo</translation>
 <translation id="6295542640242147836">Bloquear chip</translation>
 <translation id="6296410173147755564">PUK inválida</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Arquivo <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Acenando</translation>
 <translation id="6327785803543103246">Descoberta automática do proxy da Web</translation>
-<translation id="6337014272874260727">Liberar dos arquivos de acesso rápido</translation>
 <translation id="6339145975392024142">Internacional dos EUA (PC)</translation>
 <translation id="6356685157277930264">Janela de feedback do Arquivos</translation>
 <translation id="6358884629796491903">Dragão</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Diretório atual</translation>
 <translation id="6751256176799620176">1 pasta selecionada</translation>
 <translation id="6755827872271341378">Dispositivo ChromeOS Flex</translation>
+<translation id="6777029074498310250">Acesse <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> para mais informações</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6794539005637808366">Restaure ou arraste o item para uma nova pasta fora da lixeira</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,9 +794,10 @@
 <translation id="7086590977277044826">Tâmil com teclado InScript</translation>
 <translation id="7088615885725309056">Mais antigo</translation>
 <translation id="7103992300314999525">Macedônio</translation>
+<translation id="7104338189998813914">Ocorreu um problema ao acessar sua conta do OneDrive</translation>
 <translation id="7106346894903675391">Adquirir mais espaço de armazenamento...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;pesquisar no Google Drive&lt;/em&gt;</translation>
-<translation id="7135561821015524160">Canará (fonético)</translation>
+<translation id="7135561821015524160">Canarês (fonético)</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7162080671816799010">Não há "Correspondência do nome alternativo do assunto" ou "Correspondência do sufixo de domínio" para validar a identidade do servidor de autenticação</translation>
 <translation id="7165320105431587207">Falha ao configurar rede</translation>
@@ -838,7 +841,7 @@
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Malaiala (fonético)</translation>
 <translation id="7505167922889582512">Mostrar arquivos ocultos</translation>
-<translation id="7514365320538308">Fazer o download</translation>
+<translation id="7514365320538308">Baixar</translation>
 <translation id="751507702149411736">Bielorrusso</translation>
 <translation id="7521790570754130607">É necessário ter um PIN para usar os dados móveis</translation>
 <translation id="7532029025027028521">Persa (transliteração)</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Aguarde um segundo</translation>
 <translation id="7600126690270271294">Sérvio</translation>
 <translation id="7603724359189955920">Grades</translation>
+<translation id="7624010287655004652">Bloqueada por outra operadora de rede móvel</translation>
 <translation id="7627790789328695202">O item <ph name="FILE_NAME" /> já existe. Renomeie-o e tente novamente.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% concluído.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">A lista de arquivos foi alterada para a visualização em miniatura.</translation>
 <translation id="8601932370724196034">Arquivo de imagem do Crostini</translation>
 <translation id="8609695766746872526">Islandês</translation>
+<translation id="8630384863424041081">Insira o PIN do chip ou o PIN padrão fornecido pela operadora. Entre em contato com a operadora para receber ajuda.</translation>
 <translation id="863903787380594467">PIN incorreto. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>
 <translation id="8656407365183407932">Seus arquivos off-line precisaram ser removidos</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Esse arquivo é confidencial e está sujeito a restrições pela política do administrador.</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8713112442029511308">Maltês</translation>
-<translation id="8714138378966541668">Bloqueada pelo provedor</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">Selecionado: <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croata</translation>

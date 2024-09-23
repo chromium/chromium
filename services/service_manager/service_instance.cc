@@ -61,7 +61,7 @@ void ReportBlockedInterface(const Manifest::ServiceName& source_service_name,
   // effectively treat all occurrences of this branch in production code as
   // bugs that must be fixed. This crash allows such bugs to be caught in
   // testing rather than relying on easily overlooked log messages.
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
 #else
   LOG(ERROR)
 #endif
@@ -79,7 +79,7 @@ void ReportBlockedStartService(const std::string& source_service_name,
                                const std::string& target_service_name) {
 #if DCHECK_IS_ON()
   // See the note in ReportBlockedInterface above.
-  NOTREACHED()
+  NOTREACHED_IN_MIGRATION()
 #else
   LOG(ERROR)
 #endif

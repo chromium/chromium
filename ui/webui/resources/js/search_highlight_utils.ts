@@ -162,7 +162,7 @@ export function createEmptySearchBubble(
     innards.classList.toggle('above');
     updatePosition();
   });
-  // TODO(crbug.com/355446): create a way to programmatically update these
+  // TODO(crbug.com/41096577): create a way to programmatically update these
   // bubbles (i.e. call updatePosition()) when outer scope knows they need to
   // be repositioned.
   return searchBubble;

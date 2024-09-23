@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Label: el-image (label from image>title element)
+  assert_equals: <img data-testname="el-image (label from image&gt;title element)" data-expectedrole="image" data-expectedlabel="x" class="ex-role-label ex-label-only ex-role-only"> expected "x" but got ""
+[FAIL] el-image (generic, explicitly empty image>title element)
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-image (generic, explicitly empty image&gt;title element)" class="ex-generic"> expected false got true
+Harness: the test ran to completion.
+

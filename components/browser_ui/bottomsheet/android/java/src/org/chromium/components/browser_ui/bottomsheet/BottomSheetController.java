@@ -173,9 +173,15 @@ public interface BottomSheetController {
 
     /**
      * @return The {@link BackPressHandler} that will handle a back press event when the bottom
-     *         sheet is open or holds sheet content.
+     *     sheet is open or holds sheet content.
      */
     BackPressHandler getBottomSheetBackPressHandler();
+
+    /**
+     * @return Whether the sheet covers the full width of the container, or is limited to only
+     *     partial width.
+     */
+    boolean isFullWidth();
 
     /**
      * @return Whether the bottom sheet is being shown on a small screen. This disables the half

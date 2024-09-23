@@ -1,0 +1,28 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/token.mojom";
+import "services/viz/public/mojom/compositing/surface_range.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// See OffsetTag in components/viz/common/quads/offset_tag.h.
+struct OffsetTag {
+  mojo_base.mojom.Token token;
+};
+
+// See OffsetTagValue in components/viz/common/quads/offset_tag.h.
+struct OffsetTagValue {
+  OffsetTag tag;
+  gfx.mojom.Vector2dF offset;
+};
+
+// See OffsetTagDefinition in components/viz/common/quads/offset_tag.h.
+struct OffsetTagDefinition {
+  OffsetTag tag;
+  SurfaceRange provider;
+  gfx.mojom.Vector2dF min_offset;
+  gfx.mojom.Vector2dF max_offset;
+};

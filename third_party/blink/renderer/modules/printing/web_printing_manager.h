@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRINTING_WEB_PRINTING_MANAGER_H_
 
 #include "third_party/blink/public/mojom/printing/web_printing.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -15,8 +17,7 @@ namespace blink {
 
 class ExceptionState;
 class NavigatorBase;
-class ScriptPromise;
-class ScriptPromiseResolver;
+class WebPrinter;
 
 class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
                                           public Supplement<NavigatorBase> {
@@ -31,14 +32,15 @@ class MODULES_EXPORT WebPrintingManager : public ScriptWrappable,
   explicit WebPrintingManager(NavigatorBase&);
 
   // navigator.printing.getPrinters()
-  ScriptPromise getPrinters(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLSequence<WebPrinter>> getPrinters(ScriptState*,
+                                                     ExceptionState&);
 
   // ScriptWrappable:
   void Trace(Visitor*) const override;
 
  private:
   mojom::blink::WebPrintingService* GetPrintingService();
-  void OnPrintersRetrieved(ScriptPromiseResolver*,
+  void OnPrintersRetrieved(ScriptPromiseResolver<IDLSequence<WebPrinter>>*,
                            mojom::blink::GetPrintersResultPtr result);
 
   HeapMojoRemote<mojom::blink::WebPrintingService> printing_service_;

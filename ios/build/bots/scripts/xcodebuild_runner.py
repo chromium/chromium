@@ -5,18 +5,24 @@
 """Test runner for running tests using xcodebuild."""
 
 import collections
+import json
 import logging
 import os
+import plistlib
 import subprocess
 import sys
 import time
+from typing import Tuple, List, Optional
 
-import file_util
 import iossim_util
 import test_apps
+import test_runner_errors
+import shard_util
+import test_runner_errors
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
 from xcode_log_parser import XcodeLogParser
+import xcode_util
 
 # if the current directory is in scripts, then we need to add plugin
 # path in order to import from that directory
@@ -25,6 +31,12 @@ if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
       os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugin'))
 from plugin_utils import init_plugins_from_args
 from test_plugin_service import TestPluginServicerWrapper, TestPluginServicer
+
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.append(
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+import measures
 
 LOGGER = logging.getLogger(__name__)
 MAXIMUM_TESTS_PER_SHARD_FOR_RERUN = 20
@@ -171,8 +183,10 @@ class LaunchCommand(object):
     overall_launch_command_result = ResultCollection()
     clones = self.clones
     running_tests = set(self.egtests_app.get_all_tests())
+    attempt_count = measures.count('test_attempts', 'eg')
     # total number of attempts is self.retries+1
     for attempt in range(self.retries + 1):
+      attempt_count.record()
       # Cleanup any running plugin process before each attempt
       if self.test_plugin_service:
         self.test_plugin_service.reset()
@@ -195,12 +209,20 @@ class LaunchCommand(object):
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
       cmd_list = self.egtests_app.command(outdir_attempt, 'id=%s' % self.udid,
                                           clones)
-      # TODO(crbug.com/914878): add heartbeat logging to xcodebuild_runner.
-      LOGGER.info('Start test attempt #%d for command [%s]' % (
-          attempt, ' '.join(cmd_list)))
+
+      # TODO(crbug.com/340857498): temporarily turning this off on all
+      # device testing due to Xcode hang on iOS17.4+. In the future
+      # we should have a testing config flag to toggle this on/off
+      if not iossim_util.is_device_with_udid_simulator(self.udid):
+        cmd_list.extend(['-collect-test-diagnostics', 'never'])
+
+      # TODO(crbug.com/40606422): add heartbeat logging to xcodebuild_runner.
+      LOGGER.info('Start test attempt #%d for command [%s]' %
+                  (attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
 
-      result = XcodeLogParser.collect_test_results(outdir_attempt, output)
+      result = XcodeLogParser.collect_test_results(outdir_attempt, output,
+                                                   clones > 1)
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
           self.egtests_app.test_app_path)
@@ -208,7 +230,7 @@ class LaunchCommand(object):
       # will cover any missing tests. For these decided at runtime, retain
       # crashes from all attempts and a dummy "crashed" result will be reported
       # to indicate some tests might never ran.
-      # TODO(crbug.com/1235871): Switch back to excluded tests and set
+      # TODO(crbug.com/40782444): Switch back to excluded tests and set
       # |overall_crash| to always True.
       overall_launch_command_result.add_result_collection(
           result, overwrite_crash=not tests_selected_at_runtime)
@@ -289,14 +311,15 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
 
-    # TODO(crbug.com/1486897): For simulators, the record_video_option
-    # is always None right now, because we are still using our own video
-    # plugin. Currently native Xcode15+ video recording is only supported
-    # on iOS17+, but we should aim to migrate to the native solution so
-    # that we don't need to maintain our own.
     self.record_video_option = kwargs.get('record_video_option')
 
+    self.all_eg_test_names = []
+    self.all_eg_test_names = self.fetch_test_names()
+    self.resolve_eg_test_cases()
+
     # initializing test plugin service
+    # TODO(crbug.com/40933880): remove the legacy code of video recording
+    # support as we have migrated to native xcode video recording.
     self.test_plugin_service = None
     enabled_plugins = init_plugins_from_args(
         os.path.join(self.out_dir, self.udid), **kwargs)
@@ -308,6 +331,100 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
           TestPluginServicer(enabled_plugins))
     else:
       LOGGER.info('No plugins are enabled, test plugin service will not start.')
+
+  def _create_xctest_run_enum_tests(self, include_disabled: bool) -> str:
+    """Creates xctestrun file used for enumerating tests.
+
+    Returns:
+      A path to the generated xctestrun file.
+    """
+    test_app = self.get_launch_test_app()
+    xctestrun_data = test_app.fill_xctestrun_node(include_disabled)
+
+    xctestrun = os.path.join(self.out_dir, 'enumerate_tests.xctestrun')
+    with open(xctestrun, 'wb') as f:
+      plistlib.dump(xctestrun_data, f)
+
+    return xctestrun
+
+  def fetch_test_names(self,
+                       include_disabled: bool = False) -> List[Tuple[str, str]]:
+    xctestrun = self._create_xctest_run_enum_tests(include_disabled)
+    all_test_classes = []
+    error_message = ""
+    num_attempts = 4
+    for attempt in range(num_attempts):
+      # reset error_message with each attempt
+      error_message = ""
+      enumerate_tests_json = os.path.join(
+          os.path.abspath(self.out_dir),
+          'enumerate_tests_%d.json' % int(time.time()))
+
+      cmd = [
+          "xcodebuild", "test-without-building", "-enumerate-tests",
+          "-xctestrun", xctestrun, "-destination",
+          'id=%s' % self.udid, "-test-enumeration-format", "json",
+          "-test-enumeration-output-path", enumerate_tests_json
+      ]
+      LOGGER.info(cmd)
+
+      start = time.perf_counter()
+      proc = subprocess.Popen(
+          cmd,
+          env=None,
+          stdout=subprocess.PIPE,
+          stderr=subprocess.STDOUT,
+      )
+      test_runner.print_process_output(proc, timeout=self.readline_timeout)
+      end = time.perf_counter()
+      elapsed = end - start
+      LOGGER.info(f'xcodebuild -enumerate-tests (attempt {attempt + 1} of '
+                  f'{num_attempts}) completed in {elapsed:.2f} seconds')
+
+      # enumerate_tests_json will not be written if return code is non-zero
+      if not os.path.isfile(enumerate_tests_json):
+        LOGGER.error(f'xcodebuild -enumerate-tests failed to create '
+                     f'{enumerate_tests_json}')
+        continue
+
+      with open(enumerate_tests_json, "r") as f:
+        json_output = json.load(f)
+
+      if 'errors' in json_output.keys() and json_output['errors']:
+        error_message = '\n'.join(json_output['errors'])
+        LOGGER.error(error_message)
+      else:
+        all_test_classes = json_output['values'][0]['children'][0]['children']
+        if all_test_classes:
+          break
+
+    # on certain occasions -enumerate-tests will return code 0 and have an empty
+    # "errors" list in its json output, but still have failed, in which case
+    # all_test_classes will be empty
+    if error_message:
+      raise test_runner_errors.XcodeEnumerateTestsError(error_message)
+    elif not all_test_classes:
+      raise test_runner_errors.XcodeEnumerateTestsError()
+
+    all_test_names = []
+    for test_class in all_test_classes:
+      test_class_name = test_class['name']
+      test_methods = test_class['children']
+
+      for test_method in test_methods:
+        all_test_names.append((test_class_name, test_method['name']))
+
+    return all_test_names
+
+  def resolve_eg_test_cases(self):
+    gtest_total_shards = shard_util.gtest_total_shards()
+    if gtest_total_shards > 1:
+      # overwrite assignment to self.test_cases (that already occurred in parent
+      # class) if we are running EG tests on multiple swarming shards
+      if self.test_cases:
+        LOGGER.warning('Overwriting self.test_cases with sharded test cases. '
+                       'Original test cases: %s' % self.test_cases)
+      self.test_cases = shard_util.shard_eg_test_cases(self.all_eg_test_names)
 
   def get_launch_env(self):
     """Returns a dict of environment variables to use to launch the test app.
@@ -327,6 +444,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     """
     return test_apps.EgtestsApp(
         self.app_path,
+        self.all_eg_test_names,
         included_tests=self.test_cases,
         env_vars=self.env_vars,
         test_args=self.test_args,
@@ -355,26 +473,32 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     try:
       overall_result = launch_command.launch()
 
-      # Deletes simulator used in the tests after tests end.
-      if iossim_util.is_device_with_udid_simulator(self.udid):
-        iossim_util.delete_simulator_by_udid(self.udid)
-
-      # Adds disabled tests to result.
-      if self.output_disabled_tests:
+      # Adds disabled tests to result. This will output all disabled tests
+      # present in the test app binary. Since there's no use in
+      # dividing up disabled tests across swarming shards we should only bother
+      # outputting them on the first shard
+      if self.output_disabled_tests and shard_util.gtest_shard_index() == 0:
+        disabled_tests = self.fetch_test_names(include_disabled=True)
+        test_app.disabled_tests = list(
+            map(lambda test: f'{test[0]}/{test[1]}', disabled_tests))
         overall_result.add_and_report_test_names_status(
-            launch_command.egtests_app.disabled_tests,
+            test_app.disabled_tests,
             TestStatus.SKIP,
             expected_status=TestStatus.SKIP,
             test_log='Test disabled.')
 
+      # Deletes simulator used in the tests after tests end.
+      if iossim_util.is_device_with_udid_simulator(self.udid):
+        iossim_util.delete_simulator_by_udid(self.udid)
+
       # Adds unexpectedly skipped tests to result if applicable.
       tests_selected_at_runtime = _tests_decided_at_runtime(self.app_path)
       unexpectedly_skipped = []
-      # TODO(crbug.com/1048758): For the multitasking or any flaky test suites,
+      # TODO(crbug.com/40672177): For the multitasking or any flaky test suites,
       # |all_tests_to_run| contains more tests than what actually runs.
       if not tests_selected_at_runtime:
         # |all_tests_to_run| takes into consideration that only a subset of
-        # tests may have run due to the test sharding logic in run.py.
+        # tests may have run due to the test sharding logic in shard_util.py.
         all_tests_to_run = set(launch_command.egtests_app.get_all_tests())
         unexpectedly_skipped = list(all_tests_to_run -
                                     overall_result.all_test_names())
@@ -454,6 +578,9 @@ class DeviceXcodeTestRunner(SimulatorParallelTestRunner,
     self.test_results['path_delimiter'] = '/'
     self.record_video_option = kwargs.get('record_video_option')
     self.test_plugin_service = None
+    self.all_eg_test_names = []
+    self.all_eg_test_names = self.fetch_test_names()
+    self.resolve_eg_test_cases()
 
   def set_up(self):
     """Performs setup actions which must occur prior to every test launch."""

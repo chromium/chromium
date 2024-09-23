@@ -14,16 +14,183 @@ each histogram.
 
 <histograms>
 
-<variants name="PerformanceInterventionsCPUTiming">
-  <variant name="Baseline"
-      summary="every 2 minutes regardless of CPU threshold"/>
-  <variant name="Delayed"
-      summary="1 minute after the CPU threshold is reached"/>
-  <variant name="Immediate" summary="when the CPU threshold is reached"/>
+<variants name="CoreType">
+  <variant name="Balanced"/>
+  <variant name="Efficiency"/>
+  <variant name="Performance"/>
 </variants>
 
+<variants name="SiteDBWriteTrigger">
+  <variant name="ClearAllSiteData"/>
+  <variant name="ClearSiteDataForOrigins"/>
+  <variant name="WriteSiteDataIntoStore"/>
+</variants>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskMigrated" enum="Boolean"
+    expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    True if the CPU estimation task was running on a different CPU at the end of
+    the assembly loop than it was at the beginning.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only.
+  </summary>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskQueuedTime.{CoreType}"
+    units="microseconds" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time in microseconds during which the CPU estimation task was queued
+    before running.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only. Reported only on devices using the high resolution clock.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskThreadTime.{CoreType}"
+    units="microseconds" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The thread time in microseconds it took to fully execute the CPU estimation
+    task.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only. Reported only on devices using the high resolution clock.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskTotalTime.{CoreType}"
+    units="microseconds" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time in microseconds it took to fully execute the CPU estimation task,
+    that is its queued time + the wall time elapsed before the task finished.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only. Reported only on devices using the high resolution clock.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationTaskWallTime.{CoreType}"
+    units="microseconds" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The wall time in microseconds it took to fully execute the CPU estimation
+    task.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only. Reported only on devices using the high resolution clock.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.CpuEstimationThreadTimePercent.{CoreType}"
+    units="%" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The ratio of thread time vs wall time of the CPU estimation task's
+    &quot;running&quot; portion, i.e. the thread time of the assembly loop
+    divided by its wall time.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram
+    name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.{CoreType}"
+    units="%" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The CPU frequency as a percentage of the estimated current frequency (see
+    base::EstimateCpuFrequency) over the max frequency of the fastest CPU, as
+    reported by base::GetCpuMhzLimit.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram name="CPU.Experimental.EstimatedFrequencyAsPercentOfMax.{CoreType}"
+    units="%" expires_after="2024-07-10">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The CPU frequency as a percentage of the estimated current frequency (see
+    base::EstimateCpuFrequency) over the max frequency of the fastest CPU, as
+    reported by base::GetCpuMaxMhz.
+
+    Recorded when the CPU estimation task runs (every 5 minutes). Windows x86
+    only.
+  </summary>
+  <token key="CoreType" variants="CoreType"/>
+</histogram>
+
+<histogram
+    name="PerformanceManager.CPUMonitorMemoryUse.{ResourceContextType}.{ResourceContextState}"
+    units="KB" expires_after="2025-02-23">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The estimated size of CPUMeasurementMonitor's result cache. Recorded at the
+    same time as the Memory.Browser.PrivateMemoryFootprint. This slice is the
+    memory used to store {ResourceContextType} that are {ResourceContextState}.
+  </summary>
+  <token key="ResourceContextType">
+    <variant name="AllContexts" summary="all ResourceContexts"/>
+    <variant name="FrameContexts"/>
+    <variant name="OriginInBrowsingInstanceContext"/>
+    <variant name="PageContexts"/>
+    <variant name="ProcessContexts"/>
+    <variant name="WorkerContexts"/>
+  </token>
+  <token key="ResourceContextState">
+    <variant name="Dead"
+        summary="associated with a resource that no longer exists"/>
+    <variant name="Live" summary="associated with an existing resource"/>
+    <variant name="Total" summary="in any state"/>
+  </token>
+</histogram>
+
+<histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpaceMb"
+    units="MB" expires_after="2025-02-16">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The amount of available space in megabytes on the disk that hosts the
+    current user data directory as reported by
+    SysInfo::AmountOfFreeDiskSpace(user_data_dir).
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpacePercent"
+    units="%" expires_after="2025-02-16">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The percentage of available space on the disk that hosts the current user
+    data directory as reported by SysInfo::AmountOfFreeDiskSpace(user_data_dir)
+    / capacity.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
-    enum="AccessibilityModeFlagEnum" expires_after="2024-06-30">
+    enum="AccessibilityModeFlagEnum" expires_after="2025-03-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -33,7 +200,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Experimental.HasAccessibilityModeFlag"
-    enum="Boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2025-03-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -42,168 +209,36 @@ each histogram.
   </summary>
 </histogram>
 
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU.{Timing}"
-    units="%" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
+<histogram name="PerformanceManager.LoadingNotQuiescentPageCount.{Visibility}"
+    units="pages" expires_after="2025-02-10">
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded {Timing}, this histogram represents the average CPU usage of each
-    background tab.
+    Recorded every 30 seconds with the number of PageNodes that have started
+    loading and not reached quiescence at the end of the interval (ie. in
+    LoadingState kLoading or kLoadedBusy). This variant records pages that are
+    {Visibility} for the entire load. PerformanceManager.QuiescentPageCount is
+    recorded at the same time for comparison.
   </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.AverageForegroundCPU.{Timing}"
-    units="%" expires_after="2024-07-14">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing}, this histogram represents the average CPU usage of each
-    foreground (active, playing audio, etc) tab.
-  </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.BackgroundTabsToGetUnderCPUThreshold.{Timing}"
-    units="count" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing}, this histogram represents the lowest number of background
-    tabs that would need to be closed to get CPU usage under the threshold.
-  </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.DurationOverThreshold"
-    units="ms" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded when a device drops back below the CPU threshold, this histogram
-    represents the total time that the device was above the threshold.
-  </summary>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.NonChrome.{Timing}"
-    units="%" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing}, with the percentage of CPU used by non-Chrome processes
-    on the system over the past 2 minutes. This is calculated from other
-    PerformanceManager.PerformanceInterventions.CPU.* histograms: NonChrome =
-    System - (TotalBackgroundCPU + TotalForegroundCPU).
-  </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.System.{Timing}"
-    units="%" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing}, with the percentage of CPU used by all processes on the
-    system over the past 2 minutes.
-  </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.SystemCPUError.{Timing}"
-    enum="BooleanError" expires_after="2024-04-28">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing} when an error occurs measuring the system CPU usage.
-    Successful measurements are recorded in
-    PerformanceManager.PerformanceInterventions.CPU.System.*.
-  </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.TopNBackgroundCPU.{N}.{Timing}"
-    units="%" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing}, this histogram represents the sum of CPU capacity being
-    used by the top {N} background tabs.
-  </summary>
-  <token key="N">
-    <variant name="1"/>
-    <variant name="2"/>
-    <variant name="4"/>
-    <variant name="8"/>
-    <variant name="16"/>
+  <token key="Visibility">
+    <variant name="All" summary="in any visibility state"/>
+    <variant name="Hidden" summary="hidden"/>
+    <variant name="MixedVisibility" summary="in a mix of visibility states"/>
+    <variant name="Visible" summary="visible"/>
   </token>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU.{Timing}"
-    units="%" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
+<histogram name="PerformanceManager.QuiescentPageCount" units="pages"
+    expires_after="2025-02-10">
+  <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Recorded {Timing}, this histogram represents the percent of CPU capacity
-    being used by background tabs.
+    Recorded every 30 seconds with the number of PageNodes that have not started
+    loading (ie. in LoadingState kLoadingNotStarted or kLoadingTimedOut) or have
+    reached quiescence (ie. in LoadingState kLoadedIdle) at the end of the
+    interval. PerformanceManager.LoadingNotQuiescentPageCount is recorded at the
+    same time for comparison.
   </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundTabCount.{Timing}"
-    units="count" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing}, this histogram represents the number of background tabs.
-  </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.TotalForegroundCPU.{Timing}"
-    units="%" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing}, this histogram represents the percent of CPU capacity
-    being used by foreground (active, playing audio, etc) tabs.
-  </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
-</histogram>
-
-<histogram
-    name="PerformanceManager.PerformanceInterventions.CPU.TotalForegroundTabCount.{Timing}"
-    units="count" expires_after="2024-06-30">
-  <owner>agale@chromium.org</owner>
-  <owner>joenotcharles@chromium.org</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    Recorded {Timing}, this histogram represents the number of foreground
-    (active, playing audio, etc) tabs.
-  </summary>
-  <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.DatabaseInit"
@@ -268,17 +303,6 @@ each histogram.
   </token>
 </histogram>
 
-<histogram name="PerformanceManager.SiteDB.OnDiskSize" units="KB"
-    expires_after="2023-12-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The size of the Local Site Characteristics database on disk. Recorded at
-    startup when the database gets opened, if it already existed from a previous
-    run.
-  </summary>
-</histogram>
-
 <histogram name="PerformanceManager.SiteDB.ReadHasCompletedBeforeQuery"
     enum="Boolean" expires_after="2023-12-28">
   <owner>joenotcharles@google.com</owner>
@@ -290,8 +314,34 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}"
+    enum="BooleanCompleted" expires_after="2025-02-23">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Logged when a write to the Local Site Characteristics database finishes, if
+    the write was scheduled by a call to {SiteDBWriteTrigger}. The count of this
+    should match PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger},
+    otherwise writes are being lost.
+  </summary>
+  <token key="SiteDBWriteTrigger" variants="SiteDBWriteTrigger"/>
+</histogram>
+
+<histogram name="PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger}"
+    enum="BooleanAttempted" expires_after="2025-02-23">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Logged whenever a write to the Local Site Characteristics database is
+    scheduled by a call to {SiteDBWriteTrigger}. The count of this should match
+    PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}, otherwise
+    writes are being lost.
+  </summary>
+  <token key="SiteDBWriteTrigger" variants="SiteDBWriteTrigger"/>
+</histogram>
+
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
-    units="seconds" expires_after="2024-08-09">
+    units="seconds" expires_after="2025-02-16">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -301,7 +351,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToRevisit2"
-    units="seconds" expires_after="2024-08-09">
+    units="seconds" expires_after="2025-02-16">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -311,7 +361,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
-    units="%" expires_after="2024-07-07">
+    units="%" expires_after="2025-01-26">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -321,7 +371,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
-    enum="EfficiencyMode" expires_after="2024-07-21">
+    enum="EfficiencyMode" expires_after="2025-02-10">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -335,7 +385,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.UserTuning.MemorySaverModeEnabledPercent"
-    units="%" expires_after="2024-07-07">
+    units="%" expires_after="2025-01-26">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

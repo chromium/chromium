@@ -48,7 +48,7 @@ using shared_highlighting::TextFragment;
 
 - (instancetype)initWithSourceID:(ukm::SourceId)sourceID
                          latency:(base::TimeDelta)latency {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _sourceID = sourceID;
     _latency = latency;
   }
@@ -60,7 +60,7 @@ using shared_highlighting::TextFragment;
                         latency:(base::TimeDelta)latency {
   DCHECK(payload);
   DCHECK(sourceID != ukm::kInvalidSourceId);
-  if (self = [self initWithSourceID:sourceID latency:latency]) {
+  if ((self = [self initWithSourceID:sourceID latency:latency])) {
     _payload = payload;
   }
   return self;
@@ -69,7 +69,7 @@ using shared_highlighting::TextFragment;
 - (instancetype)initWithError:(LinkGenerationError)error
                      sourceID:(ukm::SourceId)sourceID
                       latency:(base::TimeDelta)latency {
-  if (self = [self initWithSourceID:sourceID latency:latency]) {
+  if ((self = [self initWithSourceID:sourceID latency:latency])) {
     _error = error;
   }
   return self;

@@ -44,8 +44,10 @@ h1 {
 
 .data-collector-list {
   width: 520px;
+  padding-top: 8px;
 }
 
-.select-all-button {
-  margin-top: 8px;
+.select-all-checkbox {
+  border-bottom: var(--cr-separator-line);
+  padding-bottom: 16px;
 }

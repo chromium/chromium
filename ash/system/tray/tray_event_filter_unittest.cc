@@ -57,7 +57,7 @@ class TestTrayBackgroundView : public TrayBackgroundView {
   ~TestTrayBackgroundView() override = default;
 
   // TrayBackgroundView:
-  void ClickedOutsideBubble() override {
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override {
     clicked_outside_bubble_called_ = true;
     CloseBubble();
   }
@@ -90,7 +90,7 @@ class TestTrayBackgroundView : public TrayBackgroundView {
     bubble_->ShowBubble(std::move(bubble_view));
   }
 
-  void CloseBubble() override { bubble_.reset(); }
+  void CloseBubbleInternal() override { bubble_.reset(); }
 
   TrayBubbleWrapper* bubble() { return bubble_.get(); }
 
@@ -362,12 +362,14 @@ TEST_F(TrayEventFilterTest, CloseTrayBubbleWhenWindowActivated) {
             system_tray->bubble()->GetBubbleView());
 
   // Showing a new window and activating it will close the system bubble.
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   EXPECT_TRUE(widget->IsActive());
   EXPECT_FALSE(system_tray->bubble());
 
   // Show a second widget.
-  std::unique_ptr<views::Widget> second_widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> second_widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   EXPECT_TRUE(second_widget->IsActive());
 
   // Re-show the system bubble.

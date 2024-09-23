@@ -1,0 +1,193 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("utils") {
+  sources = [
+    "feature_utils.cc",
+    "feature_utils.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//chrome/browser/profiles",
+    "//components/prefs",
+    "//components/saved_tab_groups:model",
+  ]
+
+  if (is_android) {
+    deps += [ ":utils_jni_headers" ]
+  }
+}
+
+if (is_android) {
+  android_library("factory_java") {
+    srcjar_deps = [ ":factory_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactory.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//components/saved_tab_groups:java",
+      "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/LocalTabGroupMutationHelper.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/LogUtils.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserver.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTracker.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/RemoteTabGroupMutationHelper.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelper.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabCreationDelegateImpl.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncController.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncIphController.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserver.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserver.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtils.java",
+    ]
+
+    deps = [
+      ":features_java",
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/preferences:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group:java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/user_education:java",
+      "//components/embedder_support/android:util_java",
+      "//components/feature_engagement/public:public_java",
+      "//components/prefs/android:java",
+      "//components/saved_tab_groups:java",
+      "//components/tab_groups:tab_groups_java",
+      "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("features_java") {
+    srcjar_deps = [ ":utils_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncFeatures.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("test_support_java") {
+    testonly = true
+
+    deps = [
+      "//base:base_java",
+      "//components/saved_tab_groups:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:url_java",
+    ]
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TestTabGroupSyncService.java" ]
+  }
+
+  robolectric_library("junit") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/LocalTabGroupMutationHelperUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationObserverUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/NavigationTrackerUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/RemoteTabGroupMutationHelperUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelperUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabCreationDelegateImplUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncControllerUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncIphControllerUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserverUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserverUnitTest.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncTestUtils.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtilsUnitTest.java",
+    ]
+    deps = [
+      ":java",
+      ":test_support_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_junit_test_support",
+      "//chrome/browser/feature_engagement:java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/preferences:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tab_group:java",
+      "//chrome/browser/tab_group_sync:java",
+      "//chrome/browser/tabmodel:java",
+      "//chrome/browser/user_education:java",
+      "//chrome/test/android:chrome_java_unit_test_support",
+      "//components/embedder_support/android:util_java",
+      "//components/feature_engagement:feature_engagement_java",
+      "//components/prefs/android:java",
+      "//components/saved_tab_groups:java",
+      "//components/tab_groups:tab_groups_java",
+      "//content/public/android:content_java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:gendeps_java",
+      "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("javatests") {
+    testonly = true
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactoryTest.java" ]
+    deps = [
+      ":factory_java",
+      ":test_support_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/test/android:chrome_java_integration_test_support",
+      "//components/saved_tab_groups:java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
+      "//third_party/junit:junit",
+      "//url:url_java",
+    ]
+  }
+
+  generate_jni("factory_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactory.java" ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtils.java" ]
+  }
+
+  generate_jni("utils_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncFeatures.java" ]
+  }
+}

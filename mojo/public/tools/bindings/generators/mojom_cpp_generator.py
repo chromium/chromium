@@ -359,7 +359,6 @@ class Generator(generator.Generator):
         "module_namespace": self.module.namespace,
         "namespaces_as_array": NamespaceToArray(self.module.namespace),
         "structs": self.module.structs,
-        "support_lazy_serialization": self.support_lazy_serialization,
         "unions": self.module.unions,
         "uses_interfaces": self._ReferencesAnyHandleOrInterfaceType(),
         "uses_native_types": self._ReferencesAnyNativeType(),
@@ -405,8 +404,7 @@ class Generator(generator.Generator):
         "has_packed_method_ordinals": HasPackedMethodOrdinals,
         "get_sync_method_ordinals": mojom.GetSyncMethodOrdinals,
         "has_uninterruptable_methods": mojom.HasUninterruptableMethods,
-        "method_supports_lazy_serialization":
-        self._MethodSupportsLazySerialization,
+        "has_estimate_size_methods": self._HasEstimateSizeMethods,
         "requires_context_for_data_view": RequiresContextForDataView,
         "should_inline": ShouldInlineStruct,
         "should_inline_union": ShouldInlineUnion,
@@ -433,6 +431,7 @@ class Generator(generator.Generator):
         "is_feature_kind": mojom.IsFeatureKind,
         "is_hashable": self._IsHashableKind,
         "is_map_kind": mojom.IsMapKind,
+        "is_non_const_ref_kind": self._IsNonConstRefKind,
         "is_nullable_kind": mojom.IsNullableKind,
         "is_object_kind": mojom.IsObjectKind,
         "is_reference_kind": mojom.IsReferenceKind,
@@ -635,13 +634,16 @@ class Generator(generator.Generator):
         return not self._IsTypemappedKind(kind) or self.typemap[
             self._GetFullMojomNameForKind(kind)]["hashable"]
       elif mojom.IsUnionKind(kind):
+        if (self._IsTypemappedKind(kind) and
+            not self.typemap[self._GetFullMojomNameForKind(kind)]["hashable"]):
+          return False
         return all(Check(field.kind) for field in kind.fields)
       elif mojom.IsAnyHandleKind(kind):
         return False
       elif mojom.IsAnyInterfaceKind(kind):
         return False
-      # TODO(crbug.com/735301): Arrays and maps could be made hashable. We just
-      # don't have a use case yet.
+      # TODO(crbug.com/41326458): Arrays and maps could be made hashable. We
+      # just don't have a use case yet.
       elif mojom.IsArrayKind(kind):
         return False
       elif mojom.IsMapKind(kind):
@@ -747,6 +749,9 @@ class Generator(generator.Generator):
       return _AddOptional(_kind_to_cpp_type[kind.MakeUnnullableKind()])
     return _kind_to_cpp_type[kind]
 
+  def _HasEstimateSizeMethods(self, interface):
+    return any(method.estimate_message_size for method in interface.methods)
+
   def _IsDefaultConstructible(self, kind):
     if self._IsTypemappedKind(kind):
       return self.typemap[self._GetFullMojomNameForKind(
@@ -785,6 +790,11 @@ class Generator(generator.Generator):
               self._IsMoveOnlyKind(kind.key_kind))
     if mojom.IsAnyHandleOrInterfaceKind(kind):
       return True
+    return False
+
+  def _IsNonConstRefKind(self, kind):
+    if self._IsTypemappedKind(kind):
+      return self.typemap[self._GetFullMojomNameForKind(kind)]["non_const_ref"]
     return False
 
   def _IsFullHeaderRequiredForImport(self, imported_module):
@@ -844,6 +854,9 @@ class Generator(generator.Generator):
     return ((not mojom.IsReferenceKind(kind)) or self._IsMoveOnlyKind(kind) or
         self._IsCopyablePassByValue(kind))
 
+  def _ShouldPassParamByNonConstRef(self, kind):
+    return self._IsNonConstRefKind(kind)
+
   def _GetCppWrapperCallType(self, kind, add_same_module_namespaces=False):
     # TODO: Remove this once interfaces are always passed as PtrInfo.
     if mojom.IsInterfaceKind(kind):
@@ -861,16 +874,37 @@ class Generator(generator.Generator):
           kind, add_same_module_namespaces=add_same_module_namespaces)
     cpp_wrapper_type = self._GetCppWrapperType(
         kind, add_same_module_namespaces=add_same_module_namespaces)
-    return (cpp_wrapper_type if self._ShouldPassParamByValue(kind)
-                             else "const %s&" % cpp_wrapper_type)
+    if self._ShouldPassParamByValue(kind):
+      return cpp_wrapper_type
+    elif self._ShouldPassParamByNonConstRef(kind):
+      return "%s&" % cpp_wrapper_type
+    else:
+      return "const %s&" % cpp_wrapper_type
 
   def _GetCppWrapperParamTypeNew(self, kind):
     cpp_wrapper_type = self._GetCppWrapperType(kind)
-    return (cpp_wrapper_type if self._ShouldPassParamByValue(kind)
-                                 or mojom.IsArrayKind(kind)
-                             else "const %s&" % cpp_wrapper_type)
+    if self._ShouldPassParamByValue(kind) or mojom.IsArrayKind(kind):
+      return cpp_wrapper_type
+    elif self._ShouldPassParamByNonConstRef(kind):
+      return "%s&" % cpp_wrapper_type
+    else:
+      return "const %s&" % cpp_wrapper_type
 
   def _GetCppFieldType(self, kind):
+
+    def _AddOptionalPODContainer(type_name):
+      return "std::optional<%s>" % type_name
+
+    def _GetTypeForElement(kind):
+      if not mojom.IsValueKind(kind):
+        return self._GetCppFieldType(kind)
+
+      if mojom.IsNullableKind(kind):
+        return _AddOptionalPODContainer(
+            self._GetCppFieldType(mojom.EnsureUnnullable(kind)))
+      else:
+        return self._GetCppFieldType(kind)
+
     if mojom.IsStructKind(kind):
       return ("mojo::internal::Pointer<%s>" %
           self._GetNameForKind(kind, internal=True))
@@ -878,11 +912,11 @@ class Generator(generator.Generator):
       return "%s" % self._GetNameForKind(kind, internal=True)
     if mojom.IsArrayKind(kind):
       return ("mojo::internal::Pointer<mojo::internal::Array_Data<%s>>" %
-              self._GetCppFieldType(kind.kind))
+              _GetTypeForElement(kind.kind))
     if mojom.IsMapKind(kind):
       return ("mojo::internal::Pointer<mojo::internal::Map_Data<%s, %s>>" %
-              (self._GetCppFieldType(kind.key_kind),
-               self._GetCppFieldType(kind.value_kind)))
+              (self._GetCppFieldType(
+                  kind.key_kind), _GetTypeForElement(kind.value_kind)))
     if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
       return "mojo::internal::Interface_Data"
     if mojom.IsPendingReceiverKind(kind):
@@ -946,18 +980,6 @@ class Generator(generator.Generator):
                  for field in kind.fields)
 
     return False
-
-  def _MethodSupportsLazySerialization(self, method):
-    if not self.support_lazy_serialization:
-      return False
-
-    # TODO(crbug.com/753433): Support lazy serialization for methods which pass
-    # associated handles.
-    if mojom.MethodPassesAssociatedKinds(method):
-      return False
-
-    return not any(self._KindMustBeSerialized(param.kind) for param in
-                   method.parameters + (method.response_parameters or []))
 
   def _TranslateConstants(self, token, kind):
     if isinstance(token, mojom.NamedValue):
@@ -1029,20 +1051,23 @@ class Generator(generator.Generator):
           kind=kind.value_kind))
       return (f'mojo::internal::GetMapValidator<*{key_validate_params}, '
               f'*{element_validate_params}>()')
-    else:  # mojom.IsArrayKind(kind)
+    elif mojom.IsArrayKind(kind):
       expected_num_elements = generator.ExpectedArraySize(kind) or 0
+      element_is_nullable = 'true' if mojom.IsNullableKind(
+          kind.kind) else 'false'
       element_validate_params = self._GetNewContainerValidateParams(kind.kind)
       if mojom.IsEnumKind(kind.kind):
         enum_validate_func = ("%s::Validate" %
             self._GetQualifiedNameForKind(kind.kind, internal=True,
                                           flatten_nested_kind=True))
         return (f'mojo::internal::GetArrayOfEnumsValidator<'
-                f'{expected_num_elements}, {enum_validate_func}>()')
+                f'{expected_num_elements}, {element_is_nullable}, '
+                f'{enum_validate_func}>()')
       else:
-        element_is_nullable = ('true'
-                               if mojom.IsNullableKind(kind.kind) else 'false')
         return (f'mojo::internal::GetArrayValidator<{expected_num_elements}, '
                 f'{element_is_nullable}, {element_validate_params}>()')
+    else:
+      raise Exception("Unknown kind: %s" % kind)
 
   def _GetNewContainerValidateParams(self, kind):
     if (not mojom.IsArrayKind(kind) and not mojom.IsMapKind(kind) and

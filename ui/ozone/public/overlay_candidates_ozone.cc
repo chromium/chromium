@@ -10,7 +10,7 @@ namespace ui {
 
 void OverlayCandidatesOzone::CheckOverlaySupport(
     OverlaySurfaceCandidateList* surfaces) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void OverlayCandidatesOzone::ObserveHardwareCapabilities(

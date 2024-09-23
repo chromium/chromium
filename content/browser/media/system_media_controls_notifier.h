@@ -58,6 +58,10 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   void MediaControllerImageChanged(
       ::media_session::mojom::MediaSessionImageType type,
       const SkBitmap& bitmap) override;
+  // There's no chapter images in the system media tray view, so we don't need
+  // to implement this method.
+  void MediaControllerChapterImageChanged(int chapter_index,
+                                          const SkBitmap& bitmap) override {}
 
  private:
   friend class SystemMediaControlsNotifierTest;

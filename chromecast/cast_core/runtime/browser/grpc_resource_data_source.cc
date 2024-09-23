@@ -164,7 +164,6 @@ std::string GrpcResourceDataSource::GetMimeType(const GURL& url) {
   }
 
   NOTREACHED() << "Unknown Mime type of file " << path;
-  return std::string();
 }
 
 bool GrpcResourceDataSource::ShouldServiceRequest(

@@ -105,7 +105,7 @@ class ElementEventWatcher {
   const ElementEventType event_type_;
   ui::ElementTracker::Subscription subscription_;
   int event_count_ = 0;
-  raw_ptr<View> last_view_ = nullptr;
+  raw_ptr<View, DanglingUntriaged> last_view_ = nullptr;
 };
 
 ElementTrackerViews::ViewList ElementsToViews(
@@ -143,8 +143,8 @@ class ElementTrackerViewsTest : public ViewsTestBase {
   std::unique_ptr<Widget> CreateWidget() {
     auto widget = std::make_unique<Widget>();
     Widget::InitParams params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 650, 650);
     widget->Init(std::move(params));
     return widget;
@@ -268,12 +268,14 @@ TEST_F(ElementTrackerViewsTest, ButtonPressedSendsActivatedSignal) {
 
   // Test mouse click.
   constexpr gfx::Point kPressPoint(10, 10);
-  button->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  button->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, kPressPoint, kPressPoint,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
+  button->OnMouseReleased(
+      ui::MouseEvent(ui::EventType::kMousePressed, kPressPoint, kPressPoint,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
 
@@ -296,9 +298,10 @@ TEST_F(ElementTrackerViewsTest, MenuButtonPressedSendsActivatedSignal) {
 
   // Test mouse click.
   constexpr gfx::Point kPressPoint(10, 10);
-  button->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, kPressPoint, kPressPoint,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(1U, pressed_count);
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
@@ -1374,23 +1377,27 @@ TEST_F(ElementTrackerTwoWidgetTest,
 
   // Test mouse click.
   constexpr gfx::Point kPressPoint(10, 10);
-  button->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  button->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, kPressPoint, kPressPoint,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
+  button->OnMouseReleased(
+      ui::MouseEvent(ui::EventType::kMousePressed, kPressPoint, kPressPoint,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
   EXPECT_EQ(0, watcher2.event_count());
 
   // Click other button.
-  button2->OnMousePressed(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
-  button2->OnMouseReleased(ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, kPressPoint, kPressPoint, ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+  button2->OnMousePressed(
+      ui::MouseEvent(ui::EventType::kMousePressed, kPressPoint, kPressPoint,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
+  button2->OnMouseReleased(
+      ui::MouseEvent(ui::EventType::kMousePressed, kPressPoint, kPressPoint,
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                     ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(button, watcher.last_view());
   EXPECT_EQ(1, watcher2.event_count());

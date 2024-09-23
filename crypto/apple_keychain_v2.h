@@ -5,6 +5,7 @@
 #ifndef CRYPTO_APPLE_KEYCHAIN_V2_H_
 #define CRYPTO_APPLE_KEYCHAIN_V2_H_
 
+#import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Foundation/Foundation.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
@@ -25,6 +26,9 @@ class CRYPTO_EXPORT AppleKeychainV2 {
   AppleKeychainV2(const AppleKeychainV2&) = delete;
   AppleKeychainV2& operator=(const AppleKeychainV2&) = delete;
 
+  // Wraps the |TKTokenWatcher.tokenIDs| property.
+  virtual NSArray* GetTokenIDs();
+
   // KeyCreateRandomKey wraps the |SecKeyCreateRandomKey| function.
   virtual base::apple::ScopedCFTypeRef<SecKeyRef> KeyCreateRandomKey(
       CFDictionaryRef params,
@@ -38,15 +42,36 @@ class CRYPTO_EXPORT AppleKeychainV2 {
   // KeyCopyPublicKey wraps the |SecKeyCopyPublicKey| function.
   virtual base::apple::ScopedCFTypeRef<SecKeyRef> KeyCopyPublicKey(
       SecKeyRef key);
+  // KeyCopyExternalRepresentation wraps the |SecKeyCopyExternalRepresentation|
+  // function.
+  virtual base::apple::ScopedCFTypeRef<CFDataRef> KeyCopyExternalRepresentation(
+      SecKeyRef key,
+      CFErrorRef* error);
+  // KeyCopyAttributes wraps the |SecKeyCopyAttributes| function.
+  virtual base::apple::ScopedCFTypeRef<CFDictionaryRef> KeyCopyAttributes(
+      SecKeyRef key);
 
+  // ItemAdd wraps the |SecItemAdd| function.
+  virtual OSStatus ItemAdd(CFDictionaryRef attributes, CFTypeRef* result);
   // ItemCopyMatching wraps the |SecItemCopyMatching| function.
   virtual OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result);
   // ItemDelete wraps the |SecItemDelete| function.
   virtual OSStatus ItemDelete(CFDictionaryRef query);
   // ItemDelete wraps the |SecItemUpdate| function.
-  virtual OSStatus ItemUpdate(
-      CFDictionaryRef query,
-      base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> keychain_data);
+  virtual OSStatus ItemUpdate(CFDictionaryRef query,
+                              CFDictionaryRef keychain_data);
+
+#if !BUILDFLAG(IS_IOS)
+  // TaskCopyValueForEntitlement wraps the |SecTaskCopyValueForEntitlement|
+  // function. Not available on iOS.
+  virtual base::apple::ScopedCFTypeRef<CFTypeRef> TaskCopyValueForEntitlement(
+      SecTaskRef task,
+      CFStringRef entitlement,
+      CFErrorRef* error);
+#endif  // !BUILDFLAG(IS_IOS)
+
+  // LAContextCanEvaluatePolicy wraps LAContext's canEvaluatePolicy method.
+  virtual BOOL LAContextCanEvaluatePolicy(LAPolicy policy, NSError** error);
 
  protected:
   AppleKeychainV2();
@@ -55,6 +80,7 @@ class CRYPTO_EXPORT AppleKeychainV2 {
  protected:
   friend class base::NoDestructor<AppleKeychainV2>;
   friend class ScopedTouchIdTestEnvironment;
+  friend class ScopedFakeAppleKeychainV2;
 
   // Set an override to the singleton instance returned by |GetInstance|. The
   // caller keeps ownership of the injected keychain and must remove the

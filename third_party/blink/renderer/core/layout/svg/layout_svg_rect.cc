@@ -27,9 +27,9 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
 
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -38,8 +38,8 @@ namespace {
 bool GeometryPropertiesChanged(const ComputedStyle& old_style,
                                const ComputedStyle& new_style) {
   return old_style.X() != new_style.X() || old_style.Y() != new_style.Y() ||
-         old_style.UsedWidth() != new_style.UsedWidth() ||
-         old_style.UsedHeight() != new_style.UsedHeight() ||
+         old_style.Width() != new_style.Width() ||
+         old_style.Height() != new_style.Height() ||
          old_style.Rx() != new_style.Rx() || old_style.Ry() != new_style.Ry();
 }
 
@@ -70,8 +70,8 @@ gfx::RectF LayoutSVGRect::UpdateShapeFromElement() {
   const ComputedStyle& style = StyleRef();
   const gfx::PointF origin =
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style);
-  const gfx::Vector2dF size = VectorForLengthPair(
-      style.UsedWidth(), style.UsedHeight(), viewport_resolver, style);
+  const gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
+                                                  viewport_resolver, style);
   // Spec: "A negative value is an error." gfx::SizeF() clamps negative
   // width/height to 0.
   const gfx::RectF bounding_box(origin, gfx::SizeF(size.x(), size.y()));
@@ -110,24 +110,7 @@ bool LayoutSVGRect::ShapeDependentStrokeContains(
     EnsurePath();
     return LayoutSVGShape::ShapeDependentStrokeContains(location);
   }
-
-  const gfx::PointF& point = location.TransformedPoint();
-  const float half_stroke_width = StrokeWidth() / 2;
-  const float half_width = fill_bounding_box_.width() / 2;
-  const float half_height = fill_bounding_box_.height() / 2;
-
-  const gfx::PointF fill_bounding_box_center =
-      gfx::PointF(fill_bounding_box_.x() + half_width,
-                  fill_bounding_box_.y() + half_height);
-  const float abs_delta_x = std::abs(point.x() - fill_bounding_box_center.x());
-  const float abs_delta_y = std::abs(point.y() - fill_bounding_box_center.y());
-
-  if (!(abs_delta_x <= half_width + half_stroke_width &&
-        abs_delta_y <= half_height + half_stroke_width))
-    return false;
-
-  return (half_width - half_stroke_width <= abs_delta_x) ||
-         (half_height - half_stroke_width <= abs_delta_y);
+  return location.IntersectsStroke(fill_bounding_box_, StrokeWidth());
 }
 
 bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
@@ -136,7 +119,7 @@ bool LayoutSVGRect::ShapeDependentFillContains(const HitTestLocation& location,
   if (GetGeometryType() != GeometryType::kRectangle) {
     return LayoutSVGShape::ShapeDependentFillContains(location, fill_rule);
   }
-  return fill_bounding_box_.InclusiveContains(location.TransformedPoint());
+  return location.Intersects(fill_bounding_box_);
 }
 
 // Returns true if the stroke is continuous and definitely uses miter joins.

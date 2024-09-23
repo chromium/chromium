@@ -24,8 +24,8 @@ TEST_F(CastViewsTest, ProgressBar) {
 
   // Create the window.  We close the window by deleting it, so we take
   // ownership of the widget + native widget.
-  views::Widget::InitParams params;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params.context = window_manager->GetRootWindow();
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

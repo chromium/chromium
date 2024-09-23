@@ -14,7 +14,6 @@ $var MAX_ARITY = 7
 #include <oaidl.h>
 
 #include "base/basictypes.h"
-#include "base/template_util.h"
 #include "base/win/scoped_variant.h"
 
 namespace remoting {

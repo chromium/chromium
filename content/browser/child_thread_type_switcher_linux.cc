@@ -24,14 +24,16 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
   pid_t peer_tid = base::FindThreadID(peer_pid, ns_tid, &ns_pid_supported);
   if (peer_tid == -1) {
     if (ns_pid_supported) {
-      DLOG(WARNING) << "Could not find tid";
+      DVLOG(1) << "Could not find tid";
     }
     return;
   }
 
-  if (peer_tid == peer_pid && thread_type != base::ThreadType::kCompositing) {
+  if (peer_tid == peer_pid && thread_type != base::ThreadType::kDefault &&
+      thread_type != base::ThreadType::kDisplayCritical) {
+    // TODO(crbug.com/40226692): Consider reporting with ReceivedBadMessage().
     DLOG(WARNING) << "Changing main thread type to another value than "
-                  << "kCompositing isn't allowed";
+                  << "kDefault or kDisplayCritical isn't allowed";
     return;
   }
 

@@ -6,8 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/css/css_custom_font_data.h"
@@ -140,7 +140,7 @@ RemoteFontFaceSource::DisplayPeriod RemoteFontFaceSource::ComputePeriod()
       return kSwapPeriod;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kSwapPeriod;
 }
 
@@ -151,11 +151,7 @@ RemoteFontFaceSource::RemoteFontFaceSource(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : face_(css_font_face),
       font_selector_(font_selector),
-      // No need to report the violation here since the font is not loaded yet
-      display_(
-          GetFontDisplayWithDocumentPolicyCheck(display,
-                                                font_selector,
-                                                ReportOptions::kDoNotReport)),
+      display_(display),
       phase_(kNoLimitExceeded),
       is_intervention_triggered_(ShouldTriggerWebFontsIntervention()),
       finished_before_document_rendering_begin_(false),
@@ -240,8 +236,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   }
 
   ClearResource();
-
-  PruneTable();
+  ClearTable();
 
   if (GetDocument()) {
     if (!GetDocument()->RenderingHasBegun()) {
@@ -263,7 +258,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
         FontInvalidationReason::kFontFaceLoaded);
     if (custom_font_data_) {
       probe::FontsUpdated(execution_context, face_->GetFontFace(),
-                          resource->Url().GetString(), custom_font_data_.get());
+                          resource->Url().GetString(), custom_font_data_.Get());
     }
   }
 }
@@ -293,8 +288,7 @@ void RemoteFontFaceSource::SetDisplay(FontDisplay display) {
   if (IsLoaded()) {
     return;
   }
-  display_ = GetFontDisplayWithDocumentPolicyCheck(
-      display, font_selector_, ReportOptions::kReportOnFailure);
+  display_ = display;
   UpdatePeriod();
 }
 
@@ -306,7 +300,7 @@ bool RemoteFontFaceSource::UpdatePeriod() {
   // Invalidate the font if its fallback visibility has changed.
   if (IsLoading() && period_ != new_period &&
       (period_ == kBlockPeriod || new_period == kBlockPeriod)) {
-    PruneTable();
+    ClearTable();
     if (face_->FallbackVisibilityChanged(this)) {
       font_selector_->FontFaceInvalidated(
           FontInvalidationReason::kGeneralInvalidation);
@@ -315,20 +309,6 @@ bool RemoteFontFaceSource::UpdatePeriod() {
   }
   period_ = new_period;
   return changed;
-}
-
-FontDisplay RemoteFontFaceSource::GetFontDisplayWithDocumentPolicyCheck(
-    FontDisplay display,
-    const FontSelector* font_selector,
-    ReportOptions report_option) const {
-  ExecutionContext* context = font_selector->GetExecutionContext();
-  if (display != FontDisplay::kFallback && display != FontDisplay::kOptional &&
-      context && context->IsWindow() &&
-      !context->IsFeatureEnabled(
-          mojom::blink::DocumentPolicyFeature::kFontDisplay, report_option)) {
-    return FontDisplay::kOptional;
-  }
-  return display;
 }
 
 bool RemoteFontFaceSource::ShouldTriggerWebFontsIntervention() {
@@ -350,7 +330,7 @@ bool RemoteFontFaceSource::IsLowPriorityLoadingAllowedForRemoteFont() const {
   return is_intervention_triggered_;
 }
 
-scoped_refptr<SimpleFontData> RemoteFontFaceSource::CreateFontData(
+const SimpleFontData* RemoteFontFaceSource::CreateFontData(
     const FontDescription& font_description,
     const FontSelectionCapabilities& font_selection_capabilities) {
   if (period_ == kFailurePeriod || !IsValid()) {
@@ -363,7 +343,7 @@ scoped_refptr<SimpleFontData> RemoteFontFaceSource::CreateFontData(
 
   histograms_.RecordFallbackTime();
 
-  return SimpleFontData::Create(
+  return MakeGarbageCollected<SimpleFontData>(
       custom_font_data_->GetFontPlatformData(
           font_description.EffectiveFontSize(),
           font_description.AdjustedSpecifiedSize(),
@@ -380,25 +360,24 @@ scoped_refptr<SimpleFontData> RemoteFontFaceSource::CreateFontData(
               : ResolvedFontFeatures(),
           font_description.Orientation(), font_description.VariationSettings(),
           font_description.GetFontPalette()),
-      CustomFontData::Create());
+      MakeGarbageCollected<CustomFontData>());
 }
 
-scoped_refptr<SimpleFontData>
-RemoteFontFaceSource::CreateLoadingFallbackFontData(
+const SimpleFontData* RemoteFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
   // This temporary font is not retained and should not be returned.
   FontCachePurgePreventer font_cache_purge_preventer;
-  scoped_refptr<SimpleFontData> temporary_font =
-      FontCache::Get().GetLastResortFallbackFont(font_description,
-                                                 kDoNotRetain);
+  const SimpleFontData* temporary_font =
+      FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
     return nullptr;
   }
-  scoped_refptr<CSSCustomFontData> css_font_data = CSSCustomFontData::Create(
+  CSSCustomFontData* css_font_data = MakeGarbageCollected<CSSCustomFontData>(
       this, period_ == kBlockPeriod ? CSSCustomFontData::kInvisibleFallback
                                     : CSSCustomFontData::kVisibleFallback);
-  return SimpleFontData::Create(temporary_font->PlatformData(), css_font_data);
+  return MakeGarbageCollected<SimpleFontData>(&temporary_font->PlatformData(),
+                                              css_font_data);
 }
 
 void RemoteFontFaceSource::BeginLoadIfNeeded() {
@@ -418,6 +397,9 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
   auto* font = To<FontResource>(GetResource());
   CHECK(font);
   if (font->StillNeedsLoad()) {
+    TRACE_EVENT("devtools.timeline", "BeginRemoteFontLoad", "id",
+                font->InspectorId(), "display",
+                face_->GetFontFace()->display());
     if (font->IsLowPriorityLoadingAllowedForRemoteFont()) {
       execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kIntervention,
@@ -458,6 +440,7 @@ void RemoteFontFaceSource::BeginLoadIfNeeded() {
 void RemoteFontFaceSource::Trace(Visitor* visitor) const {
   visitor->Trace(face_);
   visitor->Trace(font_selector_);
+  visitor->Trace(custom_font_data_);
   CSSFontFaceSource::Trace(visitor);
   FontResourceClient::Trace(visitor);
 }
@@ -558,7 +541,7 @@ RemoteFontFaceSource::FontLoadHistograms::DataSourceMetricsValue() {
     case kFromUnknown:
       return CacheHitMetrics::kMiss;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return CacheHitMetrics::kMiss;
 }
 

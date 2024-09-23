@@ -26,6 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="DisplayIdResult">
+  <int value="0" label="Error">Error calling EnumDisplayDevices</int>
+  <int value="1" label="Empty">DISPLAY_DEVICE data was empty</int>
+  <int value="2" label="Conflict">Display ID conflict detected</int>
+  <int value="3" label="Valid">Display ID was not empty and unique</int>
+</enum>
+
 <enum name="IsPinnedToTaskbarResult">
   <int value="0" label="Not pinned"/>
   <int value="1" label="Pinned"/>
@@ -98,6 +105,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="Error"/>
   <int value="1" label="Other"/>
   <int value="2" label="Unknown"/>
+</enum>
+
+<enum name="UsedDisplayIdFallback">
+  <int value="0" label="Did not use fallback">
+    Not missing DISPLAYCONFIG_PATH_INFO
+  </int>
+  <int value="1" label="Used fallback">Missing DISPLAYCONFIG_PATH_INFO</int>
 </enum>
 
 <enum name="WindowsPatchLevel">

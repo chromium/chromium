@@ -39,9 +39,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Disk error"/>
 </enum>
 
-<enum name="BooleanContainsMacros">
-  <int value="0" label="Does not contain macros"/>
-  <int value="1" label="Contains macros"/>
+<enum name="AsyncCheckTriggerForceRequestResult">
+  <int value="0" label="Classification is triggered"/>
+  <int value="1"
+      label="Classification is not triggered because the trigger models ping
+             is not skipped"/>
+  <int value="2"
+      label="Classification is not triggered because the URL is not forced by
+             real-time URL check"/>
 </enum>
 
 <enum name="BooleanForceRequest">
@@ -64,17 +69,29 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Is phishing"/>
 </enum>
 
-<enum name="BooleanZipHasAES">
-  <int value="0" label="Zip does not have AES"/>
-  <int value="1" label="Zip has AES"/>
-</enum>
-
 <enum name="CancelEphemeralWarningEvent">
   <int value="0" label="CancellationScheduled"/>
   <int value="1" label="CancellationTriggered"/>
   <int value="2" label="CancellationFailedDownloadNotFound"/>
   <int value="3" label="CancellationFailedDownloadNotEphemeral"/>
   <int value="4" label="CancellationSucceeded"/>
+</enum>
+
+<enum name="ClientSideAllowlistMatchResult">
+  <int value="0" label="No match"/>
+  <int value="1" label="CSD match"/>
+  <int value="2" label="High confidence match"/>
+  <int value="3" label="CSD and high confidence match"/>
+</enum>
+
+<enum name="ClientSideDetectionType">
+  <int value="0" label="CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED"/>
+  <int value="1" label="FORCE_REQUEST"/>
+  <int value="2" label="TRIGGER_MODELS"/>
+  <int value="3" label="NOTIFICATION_PERMISSION_PROMPT"/>
+  <int value="4" label="KEYBOARD_LOCK_REQUESTED"/>
+  <int value="5" label="POINTER_LOCK_REQUESTED"/>
+  <int value="6" label="VIBRATION_API"/>
 </enum>
 
 <enum name="ClientSidePhishingImageEmbeddingResult">
@@ -104,6 +121,17 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Term extraction failed"/>
   <int value="10" label="Visual extraction failed"/>
 </enum>
+
+<!-- LINT.IfChange(SafeBrowsingVerifyAppsEnabledResult) -->
+
+<enum name="SafeBrowsingVerifyAppsEnabledResult">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Request timed out"/>
+  <int value="3" label="Request failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/android/safe_browsing_api_handler_util.h:VerifyAppsEnabledResult) -->
 
 <enum name="SBClientDetectionClassifyThresholdsResult">
   <int value="0" label="Success"/>
@@ -168,10 +196,11 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="SENSITIVE_CONTENT_BLOCK"/>
   <int value="33" label="DEEP_SCANNED_SAFE"/>
   <int value="34" label="DEEP_SCAN_PROMPT"/>
-  <int value="35" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="35" label="BLOCKED_UNSUPPORTED_FILETYPE (deprecated)"/>
   <int value="36" label="ACCOUNT_COMPROMISE"/>
   <int value="37" label="LOCAL_DECRYPTION_PROMPT"/>
   <int value="38" label="LOCAL_DECRYPTION_FAILED"/>
+  <int value="39" label="IMMEDIATE_DEEP_SCAN"/>
 </enum>
 
 <enum name="SBClientDownloadCheckResult">
@@ -189,11 +218,13 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="SENSITIVE_CONTENT_BLOCK"/>
   <int value="12" label="DEEP_SCANNED_SAFE"/>
   <int value="13" label="PROMPT_FOR_SCANNING"/>
-  <int value="14" label="BLOCKED_UNSUPPORTED_FILETYPE"/>
+  <int value="14" label="BLOCKED_UNSUPPORTED_FILETYPE (deprecated)"/>
   <int value="15" label="DANGEROUS_ACCOUNT_COMPROMISE"/>
   <int value="16" label="DEEP_SCANNED_FAILED"/>
   <int value="17" label="PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>
   <int value="18" label="ASYNC_LOCAL_PASSWORD_SCANNING"/>
+  <int value="19" label="BLOCKED_SCAN_FAILED"/>
+  <int value="20" label="IMMEDIATE_DEEP_SCAN"/>
 </enum>
 
 <enum name="SBClientDownloadUserGestureFileTypeAttributes">
@@ -239,12 +270,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Scan failed"/>
   <int value="6" label="Scan deleted"/>
   <int value="7" label="Prompt accepted from chrome://downloads"/>
+  <int value="8" label="Incorrect password prompt shown"/>
 </enum>
 
 <enum name="SBDeepScanTriggers">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Advanced Protection Prompt"/>
+  <int value="1" label="Consumer prompt"/>
   <int value="2" label="Enterprise policy"/>
+  <int value="3" label="Encrypted archive prompt"/>
+  <int value="4" label="Immediate deep scan"/>
 </enum>
 
 <enum name="SBDeepScanType">
@@ -260,19 +294,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Phishing classifier was destructed"/>
   <int value="5"
       label="Scorer sent update and classifier is ready within timeout"/>
-</enum>
-
-<enum name="SevenZipResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Allocation failure"/>
-  <int value="3" label="CRC failure"/>
-  <int value="4" label="Memory mapping failure"/>
-  <int value="5" label="Malformed archive"/>
-  <int value="6" label="IO error"/>
-  <int value="7" label="Disk full"/>
-  <int value="8" label="No filename"/>
-  <int value="9" label="Unsupported feature in LZMA SDK"/>
 </enum>
 
 <enum name="TailoredWarningType">

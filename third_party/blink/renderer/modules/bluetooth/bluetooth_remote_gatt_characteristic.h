@@ -7,6 +7,8 @@
 
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
@@ -25,7 +27,6 @@ class BluetoothCharacteristicProperties;
 class BluetoothDevice;
 class ExceptionState;
 class ExecutionContext;
-class ScriptPromise;
 class ScriptState;
 
 // BluetoothRemoteGATTCharacteristic represents a GATT Characteristic, which is
@@ -75,23 +76,34 @@ class BluetoothRemoteGATTCharacteristic final
   String uuid() { return characteristic_->uuid; }
   BluetoothCharacteristicProperties* properties() { return properties_.Get(); }
   DOMDataView* value() const { return value_.Get(); }
-  ScriptPromise getDescriptor(ScriptState* script_state,
-                              const V8BluetoothDescriptorUUID* descriptor_uuid,
-                              ExceptionState& exception_state);
-  ScriptPromise getDescriptors(ScriptState*, ExceptionState&);
-  ScriptPromise getDescriptors(ScriptState* script_state,
-                               const V8BluetoothDescriptorUUID* descriptor_uuid,
-                               ExceptionState& exception_state);
-  ScriptPromise readValue(ScriptState*, ExceptionState&);
-  ScriptPromise writeValue(ScriptState*, const DOMArrayPiece&, ExceptionState&);
-  ScriptPromise writeValueWithResponse(ScriptState*,
-                                       const DOMArrayPiece&,
-                                       ExceptionState&);
-  ScriptPromise writeValueWithoutResponse(ScriptState*,
-                                          const DOMArrayPiece&,
-                                          ExceptionState&);
-  ScriptPromise startNotifications(ScriptState*, ExceptionState&);
-  ScriptPromise stopNotifications(ScriptState*, ExceptionState&);
+  ScriptPromise<BluetoothRemoteGATTDescriptor> getDescriptor(
+      ScriptState* script_state,
+      const V8BluetoothDescriptorUUID* descriptor_uuid,
+      ExceptionState& exception_state);
+  ScriptPromise<IDLSequence<BluetoothRemoteGATTDescriptor>> getDescriptors(
+      ScriptState*,
+      ExceptionState&);
+  ScriptPromise<IDLSequence<BluetoothRemoteGATTDescriptor>> getDescriptors(
+      ScriptState* script_state,
+      const V8BluetoothDescriptorUUID* descriptor_uuid,
+      ExceptionState& exception_state);
+  ScriptPromise<NotShared<DOMDataView>> readValue(ScriptState*,
+                                                  ExceptionState&);
+  ScriptPromise<IDLUndefined> writeValue(ScriptState*,
+                                         const DOMArrayPiece&,
+                                         ExceptionState&);
+  ScriptPromise<IDLUndefined> writeValueWithResponse(ScriptState*,
+                                                     const DOMArrayPiece&,
+                                                     ExceptionState&);
+  ScriptPromise<IDLUndefined> writeValueWithoutResponse(ScriptState*,
+                                                        const DOMArrayPiece&,
+                                                        ExceptionState&);
+  ScriptPromise<BluetoothRemoteGATTCharacteristic> startNotifications(
+      ScriptState*,
+      ExceptionState&);
+  ScriptPromise<BluetoothRemoteGATTCharacteristic> stopNotifications(
+      ScriptState*,
+      ExceptionState&);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(characteristicvaluechanged,
                                   kCharacteristicvaluechanged)
@@ -107,7 +119,7 @@ class BluetoothRemoteGATTCharacteristic final
   struct DeferredValueChange : public GarbageCollected<DeferredValueChange> {
     DeferredValueChange(Member<Event> event,
                         Member<DOMDataView> dom_data_view,
-                        Member<ScriptPromiseResolver> resolver)
+                        ScriptPromiseResolver<NotShared<DOMDataView>>* resolver)
         : event(event), dom_data_view(dom_data_view), resolver(resolver) {}
 
     // GarbageCollectedMixin:
@@ -115,7 +127,9 @@ class BluetoothRemoteGATTCharacteristic final
 
     Member<Event> event;  // Event to dispatch before resolving promise.
     Member<DOMDataView> dom_data_view;
-    Member<ScriptPromiseResolver> resolver;  // Possibly null.
+
+    // Possibly null.
+    Member<ScriptPromiseResolver<NotShared<DOMDataView>>> resolver;
   };
 
   BluetoothRemoteGATTServer* GetGatt() const {
@@ -123,35 +137,37 @@ class BluetoothRemoteGATTCharacteristic final
   }
   Bluetooth* GetBluetooth() const { return device_->GetBluetooth(); }
 
-  void ReadValueCallback(ScriptPromiseResolver*,
+  void ReadValueCallback(ScriptPromiseResolver<NotShared<DOMDataView>>*,
                          mojom::blink::WebBluetoothResult,
                          const std::optional<Vector<uint8_t>>& value);
-  void WriteValueCallback(ScriptPromiseResolver*,
+  void WriteValueCallback(ScriptPromiseResolver<IDLUndefined>*,
                           const Vector<uint8_t>& value,
                           mojom::blink::WebBluetoothResult);
 
   // Callback for startNotifictions/stopNotifications.
   // |started| is true if called as a result of startNotifictions() and
   // false if called as a result of stopNotifications().
-  void NotificationsCallback(ScriptPromiseResolver*,
-                             bool started,
-                             mojom::blink::WebBluetoothResult);
+  void NotificationsCallback(
+      ScriptPromiseResolver<BluetoothRemoteGATTCharacteristic>*,
+      bool started,
+      mojom::blink::WebBluetoothResult);
 
-  ScriptPromise WriteCharacteristicValue(ScriptState*,
-                                         const DOMArrayPiece& value,
-                                         mojom::blink::WebBluetoothWriteType,
-                                         ExceptionState&);
+  ScriptPromise<IDLUndefined> WriteCharacteristicValue(
+      ScriptState*,
+      const DOMArrayPiece& value,
+      mojom::blink::WebBluetoothWriteType,
+      ExceptionState&);
 
-  ScriptPromise GetDescriptorsImpl(ScriptState*,
-                                   ExceptionState&,
-                                   mojom::blink::WebBluetoothGATTQueryQuantity,
-                                   const String& descriptor_uuid = String());
+  void GetDescriptorsImpl(ScriptPromiseResolverBase*,
+                          ExceptionState&,
+                          mojom::blink::WebBluetoothGATTQueryQuantity,
+                          const String& descriptor_uuid = String());
 
   void GetDescriptorsCallback(
       const String& requested_descriptor_uuid,
       const String& characteristic_instance_id,
       mojom::blink::WebBluetoothGATTQueryQuantity,
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverBase*,
       mojom::blink::WebBluetoothResult,
       std::optional<Vector<mojom::blink::WebBluetoothRemoteGATTDescriptorPtr>>
           descriptors);

@@ -8,12 +8,13 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/public/browser/tts_utterance.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -108,7 +109,7 @@ gfx::FontList GetFontList(TypographyToken token) {
 const gfx::VectorIcon& GetResultTypeIcon(ResultType result_type) {
   switch (result_type) {
     case ResultType::kDefinitionResult:
-      return omnibox::kAnswerDictionaryIcon;
+      return chromeos::kDictionaryIcon;
     case ResultType::kTranslationResult:
       return omnibox::kAnswerTranslationIcon;
     case ResultType::kUnitConversionResult:
@@ -175,7 +176,7 @@ std::unique_ptr<views::FlexLayoutView> CreateHorizontalFlexLayoutView() {
 std::unique_ptr<views::Separator> CreateSeparatorView() {
   return views::Builder<views::Separator>()
       .SetOrientation(views::Separator::Orientation::kHorizontal)
-      .SetColorId(cros_tokens::kSeparatorColor)
+      .SetColorId(ui::kColorSeparator)
       .SetProperty(
           views::kMarginsKey,
           gfx::Insets::TLBR(kContentSingleSpacing, 0, kContentSingleSpacing, 0))

@@ -22,7 +22,7 @@
 #include "gpu/ipc/gl_in_process_context.h"
 #include "gpu/ipc/raster_in_process_context.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace viz {
 
@@ -203,6 +203,10 @@ unsigned int TestInProcessContextProvider::GetGrGLTextureFormat(
     SharedImageFormat format) const {
   return SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
       format, ContextCapabilities().angle_rgbx_internal_format);
+}
+
+GpuServiceImpl* TestInProcessContextProvider::GpuService() {
+  return TestGpuServiceHolder::GetInstance()->gpu_service();
 }
 
 }  // namespace viz

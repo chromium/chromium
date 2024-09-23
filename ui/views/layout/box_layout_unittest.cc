@@ -12,6 +12,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
@@ -125,14 +127,16 @@ TEST_F(BoxLayoutTest, Overflow) {
   // doesn't fit.
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(gfx::Rect(0, 0, 15, 10), v1->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), v2->bounds());
+  // BoxLayout will arrange the views in order, but because it exceeds the main
+  // view space. So the width is clipped to 0.
+  EXPECT_EQ(gfx::Rect(20, 0, 0, 10), v2->bounds());
 
   // Clipping of children should occur at the opposite end(s) to the main axis
   // alignment position.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kStart);
   HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(0, 0, 15, 10), v1->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), v2->bounds());
+  EXPECT_EQ(gfx::Rect(20, 0, 0, 10), v2->bounds());
 
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
   HandleHostLayoutManagerChanges();
@@ -152,7 +156,7 @@ TEST_F(BoxLayoutTest, NoSpace) {
   host_->AddChildView(childView);
   host_->SetBounds(0, 0, 10, 10);
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), childView->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, 0, 0), childView->bounds());
 }
 
 TEST_F(BoxLayoutTest, InvisibleChild) {
@@ -188,10 +192,12 @@ TEST_F(BoxLayoutTest, ChildIgnoredByLayout) {
 TEST_F(BoxLayoutTest, UseHeightForWidth) {
   BoxLayout* layout = host_->SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
+
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
   View* v1 = new StaticSizedView(gfx::Size(20, 10));
   host_->AddChildView(v1);
   ProportionallySizedView* v2 = new ProportionallySizedView(2);
-  v2->SetPreferredWidth(10);
   host_->AddChildView(v2);
   EXPECT_EQ(gfx::Size(20, 50), layout->GetPreferredSize(host_.get()));
 
@@ -204,10 +210,17 @@ TEST_F(BoxLayoutTest, UseHeightForWidth) {
 
   // Test without horizontal stretching of the views.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kEnd);
-  EXPECT_EQ(gfx::Size(20, 30).ToString(),
+  EXPECT_EQ(gfx::Size(20, 10).ToString(),
             layout->GetPreferredSize(host_.get()).ToString());
 
   host_->SetBounds(0, 0, 20, 30);
+  test::RunScheduledLayout(host_.get());
+  EXPECT_EQ(gfx::Rect(0, 0, 20, 10), v1->bounds());
+  EXPECT_EQ(gfx::Rect(20, 10, 0, 0), v2->bounds());
+
+  EXPECT_EQ(10, layout->GetPreferredHeightForWidth(host_.get(), 50));
+
+  v2->SetPreferredWidth(10);
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(gfx::Rect(0, 0, 20, 10), v1->bounds());
   EXPECT_EQ(gfx::Rect(10, 10, 10, 20), v2->bounds());
@@ -230,12 +243,17 @@ TEST_F(BoxLayoutTest, EmptyPreferredSize) {
     host_->SizeToPreferredSize();
     test::RunScheduledLayout(host_.get());
 
-    EXPECT_EQ(v2->GetPreferredSize().width(), host_->bounds().width()) << i;
-    EXPECT_EQ(v2->GetPreferredSize().height(), host_->bounds().height()) << i;
-    EXPECT_EQ(v1->GetPreferredSize().width(), v1->bounds().width()) << i;
-    EXPECT_EQ(v1->GetPreferredSize().height(), v1->bounds().height()) << i;
-    EXPECT_EQ(v2->GetPreferredSize().width(), v2->bounds().width()) << i;
-    EXPECT_EQ(v2->GetPreferredSize().height(), v2->bounds().height()) << i;
+    // During vertical layout, due to stretching caused by vertical axis
+    // alignment, the width of v1 is 10 instead of 0.
+    if (orientation == BoxLayout::Orientation::kHorizontal) {
+      EXPECT_EQ(v1->GetPreferredSize({}).width(), v1->bounds().width()) << i;
+      EXPECT_EQ(host_->bounds().height(), v1->bounds().height()) << i;
+    } else {
+      EXPECT_EQ(host_->bounds().width(), v1->bounds().width()) << i;
+      EXPECT_EQ(v1->GetPreferredSize({}).height(), v1->bounds().height()) << i;
+    }
+    EXPECT_EQ(v2->GetPreferredSize({}).width(), v2->bounds().width()) << i;
+    EXPECT_EQ(v2->GetPreferredSize({}).height(), v2->bounds().height()) << i;
   }
 }
 
@@ -428,12 +446,12 @@ TEST_F(BoxLayoutTest, CrossAxisAlignmentVerticalChildPreferredWidth) {
 
   // Default alignment should stretch child to full available width
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_width), v1->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, available_width, preferred_width), v1->bounds());
 
   // Stretch alignment should stretch child to full available width
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_width), v1->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, available_width, preferred_width), v1->bounds());
 
   // Child aligned to start should use preferred area
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStart);
@@ -465,25 +483,27 @@ TEST_F(BoxLayoutTest, CrossAxisAlignmentVerticalChildHugePreferredWidth) {
   v1->SetPreferredWidth(100);
 
   host_->SetBounds(0, 0, 60, 100);
+  const int available_height =
+      host_->height() - layout->inside_border_insets().height();
 
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_width), v1->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_height), v1->bounds());
 
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_width), v1->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_height), v1->bounds());
 
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStart);
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_width), v1->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_height), v1->bounds());
 
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_width), v1->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_height), v1->bounds());
 
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kEnd);
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_width), v1->bounds());
+  EXPECT_EQ(gfx::Rect(10, 10, available_width, available_height), v1->bounds());
 }
 
 TEST_F(BoxLayoutTest, FlexAll) {
@@ -653,8 +673,7 @@ TEST_F(BoxLayoutTest, FlexShrinkHorizontal) {
     layout->ClearFlexForView(v3);
     HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(10, 10, 20, 30).ToString(), v1->bounds().ToString());
-    // Conceptually this view is at 10, 40, 0, 0.
-    EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(), v2->bounds().ToString());
+    EXPECT_EQ(gfx::Rect(40, 10, 0, 30).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(50, 10, 25, 30).ToString(), v3->bounds().ToString());
   }
 }
@@ -848,7 +867,10 @@ TEST_F(BoxLayoutTest, UnbalancedMarginsUncollapsedHorizontal) {
   EXPECT_EQ(gfx::Size(59, 20), layout->GetPreferredSize(host_.get()));
   host_->SizeToPreferredSize();
   layout->Layout(host_.get());
-  EXPECT_EQ(gfx::Rect(5, 5, 20, 10), v1->bounds());
+  // The margin of v1 in the vertical direction is [5, 4], so the view center of
+  // v1 is at 10, the margin of v2 is [6, 3], and v2 is at 11. In order to
+  // ensure alignment. The center line of the entire view is 11.
+  EXPECT_EQ(gfx::Rect(5, 6, 20, 10), v1->bounds());
   EXPECT_EQ(gfx::Rect(33, 6, 20, 10), v2->bounds());
 }
 
@@ -868,7 +890,7 @@ TEST_F(BoxLayoutTest, UnbalancedMarginsCollapsedHorizontal) {
   EXPECT_EQ(gfx::Size(55, 20), layout->GetPreferredSize(host_.get()));
   host_->SizeToPreferredSize();
   layout->Layout(host_.get());
-  EXPECT_EQ(gfx::Rect(5, 5, 20, 10), v1->bounds());
+  EXPECT_EQ(gfx::Rect(5, 6, 20, 10), v1->bounds());
   EXPECT_EQ(gfx::Rect(29, 6, 20, 10), v2->bounds());
 }
 
@@ -1043,6 +1065,31 @@ TEST_F(BoxLayoutTest, MinimumChildSize) {
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(gfx::Rect(0, 0, 5, 20), v1->bounds());
   EXPECT_EQ(gfx::Rect(5, 0, 10, 20), v2->bounds());
+}
+
+// Regression test for crbug.com/331484014.
+// In a horizontal layout, a label's height should grow when it is wrapped into
+// multiple lines due to insufficient width.
+TEST_F(BoxLayoutTest, HeightIsAdjustedForInsufficientWidth) {
+  // A LayoutProvider must exist in scope in order to create a Label.
+  LayoutProvider layout_provider;
+
+  BoxLayout* layout = host_->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kHorizontal, gfx::Insets()));
+  Label* text = new Label(u"a very very very very very long text");
+  host_->AddChildView(text);
+  layout->SetFlexForView(text, 1);
+  const gfx::Size text_size = layout->GetPreferredSize(host_.get());
+
+  // Add a view next to the label. The label should wrap into multiple lines.
+  text->SetMultiLine(true);
+  StaticSizedView* v2 = new StaticSizedView(gfx::Size(20, text_size.height()));
+  host_->AddChildView(v2);
+
+  EXPECT_GT(
+      layout->GetPreferredSize(host_.get(), SizeBounds(text_size.width(), {}))
+          .height(),
+      text_size.height());
 }
 
 }  // namespace views

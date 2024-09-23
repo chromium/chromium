@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_STORE_ERROR_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_STORE_ERROR_H_
 
+#include <string_view>
+
 #include "base/types/expected.h"
 
 namespace client_certificates {
 
+// Captures the union of all possible Store errors throughout all main APIs. Do
+// not reorder values as they are used in histograms logging
+// (CertificateStoreError in enums.xml).
 enum class StoreError {
   kUnknown = 0,
   kInvalidIdentityName = 1,
@@ -27,6 +32,8 @@ enum class StoreError {
 
 template <class T>
 using StoreErrorOr = base::expected<T, StoreError>;
+
+std::string_view StoreErrorToString(StoreError error);
 
 }  // namespace client_certificates
 

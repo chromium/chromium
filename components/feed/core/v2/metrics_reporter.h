@@ -8,6 +8,7 @@
 #include <climits>
 #include <map>
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -45,8 +46,7 @@ class MetricsReporter {
     // subscribed.
     virtual void SubscribedWebFeedCount(
         base::OnceCallback<void(int)> callback) = 0;
-    virtual void RegisterFeedUserSettingsFieldTrial(
-        base::StringPiece group) = 0;
+    virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
     virtual ContentOrder GetContentOrder(
         const StreamType& stream_type) const = 0;
   };

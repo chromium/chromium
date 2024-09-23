@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "extensions/common/extension_id.h"
-#include "url/gurl.h"
 
 namespace base {
 class FilePath;

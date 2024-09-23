@@ -83,7 +83,7 @@ class MockServerProcess(object):
     def start(self):
         self.started = True
 
-    def stop(self, timeout_sec=0.0):
+    def stop(self, timeout_secs=0.0, kill_tree=True, send_sigterm=False):
         self.stopped = True
         return
 

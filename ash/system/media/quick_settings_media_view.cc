@@ -60,7 +60,8 @@ class MediaScrollView : public views::ScrollView,
   ~MediaScrollView() override = default;
 
   // views::ScrollView:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kMediaViewWidth, media_view_->GetMediaViewHeight());
   }
 
@@ -124,9 +125,6 @@ QuickSettingsMediaView::QuickSettingsMediaView(
   pagination_controller_ = std::make_unique<PaginationController>(
       &pagination_model_, PaginationController::SCROLL_AXIS_HORIZONTAL,
       base::BindRepeating([](ui::EventType) {}));
-
-  SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION));
 }
 
 QuickSettingsMediaView::~QuickSettingsMediaView() = default;
@@ -134,7 +132,8 @@ QuickSettingsMediaView::~QuickSettingsMediaView() = default;
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
 
-gfx::Size QuickSettingsMediaView::CalculatePreferredSize() const {
+gfx::Size QuickSettingsMediaView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kMediaViewWidth, GetMediaViewHeight());
 }
 
@@ -142,7 +141,7 @@ void QuickSettingsMediaView::Layout(PassKey) {
   media_scroll_view_->SetBounds(0, 0, kMediaViewWidth, GetMediaViewHeight());
 
   // Place the pagination dots view on top of the media view.
-  gfx::Size pagination_view_size = pagination_view_->CalculatePreferredSize();
+  gfx::Size pagination_view_size = pagination_view_->CalculatePreferredSize({});
   pagination_view_->SetBounds(
       (kMediaViewWidth - pagination_view_size.width()) / 2,
       kPaginationViewHeight, pagination_view_size.width(),
@@ -157,7 +156,7 @@ void QuickSettingsMediaView::OnGestureEvent(ui::GestureEvent* event) {
   // between media items.
   if (pagination_controller_->OnGestureEvent(*event, GetContentsBounds())) {
     event->SetHandled();
-  } else if (event->type() == ui::ET_GESTURE_TAP) {
+  } else if (event->type() == ui::EventType::kGestureTap) {
     // A tap gesture is handled in the same way as a mouse click event. The
     // controller does not need to know the item id for now so we do not need to
     // record it.

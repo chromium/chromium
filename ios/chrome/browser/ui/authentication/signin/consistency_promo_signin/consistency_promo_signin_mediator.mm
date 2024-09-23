@@ -243,7 +243,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       // Since sign-in UI blocks all other Chrome screens until it is dismissed
       // an account change event must come from the consistency sheet.
-      // TODO(crbug.com/1081764): Update if sign-in UI becomes non-blocking.
+      // TODO(crbug.com/40691525): Update if sign-in UI becomes non-blocking.
       DCHECK(self.signingIdentity);
       id<SystemIdentity> signedInIdentity =
           self.authenticationService->GetPrimaryIdentity(
@@ -274,7 +274,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   }
   id<SystemIdentity> signingIdentity = self.signingIdentity;
   if (!signingIdentity) {
-    // TODO(crbug.com/1204528): This case should not happen, but
+    // TODO(crbug.com/40764093): This case should not happen, but
     // `onAccountsInCookieUpdated:error:` can be called twice when there is an
     // error. Once this bug is fixed, this `if` should be replaced with
     // `DCHECK(!self.alertCoordinator)`.

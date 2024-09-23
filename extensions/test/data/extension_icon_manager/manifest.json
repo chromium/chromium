@@ -1,0 +1,13 @@
+{
+  "name": "An extension with multiple icon sizes",
+  "version": "1",
+  "manifest_version": 3,
+  "icons": {
+    "16": "16.png",
+    "24": "24.png",
+    "32": "32.png"
+    // Adding more icons here? Please ensure that we do not have
+    // a 48 x 48 icon (300% scale) here as that would mean losing
+    // test coverage in ExtensionIconManagerTest.ScaleFactors.
+  }
+}

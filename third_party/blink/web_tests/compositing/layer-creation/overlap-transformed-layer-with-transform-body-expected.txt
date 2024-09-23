@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow BODY",
+      "name": "LayoutBlockFlow BODY",
       "bounds": [784, 584],
       "transform": 1
     }

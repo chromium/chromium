@@ -15,9 +15,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
-#include "components/supervised_user/core/browser/proto_fetcher.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "net/base/backoff_entry.h"
 
@@ -30,16 +27,30 @@ class PrefService;
 class ChildAccountServiceFactory;
 
 namespace supervised_user {
-class PermissionRequestCreator;
 
 // This class handles detection of child accounts (on sign-in as well as on
 // browser restart), and triggers the appropriate behavior (e.g. enable the
 // supervised user experience, fetch information about the parent(s)).
 class ChildAccountService : public KeyedService,
-                            public signin::IdentityManager::Observer,
-                            public SupervisedUserService::Delegate {
+                            public signin::IdentityManager::Observer {
  public:
-  enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
+  enum class AuthState {
+    // The user is signed in to Chrome, and has both a valid refresh token and
+    // valid Google account cookies for the primary account.
+    AUTHENTICATED,
+
+    // The user is not signed in to Chrome.
+    NOT_AUTHENTICATED,
+
+    // The user is signed in to Chrome, but at least one of the refresh token
+    // and Google account cookie is not present or invalid.
+    PENDING,
+
+    // The user is in a state where, without user input, they may be about to
+    // transition between the three states above. Code should may choose to
+    // wait for a subsequent update to get the next stable state.
+    TRANSIENT_MOVING_TO_AUTHENTICATED,
+  };
 
   ChildAccountService(const ChildAccountService&) = delete;
   ChildAccountService& operator=(const ChildAccountService&) = delete;
@@ -48,23 +59,24 @@ class ChildAccountService : public KeyedService,
 
   void Init();
 
+  // KeyedService:
+  void Shutdown() override;
+
+#if BUILDFLAG(IS_CHROMEOS)
   // Responds whether at least one request for child status was successful.
   // And we got answer whether the account is a child account or not.
   bool IsChildAccountStatusKnown();
 
-  // KeyedService:
-  void Shutdown() override;
-
   void AddChildStatusReceivedCallback(base::OnceClosure callback);
+#endif
 
-  // Returns whether or not the user is authenticated on Google web properties
-  // based on the state of the cookie jar. Returns AuthState::PENDING if
-  // authentication state can't be determined at the moment.
-  AuthState GetGoogleAuthState();
+  // Returns the status of the user's Google authentication credentials (see
+  // `AuthState` comments for details).
+  AuthState GetGoogleAuthState() const;
 
-  // Subscribes to changes to the Google authentication state
-  // (see IsGoogleAuthenticated()). Can send a notification even if the
-  // authentication state has not changed.
+  // Subscribes to changes to the Google authentication state (see
+  // GetGoogleAuthState()). Can send a notification even if the authentication
+  // state has not changed.
   base::CallbackListSubscription ObserveGoogleAuthState(
       const base::RepeatingCallback<void()>& callback);
 
@@ -72,55 +84,46 @@ class ChildAccountService : public KeyedService,
   // this service.
   ChildAccountService(
       PrefService& user_prefs,
-      SupervisedUserService& supervised_user_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::RepeatingCallback<std::unique_ptr<PermissionRequestCreator>()>
-          permission_creator_callback,
       base::OnceCallback<void(bool)> check_user_child_status_callback,
       ListFamilyMembersService& list_family_members_service);
 
  private:
-  // SupervisedUserService::Delegate implementation.
-  void SetActive(bool active) override;
-
   // Sets whether the signed-in account is a supervised account.
   void SetSupervisionStatusAndNotifyObservers(
       bool is_subject_to_parental_controls);
+
+  // Updates whether Google SafeSearch should be forced.
+  void UpdateForceGoogleSafeSearch();
 
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
-
-  // IdentityManager::Observer implementation.
+  void OnRefreshTokenUpdatedForAccount(const CoreAccountInfo& account_info) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
-  bool active_{false};
+  void OnAuthStateUpdated();
 
-  // Enables or disables scheduled fetch of family members list.
-  const raw_ref<ListFamilyMembersService> list_family_members_service_;
-
-  // Subscription to binding between list_family_members_service_ and
-  // family_preferences_service_.
-  base::CallbackListSubscription set_family_members_subscription_;
+  // Subscription to set custodian preferences from successful fetch of
+  // ListFamilyMembersService.
+  base::CallbackListSubscription set_custodian_prefs_subscription_;
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   const raw_ref<PrefService> user_prefs_;
 
-  raw_ref<SupervisedUserService> supervised_user_service_;
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::RepeatingClosureList google_auth_state_observers_;
-
-  // Creates a new instance of a PermissionRequestCreator.
-  base::RepeatingCallback<std::unique_ptr<PermissionRequestCreator>()>
-      permission_creator_callback_;
 
   // Callback relevant on Chrome OS platform.
   // Asserts that a supervised user matches the child status of the primary

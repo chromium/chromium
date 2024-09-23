@@ -36,23 +36,23 @@ enum FileSystemHandleKind {
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=FileSystemAccessAPIExperimental
-    ] Promise<void> move(USVString new_entry_name);
+    ] Promise<undefined> move(USVString new_entry_name);
     [
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=FileSystemAccessAPIExperimental
-    ] Promise<void> move(FileSystemDirectoryHandle destination_directory);
+    ] Promise<undefined> move(FileSystemDirectoryHandle destination_directory);
     [
         CallWith=ScriptState,
         RaisesException,
         RuntimeEnabled=FileSystemAccessAPIExperimental
-    ] Promise<void> move(FileSystemDirectoryHandle destination_directory,
+    ] Promise<undefined> move(FileSystemDirectoryHandle destination_directory,
                          USVString new_entry_name);
     [
         CallWith=ScriptState,
         RaisesException,
         Measure
-    ] Promise<void> remove(optional FileSystemRemoveOptions options = {});
+    ] Promise<undefined> remove(optional FileSystemRemoveOptions options = {});
 
     [
         CallWith=ScriptState,

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "net/base/net_export.h"
 #include "net/base/upload_element_reader.h"
 
@@ -20,13 +21,12 @@ namespace net {
 // and is responsible for ensuring it outlives the UploadBytesElementReader.
 class NET_EXPORT UploadBytesElementReader : public UploadElementReader {
  public:
-  UploadBytesElementReader(const char* bytes, uint64_t length);
+  explicit UploadBytesElementReader(base::span<const uint8_t> bytes);
   UploadBytesElementReader(const UploadBytesElementReader&) = delete;
   UploadBytesElementReader& operator=(const UploadBytesElementReader&) = delete;
   ~UploadBytesElementReader() override;
 
-  const char* bytes() const { return bytes_; }
-  uint64_t length() const { return length_; }
+  base::span<const uint8_t> bytes() const { return bytes_; }
 
   // UploadElementReader overrides:
   const UploadBytesElementReader* AsBytesReader() const override;
@@ -39,8 +39,7 @@ class NET_EXPORT UploadBytesElementReader : public UploadElementReader {
            CompletionOnceCallback callback) override;
 
  private:
-  const char* const bytes_;
-  const uint64_t length_;
+  const base::span<const uint8_t> bytes_;
   uint64_t offset_ = 0;
 };
 

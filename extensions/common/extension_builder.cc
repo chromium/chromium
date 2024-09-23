@@ -23,8 +23,10 @@ constexpr char ExtensionBuilder::kServiceWorkerScriptFile[];
 struct ExtensionBuilder::ManifestData {
   Type type;
   std::string name;
-  std::vector<std::string> permissions;
-  std::vector<std::string> optional_permissions;
+  std::vector<std::string> api_permissions;
+  std::vector<std::string> optional_api_permissions;
+  std::vector<std::string> host_permissions;
+  std::vector<std::string> optional_host_permissions;
   std::optional<ActionInfo::Type> action;
   std::optional<BackgroundContext> background_context;
   std::optional<std::string> version;
@@ -38,10 +40,14 @@ struct ExtensionBuilder::ManifestData {
   std::optional<base::Value::Dict> extra;
 
   base::Value::Dict GetValue() const {
+    int fallback_manifest_version = type == Type::PLATFORM_APP ? 2 : 3;
+    int effective_manifest_version =
+        manifest_version.value_or(fallback_manifest_version);
     auto manifest =
         base::Value::Dict()
             .Set(manifest_keys::kName, name)
-            .Set(manifest_keys::kManifestVersion, manifest_version.value_or(2))
+            .Set(manifest_keys::kManifestVersion,
+                 manifest_version.value_or(fallback_manifest_version))
             .Set(manifest_keys::kVersion, version.value_or("0.1"))
             .Set(manifest_keys::kDescription, "some description");
 
@@ -57,20 +63,48 @@ struct ExtensionBuilder::ManifestData {
       }
     }
 
-    if (!permissions.empty()) {
-      base::Value::List permissions_builder;
-      for (const std::string& permission : permissions)
-        permissions_builder.Append(permission);
-      manifest.Set(manifest_keys::kPermissions, std::move(permissions_builder));
+    base::Value::List permissions_value;
+    base::Value::List optional_permissions_value;
+    base::Value::List host_permissions_value;
+    base::Value::List optional_host_permissions_value;
+
+    for (const auto& permission : api_permissions) {
+      permissions_value.Append(permission);
+    }
+    for (const auto& permission : optional_api_permissions) {
+      optional_permissions_value.Append(permission);
     }
 
-    if (!optional_permissions.empty()) {
-      base::Value::List permissions_builder;
-      for (const std::string& permission : optional_permissions) {
-        permissions_builder.Append(permission);
+    bool separate_host_permissions = effective_manifest_version >= 3;
+    for (const auto& permission : host_permissions) {
+      if (separate_host_permissions) {
+        host_permissions_value.Append(permission);
+      } else {
+        permissions_value.Append(permission);
       }
+    }
+    for (const auto& permission : optional_host_permissions) {
+      if (separate_host_permissions) {
+        optional_host_permissions_value.Append(permission);
+      } else {
+        optional_permissions_value.Append(permission);
+      }
+    }
+
+    if (!permissions_value.empty()) {
+      manifest.Set(manifest_keys::kPermissions, std::move(permissions_value));
+    }
+    if (!optional_permissions_value.empty()) {
       manifest.Set(manifest_keys::kOptionalPermissions,
-                   std::move(permissions_builder));
+                   std::move(optional_permissions_value));
+    }
+    if (!host_permissions_value.empty()) {
+      manifest.Set(manifest_keys::kHostPermissions,
+                   std::move(host_permissions_value));
+    }
+    if (!optional_host_permissions_value.empty()) {
+      manifest.Set(manifest_keys::kOptionalHostPermissions,
+                   std::move(optional_host_permissions_value));
     }
 
     if (action) {
@@ -182,33 +216,66 @@ base::Value ExtensionBuilder::BuildManifest() {
                                     : manifest_value_->Clone());
 }
 
-ExtensionBuilder& ExtensionBuilder::AddPermission(
+ExtensionBuilder& ExtensionBuilder::AddAPIPermission(
     const std::string& permission) {
   CHECK(manifest_data_);
-  manifest_data_->permissions.push_back(permission);
+  manifest_data_->api_permissions.push_back(permission);
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::AddPermissions(
+ExtensionBuilder& ExtensionBuilder::AddAPIPermissions(
     const std::vector<std::string>& permissions) {
   CHECK(manifest_data_);
-  manifest_data_->permissions.insert(manifest_data_->permissions.end(),
-                                     permissions.begin(), permissions.end());
+  manifest_data_->api_permissions.insert(manifest_data_->api_permissions.end(),
+                                         permissions.begin(),
+                                         permissions.end());
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::AddOptionalPermission(
+ExtensionBuilder& ExtensionBuilder::AddOptionalAPIPermission(
     const std::string& permission) {
   CHECK(manifest_data_);
-  manifest_data_->optional_permissions.push_back(permission);
+  manifest_data_->optional_api_permissions.push_back(permission);
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::AddOptionalPermissions(
+ExtensionBuilder& ExtensionBuilder::AddOptionalAPIPermissions(
     const std::vector<std::string>& permissions) {
   CHECK(manifest_data_);
-  manifest_data_->optional_permissions.insert(
-      manifest_data_->optional_permissions.end(), permissions.begin(),
+  manifest_data_->optional_api_permissions.insert(
+      manifest_data_->optional_api_permissions.end(), permissions.begin(),
+      permissions.end());
+  return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::AddHostPermission(
+    const std::string& permission) {
+  CHECK(manifest_data_);
+  manifest_data_->host_permissions.push_back(permission);
+  return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::AddHostPermissions(
+    const std::vector<std::string>& permissions) {
+  CHECK(manifest_data_);
+  manifest_data_->host_permissions.insert(
+      manifest_data_->host_permissions.end(), permissions.begin(),
+      permissions.end());
+  return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::AddOptionalHostPermission(
+    const std::string& permission) {
+  CHECK(manifest_data_);
+  manifest_data_->optional_host_permissions.push_back(permission);
+  return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::AddOptionalHostPermissions(
+    const std::vector<std::string>& permissions) {
+  CHECK(manifest_data_);
+  manifest_data_->optional_host_permissions.insert(
+      manifest_data_->optional_host_permissions.end(), permissions.begin(),
       permissions.end());
   return *this;
 }

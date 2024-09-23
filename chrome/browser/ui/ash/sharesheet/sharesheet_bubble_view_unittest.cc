@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,8 +31,10 @@
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -80,13 +81,14 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
 
     // Set up parent window for sharesheet to anchor to.
     auto* widget = new views::Widget();
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
     params.delegate = new TestWidgetDelegate();
     params.context = GetContext();
     widget->Init(std::move(params));
     widget->Show();
-    widget->GetNativeWindow()->SetProperty(aura::client::kShowStateKey,
-                                           ui::SHOW_STATE_FULLSCREEN);
+    widget->GetNativeWindow()->SetProperty(
+        aura::client::kShowStateKey, ui::mojom::WindowShowState::kFullscreen);
     gfx::Size window_size = widget->GetWindowBoundsInScreen().size();
     auto* content_view = new views::NativeViewHost();
     content_view->SetBounds(0, 0, window_size.width(), window_size.height());
@@ -340,7 +342,7 @@ TEST_F(SharesheetBubbleViewTest, TextPreviewOneFile) {
 
   auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
   ASSERT_EQ(title_text->GetText(), u"text.txt");
-  ASSERT_EQ(title_text->GetAccessibleName(), u"text.txt");
+  ASSERT_EQ(title_text->GetViewAccessibility().GetCachedName(), u"text.txt");
   CloseBubble();
 }
 
@@ -361,7 +363,8 @@ TEST_F(SharesheetBubbleViewTest, TextPreviewMultipleFiles) {
 
   auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
   ASSERT_EQ(title_text->GetText(), u"2 files");
-  ASSERT_EQ(title_text->GetAccessibleName(), u"2 files file.pdf, text.txt");
+  ASSERT_EQ(title_text->GetViewAccessibility().GetCachedName(),
+            u"2 files file.pdf, text.txt");
   CloseBubble();
 }
 

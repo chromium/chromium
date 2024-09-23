@@ -147,7 +147,7 @@ public class ContactDetailsSection extends SectionInformation {
             firstCompleteContactIndex = 0;
         }
 
-        // TODO(crbug.com/746062): Remove this once a journeyLogger is passed in tests.
+        // TODO(crbug.com/40530700): Remove this once a journeyLogger is passed in tests.
         if (journeyLogger != null) {
             // Log the number of suggested contact info.
             journeyLogger.setNumberOfSuggestionsShown(

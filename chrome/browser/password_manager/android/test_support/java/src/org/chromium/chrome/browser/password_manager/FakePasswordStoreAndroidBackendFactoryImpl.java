@@ -23,14 +23,4 @@ public class FakePasswordStoreAndroidBackendFactoryImpl extends PasswordStoreAnd
         }
         return mPasswordStoreAndroidBackend;
     }
-
-    /**
-     * Returns whether a down-stream implementation can be instantiated.
-     *
-     * @return True iff all preconditions for using the down-steam implementations are fulfilled.
-     */
-    @Override
-    public boolean canCreateBackend() {
-        return true;
-    }
 }

@@ -5,10 +5,10 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_WEB_RESOURCE_REQUEST_H_
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_WEB_RESOURCE_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/android/scoped_java_ref.h"
 
 namespace net {

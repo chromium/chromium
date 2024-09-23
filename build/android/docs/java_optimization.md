@@ -118,7 +118,7 @@ the name of the offending class).
     * Caching the result of `ClassNameJni.get()` in a member variable.
     * Passing a native wrapper method reference instead of using a lambda (i.e.
       `Jni.get()::methodName` vs. `() -> Jni.get.methodName()`).
-  * For more debugging info, add to `base/android/proguard/chromium_code.flags`:
+  * For more debugging info, add to `base/android/proguard/chromium_apk.flags`:
       ```
       -whyareyounotinlining class org.chromium.base.library_loader.LibraryPrefetcherJni {
           <init>();

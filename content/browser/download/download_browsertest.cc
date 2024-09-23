@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -192,24 +193,32 @@ class DownloadTestContentBrowserClient
     return base::FilePath();
   }
 
-  void RegisterNonNetworkNavigationURLLoaderFactories(
-      int frame_tree_node_id,
-      NonNetworkURLLoaderFactoryMap* factories) override {
-    if (!enable_register_non_network_url_loader_)
-      return;
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+  CreateNonNetworkNavigationURLLoaderFactory(
+      const std::string& scheme,
+      FrameTreeNodeId frame_tree_node_id) override {
+    if (!enable_register_non_network_url_loader_) {
+      return {};
+    }
 
 #if BUILDFLAG(IS_ANDROID)
-    mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        content_factory_remote;
-    content_url_loader_factory_->Clone(
-        content_factory_remote.InitWithNewPipeAndPassReceiver());
-    factories->emplace(url::kContentScheme, std::move(content_factory_remote));
+    if (scheme == url::kContentScheme) {
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          content_factory_remote;
+      content_url_loader_factory_->Clone(
+          content_factory_remote.InitWithNewPipeAndPassReceiver());
+      return content_factory_remote;
+    }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> file_factory_remote;
-    file_url_loader_factory_->Clone(
-        file_factory_remote.InitWithNewPipeAndPassReceiver());
-    factories->emplace(url::kFileScheme, std::move(file_factory_remote));
+    if (scheme == url::kFileScheme) {
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> file_factory_remote;
+      file_url_loader_factory_->Clone(
+          file_factory_remote.InitWithNewPipeAndPassReceiver());
+      return file_factory_remote;
+    }
+
+    return {};
   }
 
  private:
@@ -294,6 +303,7 @@ class DownloadFileWithDelay : public download::DownloadFileImpl {
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url,
+      const std::optional<url::Origin>& request_initiator,
       mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
       RenameCompletionCallback callback) override;
 
@@ -329,6 +339,7 @@ class DownloadFileWithDelayFactory : public download::DownloadFileFactory {
       const base::FilePath& default_download_directory,
       std::unique_ptr<download::InputStream> stream,
       uint32_t download_id,
+      const base::FilePath& duplicate_download_file_path,
       base::WeakPtr<download::DownloadDestinationObserver> observer) override;
 
   void AddRenameCallback(base::OnceClosure callback);
@@ -373,11 +384,13 @@ void DownloadFileWithDelay::RenameAndAnnotate(
     const std::string& client_guid,
     const GURL& source_url,
     const GURL& referrer_url,
+    const std::optional<url::Origin>& request_initiator,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     RenameCompletionCallback callback) {
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
   download::DownloadFileImpl::RenameAndAnnotate(
-      full_path, client_guid, source_url, referrer_url, mojo::NullRemote(),
+      full_path, client_guid, source_url, referrer_url, request_initiator,
+      mojo::NullRemote(),
       base::BindOnce(DownloadFileWithDelay::RenameCallbackWrapper, owner_,
                      std::move(callback)));
 }
@@ -404,6 +417,7 @@ download::DownloadFile* DownloadFileWithDelayFactory::CreateFile(
     const base::FilePath& default_download_directory,
     std::unique_ptr<download::InputStream> stream,
     uint32_t download_id,
+    const base::FilePath& duplicate_download_file_path,
     base::WeakPtr<download::DownloadDestinationObserver> observer) {
   return new DownloadFileWithDelay(
       std::move(save_info), default_download_directory, std::move(stream),
@@ -500,6 +514,7 @@ class CountingDownloadFileFactory : public download::DownloadFileFactory {
       const base::FilePath& default_downloads_directory,
       std::unique_ptr<download::InputStream> stream,
       uint32_t download_id,
+      const base::FilePath& duplicate_download_file_path,
       base::WeakPtr<download::DownloadDestinationObserver> observer) override {
     return new CountingDownloadFile(std::move(save_info),
                                     default_downloads_directory,
@@ -567,6 +582,7 @@ class ErrorInjectionDownloadFileFactory : public download::DownloadFileFactory {
       const base::FilePath& default_download_directory,
       std::unique_ptr<download::InputStream> stream,
       uint32_t download_id,
+      const base::FilePath& duplicate_download_file_path,
       base::WeakPtr<download::DownloadDestinationObserver> observer) override {
     ErrorInjectionDownloadFile* download_file = new ErrorInjectionDownloadFile(
         std::move(save_info), default_download_directory, std::move(stream),
@@ -997,7 +1013,6 @@ class DownloadContentTest : public ContentBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
     // Some tests are flaky due to slower loading interacting with deferred
     // commits so allow early input.
@@ -1174,7 +1189,8 @@ class DownloadContentTest : public ContentBrowserTest {
     pattern.resize(kBufferSize);
     data.resize(kBufferSize);
     for (int64_t offset = 0; offset < file_length;) {
-      int bytes_read = file.Read(offset, &data.front(), kBufferSize);
+      int bytes_read =
+          UNSAFE_TODO(file.Read(offset, &data.front(), kBufferSize));
       ASSERT_LT(0, bytes_read);
       ASSERT_GE(kBufferSize, bytes_read);
 
@@ -1333,8 +1349,9 @@ class ParallelDownloadTest : public DownloadContentTest {
               length - offset > kBufferSize ? kBufferSize : length - offset;
           output = TestDownloadHttpResponse::GetPatternBytes(
               parameters.pattern_generator_seed, offset, bytes_to_write);
-          EXPECT_EQ(bytes_to_write,
-                    file.Write(offset, output.data(), bytes_to_write));
+          EXPECT_EQ(
+              bytes_to_write,
+              UNSAFE_TODO(file.Write(offset, output.data(), bytes_to_write)));
           total_bytes += bytes_to_write;
           offset += bytes_to_write;
         }
@@ -3950,7 +3967,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
 
 // A file type that Blink can handle should not be downloaded if there are cross
 // origin redirects in the middle of the redirect chain.
-// TODO(https://crbug.com/1009913): Fix flakes on various bots and re-enable
+// TODO(crbug.com/40650833): Fix flakes on various bots and re-enable
 // this test.
 IN_PROC_BROWSER_TEST_F(DownloadContentTest,
                        DISABLED_DownloadAttributeSameOriginRedirectNavigation) {
@@ -5149,7 +5166,7 @@ IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardNonNavigationDownload) {
   EXPECT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Create a prerendered page.
-  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
   auto* render_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
   auto* web_contents = shell()->web_contents();

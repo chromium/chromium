@@ -64,11 +64,26 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
   // type only. Fall back to the main thread if it is not composite:replace.
   const AnimationEffect* effect = compositable_animation->effect();
 
-  // TODO(crbug.com/1429770): Paint worklet animations do not presently work
-  // with positive delays, so don't composite them for the moment. This should
-  // be removed when the issue is resolved.
+  // TODO(crbug.com/1429770): Implement positive delay fix for bgcolor.
   if (effect->SpecifiedTiming().start_delay.AsTimeValue().InSecondsF() > 0.f) {
-    return nullptr;
+    if (property.PropertyID() == CSSPropertyID::kClipPath) {
+      // TODO(crbug.com/365481208): When clip-path: none, the clip path paint
+      // worklet won't be painted. This results in a composited animation with
+      // no associated paint worklet. This prevents that from happening by
+      // forcing these animations to be downgraded to main thread, however this
+      // solution is far from ideal, and introduces complexity into an already
+      // complex state machine. This should be removed once a better solution
+      // is found to clip-path: none during delays.
+      if (!element->GetLayoutObject()->StyleRef().HasClipPath()) {
+        // Set the animation to kNotComposited so that when the animation begins
+        // the paint worklet is not painted.
+        element->GetElementAnimations()->SetCompositedClipPathStatus(
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+        return nullptr;
+      }
+    } else {
+      return nullptr;
+    }
   }
 
   DCHECK(effect->IsKeyframeEffect());
@@ -93,6 +108,23 @@ bool NativeCssPaintDefinition::DefaultValueFilter(
     const CSSValue* value,
     const InterpolableValue* interpolable_value) {
   return value || interpolable_value;
+}
+
+std::optional<double> NativeCssPaintDefinition::Progress(
+    const std::optional<double>& main_thread_progress,
+    const CompositorPaintWorkletJob::AnimatedPropertyValues&
+        animated_property_values) {
+  std::optional<double> progress = main_thread_progress;
+
+  // Override the progress from the main thread if the animation has been
+  // started on the compositor.
+  if (!animated_property_values.empty()) {
+    DCHECK_EQ(animated_property_values.size(), 1u);
+    const auto& entry = animated_property_values.begin();
+    progress = entry->second.float_value.value();
+  }
+
+  return progress;
 }
 
 }  // namespace blink

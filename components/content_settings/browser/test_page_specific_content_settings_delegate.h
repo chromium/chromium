@@ -27,14 +27,15 @@ class TestPageSpecificContentSettingsDelegate
   void SetDefaultRendererContentSettingRules(
       content::RenderFrameHost* rfh,
       RendererContentSettingRules* rules) override;
-  browsing_data::CookieHelper::IsDeletionDisabledCallback
-  GetIsDeletionDisabledCallback() override;
   PageSpecificContentSettings::MicrophoneCameraState GetMicrophoneCameraState()
       override;
   content::WebContents* MaybeGetSyncedWebContentsForPictureInPicture(
       content::WebContents* web_contents) override;
   void OnContentAllowed(ContentSettingsType type) override;
   void OnContentBlocked(ContentSettingsType type) override;
+  bool IsBlockedOnSystemLevel(ContentSettingsType type) override;
+  bool IsFrameAllowlistedForJavaScript(
+      content::RenderFrameHost* render_frame_host) override;
 
  private:
   raw_ptr<PrefService> prefs_;

@@ -5,6 +5,7 @@
 #include "remoting/host/desktop_session_win.h"
 
 #include <objbase.h>
+
 #include <sddl.h>
 #include <wrl/client.h>
 

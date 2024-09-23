@@ -11,12 +11,14 @@ import argparse
 import datetime
 import json
 import os
+import pathlib
 import random
 import re
 import shutil
 import subprocess
 import tempfile
 import time
+import sys
 import webbrowser
 
 from chrome_telemetry_build import chromium_config
@@ -28,9 +30,13 @@ from core.services import request
 
 path_util.AddTelemetryToPath()
 from telemetry import record_wpr
+from telemetry.wpr import archive_info
+from telemetry.internal.browser import browser_finder
+from telemetry.internal.browser import browser_options
+from telemetry.internal.util import binary_manager as telemetry_binary_manager
 
 import py_utils
-from py_utils import binary_manager
+from py_utils import binary_manager, cloud_storage
 
 
 SRC_ROOT = os.path.abspath(
@@ -48,6 +54,7 @@ MISSING_RESOURCE_RE = re.compile(
     r'of 404 \(\) ([^\s]+)')
 TELEMETRY_BIN_DEPS_CONFIG = os.path.join(
     path_util.GetTelemetryDir(), 'telemetry', 'binary_dependencies.json')
+PY_EXECUTABLE = [sys.executable]
 
 
 def _GetBranchName():
@@ -202,6 +209,7 @@ def _PrintRunInfo(out_file, chrome_log_file=False, results_details=True):
 
 class WprUpdater(object):
   def __init__(self, args):
+    self._ValidateArguments(args)
     self.story = args.story
     self.bss = args.bss
     # TODO(sergiyb): Implement a method that auto-detects a single connected
@@ -216,6 +224,10 @@ class WprUpdater(object):
     self.wpr_go_bin = None
 
     self._LoadArchiveInfo()
+
+  def _ValidateArguments(self, args):
+    if not args.story:
+      raise ValueError('--story is required!')
 
   def _LoadArchiveInfo(self):
     config = chromium_config.GetDefaultChromiumConfig()
@@ -385,8 +397,8 @@ class WprUpdater(object):
 
   def _GetTargetFromConfiguration(self, configuration):
     """Returns the target that should be used for a Pinpoint job."""
-    if configuration == 'android-pixel2-perf':
-      return 'performance_test_suite_android_clank_monochrome_64_32_bundle'
+    if configuration == 'android-pixel6-perf':
+      return 'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle'
     if configuration in ('linux-perf', 'win-10-perf',
                          'mac-10_12_laptop_low_end-perf'):
       return 'performance_test_suite'
@@ -518,7 +530,7 @@ class WprUpdater(object):
       if self._IsDesktop():
         configs = ['linux-perf', 'win-10-perf', 'mac-10_12_laptop_low_end-perf']
       else:
-        configs = ['android-pixel2-perf']
+        configs = ['android-pixel6-perf']
     for config in configs:
       job_url = self._StartPinpointJob(config)
       if not job_url:
@@ -681,16 +693,183 @@ class WprUpdater(object):
         'wait for LGTM and land the created CL.' % self.story)
 
 
+class CrossbenchWprUpdater(object):
+  """This class helps to update WPR archive files for the Crossbench tool.
+
+  Currently it supports `android-trichrome-chrome-google-64-32-bundle` browser
+  type only. The assumption is a single Android device is attached to the
+  machine, and the device is connected to the network.
+  """
+  _CB_TOOL = os.path.join(SRC_ROOT, 'third_party', 'crossbench', 'cb.py')
+  _BUCKET = cloud_storage.PARTNER_BUCKET
+  _CHROME_BROWSER = '--browser=%s'
+  _DEFAULT_BROWSER = 'android-trichrome-chrome-google-64-32-bundle'
+
+  def __init__(self, args):
+    self.story = args.story
+    self.bss = args.bss
+    self.device_id = args.device_id or 'adb'
+    self.repeat = args.repeat
+    self.binary = args.binary
+    self.bug_id = args.bug_id
+    self.reviewers = args.reviewers or DEFAULT_REVIEWERS
+    self.wpr_go_bin = None
+    self.cb_wprgo_file = args.cb_wprgo_file
+
+    self._SetupOutput(args)
+    self._LoadArchiveInfo()
+    self._find_browser(self._DEFAULT_BROWSER)
+
+  def _SetupOutput(self, args):
+    timestamp = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+    self.output_dir = os.path.join(args.output_dir or tempfile.mkdtemp(),
+                                   timestamp)
+    if os.path.exists(self.output_dir):
+      raise FileExistsError(f'{self.output_dir} already exists!')
+    pathlib.Path(self.output_dir).mkdir(parents=True)
+
+  def _LoadArchiveInfo(self):
+    self.wpr_archive_info = archive_info.WprArchiveInfo.FromFile(
+        str(self.ArchiveFilePath(self.bss)), self._BUCKET)
+
+  def _find_browser(self, browser_arg):
+    options = browser_options.BrowserFinderOptions()
+    options.chrome_root = pathlib.Path(SRC_ROOT)
+    parser = options.CreateParser()
+    telemetry_binary_manager.InitDependencyManager(None)
+    parser.parse_args([self._CHROME_BROWSER % browser_arg])
+    # Finding the browser package and installing the required dependencies.
+    possible_browser = browser_finder.FindBrowser(options)
+    if not possible_browser:
+      raise ValueError(f'Unable to find Chrome browser of type: {browser_arg}')
+    self.browser = possible_browser.settings.package
+
+  def AutoRun(self):
+    story_msg = f'the {self.story} in ' if self.story else ''
+    if not cli_helpers.Ask(
+        f'This script generates archive file for {story_msg} the '
+        f'{self.bss} benchmark. It will generate a commit in your current '
+        'branch. If you need to create a new branch or have uncommitted '
+        'changes, please stop the script and create a fresh branch. Do '
+        'you want to continue?',
+        default='no'):
+      return
+    cb_wprgo = self.RecordWpr()
+    self.ReplayWpr(cb_wprgo)
+    if not cli_helpers.Ask(
+        f'The {cb_wprgo} file has been generated and replayed. Please '
+        f'see the Crossbench log file in {self.output_dir}. Are you sure '
+        'to upload the new archive file to the cloud?',
+        default='no'):
+      return
+    if not self.UploadWpr(cb_wprgo):
+      cli_helpers.Error(f'Unabled to upload {cb_wprgo} to the cloud!')
+      return
+    cli_helpers.Comment(
+        'Thank you, you have successfully updated the archive file. Please '
+        'run `git status` to review the chagnes, upload the CL and send it to '
+        f'{self.reviewers} for reviewing.')
+
+  def LiveRun(self):
+    cb_output_dir = os.path.join(self.output_dir, 'cb_live')
+    command = self._GenerateCommandList([], cb_output_dir)
+    self._CheckLog(command, log_name='live')
+
+  def RecordWpr(self):
+    cli_helpers.Step(f'RECORD WPR: {self.bss}')
+    cb_output_dir = os.path.join(self.output_dir, 'cb_record')
+    command = self._GenerateCommandList(['--probe=wpr'], cb_output_dir)
+    self._CheckLog(command, log_name='record')
+    cb_wprgo = os.path.join(cb_output_dir, 'archive.wprgo')
+    cli_helpers.Info(f'WPRGO acrhive file: {cb_wprgo}')
+    return cb_wprgo
+
+  def ReplayWpr(self, cb_wprgo=None):
+    cb_wprgo = cb_wprgo or self.cb_wprgo_file
+    if not os.path.exists(cb_wprgo):
+      raise FileNotFoundError(f'{cb_wprgo} not found!')
+    cb_output_dir = os.path.join(self.output_dir, 'cb_replay')
+    cli_helpers.Step(f'REPLAY WPR: {cb_wprgo}')
+    network = [f'--network={{type:"wpr", path:"{cb_wprgo}"}}']
+    command = self._GenerateCommandList(network, cb_output_dir)
+    self._CheckLog(command, log_name='replay')
+
+  def UploadWpr(self, cb_wprgo=None):
+    cb_wprgo = cb_wprgo or self.cb_wprgo_file
+    if not os.path.exists(cb_wprgo):
+      raise FileNotFoundError(f'{cb_wprgo} not found!')
+    cli_helpers.Step(f'UPLOAD WPR: {cb_wprgo}')
+    archive = self._GetDataWprArchivePath()
+    self._CopyTempWprgoToData(cb_wprgo, archive)
+    _UploadArchiveToGoogleStorage(archive)
+    return _GitAddArtifactHash(archive)
+
+  def UploadCL(self):
+    raise NotImplementedError()
+
+  def StartPinpointJobs(self):
+    raise NotImplementedError()
+
+  def Cleanup(self):
+    pass
+
+  @staticmethod
+  def ArchiveFilePath(benchmark_name):
+    return os.path.join(DATA_DIR, f'crossbench_android_{benchmark_name}.json')
+
+  def _CheckLog(self, command, log_name):
+    log_path = os.path.join(self.output_dir, f'{log_name}.log')
+    cli_helpers.CheckLog(command, log_path=log_path, env=_PrepareEnv())
+    cli_helpers.Info(f'Stdout/Stderr Log: {log_path}')
+    return log_path
+
+  def _GenerateCommandList(self, args=None, cb_output_dir=None):
+    args = args or []
+    cb_output_dir = cb_output_dir or self.output_dir
+    command = PY_EXECUTABLE + [
+        f'{self._CB_TOOL}',
+        self.bss,
+        '--repeat=1',
+        f'--browser={self.device_id}:{self.browser}',
+        '--verbose',
+        '--debug',
+        '--no-symlinks',
+        f'--out-dir={cb_output_dir}',
+    ] + args
+    if self.story:
+      command += [f'--story={self.story}']
+    return command
+
+  def _GetDataWprArchivePath(self):
+    """Gets the data archive file name by parsing the JSON story config."""
+    archives = self.wpr_archive_info.data['archives']
+    archive = None
+    if self.story:
+      archive = archives.get(self.story)
+    elif archives and len(archives.keys()) == 1:
+      archive = next(iter(archives.values()))
+    if not archive:
+      raise ValueError('Either --story is required or it was not found!')
+    archive_name = next(iter(archive.values()))
+    return os.path.join(DATA_DIR, archive_name)
+
+  def _CopyTempWprgoToData(self, src_path, des_path):
+    """Copies the archive file to the `DATA_DIR` in the repository."""
+    if os.path.exists(des_path):
+      os.remove(des_path)
+    shutil.copy2(src_path, des_path)
+
+
 def Main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument('-s',
                       '--story',
                       dest='story',
-                      required=True,
+                      required=False,
                       help='Story to be recorded, replayed or uploaded. '
-                           'If you are recording a system_health benchmark, '
-                           'use desktop_system_health_story_set or '
-                           'mobile_system_health_story_set')
+                      'If you are recording a system_health benchmark, '
+                      'use desktop_system_health_story_set or '
+                      'mobile_system_health_story_set')
   parser.add_argument(
       '-bss',
       '--benchmark-or-story-set',
@@ -716,6 +895,27 @@ def Main(argv):
       '--binary', default=None,
       help='Path to the Chromium/Chrome binary relative to output directory. '
            'Defaults to default Chrome browser installed if not specified.')
+  parser.add_argument('-cb',
+                      '--crossbench',
+                      action='store_true',
+                      dest='is_cb',
+                      default=False,
+                      help='Whether to use the Crossbench tool.')
+  parser.add_argument(
+      '--out',
+      '--out-dir',
+      '--output-dir',
+      dest='output_dir',
+      default=None,
+      help='Path to generate log and archive files for Crossbench tool. '
+      'Defaults to generate a random folder in the system temp folder.')
+  parser.add_argument(
+      '--cb-wprgo',
+      '--cb-wprgo-file',
+      dest='cb_wprgo_file',
+      default=None,
+      help='Path to the target Crossbench WPRGO file.'
+      'Defaults to generate `archive.wprgo` file in the output folder.')
 
   subparsers = parser.add_subparsers(
       title='Mode in which to run this script', dest='command')
@@ -731,7 +931,10 @@ def Main(argv):
 
   args = parser.parse_args(argv)
 
-  updater = WprUpdater(args)
+  if args.is_cb:
+    updater = CrossbenchWprUpdater(args)
+  else:
+    updater = WprUpdater(args)
   try:
     if args.command == 'auto':
       _EnsureEditor()

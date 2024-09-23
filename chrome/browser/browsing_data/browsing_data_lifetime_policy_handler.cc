@@ -94,7 +94,7 @@ void BrowsingDataLifetimePolicyHandler::ApplyPolicySettings(
 void BrowsingDataLifetimePolicyHandler::PrepareForDisplaying(
     policy::PolicyMap* policies) const {
   policy::PolicyMap::Entry* entry = policies->GetMutable(policy_name());
-  if (!entry || forced_disabled_sync_types_.Size() == 0) {
+  if (!entry || forced_disabled_sync_types_.empty()) {
     return;
   }
 

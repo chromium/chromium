@@ -1,0 +1,20 @@
+<style include="healthd-internals-shared"></style>
+<cr-dialog id="dialog">
+  <div slot="title">Settings in healthd-internals</div>
+  <div slot="body">
+    <healthd-internals-config-slider id="uiUpdateIntervalSlider">
+    </healthd-internals-config-slider>
+    <healthd-internals-config-slider id="dataPollingCycleSlider">
+    </healthd-internals-config-slider>
+    <healthd-internals-config-slider id="dataRetentionDurationSlider">
+    </healthd-internals-config-slider>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClicked">
+      Cancel
+    </cr-button>
+    <cr-button class="action-button" on-click="onConfirmButtonClick">
+      Confirm
+    </cr-button>
+  </div>
+</cr-dialog>

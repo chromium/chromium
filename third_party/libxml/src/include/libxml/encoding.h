@@ -167,6 +167,7 @@ XMLPUBFUN int
 					 xmlCharEncodingHandlerPtr *out);
 XMLPUBFUN int
 	xmlOpenCharEncodingHandler	(const char *name,
+					 int output,
 					 xmlCharEncodingHandlerPtr *out);
 XMLPUBFUN xmlCharEncodingHandlerPtr
 	xmlGetCharEncodingHandler	(xmlCharEncoding enc);
@@ -201,7 +202,9 @@ XMLPUBFUN xmlCharEncoding
 	xmlDetectCharEncoding		(const unsigned char *in,
 					 int len);
 
+/** DOC_DISABLE */
 struct _xmlBuffer;
+/** DOC_ENABLE */
 XMLPUBFUN int
 	xmlCharEncOutFunc		(xmlCharEncodingHandler *handler,
 					 struct _xmlBuffer *out,

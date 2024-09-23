@@ -24,11 +24,9 @@ Parcel::Parcel(SequenceNumber sequence_number)
     : sequence_number_(sequence_number) {}
 
 Parcel::~Parcel() {
-  if (objects_) {
-    for (Ref<APIObject>& object : objects_->storage) {
-      if (object) {
-        object->Close();
-      }
+  for (Ref<APIObject>& object : objects_.storage) {
+    if (object) {
+      object->Close();
     }
   }
 }
@@ -100,10 +98,8 @@ bool Parcel::AdoptDataFragment(Ref<NodeLinkMemory> memory,
 }
 
 void Parcel::SetObjects(std::vector<Ref<APIObject>> objects) {
-  ABSL_ASSERT(!objects_);
-  objects_ = std::make_unique<ObjectStorageWithView>();
-  objects_->storage = std::move(objects);
-  objects_->view = absl::MakeSpan(objects_->storage);
+  objects_.storage = std::move(objects);
+  objects_.view = absl::MakeSpan(objects_.storage);
 }
 
 void Parcel::CommitData(size_t num_bytes) {
@@ -135,19 +131,14 @@ void Parcel::ReleaseDataFragment() {
 }
 
 void Parcel::ConsumeHandles(absl::Span<IpczHandle> out_handles) {
-  absl::Span<Ref<APIObject>> objects;
-  if (objects_) {
-    objects = objects_->view;
-  }
+  absl::Span<Ref<APIObject>> objects = objects_.view;
   ABSL_ASSERT(out_handles.size() <= objects.size());
 
   for (size_t i = 0; i < out_handles.size(); ++i) {
     out_handles[i] = APIObject::ReleaseAsHandle(std::move(objects[i]));
   }
 
-  if (objects_) {
-    objects_->view.remove_prefix(out_handles.size());
-  }
+  objects_.view.remove_prefix(out_handles.size());
 }
 
 std::string Parcel::Describe() const {

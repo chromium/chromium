@@ -7,6 +7,7 @@ import * as AcceleratorTypes from 'chrome://resources/mojo/ui/base/accelerators/
 
 import * as AcceleratorConfigurationTypes from '../mojom-webui/accelerator_configuration.mojom-webui.js';
 import * as AcceleratorInfoTypes from '../mojom-webui/accelerator_info.mojom-webui.js';
+import * as MetaKeyTypes from '../mojom-webui/meta_key.mojom-webui.js';
 import {SearchHandler, SearchHandlerInterface, SearchResult, SearchResultsAvailabilityObserverRemote} from '../mojom-webui/search.mojom-webui.js';
 import {AcceleratorConfigurationProviderInterface, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
@@ -14,9 +15,6 @@ import {AcceleratorConfigurationProviderInterface, AcceleratorResultData, Accele
 /**
  * @fileoverview
  * Type aliases for the mojo API.
- *
- * TODO(zentaro): When the fake API is replaced by mojo these can be
- * re-aliased to the corresponding mojo types, or replaced by them.
  */
 
 /**
@@ -29,6 +27,7 @@ export enum Modifier {
   CONTROL = 1 << 2,
   ALT = 1 << 3,
   COMMAND = 1 << 4,
+  FN_KEY = 1 << 5,
 }
 
 /**
@@ -85,6 +84,14 @@ export const AcceleratorConfigResult =
     AcceleratorConfigurationTypes.AcceleratorConfigResult;
 
 /**
+ * Enumeration of meta key denoting all the possible options deducable from
+ * the users keyboard. Used to show the correct key to the user in the settings
+ * UI.
+ */
+export type MetaKey = MetaKeyTypes.MetaKey;
+export const MetaKey = MetaKeyTypes.MetaKey;
+
+/**
  * Type alias for Accelerator.
  *
  * The Pick utility type is used here because only `keyCode`, `modifiers`, and
@@ -113,12 +120,13 @@ export type StandardAcceleratorInfo =
       },
     };
 
-export type TextAcceleratorInfo =
-    Omit<AcceleratorInfoTypes.AcceleratorInfo, 'layoutProperties'>&{
-      layoutProperties: {
-        textAccelerator: {parts: AcceleratorInfoTypes.TextAcceleratorPart[]},
-      },
-    };
+export type TextAcceleratorInfo = Omit<
+    AcceleratorInfoTypes.AcceleratorInfo,
+    'layoutProperties'|'acceleratorLocked'>&{
+  layoutProperties: {
+    textAccelerator: {parts: AcceleratorInfoTypes.TextAcceleratorPart[]},
+  },
+};
 
 export type AcceleratorInfo = TextAcceleratorInfo|StandardAcceleratorInfo;
 
@@ -210,7 +218,6 @@ export interface ShortcutSearchHandlerInterface extends SearchHandlerInterface {
 
 /**
  * Type alias for the ShortcutProviderInterface.
- * TODO(zentaro): Replace with a real mojo type when implemented.
  */
 export interface ShortcutProviderInterface extends
     AcceleratorConfigurationProviderInterface {
@@ -219,7 +226,7 @@ export interface ShortcutProviderInterface extends
   getDefaultAcceleratorsForId(action: number):
       Promise<{accelerators: Accelerator[]}>;
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}>;
-  hasLauncherButton(): Promise<{hasLauncherButton: boolean}>;
+  getMetaKeyToDisplay(): Promise<{metaKey: MetaKey}>;
   addAccelerator(
       source: AcceleratorSource, action: number,
       accelerator: Accelerator): Promise<{result: AcceleratorResultData}>;

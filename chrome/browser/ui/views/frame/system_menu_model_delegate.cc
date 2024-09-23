@@ -56,7 +56,7 @@ bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
 }
 
 bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bool is_maximized = browser_->window()->IsMaximized();
@@ -97,10 +97,10 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
     DCHECK(trs);
     trs->LoadTabsFromLastSession();
     if (!trs->entries().empty()) {
-      if (trs->entries().front()->type == sessions::TabRestoreService::WINDOW) {
+      if (trs->entries().front()->type == sessions::tab_restore::Type::WINDOW) {
         string_id = IDS_REOPEN_WINDOW;
       } else if (trs->entries().front()->type ==
-                 sessions::TabRestoreService::GROUP) {
+                 sessions::tab_restore::Type::GROUP) {
         string_id = IDS_REOPEN_GROUP;
       }
     }

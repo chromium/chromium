@@ -51,8 +51,9 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               (const std::vector<base::FilePath>& file_paths,
                holding_space_metrics::EventSource event_source),
               (override));
+  MOCK_METHOD(void, RefreshSuggestions, (), (override));
   MOCK_METHOD(void,
-              RemoveFileSuggestions,
+              RemoveSuggestions,
               (const std::vector<base::FilePath>& absolute_file_paths),
               (override));
   MOCK_METHOD(void,

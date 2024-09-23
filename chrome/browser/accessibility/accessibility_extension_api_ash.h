@@ -142,6 +142,16 @@ class AccessibilityPrivateInstallFaceGazeAssetsFunction
           assets);
 };
 
+// API function that sends gesture and confidence information for a detected
+// gesture in FaceGaze.
+class AccessibilityPrivateSendGestureInfoToSettingsFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateSendGestureInfoToSettingsFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.sendGestureInfoToSettings",
+                             ACCESSIBILITY_PRIVATE_SENDGESTUREINFOTOSETTINGS)
+};
+
 // API function that initiates a Pumpkin download for Dictation and responds
 // with the file bytes via a callback.
 class AccessibilityPrivateInstallPumpkinForDictationFunction
@@ -220,6 +230,14 @@ class AccessibilityPrivateSendSyntheticMouseEventFunction
                              ACCESSIBILITY_PRIVATE_SENDSYNTHETICMOUSEEVENT)
 };
 
+// API function that scrolls at a point in the specified direction.
+class AccessibilityPrivateScrollAtPointFunction : public ExtensionFunction {
+  ~AccessibilityPrivateScrollAtPointFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.scrollAtPoint",
+                             ACCESSIBILITY_PRIVATE_SCROLLATPOINT)
+};
+
 // API function that sets the location of the accessibility focus ring.
 class AccessibilityPrivateSetFocusRingsFunction : public ExtensionFunction {
   ~AccessibilityPrivateSetFocusRingsFunction() override {}
@@ -234,6 +252,14 @@ class AccessibilityPrivateSetHighlightsFunction : public ExtensionFunction {
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setHighlights",
                              ACCESSIBILITY_PRIVATE_SETHIGHLIGHTS)
+};
+
+// API function that is called when the ChromeVox focus changes.
+class AccessibilityPrivateSetChromeVoxFocusFunction : public ExtensionFunction {
+  ~AccessibilityPrivateSetChromeVoxFocusFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setChromeVoxFocus",
+                             ACCESSIBILITY_PRIVATE_SETCHROMEVOXFOCUS)
 };
 
 // API function that is called when the Select to Speak reading position
@@ -350,6 +376,15 @@ class AccessibilityPrivateUpdateDictationBubbleFunction
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateDictationBubble",
                              ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE)
+};
+
+// API function that updates the FaceGaze bubble UI.
+class AccessibilityPrivateUpdateFaceGazeBubbleFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateUpdateFaceGazeBubbleFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateFaceGazeBubble",
+                             ACCESSIBILITY_PRIVATE_UPDATEFACEGAZEBUBBLE)
 };
 
 // API function that updates properties of the Select-to-speak panel.

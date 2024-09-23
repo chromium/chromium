@@ -2,7 +2,7 @@ rootWebArea name='Table example - thead, tbody, tfoot'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++table
-++++++++rowGroup ignored
+++++++++rowGroup
 ++++++++++row
 ++++++++++++columnHeader name='Sum'
 ++++++++++++++staticText name='Sum'
@@ -25,7 +25,7 @@ rootWebArea name='Table example - thead, tbody, tfoot'
 ++++++++++++cell name='4'
 ++++++++++++++staticText name='4'
 ++++++++++++++++inlineTextBox name='4'
-++++++++rowGroup ignored
+++++++++rowGroup
 ++++++++++row
 ++++++++++++cell name='12'
 ++++++++++++++staticText name='12'

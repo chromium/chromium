@@ -19,8 +19,7 @@ class ASH_EXPORT FakeNetworkListTetherHostsHeaderView
                   NetworkListTetherHostsHeaderView)
 
  public:
-  explicit FakeNetworkListTetherHostsHeaderView(
-      NetworkListNetworkHeaderView::Delegate* delegate);
+  explicit FakeNetworkListTetherHostsHeaderView(OnExpandedStateToggle callback);
   FakeNetworkListTetherHostsHeaderView(
       const FakeNetworkListTetherHostsHeaderView&) = delete;
   FakeNetworkListTetherHostsHeaderView& operator=(

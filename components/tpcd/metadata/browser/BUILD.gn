@@ -1,0 +1,81 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("prefs") {
+  sources = [
+    "prefs.cc",
+    "prefs.h",
+  ]
+
+  deps = [
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("browser") {
+  sources = [
+    "manager.cc",
+    "manager.h",
+    "parser.cc",
+    "parser.h",
+  ]
+  deps = [
+    "//components/tpcd/metadata/common/proto",
+    ":prefs",
+  ]
+  public_deps = [
+    "//base",
+    "//components/content_settings/core/common",
+    "//components/content_settings/core/common:content_settings_enums",
+    "//components/content_settings/core/common:features",
+    "//components/prefs",
+    "//components/tpcd/metadata/common",
+    "//net",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/zlib/google:compression_utils",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
+  ]
+
+  deps = [
+    ":browser",
+    "//components/tpcd/metadata/common/proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "manager_unittest.cc",
+    "parser_unittest.cc",
+  ]
+
+  deps = [
+    ":browser",
+    "//components/tpcd/metadata/common/proto",
+    ":prefs",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/content_settings/core/common:features",
+    "//components/prefs:test_support",
+  ]
+}

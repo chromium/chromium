@@ -6,15 +6,15 @@
 
 namespace blink {
 
-GPUMemoryHeapInfo::GPUMemoryHeapInfo(const WGPUMemoryHeapInfo& info)
-    : size_(info.size), properties_(info.properties) {}
+GPUMemoryHeapInfo::GPUMemoryHeapInfo(const wgpu::MemoryHeapInfo& info)
+    : info_(info) {}
 
-const uint64_t& GPUMemoryHeapInfo::size() const {
-  return size_;
+uint64_t GPUMemoryHeapInfo::size() const {
+  return info_.size;
 }
 
-const uint32_t& GPUMemoryHeapInfo::properties() const {
-  return properties_;
+uint32_t GPUMemoryHeapInfo::properties() const {
+  return static_cast<uint32_t>(info_.properties);
 }
 
 }  // namespace blink

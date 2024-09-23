@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -101,9 +102,8 @@ class DataPipeConsumerHelper {
     }
 
     while (current_offset_ < max_bytes_to_read_) {
-      const void* data;
-      uint32_t size;
-      result = pipe_->BeginReadData(&data, &size, MOJO_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> data;
+      result = pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, data);
       if (result == MOJO_RESULT_INVALID_ARGUMENT) {
         // `pipe_` is not actually a ScopedDataPipeConsumerHandle.
         InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
@@ -123,18 +123,18 @@ class DataPipeConsumerHelper {
         break;
       }
       DCHECK_EQ(MOJO_RESULT_OK, result);
-      size = std::min<uint64_t>(size, max_bytes_to_read_ - current_offset_);
-      if (!Populate(base::make_span(static_cast<const char*>(data), size),
-                    current_offset_)) {
+      data = data.first(base::checked_cast<size_t>(std::min(
+          uint64_t{data.size()}, max_bytes_to_read_ - current_offset_)));
+      if (!Populate(base::as_chars(data), current_offset_)) {
         InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
                    false, current_offset_);
         delete this;
         return;
       }
       if (progress_client_)
-        progress_client_->OnProgress(size);
-      current_offset_ += size;
-      result = pipe_->EndReadData(size);
+        progress_client_->OnProgress(data.size());
+      current_offset_ += data.size();
+      result = pipe_->EndReadData(data.size());
       DCHECK_EQ(MOJO_RESULT_OK, result);
     }
 
@@ -252,7 +252,7 @@ class BlobBuilderFromStream::WritePipeToFileHelper
 
   bool Populate(base::span<const char> data,
                 uint64_t bytes_previously_written) override {
-    return file_.WriteAtCurrentPos(data.data(), data.size()) >= 0;
+    return file_.WriteAtCurrentPos(base::as_bytes(data)).has_value();
   }
 
   void InvokeDone(mojo::ScopedDataPipeConsumerHandle pipe,

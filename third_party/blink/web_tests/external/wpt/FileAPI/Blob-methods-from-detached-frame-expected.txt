@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] slice()
+  promise_test: Unhandled rejection with value: object "TypeError: slicedBlob.bytes is not a function"
+[FAIL] bytes()
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'call')"
+Harness: the test ran to completion.
+

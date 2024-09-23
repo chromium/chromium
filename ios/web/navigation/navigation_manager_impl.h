@@ -154,7 +154,7 @@ class NavigationManagerImpl final : public NavigationManager {
                       web::HttpsUpgradeType https_upgrade_type);
 
   // Commits the pending item, if any.
-  // TODO(crbug.com/936933): Remove this method.
+  // TODO(crbug.com/41444193): Remove this method.
   void CommitPendingItem();
 
   // Commits given pending `item` stored outside of navigation manager
@@ -176,7 +176,7 @@ class NavigationManagerImpl final : public NavigationManager {
   // Returns the navigation index that differs from the current item (or pending
   // item if it exists) by the specified `offset`, skipping redirect navigation
   // items. The index returned is not guaranteed to be valid.
-  // TODO(crbug.com/661316): Make this method private once navigation code is
+  // TODO(crbug.com/41284081): Make this method private once navigation code is
   // moved from CRWWebController to NavigationManagerImpl.
   int GetIndexForOffset(int offset) const;
 
@@ -201,8 +201,8 @@ class NavigationManagerImpl final : public NavigationManager {
 
   // The current NavigationItem. During a pending navigation, returns the
   // NavigationItem for that navigation.
-  // TODO(crbug.com/661316): Make this private once all navigation code is moved
-  // out of CRWWebController.
+  // TODO(crbug.com/41284081): Make this private once all navigation code is
+  // moved out of CRWWebController.
   NavigationItemImpl* GetCurrentItemImpl() const;
 
   // Returns the last committed NavigationItem, which may be null if there
@@ -210,7 +210,7 @@ class NavigationManagerImpl final : public NavigationManager {
   NavigationItemImpl* GetLastCommittedItemImpl() const;
 
   // Updates the pending or last committed navigation item after replaceState.
-  // TODO(crbug.com/783382): This is a legacy method to maintain backward
+  // TODO(crbug.com/41354482): This is a legacy method to maintain backward
   // compatibility for PageLoad stat. Remove this method once PageLoad no longer
   // depend on WebStateObserver::DidStartLoading.
   void UpdateCurrentItemForReplaceState(const GURL& url,
@@ -334,6 +334,10 @@ class NavigationManagerImpl final : public NavigationManager {
 
     std::vector<std::unique_ptr<NavigationItemImpl>> cached_items_;
     int cached_current_item_index_;
+
+    // Returns the WKWebView title. Must only be called when
+    // IsAttachedToWebView() is true.
+    const std::u16string GetWKWebViewTitle() const;
   };
 
   // Type of the list passed to restore items.

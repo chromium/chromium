@@ -1,0 +1,171 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.recorder_app.mojom;
+
+import "chromeos/services/machine_learning/public/mojom/soda.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
+import "services/on_device_model/public/mojom/on_device_model.mojom";
+import "services/on_device_model/public/mojom/on_device_model_service.mojom";
+
+// The state of the SODA or on-device model installation.
+enum ModelStateType {
+  // The model isn't available on this platform.
+  kUnavailable,
+
+  // The model is available but aren't fully installed yet (Can be either
+  // language pack / library not installed for SODA, or base model / LoRA layer
+  // not installed for on-device models).
+  kNotInstalled,
+
+  // The model is currently downloading and installing.
+  kInstalling,
+
+  // The model is installed and ready to be used.
+  kInstalled,
+
+  // There is an error while trying to install The model.
+  kError,
+};
+
+// The state of the model installation, including download progress.
+struct ModelState {
+  // Current state of the model installation.
+  ModelStateType type;
+
+  // The install progress. Only available when the state is `kInstalling`.
+  // Progress is the weighted average of the combined download percentage,
+  // in a range of [0, 100].
+  uint8? progress;
+};
+
+// Interface for listening to SODA or on-device model installation state.
+interface ModelStateMonitor {
+  // Update when state of the model is changed.
+  // The initial state are returned by the AddSodaMonitor/AddModelMonitor call
+  // when the `ModelStateMonitor` is added, and this method is only called on
+  // subsequent state updates.
+  Update(ModelState state);
+};
+
+// Retrieved information for a microphone.
+struct MicrophoneInfo {
+  // Whether the microphone is the system default microphone.
+  bool is_default;
+  // Whether the microphone is an internal microphone.
+  bool is_internal;
+};
+
+// Interface for listening to system quiet mode state.
+interface QuietModeMonitor {
+  // Update when system quiet mode is changed.
+  // The initial state is returned by the `AddQuietModeMonitor` call when the
+  // `QuietModeMonitor` is added, and this method is only called on subsequent
+  // state updates.
+  Update(bool in_quiet_mode);
+};
+
+// Primary interface for the chrome://recorder-app WebUI.
+interface PageHandler {
+  // Binds a new OnDeviceModel interface if possible using model from DLC
+  // specified by `model_id`.
+  // The list of possible IDs are listed in core/platform_handler.ts, and
+  // corresponds to the DLC ID on platform side.
+  LoadModel(mojo_base.mojom.Uuid model_id,
+            pending_receiver<on_device_model.mojom.OnDeviceModel> model)
+      => (on_device_model.mojom.LoadModelResult result);
+
+  // Formats the input fields with the model uuid and feature combination.
+  // The `fields` will represent the corresponding input key value pairs for
+  // different model uuid and feature combinations.
+  // The `result` can be nullopt if the model uuid and feature combination is
+  // invalid or not supported.
+  //
+  // For example, a feature may need "name" & "something" & "action" to complete
+  // the following string: "I'm {name}, I have {something}, please {action} for
+  // me.". And different feature may require different sets of key value pairs.
+  FormatModelInput(mojo_base.mojom.Uuid uuid,
+                   on_device_model.mojom.FormatFeature feature,
+                   map<string, string> fields) => (string? result);
+
+  // Validates the `text` is safe or not with the given `safety_feature` and
+  // `safety_info`. The `safety_info` should be the result returned by
+  // `ClassifyTextSafety()` from `on_device_model.mojom.OnDeviceModel`. Returns
+  // true if the `text` is safe.
+  ValidateSafetyResult(on_device_model.mojom.SafetyFeature safety_feature,
+                       string text,
+                       on_device_model.mojom.SafetyInfo safety_info)
+      => (bool is_safe);
+
+  // Adds a new monitor for model state change.
+  // Returns the current state.
+  AddModelMonitor(mojo_base.mojom.Uuid model_id,
+                  pending_remote<ModelStateMonitor> monitor)
+      => (ModelState state);
+
+  // Adds a new monitor for SODA state change.
+  // Returns the current state.
+  AddSodaMonitor(pending_remote<ModelStateMonitor> monitor)
+      => (ModelState state);
+
+  // Requests installation for SODA.
+  InstallSoda() => ();
+
+  // Loads speech recognizer with the given SodaClient and SodaRecognizer
+  // interface. Returns false when there's error loading the speech recognizer.
+  //
+  // SODA should be installed before calling this, otherwise false will be
+  // returned.
+  //
+  // The return is a boolean instead of
+  // chromeos.machine_learning.mojom.LoadModelResult, to avoid exposing
+  // implementation details to JS binding.
+  // TODO(pihsun): Move the enum to a separate mojom file and return the full
+  // enum, or have our own enum if different error needs to be treated
+  // differently in frontend.
+  // TODO(pihsun): i18n for selecting the model language. It's always en-US
+  // now.
+  LoadSpeechRecognizer(
+      pending_remote<chromeos.machine_learning.mojom.SodaClient> soda_client,
+      pending_receiver<chromeos.machine_learning.mojom.SodaRecognizer>
+          soda_recognizer) => (bool result);
+
+  // Opens the chrome feedback dialog for AI and show `description_template` in
+  // the description field.
+  OpenAiFeedbackDialog(string description_template);
+
+  // Returns the info of the microphone with the deviceId `source_id`, which is
+  // the ID returned from `enumerateDevices()` in JavaScript.
+  GetMicrophoneInfo(string source_id) => (MicrophoneInfo? info);
+
+  // Adds a new monitor for system quiet mode change. Returns the current
+  // state.
+  AddQuietModeMonitor(pending_remote<QuietModeMonitor> monitor)
+      => (bool in_quiet_mode);
+
+  // Sets the system quiet mode.
+  SetQuietMode(bool quiet_mode);
+
+  // Gets whether speaker label can be used for current profile.
+  // Note that there are some other requirements for speaker label (SODA is
+  // downloaded and installed, the language pack supports it, ...), but this
+  // method specifically only query if the current profile has the capabilities
+  // needed to use speaker label.
+  CanUseSpeakerLabelForCurrentProfile() => (bool supported);
+
+  // Records the consent of speaker label from user.
+  // Since the frontend doesn't have info about resource ID, the given
+  // consent_description_names and consent_confirmation_name corresponds to the
+  // name (camelCase, without the IDS_RECORDER prefix) in the resources.h, and
+  // will be converted back to the corresponding numbered resource IDs.
+  RecordSpeakerLabelConsent(bool consent_given,
+                            array<string> consent_description_names,
+                            string consent_confirmation_name);
+
+  // Gets whether the system audio will be captured by audio loopback.
+  // If returns true, users can use UI switch to include/exclude system audio
+  // via `getDisplayMedia`. Otherwise, microphone echo cancellation should be
+  // turned off to capture the system audio.
+  CanCaptureSystemAudioWithLoopback() => (bool supported);
+};

@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/browser/reflection_jni_headers/AccessibleObject_jni.h"
 #include "content/browser/reflection_jni_headers/Class_jni.h"
 #include "content/browser/reflection_jni_headers/Method_jni.h"

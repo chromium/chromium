@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
 
 #include <errno.h>
@@ -144,6 +149,12 @@ bool HardwareDisplayPlaneManagerLegacy::Commit(
   return ret;
 }
 
+bool HardwareDisplayPlaneManagerLegacy::TestSeamlessMode(
+    int32_t crtc_id,
+    const drmModeModeInfo& mode) {
+  return false;
+}
+
 bool HardwareDisplayPlaneManagerLegacy::DisableOverlayPlanes(
     HardwareDisplayPlaneList* plane_list) {
   // We're never going to ship legacy pageflip with overlays enabled.
@@ -201,6 +212,7 @@ bool HardwareDisplayPlaneManagerLegacy::SetPlaneData(
     HardwareDisplayPlane* hw_plane,
     const DrmOverlayPlane& overlay,
     uint32_t crtc_id,
+    std::optional<gfx::Point>,
     const gfx::Rect& src_rect) {
   // Legacy modesetting rejects transforms.
   if (overlay.plane_transform != gfx::OVERLAY_TRANSFORM_NONE)
@@ -232,22 +244,22 @@ bool HardwareDisplayPlaneManagerLegacy::IsCompatible(
 }
 
 bool HardwareDisplayPlaneManagerLegacy::CommitPendingCrtcState(
-    CrtcState* crtc_state) {
-  CrtcProperties& crtc_props = crtc_state->properties;
+    CrtcState& crtc_state) {
+  CrtcProperties& crtc_props = crtc_state.properties;
   bool result = true;
 
   if (!CommitPendingCrtcProperty(drm_, crtc_props.id, crtc_props.ctm,
-                                 crtc_state->pending_ctm_blob)) {
+                                 crtc_state.pending_ctm_blob)) {
     LOG(ERROR) << "Failed to set CTM property for crtc=" << crtc_props.id;
     result = false;
   }
   if (!CommitPendingCrtcProperty(drm_, crtc_props.id, crtc_props.gamma_lut,
-                                 crtc_state->pending_gamma_lut_blob)) {
+                                 crtc_state.pending_gamma_lut_blob)) {
     LOG(ERROR) << "Failed to set GAMMA_LUT property for crtc=" << crtc_props.id;
     result = false;
   }
   if (!CommitPendingCrtcProperty(drm_, crtc_props.id, crtc_props.degamma_lut,
-                                 crtc_state->pending_degamma_lut_blob)) {
+                                 crtc_state.pending_degamma_lut_blob)) {
     LOG(ERROR) << "Failed to set DEGAMMA_LUT property for crtc="
                << crtc_props.id;
     result = false;

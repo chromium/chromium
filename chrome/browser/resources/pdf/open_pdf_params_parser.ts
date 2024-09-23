@@ -86,7 +86,7 @@ export class OpenPdfParamsParser {
     }
 
     // User scale of 100 means zoom value of 100% i.e. zoom factor of 1.0.
-    const zoomFactor = parseFloat(paramValueSplit[0]) / 100;
+    const zoomFactor = parseFloat(paramValueSplit[0]!) / 100;
     if (Number.isNaN(zoomFactor)) {
       return {};
     }
@@ -98,8 +98,8 @@ export class OpenPdfParamsParser {
 
     // Handle #zoom=scale,left,top.
     const position = {
-      x: parseFloat(paramValueSplit[1]),
-      y: parseFloat(paramValueSplit[2]),
+      x: parseFloat(paramValueSplit[1]!),
+      y: parseFloat(paramValueSplit[2]!),
     };
     return {'position': position, 'zoom': zoomFactor};
   }
@@ -126,7 +126,7 @@ export class OpenPdfParamsParser {
     }
 
     const params: OpenPdfParams = {};
-    const viewMode = viewModeComponents[0];
+    const viewMode = viewModeComponents[0]!;
     let acceptsPositionParam = false;
 
     // Note that `pageNumber` is 1-indexed, but PDF Viewer is 0-indexed.
@@ -177,7 +177,7 @@ export class OpenPdfParamsParser {
       return params;
     }
 
-    const position = parseFloat(viewModeComponents[1]);
+    const position = parseFloat(viewModeComponents[1]!);
     if (!Number.isNaN(position)) {
       params['viewPosition'] = position;
     }
@@ -195,13 +195,14 @@ export class OpenPdfParamsParser {
   private async parseNameddestViewParam_(
       paramValue: string, pageNumber: number): Promise<OpenPdfParams> {
     const viewModeComponents = paramValue.toLowerCase().split(',');
-    const viewMode = viewModeComponents[0];
+    assert(viewModeComponents.length > 0);
+    const viewMode = viewModeComponents[0]!;
     const params: OpenPdfParams = {};
 
     if (viewMode === ViewMode.XYZ && viewModeComponents.length === 4) {
-      const x = parseFloat(viewModeComponents[1]);
-      const y = parseFloat(viewModeComponents[2]);
-      const zoom = parseFloat(viewModeComponents[3]);
+      const x = parseFloat(viewModeComponents[1]!);
+      const y = parseFloat(viewModeComponents[2]!);
+      const zoom = parseFloat(viewModeComponents[3]!);
 
       // If zoom is originally 0 for the XYZ view, it is guaranteed to be
       // transformed into "null" by the backend.
@@ -218,10 +219,10 @@ export class OpenPdfParamsParser {
 
     if (viewMode === ViewMode.FIT_R && viewModeComponents.length === 5) {
       assert(this.viewportDimensions_ !== undefined);
-      let x1 = parseFloat(viewModeComponents[1]);
-      let y1 = parseFloat(viewModeComponents[2]);
-      let x2 = parseFloat(viewModeComponents[3]);
-      let y2 = parseFloat(viewModeComponents[4]);
+      let x1 = parseFloat(viewModeComponents[1]!);
+      let y1 = parseFloat(viewModeComponents[2]!);
+      let x2 = parseFloat(viewModeComponents[3]!);
+      let y2 = parseFloat(viewModeComponents[4]!);
       if (!Number.isNaN(x1) && !Number.isNaN(y1) && !Number.isNaN(x2) &&
           !Number.isNaN(y2)) {
         if (x1 > x2) {
@@ -252,7 +253,7 @@ export class OpenPdfParamsParser {
     // explicitly mentioned except by example in the Adobe
     // "PDF Open Parameters" document.
     if (Array.from(params).length === 1) {
-      const key = Array.from(params.keys())[0];
+      const key = Array.from(params.keys())[0]!;
       if (params.get(key) === '') {
         params.append('nameddest', key);
         params.delete(key);

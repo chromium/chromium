@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "components/search_engines/template_url.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/search_engines/android/jni_headers/TemplateUrl_jni.h"
 
 using base::android::JavaParamRef;

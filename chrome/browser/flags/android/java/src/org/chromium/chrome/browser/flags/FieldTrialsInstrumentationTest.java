@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureMap;
@@ -20,7 +19,6 @@ import org.chromium.base.cached_flags.DoubleCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -48,8 +46,6 @@ public final class FieldTrialsInstrumentationTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @Before
     public void setup() {
@@ -147,23 +143,6 @@ public final class FieldTrialsInstrumentationTest {
     public void testFeatureWithoutParams() {
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
-    }
-
-    @Test
-    @SmallTest
-    @CommandLineFlags.Add({
-        "enable-features=" + FEATURE_1 + "<Study",
-        "force-fieldtrials=Study/Group"
-    })
-    public void testRuntimeParams() {
-        StringCachedFieldTrialParameter parameter =
-                new StringCachedFieldTrialParameter(FEATURE_MAP, FEATURE_1, "a1", "default");
-        parameter.setForTesting("b1");
-        Assert.assertEquals("b1", parameter.getValue());
-
-        // Make sure ensureCommandLineIsUpToDate() doesn't erase the value.
-        Features.getInstance().ensureCommandLineIsUpToDate();
-        Assert.assertEquals("b1", parameter.getValue());
     }
 
     @Test

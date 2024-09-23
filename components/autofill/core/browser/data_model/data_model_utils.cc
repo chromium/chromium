@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 
+#include "base/compiler_specific.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/unicodestring.h"
 #include "base/strings/string_number_conversions.h"
@@ -73,9 +74,16 @@ bool ParseExpirationMonth(const std::u16string& text,
   DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
          status == U_USING_DEFAULT_WARNING);
   // Full months (January, Janvier, etc.)
-  int32_t num_months;
-  const icu::UnicodeString* months = date_format_symbols.getMonths(num_months);
-  for (int32_t i = 0; i < num_months; ++i) {
+  const base::span<const icu::UnicodeString> months = [&] {
+    int32_t num_months;
+    const icu::UnicodeString* months =
+        date_format_symbols.getMonths(num_months);
+    // SAFETY: getMonths returns a pointer to a (c-style) array of length
+    // num_months.
+    return UNSAFE_BUFFERS(
+        base::span(months, base::checked_cast<size_t>(num_months)));
+  }();
+  for (size_t i = 0; i < months.size(); ++i) {
     const std::u16string icu_month(
         base::i18n::UnicodeStringToString16(months[i]));
     // We look for the ICU-defined month in |trimmed|.
@@ -87,10 +95,19 @@ bool ParseExpirationMonth(const std::u16string& text,
   }
   // Abbreviated months (jan., janv., fév.) Some abbreviations have . at the end
   // (e.g., "janv." in French). The period is removed.
-  months = date_format_symbols.getShortMonths(num_months);
+  const base::span<const icu::UnicodeString> short_months = [&] {
+    int32_t num_months;
+    const icu::UnicodeString* months =
+        date_format_symbols.getShortMonths(num_months);
+    // SAFETY: getShortMonths returns a pointer to a (c-style) array of length
+    // num_months.
+    return UNSAFE_BUFFERS(
+        base::span(months, base::checked_cast<size_t>(num_months)));
+  }();
   base::TrimString(trimmed, u".", &trimmed);
-  for (int32_t i = 0; i < num_months; ++i) {
-    std::u16string icu_month(base::i18n::UnicodeStringToString16(months[i]));
+  for (size_t i = 0; i < short_months.size(); ++i) {
+    std::u16string icu_month(
+        base::i18n::UnicodeStringToString16(short_months[i]));
     base::TrimString(icu_month, u".", &icu_month);
     // We look for the ICU-defined month in |trimmed_month|.
     if (base::i18n::StringSearchIgnoringCaseAndAccents(icu_month, trimmed,

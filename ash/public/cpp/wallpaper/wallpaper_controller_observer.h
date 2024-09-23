@@ -35,7 +35,7 @@ class ASH_PUBLIC_EXPORT WallpaperControllerObserver {
   virtual void OnWallpaperColorsChanged() {}
 
   // Invoked when the blur state of the wallpaper changes.
-  // TODO(crbug.com/875128): Remove this after web-ui login code is completely
+  // TODO(crbug.com/41408561): Remove this after web-ui login code is completely
   // removed.
   virtual void OnWallpaperBlurChanged() {}
 

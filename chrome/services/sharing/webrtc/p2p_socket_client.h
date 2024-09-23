@@ -25,7 +25,7 @@ class P2PSocketClientDelegate;
 
 // P2P socket that routes all calls over Mojo.
 // The object runs on the WebRTC worker thread.
-// TODO(crbug.com/1044522): reuse code from blink instead.
+// TODO(crbug.com/40115622): reuse code from blink instead.
 class P2PSocketClient : public network::mojom::P2PSocketClient {
  public:
   P2PSocketClient(const mojo::SharedRemote<network::mojom::P2PSocketManager>&

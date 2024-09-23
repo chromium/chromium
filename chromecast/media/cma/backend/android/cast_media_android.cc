@@ -68,12 +68,10 @@ MediaPipelineBackend* CastMediaShlib::CreateMediaPipelineBackend(
 
 double CastMediaShlib::GetMediaClockRate() {
   NOTREACHED();
-  return 0.0;
 }
 
 double CastMediaShlib::MediaClockRatePrecision() {
   NOTREACHED();
-  return 0.0;
 }
 
 void CastMediaShlib::MediaClockRateRange(double* minimum_rate,
@@ -83,7 +81,6 @@ void CastMediaShlib::MediaClockRateRange(double* minimum_rate,
 
 bool CastMediaShlib::SetMediaClockRate(double new_rate) {
   NOTREACHED();
-  return false;
 }
 
 bool CastMediaShlib::SupportsMediaClockRateChange() {

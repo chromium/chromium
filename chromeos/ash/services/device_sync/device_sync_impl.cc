@@ -133,7 +133,7 @@ DeviceSyncRequestFailureReason GetDeviceSyncRequestFailureReason(
     default:
       return DeviceSyncRequestFailureReason::kUnknown;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // The exponential back off is: base * 2^(num_failures - 1)
@@ -197,7 +197,7 @@ DeviceSyncSetSoftwareFeature GetDeviceSyncSoftwareFeature(
     case multidevice::SoftwareFeature::kMessagesForWebHost:
       return DeviceSyncSetSoftwareFeature::kMessages;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DeviceSyncSetSoftwareFeature::kUnexpectedClientFeature;
   }
 }
@@ -249,7 +249,7 @@ DeviceSyncImpl::Factory* DeviceSyncImpl::Factory::custom_factory_instance_ =
 // static
 std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
     signin::IdentityManager* identity_manager,
-    gcm::GCMDriver* gcm_driver,
+    instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* profile_prefs,
     const GcmDeviceInfoProvider* gcm_device_info_provider,
     ClientAppMetadataProvider* client_app_metadata_provider,
@@ -259,16 +259,17 @@ std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
         get_attestation_certificates_function) {
   if (custom_factory_instance_) {
     return custom_factory_instance_->CreateInstance(
-        identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
-        client_app_metadata_provider, std::move(url_loader_factory),
-        std::move(timer), get_attestation_certificates_function);
+        identity_manager, instance_id_driver, profile_prefs,
+        gcm_device_info_provider, client_app_metadata_provider,
+        std::move(url_loader_factory), std::move(timer),
+        get_attestation_certificates_function);
   }
 
   return base::WrapUnique(new DeviceSyncImpl(
-      identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
-      client_app_metadata_provider, std::move(url_loader_factory),
-      base::DefaultClock::GetInstance(), std::move(timer),
-      get_attestation_certificates_function));
+      identity_manager, instance_id_driver, profile_prefs,
+      gcm_device_info_provider, client_app_metadata_provider,
+      std::move(url_loader_factory), base::DefaultClock::GetInstance(),
+      std::move(timer), get_attestation_certificates_function));
 }
 
 // static
@@ -411,7 +412,7 @@ void DeviceSyncImpl::PendingSetFeatureStatusRequest::InvokeCallback(
 
 DeviceSyncImpl::DeviceSyncImpl(
     signin::IdentityManager* identity_manager,
-    gcm::GCMDriver* gcm_driver,
+    instance_id::InstanceIDDriver* instance_id_driver,
     PrefService* profile_prefs,
     const GcmDeviceInfoProvider* gcm_device_info_provider,
     ClientAppMetadataProvider* client_app_metadata_provider,
@@ -422,7 +423,7 @@ DeviceSyncImpl::DeviceSyncImpl(
         get_attestation_certificates_function)
     : DeviceSyncBase(),
       identity_manager_(identity_manager),
-      gcm_driver_(gcm_driver),
+      instance_id_driver_(instance_id_driver),
       profile_prefs_(profile_prefs),
       gcm_device_info_provider_(gcm_device_info_provider),
       client_app_metadata_provider_(client_app_metadata_provider),
@@ -822,7 +823,7 @@ void DeviceSyncImpl::Shutdown() {
   cryptauth_gcm_manager_.reset();
 
   identity_manager_ = nullptr;
-  gcm_driver_ = nullptr;
+  instance_id_driver_ = nullptr;
   profile_prefs_ = nullptr;
   gcm_device_info_provider_ = nullptr;
   client_app_metadata_provider_ = nullptr;
@@ -855,11 +856,7 @@ void DeviceSyncImpl::RunNextInitializationStep() {
       RegisterWithGcm();
       break;
     case InitializationStatus::kWaitingForGcmRegistration:
-      if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
-        FetchClientAppMetadata();
-      } else {
-        WaitForValidEnrollment();
-      }
+      FetchClientAppMetadata();
       break;
     case InitializationStatus::kWaitingForClientAppMetadata:
       WaitForValidEnrollment();
@@ -868,7 +865,7 @@ void DeviceSyncImpl::RunNextInitializationStep() {
       CompleteInitializationAfterSuccessfulEnrollment();
       break;
     case InitializationStatus::kReady:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -917,13 +914,17 @@ void DeviceSyncImpl::RegisterWithGcm() {
   if (!cryptauth_gcm_manager_) {
     // Initialize |cryptauth_gcm_manager_| and have it start listening for GCM
     // tickles.
-    cryptauth_gcm_manager_ =
-        CryptAuthGCMManagerImpl::Factory::Create(gcm_driver_, profile_prefs_);
+    cryptauth_gcm_manager_ = CryptAuthGCMManagerImpl::Factory::Create(
+        instance_id_driver_, profile_prefs_);
     cryptauth_gcm_manager_->StartListening();
   }
 
-  // The device previously completed GCM registration.
-  if (!cryptauth_gcm_manager_->GetRegistrationId().empty()) {
+  // The device previously completed GCM registration, and that registration
+  // id is not deprecated.
+  const std::string& registration_id =
+      cryptauth_gcm_manager_->GetRegistrationId();
+  if (!registration_id.empty() &&
+      !CryptAuthGCMManager::IsRegistrationIdDeprecated(registration_id)) {
     RunNextInitializationStep();
     return;
   }
@@ -964,7 +965,6 @@ void DeviceSyncImpl::OnGCMRegistrationResult(bool success) {
 }
 
 void DeviceSyncImpl::FetchClientAppMetadata() {
-  DCHECK(base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment));
   status_ = InitializationStatus::kWaitingForClientAppMetadata;
 
   timer_->Start(FROM_HERE, kWaitingForClientAppMetadataTimeout,
@@ -1051,28 +1051,17 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
 
   // Initialize |cryptauth_enrollment_manager_| and start observing, then call
   // Start() immediately to schedule enrollment.
-  if (base::FeatureList::IsEnabled(features::kCryptAuthV2Enrollment)) {
-    cryptauth_key_registry_ =
-        CryptAuthKeyRegistryImpl::Factory::Create(profile_prefs_);
+  cryptauth_key_registry_ =
+      CryptAuthKeyRegistryImpl::Factory::Create(profile_prefs_);
 
-    cryptauth_scheduler_ =
-        CryptAuthSchedulerImpl::Factory::Create(profile_prefs_);
+  cryptauth_scheduler_ =
+      CryptAuthSchedulerImpl::Factory::Create(profile_prefs_);
 
-    cryptauth_enrollment_manager_ =
-        CryptAuthV2EnrollmentManagerImpl::Factory::Create(
-            *client_app_metadata_, cryptauth_key_registry_.get(),
-            cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
-            cryptauth_scheduler_.get(), profile_prefs_, clock_);
-  } else {
-    cryptauth_enrollment_manager_ =
-        CryptAuthEnrollmentManagerImpl::Factory::Create(
-            clock_,
-            std::make_unique<CryptAuthEnrollerFactoryImpl>(
-                cryptauth_client_factory_.get()),
-            multidevice::SecureMessageDelegateImpl::Factory::Create(),
-            gcm_device_info_provider_->GetGcmDeviceInfo(),
-            cryptauth_gcm_manager_.get(), profile_prefs_);
-  }
+  cryptauth_enrollment_manager_ =
+      CryptAuthV2EnrollmentManagerImpl::Factory::Create(
+          *client_app_metadata_, cryptauth_key_registry_.get(),
+          cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
+          cryptauth_scheduler_.get(), profile_prefs_, clock_);
 
   // Initialize v1 and v2 CryptAuth device managers (depending on feature
   // flags). Start() is not called yet since the device has not completed
@@ -1185,7 +1174,7 @@ void DeviceSyncImpl::OnSetSoftwareFeatureStateError(
   if (it == id_to_pending_set_software_feature_request_map_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnSetSoftwareFeatureStateError(): "
                   << "Could not find request entry with ID " << request_id;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1227,7 +1216,7 @@ void DeviceSyncImpl::OnSetFeatureStatusError(
   if (it == id_to_pending_set_feature_status_request_map_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnSetFeatureStatusError(): "
                   << "Could not find request entry with ID " << request_id;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1298,7 +1287,7 @@ void DeviceSyncImpl::OnNotifyDevicesSuccess(
   if (it == pending_notify_devices_callbacks_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnNotifyDevicesSuccess(): "
                   << "Could not find request entry with ID " << request_id;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1315,7 +1304,7 @@ void DeviceSyncImpl::OnNotifyDevicesError(
   if (it == pending_notify_devices_callbacks_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnNotifyDevicesError(): "
                   << "Could not find request entry with ID " << request_id;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

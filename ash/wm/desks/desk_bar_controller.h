@@ -6,12 +6,14 @@
 #define ASH_WM_DESKS_DESK_BAR_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/display/display_observer.h"
@@ -55,14 +57,14 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
     // focusable view in `bar_view`, and `reverse`. If `reverse` is false, it
     // returns the traversible view after `starting_view`; otherwise, it returns
     // the traversible view before `starting_view`.
-    views::View* GetNextFocusableView(views::View* starting_view,
-                                      bool reverse) const;
+    const views::View* GetNextFocusableView(views::View* starting_view,
+                                            bool reverse) const;
 
     // Returns the first focusable view in `bar_view`.
-    views::View* GetFirstFocusableView() const;
+    const views::View* GetFirstFocusableView() const;
 
     // Returns the last focusable view in `bar_view`.
-    views::View* GetLastFocusableView() const;
+    const views::View* GetLastFocusableView() const;
 
     std::unique_ptr<views::Widget> bar_widget;
     raw_ptr<DeskBarViewBase> bar_view;
@@ -101,7 +103,7 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
 
   // Returns desk bar view in `root`. If there is no such desk bar, nullptr is
   // returned.
-  DeskBarViewBase* GetDeskBarView(aura::Window* root) const;
+  DeskBarViewBase* GetDeskBarView(aura::Window* root);
 
   // Returns true when there is a visible desk bar.
   bool IsShowingDeskBar() const;
@@ -116,7 +118,13 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   void CloseAllDeskBars();
 
  private:
+  // Moves the focus ring to the next traversable view.
+  void MoveFocus(const BarWidgetAndView& desk_bar, bool reverse);
+
   void CloseDeskBarInternal(BarWidgetAndView& desk_bar);
+
+  // Common handling of mouse and touch events.
+  void OnLocatedEvent(ui::LocatedEvent& event);
 
   // When pressing off the bar, it should either commit desk name change, or
   // hide the bar.
@@ -146,6 +154,8 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   bool is_shell_destroying_ = false;
 
   bool should_ignore_activation_change_ = false;
+
+  std::optional<WindowOcclusionCalculator> window_occlusion_calculator_;
 };
 
 }  // namespace ash

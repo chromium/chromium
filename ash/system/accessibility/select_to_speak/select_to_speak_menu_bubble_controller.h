@@ -37,6 +37,8 @@ class ASH_EXPORT SelectToSpeakMenuBubbleController
   friend class SelectToSpeakMenuBubbleControllerTest;
   friend class SelectToSpeakSpeedBubbleControllerTest;
 
+  void MaybeRecordDurationHistogram();
+
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
   void BubbleViewDestroyed() override;
@@ -60,6 +62,7 @@ class ASH_EXPORT SelectToSpeakMenuBubbleController
 
   std::unique_ptr<SelectToSpeakSpeedBubbleController> speed_bubble_controller_;
   double initial_speech_rate_ = 1.0;
+  base::Time last_show_time_;
 };
 
 }  // namespace ash

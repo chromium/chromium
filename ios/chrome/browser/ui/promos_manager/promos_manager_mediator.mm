@@ -18,11 +18,12 @@
 @implementation PromosManagerMediator
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                promoImpressionLimits:(PromoConfigsSet)promoImpressionLimits {
-  if (self = [super init]) {
+                         promoConfigs:(PromoConfigsSet)promoConfigs {
+  if ((self = [super init])) {
     _promosManager = promosManager;
-    if (promoImpressionLimits.size())
-      _promosManager->InitializePromoConfigs(std::move(promoImpressionLimits));
+    if (promoConfigs.size()) {
+      _promosManager->InitializePromoConfigs(std::move(promoConfigs));
+    }
   }
 
   return self;
@@ -32,15 +33,15 @@
   _promosManager->DeregisterPromo(promo);
 }
 
-- (void)recordImpression:(promos_manager::Promo)promo {
-  _promosManager->RecordImpression(promo);
+- (void)deregisterAfterDisplay:(promos_manager::Promo)promo {
+  _promosManager->DeregisterAfterDisplay(promo);
 }
 
 - (std::optional<PromoDisplayData>)nextPromoForDisplay:(BOOL)isFirstShownPromo {
   DCHECK_NE(_promosManager, nullptr);
   // Only check for a forced promo the first time around, to prevent infinite
   // forced promos.
-  // TODO(crbug.com/1457208): Once promo reentrance is supported, remove this
+  // TODO(crbug.com/40273505): Once promo reentrance is supported, remove this
   // and always show the forced promo.
   if (isFirstShownPromo) {
     std::optional<promos_manager::Promo> forcedPromo =

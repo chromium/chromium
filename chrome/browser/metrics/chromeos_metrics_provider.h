@@ -77,7 +77,7 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
 
 // Provides *histograms* to UMA. Due to the below bug, this cannot be part of
 // |ChromeOSMetricsProvider|.
-// TODO(crbug/1427219): Allow this to be part of the above class.
+// TODO(crbug.com/40899764): Allow this to be part of the above class.
 class ChromeOSHistogramMetricsProvider : public metrics::MetricsProvider {
  public:
   ChromeOSHistogramMetricsProvider();

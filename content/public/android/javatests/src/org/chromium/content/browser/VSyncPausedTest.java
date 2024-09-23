@@ -13,13 +13,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
@@ -49,7 +49,7 @@ public class VSyncPausedTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         final WebContents webContents = mActivity.getActiveWebContents();
         mObserver =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new WebContentsObserver(webContents) {
                                     @Override
@@ -63,7 +63,7 @@ public class VSyncPausedTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mObserver.destroy());
+        ThreadUtils.runOnUiThreadBlocking(() -> mObserver.destroy());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class VSyncPausedTest {
                 mActivity.getActiveWebContents(), CALL_RAF);
         mOnTitleUpdatedHelper.waitForCallback(callCount);
         Assert.assertEquals("1", mTitle);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity
                             .getActiveShell()
@@ -106,7 +106,7 @@ public class VSyncPausedTest {
             }
             Assert.assertEquals("2", mTitle);
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity
                             .getActiveShell()

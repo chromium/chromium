@@ -17,8 +17,8 @@ CredentialStorage::CredentialStorage(
 CredentialStorage::~CredentialStorage() = default;
 
 void CredentialStorage::SaveCredentials(
-    absl::string_view manager_app_id,
-    absl::string_view account_name,
+    std::string_view manager_app_id,
+    std::string_view account_name,
     const std::vector<LocalCredential>& private_credentials,
     const std::vector<SharedCredential>& public_credentials,
     PublicCredentialType public_credential_type,
@@ -47,8 +47,8 @@ void CredentialStorage::SaveCredentials(
 }
 
 void CredentialStorage::UpdateLocalCredential(
-    absl::string_view manager_app_id,
-    absl::string_view account_name,
+    std::string_view manager_app_id,
+    std::string_view account_name,
     nearby::internal::LocalCredential credential,
     SaveCredentialsResultCallback callback) {
   // Credentials are stored per-account with a constant manager_app_id, so

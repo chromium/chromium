@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
+
 #include <memory>
 #include <optional>
 
@@ -17,12 +19,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -31,6 +31,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
@@ -123,7 +124,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReauthURL(
     return CreateNonEmptyResponse(net::HTTP_NOT_IMPLEMENTED);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -595,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
   EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kUnexpectedResponse);
 }
 
-// TODO(crbug.com/1489482): Remove kNoPasskeySyncing path after metadata syncing
-// is enabled by default.
+// TODO(crbug.com/40284051): Remove kNoPasskeySyncing path after metadata
+// syncing is enabled by default.
 enum HasPasskeySyncing {
   kHasPasskeySyncing,
   kNoPasskeySyncing,

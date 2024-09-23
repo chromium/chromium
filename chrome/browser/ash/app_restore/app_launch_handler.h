@@ -32,7 +32,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
   ~AppLaunchHandler() override;
 
   // Returns true if there are some restore data. Otherwise, returns false.
-  bool HasRestoreData();
+  bool HasRestoreData() const;
 
   // Called when an app has launched. Overriders can use this to record
   // histograms based on `app_type_name`.

@@ -53,7 +53,7 @@ void AssertContextMenuItemDisabled(int label_id) {
 void AssertOverflowMenuElementEnabled(NSString* accessibilityID) {
   id<GREYMatcher> enabledMatcher =
       [ChromeEarlGrey isNewOverflowMenuEnabled]
-          // TODO(crbug.com/1285974): grey_userInteractionEnabled doesn't work
+          // TODO(crbug.com/40210654): grey_userInteractionEnabled doesn't work
           // for SwiftUI views.
           ? grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled))
           : grey_userInteractionEnabled();

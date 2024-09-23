@@ -68,45 +68,14 @@
   dispatch_queue_t priorityQueue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0ul);
   dispatch_async(priorityQueue, ^{
-    self.allCredentials = [self.credentialStore.credentials
-        sortedArrayUsingComparator:^NSComparisonResult(id<Credential> obj1,
-                                                       id<Credential> obj2) {
-          return [obj1.serviceName compare:obj2.serviceName];
-        }];
+    self.allCredentials = [self fetchAllCredentials];
 
-    NSMutableArray* suggestions = [[NSMutableArray alloc] init];
-    for (id<Credential> credential in self.allCredentials) {
-      for (ASCredentialServiceIdentifier* identifier in self
-               .serviceIdentifiers) {
-        if (credential.serviceName &&
-            [identifier.identifier
-                localizedStandardContainsString:credential.serviceName]) {
-          [suggestions addObject:credential];
-          break;
-        }
-        if (credential.serviceIdentifier &&
-            [identifier.identifier
-                localizedStandardContainsString:credential.serviceIdentifier]) {
-          [suggestions addObject:credential];
-          break;
-        }
-      }
-    }
-    self.suggestedCredentials = suggestions;
+    self.suggestedCredentials = [self.UIHandler isRequestingPasskey]
+                                    ? [self filterPasskeyCredentials]
+                                    : [self filterPasswordCredentials];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-      // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
-      // new password screen properly supports user url entry.
-      BOOL canCreatePassword =
-          IsPasswordCreationUserEnabled() && self.serviceIdentifiers.count > 0;
-      if (!canCreatePassword && !self.allCredentials.count) {
-        [self.UIHandler showEmptyCredentials];
-        return;
-      }
-      [self.consumer presentSuggestedPasswords:self.suggestedCredentials
-                                  allPasswords:self.allCredentials
-                                 showSearchBar:self.allCredentials.count > 0
-                         showNewPasswordOption:canCreatePassword];
+      [self presentCredentials];
     });
   });
 }
@@ -123,23 +92,23 @@
 }
 
 - (void)updateResultsWithFilter:(NSString*)filter {
-  // TODO(crbug.com/1297158): Remove the serviceIdentifier check once the
+  // TODO(crbug.com/40215043): Remove the serviceIdentifier check once the
   // new password screen properly supports user url entry.
   BOOL showNewPasswordOption = !filter.length &&
                                IsPasswordCreationUserEnabled() &&
                                self.serviceIdentifiers.count > 0;
   if (!filter.length) {
-    [self.consumer presentSuggestedPasswords:self.suggestedCredentials
-                                allPasswords:self.allCredentials
-                               showSearchBar:YES
-                       showNewPasswordOption:showNewPasswordOption];
+    [self.consumer presentSuggestedCredentials:self.suggestedCredentials
+                                allCredentials:self.allCredentials
+                                 showSearchBar:YES
+                         showNewPasswordOption:showNewPasswordOption];
     return;
   }
 
   NSMutableArray<id<Credential>>* suggested = [[NSMutableArray alloc] init];
   for (id<Credential> credential in self.suggestedCredentials) {
     if ([credential.serviceName localizedStandardContainsString:filter] ||
-        [credential.user localizedStandardContainsString:filter]) {
+        [credential.username localizedStandardContainsString:filter]) {
       [suggested addObject:credential];
     }
   }
@@ -147,14 +116,14 @@
   NSMutableArray<id<Credential>>* all = [[NSMutableArray alloc] init];
   for (id<Credential> credential in self.allCredentials) {
     if ([credential.serviceName localizedStandardContainsString:filter] ||
-        [credential.user localizedStandardContainsString:filter]) {
+        [credential.username localizedStandardContainsString:filter]) {
       [all addObject:credential];
     }
   }
-  [self.consumer presentSuggestedPasswords:suggested
-                              allPasswords:all
-                             showSearchBar:YES
-                     showNewPasswordOption:showNewPasswordOption];
+  [self.consumer presentSuggestedCredentials:suggested
+                              allCredentials:all
+                               showSearchBar:YES
+                       showNewPasswordOption:showNewPasswordOption];
 }
 
 - (void)showDetailsForCredential:(id<Credential>)credential {
@@ -163,6 +132,85 @@
 
 - (void)newPasswordWasSelected {
   [self.UIHandler showCreateNewPasswordUI];
+}
+
+#pragma mark - Private
+
+// Returns all credentials from the credential store, filtered by request type
+// and sorted by service name.
+- (NSArray<id<Credential>>*)fetchAllCredentials {
+  BOOL isRequestingPasskey = [self.UIHandler isRequestingPasskey];
+  // Only use passwords or passkeys, depending on what's requested.
+  NSArray<id<Credential>>* credentials = [self.credentialStore.credentials
+      filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                                   id<Credential> credential,
+                                                   NSDictionary* bindings) {
+        return credential.isPasskey == isRequestingPasskey;
+      }]];
+
+  credentials = [credentials sortedArrayUsingComparator:^NSComparisonResult(
+                                 id<Credential> obj1, id<Credential> obj2) {
+    return isRequestingPasskey ? [obj1.rpId compare:obj2.rpId]
+                               : [obj1.serviceName compare:obj2.serviceName];
+  }];
+  return credentials;
+}
+
+// Returns the list of allowed passkey credentials for the relying party.
+- (NSArray<id<Credential>>*)filterPasskeyCredentials {
+  // If the allowedCredentials array is empty, then the relying party accepts
+  // any passkey credential.
+  NSArray<NSData*>* allowedCredentials = [self.UIHandler allowedCredentials];
+  if (allowedCredentials.count == 0) {
+    return self.allCredentials;
+  }
+
+  NSMutableArray* filteredCredentials = [[NSMutableArray alloc] init];
+  for (id<Credential> credential in self.allCredentials) {
+    if ([allowedCredentials containsObject:credential.credentialId]) {
+      [filteredCredentials addObject:credential];
+    }
+  }
+  return filteredCredentials;
+}
+
+// Returns the list of allowed password credentials for the service identifier.
+- (NSArray<id<Credential>>*)filterPasswordCredentials {
+  NSMutableArray* filteredCredentials = [[NSMutableArray alloc] init];
+  for (id<Credential> credential in self.allCredentials) {
+    for (ASCredentialServiceIdentifier* identifier in self.serviceIdentifiers) {
+      if (credential.serviceName &&
+          [identifier.identifier
+              localizedStandardContainsString:credential.serviceName]) {
+        [filteredCredentials addObject:credential];
+        break;
+      }
+      if (credential.serviceIdentifier &&
+          [identifier.identifier
+              localizedStandardContainsString:credential.serviceIdentifier]) {
+        [filteredCredentials addObject:credential];
+        break;
+      }
+    }
+  }
+  return filteredCredentials;
+}
+
+// Tells the consumer to show the passed in suggested and all credentials.
+- (void)presentCredentials {
+  // TODO(crbug.com/40215043): Remove the serviceIdentifier check once the
+  // new password screen properly supports user url entry.
+  BOOL canCreatePassword = ![self.UIHandler isRequestingPasskey] &&
+                           IsPasswordCreationUserEnabled() &&
+                           self.serviceIdentifiers.count > 0;
+  if (!canCreatePassword && !self.allCredentials.count) {
+    [self.UIHandler showEmptyCredentials];
+    return;
+  }
+  [self.consumer presentSuggestedCredentials:self.suggestedCredentials
+                              allCredentials:self.allCredentials
+                               showSearchBar:self.allCredentials.count > 0
+                       showNewPasswordOption:canCreatePassword];
 }
 
 @end

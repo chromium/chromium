@@ -2,13 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cdm/cdm_adapter.h"
 
 #include <stddef.h>
+
 #include <iomanip>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -96,7 +104,7 @@ std::string CdmStatusToString(cdm::Status status) {
       return "kDeferredInitialization";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 inline std::ostream& operator<<(std::ostream& out, cdm::Status status) {
@@ -135,8 +143,8 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
     case cdm::Host_11::kVersion:
       return static_cast<cdm::Host_11*>(cdm_adapter);
   }
-  NOTREACHED_NORETURN() << "Unexpected host interface version "
-                        << host_interface_version;
+  NOTREACHED() << "Unexpected host interface version "
+               << host_interface_version;
 }
 
 void ReportSystemCodeUMA(const std::string& key_system, uint32_t system_code) {
@@ -446,9 +454,10 @@ void CdmAdapter::Decrypt(StreamType stream_type,
     return;
   }
 
-  scoped_refptr<DecoderBuffer> decrypted_buffer(
-      DecoderBuffer::CopyFrom(decrypted_block->DecryptedBuffer()->Data(),
-                              decrypted_block->DecryptedBuffer()->Size()));
+  scoped_refptr<DecoderBuffer> decrypted_buffer(DecoderBuffer::CopyFrom(
+      // SAFETY: `Data()` must return a buffer of `Size()` bytes.
+      UNSAFE_BUFFERS(base::span(decrypted_block->DecryptedBuffer()->Data(),
+                                decrypted_block->DecryptedBuffer()->Size()))));
   decrypted_buffer->set_timestamp(
       base::Microseconds(decrypted_block->Timestamp()));
   std::move(decrypt_cb).Run(Decryptor::kSuccess, std::move(decrypted_buffer));
@@ -988,7 +997,7 @@ void CdmAdapter::OnDeferredInitializationDone(cdm::StreamType stream_type,
       return;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected cdm::StreamType " << stream_type;
+  NOTREACHED() << "Unexpected cdm::StreamType " << stream_type;
 }
 
 cdm::FileIO* CdmAdapter::CreateFileIO(cdm::FileIOClient* client) {

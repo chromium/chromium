@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 #include <linux/input.h>
@@ -16,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/fixed_array.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 #include "ui/events/ozone/features.h"
@@ -45,6 +51,10 @@ struct DeviceId {
                                   : vendor < other.vendor;
   }
 };
+
+constexpr auto kKeyboardAllowlist = base::MakeFixedFlatSet<DeviceId>({
+    {0x2516, 0x0016},  // CM Storm Quickfire Pro Ultimate
+});
 
 constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x0111, 0x1830},  // SteelSeries Rival 3 Wireless (Bluetooth)
@@ -328,6 +338,10 @@ const uint16_t kSteelSeriesBluetoothVendorId = 0x0111;
 const uint16_t kSteelSeriesStratusDuoBluetoothProductId = 0x1431;
 const uint16_t kSteelSeriesStratusPlusBluetoothProductId = 0x1434;
 
+const uint16_t kFlossVirtualSuspendVendorId = 0x0000;
+const uint16_t kFlossVirtualSuspendProductId = 0x0000;
+const char kFlossVirtualSuspendName[] = "VIRTUAL_SUSPEND_UHID";
+
 bool GetEventBits(int fd,
                   const base::FilePath& path,
                   unsigned int type,
@@ -491,19 +505,18 @@ bool EventDeviceInfo::Initialize(int fd, const base::FilePath& path) {
   int max_num_slots = GetAbsMtSlotCount();
 
   // |request| is MT code + slots.
-  int32_t request[max_num_slots + 1];
-  int32_t* request_code = &request[0];
-  int32_t* request_slots = &request[1];
+  base::FixedArray<int32_t> request(max_num_slots + 1);
+  int32_t& request_code = request.front();
   for (unsigned int i = EVDEV_ABS_MT_FIRST; i <= EVDEV_ABS_MT_LAST; ++i) {
     if (!HasAbsEvent(i))
       continue;
 
-    memset(request, 0, sizeof(request));
-    *request_code = i;
-    GetSlotValues(fd, path, request, max_num_slots + 1);
+    memset(request.data(), 0, request.memsize());
+    request_code = i;
+    GetSlotValues(fd, path, request.data(), max_num_slots + 1);
 
     std::vector<int32_t>* slots = &slot_values_[i - EVDEV_ABS_MT_FIRST];
-    slots->assign(request_slots, request_slots + max_num_slots);
+    slots->assign(request.begin() + 1, request.begin() + 1 + max_num_slots);
   }
 
   if (!GetDeviceName(fd, path, &name_))
@@ -732,7 +745,7 @@ bool EventDeviceInfo::HasDirect() const {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -752,7 +765,7 @@ bool EventDeviceInfo::HasPointer() const {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -816,11 +829,21 @@ bool IsInKeyboardBlockList(input_id input_id_) {
   return false;
 }
 
+bool IsInKeyboardAllowList(input_id input_id_) {
+  DeviceId id = {input_id_.vendor, input_id_.product};
+  return kKeyboardAllowlist.contains(id);
+}
+
 bool EventDeviceInfo::HasKeyboard() const {
-  return GetKeyboardType() == KeyboardType::VALID_KEYBOARD;
+  KeyboardType type = GetKeyboardType();
+  return type == KeyboardType::VALID_KEYBOARD ||
+         type == KeyboardType::IN_ALLOWLIST;
 }
 
 KeyboardType EventDeviceInfo::GetKeyboardType() const {
+  if (IsInKeyboardAllowList(input_id_)) {
+    return KeyboardType::IN_ALLOWLIST;
+  }
   if (!HasEventType(EV_KEY))
     return KeyboardType::NOT_KEYBOARD;
   if (IsInKeyboardBlockList(input_id_))
@@ -844,6 +867,15 @@ bool EventDeviceInfo::HasMouse() const {
   if (input_id_.vendor == kSteelSeriesBluetoothVendorId &&
       (input_id_.product == kSteelSeriesStratusDuoBluetoothProductId ||
       input_id_.product == kSteelSeriesStratusPlusBluetoothProductId)) {
+    return false;
+  }
+
+  // When floss is enabled, it presents a virtual device used to wake the device
+  // on bluetooth connection. This long term should be reduced down to not
+  // appear as a mouse. For now, filter it out directly. (b/309017352)
+  if (input_id_.vendor == kFlossVirtualSuspendVendorId &&
+      input_id_.product == kFlossVirtualSuspendProductId &&
+      name_ == kFlossVirtualSuspendName) {
     return false;
   }
 
@@ -952,6 +984,7 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
       {0x18d1, 0x5057},  // Google, eel PID (wormdingler)
       {0x18d1, 0x505B},  // Google, Duck PID (quackingstick)
       {0x18d1, 0x5061},  // Google, Jewel PID (starmie)
+      {0x18d1, 0x5067},  // Google, Spikyrock (wugtrio)
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 
@@ -1040,6 +1073,8 @@ std::ostream& operator<<(std::ostream& os, const KeyboardType value) {
       return os << "ui::KeyboardType::STYLUS_BUTTON_DEVICE";
     case KeyboardType::VALID_KEYBOARD:
       return os << "ui::KeyboardType::VALID_KEYBOARD";
+    case KeyboardType::IN_ALLOWLIST:
+      return os << "ui::KeyboardType::IN_ALLOWLIST";
   }
   return os << "ui::KeyboardType::unknown_value("
             << static_cast<unsigned int>(value) << ")";

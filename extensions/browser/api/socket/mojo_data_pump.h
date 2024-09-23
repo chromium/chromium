@@ -63,7 +63,7 @@ class MojoDataPump {
   net::CompletionOnceCallback write_callback_;
   scoped_refptr<net::IOBuffer> pending_write_buffer_;
   int pending_write_buffer_size_ = 0;
-  uint32_t read_size_ = 0;
+  size_t read_size_ = 0;
 };
 
 }  //  namespace extensions

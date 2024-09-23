@@ -41,7 +41,8 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter {
 
  private:
   // The view showing the context menu. Not owned.
-  raw_ptr<views::View> menu_owner_;
+  // TODO(b/342519765): Fix the dangling ptr issue.
+  raw_ptr<views::View, DanglingUntriaged> menu_owner_;
 
   // True if this adapter was created for the shelf application menu items.
   const bool for_application_menu_items_;

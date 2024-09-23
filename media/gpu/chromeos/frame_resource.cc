@@ -21,6 +21,11 @@ VideoFrameResource* FrameResource::AsVideoFrameResource() {
   return nullptr;
 }
 
+const NativePixmapFrameResource* FrameResource::AsNativePixmapFrameResource()
+    const {
+  return nullptr;
+}
+
 FrameResource::ID FrameResource::unique_id() const {
   return unique_id_;
 }

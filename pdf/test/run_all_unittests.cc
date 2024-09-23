@@ -94,12 +94,12 @@ class PdfTestSuite final : public base::TestSuite {
  private:
   void InitializeResourceBundle() {
     ui::RegisterPathProvider();
-    base::FilePath ui_test_pak_path;
-    ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
+    base::FilePath ui_test_pak_path =
+        base::PathService::CheckedGet(ui::UI_TEST_PAK);
     ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
 
-    base::FilePath pdf_tests_pak_path;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pdf_tests_pak_path));
+    base::FilePath pdf_tests_pak_path =
+        base::PathService::CheckedGet(base::DIR_ASSETS);
     pdf_tests_pak_path =
         pdf_tests_pak_path.AppendASCII("pdf_tests_resources.pak");
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

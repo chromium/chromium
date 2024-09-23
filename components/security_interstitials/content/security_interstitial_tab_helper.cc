@@ -3,12 +3,25 @@
 // found in the LICENSE file.
 
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/browser/navigation_handle.h"
 
+namespace {
+
+bool IsInPrimaryMainFrameOrSubFrame(
+    content::NavigationHandle* navigation_handle) {
+  return (navigation_handle->GetNavigatingFrameType() ==
+              content::FrameType::kPrimaryMainFrame ||
+          (navigation_handle->GetNavigatingFrameType() ==
+               content::FrameType::kSubframe &&
+           navigation_handle->GetParentFrame()->IsActive()));
+}
+
+}  // namespace
 namespace security_interstitials {
 
 SecurityInterstitialTabHelper::~SecurityInterstitialTabHelper() {}
@@ -16,7 +29,7 @@ SecurityInterstitialTabHelper::~SecurityInterstitialTabHelper() {}
 void SecurityInterstitialTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSameDocument() ||
-      !navigation_handle->IsInPrimaryMainFrame()) {
+      !IsInPrimaryMainFrameOrSubFrame(navigation_handle)) {
     return;
   }
 
@@ -68,7 +81,7 @@ void SecurityInterstitialTabHelper::AssociateBlockingPage(
         blocking_page) {
   // An interstitial should not be shown in a prerendered page or in a fenced
   // frame. The prerender should just be canceled.
-  DCHECK(navigation_handle->IsInPrimaryMainFrame());
+  CHECK(IsInPrimaryMainFrameOrSubFrame(navigation_handle));
 
   // CreateForWebContents() creates a tab helper if it doesn't yet exist for the
   // WebContents provided by |navigation_handle|.

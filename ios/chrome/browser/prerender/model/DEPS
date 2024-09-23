@@ -9,14 +9,14 @@ include_rules = [
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/tabs/model",
   "+ios/chrome/browser/ntp/model",
-  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/web/model",
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
+  # TODO(crbug.com/40820398): Remove this dependency.
   "^prerender_service_impl.mm": [
-    "+ios/chrome/browser/ui/ntp/new_tab_page_util.h",
+    "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",
   ],
 }
 

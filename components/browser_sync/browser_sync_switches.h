@@ -41,9 +41,26 @@ inline constexpr base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
 // are migrated, at browser startup, to the signed-in non-syncing state.
 BASE_DECLARE_FEATURE(kMigrateSyncingUserToSignedIn);
 
+// Feature parameter for kMigrateSyncingUserToSignedIn.
+// Say the user has sync-the-feature enabled but is in TransportState::PAUSED
+// due to a persistent auth error.
+// - If kMigrateSyncingUserToSignedIn is on & kForceMigrateSyncingUserToSignedIn
+//   is off, MaybeMigrateSyncingUserToSignedIn() will only proceed with the
+//   migration if kMinDelayToMigrateSyncPaused has passed since the first
+//   call, or if the error got resolved in that meantime.
+// - If both flags are on, the migration runs on the first call to
+//   MaybeMigrateSyncingUserToSignedIn() and this value is irrelevant.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kMinDelayToMigrateSyncPaused);
+
 // If enabled, users who were migrated from syncing to signed-in via the above
 // flag are migrated back into the syncing state.
 BASE_DECLARE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn);
+
+// If enabled in addition to `kMigrateSyncingUserToSignedIn`, then all users
+// with Sync-the-feature enabled are migrated, at browser startup, to the
+// signed-in non-syncing state. I.e. this bypasses the "eligibility"
+// requirements.
+BASE_DECLARE_FEATURE(kForceMigrateSyncingUserToSignedIn);
 
 }  // namespace switches
 

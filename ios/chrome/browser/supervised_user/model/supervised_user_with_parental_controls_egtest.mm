@@ -4,17 +4,21 @@
 
 #import "base/test/ios/wait_util.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -54,16 +58,20 @@ static const char* kInterstitialFirstTimeBanner =
 
 @implementation SupervisedUserWithParentalControlsTestCase
 
-- (void)signInSupervisedUserWithSync:(BOOL)withSync {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
-
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:withSync];
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(kIOSQuickDelete);
+  return config;
 }
 
 - (void)signInSupervisedUser {
-  [self signInSupervisedUserWithSync:YES];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 }
 
 - (void)setUp {
@@ -138,32 +146,58 @@ static const char* kInterstitialFirstTimeBanner =
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
   [ChromeEarlGreyUI
       tapPrivacyMenuButton:chrome_test_util::ClearBrowsingDataCell()];
+
   // "Browsing history", "Cookies, Site Data" and "Cached Images and Files"
   // are the default checked options when the prefs are registered. No need to
   // modify them.
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
                         chrome_test_util::ClearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ConfirmClearBrowsingDataButton()]
-      performAction:grey_tap()];
-
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserSignin DISABLED_testSupervisedUserSignin
+#else
+#define MAYBE_testSupervisedUserSignin testSupervisedUserSignin
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the user is signed in.
-- (void)testSupervisedUserSignin {
+- (void)MAYBE_testSupervisedUserSignin {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
+// Tests that the supervised user does not see popular content suggestions.
+- (void)testSupervisedUserOpenNewTabPage {
+  [self signInSupervisedUser];
+
+  [ChromeEarlGreyUI openNewTab];
+
+  // Assert that the most visited tiles are not visible for supervised users.
+  id<GREYMatcher> firstMostVisitedTile = grey_accessibilityID(
+      [kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix
+          stringByAppendingString:@"0"]);
+  [[EarlGrey selectElementWithMatcher:firstMostVisitedTile]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+}
+
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
+  DISABLED_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
+#else
+#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
+  testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that only realized existing web states will display the interstitial
 // when a filtering for them is triggered. Also tests that the filtering logic
 // on existing tabs does not force-realize unrealized states. This is a
 // regression test for bug: 1486459.
-- (void)testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
+- (void)
+    MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
   // Signing in the user and allow all sites.
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -223,9 +257,17 @@ static const char* kInterstitialFirstTimeBanner =
   }
 }
 
+#if !TARGET_IPHONE_SIMULATOR
+#define MAYBE_testSupervisedUserSignedOutOnPolicyChange \
+  DISABLED_testSupervisedUserSignedOutOnPolicyChange
+#else
+#define MAYBE_testSupervisedUserSignedOutOnPolicyChange \
+  testSupervisedUserSignedOutOnPolicyChange
+#endif
+// TODO(crbug.com/331644931): Re-enable on device when fixed.
 // Tests that the user is correctly signed out after signin is disabled via
 // policy.
-- (void)testSupervisedUserSignedOutOnPolicyChange {
+- (void)MAYBE_testSupervisedUserSignedOutOnPolicyChange {
   [self signInSupervisedUser];
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -663,29 +705,34 @@ static const char* kInterstitialFirstTimeBanner =
 
 #pragma mark - Clear Content Behaviour
 
-// Tests that a logged in user with enabled "Sync" remains logged in after
+// Tests that a user in the legacy "syncing" state remains signed in after
 // clearing the browsing data (Cookies and BrowsingHistory).
-- (void)testSupervisedUserWithSyncIsLoggedInAfterClearingBrowsingData {
-  [self signInSupervisedUserWithSync:YES];
+// TODO(crbug.com/40066949): Delete this test after the syncing state is gone.
+- (void)testSupervisedUserWithLegacySyncStaysSignedInAfterClearingBrowsingData {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity
+                 withCapabilities:@{
+                   @(kIsSubjectToParentalControlsCapabilityName) : @YES,
+                 }];
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [self clearBrowsingData];
 
-  // The user should be still logged in.
+  // The user should be still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-// Tests that a logged in user with disabled "Sync" remains logged in after
-// clearing the browsing data (Cookies and BrowsingHistory).
-- (void)testSupervisedUserWithoutSyncIsLoggedInAfterClearingBrowsingData {
-  [self signInSupervisedUserWithSync:NO];
+// Tests that a signed in user remains signed in after clearing the browsing
+// data (Cookies and BrowsingHistory).
+- (void)testSupervisedUserStaysSignedInAfterClearingBrowsingData {
+  [self signInSupervisedUser];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 
   [self clearBrowsingData];
 
-  // The user should be still logged in.
+  // The user should be still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 

@@ -8,10 +8,10 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
@@ -60,9 +60,6 @@ class PhoneFieldParser : public FormFieldParser {
     REGEX_SUFFIX_SEPARATOR,
     REGEX_SUFFIX,
     REGEX_EXTENSION,
-    // Don't use any regex and match an empty label. This is helpful for inputs
-    // like "Phone <input><input>", where only the first fields has a label.
-    EMPTY_LABEL,
   };
 
   // Parsed fields.
@@ -88,23 +85,14 @@ class PhoneFieldParser : public FormFieldParser {
   // Returns all the `PhoneGrammar`s used for parsing.
   static const std::vector<PhoneGrammar>& GetPhoneGrammars();
 
-  // Returns the regular expression string corresponding to |regex_id|
-  static std::u16string GetRegExp(RegexType regex_id);
-
-  // Returns the constant name of the regex corresponding to |regex_id|.
-  // This is useful for logging purposes.
-  static const char* GetRegExpName(RegexType regex_id);
-
   // Returns the name of field type which indicated in JSON corresponding to
   // |regex_id|.
   static std::string GetJSONFieldType(RegexType phonetype_id);
 
-  // Convenient wrapper for ParseFieldSpecifics().
+  // Convenient wrapper for ParseField().
   static bool ParsePhoneField(ParsingContext& context,
                               AutofillScanner* scanner,
-                              base::StringPiece16 regex,
                               raw_ptr<AutofillField>* field,
-                              const char* regex_name,
                               const bool is_country_code_field,
                               const std::string& json_field_type);
 

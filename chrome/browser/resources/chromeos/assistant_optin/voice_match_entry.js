@@ -8,16 +8,16 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../components/common_styles/oobe_common_styles.css.js';
 import './assistant_common_styles.css.js';
 
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../components/behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin} from '../components/mixins/oobe_i18n_mixin.js';
 
 
 /**
  * @constructor
  * @extends {PolymerElement}
  */
-const VoiceMatchEntryBase = mixinBehaviors([OobeI18nBehavior], PolymerElement);
+const VoiceMatchEntryBase = OobeI18nMixin(PolymerElement);
 
 /**
  * @polymer

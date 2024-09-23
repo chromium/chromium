@@ -15,14 +15,19 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
+#import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 @interface PrimaryToolbarView ()
+
 // Factory used to create the buttons.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
 
@@ -86,6 +91,12 @@
     NSMutableArray<NSLayoutConstraint*>* contractedConstraints;
 @property(nonatomic, strong, readwrite)
     NSMutableArray<NSLayoutConstraint*>* contractedNoMarginConstraints;
+
+// Constraints for the tabGroupIndicator.
+@property(nonatomic, strong, readwrite)
+    NSArray<NSLayoutConstraint*>* tabGroupIndicatorTopOmniboxConstraints;
+@property(nonatomic, strong, readwrite)
+    NSArray<NSLayoutConstraint*>* tabGroupIndicatorBottomOmniboxConstraints;
 
 @end
 
@@ -163,6 +174,28 @@
   self.fakeOmniboxTarget = nil;
 }
 
+- (void)updateTabGroupIndicatorAvailability {
+  CHECK(IsTabGroupIndicatorEnabled());
+
+  BOOL isTopOmnibox = self.locationBarView != nil;
+  if (isTopOmnibox) {
+    [NSLayoutConstraint
+        deactivateConstraints:self.tabGroupIndicatorBottomOmniboxConstraints];
+    [NSLayoutConstraint
+        activateConstraints:self.tabGroupIndicatorTopOmniboxConstraints];
+  } else {
+    [NSLayoutConstraint
+        deactivateConstraints:self.tabGroupIndicatorTopOmniboxConstraints];
+    [NSLayoutConstraint
+        activateConstraints:self.tabGroupIndicatorBottomOmniboxConstraints];
+  }
+  self.tabGroupIndicatorView.showSeparator = !isTopOmnibox;
+
+  BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.superview);
+  BOOL isAvailable = !IsCompactHeight(self.superview) && !canShowTabStrip;
+  self.tabGroupIndicatorView.available = isAvailable;
+}
+
 #pragma mark - Properties
 
 - (void)setMatchNTPHeight:(BOOL)matchNTPHeight {
@@ -175,14 +208,72 @@
   [self.superview layoutIfNeeded];
 }
 
+// Sets tabgroupIndicatorView.
+- (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view {
+  CHECK(IsTabGroupIndicatorEnabled());
+  _tabGroupIndicatorView = view;
+  _tabGroupIndicatorView.hidden = YES;
+  _tabGroupIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  _tabGroupIndicatorView.backgroundColor =
+      self.buttonFactory.toolbarConfiguration.backgroundColor;
+  [self addSubview:_tabGroupIndicatorView];
+
+  id<LayoutGuideProvider> safeArea = self.safeAreaLayoutGuide;
+  [NSLayoutConstraint activateConstraints:@[
+    [self.tabGroupIndicatorView.leadingAnchor
+        constraintEqualToAnchor:safeArea.leadingAnchor],
+    [self.tabGroupIndicatorView.trailingAnchor
+        constraintEqualToAnchor:safeArea.trailingAnchor],
+    [self.tabGroupIndicatorView.heightAnchor
+        constraintEqualToConstant:kTabGroupIndicatorHeight],
+  ]];
+  self.tabGroupIndicatorTopOmniboxConstraints = @[
+    [self.tabGroupIndicatorView.bottomAnchor
+        constraintEqualToAnchor:self.locationBarContainer.topAnchor
+                       constant:-kAdaptiveLocationBarVerticalMargin],
+  ];
+  self.tabGroupIndicatorBottomOmniboxConstraints = @[
+    [self.tabGroupIndicatorView.bottomAnchor
+        constraintEqualToAnchor:self.bottomAnchor],
+  ];
+
+  [self updateTabGroupIndicatorAvailability];
+}
+
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {
-  CGFloat height = self.matchNTPHeight
-                       ? content_suggestions::FakeToolbarHeight()
-                       : ToolbarExpandedHeight(
-                             self.traitCollection.preferredContentSizeCategory);
-  return CGSizeMake(UIViewNoIntrinsicMetric, height);
+  CGFloat height = 0;
+
+  BOOL isTopOmnibox = self.locationBarView != nil;
+  if (isTopOmnibox) {
+    height += self.matchNTPHeight
+                  ? content_suggestions::FakeToolbarHeight()
+                  : ToolbarExpandedHeight(
+                        self.traitCollection.preferredContentSizeCategory);
+  }
+
+  // If the tab group indicator is visible, add its height to the total height.
+  if (IsTabGroupIndicatorEnabled() && !_tabGroupIndicatorView.hidden) {
+    height += kTabGroupIndicatorHeight;
+    // If the Omnibox is not at the top, remove the top vertical margin to avoid
+    // extra space when the tab group indicator is present.
+    if (!isTopOmnibox) {
+      height -= kTopToolbarUnsplitMargin;
+    } else {
+    }
+  }
+  // TODO(crbug.com/40279063): Find out why primary toolbar height cannot be
+  // zero. This is a temporary fix for the pdf bug.
+  return CGSizeMake(UIViewNoIntrinsicMetric, height > 0 ? height : 1);
+}
+
+- (void)didMoveToSuperview {
+  if (IsTabGroupIndicatorEnabled()) {
+    // Ensure the tab group indicator's visibility aligns with the new
+    // superview's layout context.
+    [self updateTabGroupIndicatorAvailability];
+  }
 }
 
 #pragma mark - Setup
@@ -408,6 +499,9 @@
   locationBarView.translatesAutoresizingMaskIntoConstraints = NO;
   [locationBarView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                      forAxis:UILayoutConstraintAxisHorizontal];
+  if (IsTabGroupIndicatorEnabled()) {
+    [self updateTabGroupIndicatorAvailability];
+  }
 
   if (!self.locationBarContainer || !locationBarView)
     return;
@@ -417,6 +511,10 @@
   [self.locationBarContainer.trailingAnchor
       constraintGreaterThanOrEqualToAnchor:self.locationBarView.trailingAnchor]
       .active = YES;
+}
+
+- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
+  self.tabGridButton.tabGridButtonStyle = tabGridButtonStyle;
 }
 
 - (NSArray<ToolbarButton*>*)allButtons {

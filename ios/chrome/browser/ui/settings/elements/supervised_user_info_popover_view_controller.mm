@@ -6,8 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/supervised_user/core/common/features.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -16,8 +17,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-NSString* const kFamilyLinkIconName = @"family_link_icon";
 
 NSAttributedString* PrimaryMessage(NSString* fullText) {
   DCHECK(fullText);
@@ -48,9 +47,7 @@ NSAttributedString* SecondaryMessage(BOOL addLearnMoreLink) {
       NSFontAttributeName :
           [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
       NSLinkAttributeName : [NSString
-          stringWithUTF8String:supervised_user::kManagedByParentUiMoreInfoUrl
-                                   .Get()
-                                   .c_str()],
+          stringWithUTF8String:supervised_user::kManagedByParentUiMoreInfoUrl],
     };
 
     attributedString = AttributedStringFromStringWithLink(
@@ -82,11 +79,13 @@ NSAttributedString* SecondaryMessage(BOOL addLearnMoreLink) {
 - (instancetype)initWithMessage:(NSString*)message
          isPresentingFromButton:(BOOL)isPresentingFromButton
                addLearnMoreLink:(BOOL)addLearnMoreLink {
-  return [super
-      initWithPrimaryAttributedString:PrimaryMessage(message)
-            secondaryAttributedString:SecondaryMessage(addLearnMoreLink)
-                                 icon:[UIImage imageNamed:kFamilyLinkIconName]
-               isPresentingFromButton:isPresentingFromButton];
+  return
+      [super initWithPrimaryAttributedString:PrimaryMessage(message)
+                   secondaryAttributedString:SecondaryMessage(addLearnMoreLink)
+                                        icon:CustomSymbolWithPointSize(
+                                                 kFamilylinkSymbol,
+                                                 kSymbolAccessoryPointSize)
+                      isPresentingFromButton:isPresentingFromButton];
 }
 
 #pragma mark - UIViewController

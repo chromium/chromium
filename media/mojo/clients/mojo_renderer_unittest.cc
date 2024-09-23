@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -176,7 +175,7 @@ class MojoRendererTest : public ::testing::Test {
   }
 
   void OnCdmServiceInitialized(mojom::CdmContextPtr cdm_context,
-                               const std::string& error_message) {
+                               CreateCdmStatus status) {
     cdm_context_.set_cdm_id(cdm_context->cdm_id);
   }
 
@@ -214,7 +213,7 @@ class MojoRendererTest : public ::testing::Test {
   StrictMock<MockDemuxer> demuxer_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> streams_;
+  std::vector<DemuxerStream*> streams_;
 
   // Service side bindings (declaration order is critical).
   MojoCdmServiceContext mojo_cdm_service_context_;
@@ -224,9 +223,7 @@ class MojoRendererTest : public ::testing::Test {
   // Service side mocks and helpers.
   raw_ptr<StrictMock<MockRenderer>, AcrossTasksDanglingUntriaged>
       mock_renderer_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RendererClient* remote_renderer_client_;
+  raw_ptr<RendererClient, DanglingUntriaged> remote_renderer_client_;
 
   mojo::SelfOwnedReceiverRef<mojom::Renderer> renderer_receiver_;
 };

@@ -1,18 +1,8 @@
 AXExpandedChanged on AXMenuItem AXDescription='File'
-AXMenuClosed on AXWebArea
-AXMenuClosed on AXWebArea
 === Start Continuation ===
 AXExpandedChanged on AXMenuItem AXDescription='File'
-AXMenuClosed on AXWebArea
-AXMenuClosed on AXWebArea
 === Start Continuation ===
 === Start Continuation ===
 AXExpandedChanged on AXMenuItem AXDescription='File'
-AXMenuClosed on AXWebArea
-AXMenuClosed on AXWebArea
 === Start Continuation ===
-AXMenuClosed on AXWebArea
-AXMenuClosed on AXWebArea
 === Start Continuation ===
-AXMenuClosed on AXWebArea
-AXMenuClosed on AXWebArea

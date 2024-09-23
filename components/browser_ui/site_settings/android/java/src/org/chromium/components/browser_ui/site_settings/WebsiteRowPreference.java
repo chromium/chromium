@@ -61,7 +61,10 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         setTitle(mSiteEntry.getTitleForPreferenceRow());
         setImageView(
                 R.drawable.ic_delete_white_24dp,
-                R.string.webstorage_delete_data_dialog_title,
+                context.getResources()
+                        .getString(
+                                R.string.webstorage_delete_data_content_description,
+                                mSiteEntry.getTitleForPreferenceRow()),
                 (View view) -> {
                     displayResetDialog();
                 });
@@ -118,7 +121,7 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_message);
         TextView offlineText = dialogView.findViewById(R.id.offline_text);
         offlineText.setText(R.string.webstorage_delete_data_dialog_offline_message);
-        // TODO(crbug.com/1342991): Refactor and combine this with the ClearWebsiteStorageDialog
+        // TODO(crbug.com/40231223): Refactor and combine this with the ClearWebsiteStorageDialog
         // code.
         mConfirmationDialog =
                 new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
@@ -140,16 +143,12 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
             SiteDataCleaner.resetPermissions(
                     mSiteSettingsDelegate.getBrowserContextHandle(), (Website) mSiteEntry);
             SiteDataCleaner.clearData(
-                    mSiteSettingsDelegate.getBrowserContextHandle(),
-                    (Website) mSiteEntry,
-                    mOnDeleteCallback);
+                    mSiteSettingsDelegate, (Website) mSiteEntry, mOnDeleteCallback);
         } else {
             SiteDataCleaner.resetPermissions(
                     mSiteSettingsDelegate.getBrowserContextHandle(), (WebsiteGroup) mSiteEntry);
             SiteDataCleaner.clearData(
-                    mSiteSettingsDelegate.getBrowserContextHandle(),
-                    (WebsiteGroup) mSiteEntry,
-                    mOnDeleteCallback);
+                    mSiteSettingsDelegate, (WebsiteGroup) mSiteEntry, mOnDeleteCallback);
         }
     }
 
@@ -194,6 +193,27 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
                 summary = HTTP;
             } else {
                 summary = getContext().getString(R.string.summary_with_one_bullet, HTTP, summary);
+            }
+        }
+
+        if (mSiteSettingsDelegate.shouldShowPrivacySandboxRwsUi()) {
+            if (mSiteEntry.isPartOfRws()) {
+                String rwsSummary =
+                        getContext()
+                                .getResources()
+                                .getQuantityString(
+                                        R.plurals.rws_summary,
+                                        mSiteEntry.getRwsSize(),
+                                        Integer.toString(mSiteEntry.getRwsSize()),
+                                        mSiteEntry.getRwsOwner());
+                if (summary.isEmpty()) {
+                    summary = rwsSummary;
+                } else {
+                    summary =
+                            getContext()
+                                    .getString(
+                                            R.string.summary_with_one_bullet, summary, rwsSummary);
+                }
             }
         }
 

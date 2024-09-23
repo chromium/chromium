@@ -28,7 +28,8 @@
 #define HAVE_NEON 1
 #define HAVE_NEON_DOTPROD 1
 #define HAVE_NEON_I8MM 1
-#define HAVE_SVE 1
+#define HAVE_SVE 0
+#define HAVE_SVE2 0
 #define HAVE_MIPS32 0
 #define HAVE_DSPR2 0
 #define HAVE_MSA 0
@@ -56,7 +57,6 @@
 #define CONFIG_INSTALL_LIBS 1
 #define CONFIG_INSTALL_SRCS 0
 #define CONFIG_DEBUG 0
-#define CONFIG_PROFILE 0
 #define CONFIG_GPROF 0
 #define CONFIG_GCOV 0
 #define CONFIG_RVCT 0

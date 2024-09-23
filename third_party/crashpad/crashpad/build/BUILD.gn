@@ -72,4 +72,17 @@ if (crashpad_is_ios) {
       ]
     }
   }
+
+  if (crashpad_is_in_chromium) {
+    import("//build/config/ios/ios_sdk.gni")
+    crashpad_is_ios_app_extension = ios_is_app_extension
+  } else {
+    crashpad_is_ios_app_extension = false
+  }
+
+  config("crashpad_is_ios_app_extension") {
+    if (crashpad_is_ios_app_extension) {
+      defines = [ "CRASHPAD_IS_IOS_APP_EXTENSION" ]
+    }
+  }
 }

@@ -420,7 +420,7 @@ TEST_F(AssistantManagerServiceImplTest,
   EXPECT_EQ("<access-token>", mojom_service_controller().access_token());
 }
 
-// TODO(crbug.com/1431315): Re-enable this test
+// TODO(crbug.com/40902244): Re-enable this test
 TEST_F(AssistantManagerServiceImplTest,
        DISABLED_ShouldPassUserInfoToAssistantManager) {
   Start();
@@ -435,7 +435,7 @@ TEST_F(AssistantManagerServiceImplTest,
 }
 
 TEST_F(AssistantManagerServiceImplTest,
-       // TODO(crbug.com/1431315): Re-enable this test
+       // TODO(crbug.com/40902244): Re-enable this test
        DISABLED_ShouldPassEmptyUserInfoToAssistantManager) {
   Start();
   WaitForState(AssistantManagerService::STARTED);
@@ -748,7 +748,7 @@ TEST_F(AssistantManagerServiceImplTest,
   mojom_mock.FlushForTesting();
 }
 
-// TODO(crbug.com/1431315): Re-enable this test
+// TODO(crbug.com/40902244): Re-enable this test
 TEST_F(AssistantManagerServiceImplTest, DISABLED_ShouldPropagateColorMode) {
   ASSERT_FALSE(mojom_service_controller().dark_mode_enabled().has_value());
 

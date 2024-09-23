@@ -10,7 +10,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,43 +24,45 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.settings.ClearDataProgressDialog;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.ActionType;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
-import org.chromium.components.signin.GAIAServiceType;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -71,23 +76,21 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Settings screen that allows the user to clear browsing data.
- * The user can choose which types of data to clear (history, cookies, etc), and the time range
- * from which to clear data.
+ * Settings screen that allows the user to clear browsing data. The user can choose which types of
+ * data to clear (history, cookies, etc), and the time range from which to clear data.
  */
 public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         implements BrowsingDataBridge.OnClearBrowsingDataListener,
                 Preference.OnPreferenceClickListener,
                 Preference.OnPreferenceChangeListener,
-                SignOutDialogCoordinator.Listener,
                 SigninManager.SignInStateObserver,
                 CustomDividerFragment,
-                ProfileDependentSetting,
-                FragmentHelpAndFeedbackLauncher {
+                SettingsPage,
+                ProfileDependentSetting {
     static final String FETCHER_SUPPLIED_FROM_OUTSIDE =
             "ClearBrowsingDataFetcherSuppliedFromOutside";
 
-    private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
+    static final String CLEAR_BROWSING_DATA_REFERRER = "ClearBrowsingDataReferrer";
 
     /** Represents a single item in the dialog. */
     private static class Item
@@ -110,12 +113,16 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             mParent = parent;
             mOption = option;
             mCheckbox = checkbox;
-            mCounter =
-                    new BrowsingDataCounterBridge(
-                            parent.getProfile(),
-                            this,
-                            ClearBrowsingDataFragment.getDataType(mOption),
-                            mParent.getClearBrowsingDataTabType());
+            if (option == DialogOption.CLEAR_TABS && !enabled) {
+                mCheckbox.setSummary(R.string.clear_tabs_disabled_summary);
+            } else {
+                mCounter =
+                        new BrowsingDataCounterBridge(
+                                parent.getProfile(),
+                                this,
+                                ClearBrowsingDataFragment.getDataType(mOption),
+                                mParent.getClearBrowsingDataTabType());
+            }
 
             mCheckbox.setOnPreferenceClickListener(this);
             mCheckbox.setEnabled(enabled);
@@ -123,14 +130,19 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
             int dp = mParent.getResources().getConfiguration().smallestScreenWidthDp;
             if (dp >= MIN_DP_FOR_ICON) {
+                @ColorRes
+                int colorId =
+                        enabled
+                                ? R.color.default_icon_color_tint_list
+                                : R.color.default_icon_color_disabled;
                 mCheckbox.setIcon(
                         SettingsUtils.getTintedIcon(
-                                context, ClearBrowsingDataFragment.getIcon(option)));
+                                context, ClearBrowsingDataFragment.getIcon(option), colorId));
             }
         }
 
         public void destroy() {
-            mCounter.destroy();
+            if (mCounter != null) mCounter.destroy();
         }
 
         public @DialogOption int getOption() {
@@ -204,6 +216,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         DialogOption.CLEAR_HISTORY,
         DialogOption.CLEAR_COOKIES_AND_SITE_DATA,
         DialogOption.CLEAR_CACHE,
+        DialogOption.CLEAR_TABS,
         DialogOption.CLEAR_PASSWORDS,
         DialogOption.CLEAR_FORM_DATA,
         DialogOption.CLEAR_SITE_SETTINGS
@@ -217,10 +230,11 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         int CLEAR_HISTORY = 0;
         int CLEAR_COOKIES_AND_SITE_DATA = 1;
         int CLEAR_CACHE = 2;
-        int CLEAR_PASSWORDS = 3;
-        int CLEAR_FORM_DATA = 4;
-        int CLEAR_SITE_SETTINGS = 5;
-        int NUM_ENTRIES = 6;
+        int CLEAR_TABS = 3;
+        int CLEAR_PASSWORDS = 4;
+        int CLEAR_FORM_DATA = 5;
+        int CLEAR_SITE_SETTINGS = 6;
+        int NUM_ENTRIES = 7;
     }
 
     public static final String CLEAR_BROWSING_DATA_FETCHER = "clearBrowsingDataFetcher";
@@ -233,11 +247,15 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     private ProgressDialog mProgressDialog;
     private Item[] mItems;
     private ClearBrowsingDataFetcher mFetcher;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     // This is the dialog we show to the user that lets them 'uncheck' (or exclude) the above
     // important domains from being cleared.
     private ConfirmImportantSitesDialogFragment mConfirmImportantSitesDialog;
+
+    private @TimePeriod int mLastSelectedTimePeriod;
+    private boolean mShouldShowPostDeleteFeedback;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /**
      * @return All available {@link DialogOption} entries.
@@ -257,7 +275,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             case DialogOption.CLEAR_CACHE:
                 return BrowsingDataType.CACHE;
             case DialogOption.CLEAR_COOKIES_AND_SITE_DATA:
-                return BrowsingDataType.COOKIES;
+                return BrowsingDataType.SITE_DATA;
             case DialogOption.CLEAR_FORM_DATA:
                 return BrowsingDataType.FORM_DATA;
             case DialogOption.CLEAR_HISTORY:
@@ -266,6 +284,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 return BrowsingDataType.PASSWORDS;
             case DialogOption.CLEAR_SITE_SETTINGS:
                 return BrowsingDataType.SITE_SETTINGS;
+            case DialogOption.CLEAR_TABS:
+                return BrowsingDataType.TABS;
             default:
                 throw new IllegalArgumentException();
         }
@@ -285,6 +305,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 return "clear_passwords_checkbox";
             case DialogOption.CLEAR_SITE_SETTINGS:
                 return "clear_site_settings_checkbox";
+            case DialogOption.CLEAR_TABS:
+                return "clear_tabs_checkbox";
             default:
                 throw new IllegalArgumentException();
         }
@@ -301,9 +323,11 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             case DialogOption.CLEAR_HISTORY:
                 return R.drawable.ic_watch_later_24dp;
             case DialogOption.CLEAR_PASSWORDS:
-                return R.drawable.ic_vpn_key_grey;
+                return R.drawable.ic_password_manager_key;
             case DialogOption.CLEAR_SITE_SETTINGS:
                 return R.drawable.ic_tv_options_input_settings_rotated_grey;
+            case DialogOption.CLEAR_TABS:
+                return R.drawable.ic_tab_icon_24dp;
             default:
                 throw new IllegalArgumentException();
         }
@@ -312,14 +336,16 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     /**
      * A method to create the {@link ClearBrowsingDataFragment} arguments.
      *
+     * @param referrer The name of the referrer activity.
      * @param isFetcherSuppliedFromOutside A boolean indicating whether the {@link
-     *         ClearBrowsingDataFetcher} would be supplied later or it needs to be re-created.
+     *     ClearBrowsingDataFetcher} would be supplied later or it needs to be re-created.
      */
-    public static Bundle createFragmentArgs(boolean isFetcherSuppliedFromOutside) {
+    public static Bundle createFragmentArgs(String referrer, boolean isFetcherSuppliedFromOutside) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(
                 ClearBrowsingDataFragment.FETCHER_SUPPLIED_FROM_OUTSIDE,
                 isFetcherSuppliedFromOutside);
+        bundle.putString(ClearBrowsingDataFragment.CLEAR_BROWSING_DATA_REFERRER, referrer);
         return bundle;
     }
 
@@ -378,7 +404,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         }
 
         final @CookieOrCacheDeletionChoice int choice;
-        if (dataTypes.contains(BrowsingDataType.COOKIES)) {
+        if (dataTypes.contains(BrowsingDataType.SITE_DATA)) {
             choice =
                     dataTypes.contains(BrowsingDataType.CACHE)
                             ? CookieOrCacheDeletionChoice.BOTH_COOKIES_AND_CACHE
@@ -401,25 +427,22 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
         Object spinnerSelection =
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();
-        @TimePeriod int timePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
+        mLastSelectedTimePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
         int[] dataTypesArray = CollectionUtil.integerCollectionToIntArray(dataTypes);
         if (excludedDomains != null && excludedDomains.length != 0) {
             BrowsingDataBridge.getForProfile(mProfile)
                     .clearBrowsingDataExcludingDomains(
                             this,
                             dataTypesArray,
-                            timePeriod,
+                            mLastSelectedTimePeriod,
                             excludedDomains,
                             excludedDomainReasons,
                             ignoredDomains,
                             ignoredDomainReasons);
         } else {
             BrowsingDataBridge.getForProfile(mProfile)
-                    .clearBrowsingData(this, dataTypesArray, timePeriod);
+                    .clearBrowsingData(this, dataTypesArray, mLastSelectedTimePeriod);
         }
-
-        // Clear all reported entities.
-        AppIndexingReporter.getInstance().clearHistory();
     }
 
     private void dismissProgressDialog() {
@@ -430,7 +453,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     }
 
     /** Returns the list of supported {@link DialogOption}. */
-    protected abstract List<Integer> getDialogOptions();
+    protected abstract List<Integer> getDialogOptions(Bundle fragmentArgs);
 
     /** Returns whether is a basic or advanced Clear Browsing Data tab. */
     protected abstract @ClearBrowsingDataTab int getClearBrowsingDataTabType();
@@ -454,6 +477,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     @Override
     public void onBrowsingDataCleared() {
         if (getActivity() == null) return;
+        mShouldShowPostDeleteFeedback = QuickDeleteController.isQuickDeleteFollowupEnabled();
 
         // If the user deleted their browsing history, the dialog about other forms of history
         // is enabled, and it has never been shown before, show it. Note that opening a new
@@ -472,7 +496,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, true);
         } else {
             dismissProgressDialog();
-            getActivity().finish();
+            getActivity().onBackPressed();
             RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, false);
         }
     }
@@ -560,14 +584,11 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         return spinnerOptionIndex;
     }
 
-    private void setUpClearBrowsingDataFetcher(Bundle savedInstanceState) {
+    private void setUpClearBrowsingDataFetcher(Bundle savedInstanceState, Bundle fragmentArgs) {
         if (savedInstanceState != null) {
             mFetcher = savedInstanceState.getParcelable(CLEAR_BROWSING_DATA_FETCHER);
             return;
         }
-
-        Bundle fragmentArgs = getArguments();
-        assert fragmentArgs != null : "A valid fragment argument is required.";
 
         boolean isSuppliedFromOutside =
                 fragmentArgs.getBoolean(
@@ -582,11 +603,14 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setUpClearBrowsingDataFetcher(savedInstanceState);
-        getActivity().setTitle(R.string.clear_browsing_data_title);
+        Bundle fragmentArgs = getArguments();
+        assert fragmentArgs != null : "A valid fragment argument is required.";
+
+        setUpClearBrowsingDataFetcher(savedInstanceState, fragmentArgs);
+        mPageTitle.set(getString(R.string.clear_browsing_data_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.clear_browsing_data_preferences_tab);
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        List<Integer> options = getDialogOptions();
+        List<Integer> options = getDialogOptions(fragmentArgs);
         mItems = new Item[options.size()];
 
         BrowsingDataBridge browsingDataBridge = BrowsingDataBridge.getForProfile(mProfile);
@@ -606,6 +630,15 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                         false);
             }
 
+            // Disable tabs closure if the user is in multi-window mode.
+            // TODO(b/333036591): Remove this check once tab closure works properly across
+            // multi-instances.
+            if (option == DialogOption.CLEAR_TABS) {
+                enabled = !isInMultiWindowMode();
+                RecordHistogram.recordBooleanHistogram(
+                        "Privacy.ClearBrowsingData.TabsEnabled", enabled);
+            }
+
             mItems[i] =
                     new Item(
                             getActivity(),
@@ -613,7 +646,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                             option,
                             (ClearBrowsingDataCheckBoxPreference)
                                     findPreference(getPreferenceKey(option)),
-                            isOptionSelectedByDefault(option),
+                            enabled && isOptionSelectedByDefault(option),
                             enabled);
         }
 
@@ -646,6 +679,11 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         mSigninManager.addSignInStateObserver(this);
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override
@@ -695,6 +733,10 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
             item.destroy();
         }
         mSigninManager.removeSignInStateObserver(this);
+        if (mShouldShowPostDeleteFeedback) {
+            triggerHapticFeedback();
+            showSnackbar();
+        }
     }
 
     // We either show the dialog, or modify the current one to display our messages.  This avoids
@@ -750,13 +792,15 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
     private Callback<View> createSignOutOfChromeCallback() {
         return view ->
-                SignOutDialogCoordinator.show(
+                SignOutCoordinator.startSignOutFlow(
                         requireContext(),
                         mProfile,
+                        getFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
-                        this,
-                        ActionType.CLEAR_PRIMARY_ACCOUNT,
-                        GAIAServiceType.GAIA_SERVICE_TYPE_NONE);
+                        ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager(),
+                        SignoutReason.USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
+                        /* showConfirmDialog= */ true,
+                        () -> {});
     }
 
     /**
@@ -837,42 +881,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         }
     }
 
-    /** {@link SignOutDialogCoordinator.Listener} implementation */
-    @Override
-    public void onSignOutClicked(boolean forceWipeUserData) {
-        // In case the user is not signed in, we guard the sign out so we do not hit a native crash.
-        if (!mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            return;
-        }
-        mSigninManager.runAfterOperationInProgress(
-                () -> {
-                    // In case supervised users reach this flow, remove the preference and guard
-                    // against signing out.
-                    if (!mSigninManager.isSignOutAllowed()) {
-                        updateSignOutOfChromeText();
-                        return;
-                    }
-                    final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
-                    mSigninManager.signOut(
-                            org.chromium.components.signin.metrics.SignoutReason
-                                    .USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
-                            new SigninManager.SignOutCallback() {
-                                @Override
-                                public void preWipeData() {
-                                    clearDataProgressDialog.show(
-                                            getChildFragmentManager(),
-                                            CLEAR_DATA_PROGRESS_DIALOG_TAG);
-                                }
-
-                                @Override
-                                public void signOutComplete() {
-                                    clearDataProgressDialog.dismissAllowingStateLoss();
-                                }
-                            },
-                            forceWipeUserData);
-                });
-    }
-
     /** {@link SigninManager.SignInStateObserver} implementation. */
     @Override
     public void onSignOutAllowedChanged() {
@@ -893,15 +901,69 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            mHelpAndFeedbackLauncher.show(
-                    getActivity(), getString(R.string.help_context_clear_browsing_data), null);
+            HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                    .show(
+                            getActivity(),
+                            getString(R.string.help_context_clear_browsing_data),
+                            null);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    /** Get the last focused activity that has not been destroyed. */
+    private Activity getLastFocusedActivity() {
+        if (ApplicationStatus.hasVisibleActivities()) {
+            return ApplicationStatus.getLastTrackedFocusedActivity();
+        } else {
+            return null;
+        }
+    }
+
+    /** A method to show the post-delete snack-bar confirmation. */
+    private void showSnackbar() {
+        SnackbarManager snackbarManager = null;
+        Activity activity = getLastFocusedActivity();
+        if (activity instanceof SnackbarManager.SnackbarManageable) {
+            snackbarManager = ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+        }
+        if (snackbarManager == null) return;
+
+        String snackbarMessage;
+        if (mLastSelectedTimePeriod == TimePeriod.ALL_TIME) {
+            snackbarMessage =
+                    getActivity().getString(R.string.quick_delete_snackbar_all_time_message);
+        } else {
+            snackbarMessage =
+                    getActivity()
+                            .getString(
+                                    R.string.quick_delete_snackbar_message,
+                                    TimePeriodUtils.getTimePeriodString(
+                                            getActivity(), mLastSelectedTimePeriod));
+        }
+        Snackbar snackbar =
+                Snackbar.make(
+                        snackbarMessage,
+                        /* controller= */ null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_CLEAR_BROWSING_DATA);
+        snackbarManager.showSnackbar(snackbar);
+    }
+
+    private void triggerHapticFeedback() {
+        Activity activity = getLastFocusedActivity();
+        if (activity == null) return;
+        Vibrator v = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
+        final long duration = 50;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(duration, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            // Deprecated in API 26.
+            v.vibrate(duration);
+        }
+    }
+
+    private boolean isInMultiWindowMode() {
+        return MultiWindowUtils.getInstanceCount() > 1;
     }
 }

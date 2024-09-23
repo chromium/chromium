@@ -21,6 +21,7 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -88,17 +89,17 @@ IN_PROC_BROWSER_TEST_P(RendererAppContainerEnabledTest, IsRespected) {
   GURL url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Multiple renderer processes might have started, but this test just needs
-  // one to check if it's running inside App Container or not. It is safe to
-  // hold this Pid here because no renderers can start or stop while on the UI
-  // thread.
-  base::ProcessId renderer_process_id = browser()
-                                            ->tab_strip_model()
-                                            ->GetActiveWebContents()
-                                            ->GetPrimaryMainFrame()
-                                            ->GetProcess()
-                                            ->GetProcess()
-                                            .Pid();
+  // Duplicate the base::Process to keep a valid Windows handle to to the
+  // process open, this ensures that even if the RPH gets destroyed during the
+  // runloop below, the handle to the process remains valid, and the pid is
+  // never reused by Windows.
+  const auto renderer_process = browser()
+                                    ->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetPrimaryMainFrame()
+                                    ->GetProcess()
+                                    ->GetProcess()
+                                    .Duplicate();
 
   base::RunLoop run_loop;
   base::Value out_args;
@@ -118,8 +119,10 @@ IN_PROC_BROWSER_TEST_P(RendererAppContainerEnabledTest, IsRespected) {
     ASSERT_TRUE(process);
     std::optional<double> pid = process->FindDouble("processId");
     ASSERT_TRUE(pid.has_value());
-    if (base::checked_cast<base::ProcessId>(pid.value()) != renderer_process_id)
+    if (base::checked_cast<base::ProcessId>(pid.value()) !=
+        renderer_process.Pid()) {
       continue;
+    }
     found_renderer = true;
     auto* lowbox_sid = process->FindString("lowboxSid");
     if (!lowbox_sid)

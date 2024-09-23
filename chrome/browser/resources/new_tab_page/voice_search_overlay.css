@@ -1,0 +1,190 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --receiving-audio-color: var(--google-red-500);
+  --speak-shown-duration: 2s;
+}
+
+.display-stack {
+  display: grid;
+}
+
+.display-stack > * {
+  grid-column-start: 1;
+  grid-row-start: 1;
+}
+
+#dialog {
+  align-items: center;
+  background-color: var(--color-new-tab-page-overlay-background);
+  border: none;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  left: 0;
+  margin: 0;
+  max-height: initial;
+  max-width: initial;
+  padding: 0;
+  top: 0;
+  width: 100%;
+}
+
+#closeButton {
+  --cr-icon-button-fill-color:
+      var(--color-new-tab-page-overlay-secondary-foreground);
+  margin: 0;
+  position: absolute;
+  top: 16px;
+}
+
+:host-context([dir='ltr']) #closeButton {
+  right: 16px;
+}
+
+:host-context([dir='rtl']) #closeButton {
+  left: 16px;
+}
+
+#content {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  width: 660px;
+}
+
+#texts {
+  color: var(--color-new-tab-page-overlay-secondary-foreground);
+  flex-grow: 1;
+  font-size: 32px;
+  text-align: start;
+}
+
+*[text] {
+  transition-delay: 200ms;
+  transition-duration: 500ms;
+  transition-property: opacity, padding-inline-start;
+  transition-timing-function: ease-out;
+  visibility: hidden;
+  width: 100%;
+}
+
+*[text='waiting'],
+*[text='speak'] {
+  opacity: 0;
+  /* Hiding overflow to prevent jitter when the content area is narrow. */
+  overflow-x: hidden;
+  padding-inline-start: 50px;
+}
+
+*[text][visible] {
+  opacity: 1;
+  padding-inline-start: 0;
+  visibility: visible;
+}
+
+*[text='speak'][visible] #speak {
+  opacity: 0;
+  transition: opacity 0ms var(--speak-shown-duration);
+}
+
+*[text='speak'] #listening {
+  opacity: 0;
+}
+
+*[text='speak'][visible] #listening {
+  opacity: 1;
+  transition: opacity 750ms ease-out var(--speak-shown-duration);
+}
+
+#finalResult {
+  color: var(--color-new-tab-page-overlay-foreground);
+}
+
+#errors,
+#errorLinks {
+  display: inline;
+}
+
+#errorLinks a {
+  color: var(--cr-link-color);
+  font-size: 18px;
+  font-weight: 500;
+  margin-inline-start: 0.25em;
+}
+
+#micContainer {
+  --mic-button-size: 165px;
+  --mic-container-size: 300px;
+  align-items: center;
+  flex-shrink: 0;
+  height: var(--mic-container-size);
+  justify-items: center;
+  width: var(--mic-container-size);
+}
+
+#micVolume {
+  --mic-volume-size: calc(var(--mic-button-size) +
+      var(--mic-volume-level) * (var(--mic-container-size) -
+          var(--mic-button-size)));
+  align-items: center;
+  background-color: var(--color-new-tab-page-border);
+  border-radius: 50%;
+  display: flex;
+  height: var(--mic-volume-size);
+  justify-content: center;
+  transition-duration: var(--mic-volume-duration);
+  transition-property: height, width;
+  transition-timing-function: ease-in-out;
+  width: var(--mic-volume-size);
+}
+
+#micVolumeCutout {
+  background-color: var(--color-new-tab-page-overlay-background);
+  border-radius: 50%;
+  height: var(--mic-button-size);
+  width: var(--mic-button-size);
+}
+
+#micIconContainer {
+  align-items: center;
+  border: 1px solid var(--color-new-tab-page-mic-border-color);
+  border-radius: 50%;
+  display: flex;
+  height: var(--mic-button-size);
+  justify-content: center;
+  transition: background-color 200ms ease-in-out;
+  width: var(--mic-button-size);
+}
+
+.receiving #micIconContainer {
+  background-color: var(--receiving-audio-color);
+  border-color: var(--receiving-audio-color);
+}
+
+#micIcon {
+  -webkit-mask-image: url(icons/mic.svg);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(--color-new-tab-page-mic-icon-color);
+  height: 80px;
+  transition: background-color 200ms ease-in-out;
+  width: 80px;
+}
+
+.listening #micIcon {
+  background-color: var(--receiving-audio-color);
+}
+
+.receiving #micIcon {
+  background-color: white;
+}

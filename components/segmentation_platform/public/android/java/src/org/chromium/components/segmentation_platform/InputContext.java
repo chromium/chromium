@@ -15,7 +15,9 @@ import org.chromium.url.GURL;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-/** Java version of InputContext, can be passed directly to native to execute segmentation models. */
+/**
+ * Java version of InputContext, can be passed directly to native to execute segmentation models.
+ */
 @JNINamespace("segmentation_platform")
 public class InputContext {
     private final HashMap<String, ProcessedValue> mMetadata = new HashMap<>();
@@ -177,6 +179,14 @@ public class InputContext {
                         int64Values,
                         urlKeys,
                         urlValues);
+    }
+
+    public ProcessedValue getEntryForTesting(String key) {
+        return mMetadata.get(key);
+    }
+
+    public int getSizeForTesting() {
+        return mMetadata.size();
     }
 
     @NativeMethods

@@ -93,10 +93,10 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 
   // TODO(tdresser): Find a way to avoid sleeping like this. See
   // crbug.com/405282 for details.
-  void GiveItSomeTime() {
+  void GiveItSomeTime(int delay_ms = 10) {
     base::RunLoop run_loop;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(10));
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(delay_ms));
     run_loop.Run();
   }
 
@@ -107,7 +107,6 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     // Set the scroll animation duration to a large number so that
     // we ensure secondary GestureScrollUpdates update the animation
     // instead of starting a new one.
@@ -131,15 +130,24 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
   // scrolling by |distance|. This will perform a smooth scroll on platforms
   // which support it.
   void DoSmoothWheelScroll(const gfx::Vector2d& distance) {
+    std::vector<gfx::Vector2d> scroll_events = {
+        gfx::Vector2d(distance.x(), -distance.y()),
+        gfx::Vector2d(distance.x(), -distance.y())};
+    DoScroll(distance, scroll_events);
+  }
+
+  void DoScroll(gfx::Vector2d begin_position,
+                std::vector<gfx::Vector2d> scroll_events,
+                int delay_ms = 10) {
     blink::WebGestureEvent event =
         blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
-            distance.x(), -distance.y(), blink::WebGestureDevice::kTouchpad, 1);
+            begin_position.x(), -begin_position.y(),
+            blink::WebGestureDevice::kTouchpad, 1);
     event.data.scroll_begin.delta_hint_units =
         ui::ScrollGranularity::kScrollByPixel;
     GetWidgetHost()->ForwardGestureEvent(event);
 
-    const uint32_t kNumWheelScrolls = 2;
-    for (uint32_t i = 0; i < kNumWheelScrolls; i++) {
+    for (uint32_t i = 0; i < scroll_events.size(); i++) {
       // Install a VisualStateCallback and wait for the callback in response
       // to each GestureScrollUpdate before sending the next GSU. This will
       // ensure the events are not coalesced (resulting in fewer end-to-end
@@ -150,9 +158,10 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
           base::BindOnce(&ScrollLatencyBrowserTest::InvokeVisualStateCallback,
                          base::Unretained(this)));
 
+      auto distance_to_scroll = scroll_events[i];
       blink::WebGestureEvent event2 =
           blink::SyntheticWebGestureEventBuilder::BuildScrollUpdate(
-              distance.x(), -distance.y(), 0,
+              distance_to_scroll.x(), distance_to_scroll.y(), 0,
               blink::WebGestureDevice::kTouchpad);
       event2.data.scroll_update.delta_units =
           ui::ScrollGranularity::kScrollByPixel;
@@ -162,7 +171,7 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
         // TODO: There's currently no way to block until a GPU swap
         // completes. Until then we need to spin and wait. See
         // crbug.com/897520 for more details.
-        GiveItSomeTime();
+        GiveItSomeTime(delay_ms);
       }
     }
   }
@@ -182,6 +191,11 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
 
   size_t GetSampleCountForHistogram(const std::string& histogram_name) const {
     return histogram_tester_.GetAllSamples(histogram_name).size();
+  }
+
+  std::string GetScaledDeltaTraceValue(int offset) {
+    return base::NumberToString(
+        static_cast<double>(GetWidgetHost()->GetDeviceScaleFactor() * offset));
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -229,10 +243,9 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
   frame_observer->WaitForAnyFrameSubmission();
 
   EXPECT_TRUE(VerifyRecordedSamplesForHistogram(
-      0, "EventLatency.GestureScrollUpdate.TotalLatency"));
+      0, "EventLatency.GestureScrollUpdate.TotalLatency2"));
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // A basic smoke test verifying that key scroll-related events are recorded
 // during scrolling. This test performs a simple scroll and expects to see three
 // EventLatency events with the correct types.
@@ -263,6 +276,74 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingEventLatencyTrace) {
                   std::vector<std::string>{"FIRST_GESTURE_SCROLL_UPDATE"},
                   std::vector<std::string>{"GESTURE_SCROLL_UPDATE"}));
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+
+// Basic smoke test for predictor jank metrics.
+#if BUILDFLAG(IS_ANDROID)
+// TODO(b/345225978): the android-x86-rel bot occasionally flakes due to
+// missing events after Swap.
+#if !defined(ARCH_CPU_X86_FAMILY)
+IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, ScrollingPredictor) {
+  LoadURL();
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace("input.scrolling");
+
+  const gfx::Vector2d scroll_1(0, -5);
+  const gfx::Vector2d scroll_2(0, 1);   // Previous update and subsequent update
+                                        // will produce jank where
+                                        // min(prev, next)/curr > threshold.
+  const gfx::Vector2d scroll_3(0, -5);  // Previous update and subsequent update
+                                        // will not produce jank.
+  const gfx::Vector2d scroll_4(0, -10);  // Previous update and subsequent
+                                         // update will produce jank where
+                                         // curr/max(prev, next) > threshold.
+  const gfx::Vector2d scroll_5(0, 5);
+
+  DoScroll(gfx::Vector2d(0, 25),
+           {scroll_1, scroll_2, scroll_3, scroll_4, scroll_5},
+           16 /*delay_ms - ensure there is enough time for vsync*/
+  );
+
+  // Allow enough time for the inputs to be processed and the trace events
+  // to be recorded.
+  GiveItSomeTime(100);
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+  std::string query =
+      R"(
+      INCLUDE PERFETTO MODULE chrome.scroll_jank.predictor_error;
+
+      SELECT
+        prev_delta,
+        delta_y,
+        next_delta,
+        predictor_jank,
+        delta_threshold
+      FROM chrome_predictor_error
+        ORDER BY present_ts
+      ;
+      )";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(
+      result.value(),
+      ::testing::ElementsAre(
+          std::vector<std::string>{"prev_delta", "delta_y", "next_delta",
+                                   "predictor_jank", "delta_threshold"},
+          std::vector<std::string>{GetScaledDeltaTraceValue(scroll_1.y()),
+                                   GetScaledDeltaTraceValue(scroll_2.y()),
+                                   GetScaledDeltaTraceValue(scroll_3.y()),
+                                   "3.8", "1.2"},
+          std::vector<std::string>{GetScaledDeltaTraceValue(scroll_2.y()),
+                                   GetScaledDeltaTraceValue(scroll_3.y()),
+                                   GetScaledDeltaTraceValue(scroll_4.y()), "0",
+                                   "1.2"},
+          std::vector<std::string>{GetScaledDeltaTraceValue(scroll_3.y()),
+                                   GetScaledDeltaTraceValue(scroll_4.y()),
+                                   GetScaledDeltaTraceValue(scroll_5.y()),
+                                   "0.8", "1.2"}));
+}
+#endif  // !defined(ARCH_CPU_X86_FAMILY)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

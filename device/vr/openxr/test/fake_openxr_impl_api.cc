@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/containers/contains.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/test/openxr_negotiate.h"
@@ -144,6 +149,21 @@ XrResult xrCreateActionSpace(XrSession session,
             "XrSpace is nullptr");
   RETURN_IF_XR_FAILED(g_test_helper.CreateActionSpace(*create_info, space));
 
+  return XR_SUCCESS;
+}
+
+XrResult xrCreateHandTrackerEXT(XrSession session,
+                                const XrHandTrackerCreateInfoEXT* create_info,
+                                XrHandTrackerEXT* hand_tracker) {
+  DVLOG(2) << __func__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrHandTrackerCreateInfoEXT is nullptr");
+  RETURN_IF(create_info->hand == XR_HAND_MAX_ENUM_EXT,
+            XR_ERROR_VALIDATION_FAILURE, "XrHand is unsupported");
+  RETURN_IF(hand_tracker == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrHandTrackerEXT is null");
+  *hand_tracker = g_test_helper.CreateHandTracker(create_info->hand);
   return XR_SUCCESS;
 }
 
@@ -296,6 +316,12 @@ XrResult xrCreateSwapchain(XrSession session,
 XrResult xrDestroyActionSet(XrActionSet action_set) {
   DVLOG(2) << __FUNCTION__;
   RETURN_IF_XR_FAILED(g_test_helper.DestroyActionSet(action_set));
+  return XR_SUCCESS;
+}
+
+XrResult xrDestroyHandTrackerEXT(XrHandTrackerEXT hand_tracker) {
+  DVLOG(2) << __func__;
+  RETURN_IF_XR_FAILED(g_test_helper.DestroyHandTracker(hand_tracker));
   return XR_SUCCESS;
 }
 
@@ -477,11 +503,13 @@ XrResult xrEnumerateInstanceExtensionProperties(
   RETURN_IF(properties == nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrExtensionProperties is nullptr");
   for (uint32_t i = 0; i < OpenXrTestHelper::kNumExtensionsSupported; i++) {
+    size_t dest_size = std::size(properties[i].extensionName);
+    DCHECK(dest_size > 0);
     properties[i].type = XR_TYPE_EXTENSION_PROPERTIES;
-    errno_t error = strcpy_s(properties[i].extensionName,
-                             std::size(properties[i].extensionName),
-                             OpenXrTestHelper::kExtensions[i]);
-    DCHECK(error == 0);
+    size_t copy_length =
+        base::strlcpy(properties[i].extensionName,
+                      OpenXrTestHelper::kExtensions[i], dest_size);
+    DCHECK(copy_length < dest_size);
     properties[i].extensionVersion = 1;
   }
 
@@ -861,6 +889,22 @@ XrResult xrGetSystemProperties(XrInstance instance,
   return XR_SUCCESS;
 }
 
+XrResult xrLocateHandJointsEXT(XrHandTrackerEXT hand_tracker,
+                               const XrHandJointsLocateInfoEXT* locate_info,
+                               XrHandJointLocationsEXT* locations) {
+  DVLOG(2) << __func__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateHandTracker(hand_tracker));
+  RETURN_IF(locate_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrHandJointsLocateInfoEXT is nullptr");
+  RETURN_IF(locations == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrHandJointLocationsEXT is nullptr");
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSpace(locate_info->baseSpace));
+  g_test_helper.LocateJoints(hand_tracker, locate_info, locations);
+  // No tests actually use hand joint data, so we leave them unpopulated at this
+  // time.
+  return XR_SUCCESS;
+}
+
 XrResult xrLocateSpace(XrSpace space,
                        XrSpace base_space,
                        XrTime time,
@@ -874,10 +918,7 @@ XrResult xrLocateSpace(XrSpace space,
             "XrSpaceLocation is nullptr");
   g_test_helper.LocateSpace(space, &(location->pose));
 
-  location->locationFlags = XR_SPACE_LOCATION_ORIENTATION_VALID_BIT |
-                            XR_SPACE_LOCATION_POSITION_VALID_BIT |
-                            XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT |
-                            XR_SPACE_LOCATION_POSITION_TRACKED_BIT;
+  location->locationFlags = OpenXrTestHelper::kValidTrackedPoseFlags;
 
   return XR_SUCCESS;
 }
@@ -1020,8 +1061,9 @@ XrResult xrPathToString(XrInstance instance,
   RETURN_IF(
       buffer_capacity_input <= path_string.size(), XR_ERROR_SIZE_INSUFFICIENT,
       "xrPathToString inputsize is not large enough to hold the output string");
-  errno_t error = strcpy_s(buffer, *buffer_count_output, path_string.data());
-  DCHECK_EQ(error, 0);
+  size_t copied_size =
+      base::strlcpy(buffer, path_string.data(), *buffer_count_output);
+  DCHECK_LT(copied_size, *buffer_count_output);
 
   return XR_SUCCESS;
 }
@@ -1114,113 +1156,68 @@ XrResult xrWaitSwapchainImage(XrSwapchain swapchain,
 // Getter for extension methods. Casts the correct function dynamically based on
 // the method name provided.
 // Please add new OpenXR APIs below in alphabetical order.
+#define TRY_LOAD_METHOD(method_name)                                 \
+  do {                                                               \
+    if (strcmp(name, #method_name) == 0) {                           \
+      *function = reinterpret_cast<PFN_xrVoidFunction>(method_name); \
+      return XR_SUCCESS;                                             \
+    }                                                                \
+  } while (false)
+
 XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
                                          const char* name,
                                          PFN_xrVoidFunction* function) {
-  if (strcmp(name, "xrAcquireSwapchainImage") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrAcquireSwapchainImage);
-  } else if (strcmp(name, "xrAttachSessionActionSets") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrAttachSessionActionSets);
-  } else if (strcmp(name, "xrBeginFrame") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrBeginFrame);
-  } else if (strcmp(name, "xrBeginSession") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrBeginSession);
-  } else if (strcmp(name, "xrCreateAction") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateAction);
-  } else if (strcmp(name, "xrCreateActionSet") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateActionSet);
-  } else if (strcmp(name, "xrCreateActionSpace") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateActionSpace);
-  } else if (strcmp(name, "xrCreateInstance") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateInstance);
-  } else if (strcmp(name, "xrCreateReferenceSpace") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateReferenceSpace);
-  } else if (strcmp(name, "xrCreateSession") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateSession);
-  } else if (strcmp(name, "xrCreateSwapchain") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateSwapchain);
-  } else if (strcmp(name, "xrDestroyActionSet") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroyActionSet);
-  } else if (strcmp(name, "xrDestroyInstance") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroyInstance);
-  } else if (strcmp(name, "xrDestroySession") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroySession);
-  } else if (strcmp(name, "xrDestroySpace") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroySpace);
-  } else if (strcmp(name, "xrDestroySwapchain") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroySwapchain);
-  } else if (strcmp(name, "xrEndFrame") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrEndFrame);
-  } else if (strcmp(name, "xrEndSession") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrEndSession);
-  } else if (strcmp(name, "xrEnumerateEnvironmentBlendModes") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrEnumerateEnvironmentBlendModes);
-  } else if (strcmp(name, "xrEnumerateInstanceExtensionProperties") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(
-        xrEnumerateInstanceExtensionProperties);
-  } else if (strcmp(name, "xrEnumerateSwapchainFormats") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrEnumerateSwapchainFormats);
-  } else if (strcmp(name, "xrEnumerateSwapchainImages") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrEnumerateSwapchainImages);
-  } else if (strcmp(name, "xrEnumerateViewConfigurations") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrEnumerateViewConfigurations);
-  } else if (strcmp(name, "xrEnumerateViewConfigurationViews") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrEnumerateViewConfigurationViews);
+  TRY_LOAD_METHOD(xrAcquireSwapchainImage);
+  TRY_LOAD_METHOD(xrAttachSessionActionSets);
+  TRY_LOAD_METHOD(xrBeginFrame);
+  TRY_LOAD_METHOD(xrBeginSession);
+  TRY_LOAD_METHOD(xrCreateAction);
+  TRY_LOAD_METHOD(xrCreateActionSet);
+  TRY_LOAD_METHOD(xrCreateActionSpace);
+  TRY_LOAD_METHOD(xrCreateHandTrackerEXT);
+  TRY_LOAD_METHOD(xrCreateInstance);
+  TRY_LOAD_METHOD(xrCreateReferenceSpace);
+  TRY_LOAD_METHOD(xrCreateSession);
+  TRY_LOAD_METHOD(xrCreateSwapchain);
+  TRY_LOAD_METHOD(xrDestroyActionSet);
+  TRY_LOAD_METHOD(xrDestroyHandTrackerEXT);
+  TRY_LOAD_METHOD(xrDestroyInstance);
+  TRY_LOAD_METHOD(xrDestroySession);
+  TRY_LOAD_METHOD(xrDestroySpace);
+  TRY_LOAD_METHOD(xrDestroySwapchain);
+  TRY_LOAD_METHOD(xrEndFrame);
+  TRY_LOAD_METHOD(xrEndSession);
+  TRY_LOAD_METHOD(xrEnumerateEnvironmentBlendModes);
+  TRY_LOAD_METHOD(xrEnumerateInstanceExtensionProperties);
+  TRY_LOAD_METHOD(xrEnumerateSwapchainFormats);
+  TRY_LOAD_METHOD(xrEnumerateSwapchainImages);
+  TRY_LOAD_METHOD(xrEnumerateViewConfigurations);
+  TRY_LOAD_METHOD(xrEnumerateViewConfigurationViews);
 #if BUILDFLAG(IS_WIN)
-  } else if (strcmp(name, "xrGetD3D11GraphicsRequirementsKHR") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrGetD3D11GraphicsRequirementsKHR);
+  TRY_LOAD_METHOD(xrGetD3D11GraphicsRequirementsKHR);
 #endif
-  } else if (strcmp(name, "xrGetActionStateFloat") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetActionStateFloat);
-  } else if (strcmp(name, "xrGetActionStateBoolean") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetActionStateBoolean);
-  } else if (strcmp(name, "xrGetActionStateVector2f") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetActionStateVector2f);
-  } else if (strcmp(name, "xrGetActionStatePose") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetActionStatePose);
-  } else if (strcmp(name, "xrGetCurrentInteractionProfile") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrGetCurrentInteractionProfile);
-  } else if (strcmp(name, "xrGetReferenceSpaceBoundsRect") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrGetReferenceSpaceBoundsRect);
-  } else if (strcmp(name, "xrGetViewConfigurationProperties") == 0) {
-    *function =
-        reinterpret_cast<PFN_xrVoidFunction>(xrGetViewConfigurationProperties);
-  } else if (strcmp(name, "xrGetSystem") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetSystem);
-  } else if (strcmp(name, "xrGetSystemProperties") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetSystemProperties);
-  } else if (strcmp(name, "xrLocateSpace") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrLocateSpace);
-  } else if (strcmp(name, "xrLocateViews") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrLocateViews);
-  } else if (strcmp(name, "xrPollEvent") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrPollEvent);
-  } else if (strcmp(name, "xrReleaseSwapchainImage") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrReleaseSwapchainImage);
-  } else if (strcmp(name, "xrSuggestInteractionProfileBindings") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(
-        xrSuggestInteractionProfileBindings);
-  } else if (strcmp(name, "xrStringToPath") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrStringToPath);
-  } else if (strcmp(name, "xrPathToString") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrPathToString);
-  } else if (strcmp(name, "xrSyncActions") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrSyncActions);
-  } else if (strcmp(name, "xrWaitFrame") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrWaitFrame);
-  } else if (strcmp(name, "xrWaitSwapchainImage") == 0) {
-    *function = reinterpret_cast<PFN_xrVoidFunction>(xrWaitSwapchainImage);
-  } else {
-    return XR_ERROR_FUNCTION_UNSUPPORTED;
-  }
+  TRY_LOAD_METHOD(xrGetActionStateFloat);
+  TRY_LOAD_METHOD(xrGetActionStateBoolean);
+  TRY_LOAD_METHOD(xrGetActionStateVector2f);
+  TRY_LOAD_METHOD(xrGetActionStatePose);
+  TRY_LOAD_METHOD(xrGetCurrentInteractionProfile);
+  TRY_LOAD_METHOD(xrGetReferenceSpaceBoundsRect);
+  TRY_LOAD_METHOD(xrGetViewConfigurationProperties);
+  TRY_LOAD_METHOD(xrGetSystem);
+  TRY_LOAD_METHOD(xrGetSystemProperties);
+  TRY_LOAD_METHOD(xrLocateHandJointsEXT);
+  TRY_LOAD_METHOD(xrLocateSpace);
+  TRY_LOAD_METHOD(xrLocateViews);
+  TRY_LOAD_METHOD(xrPollEvent);
+  TRY_LOAD_METHOD(xrReleaseSwapchainImage);
+  TRY_LOAD_METHOD(xrSuggestInteractionProfileBindings);
+  TRY_LOAD_METHOD(xrStringToPath);
+  TRY_LOAD_METHOD(xrPathToString);
+  TRY_LOAD_METHOD(xrSyncActions);
+  TRY_LOAD_METHOD(xrWaitFrame);
+  TRY_LOAD_METHOD(xrWaitSwapchainImage);
 
-  return XR_SUCCESS;
+  return XR_ERROR_FUNCTION_UNSUPPORTED;
 }
+
+#undef TRY_LOAD_METHOD

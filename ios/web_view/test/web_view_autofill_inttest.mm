@@ -84,10 +84,19 @@ NSString* const kTestFormHtml =
 class WebViewAutofillTest : public WebViewInttestBase {
  protected:
   WebViewAutofillTest()
-      : autofill_controller_(web_view_.autofillController),
-        autofill_controller_delegate_(
+      : autofill_controller_delegate_(
             OCMProtocolMock(@protocol(CWVAutofillControllerDelegate))) {
+    data_source_ =
+        OCMStrictProtocolMock(@protocol(CWVSyncControllerDataSource));
+    OCMStub([data_source_ allKnownIdentities]).andReturn(@[]);
+    CWVSyncController.dataSource = data_source_;
+    autofill_controller_ = web_view_.autofillController;
     autofill_controller_.delegate = autofill_controller_delegate_;
+  }
+
+  void TearDown() override {
+    [(id)data_source_ verify];
+    [(id)autofill_controller_delegate_ verify];
   }
 
   // Loads a test page with a single form and waits until Autofill has parsed
@@ -172,6 +181,7 @@ class WebViewAutofillTest : public WebViewInttestBase {
   id autofill_controller_delegate_ = nil;
   id<CWVNavigationDelegate> navigation_delegate_ = nil;
   UIView* dummy_super_view_ = nil;
+  id<CWVSyncControllerDataSource> data_source_;
 };
 
 // Tests that CWVAutofillControllerDelegate receives callbacks.
@@ -238,7 +248,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   [autofill_controller_delegate_
       verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
-  // TODO(crbug.com/1444468): `userInitiated` flipped from `NO` in iOS 16.1 to
+  // TODO(crbug.com/40911875): `userInitiated` flipped from `NO` in iOS 16.1 to
   // `YES` in 16.4, so we cannot reliably verify it until the bug is fixed.
   [[[autofill_controller_delegate_ expect] ignoringNonObjectArgs]
          autofillController:autofill_controller_
@@ -319,6 +329,7 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
   EXPECT_NSEQ(main_frame_id, fetched_suggestion.frameID);
 
   [autofill_controller_ acceptSuggestion:fetched_suggestion
+                                 atIndex:0
                        completionHandler:nil];
   NSString* filled_script =
       [NSString stringWithFormat:@"document.getElementById('%@').value",

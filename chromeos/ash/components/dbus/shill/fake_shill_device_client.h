@@ -85,7 +85,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   // ShillDeviceClient::TestInterface overrides.
   void AddDevice(const std::string& device_path,
                  const std::string& type,
-                 const std::string& name) override;
+                 const std::string& name,
+                 const std::string& address) override;
   void RemoveDevice(const std::string& device_path) override;
   void ClearDevices() override;
   base::Value* GetDeviceProperty(const std::string& device_path,

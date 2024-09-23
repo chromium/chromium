@@ -9,7 +9,6 @@ import {I18nString} from './i18n_string.js';
 import {SvgWrapper} from './lit/components/svg-wrapper.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as state from './state.js';
-import {PerfEvent} from './type.js';
 import * as util from './util.js';
 
 /**
@@ -112,16 +111,6 @@ export enum IndicatorType {
  * modes/cameras.
  */
 export function setup(): void {
-  state.addObserver(PerfEvent.CAMERA_SWITCHING, (val) => {
-    if (val) {
-      hide();
-    }
-  });
-  state.addObserver(PerfEvent.MODE_SWITCHING, (val) => {
-    if (val) {
-      hide();
-    }
-  });
   state.addObserver(state.State.STREAMING, (val) => {
     if (!val) {
       hide();
@@ -188,6 +177,12 @@ function updatePosition(
       value = rect[elProperty] + offset;
     }
 
+    if (toastProperty === PositionProperty.CENTER) {
+      const targetElementRect = targetElement.getBoundingClientRect();
+      value -= targetElementRect.width / 2;
+      style.set(PositionProperty.LEFT, CSS.px(value));
+      continue;
+    }
     if (toastProperty === PositionProperty.RIGHT) {
       value = window.innerWidth - value;
     } else if (toastProperty === PositionProperty.BOTTOM) {
@@ -213,11 +208,11 @@ class Toast {
     this.cancelHandle = setInterval(() => {
       updatePositions(anchor, positionInfos);
     }, TOAST_POSITION_UPDATE_MS);
-    updatePositions(anchor, positionInfos);
   }
 
   show(): void {
     this.parent.appendChild(this.template);
+    updatePositions(this.anchor, this.positionInfos);
   }
 
   focus(): void {
@@ -396,4 +391,13 @@ export function focus(): void {
     return;
   }
   globalEffectPayload.toast.focus();
+}
+
+/**
+ * Show the new feature toast for preview OCR scanning.
+ */
+export function showPreviewOCRToast(parent: HTMLElement): void {
+  const modeSelector = dom.get(
+      'mode-selector[i18n-new-feature=new_preview_ocr_toast]', HTMLElement);
+  showNewFeature(modeSelector, parent);
 }

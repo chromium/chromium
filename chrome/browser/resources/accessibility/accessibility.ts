@@ -21,6 +21,7 @@ enum AxMode {
   LABEL_IMAGES = 1 << 6,
   PDF_PRINTING = 1 << 7,
   PDF_OCR = 1 << 8,
+  ANNOTATE_MAIN_NODE = 1 << 9,
 }
 
 interface Data {
@@ -68,8 +69,11 @@ interface InitData {
   viewsAccessibility: boolean;
   widgets: WidgetData[];
 
+  supportedApiTypes: string[];
+  apiType: string;
+  locked: EnabledStatus;
+
   html: EnabledStatus;
-  internal: EnabledStatus;
   native: EnabledStatus;
   pdfPrinting: EnabledStatus;
   screenreader: EnabledStatus;
@@ -126,6 +130,10 @@ class BrowserProxy {
 
   setGlobalFlag(flagName: string, enabled: boolean) {
     chrome.send('setGlobalFlag', [{flagName, enabled}]);
+  }
+
+  setGlobalString(stringName: string, value: string) {
+    chrome.send('setGlobalString', [{stringName, value}]);
   }
 }
 
@@ -240,7 +248,8 @@ function initialize() {
   bindCheckbox('text', data.text);
   bindCheckbox('screenreader', data.screenreader);
   bindCheckbox('html', data.html);
-  bindCheckbox('internal', data.internal);
+  bindDropdown('apiType', data.supportedApiTypes, data.apiType);
+  bindCheckbox('locked', data.locked);
 
   getRequiredElement('pages').textContent = '';
 
@@ -299,6 +308,25 @@ function bindCheckbox(name: string, value: EnabledStatus) {
   }
   checkbox.addEventListener('change', function() {
     browserProxy.setGlobalFlag(name, checkbox.checked);
+    document.location.reload();
+  });
+}
+
+function bindDropdown(name: string, options: string[], value: string) {
+  const dropdown = getRequiredElement<HTMLSelectElement>(name);
+  // Remove any existing options.
+  dropdown.textContent = '';
+  // Add options based on the input array.
+  for (const optionName of options) {
+    const option = document.createElement('option');
+    option.textContent = optionName!;
+    dropdown.appendChild(option);
+  }
+  dropdown.value = value;
+  dropdown.addEventListener('change', function() {
+    // Make sure that the dropdown value is included in options.
+    assert(options.includes(dropdown.value));
+    browserProxy.setGlobalString(name, dropdown.value);
     document.location.reload();
   });
 }
@@ -369,6 +397,9 @@ function formatRow(
     row.appendChild(createModeElement(
         AxMode.LABEL_IMAGES, pageData, 'screenreader',
         /*readonly=*/ true));
+    row.appendChild(createModeElement(
+        AxMode.ANNOTATE_MAIN_NODE, pageData, 'screenreader',
+        /* readOnly= */ true));
   } else {
     const siteInfo = document.createElement('span');
     siteInfo.appendChild(formatValue(data, 'name'));
@@ -472,6 +503,8 @@ function getNameForAccessibilityMode(mode: AxMode): string {
       return 'PDF printing';
     case AxMode.PDF_OCR:
       return 'PDF OCR';
+    case AxMode.ANNOTATE_MAIN_NODE:
+      return 'Annotate main node';
     default:
       assertNotReached();
   }
@@ -487,23 +520,28 @@ function createModeElement(
     element.classList.add('readOnlyMode');
   } else {
     element.setAttribute('is', 'action-link');
-    element.setAttribute('role', 'button');
   }
+
+  element.role = 'button';
 
   const stateText = ((currentMode & mode) !== 0) ? 'true' : 'false';
   const isEnabled =
       (data as unknown as {[k: string]: boolean})[globalStateName];
   const accessibilityModeName = getNameForAccessibilityMode(mode);
+
+  element.ariaLabel = `${accessibilityModeName} for ${data.name}`;
+  element.ariaPressed = stateText;
+
   if (isEnabled) {
     element.textContent = accessibilityModeName + ': ' + stateText;
   } else {
     element.textContent = accessibilityModeName + ': disabled';
     element.classList.add('disabled');
+    element.ariaDisabled = 'true';
   }
-  element.setAttribute(
-      'aria-label', `${accessibilityModeName} for ${data.name}: ${stateText}`);
-  if (!readOnly) {
-    element.setAttribute('aria-pressed', stateText);
+  if (readOnly) {
+    element.ariaDisabled = 'true';
+  } else {
     element.addEventListener(
         'click', toggleAccessibility.bind(null, data, mode, globalStateName));
   }

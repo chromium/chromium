@@ -27,7 +27,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {castExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {Constructor} from '../common/types';
+import {Constructor} from '../common/types.js';
 import {routes} from '../router.js';
 
 import {MultiDeviceFeatureMixin, MultiDeviceFeatureMixinInterface} from './multidevice_feature_mixin.js';

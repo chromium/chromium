@@ -106,14 +106,17 @@ void LayoutCustomScrollbarPart::Trace(Visitor* visitor) const {
 
 // TODO(crbug.com/1020913): Support subpixel layout of scrollbars and remove
 // ToInt() in the following functions.
+// TODO(crbug.com/40339056): This could handle intrinsic sizing keywords
+// and calc-size() a bit better than it does.
 int LayoutCustomScrollbarPart::ComputeSize(const Length& length,
                                            int container_size) const {
   NOT_DESTROYED();
-  if (length.IsSpecified()) {
+  if (!length.HasAutoOrContentOrIntrinsic() && !length.HasStretch()) {
+    CHECK(length.IsSpecified());
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   }
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
-      scrollbar_->ScaleFromDIP(), StyleRef().ScrollbarWidth());
+      scrollbar_->ScaleFromDIP(), StyleRef().UsedScrollbarWidth());
 }
 
 int LayoutCustomScrollbarPart::ComputeWidth(int container_width) const {
@@ -123,13 +126,13 @@ int LayoutCustomScrollbarPart::ComputeWidth(int container_width) const {
     return 0;
   }
 
-  int width = ComputeSize(style.UsedWidth(), container_width);
-  int min_width = style.UsedMinWidth().IsAuto()
+  int width = ComputeSize(style.Width(), container_width);
+  int min_width = style.MinWidth().IsAuto()
                       ? 0
-                      : ComputeSize(style.UsedMinWidth(), container_width);
-  int max_width = style.UsedMaxWidth().IsNone()
+                      : ComputeSize(style.MinWidth(), container_width);
+  int max_width = style.MaxWidth().IsNone()
                       ? width
-                      : ComputeSize(style.UsedMaxWidth(), container_width);
+                      : ComputeSize(style.MaxWidth(), container_width);
   return std::max(min_width, std::min(max_width, width));
 }
 
@@ -140,13 +143,13 @@ int LayoutCustomScrollbarPart::ComputeHeight(int container_height) const {
     return 0;
   }
 
-  int height = ComputeSize(style.UsedHeight(), container_height);
-  int min_height = style.UsedMinHeight().IsAuto()
+  int height = ComputeSize(style.Height(), container_height);
+  int min_height = style.MinHeight().IsAuto()
                        ? 0
-                       : ComputeSize(style.UsedMinHeight(), container_height);
-  int max_height = style.UsedMaxHeight().IsNone()
+                       : ComputeSize(style.MinHeight(), container_height);
+  int max_height = style.MaxHeight().IsNone()
                        ? height
-                       : ComputeSize(style.UsedMaxHeight(), container_height);
+                       : ComputeSize(style.MaxHeight(), container_height);
   return std::max(min_height, std::min(max_height, height));
 }
 
@@ -165,11 +168,10 @@ int LayoutCustomScrollbarPart::ComputeLength() const {
   NOT_DESTROYED();
   DCHECK_NE(kScrollbarBGPart, part_);
 
-  gfx::Rect visible_content_rect =
-      scrollbar_->GetScrollableArea()->VisibleContentRect(kIncludeScrollbars);
-  if (scrollbar_->Orientation() == kHorizontalScrollbar)
-    return ComputeWidth(visible_content_rect.width());
-  return ComputeHeight(visible_content_rect.height());
+  if (scrollbar_->Orientation() == kHorizontalScrollbar) {
+    return ComputeWidth(scrollbar_->FrameRect().width());
+  }
+  return ComputeHeight(scrollbar_->FrameRect().height());
 }
 
 void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
@@ -179,7 +181,7 @@ void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
 
 LayoutPoint LayoutCustomScrollbarPart::LocationInternal() const {
   NOT_DESTROYED();
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PhysicalSize LayoutCustomScrollbarPart::Size() const {

@@ -11,10 +11,13 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/frame_interval_inputs_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/offset_tag_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/region_capture_bounds_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom-shared.h"
@@ -64,11 +67,6 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static bool has_shared_element_resources(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.has_shared_element_resources;
-  }
-
-  static bool is_resourceless_software_draw_with_scroll_or_animation(
-      const viz::CompositorFrameMetadata& metadata) {
-    return metadata.is_resourceless_software_draw_with_scroll_or_animation;
   }
 
   static bool is_handling_interaction(
@@ -121,13 +119,6 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.min_page_scale_factor;
   }
 
-  static std::optional<base::TimeDelta> preferred_frame_interval(
-      const viz::CompositorFrameMetadata& metadata) {
-    DCHECK(!metadata.preferred_frame_interval ||
-           metadata.preferred_frame_interval.value() >= base::TimeDelta());
-    return metadata.preferred_frame_interval;
-  }
-
   static bool top_controls_visible_height_set(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.top_controls_visible_height.has_value();
@@ -156,6 +147,31 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static const viz::RegionCaptureBounds& capture_bounds(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.capture_bounds;
+  }
+
+  static const std::vector<viz::OffsetTagDefinition>& offset_tag_definitions(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.offset_tag_definitions;
+  }
+
+  static const std::vector<viz::OffsetTagValue>& offset_tag_values(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.offset_tag_values;
+  }
+
+  static const std::optional<
+      blink::SameDocNavigationScreenshotDestinationToken>&
+  screenshot_destination(const viz::CompositorFrameMetadata& metadata) {
+    return metadata.screenshot_destination;
+  }
+
+  static bool is_software(const viz::CompositorFrameMetadata& metadata) {
+    return metadata.is_software;
+  }
+
+  static const viz::FrameIntervalInputs& frame_interval_inputs(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.frame_interval_inputs;
   }
 
   static bool Read(viz::mojom::CompositorFrameMetadataDataView data,

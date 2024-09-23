@@ -5,8 +5,10 @@
 #include "chrome/browser/icon_loader.h"
 
 #include <windows.h>
+
 #include <shellapi.h>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,6 +32,7 @@ class IconLoaderHelper {
  public:
   static void ExecuteLoadIcon(
       base::FilePath filename,
+      base::File file,
       chrome::mojom::IconSize size,
       float scale,
       gfx::Image default_icon,
@@ -45,10 +48,9 @@ class IconLoaderHelper {
   IconLoaderHelper& operator=(const IconLoaderHelper&) = delete;
 
  private:
-  void StartReadIconRequest();
+  void StartReadIconRequest(base::File file);
   void OnConnectionError();
-  void OnReadIconExecuted(const gfx::ImageSkia& icon,
-                          const std::u16string& group);
+  void OnReadIconExecuted(const gfx::ImageSkia& icon);
 
   using IconLoaderHelperCallback =
       base::OnceCallback<void(gfx::Image image,
@@ -71,6 +73,7 @@ class IconLoaderHelper {
 
 void IconLoaderHelper::ExecuteLoadIcon(
     base::FilePath filename,
+    base::File file,
     chrome::mojom::IconSize size,
     float scale,
     gfx::Image default_icon,
@@ -93,7 +96,7 @@ void IconLoaderHelper::ExecuteLoadIcon(
       std::move(helper), std::move(icon_loaded_callback), target_task_runner);
 
   helper_raw->set_finally(std::move(finally_callback));
-  helper_raw->StartReadIconRequest();
+  helper_raw->StartReadIconRequest(std::move(file));
 }
 
 IconLoaderHelper::IconLoaderHelper(base::FilePath filename,
@@ -109,9 +112,9 @@ IconLoaderHelper::IconLoaderHelper(base::FilePath filename,
       &IconLoaderHelper::OnConnectionError, base::Unretained(this)));
 }
 
-void IconLoaderHelper::StartReadIconRequest() {
+void IconLoaderHelper::StartReadIconRequest(base::File file) {
   remote_read_icon_->ReadIcon(
-      filename_, size_, scale_,
+      std::move(file), size_, scale_,
       base::BindOnce(&IconLoaderHelper::OnReadIconExecuted,
                      base::Unretained(this)));
 }
@@ -124,11 +127,10 @@ void IconLoaderHelper::OnConnectionError() {
   std::move(finally_).Run(std::move(default_icon_), filename_.value());
 }
 
-void IconLoaderHelper::OnReadIconExecuted(const gfx::ImageSkia& icon,
-                                          const std::u16string& group) {
+void IconLoaderHelper::OnReadIconExecuted(const gfx::ImageSkia& icon) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::wstring icon_group = base::AsWString(group);
+  std::wstring icon_group = filename_.value();
   if (icon.isNull()) {
     std::move(finally_).Run(std::move(default_icon_), icon_group);
   } else {
@@ -152,7 +154,7 @@ gfx::Image GetIconForFileExtension(const std::wstring& group,
       size = SHGFI_LARGEICON;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   gfx::Image image;
@@ -244,14 +246,23 @@ void IconLoader::ReadIconInSandbox() {
       size = chrome::mojom::IconSize::kLarge;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  target_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&IconLoaderHelper::ExecuteLoadIcon, std::move(path), size,
-                     scale_, std::move(default_icon), target_task_runner_,
-                     std::move(callback_)));
-
+  base::File file;
+  file.Initialize(path, base::File::FLAG_READ |
+                            base::File::FLAG_WIN_SHARE_DELETE |
+                            base::File::FLAG_OPEN);
+  if (file.IsValid()) {
+    target_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&IconLoaderHelper::ExecuteLoadIcon, std::move(path),
+                       std::move(file), size, scale_, std::move(default_icon),
+                       target_task_runner_, std::move(callback_)));
+  } else {
+    target_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), std::move(default_icon),
+                                  path.value()));
+  }
   delete this;
 }

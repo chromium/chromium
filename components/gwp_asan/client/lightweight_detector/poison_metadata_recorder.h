@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <memory>
+#include <vector>
 
 #include "base/export_template.h"
 #include "base/gtest_prod_util.h"

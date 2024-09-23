@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 #define COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 
+#include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -39,9 +42,25 @@ class AccountChecker {
   // enabled.
   virtual bool IsSyncingBookmarks();
 
+  // Check whether a specific sync entity is enabled by the user. This means
+  // the user has chosen to sync the provided model type and does not
+  // necessarily mean sync is active.
+  virtual bool IsSyncTypeEnabled(syncer::UserSelectableType type);
+
   virtual bool IsAnonymizedUrlDataCollectionEnabled();
 
   virtual bool IsSubjectToParentalControls();
+
+  // Whether a user is allowed to use model execution features.
+  virtual bool CanUseModelExecutionFeatures();
+
+  // Gets the user's country as determined at startup.
+  virtual std::string GetCountry();
+
+  // Gets the user's locale as determine at startup.
+  virtual std::string GetLocale();
+
+  virtual PrefService* GetPrefs();
 
  protected:
   friend class ShoppingService;
@@ -49,6 +68,8 @@ class AccountChecker {
 
   // This class should only be initialized in ShoppingService.
   AccountChecker(
+      std::string country,
+      std::string locale,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
@@ -78,7 +99,7 @@ class AccountChecker {
       // Passing the endpoint_fetcher ensures the endpoint_fetcher's
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
-      // TODO(crbug.com/1362026): Avoid passing this fetcher.
+      // TODO(crbug.com/40238190): Avoid passing this fetcher.
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> responses);
 
@@ -89,12 +110,16 @@ class AccountChecker {
       // Passing the endpoint_fetcher ensures the endpoint_fetcher's
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
-      // TODO(crbug.com/1362026): Avoid passing this fetcher.
+      // TODO(crbug.com/40238190): Avoid passing this fetcher.
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> responses);
 
   void OnFetchPriceEmailPrefJsonParsed(
       data_decoder::DataDecoder::ValueOrError result);
+
+  std::string country_;
+
+  std::string locale_;
 
   raw_ptr<PrefService> pref_service_;
 

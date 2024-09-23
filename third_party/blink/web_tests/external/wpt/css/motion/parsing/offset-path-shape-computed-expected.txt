@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] Property offset-path value 'shape(from 0px 0px, line to 10px 10px)'
+  assert_true: 'shape(from 0px 0px, line to 10px 10px)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 1em 50px, line to 10rem 10%)'
+  assert_true: 'shape(from 1em 50px, line to 10rem 10%)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, move by 10px 5px, line by 20px 40%, close)'
+  assert_true: 'shape(from 10px 10px, move by 10px 5px, line by 20px 40%, close)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, hline by 10px, vline to 5rem)'
+  assert_true: 'shape(from 10px 10px, hline by 10px, vline to 5rem)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, vline by 5%, hline to 1px)'
+  assert_true: 'shape(from 10px 10px, vline by 5%, hline to 1px)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, curve to 50px 20px via 10rem 1%)'
+  assert_true: 'shape(from 10px 10px, curve to 50px 20px via 10rem 1%)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, curve to 50px 20px via 10rem 1px 20% 1em)'
+  assert_true: 'shape(from 10px 10px, curve to 50px 20px via 10rem 1px 20% 1em)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, smooth to 50px 20px via 10rem 1%)'
+  assert_true: 'shape(from 10px 10px, smooth to 50px 20px via 10rem 1%)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, smooth to 50px 3pt)'
+  assert_true: 'shape(from 10px 10px, smooth to 50px 3pt)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, arc to 50px 3pt of 10px 10px)'
+  assert_true: 'shape(from 10px 10px, arc to 50px 3pt of 10px 10px)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10px 10px, arc to 50px 3pt of 10px 10px small rotate 0deg)'
+  assert_true: 'shape(from 10px 10px, arc to 50px 3pt of 10px 10px small rotate 0deg)' is a supported value for offset-path. expected true got false
+[FAIL] Property offset-path value 'shape(from 10% 1rem, arc to 50px 3pt of 20% cw large rotate 25deg)'
+  assert_true: 'shape(from 10% 1rem, arc to 50px 3pt of 20% cw large rotate 25deg)' is a supported value for offset-path. expected true got false
+Harness: the test ran to completion.
+

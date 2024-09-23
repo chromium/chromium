@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 
@@ -16,6 +17,7 @@ namespace autofill {
 class AutofillOfferData;
 struct ServerCvc;
 class AutofillWalletUsageData;
+class BankAccount;
 class CreditCard;
 struct CreditCardCloudTokenData;
 class Iban;
@@ -56,6 +58,13 @@ void SetAutofillWalletSpecificsFromMaskedIban(
     sync_pb::AutofillWalletSpecifics* wallet_specifics,
     bool enforce_utf8 = false);
 
+// Sets the fields of the `wallet_specifics` based on the specified
+// `benefit`. If `enforce_utf8`, ids are encoded into UTF-8.
+void SetAutofillWalletSpecificsFromCardBenefit(
+    const CreditCardBenefit& benefit,
+    bool enforce_utf8,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics);
+
 // Sets the field of the `wallet_usage_specifics` based on the specified
 // `wallet_usage_data`.
 void SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
@@ -91,6 +100,22 @@ ServerCvc AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
 VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
     const sync_pb::AutofillWalletUsageSpecifics& usage_specifics);
 
+// Creates a `BankAccount` object based off the `PaymentInstrument` returned
+// from the server.
+BankAccount BankAccountFromWalletSpecifics(
+    const sync_pb::PaymentInstrument& payment_instrument);
+
+// Populates an `AutofillWalletSpecifics` object from a `BankAccount` object.
+void SetAutofillWalletSpecificsFromBankAccount(
+    const BankAccount& bank_account,
+    sync_pb::AutofillWalletSpecifics* wallet_specifics);
+
+// Populates an `AutofillWalletSpecifics` object from a `PaymentInstrument`
+// object.
+void SetAutofillWalletSpecificsFromPaymentInstrument(
+    const sync_pb::PaymentInstrument& payment_instrument,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics);
+
 // TODO(sebsg): This should probably copy the converted state for the address
 // too.
 // Copies the metadata and the CVC data from the local cards (if
@@ -109,7 +134,10 @@ void PopulateWalletTypesFromSyncData(
     std::vector<CreditCard>& wallet_cards,
     std::vector<Iban>& wallet_ibans,
     std::vector<PaymentsCustomerData>& customer_data,
-    std::vector<CreditCardCloudTokenData>& cloud_token_data);
+    std::vector<CreditCardCloudTokenData>& cloud_token_data,
+    std::vector<BankAccount>& bank_accounts,
+    std::vector<CreditCardBenefit>& benefits,
+    std::vector<sync_pb::PaymentInstrument>& payment_instruments);
 
 // A helper function to compare two sets of data. Returns true if there is
 // any difference. It uses the Compare() of the Item class instead of comparison
@@ -117,6 +145,17 @@ void PopulateWalletTypesFromSyncData(
 template <class Item>
 bool AreAnyItemsDifferent(const std::vector<std::unique_ptr<Item>>& old_data,
                           const std::vector<Item>& new_data);
+
+// A helper function to compare two sets of data. Returns true if there is any
+// difference. It uses the comparison operators of the Item class, and does
+// not care about the order of items in the dataset.
+template <class Item>
+bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
+                          const std::vector<Item>& new_data);
+
+bool AreAnyItemsDifferent(
+    const std::vector<sync_pb::PaymentInstrument>& old_instruments,
+    const std::vector<sync_pb::PaymentInstrument>& new_instruments);
 
 // Returns whether the Virtual Card Usage Data |specifics| is valid data.
 bool IsVirtualCardUsageDataSpecificsValid(
@@ -135,6 +174,12 @@ bool IsVirtualCardUsageDataSet(
 bool IsAutofillWalletCredentialDataSpecificsValid(
     const sync_pb::AutofillWalletCredentialSpecifics&
         wallet_credential_specifics);
+
+bool AreMaskedBankAccountSupported();
+
+bool IsEwalletAccountSupported();
+
+bool IsGenericPaymentInstrumentSupported();
 
 }  // namespace autofill
 

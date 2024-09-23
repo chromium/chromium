@@ -119,7 +119,7 @@ std::unique_ptr<ArcTracingGraphicsModel> LoadGraphicsModel(
   base::FilePath base_path;
   base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
   const base::FilePath tracing_path =
-      base_path.Append("arc_graphics_tracing").Append(name);
+      base_path.Append("arc_overview_tracing").Append(name);
   std::string json_data;
   base::ReadFileToString(tracing_path, &json_data);
   DCHECK(!json_data.empty());
@@ -162,7 +162,7 @@ TEST_F(ArcTracingModelTest, TopLevel) {
   base::FilePath base_path;
   base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
   const base::FilePath tracing_path =
-      base_path.Append("arc_graphics_tracing").Append("trace.dat.gz");
+      base_path.Append("arc_overview_tracing").Append("trace.dat.gz");
 
   std::string tracing_data_compressed;
   ASSERT_TRUE(base::ReadFileToString(tracing_path, &tracing_data_compressed));
@@ -550,7 +550,7 @@ TEST_F(ArcTracingModelTest, TimeMinMax) {
   base::FilePath base_path;
   base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
   const base::FilePath tracing_path =
-      base_path.Append("arc_graphics_tracing").Append("trace_time.dat");
+      base_path.Append("arc_overview_tracing").Append("trace_time.dat");
 
   std::string tracing_data;
   ASSERT_TRUE(base::ReadFileToString(tracing_path, &tracing_data));
@@ -597,7 +597,7 @@ TEST_F(ArcTracingModelTest, GraphicsModelLoadSerialize) {
 TEST_F(ArcTracingModelTest, AsynchronousSystemEvents) {
   base::FilePath base_path;
   base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
-  const base::FilePath tracing_path = base_path.Append("arc_graphics_tracing")
+  const base::FilePath tracing_path = base_path.Append("arc_overview_tracing")
                                           .Append("trace_async_events.json");
   std::string tracing_data;
   base::ReadFileToString(tracing_path, &tracing_data);

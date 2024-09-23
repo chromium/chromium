@@ -8,8 +8,8 @@
 #include <list>
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
@@ -43,10 +43,10 @@ class MEDIA_EXPORT VariableDictionary {
   VariableDictionary& operator=(VariableDictionary&&);
 
   // Attempts to find the value of the given variable in this dictionary.
-  // The returned `base::StringPiece` must not outlive this
+  // The returned `std::string_view` must not outlive this
   // `VariableDictionary`.
-  std::optional<base::StringPiece> Find(types::VariableName name) const&;
-  std::optional<base::StringPiece> Find(types::VariableName name) const&& =
+  std::optional<std::string_view> Find(types::VariableName name) const&;
+  std::optional<std::string_view> Find(types::VariableName name) const&& =
       delete;
 
   // Attempts to define the variable `name` with the given value. If the

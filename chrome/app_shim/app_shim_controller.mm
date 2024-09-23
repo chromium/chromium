@@ -19,9 +19,11 @@
 #include "base/hash/md5.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
+#include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -45,6 +47,7 @@
 #include "chrome/grit/generated_resources.h"
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
+#include "components/metrics/child_histogram_fetcher_impl.h"
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/application.mojom.h"
@@ -193,13 +196,16 @@ AppShimController::AppShimController(const Params& params)
   // need it is that we might miss some notification actions, which again is
   // harmless.
   if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
-      app_mode::UseAdHocSigningForWebAppShims()) {
+      WebAppIsAdHocSigned()) {
     // `notification_service_` needs to be created early during start up to make
     // sure it is able to install its delegate before the OS attempts to inform
     // it of any notification actions that might have happened.
     notification_service_ =
         std::make_unique<mac_notifications::MacNotificationServiceUN>(
             std::move(notification_action_handler_remote_),
+            base::BindRepeating(
+                &AppShimController::NotificationPermissionStatusChanged,
+                base::Unretained(this)),
             UNUserNotificationCenter.currentNotificationCenter);
   }
 }
@@ -274,10 +280,12 @@ void AppShimController::PreInitFeatureState(
   base::FeatureList::SetEarlyAccessInstance(
       std::move(feature_list),
       {"AppShimLaunchChromeSilently", "AppShimNotificationAttribution",
-       "DcheckIsFatal", "MojoBindingsInlineSLS", "MojoInlineMessagePayloads",
-       "MojoIpcz", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
+       "DcheckIsFatal", "MojoMessageAlwaysUseLatestVersion",
+       "MojoBindingsInlineSLS", "MojoInlineMessagePayloads", "MojoIpcz",
+       "MojoIpczMemV2", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
        "StandardCompliantNonSpecialSchemeURLParsing",
-       "UseAdHocSigningForWebAppShims", "UseIDNA2008NonTransitional"});
+       "UseAdHocSigningForWebAppShims", "UseIDNA2008NonTransitional",
+       "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache"});
 }
 
 // static
@@ -537,6 +545,7 @@ mojo::PlatformChannelEndpoint AppShimController::ConnectToBrowser(
 
   mojo::PlatformChannel channel;
   mach_msg_base_t message{};
+  base::ScopedMachMsgDestroy scoped_message(&message.header);
   message.header.msgh_id = app_mode::kBootstrapMsgId;
   message.header.msgh_bits =
       MACH_MSGH_BITS(MACH_MSG_TYPE_MOVE_SEND, MACH_MSG_TYPE_MOVE_SEND);
@@ -546,7 +555,9 @@ mojo::PlatformChannelEndpoint AppShimController::ConnectToBrowser(
   message.header.msgh_remote_port =
       server_endpoint.TakePlatformHandle().ReleaseMachSendRight();
   kern_return_t kr = mach_msg_send(&message.header);
-  if (kr != KERN_SUCCESS) {
+  if (kr == KERN_SUCCESS) {
+    scoped_message.Disarm();
+  } else {
     MACH_LOG(ERROR, kr) << "mach_msg_send";
     return mojo::PlatformChannelEndpoint();
   }
@@ -578,11 +589,12 @@ void AppShimController::SendBootstrapOnShimConnected(
   // automatically launch the app as well. So do a kRegisterOnly launch
   // instead.
   app_shim_info->launch_type =
-      (launched_by_notification_action_ ||
-       (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            app_mode::kLaunchedByChromeProcessId) &&
-        !base::CommandLine::ForCurrentProcess()->HasSwitch(
-            app_mode::kIsNormalLaunch)))
+      launched_by_notification_action_
+          ? chrome::mojom::AppShimLaunchType::kNotificationAction
+      : (base::CommandLine::ForCurrentProcess()->HasSwitch(
+             app_mode::kLaunchedByChromeProcessId) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             app_mode::kIsNormalLaunch))
           ? chrome::mojom::AppShimLaunchType::kRegisterOnly
           : chrome::mojom::AppShimLaunchType::kNormal;
   app_shim_info->files = launch_files_;
@@ -786,11 +798,11 @@ void AppShimController::BindNotificationService(
         handler) {
   CHECK(
       base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
-  // TODO(https://crbug.com/938661): Once ad-hoc signed app shims become the
+  // TODO(crbug.com/40616749): Once ad-hoc signed app shims become the
   // default on supported platforms, change this to always use the
   // UNUserNotification API (and not support notification attribution on other
   // platforms at all).
-  if (app_mode::UseAdHocSigningForWebAppShims()) {
+  if (WebAppIsAdHocSigned()) {
     // While the constructor should have created the `notification_service_`
     // instance already, it is possible that the base::FeatureList state at the
     // time did not match the current Chrome state, so make sure to create the
@@ -800,6 +812,9 @@ void AppShimController::BindNotificationService(
       notification_service_ =
           std::make_unique<mac_notifications::MacNotificationServiceUN>(
               std::move(notification_action_handler_remote_),
+              base::BindRepeating(
+                  &AppShimController::NotificationPermissionStatusChanged,
+                  base::Unretained(this)),
               UNUserNotificationCenter.currentNotificationCenter);
     }
     // Note that `handler` as passed in to this method is ignored. Notification
@@ -808,23 +823,33 @@ void AppShimController::BindNotificationService(
     // be triggered before the browser process tries to connect to the
     // notification service.
     notification_service_un()->Bind(std::move(service));
-    // TODO(crbug.com/938661): Determine when to ask for permissions.
+    // TODO(crbug.com/40616749): Determine when to ask for permissions.
     notification_service_un()->RequestPermission(base::DoNothing());
   } else {
+    // NSUserNotificationCenter is in the process of being replaced, and
+    // warnings about its deprecation are not helpful. https://crbug.com/1127306
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     notification_service_ =
         std::make_unique<mac_notifications::MacNotificationServiceNS>(
             std::move(service), std::move(handler),
             [NSUserNotificationCenter defaultUserNotificationCenter]);
+#pragma clang diagnostic pop
   }
 }
 
 mac_notifications::MacNotificationServiceUN*
 AppShimController::notification_service_un() {
-  if (!app_mode::UseAdHocSigningForWebAppShims()) {
+  if (!WebAppIsAdHocSigned()) {
     return nullptr;
   }
   return static_cast<mac_notifications::MacNotificationServiceUN*>(
       notification_service_.get());
+}
+
+void AppShimController::NotificationPermissionStatusChanged(
+    mac_notifications::mojom::PermissionStatus status) {
+  host_->NotificationPermissionStatusChanged(status);
 }
 
 void AppShimController::SetUserAttention(
@@ -909,5 +934,19 @@ NSMenu* AppShimController::GetApplicationDockMenu() {
 }
 
 void AppShimController::ApplicationWillTerminate() {
+  // Local histogram to let tests verify that histograms are emitted properly.
+  LOCAL_HISTOGRAM_BOOLEAN("AppShim.WillTerminate", true);
   host_->ApplicationWillTerminate();
+}
+
+void AppShimController::BindChildHistogramFetcherFactory(
+    mojo::PendingReceiver<metrics::mojom::ChildHistogramFetcherFactory>
+        receiver) {
+  metrics::ChildHistogramFetcherFactoryImpl::Create(std::move(receiver));
+}
+
+bool AppShimController::WebAppIsAdHocSigned() const {
+  NSNumber* isAdHocSigned =
+      NSBundle.mainBundle.infoDictionary[app_mode::kCrAppModeIsAdHocSignedKey];
+  return isAdHocSigned.boolValue;
 }

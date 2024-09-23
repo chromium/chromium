@@ -12,6 +12,9 @@ per-file initiator_lock_compatibility*=lukasza@chromium.org
 # Cross origin opener policy.
 per-file cross_origin_opener_policy*=clamy@chromium.org
 
+# Document Isolation policy.
+per-file document_isolation_policy*=clamy@chromium.org
+
 # Files and features related to component:Internals>Network>TrustTokens
 per-file trust_token*=file://services/network/trust_tokens/OWNERS
 

@@ -2,75 +2,80 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './app_management_shared_style.css.js';
 import './app_content_dialog.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app_content_item.html.js';
+import {getCss} from './app_content_item.css.js';
+import {getHtml} from './app_content_item.html.js';
+import {createDummyApp} from './web_app_settings_utils.js';
 
-const AppManagementAppContentItemElementBase = I18nMixin(PolymerElement);
-export class AppManagementAppContentItemElement extends
-    AppManagementAppContentItemElementBase {
+export class AppContentItemElement extends CrLitElement {
   static get is() {
     return 'app-management-app-content-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      app: Object,
-      showAppContentDialog: {
-        type: Boolean,
-        value: false,
-      },
+      app: {type: Object},
+      showAppContentDialog: {type: Boolean},
       hidden: {
         type: Boolean,
-        computed: 'isAppContentHidden_(app)',
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  app: App;
-  appContentLabel: string;
-  appContentSublabel: string;
-  showAppContentDialog: boolean;
+  app: App = createDummyApp();
+  appContentLabel: string = '';
+  appContentSublabel: string = '';
+  showAppContentDialog: boolean = false;
+  override hidden: boolean = false;
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('app')) {
+      this.hidden = this.isAppContentHidden_();
+    }
+  }
+
+  override firstUpdated() {
     // Disable hover styles from cr-actionable-row-style because they do not
     // match the style of App Settings.
     this.shadowRoot!.querySelector('cr-link-row')!.toggleAttribute(
         'effectively-disabled_', true);
   }
 
-  private onAppContentClick_(): void {
+  protected onAppContentClick_(): void {
     this.showAppContentDialog = true;
   }
 
-  private onAppContentDialogClose_(): void {
+  protected onAppContentDialogClose_(): void {
     this.showAppContentDialog = false;
   }
 
   // App Content section is hidden when there's no scope_extensions entries.
   private isAppContentHidden_(): boolean {
-    return !this.app || !this.app.scopeExtensions ||
-        !this.app.scopeExtensions.length;
+    return !this.app.scopeExtensions || !this.app.scopeExtensions.length;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'app-management-app-content-item': AppManagementAppContentItemElement;
+    'app-management-app-content-item': AppContentItemElement;
   }
 }
 
-customElements.define(
-    AppManagementAppContentItemElement.is, AppManagementAppContentItemElement);
+customElements.define(AppContentItemElement.is, AppContentItemElement);

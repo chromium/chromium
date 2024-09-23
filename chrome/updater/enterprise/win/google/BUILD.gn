@@ -1,0 +1,98 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/zip.gni")
+import("//chrome/updater/branding.gni")
+import("//components/crx_file/crx3.gni")
+
+if (is_win) {
+  # generate the GoogleUpdate admx templates here
+  action("GoogleUpdateAdmxGenerate") {
+    script = "build_group_policy_template.py"
+    googleupdate_adm_file = "$root_build_dir/GoogleUpdateAdm/GoogleUpdate.adm"
+    output_dir_admx = "$root_build_dir/GoogleUpdateAdmx/"
+    googleupdate_admx_file = output_dir_admx + "GoogleUpdate.admx"
+    googleupdate_adml_file = output_dir_admx + "en-US/GoogleUpdate.adml"
+
+    inputs = [
+      script,
+      "generate_group_policy_template_adm.py",
+      "generate_group_policy_template_admx.py",
+      "public_apps.py",
+    ]
+    outputs = [
+      googleupdate_adm_file,
+      googleupdate_admx_file,
+      googleupdate_adml_file,
+    ]
+
+    args = [
+      "--updater_adm_file",
+      rebase_path(googleupdate_adm_file),
+      "--updater_admx_file",
+      rebase_path(googleupdate_admx_file),
+      "--updater_adml_file",
+      rebase_path(googleupdate_adml_file),
+    ]
+  }
+
+  # Copy the dependencies: our group policy files includes the shared
+  # google.admx/google.adml.
+  copy("GoogleUpdateAdmx") {
+    sources = [ "google.admx" ]
+    outputs = [ "$root_build_dir/GoogleUpdateAdmx/{{source_file_part}}" ]
+  }
+  copy("GoogleUpdateAdml") {
+    sources = [ "google.adml" ]
+    outputs = [ "$root_build_dir/GoogleUpdateAdmx/en-US/{{source_file_part}}" ]
+  }
+
+  # Copy the Google Cloud Management policy template files.
+  copy("GoogleCloudManagementAdm") {
+    sources = [ "GoogleCloudManagement.adm" ]
+    outputs =
+        [ "$root_build_dir/GoogleCloudManagementAdm/{{source_file_part}}" ]
+  }
+  copy("GoogleCloudManagementAdmx") {
+    sources = [
+      "GoogleCloudManagement.admx",
+      "google.admx",
+    ]
+    outputs =
+        [ "$root_build_dir/GoogleCloudManagementAdmx/{{source_file_part}}" ]
+  }
+  copy("GoogleCloudManagementAdml") {
+    sources = [
+      "GoogleCloudManagement.adml",
+      "google.adml",
+    ]
+    outputs = [
+      "$root_build_dir/GoogleCloudManagementAdmx/en-US/{{source_file_part}}",
+    ]
+  }
+
+  zip("GoogleUpdateAdmxZip") {
+    inputs = get_target_outputs(":GoogleUpdateAdmxGenerate") +
+             get_target_outputs(":GoogleUpdateAdmx") +
+             get_target_outputs(":GoogleUpdateAdml")
+    output = "$root_build_dir/GoogleUpdateAdmx.zip"
+    deps = [
+      ":GoogleUpdateAdml",
+      ":GoogleUpdateAdmx",
+      ":GoogleUpdateAdmxGenerate",
+    ]
+  }
+
+  zip("GoogleCloudManagementAdmxZip") {
+    inputs = get_target_outputs(":GoogleCloudManagementAdm") +
+             get_target_outputs(":GoogleCloudManagementAdmx") +
+             get_target_outputs(":GoogleCloudManagementAdml")
+    output = "$root_build_dir/GoogleCloudManagementAdmx.zip"
+    deps = [
+      ":GoogleCloudManagementAdm",
+      ":GoogleCloudManagementAdml",
+      ":GoogleCloudManagementAdmx",
+    ]
+  }
+}

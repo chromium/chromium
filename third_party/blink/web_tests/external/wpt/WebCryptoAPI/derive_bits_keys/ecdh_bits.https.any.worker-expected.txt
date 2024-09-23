@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] P-521 with null length
-  assert_true: Derived correct bits expected true got false
-[FAIL] P-256 with null length
-  assert_true: Derived correct bits expected true got false
-[FAIL] P-384 with null length
-  assert_true: Derived correct bits expected true got false
-Harness: the test ran to completion.
-

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <title>Name Comp: Embedded Control</title>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="../resources/testdriver.js"></script>
+  <script src="../resources/testdriver-vendor.js"></script>
+  <script src="../resources/testdriver-actions.js"></script>
+</head>
+<body>
+
+<h2 id="container0">
+  Flash the screen
+  <span tabindex="0" role="combobox">
+    <span aria-labelledby="container0">recursive</span>
+  </span> times
+</h2>
+
+<h2 id="container1">
+  <div role="combobox" id="parent" tabindex="0" aria-haspopup="listbox" aria-owns="child">parent</div>
+  <div role="listbox" id="child" tabindex="-1" aria-labelledby="parent">child</div>
+</h2>
+
+<script>
+promise_test(async t => {
+  const label = await test_driver.get_computed_label(document.getElementById('container0'));
+  assert_equals(label, "Flash the screen Flash the screen times");
+}, "Don't overflow the stack when computing the label of a combobox that references a container containing the combobox");
+
+promise_test(async t => {
+  const label = await test_driver.get_computed_label(document.getElementById('container1'));
+  assert_equals(label, "parent");
+}, "Don't overflow the stack when computing the label of a combobox referencing a listbox that itself references the combobox");
+</script>
+</body>
+</html>

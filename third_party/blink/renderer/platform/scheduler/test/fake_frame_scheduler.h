@@ -103,14 +103,14 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
     }
 
    private:
-    PageScheduler* page_scheduler_ = nullptr;
+    raw_ptr<PageScheduler> page_scheduler_ = nullptr;
     bool is_page_visible_ = false;
     bool is_frame_visible_ = false;
     FrameScheduler::FrameType frame_type_ =
         FrameScheduler::FrameType::kMainFrame;
     bool is_cross_origin_to_nearest_main_frame_ = false;
     bool is_exempt_from_throttling_ = false;
-    FrameScheduler::Delegate* delegate_ = nullptr;
+    raw_ptr<FrameScheduler::Delegate> delegate_ = nullptr;
   };
 
   // FrameScheduler implementation:
@@ -122,6 +122,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   bool IsCrossOriginToNearestMainFrame() const override {
     return is_cross_origin_to_nearest_main_frame_;
   }
+  void SetAgentClusterId(const base::UnguessableToken&) override {}
   void TraceUrlChange(const String&) override {}
   FrameScheduler::FrameType GetFrameType() const override {
     return frame_type_;
@@ -169,7 +170,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   }
 
  private:
-  raw_ptr<PageScheduler, ExperimentalRenderer> page_scheduler_;  // NOT OWNED
+  raw_ptr<PageScheduler> page_scheduler_;  // NOT OWNED
 
   bool is_page_visible_;
   bool is_frame_visible_;

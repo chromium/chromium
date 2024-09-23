@@ -1,0 +1,40 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/system",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/accessibility",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/net",
+  "+chrome/browser/ash/ownership",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/policy/enrollment",
+  "+chrome/browser/ash/policy/server_backed_state",
+  "+chrome/browser/ash/policy/test_support",
+  "+chrome/browser/ash/preferences/preferences.h",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part_ash.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/ash/session",
+  "+chrome/browser/ui/webui/ash/login",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+]

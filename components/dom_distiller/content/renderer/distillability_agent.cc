@@ -14,7 +14,7 @@
 #include "components/dom_distiller/core/url_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_distillability.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -201,7 +201,7 @@ void DistillabilityAgent::DidMeaningfulLayout(
   bool is_last = IsLast(is_loaded);
   // Connect to Mojo service on browser to notify page distillability.
   mojo::Remote<mojom::DistillabilityService> distillability_service;
-  render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+  render_frame()->GetBrowserInterfaceBroker().GetInterface(
       distillability_service.BindNewPipeAndPassReceiver());
   if (!distillability_service.is_bound())
     return;

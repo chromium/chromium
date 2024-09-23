@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Request to merge features.
+  enable_merge_request = false
+
+  # Compiled on a board overlay that supports CBX
+  overlay_include_cbx = false
+}

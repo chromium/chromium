@@ -100,7 +100,7 @@ public final class JunitTestMain {
     private static Result listTestMain(JunitTestArgParser parser)
             throws FileNotFoundException, JSONException {
         JUnitCore core = new JUnitCore();
-        TestListComputer computer = new TestListComputer();
+        TestListComputer computer = new TestListComputer(parser.mShadowsAllowlist);
         Class[] classes = findClassesFromClasspath();
         Request testRequest = Request.classes(computer, classes);
         for (String packageFilter : parser.mPackageFilters) {

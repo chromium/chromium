@@ -53,6 +53,7 @@
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/media/learning_experiment_helper.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 #include "third_party/blink/renderer/platform/media/smoothness_helper.h"
@@ -104,6 +105,18 @@ class WebLocalFrame;
 class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
 
+// The set of split histograms that are supported. Keeping them in an enum
+// helps prevent raw strings from being scattered throughout the source, and
+// can provide a convenient way to remember to update the histograms.xml file
+// when changes or additions are made.
+enum class SplitHistogramName {
+  kTimeToMetadata,
+  kTimeToPlayReady,
+  kUnderflowDuration2,
+  kVideoHeightInitial,
+  kTimeToFirstFrame,
+};
+
 // The canonical implementation of WebMediaPlayer that's backed by
 // Pipeline. Handles normal resource loading, Media Source, and
 // Encrypted Media.
@@ -135,7 +148,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner>
           video_frame_compositor_task_runner,
-      WebMediaPlayerBuilder::AdjustAllocatedMemoryCB adjust_allocated_memory_cb,
       WebContentDecryptionModule* initial_cdm,
       media::RequestRoutingTokenCallback request_routing_token_cb,
       base::WeakPtr<media::MediaObserver> media_observer,
@@ -173,8 +185,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void SetVolume(double volume) override;
   void SetLatencyHint(double seconds) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) override;
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) override;
   void OnRequestPictureInPicture() override;
   void OnTimeUpdate() override;
   bool SetSinkId(const WebString& sink_id,
@@ -201,9 +213,12 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool HasAudio() const override;
 
   void EnabledAudioTracksChanged(
-      const WebVector<WebMediaPlayer::TrackId>& enabledTrackIds) override;
+      const WebVector<WebMediaPlayer::TrackId>& enabled_track_ids) override;
   void SelectedVideoTrackChanged(
-      WebMediaPlayer::TrackId* selectedTrackId) override;
+      std::optional<WebMediaPlayer::TrackId> selected_track_id) override;
+
+  void OnEnabledAudioTracksChanged(std::vector<media::MediaTrack::Id>);
+  void OnSelectedVideoTrackChanged(std::optional<media::MediaTrack::Id>);
 
   // Dimensions of the video.
   gfx::Size NaturalSize() const override;
@@ -246,6 +261,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void SetPowerExperimentState(bool state) override;
   void SuspendForFrameClosed() override;
 
+  void SetShouldPauseWhenFrameIsHidden(
+      bool should_pause_when_frame_is_hidden) override;
+  bool GetShouldPauseWhenFrameIsHidden() override;
+
   bool HasAvailableVideoFrame() const override;
   bool HasReadableVideoFrame() const override;
 
@@ -264,6 +283,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void OnDisplayTypeChanged(DisplayType display_type) override;
 
   // WebMediaPlayerDelegate::Observer implementation.
+  void OnPageHidden() override;
+  void OnPageShown() override;
   void OnFrameHidden() override;
   void OnFrameShown() override;
   void OnIdleTimeout() override;
@@ -318,6 +339,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void RegisterFrameSinkHierarchy() override;
   void UnregisterFrameSinkHierarchy() override;
 
+  void RecordVideoOcclusionState(std::string_view occlusion_state) override;
+
   bool IsBackgroundMediaSuspendEnabled() const {
     return is_background_suspend_enabled_;
   }
@@ -369,7 +392,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // if it's not specified.
   template <uint32_t Flags, typename... T>
   void WriteSplitHistogram(void (*UmaFunction)(const std::string&, T...),
-                           const std::string& key,
+                           SplitHistogramName key,
                            const T&... value);
 
   void EnableOverlay();
@@ -426,18 +449,12 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void DemuxerRequestsSeek(base::TimeDelta seek_time) override;
 
 #if BUILDFLAG(ENABLE_FFMPEG)
-  void AddAudioTrack(const std::string& id,
-                     const std::string& label,
-                     const std::string& language,
-                     bool is_first_track) override;
-  void AddVideoTrack(const std::string& id,
-                     const std::string& label,
-                     const std::string& language,
-                     bool is_first_track) override;
+  void AddMediaTrack(const media::MediaTrack&) override;
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   void GetUrlData(const GURL& gurl,
+                  bool ignore_cache,
                   base::OnceCallback<void(scoped_refptr<UrlData>)> cb);
   base::SequenceBound<media::HlsDataSourceProvider> GetHlsDataSourceProvider()
       override;
@@ -574,8 +591,12 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   void CreateVideoDecodeStatsReporter();
 
-  // Returns true if the player is hidden.
-  bool IsHidden() const;
+  // // Returns true if the player's hosting page (WebView) is hidden or closed.
+  bool IsPageHidden() const;
+
+  // Returns true if the player's host frame is hidden or closed in the host
+  // page.
+  bool IsFrameHidden() const;
 
   // Returns true if the player is in streaming mode, meaning that the source
   // or the demuxer doesn't support timeline or seeking.
@@ -605,7 +626,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Pauses a hidden video only player to save power if possible.
   // Must be called when either of the following happens:
   // - right after the video was hidden,
-  // - right ater the pipeline has resumed if the video is hidden.
+  // - right after the pipeline has resumed if the video is hidden.
   void PauseVideoIfNeeded();
 
   // Disables the video track to save power if possible.
@@ -613,7 +634,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // - right after the video was hidden,
   // - right after the pipeline has started (|seeking_| is used to detect the
   //   when pipeline started) if the video is hidden,
-  // - right ater the pipeline has resumed if the video is hidden.
+  // - right after the pipeline has resumed if the video is hidden.
   void DisableVideoTrackIfNeeded();
 
   // Enables the video track if it was disabled before to save power.
@@ -725,7 +746,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Notifies the `client_` and the `delegate_` about metadata change.
   void DidMediaMetadataChange();
 
-  const raw_ptr<WebLocalFrame, ExperimentalRenderer> frame_;
+  const raw_ptr<WebLocalFrame> frame_;
 
   WebMediaPlayer::NetworkState network_state_ =
       WebMediaPlayer::kNetworkStateEmpty;
@@ -818,9 +839,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Whether the current decoder requires a restart on overlay transitions.
   bool decoder_requires_restart_for_overlay_ = false;
 
-  const raw_ptr<WebMediaPlayerClient, ExperimentalRenderer> client_;
-  const raw_ptr<WebMediaPlayerEncryptedMediaClient, ExperimentalRenderer>
-      encrypted_client_;
+  const raw_ptr<WebMediaPlayerClient> client_;
+  const raw_ptr<WebMediaPlayerEncryptedMediaClient> encrypted_client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
   // |delegate_id_|; an id provided after registering with the delegate.  The
@@ -833,7 +853,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // before the frame is destroyed). RenderFrameImpl owns |delegate_| and is
   // guaranteed to outlive |this|; thus it is safe to store |delegate_| as a raw
   // pointer.
-  raw_ptr<WebMediaPlayerDelegate, ExperimentalRenderer> delegate_;
+  raw_ptr<WebMediaPlayerDelegate> delegate_;
   int delegate_id_ = 0;
 
   // The playback state last reported to |delegate_|, to avoid setting duplicate
@@ -847,7 +867,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Members for notifying upstream clients about internal memory usage.  The
   // |adjust_allocated_memory_cb_| must only be called on |main_task_runner_|.
   base::RepeatingTimer memory_usage_reporting_timer_;
-  WebMediaPlayerBuilder::AdjustAllocatedMemoryCB adjust_allocated_memory_cb_;
+  raw_ptr<v8::Isolate> isolate_;
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
   int64_t last_reported_memory_usage_ = 0;
   std::unique_ptr<media::MemoryDumpProviderProxy> main_thread_mem_dumper_;
   std::unique_ptr<media::MemoryDumpProviderProxy> media_thread_mem_dumper_;
@@ -858,10 +879,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Manages the lifetime of the DataSource, and soon the Demuxer.
   std::unique_ptr<media::DemuxerManager> demuxer_manager_;
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
-  const raw_ptr<UrlIndex, ExperimentalRenderer> url_index_;
+  const raw_ptr<UrlIndex> url_index_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   // Video rendering members.
@@ -888,7 +909,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   std::unique_ptr<media::CdmContextRef> pending_cdm_context_ref_;
 
   // True when encryption is detected, either by demuxer or by presence of a
-  // ContentDecyprtionModule (CDM).
+  // ContentDecryptionModule (CDM).
   bool is_encrypted_ = false;
 
   // Captured once the cdm is provided to SetCdmInternal(). Used in creation of
@@ -1105,6 +1126,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Request pipeline to suspend. It should not block other signals after
   // suspended.
   bool pending_oneshot_suspend_ = false;
+
+  bool should_pause_when_frame_is_hidden_ = false;
 
   base::CancelableOnceClosure have_enough_after_lazy_load_cb_;
 

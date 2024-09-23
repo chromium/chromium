@@ -20,7 +20,7 @@ CaptivePortalStatus CaptivePortalStatusFromDetectionResult(
       status = CaptivePortalStatus::UNKNOWN;
       break;
     case captive_portal::RESULT_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       status = CaptivePortalStatus::UNKNOWN;
       break;
   }

@@ -5,6 +5,8 @@
 #include "content/browser/web_contents/web_contents_view_aura.h"
 
 #include <stddef.h>
+
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -118,10 +120,11 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
   void StartTestWithPage(const std::string& url) {
     ASSERT_TRUE(embedded_test_server()->Start());
     GURL test_url;
-    if (url == "about:blank")
+    if (url == "about:blank") {
       test_url = GURL(url);
-    else
+    } else {
       test_url = GURL(embedded_test_server()->GetURL(url));
+    }
     EXPECT_TRUE(NavigateToURL(shell(), test_url));
 
     frame_observer_ = std::make_unique<RenderFrameSubmissionObserver>(
@@ -204,8 +207,9 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     EXPECT_FALSE(controller.CanGoForward());
     EXPECT_EQ(0, EvalJs(main_frame, "get_current()"));
 
-    if (touch_handler)
+    if (touch_handler) {
       ASSERT_TRUE(content::ExecJs(main_frame, "install_touch_handler()"));
+    }
 
     ASSERT_TRUE(content::ExecJs(main_frame, "navigate_next()"));
     ASSERT_TRUE(content::ExecJs(main_frame, "navigate_next()"));
@@ -294,8 +298,9 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
   }
 
   void WaitAFrame() {
-    while (!GetRenderWidgetHost()->RequestRepaintForTesting())
+    while (!GetRenderWidgetHost()->RequestRepaintForTesting()) {
       GiveItSomeTime();
+    }
     frame_observer_->WaitForAnyFrameSubmission();
   }
 
@@ -473,8 +478,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 
 // Disabled because the test always fails the first time it runs on the Win Aura
 // bots, and usually but not always passes second-try (See crbug.com/179532).
-// Flaky on CrOS and Linux as well: https://crbug.com/856079
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
+// Flaky on CrOS, Linux, and Fuchsia as well: https://crbug.com/856079
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_QuickOverscrollDirectionChange \
   DISABLED_QuickOverscrollDirectionChange
 #else
@@ -507,11 +513,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   // this test to fail. This observer will let us know if this is happening.
   SpuriousMouseMoveEventObserver mouse_observer(GetRenderWidgetHost());
 
-  // TODO(crbug.com/1322921): Use a mock timer to generate timestamps for
+  // TODO(crbug.com/40838320): Use a mock timer to generate timestamps for
   // events. This would need injecting the mock timer into
   // `cc::CompositorFrameReportingController`.
   ui::TouchEvent press(
-      ui::ET_TOUCH_PRESSED,
+      ui::EventType::kTouchPressed,
       gfx::Point(bounds.x() + bounds.width() / 2, bounds.y() + 5),
       ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
@@ -519,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   ASSERT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(1, GetCurrentIndex());
 
-  ui::TouchEvent move1(ui::ET_TOUCH_MOVED,
+  ui::TouchEvent move1(ui::EventType::kTouchMoved,
                        gfx::Point(bounds.right() - 10, bounds.y() + 5),
                        ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
@@ -531,8 +537,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   // edge.
 
   for (int x = bounds.right() - 10; x >= bounds.x() + 10; x -= 10) {
-    ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
-                       ui::EventTimeForNow(),
+    ui::TouchEvent inc(ui::EventType::kTouchMoved,
+                       gfx::Point(x, bounds.y() + 5), ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     details = sink->OnEventFromSource(&inc);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -540,8 +546,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   }
 
   for (int x = bounds.x() + 10; x <= bounds.width() - 10; x += 10) {
-    ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
-                       ui::EventTimeForNow(),
+    ui::TouchEvent inc(ui::EventType::kTouchMoved,
+                       gfx::Point(x, bounds.y() + 5), ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     details = sink->OnEventFromSource(&inc);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -549,8 +555,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   }
 
   for (int x = bounds.width() - 10; x >= bounds.x() + 10; x -= 10) {
-    ui::TouchEvent inc(ui::ET_TOUCH_MOVED, gfx::Point(x, bounds.y() + 5),
-                       ui::EventTimeForNow(),
+    ui::TouchEvent inc(ui::EventType::kTouchMoved,
+                       gfx::Point(x, bounds.y() + 5), ui::EventTimeForNow(),
                        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
     details = sink->OnEventFromSource(&inc);
     ASSERT_FALSE(details.dispatcher_destroyed);
@@ -780,7 +786,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, ContentWindowClose) {
 // For linux, see http://crbug.com/381294.
 // For ChromeOS, see http://crbug.com/668128.
 // For Fuchsia, see https://crbug.com/1318245.
-#define MAYBE_RepeatedQuickOverscrollGestures DISABLED_RepeatedQuickOverscrollGestures
+#define MAYBE_RepeatedQuickOverscrollGestures \
+  DISABLED_RepeatedQuickOverscrollGestures
 #else
 #define MAYBE_RepeatedQuickOverscrollGestures RepeatedQuickOverscrollGestures
 #endif
@@ -816,7 +823,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   // right.
   std::u16string expected_title = u"Title: #2";
   content::TitleWatcher title_watcher(web_contents, expected_title);
-  TestNavigationManager nav_watcher(web_contents,
+  TestNavigationManager nav_watcher(
+      web_contents,
       embedded_test_server()->GetURL("/overscroll_navigation.html#2"));
 
   generator.GestureScrollSequence(
@@ -887,14 +895,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // tests. http://crbug.com/305722
 // TODO(tdresser): Re-enable this once eager GR is back on. See
 // crbug.com/410280.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_OverscrollNavigationTouchThrottling \
-        DISABLED_OverscrollNavigationTouchThrottling
+  DISABLED_OverscrollNavigationTouchThrottling
 #else
 #define MAYBE_OverscrollNavigationTouchThrottling \
-        DISABLED_OverscrollNavigationTouchThrottling
+  DISABLED_OverscrollNavigationTouchThrottling
 #endif
 
 // Tests that touch moves are not throttled when performing a scroll gesture on
@@ -931,8 +939,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
     // Send touch press.
     blink::SyntheticWebTouchEvent touch;
     touch.PressPoint(bounds.x() + 2, bounds.y() + 10);
-    GetRenderWidgetHost()->ForwardTouchEventWithLatencyInfo(touch,
-                                                            ui::LatencyInfo());
+    GetRenderWidgetHost()
+        ->GetRenderInputRouter()
+        ->ForwardTouchEventWithLatencyInfo(touch, ui::LatencyInfo());
     touch_start_waiter.Wait();
     WaitAFrame();
 
@@ -946,15 +955,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
           return event.GetType() == blink::WebGestureEvent::Type::kTouchMove &&
                  state == blink::mojom::InputEventResultState::kNotConsumed;
         }));
-    GetRenderWidgetHost()->ForwardTouchEventWithLatencyInfo(touch,
-                                                            ui::LatencyInfo());
+    GetRenderWidgetHost()
+        ->GetRenderInputRouter()
+        ->ForwardTouchEventWithLatencyInfo(touch, ui::LatencyInfo());
     touch_move_waiter.Wait();
 
     blink::WebGestureEvent scroll_begin =
         blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
             1, 1, blink::WebGestureDevice::kTouchscreen);
-    GetRenderWidgetHost()->ForwardGestureEventWithLatencyInfo(
-        scroll_begin, ui::LatencyInfo());
+    GetRenderWidgetHost()
+        ->GetRenderInputRouter()
+        ->ForwardGestureEventWithLatencyInfo(scroll_begin, ui::LatencyInfo());
     // Scroll begin ignores ack disposition, so don't wait for the ack.
     WaitAFrame();
 
@@ -962,36 +973,42 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
     for (int i = 2; i <= 10; ++i) {
       // Send a touch move, followed by a scroll update
       touch.MovePoint(0, bounds.x() + 20 + i * dx, bounds.y() + 100);
-      GetRenderWidgetHost()->ForwardTouchEventWithLatencyInfo(
-          touch, ui::LatencyInfo());
+      GetRenderWidgetHost()
+          ->GetRenderInputRouter()
+          ->ForwardTouchEventWithLatencyInfo(touch, ui::LatencyInfo());
       WaitAFrame();
 
       blink::WebGestureEvent scroll_update =
           blink::SyntheticWebGestureEventBuilder::BuildScrollUpdate(
               dx, 5, 0, blink::WebGestureDevice::kTouchscreen);
 
-      GetRenderWidgetHost()->ForwardGestureEventWithLatencyInfo(
-          scroll_update, ui::LatencyInfo());
+      GetRenderWidgetHost()
+          ->GetRenderInputRouter()
+          ->ForwardGestureEventWithLatencyInfo(scroll_update,
+                                               ui::LatencyInfo());
 
       WaitAFrame();
     }
 
     touch.ReleasePoint(0);
-    GetRenderWidgetHost()->ForwardTouchEventWithLatencyInfo(touch,
-                                                            ui::LatencyInfo());
+    GetRenderWidgetHost()
+        ->GetRenderInputRouter()
+        ->ForwardTouchEventWithLatencyInfo(touch, ui::LatencyInfo());
     WaitAFrame();
 
     blink::WebGestureEvent scroll_end(
         blink::WebInputEvent::Type::kGestureScrollEnd,
         blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-    GetRenderWidgetHost()->ForwardGestureEventWithLatencyInfo(
-        scroll_end, ui::LatencyInfo());
+    GetRenderWidgetHost()
+        ->GetRenderInputRouter()
+        ->ForwardGestureEventWithLatencyInfo(scroll_end, ui::LatencyInfo());
     WaitAFrame();
 
-    if (!navigated)
+    if (!navigated) {
       EXPECT_EQ(10, EvalJs(shell(), "touchmoveCount"));
-    else
+    } else {
       EXPECT_GT(10, EvalJs(shell(), "touchmoveCount"));
+    }
   }
 }
 
@@ -1056,6 +1073,20 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
 
   EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
+}
+
+// Tests that the content is not focusable when inputs are ignored, and that it
+// is focusable when inputs are not ignored.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, IgnoreInputs_Focus) {
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/simple_page.html"));
+  WebContentsImpl* contents = GetWebContentsImpl();
+  aura::WindowDelegate* view = GetWebContentsViewAura();
+
+  std::optional<WebContents::ScopedIgnoreInputEvents> ignore_inputs =
+      contents->IgnoreInputEvents(std::nullopt);
+  EXPECT_FALSE(view->CanFocus());
+  ignore_inputs.reset();
+  EXPECT_TRUE(view->CanFocus());
 }
 
 }  // namespace content

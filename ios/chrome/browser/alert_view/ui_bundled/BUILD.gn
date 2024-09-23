@@ -1,0 +1,32 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "alert_action.h",
+    "alert_action.mm",
+    "alert_consumer.h",
+    "alert_view_controller.h",
+    "alert_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/presenters",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "alert_view_controller_unittest.mm" ]
+  deps = [
+    ":ui_bundled",
+    "//testing/gtest:gtest",
+  ]
+}

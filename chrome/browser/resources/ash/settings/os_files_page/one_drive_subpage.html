@@ -8,7 +8,7 @@
   <cr-button id="oneDriveConnectDisconnect"
       on-click="onConnectDisconnectButtonClick_"
       role="button"
-      disabled$="[[isLoading_(connectionState_)]]">
+      disabled$="[[isRemoveAccessDisabled_(connectionState_)]]">
     [[connectDisconnectButtonLabel_(connectionState_)]]
   </cr-button>
 </div>

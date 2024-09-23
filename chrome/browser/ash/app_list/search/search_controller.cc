@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -12,6 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -25,25 +27,53 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/common/file_util.h"
 #include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
 #include "chrome/browser/ash/app_list/search/common/types_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/ranking/sorting.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
+#include "chrome/browser/ash/app_list/search/search_file_scanner.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/search_session_metrics_manager.h"
+#include "chrome/browser/ash/app_list/search/sparky_event_rewriter.h"
 #include "chrome/browser/ash/app_list/search/types.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
 
 namespace app_list {
 namespace {
+
+// Constants for sparky panel position.
+inline constexpr int kPanelBoundsPadding = 8;
+inline constexpr int kPanelDefaultWidth = 360;
+inline constexpr int kPanelDefaultHeight = 492;
+
+void OpenSparkyPanel() {
+  chromeos::MahiManager* sparky_manager = chromeos::MahiManager::Get();
+  if (sparky_manager && sparky_manager->IsEnabled()) {
+    auto display = display::Screen::GetScreen()->GetPrimaryDisplay();
+    // Opens the panel in the bottom right of the screen. It's the same
+    // position before the panel position becomes dynamic.
+    sparky_manager->OpenMahiPanel(
+        display.id(), gfx::Rect(display.work_area().bottom_right().x() -
+                                    kPanelDefaultWidth - kPanelBoundsPadding,
+                                display.work_area().bottom_right().y() -
+                                    kPanelDefaultHeight - kPanelBoundsPadding,
+                                kPanelDefaultWidth, kPanelDefaultHeight));
+  }
+}
 
 void ClearNonZeroStateResults(ResultsMap& results) {
   for (auto it = results.begin(); it != results.end();) {
@@ -64,10 +94,19 @@ SearchController::SearchController(
     Profile* profile,
     ash::federated::FederatedServiceController* federated_service_controller)
     : profile_(profile),
+      sparky_event_rewriter_(std::make_unique<SparkyEventRewriter>()),
       model_updater_(model_updater),
       list_controller_(list_controller),
       notifier_(notifier),
-      federated_service_controller_(federated_service_controller) {}
+      federated_service_controller_(federated_service_controller) {
+  if (chromeos::features::IsSparkyEnabled()) {
+    // Get the window tree host for the primary display.
+    const auto& display = display::Screen::GetScreen()->GetPrimaryDisplay();
+    auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+    CHECK(host);
+    host->GetEventSource()->AddEventRewriter(sparky_event_rewriter_.get());
+  }
+}
 
 SearchController::~SearchController() = default;
 
@@ -87,6 +126,12 @@ void SearchController::Initialize() {
   app_discovery_metrics_manager_ =
       std::make_unique<AppDiscoveryMetricsManager>(profile_);
   search_engine_ = std::make_unique<SearchEngine>(profile_);
+
+  if (search_features::IsLauncherSearchFileScanEnabled()) {
+    search_file_scanner_ = std::make_unique<SearchFileScanner>(
+        profile_, file_manager::util::GetMyFilesFolderForProfile(profile_),
+        GetTrashPaths(profile_));
+  }
 }
 
 std::vector<ash::AppListSearchControlCategory>
@@ -186,6 +231,15 @@ void SearchController::ClearSearch() {
 
 void SearchController::StartZeroState(base::OnceClosure on_done,
                                       base::TimeDelta timeout) {
+  // Opens launcher will open sparky UI instead if flag is enabled and shift
+  // key is pressed, and it prevents the launcher panel from opening. This code
+  // is used for experiment only and should never go to production.
+  if (chromeos::features::IsSparkyEnabled() &&
+      sparky_event_rewriter_->is_shift_pressed()) {
+    OpenSparkyPanel();
+    return;
+  }
+
   // Clear all results - zero state search request is made when the app list
   // gets first shown, which would indicate that search is not currently active.
   results_.clear();
@@ -227,8 +281,7 @@ void SearchController::OnZeroStateTimedOut() {
 void SearchController::AppListViewChanging(bool is_visible) {
   // In tablet mode, the launcher is always visible so do not log launcher open
   // if the device is in tablet mode.
-  if (is_visible && !display::Screen::GetScreen()->InTabletMode() &&
-      base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
+  if (is_visible && !display::Screen::GetScreen()->InTabletMode()) {
     app_discovery_metrics_manager_->OnLauncherOpen();
   }
 
@@ -246,9 +299,7 @@ void SearchController::OpenResult(ChromeSearchResult* result, int event_flags) {
   }
 
   metrics_manager_->OnOpen(result->result_type(), last_query_);
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    app_discovery_metrics_manager_->OnOpenResult(result, last_query_);
-  }
+  app_discovery_metrics_manager_->OnOpenResult(result, last_query_);
 
   const bool dismiss_view_on_open = result->dismiss_view_on_open();
 

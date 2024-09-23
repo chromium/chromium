@@ -5,19 +5,14 @@
 #ifndef BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
 #define BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
 
+// IWYU pragma: private, include "base/numerics/safe_conversions.h"
+
+#include <stddef.h>
 #include <stdint.h>
 
 #include <concepts>
 #include <limits>
 #include <type_traits>
-
-#if defined(__GNUC__) || defined(__clang__)
-#define BASE_NUMERICS_LIKELY(x) __builtin_expect(!!(x), 1)
-#define BASE_NUMERICS_UNLIKELY(x) __builtin_expect(!!(x), 0)
-#else
-#define BASE_NUMERICS_LIKELY(x) (x)
-#define BASE_NUMERICS_UNLIKELY(x) (x)
-#endif
 
 namespace base {
 namespace internal {

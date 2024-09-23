@@ -17,30 +17,30 @@
 
 #include "partition_alloc/shim/allocator_interception_apple.h"
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 #include <mach/mach.h>
 #import <objc/runtime.h>
 
 #include <algorithm>
-#include <bit>
 #include <cerrno>
 #include <cstddef>
 #include <new>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/partition_alloc_base/apple/mach_logging.h"
+#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/malloc_zone_functions_apple.h"
 #include "partition_alloc/third_party/apple_apsl/CFBase.h"
 
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 #include "partition_alloc/partition_alloc_base/ios/ios_util.h"
 #else
 #include "partition_alloc/partition_alloc_base/mac/mac_util.h"
@@ -135,7 +135,7 @@ bool DeprotectMallocZone(ChromeMallocZone* default_zone,
 MallocZoneFunctions g_old_zone;
 MallocZoneFunctions g_old_purgeable_zone;
 
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void* oom_killer_malloc(struct _malloc_zone_t* zone, size_t size) {
   void* result = g_old_zone.malloc(zone, size);
@@ -183,13 +183,13 @@ void* oom_killer_memalign(struct _malloc_zone_t* zone,
   // other reasons why null might be returned. See posix_memalign() in 10.15's
   // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
-      std::has_single_bit(alignment)) {
+      partition_alloc::internal::base::bits::HasSingleBit(alignment)) {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
   return result;
 }
 
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void* oom_killer_malloc_purgeable(struct _malloc_zone_t* zone, size_t size) {
   void* result = g_old_purgeable_zone.malloc(zone, size);
@@ -239,7 +239,7 @@ void* oom_killer_memalign_purgeable(struct _malloc_zone_t* zone,
   // other reasons why null might be returned. See posix_memalign() in 10.15's
   // https://opensource.apple.com/source/libmalloc/libmalloc-283/src/malloc.c .
   if (!result && size && alignment >= sizeof(void*) &&
-      std::has_single_bit(alignment)) {
+      partition_alloc::internal::base::bits::HasSingleBit(alignment)) {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
   return result;
@@ -252,7 +252,7 @@ void* oom_killer_memalign_purgeable(struct _malloc_zone_t* zone,
 // === Core Foundation CFAllocators ===
 
 bool CanGetContextForCFAllocator() {
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
   return !partition_alloc::internal::base::ios::IsRunningOnOrLater(17, 0, 0);
 #else
   // As of macOS 14, the allocators are in read-only memory and can no longer be
@@ -428,7 +428,7 @@ void InterceptAllocationsMac() {
 #if !defined(ADDRESS_SANITIZER)
   // Don't do anything special on OOM for the malloc zones replaced by
   // AddressSanitizer, as modifying or protecting them may not work correctly.
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // The malloc zone backed by PartitionAlloc crashes by default, so there is
   // no need to install the OOM killer.
   ChromeMallocZone* default_zone =
@@ -446,7 +446,7 @@ void InterceptAllocationsMac() {
     ReplaceZoneFunctions(default_zone, &new_functions);
     g_replaced_default_zone = true;
   }
-#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   ChromeMallocZone* purgeable_zone =
       reinterpret_cast<ChromeMallocZone*>(malloc_default_purgeable_zone());
@@ -630,4 +630,4 @@ void ReplaceZoneFunctions(ChromeMallocZone* zone,
 
 }  // namespace allocator_shim
 
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)

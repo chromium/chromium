@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <string>
 
@@ -130,7 +135,7 @@ std::vector<uint8_t> CertToDer(scoped_refptr<net::X509Certificate> cert) {
 }
 
 // This class provides integration testing for the keystore service crosapi.
-// TODO(https://crbug.com/1134340): The logic being tested does not rely on
+// TODO(crbug.com/40723023): The logic being tested does not rely on
 // //chrome or //content so it would be helpful if this lived in a lower-level
 // test suite.
 class KeystoreServiceLacrosBrowserTest : public InProcessBrowserTest {
@@ -171,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, WrongFormattingUser) {
 
   ASSERT_TRUE(result->is_error_message());
 
-  // TODO(https://crbug.com/1134349): Currently this errors out because the
+  // TODO(crbug.com/40151413): Currently this errors out because the
   // device is not enterprise enrolled. We want this to error out because of a
   // poorly formatted attestation message.
   const char expected_error_message[] =

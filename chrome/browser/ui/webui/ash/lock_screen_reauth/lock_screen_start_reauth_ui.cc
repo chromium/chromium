@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
 
 #include <memory>
@@ -25,7 +30,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources.h"
 #include "chrome/grit/lock_screen_reauth_resources_map.h"
-#include "chrome/grit/oobe_unconditional_resources_map.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,7 +47,7 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
+      user_manager::UserManager::Get()->GetPrimaryUser();
   std::string email;
   if (user) {
     email = user->GetDisplayEmail();
@@ -61,9 +65,6 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->EnableReplaceI18nInJS();
   source->UseStringsJs();
 
-  source->AddString("lockScreenReauthSubtitile",
-                    l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_REAUTH_SUBTITLE,
-                                               base::UTF8ToUTF16(email)));
   source->AddString(
       "lockScreenReauthSubtitile1WithError",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE1));
@@ -71,7 +72,6 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       "lockScreenReauthSubtitile2WithError",
       l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_WRONG_USER_SUBTITLE2,
                                  base::UTF8ToUTF16(email)));
-
   source->AddString("lockScreenVerifyButton",
                     l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_VERIFY_BUTTON));
   source->AddString(
@@ -126,12 +126,10 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       "samlChangeProviderButton",
       l10n_util::GetStringUTF16(IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON));
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  bool policy_ca_certs_present =
-      primary_profile
-          ? primary_profile->GetPrefs()->GetBoolean(
-                prefs::kUsedPolicyCertificates) &&
-                features::ArePolicyProvidedTrustAnchorsAllowedAtLockScreen()
-          : false;
+  bool policy_ca_certs_present = primary_profile
+                                     ? primary_profile->GetPrefs()->GetBoolean(
+                                           prefs::kUsedPolicyCertificates)
+                                     : false;
   source->AddBoolean("policyProvidedCaCertsPresent", policy_ca_certs_present);
   source->AddString(
       "policyProvidedCaCertsTooltipMessage",

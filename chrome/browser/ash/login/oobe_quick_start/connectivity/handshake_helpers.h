@@ -7,6 +7,7 @@
 
 #include <array>
 #include <optional>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"

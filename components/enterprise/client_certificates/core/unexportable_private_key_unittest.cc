@@ -10,15 +10,17 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
+#include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
+#include "net/ssl/ssl_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace client_certificates {
 
 TEST(UnexportablePrivateKeyTest, SupportedCreateKey) {
-  crypto::ScopedMockUnexportableKeyProvider scoped_provider;
-  auto provider = crypto::GetUnexportableKeyProvider();
+  ScopedSSLKeyConverter scoped_converter;
+  auto provider = crypto::GetUnexportableKeyProvider(/*config=*/{});
   ASSERT_TRUE(provider);
 
   // The mock only works with the ECDSA_SHA256 algorithm.

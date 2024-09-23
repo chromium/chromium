@@ -446,7 +446,6 @@ std::unique_ptr<XFixes::GetCursorImageReply> detail::ReadReply<
   auto& yhot = (*reply).yhot;
   auto& cursor_serial = (*reply).cursor_serial;
   auto& cursor_image = (*reply).cursor_image;
-  size_t cursor_image_len = cursor_image.size();
 
   // response_type
   uint8_t response_type;
@@ -1175,7 +1174,6 @@ std::unique_ptr<XFixes::FetchRegionReply> detail::ReadReply<
   auto& sequence = (*reply).sequence;
   auto& extents = (*reply).extents;
   auto& rectangles = (*reply).rectangles;
-  size_t rectangles_len = rectangles.size();
 
   // response_type
   uint8_t response_type;
@@ -1499,7 +1497,6 @@ std::unique_ptr<XFixes::GetCursorNameReply> detail::ReadReply<
   auto& atom = (*reply).atom;
   uint16_t nbytes{};
   auto& name = (*reply).name;
-  size_t name_len = name.size();
 
   // response_type
   uint8_t response_type;
@@ -1584,9 +1581,7 @@ std::unique_ptr<XFixes::GetCursorImageAndNameReply> detail::ReadReply<
   auto& cursor_atom = (*reply).cursor_atom;
   uint16_t nbytes{};
   auto& cursor_image = (*reply).cursor_image;
-  size_t cursor_image_len = cursor_image.size();
   auto& name = (*reply).name;
-  size_t name_len = name.size();
 
   // response_type
   uint8_t response_type;

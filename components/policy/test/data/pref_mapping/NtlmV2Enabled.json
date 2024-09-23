@@ -14,7 +14,8 @@
         },
         "prefs": {
           "auth.ntlm_v2_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
           }
         }
       }

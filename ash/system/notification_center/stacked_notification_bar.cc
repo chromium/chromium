@@ -27,6 +27,7 @@
 #include "ui/gfx/interpolated_transform.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -37,9 +38,9 @@ namespace {
 // The label button in the stacked notification bar, used for the "Clear All"
 // button.
 class StackingBarLabelButton : public PillButton {
- public:
-  METADATA_HEADER(StackingBarLabelButton);
+  METADATA_HEADER(StackingBarLabelButton, PillButton)
 
+ public:
   StackingBarLabelButton(PressedCallback callback,
                          const std::u16string& text,
                          NotificationCenterView* notification_center_view)
@@ -48,6 +49,7 @@ class StackingBarLabelButton : public PillButton {
                    PillButton::Type::kFloatingWithoutIcon,
                    /*icon=*/nullptr,
                    kNotificationPillButtonHorizontalSpacing) {
+    SetEnabled(false);
     StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                      /*highlight_on_hover=*/true,
                                      /*highlight_on_focus=*/true);
@@ -59,7 +61,7 @@ class StackingBarLabelButton : public PillButton {
   ~StackingBarLabelButton() override = default;
 };
 
-BEGIN_METADATA(StackingBarLabelButton, PillButton)
+BEGIN_METADATA(StackingBarLabelButton)
 END_METADATA
 
 }  // namespace
@@ -209,9 +211,7 @@ class StackedNotificationBar::StackedNotificationBarIcon
   AnimationCompleteCallback animation_complete_callback_;
 };
 
-BEGIN_METADATA(StackedNotificationBar,
-               StackedNotificationBarIcon,
-               views::ImageView)
+BEGIN_METADATA(StackedNotificationBar, StackedNotificationBarIcon)
 END_METADATA
 
 StackedNotificationBar::StackedNotificationBar(
@@ -282,8 +282,8 @@ bool StackedNotificationBar::Update(
       IDS_ASH_MESSAGE_CENTER_STACKING_BAR_CLEAR_ALL_BUTTON_TOOLTIP,
       unpinned_count);
   clear_all_button_->SetTooltipText(tooltip);
-  clear_all_button_->SetAccessibleName(tooltip);
-  clear_all_button_->SetEnabled(unpinned_count != 0);
+  clear_all_button_->GetViewAccessibility().SetName(tooltip);
+  clear_all_button_->SetEnabled(unpinned_count > 0);
 
   return true;
 }

@@ -1,6 +1,8 @@
 {
   "name": "Simple Extension with icon",
   "version": "0.1",
-  "icons": { "128": "icon.png" },
-  "manifest_version": 2
+  "icons": {
+    "128": "icon.png"
+  },
+  "manifest_version": 3
 }

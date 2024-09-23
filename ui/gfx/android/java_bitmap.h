@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
@@ -49,9 +49,7 @@ class GFX_EXPORT JavaBitmap {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> bitmap_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION void* pixels_;
+  raw_ptr<void> pixels_ = nullptr;
   gfx::Size size_;
   BitmapFormat format_;
   uint32_t bytes_per_row_;
@@ -79,5 +77,21 @@ GFX_EXPORT SkColorType
 ConvertToSkiaColorType(const base::android::JavaRef<jobject>& jbitmap_config);
 
 }  // namespace gfx
+
+namespace jni_zero {
+// Converts |bitmap| to an SkBitmap of the same size and format.
+// Note: |j_bitmap| is assumed to be non-null, non-empty and of format
+// RGBA_8888.
+template <>
+GFX_EXPORT SkBitmap FromJniType<SkBitmap>(JNIEnv* env,
+                                          const JavaRef<jobject>& j_bitmap);
+
+// Converts |skbitmap| to a Java-backed bitmap (android.graphics.Bitmap).
+// Note: return nullptr jobject if |skbitmap| is null or empty.
+template <>
+GFX_EXPORT ScopedJavaLocalRef<jobject> ToJniType<SkBitmap>(
+    JNIEnv* env,
+    const SkBitmap& skbitmap);
+}  // namespace jni_zero
 
 #endif  // UI_GFX_ANDROID_JAVA_BITMAP_H_

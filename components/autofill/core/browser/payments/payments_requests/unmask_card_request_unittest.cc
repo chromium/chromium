@@ -11,15 +11,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 namespace autofill::payments {
 
-// TODO(crbug/1372613): Extend tests in this file to all of the possible card
-// unmasking test cases. The cases that are not in this file are currently
+// TODO(crbug.com/40241790): Extend tests in this file to all of the possible
+// card unmasking test cases. The cases that are not in this file are currently
 // tested in PaymentsNetworkInterface tests, but they should be tested here as
 // well.
 class UnmaskCardRequestTest : public testing::Test {
@@ -154,7 +157,7 @@ TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
   EXPECT_EQ("fake_context_token", response_details.context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ("fake_fido_challenge",
-            *response_details.fido_request_options->FindString("challenge"));
+            *response_details.fido_request_options.FindString("challenge"));
 
   // Verify that the response is considered complete.
   EXPECT_TRUE(GetRequest()->IsResponseComplete());
@@ -183,11 +186,24 @@ TEST_F(UnmaskCardRequestTest, ContextTokenAndPanNotReturned) {
   EXPECT_FALSE(GetRequest()->IsResponseComplete());
 }
 
+TEST_F(UnmaskCardRequestTest, DoesNotHaveTimeoutWithoutFlag) {
+  feature_list_.InitAndDisableFeature(
+      features::kAutofillUnmaskCardRequestTimeout);
+  EXPECT_FALSE(request_->GetTimeout().has_value());
+}
+
+TEST_F(UnmaskCardRequestTest, HasTimeoutWhenFlagSet) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillUnmaskCardRequestTimeout);
+
+  EXPECT_EQ(request_->GetTimeout(), base::Seconds(30));
+}
+
 // Params of the VirtualCardUnmaskCardRequestTest:
 // -- autofill::CardUnmaskChallengeOptionType challenge_option_type
 // -- bool autofill_enable_3ds_for_vcn_yellow_path
-// TODO(crbug.com/1430297): Extend this texting fixture to test the OTP cases as
-// well.
+// TODO(crbug.com/40901660): Extend this texting fixture to test the OTP cases
+// as well.
 class VirtualCardUnmaskCardRequestTest
     : public UnmaskCardRequestTest,
       public testing::WithParamInterface<
@@ -262,6 +278,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest, GetRequestContent) {
     EXPECT_TRUE(IsIncludedInRequestContent("encrypted_cvc"));
     EXPECT_TRUE(IsIncludedInRequestContent("&s7e_13_cvc=123"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_challenge_option"));
+    EXPECT_TRUE(IsIncludedInRequestContent("selected_idv_challenge_option"));
     EXPECT_TRUE(IsIncludedInRequestContent("challenge_id"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_length"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_position"));
@@ -299,9 +316,11 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
       "\"a******b@google.com\"}}, {\"email_otp_challenge_option\": "
       "{\"challenge_id\": \"fake_challenge_id_6\", \"masked_email_address\": "
       "\"c******d@google.com\", \"otp_length\": 4}}, "
-      "{\"redirect_challenge_option\": "
-      "{\"challenge_id\": \"fake_challenge_id_7\", \"redirect_url\": "
-      "\"https://example.com/\"}}]}");
+      "{\"popup_challenge_option\": "
+      "{\"challenge_id\": \"fake_challenge_id_7\", \"popup_url\": "
+      "\"https://example.com/\", \"query_params_for_popup_close\": "
+      "{\"success_query_param_name\": \"token\", "
+      "\"failure_query_param_name\": \"failure\"}}}]}");
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
@@ -310,14 +329,13 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   EXPECT_EQ("fake_context_token", response_details.context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ("fake_fido_challenge",
-            *response_details.fido_request_options->FindString("challenge"));
+            *response_details.fido_request_options.FindString("challenge"));
 
   // Verify the six (or seven, if 3DS is enabled) challenge options are two SMS
   // OTP challenge options, two CVC challenge options, two email OTP challenge
   // options, one 3ds challenge option if 3DS is enabled and fields can be
   // correctly parsed.
-  const size_t expected_number_challenges =
-      IsAutofillEnable3dsForVcnYellowPathTurnedOn() ? 7u : 6u;
+  const size_t expected_number_challenges = IsVcn3dsEnabled() ? 7u : 6u;
   ASSERT_EQ(expected_number_challenges,
             response_details.card_unmask_challenge_options.size());
 
@@ -367,13 +385,22 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   EXPECT_EQ(u"c******d@google.com", challenge_option_6.challenge_info);
   EXPECT_EQ(4u, challenge_option_6.challenge_input_length);
 
-  if (IsAutofillEnable3dsForVcnYellowPathTurnedOn()) {
+  if (IsVcn3dsEnabled()) {
     const CardUnmaskChallengeOption& challenge_option_7 =
         response_details.card_unmask_challenge_options[6];
     EXPECT_EQ(CardUnmaskChallengeOptionType::kThreeDomainSecure,
               challenge_option_7.type);
     EXPECT_EQ("fake_challenge_id_7", challenge_option_7.id.value());
-    EXPECT_EQ(GURL("https://example.com/"), challenge_option_7.url_to_open);
+    EXPECT_EQ(GURL("https://example.com/"),
+              challenge_option_7.vcn_3ds_metadata->url_to_open);
+    EXPECT_EQ("token",
+              challenge_option_7.vcn_3ds_metadata->success_query_param_name);
+    EXPECT_EQ("failure",
+              challenge_option_7.vcn_3ds_metadata->failure_query_param_name);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_THREE_DOMAIN_SECURE_CHALLENGE_INFO),
+        challenge_option_7.challenge_info);
   }
 }
 

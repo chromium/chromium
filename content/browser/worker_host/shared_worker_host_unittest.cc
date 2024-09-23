@@ -22,6 +22,7 @@
 #include "content/browser/worker_host/mock_shared_worker.h"
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
+#include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/public/browser/shared_worker_instance.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,8 +30,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/test_content_browser_client.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -129,33 +128,25 @@ class SharedWorkerHostTest : public testing::Test {
     auto service_worker_handle =
         std::make_unique<ServiceWorkerMainResourceHandle>(
             helper_->context_wrapper(), base::DoNothing());
-    mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerContainer>
-        client_remote;
-    mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
-        host_receiver;
-    auto container_info =
-        blink::mojom::ServiceWorkerContainerInfoForClient::New();
-    container_info->client_receiver =
-        client_remote.InitWithNewEndpointAndPassReceiver();
-    host_receiver =
-        container_info->host_remote.InitWithNewEndpointAndPassReceiver();
-
-    helper_->context()->CreateContainerHostForWorker(
-        std::move(host_receiver), mock_render_process_host_->GetID(),
-        std::move(client_remote), ServiceWorkerClientInfo(host->token()));
-    service_worker_handle->OnCreatedContainerHost(std::move(container_info));
+    service_worker_handle->set_service_worker_client(
+        helper_->context()
+            ->service_worker_client_owner()
+            .CreateServiceWorkerClientForWorker(
+                mock_render_process_host_->GetID(),
+                ServiceWorkerClientInfo(host->token())));
     host->SetServiceWorkerHandle(std::move(service_worker_handle));
 
     TestContentBrowserClient client;
-    host->Start(std::move(factory), std::move(main_script_load_params),
-                std::move(subresource_loader_factories),
-                nullptr /* controller */,
-                nullptr /* controller_service_worker_object_host */,
+    host->Start(std::move(factory),
                 blink::mojom::FetchClientSettingsObject::New(
                     network::mojom::ReferrerPolicy::kDefault,
-                    GURL() /* outgoing_referrer */,
+                    /*outgoing_referrer=*/GURL(),
                     blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
-                final_response_url, &client);
+                &client,
+                WorkerScriptFetcherResult(
+                    std::move(subresource_loader_factories),
+                    std::move(main_script_load_params),
+                    PolicyContainerPolicies(), final_response_url));
   }
 
   MessagePortChannel AddClient(

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/navigation_extension_enabler.h"
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -10,17 +12,19 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/navigation_extension_enabler.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
 namespace extensions {
@@ -173,12 +177,13 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // Emulate a user gesture so that the current entry won't be skipped due to
   // the history manipulation intervention when we try to navigate back to it.
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      std::u16string(), base::NullCallback());
+      std::u16string(), base::NullCallback(),
+      content::ISOLATED_WORLD_ID_GLOBAL);
 
   // Navigate subframe to an enabled extension URL.
   scoped_refptr<const Extension> extension =
       ChromeTestExtensionLoader(profile()).LoadExtension(
-          test_data_dir_.AppendASCII("web_accessible_resources"));
+          test_data_dir_.AppendASCII("web_accessible_resources/subframe"));
   ASSERT_TRUE(extension);
   GURL extension_url = extension->GetResourceURL("web_accessible_page.html");
   EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", extension_url));
@@ -220,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
   // The SiteInstance of the disabled extension frame should be different from
   // the SiteInstance of the enabled extension subframe. It should reference the
   // invalid extension ID or the error page URL.
-  // TODO(crbug.com/1234637): remove the exceptions for Mac and Windows below
+  // TODO(crbug.com/40192071): remove the exceptions for Mac and Windows below
   // once renderer-process shutdown delay causing `extension_site_instance` to
   // be reused is addressed (see
   // RendererProcessHostImpl::ShouldDelayProcessShutdown() for details).
@@ -231,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(DisableExtensionBrowserTest,
               GURL(content::kUnreachableWebDataURL));
   } else {
     EXPECT_EQ(subframe->GetSiteInstance()->GetSiteURL(),
-              GURL(chrome::kExtensionInvalidRequestURL));
+              GURL(kExtensionInvalidRequestURL));
     // The disabled extension process should be locked.
     EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
   }

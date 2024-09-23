@@ -11,6 +11,10 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace blink {
+class WebSecurityOrigin;
+}  // namespace blink
+
 namespace extensions {
 class Dispatcher;
 class Extension;
@@ -37,6 +41,8 @@ class ChromeContentSettingsAgentDelegate
   void AllowPluginTemporarily(const std::string& identifier);
 
   // content_settings::ContentSettingsAgentImpl::Delegate:
+  bool IsFrameAllowlistedForStorageAccess(
+      blink::WebFrame* frame) const override;
   bool IsSchemeAllowlisted(const std::string& scheme) override;
   bool AllowReadFromClipboard() override;
   bool AllowWriteToClipboard() override;
@@ -63,13 +69,12 @@ class ChromeContentSettingsAgentDelegate
       const blink::WebSecurityOrigin& origin) const;
 
   // Owned by ChromeContentRendererClient and outlive us.
-  raw_ptr<extensions::Dispatcher, ExperimentalRenderer> extension_dispatcher_ =
-      nullptr;
+  raw_ptr<extensions::Dispatcher> extension_dispatcher_ = nullptr;
 #endif
 
   base::flat_set<std::string> temporarily_allowed_plugins_;
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_ = nullptr;
+  raw_ptr<content::RenderFrame> render_frame_ = nullptr;
 };
 
 #endif  // CHROME_RENDERER_CHROME_CONTENT_SETTINGS_AGENT_DELEGATE_H_

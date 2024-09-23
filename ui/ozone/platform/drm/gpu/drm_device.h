@@ -73,12 +73,13 @@ class DrmDevice : public DrmWrapper,
 
   virtual int modeset_sequence_id() const;
   HardwareDisplayPlaneManager* plane_manager() { return plane_manager_.get(); }
+  const HardwareDisplayPlaneManager* plane_manager() const {
+    return plane_manager_.get();
+  }
   GbmDevice* gbm_device() const { return gbm_.get(); }
 
  protected:
   friend class base::RefCountedThreadSafe<DrmDevice>;
-
-  friend class DrmDisplayTest;
 
   ~DrmDevice() override;
 

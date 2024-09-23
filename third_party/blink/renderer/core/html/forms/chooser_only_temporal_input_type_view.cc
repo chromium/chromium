@@ -69,10 +69,9 @@ void ChooserOnlyTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
   if (!document.IsActive() || !document.View())
     return;
   UseCounter::Count(
-      document,
-      (event.UnderlyingEvent() && event.UnderlyingEvent()->isTrusted())
-          ? WebFeature::kTemporalInputTypeChooserByTrustedClick
-          : WebFeature::kTemporalInputTypeChooserByUntrustedClick);
+      document, event.IsFullyTrusted()
+                    ? WebFeature::kTemporalInputTypeChooserByTrustedClick
+                    : WebFeature::kTemporalInputTypeChooserByUntrustedClick);
   OpenPopupView();
 }
 

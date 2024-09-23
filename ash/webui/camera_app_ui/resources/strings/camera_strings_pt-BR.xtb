@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2244252133441425811">Ativar o seletor de QPS de vídeo</translation>
 <translation id="2271433936731426666">Ativar a síntese do desempenho do vídeo no tamanho original</translation>
+<translation id="2281736597583450397">Confira detalhes mais nítidos com o zoom aprimorado</translation>
 <translation id="2320741269052147773">Movimentar para a esquerda</translation>
+<translation id="2360840973209616515">O app de câmera é gerenciado pelo administrador.
+        Para mais detalhes, entre em contato com o administrador.</translation>
+<translation id="2442754296994859145">Copie para verificar o conteúdo ou abra para interromper a digitalização.</translation>
+<translation id="2486151619109781620">Fechar caixa de diálogo e iniciar a digitalização</translation>
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="2501853267655415902">A gravação foi interrompida</translation>
 <translation id="2517472476991765520">Verificar</translation>
 <translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="2577915835281444458">A gravação vai ser interrompida em breve. Acesse o armazenamento do dispositivo para liberar espaço.</translation>
 <translation id="2599796128805996109">Câmera traseira</translation>
+<translation id="2654491636277477479">Copiar texto detectado</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipo de leitura</translation>
 <translation id="28682968802727151">Visualização do espelhamento</translation>
 <translation id="2879583609344924966">A <ph name="CAMERA" /> foi conectada.</translation>
 <translation id="3067436040345934772">Movimentar para a direita</translation>
 <translation id="3081586908890909590">Mudar para gravar vídeo</translation>
+<translation id="3091480460059548935">Detecção de texto na prévia</translation>
 <translation id="313467653172006084">30 QPS</translation>
+<translation id="3157038259444425153">Agora você pode copiar o texto da sua foto diretamente</translation>
 <translation id="3158534262962737808">Conectar-se a "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3240426699337459095">Link copiado</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">Pausar gravação</translation>
 <translation id="4121305183798804752">Documento detectado</translation>
 <translation id="414641094616694804">Esta câmera não pode mudar de resolução</translation>
-<translation id="4176463684765177261">Desativado</translation>
 <translation id="428234092390943511">Miniatura da página</translation>
-<translation id="4349714250734879769">Dimensionar frames pelo Chrome</translation>
 <translation id="4383571725254449280">Registros de desempenho de impressão</translation>
 <translation id="4445542136948522167">Parar de tirar foto</translation>
 <translation id="4570032796877367747">Câmera frontal</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">Lista de páginas digitalizadas</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Copiar endereço do link <ph name="URL" /></translation>
-<translation id="491895758387112773">Fazer multistreaming da gravação de vídeo</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Proporção da foto</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5320594929574852403">Movendo para a esquerda</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Abrir caixa de diálogo e interromper a digitalização</translation>
 <translation id="5662366948659129155">Digitalizando a página <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Quadrado</translation>
 <translation id="574392208103952083">Médio</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5976160379964388480">Outros</translation>
 <translation id="6073451960410192870">Parar de gravar</translation>
+<translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6197807149213783179">Salvar metadados</translation>
 <translation id="6233780560267770709">3 por 3</translation>
 <translation id="6243827288366940320">Proporção áurea</translation>
@@ -115,11 +122,14 @@
 Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma foto ou um vídeo de amostra e descreva o problema. Por exemplo, a foto está escura demais ou não está focando.</translation>
 <translation id="6519884562954018934">Participar do <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Compartilhar</translation>
+<translation id="6586509689874700895">Primeiro, pressione <ph name="BUTTON_NAME" /> para aumentar o zoom. Depois de tirar uma foto, os detalhes aprimorados vão aparecer.</translation>
+<translation id="659539649712855529">Copiado: <ph name="CONTENT" />.</translation>
 <translation id="6617916774429601017">Mostrar todas as resoluções</translation>
 <translation id="6631515515009660915">Espelhamento desativado</translation>
 <translation id="6652737148136672975">Mova os cantos com as teclas de seta</translation>
 <translation id="667999046851023355">Documento</translation>
 <translation id="6681668084120808868">Tirar foto</translation>
+<translation id="6692092766759105707">Copie para verificar o conteúdo.</translation>
 <translation id="6778482348691154169">Não foi possível tirar a foto</translation>
 <translation id="6888362557094394345">Movendo para baixo</translation>
 <translation id="695140971690006676">Redefinir tudo</translation>
@@ -132,8 +142,8 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="7337660886763914220">Erros no sistema de arquivos.</translation>
 <translation id="7450541714075000668">Texto copiado</translation>
 <translation id="7488619942230388918">Gravar um GIF</translation>
+<translation id="7527714402753141485">Mostra o texto e o botão para copiar</translation>
 <translation id="7557677699350329807">Mudar para a próxima câmera</translation>
-<translation id="7562584071994185503">Copiar texto "<ph name="TEXT" />"</translation>
 <translation id="7607002721634913082">Pausado</translation>
 <translation id="7608223098072244877">4 por 4</translation>
 <translation id="761421184377987513">Movendo para o canto esquerdo de baixo</translation>
@@ -153,12 +163,12 @@ Caso seu feedback seja sobre a qualidade da imagem ou do vídeo, adicione uma fo
 <translation id="8145038249676204903">Mudar para tirar foto</translation>
 <translation id="8167081290930651932">Salvar como foto</translation>
 <translation id="8239780215768881278">Fazer um instantâneo de vídeo</translation>
-<translation id="8346544573713510785">Dimensionar frames pela HAL da câmera</translation>
 <translation id="8425673304802773841">Inclinar para baixo</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8609951387004618906">Abrir <ph name="URL" /></translation>
 <translation id="8629662593426079630">360 p</translation>
 <translation id="8711011893539266636">Alterne o status do microfone. O microfone está desativado</translation>
+<translation id="8712637175834984815">Entendi</translation>
 <translation id="8730621377337864115">Concluir</translation>
 <translation id="8732462232047530626">Visualizar metadados</translation>
 <translation id="874854738381978209">Rede Wi-Fi detectada.</translation>

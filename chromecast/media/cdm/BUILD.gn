@@ -25,13 +25,6 @@ cast_source_set("cdm") {
     "//media",
     "//url",
   ]
-
-  if (is_android && enable_playready) {
-    sources += [
-      "playready_drm_delegate_android.cc",
-      "playready_drm_delegate_android.h",
-    ]
-  }
 }
 
 cast_source_set("cdm_origin_provider") {

@@ -1,0 +1,312 @@
+<style include="cr-shared-style sanitize-shared">
+  .completed-icon {
+    height: 32px;
+    width: 32px;
+  }
+
+  cr-expand-button {
+    background-color: var(--cros-sys-app_base);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    height: 32px;
+    padding: 16px 16px 0px 16px;
+  }
+
+  #dialog:focus-visible {
+    outline: none;
+  }
+
+  #expandExtensionsInfo::part(icon) {
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+    height: 20px;
+    width: 20px;
+  }
+
+  #expandChromeOsSettingsInfo::part(icon) {
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+    height: 20px;
+    width: 20px;
+  }
+
+  #expandChromeSettingsInfo::part(icon) {
+    --cr-icon-button-fill-color: var(--cros-sys-on_surface);
+    height: 20px;
+    width: 20px;
+  }
+
+  .expand-buttons {
+    background-color: var(--cros-sys-app_base_shaded);
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    height: 290px;
+    padding: 12px;
+    overflow:auto;
+  }
+
+  .expand-button-ending {
+    background-color: var(--cros-sys-app_base);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    margin-bottom: 8px;
+    padding-bottom: 16px;
+  }
+
+  .expand-container-icon {
+    height: 24px;
+    margin: 4px;
+    width: 24px;
+  }
+
+  .expand-div {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  .expand-title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-1-font);
+    font-family: var(--cros-button-1-font-family);
+    font-size: var(--cros-button-1-font-size);
+    font-weight: var(--cros-button-1-font-weight);
+    line-height: var(--cros-button-1-line-height);
+  }
+
+  .expand-title-ending {
+    background-color: var(--cros-sys-app_base);
+    border-bottom: var(--cr-separator-line);
+    border-bottom-width: 1px;
+    padding-bottom: 16px;
+  }
+
+  .icon-background {
+    background-color: var(--cros-sys-primary_container);
+    border-radius: 50%;
+    height: 32px;
+    margin-inline-end: 16px;
+    width: 32px;
+  }
+
+  .list-container {
+    align-items: center;
+    background-color: var(--cros-sys-app_base);
+    color: var(--cros-sys-on_surface);
+    display: flex;
+    font: var(--cros-button-1-font);
+    font-family: var(--cros-button-1-font-family);
+    font-size: var(--cros-button-1-font-size);
+    font-weight: var(--cros-button-1-font-weight);
+    height: 32px;
+    line-height: var(--cros-button-1-line-height);
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+  }
+
+  .list-container:not(:last-child) {
+    padding-bottom: 16px;
+  }
+
+  .sanitize-done-info {
+    background-color: var(--cros-sys-secondary_container);
+    border-radius: 16px;
+  }
+
+  .sanitize-done-rollback {
+    color: var(--cros-sys-on_secondary_container);
+    font: var(--cros-button-2-font);
+    font-family: var(--cros-button-2-font-family);
+    font-size: var(--cros-button-2-font-size);
+    font-weight: var(--cros-button-2-font-weight);
+    line-height: var(--cros-button-2-line-height);
+    padding: 12px 16px;
+  }
+
+  .secondary-button-container {
+    margin-left: auto;
+  }
+</style>
+
+<div slot="body" role="dialog" id="dialog" autofocus tabindex="-1"
+     aria-labelledby="title">
+  <div class="completed-icon-div">
+    <svg class="completed-icon"
+        preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 32 32">
+      <use href="svg/finished_32.svg#finished_32"></use>
+    </svg>
+  </div>
+  <h2><div id="title" class="title">$i18n{sanitizeDoneTitle}</div></h2>
+  <div class="sanitize-description">
+    $i18n{sanitizeDoneExplanation}
+  </div>
+  <div class="sanitize-done-info">
+    <div class="sanitize-done-rollback">
+      $i18n{sanitizeDoneRollback}
+    </div>
+    <div class="expand-buttons">
+      <cr-expand-button class="expand-container" id="expandExtensionsInfo"
+          expanded="{{extensionsExpanded_}}">
+        <div class="expand-div">
+          <div class="icon-background">
+            <svg class="expand-container-icon extensions-icon"
+                 preserveAspectRatio="xMidYMid meet"
+                 role="img" viewBox="0 0 24 24">
+              <use href="svg/card_extension_off.svg#card_extension_off"></use>
+            </svg>
+          </div>
+          <span class="expand-title" id="accordionExtensionsTitle">
+            $i18n{sanitizeDoneAccordionExtensionsTitle}
+          </span>
+        </div>
+      </cr-expand-button>
+      <template is="dom-if" if="[[extensionsExpanded_]]">
+        <div class="expand-title-ending"></div>
+        <div role="region" aria-labelledby="accordionExtensionsTitle">
+          <div class="list-container">
+            <div id="accordionExtensionsTitle">
+              $i18n{sanitizeDoneAccordionExtensionsReenable}
+            </div>
+            <span class="secondary-button-container">
+              <cros-button role="button" button-style="secondary"
+                  id="extensionsButton" on-click="onExtensionsButtonClick_"
+                  aria-label="$i18n{sanitizeDoneButtonExtensions}"
+                  aria-describedby="accordionExtensionsTitle"
+                  label="$i18n{sanitizeDoneButtonExtensions}">
+              </cros-button>
+            </span>
+          </div>
+        </div>
+      </template>
+      <div class="expand-button-ending"></div>
+      <cr-expand-button
+          class="expand-container"
+          expanded="{{chromeOSSettingsInfoExpanded_}}"
+          id="expandChromeOsSettingsInfo">
+        <div class="expand-div">
+          <div class="icon-background">
+            <svg class="expand-container-icon chromeos-icon"
+                preserveAspectRatio="xMidYMid meet"
+                role="img" viewBox="0 0 24 24">
+              <use href="svg/card_settings.svg#card_settings"></use>
+            </svg>
+          </div>
+          <span class="expand-title" id="accordionChromeOsTitle">
+            $i18n{sanitizeDoneAccordionChromeOsTitle}
+          </span>
+        </div>
+      </cr-expand-button>
+      <template is="dom-if" if="[[chromeOSSettingsInfoExpanded_]]">
+        <div class="expand-title-ending"></div>
+        <div role="region" aria-labelledby="accordionChromeOsTitle">
+          <div class="list-container">
+            <div id="accordionChromeOsInputTitle">
+              $i18n{sanitizeDoneAccordionChromeOsInput}
+            </div>
+            <span class="secondary-button-container">
+              <cros-button role="button" button-style="secondary"
+                  id="chromeOsInputButton" on-click="onChromeOsInputClick_"
+                  aria-label="$i18n{sanitizeDoneButtonChromeOSInput}"
+                  aria-describedby="accordionChromeOsInputTitle"
+                  label="$i18n{sanitizeDoneButtonChromeOSInput}">
+              </cros-button>
+            </span>
+          </div>
+          <div class="list-container">
+            <div id="accordionChromeOsNetworkTitle">
+              $i18n{sanitizeDoneAccordionChromeOsNetwork}
+            </div>
+            <span class="secondary-button-container">
+              <cros-button role="button" button-style="secondary"
+                  id="chromeOsNetworkButton"
+                  on-click="onChromeOsNetworkClick_"
+                  aria-label="$i18n{sanitizeDoneButtonChromeOSNetwork}"
+                  aria-describedby="accordionChromeOsNetworkTitle"
+                  label="$i18n{sanitizeDoneButtonChromeOSNetwork}">
+              </cros-button>
+            </span>
+          </div>
+        </div>
+      </template>
+      <div class="expand-button-ending"></div>
+      <cr-expand-button
+          class="expand-container"
+          expanded="{{chromeSettingsInfoExpanded_}}"
+          id="expandChromeSettingsInfo">
+        <div class="expand-div">
+          <div class="icon-background">
+            <svg class="expand-container-icon chrome-icon"
+                preserveAspectRatio="xMidYMid meet"
+                role="img" viewBox="0 0 24 24">
+              <use href="svg/card_chrome_product.svg#card_chrome_product"></use>
+            </svg>
+          </div>
+          <span class="expand-title" id="accordionChromeTitle">
+            $i18n{sanitizeDoneAccordionChromeTitle}
+          </span>
+        </div>
+      </cr-expand-button>
+      <template is="dom-if" if="[[chromeSettingsInfoExpanded_]]">
+        <div class="expand-title-ending"></div>
+        <div role="region" aria-labelledby="accordionChromeTitle">
+          <div class="list-container">
+            <div id="accordionChromeSiteContentTitle">
+              $i18n{sanitizeDoneAccordionChromeSiteContent}
+            </div>
+            <span class="secondary-button-container">
+              <cros-button role="button" button-style="secondary"
+                  id="chromeSiteContentButton"
+                  on-click="onChromeSiteContentClick_"
+                  aria-describedby="accordionChromeSiteContentTitle"
+                  label="Chrome Site Content">
+              </cros-button>
+            </span>
+          </div>
+          <div class="list-container">
+            <div id="accordionChromeStartupTitle">
+              $i18n{sanitizeDoneAccordionChromeStartup}
+            </div>
+            <span class="secondary-button-container">
+              <cros-button role="button" button-style="secondary"
+                  id="chromeStartupButton" on-click="onChromeStartupClick_"
+                  aria-label="$i18n{sanitizeDoneButtonChromeStartup}"
+                  aria-describedby="accordionChromeStartupTitle"
+                  label="$i18n{sanitizeDoneButtonChromeStartup}">
+              </cros-button>
+            </span>
+          </div>
+          <div class="list-container">
+            <div id="accordionChromeHomepageTitle">
+              $i18n{sanitizeDoneAccordionChromeHomepage}
+            </div>
+            <span class="secondary-button-container">
+              <cros-button role="button" button-style="secondary"
+                  id="chromeHomepageButton" on-click="onChromeHomepageClick_"
+                  aria-label="$i18n{sanitizeDoneButtonChromeHomepage}"
+                  aria-describedby="accordionChromeHomepageTitle"
+                  label="$i18n{sanitizeDoneButtonChromeHomepage}">
+              </cros-button>
+            </span>
+          </div>
+          <div class="list-container">
+            <div id="accordionChromeLanguagesTitle">
+              $i18n{sanitizeDoneAccordionChromeLanguages}
+            </div>
+            <span class="secondary-button-container">
+              <cros-button role="button" button-style="secondary"
+                  id="chromeLanguagesButton" on-click="onChromeLanguagesClick_"
+                  aria-label="$i18n{sanitizeDoneButtonChromeLanguages}"
+                  aria-describedby="accordionChromeLanguagesTitle"
+                  label="$i18n{sanitizeDoneButtonChromeLanguages}">
+              </cros-button>
+            </span>
+          </div>
+        </div>
+      </template>
+      <div class="expand-button-ending"></div>
+    </div>
+  </div>
+  <div class="button-container done-button-container">
+    <cros-button role="button" button-style="primary" id="doneButton"
+        label="$i18n{sanitizeDoneButton}" on-click="onDoneClick_">
+    </cros-button>
+  </div>
+</div>

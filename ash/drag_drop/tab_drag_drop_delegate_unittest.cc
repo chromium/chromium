@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -20,14 +20,18 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -37,6 +41,7 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #include "ui/wm/core/window_util.h"
 
 using ::base::test::RunOnceCallback;
@@ -571,8 +576,7 @@ TEST_F(TabDragDropDelegateTest, DropWithoutNewWindow) {
 TEST_F(TabDragDropDelegateTest, CancelTabDragWithFloatedWindow) {
   // Create a floated window.
   std::unique_ptr<aura::Window> source_window = CreateToplevelTestWindow();
-  source_window->SetProperty(aura::client::kAppType,
-                             static_cast<int>(AppType::BROWSER));
+  source_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(source_window.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(source_window.get())->IsFloated());
@@ -584,6 +588,45 @@ TEST_F(TabDragDropDelegateTest, CancelTabDragWithFloatedWindow) {
       source_window->bounds().CenterPoint());
   delegate.reset();
   EXPECT_EQ(original_bounds, source_window->GetBoundsInScreen());
+}
+
+TEST_F(TabDragDropDelegateTest, CaptureShouldBeReleasedAfterDrop) {
+  std::unique_ptr<aura::Window> source_window =
+      CreateToplevelTestWindow(gfx::Rect(0, 0, 10, 10));
+
+  constexpr gfx::Point kDragStartLocation(5, 5);
+
+  // Emulate a drag session ending in a drop to a new window.
+  auto* delegate = new TabDragDropDelegate(
+      Shell::GetPrimaryRootWindow(), source_window.get(), kDragStartLocation);
+
+  delegate->TakeCapture(Shell::GetPrimaryRootWindow(), source_window.get(),
+                        base::BindLambdaForTesting([]() {}),
+                        ui::TransferTouchesBehavior::kCancel);
+
+  delegate->DragUpdate(kDragStartLocation);
+  delegate->DragUpdate(kDragStartLocation + gfx::Vector2d(10, 0));
+
+  // Input capture should still be active.
+  EXPECT_TRUE(ash::window_util::GetCaptureWindow());
+
+  NewWindowDelegate::NewWindowForDetachingTabCallback new_window_callback;
+  EXPECT_CALL(*mock_new_window_delegate(),
+              NewWindowForDetachingTab(source_window.get(), _, _))
+      .Times(1)
+      .WillOnce(
+          [&](aura::Window* source_window, const ui::OSExchangeData& drop_data,
+              NewWindowDelegate::NewWindowForDetachingTabCallback callback) {
+            new_window_callback = std::move(callback);
+          });
+
+  delegate->DropAndDeleteSelf(kDragStartLocation + gfx::Vector2d(10, 0),
+                              ui::OSExchangeData());
+
+  // Input capture should have been released.
+  EXPECT_FALSE(ash::window_util::GetCaptureWindow());
+
+  std::move(new_window_callback).Run(source_window.get());
 }
 
 }  // namespace ash

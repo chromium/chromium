@@ -1,0 +1,32 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/mwb_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=mwb-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+.text {
+  color: var(--cr-primary-text-color);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 9px;
+  text-wrap: nowrap;
+}
+
+.divider {
+  background-color: var(--color-tab-search-divider);
+  height: 1px;
+  width: 100%;
+}
+
+.row {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  padding: 12px var(--mwb-list-item-horizontal-margin);
+}

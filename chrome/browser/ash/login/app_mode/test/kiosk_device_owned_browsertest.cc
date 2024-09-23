@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -28,13 +29,13 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -163,14 +165,6 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
     login_manager_.AppendRegularUsers(1);
   }
 
-  void SetUp() override {
-    KioskBaseTest::SetUp();
-
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-  }
-
   void SetUpOnMainThread() override {
     KioskBaseTest::SetUpOnMainThread();
 
@@ -189,16 +183,13 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
     return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get()));
   }
-
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-5e6b8c54-2eab-4ac0-a484-b9738466bb9b");
 
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchSuccess();
   KioskChromeAppManager::App app;
   ASSERT_TRUE(KioskChromeAppManager::Get()->GetApp(test_app_id(), &app));
@@ -211,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, WindowViewsBounds) {
   ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
 
   // Start app launch with network portal state.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
 
   // Verify the primary user profile is existing.
@@ -241,8 +231,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, WindowViewsBounds) {
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
                        VirtualKeyboardFeaturesEnabledByDefault) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchSuccess();
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -260,8 +249,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
   ExtensionTestMessageListener app_window_loaded_listener("appWindowLoaded");
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   EXPECT_TRUE(app_window_loaded_listener.WaitUntilSatisfied());
 
   // The shelf should be hidden at the beginning.
@@ -294,8 +282,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, HiddenShelf) {
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, NotSignedInWithGAIAAccount) {
   // Tests that the kiosk session is not considered to be logged in with a GAIA
   // account.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchSuccess();
   EXPECT_EQ(ManifestLocation::kExternalPref, GetInstalledAppLocation());
 
@@ -311,8 +298,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
       NetworkUiController::SetCanConfigureNetworkForTesting(false);
 
   // Start app launch and wait for network connectivity timeout.
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOffline);
   OobeScreenWaiter splash_waiter(AppLaunchSplashScreenView::kScreenId);
   splash_waiter.Wait();
 
@@ -331,26 +317,23 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, GetVolumeList) {
   SetTestApp(kTestGetVolumeListKioskAppId, /*version=*/"0.1");
 
   extensions::ResultCatcher catcher;
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, OpenA11ySettings) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
 
-  Browser* settings_browser = OpenA11ySettingsBrowser(
-      KioskChromeAppManager::Get()->kiosk_system_session());
+  Browser* settings_browser =
+      OpenA11ySettingsBrowser(KioskController::Get().GetKioskSystemSession());
   ASSERT_TRUE(settings_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
@@ -371,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
   // Replace the settings allowlist with `settings_pages`.
   ScopedSettingsPages pages(&settings_pages);
   KioskSystemSession* system_session =
-      KioskChromeAppManager::Get()->kiosk_system_session();
+      KioskController::Get().GetKioskSystemSession();
 
   // App session should be initialized.
   ASSERT_TRUE(system_session);
@@ -433,13 +416,12 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindow) {
 // This test covers b/245088137: after opening the settings browser and moving
 // focus to the main kiosk app, the settings browser could not be opened again.
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowShouldBeActive) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskChromeAppManager::Get()->kiosk_system_session();
+      KioskController::Get().GetKioskSystemSession();
 
   // App session should be initialized.
   ASSERT_TRUE(system_session);
@@ -480,13 +462,12 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowShouldBeActive) {
 // If only the a11y settings window remains open, it should not be automatically
 // closed in the chrome app kiosk session.
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowRemainsOpen) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskChromeAppManager::Get()->kiosk_system_session();
+      KioskController::Get().GetKioskSystemSession();
   // App session should be initialized.
   ASSERT_NE(system_session, nullptr);
 
@@ -502,13 +483,12 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, SettingsWindowRemainsOpen) {
 // Closing the a11y settings window should not exit the chrome app kiosk
 // session.
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, CloseSettingsWindow) {
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
   KioskSystemSession* system_session =
-      KioskChromeAppManager::Get()->kiosk_system_session();
+      KioskController::Get().GetKioskSystemSession();
   // App session should be initialized.
   ASSERT_NE(system_session, nullptr);
 
@@ -550,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   login_display_host->StartKiosk(test_kiosk_app().id(), true);
 
   // Check that no launch has started.
-  EXPECT_FALSE(login_display_host->GetKioskLaunchController());
+  EXPECT_FALSE(KioskController::Get().IsSessionStarting());
 }
 
 // This test verifies that accessibility extensions do not preserve any local
@@ -560,8 +540,7 @@ IN_PROC_BROWSER_TEST_F(
     KioskDeviceOwnedTest,
     PRE_AccessibilityExtensionsResetTheirStateUponSessionRestart) {
   test::SpeechMonitor speech_monitor;
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);
@@ -615,8 +594,7 @@ IN_PROC_BROWSER_TEST_F(
     KioskDeviceOwnedTest,
     DISABLED_AccessibilityExtensionsResetTheirStateUponSessionRestart) {
   test::SpeechMonitor speech_monitor;
-  StartAppLaunchFromLoginScreen(
-      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
   WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
                               /*terminate_app=*/false,
                               /*keep_app_open=*/true);

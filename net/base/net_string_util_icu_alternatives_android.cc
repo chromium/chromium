@@ -8,6 +8,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "net/base/net_string_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/NetStringUtil_jni.h"
 
 using base::android::ScopedJavaLocalRef;

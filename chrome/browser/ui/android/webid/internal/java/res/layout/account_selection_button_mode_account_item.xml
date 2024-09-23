@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/account_selection_button_mode_sheet_account_row_padding"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+  <ImageView
+      android:id="@+id/start_icon"
+      android:layout_width="@dimen/account_selection_button_mode_sheet_avatar_size"
+      android:layout_height="@dimen/account_selection_button_mode_sheet_avatar_size"
+      android:layout_marginVertical="@dimen/account_selection_button_mode_sheet_item_padding"
+      android:layout_marginHorizontal="@dimen/account_selection_button_mode_sheet_item_padding"
+      android:importantForAccessibility="no"
+      android:layout_gravity="center"/>
+
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/account_selection_button_mode_sheet_item_padding"
+      android:layout_weight="1"
+      android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+  </LinearLayout>
+</LinearLayout>

@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/utility/wm_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -76,7 +76,8 @@ class KioskExternalUpdateNotificationView : public views::WidgetDelegateView {
     views::WidgetDelegateView::OnPaint(canvas);
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kPreferredWidth, kPreferredHeight);
   }
 
@@ -136,10 +137,10 @@ void KioskExternalUpdateNotification::CreateAndShowNotificationView(
   gfx::Rect bounds((display_size.width() - view_size.width()) / 2,
                    (display_size.height() - view_size.height()) / 10,
                    view_size.width(), view_size.height());
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.accept_events = false;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.delegate = view_.get();

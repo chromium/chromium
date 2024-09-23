@@ -315,7 +315,7 @@ GSourceFuncs g_observer_funcs = {ObserverPrepare, ObserverCheck, nullptr,
 
 struct FdWatchSource : public GSource {
   raw_ptr<MessagePumpGlib> pump;
-  raw_ptr<MessagePumpGlib::FdWatchController, DanglingUntriaged> controller;
+  raw_ptr<MessagePumpGlib::FdWatchController> controller;
 };
 
 gboolean FdWatchSourcePrepare(GSource* source, gint* timeout_ms) {
@@ -336,7 +336,7 @@ gboolean FdWatchSourceDispatch(GSource* gsource,
   return TRUE;
 }
 
-void FdWatchSourcFinalize(GSource* gsource) {
+void FdWatchSourceFinalize(GSource* gsource) {
   // Read the comment in `WorkSourceFinalize`, the issue is exactly the same.
   auto* source = static_cast<FdWatchSource*>(gsource);
   source->pump = nullptr;
@@ -345,7 +345,7 @@ void FdWatchSourcFinalize(GSource* gsource) {
 
 GSourceFuncs g_fd_watch_source_funcs = {
     FdWatchSourcePrepare, FdWatchSourceCheck, FdWatchSourceDispatch,
-    FdWatchSourcFinalize};
+    FdWatchSourceFinalize};
 
 }  // namespace
 
@@ -368,7 +368,7 @@ struct MessagePumpGlib::RunState {
   // g_main_context_iteration() in Run(). nullopt if Run() is not calling
   // g_main_context_iteration(). Used to track whether the pump has forced a
   // nested state due to a native pump.
-  absl::optional<int> g_depth_on_iteration;
+  std::optional<int> g_depth_on_iteration;
 
   // Used to keep track of the native event work items processed by the message
   // pump.
@@ -434,6 +434,9 @@ MessagePumpGlib::FdWatchController::FdWatchController(const Location& location)
 
 MessagePumpGlib::FdWatchController::~FdWatchController() {
   if (IsInitialized()) {
+    auto* source = static_cast<FdWatchSource*>(source_);
+    source->controller = nullptr;
+
     CHECK(StopWatchingFileDescriptor());
   }
   if (was_destroyed_) {
@@ -698,7 +701,7 @@ void MessagePumpGlib::Run(Delegate* delegate) {
     if (more_work_is_plausible)
       continue;
 
-    more_work_is_plausible = state_->delegate->DoIdleWork();
+    state_->delegate->DoIdleWork();
     if (state_->should_quit)
       break;
   }

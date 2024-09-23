@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -15,13 +16,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Tests for the {@link TabViewManagerImpl} class. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -56,9 +57,14 @@ public class TabViewManagerTest {
                     public View getView() {
                         return view;
                     }
+
+                    @Override
+                    public int getBackgroundColor(Context context) {
+                        return 0;
+                    }
                 };
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     activity.getActivityTab().getTabViewManager().addTabViewProvider(tvp);
                 });

@@ -9,10 +9,10 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 @class BrowserCoordinator;
 @class BrowserViewController;
-class ChromeBrowserState;
 @protocol SyncPresenter;
 
 // Implementation of BrowserProvider -- for the most part a wrapper around
@@ -40,9 +40,6 @@ class ChromeBrowserState;
 @property(nonatomic, readonly) BOOL incognito;
 // YES if TTS audio is playing.
 @property(nonatomic, readonly) BOOL playingTTS;
-
-// Sets the interface as "primary".
-- (void)setPrimary:(BOOL)primary;
 
 // Asks the implementor to clear any presented state, dismissing the omnibox if
 // `dismissOmnibox` is YES, and calling `completion` once any animations are

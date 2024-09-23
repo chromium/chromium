@@ -75,6 +75,10 @@ class MockQuicData {
   // Returns true if all writes have been consumed.
   bool AllWriteDataConsumed();
 
+  // EXPECTs that all data has been consumed, printing any un-consumed data.
+  void ExpectAllReadDataConsumed();
+  void ExpectAllWriteDataConsumed();
+
   // Resumes I/O after it is paused.
   void Resume();
 

@@ -4,7 +4,6 @@
 
 /* #css_wrapper_metadata_start
  * #type=vars
- * #import=//resources/polymer/v3_0/paper-styles/color.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -141,6 +140,8 @@ html {
   --cr-hover-background-color: rgba(var(--google-grey-900-rgb), .1);
   --cr-active-background-color: rgba(var(--google-grey-900-rgb), .16);
   --cr-focus-outline-color: rgba(var(--google-blue-600-rgb), .4);
+
+  --paper-grey-500: #9e9e9e;
 }
 
 @media (prefers-color-scheme: dark) {

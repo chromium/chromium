@@ -22,5 +22,4 @@ include_rules = [
   "+sandbox/sandbox_export.h",
   # Everyone can use tests/
   "+sandbox/linux/tests",
-  '+third_party/abseil-cpp/absl/types/optional.h',
 ]

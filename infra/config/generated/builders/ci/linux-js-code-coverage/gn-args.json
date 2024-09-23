@@ -6,7 +6,10 @@
     "is_debug": false,
     "optimize_webui": false,
     "symbol_level": 0,
+    "target_cpu": "x64",
+    "target_os": "linux",
     "use_javascript_coverage": true,
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

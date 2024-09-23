@@ -4,22 +4,47 @@
 
 #include "components/metrics/component_metrics_provider.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "components/component_updater/component_updater_service.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
-
-#include <string>
 
 namespace metrics {
 
 namespace {
 
-SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
+// Extracts the first 32 bits of a fingerprint string, excluding the fingerprint
+// format specifier - see the fingerprint format specification at
+// https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
+uint32_t Trim(const std::string& fp) {
+  const auto len_prefix = fp.find(".");
+  if (len_prefix == std::string::npos) {
+    return 0;
+  }
+  uint32_t result = 0;
+  if (base::HexStringToUInt(fp.substr(len_prefix + 1, 8), &result)) {
+    return result;
+  }
+  return 0;
+}
+
+}  // namespace
+
+ComponentMetricsProvider::ComponentMetricsProvider(
+    std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate)
+    : components_info_delegate_(std::move(components_info_delegate)) {}
+
+ComponentMetricsProvider::~ComponentMetricsProvider() = default;
+
+// static
+SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
+    const std::string& app_id) {
   static constexpr auto kComponentMap = base::MakeFixedFlatMap<
-      base::StringPiece, SystemProfileProto_ComponentId>({
+      std::string_view, SystemProfileProto_ComponentId>({
       {"aagaghndoahmfdbmfnajfklaomcanlnh",
        SystemProfileProto_ComponentId_REAL_TIME_URL_CHECKS_ALLOWLIST},
       {"bjbdkfoakgmkndalgpadobhgbhhoanho",
@@ -34,6 +59,8 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
        SystemProfileProto_ComponentId_COMMERCE_HEURISTICS},
       {"copjbmjbojbakpaedmpkhmiplmmehfck",
        SystemProfileProto_ComponentId_INTERVENTION_POLICY_DATABASE},
+      {"dgeeihjgkpfplghdiaomabiakidhjnnn",
+       SystemProfileProto_ComponentId_GROWTH_CAMPAIGNS},
       {"dhlpobdgcjafebgbbhjdnapejmpkgiie",
        SystemProfileProto_ComponentId_DESKTOP_SHARING_HUB},
       {"eeigpngbgcognadeebkilcpcaedhellh",
@@ -139,42 +166,21 @@ SystemProfileProto_ComponentId CrxIdToComponentId(const std::string& app_id) {
        SystemProfileProto_ComponentId_CROS_TERMINA},
       {"onhpjgkfgajmkkeniaoflicgokpaebfa",
        SystemProfileProto_ComponentId_SODA_JA_JP},
+      {"cffplpkejcbdpfnfabnjikeicbedmifn",
+       SystemProfileProto_ComponentId_MASKED_DOMAIN_LIST},
   });
 
-  const auto* result = kComponentMap.find(app_id);
+  const auto result = kComponentMap.find(app_id);
   if (result == kComponentMap.end()) {
     return SystemProfileProto_ComponentId_UNKNOWN;
   }
   return result->second;
 }
 
-// Extract the first 32 bits of a fingerprint string, excluding the fingerprint
-// format specifier - see the fingerprint format specification at
-// https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md
-uint32_t Trim(const std::string& fp) {
-  const auto len_prefix = fp.find(".");
-  if (len_prefix == std::string::npos) {
-    return 0;
-  }
-  uint32_t result = 0;
-  if (base::HexStringToUInt(fp.substr(len_prefix + 1, 8), &result)) {
-    return result;
-  }
-  return 0;
-}
-
-}  // namespace
-
-ComponentMetricsProvider::ComponentMetricsProvider(
-    std::unique_ptr<ComponentMetricsProviderDelegate> components_info_delegate)
-    : components_info_delegate_(std::move(components_info_delegate)) {}
-
-ComponentMetricsProvider::~ComponentMetricsProvider() = default;
-
 void ComponentMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile) {
   for (const auto& component : components_info_delegate_->GetComponents()) {
-    const auto id = CrxIdToComponentId(component.id);
+    const auto id = ComponentMetricsProvider::CrxIdToComponentId(component.id);
     // Ignore any unknown components - in practice these are the
     // SupervisedUserWhitelists, which we do not want to transmit to UMA or
     // Crash.

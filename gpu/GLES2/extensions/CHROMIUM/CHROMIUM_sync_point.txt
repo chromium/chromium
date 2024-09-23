@@ -8,7 +8,7 @@ Name Strings
 
 Version
 
-    Last Modifed Date: November 20, 2015
+    Last Modified Date: March 18, 2024
 
 Dependencies
 
@@ -24,10 +24,8 @@ Overview
     then guarantee that commands before the inserted fence are submitted before
     commands after the sync token wait.
 
-    Combined with mailboxes from CHROMIUM_texture_mailbox, which are exported
-    using CreateAndConsumeTextureCHROMIUM and imported using
-    ProduceTextureDirectCHROMIUM commands, this allows clients across processes
-    to synchronize resources.
+    Combined with mailboxes from CHROMIUM_texture_mailbox, this allows clients
+    across processes to synchronize resources.
 
 Issues
 
@@ -119,3 +117,5 @@ Revision History
     12/13/2017   Simplified functions GenSyncTokenCHROMIUM and
                  GenUnverifiedSyncTokenCHROMIUM to generate the fence
                  implicitly. Removed function InsertFenceSyncCHROMIUM.
+ 
+    03/18/2024   Removed reference to glProduceTextureDirectCHROMIUM.

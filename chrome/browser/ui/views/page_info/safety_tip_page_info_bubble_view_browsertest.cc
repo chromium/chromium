@@ -339,7 +339,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
 
       case security_state::SafetyTipStatus::kUnknown:
       case security_state::SafetyTipStatus::kNone:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     content::WebContentsAddedObserver new_tab_observer;
     static_cast<views::StyledLabel*>(
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest, NoShowOnError) {
 }
 
 // Ensure blocked sites get blocked in incognito.
-// TODO(crbug.com/1405351): Fix this test and re-enable.
+// TODO(crbug.com/40886576): Fix this test and re-enable.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DISABLED_ShowOnBlockIncognito) {
   auto kNavigatedUrl = GetURL("accounts-google.com");
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
     ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
   }
 
-  // TODO(crbug.com/1401102): This shouldn't record a UKM.
+  // TODO(crbug.com/40884082): This shouldn't record a UKM.
   test_helper()->CheckSafetyTipUkmCount(2);
   test_helper()->CheckInterstitialUkmCount(0);
 }
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 
-  // TODO(crbug.com/1401102): Only one UKM should have been recorded, but
+  // TODO(crbug.com/40884082): Only one UKM should have been recorded, but
   // allowlisted domain also records one.
   test_helper()->CheckSafetyTipUkmCount(2);
   test_helper()->CheckInterstitialUkmCount(0);
@@ -858,7 +858,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 
-  // TODO(crbug.com/1401102): This shouldn't record metrics.
+  // TODO(crbug.com/40884082): This shouldn't record metrics.
   test_helper()->CheckSafetyTipUkmCount(1);
   test_helper()->CheckInterstitialUkmCount(0);
 }
@@ -1427,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 // a combo squatting url is flagged with a hard-coded brand name.
 // This test case trigger `keyword` heuristic as well because of `google`
 // in the URL.
-// TODO(crbug.com/1343630): keyword (embedded keyword) heuristic should
+// TODO(crbug.com/40852479): keyword (embedded keyword) heuristic should
 // be removed from the code including CheckHeuristicsUkmRecord.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DontTriggerOnAllowlistedComboSquatting) {
@@ -1447,7 +1447,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
   ASSERT_FALSE(IsUIShowing());
   histograms.ExpectTotalCount(kInterstitialHistogramName, 0);
 
-  // TODO(crbug.com/1401102): This shouldn't record a UKM.
+  // TODO(crbug.com/40884082): This shouldn't record a UKM.
   test_helper()->CheckSafetyTipUkmCount(1);
   test_helper()->CheckInterstitialUkmCount(0);
 }
@@ -1678,8 +1678,9 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewPrerenderBrowserTest,
   ASSERT_TRUE(safety_tip_observer->safety_tip_check_pending_for_testing());
   auto prerender_url = embedded_test_server()->GetURL("/simple.html");
   // Loads |prerender_url| in the prerenderer.
-  auto prerender_id = prerender_helper()->AddPrerender(prerender_url);
-  ASSERT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
+  content::FrameTreeNodeId prerender_id =
+      prerender_helper()->AddPrerender(prerender_url);
+  ASSERT_TRUE(prerender_id);
   content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                      prerender_id);
   // Waits until SafetyTipWebContentsObserver calls the callback.

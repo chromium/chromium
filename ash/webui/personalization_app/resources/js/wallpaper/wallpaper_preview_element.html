@@ -8,7 +8,7 @@
       '. theme .'
       '. .     .';
     grid-template-columns: 20px minmax(0, 1fr) 20px;
-    grid-template-rows: auto minmax(158px, 220px) 20px 1fr 24px;
+    grid-template-rows: auto auto 16px auto 20px;
     height: 100%;
   }
 
@@ -40,11 +40,12 @@
 
   #imageContainer,
   #imagePlaceholder {
+    aspect-ratio: 340/220;
     background-color: var(--personalization-app-grid-item-background-color);
     grid-area: image;
     justify-self: center;
-    max-width: 360px;
-    min-width: 252px;
+    max-width: 460px;
+    min-width: 278px;
   }
 
   ::slotted(personalization-theme) {
@@ -53,7 +54,7 @@
 
   .photo-images-container {
     background-color: var(--personalization-app-grid-item-background-color);
-    border-radius: 12px;
+    border-radius: 16px;
     box-sizing: border-box;
     display: flex;
     flex-flow: row wrap;
@@ -70,17 +71,6 @@
     height: 100%;
     object-fit: cover;
     width: 100%;
-  }
-
-  :host-context(body.jelly-enabled) #container {
-      grid-template-rows: auto auto 16px auto 20px;
-  }
-
-  :host-context(body.jelly-enabled) #imageContainer,
-  :host-context(body.jelly-enabled) #imagePlaceholder {
-    aspect-ratio: 340/220;
-    max-width: 460px;
-    min-width: 278px;
   }
 
   iron-icon[icon='personalization:managed'] {

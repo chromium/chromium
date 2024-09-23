@@ -83,6 +83,9 @@ class NavigationPredictor
   void ReportAnchorElementsLeftViewport(
       std::vector<blink::mojom::AnchorElementLeftViewportPtr> elements)
       override;
+  void ReportAnchorElementsPositionUpdate(
+      std::vector<blink::mojom::AnchorElementPositionUpdatePtr> elements)
+      override;
   void ReportAnchorElementPointerDataOnHoverTimerFired(
       blink::mojom::AnchorElementPointerDataOnHoverTimerFiredPtr pointer_data)
       override;
@@ -93,7 +96,8 @@ class NavigationPredictor
   void ReportAnchorElementPointerDown(
       blink::mojom::AnchorElementPointerDownPtr pointer_down_event) override;
   void ReportNewAnchorElements(
-      std::vector<blink::mojom::AnchorElementMetricsPtr> elements) override;
+      std::vector<blink::mojom::AnchorElementMetricsPtr> elements,
+      const std::vector<uint32_t>& removed_elements) override;
   void ProcessPointerEventUsingMLModel(
       blink::mojom::AnchorElementPointerEventForMLModelPtr pointer_event)
       override;
@@ -109,18 +113,6 @@ class NavigationPredictor
   // Record anchor element metrics on page load.
   void RecordMetricsOnLoad(
       const blink::mojom::AnchorElementMetrics& metric) const;
-
-  // Returns the minimum of the bucket that |value| belongs in, for page-wide
-  // metrics, excluding |median_link_location_|.
-  int GetBucketMinForPageMetrics(int value) const;
-
-  // Returns the minimum of the bucket that |value| belongs in, used for
-  // |median_link_location_| and the |ratio_distance_root_top|.
-  int GetLinearBucketForLinkLocation(int value) const;
-
-  // Returns the minimum of the bucket that |value| belongs in, used for
-  // |ratio_area|.
-  int GetLinearBucketForRatioArea(int value) const;
 
   // Returns `NavigationPredictorMetricsDocumentData` for the current page.
   NavigationPredictorMetricsDocumentData&
@@ -164,7 +156,6 @@ class NavigationPredictor
     // Following fields are used for computing timing inputs of the ML model.
     base::TimeTicks first_report_timestamp;
     std::optional<base::TimeTicks> pointer_over_timestamp;
-    std::optional<base::TimeTicks> entered_viewport_timestamp;
     size_t pointer_hovering_over_count = 0u;
   };
   std::unordered_map<AnchorId, AnchorElementData, typename AnchorId::Hasher>

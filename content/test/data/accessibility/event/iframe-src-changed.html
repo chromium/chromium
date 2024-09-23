@@ -1,6 +1,11 @@
 <!--
 @AURALINUX-DENY:STATE-CHANGE:DEFUNCT:TRUE*
 @AURALINUX-DENY:CHILDREN-CHANGED:*
+# Deflake -- load start can be in same serialization as the load complete.
+# The load start is fired as a state-change:busy:true. However, if it occurs
+# in the same serialization as load complete, busy will already be false.
+# In any case, the load-complete event is the important event for Linux/ATK.
+@AURALINUX-DENY:STATE-CHANGE:BUSY:TRUE*
 -->
 <!DOCTYPE html>
 <html>

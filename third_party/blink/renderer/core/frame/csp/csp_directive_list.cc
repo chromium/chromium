@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
@@ -53,8 +52,8 @@ String GetRawDirectiveForMessage(
 String GetSha256String(const String& content) {
   DigestValue digest;
   StringUTF8Adaptor utf8_content(content);
-  bool digest_success = ComputeDigest(kHashAlgorithmSha256, utf8_content.data(),
-                                      utf8_content.size(), digest);
+  bool digest_success = ComputeDigest(kHashAlgorithmSha256,
+                                      base::as_byte_span(utf8_content), digest);
   if (!digest_success) {
     return "sha256-...";
   }
@@ -73,7 +72,7 @@ network::mojom::blink::CSPHashAlgorithm ConvertHashAlgorithmToCSPHashAlgorithm(
     case IntegrityAlgorithm::kSha512:
       return network::mojom::blink::CSPHashAlgorithm::SHA512;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return network::mojom::blink::CSPHashAlgorithm::None;
 }
 
@@ -528,7 +527,6 @@ void ReportViolationForCheckSource(
     case CSPDirectiveName::FencedFrameSrc:
     case CSPDirectiveName::FrameAncestors:
     case CSPDirectiveName::FrameSrc:
-    case CSPDirectiveName::NavigateTo:
     case CSPDirectiveName::ReportTo:
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:
@@ -537,7 +535,7 @@ void ReportViolationForCheckSource(
     case CSPDirectiveName::TrustedTypes:
     case CSPDirectiveName::UpgradeInsecureRequests:
     case CSPDirectiveName::Unknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

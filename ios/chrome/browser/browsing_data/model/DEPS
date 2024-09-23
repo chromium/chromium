@@ -4,7 +4,7 @@ include_rules = [
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/webdata_services/model",
-  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/crash_report/model",
@@ -17,4 +17,6 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/web/model/font_size",
+  "+ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h",
+  "+ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h",
 ]

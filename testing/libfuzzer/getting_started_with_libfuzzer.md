@@ -169,12 +169,6 @@ is the directory to which GN configuration is written. If you wish, you can
 inspect the generated config by running `gn args out/libfuzzer`, once the
 `mb.py` script is done.
 
-*** note
-**Note:** The above invocations may set `use_remoteexec` or `use_rbe` to true.
-However, these args aren't compatible on local workstations yet. So if you run
-into reclient errors when building locally, remove both those args and set
-`use_goma` instead.
-
 You can also invoke [AFL] by using the `use_afl` GN argument, but we
 recommend libFuzzer for local development. Running libFuzzer locally doesn't
 require any special configuration and gives quick, meaningful output for speed,
@@ -202,12 +196,12 @@ the symbol level by setting the `symbol_level` attribute.
 ### Running the fuzz target
 
 After you create your fuzz target, build it with autoninja and run it locally.
-To make this example concrete, we are going to use the existing 
+To make this example concrete, we are going to use the existing
 `create_fnmatch_query_fuzzer` target.
 
 ```bash
 # Build the fuzz target.
-autoninja -C chrome/browser/ash:create_fnmatch_query_fuzzer
+autoninja -C out/libfuzzer chrome/browser/ash:create_fnmatch_query_fuzzer
 # Run the fuzz target.
 ./out/libfuzzer/create_fnmatch_query_fuzzer
 ```

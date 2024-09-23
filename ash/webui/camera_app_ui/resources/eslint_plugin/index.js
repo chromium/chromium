@@ -101,7 +101,8 @@ const todoFormatRule = {
           if (!verifyTodo(commentValue)) {
             context.report({
               node: comment,
-              message: `Use: TODO(ldap) / TODO(b/123) / TODO(crbug.com/123)`,
+              message: `Use: TODO(ldap) / TODO(b/123456789) /` +
+                  ` TODO(crbug.com/123456789)`,
             });
           }
         }

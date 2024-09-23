@@ -9,16 +9,18 @@ import android.app.Activity;
 import android.app.ActivityManager.RecentTaskInfo;
 import android.app.Notification;
 import android.app.SearchManager;
-import android.content.ComponentName;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.OptIn;
+import androidx.browser.auth.ExperimentalAuthTab;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.TrustedWebUtils;
@@ -30,10 +32,10 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
+import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -50,6 +52,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.widget.Toast;
+import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -147,14 +150,7 @@ public class LaunchIntentDispatcher {
         boolean incognito =
                 mIntent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
 
-        String url = null;
-        if (Intent.ACTION_SEND.equals(mIntent.getAction())) {
-            url = IntentHandler.getUrlFromShareIntent(mIntent);
-            if (url == null) return Action.FINISH_ACTIVITY;
-            mIntent.setData(Uri.parse(url));
-        } else {
-            url = IntentHandler.getUrlFromIntent(mIntent);
-        }
+        String url = IntentHandler.getUrlFromIntent(mIntent);
 
         // Check if a web search Intent is being handled.
         if (url == null
@@ -191,6 +187,11 @@ public class LaunchIntentDispatcher {
             return Action.FINISH_ACTIVITY;
         }
 
+        // b(357902796): Handle fall-back path for unbound WebAPKs.
+        if (isWebApkIntent(mIntent) && launchWebApk()) {
+            return Action.FINISH_ACTIVITY;
+        }
+
         return dispatchToTabbedActivity();
     }
 
@@ -212,19 +213,17 @@ public class LaunchIntentDispatcher {
         Intent searchIntent = new Intent(Intent.ACTION_WEB_SEARCH);
         searchIntent.putExtra(SearchManager.QUERY, query);
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (PackageManagerUtils.canResolveActivity(
-                    searchIntent, PackageManager.GET_RESOLVED_FILTER)) {
-                mActivity.startActivity(searchIntent);
-            } else {
-                // Phone doesn't have a WEB_SEARCH action handler, open Search Activity with
-                // the given query.
-                Intent searchActivityIntent = new Intent(Intent.ACTION_MAIN);
-                searchActivityIntent.setClass(
-                        ContextUtils.getApplicationContext(), SearchActivity.class);
-                searchActivityIntent.putExtra(SearchManager.QUERY, query);
-                mActivity.startActivity(searchActivityIntent);
-            }
+        if (PackageManagerUtils.canResolveActivity(
+                searchIntent, PackageManager.GET_RESOLVED_FILTER)) {
+            mActivity.startActivity(searchIntent);
+        } else {
+            // Phone doesn't have a WEB_SEARCH action handler, open Search Activity with
+            // the given query.
+            Intent searchActivityIntent = new Intent(Intent.ACTION_MAIN);
+            searchActivityIntent.setClass(
+                    ContextUtils.getApplicationContext(), SearchActivity.class);
+            searchActivityIntent.putExtra(SearchManager.QUERY, query);
+            mActivity.startActivity(searchActivityIntent);
         }
         return true;
     }
@@ -242,6 +241,7 @@ public class LaunchIntentDispatcher {
     /**
      * @return Whether the intent is for launching a Custom Tab.
      */
+    @OptIn(markerClass = ExperimentalAuthTab.class)
     public static boolean isCustomTabIntent(Intent intent) {
         if (intent == null) return false;
         Log.w(
@@ -249,10 +249,15 @@ public class LaunchIntentDispatcher {
                 "CustomTabsIntent#shouldAlwaysUseBrowserUI() = "
                         + CustomTabsIntent.shouldAlwaysUseBrowserUI(intent));
         if (CustomTabsIntent.shouldAlwaysUseBrowserUI(intent)
-                || !intent.hasExtra(CustomTabsIntent.EXTRA_SESSION)) {
+                || (!intent.hasExtra(CustomTabsIntent.EXTRA_SESSION)
+                        && !AuthTabIntentDataProvider.isAuthTabIntent(intent))) {
             return false;
         }
         return IntentHandler.getUrlFromIntent(intent) != null;
+    }
+
+    private static boolean isWebApkIntent(Intent intent) {
+        return intent != null && intent.hasExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME);
     }
 
     /** Creates an Intent that can be used to launch a {@link CustomTabActivity}. */
@@ -264,6 +269,8 @@ public class LaunchIntentDispatcher {
         newIntent.setAction(Intent.ACTION_VIEW);
         newIntent.setData(uri);
         newIntent.setClassName(context, CustomTabActivity.class.getName());
+        // Make sure the result of the CustomTabActivity is forwarded to the client.
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
 
         // Since configureIntentForResizableCustomTab() might change the componenet/class
         // associated with the passed intent, it needs to be called after #setClassName(context,
@@ -357,20 +364,24 @@ public class LaunchIntentDispatcher {
         }
         maybePrefetchDnsInBackground();
 
-        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE if present on the original intent so that it
-        // cannot be spoofed by CCT client apps.
+        // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
+        // the original intent so that it cannot be spoofed by CCT client apps.
         IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE);
+        IntentUtils.safeRemoveExtra(mIntent, IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE);
 
         Intent intent = new Intent(mIntent);
-        ComponentName callingActivity = mActivity.getCallingActivity();
-        if (callingActivity != null) {
-            intent.putExtra(
-                    IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, callingActivity.getPackageName());
-        } else {
-            String packageName = getClientPackageNameFromIdentitySharing();
-            if (packageName != null) {
-                intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
-            }
+        String packageName = mActivity.getCallingPackage(); // from startActivityForResult
+        String packageNameIdentitySharing = getCallingPackageIdentitySharing();
+        if (packageName == null) packageName = packageNameIdentitySharing;
+        if (packageName != null) {
+            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
+        }
+
+        // Pass the package name obtained via identity sharing API separately from the one
+        // obtained via startActivityForResult.
+        boolean identityShared = packageNameIdentitySharing != null;
+        if (identityShared) {
+            intent.putExtra(IntentHandler.EXTRA_LAUNCHED_FROM_PACKAGE, packageNameIdentitySharing);
         }
         // Create and fire a launch intent.
         Intent launchIntent = createCustomTabActivityIntent(mActivity, intent);
@@ -381,22 +392,46 @@ public class LaunchIntentDispatcher {
 
         // Allow disk writes during startActivity() to avoid strict mode violations on some
         // Samsung devices, see https://crbug.com/796548.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            if (TwaSplashController.handleIntent(mActivity, launchIntent)) {
-                return true;
-            }
-
-            mActivity.startActivity(launchIntent, null);
+        if (TwaSplashController.handleIntent(mActivity, launchIntent)) {
             return true;
         }
+
+        mActivity.startActivity(launchIntent, null);
+        RecordHistogram.recordBooleanHistogram("CustomTabs.IdentityShared", identityShared);
+        return true;
+    }
+
+    private boolean launchWebApk() {
+        // TODO(crbug.com/357902796): it may be possible to save 20ms or so by calling into
+        // WebappLauncherActivity code directly instead of sending an intent.
+
+        Intent webApkIntent = new Intent(WebappLauncherActivity.ACTION_START_WEBAPP);
+        webApkIntent.setPackage(mActivity.getPackageName());
+
+        webApkIntent.setFlags(mIntent.getFlags());
+
+        Bundle copiedExtras = mIntent.getExtras();
+        if (copiedExtras != null) {
+            webApkIntent.putExtras(copiedExtras);
+        }
+
+        try {
+            mActivity.startActivity(webApkIntent);
+        } catch (ActivityNotFoundException e) {
+            Log.w(TAG, "Unable to launch browser in WebAPK mode.");
+            RecordHistogram.recordBooleanHistogram("WebApk.LaunchFromViewIntent", false);
+            return false;
+        }
+
+        RecordHistogram.recordBooleanHistogram("WebApk.LaunchFromViewIntent", true);
+        return true;
     }
 
     /**
-     * @return Client package name obtained from {@link Activity#getLaunchedFromPackage()}.
-     *         {@code null} if the underlying OS doesn't support the feature.
+     * Returns client package name obtained from {@link Activity#getLaunchedFromPackage()}. {@code
+     * null} if the underlying OS doesn't support the feature.
      */
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
-    private String getClientPackageNameFromIdentitySharing() {
+    private String getCallingPackageIdentitySharing() {
         return BuildCompat.isAtLeastU() ? mActivity.getLaunchedFromPackage() : null;
     }
 
@@ -421,6 +456,8 @@ public class LaunchIntentDispatcher {
             }
             RecordHistogram.recordBooleanHistogram(
                     "Android.Intent.HasNonSpoofablePackageName", hasNonSpoofablePackageName());
+            boolean identityShared = getCallingPackageIdentitySharing() != null;
+            RecordHistogram.recordBooleanHistogram("Android.Intent.IdentityShared", identityShared);
         }
 
         if (mActivity instanceof ChromeLauncherActivity) {
@@ -499,13 +536,8 @@ public class LaunchIntentDispatcher {
     }
 
     private boolean hasNonSpoofablePackageName() {
-        ComponentName callingActivity = mActivity.getCallingActivity();
-        String packageName = "";
-        if (callingActivity != null) {
-            packageName = callingActivity.getPackageName();
-        }
-        return !TextUtils.isEmpty(packageName)
-                || !TextUtils.isEmpty(getClientPackageNameFromIdentitySharing());
+        return !TextUtils.isEmpty(mActivity.getCallingPackage())
+                || !TextUtils.isEmpty(getCallingPackageIdentitySharing());
     }
 
     private static boolean clearTopIntentsForCustomTabsEnabled(Intent intent) {

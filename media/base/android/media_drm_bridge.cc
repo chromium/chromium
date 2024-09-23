@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/android/media_drm_bridge.h"
 
 #include <stddef.h>
@@ -23,14 +28,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/sys_byteorder.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/android/android_util.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "media/base/android/media_drm_bridge_delegate.h"
-#include "media/base/android/media_jni_headers/MediaDrmBridge_jni.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/media_drm_key_type.h"
@@ -38,6 +41,9 @@
 #include "media/base/provision_fetcher.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/MediaDrmBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -90,9 +96,9 @@ std::string ConvertInitDataType(EmeInitDataType init_data_type) {
     case EmeInitDataType::KEYIDS:
       return "keyids";
     case EmeInitDataType::UNKNOWN:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Convert CdmSessionType to MediaDrmKeyType supported by MediaDrm.
@@ -120,7 +126,7 @@ CdmMessageType GetMessageType(RequestType request_type) {
       return CdmMessageType::LICENSE_RELEASE;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
@@ -154,7 +160,7 @@ CdmKeyInformation::KeyStatus ConvertKeyStatus(KeyStatus key_status,
       return CdmKeyInformation::EXPIRED;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class KeySystemManager {
@@ -375,7 +381,8 @@ base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
   scoped_refptr<MediaDrmBridge> media_drm_bridge =
       MediaDrmBridge::CreateWithoutSessionSupport(
           key_system, /* origin_id= */ "",
-          MediaDrmBridge::SECURITY_LEVEL_DEFAULT, base::NullCallback());
+          MediaDrmBridge::SECURITY_LEVEL_DEFAULT, "GetVersion",
+          base::NullCallback());
   if (!media_drm_bridge) {
     DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system;
     return base::Version();
@@ -397,6 +404,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
     SecurityLevel security_level,
+    const std::string& message,
     bool requires_media_crypto,
     std::unique_ptr<MediaDrmStorageBridge> storage,
     CreateFetcherCB create_fetcher_cb,
@@ -407,11 +415,11 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
   // All paths requires the MediaDrmApis.
   DCHECK(!scheme_uuid.empty());
 
-  // TODO(crbug.com/917527): Check that |origin_id| is specified on devices
+  // TODO(crbug.com/41433110): Check that |origin_id| is specified on devices
   // that support it.
 
   scoped_refptr<MediaDrmBridge> media_drm_bridge(new MediaDrmBridge(
-      scheme_uuid, origin_id, security_level, requires_media_crypto,
+      scheme_uuid, origin_id, security_level, message, requires_media_crypto,
       std::move(storage), std::move(create_fetcher_cb), session_message_cb,
       session_closed_cb, session_keys_change_cb, session_expiration_update_cb));
 
@@ -426,6 +434,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateWithoutSessionSupport(
     const std::string& key_system,
     const std::string& origin_id,
     SecurityLevel security_level,
+    const std::string& message,
     CreateFetcherCB create_fetcher_cb) {
   DVLOG(1) << __func__;
 
@@ -437,7 +446,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateWithoutSessionSupport(
   const bool requires_media_crypto = false;
 
   return CreateInternal(
-      scheme_uuid, origin_id, security_level, requires_media_crypto,
+      scheme_uuid, origin_id, security_level, message, requires_media_crypto,
       std::make_unique<MediaDrmStorageBridge>(), std::move(create_fetcher_cb),
       SessionMessageCB(), SessionClosedCB(), SessionKeysChangeCB(),
       SessionExpirationUpdateCB());
@@ -735,6 +744,21 @@ void MediaDrmBridge::SetMediaCryptoReadyCB(
            IsSecureCodecRequired());
 }
 
+bool MediaDrmBridge::SetPropertyStringForTesting(
+    const std::string& property_name,
+    const std::string& property_value) {
+  JNIEnv* env = AttachCurrentThread();
+
+  ScopedJavaLocalRef<jstring> j_property_name_string =
+      ConvertUTF8ToJavaString(env, property_name);
+
+  ScopedJavaLocalRef<jstring> j_property_value_string =
+      ConvertUTF8ToJavaString(env, property_value);
+
+  return Java_MediaDrmBridge_setPropertyStringForTesting(  // IN-TEST
+      env, j_media_drm_, j_property_name_string, j_property_value_string);
+}
+
 //------------------------------------------------------------------------------
 // The following OnXxx functions are called from Java. The implementation must
 // only do minimal work and then post tasks to avoid reentrancy issues.
@@ -845,7 +869,7 @@ void MediaDrmBridge::OnSessionClosed(
   DVLOG(2) << __func__;
   std::string session_id;
   JavaByteArrayToString(env, j_session_id, &session_id);
-  // TODO(crbug.com/1208618): Support other closed reasons.
+  // TODO(crbug.com/40181810): Support other closed reasons.
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(session_closed_cb_, std::move(session_id),
                                 CdmSessionClosedReason::kClose));
@@ -930,6 +954,7 @@ MediaDrmBridge::MediaDrmBridge(
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
     SecurityLevel security_level,
+    const std::string& message,
     bool requires_media_crypto,
     std::unique_ptr<MediaDrmStorageBridge> storage,
     const CreateFetcherCB& create_fetcher_cb,
@@ -964,9 +989,10 @@ MediaDrmBridge::MediaDrmBridge(
   // storage.
   ScopedJavaLocalRef<jstring> j_security_origin =
       ConvertUTF8ToJavaString(env, origin_id);
+  ScopedJavaLocalRef<jstring> j_message = ConvertUTF8ToJavaString(env, message);
 
   j_media_drm_.Reset(Java_MediaDrmBridge_create(
-      env, j_scheme_uuid, j_security_origin, j_security_level,
+      env, j_scheme_uuid, j_security_origin, j_security_level, j_message,
       requires_media_crypto, reinterpret_cast<intptr_t>(this),
       reinterpret_cast<intptr_t>(storage_.get())));
 }

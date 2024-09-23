@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/test_ax_tree_update.h"
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 
@@ -67,7 +68,7 @@ bool StringToBool(const std::string& s) {
   }
 
   // TODO: Specify which node this error was found at.
-  NOTREACHED() << "Invalid value passed to StringToBool: " << s;
+  NOTREACHED_IN_MIGRATION() << "Invalid value passed to StringToBool: " << s;
   return false;
 }
 
@@ -152,7 +153,7 @@ void ParseAndAddNodeProperties(
 
     } else {
       // TODO: Will extend to more properties here.
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Either an invalid property was specified, or this function does "
              "not currently support the specified property.";
     }
@@ -322,7 +323,7 @@ TestAXTreeUpdate::TestAXTreeUpdate(const std::string& tree_structure) {
       node_data_vector[i - 1].child_ids.push_back(curr_node.id);
     } else {
       elem = last_index_appearance_of_plus_count.find(plus_count - 2);
-      DCHECK(elem != last_index_appearance_of_plus_count.end())
+      CHECK(elem != last_index_appearance_of_plus_count.end())
           << "Error in plus sign count.";
       int parent_index = elem->second;
       node_data_vector[parent_index].child_ids.push_back(curr_node.id);
@@ -333,9 +334,9 @@ TestAXTreeUpdate::TestAXTreeUpdate(const std::string& tree_structure) {
 
   DCHECK(node_data_vector.size() >= 1);
 
-  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   tree_data.focused_tree_id = tree_data.tree_id;
-  tree_data.parent_tree_id = ui::AXTreeIDUnknown();
+  tree_data.parent_tree_id = AXTreeIDUnknown();
   tree_data = tree_data;
   has_tree_data = true;
   root_id = node_data_vector[0].id;

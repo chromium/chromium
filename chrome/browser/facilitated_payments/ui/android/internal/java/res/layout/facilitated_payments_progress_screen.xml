@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/facilitated_payments_progress_screen_height"
+    android:layout_marginTop="@dimen/facilitated_payments_progress_screen_margin_top">
+
+    <ImageView
+        android:layout_width="@dimen/facilitated_payments_gpay_icon_width"
+        android:layout_height="@dimen/facilitated_payments_gpay_icon_height"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        app:srcCompat="@drawable/google_pay"
+        android:importantForAccessibility="no" />
+
+    <!-- TODO: b/348142430 - Make the track for the progress spinner visible. -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        app:indicatorSize="@dimen/facilitated_payments_progress_bar_size"
+        app:indicatorColor="@macro/default_icon_color_accent1"
+        app:trackThickness="@dimen/facilitated_payments_progress_bar_track_thickness"
+        app:indeterminateTrackVisible="true" />
+
+    <ImageView
+        android:layout_width="@dimen/facilitated_payments_progress_screen_lock_size"
+        android:layout_height="@dimen/facilitated_payments_progress_screen_lock_size"
+        android:layout_centerInParent="true"
+        android:src="@drawable/lock_icon"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/progress_bar"
+        android:layout_marginTop="@dimen/facilitated_payments_progress_message_margin_top"
+        android:textAlignment="center"
+        android:text="@string/pix_payment_progress_screen_message"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+</RelativeLayout>

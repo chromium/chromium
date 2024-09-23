@@ -125,7 +125,7 @@ public class CrashTestRule implements TestRule {
         public MockCrashReportingPermissionManager() {}
 
         @Override
-        public boolean isClientInMetricsSample() {
+        public boolean isClientInSampleForCrashes() {
             return mIsInSample;
         }
 

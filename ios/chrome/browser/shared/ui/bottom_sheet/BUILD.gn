@@ -12,11 +12,14 @@ source_set("bottom_sheet_view_controller") {
 
 source_set("table_view_bottom_sheet_view_controller") {
   sources = [
+    "table_view_bottom_sheet_view_controller+subclassing.h",
     "table_view_bottom_sheet_view_controller.h",
     "table_view_bottom_sheet_view_controller.mm",
   ]
   deps = [
     ":bottom_sheet_view_controller",
+    "//base",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/table_view:cells_constants",
   ]
 }

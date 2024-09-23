@@ -30,8 +30,9 @@ NavigatorLogin* NavigatorLogin::login(Navigator& navigator) {
 NavigatorLogin::NavigatorLogin(Navigator& navigator)
     : Supplement<Navigator>(navigator) {}
 
-ScriptPromise NavigatorLogin::setStatus(ScriptState* script_state,
-                                        const V8LoginStatus& v8_status) {
+ScriptPromise<IDLUndefined> NavigatorLogin::setStatus(
+    ScriptState* script_state,
+    const V8LoginStatus& v8_status) {
   // TODO(https://crbug.com/1382193): Determine if we should add an origin
   // parameter.
   auto* context = ExecutionContext::From(script_state);
@@ -48,7 +49,7 @@ ScriptPromise NavigatorLogin::setStatus(ScriptState* script_state,
       break;
   }
   request->SetIdpSigninStatus(context->GetSecurityOrigin(), status);
-  return ScriptPromise();
+  return EmptyPromise();
 }
 
 void NavigatorLogin::Trace(Visitor* visitor) const {

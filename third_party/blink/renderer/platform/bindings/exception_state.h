@@ -59,8 +59,8 @@ class PLATFORM_EXPORT ExceptionState {
     STACK_ALLOCATED();
 
    public:
-    explicit ContextScope(const ExceptionContext& context,
-                          ExceptionState& exception_state)
+    ContextScope(const ExceptionContext& context,
+                 ExceptionState& exception_state)
         : exception_state_(exception_state), context_(context) {
       exception_state_.PushContextScope(this);
     }
@@ -98,6 +98,10 @@ class PLATFORM_EXPORT ExceptionState {
   // Sets the function to create a DOMException. Must be called only once.
   static void SetCreateDOMExceptionFunction(CreateDOMExceptionFunction);
 
+  explicit ExceptionState(v8::Isolate* isolate)
+      : main_context_(v8::ExceptionContext::kUnknown, nullptr, String()),
+        isolate_(isolate) {}
+
   ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
       : main_context_(context), isolate_(isolate) {}
 
@@ -105,7 +109,7 @@ class PLATFORM_EXPORT ExceptionState {
       : main_context_(std::move(context)), isolate_(isolate) {}
 
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name,
                  const char* property_name)
       : ExceptionState(
@@ -113,7 +117,7 @@ class PLATFORM_EXPORT ExceptionState {
             ExceptionContext(context_type, interface_name, property_name)) {}
 
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name)
       : ExceptionState(isolate,
                        ExceptionContext(context_type, interface_name)) {}
@@ -122,7 +126,7 @@ class PLATFORM_EXPORT ExceptionState {
   // which is only needed for named and indexed interceptors.
   enum ForInterceptor { kForInterceptor };
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name,
                  const AtomicString& property_name,
                  ExceptionState::ForInterceptor)
@@ -134,7 +138,7 @@ class PLATFORM_EXPORT ExceptionState {
   ExceptionState& operator=(const ExceptionState&) = delete;
 
   ~ExceptionState() {
-    if (UNLIKELY(!exception_.IsEmpty())) {
+    if (!exception_.IsEmpty()) [[unlikely]] {
       PropagateException();
     }
   }
@@ -172,6 +176,9 @@ class PLATFORM_EXPORT ExceptionState {
 
   // Rethrows a v8::Value as an exception.
   NOINLINE void RethrowV8Exception(v8::Local<v8::Value>);
+  // Report the given value as the exception being thrown, but rethrow it
+  // immediately via the v8::TryCatch instead of in the destructor.
+  NOINLINE void RethrowV8Exception(v8::TryCatch&);
 
   // Returns true if there is a pending exception.
   //
@@ -198,13 +205,6 @@ class PLATFORM_EXPORT ExceptionState {
   // Returns the context of what Web API is currently being executed.
   const ExceptionContext& GetContext() const {
     DCHECK(!context_stack_top_);
-    return main_context_;
-  }
-
-  // Returns the innermost context of the nested exception contexts.
-  const ExceptionContext& GetInnerMostContext() const {
-    if (context_stack_top_)
-      return context_stack_top_->GetContext();
     return main_context_;
   }
 
@@ -253,8 +253,26 @@ class PLATFORM_EXPORT ExceptionState {
   // The exception is empty when it was thrown through
   // DummyExceptionStateForTesting.
   TraceWrapperV8Reference<v8::Value> exception_;
+  bool thrown_via_v8_trycatch_ = false;
 
   friend class ContextScope;
+};
+
+// Syntactic sugar for creating an ExceptionState that will throw as soon as
+// the function it's passed to returns.
+// This is useful for when a v8::TryCatch is on the stack.
+class PassThroughException {
+  STACK_ALLOCATED();
+
+ public:
+  explicit PassThroughException(v8::Isolate* isolate)
+      : exception_state_(isolate) {}
+
+  operator ExceptionState&() & = delete;
+  operator ExceptionState&() && { return exception_state_; }
+
+ private:
+  ExceptionState exception_state_;
 };
 
 // NonThrowableExceptionState never allow call sites to throw an exception.
@@ -282,6 +300,27 @@ class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
   const int line_;
 };
 
+class PLATFORM_EXPORT TryRethrowScope {
+  STACK_ALLOCATED();
+
+ public:
+  TryRethrowScope(v8::Isolate* isolate, ExceptionState& exception_state)
+      : try_catch_(isolate), exception_state_(exception_state) {}
+
+  ~TryRethrowScope() {
+    if (try_catch_.HasCaught()) [[unlikely]] {
+      exception_state_.RethrowV8Exception(try_catch_);
+    }
+  }
+
+  bool HasCaught() { return try_catch_.HasCaught(); }
+  void SwallowException() { return try_catch_.Reset(); }
+  v8::Local<v8::Value> GetException() { return try_catch_.Exception(); }
+
+  v8::TryCatch try_catch_;
+  ExceptionState& exception_state_;
+};
+
 // Syntax sugar for NonThrowableExceptionState.
 // This can be used as a default value of an ExceptionState parameter like this:
 //
@@ -303,7 +342,7 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
  public:
   DummyExceptionStateForTesting()
       : ExceptionState(nullptr,
-                       ExceptionContextType::kUnknown,
+                       v8::ExceptionContext::kUnknown,
                        nullptr,
                        nullptr) {}
   ~DummyExceptionStateForTesting() {
@@ -337,8 +376,12 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
 // This can be used as a default value of an ExceptionState parameter like this:
 //
 //     Node* removeChild(Node*, ExceptionState& = IGNORE_EXCEPTION_FOR_TESTING);
-#define IGNORE_EXCEPTION_FOR_TESTING \
-  (::blink::DummyExceptionStateForTesting().ReturnThis())
+//
+// This is not strictly for testing - there are a few legitimate use cases for
+// ignore exceptions in delegated operations. But it should never be the default
+// to ignore exceptions.
+#define IGNORE_EXCEPTION (::blink::DummyExceptionStateForTesting().ReturnThis())
+#define IGNORE_EXCEPTION_FOR_TESTING IGNORE_EXCEPTION
 
 }  // namespace blink
 

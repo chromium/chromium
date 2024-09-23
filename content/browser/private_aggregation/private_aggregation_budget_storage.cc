@@ -4,9 +4,12 @@
 
 #include "content/browser/private_aggregation/private_aggregation_budget_storage.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,6 +23,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/clamped_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/sqlite_proto/key_value_data.h"
@@ -48,6 +52,14 @@ void RecordInitializationStatus(
       "PrivacySandbox.PrivateAggregation.BudgetStorage.InitStatus", status);
 }
 
+void RecordFileSizeHistogram(const base::FilePath& path_to_database) {
+  if (int64_t size_bytes; base::GetFileSize(path_to_database, &size_bytes)) {
+    base::UmaHistogramCounts1M(
+        "PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize",
+        base::MakeClampedNum(size_bytes / 1024));
+  }
+}
+
 }  // namespace
 
 // static
@@ -57,7 +69,7 @@ base::OnceClosure PrivateAggregationBudgetStorage::CreateAsync(
     base::FilePath path_to_db_dir,
     base::OnceCallback<void(std::unique_ptr<PrivateAggregationBudgetStorage>)>
         on_done_initializing) {
-  DCHECK(on_done_initializing);
+  CHECK(on_done_initializing);
   base::UmaHistogramBoolean(
       "PrivacySandbox.PrivateAggregation.BudgetStorage."
       "BeginInitializationCount",
@@ -110,12 +122,12 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
     sql::Database* db,
     bool exclusively_run_in_memory,
     base::FilePath path_to_db_dir) {
-  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(db);
+  CHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(db);
 
   db->set_histogram_tag("PrivateAggregation");
 
-  // TODO(crbug.com/1323320): Record histograms for the different
+  // TODO(crbug.com/40224647): Record histograms for the different
   // outcomes/errors.
   if (exclusively_run_in_memory) {
     if (!db->OpenInMemory()) {
@@ -135,6 +147,7 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
       RecordInitializationStatus(InitStatus::kFailedToOpenDbFile);
       return false;
     }
+    RecordFileSizeHistogram(path_to_database);
   }
 
   table_manager_->InitializeOnDbSequence(
@@ -148,7 +161,7 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
 
 void PrivateAggregationBudgetStorage::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(!!db_, !!budgets_table_);
+  CHECK_EQ(!!db_, !!budgets_table_);
 
   // Guard against `Shutdown()` being called multiple times.
   if (db_) {
@@ -186,7 +199,7 @@ void PrivateAggregationBudgetStorage::FinishInitializationOnMainSequence(
     base::ElapsedTimer elapsed_timer,
     bool was_successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(owned_this);
+  CHECK(owned_this);
 
   base::UmaHistogramBoolean(
       "PrivacySandbox.PrivateAggregation.BudgetStorage."

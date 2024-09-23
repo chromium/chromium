@@ -115,7 +115,7 @@ suite('fakeShortcutProviderTest', function() {
     // TODO(jimmyxgong): Remove this test once real data is ready.
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
 
     getProvider().setFakeAddAcceleratorResult(fakeResult);
@@ -132,7 +132,7 @@ suite('fakeShortcutProviderTest', function() {
   test('ReplaceAcceleratorFake', () => {
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
 
     getProvider().setFakeReplaceAcceleratorResult(fakeResult);
@@ -150,7 +150,7 @@ suite('fakeShortcutProviderTest', function() {
   test('RemoveAcceleratorFake', () => {
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
 
     getProvider().setFakeRemoveAcceleratorResult(fakeResult);
@@ -169,7 +169,7 @@ suite('fakeShortcutProviderTest', function() {
   test('RestoreDefaultFake', () => {
     const fakeResult: AcceleratorResultData = {
       result: AcceleratorConfigResult.kSuccess,
-      shortcutName: undefined,
+      shortcutName: null,
     };
 
     getProvider().setFakeRestoreDefaultResult(fakeResult);

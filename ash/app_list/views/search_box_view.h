@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -39,6 +40,7 @@ class FilterMenuAdapter;
 class ResultSelectionController;
 class SearchBoxViewDelegate;
 class SearchResultBaseView;
+using QueryChangedCallback = base::RepeatingCallback<void()>;
 
 // Subclass of SearchBoxViewBase. SearchBoxModel is its data model
 // that controls what icon to display, what placeholder text to use for
@@ -89,8 +91,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   static int GetFocusRingSpacing();
 
   // Overridden from SearchBoxViewBase:
-  void UpdateSearchTextfieldAccessibleNodeData(
-      ui::AXNodeData* node_data) override;
+  void UpdateSearchTextfieldAccessibleActiveDescendantId() override;
   void UpdateKeyboardVisibility() override;
   void HandleQueryChange(const std::u16string& query,
                          bool initiated_by_user) override;
@@ -106,7 +107,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Overridden from views::View:
   void OnKeyEvent(ui::KeyEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
@@ -173,7 +173,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The active descendant should be the currently selected result view in the
   // search results list.
   // `nullopt` indicates no active descendant, i.e. that no result is selected.
-  void SetA11yActiveDescendant(const std::optional<int32_t>& active_descendant);
+  void SetA11yActiveDescendant(
+      const std::optional<ui::AXPlatformNodeId>& active_descendant);
 
   // Refreshes the placeholder text with a fixed one rather than the one picked
   // up randomly
@@ -198,6 +199,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   int GetSearchBoxIconSize();
   int GetSearchBoxButtonSize();
 
+  void SetQueryChangedCallback(QueryChangedCallback callback);
+
  private:
   class FocusRingLayer;
 
@@ -206,6 +209,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Called when the assistant button within the search box gets pressed.
   void AssistantButtonPressed();
+
+  // Called when the sunfish launcher button within the search box gets pressed.
+  void SunfishButtonPressed();
 
   // Updates the icon shown left of the search box texfield.
   void UpdateSearchIcon();
@@ -262,6 +268,12 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Clear highlight range.
   void ResetHighlightRange();
 
+  // Updates the kValue attribute of the search box textfield for accessibility.
+  void UpdateAccessibleValue();
+
+  // Updates the search box's text value.
+  void SetText(const std::u16string& text);
+
   // Builds the menu model for the category filter menu. This returns a vector
   // of AppListSearchControlCategory that is shown in the filter menu.
   ui::SimpleMenuModel* BuildFilterMenuModel();
@@ -283,6 +295,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   AppListState current_app_list_state_ = AppListState::kStateApps;
 
   std::u16string current_query_;
+
+  QueryChangedCallback query_changed_callback_;
 
   // The range of highlighted text for autocomplete.
   gfx::Range highlight_range_;
@@ -317,7 +331,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Set by SearchResultPageView when the accessibility selection moves to a
   // search result view - the value is the ID of the currently selected result
   // view.
-  std::optional<int32_t> a11y_active_descendant_;
+  std::optional<ui::AXPlatformNodeId> a11y_active_descendant_;
 
   // Owned by SearchResultPageView (for fullscreen launcher) or
   // ProductivityLauncherSearchPage (for bubble launcher).

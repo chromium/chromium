@@ -56,6 +56,9 @@ class ScriptInjector {
   // Returns the world in which to execute the javascript code.
   virtual mojom::ExecutionWorld GetExecutionWorld() const = 0;
 
+  // Returns the ID of the world into which to inject.
+  virtual const std::optional<std::string>& GetExecutionWorldId() const = 0;
+
   // Returns the CSS origin of this injection.
   virtual mojom::CSSOrigin GetCssOrigin() const = 0;
 

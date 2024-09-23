@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/pickle.h"
@@ -33,14 +34,15 @@ bool LoadFromFile(base::FilePath file_path,
 
     file_contents.resize(table_cache_file.GetLength());
 
-    if (table_cache_file.Read(0, file_contents.data(), file_contents.size()) <=
-        0) {
+    if (UNSAFE_TODO(table_cache_file.Read(0, file_contents.data(),
+                                          file_contents.size())) <= 0) {
       return false;
     }
   }
 
-  base::PickleIterator pickle_iterator(
-      base::Pickle(file_contents.data(), file_contents.size()));
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(file_contents));
+  base::PickleIterator pickle_iterator(pickle);
 
   uint32_t checksum = 0;
   if (!pickle_iterator.ReadUInt32(&checksum)) {
@@ -71,7 +73,7 @@ bool LoadFromFile(base::FilePath file_path,
     return false;
   }
 
-  name_table_region->mapping.GetMemoryAsSpan<uint8_t>().copy_from(proto);
+  base::span(name_table_region->mapping).copy_from(proto);
 
   return true;
 }
@@ -89,17 +91,16 @@ bool PersistToFile(const base::MappedReadOnlyRegion& name_table_region,
   }
 
   base::Pickle pickle;
-  uint32_t checksum = base::PersistentHash(
-      name_table_region.mapping.GetMemoryAsSpan<const uint8_t>());
+  uint32_t checksum = base::PersistentHash(name_table_region.mapping);
   pickle.WriteUInt32(checksum);
-  pickle.WriteData(static_cast<char*>(name_table_region.mapping.memory()),
-                   name_table_region.mapping.size());
+  pickle.WriteData(name_table_region.mapping);
   DCHECK(pickle.size());
   {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-    if (table_cache_file.Write(0, pickle.data_as_char(), pickle.size()) == -1) {
+    if (UNSAFE_TODO(table_cache_file.Write(0, pickle.data_as_char(),
+                                           pickle.size())) == -1) {
       table_cache_file.SetLength(0);
       return false;
     }

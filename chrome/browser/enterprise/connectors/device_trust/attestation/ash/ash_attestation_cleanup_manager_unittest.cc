@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
+
 #include <memory>
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
@@ -34,14 +38,14 @@ class AshAttestationCleanupManagerTest : public testing::Test {
       : account_id_(AccountId::FromUserEmail(kTestUserEmail)) {
     ash::AttestationClient::InitializeFake();
 
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    user_manager->AddUser(account_id_);
-
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    // To make user removable, two (or more) users are needed.
+    user_manager_->AddUser(AccountId::FromUserEmail("test2@google.com"));
+    user_manager_->AddUser(account_id_);
   }
 
   ~AshAttestationCleanupManagerTest() override {
+    user_manager_.Reset();
     ash::AttestationClient::Shutdown();
   }
 
@@ -59,7 +63,10 @@ class AshAttestationCleanupManagerTest : public testing::Test {
 
   AccountId account_id_;
   ash::ScopedStubInstallAttributes stub_install_attributes_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  ash::ScopedTestingCrosSettings cros_settings_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

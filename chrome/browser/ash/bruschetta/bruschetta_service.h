@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_SERVICE_H_
 #define CHROME_BROWSER_ASH_BRUSCHETTA_BRUSCHETTA_SERVICE_H_
 
+#include <string_view>
+
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -70,6 +72,12 @@ class BruschettaService : public KeyedService,
   void RemoveVm(const guest_os::GuestId& guest_id,
                 base::OnceCallback<void(bool)> callback);
 
+  // Checks if the vm identified by `vm_name` is in the running list.
+  bool IsVmRunning(std::string_view vm_name);
+
+  // Stops all running VMs.
+  void StopRunningVms();
+
  private:
   struct VmRegistration {
     std::unique_ptr<BruschettaLauncher> launcher;
@@ -100,11 +108,11 @@ class BruschettaService : public KeyedService,
                   guest_os::GuestOsRemover::Result result);
   void OnUninstallToolsDlc(base::OnceCallback<void(bool)> callback,
                            guest_os::GuestId guest_id,
-                           const std::string& result);
+                           std::string_view result);
   void OnUninstallAllDlcs(base::OnceCallback<void(bool)> callback,
                           guest_os::GuestId guest_id,
-                          const std::string& tools_result,
-                          const std::string& firmware_result);
+                          std::string_view tools_result,
+                          std::string_view firmware_result);
 
   base::flat_map<std::string, VmRegistration> runnable_vms_;
   base::flat_map<std::string, RunningVmPolicy> running_vms_;

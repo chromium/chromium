@@ -278,6 +278,7 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   friend class UiControllerTest;
   friend class TrayViewControllerTest;
   friend class MessagePopupCollectionTest;
+  friend class MessagePopupViewTest;
   virtual void DisableTimersForTest() = 0;
 
   MessageCenter();

@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
@@ -45,7 +46,7 @@ const int kMaxRawTermScore = 30;
 // lookups of scores without requiring math. This is initialized by
 // InitDaysAgoToRecencyScoreArray called by
 // ScoredHistoryMatch::Init().
-float days_ago_to_recency_score[kDaysToPrecomputeRecencyScoresFor];
+std::array<float, kDaysToPrecomputeRecencyScoresFor> days_ago_to_recency_score;
 
 // Pre-computed information to speed up calculating topicality scores.
 // |raw_term_score_to_topicality_score| is a simple array mapping how raw terms
@@ -54,7 +55,7 @@ float days_ago_to_recency_score[kDaysToPrecomputeRecencyScoresFor];
 // assign it.  This allows easy lookups of scores without requiring math. This
 // is initialized by InitRawTermScoreToTopicalityScoreArray() called from
 // ScoredHistoryMatch::Init().
-float raw_term_score_to_topicality_score[kMaxRawTermScore];
+std::array<float, kMaxRawTermScore> raw_term_score_to_topicality_score;
 
 // Precalculates raw_term_score_to_topicality_score, used in
 // GetTopicalityScore().

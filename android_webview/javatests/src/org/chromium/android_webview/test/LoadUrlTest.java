@@ -36,13 +36,13 @@ import org.chromium.android_webview.WebviewErrorCode;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.UnsupportedEncodingException;
@@ -213,7 +213,7 @@ public class LoadUrlTest extends AwParameterizedTest {
         }
 
         public void waitForFullLoad() throws TimeoutException {
-            mCallbackHelper.waitForFirst();
+            mCallbackHelper.waitForOnly();
         }
 
         private CallbackHelper mCallbackHelper = new CallbackHelper();
@@ -351,7 +351,7 @@ public class LoadUrlTest extends AwParameterizedTest {
     private void loadWithInvalidHeaders(AwContents awContents, Map<String, String> extraHeaders)
             throws Exception {
         Assert.assertTrue(
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             try {
                                 awContents.loadUrl("about:blank", extraHeaders);
@@ -555,7 +555,7 @@ public class LoadUrlTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY)
-    // TODO(crbug.com/1038002) remove flag when enabled by default
+    // TODO(crbug.com/40051073) remove flag when enabled by default
     public void testCrossOriginRedirectWithExtraHeaders() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -600,7 +600,7 @@ public class LoadUrlTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_EXTRA_HEADERS_SAME_ORIGIN_ONLY)
-    // TODO(crbug.com/1038002) remove flag when enabled by default
+    // TODO(crbug.com/40051073) remove flag when enabled by default
     public void testRedirectToPreviousExtraHeaders() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =

@@ -11,7 +11,9 @@
           "SigninAllowed": true
         },
         "prefs": {
-          "signin.allowed_on_next_startup": {}
+          "signin.allowed_on_next_startup": {
+            "value": true
+          }
         }
       }
     ]

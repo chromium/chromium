@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -725,8 +723,9 @@ class SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest
 
 // Tests that the console logs for SafeBrowsingTriggeredPopupBlocker are from
 // correct source frames.
+// TODO: crbug.com/329145811 - The test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
-                       ConsoleLogWithSourceFrame) {
+                       DISABLED_ConsoleLogWithSourceFrame) {
   // Load a primary page.
   {
     GURL initial_url(embedded_test_server()->GetURL("/empty.html"));
@@ -750,7 +749,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
   {
     ConfigureAsAbusiveWarn(prerendering_url);
     content::WebContentsConsoleObserver console_observer(web_contents());
-    int host_id = prerender_helper_.AddPrerender(prerendering_url);
+    content::FrameTreeNodeId host_id =
+        prerender_helper_.AddPrerender(prerendering_url);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
     auto* prerendered_frame_host =
@@ -784,7 +784,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
   ConfigureAsAbusive(prerendering_url);
 
   // Loads a page in the prerender.
-  int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(prerendering_url);
   auto* prerendered_frame_host =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);
   // openWindow() is ignored in prerendering and the popup UI is not shown since

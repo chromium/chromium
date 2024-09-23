@@ -6,5 +6,5 @@
 
 [
     Exposed=(Window,Worker)
-] interface WebGLSync {
+] interface WebGLSync : WebGLObject {
 };

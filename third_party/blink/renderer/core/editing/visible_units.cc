@@ -50,14 +50,20 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
+#include "third_party/blink/renderer/core/html/html_marquee_element.h"
+#include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
+#include "third_party/blink/renderer/core/svg/svg_text_element.h"
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -501,8 +507,7 @@ PositionWithAffinity PositionForContentsPointRespectingEditingBoundary(
 
   if (result.InnerNode()) {
     return PositionRespectingEditingBoundary(
-        frame->Selection().ComputeVisibleSelectionInDOMTreeDeprecated().Start(),
-        result);
+        frame->Selection().ComputeVisibleSelectionInDOMTree().Start(), result);
   }
   return PositionWithAffinity();
 }
@@ -643,7 +648,7 @@ static Position MostBackwardOrForwardCaretPosition(
   const SelectionInDOMTree& shadow_adjusted_selection =
       SelectionAdjuster::AdjustSelectionToAvoidCrossingShadowBoundaries(
           selection);
-  const Position& adjusted_candidate = shadow_adjusted_selection.Extent();
+  const Position& adjusted_candidate = shadow_adjusted_selection.Focus();
 
   // The adjusted candidate should be between the candidate and the original
   // position. Otherwise, return the original position.
@@ -657,7 +662,7 @@ static Position MostBackwardOrForwardCaretPosition(
     const SelectionInDOMTree& editing_adjusted_selection =
         SelectionAdjuster::AdjustSelectionToAvoidCrossingEditingBoundaries(
             shadow_adjusted_selection);
-    return editing_adjusted_selection.Extent();
+    return editing_adjusted_selection.Focus();
   }
   return adjusted_candidate;
 }
@@ -767,7 +772,7 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
         IsA<Text>(current_node) ? current_pos.OffsetInTextNode() : 0,
         LayoutObjectSide::kFirstLetterIfOnBoundary);
     if (!layout_object ||
-        layout_object->Style()->Visibility() != EVisibility::kVisible) {
+        layout_object->Style()->UsedVisibility() != EVisibility::kVisible) {
       if (boundary_crossed && rule == kCannotCrossEditingBoundary)
         break;
       continue;
@@ -875,7 +880,7 @@ bool HasInvisibleFirstLetter(const Node* node) {
       DynamicTo<LayoutTextFragment>(AssociatedLayoutObjectOf(*node, 0));
   if (!first_letter || first_letter == remaining_text)
     return false;
-  return first_letter->StyleRef().Visibility() != EVisibility::kVisible ||
+  return first_letter->StyleRef().UsedVisibility() != EVisibility::kVisible ||
          DisplayLockUtilities::LockedAncestorPreventingPaint(*first_letter);
 }
 }  // namespace
@@ -960,7 +965,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
         *current_node,
         IsA<Text>(current_node) ? current_pos.OffsetInTextNode() : 0);
     if (!layout_object ||
-        layout_object->Style()->Visibility() != EVisibility::kVisible) {
+        layout_object->Style()->UsedVisibility() != EVisibility::kVisible) {
       if (boundary_crossed && rule == kCannotCrossEditingBoundary)
         break;
       continue;
@@ -1082,8 +1087,9 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
   if (!layout_object)
     return false;
 
-  if (layout_object->Style()->Visibility() != EVisibility::kVisible)
+  if (layout_object->Style()->UsedVisibility() != EVisibility::kVisible) {
     return false;
+  }
 
   if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object))
     return false;
@@ -1244,7 +1250,7 @@ static VisiblePositionTemplate<Strategy> NextPositionOfAlgorithm(
       return CreateVisiblePosition(SkipToEndOfEditingBoundary(
           next.DeepEquivalent(), position.GetPosition()));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return next;
 }
 
@@ -1331,7 +1337,7 @@ static VisiblePositionTemplate<Strategy> PreviousPositionOfAlgorithm(
           SkipToStartOfEditingBoundary(prev.DeepEquivalent(), position));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return prev;
 }
 

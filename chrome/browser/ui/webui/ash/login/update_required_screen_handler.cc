@@ -132,4 +132,8 @@ void UpdateRequiredScreenHandler::SetIsUserDataPresent(bool data_present) {
   CallExternalAPI("setIsUserDataPresent", data_present);
 }
 
+base::WeakPtr<UpdateRequiredView> UpdateRequiredScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

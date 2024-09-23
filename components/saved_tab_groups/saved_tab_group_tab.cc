@@ -5,7 +5,10 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+
+namespace tab_groups {
 
 SavedTabGroupTab::SavedTabGroupTab(
     const GURL& url,
@@ -13,7 +16,9 @@ SavedTabGroupTab::SavedTabGroupTab(
     const base::Uuid& group_guid,
     std::optional<size_t> position,
     std::optional<base::Uuid> saved_tab_guid,
-    std::optional<base::Token> local_tab_id,
+    std::optional<LocalTabID> local_tab_id,
+    std::optional<std::string> creator_cache_guid,
+    std::optional<std::string> last_updater_cache_guid,
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros,
     std::optional<gfx::Image> favicon)
@@ -25,7 +30,8 @@ SavedTabGroupTab::SavedTabGroupTab(
       position_(position),
       url_(url),
       title_(title),
-      favicon_(favicon),
+      creator_cache_guid_(std::move(creator_cache_guid)),
+      last_updater_cache_guid_(std::move(last_updater_cache_guid)),
       creation_time_windows_epoch_micros_(
           creation_time_windows_epoch_micros.has_value()
               ? creation_time_windows_epoch_micros.value()
@@ -33,74 +39,40 @@ SavedTabGroupTab::SavedTabGroupTab(
       update_time_windows_epoch_micros_(
           update_time_windows_epoch_micros.has_value()
               ? update_time_windows_epoch_micros.value()
-              : base::Time::Now()) {}
+              : base::Time::Now()),
+      favicon_(favicon) {}
+
 SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
+SavedTabGroupTab& SavedTabGroupTab::operator=(const SavedTabGroupTab& other) =
+    default;
+SavedTabGroupTab::SavedTabGroupTab(SavedTabGroupTab&& other) = default;
+SavedTabGroupTab& SavedTabGroupTab::operator=(SavedTabGroupTab&& other) =
+    default;
 SavedTabGroupTab::~SavedTabGroupTab() = default;
 
 bool SavedTabGroupTab::ShouldMergeTab(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) const {
-  bool sync_update_is_latest =
-      sync_specific.update_time_windows_epoch_micros() >=
-      update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds();
-  return sync_update_is_latest;
-}
-
-std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::MergeTab(
-    const sync_pb::SavedTabGroupSpecifics& sync_specific) {
-  if (ShouldMergeTab(sync_specific)) {
-    SetURL(GURL(sync_specific.tab().url()));
-    SetTitle(base::UTF8ToUTF16(sync_specific.tab().title()));
-    SetPosition(sync_specific.tab().position());
-    SetUpdateTimeWindowsEpochMicros(base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(sync_specific.update_time_windows_epoch_micros())));
+    const SavedTabGroupTab& remote_tab) const {
+  if (AlwaysAcceptServerDataInModel()) {
+    return true;
   }
 
-  return ToSpecifics();
+  return remote_tab.update_time_windows_epoch_micros() >=
+         update_time_windows_epoch_micros();
 }
 
-// static
-SavedTabGroupTab SavedTabGroupTab::FromSpecifics(
-    const sync_pb::SavedTabGroupSpecifics& specific) {
-  const base::Uuid& group_guid =
-      base::Uuid::ParseLowercase(specific.tab().group_guid());
-  const GURL& url = GURL(specific.tab().url());
-  const std::u16string title = base::UTF8ToUTF16(specific.tab().title());
-  const size_t position = specific.tab().position();
+void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
+  if (!ShouldMergeTab(remote_tab)) {
+    return;
+  }
 
-  const base::Uuid guid = base::Uuid::ParseLowercase(specific.guid());
-  const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(specific.creation_time_windows_epoch_micros()));
-  const base::Time update_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(specific.update_time_windows_epoch_micros()));
-
-  return SavedTabGroupTab(url, title, group_guid, position, guid, std::nullopt,
-                          creation_time, update_time);
-}
-
-std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::ToSpecifics()
-    const {
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> pb_specific =
-      std::make_unique<sync_pb::SavedTabGroupSpecifics>();
-  pb_specific->set_guid(saved_tab_guid().AsLowercaseString());
-  pb_specific->set_creation_time_windows_epoch_micros(
-      creation_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
-  pb_specific->set_update_time_windows_epoch_micros(
-      update_time_windows_epoch_micros()
-          .ToDeltaSinceWindowsEpoch()
-          .InMicroseconds());
-
-  sync_pb::SavedTabGroupTab* pb_tab = pb_specific->mutable_tab();
-  pb_tab->set_url(url().spec());
-  pb_tab->set_group_guid(saved_group_guid().AsLowercaseString());
-  pb_tab->set_title(base::UTF16ToUTF8(title()));
-  pb_tab->set_position(position().value());
-  // Note: When adding a new syncable field, also update IsSyncEquivalent().
-
-  return pb_specific;
+  SetURL(remote_tab.url());
+  SetTitle(remote_tab.title());
+  // TODO(crbug.com/319521964): check that remote tab always contains position.
+  SetPosition(remote_tab.position().value_or(0));
+  SetCreatorCacheGuid(remote_tab.creator_cache_guid());
+  SetLastUpdaterCacheGuid(remote_tab.last_updater_cache_guid());
+  SetUpdateTimeWindowsEpochMicros(
+      remote_tab.update_time_windows_epoch_micros());
 }
 
 bool SavedTabGroupTab::IsSyncEquivalent(const SavedTabGroupTab& other) const {
@@ -108,3 +80,65 @@ bool SavedTabGroupTab::IsSyncEquivalent(const SavedTabGroupTab& other) const {
          saved_group_guid() == other.saved_group_guid() &&
          title() == other.title() && position() == other.position();
 }
+
+bool SavedTabGroupTab::IsURLInRedirectChain(const GURL& url) const {
+  for (const auto& redirect_url : redirect_url_chain_) {
+    if (redirect_url.GetWithoutRef().spec() == url.GetWithoutRef().spec()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+SavedTabGroupTabBuilder::SavedTabGroupTabBuilder() = default;
+
+SavedTabGroupTabBuilder::~SavedTabGroupTabBuilder() = default;
+
+SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetURL(const GURL& url) {
+  url_ = url;
+  has_url_ = true;
+  return *this;
+}
+
+SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetTitle(
+    const std::u16string& title) {
+  title_ = title;
+  has_title_ = true;
+  return *this;
+}
+
+SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetPosition(size_t position) {
+  position_ = position;
+  has_position_ = true;
+  return *this;
+}
+
+SavedTabGroupTabBuilder& SavedTabGroupTabBuilder::SetRedirectURLChain(
+    const std::vector<GURL>& redirect_url_chain) {
+  redirect_url_chain_ = redirect_url_chain;
+  has_redirect_url_chain_ = true;
+  return *this;
+}
+
+SavedTabGroupTab SavedTabGroupTabBuilder::Build(
+    const SavedTabGroupTab& tab) const {
+  SavedTabGroupTab updated_tab(tab);
+
+  // Apply the updates from the builder.
+  if (has_url_) {
+    updated_tab.SetURL(url_);
+  }
+  if (has_title_) {
+    updated_tab.SetTitle(title_);
+  }
+  if (has_position_) {
+    updated_tab.SetPosition(position_);
+  }
+  if (has_redirect_url_chain_) {
+    updated_tab.SetRedirectURLChain(redirect_url_chain_);
+  }
+
+  return updated_tab;
+}
+
+}  // namespace tab_groups

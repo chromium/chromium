@@ -85,9 +85,14 @@ bool TestBookmarkClient::HasFaviconLoadTasks() const {
   return !requests_per_page_url_.empty();
 }
 
-void TestBookmarkClient::SetStorageStateForUma(
-    metrics::StorageStateForUma storage_state) {
-  storage_state_for_uma_ = storage_state;
+void TestBookmarkClient::SetIsSyncFeatureEnabledIncludingBookmarks(bool value) {
+  is_sync_feature_enabled_including_bookmarks_for_uma = value;
+}
+
+void TestBookmarkClient::SetAccountBookmarkSyncMetadataAndScheduleWrite(
+    const std::string& account_bookmark_sync_metadata) {
+  account_bookmark_sync_metadata_ = account_bookmark_sync_metadata;
+  account_bookmark_sync_metadata_save_closure_.Run();
 }
 
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
@@ -95,8 +100,8 @@ LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
                         std::move(managed_node_));
 }
 
-metrics::StorageStateForUma TestBookmarkClient::GetStorageStateForUma() {
-  return storage_state_for_uma_;
+bool TestBookmarkClient::IsSyncFeatureEnabledIncludingBookmarks() {
+  return is_sync_feature_enabled_including_bookmarks_for_uma;
 }
 
 bool TestBookmarkClient::CanSetPermanentNodeTitle(
@@ -113,7 +118,7 @@ std::string TestBookmarkClient::EncodeLocalOrSyncableBookmarkSyncMetadata() {
 }
 
 std::string TestBookmarkClient::EncodeAccountBookmarkSyncMetadata() {
-  return std::string();
+  return account_bookmark_sync_metadata_;
 }
 
 void TestBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
@@ -122,7 +127,10 @@ void TestBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
 
 void TestBookmarkClient::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
-    const base::RepeatingClosure& schedule_save_closure) {}
+    const base::RepeatingClosure& schedule_save_closure) {
+  account_bookmark_sync_metadata_ = metadata_str;
+  account_bookmark_sync_metadata_save_closure_ = schedule_save_closure;
+}
 
 base::CancelableTaskTracker::TaskId
 TestBookmarkClient::GetFaviconImageForPageURL(
@@ -134,7 +142,6 @@ TestBookmarkClient::GetFaviconImageForPageURL(
 }
 
 void TestBookmarkClient::OnBookmarkNodeRemovedUndoable(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t index,
     std::unique_ptr<BookmarkNode> node) {}

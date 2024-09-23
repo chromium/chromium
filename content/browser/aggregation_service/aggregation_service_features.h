@@ -16,9 +16,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAggregationService);
 extern CONTENT_EXPORT const base::FeatureParam<std::string>
     kPrivacySandboxAggregationServiceTrustedServerUrlAwsParam;
 
-// Enables padding for aggregatable reports. See crbug.com/1478353.
+// Enables filtering IDs. See crbug.com/330744610.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kPrivacySandboxAggregationServiceReportPadding);
+    kPrivacySandboxAggregationServiceFilteringIds);
 
 }  // namespace content
 

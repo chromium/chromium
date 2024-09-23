@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_SIMPLE_AUTOFILL_STRIKE_DATABASE_H_
 
 #include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

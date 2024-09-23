@@ -54,19 +54,27 @@ class SafeBrowsingTokenFetcher;
 // Lifetime:
 // The service is instantiated when the associated profile is instantiated. It
 // is destructed when the corresponding profile is destructed.
-// Enable/Disable state:
-// The service is enabled/disabled based on kEnhancedSafeBrowsing. The service
-// subscribes to the SB preference change notification to update its state.
+// Enable/Disable states:
+// The service is enabled if:
+//  - the user is opted into Enhanced Safe Browsing (ESB) OR
+//  - enterprise telemetry is enabled by a policy
 //
-// When enabled, the service receives/stores signal information, and collects
-// file data for off-store extensions. Periodically, the service creates
-// telemetry reports and uploads them to the SB servers. In the upload response,
-// the CRX telemetry server includes unsafe off-store extension verdicts that
-// the service can take action on.
+// |esb_enabled_| - Generates telemetry reports for Enhanced Safe Browsing
+// (ESB) users. When enabled, the service receives/stores signal
+// information, and collects file data for off-store extensions.
+// Periodically, the telemetry reports are uploaded to the SB servers. In
+// the upload response, the CRX telemetry server includes unsafe off-store
+// extension verdicts that the service can take action on.
+// |enterprise_enabled_| - Generates enterprise telemetry reports for
+// managed profiles. When enabled, the service also collects signal
+// information and file data for off-store extensions. Periodically, the
+// telemetry reports are sent to the Chrome Enterprise Reporting servers
+// instead. Unlike the ESB flow, there is no response received when an
+// enterprise report is sent.
 //
-// When disabled, any previously stored signal information is
-// cleared, incoming signals are ignored and no reports are sent to the SB
-// servers.
+// For both ESB and enterprise: when disabled, any previously stored signal
+// information is cleared, incoming signals are ignored and no reports are
+// sent.
 class ExtensionTelemetryService : public KeyedService {
  public:
   // Convenience method to get the service for a profile.
@@ -93,9 +101,13 @@ class ExtensionTelemetryService : public KeyedService {
   // invalid extension id).
   static void RecordSignalDiscarded(ExtensionSignalType signal_type);
 
-  // Enables/disables the service.
-  void SetEnabled(bool enable);
-  bool enabled() const { return enabled_; }
+  // Enables/disables the service for ESB reports.
+  void SetEnabledForESB(bool enable);
+  // Enables/disables the service for Enterprise reports.
+  void SetEnabledForEnterprise(bool enable);
+  // Returns true if the telemetry service is enabled for either ESB,
+  // enterprise, or both.
+  bool enabled() const;
 
   // Accepts extension telemetry signals for processing.
   void AddSignal(std::unique_ptr<ExtensionSignal> signal);
@@ -116,11 +128,40 @@ class ExtensionTelemetryService : public KeyedService {
   base::TimeDelta GetOffstoreFileDataCollectionIntervalSeconds();
 
  private:
-  // Called when prefs that affect extension telemetry service are changed.
-  void OnPrefChanged();
+  using SignalProcessors =
+      base::flat_map<ExtensionSignalType,
+                     std::unique_ptr<ExtensionSignalProcessor>>;
+  using SignalSubscribers = base::flat_map<
+      ExtensionSignalType,
+      std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>>;
+  // Maps extension id to extension data.
+  using ExtensionStore = base::flat_map<
+      extensions::ExtensionId,
+      std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>>;
+
+  // Called when the pref that affects ESB telemetry reporting is changed.
+  void OnESBPrefChanged();
+
+  // Called when the policy that affects enterprise telemetry reporting is
+  // changed.
+  void OnEnterprisePolicyChanged();
+
+  // Helper method to add and process an extension signal. Shared by both ESB
+  // and enterprise reporting.
+  void AddSignalHelper(const ExtensionSignal& signal,
+                       ExtensionStore& store,
+                       SignalSubscribers& subscribers);
+
+  // Creates a telemetry report with common fields shared by both ESB and
+  // enterprise reporting.
+  std::unique_ptr<ExtensionTelemetryReportRequest>
+  CreateReportWithCommonFieldsPopulated();
 
   // Creates and uploads telemetry reports.
   void CreateAndUploadReport();
+
+  // Creates and sends telemetry report to enterprise.
+  void CreateAndSendEnterpriseReport();
 
   void OnUploadComplete(bool success, const std::string& response_data);
 
@@ -132,9 +173,11 @@ class ExtensionTelemetryService : public KeyedService {
   // and currently installed extensions along with signal data retrieved from
   // signal processors.
   std::unique_ptr<ExtensionTelemetryReportRequest> CreateReport();
+  // For enterprise, a report is only created for extensions with signals data.
+  std::unique_ptr<ExtensionTelemetryReportRequest> CreateReportForEnterprise();
 
   // Dumps a telemetry report in logs for testing.
-  void DumpReportForTest(const ExtensionTelemetryReportRequest& report);
+  void DumpReportForTesting(const ExtensionTelemetryReportRequest& report);
 
   // Collects extension information for reporting.
   std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>
@@ -167,6 +210,16 @@ class ExtensionTelemetryService : public KeyedService {
   // extensions.
   void OnCommandLineExtensionsInfoCollected(
       extensions::ExtensionSet commandline_extensions);
+
+  // Sets up signal processors and subscribers for ESB telemetry.
+  void SetUpSignalProcessorsAndSubscribersForESB();
+
+  // Sets up signal processors and subscribers for enterprise telemetry.
+  void SetUpSignalProcessorsAndSubscribersForEnterprise();
+
+  // Sets up the off-store file data collection: file processor, timer, and
+  // command line extensions. If it is already set up, this is a no-op.
+  void SetUpOffstoreFileDataCollection();
 
   // Searches for offstore extensions, collects file data such as
   // hashes/manifest content, and saves the data to PrefService. Repeats every 2
@@ -239,67 +292,18 @@ class ExtensionTelemetryService : public KeyedService {
   void ProcessOffstoreExtensionVerdicts(
       const ExtensionTelemetryReportResponse& response);
 
-  // The persister object is bound to the threadpool. This prevents the
-  // the read/write operations the `persister_` runs from blocking
-  // the UI thread. It also allows the `persister_` object to be
-  // destroyed cleanly while running tasks during Chrome shutdown.
-  base::SequenceBound<ExtensionTelemetryPersister> persister_;
-
-  // The |file_processor_| object reads and hashes offstore extension files.
-  // Since these are blocking operations, it is bound to a different sequence
-  // task runner.
-  base::SequenceBound<ExtensionTelemetryFileProcessor> file_processor_;
-
-  // The `config_manager_` manages all configurable variables of the
-  // Extension Telemetry Service. Variables are stored in Chrome Prefs
-  // between sessions.
-  std::unique_ptr<safe_browsing::ExtensionTelemetryConfigManager>
-      config_manager_;
-
+  // Common variables shared between ESB and enterprise reporting:
   // The profile with which this instance of the service is associated.
   const raw_ptr<Profile> profile_;
-
-  // The URLLoaderFactory used to issue network requests.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Unowned object used for getting preference settings.
-  raw_ptr<PrefService> pref_service_;
-
-  // Observes changes to kSafeBrowsingEnhanced.
-  PrefChangeRegistrar pref_change_registrar_;
 
   // Unowned objects used for getting extension information.
   const raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   const raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
 
-  // Keeps track of the state of the service.
-  bool enabled_ = false;
-
-  // Used for periodic collection of telemetry reports.
-  base::RepeatingTimer timer_;
-  base::TimeDelta current_reporting_interval_;
-
-  // Specifies the number of times(N) the telemetry service checks if a
-  // telemetry upload is required within an upload interval(I). The telemetry
-  // service checks if an upload is necessary at I/N intervals. At each check
-  // interval, the in-memory telemetry data is saved to disk - till the time an
-  // upload interval has elapsed. For example, a value of 2 means that the
-  // telemetry service checks for uploads at I/2 and I. At the first check
-  // interval, the in-memory report is written to disk. At the second check
-  // interval, the in-memory report and the previously saved report in disk are
-  // both uploaded to the telemetry server.
-  int num_checks_per_upload_interval_;
-
-  // The current report being uploaded.
-  std::unique_ptr<ExtensionTelemetryReportRequest> active_report_;
-  // The current uploader instance uploading the active report.
-  std::unique_ptr<ExtensionTelemetryUploader> active_uploader_;
-
-  // Maps extension id to extension data.
-  using ExtensionStore = base::flat_map<
-      extensions::ExtensionId,
-      std::unique_ptr<ExtensionTelemetryReportRequest_ExtensionInfo>>;
-  ExtensionStore extension_store_;
+  // The |file_processor_| object reads and hashes offstore extension files.
+  // Since these are blocking operations, it is bound to a different sequence
+  // task runner.
+  base::SequenceBound<ExtensionTelemetryFileProcessor> file_processor_;
 
   // Stores extension objects for extensions that are included in the
   // --load-extension command line switch.
@@ -324,15 +328,72 @@ class ExtensionTelemetryService : public KeyedService {
   base::TimeTicks offstore_file_data_collection_start_time_;
   base::TimeDelta offstore_file_data_collection_duration_limit_;
 
-  using SignalProcessors =
-      base::flat_map<ExtensionSignalType,
-                     std::unique_ptr<ExtensionSignalProcessor>>;
-  SignalProcessors signal_processors_;
+  // ESB-specific reporting variables:
+  // Keeps track of the state of the service for ESB telemetry reporting.
+  bool esb_enabled_ = false;
 
-  using SignalSubscribers = base::flat_map<
-      ExtensionSignalType,
-      std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>>;
+  SignalProcessors signal_processors_;
   SignalSubscribers signal_subscribers_;
+
+  // Stores data on extensions with generated signals for ESB reporting.
+  ExtensionStore extension_store_;
+
+  // Used for periodic collection of ESB telemetry reports.
+  base::RepeatingTimer timer_;
+  base::TimeDelta current_reporting_interval_;
+
+  // The persister object is bound to the threadpool. This prevents the
+  // the read/write operations the `persister_` runs from blocking
+  // the UI thread. It also allows the `persister_` object to be
+  // destroyed cleanly while running tasks during Chrome shutdown.
+  base::SequenceBound<ExtensionTelemetryPersister> persister_;
+
+  // The `config_manager_` manages all configurable variables of the
+  // Extension Telemetry Service. Variables are stored in Chrome Prefs
+  // between sessions.
+  std::unique_ptr<safe_browsing::ExtensionTelemetryConfigManager>
+      config_manager_;
+
+  // The URLLoaderFactory used to issue network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Unowned object used for getting preference settings.
+  raw_ptr<PrefService> pref_service_;
+
+  // Observes changes to kSafeBrowsingEnhanced.
+  PrefChangeRegistrar pref_change_registrar_;
+
+  // Specifies the number of times(N) the telemetry service checks if a
+  // telemetry upload is required within an upload interval(I). The telemetry
+  // service checks if an upload is necessary at I/N intervals. At each check
+  // interval, the in-memory telemetry data is saved to disk - till the time an
+  // upload interval has elapsed. For example, a value of 2 means that the
+  // telemetry service checks for uploads at I/2 and I. At the first check
+  // interval, the in-memory report is written to disk. At the second check
+  // interval, the in-memory report and the previously saved report in disk are
+  // both uploaded to the telemetry server.
+  int num_checks_per_upload_interval_;
+
+  // The current report being uploaded.
+  std::unique_ptr<ExtensionTelemetryReportRequest> active_report_;
+  // The current uploader instance uploading the active report.
+  std::unique_ptr<ExtensionTelemetryUploader> active_uploader_;
+
+  // Enterprise-specific reporting variables:
+  // Keeps track of the state of the service for enterprise telemetry reporting.
+  bool enterprise_enabled_ = false;
+
+  SignalProcessors enterprise_signal_processors_;
+  SignalSubscribers enterprise_signal_subscribers_;
+
+  // Stores data on extensions with generated signals for enterprise reporting.
+  ExtensionStore enterprise_extension_store_;
+
+  // Used for periodic collection of enterprise telemetry reports.
+  base::RepeatingTimer enterprise_timer_;
+
+  // Indicates whether |Shutdown| has been called.
+  bool is_shutdown_ = false;
 
   friend class ExtensionTelemetryServiceTest;
   friend class ExtensionTelemetryServiceBrowserTest;

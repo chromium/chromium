@@ -60,10 +60,10 @@ gfx::Size DimensionsToMicrons(std::string_view value) {
   Unit unit;
   std::string_view dims;
   size_t unit_position;
-  if ((unit_position = value.find("mm")) != base::StringPiece::npos) {
+  if ((unit_position = value.find("mm")) != std::string_view::npos) {
     unit = Unit::kMillimeters;
     dims = value.substr(0, unit_position);
-  } else if ((unit_position = value.find("in")) != base::StringPiece::npos) {
+  } else if ((unit_position = value.find("in")) != std::string_view::npos) {
     unit = Unit::kInches;
     dims = value.substr(0, unit_position);
   } else {
@@ -151,5 +151,34 @@ void PwgMarginsFromSizeAndPrintableArea(const gfx::Size& size_um,
   *top_pwg = top_um / kMicronsPerPwgUnit;
 }
 #endif  // BUILDFLAG(USE_CUPS)
+
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::string GetDisplayName(const std::string& printer_name,
+                           std::string_view info) {
+#if BUILDFLAG(IS_MAC)
+  // It is possible to create a printer with a blank display name, so just
+  // use the printer name in such a case.
+  if (!info.empty()) {
+    return std::string(info);
+  }
+#endif
+  return printer_name;
+}
+
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::string_view GetPrinterDescription(std::string_view drv_info,
+                                       std::string_view info) {
+#if BUILDFLAG(IS_MAC)
+  // On Mac, `drv_info` specifies the printer description
+  if (!drv_info.empty()) {
+    return drv_info;
+  }
+#else
+  if (!info.empty()) {
+    return info;
+  }
+#endif
+  return std::string_view();
+}
 
 }  // namespace printing

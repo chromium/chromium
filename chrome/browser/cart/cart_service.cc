@@ -13,11 +13,13 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -38,7 +40,6 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/search/ntp_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -197,8 +198,7 @@ void CartService::RestoreHidden() {
 }
 
 bool CartService::IsHidden() {
-  return !base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
-         profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
+  return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
 }
 
 void CartService::LoadCart(const std::string& domain,
@@ -533,7 +533,7 @@ void CartService::SetCartDiscountEnabled(bool enabled) {
   if (enabled) {
     StartGettingDiscount();
   } else {
-    // TODO(crbug.com/1207197): Use sequence checker instead.
+    // TODO(crbug.com/40181210): Use sequence checker instead.
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     fetch_discount_worker_.reset();
   }
@@ -656,9 +656,10 @@ void CartService::Shutdown() {
   }
 }
 
-void CartService::OnURLsDeleted(history::HistoryService* history_service,
-                                const history::DeletionInfo& deletion_info) {
-  // TODO(crbug.com/1157892): Add more fine-grained deletion of cart data when
+void CartService::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  // TODO(crbug.com/40161045): Add more fine-grained deletion of cart data when
   // history deletion happens.
   if (deletion_info.is_from_expiration()) {
     return;
@@ -1211,11 +1212,11 @@ void CartService::CacheUsedDiscounts(
 
 void CartService::CleanUpDiscounts(cart_db::ChromeCartContentProto proto) {
   if (proto.merchant_cart_url().empty()) {
-    NOTREACHED() << "proto does not have merchant_cart_url";
+    NOTREACHED_IN_MIGRATION() << "proto does not have merchant_cart_url";
     return;
   }
   if (!proto.has_discount_info()) {
-    NOTREACHED() << "proto does not have discount_info";
+    NOTREACHED_IN_MIGRATION() << "proto does not have discount_info";
     return;
   }
 

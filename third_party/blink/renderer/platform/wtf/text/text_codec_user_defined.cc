@@ -23,6 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_user_defined.h"
 
 #include <memory>
@@ -47,16 +52,15 @@ void TextCodecUserDefined::RegisterCodecs(TextCodecRegistrar registrar) {
   registrar("x-user-defined", NewStreamingTextDecoderUserDefined, nullptr);
 }
 
-String TextCodecUserDefined::Decode(const char* bytes,
-                                    wtf_size_t length,
+String TextCodecUserDefined::Decode(base::span<const uint8_t> data,
                                     FlushBehavior,
                                     bool,
                                     bool&) {
   StringBuilder result;
-  result.ReserveCapacity(length);
+  result.ReserveCapacity(data.size());
 
-  for (wtf_size_t i = 0; i < length; ++i) {
-    signed char c = bytes[i];
+  for (const auto cc : data) {
+    signed char c = cc;
     result.Append(static_cast<UChar>(c & 0xF7FF));
   }
 
@@ -64,10 +68,12 @@ String TextCodecUserDefined::Decode(const char* bytes,
 }
 
 template <typename CharType>
-static std::string EncodeComplexUserDefined(const CharType* characters,
-                                            wtf_size_t length,
-                                            UnencodableHandling handling) {
+static std::string EncodeComplexUserDefined(
+    base::span<const CharType> char_data,
+    UnencodableHandling handling) {
   DCHECK_NE(handling, kNoUnencodables);
+  const auto* characters = char_data.data();
+  const wtf_size_t length = base::checked_cast<wtf_size_t>(char_data.size());
   wtf_size_t target_length = length;
   Vector<char> result(target_length);
   char* bytes = result.data();
@@ -106,15 +112,15 @@ static std::string EncodeComplexUserDefined(const CharType* characters,
 }
 
 template <typename CharType>
-std::string TextCodecUserDefined::EncodeCommon(const CharType* characters,
-                                               wtf_size_t length,
-                                               UnencodableHandling handling) {
-  std::string result(length, '\0');
+std::string TextCodecUserDefined::EncodeCommon(
+    base::span<const CharType> characters,
+    UnencodableHandling handling) {
+  std::string result(characters.size(), '\0');
 
   // Convert the string a fast way and simultaneously do an efficient check to
   // see if it's all ASCII.
   UChar ored = 0;
-  for (wtf_size_t i = 0; i < length; ++i) {
+  for (size_t i = 0; i < characters.size(); ++i) {
     UChar c = characters[i];
     result[i] = static_cast<char>(c);
     ored |= c;
@@ -124,19 +130,17 @@ std::string TextCodecUserDefined::EncodeCommon(const CharType* characters,
     return result;
 
   // If it wasn't all ASCII, call the function that handles more-complex cases.
-  return EncodeComplexUserDefined(characters, length, handling);
+  return EncodeComplexUserDefined(characters, handling);
 }
 
-std::string TextCodecUserDefined::Encode(const UChar* characters,
-                                         wtf_size_t length,
+std::string TextCodecUserDefined::Encode(base::span<const UChar> characters,
                                          UnencodableHandling handling) {
-  return EncodeCommon(characters, length, handling);
+  return EncodeCommon(characters, handling);
 }
 
-std::string TextCodecUserDefined::Encode(const LChar* characters,
-                                         wtf_size_t length,
+std::string TextCodecUserDefined::Encode(base::span<const LChar> characters,
                                          UnencodableHandling handling) {
-  return EncodeCommon(characters, length, handling);
+  return EncodeCommon(characters, handling);
 }
 
 }  // namespace WTF

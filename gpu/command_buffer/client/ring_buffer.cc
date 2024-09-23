@@ -107,7 +107,7 @@ void RingBuffer::FreePendingToken(void* pointer, uint32_t token) {
     }
   }
 
-  NOTREACHED() << "attempt to free non-existant block";
+  NOTREACHED_IN_MIGRATION() << "attempt to free non-existant block";
 }
 
 void RingBuffer::DiscardBlock(void* pointer) {
@@ -148,7 +148,7 @@ void RingBuffer::DiscardBlock(void* pointer) {
       return;
     }
   }
-  NOTREACHED() << "attempt to discard non-existant block";
+  NOTREACHED_IN_MIGRATION() << "attempt to discard non-existant block";
 }
 
 uint32_t RingBuffer::GetLargestFreeSizeNoWaiting() {

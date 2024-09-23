@@ -7,15 +7,18 @@
 #include <memory>
 
 #include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,7 +45,7 @@ constexpr char kAccountGaiaId[] = "user-example-com-test-gaia-id";
 LoginPolicyTestBase::LoginPolicyTestBase()
     : account_id_(AccountId::FromUserEmailGaiaId(kAccountId, kAccountGaiaId)) {
   set_open_about_blank_on_browser_launch(false);
-  login_manager_.set_should_launch_browser(true);
+  login_manager_.SetShouldLaunchBrowser(true);
 }
 
 LoginPolicyTestBase::~LoginPolicyTestBase() = default;
@@ -51,6 +54,13 @@ void LoginPolicyTestBase::SetUpCommandLine(base::CommandLine* command_line) {
   OobeBaseTest::SetUpCommandLine(command_line);
   command_line->AppendSwitch(ash::switches::kDisableGaiaServices);
   command_line->AppendSwitch(ash::switches::kSkipForceOnlineSignInForTesting);
+
+  // This will change the verification key to be used by the
+  // CloudPolicyValidator. It will allow for the policy provided by the
+  // PolicyBuilder to pass the signature validation.
+  command_line->AppendSwitchASCII(
+      switches::kPolicyVerificationKey,
+      PolicyBuilder::GetEncodedPolicyVerificationKey());
 }
 
 void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {

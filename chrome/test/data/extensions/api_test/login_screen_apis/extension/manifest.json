@@ -1,15 +1,13 @@
 {
   "name": "Login screen APIs test extension",
-  "version": "1.27",
-  "manifest_version": 2,
+  "version": "1.28",
+  "manifest_version": 3,
   "description": "Login screen APIs test extension",
   "default_locale": "en",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "permissions": [
-    "i18n",
     "login",
     "loginScreenUi",
     "loginScreenStorage",

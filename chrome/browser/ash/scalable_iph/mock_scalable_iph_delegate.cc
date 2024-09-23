@@ -74,5 +74,17 @@ void MockScalableIphDelegate::FakeShowNotification() {
           });
 }
 
+void MockScalableIphDelegate::FakePerformActionForScalableIph() {
+  CHECK(delegate_) << "Delegate must be set to enable fake behaviors";
+  CHECK(!perform_action_for_scalable_iph_enabled_)
+      << "Fake is already set for performing an action for Scalable Iph";
+  perform_action_for_scalable_iph_enabled_ = true;
+
+  ON_CALL(*this, PerformActionForScalableIph)
+      .WillByDefault([this](scalable_iph::ActionType action_type) {
+        return delegate_->PerformActionForScalableIph(action_type);
+      });
+}
+
 }  // namespace test
 }  // namespace ash

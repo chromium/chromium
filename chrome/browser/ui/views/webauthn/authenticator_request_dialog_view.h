@@ -11,6 +11,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -70,10 +71,13 @@ class AuthenticatorRequestDialogView
     return sheet_;
   }
 
+  // views::View:
+  void AddedToWidget() override;
+
   // views::DialogDelegateView:
   bool Accept() override;
   bool Cancel() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
   std::u16string GetWindowTitle() const override;
 
@@ -81,6 +85,7 @@ class AuthenticatorRequestDialogView
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
   void OnStepTransition() override;
   void OnSheetModelChanged() override;
+  void OnButtonsStateChanged() override;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
@@ -89,21 +94,23 @@ class AuthenticatorRequestDialogView
   friend class test::AuthenticatorRequestDialogViewTestApi;
   friend void ShowAuthenticatorRequestDialog(
       content::WebContents* web_contents,
-      AuthenticatorRequestDialogModel* model);
+      scoped_refptr<AuthenticatorRequestDialogModel> model);
 
   // Show by calling ShowAuthenticatorRequestDialog().
-  AuthenticatorRequestDialogView(content::WebContents* web_contents,
-                                 AuthenticatorRequestDialogModel* model);
+  AuthenticatorRequestDialogView(
+      content::WebContents* web_contents,
+      scoped_refptr<AuthenticatorRequestDialogModel> model);
 
   // Shows the dialog after creation or after being hidden.
   void Show();
 
   void OtherMechanismsButtonPressed();
   void ManageDevicesButtonPressed();
+  void ForgotGPMPinPressed();
+  void GPMPinOptionChosen(bool is_arbitrary);
+  void UpdateFooter();
 
-  void OnDialogClosing();
-
-  raw_ptr<AuthenticatorRequestDialogModel> model_;
+  scoped_refptr<AuthenticatorRequestDialogModel> model_;
 
   raw_ptr<AuthenticatorRequestSheetView, DanglingUntriaged> sheet_ = nullptr;
   std::unique_ptr<views::MenuRunner> other_mechanisms_menu_runner_;

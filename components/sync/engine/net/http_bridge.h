@@ -150,8 +150,8 @@ class HttpBridge : public HttpPostProvider {
   // this flow needs to be synchronized to gracefully
   // clean up URLFetcher and return appropriate values in |error_code|.
   //
-  // TODO(crbug.com/844968): Check whether we can get rid of |fetch_state_lock_|
-  // altogether after the migration to SimpleURLLoader.
+  // TODO(crbug.com/41390139): Check whether we can get rid of
+  // |fetch_state_lock_| altogether after the migration to SimpleURLLoader.
   mutable base::Lock fetch_state_lock_;
   URLFetchState fetch_state_;
 

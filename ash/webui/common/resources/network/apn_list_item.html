@@ -69,23 +69,26 @@
 <cr-action-menu id="dotsMenu">
   <button id="detailsButton" class="dropdown-item"
       on-click="onDetailsClicked_">
-    [[getDetailsMenuItemLabel_(apn)]]
+    [[getDetailsMenuItemLabel_(apn, shouldDisallowApnModification)]]
   </button>
   <template is="dom-if" if="[[shouldShowDisableMenuItem_(apn)]]" restamp>
     <button id="disableButton" class="dropdown-item"
-        on-click="onDisableClicked_">
+        on-click="onDisableClicked_"
+        disabled="[[shouldDisallowApnModification]]">
       [[i18n('apnMenuDisable')]]
     </button>
   </template>
   <template is="dom-if" if="[[shouldShowEnableMenuItem_(apn)]]" restamp>
     <button id="enableButton" class="dropdown-item"
-        on-click="onEnableClicked_">
+        on-click="onEnableClicked_"
+        disabled="[[shouldDisallowApnModification]]">
       [[i18n('apnMenuEnable')]]
     </button>
   </template>
   <template is="dom-if" if="[[shouldShowRemoveMenuItem_(apn)]]" restamp>
     <button id="removeButton" class="dropdown-item"
-        on-click="onRemoveClicked_">
+        on-click="onRemoveClicked_"
+        disabled="[[shouldDisallowApnModification]]">
       [[i18n('apnMenuRemove')]]
     </button>
   </template>

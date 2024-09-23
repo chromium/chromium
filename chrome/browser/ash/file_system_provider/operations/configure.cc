@@ -31,15 +31,15 @@ bool Configure::Execute(int request_id) {
           options));
 }
 
-void Configure::OnSuccess(int /* request_id */,
-                          const RequestValue& /* result */,
-                          bool /* has_more */) {
+void Configure::OnSuccess(/*request_id=*/int,
+                          /*result=*/const RequestValue&,
+                          /*has_more=*/bool) {
   DCHECK(callback_);
   std::move(callback_).Run(base::File::FILE_OK);
 }
 
-void Configure::OnError(int /* request_id */,
-                        const RequestValue& /* result */,
+void Configure::OnError(/*request_id=*/int,
+                        /*result=*/const RequestValue&,
                         base::File::Error error) {
   DCHECK(callback_);
   std::move(callback_).Run(error);

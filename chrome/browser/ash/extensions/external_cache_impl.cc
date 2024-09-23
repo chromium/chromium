@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 
 #include <stddef.h>
+
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -20,7 +21,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -28,6 +28,7 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -93,7 +94,7 @@ class ExternalCacheImpl::AnyInstallFailureObserver
                                      InstallObserver>
       install_tracker_observations_{this};
 
-  base::flat_set<Profile*> observed_profiles_;
+  base::flat_set<raw_ptr<Profile, CtnExperimental>> observed_profiles_;
 
   // Required to outlive |this|, which is guaranteed in practice by having
   // |owner_| own |this|.
@@ -230,8 +231,8 @@ void ExternalCacheImpl::UpdateExtensionsList(base::Value::Dict prefs) {
 void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
   for (const auto [key, value] : cached_extensions_) {
     if (!value.is_dict()) {
-      NOTREACHED() << "ExternalCacheImpl found bad entry with type "
-                   << value.type();
+      NOTREACHED_IN_MIGRATION()
+          << "ExternalCacheImpl found bad entry with type " << value.type();
       continue;
     }
 
@@ -246,7 +247,7 @@ void ExternalCacheImpl::OnDamagedFileDetected(const base::FilePath& path) {
 
       // Don't try to DownloadMissingExtensions() from here,
       // since it can cause a fail/retry loop.
-      // TODO(crbug.com/1121546) trigger re-installation mechanism with
+      // TODO(crbug.com/40715565) trigger re-installation mechanism with
       // exponential back-off.
       return;
     }
@@ -292,7 +293,7 @@ void ExternalCacheImpl::PutExternalExtension(
     const std::string& version,
     PutExternalExtensionCallback callback) {
   local_cache_.PutExtension(
-      id, std::string(), crx_file_path, version,
+      id, std::string(), crx_file_path, base::Version(version),
       base::BindOnce(&ExternalCacheImpl::OnPutExternalExtension,
                      weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)));
 }
@@ -345,8 +346,7 @@ void ExternalCacheImpl::OnExtensionDownloadFinished(
   DCHECK(file_ownership_passed);
   DCHECK(file.expected_version.IsValid());
   local_cache_.PutExtension(
-      file.extension_id, file.expected_hash, file.path,
-      file.expected_version.GetString(),
+      file.extension_id, file.expected_hash, file.path, file.expected_version,
       base::BindOnce(&ExternalCacheImpl::OnPutExtension,
                      weak_ptr_factory_.GetWeakPtr(), file.extension_id));
   if (!callback.is_null())

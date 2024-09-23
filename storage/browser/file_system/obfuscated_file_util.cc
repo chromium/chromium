@@ -203,6 +203,8 @@ class ObfuscatedFileEnumerator final
 
   int64_t Size() override { return current_platform_file_info_.size; }
 
+  base::FilePath GetName() override { return base::FilePath(); }
+
   base::Time LastModifiedTime() override {
     return current_platform_file_info_.last_modified;
   }
@@ -291,7 +293,6 @@ class ObfuscatedStorageKeyEnumerator
       return false;
     if (type_string.empty()) {
       NOTREACHED();
-      return false;
     }
     base::FilePath path =
         base_file_path_.Append(current_.path).AppendASCII(type_string);
@@ -682,17 +683,12 @@ base::File::Error ObfuscatedFileUtil::CopyOrMoveFile(
   if (error != base::File::FILE_OK)
     return error;
 
-  if (overwrite) {
-    context->change_observers()->Notify(&FileChangeObserver::OnModifyFile,
-                                        dest_url);
-  } else {
+  if (copy) {
     context->change_observers()->Notify(&FileChangeObserver::OnCreateFileFrom,
                                         dest_url, src_url);
-  }
-
-  if (!copy) {
-    context->change_observers()->Notify(&FileChangeObserver::OnRemoveFile,
-                                        src_url);
+  } else {
+    context->change_observers()->Notify(&FileChangeObserver::OnMoveFileFrom,
+                                        dest_url, src_url);
     TouchDirectory(db, src_file_info.parent_id);
   }
 
@@ -810,7 +806,7 @@ base::File::Error ObfuscatedFileUtil::DeleteFile(
       -UsageForPath(file_info.name.size()) - platform_file_info.size;
   AllocateQuota(context, growth);
   if (!db->RemoveFileInfo(file_id)) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED();
     return base::File::FILE_ERROR_FAILED;
   }
   UpdateUsage(context, url, growth);

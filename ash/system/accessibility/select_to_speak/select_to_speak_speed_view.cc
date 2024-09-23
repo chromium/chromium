@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/system/accessibility/select_to_speak/select_to_speak_speed_view.h"
 
 #include "ash/strings/grit/ash_strings.h"
@@ -26,6 +31,11 @@ namespace {
 
 // Start offset in pixels to use for option views.
 constexpr int kOptionInset = 16;
+
+void RecordSpeedMetric(int value) {
+  base::UmaHistogramSparse("Accessibility.CrosSelectToSpeak.SpeedSetFromBubble",
+                           value);
+}
 
 }  // namespace
 
@@ -60,8 +70,10 @@ void SelectToSpeakSpeedView::AddMenuItem(int option_id,
 
 void SelectToSpeakSpeedView::OnViewClicked(views::View* sender) {
   unsigned int speed_index = sender->GetID() - 1;
+  double speech_rate = kSelectToSpeakSpeechRates[speed_index];
   if (speed_index >= 0 && speed_index < std::size(kSelectToSpeakSpeechRates)) {
-    delegate_->OnSpeechRateSelected(kSelectToSpeakSpeechRates[speed_index]);
+    delegate_->OnSpeechRateSelected(speech_rate);
+    RecordSpeedMetric(floor(speech_rate * 100));
   }
 }
 
@@ -73,7 +85,8 @@ void SelectToSpeakSpeedView::SetInitialFocus() {
 }
 
 void SelectToSpeakSpeedView::OnKeyEvent(ui::KeyEvent* key_event) {
-  if (key_event->type() != ui::ET_KEY_PRESSED || key_event->is_repeat()) {
+  if (key_event->type() != ui::EventType::kKeyPressed ||
+      key_event->is_repeat()) {
     // Only process key when first pressed.
     return;
   }

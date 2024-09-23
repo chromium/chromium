@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -1959,6 +1960,11 @@ TEST_F(NetworkStateHandlerTest, DefaultServiceChanged) {
 }
 
 TEST_F(NetworkStateHandlerTest, SetNetworkChromePortalState) {
+  // This test is only necessary when kRemoveDetectPortalFromChrome is disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kRemoveDetectPortalFromChrome);
+
   RemoveEthernet();
 
   base::HistogramTester histogram_tester;
@@ -2845,12 +2851,17 @@ TEST_F(NetworkStateHandlerTest, RequestPortalDetection) {
   RemoveEthernet();
   NetworkState* wifi1 =
       GetModifiableNetworkState(kShillManagerClientStubDefaultWifi);
-  EXPECT_EQ(wifi1->connection_state(), shill::kStateOnline);
+  service_test_->SetServiceProperty(kShillManagerClientStubDefaultWifi,
+                                    shill::kStateProperty,
+                                    base::Value(shill::kStatePortalSuspected));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(wifi1->connection_state(), shill::kStatePortalSuspected);
 
   test_observer_->reset_change_counts();
   service_test_->SetRequestPortalState(shill::kStateRedirectFound);
   network_state_handler_->RequestPortalDetection();
   base::RunLoop().RunUntilIdle();
+
   wifi1 = GetModifiableNetworkState(kShillManagerClientStubDefaultWifi);
   EXPECT_EQ(wifi1->connection_state(), shill::kStateRedirectFound);
   EXPECT_EQ(test_observer_->default_network_portal_state(),

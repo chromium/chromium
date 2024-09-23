@@ -58,7 +58,54 @@ void MenuPreTargetHandlerAura::OnCancelMode(ui::CancelModeEvent* event) {
 }
 
 void MenuPreTargetHandlerAura::OnKeyEvent(ui::KeyEvent* event) {
+  // Fully exit the menu, if the key event is supposed to perform some task.
+  if (ShouldCancelMenuForEvent(*event)) {
+    controller_->Cancel(MenuController::ExitType::kAll);
+    return;
+  }
   controller_->OnWillDispatchKeyEvent(event);
+}
+
+bool MenuPreTargetHandlerAura::ShouldCancelMenuForEvent(
+    const ui::KeyEvent& event) {
+  const ui::KeyboardCode key_code = event.key_code();
+  switch (key_code) {
+    case ui::VKEY_ESCAPE:
+      // Fully exit the menu when Shift-Esc is pressed because it is
+      // supposed to open the Task Manager on Windows and Linux
+      if (event.IsShiftDown()) {
+        return true;
+      }
+      break;
+    case ui::VKEY_J:
+      // Fully exit the menu when Ctrl+J is pressed because it is supposed
+      // to open the downloads page on Windows and Linux.
+      if (event.IsControlDown()) {
+        return true;
+      }
+      break;
+    case ui::VKEY_H:
+    case ui::VKEY_R:
+    case ui::VKEY_N:
+    case ui::VKEY_T:
+    case ui::VKEY_P:
+    case ui::VKEY_S:
+      // Fully exit the menu when:
+      // Ctrl+H is pressed because it is supposed to open the history page.
+      // Ctrl+R is pressed because it is supposed to reload the current page.
+      // Ctrl+N/Ctrl+Shift+N is pressed because it is supposed to open the
+      // new window/new incognito window.
+      // Ctrl+T is pressed because it is supposed to open the new tab.
+      // Ctrl+P is pressed because it is supposed to print the current page.
+      // Ctrl+S is pressed because it is supposed to save the current web page.
+      if (event.IsControlDown()) {
+        return true;
+      }
+      break;
+    default:
+      break;
+  }
+  return false;
 }
 
 void MenuPreTargetHandlerAura::Cleanup() {

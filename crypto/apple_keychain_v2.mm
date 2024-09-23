@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Foundation/Foundation.h>
 
 #include "crypto/apple_keychain_v2.h"
@@ -37,6 +38,10 @@ void AppleKeychainV2::ClearInstanceOverride() {
 AppleKeychainV2::AppleKeychainV2() = default;
 AppleKeychainV2::~AppleKeychainV2() = default;
 
+NSArray* AppleKeychainV2::GetTokenIDs() {
+  return [[TKTokenWatcher alloc] init].tokenIDs;
+}
+
 base::apple::ScopedCFTypeRef<SecKeyRef> AppleKeychainV2::KeyCreateRandomKey(
     CFDictionaryRef params,
     CFErrorRef* error) {
@@ -58,6 +63,24 @@ base::apple::ScopedCFTypeRef<SecKeyRef> AppleKeychainV2::KeyCopyPublicKey(
   return base::apple::ScopedCFTypeRef<SecKeyRef>(SecKeyCopyPublicKey(key));
 }
 
+base::apple::ScopedCFTypeRef<CFDataRef>
+AppleKeychainV2::KeyCopyExternalRepresentation(SecKeyRef key,
+                                               CFErrorRef* error) {
+  return base::apple::ScopedCFTypeRef<CFDataRef>(
+      SecKeyCopyExternalRepresentation(key, error));
+}
+
+base::apple::ScopedCFTypeRef<CFDictionaryRef>
+AppleKeychainV2::KeyCopyAttributes(SecKeyRef key) {
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
+      SecKeyCopyAttributes(key));
+}
+
+OSStatus AppleKeychainV2::ItemAdd(CFDictionaryRef attributes,
+                                  CFTypeRef* result) {
+  return SecItemAdd(attributes, result);
+}
+
 OSStatus AppleKeychainV2::ItemCopyMatching(
     CFDictionaryRef query, CFTypeRef* result) {
   return SecItemCopyMatching(query, result);
@@ -67,10 +90,25 @@ OSStatus AppleKeychainV2::ItemDelete(CFDictionaryRef query) {
   return SecItemDelete(query);
 }
 
-OSStatus AppleKeychainV2::ItemUpdate(
-    CFDictionaryRef query,
-    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> keychain_data) {
-  return SecItemUpdate(query, keychain_data.get());
+OSStatus AppleKeychainV2::ItemUpdate(CFDictionaryRef query,
+                                     CFDictionaryRef keychain_data) {
+  return SecItemUpdate(query, keychain_data);
+}
+
+#if !BUILDFLAG(IS_IOS)
+base::apple::ScopedCFTypeRef<CFTypeRef>
+AppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
+                                             CFStringRef entitlement,
+                                             CFErrorRef* error) {
+  return base::apple::ScopedCFTypeRef<CFTypeRef>(
+      SecTaskCopyValueForEntitlement(task, entitlement, error));
+}
+#endif  // !BUILDFLAG(IS_IOS)
+
+BOOL AppleKeychainV2::LAContextCanEvaluatePolicy(LAPolicy policy,
+                                                 NSError** error) {
+  LAContext* context = [[LAContext alloc] init];
+  return [context canEvaluatePolicy:policy error:error];
 }
 
 }  // namespace crypto

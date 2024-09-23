@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<policyDefinitionResources revision="1.0" schemaVersion="1.0">
+  <displayName/>
+  <description/>
+  <resources>
+    <stringTable>
+      <string id="google">Google</string>
+    </stringTable>
+  </resources>
+</policyDefinitionResources>

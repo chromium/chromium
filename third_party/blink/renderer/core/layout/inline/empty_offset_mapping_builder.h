@@ -30,6 +30,7 @@ class EmptyOffsetMappingBuilder {
   EmptyOffsetMappingBuilder& operator=(const EmptyOffsetMappingBuilder&) =
       delete;
   void AppendIdentityMapping(unsigned) {}
+  void RevertIdentityMapping1() {}
   void AppendCollapsedMapping(unsigned) {}
   void AppendVariableMapping(unsigned, unsigned) {}
   void CollapseTrailingSpace(unsigned) {}

@@ -48,6 +48,10 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ClientControlledShellSurface*,
 // Returns true if the component for a located event should be taken care of
 // by the window system.
 bool ShouldHTComponentBlocked(int component) {
+  if (ui::IsResizingComponent(component)) {
+    return true;
+  }
+
   switch (component) {
     case HTCAPTION:
     case HTCLOSE:

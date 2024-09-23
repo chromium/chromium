@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "display_configurator.h"
 #include "ui/display/manager/configure_displays_task.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/util/display_manager_util.h"
@@ -19,29 +20,6 @@
 namespace display {
 
 namespace {
-
-bool InternalDisplayThrottled(
-    const std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>&
-        cached_displays) {
-  for (const DisplaySnapshot* display : cached_displays) {
-    if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
-      if (!display->current_mode())
-        return false;
-
-      std::vector<const DisplayMode*> modes =
-          GetSeamlessRefreshRateModes(*display, *display->current_mode());
-
-      // Can't be throttled if there are not multiple candidate modes.
-      if (modes.size() < 2)
-        return false;
-
-      return display->current_mode() == *modes.begin();
-    }
-  }
-  // No internal displays
-  return false;
-}
-
 // Move all internal panel displays to the front of the display list. Otherwise,
 // the list remains in order.
 void MoveInternalDisplaysToTheFront(
@@ -65,6 +43,27 @@ void MoveInternalDisplaysToTheFront(
   displays.swap(sorted_displays);
 }
 
+bool ResolveOverrides(
+    const DisplayConfigurator::RefreshRateOverrideMap& refresh_rate_overrides,
+    std::vector<DisplayConfigureRequest>& requests) {
+  for (auto& request : requests) {
+    if (!request.mode) {
+      continue;
+    }
+
+    auto override_it =
+        refresh_rate_overrides.find(request.display->display_id());
+    if (override_it == refresh_rate_overrides.end()) {
+      continue;
+    }
+
+    request.mode = std::make_unique<const DisplayMode>(
+        request.mode->size(), request.mode->is_interlaced(),
+        override_it->second, /*vsync_rate_min=*/std::nullopt);
+  }
+  return true;
+}
+
 }  // namespace
 
 UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
@@ -73,8 +72,8 @@ UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     int power_flags,
-    RefreshRateThrottleState refresh_rate_throttle_state,
-    bool new_vrr_state_,
+    const base::flat_set<int64_t>& new_vrr_state,
+    const DisplayConfigurator::RefreshRateOverrideMap& refresh_rate_overrides,
     bool force_configure,
     ConfigurationType configuration_type,
     ResponseCallback callback)
@@ -83,8 +82,8 @@ UpdateDisplayConfigurationTask::UpdateDisplayConfigurationTask(
       new_display_state_(new_display_state),
       new_power_state_(new_power_state),
       power_flags_(power_flags),
-      refresh_rate_throttle_state_(refresh_rate_throttle_state),
-      new_vrr_state_(new_vrr_state_),
+      new_vrr_state_(new_vrr_state),
+      refresh_rate_overrides_(refresh_rate_overrides),
       force_configure_(force_configure),
       configuration_type_(configuration_type),
       callback_(std::move(callback)),
@@ -129,9 +128,10 @@ void UpdateDisplayConfigurationTask::OnDisplaysUpdated(
   VLOG(1) << "OnDisplaysUpdated: new_display_state="
           << MultipleDisplayStateToString(new_display_state_)
           << " new_power_state=" << DisplayPowerStateToString(new_power_state_)
-          << " flags=" << power_flags_ << " refresh_rate_throttle_state_="
-          << RefreshRateThrottleStateToString(refresh_rate_throttle_state_)
-          << " new_vrr_state=" << new_vrr_state_
+          << " flags=" << power_flags_
+          << " new_vrr_state=" << VrrStateToString(new_vrr_state_)
+          << " refresh_rate_overrides="
+          << RefreshRateOverrideToString(refresh_rate_overrides_)
           << " force_configure=" << force_configure_
           << " display_count=" << cached_displays_.size();
   if (ShouldConfigure()) {
@@ -149,12 +149,17 @@ void UpdateDisplayConfigurationTask::EnterState(
     ConfigureDisplaysTask::ResponseCallback callback) {
   VLOG(2) << "EnterState";
   std::vector<DisplayConfigureRequest> requests;
-  if (!layout_manager_->GetDisplayLayout(
-          cached_displays_, new_display_state_, new_power_state_,
-          refresh_rate_throttle_state_, new_vrr_state_, &requests)) {
+  if (!layout_manager_->GetDisplayLayout(cached_displays_, new_display_state_,
+                                         new_power_state_, new_vrr_state_,
+                                         &requests)) {
     std::move(callback).Run(ConfigureDisplaysTask::ERROR);
     return;
   }
+  if (!ResolveOverrides(refresh_rate_overrides_, requests)) {
+    std::move(callback).Run(ConfigureDisplaysTask::ERROR);
+    return;
+  }
+
   if (!requests.empty()) {
     configure_task_ = std::make_unique<ConfigureDisplaysTask>(
         delegate_, requests, std::move(callback), configuration_type_);
@@ -214,7 +219,7 @@ void UpdateDisplayConfigurationTask::FinishConfiguration(bool success) {
 
   std::move(callback_).Run(success, cached_displays_,
                            cached_unassociated_displays_, new_display_state_,
-                           new_power_state_, new_vrr_state_);
+                           new_power_state_);
 }
 
 bool UpdateDisplayConfigurationTask::ShouldForceDpms() const {
@@ -238,9 +243,10 @@ bool UpdateDisplayConfigurationTask::ShouldConfigure() const {
   if (new_display_state_ != layout_manager_->GetDisplayState())
     return true;
 
-  if ((refresh_rate_throttle_state_ == kRefreshRateThrottleEnabled) !=
-      InternalDisplayThrottled(cached_displays_))
+  // Compare refresh rate overrides with current states.
+  if (ShouldConfigureRefreshRate()) {
     return true;
+  }
 
   if (ShouldConfigureVrr()) {
     return true;
@@ -279,11 +285,45 @@ bool UpdateDisplayConfigurationTask::ShouldConfigureVrr() const {
       continue;
     }
 
-    if (display->IsVrrEnabled() != new_vrr_state_) {
+    if (new_vrr_state_.contains(display->display_id()) !=
+        display->IsVrrEnabled()) {
       return true;
     }
   }
 
+  return false;
+}
+
+bool UpdateDisplayConfigurationTask::ShouldConfigureRefreshRate() const {
+  for (const DisplaySnapshot* display : cached_displays_) {
+    // TODO b/334104991: Refresh rate override is only enabled for internal
+    // displays.
+    if (display->type() != DISPLAY_CONNECTION_TYPE_INTERNAL) {
+      continue;
+    }
+
+    // No mode means display isn't turned on. Refresh rate override should
+    // not affect whether a display is enabled.
+    if (!display->current_mode() || !display->native_mode()) {
+      continue;
+    }
+
+    // Target refresh rate is the native mode's refresh rate, unless an override
+    // is specified.
+    float target_refresh_rate = display->native_mode()->refresh_rate();
+    auto it = refresh_rate_overrides_.find(display->display_id());
+    if (it != refresh_rate_overrides_.end()) {
+      target_refresh_rate = it->second;
+    }
+
+    // If the target refresh rate doesn't match the current refresh rate, then
+    // a configuration is needed.
+    if (display->current_mode()->refresh_rate() != target_refresh_rate) {
+      return true;
+    }
+  }
+
+  // Checked all displays, and none of them require a refresh rate override.
   return false;
 }
 

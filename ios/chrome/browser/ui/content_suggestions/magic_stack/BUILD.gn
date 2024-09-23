@@ -4,10 +4,16 @@
 
 source_set("public") {
   sources = [
+    "magic_stack_collection_view_audience.h",
+    "magic_stack_consumer.h",
     "magic_stack_module.h",
     "magic_stack_module.mm",
+    "magic_stack_module_container_delegate.h",
   ]
-  deps = []
+  deps = [
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -15,15 +21,25 @@ source_set("ranking_model") {
   sources = [
     "magic_stack_ranking_model.h",
     "magic_stack_ranking_model.mm",
+    "magic_stack_ranking_model_delegate.h",
   ]
   deps = [
+    ":cells",
+    ":constants",
+    ":magic_stack",
     ":public",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/home_modules",
     "//components/segmentation_platform/public",
+    "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/parcel_tracking:prefs",
-    "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
@@ -31,6 +47,7 @@ source_set("ranking_model") {
     "//ios/chrome/browser/ui/content_suggestions/cells:most_visited_tiles",
     "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
@@ -40,25 +57,39 @@ source_set("ranking_model") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("magic_stack") {
+source_set("constants") {
   sources = [
-    "magic_stack_module_container.h",
-    "magic_stack_module_container.mm",
-    "magic_stack_module_container_delegate.h",
-    "magic_stack_module_contents_factory.h",
-    "magic_stack_module_contents_factory.mm",
-    "most_visited_tiles_config.h",
-    "most_visited_tiles_config.mm",
-    "placeholder_config.h",
-    "placeholder_config.mm",
-    "shortcuts_config.h",
-    "shortcuts_config.mm",
+    "magic_stack_constants.h",
+    "magic_stack_constants.mm",
   ]
   deps = [
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/segmentation_platform/public",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("cells") {
+  sources = [
+    "magic_stack_edit_button_cell.h",
+    "magic_stack_edit_button_cell.mm",
+    "magic_stack_module_collection_view_cell.h",
+    "magic_stack_module_collection_view_cell.mm",
+    "magic_stack_module_container.h",
+    "magic_stack_module_container.mm",
+    "magic_stack_module_contents_factory.h",
+    "magic_stack_module_contents_factory.mm",
+  ]
+  deps = [
+    ":constants",
+    ":magic_stack_module_content_view_delegate",
     ":public",
-    "resources:magic_stack_placeholder_module",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -67,6 +98,53 @@ source_set("magic_stack") {
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/cells:most_visited_tiles",
+    "//ios/chrome/browser/ui/content_suggestions/cells:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
+    "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
+    "//ios/chrome/browser/ui/content_suggestions/resources",
+    "//ios/chrome/browser/ui/content_suggestions/safety_check",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
+    "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("magic_stack") {
+  sources = [
+    "edit_button_config.h",
+    "edit_button_config.mm",
+    "magic_stack_collection_view.h",
+    "magic_stack_collection_view.mm",
+    "magic_stack_layout_configurator.h",
+    "magic_stack_layout_configurator.mm",
+    "placeholder_config.h",
+    "placeholder_config.mm",
+  ]
+  deps = [
+    ":cells",
+    ":constants",
+    ":public",
+    "//base",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack/resources",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
@@ -83,42 +161,68 @@ source_set("magic_stack") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "magic_stack_ranking_model_unittest.mm" ]
+  sources = [
+    "magic_stack_collection_view_unittest.mm",
+    "magic_stack_ranking_model_unittest.mm",
+  ]
   deps = [
+    ":magic_stack",
+    ":public",
     ":ranking_model",
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",
+    "//components/feature_engagement/test:test_support",
+    "//components/ntp_tiles",
+    "//components/segmentation_platform/embedder/home_modules",
     "//components/segmentation_platform/public",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/first_run/ui_bundled:utils",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
-    "//ios/chrome/browser/parcel_tracking:features",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/reading_list/model:test_support",
+    "//ios/chrome/browser/safety_check/model:factory",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/start_surface/ui_bundled",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/cells:most_visited_tiles",
+    "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
     "//ios/chrome/browser/ui/content_suggestions/parcel_tracking",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo",
+    "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
-    "//ios/chrome/browser/ui/first_run:utils",
-    "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base:test_support",
   ]
+}
+
+source_set("magic_stack_module_content_view_delegate") {
+  sources = [ "magic_stack_module_content_view_delegate.h" ]
 }

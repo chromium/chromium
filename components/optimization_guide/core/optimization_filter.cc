@@ -5,11 +5,13 @@
 #include "components/optimization_guide/core/optimization_filter.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
+#include "url/gurl.h"
 
 namespace optimization_guide {
 
@@ -25,7 +27,12 @@ bool MatchesRegexp(const GURL& url, const RegexpList& regexps) {
   if (!url.is_valid())
     return false;
 
-  std::string clean_url = base::ToLowerASCII(url.GetAsReferrer().spec());
+  GURL::Replacements replace_url_auth;
+  replace_url_auth.ClearUsername();
+  replace_url_auth.ClearPassword();
+  std::string clean_url =
+      base::ToLowerASCII(url.ReplaceComponents(replace_url_auth).spec());
+
   for (auto& regexp : regexps) {
     if (!regexp->ok()) {
       continue;
@@ -40,7 +47,7 @@ bool MatchesRegexp(const GURL& url, const RegexpList& regexps) {
 }
 
 // Returns a SHA256 hex string for the given input.
-std::string SHA256(base::StringPiece input) {
+std::string SHA256(std::string_view input) {
   uint8_t result[crypto::kSHA256Length];
   crypto::SHA256HashString(input, result, std::size(result));
   return base::HexEncode(result);

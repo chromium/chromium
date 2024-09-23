@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_IMPL_H_
 
-#include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
-
 #include <stdint.h>
 
 #include <memory>
@@ -19,12 +17,13 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,6 +31,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -269,11 +269,12 @@ class PersonalizationAppWallpaperProviderImpl
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
 
-  void FindSeaPenWallpaperAttribution(const base::FilePath& user_file_path);
+  void FindSeaPenWallpaperAttribution(uint32_t id);
 
   void SendSeaPenWallpaperAttribution(
-      const base::FilePath& user_file_path,
-      std::optional<base::Value::Dict> sea_pen_metadata);
+      uint32_t id,
+      const gfx::ImageSkia& image,
+      mojom::RecentSeaPenImageInfoPtr sea_pen_metadata);
 
   void SendGooglePhotosAttribution(
       const ash::WallpaperInfo& info,

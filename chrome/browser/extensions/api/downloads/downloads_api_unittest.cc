@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_history.h"
@@ -117,9 +116,7 @@ class DownloadsApiUnitTest : public ExtensionApiUnittest {
       content::BrowserContext* browser_context);
 
   std::unique_ptr<MockDownloadManager> manager_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION content::DownloadManager::Observer*
+  raw_ptr<content::DownloadManager::Observer>
       download_history_manager_observer_;
 };
 

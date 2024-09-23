@@ -4,15 +4,27 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_dlc_installer.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
-constexpr char kPumpkinInstallationMetricName[] =
+constexpr char kFaceGazeAssetsInstallDurationMetric[] =
+    "Accessibility.DlcInstallerFaceGazeAssetsInstallationDuration";
+
+constexpr char kFaceGazeAssetsInstallationMetric[] =
+    "Accessibility.DlcInstallerFaceGazeAssetsSuccess";
+
+constexpr char kPumpkinInstallationMetric[] =
     "PumpkinInstaller.InstallationSuccess";
+
+constexpr char kPumpkinInstallDurationMetric[] =
+    "Accessibility.DlcInstallerPumpkinInstallationDuration";
 }  // namespace
 
 namespace ash {
@@ -39,8 +51,7 @@ void AccessibilityDlcInstaller::Callbacks::RunOnProgress(double progress) {
   on_progress_.Run(progress);
 }
 
-void AccessibilityDlcInstaller::Callbacks::RunOnError(
-    const std::string& error) {
+void AccessibilityDlcInstaller::Callbacks::RunOnError(std::string_view error) {
   DCHECK(!on_error_.is_null());
   std::move(on_error_).Run(error);
 }
@@ -70,7 +81,7 @@ void AccessibilityDlcInstaller::MaybeInstall(DlcType type,
 
 void AccessibilityDlcInstaller::MaybeInstallHelper(
     DlcType type,
-    const std::string& error,
+    std::string_view error,
     const dlcservice::DlcState& dlc_state) {
   pending_requests_.insert_or_assign(type, false);
   if (error != dlcservice::kErrorNone) {
@@ -103,18 +114,27 @@ void AccessibilityDlcInstaller::MaybeInstallHelper(
   DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&AccessibilityDlcInstaller::OnInstalled, GetWeakPtr(),
-                     type),
+                     type, base::Time::Now()),
       base::BindRepeating(&AccessibilityDlcInstaller::OnProgress, GetWeakPtr(),
                           type));
 }
 
 void AccessibilityDlcInstaller::OnInstalled(
     DlcType type,
+    const base::Time start_time,
     const DlcserviceClient::InstallResult& install_result) {
   pending_requests_.insert_or_assign(type, false);
-  if (type == DlcType::kPumpkin) {
-    base::UmaHistogramBoolean(kPumpkinInstallationMetricName,
-                              install_result.error == dlcservice::kErrorNone);
+
+  // Record success metric.
+  switch (type) {
+    case DlcType::kFaceGazeAssets:
+      base::UmaHistogramBoolean(kFaceGazeAssetsInstallationMetric,
+                                install_result.error == dlcservice::kErrorNone);
+      break;
+    case DlcType::kPumpkin:
+      base::UmaHistogramBoolean(kPumpkinInstallationMetric,
+                                install_result.error == dlcservice::kErrorNone);
+      break;
   }
 
   if (install_result.error != dlcservice::kErrorNone) {
@@ -122,6 +142,18 @@ void AccessibilityDlcInstaller::OnInstalled(
       GetCallbacks(type)->RunOnError(install_result.error);
     }
     return;
+  }
+
+  // Record install duration metric.
+  const base::TimeDelta install_duration = base::Time::Now() - start_time;
+  switch (type) {
+    case DlcType::kFaceGazeAssets:
+      base::UmaHistogramTimes(kFaceGazeAssetsInstallDurationMetric,
+                              install_duration);
+      break;
+    case DlcType::kPumpkin:
+      base::UmaHistogramTimes(kPumpkinInstallDurationMetric, install_duration);
+      break;
   }
 
   installed_dlcs_.insert(type);

@@ -92,12 +92,32 @@ Repeating the updater installation and app registration is not harmful. To
 make the system more resilient, apps may periodically repeat the installation
 and registration process.
 
+#### CRURegistration library
+
+An Objective-C library to perform these operations is in development. When
+available, applications will be able to initialize
+[`CRURegistration`](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/mac/client_lib)
+with their product IDs, then use `installUpdaterWithReply:` and
+`registerVersion:existenceCheckerPath:serverURLString:reply:` to install the
+updater (if needed) and register. These methods operate asynchronously using
+[`dispatch/dispatch.h`](https://developer.apple.com/documentation/dispatch/dispatch_queue)
+mechanisms. `CRURegistration` maintains an internal task queue, so clients can
+call `register...` immediately after `install...` without waiting for a result.
+
+`CRURegistration` uses the helpers and command line binaries documented above.
+To install the updater using `CRURegistration`, the updater must be embedded
+as a Helper as documented above.
+
+`CRURegistration` is designed to depend only on APIs published in macOS SDKs
+and compile as pure Objective-C (without requiring C++ support) so it can be
+dropped into projects without incurring Chromium dependencies.
+
 ## Uninstalling Applications and the Updater
 
 The updater will uninstall itself automatically when it has no applications to
 manage, but it may need some help to do so in a timely manner.
 
-On Windows, when an application is uninstalled, it should delete the 
+On Windows, when an application is uninstalled, it should delete the
 `(HKCU or HKLM)\SOFTWARE\{Company}\Update\Clients\{AppID}` key and then run
 the command line in
 `(HKCU or HKLM)\SOFTWARE\{Company}\Updater` → `UninstallCmdLine`. This will
@@ -106,7 +126,7 @@ notify the updater of the uninstallation.
 On macOS, it is assumed that users uninstall software by deleting the app
 bundle. The updater will notice this on its own in a few hours. However, it
 can be notified earlier by running any
-`{Company}Updater.app/Contents/MacOS/{Company}Updater --wake-all` (with 
+`{Company}Updater.app/Contents/MacOS/{Company}Updater --wake-all` (with
 `--system` for system-scope installs).
 
 ## Additional Updater Command Lines
@@ -115,9 +135,18 @@ Command line arguments for the updater client are documented in the [functional 
 
 ## Error codes
 
-The updater setup process can exit with the following error codes:
-* UNABLE_TO_ELEVATE_METAINSTALLER = 113: This error code indicates that the
-updater setup failed to elevate itself when trying to install a system app.
+To allow for the updater metainstaller process exit codes to be meaningful, all
+metainstaller and updater error codes are in a range above 0xFFFF (65535) for
+Windows only, which is the range of Windows error codes.
+
+Specifically:
+* [Metainstaller error codes](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/win/installer/exit_code.h)
+are in the 73000 range.
+* Error codes
+[funnelled through `update_client`](https://source.chromium.org/search?q=kCustomInstallErrorBase&sq=&ss=chromium%2Fchromium%2Fsrc:chrome%2Fupdater%2F)
+are in the 74000 range.
+* [updater error codes](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/constants.h?q=%22%2F%2F%20Error%20codes.%22&ss=chromium%2Fchromium%2Fsrc:chrome%2Fupdater%2F)
+are in the 75000 range.
 
 ## Dynamic Install Parameters
 
@@ -133,7 +162,7 @@ install.
 
 For example, here is a command line for the Updater on Windows that includes:
 ```
-UpdaterSetup.exe --install --tag="appguid=YourAppID&needsadmin=False"
+UpdaterSetup.exe --install="appguid=YourAppID&needsadmin=False"
 ```
 
 In this case, the updater client understands that the application installer

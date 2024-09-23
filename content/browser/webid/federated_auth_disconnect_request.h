@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_WEBID_FEDERATED_AUTH_DISCONNECT_REQUEST_H_
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"

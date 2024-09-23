@@ -10,10 +10,12 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -74,10 +76,10 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 #include "components/language/core/common/locale_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -145,7 +147,7 @@ class ChromeOSTermsHandler
     } else if (path_ == chrome::kArcPrivacyPolicyURLPath) {
       LOG(WARNING) << "Could not load offline Play Store privacy policy.";
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       ResponseOnUIThread();
     }
   }
@@ -489,11 +491,9 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   AppendBody(&html);
 
   html += "<h2>List of Chrome URLs</h2>\n<ul>\n";
-  std::vector<std::string> hosts(
-      chrome::kChromeHostURLs,
-      chrome::kChromeHostURLs + chrome::kNumberOfChromeHostURLs);
+  const base::span<const base::cstring_view> hosts = chrome::ChromeURLHosts();
   std::vector<content::WebUIConfigInfo> infos;
-  for (const std::string& host : hosts) {
+  for (base::cstring_view host : hosts) {
     GURL url(base::StrCat(
         {content::kChromeUIScheme, url::kStandardSchemeSeparator, host}));
     infos.push_back({.origin = url::Origin::Create(url), .enabled = true});
@@ -521,13 +521,15 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   // make sure that only allowed URLs are being presented.
   if (is_lacros_primary) {
     auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
-    for (const std::string& host : hosts) {
-      // TODO(crbug/1271718): The refactor should make sure that the provided
-      // list can be shown as is without filtering.
-      if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
-          WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
-        html +=
-            "<li><a href='chrome://" + host + "/'>os://" + host + "</a></li>\n";
+    for (base::cstring_view host : hosts) {
+      // TODO(crbug.com/40805730): The refactor should make sure that the
+      // provided list can be shown as is without filtering.
+      std::string chrome_url = base::StrCat({"chrome://", host});
+      std::string os_url = base::StrCat({"os://", host});
+      if (WebUiControllerFactory->CanHandleUrl(GURL(os_url)) ||
+          WebUiControllerFactory->CanHandleUrl(GURL(chrome_url))) {
+        html += base::StrCat(
+            {"<li><a href='", chrome_url, "/'>", os_url, "</a></li>\n"});
       }
     }
   } else {
@@ -548,14 +550,15 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
     html +=
         "</ul><a id=\"internals\"><h2>List of chrome://internals "
         "pages</h2></a>\n<ul>\n";
-    std::vector<std::string> internals_paths(
-        chrome::kChromeInternalsPathURLs,
-        chrome::kChromeInternalsPathURLs +
-            chrome::kNumberOfChromeInternalsPathURLs);
-    std::sort(internals_paths.begin(), internals_paths.end());
-    for (const std::string& path : internals_paths) {
-      html += "<li><a href='chrome://internals/" + path +
-              "'>chrome://internals/" + path + "</a></li>\n";
+    const base::span<const base::cstring_view> internals_paths =
+        chrome::ChromeInternalsURLPaths();
+    std::vector<std::string_view> sorted_internals_paths = base::ToVector(
+        internals_paths,
+        [](base::cstring_view v) -> std::string_view { return v; });
+    std::ranges::sort(sorted_internals_paths);
+    for (const std::string_view path : sorted_internals_paths) {
+      html += base::StrCat({"<li><a href='chrome://internals/", path,
+                            "'>chrome://internals/", path, "</a></li>\n"});
     }
   }
 
@@ -570,21 +573,22 @@ std::string ChromeURLs(content::BrowserContext* browser_context) {
   // make sure that only allowed URLs are being presented.
   if (is_lacros_primary) {
     auto* WebUiControllerFactory = ChromeWebUIControllerFactory::GetInstance();
-    for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++) {
-      // TODO(crbug/1271718): The refactor should make sure that the provided
-      // list can be shown as is without filtering.
-      const std::string host = GURL(chrome::kChromeDebugURLs[i]).host();
+    for (base::cstring_view url : chrome::ChromeDebugURLs()) {
+      // TODO(crbug.com/40805730): The refactor should make sure that the
+      // provided list can be shown as is without filtering.
+      const std::string host = GURL(url).host();
       if (WebUiControllerFactory->CanHandleUrl(GURL("os://" + host)) ||
           WebUiControllerFactory->CanHandleUrl(GURL("chrome://" + host))) {
-        html += "<li>os://" + host + "</li>\n";
+        html += base::StrCat({"<li>os://", host, "</li>\n"});
       }
     }
   } else {
 #else
   {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++)
-      html += "<li>" + std::string(chrome::kChromeDebugURLs[i]) + "</li>\n";
+    for (base::cstring_view url : chrome::ChromeDebugURLs()) {
+      html += base::StrCat({"<li>", url, "</li>\n"});
+    }
   }
   html += "</ul>\n";
 
@@ -611,6 +615,36 @@ std::string AboutLinuxProxyConfig() {
 
 }  // namespace
 
+AboutUIConfigBase::AboutUIConfigBase(std::string_view host)
+    : DefaultWebUIConfig(content::kChromeUIScheme, host) {}
+
+ChromeURLsUIConfig::ChromeURLsUIConfig()
+    : AboutUIConfigBase(chrome::kChromeUIChromeURLsHost) {}
+
+CreditsUIConfig::CreditsUIConfig()
+    : AboutUIConfigBase(chrome::kChromeUICreditsHost) {}
+
+#if !BUILDFLAG(IS_ANDROID)
+TermsUIConfig::TermsUIConfig()
+    : AboutUIConfigBase(chrome::kChromeUITermsHost) {}
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
+LinuxProxyConfigUI::LinuxProxyConfigUI()
+    : AboutUIConfigBase(chrome::kChromeUILinuxProxyConfigHost) {}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+OSCreditsUI::OSCreditsUI()
+    : AboutUIConfigBase(chrome::kChromeUIOSCreditsHost) {}
+
+BorealisCreditsUI::BorealisCreditsUI()
+    : AboutUIConfigBase(chrome::kChromeUIBorealisCreditsHost) {}
+
+CrostiniCreditsUI::CrostiniCreditsUI()
+    : AboutUIConfigBase(chrome::kChromeUICrostiniCreditsHost) {}
+#endif
+
 // AboutUIHTMLSource ----------------------------------------------------------
 
 AboutUIHTMLSource::AboutUIHTMLSource(const std::string& source_name,
@@ -628,7 +662,8 @@ void AboutUIHTMLSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  // TODO(crbug/1009127): Simplify usages of |path| since |url| is available.
+  // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
+  // available.
   const std::string path = content::URLDataSource::URLToRequestPath(url);
   std::string response;
   // Add your data source here, in alphabetical order.
@@ -669,7 +704,7 @@ void AboutUIHTMLSource::StartDataRequest(
       } else if (source_name_ == chrome::kChromeUIBorealisCreditsHost) {
         HandleBorealisCredits(profile(), std::move(callback));
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
       return;
     }
@@ -701,7 +736,7 @@ void AboutUIHTMLSource::FinishDataRequest(
 }
 
 std::string AboutUIHTMLSource::GetMimeType(const GURL& url) {
-  const base::StringPiece path = url.path_piece().substr(1);
+  const std::string_view path = url.path_piece().substr(1);
   if (path == kCreditsJsPath || path == kStatsJsPath ||
       path == kStringsJsPath) {
     return "application/javascript";
@@ -727,7 +762,7 @@ std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
 
-AboutUI::AboutUI(content::WebUI* web_ui, const std::string& host)
+AboutUI::AboutUI(content::WebUI* web_ui, const GURL& url)
     : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
@@ -737,7 +772,7 @@ AboutUI::AboutUI(content::WebUI* web_ui, const std::string& host)
 #endif
 
   content::URLDataSource::Add(
-      profile, std::make_unique<AboutUIHTMLSource>(host, profile));
+      profile, std::make_unique<AboutUIHTMLSource>(url.host(), profile));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

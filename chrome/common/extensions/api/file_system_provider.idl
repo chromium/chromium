@@ -61,6 +61,12 @@ namespace fileSystemProvider {
     DOMString id;
   };
 
+  // Information relating to files that are served by a cloud file system.
+  dictionary CloudFileInfo {
+    // A tag that represents the version of the file.
+    DOMString? versionTag;
+  };
+
   // Represents metadata of a file or a directory.
   dictionary EntryMetadata {
     // True if it is a directory. Must be provided if requested in
@@ -93,6 +99,11 @@ namespace fileSystemProvider {
     // local files not backed by cloud storage, it should be undefined when
     // requested.
     CloudIdentifier? cloudIdentifier;
+
+    // Information that identifies a specific file in the underlying cloud file
+    // system. Must be provided if requested in <code>options</code> and the
+    // file is backed by cloud storage.
+    CloudFileInfo? cloudFileInfo;
   };
 
   // Represents a watcher.
@@ -221,6 +232,10 @@ namespace fileSystemProvider {
     // Set to <code>true</code> if <code>cloudIdentifier</code> value is
     // requested.
     boolean cloudIdentifier;
+
+    // Set to <code>true</code> if <code>cloudFileInfo</code> value is
+    // requested.
+    boolean cloudFileInfo;
   };
 
   // Options for the $(ref:onGetActionsRequested) event.
@@ -493,6 +508,9 @@ namespace fileSystemProvider {
 
     // The type of the change which happened to the entry.
     ChangeType changeType;
+
+    // Information relating to the file if backed by a cloud file system.
+    CloudFileInfo? cloudFileInfo;
   };
 
   // Options for the $(ref:notify) method.
@@ -564,6 +582,10 @@ namespace fileSystemProvider {
   [nocompile] callback FileDataCallback = void(
       ArrayBuffer data, boolean hasMore);
 
+  // Success callback for the $(ref:onOpenFileRequested) event.
+  [nocompile] callback OpenFileSuccessCallback = void(
+      optional EntryMetadata metadata);
+
   // A generic result callback to indicate success or failure.
   callback ResultCallback = void();
 
@@ -580,8 +602,9 @@ namespace fileSystemProvider {
     //
     // In case of an error, $(ref:runtime.lastError) will be set with a
     // corresponding error code.
-    [supportsPromises] static void mount(MountOptions options,
-                                         optional ResultCallback callback);
+    static void mount(
+        MountOptions options,
+        optional ResultCallback callback);
 
     // Unmounts a file system with the given <code>fileSystemId</code>. It
     // must be called after $(ref:onUnmountRequested) is invoked. Also,
@@ -590,16 +613,18 @@ namespace fileSystemProvider {
     //
     // In case of an error, $(ref:runtime.lastError) will be set with a
     // corresponding error code.
-    [supportsPromises] static void unmount(UnmountOptions options,
-                                           optional ResultCallback callback);
+    static void unmount(
+        UnmountOptions options,
+        optional ResultCallback callback);
 
     // Returns all file systems mounted by the extension.
-    [supportsPromises] static void getAll(GetAllCallback callback);
+    static void getAll(GetAllCallback callback);
 
     // Returns information about a file system with the passed
     // <code>fileSystemId</code>.
-    [supportsPromises] static void get(DOMString fileSystemId,
-                                       GetCallback callback);
+    static void get(
+        DOMString fileSystemId,
+        GetCallback callback);
 
     // Notifies about changes in the watched directory at
     // <code>observedPath</code> in <code>recursive</code> mode. If the file
@@ -630,8 +655,9 @@ namespace fileSystemProvider {
     //
     // In case of an error, $(ref:runtime.lastError) will be set
     // will a corresponding error code.
-    [supportsPromises] static void notify(NotifyOptions options,
-                                          optional ResultCallback callback);
+    static void notify(
+        NotifyOptions options,
+        optional ResultCallback callback);
   };
 
   interface Events {
@@ -679,7 +705,7 @@ namespace fileSystemProvider {
     // files opened at once can be specified with <code>MountOptions</code>.
     [maxListeners=1] static void onOpenFileRequested(
         OpenFileRequestedOptions options,
-        ProviderSuccessCallback successCallback,
+        OpenFileSuccessCallback successCallback,
         ProviderErrorCallback errorCallback);
 
     // Raised when opening a file previously opened with

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_frame_request_callback_collection.h"
 
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_frame_request_callback.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
@@ -72,7 +73,8 @@ void XRFrameRequestCallbackCollection::ExecuteCallbacks(XRSession* session,
       DCHECK_EQ(current_callback_async_tasks_.end(), it_async_task);
       continue;
     }
-    DCHECK_NE(current_callback_async_tasks_.end(), it_async_task);
+    CHECK_NE(current_callback_async_tasks_.end(), it_async_task,
+             base::NotFatalUntil::M130);
 
     probe::AsyncTask async_task(context_, it_async_task->value.get());
     it_frame_request->value->InvokeAndReportException(session, timestamp,

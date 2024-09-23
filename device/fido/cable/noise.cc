@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/cable/noise.h"
 
 #include <string.h>
 
 #include "base/check_op.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "crypto/aead.h"
 #include "crypto/sha2.h"
 #include "device/fido/fido_constants.h"
@@ -107,9 +112,9 @@ void Noise::MixKeyAndHash(base::span<const uint8_t> ikm) {
 
 std::vector<uint8_t> Noise::EncryptAndHash(
     base::span<const uint8_t> plaintext) {
-  uint8_t nonce[12] = {0};
-  const uint32_t counter = base::ByteSwap(symmetric_nonce_);
-  memcpy(nonce, &counter, sizeof(counter));
+  uint8_t nonce[12] = {};
+  base::span(nonce).first<4u>().copy_from(
+      base::numerics::U32ToBigEndian(symmetric_nonce_));
   symmetric_nonce_++;
 
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
@@ -121,9 +126,9 @@ std::vector<uint8_t> Noise::EncryptAndHash(
 
 std::optional<std::vector<uint8_t>> Noise::DecryptAndHash(
     base::span<const uint8_t> ciphertext) {
-  uint8_t nonce[12] = {0};
-  const uint32_t counter = base::ByteSwap(symmetric_nonce_);
-  memcpy(nonce, &counter, sizeof(counter));
+  uint8_t nonce[12] = {};
+  base::span(nonce).first<4u>().copy_from(
+      base::numerics::U32ToBigEndian(symmetric_nonce_));
   symmetric_nonce_++;
 
   crypto::Aead aead(crypto::Aead::AES_256_GCM);

@@ -86,8 +86,8 @@ IN_PROC_BROWSER_TEST_P(MajorityAgeUserMetricsProviderTest,
   metrics::test::AddUserBirthYearAndGenderToSyncServer(
       GetFakeServer()->AsWeakPtr(), test_birth_year, test_gender);
 
-  // TODO(crbug/1076461): Try to replace the below set-up code with functions
-  // from SyncTest.
+  // TODO(crbug.com/40688248): Try to replace the below set-up code with
+  // functions from SyncTest.
   std::unique_ptr<SyncServiceImplHarness> harness =
       metrics::test::InitializeProfileForSync(browser()->profile(),
                                               GetFakeServer()->AsWeakPtr());

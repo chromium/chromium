@@ -14,7 +14,5 @@ interface FencedFrameConfig {
   // For more information on why this is needed please see:
   // https://github.com/WICG/fenced-frame/issues/48#issuecomment-1245809738
   [RuntimeEnabled=FencedFramesDefaultMode] constructor(USVString url);
-  readonly attribute FencedFrameConfigSize? width;
-  readonly attribute FencedFrameConfigSize? height;
   void setSharedStorageContext(DOMString contextString);
 };

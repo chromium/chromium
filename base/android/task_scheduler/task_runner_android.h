@@ -35,7 +35,7 @@ class BASE_EXPORT TaskRunnerAndroid {
   void PostDelayedTask(JNIEnv* env,
                        const base::android::JavaRef<jobject>& task,
                        jlong delay,
-                       jstring runnable_class_name);
+                       std::string& runnable_class_name);
 
   bool BelongsToCurrentThread(JNIEnv* env);
 

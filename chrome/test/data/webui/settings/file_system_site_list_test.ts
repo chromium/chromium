@@ -24,14 +24,12 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
   const directoryFilePath: string = 'g/h/';
 
   const TEST_FILE_SYSTEM_DIRECTORY_READ_GRANT: FileSystemGrant = {
-    origin: origin1,
     filePath: directoryFilePath,
     displayName: directoryFilePath,
     isDirectory: true,
   };
 
   const TEST_FILE_SYSTEM_FILE_WRITE_GRANT: FileSystemGrant = {
-    origin: origin2,
     filePath: filePath,
     displayName: filePath,
     isDirectory: false,

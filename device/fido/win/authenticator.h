@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_constants.h"
 
 namespace device {
 
@@ -35,7 +36,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
   // This method is safe to call without checking WinWebAuthnApi::IsAvailable().
   // Returns false if |api| is nullptr.
   static void IsUserVerifyingPlatformAuthenticatorAvailable(
-      bool is_off_the_record,
       WinWebAuthnApi* api,
       base::OnceCallback<void(bool is_available)>);
 
@@ -71,10 +71,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
 
   ~WinWebAuthnApiAuthenticator() override;
 
-  // ShowsPrivacyNotice returns true if the Windows native UI will show a
-  // privacy notice dialog before a MakeCredential request that might create
-  // a resident key or that requests attestation.
-  bool ShowsPrivacyNotice() const;
+  // ShowsResidentCredentialNotice returns true if the Windows native UI will
+  // show a privacy notice dialog before a MakeCredential request that might
+  // create a resident key or that requests attestation.
+  bool ShowsResidentCredentialNotice() const;
 
  private:
   // FidoAuthenticator:
@@ -99,11 +99,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApiAuthenticator
 
   void MakeCredentialDone(
       MakeCredentialCallback callback,
-      std::pair<CtapDeviceResponseCode,
+      std::pair<MakeCredentialStatus,
                 std::optional<AuthenticatorMakeCredentialResponse>> result);
   void GetAssertionDone(
       GetAssertionCallback callback,
-      std::pair<CtapDeviceResponseCode,
+      std::pair<GetAssertionStatus,
                 std::optional<AuthenticatorGetAssertionResponse>> result);
 
   // options_ is per-instance because the capabilities of `win_api_` can

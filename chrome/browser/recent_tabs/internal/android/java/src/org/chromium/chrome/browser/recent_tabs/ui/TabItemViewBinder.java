@@ -17,6 +17,8 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.R;
@@ -33,10 +35,10 @@ import org.chromium.url.GURL;
 public class TabItemViewBinder {
     /** A class to hold objects used for tab favicon fetching. */
     static class BindContext {
-        final DefaultFaviconHelper mDefaultFaviconHelper;
-        final RoundedIconGenerator mIconGenerator;
-        final FaviconHelper mFaviconHelper;
-        final Profile mProfile;
+        private final DefaultFaviconHelper mDefaultFaviconHelper;
+        private final RoundedIconGenerator mIconGenerator;
+        private final Profile mProfile;
+        private @Nullable FaviconHelper mFaviconHelper;
 
         BindContext(
                 DefaultFaviconHelper defaultFaviconHelper,
@@ -57,12 +59,19 @@ public class TabItemViewBinder {
             return mIconGenerator;
         }
 
-        public FaviconHelper getFaviconHelper() {
+        public @Nullable FaviconHelper getFaviconHelper() {
             return mFaviconHelper;
         }
 
         public Profile getProfile() {
             return mProfile;
+        }
+
+        public void destroy() {
+            // If the FaviconHelper is still non-null before destroy, remove it.
+            if (mFaviconHelper != null) {
+                mFaviconHelper = null;
+            }
         }
     }
 
@@ -111,10 +120,16 @@ public class TabItemViewBinder {
                             }
                         }
                     };
-            bindContext
-                    .getFaviconHelper()
-                    .getForeignFaviconImageForURL(
-                            bindContext.getProfile(), tab.url, faviconSize, imageCallback);
+
+            FaviconHelper faviconHelper = bindContext.getFaviconHelper();
+            // If the faviconHelper is null, possibly when the feature was exited and invoked
+            // destroy methods before the favicon was attempted to be fetched, do not fetch the
+            // favicon to avoid a native crash.
+            if (faviconHelper != null) {
+                faviconHelper.getForeignFaviconImageForURL(
+                        bindContext.getProfile(), tab.url, faviconSize, imageCallback);
+            }
+
             Drawable image =
                     bindContext
                             .getDefaultFaviconHelper()

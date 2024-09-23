@@ -5,6 +5,8 @@
 # are simply represented as wildcard expressions of regexp, and thus it might be
 # over-ignorelisted.
 
+[vptr]
+
 #############################################################################
 # Identical layouts.
 # If base and derived classes have identifical memory layouts (i.e., the same

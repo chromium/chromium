@@ -6,7 +6,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni/NativeUmaRecorder_jni.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -15,6 +14,14 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/robolectric_buildflags.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/NativeUmaRecorder_jni.h"  // nogncheck
+#else
+#include "base/metrics_jni/NativeUmaRecorder_jni.h"
+#endif
 
 namespace base {
 namespace android {
@@ -208,12 +215,11 @@ jlong JNI_NativeUmaRecorder_RecordSparseHistogram(
   return reinterpret_cast<jlong>(histogram);
 }
 
-void JNI_NativeUmaRecorder_RecordUserAction(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_user_action_name,
-    jlong j_millis_since_event) {
+void JNI_NativeUmaRecorder_RecordUserAction(JNIEnv* env,
+                                            std::string& user_action_name,
+                                            jlong j_millis_since_event) {
   // Time values coming from Java need to be synchronized with TimeTick clock.
-  RecordComputedActionSince(ConvertJavaStringToUTF8(env, j_user_action_name),
+  RecordComputedActionSince(user_action_name,
                             Milliseconds(j_millis_since_event));
 }
 
@@ -223,10 +229,9 @@ void JNI_NativeUmaRecorder_RecordUserAction(
 // targets - see http://crbug.com/415945.
 jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
     JNIEnv* env,
-    const JavaParamRef<jstring>& histogram_name,
+    std::string& name,
     jint sample,
     jlong snapshot_ptr) {
-  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (histogram == nullptr) {
     // No samples have been recorded for this histogram (yet?).
@@ -246,9 +251,8 @@ jint JNI_NativeUmaRecorder_GetHistogramValueCountForTesting(
 
 jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
     JNIEnv* env,
-    const JavaParamRef<jstring>& histogram_name,
+    std::string& name,
     jlong snapshot_ptr) {
-  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (histogram == nullptr) {
     // No samples have been recorded for this histogram.
@@ -268,10 +272,8 @@ jint JNI_NativeUmaRecorder_GetHistogramTotalCountForTesting(
 // Returns an array with 3 entries for each bucket, representing (min, max,
 // count).
 ScopedJavaLocalRef<jlongArray>
-JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& histogram_name) {
-  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
+JNI_NativeUmaRecorder_GetHistogramSamplesForTesting(JNIEnv* env,
+                                                    std::string& name) {
   HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   std::vector<int64_t> buckets;
 

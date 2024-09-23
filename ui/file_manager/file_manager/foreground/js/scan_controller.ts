@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
+import {PropStatus} from '../../state/state.js';
 import {getStore, type Store} from '../../state/store.js';
 
-import {DirectoryModel} from './directory_model.js';
-import {FileSelectionHandler} from './file_selection.js';
-import {SpinnerController} from './spinner_controller.js';
-import {ListContainer} from './ui/list_container.js';
+import type {CurDirScanUpdatedEvent, DirectoryModel} from './directory_model.js';
+import type {FileSelectionHandler} from './file_selection.js';
+import type {SpinnerController} from './spinner_controller.js';
+import type {ListContainer} from './ui/list_container.js';
 
 /**
  * Handler for scan related events of DirectoryModel.
@@ -36,17 +36,17 @@ export class ScanController {
       private readonly selectionHandler_: FileSelectionHandler) {
     this.store_ = getStore();
     this.directoryModel_.addEventListener(
-        'scan-started', this.onScanStarted_.bind(this));
+        'cur-dir-scan-started', this.onScanStarted_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-completed', this.onScanCompleted_.bind(this));
+        'cur-dir-scan-completed', this.onScanCompleted_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-failed', this.onScanCancelled_.bind(this));
+        'cur-dir-scan-failed', this.onScanCancelled_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-cancelled', this.onScanCancelled_.bind(this));
+        'cur-dir-scan-canceled', this.onScanCancelled_.bind(this));
     this.directoryModel_.addEventListener(
-        'scan-updated', this.onScanUpdated_.bind(this));
+        'cur-dir-scan-updated', this.onScanUpdated_.bind(this));
     this.directoryModel_.addEventListener(
-        'rescan-completed', this.onRescanCompleted_.bind(this));
+        'cur-dir-rescan-completed', this.onRescanCompleted_.bind(this));
   }
 
   private onScanStarted_() {
@@ -55,7 +55,7 @@ export class ScanController {
     }
 
     if (window.IN_TEST) {
-      this.listContainer_.element.removeAttribute('scan-completed');
+      this.listContainer_.element.removeAttribute('cur-dir-scan-completed');
       this.listContainer_.element.setAttribute(
           'scan-started', this.directoryModel_.getCurrentDirName());
     }
@@ -124,24 +124,26 @@ export class ScanController {
    * Sends the scanned directory content to the Store.
    */
   private updateStore_() {
-    const entries: Array<Entry|FilesAppEntry> =
-        this.directoryModel_.getFileList().slice();
-    this.store_.dispatch(updateDirectoryContent({entries}));
+    const entries = this.directoryModel_.getFileList().slice();
+    this.store_.dispatch(
+        updateDirectoryContent({entries, status: PropStatus.SUCCESS}));
   }
 
   /**
    */
-  private onScanUpdated_() {
+  private onScanUpdated_(e: CurDirScanUpdatedEvent) {
     if (!this.scanInProgress_) {
       console.warn('Scan-updated event received. But scan is not started.');
       return;
     }
 
-    // Call this immediately (instead of debouncing it with
-    // `scanUpdatedTimer_`) so the current directory entries don't get
-    // accidentally removed from the store by `clearCachedEntries` in
-    // `state/reducers/all_entries.ts`.
-    this.updateStore_();
+    // Call this immediately (instead of debouncing it with `scanUpdatedTimer_`)
+    // so the current directory entries don't get accidentally removed from the
+    // store by `clearCachedEntries()`, when the scan is store-based the entries
+    // are already in the store.
+    if (!e.detail.isStoreBased) {
+      this.updateStore_();
+    }
 
     if (this.scanUpdatedTimer_) {
       return;
@@ -181,7 +183,7 @@ export class ScanController {
   }
 
   /**
-   * Handle the 'rescan-completed' from the DirectoryModel.
+   * Handle the 'cur-dir-rescan-completed' from the DirectoryModel.
    */
   private onRescanCompleted_() {
     this.updateStore_();

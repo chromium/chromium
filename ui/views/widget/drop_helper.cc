@@ -100,7 +100,8 @@ DragOperation DropHelper::OnDrop(const OSExchangeData& data,
   View* root_view = drop_view->GetWidget()->GetRootView();
   View::ConvertPointToTarget(root_view, drop_view, &view_location);
   ui::DropTargetEvent drop_event(data, gfx::PointF(view_location),
-                                 gfx::PointF(view_location), drag_operation);
+                                 gfx::PointF(root_view_location),
+                                 drag_operation);
   auto output_drag_op = ui::mojom::DragOperation::kNone;
   auto drop_cb = drop_view->GetDropCallback(drop_event);
   std::move(drop_cb).Run(drop_event, output_drag_op,
@@ -126,7 +127,8 @@ DropHelper::DropCallback DropHelper::GetDropCallback(
   View* root_view = drop_view->GetWidget()->GetRootView();
   View::ConvertPointToTarget(root_view, drop_view, &view_location);
   ui::DropTargetEvent drop_event(data, gfx::PointF(view_location),
-                                 gfx::PointF(view_location), drag_operation);
+                                 gfx::PointF(root_view_location),
+                                 drag_operation);
 
   auto drop_view_cb = drop_view->GetDropCallback(drop_event);
   if (!drop_view_cb)
@@ -202,7 +204,7 @@ void DropHelper::NotifyDragEntered(const OSExchangeData& data,
   gfx::Point target_view_location(root_view_location);
   View::ConvertPointToTarget(root_view_, target_view_, &target_view_location);
   ui::DropTargetEvent enter_event(data, gfx::PointF(target_view_location),
-                                  gfx::PointF(target_view_location),
+                                  gfx::PointF(root_view_location),
                                   drag_operation);
   target_view_->OnDragEntered(enter_event);
 }
@@ -216,7 +218,7 @@ int DropHelper::NotifyDragOver(const OSExchangeData& data,
   gfx::Point target_view_location(root_view_location);
   View::ConvertPointToTarget(root_view_, target_view_, &target_view_location);
   ui::DropTargetEvent enter_event(data, gfx::PointF(target_view_location),
-                                  gfx::PointF(target_view_location),
+                                  gfx::PointF(root_view_location),
                                   drag_operation);
   return target_view_->OnDragUpdated(enter_event);
 }

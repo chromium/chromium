@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/account_checker.h"
+
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -16,8 +17,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -37,17 +38,21 @@ const char kNotificationsPrefUrl[] =
     "https://memex-pa.googleapis.com/v1/notifications/preferences";
 
 AccountChecker::AccountChecker(
+    std::string country,
+    std::string locale,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : pref_service_(pref_service),
+    : country_(country),
+      locale_(locale),
+      pref_service_(pref_service),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
       url_loader_factory_(url_loader_factory),
       weak_ptr_factory_(this) {
-  // TODO(crbug.com/1366165): Avoid pushing the fetched pref value to the server
-  // again.
+  // TODO(crbug.com/40239641): Avoid pushing the fetched pref value to the
+  // server again.
   if (pref_service) {
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(pref_service);
@@ -78,7 +83,7 @@ bool AccountChecker::IsSyncingBookmarks() {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     return sync_service_ && syncer::GetUploadToGoogleState(
-                                sync_service_, syncer::ModelType::BOOKMARKS) ==
+                                sync_service_, syncer::DataType::BOOKMARKS) ==
                                 syncer::UploadState::ACTIVE;
   }
   // The feature is not enabled, fallback to old behavior.
@@ -87,8 +92,13 @@ bool AccountChecker::IsSyncingBookmarks() {
   // ConsentLevel::kSync documentation for details.
   return sync_service_ && sync_service_->IsSyncFeatureActive() &&
          syncer::GetUploadToGoogleState(sync_service_,
-                                        syncer::ModelType::BOOKMARKS) !=
+                                        syncer::DataType::BOOKMARKS) !=
              syncer::UploadState::NOT_ACTIVE;
+}
+
+bool AccountChecker::IsSyncTypeEnabled(syncer::UserSelectableType type) {
+  return sync_service_ && sync_service_->GetUserSettings() &&
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(type);
 }
 
 bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {
@@ -111,6 +121,33 @@ bool AccountChecker::IsSubjectToParentalControls() {
 
   return capabilities.is_subject_to_parental_controls() ==
          signin::Tribool::kTrue;
+}
+
+bool AccountChecker::CanUseModelExecutionFeatures() {
+  if (!identity_manager_) {
+    return false;
+  }
+
+  AccountCapabilities capabilities =
+      identity_manager_
+          ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities;
+
+  return capabilities.can_use_model_execution_features() ==
+         signin::Tribool::kTrue;
+}
+
+std::string AccountChecker::GetCountry() {
+  return country_;
+}
+
+std::string AccountChecker::GetLocale() {
+  return locale_;
+}
+
+PrefService* AccountChecker::GetPrefs() {
+  return pref_service_.get();
 }
 
 void AccountChecker::FetchPriceEmailPref() {

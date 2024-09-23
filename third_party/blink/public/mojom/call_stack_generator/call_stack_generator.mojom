@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// This interface defines the CallStackGenerator, which is responsible for
+// interrupting the main thread isolate and collecting the JavaScript call
+// stack.
+interface CallStackGenerator {
+  // Calls the CollectJavaScriptCallStack function to collect a JavaScript
+  // call stack
+  CollectJavaScriptCallStack() => (
+    string javascript_call_stack,
+    LocalFrameToken? frame_token
+    );
+};

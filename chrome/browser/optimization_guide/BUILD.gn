@@ -2,21 +2,136 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("optimization_guide") {
+  sources = [
+    "chrome_browser_main_extra_parts_optimization_guide.h",
+    "chrome_hints_manager.h",
+    "chrome_model_quality_logs_uploader_service.h",
+    "chrome_prediction_model_store.h",
+    "model_validator_keyed_service.h",
+    "model_validator_keyed_service_factory.h",
+    "optimization_guide_internals_ui.h",
+    "optimization_guide_keyed_service.h",
+    "optimization_guide_keyed_service_factory.h",
+    "optimization_guide_tab_url_provider.h",
+    "optimization_guide_web_contents_observer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:main_extra_parts",
+    "//chrome/browser/navigation_predictor",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:prediction",
+    "//components/optimization_guide/optimization_guide_internals/webui",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+    "//ui/webui",
+  ]
+  if (is_android) {
+    public_deps += [ "//chrome/browser/bookmarks/android" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_browser_main_extra_parts_optimization_guide.cc",
+    "chrome_hints_manager.cc",
+    "chrome_model_quality_logs_uploader_service.cc",
+    "chrome_prediction_model_store.cc",
+    "model_validator_keyed_service.cc",
+    "model_validator_keyed_service_factory.cc",
+    "optimization_guide_internals_ui.cc",
+    "optimization_guide_keyed_service.cc",
+    "optimization_guide_keyed_service_factory.cc",
+    "optimization_guide_tab_url_provider.cc",
+    "optimization_guide_web_contents_observer.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":optimization_guide",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profiles",
+    "//chrome/browser/sync:sync",
+    "//chrome/browser/ui:ui",
+    "//components/metrics_services_manager:metrics_services_manager",
+    "//components/no_state_prefetch/browser:browser",
+    "//components/user_prefs:user_prefs",
+    "//components/variations/service:service",
+  ]
+  if (is_android) {
+    deps += [
+      "//base",
+      "//chrome/browser/optimization_guide/android:jni_headers",
+    ]
+  }
+}
+
 source_set("test_support") {
   testonly = true
-
   sources = [
     "browser_test_util.cc",
     "browser_test_util.h",
+    "mock_optimization_guide_keyed_service.cc",
+    "mock_optimization_guide_keyed_service.h",
   ]
-
   deps = [
+    ":optimization_guide",
     "//base",
-    "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/test:test_support",
     "//components/metrics:content",
     "//components/optimization_guide/core",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
-    "//content/test:test_support",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "hints_fetcher_browsertest.cc",
+      "optimization_guide_keyed_service_browsertest.cc",
+    ]
+    deps = [
+      ":optimization_guide",
+      ":test_support",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//components/metrics_services_manager",
+      "//components/no_state_prefetch/browser",
+      "//components/optimization_guide/core:test_support",
+      "//components/site_engagement/content",
+      "//components/variations/service",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "chrome_hints_manager_unittest.cc",
+    "chrome_model_quality_logs_uploader_service_unittest.cc",
+  ]
+  if (!is_android) {
+    sources += [
+      # Android uses a different way of showing browser windows.
+      "optimization_guide_tab_url_provider_unittest.cc",
+    ]
+  }
+  deps = [
+    ":optimization_guide",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/prefs:test_support",
+    "//components/unified_consent:unified_consent",
+    "//components/variations:test_support",
   ]
 }

@@ -25,6 +25,10 @@ class NativeWindowTracker;
 // - The dialog's parent window
 // - The browser window to use to open a new tab if a user clicks a link in the
 //   dialog.
+//
+// This can either be created with a content::WebContents or a
+// gfx::NativeWindow. If this is created for WebContents, GetParentWindow() will
+// return the outermost window hosting the WebContents.
 class ExtensionInstallPromptShowParams {
  public:
   explicit ExtensionInstallPromptShowParams(content::WebContents* web_contents);
@@ -57,11 +61,17 @@ class ExtensionInstallPromptShowParams {
   bool WasParentDestroyed();
 
  private:
+  // Returns trues if the current object was configured for WebContents.
+  bool WasConfiguredForWebContents();
+
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
+  // Only one of these will be non-null.
   base::WeakPtr<content::WebContents> parent_web_contents_;
-
   gfx::NativeWindow parent_window_;
+
+  // Used to track the parent_window_'s lifetime. We need to explicitly track it
+  // because aura::Window does not expose a WeakPtr like WebContents.
   std::unique_ptr<views::NativeWindowTracker> native_window_tracker_;
 };
 

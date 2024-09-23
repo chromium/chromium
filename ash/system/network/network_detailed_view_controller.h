@@ -44,6 +44,7 @@ class ASH_EXPORT NetworkDetailedViewController
   // DetailedViewController:
   std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
+  void ShutDown() override;
 
  private:
   // NetworkDetailedView::Delegate:

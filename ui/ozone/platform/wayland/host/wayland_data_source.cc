@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 
 #include <gtk-primary-selection-client-protocol.h>
@@ -37,6 +42,13 @@ DataSource<T>::~DataSource() {
 }
 
 template <typename T>
+void DataSource<T>::HandleDropEvent() {
+  VLOG(1) << "OnDataSourceDropPerformed in WaylandDataSource";
+  // No timestamp for these events. Use EventTimeForNow(), for now.
+  delegate_->OnDataSourceDropPerformed(this, ui::EventTimeForNow());
+}
+
+template <typename T>
 void DataSource<T>::HandleFinishEvent(bool completed) {
   VLOG(1) << "OnDataSourceFinish in WaylandDataSource";
   // No timestamp for these events. Use EventTimeForNow(), for now.
@@ -49,11 +61,13 @@ void DataSource<T>::HandleFinishEvent(bool completed) {
 // for more details about non-blocking behavior for 'write' syscall.
 // https://pubs.opengroup.org/onlinepubs/007904975/functions/write.html
 bool WriteDataNonBlocking(int fd, const std::string& data_str) {
-  const char* data = data_str.data();
-  const ssize_t size = base::checked_cast<ssize_t>(data_str.size());
+  auto data_span = base::as_bytes(base::make_span(data_str));
+  const ssize_t size = base::checked_cast<ssize_t>(data_span.size());
   ssize_t written = 0;
+
   while (written < size) {
-    ssize_t result = write(fd, data + written, size - written);
+    auto remaining_span = data_span.subspan(written);
+    ssize_t result = write(fd, remaining_span.data(), remaining_span.size());
     if (result == -1) {
       if (errno == EINTR || errno == EAGAIN)
         continue;
@@ -108,7 +122,8 @@ void DataSource<T>::OnTarget(void* data, T* source, const char* mime_type) {
 
 template <typename T>
 void DataSource<T>::OnDndDropPerformed(void* data, T* source) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<DataSource<T>*>(data);
+  self->HandleDropEvent();
 }
 
 //////////////////////////////////////////////////////////////////////////////

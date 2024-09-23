@@ -68,15 +68,15 @@ int UninstallCandidate(UpdaterScope scope) {
   VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
           << " : " << __func__;
   int error = kErrorOk;
-
-  if (DeleteCandidateInstallFolder(scope) ||
-      DeleteFolder(GetVersionedInstallDirectory(scope))) {
+  if (!DeleteCandidateInstallFolder(scope)) {
+    VLOG(1) << "Failed to delete versioned folder.";
     error = kErrorFailedToDeleteFolder;
   }
 
   std::optional<base::FilePath> versioned_socket =
       GetActiveDutyInternalSocketPath(scope);
   if (!versioned_socket || !base::DeleteFile(versioned_socket.value())) {
+    VLOG(1) << "Failed to delete versioned socket file.";
     error = kErrorFailedToDeleteSocket;
   }
 

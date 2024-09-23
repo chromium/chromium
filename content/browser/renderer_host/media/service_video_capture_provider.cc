@@ -34,6 +34,9 @@
 
 namespace {
 
+using GetSourceInfosResult =
+    video_capture::mojom::VideoSourceProvider::GetSourceInfosResult;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<video_capture::mojom::AcceleratorFactory>
 CreateAcceleratorFactory() {
@@ -51,7 +54,18 @@ enum class GetDeviceInfosResult {
   kMaxValue = kFailureAfterRetry,
 };
 
-void LogGetDeviceInfosResult(GetDeviceInfosResult result) {
+void LogGetDeviceInfosResult(
+    std::optional<GetSourceInfosResult> get_source_infos_result,
+    bool get_device_infos_retried) {
+  GetDeviceInfosResult result;
+  if (get_source_infos_result &&
+      *get_source_infos_result == GetSourceInfosResult::kSuccess) {
+    result = get_device_infos_retried ? GetDeviceInfosResult::kSucessAfterRetry
+                                      : GetDeviceInfosResult::kSucessNoRetry;
+  } else {
+    result = get_device_infos_retried ? GetDeviceInfosResult::kFailureAfterRetry
+                                      : GetDeviceInfosResult::kFailureNoRetry;
+  }
   base::UmaHistogramEnumeration("Media.VideoCapture.GetDeviceInfosResult",
                                 result);
 }
@@ -170,6 +184,20 @@ ServiceVideoCaptureProvider::CreateDeviceLauncher() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ServiceVideoCaptureProvider::OpenNativeScreenCapturePicker(
+    DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  NOTREACHED();
+}
+
+void ServiceVideoCaptureProvider::CloseNativeScreenCapturePicker(
+    DesktopMediaID device_id) {
+  NOTREACHED();
+}
+
 void ServiceVideoCaptureProvider::OnServiceStarted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // Whenever the video capture service starts, we register a
@@ -280,14 +308,24 @@ void ServiceVideoCaptureProvider::GetDeviceInfosAsyncForRetry() {
 
 void ServiceVideoCaptureProvider::OnDeviceInfosReceived(
     scoped_refptr<RefCountedVideoSourceProvider> service_connection,
+    GetSourceInfosResult result,
     const std::vector<media::VideoCaptureDeviceInfo>& infos) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  LogGetDeviceInfosResult(get_device_infos_retried_
-                              ? GetDeviceInfosResult::kSucessAfterRetry
-                              : GetDeviceInfosResult::kSucessNoRetry);
+  LogGetDeviceInfosResult(result, get_device_infos_retried_);
   for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {
-    std::move(callback).Run(media::mojom::DeviceEnumerationResult::kSuccess,
-                            infos);
+    media::mojom::DeviceEnumerationResult callback_result;
+    switch (result) {
+      case GetSourceInfosResult::kSuccess:
+        callback_result = media::mojom::DeviceEnumerationResult::kSuccess;
+        break;
+      case GetSourceInfosResult::kErrorDroppedRequest:
+        callback_result = media::mojom::DeviceEnumerationResult::
+            kErrorCaptureServiceDroppedRequest;
+        break;
+      default:
+        NOTREACHED() << "Invalid GetSourceInfosResult result " << result;
+    }
+    std::move(callback).Run(callback_result, infos);
   }
   get_device_infos_pending_callbacks_.clear();
 }
@@ -309,9 +347,8 @@ void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
         "retries");
   }
 
-  LogGetDeviceInfosResult(get_device_infos_retried_
-                              ? GetDeviceInfosResult::kFailureAfterRetry
-                              : GetDeviceInfosResult::kFailureNoRetry);
+  LogGetDeviceInfosResult(/*get_source_infos_result=*/std::nullopt,
+                          get_device_infos_retried_);
 
   // After too many retries, we just return an empty list
   for (GetDeviceInfosCallback& callback : get_device_infos_pending_callbacks_) {

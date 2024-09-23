@@ -18,6 +18,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/network_condition_service.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -61,11 +62,11 @@ class EncryptedReportingServiceProvider
                   bool success);
 
   // Callbacks referring to MissivedClient.
-  static ::reporting::UploadClient::ReportSuccessfulUploadCallback
+  static ::reporting::ReportSuccessfulUploadCallback
   GetReportSuccessUploadCallback();
-  static ::reporting::UploadClient::EncryptionKeyAttachedCallback
+  static ::reporting::EncryptionKeyAttachedCallback
   GetEncryptionKeyAttachedCallback();
-  static ::reporting::UploadClient::UpdateConfigInMissiveCallback
+  static ::reporting::UpdateConfigInMissiveCallback
   GetUpdateConfigInMissiveCallback();
 
   // Returns true if called on the origin thread.

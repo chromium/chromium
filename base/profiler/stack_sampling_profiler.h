@@ -6,6 +6,7 @@
 #define BASE_PROFILER_STACK_SAMPLING_PROFILER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/base_export.h"
@@ -15,7 +16,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -31,7 +31,7 @@ class StackSamplerTestDelegate;
 // Sample StackSamplingProfiler usage:
 //
 //   // Create and customize params as desired.
-//   base::StackStackSamplingProfiler::SamplingParams params;
+//   base::StackSamplingProfiler::SamplingParams params;
 //
 //   // Create a ProfileBuilder subclass to process the profiles.
 //   class ProfileBuilder : public base::ProfileBuilder {...}
@@ -180,14 +180,13 @@ class BASE_EXPORT StackSamplingProfiler {
       TimeTicks period_start,
       TimeTicks period_end,
       uint64_t name_hash,
-      absl::optional<int64_t> key,
+      std::optional<int64_t> key,
       int64_t value,
-      absl::optional<PlatformThreadId> thread_id);
-  friend void AddProfileMetadataImpl(
-      uint64_t name_hash,
-      int64_t key,
-      int64_t value,
-      absl::optional<PlatformThreadId> thread_id);
+      std::optional<PlatformThreadId> thread_id);
+  friend void AddProfileMetadataImpl(uint64_t name_hash,
+                                     int64_t key,
+                                     int64_t value,
+                                     std::optional<PlatformThreadId> thread_id);
 
   // Apply metadata to already recorded samples. See the
   // ApplyMetadataToPastSamples() docs in sample_metadata.h.
@@ -195,25 +194,20 @@ class BASE_EXPORT StackSamplingProfiler {
       TimeTicks period_start,
       TimeTicks period_end,
       uint64_t name_hash,
-      absl::optional<int64_t> key,
+      std::optional<int64_t> key,
       int64_t value,
-      absl::optional<PlatformThreadId> thread_id);
+      std::optional<PlatformThreadId> thread_id);
 
   // Adds metadata as metadata global to the sampling profile.
   static void AddProfileMetadata(uint64_t name_hash,
                                  int64_t key,
                                  int64_t value,
-                                 absl::optional<PlatformThreadId> thread_id);
+                                 std::optional<PlatformThreadId> thread_id);
 
   // The thread whose stack will be sampled.
   SamplingProfilerThreadToken thread_token_;
 
   const SamplingParams params_;
-
-  // Receives the sampling data and builds a profile. The ownership of this
-  // object will be transferred to the sampling thread when thread sampling
-  // starts.
-  std::unique_ptr<ProfileBuilder> profile_builder_;
 
   // Stack sampler which stops the thread and collects stack frames. The
   // ownership of this object will be transferred to the sampling thread when
@@ -221,7 +215,7 @@ class BASE_EXPORT StackSamplingProfiler {
   std::unique_ptr<StackSampler> sampler_;
 
   // This starts "signaled", is reset when sampling begins, and is signaled
-  // when that sampling is complete and the profile_builder_'s
+  // when that sampling is complete and the profile builder's
   // OnProfileCompleted function has executed.
   WaitableEvent profiling_inactive_;
 

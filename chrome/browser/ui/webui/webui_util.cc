@@ -18,25 +18,11 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
 #endif
-
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/views/widget/widget.h"
-#endif  // defined(TOOLKIT_VIEWS)
 
 namespace webui {
 
@@ -45,10 +31,48 @@ void SetJSModuleDefaults(content::WebUIDataSource* source) {
       base::StartsWith(source->GetSource(), content::kChromeUIUntrustedScheme)
           ? content::kChromeUIUntrustedScheme
           : content::kChromeUIScheme;
+  // Set the default src to 'self' only. Generally necessary overrides are set
+  // below. Additional overrides should generally be added for individual
+  // data sources only.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::DefaultSrc, "default-src 'self';");
+  // Allow connecting to chrome://resources for trusted UIs and images from
+  // chrome://image, chrome://theme, chrome://favicon2, chrome://resources and
+  // data URLs.
+  // TODO: Both of these are needed by only a smaller subset of UIs. Should
+  // the overrides be moved to those UIs only?
+  if (scheme == content::kChromeUIScheme) {
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ConnectSrc,
+        "connect-src chrome://resources chrome://theme 'self';");
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ImgSrc,
+        "img-src chrome://resources chrome://theme chrome://image "
+        "chrome://favicon2 chrome://app-icon chrome://extension-icon "
+        "chrome://fileicon "
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        "chrome://chromeos-asset chrome://userimage "
+#endif
+        "blob: data: 'self';");
+  }
+
+  // webui-test is required for tests. Scripts from //resources are allowed
+  // for all UIs.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       base::StringPrintf("script-src %s://resources %s://webui-test 'self';",
                          scheme.c_str(), scheme.c_str()));
+  // Allow loading fonts from //resources.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FontSrc,
+      base::StringPrintf("font-src %s://resources 'self';", scheme.c_str()));
+  // unsafe-inline is required for Polymer. Allow styles to be imported from
+  // //resources and //theme.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      base::StringPrintf(
+          "style-src %s://resources %s://theme 'self' 'unsafe-inline';",
+          scheme.c_str(), scheme.c_str()));
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
@@ -96,87 +120,5 @@ void AddLocalizedString(content::WebUIDataSource* source,
   std::erase(str, '&');
   source->AddString(message, str);
 }
-
-void SetupChromeRefresh2023(content::WebUIDataSource* source) {
-  source->AddString(
-      "chromeRefresh2023Attribute",
-      features::IsChromeWebuiRefresh2023() ? "chrome-refresh-2023" : "");
-}
-
-#if defined(TOOLKIT_VIEWS)
-
-namespace {
-const ui::ThemeProvider* g_theme_provider_for_testing = nullptr;
-}  // namespace
-
-ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents) {
-  ui::NativeTheme* native_theme = nullptr;
-
-  if (web_contents) {
-    Browser* browser = chrome::FindBrowserWithTab(web_contents);
-
-    if (browser) {
-      // Find for WebContents hosted in a tab.
-      native_theme = browser->window()->GetNativeTheme();
-    }
-
-    if (!native_theme) {
-      // Find for WebContents hosted in a widget, but not directly in a
-      // Browser. e.g. Tab Search, Read Later.
-      views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
-          web_contents->GetContentNativeView());
-      if (widget)
-        native_theme = widget->GetNativeTheme();
-    }
-  }
-
-  if (!native_theme) {
-    // Find for isolated WebContents, e.g. in tests.
-    // Or when |web_contents| is nullptr, because the renderer is not ready.
-    // TODO(crbug/1056916): Remove global accessor to NativeTheme.
-    native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  }
-
-  return native_theme;
-}
-
-const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents) {
-  if (g_theme_provider_for_testing)
-    return g_theme_provider_for_testing;
-
-  auto* browser_window =
-      BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
-
-  if (browser_window)
-    return browser_window->GetThemeProvider();
-
-  // Fallback 1: get the theme provider from the profile's associated browser.
-  // This is used in newly created tabs, e.g. NewTabPageUI, where theming is
-  // required before the WebContents is attached to a browser window.
-  // TODO(crbug.com/1298767): Remove this fallback by associating the
-  // WebContents during navigation.
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  const Browser* browser = chrome::FindBrowserWithProfile(profile);
-  if (browser)
-    return browser->window()->GetThemeProvider();
-
-  // Fallback 2: get the theme provider from the last created browser.
-  // This is used in ChromeOS, where under multi-signin a browser window can
-  // be sent to another profile.
-  // TODO(crbug.com/1298767): Remove this fallback by associating the
-  // WebContents during navigation.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  browser = browser_list->empty()
-                ? nullptr
-                : *std::prev(BrowserList::GetInstance()->end());
-  return browser ? browser->window()->GetThemeProvider() : nullptr;
-}
-
-void SetThemeProviderForTesting(const ui::ThemeProvider* theme_provider) {
-  g_theme_provider_for_testing = theme_provider;
-}
-
-#endif  // defined(TOOLKIT_VIEWS)
 
 }  // namespace webui

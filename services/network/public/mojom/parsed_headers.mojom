@@ -7,11 +7,11 @@ module network.mojom;
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
+import "services/network/public/mojom/document_isolation_policy.mojom";
 import "services/network/public/mojom/link_header.mojom";
 import "services/network/public/mojom/no_vary_search.mojom";
 import "services/network/public/mojom/supports_loading_mode.mojom";
 import "services/network/public/mojom/timing_allow_origin.mojom";
-import "services/network/public/mojom/variants_header.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/x_frame_options.mojom";
 
@@ -37,8 +37,12 @@ struct ParsedHeaders {
   CrossOriginEmbedderPolicy cross_origin_embedder_policy;
 
   // The parsed value of the Cross-Origin-Opener-Policy (COOP) and
-  // Cross-Origin-opener-Policy-Report-Only headers.
+  // Cross-Origin-Opener-Policy-Report-Only headers.
   CrossOriginOpenerPolicy cross_origin_opener_policy;
+
+  // The parsed value of the Document-Isolation-Policy (DIP) and
+  // Document-Isolation-Policy-Report-Only headers.
+  DocumentIsolationPolicy document_isolation_policy;
 
   // The parsed value of the Origin-Agent-Cluster header.
   OriginAgentClusterValue origin_agent_cluster;
@@ -97,24 +101,35 @@ struct ParsedHeaders {
   // URLs are represented here as strings, and have not been validated.
   map<string,string>? reporting_endpoints;
 
-  // The parsed Variants response header.
+  // The parsed Cookie-Indices response header.
   //
-  // Indicates that representations are available for a given resource at the
-  // time that the response is produced, by enumerating the request header
-  // fields that it varies on, along with a representation of the values that
-  // are available for each.
+  // Lists cookie names which might affect whether this content is cacheable.
+  // Responses should not be cached if one of the named cookies has a changed
+  // value.
+  //
+  // This field is populated even if `Vary: Cookie` is not specified (and it
+  // would therefore be ineffective).
+  //
+  // https://mnot.github.io/I-D/draft-nottingham-http-availability-hints.html#name-cookie
+  array<string>? cookie_indices;
+
+  // The parsed Avail-Language response header.
+  //
+  // The Avail-Language response header field is the availability hint for
+  // content negotiation using the Accept-Language request header field defined
+  // in https://www.rfc-editor.org/rfc/rfc9110#section-12.5.4. The default
+  // language, if provided, will be put in the first language.
   //
   // If Structured Header parsing fails or a member's value does have the
   // structure outlined as defined, the client MUST treat the representation as
-  // having no Variants header field.
+  // having no Avail-Language header field.
   //
-  // Variants header only contains Accept-Language values. Please update the
-  // description if it extends to support other header values. Also, it only be
-  // populated when kReduceAcceptLanguage feature enabled.
+  // It will only be populated when the kReduceAcceptLanguage feature is
+  // enabled.
   //
   // For more information, see:
-  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-variants-06#section-2.
-  array<VariantsHeader>? variants_headers;
+  // https://mnot.github.io/I-D/draft-nottingham-http-availability-hints.html#section-5.3.
+  array<string>? avail_language;
 
   // The parsed value of the Content-Language header.
   array<string>? content_language;
@@ -129,6 +144,10 @@ struct ParsedHeaders {
   // The parsed value of the Observe-Browsing-Topics header. See:
   // https://patcg-individual-drafts.github.io/topics/#the-observe-browsing-topics-http-response-header-header
   bool observe_browsing_topics;
+
+  // The parsed value of the Allow-Cross-Origin-Event-Reporting header. See:
+  // https://wicg.github.io/fenced-frame/#fenced-frame-config-cross-origin-reporting-allowed
+  bool allow_cross_origin_event_reporting;
 
   // Please update `CheckParsedHeadersEquals` after adding new fields.
 };

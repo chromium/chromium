@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:id="@+id/account_image"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/logo_avatar_anonymous"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+      <TextView
+          android:id="@+id/account_text_primary"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="top"
+          android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+          tools:text="John Doe"
+          android:textDirection="locale"/>
+
+      <TextView
+          android:id="@+id/account_text_secondary"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="top"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+          tools:text="john.doe@example.com"
+          android:textDirection="locale"/>
+    </LinearLayout>
+
+</LinearLayout>

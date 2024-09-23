@@ -127,18 +127,6 @@ bool CanAccessWindowInternal(
         accessing_window->document(),
         can_access ? WebFeature::kDocumentDomainEnabledCrossOriginAccess
                    : WebFeature::kDocumentDomainBlockedCrossOriginAccess);
-    // Handle deprecation warnings for OriginAgentCluster default:
-    // If the new default is not (yet) enabled, but warnings are, and
-    // access gets allowed for domain-setting reasons (reasons checked in
-    // the if clause above).
-    if (accessing_window->GetAgent()->IsOriginOrSiteKeyedBasedOnDefault() &&
-        base::FeatureList::IsEnabled(
-            blink::features::kOriginAgentClusterDefaultWarning) &&
-        can_access) {
-      UseCounter::CountDeprecation(
-          accessing_window->document(),
-          WebFeature::kCrossOriginAccessBasedOnDocumentDomain);
-    }
   }
   if (!can_access) {
     // Ensure that if we got a cluster mismatch that it was due to a permissions
@@ -201,13 +189,13 @@ DOMWindow* FindWindow(v8::Isolate* isolate,
                       const WrapperTypeInfo* type,
                       v8::Local<v8::Object> holder) {
   if (V8Window::GetWrapperTypeInfo()->Equals(type))
-    return V8Window::ToWrappableUnsafe(holder);
+    return V8Window::ToWrappableUnsafe(isolate, holder);
 
   if (V8Location::GetWrapperTypeInfo()->Equals(type))
-    return V8Location::ToWrappableUnsafe(holder)->DomWindow();
+    return V8Location::ToWrappableUnsafe(isolate, holder)->DomWindow();
 
   // This function can handle only those types listed above.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -291,12 +279,14 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
   }
 
   // Fast path for the most likely case.
-  if (LIKELY(accessing_context == target_context))
+  if (accessing_context == target_context) [[likely]] {
     return true;
+  }
 
+  v8::Isolate* isolate = accessing_context->GetIsolate();
   return ShouldAllowAccessToV8ContextInternal(
-      ScriptState::From(accessing_context), ScriptState::From(target_context),
-      exception_state);
+      ScriptState::From(isolate, accessing_context),
+      ScriptState::From(isolate, target_context), exception_state);
 }
 
 void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,

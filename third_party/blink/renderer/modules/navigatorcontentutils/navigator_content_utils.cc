@@ -114,8 +114,8 @@ bool VerifyCustomHandlerScheme(const String& scheme,
 
   bool has_custom_scheme_prefix = false;
   StringUTF8Adaptor scheme_adaptor(scheme);
-  if (!IsValidCustomHandlerScheme(scheme_adaptor.AsStringPiece(),
-                                  security_level, &has_custom_scheme_prefix)) {
+  if (!IsValidCustomHandlerScheme(scheme_adaptor.AsStringView(), security_level,
+                                  &has_custom_scheme_prefix)) {
     if (has_custom_scheme_prefix) {
       error_string = "The scheme name '" + scheme +
                      "' is not allowed. Schemes starting with '" + scheme +
@@ -137,8 +137,8 @@ bool VerifyCustomHandlerURLSyntax(const KURL& full_url,
                                   const String& user_url,
                                   String& error_message) {
   StringUTF8Adaptor url_adaptor(user_url);
-  URLSyntaxErrorCode code = IsValidCustomHandlerURLSyntax(
-      GURL(full_url), url_adaptor.AsStringPiece());
+  URLSyntaxErrorCode code =
+      IsValidCustomHandlerURLSyntax(GURL(full_url), url_adaptor.AsStringView());
   switch (code) {
     case URLSyntaxErrorCode::kNoError:
       return true;

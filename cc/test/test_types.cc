@@ -4,6 +4,8 @@
 
 #include "cc/test/test_types.h"
 
+#include "cc/base/region.h"
+
 namespace cc {
 
 namespace {
@@ -27,6 +29,10 @@ const char* RasterTypeTestSuffix(TestRasterType type) {
 void PrintTo(const RasterTestConfig& config, std::ostream* os) {
   PrintTo(config.renderer_type, os);
   *os << '_' << RasterTypeTestSuffix(config.raster_type);
+}
+
+void PrintTo(const Region& region, std::ostream* os) {
+  *os << region.ToString();
 }
 
 }  // namespace cc

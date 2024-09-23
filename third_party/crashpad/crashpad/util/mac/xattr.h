@@ -18,9 +18,9 @@
 #include <time.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 
 namespace crashpad {
 
@@ -44,7 +44,7 @@ enum class XattrStatus {
 //!
 //! \return XattrStatus
 XattrStatus ReadXattr(const base::FilePath& file,
-                      const base::StringPiece& name,
+                      std::string_view name,
                       std::string* value);
 
 //! \brief Writes an extended attribute on a file.
@@ -56,7 +56,7 @@ XattrStatus ReadXattr(const base::FilePath& file,
 //! \return `true` if the write was successful. `false` on error, with a message
 //!     logged.
 bool WriteXattr(const base::FilePath& file,
-                const base::StringPiece& name,
+                std::string_view name,
                 const std::string& value);
 
 //! \copydoc ReadXattr
@@ -64,32 +64,32 @@ bool WriteXattr(const base::FilePath& file,
 //! Only the values `"0"` and `"1"`, for `false` and `true` respectively, are
 //! valid conversions.
 XattrStatus ReadXattrBool(const base::FilePath& file,
-                          const base::StringPiece& name,
+                          std::string_view name,
                           bool* value);
 
 //! \copydoc WriteXattr
 bool WriteXattrBool(const base::FilePath& file,
-                    const base::StringPiece& name,
+                    std::string_view name,
                     bool value);
 
 //! \copydoc ReadXattr
 XattrStatus ReadXattrInt(const base::FilePath& file,
-                         const base::StringPiece& name,
+                         std::string_view name,
                          int* value);
 
 //! \copydoc WriteXattr
 bool WriteXattrInt(const base::FilePath& file,
-                   const base::StringPiece& name,
+                   std::string_view name,
                    int value);
 
 //! \copydoc ReadXattr
 XattrStatus ReadXattrTimeT(const base::FilePath& file,
-                           const base::StringPiece& name,
+                           std::string_view name,
                            time_t* value);
 
 //! \copydoc WriteXattr
 bool WriteXattrTimeT(const base::FilePath& file,
-                     const base::StringPiece& name,
+                     std::string_view name,
                      time_t value);
 
 //! \brief Removes an extended attribute from a file.
@@ -98,8 +98,7 @@ bool WriteXattrTimeT(const base::FilePath& file,
 //! \param[in] name The name of the extended attribute to remove.
 //!
 //! \return XattrStatus
-XattrStatus RemoveXattr(const base::FilePath& file,
-                        const base::StringPiece& name);
+XattrStatus RemoveXattr(const base::FilePath& file, std::string_view name);
 
 }  // namespace crashpad
 

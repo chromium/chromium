@@ -4,9 +4,10 @@
 
 #include "content/browser/devtools/devtools_stream_blob.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -201,8 +202,7 @@ void DevToolsStreamBlob::OnReadComplete(int bytes_read) {
     status = blob_reader_->remaining_bytes() ? StatusSuccess : StatusEOF;
     if (is_binary_) {
       base64_encoded = true;
-      *data =
-          base::Base64Encode(base::StringPiece(io_buf_->data(), bytes_read));
+      *data = base::Base64Encode(std::string_view(io_buf_->data(), bytes_read));
     } else {
       // TODO(caseq): truncate at UTF8 boundary.
       *data = std::string(io_buf_->data(), bytes_read);

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_DEFAULT_MODEL_DEVICE_TIER_SEGMENT_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_DEFAULT_MODEL_DEVICE_TIER_SEGMENT_H_
 
-#include <optional>
-
 #include "components/segmentation_platform/public/model_provider.h"
 
 namespace segmentation_platform {

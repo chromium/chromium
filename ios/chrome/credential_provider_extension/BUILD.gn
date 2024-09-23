@@ -31,10 +31,12 @@ source_set("credential_provider") {
   deps = [
     ":account_verification_provider",
     ":metrics_util",
-    ":password_util",
+    ":passkey_keychain_util",
+    ":passkey_util",
     ":reauthentication_handler",
     ":system_strings",
     "//base",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:client",
     "//ios/chrome/common/crash_report",
@@ -45,6 +47,7 @@ source_set("credential_provider") {
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/credential_provider_extension/resources",
     "//ios/chrome/credential_provider_extension/ui",
+    "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
     "//ios/chrome/credential_provider_extension/ui:feature_flags",
   ]
 
@@ -67,12 +70,17 @@ generate_localizable_strings("system_strings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "metrics_util_unittest.mm" ]
+  sources = [
+    "metrics_util_unittest.mm",
+    "passkey_util_unittest.mm",
+  ]
   deps = [
     ":metrics_util",
+    ":passkey_util",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/common/app_group",
+    "//ios/chrome/common/credential_provider",
     "//testing/gtest",
   ]
 }
@@ -93,6 +101,33 @@ source_set("reauthentication_handler") {
 buildflag_header("password_spec_fetcher_buildflags") {
   header = "password_spec_fetcher_buildflags.h"
   flags = [ "GOOGLE_API_KEY=@\"$ios_credential_provider_extension_api_key\"" ]
+}
+
+source_set("passkey_util") {
+  sources = [
+    "passkey_util.h",
+    "passkey_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
+    "//ios/chrome/common/credential_provider:ui",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_util") {
+  sources = [
+    "passkey_keychain_util.h",
+    "passkey_keychain_util.mm",
+  ]
+  deps = [
+    ":passkey_keychain_provider",
+    "//base",
+    "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("password_util") {
@@ -118,6 +153,30 @@ source_set("metrics_util") {
     "//base",
     "//ios/chrome/common/app_group",
   ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider") {
+  public_deps = [ ":passkey_keychain_provider_header" ]
+  deps = [ ios_passkey_keychain_provider_target ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_header") {
+  sources = [ "passkey_keychain_provider.h" ]
+  deps = [ "//base" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_implementation") {
+  sources = [ "passkey_keychain_provider.mm" ]
+  deps = [
+    ":passkey_keychain_provider_header",
+    "//base",
+  ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }
 

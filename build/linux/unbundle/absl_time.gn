@@ -19,3 +19,6 @@ source_set("time") {
   deps = [ ":time_shim" ]
   public_configs = [ ":system_absl_time" ]
 }
+
+source_set("time_test") {
+}

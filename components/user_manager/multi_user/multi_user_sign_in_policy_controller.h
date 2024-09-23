@@ -41,21 +41,17 @@ class USER_MANAGER_EXPORT MultiUserSignInPolicyController {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Stops to work.
-  void Shutdown();
-
   // Returns the cached policy value for `user_email`.
   MultiUserSignInPolicy GetCachedValue(std::string_view user_email) const;
-
-  // Returns the primary user's policy. If there's no primary user,
-  // returns std::nullopt.
-  std::optional<MultiUserSignInPolicy> GetPrimaryUserPolicy() const;
 
   // Returns true if user allowed to be in the current session.
   bool IsUserAllowedInSession(const std::string& user_email) const;
 
-  // Starts to observe the multiprofile user behavior pref of the given user.
+  // Starts to observe the multi-user signin policy for the given user.
   void StartObserving(User* user);
+
+  // Stops to observe the multi-user signin policy for the given user.
+  void StopObserving(User* user);
 
   // Removes the cached values for the given user.
   void RemoveCachedValues(std::string_view user_email);

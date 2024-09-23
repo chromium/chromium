@@ -1,0 +1,84 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("search") {
+  sources = [
+    "search.cc",
+    "search.h",
+  ]
+  public_deps = []
+  deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/common",
+    "//components/google/core/common",
+    "//components/search",
+    "//components/search_engines:search_engine_type",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common:buildflags",
+    "//content/public/browser",
+    "//url",
+  ]
+  if (is_android) {
+    sources += [
+      "contextual_search_policy_handler_android.cc",
+      "contextual_search_policy_handler_android.h",
+    ]
+    public_deps += [ "//components/policy/core/browser" ]
+    deps += [ "//components/prefs" ]
+  } else {
+    sources += [
+      "instant_service.cc",
+      "instant_service.h",
+      "instant_service_factory.cc",
+      "instant_service_factory.h",
+      "instant_service_observer.cc",
+      "instant_service_observer.h",
+      "most_visited_iframe_source.cc",
+      "most_visited_iframe_source.h",
+      "ntp_custom_background_enabled_policy_handler.cc",
+      "ntp_custom_background_enabled_policy_handler.h",
+      "search_engine_base_url_tracker.cc",
+      "search_engine_base_url_tracker.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/themes",
+      "//chrome/common",
+      "//components/history/core/browser",
+      "//components/keyed_service/core",
+      "//components/ntp_tiles",
+      "//components/policy/core/browser",
+      "//components/prefs",
+      "//components/search_engines",
+      "//content/public/browser",
+      "//ui/native_theme",
+      "//url",
+    ]
+    deps += [
+      "//chrome/app/theme:theme_resources",
+      "//chrome/app/theme:theme_resources_grit",
+      "//chrome/browser/resources/new_tab_page_instant:resources",
+      "//chrome/browser/resources/new_tab_page_instant:resources_grit",
+      "//chrome/common:constants",
+      "//chrome/common:non_code_constants",
+      "//chrome/common/search:mojo_bindings",
+      "//components/favicon_base",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/common",
+      "//components/sync_preferences",
+      "//extensions/browser",
+      "//extensions/common",
+      "//mojo/public/cpp/bindings",
+      "//ui/base",
+      "//ui/gfx:color_utils",
+    ]
+  }
+}

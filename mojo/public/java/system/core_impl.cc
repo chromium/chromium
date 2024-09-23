@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,6 +19,8 @@
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/system_impl_java_jni_headers/CoreImpl_jni.h"
 
 namespace mojo {
@@ -175,13 +182,13 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadMessage(
     return Java_CoreImpl_newReadMessageResult(env, result, nullptr, nullptr);
 
   // Extend handles to 64-bit values if necessary.
-  std::vector<jlong> java_handles(handles.size());
+  std::vector<int64_t> java_handles(handles.size());
   base::ranges::copy(handles, java_handles.begin());
   return Java_CoreImpl_newReadMessageResult(
       env, result,
       base::android::ToJavaByteArray(env, static_cast<uint8_t*>(buffer),
                                      num_bytes),
-      base::android::ToJavaLongArray(env, java_handles.data(), num_handles));
+      base::android::ToJavaLongArray(env, java_handles));
 }
 
 static ScopedJavaLocalRef<jobject> JNI_CoreImpl_ReadData(

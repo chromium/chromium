@@ -63,6 +63,8 @@ source_set("common") {
     "chromeos_status.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
+    "frame_resource_converter.cc",
+    "frame_resource_converter.h",
     "gl_image_processor_backend.cc",
     "gl_image_processor_backend.h",
     "gpu_buffer_layout.cc",
@@ -76,11 +78,17 @@ source_set("common") {
     "image_processor_with_pool.h",
     "libyuv_image_processor_backend.cc",
     "libyuv_image_processor_backend.h",
+    "mailbox_frame_registry.cc",
+    "mailbox_frame_registry.h",
     "mailbox_video_frame_converter.cc",
     "mailbox_video_frame_converter.h",
+    "native_pixmap_frame_resource.cc",
+    "native_pixmap_frame_resource.h",
     "oop_video_decoder.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
+    "registered_mailbox_frame_converter.cc",
+    "registered_mailbox_frame_converter.h",
     "shaders/shaders.h",
     "vd_video_decode_accelerator.cc",
     "vd_video_decode_accelerator.h",
@@ -89,7 +97,7 @@ source_set("common") {
     "video_decoder_pipeline.h",
   ]
 
-  # TODO(crbug.com/1012587): Merge :fourcc to :common.
+  # TODO(crbug.com/40652235): Merge :fourcc to :common.
   public_deps = [
     ":fourcc",
     ":video_frame_resource",
@@ -105,7 +113,6 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//gpu/ipc/common:common",
-    "//gpu/vulkan/init:init",
     "//media",
     "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",
@@ -114,7 +121,6 @@ source_set("common") {
     "//media/gpu:video_frame_mapper_common",
     "//third_party/libyuv",
     "//ui/gfx:buffer_types",
-    "//ui/gfx:gfx_switches",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
     "//ui/gfx/linux:drm",
@@ -124,10 +130,13 @@ source_set("common") {
 
   if (enable_vulkan) {
     sources += [
-      "vulkan_image_processor.cc",
-      "vulkan_image_processor.h",
+      "vulkan_overlay_adaptor.cc",
+      "vulkan_overlay_adaptor.h",
     ]
-    deps += [ "//gpu/command_buffer/service:gles2" ]
+    deps += [
+      "//gpu/command_buffer/service:gles2",
+      "//gpu/vulkan/init:init",
+    ]
   }
 
   if (is_chromeos) {
@@ -210,7 +219,6 @@ source_set("video_frame_mapper") {
   ]
 
   deps = [
-    ":common",
     "//base",
     "//media",
     "//media/gpu:command_buffer_helper",
@@ -265,15 +273,33 @@ source_set("unit_tests") {
   sources = [
     "chromeos_compressed_gpu_memory_buffer_video_frame_utils_unittest.cc",
     "fourcc_unittests.cc",
+    "mailbox_frame_registry_unittest.cc",
     "mailbox_video_frame_converter_unittest.cc",
+    "native_pixmap_frame_resource_unittest.cc",
     "platform_video_frame_pool_unittest.cc",
     "platform_video_frame_utils_unittest.cc",
     "video_decoder_pipeline_unittest.cc",
+    "video_frame_resource_unittest.cc",
   ]
   if (is_chromeos_ash) {
     deps +=
         [ "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_gpu" ]
   }
+}
+
+source_set("perf_test_utils") {
+  testonly = true
+  deps = [
+    ":chromeos",
+    "//base/test:test_support",
+    "//media/gpu/test:video_test_environment",
+    "//testing/gtest",
+    "//testing/perf",
+  ]
+  sources = [
+    "perf_test_util.cc",
+    "perf_test_util.h",
+  ]
 }
 
 test("image_processor_test") {
@@ -312,6 +338,7 @@ if (use_v4l2_codec) {
     sources = [ "image_processor_perf_test.cc" ]
     deps = [
       ":chromeos",
+      ":perf_test_utils",
       "//base/test:test_support",
       "//media:test_support",
       "//media/gpu:video_frame_mapper_common",
@@ -326,5 +353,26 @@ if (use_v4l2_codec) {
     if (enable_vulkan) {
       deps += [ "//gpu/command_buffer/service:gles2" ]
     }
+  }
+}
+
+if (use_v4l2_codec && enable_vulkan) {
+  test("vulkan_overlay_adaptor_test") {
+    sources = [ "vulkan_overlay_adaptor_test.cc" ]
+    deps = [
+      ":chromeos",
+      ":perf_test_utils",
+      "//base/test:test_support",
+      "//gpu/command_buffer/service:gles2",
+      "//media:test_support",
+      "//media/gpu:video_frame_mapper_common",
+      "//media/gpu/test:helpers",
+      "//media/gpu/test:video_test_environment",
+      "//testing/gtest",
+      "//testing/perf",
+      "//third_party/libyuv",
+      "//ui/gl",
+      "//ui/gl:test_support",
+    ]
   }
 }

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/interest_group/auction_config_mojom_traits.h"
 
+#include <cmath>
 #include <optional>
 #include <string>
 
@@ -16,6 +17,7 @@
 #include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -31,6 +33,9 @@ bool AreBuyerPrioritySignalsValid(
     const base::flat_map<std::string, double>& buyer_priority_signals) {
   for (const auto& priority_signal : buyer_priority_signals) {
     if (base::StartsWith(priority_signal.first, "browserSignals.")) {
+      return false;
+    }
+    if (!std::isfinite(priority_signal.second)) {
       return false;
     }
   }
@@ -81,7 +86,7 @@ bool AdConfigMaybePromiseTraitsHelper<View, Wrapper>::Read(View in,
       return true;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -105,6 +110,11 @@ template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
     blink::mojom::AuctionAdConfigMaybePromiseDirectFromSellerSignalsDataView,
     blink::AuctionConfig::MaybePromiseDirectFromSellerSignals>;
 
+template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
+    blink::mojom::
+        AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacementsDataView,
+    blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements>;
+
 bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
                   blink::AuctionConfig::BuyerTimeouts>::
     Read(blink::mojom::AuctionAdConfigBuyerTimeoutsDataView data,
@@ -113,7 +123,28 @@ bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
       !data.ReadAllBuyersTimeout(&out->all_buyers_timeout)) {
     return false;
   }
+  if (out->per_buyer_timeouts) {
+    for (const auto& timeout : *out->per_buyer_timeouts) {
+      if (timeout.second.is_negative()) {
+        return false;
+      }
+    }
+  }
+  if (out->all_buyers_timeout && out->all_buyers_timeout->is_negative()) {
+    return false;
+  }
   return true;
+}
+
+bool StructTraits<blink::mojom::AdKeywordReplacementDataView,
+                  blink::AuctionConfig::AdKeywordReplacement>::
+    Read(blink::mojom::AdKeywordReplacementDataView data,
+         blink::AuctionConfig::AdKeywordReplacement* out) {
+  if (!data.ReadMatch(&out->match) ||
+      !data.ReadReplacement(&out->replacement)) {
+    return false;
+  }
+  return out->IsValid();
 }
 
 bool StructTraits<blink::mojom::AdCurrencyDataView, blink::AdCurrency>::Read(
@@ -151,6 +182,9 @@ bool StructTraits<
     return false;
   }
   out->scale = data.scale();
+  if (!std::isfinite(out->scale)) {
+    return false;
+  }
   return true;
 }
 
@@ -182,6 +216,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadSellerTimeout(&out->seller_timeout) ||
       !data.ReadPerBuyerSignals(&out->per_buyer_signals) ||
       !data.ReadBuyerTimeouts(&out->buyer_timeouts) ||
+      !data.ReadReportingTimeout(&out->reporting_timeout) ||
       !data.ReadSellerCurrency(&out->seller_currency) ||
       !data.ReadBuyerCurrencies(&out->buyer_currencies) ||
       !data.ReadBuyerCumulativeTimeouts(&out->buyer_cumulative_timeouts) ||
@@ -196,8 +231,39 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
           &out->required_seller_capabilities) ||
       !data.ReadRequestedSize(&out->requested_size) ||
       !data.ReadAllSlotsRequestedSizes(&out->all_slots_requested_sizes) ||
+      !data.ReadPerBuyerMultiBidLimits(&out->per_buyer_multi_bid_limits) ||
       !data.ReadAuctionNonce(&out->auction_nonce) ||
-      !data.ReadComponentAuctions(&out->component_auctions)) {
+      !data.ReadSellerRealTimeReportingType(
+          &out->seller_real_time_reporting_type) ||
+      !data.ReadPerBuyerRealTimeReportingTypes(
+          &out->per_buyer_real_time_reporting_types) ||
+      !data.ReadComponentAuctions(&out->component_auctions) ||
+      !data.ReadDeprecatedRenderUrlReplacements(
+          &out->deprecated_render_url_replacements) ||
+      !data.ReadTrustedScoringSignalsCoordinator(
+          &out->trusted_scoring_signals_coordinator)) {
+    return false;
+  }
+
+  if (out->seller_timeout && out->seller_timeout->is_negative()) {
+    return false;
+  }
+
+  if (out->reporting_timeout && out->reporting_timeout->is_negative()) {
+    return false;
+  }
+
+  // Negative length limit is invalid.
+  if (data.max_trusted_scoring_signals_url_length() < 0) {
+    return false;
+  }
+  out->max_trusted_scoring_signals_url_length =
+      data.max_trusted_scoring_signals_url_length();
+
+  // Coodinator must be HTTPS. This also excludes opaque origins, for which
+  // scheme() returns an empty string.
+  if (out->trusted_scoring_signals_coordinator.has_value() &&
+      out->trusted_scoring_signals_coordinator->scheme() != url::kHttpsScheme) {
     return false;
   }
 
@@ -231,6 +297,8 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !AreBuyerPrioritySignalsValid(*out->all_buyers_priority_signals)) {
     return false;
   }
+
+  out->all_buyers_multi_bid_limit = data.all_buyers_multi_bid_limit();
 
   for (const auto& component_auction : out->component_auctions) {
     // TODO(1457241): Add support for multi-level auctions including server-side
@@ -280,13 +348,6 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
           &out->aggregation_coordinator_origin)) {
     return false;
   }
-
-  // Negative length limit is invalid.
-  if (data.max_trusted_scoring_signals_url_length() < 0) {
-    return false;
-  }
-  out->max_trusted_scoring_signals_url_length =
-      data.max_trusted_scoring_signals_url_length();
 
   out->expects_additional_bids = data.expects_additional_bids();
   // An auction that expects additional bids must have an auction nonce provided
@@ -344,14 +405,25 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
     return false;
   }
 
-  // `decision_logic_url` and, if present, `trusted_scoring_signals_url` must
-  // share the seller's origin, and must be HTTPS. Need to explicitly check the
-  // scheme because some non-HTTPS URLs may have HTTPS origins (e.g., blob
-  // URLs).
-  if ((out->decision_logic_url &&
+  // If present and valid, `decision_logic_url` and
+  // `trusted_scoring_signals_url` must share the seller's origin, and must be
+  // HTTPS. Need to explicitly check the scheme because some non-HTTPS URLs may
+  // have HTTPS origins (e.g., blob URLs). Trusted signals URLs also have
+  // additional restrictions (no query, etc).
+  //
+  // Invalid GURLs are allowed through because even though the renderer code
+  // doesn't let invalid GURLs through, trying to pass a too-long GURL through
+  // Mojo results in an invalid GURL on the other side. Rather than preventing
+  // that from happening through, GURL consumers generally just let such GURLs
+  // flow to the network stack, where they return network errors, so we copy
+  // that behavior with auctions. Even when one component of an auction has
+  // invalid GURLs due to this, other components may not, and it's possible
+  // there's a winner.
+  if ((out->decision_logic_url && out->decision_logic_url->is_valid() &&
        !out->IsHttpsAndMatchesSellerOrigin(*out->decision_logic_url)) ||
       (out->trusted_scoring_signals_url &&
-       !out->IsHttpsAndMatchesSellerOrigin(
+       out->trusted_scoring_signals_url->is_valid() &&
+       !out->IsValidTrustedScoringSignalsURL(
            *out->trusted_scoring_signals_url))) {
     return false;
   }

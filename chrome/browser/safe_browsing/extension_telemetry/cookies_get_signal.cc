@@ -11,8 +11,12 @@ namespace safe_browsing {
 CookiesGetSignal::CookiesGetSignal(const extensions::ExtensionId& extension_id,
                                    const std::string& name,
                                    const std::string& store_id,
-                                   const std::string& url)
-    : ExtensionSignal(extension_id), name_(name), store_id_(store_id) {
+                                   const std::string& url,
+                                   extensions::StackTrace js_callstack)
+    : ExtensionSignal(extension_id),
+      name_(name),
+      store_id_(store_id),
+      js_callstack_(std::move(js_callstack)) {
   url_ = SanitizeURLWithoutFilename(url);
 }
 

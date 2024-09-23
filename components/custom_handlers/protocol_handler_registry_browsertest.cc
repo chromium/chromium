@@ -199,7 +199,7 @@ class RegisterProtocolHandlerAndServiceWorkerInterceptor
   }
 };
 
-// TODO(crbug.com/1204127): Fix flakiness.
+// TODO(crbug.com/40763886): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerAndServiceWorkerInterceptor,
                        DISABLED_RegisterFetchListenerForHTMLHandler) {
   // Register a service worker intercepting requests to the HTML handler.

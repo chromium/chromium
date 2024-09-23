@@ -11,10 +11,13 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/commerce/core/android/core_jni/ShoppingService_jni.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/commerce/core/android/core_jni/DiscountInfo_jni.h"
+#include "components/commerce/core/android/core_jni/ShoppingService_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
@@ -31,6 +34,45 @@ ScopedJavaLocalRef<jobject> ToJavaObject(JNIEnv* env,
       env, static_cast<int>(sub.type), static_cast<int>(sub.id_type),
       static_cast<int>(sub.management_type),
       ConvertUTF8ToJavaString(env, sub.id));
+}
+
+ScopedJavaLocalRef<jobject> ConvertToJavaDiscountInfo(
+    JNIEnv* env,
+    const DiscountInfo& info) {
+  ScopedJavaLocalRef<jstring> terms_and_conditions_java_string =
+      info.terms_and_conditions.has_value()
+          ? ConvertUTF8ToJavaString(env, info.terms_and_conditions.value())
+          : nullptr;
+  ScopedJavaLocalRef<jstring> discount_code_java_string =
+      info.discount_code.has_value()
+          ? ConvertUTF8ToJavaString(env, info.discount_code.value())
+          : nullptr;
+
+  return Java_DiscountInfo_Constructor(
+      env, static_cast<int>(info.cluster_type), static_cast<int>(info.type),
+      ConvertUTF8ToJavaString(env, info.language_code),
+      ConvertUTF8ToJavaString(env, info.description_detail),
+      terms_and_conditions_java_string,
+      ConvertUTF8ToJavaString(env, info.value_in_text),
+      discount_code_java_string, info.id, info.is_merchant_wide,
+      info.expiry_time_sec, info.offer_id);
+}
+
+ScopedJavaLocalRef<jobjectArray> ConvertToJavaDiscountInfos(
+    JNIEnv* env,
+    const std::vector<DiscountInfo>& info) {
+  std::vector<ScopedJavaLocalRef<jobject>> j_discount_infos;
+
+  jclass discount_info_clazz =
+      org_chromium_components_commerce_core_DiscountInfo_clazz(env);
+
+  for (size_t i = 0; i < info.size(); i++) {
+    ScopedJavaLocalRef<jobject> discount_info_java =
+        ConvertToJavaDiscountInfo(env, info[i]);
+    j_discount_infos.push_back(discount_info_java);
+  }
+  return base::android::ToTypedJavaArrayOfObjects(
+      env, base::make_span(j_discount_infos), discount_info_clazz);
 }
 
 }  // namespace
@@ -53,7 +95,7 @@ void ShoppingServiceAndroid::GetProductInfoForUrl(
     const JavaParamRef<jobject>& j_callback) {
   CHECK(shopping_service_);
 
-  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   shopping_service_->GetProductInfoForUrl(
       url, base::BindOnce(&ShoppingServiceAndroid::HandleProductInfoCallback,
@@ -68,7 +110,7 @@ ShoppingServiceAndroid::GetAvailableProductInfoForUrl(
     const JavaParamRef<jobject>& j_gurl) {
   CHECK(shopping_service_);
 
-  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   std::optional<ProductInfo> info =
       shopping_service_->GetAvailableProductInfoForUrl(url);
@@ -121,7 +163,7 @@ void ShoppingServiceAndroid::GetMerchantInfoForUrl(
     const JavaParamRef<jobject>& j_callback) {
   CHECK(shopping_service_);
 
-  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   shopping_service_->GetMerchantInfoForUrl(
       url, base::BindOnce(&ShoppingServiceAndroid::HandleMerchantInfoCallback,
@@ -155,7 +197,7 @@ void ShoppingServiceAndroid::GetPriceInsightsInfoForUrl(
     const JavaParamRef<jobject>& j_callback) {
   CHECK(shopping_service_);
 
-  GURL url = *url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   shopping_service_->GetPriceInsightsInfoForUrl(
       url,
@@ -199,6 +241,33 @@ void ShoppingServiceAndroid::HandlePriceInsightsInfoCallback(
       info_java_object);
 }
 
+void ShoppingServiceAndroid::GetDiscountInfoForUrl(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jobject>& j_gurl,
+    const JavaParamRef<jobject>& j_callback) {
+  CHECK(shopping_service_);
+
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+
+  shopping_service_->GetDiscountInfoForUrl(
+      {url}, base::BindOnce(&ShoppingServiceAndroid::HandleDiscountInfoCallback,
+                            weak_ptr_factory_.GetWeakPtr(), env,
+                            ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
+void ShoppingServiceAndroid::HandleDiscountInfoCallback(
+    JNIEnv* env,
+    const ScopedJavaGlobalRef<jobject>& callback,
+    const GURL& url,
+    const std::vector<DiscountInfo> info) {
+  ScopedJavaLocalRef<jobjectArray> discount_info_array_obj =
+      ConvertToJavaDiscountInfos(env, info);
+  Java_ShoppingService_runDiscountInfoCallback(
+      env, callback, url::GURLAndroid::FromNativeGURL(env, url),
+      discount_info_array_obj);
+}
+
 void ShoppingServiceAndroid::FetchPriceEmailPref(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
@@ -225,14 +294,16 @@ void ShoppingServiceAndroid::Subscribe(
     const JavaParamRef<jstring>& j_seen_offer_id,
     jlong j_seen_price,
     const JavaParamRef<jstring>& j_seen_country,
+    const JavaParamRef<jstring>& j_seen_locale,
     const JavaParamRef<jobject>& j_callback) {
   std::string id = ConvertJavaStringToUTF8(j_id);
   std::string seen_offer_id = ConvertJavaStringToUTF8(j_seen_offer_id);
   std::string seen_country = ConvertJavaStringToUTF8(j_seen_country);
+  std::string seen_locale = ConvertJavaStringToUTF8(j_seen_locale);
   CHECK(!id.empty());
 
   auto user_seen_offer = std::make_optional<UserSeenOffer>(
-      seen_offer_id, j_seen_price, seen_country);
+      seen_offer_id, j_seen_price, seen_country, seen_locale);
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
                            id, ManagementType(j_management_type),
                            kUnknownSubscriptionTimestamp,
@@ -373,6 +444,14 @@ bool ShoppingServiceAndroid::IsPriceInsightsEligible(
   CHECK(shopping_service_);
 
   return shopping_service_->IsPriceInsightsEligible();
+}
+
+bool ShoppingServiceAndroid::IsDiscountEligibleToShowOnNavigation(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(shopping_service_);
+
+  return shopping_service_->IsDiscountEligibleToShowOnNavigation();
 }
 
 }  // namespace commerce

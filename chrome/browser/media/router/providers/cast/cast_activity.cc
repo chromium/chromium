@@ -33,7 +33,7 @@ void CastActivity::SetRouteIsConnecting(bool is_connecting) {
 mojom::RoutePresentationConnectionPtr CastActivity::AddClient(
     const CastMediaSource& source,
     const url::Origin& origin,
-    int frame_tree_node_id) {
+    content::FrameTreeNodeId frame_tree_node_id) {
   const std::string& client_id = source.client_id();
   DCHECK(!base::Contains(connected_clients_, client_id));
   std::unique_ptr<CastSessionClient> client =
@@ -64,7 +64,7 @@ CastSession* CastActivity::GetSession() const {
     return nullptr;
   CastSession* session = session_tracker_->GetSessionById(*session_id_);
   if (!session) {
-    // TODO(crbug.com/905002): Add UMA metrics for this and other error
+    // TODO(crbug.com/41426190): Add UMA metrics for this and other error
     // conditions.
     LOG(ERROR) << "Session not found: " << *session_id_;
   }

@@ -5,6 +5,8 @@
 #include "base/android/feature_map.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/accessibility_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/accessibility/ax_base_jni_headers/AccessibilityFeaturesMap_jni.h"
 
 namespace ui {

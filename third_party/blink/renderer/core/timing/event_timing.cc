@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -81,8 +82,11 @@ bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
   // events that are considered continuous: event types for which the user agent
   // may have timer-based dispatch under certain conditions. These are excluded
   // since EventCounts cannot be used to properly computed percentiles on those.
-  // See spec: https://wicg.github.io/event-timing/#sec-events-exposed
-  return event.isTrusted() &&
+  // See spec: https://wicg.github.io/event-timing/#sec-events-exposed.
+  // Needs to be kept in sync with WebInputEvent::IsWebInteractionEvent(),
+  // except non-raw web input event types, for example kCompositionend.
+  return (event.isTrusted() ||
+          event.type() == event_type_names::kCompositionend) &&
          (IsA<MouseEvent>(event) || IsA<PointerEvent>(event) ||
           IsA<TouchEvent>(event) || IsA<KeyboardEvent>(event) ||
           IsA<WheelEvent>(event) || event.IsInputEvent() ||
@@ -101,10 +105,10 @@ std::unique_ptr<EventTiming> EventTiming::Create(
     const Event& event,
     EventTarget* original_event_target) {
   auto* performance = DOMWindowPerformance::performance(*window);
-  if (!performance || !event.isTrusted() ||
-      (!IsEventTypeForEventTiming(event) &&
-       event.type() != event_type_names::kPointermove))
+  if (!performance || (!IsEventTypeForEventTiming(event) &&
+                       event.type() != event_type_names::kPointermove)) {
     return nullptr;
+  }
 
   // Most events track their performance in EventDispatcher::Dispatch but
   // some event types which can be filtered are tracked at the point
@@ -113,18 +117,33 @@ std::unique_ptr<EventTiming> EventTiming::Create(
   if (performance->GetCurrentEventTimingEvent() == &event)
     return nullptr;
 
-  bool should_report_for_event_timing = ShouldReportForEventTiming(performance);
-  bool should_log_event = ShouldLogEvent(event);
+  if (!RuntimeEnabledFeatures::
+          ContinueEventTimingRecordingWhenBufferIsFullEnabled()) {
+    bool should_report_for_event_timing =
+        ShouldReportForEventTiming(performance);
 
-  if (!should_report_for_event_timing && !should_log_event)
-    return nullptr;
+    bool should_log_event = ShouldLogEvent(event);
 
-  base::TimeTicks processing_start = Now();
-  HandleInputDelay(window, event, processing_start);
-  return should_report_for_event_timing
-             ? std::make_unique<EventTiming>(processing_start, performance,
-                                             event, original_event_target)
-             : nullptr;
+    if (!should_report_for_event_timing && !should_log_event) {
+      return nullptr;
+    }
+
+    base::TimeTicks processing_start = Now();
+
+    HandleInputDelay(window, event, processing_start);
+
+    return should_report_for_event_timing
+               ? std::make_unique<EventTiming>(processing_start, performance,
+                                               event, original_event_target)
+               : nullptr;
+  } else {
+    base::TimeTicks processing_start = Now();
+
+    HandleInputDelay(window, event, processing_start);
+
+    return std::make_unique<EventTiming>(processing_start, performance, event,
+                                         original_event_target);
+  }
 }
 
 // static

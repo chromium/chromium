@@ -127,6 +127,6 @@ public class TileView extends FrameLayout {
 
     @Override
     public boolean isFocused() {
-        return super.isFocused() || (isSelected() && !isInTouchMode());
+        return super.isFocused() || isSelected();
     }
 }

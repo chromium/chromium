@@ -17,6 +17,12 @@ class GCMProfileService;
 // Profiles.
 class GCMProfileServiceFactory : public ProfileKeyedServiceFactory {
  public:
+  // A repeating factory that can be installed globally for all `context`
+  // objects (thus needs to be repeating factory).
+  using GlobalTestingFactory =
+      base::RepeatingCallback<std::unique_ptr<KeyedService>(
+          content::BrowserContext*)>;
+
   static GCMProfileService* GetForProfile(content::BrowserContext* profile);
   static GCMProfileServiceFactory* GetInstance();
 
@@ -26,7 +32,8 @@ class GCMProfileServiceFactory : public ProfileKeyedServiceFactory {
   // your test fixture.
   class ScopedTestingFactoryInstaller {
    public:
-    explicit ScopedTestingFactoryInstaller(TestingFactory testing_factory);
+    explicit ScopedTestingFactoryInstaller(
+        GlobalTestingFactory testing_factory);
 
     ScopedTestingFactoryInstaller(const ScopedTestingFactoryInstaller&) =
         delete;

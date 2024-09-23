@@ -9,16 +9,20 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/document_suggestions_service.h"
+#include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
 
@@ -51,15 +55,48 @@ GURL RemoteSuggestionsService::EndpointUrl(
     const TemplateURL* template_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const SearchTermsData& search_terms_data) {
-  const TemplateURLRef& suggestion_url_ref =
-      template_url->suggestions_url_ref();
+  GURL url = GURL(template_url->suggestions_url_ref().ReplaceSearchTerms(
+      search_terms_args, search_terms_data));
 
-  // Append a specific suggest client in ChromeOS app_list launcher contexts.
-  BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
-      template_url, search_terms_data, search_terms_args.page_classification,
-      &search_terms_args);
-  return GURL(suggestion_url_ref.ReplaceSearchTerms(search_terms_args,
-                                                    search_terms_data));
+  // Return early for non-Google template URLs.
+  if (!search::TemplateURLIsGoogle(template_url, search_terms_data)) {
+    return url;
+  }
+
+  // Append or replace query params based on `page_classification`.
+  switch (search_terms_args.page_classification) {
+    case metrics::OmniboxEventProto::CHROMEOS_APP_LIST: {
+      // Append `sclient=cros-launcher` for CrOS app_list launcher entry point.
+      url = net::AppendOrReplaceQueryParameter(url, "sclient", "cros-launcher");
+      break;
+    }
+    case metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
+    case metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX:
+      // Append `client=chrome-contextual` for non-multimodal and contextual
+      // lens searchboxes.
+      url = net::AppendOrReplaceQueryParameter(url, "client",
+                                               "chrome-contextual");
+      break;
+    case metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX: {
+      // Append `client=chrome-multimodal` for the multimodal lens searchbox.
+      url = net::AppendOrReplaceQueryParameter(url, "client",
+                                               "chrome-multimodal");
+      // Append `iil=` for the multimodal searchbox entry point, if available.
+      if (search_terms_args.lens_overlay_interaction_response.has_value() &&
+          search_terms_args.lens_overlay_interaction_response
+              ->has_suggest_signals()) {
+        url = net::AppendOrReplaceQueryParameter(
+            url, "iil",
+            search_terms_args.lens_overlay_interaction_response
+                ->suggest_signals());
+      }
+      break;
+    }
+    default:
+      break;
+  }
+
+  return url;
 }
 
 std::unique_ptr<network::SimpleURLLoader>

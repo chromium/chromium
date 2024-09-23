@@ -141,6 +141,11 @@ template("system_webview_apk_or_module_tmpl") {
       "//android_webview:pak_file_assets",
     ]
 
+    # Only the .build_config.json is used from this target, and it's fine if
+    # it contains more assets than we need (always use the 64_32 variant).
+    # https://crbug.com/357131361
+    suffix_apk_assets_used_by = system_webview_apk_target
+
     deps += [ "//android_webview:android_webview_no_weblayer_java" ]
 
     if (!_omit_dex) {
@@ -199,15 +204,6 @@ template("system_webview_apk_or_module_tmpl") {
           }
           secondary_native_lib_placeholders = [ "libplaceholder.so" ]
           static_library_provider_use_secondary_abi = true
-        }
-
-        # http://crbug.com/1042107.
-        if (is_component_build) {
-          if (_is_64_bit_browser) {
-            main_component_library = "libmonochrome_64.cr.so"
-          } else {
-            main_component_library = "libmonochrome.cr.so"
-          }
         }
       } else {
         native_lib_placeholders = [ "libplaceholder.so" ]

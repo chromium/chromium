@@ -13,7 +13,7 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -25,6 +25,11 @@ namespace webauthn_credentials_helper {
 using sync_datatype_helper::test;
 
 namespace {
+
+// Passkey creation timestamps are assumed to increase monotonically to get
+// expected behaviour around shadowed credentials. This global tracks the
+// "current" timestamp, and is increased on each use.
+int g_timestamp = 0;
 
 class WebAuthnCredentialsSyncIdEqualsChecker
     : public MultiClientStatusChangeChecker {
@@ -109,7 +114,7 @@ ServerPasskeysMatchChecker::~ServerPasskeysMatchChecker() = default;
 bool ServerPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for server passkeys to match: ";
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server()->GetSyncEntitiesByModelType(syncer::WEBAUTHN_CREDENTIAL);
+      fake_server()->GetSyncEntitiesByDataType(syncer::WEBAUTHN_CREDENTIAL);
   testing::StringMatchResultListener result_listener;
   const bool matches =
       testing::ExplainMatchResult(matcher_, entities, &result_listener);
@@ -184,8 +189,7 @@ sync_pb::WebauthnCredentialSpecifics NewPasskey() {
   // Pick random user IDs so we don't accidentally create shadow chains. Use
   // `NewShadowingPasskey` to explicitly test shadowing.
   specifics.set_user_id(base::RandBytesAsString(16));
-  specifics.set_creation_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_creation_time(++g_timestamp);
   // Set some random encrypted_data to ensure the model accepts the specifics as
   // valid.
   specifics.set_encrypted("a");
@@ -199,8 +203,7 @@ sync_pb::WebauthnCredentialSpecifics NewShadowingPasskey(
   specifics.set_credential_id(base::RandBytesAsString(16));
   specifics.set_rp_id(shadowed.rp_id());
   specifics.set_user_id(shadowed.user_id());
-  specifics.set_creation_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_creation_time(++g_timestamp);
   specifics.add_newly_shadowed_credential_ids(shadowed.credential_id());
   // Set some random encrypted_data to ensure the model accepts the specifics as
   // valid.

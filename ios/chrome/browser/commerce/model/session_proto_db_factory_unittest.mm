@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -14,15 +14,15 @@ class SessionProtoDBFactoryTest : public PlatformTest {
   SessionProtoDBFactoryTest() {}
 
   void SetUp() override {
-    TestChromeBrowserState::Builder builder_a;
-    browser_state_a_ = builder_a.Build();
-    TestChromeBrowserState::Builder builder_b;
-    browser_state_b_ = builder_b.Build();
+    TestProfileIOS::Builder builder_a;
+    profile_a_ = std::move(builder_a).Build();
+    TestProfileIOS::Builder builder_b;
+    profile_b_ = std::move(builder_b).Build();
   }
 
  protected:
-  std::unique_ptr<TestChromeBrowserState> browser_state_a_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_b_;
+  std::unique_ptr<TestProfileIOS> profile_a_;
+  std::unique_ptr<TestProfileIOS> profile_b_;
   web::WebTaskEnvironment task_environment_;
 };
 
@@ -31,8 +31,7 @@ TEST_F(SessionProtoDBFactoryTest, TestIncognito) {
       nullptr,
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
-          ->GetForBrowserState(
-              browser_state_a_->GetOffTheRecordChromeBrowserState()));
+          ->GetForProfile(profile_a_->GetOffTheRecordProfile()));
 }
 
 TEST_F(SessionProtoDBFactoryTest, TestNonIncognito) {
@@ -40,25 +39,25 @@ TEST_F(SessionProtoDBFactoryTest, TestNonIncognito) {
       nullptr,
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
-          ->GetForBrowserState(browser_state_a_.get()));
+          ->GetForProfile(profile_a_.get()));
 }
 
 TEST_F(SessionProtoDBFactoryTest, TestSameBrowserState) {
   EXPECT_EQ(
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
-          ->GetForBrowserState(browser_state_a_.get()),
+          ->GetForProfile(profile_a_.get()),
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
-          ->GetForBrowserState(browser_state_a_.get()));
+          ->GetForProfile(profile_a_.get()));
 }
 
 TEST_F(SessionProtoDBFactoryTest, TestDifferentBrowserState) {
   EXPECT_NE(
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
-          ->GetForBrowserState(browser_state_a_.get()),
+          ->GetForProfile(profile_a_.get()),
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
-          ->GetForBrowserState(browser_state_b_.get()));
+          ->GetForProfile(profile_b_.get()));
 }

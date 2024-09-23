@@ -8,6 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
 
+import android.os.Build;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -16,30 +18,39 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
+import org.chromium.net.impl.CronetLogger.CronetTrafficInfo;
+import org.chromium.net.impl.TestLogger;
 
 import java.nio.ByteBuffer;
 import java.util.Date;
 
 /** Tests functionality of BidirectionalStream's QUIC implementation. */
 @RunWith(AndroidJUnit4.class)
-@Batch(Batch.UNIT_TESTS)
+// TODO(b/344966604): Fix and batch afterwards.
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
         reason =
                 "The fallback implementation doesn't support bidirectional streaming. "
                         + "crbug.com/1494870: Enable for AOSP_PLATFORM once fixed")
 public class BidirectionalStreamQuicTest {
-    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    private final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    private final CronetLoggerTestRule<TestLogger> mLoggerTestRule =
+            new CronetLoggerTestRule<>(TestLogger.class);
+
+    @Rule public final RuleChain chain = RuleChain.outerRule(mTestRule).around(mLoggerTestRule);
+
+    private TestLogger mTestLogger;
 
     private ExperimentalCronetEngine mCronetEngine;
 
     @Before
     public void setUp() throws Exception {
+        mTestLogger = mLoggerTestRule.mTestLogger;
         mTestRule
                 .getTestFramework()
                 .applyEngineBuilderPatch(
@@ -47,7 +58,9 @@ public class BidirectionalStreamQuicTest {
                             QuicTestServer.startQuicTestServer(
                                     mTestRule.getTestFramework().getContext());
 
-                            JSONObject quicParams = new JSONObject();
+                            JSONObject quicParams =
+                                    new JSONObject()
+                                            .put("retry_without_alt_svc_on_quic_errors", false);
                             JSONObject hostResolverParams =
                                     CronetTestUtil.generateHostResolverRules();
                             JSONObject experimentalOptions =
@@ -69,6 +82,7 @@ public class BidirectionalStreamQuicTest {
 
     @After
     public void tearDown() throws Exception {
+        mTestLogger = null;
         QuicTestServer.shutdownQuicTestServer();
     }
 
@@ -98,6 +112,7 @@ public class BidirectionalStreamQuicTest {
     @Test
     @SmallTest
     public void testSimplePost() throws Exception {
+        CronetImplementation implementationUnderTest = mTestRule.implementationUnderTest();
         String path = "/simple.txt";
         String quicURL = QuicTestServer.getServerURL() + path;
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
@@ -124,9 +139,11 @@ public class BidirectionalStreamQuicTest {
         requestFinishedListener.blockUntilDone();
         Date endTime = new Date();
         RequestFinishedInfo finishedInfo = requestFinishedListener.getRequestInfo();
-        MetricsTestUtil.checkRequestFinishedInfo(finishedInfo, quicURL, startTime, endTime);
+        MetricsTestUtil.checkRequestFinishedInfo(
+                implementationUnderTest, finishedInfo, quicURL, startTime, endTime);
         assertThat(finishedInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
-        MetricsTestUtil.checkHasConnectTiming(finishedInfo.getMetrics(), startTime, endTime, true);
+        MetricsTestUtil.checkHasConnectTiming(
+                implementationUnderTest, finishedInfo.getMetrics(), startTime, endTime, true);
         assertThat(finishedInfo.getAnnotations()).containsExactly("request annotation", this);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString)
@@ -335,7 +352,7 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
-    public void testStreamFailWithQuicDetailedErrorCode() throws Exception {
+    public void testServerAbruptShutdownShouldTerminateConnection() throws Exception {
         String path = "/simple.txt";
         String quicURL = QuicTestServer.getServerURL() + path;
         TestBidirectionalStreamCallback callback =
@@ -358,10 +375,54 @@ public class BidirectionalStreamQuicTest {
         callback.blockForDone();
         assertThat(stream.isDone()).isTrue();
         assertThat(callback.mError).isNotNull();
-        if (callback.mError instanceof QuicException) {
-            QuicException quicException = (QuicException) callback.mError;
-            // Checks that detailed quic error code is not QUIC_NO_ERROR == 0.
-            assertThat(quicException.getQuicDetailedErrorCode()).isGreaterThan(0);
+        // TODO(b/365787337): Investigate the flaky QUIC error code when the server shuts down
+        // abruptly.
+        // The network error returned when a server shutdowns abruptly is non-deterministic
+        // for the test server that we are using (QuicTestServer). It could return one of the
+        // following:
+        // (1) QuicException with error code (51) PACKET_READ_ERROR.
+        // (2) QuicException with error code (16) PEER_GOING_AWAY.
+        // (3) BidirectionalStreamNetworkException with internal error code
+        // ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED.
+        // That's why there is no explicit check for the error code.
+        assertThat(callback.mError).isInstanceOf(NetworkException.class);
+    }
+
+    @Test
+    @SmallTest
+    public void testServerSendQuicConnectionCloseCorrectlyReported() throws Exception {
+        String quicURL = QuicTestServer.getServerURL() + QuicTestServer.getConnectionClosePath();
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(quicURL, callback, callback.getExecutor())
+                        .setHttpMethod("GET")
+                        .addHeader("Content-Type", "zebra")
+                        .build();
+        stream.start();
+        callback.blockForDone();
+        assertThat(stream.isDone()).isTrue();
+        assertThat(callback.mError).isNotNull();
+
+        assertThat(callback.mError).isInstanceOf(QuicException.class);
+        QuicException quicException = (QuicException) callback.mError;
+        // 0 is QUIC_NO_ERROR, This is expected because of the test-server behavior, see
+        // https://source.chromium.org/chromium/_/quiche/quiche/+/86e3e869377b05a7143dfa07a4d1219881396661:quiche/quic/tools/quic_simple_server_stream.cc;l=286;
+        assertThat(quicException.getQuicDetailedErrorCode()).isEqualTo(0);
+        assertThat(quicException.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.PEER);
+        assertThat(quicException.getErrorCode())
+                .isEqualTo(NetworkException.ERROR_QUIC_PROTOCOL_FAILED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mTestLogger.waitForLogCronetTrafficInfo();
+            final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
+            assertThat(trafficInfo.getConnectionCloseSource())
+                    .isEqualTo(quicException.getConnectionCloseSource());
+            assertThat(trafficInfo.getNetworkInternalErrorCode())
+                    .isEqualTo(quicException.getCronetInternalErrorCode());
+            assertThat(trafficInfo.getQuicErrorCode())
+                    .isEqualTo(quicException.getQuicDetailedErrorCode());
+            assertThat(trafficInfo.getFailureReason())
+                    .isEqualTo(CronetTrafficInfo.RequestFailureReason.NETWORK);
         }
     }
 }

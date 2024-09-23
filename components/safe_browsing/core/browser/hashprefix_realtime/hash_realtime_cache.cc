@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 
 namespace safe_browsing {
@@ -103,7 +103,7 @@ void HashRealTimeCache::CacheSearchHashesResponse(
           full_hash_to_store);
     } else {
       // There should always be a hash prefix associated with the full hash.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

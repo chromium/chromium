@@ -357,6 +357,13 @@ async function pointerdown(target) {
     .send();
 }
 
+async function pointerup(target) {
+  const actions = new test_driver.Actions();
+  return actions.addPointer("mousePointer", "mouse")
+    .pointerMove(0, 0, { origin: target })
+    .pointerUp()
+    .send();
+}
 async function auxPointerdown(target) {
   const actions = new test_driver.Actions();
   return actions.addPointer("mousePointer", "mouse")
@@ -369,6 +376,21 @@ async function auxPointerdown(target) {
 // function.
 async function pressKey(target, key) {
   await test_driver.send_keys(target, key);
+}
+
+async function flingAndTapInTarget(target) {
+  const actions = new test_driver.Actions();
+  return actions.addPointer("pointer1", "touch")
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown()
+        .pointerMove(0, -50, {origin: target})
+        .pointerMove(0, -50, {origin: target})
+        .pointerUp()
+        .pause(60)
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown()
+        .pointerUp()
+        .send();
 }
 
 // The testdriver.js, testdriver-vendor.js need to be included to use this
@@ -409,11 +431,38 @@ async function createPerformanceObserverPromise(observeTypes, callback, readyToR
   });
 }
 
+const ENTER_KEY = '\uE007';
+const SPACE_KEY = '\uE00D';
+
+async function blockPointerDownEventListener(target, duration, count) {
+  return new Promise(resolve => {
+    target.addEventListener("pointerdown", () => {
+      event_count++;
+      mainThreadBusy(duration);
+      if (event_count == count)
+        resolve();
+    });
+  });
+}
+
+async function flingTapAndBlockMain(target, duration) {
+  await Promise.all([
+    blockPointerDownEventListener(target, 30, 2),
+    blockNextEventListener(target, "pointercancel", 30),
+    blockNextEventListener(target, "scroll", 30),
+    flingAndTapInTarget(target),
+  ]);
+}
+
 // The testdriver.js, testdriver-vendor.js need to be included to use this
 // function.
-async function interactAndObserve(interactionType, target, observerPromise) {
+async function interactAndObserve(interactionType, target, observerPromise, key = '') {
   let interactionPromise;
   switch (interactionType) {
+    case 'key': {
+      addListeners(target, ['keydown', 'keyup']);
+      interactionPromise = pressKey(target, key);
+    }
     case 'tap': {
       addListeners(target, ['pointerdown', 'pointerup']);
       interactionPromise = tap(target);
@@ -441,6 +490,25 @@ async function interactAndObserve(interactionType, target, observerPromise) {
       addListeners(target,
         ['mousedown', 'pointerdown', 'contextmenu']);
       interactionPromise = Promise.all([auxPointerdown(target), pointerdown(target)]);
+      break;
+    }
+    case 'orphan-pointerup': {
+      addListeners(target, ['pointerup']);
+      interactionPromise = pointerup(target);
+      break;
+    }
+    case 'space-key-simulated-click': {
+      addListeners(target, ['keydown', 'click']);
+      interactionPromise = interact('key', target, SPACE_KEY);
+      break;
+    }
+    case 'enter-key-simulated-click': {
+      addListeners(target, ['keydown', 'click']);
+      interactionPromise = interact('key', target, ENTER_KEY);
+      break;
+    }
+    case 'fling-tap': {
+      interactionPromise = flingTapAndBlockMain(target, 30);
       break;
     }
   }

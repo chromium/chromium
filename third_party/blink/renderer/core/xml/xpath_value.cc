@@ -81,7 +81,7 @@ bool Value::ToBoolean() const {
     case kStringValue:
       return !data_->string_.empty();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -112,7 +112,7 @@ double Value::ToNumber() const {
     case kBooleanValue:
       return bool_;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0.0;
 }
 
@@ -135,7 +135,7 @@ String Value::ToString() const {
     case kBooleanValue:
       return bool_ ? "true" : "false";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 

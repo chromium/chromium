@@ -21,7 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
-#include "chrome/browser/ash/process_snapshot_server.h"
+#include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

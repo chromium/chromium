@@ -113,8 +113,8 @@ def main():
   out_gn_args_path = options.out_dir / 'args.gn'
   extra_gn_args = [
       'treat_warnings_as_errors = true',
-      # GOMA does not work with non-standard output directories.
-      'use_goma = false',
+      # reclient does not work with non-standard output directories.
+      'use_remoteexec = false',
   ]
   _copy_and_append_gn_args(
       options.gn_args_path, out_gn_args_path,

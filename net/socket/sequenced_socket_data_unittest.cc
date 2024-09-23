@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <string>
 
@@ -648,7 +653,6 @@ TEST_F(SequencedSocketDataTest, SingleSyncWriteTooSmall) {
   }
 
   static const char* kExpectedFailures[] = {
-      "Expected: (data.length()) >= (expected_data.length())",
       "Value of: actual_data == expected_data\n  Actual: false\nExpected: true",
       "Expected equality of these values:\n  rv"};
   ASSERT_EQ(std::size(kExpectedFailures),

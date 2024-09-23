@@ -32,24 +32,12 @@ namespace {
 
 using ::chromeos::WindowStateType;
 
-// |kMinimumOnScreenArea + 1| is used to avoid adjusting loop.
-constexpr int kClientControlledWindowMinimumOnScreenArea =
-    kMinimumOnScreenArea + 1;
 }  // namespace
 
 ClientControlledState::ClientControlledState(std::unique_ptr<Delegate> delegate)
     : BaseState(WindowStateType::kDefault), delegate_(std::move(delegate)) {}
 
 ClientControlledState::~ClientControlledState() = default;
-
-// static
-void ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
-    const gfx::Rect& display_bounds,
-    gfx::Rect* bounds) {
-  AdjustBoundsToEnsureWindowVisibility(
-      display_bounds, kClientControlledWindowMinimumOnScreenArea,
-      kClientControlledWindowMinimumOnScreenArea, bounds);
-}
 
 void ClientControlledState::ResetDelegate() {
   delegate_.reset();
@@ -95,7 +83,6 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
       break;
     case WM_EVENT_SHOW_INACTIVE:
       NOTREACHED();
-      break;
     default:
       NOTREACHED() << "Unknown event :" << event->type();
   }
@@ -103,9 +90,13 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
 
 void ClientControlledState::AttachState(
     WindowState* window_state,
-    WindowState::State* state_in_previous_mode) {}
+    WindowState::State* state_in_previous_mode) {
+  window_state->is_client_controlled_ = true;
+}
 
-void ClientControlledState::DetachState(WindowState* window_state) {}
+void ClientControlledState::DetachState(WindowState* window_state) {
+  window_state->is_client_controlled_ = false;
+}
 
 void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
                                                   const WMEvent* event) {
@@ -154,8 +145,8 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
     }
   } else if (event->type() == WM_EVENT_ADDED_TO_WORKSPACE) {
     gfx::Rect bounds = window->bounds();
-    AdjustBoundsForMinimumWindowVisibility(window->GetRootWindow()->bounds(),
-                                           &bounds);
+    AdjustBoundsToEnsureMinimumWindowVisibility(
+        window->GetRootWindow()->bounds(), /*client_controlled=*/true, &bounds);
 
     if (window->bounds() != bounds)
       window_state->SetBoundsConstrained(bounds);
@@ -188,7 +179,6 @@ void ClientControlledState::HandleCompoundEvents(WindowState* window_state,
       break;
     default:
       NOTREACHED() << "Invalid event :" << event->type();
-      break;
   }
 }
 
@@ -200,12 +190,20 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
   switch (event->type()) {
     case WM_EVENT_SET_BOUNDS: {
       const auto* set_bounds_event = event->AsSetBoundsWMEvent();
-      const gfx::Rect& bounds = set_bounds_event->requested_bounds();
+      const gfx::Rect& bounds = set_bounds_event->requested_bounds_in_parent();
       if (set_bounds_locally_) {
-        // Don’t preempt on-going animation (e.g. tucking) for floated windows.
-        if (window_state->IsFloated() && window->layer() &&
-            window->layer()->GetAnimator()->is_animating()) {
-          return;
+        if (window_state->IsFloated()) {
+          // Don’t preempt on-going animation (e.g. tucking) for floated
+          // windows.
+          if (window->layer() &&
+              window->layer()->GetAnimator()->is_animating()) {
+            return;
+          }
+          // Don't move the tucked window. It's fully controlled by ash now.
+          if (Shell::Get()->float_controller()->IsFloatedWindowTuckedForTablet(
+                  window)) {
+            return;
+          }
         }
 
         switch (next_bounds_change_animation_type_) {
@@ -227,7 +225,6 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
             break;
           case WindowState::BoundsChangeAnimationType::kAnimateZero:
             NOTREACHED();
-            break;
         }
         next_bounds_change_animation_type_ =
             WindowState::BoundsChangeAnimationType::kNone;

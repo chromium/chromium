@@ -55,7 +55,6 @@ void DestroyNoStatePrefetchContents(
 
 void CreateSafeBrowsingUserInteractionObserver(
     const security_interstitials::UnsafeResource& resource,
-    bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForResource(resource);
@@ -75,7 +74,7 @@ void CreateSafeBrowsingUserInteractionObserver(
   }
 #endif
   SafeBrowsingUserInteractionObserver::CreateForWebContents(
-      web_contents, resource, is_main_frame, ui_manager);
+      web_contents, resource, ui_manager);
 }
 
 }  // namespace
@@ -86,15 +85,14 @@ UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
     : database_manager_(std::move(database_manager)),
       ui_manager_(std::move(ui_manager)),
       threat_types_(CreateSBThreatTypeSet({
-// TODO(crbug.com/835961): Enable on Android when list is available.
+// TODO(crbug.com/41385006): Enable on Android when list is available.
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
-        safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE,
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE,
 #endif
-            safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
-            safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
-            safe_browsing::SB_THREAT_TYPE_URL_UNWANTED,
-            safe_browsing::SB_THREAT_TYPE_BILLING
-      })) {
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING})) {
 }
 
 UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
@@ -113,7 +111,6 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const security_interstitials::UnsafeResource& resource,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
-    bool is_main_frame,
     bool has_user_gesture) {
   // Keep a post task here to avoid possible reentrancy into safe browsing
   // code if it is running on the UI thread.
@@ -126,13 +123,12 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
 // Starts displaying the SafeBrowsing interstitial page.
 void UrlCheckerDelegateImpl::
     StartObservingInteractionsForDelayedBlockingPageHelper(
-        const security_interstitials::UnsafeResource& resource,
-        bool is_main_frame) {
+        const security_interstitials::UnsafeResource& resource) {
   // Keep a post task here to avoid possible reentrancy into safe browsing
   // code if it is running on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CreateSafeBrowsingUserInteractionObserver,
-                                resource, is_main_frame, ui_manager_));
+                                resource, ui_manager_));
 }
 
 bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
@@ -166,6 +162,14 @@ void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&NotifySuspiciousSiteTriggerDetected,
                                 web_contents_getter));
+}
+
+void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+  ui_manager_->SendThreatDetails(web_contents_getter.Run()->GetBrowserContext(),
+                                 std::move(report));
 }
 
 const SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {

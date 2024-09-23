@@ -76,7 +76,7 @@ net::RequestPriority WebURLRequest::ConvertToNetPriority(
 
     case WebURLRequest::Priority::kUnresolved:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return net::LOW;
   }
 }
@@ -343,14 +343,6 @@ void WebURLRequest::SetRedirectMode(network::mojom::RedirectMode redirect) {
   return resource_request_->SetRedirectMode(redirect);
 }
 
-WebString WebURLRequest::GetFetchIntegrity() const {
-  return resource_request_->GetFetchIntegrity();
-}
-
-void WebURLRequest::SetFetchIntegrity(const WebString& integrity) {
-  return resource_request_->SetFetchIntegrity(integrity);
-}
-
 const scoped_refptr<WebURLRequestExtraData>&
 WebURLRequest::GetURLRequestExtraData() const {
   return resource_request_->GetURLRequestExtraData();
@@ -478,12 +470,12 @@ int WebURLRequest::GetLoadFlagsForWebUrlRequest() const {
   if (resource_request_->AllowsStaleResponse()) {
     load_flags |= net::LOAD_SUPPORT_ASYNC_REVALIDATION;
   }
-  if (resource_request_->PrefetchMaybeForTopLeveNavigation()) {
-    DCHECK_EQ(resource_request_->GetRequestContext(),
-              blink::mojom::blink::RequestContextType::PREFETCH);
+  if (resource_request_->PrefetchMaybeForTopLevelNavigation()) {
+    CHECK_EQ(resource_request_->GetRequestContext(),
+             blink::mojom::blink::RequestContextType::PREFETCH);
     if (!resource_request_->RequestorOrigin()->IsSameOriginWith(
             SecurityOrigin::Create(resource_request_->Url()).get())) {
-      load_flags |= net::LOAD_RESTRICTED_PREFETCH;
+      load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
     }
   }
 

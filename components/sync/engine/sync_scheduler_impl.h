@@ -32,15 +32,15 @@ namespace syncer {
 class BackoffDelayProvider;
 struct ModelNeutralState;
 
+// Lives on the sync sequence.
 class SyncSchedulerImpl : public SyncScheduler {
  public:
-  // |name| is a display string to identify the syncer thread.
+  // |name| is a display string to identify the sync sequence.
   SyncSchedulerImpl(const std::string& name,
                     std::unique_ptr<BackoffDelayProvider> delay_provider,
                     SyncCycleContext* context,
                     std::unique_ptr<Syncer> syncer,
-                    bool ignore_auth_credentials,
-                    bool sync_poll_immediately_on_every_startup);
+                    bool ignore_auth_credentials);
 
   SyncSchedulerImpl(const SyncSchedulerImpl&) = delete;
   SyncSchedulerImpl& operator=(const SyncSchedulerImpl&) = delete;
@@ -50,15 +50,15 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   void Start(Mode mode, base::Time last_poll_time) override;
   void ScheduleConfiguration(sync_pb::SyncEnums::GetUpdatesOrigin origin,
-                             ModelTypeSet types_to_download,
+                             DataTypeSet types_to_download,
                              base::OnceClosure ready_task) override;
   void Stop() override;
-  void ScheduleLocalNudge(ModelType type) override;
-  void ScheduleLocalRefreshRequest(ModelTypeSet types) override;
-  void ScheduleInvalidationNudge(ModelType type) override;
-  void ScheduleInitialSyncNudge(ModelType model_type) override;
+  void ScheduleLocalNudge(DataType type) override;
+  void ScheduleLocalRefreshRequest(DataTypeSet types) override;
+  void ScheduleInvalidationNudge(DataType type) override;
+  void ScheduleInitialSyncNudge(DataType data_type) override;
   void SetNotificationsEnabled(bool notifications_enabled) override;
-  void SetHasPendingInvalidations(ModelType type,
+  void SetHasPendingInvalidations(DataType type,
                                   bool has_invalidations) override;
 
   void OnCredentialsUpdated() override;
@@ -66,18 +66,18 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // SyncCycle::Delegate implementation.
   void OnThrottled(const base::TimeDelta& throttle_duration) override;
-  void OnTypesThrottled(ModelTypeSet types,
+  void OnTypesThrottled(DataTypeSet types,
                         const base::TimeDelta& throttle_duration) override;
-  void OnTypesBackedOff(ModelTypeSet types) override;
+  void OnTypesBackedOff(DataTypeSet types) override;
   bool IsAnyThrottleOrBackoff() override;
   void OnReceivedPollIntervalUpdate(
       const base::TimeDelta& new_interval) override;
   void OnReceivedCustomNudgeDelays(
-      const std::map<ModelType, base::TimeDelta>& nudge_delays) override;
+      const std::map<DataType, base::TimeDelta>& nudge_delays) override;
   void OnSyncProtocolError(
       const SyncProtocolError& sync_protocol_error) override;
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override;
-  void OnReceivedMigrationRequest(ModelTypeSet types) override;
+  void OnReceivedMigrationRequest(DataTypeSet types) override;
   void OnReceivedQuotaParamsForExtensionTypes(
       std::optional<int> max_tokens,
       std::optional<base::TimeDelta> refill_interval,
@@ -94,7 +94,7 @@ class SyncSchedulerImpl : public SyncScheduler {
  private:
   struct ConfigurationParams {
     ConfigurationParams(sync_pb::SyncEnums::GetUpdatesOrigin origin,
-                        ModelTypeSet types_to_download,
+                        DataTypeSet types_to_download,
                         base::OnceClosure ready_task);
     ~ConfigurationParams();
 
@@ -102,7 +102,7 @@ class SyncSchedulerImpl : public SyncScheduler {
     ConfigurationParams& operator=(const ConfigurationParams&) = delete;
 
     const sync_pb::SyncEnums::GetUpdatesOrigin origin;
-    const ModelTypeSet types_to_download;
+    const DataTypeSet types_to_download;
     // Callback to invoke on configuration completion.
     base::OnceClosure ready_task;
   };
@@ -176,7 +176,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   void NotifyBlockedTypesChanged();
 
   // Looks for pending work and, if it finds any, runs it. TrySyncCycleJob just
-  // posts a call to TrySyncCycleJobImpl on the current thread.
+  // posts a call to TrySyncCycleJobImpl on the current sequence.
   void TrySyncCycleJob(RespectGlobalBackoff respect_backoff);
   void TrySyncCycleJobImpl(RespectGlobalBackoff respect_backoff);
 
@@ -205,7 +205,7 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // Returns the set of types that are enabled and not currently throttled and
   // backed off.
-  ModelTypeSet GetEnabledAndUnblockedTypes();
+  DataTypeSet GetEnabledAndUnblockedTypes();
 
   // Called as we are started to broadcast an initial cycle snapshot
   // containing data like initial_sync_ended.  Important when the client starts
@@ -213,13 +213,6 @@ class SyncSchedulerImpl : public SyncScheduler {
   void SendInitialSnapshot();
 
   bool IsEarlierThanCurrentPendingJob(const base::TimeDelta& delay);
-
-  // Computes the last poll time the system should assume on start-up.
-  static base::Time ComputeLastPollOnStart(
-      base::Time last_poll,
-      base::TimeDelta poll_interval,
-      base::Time now,
-      bool sync_poll_immediately_on_every_startup);
 
   // Used for logging.
   const std::string name_;
@@ -233,14 +226,9 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Timer for polling. Restarted on each successful poll, and when entering
   // normal sync mode or exiting an error state. Not active in configuration
   // mode.
-  // Depending on the state of kSyncSchedulerUseWallClockTimer, *either* the
-  // OneShotTimer *or* the WallClockTimer is used.
-  // TODO(crbug.com/1497926): Once kSyncSchedulerUseWallClockTimer is launched,
-  // remove poll_timer_ticks_.
-  base::OneShotTimer poll_timer_ticks_;
   // Note that this is a WallClockTimer (as opposed to a regular OneShotTimer)
   // so that it continues counting even if the device is suspended.
-  base::WallClockTimer poll_timer_wall_;
+  base::WallClockTimer poll_timer_;
 
   // The mode of operation.
   Mode mode_ = CONFIGURATION_MODE;
@@ -253,7 +241,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   // The timer for the next pending task (except for polling, which has its own
   // timer). This can be a delayed nudge (standard case), or throttling/backoff
   // (either global or for some data type(s)).
-  // TODO(crbug.com/1497926): Maybe use a WallClockTimer, so that
+  // TODO(crbug.com/40939309): Maybe use a WallClockTimer, so that
   // throttling/backoff continue counting even if the device is suspended?
   base::OneShotTimer pending_wakeup_timer_;
 
@@ -271,9 +259,6 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // The time when the last poll request finished. Used for computing the next
   // poll time.
-  // TODO(crbug.com/1497926): Once kSyncSchedulerUseWallClockTimer is launched,
-  // remove last_poll_reset_ticks_.
-  base::TimeTicks last_poll_reset_ticks_;
   base::Time last_poll_reset_time_;
 
   // One-shot timer for scheduling GU retry according to delay set by server.
@@ -281,8 +266,6 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // Dictates if the scheduler should wait for authentication to happen or not.
   const bool ignore_auth_credentials_;
-
-  const bool sync_poll_immediately_on_every_startup_;
 
   // Used to prevent changing nudge delays by the server in integration tests.
   bool force_short_nudge_delay_for_test_ = false;

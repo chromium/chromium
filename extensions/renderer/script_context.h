@@ -21,6 +21,7 @@
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/script_constants.h"
+#include "extensions/common/stack_frame.h"
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -59,6 +60,7 @@ class ScriptContext {
                 blink::WebLocalFrame* frame,
                 const mojom::HostID& host_id,
                 const Extension* extension,
+                std::optional<int> blink_isolated_world_id,
                 mojom::ContextType context_type,
                 const Extension* effective_extension,
                 mojom::ContextType effective_context_type);
@@ -206,8 +208,8 @@ class ScriptContext {
     ~ScopedFrameDocumentLoader();
 
    private:
-    raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
-    raw_ptr<blink::WebDocumentLoader, ExperimentalRenderer> document_loader_;
+    raw_ptr<blink::WebLocalFrame> frame_;
+    raw_ptr<blink::WebDocumentLoader> document_loader_;
   };
 
   // TODO(devlin): Move all these Get*URL*() methods out of here? While they are
@@ -274,6 +276,9 @@ class ScriptContext {
   // Gets the current stack trace as a multi-line string to be logged.
   std::string GetStackTraceAsString() const;
 
+  // Gets the current stack trace in a structured form instead of a string.
+  std::optional<StackTrace> GetStackTrace(int frame_limit);
+
   // Generate a unique integer value. This is only unique within this instance.
   int32_t GetNextIdFromCounter() { return id_counter++; }
 
@@ -296,7 +301,7 @@ class ScriptContext {
 
   // The WebLocalFrame associated with this context. This can be NULL because
   // this object can outlive is destroyed asynchronously.
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> web_frame_;
+  raw_ptr<blink::WebLocalFrame> web_frame_;
 
   // The HostID associated with this context. For extensions, the HostID
   // HostType should match kExtensions and the ID should match
@@ -306,6 +311,12 @@ class ScriptContext {
   // The extension associated with this context, or NULL if there is none. This
   // might be a hosted app in the case that this context is hosting a web URL.
   scoped_refptr<const Extension> extension_;
+
+  // The ID of the isolated world with which this context is associated, if
+  // any.  This is predominantly set for user script and content script
+  // contexts, but may be set for others, such as when something injects into a
+  // <webview>.
+  const std::optional<int> blink_isolated_world_id_;
 
   // The type of context.
   mojom::ContextType context_type_;
@@ -334,7 +345,7 @@ class ScriptContext {
   // invalidation.
   std::vector<base::OnceClosure> invalidate_observers_;
 
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   GURL url_;
 

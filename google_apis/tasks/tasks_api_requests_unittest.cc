@@ -146,7 +146,8 @@ TEST_F(TasksApiRequestsTest, ListTasksRequest) {
   base::test::TestFuture<base::expected<std::unique_ptr<Tasks>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListTasksRequest>(
-      request_sender(), kTaskListId, /*page_token=*/"", future.GetCallback());
+      request_sender(), kTaskListId, /*page_token=*/"",
+      /*include_assigned=*/false, future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
@@ -154,6 +155,7 @@ TEST_F(TasksApiRequestsTest, ListTasksRequest) {
   EXPECT_EQ(last_request().method, net::test_server::METHOD_GET);
   EXPECT_EQ(last_request().GetURL(),
             GetListTasksUrl(kTaskListId, /*include_completed=*/false,
+                            /*include_assigned=*/false,
                             /*max_results=*/100,
                             /*page_token=*/""));
   EXPECT_TRUE(future.Get().value());
@@ -167,7 +169,7 @@ TEST_F(TasksApiRequestsTest, ListTasksWithOptionalArgsRequest) {
       future;
   auto request = std::make_unique<ListTasksRequest>(
       request_sender(), kTaskListId, /*page_token=*/"qwerty",
-      future.GetCallback());
+      /*include_assigned=*/false, future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 
@@ -175,6 +177,7 @@ TEST_F(TasksApiRequestsTest, ListTasksWithOptionalArgsRequest) {
   EXPECT_EQ(last_request().method, net::test_server::METHOD_GET);
   EXPECT_EQ(last_request().GetURL(),
             GetListTasksUrl(kTaskListId, /*include_completed=*/false,
+                            /*include_assigned=*/false,
                             /*max_results=*/100,
                             /*page_token=*/"qwerty"));
   EXPECT_TRUE(future.Get().value());
@@ -187,7 +190,8 @@ TEST_F(TasksApiRequestsTest, ListTasksRequestHandlesError) {
   base::test::TestFuture<base::expected<std::unique_ptr<Tasks>, ApiErrorCode>>
       future;
   auto request = std::make_unique<ListTasksRequest>(
-      request_sender(), kTaskListId, /*page_token=*/"", future.GetCallback());
+      request_sender(), kTaskListId, /*page_token=*/"",
+      /*include_assigned=*/false, future.GetCallback());
   request_sender()->StartRequestWithAuthRetry(std::move(request));
   ASSERT_TRUE(future.Wait());
 

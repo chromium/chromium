@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -61,6 +62,7 @@ class CORE_EXPORT EffectModel : public GarbageCollected<EffectModel> {
   virtual ~EffectModel() = default;
   virtual bool Sample(int iteration,
                       double fraction,
+                      TimingFunction::LimitDirection,
                       AnimationTimeDelta iteration_duration,
                       HeapVector<Member<Interpolation>>&) const = 0;
 

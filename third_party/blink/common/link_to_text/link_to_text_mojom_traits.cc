@@ -45,7 +45,7 @@ EnumTraits<blink::mojom::LinkGenerationError,
       return blink::mojom::LinkGenerationError::kNotGenerated;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::mojom::LinkGenerationError::kNone;
 }
 
@@ -104,7 +104,7 @@ bool EnumTraits<blink::mojom::LinkGenerationError,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -119,7 +119,7 @@ EnumTraits<blink::mojom::LinkGenerationReadyStatus,
       return blink::mojom::LinkGenerationReadyStatus::kRequestedAfterReady;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return blink::mojom::LinkGenerationReadyStatus::kRequestedBeforeReady;
 }
 
@@ -138,7 +138,7 @@ bool EnumTraits<blink::mojom::LinkGenerationReadyStatus,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

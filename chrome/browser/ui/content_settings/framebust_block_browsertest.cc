@@ -32,6 +32,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -46,7 +47,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
 namespace {
@@ -133,7 +133,7 @@ class FramebustBlockBrowserTest
     child->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(base::StringPrintf("window.top.location = '%s';",
                                               redirect_url.spec().c_str())),
-        base::NullCallback());
+        base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
     block_waiter.Run();
 
     return base::Contains(GetFramebustTabHelper()->blocked_urls(),
@@ -173,8 +173,9 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   EXPECT_FALSE(clicked_url_.has_value());
 
   content::TestNavigationObserver observer(GetWebContents());
-  ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
   framebust_block_bubble_model.OnListItemClicked(/* index = */ 1, click_event);
   observer.Wait();
@@ -313,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   child->ExecuteJavaScriptForTests(
       base::ASCIIToUTF16(base::StringPrintf("window.top.location = '%s';",
                                             redirect_url.spec().c_str())),
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   observer.Wait();
   EXPECT_TRUE(GetFramebustTabHelper()->blocked_urls().empty());
 }
@@ -345,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   child->ExecuteJavaScriptForTests(
       base::ASCIIToUTF16(base::StringPrintf("window.top.location = '%s';",
                                             redirect_url.spec().c_str())),
-      base::NullCallback());
+      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   observer.Wait();
   EXPECT_TRUE(GetFramebustTabHelper()->blocked_urls().empty());
 }

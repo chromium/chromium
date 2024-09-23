@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] getInterestGroupAdAuctionData() with multiple buyers
+  assert_true: valid key Id expected true got false
+[FAIL] getInterestGroupAdAuctionData() uses perBuyerConfig to select buyers
+  assert_true: valid key Id expected true got false
+Harness: the test ran to completion.
+

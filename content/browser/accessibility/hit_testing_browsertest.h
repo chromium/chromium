@@ -7,6 +7,13 @@
 
 #include "content/browser/accessibility/accessibility_content_browsertest.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point.h"
+
+namespace gfx {
+
+class Point;
+
+}  // namespace gfx
 
 namespace content {
 
@@ -24,7 +31,7 @@ class AccessibilityHitTestingBrowserTest
   };
 
  protected:
-  BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
+  ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
   float GetDeviceScaleFactor();
   float GetPageScaleFactor();
   gfx::Rect GetViewBoundsInScreenCoordinates();
@@ -33,18 +40,20 @@ class AccessibilityHitTestingBrowserTest
   gfx::Point FrameToCSSPoint(gfx::Point css_point);
 
   // Test the hit test action that fires an event.
-  BrowserAccessibility* HitTestAndWaitForResultWithEvent(
+  ui::BrowserAccessibility* HitTestAndWaitForResultWithEvent(
       const gfx::Point& point,
       ax::mojom::Event event_to_fire);
-  BrowserAccessibility* HitTestAndWaitForResult(const gfx::Point& point);
+  ui::BrowserAccessibility* HitTestAndWaitForResult(const gfx::Point& point);
 
   // Test the hit test mojo RPC that calls a callback function.
-  BrowserAccessibility* AsyncHitTestAndWaitForCallback(const gfx::Point& point);
+  ui::BrowserAccessibility* AsyncHitTestAndWaitForCallback(
+      const gfx::Point& point);
 
   // Test the caching async hit test.
-  BrowserAccessibility* CallCachingAsyncHitTest(const gfx::Point& page_point);
+  ui::BrowserAccessibility* CallCachingAsyncHitTest(
+      const gfx::Point& page_point);
 
-  BrowserAccessibility* CallNearestLeafNode(const gfx::Point& page_point);
+  ui::BrowserAccessibility* CallNearestLeafNode(const gfx::Point& page_point);
   void SynchronizeThreads();
   std::string FormatHitTestAccessibilityTree();
   std::string GetScopedTrace(gfx::Point css_point);

@@ -67,11 +67,6 @@ const char kEnableDawnFeatures[] = "enable-dawn-features";
 // Set the Dawn features(toggles) disabled on the creation of Dawn devices.
 const char kDisableDawnFeatures[] = "disable-dawn-features";
 
-// Changes the type (to kRealtimeAudio) of gpu process and compositor thread.
-// This is only to be used for perf tests on macOS for more reliable values.
-const char kUseHighGPUThreadPriorityForPerfTests[] =
-    "use-gpu-high-thread-priority-for-perf-tests";
-
 // Start the non-sandboxed GPU process for DX12 and Vulkan info collection
 // immediately after the browser starts. The default is to delay for 120
 // seconds.
@@ -114,11 +109,11 @@ const char kDisableVulkanFallbackToGLForTesting[] =
     "disable-vulkan-fallback-to-gl-for-testing";
 
 // Specifies the heap limit for Vulkan memory.
-// TODO(crbug/1158000): Remove this switch.
+// TODO(crbug.com/40161102): Remove this switch.
 const char kVulkanHeapMemoryLimitMb[] = "vulkan-heap-memory-limit-mb";
 
 // Specifies the sync CPU limit for total Vulkan memory.
-// TODO(crbug/1158000): Remove this switch.
+// TODO(crbug.com/40161102): Remove this switch.
 const char kVulkanSyncCpuMemoryLimitMb[] = "vulkan-sync-cpu-memory-limit-mb";
 
 // Crash Chrome if GPU process crashes. This is to force a test to fail when
@@ -150,5 +145,16 @@ const char kDisableSkiaGraphite[] = "disable-skia-graphite";
 const char kEnableSkiaGraphite[] = "enable-skia-graphite";
 
 const char kShaderCachePath[] = "shader-cache-path";
+
+// Try to use a redistributable DirectML.dll. Used for testing WebNN
+// against newer DirectML release before it is integrated into Windows OS.
+// Please see more info about DirectML releases at:
+// https://learn.microsoft.com/en-us/windows/ai/directml/dml-version-history
+const char kUseRedistributableDirectML[] = "use-redist-dml";
+
+// Enables ThreadControllerWithMessagePumpImpl's TimeKeeper UMA metrics using
+// CrGpuMain as suffix.
+const char kEnableGpuMainTimeKeeperMetrics[] =
+    "enable-gpu-main-time-keeper-metrics";
 
 }  // namespace switches

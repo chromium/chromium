@@ -61,7 +61,9 @@ class AccountManagerUIHandler
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error) override;
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
 
   // |AccountAppsAvailability::Observer| overrides.
   void OnAccountAvailableInArc(
@@ -72,6 +74,7 @@ class AccountManagerUIHandler
  private:
   friend class AccountManagerUIHandlerTest;
   friend class AccountManagerUIHandlerTestWithArcAccountRestrictions;
+  friend class AccountManagerUIHandlerTestWithManagedArcAccountRestriction;
 
   void SetProfileForTesting(Profile* profile);
 
@@ -122,6 +125,9 @@ class AccountManagerUIHandler
 
   // Refreshes the UI.
   void RefreshUI();
+
+  // Whether some accounts may not be available in ARC due to policy or config.
+  static bool AreArcAccountsRestricted();
 
   raw_ptr<Profile> profile_ = nullptr;
 

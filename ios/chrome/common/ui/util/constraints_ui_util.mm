@@ -124,6 +124,14 @@ void AddSameConstraintsWithInsets(id<EdgeLayoutGuideProvider> innerView,
       insets);
 }
 
+void AddSameConstraintsWithInset(id<EdgeLayoutGuideProvider> innerView,
+                                 id<EdgeLayoutGuideProvider> outerView,
+                                 CGFloat inset) {
+  AddSameConstraintsWithInsets(
+      innerView, outerView,
+      NSDirectionalEdgeInsets(inset, inset, inset, inset));
+}
+
 void PinToSafeArea(id<EdgeLayoutGuideProvider> innerView, UIView* outerView) {
   AddSameConstraints(innerView, outerView.safeAreaLayoutGuide);
 }
@@ -162,6 +170,17 @@ void AddSameConstraintsToSidesWithInsets(id<EdgeLayoutGuideProvider> innerView,
   }
 
   [NSLayoutConstraint activateConstraints:constraints];
+}
+
+void AddSizeConstraints(id<LayoutGuideProvider> view, CGSize size) {
+  [NSLayoutConstraint activateConstraints:@[
+    [view.widthAnchor constraintEqualToConstant:size.width],
+    [view.heightAnchor constraintEqualToConstant:size.height],
+  ]];
+}
+
+void AddSquareConstraints(id<LayoutGuideProvider> view, CGFloat edge) {
+  AddSizeConstraints(view, CGSize(edge, edge));
 }
 
 NSArray<NSLayoutConstraint*>* AddOptionalVerticalPadding(

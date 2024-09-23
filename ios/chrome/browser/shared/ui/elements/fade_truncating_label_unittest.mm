@@ -8,7 +8,6 @@
 #import <vector>
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"

@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "ash/shell_observer.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -54,7 +55,8 @@ class Pointer : public SurfaceTreeHost,
                 public aura::client::DragDropClientObserver,
                 public aura::client::CursorClientObserver,
                 public aura::client::FocusChangeObserver,
-                public ash::ShellObserver {
+                public ash::ShellObserver,
+                public ash::DesksController::Observer {
  public:
   Pointer(PointerDelegate* delegate,
           Seat* seat,
@@ -108,6 +110,9 @@ class Pointer : public SurfaceTreeHost,
   void OnRootWindowAdded(aura::Window* root_window) override;
   void OnRootWindowWillShutdown(aura::Window* root_window) override;
 
+  // ash::DesksController::Observer:
+  void OnDeskSwitchAnimationFinished() override;
+
   // Relative motion registration.
   void RegisterRelativePointerDelegate(RelativePointerDelegate* delegate);
   void UnregisterRelativePointerDelegate(RelativePointerDelegate* delegate);
@@ -140,6 +145,11 @@ class Pointer : public SurfaceTreeHost,
   // Set the stylus delegate for handling stylus events.
   void SetStylusDelegate(PointerStylusDelegate* delegate);
   bool HasStylusDelegate() const;
+
+  // Pointer capture is enabled if and only if `capture_window_` is not null.
+  bool GetIsPointerConstrainedForTesting() {
+    return capture_window_ != nullptr;
+  }
 
  private:
   // Remove |delegate| from |constraints_|.
@@ -284,7 +294,7 @@ class Pointer : public SurfaceTreeHost,
   const base::UnguessableToken cursor_capture_source_id_;
 
   // Last received event type.
-  ui::EventType last_event_type_ = ui::ET_UNKNOWN;
+  ui::EventType last_event_type_ = ui::EventType::kUnknown;
 
   // Last reported stylus values.
   ui::EventPointerType last_pointer_type_ = ui::EventPointerType::kUnknown;

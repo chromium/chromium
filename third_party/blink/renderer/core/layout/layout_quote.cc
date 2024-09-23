@@ -36,9 +36,12 @@
 
 namespace blink {
 
-LayoutQuote::LayoutQuote(PseudoElement& pseudo, QuoteType quote)
-    : LayoutInline(nullptr), type_(quote), depth_(0), owning_pseudo_(&pseudo) {
-  SetDocumentForAnonymous(&pseudo.GetDocument());
+LayoutQuote::LayoutQuote(LayoutObject& owner, QuoteType quote)
+    : LayoutInline(nullptr),
+      type_(quote),
+      depth_(0),
+      owning_pseudo_(DynamicTo<PseudoElement>(owner.GetNode())) {
+  SetDocumentForAnonymous(&owner.GetDocument());
 }
 
 LayoutQuote::~LayoutQuote() {
@@ -103,8 +106,7 @@ void LayoutQuote::UpdateText() {
                            : Style());
     fragment->SetContentString(text_.Impl());
   } else {
-    fragment =
-        LayoutTextFragment::CreateAnonymous(*owning_pseudo_, text_.Impl());
+    fragment = LayoutTextFragment::CreateAnonymous(GetDocument(), text_.Impl());
     fragment->SetStyle(Style());
     AddChild(fragment);
   }
@@ -134,7 +136,7 @@ String LayoutQuote::ComputeText() const {
     case QuoteType::kOpen:
       return GetQuotesData()->GetOpenQuote(depth_).Impl();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 

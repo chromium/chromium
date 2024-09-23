@@ -78,9 +78,11 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
                         ? AccountUtils.createAccountFromName(selectedAccountName)
                         : null;
 
+        assert getProfileProvider().getOriginalProfile() != null;
         ReauthenticatorBridge reauthenticatorBridge =
                 requireDeviceLockReauthentication
-                        ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge()
+                        ? DeviceLockCoordinator.createDeviceLockAuthenticatorBridge(
+                                this, getProfileProvider().getOriginalProfile())
                         : null;
         mDeviceLockCoordinator =
                 new DeviceLockCoordinator(

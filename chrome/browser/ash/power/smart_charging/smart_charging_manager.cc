@@ -212,9 +212,9 @@ SmartChargingManager::SmartChargingManager(
 SmartChargingManager::~SmartChargingManager() = default;
 
 std::unique_ptr<SmartChargingManager> SmartChargingManager::CreateInstance() {
-  // TODO(crbug.com/1028853): we are collecting data from Chromebook only. Since
-  // this action is discouraged, we will modify the condition latter using dbus
-  // calls.
+  // TODO(crbug.com/40109338): we are collecting data from Chromebook only.
+  // Since this action is discouraged, we will modify the condition latter using
+  // dbus calls.
   if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook)
     return nullptr;
 
@@ -469,7 +469,7 @@ void SmartChargingManager::LogEvent(const EventReason& reason) {
   proto.mutable_event()->set_reason(reason);
   PopulateUserChargingEventProto(&proto);
 
-  // TODO(crbug.com/1028853): This is for testing only. Need to remove when
+  // TODO(crbug.com/40109338): This is for testing only. Need to remove when
   // ukm logger is available.
   user_charging_event_for_test_ = proto;
 

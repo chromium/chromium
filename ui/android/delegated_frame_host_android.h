@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/android/ui_android_export.h"
+#include "ui/android/window_android_compositor.h"
 
 namespace cc::slim {
 class SurfaceLayer;
@@ -40,9 +42,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
     : public viz::HostFrameSinkClient,
       public viz::FrameEvictorClient {
  public:
-  class Client {
+  class Client : public WindowAndroidCompositor::FrameSubmissionObserver {
    public:
-    virtual ~Client() {}
+    ~Client() override {}
     virtual void OnFrameTokenChanged(uint32_t frame_token,
                                      base::TimeTicks activation_time) = 0;
     virtual void WasEvicted() = 0;
@@ -166,8 +168,6 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // Called when the page has just entered BFCache.
   void DidEnterBackForwardCache();
 
-  void SetTopControlsVisibleHeight(float height);
-
   viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
 
   viz::SurfaceId GetCurrentSurfaceIdForTesting() const;
@@ -180,11 +180,15 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   void SetIsFrameSinkIdOwner(bool is_owner);
 
+  void RegisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
+  void UnregisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
+
  private:
   // FrameEvictorClient implementation.
   void EvictDelegatedFrame(
       const std::vector<viz::SurfaceId>& surface_ids) override;
-  std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() const override;
+  viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction()
+      const override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
   viz::SurfaceId GetPreNavigationSurfaceId() const override;
 
@@ -214,8 +218,6 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   raw_ptr<WindowAndroidCompositor> registered_parent_compositor_ = nullptr;
   raw_ptr<Client> client_;
 
-  float top_controls_visible_height_ = 0.f;
-
   scoped_refptr<cc::slim::SurfaceLayer> content_layer_;
 
   // Whether we've received a frame from the renderer since navigating.
@@ -236,7 +238,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   // The LocalSurfaceId of the currently embedded surface. If surface sync is
   // on, this surface is not necessarily active.
   //
-  // TODO(https://crbug.com/1459238): this value is a copy of what the browser
+  // TODO(crbug.com/40274223): this value is a copy of what the browser
   // wants to embed. The source of truth is stored else where. We should
   // consider de-dup this ID.
   viz::LocalSurfaceId local_surface_id_;

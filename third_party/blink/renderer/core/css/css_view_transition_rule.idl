@@ -6,6 +6,6 @@
   Exposed=Window,
   RuntimeEnabled=ViewTransitionOnNavigation
 ] interface CSSViewTransitionRule : CSSRule {
-  [SetterCallWith=ExecutionContext] attribute CSSOMString navigation;
+  [SetterCallWith=ExecutionContext] readonly attribute CSSOMString navigation;
+  [RuntimeEnabled=ViewTransitionTypes, SameObject, SaveSameObject] readonly attribute FrozenArray<CSSOMString> types;
 };
-

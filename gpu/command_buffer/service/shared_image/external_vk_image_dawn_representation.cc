@@ -10,11 +10,12 @@
 #include <vector>
 
 #include "base/posix/eintr_wrapper.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_image.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
-#include "third_party/skia/include/gpu/vk/GrVkTypes.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 
 namespace gpu {
@@ -41,7 +42,8 @@ ExternalVkImageDawnImageRepresentation::
 }
 
 wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage) {
   DCHECK(begin_access_semaphores_.empty());
   if (!backing_impl()->BeginAccess(false, &begin_access_semaphores_,
                                    /*is_gl=*/false)) {
@@ -59,12 +61,35 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
   texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.viewFormats = view_formats_.data();
 
-  // We need to have internal usages of CopySrc for copies,
-  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
+  const GrBackendTexture& backend_texture = backing_impl()->backend_texture();
+  GrVkImageInfo image_info;
+  GrBackendTextures::GetVkImageInfo(backend_texture, &image_info);
+
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                               wgpu::TextureUsage::RenderAttachment |
-                               wgpu::TextureUsage::TextureBinding;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    internalDesc.internalUsage = internal_usage;
+
+    if (image_info.fImageLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
+      // We pass `image_info.fImageLayout` to Dawn in the
+      // ExternalImageDescriptor below as the old/new layout for it to use. For
+      // a Vulkan-backed Dawn texture to be usable with the Vulkan color
+      // attachment layout, it must have RenderAttachment usage.
+      // TODO(crbug.com/339171225): Determine if it is possible to eliminate the
+      // need for this workaround, which turns these Dawn accesses into write
+      // accesses regardless of whether the client has specified any write
+      // usages.
+      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+    }
+  } else {
+    // We need to have internal usages of CopySrc for copies,
+    // RenderAttachment for clears, and TextureBinding for
+    // copyTextureForBrowser.
+    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::RenderAttachment |
+                                 wgpu::TextureUsage::TextureBinding;
+  }
+
   texture_descriptor.nextInChain = &internalDesc;
 
   dawn::native::vulkan::ExternalImageDescriptorOpaqueFD descriptor = {};
@@ -75,9 +100,6 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
   descriptor.memoryTypeIndex = backing_impl()->image()->memory_type_index();
   descriptor.memoryFD = dup(memory_fd_.get());
 
-  const GrBackendTexture& backend_texture = backing_impl()->backend_texture();
-  GrVkImageInfo image_info;
-  GrBackendTextures::GetVkImageInfo(backend_texture, &image_info);
   // We should either be importing the image from the external queue, or it
   // was just created with no queue ownership.
   DCHECK(image_info.fCurrentQueueFamily == VK_QUEUE_FAMILY_IGNORED ||
@@ -96,6 +118,16 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
 
   texture_ = wgpu::Texture::Acquire(
       dawn::native::vulkan::WrapVulkanImage(device_.Get(), &descriptor));
+  if (!texture_) {
+    backing_impl()->EndAccess(false, ExternalSemaphore(), /*is_gl=*/false);
+    // In this case we didn't submit anything, so we can't reuse them.
+    // Release them immediately.
+    backing_impl()->ReleaseSemaphoresWithFenceHelper(
+        std::move(begin_access_semaphores_));
+    begin_access_semaphores_.clear();
+    return nullptr;
+  }
+
   return texture_.Get();
 }
 

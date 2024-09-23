@@ -44,6 +44,9 @@ http://[::1]:8000/devtools/resources/post-target.cgi?queryParam1=queryValue1&que
         url : "http://[::1]:8000/devtools/resources/post-target.cgi?queryParam1=queryValue1&queryParam2="
     }
     response : {
+        _fetchedViaServiceWorker : false
+        _responseCacheStorageCacheName : undefined
+        _serviceWorkerResponseSource : undefined
         _transferSize : <number>
         bodySize : <number>
         content : {

@@ -8,195 +8,45 @@
 # There is no need to specify template arguments:
 #     my_namespace::my_subnamespace::MyTemplate::my_field_
 
-# Populated manually - double implicit-cast required.
-PaintManager::instance_
-
-# Populated manually - needed for lock annotations
-base::trace_event::TraceLog::OptionalAutoLock::lock_
-
-# Populated manually - templates make it difficult for the rewriter to see that
-# |.get()| needs to be appended.
-blink::xpath::EvaluationContext::node
-WTF::HashTableAddResult::container_
-WTF::HashTableAddResult::stored_value
-cast_channel::CastTransportTest::logger_
-content::IndexedDBDispatcherHost::indexed_db_context_
-ServiceProcessState::state_
-
-# Populated manually - used with gmock Field() that expects a raw pointer.
-base::Frame::module
-
-# Populated manually - requires a rewrite in a generated file
-gpu::MockTransferBuffer::ExpectedMemoryInfo::ptr
-
-# Populated manually - conflicting types in an initializer list
-WebUITabStripContainerView::tab_counter_
-DownloadItemView::review_button_
-
-# Populated manually to avoid returning a reference to a temporary T* (result of
-# implicitly casting raw_ptr<T> to T*).  This covers functions that return
-# |SomeClass*&| and local variables with that type.
-AllTabContentsesList::Iterator::cur_
-blink::NormalPage::CompactionContext::current_page_
-blink::Worklist::PrivateSegmentHolder::private_pop_segment
-blink::Worklist::PrivateSegmentHolder::private_push_segment
-content::(anonymous namespace)::AudioStreamMonitorTest::monitor_
-content::AudioStreamMonitor::clock_
-remoting::ChromotingHostTest::client1_
-remoting::ChromotingHostTest::client2_
-WTF::ICUConverterWrapper::converter
-(anonymous namespace)::WebAuthnCableSecondFactor::model_
-
-# Populated manually - always holds a pointer to an OilPan-allocated memory.
-blink::PersistentBase::raw_
-blink::SVGFilterBuilder::last_effect_
-
-# Populated manually - global-scope exclusions that are missing because the
-# global variable is in a build configuration specific code
-base::android::ReachedAddressesBitset::reached_
-
-# Populated manually - missing |.get()| in not-rewritten platform specific code
-viz::OverlayCandidate::rpdq
-viz::CALayerOverlay::rpdq
-viz::DrawQuad::shared_quad_state
-content::RenderWidgetHostInputEventRouter::wheel_target_
-NavigateParams::navigated_or_inserted_contents
-web_app::WebAppTabStripBrowserTest::App::web_contents
-policy::ChromePolicyConversionsClient::profile_
-
-# Populated manually - reference to raw_ptr in not-rewritten platform specific code
-viz::DirectRenderer::DrawingFrame::current_render_pass
-TabGroupViews::header_
-TabGroupViews::underline_
-TabGroupViews::highlight_
-views::LayoutManager::view_setting_visibility_on_
-FullscreenController::deactivated_contents_
-content::RenderWidgetHostInputEventRouter::touch_target_
-content::RenderWidgetHostInputEventRouter::touchpad_gesture_target_
-base::MessagePumpLibevent::run_state_
-
-# Populated manually - incompatibilities with tracing in not-rewritten platform specific code
-TabStripModelChange::RemovedTab::contents
-
-# Populated manually - extra .get() added in not-rewritten platform specific code
-SECItem::data
-
-# Populated manually - the rewriter has trouble appending |.get()| inside macros
-# that work with |XDisplay*|.
-extensions::GlobalShortcutListenerX11::x_display_
-ui::VisualPickerGlx::display_
-media::(anonymous namespace)::UserInputMonitorLinuxCore::x_record_display_
-media::cast::test::LinuxOutputWindow::display_
-remoting::(anonymous namespace)::InputInjectorX11::Core::display_
-remoting::(anonymous namespace)::LocalHotkeyInputMonitorX11::Core::x_record_display_
-remoting::(anonymous namespace)::LocalMouseInputMonitorX11::Core::x_record_display_
-remoting::ClipboardX11::display_
-remoting::XServerClipboard::display_
-Simulator::display_
-ui::ClipboardX11::X11Details::x_display_
-ui::SelectionRequestorTest::x_display_
-ui::X11EventSource::display_
-ui::X11MenuRegistrar::xdisplay_
-ui::X11WorkspaceHandler::xdisplay_
-ui::XDisplayManager::xdisplay_
-ui::XOSExchangeDataProvider::x_display_
-ui::XVisualManager::display_
-ui::XWindow::xdisplay_
-views::test::(anonymous namespace)::UIControlsDesktopX11::x_display_
-viz::SkiaOutputDeviceX11::display_
-x11::Connection::display_
-
-# Populated manually - static_cast not related by inheritance.
-gtk::GtkKeyBindingsHandler::fake_window_
-gtk::GtkKeyBindingsHandler::handler_
-gtk::SelectFileDialogLinuxGtk::preview_
-remoting::(anonymous namespace)::DisconnectWindowGtk::disconnect_window_
-remoting::(anonymous namespace)::DisconnectWindowGtk::message_
-remoting::(anonymous namespace)::GtkFileChooserOnUiThread::file_dialog_
-remoting::(anonymous namespace)::It2MeConfirmationDialogLinux::confirmation_window_
-remoting::ContinueWindowGtk::continue_window_
-ui::AXPlatformNodeAuraLinux::atk_hyperlink_
-PrintDialogGtk::dialog_
-
-# Populated manually, because of in-out-arg usage.
-blink::PaintController::IdAsHashKey::client
-ui::AXPlatformNodeAuraLinux::atk_object_
-
-# Populated manually - problems related to passing to a templated && parameter,
-# which is later forwarded to something that doesn't vibe with raw_ptr<T>. The
-# rewriter has no visibility into where the parameter is forwarded to.
+# Problems related to passing to a templated && parameter, which is later
+# forwarded to something that doesn't vibe with raw_ptr<T>. The rewriter has
+# no visibility into where the parameter is forwarded to.
 ProfileDestroyer::profile_
 (anonymous namespace)::BluetoothLowEnergyApiTest::mock_adapter_
 content::RenderProcessHostImpl::browser_context_
 device::BluetoothDevice::adapter_
 
-# Populated manually - problems related to lambdas with no return type, where
-# the return value is raw_ptr<T>, but variable/parameter receiving the lambda
-# expects the raw pointer type.
-vr::LocationBarState::vector_icon
-vr::OmniboxSuggestion::icon
-
-# Populated manually - assigned to |auto*| in ranged loop on an array
-# initializer literal comprising of those pointers.
-DownloadItemView::discard_button_
-DownloadItemView::open_now_button_
-DownloadItemView::save_button_
-DownloadItemView::scan_button_
-OpaqueBrowserFrameViewLayout::minimize_button_
-OpaqueBrowserFrameViewLayout::maximize_button_
-OpaqueBrowserFrameViewLayout::restore_button_
-OpaqueBrowserFrameViewLayout::close_button_
-
-# Populated manually - incompatibilities with tracing (TRACE_EVENT*),
+# Incompatibilities with tracing (TRACE_EVENT*),
 # perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
 cc::GpuImageDecodeCache::dark_mode_filter_
-blink::scheduler::MainThreadSchedulerImpl::current_agent_group_scheduler_
 performance_manager::v8_memory::(anonymous namespace)::V8ContextTrackerTest::tracker_
-content::(anonymous namespace)::BackForwardCacheMessageFilter::interface_name_
-base::trace_event::MemoryDumpProviderInfo::name
 content::NavigationRequest::frame_tree_node_
-content::NavigationRequest::rfh_restored_from_back_forward_cache_
-blink::scheduler::FrameSchedulerImpl::blame_context_
 content::TestNavigationManager::request_
 
-# Populated manually - requires rewriting member pointer type
-courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::input
-courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_forward
-courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_backward
-courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expect_in
-
-# Populated manually - pointer to address in another process could be confused
-# as a pointer to PA memory
+# Pointer to address in another process could be confused as a pointer to PA
+# memory.
 sandbox::TargetProcess::base_address_ # https://crbug.com/1173374
 
-# Populated manually - pointers that kernel sees as raw pointers
-# https://crbug.com/1395075
-base::(anonymous namespace)::kernel_sigaction::k_sa_handler
-base::(anonymous namespace)::kernel_sigaction::k_sa_restorer
+# Pointers that other code (e.g. kernel code) sees a different version of the
+# struct/class, which uses a raw pointer.
+base::(anonymous namespace)::kernel_sigaction::k_sa_handler   # https://crbug.com/1395075
+base::(anonymous namespace)::kernel_sigaction::k_sa_restorer  # as above
+SECItem::data
 
-# Populated manually - uninitialized memory reinterpret_cast to raw_ptr<T>
-# causing AddRef/Deref mismatch.
+# Uninitialized memory reinterpret_cast to raw_ptr<T> causing AddRef/Deref
+# mismatch.
 sandbox::(anonymous namespace)::_HEAP_32::Heap
 sandbox::(anonymous namespace)::_HEAP_64::Heap
 sql::SandboxedVfsFileSqliteBridge::sandboxed_vfs_file
 sandbox::SharedMemIPCServer::client_control_
-sandbox::SharedMemIPCServer::thread_provider_
 sandbox::SharedMemIPCServer::call_dispatcher_
 
-# Populated manually - pointer to stale non-PA allocation could be confused as a
-# pointer to PA memory when that address space is reused https://crbug.com/1173851
-base::PersistentMemoryAllocator::mem_base_ # https://crbug.com/1169582
-base::SharedMemoryMapping::memory_ # https://crbug.com/1169581
-mojo::core::PlatformSharedMemoryMapping::base_ # https://crbug.com/1173380
-
-# Populated manually - other compile-time reasons
+# Other compile-time reasons.
 iovec::iov_base  # requires adding .get() in another repository, used e.g. in
                  # reinterpret_cast in quic_stream_sequencer_buffer.cc
 net::SockaddrStorage::addr  # .get() not added in reinterpret_cast, reason unknown
 views::internal::ClassPropertyValueSetter::property_  # passed to templated param T*
 (anonymous namespace)::ScopedFunctionHelper::function_  # function pointer template
-KeyedServiceBaseFactory::service_name_ # used in decltype
-OutOfMemoryTest::value_ # used to pass non const pointer to pointer
 
 # ELEMENT() treats the raw_ptr<T> as a void*, and so when a pointer is written
 # AddRef() won't be called, causing AddRef/Deref mismatch.
@@ -246,7 +96,7 @@ device::(anonymous namespace)::CBORExtract_MissingRequired_Test::TestBody()::Dum
 device::(anonymous namespace)::CBORExtract_WrongType_Test::TestBody()::Dummy::value
 device::(anonymous namespace)::CBORExtract_RequiredInOptionalMap_Test::TestBody()::Dummy::value
 
-# Populated manually - pointer to Objective-C object
+# Pointers to Objective-C objects.
 gfx::ScopedNSGraphicsContextSaveGState::context_
 base::apple::ScopedNSAutoreleasePool::autorelease_pool_
 content::ThemeHelperMac::theme_observer_
@@ -259,15 +109,16 @@ image_editor::EventCaptureMac::window_
 content::ScopedNotifyNativeEventProcessorObserver::event_
 device::fido::mac::TouchIdCredentialStore::authentication_context_
 
-# Populated manually - struct is part of separate binary and must be a POD
+# The struct is part of separate binary and must be a POD
 # https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/mac/app_mode_common.mm;l=64
 app_mode::ChromeAppModeInfo::argv
 
-# Populated manually - requires @property rewrite
+# Requires @property rewrite.
 # In Objective-C the instance variable type and property type must be the same.
 # Currently, the rewriter can only rewrite the instance variable declaration.
 # So the types do not match, and causes a compiler error.
-# These fields can be rewritten once the rewriter can rewrite @property declarations.
+# These fields can be rewritten once the rewriter can rewrite @property
+# declarations.
 ObjCPropertyTestBase::_basePointer
 ObjCPropertyTestDerived::_derivedPointer
 ObjCPropertyTestDerived::_protoPointer
@@ -279,29 +130,33 @@ AXPlatformNodeCocoa::_node
 ShellNativeAppWindowController::_appWindow
 WatchedLifetimeMenuController::_deallocCalled
 
+# Pointee already protected by another raw_ptr in the same class (perf
+# optimization).
+blink::SegmentedSubstring::data_last_char_
+net::FixedSetIncrementalLookup::bytes_
+
+# Causes unrelated test failures.
+# TODO(crbug.com/349424269): Fix tests, rewrite, and remove.
+media::Vp9FrameHeader::data
+
 #######
 # BackupRefPtr-specific sections
 #######
 
-# Populated manually - std::is_trivially_destructible static_assert failure
+# std::is_trivially_destructible static_assert failure.
 blink::HTMLElementEquivalent::tag_name_
 blink::PrerendererClient::client_
 blink::weakness_marking_test::EphemeronCallbacksCounter::count_holder_
 sql::recover::InnerPageDecoder::db_reader_
 sql::recover::LeafPageDecoder::db_reader_
 
-# Populated manually - flexible array with non-trivial destruction
+# Flexible array with non-trivial destruction.
 blink::ShapeResultView::(anonymous struct)::alignment
 
-# Populated manually - these pointers crash, because a base class ctor accesses
-# child class ptr fields before they're initialized.
+# These pointers crash, because a base class ctor accesses child class ptr
+# fields before they're initialized (see crbug.com/349213429).
 blink::CacheEntry::next_
 blink::CacheEntry::prev_
-WTF::LruCache::MappedListNodeWithKey::next_
-WTF::LruCache::MappedListNodeWithKey::prev_
-
-# Populated manually - these pointers crash, due to use-after-move.
-gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 
 #######
 # End of BackupRefPtr-specific sections
@@ -311,54 +166,64 @@ gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
 # Performance-related exclusions
 #######
 
-# Populated manually - to avoid out-of-line destructor
+# To avoid out-of-line destructor.
 base::LockFreeAddressHashSet::Node::next
 gpu::gles2::TextureManager::DoTexSubImageArguments::pixels
 gpu::gles2::TextureManager::DoTexImageArguments::pixels
 
-# Populated manually - on-stack pointer + a large number of non-PA pointees
+# On-stack pointer + a large number of non-PA pointees.
 base::AutoReset::scoped_variable_
-
-# Populated manually - on-stack pointee
-base::StackAllocator::source_
-
-# Populated manually - on-stack pointer + a large number of non-PA pointees
 mojo::core::ports::PortLocker::port_refs_
 
-# Populated manually - static pointee
+# Static pointee.
 mojo::core::RequestContext::tls_context_
 base::sequence_manager::LazyNow::tick_clock_
 
-# Populated manually - on-stack pointee
+# On-stack pointee.
+base::StackAllocator::source_
 mojo::internal::ContainerValidateParams::key_validate_params
 mojo::internal::ContainerValidateParams::element_validate_params
 mojo::internal::ValidationContext::ScopedDepthTracker::ctx_
 
-# Populated manually - usually on-stack pointer, pointing back to the collection
-# being iterated, owned by object that iterates over it.
+# Usually on-stack pointer, pointing back to the collection being iterated,
+# owned by object that iterates over it.
 base::internal::circular_deque_const_iterator::parent_deque_
 
-# Populated manually - on-stack pointer + a large number of non-PA pointees through WeakLinkNode
+# On-stack pointer + a large number of non-PA pointees through WeakLinkNode.
 base::internal::LinkNodeBase::next_
 base::internal::LinkNodeBase::previous_
 
-# Populated manually - on-stack pointer
+# On-stack pointer.
 base::internal::WeakLinkNode::list_
 
-# Populated manually - using mmap, MapViewOfFile or base::AllocPages directly
+# Stack-scoped pointer, but embedding class/struct can't be marked
+# STACK_ALLOCATED (e.g. held in unique_ptr on stack).
+base::internal::BasicMovableAutoLock::lock_
+
+# Pointer to memory not allocated by PartitionAlloc (e.g. allocated using
+# mmap/MapViewOfFile/OilPan,partition_alloc::AllocPages, or a global, ...)
+base::MemoryMappedFile::bytes_
+base::PersistentMemoryAllocator::mem_base_
 blink::GCInfoTable::table_
 cc::(anonymous namespace)::BitmapRasterBufferImpl::pixels_
 # TODO(bartekn): This one has a malloc() path, consider rewriting after all.
 disk_cache::MappedFile::buffer_
 network::MojoToNetPendingBuffer::buffer_
 network::NetToMojoPendingBuffer::buffer_
+policy::PolicyMap::Entry::details
+blink::SVGFilterBuilder::last_effect_
+net::HttpCache::Transaction::SetRequest(const NetLogWithSource &)::(anonymous struct)::search
+# Unrewritten in crrev.com/c/5349143 and excluded in crrev.com/c/5353647.
+# TODO(crbug.com/348793154): Remove once clang plugin no longer enforces those.
+blink::(anonymous namespace)::MockClient::delegate_
+blink::(anonymous namespace)::PaymentResponseFunction::value_
 
-# Populated manually - Field initialized with non-nullptr value in constexpr.
+# Field initialized with non-nullptr value in constexpr.
 enterprise_connectors::ServiceProvider::analysis
 enterprise_connectors::ServiceProvider::reporting
 enterprise_connectors::ServiceProvider::file_system
 
-# Populated manually - based on sampling profiler data and tab_search:top100:2020 profiler data
+# Based on sampling profiler data and tab_search:top100:2020 profiler data.
 (anonymous namespace)::TlsVectorEntry::data
 LinkNodeBase::next_
 LinkNodeBase::previous_
@@ -366,8 +231,6 @@ WeakLinkNode::list_
 base::Location::program_counter_
 base::MessagePump::Delegate::ScopedDoWorkItem::outer_
 base::MessagePumpEpoll::RunState::delegate
-base::MessagePumpLibevent::RunState::delegate
-base::internal::OperationsController::OperationToken::outer_
 base::internal::SequenceLocalStorageMap::ValueDestructorPair::destructor_
 base::internal::SequenceLocalStorageMap::ValueDestructorPair::value_
 base::internal::TaskDestructionDetector::timer_
@@ -390,10 +253,10 @@ cc::PaintOpBuffer::OffsetIterator::buffer_
 cc::PaintOpBuffer::OffsetIterator::offsets_
 cc::PaintOpBuffer::OffsetIterator::ptr_
 cc::PaintOpBuffer::PlaybackFoldingIterator::current_op_
-cc::PictureLayerTiling::CoverageIterator::current_tile_
-cc::PictureLayerTiling::CoverageIterator::tiling_
 cc::PlaybackParams::image_provider
 cc::ResourcePool::InUsePoolResource::resource_
+cc::TilingCoverageIterator::current_tile_;
+cc::TilingCoverageIterator::tiling_;
 cc::TilingSetEvictionQueue::EvictionRectIterator::tilings_
 cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_
 cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_data_
@@ -446,36 +309,58 @@ url::CanonOutputT::buffer_
 prefs::ScopedDictionaryPrefUpdate::service_
 prefs::DictionaryValueUpdate::value_
 
-# Populated manually - type is unsupported by raw_ptr to avoid being used in
-# performance sensitive base::Unretained
+# Type is unsupported by raw_ptr to avoid being used in performance sensitive
+# base::Unretained.
 content::responsiveness::Watcher::calculator_io_
+
+# Hammering down visible nails in stack samples. Thought to hurt renderer
+# performance unacceptably.
+# See https://crrev.com/c/5271003
+cc::EffectTreeLayerListIterator::Position::current_layer
+cc::EffectTreeLayerListIterator::Position::current_render_surface
+cc::EffectTreeLayerListIterator::Position::target_render_surface
+cc::EffectTreeLayerListIterator::layer_tree_impl_
+cc::EffectTreeLayerListIterator::effect_tree_
+cc::HeadsUpDisplayLayerImpl::placeholder_quad_
+cc::GlobalMetricsTrackers::dropped_frame_counter
+cc::GlobalMetricsTrackers::latency_ukm_reporter
+cc::GlobalMetricsTrackers::frame_sequence_trackers
+cc::GlobalMetricsTrackers::event_latency_tracker
+cc::GlobalMetricsTrackers::predictor_jank_tracker
+cc::GlobalMetricsTrackers::scroll_jank_dropped_frame_tracker
+cc::GlobalMetricsTrackers::scroll_jank_ukm_reporter
+cc::CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::owner_
+cc::CompositorFrameReporter::ProcessedVizBreakdown::Iterator::owner_
+cc::TilingSetCoverageIterator::tilings_
+cc::PrioritizedTile::tile_
+cc::PrioritizedTile::source_tiling_
+cc::LayerTreeHostImpl::FrameData::render_surface_list
+cc::PropertyTree::property_trees_
+cc::LayerTreeHostImpl::FrameData::will_draw_layers
+cc::LayerTreeImpl::render_surface_list_
+viz::(anonymous namespace)::BspTreePerfTest::base_list_
 
 #######
 # End of performance-related exclusions
 #######
 
+#######
+# Recent manual exclusions.
+#
+# This section contains fields that were unrewritten manually, even if they're
+# decoreated with RAW_PTR_EXCLUSION in code (e.g. perf exclusions, things that
+# don't compile or crash). The reason is that the rewriter rules change over
+# time (or code changes in a way that a rule no longer applies), hence we want
+# to run a rewrite "refresh" which ignores RAW_PTR_EXCLUSION, and we need a way
+# to keep the manual exclusions out of the picture.
+#######
 
-# This section contains exclusions that were discovered during the rewrite in
-# crrev.comc/c/5232280.
-#
-# Some of these caused compiler errors, some of these simply pertained to
-# pointers that were already marked as RAW_PTR_EXCLUSION for non-automated
-# reasons.
-#
-# We want to list them explicitly, so that future incremental rewrites that
-# ignore RAW_PTR_EXCLUSION don't try to rewrite these again and again.
-base::internal::BasicAutoLock::lock_
-base::internal::BasicAutoTryLock::lock_
-base::internal::BasicAutoUnlock::lock_
-base::internal::BasicAutoLockMaybe::lock_
-base::internal::BasicReleasableAutoLock::lock_
+# Exclusions discovered during the rewrite in crrev.com/c/5232280.
 base::CheckedContiguousIterator::start_
 base::CheckedContiguousIterator::current_
 base::CheckedContiguousIterator::end_
 base::internal::flat_tree::KeyValueCompare::comp_
-base::MemoryMappedFile::data_
 base::MadvFreeDiscardableMemoryPosix::data_
-base::i18n::IcuMergeableDataFile::lacros_data_
 base::internal::UnexpectedDeducer::lambda_
 (anonymous namespace)::CouponDataStruct::description
 (anonymous namespace)::CouponDataStruct::coupon_code
@@ -515,7 +400,7 @@ cc::Tile::CreateInfo::tiling
 cc::Tile::tile_manager_
 cc::Tile::tiling_
 cc::OcclusionTracker::StackObject::target
-safe_browsing::MultipartDataPipeGetter::InternalMemoryMappedFile::data_
+safe_browsing::ConnectorDataPipeGetter::InternalMemoryMappedFile::data_
 ScreenshotArea::window
 ExtensionSettingsOverriddenDialog::Params::icon
 ProfileMenuViewBase::EditButtonParams::edit_icon
@@ -523,7 +408,7 @@ ReadAnythingLineSpacingModel::LineSpacingInfo::icon_asset
 ReadAnythingLetterSpacingModel::LetterSpacingInfo::icon_asset
 ToolbarButton::VectorIcons::icon
 ToolbarButton::VectorIcons::touch_icon
-updater::ScopedLockImpl::mutex_
+named_system_lock::ScopedLockImpl::mutex_
 ash::memory::userspace_swap::(anonymous namespace)::ScopedMemory::ptr_
 pdf::PdfStreamDelegate::StreamInfo::injected_script
 content::responsiveness::JankMonitorImpl::ThreadExecutionState::TaskMetadata::identifier
@@ -531,11 +416,11 @@ media::V4L2CaptureDelegate::BufferTracker::start_
 mojo::internal::ArrayDataViewImpl::data_
 mojo::internal::ArrayDataViewImpl::message_
 mojo::MapValuesArrayView::map
-mojo::internal::ArrayIterator<Traits, MaybeConstUserType, true>::input_
-mojo::internal::ArrayIterator<Traits, MaybeConstUserType, false>::input_
+mojo::internal::ArrayIterator<type-parameter-0-0, type-parameter-0-1, true>::input_
+mojo::internal::ArrayIterator<type-parameter-0-0, type-parameter-0-1, false>::input_
 mojo::internal::MapReaderBase::input_
 mojo::internal::MessageFragment::message_
-mojo::internal::MessageFragment<Array_Data<T>>::message_
+mojo::internal::MessageFragment<Array_Data<type-parameter-0-0>>::message_
 mojo::internal::ValidationContext::message_
 mojo::ReceiverSetState::Entry::state_
 mojo::ReceiverSetState::Entry::DispatchFilter::entry_
@@ -559,3 +444,90 @@ base::internal::BinaryPredicateProjector::proj2_
 gwp_asan::internal::lud::AllocationInfo::address
 gwp_asan::internal::lud::AllocationInfo::context
 ui::EventTarget::PrioritizedHandler::handler
+
+# Exclusions discovered during the rewrite in crrev.com/c/5240446.
+blink::(anonymous namespace)::ConversionContext::StateEntry::transform
+blink::(anonymous namespace)::ConversionContext::StateEntry::clip
+blink::(anonymous namespace)::ConversionContext::StateEntry::effect
+blink::(anonymous namespace)::ConversionContext::StateEntry::previous_transform
+blink::GeometryMapperClipCache::ClipAndTransform::ancestor_clip
+blink::GeometryMapperClipCache::ClipAndTransform::ancestor_transform
+blink::GeometryMapperTransformCache::root_of_2d_translation_
+blink::WebGLRenderingContextBase::TypedExtensionTracker::extension_field_
+blink::BlinkStorageKeyTest_FromWireReturnValue_Test::TestBody()::TestCase::top_level_site
+blink::BlinkStorageKeyTest_FromWireReturnValue_Test::TestBody()::TestCase::top_level_site_if_third_party_enabled
+blink::BlinkStorageKeyTest_FromWireReturnValue_Test::TestBody()::TestCase::nonce
+
+# Excluded in crrev.com/c/5247462.
+base::(anonymous namespace)::ScopedEventSignaller::event_
+base::(anonymous namespace)::HandlerParams::event
+base::(anonymous namespace)::HandlerParams::success
+base::(anonymous namespace)::HandlerParams::context
+base::(anonymous namespace)::HandlerParams::stack_buffer
+base::(anonymous namespace)::HandlerParams::stack_copy_bottom
+base::(anonymous namespace)::HandlerParams::maybe_timestamp
+base::(anonymous namespace)::HandlerParams::stack_copier_delegate
+
+# Excluded in crrev.com/c/5370959.
+base::basic_cstring_view::ptr_
+
+# Excluded in crrev.com/c/5604742.
+viz::DrawQuad::shared_quad_state
+
+# Excluded in crrev.com/c/5546711.
+mahi::WebContentState::top_level_native_window
+
+# Excluded as part of performance investigations in the following CLs:
+# crrev.com/c/5423055
+base::internal::ThreadGroup::BaseScopedCommandsExecutor::outer_
+# crrev.com/c/5444919
+base::sequence_manager::internal::WorkQueueSets::OldestTaskOrder::value
+# crrev.com/c/5456638
+base::SequencedTaskRunner::CurrentDefaultHandle::previous_handle_
+base::SingleThreadTaskRunner::CurrentDefaultHandle::previous_handle_
+base::sequence_manager::internal::DelayedTaskHandleDelegate::outer_
+base::sequence_manager::internal::TaskQueueImpl::GuardedTaskPoster::outer_
+base::sequence_manager::internal::TaskQueueImpl::OnTaskPostedCallbackHandleImpl::task_queue_impl_
+base::sequence_manager::internal::WakeUpQueue::ScheduledWakeUp::queue
+base::sequence_manager::internal::WorkQueue::work_queue_sets_
+base::sequence_manager::internal::WorkQueue::task_queue_
+base::sequence_manager::internal::SyncWorkAuthorization::tracker_
+base::internal::RegisteredTaskSource::task_tracker_
+cc::RTree::Branch::subtree
+cc::PictureLayerImpl::twin_layer_
+cc::TileSizeCalculator::layer_impl_
+viz::(anonymous namespace)::DrawQuadCommon::shared_quad_state
+mojo::test::(anonymous namespace)::ReentrantMessageAccumulator::connector_
+mojo::InterfaceEndpointClient::HandleIncomingMessageThunk::owner_
+mojo::MessageDispatcher::sink_
+mojo::internal::ControlMessageHandler::owner_
+mojo::internal::ControlMessageProxy::owner_
+mojo::internal::MultiplexRouter::InterfaceEndpoint::client_
+mojo::internal::MultiplexRouter::InterfaceEndpoint::router_
+mojo::DrawQuadWithSharedQuadState::quad
+mojo::DrawQuadWithSharedQuadState::shared_quad_state
+mojo::OptSharedQuadState::sqs
+# crrev.com/c/5553525
+cc::PlaybackImageProvider::cache_
+# crrev.com/c/5552926
+cc::(anonymous namespace)::OopPixelTest::RasterOptions::image_cache
+cc::ImageController::cache_
+cc::LayerTreeHostImpl::ImageDecodeCacheHolder::image_decode_cache_ptr_
+blink::FakeWebGraphicsContext3DProvider::image_decode_cache_
+# crrev.com/c/5528378
+blink::MemoryManagedPaintRecorder::current_canvas_
+viz::DisplayResourceProvider::ScopedReadLockSharedImage::resource_
+viz::DisplayResourceProvider::ScopedReadLockSharedImage::resource_provider_
+media::VideoFrame::ScopedMapping::gpu_memory_buffer_  # duplicated in crrev.com/c/5581537
+gpu::ClientSharedImage::ScopedMapping::buffer_
+gpu::SharedImageRepresentation::ScopedAccessBase::representation_
+gpu::SharedImageRepresentation::manager_
+gpu::SharedImageRepresentation::backing_
+gpu::SharedImageRepresentation::tracker_
+gpu::Scheduler::Sequence::scheduler_
+# crrev.com/c/5647253
+gpu::gles2::PassthroughProgramCache::ProgramCacheValue::program_cache_
+
+#######
+# End of recent manual exclusions
+#######

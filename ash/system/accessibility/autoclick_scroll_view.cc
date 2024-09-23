@@ -42,9 +42,9 @@ constexpr int kScrollPadIconPadding = 30;
 
 // The close button for the automatic clicks scroll bubble.
 class AutoclickScrollCloseButton : public FloatingMenuButton {
- public:
-  METADATA_HEADER(AutoclickScrollCloseButton);
+  METADATA_HEADER(AutoclickScrollCloseButton, FloatingMenuButton)
 
+ public:
   AutoclickScrollCloseButton()
       : FloatingMenuButton(
             base::BindRepeating(&AutoclickScrollCloseButton::OnButtonPressed,
@@ -100,7 +100,7 @@ class AutoclickScrollCloseButton : public FloatingMenuButton {
   bool hovered_ = false;
 };
 
-BEGIN_METADATA(AutoclickScrollCloseButton, FloatingMenuButton)
+BEGIN_METADATA(AutoclickScrollCloseButton)
 END_METADATA
 
 // A single scroll button (up/down/left/right) for automatic clicks scroll
@@ -109,8 +109,9 @@ END_METADATA
 // encloses the button.
 class AutoclickScrollButton : public CustomShapeButton,
                               public views::MaskedTargeterDelegate {
+  METADATA_HEADER(AutoclickScrollButton, CustomShapeButton)
+
  public:
-  METADATA_HEADER(AutoclickScrollButton);
   AutoclickScrollButton(AutoclickController::ScrollPadAction action,
                         const gfx::VectorIcon& icon,
                         int accessible_name_id,
@@ -318,7 +319,7 @@ class AutoclickScrollButton : public CustomShapeButton,
   const raw_ref<const gfx::VectorIcon> icon_;
 };
 
-BEGIN_METADATA(AutoclickScrollButton, CustomShapeButton)
+BEGIN_METADATA(AutoclickScrollButton)
 END_METADATA
 
 // ------ AutoclickScrollBubbleView  ------ //

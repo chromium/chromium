@@ -48,6 +48,14 @@ enum OptionalBoolean {
   kTrue,
 };
 
+[Stable, Extensible]
+enum MachineStatisticKeyType {
+  [Default] kUnknown = 0,
+  kOemDeviceRequisitionKey = 1,
+  kHardwareClassKey = 2,
+  kCustomizationIdKey = 3,
+};
+
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
 // file.
 [Stable]
@@ -78,8 +86,8 @@ interface DomMessageObserver {
 // Implemented in lacros-chrome.
 // Lets the Ash browser tests that require Lacros to send commands to this
 // lacros-chrome instance.
-// Next version: 10
-// Next method id: 12
+// Next version: 12
+// Next method id: 14
 [Stable, Uuid="20e7f031-f4e1-4ad9-bd91-ad59eb8b1504"]
 interface StandaloneBrowserTestController {
   // Installs a test web app in lacros-chrome given a start URL and mode (open
@@ -141,6 +149,15 @@ interface StandaloneBrowserTestController {
   // Sets WebAppInstallForceList pref for a primary user profile.
   [MinVersion=9]
   SetWebAppInstallForceListPref@11(string policy) => (bool success);
+
+  // Installs a component extension at the given directory with the given
+  // extension id in Lacros.
+  [MinVersion=10]
+  InstallComponentExtension@12(string path, string extension_id) => ();
+
+  // Injects a fake extension printer handler in lacros.
+  [MinVersion=11]
+  SetFakeExtensionPrinterHandler@13() => ();
 };
 
 // Allows callers running in lacros to trigger test events that are passed to
@@ -331,8 +348,8 @@ enum SnapPosition {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 33
-// Next method id: 48
+// Next version: 37
+// Next method id: 54
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -456,7 +473,7 @@ interface TestController {
   SetSelectedSharesheetApp@21(string app_id) => ();
 
   // Returns the version of ash-chrome, e.g. "103.0.5029.0". The returned string
-  // is intended to be compatible with the base::Version(StringPiece)
+  // is intended to be compatible with the base::Version(std::string_view)
   // constructor.
   // Consider using the convenience wrapper
   // lacros_test_helper.h:IsAshVersionAtLeastForTesting instead.
@@ -588,4 +605,27 @@ interface TestController {
   // Checks whether the shelf is currently visible.
   [MinVersion=32]
   IsShelfVisible@47() => (bool visible);
+
+  // Sets whether the app install dialog is enabled and should auto accept
+  // installation without actual user input.
+  [MinVersion=33]
+  SetAppInstallDialogAutoAccept@48(bool auto_accept) => ();
+
+  // Sets the number of displays through the `DisplayManagerTestApi`.
+  // The values can be in the range [1, 8].
+  [MinVersion=34] UpdateDisplay@49(int32 number_of_displays) => ();
+
+  // Enables or disables FakeStatisticsProvider for testing.
+  [MinVersion=35] EnableStatisticsProviderForTesting@50(bool enable) => ();
+
+  // Clears all machine statistics data from FakeStatisficsProvider for testing.
+  [MinVersion=35] ClearAllMachineStatistics@51() => ();
+
+  // Sets the machine statistics data with FakeStatisficsProvider for testing.
+  // Returns true if succeeded.
+  [MinVersion=35] SetMachineStatistic@52(MachineStatisticKeyType key,
+      string value) => (bool success);
+
+  // Set fling gesture recognition threshold for testing.
+  [MinVersion=36] SetMinFlingVelocity@53(float velocity) => ();
 };

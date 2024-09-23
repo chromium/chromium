@@ -20,7 +20,6 @@ EnumTraits<mojo_base::mojom::MemoryPressureLevel,
       return mojo_base::mojom::MemoryPressureLevel::CRITICAL;
   }
   NOTREACHED();
-  return mojo_base::mojom::MemoryPressureLevel::NONE;
 }
 
 // static

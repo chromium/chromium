@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -149,7 +148,7 @@ class WebAppPolicyManager {
   void OnAppsSynchronized(
       std::map<GURL, ExternallyManagedAppManager::InstallResult>
           install_results,
-      std::map<GURL, bool> uninstall_results);
+      std::map<GURL, webapps::UninstallResultCode> uninstall_results);
 
   void ApplyPolicySettings();
   void ApplyRunOnOsLoginPolicySettings(
@@ -165,7 +164,9 @@ class WebAppPolicyManager {
   // Parses install options from a `base::Value::Dict`, which represents one
   // entry of the kWepAppInstallForceList. If the value contains a custom_name
   // or custom_icon, it is inserted into the custom_manifest_values_by_url_ map.
-  ExternalInstallOptions ParseInstallPolicyEntry(
+  // If the install_url in the entry is invalid, returns a `std::nullopt`, so
+  // that installation can be skipped.
+  std::optional<ExternalInstallOptions> ParseInstallPolicyEntry(
       const base::Value::Dict& entry);
 
   void ObserveDisabledSystemFeaturesPolicy();
@@ -178,18 +179,6 @@ class WebAppPolicyManager {
   // policy.
   void PopulateDisabledWebAppsIdsLists();
   void OnWebAppForceInstallPolicyParsed();
-
-  // An error loaded policy app is one that:
-  // 1. Is installed as a legit non-placeholder app from a policy install URL.
-  // 2. Has a start_url that matches the policy install URL.
-  // 3. Has an empty manifest URL.
-  // This usually happened before crbug.com/1440946 was fixed, when URL loading
-  // failures of 4xx and 5xx HTTP errors were not treated erroneously, leading
-  // to an app that is installed with an invalid start URL. This has an unique
-  // id compared to its default app counterpart (if any), and is hence treated
-  // as a valid app w.r.t to the web apps system even though it is invalid.
-  bool IsMaybeErrorLoadedPolicyApp(const webapps::AppId& app_id,
-                                   const GURL& policy_install_url);
 
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;

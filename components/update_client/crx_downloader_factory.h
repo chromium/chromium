@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_CRX_DOWNLOADER_FACTORY_H_
 #define COMPONENTS_UPDATE_CLIENT_CRX_DOWNLOADER_FACTORY_H_
 
+#include <cstdint>
 #include <optional>
 
 #include "base/files/file_path.h"

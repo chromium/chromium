@@ -73,7 +73,6 @@ std::string GetCheckinRequestStatusString(CheckinRequestStatus status) {
   }
 
   NOTREACHED();
-  return "Failed: Unknown reason";
 }
 
 // Records checkin status to both stats recorder and reports to UMA.
@@ -243,8 +242,6 @@ void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
     LOG(ERROR) << "Check-in request got net error: " << source->NetError();
     RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNetError,
                                     recorder_, /* will_retry= */ true);
-    base::UmaHistogramSparse("GCM.CheckinRequestStatusNetError",
-                             std::abs(source->NetError()));
 
     RetryWithBackoff();
     return;

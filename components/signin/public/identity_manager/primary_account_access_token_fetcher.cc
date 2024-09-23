@@ -144,9 +144,6 @@ void PrimaryAccountAccessTokenFetcher::OnAccessTokenFetchComplete(
   // Moreover, OnRefreshTokenAvailable might happen after startup when the
   // credentials are changed/updated.
   // To handle these cases, we retry a canceled request once.
-  // However, a request may also get cancelled for legitimate reasons, e.g.
-  // because the user signed out. In those cases, there's no point in retrying,
-  // so only retry if there (still) is a valid refresh token.
   // NOTE: Maybe we should retry for all transient errors here, so that clients
   // don't have to.
   if (mode_ == Mode::kWaitUntilAvailable && !access_token_retried_ &&

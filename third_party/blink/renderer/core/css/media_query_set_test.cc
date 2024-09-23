@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -105,7 +104,7 @@ TEST(MediaQuerySetTest, Basic) {
       {"print and (min-resolution: 300dpi)", nullptr},
       {"print and (min-resolution: 118dpcm)", nullptr},
       {"(resolution: 0.83333333333333333333dppx)",
-       "(resolution: 0.833333333333333dppx)"},
+       "(resolution: 0.833333dppx)"},
       {"(resolution: 2.4dppx)", nullptr},
       {"(resolution: calc(1dppx))", "(resolution: calc(1dppx))"},
       {"(resolution: calc(1x))", "(resolution: calc(1dppx))"},
@@ -240,6 +239,10 @@ TEST(MediaQuerySetTest, Basic) {
       {"(block-size > 0px)", "not all"},
       {"(min-block-size: 0px)", "not all"},
       {"(max-block-size: 0px)", "not all"},
+      {"(device-aspect-ratio: calc(16.1)/calc(9.0))",
+       "(device-aspect-ratio: calc(16.1) / calc(9))"},
+      {"(device-aspect-ratio: calc(16.1)/9.0)",
+       "(device-aspect-ratio: calc(16.1) / 9)"},
   };
 
   for (const MediaQuerySetTestCase& test : test_cases) {

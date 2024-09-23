@@ -6,7 +6,6 @@ package org.chromium.components.signin;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +28,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.signin.AccountManagerDelegate.CapabilityResponse;
+import org.chromium.components.signin.ConnectionRetry.AuthTask;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -80,8 +80,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private @Nullable AsyncTask<List<String>> mFetchGaiaIdsTask;
 
     private int mNumberOfRetries;
+    private boolean mDidAccountFetchSucceed;
 
-    /** @param delegate the AccountManagerDelegate to use as a backend */
+    private int mPendingTokenRequests;
+    private Runnable mTokenRequestsCompletedCallback;
+
+    /**
+     * @param delegate the AccountManagerDelegate to use as a backend
+     */
     public AccountManagerFacadeImpl(AccountManagerDelegate delegate) {
         ThreadUtils.assertOnUiThread();
         mDelegate = delegate;
@@ -128,46 +134,97 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return mCoreAccountInfosPromise;
     }
 
-    /** @return Whether or not there is an account authenticator for Google accounts. */
+    @MainThread
     @Override
-    public boolean hasGoogleAccountAuthenticator() {
-        AuthenticatorDescription[] descs = mDelegate.getAuthenticatorTypes();
-        for (AuthenticatorDescription desc : descs) {
-            if (AccountUtils.GOOGLE_ACCOUNT_TYPE.equals(desc.type)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Synchronously gets an OAuth2 access token. May return a cached version, use
-     * {@link #invalidateAccessToken} to invalidate a token in the cache.
-     * @param coreAccountInfo The {@link CoreAccountInfo} for which the token is requested.
-     * @param scope OAuth2 scope for which the requested token should be valid.
-     * @return The OAuth2 access token as an AccessTokenData with a string and an expiration time..
-     */
-    @Override
-    public AccessTokenData getAccessToken(CoreAccountInfo coreAccountInfo, String scope)
-            throws AuthException {
+    public void getAccessToken(
+            CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback) {
+        ThreadUtils.assertOnUiThread();
         assert coreAccountInfo != null;
         assert scope != null;
-        return mDelegate.getAuthToken(
-                AccountUtils.createAccountFromName(coreAccountInfo.getEmail()), scope);
+        pendingRequestStarted();
+        ConnectionRetry.runAuthTask(
+                new AuthTask<AccessTokenData>() {
+                    @Override
+                    public AccessTokenData run() throws AuthException {
+                        return mDelegate.getAuthToken(
+                                AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
+                                scope);
+                    }
+
+                    @Override
+                    public void onSuccess(AccessTokenData token) {
+                        callback.onGetTokenSuccess(token);
+                        pendingRequestFinished();
+                    }
+
+                    @Override
+                    public void onFailure(boolean isTransientError) {
+                        callback.onGetTokenFailure(isTransientError);
+                        pendingRequestFinished();
+                    }
+                });
     }
 
-    /**
-     * Removes an OAuth2 access token from the cache with retries asynchronously.
-     * Uses {@link #getAccessToken} to issue a new token after invalidating the old one.
-     * @param accessToken The access token to invalidate.
-     */
-    @Override
-    public void invalidateAccessToken(String accessToken) {
-        if (!TextUtils.isEmpty(accessToken)) {
-            ConnectionRetry.runAuthTask(
-                    () -> {
-                        mDelegate.invalidateAuthToken(accessToken);
-                        return true;
-                    });
+    private void pendingRequestStarted() {
+        ThreadUtils.assertOnUiThread();
+        mPendingTokenRequests++;
+    }
+
+    private void pendingRequestFinished() {
+        ThreadUtils.assertOnUiThread();
+        mPendingTokenRequests--;
+        assert mPendingTokenRequests >= 0;
+        if (mPendingTokenRequests == 0 && mTokenRequestsCompletedCallback != null) {
+            Runnable callback = mTokenRequestsCompletedCallback;
+            mTokenRequestsCompletedCallback = null;
+            callback.run();
         }
+    }
+
+    @Override
+    public void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable) {
+        ThreadUtils.assertOnUiThread();
+        if (TextUtils.isEmpty(accessToken)) {
+            // TODO(https://crbug.com/366403142): Replace this with an exception.
+            if (completedRunnable != null) {
+                completedRunnable.run();
+            }
+            return;
+        }
+        ConnectionRetry.runAuthTask(
+                new AuthTask<Void>() {
+                    @Override
+                    public Void run() throws AuthException {
+                        mDelegate.invalidateAuthToken(accessToken);
+                        return null;
+                    }
+
+                    @Override
+                    public void onSuccess(Void ignored) {
+                        if (completedRunnable != null) {
+                            completedRunnable.run();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(boolean ignored) {
+                        if (completedRunnable != null) {
+                            completedRunnable.run();
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void waitForPendingTokenRequestsToComplete(Runnable requestsCompletedCallback) {
+        ThreadUtils.assertOnUiThread();
+        assert mTokenRequestsCompletedCallback == null;
+        if (mPendingTokenRequests == 0) {
+            requestsCompletedCallback.run();
+            return;
+        }
+        // The callback will be invoked when the all pending token requests are finished.
+        mTokenRequestsCompletedCallback = requestsCompletedCallback;
     }
 
     @Override
@@ -183,7 +240,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
             @Override
             protected void onPostExecute(Boolean isChild) {
-                // TODO(crbug.com/1258563): rework this interface to avoid passing a null account.
+                // TODO(crbug.com/40201126): rework this interface to avoid passing a null account.
                 listener.onStatusReady(isChild, isChild ? coreAccountInfo : null);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -243,23 +300,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mDelegate.updateCredentials(account, activity, callback);
     }
 
-    /**
-     * Returns the Gaia id for the account associated with the given email address.
-     * If an account with the given email address is not installed on the device
-     * then null is returned.
-     *
-     * This method will throw IllegalStateException if called on the main thread.
-     *
-     * @param accountEmail The email address of a Google account.
-     */
-    @Override
-    public String getAccountGaiaId(String accountEmail) {
-        return mDelegate.getAccountGaiaId(accountEmail);
-    }
-
     @Override
     public void confirmCredentials(Account account, Activity activity, Callback<Bundle> callback) {
         mDelegate.confirmCredentials(account, activity, callback);
+    }
+
+    @Override
+    public boolean didAccountFetchSucceed() {
+        return mDidAccountFetchSucceed;
     }
 
     /**
@@ -286,9 +334,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                             if (isCancelled()) {
                                 return null;
                             }
-                            final String gaiaId = getAccountGaiaId(email);
+                            final String gaiaId = mDelegate.getAccountGaiaId(email);
                             if (gaiaId == null) {
-                                // TODO(crbug.com/1465339): Add metrics to check how often we get a
+                                // TODO(crbug.com/40275966): Add metrics to check how often we get a
                                 // null gaiaId.
                                 return null;
                             }
@@ -341,8 +389,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
             @Override
             protected void onPostExecute(@Nullable List<Account> allAccounts) {
-                boolean didBackoffSucceed = true;
+                mDidAccountFetchSucceed = true;
                 if (allAccounts == null) {
+                    mDidAccountFetchSucceed = false;
                     if (shouldRetry()) {
                         // Wait for a fixed amount of time then try to fetch the accounts again.
                         PostTask.postDelayedTask(
@@ -356,14 +405,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         // We shouldn't wait indefinitely for the account fetching to succeed, at it
                         // might block certain features. Fall back to an empty list to allow the
                         // user to proceed.
-                        allAccounts = List.of();
-                        didBackoffSucceed = false;
+                        allAccounts = mAllAccounts.get() == null ? List.of() : mAllAccounts.get();
                     }
                 }
                 if (mNumberOfRetries != 0) {
                     RecordHistogram.recordBooleanHistogram(
-                            "Signin.GetAccountsBackoffSuccess", didBackoffSucceed);
-                    if (didBackoffSucceed) {
+                            "Signin.GetAccountsBackoffSuccess", mDidAccountFetchSucceed);
+                    if (mDidAccountFetchSucceed) {
                         RecordHistogram.recordExactLinearHistogram(
                                 "Signin.GetAccountsBackoffRetries",
                                 mNumberOfRetries,
@@ -424,5 +472,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             return capabilityName.substring(ACCOUNT_CAPABILITY_NAME_PREFIX.length());
         }
         return capabilityName;
+    }
+
+    public void resetAccountsForTesting() {
+        mCoreAccountInfosPromise = new Promise<>();
+        mAllAccounts.set(null);
+        updateAccounts();
     }
 }

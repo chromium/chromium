@@ -26,8 +26,9 @@ void RecordUkmNonCompliantApi(
 }
 
 void RecordUkmAssistiveMatch(ukm::SourceId source, const int64_t type) {
-  if (source == ukm::kInvalidSourceId)
+  if (source == ukm::kInvalidSourceId) {
     return;
+  }
 
   ukm::builders::InputMethod_Assistive_Match(source).SetType(type).Record(
       ukm::UkmRecorder::Get());

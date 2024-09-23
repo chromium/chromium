@@ -148,9 +148,12 @@ void HTMLFieldSetElement::ChildrenChanged(const ChildrenChange& change) {
     focused_element->blur();
 }
 
-bool HTMLFieldSetElement::SupportsFocus(UpdateBehavior update_behavior) const {
-  return HTMLElement::SupportsFocus(update_behavior) &&
-         !IsDisabledFormControl();
+FocusableState HTMLFieldSetElement::SupportsFocus(
+    UpdateBehavior update_behavior) const {
+  if (IsDisabledFormControl()) {
+    return FocusableState::kNotFocusable;
+  }
+  return HTMLElement::SupportsFocus(update_behavior);
 }
 
 FormControlType HTMLFieldSetElement::FormControlType() const {
@@ -168,8 +171,9 @@ LayoutObject* HTMLFieldSetElement::CreateLayoutObject(const ComputedStyle&) {
 
 LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
   if (const auto* ng_fieldset = DynamicTo<LayoutFieldset>(GetLayoutBox())) {
-    if (auto* content = ng_fieldset->FindAnonymousFieldsetContentBox())
+    if (auto* content = ng_fieldset->FindAnonymousFieldsetContentBox()) {
       return content;
+    }
   }
   return HTMLFormControlElement::GetLayoutBoxForScrolling();
 }

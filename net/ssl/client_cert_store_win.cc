@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/ssl/client_cert_store_win.h"
 
 #include <algorithm>
@@ -9,8 +14,9 @@
 #include <memory>
 #include <string>
 
-#define SECURITY_WIN32  // Needs to be defined before including security.h
 #include <windows.h>
+
+#define SECURITY_WIN32
 #include <security.h>
 
 #include "base/functional/bind.h"
@@ -156,7 +162,7 @@ ClientCertIdentityList GetClientCertsImpl(HCERTSTORE cert_store,
     BOOL ok = CertAddCertificateContextToStore(
         nullptr, cert_context, CERT_STORE_ADD_USE_EXISTING, &raw);
     if (!ok) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     cert_context2.reset(raw);
@@ -223,20 +229,26 @@ ClientCertStoreWin::ClientCertStoreWin(
 
 ClientCertStoreWin::~ClientCertStoreWin() = default;
 
-void ClientCertStoreWin::GetClientCerts(const SSLCertRequestInfo& request,
-                                        ClientCertListCallback callback) {
+void ClientCertStoreWin::GetClientCerts(
+    scoped_refptr<const SSLCertRequestInfo> request,
+    ClientCertListCallback callback) {
   GetSSLPlatformKeyTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      // Caller is responsible for keeping the |request| alive
-      // until the callback is run, so std::cref is safe.
       base::BindOnce(&ClientCertStoreWin::GetClientCertsWithCertStore,
-                     std::cref(request), cert_store_callback_),
-      std::move(callback));
+                     std::move(request), cert_store_callback_),
+      base::BindOnce(&ClientCertStoreWin::OnClientCertsResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClientCertStoreWin::OnClientCertsResponse(
+    ClientCertListCallback callback,
+    ClientCertIdentityList identities) {
+  std::move(callback).Run(std::move(identities));
 }
 
 // static
 ClientCertIdentityList ClientCertStoreWin::GetClientCertsWithCertStore(
-    const SSLCertRequestInfo& request,
+    scoped_refptr<const SSLCertRequestInfo> request,
     const base::RepeatingCallback<crypto::ScopedHCERTSTORE()>&
         cert_store_callback) {
   ScopedHCERTSTOREWithChecks cert_store;
@@ -255,7 +267,7 @@ ClientCertIdentityList ClientCertStoreWin::GetClientCertsWithCertStore(
     PLOG(ERROR) << "Could not open certificate store: ";
     return ClientCertIdentityList();
   }
-  return GetClientCertsImpl(cert_store.get(), request);
+  return GetClientCertsImpl(cert_store.get(), *request);
 }
 
 bool ClientCertStoreWin::SelectClientCertsForTesting(

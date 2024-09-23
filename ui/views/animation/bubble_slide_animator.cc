@@ -106,7 +106,7 @@ gfx::Rect BubbleSlideAnimator::CalculateTargetBounds(
     const View* desired_anchor_view) const {
   return bubble_delegate_->GetBubbleFrameView()->GetUpdatedWindowBounds(
       desired_anchor_view->GetAnchorBoundsInScreen(), bubble_delegate_->arrow(),
-      bubble_delegate_->GetWidget()->client_view()->GetPreferredSize(), true);
+      bubble_delegate_->GetWidget()->client_view()->GetPreferredSize({}), true);
 }
 
 }  // namespace views

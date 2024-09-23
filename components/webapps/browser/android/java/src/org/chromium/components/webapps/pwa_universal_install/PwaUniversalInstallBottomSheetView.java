@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.os.Build;
-import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +15,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
 
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.WebContents;
-
-import java.util.concurrent.Callable;
+import org.chromium.ui.base.LocalizationUtils;
 
 /** The view portion of the PWA Universal Install bottom sheet. */
 public class PwaUniversalInstallBottomSheetView {
@@ -36,8 +33,9 @@ public class PwaUniversalInstallBottomSheetView {
     public void initialize(
             Context context,
             WebContents webContents,
-            Callable<Pair<Bitmap, Boolean>> iconCall,
-            int arrowId) {
+            int arrowId,
+            int installOverlayId,
+            int shortcutOverlayId) {
         mContentView =
                 LayoutInflater.from(context)
                         .inflate(
@@ -52,7 +50,7 @@ public class PwaUniversalInstallBottomSheetView {
                 .findViewById(R.id.option_shortcut)
                 .setBackgroundResource(R.drawable.pwa_restore_app_item_background_bottom);
 
-        // Add a 4dp separator view as a separate item in the ScrollView so as to not affect the
+        // Add a 2dp separator view as a separate item in the ScrollView so as to not affect the
         // height of the app item view (or mess up the rounded corners).
         View separator = mContentView.findViewById(R.id.separator);
         separator.setLayoutParams(
@@ -61,50 +59,50 @@ public class PwaUniversalInstallBottomSheetView {
                         (int)
                                 TypedValue.applyDimension(
                                         TypedValue.COMPLEX_UNIT_DIP,
-                                        4,
+                                        2,
                                         context.getResources().getDisplayMetrics())));
 
-        // Setup the app icon, with a placeholder as fallback in case of an error.
-        Pair<Bitmap, Boolean> iconWithMetadata;
-        try {
-            iconWithMetadata = iconCall.call();
-        } catch (Exception exception) {
-            iconWithMetadata = null;
+        if (arrowId != 0) {
+            ImageView installArrow = mContentView.findViewById(R.id.arrow_install);
+            ImageView shortcutArrow = mContentView.findViewById(R.id.arrow_shortcut);
+            installArrow.setImageResource(arrowId);
+            shortcutArrow.setImageResource(arrowId);
+            if (LocalizationUtils.isLayoutRtl()) {
+                // Flip the image horizontally, so that the arrow points the right way for RTL.
+                installArrow.setScaleX(-1);
+                shortcutArrow.setScaleX(-1);
+            }
         }
-        Bitmap appIcon = iconWithMetadata != null ? iconWithMetadata.first : null;
-        boolean isAdaptive = iconWithMetadata != null ? iconWithMetadata.second : false;
+        if (installOverlayId != 0 && shortcutOverlayId != 0) {
+            ((ImageView) mContentView.findViewById(R.id.install_icon_overlay))
+                    .setImageResource(installOverlayId);
+            ((ImageView) mContentView.findViewById(R.id.shortcut_icon_overlay))
+                    .setImageResource(shortcutOverlayId);
+        }
+    }
+
+    public void setIcon(Bitmap appIcon, boolean isAdaptive) {
         assert (!isAdaptive || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 : "Adaptive icons should not be provided pre-Android O.";
 
-        if (appIcon == null) {
-            int iconColor = context.getColor(R.color.default_favicon_background_color);
-            RoundedIconGenerator iconGenerator =
-                    new RoundedIconGenerator(
-                            context.getResources(),
-                            APP_ICON_SIZE_DP,
-                            APP_ICON_SIZE_DP,
-                            APP_ICON_CORNER_RADIUS_DP,
-                            iconColor,
-                            APP_ICON_TEXT_SIZE_DP);
-            appIcon = iconGenerator.generateIconForText("?");
-        }
+        ImageView appIconInstall = mContentView.findViewById(R.id.app_icon_install);
+        ImageView appIconShortcut = mContentView.findViewById(R.id.app_icon_shortcut);
 
-        ImageView app_icon_install = mContentView.findViewById(R.id.app_icon_install);
-        ImageView app_icon_shortcut = mContentView.findViewById(R.id.app_icon_shortcut);
         if (isAdaptive) {
-            app_icon_install.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
-            app_icon_shortcut.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
+            appIconInstall.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
+            appIconShortcut.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
         } else {
-            app_icon_install.setImageBitmap(appIcon);
-            app_icon_shortcut.setImageBitmap(appIcon);
+            appIconInstall.setImageBitmap(appIcon);
+            appIconShortcut.setImageBitmap(appIcon);
         }
 
-        if (arrowId != 0) {
-            ((ImageView) mContentView.findViewById(R.id.arrow_install))
-                    .setBackgroundResource(arrowId);
-            ((ImageView) mContentView.findViewById(R.id.arrow_shortcut))
-                    .setBackgroundResource(arrowId);
-        }
+        // Swap out the spinners for icons.
+        mContentView.findViewById(R.id.spinny_install).setVisibility(View.GONE);
+        mContentView.findViewById(R.id.spinny_shortcut).setVisibility(View.GONE);
+        appIconInstall.setVisibility(View.VISIBLE);
+        appIconShortcut.setVisibility(View.VISIBLE);
+        mContentView.findViewById(R.id.install_icon_overlay).setVisibility(View.VISIBLE);
+        mContentView.findViewById(R.id.shortcut_icon_overlay).setVisibility(View.VISIBLE);
     }
 
     public View getContentView() {

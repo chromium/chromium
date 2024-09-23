@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/web_authn.h"
@@ -57,6 +58,10 @@ class WebAuthnHandler : public DevToolsDomainHandler,
                            bool is_user_verified) override;
   Response SetAutomaticPresenceSimulation(const String& authenticator_id,
                                           bool enabled) override;
+  Response SetCredentialProperties(const String& authenticator_id,
+                                   const Binary& credential_id,
+                                   Maybe<bool> backup_eligibility,
+                                   Maybe<bool> backup_state) override;
 
  private:
   // Finds the authenticator with the given |id|. Returns Response::OK() if
@@ -74,7 +79,7 @@ class WebAuthnHandler : public DevToolsDomainHandler,
   void OnAuthenticatorWillBeDestroyed(
       VirtualAuthenticator* authenticator) override;
 
-  RenderFrameHostImpl* frame_host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
   std::unique_ptr<WebAuthn::Frontend> frontend_;
   base::ScopedMultiSourceObservation<VirtualAuthenticator,
                                      VirtualAuthenticator::Observer>

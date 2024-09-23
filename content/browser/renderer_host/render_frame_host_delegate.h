@@ -46,6 +46,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/window_open_disposition.h"
@@ -79,7 +80,7 @@ namespace mojom {
 class DisplayCutoutHost;
 class FullscreenOptions;
 class WindowFeatures;
-}
+}  // namespace mojom
 class PageState;
 namespace web_pref {
 struct WebPreferences;
@@ -98,7 +99,9 @@ class SharedDictionaryAccessDetails;
 
 namespace ui {
 class ClipboardFormatType;
-}
+struct AXUpdatesAndEvents;
+struct AXLocationChanges;
+}  // namespace ui
 
 namespace content {
 class FrameTreeNode;
@@ -106,8 +109,6 @@ class PrerenderHostRegistry;
 class RenderWidgetHostImpl;
 class SessionStorageNamespace;
 class SiteInstanceGroup;
-struct AXEventNotificationDetails;
-struct AXLocationChangeNotificationDetails;
 struct ContextMenuParams;
 struct CookieAccessDetails;
 struct GlobalRequestID;
@@ -298,10 +299,14 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Called when accessibility events or location changes are received
   // from a render frame, when the accessibility mode has the
   // ui::AXMode::kWebContents flag set.
-  virtual void AccessibilityEventReceived(
-      const AXEventNotificationDetails& details) {}
+  virtual void ProcessAccessibilityUpdatesAndEvents(
+      ui::AXUpdatesAndEvents& details) {}
   virtual void AccessibilityLocationChangesReceived(
-      const std::vector<AXLocationChangeNotificationDetails>& details) {}
+      const std::vector<ui::AXLocationChanges>& details) {}
+
+  // Indicates an unrecoverable error in accessibility. Gracefully turns off
+  // accessibility in all frames.
+  virtual void UnrecoverableAccessibilityError() {}
 
   // Gets the GeolocationContext associated with this delegate.
   virtual device::mojom::GeolocationContext* GetGeolocationContext();
@@ -313,9 +318,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 #endif
 
   // Returns whether entering fullscreen with EnterFullscreenMode() is allowed.
-  virtual bool CanEnterFullscreenMode(
-      RenderFrameHostImpl* requesting_frame,
-      const blink::mojom::FullscreenOptions& options);
+  virtual bool CanEnterFullscreenMode(RenderFrameHostImpl* requesting_frame);
 
   // Notification that the frame with the given host wants to enter fullscreen
   // mode. Must only be called if CanEnterFullscreenMode returns true.
@@ -378,7 +381,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void DidCallFocus() {}
 
   // Returns whether this delegate is an inner WebContents for a guest.
-  // TODO(https://crbug.com/1295431): Remove in favor of tracking pending guest
+  // TODO(crbug.com/40214326): Remove in favor of tracking pending guest
   // initializations instead.
   virtual bool IsInnerWebContentsForGuest();
 
@@ -509,6 +512,17 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnFrameAudioStateChanged(RenderFrameHostImpl* host,
                                         bool is_audible) {}
 
+  // Notifies observers if a remote subframe's intersection with the viewport
+  // has changed.
+  //
+  // Note: This is only called for remote frames. If you only care about if the
+  // frame intersects or not with the viewport, use OnFrameVisibilityChanged()
+  // below, as it is called for all frames.
+  virtual void OnRemoteSubframeViewportIntersectionStateChanged(
+      RenderFrameHostImpl* host,
+      const blink::mojom::ViewportIntersectionState&
+          viewport_intersection_state) {}
+
   // Notifies observers that the frame's visibility has changed.
   virtual void OnFrameVisibilityChanged(
       RenderFrameHostImpl* host,
@@ -522,7 +536,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Returns FrameTreeNodes that are logically owned by another frame even
   // though this relationship is not yet reflected in their frame trees. This
-  // can happen, for example, with unattached guests and orphaned portals.
+  // can happen, for example, with unattached guests.
   virtual std::vector<FrameTreeNode*> GetUnattachedOwnedNodes(
       RenderFrameHostImpl* owner);
 
@@ -551,7 +565,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // ui::ClipboardFormatType::HtmlType() is used.
   //
   // It is also possible for the data type to be
-  // ui::ClipboardFormatType::WebCustomDataType() indicating that the paste
+  // ui::ClipboardFormatType::DataTransferCustomType() indicating that the paste
   // uses a custom data format.  It is up to the implementation to attempt to
   // understand the type if possible.  It is acceptable to deny pastes of
   // unknown data types.
@@ -567,6 +581,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const ClipboardMetadata& metadata,
       ClipboardPasteData clipboard_paste_data,
       IsClipboardPasteAllowedCallback callback);
+
+  // Notifies the delegate that `copied_text` has been
+  // copied to the clipboard from the `render_frame_host`.
+  virtual void OnTextCopiedToClipboard(RenderFrameHostImpl* render_frame_host,
+                                       const std::u16string& copied_text) {}
 
   // Notified when the main frame of `source` adjusts the page scale.
   virtual void OnPageScaleFactorChanged(PageImpl& source) {}
@@ -597,13 +616,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
           blink_widget_host,
       mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget);
 
-  // Returns true if the popup is shown through WebContentsObserver. Else, the
-  // Android / Mac flavors of `RenderViewHostDelegateView` will show the popup
-  // menu correspondingly, and `WebContentsViewChildFrame` will show the popup
-  // for Mac's GuestView.
-  virtual bool ShowPopupMenu(RenderFrameHostImpl* render_frame_host,
-                             const gfx::Rect& bounds);
-
   virtual void DidLoadResourceFromMemoryCache(
       RenderFrameHostImpl* source,
       const GURL& url,
@@ -626,6 +638,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnSharedDictionaryAccessed(
       RenderFrameHostImpl* render_frame_host,
       const network::mojom::SharedDictionaryAccessDetails& details) {}
+
+  virtual void NotifyStorageAccessed(
+      RenderFrameHostImpl* render_frame_host,
+      blink::mojom::StorageTypeAccessed storage_type,
+      bool blocked) {}
+  virtual void OnVibrate(RenderFrameHostImpl* render_frame_host) {}
 
   // Notified that the renderer responded after calling GetSavableResourceLinks.
   virtual void SavableResourceLinksResponse(
@@ -705,6 +723,34 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // If a timer for an unresponsive renderer fires, whether it should be
   // ignored.
   virtual bool ShouldIgnoreUnresponsiveRenderer();
+
+  // Returns the base permissions policy that should be applied to the Isolated
+  // Web App running in the given RenderFrameHostImpl. If std::nullopt is
+  // returned the default non-isolated permissions policy will be applied.
+  virtual std::optional<blink::ParsedPermissionsPolicy>
+  GetPermissionsPolicyForIsolatedWebApp(RenderFrameHostImpl* source);
+
+  // Updates the draggable regions defined by the app-region CSS property.
+  virtual void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions) {}
+
+  // Whether the containing window was initially opened as a new popup.
+  virtual bool IsPopup() const;
+
+  // If the containing window was opened as a new partitioned popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  virtual bool IsPartitionedPopin() const;
+
+  // If this window was opened as a new partitioned popin this will be the
+  // frame of the opener. This will only have a value if `is_popup_` is true.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  virtual RenderFrameHostImpl* PartitionedPopinOpener() const;
+
+  // Each window can have at most one open partitioned popin, and this will be a
+  // pointer to it. If this is set `PartitionedPopinOpener` must return null as
+  // no popin can open a popin.
+  // See https://explainers-by-googlers.github.io/partitioned-popins/
+  virtual WebContents* OpenedPartitionedPopin() const;
 
  protected:
   virtual ~RenderFrameHostDelegate() = default;

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/test/data/webui/build_webui_tests.gni")
-import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 
 assert(enable_pdf, "enable_pdf check failed")
@@ -30,6 +29,7 @@ build_webui_tests("build") {
     "navigator_test.ts",
     "nobeep_test.ts",
     "page_change_test.ts",
+    "page_selector_test.ts",
     "params_parser_test.ts",
     "plugin_controller_test.ts",
     "post_message_proxy_test.ts",
@@ -46,7 +46,6 @@ build_webui_tests("build") {
     "viewer_thumbnail_bar_test.ts",
     "viewer_thumbnail_test.ts",
     "viewer_toolbar_test.ts",
-    "viewport_scroller_test.ts",
     "viewport_test.ts",
     "whitespace_title_test.ts",
     "zoom_manager_test.ts",
@@ -60,8 +59,19 @@ build_webui_tests("build") {
     ]
   }
 
-  if (enable_screen_ai_service) {
-    files += [ "pdf_ocr_toolbar_test.ts" ]
+  if (enable_pdf_ink2) {
+    files += [
+      "ink2_before_unload_stroke_test.ts",
+      "ink2_before_unload_undo_test.ts",
+      "ink2_save_test.ts",
+      "ink2_side_panel_test.ts",
+      "ink2_test.ts",
+      "ink2_viewer_toolbar_test.ts",
+    ]
+
+    if (!is_chromeos_ash) {
+      files += [ "ink2_disabled_test.ts" ]
+    }
   }
 
   if (is_chromeos_ash) {
@@ -69,6 +79,7 @@ build_webui_tests("build") {
   }
 
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/chrome_test.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/mime_handler_private.d.ts",
@@ -82,7 +93,7 @@ build_webui_tests("build") {
   ts_deps = [
     "../webui:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
-    "//third_party/polymer/v3_0:library",
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 }

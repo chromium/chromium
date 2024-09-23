@@ -127,7 +127,7 @@ AuctionWorkletDevToolsAgentHostManager::
 
 AuctionWorkletDevToolsAgentHostManager::
     ~AuctionWorkletDevToolsAgentHostManager() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AuctionWorkletDevToolsAgentHostManager::GetAll(

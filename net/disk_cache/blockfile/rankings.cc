@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/disk_cache/blockfile/rankings.h"
 
 #include <stdint.h>
@@ -175,7 +180,7 @@ void GenerateCrash(CrashLocation location) {
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 #endif  // NDEBUG
@@ -634,7 +639,7 @@ void Rankings::ConvertToLongLived(CacheRankingsBlock* rankings) {
 void Rankings::CompleteTransaction() {
   Addr node_addr(static_cast<CacheAddr>(control_data_->transaction));
   if (!node_addr.is_initialized() || node_addr.is_separate_file()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     LOG(ERROR) << "Invalid rankings info.";
     return;
   }
@@ -653,7 +658,7 @@ void Rankings::CompleteTransaction() {
   } else if (REMOVE == control_data_->operation) {
     RevertRemove(&node);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     LOG(ERROR) << "Invalid operation to recover.";
   }
 }
@@ -685,7 +690,7 @@ void Rankings::RevertRemove(CacheRankingsBlock* node) {
     return;
   }
   if (next_addr.is_separate_file() || prev_addr.is_separate_file()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     LOG(WARNING) << "Invalid rankings info.";
     control_data_->transaction = 0;
     return;

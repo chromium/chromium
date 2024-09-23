@@ -69,6 +69,10 @@ class AccountAppsAvailability
   // ARC account restrictions are enabled iff Lacros is enabled.
   static bool IsArcAccountRestrictionsEnabled();
 
+  // Managed secondary accounts are restricted if
+  // SecondaryAccountAllowedInArcPolicy is enabled.
+  static bool IsArcManagedAccountRestrictionEnabled();
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Registers an observer.

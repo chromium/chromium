@@ -23,9 +23,8 @@ import './account_manager_settings_card.js';
 import './additional_accounts_settings_card.js';
 
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
-import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -382,10 +381,8 @@ export class OsSettingsPeoplePageElement extends
       return;
     }
 
-    // First account is always the device account.
-    assert(
-        accounts[0].isDeviceAccount,
-        'The device account should always be first.');
+    // Device account is always first per account_manager_ui_handler.cc.
+    // TODO(b/325142618) Investigate why `isDeviceAccount` is not always true.
     this.deviceAccount_ = accounts[0];
     this.profileName_ = this.deviceAccount_.fullName;
     this.profileEmail_ = this.deviceAccount_.email;
@@ -407,7 +404,8 @@ export class OsSettingsPeoplePageElement extends
 
     // When ChromeOSAccountManager is disabled, fall back to using the sync
     // username ("alice@gmail.com") as the profile label.
-    if (!this.isAccountManagerEnabled_ && syncStatus && syncStatus.signedIn &&
+    if (!this.isAccountManagerEnabled_ && syncStatus &&
+        syncStatus.signedInState === SignedInState.SYNCING &&
         syncStatus.signedInUsername) {
       this.profileLabel_ = syncStatus.signedInUsername;
     }
@@ -433,10 +431,6 @@ export class OsSettingsPeoplePageElement extends
       return loadTimeData.getString('osProfileName');
     }
     return this.profileName_;
-  }
-
-  private showSignin_(syncStatus: SyncStatus): boolean {
-    return loadTimeData.getBoolean('signinAllowed') && !(syncStatus.signedIn);
   }
 
   private onAuthTokenChanged_(): void {

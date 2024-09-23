@@ -17,5 +17,6 @@ public abstract class PermissionsAndroidFeatureList {
 
     public static final String ONE_TIME_PERMISSION = "OneTimePermission";
 
-    public static final String PERMISSION_STORAGE_ACCESS = "PermissionStorageAccessAPI";
+    public static final String ANDROID_CANCEL_PERMISSION_PROMPT_ON_TOUCH_OUTSIDE =
+            "AndroidCancelPermissionPromptOnTouchOutside";
 }

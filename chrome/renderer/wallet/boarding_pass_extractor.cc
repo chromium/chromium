@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/renderer/wallet/boarding_pass_extractor.h"
 
 #include "base/metrics/histogram_macros.h"
@@ -9,7 +14,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -146,7 +151,7 @@ void BoardingPassExtractor::ExtractBoardingPassWithScript(
       blink::WebScriptSource(blink::WebString::FromUTF8(script));
 
   main_frame->RequestExecuteScript(
-      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1u),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::span_from_ref(source),
       blink::mojom::UserActivationOption::kDoNotActivate,
       blink::mojom::EvaluationTiming::kAsynchronous,
       blink::mojom::LoadEventBlockingOption::kDoNotBlock,

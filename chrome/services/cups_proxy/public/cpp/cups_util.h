@@ -10,6 +10,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
@@ -50,8 +51,7 @@ std::optional<std::string> GetPrinterId(ipp_t* ipp);
 
 // Expects |endpoint| to be of the form '/printers/{printer_id}'.
 // Returns an empty Optional if parsing fails or yields an empty printer_id.
-std::optional<std::string> ParseEndpointForPrinterId(
-    base::StringPiece endpoint);
+std::optional<std::string> ParseEndpointForPrinterId(std::string_view endpoint);
 
 // Return list of printers containing first recently used printers,
 // then |saved| printers and |enterprise| printers up until the hard printer

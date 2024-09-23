@@ -16,8 +16,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/child_accounts/apps/app_test_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
-#include "chrome/browser/ash/child_accounts/time_limits/app_time_test_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -82,7 +82,7 @@ class FamilyUserChromeActivityMetricsTest
     extension_service_->Init();
 
     // Install Chrome.
-    scoped_refptr<extensions::Extension> chrome = app_time::CreateExtension(
+    scoped_refptr<extensions::Extension> chrome = CreateExtension(
         app_constants::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
     extension_service_->AddComponentExtension(chrome.get());
 

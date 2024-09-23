@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HAN_KERNING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HAN_KERNING_H_
 
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "base/gtest_prod_util.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -57,16 +59,13 @@ class PLATFORM_EXPORT HanKerning {
              const FontDescription& font_description,
              Options options,
              FontFeatures* features) {
-    if (!RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) {
-      return;
-    }
     if (text.Is8Bit()) {
       return;
     }
     Compute(text, start, end, font_data, font_description, options, features);
   }
   ~HanKerning() {
-    if (UNLIKELY(features_)) {
+    if (features_) [[unlikely]] {
       ResetFeatures();
     }
   }
@@ -107,7 +106,11 @@ class PLATFORM_EXPORT HanKerning {
   };
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HanKerningTest, MayApply);
+
   static CharType GetCharType(UChar ch, const FontData& font_data);
+
+  static bool MayApply(StringView text);
 
   static bool ShouldKern(CharType type, CharType last_type);
   static bool ShouldKernLast(CharType type, CharType last_type);

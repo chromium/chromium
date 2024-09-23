@@ -114,7 +114,7 @@ inline bool SeekBackPast(std::string::const_iterator* it,
 }
 
 // Returns the string piece within |value| that is a valid cookie value.
-base::StringPiece ValidStringPieceForValue(const std::string& value) {
+std::string_view ValidStringPieceForValue(const std::string& value) {
   std::string::const_iterator it = value.begin();
   std::string::const_iterator end =
       net::ParsedCookie::FindFirstTerminator(value);
@@ -131,7 +131,6 @@ base::StringPiece ValidStringPieceForValue(const std::string& value) {
 namespace net {
 
 ParsedCookie::ParsedCookie(const std::string& cookie_line,
-                           bool block_truncated,
                            CookieInclusionStatus* status_out) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
@@ -141,7 +140,7 @@ ParsedCookie::ParsedCookie(const std::string& cookie_line,
   }
   *status_out = CookieInclusionStatus();
 
-  ParseTokenValuePairs(cookie_line, block_truncated, *status_out);
+  ParseTokenValuePairs(cookie_line, *status_out);
   if (IsValid()) {
     SetupAttributes();
   } else {
@@ -182,7 +181,7 @@ bool ParsedCookie::SetName(const std::string& name) {
   // before calling ParseTokenString because we want terminating characters
   // ('\r', '\n', and '\0') and '=' in `name` to cause a rejection instead of
   // truncation.
-  // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+  // TODO(crbug.com/40191620) Once we change logic more broadly to reject
   // cookies containing these characters, we should be able to simplify this
   // logic since IsValidCookieNameValuePair() also calls IsValidCookieName().
   // Also, this check will currently fail if `name` has a tab character in the
@@ -214,7 +213,7 @@ bool ParsedCookie::SetValue(const std::string& value) {
   // before calling ParseValueString because we want terminating characters
   // ('\r', '\n', and '\0') in `value` to cause a rejection instead of
   // truncation.
-  // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+  // TODO(crbug.com/40191620) Once we change logic more broadly to reject
   // cookies containing these characters, we should be able to simplify this
   // logic since IsValidCookieNameValuePair() also calls IsValidCookieValue().
   // Also, this check will currently fail if `value` has a tab character in
@@ -471,7 +470,7 @@ bool ParsedCookie::IsValidCookieNameValuePair(
       status_out->AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_NO_COOKIE_CONTENT);
     }
-    // TODO(crbug.com/1228815) Note - if the exclusion reasons change to no
+    // TODO(crbug.com/40189703) Note - if the exclusion reasons change to no
     // longer be the same, we'll need to not return right away and evaluate all
     // of the checks.
     return false;
@@ -503,7 +502,6 @@ bool ParsedCookie::IsValidCookieNameValuePair(
 
 // Parse all token/value pairs and populate pairs_.
 void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
-                                        bool block_truncated,
                                         CookieInclusionStatus& status_out) {
   pairs_.clear();
 
@@ -516,30 +514,11 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
   // Then we can log any unexpected terminators.
   std::string::const_iterator end = FindFirstTerminator(cookie_line);
 
-  // For metrics on truncating character presence in the cookie line.
+  // Block cookies that were truncated by control characters.
   if (end < cookie_line.end()) {
-    switch (*end) {
-      case '\0':
-        truncating_char_in_cookie_string_type_ =
-            TruncatingCharacterInCookieStringType::kTruncatingCharNull;
-        break;
-      case '\r':
-        truncating_char_in_cookie_string_type_ =
-            TruncatingCharacterInCookieStringType::kTruncatingCharNewline;
-        break;
-      case '\n':
-        truncating_char_in_cookie_string_type_ =
-            TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed;
-        break;
-      default:
-        NOTREACHED();
-    }
-    if (block_truncated &&
-        base::FeatureList::IsEnabled(net::features::kBlockTruncatedCookies)) {
-      status_out.AddExclusionReason(
-          CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
-      return;
-    }
+    status_out.AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_DISALLOWED_CHARACTER);
+    return;
   }
 
   // Exit early for an empty cookie string.

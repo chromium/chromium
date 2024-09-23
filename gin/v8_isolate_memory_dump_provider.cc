@@ -135,11 +135,11 @@ std::string IsolateTypeString(IsolateHolder::IsolateType isolate_type) {
     case IsolateHolder::IsolateType::kBlinkWorkerThread:
       return "workers";
     case IsolateHolder::IsolateType::kTest:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case IsolateHolder::IsolateType::kUtility:
       return "utility";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool CanHaveMultipleIsolates(IsolateHolder::IsolateType isolate_type) {
@@ -149,12 +149,12 @@ bool CanHaveMultipleIsolates(IsolateHolder::IsolateType isolate_type) {
     case IsolateHolder::IsolateType::kBlinkWorkerThread:
       return true;
     case IsolateHolder::IsolateType::kTest:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case IsolateHolder::IsolateType::kUtility:
       // PDFium and ProxyResolver create one isolate per process.
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

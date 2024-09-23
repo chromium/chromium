@@ -35,16 +35,13 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
   ~SurfaceAugmenter();
 
   bool SupportsSubpixelAccuratePosition() const;
-  // Returns true if augmented_sub_surface_set_clip_rect is supported.
-  // TODO(crbug.com/1457446): Remove this when augmented_surface_set_clip_rect
-  // is spread enough.
-  bool SupportsClipRect() const;
   // Returns true if augmented_surface_set_clip_rect is supported.
   bool SupportsClipRectOnAugmentedSurface() const;
   bool SupportsTransform() const;
   // Returns true if augmented_surface_set_rounded_corners_clip_bounds handles
   // bounds as its in local surface coordinates space.
   bool NeedsRoundedClipBoundsInLocalSurfaceCoordinates() const;
+  bool SupportsCompositingOnlySurface() const;
 
   uint32_t GetSurfaceAugmentorVersion() const;
 

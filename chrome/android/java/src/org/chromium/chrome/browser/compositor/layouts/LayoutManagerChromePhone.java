@@ -9,21 +9,17 @@ import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
-
-import java.util.concurrent.Callable;
 
 /**
  * {@link LayoutManagerChromePhone} is the specialization of {@link LayoutManagerChrome} for the
@@ -38,41 +34,29 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      *
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
-     * @param startSurfaceSupplier Supplier for an interface to talk to the Grid Tab Switcher when
-     *     Start surface refactor is disabled. Used to create overviewLayout if it has value,
-     *     otherwise will use the accessibility overview layout.
-     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher when
-     *     Start surface refactor is enabled. Used to create overviewLayout if it has value,
-     *     otherwise will use the accessibility overview layout.
-     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
-     *     controls.
+     * @param tabSwitcherSupplier Supplier for an interface to talk to the Grid Tab Switcher. Used
+     *     to create overviewLayout if it has value, otherwise will use the accessibility overview
+     *     layout.
+     * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
-     * @param delayedTabSwitcherCallable Callable to create GTS view if Start Surface refactor and
-     *     DeferCreateTabSwitcherLayout are enabled.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      */
     public LayoutManagerChromePhone(
             LayoutManagerHost host,
             ViewGroup contentContainer,
-            Supplier<StartSurface> startSurfaceSupplier,
             Supplier<TabSwitcher> tabSwitcherSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            Callable<ViewGroup> delayedTabSwitcherCallable,
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
         super(
                 host,
                 contentContainer,
-                startSurfaceSupplier,
                 tabSwitcherSupplier,
-                browserControlsStateProvider,
+                tabModelSelectorSupplier,
                 tabContentManagerSupplier,
                 topUiThemeColorProvider,
-                null,
-                null,
-                delayedTabSwitcherCallable,
                 hubLayoutDependencyHolder);
     }
 
@@ -117,9 +101,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     @Override
     protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
         boolean showOverview = nextId == Tab.INVALID_TAB_ID;
-        if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
-                && getActiveLayoutType() != LayoutType.START_SURFACE
-                && showOverview) {
+        if (getActiveLayoutType() != LayoutType.TAB_SWITCHER && showOverview) {
             // Since there will be no 'next' tab to display, switch to
             // overview mode when the animation is finished.
             if (getActiveLayoutType() == LayoutType.SIMPLE_ANIMATION) {
@@ -142,8 +124,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // smoothly.
             getActiveLayout().onTabCreating(sourceId);
         } else if (animationsEnabled()) {
-            if (!isLayoutVisible(LayoutType.TAB_SWITCHER)
-                    && !isLayoutVisible(LayoutType.START_SURFACE)) {
+            if (!isLayoutVisible(LayoutType.TAB_SWITCHER)) {
                 if (getActiveLayout() != null && getActiveLayout().isStartingToHide()) {
                     setNextLayout(mSimpleAnimationLayout, true);
                     // The method Layout#doneHiding() will automatically show the next layout.

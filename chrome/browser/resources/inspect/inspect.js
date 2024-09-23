@@ -28,11 +28,6 @@ let browserInspector = 'chrome://tracing';
 let browserInspectorTitle = 'trace';
 
 (function() {
-const chromeMatch = navigator.userAgent.match(/(?:^|\W)Chrome\/(\S+)/);
-if (chromeMatch && chromeMatch.length > 1) {
-  HOST_CHROME_VERSION = chromeMatch[1].split('.').map(s => Number(s) || 0);
-}
-
 const queryParams = window.location.search;
 if (!queryParams) {
   return;
@@ -160,6 +155,10 @@ function showNativeUILaunchButton(enabled) {
   $('launch-ui-devtools').disabled = !enabled;
   $('ui-devtools-disabled-text').hidden = enabled;
   $('ui-devtools-enabled-text').hidden = !enabled;
+}
+
+function setHostVersion(version) {
+  HOST_CHROME_VERSION = version;
 }
 
 function populateLocalTargets(data) {
@@ -738,6 +737,8 @@ function initSettings() {
 
   $('launch-ui-devtools')
       .addEventListener('click', sendCommand.bind(null, 'launch-ui-devtools'));
+  checkboxSendsCommand('bubble-locking-checkbox', 'set-bubble-locking');
+
   $('port-forwarding-config-open')
       .addEventListener('click', openPortForwardingConfig);
   $('tcp-discovery-config-open').addEventListener('click', openTargetsConfig);
@@ -926,6 +927,10 @@ function updateTCPDiscoveryEnabled(enabled) {
 function updateTCPDiscoveryConfig(config) {
   window.targetDiscoveryConfig = config;
   $('tcp-discovery-config-open').disabled = !config;
+}
+
+function updateBubbleLockingCheckbox(enabled) {
+  updateCheckbox('bubble-locking-checkbox', enabled);
 }
 
 function appendRow(list, lineFactory, key, value) {
@@ -1163,11 +1168,13 @@ Object.assign(window, {
   updatePortForwardingConfig,
   updateTCPDiscoveryEnabled,
   updateTCPDiscoveryConfig,
+  updateBubbleLockingCheckbox,
   populateNativeUITargets,
   populateTargets,
   populatePortStatus,
   showIncognitoWarning,
   showNativeUILaunchButton,
+  setHostVersion,
 });
 
 document.addEventListener('DOMContentLoaded', onload);

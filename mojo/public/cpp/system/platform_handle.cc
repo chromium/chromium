@@ -52,7 +52,6 @@ ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
       break;
     default:
       NOTREACHED();
-      return ScopedSharedBufferHandle();
   }
 
   base::subtle::ScopedPlatformSharedMemoryHandle handle =

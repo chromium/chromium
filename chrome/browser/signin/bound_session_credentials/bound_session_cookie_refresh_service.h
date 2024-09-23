@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_REFRESH_SERVICE_H_
 
+#include <string>
+#include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -14,6 +17,8 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+struct BoundSessionDebugInfo;
 
 // BoundSessionCookieRefreshService is responsible for maintaining cookies
 // associated with bound sessions. This class does the following:
@@ -54,14 +59,15 @@ class BoundSessionCookieRefreshService
   virtual void RegisterNewBoundSession(
       const bound_session_credentials::BoundSessionParams& params) = 0;
 
-  // Terminate the session if the session termination header is set and the
-  // `session_id` matches the current bound session's id. This header is
-  // expected to be set on signout.
+  // Terminates a session running on `response_url`'s site if the session
+  // termination header is set and the header's session ID matches the current
+  // session id. This header is expected to be set on signout.
   virtual void MaybeTerminateSession(
+      const GURL& response_url,
       const net::HttpResponseHeaders* headers) = 0;
 
   // Returns bound session params.
-  virtual chrome::mojom::BoundSessionThrottlerParamsPtr
+  virtual std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
   GetBoundSessionThrottlerParams() const = 0;
 
   virtual void CreateRegistrationRequest(
@@ -71,6 +77,9 @@ class BoundSessionCookieRefreshService
 
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  virtual std::vector<BoundSessionDebugInfo> GetBoundSessionDebugInfo()
+      const = 0;
 
  private:
   friend class RendererUpdater;

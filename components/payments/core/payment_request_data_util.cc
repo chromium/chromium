@@ -58,7 +58,7 @@ mojom::PaymentAddressPtr GetPaymentAddressFromAutofillProfile(
   payment_address->recipient =
       base::UTF16ToUTF8(profile.GetInfo(autofill::NAME_FULL, app_locale));
 
-  // TODO(crbug.com/705945): Format phone number according to spec.
+  // TODO(crbug.com/40512882): Format phone number according to spec.
   payment_address->phone =
       base::UTF16ToUTF8(profile.GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER));
 

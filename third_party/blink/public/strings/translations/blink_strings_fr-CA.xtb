@@ -1,29 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
-<translation id="1088086359088493902">Secondes</translation>
-<translation id="1142001580032786438">Afficher le sélecteur de semaine</translation>
+<translation id="1012241361789814178">Le débogueur s'est arrêté dans un autre onglet; cliquez pour passer à cet onglet.</translation>
 <translation id="1171774979989969504">Veuillez entrer une adresse de courriel.</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1306460908038601864">Désactivé</translation>
 <translation id="1311894908970423688">La valeur doit être <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="1480676835519562650">plusieurs éléments sélectionnables, <ph name="SELECTED" /> sur <ph name="COUNT" /> sélectionné.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Ce mois-ci</translation>
 <translation id="1637811476055996098">Sélect. fichiers</translation>
-<translation id="1681022320378710418">Heure actuelle</translation>
-<translation id="1727839386348365796">Pipette</translation>
+<translation id="1680090928918677457">Utiliser l'appareil photo</translation>
 <translation id="1729654308190250600">Veuillez entrer une adresse de courriel.</translation>
 <translation id="1758486001363313524">Autres...</translation>
-<translation id="1787192514241997742">durée totale : <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Autoriser l'accès à la caméra</translation>
-<translation id="1822429046913737220">AM/PM</translation>
-<translation id="1832974991323546415">lire sur l'appareil distant</translation>
 <translation id="1921819250265091946">jj</translation>
 <translation id="1938124657309484470">La valeur doit être <ph name="MAXIMUM_DATE_OR_TIME" /> ou plus tôt.</translation>
-<translation id="1946271899482435442">Afficher le sélecteur de date</translation>
 <translation id="1993104285338243655">Passage à la duplication d'écran</translation>
-<translation id="2031987842108996681">Canal rouge</translation>
 <translation id="2060505056492490888">Le symbole « <ph name="DOT" /> » est utilisé à une position incorrecte dans « <ph name="INVALIDDOMAIN" /> ».</translation>
 <translation id="2068711044993563745">La valeur minimale (<ph name="MINIMUM" />) doit être inférieure à la valeur maximale (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Aujourd'hui</translation>
@@ -31,29 +22,16 @@
 <translation id="2247351761944213033">Semaine <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Piste <ph name="NUMBER" /></translation>
 <translation id="2353297238722298836">La caméra et le microphone sont autorisés</translation>
-<translation id="2393030564806080191">Valeur hexadécimale de la couleur</translation>
-<translation id="2398813069815436052">boîte de dialogue ouverte</translation>
-<translation id="245932805758469625">nombre de secondes de vidéo restantes</translation>
-<translation id="248395913932153421">Jour</translation>
 <translation id="2507943997699731163">Veuillez remplir ce champ.</translation>
-<translation id="2530182415807757784">plusieurs éléments sélectionnables, aucun n'a été sélectionné.</translation>
-<translation id="2561842179657104141">afficher plus de commandes multimédias</translation>
-<translation id="2572483411312390101">jouer</translation>
 <translation id="2613802280814924224">Veuillez entrer une valeur valide. La valeur valide la plus proche est <ph name="VALID_VALUE" />.</translation>
-<translation id="2634240155926812724">Canal vert</translation>
 <translation id="2653659639078652383">Envoyer</translation>
-<translation id="2723001399770238859">audio</translation>
 <translation id="2746543609216772311">La valeur doit être <ph name="MINIMUM_DATE_OR_TIME" /> ou plus tard.</translation>
 <translation id="2761667185364618470">Veuillez cocher cette case si vous souhaitez continuer.</translation>
 <translation id="2908441821576996758">Veuillez entrer une liste d'adresses de courriel séparées par des virgules.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Mo</translation>
-<translation id="3053226512517284904">afficher le menu des audiodescriptions</translation>
 <translation id="3075154866155599887">Veuillez entrer une valeur valide. Le champ n'est pas complet ou contient une date non valide.</translation>
 <translation id="310520048233152454">Veuillez entrer une adresse URL.</translation>
-<translation id="3220661731597678625">Étape en cours</translation>
 <translation id="3321030238473337787">Vitesse de lecture</translation>
-<translation id="3329013043687509092">Saturation</translation>
-<translation id="3377518164566272702">Autoriser l'accès au microphone et à la caméra</translation>
 <translation id="3450233048674729344">La valeur doit être inférieure ou égale à <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Quitter le mode d'incrustation d'image</translation>
@@ -62,132 +40,71 @@
 <translation id="383465348367842624">Le texte précédant « <ph name="ATSIGN" /> » ne doit pas contenir le symbole « <ph name="INVALIDCHARACTER" /> ».</translation>
 <translation id="3846214748874656680">Quitter le mode Plein écran</translation>
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
-<translation id="4103419683916926126">Millisecondes</translation>
-<translation id="4201051445878709314">Afficher le mois précédent</translation>
 <translation id="4360991593054037559">Veuillez entrer une valeur valide. Les deux valeurs valides les plus proches sont « <ph name="VALID_VALUE_LOW" /> » et « <ph name="VALID_VALUE_HIGHER" /> ».</translation>
 <translation id="4522570452068850558">Détails</translation>
 <translation id="4663373278480897665">La caméra est autorisée</translation>
 <translation id="4664250907885839816">La partie suivant « <ph name="ATSIGN" /> » ne doit pas contenir le symbole « <ph name="INVALIDCHARACTER" /> ».</translation>
 <translation id="4718048029184481307">Lecture en mode d'incrustation d'image</translation>
-<translation id="4748357248530471599">activer/désactiver plein écran en encoche</translation>
-<translation id="4763480195061959176">Vidéo</translation>
 <translation id="4792862212177489858">Partager la position</translation>
 <translation id="4812940957355064477">Veuillez entrer un nombre.</translation>
-<translation id="4912200001568447310">Élément actuel</translation>
-<translation id="4915360478455618802">Afficher le sélecteur d'heure</translation>
-<translation id="4924138096460353083">indéterminé</translation>
-<translation id="4950364064308314478">Afficher le sélecteur de date et d'heure locales</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" /> est sélectionné</translation>
+<translation id="49269513399674318">Utiliser le microphone</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> élément(s) sélectionné(s)</translation>
 <translation id="4992066212339426712">Réactiver le son</translation>
 <translation id="49969490063480558">Veuillez entrer la partie manquante après « <ph name="ATSIGN" /> ». « <ph name="INVALIDADDRESS" /> » est incomplète.</translation>
-<translation id="5037575921016181960">Mot de passe fort</translation>
-<translation id="5090250355906949916">barre de défilement pour la durée de la vidéo</translation>
-<translation id="509897012892853729">Canal bleu</translation>
-<translation id="5117590920725113268">Afficher le mois suivant</translation>
 <translation id="5164977714490026579">La valeur doit être supérieure ou égale à <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
-<translation id="5199514351668672591">retour aux options</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
-<translation id="5272594226096532950">Non coché. Dans le groupe, option <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">Veuillez entrer la partie manquante avant le caractère « <ph name="ATSIGN" /> ». L'adresse « <ph name="INVALIDADDRESS" /> » est incomplète.</translation>
 <translation id="5334352251556557839">Impossible de faire jouer le média.</translation>
 <translation id="537648784377940524">La date minimale (<ph name="MIN_DATE_OR_TIME" />) doit être antérieure à la date maximale (<ph name="MAX_DATE_OR_TIME" />).</translation>
-<translation id="5378437566635403538">développé, boîte de dialogue ouverte.</translation>
-<translation id="5425179576310518467">Date actuelle</translation>
 <translation id="5466621249238537318">Veuillez sélectionner un ou plusieurs fichiers.</translation>
-<translation id="5468998798572797635">Quitter le mode plein écran</translation>
 <translation id="5514612371225420585">Fichier sur votre appareil</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Diffuser</translation>
-<translation id="5546461542133609677">Réactiver le son</translation>
 <translation id="5630795885300617244">Touchez deux fois à gauche ou à droite pour passer 10 secondes</translation>
-<translation id="5677946354068040947">autres options</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
-<translation id="5786442179789148008">Afficher le menu de la vitesse de lecture</translation>
-<translation id="5787939484346677755">développé, des options de saisie semi-automatique sont proposées.</translation>
-<translation id="5860033963881614850">Désactivé</translation>
 <translation id="588258955323874662">Plein écran</translation>
 <translation id="5888666972993069672">Diffusion sur <ph name="DEVICE_FRIENDLY_NAME" /> en cours…</translation>
-<translation id="5916664084637901428">Activé</translation>
 <translation id="5939518447894949180">Recommencer</translation>
 <translation id="5966707198760109579">Semaine</translation>
 <translation id="5985507339671257014">0,5</translation>
-<translation id="6011459053400940133">curseur de réglage du volume</translation>
-<translation id="6015796118275082299">Année</translation>
-<translation id="6165053282446038410">développé, <ph name="COUNT" /> options de saisie semi-automatique sont proposées.</translation>
-<translation id="6212595056017402527">Page actuelle</translation>
-<translation id="6281588256137006900">Luminosité</translation>
 <translation id="6310801910862476708">Quitter le mode d'incrustation d'image</translation>
-<translation id="6398862346408813489">Afficher le panneau de sélection du mois</translation>
-<translation id="6404546809543547843">barre de défilement de la durée du contenu audio</translation>
-<translation id="6443871981718447451">afficher le menu des sous-titres</translation>
 <translation id="6484738902856791350">Imprimer avec mise en forme</translation>
 <translation id="6550675742724504774">Options</translation>
-<translation id="6572309429103589720">Grammaire incorrecte</translation>
-<translation id="658823671542763450">Activer le mode plein écran</translation>
-<translation id="6606094904835912297">Couleurs système</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="668171684555832681">Autre...</translation>
 <translation id="6709093583001123835">La valeur doit être <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Mauvaise qualité de lecture</translation>
-<translation id="6719914554879143100">Coché. Dans le groupe, option <ph name="INDEX" /> de <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6820355525329141109">Échec du chargement du plugiciel.</translation>
-<translation id="6831465880655513317">Cercle chromatique avec un curseur en deux dimensions pour sélectionner la saturation et la luminosité</translation>
-<translation id="6843725295806269523">Désactivation du son</translation>
 <translation id="6919891270253167948">1,5</translation>
-<translation id="6941933287844615239">télécharger des commandes multimédias</translation>
-<translation id="698788488269350478">développé.</translation>
 <translation id="6989848892321993519">Veuillez allonger ce texte de manière à ce qu'il comporte au moins <ph name="MIN_CHARACTERS" /> caractères (votre texte compte actuellement 1 caractère).</translation>
 <translation id="7080893216867146095">Partage de position autorisé</translation>
 <translation id="709897737746224366">Veuillez respecter le format demandé.</translation>
-<translation id="7102274145889307184">Position actuelle</translation>
+<translation id="7134810312945846184">Utiliser le microphone et l'appareil photo</translation>
 <translation id="7263440858009898357">Veuillez sélectionner un élément dans la liste.</translation>
-<translation id="7320576522385648310">mise en tampon</translation>
-<translation id="7341556277900466204">Cercle chromatique</translation>
 <translation id="7364796246159120393">Sélectionner un fichier</translation>
 <translation id="739024184232394898">Autre...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> To</translation>
 <translation id="7514365320538308">Télécharger</translation>
-<translation id="7673697353781729403">Heures</translation>
 <translation id="7750228210027921155">Incrustation d'image</translation>
-<translation id="775297008183122718">Entrée non valide</translation>
 <translation id="7782515065589691344">1.25</translation>
-<translation id="7789962463072032349">pause</translation>
-<translation id="7852167693871241274">Curseur des nuances de couleurs</translation>
 <translation id="7888071071722539607">Veuillez ajouter « <ph name="ATSIGN" /> » dans l'adresse de courriel. Il manque un symbole « <ph name="ATSIGN" /> » dans « <ph name="INVALIDADDRESS" /> ».</translation>
 <translation id="795667975304826397">Aucun fichier sélectionné</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" /> n'est pas sélectionné</translation>
 <translation id="8117451130807776954">Cette semaine</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">aaaa</translation>
-<translation id="8261464734335370856">Orthographe incorrecte</translation>
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="835897206747267392">Valeur non valide.</translation>
 <translation id="839593075537728968">La valeur doit être comprise entre <ph name="MINIMUM_TIME" /> et <ph name="MAXIMUM_TIME" />.</translation>
-<translation id="8403857369060869934">temps écoulé : <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> fichiers</translation>
 <translation id="8451268428117625855">Veuillez sélectionner un fichier.</translation>
-<translation id="8534579021159131403">Minutes</translation>
-<translation id="8541249477527128034">commande multimédia</translation>
-<translation id="8613126697340063924">contrôler la lecture à distance</translation>
-<translation id="8634971699417195529">Afficher le sélecteur de mois</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Renvoyer à la ligne</translation>
 <translation id="8750798805984357768">Veuillez sélectionner l'une de ces options.</translation>
 <translation id="8845239796550121995">Diffusion sur votre téléviseur en cours…</translation>
 <translation id="8875657656876809964">Erreur de lecture de la vidéo</translation>
-<translation id="8889402386540077796">Teinte</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> ko</translation>
-<translation id="894736920926684893">Commutateur de format</translation>
-<translation id="8987927404178983737">Mois</translation>
-<translation id="901493112792887934">Durée actuelle en secondes</translation>
-<translation id="9093215626363556771">quitter le mode d'incrustation d'image</translation>
 <translation id="9132465097189459683">Autres...</translation>
-<translation id="9155987714137265666"><ph name="WEEK" />, à partir du <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Incrustation d'image</translation>
-<translation id="918430632320614861">Autoriser l'accès au microphone</translation>
-<translation id="945780513535800434">Partiellement cochée</translation>
-<translation id="954003015749068518">ouvrir le mode d'incrustation d'image</translation>
 </translationbundle>

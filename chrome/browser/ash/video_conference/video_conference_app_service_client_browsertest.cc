@@ -45,6 +45,7 @@
 #include "content/public/test/test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 namespace {
@@ -146,10 +147,8 @@ class FakeAppInstance {
 class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kVideoConference,
-         ash::features::kCameraEffectsSupportedByHardware},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kFeatureManagementVideoConference);
 
     InProcessBrowserTest::SetUp();
   }

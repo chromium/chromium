@@ -1,0 +1,11 @@
+{
+  "name": "Icon Variants",
+  "manifest_version": 3,
+  "version": "0.0.1",
+  "icon_variants": [
+    {
+      "16": "16.png",
+      "48": "48.png"
+    }
+  ]
+}

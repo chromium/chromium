@@ -47,7 +47,7 @@ struct ChromeColor {
   // The background color.
   skia.mojom.SkColor foreground;
   // The base color.
-  // TODO(crbug/1454868): Make base no longer optional once GM2 is removed.
+  // TODO(crbug.com/40917130): Make base no longer optional once GM2 is removed.
   skia.mojom.SkColor? base;
   // The color variant for this color palette.
   ui.mojom.BrowserColorVariant variant;
@@ -63,9 +63,8 @@ interface ThemeColorPickerHandlerFactory {
 // Browser-side handler for requests from WebUI page.
 interface ThemeColorPickerHandler {
   // Returns the chrome colors used in the customize colors component with
-  // |is_dark_mode| true for darker versions of the colors. |extended_list|
-  // set to false returns a subset of the list sent when true.
-  GetChromeColors(bool is_dark_mode, bool extended_list) => (array<ChromeColor> colors);
+  // |is_dark_mode| true for darker versions of the colors.
+  GetChromeColors(bool is_dark_mode) => (array<ChromeColor> colors);
 
   // Triggers a call to |ThemeColorPickerClient.SetTheme()|.
   UpdateTheme();

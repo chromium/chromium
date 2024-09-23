@@ -18,8 +18,8 @@ namespace media {
 //  min / default / max values - hardcoded range and default for this tuneable.
 //
 // Via finch, one may enable randomization of the Tuneables, such that a value
-// will be chosen at random between a finch-provided miniumum and maximum.  This
-// minumum and maximum will be constrained by the hardcoded one provided during
+// will be chosen at random between a finch-provided minimum and maximum.  This
+// minimum and maximum will be constrained by the hardcoded one provided during
 // construction.  Different Tuneable instances for the same name are still
 // guaranteed to be equal, as described above.
 template <typename T>

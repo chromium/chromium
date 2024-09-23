@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "ui/views/widget/widget.h"

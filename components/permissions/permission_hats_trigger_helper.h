@@ -9,8 +9,10 @@
 #include <optional>
 #include <utility>
 
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/messages/android/message_enums.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "constants.h"
 
@@ -58,7 +60,11 @@ class PermissionHatsTriggerHelper {
         const std::string& survey_display_time,
         std::optional<base::TimeDelta> prompt_display_duration,
         OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
-        std::optional<GURL> gurl);
+        std::optional<GURL> gurl,
+        std::optional<
+            permissions::feature_params::PermissionElementPromptPosition>
+            pepc_prompt_position,
+        ContentSetting initial_permission_status);
     PromptParametersForHats(const PromptParametersForHats& other);
     ~PromptParametersForHats();
 
@@ -72,6 +78,9 @@ class PermissionHatsTriggerHelper {
     std::optional<base::TimeDelta> prompt_display_duration;
     OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket;
     std::string url;
+    std::optional<permissions::feature_params::PermissionElementPromptPosition>
+        pepc_prompt_position;
+    ContentSetting initial_permission_status;
   };
 
   struct SurveyParametersForHats {

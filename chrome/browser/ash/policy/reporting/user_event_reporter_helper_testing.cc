@@ -32,4 +32,9 @@ bool UserEventReporterHelperTesting::IsKioskUser() const {
   return is_kiosk_user_;
 }
 
+// static
+std::string UserEventReporterHelperTesting::GetDeviceDmToken() const {
+  return "testing-dm-token";
+}
+
 }  // namespace reporting

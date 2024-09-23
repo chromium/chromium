@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if defined(UNSAFE_BUFFERS_BUILD)
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "pdf/pdfium/pdfium_page.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
@@ -16,6 +21,7 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
@@ -110,6 +116,27 @@ base::FilePath GetThumbnailTestData(const std::string& expectation_file_prefix,
       .AppendASCII(file_name);
 }
 
+constexpr struct {
+  size_t page_index;
+  float device_pixel_ratio;
+  gfx::Size expected_thumbnail_size;
+} kGenerateThumbnailTestParams[] = {
+    {0, 1, {108, 140}},  // ANSI Letter
+    {1, 1, {108, 152}},  // ISO 216 A4
+    {2, 1, {140, 140}},  // Square
+    {3, 1, {540, 108}},  // Wide
+    {4, 1, {108, 540}},  // Tall
+    {5, 1, {1399, 46}},  // Super wide
+    {6, 1, {46, 1399}},  // Super tall
+    {0, 2, {216, 280}},  // ANSI Letter
+    {1, 2, {214, 303}},  // ISO 216 A4
+    {2, 2, {255, 255}},  // Square
+    {3, 2, {571, 114}},  // Wide
+    {4, 2, {114, 571}},  // Tall
+    {5, 2, {1399, 46}},  // Super wide
+    {6, 2, {46, 1399}},  // Super tall
+};
+
 }  // namespace
 
 using PDFiumPageTest = PDFiumTestBase;
@@ -138,17 +165,17 @@ TEST_P(PDFiumPageTest, IsCharInPageBounds) {
   const gfx::RectF page_bounds = page.GetCroppedRect();
   EXPECT_EQ(page_bounds, gfx::RectF(193.33333f, 129.33333f));
 
-  EXPECT_EQ(page.GetCharAtIndex(0), 'H');
+  EXPECT_EQ(page.GetCharUnicode(0), static_cast<uint32_t>('H'));
   EXPECT_FALSE(page.IsCharInPageBounds(0, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(12), '!');
+  EXPECT_EQ(page.GetCharUnicode(12), static_cast<uint32_t>('!'));
   EXPECT_TRUE(page.IsCharInPageBounds(12, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(13), '\r');
+  EXPECT_EQ(page.GetCharUnicode(13), static_cast<uint32_t>('\r'));
   EXPECT_TRUE(page.IsCharInPageBounds(13, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(14), '\n');
+  EXPECT_EQ(page.GetCharUnicode(14), static_cast<uint32_t>('\n'));
   EXPECT_TRUE(page.IsCharInPageBounds(14, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(15), 'G');
+  EXPECT_EQ(page.GetCharUnicode(15), static_cast<uint32_t>('G'));
   EXPECT_FALSE(page.IsCharInPageBounds(15, page_bounds));
-  EXPECT_EQ(page.GetCharAtIndex(29), '!');
+  EXPECT_EQ(page.GetCharUnicode(29), static_cast<uint32_t>('!'));
   EXPECT_FALSE(page.IsCharInPageBounds(29, page_bounds));
 }
 
@@ -520,13 +547,14 @@ TEST_P(PDFiumPageImageTest, ImageAltText) {
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageTest, testing::Bool());
 
-class PDFiumPageImageDataTest : public PDFiumPageImageTest {
+class PDFiumPageImageForOcrTest : public PDFiumPageImageTest {
  public:
-  PDFiumPageImageDataTest() : enable_pdf_ocr_({features::kPdfOcr}) {}
+  PDFiumPageImageForOcrTest() : enable_pdf_ocr_({features::kPdfOcr}) {}
 
-  PDFiumPageImageDataTest(const PDFiumPageImageDataTest&) = delete;
-  PDFiumPageImageDataTest& operator=(const PDFiumPageImageDataTest&) = delete;
-  ~PDFiumPageImageDataTest() override = default;
+  PDFiumPageImageForOcrTest(const PDFiumPageImageForOcrTest&) = delete;
+  PDFiumPageImageForOcrTest& operator=(const PDFiumPageImageForOcrTest&) =
+      delete;
+  ~PDFiumPageImageForOcrTest() override = default;
 
   void SetUp() override {
     PDFiumPageImageTest::SetUp();
@@ -544,7 +572,7 @@ class PDFiumPageImageDataTest : public PDFiumPageImageTest {
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };
 
-TEST_P(PDFiumPageImageDataTest, ImageData) {
+TEST_P(PDFiumPageImageForOcrTest, LowResolutionImage) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));
@@ -572,7 +600,27 @@ TEST_P(PDFiumPageImageDataTest, ImageData) {
   EXPECT_EQ(image_bitmap.height(), 50);
 }
 
-TEST_P(PDFiumPageImageDataTest, RotatedPageImageData) {
+TEST_P(PDFiumPageImageForOcrTest, HighResolutionImage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("big_image.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
+  page.CalculateImages();
+  ASSERT_EQ(1u, page.images_.size());
+
+  SkBitmap image_bitmap = engine->GetImageForOcr(
+      /*page_index=*/0, page.images_[0].page_object_index);
+  EXPECT_FALSE(image_bitmap.drawsNothing());
+  // While the original image is 5000x5000, the returned image is 267x267 as
+  // OCR needs at most 300 DPI.
+  EXPECT_EQ(image_bitmap.width(), 267);
+  EXPECT_EQ(image_bitmap.height(), 267);
+}
+
+TEST_P(PDFiumPageImageForOcrTest, RotatedPage) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("rotated_page.pdf"));
@@ -591,7 +639,7 @@ TEST_P(PDFiumPageImageDataTest, RotatedPageImageData) {
   EXPECT_EQ(image_bitmap.height(), 100);
 }
 
-TEST_P(PDFiumPageImageDataTest, ImageDataForNonImage) {
+TEST_P(PDFiumPageImageForOcrTest, NonImage) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("text_with_image.pdf"));
@@ -618,7 +666,7 @@ TEST_P(PDFiumPageImageDataTest, ImageDataForNonImage) {
   EXPECT_EQ(image_bitmap.height(), 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageDataTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, PDFiumPageImageForOcrTest, testing::Bool());
 
 using PDFiumPageTextTest = PDFiumTestBase;
 
@@ -1106,27 +1154,6 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnail) {
       InitializeEngine(&client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
   ASSERT_EQ(7, engine->GetNumberOfPages());
 
-  static constexpr struct {
-    size_t page_index;
-    float device_pixel_ratio;
-    gfx::Size expected_thumbnail_size;
-  } kGenerateThumbnailTestParams[] = {
-      {0, 1, {108, 140}},  // ANSI Letter
-      {1, 1, {108, 152}},  // ISO 216 A4
-      {2, 1, {140, 140}},  // Square
-      {3, 1, {540, 108}},  // Wide
-      {4, 1, {108, 540}},  // Tall
-      {5, 1, {1399, 46}},  // Super wide
-      {6, 1, {46, 1399}},  // Super tall
-      {0, 2, {216, 280}},  // ANSI Letter
-      {1, 2, {214, 303}},  // ISO 216 A4
-      {2, 2, {255, 255}},  // Square
-      {3, 2, {571, 114}},  // Wide
-      {4, 2, {114, 571}},  // Tall
-      {5, 2, {1399, 46}},  // Super wide
-      {6, 2, {46, 1399}},  // Super tall
-  };
-
 #if defined(ARCH_CPU_ARM64)
   std::string file_name =
       GetParam() ? "variable_page_sizes_arm64" : "variable_page_sizes";
@@ -1151,6 +1178,21 @@ TEST_P(PDFiumPageThumbnailTest, GenerateThumbnailForAnnotation) {
                         /*expected_thumbnail_size=*/{255, 255},
                         "signature_widget");
 }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+TEST_P(PDFiumPageThumbnailTest, GetThumbnailSize) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
+  ASSERT_EQ(7, engine->GetNumberOfPages());
+
+  for (const auto& params : kGenerateThumbnailTestParams) {
+    EXPECT_EQ(
+        params.expected_thumbnail_size,
+        engine->GetThumbnailSize(params.page_index, params.device_pixel_ratio));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageThumbnailTest, testing::Bool());
 

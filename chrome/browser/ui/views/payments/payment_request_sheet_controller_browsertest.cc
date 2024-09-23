@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -45,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   EXPECT_FALSE(dialog_view()
                    ->throbber_overlay_for_testing()
                    ->GetViewAccessibility()
-                   .IsIgnored());
+                   .GetIsIgnored());
   EXPECT_FALSE(dialog_view()
                    ->throbber_overlay_for_testing()
                    ->GetViewAccessibility()
@@ -75,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   EXPECT_TRUE(dialog_view()
                   ->throbber_overlay_for_testing()
                   ->GetViewAccessibility()
-                  .IsIgnored());
+                  .GetIsIgnored());
   EXPECT_TRUE(dialog_view()
                   ->throbber_overlay_for_testing()
                   ->GetViewAccessibility()
@@ -101,18 +102,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   // Expect that the payment request view is accessibility visible.
   views::View* payment_request_view =
       GetByDialogViewID(DialogViewID::PAYMENT_REQUEST_SHEET);
-  EXPECT_FALSE(payment_request_view->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(payment_request_view->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(payment_request_view->GetViewAccessibility().IsLeaf());
 
   OpenContactInfoEditorScreen();
 
   // Expect that the now hidden payment request view is not accessibility
   // visible, and that the contact info view is.
-  EXPECT_TRUE(payment_request_view->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(payment_request_view->GetViewAccessibility().GetIsIgnored());
   EXPECT_TRUE(payment_request_view->GetViewAccessibility().IsLeaf());
   views::View* contact_info_view =
       GetByDialogViewID(DialogViewID::CONTACT_INFO_EDITOR_SHEET);
-  EXPECT_FALSE(contact_info_view->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(contact_info_view->GetViewAccessibility().GetIsIgnored());
   EXPECT_FALSE(contact_info_view->GetViewAccessibility().IsLeaf());
 }
 

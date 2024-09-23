@@ -49,6 +49,7 @@
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
+#include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
@@ -56,11 +57,12 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
+#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -310,7 +312,7 @@ WebLocalFrameImpl* CreateLocalChild(
   auto* frame = To<WebLocalFrameImpl>(
       parent.CreateLocalChild(scope, client, nullptr, LocalFrameToken()));
   client->Bind(frame, std::move(owned_client));
-  finish_creation(frame, DocumentToken());
+  finish_creation(frame, DocumentToken(), mojo::NullRemote());
   return frame;
 }
 
@@ -328,7 +330,7 @@ WebLocalFrameImpl* CreateLocalChild(
   auto* frame = To<WebLocalFrameImpl>(
       parent.CreateLocalChild(scope, client, nullptr, LocalFrameToken()));
   client->Bind(frame, std::move(self_owned));
-  finish_creation(frame, DocumentToken());
+  finish_creation(frame, DocumentToken(), mojo::NullRemote());
   return frame;
 }
 
@@ -435,11 +437,12 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
     WebViewClient* web_view_client,
     void (*update_settings_func)(WebSettings*),
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode) {
+        fenced_frame_mode,
+    bool is_prerendering) {
   Reset();
 
   InitializeWebView(web_view_client, opener ? opener->View() : nullptr,
-                    fenced_frame_mode);
+                    fenced_frame_mode, is_prerendering);
   if (update_settings_func)
     update_settings_func(web_view_->GetSettings());
 
@@ -447,7 +450,8 @@ WebViewImpl* WebViewHelper::InitializeWithOpener(
   web_frame_client =
       CreateDefaultClientIfNeeded(web_frame_client, owned_web_frame_client);
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
-      web_view_, web_frame_client, nullptr, LocalFrameToken(), DocumentToken(),
+      web_view_, web_frame_client, nullptr, mojo::NullRemote(),
+      LocalFrameToken(), DocumentToken(),
       // Passing a null policy_container will create an empty, default policy
       // container.
       /*policy_container=*/nullptr, opener,
@@ -539,7 +543,9 @@ WebViewHelper::InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver) {
   Reset();
 
-  InitializeWebView(web_view_client, nullptr, std::nullopt);
+  InitializeWebView(web_view_client, /*opener=*/nullptr,
+                    /*fenced_frame_mode=*/std::nullopt,
+                    /*is_prerendering=*/false);
 
   if (!security_origin)
     security_origin = SecurityOrigin::CreateUniqueOpaque();
@@ -575,7 +581,7 @@ WebLocalFrameImpl* WebViewHelper::CreateLocalChild(
   auto* frame = To<WebLocalFrameImpl>(parent.CreateLocalChild(
       mojom::blink::TreeScopeType::kDocument, name, FramePolicy(), client,
       nullptr, previous_sibling, properties, LocalFrameToken(), nullptr,
-      DocumentToken(),
+      DocumentToken(), mojo::NullRemote(),
       std::make_unique<WebPolicyContainer>(
           WebPolicyContainerPolicies(),
           mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote())));
@@ -595,8 +601,9 @@ WebLocalFrameImpl* WebViewHelper::CreateProvisional(
   std::unique_ptr<TestWebFrameClient> owned_client;
   client = CreateDefaultClientIfNeeded(client, owned_client);
   auto* frame = To<WebLocalFrameImpl>(WebLocalFrame::CreateProvisional(
-      client, nullptr, LocalFrameToken(), &old_frame, FramePolicy(),
-      WebFrame::ToCoreFrame(old_frame)->Tree().GetName(), old_frame.View()));
+      client, nullptr, mojo::NullRemote(), LocalFrameToken(), &old_frame,
+      FramePolicy(), WebFrame::ToCoreFrame(old_frame)->Tree().GetName(),
+      old_frame.View()));
   client->Bind(frame, std::move(owned_client));
 
   // Create a widget, if necessary.
@@ -714,7 +721,8 @@ void WebViewHelper::InitializeWebView(
     WebViewClient* web_view_client,
     class WebView* opener,
     std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode) {
+        fenced_frame_mode,
+    bool is_prerendering) {
   auto browsing_context_group_info = BrowsingContextGroupInfo::CreateUnique();
   if (opener) {
     WebViewImpl* opener_impl = To<WebViewImpl>(opener);
@@ -723,11 +731,15 @@ void WebViewHelper::InitializeWebView(
   }
   web_view_client =
       CreateDefaultClientIfNeeded(web_view_client, owned_web_view_client_);
+  blink::mojom::PrerenderParamPtr prerender_param = nullptr;
+  if (is_prerendering) {
+    prerender_param = blink::mojom::PrerenderParam::New();
+    prerender_param->page_metric_suffix = "for_testing";
+  }
+
   web_view_ = To<WebViewImpl>(
       WebView::Create(web_view_client,
-                      /*is_hidden=*/false,
-                      /*is_prerendering=*/false,
-                      /*is_inside_portal=*/false,
+                      /*is_hidden=*/is_prerendering, std::move(prerender_param),
                       /*fenced_frame_mode=*/fenced_frame_mode,
                       /*compositing_enabled=*/true,
                       /*widgets_never_composited=*/false,
@@ -735,7 +747,9 @@ void WebViewHelper::InitializeWebView(
                       *agent_group_scheduler_,
                       /*session_storage_namespace_id=*/std::string(),
                       /*page_base_background_color=*/std::nullopt,
-                      std::move(browsing_context_group_info)));
+                      std::move(browsing_context_group_info),
+                      /*color_provider_colors=*/nullptr,
+                      /*partitioned_popin_params=*/nullptr));
   // This property must be set at initialization time, it is not supported to be
   // changed afterward, and does nothing.
   web_view_->GetSettings()->SetViewportEnabled(viewport_enabled_);
@@ -769,15 +783,16 @@ WebViewImpl* WebViewHelper::CreateWebView(WebViewClient* web_view_client,
   return To<WebViewImpl>(
       WebView::Create(web_view_client,
                       /*is_hidden=*/false,
-                      /*is_prerendering=*/false,
-                      /*is_inside_portal=*/false,
+                      /*prerender_param=*/nullptr,
                       /*fenced_frame_mode=*/std::nullopt, compositing_enabled,
                       /*widgets_never_composited=*/false,
                       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
                       *agent_group_scheduler_,
                       /*session_storage_namespace_id=*/std::string(),
                       /*page_base_background_color=*/std::nullopt,
-                      BrowsingContextGroupInfo::CreateUnique()));
+                      BrowsingContextGroupInfo::CreateUnique(),
+                      /*color_provider_colors=*/nullptr,
+                      /*partitioned_popin_params=*/nullptr));
 }
 
 int TestWebFrameClient::loads_in_progress_ = 0;
@@ -797,6 +812,7 @@ void TestWebFrameClient::Bind(WebLocalFrame* frame,
 }
 
 void TestWebFrameClient::FrameDetached() {
+  std::move(frame_detached_callback_).Run();
   frame_->Close();
   self_owned_.reset();
 }
@@ -820,7 +836,7 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
   client->sandbox_flags_ = frame_policy.sandbox_flags;
   TestWebFrameClient* client_ptr = client.get();
   client_ptr->Bind(frame, std::move(client));
-  finish_creation(frame, DocumentToken());
+  finish_creation(frame, DocumentToken(), mojo::NullRemote());
   return frame;
 }
 
@@ -956,6 +972,10 @@ void TestWebFrameClient::DestroyChildViews() {
   child_web_views_.clear();
 }
 
+void TestWebFrameClient::SetFrameDetachedCallback(base::OnceClosure callback) {
+  frame_detached_callback_ = std::move(callback);
+}
+
 TestWidgetInputHandlerHost* TestWebFrameWidget::GetInputHandlerHost() {
   if (!widget_input_handler_host_)
     widget_input_handler_host_ = std::make_unique<TestWidgetInputHandlerHost>();
@@ -1009,7 +1029,15 @@ void TestWebFrameWidget::BindWidgetChannels(
   widget_host_ = CreateWidgetHost();
   widget_host_->BindWidgetHost(std::move(receiver), std::move(frame_receiver));
   mojo::Remote<mojom::blink::WidgetInputHandler> input_handler;
-  widget_remote->GetWidgetInputHandler(
+
+  mojo::PendingRemote<mojom::blink::RenderInputRouterClient> rir_client_remote;
+  // Setup RenderInputRouter mojo connections.
+  widget_remote->SetupRenderInputRouterConnections(
+      rir_client_remote.InitWithNewPipeAndPassReceiver(),
+      /* viz_client= */ mojo::NullReceiver());
+  widget_host_->BindRenderInputRouterInterfaces(std::move(rir_client_remote));
+
+  widget_host_->GetWidgetInputHandler(
       input_handler.BindNewPipeAndPassReceiver(),
       GetInputHandlerHost()->BindNewRemote());
 }
@@ -1098,6 +1126,18 @@ void TestWebFrameWidgetHost::BindWidgetHost(
         frame_receiver) {
   receiver_.Bind(std::move(receiver));
   frame_receiver_.Bind(std::move(frame_receiver));
+}
+
+void TestWebFrameWidgetHost::BindRenderInputRouterInterfaces(
+    mojo::PendingRemote<mojom::blink::RenderInputRouterClient> remote) {
+  client_remote_.reset();
+  client_remote_.Bind(std::move(remote));
+}
+
+void TestWebFrameWidgetHost::GetWidgetInputHandler(
+    mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
+    mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host) {
+  client_remote_->GetWidgetInputHandler(std::move(request), std::move(host));
 }
 
 mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost>

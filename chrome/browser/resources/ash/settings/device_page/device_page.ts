@@ -6,7 +6,7 @@
  * @fileoverview 'settings-device-page' is the settings page for device and
  * peripheral settings.
  */
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
@@ -142,7 +142,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       hideStorageInfo_: {
         type: Boolean,
         value() {
-          // TODO(crbug.com/868747): Show an explanatory message instead.
+          // TODO(crbug.com/40587075): Show an explanatory message instead.
           return loadTimeData.valueExists('isDemoSession') &&
               loadTimeData.getBoolean('isDemoSession');
         },

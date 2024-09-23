@@ -6,11 +6,14 @@
 
 #include <inttypes.h>
 
-#include <ostream>  // Needed to compile NOTREACHED() with operator <<.
+#include <cstdint>
 #include <string>
 
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
+#include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "sql/sqlite_result_code.h"

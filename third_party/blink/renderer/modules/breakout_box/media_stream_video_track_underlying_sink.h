@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_VIDEO_TRACK_UNDERLYING_SINK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_VIDEO_TRACK_UNDERLYING_SINK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"
@@ -32,18 +33,18 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
   ~MediaStreamVideoTrackUnderlyingSink() override;
 
   // UnderlyingSinkBase overrides.
-  ScriptPromise start(ScriptState* script_state,
-                      WritableStreamDefaultController* controller,
-                      ExceptionState& exception_state) override;
-  ScriptPromise write(ScriptState* script_state,
-                      ScriptValue chunk,
-                      WritableStreamDefaultController* controller,
-                      ExceptionState& exception_state) override;
-  ScriptPromise abort(ScriptState* script_state,
-                      ScriptValue reason,
-                      ExceptionState& exception_state) override;
-  ScriptPromise close(ScriptState* script_state,
-                      ExceptionState& exception_state) override;
+  ScriptPromise<IDLUndefined> start(ScriptState* script_state,
+                                    WritableStreamDefaultController* controller,
+                                    ExceptionState& exception_state) override;
+  ScriptPromise<IDLUndefined> write(ScriptState* script_state,
+                                    ScriptValue chunk,
+                                    WritableStreamDefaultController* controller,
+                                    ExceptionState& exception_state) override;
+  ScriptPromise<IDLUndefined> abort(ScriptState* script_state,
+                                    ScriptValue reason,
+                                    ExceptionState& exception_state) override;
+  ScriptPromise<IDLUndefined> close(ScriptState* script_state,
+                                    ExceptionState& exception_state) override;
 
   std::unique_ptr<WritableStreamTransferringOptimizer>
   GetTransferringOptimizer();
@@ -61,13 +62,13 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
   // not have arrived yet, and initializing the
   // WebGraphicsContext3DVideoFramePool may require a round-trip to the main
   // thread.
-  std::optional<ScriptPromise> MaybeConvertToNV12GMBVideoFrame(
+  std::optional<ScriptPromise<IDLUndefined>> MaybeConvertToNV12GMBVideoFrame(
       ScriptState* script_state,
       scoped_refptr<media::VideoFrame> video_frame,
       base::TimeTicks estimated_capture_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
   // Handles callback from WebGraphicsContext3DVideoFramePool::Convert.
-  void ConvertDone(Persistent<ScriptPromiseResolver> resolver,
+  void ConvertDone(ScriptPromiseResolver<IDLUndefined>* resolver,
                    scoped_refptr<media::VideoFrame> orig_video_frame,
                    base::TimeTicks estimated_capture_time,
                    scoped_refptr<media::VideoFrame> converted_video_frame);
@@ -79,7 +80,9 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
       GUARDED_BY_CONTEXT(sequence_checker_);
   int convert_to_nv12_gmb_failure_count_ GUARDED_BY_CONTEXT(sequence_checker_) =
       0;
-  gpu::GpuMemoryBufferManager* const gmb_manager_ = nullptr;
+  const raw_ptr<gpu::GpuMemoryBufferManager, DanglingUntriaged> gmb_manager_ = nullptr;
+
+  bool should_try_to_write_capture_time_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

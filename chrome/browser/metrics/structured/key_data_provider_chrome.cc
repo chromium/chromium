@@ -21,10 +21,6 @@ bool KeyDataProviderChrome::IsReady() {
   return device_key_.IsReady();
 }
 
-void KeyDataProviderChrome::OnProfileAdded(const base::FilePath& profile_path) {
-  // Key data providers don't need to do anything with the profile, yet.
-}
-
 std::optional<uint64_t> KeyDataProviderChrome::GetId(
     const std::string& project_name) {
   return device_key_.GetId(project_name);

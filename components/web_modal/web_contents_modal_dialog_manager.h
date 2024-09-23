@@ -9,12 +9,17 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/web_modal_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/native_widget_types.h"
+
+namespace content {
+enum class Visibility;
+}  // namespace content
 
 namespace web_modal {
 
@@ -26,6 +31,20 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
       public content::WebContentsObserver,
       public content::WebContentsUserData<WebContentsModalDialogManager> {
  public:
+  // Observes when web modal dialog is about to close as a result of a page
+  // navigation.
+  class CloseOnNavigationObserver : public base::CheckedObserver {
+   public:
+    CloseOnNavigationObserver(const CloseOnNavigationObserver&) = delete;
+    CloseOnNavigationObserver& operator=(const CloseOnNavigationObserver&) =
+        delete;
+
+    virtual void OnWillClose() = 0;
+
+   protected:
+    CloseOnNavigationObserver() = default;
+  };
+
   WebContentsModalDialogManager(const WebContentsModalDialogManager&) = delete;
   WebContentsModalDialogManager& operator=(
       const WebContentsModalDialogManager&) = delete;
@@ -47,6 +66,11 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   // Focus the topmost modal dialog.  IsDialogActive() must be true when calling
   // this function.
   void FocusTopmostDialog() const;
+
+  // Manages observer for when dialogs are closed as a result of page
+  // navigation.
+  void AddCloseOnNavigationObserver(CloseOnNavigationObserver* observer);
+  void RemoveCloseOnNavigationObserver(CloseOnNavigationObserver* observer);
 
   // SingleWebContentsDialogManagerDelegate:
   content::WebContents* GetWebContents() const override;
@@ -106,8 +130,8 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   // All active dialogs.
   base::circular_deque<DialogState> child_dialogs_;
 
-  // Whether the WebContents' visibility is content::Visibility::HIDDEN.
-  bool web_contents_is_hidden_;
+  // The WebContents' visibility.
+  content::Visibility web_contents_visibility_;
 
   // True while closing the dialogs on WebContents close.
   bool closing_all_dialogs_ = false;
@@ -115,6 +139,9 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   // Optional closure to re-enable input events, if we're ignored them.
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
+
+  base::ObserverList<CloseOnNavigationObserver>
+      close_on_navigation_observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

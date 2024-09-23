@@ -11,7 +11,12 @@ found in the LICENSE file.
     android:layout_width="match_parent" >
 
     <FrameLayout
-        android:id="@+id/alternate_parent"
+        android:id="@+id/alternate_parent_1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/alternate_parent_2"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

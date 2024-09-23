@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef NET_BASE_IO_BUFFER_H_
 #define NET_BASE_IO_BUFFER_H_
 
@@ -91,11 +96,11 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
     return reinterpret_cast<const uint8_t*>(data());
   }
 
-  base::span<char> span() {
-    return base::make_span(data(), static_cast<size_t>(size_));
+  base::span<uint8_t> span() {
+    return base::make_span(bytes(), static_cast<size_t>(size_));
   }
-  base::span<const char> span() const {
-    return base::make_span(data(), static_cast<size_t>(size_));
+  base::span<const uint8_t> span() const {
+    return base::make_span(bytes(), static_cast<size_t>(size_));
   }
 
  protected:
@@ -109,8 +114,7 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   virtual ~IOBuffer();
 
-  raw_ptr<char, AcrossTasksDanglingUntriaged | AllowPtrArithmetic> data_ =
-      nullptr;
+  raw_ptr<char, AllowPtrArithmetic> data_ = nullptr;
   int size_ = 0;
 };
 
@@ -211,11 +215,24 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   int offset() { return offset_; }
 
   int RemainingCapacity();
-  char* StartOfBuffer();
+
+  // Returns the entire buffer, including the bytes before the `offset()`.
+  //
+  // The `span()` method in the base class only gives the part of the buffer
+  // after `offset()`.
+  base::span<uint8_t> everything();
+  base::span<const uint8_t> everything() const;
+
+  // Return a span before the `offset()`.
+  base::span<uint8_t> span_before_offset();
+  base::span<const uint8_t> span_before_offset() const;
 
  private:
   ~GrowableIOBuffer() override;
 
+  // TODO(329476354): Convert to std::vector, use reserve()+resize() to make
+  // exact reallocs, and remove `capacity_`. Possibly with an allocator the
+  // default-initializes, if it's important to not initialize the new memory?
   std::unique_ptr<char, base::FreeDeleter> real_data_;
   int capacity_ = 0;
   int offset_ = 0;

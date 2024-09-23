@@ -16,6 +16,6 @@ namespace system.memory {
 
   interface Functions {
     // Get physical memory information.
-    [supportsPromises] static void getInfo(MemoryInfoCallback callback);
+    static void getInfo(MemoryInfoCallback callback);
   };
 };

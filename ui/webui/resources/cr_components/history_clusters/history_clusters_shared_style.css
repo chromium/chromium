@@ -3,11 +3,13 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style
- * #import=chrome://resources/cr_elements/cr_shared_style.css.js
- * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=./shared_vars.css.js
- * #include=cr-shared-style cr-hidden-style
+ * #include=cr-shared-style-lit cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 .truncate {
@@ -20,13 +22,9 @@
   border: 1px solid var(--border-color);
   border-radius: calc(var(--pill-height) / 2);
   box-sizing: border-box;
-  font-size: 0.875rem;  /* 14px */
+  font-size: 0.75rem; /* 12px */
   height: var(--pill-height);
   line-height: 1.5;  /* 21px */
-}
-
-:host-context([chrome-refresh-2023]) .pill {
-  font-size: 0.75rem; /* 12px */
 }
 
 .pill-icon-start {
@@ -35,10 +33,6 @@
 }
 
 .pill-icon-start .icon {
-  margin-inline-end: 8px;
-}
-
-:host-context([chrome-refresh-2023]) .pill-icon-start .icon {
   margin-inline-end: 4px;
 }
 

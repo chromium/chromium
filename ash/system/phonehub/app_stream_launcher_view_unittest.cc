@@ -91,7 +91,8 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
     DCHECK(!widget_);
     widget_ = new views::Widget;
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+        CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 600, 800);
     widget_->Init(std::move(params));
   }

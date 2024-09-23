@@ -28,7 +28,6 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
 
   // AccountReconcilorDelegate:
   bool IsReconcileEnabled() const override;
-  bool IsUpdateCookieAllowed() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
   void RevokeSecondaryTokensForReconcileIfNeeded(
       const std::vector<gaia::ListedAccount>& gaia_accounts) override;
@@ -40,6 +39,19 @@ class DiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
       const std::vector<gaia::ListedAccount>& gaia_accounts,
       bool first_execution) override;
   ConsentLevel GetConsentLevelForPrimaryAccount() const override;
+
+  // Returns true if explicit browser sign in is enabled and Chrome isn't signed
+  // in.
+  // In this mode:
+  // - First, refresh tokens that do not have a valid counter account in the
+  //   cookie are revoked.
+  // - Then if needed, the cookie is updated to remove accounts that do not
+  //   have a refresh token. This is possible:
+  //   (1) If the user has signed out from chrome while being offline.
+  //   (2) If an account is moved from a profile to another as part of the
+  //       Sign in interception flows or as a result of merge sync data flow.
+  // Public for testing.
+  bool IsCookieBasedConsistencyMode() const;
 
  private:
   // Possible inconsistency reasons between tokens and gaia cookies.

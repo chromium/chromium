@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_MENU_ICON_LOADER_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_MENU_ICON_LOADER_H_
 
-#include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/extensions/menu_icon_loader.h"
 #include "chrome/browser/extensions/menu_manager.h"
+#include "extensions/browser/extension_icon_manager.h"
 
 namespace content {
 class BrowserContext;

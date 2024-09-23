@@ -8,13 +8,17 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.animation.ObjectAnimator;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,6 +29,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -149,5 +155,71 @@ public class LogoViewTest {
         mModel.set(LogoProperties.SHOW_LOADING_VIEW, true);
         Assert.assertNull(mView.getLogoForTesting());
         Assert.assertEquals(View.GONE, mView.getLoadingViewVisibilityForTesting());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.LOGO_POLISH})
+    public void testDoodleAnimation() {
+        mView.setIsLogoPolishFlagEnabledForTesting(true);
+        Resources res = mView.getResources();
+        int normalLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
+        int normalLogoTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int logoHeightForLogoPolish = LogoUtils.getLogoHeightForLogoPolishWithSmallSize(res);
+        int logoTopMarginForLogoPolish = LogoUtils.getTopMarginForLogoPolish(res);
+
+        MarginLayoutParams logoLayoutParams = (MarginLayoutParams) mView.getLayoutParams();
+
+        // Test default google logo.
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mView.setDefaultGoogleLogo(
+                new CachedTintedBitmap(R.drawable.google_logo, R.color.google_logo_tint_color)
+                        .getBitmap(mView.getContext()));
+        mView.updateLogo(null);
+        mView.endAnimationsForTesting();
+        Assert.assertEquals(normalLogoHeight, logoLayoutParams.height);
+        Assert.assertEquals(normalLogoTopMargin, logoLayoutParams.topMargin);
+
+        // Test doodle animation.
+        Logo logo = new Logo(mBitmap, null, ALT_TEXT, null);
+        mModel.set(LogoProperties.LOGO, logo);
+        ObjectAnimator fadeAnimation = mView.getFadeAnimationForTesting();
+        Assert.assertNotNull(fadeAnimation);
+
+        fadeAnimation.pause();
+
+        fadeAnimation.setCurrentFraction(0);
+        Assert.assertEquals(normalLogoHeight, logoLayoutParams.height);
+        Assert.assertEquals(normalLogoTopMargin, logoLayoutParams.topMargin);
+
+        fadeAnimation.setCurrentFraction(0.3F);
+        Assert.assertEquals(normalLogoHeight, logoLayoutParams.height);
+        Assert.assertEquals(normalLogoTopMargin, logoLayoutParams.topMargin);
+
+        fadeAnimation.setCurrentFraction(0.5F);
+        Assert.assertEquals(normalLogoHeight, logoLayoutParams.height);
+        Assert.assertEquals(normalLogoTopMargin, logoLayoutParams.topMargin);
+
+        fadeAnimation.setCurrentFraction(0.65F);
+        Assert.assertEquals(
+                Math.round((normalLogoHeight + (logoHeightForLogoPolish - normalLogoHeight) * 0.3)),
+                logoLayoutParams.height);
+        Assert.assertEquals(
+                Math.round(
+                        (normalLogoTopMargin
+                                + (logoTopMarginForLogoPolish - normalLogoTopMargin) * 0.3)),
+                logoLayoutParams.topMargin);
+
+        fadeAnimation.setCurrentFraction(0.75F);
+        Assert.assertEquals(
+                Math.round((normalLogoHeight + logoHeightForLogoPolish) * 0.5),
+                logoLayoutParams.height);
+        Assert.assertEquals(
+                Math.round((normalLogoTopMargin + logoTopMarginForLogoPolish) * 0.5),
+                logoLayoutParams.topMargin);
+
+        fadeAnimation.setCurrentFraction(1);
+        Assert.assertEquals(logoHeightForLogoPolish, logoLayoutParams.height);
+        Assert.assertEquals(logoTopMarginForLogoPolish, logoLayoutParams.topMargin);
     }
 }

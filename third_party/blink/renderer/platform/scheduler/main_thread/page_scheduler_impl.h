@@ -8,14 +8,17 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/cancelable_closure_holder.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/common/throttling/type.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
@@ -37,6 +40,7 @@ class CPUTimeBudgetPool;
 class FrameSchedulerImpl;
 class MainThreadSchedulerImpl;
 class MainThreadTaskQueue;
+class PolicyUpdater;
 class WakeUpBudgetPool;
 
 class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
@@ -81,9 +85,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   bool OptedOutFromAggressiveThrottlingForTest() const override;
   bool RequestBeginMainFrameNotExpected(bool new_state) override;
   scoped_refptr<scheduler::WidgetScheduler> CreateWidgetScheduler() override;
-
-  // Virtual for testing.
-  virtual void ReportIntervention(const String& message);
 
   bool IsFrozen() const;
   bool OptedOutFromAggressiveThrottling() const;
@@ -130,9 +131,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // frame it not a local one.
   FrameSchedulerImpl* SelectFrameForUkmAttribution();
 
-  bool ThrottleUnimportantFrameTimers() const {
-    return throttle_unimportant_frame_timers_;
-  }
+  // Update policy for all frames.
+  void UpdatePolicy();
 
   void WriteIntoTrace(perfetto::TracedValue context, base::TimeTicks now) const;
 
@@ -141,6 +141,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   }
 
  private:
+  friend class AgentGroupSchedulerImpl;
   friend class FrameSchedulerImpl;
   friend class page_scheduler_impl_unittest::PageSchedulerImplTest;
 
@@ -149,8 +150,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
     kAudible,
     kRecentlyAudible,
   };
-
-  enum class NotificationPolicy { kNotifyFrames, kDoNotNotifyFrames };
 
   void RegisterFrameSchedulerImpl(FrameSchedulerImpl* frame_scheduler);
 
@@ -164,7 +163,10 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   // Support not issuing a notification to frames when we disable freezing as
   // a part of foregrounding the page.
-  void SetPageFrozenImpl(bool frozen, NotificationPolicy notification_policy);
+  void SetPageFrozenImpl(bool frozen,
+                         PolicyUpdater& policy_updater,
+                         base::MemoryReductionTaskContext called_from =
+                             base::MemoryReductionTaskContext::kDelayExpired);
 
   // Adds `task_queue` to `wake_up_budget_pool`.
   void AddQueueToWakeUpBudgetPool(MainThreadTaskQueue* task_queue,
@@ -173,12 +175,11 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // Removes `task_queue` from its current `WakeUpBudgetPool`, if any.
   void RemoveQueueFromWakeUpBudgetPool(MainThreadTaskQueue* task_queue,
                                        base::LazyNow* lazy_now);
-  // Returns the WakeUpBudgetPool to use for a `task_queue` which belongs to a
-  // frame with the given properties.
+  // Returns the WakeUpBudgetPool to use for a `task_queue` on a frame of type
+  // `frame_origin_type` which allows throttling of type `throttling_type`.
   WakeUpBudgetPool* GetWakeUpBudgetPool(MainThreadTaskQueue* task_queue,
                                         FrameOriginType frame_origin_type,
-                                        bool frame_visible,
-                                        bool is_important);
+                                        ThrottlingType throttling_type);
 
   // Initializes WakeUpBudgetPools, if not already initialized.
   void MaybeInitializeWakeUpBudgetPools(base::LazyNow* lazy_now);
@@ -188,7 +189,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   // Depending on page visibility, either turns throttling off, or schedules a
   // call to enable it after a grace period.
-  void UpdatePolicyOnVisibilityChange(NotificationPolicy notification_policy);
+  void UpdatePolicyOnVisibilityChange(PolicyUpdater& policy_updater);
 
   // Adjusts settings of budget pools depending on current state of the page.
   void UpdateCPUTimeBudgetPool(base::LazyNow* lazy_now);
@@ -207,11 +208,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   void DoIntensivelyThrottleWakeUps();
   void ResetHadRecentTitleOrFaviconUpdate();
 
-  // Notify frames that the page scheduler state has been updated.
-  void NotifyFrames();
-
-  void EnableThrottling();
-
   // Returns true if the page is backgrounded, false otherwise. A page is
   // considered backgrounded if it is not visible, not playing audio and
   // virtual time is disabled.
@@ -220,14 +216,12 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   // Returns true if WakeUpBudgetPools were initialized.
   bool HasWakeUpBudgetPools() const;
 
-  // Notify frames to move their task queues to the appropriate
-  // WakeUpBudgetPool.
-  void MoveTaskQueuesToCorrectWakeUpBudgetPoolAndUpdate();
-
   // Determines when this page's frozen state should change. If it should change
   // now, perform the state transition. Otherwise, schedules another call to
   // this method at the time when it should change.
-  void UpdateFrozenState(NotificationPolicy notification_policy);
+  void UpdateFrozenState(PolicyUpdater& policy_updater);
+  void UpdateFrozenState(PolicyUpdater& policy_updater,
+                         base::MemoryReductionTaskContext called_from);
 
   // Returns all WakeUpBudgetPools owned by this PageSchedulerImpl.
   static constexpr int kNumWakeUpBudgetPools = 4;
@@ -235,7 +229,7 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   TraceableVariableController tracing_controller_;
   HashSet<FrameSchedulerImpl*> frame_schedulers_;
-  raw_ptr<MainThreadSchedulerImpl, ExperimentalRenderer> main_thread_scheduler_;
+  raw_ptr<MainThreadSchedulerImpl, DanglingUntriaged> main_thread_scheduler_;
   Persistent<AgentGroupSchedulerImpl> agent_group_scheduler_;
 
   PageVisibilityState page_visibility_;
@@ -291,17 +285,14 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   //    AllowUnalignedWakeUpIfNoRecentWakeUp() on this pool.
   std::unique_ptr<WakeUpBudgetPool> cross_origin_intensive_wake_up_budget_pool_;
 
-  raw_ptr<PageScheduler::Delegate, ExperimentalRenderer> delegate_;
+  raw_ptr<PageScheduler::Delegate> delegate_;
   CancelableClosureHolder do_throttle_cpu_time_callback_;
   CancelableClosureHolder do_intensively_throttle_wake_ups_callback_;
   CancelableClosureHolder reset_had_recent_title_or_favicon_update_;
   CancelableClosureHolder on_audio_silent_closure_;
-  CancelableClosureHolder update_frozen_state_callback_;
+  base::OneShotDelayedBackgroundTimer update_frozen_state_timer_;
   const base::TimeDelta delay_for_background_tab_freezing_;
 
-  // Whether timers of foreground unimportant frames (visible small and non user
-  // activated cross-origin frames) should be always throttled.
-  const bool throttle_unimportant_frame_timers_;
   // Interval between throttled wake ups for unimportant frames (visible, small
   // and non user activated cross origin frames) on a foreground page.
   const base::TimeDelta unimportant_timers_throttled_wake_up_interval_;

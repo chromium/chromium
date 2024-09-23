@@ -84,8 +84,10 @@ void WebsiteMetricsBrowserTestMixin::SetUpOnMainThread() {
     app_service_proxy->SetAppPlatformMetricsServiceForTesting(
         std::move(metrics_service));
   }
-  app_platform_metrics_service_->Start(app_service_proxy->AppRegistryCache(),
-                                       app_service_proxy->InstanceRegistry());
+  app_platform_metrics_service_->Start(
+      app_service_proxy->AppRegistryCache(),
+      app_service_proxy->InstanceRegistry(),
+      app_service_proxy->AppCapabilityAccessCache());
 #endif
 }
 
@@ -112,7 +114,7 @@ Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
                         ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = disposition;
   Navigate(&params);
-  auto* const contents = params.navigated_or_inserted_contents;
+  auto* const contents = params.navigated_or_inserted_contents.get();
   CHECK_EQ(::chrome::FindBrowserWithTab(params.navigated_or_inserted_contents),
            browser);
   ::content::TestNavigationObserver observer(contents);

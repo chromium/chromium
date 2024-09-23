@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/javascript_test_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -156,11 +157,19 @@ class NaClBrowserTestStatic : public NaClBrowserTestBase {
 class NaClBrowserTestNewlibExtension : public NaClBrowserTestNewlib {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override;
+
+  // TODO(https://crbug.com/40804030): Remove when these tests use only MV3
+  // extensions.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 class NaClBrowserTestGLibcExtension : public NaClBrowserTestGLibc {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override;
+
+  // TODO(https://crbug.com/40804030): Remove when these tests use only MV3
+  // extensions.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \

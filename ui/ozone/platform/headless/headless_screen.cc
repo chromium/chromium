@@ -4,11 +4,12 @@
 
 #include "ui/ozone/platform/headless/headless_screen.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "ui/display/tablet_state.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -23,7 +24,7 @@ constexpr gfx::Size kHeadlessDisplaySize(1, 1);
 
 // Parse comma-separated screen width and height.
 bool ParseScreenSize(const std::string& screen_size, int* width, int* height) {
-  std::vector<base::StringPiece> width_and_height = base::SplitStringPiece(
+  std::vector<std::string_view> width_and_height = base::SplitStringPiece(
       screen_size, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (width_and_height.size() != 2)
     return false;
@@ -69,7 +70,7 @@ const std::vector<display::Display>& HeadlessScreen::GetAllDisplays() const {
 
 display::Display HeadlessScreen::GetPrimaryDisplay() const {
   auto iter = display_list_.GetPrimaryDisplayIterator();
-  DCHECK(iter != display_list_.displays().end());
+  CHECK(iter != display_list_.displays().end(), base::NotFatalUntil::M130);
   return *iter;
 }
 

@@ -81,7 +81,7 @@ std::unique_ptr<net::HostResolver> CreateGlobalHostResolver(
     net::NetLog* net_log) {
   TRACE_EVENT0("startup", "IOSIOThread::CreateGlobalHostResolver");
 
-  // TODO(crbug.com/934402): Use a shared HostResolverManager instead of a
+  // TODO(crbug.com/40614970): Use a shared HostResolverManager instead of a
   // single global HostResolver for iOS.
   std::unique_ptr<net::HostResolver> global_host_resolver =
       net::HostResolver::CreateStandaloneResolver(net_log);
@@ -316,7 +316,7 @@ IOSIOThread::ConstructSystemRequestContext() {
   *quic_context->params() = quic_params_;
   builder.set_quic_context(std::move(quic_context));
   // In-memory cookie store.
-  // TODO(crbug.com/801910): Hook up logging by passing in a non-null netlog.
+  // TODO(crbug.com/41364708): Hook up logging by passing in a non-null netlog.
   builder.SetCookieStore(std::make_unique<net::CookieMonster>(
       nullptr /* store */, nullptr /* netlog */));
   builder.set_network_delegate(std::move(network_delegate));

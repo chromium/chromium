@@ -56,7 +56,7 @@ class MockTlsConnectionFactoryClient
               (override));
   MOCK_METHOD(void,
               OnError,
-              (openscreen::TlsConnectionFactory*, Error),
+              (openscreen::TlsConnectionFactory*, const Error&),
               (override));
 };
 
@@ -112,7 +112,7 @@ class TlsConnectionFactoryTest : public ::testing::Test {
 
 TEST_F(TlsConnectionFactoryTest, CallsNetworkContextCreateMethod) {
   StrictMock<MockTlsConnectionFactoryClient> mock_client;
-  TlsConnectionFactory factory(&mock_client);
+  TlsConnectionFactory factory(mock_client);
 
   factory.Connect(kValidOpenscreenEndpoint, TlsConnectOptions{});
 
@@ -123,7 +123,7 @@ TEST_F(TlsConnectionFactoryTest, CallsNetworkContextCreateMethod) {
 TEST_F(TlsConnectionFactoryTest,
        CallsOnConnectionFailedWhenNetworkContextReportsError) {
   StrictMock<MockTlsConnectionFactoryClient> mock_client;
-  TlsConnectionFactory factory(&mock_client);
+  TlsConnectionFactory factory(mock_client);
   EXPECT_CALL(mock_client,
               OnConnectionFailed(&factory, kValidOpenscreenEndpoint));
 

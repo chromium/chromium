@@ -16,7 +16,16 @@ Neither has a leading slash.
 
 import json
 import logging
-from typing import List, Literal, Optional, Sequence, Tuple
+from typing import (
+    Any,
+    Dict,
+    List,
+    Literal,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+)
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
@@ -43,6 +52,51 @@ MANIFEST_NAME = 'MANIFEST.json'
 BASE_MANIFEST_NAME = 'WPT_BASE_MANIFEST_8.json'
 
 # TODO(robertma): Use the official wpt.manifest module.
+
+
+Relation = Literal['==', '!=']
+Reference = Tuple[str, Relation]
+
+FuzzyRange = Tuple[int, int]
+FuzzyParameters = Tuple[Optional[FuzzyRange], Optional[FuzzyRange]]
+
+
+class _Test(NamedTuple):
+    """A container for per-test information."""
+    # To save space, `file_path` is `None` if it's identical to the URL, which
+    # it is for most tests.
+    file_path: Optional[str]
+    test_type: str
+    references: List[Reference]
+    extras: Dict[str, Any]
+
+    @property
+    def slow(self) -> bool:
+        return self.extras.get('timeout') == 'long'
+
+    @property
+    def pac(self) -> Optional[str]:
+        return self.extras.get('pac')
+
+    @property
+    def fuzzy_params(self) -> FuzzyParameters:
+        params = self.extras.get('fuzzy')
+        if not params:
+            return None, None
+        _, (max_diff, total_pixels) = params[0]
+        assert len(max_diff) == 2, max_diff
+        assert len(total_pixels) == 2, total_pixels
+        return max_diff, total_pixels
+
+    @property
+    def jsshell(self) -> bool:
+        """Whether this manifest item is a jsshell test.
+
+        "jsshell" is one of the scopes automatically generated from .any.js
+        tests. It is intended to run in a thin JavaScript shell instead of a
+        full browser, so we usually ignore it in web tests. (crbug.com/871950)
+        """
+        return self.extras.get('jsshell', False)
 
 
 class WPTManifest:
@@ -93,15 +147,8 @@ class WPTManifest:
                  wpt_dir: str,
                  test_types: Optional[Sequence[str]] = None,
                  exclude_jsshell: bool = True):
-        self.raw_dict = raw_dict
+        self._raw_dict = raw_dict
         self.wpt_dir = wpt_dir
-        # As a workaround to handle the change from a flat-list to a trie
-        # structure in the v8 manifest, flatten the items back to the v7 format.
-        #
-        # TODO(crbug.com/912496): Properly support the trie structure.
-        self.raw_dict['items'] = self._flatten_items(
-            self.raw_dict.get('items', {}))
-
         self.test_types = test_types or (
             'manual',
             'reftest',
@@ -109,8 +156,54 @@ class WPTManifest:
             'testharness',
             'crashtest',
         )
-        self.test_name_to_file = {}
+        self._tests_by_url = {}
         self._exclude_jsshell = exclude_jsshell
+
+        items = self._raw_dict.get('items', {})
+        for test_type in self.test_types:
+            self._map_tests(test_type, items.get(test_type, {}))
+
+    def _map_tests(self, test_type: str, trie, path: str = ''):
+        """Record tests present in a trie for some test type.
+
+        Arguments:
+            test_type: The WPT test type.
+            trie: Either:
+              * A list, which represents a test file (a leaf in the trie).
+              * A map representing a test directory. It maps the next path
+                component to the corresponding child.
+            path: The path so far to this test file or directory.
+
+        Note:
+            When constructing the external manifest, this recursive walk must
+            traverse all 50k+ items, so it impacts the startup performance of
+            many tools.
+        """
+        if isinstance(trie, dict):
+            for component, child in trie.items():
+                # URLs always use `/` for path separators. Don't add a leading
+                # `/`, since that's the convention in `blinkpy` for test paths.
+                child_path = f'{path}/{component}' if path else component
+                self._map_tests(test_type, child, child_path)
+            return
+
+        assert len(trie) >= 2, f'{trie!r} must contain at least one test'
+        # Ignore the first element, which is the file's Git tree ID.
+        for url, *maybe_refs, extras in trie[1:]:
+            assert len(maybe_refs) <= 1, f'extra item data: {maybe_refs!r}'
+            refs = maybe_refs[0] if maybe_refs else []
+            # To save space, the v8 manifest omits the URL if it's
+            # identical to the file path, which it is for most tests.
+            if url:
+                # Trim any leading `/`, which WPT URLs use by convention.
+                if url.startswith('/'):
+                    url = url[1:]
+                test = _Test(path, test_type, refs, extras)
+            else:
+                url, test = path, _Test(None, test_type, refs, extras)
+            assert url not in self._tests_by_url, f'duplicate URL {url!r}'
+            if not self._exclude_jsshell or not test.jsshell:
+                self._tests_by_url[url] = test
 
     @classmethod
     def from_file(cls,
@@ -125,98 +218,38 @@ class WPTManifest:
                    fs.dirname(fs.relpath(manifest_path, port.web_tests_dir())),
                    test_types, exclude_jsshell)
 
-    def _items_for_file_path(self, path_in_wpt):
-        """Finds manifest items for the given WPT path.
-
-        Args:
-            path_in_wpt: A file path relative to the root of WPT.
-
-        Returns:
-            A list of manifest items, or None if not found.
-        """
-        items = self.raw_dict.get('items', {})
-        for test_type in self.test_types:
-            if test_type not in items:
-                continue
-            if path_in_wpt in items[test_type]:
-                return items[test_type][path_in_wpt]
-        return None
-
-    def _item_for_url(self, url):
-        """Finds the manifest item for the given WPT URL.
-
-        Args:
-            url: A WPT URL.
-
-        Returns:
-            A manifest item, or None if not found.
-        """
-        return self.all_url_items().get(url)
-
-    @staticmethod
-    def _get_url_from_item(item):
-        return item[0]
-
-    @staticmethod
-    def _get_extras_from_item(item):
-        return item[-1]
-
-    @staticmethod
-    def _is_not_jsshell(item):
-        """Returns True if the manifest item isn't a jsshell test.
-
-        "jsshell" is one of the scopes automatically generated from .any.js
-        tests. It is intended to run in a thin JavaScript shell instead of a
-        full browser, so we simply ignore it in web tests. (crbug.com/871950)
-        """
-        extras = WPTManifest._get_extras_from_item(item)
-        return not extras.get('jsshell', False)
-
-    @memoized
-    def all_url_items(self):
-        """Returns a dict mapping every URL in the manifest to its item."""
-        url_items = {}
-        if 'items' not in self.raw_dict:
-            return url_items
-        items = self.raw_dict['items']
-        for test_type in self.test_types:
-            if test_type not in items:
-                continue
-            for filename, records in items[test_type].items():
-                if self._exclude_jsshell:
-                    records = filter(self._is_not_jsshell, records)
-                for item in records:
-                    url_for_item = self._get_url_from_item(item)
-                    url_items[url_for_item] = item
-                    self.test_name_to_file[url_for_item] = filename
-        return url_items
-
     @memoized
     def all_urls(self):
         """Returns a set of the URLs for all items in the manifest."""
-        urls_with_nonempty_paths = []
-        for url in self.all_url_items().keys():
-            assert not url.startswith('/')
-            assert not url.endswith('/')
-            # Drop empty path components.
-            url = url.replace('//', '/')
-            urls_with_nonempty_paths.append(url)
-        return frozenset(urls_with_nonempty_paths)
+        return frozenset(self._tests_by_url)
 
-    def is_test_file(self, path_in_wpt):
-        """Checks if path_in_wpt is a test file according to the manifest."""
-        assert not path_in_wpt.startswith('/')
-        return self._items_for_file_path(path_in_wpt) is not None
-
-    def get_test_type(self, test_path: str) -> Optional[str]:
+    def get_test_type(self, url: str) -> Optional[str]:
         """Returns the test type of the given test file path."""
-        assert not test_path.startswith('/')
-        items = self.raw_dict.get('items', {})
-        for test_type in self.test_types:
-            type_items = items.get(test_type, {})
-            if test_path in type_items:
-                return test_type
-        return None
+        assert not url.startswith('/')
+        test = self._tests_by_url.get(url)
+        return test and test.test_type
+
+    def is_test_file(self, file_path: str) -> bool:
+        """Checks if file_path is a test file according to the manifest."""
+        assert not file_path.startswith('/')
+        components = file_path.split('/')
+        assert components, file_path
+        tries_by_type = self._raw_dict.get('items', {})
+        return any(
+            self._contains_file(tries_by_type.get(test_type, {}), components)
+            for test_type in self.test_types)
+
+    def _contains_file(self, trie, components: Sequence[str]) -> bool:
+        """Determine if a test trie contains a test file."""
+        if isinstance(trie, list):
+            # Not a test file if there are still components at a leaf.
+            return not bool(components)
+        if not components:
+            # This is a test directory, not a test file.
+            return False
+        next_component, *rest = components
+        child = trie.get(next_component)
+        return bool(child) and self._contains_file(child, rest)
 
     def is_test_url(self, url):
         """Checks if url is a valid test in the manifest."""
@@ -225,18 +258,15 @@ class WPTManifest:
 
     def is_crash_test(self, url):
         """Checks if a WPT is a crashtest according to the manifest."""
-        test_path = self.file_path_for_test_url(url)
-        return test_path and self.get_test_type(test_path) == 'crashtest'
+        return self.get_test_type(url) == 'crashtest'
 
     def is_manual_test(self, url):
         """Checks if a WPT is a manual according to the manifest."""
-        test_path = self.file_path_for_test_url(url)
-        return test_path and self.get_test_type(test_path) == 'manual'
+        return self.get_test_type(url) == 'manual'
 
     def is_print_reftest(self, url):
         """Checks if a WPT is a print reftest according to the manifest."""
-        test_path = self.file_path_for_test_url(url)
-        return test_path and self.get_test_type(test_path) == 'print-reftest'
+        return self.get_test_type(url) == 'print-reftest'
 
     def is_slow_test(self, url):
         """Checks if a WPT is slow (long timeout) according to the manifest.
@@ -247,14 +277,8 @@ class WPTManifest:
         Returns:
             True if the test is found and is slow, False otherwise.
         """
-        if not self.is_test_url(url):
-            return False
-
-        item = self._item_for_url(url)
-        if not item:
-            return False
-        extras = self._get_extras_from_item(item)
-        return extras.get('timeout') == 'long'
+        test = self._tests_by_url.get(url)
+        return test.slow if test else False
 
     def extract_test_pac(self, url):
         """Get the proxy configuration (PAC) for the test
@@ -265,18 +289,10 @@ class WPTManifest:
         Returns:
             A relative PAC url if noted by the test, None otherwise.
         """
-        if not self.is_test_url(url):
-            return None
+        test = self._tests_by_url.get(url)
+        return test and test.pac
 
-        item = self._item_for_url(url)
-        if not item:
-            return None
-
-        extras = self._get_extras_from_item(item)
-        return extras.get('pac')
-
-    def extract_reference_list(
-            self, url: str) -> List[Tuple[Literal['==', '!='], str]]:
+    def extract_reference_list(self, url: str) -> List[Tuple[Relation, str]]:
         """Extracts reference information of the specified (print) reference test.
 
         The return value is a list of (match/not-match, reference path in wpt)
@@ -284,24 +300,12 @@ class WPTManifest:
            [("==", "/foo/bar/baz-match.html"),
             ("!=", "/foo/bar/baz-mismatch.html")]
         """
-        items = self.raw_dict.get('items', {})
-        test_path = self.file_path_for_test_url(url)
-        test_type = test_path and self.get_test_type(test_path)
-        if test_type not in ['reftest', 'print-reftest']:
+        test = self._tests_by_url.get(url)
+        if not test:
             return []
+        return [(relation, ref) for ref, relation in test.references]
 
-        reftest_list = []
-        item = self._item_for_url(url)
-        for ref_path_in_wpt, expectation in (item[1] if item else []):
-            # Ref URLs in MANIFEST should be absolute, but we double check
-            # just in case.
-            if (not ref_path_in_wpt.startswith('about:')
-                    and not ref_path_in_wpt.startswith('/')):
-                ref_path_in_wpt = '/' + ref_path_in_wpt
-            reftest_list.append((expectation, ref_path_in_wpt))
-        return reftest_list
-
-    def extract_fuzzy_metadata(self, url):
+    def extract_fuzzy_metadata(self, url: str) -> FuzzyParameters:
         """Extracts the fuzzy reftest metadata for the specified (print) reference test.
 
         Although WPT supports multiple fuzzy references for a given test (one
@@ -323,28 +327,13 @@ class WPTManifest:
             for the test. If the test isn't a reference test or doesn't have
             fuzzy information, a pair of Nones are returned.
         """
-
-        items = self.raw_dict.get('items', {})
-        test_path = self.file_path_for_test_url(url)
-        test_type = test_path and self.get_test_type(test_path)
-        if test_type not in ['reftest', 'print-reftest']:
+        test = self._tests_by_url.get(url)
+        test_type = self.get_test_type(url)
+        if test_type not in {'reftest', 'print-reftest'}:
             return None, None
+        return test.fuzzy_params
 
-        item = self._item_for_url(url)
-        # The item is a list of [url, refs, properties], and the fuzzy metadata
-        # is stored in the properties dict.
-        if 'fuzzy' in item[2]:
-            fuzzy_metadata_list = item[2]['fuzzy']
-            for fuzzy_metadata in fuzzy_metadata_list:
-                # The fuzzy metadata is a nested list of [url, [maxDifference,
-                # maxPixels]].
-                assert len(
-                    fuzzy_metadata[1]
-                ) == 2, 'Malformed fuzzy ref data for {}'.format(url)
-                return fuzzy_metadata[1]
-        return None, None
-
-    def file_path_for_test_url(self, url):
+    def file_path_for_test_url(self, url: str) -> Optional[str]:
         """Finds the file path for the given test URL.
 
         Args:
@@ -353,9 +342,8 @@ class WPTManifest:
         Returns:
             The path to the file containing this test URL, or None if not found.
         """
-        # Call all_url_items to ensure the test to file mapping is populated.
-        self.all_url_items()
-        return self.test_name_to_file.get(url)
+        test = self._tests_by_url.get(url)
+        return (test.file_path or url) if test else None
 
     @staticmethod
     def ensure_manifest(port, path=None):
@@ -370,6 +358,10 @@ class WPTManifest:
             path = fs.join('external', 'wpt')
         wpt_path = fs.join(port.web_tests_dir(), path)
         manifest_path = fs.join(wpt_path, MANIFEST_NAME)
+
+        def is_cog() -> bool:
+            """Checks the environment is cog."""
+            return fs.getcwd().startswith('/google/cog/cloud')
 
         # Unconditionally delete local MANIFEST.json to avoid regenerating the
         # manifest from scratch (when version is bumped) or invalid/out-of-date
@@ -389,6 +381,14 @@ class WPTManifest:
                 _log.debug('Copying base manifest from "%s" to "%s".',
                            base_manifest_path, manifest_path)
                 fs.copyfile(base_manifest_path, manifest_path)
+                # TODO(https://github.com/web-platform-tests/wpt/issues/47350):
+                # This is a workaround to handle the hanging issue when running
+                # WPTs in Cider. Not updating WPT manifest usually is not OK
+                # unless the change is not fundamental.
+                # We should eventually allow partial update to the manifest.
+                if is_cog():
+                    _log.info('Skip manifest generation in Cog.')
+                    return
             else:
                 _log.error('Manifest base not found at "%s".',
                            base_manifest_path)
@@ -424,93 +424,7 @@ class WPTManifest:
         ]
 
         # ScriptError will be raised if the command fails.
-        output = port.host.executive.run_command(
-            cmd,
-            timeout_seconds=600,
-            # This will also include stderr in the exception message.
-            return_stderr=True)
+        # This will also include stderr in the exception message.
+        output = port.host.executive.run_command(cmd, timeout_seconds=600)
         if output:
             _log.debug('Output: %s', output)
-
-    @staticmethod
-    def _flatten_items(items):
-        """Flattens the 'items' object of a v8 manifest to the v7 format.
-
-        The v8 manifest is a trie, where each level is a directory. The v7
-        format, which the blinkpy code was written around, uses flat list:
-
-        {
-            "items": {
-                "crashtest": {
-                    "dir1/dir2/filename1": [manifest items],
-                    "dir1/dir2/filename2": [manifest items],
-                    ...
-                },
-                "manual": {...},
-                "reftest": {...},
-                "print-reftest": {...},
-                "testharness": {...}
-            },
-            // other info...
-        }
-
-        Args:
-            items: an 'items' entry in the v8 trie format.
-
-        Returns:
-            The input data, rewritten to the v7 flat-list format.
-        """
-
-        def _handle_node(test_type_items, node, path):
-            """Recursively walks the trie, converting to the flat format.
-
-            Args:
-                test_type_items: the root dictionary for the current test type
-                    (e.g. 'testharness'). Will be updated by this function with
-                    new entries for any files found.
-                node: the current node in the trie
-                path: the accumulated filepath so far
-            """
-            assert isinstance(node, dict)
-
-            for k, v in node.items():
-                # WPT urls are always joined by '/', even on Windows.
-                new_path = k if not path else path + '/' + k
-
-                # Leafs (files) map to a list rather than a dict, e.g.
-                #     'filename.html': [
-                #       'git object ID',
-                #       [manifest item],
-                #       [manifest item],
-                #     ],
-                if isinstance(v, list):
-                    # A file should be unique, and it should always contain both
-                    # a git object ID and at least one manifest item (which may
-                    # be empty).
-                    assert new_path not in test_type_items
-                    assert len(v) >= 2
-
-                    # We have no use for the git object ID.
-                    manifest_items = v[1:]
-                    for manifest_item in manifest_items:
-                        # As an optimization, the v8 manifest will omit the URL
-                        # if it is the same as the filepath. The v7 manifest did
-                        # not, so restore that information.
-                        if manifest_item:
-                            maybe_url = manifest_item[0]
-                            if maybe_url is None:
-                                manifest_item[0] = new_path
-                            elif maybe_url.startswith('/'):
-                                manifest_item[0] = maybe_url[len('/'):]
-                    test_type_items[new_path] = manifest_items
-                else:
-                    # Otherwise, we should be at a directory and so can recurse.
-                    _handle_node(test_type_items, v, new_path)
-
-        new_items = {}
-        for test_type, value in items.items():
-            test_type_items = {}
-            _handle_node(test_type_items, value, '')
-            new_items[test_type] = test_type_items
-
-        return new_items

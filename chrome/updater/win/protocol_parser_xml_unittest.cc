@@ -170,9 +170,22 @@ TEST(ProtocolParserXML, BadUrlValue) {
             "Invalid URL codebase in <url>: ht@tp://dl.google.com");
 }
 
+TEST(ProtocolParserXML, MissingManifestVersion) {
+  ProtocolParserXML xml_parser;
+  EXPECT_TRUE(xml_parser.Parse(
+      "<response protocol=\"3.0\">"
+      "  <app appid=\"{8A69D345-D564-463C-AFF1-A69D9E530F96}\" status=\"ok\">"
+      "    <updatecheck status=\"ok\">"
+      "      <manifest />"
+      "    </updatecheck>"
+      "  </app>"
+      "</response>"));
+  EXPECT_TRUE(xml_parser.errors().empty());
+}
+
 TEST(ProtocolParserXML, BadManifestVersion) {
   ProtocolParserXML xml_parser;
-  EXPECT_FALSE(xml_parser.Parse(
+  EXPECT_TRUE(xml_parser.Parse(
       "<response protocol=\"3.0\">"
       "  <app appid=\"{8A69D345-D564-463C-AFF1-A69D9E530F96}\" status=\"ok\">"
       "    <updatecheck status=\"ok\">"
@@ -180,8 +193,7 @@ TEST(ProtocolParserXML, BadManifestVersion) {
       "    </updatecheck>"
       "  </app>"
       "</response>"));
-  EXPECT_EQ(xml_parser.errors(),
-            "Bad `version` attribute in <manifest>: 100.99.0.abc");
+  EXPECT_TRUE(xml_parser.errors().empty());
 }
 
 TEST(ProtocolParserXML, BadActionEvent) {

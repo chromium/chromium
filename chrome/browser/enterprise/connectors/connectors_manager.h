@@ -9,11 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
-#include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/connectors_manager_base.h"
+#include "components/enterprise/connectors/core/reporting_service_settings.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
@@ -23,47 +23,40 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/public/browser/browser_context.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace storage {
 class FileSystemURL;
 }
 
 namespace enterprise_connectors {
-class BrowserCrashEventRouter;
 
-// Manages access to Connector policies for a given profile. This class is
-// responsible for caching the Connector policies, validate them against
-// approved service providers and provide a simple interface to them.
+// This class overrides `ConnectorsManagerBase` for desktop and Android usage.
+// It manages access to Reporting and Analysis Connector policies for a given
+// profile.
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-class ConnectorsManager : public BrowserListObserver,
+class ConnectorsManager : public ConnectorsManagerBase,
+                          public BrowserListObserver,
                           public TabStripModelObserver {
 #else
-class ConnectorsManager {
+class ConnectorsManager : public ConnectorsManagerBase {
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
  public:
   // Maps used to cache connectors settings.
   using AnalysisConnectorsSettings =
       std::map<AnalysisConnector, std::vector<AnalysisServiceSettings>>;
-  using ReportingConnectorsSettings =
-      std::map<ReportingConnector, std::vector<ReportingServiceSettings>>;
 
-  ConnectorsManager(
-      std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router,
-      std::unique_ptr<ExtensionInstallEventRouter> extension_install_router,
-      PrefService* pref_service,
-      const ServiceProviderConfig* config,
-      bool observe_prefs = true);
+  ConnectorsManager(PrefService* pref_service,
+                    const ServiceProviderConfig* config,
+                    bool observe_prefs = true);
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   ~ConnectorsManager() override;
 #else
-  ~ConnectorsManager();
+  ~ConnectorsManager() override;
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-
-  // Validates which settings should be applied to a reporting event
-  // against cached policies. Cache the policy value the first time this is
-  // called for every different connector.
-  std::optional<ReportingSettings> GetReportingSettings(
-      ReportingConnector connector);
 
   // Validates which settings should be applied to an analysis connector event
   // against cached policies. This function will prioritize new connector
@@ -80,8 +73,7 @@ class ConnectorsManager {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Checks if the corresponding connector is enabled.
-  bool IsConnectorEnabled(AnalysisConnector connector) const;
-  bool IsConnectorEnabled(ReportingConnector connector) const;
+  bool IsAnalysisConnectorEnabled(AnalysisConnector connector) const;
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Check if the corresponding connector is enabled for any local agent.
@@ -98,16 +90,16 @@ class ConnectorsManager {
 
   std::vector<std::string> GetAnalysisServiceProviderNames(
       AnalysisConnector connector);
-  std::vector<std::string> GetReportingServiceProviderNames(
-      ReportingConnector connector);
 
   std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
       AnalysisConnector connector);
 
+  void SetTelemetryObserverCallback(base::RepeatingCallback<void()> callback);
+
   // Public testing functions.
   const AnalysisConnectorsSettings& GetAnalysisConnectorsSettingsForTesting()
       const;
-  const ReportingConnectorsSettings& GetReportingConnectorsSettingsForTesting()
+  const base::RepeatingCallback<void()> GetTelemetryObserverCallbackForTesting()
       const;
 
  private:
@@ -123,16 +115,11 @@ class ConnectorsManager {
       const TabStripSelectionChange& selection) override;
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-  // Validates which settings should be applied to an analysis connector event
-  // against connector policies. Cache the policy value the first time this is
-  // called for every different connector.
-  std::optional<AnalysisSettings> GetAnalysisSettingsFromConnectorPolicy(
-      const GURL& url,
-      AnalysisConnector connector);
-
   // Read and cache the policy corresponding to |connector|.
   void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const;
-  void CacheReportingConnectorPolicy(ReportingConnector connector);
+
+  // Get data location region from policy.
+  DataRegion GetDataRegion() const;
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Close connection with local agent if all the relevant connectors are turned
@@ -146,40 +133,16 @@ class ConnectorsManager {
 
   // Sets up |pref_change_registrar_|. Used by the constructor and
   // SetUpForTesting.
-  void StartObservingPrefs(PrefService* pref_service);
   void StartObservingPref(AnalysisConnector connector);
-  void StartObservingPref(ReportingConnector connector);
 
-  // Validates which settings should be applied to an analysis connector event
-  // against connector policies. Cache the policy value the first time this is
-  // called for every different connector.
-  std::optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
-      ReportingConnector connector);
-
-  PrefService* prefs() { return pref_change_registrar_.prefs(); }
-
-  const PrefService* prefs() const { return pref_change_registrar_.prefs(); }
-
-  // Cached values of available service providers. This information validates
-  // the Connector policies have a valid provider.
-  raw_ptr<const ServiceProviderConfig> service_provider_config_;
+  // ConnectorsManagerBase overrides:
+  void StartObservingPrefs(PrefService* pref_service) override;
 
   // Cached values of the connector policies. Updated when a connector is first
   // used or when a policy is updated.  Analysis connectors settings are
   // mutable because they maybe updated by a call to IsConnectorEnabled(),
   // which is a const method.
   mutable AnalysisConnectorsSettings analysis_connector_settings_;
-  ReportingConnectorsSettings reporting_connector_settings_;
-
-  // Used to track changes of connector policies and propagate them in
-  // |connector_settings_|.
-  PrefChangeRegistrar pref_change_registrar_;
-
-  // A router to report browser crash events via the reporting pipeline.
-  std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router_;
-
-  // An observer to report extension install events via the reporting pipeline.
-  std::unique_ptr<ExtensionInstallEventRouter> extension_install_event_router_;
 };
 
 }  // namespace enterprise_connectors

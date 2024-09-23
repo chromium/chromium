@@ -9,10 +9,10 @@
 #include <set>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -52,7 +52,7 @@ std::vector<MIV*> GetMenuItemsFromChildren(const View::Views& children) {
   base::ranges::transform(
       children, std::back_inserter(menu_items),
       static_cast<MIV* (*)(V*)>(&AsViewClass<MenuItemView>));
-  base::EraseIf(menu_items, [](MIV* item) {
+  std::erase_if(menu_items, [](MIV* item) {
     return !item || IsViewClass<EmptyMenuMenuItem>(item);
   });
   return menu_items;
@@ -64,6 +64,10 @@ SubmenuView::SubmenuView(MenuItemView* parent) : parent_menu_item_(parent) {
   CHECK(parent_menu_item_);
   // We'll delete ourselves, otherwise the ScrollView would delete us on close.
   set_owned_by_client();
+
+  // Menus in Chrome are always traversed in a vertical direction.
+  GetViewAccessibility().SetIsVertical(true);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
 }
 
 SubmenuView::~SubmenuView() {
@@ -89,7 +93,7 @@ MenuItemView* SubmenuView::GetMenuItemAt(size_t index) {
 int SubmenuView::GetPreferredItemHeight() const {
   EmptyMenuMenuItem menu_item(parent_menu_item_);
   menu_item.set_controller(parent_menu_item_->GetMenuController());
-  return menu_item.GetPreferredSize().height();
+  return menu_item.GetPreferredSize({}).height();
 }
 
 PrefixSelector* SubmenuView::GetPrefixSelector() {
@@ -189,7 +193,7 @@ void SubmenuView::Layout(PassKey) {
   }
 
   // Use our current y, unless it means part of the menu isn't visible anymore.
-  const int pref_height = GetPreferredSize().height();
+  const int pref_height = GetPreferredSize(SizeBounds(size())).height();
   SetBounds(x(),
             (pref_height > parent()->height())
                 ? std::max(parent()->height() - pref_height, y())
@@ -219,7 +223,8 @@ void SubmenuView::Layout(PassKey) {
   }
 }
 
-gfx::Size SubmenuView::CalculatePreferredSize() const {
+gfx::Size SubmenuView::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   if (children().empty()) {
     return gfx::Size();
   }
@@ -252,7 +257,7 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
       touchable_minimum_width = dimensions.standard_width;
     } else {
       max_complex_width =
-          std::max(max_complex_width, child->GetPreferredSize().width());
+          std::max(max_complex_width, child->GetPreferredSize({}).width());
     }
   }
   const auto& config = MenuConfig::instance();
@@ -297,11 +302,14 @@ gfx::Size SubmenuView::CalculatePreferredSize() const {
 void SubmenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Inherit most of the state from the parent menu item, except the role and
   // the orientation.
-  if (parent_menu_item_)
+  if (parent_menu_item_) {
+    // TODO(crbug.com/325137417): To ensure the name is set for
+    // parent_menu_item_, the role must be assigned before calling
+    // GetAccessibleNodeData. Omitting this role could disrupt functionality, as
+    // the AXNodeData::SetName() function checks for the relevant role.
+    node_data->role = parent_menu_item_->GetViewAccessibility().GetCachedRole();
     parent_menu_item_->GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kMenu;
-  // Menus in Chrome are always traversed in a vertical direction.
-  node_data->AddState(ax::mojom::State::kVertical);
+  }
 }
 
 void SubmenuView::PaintChildren(const PaintInfo& paint_info) {
@@ -424,20 +432,20 @@ bool SubmenuView::OnMouseWheel(const ui::MouseWheelEvent& e) {
 void SubmenuView::OnGestureEvent(ui::GestureEvent* event) {
   bool handled = true;
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
+    case ui::EventType::kGestureScrollBegin:
       scroll_animator_->Stop();
       break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       handled = OnScroll(0, event->details().scroll_y());
       break;
-    case ui::ET_GESTURE_SCROLL_END:
+    case ui::EventType::kGestureScrollEnd:
       break;
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kScrollFlingStart:
       if (event->details().velocity_y() != 0.0f)
         scroll_animator_->Start(0, event->details().velocity_y());
       break;
-    case ui::ET_GESTURE_TAP_DOWN:
-    case ui::ET_SCROLL_FLING_CANCEL:
+    case ui::EventType::kGestureTapDown:
+    case ui::EventType::kScrollFlingCancel:
       if (scroll_animator_->is_scrolling())
         scroll_animator_->Stop();
       else
@@ -505,6 +513,12 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
   }
   // Fire kMenuPopupStart for each menu/submenu that is shown.
   NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
+
+  // Announce if the menu/submenu is empty.
+  if (GetRowCount() == 0) {
+    GetViewAccessibility().AnnouncePolitely(
+        l10n_util::GetStringUTF16(IDS_APP_MENU_AX_ANNOUNCE_EMPTY_SUBMENU));
+  }
 }
 
 void SubmenuView::Reposition(const gfx::Rect& bounds,

@@ -1,7 +1,7 @@
 #include "rar.hpp"
 
 bool ReadTextFile(
-  const wchar *Name,
+  const std::wstring &Name,
   StringList *List,
   bool Config,
   bool AbortOnError,
@@ -10,17 +10,15 @@ bool ReadTextFile(
   bool SkipComments,
   bool ExpandEnvStr)
 {
-  wchar FileName[NM];
-  *FileName=0;
+  std::wstring FileName;
 
-  if (Name!=NULL)
-    if (Config)
-      GetConfigName(Name,FileName,ASIZE(FileName),true,false);
-    else
-      wcsncpyz(FileName,Name,ASIZE(FileName));
+  if (Config)
+    GetConfigName(Name,FileName,true,false);
+  else
+    FileName=Name;
 
   File SrcFile;
-  if (*FileName!=0)
+  if (!FileName.empty())
   {
     bool OpenCode=AbortOnError ? SrcFile.WOpen(FileName):SrcFile.Open(FileName,0);
 
@@ -34,36 +32,36 @@ bool ReadTextFile(
   else
     SrcFile.SetHandleType(FILE_HANDLESTD);
 
-  uint DataSize=0,ReadSize;
+  size_t DataSize=0,ReadSize;
   const int ReadBlock=4096;
 
-  Array<byte> Data(ReadBlock);
+  std::vector<byte> Data(ReadBlock);
   while ((ReadSize=SrcFile.Read(&Data[DataSize],ReadBlock))!=0)
   {
     DataSize+=ReadSize;
-    Data.Add(ReadSize); // Always have ReadBlock available for next data.
+    Data.resize(DataSize+ReadBlock); // Always have ReadBlock available for next data.
   }
   // Set to really read size, so we can zero terminate it correctly.
-  Data.Alloc(DataSize);
+  Data.resize(DataSize);
 
   int LittleEndian=DataSize>=2 && Data[0]==255 && Data[1]==254 ? 1:0;
   int BigEndian=DataSize>=2 && Data[0]==254 && Data[1]==255 ? 1:0;
   bool Utf8=DataSize>=3 && Data[0]==0xef && Data[1]==0xbb && Data[2]==0xbf;
 
   if (SrcCharset==RCH_DEFAULT)
-    SrcCharset=DetectTextEncoding(&Data[0],DataSize);
+    SrcCharset=DetectTextEncoding(Data.data(),DataSize);
 
-  Array<wchar> DataW;
+  std::vector<wchar> DataW(ReadBlock);
 
   if (SrcCharset==RCH_DEFAULT || SrcCharset==RCH_OEM || SrcCharset==RCH_ANSI)
   {
-    Data.Push(0); // Zero terminate.
+    Data.push_back(0); // Zero terminate.
 #if defined(_WIN_ALL)
     if (SrcCharset==RCH_OEM)
-      OemToCharA((char *)&Data[0],(char *)&Data[0]);
+      OemToCharA((char *)Data.data(),(char *)Data.data());
 #endif
-    DataW.Alloc(Data.Size());
-    CharToWide((char *)&Data[0],&DataW[0],DataW.Size());
+    DataW.resize(Data.size());
+    CharToWide((char *)Data.data(),DataW.data(),DataW.size());
   }
 
   if (SrcCharset==RCH_UNICODE)
@@ -75,8 +73,8 @@ bool ReadTextFile(
       LittleEndian=1;
     }
     
-    DataW.Alloc(Data.Size()/2+1);
-    size_t End=Data.Size() & ~1; // We need even bytes number for UTF-16.
+    DataW.resize(Data.size()/2+1);
+    size_t End=Data.size() & ~1; // We need even bytes number for UTF-16.
     for (size_t I=Start;I<End;I+=2)
       DataW[(I-Start)/2]=Data[I+BigEndian]+Data[I+LittleEndian]*256;
     DataW[(End-Start)/2]=0;
@@ -84,12 +82,12 @@ bool ReadTextFile(
 
   if (SrcCharset==RCH_UTF8)
   {
-    Data.Push(0); // Zero terminate data.
-    DataW.Alloc(Data.Size());
-    UtfToWide((const char *)(Data+(Utf8 ? 3:0)),&DataW[0],DataW.Size());
+    Data.push_back(0); // Zero terminate data.
+    DataW.resize(Data.size());
+    UtfToWide((const char *)(Data.data()+(Utf8 ? 3:0)),DataW.data(),DataW.size());
   }
 
-  wchar *CurStr=&DataW[0];
+  wchar *CurStr=DataW.data();
 
   while (*CurStr!=0)
   {
@@ -127,12 +125,11 @@ bool ReadTextFile(
 #if defined(_WIN_ALL)
     if (ExpandEnvStr && *CurStr=='%') // Expand environment variables in Windows.
     {
-      wchar ExpName[NM];
-      *ExpName=0;
-      DWORD Result=ExpandEnvironmentStrings(CurStr,ExpName,ASIZE(ExpName));
-      Expanded=Result!=0 && Result<ASIZE(ExpName);
-      if (Expanded && *ExpName!=0)
+      std::wstring ExpName=CurStr;
+      ExpandEnvironmentStr(ExpName);
+      if (!ExpName.empty())
         List->AddString(ExpName);
+      Expanded=true;
     }
 #endif
     if (!Expanded && *CurStr!=0)

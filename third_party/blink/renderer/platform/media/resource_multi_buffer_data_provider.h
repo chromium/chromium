@@ -14,12 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/blink/public/platform/media/multi_buffer.h"
-#include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/media/multi_buffer.h"
+#include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "url/gurl.h"
 
@@ -60,7 +60,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   void DidSendData(uint64_t bytesSent, uint64_t totalBytesToBeSent) override;
   void DidReceiveResponse(const WebURLResponse& response) override;
   void DidDownloadData(uint64_t data_length) override;
-  void DidReceiveData(const char* data, int data_length) override;
+  void DidReceiveData(base::span<const char> data_length) override;
   void DidFinishLoading() override;
   void DidFail(const WebURLError&) override;
 
@@ -97,7 +97,7 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   // We don't need (or want) a scoped_refptr for this one, because
   // we are owned by it. Note that we may change this when we encounter
   // a redirect because we actually change ownership.
-  raw_ptr<UrlData, ExperimentalRenderer> url_data_;
+  raw_ptr<UrlData> url_data_;
 
   // Temporary storage for incoming data.
   std::list<scoped_refptr<media::DataBuffer>> fifo_;

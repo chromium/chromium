@@ -45,8 +45,9 @@ class BrowserCommandsTest : public BrowserWithTestWindowTest {
 
   // BrowserWithTestWindowTest overrides.
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{BookmarkModelFactory::GetInstance(),
-             BookmarkModelFactory::GetDefaultFactory()}};
+    return {TestingProfile::TestingFactory{
+        BookmarkModelFactory::GetInstance(),
+        BookmarkModelFactory::GetDefaultFactory()}};
   }
 };
 
@@ -178,9 +179,10 @@ TEST_F(BrowserCommandsTest, BookmarkCurrentTab) {
   // Navigate to a url.
   GURL url1("http://foo/1");
   AddTab(browser(), url1);
-  browser()->OpenURL(OpenURLParams(url1, Referrer(),
-                                   WindowOpenDisposition::CURRENT_TAB,
-                                   ui::PAGE_TRANSITION_TYPED, false));
+  browser()->OpenURL(
+      OpenURLParams(url1, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+                    ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
 
   chrome::BookmarkCurrentTab(browser());
 
@@ -221,10 +223,10 @@ TEST_F(BrowserCommandsTest, BackForwardInNewTab) {
   browser()->tab_strip_model()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  // TODO(crbug.com/11055): It should not be necessary to commit the load here,
-  // but because of this bug, it will assert later if we don't. When the bug is
-  // fixed, one of the three commits here related to this bug should be removed
-  // (to test both codepaths).
+  // TODO(crbug.com/40705856): It should not be necessary to commit the load
+  // here, but because of this bug, it will assert later if we don't. When the
+  // bug is fixed, one of the three commits here related to this bug should be
+  // removed (to test both codepaths).
   CommitPendingLoad(&first->GetController());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   chrome::GoForward(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
@@ -249,7 +251,7 @@ TEST_F(BrowserCommandsTest, BackForwardInNewTab) {
   browser()->tab_strip_model()->ActivateTabAt(
       2, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  // TODO(crbug.com/11055): see the comment above about why we need this.
+  // TODO(crbug.com/40705856): see the comment above about why we need this.
   CommitPendingLoad(&second->GetController());
   chrome::GoBack(browser(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
   ASSERT_EQ(3, browser()->tab_strip_model()->active_index());
@@ -258,7 +260,7 @@ TEST_F(BrowserCommandsTest, BackForwardInNewTab) {
                 GetVisibleURL());
 
   // Same thing again for forward.
-  // TODO(crbug.com/11055): see the comment above about why we need this.
+  // TODO(crbug.com/40705856): see the comment above about why we need this.
   CommitPendingLoad(&
       browser()->tab_strip_model()->GetActiveWebContents()->GetController());
   chrome::GoForward(browser(), WindowOpenDisposition::NEW_FOREGROUND_TAB);
@@ -295,7 +297,7 @@ TEST_F(BrowserCommandsTest, BackForwardInNewTabWithGroup) {
   browser()->tab_strip_model()->ActivateTabAt(
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  // TODO(crbug.com/11055): see the comment above about why we need this.
+  // TODO(crbug.com/40705856): see the comment above about why we need this.
   CommitPendingLoad(
       &browser()->tab_strip_model()->GetActiveWebContents()->GetController());
   chrome::GoForward(browser(), WindowOpenDisposition::NEW_BACKGROUND_TAB);
@@ -429,7 +431,7 @@ TEST_F(BrowserCommandsTest, OnDefaultZoomLevelChanged) {
 
   // Set the default zoom level to 125.
   profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
-      blink::PageZoomFactorToZoomLevel(1.25));
+      blink::ZoomFactorToZoomLevel(1.25));
   EXPECT_FLOAT_EQ(125.0f, zoom_controller->GetZoomPercent());
 
   // Actual Size from context menu should be disabled now.

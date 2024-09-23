@@ -30,7 +30,6 @@ static_library("common") {
     "//components/url_matcher:url_matcher",
     "//extensions/buildflags",
     "//ui/base",
-    "//url",
   ]
 
   public_deps = [ ":features" ]
@@ -45,6 +44,7 @@ source_set("features") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//extensions/buildflags",
   ]
 }
 

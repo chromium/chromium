@@ -30,9 +30,9 @@ class ChromeClassTester {
   clang::CompilerInstance& instance() { return instance_; }
   clang::DiagnosticsEngine& diagnostic() { return diagnostic_; }
 
-  // Utility method for subclasses to check how a certain SourceLocation should
-  // be handled. The main criteria for classification is the SourceLocation's
-  // path (e.g. whether it's in //third_party).
+  // A classification used to determine how a certain SourceLocation should be
+  // handled for diagnostics. The main criteria for classification is the
+  // SourceLocation's path (e.g. whether it's in //third_party).
   enum class LocationType {
     // Enforce all default checks.
     kChrome,
@@ -43,6 +43,13 @@ class ChromeClassTester {
     // it doesn't make sense to enforce Chrome's custom diagnostics.
     kThirdParty,
   };
+
+  // Determines if a SourceLocation is considered part of first-party or
+  // third-party code, which can be used to determine how or which diagnostics
+  // should be emitted.
+  //
+  // NOTE: chrome_checker::ClassifySourceLocation() provides finer granularity
+  // in its answer.
   LocationType ClassifyLocation(clang::SourceLocation loc);
 
   // Utility method to check whether the given record has any of the ignored
@@ -67,19 +74,16 @@ class ChromeClassTester {
 
   // Utility methods used for filtering out non-chrome classes (and ones we
   // deliberately ignore) in HandleTagDeclDefinition().
-  bool IsIgnoredType(const std::string& base_name);
+  bool IsIgnoredType(std::string_view base_name);
 
   clang::CompilerInstance& instance_;
   clang::DiagnosticsEngine& diagnostic_;
 
-  // List of banned directories.
-  std::set<std::string> banned_directories_;
-
   // List of types that we don't check.
-  std::set<std::string> ignored_record_names_;
+  std::set<std::string_view> ignored_record_names_;
 
   // List of base classes that we skip when checking complex class ctors/dtors.
-  std::set<std::string> ignored_base_classes_;
+  std::set<std::string_view> ignored_base_classes_;
 };
 
 #endif  // TOOLS_CLANG_PLUGINS_CHROMECLASSTESTER_H_

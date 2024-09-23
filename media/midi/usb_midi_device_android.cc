@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/midi/usb_midi_device_android.h"
 
 #include <stddef.h>
@@ -10,8 +15,10 @@
 #include "base/i18n/icu_string_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "media/midi/midi_jni_headers/UsbMidiDeviceAndroid_jni.h"
 #include "media/midi/usb_midi_descriptor_parser.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/midi/midi_jni_headers/UsbMidiDeviceAndroid_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;

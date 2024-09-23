@@ -1,0 +1,97 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("service") {
+  sources = [
+    "accessibility_service_client.cc",
+    "accessibility_service_client.h",
+    "accessibility_service_devtools_delegate.cc",
+    "accessibility_service_devtools_delegate.h",
+    "autoclick_client_impl.cc",
+    "autoclick_client_impl.h",
+    "automation_client_impl.cc",
+    "automation_client_impl.h",
+    "speech_recognition_impl.cc",
+    "speech_recognition_impl.h",
+    "tts_client_impl.cc",
+    "tts_client_impl.h",
+    "user_input_impl.cc",
+    "user_input_impl.h",
+    "user_interface_impl.cc",
+    "user_interface_impl.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//chrome/browser/ash/extensions/speech",
+    "//chrome/browser/ui/aura/accessibility",
+    "//chrome/common:constants",
+    "//content/public/browser",
+    "//services/accessibility/public/mojom:os_service_mojom_shared",
+    "//services/accessibility/public/mojom:os_service_mojom_shared_cpp_sources",
+    "//ui/strings:ui_strings_grit",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//extensions/browser/api/automation_internal",
+    "//services/accessibility/public/mojom",
+    "//services/accessibility/public/mojom:assistive_technology_type",
+    "//services/accessibility/public/mojom:automation",
+    "//services/accessibility/public/mojom:automation_client",
+    "//services/accessibility/public/mojom:mojom_shared",
+    "//services/accessibility/public/mojom:mojom_shared_cpp_sources",
+    "//services/accessibility/public/mojom:os_service_mojom",
+  ]
+}
+
+static_library("test_support") {
+  sources = [
+    "fake_accessibility_service.cc",
+    "fake_accessibility_service.h",
+  ]
+
+  deps = []
+
+  public_deps = [
+    "//base",
+    "//chrome/browser",
+    "//components/keyed_service/core",
+    "//services/accessibility/public/mojom",
+    "//services/accessibility/public/mojom:automation",
+    "//services/accessibility/public/mojom:automation_client",
+    "//services/accessibility/public/mojom:os_service_mojom",
+    "//ui/accessibility:ax_base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "accessibility_service_client_browsertest.cc",
+    "accessibility_service_devtools_delegate_browsertest.cc",
+    "speech_recognition_impl_browsertest.cc",
+  ]
+
+  deps = [
+    ":service",
+    ":test_support",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/ash/extensions/speech",
+    "//chrome/browser/ui/ash/keyboard",
+    "//chrome/test:test_support",
+  ]
+}

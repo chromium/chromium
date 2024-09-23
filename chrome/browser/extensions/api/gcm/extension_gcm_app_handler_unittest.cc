@@ -321,7 +321,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   scoped_refptr<const Extension> CreateExtension() {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder(kTestExtensionName)
-            .AddPermission("gcm")
+            .AddAPIPermission("gcm")
             .SetPath(temp_dir_.GetPath())
             .SetID("ldnnhddmnhbkjipkidpdiheffobcpfmf")
             .Build();

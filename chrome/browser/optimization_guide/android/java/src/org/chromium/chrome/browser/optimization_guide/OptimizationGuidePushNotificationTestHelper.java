@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
@@ -23,7 +24,7 @@ public class OptimizationGuidePushNotificationTestHelper {
     @CalledByNative
     public void setUpMocks() {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfile);
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
     }
 
     @CalledByNative

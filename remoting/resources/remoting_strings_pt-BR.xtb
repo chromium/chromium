@@ -28,7 +28,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="2329392777730037872">Falha ao abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível acessar o host. Isso se deve, provavelmente, à configuração da rede que você está usando.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Visto on-line pela última vez <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Conceder a permissão "Acessibilidade" para o <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Gostaria de compartilhar este computador para que outro usuário o veja e controle?</translation>
@@ -53,7 +52,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="3423542133075182604">Processo remoto de Chave de segurança</translation>
 <translation id="3581045510967524389">Não foi possível conectar à rede. Verifique se seu dispositivo está on-line.</translation>
 <translation id="3596628256176442606">Este serviço permite conexões de entrada a partir de clientes do Chromoting.</translation>
-<translation id="369442766917958684">Off-line.</translation>
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3776024066357219166">Sua sessão na Área de trabalho remota do Google Chrome foi encerrada.</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -62,7 +60,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="3931191050278863510">O host parou.</translation>
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="405887016757208221">O computador remoto apresentou uma falha ao inicializar a sessão. Se o problema persistir, tente configurar o host novamente.</translation>
-<translation id="4060747889721220580">Fazer o download do arquivo</translation>
+<translation id="4060747889721220580">Baixar o arquivo</translation>
 <translation id="4126409073460786861">Depois de concluir a configuração, atualize esta página para poder acessar o computador escolhendo seu dispositivo e digitando o PIN</translation>
 <translation id="4145029455188493639">Conectado como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Alguns componentes obrigatórios não foram encontrados. Certifique-se de que você esteja executando a última versão do software e tente novamente.</translation>
@@ -105,7 +103,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Seu computador está sendo compartilhado com <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Conectado como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconectar</translation>
 <translation id="5810269635982033450">A tela atua como um trackpad</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> solicitou acesso para ver sua tela e controlar seu teclado e mouse. Se você não esperava essa solicitação, pressione "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />". Se estiver tudo certo, pressione "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" para permitir a conexão.</translation>
@@ -158,7 +155,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="7970576581263377361">Falha na autenticação. Faça login novamente no Chromium.</translation>
 <translation id="7981525049612125370">A sessão remota expirou.</translation>
 <translation id="8038111231936746805">(padrão)</translation>
-<translation id="8041089156583427627">Enviar comentários</translation>
+<translation id="8041089156583427627">Enviar feedback</translation>
 <translation id="8060029310790625334">Central de Ajuda</translation>
 <translation id="806699900641041263">Conectando a <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">Para usar a Área de trabalho remota do Google, adicione uma Conta do Google a seu dispositivo.</translation>

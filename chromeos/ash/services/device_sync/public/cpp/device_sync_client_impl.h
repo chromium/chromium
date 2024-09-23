@@ -134,7 +134,7 @@ class DeviceSyncClientImpl : public DeviceSyncClient,
 
   std::optional<std::string> local_instance_id_;
 
-  // TODO(https://crbug.com/1019206): Track only the local Instance ID after v1
+  // TODO(crbug.com/40105247): Track only the local Instance ID after v1
   // DeviceSync is disabled, when the local device is guaranteed to have an
   // Instance ID. Note: When v1 and v2 DeviceSync are running in parallel, if we
   // are still waiting for the first v2 DeviceSync to successfully complete, it

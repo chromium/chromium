@@ -33,7 +33,9 @@ class BackForwardCacheWebContentsDelegate : public WebContentsDelegate {
  public:
   BackForwardCacheWebContentsDelegate() = default;
 
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(WebContents& web_contents) override {
+    return true;
+  }
 };
 
 }  // namespace
@@ -190,7 +192,7 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
               testing::ElementsAre(UkmEntry{id3, {{time_away, 0b1000}}}));
 }
 
-// TODO(crbug.com/1255492): Flaky under TSan.
+// TODO(crbug.com/40200059): Flaky under TSan.
 #if BUILDFLAG(USING_SANITIZER)
 #define MAYBE_TimeRecordedWhenRendererIsKilled DISABLED_TimeRecordedWhenRendererIsKilled
 #else
@@ -246,6 +248,7 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kUnloadEventListener =*/9,
       /* WebSchedulerTrackedFeature::kFreezeEventListener =*/10,
       /* WebSchedulerTrackedFeature::kResumeEventListener =*/11,
+      /* WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet =*/14,
       /* WebSchedulerTrackedFeature::kServiceWorkerControlledPage =*/16,
       /* WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction =*/17,
       /* WebSchedulerTrackedFeature::kHasScriptableFramesInMultipleTabs =*/18,
@@ -257,6 +260,8 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kWakeLock =*/35,
       /* WebSchedulerTrackedFeature::kWebFileSystem =*/39,
       /* WebSchedulerTrackedFeature::kAppBanner =*/42,
+      /* WebSchedulerTrackedFeature::kPortal =*/46,
+      /* WebSchedulerTrackedFeature::kSpeechSynthesis =*/50,
       /* WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated =*/56};
 
   for (BackForwardCacheImpl::CacheControlNoStoreContext ccns_context :
@@ -269,7 +274,7 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
         BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
     auto allowed_features = BackForwardCacheImpl::GetAllowedFeatures(
         BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
-    ASSERT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
+    ASSERT_TRUE(Intersection(disallowed_features, allowed_features).empty());
     for (auto feature : Union(disallowed_features, allowed_features)) {
       combined_features.emplace(static_cast<uint64_t>(feature));
     }

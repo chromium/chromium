@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/devtools_preload_storage.h"
 #include "content/browser/devtools/protocol/preload.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -177,6 +179,18 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
           RedirectedPrerenderingUrlHasEffectiveUrl;
     case PrerenderFinalStatus::kActivationUrlHasEffectiveUrl:
       return Preload::PrerenderFinalStatusEnum::ActivationUrlHasEffectiveUrl;
+    case PrerenderFinalStatus::kJavaScriptInterfaceAdded:
+      return Preload::PrerenderFinalStatusEnum::JavaScriptInterfaceAdded;
+    case PrerenderFinalStatus::kJavaScriptInterfaceRemoved:
+      return Preload::PrerenderFinalStatusEnum::JavaScriptInterfaceRemoved;
+    case PrerenderFinalStatus::kAllPrerenderingCanceled:
+      return Preload::PrerenderFinalStatusEnum::AllPrerenderingCanceled;
+    case PrerenderFinalStatus::kWindowClosed:
+      return Preload::PrerenderFinalStatusEnum::WindowClosed;
+    case PrerenderFinalStatus::kSlowNetwork:
+      return Preload::PrerenderFinalStatusEnum::SlowNetwork;
+    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
+      return Preload::PrerenderFinalStatusEnum::OtherPrerenderedPageActivated;
   }
 }
 
@@ -244,9 +258,6 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleDataSaverEnabled;
     case PrefetchStatus::kPrefetchIneligibleExistingProxy:
       return Preload::PrefetchStatusEnum::PrefetchNotEligibleExistingProxy;
-    case PrefetchStatus::kPrefetchIneligibleBrowserContextOffTheRecord:
-      return Preload::PrefetchStatusEnum::
-          PrefetchNotEligibleBrowserContextOffTheRecord;
     case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
       return Preload::PrefetchStatusEnum::PrefetchNotEligiblePreloadingDisabled;
     case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
@@ -262,8 +273,6 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
       return Preload::PrefetchStatusEnum::PrefetchFailedInvalidRedirect;
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       return Preload::PrefetchStatusEnum::PrefetchFailedIneligibleRedirect;
-    case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
-      return Preload::PrefetchStatusEnum::PrefetchFailedPerPageLimitExceeded;
     case PrefetchStatus::
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
       return Preload::PrefetchStatusEnum::
@@ -277,8 +286,8 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
 
 bool PreloadingTriggeringOutcomeSupportedByPrefetch(
     PreloadingTriggeringOutcome feature) {
-  // TODO(crbug/1384419): revisit the unsupported cases call sites to make sure
-  // that either they are covered by other CDPs or they are included by the
+  // TODO(crbug.com/40246462): revisit the unsupported cases call sites to make
+  // sure that either they are covered by other CDPs or they are included by the
   // current CDPs in the future.
   switch (feature) {
     case PreloadingTriggeringOutcome::kRunning:
@@ -298,8 +307,8 @@ bool PreloadingTriggeringOutcomeSupportedByPrefetch(
 
 bool PreloadingTriggeringOutcomeSupportedByPrerender(
     PreloadingTriggeringOutcome feature) {
-  // TODO(crbug/1384419): revisit the unsupported cases call sites to make sure
-  // that either they are covered by other CDPs or they are included by the
+  // TODO(crbug.com/40246462): revisit the unsupported cases call sites to make
+  // sure that either they are covered by other CDPs or they are included by the
   // current CDPs in the future.
   switch (feature) {
     case PreloadingTriggeringOutcome::kRunning:
@@ -440,6 +449,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
 Response PreloadHandler::Enable() {
   enabled_ = true;
   SendInitialPreloadEnabledState();
+  SendCurrentPreloadStatus();
   return Response::FallThrough();
 }
 
@@ -475,7 +485,7 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
   auto* delegate = prefetch_service->GetPrefetchServiceDelegate();
   auto& config = PreloadingConfig::GetInstance();
 
-  // TODO(https://crbug.com/1384419): Add more grainularity to
+  // TODO(crbug.com/40246462): Add more grainularity to
   // PreloadingEligibility to distinguish PreloadHoldback and
   // DisabledByPreference for PreloadingEligibility::kPreloadingDisabled.
   // Use more general method to check status of Preloading instead of
@@ -490,6 +500,50 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
       config.ShouldHoldback(
           PreloadingType::kPrerender,
           content::content_preloading_predictor::kSpeculationRules));
+}
+
+void PreloadHandler::SendCurrentPreloadStatus() {
+  if (!host_) {
+    return;
+  }
+
+  std::vector<RenderFrameHostImpl*> documents_in_local_subtree;
+  RenderFrameHostImpl* root = host_;
+  host_->ForEachRenderFrameHostWithAction(
+      [&documents_in_local_subtree, root](
+          RenderFrameHostImpl* rfh) -> RenderFrameHost::FrameIterationAction {
+        if (rfh != root &&
+            RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(rfh)) {
+          return RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+        documents_in_local_subtree.push_back(rfh);
+        return RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  for (RenderFrameHostImpl* document : documents_in_local_subtree) {
+    auto* preload_storage =
+        DevToolsPreloadStorage::GetForCurrentDocument(document);
+    if (!preload_storage) {
+      continue;
+    }
+
+    const base::UnguessableToken initiator_devtools_navigation_token =
+        document->GetDevToolsNavigationToken().value();
+    const std::string initiating_frame_id =
+        document->GetDevToolsFrameToken().ToString();
+    for (const auto& [key, data] : preload_storage->prefetch_data_map()) {
+      DidUpdatePrefetchStatus(
+          initiator_devtools_navigation_token, initiating_frame_id,
+          /*prefetch_url=*/key, data.outcome, data.status, data.request_id);
+    }
+    for (const auto& [key, data] : preload_storage->prerender_data_map()) {
+      DidUpdatePrerenderStatus(
+          initiator_devtools_navigation_token, /*prerender_url=*/key.first,
+          /*target_hint=*/key.second, data.outcome, data.status,
+          data.disallowed_mojo_interface,
+          data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);
+    }
+  }
 }
 
 }  // namespace content::protocol

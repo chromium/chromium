@@ -33,20 +33,18 @@ namespace crosapi = ::crosapi::mojom;
 
 // TelemetryApiFunctionBase ----------------------------------------------------
 
-TelemetryApiFunctionBase::TelemetryApiFunctionBase()
-    : remote_probe_service_strategy_(RemoteProbeServiceStrategy::Create()) {}
+TelemetryApiFunctionBase::TelemetryApiFunctionBase() {}
 
 TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 
-mojo::Remote<crosapi::TelemetryProbeService>&
-TelemetryApiFunctionBase::GetRemoteService() {
-  DCHECK(remote_probe_service_strategy_);
-  return remote_probe_service_strategy_->GetRemoteService();
+crosapi::TelemetryProbeService* TelemetryApiFunctionBase::GetRemoteService() {
+  DCHECK(RemoteProbeServiceStrategy::Get()->GetRemoteProbeService());
+  return RemoteProbeServiceStrategy::Get()->GetRemoteProbeService();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool TelemetryApiFunctionBase::IsCrosApiAvailable() {
-  return remote_probe_service_strategy_ != nullptr;
+  return RemoteProbeServiceStrategy::Get()->GetRemoteProbeService() != nullptr;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

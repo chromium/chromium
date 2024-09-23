@@ -15,62 +15,55 @@ namespace autofill {
 namespace {
 
 // Returns the span of MatchPatternRefs for the given pattern name, language
-// code, and pattern source.
+// code, and pattern file.
 //
-// Hits a CHECK if the given pattern source contains no patterns for the given
+// Hits a CHECK if the given pattern file contains no patterns for the given
 // name.
 //
 // Falls back to the union of all patterns of a the given name in the given
-// pattern source if there are no patterns for the given language.
+// pattern file if there are no patterns for the given language.
 base::span<const MatchPatternRef> GetMatchPatterns(
     std::string_view name,
     std::string_view language_code,
-    PatternSource pattern_source) {
-  auto* it = kPatternMap.find(std::make_pair(name, language_code));
+    PatternFile pattern_file) {
+  auto it = kPatternMap.find(std::make_pair(name, language_code));
   if (!language_code.empty() && it == kPatternMap.end())
     it = kPatternMap.find(std::make_pair(name, ""));
   CHECK(it != kPatternMap.end());
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  switch (pattern_source) {
-    case PatternSource::kLegacy:
+  switch (pattern_file) {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+    case PatternFile::kLegacy:
       return it->second[0];
-    case PatternSource::kDefault:
-      return it->second[1];
-    case PatternSource::kExperimental:
-      return it->second[2];
-    case PatternSource::kNextGen:
-      return it->second[3];
-  }
 #else
-  switch (pattern_source) {
-    case PatternSource::kLegacy:
+    case PatternFile::kDefault:
       return it->second[0];
-  }
+    case PatternFile::kPredictionImprovements:
+      return it->second[1];
 #endif
+  }
   NOTREACHED();
-  return {};
 }
 
 }  // namespace
 
-std::optional<PatternSource> GetActivePatternSource() {
-  return HeuristicSourceToPatternSource(GetActiveHeuristicSource());
+std::optional<PatternFile> GetActivePatternFile() {
+  return HeuristicSourceToPatternFile(GetActiveHeuristicSource());
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     std::string_view name,
     std::optional<LanguageCode> language_code,
-    PatternSource pattern_source) {
-  return language_code ? GetMatchPatterns(name, **language_code, pattern_source)
-                       : GetMatchPatterns(name, "", pattern_source);
+    PatternFile pattern_file) {
+  return language_code ? GetMatchPatterns(name, **language_code, pattern_file)
+                       : GetMatchPatterns(name, "", pattern_file);
 }
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     FieldType type,
     std::optional<LanguageCode> language_code,
-    PatternSource pattern_source) {
+    PatternFile pattern_file) {
   return GetMatchPatterns(FieldTypeToStringView(type), language_code,
-                          pattern_source);
+                          pattern_file);
 }
 
 bool IsSupportedLanguageCode(LanguageCode language_code) {
@@ -85,18 +78,12 @@ MatchingPattern MatchPatternRef::operator*() const {
   return {
       .positive_pattern = p.positive_pattern,
       .negative_pattern = p.negative_pattern,
-      .positive_score = p.positive_score,
-      .match_field_attributes =
-          is_supplementary() ? DenseSet<MatchAttribute>{MatchAttribute::kName}
-                             : p.match_field_attributes,
+      .match_field_attributes = is_supplementary()
+                                    ? DenseSet({MatchAttribute::kName})
+                                    : p.match_field_attributes,
       .form_control_types = p.form_control_types,
+      .feature = p.feature,
   };
-}
-
-bool AreMatchingPatternsEqual(PatternSource a,
-                              PatternSource b,
-                              LanguageCode language_code) {
-  return AreMatchingPatternsEqualImpl(a, b, language_code);
 }
 
 }  // namespace autofill

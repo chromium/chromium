@@ -38,13 +38,8 @@ struct GPU_EXPORT ContextCreationAttribs {
   ContextCreationAttribs(const ContextCreationAttribs& other);
   ContextCreationAttribs& operator=(const ContextCreationAttribs& other);
 
-  // Used only by tests and not serialized over IPC.
-  gfx::Size offscreen_framebuffer_size_for_testing;
   gl::GpuPreference gpu_preference = gl::GpuPreference::kLowPower;
 
-#if BUILDFLAG(IS_ANDROID)
-  bool need_alpha = false;
-#endif
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;

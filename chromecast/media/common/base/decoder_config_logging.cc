@@ -39,7 +39,6 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "MPEG-H Audio";
   }
   NOTREACHED();
-  return stream << "UNKNOWN";
 }
 
 std::ostream& operator<<(std::ostream& stream,
@@ -67,5 +66,4 @@ std::ostream& operator<<(std::ostream& stream,
       return stream << "planar unsigned 8-bit int";
   }
   NOTREACHED();
-  return stream << "UNKNOWN";
 }

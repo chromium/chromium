@@ -197,4 +197,20 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                     new SupportLibProfile(mSharedWebViewChromium.getProfile()));
         }
     }
+
+    @Override
+    public void setAudioMuted(boolean muted) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.SET_AUDIO_MUTED")) {
+            recordApiCall(ApiCall.SET_AUDIO_MUTED);
+            mSharedWebViewChromium.getAwContents().setAudioMuted(muted);
+        }
+    }
+
+    @Override
+    public boolean isAudioMuted() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.IS_AUDIO_MUTED")) {
+            recordApiCall(ApiCall.IS_AUDIO_MUTED);
+            return mSharedWebViewChromium.getAwContents().isAudioMuted();
+        }
+    }
 }

@@ -8,8 +8,8 @@
 #include <optional>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
 #include "content/common/content_export.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 
@@ -56,7 +56,7 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   // kNone: No preload request is triggered. This is the default state.
   // kRaceNetworkRequest:
   //    RaceNetworkRequest is triggered.
-  //    TODO(crbug.com/1420517) This will be passed to the renderer and block
+  //    TODO(crbug.com/40258805) This will be passed to the renderer and block
   //    the corresponding request from the ServiceWorker.
   // kNavigationPreload:
   //    Enabled when Navigation Preload is triggered.
@@ -76,7 +76,7 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   void RecordFetchResponseFrom();
 
   FetchResponseFrom commit_responsibility() { return commit_responsibility_; }
-  void SetCommitResponsibility(FetchResponseFrom fetch_response_from);
+  virtual void SetCommitResponsibility(FetchResponseFrom fetch_response_from);
 
   DispatchedPreloadType dispatched_preload_type() {
     return dispatched_preload_type_;
@@ -110,24 +110,24 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
       const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHeadPtr& response_head) = 0;
 
-  // TODO(crbug.com/1523917): remove the function after the spec has been
-  // decided and the implementation is ready.
-  //
-  // Currently, timing info for the ServiceWorker static routing API
-  // has not been decided yet.  To avoid unnecessary confusion, no metrics
-  // are recorded if the fetch handler is not executed. i.e. cache or network
-  // sources are used.
-  bool ShouldAvoidRecordingServiceWorkerTimingInfo();
-  void set_used_router_source_type(
-      blink::ServiceWorkerRouterSource::Type type) {
-    used_router_source_type_ = type;
+  // Determine if the fetch start should be recorded, by checking the matched
+  // source type of ServiceWorker static routing API. If no source is matched,
+  // or the source is matched to `race` or `fetch-event`, we should record fetch
+  // start time since these cases will start the ServiceWorker and trigger fetch
+  // event.
+  bool ShouldRecordServiceWorkerFetchStart();
+  bool IsMatchedRouterSourceType(
+      network::mojom::ServiceWorkerRouterSourceType type);
+  void set_matched_router_source_type(
+      network::mojom::ServiceWorkerRouterSourceType type) {
+    matched_router_source_type_ = type;
   }
 
  private:
   FetchResponseFrom commit_responsibility_ = FetchResponseFrom::kNoResponseYet;
   DispatchedPreloadType dispatched_preload_type_ = DispatchedPreloadType::kNone;
-  std::optional<blink::ServiceWorkerRouterSource::Type>
-      used_router_source_type_;
+  std::optional<network::mojom::ServiceWorkerRouterSourceType>
+      matched_router_source_type_;
 };
 }  // namespace content
 

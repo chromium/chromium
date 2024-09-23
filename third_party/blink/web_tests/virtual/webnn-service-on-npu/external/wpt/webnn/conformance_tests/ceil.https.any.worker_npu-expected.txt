@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] ceil float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
+[FAIL] ceil float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
+[FAIL] ceil float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
+[FAIL] ceil float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
+[FAIL] ceil float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
+[FAIL] ceil float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test ceil float32 actual 5 should be close enough to expected 6 by the acceptable 0 ULP distance, but they have 2097152 ULP distance expected true got false
+Harness: the test ran to completion.
+

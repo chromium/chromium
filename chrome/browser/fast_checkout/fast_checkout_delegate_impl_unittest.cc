@@ -20,6 +20,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using ::autofill::FastCheckoutTriggerOutcome;
 using ::autofill::test::CreateTestAddressFormData;
 
@@ -85,7 +87,7 @@ TEST_F(FastCheckoutDelegateImplTest, HideFastCheckoutWhenNotShowing) {
 
 TEST_F(FastCheckoutDelegateImplTest, IntendsToShowFastCheckout) {
   autofill::FormData form = CreateTestAddressFormData();
-  autofill::FormFieldData& field = form.fields[0];
+  const autofill::FormFieldData& field = form.fields()[0];
   autofill::FormFieldData non_seen_field = autofill::test::CreateTestFormField(
       "First Name", "firstname", "", autofill::FormControlType::kInputText);
   autofill_manager()->OnFormsSeen(
@@ -106,7 +108,7 @@ TEST_F(FastCheckoutDelegateImplTest, IntendsToShowFastCheckout) {
 TEST_F(FastCheckoutDelegateImplTest,
        RecordsFastCheckoutTriggerOutcomeMetricIfNotSupported) {
   autofill::FormData form = CreateTestAddressFormData();
-  autofill::FormFieldData& field = form.fields[0];
+  const autofill::FormFieldData& field = form.fields()[0];
   autofill_manager()->OnFormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{});
@@ -129,3 +131,5 @@ TEST_F(FastCheckoutDelegateImplTest,
       kUmaKeyFastCheckoutTriggerOutcome,
       FastCheckoutTriggerOutcome::kFailureFieldNotEmpty, 1u);
 }
+
+}  // namespace

@@ -606,7 +606,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // Loads a page in the prerender.
   GURL prerender_url = https_test_server()->GetURL("/title2.html");
-  const int host_id = prerender_helper()->AddPrerender(prerender_url);
+  const content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   EXPECT_FALSE(host_observer.was_activated());

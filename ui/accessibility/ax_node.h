@@ -72,7 +72,7 @@ class AX_EXPORT AXNode final {
 
     ChildIteratorBase(const NodeType* parent, NodeType* child);
     ChildIteratorBase(const ChildIteratorBase& it);
-    ~ChildIteratorBase() {}
+    ~ChildIteratorBase() = default;
     bool operator==(const ChildIteratorBase& rhs) const;
     bool operator!=(const ChildIteratorBase& rhs) const;
     ChildIteratorBase& operator++();
@@ -341,15 +341,9 @@ class AX_EXPORT AXNode final {
   GetIntAttributes() const {
     return data().int_attributes;
   }
-  bool HasIntAttribute(ax::mojom::IntAttribute attribute) const {
-    return data().HasIntAttribute(attribute);
-  }
-  int GetIntAttribute(ax::mojom::IntAttribute attribute) const {
-    return data().GetIntAttribute(attribute);
-  }
-  bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const {
-    return data().GetIntAttribute(attribute, value);
-  }
+  bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
+  int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
+  bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const;
 
   const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
   GetStringAttributes() const {
@@ -358,13 +352,9 @@ class AX_EXPORT AXNode final {
   bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetStringAttribute(
       ax::mojom::StringAttribute attribute) const;
-  bool GetStringAttribute(ax::mojom::StringAttribute attribute,
-                          std::string* value) const;
 
   std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
-  bool GetString16Attribute(ax::mojom::StringAttribute attribute,
-                            std::u16string* value) const;
 
   bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetInheritedStringAttribute(
@@ -380,8 +370,6 @@ class AX_EXPORT AXNode final {
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   const std::vector<int32_t>& GetIntListAttribute(
       ax::mojom::IntListAttribute attribute) const;
-  bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
-                           std::vector<int32_t>* value) const;
 
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const {
     return data().HasStringListAttribute(attribute);
@@ -389,10 +377,6 @@ class AX_EXPORT AXNode final {
   const std::vector<std::string>& GetStringListAttribute(
       ax::mojom::StringListAttribute attribute) const {
     return data().GetStringListAttribute(attribute);
-  }
-  bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
-                              std::vector<std::string>* value) const {
-    return data().GetStringListAttribute(attribute, value);
   }
 
   const base::StringPairs& GetHtmlAttributes() const {
@@ -513,10 +497,11 @@ class AX_EXPORT AXNode final {
   // this node's coordinate system as specified in
   // `AXNodeData::relative_bounds`.
   //
-  // Note that `start_offset` and `end_offset` are either in UTF8 or UTF16 code
-  // units, not in grapheme clusters.
-  gfx::RectF GetTextContentRangeBoundsUTF8(int start_offset,
-                                           int end_offset) const;
+  // Note that `start_offset` and `end_offset` are in UTF16 code units, not in
+  // grapheme clusters. For example, the following Hindi text
+  // u"\x0939\x093F\x0928\x094D\x0926\x0940" consists of two glyphs and has
+  // character offsets {40, 40, 59, 59, 59, 59} since the first glyph is
+  // represented by 2 code units in UTF16 and the second by 4 code units.
   gfx::RectF GetTextContentRangeBoundsUTF16(int start_offset,
                                             int end_offset) const;
 
@@ -568,6 +553,7 @@ class AX_EXPORT AXNode final {
   AXNode* GetTableCaption() const;
   AXNode* GetTableCellFromIndex(int index) const;
   AXNode* GetTableCellFromCoords(int row_index, int col_index) const;
+  AXNode* GetTableCellFromAriaCoords(int aria_row_index, int aria_col_index) const;
   // Get all the column header node ids of the table.
   std::vector<AXNodeID> GetTableColHeaderNodeIds() const;
   // Get the column header node ids associated with |col_index|.

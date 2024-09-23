@@ -30,9 +30,7 @@ export class CrTabBoxElement extends CustomElement {
   constructor() {
     super();
 
-    const tabs = this.$<HTMLElement>('#tablist');
-    assert(tabs);
-    this.tabs_ = tabs;
+    this.tabs_ = this.getRequiredElement('#tablist');
     this.tabs_.addEventListener('keydown', e => this.onKeydown_(e));
     this.tabs_.addEventListener('click', (e: MouseEvent) => {
       const tabs = this.getTabs_();
@@ -46,9 +44,7 @@ export class CrTabBoxElement extends CustomElement {
       }
     });
 
-    const panels = this.$<HTMLElement>('#tabpanels');
-    assert(panels);
-    this.panels_ = panels;
+    this.panels_ = this.getRequiredElement('#tabpanels');
     this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
   }
 

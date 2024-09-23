@@ -10,8 +10,13 @@
 #include "url/gurl.h"
 
 TEST(LogWebUIUrlTest, ValidUrls) {
-  // Typical WebUI page.
+  // chrome:// WebUI page.
   EXPECT_TRUE(webui::LogWebUIUrl(GURL(chrome::kChromeUIDownloadsURL)));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // chrome-untrusted:// WebUI page.
+  EXPECT_TRUE(webui::LogWebUIUrl(GURL(chrome::kChromeUIUntrustedPrintURL)));
+#endif
 
   // WebUI page with a subpage.
   GURL::Replacements replace_clear_data_path;

@@ -24,6 +24,7 @@
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_web_request_reporter_impl.h"
 #include "chrome/browser/signin/google_accounts_private_api_host.h"
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -39,11 +40,9 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -69,9 +68,14 @@
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_lacros.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
-#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros_basic.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif
 
@@ -119,10 +123,6 @@
 #include "chrome/browser/plugins/plugin_observer.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
-#endif
-
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
@@ -135,7 +135,6 @@ namespace {
 // thread.
 void MaybeCreateSafeBrowsingForRenderer(
     int process_id,
-    base::WeakPtr<content::ResourceContext> resource_context,
     base::RepeatingCallback<scoped_refptr<safe_browsing::UrlCheckerDelegate>(
         bool safe_browsing_enabled,
         bool should_check_on_sb_disabled,
@@ -159,30 +158,15 @@ void MaybeCreateSafeBrowsingForRenderer(
   bool safe_browsing_enabled =
       safe_browsing::IsSafeBrowsingEnabled(*pref_service);
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
-        process_id, std::move(resource_context),
-        base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
-                            // Navigation initiated from renderer should never
-                            // check when safe browsing is disabled, because
-                            // enterprise check only supports mainframe URL.
-                            /*should_check_on_sb_disabled=*/false,
-                            allowlist_domains),
-        std::move(receiver));
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &safe_browsing::MojoSafeBrowsingImpl::MaybeCreate, process_id,
-            std::move(resource_context),
-            base::BindRepeating(
-                get_checker_delegate, safe_browsing_enabled,
-                // Navigation initiated from renderer should never
-                // check when safe browsing is disabled, because
-                // enterprise check only supports mainframe URL.
-                /*should_check_on_sb_disabled=*/false, allowlist_domains),
-            std::move(receiver)));
-  }
+  safe_browsing::MojoSafeBrowsingImpl::MaybeCreate(
+      process_id,
+      base::BindRepeating(get_checker_delegate, safe_browsing_enabled,
+                          // Navigation initiated from renderer should never
+                          // check when safe browsing is disabled, because
+                          // enterprise check only supports mainframe URL.
+                          /*should_check_on_sb_disabled=*/false,
+                          allowlist_domains),
+      std::move(receiver));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -247,12 +231,9 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (safe_browsing_service_) {
-    content::ResourceContext* resource_context =
-        render_process_host->GetBrowserContext()->GetResourceContext();
     registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
         base::BindRepeating(
             &MaybeCreateSafeBrowsingForRenderer, render_process_host->GetID(),
-            resource_context->GetWeakPtr(),
             base::BindRepeating(
                 &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
                 base::Unretained(this))),
@@ -355,7 +336,7 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       }));
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
   if (!site.SchemeIs(extensions::kExtensionScheme))
     return;
@@ -515,7 +496,7 @@ void ChromeContentBrowserClient::
             std::move(receiver), render_frame_host);
       },
       &render_frame_host));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   associated_registry.AddInterface<extensions::mojom::LocalFrameHost>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,
@@ -525,7 +506,7 @@ void ChromeContentBrowserClient::
                 std::move(receiver), render_frame_host);
           },
           &render_frame_host));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   associated_registry.AddInterface<offline_pages::mojom::MhtmlPageNotifier>(
       base::BindRepeating(
@@ -547,10 +528,10 @@ void ChromeContentBrowserClient::
           },
           &render_frame_host));
 #if BUILDFLAG(ENABLE_PDF)
-  associated_registry.AddInterface<pdf::mojom::PdfService>(base::BindRepeating(
+  associated_registry.AddInterface<pdf::mojom::PdfHost>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<pdf::mojom::PdfService> receiver) {
-        pdf::PDFDocumentHelper::BindPdfService(
+         mojo::PendingAssociatedReceiver<pdf::mojom::PdfHost> receiver) {
+        pdf::PDFDocumentHelper::BindPdfHost(
             std::move(receiver), render_frame_host,
             std::make_unique<ChromePDFDocumentHelperClient>());
       },
@@ -577,6 +558,20 @@ void ChromeContentBrowserClient::
               headless::HeadlessPrintManager::BindPrintManagerHost(
                   std::move(receiver), render_frame_host);
             } else {
+#if BUILDFLAG(IS_CHROMEOS)
+              if (base::FeatureList::IsEnabled(
+                      ::features::kPrintPreviewCrosPrimary)) {
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+                chromeos::PrintViewManagerCros::BindPrintManagerHost(
+                    std::move(receiver), render_frame_host);
+#else
+                chromeos::PrintViewManagerCrosBasic::BindPrintManagerHost(
+                    std::move(receiver), render_frame_host);
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+                return;
+              }
+#endif  // BUILDFLAG(CHROMEOS)
+
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
               printing::PrintViewManager::BindPrintManagerHost(
                   std::move(receiver), render_frame_host);
@@ -606,7 +601,6 @@ void ChromeContentBrowserClient::
             BindReceiver(std::move(receiver), render_frame_host);
       },
       &render_frame_host));
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   associated_registry
       .AddInterface<supervised_user::mojom::SupervisedUserCommands>(
           base::BindRepeating(
@@ -617,7 +611,6 @@ void ChromeContentBrowserClient::
                     std::move(receiver), render_frame_host);
               },
               &render_frame_host));
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 }
 
 void ChromeContentBrowserClient::BindGpuHostReceiver(
@@ -660,7 +653,7 @@ void ChromeContentBrowserClient::BindHostReceiverForRenderer(
           receiver.As<content_settings::mojom::ContentSettingsManager>()) {
     content_settings::ContentSettingsManagerImpl::Create(
         render_process_host, std::move(host_receiver),
-        std::make_unique<chrome::ContentSettingsManagerDelegate>());
+        std::make_unique<ContentSettingsManagerDelegate>());
     return;
   }
 

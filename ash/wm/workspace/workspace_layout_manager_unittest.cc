@@ -11,7 +11,6 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/test/app_list_test_helper.h"
-#include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/keyboard/ui/keyboard_ui.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -35,6 +34,7 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
+#include "ash/style/rounded_label_widget.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -71,6 +71,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
@@ -105,11 +106,12 @@ class MaximizeDelegateView : public views::WidgetDelegateView {
 
   ~MaximizeDelegateView() override = default;
 
-  bool GetSavedWindowPlacement(const views::Widget* widget,
-                               gfx::Rect* bounds,
-                               ui::WindowShowState* show_state) const override {
+  bool GetSavedWindowPlacement(
+      const views::Widget* widget,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override {
     *bounds = initial_bounds_;
-    *show_state = ui::SHOW_STATE_MAXIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMaximized;
     return true;
   }
 
@@ -278,7 +280,8 @@ TEST_F(WorkspaceLayoutManagerTest, KeepRestoredWindowInDisplay) {
   // Fullscreen -> Normal transition.
   window->SetBounds(gfx::Rect(0, 0, 130, 40));  // reset bounds.
   ASSERT_EQ("0,0 130x40", window->bounds().ToString());
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(window->bounds(), window->GetRootWindow()->bounds());
   window_state->SetRestoreBoundsInScreen(gfx::Rect(-100, -100, 130, 40));
   window_state->Restore();
@@ -326,8 +329,8 @@ TEST_F(WorkspaceLayoutManagerTest, MaximizeInDisplayToBeRestored) {
 
   // Restoring widget state.
   std::unique_ptr<views::Widget> w1(new views::Widget);
-  views::Widget::InitParams params;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   params.delegate = new MaximizeDelegateView(gfx::Rect(400, 0, 130, 40));
   params.context = GetContext();
   w1->Init(std::move(params));
@@ -356,7 +359,8 @@ TEST_F(WorkspaceLayoutManagerTest, FullscreenInDisplayToBeRestored) {
   window_state->SetRestoreBoundsInScreen(gfx::Rect(400, 0, 130, 40));
   // Maximize the window in 2nd display as the restore bounds
   // is inside 2nd display.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(root_windows[1], window->GetRootWindow());
   EXPECT_EQ("300,0 400x500", window->GetBoundsInScreen().ToString());
 
@@ -367,7 +371,8 @@ TEST_F(WorkspaceLayoutManagerTest, FullscreenInDisplayToBeRestored) {
   // If the restore bounds intersects with the current display,
   // don't move.
   window_state->SetRestoreBoundsInScreen(gfx::Rect(295, 0, 130, 40));
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(root_windows[1], window->GetRootWindow());
   EXPECT_EQ("300,0 400x500", window->GetBoundsInScreen().ToString());
 
@@ -462,7 +467,8 @@ TEST_F(WorkspaceLayoutManagerTest, MaximizeWithEmptySize) {
   std::unique_ptr<aura::Window> window =
       std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMaximized);
   aura::Window* active_desk_container =
       Shell::GetPrimaryRootWindowController()->GetContainer(
           desks_util::GetActiveDeskContainerId());
@@ -1073,6 +1079,90 @@ TEST_F(WorkspaceLayoutManagerTest,
   EXPECT_EQ(old_bounds, pip_window->GetBoundsInScreen());
 }
 
+// Tests no crash after keyboard bounds change. Regression test for
+// b/325673844.
+TEST_F(WorkspaceLayoutManagerTest,
+       NoCrashAfterKeyboardDisplacingBoundsChanged) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  WindowState* window_state = WindowState::Get(window.get());
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+  const gfx::Rect bounds_without_vk(window->GetBoundsInScreen());
+
+  // Show the virtual keyboard. Test the bounds are updated.
+  SetVirtualKeyboardEnabled(true);
+  auto* keyboard_controller = keyboard::KeyboardUIController::Get();
+  keyboard_controller->ShowKeyboard(true);
+  EXPECT_TRUE(window_state->IsSnapped());
+  gfx::Rect bounds_with_vk(GetPrimaryDisplay().work_area());
+  bounds_with_vk.set_width(bounds_with_vk.width() / 2);
+  EXPECT_EQ(bounds_with_vk, window->GetBoundsInScreen());
+  EXPECT_NE(bounds_without_vk, bounds_with_vk);
+
+  // Hide the virtual keyboard. Test the bounds are restored to the initial
+  // snapped bounds.
+  keyboard_controller->HideKeyboardByUser();
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(bounds_without_vk, window->GetBoundsInScreen());
+
+  // Test that click on the caption button does not crash.
+  const gfx::Rect window_bounds(window->GetBoundsInScreen());
+  const gfx::Point drag_point(window_bounds.CenterPoint().x(),
+                              window_bounds.y() + 10);
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(drag_point);
+  event_generator->ClickLeftButton();
+}
+
+// Tests that when a window is snapped, then maximized, then dragged out to an
+// area *not* to snap, the window is *not* restored to snap state. Regression
+// test for http://b/324477985.
+TEST_F(WorkspaceLayoutManagerTest, DragToSnapThenMaximize) {
+  UpdateDisplay("800x600");
+
+  auto get_drag_point = [](aura::Window* win) {
+    auto* frame = NonClientFrameViewAsh::Get(win);
+    return frame->GetHeaderView()->GetBoundsInScreen().CenterPoint();
+  };
+
+  // Create a normal window, then drag to snap to the right.
+  std::unique_ptr<aura::Window> window(CreateAppWindow());
+  const gfx::Rect normal_bounds(window->GetBoundsInScreen());
+  ASSERT_EQ(gfx::Rect(0, 0, 300, 300), normal_bounds);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(window.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(get_drag_point(window.get()));
+  event_generator->DragMouseTo(work_area.right_center());
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state->GetStateType());
+  gfx::Rect snapped_bounds(work_area);
+  snapped_bounds.set_x(work_area.x() + work_area.width() / 2);
+  snapped_bounds.set_width(work_area.width() / 2);
+  ASSERT_EQ(snapped_bounds, window->GetBoundsInScreen());
+  ASSERT_NE(normal_bounds, snapped_bounds);
+
+  // Maximize the window. The window will have snapped restore state.
+  window_state->Maximize();
+  ASSERT_EQ(work_area, window->GetBoundsInScreen());
+  EXPECT_EQ(WindowStateType::kMaximized, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            window_state->GetRestoreWindowState());
+
+  // Drag the maximized window to the center of the work area.
+  event_generator->MoveMouseTo(get_drag_point(window.get()));
+  event_generator->DragMouseTo(work_area.CenterPoint());
+  EXPECT_NE(WindowStateType::kSecondarySnapped, window_state->GetStateType());
+  EXPECT_NE(snapped_bounds, window->GetBoundsInScreen());
+  EXPECT_EQ(WindowStateType::kNormal, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kNormal, window_state->GetRestoreWindowState());
+
+  // Drag the window to snap again.
+  event_generator->MoveMouseTo(get_drag_point(window.get()));
+  event_generator->DragMouseTo(work_area.right_center());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state->GetStateType());
+}
+
 // Following "Solo" tests were originally written for BaseLayoutManager.
 using WorkspaceLayoutManagerSoloTest = AshTestBase;
 
@@ -1081,12 +1171,14 @@ TEST_F(WorkspaceLayoutManagerSoloTest, Maximize) {
   gfx::Rect bounds(100, 100, 200, 200);
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(bounds));
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMaximized);
   // Maximized window fills the work area, not the whole display.
   EXPECT_EQ(
       screen_util::GetMaximizedWindowBoundsInParent(window.get()).ToString(),
       window->bounds().ToString());
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(bounds.ToString(), window->bounds().ToString());
 }
 
@@ -1095,11 +1187,13 @@ TEST_F(WorkspaceLayoutManagerSoloTest, Minimize) {
   gfx::Rect bounds(100, 100, 200, 200);
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(bounds));
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMinimized);
   EXPECT_FALSE(window->IsVisible());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
   EXPECT_EQ(bounds, window->bounds());
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   EXPECT_TRUE(window->IsVisible());
   EXPECT_FALSE(WindowState::Get(window.get())->IsMinimized());
   EXPECT_EQ(bounds, window->bounds());
@@ -1171,7 +1265,7 @@ TEST_F(WorkspaceLayoutManagerSoloTest,
 class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
  public:
   FocusDuringUnminimizeWindowObserver()
-      : window_(nullptr), show_state_(ui::SHOW_STATE_END) {}
+      : window_(nullptr), show_state_(ui::mojom::WindowShowState::kEnd) {}
 
   FocusDuringUnminimizeWindowObserver(
       const FocusDuringUnminimizeWindowObserver&) = delete;
@@ -1197,15 +1291,15 @@ class FocusDuringUnminimizeWindowObserver : public aura::WindowObserver {
     }
   }
 
-  ui::WindowShowState GetShowStateAndReset() {
-    ui::WindowShowState ret = show_state_;
-    show_state_ = ui::SHOW_STATE_END;
+  ui::mojom::WindowShowState GetShowStateAndReset() {
+    ui::mojom::WindowShowState ret = show_state_;
+    show_state_ = ui::mojom::WindowShowState::kEnd;
     return ret;
   }
 
  private:
   raw_ptr<aura::Window> window_;
-  ui::WindowShowState show_state_;
+  ui::mojom::WindowShowState show_state_;
 };
 
 // Make sure that the window's show state is correct in
@@ -1216,12 +1310,15 @@ TEST_F(WorkspaceLayoutManagerSoloTest, FocusDuringUnminimize) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
   observer.SetWindow(window.get());
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMinimized);
   EXPECT_FALSE(window->IsVisible());
-  EXPECT_EQ(ui::SHOW_STATE_MINIMIZED, observer.GetShowStateAndReset());
+  EXPECT_EQ(ui::mojom::WindowShowState::kMinimized,
+            observer.GetShowStateAndReset());
   window->Show();
   EXPECT_TRUE(window->IsVisible());
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, observer.GetShowStateAndReset());
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal,
+            observer.GetShowStateAndReset());
   observer.SetWindow(nullptr);
 }
 
@@ -1230,7 +1327,8 @@ TEST_F(WorkspaceLayoutManagerSoloTest, MaximizeRootWindowResize) {
   gfx::Rect bounds(100, 100, 200, 200);
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(bounds));
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMaximized);
   gfx::Rect initial_work_area_bounds =
       screen_util::GetMaximizedWindowBoundsInParent(window.get());
   EXPECT_EQ(initial_work_area_bounds.ToString(), window->bounds().ToString());
@@ -1249,11 +1347,13 @@ TEST_F(WorkspaceLayoutManagerSoloTest, Fullscreen) {
   gfx::Rect bounds(100, 100, 200, 200);
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(bounds));
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   // Fullscreen window fills the whole display.
   EXPECT_EQ(GetDisplayNearestWindow(window.get()).bounds().ToString(),
             window->bounds().ToString());
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(bounds.ToString(), window->bounds().ToString());
 }
 
@@ -1272,7 +1372,7 @@ TEST_F(WorkspaceLayoutManagerSoloTest, FullscreenSuspendsAlwaysOnTop) {
                                      ui::ZOrderLevel::kFloatingWindow);
   // Making a window fullscreen temporarily suspends always on top state.
   fullscreen_window->SetProperty(aura::client::kShowStateKey,
-                                 ui::SHOW_STATE_FULLSCREEN);
+                                 ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
             always_on_top_window1->GetProperty(aura::client::kZOrderingKey));
   EXPECT_EQ(ui::ZOrderLevel::kNormal,
@@ -1290,7 +1390,7 @@ TEST_F(WorkspaceLayoutManagerSoloTest, FullscreenSuspendsAlwaysOnTop) {
 
   // Making fullscreen window normal restores always on top windows.
   fullscreen_window->SetProperty(aura::client::kShowStateKey,
-                                 ui::SHOW_STATE_NORMAL);
+                                 ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
             always_on_top_window1->GetProperty(aura::client::kZOrderingKey));
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
@@ -1321,7 +1421,7 @@ TEST_F(WorkspaceLayoutManagerSoloTest,
   // Making a window fullscreen temporarily suspends always on top state, but
   // should not do so for PIP.
   fullscreen_window->SetProperty(aura::client::kShowStateKey,
-                                 ui::SHOW_STATE_FULLSCREEN);
+                                 ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
             pip_window->GetProperty(aura::client::kZOrderingKey));
   EXPECT_NE(nullptr,
@@ -1329,7 +1429,7 @@ TEST_F(WorkspaceLayoutManagerSoloTest,
 
   // Making fullscreen window normal does not affect PIP.
   fullscreen_window->SetProperty(aura::client::kShowStateKey,
-                                 ui::SHOW_STATE_NORMAL);
+                                 ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ(ui::ZOrderLevel::kFloatingWindow,
             pip_window->GetProperty(aura::client::kZOrderingKey));
   EXPECT_EQ(nullptr,
@@ -1428,7 +1528,8 @@ TEST_F(WorkspaceLayoutManagerSoloTest, FullscreenRootWindowResize) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(bounds));
   // Fullscreen window fills the whole display.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(GetDisplayNearestWindow(window.get()).bounds().ToString(),
             window->bounds().ToString());
   // Enlarge the root window.  We should still match the display size.
@@ -1476,11 +1577,13 @@ TEST_F(WorkspaceLayoutManagerSoloTest, MaximizeSetsRestoreBounds) {
   WindowState* window_state = WindowState::Get(window.get());
 
   // Maximize it, which will keep the previous restore bounds.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMaximized);
   EXPECT_EQ("10,20 30x40", window_state->GetRestoreBoundsInParent().ToString());
 
   // Restore it, which should restore bounds and reset restore bounds.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   EXPECT_EQ("10,20 30x40", window->bounds().ToString());
   EXPECT_FALSE(window_state->HasRestoreBounds());
 }
@@ -1493,7 +1596,8 @@ TEST_F(WorkspaceLayoutManagerSoloTest, MaximizeResetsRestoreBounds) {
   window_state->SetRestoreBoundsInParent(gfx::Rect(10, 11, 12, 13));
 
   // Maximize it, which will keep the previous restore bounds.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMaximized);
   EXPECT_EQ("10,11 12x13", window_state->GetRestoreBoundsInParent().ToString());
 }
 
@@ -1596,7 +1700,8 @@ class WorkspaceLayoutManagerBackdropTest : public AshTestBase {
 
   aura::Window* CreateTestWindowInParent(aura::Window* root_window) {
     aura::Window* window = new aura::Window(nullptr);
-    window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+    window->SetProperty(aura::client::kShowStateKey,
+                        ui::mojom::WindowShowState::kNormal);
     window->SetType(aura::client::WINDOW_TYPE_NORMAL);
     window->Init(ui::LAYER_TEXTURED);
     aura::client::ParentWindowWithContext(window, root_window, gfx::Rect(),
@@ -2057,8 +2162,9 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
     work_area_insets->UpdateWorkAreaInsetsForTest(root, gfx::Rect(),
                                                   gfx::Insets(), insets);
 
-    ash::KeyboardStateDescriptor state{true, keyboard_bounds_, keyboard_bounds_,
-                                       keyboard_bounds_};
+    ash::KeyboardStateDescriptor state{/*is_visible=*/true,
+                                       /*is_temporary=*/false, keyboard_bounds_,
+                                       keyboard_bounds_, keyboard_bounds_};
     work_area_insets->OnKeyboardAppearanceChanged(state);
   }
 
@@ -2068,8 +2174,9 @@ class WorkspaceLayoutManagerKeyboardTest : public AshTestBase {
     work_area_insets->UpdateWorkAreaInsetsForTest(
         root, gfx::Rect(), gfx::Insets(), restore_work_area_insets_);
 
-    ash::KeyboardStateDescriptor state{true, gfx::Rect(), gfx::Rect(),
-                                       gfx::Rect()};
+    ash::KeyboardStateDescriptor state{/*is_visible=*/true,
+                                       /*is_temporary=*/false, gfx::Rect(),
+                                       gfx::Rect(), gfx::Rect()};
     work_area_insets->OnKeyboardAppearanceChanged(state);
 
     layout_manager_->OnKeyboardDisplacingBoundsChanged(gfx::Rect());
@@ -2212,7 +2319,7 @@ TEST_F(WorkspaceLayoutManagerKeyboardTest,
 
   // Open keyboard in sticky mode.
   kb_controller->ShowKeyboard(true);
-  ASSERT_TRUE(keyboard::WaitUntilShown());
+  ASSERT_TRUE(keyboard::test::WaitUntilShown());
 
   int shift =
       work_area.height() - kb_controller->GetKeyboardWindow()->bounds().y();
@@ -2230,19 +2337,10 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   SetTabletModeEnabled(true);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
-  class SplitViewTestWindowDelegate : public aura::test::TestWindowDelegate {
-   public:
-    SplitViewTestWindowDelegate() = default;
-    ~SplitViewTestWindowDelegate() override = default;
-
-    // aura::test::TestWindowDelegate:
-    void OnWindowDestroying(aura::Window* window) override { window->Hide(); }
-    void OnWindowDestroyed(aura::Window* window) override { delete this; }
-  };
-
   auto CreateWindow = [this](const gfx::Rect& bounds) {
     aura::Window* window = CreateTestWindowInShellWithDelegate(
-        new SplitViewTestWindowDelegate, -1, bounds);
+        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), -1,
+        bounds);
     return window;
   };
 
@@ -2300,6 +2398,11 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   // still be the same as the container bounds.
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
   split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
+
+  // The split view divider is also a child of the default desk container. Spin
+  // the run loop here so that the post task to close the divider widget when
+  // snapping two windows gets run.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(4U, default_container()->children().size());
   for (aura::Window* child : default_container()->children()) {

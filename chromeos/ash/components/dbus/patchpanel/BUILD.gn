@@ -26,8 +26,10 @@ component("patchpanel") {
 }
 
 proto_library("patchpanel_proto") {
+  proto_in_dir = "//third_party/cros_system_api/dbus/patchpanel"
   sources = [
-    "//third_party/cros_system_api/dbus/patchpanel/patchpanel_service.proto",
+    "${proto_in_dir}/patchpanel_service.proto",
+    "${proto_in_dir}/traffic_annotation.proto",
   ]
 
   proto_out_dir = "chromeos/ash/components/dbus/patchpanel"

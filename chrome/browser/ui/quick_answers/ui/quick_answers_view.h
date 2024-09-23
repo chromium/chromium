@@ -5,28 +5,38 @@
 #ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
 
+#include <optional>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
+#include "chrome/browser/ui/quick_answers/ui/loading_view.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_stage_button.h"
+#include "chrome/browser/ui/quick_answers/ui/result_view.h"
+#include "chrome/browser/ui/quick_answers/ui/retry_view.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/metadata/view_factory.h"
+#include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
 class ImageButton;
 class ImageView;
-class Label;
-class LabelButton;
 class WebView;
 }  // namespace views
 
 namespace chromeos::editor_menu {
 class FocusSearch;
-class PreTargetHandler;
 }  // namespace chromeos::editor_menu
 
 class QuickAnswersUiController;
@@ -35,18 +45,23 @@ namespace quick_answers {
 struct QuickAnswer;
 struct PhoneticsInfo;
 
-class QuickAnswersPreTargetHandler;
-
 // A bubble style view to show QuickAnswer.
-class QuickAnswersView : public views::View {
-  METADATA_HEADER(QuickAnswersView, views::View)
+class QuickAnswersView : public chromeos::ReadWriteCardsView {
+  METADATA_HEADER(QuickAnswersView, chromeos::ReadWriteCardsView)
 
  public:
-  static constexpr char kWidgetName[] = "QuickAnswersViewWidget";
+  struct Params {
+   public:
+    std::string title;
+    Design design = Design::kCurrent;
+    // Set true to show a Google internal variant of Qucik Answers UI.
+    bool is_internal = false;
+  };
 
-  QuickAnswersView(const gfx::Rect& anchor_view_bounds,
-                   const std::string& title,
-                   bool is_internal,
+  using MockGenerateTtsCallback =
+      base::RepeatingCallback<void(const PhoneticsInfo&)>;
+
+  QuickAnswersView(const Params& params,
                    base::WeakPtr<QuickAnswersUiController> controller);
 
   QuickAnswersView(const QuickAnswersView&) = delete;
@@ -54,38 +69,42 @@ class QuickAnswersView : public views::View {
 
   ~QuickAnswersView() override;
 
-  static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& anchor_view_bounds,
-      const std::string& title,
-      bool is_internal,
-      base::WeakPtr<QuickAnswersUiController> controller);
-
-  // views::View:
+  // chromeos::ReadWriteCardsView:
   void RequestFocus() override;
   bool HasFocus() const override;
   void OnFocus() override;
-  void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::Size GetMaximumSize() const override;
+  void UpdateBoundsForQuickAnswers() override;
 
   // Called when a click happens to trigger Assistant Query.
   void SendQuickAnswersQuery();
 
-  void UpdateAnchorViewBounds(const gfx::Rect& anchor_view_bounds);
+  // `std::nullopt` means an unknown intent, which is used only from
+  // Linux-ChromeOS. On Linux-ChromeOS, intent generation code is not exercised.
+  // Intent is initially set to `kUnknown` on Linux-ChromeOS and set it to an
+  // actual intent later by the backend, i.e., intent transition `std::nullopt`
+  // -> an intent value. There can be a case where pre-process find an intent
+  // but the backend doesn't find the intent. For that case, the spec is that we
+  // keep the original intent icon/ui, i.e., no transition of an intent value ->
+  // `std::nullopt`.
+  void SetIntent(Intent intent);
+  std::optional<Intent> GetIntent() const;
 
-  // Update the quick answers view with quick answers result.
-  void UpdateView(const gfx::Rect& anchor_view_bounds,
-                  const quick_answers::QuickAnswer& quick_answer);
+  void SetResult(const StructuredResult& structured_result);
 
   void ShowRetryView();
 
-  ui::ImageModel GetIconImageModelForTesting();
-
-  gfx::Rect GetAnchorViewBounds() { return anchor_view_bounds_; }
+  LoadingView* GetLoadingViewForTesting() { return loading_view_; }
+  RetryView* GetRetryViewForTesting() { return retry_view_; }
+  ResultView* GetResultViewForTesting() { return result_view_; }
+  void SetMockGenerateTtsCallbackForTesting(
+      MockGenerateTtsCallback mock_generate_tts_callback);
+  views::ImageButton* GetSettingsButtonForTesting() { return settings_button_; }
+  views::ImageButton* GetDogfoodButtonForTesting() { return dogfood_button_; }
 
  private:
-  void InitLayout();
-  void AddContentView();
+  bool HasFocusInside();
   void AddFrameButtons();
   bool ShouldAddPhoneticsAudioButton(ResultType result_type,
                                      GURL phonetics_audio,
@@ -93,14 +112,11 @@ class QuickAnswersView : public views::View {
   void AddPhoneticsAudioButton(
       const quick_answers::PhoneticsInfo& phonetics_info,
       View* container);
-  void AddAssistantIcon();
-  void AddGoogleIcon();
-  void AddDefaultResultTypeIcon();
-  int GetBoundsWidth();
   int GetLabelWidth(bool is_title);
   void ResetContentView();
-  void UpdateBounds();
   void UpdateQuickAnswerResult(const quick_answers::QuickAnswer& quick_answer);
+  void GenerateTts(const PhoneticsInfo& phonetics_info);
+  void SwitchTo(views::View* view);
 
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();
@@ -109,35 +125,45 @@ class QuickAnswersView : public views::View {
   void OnPhoneticsAudioButtonPressed(
       const quick_answers::PhoneticsInfo& phonetics_info);
 
-  // The relative position to the screen for Ash and to the toplevel window for
-  // Lacros.
-  gfx::Rect anchor_view_bounds_;
+  void UpdateUiText();
+  void UpdateAccessibleName();
+  void UpdateIcon();
 
   base::WeakPtr<QuickAnswersUiController> controller_;
-  bool has_second_row_answer_ = false;
   std::string title_;
-  bool is_internal_ = false;
+  const Design design_;
+  std::optional<Intent> intent_ = std::nullopt;
+  const bool is_internal_;
 
-  raw_ptr<views::View> base_view_ = nullptr;
-  raw_ptr<views::View> main_view_ = nullptr;
-  raw_ptr<views::View> content_view_ = nullptr;
-  raw_ptr<views::View> report_query_view_ = nullptr;
-  raw_ptr<views::Label> first_answer_label_ = nullptr;
-  raw_ptr<views::LabelButton> retry_label_ = nullptr;
-  raw_ptr<views::ImageButton> dogfood_feedback_button_ = nullptr;
+  raw_ptr<QuickAnswersStageButton> quick_answers_stage_button_ = nullptr;
+  raw_ptr<views::Label> refreshed_ui_header_ = nullptr;
+
+  raw_ptr<LoadingView> loading_view_ = nullptr;
+  raw_ptr<RetryView> retry_view_ = nullptr;
+  raw_ptr<ResultView> result_view_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
-  raw_ptr<views::ImageButton> phonetics_audio_button_ = nullptr;
-  raw_ptr<views::ImageView> result_type_icon_ = nullptr;
+  raw_ptr<views::ImageButton> dogfood_button_ = nullptr;
 
-  // Invisible web view to play phonetics audio for definition results.
-  raw_ptr<views::WebView> phonetics_audio_web_view_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
-  std::unique_ptr<chromeos::editor_menu::PreTargetHandler>
-      quick_answers_view_handler_;
+  MockGenerateTtsCallback mock_generate_tts_callback_;
+
+  // Invisible WebView to play phonetics audio for definition results. WebView
+  // is lazy created to improve performance.
+  views::ViewTracker phonetics_audio_web_view_;
+
   std::unique_ptr<chromeos::editor_menu::FocusSearch> focus_search_;
   base::WeakPtrFactory<QuickAnswersView> weak_factory_{this};
 };
 
+BEGIN_VIEW_BUILDER(/* no export */,
+                   QuickAnswersView,
+                   chromeos::ReadWriteCardsView)
+VIEW_BUILDER_PROPERTY(Intent, Intent)
+END_VIEW_BUILDER
+
 }  // namespace quick_answers
+
+DEFINE_VIEW_BUILDER(/* no export */, quick_answers::QuickAnswersView)
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_

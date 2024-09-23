@@ -32,8 +32,8 @@ class StatusController {
 
   // The types which had non-deletion updates in the GetUpdates during the
   // last sync cycle.
-  ModelTypeSet get_updated_types() const;
-  void add_updated_type(ModelType type);
+  DataTypeSet get_updated_types() const;
+  void add_updated_type(DataType type);
   void clear_updated_types();
 
   // Various conflict counters.

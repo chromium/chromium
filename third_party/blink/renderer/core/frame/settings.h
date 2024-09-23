@@ -48,6 +48,9 @@ class CORE_EXPORT Settings : public SettingsBase {
   GenericFontFamilySettings& GetGenericFontFamilySettings() {
     return generic_font_family_settings_;
   }
+  const GenericFontFamilySettings& GetGenericFontFamilySettings() const {
+    return generic_font_family_settings_;
+  }
   void NotifyGenericFontFamilyChange() {
     Invalidate(SettingsDelegate::ChangeType::kFontFamily);
   }

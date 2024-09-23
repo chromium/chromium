@@ -19,12 +19,17 @@
 
 class PrefService;
 
+struct PasswordManagerSettingGmsAccessResult {
+  password_manager::PasswordManagerSetting setting;
+  bool was_successful;
+};
+
 // Service implementation responsible with requesting and updating settings
 // prefs based on settings changes in Google Mobile Services. It also answers
 // password manager prefs queries, taking into account managed prefs and
 // the possibility of communicating with GMS.
 class PasswordManagerSettingsServiceAndroidImpl
-    : public PasswordManagerSettingsService,
+    : public password_manager::PasswordManagerSettingsService,
       public password_manager::PasswordSettingsUpdaterAndroidReceiverBridge::
           Consumer,
       public syncer::SyncServiceObserver {
@@ -69,6 +74,14 @@ class PasswordManagerSettingsServiceAndroidImpl
                              bool value) override;
   void OnSettingValueAbsent(
       password_manager::PasswordManagerSetting setting) override;
+  void OnSettingFetchingError(
+      password_manager::PasswordManagerSetting setting,
+      AndroidBackendAPIErrorCode api_error_code) override;
+  void OnSuccessfulSettingChange(
+      password_manager::PasswordManagerSetting setting) override;
+  void OnFailedSettingChange(
+      password_manager::PasswordManagerSetting setting,
+      AndroidBackendAPIErrorCode api_error_code) override;
 
   // Stores the given `value` of the `setting` into the android-only GMS prefs.
   // Stores the same `value` in the old prefs are not being synced.
@@ -96,6 +109,19 @@ class PasswordManagerSettingsServiceAndroidImpl
   // and ready to use local UPM.
   bool UsesUPMBackend() const;
 
+  // Checks for the settings migration requirements. It goes through every
+  // setting pref and resolves differences between value in Chrome and GMS.
+  // This method will be run for upm users with and without local passwords
+  // support. For the former ones this should be a noop without any changes to
+  // their prefs. For the latter ones pref values might change.
+  void MigratePrefsIfNeeded(
+      const std::vector<PasswordManagerSettingGmsAccessResult>& results);
+
+  // Checks if setting prefs was successful and marks the migation as complete
+  // if there were no errors.
+  void FinishSettingsMigration(
+      const std::vector<PasswordManagerSettingGmsAccessResult>& results);
+
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
@@ -120,6 +146,23 @@ class PasswordManagerSettingsServiceAndroidImpl
   // True if settings were requested from the backend after password sync
   // setting was changed, and the fetch is still in progress.
   bool fetch_after_sync_status_change_in_progress_ = false;
+
+  // Tires to start migration after getting prefs from gms finished.
+  // This callback needs to be run even if getting pref value from GMS failed,
+  // because of the following scenario:
+  // 1. Chrome is opened, fetching prefs has started.
+  // 2. One of the calls to GMS fails, the other succeeds.
+  // 3. Chrome is put to the background and then to the foreground again.
+  // 4. That causes fetching prefs from the GMS again. And if one of them fails
+  // and the other succeeds, we would count the migration as successful. By
+  // calling the `start_migration_callback_` with was_successful set to false we
+  // ensure that if anything failed, migration will be counted as failed.
+  base::RepeatingCallback<void(PasswordManagerSettingGmsAccessResult)>
+      start_migration_callback_;
+
+  // Finishes migration and checks for errors.
+  base::RepeatingCallback<void(PasswordManagerSettingGmsAccessResult)>
+      migration_finished_callback_;
 
   // Settings requested from the backend after a sync status change, but not
   // fetched yet.

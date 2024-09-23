@@ -110,13 +110,13 @@ std::u16string RecentlyUsedFoldersComboModel::GetItemAt(size_t index) const {
       return l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS);
     case Item::TYPE_SEPARATOR:
       // This function should not be called for separators.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::u16string();
     case Item::TYPE_CHOOSE_ANOTHER_FOLDER:
       return l10n_util::GetStringUTF16(
           IDS_BOOKMARK_BUBBLE_CHOOSER_ANOTHER_FOLDER);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -140,31 +140,26 @@ std::optional<size_t> RecentlyUsedFoldersComboModel::GetDefaultIndex() const {
   return it == items_.end() ? 0 : static_cast<int>(it - items_.begin());
 }
 
-void RecentlyUsedFoldersComboModel::BookmarkModelLoaded(BookmarkModel* model,
-                                                        bool ids_reassigned) {}
+void RecentlyUsedFoldersComboModel::BookmarkModelLoaded(bool ids_reassigned) {}
 
-void RecentlyUsedFoldersComboModel::BookmarkModelBeingDeleted(
-    BookmarkModel* model) {
-}
+void RecentlyUsedFoldersComboModel::BookmarkModelBeingDeleted() {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeMoved(
-    BookmarkModel* model,
     const BookmarkNode* old_parent,
     size_t old_index,
     const BookmarkNode* new_parent,
     size_t new_index) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeAdded(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t index,
     bool added_by_user) {}
 
 void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t old_index,
-    const BookmarkNode* node) {
+    const BookmarkNode* node,
+    const base::Location& location) {
   // Changing is rare enough that we don't attempt to readjust the contents.
   // Update |items_| so we aren't left pointing to a deleted node.
   bool changed = false;
@@ -183,30 +178,24 @@ void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
 }
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeRemoved(
-    BookmarkModel* model,
     const BookmarkNode* parent,
     size_t old_index,
     const BookmarkNode* node,
-    const std::set<GURL>& removed_urls) {}
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeChanged(
-    BookmarkModel* model,
-    const BookmarkNode* node) {
-}
+    const BookmarkNode* node) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeFaviconChanged(
-    BookmarkModel* model,
-    const BookmarkNode* node) {
-}
+    const BookmarkNode* node) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeChildrenReordered(
-      BookmarkModel* model,
-      const BookmarkNode* node) {
-}
+    const BookmarkNode* node) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkAllUserNodesRemoved(
-    BookmarkModel* model,
-    const std::set<GURL>& removed_urls) {
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
   // Changing is rare enough that we don't attempt to readjust the contents.
   // Update |items_| so we aren't left pointing to a deleted node.
   bool changed = false;

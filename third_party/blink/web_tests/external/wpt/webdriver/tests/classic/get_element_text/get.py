@@ -87,13 +87,6 @@ def test_stale_element_reference(session, stale_element, as_frame):
     assert_error(response, "stale element reference")
 
 
-def test_getting_text_of_a_non_existant_element_is_an_error(session, inline):
-    session.url = inline("""<body>Hello world</body>""")
-
-    result = get_element_text(session, "foo")
-    assert_error(result, "no such element")
-
-
 def test_read_element_text(session, inline):
     session.url = inline("Before f<span id='id'>oo</span> after")
     element = session.find.css("#id", all=False)
@@ -102,13 +95,27 @@ def test_read_element_text(session, inline):
     assert_success(result, "oo")
 
 
+@pytest.mark.parametrize("text, expected", [
+    ("foo bar", "Foo Bar"),
+    ("foo-bar", "Foo-Bar"),
+    ("foo_bar", "Foo_bar"),
+], ids=["space", "dash", "underscore"])
+def test_transform_capitalize(session, inline, text, expected):
+    session.url = inline(
+        f"""<div style="text-transform: capitalize;">{text}""")
+    element = session.find.css("div", all=False)
+
+    result = get_element_text(session, element.id)
+    assert_success(result, expected)
+
+
 @pytest.mark.parametrize("text, inner_html, expected", [
     ("cheese", "<slot><span>foo</span>bar</slot>", "cheese"),
     ("cheese", "<slot><span>foo</span></slot>bar", "cheesebar"),
     ("cheese", "<slot><span style=\"display: none\">foo</span>bar</slot>", "cheese"),
     ("", "<slot><span>foo</span>bar</slot>", "foobar"),
     ("", "<slot><span>foo</span></slot>bar", "foobar"),
-    ("", "<slot><span style=\"display: none\">foo</span>bar</slot>", "bar"),
+    ("", "<slot><span style='display: none'>foo</span>bar</slot>", "bar"),
 ], ids=[
     "custom visible",
     "custom outside",

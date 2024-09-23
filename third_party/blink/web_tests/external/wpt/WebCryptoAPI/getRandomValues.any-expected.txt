@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Float16 arrays
+  assert_throws_dom: Float16Array function "function() {\n        self.crypto.getRandomValues(new Float16Array(6))\n    }" threw object "ReferenceError: Float16Array is not defined" that is not a DOMException TypeMismatchError: property "code" is equal to undefined, expected 17
+Harness: the test ran to completion.
+

@@ -11,95 +11,84 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 
+namespace bookmarks {
+class BookmarkNode;
+}  // namespace bookmarks
+
 // The ObjC translations of the C++ observer callbacks are defined here.
 @protocol BookmarkModelBridgeObserver <NSObject>
 // The bookmark model has loaded.
-- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model;
+- (void)bookmarkModelLoaded;
 // The node has changed, but not its children.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode;
+- (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // The node has not changed, but the ordering and existence of its children have
 // changed.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
+- (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // The node has moved to a new parent folder.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
-           fromParent:(const bookmarks::BookmarkNode*)oldParent
-             toParent:(const bookmarks::BookmarkNode*)newParent;
+- (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+         fromParent:(const bookmarks::BookmarkNode*)oldParent
+           toParent:(const bookmarks::BookmarkNode*)newParent;
 // `node` was deleted from `folder`.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+- (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder;
 // All non-permanent nodes have been removed in model.
-- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model;
+- (void)bookmarkModelRemovedAllNodes;
 
 @optional
 // Called before removing a bookmark node.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-       willDeleteNode:(const bookmarks::BookmarkNode*)node
-           fromFolder:(const bookmarks::BookmarkNode*)folder;
+- (void)willDeleteNode:(const bookmarks::BookmarkNode*)node
+            fromFolder:(const bookmarks::BookmarkNode*)folder;
 // Called after adding a bookmark node.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-           didAddNode:(const bookmarks::BookmarkNode*)node
-             toFolder:(const bookmarks::BookmarkNode*)folder;
+- (void)didAddNode:(const bookmarks::BookmarkNode*)node
+          toFolder:(const bookmarks::BookmarkNode*)folder;
 
 // Called before removing all non-permanent nodes.
-- (void)bookmarkModelWillRemoveAllNodes:(const bookmarks::BookmarkModel*)model;
+- (void)bookmarkModelWillRemoveAllNodes;
 // The node favicon changed.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-    didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
+- (void)didChangeFaviconForNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // Called before changing a bookmark node.
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-    willChangeBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode;
+- (void)willChangeBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // Called when the model is being deleted.
-- (void)bookmarkModelBeingDeleted:(bookmarks::BookmarkModel*)model;
+- (void)bookmarkModelBeingDeleted;
 @end
 
 // A bridge that translates BookmarkModelObserver C++ callbacks into ObjC
 // callbacks.
 class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
  public:
-  explicit BookmarkModelBridge(id<BookmarkModelBridgeObserver> observer,
-                               bookmarks::BookmarkModel* model);
+  BookmarkModelBridge(id<BookmarkModelBridgeObserver> observer,
+                      bookmarks::BookmarkModel* model);
   ~BookmarkModelBridge() override;
 
  private:
-  void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
-                           bool ids_reassigned) override;
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
-  void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* old_parent,
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
-  void BookmarkNodeAdded(bookmarks::BookmarkModel* model,
-                         const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
-  void OnWillRemoveBookmarks(bookmarks::BookmarkModel* model,
-                             const bookmarks::BookmarkNode* parent,
+  void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
                              size_t old_index,
-                             const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* parent,
+                             const bookmarks::BookmarkNode* node,
+                             const base::Location& location) override;
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override;
+                           const std::set<GURL>& removed_urls,
+                           const base::Location& location) override;
 
-  void OnWillChangeBookmarkNode(bookmarks::BookmarkModel* model,
-                                const bookmarks::BookmarkNode* node) override;
+  void OnWillChangeBookmarkNode(const bookmarks::BookmarkNode* node) override;
 
-  void BookmarkNodeChanged(bookmarks::BookmarkModel* model,
-                           const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeFaviconChanged(bookmarks::BookmarkModel* model,
-                                  const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
-      bookmarks::BookmarkModel* model,
       const bookmarks::BookmarkNode* node) override;
-  void OnWillRemoveAllUserBookmarks(bookmarks::BookmarkModel* model) override;
-  void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
-                                   const std::set<GURL>& removed_urls) override;
+  void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override;
 
   __weak id<BookmarkModelBridgeObserver> observer_;
 

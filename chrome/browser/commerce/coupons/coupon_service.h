@@ -14,13 +14,13 @@
 #include "chrome/browser/commerce/coupons/coupon_service_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 // Service to host coupon-related logics.
-class CouponService : public KeyedService,
-                      public autofill::CouponServiceDelegate {
+class CouponService : public KeyedService {
  public:
+  // TODO(b/351080010): Migrate CouponService to use DiscountInfo instead of
+  // AutofillOfferData.
   using Coupons = std::vector<autofill::AutofillOfferData*>;
   using CouponsMap =
       base::flat_map<GURL,
@@ -60,13 +60,12 @@ class CouponService : public KeyedService,
   // Get called when cart or discount feature status might have changed.
   virtual void MaybeFeatureStatusChanged(bool enabled);
 
-  // autofill::CouponServiceDelegate:
   // Get FreeListing coupons for the given URL. Will return an empty
   // list if there is no coupon data associated with this URL.
-  Coupons GetFreeListingCouponsForUrl(const GURL& url) override;
+  Coupons GetFreeListingCouponsForUrl(const GURL& url);
 
   // Check if CouponService has eligible coupons for |url|.
-  bool IsUrlEligible(const GURL& url) override;
+  bool IsUrlEligible(const GURL& url);
 
   void AddObserver(CouponServiceObserver* observer);
 

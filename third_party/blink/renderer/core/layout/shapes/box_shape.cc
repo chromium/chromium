@@ -29,6 +29,8 @@
 
 #include "third_party/blink/renderer/core/layout/shapes/box_shape.h"
 
+#include "base/notreached.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -103,6 +105,38 @@ void BoxShape::BuildDisplayPaths(DisplayPaths& paths) const {
   paths.shape.AddRoundedRect(bounds_);
   if (ShapeMargin())
     paths.margin_shape.AddRoundedRect(ShapeMarginBounds());
+}
+
+FloatRoundedRect BoxShape::ToLogical(const FloatRoundedRect& rect,
+                                     const WritingModeConverter& converter) {
+  if (converter.GetWritingMode() == WritingMode::kHorizontalTb) {
+    return rect;
+  }
+
+  gfx::RectF logical_rect = converter.ToLogical(rect.Rect());
+  gfx::SizeF top_left = rect.GetRadii().TopLeft();
+  top_left.Transpose();
+  gfx::SizeF top_right = rect.GetRadii().TopRight();
+  top_right.Transpose();
+  gfx::SizeF bottom_left = rect.GetRadii().BottomLeft();
+  bottom_left.Transpose();
+  gfx::SizeF bottom_right = rect.GetRadii().BottomRight();
+  bottom_right.Transpose();
+
+  switch (converter.GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      NOTREACHED_NORETURN();
+    case WritingMode::kVerticalLr:
+      return FloatRoundedRect(logical_rect, top_left, bottom_left, top_right,
+                              bottom_right);
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      return FloatRoundedRect(logical_rect, top_right, bottom_right, top_left,
+                              bottom_left);
+    case WritingMode::kSidewaysLr:
+      return FloatRoundedRect(logical_rect, bottom_left, top_left, bottom_right,
+                              top_right);
+  }
 }
 
 }  // namespace blink

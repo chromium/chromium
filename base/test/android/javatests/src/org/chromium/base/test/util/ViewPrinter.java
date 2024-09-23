@@ -26,15 +26,21 @@ public class ViewPrinter {
 
     /** Options to customize rendering and printing. */
     public static class Options {
-        private static final Options DEFAULT = new Options();
+        public static final Options DEFAULT = new Options();
 
         private String mLogTag = "ViewPrinter";
+        private boolean mPrintChildren = true;
         private boolean mPrintNonVisibleViews;
         private boolean mPrintResourcePackage;
         public boolean mPrintViewBounds;
 
         public Options setLogTag(String logTag) {
             mLogTag = logTag;
+            return this;
+        }
+
+        public Options setPrintChildren(boolean printChildren) {
+            mPrintChildren = printChildren;
             return this;
         }
 
@@ -53,6 +59,8 @@ public class ViewPrinter {
             return this;
         }
     }
+
+    private static final int MAX_TEXT_TO_PRINT = 50;
 
     /**
      * Print out a representation of a View hierarchy to logcat for debugging.
@@ -139,8 +147,17 @@ public class ViewPrinter {
 
         if (rootView instanceof TextView) {
             TextView v = (TextView) rootView;
+            CharSequence textAsCharSequence = v.getText();
+            String text;
+            if (textAsCharSequence.length() > MAX_TEXT_TO_PRINT) {
+                textAsCharSequence = textAsCharSequence.subSequence(0, MAX_TEXT_TO_PRINT - 5);
+                text = textAsCharSequence + "(...)";
+            } else {
+                text = textAsCharSequence.toString();
+            }
+            text = text.replace("\n", "\\n");
             stringBuilder.append('"');
-            stringBuilder.append(v.getText());
+            stringBuilder.append(text);
             stringBuilder.append("\" | ");
         }
 
@@ -164,6 +181,10 @@ public class ViewPrinter {
             stringBuilder.append(", h ");
             stringBuilder.append(rootView.getHeight());
             stringBuilder.append("]");
+        }
+
+        if (!options.mPrintChildren) {
+            return new TreeOutput(stringBuilder.toString());
         }
 
         stringBuilder.append('\n');

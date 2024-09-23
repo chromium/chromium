@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MOJO_SECURITY_ORIGIN_MOJOM_TRAITS_H_
 
 #include <optional>
+#include <string_view>
 
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/bindings/optional_as_pointer.h"
@@ -70,8 +71,8 @@ struct StructTraits<url::mojom::OriginDataView,
     // This implementation is very close to
     // SecurityOrigin::CreateFromUrlOrigin, so keep in sync if modifications
     // are made in that method.
-    base::StringPiece scheme;
-    base::StringPiece host;
+    std::string_view scheme;
+    std::string_view host;
     std::optional<base::UnguessableToken> nonce_if_opaque;
     if (!data.ReadScheme(&scheme) || !data.ReadHost(&host) ||
         !data.ReadNonceIfOpaque(&nonce_if_opaque))

@@ -14,25 +14,19 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 
 import {getTemplate} from './signin_fatal_error.html.js';
 
 const SigninFatalErrorBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
-    };
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
 interface SigninFatalErrorScreenData {
   errorState: OobeTypes.FatalErrorCode;
@@ -106,8 +100,8 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState(): OOBE_UI_STATE {
-    return OOBE_UI_STATE.BLOCKING;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.BLOCKING;
   }
 
   /**
@@ -124,6 +118,7 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
    * @param data Screen init payload.
    */
   override onBeforeShow(data: SigninFatalErrorScreenData) {
+    super.onBeforeShow(data);
     this.params = data;
     this.errorState = data.errorState;
     this.keyboardHint = data.keyboardHint;
@@ -131,7 +126,7 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
     this.helpLinkText = data.helpLinkText;
   }
 
-  private onClick() {
+  private onClick(): void {
     this.userActed('screen-dismissed');
   }
 
@@ -140,7 +135,7 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
    * user based on the error
    */
   private computeButtonKey(errorState: OobeTypes.FatalErrorCode) {
-    if (errorState == OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED) {
+    if (errorState === OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED) {
       return 'fatalErrorDoneButton';
     }
 
@@ -161,11 +156,10 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
         return this.i18nDynamic(locale, 'fatalErrorMessageNoAccountDetails');
       case OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED:
         const url = params.url;
-        assert(url);
-        return this.i18nDynamic(locale, 'fatalErrorMessageInsecureURL', url);
+        return this.i18nDynamic(
+            locale, 'fatalErrorMessageInsecureURL', url || '');
       case OobeTypes.FatalErrorCode.CUSTOM:
-        assert(params.errorText);
-        return params.errorText;
+        return params.errorText || '';
       default:
         return '';
     }

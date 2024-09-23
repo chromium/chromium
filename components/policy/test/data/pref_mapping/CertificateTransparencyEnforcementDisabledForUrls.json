@@ -9,30 +9,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "certificate_transparency.excluded_hosts": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "CertificateTransparencyEnforcementDisabledForUrls": [
-            "example.com"
-          ]
-        },
-        "prefs": {
-          "certificate_transparency.excluded_hosts": {
-            "value": [
-              "example.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "certificate_transparency.excluded_hosts",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "example.com"
+        ]
+      ]
+    }
   }
 ]

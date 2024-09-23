@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_page_scheduler.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using base::sequence_manager::TaskQueue;
 using base::sequence_manager::FakeTask;
@@ -59,6 +58,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
   }
 
   void TearDown() override {
+    metrics_helper_ = nullptr;
     scheduler_->Shutdown();
     scheduler_.reset();
   }
@@ -193,7 +193,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
             .SetPageScheduler(throtting_exempt_view_.get());
         break;
       case FrameStatus::kCount:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return nullptr;
     }
     return builder.Build();
@@ -201,8 +201,7 @@ class MainThreadMetricsHelperTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
-  raw_ptr<MainThreadMetricsHelper, DanglingUntriaged>
-      metrics_helper_;  // NOT OWNED
+  raw_ptr<MainThreadMetricsHelper> metrics_helper_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<FakePageScheduler> playing_view_ =
       FakePageScheduler::Builder().SetIsAudioPlaying(true).Build();

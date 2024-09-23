@@ -102,7 +102,7 @@ constexpr auto kGoogleOneOfferBannerSupportedCountries =
   dict->Set(id, l10n_util::GetPluralStringFUTF16(idr, n))
 
 void AddStringsForFileTypes(base::Value::Dict* dict) {
-  // TODO(crbug.com/438921): Rename string IDs to something like
+  // TODO(crbug.com/41146170): Rename string IDs to something like
   // FILE_TYPE_WHATEVER.
   SET_STRING("ARCHIVE_FILE_TYPE", IDS_FILE_BROWSER_ARCHIVE_FILE_TYPE);
   SET_STRING("AUDIO_FILE_TYPE", IDS_FILE_BROWSER_AUDIO_FILE_TYPE);
@@ -346,18 +346,11 @@ void AddStringsForSharesheet(base::Value::Dict* dict) {
 }
 
 void AddStringsForHoldingSpace(base::Value::Dict* dict) {
-  const std::u16string pin_command =
-      ash::features::IsHoldingSpaceRefreshEnabled()
-          ? l10n_util::GetStringUTF16(
-                IDS_FILE_BROWSER_HOLDING_SPACE_PIN_COMMAND_LABEL)
-          : l10n_util::GetStringUTF16(
-                IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
+  const std::u16string pin_command = l10n_util::GetStringUTF16(
+      IDS_FILE_BROWSER_HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL);
   dict->Set("HOLDING_SPACE_PIN_COMMAND_LABEL", pin_command);
-  SET_STRING(
-      "HOLDING_SPACE_UNPIN_COMMAND_LABEL",
-      ash::features::IsHoldingSpaceRefreshEnabled()
-          ? IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_COMMAND_LABEL
-          : IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL);
+  SET_STRING("HOLDING_SPACE_UNPIN_COMMAND_LABEL",
+             IDS_FILE_BROWSER_HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL);
   SET_STRING("HOLDING_SPACE_WELCOME_DISMISS",
              IDS_FILE_BROWSER_HOLDING_SPACE_WELCOME_DISMISS);
   dict->Set("HOLDING_SPACE_WELCOME_TEXT",
@@ -381,8 +374,6 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("ALL_FILES_FILTER", IDS_FILE_BROWSER_ALL_FILES_FILTER);
   SET_STRING("ARCHIVE_MOUNT_FAILED", IDS_FILE_BROWSER_ARCHIVE_MOUNT_FAILED);
   SET_STRING("ARCHIVE_MOUNT_MESSAGE", IDS_FILE_BROWSER_ARCHIVE_MOUNT_MESSAGE);
-  SET_STRING("ARCHIVE_MOUNT_INVALID_PATH",
-             IDS_FILE_BROWSER_ARCHIVE_MOUNT_INVALID_PATH);
   SET_STRING("BULK_PINNING_BATTERY_SAVER",
              IDS_FILE_BROWSER_BULK_PINNING_BATTERY_SAVER);
   SET_STRING("BULK_PINNING_ERROR", IDS_FILE_BROWSER_BULK_PINNING_ERROR);
@@ -1017,8 +1008,6 @@ void AddStringsGeneric(base::Value::Dict* dict) {
              IDS_WEBSTORE_WIDGET_LOADING_SPINNER_ALT);
   SET_STRING("SUGGEST_DIALOG_INSTALLING_SPINNER_ALT",
              IDS_WEBSTORE_WIDGET_INSTALLING_SPINNER_ALT);
-  SET_STRING("TASK_INSTALL_ISOLATED_WEB_APP",
-             IDS_FILE_BROWSER_TASK_INSTALL_ISOLATED_WEB_APP);
   SET_STRING("TASK_INSTALL_LINUX_PACKAGE",
              IDS_FILE_BROWSER_TASK_INSTALL_LINUX_PACKAGE);
   SET_STRING("TASK_IMPORT_CROSTINI_IMAGE", IDS_SETTINGS_CROSTINI_IMPORT_LABEL);
@@ -1028,8 +1017,6 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("TASK_OPEN_GDOC", IDS_FILE_BROWSER_TASK_OPEN_GDOC);
   SET_STRING("TASK_OPEN_GSHEET", IDS_FILE_BROWSER_TASK_OPEN_GSHEET);
   SET_STRING("TASK_OPEN_GSLIDES", IDS_FILE_BROWSER_TASK_OPEN_GSLIDES);
-  SET_STRING("TASK_OPEN_MICROSOFT_365",
-             IDS_FILE_BROWSER_TASK_OPEN_MICROSOFT_365);
   SET_STRING("TASK_VIEW", IDS_FILE_BROWSER_TASK_VIEW);
   SET_STRING("THUMBNAIL_VIEW_TOOLTIP", IDS_FILE_BROWSER_THUMBNAIL_VIEW_TOOLTIP);
   SET_STRING("TIME_REMAINING_ESTIMATE",
@@ -1164,6 +1151,10 @@ void AddStringsGeneric(base::Value::Dict* dict) {
   SET_STRING("ONEDRIVE_SIGN_IN_SUBTITLE",
              IDS_FILE_BROWSER_ONEDRIVE_SIGN_IN_SUBTITLE);
   SET_STRING("ONEDRIVE_SIGN_IN_LINK", IDS_FILE_BROWSER_ONEDRIVE_SIGN_IN_LINK);
+  SET_STRING("ONEDRIVE_FROZEN_ACCOUNT_TITLE",
+             IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_TITLE);
+  SET_STRING("ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE",
+             IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE);
 }  // NOLINT(readability/fn_size): Structure of AddStringsGeneric function
    // should be easy to manage.
 
@@ -1230,7 +1221,9 @@ bool IsEligibleAndEnabledGoogleOneOfferFilesBanner() {
   }
 
   return base::FeatureList::IsEnabled(
-      ash::features::kGoogleOneOfferFilesBanner);
+             ash::features::kGoogleOneOfferFilesBanner) &&
+         !base::FeatureList::IsEnabled(
+             ash::features::kDisableGoogleOneOfferFilesBanner);
 }
 
 void AddStringsForVms(base::Value::Dict* dict) {
@@ -1270,6 +1263,23 @@ void AddStringsForVms(base::Value::Dict* dict) {
                 overall_name));
 }
 
+void AddStringsForSkyVault(base::Value::Dict* dict) {
+  dict->Set(
+      "SKYVAULT_MIGRATION_BANNER_GOOGLE_DRIVE",
+      base::ReplaceStringPlaceholders(
+          l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_BANNER),
+          l10n_util::GetStringUTF16(IDS_OFFICE_CLOUD_PROVIDER_GOOGLE_DRIVE),
+          /*offset=*/nullptr));
+  dict->Set("SKYVAULT_MIGRATION_BANNER_ONEDRIVE",
+            base::ReplaceStringPlaceholders(
+                l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_BANNER),
+                l10n_util::GetStringUTF16(IDS_OFFICE_CLOUD_PROVIDER_ONEDRIVE),
+                /*offset=*/nullptr));
+  dict->Set("SKYVAULT_MISCONFIGURED_POLICY_MESSAGE",
+            l10n_util::GetStringUTF16(
+                IDS_POLICY_SKYVAULT_MISCONFIGURED_POLICY_MESSAGE));
+}
+
 }  // namespace
 
 base::Value::Dict GetFileManagerStrings() {
@@ -1286,6 +1296,7 @@ base::Value::Dict GetFileManagerStrings() {
   AddStringsForPhotos(&dict);
   AddStringsGeneric(&dict);
   AddStringsForVms(&dict);
+  AddStringsForSkyVault(&dict);
 
   dict.Set(
       "DOWNLOADS_LOW_SPACE_WARNING_HELP_URL",
@@ -1378,8 +1389,8 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("CROS_COMPONENTS", chromeos::features::IsCrosComponentsEnabled());
 
-  dict->Set("NEW_DIRECTORY_TREE", base::FeatureList::IsEnabled(
-                                      ash::features::kFilesNewDirectoryTree));
+  dict->Set("MATERIALIZED_VIEWS", base::FeatureList::IsEnabled(
+                                      ash::features::kFilesMaterializedViews));
 
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(
@@ -1391,6 +1402,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   } else {
     dict->Set("DLP_ENABLED", false);
   }
+
+  dict->Set("SKYVAULT_V2_ENABLED",
+            base::FeatureList::IsEnabled(features::kSkyVaultV2));
 
   base::Value::List vms;
   auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);

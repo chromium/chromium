@@ -20,7 +20,7 @@ namespace content {
 // This class is the video consumer to FrameSinkVideoCapturerImpl. This class,
 // in turn sends video frames to its host via the OnFrameCapturedCallback. Used
 // when the VizDisplayCompositor feature is enabled.
-// TODO(crbug.com/846811): This class can probably be merged into
+// TODO(crbug.com/41391202): This class can probably be merged into
 // viz::ClientFrameSinkVideoCapturer.
 class CONTENT_EXPORT DevToolsVideoConsumer
     : public viz::mojom::FrameSinkVideoConsumer {

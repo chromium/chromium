@@ -35,8 +35,8 @@
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -172,7 +172,7 @@ class PrerenderTest : public testing::Test {
         mojom::blink::NoStatePrefetchProcessor::Name_, {});
   }
 
-  BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() {
+  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() {
     return web_view_helper_.LocalMainFrame()
         ->GetFrame()
         ->GetBrowserInterfaceBroker();

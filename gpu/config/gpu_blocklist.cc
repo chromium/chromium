@@ -16,8 +16,7 @@ GpuBlocklist::~GpuBlocklist() = default;
 
 // static
 std::unique_ptr<GpuBlocklist> GpuBlocklist::Create() {
-  return Create(base::make_span(kSoftwareRenderingListEntries,
-                                kSoftwareRenderingListEntryCount));
+  return Create(kSoftwareRenderingListEntries);
 }
 
 // static
@@ -45,14 +44,15 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
   list->AddSupportedFeature("accelerated_webgpu",
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGPU);
   list->AddSupportedFeature("skia_graphite", GPU_FEATURE_TYPE_SKIA_GRAPHITE);
+  list->AddSupportedFeature("webnn", GPU_FEATURE_TYPE_WEBNN);
   return list;
 }
 
 // static
 bool GpuBlocklist::AreEntryIndicesValid(
     const std::vector<uint32_t>& entry_indices) {
-  return GpuControlList::AreEntryIndicesValid(entry_indices,
-                                              kSoftwareRenderingListEntryCount);
+  return GpuControlList::AreEntryIndicesValid(
+      entry_indices, kSoftwareRenderingListEntries.size());
 }
 
 }  // namespace gpu

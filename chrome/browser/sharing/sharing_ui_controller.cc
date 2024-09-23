@@ -7,17 +7,17 @@
 #include <utility>
 
 #include "base/time/time.h"
-#include "chrome/browser/sharing/features.h"
-#include "chrome/browser/sharing/sharing_constants.h"
-#include "chrome/browser/sharing/sharing_dialog.h"
-#include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
-#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/sharing_message/features.h"
+#include "components/sharing_message/sharing_constants.h"
+#include "components/sharing_message/sharing_dialog.h"
+#include "components/sharing_message/sharing_dialog_data.h"
+#include "components/sharing_message/sharing_target_device_info.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -66,7 +66,7 @@ std::u16string SharingUiController::GetTitle(SharingDialogType dialog_type) {
 
     case SharingSendMessageResult::kSuccessful:
     case SharingSendMessageResult::kCancelled:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
 
     case SharingSendMessageResult::kPayloadTooLarge:
@@ -180,7 +180,7 @@ bool SharingUiController::HasAccessibleUi() const {
 base::OnceClosure SharingUiController::SendMessageToDevice(
     const SharingTargetDeviceInfo& device,
     std::optional<base::TimeDelta> response_timeout,
-    chrome_browser_sharing::SharingMessage sharing_message,
+    components_sharing_message::SharingMessage sharing_message,
     std::optional<SharingMessageSender::ResponseCallback> custom_callback) {
   send_result_ = SharingSendMessageResult::kSuccessful;
   target_device_name_ = device.client_name();
@@ -241,7 +241,7 @@ void SharingUiController::OnResponse(
     int dialog_id,
     std::optional<SharingMessageSender::ResponseCallback> custom_callback,
     SharingSendMessageResult result,
-    std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
+    std::unique_ptr<components_sharing_message::ResponseMessage> response) {
   if (custom_callback)
     std::move(custom_callback.value()).Run(result, std::move(response));
   if (dialog_id != last_dialog_id_)

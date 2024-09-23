@@ -121,6 +121,9 @@ class ConditionValidator {
   // Called to get if there is a pending priority notification to be shown next.
   virtual std::optional<std::string> GetPendingPriorityNotification() = 0;
 
+  // Called to reset the session info, including the shown history.
+  virtual void ResetSession() = 0;
+
  protected:
   ConditionValidator() = default;
 };

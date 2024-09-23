@@ -12,6 +12,7 @@
 <meta name="variant" content="?parsing-scope-keys.json">
 <meta name="variant" content="?parsing-specifier-keys.json">
 <meta name="variant" content="?parsing-trailing-slashes.json">
+<meta name="variant" content="?parsing-integrity.json">
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -85,7 +86,7 @@ function jsonToTests(json, inheritedProps = {}, name = '') {
     });
   } else {
     // Leaf (test) node
-    return [{ name, ...baseProps }];
+    return [{ name: json.name, ...baseProps }];
   }
 }
 

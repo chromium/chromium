@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Resources for Growth Framework. -->
+  <include name="IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG" file="../resources/internal/container_app.png" type="BINDATA" />
+  <include name="IDR_GROWTH_FRAMEWORK_G1_PNG" file="../components/growth/resources/logo_one_color_2x_web_96dp.png" type="BINDATA" />
+  <include name="IDR_GROWTH_FRAMEWORK_SPARK_REBUY_PNG" file="../resources/internal/spark_rebuy_2x.png" type="BINDATA" />
+  <include name="IDR_GROWTH_FRAMEWORK_SPARK_1P_APP_PNG" file="../resources/internal/spark_1p_app_2x.png" type="BINDATA" />
+  <include name="IDR_GROWTH_FRAMEWORK_SPARK_V2_PNG" file="../resources/internal/spark_v2_1x.png" type="BINDATA" />
+  <include name="IDR_GROWTH_FRAMEWORK_G1_NOTIFICATION_PNG" file="../resources/internal/g1_notification_1x.png" type="BINDATA" />
+</grit-part>

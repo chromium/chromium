@@ -55,6 +55,7 @@ class HoverListView : public views::View {
   void AppendListItemView(const ui::ImageModel& icon,
                           std::u16string item_text,
                           std::u16string item_description,
+                          bool enabled,
                           int item_tag);
   void CreateAndAppendPlaceholderItem();
   views::Button& GetTopListItemView() const;

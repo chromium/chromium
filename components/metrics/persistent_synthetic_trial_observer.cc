@@ -16,6 +16,8 @@ void PersistSyntheticFieldTrials(
     const std::vector<variations::SyntheticTrialGroup>& trials_removed) {
   // Mark all the updated synthetic field trials in the persistent profile,
   // update the removed trials first, then add the updated trials.
+  // TODO: crbug.com/345445618 - Handle kNextLog annotation mode properly, and
+  // when the annotation mode changes.
   for (const auto& removed : trials_removed) {
     metrics::GlobalPersistentSystemProfile::GetInstance()->RemoveFieldTrial(
         removed.trial_name());

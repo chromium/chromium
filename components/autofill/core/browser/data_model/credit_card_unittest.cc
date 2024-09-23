@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/data_model/credit_card.h"
+
 #include <stddef.h>
 
 #include <string>
@@ -16,8 +18,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/data_model/test_autofill_data_model.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/validation.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -35,14 +37,13 @@ using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
 
 namespace autofill {
+namespace {
 
 const CreditCard::RecordType LOCAL_CARD = CreditCard::RecordType::kLocalCard;
 const CreditCard::RecordType MASKED_SERVER_CARD =
     CreditCard::RecordType::kMaskedServerCard;
 const CreditCard::RecordType FULL_SERVER_CARD =
     CreditCard::RecordType::kFullServerCard;
-
-namespace {
 
 // From
 // https://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
@@ -88,8 +89,6 @@ std::u16string GetYearInTheFuture() {
   AutofillClock::Now().LocalExplode(&now);
   return base::NumberToString16(now.year + 4);
 }
-
-}  // namespace
 
 TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
@@ -469,7 +468,7 @@ TEST(CreditCardTest, GetMetadata) {
   local_card.set_use_count(2);
   local_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(25));
   local_card.set_billing_address_id("123");
-  AutofillMetadata local_metadata = local_card.GetMetadata();
+  PaymentsMetadata local_metadata = local_card.GetMetadata();
   EXPECT_EQ(local_card.guid(), local_metadata.id);
   EXPECT_EQ(local_card.billing_address_id(), local_metadata.billing_address_id);
   EXPECT_EQ(local_card.use_count(), local_metadata.use_count);
@@ -479,7 +478,7 @@ TEST(CreditCardTest, GetMetadata) {
   masked_card.set_use_count(4);
   masked_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(50));
   masked_card.set_billing_address_id("abc");
-  AutofillMetadata masked_metadata = masked_card.GetMetadata();
+  PaymentsMetadata masked_metadata = masked_card.GetMetadata();
   EXPECT_EQ(masked_card.server_id(), masked_metadata.id);
   EXPECT_EQ(masked_card.billing_address_id(),
             masked_metadata.billing_address_id);
@@ -490,7 +489,7 @@ TEST(CreditCardTest, GetMetadata) {
   full_card.set_use_count(6);
   full_card.set_use_date(base::Time::FromSecondsSinceUnixEpoch(100));
   full_card.set_billing_address_id("xyz");
-  AutofillMetadata full_metadata = full_card.GetMetadata();
+  PaymentsMetadata full_metadata = full_card.GetMetadata();
   EXPECT_EQ(full_card.server_id(), full_metadata.id);
   EXPECT_EQ(full_card.billing_address_id(), full_metadata.billing_address_id);
   EXPECT_EQ(full_card.use_count(), full_metadata.use_count);
@@ -499,7 +498,7 @@ TEST(CreditCardTest, GetMetadata) {
 
 TEST(CreditCardTest, SetMetadata_MatchingId) {
   CreditCard local_card = test::GetCreditCard();
-  AutofillMetadata local_metadata;
+  PaymentsMetadata local_metadata;
   local_metadata.id = local_card.guid();
   local_metadata.use_count = 100;
   local_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -511,7 +510,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   EXPECT_EQ(local_metadata.use_date, local_card.use_date());
 
   CreditCard masked_card = test::GetMaskedServerCard();
-  AutofillMetadata masked_metadata;
+  PaymentsMetadata masked_metadata;
   masked_metadata.id = masked_card.server_id();
   masked_metadata.use_count = 100;
   masked_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -524,7 +523,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
   EXPECT_EQ(masked_metadata.use_date, masked_card.use_date());
 
   CreditCard full_card = test::GetFullServerCard();
-  AutofillMetadata full_metadata;
+  PaymentsMetadata full_metadata;
   full_metadata.id = full_card.server_id();
   full_metadata.use_count = 100;
   full_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -538,7 +537,7 @@ TEST(CreditCardTest, SetMetadata_MatchingId) {
 
 TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   CreditCard local_card = test::GetCreditCard();
-  AutofillMetadata local_metadata;
+  PaymentsMetadata local_metadata;
   local_metadata.id = "WrongId";
   local_metadata.use_count = 100;
   local_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -550,7 +549,7 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(local_metadata.use_date, local_card.use_date());
 
   CreditCard masked_card = test::GetMaskedServerCard();
-  AutofillMetadata masked_metadata;
+  PaymentsMetadata masked_metadata;
   masked_metadata.id = "WrongId";
   masked_metadata.use_count = 100;
   masked_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -563,7 +562,7 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(masked_metadata.use_date, masked_card.use_date());
 
   CreditCard full_card = test::GetFullServerCard();
-  AutofillMetadata full_metadata;
+  PaymentsMetadata full_metadata;
   full_metadata.id = "WrongId";
   full_metadata.use_count = 100;
   full_metadata.use_date = base::Time::FromSecondsSinceUnixEpoch(50);
@@ -1041,43 +1040,84 @@ TEST(CreditCardTest, Compare) {
 
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceId) {
-  EXPECT_EQ(IDR_AUTOFILL_CC_AMEX,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
-  EXPECT_EQ(IDR_AUTOFILL_CC_DINERS,
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableVerveCardSupport};
+  bool new_network_images = base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewCardArtAndNetworkImages);
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_AMEX : IDR_AUTOFILL_CC_AMEX,
+      CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_DINERS
+                               : IDR_AUTOFILL_CC_DINERS,
             CreditCard::IconResourceId(Suggestion::Icon::kCardDiners));
-  EXPECT_EQ(IDR_AUTOFILL_CC_DISCOVER,
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_DISCOVER
+                               : IDR_AUTOFILL_CC_DISCOVER,
             CreditCard::IconResourceId(Suggestion::Icon::kCardDiscover));
-  EXPECT_EQ(IDR_AUTOFILL_CC_ELO,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardElo));
-  EXPECT_EQ(IDR_AUTOFILL_CC_JCB,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardJCB));
-  EXPECT_EQ(IDR_AUTOFILL_CC_MASTERCARD,
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_ELO : IDR_AUTOFILL_CC_ELO,
+      CreditCard::IconResourceId(Suggestion::Icon::kCardElo));
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_JCB : IDR_AUTOFILL_CC_JCB,
+      CreditCard::IconResourceId(Suggestion::Icon::kCardJCB));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_MASTERCARD
+                               : IDR_AUTOFILL_CC_MASTERCARD,
             CreditCard::IconResourceId(Suggestion::Icon::kCardMasterCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_MIR,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardMir));
-  EXPECT_EQ(IDR_AUTOFILL_CC_TROY,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardTroy));
-  EXPECT_EQ(IDR_AUTOFILL_CC_UNIONPAY,
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_MIR : IDR_AUTOFILL_CC_MIR,
+      CreditCard::IconResourceId(Suggestion::Icon::kCardMir));
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_TROY : IDR_AUTOFILL_CC_TROY,
+      CreditCard::IconResourceId(Suggestion::Icon::kCardTroy));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_UNIONPAY
+                               : IDR_AUTOFILL_CC_UNIONPAY,
             CreditCard::IconResourceId(Suggestion::Icon::kCardUnionPay));
-  EXPECT_EQ(IDR_AUTOFILL_CC_VISA,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardVisa));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_VERVE
+                               : IDR_AUTOFILL_CC_VERVE,
+            CreditCard::IconResourceId(Suggestion::Icon::kCardVerve));
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_VISA : IDR_AUTOFILL_CC_VISA,
+      CreditCard::IconResourceId(Suggestion::Icon::kCardVisa));
 }
 
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceIdFromString) {
-  EXPECT_EQ(IDR_AUTOFILL_CC_AMEX,
-            CreditCard::IconResourceId(kAmericanExpressCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_DINERS, CreditCard::IconResourceId(kDinersCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_DISCOVER,
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableVerveCardSupport};
+  bool new_network_images = base::FeatureList::IsEnabled(
+      features::kAutofillEnableNewCardArtAndNetworkImages);
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_AMEX : IDR_AUTOFILL_CC_AMEX,
+      CreditCard::IconResourceId(kAmericanExpressCard));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_DINERS
+                               : IDR_AUTOFILL_CC_DINERS,
+            CreditCard::IconResourceId(kDinersCard));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_DISCOVER
+                               : IDR_AUTOFILL_CC_DISCOVER,
             CreditCard::IconResourceId(kDiscoverCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_ELO, CreditCard::IconResourceId(kEloCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_JCB, CreditCard::IconResourceId(kJCBCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_MASTERCARD,
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_ELO : IDR_AUTOFILL_CC_ELO,
+      CreditCard::IconResourceId(kEloCard));
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_JCB : IDR_AUTOFILL_CC_JCB,
+      CreditCard::IconResourceId(kJCBCard));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_MASTERCARD
+                               : IDR_AUTOFILL_CC_MASTERCARD,
             CreditCard::IconResourceId(kMasterCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_MIR, CreditCard::IconResourceId(kMirCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_TROY, CreditCard::IconResourceId(kTroyCard));
-  EXPECT_EQ(IDR_AUTOFILL_CC_UNIONPAY, CreditCard::IconResourceId(kUnionPay));
-  EXPECT_EQ(IDR_AUTOFILL_CC_VISA, CreditCard::IconResourceId(kVisaCard));
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_MIR : IDR_AUTOFILL_CC_MIR,
+      CreditCard::IconResourceId(kMirCard));
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_TROY : IDR_AUTOFILL_CC_TROY,
+      CreditCard::IconResourceId(kTroyCard));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_UNIONPAY
+                               : IDR_AUTOFILL_CC_UNIONPAY,
+            CreditCard::IconResourceId(kUnionPay));
+  EXPECT_EQ(new_network_images ? IDR_AUTOFILL_METADATA_CC_VERVE
+                               : IDR_AUTOFILL_CC_VERVE,
+            CreditCard::IconResourceId(kVerveCard));
+  EXPECT_EQ(
+      new_network_images ? IDR_AUTOFILL_METADATA_CC_VISA : IDR_AUTOFILL_CC_VISA,
+      CreditCard::IconResourceId(kVisaCard));
 }
 
 TEST(CreditCardTest, UpdateFromImportedCard_UpdatedWithNameAndExpirationDate) {
@@ -1509,15 +1549,15 @@ TEST(CreditCardTest, SetExpirationMonth) {
   EXPECT_EQ(u"07", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(7, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"January", "en-US");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"January", "en-US");
   EXPECT_EQ(u"01", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(1, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"Apr", "en-US");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"Apr", "en-US");
   EXPECT_EQ(u"04", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(4, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"FÉVRIER", "fr-FR");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"FÉVRIER", "fr-FR");
   EXPECT_EQ(u"02", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(2, card.expiration_month());
 }
@@ -1568,6 +1608,9 @@ TEST(CreditCardTest, CreditCardVerificationCode) {
                   "https://www.example.com/");
   card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"999");
   EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_EQ(u"999", card.cvc());
+  card.SetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE, u"999");
+  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
   EXPECT_EQ(u"999", card.cvc());
 }
 
@@ -1650,8 +1693,8 @@ TEST_P(CreditCardMatchingTypesTest, Cases) {
                   ASCIIToUTF16(test_case.card_exp_year));
 
   FieldTypeSet matching_types;
-  card.GetMatchingTypes(UTF8ToUTF16(test_case.value), test_case.locale,
-                        &matching_types);
+  card.GetMatchingTypesWithProfileSources(
+      UTF8ToUTF16(test_case.value), test_case.locale, &matching_types, nullptr);
   EXPECT_EQ(test_case.expected_matched_types, matching_types);
 }
 
@@ -1707,327 +1750,6 @@ const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
 INSTANTIATE_TEST_SUITE_P(CreditCardTest,
                          CreditCardMatchingTypesTest,
                          testing::ValuesIn(kCreditCardMatchingTypesTestCases));
-
-struct GetCardNetworkTestCase {
-  const char* card_number;
-  const char* issuer_network;
-  bool is_valid;
-};
-
-// We are doing batches here because INSTANTIATE_TEST_SUITE_P has a
-// 50 upper limit.
-class GetCardNetworkTestBatch1
-    : public testing::TestWithParam<GetCardNetworkTestCase> {};
-
-TEST_P(GetCardNetworkTestBatch1, GetCardNetwork) {
-  auto test_case = GetParam();
-  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
-  SCOPED_TRACE(card_number);
-  EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
-  EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CreditCardTest,
-    GetCardNetworkTestBatch1,
-    testing::Values(
-        // The relevant sample numbers from
-        // http://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
-        GetCardNetworkTestCase{"378282246310005", kAmericanExpressCard, true},
-        GetCardNetworkTestCase{"371449635398431", kAmericanExpressCard, true},
-        GetCardNetworkTestCase{"378734493671000", kAmericanExpressCard, true},
-        GetCardNetworkTestCase{"30569309025904", kDinersCard, true},
-        GetCardNetworkTestCase{"38520000023237", kDinersCard, true},
-        GetCardNetworkTestCase{"6011111111111117", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6011000990139424", kDiscoverCard, true},
-        GetCardNetworkTestCase{"3530111333300000", kJCBCard, true},
-        GetCardNetworkTestCase{"3566002020360505", kJCBCard, true},
-        GetCardNetworkTestCase{"5555555555554444", kMasterCard, true},
-        GetCardNetworkTestCase{"5105105105105100", kMasterCard, true},
-        GetCardNetworkTestCase{"4111111111111111", kVisaCard, true},
-        GetCardNetworkTestCase{"4012888888881881", kVisaCard, true},
-        GetCardNetworkTestCase{"4222222222222", kVisaCard, true},
-        GetCardNetworkTestCase{"4532261615476013542", kVisaCard, true},
-
-        // The relevant sample numbers from
-        // https://www.auricsystems.com/sample-credit-card-numbers/
-        GetCardNetworkTestCase{"343434343434343", kAmericanExpressCard, true},
-        GetCardNetworkTestCase{"371144371144376", kAmericanExpressCard, true},
-        GetCardNetworkTestCase{"341134113411347", kAmericanExpressCard, true},
-        GetCardNetworkTestCase{"36438936438936", kDinersCard, true},
-        GetCardNetworkTestCase{"36110361103612", kDinersCard, true},
-        GetCardNetworkTestCase{"36111111111111", kDinersCard, true},
-        GetCardNetworkTestCase{"6011016011016011", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6011000990139424", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6011000000000004", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6011000995500000", kDiscoverCard, true},
-        GetCardNetworkTestCase{"6500000000000002", kDiscoverCard, true},
-        GetCardNetworkTestCase{"3566002020360505", kJCBCard, true},
-        GetCardNetworkTestCase{"3528000000000007", kJCBCard, true},
-        GetCardNetworkTestCase{"2222400061240016", kMasterCard, true},
-        GetCardNetworkTestCase{"2223000048400011", kMasterCard, true},
-        GetCardNetworkTestCase{"5500005555555559", kMasterCard, true},
-        GetCardNetworkTestCase{"5555555555555557", kMasterCard, true},
-        GetCardNetworkTestCase{"5454545454545454", kMasterCard, true},
-        GetCardNetworkTestCase{"5478050000000007", kMasterCard, true},
-        GetCardNetworkTestCase{"5112345112345114", kMasterCard, true},
-        GetCardNetworkTestCase{"5115915115915118", kMasterCard, true},
-        GetCardNetworkTestCase{"6247130048162403", kUnionPay, true},
-        GetCardNetworkTestCase{"6247130048162403", kUnionPay, true},
-        GetCardNetworkTestCase{"622384452162063648", kUnionPay, true},
-        GetCardNetworkTestCase{"2204883716636153", kMirCard, true},
-        GetCardNetworkTestCase{"2200111234567898", kMirCard, true},
-        GetCardNetworkTestCase{"2200481349288130", kMirCard, true}));
-
-class GetCardNetworkTestBatch2
-    : public testing::TestWithParam<GetCardNetworkTestCase> {};
-
-TEST_P(GetCardNetworkTestBatch2, GetCardNetwork) {
-  auto test_case = GetParam();
-  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
-  SCOPED_TRACE(card_number);
-  EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
-  EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CreditCardTest,
-    GetCardNetworkTestBatch2,
-    testing::Values(
-        // The relevant numbers are sampled from
-        // https://www.bincodes.com/bank-creditcard-generator/ and
-        // https://www.ebanx.com/business/en/developers/integrations/testing/credit-card-test-numbers
-        // It's then modified to fit the correct pattern based on the Elo regex,
-        // sourced from the Elo documentation.
-        GetCardNetworkTestCase{"5067071446391278", kEloCard, true},
-        GetCardNetworkTestCase{"6277800000457016", kEloCard, true},
-
-        // These sample numbers were created by taking the expected card prefix,
-        // filling out the required number of digits, and editing the last digit
-        // so that the full number passes a Luhn check.
-        GetCardNetworkTestCase{"4312741111111112", kEloCard, true},
-        GetCardNetworkTestCase{"4514161111111119", kEloCard, true},
-        GetCardNetworkTestCase{"5090141111111110", kEloCard, true},
-        GetCardNetworkTestCase{"6277801111111112", kEloCard, true},
-        GetCardNetworkTestCase{"2205111111111112", kTroyCard, true},
-        GetCardNetworkTestCase{"9792111111111116", kTroyCard, true},
-
-        // Existence of separators should not change the result, especially for
-        // prefixes that go past the first separator.
-        GetCardNetworkTestCase{"4111 1111 1111 1111", kVisaCard, true},
-        GetCardNetworkTestCase{"4111-1111-1111-1111", kVisaCard, true},
-        GetCardNetworkTestCase{"4312 7411 1111 1112", kEloCard, true},
-        GetCardNetworkTestCase{"4312-7411-1111-1112", kEloCard, true},
-        GetCardNetworkTestCase{"2205 1111 1111 1112", kTroyCard, true},
-        GetCardNetworkTestCase{"2205-1111-1111-1112", kTroyCard, true},
-
-        // Empty string
-        GetCardNetworkTestCase{"", kGenericCard, false},
-
-        // Non-numeric
-        GetCardNetworkTestCase{"garbage", kGenericCard, false},
-        GetCardNetworkTestCase{"4garbage", kGenericCard, false},
-
-        // Fails Luhn check.
-        GetCardNetworkTestCase{"4111111111111112", kVisaCard, false},
-        GetCardNetworkTestCase{"6247130048162413", kUnionPay, false},
-        GetCardNetworkTestCase{"2204883716636154", kMirCard, false},
-
-        // Invalid length.
-        GetCardNetworkTestCase{"3434343434343434", kAmericanExpressCard, false},
-        GetCardNetworkTestCase{"411111111111116", kVisaCard, false},
-        GetCardNetworkTestCase{"220011123456783", kMirCard, false}));
-
-class GetCardNetworkTestBatch3
-    : public testing::TestWithParam<GetCardNetworkTestCase> {};
-
-TEST_P(GetCardNetworkTestBatch3, GetCardNetwork) {
-  auto test_case = GetParam();
-  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
-  SCOPED_TRACE(card_number);
-  EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
-  EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CreditCardTest,
-    GetCardNetworkTestBatch3,
-    testing::Values(
-        // Issuer Identification Numbers (IINs) that Chrome recognizes.
-        GetCardNetworkTestCase{"2200", kMirCard, false},
-        GetCardNetworkTestCase{"2201", kMirCard, false},
-        GetCardNetworkTestCase{"2202", kMirCard, false},
-        GetCardNetworkTestCase{"2203", kMirCard, false},
-        GetCardNetworkTestCase{"2204", kMirCard, false},
-        GetCardNetworkTestCase{"22050", kTroyCard, false},
-        GetCardNetworkTestCase{"22051", kTroyCard, false},
-        GetCardNetworkTestCase{"22052", kTroyCard, false},
-        GetCardNetworkTestCase{"2221", kMasterCard, false},
-        GetCardNetworkTestCase{"2720", kMasterCard, false},
-        GetCardNetworkTestCase{"300", kDinersCard, false},
-        GetCardNetworkTestCase{"301", kDinersCard, false},
-        GetCardNetworkTestCase{"302", kDinersCard, false},
-        GetCardNetworkTestCase{"303", kDinersCard, false},
-        GetCardNetworkTestCase{"304", kDinersCard, false},
-        GetCardNetworkTestCase{"305", kDinersCard, false},
-        GetCardNetworkTestCase{"309", kDinersCard, false},
-        GetCardNetworkTestCase{"34", kAmericanExpressCard, false},
-        GetCardNetworkTestCase{"3528", kJCBCard, false},
-        GetCardNetworkTestCase{"3531", kJCBCard, false},
-        GetCardNetworkTestCase{"3589", kJCBCard, false},
-        GetCardNetworkTestCase{"36", kDinersCard, false},
-        GetCardNetworkTestCase{"37", kAmericanExpressCard, false},
-        GetCardNetworkTestCase{"38", kDinersCard, false},
-        GetCardNetworkTestCase{"39", kDinersCard, false},
-        GetCardNetworkTestCase{"4", kVisaCard, false},
-        GetCardNetworkTestCase{"431274", kEloCard, false},
-        GetCardNetworkTestCase{"451416", kEloCard, false},
-        GetCardNetworkTestCase{"506707", kEloCard, false},
-        GetCardNetworkTestCase{"509014", kEloCard, false},
-        GetCardNetworkTestCase{"51", kMasterCard, false},
-        GetCardNetworkTestCase{"52", kMasterCard, false},
-        GetCardNetworkTestCase{"53", kMasterCard, false},
-        GetCardNetworkTestCase{"54", kMasterCard, false},
-        GetCardNetworkTestCase{"55", kMasterCard, false},
-        GetCardNetworkTestCase{"6011", kDiscoverCard, false},
-        GetCardNetworkTestCase{"62", kUnionPay, false},
-        GetCardNetworkTestCase{"627780", kEloCard, false},
-        GetCardNetworkTestCase{"636368", kEloCard, false},
-        GetCardNetworkTestCase{"644", kDiscoverCard, false},
-        GetCardNetworkTestCase{"645", kDiscoverCard, false},
-        GetCardNetworkTestCase{"646", kDiscoverCard, false},
-        GetCardNetworkTestCase{"647", kDiscoverCard, false},
-        GetCardNetworkTestCase{"648", kDiscoverCard, false},
-        GetCardNetworkTestCase{"649", kDiscoverCard, false},
-        GetCardNetworkTestCase{"65", kDiscoverCard, false},
-        GetCardNetworkTestCase{"9792", kTroyCard, false}));
-
-class GetCardNetworkTestBatch4
-    : public testing::TestWithParam<GetCardNetworkTestCase> {};
-
-TEST_P(GetCardNetworkTestBatch4, GetCardNetwork) {
-  auto test_case = GetParam();
-  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
-  SCOPED_TRACE(card_number);
-  EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
-  EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    CreditCardTest,
-    GetCardNetworkTestBatch4,
-    testing::Values(
-        // Not enough data to determine an IIN uniquely.
-        GetCardNetworkTestCase{"2", kGenericCard, false},
-        GetCardNetworkTestCase{"3", kGenericCard, false},
-        GetCardNetworkTestCase{"30", kGenericCard, false},
-        GetCardNetworkTestCase{"35", kGenericCard, false},
-        GetCardNetworkTestCase{"5", kGenericCard, false},
-        GetCardNetworkTestCase{"6", kGenericCard, false},
-        GetCardNetworkTestCase{"60", kGenericCard, false},
-        GetCardNetworkTestCase{"601", kGenericCard, false},
-        GetCardNetworkTestCase{"64", kGenericCard, false},
-        GetCardNetworkTestCase{"9", kGenericCard, false},
-
-        // Unknown IINs.
-        GetCardNetworkTestCase{"0", kGenericCard, false},
-        GetCardNetworkTestCase{"1", kGenericCard, false},
-        GetCardNetworkTestCase{"22053", kGenericCard, false},
-        GetCardNetworkTestCase{"306", kGenericCard, false},
-        GetCardNetworkTestCase{"307", kGenericCard, false},
-        GetCardNetworkTestCase{"308", kGenericCard, false},
-        GetCardNetworkTestCase{"31", kGenericCard, false},
-        GetCardNetworkTestCase{"32", kGenericCard, false},
-        GetCardNetworkTestCase{"33", kGenericCard, false},
-        GetCardNetworkTestCase{"351", kGenericCard, false},
-        GetCardNetworkTestCase{"3527", kGenericCard, false},
-        GetCardNetworkTestCase{"359", kGenericCard, false},
-        GetCardNetworkTestCase{"50", kGenericCard, false},
-        GetCardNetworkTestCase{"56", kGenericCard, false},
-        GetCardNetworkTestCase{"57", kGenericCard, false},
-        GetCardNetworkTestCase{"58", kGenericCard, false},
-        GetCardNetworkTestCase{"59", kGenericCard, false},
-        GetCardNetworkTestCase{"600", kGenericCard, false},
-        GetCardNetworkTestCase{"602", kGenericCard, false},
-        GetCardNetworkTestCase{"603", kGenericCard, false},
-        GetCardNetworkTestCase{"604", kGenericCard, false},
-        GetCardNetworkTestCase{"605", kGenericCard, false},
-        GetCardNetworkTestCase{"606", kGenericCard, false},
-        GetCardNetworkTestCase{"607", kGenericCard, false},
-        GetCardNetworkTestCase{"608", kGenericCard, false},
-        GetCardNetworkTestCase{"609", kGenericCard, false},
-        GetCardNetworkTestCase{"61", kGenericCard, false},
-        GetCardNetworkTestCase{"63", kGenericCard, false},
-        GetCardNetworkTestCase{"640", kGenericCard, false},
-        GetCardNetworkTestCase{"641", kGenericCard, false},
-        GetCardNetworkTestCase{"642", kGenericCard, false},
-        GetCardNetworkTestCase{"643", kGenericCard, false},
-        GetCardNetworkTestCase{"66", kGenericCard, false},
-        GetCardNetworkTestCase{"67", kGenericCard, false},
-        GetCardNetworkTestCase{"68", kGenericCard, false},
-        GetCardNetworkTestCase{"69", kGenericCard, false},
-        GetCardNetworkTestCase{"7", kGenericCard, false},
-        GetCardNetworkTestCase{"8", kGenericCard, false},
-        GetCardNetworkTestCase{"90", kGenericCard, false},
-        GetCardNetworkTestCase{"91", kGenericCard, false},
-        GetCardNetworkTestCase{"92", kGenericCard, false},
-        GetCardNetworkTestCase{"93", kGenericCard, false},
-        GetCardNetworkTestCase{"94", kGenericCard, false},
-        GetCardNetworkTestCase{"95", kGenericCard, false},
-        GetCardNetworkTestCase{"97", kGenericCard, false},
-        GetCardNetworkTestCase{"979", kGenericCard, false},
-        GetCardNetworkTestCase{"98", kGenericCard, false},
-        GetCardNetworkTestCase{"99", kGenericCard, false},
-
-        // Oddball case: Unknown issuer, but valid Luhn check and plausible
-        // length.
-        GetCardNetworkTestCase{"7000700070007000", kGenericCard, true}));
-
-class GetCardNetworkTestBatch5
-    : public testing::TestWithParam<GetCardNetworkTestCase> {};
-
-TEST_P(GetCardNetworkTestBatch5, GetCardNetwork) {
-  auto test_case = GetParam();
-  std::u16string card_number = ASCIIToUTF16(test_case.card_number);
-  SCOPED_TRACE(card_number);
-  EXPECT_EQ(test_case.issuer_network, CreditCard::GetCardNetwork(card_number));
-  EXPECT_EQ(test_case.is_valid, IsValidCreditCardNumber(card_number));
-}
-
-// These are the cards that would be wrongly displayed as Discover before Elo
-// regex pattern was introduced to match the Elo BIN.
-INSTANTIATE_TEST_SUITE_P(
-    CreditCardTest,
-    GetCardNetworkTestBatch5,
-    testing::Values(GetCardNetworkTestCase{"6500311446391271", kEloCard, true},
-                    GetCardNetworkTestCase{"6500401446391270", kEloCard, true},
-                    GetCardNetworkTestCase{"6500691446391276", kEloCard, true},
-                    GetCardNetworkTestCase{"6500701446391273", kEloCard, true},
-                    GetCardNetworkTestCase{"6504061446391278", kEloCard, true},
-                    GetCardNetworkTestCase{"6504101446391272", kEloCard, true},
-                    GetCardNetworkTestCase{"6504221446391278", kEloCard, true},
-                    GetCardNetworkTestCase{"6504301446391278", kEloCard, true},
-                    GetCardNetworkTestCase{"6505804463912719", kEloCard, true},
-                    GetCardNetworkTestCase{"6504901446391275", kEloCard, true},
-                    GetCardNetworkTestCase{"6505001446391273", kEloCard, true},
-                    GetCardNetworkTestCase{"6505101446391271", kEloCard, true},
-                    GetCardNetworkTestCase{"6505201446391279", kEloCard, true},
-                    GetCardNetworkTestCase{"6505301446391277", kEloCard, true},
-                    GetCardNetworkTestCase{"6505521446391270", kEloCard, true},
-                    GetCardNetworkTestCase{"6505601446391270", kEloCard, true},
-                    GetCardNetworkTestCase{"6505701446391278", kEloCard, true},
-                    GetCardNetworkTestCase{"6505801446391276", kEloCard, true},
-                    GetCardNetworkTestCase{"6505901446391274", kEloCard, true},
-                    GetCardNetworkTestCase{"6516521446391277", kEloCard, true},
-                    GetCardNetworkTestCase{"6516601446391277", kEloCard, true},
-                    GetCardNetworkTestCase{"6516701446391275", kEloCard, true},
-                    GetCardNetworkTestCase{"6516881446391275", kEloCard, true},
-                    GetCardNetworkTestCase{"6550001446391277", kEloCard, true},
-                    GetCardNetworkTestCase{"6550121446391273", kEloCard, true},
-                    GetCardNetworkTestCase{"6550261446391277", kEloCard, true},
-                    GetCardNetworkTestCase{"6550361446391275", kEloCard, true},
-                    GetCardNetworkTestCase{"6550511446391275", kEloCard,
-                                           true}));
 
 TEST(CreditCardTest, LastFourDigits) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
@@ -2104,9 +1826,7 @@ constexpr base::TimeDelta kCurrent = base::Days(0);
 constexpr base::TimeDelta kOneYear = base::Days(365);
 constexpr base::TimeDelta kOneMonth = base::Days(31);
 
-void MonthAndYearFromDelta(const base::TimeDelta& time_delta,
-                           int& month,
-                           int& year) {
+void MonthAndYearFromDelta(base::TimeDelta time_delta, int& month, int& year) {
   base::Time now = AutofillClock::Now();
   autofill::TestAutofillClock test_clock;
   test_clock.SetNow(now);
@@ -2225,9 +1945,9 @@ TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
   model_b.set_use_date(test_case.use_date_b);
 
   EXPECT_EQ(test_case.expectation == GREATER,
-            model_a.HasGreaterRankingThan(&model_b, current_time));
+            model_a.HasGreaterRankingThan(model_b, current_time));
   EXPECT_NE(test_case.expectation == GREATER,
-            model_b.HasGreaterRankingThan(&model_a, current_time));
+            model_b.HasGreaterRankingThan(model_a, current_time));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2264,4 +1984,5 @@ INSTANTIATE_TEST_SUITE_P(
                                    "guid_b", 1, current_time - base::Days(30),
                                    LESS}));
 
+}  // namespace
 }  // namespace autofill

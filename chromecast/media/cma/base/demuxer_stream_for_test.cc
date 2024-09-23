@@ -47,7 +47,6 @@ void DemuxerStreamForTest::Read(uint32_t count, ReadCB read_cb) {
 
 ::media::AudioDecoderConfig DemuxerStreamForTest::audio_decoder_config() {
   NOTREACHED() << "DemuxerStreamForTest is a video DemuxerStream";
-  return ::media::AudioDecoderConfig();
 }
 
 ::media::VideoDecoderConfig DemuxerStreamForTest::video_decoder_config() {

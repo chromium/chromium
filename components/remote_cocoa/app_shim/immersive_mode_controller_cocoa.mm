@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "components/remote_cocoa/app_shim/features.h"
 #import "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/gfx/geometry/rect.h"
@@ -151,23 +152,24 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
 
 ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
     NativeWidgetMacNSWindow* browser_window,
-    NativeWidgetMacNSWindow* overlay_window)
+    NativeWidgetMacOverlayNSWindow* overlay_window)
     : weak_ptr_factory_(this) {
   browser_window_ = browser_window;
   overlay_window_ = overlay_window;
+#ifndef NDEBUG
+  overlay_window_.title = @"overlay";
+#endif  // NDEBUG
   // Record this now, since it will be 0 at the end of the transition if the
   // menu bar is set to autohide.
   menu_bar_height_ =
       [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
 
   overlay_window_.commandDispatchParentOverride = browser_window_;
+
   // A style of NSTitlebarSeparatorStyleAutomatic (default) will show a black
   // line separator when removing the NSWindowStyleMaskFullSizeContentView style
-  // bit. We do not want a separator. Pre-macOS 11 there is no titlebar
-  // separator.
-  if (@available(macOS 11.0, *)) {
-    browser_window_.titlebarSeparatorStyle = NSTitlebarSeparatorStyleNone;
-  }
+  // bit. We do not want a separator.
+  browser_window_.titlebarSeparatorStyle = NSTitlebarSeparatorStyleNone;
 
   // Create a new NSTitlebarAccessoryViewController that will host the
   // overlay_view_.
@@ -194,6 +196,10 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
   // Use a placeholder view since the content has been moved to the
   // ImmersiveModeTitlebarViewController.
   overlay_window_.contentView = [[OpaqueView alloc] init];
+  if (base::FeatureList::IsEnabled(
+          remote_cocoa::features::kImmersiveFullscreenOverlayWindowDebug)) {
+    [overlay_window_ debugWithColor:NSColor.greenColor];
+  }
 
   // The overlay window will become a child of NSToolbarFullScreenWindow and sit
   // above it in the z-order. Allow mouse events that are not handled by the
@@ -229,9 +235,7 @@ ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
   overlay_window_.contentView = overlay_content_view_;
   [immersive_mode_titlebar_view_controller_ removeFromParentViewController];
   browser_window_.styleMask |= NSWindowStyleMaskFullSizeContentView;
-  if (@available(macOS 11.0, *)) {
-    browser_window_.titlebarSeparatorStyle = NSTitlebarSeparatorStyleAutomatic;
-  }
+  browser_window_.titlebarSeparatorStyle = NSTitlebarSeparatorStyleAutomatic;
 }
 
 void ImmersiveModeControllerCocoa::Init() {
@@ -353,7 +357,7 @@ void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
       // `immersive_mode_titlebar_view_controller_` to be
       // displayed z-order on top of the content view. This will cover up any
       // perceived jank.
-      // TODO(https://crbug.com/1375995): Handle fullscreen exit.
+      // TODO(crbug.com/40873399): Handle fullscreen exit.
       if (!fullscreen_transition_complete_) {
         break;
       }
@@ -416,7 +420,7 @@ bool ImmersiveModeControllerCocoa::ShouldObserveChildWindow(NSWindow* child) {
 NSWindow* ImmersiveModeControllerCocoa::browser_window() {
   return browser_window_;
 }
-NSWindow* ImmersiveModeControllerCocoa::overlay_window() {
+NativeWidgetMacOverlayNSWindow* ImmersiveModeControllerCocoa::overlay_window() {
   return overlay_window_;
 }
 BridgedContentView* ImmersiveModeControllerCocoa::overlay_content_view() {
@@ -439,7 +443,7 @@ void ImmersiveModeControllerCocoa::OnChildWindowAdded(NSWindow* child) {
   window_lock_received_.insert(child);
   RevealLock();
 
-  // TODO(https://crbug.com/1350595): Handle a detached find bar.
+  // TODO(crbug.com/40234209): Handle a detached find bar.
 }
 
 void ImmersiveModeControllerCocoa::OnChildWindowRemoved(NSWindow* child) {
@@ -639,20 +643,15 @@ void ImmersiveModeControllerCocoa::LayoutWindowWithAnchorView(
   NSPoint point_on_screen =
       [anchor_view.window convertPointToScreen:point_in_window];
 
-  // This branch is only useful on macOS 11 and greater. macOS 10.15 and
-  // earlier move the window instead of clipping the view within the window.
-  // This allows the overlay window to appropriately track the overlay view.
-  if (@available(macOS 11.0, *)) {
-    // If the anchor view is clipped move the window off screen. A clipped
-    // anchor view indicates the titlebar is hidden or is in transition AND the
-    // browser content view takes up the whole window
-    // ("Always Show Toolbar in Full Screen" is disabled). When we are in this
-    // state we don't want the window on screen, otherwise it may mask input to
-    // the browser view. In all other cases will not enter this branch and the
-    // window will be placed at the same coordinates as the anchor view.
-    if (anchor_view.visibleRect.size.height != anchor_view.frame.size.height) {
-      point_on_screen.y = GetOffscreenYOrigin();
-    }
+  // If the anchor view is clipped move the window off screen. A clipped
+  // anchor view indicates the titlebar is hidden or is in transition AND the
+  // browser content view takes up the whole window
+  // ("Always Show Toolbar in Full Screen" is disabled). When we are in this
+  // state we don't want the window on screen, otherwise it may mask input to
+  // the browser view. In all other cases will not enter this branch and the
+  // window will be placed at the same coordinates as the anchor view.
+  if (anchor_view.visibleRect.size.height != anchor_view.frame.size.height) {
+    point_on_screen.y = GetOffscreenYOrigin();
   }
 
   // If the toolbar is hidden (mojom::ToolbarVisibilityStyle::kNone) also move

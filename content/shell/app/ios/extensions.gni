@@ -1,0 +1,67 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/compile_entitlements.gni")
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/ios/rules.gni")
+import("//build/ios/extension_bundle_data.gni")
+import("//ios/build/chrome_build.gni")
+import("//ios/build/config.gni")
+
+template("browserkit_extension") {
+  _process_target = target_name
+  tweak_info_plist("tweak_${_process_target}_plist") {
+    info_plist = "//content/app/ios/appex/${_process_target}.plist"
+  }
+
+  extension_bundle_data("${_process_target}_bundle") {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    extension_dir = "Extensions"
+    extension_name = "${_process_target}.appex"
+    extension_target = ":${_process_target}"
+  }
+
+  compile_entitlements("${_process_target}_entitlements") {
+    substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+    output_name = "$target_gen_dir/${_process_target}.appex.entitlements"
+    entitlements_templates =
+        [ "//content/app/ios/appex/${_process_target}.appex.entitlements" ]
+  }
+
+  # We don't use ios_appex_bundle here because we don't want to mess with multiple
+  # toolkits as the core framework is built with the default toolkit.
+  ios_app_bundle(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "defines",
+                             "deps",
+                             "framework_dirs",
+                             "frameworks",
+                             "public_deps",
+                             "sources",
+                             "target_name",
+                           ])
+
+    output_name = target_name
+    transparent = true
+
+    configs += [ "//build/config/ios:ios_extension_executable_flags" ]
+
+    deps = [
+      "//content/app/ios/appex:${_process_target}",
+      "//content/shell:content_shell_framework+link",
+    ]
+
+    ldflags = [
+      "-Wl,--ignore-auto-link-option=CoreAudioTypes",
+      "-Wl,-no_application_extension",
+      "-Wl,-rpath,@executable_path/../../Frameworks",
+    ]
+
+    product_type = "com.apple.product-type.app-extension"
+    entitlements_target = ":${_process_target}_entitlements"
+    info_plist_target = ":tweak_${_process_target}_plist"
+  }
+}

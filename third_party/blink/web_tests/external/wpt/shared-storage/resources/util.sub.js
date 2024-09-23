@@ -1,7 +1,9 @@
 function loadSharedStorageImage(data) {
   let {key, value, hasSharedStorageWritableAttribute, isSameOrigin} = data;
+  const encodedKey = encodeURIComponent(key);
+  const encodedValue = encodeURIComponent(value);
   const sameOriginSrc = `/shared-storage/resources/` +
-      `shared-storage-writable-pixel.png?key=${key}&value=${value}`;
+      `shared-storage-writable-pixel.png?key=${encodedKey}&value=${encodedValue}`;
   const crossOriginSrc =
       'https://{{domains[www]}}:{{ports[https][0]}}' + sameOriginSrc;
 
@@ -114,4 +116,52 @@ async function loadNestedSharedStorageFrameInNewFrame(data) {
       nestedSrc, hasSharedStorageWritableAttribute);
   await windowPromise;
   return {frame: frame, nestedFrame: nestedFrame, nestedFrameUrl: nestedSrc};
+}
+
+async function testCreateWorkletWithDataOption(
+    test, data_origin, key, value, is_same_origin_script, expect_success) {
+  const sameOrigin = location.origin;
+  const crossOrigin = 'https://{{domains[www]}}:{{ports[https][0]}}';
+  const sameOriginScriptUrl = `/shared-storage/resources/simple-module.js`;
+  const scriptOrigin = is_same_origin_script ? sameOrigin : crossOrigin;
+  const scriptUrl = is_same_origin_script ? sameOriginScriptUrl :
+                                            crossOrigin + sameOriginScriptUrl;
+  const dataOrigin =
+      (data_origin === 'script-origin') ? scriptOrigin : sameOrigin;
+  let success = false;
+  let error = null;
+
+  try {
+    const worklet = await sharedStorage.createWorklet(
+        scriptUrl, {credentials: 'omit', dataOrigin: data_origin});
+
+    const ancestor_key = token();
+    let url0 =
+        generateURL('/shared-storage/resources/frame0.html', [ancestor_key]);
+
+    let select_url_result =
+        await worklet.selectURL('test-url-selection-operation', [{url: url0}], {
+          data: {'mockResult': 0, 'setKey': key, 'setValue': value},
+          resolveToConfig: true,
+          keepAlive: true
+        });
+
+    assert_true(validateSelectURLResult(select_url_result, true));
+    attachFencedFrame(select_url_result, 'opaque-ads');
+    const result0 = await nextValueFromServer(ancestor_key);
+    assert_equals(result0, 'frame0_loaded');
+
+    await verifyKeyValueForOrigin(key, value, dataOrigin);
+    await deleteKeyForOrigin(key, dataOrigin);
+    success = true;
+  } catch (e) {
+    error = e;
+    assert_equals(e.name, 'TypeError');
+  } finally {
+    assert_equals(
+        expect_success, success,
+        error ? 'expected success but error thrown: ' + error.toString() :
+                'no error caught even though one was expected');
+    test.done();
+  }
 }

@@ -18,10 +18,11 @@ items:
   value: false
 owners:
 - emaxx@chromium.org
-- pmarko@chromium.org
+- miersh@google.com
 schema:
   type: boolean
 supported_on:
 - chrome_os:96-
 tags: []
 type: main
+generate_device_proto: False

@@ -42,7 +42,6 @@ bool LogMessage::AppendToProto(ProtoAppender* appender) const {
   // track_event_thread_local_event_sink.cc in the function |AddTraceEvent|, so
   // this call should never happen.
   NOTREACHED();
-  return false;
 }
 
 }  // namespace trace_event

@@ -1,0 +1,2 @@
+per-file *sync_bridge*=file://components/sync/OWNERS
+per-file *data_type_controller*=file://components/sync/OWNERS

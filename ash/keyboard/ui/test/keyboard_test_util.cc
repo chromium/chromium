@@ -65,8 +65,6 @@ bool WaitUntilLoaded() {
   return true;
 }
 
-}  // namespace test
-
 bool WaitUntilShown() {
   // KeyboardController send a visibility update once the show animation
   // finishes.
@@ -77,7 +75,7 @@ bool WaitUntilHidden() {
   // Unlike |WaitUntilShown|, KeyboardController updates its visibility
   // at the beginning of the hide animation. There's currently no way to
   // actually detect when the hide animation finishes.
-  // TODO(https://crbug.com/849995): Find a proper solution to this.
+  // TODO(crbug.com/41392988): Find a proper solution to this.
   return WaitVisibilityChangesTo(false /* wait_until */);
 }
 
@@ -102,5 +100,7 @@ gfx::Rect KeyboardBoundsFromRootBounds(const gfx::Rect& root_bounds,
   return gfx::Rect(root_bounds.x(), root_bounds.bottom() - keyboard_height,
                    root_bounds.width(), keyboard_height);
 }
+
+}  // namespace test
 
 }  // namespace keyboard

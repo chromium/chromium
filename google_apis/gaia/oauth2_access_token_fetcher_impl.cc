@@ -250,7 +250,6 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
     case kOk:
     case kOkUnexpectedFormat:
       NOTREACHED();
-      break;
 
     case kRateLimitExceeded:
     case kInternalFailure:

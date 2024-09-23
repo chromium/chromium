@@ -6,13 +6,14 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -191,7 +192,7 @@ const std::map<IconType, IconParams>& GetIconTypeToIconParamsMap() {
 const IconParams& GetIconParamsFromIconType(IconType icon) {
   const auto& icon_type_to_icon_params = GetIconTypeToIconParamsMap();
   const auto& it = icon_type_to_icon_params.find(icon);
-  DCHECK(it != icon_type_to_icon_params.end());
+  CHECK(it != icon_type_to_icon_params.end(), base::NotFatalUntil::M130);
 
   return it->second;
 }
@@ -215,7 +216,7 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
   // Changes to this map should be reflected in
   // ui/file_manager/base/gn/file_types.json5
   static const auto extension_to_icon =
-      base::MakeFixedFlatMap<base::StringPiece, IconType>({
+      base::MakeFixedFlatMap<std::string_view, IconType>({
           // Image
           {".JPEG", IconType::kImage},
           {".JPG", IconType::kImage},
@@ -327,7 +328,7 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".TINI", IconType::kTini},
       });
 
-  const auto* const it =
+  const auto it =
       extension_to_icon.find(base::ToUpperASCII(filepath.Extension()));
   if (it != extension_to_icon.end()) {
     return it->second;
@@ -401,8 +402,10 @@ gfx::ImageSkia GetIconFromType(const std::string& icon_type,
                                    dark_background, std::nullopt);
 }
 
-gfx::ImageSkia GetIconFromType(IconType icon_type, bool dark_background) {
-  return GetVectorIconFromIconType(icon_type, dark_background, std::nullopt);
+gfx::ImageSkia GetIconFromType(IconType icon_type,
+                               bool dark_background,
+                               std::optional<int> dip_size) {
+  return GetVectorIconFromIconType(icon_type, dark_background, dip_size);
 }
 
 SkColor GetIconColorForPath(const base::FilePath& filepath,
@@ -410,7 +413,7 @@ SkColor GetIconColorForPath(const base::FilePath& filepath,
   const auto& icon_type = internal::GetIconTypeForPath(filepath);
   const auto& icon_type_to_icon_params = GetIconTypeToIconParamsMap();
   const auto& it = icon_type_to_icon_params.find(icon_type);
-  DCHECK(it != icon_type_to_icon_params.end());
+  CHECK(it != icon_type_to_icon_params.end(), base::NotFatalUntil::M130);
 
   return ResolveColor(it->second.color_id, dark_background);
 }

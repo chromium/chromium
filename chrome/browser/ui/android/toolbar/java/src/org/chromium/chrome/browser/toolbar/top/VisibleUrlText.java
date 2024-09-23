@@ -10,11 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 /**
- * A best effort to give equality between two visual states of URL text. Contains a hint that
- * should be the visible text, but under edge cases this will be null, and the full URL will be
- * fallen back upon. This means callers need to be able to tolerate false negatives. Typically fine
- * for uses such as performance optimizations where this failure state is just an inefficiency.
+ * A best effort to give equality between two visual states of URL text. Contains a hint that should
+ * be the visible text, but under edge cases this will be null, and the full URL will be fallen back
+ * upon. This means callers need to be able to tolerate false negatives. Typically fine for uses
+ * such as performance optimizations where this failure state is just an inefficiency.
  */
 public class VisibleUrlText {
     private final @NonNull CharSequence mUrlText;
@@ -39,7 +41,33 @@ public class VisibleUrlText {
                 && TextUtils.equals(mVisibleTextPrefixHint, that.mVisibleTextPrefixHint)) {
             return true;
         }
+
         return TextUtils.equals(mUrlText, that.mUrlText);
+    }
+
+    /**
+     * Returns true if updating currentVisibleUrlText to nextVisibleUrlText won't cause a visible
+     * difference.
+     */
+    public static boolean isVisuallyEquivalent(
+            VisibleUrlText currentVisibleUrlText, VisibleUrlText nextVisibleUrlText) {
+        // If this feature is enabled, then we only calculate the visible hint when navigating
+        // to a url with the same domain. This means the first navigation will result in a null
+        // visible hint and a screenshot being captured. If we navigate to another url with the same
+        // domain, we calculate the visible hint, but we don't have to capture a screenshot (even
+        // though the two VisibleUrlTexts aren't equal) if the visible hint is a prefix of the
+        // previous url.
+        if (ChromeFeatureList.sNoVisibleHintForDifferentTLD.isEnabled()
+                && TextUtils.isEmpty(currentVisibleUrlText.mVisibleTextPrefixHint)
+                && !TextUtils.isEmpty(nextVisibleUrlText.mVisibleTextPrefixHint)
+                && TextUtils.indexOf(
+                                currentVisibleUrlText.mUrlText,
+                                nextVisibleUrlText.mVisibleTextPrefixHint)
+                        == 0) {
+            return true;
+        }
+
+        return currentVisibleUrlText.equals(nextVisibleUrlText);
     }
 
     /**

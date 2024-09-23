@@ -62,8 +62,6 @@ class PLATFORM_EXPORT V8PerContextData final
   V8PerContextData(const V8PerContextData&) = delete;
   V8PerContextData& operator=(const V8PerContextData&) = delete;
 
-  static V8PerContextData* From(v8::Local<v8::Context>);
-
   ~V8PerContextData();
 
   void Trace(Visitor* visitor) const;
@@ -74,13 +72,14 @@ class PLATFORM_EXPORT V8PerContextData final
   // To create JS Wrapper objects, we create a cache of a 'boiler plate'
   // object, and then simply Clone that object each time we need a new one.
   // This is faster than going through the full object creation process.
-  v8::Local<v8::Object> CreateWrapperFromCache(const WrapperTypeInfo* type) {
+  v8::Local<v8::Object> CreateWrapperFromCache(v8::Isolate* isolate,
+                                               const WrapperTypeInfo* type) {
     if (auto it = wrapper_boilerplates_.find(type);
         it != wrapper_boilerplates_.end()) {
       v8::Local<v8::Object> obj = it->value.Get(isolate_);
-      return obj->Clone();
+      return obj->Clone(isolate);
     }
-    return CreateWrapperFromCacheSlowCase(type);
+    return CreateWrapperFromCacheSlowCase(isolate, type);
   }
 
   // Returns the interface object that is appropriately initialized (e.g.
@@ -117,10 +116,11 @@ class PLATFORM_EXPORT V8PerContextData final
   Data* GetData(const char* key);
 
  private:
-  v8::Local<v8::Object> CreateWrapperFromCacheSlowCase(const WrapperTypeInfo*);
+  v8::Local<v8::Object> CreateWrapperFromCacheSlowCase(v8::Isolate*,
+                                                       const WrapperTypeInfo*);
   v8::Local<v8::Function> ConstructorForTypeSlowCase(const WrapperTypeInfo*);
 
-  const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
 
   // For each possible type of wrapper, we keep a boilerplate object.
   // The boilerplate is used to create additional wrappers of the same type.

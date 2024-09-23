@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/nqe/network_quality_estimator.h"
 
 #include <algorithm>
@@ -23,7 +28,6 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -69,7 +73,7 @@ NetworkQualityObservationSource ProtocolSourceToObservationSource(
     case SocketPerformanceWatcherFactory::PROTOCOL_QUIC:
       return NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NETWORK_QUALITY_OBSERVATION_SOURCE_TCP;
 }
 
@@ -80,11 +84,54 @@ bool RequestSchemeIsHTTPOrHTTPS(const URLRequest& request) {
 
 nqe::internal::NetworkID DoGetCurrentNetworkID(
     NetworkQualityEstimatorParams* params) {
-    nqe::internal::NetworkID network_id(
-        NetworkChangeNotifier::GetConnectionType(), std::string(), INT32_MIN);
+  nqe::internal::NetworkID network_id(
+      NetworkChangeNotifier::GetConnectionType(), std::string(), INT32_MIN);
 
-      return network_id;
+  return network_id;
+}
+
+const char* CategoryToString(nqe::internal::ObservationCategory category) {
+  switch (category) {
+    case nqe::internal::OBSERVATION_CATEGORY_HTTP:
+      return "HTTP";
+    case nqe::internal::OBSERVATION_CATEGORY_TRANSPORT:
+      return "Transport";
+    case nqe::internal::OBSERVATION_CATEGORY_END_TO_END:
+      return "EndToEnd";
+    case nqe::internal::OBSERVATION_CATEGORY_COUNT:
+      NOTREACHED();
   }
+}
+
+base::TimeTicks GetStartTimeFromThreshold(int threshold) {
+  if (threshold < 0) {
+    return base::TimeTicks();
+  }
+  return base::TimeTicks::Now() - base::Seconds(threshold);
+}
+
+base::TimeTicks GetHTTPStartTime() {
+  static const int threshold = features::kRecentHTTPThresholdInSeconds.Get();
+  return GetStartTimeFromThreshold(threshold);
+}
+
+base::TimeTicks GetTransportStartTime() {
+  static const int threshold =
+      features::kRecentTransportThresholdInSeconds.Get();
+  return GetStartTimeFromThreshold(threshold);
+}
+
+base::TimeTicks GetEndToEndStartTime() {
+  static const int threshold =
+      features::kRecentEndToEndThresholdInSeconds.Get();
+  return GetStartTimeFromThreshold(threshold);
+}
+
+void RecordFallbackSuccess(std::string_view category, bool fallback_success) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"NQE.RTT.HittingThreshold.", category, ".FallbackSuccess"}),
+      fallback_success);
+}
 
 }  // namespace
 
@@ -119,6 +166,8 @@ NetworkQualityEstimator::NetworkQualityEstimator(
               tick_clock_,
               params_->weight_multiplier_per_second(),
               1.0 /*params_->weight_multiplier_per_signal_strength_level()*/)},
+      effective_connection_type_recomputation_interval_(
+          features::kEffectiveConnectionTypeRecomputationInterval.Get()),
       net_log_(NetLogWithSource::Make(
           net_log,
           net::NetLogSourceType::NETWORK_QUALITY_ESTIMATOR)),
@@ -309,6 +358,25 @@ void NetworkQualityEstimator::NotifyHeadersReceived(
 
   if (IsHangingRequest(observed_http_rtt))
     return;
+
+  // Metrics on estimation errors.
+  const auto& estimated_rtt = GetHttpRTT();
+  if (estimated_rtt) {
+    const base::TimeDelta estimation_error = observed_http_rtt - *estimated_rtt;
+    if (estimation_error.is_zero()) {
+      base::UmaHistogramBoolean("NQE.RTT.Error.IsZero", true);
+      base::UmaHistogramTimes("NQE.RTT.Error.Absolute", estimation_error);
+    } else {
+      base::UmaHistogramBoolean("NQE.RTT.Error.IsZero", false);
+      if (estimation_error.is_positive()) {
+        base::UmaHistogramTimes("NQE.RTT.Error.Positive", estimation_error);
+        base::UmaHistogramTimes("NQE.RTT.Error.Absolute", estimation_error);
+      } else {  // Negative.
+        base::UmaHistogramTimes("NQE.RTT.Error.Negative", -estimation_error);
+        base::UmaHistogramTimes("NQE.RTT.Error.Absolute", -estimation_error);
+      }
+    }
+  }
 
   Observation http_rtt_observation(observed_http_rtt.InMilliseconds(),
                                    tick_clock_->NowTicks(),
@@ -550,6 +618,10 @@ void NetworkQualityEstimator::ComputeEffectiveConnectionType() {
     UMA_HISTOGRAM_TIMES("NQE.RTT.OnECTComputation",
                         network_quality_.http_rtt());
   }
+  if (network_quality_.transport_rtt() != nqe::internal::InvalidRTT()) {
+    base::UmaHistogramTimes("NQE.TransportRTT.OnECTComputation",
+                            network_quality_.transport_rtt());
+  }
 
   end_to_end_rtt_ = std::nullopt;
   if (end_to_end_rtt != nqe::internal::InvalidRTT()) {
@@ -752,21 +824,41 @@ NetworkQualityEstimator::GetRecentEffectiveConnectionTypeUsingMetrics(
     return EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
   }
 
-  if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_HTTP, base::TimeTicks(),
-                    http_rtt, nullptr)) {
-    *http_rtt = nqe::internal::InvalidRTT();
+  if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_HTTP,
+                    GetHTTPStartTime(), http_rtt, nullptr)) {
+    bool fallback_success = true;
+    if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_HTTP,
+                      base::TimeTicks(), http_rtt, nullptr)) {
+      *http_rtt = nqe::internal::InvalidRTT();
+      fallback_success = false;
+    }
+    RecordFallbackSuccess("HTTP", fallback_success);
   }
 
   if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_TRANSPORT,
-                    base::TimeTicks(), transport_rtt,
+                    GetTransportStartTime(), transport_rtt,
                     transport_rtt_observation_count)) {
-    *transport_rtt = nqe::internal::InvalidRTT();
+    bool fallback_success = true;
+    if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_TRANSPORT,
+                      base::TimeTicks(), transport_rtt,
+                      transport_rtt_observation_count)) {
+      *transport_rtt = nqe::internal::InvalidRTT();
+      fallback_success = false;
+    }
+    RecordFallbackSuccess("Transport", fallback_success);
   }
 
   if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_END_TO_END,
-                    base::TimeTicks(), end_to_end_rtt,
+                    GetEndToEndStartTime(), end_to_end_rtt,
                     end_to_end_rtt_observation_count)) {
-    *end_to_end_rtt = nqe::internal::InvalidRTT();
+    bool fallback_success = true;
+    if (!GetRecentRTT(nqe::internal::OBSERVATION_CATEGORY_END_TO_END,
+                      base::TimeTicks(), end_to_end_rtt,
+                      end_to_end_rtt_observation_count)) {
+      *end_to_end_rtt = nqe::internal::InvalidRTT();
+      fallback_success = false;
+    }
+    RecordFallbackSuccess("EndToEnd", fallback_success);
   }
 
   UpdateHttpRttUsingAllRttValues(http_rtt, *transport_rtt, *end_to_end_rtt);
@@ -918,7 +1010,7 @@ base::TimeDelta NetworkQualityEstimator::GetRTTEstimateInternal(
                              percentile, observations_count)
               .value_or(nqe::internal::INVALID_RTT_THROUGHPUT));
     case nqe::internal::OBSERVATION_CATEGORY_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::TimeDelta();
   }
 }
@@ -1071,7 +1163,17 @@ void NetworkQualityEstimator::AddAndNotifyObserversOfRTT(
       observation.GetObservationCategories();
   for (nqe::internal::ObservationCategory observation_category :
        observation_categories) {
-    rtt_ms_observations_[observation_category].AddObservation(observation);
+    auto evicted =
+        rtt_ms_observations_[observation_category].AddObservation(observation);
+    if (evicted) {
+      auto delta = base::TimeTicks::Now() - evicted->timestamp();
+      base::UmaHistogramLongTimes100(
+          base::StrCat({"NQE.RTT.ObservationBufferLifeTime2.",
+                        CategoryToString(observation_category)}),
+          delta);
+      base::UmaHistogramLongTimes100("NQE.RTT.ObservationBufferLifeTime2.All",
+                                     delta);
+    }
   }
 
   if (observation.source() == NETWORK_QUALITY_OBSERVATION_SOURCE_TCP ||

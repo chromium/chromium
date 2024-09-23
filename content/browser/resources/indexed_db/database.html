@@ -1,0 +1,41 @@
+<link rel="stylesheet" type="text/css" href="common.css">
+<style>
+
+  .connection-count {
+    margin: 0 8px;
+  }
+
+  .connection-count.active,
+  .connection-count.pending {
+    font-weight: bold;
+  }
+</style>
+<span>Open database:</span>
+<span class="open-databases"></span>
+<div>
+  <span>Connection counts:</span>
+  <span class="connection-count open">
+    <span>open:</span>
+    <span class="value"></span>
+  </span>
+  <span class="connection-count active">
+    <span>active opens/deletes:</span>
+    <span class="value"></span>
+  </span>
+  <span class="connection-count pending">
+    <span>pending opens/deletes:</span>
+    <span class="value"></span>
+  </span>
+</div>
+<div id="transactions"></div>
+
+<!-- This should be made a standalone component when adding more fields. -->
+<template id="client-metadata">
+  <span>
+    Tab/worker:
+    <span class="client-id"></span>
+  </span>
+  <div class="controls">
+    <span class="control inspect">Inspect</span>
+  </div>
+</template>

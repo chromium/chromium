@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This perf test measures the time from when the display compositor starts
 // drawing on the compositor thread to when a swap buffers occurs on the
 // GPU main thread.
@@ -25,7 +30,6 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display.h"
@@ -169,9 +173,8 @@ TransferableResource CreateTestTexture(
       child_context_provider->SharedImageInterface();
   DCHECK(sii);
   auto client_shared_image = sii->CreateSharedImage(
-      SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+      {SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel"},
       base::as_byte_span(pixels));
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
@@ -275,9 +278,10 @@ class RendererPerfTest : public VizPerfTest {
     auto overlay_processor = std::make_unique<OverlayProcessorStub>();
     display_ = std::make_unique<Display>(
         &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
-        /*sync_point_manager=*/nullptr, renderer_settings_, &debug_settings_,
-        kArbitraryFrameSinkId, std::move(display_controller),
-        std::move(output_surface), std::move(overlay_processor),
+        /*sync_point_manager=*/nullptr, /*gpu_scheduler=*/nullptr,
+        renderer_settings_, &debug_settings_, kArbitraryFrameSinkId,
+        std::move(display_controller), std::move(output_surface),
+        std::move(overlay_processor),
         /*display_scheduler=*/nullptr,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     display_->SetVisible(true);
@@ -388,29 +392,6 @@ class RendererPerfTest : public VizPerfTest {
                 texture_quad->premultiplied_alpha);
             texture_quad->resources.ids[TextureDrawQuad::kResourceIdIndex] =
                 actual_id;
-          } break;
-          case DrawQuad::Material::kYuvVideoContent: {
-            YUVVideoDrawQuad* yuv_quad =
-                reinterpret_cast<YUVVideoDrawQuad*>(quad);
-            const size_t kIndex[] = {
-                YUVVideoDrawQuad::kYPlaneResourceIdIndex,
-                YUVVideoDrawQuad::kUPlaneResourceIdIndex,
-                YUVVideoDrawQuad::kVPlaneResourceIdIndex,
-                YUVVideoDrawQuad::kAPlaneResourceIdIndex,
-            };
-            const gfx::Size kSize[] = {
-                yuv_quad->ya_tex_size(),
-                yuv_quad->uv_tex_size(),
-                yuv_quad->uv_tex_size(),
-                yuv_quad->ya_tex_size(),
-            };
-            for (size_t ii = 0; ii < yuv_quad->resources.count; ++ii) {
-              ResourceId recorded_id = yuv_quad->resources.ids[kIndex[ii]];
-              ResourceId actual_id =
-                  this->MapResourceId(&resource_map, recorded_id, kSize[ii],
-                                      SkColor4f{0.0f, 1.0f, 0.0f, 0.5f}, false);
-              yuv_quad->resources.ids[kIndex[ii]] = actual_id;
-            }
           } break;
           default:
             ASSERT_TRUE(false);

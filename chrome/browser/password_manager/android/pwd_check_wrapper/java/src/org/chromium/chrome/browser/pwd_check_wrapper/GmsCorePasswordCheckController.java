@@ -25,16 +25,19 @@ class GmsCorePasswordCheckController
     private final SyncService mSyncService;
     private final PrefService mPrefService;
     private final PasswordStoreBridge mPasswordStoreBridge;
+    private final PasswordManagerHelper mPasswordManagerHelper;
     private final CompletableFuture<Integer> mPasswordsCountAccountStorage;
     private final CompletableFuture<Integer> mPasswordsCountLocalStorage;
 
     GmsCorePasswordCheckController(
             SyncService syncService,
             PrefService prefService,
-            PasswordStoreBridge passwordStoreBridge) {
+            PasswordStoreBridge passwordStoreBridge,
+            PasswordManagerHelper passwordManagerHelper) {
         mSyncService = syncService;
         mPrefService = prefService;
         mPasswordStoreBridge = passwordStoreBridge;
+        mPasswordManagerHelper = passwordManagerHelper;
         mPasswordsCountAccountStorage = new CompletableFuture<>();
         mPasswordsCountLocalStorage = new CompletableFuture<>();
         mPasswordStoreBridge.addObserver(this, true);
@@ -45,7 +48,7 @@ class GmsCorePasswordCheckController
             @PasswordStorageType int passwordStorageType) {
         WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
         CompletableFuture<PasswordCheckResult> passwordCheckResult = new CompletableFuture<>();
-        PasswordManagerHelper.runPasswordCheckupInBackground(
+        mPasswordManagerHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 PasswordCheckController.getAccountNameForPasswordStorageType(
                         passwordStorageType, mSyncService),
@@ -75,7 +78,7 @@ class GmsCorePasswordCheckController
             @PasswordStorageType int passwordStorageType,
             CompletableFuture<PasswordCheckResult> passwordCheckResult) {
         WeakReference<GmsCorePasswordCheckController> weakRef = new WeakReference(this);
-        PasswordManagerHelper.getBreachedCredentialsCount(
+        mPasswordManagerHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 PasswordCheckController.getAccountNameForPasswordStorageType(
                         passwordStorageType, mSyncService),

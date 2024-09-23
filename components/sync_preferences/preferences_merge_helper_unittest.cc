@@ -18,14 +18,13 @@ namespace {
 const char kMergeableDictPref[] = "mergeable.dict.pref";
 const char kMergeableListPref[] = "mergeable.list.pref";
 
-const std::unordered_map<std::string, SyncablePrefMetadata>
-    kSyncablePrefsDatabase = {
-        {kMergeableListPref,
-         {/*syncable_pref_id=*/1, syncer::PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kMergeableListWithRewriteOnUpdate}},
-        {kMergeableDictPref,
-         {/*syncable_pref_id=*/2, syncer::PREFERENCES, PrefSensitivity::kNone,
-          MergeBehavior::kMergeableDict}},
+const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
+    {kMergeableListPref,
+     {/*syncable_pref_id=*/1, syncer::PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+    {kMergeableDictPref,
+     {/*syncable_pref_id=*/2, syncer::PREFERENCES, PrefSensitivity::kNone,
+      MergeBehavior::kMergeableDict}},
 };
 
 TEST(PreferencesMergeHelperTest, MergeListValues) {
@@ -570,7 +569,7 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
 
   // PrefModelAssociatorClient implementation.
   base::Value MaybeMergePreferenceValues(
-      const std::string& pref_name,
+      std::string_view pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const override {
     return base::Value();
@@ -671,7 +670,7 @@ TEST(PreferencesMergeHelperTest,
 }
 
 // Tests for MergePreference() exists in pref_model_associator_unittest.cc.
-// TODO(crbug.com/1416479): Move those tests here.
+// TODO(crbug.com/40256874): Move those tests here.
 
 }  // namespace
 }  // namespace sync_preferences

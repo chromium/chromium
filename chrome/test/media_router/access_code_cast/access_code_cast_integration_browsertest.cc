@@ -57,7 +57,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #endif
 
 using testing::_;
@@ -259,11 +259,10 @@ void AccessCodeCastIntegrationBrowserTest::SetUpPrimaryAccountWithHostedDomain(
 
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
-      sync_service(profile)->SetTransportState(
-          syncer::SyncService::TransportState::PAUSED);
+      sync_service(profile)->SetPersistentAuthError();
       break;
     case signin::ConsentLevel::kSync:
-      sync_service(profile)->SetTransportState(
+      sync_service(profile)->SetMaxTransportState(
           syncer::SyncService::TransportState::ACTIVE);
       break;
   }
@@ -293,13 +292,15 @@ content::WebContents* AccessCodeCastIntegrationBrowserTest::ShowDialog() {
   // won't do anything and the test will hang.
   EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
+  // Setting the flag to prevent widget deactivation before creating the dialog.
+  AccessCodeCastDialog::ShouldBlockWidgetActivationChangedForTest(true);
+
   // This string is empty since the ShowUi function requires a string. We do not
   // need one in the context we are using the function.
   ShowUi("");
   EXPECT_TRUE(VerifyUi());
   content::WebContents* dialog_contents = observer.GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(dialog_contents));
-  AccessCodeCastDialog::ShouldBlockWidgetActivationChangedForTest(true);
 
   return dialog_contents;
 }
@@ -624,7 +625,7 @@ AccessCodeCastPrefUpdater*
 AccessCodeCastIntegrationBrowserTest::GetPrefUpdater() {
   auto* service = AccessCodeCastSinkServiceFactory::GetForProfile(
       ProfileManager::GetLastUsedProfile());
-  return service ? service->pref_updater_.get() : nullptr;
+  return service ? service->GetPrefUpdaterForTesting() : nullptr;
 }
 
 void AccessCodeCastIntegrationBrowserTest::AddScreenplayTag(
@@ -656,7 +657,7 @@ void AccessCodeCastIntegrationBrowserTest::
   auto* service = AccessCodeCastSinkServiceFactory::GetForProfile(
       ProfileManager::GetLastUsedProfile());
   if (service) {
-    service->SetTaskRunnerForTest(task_runner_);
+    service->SetTaskRunnerForTesting(task_runner_);
   }
 }
 

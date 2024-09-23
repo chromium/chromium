@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -81,113 +82,71 @@ QuickAnswersStateLacros::QuickAnswersStateLacros() {
     observer.OnPrefsInitialized();
   }
 
-  UpdateEligibility();
+  MaybeNotifyEligibilityChanged();
 }
 
 QuickAnswersStateLacros::~QuickAnswersStateLacros() = default;
 
-void QuickAnswersStateLacros::StartConsent() {
-  consent_start_time_ = base::TimeTicks::Now();
+void QuickAnswersStateLacros::AsyncWriteConsentUiImpressionCount(
+    int32_t count) {
+  SetPref(crosapi::mojom::PrefPath::kQuickAnswersNoticeImpressionCount,
+          base::Value(count));
 }
 
-void QuickAnswersStateLacros::OnConsentResult(ConsentResultType result) {
-  DCHECK(!consent_start_time_.is_null());
-  auto duration = base::TimeTicks::Now() - consent_start_time_;
-
-  auto new_impression_count = impression_count_;
-
-  // Only increase the counter and record the impression if the minimum duration
-  // has been reached.
-  if (duration.InSeconds() >= kConsentImpressionMinimumDuration) {
-    ++new_impression_count;
-    // Increments impression count.
-    SetPref(crosapi::mojom::PrefPath::kQuickAnswersNoticeImpressionCount,
-            base::Value(new_impression_count));
-    RecordConsentResult(result, new_impression_count, duration);
-  }
-
-  switch (result) {
-    case ConsentResultType::kAllow:
-      SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
-              base::Value(ConsentStatus::kAccepted));
-      // Enable Quick Answers if the user accepted the consent.
-      SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled,
-              base::Value(true));
-      break;
-    case ConsentResultType::kNoThanks:
-      SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
-              base::Value(ConsentStatus::kRejected));
-      SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled,
-              base::Value(false));
-      break;
-    case ConsentResultType::kDismiss:
-      // If the impression count cap is reached, set the consented status to
-      // false;
-      bool impression_cap_reached =
-          new_impression_count >= kConsentImpressionCap;
-      if (impression_cap_reached) {
-        SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
-                base::Value(ConsentStatus::kRejected));
-        SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled,
-                base::Value(false));
-      }
-  }
-
-  consent_start_time_ = base::TimeTicks();
+void QuickAnswersStateLacros::AsyncWriteConsentStatus(
+    ConsentStatus consent_status) {
+  SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
+          base::Value(consent_status));
+}
+void QuickAnswersStateLacros::AsyncWriteEnabled(bool enabled) {
+  SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled, base::Value(enabled));
 }
 
 void QuickAnswersStateLacros::OnSettingsEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
   bool settings_enabled = value.GetBool();
 
-  if (chromeos::IsKioskSession() && settings_enabled) {
+  // `QuickAnswersStateAsh` co-exists with `QuickAnswersStateLacros`. As
+  // `QuickAnswersStateAsh` should also get notified for those pref changes,
+  // `QuickAnswersStateLacros` doesn't need to modify prefs. For now, leave
+  // KioskSession logic as its logic works in a fail-safe way. Toggled from the
+  // settings logic is removed.
+  //
+  // TODO(b/340628526): Remove this as we update consent status logic.
+  if (chromeos::IsKioskSession()) {
     settings_enabled = false;
     SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled, base::Value(false));
     SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
             base::Value(quick_answers::prefs::ConsentStatus::kRejected));
   }
 
-  if (settings_enabled_ == settings_enabled) {
-    return;
-  }
-  settings_enabled_ = settings_enabled;
-
-  // If the user turn on the Quick Answers in settings, set the consented status
-  // to true.
-  if (settings_enabled_) {
-    SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
-            base::Value(quick_answers::prefs::ConsentStatus::kAccepted));
-  }
-
-  for (auto& observer : observers_) {
-    observer.OnSettingsEnabled(settings_enabled_);
-  }
+  quick_answers_enabled_ = settings_enabled;
+  MaybeNotifyIsEnabledChanged();
 }
 
 void QuickAnswersStateLacros::OnConsentStatusChanged(base::Value value) {
   DCHECK(value.is_int());
-  consent_status_ =
-      static_cast<quick_answers::prefs::ConsentStatus>(value.GetInt());
-
-  for (auto& observer : observers_) {
-    observer.OnConsentStatusUpdated(consent_status_);
-  }
+  SetQuickAnswersFeatureConsentStatus(
+      static_cast<quick_answers::prefs::ConsentStatus>(value.GetInt()));
 }
 
 void QuickAnswersStateLacros::OnDefinitionEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
-  definition_enabled_ = value.GetBool();
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kDefinition,
+                                     value.GetBool());
 }
 
 void QuickAnswersStateLacros::OnTranslationEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
-  translation_enabled_ = value.GetBool();
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kTranslation,
+                                     value.GetBool());
 }
 
 void QuickAnswersStateLacros::OnUnitConversionEnabledChanged(
     base::Value value) {
   DCHECK(value.is_bool());
-  unit_conversion_enabled_ = value.GetBool();
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kUnitConversion,
+                                     value.GetBool());
 }
 
 void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
@@ -215,7 +174,7 @@ void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
     observer.OnApplicationLocaleReady(resolved_locale);
   }
 
-  UpdateEligibility();
+  MaybeNotifyEligibilityChanged();
 }
 
 void QuickAnswersStateLacros::OnPreferredLanguagesChanged(base::Value value) {
@@ -229,7 +188,7 @@ void QuickAnswersStateLacros::OnPreferredLanguagesChanged(base::Value value) {
 
 void QuickAnswersStateLacros::OnImpressionCountChanged(base::Value value) {
   DCHECK(value.is_int());
-  impression_count_ = value.GetInt();
+  consent_ui_impression_count_ = value.GetInt();
 }
 
 void QuickAnswersStateLacros::OnImpressionDurationChanged(base::Value value) {

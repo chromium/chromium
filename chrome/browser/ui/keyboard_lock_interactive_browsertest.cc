@@ -29,7 +29,7 @@
 namespace {
 
 // Javascript snippet used to verify the keyboard lock API exists.
-// TODO(crbug.com/680809): These checks can be removed once the blink flag for
+// TODO(crbug.com/40501396): These checks can be removed once the blink flag for
 // the API is removed.
 constexpr char kKeyboardLockMethodExistanceCheck[] =
     "(navigator.keyboard != undefined) &&"
@@ -361,7 +361,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/837438): Enable once browser fullscreen is reliable in tests.
+// TODO(crbug.com/41385780): Enable once browser fullscreen is reliable in
+// tests.
 #define MAYBE_RequestedButNotActiveInBrowserFullscreen \
   DISABLED_RequestedButNotActiveInBrowserFullscreen
 #else
@@ -418,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_EQ(initial_tab_count + 1, GetTabCount());
 }
 
-// TODO(crbug.com/1305388): Flaky on mac.
+// TODO(crbug.com/40827037): Flaky on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CancelActiveKeyboardLockBeforeFullscreen \
   DISABLED_CancelActiveKeyboardLockBeforeFullscreen

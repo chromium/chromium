@@ -42,7 +42,8 @@ class Tracker;
 // Configures the consumer.
 - (void)configureConsumer;
 
-// Registers the Docking Promo for single display.
+// Registers the Docking Promo (Remind Me Later version) for single display with
+// the Promos Manager.
 - (void)registerPromoWithPromosManager;
 
 @end

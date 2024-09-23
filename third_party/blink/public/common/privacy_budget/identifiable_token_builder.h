@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_BUILDER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_BUILDER_H_
 
 #include <array>
+#include <string_view>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
-#include "base/sys_byteorder.h"
-#include "base/template_util.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_internal_templates.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
@@ -77,7 +80,7 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   // adding the contents of the buffer. Doing so will achieve the same ends as
   // AddAtomic().
   IdentifiableTokenBuilder& AddAtomic(ByteSpan buffer);
-  IdentifiableTokenBuilder& AddAtomic(base::StringPiece string) {
+  IdentifiableTokenBuilder& AddAtomic(std::string_view string) {
     return AddAtomic(base::as_bytes(base::make_span(string)));
   }
 
@@ -101,8 +104,7 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
                 sizeof(T) <= sizeof(uint64_t)>* = nullptr>
   IdentifiableTokenBuilder& AddValue(T in) {
     AlignPartialBuffer();
-    int64_t clean_buffer =
-        base::ByteSwapToLE64(internal::DigestOfObjectRepresentation(in));
+    int64_t clean_buffer = internal::DigestOfObjectRepresentation(in);
     return AddBytes(base::make_span(
         reinterpret_cast<const uint8_t*>(&clean_buffer), sizeof(clean_buffer)));
   }
@@ -127,6 +129,9 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   // No comparisons.
   bool operator==(const IdentifiableTokenBuilder&) const = delete;
   bool operator<(const IdentifiableTokenBuilder&) const = delete;
+
+  // A big random prime. It's also the digest returned for an empty block.
+  static constexpr uint64_t kChainingValueSeed = UINT64_C(6544625333304541877);
 
  private:
   // Block size. Must be a multiple of 64. Higher block sizes consume more

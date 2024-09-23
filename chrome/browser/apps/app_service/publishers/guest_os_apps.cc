@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -97,7 +98,7 @@ void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
   } else {
     Launch(params.app_id, event_flags, params.launch_source,
            std::make_unique<WindowInfo>(params.display_id));
-    // TODO(crbug.com/1244506): Add launch return value.
+    // TODO(crbug.com/40787924): Add launch return value.
     std::move(callback).Run(LaunchResult());
   }
 }
@@ -232,7 +233,7 @@ apps::IntentFilters CreateIntentFilterForAppService(
   // In this case, remove all mime types that begin with "text/" and replace
   // them with a single "text/*" mime type.
   if (base::Contains(mime_types, "text/plain")) {
-    base::EraseIf(mime_types, [](const std::string& s) {
+    std::erase_if(mime_types, [](const std::string& s) {
       return base::StartsWith(s, "text/");
     });
     mime_types.push_back("text/*");
@@ -241,8 +242,8 @@ apps::IntentFilters CreateIntentFilterForAppService(
   apps::IntentFilters intent_filters;
   intent_filters.push_back(apps_util::CreateFileFilter(
       {apps_util::kIntentActionView}, mime_types, extension_types,
-      // TODO(crbug/1349974): Remove activity_name when default file handling
-      // preferences for Files App are migrated.
+      // TODO(crbug.com/40233967): Remove activity_name when default file
+      // handling preferences for Files App are migrated.
       /*activity_name=*/apps_util::kGuestOsActivityName));
 
   return intent_filters;

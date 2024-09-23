@@ -1,0 +1,45 @@
+<!doctype html>
+<head>
+<meta charset="utf-8"/>
+<meta name="timeout" content="long">
+<meta name="help" href="https://github.com/WICG/CHIPS#chips-cookies-having-independent-partitioned-state">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<title>Test partitioned cookies are sent in top-level cross-site to same-site redirects</title>
+</head>
+<body>
+<script>
+  const partitionedCookie = "ancestor=chain";
+  // Cross-site html file will add query param 'redirect=true'
+  // to indicate that redirect has been initiated. This is done
+  // to allow for the redirect to return the window to this site.
+  // This is needed to prevent a timeout in the test harness.
+  if(!window.location.href.includes("redirect=true")){
+    const partitionedCookieAttributes =
+      "; Secure; Path=/; SameSite=None; Partitioned";
+    const partitionedCookieLine =
+      partitionedCookie + partitionedCookieAttributes;
+    //Set partitioned cookie to top-level site.
+    document.cookie = partitionedCookieLine;
+    assert_true(document.cookie.includes(partitionedCookie));
+
+    //Navigate top-level to cross-site.
+    const resourceDir = "/cookies/partitioned-cookies/resources/";
+    const crossSiteUrl = new URL(
+      resourceDir + "ancestor-chain-cross-site-top-level.html?host="
+      +`${window.location.hostname}`,
+      `https://${TEST_HOST}:${window.location.port}`);
+
+    window.location=crossSiteUrl.href;
+  }
+
+  //Confirm that the partitioned cookie is available after redirect
+  //back from cross-site in document and http headers.
+    test(() => {
+      assert_true(document.cookie.includes(partitionedCookie));
+      assert_true(window.location.href.includes(partitionedCookie));
+
+}, "Partitioned Cookies are available in top-level cross-site to same-site redirects");
+</script>
+</body>

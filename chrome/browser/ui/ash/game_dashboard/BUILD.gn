@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("game_dashboard") {
+  sources = [
+    "chrome_game_dashboard_delegate.cc",
+    "chrome_game_dashboard_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/scalable_iph",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chromeos/ash/components/scalable_iph",
+    "//components/user_manager",
+  ]
+}

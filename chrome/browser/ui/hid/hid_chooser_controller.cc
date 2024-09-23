@@ -5,11 +5,12 @@
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/chooser_controller/title_util.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -210,10 +211,12 @@ void HidChooserController::OpenHelpCenterUrl() const {
   if (!web_contents)
     return;
 
-  web_contents->OpenURL(content::OpenURLParams(
-      GURL(chrome::kChooserHidOverviewUrl), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false));
+  web_contents->OpenURL(
+      content::OpenURLParams(
+          GURL(chrome::kChooserHidOverviewUrl), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 }
 
 void HidChooserController::OnDeviceAdded(
@@ -370,9 +373,9 @@ bool HidChooserController::RemoveDeviceInfo(
     const device::mojom::HidDeviceInfo& device) {
   auto id = PhysicalDeviceIdFromDeviceInfo(device);
   auto find_it = device_map_.find(id);
-  DCHECK(find_it != device_map_.end());
+  CHECK(find_it != device_map_.end(), base::NotFatalUntil::M130);
   auto& device_infos = find_it->second;
-  base::EraseIf(device_infos,
+  std::erase_if(device_infos,
                 [&device](const device::mojom::HidDeviceInfoPtr& d) {
                   return d->guid == device.guid;
                 });
@@ -380,7 +383,7 @@ bool HidChooserController::RemoveDeviceInfo(
     return false;
   // A device was disconnected. Remove it from the chooser list.
   device_map_.erase(find_it);
-  base::Erase(items_, id);
+  std::erase(items_, id);
   return true;
 }
 
@@ -388,10 +391,10 @@ void HidChooserController::UpdateDeviceInfo(
     const device::mojom::HidDeviceInfo& device) {
   auto id = PhysicalDeviceIdFromDeviceInfo(device);
   auto physical_device_it = device_map_.find(id);
-  DCHECK(physical_device_it != device_map_.end());
+  CHECK(physical_device_it != device_map_.end(), base::NotFatalUntil::M130);
   auto& device_infos = physical_device_it->second;
   auto device_it = base::ranges::find(device_infos, device.guid,
                                       &device::mojom::HidDeviceInfo::guid);
-  DCHECK(device_it != device_infos.end());
+  CHECK(device_it != device_infos.end(), base::NotFatalUntil::M130);
   *device_it = device.Clone();
 }

@@ -31,6 +31,8 @@ extern const char kPolicyVTPMUpdateActionKey[];
 extern const char kPolicyOEMStringsKey[];
 extern const char kPolicyDisplayOrderKey[];
 
+extern const char kBruschettaMicAllowed[];
+
 enum class PolicyEnabledState {
   BLOCKED = 0,
   RUN_ALLOWED = 1,

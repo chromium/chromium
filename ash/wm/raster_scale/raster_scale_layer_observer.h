@@ -9,6 +9,7 @@
 #include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window_observer.h"
@@ -136,7 +137,7 @@ class RasterScaleLayerObserver
   // We need to hold onto transient windows to apply the same raster scale to
   // them as the main `apply_window_`, and to unapply them when they are done.
   // The raster scale locks for transient windows are held in `raster_scales_`.
-  base::flat_set<aura::Window*> transient_windows_;
+  base::flat_set<raw_ptr<aura::Window, CtnExperimental>> transient_windows_;
 
   // Holds raster scale locks for windows. This will be `apply_window_` plus any
   // transient children windows.

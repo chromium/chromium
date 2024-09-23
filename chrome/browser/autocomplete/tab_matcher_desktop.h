@@ -18,12 +18,14 @@ class TabMatcherDesktop : public TabMatcher {
                     Profile* profile)
       : template_url_service_{template_url_service}, profile_{profile} {}
 
+  // TabMatcher implementation.
   bool IsTabOpenWithURL(const GURL& gurl,
                         const AutocompleteInput* input) const override;
-
-  std::vector<content::WebContents*> GetOpenTabs() const override;
+  std::vector<TabMatcher::TabWrapper> GetOpenTabs() const override;
 
  private:
+  std::vector<content::WebContents*> GetOpenWebContents() const;
+
   bool IsStrippedURLEqualToWebContentsURL(
       const GURL& stripped_url,
       content::WebContents* web_contents,

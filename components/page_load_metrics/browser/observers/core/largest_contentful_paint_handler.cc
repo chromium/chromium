@@ -13,7 +13,7 @@
 
 namespace page_load_metrics {
 
-// TODO(crbug/616901): True in test only. Since we are unable to config
+// TODO(crbug.com/41256933): True in test only. Since we are unable to config
 // navigation start in tests, we disable the offsetting to make the test
 // deterministic.
 static bool g_disable_subframe_navigation_start_offset = false;
@@ -123,9 +123,9 @@ ContentfulPaintTimingInfo::ContentfulPaintTimingInfo(
     const std::optional<net::RequestPriority>& image_request_priority,
     bool in_main_frame,
     const blink::LargestContentfulPaintType type,
-    const absl::optional<base::TimeDelta>& image_discovery_time,
-    const absl::optional<base::TimeDelta>& image_load_start,
-    const absl::optional<base::TimeDelta>& image_load_end)
+    const std::optional<base::TimeDelta>& image_discovery_time,
+    const std::optional<base::TimeDelta>& image_load_start,
+    const std::optional<base::TimeDelta>& image_load_end)
     : time_(time),
       size_(size),
       text_or_image_(text_or_image),
@@ -178,7 +178,7 @@ std::string ContentfulPaintTimingInfo::TextOrImageInString() const {
     case LargestContentTextOrImage::kImage:
       return "image";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "NOT_REACHED";
   }
 }
@@ -302,9 +302,9 @@ void LargestContentfulPaintHandler::UpdateSoftNavigationLargestContentfulPaint(
             largest_contentful_paint.type),
         largest_contentful_paint.image_bpp,
         GetImageRequestPriority(largest_contentful_paint),
-        largest_contentful_paint.largest_image_discovery_time,
-        largest_contentful_paint.largest_image_load_start,
-        largest_contentful_paint.largest_image_load_end);
+        largest_contentful_paint.resource_load_timings->discovery_time,
+        largest_contentful_paint.resource_load_timings->load_start,
+        largest_contentful_paint.resource_load_timings->load_end);
   }
 }
 
@@ -337,9 +337,9 @@ void LargestContentfulPaintHandler::RecordMainFrameTiming(
             largest_contentful_paint.type),
         largest_contentful_paint.image_bpp,
         GetImageRequestPriority(largest_contentful_paint),
-        largest_contentful_paint.largest_image_discovery_time,
-        largest_contentful_paint.largest_image_load_start,
-        largest_contentful_paint.largest_image_load_end);
+        largest_contentful_paint.resource_load_timings->discovery_time,
+        largest_contentful_paint.resource_load_timings->load_start,
+        largest_contentful_paint.resource_load_timings->load_end);
   }
 }
 
@@ -381,7 +381,7 @@ void LargestContentfulPaintHandler::UpdateSubFrameTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
     ContentfulPaint& subframe_contentful_paint,
-    const absl::optional<base::TimeDelta>&
+    const std::optional<base::TimeDelta>&
         first_input_or_scroll_notified_timestamp,
     const base::TimeDelta& navigation_start_offset,
     const bool is_cross_site) {
@@ -417,11 +417,12 @@ void LargestContentfulPaintHandler::UpdateSubFrameTiming(
       /*in_main_frame=*/false,
       static_cast<blink::LargestContentfulPaintType>(
           largest_contentful_paint.type),
-      AdjustedTime(largest_contentful_paint.largest_image_discovery_time,
+      AdjustedTime(
+          largest_contentful_paint.resource_load_timings->discovery_time,
+          navigation_start_offset),
+      AdjustedTime(largest_contentful_paint.resource_load_timings->load_start,
                    navigation_start_offset),
-      AdjustedTime(largest_contentful_paint.largest_image_load_start,
-                   navigation_start_offset),
-      AdjustedTime(largest_contentful_paint.largest_image_load_end,
+      AdjustedTime(largest_contentful_paint.resource_load_timings->load_end,
                    navigation_start_offset));
 
   if (IsValid(new_image_candidate.Time())) {
@@ -485,7 +486,8 @@ void LargestContentfulPaintHandler::OnDidFinishSubFrameNavigation(
       navigation_handle->GetFrameTreeNodeId(), navigation_delta));
 }
 
-void LargestContentfulPaintHandler::OnSubFrameDeleted(int frame_tree_node_id) {
+void LargestContentfulPaintHandler::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   subframe_navigation_start_offset_.erase(frame_tree_node_id);
 }
 

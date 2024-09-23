@@ -46,6 +46,7 @@ Otherwise, specify the id of the target device:
 ```bash
 $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
 --browser=web-engine-shell --out-dir=/path/to/outdir --target-id=[TARGET_ID]
+```
 
 ### Updating OS flag
 You can update the OS of a device by specifying the path to an image and how

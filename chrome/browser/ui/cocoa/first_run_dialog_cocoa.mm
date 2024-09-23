@@ -82,13 +82,6 @@ void ShowFirstRunModal() {
   }
 }
 
-// True when the stats checkbox should be checked by default. This is only
-// the case when the canary is running.
-bool StatsCheckboxDefault() {
-  // Opt-in means the checkbox is unchecked by default.
-  return !first_run::IsMetricsReportingOptIn();
-}
-
 }  // namespace
 
 namespace first_run {
@@ -104,8 +97,7 @@ void ShowFirstRunDialogCocoa() {
 }
 
 - (instancetype)init {
-  _viewController = [[FirstRunDialogViewController alloc]
-      initWithStatsCheckboxInitiallyChecked:StatsCheckboxDefault()];
+  _viewController = [[FirstRunDialogViewController alloc] init];
 
   // Create the content view controller (and the content view) *before* the
   // window, so that we can find out what the content view's frame is supposed

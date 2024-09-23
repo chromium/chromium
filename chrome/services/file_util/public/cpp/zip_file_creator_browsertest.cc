@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/services/file_util/public/mojom/file_util_service.mojom.h"
@@ -269,19 +270,19 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
     ASSERT_TRUE(base::CreateDirectory(root_dir));
 
     for (int i = 1; i < 90; i++) {
-      base::FilePath file(std::to_string(i) + ".txt");
-      std::string content = "Hello" + std::to_string(i);
+      base::FilePath file(base::NumberToString(i) + ".txt");
+      std::string content = "Hello" + base::NumberToString(i);
       ASSERT_TRUE(base::WriteFile(root_dir.Append(file), content));
       file_tree_content[file] = content;
     }
     for (int i = 1; i <= 10; i++) {
-      base::FilePath dir(std::to_string(i));
+      base::FilePath dir(base::NumberToString(i));
       ASSERT_TRUE(base::CreateDirectory(root_dir.Append(dir)));
       file_tree_content[dir] = std::string();
       for (int j = 1; j <= 70; j++) {
-        base::FilePath file = dir.Append(std::to_string(j) + ".txt");
+        base::FilePath file = dir.Append(base::NumberToString(j) + ".txt");
         std::string content =
-            "Hello" + std::to_string(i) + "/" + std::to_string(j);
+            "Hello" + base::NumberToString(i) + "/" + base::NumberToString(j);
         ASSERT_TRUE(base::WriteFile(root_dir.Append(file), content));
         file_tree_content[file] = content;
       }

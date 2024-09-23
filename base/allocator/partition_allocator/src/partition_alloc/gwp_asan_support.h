@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_GWP_ASAN_SUPPORT_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_GWP_ASAN_SUPPORT_H_
+#ifndef PARTITION_ALLOC_GWP_ASAN_SUPPORT_H_
+#define PARTITION_ALLOC_GWP_ASAN_SUPPORT_H_
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
 #include <cstddef>
 #include <cstdint>
@@ -115,6 +115,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) GwpAsanSupport {
 
 }  // namespace partition_alloc
 
-#endif  // BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
+#endif  // PA_BUILDFLAG(ENABLE_GWP_ASAN_SUPPORT)
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_GWP_ASAN_SUPPORT_H_
+#endif  // PARTITION_ALLOC_GWP_ASAN_SUPPORT_H_

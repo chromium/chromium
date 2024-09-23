@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/metrics/compositor_timing_history.h"
 
 #include <stddef.h>
@@ -12,29 +17,12 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/base/features.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 
 namespace cc {
-
-class CompositorTimingHistory::UMAReporter {
- public:
-  virtual ~UMAReporter() = default;
-
-  // Throughput measurements
-  virtual void AddDrawInterval(base::TimeDelta interval) = 0;
-
-  // Latency measurements
-  virtual void AddBeginImplFrameLatency(base::TimeDelta delta) = 0;
-  virtual void AddDrawDuration(base::TimeDelta duration) = 0;
-
-  virtual void AddImplFrameDeadlineType(
-      CompositorTimingHistory::DeadlineMode deadline_mode) = 0;
-};
 
 namespace {
 
@@ -58,54 +46,8 @@ const double kBeginMainFrameQueueDurationNotCriticalEstimationPercentile = 90.0;
 const double kBeginMainFrameStartToReadyToCommitEstimationPercentile = 90.0;
 const double kCommitEstimatePercentile = 90.0;
 const double kCommitToReadyToActivateEstimationPercentile = 90.0;
-const double kPrepareTilesEstimationPercentile = 90.0;
 const double kActivateEstimationPercentile = 90.0;
 const double kDrawEstimationPercentile = 90.0;
-
-double BeginMainFrameStartToReadyToCommitCriticalPercentile() {
-  if (base::FeatureList::IsEnabled(
-          features::kDurationEstimatesInCompositorTimingHistory)) {
-    double result = base::GetFieldTrialParamByFeatureAsDouble(
-        features::kDurationEstimatesInCompositorTimingHistory,
-        "BMFStartCritialPercentile", -1.0);
-    if (result > 0)
-      return result;
-  }
-  return 90.0;
-}
-
-double BeginMainFrameStartToReadyToCommitNonCriticalPercentile() {
-  if (base::FeatureList::IsEnabled(
-          features::kDurationEstimatesInCompositorTimingHistory)) {
-    double result = base::GetFieldTrialParamByFeatureAsDouble(
-        features::kDurationEstimatesInCompositorTimingHistory,
-        "BMFStartNonCritialPercentile", -1.0);
-    if (result > 0)
-      return result;
-  }
-  return 90.0;
-}
-
-double BeginMainFrameQueueToActivateCriticalPercentile() {
-  if (base::FeatureList::IsEnabled(
-          features::kDurationEstimatesInCompositorTimingHistory)) {
-    double result = base::GetFieldTrialParamByFeatureAsDouble(
-        features::kDurationEstimatesInCompositorTimingHistory,
-        "BMFQueueCritialPercentile", -1.0);
-    if (result > 0)
-      return result;
-  }
-  return 90.0;
-}
-
-// This macro is deprecated since its bucket count uses too much bandwidth.
-// It also has sub-optimal range and bucket distribution.
-// TODO(brianderson): Delete this macro and associated UMAs once there is
-// sufficient overlap with the re-bucketed UMAs.
-#define UMA_HISTOGRAM_CUSTOM_TIMES_MICROS(name, sample)                     \
-  UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample.InMicroseconds(),                \
-                              kUmaDurationMinMicros, kUmaDurationMaxMicros, \
-                              kUmaDurationBucketCount);
 
 // ~90 VSync aligned UMA buckets.
 const int kUMAVSyncBuckets[] = {
@@ -214,68 +156,6 @@ const int kUMAVSyncBuckets[] = {
     32000000,
 };
 
-// ~50 UMA buckets with high precision from ~100 us to 1s.
-const int kUMADurationBuckets[] = {
-    // Powers of 2 from 1 us to 64 us @ 50% precision.
-    1,
-    2,
-    4,
-    8,
-    16,
-    32,
-    64,
-    // 1.25^20, 1.25^21, ..., 1.25^62 @ 20% precision.
-    87,
-    108,
-    136,
-    169,
-    212,
-    265,
-    331,
-    414,
-    517,
-    646,
-    808,
-    1010,
-    1262,
-    1578,
-    1972,
-    2465,
-    3081,
-    3852,
-    4815,
-    6019,
-    7523,
-    9404,
-    11755,
-    14694,
-    18367,
-    22959,
-    28699,
-    35873,
-    44842,
-    56052,
-    70065,
-    87581,
-    109476,
-    136846,
-    171057,
-    213821,
-    267276,
-    334096,
-    417619,
-    522024,
-    652530,
-    815663,
-    1019579,
-    // Powers of 2 from 2s to 32s @ 50% precision.
-    2000000,
-    4000000,
-    8000000,
-    16000000,
-    32000000,
-};
-
 #define UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(name, sample)             \
   do {                                                                     \
     UMA_HISTOGRAM_CUSTOM_ENUMERATION(                                      \
@@ -284,106 +164,12 @@ const int kUMADurationBuckets[] = {
                          kUMAVSyncBuckets + std::size(kUMAVSyncBuckets))); \
   } while (false)
 
-#define UMA_HISTOGRAM_CUSTOM_TIMES_DURATION_SUFFIX(name, suffix, sample) \
-  do {                                                                   \
-    UMA_HISTOGRAM_CUSTOM_ENUMERATION(                                    \
-        name "2" suffix, sample.InMicroseconds(),                        \
-        std::vector<int>(                                                \
-            kUMADurationBuckets,                                         \
-            kUMADurationBuckets + std::size(kUMADurationBuckets)));      \
-  } while (false)
-
-#define UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(name, sample) \
-  UMA_HISTOGRAM_CUSTOM_TIMES_DURATION_SUFFIX(name, "", sample)
-
-#define UMA_HISTOGRAM_READY_TO_ACTIVATE(name, sample, priority)            \
-  do {                                                                     \
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(name, sample);                     \
-    switch (priority) {                                                    \
-      case SAME_PRIORITY_FOR_BOTH_TREES:                                   \
-        UMA_HISTOGRAM_CUSTOM_TIMES_DURATION_SUFFIX(name, ".Same", sample); \
-        break;                                                             \
-      case SMOOTHNESS_TAKES_PRIORITY:                                      \
-        UMA_HISTOGRAM_CUSTOM_TIMES_DURATION_SUFFIX(name, ".Smoothness",    \
-                                                   sample);                \
-        break;                                                             \
-      case NEW_CONTENT_TAKES_PRIORITY:                                     \
-        UMA_HISTOGRAM_CUSTOM_TIMES_DURATION_SUFFIX(name, ".NewContent",    \
-                                                   sample);                \
-        break;                                                             \
-    }                                                                      \
-  } while (false)
-
-class RendererUMAReporter : public CompositorTimingHistory::UMAReporter {
- public:
-  ~RendererUMAReporter() override = default;
-
-  void AddDrawInterval(base::TimeDelta interval) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED("Scheduling.Renderer.DrawInterval",
-                                             interval);
-  }
-
-  void AddBeginImplFrameLatency(base::TimeDelta delta) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(
-        "Scheduling.Renderer.BeginImplFrameLatency", delta);
-  }
-
-  void AddDrawDuration(base::TimeDelta duration) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Renderer.DrawDuration",
-                                        duration);
-  }
-
-  void AddImplFrameDeadlineType(
-      CompositorTimingHistory::DeadlineMode deadline_mode) override {
-    UMA_HISTOGRAM_ENUMERATION("Scheduling.Renderer.DeadlineMode",
-                              deadline_mode);
-  }
-};
-
-class BrowserUMAReporter : public CompositorTimingHistory::UMAReporter {
- public:
-  ~BrowserUMAReporter() override = default;
-
-  // DrawInterval is not meaningful to measure on browser side because
-  // browser rendering fps is not at 60.
-  void AddDrawInterval(base::TimeDelta interval) override {}
-
-  void AddBeginImplFrameLatency(base::TimeDelta delta) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION(
-        "Scheduling.Browser.BeginImplFrameLatency", delta);
-  }
-
-  void AddDrawDuration(base::TimeDelta duration) override {
-    UMA_HISTOGRAM_CUSTOM_TIMES_DURATION("Scheduling.Browser.DrawDuration",
-                                        duration);
-  }
-
-  void AddImplFrameDeadlineType(
-      CompositorTimingHistory::DeadlineMode deadline_mode) override {
-    // The browser compositor scheduler is synchronous and only has None (or
-    // Blocked as edges cases) for deadline mode.
-  }
-};
-
-class NullUMAReporter : public CompositorTimingHistory::UMAReporter {
- public:
-  ~NullUMAReporter() override = default;
-  void AddDrawInterval(base::TimeDelta interval) override {}
-  void AddBeginImplFrameLatency(base::TimeDelta delta) override {}
-  void AddDrawDuration(base::TimeDelta duration) override {}
-  void AddImplFrameDeadlineType(
-      CompositorTimingHistory::DeadlineMode deadline_mode) override {}
-};
-
 }  // namespace
 
 CompositorTimingHistory::CompositorTimingHistory(
-    bool using_synchronous_renderer_compositor,
     UMACategory uma_category,
     RenderingStatsInstrumentation* rendering_stats_instrumentation)
-    : using_synchronous_renderer_compositor_(
-          using_synchronous_renderer_compositor),
-      enabled_(false),
+    : enabled_(false),
       compositor_drawing_continuously_(false),
       begin_main_frame_queue_duration_history_(kDurationHistorySize),
       begin_main_frame_queue_duration_critical_history_(kDurationHistorySize),
@@ -393,38 +179,12 @@ CompositorTimingHistory::CompositorTimingHistory(
           kDurationHistorySize),
       commit_duration_history_(kDurationHistorySize),
       commit_to_ready_to_activate_duration_history_(kDurationHistorySize),
-      prepare_tiles_duration_history_(kDurationHistorySize),
       activate_duration_history_(kDurationHistorySize),
       draw_duration_history_(kDurationHistorySize),
-      duration_estimates_enabled_(base::FeatureList::IsEnabled(
-          features::kDurationEstimatesInCompositorTimingHistory)),
-      bmf_start_to_ready_to_commit_critical_history_(kDurationHistorySize),
-      bmf_start_to_ready_to_commit_critical_percentile_(
-          BeginMainFrameStartToReadyToCommitCriticalPercentile()),
-      bmf_start_to_ready_to_commit_not_critical_history_(kDurationHistorySize),
-      bmf_start_to_ready_to_commit_not_critical_percentile_(
-          BeginMainFrameStartToReadyToCommitNonCriticalPercentile()),
-      bmf_queue_to_activate_critical_history_(kDurationHistorySize),
-      bmf_queue_to_activate_critical_percentile_(
-          BeginMainFrameQueueToActivateCriticalPercentile()),
-      uma_reporter_(CreateUMAReporter(uma_category)),
+      uma_category_(uma_category),
       rendering_stats_instrumentation_(rendering_stats_instrumentation) {}
 
 CompositorTimingHistory::~CompositorTimingHistory() = default;
-
-std::unique_ptr<CompositorTimingHistory::UMAReporter>
-CompositorTimingHistory::CreateUMAReporter(UMACategory category) {
-  switch (category) {
-    case RENDERER_UMA:
-      return base::WrapUnique(new RendererUMAReporter);
-    case BROWSER_UMA:
-      return base::WrapUnique(new BrowserUMAReporter);
-    case NULL_UMA:
-      return base::WrapUnique(new NullUMAReporter);
-  }
-  NOTREACHED();
-  return base::WrapUnique<CompositorTimingHistory::UMAReporter>(nullptr);
-}
 
 base::TimeTicks CompositorTimingHistory::Now() const {
   return base::TimeTicks::Now();
@@ -483,11 +243,6 @@ CompositorTimingHistory::CommitToReadyToActivateDurationEstimate() const {
       kCommitToReadyToActivateEstimationPercentile);
 }
 
-base::TimeDelta CompositorTimingHistory::PrepareTilesDurationEstimate() const {
-  return prepare_tiles_duration_history_.Percentile(
-      kPrepareTilesEstimationPercentile);
-}
-
 base::TimeDelta CompositorTimingHistory::ActivateDurationEstimate() const {
   return activate_duration_history_.Percentile(kActivateEstimationPercentile);
 }
@@ -499,10 +254,6 @@ base::TimeDelta CompositorTimingHistory::DrawDurationEstimate() const {
 base::TimeDelta
 CompositorTimingHistory::BeginMainFrameStartToReadyToCommitCriticalEstimate()
     const {
-  if (duration_estimates_enabled_) {
-    return bmf_start_to_ready_to_commit_critical_history_.Percentile(
-        bmf_start_to_ready_to_commit_critical_percentile_);
-  }
   return BeginMainFrameStartToReadyToCommitDurationEstimate() +
          BeginMainFrameQueueDurationCriticalEstimate();
 }
@@ -510,34 +261,16 @@ CompositorTimingHistory::BeginMainFrameStartToReadyToCommitCriticalEstimate()
 base::TimeDelta
 CompositorTimingHistory::BeginMainFrameStartToReadyToCommitNotCriticalEstimate()
     const {
-  if (duration_estimates_enabled_) {
-    return bmf_start_to_ready_to_commit_not_critical_history_.Percentile(
-        bmf_start_to_ready_to_commit_not_critical_percentile_);
-  }
   return BeginMainFrameStartToReadyToCommitDurationEstimate() +
          BeginMainFrameQueueDurationNotCriticalEstimate();
 }
 
 base::TimeDelta
 CompositorTimingHistory::BeginMainFrameQueueToActivateCriticalEstimate() const {
-  if (duration_estimates_enabled_) {
-    return bmf_queue_to_activate_critical_history_.Percentile(
-        bmf_queue_to_activate_critical_percentile_);
-  }
   return BeginMainFrameStartToReadyToCommitDurationEstimate() +
          CommitDurationEstimate() + CommitToReadyToActivateDurationEstimate() +
          ActivateDurationEstimate() +
          BeginMainFrameQueueDurationCriticalEstimate();
-}
-
-void CompositorTimingHistory::WillBeginImplFrame(
-    const viz::BeginFrameArgs& args,
-    base::TimeTicks now) {
-  viz::BeginFrameArgs::BeginFrameArgsType frame_type = args.type;
-  base::TimeTicks frame_time = args.frame_time;
-
-  if (frame_type == viz::BeginFrameArgs::NORMAL)
-    uma_reporter_->AddBeginImplFrameLatency(now - frame_time);
 }
 
 void CompositorTimingHistory::WillFinishImplFrame(bool needs_redraw) {
@@ -574,34 +307,16 @@ void CompositorTimingHistory::NotifyReadyToCommit() {
   DCHECK_EQ(ready_to_commit_time_, base::TimeTicks());
   ready_to_commit_time_ = Now();
   pending_commit_on_critical_path_ = begin_main_frame_on_critical_path_;
-  if (enabled_ && duration_estimates_enabled_) {
-    bmf_start_to_ready_to_activate_duration_ =
-        ready_to_commit_time_ - begin_main_frame_start_time_;
-  }
   base::TimeDelta bmf_duration =
       ready_to_commit_time_ - begin_main_frame_start_time_;
   DidBeginMainFrame(ready_to_commit_time_);
   begin_main_frame_start_to_ready_to_commit_duration_history_.InsertSample(
       bmf_duration);
-  if (enabled_ && duration_estimates_enabled_) {
-    if (pending_commit_on_critical_path_) {
-      bmf_start_to_ready_to_commit_critical_history_.InsertSample(
-          bmf_duration + begin_main_frame_queue_duration_);
-    } else {
-      bmf_start_to_ready_to_commit_not_critical_history_.InsertSample(
-          bmf_duration + begin_main_frame_queue_duration_);
-    }
-  }
 }
 
 void CompositorTimingHistory::WillCommit() {
   DCHECK_NE(ready_to_commit_time_, base::TimeTicks());
   commit_start_time_ = Now();
-  if (enabled_ && duration_estimates_enabled_) {
-    DCHECK_NE(ready_to_commit_time_, base::TimeTicks());
-    bmf_start_to_ready_to_activate_duration_ +=
-        commit_start_time_ - ready_to_commit_time_;
-  }
   ready_to_commit_time_ = base::TimeTicks();
 }
 
@@ -610,17 +325,10 @@ void CompositorTimingHistory::DidCommit() {
   DCHECK_NE(commit_start_time_, base::TimeTicks());
 
   base::TimeTicks commit_end_time = Now();
-  if (enabled_ && duration_estimates_enabled_) {
-    pending_tree_on_critical_path_ = pending_commit_on_critical_path_;
-    bmf_start_to_ready_to_activate_duration_ +=
-        (commit_end_time - commit_start_time_);
-  }
   commit_duration_history_.InsertSample(commit_end_time - commit_start_time_);
 
   pending_tree_is_impl_side_ = false;
   pending_tree_creation_time_ = commit_end_time;
-  if (enabled_ && duration_estimates_enabled_)
-    pending_tree_bmf_queue_duration_ = begin_main_frame_queue_duration_;
 }
 
 void CompositorTimingHistory::DidBeginMainFrame(
@@ -652,8 +360,6 @@ void CompositorTimingHistory::DidBeginMainFrame(
       begin_main_frame_queue_duration_not_critical_history_.InsertSample(
           bmf_queue_duration);
     }
-    if (duration_estimates_enabled_)
-      begin_main_frame_queue_duration_ = bmf_queue_duration;
   }
 
   begin_main_frame_sent_time_ = base::TimeTicks();
@@ -669,21 +375,6 @@ void CompositorTimingHistory::WillInvalidateOnImplSide() {
   pending_tree_on_critical_path_ = false;
   pending_tree_bmf_queue_duration_ = base::TimeDelta();
   pending_tree_creation_time_ = base::TimeTicks::Now();
-}
-
-void CompositorTimingHistory::WillPrepareTiles() {
-  DCHECK_EQ(base::TimeTicks(), prepare_tiles_start_time_);
-  prepare_tiles_start_time_ = Now();
-}
-
-void CompositorTimingHistory::DidPrepareTiles() {
-  DCHECK_NE(base::TimeTicks(), prepare_tiles_start_time_);
-
-  base::TimeDelta prepare_tiles_duration = Now() - prepare_tiles_start_time_;
-  if (enabled_)
-    prepare_tiles_duration_history_.InsertSample(prepare_tiles_duration);
-
-  prepare_tiles_start_time_ = base::TimeTicks();
 }
 
 void CompositorTimingHistory::ReadyToActivate() {
@@ -707,8 +398,6 @@ void CompositorTimingHistory::ReadyToActivate() {
     if (enabled_) {
       commit_to_ready_to_activate_duration_history_.InsertSample(
           time_since_commit);
-      if (duration_estimates_enabled_)
-        bmf_start_to_ready_to_activate_duration_ += time_since_commit;
     }
   }
 }
@@ -729,19 +418,6 @@ void CompositorTimingHistory::DidActivate() {
 
   if (enabled_) {
     activate_duration_history_.InsertSample(activate_duration);
-
-    if (duration_estimates_enabled_) {
-      if (pending_tree_on_critical_path_) {
-        base::TimeDelta time_since_ready_to_activate =
-            activate_end_time - pending_tree_ready_to_activate_time_;
-        DCHECK_NE(pending_tree_bmf_queue_duration_, base::TimeDelta());
-        bmf_queue_to_activate_critical_history_.InsertSample(
-            bmf_start_to_ready_to_activate_duration_ +
-            time_since_ready_to_activate + pending_tree_bmf_queue_duration_);
-      }
-      bmf_start_to_ready_to_activate_duration_ = base::TimeDelta();
-      pending_tree_on_critical_path_ = false;
-    }
   }
 
   pending_tree_ready_to_activate_time_ = base::TimeTicks();
@@ -765,8 +441,6 @@ void CompositorTimingHistory::DidDraw() {
   rendering_stats_instrumentation_->AddDrawDuration(draw_duration,
                                                     draw_estimate);
 
-  uma_reporter_->AddDrawDuration(draw_duration);
-
   if (enabled_) {
     draw_duration_history_.InsertSample(draw_duration);
   }
@@ -774,7 +448,10 @@ void CompositorTimingHistory::DidDraw() {
   SetCompositorDrawingContinuously(true);
   if (!draw_end_time_prev_.is_null()) {
     base::TimeDelta draw_interval = draw_end_time - draw_end_time_prev_;
-    uma_reporter_->AddDrawInterval(draw_interval);
+    if (uma_category_ == RENDERER_UMA) {
+      UMA_HISTOGRAM_CUSTOM_TIMES_VSYNC_ALIGNED(
+          "Scheduling.Renderer.DrawInterval", draw_interval);
+    }
     // Emit a trace event to highlight a long time lapse between the draw times
     // of back-to-back BeginImplFrames.
     if (draw_interval > kDrawIntervalTraceThreshold) {
@@ -794,11 +471,6 @@ void CompositorTimingHistory::DidDraw() {
   draw_start_time_ = base::TimeTicks();
 }
 
-void CompositorTimingHistory::RecordDeadlineMode(DeadlineMode deadline_mode) {
-  if (uma_reporter_)
-    uma_reporter_->AddImplFrameDeadlineType(deadline_mode);
-}
-
 void CompositorTimingHistory::ClearHistory() {
   TRACE_EVENT0("cc,benchmark", "CompositorTimingHistory::ClearHistory");
 
@@ -808,12 +480,8 @@ void CompositorTimingHistory::ClearHistory() {
   begin_main_frame_start_to_ready_to_commit_duration_history_.Clear();
   commit_duration_history_.Clear();
   commit_to_ready_to_activate_duration_history_.Clear();
-  prepare_tiles_duration_history_.Clear();
   activate_duration_history_.Clear();
   draw_duration_history_.Clear();
-  bmf_start_to_ready_to_commit_critical_history_.Clear();
-  bmf_start_to_ready_to_commit_not_critical_history_.Clear();
-  bmf_queue_to_activate_critical_history_.Clear();
 }
 
 size_t CompositorTimingHistory::CommitDurationSampleCountForTesting() const {

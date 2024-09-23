@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/process/process_metrics.h"
 
 #include <stddef.h>
@@ -29,13 +34,16 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
+#include "base/types/expected.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -43,7 +51,7 @@
 #include <sys/mman.h>
 #endif
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_MAC)
 #include <mach/mach.h>
 
 #include "base/apple/mach_logging.h"
@@ -64,6 +72,14 @@ namespace base::debug {
 
 namespace {
 
+using base::test::ErrorIs;
+using base::test::ValueIs;
+using ::testing::_;
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
+using ::testing::Ge;
+
 #if ENABLE_CPU_TESTS
 
 void BusyWork(std::vector<std::string>* vec) {
@@ -74,31 +90,20 @@ void BusyWork(std::vector<std::string>* vec) {
   }
 }
 
+// Tests that GetCumulativeCPUUsage() returns a valid result that's equal to or
+// greater than `prev_cpu_usage`, and returns the result. If
+// GetCumulativeCPUUsage() returns an error, records a failed expectation and
+// returns an empty TimeDelta so that each test doesn't need to check for
+// nullopt repeatedly.
 TimeDelta TestCumulativeCPU(ProcessMetrics* metrics, TimeDelta prev_cpu_usage) {
-  const TimeDelta current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
-  return current_cpu_usage;
-}
-
-TimeDelta TestPreciseCumulativeCPU(ProcessMetrics* metrics,
-                                   TimeDelta prev_cpu_usage) {
-#if BUILDFLAG(IS_WIN)
-  const TimeDelta current_cpu_usage = metrics->GetPreciseCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
-  return current_cpu_usage;
-#else
-  // Do nothing. Not supported on this platform.
-  return base::TimeDelta();
-#endif
+  const base::expected<TimeDelta, ProcessCPUUsageError> current_cpu_usage =
+      metrics->GetCumulativeCPUUsage();
+  EXPECT_THAT(current_cpu_usage, ValueIs(Ge(prev_cpu_usage)));
+  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), ValueIs(Ge(0.0)));
+  return current_cpu_usage.value_or(TimeDelta());
 }
 
 #endif  // ENABLE_CPU_TESTS
-
-using ::testing::AssertionFailure;
-using ::testing::AssertionResult;
-using ::testing::AssertionSuccess;
 
 // Helper to deal with Mac process launching complexity. On other platforms this
 // is just a thin wrapper around SpawnMultiProcessTestChild.
@@ -136,13 +141,13 @@ class TestChildLauncher {
   CommandLine command_line_ = GetMultiProcessTestChildBaseCommandLine();
   Process child_process_;
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_MAC)
   class TestChildPortProvider;
   std::unique_ptr<TestChildPortProvider> port_provider_;
 #endif
 };
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_MAC)
 
 // Adapted from base/mac/mach_port_rendezvous_unittest.cc and
 // https://mw.foldr.org/posts/computers/macosx/task-info-fun-with-mach/
@@ -637,10 +642,7 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   std::unique_ptr<ProcessMetrics> metrics =
       ProcessMetrics::CreateCurrentProcessMetrics();
 
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
-#if BUILDFLAG(IS_WIN)
-  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
-#endif
+  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), ValueIs(Ge(0.0)));
 
   Thread thread1("thread1");
   Thread thread2("thread2");
@@ -663,26 +665,18 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   thread3.task_runner()->PostTask(FROM_HERE, BindOnce(&BusyWork, &vec3));
 
   TimeDelta prev_cpu_usage = TestCumulativeCPU(metrics.get(), TimeDelta());
-  TimeDelta prev_precise_cpu_usage =
-      TestPreciseCumulativeCPU(metrics.get(), TimeDelta());
 
   thread1.Stop();
   prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
-  prev_precise_cpu_usage =
-      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread2.Stop();
   prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
-  prev_precise_cpu_usage =
-      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread3.Stop();
   prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
-  prev_precise_cpu_usage =
-      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 }
 
-#if !BUILDFLAG(IS_APPLE) || BUILDFLAG(USE_BLINK)
+#if !BUILDFLAG(IS_APPLE)
 
 // Subprocess to test the child CPU usage.
 MULTIPROCESS_TEST_MAIN(CPUUsageChildMain) {
@@ -701,9 +695,17 @@ TEST_F(SystemMetricsTest, MeasureChildCpuUsage) {
       child_launcher.CreateChildProcessMetrics();
 
   const TimeDelta cpu_usage1 = TestCumulativeCPU(metrics.get(), TimeDelta());
-  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 
-  const TimeDelta cpu_usage2 = TestCumulativeCPU(metrics.get(), cpu_usage1);
+  // The child thread does busy work, so it should get some CPU usage. There's a
+  // small chance it won't be scheduled during the delay so loop several times.
+  const auto abort_time =
+      base::TimeTicks::Now() + TestTimeouts::action_max_timeout();
+  TimeDelta cpu_usage2;
+  while (cpu_usage2.is_zero() && !HasFailure() &&
+         base::TimeTicks::Now() < abort_time) {
+    PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    cpu_usage2 = TestCumulativeCPU(metrics.get(), cpu_usage1);
+  }
   EXPECT_TRUE(cpu_usage2.is_positive());
 
   ASSERT_TRUE(child_launcher.TerminateChildProcess());
@@ -711,38 +713,15 @@ TEST_F(SystemMetricsTest, MeasureChildCpuUsage) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
   // Windows and Fuchsia return final measurements of a process after it exits.
   TestCumulativeCPU(metrics.get(), cpu_usage2);
-#elif BUILDFLAG(IS_APPLE)
-  // Mac and iOS return 0 on error. GetPlatformIndependentCPUUsage subtracts
-  // from this to get a negative.
-  EXPECT_EQ(metrics->GetCumulativeCPUUsage(), TimeDelta());
-  EXPECT_LT(metrics->GetPlatformIndependentCPUUsage(), 0.0);
 #else
-  // All other platforms return a negative time value to indicate an error.
-  EXPECT_LT(metrics->GetCumulativeCPUUsage(), TimeDelta());
-  EXPECT_LT(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  // All other platforms return an error.
+  EXPECT_THAT(metrics->GetCumulativeCPUUsage(), ErrorIs(_));
+  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), ErrorIs(_));
 #endif
 }
 
-#endif  // !BUILDFLAG(IS_APPLE) || BUILDFLAG(USE_BLINK)
+#endif  // !BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_FUCHSIA)
-
-// Fuchsia CHECK's when measuring an invalid procses.
-using SystemMetricsDeathTest = SystemMetricsTest;
-TEST_F(SystemMetricsDeathTest, InvalidProcessCpuUsage) {
-  std::unique_ptr<ProcessMetrics> metrics =
-      ProcessMetrics::CreateProcessMetrics(kNullProcessHandle);
-  EXPECT_CHECK_DEATH(
-      { [[maybe_unused]] TimeDelta usage = metrics->GetCumulativeCPUUsage(); });
-  EXPECT_CHECK_DEATH({
-    [[maybe_unused]] double usage = metrics->GetPlatformIndependentCPUUsage();
-  });
-}
-
-#else  // !BUILDFLAG(IS_FUCHSIA)
-
-// Windows, Mac and iOS also return 0 on error. All other platforms return a
-// negative value to indicate an error.
 TEST_F(SystemMetricsTest, InvalidProcessCpuUsage) {
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<ProcessMetrics> metrics =
@@ -751,20 +730,9 @@ TEST_F(SystemMetricsTest, InvalidProcessCpuUsage) {
   std::unique_ptr<ProcessMetrics> metrics =
       ProcessMetrics::CreateProcessMetrics(kNullProcessHandle);
 #endif
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  EXPECT_EQ(metrics->GetCumulativeCPUUsage(), TimeDelta());
-#else
-  EXPECT_LT(metrics->GetCumulativeCPUUsage(), TimeDelta());
-#endif
-
-  // The first call always caches the result of GetCumulativeCPUUsage() and
-  // returns 0, even if it's an error value. The second call returns the delta
-  // with the cached result, which is 0 when the second GetCumulativeCPUUsage()
-  // call returns the same error value.
-  EXPECT_EQ(metrics->GetPlatformIndependentCPUUsage(), 0.0);
-  EXPECT_EQ(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  EXPECT_THAT(metrics->GetCumulativeCPUUsage(), ErrorIs(_));
+  EXPECT_THAT(metrics->GetPlatformIndependentCPUUsage(), ErrorIs(_));
 }
-#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 #endif  // ENABLE_CPU_TESTS
 
@@ -828,7 +796,7 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
 
   // All the values should be less than the total amount of memory.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/711450): re-enable the following assertion on iOS.
+  // TODO(crbug.com/40515565): re-enable the following assertion on iOS.
   EXPECT_LT(info.free, info.total);
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -913,8 +881,7 @@ TEST(ProcessMetricsTest, DISABLED_GetNumberOfThreads) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 namespace {
 
 // Keep these in sync so the GetChildOpenFdCount test can refer to correct test
@@ -1030,7 +997,7 @@ TEST(ProcessMetricsTest, GetOpenFdCount) {
   EXPECT_GT(new_fd_count, 0);
   EXPECT_EQ(new_fd_count, fd_count + 1);
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

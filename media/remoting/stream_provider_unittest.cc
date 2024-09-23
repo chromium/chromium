@@ -81,7 +81,7 @@ class StreamProviderTest : public testing::Test {
         } else if (type == DemuxerStream::Type::VIDEO) {
           receiver_video_demuxer_stream_handle_ = message->integer_value();
         } else {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         }
 
         RpcInitializeCallback(type);
@@ -124,7 +124,7 @@ class StreamProviderTest : public testing::Test {
       }
 
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     rpc_messenger_->SendMessageToRemote(*rpc);
@@ -139,7 +139,7 @@ class StreamProviderTest : public testing::Test {
         SendVideoFrame();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -227,7 +227,7 @@ class StreamProviderTest : public testing::Test {
         received_video_buffer_ = buffer;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -299,7 +299,7 @@ TEST_F(StreamProviderTest, ReadBuffer) {
       1, base::BindOnce(&StreamProviderTest::OnBufferReadFromDemuxerStream,
                         base::Unretained(this), DemuxerStream::Type::AUDIO));
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(audio_buffer_->data_size(), received_audio_buffer_->data_size());
+  EXPECT_EQ(audio_buffer_->size(), received_audio_buffer_->size());
   EXPECT_EQ(audio_buffer_->end_of_stream(),
             received_audio_buffer_->end_of_stream());
   EXPECT_EQ(audio_buffer_->is_key_frame(),

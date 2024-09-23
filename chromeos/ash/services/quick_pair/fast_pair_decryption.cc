@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
@@ -20,6 +21,16 @@ constexpr int kMessageTypeIndex = 0;
 constexpr int kResponseAddressStartIndex = 1;
 constexpr int kResponseSaltStartIndex = 7;
 constexpr uint8_t kKeybasedPairingResponseType = 0x01;
+
+// Key-based Pairing Extended Response
+constexpr int kResponse2FlagsStartIndex = 1;
+constexpr int kResponse2NumberOfAddressesStartIndex = 2;
+constexpr int kResponse2AddressStartIndex1 = 3;
+constexpr int kResponse2SaltStartIndex1 = 9;
+constexpr int kResponse2AddressStartIndex2 = 9;
+constexpr int kResponse2SaltStartIndex2 = 15;
+constexpr uint8_t kKeybasedPairingExtendedReponseType = 0x02;
+
 constexpr uint8_t kSeekerPasskeyType = 0x02;
 constexpr uint8_t kProviderPasskeyType = 0x03;
 constexpr int kPasskeySaltStartIndex = 4;
@@ -47,6 +58,44 @@ std::optional<DecryptedResponse> ParseDecryptedResponse(
       DecryptBytes(aes_key_bytes, encrypted_response_bytes);
 
   uint8_t message_type = decrypted_response_bytes[kMessageTypeIndex];
+
+  // Decrypts the Key-based Pairing Extended Response
+  if (ash::features::IsFastPairKeyboardsEnabled() &&
+      message_type == kKeybasedPairingExtendedReponseType) {
+    uint8_t flags = decrypted_response_bytes[kResponse2FlagsStartIndex];
+    uint8_t num_addresses =
+        decrypted_response_bytes[kResponse2NumberOfAddressesStartIndex];
+
+    std::array<uint8_t, kDecryptedResponseAddressByteSize> address_bytes;
+    std::copy(decrypted_response_bytes.begin() + kResponse2AddressStartIndex1,
+              decrypted_response_bytes.begin() + kResponse2SaltStartIndex1,
+              address_bytes.begin());
+
+    std::array<uint8_t, kDecryptedResponseSaltByteSize> salt;
+    salt.fill(0);
+
+    if (num_addresses == 2) {
+      std::array<uint8_t, kDecryptedResponseAddressByteSize>
+          secondary_address_bytes;
+      std::copy(decrypted_response_bytes.begin() + kResponse2AddressStartIndex2,
+                decrypted_response_bytes.begin() + kResponse2SaltStartIndex2,
+                secondary_address_bytes.begin());
+
+      std::copy(decrypted_response_bytes.begin() + kResponse2SaltStartIndex2,
+                decrypted_response_bytes.end(), salt.begin());
+
+      return DecryptedResponse(
+          FastPairMessageType::kKeyBasedPairingExtendedResponse, address_bytes,
+          salt, flags, num_addresses, secondary_address_bytes);
+    }
+
+    std::copy(decrypted_response_bytes.begin() + kResponse2SaltStartIndex1,
+              decrypted_response_bytes.end(), salt.begin());
+
+    return DecryptedResponse(
+        FastPairMessageType::kKeyBasedPairingExtendedResponse, address_bytes,
+        salt, flags, num_addresses, std::nullopt);
+  }
 
   // If the message type index is not the expected fast pair message type, then
   // this is not a valid fast pair response.

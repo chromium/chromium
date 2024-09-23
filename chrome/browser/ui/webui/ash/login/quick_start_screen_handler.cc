@@ -24,13 +24,9 @@ void QuickStartScreenHandler::SetPIN(const std::string pin) {
   CallExternalAPI("setPin", pin);
 }
 
-void QuickStartScreenHandler::SetQRCode(base::Value::List blob) {
-  CallExternalAPI("setQRCode", std::move(blob));
-}
-
-void QuickStartScreenHandler::SetDiscoverableName(
-    const std::string& discoverable_name) {
-  CallExternalAPI("setDiscoverableName", discoverable_name);
+void QuickStartScreenHandler::SetQRCode(base::Value::List blob,
+                                        const std::string url) {
+  CallExternalAPI("setQRCode", std::move(blob), url);
 }
 
 void QuickStartScreenHandler::ShowInitialUiStep() {
@@ -61,8 +57,9 @@ void QuickStartScreenHandler::ShowCreatingAccountStep() {
   CallExternalAPI("showCreatingAccountStep");
 }
 
-void QuickStartScreenHandler::ShowSetupCompleteStep() {
-  CallExternalAPI("showSetupCompleteStep");
+void QuickStartScreenHandler::ShowSetupCompleteStep(
+    const bool did_transfer_wifi) {
+  CallExternalAPI("showSetupCompleteStep", did_transfer_wifi);
 }
 
 void QuickStartScreenHandler::SetUserEmail(const std::string email) {
@@ -77,16 +74,30 @@ void QuickStartScreenHandler::SetUserAvatar(const std::string avatar_url) {
   CallExternalAPI("setUserAvatarUrl", avatar_url);
 }
 
+void QuickStartScreenHandler::SetWillRequestWiFi(const bool will_request_wifi) {
+  CallExternalAPI("setWillRequestWiFi", will_request_wifi);
+}
+
+base::WeakPtr<QuickStartView> QuickStartScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void QuickStartScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("quickStartSetupQrTitle", IDS_LOGIN_QUICK_START_SETUP_QR_TITLE);
   builder->Add("quickStartSetupPinTitle",
                IDS_LOGIN_QUICK_START_SETUP_PIN_TITLE);
   builder->Add("quickStartSetupSubtitle", IDS_LOGIN_QUICK_START_SETUP_SUBTITLE);
+  builder->Add("quickStartSetupSubtitleAccountOnly",
+               IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_ACCOUNT_ONLY);
   builder->Add("quickStartSetupContentFooterTurnOnWifi",
                IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_TURN_ON_WIFI_AND_BLT);
-  builder->Add("quickStartSetupContentFooterFollowInstructions",
-               IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS);
+  builder->Add(
+      "quickStartSetupContentFooterFollowInstructionsQr",
+      IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS_QR);
+  builder->Add(
+      "quickStartSetupContentFooterFollowInstructionsPin",
+      IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS_PIN);
   builder->Add("quickStartWifiTransferTitle",
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
   builder->Add("quickStartWifiTransferSubtitle",
@@ -101,8 +112,10 @@ void QuickStartScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE);
   builder->Add("quickStartSetupCompleteTitle",
                IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_TITLE);
-  builder->Add("quickStartSetupCompleteSubtitle",
-               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE);
+  builder->Add("quickStartSetupCompleteSubtitleBoth",
+               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE_BOTH);
+  builder->Add("quickStartSetupCompleteSubtitleSignedIn",
+               IDS_LOGIN_QUICK_START_SETUP_COMPLETE_STEP_SUBTITLE_SIGNED_IN);
   builder->Add("quickStartSetupFromSigninTitle",
                IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE);
   builder->Add("quickStartSetupFromSigninSubtitle",

@@ -21,11 +21,22 @@ import pretty_print_xml
 
 # Non-basic type keys for storing comments and text attributes, so they don't
 # conflict with regular keys, and can be skipped in JSON serialization.
-COMMENT_KEY = ('comment')
+PRECEDING_COMMENT_KEY = ('preceding_comment')
+TRAILING_COMMENT_KEY = ('trailing_comment')
 TEXT_KEY = ('text')
 
 
-def GetCommentsForNode(node):
+def IsTrailingComment(comment: str) -> bool:
+  """Returns whether this comment is a trailing comment.
+
+  In this context a trailing comment is one which should be anchored to the
+  preceding node, rather than the following node. All comments that are not
+  trailing comments are assumed to be anchored to the following node.
+  """
+  return comment.strip().startswith('LINT.ThenChange')
+
+
+def GetPrecedingCommentsForNode(node):
   """Extracts comments in the current node.
 
   Args:
@@ -38,10 +49,32 @@ def GetCommentsForNode(node):
   node = node.previousSibling
   while node:
     if node.nodeType == minidom.Node.COMMENT_NODE:
-      comments.append(node.data)
+      if not IsTrailingComment(node.data):
+        comments.append(node.data)
     elif node.nodeType != minidom.Node.TEXT_NODE:
       break
     node = node.previousSibling
+  return comments[::-1]
+
+
+def GetTrailingCommentsForNode(node):
+  """Extracts comments in the current node.
+
+  Args:
+    node: The DOM node to extract comments from.
+
+  Returns:
+    A list of comment DOM nodes.
+  """
+  comments = []
+  node = node.nextSibling
+  while node:
+    if node.nodeType == minidom.Node.COMMENT_NODE:
+      if IsTrailingComment(node.data):
+        comments.append(node.data)
+    elif node.nodeType != minidom.Node.TEXT_NODE:
+      break
+    node = node.nextSibling
   return comments[::-1]
 
 
@@ -125,7 +158,20 @@ class NodeType(object):
       An XML node encoding the object.
     """
 
-  def GetComments(self, obj):
+  def GetPrecedingComments(self, obj):
+    """Gets comments for the object being encoded.
+
+    Args:
+      obj: The object to be encoded into the XML.
+
+    Returns:
+      A list of comment nodes for the object.
+    """
+    del obj  # Used in ObjectNodeType implementation
+    # The base NodeType does not store comments
+    return []
+
+  def GetTrailingComments(self, obj):
     """Gets comments for the object being encoded.
 
     Args:
@@ -146,8 +192,9 @@ class NodeType(object):
       node: An XML node to marshall the object into.
       obj: The object to be encoded into the XML.
     """
-    PutCommentsInNode(doc, node, self.GetComments(obj))
+    PutCommentsInNode(doc, node, self.GetPrecedingComments(obj))
     node.appendChild(self.Marshall(doc, obj))
+    PutCommentsInNode(doc, node, self.GetTrailingComments(obj))
 
   def GetAttributes(self):
     """Gets a sorted list of attributes that this node can have.
@@ -198,7 +245,8 @@ class TextNodeType(NodeType):
     """
 
     obj = {}
-    obj[COMMENT_KEY] = GetCommentsForNode(node)
+    obj[PRECEDING_COMMENT_KEY] = GetPrecedingCommentsForNode(node)
+    obj[TRAILING_COMMENT_KEY] = GetTrailingCommentsForNode(node)
 
     if not node.firstChild:
       return obj
@@ -229,7 +277,7 @@ class TextNodeType(NodeType):
       node.appendChild(doc.createTextNode(text))
     return node
 
-  def GetComments(self, obj):
+  def GetPrecedingComments(self, obj):
     """Gets comments for the object being encoded.
 
     Args:
@@ -238,8 +286,18 @@ class TextNodeType(NodeType):
     Returns:
       A list of comment nodes for the object.
     """
-    return obj[COMMENT_KEY]
+    return obj[PRECEDING_COMMENT_KEY]
 
+  def GetTrailingComments(self, obj):
+    """Gets comments for the object being encoded.
+
+    Args:
+      obj: The object to be encoded into the XML.
+
+    Returns:
+      A list of comment nodes for the object.
+    """
+    return obj[TRAILING_COMMENT_KEY]
 
 class ChildType(object):
   """Metadata about a node type's children.
@@ -305,7 +363,8 @@ class ObjectNodeType(NodeType):
       ValueError: The node is missing required children.
     """
     obj = {}
-    obj[COMMENT_KEY] = GetCommentsForNode(node)
+    obj[PRECEDING_COMMENT_KEY] = GetPrecedingCommentsForNode(node)
+    obj[TRAILING_COMMENT_KEY] = GetTrailingCommentsForNode(node)
 
     for attr, attr_type, attr_re in self.attributes:
       if node.hasAttribute(attr):
@@ -372,7 +431,7 @@ class ObjectNodeType(NodeType):
         child.node_type.MarshallIntoNode(doc, node, obj[child.attr])
     return node
 
-  def GetComments(self, obj):
+  def GetPrecedingComments(self, obj):
     """Gets comments for the object being encoded.
 
     Args:
@@ -381,7 +440,18 @@ class ObjectNodeType(NodeType):
     Returns:
       A list of comment nodes for the object.
     """
-    return obj[COMMENT_KEY]
+    return obj[PRECEDING_COMMENT_KEY]
+
+  def GetTrailingComments(self, obj):
+    """Gets comments for the object being encoded.
+
+    Args:
+      obj: The object to be encoded into the XML.
+
+    Returns:
+      A list of comment nodes for the object.
+    """
+    return obj[TRAILING_COMMENT_KEY]
 
   def GetAttributes(self):
     """Gets a sorted list of attributes that this node can have.

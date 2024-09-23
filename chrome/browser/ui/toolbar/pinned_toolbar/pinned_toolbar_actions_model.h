@@ -30,24 +30,29 @@ class PinnedToolbarActionsModel : public KeyedService {
   ~PinnedToolbarActionsModel() override;
 
   // Used to notify objects that extend this class that a change has occurred in
-  // the model.
+  // the model. Note that added/removed/moved are NOT called when the pref is
+  // updated directly, e.g. for changes synced from another device.
   class Observer {
    public:
     // Signals that `id` has been added to the model. This will
-    // *only* be called after the model has been initialized.
-    virtual void OnActionAdded(const actions::ActionId& id) = 0;
+    // *only* be called after the model has been initialized. N.B. Direct pref
+    // updates which happen to add an action WILL NOT call this method.
+    virtual void OnActionAddedLocally(const actions::ActionId& id) = 0;
 
     // Signals that the given action with `id` has been removed from the
-    // model.
-    virtual void OnActionRemoved(const actions::ActionId& id) = 0;
+    // model. N.B. Direct pref updates which happen to remove an action WILL NOT
+    // call this method.
+    virtual void OnActionRemovedLocally(const actions::ActionId& id) = 0;
 
     // Signals that the given action with `id` has been moved in the model.
-    virtual void OnActionMoved(const actions::ActionId& id,
-                               int from_index,
-                               int to_index) = 0;
+    // N.B. Direct pref updates which happen to move an action WILL NOT call
+    // this method.
+    virtual void OnActionMovedLocally(const actions::ActionId& id,
+                                      int from_index,
+                                      int to_index) = 0;
 
-    // Called when the pinned actions change. Specifically, when an action is
-    // added, removed, or moved.
+    // Called when the pinned actions change, in any way for any reason. Unlike
+    // the above methods, this does include pref updates.
     virtual void OnActionsChanged() = 0;
 
    protected:
@@ -58,8 +63,8 @@ class PinnedToolbarActionsModel : public KeyedService {
   static PinnedToolbarActionsModel* Get(Profile* profile);
 
   // Adds or removes an observer.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
 
   // Verify if we can update the model with the current profile.
   bool CanUpdate();
@@ -75,15 +80,30 @@ class PinnedToolbarActionsModel : public KeyedService {
   // not exist in the model.
   // 2) Removes `action_id` from the model if
   // `should_pin` is false and the id exists in the model.
-  void UpdatePinnedState(const actions::ActionId& action_id,
-                         const bool should_pin);
+  virtual void UpdatePinnedState(const actions::ActionId& action_id,
+                                 const bool should_pin);
 
-  void MaybeMigrateSearchCompanionPinnedStateForTesting();
+  // TODO(b/307350981): Remove MaybeUpdateSearchCompanionPinnedState() and
+  // UpdateSearchCompanionDefaultState() after migration is complete.
+  // Migrate the search companion pin state
+  // `kSidePanelCompanionEntryPinnedToToolbar` into kPinnedActions.
+  void MaybeUpdateSearchCompanionPinnedState(
+      bool companion_should_be_default_pinned);
+
+  // Resets the pinned actions to default. NOTE: This also affects the home and
+  // forward buttons, even though those are not otherwise managed by this model.
+  virtual void ResetToDefault();
+
+  // Returns true if the set of pinned actions is the default set. NOTE: This
+  // also includes the home and forward buttons, even though those are not
+  // otherwise managed by this model.
+  bool IsDefault() const;
+
+  // TODO(b/353323253): Remove after Pinned Chrome Labs migration is complete.
+  void MaybeMigrateChromeLabsPinnedState();
 
   // Returns the ordered list of pinned ActionIds.
-  const std::vector<actions::ActionId>& pinned_action_ids() const {
-    return pinned_action_ids_;
-  }
+  virtual const std::vector<actions::ActionId>& PinnedActionIds() const;
 
  private:
   // Adds the `action_id` to the kPinnedActions pref.
@@ -98,15 +118,10 @@ class PinnedToolbarActionsModel : public KeyedService {
   // the latest data from the pref.
   void UpdatePinnedActionIds();
 
-  // TODO(b/307350981): Remove MaybeMigrateSearchCompanionPinnedState() and
-  // UpdateSearchCompanionDefaultState() after migration is complete.
-  // Migrate the search companion pin state
-  // `kSidePanelCompanionEntryPinnedToToolbar` into kPinnedActions.
-  void MaybeMigrateSearchCompanionPinnedState();
-
   // Calculates and updates `kPinnedActions` with current default pinned state
   // of the search companion feature.
-  void UpdateSearchCompanionDefaultState();
+  void UpdateSearchCompanionDefaultState(
+      bool companion_should_be_default_pinned);
 
   void UpdatePref(const std::vector<actions::ActionId>& updated_list);
 

@@ -35,6 +35,9 @@ class InstallIsolatedWebAppVirtualTask : public VirtualTask {
 
   GURL icon_url() const override;
 
+  bool IsDlpBlocked(
+      const std::vector<std::string>& dlp_source_urls) const override;
+
   bool Execute(
       Profile* profile,
       const TaskDescriptor& task,

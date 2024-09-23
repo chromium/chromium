@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +23,6 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
@@ -151,7 +153,7 @@ class AppIconFactoryTest : public testing::Test {
   }
 
   void GenerateCrostiniPenguinCompressedIcon(std::vector<uint8_t>& output) {
-    base::StringPiece data =
+    std::string_view data =
         ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
             IDR_LOGO_CROSTINI_DEFAULT);
     output = std::vector<uint8_t>(data.begin(), data.end());

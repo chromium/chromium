@@ -91,7 +91,7 @@ class FakeDemuxerStream : public DemuxerStream {
 
  private:
   void UpdateVideoDecoderConfig();
-  void DoRead();
+  void DoRead(int read_count = 1);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -136,8 +136,7 @@ class FakeMediaResource : public MediaResource {
   ~FakeMediaResource() override;
 
   // MediaResource implementation.
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
-      override;
+  std::vector<DemuxerStream*> GetAllStreams() override;
 
  private:
   FakeDemuxerStream fake_video_stream_;

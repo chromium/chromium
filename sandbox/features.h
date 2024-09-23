@@ -15,4 +15,4 @@ bool IsAppContainerSandboxSupported();
 #endif
 }  // namespace sandbox::features
 
-#endif
+#endif  // SANDBOX_FEATURES_H_

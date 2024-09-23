@@ -280,7 +280,7 @@ TEST_F(VisibleUnitsTest,
       "</div>");
   const PositionWithAffinity& result =
       AdjustForwardPositionToAvoidCrossingEditingBoundaries(
-          PositionWithAffinity(selection.Extent()), selection.Base());
+          PositionWithAffinity(selection.Focus()), selection.Anchor());
   ASSERT_TRUE(result.IsNotNull());
   EXPECT_EQ(
       "<div contenteditable>"
@@ -1017,8 +1017,12 @@ TEST_F(VisibleUnitsTest, SnapForwardWithSelect) {
             MostForwardCaretPosition(PositionInFlatTree(select, 1)));
   EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
             MostForwardCaretPosition(PositionInFlatTree(select, 2)));
-  EXPECT_EQ(PositionInFlatTree::AfterNode(select),
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
             MostForwardCaretPosition(PositionInFlatTree(select, 3)));
+  EXPECT_EQ(PositionInFlatTree::BeforeNode(select),
+            MostForwardCaretPosition(PositionInFlatTree(select, 4)));
+  EXPECT_EQ(PositionInFlatTree::AfterNode(select),
+            MostForwardCaretPosition(PositionInFlatTree(select, 5)));
 
   EXPECT_EQ(
       PositionInFlatTree::AfterNode(select),

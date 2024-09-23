@@ -6,14 +6,13 @@
 #ifndef MEDIA_GPU_V4L2_TEST_H265_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_H265_DECODER_H_
 
-#include "media/gpu/v4l2/test/video_decoder.h"
-
 #include <queue>
 
 #include "base/memory/raw_ref.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/v4l2/test/h265_dpb.h"
-#include "media/video/h265_parser.h"
+#include "media/gpu/v4l2/test/video_decoder.h"
+#include "media/parsers/h265_parser.h"
 
 namespace media {
 namespace v4l2_test {
@@ -36,7 +35,8 @@ class H265Decoder : public VideoDecoder {
                                        std::vector<uint8_t>& y_plane,
                                        std::vector<uint8_t>& u_plane,
                                        std::vector<uint8_t>& v_plane,
-                                       gfx::Size& size) override;
+                                       gfx::Size& size,
+                                       BitDepth& bit_depth) override;
 
  private:
   H265Decoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,

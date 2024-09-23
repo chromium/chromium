@@ -19,10 +19,10 @@
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/hotspot/hotspot_tray_view.h"
 #include "ash/system/human_presence/snooping_protection_view.h"
-#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_tray_view.h"
+#include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/power/tray_power.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -115,11 +115,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   ime_mode_view_ = AddTrayItemToContainer(std::make_unique<ImeModeView>(shelf));
   managed_device_view_ = AddTrayItemToContainer(
       std::make_unique<ManagedDeviceTrayItemView>(shelf));
-
-  if (features::IsHotspotEnabled()) {
-    hotspot_tray_view_ =
-        AddTrayItemToContainer(std::make_unique<HotspotTrayView>(shelf));
-  }
+  hotspot_tray_view_ =
+      AddTrayItemToContainer(std::make_unique<HotspotTrayView>(shelf));
 
   if (features::IsSeparateNetworkIconsEnabled()) {
     AddTrayItemToContainer(std::make_unique<NetworkTrayView>(
@@ -133,7 +130,8 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
             shelf, ActiveNetworkIcon::Type::kSingle));
   }
 
-  AddTrayItemToContainer(std::make_unique<PowerTrayView>(shelf));
+  power_tray_view_ =
+      AddTrayItemToContainer(std::make_unique<PowerTrayView>(shelf));
 
   if (ShouldChannelIndicatorBeShown()) {
     base::RecordAction(base::UserMetricsAction("Tray_ShowChannelInfo"));
@@ -179,6 +177,7 @@ void UnifiedSystemTray::OnButtonPressed(const ui::Event& event) {
 
   if (features::IsWelcomeTourEnabled()) {
     welcome_tour_metrics::RecordInteraction(
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
         welcome_tour_metrics::Interaction::kQuickSettings);
   }
 }
@@ -299,10 +298,6 @@ TrayBubbleView* UnifiedSystemTray::GetBubbleView() {
   return bubble_ ? bubble_->GetBubbleView() : nullptr;
 }
 
-const char* UnifiedSystemTray::GetClassName() const {
-  return "UnifiedSystemTray";
-}
-
 std::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
     const {
   return std::make_optional(AcceleratorAction::kToggleSystemTrayBubble);
@@ -389,7 +384,7 @@ void UnifiedSystemTray::ShowBubble() {
   }
 }
 
-void UnifiedSystemTray::CloseBubble() {
+void UnifiedSystemTray::CloseBubbleInternal() {
   base::UmaHistogramMediumTimes("Ash.QuickSettings.UserJourneyTime",
                                 base::TimeTicks::Now() - time_opened_);
   HideBubbleInternal();
@@ -474,7 +469,18 @@ void UnifiedSystemTray::HideBubble(const TrayBubbleView* bubble_view) {
 
 void UnifiedSystemTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {}
 
-void UnifiedSystemTray::ClickedOutsideBubble() {
+void UnifiedSystemTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
+  const gfx::Point event_location =
+      event.target() ? event.target()->GetScreenLocation(event)
+                     : event.root_location();
+
+  // When Quick Settings bubble is opened and the date tray is clicked, the
+  // bubble should not be closed since it will transition to show calendar.
+  if (shelf()->GetStatusAreaWidget()->date_tray()->GetBoundsInScreen().Contains(
+          event_location)) {
+    return;
+  }
+
   CloseBubble();
 }
 
@@ -543,7 +549,7 @@ void UnifiedSystemTray::DestroyBubble() {
 }
 
 void UnifiedSystemTray::UpdateTrayItemColor(bool is_active) {
-  for (auto* tray_item : tray_items_) {
+  for (TrayItemView* tray_item : tray_items_) {
     tray_item->UpdateLabelOrImageViewColor(is_active);
   }
 }

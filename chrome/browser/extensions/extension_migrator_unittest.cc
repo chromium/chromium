@@ -46,7 +46,7 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
     // Create prefs file to make the profile not new.
     params.prefs_content = "{}";
     params.is_first_run = false;
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
     service()->Init();
     AddMigratorProvider();
   }

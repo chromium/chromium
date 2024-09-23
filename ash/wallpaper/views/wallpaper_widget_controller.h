@@ -12,29 +12,32 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/display/display_observer.h"
 
 namespace ui {
+class Layer;
 class LayerTreeOwner;
-}
+}  // namespace ui
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 namespace ash {
 class WallpaperView;
 
 // This class manages widget-based wallpapers.
 // WallpaperWidgetController is owned by RootWindowController.
-// Exported for tests.
 class ASH_EXPORT WallpaperWidgetController
-    : public ui::ImplicitAnimationObserver {
+    : public ui::ImplicitAnimationObserver,
+      public display::DisplayObserver,
+      public ui::ColorProviderSourceObserver {
  public:
   explicit WallpaperWidgetController(aura::Window* root_window);
 
@@ -44,13 +47,20 @@ class ASH_EXPORT WallpaperWidgetController
 
   ~WallpaperWidgetController() override;
 
-  // Initialize the widget. |lock| specifies if the wallpaper should be created
-  // for the locked state.
+  WallpaperView* wallpaper_view() { return wallpaper_view_; }
+
+  ui::Layer* wallpaper_underlay_layer() {
+    return wallpaper_underlay_layer_.get();
+  }
+
+  // Initializes the widget. `locked` determines if the wallpaper should be
+  // created for the locked state.
   void Init(bool locked);
 
   views::Widget* GetWidget();
 
-  // Whether a wallpaper change is in progress, i.e. |animating_widget_| exists.
+  // Returns true if wallpaper change is in progress, i.e. `animating_widget_`
+  // exists.
   bool IsAnimating() const;
 
   // If an animating wallpaper change is in progress, it ends the animation and
@@ -79,13 +89,20 @@ class ASH_EXPORT WallpaperWidgetController
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
-  WallpaperView* wallpaper_view() { return wallpaper_view_; }
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
+
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
 
   ui::LayerTreeOwner* old_layer_tree_owner_for_testing() {
     return old_layer_tree_owner_.get();
   }
 
  private:
+  void CreateWallpaperUnderlayLayer();
+
   // Runs callbacks in |animation_end_callbacks_|.
   void RunAnimationEndCallbacks();
 
@@ -102,13 +119,18 @@ class ASH_EXPORT WallpaperWidgetController
   std::unique_ptr<ui::LayerTreeOwner> old_layer_tree_owner_;
 
   // Pointer to the wallpaper view owned by |widget_|.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION WallpaperView* wallpaper_view_ = nullptr;
+  raw_ptr<WallpaperView> wallpaper_view_ = nullptr;
+
+  // A solid-color layer stacked below the clipped `wallpaper_view_`
+  // layer. Note that it can't be stacked at bottom since the `shield_view_` may
+  // exist.
+  std::unique_ptr<ui::Layer> wallpaper_underlay_layer_;
 
   // Callbacks to be run when the |animating_widget_| stops animating and gets
   // set as the active widget.
   std::list<base::OnceClosure> animation_end_callbacks_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

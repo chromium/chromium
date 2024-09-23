@@ -23,7 +23,7 @@ EnumTraits<nearby::connections::mojom::LogSeverity,
       return nearby::connections::mojom::LogSeverity::kFatal;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nearby::connections::mojom::LogSeverity::kInfo;
 }
 
@@ -49,7 +49,7 @@ bool EnumTraits<nearby::connections::mojom::LogSeverity,
       return true;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

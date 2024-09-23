@@ -12,6 +12,7 @@ import androidx.annotation.MainThread;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator.Listener;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -32,9 +33,25 @@ public class AccountPickerDialogCoordinator {
     @MainThread
     public AccountPickerDialogCoordinator(
             Context context, Listener listener, ModalDialogManager modalDialogManager) {
-        mAccountPickerView = inflateAccountPickerView(context);
-        mCoordinator = new AccountPickerCoordinator(mAccountPickerView, listener);
         mDialogManager = modalDialogManager;
+        mAccountPickerView = inflateAccountPickerView(context);
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            mCoordinator =
+                    new AccountPickerCoordinator(
+                            mAccountPickerView,
+                            listener,
+                            R.layout.account_picker_dialog_row,
+                            R.layout.account_picker_dialog_new_account_row);
+        } else {
+            mCoordinator =
+                    new AccountPickerCoordinator(
+                            mAccountPickerView,
+                            listener,
+                            R.layout.account_picker_row,
+                            R.layout.account_picker_new_account_row);
+        }
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
@@ -44,6 +61,7 @@ public class AccountPickerDialogCoordinator {
                         .with(ModalDialogProperties.CUSTOM_VIEW, mAccountPickerView)
                         .with(ModalDialogProperties.CONTROLLER, createController())
                         .build();
+
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 

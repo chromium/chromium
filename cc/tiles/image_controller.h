@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -142,7 +142,9 @@ class CC_EXPORT ImageController {
   void ScheduleImageDecodeOnWorkerIfNeeded()
       EXCLUSIVE_LOCKS_REQUIRED(worker_state_->lock);
 
-  raw_ptr<ImageDecodeCache> cache_ = nullptr;
+  // RAW_PTR_EXCLUSION: ImageDecodeCache is marked as not supported by raw_ptr.
+  // See raw_ptr.h for more information.
+  RAW_PTR_EXCLUSION ImageDecodeCache* cache_ = nullptr;
   std::vector<DrawImage> predecode_locked_images_;
 
   static ImageDecodeRequestId s_next_image_decode_queue_id_;

@@ -4,6 +4,8 @@
 
 #include "content/common/webid/identity_url_loader_throttle.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,19 +30,12 @@ static constexpr char kSetLoginHeader[] = "Set-Login";
 static constexpr char kSetLoginHeaderValueLoggedIn[] = "logged-in";
 static constexpr char kSetLoginHeaderValueLoggedOut[] = "logged-out";
 
-bool IsFedCmIdpSigninStatusThrottleEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusMetrics) ||
-         base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled);
-}
-
 }  // namespace
 
 namespace content {
 
 std::unique_ptr<blink::URLLoaderThrottle> MaybeCreateIdentityUrlLoaderThrottle(
     SetIdpStatusCallback cb) {
-  if (!IsFedCmIdpSigninStatusThrottleEnabled())
-    return nullptr;
   return std::make_unique<IdentityUrlLoaderThrottle>(std::move(cb));
 }
 
@@ -96,7 +91,7 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
   if (!network::IsOriginPotentiallyTrustworthy(origin))
     return;
 
-  // TODO(crbug.com/1357790):
+  // TODO(crbug.com/40236764):
   // - Limit to toplevel frames
   // - Decide whether to limit to same-origin
   // - Decide the right behavior with respect to user gestures.
@@ -125,8 +120,8 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
 // static
 bool IdentityUrlLoaderThrottle::HeaderHasToken(
     const net::HttpResponseHeaders& headers,
-    base::StringPiece header_name,
-    base::StringPiece token) {
+    std::string_view header_name,
+    std::string_view token) {
   if (!headers.HasHeader(header_name)) {
     return false;
   }
@@ -134,7 +129,7 @@ bool IdentityUrlLoaderThrottle::HeaderHasToken(
   std::string value;
   headers.GetNormalizedHeader(header_name, &value);
 
-  std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
       value, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   return base::Contains(tokens, token);
 }

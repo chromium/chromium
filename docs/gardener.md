@@ -25,15 +25,18 @@ necessary authority to fulfill them. In particular, you have the authority to:
 
 TBRs were removed in Q1 2021.
 
-For more information on Chromium Trunk Gardeners, including How Tos, Swapping
-Shifts and rotation updates, please see [Chromium Trunk Gardening](https://goto.google.com/chrome-trunk-gardening)
+There are a number of different gardening rotations. For more information on
+gardening, including How Tos, Swapping Shifts and rotation updates, please see
+[Chromium Trunk Gardening](https://goto.google.com/chrome-gardening)
+(Google-internal link).
 
 ## How to be a Gardener
 
 To be a gardener, you must be both a Chromium committer and a Google employee.
 For more detailed gardening instructions, please see the internal documentation
 at
-[go/chrome-gardening-how-to](https://goto.google.com/chrome-gardening-how-to).
+[go/chrome-gardening-how-to](https://goto.google.com/chrome-gardening-how-to)
+(Google-internal link).
 
 ## Contacting the Gardeners
 
@@ -62,7 +65,7 @@ no longer gardener, and thus no longer responsible for triaging these bugs.
 Instead, if you aren't the best owner for the bug, please help to triage it
 more appropriately, since you're probably the test author, familiar with the
 test, or an OWNER. If have no idea who a good owner for the test is (or were
-assigned the bug in error\*), you can reapply the `Sheriff-Chromium` label and
+assigned the bug in error\*), you can reapply the `Gardener-Chromium` label and
 flip the status to `Untriaged`; this will put it back in the gardener queue for
 the next gardener to take a look at. Please only do this as a last resort, since
 the next gardener is unlikely to have any more information about the issue.

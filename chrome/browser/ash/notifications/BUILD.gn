@@ -1,0 +1,132 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("notifications") {
+  sources = [
+    "adb_sideloading_policy_change_notification.cc",
+    "adb_sideloading_policy_change_notification.h",
+    "debugd_notification_handler.cc",
+    "debugd_notification_handler.h",
+    "deprecation_notification_controller.cc",
+    "deprecation_notification_controller.h",
+    "echo_dialog_listener.h",
+    "echo_dialog_view.cc",
+    "echo_dialog_view.h",
+    "gnubby_notification.cc",
+    "gnubby_notification.h",
+    "idle_app_name_notification_view.cc",
+    "idle_app_name_notification_view.h",
+    "kiosk_external_update_notification.cc",
+    "kiosk_external_update_notification.h",
+    "low_disk_notification.cc",
+    "low_disk_notification.h",
+    "multi_capture_notifications.cc",
+    "multi_capture_notifications.h",
+    "request_system_proxy_credentials_view.cc",
+    "request_system_proxy_credentials_view.h",
+    "screen_capture_notification_ui_ash.cc",
+    "screen_capture_notification_ui_ash.h",
+    "system_proxy_notification.cc",
+    "system_proxy_notification.h",
+    "tpm_auto_update_notification.cc",
+    "tpm_auto_update_notification.h",
+    "update_required_notification.cc",
+    "update_required_notification.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/gnubby",
+    "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/power",
+    "//components/prefs",
+    "//content/public/browser",
+    "//extensions/common",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/compositor",
+    "//ui/display",
+    "//ui/events",
+    "//ui/events/ash",
+    "//ui/gfx",
+    "//ui/message_center",
+    "//ui/views",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "debugd_notification_handler_unittest.cc",
+    "deprecation_notification_controller_unittest.cc",
+    "echo_dialog_view_unittest.cc",
+    "gnubby_notification_unittest.cc",
+    "idle_app_name_notification_view_unittest.cc",
+    "low_disk_notification_unittest.cc",
+    "mock_adb_sideloading_policy_change_notification.cc",
+    "mock_adb_sideloading_policy_change_notification.h",
+    "multi_capture_notifications_unittest.cc",
+    "request_system_proxy_credentials_view_unittest.cc",
+    "update_required_notification_unittest.cc",
+  ]
+
+  deps = [
+    ":notifications",
+    "//ash",
+    "//ash:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/policy/handlers:test_support",
+    "//chrome/browser/ash/policy/multi_screen_capture",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/gnubby",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/message_center",
+    "//ui/views",
+  ]
+}

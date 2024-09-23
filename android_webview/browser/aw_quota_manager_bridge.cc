@@ -8,7 +8,6 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
-#include "android_webview/browser_jni_headers/AwQuotaManagerBridge_jni.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -25,6 +24,9 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwQuotaManagerBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -271,7 +273,7 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
       },
       ScopedJavaGlobalRef<jobject>(env, callback), is_quota);
 
-  // TODO(crbug.com/889590): Use helper for url::Origin creation from string.
+  // TODO(crbug.com/41417435): Use helper for url::Origin creation from string.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(

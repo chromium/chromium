@@ -30,9 +30,11 @@ public class PaymentAppService implements PaymentAppFactoryInterface {
 
     private PaymentAppService() {}
 
-    // TODO(crbug.com/1142846): Remove this method after tests and clank switch to use
+    // TODO(crbug.com/40727972): Remove this method after tests and clank switch to use
     // addUniqueFactory.
-    /** @param factory The factory to add. */
+    /**
+     * @param factory The factory to add.
+     */
     public void addFactory(PaymentAppFactoryInterface factory) {
         String id = UNTRACKED_FACTORY_ID_PREFIX + (mIdMax++);
         mFactories.put(id, factory);

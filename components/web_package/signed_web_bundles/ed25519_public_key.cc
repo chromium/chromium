@@ -33,14 +33,15 @@ bool Ed25519PublicKey::operator!=(const Ed25519PublicKey& other) const {
 
 base::expected<Ed25519PublicKey, std::string> Ed25519PublicKey::Create(
     base::span<const uint8_t> key) {
-  if (key.size() != kLength) {
+  auto sized_key = key.to_fixed_extent<kLength>();
+  if (!sized_key) {
     return base::unexpected(base::StringPrintf(
         "The Ed25519 public key does not have the correct length. Expected %zu "
         "bytes, but received %zu bytes.",
         kLength, key.size()));
   }
 
-  return Create(base::make_span<kLength>(key));
+  return Create(*sized_key);
 }
 
 Ed25519PublicKey Ed25519PublicKey::Create(

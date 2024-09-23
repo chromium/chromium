@@ -4,22 +4,20 @@
 
 #include "ash/public/cpp/desk_template.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/sync_device_info/local_device_info_util.h"
 #include "components/tab_groups/tab_group_info.h"
-#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 
 namespace ash {
 
 namespace {
-
-constexpr char kOsFeedbackAppId[] = "iffgohomcomlpmkfikfffagkkoojjffm";
 
 std::string TabGroupDataToString(const app_restore::RestoreData* restore_data) {
   std::string result = "tab groups:[";
@@ -73,27 +71,18 @@ DeskTemplate::~DeskTemplate() = default;
 // static
 bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
   // For now we'll ignore crostini windows in desk templates.
-  const AppType app_type =
-      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  const chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
   switch (app_type) {
-    case AppType::NON_APP:
-    case AppType::CROSTINI_APP:
+    case chromeos::AppType::NON_APP:
+    case chromeos::AppType::CROSTINI_APP:
       return false;
-    case AppType::LACROS:
-    case AppType::ARC_APP:
-    case AppType::BROWSER:
-    case AppType::CHROME_APP:
+    case chromeos::AppType::LACROS:
+    case chromeos::AppType::ARC_APP:
+    case chromeos::AppType::BROWSER:
+    case chromeos::AppType::CHROME_APP:
+    case chromeos::AppType::SYSTEM_APP:
       return true;
-    case AppType::SYSTEM_APP: {
-      const auto* app_id = window->GetProperty(kAppIDKey);
-      // Feedback app is not saved, see b/301479278.
-      if (app_id && *app_id == kOsFeedbackAppId) {
-        return false;
-      }
-    } break;
   }
-
-  return true;
 }
 
 constexpr char DeskTemplate::kIncognitoWindowIdentifier[];

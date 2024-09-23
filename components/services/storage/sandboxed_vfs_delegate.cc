@@ -5,9 +5,9 @@
 #include "components/services/storage/sandboxed_vfs_delegate.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
@@ -45,12 +45,6 @@ SandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
   access.can_read = info->can_read;
   access.can_write = info->can_write;
   return access;
-}
-
-bool SandboxedVfsDelegate::SetFileLength(const base::FilePath& file_path,
-                                         base::File& file,
-                                         size_t size) {
-  return filesystem_->SetOpenedFileLength(&file, static_cast<uint64_t>(size));
 }
 
 }  // namespace storage

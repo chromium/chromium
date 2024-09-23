@@ -63,6 +63,10 @@ class ASH_PUBLIC_EXPORT DeskProfilesDelegate {
   // Returns the primary profile ID.
   virtual uint64_t GetPrimaryProfileId() const = 0;
 
+  // If `profile_id` is zero, this returns `GetPrimaryProfileId`, otherwise
+  // `profile_id` is returned as-is.
+  uint64_t ResolveProfileId(uint64_t profile_id);
+
   // Adds or removes an observer that will receive profile updates.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;

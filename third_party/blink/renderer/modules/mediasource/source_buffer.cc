@@ -36,10 +36,10 @@
 #include <tuple>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/stream_parser_buffer.h"
+#include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -150,7 +150,7 @@ scoped_refptr<media::StreamParserBuffer> MakeAudioStreamParserBuffer(
   // same underlying DecoderBuffer.
   auto stream_parser_buffer = media::StreamParserBuffer::CopyFrom(
       audio_chunk.buffer()->data(),
-      base::checked_cast<int>(audio_chunk.buffer()->data_size()),
+      base::checked_cast<int>(audio_chunk.buffer()->size()),
       audio_chunk.buffer()->is_key_frame(), media::DemuxerStream::AUDIO,
       kWebCodecsAudioTrackId);
 
@@ -175,7 +175,7 @@ scoped_refptr<media::StreamParserBuffer> MakeVideoStreamParserBuffer(
   // same underlying DecoderBuffer.
   auto stream_parser_buffer = media::StreamParserBuffer::CopyFrom(
       video_chunk.buffer()->data(),
-      base::checked_cast<int>(video_chunk.buffer()->data_size()),
+      base::checked_cast<int>(video_chunk.buffer()->size()),
       video_chunk.buffer()->is_key_frame(), media::DemuxerStream::VIDEO,
       kWebCodecsVideoTrackId);
 
@@ -602,8 +602,7 @@ void SourceBuffer::appendBuffer(DOMArrayBuffer* data,
   DVLOG(2) << __func__ << " this=" << this << " size=" << data->ByteLength();
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
-  AppendBufferInternal(static_cast<const unsigned char*>(data->Data()),
-                       data->ByteLength(), exception_state);
+  AppendBufferInternal(data->ByteSpan(), exception_state);
 }
 
 void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
@@ -611,8 +610,7 @@ void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
   DVLOG(3) << __func__ << " this=" << this << " size=" << data->byteLength();
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
-  AppendBufferInternal(static_cast<const unsigned char*>(data->BaseAddress()),
-                       data->byteLength(), exception_state);
+  AppendBufferInternal(data->ByteSpan(), exception_state);
 }
 
 // Note that |chunks| may be a sequence of mixed audio and video encoded chunks
@@ -624,7 +622,7 @@ void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
 // implementation. Further note, |chunks| may instead be a single audio or a
 // single video chunk as a helpful additional overload for one-chunk-at-a-time
 // append use-cases.
-ScriptPromise SourceBuffer::appendEncodedChunks(
+ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
     ScriptState* script_state,
     const V8EncodedChunks* chunks,
     ExceptionState& exception_state) {
@@ -640,7 +638,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
                                         exception_state)) {
     TRACE_EVENT_NESTABLE_ASYNC_END0(
         "media", "SourceBuffer::appendEncodedChunks", TRACE_ID_LOCAL(this));
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   // Convert |chunks| to a StreamParser::BufferQueue.
@@ -657,7 +655,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
     case V8EncodedChunks::ContentType::kEncodedAudioChunk:
       buffer_queue->emplace_back(
           MakeAudioStreamParserBuffer(*(chunks->GetAsEncodedAudioChunk())));
-      size += buffer_queue->back()->data_size();
+      size += buffer_queue->back()->size();
       break;
     case V8EncodedChunks::ContentType::kEncodedVideoChunk: {
       const auto& video_chunk = *(chunks->GetAsEncodedVideoChunk());
@@ -666,10 +664,10 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
             exception_state,
             "EncodedVideoChunk is missing duration, required for use with "
             "SourceBuffer.");
-        return ScriptPromise();
+        return EmptyPromise();
       }
       buffer_queue->emplace_back(MakeVideoStreamParserBuffer(video_chunk));
-      size += buffer_queue->back()->data_size();
+      size += buffer_queue->back()->size();
       break;
     }
     case V8EncodedChunks::ContentType::
@@ -682,7 +680,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
               kEncodedAudioChunk:
             buffer_queue->emplace_back(MakeAudioStreamParserBuffer(
                 *(av_chunk->GetAsEncodedAudioChunk())));
-            size += buffer_queue->back()->data_size();
+            size += buffer_queue->back()->size();
             break;
           case V8UnionEncodedAudioChunkOrEncodedVideoChunk::ContentType::
               kEncodedVideoChunk: {
@@ -692,11 +690,11 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
                   exception_state,
                   "EncodedVideoChunk is missing duration, required for use "
                   "with SourceBuffer.");
-              return ScriptPromise();
+              return EmptyPromise();
             }
             buffer_queue->emplace_back(
                 MakeVideoStreamParserBuffer(video_chunk));
-            size += buffer_queue->back()->data_size();
+            size += buffer_queue->back()->size();
             break;
           }
         }
@@ -705,8 +703,9 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
   }
 
   DCHECK(!append_encoded_chunks_resolver_);
-  append_encoded_chunks_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  append_encoded_chunks_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   auto promise = append_encoded_chunks_resolver_->Promise();
 
   // Do remainder of steps of analogue of prepare append algorithm and sending
@@ -723,7 +722,7 @@ ScriptPromise SourceBuffer::appendEncodedChunks(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "Worker MediaSource attachment is closing");
     append_encoded_chunks_resolver_ = nullptr;
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   return promise;
@@ -1547,7 +1546,7 @@ bool SourceBuffer::InitializationSegmentReceived(
       DVLOG(3) << __func__ << " this=" << this
                << " failed: unsupported track type " << track_info.track_type;
       // TODO(servolk): Add handling of text tracks.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     if (first_initialization_segment_received_ && !track) {
       DVLOG(3) << __func__ << " this=" << this
@@ -1686,7 +1685,9 @@ bool SourceBuffer::InitializationSegmentReceived(
       // 5.2.7 TODO(servolk): Implement track kind processing.
       // 5.2.8.2 Let new audio track be a new AudioTrack object.
       auto* audio_track = MakeGarbageCollected<AudioTrack>(
-          track_info.id, kind, std::move(label), std::move(language), false);
+          track_info.id, kind, std::move(label), std::move(language),
+          /*enabled=*/false,
+          /*exclusive=*/false);
       SourceBufferTrackBaseSupplement::SetSourceBuffer(*audio_track, this);
       // 5.2.8.7 If audioTracks.length equals 0, then run the following steps:
       if (audioTracks().length() == 0) {
@@ -1936,11 +1937,10 @@ bool SourceBuffer::EvictCodedFrames(double media_time, size_t new_data_size) {
   return result;
 }
 
-void SourceBuffer::AppendBufferInternal(const unsigned char* data,
-                                        size_t size,
+void SourceBuffer::AppendBufferInternal(base::span<const unsigned char> data,
                                         ExceptionState& exception_state) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "SourceBuffer::appendBuffer",
-                                    TRACE_ID_LOCAL(this), "size", size);
+                                    TRACE_ID_LOCAL(this), "size", data.size());
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
   //
@@ -1971,7 +1971,7 @@ void SourceBuffer::AppendBufferInternal(const unsigned char* data,
   // |source_| and |source_| must have an attachment because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
           &SourceBuffer::AppendBufferInternal_Locked, WrapPersistent(this),
-          WTF::Unretained(data), size, WTF::Unretained(&exception_state)))) {
+          data, WTF::Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -1981,8 +1981,7 @@ void SourceBuffer::AppendBufferInternal(const unsigned char* data,
 }
 
 void SourceBuffer::AppendBufferInternal_Locked(
-    const unsigned char* data,
-    size_t size,
+    base::span<const unsigned char> data,
     ExceptionState* exception_state,
     MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) {
   DCHECK(source_);
@@ -1991,7 +1990,7 @@ void SourceBuffer::AppendBufferInternal_Locked(
 
   // Finish the prepare append algorithm begun by the caller.
   double media_time = GetMediaTime();
-  if (!PrepareAppend(media_time, size, *exception_state)) {
+  if (!PrepareAppend(media_time, data.size(), *exception_state)) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::appendBuffer",
                                     TRACE_ID_LOCAL(this));
     return;
@@ -1999,22 +1998,16 @@ void SourceBuffer::AppendBufferInternal_Locked(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "prepareAsyncAppend",
                                     TRACE_ID_LOCAL(this));
 
-  // `data` can be nullptr iff `size` is 0. For example,
-  // sourceBuffer.appendBuffer(new ArrayBuffer()) results in this situation.
-  DCHECK(data || size == 0);
-
   // 2. Add data to the end of the input buffer. Zero-length appends result in
   // just a single async segment parser loop run later, with nothing added to
   // the parser's input buffer here synchronously.
-  if (data) {
-    if (!web_source_buffer_->AppendToParseBuffer(data, size)) {
-      MediaSource::LogAndThrowDOMException(
-          *exception_state, DOMExceptionCode::kQuotaExceededError,
-          "Unable to allocate space required to buffer appended media.");
-      TRACE_EVENT_NESTABLE_ASYNC_END0(
-          "media", "SourceBuffer::prepareAsyncAppend", TRACE_ID_LOCAL(this));
-      return;
-    }
+  if (!web_source_buffer_->AppendToParseBuffer(data)) {
+    MediaSource::LogAndThrowDOMException(
+        *exception_state, DOMExceptionCode::kQuotaExceededError,
+        "Unable to allocate space required to buffer appended media.");
+    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::prepareAsyncAppend",
+                                    TRACE_ID_LOCAL(this));
+    return;
   }
 
   // 3. Set the updating attribute to true.
@@ -2101,10 +2094,9 @@ void SourceBuffer::AppendEncodedChunksAsyncPart_Locked(
     // attachment will send updated buffered and seekable information to the
     // main thread here, too.
     AppendError(pass_key);
-    append_encoded_chunks_resolver_->Reject(V8ThrowDOMException::CreateOrDie(
-        append_encoded_chunks_resolver_->GetScriptState()->GetIsolate(),
+    append_encoded_chunks_resolver_->RejectWithDOMException(
         DOMExceptionCode::kSyntaxError,
-        "Parsing or frame processing error while buffering encoded chunks."));
+        "Parsing or frame processing error while buffering encoded chunks.");
     append_encoded_chunks_resolver_ = nullptr;
   } else {
     updating_ = false;

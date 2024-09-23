@@ -8,6 +8,13 @@
 
 namespace net {
 
+// static
+ProxyInfo ProxyInfo::Direct() {
+  ProxyInfo proxy_info;
+  proxy_info.UseDirect();
+  return proxy_info;
+}
+
 ProxyInfo::ProxyInfo() = default;
 
 ProxyInfo::ProxyInfo(const ProxyInfo& other) = default;
@@ -66,72 +73,6 @@ bool ProxyInfo::ContainsMultiProxyChain() const {
 
 std::string ProxyInfo::ToPacString() const {
   return proxy_list_.ToPacString();
-}
-
-bool ProxyInfo::is_https() const {
-  if (is_empty() || is_direct()) {
-    return false;
-  }
-  if (proxy_chain().is_multi_proxy()) {
-    CHECK(AllChainProxiesAreHttps());
-    return true;
-  }
-  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_https();
-}
-
-bool ProxyInfo::is_http_like() const {
-  if (is_empty() || is_direct()) {
-    return false;
-  }
-  if (proxy_chain().is_multi_proxy()) {
-    CHECK(AllChainProxiesAreHttps());
-    return true;
-  }
-  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_http_like();
-}
-
-bool ProxyInfo::is_secure_http_like() const {
-  if (is_empty() || is_direct()) {
-    return false;
-  }
-  if (proxy_chain().is_multi_proxy()) {
-    CHECK(AllChainProxiesAreHttps());
-    return true;
-  }
-  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_secure_http_like();
-}
-
-bool ProxyInfo::is_http() const {
-  if (is_empty() || is_direct()) {
-    return false;
-  }
-  if (proxy_chain().is_multi_proxy()) {
-    CHECK(AllChainProxiesAreHttps());
-    return false;
-  }
-  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_http();
-}
-
-bool ProxyInfo::is_quic() const {
-  if (is_empty() || is_direct()) {
-    return false;
-  }
-  if (proxy_chain().is_multi_proxy()) {
-    CHECK(AllChainProxiesAreHttps());
-    return false;
-  }
-  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_quic();
-}
-
-bool ProxyInfo::is_socks() const {
-  if (is_empty() || is_direct()) {
-    return false;
-  }
-  if (proxy_chain().is_multi_proxy()) {
-    CHECK(AllChainProxiesAreHttps());
-    return false;
-  }
-  return proxy_chain().GetProxyServer(/*chain_index=*/0).is_socks();
 }
 
 bool ProxyInfo::is_for_ip_protection() const {

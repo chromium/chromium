@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/build/tests/cast_test.gni")
+
+cast_test_group("starboard_media_tests") {
+  tests = [
+    "//chromecast/starboard/media/cdm:starboard_decryptor_cast_test",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker_test",
+    "//chromecast/starboard/media/media:media_pipeline_backend_starboard_test",
+    "//chromecast/starboard/media/media:mime_utils_test",
+    "//chromecast/starboard/media/media:starboard_audio_decoder_test",
+    "//chromecast/starboard/media/media:starboard_resampler_test",
+    "//chromecast/starboard/media/media:starboard_video_decoder_test",
+    "//chromecast/starboard/media/media:starboard_video_plane_test",
+  ]
+}

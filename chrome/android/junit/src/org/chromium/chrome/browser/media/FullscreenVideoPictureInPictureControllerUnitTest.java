@@ -15,7 +15,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,11 +33,12 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +58,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private InfoBarContainer mInfoBarContainer;
+    @Mock private MediaSession mMediaSession;
 
     // Not a mock, since it's just a container and `final` anyway.
     private UserDataHost mUserDataHost = new UserDataHost();
@@ -65,8 +66,9 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     private FullscreenVideoPictureInPictureController mController;
 
     @Captor private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
+    @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
 
-    /** List of tasks that were posted, including with delay.  Run with runUntilIdle(). */
+    /** List of tasks that were posted, including with delay. Run with runUntilIdle(). */
     private List<Runnable> mRunnables = new ArrayList<>();
 
     /** Class to be tested, extended to allow us to provide some hooks. */
@@ -82,6 +84,11 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         @Override
         InfoBarContainer getInfoBarContainerForTab(Tab tab) {
             return mInfoBarContainer;
+        }
+
+        @Override
+        MediaSession getMediaSession() {
+            return mMediaSession;
         }
 
         @Override
@@ -115,11 +122,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         mController =
                 new FullscreenVideoPictureInPictureControllerWithOverrides(
                         mActivity, mActivityTabProvider, mFullscreenManager);
-    }
-
-    @After
-    public void tearDown() {
-        AppHooks.setInstanceForTesting(null);
     }
 
     /** Set up the mocks to claim that there is / is not full screen video playback */
@@ -185,5 +187,61 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
                 TimeUnit.MILLISECONDS);
         runUntilIdle();
         verify(mActivity, times(1)).moveTaskToBack(true);
+    }
+
+    /** Stash will pause the video, then restart it when un-stashed. */
+    @Test
+    public void pictureInPicturePausesAndResumesWhenStashed() {
+        mController.onEnteredPictureInPictureMode();
+        verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
+
+        // Stash while media is playing.
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mController.onStashReported(true);
+        verify(mMediaSession, times(1)).suspend();
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+
+        // Un-stash while media is still paused.
+        mController.onStashReported(false);
+        verify(mMediaSession, times(1)).resume();
+    }
+
+    /**
+     * Stash will neither pause on stash nor resume on unstash video that's paused when the pip
+     * window is stashed.
+     */
+    @Test
+    public void pictureInPictureDoesNotChangeAlreadyPausedVideoOnStash() {
+        mController.onEnteredPictureInPictureMode();
+        verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
+        // Make sure that the video is paused.
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+
+        // Stashing paused video should do nothing.
+        mController.onStashReported(true);
+        verify(mMediaSession, times(0)).suspend();
+
+        // Un-stash should also do nothing.
+        mController.onStashReported(false);
+        verify(mMediaSession, times(0)).resume();
+    }
+
+    /** If video starts playing during a normal stash, unstash should no-op. */
+    @Test
+    public void pictureInPictureDoesNotResumeOnUnstashIfAlreadyPlaying() {
+        mController.onEnteredPictureInPictureMode();
+        verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
+        // Stash normally.
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mController.onStashReported(true);
+        verify(mMediaSession, times(1)).suspend();
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+
+        // Restart playback while still stashed.
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+
+        // Un-stash should do nothing since there's nothing to do.
+        mController.onStashReported(false);
+        verify(mMediaSession, times(0)).resume();
     }
 }

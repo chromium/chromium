@@ -1,21 +1,21 @@
 This directory contains simple web components for Web UI. These components may
-be shared across any WebUI. Non-Polymer components should be compatible across
-all platforms (including ios). Polymer components currently are not supported
-on iOS or Android.
+be shared across any WebUI. Non-Polymer/Lit components should be compatible
+across all platforms (including ios). Polymer/Lit components currently are not
+supported on iOS or Android.
+
+These web components must be used in at least 3 different WebUI surfaces. In
+some cases, an exception may be made for a component used in 2 surfaces, if
+there is a strong justification for why a more limited sharing model (see
+chrome/browser/resources/settings_shared/ for an example) is not more
+appropriate.
+
+These web components must have corresponding unit tests in
+chrome/test/data/webui/cr_elements.
 
 These web components may use loadTimeData and i18nMixin, but may not use
 i18n{...} replacements.
 
-These web components should avoid the use of chrome.send and should generally
-avoid dependencies on extension APIs as well.
-
-TODO(dpapad): Audit elements currently using chrome.settingsPrivate and decide whether to move these or update the
-guidelines.
+These web components should avoid the use of chrome.send/Mojo APIs and
+should avoid dependencies on extension APIs as well.
 
 For more complex components, see cr_components.
-
-NOTE (19 Dec 2023): cr_elements are currently being forked between Ash and
-Desktop, see https://crbug.com/1512231. *Do not make new CrOS-only changes in
-this folder*; instead make such changes in the Ash fork at
-ash/webui/resources/common/cr_elements. If an element that is not yet forked
-requires a CrOS-only change, comment on the bug to expedite forking it.

@@ -9,6 +9,7 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../os_settings_icons.html.js';
 import '../settings_shared.css.js';
 
@@ -41,16 +42,49 @@ export class OsSettingsMenuItemElement extends PolymerElement {
         value: '',
       },
 
+      label: {
+        type: String,
+        value: '',
+      },
+
       sublabel: {
         type: String,
         value: '',
+      },
+
+      /**
+       * Mirrors `label` to the `aria-label` attribute and is used solely for
+       * a11y purposes.
+       */
+      ariaLabel: {
+        type: String,
+        reflectToAttribute: true,
+        computed: 'computeAriaLabel_(label)',
+      },
+
+      /**
+       * Mirrors `sublabel` to the `aria-description` attribute and is used
+       * solely for a11y purposes.
+       */
+      ariaDescription: {
+        type: String,
+        reflectToAttribute: true,
+        computed: 'computeAriaDescription_(sublabel)',
+      },
+
+      tooltipPosition: {
+        type: String,
+        value: 'right',
       },
     };
   }
 
   icon: string;
   path: string;
+  label: string;
   sublabel: string;
+  override ariaDescription: string|null;
+  tooltipPosition: 'right'|'left'|'bottom';
 
   override ready(): void {
     super.ready();
@@ -60,6 +94,23 @@ export class OsSettingsMenuItemElement extends PolymerElement {
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
   }
 
+  /**
+   * Mirrors `label` to `ariaLabel` for a11y purposes.
+   */
+  private computeAriaLabel_(): string {
+    return this.label;
+  }
+
+  /**
+   * Mirrors `sublabel` to `ariaDescription` for a11y purposes.
+   */
+  private computeAriaDescription_(): string {
+    return this.sublabel;
+  }
+
+  /**
+   * Simulate a click only when the Enter or Space key is pressed.
+   */
   private onKeyDown_(event: KeyboardEvent): void {
     if (event.key !== ' ' && event.key !== 'Enter') {
       return;
@@ -72,10 +123,8 @@ export class OsSettingsMenuItemElement extends PolymerElement {
     }
 
     // Simulate click
-    if (event.key === 'Enter') {
-      this.dispatchEvent(
-          new CustomEvent('click', {bubbles: true, composed: true}));
-    }
+    this.dispatchEvent(
+        new CustomEvent('click', {bubbles: true, composed: true}));
   }
 }
 

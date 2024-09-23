@@ -13,5 +13,6 @@ typedef struct
 void sha256_init(sha256_context *ctx);
 void sha256_process(sha256_context *ctx, const void *Data, size_t Size);
 void sha256_done(sha256_context *ctx, byte *Digest);
+void sha256_get(const void *Data, size_t Size, byte *Digest);
 
 #endif

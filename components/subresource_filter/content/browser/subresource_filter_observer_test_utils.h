@@ -17,6 +17,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -60,7 +61,7 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
       const GURL& url) const;
   std::optional<LoadPolicy> GetChildFrameLoadPolicy(const GURL& url) const;
 
-  bool GetIsAdFrame(int frame_tree_node_id) const;
+  bool GetIsAdFrame(content::FrameTreeNodeId frame_tree_node_id) const;
 
   std::optional<mojom::ActivationLevel> GetPageActivationForLastCommittedLoad()
       const;
@@ -73,7 +74,7 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
   std::map<GURL, LoadPolicy> child_frame_load_evaluations_;
 
   // Set of FrameTreeNode IDs representing frames tagged as ads.
-  std::set<int> ad_frames_;
+  std::set<content::FrameTreeNodeId> ad_frames_;
 
   std::map<GURL, mojom::ActivationLevel> page_activations_;
   std::map<GURL, SafeBrowsingCheck> safe_browsing_checks_;

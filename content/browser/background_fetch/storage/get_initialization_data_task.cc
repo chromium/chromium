@@ -511,7 +511,7 @@ void GetInitializationDataTask::FinishWithError(
       // is available, mark the registration for deletion.
       // Note that the Developer ID isn't available if the metadata extraction
       // failed.
-      // TODO(crbug.com/865388): Getting the Developer ID should be possible
+      // TODO(crbug.com/40585668): Getting the Developer ID should be possible
       // since it is part of the key for when we got the Unique ID.
       AddDatabaseTask(std::make_unique<MarkRegistrationForDeletionTask>(
           data_manager(), data.second.registration_id,

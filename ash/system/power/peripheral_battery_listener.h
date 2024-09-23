@@ -25,6 +25,17 @@
 
 namespace ash {
 
+const char kStylusBatteryReportingEligibilityHistogramName[] =
+    "ChromeOS.Inputs.Stylus.BatteryReportingEligibility";
+
+enum class StylusBatteryReportingEligibility {
+  kIneligible = 0,
+  kIneligibleDueToScreen = 1,
+  kEligible = 2,
+  kIncorrectReports = 3,
+  kMaxValue = kIncorrectReports
+};
+
 class BluetoothDevice;
 class PeripheralBatteryListenerTest;
 

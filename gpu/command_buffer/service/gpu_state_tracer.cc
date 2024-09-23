@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/gpu_state_tracer.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -91,8 +93,8 @@ void Snapshot::AppendAsTraceFormat(std::string* out) const {
                                         &png_data);
     DCHECK(png_ok);
 
-    base::StringPiece base64_input(reinterpret_cast<const char*>(&png_data[0]),
-                                   png_data.size());
+    std::string_view base64_input(reinterpret_cast<const char*>(&png_data[0]),
+                                  png_data.size());
     std::string base64_output = base::Base64Encode(base64_input);
 
     *out += "\"screenshot\":\"" + base64_output + "\"";

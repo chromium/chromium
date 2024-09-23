@@ -6,9 +6,16 @@ module bluetooth.mojom;
 
 import "device/bluetooth/public/mojom/device.mojom";
 import "device/bluetooth/public/mojom/uuid.mojom";
+import "device/bluetooth/public/mojom/gatt_characteristic_permissions.mojom";
+import "device/bluetooth/public/mojom/gatt_characteristic_properties.mojom";
+import "device/bluetooth/public/mojom/gatt_service_error_code.mojom";
 
 // Possible errors sent as a response by Adapter.ConnectToDevice on a Device
 // connection request.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the NearbyConnectionsConnectResult enum in
+// src/tools/metrics/histograms/metadata/nearby/enums.xml.
 enum ConnectResult {
   SUCCESS,
   AUTH_CANCELED,
@@ -26,6 +33,18 @@ enum ConnectResult {
   NOT_CONNECTED,
   DOES_NOT_EXIST,
   INVALID_ARGS,
+  NON_AUTH_TIMEOUT,
+  NO_MEMORY,
+  JNI_ENVIRONMENT,
+  JNI_THREAD_ATTACH,
+  WAKELOCK,
+  UNEXPECTED_STATE,
+  SOCKET,
+};
+
+union LocalCharacteristicReadResult {
+  GattServiceErrorCode error_code;
+  array<uint8> data;
 };
 
 // The results of a successful connection via ConnectToServiceInsecurely().
@@ -44,13 +63,16 @@ struct AcceptConnectionResult {
 };
 
 struct AdapterInfo {
-  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
+  // TODO(crbug.com/40709957): Use fixed-size array, not string, for address.
   string address;
   string name;
   string system_name;
   // Whether the new CrOS Bluetooth stack (aka floss) is in use. See
   // go/project-floss for more info.
   bool floss;
+  // Whether the adapter supports BLE extended advertisements, which were
+  // added in Bluetooth 5.
+  bool extended_advertisement_support;
   bool initialized;
   bool present;
   bool powered;
@@ -137,6 +159,46 @@ interface ServerSocket {
   Disconnect() => ();
 };
 
+// Representation of a BLE GATT service. A `GattService` is created by
+// `Adapter::CreateLocalGattService()`. To use this interface, first create all
+// characteristics belonging to the service via `CreateCharacteristic()`. Then,
+// when ready to publish the service and its characteristics on the local
+// adapter's GATT database, call `Register()`. Requests from GATT clients to
+// read/write values on the characteristics are executed via the
+// `GattServiceObserver`. When finished with the `GattService`, callers should
+// delete their Mojo remote, which triggers the underlying GATT service in
+// the local adapter to be deleted.
+interface GattService {
+  // Creates a characteristic and adds it to the GATT service under the given
+  // characteristic uuid, using the service UUID tied to the `GattService`.
+  // This method will fail if the characteristic already exists at
+  // `characteristic_uuid`; it is expected that callers will only call
+  // when they want to create a characteristic that does not already exist.
+  [Sync]
+  CreateCharacteristic(UUID characteristic_uuid,
+    GattCharacteristicPermissions permissions,
+    GattCharacteristicProperties properties) => (bool success);
+
+  // Registers this `GattService` with the local Bluetooth Adapter.
+  // Calling `Register()` will make this service and all of its associated
+  // attributes available on the local adapter's GATT database. This should be
+  // called once all the requested characteristics have been created, before
+  // advertising begins. No `error_code` indicates success.
+  Register() => (GattServiceErrorCode? error_code);
+};
+
+// Listener on `GattService` events.
+// TODO(b/311430390): Implement additional methods that communicate write
+// requests on GATT characteristics.
+interface GattServiceObserver {
+  // Called when a remote peripheral is reading from the characteristic.
+  // On failures, |read_result| will be the error code. On success,
+  // |read_result| will be the read result value.
+  OnLocalCharacteristicRead(DeviceInfo remote_device,
+    UUID characteristic_uuid, UUID service_uuid, uint32 offset) =>
+    (LocalCharacteristicReadResult read_result);
+};
+
 // Handles requests to either query Bluetooth adapter capabilities or state, or
 // find or connect to remote devices. Backed by //device/bluetooth.
 // Note: Methods which are declared [Sync] are for use by
@@ -146,7 +208,7 @@ interface Adapter {
   // Creates a GATT connection to the device with |address| and returns a
   // Device if the connection was succesful. The GATT connection is tied to the
   // the lifetime of the Device message pipe.
-  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
+  // TODO(crbug.com/40709957): Use fixed-size array, not string, for address.
   ConnectToDevice(string address) =>
       (ConnectResult result, pending_remote<Device>? device);
 
@@ -168,7 +230,9 @@ interface Adapter {
   // registered successfully.
   //
   // When |use_scan_response| is true, the |service_data| is added to the scan
-  // response instead of the initial advertisement. A few assumptions are made:
+  // response instead of the initial advertisement. When |connectable| is true,
+  // the advertisement is created as type PERIPHERAL; else it is type BROADCAST.
+  // A few assumptions are made:
   //
   // 1) The |service_id| provided is a valid 16-bit UUID in 128-bit format.
   //    The identifying 16-bits will be extracted for the short service id used
@@ -177,9 +241,6 @@ interface Adapter {
   //    the Platform right now.
   //
   // Important notes:
-  // * This method registers a "non-connectable" advertisement. Any future
-  //   effort to allow this API to support "connectable" advertisements would
-  //   also require the addition of an API to support hosting a GATT server.
   // * Bluetooth chips generally can only broadcast a few advertisements,
   //   sometimes even only one, simultaneously. This can be mitigated by
   //   operating systems "rotating" advertisements in the higher software layer,
@@ -187,7 +248,8 @@ interface Adapter {
   //   understanding their host OS's and/or hardware's limitations.
   [Sync]
   RegisterAdvertisement(UUID service_id, array<uint8> service_data,
-      bool use_scan_response) => (pending_remote<Advertisement>? advertisement);
+      bool use_scan_response, bool connectable)
+      => (pending_remote<Advertisement>? advertisement);
 
   // Requests the local device to make itself discoverable to nearby remote
   // devices.
@@ -195,7 +257,7 @@ interface Adapter {
   SetDiscoverable(bool discoverable) => (bool success);
 
   // Change the name of the local device as it appears to remote devices.
-  // TODO(crbug.com/1117654): Implement a mechanism to request this resource
+  // TODO(crbug.com/40145221): Implement a mechanism to request this resource
   // before being able to use it.
   [Sync]
   SetName(string name) => (bool success);
@@ -215,7 +277,7 @@ interface Adapter {
   // If the local device is already bonded and the connection attempt fails,
   // when |should_unbond_on_error| is true the local device will forget the
   // remote device. (see b/204274786)
-  // TODO(crbug.com/1112886): Use fixed-size array, not string, for address.
+  // TODO(crbug.com/40709957): Use fixed-size array, not string, for address.
   [Sync]
   ConnectToServiceInsecurely(string address, UUID service_uuid,
       bool should_unbond_on_error) => (ConnectToServiceResult? result);
@@ -229,6 +291,25 @@ interface Adapter {
   [Sync]
   CreateRfcommServiceInsecurely(string service_name, UUID service_uuid)
       => (pending_remote<ServerSocket>? server_socket);
+
+  // Creates a local GATT service corresponding to |service_id|, and
+  // communicates events to the |observer|. This call is only expected to be
+  // used to create a local GATT service that does not exist at |service_id|.
+  // Callers should first consult |IsLeScatternetDualRoleSupported()| before
+  // calling this method to determine if a GATT service can be safely started on
+  // the local device.
+  [Sync]
+  CreateLocalGattService(UUID service_id,
+       pending_remote<GattServiceObserver> observer)
+      => (pending_remote<GattService> gatt_service);
+
+  // Retrieves the status of whether or not the LE Scatternet Dual Role
+  // (simultaneous use of the LE peripheral and central roles) is supported on
+  // the Adapter. If |is_supported| is true, then callers can call
+  // |CreateLocalGattService()| without being concerned about performance or
+  // stability issues.
+  [Sync]
+  IsLeScatternetDualRoleSupported() => (bool is_supported);
 };
 
 // Listener on Bluetooth events. Register as an observer via AddObserver().

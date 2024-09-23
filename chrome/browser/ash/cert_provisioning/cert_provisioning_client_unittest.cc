@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -218,6 +217,8 @@ class CertProvisioningClientTest
   const std::string& cert_scope_dm_api_string() const override {
     return std::get<1>(GetParam());
   }
+
+  const std::string kCertProvisioningId = GenerateCertProvisioningId();
 };
 
 // Checks a successful invocation of Start.
@@ -227,7 +228,8 @@ TEST_P(CertProvisioningClientTest, StartSuccess) {
   StartFuture start_future;
   cert_provisioning_client.Start(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       start_future.GetCallback());
 
   // Expect one request to CloudPolicyClient, verify its contents.
@@ -236,6 +238,8 @@ TEST_P(CertProvisioningClientTest, StartSuccess) {
       cloud_policy_client_.cert_prov_calls().back();
   {
     em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_provisioning_process_id(
+        kCertProvisioningId);
     expected_request.set_certificate_scope(cert_scope_dm_api_string());
     expected_request.set_cert_profile_id(kCertProfileId);
     expected_request.set_policy_version(kCertProfileVersion);
@@ -267,7 +271,8 @@ TEST_P(CertProvisioningClientTest, GetNextInstructionSuccess) {
   NextInstructionFuture next_instruction_future;
   cert_provisioning_client.GetNextInstruction(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       next_instruction_future.GetCallback());
 
   // Expect one request to CloudPolicyClient, verify its contents.
@@ -276,6 +281,8 @@ TEST_P(CertProvisioningClientTest, GetNextInstructionSuccess) {
       cloud_policy_client_.cert_prov_calls().back();
   {
     em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_provisioning_process_id(
+        kCertProvisioningId);
     expected_request.set_certificate_scope(cert_scope_dm_api_string());
     expected_request.set_cert_profile_id(kCertProfileId);
     expected_request.set_policy_version(kCertProfileVersion);
@@ -310,7 +317,8 @@ TEST_P(CertProvisioningClientTest, AuthorizeSuccess) {
   NoDataFuture no_data_future;
   cert_provisioning_client.Authorize(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       kVaChallengeResponse, no_data_future.GetCallback());
 
   // Expect one request to CloudPolicyClient, verify its contents.
@@ -319,6 +327,8 @@ TEST_P(CertProvisioningClientTest, AuthorizeSuccess) {
       cloud_policy_client_.cert_prov_calls().back();
   {
     em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_provisioning_process_id(
+        kCertProvisioningId);
     expected_request.set_certificate_scope(cert_scope_dm_api_string());
     expected_request.set_cert_profile_id(kCertProfileId);
     expected_request.set_policy_version(kCertProfileVersion);
@@ -347,7 +357,8 @@ TEST_P(CertProvisioningClientTest, UploadProofOfPossessionSuccess) {
   NoDataFuture no_data_future;
   cert_provisioning_client.UploadProofOfPossession(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       kSignature, no_data_future.GetCallback());
 
   // Expect one request to CloudPolicyClient, verify its contents.
@@ -356,6 +367,8 @@ TEST_P(CertProvisioningClientTest, UploadProofOfPossessionSuccess) {
       cloud_policy_client_.cert_prov_calls().back();
   {
     em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_provisioning_process_id(
+        kCertProvisioningId);
     expected_request.set_certificate_scope(cert_scope_dm_api_string());
     expected_request.set_cert_profile_id(kCertProfileId);
     expected_request.set_policy_version(kCertProfileVersion);
@@ -387,7 +400,8 @@ TEST_P(CertProvisioningClientTest, StartCsrSuccess) {
   StartCsrFuture start_csr_future;
   cert_provisioning_client.StartCsr(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       start_csr_future.GetStartCsrCallback());
 
   // Expect one request to CloudPolicyClient, verify its contents.
@@ -396,6 +410,8 @@ TEST_P(CertProvisioningClientTest, StartCsrSuccess) {
       cloud_policy_client_.cert_prov_calls().back();
   {
     em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_provisioning_process_id(
+        kCertProvisioningId);
     expected_request.set_certificate_scope(cert_scope_dm_api_string());
     expected_request.set_cert_profile_id(kCertProfileId);
     expected_request.set_policy_version(kCertProfileVersion);
@@ -439,7 +455,8 @@ TEST_P(CertProvisioningClientTest, StartCsrTryLater) {
   StartCsrFuture start_csr_future;
   cert_provisioning_client.StartCsr(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       start_csr_future.GetStartCsrCallback());
 
   // Expect one request to CloudPolicyClient.
@@ -469,7 +486,8 @@ TEST_P(CertProvisioningClientTest, StartCsrError) {
   StartCsrFuture start_csr_future;
   cert_provisioning_client.StartCsr(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       start_csr_future.GetStartCsrCallback());
 
   // Expect one request to CloudPolicyClient.
@@ -497,7 +515,8 @@ TEST_P(CertProvisioningClientTest, FinishCsrSuccess) {
   FinishCsrFuture finish_csr_future;
   cert_provisioning_client.FinishCsr(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       kVaChallengeResponse, kSignature,
       finish_csr_future.GetFinishCsrCallback());
 
@@ -507,6 +526,8 @@ TEST_P(CertProvisioningClientTest, FinishCsrSuccess) {
       cloud_policy_client_.cert_prov_calls().back();
   {
     em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_provisioning_process_id(
+        kCertProvisioningId);
     expected_request.set_certificate_scope(cert_scope_dm_api_string());
     expected_request.set_cert_profile_id(kCertProfileId);
     expected_request.set_policy_version(kCertProfileVersion);
@@ -542,7 +563,8 @@ TEST_P(CertProvisioningClientTest, FinishCsrError) {
   FinishCsrFuture finish_csr_future;
   cert_provisioning_client.FinishCsr(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       kVaChallengeResponse, kSignature,
       finish_csr_future.GetFinishCsrCallback());
 
@@ -573,7 +595,8 @@ TEST_P(CertProvisioningClientTest, DownloadCertSuccess) {
   DownloadCertFuture download_cert_future;
   cert_provisioning_client.DownloadCert(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       download_cert_future.GetDownloadCertCallback());
 
   // Expect one request to CloudPolicyClient, verify its contents.
@@ -582,6 +605,8 @@ TEST_P(CertProvisioningClientTest, DownloadCertSuccess) {
       cloud_policy_client_.cert_prov_calls().back();
   {
     em::ClientCertificateProvisioningRequest expected_request;
+    expected_request.set_certificate_provisioning_process_id(
+        kCertProvisioningId);
     expected_request.set_certificate_scope(cert_scope_dm_api_string());
     expected_request.set_cert_profile_id(kCertProfileId);
     expected_request.set_policy_version(kCertProfileVersion);
@@ -617,7 +642,8 @@ TEST_P(CertProvisioningClientTest, DownloadCertError) {
   DownloadCertFuture download_cert_future;
   cert_provisioning_client.DownloadCert(
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       download_cert_future.GetDownloadCertCallback());
 
   // Expect one request to CloudPolicyClient.
@@ -685,6 +711,8 @@ class CertProvisioningClientErrorHandlingTest
                           std::move(callback));
   }
 
+  const std::string kCertProvisioningId = GenerateCertProvisioningId();
+
  private:
   const CertScopePair& cert_scope_pair() const {
     return std::get<0>(GetParam());
@@ -702,7 +730,8 @@ TEST_P(CertProvisioningClientErrorHandlingTest, CertProvBackendError) {
   ExecuteCertProvisioningClientCall(
       &cert_provisioning_client,
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       no_data_future.GetCallback());
 
   ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
@@ -737,7 +766,8 @@ TEST_P(CertProvisioningClientErrorHandlingTest, DeviceManagementError) {
   ExecuteCertProvisioningClientCall(
       &cert_provisioning_client,
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       no_data_future.GetCallback());
 
   ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));
@@ -765,7 +795,8 @@ TEST_P(CertProvisioningClientErrorHandlingTest, ResponseFieldNotFilled) {
   ExecuteCertProvisioningClientCall(
       &cert_provisioning_client,
       CertProvisioningClient::ProvisioningProcess(
-          cert_scope(), kCertProfileId, kCertProfileVersion, kPublicKey),
+          kCertProvisioningId, cert_scope(), kCertProfileId,
+          kCertProfileVersion, kPublicKey),
       no_data_future.GetCallback());
 
   ASSERT_THAT(cloud_policy_client_.cert_prov_calls(), SizeIs(1));

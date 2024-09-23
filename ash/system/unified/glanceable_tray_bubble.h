@@ -17,7 +17,6 @@ class View;
 namespace ash {
 
 class CalendarView;
-class ClassroomBubbleStudentView;
 class GlanceableTrayBubbleView;
 
 // Manages the bubble that contains GlanceableTrayView.
@@ -40,7 +39,7 @@ class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
   bool IsBubbleActive() const;
 
   views::View* GetTasksView();
-  ClassroomBubbleStudentView* GetClassroomStudentView();
+  views::View* GetClassroomStudentView();
   CalendarView* GetCalendarView();
 
  private:

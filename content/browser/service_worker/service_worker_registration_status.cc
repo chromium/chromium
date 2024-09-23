@@ -27,7 +27,7 @@ void GetServiceWorkerErrorTypeForRegistration(
     *out_message = blink::ServiceWorkerStatusToString(status);
   switch (status) {
     case blink::ServiceWorkerStatusCode::kOk:
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "Calling this when status == OK is not allowed";
       return;
 
@@ -70,6 +70,13 @@ void GetServiceWorkerErrorTypeForRegistration(
       *out_error = blink::mojom::ServiceWorkerErrorType::kAbort;
       return;
 
+    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
+      // In case of storage data corruption, `register()`, `getRegistration()`
+      // or `getRegistrations()` fail. For that case, it might be fine to
+      // just return promise error.
+      // See: crbug.com/332136252
+      return;
+
     case blink::ServiceWorkerStatusCode::kErrorActivateWorkerFailed:
     case blink::ServiceWorkerStatusCode::kErrorIpcFailed:
     case blink::ServiceWorkerStatusCode::kErrorFailed:
@@ -78,7 +85,6 @@ void GetServiceWorkerErrorTypeForRegistration(
     case blink::ServiceWorkerStatusCode::kErrorState:
     case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
     case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
-    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
       // Unexpected, or should have bailed out before calling this, or we don't
       // have a corresponding blink error code yet.
       break;  // Fall through to NOTREACHED().
@@ -87,7 +93,7 @@ void GetServiceWorkerErrorTypeForRegistration(
                           static_cast<uint32_t>(status));
   SCOPED_CRASH_KEY_STRING256("GetSWErrTypeForReg", "status_str",
                              blink::ServiceWorkerStatusToString(status));
-  DUMP_WILL_BE_NOTREACHED_NORETURN()
+  DUMP_WILL_BE_NOTREACHED()
       << "Got unexpected error code: " << static_cast<uint32_t>(status) << " "
       << blink::ServiceWorkerStatusToString(status);
 }

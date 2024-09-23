@@ -1,0 +1,35 @@
+<style include="settings-shared">
+  .error {
+    color: var(--cros-text-color-alert);
+    display: inline-block;
+  }
+
+  #problemDiv {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    font-size: 10px;
+    height: 32px;
+    min-height: 0;
+    padding-bottom: 8px;
+  }
+
+  /* Hide this using 'visibility: hidden' instead of 'hidden' so that the
+      dialog does not resize when there are no problems to display. */
+  #problemDiv[invisible] {
+    visibility: hidden;
+  }
+</style>
+<pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
+    on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
+    disabled="[[isSetPinCallPending_]]"
+    aria-label="[[ariaLabel]]"
+    has-error="[[hasError_(problemMessage_)]]"
+    enable-placeholder>
+  <div id="problemDiv" invisible$="[[!problemMessage_]]"
+       class$="[[getErrorClass_(problemMessage_)]]">
+    <span aria-live="assertive">
+      [[problemMessage_]]
+    </span>
+  </div>
+</pin-keyboard>

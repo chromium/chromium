@@ -12,7 +12,7 @@ source_set("javascript_feature") {
   deps = [
     ":rss_link_js",
     ":service",
-    "//ios/chrome/browser/ui/follow",
+    "//ios/chrome/browser/follow/ui_bundled",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//net",
@@ -29,8 +29,8 @@ source_set("utils") {
     "//components/prefs",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/web/public",
@@ -48,7 +48,6 @@ source_set("enums") {
 
 source_set("tab_helper") {
   sources = [
-    "follow_iph_presenter.h",
     "follow_menu_updater.h",
     "follow_tab_helper.h",
     "follow_tab_helper.mm",
@@ -67,8 +66,9 @@ source_set("tab_helper") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
@@ -108,8 +108,8 @@ source_set("service_factory") {
     "//components/keyed_service/ios",
     "//components/pref_registry:pref_registry",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/public/provider/chrome/browser/follow:follow_api",
   ]
 }
@@ -133,16 +133,16 @@ source_set("browser_agent") {
     "//ios/chrome/browser/discover_feed/model:model",
     "//ios/chrome/browser/follow/model:service",
     "//ios/chrome/browser/follow/model:service_factory",
+    "//ios/chrome/browser/follow/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/ui/follow",
-    "//ios/chrome/browser/ui/ntp/metrics",
-    "//ios/chrome/browser/ui/ntp/metrics:constants",
     "//ui/base",
   ]
 }
@@ -166,8 +166,9 @@ source_set("unit_tests") {
     ":javascript_feature",
     ":utils",
     "//base/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/web/model:web_internal",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

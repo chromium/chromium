@@ -32,7 +32,7 @@ class MockMessagePortClient : public openscreen::cast::MessagePort::Client {
               OnMessage,
               (const std::string&, const std::string&, const std::string&),
               (override));
-  MOCK_METHOD(void, OnError, (openscreen::Error), (override));
+  MOCK_METHOD(void, OnError, (const openscreen::Error&), (override));
 
   const std::string& source_id() override { return source_id_; }
 

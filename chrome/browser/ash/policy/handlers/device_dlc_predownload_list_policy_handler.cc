@@ -18,7 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 
 namespace policy {
 
@@ -62,7 +62,7 @@ DeviceDlcPredownloadListPolicyHandler::DecodeDeviceDlcPredownloadListPolicy(
   std::vector<std::string> unknown_dlcs;
   constexpr auto policy_value_to_dlc_id =
       base::MakeFixedFlatMap<std::string_view, std::string_view>(
-          {{"scanner_drivers", "sane-backends-extras-dlc"}});
+          {{"scanner_drivers", "sane-backends-pfu"}});
 
   base::Value::List dlcs_to_predownload =
       base::Value::List::with_capacity(raw_policy_value.size());

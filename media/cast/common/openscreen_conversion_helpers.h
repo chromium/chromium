@@ -8,10 +8,10 @@
 #include "media/cast/common/sender_encoded_frame.h"
 #include "net/base/ip_address.h"
 #include "third_party/openscreen/src/cast/streaming/capture_configs.h"
-#include "third_party/openscreen/src/cast/streaming/constants.h"
-#include "third_party/openscreen/src/cast/streaming/offer_messages.h"
+#include "third_party/openscreen/src/cast/streaming/public/constants.h"
+#include "third_party/openscreen/src/cast/streaming/public/offer_messages.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 #include "third_party/openscreen/src/cast/streaming/rtp_time.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
 #include "third_party/openscreen/src/cast/streaming/sender_message.h"
 #include "third_party/openscreen/src/platform/api/time.h"
 #include "ui/gfx/geometry/size.h"
@@ -23,7 +23,6 @@ enum class AudioCodec;
 enum class VideoCodec;
 
 namespace cast {
-enum class Codec;
 
 openscreen::Clock::time_point ToOpenscreenTimePoint(base::TimeTicks ticks);
 
@@ -42,16 +41,14 @@ base::TimeDelta ToTimeDelta(openscreen::Clock::duration tp);
 const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
     const SenderEncodedFrame& encoded_frame);
 
-openscreen::cast::AudioCodec ToOpenscreenAudioCodec(Codec codec);
-openscreen::cast::VideoCodec ToOpenscreenVideoCodec(Codec codec);
-Codec ToCodec(openscreen::cast::AudioCodec codec);
-Codec ToCodec(openscreen::cast::VideoCodec codec);
-AudioCodec ToAudioCodec(openscreen::cast::AudioCodec codec);
-VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec);
+openscreen::cast::AudioCodec ToOpenscreenAudioCodec(media::AudioCodec codec);
+openscreen::cast::VideoCodec ToOpenscreenVideoCodec(media::VideoCodec codec);
+media::AudioCodec ToAudioCodec(openscreen::cast::AudioCodec codec);
+media::VideoCodec ToVideoCodec(openscreen::cast::VideoCodec codec);
 
 openscreen::IPAddress ToOpenscreenIPAddress(const net::IPAddress& address);
 
-// TODO(https://crbug.com/1441658): should be replaced with Open Screen's
+// TODO(crbug.com/40266598): should be replaced with Open Screen's
 // internal conversion methods.
 constexpr int kAesKeyLength = 16;
 std::array<uint8_t, kAesKeyLength> AesKeyToArray(std::string aes_key);

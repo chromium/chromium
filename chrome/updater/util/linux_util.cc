@@ -26,6 +26,11 @@ constexpr base::FilePath::CharType kSystemDataPath[] =
 constexpr base::FilePath::CharType kUserRelativeDataPath[] =
     FILE_PATH_LITERAL(".local/");
 
+base::FilePath GetUpdaterFolderName() {
+  return base::FilePath(COMPANY_SHORTNAME_LOWERCASE_STRING)
+      .Append(PRODUCT_FULLNAME_DASHED_LOWERCASE_STRING);
+}
+
 }  // namespace
 
 const char kLauncherName[] = "launcher";

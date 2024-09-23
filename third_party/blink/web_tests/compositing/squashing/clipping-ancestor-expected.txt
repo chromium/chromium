@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='inner'",
+      "name": "LayoutBlockFlow DIV id='inner'",
       "bounds": [200, 10],
       "contentsOpaque": true,
       "backgroundColor": "#F5F5F5",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='hoverable'",
+      "name": "LayoutBlockFlow (positioned) DIV class='hoverable'",
       "position": [8, 0],
       "bounds": [100, 100],
       "contentsOpaque": true,

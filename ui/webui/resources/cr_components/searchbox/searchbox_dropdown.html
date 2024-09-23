@@ -1,0 +1,147 @@
+<style include="cr-icons searchbox-dropdown-shared-style">
+  :host {
+    user-select: none;
+  }
+
+  #content {
+    background-color: var(--color-searchbox-results-background);
+    border-radius: calc(0.5 * var(--cr-searchbox-height));
+    box-shadow: var(--cr-searchbox-shadow);
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    padding-bottom: 8px;
+    padding-top: var(--cr-searchbox-height);
+  }
+
+  @media (forced-colors: active) {
+    #content {
+      border: 1px solid ActiveBorder;
+    }
+  }
+
+  .matches {
+    display: contents;
+  }
+
+  cr-searchbox-match {
+    color: var(--color-searchbox-results-foreground);
+  }
+
+  .header {
+    align-items: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    font-size: inherit;
+    font-weight: inherit;
+    /* To mirror match typical row height of items in vertical list. */
+    height: 44px;
+    margin-block-end: 0;
+    margin-block-start: 0;
+    outline: none;
+    padding-bottom: 6px;
+    padding-inline-end: 16px;
+    padding-inline-start: 12px;
+    padding-top: 6px;
+  }
+
+  .header .text {
+    color: var(--color-searchbox-results-foreground-dimmed);
+    font-size: .875em;
+    font-weight: 500;
+    overflow: hidden;
+    padding-inline-end: 1px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header cr-icon-button {
+    top: 1px;
+  }
+
+  .header:focus-within:not(:focus) cr-icon-button {
+      --cr-icon-button-fill-color:
+          var(--color-searchbox-results-icon-selected);
+  }
+
+  @media (forced-colors: active) {
+    cr-searchbox-match:-webkit-any(:hover, :focus-within, [selected]) {
+      background-color: Highlight;
+    }
+  }
+
+  .primary-side {
+    flex: 1;
+    min-width: 0;
+  }
+
+  :host-context([is-lens-searchbox_]) .primary-side::before {
+    content: '';
+    position: relative;
+    height: 1px;
+    background-color: #DADCE0;
+    top: 0;
+    width: calc(var(--cr-searchbox-width) - 24px);
+    display: block;
+    left: 12px;
+  }
+
+  .secondary-side {
+    display: var(--cr-searchbox-secondary-side-display, none);
+    min-width: 0;
+    padding-block-end: 8px;
+    padding-inline-end: 16px;
+    width: 314px;
+  }
+
+  .secondary-side .header {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  .secondary-side .matches {
+    display: block;
+  }
+
+  .secondary-side .matches.horizontal {
+    display: flex;
+    gap: 4px;
+  }
+</style>
+<div id="content" part="dropdown-content">
+  <template is="dom-repeat"
+      items="[[sideTypes_(showSecondarySide_)]]"
+      as="sideType">
+    <div class$="[[sideTypeClass_(sideType)]]">
+      <template is="dom-repeat" items="[[groupIdsForSideType_(sideType, result.matches.*)]]"
+          as="groupId">
+        <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
+          <!-- Header cannot be tabbed into but gets focus when clicked. This stops
+              the dropdown from losing focus and closing as a result. -->
+          <h3 class="header" data-id$="[[groupId]]" tabindex="-1"
+              on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
+              on-mousedown="onHeaderMousedown_" aria-hidden="true">
+            <span class="text">[[headerForGroup_(groupId)]]</span>
+            <cr-icon-button class$="action-icon [[toggleButtonIconForGroup_(groupId, hiddenGroupIds_.*)]]"
+                title="[[toggleButtonTitleForGroup_(groupId, hiddenGroupIds_.*)]]"
+                aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]">
+            </cr-icon-button>
+          </h3>
+        </template>
+        <div class$="matches [[renderTypeClassForGroup_(groupId)]]">
+          <template is="dom-repeat"
+              items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
+              as="match" on-dom-change="onResultRepaint_">
+            <cr-searchbox-match tabindex="0" role="option" match="[[match]]"
+                match-index="[[matchIndex_(match)]]" side-type="[[sideType]]"
+                selected$="[[isSelected_(match, selectedMatchIndex)]]"
+                show-thumbnail="[[showThumbnail]]">
+            </cr-searchbox-match>
+          </template>
+        </div>
+      </template>
+    </div>
+  </template>
+</div>

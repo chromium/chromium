@@ -64,5 +64,5 @@ void MutedNotificationHandler::OnClose(Profile* profile,
 
 void MutedNotificationHandler::OpenSettings(Profile* profile,
                                             const GURL& origin) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

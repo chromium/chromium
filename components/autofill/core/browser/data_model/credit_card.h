@@ -26,20 +26,7 @@ namespace autofill {
 inline constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
 inline constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
 
-// The string identifiers for credit card icon resources.
-inline constexpr char kAmericanExpressCard[] = "americanExpressCC";
-inline constexpr char kDinersCard[] = "dinersCC";
-inline constexpr char kDiscoverCard[] = "discoverCC";
-inline constexpr char kEloCard[] = "eloCC";
-inline constexpr char kGenericCard[] = "genericCC";
-inline constexpr char kJCBCard[] = "jcbCC";
-inline constexpr char kMasterCard[] = "masterCardCC";
-inline constexpr char kMirCard[] = "mirCC";
-inline constexpr char kTroyCard[] = "troyCC";
-inline constexpr char kUnionPay[] = "unionPayCC";
-inline constexpr char kVisaCard[] = "visaCC";
-
-struct AutofillMetadata;
+struct PaymentsMetadata;
 
 namespace internal {
 
@@ -62,13 +49,19 @@ class CreditCard : public AutofillDataModel {
     // something on the server).
     kLocalCard,
 
-    // A card from Wallet with masked information. Such cards will only have
-    // the last 4 digits of the card number, and require an extra download to
-    // convert to a kFullServerCard.
+    // A card from Wallet with masked information. Such cards only have the last
+    // 4 digits of the card number, and require an extra download to fetch the
+    // full number.
     kMaskedServerCard,
 
-    // A card from the Wallet server with full information store locally. This
-    // card is not locally editable.
+    // A cached form of kMaskedServerCard, with a full number. Historically
+    // these could be persisted in Chrome, however that is no longer possible.
+    // They exist only in an in-memory cache used for card filling, to avoid
+    // another authentication when re-filling a card on the same page.
+    //
+    // TODO(crbug.com/40939195): Consolidate kMaskedServerCard and
+    // kFullServerCard to a single RecordType, and have the cached/full-card
+    // status for a given CreditCard be tracked independently.
     kFullServerCard,
 
     // A card generated from a server card by the card issuer. This card is not
@@ -157,9 +150,6 @@ class CreditCard : public AutofillDataModel {
   std::string origin() const { return origin_; }
   void set_origin(const std::string& origin) { origin_ = origin; }
 
-  // Returns a version of |number| that has any separator characters removed.
-  static const std::u16string StripSeparators(const std::u16string& number);
-
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
   static std::u16string NetworkForDisplay(const std::string& network);
 
@@ -168,16 +158,6 @@ class CreditCard : public AutofillDataModel {
 
   // Converts icon_str to Suggestion::Icon and calls the method above.
   static int IconResourceId(std::string_view icon_str);
-
-  // Returns the internal representation of card issuer network corresponding to
-  // the given |number|.  The card issuer network is determined purely according
-  // to the Issuer Identification Number (IIN), a.k.a. the "Bank Identification
-  // Number (BIN)", which is parsed from the relevant prefix of the |number|.
-  // This function performs no additional validation checks on the |number|.
-  // Hence, the returned issuer network for both the valid card
-  // "4111-1111-1111-1111" and the invalid card "4garbage" will be Visa, which
-  // has an IIN of 4.
-  static const char* GetCardNetwork(const std::u16string& number);
 
   // Returns whether the nickname is valid. Note that empty nicknames are valid
   // because they are not required.
@@ -195,18 +175,19 @@ class CreditCard : public AutofillDataModel {
   // kVisaCard.
   void SetNetworkForMaskedCard(std::string_view network);
 
-  // AutofillDataModel:
-  AutofillMetadata GetMetadata() const override;
-  double GetRankingScore(base::Time current_time) const override;
-  bool SetMetadata(const AutofillMetadata& metadata) override;
+  PaymentsMetadata GetMetadata() const;
+  bool SetMetadata(const PaymentsMetadata& metadata);
+
   // Returns whether the card is deletable: if it is expired and has not been
-  // used for longer than |kDisusedCreditCardDeletionTimeDelta|.
-  bool IsDeletable() const override;
+  // used for longer than `kDisusedDataModelDeletionTimeDelta`.
+  bool IsDeletable() const;
 
   // FormGroup:
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& app_locale,
-                        FieldTypeSet* matching_types) const override;
+  void GetMatchingTypesWithProfileSources(
+      const std::u16string& text,
+      const std::string& app_locale,
+      FieldTypeSet* matching_types,
+      PossibleProfileValueSources* profile_value_sources) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
@@ -246,7 +227,9 @@ class CreditCard : public AutofillDataModel {
   Issuer card_issuer() const { return card_issuer_; }
   void set_card_issuer(Issuer card_issuer) { card_issuer_ = card_issuer; }
   const std::string& issuer_id() const { return issuer_id_; }
-  void set_issuer_id(const std::string& issuer_id) { issuer_id_ = issuer_id; }
+  void set_issuer_id(const std::string_view issuer_id) {
+    issuer_id_ = std::string(issuer_id);
+  }
 
   // If the card numbers for |this| and |imported_card| match, and merging the
   // two wouldn't result in unverified data overwriting verified data,
@@ -283,6 +266,17 @@ class CreditCard : public AutofillDataModel {
 
   // Returns true if expiration date for `this` card is the same as `other`.
   [[nodiscard]] bool HasSameExpirationDateAs(const CreditCard& other) const;
+
+  // Calculates the ranking score used for ranking the card suggestion. If
+  // `use_frecency` is true we use the new ranking algorithm.
+  double GetRankingScore(base::Time current_time,
+                         bool use_frecency = false) const;
+
+  // Compares two credit cards and returns if the current card has a greater
+  // ranking score than `other`.
+  bool HasGreaterRankingThan(const CreditCard& other,
+                             base::Time comparison_time,
+                             bool use_frecency = false) const;
 
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.
@@ -323,7 +317,7 @@ class CreditCard : public AutofillDataModel {
   void RecordAndLogUse();
 
   // Returns whether the card is expired based on |current_time|.
-  bool IsExpired(const base::Time& current_time) const;
+  bool IsExpired(base::Time current_time) const;
 
   // Returns whether the card is a masked card. Such cards will only have
   // the last 4 digits of the card number.
@@ -481,6 +475,11 @@ class CreditCard : public AutofillDataModel {
   void clear_cvc() { cvc_.clear(); }
   void set_cvc(const std::u16string& cvc) { cvc_ = cvc; }
 
+  base::Time cvc_modification_date() const { return cvc_modification_date_; }
+  void set_cvc_modification_date(base::Time date) {
+    cvc_modification_date_ = date;
+  }
+
  private:
   friend class CreditCardTestApi;
 
@@ -517,7 +516,7 @@ class CreditCard : public AutofillDataModel {
   // some dependencies around `guid_` for server cards exist. See the server_id
   // constructor of `CreditCard()`. Notably, for server cards the `guid_` is
   // not persisted and should not be used.
-  // TODO(crbug.com/1121806): Create a variant of the different ids, since
+  // TODO(crbug.com/40146355): Create a variant of the different ids, since
   // only one of them should be populated based on the `record_type()`.
   std::string guid_;
 
@@ -567,7 +566,7 @@ class CreditCard : public AutofillDataModel {
   // The nickname of the card. May be empty when nickname is not set.
   std::u16string nickname_;
 
-  // TODO(crbug.com/1394514): Consider removing this field and all its usage
+  // TODO(crbug.com/40248631): Consider removing this field and all its usage
   // after `issuer_id_` is used.
   // The issuer for the card. This is populated from the sync response. It has a
   // default value of CreditCard::Issuer::kIssuerUnknown.
@@ -579,7 +578,7 @@ class CreditCard : public AutofillDataModel {
 
   // For masked server cards, this is the ID assigned by the server to uniquely
   // identify this card. |server_id_| is the legacy version of this.
-  // TODO(crbug.com/1121806): remove server_id_ after full deprecation
+  // TODO(crbug.com/40146355): remove server_id_ after full deprecation
   int64_t instrument_id_;
 
   // The virtual card enrollment state of this card. If it is kEnrolled, then
@@ -608,6 +607,10 @@ class CreditCard : public AutofillDataModel {
 
   // The card verification code of the card. May be empty.
   std::u16string cvc_;
+
+  // CVCs can be updated independently of the card and track their modification
+  // date independently. The timestamp `is_null()` for cards without CVC.
+  base::Time cvc_modification_date_;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

@@ -54,7 +54,7 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
 
  private:
   LocalFrameView& FrameView() const;
-  void WriteDocument(SharedBuffer*);
+  void WriteDocument(SegmentedBuffer&);
   Element& GetElementById(const AtomicString&) const;
   void AdjustBubblePosition(const gfx::Rect& view_rect);
 

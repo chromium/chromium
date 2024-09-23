@@ -5,13 +5,13 @@
 #ifndef BASE_BASE64URL_H_
 #define BASE_BASE64URL_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -33,7 +33,7 @@ BASE_EXPORT void Base64UrlEncode(span<const uint8_t> input,
                                  std::string* output);
 
 // Same as the previous function, but accepts an input string.
-BASE_EXPORT void Base64UrlEncode(StringPiece input,
+BASE_EXPORT void Base64UrlEncode(std::string_view input,
                                  Base64UrlEncodePolicy policy,
                                  std::string* output);
 
@@ -53,13 +53,13 @@ enum class Base64UrlDecodePolicy {
 //
 // The |policy| defines whether padding will be required, ignored or disallowed
 // altogether. |input| and |*output| may reference the same storage.
-[[nodiscard]] BASE_EXPORT bool Base64UrlDecode(StringPiece input,
+[[nodiscard]] BASE_EXPORT bool Base64UrlDecode(std::string_view input,
                                                Base64UrlDecodePolicy policy,
                                                std::string* output);
 
 // Same as the previous function, but writing to a `std::vector`.
-[[nodiscard]] BASE_EXPORT absl::optional<std::vector<uint8_t>> Base64UrlDecode(
-    StringPiece input,
+[[nodiscard]] BASE_EXPORT std::optional<std::vector<uint8_t>> Base64UrlDecode(
+    std::string_view input,
     Base64UrlDecodePolicy policy);
 
 }  // namespace base

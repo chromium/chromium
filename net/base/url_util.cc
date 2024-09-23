@@ -96,8 +96,7 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
   url::Component cursor(0, input.size());
   std::string output;
   url::Component key_range, value_range;
-  while (url::ExtractQueryKeyValue(input.data(), &cursor, &key_range,
-                                   &value_range)) {
+  while (url::ExtractQueryKeyValue(input, &cursor, &key_range, &value_range)) {
     const std::string_view key = input.substr(key_range.begin, key_range.len);
     std::string key_value_pair;
     // Check |replaced| as only the first pair should be replaced.
@@ -178,8 +177,7 @@ void QueryIterator::Advance() {
   key_.reset();
   value_.reset();
   unescaped_value_.clear();
-  at_end_ =
-      !url::ExtractQueryKeyValue(url_->spec().c_str(), &query_, &key_, &value_);
+  at_end_ = !url::ExtractQueryKeyValue(url_->spec(), &query_, &key_, &value_);
 }
 
 bool GetValueForKeyInQuery(const GURL& url,
@@ -271,9 +269,7 @@ std::string GetHostAndOptionalPort(const GURL& url) {
 
 NET_EXPORT std::string GetHostAndOptionalPort(
     const url::SchemeHostPort& scheme_host_port) {
-  int default_port = url::DefaultPortForScheme(
-      scheme_host_port.scheme().data(),
-      static_cast<int>(scheme_host_port.scheme().length()));
+  int default_port = url::DefaultPortForScheme(scheme_host_port.scheme());
   if (default_port != scheme_host_port.port()) {
     return base::StringPrintf("%s:%i", scheme_host_port.host().c_str(),
                               scheme_host_port.port());
@@ -422,7 +418,9 @@ bool IsHostnameNonUnique(std::string_view hostname) {
 
   // Check for a registry controlled portion of |hostname|, ignoring private
   // registries, as they already chain to ICANN-administered registries,
-  // and explicitly ignoring unknown registries.
+  // and explicitly ignoring unknown registries. Registry identifiers themselves
+  // are also treated as unique, since a TLD is a valid hostname and can host a
+  // web server.
   //
   // Note: This means that as new gTLDs are introduced on the Internet, they
   // will be treated as non-unique until the registry controlled domain list
@@ -430,8 +428,12 @@ bool IsHostnameNonUnique(std::string_view hostname) {
   // advance notice to deprecate older versions of this code, this an
   // acceptable tradeoff.
   return !registry_controlled_domains::HostHasRegistryControlledDomain(
-      canonical_name, registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
-      registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+             canonical_name,
+             registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+             registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES) &&
+         !registry_controlled_domains::HostIsRegistryIdentifier(
+             canonical_name,
+             registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
 }
 
 bool IsLocalhost(const GURL& url) {

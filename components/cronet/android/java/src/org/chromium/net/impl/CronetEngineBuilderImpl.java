@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -138,13 +139,13 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private final Context mApplicationContext;
     private final List<QuicHint> mQuicHints = new LinkedList<>();
     private final List<Pkp> mPkps = new LinkedList<>();
+    private final CronetSource mSource;
     private boolean mPublicKeyPinningBypassForLocalTrustAnchorsEnabled;
     private String mUserAgent;
     private String mStoragePath;
     private boolean mQuicEnabled;
     private boolean mHttp2Enabled;
     private boolean mBrotiEnabled;
-    private boolean mDisableCache;
     private HttpCacheMode mHttpCacheMode;
     private long mHttpCacheMaxSize;
     private String mExperimentalOptions;
@@ -154,13 +155,15 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
     /**
      * Default config enables SPDY and QUIC, disables SDCH and HTTP cache.
+     *
      * @param context Android {@link Context} for engine to use.
      */
-    public CronetEngineBuilderImpl(Context context) {
+    public CronetEngineBuilderImpl(Context context, CronetSource source) {
         var startUptimeMillis = SystemClock.uptimeMillis();
         boolean successful = false;
         mApplicationContext = context.getApplicationContext();
-        mLogger = CronetLoggerFactory.createLogger(mApplicationContext, getCronetSource());
+        mSource = source;
+        mLogger = CronetLoggerFactory.createLogger(mApplicationContext, mSource);
         try {
             enableQuic(true);
             enableHttp2(true);
@@ -173,6 +176,11 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         } finally {
             maybeLogCronetEngineBuilderInitializedInfo(startUptimeMillis, successful);
         }
+    }
+
+    /** TODO(b/332878149): Remove once this has landed internally and we've fixed all failures. */
+    public CronetEngineBuilderImpl(Context context) {
+        this(context, CronetSource.CRONET_SOURCE_UNSPECIFIED);
     }
 
     private void maybeLogCronetEngineBuilderInitializedInfo(
@@ -191,7 +199,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
             logInfo.author = CronetLogger.CronetEngineBuilderInitializedInfo.Author.IMPL;
             logInfo.uid = Process.myUid();
             logInfo.implVersion = new CronetLogger.CronetVersion(ImplVersion.getCronetVersion());
-            logInfo.source = getCronetSource();
+            logInfo.source = mSource;
             logInfo.apiVersion =
                     new CronetLogger.CronetVersion(
                             VersionSafeCallbacks.ApiVersion.getCronetVersion());
@@ -204,15 +212,8 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         }
     }
 
-    static CronetSource getCronetSource() {
-        ClassLoader implClassLoader = CronetEngineBuilderImpl.class.getClassLoader();
-        if (implClassLoader.toString().startsWith("java.lang.BootClassLoader")) {
-            return CronetSource.CRONET_SOURCE_PLATFORM;
-        }
-        ClassLoader apiClassLoader = CronetEngine.class.getClassLoader();
-        return apiClassLoader.equals(implClassLoader)
-                ? CronetSource.CRONET_SOURCE_STATICALLY_LINKED
-                : CronetSource.CRONET_SOURCE_PLAY_SERVICES;
+    CronetSource getCronetSource() {
+        return mSource;
     }
 
     @Override
@@ -371,15 +372,10 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
             Set<byte[]> pinsSha256,
             boolean includeSubdomains,
             Date expirationDate) {
-        if (hostName == null) {
-            throw new NullPointerException("The hostname cannot be null");
-        }
-        if (pinsSha256 == null) {
-            throw new NullPointerException("The set of SHA256 pins cannot be null");
-        }
-        if (expirationDate == null) {
-            throw new NullPointerException("The pin expiration date cannot be null");
-        }
+        Objects.requireNonNull(hostName, "The hostname cannot be null.");
+        Objects.requireNonNull(pinsSha256, "The set of SHA256 pins cannot be null.");
+        Objects.requireNonNull(expirationDate, "The pin expiration date cannot be null.");
+
         String idnHostName = validateHostNameForPinningAndConvert(hostName);
         // Convert the pin to BASE64 encoding to remove duplicates.
         Map<String, byte[]> hashes = new HashMap<>();
@@ -511,7 +507,14 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
-    /** @return thread priority provided by user, or {@code defaultThreadPriority} if none provided. */
+    @Override
+    protected long getLogCronetInitializationRef() {
+        return 0;
+    }
+
+    /**
+     * @return thread priority provided by user, or {@code defaultThreadPriority} if none provided.
+     */
     @VisibleForTesting
     int threadPriority(int defaultThreadPriority) {
         return mThreadPriority == INVALID_THREAD_PRIORITY ? defaultThreadPriority : mThreadPriority;

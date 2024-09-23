@@ -63,7 +63,7 @@ class CastPixmap : public gfx::NativePixmap {
   }
   size_t GetNumberOfPlanes() const override { return 1; }
   bool SupportsZeroCopyWebGPUImport() const override {
-    // TODO(crbug.com/1258986): Figure out how to import multi-planar pixmap
+    // TODO(crbug.com/40201271): Figure out how to import multi-planar pixmap
     // into WebGPU without copy.
     return false;
   }
@@ -77,7 +77,7 @@ class CastPixmap : public gfx::NativePixmap {
       std::vector<gfx::GpuFence> release_fences) override {
     return false;
   }
-  gfx::NativePixmapHandle ExportHandle() override {
+  gfx::NativePixmapHandle ExportHandle() const override {
     return gfx::NativePixmapHandle();
   }
 

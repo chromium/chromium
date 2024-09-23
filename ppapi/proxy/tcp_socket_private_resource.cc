@@ -106,7 +106,6 @@ int32_t TCPSocketPrivateResource::SetOption(
                            callback);
     default:
       NOTREACHED();
-      return PP_ERROR_BADARGUMENT;
   }
 }
 
@@ -115,7 +114,6 @@ PP_Resource TCPSocketPrivateResource::CreateAcceptedSocket(
     const PP_NetAddress_Private& /* local_addr */,
     const PP_NetAddress_Private& /* remote_addr */) {
   NOTREACHED();
-  return 0;
 }
 
 }  // namespace proxy

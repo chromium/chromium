@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -21,6 +22,7 @@
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/browser/ui/region_combobox_model.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,8 +30,6 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
-
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 
 namespace payments {
 
@@ -238,8 +238,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   data_loop.Run();
 
   personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
-  autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
+  ASSERT_EQ(1UL,
+            personal_data_manager->address_data_manager().GetProfiles().size());
+  const autofill::AutofillProfile* profile =
+      personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
   EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -287,8 +289,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   data_loop.Run();
 
   personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
-  autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
+  ASSERT_EQ(1UL,
+            personal_data_manager->address_data_manager().GetProfiles().size());
+  const autofill::AutofillProfile* profile =
+      personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
   EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -296,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                                /*accept_empty_phone_number=*/false);
 }
 
-// TODO(crbug.com/1150496): flaky.
+// TODO(crbug.com/40732468): flaky.
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                        DISABLED_AsyncData) {
   NavigateTo("/payment_request_dynamic_shipping_test.html");
@@ -332,8 +336,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   data_loop.Run();
 
   personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
-  autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
+  ASSERT_EQ(1UL,
+            personal_data_manager->address_data_manager().GetProfiles().size());
+  const autofill::AutofillProfile* profile =
+      personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
   EXPECT_EQ(country_code, profile->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -486,8 +492,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   data_loop.Run();
 
   personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
-  autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
+  ASSERT_EQ(1UL,
+            personal_data_manager->address_data_manager().GetProfiles().size());
+  const autofill::AutofillProfile* profile =
+      personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -529,8 +537,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   data_loop.Run();
 
   personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
-  autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
+  ASSERT_EQ(1UL,
+            personal_data_manager->address_data_manager().GetProfiles().size());
+  const autofill::AutofillProfile* profile =
+      personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
   EXPECT_EQ(kAnyState16, profile->GetRawInfo(autofill::ADDRESS_HOME_STATE));
@@ -590,9 +600,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   data_loop.Run();
 
   personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
-  autofill::AutofillProfile* saved_profile =
-      personal_data_manager->GetProfiles()[0];
+  ASSERT_EQ(1UL,
+            personal_data_manager->address_data_manager().GetProfiles().size());
+  const autofill::AutofillProfile* saved_profile =
+      personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(saved_profile);
   EXPECT_EQ(kCountryWithoutStates,
             saved_profile->GetInfo(autofill::ADDRESS_HOME_COUNTRY, kLocale));
@@ -784,8 +795,10 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   data_loop.Run();
 
   personal_data_manager->RemoveObserver(&personal_data_observer_);
-  ASSERT_EQ(1UL, personal_data_manager->GetProfiles().size());
-  autofill::AutofillProfile* profile = personal_data_manager->GetProfiles()[0];
+  ASSERT_EQ(1UL,
+            personal_data_manager->address_data_manager().GetProfiles().size());
+  const autofill::AutofillProfile* profile =
+      personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
   // Use GetRawInfo to get the country code.
   EXPECT_EQ(kCountryWithoutStatesCode,
@@ -908,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   EXPECT_FALSE(save_button->GetEnabled());
 }
 
-// TODO(crbug.com/730652): This address should be invalid.
+// TODO(crbug.com/40524578): This address should be invalid.
 // Tests that if the a profile has a country and an invalid state for the
 // country, the address is considered valid.
 IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
@@ -1026,7 +1039,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   EXPECT_FALSE(save_button->GetEnabled());
 }
 
-// TODO(crbug.com/730165): The profile should be considered valid.
+// TODO(crbug.com/40524404): The profile should be considered valid.
 // Tests that if the a profile has no country but has a valid state for the
 // default country, the editor sets the country and the state for the user.
 // This should also enable the "Done" button.
@@ -1074,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   EXPECT_TRUE(save_button->GetEnabled());
 }
 
-// TODO(crbug.com/730165): The profile should be considered valid.
+// TODO(crbug.com/40524404): The profile should be considered valid.
 // Tests that if the a profile has no country but has a valid state for the
 // default country, the editor sets the country and the state for the user.
 // This should also enable the "Done" button.
@@ -1239,7 +1252,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
   personal_data_manager->RemoveObserver(&personal_data_observer_);
   // In incognito, the profile should be available in shipping_profiles but it
   // shouldn't be saved to the PersonalDataManager.
-  ASSERT_EQ(0UL, personal_data_manager->GetProfiles().size());
+  ASSERT_EQ(0UL,
+            personal_data_manager->address_data_manager().GetProfiles().size());
 
   ASSERT_EQ(1UL, request->state()->shipping_profiles().size());
   autofill::AutofillProfile* profile =

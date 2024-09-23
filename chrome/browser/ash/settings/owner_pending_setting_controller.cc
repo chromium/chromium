@@ -10,9 +10,9 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -146,9 +146,18 @@ void OwnerPendingSettingController::SetWithService(
   if (service && service->IsOwner()) {
     if (!owner_settings_service_observation_.IsObserving())
       owner_settings_service_observation_.Observe(service);
+
+    // `is_value_being_set_with_service_` must be set to `true` and
+    // `pending_pref_name_` must be set with `value` before setting `pref_name_`
+    // with `OwnerSettingService` to guarantee that future calls to `GetValue()`
+    // returns the pending value instead of the signed value until
+    // `OnSignedPolicyStored(true)` is called.
+    // Since calls to `GetValue()` can happen inside `service->Set()`, the order
+    // of the following lines is important.
     is_value_being_set_with_service_ = true;
-    service->Set(pref_name_, value);
     local_state_->Set(pending_pref_name_, value);
+
+    service->Set(pref_name_, value);
   } else {
     // Do nothing since we are not the owner.
     LOG(WARNING) << "Changing settings from non-owner, setting=" << pref_name_;

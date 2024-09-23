@@ -38,9 +38,6 @@ class WebsitePreference extends ChromeImageViewPreference {
     protected final SiteSettingsCategory mCategory;
     private Runnable mRefreshZoomsListFunction;
 
-    // TODO(crbug.com/1076571): Move these constants to dimens.xml
-    private static final int TEXT_SIZE_SP = 13;
-
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
 
@@ -141,16 +138,16 @@ class WebsitePreference extends ChromeImageViewPreference {
 
     protected String buildSummary() {
         if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                && mSiteSettingsDelegate.isFirstPartySetsDataAccessEnabled()
-                && mSite.getFPSCookieInfo() != null) {
-            var fpsInfo = mSite.getFPSCookieInfo();
+                && mSiteSettingsDelegate.isRelatedWebsiteSetsDataAccessEnabled()
+                && mSite.getRWSCookieInfo() != null) {
+            var rwsInfo = mSite.getRWSCookieInfo();
             return getContext()
                     .getResources()
                     .getQuantityString(
-                            R.plurals.allsites_fps_list_summary,
-                            fpsInfo.getMembersCount(),
-                            Integer.toString(fpsInfo.getMembersCount()),
-                            fpsInfo.getOwner());
+                            R.plurals.allsites_rws_list_summary,
+                            rwsInfo.getMembersCount(),
+                            Integer.toString(rwsInfo.getMembersCount()),
+                            rwsInfo.getOwner());
         }
 
         if (hasSubPage()) {
@@ -193,7 +190,7 @@ class WebsitePreference extends ChromeImageViewPreference {
             return null;
         }
 
-        // TODO(crbug.com/1478113): Check if on Android there is a possibility of other exceptions
+        // TODO(crbug.com/40071127): Check if on Android there is a possibility of other exceptions
         // being scoped to an embedder.
         return getContext()
                 .getString(R.string.website_settings_embedded_on, mSite.getEmbedder().getTitle());
@@ -204,7 +201,11 @@ class WebsitePreference extends ChromeImageViewPreference {
             // Create and set the delete button for this preference.
             setImageView(
                     R.drawable.btn_close,
-                    R.string.webstorage_delete_data_dialog_title,
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    R.string.webstorage_delete_data_content_description,
+                                    buildTitle()),
                     (OnClickListener)
                             view -> {
                                 SiteSettingsUtil.resetZoomLevel(
@@ -219,7 +220,11 @@ class WebsitePreference extends ChromeImageViewPreference {
         if (hasSubPage()) {
             setImageView(
                     R.drawable.ic_expand_more_horizontal_black_24dp,
-                    R.string.webstorage_delete_data_dialog_title,
+                    getContext()
+                            .getResources()
+                            .getString(
+                                    R.string.webstorage_delete_data_content_description,
+                                    buildTitle()),
                     (OnClickListener)
                             view -> {
                                 mStorageAccessSettingsPageListener
@@ -255,11 +260,12 @@ class WebsitePreference extends ChromeImageViewPreference {
         super.onBindViewHolder(holder);
         TextView usageText = (TextView) holder.findViewById(R.id.usage_text);
         usageText.setVisibility(View.GONE);
+        var resources = getContext().getResources();
         if (mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             long totalUsage = mSite.getTotalUsage();
             if (totalUsage > 0) {
                 usageText.setText(Formatter.formatShortFileSize(getContext(), totalUsage));
-                usageText.setTextSize(TEXT_SIZE_SP);
+                usageText.setTextSize(resources.getDimensionPixelSize(R.dimen.usage_text_size));
                 usageText.setVisibility(View.VISIBLE);
             }
         }
@@ -270,7 +276,7 @@ class WebsitePreference extends ChromeImageViewPreference {
                                     * PageZoomUtils.convertZoomFactorToZoomLevel(
                                             mSite.getZoomFactor()));
             usageText.setText(getContext().getString(R.string.page_zoom_level, readableZoomLevel));
-            usageText.setTextSize(TEXT_SIZE_SP);
+            usageText.setTextSize(resources.getDimensionPixelSize(R.dimen.usage_text_size));
             usageText.setVisibility(View.VISIBLE);
             setViewClickable(false);
         }

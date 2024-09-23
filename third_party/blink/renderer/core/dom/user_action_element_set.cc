@@ -44,6 +44,17 @@ bool UserActionElementSet::HasFlags(const Node* node, unsigned flags) const {
   return HasFlags(To<Element>(node), flags);
 }
 
+HeapVector<Member<Element>> UserActionElementSet::GetAllWithFlags(
+    const unsigned flags) const {
+  HeapVector<Member<Element>> found_elements;
+  for (const auto& pair : elements_) {
+    if (pair.value & flags) {
+      found_elements.push_back(pair.key);
+    }
+  }
+  return found_elements;
+}
+
 void UserActionElementSet::SetFlags(Node* node, unsigned flags) {
   auto* this_element = DynamicTo<Element>(node);
   if (!this_element)

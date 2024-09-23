@@ -33,7 +33,8 @@ ScrollBarButton::ScrollBarButton(PressedCallback callback,
 
 ScrollBarButton::~ScrollBarButton() = default;
 
-gfx::Size ScrollBarButton::CalculatePreferredSize() const {
+gfx::Size ScrollBarButton::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   if (!GetWidget())
     return gfx::Size();
   return GetNativeTheme()->GetPartSize(
@@ -60,7 +61,7 @@ void ScrollBarButton::OnThemeChanged() {
 }
 
 void ScrollBarButton::PaintButtonContents(gfx::Canvas* canvas) {
-  gfx::Rect bounds(GetPreferredSize());
+  gfx::Rect bounds(GetPreferredSize({}));
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           GetNativeThemePart(), GetNativeThemeState(), bounds,
                           GetNativeThemeParams());
@@ -84,7 +85,7 @@ ui::NativeTheme::Part ScrollBarButton::GetNativeThemePart() const {
       return ui::NativeTheme::kScrollbarRightArrow;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ui::NativeTheme::State ScrollBarButton::GetNativeThemeState() const {
@@ -101,15 +102,15 @@ ui::NativeTheme::State ScrollBarButton::GetNativeThemeState() const {
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ScrollBarButton::RepeaterNotifyClick() {
   gfx::Point cursor_point =
       display::Screen::GetScreen()->GetCursorScreenPoint();
-  ui::MouseEvent event(ui::ET_MOUSE_RELEASED, cursor_point, cursor_point,
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent event(ui::EventType::kMouseReleased, cursor_point,
+                       cursor_point, ui::EventTimeForNow(),
+                       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   Button::NotifyClick(event);
 }
 

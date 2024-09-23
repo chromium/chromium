@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 
 #include <algorithm>
@@ -13,15 +18,6 @@
 #include "base/hash/legacy_hash.h"
 
 namespace blink {
-
-namespace {
-
-// A big random prime. It's also the digest returned for an empty block.
-constexpr uint64_t kChainingValueSeed = UINT64_C(6544625333304541877);
-
-}  // namespace
-
-const size_t IdentifiableTokenBuilder::kBlockSizeInBytes;
 
 IdentifiableTokenBuilder::IdentifiableTokenBuilder()
     : chaining_value_(kChainingValueSeed) {
@@ -47,7 +43,7 @@ IdentifiableTokenBuilder::IdentifiableTokenBuilder(ByteSpan buffer)
 }
 
 IdentifiableTokenBuilder& IdentifiableTokenBuilder::AddBytes(ByteSpan message) {
-  DCHECK_NE(position_, partial_.end());
+  DCHECK(position_ != partial_.end());
   // Phase 1:
   //    Slurp in as much of the message as necessary if there's a partial block
   //    already assembled. Copying is expensive, so |partial_| is only involved
@@ -60,7 +56,7 @@ IdentifiableTokenBuilder& IdentifiableTokenBuilder::AddBytes(ByteSpan message) {
 
   // Phase 2:
   //    Consume as many full blocks as possible from |message|.
-  DCHECK_EQ(position_, partial_.begin());
+  DCHECK(position_ == partial_.begin());
   while (message.size() >= kBlockSizeInBytes) {
     DigestBlock(message.first<kBlockSizeInBytes>());
     message = message.subspan(kBlockSizeInBytes);
@@ -117,13 +113,13 @@ void IdentifiableTokenBuilder::AlignPartialBuffer() {
   if (position_ == partial_.end())
     DigestBlock(TakeCompletedBlock());
 
-  DCHECK_NE(position_, partial_.end());
+  DCHECK(position_ != partial_.end());
   DCHECK(IsAligned());
 }
 
 void IdentifiableTokenBuilder::DigestBlock(ConstFullBlockSpan block) {
   // partial_ should've been flushed before calling this.
-  DCHECK_EQ(position_, partial_.begin());
+  DCHECK(position_ == partial_.begin());
 
   // The chaining value (initialized with the initialization vector
   // kChainingValueSeed) is only used for diffusion. There's no length padding
@@ -143,7 +139,7 @@ size_t IdentifiableTokenBuilder::PartialSize() const {
 
 IdentifiableTokenBuilder::ConstFullBlockSpan
 IdentifiableTokenBuilder::TakeCompletedBlock() {
-  DCHECK_EQ(position_, partial_.end());
+  DCHECK(position_ == partial_.end());
   auto buffer = base::make_span(partial_);
   position_ = partial_.begin();
   return buffer;

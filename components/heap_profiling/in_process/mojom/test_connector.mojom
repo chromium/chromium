@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module heap_profiling.mojom;
+
+import "components/heap_profiling/in_process/mojom/snapshot_controller.mojom";
+import "components/metrics/public/mojom/call_stack_profile_collector.mojom";
+
+// Bootstraps heap_profiling.mojom.SnapshotController (browser->child) and
+// metrics.mojom.CallStacksProfileCollector (child->browser) connections in a
+// multiprocess test.
+interface TestConnector {
+  // Passes `controller` to the child, which should reply once it's bound.
+  ConnectSnapshotController(
+      pending_receiver<heap_profiling.mojom.SnapshotController> controller) =>
+      ();
+
+  // Passes `collector` to the child, which should reply once it's bound.
+  ConnectProfileCollector(
+      pending_remote<metrics.mojom.CallStackProfileCollector> collector) => ();
+
+  // Tells the child the test is over.
+  Disconnect();
+};

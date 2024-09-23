@@ -63,7 +63,7 @@ void RequestHandlerBase::PrepareRequest(
   }
 
   request->set_analysis_connector(connector);
-  request->set_email(safe_browsing::GetProfileEmail(profile_));
+  request->set_email(GetProfileEmail(profile_));
   request->set_url(url_.spec());
   request->set_source(source_);
   request->set_destination(destination_);
@@ -80,6 +80,9 @@ void RequestHandlerBase::PrepareRequest(
   if (reason_ != ContentAnalysisRequest::UNKNOWN) {
     request->set_reason(reason_);
   }
+
+  request->set_blocking(analysis_settings_->block_until_verdict !=
+                        BlockUntilVerdict::kNoBlock);
 }
 
 safe_browsing::BinaryUploadService*

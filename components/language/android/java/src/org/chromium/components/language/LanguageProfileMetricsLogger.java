@@ -45,7 +45,8 @@ public class LanguageProfileMetricsLogger {
         int NUM_ENTRIES = 4;
     }
 
-    public void recordInitiationStatus(boolean signedIn, @ULPInitiationStatus int initStatus) {
+    public static void recordInitiationStatus(
+            boolean signedIn, @ULPInitiationStatus int initStatus) {
         RecordHistogram.recordEnumeratedHistogram(
                 INITIATION_STATUS_HISTOGRAM, initStatus, ULPInitiationStatus.NUM_ENTRIES);
         if (signedIn) {

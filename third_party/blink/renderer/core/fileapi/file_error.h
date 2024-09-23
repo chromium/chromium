@@ -40,6 +40,10 @@ namespace blink {
 class DOMException;
 class ExceptionState;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FileErrorCode)
 enum class FileErrorCode {
   kOK = 0,
   kNotFoundErr = 1,
@@ -54,7 +58,9 @@ enum class FileErrorCode {
   kQuotaExceededErr = 10,
   kTypeMismatchErr = 11,
   kPathExistsErr = 12,
+  kMaxValue = kPathExistsErr
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:FileErrorCode)
 
 namespace file_error {
 

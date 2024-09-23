@@ -204,8 +204,8 @@ void ClearKeyPersistentSessionCdm::OnFileReadForLoadSession(
   if (!cdm_->UpdateSessionWithJWK(session_id,
                                   std::string(data.begin(), data.end()),
                                   &key_added, &exception, &error_message)) {
-    NOTREACHED() << "Saved session data is not usable, error = "
-                 << error_message;
+    NOTREACHED_IN_MIGRATION()
+        << "Saved session data is not usable, error = " << error_message;
     // Return an empty string to indicate that the session was not found.
     promise->resolve(std::string());
     return;

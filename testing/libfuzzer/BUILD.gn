@@ -8,8 +8,16 @@
 # To enable libfuzzer, 'use_libfuzzer' GN option should be set to true.
 # Or equivalent 'use_afl' or 'use_centipede' options for those engines.
 
+import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+
+declare_args() {
+  # Build individual_fuzztest_wrapper if use_fuzztest_wrapper is set.
+  # Some projects doesn't have //base and cannot build
+  # individual_fuzztest_wrapper.
+  use_fuzztest_wrapper = true
+}
 
 # Temporary target for legacy reasons. Some third party repos explicitly
 # refer to libfuzzer_main though they should refer to fuzzer_engine_main
@@ -17,7 +25,7 @@ import("//build/config/sanitizers/sanitizers.gni")
 # all to point to :fuzzing_engine_main instead.
 # TODO: remove this target once they've all migrated.
 source_set("libfuzzer_main") {
-  deps = [ ":fuzzing_engine" ]
+  deps = [ ":is_a_fuzz_target" ]
   testonly = true
   sources = []
   if (use_libfuzzer) {
@@ -43,16 +51,25 @@ if (fuzzing_engine_supports_custom_main) {
   # Depend on this if you want to use LLVMFuzzerRunDriver from within an existing
   # executable
   group("fuzzing_engine_no_main") {
-    deps = [ ":fuzzing_engine" ]
+    testonly = true
+    deps = [
+      ":fuzzing_engine_no_main_core",
+      ":is_a_fuzz_target",
+    ]
+  }
+
+  group("fuzzing_engine_no_main_core") {
     testonly = true
     if (use_libfuzzer) {
-      deps += [ "//third_party/libFuzzer:libfuzzer" ]
+      deps = [ "//third_party/libFuzzer:libfuzzer" ]
     } else if (use_centipede) {
-      deps += [ "//third_party/fuzztest:centipede_runner_no_main" ]
+      deps = [ "//third_party/fuzztest:centipede_runner_no_main" ]
       data_deps = [
         # Centipede based fuzzers require the centipede runner in order to fuzz.
         "//third_party/fuzztest:centipede",
       ]
+    } else if (use_fuzzilli) {
+      deps = [ "//testing/libfuzzer/fuzzilli:fuzzilli_driver" ]
     }
   }
 }
@@ -66,7 +83,13 @@ group("fuzzing_engine_main") {
 
 # Any fuzzer using any fuzzing engine. This will be used by infra scripts
 # to identify fuzzers which should be built and made available to ClusterFuzz.
+group("is_a_fuzz_target") {
+  deps = [ ":fuzzing_engine" ]
+}
+
+# Named for legacy reasons for compatibility with recipes.
 group("fuzzing_engine") {
+  visibility = [ ":is_a_fuzz_target" ]
   if (use_clang_coverage) {
     # For purposes of code coverage calculation, fuzzer targets are run through
     # a wrapper script in this directory, which handles corpus retrieval and
@@ -125,9 +148,27 @@ if (build_with_chromium && use_blink) {
   }
 }
 
-# A wrapper that knows how to execute a single fuzztest within a binary
-# containing many fuzztests.
-source_set("individual_fuzztest_wrapper") {
-  sources = [ "//testing/libfuzzer/fuzztest_wrapper.cpp" ]
-  deps = [ "//base" ]
+buildflag_header("fuzztest_wrapper_buildflags") {
+  header = "fuzztest_wrapper_buildflags.h"
+  flags = [ "USE_CENTIPEDE=$use_centipede" ]
+}
+
+if (use_fuzztest_wrapper) {
+  # A wrapper that knows how to execute a single fuzztest within a binary
+  # containing many fuzztests.
+  # Unlike fuzztests themselves, this depends on :is_a_fuzz_target
+  # so that the build jobs know to build all these.
+  source_set("individual_fuzztest_wrapper") {
+    sources = [ "//testing/libfuzzer/fuzztest_wrapper.cpp" ]
+    deps = [
+      ":fuzztest_wrapper_buildflags",
+      ":is_a_fuzz_target",
+      "//base",
+    ]
+  }
+}
+
+group("research") {
+  testonly = true
+  deps = [ "research:research" ]
 }

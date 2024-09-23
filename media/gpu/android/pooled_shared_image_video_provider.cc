@@ -146,7 +146,7 @@ void PooledSharedImageVideoProvider::ProcessFreePooledImage(
       // Construct a record that notifies us when the image is released.
       // TODO(liberato): Don't copy fields this way.
       ImageRecord record;
-      record.mailbox = pooled_image->record.mailbox;
+      record.shared_image = pooled_image->record.shared_image;
       record.is_vulkan = pooled_image->record.is_vulkan;
       record.codec_image_holder = pooled_image->record.codec_image_holder;
       // The release CB notifies us instead of |provider_|.

@@ -36,6 +36,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -112,6 +113,41 @@ class BaseSiteIsolationTest : public testing::Test {
   SiteIsolationContentBrowserClient browser_client_;
   raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
 };
+
+// Tests with OriginKeyedProcessesByDefault enabled.
+class OriginKeyedProcessesByDefaultSiteIsolationPolicyTest
+    : public BaseSiteIsolationTest {
+ public:
+  OriginKeyedProcessesByDefaultSiteIsolationPolicyTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{::features::kOriginKeyedProcessesByDefault},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Make sure AreOriginKeyedProcessesEnabledByDefault() only returns true when
+// StrictSiteIsolation is enabled.
+TEST_F(OriginKeyedProcessesByDefaultSiteIsolationPolicyTest,
+       RequiresStrictSiteIsolation) {
+  SetEnableStrictSiteIsolation(false);
+  // Even though we've disabled ShouldEnableStrictSiteIsolation via the test
+  // ContentBrowserClient, if this test runs on a bot where --site-per-process
+  // is specified on the command line, UseDedicatedProcessesForAllSites() will
+  // still be true, which will enable AreOriginKeyedProcessesEnabledByDefault().
+  EXPECT_EQ(
+      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+  SetEnableStrictSiteIsolation(true);
+  // When this runs on Android, the return value from
+  // SiteIsolationContentBrowserClient::ShouldDisableSiteIsolation() may still
+  // override our attempt to SetEnableStrictSiteIsolation(true).
+  EXPECT_EQ(
+      content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites(),
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+}
 
 class SiteIsolationPolicyTest : public BaseSiteIsolationTest {
  public:

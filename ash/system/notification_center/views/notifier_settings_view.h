@@ -51,9 +51,6 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   void OnNotifierIconUpdated(const message_center::NotifierId& notifier_id,
                              const gfx::ImageSkia& icon) override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   views::ScrollView* get_scroller_view_for_test() { return scroller_; }
   views::Label* get_notification_settings_lable_for_test() {
     return notification_settings_label_;
@@ -104,7 +101,8 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   // Overridden from views::View:
   void Layout(PassKey) override;
   gfx::Size GetMinimumSize() const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
 

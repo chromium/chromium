@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_bundle_encoder.h"
 
+#include "base/containers/heap_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_bundle_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_bundle_encoder_descriptor.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
@@ -31,10 +37,10 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     }
   }
 
-  std::unique_ptr<WGPUTextureFormat[]> color_formats =
-      AsDawnEnum<WGPUTextureFormat>(webgpu_desc->colorFormats());
+  base::HeapArray<wgpu::TextureFormat> color_formats =
+      AsDawnEnum<wgpu::TextureFormat>(webgpu_desc->colorFormats());
 
-  WGPUTextureFormat depth_stencil_format = WGPUTextureFormat_Undefined;
+  wgpu::TextureFormat depth_stencil_format = wgpu::TextureFormat::Undefined;
   if (webgpu_desc->hasDepthStencilFormat()) {
     if (!device->ValidateTextureFormatUsage(webgpu_desc->depthStencilFormat(),
                                             exception_state)) {
@@ -44,47 +50,47 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
     depth_stencil_format = AsDawnEnum(webgpu_desc->depthStencilFormat());
   }
 
-  std::string label;
-  WGPURenderBundleEncoderDescriptor dawn_desc = {};
-  dawn_desc.nextInChain = nullptr;
-  dawn_desc.colorFormatCount = color_formats_count;
-  dawn_desc.colorFormats = color_formats.get();
-  dawn_desc.depthStencilFormat = depth_stencil_format;
-  dawn_desc.sampleCount = webgpu_desc->sampleCount();
-  dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
-  dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();
-  if (webgpu_desc->hasLabel()) {
-    label = webgpu_desc->label().Utf8();
+  wgpu::RenderBundleEncoderDescriptor dawn_desc = {
+      .colorFormatCount = color_formats_count,
+      .colorFormats = color_formats.data(),
+      .depthStencilFormat = depth_stencil_format,
+      .sampleCount = webgpu_desc->sampleCount(),
+      .depthReadOnly = webgpu_desc->depthReadOnly(),
+      .stencilReadOnly = webgpu_desc->stencilReadOnly(),
+  };
+  std::string label = webgpu_desc->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
   GPURenderBundleEncoder* encoder =
       MakeGarbageCollected<GPURenderBundleEncoder>(
-          device, device->GetProcs().deviceCreateRenderBundleEncoder(
-                      device->GetHandle(), &dawn_desc));
-  if (webgpu_desc->hasLabel())
-    encoder->setLabel(webgpu_desc->label());
+          device, device->GetHandle().CreateRenderBundleEncoder(&dawn_desc),
+          webgpu_desc->label());
   return encoder;
 }
 
 GPURenderBundleEncoder::GPURenderBundleEncoder(
     GPUDevice* device,
-    WGPURenderBundleEncoder render_bundle_encoder)
-    : DawnObject<WGPURenderBundleEncoder>(device, render_bundle_encoder) {}
+    wgpu::RenderBundleEncoder render_bundle_encoder,
+    const String& label)
+    : DawnObject<wgpu::RenderBundleEncoder>(device,
+                                            render_bundle_encoder,
+                                            label) {}
 
 void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
     const Vector<uint32_t>& dynamicOffsets) {
-  WGPUBindGroupImpl* bgImpl = bindGroup ? bindGroup->GetHandle() : nullptr;
-  GetProcs().renderBundleEncoderSetBindGroup(
-      GetHandle(), index, bgImpl, dynamicOffsets.size(), dynamicOffsets.data());
+  GetHandle().SetBindGroup(
+      index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr),
+      dynamicOffsets.size(), dynamicOffsets.data());
 }
 
 void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bind_group,
-    const FlexibleUint32Array& dynamic_offsets_data,
+    base::span<const uint32_t> dynamic_offsets_data,
     uint64_t dynamic_offsets_data_start,
     uint32_t dynamic_offsets_data_length,
     ExceptionState& exception_state) {
@@ -95,26 +101,23 @@ void GPURenderBundleEncoder::setBindGroup(
   }
 
   const uint32_t* data =
-      dynamic_offsets_data.DataMaybeOnStack() + dynamic_offsets_data_start;
+      dynamic_offsets_data.data() + dynamic_offsets_data_start;
 
-  WGPUBindGroupImpl* bgImpl = bind_group ? bind_group->GetHandle() : nullptr;
-  GetProcs().renderBundleEncoderSetBindGroup(GetHandle(), index, bgImpl,
-                                             dynamic_offsets_data_length, data);
+  GetHandle().SetBindGroup(
+      index, bind_group ? bind_group->GetHandle() : wgpu::BindGroup(nullptr),
+      dynamic_offsets_data_length, data);
 }
 
 GPURenderBundle* GPURenderBundleEncoder::finish(
     const GPURenderBundleDescriptor* webgpu_desc) {
-  std::string label;
-  WGPURenderBundleDescriptor dawn_desc = {};
-  dawn_desc.nextInChain = nullptr;
-  if (webgpu_desc->hasLabel()) {
-    label = webgpu_desc->label().Utf8();
+  wgpu::RenderBundleDescriptor dawn_desc = {};
+  std::string label = webgpu_desc->label().Utf8();
+  if (!label.empty()) {
     dawn_desc.label = label.c_str();
   }
 
-  WGPURenderBundle render_bundle =
-      GetProcs().renderBundleEncoderFinish(GetHandle(), &dawn_desc);
-  return MakeGarbageCollected<GPURenderBundle>(device_, render_bundle);
+  return MakeGarbageCollected<GPURenderBundle>(
+      device_, GetHandle().Finish(&dawn_desc), webgpu_desc->label());
 }
 
 }  // namespace blink

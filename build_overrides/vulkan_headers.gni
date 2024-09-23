@@ -8,7 +8,7 @@ import("//build_overrides/wayland.gni")
 vulkan_use_x11 = ozone_platform_x11
 vulkan_use_wayland = ozone_platform_wayland
 
-if (vulkan_use_wayland) {
+if (vulkan_use_wayland && !use_system_libwayland) {
   vulkan_wayland_include_dirs = [
     "$wayland_gn_dir/src/src",
     "$wayland_gn_dir/include/src",

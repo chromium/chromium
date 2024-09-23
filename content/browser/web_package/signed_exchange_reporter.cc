@@ -72,23 +72,23 @@ const char* GetResultTypeString(SignedExchangeLoadResult result) {
     case SignedExchangeLoadResult::kMerkleIntegrityError:
       return kSXGResultMiError;
     case SignedExchangeLoadResult::kSXGServedWithoutNosniff:
-      // TODO(crbug/910516): Need to update the spec to send the report in this
-      // case.
+      // TODO(crbug.com/40604536): Need to update the spec to send the report in
+      // this case.
       return kSXGResultParseError;
     case SignedExchangeLoadResult::kInvalidIntegrityHeader:
       return kSXGResultInvalidIntegrityHeader;
     case SignedExchangeLoadResult::kVariantMismatch:
-      // TODO(crbug/910516): Need to update the spec to send the report in this
-      // case.
+      // TODO(crbug.com/40604536): Need to update the spec to send the report in
+      // this case.
       return kSXGResultVariantMismatch;
     case SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG:
-      // TODO(crbug/910516): Need to update the spec to send the report in this
-      // case.
+      // TODO(crbug.com/40604536): Need to update the spec to send the report in
+      // this case.
       return kSXGResultHadCookie;
     case SignedExchangeLoadResult::kPKPViolationError:
       return kSXGResultCertVerificationError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kSXGResultFailed;
 }
 
@@ -125,7 +125,7 @@ bool ShouldDowngradeReport(const char* result_string,
 }
 
 void ReportResult(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     network::mojom::SignedExchangeReportPtr report,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   FrameTreeNode* frame_tree_node =
@@ -152,7 +152,7 @@ std::unique_ptr<SignedExchangeReporter> SignedExchangeReporter::MaybeCreate(
     const std::string& referrer,
     const network::mojom::URLResponseHead& response,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   if (!signed_exchange_utils::
           IsSignedExchangeReportingForDistributorsEnabled()) {
     return nullptr;
@@ -167,7 +167,7 @@ SignedExchangeReporter::SignedExchangeReporter(
     const std::string& referrer,
     const network::mojom::URLResponseHead& response,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : report_(network::mojom::SignedExchangeReport::New()),
       request_start_(response.load_timing.request_start),
       network_anonymization_key_(network_anonymization_key),

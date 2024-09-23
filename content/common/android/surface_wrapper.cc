@@ -5,7 +5,9 @@
 #include "content/common/android/surface_wrapper.h"
 
 #include "base/check.h"
-#include "content/public/android/content_main_dex_jni/SurfaceWrapper_jni.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/common_jni/SurfaceWrapper_jni.h"
 
 namespace content {
 

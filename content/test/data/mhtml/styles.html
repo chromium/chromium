@@ -1,0 +1,40 @@
+<head>
+<style id="inlinestyle1">
+</style>
+<link rel="stylesheet" href="style.css">
+</head>
+<style>
+#hidden1 {
+    display: block;
+}
+#hidden2 {
+    display: none;
+}
+</style>
+
+
+<body>
+    <!--Only hidden1 and hidden4 should be visible if stylesheets
+    are applied in the correct order. -->
+
+    <!--Hidden by <link>, shown by inline style.-->
+    <div id="hidden1">hidden1</div>
+    <!--Shown by <link>, hidden by inline style.-->
+    <div id="hidden2">hidden2</div>
+    <!--Shown by first inline style, Hidden by <link>.-->
+    <div id="hidden3">hidden3</div>
+    <!--Hidden by first inline style, Shown by <link>.-->
+    <div id="hidden4">hidden4</div>
+
+<script>
+    // Ensure we serialize the modified stylesheet.
+    const sheet1 = document.getElementById("inlinestyle1").sheet;
+    sheet1.insertRule(`#hidden3 {
+        display: block;
+    }`);
+    sheet1.insertRule(`#hidden4 {
+        display: none;
+    }`);
+</script>
+
+</body>

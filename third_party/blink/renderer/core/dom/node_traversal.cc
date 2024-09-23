@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 
 #include "third_party/blink/renderer/core/dom/container_node.h"
-#include "third_party/blink/renderer/core/dom/range.h"
 
 namespace blink {
 
@@ -181,7 +180,7 @@ Node* NodeTraversal::PreviousPostOrder(const Node& current,
 }
 
 Node* NodeTraversal::CommonAncestor(const Node& node_a, const Node& node_b) {
-  return Range::commonAncestorContainer(&node_a, &node_b);
+  return node_a.CommonAncestor(node_b, NodeTraversal::Parent);
 }
 
 }  // namespace blink

@@ -1,0 +1,48 @@
+<!doctype html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+<script src="../resources/testdriver-actions.js"></script>
+
+<div role="menu">
+  <div role="menuitem" id="menu_item_1">
+    <input placeholder="Custom_Placeholder_1" role="searchbox" />
+  </div>
+  <div role="menuitem" id="menu_item_2">
+    <input placeholder="Custom_Placeholder_2" role="textbox" />
+  </div>
+  <div role="menuitem" id="menu_item_3">
+    <input placeholder="Custom_Placeholder_3" role="searchbox" value="Custom_Value_1" />
+  </div>
+  <div role="menuitem" id="menu_item_4">
+    <input placeholder="Custom_Placeholder_4" role="textbox" value="Custom_Value_2" />
+  </div>
+</div>
+<script>
+  // According to accessible name computation rules [1], an element's name is
+  // derived from the value of its child element with role='textbox' (including
+  // searchbox). If the child value is empty, the name should be computed using
+  // the next set of rules. In this test, we validate that the placeholder value
+  // is used when there's no value.
+  // [1]:https://www.w3.org/TR/accname-1.1/#mapping_additional_nd_name
+  promise_test(async t => {
+    const name_1 =
+      await test_driver.get_computed_label(document.getElementById('menu_item_1'));
+      const name_2 =
+      await test_driver.get_computed_label(document.getElementById('menu_item_2'));
+
+    assert_equals(name_1, "Custom_Placeholder_1");
+    assert_equals(name_2, "Custom_Placeholder_2");
+  }, "Accessible name derived from placeholder when value is empty");
+
+  promise_test(async t => {
+    const name_3 =
+      await test_driver.get_computed_label(document.getElementById('menu_item_3'));
+      const name_4 =
+      await test_driver.get_computed_label(document.getElementById('menu_item_4'));
+
+    assert_equals(name_3, "Custom_Value_1");
+    assert_equals(name_4, "Custom_Value_2");
+  }, "Accessible name derived from value when value is not empty");
+</script>

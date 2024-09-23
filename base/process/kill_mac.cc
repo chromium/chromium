@@ -19,8 +19,6 @@ namespace base {
 
 namespace {
 
-const int kWaitBeforeKillSeconds = 2;
-
 // Reap |child| process. This call blocks until completion.
 void BlockingReap(pid_t child) {
   const pid_t result = HANDLE_EINTR(waitpid(child, NULL, 0));
@@ -28,6 +26,8 @@ void BlockingReap(pid_t child) {
     DPLOG(ERROR) << "waitpid(" << child << ", NULL, 0)";
   }
 }
+
+}  // namespace
 
 // Waits for |timeout| seconds for the given |child| to exit and reap it. If
 // the child doesn't exit within the time specified, kills it.
@@ -164,10 +164,11 @@ void WaitForChildToDie(pid_t child, int timeout) {
   }
 }
 
-}  // namespace
-
+#if !BUILDFLAG(IS_IOS)
 void EnsureProcessTerminated(Process process) {
+  constexpr int kWaitBeforeKillSeconds = 2;
   WaitForChildToDie(process.Pid(), kWaitBeforeKillSeconds);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace base

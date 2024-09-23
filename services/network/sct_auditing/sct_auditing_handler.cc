@@ -5,7 +5,6 @@
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 
 #include "base/base64.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -85,8 +84,9 @@ SCTAuditingHandler::SCTAuditingHandler(NetworkContext* context,
   background_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  writer_ = std::make_unique<base::ImportantFileWriter>(persistence_path_,
-                                                        background_runner_);
+  constexpr const char* kHistogramSuffix = "SCTAuditing";
+  writer_ = std::make_unique<base::ImportantFileWriter>(
+      persistence_path_, background_runner_, kHistogramSuffix);
 
   // Post a task to load persisted state after startup has finished.
   foreground_runner_->PostTask(
@@ -451,7 +451,7 @@ network::mojom::URLLoaderFactory* SCTAuditingHandler::GetURLLoaderFactory() {
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
   params->process_id = network::mojom::kBrowserProcessId;
-  params->is_corb_enabled = false;
+  params->is_orb_enabled = false;
   params->is_trusted = true;
   params->automatically_assign_isolation_info = true;
 

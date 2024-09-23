@@ -13,10 +13,11 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mime_util.h"
@@ -34,22 +35,22 @@ std::vector<std::string> GetUserAddedRoots();
 // certificate listed first.
 // |auth_type| is as per the Java X509Certificate.checkServerTrusted method.
 void VerifyX509CertChain(const std::vector<std::string>& cert_chain,
-                         base::StringPiece auth_type,
-                         base::StringPiece host,
+                         std::string_view auth_type,
+                         std::string_view host,
                          CertVerifyStatusAndroid* status,
                          bool* is_issued_by_known_root,
                          std::vector<std::string>* verified_chain);
 
 // Adds a certificate as a root trust certificate to the trust manager.
 // |cert| is DER encoded certificate, |len| is its length in bytes.
-void AddTestRootCertificate(const uint8_t* cert, size_t len);
+void AddTestRootCertificate(base::span<const uint8_t> cert);
 
 // Removes all root certificates added by |AddTestRootCertificate| calls.
 void ClearTestRootCertificates();
 
 // Returns true if cleartext traffic to |host| is allowed by the app. Always
 // true on L and older.
-bool IsCleartextPermitted(base::StringPiece host);
+bool IsCleartextPermitted(std::string_view host);
 
 // Returns true if it can determine that only loopback addresses are configured.
 // i.e. if only 127.0.0.1 and ::1 are routable.
@@ -58,7 +59,7 @@ bool HaveOnlyLoopbackAddresses();
 
 // Get the mime type (if any) that is associated with the file extension.
 // Returns true if a corresponding mime type exists.
-bool GetMimeTypeFromExtension(base::StringPiece extension, std::string* result);
+bool GetMimeTypeFromExtension(std::string_view extension, std::string* result);
 
 // Returns MCC+MNC (mobile country code + mobile network code) as
 // the numeric name of the current registered operator. This function

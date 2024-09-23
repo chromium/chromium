@@ -16,31 +16,26 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.MultiActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests that WebappActivities are launched correctly.
@@ -54,8 +49,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappModeTest {
-    @Rule public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
-
     private static final String WEBAPP_1_ID = "webapp_id_1";
     private static final String WEBAPP_1_URL =
             UrlUtils.encodeHtmlDataUri(
@@ -72,8 +65,8 @@ public class WebappModeTest {
 
     private static final String WEBAPP_ICON =
             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXB"
-                    + "IWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wQIFB4cxOfiSQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdG"
-                    + "ggR0lNUFeBDhcAAAAMSURBVAjXY2AUawEAALcAnI/TkI8AAAAASUVORK5CYII=";
+                + "IWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3wQIFB4cxOfiSQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdG"
+                + "ggR0lNUFeBDhcAAAAMSURBVAjXY2AUawEAALcAnI/TkI8AAAAASUVORK5CYII=";
 
     private Intent createIntent(String id, String url, String title, String icon, boolean addMac) {
         Intent intent = WebappTestHelper.createMinimalWebappIntent(id, url);
@@ -103,7 +96,7 @@ public class WebappModeTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(this::setUpOnUiThread);
+        ThreadUtils.runOnUiThreadBlocking(this::setUpOnUiThread);
     }
 
     private void setUpOnUiThread() {
@@ -236,32 +229,6 @@ public class WebappModeTest {
                     WebappActivity lastWebappActivity = (WebappActivity) lastActivity;
                     Criteria.checkThat(
                             lastWebappActivity.getActivityTab().getId(), Matchers.is(webappTabId));
-                });
-    }
-
-    /** Ensure WebappActivities can't be launched without proper security checks. */
-    @Test
-    @MediumTest
-    @Feature({"Webapps"})
-    @DisabledTest(message = "crbug.com/755114")
-    public void testWebappRequiresValidMac() throws Exception {
-        // Try to start a WebappActivity.  Fail because the Intent is insecure.
-        fireWebappIntent(WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, false);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-                    Criteria.checkThat(
-                            lastActivity, Matchers.instanceOf(ChromeTabbedActivity.class));
-                });
-        ChromeActivity chromeActivity =
-                (ChromeActivity) ApplicationStatus.getLastTrackedFocusedActivity();
-        mTestRule.waitForFullLoad(chromeActivity, WEBAPP_1_TITLE);
-
-        // Firing a correct Intent should start a WebappActivity instance instead of the browser.
-        fireWebappIntent(WEBAPP_2_ID, WEBAPP_2_URL, WEBAPP_2_TITLE, WEBAPP_ICON, true);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return isWebappActivityReady(ApplicationStatus.getLastTrackedFocusedActivity());
                 });
     }
 

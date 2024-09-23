@@ -4,12 +4,13 @@
 
 #include "fuchsia_web/common/test/url_request_rewrite_test_util.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "fuchsia_web/common/string_util.h"
 
 fuchsia::web::UrlRequestRewrite CreateRewriteAddHeaders(
-    base::StringPiece header_name,
-    base::StringPiece header_value) {
+    std::string_view header_name,
+    std::string_view header_value) {
   fuchsia::net::http::Header header;
   header.name = StringToBytes(header_name);
   header.value = StringToBytes(header_value);
@@ -26,8 +27,8 @@ fuchsia::web::UrlRequestRewrite CreateRewriteAddHeaders(
 }
 
 fuchsia::web::UrlRequestRewrite CreateRewriteRemoveHeader(
-    std::optional<base::StringPiece> query_pattern,
-    base::StringPiece header_name) {
+    std::optional<std::string_view> query_pattern,
+    std::string_view header_name) {
   fuchsia::web::UrlRequestRewriteRemoveHeader remove_header;
   if (query_pattern)
     remove_header.set_query_pattern(std::string(query_pattern.value()));
@@ -39,8 +40,8 @@ fuchsia::web::UrlRequestRewrite CreateRewriteRemoveHeader(
 }
 
 fuchsia::web::UrlRequestRewrite CreateRewriteSubstituteQueryPattern(
-    base::StringPiece pattern,
-    base::StringPiece substitution) {
+    std::string_view pattern,
+    std::string_view substitution) {
   fuchsia::web::UrlRequestRewriteSubstituteQueryPattern
       substitute_query_pattern;
   substitute_query_pattern.set_pattern(std::string(pattern));
@@ -52,8 +53,8 @@ fuchsia::web::UrlRequestRewrite CreateRewriteSubstituteQueryPattern(
 }
 
 fuchsia::web::UrlRequestRewrite CreateRewriteReplaceUrl(
-    base::StringPiece url_ends_with,
-    base::StringPiece new_url) {
+    std::string_view url_ends_with,
+    std::string_view new_url) {
   fuchsia::web::UrlRequestRewriteReplaceUrl replace_url;
   replace_url.set_url_ends_with(std::string(url_ends_with));
   replace_url.set_new_url(std::string(new_url));
@@ -64,7 +65,7 @@ fuchsia::web::UrlRequestRewrite CreateRewriteReplaceUrl(
 }
 
 fuchsia::web::UrlRequestRewrite CreateRewriteAppendToQuery(
-    base::StringPiece query) {
+    std::string_view query) {
   fuchsia::web::UrlRequestRewriteAppendToQuery append_to_query;
   append_to_query.set_query(std::string(query));
   fuchsia::web::UrlRequestRewrite rewrite;

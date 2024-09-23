@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/borealis/borealis_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,7 +47,8 @@ class BorealisWindowManagerTest : public ChromeAshTestBase {
   }
 
   std::string GetBorealisClientId() {
-    return std::string(kBorealisWindowPrefix) + kBorealisClientSuffix;
+    return std::string(ash::borealis::kBorealisWindowPrefix) +
+           kBorealisClientSuffix;
   }
 
  private:
@@ -227,7 +229,7 @@ TEST_F(BorealisWindowManagerTest, AnonymousObserverNotCalledForKnownApp) {
 TEST_F(BorealisWindowManagerTest, SteamClientIsNonGameBorealisWindow) {
   std::unique_ptr<aura::Window> window = MakeWindow(GetBorealisClientId());
 
-  EXPECT_TRUE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_TRUE(ash::borealis::IsBorealisWindow(window.get()));
   EXPECT_FALSE(
       BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
 }
@@ -236,7 +238,7 @@ TEST_F(BorealisWindowManagerTest, NewSteamClientIsNonGameBorealisWindow) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.xprop.769");
 
-  EXPECT_TRUE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_TRUE(ash::borealis::IsBorealisWindow(window.get()));
   EXPECT_FALSE(
       BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
 }
@@ -245,7 +247,7 @@ TEST_F(BorealisWindowManagerTest, ArbitraryBorealisWindowsAreNotGames) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.foo");
 
-  EXPECT_TRUE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_TRUE(ash::borealis::IsBorealisWindow(window.get()));
   EXPECT_FALSE(
       BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
 }
@@ -253,7 +255,7 @@ TEST_F(BorealisWindowManagerTest, CanIdentifySteamGames) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.borealis.xprop.123");
 
-  EXPECT_TRUE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_TRUE(ash::borealis::IsBorealisWindow(window.get()));
   EXPECT_TRUE(
       BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
 }
@@ -262,7 +264,7 @@ TEST_F(BorealisWindowManagerTest, TerminaWindowsAreNotBorealisWindowsOrGames) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.guest_os.termina.xprop.123");
 
-  EXPECT_FALSE(BorealisWindowManager::IsBorealisWindow(window.get()));
+  EXPECT_FALSE(ash::borealis::IsBorealisWindow(window.get()));
   EXPECT_FALSE(
       BorealisWindowManager::IsSteamGameWindow(profile(), window.get()));
 }

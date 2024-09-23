@@ -6,7 +6,7 @@ supported_on:
 - ios:110-
 features:
   dynamic_refresh: true
-  per_profile: true
+  per_profile: false
 type: main
 schema:
   type: boolean

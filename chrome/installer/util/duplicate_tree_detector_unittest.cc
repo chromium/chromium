@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/installer/util/duplicate_tree_detector.h"
+
 #include <windows.h>
 
 #include <fstream>
@@ -10,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
-#include "chrome/installer/util/duplicate_tree_detector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

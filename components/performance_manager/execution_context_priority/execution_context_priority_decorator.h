@@ -5,18 +5,17 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_DECORATOR_H_
 
-#include "components/performance_manager/execution_context_priority/ad_frame_voter.h"
-#include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
-#include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
-#include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
-#include "components/performance_manager/execution_context_priority/inherit_client_priority_voter.h"
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "components/performance_manager/execution_context_priority/max_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/override_vote_aggregator.h"
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
+#include "components/performance_manager/execution_context_priority/voter_base.h"
 #include "components/performance_manager/public/graph/graph.h"
 
-namespace performance_manager {
-namespace execution_context_priority {
+namespace performance_manager::execution_context_priority {
 
 // The ExecutionContextPriorityDecorator's responsibility is to own the voting
 // system that assigns the priority of every frame and worker in the graph.
@@ -36,6 +35,12 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
+  // Constructs a voter and adds it to `voters_`.
+  template <class T, class... Args>
+  void AddVoter(Args&&... args) {
+    voters_.push_back(std::make_unique<T>(std::forward<Args>(args)...));
+  }
+
   // Takes in the aggregated votes and applies them to the execution contexts in
   // the graph.
   RootVoteObserver root_vote_observer_;
@@ -47,26 +52,9 @@ class ExecutionContextPriorityDecorator final : public GraphOwned {
   // Aggregates all the votes from the voters.
   MaxVoteAggregator max_vote_aggregator_;
 
-  // Note: Voters should be added below this line so that they are destroyed
-  //       before the aggregators.
-
-  // Casts a downvote for ad frames.
-  AdFrameVoter ad_frame_voter_;
-
-  // Casts a USER_VISIBLE vote when a frame is visible.
-  FrameVisibilityVoter frame_visibility_voter_;
-
-  // Casts a USER_VISIBLE vote when a frame is audible.
-  FrameAudibleVoter frame_audible_voter_;
-
-  // Casts a USER_VISIBLE vote when a frame is capturing a media stream.
-  FrameCapturingMediaStreamVoter frame_capturing_media_stream_voter_;
-
-  // Casts a vote for each child worker with the client's priority.
-  InheritClientPriorityVoter inherit_client_priority_voter_;
+  std::vector<std::unique_ptr<VoterBase>> voters_;
 };
 
-}  // namespace execution_context_priority
-}  // namespace performance_manager
+}  // namespace performance_manager::execution_context_priority
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_DECORATOR_H_

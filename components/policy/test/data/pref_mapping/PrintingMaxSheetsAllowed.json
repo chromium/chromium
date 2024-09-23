@@ -9,7 +9,9 @@
           "PrintingMaxSheetsAllowed": 10
         },
         "prefs": {
-          "printing.max_sheets_allowed": {}
+          "printing.max_sheets_allowed": {
+            "value": 10
+          }
         }
       }
     ]

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<style>
+  @page {
+    size: 300px;
+    margin: 0;
+  }
+  .fakepagebox {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100px;
+    height: 150px;
+    background: url(../support/cat.png) no-repeat;
+    background-size: 100px;
+  }
+  body {
+    margin: 0;
+  }
+  .content {
+    float: left;
+    background: url(../support/cat.png) no-repeat;
+    background-size: 100px;
+    width: 100px;
+    height: 150px;
+  }
+</style>
+<div class="fakepagebox"></div>
+<div style="scale:0.8; transform-origin:top left;">
+  <div class="content"></div>
+  <div class="content"></div>
+</div>

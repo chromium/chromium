@@ -27,6 +27,16 @@ class ResponseParamsJsImpl {
       'getNullFloat',
       'getNullDouble',
       'getNullEnum',
+
+      'getNullBools',
+      'getNullInt16s',
+      'getNullUint32s',
+      'getNullDoubles',
+      'getNullEnums',
+
+      'getNullBoolMap',
+      'getNullInt32Map',
+      'getNullEnumMap',
     ];
     for (const method of nullMethods) {
       this[method] = this.getNullOptional;
@@ -45,6 +55,16 @@ class ResponseParamsJsImpl {
       'getOptionalFloat',
       'getOptionalDouble',
       'getOptionalEnum',
+
+      'getOptionalBools',
+      'getOptionalInt16s',
+      'getOptionalUint32s',
+      'getOptionalDoubles',
+      'getOptionalEnums',
+
+      'getOptionalBoolMap',
+      'getOptionalFloatMap',
+      'getOptionalEnumMap',
     ];
     for (const method of methods) {
       this[method] = this.getOptional;
@@ -279,6 +299,35 @@ promise_test(async () => {
     }
 }, 'JS decoding of null struct with optional numerics.');
 
+
+const testGetArraysOfNullsMethods = [
+  'getNullBools',
+  'getNullInt16s',
+  'getNullUint32s',
+  'getNullDoubles',
+  'getNullEnums',
+];
+
+for (const method of testGetArraysOfNullsMethods) {
+  promise_test(async() => {
+    const response = await cpp[method]();
+    assert_array_equals(response.optionalValues, [null]);
+  });
+}
+
+const testGetMapOfNullsMethods = [
+  'getNullBoolMap',
+  'getNullInt32Map',
+  'getNullEnumMap',
+];
+
+for (const method of testGetMapOfNullsMethods) {
+  promise_test(async() => {
+    const response = await cpp[method]();
+    assert_object_equals(response.optionalValues, {0: null});
+  });
+}
+
 const testMethods = [{
   method: 'getOptionalBool',
   valueToUse: true,
@@ -459,3 +508,52 @@ promise_test(async () => {
     assert_equals(s[field.name], field.value, field.name);
   }
 }, 'JS encoding of struct with optional numerics in response params.');
+
+const testNullWrapping = [{
+  name: 'getOptionalBools',
+  value: true,
+}, {
+  name: 'getOptionalInt16s',
+  value: 16,
+}, {
+  name: 'getOptionalUint32s',
+  value: 32,
+}, {
+  name: 'getOptionalDoubles',
+  value: 22.2,
+}, {
+  name: 'getOptionalEnums',
+  value: OptionalNumericsRegularEnum.kFoo,
+}];
+
+for (const {name, value} of testNullWrapping) {
+  promise_test(async() => {
+    const response = await cpp[name](value);
+    assert_array_equals(response.optionalValues, [null, value, null]);
+  });
+}
+
+const testNullWrappingForMap = [{
+  name: 'getOptionalBoolMap',
+  key: 6,
+  value: false,
+}, {
+  name: 'getOptionalFloatMap',
+  key: 7,
+  value: 1.25,
+}, {
+  name: 'getOptionalEnumMap',
+  key: 8,
+  value: OptionalNumericsRegularEnum.kFoo,
+}];
+
+for (const {name, key, value} of testNullWrappingForMap) {
+  promise_test(async() => {
+    const response = await cpp[name](key, value);
+    assert_object_equals(response.optionalValues, {
+      [key - 1]: null,
+      [key]: value,
+      [key + 1]: null,
+    });
+  });
+}

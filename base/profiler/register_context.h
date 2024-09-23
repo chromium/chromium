@@ -1,7 +1,12 @@
 // Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file provides the RegisterContext cross-platform typedef that represents
 // the native register context for the platform, plus functions that provide
 // access to key registers in the context.

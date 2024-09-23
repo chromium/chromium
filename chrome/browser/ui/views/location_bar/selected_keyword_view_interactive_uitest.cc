@@ -12,6 +12,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace {
 
@@ -36,16 +37,8 @@ class SelectedKeywordViewTest : public extensions::ExtensionBrowserTest {
 // extension's omnibox keyword. When the extension's omnibox keyword is
 // activated, then the selected keyword label in the omnibox should be the
 // extension's short name.
-// TODO(https://crbug.com/1407072): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TestSelectedKeywordViewIsExtensionShortname \
-  DISABLED_TestSelectedKeywordViewIsExtensionShortname
-#else
-#define MAYBE_TestSelectedKeywordViewIsExtensionShortname \
-  TestSelectedKeywordViewIsExtensionShortname
-#endif
 IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
-                       MAYBE_TestSelectedKeywordViewIsExtensionShortname) {
+                       TestSelectedKeywordViewIsExtensionShortname) {
   const extensions::Extension* extension =
       InstallExtension(test_data_dir_.AppendASCII("omnibox"), 1);
   ASSERT_NE(extension, nullptr);
@@ -64,6 +57,8 @@ IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
   SelectedKeywordView* selected_keyword_view =
       browser_view->toolbar()->location_bar()->selected_keyword_view();
   ASSERT_NE(selected_keyword_view, nullptr);
+
+  views::test::RunScheduledLayout(browser_view);
 
   // Verify that the label in the omnibox is the extension's shortname.
   EXPECT_EQ(extension->short_name(),

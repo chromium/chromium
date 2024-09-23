@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 63
+version_id: 66
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -658,7 +658,6 @@ file_types {
   uma_value: 234
   is_archive: true
   ping_setting: FULL_PING
-
 }
 file_types {
   # Opens in IE, drops MOTW
@@ -731,6 +730,16 @@ file_types {
   uma_value: 240
   is_archive: true
   ping_setting: FULL_PING
+}
+file_types {
+  extension: "zst"
+  uma_value: 412
+  is_archive: true
+  inspection_type: SEVEN_ZIP
+  platform_settings {
+    auto_open_hint: ALLOW_AUTO_OPEN
+    max_file_size_to_analyze: 52428800 # 50MB
+  }
 }
 
 # Java
@@ -885,6 +894,46 @@ file_types {
 file_types {
   extension: "pyw"
   uma_value: 132
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_LINUX
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  platform_settings {
+    platform: PLATFORM_TYPE_MAC
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "pyz"
+  uma_value: 410
+  ping_setting: FULL_PING
+  platform_settings {
+    platform: PLATFORM_TYPE_LINUX
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  platform_settings {
+    platform: PLATFORM_TYPE_MAC
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
+}
+file_types {
+  extension: "pyzw"
+  uma_value: 411
   ping_setting: FULL_PING
   platform_settings {
     platform: PLATFORM_TYPE_LINUX
@@ -1405,7 +1454,6 @@ file_types {
   extension: "doc"
   uma_value: 328
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "docb"
@@ -1416,13 +1464,11 @@ file_types {
   extension: "docm"
   uma_value: 269
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "docx"
   uma_value: 268
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "dot"
@@ -1473,7 +1519,6 @@ file_types {
   extension: "pps"
   uma_value: 355
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "ppsm"
@@ -1484,13 +1529,11 @@ file_types {
   extension: "ppsx"
   uma_value: 281
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "ppt"
   uma_value: 332
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "pptm"
@@ -1501,7 +1544,6 @@ file_types {
   extension: "pptx"
   uma_value: 277
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "rtf"
@@ -1522,7 +1564,6 @@ file_types {
   extension: "xla"
   uma_value: 348
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlam"
@@ -1554,25 +1595,21 @@ file_types {
   extension: "xls"
   uma_value: 327
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlsb"
   uma_value: 344
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlsm"
   uma_value: 274
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlsx"
   uma_value: 273
   ping_setting: FULL_PING
-  inspection_type: OFFICE_DOCUMENT
 }
 file_types {
   extension: "xlt"
@@ -1593,6 +1630,19 @@ file_types {
   extension: "xlw"
   uma_value: 351
   ping_setting: FULL_PING
+}
+
+# IQY files can execute Powershell on opening. See
+# https://crbug.com/40068800.
+file_types {
+  extension: "iqy"
+  ping_setting: FULL_PING
+  uma_value: 413
+  platform_settings {
+    platform: PLATFORM_TYPE_WINDOWS
+    danger_level: ALLOW_ON_USER_GESTURE
+    auto_open_hint: DISALLOW_AUTO_OPEN
+  }
 }
 
 # Extensions that will open in IE even when chrome is set as default browser.

@@ -31,133 +31,43 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_SERIALIZER_H_
 
+#include "third_party/blink/public/web/web_frame_serializer.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/attribute.h"
-#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class CSSPropertyValueSet;
-class CSSRule;
-class CSSStyleSheet;
-class CSSValue;
-class Document;
-class Element;
-class FontResource;
-class HTMLTemplateElement;
-class ImageResourceContent;
 class LocalFrame;
-class ShadowRoot;
+class Frame;
 
 struct SerializedResource;
 
-class FrameSerializerResourceDelegate {
+// This class is used to serialize frame's contents to MHTML. It serializes
+// frame's document and resources such as images and CSS stylesheets.
+class CORE_EXPORT FrameSerializer {
  public:
-  virtual ~FrameSerializerResourceDelegate() = default;
+  FrameSerializer() = delete;
 
-  // Adds the resource needed to serialize an element.
-  virtual void AddResourceForElement(Document&, const Element&) = 0;
+  // Returns a Content-ID to be used for the given frame.
+  // See rfc2557 - section 8.3 - "Use of the Content-ID header and CID URLs".
+  // Format note - the returned string should be of the form "<foo@bar.com>"
+  // (i.e. the strings should include the angle brackets).
+  static String GetContentID(Frame* frame);
 
-  // Serializes the stylesheet back to text and adds it to the resources if
-  // URL is not-empty.  It also adds any resources included in that stylesheet
-  // (including any imported stylesheets and their own resources).
-  virtual void SerializeCSSStyleSheet(CSSStyleSheet&, const KURL&) = 0;
-};
-
-// This class is used to serialize frame's contents back to text (typically
-// HTML).  It serializes frame's document and resources such as images and CSS
-// stylesheets.
-class CORE_EXPORT FrameSerializer : public FrameSerializerResourceDelegate {
-  STACK_ALLOCATED();
-
- public:
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-
-    // Controls whether HTML serialization should skip the given element.
-    virtual bool ShouldIgnoreElement(const Element&) { return false; }
-
-    // Controls whether HTML serialization should skip the given attribute.
-    virtual bool ShouldIgnoreAttribute(const Element&, const Attribute&) {
-      return false;
-    }
-
-    // Method allowing the Delegate control which URLs are written into the
-    // generated html document.
-    //
-    // When URL of the element needs to be rewritten, this method should
-    // return true and populate |rewrittenLink| with a desired value of the
-    // html attribute value to be used in place of the original link.
-    // (i.e. in place of img.src or iframe.src or object.data).
-    //
-    // If no link rewriting is desired, this method should return false.
-    virtual bool RewriteLink(const Element&, String& rewritten_link) {
-      return false;
-    }
-
-    // Tells whether to skip serialization of a subresource or CSSStyleSheet
-    // with a given URI. Used to deduplicate resources across multiple frames.
-    virtual bool ShouldSkipResourceWithURL(const KURL&) { return false; }
-
-    // Returns custom attributes that need to add in order to serialize the
-    // element.
-    virtual Vector<Attribute> GetCustomAttributes(const Element&) {
-      return Vector<Attribute>();
-    }
-
-    // Returns a shadow tree that needs to be serialized.
-    virtual std::pair<ShadowRoot*, HTMLTemplateElement*> GetShadowTree(
-        const Element&) const {
-      return std::pair<ShadowRoot*, HTMLTemplateElement*>();
-    }
-  };
-
-  // Constructs a serializer that will write output to the given deque of
-  // SerializedResources and uses the Delegate for controlling some
-  // serialization aspects.  Callers need to ensure that both arguments stay
-  // alive until the FrameSerializer gets destroyed.
-  FrameSerializer(Deque<SerializedResource>&, Delegate&);
-
-  // Initiates the serialization of the frame. All serialized content and
-  // retrieved resources are added to the Deque passed to the constructor.
-  // The first resource in that deque is the frame's serialized content.
+  // Serializes the frame. Writes output to the given deque of
+  // SerializedResources and uses `web_delegate` for controlling some
+  // serialization aspects. All serialized content and retrieved resources are
+  // added to `resources`. The first resource is the frame's serialized content.
   // Subsequent resources are images, css, etc.
-  void SerializeFrame(const LocalFrame&);
+  static void SerializeFrame(
+      Deque<SerializedResource>& resources,
+      WebFrameSerializer::MHTMLPartsGenerationDelegate& web_delegate,
+      const LocalFrame&);
 
   static String MarkOfTheWebDeclaration(const KURL&);
-
- private:
-  void AddResourceForElement(Document&, const Element&) override;
-  void SerializeCSSStyleSheet(CSSStyleSheet&, const KURL&) override;
-
-  // Serializes the css rule (including any imported stylesheets), adding
-  // referenced resources.
-  void SerializeCSSRule(CSSRule*);
-
-  bool ShouldAddURL(const KURL&);
-
-  void AddToResources(const String& mime_type,
-                      scoped_refptr<const SharedBuffer>,
-                      const KURL&);
-  void AddImageToResources(ImageResourceContent*, const KURL&);
-  void AddFontToResources(FontResource&);
-
-  void RetrieveResourcesForProperties(const CSSPropertyValueSet*, Document&);
-  void RetrieveResourcesForCSSValue(const CSSValue&, Document&);
-
-  Deque<SerializedResource>* resources_;
-  // This hashset is only used for de-duplicating resources to be serialized.
-  HashSet<KURL> resource_urls_;
-
-  Delegate& delegate_;
 };
 
 }  // namespace blink

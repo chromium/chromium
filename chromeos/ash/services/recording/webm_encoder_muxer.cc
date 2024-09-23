@@ -207,7 +207,10 @@ void WebmEncoderMuxer::InitializeVideoEncoder(
       base::BindRepeating(&WebmEncoderMuxer::OnVideoEncoderOutput,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&WebmEncoderMuxer::OnVideoEncoderInitialized,
-                     weak_ptr_factory_.GetWeakPtr(), video_encoder_.get()));
+                     weak_ptr_factory_.GetWeakPtr(),
+                     // TODO(crbug.com/40061562): Remove
+                     // `UnsafeDanglingUntriaged`
+                     base::UnsafeDanglingUntriaged(video_encoder_.get())));
 }
 
 void WebmEncoderMuxer::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
@@ -231,7 +234,7 @@ void WebmEncoderMuxer::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
 }
 
 void WebmEncoderMuxer::EncodeRgbVideo(RgbVideoFrame rgb_video_frame) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 EncodeAudioCallback WebmEncoderMuxer::GetEncodeAudioCallback() {
@@ -379,8 +382,7 @@ void WebmEncoderMuxer::OnVideoEncoderOutput(
 
   // TODO(crbug.com/1143798): Explore changing the WebmMuxer so it doesn't work
   // with strings, to avoid copying the encoded data.
-  std::string data{reinterpret_cast<const char*>(output.data.get()),
-                   output.size};
+  std::string data{output.data.begin(), output.data.end()};
   muxer_adapter_.OnEncodedVideo(muxer_params, std::move(data), std::string(),
                                 std::move(codec_description), timestamp,
                                 output.key_frame);
@@ -394,9 +396,8 @@ void WebmEncoderMuxer::OnAudioEncoded(
 
   // TODO(crbug.com/1143798): Explore changing the WebmMuxer so it doesn't work
   // with strings, to avoid copying the encoded data.
-  std::string encoded_data{
-      reinterpret_cast<const char*>(encoded_audio.encoded_data.get()),
-      encoded_audio.encoded_data_size};
+  std::string encoded_data(encoded_audio.encoded_data.begin(),
+                           encoded_audio.encoded_data.end());
   muxer_adapter_.OnEncodedAudio(encoded_audio.params, std::move(encoded_data),
                                 std::move(codec_description),
                                 encoded_audio.timestamp);

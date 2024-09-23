@@ -12,10 +12,12 @@
 namespace blink {
 
 struct CallCounts {
+  bool response_for_is_meta_experiment_active = false;
   bool response_for_is_active = false;
   bool response_for_is_anything_blocked = false;
   bool response_for_is_allowed = false;
 
+  int count_of_is_meta_experiment_active = 0;
   int count_of_is_active = 0;
   int count_of_is_any_type_or_surface_blocked = 0;
   int count_of_is_surface_allowed = 0;
@@ -27,6 +29,8 @@ class COMPONENT_EXPORT(PRIVACY_BUDGET_TEST_SUPPORT)
     : public IdentifiabilityStudySettingsProvider {
  public:
   explicit CountingSettingsProvider(CallCounts* state) : state_(state) {}
+
+  bool IsMetaExperimentActive() const override;
 
   bool IsActive() const override;
 

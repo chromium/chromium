@@ -13,6 +13,7 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
@@ -27,7 +28,8 @@ void DispatchToAgents(DevToolsAgentHostImpl* agent_host,
     (h->*method)(std::forward<Args>(args)...);
 }
 
-RenderFrameHostImpl* GetRenderFrameHostImplFrom(int frame_tree_node_id) {
+RenderFrameHostImpl* GetRenderFrameHostImplFrom(
+    FrameTreeNodeId frame_tree_node_id) {
   auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (!ftn) {
     return nullptr;
@@ -42,13 +44,13 @@ RenderFrameHostImpl* GetRenderFrameHostImplFrom(int frame_tree_node_id) {
 NetworkServiceDevToolsObserver::NetworkServiceDevToolsObserver(
     base::PassKey<NetworkServiceDevToolsObserver> pass_key,
     const std::string& id,
-    int frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id)
     : devtools_agent_id_(id), frame_tree_node_id_(frame_tree_node_id) {}
 
 NetworkServiceDevToolsObserver::~NetworkServiceDevToolsObserver() = default;
 
 DevToolsAgentHostImpl* NetworkServiceDevToolsObserver::GetDevToolsAgentHost() {
-  if (frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id_) {
     auto* frame_tree_node =
         FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
     if (!frame_tree_node)
@@ -94,6 +96,18 @@ void NetworkServiceDevToolsObserver::OnRawResponse(
                    http_status_code, cookie_partition_key);
 }
 
+void NetworkServiceDevToolsObserver::OnEarlyHintsResponse(
+    const std::string& devtools_request_id,
+    std::vector<network::mojom::HttpRawHeaderPairPtr> headers) {
+  auto* host = GetDevToolsAgentHost();
+  if (!host) {
+    return;
+  }
+  DispatchToAgents(host,
+                   &protocol::NetworkHandler::OnResponseReceivedEarlyHints,
+                   devtools_request_id, headers);
+}
+
 void NetworkServiceDevToolsObserver::OnTrustTokenOperationDone(
     const std::string& devtools_request_id,
     network::mojom::TrustTokenOperationResultPtr result) {
@@ -110,8 +124,9 @@ void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
     bool is_warning,
     network::mojom::IPAddressSpace resource_address_space,
     network::mojom::ClientSecurityStatePtr client_security_state) {
-  if (frame_tree_node_id_ == FrameTreeNode::kFrameTreeNodeInvalidId)
+  if (frame_tree_node_id_.is_null()) {
     return;
+  }
   auto* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   if (!ftn)
     return;
@@ -206,23 +221,6 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   if (!rfhi)
     return;
 
-  // TODO(https://crbug.com/1268378): Remove this once enforcement is always
-  // enabled and warnings are no more.
-  if (is_warning && initiator_origin.has_value()) {
-    if (!initiator_origin->IsSameOriginWith(url)) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          rfhi, blink::mojom::WebFeature::
-                    kPrivateNetworkAccessIgnoredCrossOriginPreflightError);
-    }
-
-    if (net::SchemefulSite(initiator_origin.value()) !=
-        net::SchemefulSite(url)) {
-      GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-          rfhi, blink::mojom::WebFeature::
-                    kPrivateNetworkAccessIgnoredCrossSitePreflightError);
-    }
-  }
-
   std::unique_ptr<protocol::Audits::AffectedRequest> affected_request =
       protocol::Audits::AffectedRequest::Create()
           .SetRequestId(devtools_request_id ? *devtools_request_id : "")
@@ -257,7 +255,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
 }
 
-void NetworkServiceDevToolsObserver::OnCorbError(
+void NetworkServiceDevToolsObserver::OnOrbError(
     const std::optional<std::string>& devtools_request_id,
     const GURL& url) {
   RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
@@ -335,6 +333,98 @@ void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponseError(
       bundle_request_devtools_id);
 }
 
+namespace {
+
+protocol::String BuildSharedDictionaryError(
+    network::mojom::SharedDictionaryError write_error) {
+  using network::mojom::SharedDictionaryError;
+  namespace SharedDictionaryErrorEnum =
+      protocol::Audits::SharedDictionaryErrorEnum;
+  switch (write_error) {
+    case SharedDictionaryError::kUseErrorCrossOriginNoCorsRequest:
+      return SharedDictionaryErrorEnum::UseErrorCrossOriginNoCorsRequest;
+    case SharedDictionaryError::kUseErrorDictionaryLoadFailure:
+      return SharedDictionaryErrorEnum::UseErrorDictionaryLoadFailure;
+    case SharedDictionaryError::kUseErrorMatchingDictionaryNotUsed:
+      return SharedDictionaryErrorEnum::UseErrorMatchingDictionaryNotUsed;
+    case SharedDictionaryError::kUseErrorUnexpectedContentDictionaryHeader:
+      return SharedDictionaryErrorEnum::
+          UseErrorUnexpectedContentDictionaryHeader;
+    case SharedDictionaryError::kWriteErrorAlreadyRegistered:
+      NOTREACHED();
+    case SharedDictionaryError::kWriteErrorCossOriginNoCorsRequest:
+      return SharedDictionaryErrorEnum::WriteErrorCossOriginNoCorsRequest;
+    case SharedDictionaryError::kWriteErrorDisallowedBySettings:
+      return SharedDictionaryErrorEnum::WriteErrorDisallowedBySettings;
+    case SharedDictionaryError::kWriteErrorExpiredResponse:
+      return SharedDictionaryErrorEnum::WriteErrorExpiredResponse;
+    case SharedDictionaryError::kWriteErrorFeatureDisabled:
+      return SharedDictionaryErrorEnum::WriteErrorFeatureDisabled;
+    case SharedDictionaryError::kWriteErrorInsufficientResources:
+      return SharedDictionaryErrorEnum::WriteErrorInsufficientResources;
+    case SharedDictionaryError::kWriteErrorInvalidMatchField:
+      return SharedDictionaryErrorEnum::WriteErrorInvalidMatchField;
+    case SharedDictionaryError::kWriteErrorInvalidStructuredHeader:
+      return SharedDictionaryErrorEnum::WriteErrorInvalidStructuredHeader;
+    case SharedDictionaryError::kWriteErrorNavigationRequest:
+      return SharedDictionaryErrorEnum::WriteErrorNavigationRequest;
+    case SharedDictionaryError::kWriteErrorNoMatchField:
+      return SharedDictionaryErrorEnum::WriteErrorNoMatchField;
+    case SharedDictionaryError::kWriteErrorNonListMatchDestField:
+      return SharedDictionaryErrorEnum::WriteErrorNonListMatchDestField;
+    case SharedDictionaryError::kWriteErrorNonSecureContext:
+      return SharedDictionaryErrorEnum::WriteErrorNonSecureContext;
+    case SharedDictionaryError::kWriteErrorNonStringIdField:
+      return SharedDictionaryErrorEnum::WriteErrorNonStringIdField;
+    case SharedDictionaryError::kWriteErrorNonStringInMatchDestList:
+      return SharedDictionaryErrorEnum::WriteErrorNonStringInMatchDestList;
+    case SharedDictionaryError::kWriteErrorNonStringMatchField:
+      return SharedDictionaryErrorEnum::WriteErrorNonStringMatchField;
+    case SharedDictionaryError::kWriteErrorNonTokenTypeField:
+      return SharedDictionaryErrorEnum::WriteErrorNonTokenTypeField;
+    case SharedDictionaryError::kWriteErrorRequestAborted:
+      return SharedDictionaryErrorEnum::WriteErrorRequestAborted;
+    case SharedDictionaryError::kWriteErrorShuttingDown:
+      return SharedDictionaryErrorEnum::WriteErrorShuttingDown;
+    case SharedDictionaryError::kWriteErrorTooLongIdField:
+      return SharedDictionaryErrorEnum::WriteErrorTooLongIdField;
+    case SharedDictionaryError::kWriteErrorUnsupportedType:
+      return SharedDictionaryErrorEnum::WriteErrorUnsupportedType;
+  }
+}
+
+}  // namespace
+
+void NetworkServiceDevToolsObserver::OnSharedDictionaryError(
+    const std::string& devtool_request_id,
+    const GURL& url,
+    network::mojom::SharedDictionaryError error) {
+  RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
+  if (!rfhi) {
+    return;
+  }
+  auto affected_request = protocol::Audits::AffectedRequest::Create()
+                              .SetRequestId(devtool_request_id)
+                              .SetUrl(url.spec())
+                              .Build();
+  auto shared_dictionary_issue_details =
+      protocol::Audits::SharedDictionaryIssueDetails::Create()
+          .SetSharedDictionaryError(BuildSharedDictionaryError(error))
+          .SetRequest(std::move(affected_request))
+          .Build();
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetSharedDictionaryIssueDetails(
+                         std::move(shared_dictionary_issue_details))
+                     .Build();
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::SharedDictionaryIssue)
+          .SetDetails(std::move(details))
+          .Build();
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+}
+
 void NetworkServiceDevToolsObserver::Clone(
     mojo::PendingReceiver<network::mojom::DevToolsObserver> observer) {
   mojo::MakeSelfOwnedReceiver(
@@ -350,7 +440,7 @@ NetworkServiceDevToolsObserver::MakeSelfOwned(const std::string& id) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<NetworkServiceDevToolsObserver>(
           base::PassKey<NetworkServiceDevToolsObserver>(), id,
-          FrameTreeNode::kFrameTreeNodeInvalidId),
+          FrameTreeNodeId()),
       remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }

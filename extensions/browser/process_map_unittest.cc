@@ -59,11 +59,11 @@ scoped_refptr<const Extension> CreateExtensionWithFlags(TypeToCreate type,
 using extensions::ProcessMap;
 
 TEST(ExtensionProcessMapTest, Test) {
-  ProcessMap map;
+  ProcessMap map(/*browser_context=*/nullptr);
 
   // Test behavior when empty.
   EXPECT_FALSE(map.Contains("a", 1));
-  EXPECT_FALSE(map.RemoveAllFromProcess(1));
+  EXPECT_FALSE(map.Remove(1));
   EXPECT_EQ(0u, map.size());
 
   // Test insertion and behavior with one item.
@@ -96,27 +96,27 @@ TEST(ExtensionProcessMapTest, Test) {
 
   // At this point we have {a,1}, {a,2}, {b,3}, and {b,4} in the map. Test
   // removal of these processes.
-  EXPECT_EQ(1, map.RemoveAllFromProcess(1));
+  EXPECT_EQ(1, map.Remove(1));
   EXPECT_EQ(3u, map.size());
   EXPECT_FALSE(map.Contains("a", 1));
   EXPECT_TRUE(map.Contains("a", 2));
 
-  EXPECT_EQ(1, map.RemoveAllFromProcess(2));
+  EXPECT_EQ(1, map.Remove(2));
   EXPECT_EQ(2u, map.size());
-  EXPECT_EQ(0, map.RemoveAllFromProcess(2));
+  EXPECT_EQ(0, map.Remove(2));
   EXPECT_EQ(2u, map.size());
-  EXPECT_EQ(1, map.RemoveAllFromProcess(3));
+  EXPECT_EQ(1, map.Remove(3));
   EXPECT_EQ(1u, map.size());
-  EXPECT_EQ(0, map.RemoveAllFromProcess(3));
+  EXPECT_EQ(0, map.Remove(3));
   EXPECT_EQ(1u, map.size());
-  EXPECT_EQ(1, map.RemoveAllFromProcess(4));
+  EXPECT_EQ(1, map.Remove(4));
   EXPECT_EQ(0u, map.size());
-  EXPECT_EQ(0, map.RemoveAllFromProcess(4));
+  EXPECT_EQ(0, map.Remove(4));
   EXPECT_EQ(0u, map.size());
 }
 
 TEST(ExtensionProcessMapTest, GetMostLikelyContextType) {
-  ProcessMap map;
+  ProcessMap map(/*browser_context=*/nullptr);
   const GURL web_url("https://foo.example");
   const GURL extension_url("chrome-extension://foobar");
   const GURL untrusted_webui_url("chrome-untrusted://foo/index.html");

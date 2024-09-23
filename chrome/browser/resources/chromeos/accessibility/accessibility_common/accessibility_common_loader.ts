@@ -6,6 +6,7 @@ import '/common/testing/test_import_manager.js';
 
 import {Flags} from '/common/flags.js';
 import {InstanceChecker} from '/common/instance_checker.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Autoclick} from './autoclick/autoclick.js';
 import {Dictation} from './dictation/dictation.js';
@@ -229,3 +230,6 @@ export class AccessibilityCommon {
 InstanceChecker.closeExtraInstances();
 // Initialize the AccessibilityCommon extension.
 AccessibilityCommon.init();
+
+TestImportManager.exportForTesting(
+    ['AccessibilityCommon', AccessibilityCommon]);

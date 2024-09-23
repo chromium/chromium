@@ -14,7 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/android/chrome_jni_headers/UmaSessionStats_jni.h"
 #include "chrome/browser/android/metrics/android_session_durations_service.h"
 #include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/android/preferences/shared_preferences_migrator_android.h"
@@ -31,6 +30,9 @@
 #include "components/ukm/ukm_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/browser_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/UmaSessionStats_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -325,11 +327,8 @@ static void JNI_UmaSessionStats_UpdateMetricsServiceState(
 
 static void JNI_UmaSessionStats_RegisterExternalExperiment(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jfallback_study_name,
     const JavaParamRef<jintArray>& jexperiment_ids,
     jboolean override_existing_ids) {
-  std::string fallback_study_name(
-      ConvertJavaStringToUTF8(env, jfallback_study_name));
   std::vector<int> experiment_ids;
   // A null |jexperiment_ids| is the same as an empty list.
   if (jexperiment_ids) {
@@ -344,8 +343,7 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
 
   g_browser_process->metrics_service()
       ->GetSyntheticTrialRegistry()
-      ->RegisterExternalExperiments(fallback_study_name, experiment_ids,
-                                    override_mode);
+      ->RegisterExternalExperiments(experiment_ids, override_mode);
 }
 
 static void JNI_UmaSessionStats_RegisterSyntheticFieldTrial(
@@ -387,6 +385,10 @@ static void JNI_UmaSessionStats_RecordPageLoadedWithKeyboard(JNIEnv*) {
 
 static void JNI_UmaSessionStats_RecordPageLoadedWithMouse(JNIEnv*) {
   base::RecordAction(UserMetricsAction("MobilePageLoadedWithMouse"));
+}
+
+static void JNI_UmaSessionStats_RecordPageLoadedWithToEdge(JNIEnv*) {
+  base::RecordAction(UserMetricsAction("MobilePageLoadedWithToEdge"));
 }
 
 static jlong JNI_UmaSessionStats_Init(JNIEnv* env) {

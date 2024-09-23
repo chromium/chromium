@@ -74,7 +74,7 @@ def _GetMachineGroup(build_properties):
       if build_properties.get('builder_group', False):
         legacy_builder_group = build_properties['builder_group']
       else:
-        # TODO(crbug.com/1153958): remove reference to mastername.
+        # TODO(crbug.com/40159248): remove reference to mastername.
         legacy_builder_group = build_properties['mastername']
       if builder_group_mapping.get(legacy_builder_group):
         machine_group = builder_group_mapping[legacy_builder_group]
@@ -90,18 +90,29 @@ def _GetMachineGroup(build_properties):
 def _upload_perf_results(json_to_upload, name, configuration_name,
     build_properties, output_json_file):
   """Upload the contents of result JSON(s) to the perf dashboard."""
-  args= [
-      '--buildername', build_properties['buildername'],
-      '--buildnumber', build_properties['buildnumber'],
-      '--name', name,
-      '--configuration-name', configuration_name,
-      '--results-file', json_to_upload,
-      '--results-url', RESULTS_URL,
-      '--got-revision-cp', build_properties['got_revision_cp'],
-      '--got-v8-revision', build_properties['got_v8_revision'],
-      '--got-webrtc-revision', build_properties['got_webrtc_revision'],
-      '--output-json-file', output_json_file,
-      '--perf-dashboard-machine-group', _GetMachineGroup(build_properties)
+  args = [
+      '--buildername',
+      build_properties['buildername'],
+      '--buildnumber',
+      str(build_properties['buildnumber']),
+      '--name',
+      name,
+      '--configuration-name',
+      configuration_name,
+      '--results-file',
+      json_to_upload,
+      '--results-url',
+      RESULTS_URL,
+      '--got-revision-cp',
+      build_properties['got_revision_cp'],
+      '--got-v8-revision',
+      build_properties['got_v8_revision'],
+      '--got-webrtc-revision',
+      build_properties['got_webrtc_revision'],
+      '--output-json-file',
+      output_json_file,
+      '--perf-dashboard-machine-group',
+      _GetMachineGroup(build_properties),
   ]
   buildbucket = build_properties.get('buildbucket', {})
   if isinstance(buildbucket, six.string_types):
@@ -119,11 +130,12 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
   if _is_histogram(json_to_upload):
     args.append('--send-as-histograms')
 
-  #TODO(crbug.com/1072729): log this in top level
+  #TODO(crbug.com/40127249): log this in top level
   logging.info('upload_results_to_perf_dashboard: %s.' % args)
 
   # Duplicate part of the results upload to staging.
-  if configuration_name == 'linux-perf-fyi' and name == 'system_health.common_desktop':
+  if (configuration_name == 'linux-perf-fyi'
+      and name == 'system_health.common_desktop'):
     try:
       RESULTS_URL_STAGE = 'https://chromeperf-stage.uc.r.appspot.com'
       staging_args = [(s if s != RESULTS_URL else RESULTS_URL_STAGE)
@@ -179,8 +191,10 @@ def _merge_json_output(output_json,
                                                      test_cross_device)
 
   # Only append the perf results links if present
+  # b/5382232 - changed from links to additional_links so that the links are
+  # retained, but not propagated to the presentation layers in recipe.
   if extra_links:
-    merged_results['links'] = extra_links
+    merged_results['additional_links'] = extra_links
 
   with open(output_json, 'w') as f:
     json.dump(merged_results, f)
@@ -225,7 +239,7 @@ def _handle_perf_json_test_results(
             # flakiness dashboard since we don't monitor the ref build
             test_results_list.append(json_results)
       except IOError as e:
-        # TODO(crbug.com/936602): Figure out how to surface these errors. Should
+        # TODO(crbug.com/40615891): Figure out how to surface these errors. Should
         # we have a non-zero exit code if we error out?
         logging.error('Failed to obtain test results for %s: %s',
                       benchmark_name, e)
@@ -432,7 +446,7 @@ def _merge_perf_results(benchmark_name, results_filename, directories):
       with open(filename) as pf:
         collected_results.append(json.load(pf))
     except IOError as e:
-      # TODO(crbug.com/936602): Figure out how to surface these errors. Should
+      # TODO(crbug.com/40615891): Figure out how to surface these errors. Should
       # we have a non-zero exit code if we error out?
       logging.error('Failed to obtain perf results from %s: %s',
                     directory, e)
@@ -481,14 +495,14 @@ def _upload_individual(
     results_size_in_mib = os.path.getsize(results_filename) / (2 ** 20)
     logging.info('Uploading perf results from %s benchmark (size %s Mib)' %
           (benchmark_name, results_size_in_mib))
-    with open(output_json_file, 'w') as oj:
-      upload_return_code = _upload_perf_results(
-        results_filename,
-        benchmark_name, configuration_name, build_properties, oj)
-      upload_end_time = time.time()
-      print_duration(('%s upload time' % (benchmark_name)),
-                     upload_begin_time, upload_end_time)
-      return (benchmark_name, upload_return_code == 0)
+    upload_return_code = _upload_perf_results(results_filename, benchmark_name,
+                                              configuration_name,
+                                              build_properties,
+                                              output_json_file)
+    upload_end_time = time.time()
+    print_duration(('%s upload time' % (benchmark_name)), upload_begin_time,
+                   upload_end_time)
+    return (benchmark_name, upload_return_code == 0)
   finally:
     shutil.rmtree(tmpfile_dir)
 
@@ -507,7 +521,7 @@ def _GetCpuCount(log=True):
   try:
     cpu_count = multiprocessing.cpu_count()
     if sys.platform == 'win32':
-      # TODO(crbug.com/1190269) - we can't use more than 56
+      # TODO(crbug.com/40755900) - we can't use more than 56
       # cores on Windows or Python3 may hang.
       cpu_count = min(cpu_count, 56)
     return cpu_count
@@ -515,7 +529,7 @@ def _GetCpuCount(log=True):
     if log:
       logging.warning(
           'Failed to get a CPU count for this bot. See crbug.com/947035.')
-    # TODO(crbug.com/948281): This is currently set to 4 since the mac masters
+    # TODO(crbug.com/41450490): This is currently set to 4 since the mac masters
     # only have 4 cores. Once we move to all-linux, this can be increased or
     # we can even delete this whole function and use multiprocessing.cpu_count()
     # directly.
@@ -640,7 +654,7 @@ def _handle_perf_results(
     output_json_file = os.path.join(
         output_results_dir, (str(uuid.uuid4()) + benchmark_name))
     results_dict[benchmark_name] = output_json_file
-    #TODO(crbug.com/1072729): pass final arguments instead of build properties
+    #TODO(crbug.com/40127249): pass final arguments instead of build properties
     # and configuration_name
     invocations.append((
         benchmark_name, directories, configuration_name,
@@ -656,7 +670,7 @@ def _handle_perf_results(
   try:
     async_result = pool.map_async(
         _upload_individual_benchmark, invocations)
-    # TODO(crbug.com/947035): What timeout is reasonable?
+    # TODO(crbug.com/40620578): What timeout is reasonable?
     results = async_result.get(timeout=4000)
   except multiprocessing.TimeoutError:
     upload_result_timeout = True

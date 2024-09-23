@@ -27,7 +27,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -229,31 +228,6 @@ bool IsArcVmAndSwappedOut(content::BrowserContext* context) {
 
 }  // namespace
 
-// Package names, kept in sorted order.
-const char kPlayStoreActivity[] = "com.android.vending.AssetBrowserActivity";
-const char kPlayStorePackage[] = "com.android.vending";
-
-// App IDs, kept in sorted order.
-const char kAndroidContactsAppId[] = "kipfkokfekalckplgaikemhghlbkgpfl";
-const char kGmailAppId[] = "hhkfkjpmacfncmbapfohfocpjpdnobjg";
-const char kGoogleCalendarAppId[] = "decaoeahkmjpajbmlbpogjjkjbjokeed";
-const char kGoogleDuoAppId[] = "djkcbcmkefiiphjkonbeknmcgiheajce";
-const char kGoogleMapsAppId[] = "gmhipfhgnoelkiiofcnimehjnpaejiel";
-const char kGooglePhotosAppId[] = "fdbkkojdbojonckghlanfaopfakedeca";
-const char kGoogleTVAppId[] = "kadljooblnjdohjelobhphgeimdbcpbo";
-const char kInfinitePainterAppId[] = "afihfgfghkmdmggakhkgnfhlikhdpima";
-const char kLightRoomAppId[] = "fpegfnbgomakooccabncdaelhfppceni";
-const char kPackageInstallerAppId[] = "jegcgkleafemmaabigncnldhlhnddfkf";
-const char kPlayBooksAppId[] = "cafegjnmmjpfibnlddppihpnkbkgicbg";
-const char kPlayGamesAppId[] = "nplnnjkbeijcggmpdcecpabgbjgeiedc";
-const char kPlayMoviesAppId[] = "dbbihmicnlldbflflckpafphlekmjfnm";
-const char kPlayMusicAppId[] = "ophbaopahelaolbjliokocojjbgfadfn";
-const char kPlayStoreAppId[] = "cnbgggchhmkkdmeppjobngjoejnihlei";
-const char kSettingsAppId[] = "mconboelelhjpkbdhhiijkgcimoangdj";
-const char kYoutubeAppId[] = "aniolghapcdkoolpkffememnhpphmjkl";
-const char kYoutubeMusicAppId[] = "hpdkdmlckojaocbedhffglopeafcgggc";
-const char kYoutubeMusicWebApkAppId[] = "jcmmigapnpnikbmnjknhcoageaeinihi";
-
 bool ShouldShowInLauncher(const std::string& app_id) {
   for (auto* const id : kAppIdsHiddenInLauncher) {
     if (id == app_id)
@@ -322,7 +296,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     window_info->display_id = GetValidDisplayId(window_info->display_id);
 
   // Activate ARC in case still not active.
-  ArcSessionManager::Get()->AllowActivation();
+  ArcSessionManager::Get()->AllowActivation(
+      ArcSessionManager::AllowActivationReason::kUserLaunchAction);
 
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(context);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
@@ -739,7 +714,7 @@ void ExecuteArcShortcutCommand(content::BrowserContext* context,
     return;
 
   app_list::LaunchData launch_data;
-  // TODO(crbug.com/1199206): This should set launch_data.launched_from.
+  // TODO(crbug.com/40177716): This should set launch_data.launched_from.
   launch_data.id =
       ConstructArcAppShortcutUrl(arc_shelf_id.app_id(), shortcut_id),
   launch_data.result_type = ash::AppListSearchResultType::kArcAppShortcut;

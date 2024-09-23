@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/test/gtest_tags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/lacros/lacros_service.h"

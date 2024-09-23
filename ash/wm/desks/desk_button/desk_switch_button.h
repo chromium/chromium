@@ -33,8 +33,8 @@ class ASH_EXPORT DeskSwitchButton : public views::ImageButton {
   Type type() { return type_; }
 
   // views::ImageButton:
-  gfx::Size CalculatePreferredSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void StateChanged(ButtonState old_state) override;
@@ -71,4 +71,4 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(VIEWS_EXPORT, ash::DeskSwitchButton)
 
-#endif
+#endif  // ASH_WM_DESKS_DESK_BUTTON_DESK_SWITCH_BUTTON_H_

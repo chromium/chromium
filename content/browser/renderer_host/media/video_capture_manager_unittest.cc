@@ -21,10 +21,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
+#include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 #include "content/common/buildflags.h"
@@ -36,6 +39,7 @@
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/video_capture_system_impl.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -46,14 +50,13 @@ using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
 
 namespace content {
 
 namespace {
-
-const auto kIgnoreLogMessageCB = base::DoNothing();
 
 // Wraps FakeVideoCaptureDeviceFactory to allow mocking of the
 // VideoCaptureDevice MaybeSuspend() and Resume() methods. This is used to check
@@ -236,9 +239,18 @@ class MockBrowserClient : public content::ContentBrowserClient {
               BindVideoEffectsManager,
               (const std::string& device_id,
                content::BrowserContext* browser_context,
-               mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+               mojo::PendingReceiver<media::mojom::VideoEffectsManager>
                    video_effects_manager),
               (override));
+
+  MOCK_METHOD(
+      void,
+      BindVideoEffectsProcessor,
+      (const std::string& device_id,
+       content::BrowserContext* browser_context,
+       mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
+           video_effects_processor),
+      (override));
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -292,18 +304,21 @@ class VideoCaptureManagerTest : public testing::Test {
     auto video_capture_device_factory =
         std::make_unique<WrappedDeviceFactory>();
     video_capture_device_factory_ = video_capture_device_factory.get();
-    auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
-        std::move(video_capture_device_factory));
-    auto video_capture_provider =
-        std::make_unique<InProcessVideoCaptureProvider>(
-            std::move(video_capture_system),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            kIgnoreLogMessageCB);
+    auto fake_video_capture_provider =
+        std::make_unique<FakeVideoCaptureProvider>(
+            std::move(video_capture_device_factory));
+    auto screencapture_video_capture_provider =
+        InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
+            base::SingleThreadTaskRunner::GetCurrentDefault());
+    auto video_capture_provider_switcher =
+        std::make_unique<VideoCaptureProviderSwitcher>(
+            std::move(fake_video_capture_provider),
+            std::move(screencapture_video_capture_provider));
     screenlock_monitor_source_ = new ScreenlockMonitorTestSource();
     screenlock_monitor_ = std::make_unique<ScreenlockMonitor>(
         std::unique_ptr<ScreenlockMonitorSource>(screenlock_monitor_source_));
 
-    vcm_ = new VideoCaptureManager(std::move(video_capture_provider),
+    vcm_ = new VideoCaptureManager(std::move(video_capture_provider_switcher),
                                    base::DoNothing());
     const int32_t kNumberOfFakeDevices = 2;
     video_capture_device_factory_->SetToDefaultDevicesConfig(
@@ -345,7 +360,7 @@ class VideoCaptureManagerTest : public testing::Test {
 
     VideoCaptureControllerID client_id = base::UnguessableToken::Create();
     vcm_->ConnectClient(
-        session_id, params, client_id, frame_observer_.get(),
+        session_id, params, client_id, frame_observer_.get(), std::nullopt,
         base::BindOnce(&VideoCaptureManagerTest::OnGotControllerCallback,
                        base::Unretained(this), client_id, expect_success),
         /*browser_context=*/&browser_context_);
@@ -381,7 +396,7 @@ class VideoCaptureManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
   void ApplicationStateChange(base::android::ApplicationState state) {
     vcm_->OnApplicationStateChange(state);
   }
@@ -428,13 +443,13 @@ TEST_F(VideoCaptureManagerTest, CreateAndClose) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-// Try to start and stop a device with an effects manager
-TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsManager) {
+// Try to start and stop a device with an effects processor
+TEST_F(VideoCaptureManagerTest, CreateWithVideoEffectsProcessor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kCameraMicEffects);
-  mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager> receiver;
-  EXPECT_CALL(browser_client_, BindVideoEffectsManager(devices_.front().id,
-                                                       &browser_context_, _))
+  mojo::PendingReceiver<media::mojom::VideoEffectsManager> receiver;
+  EXPECT_CALL(browser_client_, BindVideoEffectsProcessor(devices_.front().id,
+                                                         &browser_context_, _))
       .Times(1);
 
   base::UnguessableToken video_session_id = vcm_->Open(devices_.front());
@@ -911,7 +926,7 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeClient) {
   vcm_->UnregisterListener(listener_.get());
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 // Try to open, start, pause and resume a device.
 TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
   InSequence s;
@@ -944,7 +959,7 @@ TEST_F(VideoCaptureManagerTest, PauseAndResumeDevice) {
   base::RunLoop().RunUntilIdle();
   vcm_->UnregisterListener(listener_.get());
 }
-#else
+#elif !BUILDFLAG(IS_DESKTOP_ANDROID)
 TEST_F(VideoCaptureManagerTest, PauseAndResumeDeviceOnScreenLock) {
   vcm_->set_idle_close_timeout_for_testing(base::TimeDelta());
 

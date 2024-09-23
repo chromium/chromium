@@ -70,7 +70,7 @@ class ProjectingObserverTest : public testing::Test {
 
 TEST_F(ProjectingObserverTest, CheckNoDisplay) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   EXPECT_EQ(1, power_client()->num_set_is_projecting_calls());
   EXPECT_FALSE(power_client()->is_projecting());
@@ -79,7 +79,7 @@ TEST_F(ProjectingObserverTest, CheckNoDisplay) {
 TEST_F(ProjectingObserverTest, CheckWithoutInternalDisplay) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateVGASnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   EXPECT_EQ(1, power_client()->num_set_is_projecting_calls());
   EXPECT_FALSE(power_client()->is_projecting());
@@ -88,7 +88,7 @@ TEST_F(ProjectingObserverTest, CheckWithoutInternalDisplay) {
 TEST_F(ProjectingObserverTest, CheckWithInternalDisplay) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateInternalSnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   EXPECT_EQ(1, power_client()->num_set_is_projecting_calls());
   EXPECT_FALSE(power_client()->is_projecting());
@@ -98,7 +98,7 @@ TEST_F(ProjectingObserverTest, CheckWithTwoVGADisplays) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateVGASnapshot());
   displays.push_back(CreateVGASnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   EXPECT_EQ(1, power_client()->num_set_is_projecting_calls());
   // We need at least 1 internal display to set projecting to on.
@@ -109,7 +109,7 @@ TEST_F(ProjectingObserverTest, CheckWithInternalAndVGADisplays) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateInternalSnapshot());
   displays.push_back(CreateVGASnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   EXPECT_EQ(1, power_client()->num_set_is_projecting_calls());
   EXPECT_TRUE(power_client()->is_projecting());
@@ -118,7 +118,7 @@ TEST_F(ProjectingObserverTest, CheckWithInternalAndVGADisplays) {
 TEST_F(ProjectingObserverTest, CheckWithVGADisplayAndOneCastingSession) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateVGASnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   observer_->OnCastingSessionStartedOrStopped(true);
 
@@ -130,7 +130,7 @@ TEST_F(ProjectingObserverTest, CheckWithVGADisplayAndOneCastingSession) {
 TEST_F(ProjectingObserverTest, CheckWithInternalDisplayAndOneCastingSession) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateInternalSnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   observer_->OnCastingSessionStartedOrStopped(true);
 
@@ -141,7 +141,7 @@ TEST_F(ProjectingObserverTest, CheckWithInternalDisplayAndOneCastingSession) {
 TEST_F(ProjectingObserverTest, CheckProjectingAfterClosingACastingSession) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateInternalSnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   observer_->OnCastingSessionStartedOrStopped(true);
   observer_->OnCastingSessionStartedOrStopped(true);
@@ -159,7 +159,7 @@ TEST_F(ProjectingObserverTest,
        CheckStopProjectingAfterClosingAllCastingSessions) {
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateInternalSnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   observer_->OnCastingSessionStartedOrStopped(true);
   observer_->OnCastingSessionStartedOrStopped(false);
@@ -173,11 +173,11 @@ TEST_F(ProjectingObserverTest,
   std::vector<std::unique_ptr<display::DisplaySnapshot>> displays;
   displays.push_back(CreateInternalSnapshot());
   displays.push_back(CreateVGASnapshot());
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   // Remove VGA output.
   displays.erase(displays.begin() + 1);
-  observer_->OnDisplayModeChanged(GetPointers(displays));
+  observer_->OnDisplayConfigurationChanged(GetPointers(displays));
 
   EXPECT_EQ(2, power_client()->num_set_is_projecting_calls());
   EXPECT_FALSE(power_client()->is_projecting());

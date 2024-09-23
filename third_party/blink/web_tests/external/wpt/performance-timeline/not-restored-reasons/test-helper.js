@@ -27,11 +27,20 @@ function assertReasonsStructEquals(
   } else {
     for (let j = 0; j < children.length; j++) {
       assertReasonsStructEquals(
-          result.children[0], children[0].url,
-          children[0].src, children[0].id, children[0].name, children[0].reasons,
-          children[0].children);
+          result.children[j], children[j].url,
+          children[j].src, children[j].id, children[j].name, children[j].reasons,
+          children[j].children);
     }
   }
+}
+
+function ReasonsInclude(reasons, targetReason) {
+  for (const reason of reasons) {
+    if (reason.reason == targetReason) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Requires:

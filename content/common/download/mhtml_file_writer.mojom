@@ -4,6 +4,7 @@
 
 module content.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -69,10 +70,10 @@ struct SerializeAsMHTMLParams {
   // generated using SHA256HashString function from crypto/sha2.h and hashing
   // |salt + url.spec()|.
   // This array MUST be sorted and contain no duplicates.
-  array<string> digests_of_uris_to_skip;
+  array<mojo_base.mojom.ByteString> digests_of_uris_to_skip;
 
   // Salt used for |digests_of_uris_to_skip|.
-  string salt;
+  mojo_base.mojom.ByteString salt;
 
   // Destination handle to write MHTML data to.
   MhtmlOutputHandle output_handle;
@@ -88,5 +89,5 @@ interface MhtmlFileWriter {
   // thread serializing the frame.
   SerializeAsMHTML(SerializeAsMHTMLParams params)
     =>  (MhtmlSaveStatus status,
-        array<string> digests_of_uris_to_skip);
+        array<mojo_base.mojom.ByteString> digests_of_uris_to_skip);
 };

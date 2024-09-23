@@ -1,0 +1,161 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
+
+option java_outer_classname = "DeidentifiedWebAnalyticsProtos";
+
+package dwa;
+
+import "histogram_event.proto";
+import "system_profile.proto";
+
+// A report containing deidentified web analytics data. One report is sent per
+// 5-30 minutes depending on the client.
+// Next tag: 6
+message DeidentifiedWebAnalyticsReport {
+  optional CoarseSystemInfo coarse_system_info = 1;
+
+  // Temporary identifier that gets generated once a day.
+  optional fixed64 dwa_ephemeral_id = 2;
+
+  // A list of page load events, one entry per page load.
+  // This field should be cleared when a report is sent, its content should be
+  // encrypted and placed in encrypted_page_load_events.
+  repeated PageLoadEvents page_load_events = 3;
+
+  // A list of encrypted page load events, one entry per page load.
+  repeated EncryptedPageLoadEvents encrypted_page_load_events = 4;
+
+  // Unix timestamp of when the report was generated and sent.
+  optional int64 timestamp = 5;
+}
+
+// All fields in this message should be populated by the client before sending
+// the report to comply with the entropy requirements (an unset field
+// essentially increases entropy).
+// Next tag: 7
+message CoarseSystemInfo {
+  // Stable or not-stable channel, 1 bit allocated.
+  // CHANNEL_INVALID is an invalid value and should never used. The client
+  // should check the value before sending the report.
+  enum Channel {
+    CHANNEL_INVALID = 0;
+    CHANNEL_STABLE = 1;
+    CHANNEL_NOT_STABLE = 2;
+  }
+  optional Channel channel = 1;
+
+  // Platform and activity type, 4 bits allocated.
+  // PLATFORM_INVALID is an invalid value and should never used. The client
+  // should check the value before sending the report.
+  enum Platform {
+    PLATFORM_INVALID = 0;
+    PLATFORM_OTHER = 1;
+    PLATFORM_ANDROID_WEBVIEW = 2;
+    PLATFORM_ANDROID_BROWSER_APP = 3;
+    PLATFORM_ANDROID_CCT = 4;
+    PLATFORM_ANDROID_PWA = 5;
+    PLATFORM_ANDROID_TWA = 6;
+    PLATFORM_IOS = 7;
+    PLATFORM_WINDOWS = 8;
+    PLATFORM_MACOS = 9;
+    PLATFORM_LINUX = 10;
+    PLATFORM_CHROMEOS = 11;
+  }
+  optional Platform platform = 2;
+
+  // Geo designation, 1 bit allocated.
+  // GEO_DESIGNATION_INVALID is an invalid value and should never used. The
+  // client should check the value before sending the report.
+  enum GeoDesignation {
+    GEO_DESIGNATION_INVALID = 0;
+    GEO_DESIGNATION_EEA = 1;  // Countries under the European Economic Area.
+    GEO_DESIGNATION_ROW = 2;  // Rest of the world.
+  }
+  optional GeoDesignation geo_designation = 3;
+
+  // An indicator of whether this is a recent (week old) client install or
+  // not, 1 bit allocated.
+  // Note that what "recent" means could potentially change in the future
+  // without changing the enum value as that would increase entropy.
+  // When analyzing data, always check for changes in what recent means for
+  // each milestone.
+  // CLIENT_AGE_INVALID is an invalid value and should never used. The client
+  // should check the value before sending the report.
+  enum ClientAge {
+    CLIENT_AGE_INVALID = 0;
+    CLIENT_AGE_RECENT = 1;
+    CLIENT_AGE_NOT_RECENT = 2;
+  }
+  optional ClientAge client_age = 4;
+
+  // First 3 digits of the milestone mod (%) 16, 4 bits allocated.
+  optional int32 milestone_prefix_trimmed = 5;
+
+  // Whether UKM logging is enabled, 1 bit allocated.
+  optional bool is_ukm_enabled = 6;
+}
+
+// Events that occurred in a single page load.
+message PageLoadEvents {
+  repeated DeidentifiedWebAnalyticsEvent events = 1;
+}
+
+// A container for a list of encrypted page load events.
+message EncryptedPageLoadEvents {
+  // A container for an encrypted page load event.
+  message EncryptedPageLoadEvent {
+    // A container for an encrypted deidentified web analytics event, each
+    // container corresponds to a single deidentified web analytics event and a
+    // hash of the field trials associated with that event.
+    message EncryptedDeidentifiedWebAnalyticsEvent {
+      optional bytes encrypted_event = 1;
+      optional fixed64 field_trials_hash = 2;
+    }
+
+    repeated EncryptedDeidentifiedWebAnalyticsEvent
+        encrypted_deidentified_web_analytics_events = 1;
+  }
+
+  repeated EncryptedPageLoadEvent encrypted_page_load_events = 1;
+}
+
+message DeidentifiedWebAnalyticsEvent {
+  // A hash of the event name/type (such as "ReportingAPIUsage").
+  // Uses the same hash function as UMA.
+  // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
+  optional fixed64 event_hash = 1;
+
+  // The type of content that the event is associated with.
+  // CONTENT_TYPE_INVALID is an invalid value and should never used. The
+  // client should check the value before sending the report.
+  message ContentMetric {
+    enum ContentType {
+      CONTENT_TYPE_INVALID = 0;
+
+      // The content is a URL.
+      CONTENT_TYPE_URL = 1;
+    }
+    optional ContentType content_type = 1;
+
+    // A hash of the content (e.g. hash("example.com")).
+    // Uses the same hash function as UMA.
+    // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
+    optional fixed64 content_hash = 2;
+
+    // Metrics associated with the content, name hash and values behave the
+    // same as in UMA.
+    repeated metrics.HistogramEventProto metrics = 3;
+  }
+
+  repeated ContentMetric content_metrics = 2;
+
+  // Field trials that we want to associate with this event, name id and
+  // group id behave the same as in UMA.
+  repeated metrics.SystemProfileProto.FieldTrial field_trials = 3;
+}

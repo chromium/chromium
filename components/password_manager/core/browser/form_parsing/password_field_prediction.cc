@@ -12,6 +12,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::AutofillType;
@@ -32,17 +33,17 @@ FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
   // send additional predictions in `field.server_predictions()`. This function
   // chooses the relevant one for Password Manager predictions.
 
-  // 1. If there is cvc prediction returns it.
+  // 1. If there is credit card related prediction, return the prediction.
   for (const auto& server_predictions : prediction.server_predictions) {
-    if (server_predictions.type() == autofill::CREDIT_CARD_VERIFICATION_CODE) {
-      return autofill::CREDIT_CARD_VERIFICATION_CODE;
+    FieldType type = static_cast<FieldType>(server_predictions.type());
+    if (GroupTypeOfFieldType(type) == autofill::FieldTypeGroup::kCreditCard) {
+      return type;
     }
   }
 
   // 2. If there is password related prediction returns it.
   for (const auto& server_predictions : prediction.server_predictions) {
-    FieldType type =
-        ToSafeFieldType(server_predictions.type(), FieldType::NO_SERVER_DATA);
+    FieldType type = static_cast<FieldType>(server_predictions.type());
     if (DeriveFromFieldType(type) != CredentialFieldType::kNone) {
       return type;
     }
@@ -54,13 +55,22 @@ FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
 }  // namespace
 
 CredentialFieldType DeriveFromFieldType(FieldType type) {
+  if (GroupTypeOfFieldType(type) == autofill::FieldTypeGroup::kCreditCard) {
+    return CredentialFieldType::kNonCredential;
+  }
+  // TODO: crbug/40925827 - Move if statement under switch case after the
+  // feature is launched.
+  if (type == autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES &&
+      base::FeatureList::IsEnabled(
+          features::kUsernameFirstFlowWithIntermediateValuesPredictions)) {
+    return CredentialFieldType::kSingleUsername;
+  }
   switch (type) {
     case autofill::USERNAME:
     case autofill::USERNAME_AND_EMAIL_ADDRESS:
       return CredentialFieldType::kUsername;
     case autofill::SINGLE_USERNAME:
     case autofill::SINGLE_USERNAME_FORGOT_PASSWORD:
-    case autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return CredentialFieldType::kSingleUsername;
     case autofill::PASSWORD:
       return CredentialFieldType::kCurrentPassword;
@@ -69,10 +79,36 @@ CredentialFieldType DeriveFromFieldType(FieldType type) {
       return CredentialFieldType::kNewPassword;
     case autofill::CONFIRMATION_PASSWORD:
       return CredentialFieldType::kConfirmationPassword;
+    case autofill::NOT_PASSWORD:
+    case autofill::NOT_USERNAME:
+    case autofill::ONE_TIME_CODE:
+      return CredentialFieldType::kNonCredential;
     default:
       return CredentialFieldType::kNone;
   }
 }
+
+PasswordFieldPrediction::PasswordFieldPrediction(
+    autofill::FieldRendererId renderer_id,
+    autofill::FieldSignature signature,
+    autofill::FieldType type,
+    bool may_use_prefilled_placeholder,
+    bool is_override)
+    : renderer_id(renderer_id),
+      signature(signature),
+      type(ToSafeFieldType(type, FieldType::NO_SERVER_DATA)),
+      may_use_prefilled_placeholder(may_use_prefilled_placeholder),
+      is_override(is_override) {}
+
+PasswordFieldPrediction::PasswordFieldPrediction(
+    const PasswordFieldPrediction&) = default;
+PasswordFieldPrediction& PasswordFieldPrediction::operator=(
+    const PasswordFieldPrediction&) = default;
+PasswordFieldPrediction::PasswordFieldPrediction(PasswordFieldPrediction&&) =
+    default;
+PasswordFieldPrediction& PasswordFieldPrediction::operator=(
+    PasswordFieldPrediction&&) = default;
+PasswordFieldPrediction::~PasswordFieldPrediction() = default;
 
 FormPredictions::FormPredictions() = default;
 FormPredictions::FormPredictions(const FormPredictions&) = default;
@@ -101,7 +137,7 @@ FormPredictions ConvertToFormPredictions(
   FieldSignature last_new_password;
 
   bool explicit_confirmation_hint_present = false;
-  for (const auto& field : form.fields) {
+  for (const auto& field : form.fields()) {
     if (auto it = predictions.find(field.global_id());
         it != predictions.end() &&
         it->second.server_type() == autofill::CONFIRMATION_PASSWORD) {
@@ -111,7 +147,7 @@ FormPredictions ConvertToFormPredictions(
   }
 
   std::vector<PasswordFieldPrediction> field_predictions;
-  for (const auto& field : form.fields) {
+  for (const auto& field : form.fields()) {
     auto it = predictions.find(field.global_id());
     CHECK(it != predictions.end());
     const AutofillType::ServerPrediction& autofill_prediction = it->second;
@@ -129,13 +165,11 @@ FormPredictions ConvertToFormPredictions(
       }
     }
 
-    field_predictions.emplace_back();
-    field_predictions.back().renderer_id = field.renderer_id;
-    field_predictions.back().signature = current_signature;
-    field_predictions.back().type = server_type;
-    field_predictions.back().may_use_prefilled_placeholder =
-        autofill_prediction.may_use_prefilled_placeholder.value_or(false);
-    field_predictions.back().is_override = autofill_prediction.is_override();
+    field_predictions.emplace_back(
+        field.renderer_id(), current_signature, server_type,
+        /*may_use_prefilled_placeholder=*/
+        autofill_prediction.may_use_prefilled_placeholder.value_or(false),
+        /*is_override=*/autofill_prediction.is_override());
   }
 
   FormPredictions result;

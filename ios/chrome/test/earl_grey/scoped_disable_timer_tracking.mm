@@ -7,7 +7,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 // Helper class to disable EarlGrey's NSTimer tracking.
-// TODO(crbug.com/1101608): This is a workaround that should be removed once a
+// TODO(crbug.com/40138424): This is a workaround that should be removed once a
 // proper fix lands in EarlGrey.
 ScopedDisableTimerTracking::ScopedDisableTimerTracking() {
   original_interval_ =

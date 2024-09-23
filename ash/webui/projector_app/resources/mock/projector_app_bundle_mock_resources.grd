@@ -11,7 +11,6 @@
   <release seq="1">
     <includes>
       <include name="IDR_PROJECTOR_APP_APP_BIN_JS" file="app_bin.js" type="BINDATA" compress="brotli" />
-      <include name="IDR_PROJECTOR_APP_PROJECTOR_CROS_STYLESHEET_CSS" file="projector_cros_stylesheet.css" type="BINDATA" compress="brotli"/>
     </includes>
   </release>
 </grit>

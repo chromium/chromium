@@ -638,7 +638,7 @@ void Camera3AController::Set3AMode(cros::mojom::CameraMetadataTag tag,
       awb_mode_set_ = false;
       break;
     default:
-      NOTREACHED() << "Invalid 3A mode: " << tag;
+      NOTREACHED_IN_MIGRATION() << "Invalid 3A mode: " << tag;
   }
 }
 

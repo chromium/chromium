@@ -9,7 +9,7 @@
     RuntimeEnabled=WebXR
 ] interface XRSystem : EventTarget {
   attribute EventHandler ondevicechange;
-  [CallWith=ScriptState, DeprecateAs=XRSupportsSession, RaisesException] Promise<void> supportsSession(XRSessionMode mode);
+  [CallWith=ScriptState, DeprecateAs=XRSupportsSession, RaisesException] Promise<undefined> supportsSession(XRSessionMode mode);
   [CallWith=ScriptState, MeasureAs=XRIsSessionSupported, RaisesException] Promise<boolean> isSessionSupported(XRSessionMode mode);
   [CallWith=ScriptState, MeasureAs=XRRequestSession, RaisesException] Promise<XRSession> requestSession(XRSessionMode mode, optional XRSessionInit options = {});
 };

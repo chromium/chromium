@@ -13,6 +13,10 @@ static_library("common") {
     "activation_scope.h",
     "common_features.cc",
     "common_features.h",
+    "constants.cc",
+    "constants.h",
+    "copying_file_stream.cc",
+    "copying_file_stream.h",
     "document_subresource_filter.cc",
     "document_subresource_filter.h",
     "first_party_origin.cc",
@@ -23,7 +27,11 @@ static_library("common") {
     "load_policy.h",
     "memory_mapped_ruleset.cc",
     "memory_mapped_ruleset.h",
+    "ruleset_config.h",
+    "ruleset_dealer.cc",
+    "ruleset_dealer.h",
     "scoped_timers.h",
+    "time_measurements.cc",
     "time_measurements.h",
     "unindexed_ruleset.cc",
     "unindexed_ruleset.h",
@@ -55,8 +63,8 @@ static_library("test_support") {
     "test_ruleset_utils.cc",
     "test_ruleset_utils.h",
   ]
+  public_deps = [ ":common" ]
   deps = [
-    ":common",
     "//base",
     "//net",
     "//testing/gtest",
@@ -71,7 +79,9 @@ source_set("unit_tests") {
     "first_party_origin_unittest.cc",
     "indexed_ruleset_unittest.cc",
     "load_policy_unittest.cc",
+    "ruleset_dealer_unittest.cc",
     "scoped_timers_unittest.cc",
+    "time_measurements_unittest.cc",
     "unindexed_ruleset_unittest.cc",
   ]
   deps = [

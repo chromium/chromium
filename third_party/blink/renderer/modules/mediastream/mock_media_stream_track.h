@@ -54,12 +54,12 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   void SetConstraints(MediaTrackConstraints* constraints) {
     constraints_ = constraints;
   }
-  ScriptPromise applyConstraints(
+  ScriptPromise<IDLUndefined> applyConstraints(
       ScriptState* state,
       const MediaTrackConstraints* constraints) override {
     return applyConstraintsScriptState(state, constraints);
   }
-  void applyConstraints(ScriptPromiseResolver* resolver,
+  void applyConstraints(ScriptPromiseResolver<IDLUndefined>* resolver,
                         const MediaTrackConstraints* constraints) override {
     applyConstraintsResolver(resolver, constraints);
   }
@@ -98,7 +98,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   std::unique_ptr<AudioSourceProvider> CreateWebAudioSource(
       int context_sample_rate,
-      uint32_t context_buffer_size) override {
+      base::TimeDelta platform_buffer_duration) override {
     return nullptr;
   }
 
@@ -111,11 +111,15 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   MOCK_METHOD1(stopTrack, void(ExecutionContext*));
   MOCK_METHOD1(clone, MediaStreamTrack*(ExecutionContext*));
-  MOCK_METHOD0(stats, MediaStreamTrackVideoStats*());
+  MOCK_METHOD0(
+      stats,
+      V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats*());
   MOCK_METHOD2(applyConstraintsScriptState,
-               ScriptPromise(ScriptState*, const MediaTrackConstraints*));
+               ScriptPromise<IDLUndefined>(ScriptState*,
+                                           const MediaTrackConstraints*));
   MOCK_METHOD2(applyConstraintsResolver,
-               void(ScriptPromiseResolver*, const MediaTrackConstraints*));
+               void(ScriptPromiseResolver<IDLUndefined>*,
+                    const MediaTrackConstraints*));
   MOCK_METHOD1(SetInitialConstraints, void(const MediaConstraints&));
   MOCK_METHOD1(SetConstraints, void(const MediaConstraints&));
   MOCK_METHOD1(RegisterMediaStream, void(MediaStream*));

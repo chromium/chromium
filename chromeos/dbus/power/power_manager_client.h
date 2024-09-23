@@ -17,7 +17,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/battery_saver.pb.h"
 #include "chromeos/dbus/power_manager/charge_history_state.pb.h"
 #include "chromeos/dbus/power_manager/peripheral_battery_status.pb.h"
@@ -39,6 +40,7 @@ namespace power_manager {
 class BacklightBrightnessChange;
 class ScreenIdleState;
 class SetBacklightBrightnessRequest;
+class SetAmbientLightSensorEnabledRequest;
 }  // namespace power_manager
 
 namespace chromeos {
@@ -84,6 +86,14 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // Called when the screen brightness is changed.
     virtual void ScreenBrightnessChanged(
         const power_manager::BacklightBrightnessChange& change) {}
+
+    // Called when the ambient light sensor status changes.
+    virtual void AmbientLightSensorEnabledChanged(
+        const power_manager::AmbientLightSensorChange& change) {}
+
+    // Called when the keyboard ambient light sensor status changes.
+    virtual void KeyboardAmbientLightSensorEnabledChanged(
+        const power_manager::AmbientLightSensorChange& change) {}
 
     // Called when the ambient light changed.
     virtual void AmbientColorChanged(const int32_t color_temperature) {}
@@ -241,6 +251,25 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   virtual void GetScreenBrightnessPercent(
       DBusMethodCallback<double> callback) = 0;
 
+  // Sets whether the ambient light sensor should be used in brightness
+  // calculations.
+  virtual void SetAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request) = 0;
+
+  // Asynchronously gets whether the ambient light sensor is currently enabled
+  // (i.e. whether it's being used in brightness calculations). On error (e.g.
+  // powerd not running), |callback| will be run with nullopt.
+  virtual void GetAmbientLightSensorEnabled(
+      DBusMethodCallback<bool> callback) = 0;
+
+  // Asynchronously gets whether the device has at least one ambient light
+  // sensor. On error (e.g. powerd not running), |callback| will be run with
+  // nullopt.
+  virtual void HasAmbientLightSensor(DBusMethodCallback<bool> callback) = 0;
+
+  // Check if the keyboard has a backlight.
+  virtual void HasKeyboardBacklight(DBusMethodCallback<bool> callback) = 0;
+
   // Decreases the keyboard brightness.
   virtual void DecreaseKeyboardBrightness() = 0;
 
@@ -259,6 +288,17 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // Toggle the keyboard backlight on or off.
   virtual void ToggleKeyboardBacklight() = 0;
 
+  // Sets whether the ambient light sensor should be used in keyboard brightness
+  // calculations.
+  virtual void SetKeyboardAmbientLightSensorEnabled(
+      const power_manager::SetAmbientLightSensorEnabledRequest& request) = 0;
+
+  // Asynchronously gets whether the keyboard ambient light sensor is currently
+  // enabled. On error (e.g. powerd not running), |callback| will be run with
+  // nullopt.
+  virtual void GetKeyboardAmbientLightSensorEnabled(
+      DBusMethodCallback<bool> callback) = 0;
+
   // Returns the last power status that was received from D-Bus, if any.
   virtual const std::optional<power_manager::PowerSupplyProperties>&
   GetLastStatus() = 0;
@@ -274,8 +314,13 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // Requests the current thermal state.
   virtual void RequestThermalState() = 0;
 
-  // Requests suspend of the system.
-  virtual void RequestSuspend() = 0;
+  // Requests suspend of the system. If |duration_secs| is non-zero, an alarm
+  // will be set to wake up the system after this many seconds (a dark resume).
+  // |flavor| is a platform-specific flavor of suspend (to RAM, disk, etc.).
+  // |wakeup_count| is an optional wakeup count to pass to powerd.
+  virtual void RequestSuspend(std::optional<uint64_t> wakeup_count,
+                              int32_t duration_secs,
+                              power_manager::RequestSuspendFlavor flavor) = 0;
 
   // Requests restart of the system. |description| contains a human-readable
   // string describing the source of the request that will be logged by powerd.

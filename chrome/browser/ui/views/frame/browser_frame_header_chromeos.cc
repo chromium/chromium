@@ -168,23 +168,21 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   std::optional<ui::ColorId> button_colors;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (features::IsChromeRefresh2023()) {
-    auto* browser_non_client_frame_view =
-        static_cast<BrowserNonClientFrameViewChromeOS*>(view());
+  auto* browser_non_client_frame_view =
+      static_cast<BrowserNonClientFrameViewChromeOS*>(view());
 
-    web_app::AppBrowserController* app_browser_controller =
-        browser_non_client_frame_view->browser_view()
-            ->browser()
-            ->app_controller();
+  web_app::AppBrowserController* app_browser_controller =
+      browser_non_client_frame_view->browser_view()
+          ->browser()
+          ->app_controller();
 
-    // Please note, `app_browser_controller` may be null for non-PWA windows.
-    if (!app_browser_controller ||
-        (app_browser_controller->system_app() &&
-         app_browser_controller->system_app()->UseSystemThemeColor())) {
-      button_colors = mode() == MODE_ACTIVE
-                          ? ui::kColorSysPrimary
-                          : ui::kColorFrameCaptionButtonUnfocused;
-    }
+  // Please note, `app_browser_controller` may be null for non-PWA windows.
+  if (!app_browser_controller ||
+      (app_browser_controller->system_app() &&
+       app_browser_controller->system_app()->UseSystemThemeColor())) {
+    button_colors = mode() == MODE_ACTIVE
+                        ? ui::kColorSysPrimary
+                        : ui::kColorFrameCaptionButtonUnfocused;
   }
 #endif
   UpdateCaptionButtonColors(button_colors);

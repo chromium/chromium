@@ -52,7 +52,7 @@
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(crbug/1179729): Move these functions to
+// TODO(crbug.com/40169678): Move these functions to
 // /chrome/test/base/test_utils.{h|cc}.
 base::FilePath GetTestFilePath(const char* dir, const char* file) {
   base::FilePath path;
@@ -97,20 +97,6 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
   base::OnceClosure quit_closure_;
   bool initialized_;
   raw_ptr<content::DownloadManager> download_manager_;
-};
-
-class CookiesTreeObserver : public CookiesTreeModel::Observer {
- public:
-  explicit CookiesTreeObserver(base::OnceClosure quit_closure)
-      : quit_closure_(std::move(quit_closure)) {}
-  ~CookiesTreeObserver() override = default;
-
-  void TreeModelEndBatchDeprecated(CookiesTreeModel* model) override {
-    std::move(quit_closure_).Run();
-  }
-
- private:
-  base::OnceClosure quit_closure_;
 };
 
 // Check if |file| matches any regex in |ignore_file_patterns|.
@@ -332,13 +318,13 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
           }
         }
       } else {
-        // TODO(https://crbug.com/1238325): Most databases are already open and
+        // TODO(crbug.com/40784064): Most databases are already open and
         // the LOCK prevents us from accessing them.
         LOG(INFO) << "Could not open: " << file << " " << status.ToString();
       }
     }
 
-    // TODO(crbug.com/846297): Add support for sqlite and other formats that
+    // TODO(crbug.com/40577815): Add support for sqlite and other formats that
     // possibly contain non-plaintext data.
 
     // Check file content.
@@ -365,45 +351,6 @@ bool BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
     }
   }
   return found;
-}
-
-int BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModelCount(
-    const CookieTreeNode* root) {
-  int count = 0;
-  for (const auto& node : root->children()) {
-    EXPECT_GE(node->children().size(), 1u);
-    count += node->children().size();
-  }
-  return count;
-}
-
-std::string BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModelInfo(
-    const CookieTreeNode* root) {
-  std::stringstream info;
-  info << "CookieTreeModel: " << std::endl;
-  for (const auto& node : root->children()) {
-    info << node->GetTitle() << std::endl;
-    for (const auto& child : node->children()) {
-      const auto node_type = child->GetDetailedInfo().node_type;
-      info << "  " << child->GetTitle() << " " << node_type << std::endl;
-    }
-  }
-  return info.str();
-}
-
-std::unique_ptr<CookiesTreeModel>
-BrowsingDataRemoverBrowserTestBase::GetCookiesTreeModel(Profile* profile) {
-  auto container = LocalDataContainer::CreateFromStoragePartition(
-      profile->GetDefaultStoragePartition(),
-      CookiesTreeModel::GetCookieDeletionDisabledCallback(profile));
-  base::RunLoop run_loop;
-  CookiesTreeObserver observer(run_loop.QuitClosure());
-  auto model = std::make_unique<CookiesTreeModel>(
-      std::move(container), profile->GetExtensionSpecialStoragePolicy());
-  model->AddCookiesTreeObserver(&observer);
-  run_loop.Run();
-  model->RemoveCookiesTreeObserver(&observer);
-  return model;
 }
 
 std::unique_ptr<BrowsingDataModel>

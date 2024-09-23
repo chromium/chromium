@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string.h>
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
+
 #include <windows.h>
+
+#include <string.h>
 
 #include <memory>
 #include <utility>
@@ -26,7 +29,6 @@
 #include "base/win/windows_types.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
-#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -162,14 +164,6 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
     PLOG(ERROR) << "Failed to get peer PID";
     OnError();
     return;
-  }
-  std::optional<base::win::ScopedHandle> impersonation_token;
-  if (ImpersonateNamedPipeClient(pending_named_pipe_handle_.Get())) {
-    HANDLE token = nullptr;
-    if (OpenThreadToken(GetCurrentThread(), TOKEN_ALL_ACCESS, TRUE, &token)) {
-      info->impersonation_token = base::win::ScopedHandle(token);
-    }
-    RevertToSelf();
   }
   mojo::PlatformChannelEndpoint endpoint(
       mojo::PlatformHandle(std::move(pending_named_pipe_handle_)));

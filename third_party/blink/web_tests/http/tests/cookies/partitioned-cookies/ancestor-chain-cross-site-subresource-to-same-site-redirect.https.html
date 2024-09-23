@@ -1,0 +1,67 @@
+<!doctype html>
+<head>
+<meta charset="utf-8"/>
+<meta name="timeout" content="long">
+<meta name="help" href="https://github.com/WICG/CHIPS#chips-cookies-having-independent-partitioned-state">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+<title>Test partitioned cookies are sent in embedded cross-site to same-site redirects</title>
+</head>
+<body>
+<script>
+
+promise_test(async () => {
+  //Add partitioned cookie to top-level site.
+  assert_equals(document.cookie, "");
+  const partitionedCookie = "ancestor=chain";
+  const partitionedCookieAttributes =
+      "; Secure; Path=/; SameSite=None; Partitioned";
+  const partitionedCookieLine =
+      partitionedCookie + partitionedCookieAttributes;
+
+  document.cookie = partitionedCookieLine;
+
+  assert_true(document.cookie.includes(partitionedCookie));
+
+  const sameSiteHost = window.location.hostname;
+  const resourceDir = "/cookies/partitioned-cookies/resources/";
+  const crossSiteUrl = new URL(
+    resourceDir + "ancestor-chain-empty-embed.html",
+    `https://${TEST_HOST}:${window.location.port}`);
+  const sameSiteUrl = new URL(
+      resourceDir + "ancestor-chain-empty-embed.html",
+    `https://${sameSiteHost}:${window.location.port}`);
+
+  // Create cross-site iframe and wait for it to load.
+  const iframe = document.createElement("iframe");
+  iframe.src = crossSiteUrl.href;
+  document.body.appendChild(iframe);
+  await new Promise(r => iframe.onload = r);
+
+  // Confirm that the iframe is cross-site.
+  var iframeUrl = new URL(iframe.src);
+  var iframeHost = iframeUrl.hostname;
+  assert_not_equals(sameSiteHost, iframeHost);
+
+  // Initiate the redirect from cross-site to same-site through
+  // redirect-and-append-cookie-header.php
+  iframe.src = resourceDir+
+    "redirect-and-append-cookie-header.php?location="
+    + sameSiteUrl.href;
+  await new Promise(r => iframe.onload = r);
+
+  // Confirm that the iframe is now same-site.
+  iframeUrl = new URL(iframe.src);
+  iframeHost = iframeUrl.hostname;
+  assert_equals(sameSiteHost, iframeHost);
+
+  // Confirm that the cookie was in http header of the redirect request
+  assert_true(iframe.contentWindow.location.href
+      .includes(partitionedCookie));
+  assert_true(iframe.contentDocument.cookie
+      .includes(partitionedCookie));
+}, "Partitioned cookies are sent in embedded cross-site to same-site redirects");
+
+</script>
+</body>

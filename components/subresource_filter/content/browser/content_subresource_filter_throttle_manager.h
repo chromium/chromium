@@ -17,12 +17,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
-#include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
-#include "components/subresource_filter/content/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/browser/safe_browsing_child_navigation_throttle.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
+#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
@@ -82,9 +83,7 @@ enum class SubresourceFilterAction {
 // subresource filter (e.g. each computes main frame activation separately).
 // Fenced frames are an exception. A fenced frame does create a separate Page
 // but is considered a "subresource filter child" of its embedder;
-// behaviorally, the subresource filter treats it like a regular iframe.
-// Portals also have their own Page but their behavior hasn't been considered
-// in detail yet; they are currently considered a root. See
+// behaviorally, the subresource filter treats it like a regular iframe. See
 // IsInSubresourceFilterRoot in
 // content_subresource_filter_web_contents_helper.cc. The term "main frame" is
 // avoided in subresource filter code to avoid ambiguity; instead, the main
@@ -148,7 +147,7 @@ class ContentSubresourceFilterThrottleManager
   // that is: main-frame, cross-document navigations that are not making an
   // existing page primary. In other cases, FromNavigationHandle will look up
   // the throttle manager from the page it is navigating in. This cannot (will
-  // DCHECK) be used for prerendering or BFCache activating navigations because
+  // CHECK) be used for prerendering or BFCache activating navigations because
   // which page to get a throttle manager from is ambiguous: the navigation
   // occurs in the primary frame tree but the non-primary page is the resulting
   // page.
@@ -195,7 +194,7 @@ class ContentSubresourceFilterThrottleManager
   }
 
   // Returns whether the identified frame is considered to be an ad.
-  bool IsFrameTaggedAsAd(int frame_tree_node_id) const;
+  bool IsFrameTaggedAsAd(content::FrameTreeNodeId frame_tree_node_id) const;
   // Returns whether `frame_host` is in a frame considered to be an ad.
   bool IsRenderFrameHostTaggedAsAd(content::RenderFrameHost* frame_host) const;
 
@@ -205,7 +204,7 @@ class ContentSubresourceFilterThrottleManager
   // filter. Load policy is determined by presence of the navigation url in the
   // filter list.
   std::optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
-      int frame_tree_node_id) const;
+      content::FrameTreeNodeId frame_tree_node_id) const;
 
   // Called when the user has requested a reload of a page with
   // blocked ads (e.g., via an infobar).
@@ -232,7 +231,7 @@ class ContentSubresourceFilterThrottleManager
   // called explicitly from the WebContentsHelper, which is a
   // WebContentsObserver, but only for the appropriate throttle manager.
   void RenderFrameDeleted(content::RenderFrameHost* frame_host);
-  void FrameDeleted(int frame_tree_node_id);
+  void FrameDeleted(content::FrameTreeNodeId frame_tree_node_id);
   // "InFrame" here means that the navigation doesn't move a page between frame
   // trees. i.e.  it is not a prerender activation.
   void ReadyToCommitInFrameNavigation(
@@ -271,8 +270,8 @@ class ContentSubresourceFilterThrottleManager
       AdTagCarriesAcrossProcesses);
   FRIEND_TEST_ALL_PREFIXES(ContentSubresourceFilterThrottleManagerTest,
                            FirstDisallowedLoadCalledOutOfOrder);
-  std::unique_ptr<ChildFrameNavigationFilteringThrottle>
-  MaybeCreateChildFrameNavigationFilteringThrottle(
+  std::unique_ptr<SafeBrowsingChildNavigationThrottle>
+  MaybeCreateChildNavigationThrottle(
       content::NavigationHandle* navigation_handle);
   std::unique_ptr<ActivationStateComputingNavigationThrottle>
   MaybeCreateActivationStateComputingThrottle(
@@ -307,8 +306,9 @@ class ContentSubresourceFilterThrottleManager
       content::NavigationHandle* navigation_handle);
   blink::FrameAdEvidence& EnsureFrameAdEvidence(
       content::RenderFrameHost* render_frame_host);
-  blink::FrameAdEvidence& EnsureFrameAdEvidence(int frame_tree_node_id,
-                                                int parent_frame_tree_node_id);
+  blink::FrameAdEvidence& EnsureFrameAdEvidence(
+      content::FrameTreeNodeId frame_tree_node_id,
+      content::FrameTreeNodeId parent_frame_tree_node_id);
 
   mojom::ActivationState ActivationStateForNextCommittedLoad(
       content::NavigationHandle* navigation_handle);
@@ -377,18 +377,19 @@ class ContentSubresourceFilterThrottleManager
   // Set of frames that have been identified as ads, identified by FrameTreeNode
   // ID. A RenderFrameHost is an ad frame iff the FrameAdEvidence
   // corresponding to the frame indicates that it is.
-  base::flat_set<int> ad_frames_;
+  base::flat_set<content::FrameTreeNodeId> ad_frames_;
 
   // Map of child frames, keyed by FrameTreeNode ID, with value being the
   // evidence for or against the frames being ads. This evidence is updated
   // whenever a navigation's LoadPolicy is calculated.
-  std::map<int, blink::FrameAdEvidence> tracked_ad_evidence_;
+  std::map<content::FrameTreeNodeId, blink::FrameAdEvidence>
+      tracked_ad_evidence_;
 
   // Map of frames whose navigations have been identified as ads, keyed by
   // FrameTreeNode ID. Contains information on the most current completed
   // navigation for any given frames. If a frame is not present in the map, it
   // has not had a navigation evaluated by the filter list.
-  std::map<int, LoadPolicy> navigation_load_policies_;
+  std::map<content::FrameTreeNodeId, LoadPolicy> navigation_load_policies_;
 
   // Receiver set for all RenderFrames in this throttle manager's page.
   content::RenderFrameHostReceiverSet<mojom::SubresourceFilterHost> receiver_;

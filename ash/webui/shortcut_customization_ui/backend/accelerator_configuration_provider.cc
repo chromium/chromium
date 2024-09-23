@@ -16,6 +16,7 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
@@ -35,11 +36,15 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -52,6 +57,10 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -80,7 +89,6 @@ constexpr char kRemoveDefaultAcceleratorHistogramName[] =
 // times in the frontend. GetHiddenAcceleratorMap() is used to collect such
 // accelerators and hide them from display.
 const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
-  // TODO(jimmyxgong): nice to remove entries for positional modifiers.
   static const auto kHiddenAcceleratorMap =
       base::NoDestructor<HiddenAcceleratorMap>({
           {AcceleratorAction::kToggleAppList,
@@ -173,10 +181,10 @@ std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
     const std::vector<size_t>& offsets,
     size_t str_size) {
   // |str_size| should be the sum of the lengths of |plain_text_parts|.
-  DCHECK_EQ(str_size, std::accumulate(
+  DCHECK_EQ(str_size, std::transform_reduce(
                           plain_text_parts.begin(), plain_text_parts.end(), 0u,
-                          [](size_t accumulator, const std::u16string& part) {
-                            return accumulator + part.size();
+                          std::plus<>(), [](const std::u16string& part) {
+                            return part.length();
                           }));
 
   DCHECK(std::is_sorted(offsets.begin(), offsets.end()));
@@ -296,7 +304,6 @@ mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
 }
 
 mojom::AcceleratorType GetAcceleratorType(ui::Accelerator accelerator) {
-  // TODO(longbowei): Add and handle more Accelerator types in the future.
   if (Shell::Get()->ash_accelerator_configuration()->IsDeprecated(
           accelerator)) {
     return mojom::AcceleratorType::kDeprecated;
@@ -307,11 +314,13 @@ mojom::AcceleratorType GetAcceleratorType(ui::Accelerator accelerator) {
 // Create accelerator info using accelerator and extra properties.
 mojom::AcceleratorInfoPtr CreateStandardAcceleratorInfo(
     const ui::Accelerator& accelerator,
+    bool accelerator_locked,
     bool locked,
     mojom::AcceleratorType type,
     mojom::AcceleratorState state,
     std::optional<ui::Accelerator> original_accelerator = std::nullopt) {
   mojom::AcceleratorInfoPtr info_mojom = mojom::AcceleratorInfo::New();
+  info_mojom->accelerator_locked = accelerator_locked;
   info_mojom->locked = locked;
   info_mojom->type = type;
   info_mojom->state = state;
@@ -347,9 +356,6 @@ std::optional<AcceleratorConfigResult> ValidateSourceAndAction(
 // accelerator.
 std::optional<AcceleratorConfigResult> ValidateAccelerator(
     const ui::Accelerator& accelerator) {
-  // TODO(jimmyxgong): The following cases are not finalized, we still need to
-  // validate if the key is present in connected keyboards.
-
   // Sanitize the modifiers with only the relevant modifiers for customization.
   const int modifiers = accelerator.modifiers() & kCustomizationModifierMask;
 
@@ -383,11 +389,11 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
   }
 
   // Case: Non-standard keys cannot have search as a modifier.
-  absl::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
+  std::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
       key_code_entry = FindKeyCodeEntry(accelerator.key_code());
   if (key_code_entry.has_value()) {
     const ui::KeyEvent key_event(
-        ui::ET_KEY_PRESSED, key_code_entry->resulting_key_code,
+        ui::EventType::kKeyPressed, key_code_entry->resulting_key_code,
         key_code_entry->dom_code, accelerator.modifiers());
     const AcceleratorKeyInputType input_type =
         GetKeyInputTypeFromKeyEvent(key_event);
@@ -422,6 +428,14 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
     return AcceleratorConfigResult::kShiftOnlyNotAllowed;
   }
 
+  // Case: Accelerator cannot have right alt key.
+  if (accelerator.key_code() == ui::VKEY_RIGHT_ALT) {
+    VLOG(1) << "Failed to validate accelerator: "
+            << accelerator.GetShortcutText() << " with error: "
+            << static_cast<int>(AcceleratorConfigResult::kBlockRightAlt);
+    return AcceleratorConfigResult::kBlockRightAlt;
+  }
+
   // No errors with the accelerator.
   return std::nullopt;
 }
@@ -437,15 +451,24 @@ std::string GetUuid(mojom::AcceleratorSource source,
 // or specific device property.
 bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
   switch (details.action_id) {
-    case kToggleSnapGroupWindowsGroupAndUngroup:
-    case kToggleSnapGroupWindowsMinimizeAndRestore:
-      return !features::IsSnapGroupEnabled();
     // Hide user switching shortcuts for lacros builds.
     case kSwitchToNextUser:
     case kSwitchToPreviousUser:
       return crosapi::lacros_startup_state::IsLacrosEnabled();
     case kPrivacyScreenToggle:
       return accelerators::CanTogglePrivacyScreen();
+    case kTilingWindowResizeLeft:
+    case kTilingWindowResizeRight:
+    case kTilingWindowResizeUp:
+    case kTilingWindowResizeDown:
+      return !features::IsTilingWindowResizeEnabled();
+    case kToggleMouseKeys:
+      return !::features::IsAccessibilityMouseKeysEnabled();
+    case kToggleSnapGroupWindowsMinimizeAndRestore:
+      return true;
+    case kTogglePicker:
+      return !(ash::features::IsPickerUpdateEnabled() &&
+               Shell::Get()->picker_controller());
   }
 
   return false;
@@ -579,7 +602,7 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
   // data that provides additional details for the app for styling.
   // Also create a cached shortcut description lookup.
   for (const auto& layout_id : kAcceleratorLayouts) {
-    const std::optional<AcceleratorLayoutDetails> layout =
+    std::optional<AcceleratorLayoutDetails> layout =
         GetAcceleratorLayout(layout_id);
     if (!layout) {
       LOG(ERROR) << "Unexpectedly could not find layout for id: " << layout_id;
@@ -588,6 +611,13 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
     if (ShouldExcludeItem(*layout)) {
       continue;
     }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (layout_id == AcceleratorAction::kTogglePicker &&
+        Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
+      layout->description_string_id = IDS_ASH_ACCELERATOR_DESCRIPTION_RIGHT_ALT;
+    }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     layout_infos_.push_back(LayoutInfoToMojom(*layout));
     accelerator_layout_lookup_[GetUuid(layout->source, layout->action_id)] =
         *layout;
@@ -648,10 +678,10 @@ void AcceleratorConfigurationProvider::IsCustomizationAllowedByPolicy(
       Shell::Get()->accelerator_prefs()->IsCustomizationAllowedByPolicy());
 }
 
-void AcceleratorConfigurationProvider::HasLauncherButton(
-    HasLauncherButtonCallback callback) {
+void AcceleratorConfigurationProvider::GetMetaKeyToDisplay(
+    GetMetaKeyToDisplayCallback callback) {
   std::move(callback).Run(
-      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard());
+      Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay());
 }
 
 void AcceleratorConfigurationProvider::GetConflictAccelerator(
@@ -1180,8 +1210,14 @@ void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
           accessibility_accelerator_to_id_.InsertNew(
               std::make_pair(accelerator, action_id));
         } else {
-          non_configurable_accelerator_to_id_.InsertNew(
-              std::make_pair(accelerator, action_id));
+          auto* action_ids =
+              non_configurable_accelerator_to_id_.Find(accelerator);
+          if (!action_ids) {
+            non_configurable_accelerator_to_id_.InsertNew(std::make_pair(
+                accelerator, std::vector<AcceleratorActionId>{action_id}));
+          } else {
+            action_ids->push_back(action_id);
+          }
         }
         id_to_non_configurable_accelerators_[action_id].push_back(accelerator);
       }
@@ -1229,7 +1265,8 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
     bool locked,
     mojom::AcceleratorType type,
     mojom::AcceleratorState state,
-    std::vector<mojom::AcceleratorInfoPtr>& output) {
+    std::vector<mojom::AcceleratorInfoPtr>& output,
+    bool is_accelerator_locked) {
   // Get the alias accelerators by doing F-Keys remapping and
   // (reversed) six-pack-keys remapping if applicable.
   std::vector<ui::Accelerator> accelerator_aliases =
@@ -1241,7 +1278,8 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
   // `kDisabledByUnavailableKeys`.
   if (accelerator_aliases.empty()) {
     output.push_back(CreateStandardAcceleratorInfo(
-        accelerator, locked, GetAcceleratorType(accelerator),
+        accelerator, is_accelerator_locked, locked,
+        GetAcceleratorType(accelerator),
         mojom::AcceleratorState::kDisabledByUnavailableKeys));
     return;
   }
@@ -1252,11 +1290,12 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
     // what is the real accelerator to configure.
     if (accelerator_alias != accelerator) {
       output.push_back(CreateStandardAcceleratorInfo(
-          accelerator_alias, locked, GetAcceleratorType(accelerator), state,
-          accelerator));
+          accelerator_alias, is_accelerator_locked, locked,
+          GetAcceleratorType(accelerator), state, accelerator));
     } else {
       output.push_back(CreateStandardAcceleratorInfo(
-          accelerator_alias, locked, GetAcceleratorType(accelerator), state));
+          accelerator_alias, is_accelerator_locked, locked,
+          GetAcceleratorType(accelerator), state));
     }
   }
 }
@@ -1404,15 +1443,17 @@ AcceleratorConfigurationProvider::FindNonConfigurableIdFromAccelerator(
     const ui::Accelerator& accelerator) {
   std::vector<uint32_t> ids;
   // Check browser/text non-configurable accelerators first.
-  uint32_t* non_configurable_conflict_id =
+  auto* non_configurable_conflict_ids =
       non_configurable_accelerator_to_id_.Find(accelerator);
 
-  if (non_configurable_conflict_id) {
-    ids.push_back(*non_configurable_conflict_id);
+  if (non_configurable_conflict_ids) {
+    for (const auto id : *non_configurable_conflict_ids) {
+      ids.push_back(id);
+    }
   }
 
   // Then check accessibility accelerators.
-  non_configurable_conflict_id =
+  uint32_t* non_configurable_conflict_id =
       accessibility_accelerator_to_id_.Find(accelerator);
 
   if (non_configurable_conflict_id) {
@@ -1576,24 +1617,29 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
       if (base::Contains(accelerators, default_accelerator)) {
         continue;
       }
+      const bool is_accelerator_locked =
+          ash_accelerator_configuration_->IsAcceleratorLocked(
+              default_accelerator);
 
       // Append the missing default accelerators but marked as disabled by user.
       CreateAndAppendAliasedAccelerators(
           default_accelerator, layout->locked, mojom::AcceleratorType::kDefault,
           mojom::AcceleratorState::kDisabledByUser,
-          output_action_id_to_accelerators[layout->action_id]);
+          output_action_id_to_accelerators[layout->action_id],
+          is_accelerator_locked);
     }
 
     for (const auto& accelerator : accelerators) {
       if (IsAcceleratorHidden(layout->action_id, accelerator)) {
         continue;
       }
-      // TODO(jimmyxgong): Check pref storage to determine whether the
-      // AcceleratorType was user-added or default.
+      const bool is_accelerator_locked =
+          ash_accelerator_configuration_->IsAcceleratorLocked(accelerator);
       CreateAndAppendAliasedAccelerators(
           accelerator, layout->locked, mojom::AcceleratorType::kDefault,
           mojom::AcceleratorState::kEnabled,
-          output_action_id_to_accelerators[layout->action_id]);
+          output_action_id_to_accelerators[layout->action_id],
+          is_accelerator_locked);
     }
   }
 }

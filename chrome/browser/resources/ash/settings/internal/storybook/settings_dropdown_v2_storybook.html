@@ -1,0 +1,24 @@
+<style include="storybook-styles">
+</style>
+
+<h2>Basic</h2>
+<settings-dropdown-v2
+    value="[[basicDropdownValue_]]"
+    options="[[dropdownOptions_]]"
+    on-change="onBasicDropdownChange_"
+    disabled="[[basicDropdownDisabled_]]"
+    aria-label="A11y label"
+    aria-description="A11y description">
+</settings-dropdown-v2>
+
+<cr-checkbox checked="{{basicDropdownDisabled_}}">Disabled</cr-checkbox>
+
+<code>
+  <div>Value: [[basicDropdownValue_]]</div>
+</code>
+
+<h2>Managed (via pref)</h2>
+<settings-dropdown-v2
+    pref="[[virtualManagedPref_]]"
+    options="[[dropdownOptions_]]">
+</settings-dropdown-v2>

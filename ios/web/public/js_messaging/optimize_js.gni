@@ -18,8 +18,8 @@ declare_args() {
 #     The primary JavaScript file.
 #
 #   sources:
-#     The full list of source scripts including |primary_script| and others
-#     referenced from within |primary_script|. Listing all these files here
+#     The full list of source scripts including `primary_script` and others
+#     referenced from within `primary_script`. Listing all these files here
 #     ensures this target is rebuilt if any of the files are changed.
 #
 #   output_name (optional):
@@ -86,12 +86,12 @@ template("optimize_js") {
     }
 
     if (defined(invoker.deps)) {
-      args += [ "--path-mapping-manifests" ]
+      args += [ "--dep-tsconfigs" ]
       foreach(_dep, invoker.deps) {
         _dep_gen_dir =
             rebase_path(get_label_info(_dep, "target_gen_dir"), root_build_dir)
         name = get_label_info(_dep, "name")
-        args += [ "$_dep_gen_dir/${name}_manifest.json" ]
+        args += [ "$_dep_gen_dir/tsconfig_${name}.json" ]
       }
     }
   }

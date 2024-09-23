@@ -89,8 +89,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // if the window was restored, regardless of its current state.
   int NonClientTopHeight(bool restored) const;
 
-  int GetTabStripInsetsTop(bool restored) const;
-
   // Returns the y-coordinate of the caption button when native frame buttons
   // are disabled.  If |restored| is true, acts as if the window is restored
   // regardless of the real mode.
@@ -126,9 +124,6 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   }
 
   const gfx::Rect& client_view_bounds() const { return client_view_bounds_; }
-
-  // Returns the extra thickness of the area above the tabs.
-  int GetNonClientRestoredExtraThickness() const;
 
   // Enables or disables WCO and updates child views accordingly.
   void SetWindowControlsOverlayEnabled(bool enabled, views::View* host);
@@ -220,6 +215,9 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
 
   // views::LayoutManager:
   gfx::Size GetPreferredSize(const views::View* host) const override;
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override;
   void ViewAdded(views::View* host, views::View* view) override;
   void ViewRemoved(views::View* host, views::View* view) override;
 
@@ -239,12 +237,10 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   int forced_window_caption_spacing_ = -1;
 
   // Window controls.
-  // These fields are not raw_ptr<> because they are assigned to |auto*| in
-  // ranged loop on an array initializer literal comprising of those pointers.
-  RAW_PTR_EXCLUSION views::Button* minimize_button_ = nullptr;
-  RAW_PTR_EXCLUSION views::Button* maximize_button_ = nullptr;
-  RAW_PTR_EXCLUSION views::Button* restore_button_ = nullptr;
-  RAW_PTR_EXCLUSION views::Button* close_button_ = nullptr;
+  raw_ptr<views::Button> minimize_button_ = nullptr;
+  raw_ptr<views::Button> maximize_button_ = nullptr;
+  raw_ptr<views::Button> restore_button_ = nullptr;
+  raw_ptr<views::Button> close_button_ = nullptr;
 
   raw_ptr<views::View> window_icon_ = nullptr;
   raw_ptr<views::Label, DanglingUntriaged> window_title_ = nullptr;

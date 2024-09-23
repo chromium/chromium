@@ -159,8 +159,7 @@ net::CertStatus LocationBarModelImpl::GetCertStatus() const {
 }
 
 OmniboxEventProto::PageClassification
-LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source,
-                                            bool is_prefetch) {
+LocationBarModelImpl::GetPageClassification(bool is_prefetch) const {
   // We may be unable to fetch the current URL during startup or shutdown when
   // the omnibox exists but there is no attached page.
   GURL gurl;
@@ -168,11 +167,7 @@ LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source,
     return OmniboxEventProto::OTHER;
   }
   if (delegate_->IsNewTabPage()) {
-    // Note that we treat OMNIBOX as the source if focus_source_ is INVALID,
-    // i.e., if input isn't actually in progress.
     return is_prefetch ? OmniboxEventProto::NTP_ZPS_PREFETCH
-           : focus_source == OmniboxFocusSource::FAKEBOX
-               ? OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS
                : OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS;
   }
   if (!gurl.is_valid()) {
@@ -236,9 +231,13 @@ std::u16string LocationBarModelImpl::GetSecureDisplayText() const {
           visible_security_state = delegate_->GetVisibleSecurityState();
 
       // Don't show any text in the security indicator for sites on the billing
-      // interstitial list.
+      // interstitial list or blocked by the enterprise administrator.
       if (visible_security_state->malicious_content_status ==
-          security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
+              security_state::MALICIOUS_CONTENT_STATUS_BILLING ||
+          visible_security_state->malicious_content_status ==
+              security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK ||
+          visible_security_state->malicious_content_status ==
+              security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN) {
         return std::u16string();
       }
 

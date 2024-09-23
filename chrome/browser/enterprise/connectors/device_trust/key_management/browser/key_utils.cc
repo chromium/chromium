@@ -16,19 +16,24 @@ namespace enterprise_connectors {
 std::optional<std::string> GetUploadBrowserPublicKeyUrl(
     const std::string& client_id,
     const std::string& dm_token,
+    const std::optional<std::string>& profile_id,
     policy::DeviceManagementService* device_management_service) {
   if (!device_management_service) {
     return std::nullopt;
   }
 
-  // Get the DM server URL to upload the public key. Reuse
-  // DMServerJobConfiguration to reuse the URL building steps.
-  policy::DMServerJobConfiguration config(
-      device_management_service,
+  auto params = policy::DMServerJobConfiguration::CreateParams::WithoutClient(
       policy::DeviceManagementService::JobConfiguration::
           TYPE_BROWSER_UPLOAD_PUBLIC_KEY,
-      client_id, true, policy::DMAuth::FromDMToken(dm_token), std::nullopt,
-      nullptr, base::DoNothing());
+      device_management_service, client_id, nullptr);
+
+  params.critical = true;
+  params.auth_data = policy::DMAuth::FromDMToken(dm_token);
+  if (profile_id.has_value()) {
+    params.profile_id = profile_id.value();
+  }
+
+  policy::DMServerJobConfiguration config(std::move(params));
 
   auto resource_request = config.GetResourceRequest(false, 0);
   if (!resource_request) {

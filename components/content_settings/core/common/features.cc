@@ -23,7 +23,11 @@ namespace features {
 // Enables unused site permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckUnusedSitePermissions,
              "SafetyCheckUnusedSitePermissions",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else   // BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
              "SafetyCheckUnusedSitePermissionsForSupportedChooserPermissions",
@@ -80,10 +84,20 @@ BASE_FEATURE(kImprovedSemanticsActivityIndicators,
 
 BASE_FEATURE(kLeftHandSideActivityIndicators,
              "LeftHandSideActivityIndicators",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kCrosSystemLevelPermissionBlockedWarnings,
+             "CrosBlockWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kTrackingProtection3pcd,
              "TrackingProtection3pcd",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNativeUnpartitionedStoragePermittedWhen3PCOff,
+             "NativeUnpartitionedStoragePermittedWhen3PCOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
@@ -97,22 +111,6 @@ const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
 
 BASE_FEATURE(kContentSettingsPartitioning,
              "ContentSettingsPartitioning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kMetadataGrantsThresholdName[] = "MetadataGrantsThreshold";
-const char kUseTestMetadataName[] = "UseTestMetadata";
-
-BASE_FEATURE(kHostIndexedMetadataGrants,
-             "HostIndexedMetadataGrants",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kMetadataGrantsThreshold{
-    &kHostIndexedMetadataGrants, kMetadataGrantsThresholdName, 1};
-const base::FeatureParam<int> kUseTestMetadata{&kHostIndexedMetadataGrants,
-                                               kUseTestMetadataName, 0};
-
-BASE_FEATURE(kIndexedHostContentSettingsMap,
-             "IndexedHostContentSettingsMap",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

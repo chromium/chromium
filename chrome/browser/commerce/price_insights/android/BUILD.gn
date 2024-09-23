@@ -1,0 +1,136 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/price_insights/PriceInsightsBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/price_insights/PriceInsightsBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/price_insights/PriceInsightsBottomSheetMediator.java",
+    "java/src/org/chromium/chrome/browser/price_insights/PriceInsightsBottomSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/price_insights/PriceInsightsBottomSheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/price_insights/PriceInsightsButtonController.java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.price_insights"
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:supplier_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/android/customtabs/branding:java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/user_education:java",
+    "//components/bookmarks/common/android:bookmarks_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/util/android:java",
+    "//components/commerce/core/android:core_java",
+    "//components/feature_engagement/public:public_java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/color/price_tracking_ineligible_button_background_color.xml",
+    "java/res/color/price_tracking_ineligible_button_foreground_color.xml",
+    "java/res/drawable/ic_open_in_new_20dp.xml",
+    "java/res/drawable/price_insights_sheet_background.xml",
+    "java/res/drawable/price_insights_sheet_bottom_corner_background.xml",
+    "java/res/drawable/price_insights_sheet_content_background.xml",
+    "java/res/drawable/price_insights_sheet_price_tracking_button_disabled.xml",
+    "java/res/drawable/price_insights_sheet_price_tracking_button_enabled.xml",
+    "java/res/drawable/price_insights_sheet_top_corner_background.xml",
+    "java/res/layout/price_history_layout.xml",
+    "java/res/layout/price_insights_container.xml",
+    "java/res/layout/price_tracking_layout.xml",
+    "java/res/values/dimens.xml",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/price_insights/PriceInsightsBottomSheetMediatorTest.java",
+    "javatests/src/org/chromium/chrome/browser/price_insights/PriceInsightsButtonControllerTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/bookmarks/common/android:bookmarks_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/commerce/core/android:core_java",
+    "//components/webapps/browser/android:webapps_jni_headers_java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "javatests/src/org/chromium/chrome/browser/price_insights/PriceInsightsBottomSheetCoordinatorTest.java" ]
+
+  resources_package = "org.chromium.chrome.browser.price_insights"
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:supplier_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/commerce/core/android:core_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}

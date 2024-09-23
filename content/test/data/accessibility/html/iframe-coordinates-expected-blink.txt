@@ -11,7 +11,7 @@ rootWebArea pageLocation=(0, 0) scrollX=0 scrollY=0 scrollable=false
 ++++++++++++inlineTextBox name='Button'
 ++++++genericContainer size=(300, 150) pageLocation=(0, 300)
 ++++++++iframe size=(300, 100) pageLocation=(0, 300) unclippedSize=(300, 100)
-++++++++++rootWebArea size=(300, 100) pageLocation=(0, 300) unclippedSize=(300, 100) scrollX=0 scrollY=0 scrollable=true
+++++++++++rootWebArea size=(300, 100) pageLocation=(0, 300) unclippedSize=(300, 100) scrollX=0 scrollY=0 scrollable=false
 ++++++++++++genericContainer ignored size=(300, 100)
 ++++++++++++++genericContainer ignored size=(300, 100)
 ++++++++++++++++genericContainer size=(300, 100) pageLocation=(0, 300) unclippedSize=(300, 100)

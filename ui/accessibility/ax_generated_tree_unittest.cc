@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -16,6 +21,7 @@
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_serializer.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/tree_generator.h"
 
 namespace ui {
@@ -73,10 +79,11 @@ std::string TreeToString(const AXTree& tree) {
 }
 
 AXTreeUpdate SerializeEntireTree(AXSerializableTree& tree) {
-  std::unique_ptr<AXTreeSource<const AXNode*>> tree_source(
-      tree.CreateTreeSource());
-  AXTreeSerializer<const AXNode*, std::vector<const AXNode*>> serializer(
-      tree_source.get());
+  std::unique_ptr<AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>>
+      tree_source(tree.CreateTreeSource());
+  AXTreeSerializer<const AXNode*, std::vector<const AXNode*>, AXTreeUpdate*,
+                   AXTreeData*, AXNodeData>
+      serializer(tree_source.get());
   AXTreeUpdate update;
   CHECK(serializer.SerializeChanges(tree.root(), &update));
   return update;
@@ -88,11 +95,11 @@ AXTreeUpdate MakeTreeUpdateFromIgnoredChanges(AXSerializableTree& tree0,
                                               AXSerializableTree& tree1) {
   AXTreeUpdate update = SerializeEntireTree(tree1);
   AXTreeUpdate result;
-  for (size_t i = 0; i < update.nodes.size(); i++) {
-    AXNode* tree0_node = tree0.GetFromId(update.nodes[i].id);
-    AXNode* tree1_node = tree1.GetFromId(update.nodes[i].id);
+  for (auto& node : update.nodes) {
+    AXNode* tree0_node = tree0.GetFromId(node.id);
+    AXNode* tree1_node = tree1.GetFromId(node.id);
     if (tree0_node->IsIgnored() != tree1_node->IsIgnored())
-      result.nodes.push_back(update.nodes[i]);
+      result.nodes.push_back(node);
   }
   return result;
 }
@@ -269,9 +276,10 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
 
           // Start by serializing tree0 and unserializing it into a new
           // empty tree |dst_tree|.
-          std::unique_ptr<AXTreeSource<const AXNode*>> tree0_source(
-              tree0.CreateTreeSource());
-          AXTreeSerializer<const AXNode*, std::vector<const AXNode*>>
+          std::unique_ptr<AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>>
+              tree0_source(tree0.CreateTreeSource());
+          AXTreeSerializer<const AXNode*, std::vector<const AXNode*>,
+                           AXTreeUpdate*, AXTreeData*, AXNodeData>
               serializer(tree0_source.get());
           AXTreeUpdate update0;
           ASSERT_TRUE(serializer.SerializeChanges(tree0.root(), &update0));
@@ -286,8 +294,8 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
           EXPECT_EQ(TreeToString(tree0), TreeToString(dst_tree));
 
           // Next, pretend that tree0 turned into tree1.
-          std::unique_ptr<AXTreeSource<const AXNode*>> tree1_source(
-              tree1.CreateTreeSource());
+          std::unique_ptr<AXTreeSource<const AXNode*, AXTreeData*, AXNodeData>>
+              tree1_source(tree1.CreateTreeSource());
           serializer.ChangeTreeSourceForTesting(tree1_source.get());
 
           // Mark as dirty the subtree rooted at one of the nodes.

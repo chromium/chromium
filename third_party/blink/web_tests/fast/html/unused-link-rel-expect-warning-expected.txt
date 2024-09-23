@@ -1,0 +1,9 @@
+CONSOLE WARNING: Did not find element expected to be parsed from: <link rel=expect href="#non-existent">
+Unused should generate a console warning
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Autopip Video Picture-in-Picture Visibility Test</title>
+    <style>
+        .video-container {
+            position: relative;
+        }
+
+        .occluding-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: red;
+        }
+
+        .non-occluding-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: yellow;
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="video-container">
+        <video width="300" height="300" id="video" controls loop>
+            <source src="../bigbuck.webm">
+        </video>
+    </div>
+</body>
+<script>
+    const video = document.getElementById('video');
+
+    function addOverlayToVideo(shouldOcclude) {
+        const videoContainer = document.querySelector('.video-container');
+
+        // Create the overlay div
+        const overlayDiv = document.createElement('div');
+        shouldOcclude ? overlayDiv.classList.add('occluding-overlay') : overlayDiv.classList.add('non-occluding-overlay');
+
+        // Add overlay to the video container
+        videoContainer.appendChild(overlayDiv);
+    }
+
+    function makeOccludingOverlayInvisible() {
+        let div = document.querySelector(".occluding-overlay")
+        div.style.backgroundColor = "transparent";
+    }
+
+    function playVideo() {
+        navigator.mediaSession.playbackState = "playing";
+        video.play();
+    }
+
+    function pauseVideo() {
+        video.pause();
+        navigator.mediaSession.playbackState = "paused";
+    }
+
+    function openPip() {
+        video.requestPictureInPicture();
+    }
+
+    navigator.mediaSession.setActionHandler('enterpictureinpicture', openPip);
+</script>

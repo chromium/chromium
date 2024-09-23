@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -358,7 +358,7 @@ void CastMessageHandler::OnMessage(const CastSocket& socket,
   // OnAppMessage and OnInternalMessage methods).
   if (IsCastReservedNamespace(message.namespace_())) {
     if (message.payload_type() ==
-        cast::channel::CastMessage_PayloadType_STRING) {
+        openscreen::cast::proto::CastMessage_PayloadType_STRING) {
       VLOG(1) << __func__ << ": channel_id: " << socket.id()
               << ", message: " << message;
       parse_json_.Run(
@@ -578,7 +578,7 @@ void CastMessageHandler::PendingRequests::HandlePendingRequest(
     std::string app_id = (*app_availability_it)->app_id;
     GetAppAvailabilityResult result =
         GetAppAvailabilityResultFromResponse(response, app_id);
-    base::EraseIf(pending_app_availability_requests_,
+    std::erase_if(pending_app_availability_requests_,
                   [&app_id, result](const auto& request_ptr) {
                     if (request_ptr->app_id == app_id) {
                       std::move(request_ptr->callback).Run(app_id, result);
@@ -659,7 +659,7 @@ void CastMessageHandler::PendingRequests::StopSessionTimedOut(int request_id) {
 void CastMessageHandler::PendingRequests::SetVolumeTimedOut(int request_id) {
   DVLOG(1) << __func__ << ", request_id: " << request_id;
   auto it = pending_volume_requests_by_id_.find(request_id);
-  DCHECK(it != pending_volume_requests_by_id_.end());
+  CHECK(it != pending_volume_requests_by_id_.end(), base::NotFatalUntil::M130);
   std::move(it->second->callback).Run(Result::kFailed);
   pending_volume_requests_by_id_.erase(it);
 }

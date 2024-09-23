@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/socket/tcp_socket.h"
-#include "net/socket/tcp_socket_win.h"
 
 #include <errno.h>
 #include <mstcpip.h>
@@ -12,12 +16,15 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/win/windows_version.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -35,6 +42,8 @@
 #include "net/socket/socket_net_log_params.h"
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_tag.h"
+#include "net/socket/tcp_socket_io_completion_port_win.h"
+#include "net/socket/tcp_socket_win.h"
 
 namespace net {
 
@@ -99,17 +108,65 @@ bool SetNonBlockingAndGetError(int fd, int* os_error) {
 
 //-----------------------------------------------------------------------------
 
-// This class encapsulates all the state that has to be preserved as long as
-// there is a network IO operation in progress. If the owner TCPSocketWin is
-// destroyed while an operation is in progress, the Core is detached and it
-// lives until the operation completes and the OS doesn't reference any resource
-// declared on this class anymore.
-class TCPSocketWin::Core : public base::RefCounted<Core> {
+class NET_EXPORT TCPSocketDefaultWin : public TCPSocketWin {
  public:
-  explicit Core(TCPSocketWin* socket);
+  TCPSocketDefaultWin(
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetLog* net_log,
+      const NetLogSource& source);
 
-  Core(const Core&) = delete;
-  Core& operator=(const Core&) = delete;
+  TCPSocketDefaultWin(
+      std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+      NetLogWithSource net_log_source);
+
+  ~TCPSocketDefaultWin() override;
+
+  // TCPSocketWin:
+  int Read(IOBuffer* buf,
+           int buf_len,
+           CompletionOnceCallback callback) override;
+  int ReadIfReady(IOBuffer* buf,
+                  int buf_len,
+                  CompletionOnceCallback callback) override;
+  int CancelReadIfReady() override;
+  int Write(IOBuffer* buf,
+            int buf_len,
+            CompletionOnceCallback callback,
+            const NetworkTrafficAnnotationTag& traffic_annotation) override;
+
+ protected:
+  // TCPSocketWin:
+  scoped_refptr<Core> CreateCore() override;
+  bool HasPendingRead() const override;
+  void OnClosed() override;
+
+ private:
+  class CoreImpl;
+
+  void RetryRead(int rv);
+  void DidCompleteWrite();
+  void DidSignalRead();
+
+  CoreImpl& GetCoreImpl();
+
+  // External callback; called when read is complete.
+  CompletionOnceCallback read_callback_;
+
+  // Non-null if a ReadIfReady() is to be completed asynchronously. This is an
+  // external callback if user used ReadIfReady() instead of Read(), but a
+  // wrapped callback on top of RetryRead() if Read() is used.
+  CompletionOnceCallback read_if_ready_callback_;
+
+  // External callback; called when write is complete.
+  CompletionOnceCallback write_callback_;
+};
+
+class TCPSocketDefaultWin::CoreImpl : public TCPSocketWin::Core {
+ public:
+  explicit CoreImpl(TCPSocketDefaultWin* socket);
+
+  CoreImpl(const CoreImpl&) = delete;
+  CoreImpl& operator=(const CoreImpl&) = delete;
 
   // Start watching for the end of a read or write operation.
   void WatchForRead();
@@ -118,8 +175,10 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
   // Stops watching for read.
   void StopWatchingForRead();
 
-  // The TCPSocketWin is going away.
-  void Detach();
+  // TCPSocketWin::Core:
+  void Detach() override;
+  HANDLE GetConnectEvent() override;
+  void WatchForConnect() override;
 
   // Event handle for monitoring connect and read events through WSAEventSelect.
   HANDLE read_event_;
@@ -139,36 +198,34 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
   bool non_blocking_reads_initialized_ = false;
 
  private:
-  friend class base::RefCounted<Core>;
-
   class ReadDelegate : public base::win::ObjectWatcher::Delegate {
    public:
-    explicit ReadDelegate(Core* core) : core_(core) {}
+    explicit ReadDelegate(CoreImpl* core) : core_(core) {}
     ~ReadDelegate() override = default;
 
     // base::ObjectWatcher::Delegate methods:
     void OnObjectSignaled(HANDLE object) override;
 
    private:
-    const raw_ptr<Core> core_;
+    const raw_ptr<CoreImpl> core_;
   };
 
   class WriteDelegate : public base::win::ObjectWatcher::Delegate {
    public:
-    explicit WriteDelegate(Core* core) : core_(core) {}
+    explicit WriteDelegate(CoreImpl* core) : core_(core) {}
     ~WriteDelegate() override = default;
 
     // base::ObjectWatcher::Delegate methods:
     void OnObjectSignaled(HANDLE object) override;
 
    private:
-    const raw_ptr<Core> core_;
+    const raw_ptr<CoreImpl> core_;
   };
 
-  ~Core();
+  ~CoreImpl() override;
 
   // The socket that created this object.
-  raw_ptr<TCPSocketWin> socket_;
+  raw_ptr<TCPSocketDefaultWin> socket_;
 
   // |reader_| handles the signals from |read_watcher_|.
   ReadDelegate reader_;
@@ -181,7 +238,10 @@ class TCPSocketWin::Core : public base::RefCounted<Core> {
   base::win::ObjectWatcher write_watcher_;
 };
 
-TCPSocketWin::Core::Core(TCPSocketWin* socket)
+TCPSocketWin::Core::Core() = default;
+TCPSocketWin::Core::~Core() = default;
+
+TCPSocketDefaultWin::CoreImpl::CoreImpl(TCPSocketDefaultWin* socket)
     : read_event_(WSACreateEvent()),
       socket_(socket),
       reader_(this),
@@ -190,7 +250,7 @@ TCPSocketWin::Core::Core(TCPSocketWin* socket)
   write_overlapped_.hEvent = WSACreateEvent();
 }
 
-TCPSocketWin::Core::~Core() {
+TCPSocketDefaultWin::CoreImpl::~CoreImpl() {
   // Detach should already have been called.
   DCHECK(!socket_);
 
@@ -201,26 +261,26 @@ TCPSocketWin::Core::~Core() {
   memset(&write_overlapped_, 0xaf, sizeof(write_overlapped_));
 }
 
-void TCPSocketWin::Core::WatchForRead() {
+void TCPSocketDefaultWin::CoreImpl::WatchForRead() {
   // Reads use WSAEventSelect, which closesocket() cancels so unlike writes,
   // there's no need to increment the reference count here.
   read_watcher_.StartWatchingOnce(read_event_, &reader_);
 }
 
-void TCPSocketWin::Core::WatchForWrite() {
+void TCPSocketDefaultWin::CoreImpl::WatchForWrite() {
   // We grab an extra reference because there is an IO operation in progress.
   // Balanced in WriteDelegate::OnObjectSignaled().
   AddRef();
   write_watcher_.StartWatchingOnce(write_overlapped_.hEvent, &writer_);
 }
 
-void TCPSocketWin::Core::StopWatchingForRead() {
-  DCHECK(!socket_->waiting_connect_);
+void TCPSocketDefaultWin::CoreImpl::StopWatchingForRead() {
+  DCHECK(!socket_->connect_callback_);
 
   read_watcher_.StopWatching();
 }
 
-void TCPSocketWin::Core::Detach() {
+void TCPSocketDefaultWin::CoreImpl::Detach() {
   // Stop watching the read watcher. A read won't be signalled after the Detach
   // call, since the socket has been closed, but it's possible the event was
   // signalled when the socket was closed, but hasn't been handled yet, so need
@@ -232,16 +292,28 @@ void TCPSocketWin::Core::Detach() {
   socket_ = nullptr;
 }
 
-void TCPSocketWin::Core::ReadDelegate::OnObjectSignaled(HANDLE object) {
-  DCHECK_EQ(object, core_->read_event_);
-  DCHECK(core_->socket_);
-  if (core_->socket_->waiting_connect_)
-    core_->socket_->DidCompleteConnect();
-  else
-    core_->socket_->DidSignalRead();
+HANDLE TCPSocketDefaultWin::CoreImpl::GetConnectEvent() {
+  // `read_event_` is used to watch for connect.
+  return read_event_;
 }
 
-void TCPSocketWin::Core::WriteDelegate::OnObjectSignaled(
+void TCPSocketDefaultWin::CoreImpl::WatchForConnect() {
+  // `read_event_` is used to watch for connect.
+  WatchForRead();
+}
+
+void TCPSocketDefaultWin::CoreImpl::ReadDelegate::OnObjectSignaled(
+    HANDLE object) {
+  DCHECK_EQ(object, core_->read_event_);
+  DCHECK(core_->socket_);
+  if (core_->socket_->connect_callback_) {
+    core_->socket_->DidCompleteConnect();
+  } else {
+    core_->socket_->DidSignalRead();
+  }
+}
+
+void TCPSocketDefaultWin::CoreImpl::WriteDelegate::OnObjectSignaled(
     HANDLE object) {
   DCHECK_EQ(object, core_->write_overlapped_.hEvent);
   if (core_->socket_)
@@ -252,6 +324,31 @@ void TCPSocketWin::Core::WriteDelegate::OnObjectSignaled(
 }
 
 //-----------------------------------------------------------------------------
+
+// static
+std::unique_ptr<TCPSocketWin> TCPSocketWin::Create(
+    std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetLog* net_log,
+    const NetLogSource& source) {
+  if (base::FeatureList::IsEnabled(features::kTcpSocketIoCompletionPortWin)) {
+    return std::make_unique<TcpSocketIoCompletionPortWin>(
+        std::move(socket_performance_watcher), net_log, source);
+  }
+  return std::make_unique<TCPSocketDefaultWin>(
+      std::move(socket_performance_watcher), net_log, source);
+}
+
+// static
+std::unique_ptr<TCPSocketWin> TCPSocketWin::Create(
+    std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetLogWithSource net_log_source) {
+  if (base::FeatureList::IsEnabled(features::kTcpSocketIoCompletionPortWin)) {
+    return std::make_unique<TcpSocketIoCompletionPortWin>(
+        std::move(socket_performance_watcher), net_log_source);
+  }
+  return std::make_unique<TCPSocketDefaultWin>(
+      std::move(socket_performance_watcher), std::move(net_log_source));
+}
 
 TCPSocketWin::TCPSocketWin(
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -271,14 +368,17 @@ TCPSocketWin::TCPSocketWin(
     : socket_(INVALID_SOCKET),
       socket_performance_watcher_(std::move(socket_performance_watcher)),
       accept_event_(WSA_INVALID_EVENT),
-      net_log_(net_log_source) {
+      net_log_(std::move(net_log_source)) {
   net_log_.BeginEvent(NetLogEventType::SOCKET_ALIVE);
   EnsureWinsockInit();
 }
 
 TCPSocketWin::~TCPSocketWin() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Close();
+
+  // The subclass must call `Close`. See comment in header file.
+  CHECK(!core_);
+
   net_log_.EndEvent(NetLogEventType::SOCKET_ALIVE);
 }
 
@@ -318,7 +418,7 @@ int TCPSocketWin::AdoptConnectedSocket(SocketDescriptor socket,
     return result;
   }
 
-  core_ = base::MakeRefCounted<Core>(this);
+  core_ = CreateCore();
   peer_address_ = std::make_unique<IPEndPoint>(peer_address);
 
   return OK;
@@ -414,7 +514,8 @@ int TCPSocketWin::Connect(const IPEndPoint& address,
                           CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(socket_, INVALID_SOCKET);
-  DCHECK(!waiting_connect_);
+  DCHECK(!connect_callback_);
+  DCHECK(callback);
 
   // |peer_address_| and |core_| will be non-NULL if Connect() has been called.
   // Unless Close() is called to reset the internal state, a second call to
@@ -434,9 +535,7 @@ int TCPSocketWin::Connect(const IPEndPoint& address,
   int rv = DoConnect();
   if (rv == ERR_IO_PENDING) {
     // Synchronous operation not supported.
-    DCHECK(!callback.is_null());
-    read_callback_ = std::move(callback);
-    waiting_connect_ = true;
+    connect_callback_ = std::move(callback);
   } else {
     DoConnectComplete(rv);
   }
@@ -447,75 +546,90 @@ int TCPSocketWin::Connect(const IPEndPoint& address,
 bool TCPSocketWin::IsConnected() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (socket_ == INVALID_SOCKET || waiting_connect_)
+  if (socket_ == INVALID_SOCKET || connect_callback_) {
+    // Outstanding connect attempt pending.
     return false;
+  }
 
-  if (waiting_read_)
+  if (HasPendingRead()) {
     return true;
+  }
 
-  // Check if connection is alive.
   char c;
   int rv = recv(socket_, &c, 1, MSG_PEEK);
+  if (rv == 0) {
+    // Connection gracefully closed.
+    return false;
+  }
   int os_error = WSAGetLastError();
-  if (rv == 0)
+  if (rv == SOCKET_ERROR && os_error != WSAEWOULDBLOCK) {
+    // Connection dropped/terminated due to error.
     return false;
-  if (rv == SOCKET_ERROR && os_error != WSAEWOULDBLOCK)
-    return false;
+  }
 
+  // One byte available or would block waiting for one byte.
   return true;
 }
 
 bool TCPSocketWin::IsConnectedAndIdle() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (socket_ == INVALID_SOCKET || waiting_connect_)
+  if (socket_ == INVALID_SOCKET || connect_callback_) {
+    // Outstanding connect attempt pending.
     return false;
+  }
 
-  if (waiting_read_)
+  if (HasPendingRead()) {
     return true;
+  }
 
-  // Check if connection is alive and we haven't received any data
-  // unexpectedly.
   char c;
   int rv = recv(socket_, &c, 1, MSG_PEEK);
+  if (rv >= 0) {
+    // Connection gracefully closed or one byte available to read without
+    // blocking.
+    return false;
+  }
   int os_error = WSAGetLastError();
-  if (rv >= 0)
+  if (os_error != WSAEWOULDBLOCK) {
+    // Connection dropped/terminated due to error.
     return false;
-  if (os_error != WSAEWOULDBLOCK)
-    return false;
+  }
 
+  // No data available; blocking required.
   return true;
 }
 
-int TCPSocketWin::Read(IOBuffer* buf,
-                       int buf_len,
-                       CompletionOnceCallback callback) {
+int TCPSocketDefaultWin::Read(IOBuffer* buf,
+                              int buf_len,
+                              CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!core_->read_iobuffer_.get());
+  CoreImpl& core = GetCoreImpl();
+  DCHECK(!core.read_iobuffer_.get());
   // base::Unretained() is safe because RetryRead() won't be called when |this|
   // is gone.
   int rv = ReadIfReady(
       buf, buf_len,
-      base::BindOnce(&TCPSocketWin::RetryRead, base::Unretained(this)));
+      base::BindOnce(&TCPSocketDefaultWin::RetryRead, base::Unretained(this)));
   if (rv != ERR_IO_PENDING)
     return rv;
   read_callback_ = std::move(callback);
-  core_->read_iobuffer_ = buf;
-  core_->read_buffer_length_ = buf_len;
+  core.read_iobuffer_ = buf;
+  core.read_buffer_length_ = buf_len;
   return ERR_IO_PENDING;
 }
 
-int TCPSocketWin::ReadIfReady(IOBuffer* buf,
-                              int buf_len,
-                              CompletionOnceCallback callback) {
+int TCPSocketDefaultWin::ReadIfReady(IOBuffer* buf,
+                                     int buf_len,
+                                     CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(socket_, INVALID_SOCKET);
-  DCHECK(!waiting_read_);
   DCHECK(read_if_ready_callback_.is_null());
 
-  if (!core_->non_blocking_reads_initialized_) {
-    WSAEventSelect(socket_, core_->read_event_, FD_READ | FD_CLOSE);
-    core_->non_blocking_reads_initialized_ = true;
+  CoreImpl& core = GetCoreImpl();
+  if (!core.non_blocking_reads_initialized_) {
+    WSAEventSelect(socket_, core.read_event_, FD_READ | FD_CLOSE);
+    core.non_blocking_reads_initialized_ = true;
   }
   int rv = recv(socket_, buf->data(), buf_len, 0);
   int os_error = WSAGetLastError();
@@ -533,45 +647,42 @@ int TCPSocketWin::ReadIfReady(IOBuffer* buf,
     return rv;
   }
 
-  waiting_read_ = true;
   read_if_ready_callback_ = std::move(callback);
-  core_->WatchForRead();
+  core.WatchForRead();
   return ERR_IO_PENDING;
 }
 
-int TCPSocketWin::CancelReadIfReady() {
+int TCPSocketDefaultWin::CancelReadIfReady() {
   DCHECK(read_callback_.is_null());
   DCHECK(!read_if_ready_callback_.is_null());
-  DCHECK(waiting_read_);
 
-  core_->StopWatchingForRead();
+  GetCoreImpl().StopWatchingForRead();
   read_if_ready_callback_.Reset();
-  waiting_read_ = false;
   return net::OK;
 }
 
-int TCPSocketWin::Write(
+int TCPSocketDefaultWin::Write(
     IOBuffer* buf,
     int buf_len,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& /* traffic_annotation */) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(socket_, INVALID_SOCKET);
-  DCHECK(!waiting_write_);
   CHECK(write_callback_.is_null());
   DCHECK_GT(buf_len, 0);
-  DCHECK(!core_->write_iobuffer_.get());
+  CoreImpl& core = GetCoreImpl();
+  DCHECK(!core.write_iobuffer_.get());
 
   WSABUF write_buffer;
   write_buffer.len = buf_len;
   write_buffer.buf = buf->data();
 
   DWORD num;
-  int rv = WSASend(socket_, &write_buffer, 1, &num, 0,
-                   &core_->write_overlapped_, nullptr);
+  int rv = WSASend(socket_, &write_buffer, 1, &num, 0, &core.write_overlapped_,
+                   nullptr);
   int os_error = WSAGetLastError();
   if (rv == 0) {
-    if (ResetEventIfSignaled(core_->write_overlapped_.hEvent)) {
+    if (ResetEventIfSignaled(core.write_overlapped_.hEvent)) {
       rv = static_cast<int>(num);
       if (rv > buf_len || rv < 0) {
         // It seems that some winsock interceptors report that more was written
@@ -592,11 +703,10 @@ int TCPSocketWin::Write(
       return net_error;
     }
   }
-  waiting_write_ = true;
   write_callback_ = std::move(callback);
-  core_->write_iobuffer_ = buf;
-  core_->write_buffer_length_ = buf_len;
-  core_->WatchForWrite();
+  core.write_iobuffer_ = buf;
+  core.write_buffer_length_ = buf_len;
+  core.WatchForWrite();
   return ERR_IO_PENDING;
 }
 
@@ -730,13 +840,9 @@ void TCPSocketWin::Close() {
     // when the socket is closed. This is not the case for reads.
   }
 
-  waiting_connect_ = false;
-  waiting_read_ = false;
-  waiting_write_ = false;
+  connect_callback_.Reset();
+  OnClosed();
 
-  read_callback_.Reset();
-  read_if_ready_callback_.Reset();
-  write_callback_.Reset();
   peer_address_.reset();
   connect_os_error_ = 0;
 }
@@ -751,7 +857,7 @@ void TCPSocketWin::StartLoggingMultipleConnectAttempts(
     logging_multiple_connect_attempts_ = true;
     LogConnectBegin(addresses);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -760,11 +866,13 @@ void TCPSocketWin::EndLoggingMultipleConnectAttempts(int net_error) {
     LogConnectEnd(net_error);
     logging_multiple_connect_attempts_ = false;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
 SocketDescriptor TCPSocketWin::ReleaseSocketDescriptorForTesting() {
+  CHECK(!registered_as_io_handler_);
+
   SocketDescriptor socket_descriptor = socket_;
   socket_ = INVALID_SOCKET;
   Close();
@@ -773,6 +881,13 @@ SocketDescriptor TCPSocketWin::ReleaseSocketDescriptorForTesting() {
 
 SocketDescriptor TCPSocketWin::SocketDescriptorForTesting() const {
   return socket_;
+}
+
+void TCPSocketWin::CloseSocketDescriptorForTesting() {
+  CHECK_NE(socket_, INVALID_SOCKET);
+  CHECK_EQ(closesocket(socket_), 0);
+  // Clear `socket_` so that `Close()` doesn't attempt to close it again.
+  socket_ = INVALID_SOCKET;
 }
 
 int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
@@ -789,15 +904,15 @@ int TCPSocketWin::AcceptInternal(std::unique_ptr<TCPSocketWin>* socket,
 
   IPEndPoint ip_end_point;
   if (!ip_end_point.FromSockAddr(storage.addr, storage.addr_len)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     if (closesocket(new_socket) < 0)
       PLOG(ERROR) << "closesocket";
     int net_error = ERR_ADDRESS_INVALID;
     net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_ACCEPT, net_error);
     return net_error;
   }
-  auto tcp_socket = std::make_unique<TCPSocketWin>(nullptr, net_log_.net_log(),
-                                                   net_log_.source());
+  auto tcp_socket =
+      TCPSocketWin::Create(nullptr, net_log_.net_log(), net_log_.source());
   int adopt_result = tcp_socket->AdoptConnectedSocket(new_socket, ip_end_point);
   if (adopt_result != OK) {
     net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_ACCEPT,
@@ -845,15 +960,25 @@ int TCPSocketWin::DoConnect() {
     return CreateNetLogIPEndPointParams(peer_address_.get());
   });
 
-  core_ = base::MakeRefCounted<Core>(this);
+  core_ = CreateCore();
 
   // WSAEventSelect sets the socket to non-blocking mode as a side effect.
   // Our connect() and recv() calls require that the socket be non-blocking.
-  WSAEventSelect(socket_, core_->read_event_, FD_CONNECT);
+  WSAEventSelect(socket_, core_->GetConnectEvent(), FD_CONNECT);
 
   SockaddrStorage storage;
   if (!peer_address_->ToSockAddr(storage.addr, &storage.addr_len))
     return ERR_ADDRESS_INVALID;
+
+  // Set option to choose a random port, if the socket is not already bound.
+  // Ignore failures, which may happen if the socket was already bound.
+  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1 &&
+      base::FeatureList::IsEnabled(features::kEnableTcpPortRandomization)) {
+    BOOL randomize_port = TRUE;
+    setsockopt(socket_, SOL_SOCKET, SO_RANDOMIZE_PORT,
+               reinterpret_cast<const char*>(&randomize_port),
+               sizeof(randomize_port));
+  }
 
   if (!connect(socket_, storage.addr, storage.addr_len)) {
     // Connected without waiting!
@@ -866,10 +991,11 @@ int TCPSocketWin::DoConnect() {
     // It's not documented whether the event object will be signaled or not
     // if connect does return 0.  So the code below is essentially dead code
     // and we don't know if it's correct.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 
-    if (ResetEventIfSignaled(core_->read_event_))
+    if (ResetEventIfSignaled(core_->GetConnectEvent())) {
       return OK;
+    }
   } else {
     int os_error = WSAGetLastError();
     if (os_error != WSAEWOULDBLOCK) {
@@ -881,7 +1007,7 @@ int TCPSocketWin::DoConnect() {
     }
   }
 
-  core_->WatchForRead();
+  core_->WatchForConnect();
   return ERR_IO_PENDING;
 }
 
@@ -923,30 +1049,30 @@ void TCPSocketWin::LogConnectEnd(int net_error) {
   });
 }
 
-void TCPSocketWin::RetryRead(int rv) {
-  DCHECK(core_->read_iobuffer_);
+void TCPSocketDefaultWin::RetryRead(int rv) {
+  CoreImpl& core = GetCoreImpl();
+  DCHECK(core.read_iobuffer_);
 
   if (rv == OK) {
     // base::Unretained() is safe because RetryRead() won't be called when
     // |this| is gone.
-    rv = ReadIfReady(
-        core_->read_iobuffer_.get(), core_->read_buffer_length_,
-        base::BindOnce(&TCPSocketWin::RetryRead, base::Unretained(this)));
+    rv = ReadIfReady(core.read_iobuffer_.get(), core.read_buffer_length_,
+                     base::BindOnce(&TCPSocketDefaultWin::RetryRead,
+                                    base::Unretained(this)));
     if (rv == ERR_IO_PENDING)
       return;
   }
-  core_->read_iobuffer_ = nullptr;
-  core_->read_buffer_length_ = 0;
+  core.read_iobuffer_ = nullptr;
+  core.read_buffer_length_ = 0;
   std::move(read_callback_).Run(rv);
 }
 
 void TCPSocketWin::DidCompleteConnect() {
-  DCHECK(waiting_connect_);
-  DCHECK(!read_callback_.is_null());
+  DCHECK(connect_callback_);
   int result;
 
   WSANETWORKEVENTS events;
-  int rv = WSAEnumNetworkEvents(socket_, core_->read_event_, &events);
+  int rv = WSAEnumNetworkEvents(socket_, core_->GetConnectEvent(), &events);
   int os_error = WSAGetLastError();
   if (rv == SOCKET_ERROR) {
     DLOG(FATAL)
@@ -963,22 +1089,20 @@ void TCPSocketWin::DidCompleteConnect() {
 
   connect_os_error_ = os_error;
   DoConnectComplete(result);
-  waiting_connect_ = false;
 
   DCHECK_NE(result, ERR_IO_PENDING);
-  std::move(read_callback_).Run(result);
+  std::move(connect_callback_).Run(result);
 }
 
-void TCPSocketWin::DidCompleteWrite() {
-  DCHECK(waiting_write_);
+void TCPSocketDefaultWin::DidCompleteWrite() {
   DCHECK(!write_callback_.is_null());
 
+  CoreImpl& core = GetCoreImpl();
   DWORD num_bytes, flags;
-  BOOL ok = WSAGetOverlappedResult(socket_, &core_->write_overlapped_,
-                                   &num_bytes, FALSE, &flags);
+  BOOL ok = WSAGetOverlappedResult(socket_, &core.write_overlapped_, &num_bytes,
+                                   FALSE, &flags);
   int os_error = WSAGetLastError();
-  WSAResetEvent(core_->write_overlapped_.hEvent);
-  waiting_write_ = false;
+  WSAResetEvent(core.write_overlapped_.hEvent);
   int rv;
   if (!ok) {
     rv = MapSystemError(os_error);
@@ -986,32 +1110,32 @@ void TCPSocketWin::DidCompleteWrite() {
                       os_error);
   } else {
     rv = static_cast<int>(num_bytes);
-    if (rv > core_->write_buffer_length_ || rv < 0) {
+    if (rv > core.write_buffer_length_ || rv < 0) {
       // It seems that some winsock interceptors report that more was written
       // than was available. Treat this as an error.  http://crbug.com/27870
       LOG(ERROR) << "Detected broken LSP: Asked to write "
-                 << core_->write_buffer_length_ << " bytes, but " << rv
+                 << core.write_buffer_length_ << " bytes, but " << rv
                  << " bytes reported.";
       rv = ERR_WINSOCK_UNEXPECTED_WRITTEN_BYTES;
     } else {
       net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_SENT,
-                                    num_bytes, core_->write_iobuffer_->data());
+                                    num_bytes, core.write_iobuffer_->data());
     }
   }
 
-  core_->write_iobuffer_ = nullptr;
+  core.write_iobuffer_ = nullptr;
 
   DCHECK_NE(rv, ERR_IO_PENDING);
   std::move(write_callback_).Run(rv);
 }
 
-void TCPSocketWin::DidSignalRead() {
-  DCHECK(waiting_read_);
+void TCPSocketDefaultWin::DidSignalRead() {
   DCHECK(!read_if_ready_callback_.is_null());
 
+  CoreImpl& core = GetCoreImpl();
   int os_error = 0;
   WSANETWORKEVENTS network_events;
-  int rv = WSAEnumNetworkEvents(socket_, core_->read_event_, &network_events);
+  int rv = WSAEnumNetworkEvents(socket_, core.read_event_, &network_events);
   os_error = WSAGetLastError();
 
   if (rv == SOCKET_ERROR) {
@@ -1036,12 +1160,11 @@ void TCPSocketWin::DidSignalRead() {
   } else {
     // This may happen because Read() may succeed synchronously and
     // consume all the received data without resetting the event object.
-    core_->WatchForRead();
+    core.WatchForRead();
     return;
   }
 
   DCHECK_NE(rv, ERR_IO_PENDING);
-  waiting_read_ = false;
   std::move(read_if_ready_callback_).Run(rv);
 }
 
@@ -1061,6 +1184,42 @@ void TCPSocketWin::ApplySocketTag(const SocketTag& tag) {
 int TCPSocketWin::BindToNetwork(handles::NetworkHandle network) {
   NOTIMPLEMENTED();
   return ERR_NOT_IMPLEMENTED;
+}
+
+TCPSocketDefaultWin::TCPSocketDefaultWin(
+    std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetLog* net_log,
+    const NetLogSource& source)
+    : TCPSocketWin(std::move(socket_performance_watcher), net_log, source) {}
+
+TCPSocketDefaultWin::TCPSocketDefaultWin(
+    std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    NetLogWithSource net_log_source)
+    : TCPSocketWin(std::move(socket_performance_watcher),
+                   std::move(net_log_source)) {}
+
+TCPSocketDefaultWin::~TCPSocketDefaultWin() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  Close();
+}
+
+TCPSocketDefaultWin::CoreImpl& TCPSocketDefaultWin::GetCoreImpl() {
+  return CHECK_DEREF(static_cast<CoreImpl*>(core_.get()));
+}
+
+scoped_refptr<TCPSocketWin::Core> TCPSocketDefaultWin::CreateCore() {
+  return base::MakeRefCounted<CoreImpl>(this);
+}
+
+bool TCPSocketDefaultWin::HasPendingRead() const {
+  CHECK(!read_callback_ || read_if_ready_callback_);
+  return !read_if_ready_callback_.is_null();
+}
+
+void TCPSocketDefaultWin::OnClosed() {
+  read_callback_.Reset();
+  read_if_ready_callback_.Reset();
+  write_callback_.Reset();
 }
 
 }  // namespace net

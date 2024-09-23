@@ -13,14 +13,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -28,6 +26,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -180,15 +179,11 @@ const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
   GetURL(&url);
 
   if (url.SchemeIs(content::kChromeUIScheme)) {
-    return (OmniboxFieldTrial::IsChromeRefreshIconsEnabled())
-               ? &omnibox::kProductChromeRefreshIcon
-               : &omnibox::kProductIcon;
+    return &omnibox::kProductChromeRefreshIcon;
   }
 
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    return (OmniboxFieldTrial::IsChromeRefreshIconsEnabled())
-               ? &vector_icons::kExtensionChromeRefreshIcon
-               : &omnibox::kExtensionAppIcon;
+    return &vector_icons::kExtensionChromeRefreshIcon;
   }
 #endif
 

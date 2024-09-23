@@ -15,7 +15,7 @@ namespace blink {
 
 class PLATFORM_EXPORT FontSizeAdjust {
  public:
-  enum class Metric { kExHeight, kCapHeight, kChWidth, kIcWidth };
+  enum class Metric { kExHeight, kCapHeight, kChWidth, kIcWidth, kIcHeight };
   enum class ValueType : bool { kNumber, kFromFont };
 
   FontSizeAdjust() = default;

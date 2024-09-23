@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -26,11 +27,11 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 
 namespace web_app {
@@ -42,7 +43,10 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionForSyncInstall() {
       webapps::WebappInstallSource::SYNC);
   finalize_options.overwrite_existing_manifest_fields = true;
   // If app is not locally installed then no OS integration like OS shortcuts.
-  finalize_options.locally_installed = AreAppsLocallyInstalledBySync();
+  finalize_options.install_state =
+      AreAppsLocallyInstalledBySync()
+          ? proto::InstallState::INSTALLED_WITH_OS_INTEGRATION
+          : proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
   finalize_options.add_to_applications_menu = AreAppsLocallyInstalledBySync();
   finalize_options.add_to_desktop = AreAppsLocallyInstalledBySync();
   // Never add the app to the quick launch bar after sync.
@@ -104,9 +108,8 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   DCHECK(AreAppsLocallyInstalledBySync());
 #endif
   DCHECK(params_.start_url.is_valid());
-  fallback_install_info_ =
-      std::make_unique<WebAppInstallInfo>(params_.manifest_id);
-  fallback_install_info_->start_url = params_.start_url;
+  fallback_install_info_ = std::make_unique<WebAppInstallInfo>(
+      params_.manifest_id, params_.start_url);
   fallback_install_info_->title = base::UTF8ToUTF16(params_.title);
   fallback_install_info_->user_display_mode = params_.user_display_mode;
   fallback_install_info_->scope = params_.scope;
@@ -135,7 +138,7 @@ void InstallFromSyncCommand::StartWithLock(
 
   url_loader_->LoadUrl(
       params_.start_url, &lock_->shared_web_contents(),
-      WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+      webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(
           &InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo,
           weak_ptr_factory_.GetWeakPtr()));
@@ -147,25 +150,25 @@ void InstallFromSyncCommand::SetFallbackTriggeredForTesting(
 }
 
 void InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
-    WebAppUrlLoader::Result result) {
+    webapps::WebAppUrlLoaderResult result) {
   GetMutableDebugValue().Set("WebAppUrlLoader::Result",
                              ConvertUrlLoaderResultToString(result));
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     install_error_log_entry_.LogUrlLoaderError(
         "OnWebAppUrlLoaded", params_.start_url.spec(), result);
   }
 
-  if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
+  if (result == webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded) {
     InstallFallback(webapps::InstallResultCode::kInstallURLRedirected);
     return;
   }
 
-  if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
+  if (result == webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong) {
     InstallFallback(webapps::InstallResultCode::kInstallURLLoadTimeOut);
     return;
   }
 
-  if (result != WebAppUrlLoader::Result::kUrlLoaded) {
+  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     InstallFallback(webapps::InstallResultCode::kInstallURLLoadFailed);
     return;
   }
@@ -203,20 +206,18 @@ void InstallFromSyncCommand::OnGetWebAppInstallInfo(
 
 void InstallFromSyncCommand::OnDidPerformInstallableCheck(
     blink::mojom::ManifestPtr opt_manifest,
-    const GURL& manifest_url,
     bool valid_manifest_for_web_app,
     webapps::InstallableStatusCode error_code) {
-  if (opt_manifest) {
-    UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url,
-                                 install_info_.get());
-  } else {
-    // If there is no manifest, set the manifest id from the parameters.
-    install_info_->manifest_id = params_.manifest_id;
+  if (!opt_manifest) {
+    InstallFallback(webapps::InstallResultCode::kExpectedAppIdCheckFailed);
+    return;
   }
+
+  UpdateWebAppInfoFromManifest(*opt_manifest, install_info_.get());
 
   // Ensure that the manifest linked is the right one.
   webapps::AppId generated_app_id =
-      GenerateAppIdFromManifestId(install_info_->manifest_id);
+      GenerateAppIdFromManifestId(install_info_->manifest_id());
   if (params_.app_id != generated_app_id) {
     // Add the error to the log.
     base::Value::Dict expected_id_error;
@@ -234,7 +235,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
 
   // If the page doesn't have a favicon, then the icon fetcher will hang
   // forever.
-  // TODO(https://crbug.com/1328977): Allow favicons without waiting for them to
+  // TODO(crbug.com/40226606): Allow favicons without waiting for them to
   // be updated on the page.
   IconUrlSizeSet icon_urls = GetValidIconUrlsToDownload(*install_info_);
   data_retriever_->GetIcons(
@@ -275,10 +276,10 @@ void InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall(
                      weak_ptr_factory_.GetWeakPtr(), mode));
 }
 
-void InstallFromSyncCommand::OnInstallFinalized(FinalizeMode mode,
-                                                const webapps::AppId& app_id,
-                                                webapps::InstallResultCode code,
-                                                OsHooksErrors os_hooks_errors) {
+void InstallFromSyncCommand::OnInstallFinalized(
+    FinalizeMode mode,
+    const webapps::AppId& app_id,
+    webapps::InstallResultCode code) {
   if (mode == FinalizeMode::kNormalWebAppInfo && !IsSuccess(code)) {
     InstallFallback(code);
     return;
@@ -330,7 +331,7 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
   // a sync install is not a recordable install source.
   DCHECK(!webapps::InstallableMetrics::IsReportableInstallSource(
       webapps::WebappInstallSource::SYNC));
-  // TODO(https://crbug.com/1303949): migrate LogToInstallManager to take a
+  // TODO(crbug.com/40826246): migrate LogToInstallManager to take a
   // base::Value::Dict
   if (install_error_log_entry_.HasErrorDict()) {
     command_manager()->LogToInstallManager(

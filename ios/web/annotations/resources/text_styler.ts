@@ -10,11 +10,14 @@
 class TextStyler {
   static DECORATION_STYLES = 'border-bottom-width: 1px; ' +
       'border-bottom-style: dotted; ' +
-      'background-color: transparent';
+      'background-color: transparent; ' +
+      'pointer-events: none;';
   static DECORATION_STYLES_FOR_PHONE_AND_EMAIL = 'border-bottom-width: 1px; ' +
       'border-bottom-style: solid; ' +
-      'background-color: transparent';
+      'background-color: transparent; ' +
+      'pointer-events: none;';
   static DECORATION_DEFAULT_COLOR = 'blue';
+  static DECORATION_STYLES_FOR_SPACE = 'white-space: pre';
 
   // Adds style on given `element`.
   style(parentNode: Node, element: HTMLElement, type: string): void {
@@ -31,6 +34,11 @@ class TextStyler {
 
     element.style.borderBottomColor = textColor;
     element.setAttribute('role', 'link');
+  }
+
+  // Styles a whitespace that doesn't collapse with its neighbors.
+  space(element: HTMLElement): void {
+    element.style.cssText = TextStyler.DECORATION_STYLES_FOR_SPACE;
   }
 }
 

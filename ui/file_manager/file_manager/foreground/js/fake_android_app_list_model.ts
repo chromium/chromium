@@ -4,7 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {AndroidAppListModel} from './android_app_list_model.js';
+import type {AndroidAppListModel} from './android_app_list_model.js';
 
 /**
  * @param appNames List app names to be added.

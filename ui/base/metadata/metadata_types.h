@@ -45,6 +45,17 @@ COMPONENT_EXPORT(UI_BASE_METADATA) extern bool operator!(PropertyFlags op);
 // Used to identify the CallbackList<> within the PropertyChangedVectors map.
 using PropertyKey = const void*;
 
+// Used to generate property keys when a single field needs multiple property
+// keys - for example, if you have a single "bounds" field which is a gfx::Rect
+// and want to have four separate properties that all use that field, you can
+// use MakeUniquePropertyKey() rather than using &bounds_ + 0, &bounds_ + 1,
+// and so on. This avoids unsafe buffer use warnings.
+static inline PropertyKey MakeUniquePropertyKey(PropertyKey base,
+                                                uintptr_t offset) {
+  return reinterpret_cast<PropertyKey>(reinterpret_cast<uintptr_t>(base) +
+                                       offset);
+}
+
 using PropertyChangedCallbacks = base::RepeatingClosureList;
 using PropertyChangedCallback = PropertyChangedCallbacks::CallbackType;
 
@@ -87,7 +98,17 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   ClassMetaData& operator=(const ClassMetaData&) = delete;
   virtual ~ClassMetaData();
 
-  const std::string& type_name() const { return type_name_; }
+  const char* type_name() const {
+    static_assert(
+        std::is_same<decltype(type_name_), std::string_view>::value,
+        "This string is logged in plaintext via UMA trace events uploads, so "
+        "must be static as a privacy requirement.");
+    // This is safe because the underlying string is a C string and null
+    // terminated.
+    // TODO(325589481): See if directly returning the string_view would be
+    // desirable.
+    return type_name_.data();
+  }
   const std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>>& members()
       const {
     return members_;
@@ -161,10 +182,11 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
   ClassMemberIterator end();
 
  protected:
-  void SetTypeName(const std::string& type_name);
+  void SetTypeName(const std::string_view type_name);
 
  private:
-  std::string type_name_;
+  // `type_name_` is a static string stored in the binary.
+  std::string_view type_name_;
   mutable std::string unique_name_;
   std::vector<raw_ptr<MemberMetaDataBase, VectorExperimental>> members_;
   raw_ptr<ClassMetaData> parent_class_meta_data_ = nullptr;

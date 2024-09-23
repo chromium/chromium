@@ -18,7 +18,7 @@ class RenderFrameHost;
 // early if if the old document did not opt-in, even if the navigation was
 // initiated from the browser process.
 // See:
-// https://github.com/WICG/view-transitions/blob/main/explainer.md#declarative-opt-in-to-transitions.
+// https://drafts.csswg.org/css-view-transitions-2/#view-transition-rule
 class CONTENT_EXPORT ViewTransitionOptInState
     : public content::DocumentUserData<ViewTransitionOptInState> {
  public:

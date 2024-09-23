@@ -5,18 +5,17 @@
 #ifndef COMPONENTS_MANTA_SNAPPER_PROVIDER_H_
 #define COMPONENTS_MANTA_SNAPPER_PROVIDER_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/base_provider.h"
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/proto/manta.pb.h"
+#include "components/manta/provider_params.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -28,48 +27,36 @@ namespace manta {
 // IMPORTANT: This class depends on `IdentityManager`.
 // `SnapperProvider::Call` will return an empty response after `IdentityManager`
 // destruction.
-class COMPONENT_EXPORT(MANTA) SnapperProvider
-    : public signin::IdentityManager::Observer {
+class COMPONENT_EXPORT(MANTA) SnapperProvider : virtual public BaseProvider {
  public:
   // Returns a `SnapperProvider` instance tied to the profile of the passed
   // arguments.
   SnapperProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      const ProviderParams& provider_params);
 
   SnapperProvider(const SnapperProvider&) = delete;
   SnapperProvider& operator=(const SnapperProvider&) = delete;
 
   ~SnapperProvider() override;
 
-  // Calls the google service endpoint with the provided request as the http
-  // POST request payload. The fetched response is returned to the caller via a
-  // `MantaProtoResponseCallback` callback.
-  // `done_callback` will be called with nullptr if `IdentityManager` is no
-  // longer valid.
-  virtual void Call(const manta::proto::Request& request,
+  // Adds some additional metadata to the mutable request and calls the google
+  // service endpoint with it as the http POST `request` and the specified
+  // `traffic_annotation`. The fetched response is returned to the caller via
+  // `done_callback. `done_callback` will be called with nullptr if
+  // `IdentityManager` is no longer valid.
+  virtual void Call(manta::proto::Request& request,
+                    net::NetworkTrafficAnnotationTag traffic_annotation,
                     MantaProtoResponseCallback done_callback);
 
-  // signin::IdentityManager::Observer:
-  void OnIdentityManagerShutdown(
-      signin::IdentityManager* identity_manager) override;
+ protected:
+  SnapperProvider(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
 
  private:
   friend class FakeSnapperProvider;
-
-  // Creates and returns unique pointer to an `EndpointFetcher` initialized with
-  // the provided parameters and defaults relevant to `SnapperProvider`. Virtual
-  // to allow overriding in tests.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const GURL& url,
-      const std::vector<std::string>& scopes,
-      const std::string& post_data);
-
-  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
 
   base::WeakPtrFactory<SnapperProvider> weak_ptr_factory_{this};
 };

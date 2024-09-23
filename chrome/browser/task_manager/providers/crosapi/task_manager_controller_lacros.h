@@ -30,7 +30,8 @@ class TaskManagerControllerLacros : public TaskManagerObserver {
 
   using GetTaskManagerTasksCallback =
       base::OnceCallback<void(std::vector<crosapi::mojom::TaskPtr>,
-                              std::vector<crosapi::mojom::TaskGroupPtr>)>;
+                              std::vector<crosapi::mojom::TaskGroupPtr>,
+                              const std::optional<std::string>&)>;
   // Gets task manager's task data.
   void GetTaskManagerTasks(GetTaskManagerTasksCallback callback);
 

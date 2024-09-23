@@ -9,7 +9,6 @@
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -24,9 +23,9 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSemaphore.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
@@ -293,7 +292,12 @@ SkiaVkAndroidImageRepresentation::GetEndAccessState() {
   if (!vulkan_image_)
     return nullptr;
 
-  const uint32_t kSingleDeviceUsage =
+  // `kSingleDeviceUsage` defines the set of usages for which only the Vulkan
+  // device from SharedContextState is used. If the SI has any usages outside
+  // this set (e.g., if it has any GLES2 usage, including
+  // RASTER_OVER_GLES2_ONLY), then it will be accessed beyond the Vulkan device
+  // from SharedContextState and hence does not have single-device usage.
+  const SharedImageUsageSet kSingleDeviceUsage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
       SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
@@ -303,7 +307,7 @@ SkiaVkAndroidImageRepresentation::GetEndAccessState() {
   // same vkDevice, so technically we could transfer between queues instead of
   // jumping to external queue. But currently it's not possible because we
   // create new vkImage each time.
-  if ((android_backing()->usage() & ~kSingleDeviceUsage) ||
+  if (!kSingleDeviceUsage.HasAll(android_backing()->usage()) ||
       android_backing()->is_thread_safe()) {
     return std::make_unique<skgpu::MutableTextureState>(
         skgpu::MutableTextureStates::MakeVulkan(

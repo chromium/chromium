@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/services/font/public/cpp/font_loader.h"
+
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "components/services/font/font_service_app.h"
-#include "components/services/font/public/cpp/font_loader.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
 #include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,9 +40,9 @@ std::string GetPostscriptNameFromFile(base::File& font_file) {
   if (!file_size)
     return "";
 
-  std::vector<char> file_contents;
-  file_contents.resize(file_size);
-  CHECK_EQ(file_size, font_file.Read(0, file_contents.data(), file_size));
+  std::vector<char> file_contents(file_size);
+  CHECK(font_file.ReadAndCheck(0, base::as_writable_byte_span(file_contents)));
+
   std::string font_family_name;
   FT_Library library;
   FT_Init_FreeType(&library);

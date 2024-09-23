@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/heap_array.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/i18n/case_conversion.h"
@@ -21,7 +22,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
 #include "base/strings/strcat_win.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/pe_image_reader.h"
@@ -239,7 +239,7 @@ void GetCertificateInfo(const base::FilePath& filename,
   certificate_info->subject = subject;
 }
 
-bool IsMicrosoftModule(base::StringPiece16 subject) {
+bool IsMicrosoftModule(std::u16string_view subject) {
   static constexpr char16_t kMicrosoft[] = u"Microsoft ";
   return base::StartsWith(subject, kMicrosoft);
 }
@@ -293,24 +293,22 @@ bool GetModuleImageSizeAndTimeDateStamp(const base::FilePath& path,
                                         uint32_t* size_of_image,
                                         uint32_t* time_date_stamp) {
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return false;
+  }
 
   // The values fetched here from the NT header live in the first 4k bytes of
   // the file in a well-formed dll.
   constexpr size_t kPageSize = 4096;
 
-  // Note: std::make_unique() is explicitly avoided because it does value-
-  //       initialization on arrays, which is not needed in this case.
-  auto buffer = std::unique_ptr<uint8_t[]>(new uint8_t[kPageSize]);
-  int bytes_read =
-      file.Read(0, reinterpret_cast<char*>(buffer.get()), kPageSize);
-  if (bytes_read == -1)
+  auto buffer = base::HeapArray<uint8_t>::Uninit(kPageSize);
+  std::optional<size_t> bytes_read = file.Read(0, buffer);
+  if (!bytes_read.has_value()) {
     return false;
+  }
 
   base::win::PeImageReader pe_image_reader;
-  if (!pe_image_reader.Initialize(base::make_span(
-          buffer.get(), base::checked_cast<size_t>(bytes_read)))) {
+  if (!pe_image_reader.Initialize(buffer.first(bytes_read.value()))) {
     return false;
   }
 

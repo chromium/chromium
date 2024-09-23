@@ -108,14 +108,13 @@
 ; Reads of signed Mach-O blobs created by the CVMS server.
 ; https://crbug.com/850021
 (define (allow-cvms-blobs)
-  (if (>= os-version 1014)
-    (begin
-      (allow file-read* file-write-unlink
-        (prefix "/private/tmp/cvmsCodeSignObj"))
-      (allow file-read*
-        (extension "com.apple.cvms.kernel")
-        (prefix "/private/var/db/CVMS/cvmsCodeSignObj"))
-)))
+  (begin
+    (allow file-read* file-write-unlink
+      (prefix "/private/tmp/cvmsCodeSignObj"))
+    (allow file-read*
+      (extension "com.apple.cvms.kernel")
+      (prefix "/private/var/db/CVMS/cvmsCodeSignObj"))
+))
 
 ; Allow logging for all processes.
 (allow file-write*
@@ -189,6 +188,15 @@
   (subpath "/System/Library/Preferences/Logging")
   (subpath "/System/Library/PrivateFrameworks")
   (subpath "/usr/lib")
+)
+
+; In some circumstances, Safari updates are installed below /Library/Apple and
+; SafariServices.framework in /System/Library/Frameworks is replaced with a
+; symlink into that directory tree. These paths must be readable to allow
+; the framework to be loaded.
+(allow file-read*
+  (subpath "/Library/Apple/System/Library/Frameworks")
+  (subpath "/Library/Apple/System/Library/PrivateFrameworks")
 )
 
 ; Reads from /etc.
@@ -267,15 +275,31 @@
   (sysctl-name "hw.activecpu")
   (sysctl-name "hw.busfrequency_compat")
   (sysctl-name "hw.byteorder")
+  (sysctl-name "hw.cacheconfig")
   (sysctl-name "hw.cachelinesize_compat")
+  (sysctl-name "hw.cpufamily")
   (sysctl-name "hw.cpufrequency_compat")
   (sysctl-name "hw.cputype")
+  (sysctl-name "hw.l1dcachesize_compat")
+  (sysctl-name "hw.l1icachesize_compat")
+  (sysctl-name "hw.l2cachesize_compat")
+  (sysctl-name "hw.l3cachesize_compat")
   (sysctl-name "hw.logicalcpu_max")
   (sysctl-name "hw.machine")
   (sysctl-name "hw.ncpu")
   (sysctl-name "hw.nperflevels")
+  (sysctl-name "hw.optional.arm.FEAT_BF16")
+  (sysctl-name "hw.optional.arm.FEAT_DotProd")
+  (sysctl-name "hw.optional.arm.FEAT_FCMA")
+  (sysctl-name "hw.optional.arm.FEAT_FHM")
+  (sysctl-name "hw.optional.arm.FEAT_FP16")
+  (sysctl-name "hw.optional.arm.FEAT_I8MM")
+  (sysctl-name "hw.optional.arm.FEAT_JSCVT")
+  (sysctl-name "hw.optional.arm.FEAT_LSE")
+  (sysctl-name "hw.optional.arm.FEAT_RDM")
   (sysctl-name "hw.optional.arm.FEAT_SHA512")
   (sysctl-name "hw.optional.armv8_2_sha512")
+  (sysctl-name "hw.packages")
   (sysctl-name "hw.pagesize_compat")
   (sysctl-name "hw.physicalcpu_max")
   (sysctl-name "hw.tbfrequency_compat")

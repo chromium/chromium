@@ -17,17 +17,22 @@
 #ifndef MEDIAPIPE_FRAMEWORK_SUBGRAPH_H_
 #define MEDIAPIPE_FRAMEWORK_SUBGRAPH_H_
 
-#include "absl/base/macros.h"
-#include "absl/memory/memory.h"
+#include <functional>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "absl/status/status.h"
+#include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 #include "mediapipe/framework/calculator.pb.h"
 #include "mediapipe/framework/deps/registration.h"
 #include "mediapipe/framework/graph_service.h"
 #include "mediapipe/framework/graph_service_manager.h"
-#include "mediapipe/framework/port/status.h"
-#include "mediapipe/framework/port/statusor.h"
+#include "mediapipe/framework/resources.h"
+#include "mediapipe/framework/resources_service.h"
 #include "mediapipe/framework/tool/calculator_graph_template.pb.h"
 #include "mediapipe/framework/tool/options_util.h"
 
@@ -38,17 +43,22 @@ class SubgraphContext {
   SubgraphContext() : SubgraphContext(nullptr, nullptr) {}
   // @node and/or @service_manager can be nullptr.
   SubgraphContext(CalculatorGraphConfig::Node* node,
-                  const GraphServiceManager* service_manager)
-      : default_node_(node ? absl::nullopt
-                           : absl::optional<CalculatorGraphConfig::Node>(
+                  std::shared_ptr<GraphServiceManager> service_manager)
+      : default_node_(node ? std::nullopt
+                           : std::optional<CalculatorGraphConfig::Node>(
                                  CalculatorGraphConfig::Node())),
         original_node_(node ? *node : default_node_.value()),
-        default_service_manager_(
-            service_manager
-                ? absl::nullopt
-                : absl::optional<GraphServiceManager>(GraphServiceManager())),
-        service_manager_(service_manager ? *service_manager
-                                         : default_service_manager_.value()),
+        service_manager_(service_manager
+                             ? std::move(service_manager)
+                             : std::make_shared<GraphServiceManager>()),
+        resources_([this]() {
+          std::shared_ptr<Resources> resources =
+              service_manager_->GetServiceObject(kResourcesService);
+          if (!resources) {
+            resources = CreateDefaultResources();
+          }
+          return resources;
+        }()),
         options_map_(
             std::move(tool::MutableOptionsMap().Initialize(original_node_))) {}
 
@@ -73,19 +83,29 @@ class SubgraphContext {
 
   template <typename T>
   ServiceBinding<T> Service(const GraphService<T>& service) const {
-    return ServiceBinding<T>(service_manager_.GetServiceObject(service));
+    return ServiceBinding<T>(service_manager_->GetServiceObject(service));
   }
+
+  // Gets interface to access resources (file system, assets, etc.) from
+  // subgraphs.
+  //
+  // NOTE: this is the preferred way to access resources from subgraphs and
+  // calculators as it allows for fine grained per graph configuration.
+  //
+  // Resources can be configured by setting a custom `kResourcesService` graph
+  // service on `CalculatorGraph`. The default resources service can be created
+  // and reused through `CreateDefaultResources`.
+  const Resources& GetResources() { return *resources_; }
 
  private:
   // Populated if node is not provided during construction.
-  absl::optional<CalculatorGraphConfig::Node> default_node_;
+  std::optional<CalculatorGraphConfig::Node> default_node_;
 
   CalculatorGraphConfig::Node& original_node_;
 
-  // Populated if service manager is not provided during construction.
-  const absl::optional<GraphServiceManager> default_service_manager_;
+  std::shared_ptr<GraphServiceManager> service_manager_;
 
-  const GraphServiceManager& service_manager_;
+  std::shared_ptr<Resources> resources_;
 
   tool::MutableOptionsMap options_map_;
 };
@@ -143,7 +163,7 @@ using SubgraphRegistry = GlobalFactoryRegistry<std::unique_ptr<Subgraph>>;
 #define REGISTER_MEDIAPIPE_GRAPH(name)                             \
   REGISTER_FACTORY_FUNCTION_QUALIFIED(mediapipe::SubgraphRegistry, \
                                       subgraph_registration, name, \
-                                      absl::make_unique<name>)
+                                      std::make_unique<name>)
 
 // A graph factory holding a literal CalculatorGraphConfig.
 class ProtoSubgraph : public Subgraph {

@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "chrome/utility/safe_browsing/rar_analyzer.h"
 #include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
 #include "chrome/utility/safe_browsing/zip_analyzer.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
@@ -18,14 +17,16 @@
 #include "chrome/utility/safe_browsing/mac/dmg_analyzer.h"
 #endif
 
+#if USE_UNRAR
+#include "chrome/utility/safe_browsing/rar_analyzer.h"
+#endif
+
 namespace safe_browsing {
 
 // static
 std::unique_ptr<ArchiveAnalyzer> ArchiveAnalyzer::CreateForArchiveType(
     DownloadFileType_InspectionType file_type) {
-  if (file_type == DownloadFileType::RAR) {
-    return std::make_unique<RarAnalyzer>();
-  } else if (file_type == DownloadFileType::ZIP) {
+  if (file_type == DownloadFileType::ZIP) {
     return std::make_unique<ZipAnalyzer>();
   } else if (file_type == DownloadFileType::SEVEN_ZIP) {
     return std::make_unique<SevenZipAnalyzer>();
@@ -34,6 +35,12 @@ std::unique_ptr<ArchiveAnalyzer> ArchiveAnalyzer::CreateForArchiveType(
 #if BUILDFLAG(IS_MAC)
   if (file_type == DownloadFileType::DMG) {
     return std::make_unique<dmg::DMGAnalyzer>();
+  }
+#endif
+
+#if USE_UNRAR
+  if (file_type == DownloadFileType::RAR) {
+    return std::make_unique<RarAnalyzer>();
   }
 #endif
 
@@ -86,9 +93,12 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
                                             bool is_encrypted,
                                             bool is_directory,
                                             bool contents_valid) {
-  if (base::FeatureList::IsEnabled(kNestedArchives) && !is_encrypted) {
+  if (!is_encrypted) {
     nested_analyzer_ = ArchiveAnalyzer::CreateForArchiveType(GetFileType(path));
     if (nested_analyzer_) {
+      // Archive analyzers expect to start at the beginning of the
+      // archive, but we may be at the end.
+      entry.Seek(base::File::FROM_BEGIN, 0);
       nested_analyzer_->Analyze(
           entry.Duplicate(), path, password(),
           base::BindOnce(&ArchiveAnalyzer::NestedAnalysisFinished, GetWeakPtr(),
@@ -105,7 +115,8 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
   }
 
   UpdateArchiveAnalyzerResultsWithFile(path, &entry, file_length, is_encrypted,
-                                       is_directory, contents_valid, results_);
+                                       is_directory, contents_valid,
+                                       IsTopLevelArchive(), results_);
   return true;
 }
 
@@ -147,6 +158,10 @@ void ArchiveAnalyzer::NestedAnalysisFinished(base::File entry,
   if (ResumeExtraction()) {
     std::move(finished_analysis_callback_).Run();
   }
+}
+
+bool ArchiveAnalyzer::IsTopLevelArchive() const {
+  return root_path_.empty();
 }
 
 }  // namespace safe_browsing

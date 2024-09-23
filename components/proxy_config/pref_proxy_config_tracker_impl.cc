@@ -15,11 +15,13 @@
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "net/base/proxy_server.h"
+#include "net/net_buildflags.h"
 #include "url/gurl.h"
 
 namespace {
@@ -66,8 +68,9 @@ ProxyConfigServiceImpl::ProxyConfigServiceImpl(
 }
 
 ProxyConfigServiceImpl::~ProxyConfigServiceImpl() {
-  if (registered_observer_ && base_service_.get())
+  if (registered_observer_ && base_service_.get()) {
     base_service_->RemoveObserver(this);
+  }
 }
 
 void ProxyConfigServiceImpl::AddObserver(
@@ -90,8 +93,9 @@ ProxyConfigServiceImpl::GetLatestProxyConfig(
   net::ProxyConfigWithAnnotation system_config;
   ConfigAvailability system_availability =
       net::ProxyConfigService::CONFIG_UNSET;
-  if (base_service_)
+  if (base_service_) {
     system_availability = base_service_->GetLatestProxyConfig(&system_config);
+  }
 
   ProxyPrefs::ConfigState config_state;
   return PrefProxyConfigTrackerImpl::GetEffectiveProxyConfig(
@@ -100,8 +104,9 @@ ProxyConfigServiceImpl::GetLatestProxyConfig(
 }
 
 void ProxyConfigServiceImpl::OnLazyPoll() {
-  if (base_service_)
+  if (base_service_) {
     base_service_->OnLazyPoll();
+  }
 }
 
 bool ProxyConfigServiceImpl::UsesPolling() {
@@ -115,8 +120,9 @@ void ProxyConfigServiceImpl::UpdateProxyConfig(
   pref_config_state_ = config_state;
   pref_config_ = config;
 
-  if (observers_.empty())
+  if (observers_.empty()) {
     return;
+  }
 
   // Evaluate the proxy configuration. If GetLatestProxyConfig returns
   // CONFIG_PENDING, we are using the system proxy service, but it doesn't have
@@ -129,8 +135,9 @@ void ProxyConfigServiceImpl::UpdateProxyConfig(
   net::ProxyConfigWithAnnotation new_config;
   ConfigAvailability availability = GetLatestProxyConfig(&new_config);
   if (availability != CONFIG_PENDING) {
-    for (net::ProxyConfigService::Observer& observer : observers_)
+    for (net::ProxyConfigService::Observer& observer : observers_) {
       observer.OnProxyConfigChanged(new_config, availability);
+    }
   }
 }
 
@@ -145,8 +152,9 @@ void ProxyConfigServiceImpl::OnProxyConfigChanged(
   if (!PrefProxyConfigTrackerImpl::PrefPrecedes(pref_config_state_)) {
     net::ProxyConfigWithAnnotation actual_config;
     availability = GetLatestProxyConfig(&actual_config);
-    for (net::ProxyConfigService::Observer& observer : observers_)
+    for (net::ProxyConfigService::Observer& observer : observers_) {
       observer.OnProxyConfigChanged(actual_config, availability);
+    }
   }
 }
 
@@ -229,10 +237,11 @@ PrefProxyConfigTrackerImpl::GetEffectiveProxyConfig(
 
   if (system_availability == net::ProxyConfigService::CONFIG_UNSET) {
     // If there's no system proxy config, fall back to prefs or default.
-    if (pref_state == ProxyPrefs::CONFIG_FALLBACK && !ignore_fallback_config)
+    if (pref_state == ProxyPrefs::CONFIG_FALLBACK && !ignore_fallback_config) {
       *effective_config = pref_config;
-    else
+    } else {
       *effective_config = net::ProxyConfigWithAnnotation::CreateDirect();
+    }
     return net::ProxyConfigService::CONFIG_VALID;
   }
 
@@ -294,8 +303,9 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
 ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::GetProxyConfig(
     net::ProxyConfigWithAnnotation* config) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (pref_config_state_ != ProxyPrefs::CONFIG_UNSET)
+  if (pref_config_state_ != ProxyPrefs::CONFIG_UNSET) {
     *config = pref_config_;
+  }
   return pref_config_state_;
 }
 
@@ -310,11 +320,13 @@ void PrefProxyConfigTrackerImpl::OnProxyConfigChanged(
   }
 
   active_config_state_ = config_state;
-  if (active_config_state_ != ProxyPrefs::CONFIG_UNSET)
+  if (active_config_state_ != ProxyPrefs::CONFIG_UNSET) {
     active_config_ = config;
+  }
 
-  if (!proxy_config_service_impl_)
+  if (!proxy_config_service_impl_) {
     return;
+  }
 
   // If the ProxyConfigService lives on the current thread, just synchronously
   // tell it about the new configuration.
@@ -382,7 +394,19 @@ bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
                    << "specify their URLs. Falling back to direct connection.";
         return true;
       }
-      proxy_config.proxy_rules().ParseFromString(proxy_server);
+
+      bool allow_bracketed_proxy_chains = false;
+      bool allow_quic_proxy_support = false;
+
+#if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+      allow_bracketed_proxy_chains = true;
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+      allow_quic_proxy_support = true;
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
+      proxy_config.proxy_rules().ParseFromString(
+          proxy_server, allow_bracketed_proxy_chains, allow_quic_proxy_support);
 
       std::string proxy_bypass;
       if (proxy_dict.GetBypassList(&proxy_bypass)) {
@@ -396,7 +420,8 @@ bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
       // Fall through to NOTREACHED().
     }
   }
-  NOTREACHED() << "Unknown proxy mode, falling back to system settings.";
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown proxy mode, falling back to system settings.";
   return false;
 }
 
@@ -409,8 +434,9 @@ void PrefProxyConfigTrackerImpl::OnProxyPrefChanged() {
       (pref_config_state_ != ProxyPrefs::CONFIG_UNSET &&
        !pref_config_.value().Equals(new_config.value()))) {
     pref_config_state_ = config_state;
-    if (pref_config_state_ != ProxyPrefs::CONFIG_UNSET)
+    if (pref_config_state_ != ProxyPrefs::CONFIG_UNSET) {
       pref_config_ = new_config;
+    }
     OnProxyConfigChanged(config_state, new_config);
   }
 }

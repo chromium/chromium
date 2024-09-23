@@ -7,10 +7,10 @@
 
 #include <deque>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/range/range.h"
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) SurroundingTextTracker {
     // Returns the string piece of the composition range of the
     // |surrounding_text|.
     // If composition is out of the range, nullopt will be returned.
-    std::optional<base::StringPiece16> GetCompositionText() const;
+    std::optional<std::u16string_view> GetCompositionText() const;
 
     // Whole surrounding text, specifically this may include composition text.
     std::u16string surrounding_text;
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) SurroundingTextTracker {
   // Otherwise, forgets everything and reset by the state of the given
   // arguments, then returns kHistoryIsReset.
   // Note intentiontally ignored composition text.
-  UpdateResult Update(const base::StringPiece16 surrounding_text,
+  UpdateResult Update(const std::u16string_view surrounding_text,
                       size_t utf16_offset,
                       const gfx::Range& selection);
 
@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) SurroundingTextTracker {
   void OnSetCompositionFromExistingText(const gfx::Range& range);
   void OnConfirmCompositionText(bool keep_selection);
   void OnClearCompositionText();
-  void OnInsertText(const base::StringPiece16 text,
+  void OnInsertText(const std::u16string_view text,
                     TextInputClient::InsertTextCursorBehavior cursor_behavior);
   void OnExtendSelectionAndDelete(size_t before, size_t after);
 
@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) SurroundingTextTracker {
     ~Entry();
   };
 
-  void ResetInternal(base::StringPiece16 surrounding_text,
+  void ResetInternal(std::u16string_view surrounding_text,
                      size_t utf16_offset,
                      const gfx::Range& selection);
 

@@ -273,8 +273,9 @@ async function asyncClassifyHosts(hosts: string[], sequenceNumber: number) {
 }
 
 function clearHostsClassificationResult() {
-  const table = document.querySelector('#hosts-classification-result-table')! as
-      HTMLTableElement;
+  const table = document.querySelector<HTMLTableElement>(
+      '#hosts-classification-result-table');
+  assert(table);
 
   while (table.rows[1]) {
     table.deleteRow(1);
@@ -317,9 +318,9 @@ async function asyncGetModelInfo() {
               '#hosts-classification-button')!.addEventListener('click', () => {
     clearHostsClassificationResult();
 
-    const input = (document.querySelector('#input-hosts-textarea')! as
-                   HTMLTextAreaElement)
-                      .value;
+    const input =
+        document.querySelector<HTMLTextAreaElement>(
+                    '#input-hosts-textarea')!.value;
     const hosts = input!.split('\n');
 
     const preprocessedHosts = [] as string[];

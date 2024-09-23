@@ -61,7 +61,7 @@ class WebrtcVideoEncoder {
     FrameStats& operator=(const FrameStats&) = default;
     virtual ~FrameStats() = default;
 
-    // TODO(crbug.com/1192865): Consolidate all the per-frame statistics
+    // TODO(crbug.com/40175068): Consolidate all the per-frame statistics
     // into a single struct in remoting/protocol.
     base::TimeTicks capture_started_time;
     base::TimeTicks capture_ended_time;
@@ -124,8 +124,9 @@ class WebrtcVideoEncoder {
 
   // Encoder configurable settings, may be provided via SDP or OOB via a
   // proprietary message.
-  virtual void SetLosslessEncode(bool want_lossless) {}
-  virtual void SetLosslessColor(bool want_lossless) {}
+  virtual void SetLosslessEncode(bool want_lossless_encode) {}
+  virtual void SetLosslessColor(bool want_lossless_color) {}
+  virtual void SetUseActiveMap(bool use_active_map) {}
   virtual void SetEncoderSpeed(int encoder_speed) {}
 
   // Encode an image stored in |frame|. If frame.updated_region() is empty

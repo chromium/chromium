@@ -16,10 +16,13 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
+#include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
+#include "components/segmentation_platform/internal/selection/selection_utils.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 
 namespace segmentation_platform {
@@ -37,26 +40,21 @@ std::string SegmentMetadataToString(const proto::SegmentInfo& segment_info) {
 
 std::string PredictionResultToString(const proto::SegmentInfo& segment_info,
                                      const std::optional<float>& segment_rank) {
-  if (!segment_info.has_prediction_result()) {
-    if (!segment_rank)
-      return std::string();
-    // Rank maybe available without segment info since it is stored in prefs.
-    return base::StringPrintf("rank: %f", *segment_rank);
+  if (!segment_info.has_prediction_result() ||
+      !segment_info.prediction_result().has_output_config()) {
+    return std::string();
   }
-  const auto prediction_result = segment_info.prediction_result();
-  base::Time time;
-  if (prediction_result.has_timestamp_us()) {
-    time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(prediction_result.timestamp_us()));
+  const auto& prediction_result = segment_info.prediction_result();
+  if (PostProcessor::IsClassificationResult(prediction_result)) {
+    return PostProcessor()
+        .GetPostProcessedClassificationResult(prediction_result,
+                                              PredictionStatus::kSucceeded)
+        .ToDebugString();
+  } else {
+    return PostProcessor()
+        .GetRawResult(prediction_result, PredictionStatus::kSucceeded)
+        .ToDebugString();
   }
-  std::ostringstream time_string;
-  time_string << time;
-  const float kInvalidScore = -1;
-  // TODO(ritikagup) : Make changes to print all the values in result.
-  return base::StringPrintf(
-      "result: %f, time: %s, rank: %f",
-      prediction_result.result_size() > 0 ? prediction_result.result()[0] : 0,
-      time_string.str().c_str(), segment_rank ? *segment_rank : kInvalidScore);
 }
 
 base::flat_set<proto::SegmentId> GetAllSegmentIds(
@@ -221,6 +219,8 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
       result.back().segment_status.emplace_back(
           segment_id.first, SegmentMetadataToString(*info),
           PredictionResultToString(*info, current_segment_rank),
+          base::Time::FromDeltaSinceWindowsEpoch(
+              base::Microseconds(info->prediction_result().timestamp_us())),
           can_execute_segment);
     }
   }

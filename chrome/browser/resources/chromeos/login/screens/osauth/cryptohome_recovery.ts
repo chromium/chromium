@@ -10,29 +10,22 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './cryptohome_recovery.html.js';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 enum CryptohomeRecoveryUIState {
   LOADING = 'loading',
-  DONE = 'done',
-  ERROR = 'error',
   REAUTH_NOTIFICATION = 'reauth-notification',
 }
 
 const CryptohomeRecoveryBase =
-    mixinBehaviors(
-      [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-      PolymerElement) as {
-        new (): PolymerElement & OobeI18nBehaviorInterface &
-            LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-  };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 class CryptohomeRecovery extends CryptohomeRecoveryBase {
   static get is() {
@@ -78,8 +71,6 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
 
   override get EXTERNAL_API(): string[] {
     return [
-      'onRecoverySucceeded',
-      'onRecoveryFailed',
       'showReauthNotification',
     ];
   }
@@ -92,7 +83,8 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   /**
    * Invoked just before being shown.
    */
-  onBeforeShow(): void {
+  override onBeforeShow(): void {
+    super.onBeforeShow();
     this.reset();
   }
 
@@ -102,60 +94,11 @@ class CryptohomeRecovery extends CryptohomeRecoveryBase {
   }
 
   /**
-   * Called when Cryptohome recovery succeeded.
-   */
-  onRecoverySucceeded(): void {
-    this.setUIStep(CryptohomeRecoveryUIState.DONE);
-    this.disabled = false;
-  }
-
-  /**
-   * Called when Cryptohome recovery failed.
-   */
-  onRecoveryFailed(): void {
-    this.setUIStep(CryptohomeRecoveryUIState.ERROR);
-    this.disabled = false;
-  }
-
-  /**
    * Shows a reauth required message when there's no reauth proof token.
    */
   showReauthNotification(): void {
     this.setUIStep(CryptohomeRecoveryUIState.REAUTH_NOTIFICATION);
     this.disabled = false;
-  }
-
-  /**
-   * Enter old password button click handler.
-   */
-  private onGoToManualRecovery(): void {
-    if (this.disabled) {
-      return;
-    }
-    this.disabled = true;
-    this.userActed('enter-old-password');
-  }
-
-  /**
-   * Retry button click handler.
-   */
-  private onRetry(): void {
-    if (this.disabled) {
-      return;
-    }
-    this.disabled = true;
-    this.userActed('retry');
-  }
-
-  /**
-   * Done button click handler.
-   */
-  private onDone(): void {
-    if (this.disabled) {
-      return;
-    }
-    this.disabled = true;
-    this.userActed('done');
   }
 
   /**

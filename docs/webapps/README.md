@@ -31,6 +31,8 @@ See [Web Apps - Concepts][4].
 
 Use [chrome://web-app-internals][5] to inspect internal web app state. For Chromium versions prior to M93 use [chrome://internals/web-app][6].
 
+To test the behavior of the web app itself, Chrome DevTools Protocol can be used. See [Instruction of using PWA via CDP][59].
+
 ### Documentation Guidelines
 
 - Markdown documentation (files like this):
@@ -311,3 +313,4 @@ This information is used when launching a web app (to determine what profile or 
 [54]: webui_web_app.md
 [57]: https://source.chromium.org/search?q=WebAppInternalsHandler::BuildDebugInfo
 [58]: testing.md
+[59]: cdp-integration.md

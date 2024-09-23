@@ -12,12 +12,12 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
+#include "components/qr_code_generator/error.h"
 
 namespace qr_code_generator {
 
-// Contains output data for Generate().
+// Contains output data from Generate().
 // The default state contains no data.
 struct GeneratedCode {
  public:
@@ -52,7 +52,7 @@ struct GeneratedCode {
 // The generator will attempt to choose a version that fits the data and which
 // is >= |min_version|, if given. The returned span's length is
 // input-dependent and not known at compile-time.
-std::optional<GeneratedCode> Generate(
+base::expected<GeneratedCode, Error> GenerateCode(
     base::span<const uint8_t> in,
     std::optional<int> min_version = std::nullopt);
 

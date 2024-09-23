@@ -3,8 +3,7 @@
 # found in the LICENSE file.
 
 import unittest
-
-import mock
+from unittest import mock
 
 from core.services import pinpoint_service
 

@@ -5,9 +5,9 @@
 #include "net/spdy/spdy_stream_test_util.h"
 
 #include <cstddef>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,16 +23,16 @@ ClosingDelegate::~ClosingDelegate() = default;
 void ClosingDelegate::OnHeadersSent() {}
 
 void ClosingDelegate::OnEarlyHintsReceived(
-    const spdy::Http2HeaderBlock& headers) {}
+    const quiche::HttpHeaderBlock& headers) {}
 
 void ClosingDelegate::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {}
+    const quiche::HttpHeaderBlock& response_headers) {}
 
 void ClosingDelegate::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {}
 
 void ClosingDelegate::OnDataSent() {}
 
-void ClosingDelegate::OnTrailers(const spdy::Http2HeaderBlock& trailers) {}
+void ClosingDelegate::OnTrailers(const quiche::HttpHeaderBlock& trailers) {}
 
 void ClosingDelegate::OnClose(int status) {
   DCHECK(stream_);
@@ -60,13 +60,13 @@ void StreamDelegateBase::OnHeadersSent() {
 }
 
 void StreamDelegateBase::OnEarlyHintsReceived(
-    const spdy::Http2HeaderBlock& headers) {
+    const quiche::HttpHeaderBlock& headers) {
   EXPECT_TRUE(send_headers_completed_);
   early_hints_.push_back(headers.Clone());
 }
 
 void StreamDelegateBase::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   EXPECT_TRUE(send_headers_completed_);
   response_headers_ = response_headers.Clone();
 }
@@ -78,7 +78,7 @@ void StreamDelegateBase::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
 
 void StreamDelegateBase::OnDataSent() {}
 
-void StreamDelegateBase::OnTrailers(const spdy::Http2HeaderBlock& trailers) {}
+void StreamDelegateBase::OnTrailers(const quiche::HttpHeaderBlock& trailers) {}
 
 void StreamDelegateBase::OnClose(int status) {
   if (!stream_.get())
@@ -114,7 +114,7 @@ std::string StreamDelegateBase::TakeReceivedData() {
 
 std::string StreamDelegateBase::GetResponseHeaderValue(
     const std::string& name) const {
-  spdy::Http2HeaderBlock::const_iterator it = response_headers_.find(name);
+  quiche::HttpHeaderBlock::const_iterator it = response_headers_.find(name);
   return (it == response_headers_.end()) ? std::string()
                                          : std::string(it->second);
 }
@@ -143,13 +143,13 @@ void StreamDelegateConsumeData::OnDataReceived(
 
 StreamDelegateSendImmediate::StreamDelegateSendImmediate(
     const base::WeakPtr<SpdyStream>& stream,
-    base::StringPiece data)
+    std::string_view data)
     : StreamDelegateBase(stream), data_(data) {}
 
 StreamDelegateSendImmediate::~StreamDelegateSendImmediate() = default;
 
 void StreamDelegateSendImmediate::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   StreamDelegateBase::OnHeadersReceived(response_headers);
   if (data_.data()) {
     scoped_refptr<StringIOBuffer> buf =
@@ -160,7 +160,7 @@ void StreamDelegateSendImmediate::OnHeadersReceived(
 
 StreamDelegateWithBody::StreamDelegateWithBody(
     const base::WeakPtr<SpdyStream>& stream,
-    base::StringPiece data)
+    std::string_view data)
     : StreamDelegateBase(stream),
       buf_(base::MakeRefCounted<StringIOBuffer>(std::string(data))) {}
 
@@ -179,7 +179,7 @@ StreamDelegateCloseOnHeaders::StreamDelegateCloseOnHeaders(
 StreamDelegateCloseOnHeaders::~StreamDelegateCloseOnHeaders() = default;
 
 void StreamDelegateCloseOnHeaders::OnHeadersReceived(
-    const spdy::Http2HeaderBlock& response_headers) {
+    const quiche::HttpHeaderBlock& response_headers) {
   stream()->Cancel(ERR_ABORTED);
 }
 

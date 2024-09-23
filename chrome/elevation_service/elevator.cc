@@ -6,19 +6,29 @@
 
 #include <dpapi.h>
 #include <oleauto.h>
-
 #include <stdint.h>
 
+#include <string>
+#include <vector>
+
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/version_info/channel.h"
+#include "base/version_info/version_info.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/elevation_service/caller_validation.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
+#include "chrome/install_static/install_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/elevation_service/internal/elevation_service_internal.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace elevation_service {
 
@@ -61,13 +71,23 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
                               const BSTR plaintext,
                               BSTR* ciphertext,
                               DWORD* last_error) {
-  if (protection_level > ProtectionLevel::PATH_VALIDATION)
-    return E_INVALIDARG;
+  if (protection_level >= ProtectionLevel::PROTECTION_MAX) {
+    return kErrorUnsupportedProtectionLevel;
+  }
 
   UINT length = ::SysStringByteLen(plaintext);
 
   if (!length)
     return E_INVALIDARG;
+
+  std::string plaintext_str(reinterpret_cast<char*>(plaintext), length);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto pre_process_result = PreProcessData(plaintext_str);
+  if (!pre_process_result.has_value()) {
+    return pre_process_result.error();
+  }
+  plaintext_str.swap(*pre_process_result);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   HRESULT hr = ::CoImpersonateClient();
   if (FAILED(hr))
@@ -75,31 +95,34 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
 
   DATA_BLOB intermediate = {};
   {
-    base::ScopedClosureRunner revert_to_self(
-        base::BindOnce([]() { ::CoRevertToSelf(); }));
+    absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
 
     const auto calling_process = GetCallingProcess();
     if (!calling_process.IsValid())
       return kErrorCouldNotObtainCallingProcess;
 
-    const std::string validation_data =
+    const auto validation_data =
         GenerateValidationData(protection_level, calling_process);
-    if (validation_data.empty())
-      return kErrorCouldNotGenerateValidationData;
+    if (!validation_data.has_value()) {
+      return validation_data.error();
+    }
+    const auto data =
+        std::string(validation_data->cbegin(), validation_data->cend());
 
     std::string data_to_encrypt;
-    AppendStringWithLength(validation_data, data_to_encrypt);
-    AppendStringWithLength(
-        std::string(reinterpret_cast<char*>(plaintext), length),
-        data_to_encrypt);
+    AppendStringWithLength(data, data_to_encrypt);
+    AppendStringWithLength(plaintext_str, data_to_encrypt);
 
     DATA_BLOB input = {};
     input.cbData = base::checked_cast<DWORD>(data_to_encrypt.length());
     input.pbData = const_cast<BYTE*>(
         reinterpret_cast<const BYTE*>(data_to_encrypt.data()));
 
-    if (!::CryptProtectData(&input, L"", nullptr, nullptr, nullptr, 0,
-                            &intermediate)) {
+    if (!::CryptProtectData(
+            &input, /*szDataDescr=*/
+            base::SysUTF8ToWide(version_info::GetProductName()).c_str(),
+            nullptr, nullptr, nullptr, /*dwFlags=*/CRYPTPROTECT_AUDIT,
+            &intermediate)) {
       *last_error = ::GetLastError();
       return kErrorCouldNotEncryptWithUserContext;
     }
@@ -108,8 +131,12 @@ HRESULT Elevator::EncryptData(ProtectionLevel protection_level,
   {
     base::win::ScopedLocalAlloc intermediate_freer(intermediate.pbData);
 
-    if (!::CryptProtectData(&intermediate, L"", nullptr, nullptr, nullptr, 0,
-                            &output)) {
+    if (!::CryptProtectData(
+            &intermediate,
+            /*szDataDescr=*/
+            base::SysUTF8ToWide(version_info::GetProductName()).c_str(),
+            nullptr, nullptr, nullptr, /*dwFlags=*/CRYPTPROTECT_AUDIT,
+            &output)) {
       *last_error = ::GetLastError();
       return kErrorCouldNotEncryptWithSystemContext;
     }
@@ -155,8 +182,7 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   std::string plaintext_str;
   {
     DATA_BLOB output = {};
-    base::ScopedClosureRunner revert_to_self(
-        base::BindOnce([]() { ::CoRevertToSelf(); }));
+    absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
     // Decrypt using the user store.
     if (!::CryptUnprotectData(&intermediate, nullptr, nullptr, nullptr, nullptr,
                               0, &output)) {
@@ -168,23 +194,41 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
     std::string mutable_plaintext(reinterpret_cast<char*>(output.pbData),
                                   output.cbData);
 
-    std::string validation_data = PopFromStringFront(mutable_plaintext);
-    if (validation_data.empty())
+    const std::string validation_data = PopFromStringFront(mutable_plaintext);
+    if (validation_data.empty()) {
       return E_INVALIDARG;
+    }
+    const auto data =
+        std::vector<uint8_t>(validation_data.cbegin(), validation_data.cend());
     const auto process = GetCallingProcess();
     if (!process.IsValid()) {
       *last_error = ::GetLastError();
       return kErrorCouldNotObtainCallingProcess;
     }
 
-    // Validation should always be done as the caller.
-    bool validated = ValidateData(process, validation_data);
-    if (!validated) {
+    // Note: Validation should always be done using caller impersonation token.
+    std::string log_message;
+    HRESULT validation_result = ValidateData(process, data, &log_message);
+
+    if (FAILED(validation_result)) {
       *last_error = ::GetLastError();
-      return kValidationDidNotPass;
+      // Only enable extended logging on Dev channel.
+      if (install_static::GetChromeChannel() == version_info::Channel::DEV &&
+          !log_message.empty()) {
+        *plaintext =
+            ::SysAllocStringByteLen(log_message.c_str(), log_message.length());
+      }
+      return validation_result;
     }
     plaintext_str = PopFromStringFront(mutable_plaintext);
   }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto post_process_result = PostProcessData(plaintext_str);
+  if (!post_process_result.has_value()) {
+    return post_process_result.error();
+  }
+  plaintext_str.swap(*post_process_result);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   *plaintext =
       ::SysAllocStringByteLen(plaintext_str.c_str(), plaintext_str.length());

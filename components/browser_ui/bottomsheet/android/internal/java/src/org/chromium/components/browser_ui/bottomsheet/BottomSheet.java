@@ -740,13 +740,8 @@ class BottomSheet extends FrameLayout
             boolean isAtMinHeight =
                     MathUtils.areFloatsEqual(getCurrentOffsetPx(), minScrollableHeight);
             boolean heightLessThanPeek = getCurrentOffsetPx() < minScrollableHeight;
-            // Trigger the onSheetClosed event when the sheet is moving toward the hidden state if
-            // peek is disabled. This should be fine since touch is disabled when the sheet's target
-            // is hidden.
-            boolean triggerCloseWithHidden =
-                    !isPeekStateEnabled() && mTargetState == SheetState.HIDDEN;
 
-            if (isSheetOpen() && (heightLessThanPeek || isAtMinHeight || triggerCloseWithHidden)) {
+            if (isSheetOpen() && (heightLessThanPeek || isAtMinHeight)) {
                 onSheetClosed(reason);
             } else if (!isSheetOpen()
                     && mTargetState != SheetState.HIDDEN
@@ -1098,6 +1093,14 @@ class BottomSheet extends FrameLayout
         return mContainerWidth;
     }
 
+    /**
+     * @return Whether the sheet covers the full width of the container, or is limited to only
+     *     partial width.
+     */
+    public boolean isFullWidth() {
+        return getMaxSheetWidth() >= mContainerWidth;
+    }
+
     /** Center and size the sheet in its container. */
     private void sizeAndPositionSheetInParent() {
         int maxSheetWidth = getMaxSheetWidth();
@@ -1287,10 +1290,15 @@ class BottomSheet extends FrameLayout
 
     /**
      * Called when the sheet content has changed, to update dependent state and notify observers.
+     *
      * @param content The new sheet content, or null if the sheet has no content.
      */
     protected void onSheetContentChanged(@Nullable final BottomSheetContent content) {
         mSheetContent = content;
+
+        boolean shouldLongPressMoveSheet =
+                content == null ? false : content.shouldLongPressMoveSheet();
+        mGestureDetector.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
 
         if (content != null && isFullHeightWrapContent()) {
             // Listen for layout/size changes.
@@ -1328,6 +1336,19 @@ class BottomSheet extends FrameLayout
         mContentWidth = right - left;
         invalidateContentDesiredHeight();
         ensureContentIsWrapped(/* animate= */ true);
+
+        // If the sheet height changes mid-animation, make sure we animate to that height.
+        // TODO(330357665): This animation will look rough in most cases, we should investigate a
+        //                  way to smooth this.
+        int newHeight = bottom - top;
+        int oldHeight = oldBottom - oldTop;
+        if (isRunningSettleAnimation() && isFullHeightWrapContent() && oldHeight != newHeight) {
+            @SheetState int target = getTargetSheetState();
+            if (target != SheetState.NONE) {
+                cancelAnimation();
+                setSheetState(target, /* animate= */ true);
+            }
+        }
     }
 
     private void ensureContentIsWrapped(boolean animate) {

@@ -114,6 +114,7 @@ void GCMAccountTracker::OnAccessTokenFetchCompleteForAccount(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   auto iter = account_infos_.find(account_id);
+  // DCHECK iter!=end() is sensible here as goal is to report missing values.
   DCHECK(iter != account_infos_.end());
   if (iter != account_infos_.end()) {
     DCHECK_EQ(GETTING_TOKEN, iter->second.state);
@@ -191,7 +192,7 @@ void GCMAccountTracker::ReportTokens() {
       // This should not happen, as we are making a check that there are no
       // pending requests above, stopping tracking of removed accounts, or start
       // fetching tokens.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -274,7 +275,7 @@ void GCMAccountTracker::GetAllNeededTokens() {
     return;
 
   // Only start fetching access tokens if the user consented for sync.
-  // TODO(crbug.com/1466865): Delete account-tracking code, latest when
+  // TODO(crbug.com/40067875): Delete account-tracking code, latest when
   // ConsentLevel::kSync is cleaned up from the codebase.
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync))
     return;

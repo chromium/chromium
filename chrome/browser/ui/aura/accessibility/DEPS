@@ -1,0 +1,18 @@
+include_rules = [
+  # This directory is planned to be moved out of //chrome. Avoid adding new //chrome
+  # dependencies; see b/365894723.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/aura/accessibility",
+]
+
+specific_include_rules = {
+  "automation_manager_aura_browsertest\.cc": [
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/test",
+  ]
+}

@@ -76,8 +76,9 @@ TEST_P(UserChangesAutocorrectPrefMetric,
   FakeInputMethodOptions options(profile_.GetPrefs(), kUsEnglish);
 
   // Set the initial autocorrect level (simulating previous values set by user).
-  if (test_case.autocorrect_level_from)
+  if (test_case.autocorrect_level_from) {
     options.SetPkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  }
   // Start observing for changes.
   PrefChangeRecorder recorder(profile_.GetPrefs());
   options.SetPkAutocorrectLevel(test_case.autocorrect_level_to);
@@ -103,8 +104,9 @@ TEST_P(UserChangesAutocorrectPrefMetric,
   FakeInputMethodOptions options(profile_.GetPrefs(), kUsEnglish);
 
   // Set the initial autocorrect level (simulating previous values set by user).
-  if (test_case.autocorrect_level_from)
+  if (test_case.autocorrect_level_from) {
     options.SetVkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  }
   // Start observing for changes.
   PrefChangeRecorder recorder(profile_.GetPrefs());
   options.SetVkAutocorrectLevel(test_case.autocorrect_level_to);
@@ -130,8 +132,9 @@ TEST_P(UserChangesAutocorrectPrefMetric,
   FakeInputMethodOptions options(profile_.GetPrefs(), kBrazilPortuguese);
 
   // Set the initial autocorrect level (simulating previous values set by user).
-  if (test_case.autocorrect_level_from)
+  if (test_case.autocorrect_level_from) {
     options.SetPkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  }
   // Start observing for changes.
   PrefChangeRecorder recorder(profile_.GetPrefs());
   options.SetPkAutocorrectLevel(test_case.autocorrect_level_to);
@@ -150,8 +153,9 @@ TEST_P(UserChangesAutocorrectPrefMetric,
   FakeInputMethodOptions options(profile_.GetPrefs(), kBrazilPortuguese);
 
   // Set the initial autocorrect level (simulating previous values set by user).
-  if (test_case.autocorrect_level_from)
+  if (test_case.autocorrect_level_from) {
     options.SetVkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  }
   // Start observing for changes.
   PrefChangeRecorder recorder(profile_.GetPrefs());
   options.SetVkAutocorrectLevel(test_case.autocorrect_level_to);
@@ -170,8 +174,9 @@ TEST_P(UserChangesAutocorrectPrefMetric,
   FakeInputMethodOptions options(profile_.GetPrefs(), kUsEnglish);
 
   // Set the initial autocorrect level (simulating previous values set by user).
-  if (test_case.autocorrect_level_from)
+  if (test_case.autocorrect_level_from) {
     options.SetPkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  }
   // Start observing for changes.
   PrefChangeRecorder recorder(profile_.GetPrefs());
   options.SetPkAutocorrectLevel(test_case.autocorrect_level_to);
@@ -190,8 +195,9 @@ TEST_P(UserChangesAutocorrectPrefMetric,
   FakeInputMethodOptions options(profile_.GetPrefs(), kUsEnglish);
 
   // Set the initial autocorrect level (simulating previous values set by user).
-  if (test_case.autocorrect_level_from)
+  if (test_case.autocorrect_level_from) {
     options.SetVkAutocorrectLevel(test_case.autocorrect_level_from.value());
+  }
   // Start observing for changes.
   PrefChangeRecorder recorder(profile_.GetPrefs());
   options.SetVkAutocorrectLevel(test_case.autocorrect_level_to);

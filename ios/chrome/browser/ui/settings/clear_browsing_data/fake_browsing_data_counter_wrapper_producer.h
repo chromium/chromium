@@ -9,6 +9,11 @@
 
 @interface FakeBrowsingDataCounterWrapperProducer
     : BrowsingDataCounterWrapperProducer
+
+// Triggers the callback associated with the same prefName as
+// `BrowsingDataCounter::Result.GetPrefName` with the `result`.
+- (void)triggerUpdateUICallbackForResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_FAKE_BROWSING_DATA_COUNTER_WRAPPER_PRODUCER_H_

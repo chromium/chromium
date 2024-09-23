@@ -26,10 +26,12 @@ enum MediaSessionAction {
   "seekto",
   "togglemicrophone",
   "togglecamera",
+  "togglescreenshare",
   "hangup",
   "previousslide",
   "nextslide",
-  "enterpictureinpicture"
+  "enterpictureinpicture",
+  "voiceactivity"
 };
 
 callback MediaSessionActionHandler = undefined(MediaSessionActionDetails details);
@@ -44,9 +46,11 @@ interface MediaSession {
 
   undefined setPositionState(optional MediaPositionState state = {});
 
-  undefined setMicrophoneActive(boolean active);
+  Promise<undefined> setMicrophoneActive(boolean active);
 
-  undefined setCameraActive(boolean active);
+  Promise<undefined> setCameraActive(boolean active);
+
+  Promise<undefined> setScreenshareActive(boolean active);
 };
 
 [Exposed=Window]
@@ -56,12 +60,27 @@ interface MediaMetadata {
   attribute DOMString artist;
   attribute DOMString album;
   attribute FrozenArray<MediaImage> artwork;
+  [SameObject] readonly attribute FrozenArray<ChapterInformation> chapterInfo;
 };
 
 dictionary MediaMetadataInit {
   DOMString title = "";
   DOMString artist = "";
   DOMString album = "";
+  sequence<MediaImage> artwork = [];
+  sequence<ChapterInformationInit> chapterInfo = [];
+};
+
+[Exposed=Window]
+interface ChapterInformation {
+  readonly attribute DOMString title;
+  readonly attribute double startTime;
+  [SameObject] readonly attribute FrozenArray<MediaImage> artwork;
+};
+
+dictionary ChapterInformationInit {
+  DOMString title = "";
+  double startTime = 0;
   sequence<MediaImage> artwork = [];
 };
 
@@ -79,7 +98,17 @@ dictionary MediaPositionState {
 
 dictionary MediaSessionActionDetails {
   required MediaSessionAction action;
+};
+
+dictionary MediaSessionSeekActionDetails : MediaSessionActionDetails {
   double seekOffset;
-  double seekTime;
+};
+
+dictionary MediaSessionSeekToActionDetails : MediaSessionActionDetails {
+  required double seekTime;
   boolean fastSeek;
+};
+
+dictionary MediaSessionCaptureActionDetails : MediaSessionActionDetails {
+  boolean isActivating;
 };

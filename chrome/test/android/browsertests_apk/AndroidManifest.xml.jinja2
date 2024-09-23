@@ -4,10 +4,10 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
  -->
-
+{% set default_manifest_package = "org.chromium.android_browsertests_apk" %}
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.chromium.android_browsertests_apk">
+  package="{{ manifest_package|default(default_manifest_package) }}">
 
     <uses-feature android:glEsVersion="0x00020000" />
 
@@ -23,11 +23,13 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    {% block extra_uses_permissions %}
+    {% endblock %}
 
-    <application android:name="ChromeBrowserTestsApplication"
+    <application android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsApplication"
             android:label="ChromeBrowserTests"
             android:requestLegacyExternalStorage="true">
-        <activity android:name="ChromeBrowserTestsActivity"
+        <activity android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsActivity"
                   android:launchMode="singleTask"
                   android:theme="@style/Theme.Chromium.TabbedMode"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
@@ -48,7 +50,7 @@
           <intent-filter tools:ignore="AppLinkUrlError">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
-            <!-- TODO(https://crbug.com/800875): Limit these to
+            <!-- TODO(crbug.com/40557607): Limit these to
                  supported MIME types. -->
             <data android:mimeType="image/*" />
             <data android:mimeType="video/*" />
@@ -56,6 +58,7 @@
             <data android:scheme="content" />
           </intent-filter>
         </activity>
+
         <activity-alias android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
                         android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
                         android:theme="@android:style/Theme.NoDisplay"
@@ -65,7 +68,7 @@
           <intent-filter tools:ignore="AppLinkUrlError">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
-            <!-- TODO(https://crbug.com/800875): Limit these to supported MIME types. -->
+            <!-- TODO(crbug.com/40557607): Limit these to supported MIME types. -->
             <data android:mimeType="audio/*" />
             <data android:scheme="file" />
             <data android:scheme="content" />
@@ -84,23 +87,19 @@
           </intent-filter>
         </activity>
 
-        <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
+        <receiver android:name="org.chromium.chrome.browser.shortcuts_widget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
+        <receiver android:name="org.chromium.chrome.browser.shortcuts_widget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
         </receiver>
-
-        <service android:name="org.chromium.components.background_task_scheduler.BackgroundTaskJobService"
-                 android:exported="false"
-                 android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <service android:name="org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobService"
                  android:permission="android.permission.BIND_JOB_SERVICE"
@@ -132,10 +131,16 @@
                  android:isolatedProcess="false"
                  android:exported="false" />
         {% endfor %}
+
+        <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
+        <provider
+            android:authorities="{{ manifest_package|default(default_manifest_package) }}.androidx-startup"
+            android:name="androidx.startup.InitializationProvider"
+            android:exported="false"
+            tools:node="remove" />
     </application>
 
     <instrumentation android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsInstrumentationTestRunner"
             android:label="ChromeBrowserTests"
-            android:targetPackage="org.chromium.android_browsertests_apk"
-            chromium-junit3="true"/>
+      android:targetPackage="{{ manifest_package|default(default_manifest_package) }}"/>
 </manifest>

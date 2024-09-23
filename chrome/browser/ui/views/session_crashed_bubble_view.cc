@@ -71,12 +71,14 @@ bool DoesSupportConsentCheck() {
 }
 
 void OpenUmaLink(Browser* browser, const ui::Event& event) {
-  browser->OpenURL(content::OpenURLParams(
-      GURL("https://support.google.com/chrome/answer/96817"),
-      content::Referrer(),
-      ui::DispositionFromEventFlags(event.flags(),
-                                    WindowOpenDisposition::NEW_FOREGROUND_TAB),
-      ui::PAGE_TRANSITION_LINK, false));
+  browser->OpenURL(
+      content::OpenURLParams(
+          GURL("https://support.google.com/chrome/answer/96817"),
+          content::Referrer(),
+          ui::DispositionFromEventFlags(
+              event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+          ui::PAGE_TRANSITION_LINK, false),
+      /*navigation_handle_callback=*/{});
 }
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kUmaConsentCheckboxId);

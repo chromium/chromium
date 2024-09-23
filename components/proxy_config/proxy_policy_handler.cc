@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/proxy_config/proxy_policy_handler.h"
 
 #include <stddef.h>
@@ -343,7 +348,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
         break;
       default:
         proxy_mode = ProxyPrefs::MODE_DIRECT;
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   } else {
     return;
@@ -367,7 +372,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
         set_proxy_pref_value(ProxyConfigDictionary::CreatePacScript(
             pac_url->GetString(), mandatory));
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
       break;
     }
@@ -384,7 +389,7 @@ void ProxyPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       set_proxy_pref_value(ProxyConfigDictionary::CreateSystem());
       break;
     case ProxyPrefs::kModeCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.paint_preview;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -150,7 +152,8 @@ public class TabbedPaintPreview implements UserData {
                         ChromeColors.getPrimaryBackgroundColor(mTab.getContext(), false),
                         /* ignoreInitialScrollOffset= */ false);
 
-        // TODO(crbug/1230021): Consider deferring/post tasking. Locally this appears to be slow.
+        // TODO(crbug.com/40190158): Consider deferring/post tasking. Locally this appears to be
+        // slow.
         TraceEvent.begin("TabbedPaintPreview.maybeShow addTabViewProvider");
         mTab.getTabViewManager().addTabViewProvider(mTabbedPaintPreviewViewProvider);
         TraceEvent.end("TabbedPaintPreview.maybeShow addTabViewProvider");
@@ -243,7 +246,8 @@ public class TabbedPaintPreview implements UserData {
 
         // Clear input focus. This is required due to a bug where the root view is treated as
         // focused for input on exit causing talkback to attempt to return focus to the root view.
-        // TODO(crbug/1197693): this approach could cause loss of focus in a menu, omnibox, etc.
+        // TODO(crbug.com/40760302): this approach could cause loss of focus in a menu, omnibox,
+        // etc.
         // is there a less heavy-handed option here?
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         Activity activity = window != null ? window.getActivity().get() : null;
@@ -336,6 +340,13 @@ public class TabbedPaintPreview implements UserData {
         public void onShown() {
             showToolbarPersistent();
             setProgressPreventionNeeded(true);
+        }
+
+        @Override
+        public @ColorInt int getBackgroundColor(Context context) {
+            // TODO(crbug.com/337883538): should be replaced by the background of the preview image
+            // rather that the primary background color.
+            return ChromeColors.getPrimaryBackgroundColor(mTab.getContext(), false);
         }
 
         @Override

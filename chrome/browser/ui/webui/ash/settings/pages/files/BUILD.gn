@@ -1,0 +1,79 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("files") {
+  sources = [
+    "files_section.cc",
+    "files_section.h",
+    "google_drive_page_handler.cc",
+    "google_drive_page_handler.h",
+    "google_drive_page_handler_factory.cc",
+    "google_drive_page_handler_factory.h",
+    "one_drive_page_handler.cc",
+    "one_drive_page_handler.h",
+    "one_drive_page_handler_factory.cc",
+    "one_drive_page_handler_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/ash/smb_shares",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/drivefs",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "google_drive_handler_browsertest.cc" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
+    "//chrome/browser/ui/webui/ash/settings/test_support",
+    "//chrome/test/data/webui/chromeos/settings:test_api_mojom",
+    "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/drivefs:test_support",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+  ]
+}

@@ -68,7 +68,7 @@ public class IncognitoReauthSettingUtils {
         ResettersForTesting.register(() -> sIsDeviceScreenLockEnabledForTesting = null);
     }
 
-    // TODO(crbug.com/1249473): Use NoUnderlineClickableSpan here to build the
+    // TODO(crbug.com/40197623): Use NoUnderlineClickableSpan here to build the
     // summary string which takes the user to Android system settings. The summary
     // click behaviour is dependent on {@link IncognitoReauthSettingSwitchPreference} so
     // need to refactor that as well.

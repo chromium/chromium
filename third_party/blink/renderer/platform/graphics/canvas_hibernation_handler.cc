@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 
 #include "base/feature_list.h"
+#include "base/memory/post_delayed_memory_reduction_task.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -23,7 +25,20 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
 
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+// "GN check" doesn't know that this file is only included when
+// BUILDFLAG(HAS_ZSTD_COMPRESSION) is true. Disable it here.
+#include "third_party/zstd/src/lib/zstd.h"  // nogncheck
+#endif
+
 namespace blink {
+
+// Use ZSTD to compress the snapshot. This is faster to decompress, and much
+// faster to compress. ZSTD may not be available on all platforms, so this
+// feature will be a no-op on those.
+BASE_FEATURE(kCanvasHibernationSnapshotZstd,
+             "CanvasHibernationSnapshotZstd",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 HibernatedCanvasMemoryDumpProvider&
@@ -120,8 +135,7 @@ void CanvasHibernationHandler::SaveForHibernation(
   HibernatedCanvasMemoryDumpProvider::GetInstance().Register(this);
 
   // Don't bother compressing very small canvases.
-  if (ImageMemorySize(*image_) < 16 * 1024 ||
-      !base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
+  if (ImageMemorySize(*image_) < 16 * 1024) {
     return;
   }
 
@@ -144,17 +158,15 @@ void CanvasHibernationHandler::SaveForHibernation(
   // the renderer is idle. In other words, a delayed idle task would not execute
   // as long as the renderer is in background, which completely defeats the
   // purpose.
-  GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE,
+  base::PostDelayedMemoryReductionTask(
+      GetMainThreadTaskRunner(), FROM_HERE,
       base::BindOnce(&CanvasHibernationHandler::OnAfterHibernation,
                      weak_ptr_factory_.GetWeakPtr(), epoch_),
-      kBeforeCompressionDelay);
+      before_compression_delay_);
 }
 
 void CanvasHibernationHandler::OnAfterHibernation(uint64_t epoch) {
   DCheckInvariant();
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
   // Either we no longer have the image (because we are not hibernating), or we
   // went through another visible / not visible cycle (in which case it is too
   // early to compress).
@@ -162,8 +174,14 @@ void CanvasHibernationHandler::OnAfterHibernation(uint64_t epoch) {
     return;
   }
   auto task_runner = GetMainThreadTaskRunner();
+  algorithm_ = CompressionAlgorithm::kZlib;
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+  if (base::FeatureList::IsEnabled(kCanvasHibernationSnapshotZstd)) {
+    algorithm_ = CompressionAlgorithm::kZstd;
+  }
+#endif
   auto params = std::make_unique<BackgroundTaskParams>(
-      image_, epoch_, weak_ptr_factory_.GetWeakPtr(), task_runner);
+      image_, epoch_, algorithm_, weak_ptr_factory_.GetWeakPtr(), task_runner);
 
   if (background_thread_task_runner_for_testing_) {
     background_thread_task_runner_for_testing_->PostTask(
@@ -180,16 +198,16 @@ void CanvasHibernationHandler::OnEncoded(
     std::unique_ptr<CanvasHibernationHandler::BackgroundTaskParams> params,
     sk_sp<SkData> encoded) {
   DCheckInvariant();
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
-  // Discard the compressed image, it is no longer current.
-  if (params->epoch != epoch_ || !IsHibernating()) {
-    return;
+  // Store the compressed image if it is still current.
+  if (params->epoch == epoch_ && IsHibernating()) {
+    DCHECK_EQ(image_.get(), params->image.get());
+    encoded_ = encoded;
+    image_ = nullptr;
   }
 
-  DCHECK_EQ(image_.get(), params->image.get());
-  encoded_ = encoded;
-  image_ = nullptr;
+  if (on_encoded_callback_for_testing_) {
+    on_encoded_callback_for_testing_.Run();
+  }
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -203,14 +221,60 @@ CanvasHibernationHandler::GetMainThreadTaskRunner() const {
 void CanvasHibernationHandler::Encode(
     std::unique_ptr<CanvasHibernationHandler::BackgroundTaskParams> params) {
   TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
-  sk_sp<SkData> encoded =
-      SkPngEncoder::Encode(nullptr, params->image.get(), {});
+  // Using thread time, since this is a BEST_EFFORT task, which may be
+  // descheduled.
+  base::ElapsedThreadTimer thread_timer;
+
+  sk_sp<SkData> encoded = nullptr;
+
+  switch (params->algorithm) {
+    case CompressionAlgorithm::kZlib:
+      encoded = SkPngEncoder::Encode(nullptr, params->image.get(), {});
+      break;
+    case CompressionAlgorithm::kZstd: {
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+      SkPngEncoder::Options options;
+      // When the compression level is set to 0, no compression is done. Then we
+      // can pass the result to ZSTD. This won't produce a valid PNG, but it
+      // doesn't matter, as we don't write it to disk, and restore it ourselves.
+      options.fZLibLevel = 0;
+      sk_sp<SkData> encoded_uncompressed =
+          SkPngEncoder::Encode(nullptr, params->image.get(), options);
+
+      TRACE_EVENT_BEGIN2("blink", "ZstdCompression", "original_size", 0, "size",
+                         0);
+      size_t uncompressed_size = encoded_uncompressed->size();
+      size_t buffer_size = ZSTD_compressBound(encoded_uncompressed->size());
+      std::vector<char> compressed_buffer(buffer_size);
+      // Field data show that compression ratios are very good in practice with
+      // zlib (most often better than 10:1), so prefer fast (de)compression to
+      // higher compression ratios.
+      constexpr int kZstdCompressionLevel = 1;
+      size_t compressed_size =
+          ZSTD_compress(compressed_buffer.data(), compressed_buffer.size(),
+                        encoded_uncompressed->data(),
+                        encoded_uncompressed->size(), kZstdCompressionLevel);
+      CHECK(!ZSTD_isError(compressed_size))
+          << "Error: " << ZSTD_getErrorName(uncompressed_size);
+      // Free the uncompressed version before making the allocation
+      // below. Likely doesn't matter much though, as the compressed version is
+      // much smaller.
+      encoded_uncompressed = nullptr;
+      encoded = SkData::MakeWithCopy(compressed_buffer.data(), compressed_size);
+      TRACE_EVENT_END2("blink", "ZstdCompression", "original_size",
+                       uncompressed_size, "size", compressed_size);
+      break;
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
+    }
+  }
 
   size_t original_memory_size = ImageMemorySize(*params->image);
   int compression_ratio_percentage = static_cast<int>(
       (static_cast<size_t>(100) * encoded->size()) / original_memory_size);
+  UMA_HISTOGRAM_TIMES("Blink.Canvas.2DLayerBridge.Compression.ThreadTime",
+                      thread_timer.Elapsed());
   UMA_HISTOGRAM_PERCENTAGE("Blink.Canvas.2DLayerBridge.Compression.Ratio",
                            compression_ratio_percentage);
   UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -232,14 +296,41 @@ sk_sp<SkImage> CanvasHibernationHandler::GetImage() {
   }
 
   CHECK(encoded_);
-  CHECK(SkPngDecoder::IsPng(encoded_->data(), encoded_->size()));
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
+
+  sk_sp<SkData> png_data = nullptr;
+  switch (algorithm_) {
+    case CompressionAlgorithm::kZlib:
+      // Nothing to do to prepare the PNG data.
+      png_data = encoded_;
+      break;
+    case CompressionAlgorithm::kZstd: {
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+      uint64_t content_size =
+          ZSTD_getFrameContentSize(encoded_->data(), encoded_->size());
+      // The CHECK()s below indicate memory corruption, terminate.
+      CHECK_NE(content_size, ZSTD_CONTENTSIZE_UNKNOWN);
+      CHECK_NE(content_size, ZSTD_CONTENTSIZE_ERROR);
+      // Only needed when sizeof(size_t) == 4, but kept everywhere.
+      CHECK_LE(content_size, std::numeric_limits<size_t>::max());
+      png_data = SkData::MakeUninitialized(static_cast<size_t>(content_size));
+      size_t uncompressed_size = ZSTD_decompress(
+          static_cast<char*>(png_data->writable_data()), png_data->size(),
+          static_cast<const char*>(encoded_->data()), encoded_->size());
+      CHECK(!ZSTD_isError(uncompressed_size))
+          << "Error: " << ZSTD_getErrorName(uncompressed_size);
+      break;
+#else
+      NOTREACHED();
+#endif
+    }
+  }
+
+  CHECK(SkPngDecoder::IsPng(png_data->data(), png_data->size()));
 
   base::TimeTicks before = base::TimeTicks::Now();
   // Note: not discarding the encoded image.
   sk_sp<SkImage> image = nullptr;
-  std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(encoded_, nullptr);
+  std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(png_data, nullptr);
   if (codec) {
     image = std::get<0>(codec->getImage());
   }
@@ -249,7 +340,6 @@ sk_sp<SkImage> CanvasHibernationHandler::GetImage() {
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime",
       after - before);
   return image;
-  ;
 }
 
 void CanvasHibernationHandler::Clear() {

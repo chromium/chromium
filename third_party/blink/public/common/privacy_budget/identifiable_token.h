@@ -6,12 +6,11 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_H_
 
 #include <cstdint>
+#include <string_view>
 #include <type_traits>
 
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
-#include "base/template_util.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_internal_templates.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 
@@ -40,9 +39,9 @@ namespace blink {
 //
 //    1. std::string -> const std::string&
 //             : lvalue -> lvalue reference + cv-qualification
-//    2. const std::string& -> base::StringPiece
+//    2. const std::string& -> std::string_view
 //             : user-defined conversion via constructor
-//               base::StringPiece(const std::string&)
+//               std::string_view(const std::string&)
 //
 // However, when used within a builder expression, the user-defined conversion
 // doesn't occur due to there not being a single user defined conversion from
@@ -148,7 +147,7 @@ class IdentifiableToken {
   // Care must be taken when using string types with IdentifiableToken() since
   // there's not privacy expectation in the resulting token value. If the string
   // used as an input is privacy sensitive, it should not be passed in as-is.
-  explicit IdentifiableToken(base::StringPiece s)
+  explicit IdentifiableToken(std::string_view s)
       : IdentifiableToken(base::as_bytes(base::make_span(s))) {
     // The cart is before the horse, but it's a static_assert<>.
     static_assert(

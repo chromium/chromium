@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
@@ -11,6 +13,7 @@
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/script_executor.h"
 #include "extensions/browser/script_result_queue.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -45,13 +48,13 @@ class ExtensionWebSocketApiTest : public ExtensionApiTest {
 void ExtensionWebSocketApiTest::RunServiceWorkerWebSocketTest(
     const char* test_directory) {
   ExtensionTestMessageListener socket_ready_listener("socket ready");
-  service_worker_test_utils::TestRegistrationObserver observer(
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
       browser()->profile());
   ResultCatcher catcher;
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(test_directory));
   ASSERT_TRUE(extension);
-  observer.WaitForWorkerStart();
+  const int64_t version_id = observer.WaitForWorkerStarted();
 
   // Open the web socket in the extension.
   base::Value open_result = BackgroundScriptExecutor::ExecuteScript(
@@ -69,8 +72,7 @@ void ExtensionWebSocketApiTest::RunServiceWorkerWebSocketTest(
   content::ServiceWorkerContext* context =
       util::GetServiceWorkerContextForExtensionId(extension->id(),
                                                   browser()->profile());
-  content::SetServiceWorkerIdleDelay(
-      context, observer.GetServiceWorkerVersionId(), base::Seconds(1));
+  content::SetServiceWorkerIdleDelay(context, version_id, base::Seconds(1));
 
   // Wait for two seconds of web socket activity, after which the socket will
   // be closed and the extension will return. If we make it to the two seconds,

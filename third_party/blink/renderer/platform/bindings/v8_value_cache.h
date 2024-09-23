@@ -65,7 +65,8 @@ class StringCacheMapTraits
     return data.GetParameter();
   }
 
-  static void OnWeakCallback(const v8::WeakCallbackInfo<WeakCallbackDataType>&);
+  static void OnWeakCallback(
+      const v8::WeakCallbackInfo<WeakCallbackDataType>&) {}
 
   static void Dispose(v8::Isolate*,
                       v8::Global<v8::String> value,
@@ -126,24 +127,12 @@ class PLATFORM_EXPORT StringCache {
   StringCache& operator=(const StringCache&) = delete;
 
   v8::Local<v8::String> V8ExternalString(v8::Isolate* isolate,
-                                         StringImpl* string_impl) {
-    DCHECK(string_impl);
-    if (last_string_impl_.get() == string_impl)
-      return last_v8_string_.NewLocal(isolate);
-    return V8ExternalStringSlow(isolate, string_impl);
-  }
-
+                                         StringImpl* string_impl);
   v8::Local<v8::String> V8ExternalString(v8::Isolate* isolate,
                                          const ParkableString& string);
 
   void SetReturnValueFromString(v8::ReturnValue<v8::Value> return_value,
-                                StringImpl* string_impl) {
-    DCHECK(string_impl);
-    if (last_string_impl_.get() == string_impl)
-      last_v8_string_.SetReturnValue(return_value);
-    else
-      SetReturnValueFromStringSlow(return_value, string_impl);
-  }
+                                StringImpl* string_impl);
 
   void Dispose();
 
@@ -151,22 +140,13 @@ class PLATFORM_EXPORT StringCache {
   friend class ParkableStringCacheMapTraits;
 
  private:
-  v8::Local<v8::String> V8ExternalStringSlow(v8::Isolate*, StringImpl*);
-  void SetReturnValueFromStringSlow(v8::ReturnValue<v8::Value>, StringImpl*);
   v8::Local<v8::String> CreateStringAndInsertIntoCache(v8::Isolate*,
                                                        StringImpl*);
   v8::Local<v8::String> CreateStringAndInsertIntoCache(v8::Isolate*,
-                                                       const ParkableString&);
-  void InvalidateLastString();
+                                                       ParkableString);
 
   StringCacheMapTraits::MapType string_cache_;
-  StringCacheMapTraits::MapType::PersistentValueReference last_v8_string_;
   ParkableStringCacheMapTraits::MapType parkable_string_cache_;
-
-  // Note: RefPtr is a must as we cache by StringImpl* equality, not identity
-  // hence lastStringImpl might be not a key of the cache (in sense of identity)
-  // and hence it's not refed on addition.
-  scoped_refptr<StringImpl> last_string_impl_;
 };
 
 }  // namespace blink

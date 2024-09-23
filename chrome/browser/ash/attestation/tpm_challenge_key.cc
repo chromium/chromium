@@ -29,7 +29,7 @@ TpmChallengeKey* TpmChallengeKeyFactory::next_result_for_testing_ = nullptr;
 
 // static
 std::unique_ptr<TpmChallengeKey> TpmChallengeKeyFactory::Create() {
-  if (UNLIKELY(next_result_for_testing_)) {
+  if (next_result_for_testing_) [[unlikely]] {
     std::unique_ptr<TpmChallengeKey> result(next_result_for_testing_);
     next_result_for_testing_ = nullptr;
     return result;

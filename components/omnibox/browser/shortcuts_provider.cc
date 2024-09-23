@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
@@ -28,6 +27,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/autocomplete_i18n.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -48,16 +48,19 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/config.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_IOS)
+
+constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
 namespace {
 
 using ShortcutMatch = ShortcutsProvider::ShortcutMatch;
-using ScoringSignals = ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
+using ScoringSignals = ::metrics::OmniboxScoringSignals;
 
 class DestinationURLEqualsURL {
  public:
@@ -228,7 +231,7 @@ void ShortcutsProvider::DeleteMatch(const AutocompleteMatch& match) {
     backend_->DeleteShortcutsWithURL(url);
   }
 
-  base::EraseIf(matches_, DestinationURLEqualsURL(url));
+  std::erase_if(matches_, DestinationURLEqualsURL(url));
   // NOTE: |match| is now dead!
 
   // Delete the match from the history DB. This will eventually result in a
@@ -309,12 +312,12 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
     if (shortcut_match.relevance == 0)
       continue;
 
-    if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
-      // Let builtin provider win for starter pack shortcuts; they should not
-      // allow default or inline autocomplete for the keyword mode refresh.
-      if (shortcut_match.type == AutocompleteMatch::Type::STARTER_PACK) {
-        continue;
-      }
+    if (kIsDesktop &&
+        AutocompleteMatch::IsFeaturedSearchType(shortcut_match.type)) {
+      // Let FeaturedSearchProvider win for feature search shortcuts (e.g.
+      // starter pack and feature site search created by policy); they should
+      // not allow default or inline autocomplete for the keyword mode refresh.
+      continue;
     }
 
     if (shortcut_match.shortcut->match_core.type ==
@@ -389,11 +392,9 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
         int relevance = max_relevance;
         if (max_relevance > 1)
           --max_relevance;
-        auto match = ShortcutToACMatch(
-            *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
-            relevance, input, fixed_up_input, lower_input);
-        if (populate_scoring_signals &&
-            AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
+        auto match = ShortcutMatchToACMatch(shortcut_match, relevance, input,
+                                            fixed_up_input, lower_input);
+        if (populate_scoring_signals && match.IsMlSignalLoggingEligible()) {
           PopulateScoringSignals(shortcut_match, &match);
         }
         return match;
@@ -403,9 +404,9 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
   base::ranges::transform(
       history_cluster_shortcut_matches, std::back_inserter(matches_),
       [&](const auto& shortcut_match) {
-        auto match = ShortcutToACMatch(
-            *shortcut_match.shortcut, shortcut_match.stripped_destination_url,
-            shortcut_match.relevance, input, fixed_up_input, lower_input);
+        auto match =
+            ShortcutMatchToACMatch(shortcut_match, shortcut_match.relevance,
+                                   input, fixed_up_input, lower_input);
     // Guard this as `HistoryClusterProvider` doesn't exist on iOS.
     // Though this code will never run on iOS regardless.
 #if !BUILDFLAG(IS_IOS)
@@ -493,9 +494,8 @@ ShortcutMatch ShortcutsProvider::CreateScoredShortcutMatch(
                        shortcut};
 }
 
-AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
-    const ShortcutsDatabase::Shortcut& shortcut,
-    const GURL& stripped_destination_url,
+AutocompleteMatch ShortcutsProvider::ShortcutMatchToACMatch(
+    const ShortcutMatch& shortcut_match,
     int relevance,
     const AutocompleteInput& input,
     const std::u16string& fixed_up_input_text,
@@ -510,10 +510,11 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   // when the X appears on the de-duplicated History and Shortcuts matches.
   match.deletable = client_->AllowDeletingBrowserHistory();
 
+  const ShortcutsDatabase::Shortcut& shortcut = *shortcut_match.shortcut;
   match.fill_into_edit = shortcut.match_core.fill_into_edit;
   match.destination_url = shortcut.match_core.destination_url;
   DCHECK(match.destination_url.is_valid());
-  match.stripped_destination_url = stripped_destination_url;
+  match.stripped_destination_url = shortcut_match.stripped_destination_url;
   DCHECK(match.stripped_destination_url.is_valid());
   match.document_type = shortcut.match_core.document_type;
   match.contents = shortcut.match_core.contents;
@@ -526,8 +527,13 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   match.type = shortcut.match_core.type;
   match.keyword = shortcut.match_core.keyword;
   match.shortcut_boosted = relevance > kShortcutsProviderDefaultMaxRelevance;
-  match.RecordAdditionalInfo("number of hits", shortcut.number_of_hits);
-  match.RecordAdditionalInfo("last access time", shortcut.last_access_time);
+  match.RecordAdditionalInfo("number of hits",
+                             shortcut_match.aggregate_number_of_hits);
+  match.RecordAdditionalInfo("last access time",
+                             shortcut_match.most_recent_access_time);
+  match.RecordAdditionalInfo(
+      "shortest shortcut text length",
+      static_cast<int>(shortcut_match.shortest_text_length));
   match.RecordAdditionalInfo("original input text", shortcut.text);
   if (match.shortcut_boosted)
     match.RecordAdditionalInfo("shortcut boosted", "true");
@@ -545,17 +551,6 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
   // allows, for example, the input of "foo.c" to autocomplete to "foo.com" for
   // a fill_into_edit of "http://foo.com".
   const bool is_search_type = AutocompleteMatch::IsSearchType(match.type);
-
-  const bool is_starter_pack = AutocompleteMatch::IsStarterPackType(match.type);
-  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled()) {
-    DCHECK(!is_starter_pack);
-    DCHECK(is_search_type != match.keyword.empty())
-        << "type: " << match.type << ", keyword: " << match.keyword;
-  } else {
-    DCHECK(is_search_type != match.keyword.empty() || is_starter_pack)
-        << "type: " << match.type << ", keyword: " << match.keyword;
-  }
-
   const bool keyword_matches =
       base::StartsWith(base::UTF16ToUTF8(input.text()),
                        base::StrCat({base::UTF16ToUTF8(match.keyword), " "}),

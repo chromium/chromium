@@ -45,8 +45,8 @@ void ScopedPictureInPictureOcclusionObservation::Observe(
       base::ScopedObservation<PictureInPictureOcclusionTracker,
                               PictureInPictureOcclusionTrackerObserver>>(
       observer_.get());
-  observation_->Observe(tracker);
   widget_observation_.Observe(widget);
+  observation_->Observe(tracker);
 }
 
 void ScopedPictureInPictureOcclusionObservation::OnWidgetDestroying(

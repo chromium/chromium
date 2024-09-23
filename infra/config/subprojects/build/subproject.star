@@ -3,3 +3,4 @@
 # found in the LICENSE file.
 
 exec("./build.star")
+exec("./build.fyi.star")

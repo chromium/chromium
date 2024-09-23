@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-#include <optional>
+#include <array>
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -150,11 +150,12 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, AllMessagesReceived) {
   auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>();
 
   const size_t kBufferSize = 256;
-  const std::string kMessages[] = {
+  const auto kMessages = std::to_array<std::string>({
       "I thought we were having steamed clams.",
       "D'oh, no! I said steamed hams. That's what I call hamburgers.",
       "You call hamburgers, \"steamed hams?\"",
-      "Yes. It's a regional dialect."};
+      "Yes. It's a regional dialect.",
+  });
   auto region = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
   base::WritableSharedMemoryMapping mapping = region.Map();
   memset(mapping.memory(), 0, kBufferSize);
@@ -319,25 +320,6 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, PreloadLibraryBadPath) {
           .Pass());
   observer.WaitForLaunch();
   observer.WaitForCrash();
-}
-
-// This test calls a function that verifies that user32 is loaded.
-IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, PinUser32) {
-  EchoServiceProcessObserver observer;
-  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>(
-      ServiceProcessHost::Options()
-          .WithPinUser32(ServiceProcessHostPinUser32::GetPassKey())
-          .Pass());
-  observer.WaitForLaunch();
-
-  base::RunLoop loop;
-  echo_service->CallUser32(
-      std::string("lowercase"),
-      base::BindLambdaForTesting([&](const std::string& upper) {
-        EXPECT_EQ(upper, std::string("LOWERCASE"));
-        loop.Quit();
-      }));
-  loop.Run();
 }
 #endif  // BUILDFLAG(IS_WIN)
 

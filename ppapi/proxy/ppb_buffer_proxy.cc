@@ -58,7 +58,6 @@ void Buffer::Unmap() {
 
 int32_t Buffer::GetSharedMemory(base::UnsafeSharedMemoryRegion** out_handle) {
   NOTREACHED();
-  return PP_ERROR_NOTSUPPORTED;
 }
 
 PPB_Buffer_Proxy::PPB_Buffer_Proxy(Dispatcher* dispatcher)

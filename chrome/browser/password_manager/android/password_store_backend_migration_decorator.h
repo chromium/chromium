@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/sync/service/sync_service_observer.h"
 
@@ -20,19 +19,22 @@ namespace password_manager {
 
 class BuiltInBackendToAndroidBackendMigrator;
 
-// This is the backend that should be used on Android platform until the full
-// migration to the Android backend is launched. Internally, this backend
-// owns two backends: the built-in and the Android backend. In addition
-// to delegating all backend responsibilities, it is responsible for migrating
-// credentials between both backends as well as instantiating any proxy backends
-// that are used for shadowing the traffic.
+// Exposed here for testing.
+inline constexpr base::TimeDelta kLocalPasswordsMigrationToAndroidBackendDelay =
+    base::Seconds(5);
+
+// This backend migrates local passwords from `built_in_backend` to
+// `android_backend`. Migration is scheduled after InitBackend() call. While
+// migration is ongoing password saving is suppressed. Before migration is
+// finished `built_in_backend` is used for all operations. After migration is
+// complete `android_backend` is used instead, although password deletions are
+// still propagated to `built_in_backend` as well.
 class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
  public:
   PasswordStoreBackendMigrationDecorator(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
       std::unique_ptr<PasswordStoreBackend> android_backend,
-      PrefService* prefs,
-      IsAccountStore is_account_store);
+      PrefService* prefs);
   PasswordStoreBackendMigrationDecorator(
       const PasswordStoreBackendMigrationDecorator&) = delete;
   PasswordStoreBackendMigrationDecorator(
@@ -44,53 +46,6 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   ~PasswordStoreBackendMigrationDecorator() override;
 
  private:
-  class PasswordSyncSettingsHelper : public syncer::SyncServiceObserver {
-   public:
-    explicit PasswordSyncSettingsHelper(PrefService* prefs);
-
-    // Remembers the initial sync setting to track its changes later.
-    // Should be called after SyncService is initialized.
-    void CachePasswordSyncSettingOnStartup(syncer::SyncService* sync);
-
-    // Called when sync settings were applied to confirm change of state.
-    void SyncStatusChangeApplied();
-
-    // Clears cached prefs when they are not needed anymore.
-    void ResetCachedPrefs();
-
-    void set_migrator(BuiltInBackendToAndroidBackendMigrator* migrator) {
-      migrator_ = migrator;
-    }
-
-   private:
-    // syncer::SyncServiceObserver implementation.
-    void OnStateChanged(syncer::SyncService* sync) override;
-    void OnSyncCycleCompleted(syncer::SyncService* sync) override;
-
-    // Pref service.
-    const raw_ptr<PrefService> prefs_ = nullptr;
-
-    // Set when sync_service is already initialized and can be interacted with.
-    raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
-
-    // Migrator object to use in case observed sync service events should
-    // trigger migration.
-    raw_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_ = nullptr;
-
-    // Cached value of the configured password sync setting. Updated when the
-    // user is changing sync settings, and may from
-    // |password_sync_applied_setting_| at that moment.
-    bool password_sync_configured_setting_ = false;
-
-    // Cached value of the password sync runtime state. May differ from
-    // |password_sync_configured_setting_| at the moment when the user is
-    // changing sync settings. Updated when new settings take action.
-    bool password_sync_applied_setting_ = false;
-
-    // If the first sync cycle after the startup has completed.
-    bool is_waiting_for_the_first_sync_cycle_ = true;
-  };
-
   // Implements PasswordStoreBackend interface.
   void InitBackend(AffiliatedMatchHelper* affiliated_match_helper,
                    RemoteChangesReceived remote_form_changes_received,
@@ -114,15 +69,18 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
                      PasswordChangesOrErrorReply callback) override;
   void UpdateLoginAsync(const PasswordForm& form,
                         PasswordChangesOrErrorReply callback) override;
-  void RemoveLoginAsync(const PasswordForm& form,
+  void RemoveLoginAsync(const base::Location& location,
+                        const PasswordForm& form,
                         PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsByURLAndTimeAsync(
+      const base::Location& location,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
       PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
+      const base::Location& location,
       base::Time delete_begin,
       base::Time delete_end,
       PasswordChangesOrErrorReply callback) override;
@@ -130,33 +88,31 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  void RecordAddLoginAsyncCalledFromTheStore() override;
+  void RecordUpdateLoginAsyncCalledFromTheStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
-  // Starts migration process.
-  void StartMigrationAfterInit();
+  // Forwards the (possible) forms changes caused by a remote event to the
+  // backend. Only changes from the active_backend() are taken into
+  // consideration. For `android_backend_` they can happen on foreground event.
+  void OnRemoteFormChangesReceived(
+      RemoteChangesReceived remote_form_changes_received,
+      base::WeakPtr<PasswordStoreBackend> from_backend,
+      std::optional<PasswordStoreChangeList> changes);
 
-  // React on sync changes to keep GMS Core local storage up-to-date.
-  // Called when the changed setting is applied.
-  // TODO(https://crbug.com/) Remove this method when no longer needed.
-  void SyncStatusChanged();
+  PasswordStoreBackend* active_backend();
 
-  // Proxy backend to which all responsibilities are being delegated.
-  std::unique_ptr<PasswordStoreBackend> active_backend_;
-
-  raw_ptr<PasswordStoreBackend> built_in_backend_;
-  raw_ptr<PasswordStoreBackend> android_backend_;
+  std::unique_ptr<PasswordStoreBackend> built_in_backend_;
+  std::unique_ptr<PasswordStoreBackend> android_backend_;
 
   const raw_ptr<PrefService> prefs_ = nullptr;
 
-  raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
-
+  // Helper class responsible for actually migrating passwords from one backend
+  // to another.
   std::unique_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_;
-
-  // Listener for sync settings changes.
-  PasswordSyncSettingsHelper sync_settings_helper_;
 
   base::WeakPtrFactory<PasswordStoreBackendMigrationDecorator>
       weak_ptr_factory_{this};

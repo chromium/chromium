@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/sync/nigori/cross_user_sharing_keys.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
 
@@ -37,7 +39,7 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromSingleKeyForTesting(
 std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
     const sync_pb::CryptographerData& proto) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateFromProto(proto.key_bag());
-  // TODO(crbug.com/1109221): An invalid local state should be handled in the
+  // TODO(crbug.com/40141634): An invalid local state should be handled in the
   // caller instead of CHECK-ing here, e.g. by resetting the local state.
   CHECK(proto.default_key_name().empty() ||
         key_bag.HasKey(proto.default_key_name()));
@@ -123,6 +125,10 @@ bool CryptographerImpl::HasKeyPair(uint32_t key_pair_version) const {
   return cross_user_sharing_keys_.HasKeyPair(key_pair_version);
 }
 
+size_t CryptographerImpl::KeyPairSizeForMetrics() const {
+  return cross_user_sharing_keys_.size();
+}
+
 const CrossUserSharingPublicPrivateKeyPair&
 CryptographerImpl::GetCrossUserSharingKeyPair(uint32_t version) const {
   return cross_user_sharing_keys_.GetKeyPair(version);
@@ -165,8 +171,8 @@ bool CryptographerImpl::EncryptString(const std::string& decrypted,
     return false;
   }
 
-  return key_bag_.EncryptWithKey(default_encryption_key_name_, decrypted,
-                                 encrypted);
+  *encrypted = key_bag_.EncryptWithKey(default_encryption_key_name_, decrypted);
+  return true;
 }
 
 bool CryptographerImpl::DecryptToString(const sync_pb::EncryptedData& encrypted,

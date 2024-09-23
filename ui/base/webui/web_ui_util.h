@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "ui/base/template_expressions.h"
 #include "ui/base/window_open_disposition.h"
@@ -42,7 +42,7 @@ WindowOpenDisposition GetDispositionFromClick(const base::Value::List& args,
 
 // Parse a formatted scale factor string into float and sets to |scale_factor|.
 COMPONENT_EXPORT(UI_BASE)
-bool ParseScaleFactor(const base::StringPiece& identifier, float* scale_factor);
+bool ParseScaleFactor(std::string_view identifier, float* scale_factor);
 
 // Parses a URL containing some path [{frame}]@{scale}x. If it contains a
 // scale factor then it is returned and the associated part of the URL is
@@ -85,7 +85,7 @@ COMPONENT_EXPORT(UI_BASE) std::string GetTextDirection();
 // also includes an script that injects `loadTimeDataRaw` in the global `window`
 // scope.
 COMPONENT_EXPORT(UI_BASE)
-std::string GetLocalizedHtml(base::StringPiece html_template,
+std::string GetLocalizedHtml(std::string_view html_template,
                              const base::Value::Dict& strings);
 }  // namespace webui
 

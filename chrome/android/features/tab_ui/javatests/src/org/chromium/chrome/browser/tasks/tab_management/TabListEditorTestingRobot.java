@@ -30,6 +30,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 
+import androidx.annotation.IdRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.NoMatchingViewException;
@@ -42,17 +43,19 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 
+import org.chromium.base.test.util.RawFailureHandler;
+import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.test.R;
 
 /**
- * This is the testing util class for TabListEditor. It's used to perform action and verify
- * result within the TabListEditor.
+ * This is the testing util class for TabListEditor. It's used to perform action and verify result
+ * within the TabListEditor.
  */
 public class TabListEditorTestingRobot {
     /**
      * @param viewMatcher A matcher that matches a view.
-     * @return A matcher that matches view in the {@link TabListEditorLayout} based on the
-     *         given matcher.
+     * @return A matcher that matches view in the {@link TabListEditorLayout} based on the given
+     *     matcher.
      */
     public static Matcher<View> inTabListEditor(Matcher<View> viewMatcher) {
         return allOf(isDescendantOfA(instanceOf(TabListEditorLayout.class)), viewMatcher);
@@ -62,11 +65,11 @@ public class TabListEditorTestingRobot {
      * @return A view matcher that matches the item is selected.
      */
     public static Matcher<View> itemIsSelected() {
-        return new BoundedMatcher<View, SelectableTabGridView>(SelectableTabGridView.class) {
-            private SelectableTabGridView mSelectableTabGridView;
+        return new BoundedMatcher<View, TabGridView>(TabGridView.class) {
+            private TabGridView mSelectableTabGridView;
 
             @Override
-            protected boolean matchesSafely(SelectableTabGridView selectableTabGridView) {
+            protected boolean matchesSafely(TabGridView selectableTabGridView) {
                 mSelectableTabGridView = selectableTabGridView;
 
                 return mSelectableTabGridView.isChecked()
@@ -124,6 +127,16 @@ public class TabListEditorTestingRobot {
             return this;
         }
 
+        public TabListEditorTestingRobot.Action clickActionButtonAdapterPosition(
+                int position, @IdRes int actionButtonId) {
+            ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
+                    inTabListEditor(withId(R.id.tab_list_recycler_view)),
+                    position,
+                    withId(actionButtonId),
+                    click());
+            return this;
+        }
+
         public TabListEditorTestingRobot.Action clickToolbarMenuButton() {
             onView(
                             inTabListEditor(
@@ -145,18 +158,28 @@ public class TabListEditorTestingRobot {
         }
 
         public TabListEditorTestingRobot.Action clickToolbarNavigationButton() {
+            clickToolbarNavigationButton(R.string.accessibility_tab_selection_editor_back_button);
+            return this;
+        }
+
+        public TabListEditorTestingRobot.Action clickToolbarNavigationButton(
+                @IdRes int navigationButtonIdRes) {
             onView(
                             inTabListEditor(
                                     allOf(
-                                            withContentDescription(
-                                                    R.string
-                                                            .accessibility_tab_selection_editor_back_button),
+                                            withContentDescription(navigationButtonIdRes),
                                             withParent(withId(R.id.action_bar)))))
                     .perform(click());
             return this;
         }
 
         public TabListEditorTestingRobot.Action clickEndButtonAtAdapterPosition(int position) {
+            clickViewIdAtAdapterPosition(0, R.id.end_button);
+            return this;
+        }
+
+        public TabListEditorTestingRobot.Action clickViewIdAtAdapterPosition(
+                int position, @IdRes int id) {
             onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(
                             new ViewAction() {
@@ -177,10 +200,7 @@ public class TabListEditorTestingRobot {
                                     RecyclerView.ViewHolder viewHolder =
                                             recyclerView.findViewHolderForAdapterPosition(position);
                                     if (viewHolder.itemView == null) return;
-                                    viewHolder
-                                            .itemView
-                                            .findViewById(R.id.end_button)
-                                            .performClick();
+                                    viewHolder.itemView.findViewById(id).performClick();
                                 }
                             });
             return this;
@@ -197,10 +217,10 @@ public class TabListEditorTestingRobot {
 
         public TabListEditorTestingRobot.Result verifyTabListEditorIsHidden() {
             try {
-                onView(
-                                allOf(
-                                        instanceOf(TabListEditorLayout.class),
-                                        withId(R.id.selectable_list)))
+                onView(allOf(instanceOf(TabListEditorLayout.class), withId(R.id.selectable_list)))
+                        // DefaultFailureHandler breaks when dumping the view hierarchy that
+                        // contains a webview. See crbug.com/339675001.
+                        .withFailureHandler(RawFailureHandler.getInstance())
                         .check(matches(isDisplayed()));
             } catch (NoMatchingRootException | NoMatchingViewException e) {
                 return this;

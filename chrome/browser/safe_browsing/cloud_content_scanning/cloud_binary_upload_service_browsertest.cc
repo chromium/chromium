@@ -62,7 +62,7 @@ class TestSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
   }
 
   void OnInvalidAccessToken(const std::string& invalid_access_token) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 };
 

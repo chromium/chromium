@@ -8,6 +8,8 @@ export interface KeepAlive {
 }
 
 export interface ProfileState {
+  foregroundColor: string;
+  backgroundColor: string;
   profilePath: string;
   localProfileName: string;
   signinState: string;
@@ -27,6 +29,7 @@ export interface ProfileState {
 }
 
 export interface ProfileStateElement {
+  className: string;
   profileState: ProfileState;
   expanded: boolean;
 }

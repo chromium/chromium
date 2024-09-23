@@ -30,7 +30,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceMac : public BluetoothDevice {
       BluetoothGattService::GattErrorCode error_code);
   static BluetoothGattService::GattErrorCode GetGattErrorCodeFromNSError(
       NSError* error);
-  virtual bool IsLowEnergyDevice() = 0;
 
  protected:
   explicit BluetoothDeviceMac(BluetoothAdapter* adapter);

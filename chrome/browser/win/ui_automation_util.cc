@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 
 std::wstring GetCachedBstrValue(IUIAutomationElement* element,
@@ -90,19 +91,15 @@ std::vector<int32_t> GetCachedInt32ArrayValue(IUIAutomationElement* element,
     return values;
   }
 
-  SAFEARRAY* array = V_ARRAY(var.ptr());
-  if (SafeArrayGetDim(array) != 1)
+  // Convert to ScopedSafearray for convenient access to the data.
+  base::win::ScopedSafearray scoped_array(var.Release().parray);
+
+  auto lock_scope = scoped_array.CreateLockScope<VT_I4>();
+  if (!lock_scope) {
     return values;
-  long lower_bound = 0;
-  long upper_bound = 0;
-  SafeArrayGetLBound(array, 1, &lower_bound);
-  SafeArrayGetUBound(array, 1, &upper_bound);
-  if (lower_bound || upper_bound <= lower_bound)
-    return values;
-  int32_t* data = nullptr;
-  SafeArrayAccessData(array, reinterpret_cast<void**>(&data));
-  values.assign(data, data + upper_bound + 1);
-  SafeArrayUnaccessData(array);
+  }
+
+  values.assign(lock_scope->begin(), lock_scope->end());
 #endif  // DCHECK_IS_ON()
   return values;
 }

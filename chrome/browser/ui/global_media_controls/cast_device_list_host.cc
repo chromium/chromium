@@ -39,7 +39,7 @@ IconType GetIcon(const media_router::UIMediaSink& sink) {
     case media_router::SinkIconType::WIRED_DISPLAY:
       return IconType::kInput;
     case media_router::SinkIconType::TOTAL_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return IconType::kTv;
   }
 }
@@ -91,6 +91,7 @@ CastDeviceListHost::CastDeviceListHost(
       media_remoting_callback_(std::move(media_remoting_callback)),
       hide_dialog_callback_(std::move(hide_dialog_callback)),
       on_sinks_discovered_callback_(std::move(on_sinks_discovered_callback)),
+      initialization_time_(base::Time::Now()),
       id_(next_id_++) {
   cast_controller_->AddObserver(this);
   cast_controller_->RegisterDestructor(
@@ -150,6 +151,13 @@ void CastDeviceListHost::SelectDevice(const std::string& device_id) {
 
 void CastDeviceListHost::OnModelUpdated(
     const media_router::CastDialogModel& model) {
+  if (base::FeatureList::IsEnabled(
+          media_router::kShowCastPermissionRejectedError) &&
+      model.is_permission_rejected()) {
+    client_->OnPermissionRejected();
+    return;
+  }
+
   sinks_ = model.media_sinks();
   std::vector<global_media_controls::mojom::DevicePtr> devices;
   for (const auto& sink : sinks_) {
@@ -160,6 +168,7 @@ void CastDeviceListHost::OnModelUpdated(
 
   if (!devices.empty()) {
     on_sinks_discovered_callback_.Run();
+    RecordSinkLoadTime();
   }
   client_->OnDevicesUpdated(std::move(devices));
 }
@@ -186,6 +195,15 @@ void CastDeviceListHost::StartCasting(const media_router::UIMediaSink& sink) {
 
 void CastDeviceListHost::DestroyCastController() {
   cast_controller_.reset();
+}
+
+void CastDeviceListHost::RecordSinkLoadTime() {
+  if (!sinks_load_time_.is_null()) {
+    return;
+  }
+  sinks_load_time_ = base::Time::Now();
+  media_router::MediaRouterMetrics::RecordGmcDialogLoaded(sinks_load_time_ -
+                                                          initialization_time_);
 }
 
 int CastDeviceListHost::next_id_ = 0;

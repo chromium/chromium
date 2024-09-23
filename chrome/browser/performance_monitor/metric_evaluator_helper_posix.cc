@@ -12,7 +12,7 @@ MetricEvaluatorsHelperPosix::MetricEvaluatorsHelperPosix() = default;
 MetricEvaluatorsHelperPosix::~MetricEvaluatorsHelperPosix() = default;
 
 std::optional<int> MetricEvaluatorsHelperPosix::GetFreePhysicalMemoryMb() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

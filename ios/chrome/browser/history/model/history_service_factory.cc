@@ -15,27 +15,27 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/history/model/history_client_impl.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/common/channel_info.h"
 
 namespace ios {
 
 namespace {
 
+std::unique_ptr<HistoryClientImpl> BuildHistoryClient(
+    ChromeBrowserState* browser_state) {
+  return std::make_unique<HistoryClientImpl>(
+      BookmarkModelFactory::GetForBrowserState(browser_state));
+}
+
 std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   std::unique_ptr<history::HistoryService> history_service(
-      new history::HistoryService(
-          std::make_unique<HistoryClientImpl>(
-              LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-                  browser_state),
-              AccountBookmarkModelFactory::GetForBrowserState(browser_state)),
-          nullptr));
+      new history::HistoryService(BuildHistoryClient(browser_state), nullptr));
   if (!history_service->Init(history::HistoryDatabaseParamsForPath(
           browser_state->GetStatePath(), GetChannel()))) {
     return nullptr;
@@ -47,32 +47,37 @@ std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
 
 // static
 history::HistoryService* HistoryServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
-  // If saving history is disabled, only allow explicit access.
-  if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
-      browser_state->GetPrefs()->GetBoolean(
-          prefs::kSavingBrowserHistoryDisabled)) {
-    return nullptr;
-  }
-
-  return static_cast<history::HistoryService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+  return GetForProfile(profile, access_type);
 }
 
 // static
-history::HistoryService* HistoryServiceFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state,
+history::HistoryService* HistoryServiceFactory::GetForProfile(
+    ProfileIOS* profile,
     ServiceAccessType access_type) {
   // If saving history is disabled, only allow explicit access.
   if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
-      browser_state->GetPrefs()->GetBoolean(
-          prefs::kSavingBrowserHistoryDisabled)) {
+      profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
     return nullptr;
   }
 
   return static_cast<history::HistoryService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
+
+// static
+history::HistoryService* HistoryServiceFactory::GetForProfileIfExists(
+    ProfileIOS* profile,
+    ServiceAccessType access_type) {
+  // If saving history is disabled, only allow explicit access.
+  if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
+      profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
+    return nullptr;
+  }
+
+  return static_cast<history::HistoryService*>(
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -91,8 +96,7 @@ HistoryServiceFactory::HistoryServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "HistoryService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(AccountBookmarkModelFactory::GetInstance());
-  DependsOn(LocalOrSyncableBookmarkModelFactory::GetInstance());
+  DependsOn(BookmarkModelFactory::GetInstance());
 }
 
 HistoryServiceFactory::~HistoryServiceFactory() {

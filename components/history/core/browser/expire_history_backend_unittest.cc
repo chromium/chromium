@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/history/core/browser/expire_history_backend.h"
 
 #include <stddef.h>
@@ -37,7 +42,10 @@
 #include "components/history/core/test/wait_top_sites_loaded_observer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::UnorderedElementsAre;
 
 // The test must be in the history namespace for the gtest forward declarations
 // to work. It also eliminates a bunch of ugly "history::".
@@ -77,17 +85,13 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
       : backend_client_(history_client_.CreateBackendClient()),
         expirer_(this,
                  backend_client_.get(),
-                 task_environment_.GetMainThreadTaskRunner()),
-        now_(PretendNow()) {}
+                 task_environment_.GetMainThreadTaskRunner()) {}
 
  protected:
   // Called by individual tests when they want data populated.
   void AddExampleData(URLID url_ids[3],
                       base::Time visit_times[4],
                       bool set_app_id = false);
-
-  // Add visits with source information.
-  void AddExampleSourceData(const GURL& url, URLID* id);
 
   // Returns true if the given favicon has an entry in the DB.
   bool HasFavicon(favicon_base::FaviconID favicon_id);
@@ -119,8 +123,6 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
   void StarURL(const GURL& url) { history_client_.AddBookmark(url); }
 
-  static bool IsStringInFile(const base::FilePath& filename, const char* str);
-
   // Returns the path the db files are created in.
   const base::FilePath& path() const { return tmp_dir_.GetPath(); }
 
@@ -138,9 +140,6 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   std::unique_ptr<HistoryDatabase> main_db_;
   std::unique_ptr<favicon::FaviconDatabase> thumb_db_;
   scoped_refptr<TopSitesImpl> top_sites_;
-
-  // base::Time at the beginning of the test, so everybody agrees what "now" is.
-  const base::Time now_;
 
   typedef std::vector<std::pair<bool, URLRows>> URLsModifiedNotificationList;
   URLsModifiedNotificationList urls_modified_notifications_;
@@ -205,12 +204,12 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     urls_modified_notifications_.push_back(
         std::make_pair(is_from_expiration, rows));
   }
-  void NotifyURLsDeleted(DeletionInfo deletion_info) override {
+  void NotifyDeletions(DeletionInfo deletion_info) override {
     urls_deleted_notifications_.push_back(std::move(deletion_info));
   }
   void NotifyVisitUpdated(const VisitRow& visit,
                           VisitUpdateReason reason) override {}
-  void NotifyVisitDeleted(const VisitRow& visit) override {}
+  void NotifyVisitsDeleted(const std::vector<DeletedVisit>& visits) override {}
 };
 
 // The example data consists of 4 visits. The middle two visits are to the
@@ -410,14 +409,6 @@ TEST_F(ExpireHistoryTest, DeleteFaviconsIfPossible) {
     EXPECT_TRUE(HasFavicon(icon_id));
     EXPECT_TRUE(effects.deleted_favicons.empty());
   }
-}
-
-// static
-bool ExpireHistoryTest::IsStringInFile(const base::FilePath& filename,
-                                       const char* str) {
-  std::string contents;
-  EXPECT_TRUE(base::ReadFileToString(filename, &contents));
-  return contents.find(str) != std::string::npos;
 }
 
 // Deletes a URL with a favicon that it is the last referencer of, so that it
@@ -658,6 +649,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarred) {
   EXPECT_EQ(GetLastDeletionInfo()->time_range().end(), base::Time());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(3, 4));
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -896,6 +889,8 @@ TEST_F(ExpireHistoryTest, FlushURLsForTimes) {
   EXPECT_FALSE(GetLastDeletionInfo()->time_range().IsValid());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(3, 4));
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -941,7 +936,7 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarredRestricted) {
   main_db_->GetVisitsForURL(url_ids[2], &visits);
   ASSERT_EQ(1U, visits.size());
 
-  // This should delete the last two visits.
+  // This should delete only visit 3, because of the URL restriction.
   std::set<GURL> restrict_urls = {url_row1.url()};
   expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[2],
                                 base::Time(),
@@ -952,6 +947,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarredRestricted) {
   EXPECT_EQ(GetLastDeletionInfo()->restrict_urls()->size(), 1U);
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(3));
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -1036,6 +1033,8 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPropagatesUserInitiated) {
   EXPECT_FALSE(GetLastDeletionInfo()->is_from_expiration());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(4));
 
   expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[1],
                                 base::Time(),
@@ -1043,6 +1042,8 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPropagatesUserInitiated) {
   EXPECT_TRUE(GetLastDeletionInfo()->is_from_expiration());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(2, 3));
 }
 
 TEST_F(ExpireHistoryTest, ExpireHistoryBeforeUnstarred) {
@@ -1139,12 +1140,16 @@ TEST_F(ExpireHistoryTest, ExpireSomeOldHistory) {
   EXPECT_FALSE(GetLastDeletionInfo()->time_range().IsValid());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(1));
   ClearLastNotifications();
 
   // Deleting a time range with the max number of results should return true
   // (max deleted).
   EXPECT_TRUE(expirer_.ExpireSomeOldHistory(visit_times[2], reader, 1));
-  EXPECT_EQ(nullptr, GetLastDeletionInfo());
+  ASSERT_TRUE(GetLastDeletionInfo());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(2));
 }
 
 TEST_F(ExpireHistoryTest, ExpiringVisitsReader) {
@@ -1183,7 +1188,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteUnstarred) {
   // The blob does not encode any real bitmap, obviously.
   const unsigned char kBlob[] = "0";
   scoped_refptr<base::RefCountedBytes> favicon(
-      new base::RefCountedBytes(kBlob, sizeof(kBlob)));
+      new base::RefCountedBytes(kBlob));
 
   // Icon: old and not bookmarked case.
   GURL url("http://google.com/favicon.ico");
@@ -1209,7 +1214,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesNotDeleteStarred) {
   // The blob does not encode any real bitmap, obviously.
   const unsigned char kBlob[] = "0";
   scoped_refptr<base::RefCountedBytes> favicon(
-      new base::RefCountedBytes(kBlob, sizeof(kBlob)));
+      new base::RefCountedBytes(kBlob));
 
   // Icon: old but bookmarked case.
   GURL url("http://google.com/favicon.ico");
@@ -1249,7 +1254,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteAfterLongDelay) {
   // The blob does not encode any real bitmap, obviously.
   const unsigned char kBlob[] = "0";
   scoped_refptr<base::RefCountedBytes> favicon(
-      new base::RefCountedBytes(kBlob, sizeof(kBlob)));
+      new base::RefCountedBytes(kBlob));
 
   // Icon: old and not bookmarked case.
   GURL url("http://google.com/favicon.ico");
@@ -1280,7 +1285,7 @@ TEST_F(ExpireHistoryTest,
   // The blob does not encode any real bitmap, obviously.
   const unsigned char kBlob[] = "0";
   scoped_refptr<base::RefCountedBytes> favicon(
-      new base::RefCountedBytes(kBlob, sizeof(kBlob)));
+      new base::RefCountedBytes(kBlob));
 
   // Icon: old but bookmarked case.
   GURL url("http://google.com/favicon.ico");
@@ -1439,6 +1444,34 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
   URLRow u;
   EXPECT_TRUE(main_db_->GetURLRow(url1, &u));
   EXPECT_FALSE(main_db_->GetURLRow(url2, &u));
+}
+
+TEST_F(ExpireHistoryTest, DeleteVisitsWithoutDeletingURLs) {
+  URLID url_ids[3];
+  base::Time visit_times[4];
+  AddExampleData(url_ids, visit_times);
+
+  URLRow url_row1;
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[1], &url_row1));
+
+  VisitVector visits;
+  main_db_->GetVisitsForURL(url_ids[1], &visits);
+  ASSERT_EQ(2U, visits.size());
+
+  // This should delete just one visit from url_row1, but leave the URL alone,
+  // because it still has one other visit remaining.
+  expirer_.ExpireHistoryForTimes({visit_times[2]});
+
+  ASSERT_TRUE(GetLastDeletionInfo())
+      << "A deletion notification should have been issued.";
+  EXPECT_FALSE(GetLastDeletionInfo()->time_range().IsValid());
+  EXPECT_EQ(DeletionInfo::Reason::kOther,
+            GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(3));
+
+  EXPECT_TRUE(main_db_->GetURLRow(url_ids[1], &url_row1))
+      << "URL should still exist";
 }
 
 // TODO(brettw) add some visits with no URL to make sure everything is updated

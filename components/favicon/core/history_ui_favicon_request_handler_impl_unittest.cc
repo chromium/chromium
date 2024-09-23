@@ -39,7 +39,7 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmapResult(
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
   gfx::PNGCodec::EncodeBGRASkBitmap(
       gfx::test::CreateBitmap(desired_size_in_pixel, SK_ColorRED), false,
-      &data->data());
+      &data->as_vector());
   favicon_base::FaviconRawBitmapResult result;
   result.bitmap_data = data;
   result.icon_url = icon_url;
@@ -89,8 +89,8 @@ class MockFaviconServiceWithFake : public MockFaviconService {
 
   ~MockFaviconServiceWithFake() override = default;
 
-  // Simulates the service having an icon stored for |page_url|, the URL of the
-  // image being |icon_url|. The real FaviconService performs resizing if it
+  // Simulates the service having an icon stored for `page_url`, the URL of the
+  // image being `icon_url`. The real FaviconService performs resizing if it
   // can't find a stored icon matching the requested size, so the same is true
   // here: any requested size will return a bitmap of that size.
   void StoreMockLocalFavicon(const GURL& page_url, const GURL& icon_url) {
@@ -119,10 +119,10 @@ class MockLargeIconServiceWithFake : public LargeIconService {
       : mock_favicon_service_with_fake_(mock_favicon_service_with_fake) {
     // Fake won't respond with any icons at first (HTTP error 404).
     ON_CALL(*this,
-            GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                _, _, _, _, _))
+            GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _,
+                                                                          _, _))
         .WillByDefault(
-            [](auto, auto, auto, auto,
+            [](auto, auto, auto,
                favicon_base::GoogleFaviconServerCallback server_callback) {
               std::move(server_callback)
                   .Run(favicon_base::GoogleFaviconServerRequestStatus::
@@ -136,16 +136,17 @@ class MockLargeIconServiceWithFake : public LargeIconService {
 
   ~MockLargeIconServiceWithFake() override = default;
 
-  // Simulates the Google Server having an icon stored for |page_url|, of
-  // associated |icon_url|. Requests will cause the icon to be stored in
-  // |mock_favicon_service_with_fake_|.
+  // Simulates the Google Server having an icon stored for `page_url`, of
+  // associated `icon_url`. Requests will cause the icon to be stored in
+  // `mock_favicon_service_with_fake_`.
   void StoreMockGoogleServerFavicon(const GURL& page_url,
                                     const GURL& icon_url) {
     ON_CALL(*this,
-            GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                _, _, _, _, _))
+            GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _,
+                                                                          _, _))
         .WillByDefault(
-            [=](auto, auto, auto, auto,
+            [=, this](
+                auto, auto, auto,
                 favicon_base::GoogleFaviconServerCallback server_callback) {
               mock_favicon_service_with_fake_->StoreMockLocalFavicon(page_url,
                                                                      icon_url);
@@ -155,46 +156,69 @@ class MockLargeIconServiceWithFake : public LargeIconService {
   }
 
   // LargeIconService overrides.
-  MOCK_METHOD5(GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
-               void(const GURL& page_url,
-                    bool may_page_url_be_private,
-                    bool should_trim_page_url_path,
-                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
-                    favicon_base::GoogleFaviconServerCallback callback));
-  MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForPageUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& page_url,
-                   int min_source_size_in_pixel,
-                   int desired_size_in_pixel,
-                   favicon_base::LargeIconCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD5(GetLargeIconImageOrFallbackStyleForPageUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& page_url,
-                   int min_source_size_in_pixel,
-                   int desired_size_in_pixel,
-                   favicon_base::LargeIconImageCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD4(GetLargeIconRawBitmapForPageUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& page_url,
-                   int min_source_size_in_pixel,
-                   favicon_base::FaviconRawBitmapCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD5(GetLargeIconRawBitmapOrFallbackStyleForIconUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& icon_url,
-                   int min_source_size_in_pixel,
-                   int desired_size_in_pixel,
-                   favicon_base::LargeIconCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD4(GetIconRawBitmapOrFallbackStyleForPageUrl,
-               base::CancelableTaskTracker::TaskId(
-                   const GURL& page_url,
-                   int desired_size_in_pixel,
-                   favicon_base::LargeIconCallback callback,
-                   base::CancelableTaskTracker* tracker));
-  MOCK_METHOD1(TouchIconFromGoogleServer, void(const GURL& icon_url));
+  MOCK_METHOD(void,
+              GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache,
+              (const GURL& page_url,
+               bool should_trim_page_url_path,
+               const net::NetworkTrafficAnnotationTag& traffic_annotation,
+               favicon_base::GoogleFaviconServerCallback callback),
+              (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl,
+              (const GURL& page_url,
+               int min_source_size_in_pixel,
+               int desired_size_in_pixel,
+               favicon_base::LargeIconCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetLargeIconImageOrFallbackStyleForPageUrl,
+              (const GURL& page_url,
+               int min_source_size_in_pixel,
+               int desired_size_in_pixel,
+               favicon_base::LargeIconImageCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(
+      base::CancelableTaskTracker::TaskId,
+      GetLargeIconRawBitmapForPageUrl,
+      (const GURL& page_url,
+       int min_source_size_in_pixel,
+       std::optional<int> size_in_pixel_to_resize_to,
+       LargeIconService::NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+       favicon_base::LargeIconCallback callback,
+       base::CancelableTaskTracker* tracker),
+      (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetLargeIconRawBitmapOrFallbackStyleForIconUrl,
+              (const GURL& icon_url,
+               int min_source_size_in_pixel,
+               int desired_size_in_pixel,
+               favicon_base::LargeIconCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              GetIconRawBitmapOrFallbackStyleForPageUrl,
+              (const GURL& page_url,
+               int desired_size_in_pixel,
+               favicon_base::LargeIconCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(void,
+              GetLargeIconFromCacheFallbackToGoogleServer,
+              (const GURL& page_url,
+               StandardIconSize min_source_size_in_pixel,
+               std::optional<StandardIconSize> size_in_pixel_to_resize_to,
+               NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+               bool should_trim_page_url_path,
+               const net::NetworkTrafficAnnotationTag& traffic_annotation,
+               favicon_base::LargeIconCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+  MOCK_METHOD(void,
+              TouchIconFromGoogleServer,
+              (const GURL& icon_url),
+              (override));
 
  private:
   const raw_ptr<MockFaviconServiceWithFake> mock_favicon_service_with_fake_;
@@ -274,8 +298,8 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerBitmap) {
       .Times(2);
   EXPECT_CALL(mock_large_icon_service_,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  kPageUrl, _,
-                  /*should_trim_url_path=*/false, _, _));
+                  kPageUrl,
+                  /*should_trim_page_url_path=*/false, _, _));
   favicon_base::FaviconRawBitmapResult result;
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
       kPageUrl, /*desired_size_in_pixel=*/16,
@@ -317,8 +341,8 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest, ShouldGetGoogleServerImage) {
       .Times(2);
   EXPECT_CALL(mock_large_icon_service_,
               GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  kPageUrl, _,
-                  /*should_trim_url_path=*/false, _, _));
+                  kPageUrl,
+                  /*should_trim_page_url_path=*/false, _, _));
   favicon_base::FaviconImageResult result;
   history_ui_favicon_request_handler_.GetFaviconImageForPageURL(
       kPageUrl, base::BindOnce(&StoreImage, &result), kOrigin);
@@ -341,9 +365,9 @@ TEST_F(HistoryUiFaviconRequestHandlerImplTest,
         std::move(callback).Run(favicon_base::FaviconRawBitmapResult());
         return kTaskId;
       });
-  EXPECT_CALL(mock_large_icon_service_,
-              GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
-                  _, _, _, _, _))
+  EXPECT_CALL(
+      mock_large_icon_service_,
+      GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _, _, _))
       .Times(0);
   history_ui_favicon_request_handler_.GetRawFaviconForPageURL(
       kPageUrl, /*desired_size_in_pixel=*/16, base::DoNothing(), kOrigin);

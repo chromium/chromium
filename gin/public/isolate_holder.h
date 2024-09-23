@@ -84,7 +84,9 @@ class GIN_EXPORT IsolateHolder {
       IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal,
       v8::CreateHistogramCallback create_histogram_callback = nullptr,
       v8::AddHistogramSampleCallback add_histogram_sample_callback = nullptr,
-      scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner =
+      scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner =
+          nullptr,
+      scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner =
           nullptr);
   IsolateHolder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
@@ -92,7 +94,9 @@ class GIN_EXPORT IsolateHolder {
       IsolateType isolate_type,
       std::unique_ptr<v8::Isolate::CreateParams> params,
       IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal,
-      scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner =
+      scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner =
+          nullptr,
+      scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner =
           nullptr);
   IsolateHolder(const IsolateHolder&) = delete;
   IsolateHolder& operator=(const IsolateHolder&) = delete;

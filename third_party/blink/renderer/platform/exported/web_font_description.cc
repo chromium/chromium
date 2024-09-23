@@ -49,13 +49,10 @@ WebFontDescription::WebFontDescription(const FontDescription& desc) {
 }
 
 WebFontDescription::operator FontDescription() const {
-  FontFamily font_family;
-  font_family.SetFamily(family, family_is_generic
-                                    ? FontFamily::Type::kGenericFamily
-                                    : FontFamily::Type::kFamilyName);
-
   FontDescription desc;
-  desc.SetFamily(font_family);
+  desc.SetFamily(FontFamily(family, family_is_generic
+                                        ? FontFamily::Type::kGenericFamily
+                                        : FontFamily::Type::kFamilyName));
   desc.SetGenericFamily(
       static_cast<FontDescription::GenericFamilyType>(generic_family));
   desc.SetSpecifiedSize(size);

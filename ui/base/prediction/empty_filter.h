@@ -28,12 +28,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) EmptyFilter : public InputFilter {
 
   // Returns the name of the filter
   const char* GetName() const override;
-
-  // Returns a copy of the filter.
-  InputFilter* Clone() override;
-
-  // Reset the filter to its initial state
-  void Reset() override;
 };
 
 }  // namespace ui

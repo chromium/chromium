@@ -469,7 +469,7 @@ bool TestingLegacySessionStorageDatabase::LazyOpen(bool create_if_needed) {
                                   SESSION_STORAGE_UMA_RECREATE_IO_ERROR,
                                   SESSION_STORAGE_UMA_MAX);
       } else {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
       }
 
       db_error_ = true;

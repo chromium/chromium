@@ -53,19 +53,25 @@ class TestingProvidedFileSystem : public FakeProvidedFileSystem {
   OpenFileCallback open_callback_;
   std::vector<int> close_requests_;
 
-  void CompleteOpen(int file_handle, base::File::Error result) {
-    std::move(open_callback_).Run(file_handle, result);
+  void CompleteOpen(int file_handle,
+                    base::File::Error result,
+                    std::unique_ptr<EntryMetadata> metadata) {
+    std::move(open_callback_).Run(file_handle, result, std::move(metadata));
   }
 
   void AbortOpen() {
-    std::move(open_callback_).Run(0, base::File::FILE_ERROR_ABORT);
+    std::move(open_callback_)
+        .Run(0, base::File::FILE_ERROR_ABORT, /*metadata=*/nullptr);
   }
 };
 
 typedef std::vector<std::pair<int, base::File::Error>> OpenLog;
 
-void LogOpen(OpenLog* log, int file_handle, base::File::Error result) {
-  log->push_back(std::make_pair(file_handle, result));
+void LogOpen(OpenLog* log,
+             int file_handle,
+             base::File::Error result,
+             std::unique_ptr<EntryMetadata> metadata) {
+  log->emplace_back(file_handle, result);
 }
 
 }  // namespace
@@ -99,7 +105,8 @@ TEST(ScopedFileOpenerTest, CloseAfterOpening) {
                                  base::BindOnce(&LogOpen, &log));
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(file_system.has_open_callback());
-    file_system.open_callback().Run(123, base::File::FILE_OK);
+    file_system.open_callback().Run(123, base::File::FILE_OK,
+                                    /*cloud_file_info=*/nullptr);
   }
 
   ASSERT_EQ(1u, log.size());
@@ -120,7 +127,8 @@ TEST(ScopedFileOpenerTest, CloseAfterAborting) {
                                  base::BindOnce(&LogOpen, &log));
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(file_system.has_open_callback());
-    file_system.open_callback().Run(0, base::File::FILE_ERROR_ABORT);
+    file_system.open_callback().Run(0, base::File::FILE_ERROR_ABORT,
+                                    /*cloud_file_info=*/nullptr);
   }
 
   ASSERT_EQ(1u, log.size());

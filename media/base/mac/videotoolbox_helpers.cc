@@ -7,64 +7,19 @@
 #include <array>
 #include <vector>
 
-#include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
 
-namespace media {
-
-namespace video_toolbox {
+namespace media::video_toolbox {
 
 namespace {
 static const char kAnnexBHeaderBytes[4] = {0, 0, 0, 1};
 }  // anonymous namespace
-
-base::apple::ScopedCFTypeRef<CFDictionaryRef>
-DictionaryWithKeysAndValues(CFTypeRef* keys, CFTypeRef* values, size_t size) {
-  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(CFDictionaryCreate(
-      kCFAllocatorDefault, keys, values, size, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
-}
-
-base::apple::ScopedCFTypeRef<CFDictionaryRef> DictionaryWithKeyValue(
-    CFTypeRef key,
-    CFTypeRef value) {
-  CFTypeRef keys[1] = {key};
-  CFTypeRef values[1] = {value};
-  return DictionaryWithKeysAndValues(keys, values, 1);
-}
-
-base::apple::ScopedCFTypeRef<CFArrayRef> ArrayWithIntegers(const int* v,
-                                                           size_t size) {
-  std::vector<CFNumberRef> numbers;
-  numbers.reserve(size);
-  for (const int* end = v + size; v < end; ++v)
-    numbers.push_back(CFNumberCreate(nullptr, kCFNumberSInt32Type, v));
-  base::apple::ScopedCFTypeRef<CFArrayRef> array(CFArrayCreate(
-      kCFAllocatorDefault, reinterpret_cast<const void**>(&numbers[0]),
-      numbers.size(), &kCFTypeArrayCallBacks));
-  for (auto* number : numbers) {
-    CFRelease(number);
-  }
-  return array;
-}
-
-base::apple::ScopedCFTypeRef<CFArrayRef> ArrayWithIntegerAndFloat(
-    int int_val,
-    float float_val) {
-  std::array<CFNumberRef, 2> numbers = {
-      {CFNumberCreate(nullptr, kCFNumberSInt32Type, &int_val),
-       CFNumberCreate(nullptr, kCFNumberFloat32Type, &float_val)}};
-  base::apple::ScopedCFTypeRef<CFArrayRef> array(CFArrayCreate(
-      kCFAllocatorDefault, reinterpret_cast<const void**>(numbers.data()),
-      numbers.size(), &kCFTypeArrayCallBacks));
-  for (auto* number : numbers)
-    CFRelease(number);
-  return array;
-}
 
 // Wrapper class for writing AnnexBBuffer output into.
 class AnnexBBuffer {
@@ -124,27 +79,29 @@ class StringAnnexBBuffer : public AnnexBBuffer {
 };
 
 template <typename NalSizeType>
-void CopyNalsToAnnexB(char* buffer,
-                      const size_t buffer_size,
+  requires(std::is_integral_v<NalSizeType> && std::is_unsigned_v<NalSizeType> &&
+           sizeof(NalSizeType) <= 4)
+void CopyNalsToAnnexB(base::span<const char> buffer,
                       AnnexBBuffer* annexb_buffer) {
-  static_assert(sizeof(NalSizeType) == 1 || sizeof(NalSizeType) == 2 ||
-                    sizeof(NalSizeType) == 4,
-                "NAL size type has unsupported size");
-  DCHECK(buffer);
-  DCHECK(annexb_buffer);
-  size_t bytes_left = buffer_size;
-  while (bytes_left > 0) {
-    DCHECK_GT(bytes_left, sizeof(NalSizeType));
+  while (!buffer.empty()) {
     NalSizeType nal_size;
-    base::ReadBigEndian(reinterpret_cast<uint8_t*>(buffer), &nal_size);
-    bytes_left -= sizeof(NalSizeType);
-    buffer += sizeof(NalSizeType);
+    if constexpr (sizeof(NalSizeType) == 1u) {
+      nal_size =
+          base::U8FromBigEndian(base::as_bytes(buffer).template first<1u>());
+    } else if constexpr (sizeof(NalSizeType) == 2u) {
+      nal_size =
+          base::U16FromBigEndian(base::as_bytes(buffer).template first<2u>());
+    } else {
+      nal_size =
+          base::U32FromBigEndian(base::as_bytes(buffer).template first<4u>());
+    }
 
-    DCHECK_GE(bytes_left, nal_size);
+    auto [nals_buf, remain] =
+        buffer.subspan(sizeof(NalSizeType)).split_at(nal_size);
+    buffer = remain;
+
     annexb_buffer->Append(kAnnexBHeaderBytes, sizeof(kAnnexBHeaderBytes));
-    annexb_buffer->Append(buffer, nal_size);
-    bytes_left -= nal_size;
-    buffer += nal_size;
+    annexb_buffer->Append(nals_buf.data(), nals_buf.size());
   }
 }
 
@@ -167,7 +124,7 @@ OSStatus GetParameterSetAtIndex(VideoCodec codec,
           parameterSetSizeOut, parameterSetCountOut, NALUnitHeaderLengthOut);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -182,12 +139,12 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
   OSStatus status;
 
   // Get the sample buffer's block buffer and format description.
-  auto* bb = CMSampleBufferGetDataBuffer(sbuf);
+  auto* const bb = CMSampleBufferGetDataBuffer(sbuf);
   DCHECK(bb);
   auto* fdesc = CMSampleBufferGetFormatDescription(sbuf);
   DCHECK(fdesc);
 
-  size_t bb_size = CMBlockBufferGetDataLength(bb);
+  const size_t bb_size = CMBlockBufferGetDataLength(bb);
   size_t total_bytes = bb_size;
 
   size_t pset_count;
@@ -257,22 +214,29 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
 
   // Copy all the NAL units. In the process convert them from AVCC/HVCC format
   // (length header) to AnnexB format (start code).
-  char* bb_data;
+  char* contiguous_bb_data;
   status = CMBlockBufferGetDataPointer(contiguous_bb.get(), 0, nullptr, nullptr,
-                                       &bb_data);
+                                       &contiguous_bb_data);
   if (status != noErr) {
     DLOG(ERROR) << " CMBlockBufferGetDataPointer failed: " << status;
     return false;
   }
+  auto contiguous_bb_span =
+      // SAFETY: `bb` is a block buffer of size `bb_size`, queried above through
+      // CMBlockBufferGetDataLength(). The `contiguous_bb` is a contiguous
+      // buffer created from `bb`, so it has the same size. Thus the
+      // `contiguous_bb_data` pointer, which points to the `contiguous_bb`
+      // buffer, will point to an array of size `bb_size`.
+      UNSAFE_BUFFERS(base::span<const char>(contiguous_bb_data, bb_size));
 
   if (nal_size_field_bytes == 1) {
-    CopyNalsToAnnexB<uint8_t>(bb_data, bb_size, annexb_buffer);
+    CopyNalsToAnnexB<uint8_t>(contiguous_bb_span, annexb_buffer);
   } else if (nal_size_field_bytes == 2) {
-    CopyNalsToAnnexB<uint16_t>(bb_data, bb_size, annexb_buffer);
+    CopyNalsToAnnexB<uint16_t>(contiguous_bb_span, annexb_buffer);
   } else if (nal_size_field_bytes == 4) {
-    CopyNalsToAnnexB<uint32_t>(bb_data, bb_size, annexb_buffer);
+    CopyNalsToAnnexB<uint32_t>(contiguous_bb_span, annexb_buffer);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return true;
 }
@@ -346,6 +310,4 @@ bool SessionPropertySetter::Set(CFStringRef key, CFArrayRef value) {
   return VTSessionSetProperty(session_.get(), key, value) == noErr;
 }
 
-}  // namespace video_toolbox
-
-}  // namespace media
+}  // namespace media::video_toolbox

@@ -9,6 +9,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,8 +60,8 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   // mojom::AuctionWorkletService implementation:
   void LoadBidderWorklet(
       mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
-      mojo::PendingRemote<mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -72,11 +73,12 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       const std::string& trusted_bidding_signals_slot_size_param,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-      std::optional<uint16_t> experiment_group_id) override;
+      std::optional<uint16_t> experiment_group_id,
+      mojom::TrustedSignalsPublicKeyPtr public_key) override;
   void LoadSellerWorklet(
       mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
-      mojo::PendingRemote<mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -87,6 +89,10 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       std::optional<uint16_t> experiment_group_id) override;
+
+  // Returns an index in the seller thread pool, where the corresponding V8
+  // thread will be used to execute the next task.
+  size_t GetNextSellerWorkletThreadIndex();
 
  private:
   class V8HelperHolder;
@@ -102,12 +108,14 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
                                const std::string& reason);
 
+  ProcessModel process_model_;
+
   // These should be before `bidder_worklets_` and `seller_worklets_` as they
   // need to be destroyed after them, as the actual destruction of
   // V8HelperHolder may need to block to get V8 shutdown cleanly, which is
   // helped by worklets not being around to produce more work.
-  scoped_refptr<V8HelperHolder> auction_bidder_v8_helper_holder_;
-  scoped_refptr<V8HelperHolder> auction_seller_v8_helper_holder_;
+  std::vector<scoped_refptr<V8HelperHolder>> auction_bidder_v8_helper_holders_;
+  std::vector<scoped_refptr<V8HelperHolder>> auction_seller_v8_helper_holders_;
 
   // This is bound when created via CreateForService(); in case of
   // CreateForRenderer() an external SelfOwnedReceiver is used instead.

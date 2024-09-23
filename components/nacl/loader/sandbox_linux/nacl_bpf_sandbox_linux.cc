@@ -152,7 +152,7 @@ ResultExpr NaClBPFSandboxPolicy::EvaluateSyscall(int sysno) const {
     default:
       return baseline_policy_->EvaluateSyscall(sysno);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   // GCC wants this.
   return Error(EPERM);
 }

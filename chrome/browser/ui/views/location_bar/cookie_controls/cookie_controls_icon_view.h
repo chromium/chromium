@@ -13,8 +13,6 @@
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
-#include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
-#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 // View for the cookie control icon in the Omnibox.  This is the new version of
@@ -33,12 +31,11 @@ class CookieControlsIconView : public PageActionIconView,
   ~CookieControlsIconView() override;
 
   // CookieControlsObserver:
-  void OnBreakageConfidenceLevelChanged(
-      CookieControlsBreakageConfidenceLevel level) override;
-  void OnUserBypassIconStatusChanged(
+  void OnCookieControlsIconStatusChanged(
       bool icon_visible,
       bool protections_on,
-      CookieBlocking3pcdStatus blocking_status) override;
+      CookieBlocking3pcdStatus blocking_status,
+      bool should_highlight) override;
   void OnFinishedPageReloadWithChangedSettings() override;
 
   void ShowCookieControlsBubble();
@@ -51,6 +48,8 @@ class CookieControlsIconView : public PageActionIconView,
   void SetCoordinatorForTesting(
       std::unique_ptr<CookieControlsBubbleCoordinator> coordinator);
 
+  void DisableUpdatesForTesting();
+
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -61,26 +60,33 @@ class CookieControlsIconView : public PageActionIconView,
 
   bool GetAssociatedBubble() const;
   bool ShouldBeVisible() const;
+  // Whether a managed IPH is currently active.
+  bool IsManagedIPHActive() const;
   void OnIPHClosed();
 
   // Attempts to show IPH for the cookie controls icon.
   // Returns whether IPH was successfully shown.
   bool MaybeShowIPH();
 
-  // Set confidence_changed = true to animate if the confidence level changed
-  // even if the icon is already visible.
-  void UpdateVisibilityAndAnimate(bool confidence_changed = false);
+  bool MaybeAnimateIcon();
+  void UpdateIcon();
+
   int GetLabelForStatus() const;
   void SetLabelAndTooltip();
 
   bool icon_visible_ = false;
   bool protections_on_ = false;
+  bool did_animate_ = false;
+  // Whether we should have a visual indicator highlighting the icon.
+  bool should_highlight_ = false;
+  GURL last_visited_url_;
+
+  // True if calls to UpdateImpl should noop for testing purposes.
+  // TODO: 344042974 - Remove this once the issue has been resolved.
+  bool disable_updates_for_testing_ = false;
 
   CookieBlocking3pcdStatus blocking_status_ =
       CookieBlocking3pcdStatus::kNotIn3pcd;
-
-  CookieControlsBreakageConfidenceLevel confidence_ =
-      CookieControlsBreakageConfidenceLevel::kUninitialized;
 
   raw_ptr<Browser> browser_ = nullptr;
 

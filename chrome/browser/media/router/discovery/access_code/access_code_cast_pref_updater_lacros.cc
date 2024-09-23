@@ -193,7 +193,7 @@ void AccessCodeCastPrefUpdaterLacros::ClearDeviceAddedTimeDict(
           base::Value::Dict(), std::move(on_cleared_callback));
 }
 
-void AccessCodeCastPrefUpdaterLacros::UpdateDevicesDictForTest(
+void AccessCodeCastPrefUpdaterLacros::UpdateDevicesDictForTesting(
     const MediaSinkInternal& sink) {
   AddToPref(crosapi::mojom::PrefPath::kAccessCodeCastDevices, sink.id(),
             base::Value(CreateValueDictFromMediaSinkInternal(sink)),

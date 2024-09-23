@@ -12,12 +12,26 @@ namespace apps {
 // Do not modify existing strings, they are used by metrics.
 std::ostream& operator<<(std::ostream& out, AppInstallSurface surface) {
   switch (surface) {
-    case AppInstallSurface::kAppInstallNavigationThrottle:
-      return out << "AppInstallNavigationThrottle";
     case AppInstallSurface::kAppPreloadServiceOem:
       return out << "AppPreloadServiceOem";
     case AppInstallSurface::kAppPreloadServiceDefault:
       return out << "AppPreloadServiceDefault";
+    case AppInstallSurface::kOobeAppRecommendations:
+      return out << "OobeAppRecommendations";
+    case AppInstallSurface::kAppInstallUriUnknown:
+      return out << "AppInstallUriUnknown";
+    case AppInstallSurface::kAppInstallUriShowoff:
+      return out << "AppInstallUriShowoff";
+    case AppInstallSurface::kAppInstallUriMall:
+      return out << "AppInstallUriMall";
+    case AppInstallSurface::kAppInstallUriMallV2:
+      return out << "AppInstallUriMallV2";
+    case AppInstallSurface::kAppInstallUriGetit:
+      return out << "AppInstallUriGetit";
+    case AppInstallSurface::kAppInstallUriLauncher:
+      return out << "AppInstallUriLauncher";
+    case AppInstallSurface::kAppInstallUriPeripherals:
+      return out << "AppInstallUriPeripherals";
   }
 }
 
@@ -27,6 +41,16 @@ std::ostream& operator<<(std::ostream& out, const AppInstallIcon& icon) {
   out << ", width_in_pixels: " << icon.width_in_pixels;
   out << ", mime_type: " << icon.mime_type;
   out << ", is_masking_allowed: " << icon.is_masking_allowed;
+  return out << "}";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const AppInstallScreenshot& screenshot) {
+  out << "AppInstallScreenshot{";
+  out << "url: " << screenshot.url;
+  out << ", mime_type: " << screenshot.mime_type;
+  out << ", width_in_pixels: " << screenshot.width_in_pixels;
+  out << ", height_in_pixels: " << screenshot.height_in_pixels;
   return out << "}";
 }
 
@@ -48,7 +72,17 @@ std::ostream& operator<<(std::ostream& out, const WebAppInstallData& data) {
   out << ", original_manifest_url: " << data.original_manifest_url;
   out << ", proxied_manifest_url: " << data.proxied_manifest_url;
   out << ", document_url: " << data.document_url;
+  out << ", open_as_window: " << data.open_as_window;
   return out << "}";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const GeForceNowAppInstallData& data) {
+  return out << "GeForceNowAppInstallData{}";
+}
+
+std::ostream& operator<<(std::ostream& out, const SteamAppInstallData& data) {
+  return out << "SteamAppInstallData{}";
 }
 
 AppInstallData::AppInstallData(PackageId package_id)
@@ -61,6 +95,21 @@ AppInstallData& AppInstallData::operator=(AppInstallData&&) = default;
 
 AppInstallData::~AppInstallData() = default;
 
+bool AppInstallData::IsValidForInstallation() const {
+  if (package_id.package_type() == PackageType::kWeb ||
+      package_id.package_type() == PackageType::kWebsite) {
+    if (!absl::holds_alternative<WebAppInstallData>(app_type_data)) {
+      return false;
+    }
+  } else if (!install_url.is_valid()) {
+    // For all package types other than Web/Website, there must be an Install
+    // URL for us to launch.
+    return false;
+  }
+
+  return true;
+}
+
 std::ostream& operator<<(std::ostream& out, const AppInstallData& data) {
   out << "AppInstallData{";
 
@@ -70,11 +119,17 @@ std::ostream& operator<<(std::ostream& out, const AppInstallData& data) {
 
   out << ", description: " << data.description;
 
-  out << ", icons: {";
-  for (const AppInstallIcon& icon : data.icons) {
-    out << icon << ", ";
+  if (data.icon.has_value()) {
+    out << ", icon: " << data.icon.value();
+  }
+
+  out << ", screenshots: {";
+  for (const AppInstallScreenshot& screenshot : data.screenshots) {
+    out << screenshot << ", ";
   }
   out << "}, ";
+
+  out << ", install_url: " << data.install_url;
 
   out << ", app_type_data: ";
   absl::visit([&out](const auto& data) { out << data; }, data.app_type_data);

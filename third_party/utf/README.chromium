@@ -2,7 +2,8 @@ Name: libutf
 Short Name: libutf
 URL: https://github.com/cls/libutf
 Version: ee5074db68f498a5c802dc9f1645f396c219938a
-Date: 2021/01/05
+Revision: ee5074db68f498a5c802dc9f1645f396c219938a
+Date: 2021-01-05
 License: MIT License
 License File: LICENSE
 Security Critical: Yes

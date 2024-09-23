@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_CLIENT_H_
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -45,6 +47,7 @@ namespace media {
 enum class MediaContentType;
 enum class VideoCodec;
 enum class AudioCodec;
+class MediaTrack;
 }  // namespace media
 
 namespace blink {
@@ -80,6 +83,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
     kBackgroundVideoOptimization,
     kSuspendedPlayerIdleTimeout,
     kRemotePlayStateChange,
+    kFrameHidden,
   };
 
   static const int kMediaRemotingStopNoText = -1;
@@ -91,19 +95,11 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
   virtual void DurationChanged() = 0;
   virtual void SizeChanged() = 0;
   virtual void SetCcLayer(cc::Layer*) = 0;
-  virtual WebMediaPlayer::TrackId AddAudioTrack(const WebString& id,
-                                                AudioTrackKind,
-                                                const WebString& label,
-                                                const WebString& language,
-                                                bool enabled) = 0;
-  virtual void RemoveAudioTrack(WebMediaPlayer::TrackId) = 0;
-  virtual WebMediaPlayer::TrackId AddVideoTrack(const WebString& id,
-                                                VideoTrackKind,
-                                                const WebString& label,
-                                                const WebString& language,
-                                                bool selected) = 0;
-  virtual void RemoveVideoTrack(WebMediaPlayer::TrackId) = 0;
-  virtual void MediaSourceOpened(WebMediaSource*) = 0;
+
+  virtual void AddMediaTrack(const media::MediaTrack&) = 0;
+  virtual void RemoveMediaTrack(const media::MediaTrack&) = 0;
+
+  virtual void MediaSourceOpened(std::unique_ptr<WebMediaSource>) = 0;
   virtual void RemotePlaybackCompatibilityChanged(const WebURL&,
                                                   bool is_compatible) = 0;
 
@@ -222,6 +218,9 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerClient {
 
   // Notify the client that the RemotePlayback has been disabled/enabled.
   virtual void OnRemotePlaybackDisabled(bool disabled) = 0;
+
+  // Returns the DOMNodeId of the DOM element hosting this media player.
+  virtual int GetElementId() = 0;
 
  protected:
   ~WebMediaPlayerClient() = default;

@@ -5,9 +5,15 @@
 #ifndef SQL_SQL_MEMORY_DUMP_PROVIDER_H_
 #define SQL_SQL_MEMORY_DUMP_PROVIDER_H_
 
+#include <cstdint>
+
 #include "base/component_export.h"
 #include "base/memory/singleton.h"
 #include "base/trace_event/memory_dump_provider.h"
+
+namespace base::trace_event {
+struct MemoryDumpArgs;
+}
 
 namespace sql {
 
@@ -17,6 +23,12 @@ class COMPONENT_EXPORT(SQL) SqlMemoryDumpProvider
     : public base::trace_event::MemoryDumpProvider {
  public:
   static SqlMemoryDumpProvider* GetInstance();
+
+  // Gets the memory used by SQLite, in bytes, and returns via return value. The
+  // high water usage (highest recorded usage) is returned via out-param if
+  // non-null. If `high_water` is non-null, the high water mark will also be
+  // reset afterwards.
+  static int64_t GetMemoryUse(int64_t* high_water = nullptr);
 
   SqlMemoryDumpProvider(const SqlMemoryDumpProvider&) = delete;
   SqlMemoryDumpProvider& operator=(const SqlMemoryDumpProvider&) = delete;

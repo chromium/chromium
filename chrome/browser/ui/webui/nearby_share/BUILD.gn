@@ -6,6 +6,45 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos, "Nearby Share is CrOS only")
 
+static_library("nearby_share") {
+  sources = [
+    "nearby_share_dialog_ui.cc",
+    "nearby_share_dialog_ui.h",
+    "shared_resources.cc",
+    "shared_resources.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//chrome/browser/nearby_sharing:share_target",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/contacts",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/nearby_share:resources",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
+    "//ui/webui",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "nearby_share_dialog_ui_browsertest.cc" ]
+
+  deps = [
+    ":nearby_share",
+    "//chrome/browser",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+  ]
+}
+
 mojom("share_type") {
   sources = [ "nearby_share_share_type.mojom" ]
   webui_module_path = "/"

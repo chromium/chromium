@@ -50,6 +50,7 @@
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -278,13 +279,6 @@ void LogHostPermissionsAccess(const Extension& extension,
   }
 }
 
-bool ShouldCollectDevModeDataForLocation(mojom::ManifestLocation location) {
-  return location == mojom::ManifestLocation::kExternalPref ||
-         location == mojom::ManifestLocation::kExternalPrefDownload ||
-         location == mojom::ManifestLocation::kExternalRegistry ||
-         location == mojom::ManifestLocation::kUnpacked;
-}
-
 }  // namespace
 
 InstalledLoader::InstalledLoader(ExtensionService* extension_service)
@@ -474,7 +468,7 @@ void InstalledLoader::RecordExtensionsIncrementedMetricsForTesting(
   LoadAllExtensions(profile);
 }
 
-// TODO(crbug.com/1163038): Separate out Webstore/Offstore metrics.
+// TODO(crbug.com/40739895): Separate out Webstore/Offstore metrics.
 void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
                                               bool is_user_profile) {
   ExtensionManagement* extension_management =
@@ -520,9 +514,8 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
   ManifestVersion2And3Counts unpacked_manifest_version_counts;
 
   bool should_record_incremented_metrics = is_user_profile;
-  bool should_record_offstore_developer_mode_metrics =
-      !profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode) &&
-      is_user_profile;
+  bool dev_mode_enabled =
+      GetCurrentDeveloperMode(util::GetBrowserContextId(profile));
 
   const ExtensionSet& extensions = extension_registry_->enabled_extensions();
   for (ExtensionSet::const_iterator iter = extensions.begin();
@@ -566,14 +559,24 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
           UMA_HISTOGRAM_ENUMERATION("Extensions.FromWebstoreInconsistency2",
                                     BAD_UPDATE_URL, 2);
         }
-      } else if (should_record_offstore_developer_mode_metrics &&
-                 ShouldCollectDevModeDataForLocation(location)) {
-        // Record non-webstore extensions when user is not in developer
-        // mode. Only include external pref, registry, and unpacked locations.
-        base::UmaHistogramEnumeration(
-            "Extensions.NonWebstoreLocationWithDeveloperModeOff.Enabled",
-            location);
+      } else if (is_user_profile) {
+        // Record enabled non-webstore extensions based on developer mode
+        // status.
+        if (dev_mode_enabled) {
+          base::UmaHistogramEnumeration(
+              "Extensions.NonWebstoreLocationWithDeveloperModeOn.Enabled3",
+              location);
+        } else {
+          base::UmaHistogramEnumeration(
+              "Extensions.NonWebstoreLocationWithDeveloperModeOff.Enabled3",
+              location);
+        }
       }
+    }
+
+    if (is_user_profile) {
+      base::UmaHistogramBoolean("Extensions.DeveloperModeEnabled",
+                                dev_mode_enabled);
     }
 
     if (Manifest::IsExternalLocation(location)) {
@@ -650,7 +653,7 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
           manifest_version_counts = &unpacked_manifest_version_counts;
           break;
         case mojom::ManifestLocation::kInvalidLocation:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       base::UmaHistogramExactLinear(location_histogram_name,
                                     extension->manifest_version(),
@@ -901,15 +904,19 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       }
     }
 
-    // Record disabled non-webstore extensions when user is not in developer
-    // mode.  Only include external pref, registry, and unpacked locations.
-    if (should_record_offstore_developer_mode_metrics &&
+    // Record disabled non-webstore extensions based on developer mode status.
+    if (is_user_profile &&
         !extension_management->UpdatesFromWebstore(*disabled_extension) &&
-        !disabled_extension->from_webstore() &&
-        ShouldCollectDevModeDataForLocation(location)) {
-      base::UmaHistogramEnumeration(
-          "Extensions.NonWebstoreLocationWithDeveloperModeOff.Disabled",
-          location);
+        !disabled_extension->from_webstore()) {
+      if (dev_mode_enabled) {
+        base::UmaHistogramEnumeration(
+            "Extensions.NonWebstoreLocationWithDeveloperModeOn.Disabled3",
+            location);
+      } else {
+        base::UmaHistogramEnumeration(
+            "Extensions.NonWebstoreLocationWithDeveloperModeOff.Disabled3",
+            location);
+      }
     }
 
     if (extension_service_->allowlist()->GetExtensionAllowlistState(
@@ -1003,8 +1010,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
   base::UmaHistogramCounts100("Extensions.LoadPlatformApp", platform_app_count);
   base::UmaHistogramCounts100("Extensions.LoadExtension",
                               extension_user_count + extension_external_count);
-  base::UmaHistogramCounts100("Extensions.LoadExtensionUser",
-                              extension_user_count);
   base::UmaHistogramCounts100("Extensions.LoadExtensionExternal",
                               extension_external_count);
   base::UmaHistogramCounts100("Extensions.LoadUserScript", user_script_count);
@@ -1072,26 +1077,17 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
   if (incognito_allowed_count + incognito_not_allowed_count > 0) {
     base::UmaHistogramCounts100("Extensions.IncognitoAllowed",
                                 incognito_allowed_count);
-    base::UmaHistogramCounts100("Extensions.IncognitoNotAllowed",
-                                incognito_not_allowed_count);
     if (should_record_incremented_metrics) {
       base::UmaHistogramCounts100("Extensions.IncognitoAllowed2",
                                   incognito_allowed_count);
-      base::UmaHistogramCounts100("Extensions.IncognitoNotAllowed2",
-                                  incognito_not_allowed_count);
     }
   }
-  if (file_access_allowed_count + file_access_not_allowed_count > 0) {
-    base::UmaHistogramCounts100("Extensions.FileAccessAllowed",
+  if (file_access_allowed_count + file_access_not_allowed_count > 0 &&
+      should_record_incremented_metrics) {
+    base::UmaHistogramCounts100("Extensions.FileAccessAllowed2",
                                 file_access_allowed_count);
-    base::UmaHistogramCounts100("Extensions.FileAccessNotAllowed",
+    base::UmaHistogramCounts100("Extensions.FileAccessNotAllowed2",
                                 file_access_not_allowed_count);
-    if (should_record_incremented_metrics) {
-      base::UmaHistogramCounts100("Extensions.FileAccessAllowed2",
-                                  file_access_allowed_count);
-      base::UmaHistogramCounts100("Extensions.FileAccessNotAllowed2",
-                                  file_access_not_allowed_count);
-    }
   }
   base::UmaHistogramCounts100(
       "Extensions.CorruptExtensionTotalDisables",

@@ -16,20 +16,24 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/security_token_session_restriction_view.h"
+#include "chrome/browser/ui/ash/security_token_restriction/security_token_session_restriction_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
@@ -43,6 +47,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/cert/asn1_util.h"
@@ -71,6 +76,13 @@ constexpr char kNotifierSecurityTokenSession[] =
 constexpr char kNotificationId[] =
     "security_token_session_controller_notification";
 
+// How long we allow before smart card middleware extensions start reporting
+// the user's certificates after all extensions become installed and ready
+// during login or unlock process. This is needed because of the time it takes
+// because USB devices can temporarily remain occupied by the login/lock-screen
+// extensions.
+constexpr base::TimeDelta kSessionActivationTimeout = base::Seconds(20);
+
 SecurityTokenSessionController::Behavior ParseBehaviorPrefValue(
     const std::string& behavior) {
   if (behavior == kIgnorePrefValue)
@@ -81,6 +93,19 @@ SecurityTokenSessionController::Behavior ParseBehaviorPrefValue(
     return SecurityTokenSessionController::Behavior::kLock;
 
   return SecurityTokenSessionController::Behavior::kIgnore;
+}
+
+std::string SerializeBehaviorValue(
+    const SecurityTokenSessionController::Behavior& behavior) {
+  switch (behavior) {
+    case SecurityTokenSessionController::Behavior::kIgnore:
+      return std::string(kIgnorePrefValue);
+    case SecurityTokenSessionController::Behavior::kLogout:
+      return std::string(kLogoutPrefValue);
+    case SecurityTokenSessionController::Behavior::kLock:
+      return std::string(kLockPrefValue);
+  }
+  NOTREACHED();
 }
 
 // Checks if `domain` represents a valid domain. Returns false if `domain` is
@@ -166,15 +191,17 @@ const char* const
         "security_token_session_notification_displayed";
 
 SecurityTokenSessionController::SecurityTokenSessionController(
-    bool is_user_profile,
+    Profile* profile,
     PrefService* local_state,
     const user_manager::User* primary_user,
     chromeos::CertificateProviderService* certificate_provider_service)
-    : is_user_profile_(is_user_profile),
+    : is_user_profile_(ProfileHelper::IsPrimaryProfile(profile)),
       local_state_(local_state),
       primary_user_(primary_user),
       certificate_provider_service_(certificate_provider_service),
-      session_manager_(session_manager::SessionManager::Get()) {
+      extensions_tracker_(extensions::ExtensionRegistry::Get(profile), profile),
+      session_manager_(session_manager::SessionManager::Get()),
+      session_activation_seconds_(kSessionActivationTimeout) {
   DCHECK(local_state_);
   DCHECK(primary_user_);
   DCHECK(certificate_provider_service_);
@@ -200,9 +227,11 @@ SecurityTokenSessionController::SecurityTokenSessionController(
   pref_change_registrar_.Add(prefs::kSecurityTokenSessionNotificationSeconds,
                              notification_pref_changed_callback);
   certificate_provider_service_->AddObserver(this);
+  extensions_tracker_.AddObserver(this);
 }
 
 SecurityTokenSessionController::~SecurityTokenSessionController() {
+  extensions_tracker_.RemoveObserver(this);
   certificate_provider_service_->RemoveObserver(this);
 }
 
@@ -251,8 +280,19 @@ void SecurityTokenSessionController::OnCertificatesUpdated(
   if (extension_provides_all_required_certificates) {
     ExtensionProvidesAllRequiredCertificates(extension_id);
   } else {
-    ExtensionStopsProvidingCertificate(extension_id);
+    extensions_missing_required_certificates_.insert(extension_id);
+    ExtensionStopsProvidingCertificate();
   }
+}
+
+void SecurityTokenSessionController::OnForceInstalledExtensionsReady() {
+  if (session_manager_->session_state() !=
+          session_manager::SessionState::ACTIVE ||
+      is_session_activation_complete_ ||
+      session_activation_timer_.IsRunning()) {
+    return;
+  }
+  StartSessionActivation();
 }
 
 void SecurityTokenSessionController::OnSessionStateChanged() {
@@ -263,11 +303,34 @@ void SecurityTokenSessionController::OnSessionStateChanged() {
     had_lock_screen_transition_ = true;
   }
 
+  is_session_activation_complete_ = false;
   // Reset the flag, so that after the certificates are collected from all
   // extensions we know whether the absence of some should be tolerated.
   all_required_certificates_were_observed_ = false;
 
   UpdateBehavior();
+
+  // In case kInstallForceList preference wouldn't load yet, it would still
+  // mean that all extensions are installed and ready. However, IsComplete()
+  // call also ensures there is at least one extension that is installed and
+  // ready. That will always be the case because reading smartcards depends on
+  // Smart Card Connector App being installed.
+  if (session_manager_->session_state() ==
+          session_manager::SessionState::ACTIVE &&
+      extensions_tracker_.IsComplete()) {
+    StartSessionActivation();
+  }
+}
+
+void SecurityTokenSessionController::SetSessionActivationTimeoutForTest(
+    base::TimeDelta session_activation_seconds) {
+  session_activation_seconds_ = session_activation_seconds;
+}
+
+void SecurityTokenSessionController::TriggerSessionActivationTimeoutForTest() {
+  if (session_activation_timer_.IsRunning()) {
+    session_activation_timer_.FireNow();
+  }
 }
 
 // static
@@ -368,7 +431,7 @@ bool SecurityTokenSessionController::ShouldApplyPolicyInCurrentSessionState()
       }
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -402,7 +465,21 @@ void SecurityTokenSessionController::TriggerAction() {
       ScheduleLogoutNotification();
       return;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
+}
+
+void SecurityTokenSessionController::StartSessionActivation() {
+  session_activation_timer_.Start(
+      FROM_HERE, session_activation_seconds_,
+      base::BindOnce(&SecurityTokenSessionController::CompleteSessionActivation,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SecurityTokenSessionController::CompleteSessionActivation() {
+  is_session_activation_complete_ = true;
+  if (!all_required_certificates_were_observed_) {
+    ExtensionStopsProvidingCertificate();
+  }
 }
 
 void SecurityTokenSessionController::ExtensionProvidesAllRequiredCertificates(
@@ -414,10 +491,7 @@ void SecurityTokenSessionController::ExtensionProvidesAllRequiredCertificates(
   }
 }
 
-void SecurityTokenSessionController::ExtensionStopsProvidingCertificate(
-    const extensions::ExtensionId& extension_id) {
-  extensions_missing_required_certificates_.insert(extension_id);
-
+void SecurityTokenSessionController::ExtensionStopsProvidingCertificate() {
   if (!all_required_certificates_were_observed_ &&
       had_lock_screen_transition_) {
     // When transitioning to/from the Lock Screen, we delay applying the policy
@@ -427,11 +501,24 @@ void SecurityTokenSessionController::ExtensionStopsProvidingCertificate(
     // access conflicts between two profiles.
     return;
   }
+  if (!all_required_certificates_were_observed_ &&
+      session_manager_->session_state() ==
+          session_manager::SessionState::ACTIVE &&
+      !is_session_activation_complete_) {
+    return;
+  }
 
   if (fullscreen_notification_) {
     // There was already a security token missing.
     return;
   }
+
+  if (behavior_ == Behavior::kIgnore) {
+    return;
+  }
+  SYSLOG(WARNING) << "Missing certificate is about to trigger "
+                  << SerializeBehaviorValue(behavior_)
+                  << " action with a delay " << notification_seconds_ << ".";
 
   // Schedule session lock / logout.
   action_timer_.Start(
@@ -446,7 +533,7 @@ void SecurityTokenSessionController::ExtensionStopsProvidingCertificate(
             base::BindOnce(&SecurityTokenSessionController::TriggerAction,
                            weak_ptr_factory_.GetWeakPtr()),
             behavior_,
-            chrome::enterprise_util::GetDomainFromEmail(
+            enterprise_util::GetDomainFromEmail(
                 primary_user_->GetDisplayEmail())),
         nullptr, nullptr);
     fullscreen_notification_->Show();
@@ -460,8 +547,8 @@ void SecurityTokenSessionController::AddLockNotification() {
     return;
   SetNotificationDisplayedKnownUserFlag();
 
-  std::string domain = chrome::enterprise_util::GetDomainFromEmail(
-      primary_user_->GetDisplayEmail());
+  std::string domain =
+      enterprise_util::GetDomainFromEmail(primary_user_->GetDisplayEmail());
   DisplayNotification(
       l10n_util::GetStringFUTF16(IDS_SECURITY_TOKEN_SESSION_LOCK_MESSAGE_TITLE,
                                  ui::GetChromeOSDeviceName()),
@@ -479,12 +566,12 @@ void SecurityTokenSessionController::ScheduleLogoutNotification() {
 
   local_state_->SetString(
       prefs::kSecurityTokenSessionNotificationScheduledDomain,
-      chrome::enterprise_util::GetDomainFromEmail(
-          primary_user_->GetDisplayEmail()));
+      enterprise_util::GetDomainFromEmail(primary_user_->GetDisplayEmail()));
 }
 
 void SecurityTokenSessionController::Reset() {
   action_timer_.Stop();
+  session_activation_timer_.Stop();
   extensions_missing_required_certificates_.clear();
   if (fullscreen_notification_) {
     if (!fullscreen_notification_->IsClosed()) {

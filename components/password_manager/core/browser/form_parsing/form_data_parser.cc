@@ -6,10 +6,12 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,8 +21,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -28,11 +30,13 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_util.h"
 
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
@@ -60,11 +64,12 @@ struct AutocompleteParsing {
 // this sets accepts_webauthn_credentials to true.
 AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
   AutocompleteParsing result;
-  std::vector<base::StringPiece> tokens =
+  std::vector<std::string_view> tokens =
       base::SplitStringPiece(attribute, base::kWhitespaceASCII,
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (tokens.empty())
+  if (tokens.empty()) {
     return result;
+  }
 
   if (base::EqualsCaseInsensitiveASCII(tokens.back(),
                                        constants::kAutocompleteWebAuthn)) {
@@ -72,10 +77,11 @@ AutocompleteParsing ParseAutocomplete(const std::string& attribute) {
     tokens.pop_back();
   }
 
-  if (tokens.empty())
+  if (tokens.empty()) {
     return result;
+  }
 
-  const base::StringPiece& field_type = tokens.back();
+  std::string_view field_type = tokens.back();
   if (base::EqualsCaseInsensitiveASCII(field_type,
                                        constants::kAutocompleteUsername)) {
     result.flag = AutocompleteFlag::kUsername;
@@ -118,55 +124,32 @@ bool StringMatchesHiddenValue(const std::u16string& str) {
   return autofill::MatchesRegex<constants::kHiddenValueRe>(str);
 }
 
-// Return true if the |field| is suspected to be a credit card field based on
-// server side predictions, autocomplete attribute, and keywords in field's id
-// and name.
+// Return true if the `field` is suspected to be a credit card field based on
+// autocomplete attribute or keywords in field's id and name.
 bool IsCreditCardField(const ProcessedField& field) {
-  return field.server_hints_credit_card_field ||
-         field.autocomplete_flag == AutocompleteFlag::kCreditCardField ||
-         StringMatchesCVC(field.field->name_attribute) ||
-         StringMatchesCVC(field.field->id_attribute);
+  return field.autocomplete_flag == AutocompleteFlag::kCreditCardField ||
+         StringMatchesCVC(field.field->name_attribute()) ||
+         StringMatchesCVC(field.field->id_attribute());
 }
 
-// Returns true if the |field| is suspected to be not a password field
-// (including CVC fields). The suspicion is based on server-side provided hints
-// and on checking the field's id and name for hinting towards a CVC code,
-// Social Security Number or one-time password.
+// Returns true if the `field` is suspected to be not a password field
+// (including CVC fields). The suspicion is based on checking the
+// field's id and name for hinting towards a CVC code, Social Security
+// Number or one-time password.
 bool IsNotPasswordField(const ProcessedField& field,
                         bool* otp_field_detected_with_regex = nullptr) {
-  if (IsCreditCardField(field) || field.server_hints_not_password ||
+  if (IsCreditCardField(field) ||
       field.autocomplete_flag == AutocompleteFlag::kOneTimeCode ||
-      StringMatchesSSN(field.field->name_attribute) ||
-      StringMatchesSSN(field.field->id_attribute)) {
+      StringMatchesSSN(field.field->name_attribute()) ||
+      StringMatchesSSN(field.field->id_attribute())) {
     return true;
   }
-  bool is_otp_field = StringMatchesOTP(field.field->name_attribute) ||
-                      StringMatchesOTP(field.field->id_attribute);
+  bool is_otp_field = StringMatchesOTP(field.field->name_attribute()) ||
+                      StringMatchesOTP(field.field->id_attribute());
   if (otp_field_detected_with_regex) {
     *otp_field_detected_with_regex |= is_otp_field;
   }
   return is_otp_field;
-}
-
-// Returns true if the |field| is suspected to be not the username field.
-bool IsNotUsernameField(const ProcessedField& field) {
-  return field.server_hints_not_username;
-}
-
-// Returns true iff |field_type| is one of password types.
-bool IsPasswordPrediction(const CredentialFieldType field_type) {
-  switch (field_type) {
-    case CredentialFieldType::kUsername:
-    case CredentialFieldType::kSingleUsername:
-    case CredentialFieldType::kNone:
-      return false;
-    case CredentialFieldType::kCurrentPassword:
-    case CredentialFieldType::kNewPassword:
-    case CredentialFieldType::kConfirmationPassword:
-      return true;
-  }
-  NOTREACHED();
-  return false;
 }
 
 // Returns true iff |processed_field| matches the |interactability_bar|. That is
@@ -190,7 +173,7 @@ bool MatchesInteractability(const ProcessedField& processed_field,
                             Interactability interactability_bar) {
   return (processed_field.interactability >= interactability_bar) ||
          (interactability_bar == Interactability::kCertain &&
-          (processed_field.field->properties_mask &
+          (processed_field.field->properties_mask() &
            FieldPropertiesFlags::kAutofilled));
 }
 
@@ -205,7 +188,7 @@ bool IsProbablyNotUsername(const std::u16string& s) {
 
 // Returns |user_input| if it is not empty, |value| otherwise.
 const std::u16string& GetFieldValue(const FormFieldData& field) {
-  return field.user_input.empty() ? field.value : field.user_input;
+  return field.user_input().empty() ? field.value() : field.user_input();
 }
 
 // A helper struct that is used to capture significant fields to be used for
@@ -215,6 +198,9 @@ struct SignificantFields {
   raw_ptr<const FormFieldData> password = nullptr;
   raw_ptr<const FormFieldData> new_password = nullptr;
   raw_ptr<const FormFieldData> confirmation_password = nullptr;
+  // If server has new password prediction on the text field, such field will be
+  // stored in `manual_generation_enabled_field`.
+  raw_ptr<const FormFieldData> manual_generation_enabled_field = nullptr;
   // True if the information about fields could only be derived after relaxing
   // some constraints. The resulting PasswordForm should only be used for
   // fallback UI.
@@ -264,8 +250,8 @@ struct SignificantFields {
         password = passwords[0];
         break;
       case 2:
-        if (!passwords[0]->value.empty() &&
-            passwords[0]->value == passwords[1]->value) {
+        if (!passwords[0]->value().empty() &&
+            passwords[0]->value() == passwords[1]->value()) {
           // Two identical non-empty passwords: assume we are seeing a new
           // password with a confirmation. This can be either a sign-up form or
           // a password change form that does not ask for the old password.
@@ -286,19 +272,19 @@ struct SignificantFields {
         // If there are more than 3 passwords it is not very clear what this
         // form it is. Consider only the first 3 passwords in such case as a
         // best-effort solution.
-        if (!passwords[0]->value.empty() &&
-            passwords[0]->value == passwords[1]->value &&
-            passwords[0]->value == passwords[2]->value) {
+        if (!passwords[0]->value().empty() &&
+            passwords[0]->value() == passwords[1]->value() &&
+            passwords[0]->value() == passwords[2]->value()) {
           // All passwords are the same. Assume that the first field is the
           // current password.
           password = passwords[0];
-        } else if (passwords[1]->value == passwords[2]->value) {
+        } else if (passwords[1]->value() == passwords[2]->value()) {
           // New password is the duplicated one, and comes second; or empty form
           // with at least 3 password fields.
           password = passwords[0];
           new_password = passwords[1];
           confirmation_password = passwords[2];
-        } else if (passwords[0]->value == passwords[1]->value) {
+        } else if (passwords[0]->value() == passwords[1]->value()) {
           // It is strange that the new password comes first, but trust more
           // which fields are duplicated than the ordering of fields. Assume
           // that any password fields after the new password contain sensitive
@@ -321,17 +307,17 @@ std::ostream& operator<<(std::ostream& os,
                          const SignificantFields& significant_fields) {
   os << u"SignificantFields(";
   if (significant_fields.username) {
-    os << u"username=" << significant_fields.username->name;
+    os << u"username=" << significant_fields.username->name();
   }
   if (significant_fields.password) {
-    os << " password=" << significant_fields.password->name;
+    os << " password=" << significant_fields.password->name();
   }
   if (significant_fields.new_password) {
-    os << " new_password=" << significant_fields.new_password->name;
+    os << " new_password=" << significant_fields.new_password->name();
   }
   if (significant_fields.confirmation_password) {
     os << " confirmation_password="
-       << significant_fields.confirmation_password->name;
+       << significant_fields.confirmation_password->name();
   }
   os << ")";
   return os;
@@ -349,18 +335,25 @@ bool IsFieldInSignificantFields(const SignificantFields& significant_fields,
 bool DoesPredictionCorrespondToField(
     const FormFieldData& field,
     const PasswordFieldPrediction& prediction) {
-  return field.renderer_id == prediction.renderer_id;
+  return field.renderer_id() == prediction.renderer_id;
 }
 
 // Returns the first element of |fields| which corresponds to |prediction|, or
 // null if there is no such element.
-ProcessedField* FindField(std::vector<ProcessedField>* processed_fields,
+ProcessedField* FindField(std::vector<ProcessedField>& processed_fields,
                           const PasswordFieldPrediction& prediction) {
-  for (ProcessedField& processed_field : *processed_fields) {
-    if (DoesPredictionCorrespondToField(*processed_field.field, prediction))
+  for (ProcessedField& processed_field : processed_fields) {
+    if (DoesPredictionCorrespondToField(*processed_field.field, prediction)) {
       return &processed_field;
+    }
   }
   return nullptr;
+}
+
+bool CanBeConsideredAsSingleUsernameField(const FormFieldData* field) {
+  return field &&
+         util::CanFieldBeConsideredAsSingleUsername(
+             field->name_attribute(), field->id_attribute(), field->label());
 }
 
 // Given a `new_password` field tries to find a matching confirmation_password
@@ -372,8 +365,9 @@ const FormFieldData* FindConfirmationPasswordField(
     const FormFieldData& new_password) {
   auto new_password_field = base::ranges::find(processed_fields, &new_password,
                                                &ProcessedField::field);
-  if (new_password_field == processed_fields.end())
+  if (new_password_field == processed_fields.end()) {
     return nullptr;
+  }
 
   // Find a processed field following `new_password_field` with matching
   // interactability and value.
@@ -391,9 +385,17 @@ const FormFieldData* FindConfirmationPasswordField(
              : nullptr;
 }
 
+bool HasPasswordFieldsWithUserInput(
+    const std::vector<ProcessedField>& processed_fields) {
+  return base::ranges::any_of(
+      processed_fields, [](const ProcessedField& field) {
+        return field.is_password && !field.field->user_input().empty();
+      });
+}
+
 // Tries to parse |processed_fields| based on server |predictions|. Uses |mode|
 // to decide which of two username hints are relevant, if present.
-void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
+void ParseUsingPredictions(std::vector<ProcessedField>& processed_fields,
                            const FormPredictions& predictions,
                            FormDataParser::Mode mode,
                            SignificantFields* result) {
@@ -414,29 +416,27 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     ProcessedField* processed_field = nullptr;
 
     CredentialFieldType field_type = DeriveFromFieldType(prediction.type);
-    bool is_password_prediction = IsPasswordPrediction(field_type);
-    if (mode == FormDataParser::Mode::kSaving && is_password_prediction &&
-        !base::FeatureList::IsEnabled(
-            password_manager::features::kUseServerPredictionsOnSaveParsing)) {
-      continue;
-    }
+
     switch (field_type) {
       case CredentialFieldType::kUsername:
         if (!result->username) {
           processed_field = FindField(processed_fields, prediction);
-          if (processed_field)
+          if (processed_field) {
             result->username = processed_field->field;
+          }
         } else if (!second_username) {
           processed_field = FindField(processed_fields, prediction);
-          if (processed_field)
+          if (processed_field) {
             second_username = processed_field->field;
+          }
         } else {
           prevent_handling_two_usernames = true;
         }
         break;
       case CredentialFieldType::kSingleUsername:
         processed_field = FindField(processed_fields, prediction);
-        if (processed_field) {
+        if (processed_field &&
+            CanBeConsideredAsSingleUsernameField(processed_field->field)) {
           result->username = processed_field->field;
           result->is_single_username = true;
           base::UmaHistogramBoolean(
@@ -451,8 +451,9 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
         } else {
           processed_field = FindField(processed_fields, prediction);
           if (processed_field) {
-            if (!processed_field->is_password)
+            if (!processed_field->is_password) {
               continue;
+            }
             result->password = processed_field->field;
           }
         }
@@ -460,8 +461,9 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
       case CredentialFieldType::kNewPassword:
         // If any (and thus the first) new password comes before the current
         // password, the first username is understood as sign-up, not sign-in.
-        if (!result->password)
+        if (!result->password) {
           sign_in_username_first = false;
+        }
 
         // If multiple hints for new-password fields are given (e.g., because
         // of more fields having the same signature), the first one should be
@@ -471,16 +473,33 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
         if (!result->new_password) {
           processed_field = FindField(processed_fields, prediction);
           if (processed_field) {
-            result->new_password = processed_field->field;
-            processed_field->is_predicted_as_password = true;
+            if (processed_field->is_password || prediction.is_override) {
+              // Overrides ignore field type since the overrides are curated by
+              // developers.
+              result->new_password = processed_field->field;
+              processed_field->is_predicted_as_password = true;
+            } else {
+              // Don't show automatic password generation suggestion, but allow
+              // the manual generation.
+              result->manual_generation_enabled_field = processed_field->field;
+            }
           }
         }
         break;
       case CredentialFieldType::kConfirmationPassword:
         processed_field = FindField(processed_fields, prediction);
-        if (processed_field) {
+        if (processed_field &&
+            (processed_field->is_password || prediction.is_override)) {
           result->confirmation_password = processed_field->field;
           processed_field->is_predicted_as_password = true;
+        }
+        break;
+      case CredentialFieldType::kNonCredential:
+        // Fields with non credential fields predictions do not participate in
+        // filling/saving.
+        processed_field = FindField(processed_fields, prediction);
+        if (processed_field) {
+          processed_field->server_hints_non_credential_field = true;
         }
         break;
       case CredentialFieldType::kNone:
@@ -490,10 +509,11 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
 
   if (result->is_single_username) {
     if (mode == FormDataParser::Mode::kSaving &&
-        (result->password || result->new_password)) {
-      // Contradicting predictions were received: the form was predicted to be
-      // both a single username form and a password form. Prioritize saving
-      // the password.
+        HasPasswordFieldsWithUserInput(processed_fields)) {
+      // Saving is no-op for single username forms. Therefore, in saving mode in
+      // case of doubt (where the form contains password fields with user
+      // input), ignore the SINGLE_USERNAME prediction to allow saving the
+      // password value.
       result->username = nullptr;
       result->is_single_username = false;
     } else {
@@ -502,16 +522,18 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     }
   }
 
-  if (!result->new_password || !result->password)
+  if (!result->new_password || !result->password) {
     prevent_handling_two_usernames = true;
+  }
 
   if (!prevent_handling_two_usernames && second_username) {
     // Now that there are two usernames, |sign_in_username_first| determines
     // which is sign-in and which sign-up.
     const FormFieldData* sign_in = result->username;
     const FormFieldData* sign_up = second_username;
-    if (!sign_in_username_first)
+    if (!sign_in_username_first) {
       std::swap(sign_in, sign_up);
+    }
     // For filling, the sign-in username is relevant, because Chrome should not
     // fill where the credentials first need to be created. For saving, the
     // sign-up username is relevant: if both have values, then the sign-up one
@@ -522,28 +544,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
 
   // If the server suggests there is a confirmation field but no new password,
   // something went wrong. Sanitize the result.
-  if (result->confirmation_password && !result->new_password)
+  if (result->confirmation_password && !result->new_password) {
     result->confirmation_password = nullptr;
-
-  // For the use of basic heuristics, also mark CVC fields and NOT_PASSWORD
-  // fields as such.
-  // TODO(crbug/1507825): Treat non-password related fields as not password and
-  // not username fields.
-  for (const PasswordFieldPrediction& prediction : predictions.fields) {
-    ProcessedField* current_field = FindField(processed_fields, prediction);
-    if (!current_field)
-      continue;
-    if (prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE ||
-        prediction.type == autofill::CREDIT_CARD_NUMBER) {
-      current_field->server_hints_credit_card_field = true;
-    } else if (prediction.type == autofill::ONE_TIME_CODE) {
-      current_field->server_hints_not_password = true;
-      current_field->server_hints_not_username = true;
-    } else if (prediction.type == autofill::NOT_PASSWORD) {
-      current_field->server_hints_not_password = true;
-    } else if (prediction.type == autofill::NOT_USERNAME) {
-      current_field->server_hints_not_username = true;
-    }
   }
 }
 
@@ -570,24 +572,20 @@ void ParseUsingAutocomplete(const std::vector<ProcessedField>& processed_fields,
     }
     switch (processed_field.autocomplete_flag) {
       case AutocompleteFlag::kUsername:
-        if (processed_field.is_password || result->username ||
-            processed_field.server_hints_not_username)
+        if (processed_field.is_password || result->username) {
           continue;
+        }
         username_fields_found++;
         field_marked_as_username = processed_field.field;
         break;
       case AutocompleteFlag::kCurrentPassword:
-        if (!processed_field.is_password || result->password ||
-            processed_field.server_hints_not_password ||
-            processed_field.server_hints_credit_card_field) {
+        if (!processed_field.is_password || result->password) {
           continue;
         }
         result->password = processed_field.field;
         break;
       case AutocompleteFlag::kNewPassword:
         if (!processed_field.is_password || new_password_found_by_server ||
-            processed_field.server_hints_not_password ||
-            processed_field.server_hints_credit_card_field ||
             should_ignore_new_password_autocomplete) {
           continue;
         }
@@ -616,8 +614,9 @@ void ParseUsingAutocomplete(const std::vector<ProcessedField>& processed_fields,
         break;
     }
   }
-  if (!result->username && username_fields_found == 1)
+  if (!result->username && username_fields_found == 1) {
     result->username = field_marked_as_username;
+  }
 }
 
 // This computes the "likely" condition from the design https://goo.gl/ERvoEN .
@@ -630,9 +629,9 @@ bool IsLikelyPassword(const ProcessedField& field, size_t* ignored_readonly) {
   // only temporarily, that makes it still interesting for saving. The fact
   // that a user typed or Chrome filled into that field in the past is an
   // indicator that the readonly was only temporary.
-  if (field.field->is_readonly &&
-      !(field.field->properties_mask & (FieldPropertiesFlags::kUserTyped |
-                                        FieldPropertiesFlags::kAutofilled))) {
+  if (field.field->is_readonly() &&
+      !(field.field->properties_mask() & (FieldPropertiesFlags::kUserTyped |
+                                          FieldPropertiesFlags::kAutofilled))) {
     ++*ignored_readonly;
     return false;
   }
@@ -641,17 +640,15 @@ bool IsLikelyPassword(const ProcessedField& field, size_t* ignored_readonly) {
 
 // Filters the available passwords from |processed_fields| using these rules:
 // (0): Filter out all input fields which type is not password.
-// (1) If |mode| == |kFilling|, credit card fields are ignored even for
-// fallback.
-// (2) Passwords with Interactability below |best_interactability| are removed.
-// (3) If |mode| == |kSaving|, passwords with empty values are removed.
-// (4) Passwords for which IsLikelyPassword returns false are removed.
-// (5) The field parsed as username is removed.
-// If applying filters (0)-(1) results in an empty vector, the vector is
+// (1) Passwords with Interactability below |best_interactability| are removed.
+// (2) If |mode| == |kSaving|, passwords with empty values are removed.
+// (3) Passwords for which IsLikelyPassword returns false are removed.
+// (4) The field parsed as username is removed.
+// If applying filter (0) results in an empty vector, the vector is
 // returned.
-// If applying filters (0)-(5) results in a non-empty vector of password fields,
+// If applying filters (0)-(4) results in a non-empty vector of password fields,
 // that vector is returned. Otherwise, roll back to the result after applying
-// (0)-(3) and return it (with |is_fallback=true|) even if the result is empty.
+// (0)-(2) and return it (with |is_fallback=true|) even if the result is empty.
 // Neither of the following output parameters may be null:
 // - |readonly_status| will be updated according to the processing of the parsed
 // fields.
@@ -671,27 +668,14 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   std::vector<const ProcessedField*> passwords;
   passwords.reserve(processed_fields.size());
   for (const ProcessedField& processed_field : processed_fields) {
-    if (processed_field.is_password)
+    if (processed_field.is_password) {
       passwords.push_back(&processed_field);
+    }
   }
-  // Step 1: filter out credit card fields (e.g. CVC). In the filling mode,
-  // don't keep CC fields even for fallback filling and let non-password
-  // Autofill handle these fields. Fallback saving is fine because saving UIs of
-  // Autofill and the password manager are not mutually exclusive.
-  if (mode == FormDataParser::Mode::kFilling &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kDisablePasswordsDropdownForCvcFields)) {
-    base::EraseIf(passwords, [](const ProcessedField* processed_field) {
-      // TODO(crbug/1425423): This code does not use |StringMatchesCVC| because
-      // the underlying regex has a high false positive rate, i.e. matches many
-      // real password fields. Reconsider this once the regex becomes better.
-      return processed_field->server_hints_credit_card_field ||
-             processed_field->autocomplete_flag ==
-                 AutocompleteFlag::kCreditCardField;
-    });
-  }
-  if (passwords.empty())
+
+  if (passwords.empty()) {
     return std::vector<const FormFieldData*>();
+  }
 
   // These two counters are used to determine the ReadonlyPasswordFields value
   // corresponding to this form.
@@ -699,14 +683,14 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   size_t ignored_readonly = 0;
 
   // Step 2: apply filter criterion (2).
-  base::EraseIf(
+  std::erase_if(
       passwords, [best_interactability](const ProcessedField* processed_field) {
         return !MatchesInteractability(*processed_field, best_interactability);
       });
 
   if (mode == FormDataParser::Mode::kSaving) {
     // Step 3: apply filter criterion (3).
-    base::EraseIf(passwords, [](const ProcessedField* processed_field) {
+    std::erase_if(passwords, [](const ProcessedField* processed_field) {
       return GetFieldValue(*processed_field->field).empty();
     });
   }
@@ -723,19 +707,20 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
 
   // Step 5: remove the field parsed as username, if needed.
   if (username && username->IsPasswordInputElement()) {
-    base::EraseIf(filtered, [username](const ProcessedField* processed_field) {
-      return processed_field->field->renderer_id == username->renderer_id;
+    std::erase_if(filtered, [username](const ProcessedField* processed_field) {
+      return processed_field->field->renderer_id() == username->renderer_id();
     });
   }
 
   // Compute the readonly statistic for metrics.
   DCHECK_LE(ignored_readonly, all_passwords_seen);
-  if (ignored_readonly == 0)
+  if (ignored_readonly == 0) {
     *readonly_status = FormDataParser::ReadonlyPasswordFields::kNoneIgnored;
-  else if (ignored_readonly < all_passwords_seen)
+  } else if (ignored_readonly < all_passwords_seen) {
     *readonly_status = FormDataParser::ReadonlyPasswordFields::kSomeIgnored;
-  else
+  } else {
     *readonly_status = FormDataParser::ReadonlyPasswordFields::kAllIgnored;
+  }
 
   // Ensure that |filtered| contains what needs to be returned...
   if (filtered.empty()) {
@@ -746,8 +731,9 @@ std::vector<const FormFieldData*> GetRelevantPasswords(
   // ...and strip ProcessedFields down to FormFieldData.
   std::vector<const FormFieldData*> result;
   result.reserve(filtered.size());
-  for (const ProcessedField* processed_field : filtered)
+  for (const ProcessedField* processed_field : filtered) {
     result.push_back(processed_field->field);
+  }
 
   return result;
 }
@@ -763,7 +749,8 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
     FormDataParser::Mode mode,
     Interactability best_interactability,
     bool is_fallback) {
-  DCHECK(first_relevant_password != processed_fields.end());
+  CHECK(first_relevant_password != processed_fields.end(),
+        base::NotFatalUntil::M130);
 
   // For saving filter out empty fields and fields with values which are not
   // username.
@@ -779,23 +766,25 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
   // password.
   for (auto it = std::make_reverse_iterator(first_relevant_password);
        it != processed_fields.rend(); ++it) {
-    if (it->is_password || it->is_predicted_as_password)
-      continue;
-    if (!MatchesInteractability(*it, best_interactability))
-      continue;
-    if (is_saving && IsProbablyNotUsername(GetFieldValue(*it->field)))
-      continue;
-    if (!is_fallback && IsNotPasswordField(*it))
-      continue;
-    if (!is_fallback && IsNotUsernameField(*it)) {
+    if (it->is_password || it->is_predicted_as_password) {
       continue;
     }
-    if (!username)
+    if (!MatchesInteractability(*it, best_interactability)) {
+      continue;
+    }
+    if (is_saving && IsProbablyNotUsername(GetFieldValue(*it->field))) {
+      continue;
+    }
+    if (!is_fallback && IsNotPasswordField(*it)) {
+      continue;
+    }
+    if (!username) {
       username = it->field;
-    if (!focusable_username && it->field->is_focusable) {
+    }
+    if (!focusable_username && it->field->is_focusable()) {
       focusable_username = it->field;
     }
-    if (stored_usernames.contains(base::i18n::ToLower(it->field->value))) {
+    if (stored_usernames.contains(base::i18n::ToLower(it->field->value()))) {
       return it->field;
     }
   }
@@ -806,7 +795,7 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
 // A helper to return a |field|'s renderer_id or
 // a null renderer ID if |field| is null.
 autofill::FieldRendererId ExtractUniqueId(const FormFieldData* field) {
-  return field ? field->renderer_id : autofill::FieldRendererId();
+  return field ? field->renderer_id() : autofill::FieldRendererId();
 }
 
 // Tries to find the username and password fields in |processed_fields| based
@@ -828,8 +817,9 @@ void ParseUsingBaseHeuristics(
     FormDataParser::ReadonlyPasswordFields* readonly_status) {
   // If there is both the username and the minimal set of fields to build a
   // PasswordForm, return early -- no more work to do.
-  if (found_fields->HasPasswords() && found_fields->username)
+  if (found_fields->HasPasswords() && found_fields->username) {
     return;
+  }
 
   // Will point to the password included in |found_field| which is first in the
   // order of fields in |processed_fields|.
@@ -838,7 +828,7 @@ void ParseUsingBaseHeuristics(
   if (!found_fields->HasPasswords()) {
     // What is the best interactability among passwords?
     Interactability password_max = Interactability::kUnlikely;
-    // TODO(crbug.com/1382805): The variable is used only for metrics for the
+    // TODO(crbug.com/40245821): The variable is used only for metrics for the
     // new OTP regex launch. Remove the variable after the launch.
     bool otp_field_detected_with_regex = false;
     for (const ProcessedField& processed_field : processed_fields) {
@@ -856,11 +846,13 @@ void ParseUsingBaseHeuristics(
     std::vector<const FormFieldData*> passwords = GetRelevantPasswords(
         processed_fields, mode, password_max, readonly_status,
         &found_fields->is_fallback, found_fields->username);
-    if (passwords.empty())
+    if (passwords.empty()) {
       return;
+    }
     found_fields->LocateSpecificPasswords(passwords);
-    if (!found_fields->HasPasswords())
+    if (!found_fields->HasPasswords()) {
       return;
+    }
     for (auto it = processed_fields.begin(); it != processed_fields.end();
          ++it) {
       if (it->field == passwords[0]) {
@@ -876,23 +868,26 @@ void ParseUsingBaseHeuristics(
     for (auto it = processed_fields.begin(); it != processed_fields.end();
          ++it) {
       if ((it->is_password || it->is_predicted_as_password) &&
-          base::Contains(password_ids, it->field->renderer_id)) {
+          base::Contains(password_ids, it->field->renderer_id())) {
         first_relevant_password = it;
         break;
       }
     }
   }
-  DCHECK(first_relevant_password != processed_fields.end());
+  CHECK(first_relevant_password != processed_fields.end(),
+        base::NotFatalUntil::M130);
 
-  if (found_fields->username)
+  if (found_fields->username) {
     return;
+  }
 
   // What is the best interactability among text fields preceding the passwords?
   *username_max = Interactability::kUnlikely;
   for (auto it = processed_fields.begin(); it != first_relevant_password;
        ++it) {
-    if (!it->is_password && !IsNotPasswordField(*it))
+    if (!it->is_password && !IsNotPasswordField(*it)) {
       *username_max = std::max(*username_max, it->interactability);
+    }
   }
 
   found_fields->username = FindUsernameFieldBaseHeuristics(
@@ -906,25 +901,26 @@ void ParseUsingBaseHeuristics(
 void SetFields(const SignificantFields& significant_fields,
                PasswordForm* password_form) {
   if (significant_fields.username) {
-    password_form->username_element = significant_fields.username->name;
+    password_form->username_element = significant_fields.username->name();
     password_form->username_value = GetFieldValue(*significant_fields.username);
     password_form->username_element_renderer_id =
-        significant_fields.username->renderer_id;
+        significant_fields.username->renderer_id();
   }
 
   if (significant_fields.password) {
-    password_form->password_element = significant_fields.password->name;
+    password_form->password_element = significant_fields.password->name();
     password_form->password_value = GetFieldValue(*significant_fields.password);
     password_form->password_element_renderer_id =
-        significant_fields.password->renderer_id;
+        significant_fields.password->renderer_id();
   }
 
   if (significant_fields.new_password) {
-    password_form->new_password_element = significant_fields.new_password->name;
+    password_form->new_password_element =
+        significant_fields.new_password->name();
     password_form->new_password_value =
         GetFieldValue(*significant_fields.new_password);
     password_form->new_password_element_renderer_id =
-        significant_fields.new_password->renderer_id;
+        significant_fields.new_password->renderer_id();
   }
 
   if (significant_fields.confirmation_password) {
@@ -932,9 +928,9 @@ void SetFields(const SignificantFields& significant_fields,
         << "Lone confirmation field (no new password field)"
         << significant_fields;
     password_form->confirmation_password_element =
-        significant_fields.confirmation_password->name;
+        significant_fields.confirmation_password->name();
     password_form->confirmation_password_element_renderer_id =
-        significant_fields.confirmation_password->renderer_id;
+        significant_fields.confirmation_password->renderer_id();
   }
 }
 
@@ -958,14 +954,15 @@ std::vector<ProcessedField> ProcessFields(
 
   // |all_alternative_passwords| should only contain each value once.
   // |seen_password_values| ensures that duplicates are ignored.
-  std::set<base::StringPiece16> seen_password_values;
+  std::set<std::u16string_view> seen_password_values;
   // Similarly for usernames.
-  std::set<base::StringPiece16> seen_username_values;
+  std::set<std::u16string_view> seen_username_values;
 
   const bool consider_only_non_empty = mode == FormDataParser::Mode::kSaving;
   for (const FormFieldData& field : fields) {
-    if (!field.IsTextInputElement())
+    if (!field.IsTextInputElement()) {
       continue;
+    }
 
     const std::u16string& field_value = GetFieldValue(field);
     if (consider_only_non_empty &&
@@ -974,10 +971,10 @@ std::vector<ProcessedField> ProcessFields(
     }
 
     const bool is_password =
-        field.form_control_type == autofill::FormControlType::kInputPassword;
+        field.form_control_type() == autofill::FormControlType::kInputPassword;
 
     if (!field_value.empty()) {
-      std::set<base::StringPiece16>& seen_values =
+      std::set<std::u16string_view>& seen_values =
           is_password ? seen_password_values : seen_username_values;
       AlternativeElementVector* all_alternative_fields =
           is_password ? all_alternative_passwords : all_alternative_usernames;
@@ -986,13 +983,13 @@ std::vector<ProcessedField> ProcessFields(
       if (insertion.second) {
         // There was no such element in |seen_values|.
         all_alternative_fields->emplace_back(
-            AlternativeElement::Value(field_value), field.renderer_id,
-            AlternativeElement::Name(field.name));
+            AlternativeElement::Value(field_value), field.renderer_id(),
+            AlternativeElement::Name(field.name()));
       }
     }
 
     const AutocompleteParsing autocomplete_parsing =
-        ParseAutocomplete(field.autocomplete_attribute);
+        ParseAutocomplete(field.autocomplete_attribute());
 
     ProcessedField processed_field = {
         .field = &field,
@@ -1001,10 +998,11 @@ std::vector<ProcessedField> ProcessFields(
         .accepts_webauthn_credentials =
             autocomplete_parsing.accepts_webauthn_credentials};
 
-    if (field.properties_mask & FieldPropertiesFlags::kUserTyped)
+    if (field.properties_mask() & FieldPropertiesFlags::kUserTyped) {
       processed_field.interactability = Interactability::kCertain;
-    else if (field.is_focusable)
+    } else if (field.is_focusable()) {
       processed_field.interactability = Interactability::kPossible;
+    }
 
     result.push_back(processed_field);
   }
@@ -1018,14 +1016,16 @@ std::vector<ProcessedField> ProcessFields(
 bool GetMayUsePrefilledPlaceholder(
     const std::optional<FormPredictions>& form_predictions,
     const SignificantFields& significant_fields) {
-  if (!form_predictions || !significant_fields.username)
+  if (!form_predictions || !significant_fields.username) {
     return false;
+  }
 
   autofill::FieldRendererId username_id =
-      significant_fields.username->renderer_id;
+      significant_fields.username->renderer_id();
   for (const PasswordFieldPrediction& prediction : form_predictions->fields) {
-    if (prediction.renderer_id == username_id)
+    if (prediction.renderer_id == username_id) {
       return prediction.may_use_prefilled_placeholder;
+    }
   }
   return false;
 }
@@ -1052,9 +1052,9 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
 
   // Create the PasswordForm and set data not related to specific fields.
   auto result = std::make_unique<PasswordForm>();
-  result->url = form_data.url;
-  result->signon_realm = GetSignonRealm(form_data.url);
-  result->action = form_data.action;
+  result->url = form_data.url();
+  result->signon_realm = GetSignonRealm(form_data.url());
+  result->action = form_data.action();
   result->form_data = form_data;
   result->all_alternative_passwords = std::move(all_alternative_passwords);
   result->all_alternative_usernames = std::move(all_alternative_usernames);
@@ -1064,16 +1064,15 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
   result->server_side_classification_successful = form_predictions.has_value();
   result->username_may_use_prefilled_placeholder =
       GetMayUsePrefilledPlaceholder(form_predictions, significant_fields);
-  result->is_new_password_reliable =
-      significant_fields.is_new_password_reliable;
   result->only_for_fallback = significant_fields.is_fallback;
-  result->submission_event = form_data.submission_event;
+  result->submission_event = form_data.submission_event();
   result->accepts_webauthn_credentials =
       significant_fields.accepts_webauthn_credentials;
 
-  for (const FormFieldData& field : form_data.fields) {
-    if (field.form_control_type == autofill::FormControlType::kInputPassword &&
-        (field.properties_mask & FieldPropertiesFlags::kAutofilled)) {
+  for (const FormFieldData& field : form_data.fields()) {
+    if (field.form_control_type() ==
+            autofill::FormControlType::kInputPassword &&
+        (field.properties_mask() & FieldPropertiesFlags::kAutofilled)) {
       result->form_has_autofilled_value = true;
     }
   }
@@ -1087,43 +1086,87 @@ bool FieldValueIsTooShortForSaving(const FormFieldData* field) {
   return field && GetFieldValue(*field).size() <= 1;
 }
 
+bool FieldMaxLengthAllowsPasswordGeneration(const FormFieldData& field) {
+  return field.max_length() >=
+         autofill::password_generation::kMinimumPasswordLength;
+}
+
 }  // namespace
+
+FormParsingResult::FormParsingResult() = default;
+
+FormParsingResult::FormParsingResult(
+    std::unique_ptr<PasswordForm> password_form,
+    UsernameDetectionMethod username_detection_method,
+    bool is_new_password_reliable,
+    std::vector<autofill::FieldRendererId> suggestion_banned_fields,
+    const FormFieldData* manual_generation_enabled_field)
+    : password_form(std::move(password_form)),
+      username_detection_method(username_detection_method),
+      is_new_password_reliable(is_new_password_reliable),
+      suggestion_banned_fields(std::move(suggestion_banned_fields)),
+      manual_generation_enabled_field(
+          manual_generation_enabled_field
+              ? manual_generation_enabled_field->renderer_id()
+              : autofill::FieldRendererId()) {}
+
+FormParsingResult::FormParsingResult(FormParsingResult&& other) = default;
+
+FormParsingResult::~FormParsingResult() = default;
 
 FormDataParser::FormDataParser() = default;
 
 FormDataParser::~FormDataParser() = default;
 
-std::tuple<std::unique_ptr<PasswordForm>,
-           FormDataParser::UsernameDetectionMethod>
-FormDataParser::ParseAndReturnUsernameDetection(
+FormParsingResult FormDataParser::ParseAndReturnParsingResult(
     const FormData& form_data,
     Mode mode,
     const base::flat_set<std::u16string>& stored_usernames) {
-  if (form_data.fields.size() > kMaxParseableFields)
-    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
-  if (!form_data.url.is_valid())
-    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
+  if (form_data.fields().size() > kMaxParseableFields) {
+    return FormParsingResult();
+  }
+  if (!form_data.url().is_valid()) {
+    return FormParsingResult();
+  }
 
   readonly_status_ = ReadonlyPasswordFields::kNoHeuristics;
   AlternativeElementVector all_alternative_passwords;
   AlternativeElementVector all_alternative_usernames;
   std::vector<ProcessedField> processed_fields =
-      ProcessFields(form_data.fields, &all_alternative_passwords,
+      ProcessFields(form_data.fields(), &all_alternative_passwords,
                     &all_alternative_usernames, mode);
 
-  if (processed_fields.empty())
-    return {nullptr, UsernameDetectionMethod::kNoUsernameDetected};
+  if (processed_fields.empty()) {
+    return FormParsingResult();
+  }
 
   SignificantFields significant_fields;
   UsernameDetectionMethod method = UsernameDetectionMethod::kNoUsernameDetected;
 
   // (1) First, try to parse with server predictions.
   if (predictions_) {
-    ParseUsingPredictions(&processed_fields, *predictions_, mode,
+    ParseUsingPredictions(processed_fields, *predictions_, mode,
                           &significant_fields);
     if (significant_fields.username) {
       method = UsernameDetectionMethod::kServerSidePrediction;
     }
+  }
+
+  // Fields with server prediction `CREDIT_CARD_FIELD`, `CREDIT_CARD_NUMBER`,
+  // `NOT_USERNAME`, and `NOT_PASSWORD` must not be considered in base
+  // heuristics parsing or parsing using autocomplete attributes.
+  std::vector<autofill::FieldRendererId> suggestion_banned_fields;
+  for (const ProcessedField& field : processed_fields) {
+    if (field.server_hints_non_credential_field) {
+      suggestion_banned_fields.push_back(field.field->renderer_id());
+    }
+  }
+  std::erase_if(processed_fields, [](ProcessedField field) {
+    return field.server_hints_non_credential_field;
+  });
+  // Server classified all fields as not related to credentials, early return.
+  if (processed_fields.empty()) {
+    return FormParsingResult();
   }
 
   // (2) If that failed, try to parse with autocomplete attributes.
@@ -1157,11 +1200,11 @@ FormDataParser::ParseAndReturnUsernameDetection(
     // analysis.
     if (!username_found_before_heuristic) {
       const FormFieldData* username_field_by_context =
-          FindUsernameInPredictions(form_data.username_predictions,
+          FindUsernameInPredictions(form_data.username_predictions(),
                                     processed_fields, username_max);
       if (username_field_by_context &&
           !(mode == FormDataParser::Mode::kSaving &&
-            username_field_by_context->value.empty())) {
+            username_field_by_context->value().empty())) {
         significant_fields.username = username_field_by_context;
         if (method == UsernameDetectionMethod::kNoUsernameDetected ||
             method == UsernameDetectionMethod::kBaseHeuristic) {
@@ -1196,9 +1239,11 @@ FormDataParser::ParseAndReturnUsernameDetection(
   // eligible for automatic password generation. This only makes sense when
   // forms are analysed for filling, because no passwords are generated when the
   // user saves the already entered one.
-  significant_fields.is_new_password_reliable =
-      mode == Mode::kFilling && significant_fields.new_password &&
-      new_password_found_before_heuristic;
+  bool is_new_password_reliable = mode == Mode::kFilling &&
+                                  significant_fields.new_password &&
+                                  FieldMaxLengthAllowsPasswordGeneration(
+                                      *significant_fields.new_password) &&
+                                  new_password_found_before_heuristic;
 
   if (mode == Mode::kFilling) {
     for (const auto& field : processed_fields) {
@@ -1220,20 +1265,20 @@ FormDataParser::ParseAndReturnUsernameDetection(
        FieldValueIsTooShortForSaving(significant_fields.new_password))) {
     significant_fields.is_fallback = true;
   }
-
-  return {
+  return FormParsingResult(
       AssemblePasswordForm(form_data, significant_fields,
                            std::move(all_alternative_passwords),
                            std::move(all_alternative_usernames), predictions_),
-      method};
+      method, is_new_password_reliable, suggestion_banned_fields,
+      significant_fields.manual_generation_enabled_field);
 }
 
 std::unique_ptr<PasswordForm> FormDataParser::Parse(
     const FormData& form_data,
     Mode mode,
     const base::flat_set<std::u16string>& stored_usernames) {
-  return std::get<0>(
-      ParseAndReturnUsernameDetection(form_data, mode, stored_usernames));
+  return ParseAndReturnParsingResult(form_data, mode, stored_usernames)
+      .password_form;
 }
 
 std::string GetSignonRealm(const GURL& url) {
@@ -1253,8 +1298,7 @@ const FormFieldData* FindUsernameInPredictions(
   for (autofill::FieldRendererId predicted_id : username_predictions) {
     auto iter = base::ranges::find_if(
         processed_fields, [&](const ProcessedField& processed_field) {
-          return !IsNotUsernameField(processed_field) &&
-                 (processed_field.field->renderer_id == predicted_id) &&
+          return processed_field.field->renderer_id() == predicted_id &&
                  MatchesInteractability(processed_field, username_max);
         });
     if (iter != processed_fields.end()) {

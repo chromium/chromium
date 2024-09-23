@@ -1,0 +1,69 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("kiosk_vision") {
+  sources = [
+    "kiosk_vision_telemetry_sampler.cc",
+    "kiosk_vision_telemetry_sampler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/app_mode",
+    "//chromeos/ash/components/kiosk/vision",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "kiosk_vision_telemetry_sampler_unittest.cc" ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_mode:test_support",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting/kiosk_vision",
+    "//chromeos/ash/components/kiosk/vision",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "kiosk_vision_telemetry_events_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ash/app_mode:test_support",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/kiosk/vision:vision_prefs",
+    "//chromeos/dbus/missive:test_support",
+    "//components/prefs",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

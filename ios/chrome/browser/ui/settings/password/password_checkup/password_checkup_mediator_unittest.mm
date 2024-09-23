@@ -5,18 +5,20 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 
 #import "base/test/bind.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_consumer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -65,10 +67,10 @@ class PasswordCheckupMediatorTest : public PlatformTest {
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
         browser_state_.get());
@@ -95,6 +97,9 @@ class PasswordCheckupMediatorTest : public PlatformTest {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -115,7 +120,7 @@ TEST_F(PasswordCheckupMediatorTest,
          setPasswordCheckupHomepageState:PasswordCheckupHomepageState::
                                              PasswordCheckupHomepageStateDone
                   insecurePasswordCounts:counts
-      formattedElapsedTimeSinceLastCheck:@"Check never run."]);
+      formattedElapsedTimeSinceLastCheck:@"Check never run"]);
   OCMExpect([consumer() setAffiliatedGroupCount:0]);
 
   PasswordCheckupMediator<PasswordCheckObserver>* password_check_observer =
@@ -139,7 +144,7 @@ TEST_F(PasswordCheckupMediatorTest, NotifiesConsumerOnInsecurePasswordChange) {
          setPasswordCheckupHomepageState:PasswordCheckupHomepageState::
                                              PasswordCheckupHomepageStateDone
                   insecurePasswordCounts:counts
-      formattedElapsedTimeSinceLastCheck:@"Check never run."]);
+      formattedElapsedTimeSinceLastCheck:@"Check never run"]);
   OCMExpect([consumer() setAffiliatedGroupCount:1]);
 
   PasswordCheckupMediator<PasswordCheckObserver>* password_check_observer =
@@ -180,7 +185,7 @@ TEST_F(PasswordCheckupMediatorTest,
          setPasswordCheckupHomepageState:PasswordCheckupHomepageState::
                                              PasswordCheckupHomepageStateDone
                   insecurePasswordCounts:counts
-      formattedElapsedTimeSinceLastCheck:@"Check never run."]);
+      formattedElapsedTimeSinceLastCheck:@"Check never run"]);
   OCMExpect([consumer() setAffiliatedGroupCount:1]);
 
   // Enter an error state of PasswordCheckState.
@@ -193,6 +198,32 @@ TEST_F(PasswordCheckupMediatorTest,
   AddIssueToForm(&form2, InsecureType::kWeak);
   GetTestStore().AddLogin(form2);
   RunUntilIdle();
+
+  EXPECT_OCMOCK_VERIFY(consumer());
+}
+
+// Verifies the consumer is notified when Safety Check notifications should be
+// enabled.
+TEST_F(PasswordCheckupMediatorTest,
+       NotifiesConsumerWhenSafetyCheckNotificationsAreEnabled) {
+  feature_list_.InitAndEnableFeature(kSafetyCheckNotifications);
+
+  OCMExpect([consumer() setSafetyCheckNotificationsEnabled:YES]);
+
+  [mediator() reconfigureNotificationsSection:YES];
+
+  EXPECT_OCMOCK_VERIFY(consumer());
+}
+
+// Verifies the consumer is notified when Safety Check notifications should be
+// disabled.
+TEST_F(PasswordCheckupMediatorTest,
+       NotifiesConsumerWhenSafetyCheckNotificationsAreDisabled) {
+  feature_list_.InitAndEnableFeature(kSafetyCheckNotifications);
+
+  OCMExpect([consumer() setSafetyCheckNotificationsEnabled:NO]);
+
+  [mediator() reconfigureNotificationsSection:NO];
 
   EXPECT_OCMOCK_VERIFY(consumer());
 }

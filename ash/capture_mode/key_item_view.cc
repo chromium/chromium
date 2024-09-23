@@ -98,7 +98,8 @@ void KeyItemView::Layout(PassKey) {
   }
 }
 
-gfx::Size KeyItemView::CalculatePreferredSize() const {
+gfx::Size KeyItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Return the fixed size if the key item contains icon or label with a single
   // character.
   if (icon_ || (label_ && label_->GetText().length() == 1)) {

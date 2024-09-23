@@ -476,7 +476,8 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
         // We should get the original frame as-is here.
         EXPECT_EQ(frame->storage_type(),
                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-        EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_frame->GetGpuMemoryBuffer());
+        EXPECT_EQ(frame->GetGpuMemoryBufferForTesting(),
+                  gmb_frame->GetGpuMemoryBufferForTesting());
         EXPECT_EQ(frame->coded_size(), kCodedSize);
         EXPECT_EQ(frame->visible_rect(), kVisibleRect);
         EXPECT_EQ(frame->natural_size(), kNaturalSize);
@@ -495,7 +496,8 @@ TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
         // |kDesiredSize| exposed as natural size of the wrapped frame.
         EXPECT_EQ(frame->storage_type(),
                   media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
-        EXPECT_EQ(frame->GetGpuMemoryBuffer(), gmb_frame->GetGpuMemoryBuffer());
+        EXPECT_EQ(frame->GetGpuMemoryBufferForTesting(),
+                  gmb_frame->GetGpuMemoryBufferForTesting());
         EXPECT_EQ(frame->coded_size(), kCodedSize);
         EXPECT_EQ(frame->visible_rect(), kVisibleRect);
         EXPECT_EQ(frame->natural_size(), kDesiredSize);

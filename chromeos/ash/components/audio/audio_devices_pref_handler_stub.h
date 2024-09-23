@@ -28,6 +28,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   using AudioDeviceVolumeGain = std::map<uint64_t, int>;
   using AudioDeviceStateMap = std::map<uint64_t, DeviceState>;
   using AudioDeviceUserPriority = std::map<uint64_t, int>;
+  using AudioDevicePreferenceSetMap = std::map<std::string, std::string>;
+  using MostRecentActivatedDeviceIdList = base::Value::List;
 
   AudioDevicesPrefHandlerStub();
 
@@ -60,12 +62,28 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   bool GetNoiseCancellationState() override;
   void SetNoiseCancellationState(bool noise_cancellation_state) override;
 
+  bool GetStyleTransferState() const override;
+  void SetStyleTransferState(bool style_transfer_state) override;
+
   void SetAudioOutputAllowedValue(bool is_audio_output_allowed);
 
   bool GetForceRespectUiGainsState() override;
   void SetForceRespectUiGainsState(bool force_respect_ui_gains) override;
   bool GetHfpMicSrState() override;
   void SetHfpMicSrState(bool hfp_mic_sr_state) override;
+
+  const std::optional<uint64_t> GetPreferredDeviceFromPreferenceSet(
+      bool is_input,
+      const AudioDeviceList& devices) override;
+  void UpdateDevicePreferenceSet(const AudioDeviceList& devices,
+                                 const AudioDevice& preferred_device) override;
+
+  const base::Value::List& GetMostRecentActivatedDeviceIdList(
+      bool is_input) override;
+  void UpdateMostRecentActivatedDeviceIdList(
+      const AudioDevice& device) override;
+
+  const AudioDevicePreferenceSetMap& GetDevicePreferenceSetMap();
 
  protected:
   ~AudioDevicesPrefHandlerStub() override;
@@ -75,11 +93,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   AudioDeviceVolumeGain audio_device_volume_gain_map_;
   AudioDeviceStateMap audio_device_state_map_;
   AudioDeviceUserPriority user_priority_map_;
+  AudioDevicePreferenceSetMap device_preference_set_map_;
+  MostRecentActivatedDeviceIdList most_recent_activated_device_id_list;
 
   base::ObserverList<AudioPrefObserver>::Unchecked observers_;
 
   bool is_audio_output_allowed_ = true;
   bool noise_cancellation_state_ = true;
+  bool style_transfer_state_ = false;
   bool force_respect_ui_gains_ = false;
   bool hfp_mic_sr_ = false;
 };

@@ -26,28 +26,33 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   int ScrollbarThickness(float scale_from_dip,
                          EScrollbarWidth scrollbar_width) const override;
   bool UsesOverlayScrollbars() const override;
+  bool UsesFluentScrollbars() const override;
   bool UsesFluentOverlayScrollbars() const override;
   // When scrollbars are main threaded the thumb size returned by ThumbRect()
   // is the expanded thumb size. This function shrinks the thumb and displaces
   // it to be near the correct Edge of the scrollable area.
-  gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(Scrollbar&, gfx::Rect& rect)
-      const override;
+  gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
+      const Scrollbar&,
+      const gfx::Rect& rect) const override;
+
+  bool UsesSolidColorThumb() const override { return true; }
+  bool UsesNinePatchTrackAndButtonsResource() const override;
 
  protected:
   ScrollbarThemeFluent();
 
-  gfx::Rect ThumbRect(const Scrollbar&) override;
+  gfx::Rect ThumbRect(const Scrollbar&) const override;
   gfx::Size ButtonSize(const Scrollbar&) const override;
 
-  void PaintTrack(GraphicsContext&,
-                  const Scrollbar&,
-                  const gfx::Rect&) override;
+  void PaintTrackBackground(GraphicsContext&,
+                            const Scrollbar&,
+                            const gfx::Rect&) override;
   void PaintButton(GraphicsContext& context,
                    const Scrollbar& scrollbar,
                    const gfx::Rect& rect,
                    ScrollbarPart part) override;
   WebThemeEngine::ScrollbarThumbExtraParams BuildScrollbarThumbExtraParams(
-      const Scrollbar&) override;
+      const Scrollbar&) const override;
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override;
   base::TimeDelta OverlayScrollbarFadeOutDuration() const override;
 

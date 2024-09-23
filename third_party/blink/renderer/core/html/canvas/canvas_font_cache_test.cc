@@ -15,8 +15,6 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
-using testing::Mock;
-
 namespace blink {
 
 class CanvasFontCacheTest : public PageTestBase {
@@ -74,7 +72,7 @@ TEST_F(CanvasFontCacheTest, PageVisibilityChange) {
   Context2D()->setFontForTesting("10px sans-serif");
   EXPECT_TRUE(Cache()->IsInCache("10px sans-serif"));
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
-                               /*initial_state=*/false);
+                               /*is_initial_state=*/false);
   EXPECT_FALSE(Cache()->IsInCache("10px sans-serif"));
 
   Context2D()->setFontForTesting("15px sans-serif");
@@ -86,7 +84,7 @@ TEST_F(CanvasFontCacheTest, PageVisibilityChange) {
   EXPECT_FALSE(Cache()->IsInCache("15px sans-serif"));
 
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
-                               /*initial_state=*/false);
+                               /*is_initial_state=*/false);
   Context2D()->setFontForTesting("15px sans-serif");
   Context2D()->setFontForTesting("10px sans-serif");
   EXPECT_TRUE(Cache()->IsInCache("10px sans-serif"));
@@ -105,7 +103,7 @@ TEST_F(CanvasFontCacheTest, CreateDocumentFontCache) {
 // happen, setFontForTesting() should clear the cache instead.
 TEST_F(CanvasFontCacheTest, HardMaxFontsOnPageVisibility) {
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
-                               /*initial_state=*/false);
+                               /*is_initial_state=*/false);
   // Fill up the font cache.
   for (unsigned i = 0; i < Cache()->HardMaxFonts(); ++i) {
     String font_string;
@@ -118,7 +116,7 @@ TEST_F(CanvasFontCacheTest, HardMaxFontsOnPageVisibility) {
 
   // Set initial state to true to not trigger a flush.
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
-                               /*initial_state=*/true);
+                               /*is_initial_state=*/true);
   // Set font should detect that things are out-of-sync and clear the cache.
   Context2D()->setFontForTesting("15px serif");
   EXPECT_EQ(Cache()->GetCacheSize(), 1u);

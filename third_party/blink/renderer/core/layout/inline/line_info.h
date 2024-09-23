@@ -29,9 +29,10 @@ struct InlineItemsData;
 //
 // LineBreaker produces, and InlineLayoutAlgorithm consumes.
 class CORE_EXPORT LineInfo {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
+  void Trace(Visitor* visitor) const;
   void Reset();
 
   const InlineItemsData& ItemsData() const {
@@ -47,6 +48,12 @@ class CORE_EXPORT LineInfo {
   void SetLineStyle(const InlineNode&,
                     const InlineItemsData&,
                     bool use_first_line_style);
+  void OverrideLineStyle(const ComputedStyle& style) { line_style_ = style; }
+
+  // True if this line is a first formatted line.
+  // https://drafts.csswg.org/css-pseudo-4/#first-formatted-line
+  bool IsFirstFormattedLine() const { return is_first_formatted_line_; }
+  void SetIsFirstFormattedLine(bool value) { is_first_formatted_line_ = value; }
 
   // Use ::first-line style if true.
   // https://drafts.csswg.org/css-pseudo/#selectordef-first-line
@@ -79,6 +86,11 @@ class CORE_EXPORT LineInfo {
   // Returns true if this line is a block-in-inline.
   bool IsBlockInInline() const { return is_block_in_inline_; }
   void SetIsBlockInInline() { is_block_in_inline_ = true; }
+
+  bool IsRubyBase() const { return is_ruby_base_; }
+  void SetIsRubyBase() { is_ruby_base_ = true; }
+  bool IsRubyText() const { return is_ruby_text_; }
+  void SetIsRubyText() { is_ruby_text_ = true; }
 
   // InlineItemResults for this line.
   InlineItemResults* MutableResults() { return &results_; }
@@ -173,13 +185,26 @@ class CORE_EXPORT LineInfo {
   const InlineItemTextIndex& Start() const { return start_; }
   unsigned StartOffset() const { return start_.text_offset; }
   void SetStart(const InlineItemTextIndex& index) { start_ = index; }
+
+  // Start text offset of this line, excluding out-of-flow objects, and
+  // zero-length items.
+  // Returns EndTextOffset() if the line is empty or all item results are
+  // excluded.
+  unsigned InflowStartOffset() const;
+
   // End offset of this line. This is the same as the start offset of the next
   // line, or the end of block if this is the last line.
   InlineItemTextIndex End() const;
   unsigned EndTextOffset() const;
   // End text offset of this line, excluding out-of-flow objects such as
   // floating or positioned.
-  unsigned InflowEndOffset() const;
+  unsigned InflowEndOffset() const {
+    return InflowEndOffsetInternal(/* skip_forced_break */ false);
+  }
+  // In addition to the above, forced breaks and collapsed spaces are excluded.
+  unsigned InflowEndOffsetWithoutForcedBreak() const {
+    return InflowEndOffsetInternal(/* skip_forced_break */ true);
+  }
   // End text offset for `text-align: justify`. This excludes preserved trailing
   // spaces. Available only when |TextAlign()| is |kJustify|.
   unsigned EndOffsetForJustify() const {
@@ -189,6 +214,8 @@ class CORE_EXPORT LineInfo {
   // End item index of this line.
   unsigned EndItemIndex() const { return end_item_index_; }
   void SetEndItemIndex(unsigned index) { end_item_index_ = index; }
+
+  bool GlyphCountIsGreaterThan(wtf_size_t limit) const;
 
   // The base direction of this line for the bidi algorithm.
   TextDirection BaseDirection() const { return base_direction_; }
@@ -208,10 +235,19 @@ class CORE_EXPORT LineInfo {
     block_in_inline_layout_result_ = std::move(layout_result);
   }
 
-  // |MayHaveTextCombineItem()| is used for treating text-combine box as
-  // ideographic character during "text-align:justify".
-  bool MayHaveTextCombineItem() const { return may_have_text_combine_item_; }
-  void SetHaveTextCombineItem() { may_have_text_combine_item_ = true; }
+  // |MayHaveTextCombineOrRubyItem()| is a flag for special text handling
+  // during "text-align:justify".
+  bool MayHaveTextCombineOrRubyItem() const {
+    return may_have_text_combine_or_ruby_item_;
+  }
+  void SetHaveTextCombineOrRubyItem() {
+    may_have_text_combine_or_ruby_item_ = true;
+  }
+
+  // True if the line might contain ruby overhang. It affects min-max
+  // computation.
+  bool MayHaveRubyOverhang() const { return may_have_ruby_overhang_; }
+  void SetMayHaveRubyOverhang() { may_have_ruby_overhang_ = true; }
 
   // Returns annotation block start adjustment base on annotation and initial
   // letter.
@@ -255,17 +291,18 @@ class CORE_EXPORT LineInfo {
   // The width of preserved trailing spaces.
   LayoutUnit ComputeTrailingSpaceWidth(
       unsigned* end_offset_out = nullptr) const;
+  unsigned InflowEndOffsetInternal(bool skip_forced_break) const;
 
-  const InlineItemsData* items_data_ = nullptr;
-  const ComputedStyle* line_style_{nullptr};
+  Member<const InlineItemsData> items_data_;
+  Member<const ComputedStyle> line_style_;
   InlineItemResults results_;
 
   BfcOffset bfc_offset_;
 
-  const InlineBreakToken* break_token_ = nullptr;
+  Member<const InlineBreakToken> break_token_;
   HeapVector<Member<const InlineBreakToken>> parallel_flow_break_tokens_;
 
-  const LayoutResult* block_in_inline_layout_result_ = nullptr;
+  Member<const LayoutResult> block_in_inline_layout_result_;
 
   std::optional<LayoutUnit> minimum_space_shortage_;
 
@@ -285,6 +322,7 @@ class CORE_EXPORT LineInfo {
   ETextAlign text_align_ = ETextAlign::kLeft;
   TextDirection base_direction_ = TextDirection::kLtr;
 
+  bool is_first_formatted_line_ = false;
   bool use_first_line_style_ = false;
   bool is_last_line_ = false;
   bool has_forced_break_ = false;
@@ -299,9 +337,13 @@ class CORE_EXPORT LineInfo {
   // Even if text combine item causes line break, this variable is not reset.
   // This variable is used to add spacing before/after text combine items if
   // "text-align: justify".
+  // Also, the variable is used to represent existence of <ruby>, which needs
+  // special handling for "text-align: justify".
   // Note: To avoid scanning |InlineItemResults|, this variable is true
   // when |InlineItemResult| to |results_|.
-  bool may_have_text_combine_item_ = false;
+  bool may_have_text_combine_or_ruby_item_ = false;
+  // True if the last processed line might contain ruby overhang.
+  bool may_have_ruby_overhang_ = false;
   bool allow_hang_for_alignment_ = false;
 
   // When adding fields, pelase ensure `Reset()` is in sync.
@@ -310,5 +352,7 @@ class CORE_EXPORT LineInfo {
 std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info);
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::LineInfo)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LINE_INFO_H_

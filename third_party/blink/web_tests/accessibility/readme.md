@@ -20,7 +20,7 @@ These tests check the accessibility tree directly in Blink using ```Accessibilit
 
 The code that implements the bindings is here:
 
-* ```content/shell/test_runner/accessibility_controller.cc```
-* ```content/shell/test_runner/web_ax_object_proxy.cc```
+* ```content/web_test/renderer/accessibility_controller.cc```
+* ```content/web_test/renderer/web_ax_object_proxy.cc```
 
 You'll probably find bindings for the features you want to test already. If not, it's not hard to add new ones.

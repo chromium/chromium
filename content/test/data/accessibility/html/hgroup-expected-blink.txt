@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++group ignored
+++++++group
 ++++++++heading name='Heading 1' hierarchicalLevel=1
 ++++++++++staticText name='Heading 1'
 ++++++++++++inlineTextBox name='Heading 1'

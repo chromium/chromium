@@ -17,7 +17,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetImplementation;
@@ -31,7 +32,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 
 /** Tests the CronetBufferedOutputStream implementation. */
-@Batch(Batch.UNIT_TESTS)
+@DoNotBatch(reason = "crbug/1459563")
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK},
         reason = "See crrev.com/c/4590329")
@@ -71,25 +72,27 @@ public class CronetBufferedOutputStreamTest {
         assertThrows(ProtocolException.class, mConnection::getOutputStream);
     }
 
+    // Tests the case where we don't specify any streaming mode, call connect(), and *then* start
+    // writing to the output stream. It's not entirely clear from HttpURLConnection docs if this is
+    // supposed to work, but the default Android implementation does support this pattern, so for
+    // compatibility we should too. See http://crbug.com/348166397.
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason = "New behavior that has not made it to HttpEngine yet")
     public void testWriteAfterConnect() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
-        OutputStream out = mConnection.getOutputStream();
-        out.write(TestUtil.UPLOAD_DATA);
         mConnection.connect();
-        // Attempt to write some more.
-        IllegalStateException e =
-                assertThrows(IllegalStateException.class, () -> out.write(TestUtil.UPLOAD_DATA));
 
-        assertThat(e)
-                .hasMessageThat()
-                .isEqualTo(
-                        "Use setFixedLengthStreamingMode() or "
-                                + "setChunkedStreamingMode() for writing after connect");
+        String dataString = "some very important data";
+        mConnection.getOutputStream().write(dataString.getBytes());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEqualTo(dataString);
     }
 
     @Test
@@ -101,7 +104,7 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setRequestMethod("POST");
         OutputStream out = mConnection.getOutputStream();
         assertThat(mConnection.getResponseCode()).isEqualTo(200);
-        assertThrows(IllegalStateException.class, () -> out.write(TestUtil.UPLOAD_DATA));
+        assertThrows(Exception.class, () -> out.write(TestUtil.UPLOAD_DATA));
     }
 
     @Test
@@ -150,6 +153,7 @@ public class CronetBufferedOutputStreamTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("crbug.com/344966615")
     public void testPostWithContentLengthWriteOneByte() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);

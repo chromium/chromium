@@ -20,7 +20,6 @@ class scoped_refptr;
 
 namespace gfx {
 class ImageSkia;
-class Insets;
 class Point;
 class Rect;
 class SizeF;
@@ -177,12 +176,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // specifying the decoration insets.
   virtual bool CanSetDecorationInsets() const;
 
-  // Lets the WM know which portion of the window is the frame decoration.  The
-  // WM may use this to eg. snap windows to each other starting where the window
-  // begins rather than starting where the shadow begins.  If |insets_px| is
-  // nullptr, then any existing insets will be reset.
-  virtual void SetDecorationInsets(const gfx::Insets* insets_px);
-
   // Sets a hint for the compositor so it can avoid unnecessarily redrawing
   // occluded portions of windows.  If |region_px| is nullopt or empty, then any
   // existing region will be reset.
@@ -192,7 +185,7 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // potentially large (24px) hit area for window resizing on the window shadow
   // to a more reasonable (10px) area.  If |region_px| is nullopt, then any
   // existing region will be reset.
-  virtual void SetInputRegion(std::optional<gfx::Rect> region_px);
+  virtual void SetInputRegion(std::optional<std::vector<gfx::Rect>> region_px);
 
   // Whether the platform supports client-controlled window movement. Under
   // Wayland, for example, this returns false, unless the required protocol

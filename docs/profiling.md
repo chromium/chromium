@@ -45,6 +45,10 @@ Run the perf tool like this:
 *** promo
 To adjust the sampling frequency, use the `-F` argument, e.g., `-F 1000`.
 ***
+*** promo
+If this fails to collect any samples on a Cloudtop/VM (presumably while profiling tests),
+try adding `-e cpu-clock`.
+***
 
 To stop profiling, press `Control-c` in the terminal window where `perf` is running. Run `pprof` to view the results, providing the path to the browser executable; e.g.:
 

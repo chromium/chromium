@@ -6,13 +6,10 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -197,15 +194,6 @@ void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
     if (IsAppBrowser(browser) &&
         multi_user_util::IsProfileFromActiveUser(browser->profile())) {
       AddAppBrowserToShelf(browser);
-      if (!ash::features::IsStandaloneWindowMigrationUxEnabled()) {
-        return;
-      }
-      std::string app_id =
-          web_app::GetAppIdFromApplicationName(browser->app_name());
-      if (app_id.empty()) {
-        return;
-      }
-      MaybeShowStandaloneMigrationNudge(app_id, browser->profile());
     }
   }
 }
@@ -266,7 +254,6 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
     for (const auto& contents : remove->contents) {
       switch (contents.remove_reason) {
         case TabStripModelChange::RemoveReason::kDeleted:
-        case TabStripModelChange::RemoveReason::kCached:
 #if DCHECK_IS_ON()
           DCHECK(!base::Contains(tabs_in_transit_, contents.contents));
 #endif
@@ -276,7 +263,7 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
           // The tab will be reinserted immediately into another browser, so
           // this event is ignored.
           if (browser->is_type_devtools()) {
-            // TODO(crbug.com/1221967): when a dev tools window is docked, and
+            // TODO(crbug.com/40773744): when a dev tools window is docked, and
             // its WebContents is removed, it will not be reinserted into
             // another tab strip, so it should be treated as closed.
             OnTabClosing(contents.contents);
@@ -437,7 +424,7 @@ void BrowserStatusMonitor::OnTabClosing(content::WebContents* contents) {
 
 void BrowserStatusMonitor::OnTabMoved(TabStripModel* tab_strip_model,
                                       content::WebContents* contents) {
-  // TODO(crbug.com/1203992): split this into inserted and moved cases.
+  // TODO(crbug.com/40763808): split this into inserted and moved cases.
   OnTabInserted(tab_strip_model, contents);
 }
 

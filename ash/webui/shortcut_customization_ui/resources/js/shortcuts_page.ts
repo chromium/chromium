@@ -15,15 +15,13 @@ import {AcceleratorRowElement} from './accelerator_row.js';
 import {AcceleratorSubsectionElement} from './accelerator_subsection.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
-import {AcceleratorCategory, AcceleratorSubcategory} from './shortcut_types';
+import {AcceleratorCategory, AcceleratorSubcategory} from './shortcut_types.js';
 import {getTemplate} from './shortcuts_page.html.js';
 
 /**
  * @fileoverview
  * 'shortcuts-page' is a generic page that is capable of rendering the
  * shortcuts for a specific category.
- *
- * TODO(jimmyxgong): Implement this skeleton element.
  */
 
 // 150ms is enough of delay to wait for the virtual keyboard to disappear and

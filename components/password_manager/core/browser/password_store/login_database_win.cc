@@ -5,21 +5,24 @@
 #include "components/password_manager/core/browser/password_store/login_database.h"
 
 #include "base/strings/string_util.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 
 namespace password_manager {
 
-LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
+EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
-    std::string* cipher_text) {
-  if (OSCrypt::EncryptString16(plain_text, cipher_text))
-    return ENCRYPTION_RESULT_SUCCESS;
-  return ENCRYPTION_RESULT_ITEM_FAILURE;
+    std::string* cipher_text) const {
+  bool result = encryptor_
+                    ? encryptor_->EncryptString16(plain_text, cipher_text)
+                    : OSCrypt::EncryptString16(plain_text, cipher_text);
+  return result ? EncryptionResult::kSuccess
+                : EncryptionResult::kServiceFailure;
 }
 
-LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
+EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
-    std::u16string* plain_text) {
+    std::u16string* plain_text) const {
   // Unittests need to read sample database entries. If these entries had real
   // passwords, their encoding would need to be different for every platform.
   // To avoid the need for that, the entries have empty passwords. OSCrypt on
@@ -31,11 +34,14 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
   // discussion.
   if (cipher_text.empty()) {
     plain_text->clear();
-    return ENCRYPTION_RESULT_SUCCESS;
+    return EncryptionResult::kSuccess;
   }
-  if (OSCrypt::DecryptString16(cipher_text, plain_text))
-    return ENCRYPTION_RESULT_SUCCESS;
-  return ENCRYPTION_RESULT_ITEM_FAILURE;
+
+  bool result = encryptor_
+                    ? encryptor_->DecryptString16(cipher_text, plain_text)
+                    : OSCrypt::DecryptString16(cipher_text, plain_text);
+  return result ? EncryptionResult::kSuccess
+                : EncryptionResult::kServiceFailure;
 }
 
 }  // namespace password_manager

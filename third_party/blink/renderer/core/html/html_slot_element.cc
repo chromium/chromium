@@ -267,7 +267,7 @@ void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes() {
     }
     previous = current;
     if (flat_tree_parent_changed)
-      current->FlatTreeParentChanged();
+      current->ParentSlotChanged();
   }
   if (previous) {
     DCHECK(previous->GetFlatTreeNodeData());
@@ -505,13 +505,13 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChangeByDynamicProgramming(
     if (backtrack == std::make_pair(r - 1, c - 1)) {
       DCHECK_EQ(old_slotted[r - 1], new_slotted[c - 1]);
     } else if (backtrack == std::make_pair(r, c - 1)) {
-      new_slotted[c - 1]->FlatTreeParentChanged();
+      new_slotted[c - 1]->ParentSlotChanged();
     }
     std::tie(r, c) = backtrack;
   }
   if (c > 0) {
     for (wtf_size_t i = 0; i < c; ++i)
-      new_slotted[i]->FlatTreeParentChanged();
+      new_slotted[i]->ParentSlotChanged();
   }
 }
 
@@ -527,7 +527,7 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChange(
   // correctness of the rendering,
   //
   // for (auto& node: new_slotted) {
-  //   node->FlatTreeParentChanged();
+  //   node->ParentSlotChanged();
   // }
   //
   // However, reattaching all ndoes is not good in terms of performance.
@@ -673,11 +673,11 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChangeNaive(
   // Reattach nodes
   if (forward_result.size() <= backward_result.size()) {
     for (auto& node : forward_result) {
-      node->FlatTreeParentChanged();
+      node->ParentSlotChanged();
     }
   } else {
     for (auto& node : backward_result) {
-      node->FlatTreeParentChanged();
+      node->ParentSlotChanged();
     }
   }
 }
@@ -752,6 +752,21 @@ void HTMLSlotElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
   if (SupportsAssignment())
     SetShadowRootNeedsAssignmentRecalc();
+}
+
+bool HTMLSlotElement::CalculateAndAdjustAutoDirectionality() {
+  if (SupportsAssignment() &&
+      ContainingShadowRoot()->GetSlotAssignment().NeedsAssignmentRecalc()) {
+    // It might not be safe to do an auto directionality update right now
+    // since it might run RecalcAssignment at a bad time; we should wait until
+    // RecalcAssignment runs.  RecalcAssignment needs to update directionality
+    // anyway, so we don't need to invalidate anything.
+
+    // This dependency on NeedsAssignmentRecalc() is a little bit ugly, but it
+    // seems far less problematic than other solutions.
+    return false;
+  }
+  return HTMLElement::CalculateAndAdjustAutoDirectionality();
 }
 
 void HTMLSlotElement::Trace(Visitor* visitor) const {

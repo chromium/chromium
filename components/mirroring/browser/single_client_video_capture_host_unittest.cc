@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -83,8 +84,8 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
       base::OnceClosure connection_lost_cb,
       Callbacks* callbacks,
       base::OnceClosure done_cb,
-      mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
-          video_effects_manager) override {
+      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
+          video_effects_processor) override {
     if (!params.IsValid()) {
       callbacks->OnDeviceLaunchFailed(
           media::VideoCaptureError::

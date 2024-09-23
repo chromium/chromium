@@ -1,0 +1,57 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host([drop-position='into']) cr-url-list-item {
+  background: var(--cr-hover-background-color);
+}
+
+:host-context(.focus-outline-visible):host(:focus) cr-url-list-item {
+  background-color: var(--cr-active-background-color);
+}
+
+cr-url-list-item[size=compact] {
+  --cr-url-list-item-padding: 6px 14px;
+}
+
+/* Visually hide the label but allow the screen reader to pick it up. */
+cr-checkbox::part(label-container) {
+  clip: rect(0,0,0,0);
+  display: block;
+  position: fixed;
+}
+
+cr-input {
+  --cr-input-background-color: transparent;
+  --cr-input-error-display: none;
+  width: 100%;
+}
+
+iron-icon {
+  --iron-icon-fill-color: currentColor;
+  height: 16px;
+  width: 16px;
+}
+
+cr-input.stroked:hover {
+  --cr-input-hover-background-color: transparent;
+}
+
+cr-expand-button {
+  display: flex;
+  flex-direction: row-reverse;
+  --cr-section-vertical-padding: 0px;
+  margin-left: calc(var(--depth) * var(--margin-per-depth));
+}
+
+#bookmark {
+  margin-left: calc(var(--depth) * var(--margin-per-depth) +
+      var(--base-margin));
+}

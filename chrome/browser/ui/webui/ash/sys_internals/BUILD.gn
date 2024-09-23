@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("sys_internals") {
+  sources = [
+    "sys_internals_message_handler.cc",
+    "sys_internals_message_handler.h",
+    "sys_internals_ui.cc",
+    "sys_internals_ui.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/resources:webui_resources_grd",
+  ]
+}

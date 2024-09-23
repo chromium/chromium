@@ -1,0 +1,14 @@
+This is a wdspec test.
+[FAIL] test_prompt_unload_not_triggering_dialog[None-window]
+  TypeError: close() got an unexpected keyword argument 'prompt_unload'
+[FAIL] test_prompt_unload_not_triggering_dialog[None-tab]
+  TypeError: close() got an unexpected keyword argument 'prompt_unload'
+[FAIL] test_prompt_unload_not_triggering_dialog[False-window]
+  TypeError: close() got an unexpected keyword argument 'prompt_unload'
+[FAIL] test_prompt_unload_not_triggering_dialog[False-tab]
+  TypeError: close() got an unexpected keyword argument 'prompt_unload'
+[FAIL] test_prompt_unload_triggering_dialog[capabilities0-window]
+  asyncio.exceptions.TimeoutError
+[FAIL] test_prompt_unload_triggering_dialog[capabilities0-tab]
+  asyncio.exceptions.TimeoutError
+Harness: the test ran to completion.

@@ -14,7 +14,6 @@
 
 @class AuthenticationFlowPerformer;
 class Browser;
-@protocol BrowsingDataCommands;
 @class UIViewController;
 @protocol SystemIdentity;
 
@@ -39,13 +38,13 @@ class Browser;
 // * `browser` is the current browser where the authentication flow is being
 //   presented.
 // * `accessPoint` is the sign-in access point
-// * `postSignInAction` represents the action to be taken once `identity` is
+// * `postSignInActions` represents the actions to be taken once `identity` is
 //   signed in.
 // * `presentingViewController` is the top presented view controller.
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
                     accessPoint:(signin_metrics::AccessPoint)accessPoint
-               postSignInAction:(PostSignInAction)postSignInAction
+              postSignInActions:(PostSignInActionSet)postSignInActions
        presentingViewController:(UIViewController*)presentingViewController
     NS_DESIGNATED_INITIALIZER;
 
@@ -56,7 +55,8 @@ class Browser;
 // sync.
 // It is safe to destroy this authentication flow when `completion` is called.
 // `completion` must not be nil.
-- (void)startSignInWithCompletion:(signin_ui::CompletionCallback)completion;
+- (void)startSignInWithCompletion:
+    (signin_ui::SigninCompletionCallback)completion;
 
 // * Interrupts the current sign-in operation (if any).
 // * Dismiss any UI presented accordingly to `action`.
@@ -66,9 +66,6 @@ class Browser;
 // Does noting if the sign-in flow is already done
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action;
 
-// The dispatcher used to clear browsing data.
-@property(nonatomic, weak) id<BrowsingDataCommands> dispatcher;
-
 // The delegate.
 @property(nonatomic, weak) id<AuthenticationFlowDelegate> delegate;
 
@@ -77,6 +74,10 @@ class Browser;
 
 // Sign-in access point
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
+
+// Whether the History Sync Opt-In screen follows after authentication flow
+// completes with success.
+@property(nonatomic, assign) BOOL precedingHistorySync;
 
 @end
 

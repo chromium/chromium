@@ -7,7 +7,6 @@
 #include <cstdint>
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
@@ -19,6 +18,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_state.h"
@@ -28,8 +28,9 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
@@ -65,12 +66,13 @@ constexpr ShellWindowId kAppParentContainers[19] = {
 };
 
 // The types of apps currently supported by window restore.
-// TODO(crbug.com/1164472): Checking app type is temporary solution until we
+// TODO(crbug.com/40163553): Checking app type is temporary solution until we
 // can get windows which are allowed to window restore from the
 // FullRestoreService.
-constexpr AppType kSupportedAppTypes[5] = {
-    AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP,
-    AppType::SYSTEM_APP, AppType::LACROS};
+constexpr chromeos::AppType kSupportedAppTypes[5] = {
+    chromeos::AppType::BROWSER, chromeos::AppType::CHROME_APP,
+    chromeos::AppType::ARC_APP, chromeos::AppType::SYSTEM_APP,
+    chromeos::AppType::LACROS};
 
 // Delay for certain app types before activation is allowed. This is because
 // some apps' client request activation after creation, which can break user
@@ -97,19 +99,12 @@ void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
 
   const auto& closest_display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-  gfx::Rect display_area = closest_display.work_area();
+  const gfx::Rect display_area = closest_display.work_area();
   if (display_area.Contains(current_bounds))
     return;
 
-  // Adjust the bounds so that at least 30% of the window bounds is visible.
-  auto get_minimum_length = [](int length) -> int {
-    return std::max(
-        kMinimumOnScreenArea,
-        static_cast<int>(std::round(length * kMinimumPercentOnScreenArea)));
-  };
-  AdjustBoundsToEnsureWindowVisibility(
-      display_area, get_minimum_length(current_bounds.width()),
-      get_minimum_length(current_bounds.height()), &current_bounds);
+  AdjustBoundsToEnsureMinimumWindowVisibility(
+      display_area, /*client_controlled=*/false, &current_bounds);
 
   auto* window_state = WindowState::Get(window);
   if (window_state->HasRestoreBounds()) {
@@ -180,12 +175,12 @@ bool WindowRestoreController::CanActivateRestoredWindow(
     return false;
 
   // Ghost windows can be activated.
-  const AppType app_type =
-      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  const chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
   const bool is_real_arc_window =
       window->GetProperty(app_restore::kRealArcTaskWindow);
-  if (app_type == AppType::ARC_APP && !is_real_arc_window)
+  if (app_type == chromeos::AppType::ARC_APP && !is_real_arc_window) {
     return true;
+  }
 
   auto* desk_container = window->parent();
   if (!desk_container || !desks_util::IsDeskContainer(desk_container))
@@ -518,9 +513,8 @@ void WindowRestoreController::SaveWindowImpl(
   }
 
   // Only some app types can be saved.
-  if (!base::Contains(
-          kSupportedAppTypes,
-          static_cast<AppType>(window->GetProperty(aura::client::kAppType)))) {
+  if (!base::Contains(kSupportedAppTypes,
+                      window->GetProperty(chromeos::kAppTypeKey))) {
     return;
   }
 
@@ -538,8 +532,8 @@ void WindowRestoreController::SaveWindowImpl(
     mru_windows =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
   }
-  std::unique_ptr<app_restore::WindowInfo> window_info = BuildWindowInfo(
-      window, activation_index, /*for_saved_desks=*/false, mru_windows);
+  std::unique_ptr<app_restore::WindowInfo> window_info =
+      BuildWindowInfo(window, activation_index, mru_windows);
   ::full_restore::SaveWindowInfo(*window_info);
 
   if (g_save_window_callback_for_testing)
@@ -559,17 +553,22 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
       // case we want to track it before it becomes visible. This will allow us
       // to snap the window before it is shown and skip first showing the window
       // in normal or maximized state.
-      // TODO(crbug.com/1164472): Investigate splitview for ARC apps, which
+      // TODO(crbug.com/40163553): Investigate splitview for ARC apps, which
       // are not managed by TabletModeWindowManager.
       Shell::Get()->tablet_mode_controller()->AddWindow(window);
 
       if (chromeos::IsSnappedWindowStateType(*state_type)) {
-        base::AutoReset<aura::Window*> auto_reset_to_be_snapped(
+        base::AutoReset<raw_ptr<aura::Window>> auto_reset_to_be_snapped(
             &to_be_snapped_window_, window);
+        // Use the window restore info snap percentage as the target snap ratio.
+        const float snap_ratio = window_info->snap_percentage.value_or(
+                                     chromeos::kDefaultSnapRatio * 100) *
+                                 0.01f;
         const WindowSnapWMEvent snap_event(
             *state_type == chromeos::WindowStateType::kPrimarySnapped
                 ? WM_EVENT_SNAP_PRIMARY
                 : WM_EVENT_SNAP_SECONDARY,
+            snap_ratio,
             WindowSnapActionSource::
                 kSnapByFullRestoreOrDeskTemplateOrSavedDesk);
         window_state->OnWMEvent(&snap_event);
@@ -598,15 +597,14 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
   // showing. We cannot detect this, so we use a timeout to keep the window not
   // activatable for a while longer. Classic browser and lacros windows are
   // expected to call `ShowInactive()` where the browser is created.
-  const AppType app_type =
-      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  const chromeos::AppType app_type = window->GetProperty(chromeos::kAppTypeKey);
   // Prevent apply activation delay on ARC ghost window. It should be only apply
   // on real ARC window. Only ARC ghost window use this property.
   const bool is_real_arc_window =
       window->GetProperty(app_restore::kRealArcTaskWindow);
   const base::TimeDelta delay =
-      app_type == AppType::CHROME_APP ||
-              (app_type == AppType::ARC_APP && is_real_arc_window)
+      app_type == chromeos::AppType::CHROME_APP ||
+              (app_type == chromeos::AppType::ARC_APP && is_real_arc_window)
           ? kAllowActivationDelay
           : base::TimeDelta();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(

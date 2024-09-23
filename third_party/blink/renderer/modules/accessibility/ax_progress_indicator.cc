@@ -34,7 +34,7 @@ namespace blink {
 // See the `HTMLProgressElement` class for more information.
 AXProgressIndicator::AXProgressIndicator(LayoutObject* layout_object,
                                          AXObjectCacheImpl& ax_object_cache)
-    : AXLayoutObject(layout_object, ax_object_cache) {
+    : AXNodeObject(layout_object, ax_object_cache) {
   DCHECK(layout_object);
   DCHECK(IsA<HTMLProgressElement>(layout_object->GetNode()))
       << "The layout object's node isn't an HTMLProgressElement.";
@@ -82,9 +82,7 @@ bool AXProgressIndicator::MinValueForRange(float* out_value) const {
 }
 
 HTMLProgressElement* AXProgressIndicator::GetProgressElement() const {
-  LayoutObject* layout = layout_object_.Get();
-  DCHECK(layout);
-  return DynamicTo<HTMLProgressElement>(layout->GetNode());
+  return DynamicTo<HTMLProgressElement>(GetNode());
 }
 
 }  // namespace blink

@@ -58,10 +58,10 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
                                         bool from_profile_picker) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // ChromeOS doesn't have the avatar bubble so it never calls this function.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   last_login_error_ = error;
-  // TODO(crbug.com/1326904): Check if the condition should be `!error.IsOk()`
+  // TODO(crbug.com/40225985): Check if the condition should be `!error.IsOk()`
   if (!error.message().empty()) {
     if (browser) {
       browser->signin_view_controller()->ShowModalSigninErrorDialog();
@@ -76,7 +76,7 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
 
 void LoginUIService::SetProfileBlockingErrorMessage() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #else
   last_login_error_ = SigninUIError::ProfileIsBlocked();
 #endif

@@ -133,6 +133,66 @@
             }
           ]
         }
+      },
+      {
+        "name": "addSiteAccessRequest",
+        "type": "function",
+        "description": "Adds a site access request. Request will only be signaled to the user if extension can be granted access to site in the request. Request will be reset on cross-origin navigation. When accepted, grants persistent access to the site’s top origin",
+        // TODO(crbug.com/330588494): Remove nodoc.
+        "nodoc": true,
+        "parameters": [
+          {
+            "name": "request",
+            "type": "object",
+            "properties": {
+              "documentId": {
+                "type": "string",
+                "optional": true,
+                "description": "The id of a document where site access requests can be shown. Must be the top-level document within a tab. If provided, the request is shown on the tab of the specified document and is removed when the document navigates to a new origin. Adding a new request will override any existent request for `tabId`. This or `tabId` must be specified."
+              },
+              "tabId": {
+                "type": "number",
+                "optional": true,
+                "description": "The id of the tab where site access requests can be shown. If provided, the request is shown on the specified tab and is removed when the tab navigates to a new origin. Adding a new request will override an existent request for `documentId`. This or `documentId` must be specified."
+              }
+            }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
+      },
+      {
+        "name": "removeSiteAccessRequest",
+        "type": "function",
+        "description": "Removes a site access request, if existent.",
+        // TODO(crbug.com/330588494): Remove nodoc.
+        "nodoc": true,
+        "parameters": [
+          {
+            "name": "request",
+            "type": "object",
+            "properties": {
+              "documentId": {
+                "type": "string",
+                "optional": true,
+                "description": "The id of a document where site access request will be removed. Must be the top-level document within a tab. This or `tabId` must be specified."
+              },
+              "tabId": {
+                "type": "number",
+                "optional": true,
+                "description": "The id of the tab where site access request will be removed. This or `documentId` must be specified."
+              }
+            }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       }
     ]
   }

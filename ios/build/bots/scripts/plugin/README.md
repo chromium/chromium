@@ -8,7 +8,7 @@ This directory contains the server side code for running test plugins throughout
 lifecycle stages of a XCTest case. Currently only video recording plugin is supported.
 Googlers can find more information in the
 [design doc](https://docs.google.com/document/d/1kMzdsozzIaX1Lb-7gBT2MKATxsBuJ1V8vHGkiqz-5Qs/edit?usp=sharing)
-*TODO(crbug.com/1349392): add more info about how plugin works once video plugin is implemented*
+*TODO(crbug.com/40233737): add more info about how plugin works once video plugin is implemented*
 
 ## How to Test Locally
 1. Edit the comment section in test_plugin_client.py with your custom code that you want to test

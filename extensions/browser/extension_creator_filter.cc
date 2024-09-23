@@ -44,8 +44,9 @@ bool ExtensionCreatorFilter::ShouldPackageFile(
       FILE_PATH_LITERAL(".svn"),        FILE_PATH_LITERAL("__MACOSX"),
       FILE_PATH_LITERAL("desktop.ini"), FILE_PATH_LITERAL("Thumbs.db")};
   for (const auto& component : file_path.GetComponents()) {
-    if (base::Contains(kNamesToExclude, component))
+    if (base::Contains(kNamesToExclude, component)) {
       return false;
+    }
   }
 
   base::FilePath::CharType first_character = base_name.value().front();

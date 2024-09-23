@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <Foundation/Foundation.h>
-
 #import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature.h"
+
+#import <Foundation/Foundation.h>
 
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_java_script_feature_observer.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -62,13 +63,11 @@ class TestWebSelectionJavaScriptFeatureObserver
 class WebSelectionJavaScriptFeatureTest : public PlatformTest {
  public:
   WebSelectionJavaScriptFeatureTest()
-      : task_environment_(web::WebTaskEnvironment::Options::DEFAULT,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        web_client_(std::make_unique<ChromeWebClient>()) {
+      : web_client_(std::make_unique<ChromeWebClient>()) {
     feature_list_.InitAndEnableFeature(kIOSEditMenuPartialTranslate);
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
 
     selection_observer_ =
@@ -92,10 +91,12 @@ class WebSelectionJavaScriptFeatureTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
  protected:
-  web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<TestWebSelectionJavaScriptFeatureObserver>
       selection_observer_;

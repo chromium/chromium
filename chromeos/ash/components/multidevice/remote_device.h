@@ -28,7 +28,7 @@ struct RemoteDevice {
   // The Instance ID is the primary identifier for devices using CryptAuth v2,
   // but the Instance ID is not present in CryptAuth v1. This string is empty
   // for devices not using CryptAuth v2 Enrollment and v2 DeviceSync.
-  // TODO(https://crbug.com/1019206): Remove comments when v1 DeviceSync is
+  // TODO(crbug.com/40105247): Remove comments when v1 DeviceSync is
   // disabled.
   std::string instance_id;
 

@@ -19,29 +19,28 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/autofill_metadata.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,10 +51,10 @@ using base::ScopedTempDir;
 using IbanChangeKey = absl::variant<std::string, int64_t>;
 using sync_pb::WalletMetadataSpecifics;
 using syncer::DataBatch;
+using syncer::DataType;
 using syncer::EntityData;
 using syncer::KeyAndData;
-using syncer::MockModelTypeChangeProcessor;
-using syncer::ModelType;
+using syncer::MockDataTypeLocalChangeProcessor;
 using testing::_;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
@@ -271,11 +270,10 @@ MATCHER_P(HasSpecifics, expected, "") {
   return true;
 }
 
-}  // namespace
-
 class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
  public:
-  AutofillWalletMetadataSyncBridgeTest() {}
+  AutofillWalletMetadataSyncBridgeTest()
+      : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {}
 
   AutofillWalletMetadataSyncBridgeTest(
       const AutofillWalletMetadataSyncBridgeTest&) = delete;
@@ -290,30 +288,30 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
-    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
+    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"),
+             &encryptor_);
     ON_CALL(*backend(), GetDatabase()).WillByDefault(Return(&db_));
     ResetProcessor();
   }
 
   void ResetProcessor() {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::AUTOFILL_WALLET_METADATA, /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        syncer::AUTOFILL_WALLET_METADATA, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
   }
 
   void ResetBridge(bool initial_sync_done = true) {
-    sync_pb::ModelTypeState model_type_state;
-    model_type_state.set_initial_sync_state(
+    sync_pb::DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
         initial_sync_done
-            ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE
+            ? sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE
             : sync_pb::
-                  ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
-    model_type_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(syncer::AUTOFILL_WALLET_METADATA));
-    model_type_state.set_cache_guid(kDefaultCacheGuid);
-    EXPECT_TRUE(sync_metadata_table_.UpdateModelTypeState(
-        syncer::AUTOFILL_WALLET_METADATA, model_type_state));
+                  DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+    data_type_state.mutable_progress_marker()->set_data_type_id(
+        GetSpecificsFieldNumberFromDataType(syncer::AUTOFILL_WALLET_METADATA));
+    data_type_state.set_cache_guid(kDefaultCacheGuid);
+    EXPECT_TRUE(sync_metadata_table_.UpdateDataTypeState(
+        syncer::AUTOFILL_WALLET_METADATA, data_type_state));
     bridge_ = std::make_unique<AutofillWalletMetadataSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
@@ -336,7 +334,7 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
             }));
     loop.Run();
 
-    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
@@ -349,9 +347,9 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     // get filtered out as reflection by the processor.
     ++response_version;
     // After this update initial sync is for sure done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     syncer::UpdateResponseDataList updates;
     for (const WalletMetadataSpecifics& specifics : remote_data) {
@@ -367,9 +365,9 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     // get filtered out as reflection by the processor.
     ++response_version;
     // After this update initial sync is for sure done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     syncer::UpdateResponseDataList updates;
     for (const WalletMetadataSpecifics& specifics : remote_tombstones) {
@@ -406,14 +404,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
 
   std::vector<WalletMetadataSpecifics> GetAllLocalData() {
     std::vector<WalletMetadataSpecifics> data;
-    // Perform an async call synchronously for testing.
-    base::RunLoop loop;
-    bridge()->GetAllDataForDebugging(base::BindLambdaForTesting(
-        [&loop, &data](std::unique_ptr<DataBatch> batch) {
-          ExtractWalletMetadataSpecificsFromDataBatch(std::move(batch), &data);
-          loop.Quit();
-        }));
-    loop.Run();
+    ExtractWalletMetadataSpecificsFromDataBatch(
+        bridge()->GetAllDataForDebugging(), &data);
     return data;
   }
 
@@ -432,16 +424,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   std::vector<WalletMetadataSpecifics> GetLocalData(
       AutofillWalletMetadataSyncBridge::StorageKeyList storage_keys) {
     std::vector<WalletMetadataSpecifics> data;
-    // Perform an async call synchronously for testing.
-    base::RunLoop loop;
-    bridge()->GetData(storage_keys,
-                      base::BindLambdaForTesting(
-                          [&loop, &data](std::unique_ptr<DataBatch> batch) {
-                            ExtractWalletMetadataSpecificsFromDataBatch(
-                                std::move(batch), &data);
-                            loop.Quit();
-                          }));
-    loop.Run();
+    ExtractWalletMetadataSpecificsFromDataBatch(
+        bridge()->GetDataForCommit(storage_keys), &data);
     return data;
   }
 
@@ -463,11 +447,11 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
 
   AutofillWalletMetadataSyncBridge* bridge() { return bridge_.get(); }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
-  syncer::ClientTagBasedModelTypeProcessor* real_processor() {
+  syncer::ClientTagBasedDataTypeProcessor* real_processor() {
     return real_processor_.get();
   }
 
@@ -480,12 +464,13 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
   autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  const os_crypt_async::Encryptor encryptor_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;
   WebDatabase db_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletMetadataSyncBridge> bridge_;
 };
 
@@ -889,7 +874,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   table()->SetServerCreditCards({existing_card});
   ResetBridge();
 
-  EXPECT_CALL(mock_processor(), Delete(kCard1StorageKey, _));
+  EXPECT_CALL(mock_processor(), Delete(kCard1StorageKey, _, _));
   // Local changes should not cause local DB writes.
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
   EXPECT_CALL(*backend(),
@@ -915,7 +900,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   // Check that there is some metadata, from start on.
   ASSERT_FALSE(GetAllLocalDataInclRestart().empty());
 
-  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _));
+  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _, _));
   // Local changes should not cause local DB writes.
   EXPECT_CALL(*backend(), CommitChanges).Times(0);
   EXPECT_CALL(*backend(),
@@ -987,9 +972,6 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
 // Verify that updates of local (non-sync) credit cards are ignored.
 // Regression test for crbug.com/1206306.
 TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
-  // Local credit cards need crypto for storage.
-  OSCryptMocker::SetUp();
-
   // Add local data.
   CreditCard existing_card =
       CreateLocalCreditCardWithDetails(/*use_count=*/30, /*use_date=*/40);
@@ -1013,8 +995,6 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest, DoNotPropagateNonSyncCards) {
 
   // Check that there is also no metadata at the end.
   EXPECT_THAT(GetAllLocalDataInclRestart(), IsEmpty());
-
-  OSCryptMocker::TearDown();
 }
 
 // Verify that old orphan metadata gets deleted on startup.
@@ -1031,7 +1011,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   // Make the orphans old by advancing time.
   AdvanceTestClockByTwoYears();
 
-  EXPECT_CALL(mock_processor(), Delete(kCard1StorageKey, _));
+  EXPECT_CALL(mock_processor(), Delete(kCard1StorageKey, _, _));
   EXPECT_CALL(*backend(), CommitChanges());
 
   ResetBridge();
@@ -1051,7 +1031,7 @@ TEST_F(AutofillWalletMetadataSyncBridgeTest,
   // Make the orphans old by advancing time.
   AdvanceTestClockByTwoYears();
 
-  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _));
+  EXPECT_CALL(mock_processor(), Delete(kIban1StorageKey, _, _));
   EXPECT_CALL(*backend(), CommitChanges);
 
   ResetBridge();
@@ -1954,6 +1934,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            LATER_SYNC_ADD,
                                            LATER_SYNC_UPDATE));
 
+}  // namespace
 }  // namespace autofill
 
 namespace sync_pb {

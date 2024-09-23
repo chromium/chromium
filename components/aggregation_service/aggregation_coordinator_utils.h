@@ -5,18 +5,18 @@
 #ifndef COMPONENTS_AGGREGATION_SERVICE_AGGREGATION_COORDINATOR_UTILS_H_
 #define COMPONENTS_AGGREGATION_SERVICE_AGGREGATION_COORDINATOR_UTILS_H_
 
-#include "base/component_export.h"
+#include <string_view>
+#include <vector>
 
-namespace url {
-class Origin;
-}  // namespace url
+#include "base/component_export.h"
+#include "url/origin.h"
 
 namespace aggregation_service {
 
-constexpr char kDefaultAggregationCoordinatorAwsCloud[] =
+inline constexpr std::string_view kDefaultAggregationCoordinatorAwsCloud =
     "https://publickeyservice.msmt.aws.privacysandboxservices.com";
 
-constexpr char kDefaultAggregationCoordinatorGcpCloud[] =
+inline constexpr std::string_view kDefaultAggregationCoordinatorGcpCloud =
     "https://publickeyservice.msmt.gcp.privacysandboxservices.com";
 
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
@@ -24,6 +24,26 @@ url::Origin GetDefaultAggregationCoordinatorOrigin();
 
 COMPONENT_EXPORT(AGGREGATION_SERVICE)
 bool IsAggregationCoordinatorOriginAllowed(const url::Origin&);
+
+class COMPONENT_EXPORT(AGGREGATION_SERVICE)
+    ScopedAggregationCoordinatorAllowlistForTesting {
+ public:
+  explicit ScopedAggregationCoordinatorAllowlistForTesting(
+      std::vector<url::Origin> origins = {});
+  ~ScopedAggregationCoordinatorAllowlistForTesting();
+  ScopedAggregationCoordinatorAllowlistForTesting(
+      const ScopedAggregationCoordinatorAllowlistForTesting&) = delete;
+  ScopedAggregationCoordinatorAllowlistForTesting& operator=(
+      const ScopedAggregationCoordinatorAllowlistForTesting&) = delete;
+
+  ScopedAggregationCoordinatorAllowlistForTesting(
+      ScopedAggregationCoordinatorAllowlistForTesting&&) = delete;
+  ScopedAggregationCoordinatorAllowlistForTesting& operator=(
+      ScopedAggregationCoordinatorAllowlistForTesting&&) = delete;
+
+ private:
+  std::vector<url::Origin> previous_;
+};
 
 }  // namespace aggregation_service
 

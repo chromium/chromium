@@ -97,7 +97,8 @@ TextureOwner::~TextureOwner() {
 scoped_refptr<TextureOwner> TextureOwner::Create(
     Mode mode,
     scoped_refptr<SharedContextState> context_state,
-    scoped_refptr<RefCountedLock> drdc_lock) {
+    scoped_refptr<RefCountedLock> drdc_lock,
+    TextureOwnerCodecType type_for_metrics) {
   auto texture = CreateTexture(context_state.get());
   switch (mode) {
     case Mode::kAImageReaderInsecure:
@@ -105,14 +106,14 @@ scoped_refptr<TextureOwner> TextureOwner::Create(
     case Mode::kAImageReaderSecureSurfaceControl:
       return new ImageReaderGLOwner(std::move(texture), mode,
                                     std::move(context_state),
-                                    std::move(drdc_lock));
+                                    std::move(drdc_lock), type_for_metrics);
     case Mode::kSurfaceTextureInsecure:
       DCHECK(!drdc_lock);
       return new SurfaceTextureGLOwner(std::move(texture),
                                        std::move(context_state));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

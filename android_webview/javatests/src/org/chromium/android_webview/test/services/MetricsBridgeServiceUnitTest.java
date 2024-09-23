@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.services;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.os.IBinder;
 
@@ -40,7 +40,7 @@ import java.util.concurrent.FutureTask;
  * they don't actually launch any services or other components.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class MetricsBridgeServiceUnitTest {
     public static final byte[] PARSING_LOG_RESULT_SUCCESS_RECORD =
@@ -51,18 +51,6 @@ public class MetricsBridgeServiceUnitTest {
                     .setMin(1)
                     .setMax(MetricsBridgeService.ParsingLogResult.COUNT)
                     .setNumBuckets(MetricsBridgeService.ParsingLogResult.COUNT + 1)
-                    .build()
-                    .toByteArray();
-
-    public static final byte[] RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD =
-            HistogramRecord.newBuilder()
-                    .setRecordType(RecordType.HISTOGRAM_LINEAR)
-                    .setHistogramName(
-                            "Android.WebView.NonEmbeddedMetrics.RetrieveMetricsTaskStatus")
-                    .setSample(MetricsBridgeService.RetrieveMetricsTaskStatus.SUCCESS)
-                    .setMin(1)
-                    .setMax(MetricsBridgeService.RetrieveMetricsTaskStatus.COUNT)
-                    .setNumBuckets(MetricsBridgeService.RetrieveMetricsTaskStatus.COUNT + 1)
                     .build()
                     .toByteArray();
 
@@ -168,8 +156,7 @@ public class MetricsBridgeServiceUnitTest {
                     recordLinearProto.toByteArray(),
                     recordBooleanProto.toByteArray(),
                     PARSING_LOG_RESULT_SUCCESS_RECORD,
-                    recordBooleanProto.toByteArray(),
-                    RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD
+                    recordBooleanProto.toByteArray()
                 };
 
         // Assert file is deleted after the retrieve call

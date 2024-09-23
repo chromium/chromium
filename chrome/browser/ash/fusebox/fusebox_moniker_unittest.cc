@@ -51,6 +51,21 @@ TEST(MonikerMapTest, ExtractTokenResult) {
     EXPECT_EQ(result.token,
               base::Token(0x0123456789ABCDEFull, 0x0000111122223333ull));
   }
+
+  {
+    auto result = MonikerMap::ExtractToken(
+        "moniker/0123456789ABCDEF0000111122223333.html");
+    EXPECT_EQ(result.result_type, ResultType::OK);
+    EXPECT_EQ(result.token,
+              base::Token(0x0123456789ABCDEFull, 0x0000111122223333ull));
+  }
+
+  {
+    auto result = MonikerMap::ExtractToken(
+        "moniker/0123456789ABCDEF0000111122223333_no_dot");
+    EXPECT_EQ(result.result_type,
+              ResultType::MONIKER_FS_URL_BUT_NOT_WELL_FORMED);
+  }
 }
 
 }  // namespace fusebox

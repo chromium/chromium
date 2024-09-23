@@ -80,7 +80,7 @@ void ProcessQueryToConditions(
       allow ? URLQueryElementMatcherCondition::MATCH_ALL
             : URLQueryElementMatcherCondition::MATCH_ANY;
 
-  while (ExtractQueryKeyValue(query.data(), &query_left, &key, &value)) {
+  while (ExtractQueryKeyValue(query, &query_left, &key, &value)) {
     URLQueryElementMatcherCondition::QueryElementType query_element_type =
         value.len ? URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY_VALUE
                   : URLQueryElementMatcherCondition::ELEMENT_TYPE_KEY;

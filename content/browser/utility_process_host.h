@@ -29,12 +29,6 @@
 #include "content/public/common/zygote/zygote_handle.h"
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
-// TODO(crbug.com/1328879): Remove this when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-#include "base/functional/callback.h"
-#include "mojo/public/cpp/system/message_pipe.h"
-#endif
-
 namespace base {
 class Thread;
 }  // namespace base
@@ -85,7 +79,7 @@ class CONTENT_EXPORT UtilityProcessHost
 
   // This class is self-owned. It must be instantiated using new, and shouldn't
   // be deleted manually.
-  // TODO(https://crbug.com/1411101): Make it clearer the caller of the
+  // TODO(crbug.com/40254698): Make it clearer the caller of the
   // constructor do not own memory. A static method to create them + private
   // constructor could be better.
   UtilityProcessHost();
@@ -111,17 +105,6 @@ class CONTENT_EXPORT UtilityProcessHost
   // Starts the utility process.
   bool Start();
 
-// TODO(crbug.com/1328879): Remove this method when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  // Instructs the utility process to run an instance of the named service,
-  // bound to |service_pipe|. This is DEPRECATED and should never be used.
-  using RunServiceDeprecatedCallback =
-      base::OnceCallback<void(std::optional<base::ProcessId>)>;
-  void RunServiceDeprecated(const std::string& service_name,
-                            mojo::ScopedMessagePipeHandle service_pipe,
-                            RunServiceDeprecatedCallback callback);
-#endif
-
   // Sets the name of the process to appear in the task manager.
   void SetName(const std::u16string& name);
 
@@ -135,12 +118,13 @@ class CONTENT_EXPORT UtilityProcessHost
   // Provides extra switches to append to the process's command line.
   void SetExtraCommandLineSwitches(std::vector<std::string> switches);
 
+  // Allows the child process to bind viz.mojom.Gpu.
+  void SetAllowGpuClient();
+
 #if BUILDFLAG(IS_WIN)
   // Specifies libraries to preload before the sandbox is locked down. Paths
   // should be absolute.
   void SetPreloadLibraries(const std::vector<base::FilePath>& preloads);
-  // Specifies that the child should pin user32 before sandbox lockdown.
-  void SetPinUser32();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
@@ -198,8 +182,6 @@ class CONTENT_EXPORT UtilityProcessHost
 #if BUILDFLAG(IS_WIN)
   // Libraries to load before sandbox lockdown. Only used on Windows.
   std::vector<base::FilePath> preload_libraries_;
-  // Should the child pin user32. Only used on Windows.
-  bool pin_user32_;
 #endif  // BUILDFLAG(IS_WIN)
 
   // Extra files and file descriptors to preload in the new process.
@@ -218,14 +200,8 @@ class CONTENT_EXPORT UtilityProcessHost
   };
   LaunchState launch_state_ = LaunchState::kLaunchInProgress;
 
-// TODO(crbug.com/1328879): Remove this when fixing the bug.
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-  // Collection of callbacks to be run once the process is actually started (or
-  // fails to start).
-  std::vector<RunServiceDeprecatedCallback> pending_run_service_callbacks_;
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+  bool allowed_gpu_;
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
 #endif
 

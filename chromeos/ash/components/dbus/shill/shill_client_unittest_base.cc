@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 
 #include <stddef.h>
@@ -201,6 +206,16 @@ void ShillClientUnittestBase::ExpectUint32Argument(
 }
 
 // static
+void ShillClientUnittestBase::ExpectIntArgument(
+    int expected_value,
+    dbus::MessageReader* reader) {
+  int value;
+  ASSERT_TRUE(reader->PopInt32(&value));
+  EXPECT_EQ(expected_value, value);
+  EXPECT_FALSE(reader->HasMoreData());
+}
+
+// static
 void ShillClientUnittestBase::ExpectArrayOfBytesArgument(
     const std::string& expected_bytes,
     dbus::MessageReader* reader) {
@@ -294,7 +309,7 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
         ASSERT_FALSE(value->is_none());
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     ASSERT_TRUE(value.get());
     const base::Value* expected_value = expected_dictionary->Find(key);

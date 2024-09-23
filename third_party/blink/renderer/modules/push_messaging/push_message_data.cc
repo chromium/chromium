@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_usvstring.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -38,45 +39,40 @@ PushMessageData* PushMessageData::Create(
   switch (message_data->GetContentType()) {
     case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
         kArrayBuffer: {
-      DOMArrayBuffer* buffer = message_data->GetAsArrayBuffer();
-      return MakeGarbageCollected<PushMessageData>(
-          static_cast<const char*>(buffer->Data()),
-          base::checked_cast<wtf_size_t>(buffer->ByteLength()));
+      const DOMArrayBuffer* buffer = message_data->GetAsArrayBuffer();
+      return MakeGarbageCollected<PushMessageData>(buffer->ByteSpan());
     }
     case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
         kArrayBufferView: {
-      DOMArrayBufferView* buffer_view =
+      const DOMArrayBufferView* buffer_view =
           message_data->GetAsArrayBufferView().Get();
-      return MakeGarbageCollected<PushMessageData>(
-          static_cast<const char*>(buffer_view->BaseAddress()),
-          base::checked_cast<wtf_size_t>(buffer_view->byteLength()));
+      return MakeGarbageCollected<PushMessageData>(buffer_view->ByteSpan());
     }
     case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
         kUSVString: {
       std::string encoded_string = UTF8Encoding().Encode(
           message_data->GetAsUSVString(), WTF::kNoUnencodables);
       return MakeGarbageCollected<PushMessageData>(
-          encoded_string.c_str(),
-          static_cast<unsigned>(encoded_string.length()));
+          base::as_byte_span(encoded_string));
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
-PushMessageData::PushMessageData(const char* data, unsigned bytes_size) {
-  data_.Append(data, bytes_size);
+PushMessageData::PushMessageData(base::span<const uint8_t> data) {
+  data_.AppendSpan(data);
 }
 
 PushMessageData::~PushMessageData() = default;
 
 DOMArrayBuffer* PushMessageData::arrayBuffer() const {
-  return DOMArrayBuffer::Create(data_.data(), data_.size());
+  return DOMArrayBuffer::Create(data_);
 }
 
 Blob* PushMessageData::blob() const {
   auto blob_data = std::make_unique<BlobData>();
-  blob_data->AppendBytes(data_.data(), data_.size());
+  blob_data->AppendBytes(data_);
 
   // Note that the content type of the Blob object is deliberately not being
   // provided, following the specification.
@@ -99,7 +95,7 @@ ScriptValue PushMessageData::json(ScriptState* script_state,
 }
 
 String PushMessageData::text() const {
-  return UTF8Encoding().Decode(data_.data(), data_.size());
+  return UTF8Encoding().Decode(data_);
 }
 
 }  // namespace blink

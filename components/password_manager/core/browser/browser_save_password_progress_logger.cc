@@ -64,7 +64,7 @@ std::string GenerationTypeToString(
     case AutofillUploadContents::Field::IGNORED_GENERATION_POPUP:
       return "Generation ignored";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::string();
 }
@@ -119,22 +119,24 @@ std::string GetFormFieldDataWithPropertiesMaskLogString(
   std::string field_info =
       autofill::SavePasswordProgressLogger::GetFormFieldDataLogString(field);
 
-  if (field.properties_mask) {
+  if (field.properties_mask()) {
     field_info += ", properties=";
+    field_info += (field.properties_mask() & FieldPropertiesFlags::kUserTyped)
+                      ? "T"
+                      : "_";
     field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kUserTyped) ? "T" : "_";
-    field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kAutofilledOnPageLoad)
+        (field.properties_mask() & FieldPropertiesFlags::kAutofilledOnPageLoad)
             ? "Ap"
             : "__";
+    field_info += (field.properties_mask() &
+                   FieldPropertiesFlags::kAutofilledOnUserTrigger)
+                      ? "Au"
+                      : "__";
     field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kAutofilledOnUserTrigger)
-            ? "Au"
-            : "__";
-    field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kHadFocus) ? "F" : "_";
-    field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kKnownValue) ? "K" : "_";
+        (field.properties_mask() & FieldPropertiesFlags::kHadFocus) ? "F" : "_";
+    field_info += (field.properties_mask() & FieldPropertiesFlags::kKnownValue)
+                      ? "K"
+                      : "_";
   }
 
   return field_info;
@@ -150,7 +152,7 @@ std::string GetFormDataFieldsAndPredictionsLogString(
   result += BrowserSavePasswordProgressLogger::GetStringFromID(
                 BrowserSavePasswordProgressLogger::STRING_FIELDS) +
             ": " + "\n";
-  for (const FormFieldData& field : form.fields) {
+  for (const FormFieldData& field : form.fields()) {
     std::string field_info = GetFormFieldDataWithPropertiesMaskLogString(field);
 
     if (!predictions.contains(field.global_id())) {
@@ -206,9 +208,10 @@ void BrowserSavePasswordProgressLogger::LogFormDataWithServerPredictions(
              FormSignatureToDebugString(
                  autofill::CalculateAlternativeFormSignature(form)) +
              "\n";
-  message += GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form.url) + "\n";
   message +=
-      GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form.action) + "\n";
+      GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form.url()) + "\n";
+  message +=
+      GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form.action()) + "\n";
   message += GetFormDataFieldsAndPredictionsLogString(form, predictions);
   message += "}";
   SendLog(message);
@@ -317,8 +320,9 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
       base::StrAppend(&field_info, {", VOTE: ", FieldTypeToStringView(type)});
     }
 
-    if (field->vote_type())
+    if (field->vote_type()) {
       field_info += ", vote_type=" + VoteTypeToString(field->vote_type());
+    }
 
     if (field->initial_value_hash().has_value()) {
       field_info += ", initial value hash=";
@@ -326,11 +330,13 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
     }
 
     std::string generation = GenerationTypeToString(field->generation_type());
-    if (!generation.empty())
+    if (!generation.empty()) {
       field_info += ", GENERATION_EVENT: " + generation;
+    }
 
-    if (field->generated_password_changed())
+    if (field->generated_password_changed()) {
       field_info += ", generated password changed";
+    }
 
     if (field->password_requirements()) {
       std::ostringstream s;

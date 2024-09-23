@@ -134,8 +134,7 @@ class ServiceWorkerPaymentAppCreator {
   }
 
  private:
-  void OnSWPaymentAppValidated(base::WeakPtr<ServiceWorkerPaymentApp> app,
-                               bool result) {
+  void OnSWPaymentAppValidated(base::WeakPtr<ServiceWorkerPaymentApp> app) {
     if (!app || !delegate_) {
       FinishAndCleanup();
       return;
@@ -143,8 +142,7 @@ class ServiceWorkerPaymentAppCreator {
 
     auto iterator = available_apps_.find(app.get());
     if (iterator != available_apps_.end()) {
-      if (result)
-        delegate_->OnPaymentAppCreated(std::move(iterator->second));
+      delegate_->OnPaymentAppCreated(std::move(iterator->second));
       available_apps_.erase(iterator);
     }
 

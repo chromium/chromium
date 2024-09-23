@@ -18,12 +18,22 @@
   }
 </style>
 <div id="mouse">
-  <h2 class="subsection-header" id="mouseName">[[mouse.name]]</h2>
+  <per-device-subsection-header
+    id="subsectionHeader"
+    device-key="[[mouse.deviceKey]]"
+    name="[[mouse.name]]"
+    battery-info="[[mouse.batteryInfo]]"
+    icon="os-settings:device-mouse">
+  </per-device-subsection-header>
   <template is="dom-if" if="[[showSwapToggleButton(
       customizationRestriction, isPeripheralCustomizationEnabled_)]]">
     <settings-toggle-button id="mouseSwapToggleButton"
         label="$i18n{mouseSwapButtonsLabel}" pref="{{primaryRightPref}}">
     </settings-toggle-button>
+  </template>
+  <template is="dom-if" if="[[showInstallAppRow(mouse.appInfo)]]">
+    <per-device-install-row app-info="[[mouse.appInfo]]">
+    </per-device-install-row>
   </template>
   <div class="subsection">
     <template is="dom-if" if="[[allowScrollSettings_]]">
@@ -69,7 +79,7 @@
       <h2 class="hr">$i18n{mouseScrolling}</h2>
     </template>
     <div class="settings-box bottom-divider" id="mouseReverseScrollRow"
-          on-click="onMouseReverseScrollRowClicked_">
+          on-click="onMouseReverseScrollRowClicked_" actionable-row>
       <div class="start settings-box-text">
         <localized-link
             aria-describedby="mouseName"
@@ -92,7 +102,7 @@
     </div>
     <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
       <div class="settings-box bottom-divider" id="mouseControlledScrollingRow"
-            on-click="onMouseControlledScrollingRowClicked_">
+            on-click="onMouseControlledScrollingRowClicked_" actionable-row>
         <div class="start settings-box-text">
           <localized-link
               aria-describedby="mouseName"
@@ -133,6 +143,11 @@
         aria-describedby="mouseName"
         label="$i18n{customizeMouseButtonsTitle}">
       </cr-link-row>
+    </template>
+    <template is="dom-if" if="[[isCompanionAppInstalled(mouse.appInfo)]]">
+      <per-device-app-installed-row id="AppInstalledRow"
+          app-info="[[mouse.appInfo]]">
+      </per-device-app-installed-row>
     </template>
   </div>
 </div>

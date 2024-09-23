@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
@@ -291,14 +292,13 @@ class ShowItemHelper {
   base::WeakPtrFactory<ShowItemHelper> weak_ptr_factory_{this};
 };
 
-void RunCommand(const std::string& command,
-                const base::FilePath& working_directory,
-                const std::string& arg) {
+void OnLaunchOptionsCreated(const std::string& command,
+                            const base::FilePath& working_directory,
+                            const std::string& arg,
+                            base::LaunchOptions options) {
   std::vector<std::string> argv;
   argv.push_back(command);
   argv.push_back(arg);
-
-  base::LaunchOptions options;
   options.current_directory = working_directory;
   options.allow_new_privs = true;
   // xdg-open can fall back on mailcap which eventually might plumb through
@@ -318,6 +318,13 @@ void RunCommand(const std::string& command,
   base::Process process = base::LaunchProcess(argv, options);
   if (process.IsValid())
     base::EnsureProcessGetsReaped(std::move(process));
+}
+
+void RunCommand(const std::string& command,
+                const base::FilePath& working_directory,
+                const std::string& arg) {
+  base::nix::CreateLaunchOptionsWithXdgActivation(
+      base::BindOnce(&OnLaunchOptionsCreated, command, working_directory, arg));
 }
 
 void XDGOpen(const base::FilePath& working_directory, const std::string& path) {

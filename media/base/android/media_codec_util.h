@@ -64,10 +64,6 @@ class MEDIA_EXPORT MediaCodecUtil {
   // Indicates if MediaCodec.setOutputSurface() works on this device.
   static bool IsSetOutputSurfaceSupported();
 
-  // Return true if the compressed audio |codec| will pass through the media
-  // pipelines without decompression.
-  static bool IsPassthroughAudioFormat(AudioCodec codec);
-
   // Returns a known alignment which can be used to translate visible size into
   // coded size. E.g., a size of (1, 1) means no alignment while a size of
   // (64, 1) would mean visible width should be rounded up to the nearest

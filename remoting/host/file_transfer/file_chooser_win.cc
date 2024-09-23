@@ -5,6 +5,7 @@
 #include "remoting/host/file_transfer/file_chooser.h"
 
 #include <windows.h>
+
 #include <wtsapi32.h>
 
 #include <cstdlib>

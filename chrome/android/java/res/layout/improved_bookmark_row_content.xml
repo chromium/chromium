@@ -22,14 +22,15 @@ found in the LICENSE file.
     <ImageView
         android:id="@+id/local_bookmark_image"
         android:visibility="gone"
-        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_marginEnd="4dp"
         android:layout_gravity="end"
         android:src="@drawable/ic_cloud_off_24dp"
         app:tint="@color/default_icon_color_disabled"
         android:scaleType="center"
-        android:importantForAccessibility="no"
-        android:focusable="false" />
+        android:focusable="false"
+        android:contentDescription="@string/local_bookmarks_section_header" />
 
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/more"

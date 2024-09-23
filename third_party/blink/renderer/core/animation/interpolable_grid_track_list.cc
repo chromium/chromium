@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/animation/interpolable_grid_track_repeater.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -19,6 +18,7 @@ InterpolableGridTrackList::InterpolableGridTrackList(InterpolableList* values,
 // static
 InterpolableGridTrackList* InterpolableGridTrackList::MaybeCreate(
     const NGGridTrackList& track_list,
+    const CSSProperty& property,
     float zoom) {
   // Subgrids do not have sizes stored on their track list to interpolate.
   if (track_list.HasAutoRepeater() || track_list.IsSubgriddedAxis()) {
@@ -40,7 +40,7 @@ InterpolableGridTrackList* InterpolableGridTrackList::MaybeCreate(
         track_list.RepeatType(i));
     InterpolableGridTrackRepeater* result =
         InterpolableGridTrackRepeater::Create(repeater, repeater_track_sizes,
-                                              zoom);
+                                              property, zoom);
     DCHECK(result);
     values->Set(i, result);
   }
@@ -60,14 +60,13 @@ NGGridTrackList InterpolableGridTrackList::CreateNGGridTrackList(
 }
 
 InterpolableGridTrackList* InterpolableGridTrackList::RawClone() const {
-  InterpolableList* values(DynamicTo<InterpolableList>(values_->Clone()));
+  InterpolableList* values(values_->Clone());
   return MakeGarbageCollected<InterpolableGridTrackList>(std::move(values),
                                                          progress_);
 }
 
 InterpolableGridTrackList* InterpolableGridTrackList::RawCloneAndZero() const {
-  InterpolableList* values(
-      DynamicTo<InterpolableList>(values_->CloneAndZero()));
+  InterpolableList* values(values_->CloneAndZero());
   return MakeGarbageCollected<InterpolableGridTrackList>(std::move(values),
                                                          progress_);
 }

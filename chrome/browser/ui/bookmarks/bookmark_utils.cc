@@ -17,6 +17,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -158,10 +159,19 @@ bool IsAppsShortcutEnabled(Profile* profile) {
 #endif
 }
 
+bool IsSavedTabGroupsEnabled(Profile* profile) {
+  return profile->IsRegularProfile();
+}
+
 bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
   return IsAppsShortcutEnabled(profile) &&
          profile->GetPrefs()->GetBoolean(
              bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
+}
+
+bool ShouldShowTabGroupsInBookmarkBar(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
 }
 
 int GetBookmarkDragOperation(content::BrowserContext* browser_context,
@@ -235,7 +245,7 @@ bool IsValidBookmarkDropLocation(Profile* profile,
                                  const BookmarkNode* drop_parent,
                                  size_t index) {
   if (!drop_parent->is_folder()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -282,17 +292,9 @@ gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
   const gfx::VectorIcon* id;
   gfx::ImageSkia folder;
   if (icon_type == BookmarkFolderIconType::kNormal) {
-    id = features::IsChromeRefresh2023()
-             ? &vector_icons::kFolderChromeRefreshIcon
-             : (ui::TouchUiController::Get()->touch_ui()
-                    ? &vector_icons::kFolderTouchIcon
-                    : &vector_icons::kFolderIcon);
+    id = &vector_icons::kFolderChromeRefreshIcon;
   } else {
-    id = features::IsChromeRefresh2023()
-             ? &vector_icons::kFolderManagedRefreshIcon
-             : (ui::TouchUiController::Get()->touch_ui()
-                    ? &vector_icons::kFolderManagedTouchIcon
-                    : &vector_icons::kFolderManagedIcon);
+    id = &vector_icons::kFolderManagedRefreshIcon;
   }
   const ui::ThemedVectorIcon icon =
       absl::holds_alternative<SkColor>(color)
@@ -316,35 +318,8 @@ ui::ImageModel GetBookmarkFolderIcon(
                             absl::variant<ui::ColorId, SkColor> color,
                             const ui::ColorProvider* color_provider) {
     gfx::ImageSkia folder;
-    if (features::IsChromeRefresh2023()) {
-      folder = GetBookmarkFolderImageFromVectorIcon(icon_type, color,
-                                                    color_provider);
-    } else {
-#if BUILDFLAG(IS_WIN)
-      // TODO(bsep): vectorize the Windows versions: crbug.com/564112
-      folder = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          default_id);
-#elif BUILDFLAG(IS_MAC)
-      SkColor sk_color;
-      if (absl::holds_alternative<SkColor>(color)) {
-        sk_color = absl::get<SkColor>(color);
-      } else {
-        DCHECK(color_provider);
-        sk_color = color_provider->GetColor(absl::get<ui::ColorId>(color));
-      }
-      const int white_id = (icon_type == BookmarkFolderIconType::kNormal)
-                               ? IDR_FOLDER_CLOSED_WHITE
-                               : IDR_BOOKMARK_BAR_FOLDER_MANAGED_WHITE;
-      const int resource_id =
-          color_utils::IsDark(sk_color) ? default_id : white_id;
-      folder = *ui::ResourceBundle::GetSharedInstance()
-                    .GetNativeImageNamed(resource_id)
-                    .ToImageSkia();
-#else
-      folder = GetBookmarkFolderImageFromVectorIcon(icon_type, color,
-                                                    color_provider);
-#endif
-    }
+    folder =
+        GetBookmarkFolderImageFromVectorIcon(icon_type, color, color_provider);
     return gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder),
                           folder.size());
   };

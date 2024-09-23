@@ -76,7 +76,8 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
     const scoped_refptr<user_prefs::PrefRegistrySyncable>& pref_registry,
     policy::PolicyService* policy_service,
     policy::BrowserPolicyConnector* policy_connector,
-    const scoped_refptr<PrefStore>& supervised_user_prefs) {
+    const scoped_refptr<PrefStore>& supervised_user_prefs,
+    bool async) {
   // chrome_prefs::CreateProfilePrefs uses ProfilePrefStoreManager to create
   // the preference store however since Chrome on iOS does not need to track
   // preference modifications (as applications are sand-boxed), it can use a
@@ -91,6 +92,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
         browser_state_path.Append(kAccountPreferencesFilename), nullptr,
         pref_io_task_runner));
   }
+  factory.set_async(async);
   std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service =
       factory.CreateSyncable(pref_registry.get());
   return pref_service;

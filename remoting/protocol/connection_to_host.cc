@@ -22,7 +22,6 @@ const char* ConnectionToHost::StateToString(State state) {
     RETURN_STRING_LITERAL(FAILED);
   }
   NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace remoting::protocol

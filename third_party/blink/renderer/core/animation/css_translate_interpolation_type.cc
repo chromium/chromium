@@ -29,11 +29,14 @@ bool IsNoneValue(const InterpolationValue& value) {
 class InheritedTranslateChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedTranslateChecker(
-      scoped_refptr<TranslateTransformOperation> inherited_translate)
-      : inherited_translate_(std::move(inherited_translate)) {}
+  InheritedTranslateChecker(TranslateTransformOperation* inherited_translate)
+      : inherited_translate_(inherited_translate) {}
   ~InheritedTranslateChecker() override = default;
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(inherited_translate_);
+  }
 
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
@@ -47,7 +50,7 @@ class InheritedTranslateChecker
   }
 
  private:
-  scoped_refptr<TransformOperation> inherited_translate_;
+  Member<TransformOperation> inherited_translate_;
 };
 
 enum TranslateComponentIndex : unsigned {
@@ -68,18 +71,22 @@ InterpolableValue* CreateTranslateIdentity() {
 
 InterpolationValue ConvertTranslateOperation(
     const TranslateTransformOperation* translate,
+    const CSSProperty& property,
     double zoom) {
   if (!translate)
     return CreateNoneValue();
 
   auto* result =
       MakeGarbageCollected<InterpolableList>(kTranslateComponentIndexCount);
-  result->Set(kTranslateX,
-              InterpolableLength::MaybeConvertLength(translate->X(), zoom));
-  result->Set(kTranslateY,
-              InterpolableLength::MaybeConvertLength(translate->Y(), zoom));
+  result->Set(kTranslateX, InterpolableLength::MaybeConvertLength(
+                               translate->X(), property, zoom,
+                               /*interpolate_size=*/std::nullopt));
+  result->Set(kTranslateY, InterpolableLength::MaybeConvertLength(
+                               translate->Y(), property, zoom,
+                               /*interpolate_size=*/std::nullopt));
   result->Set(kTranslateZ, InterpolableLength::MaybeConvertLength(
-                               Length::Fixed(translate->Z()), zoom));
+                               Length::Fixed(translate->Z()), property, zoom,
+                               /*interpolate_size=*/std::nullopt));
   return InterpolationValue(result);
 }
 
@@ -103,8 +110,8 @@ InterpolationValue CSSTranslateInterpolationType::MaybeConvertInherit(
   TranslateTransformOperation* inherited_translate =
       state.ParentStyle()->Translate();
   conversion_checkers.push_back(
-      std::make_unique<InheritedTranslateChecker>(inherited_translate));
-  return ConvertTranslateOperation(inherited_translate,
+      MakeGarbageCollected<InheritedTranslateChecker>(inherited_translate));
+  return ConvertTranslateOperation(inherited_translate, CssProperty(),
                                    state.ParentStyle()->EffectiveZoom());
 }
 
@@ -156,7 +163,8 @@ PairwiseInterpolationValue CSSTranslateInterpolationType::MaybeMergeSingles(
 InterpolationValue
 CSSTranslateInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
-  return ConvertTranslateOperation(style.Translate(), style.EffectiveZoom());
+  return ConvertTranslateOperation(style.Translate(), CssProperty(),
+                                   style.EffectiveZoom());
 }
 
 void CSSTranslateInterpolationType::Composite(
@@ -197,10 +205,9 @@ void CSSTranslateInterpolationType::ApplyStandardPropertyValue(
                 .CreateLength(conversion_data, Length::ValueRange::kAll)
                 .Pixels();
 
-  scoped_refptr<TranslateTransformOperation> result =
-      TranslateTransformOperation::Create(x, y, z,
-                                          TransformOperation::kTranslate3D);
-  state.StyleBuilder().SetTranslate(std::move(result));
+  state.StyleBuilder().SetTranslate(
+      MakeGarbageCollected<TranslateTransformOperation>(
+          x, y, z, TransformOperation::kTranslate3D));
 }
 
 }  // namespace blink

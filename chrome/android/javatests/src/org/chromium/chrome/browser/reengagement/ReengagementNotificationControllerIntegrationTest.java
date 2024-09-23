@@ -34,6 +34,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -57,7 +58,6 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.HashMap;
@@ -81,7 +81,6 @@ public class ReengagementNotificationControllerIntegrationTest {
     @Before
     public void setUp() throws Exception {
         reset(mTracker);
-        FeatureList.setTestCanUseDefaultsForTesting();
         setReengagementNotificationEnabled(true);
         TrackerFactory.setTrackerForTests(mTracker);
         closeReengagementNotifications();
@@ -285,7 +284,7 @@ public class ReengagementNotificationControllerIntegrationTest {
                         tabAddedCallback.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabbedActivityTestRule
                             .getActivity()
@@ -301,7 +300,7 @@ public class ReengagementNotificationControllerIntegrationTest {
 
         tabAddedCallback.waitForCallback(0);
         Tab tab =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mTabbedActivityTestRule.getActivity().getActivityTab());
         Assert.assertTrue(UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(tab)));
         Assert.assertFalse(tab.isIncognito());
@@ -384,7 +383,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     private static void setReengagementNotificationEnabled(boolean enabled) {
         Map<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.REENGAGEMENT_NOTIFICATION, enabled);
-        // TODO(crbug.com/1111584): Remove these overrides when FeatureList#isInitialized() works
+        // TODO(crbug.com/40142646): Remove these overrides when FeatureList#isInitialized() works
         // as expected with test values.
         features.put(ChromeFeatureList.VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
         FeatureList.setTestFeatures(features);

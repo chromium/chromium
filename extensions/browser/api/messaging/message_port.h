@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "extensions/browser/activity.h"

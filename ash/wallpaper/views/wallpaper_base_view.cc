@@ -47,10 +47,6 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
   gfx::ImageSkia wallpaper = controller->GetWallpaper();
   WallpaperLayout layout = controller->GetWallpaperLayout();
 
-  // Wallpapers with png format could be partially transparent. Fill the canvas
-  // with black to make it opaque before painting the wallpaper.
-  canvas->FillRect(GetLocalBounds(), SK_ColorBLACK);
-
   if (wallpaper.isNull()) {
     return;
   }
@@ -102,13 +98,16 @@ void WallpaperBaseView::OnPaint(gfx::Canvas* canvas) {
           centered_layout_image_scale_.y() / image_scale);
       wallpaper_rect.set_x((width() - wallpaper_rect.width()) / 2);
       wallpaper_rect.set_y((height() - wallpaper_rect.height()) / 2);
+      // Fill background with black if wallpaper does not cover the entire view.
+      if (!wallpaper_rect.Contains(GetLocalBounds())) {
+        canvas->FillRect(GetLocalBounds(), SK_ColorBLACK);
+      }
       DrawWallpaper(wallpaper, gfx::Rect(wallpaper.size()), wallpaper_rect,
                     flags, canvas);
       break;
     }
     default: {
       NOTREACHED();
-      break;
     }
   }
 

@@ -19,6 +19,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -132,7 +133,12 @@ public class DownloadActivityLauncher implements ApplicationStatus.ActivityState
 
     public void getActivityForOpenDialog(Callback<Activity> callback) {
         if (mActivityStatus != DownloadActivityStatus.INITIALIZING) {
-            callback.onResult(ApplicationStatus.getLastTrackedFocusedActivity());
+            Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
+            if (activity instanceof ModalDialogManagerHolder) {
+                callback.onResult(activity);
+            } else {
+                mActivityCallbacks.add(callback);
+            }
         } else {
             mActivityCallbacks.add(callback);
         }

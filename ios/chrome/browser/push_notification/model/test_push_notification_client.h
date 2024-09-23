@@ -13,21 +13,21 @@ class TestPushNotificationClient : public PushNotificationClient {
   ~TestPushNotificationClient() override;
 
   // Override PushNotificationClient::
-  void HandleNotificationInteraction(
+  bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
-  UIBackgroundFetchResult HandleNotificationReception(
+  std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;
   NSArray<UNNotificationCategory*>* RegisterActionableNotifications() override;
 
   // Indicates whether the client has been
   bool HasNotificationReceivedInteraction();
   // Sets the client's UIBackgroundFetchResult to given FetchResult.
-  void SetBackgroundFetchResult(UIBackgroundFetchResult result);
+  void SetBackgroundFetchResult(std::optional<UIBackgroundFetchResult> result);
   void OnSceneActiveForegroundBrowserReady() override;
   bool IsBrowserReady();
 
  private:
-  UIBackgroundFetchResult fetch_result_ = UIBackgroundFetchResultNoData;
+  std::optional<UIBackgroundFetchResult> fetch_result_ = std::nullopt;
   bool has_notification_received_interaction_ = false;
   bool is_browser_ready_ = false;
 };

@@ -22,12 +22,6 @@ namespace headless {
 PDFPageBitmap::PDFPageBitmap() = default;
 PDFPageBitmap::~PDFPageBitmap() = default;
 
-bool PDFPageBitmap::Render(const std::string& pdf_data, int page_index) {
-  auto pdf_span = base::make_span(
-      reinterpret_cast<const uint8_t*>(pdf_data.data()), pdf_data.size());
-  return Render(pdf_span, page_index);
-}
-
 bool PDFPageBitmap::Render(base::span<const uint8_t> pdf_data, int page_index) {
   std::optional<gfx::SizeF> page_size_in_points =
       chrome_pdf::GetPDFPageSizeByIndex(pdf_data, page_index);

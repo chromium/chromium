@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
+import("//ios/web/javascript_flags.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("js_messaging") {
@@ -15,10 +16,12 @@ source_set("js_messaging") {
     ":setup_frame_js",
     ":web_view_js_utils",
     "//base",
+    "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:web_view_js_utils",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_view:util",
@@ -51,12 +54,18 @@ source_set("java_script_feature") {
     ":scoped_wk_script_message_handler",
     ":web_view_js_utils",
     "//base",
+    "//ios/web:features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:web_view_js_utils",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
   ]
+
+  if (ios_enable_javascript_flags) {
+    deps += [ "//ios/web:flags" ]
+  }
 
   sources = [
     "java_script_content_world.mm",
@@ -137,7 +146,10 @@ source_set("scoped_wk_script_message_handler") {
 }
 
 source_set("web_view_js_utils") {
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/web/public/js_messaging:web_view_js_utils",
+  ]
 
   sources = [
     "web_view_js_utils.h",
@@ -150,11 +162,7 @@ optimize_ts("setup_frame_js") {
 
   sources = [ "resources/setup_frame.ts" ]
 
-  deps = [
-    "//ios/web/public/js_messaging:frame_id",
-    "//ios/web/public/js_messaging:gcrweb",
-    "//ios/web/public/js_messaging:util_scripts",
-  ]
+  deps = [ "//ios/web/public/js_messaging:frame_id" ]
 }
 
 optimize_ts("frame_listeners_js") {

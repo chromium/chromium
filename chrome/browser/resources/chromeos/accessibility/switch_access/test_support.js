@@ -21,6 +21,7 @@
 
   module = await import('./switch_access.js');
   globalThis.SwitchAccess = module.SwitchAccess;
+  await SwitchAccess.ready();
 
   const focusRingState = {
     'primary': {'role': '', 'name': ''},

@@ -340,7 +340,7 @@ void VpnService::OnListenerAdded(const extensions::EventListenerInfo& details) {
 crosapi::mojom::VpnService* VpnService::GetVpnService() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // CrosapiManager may not be initialized.
-  // TODO(crbug.com/1326801): Assert it's only happening in tests.
+  // TODO(crbug.com/40225953): Assert it's only happening in tests.
   if (!crosapi::CrosapiManager::IsInitialized()) {
     LOG(ERROR) << "CrosapiManager is not initialized.";
     return nullptr;

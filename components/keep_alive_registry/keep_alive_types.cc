@@ -94,7 +94,7 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "UMA_LOG";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return out << static_cast<int>(origin);
 }
 
@@ -107,6 +107,6 @@ std::ostream& operator<<(std::ostream& out,
       return out << "ENABLED";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return out << static_cast<int>(restart);
 }

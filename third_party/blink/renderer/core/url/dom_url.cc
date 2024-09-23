@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/url/url_search_params.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -63,11 +64,36 @@ DOMURL::DOMURL(PassKey,
     exception_state.ThrowTypeError("Invalid URL");
 }
 
+DOMURL::DOMURL(PassKey, const KURL& url): url_(url) {
+}
+
 DOMURL::~DOMURL() = default;
 
 void DOMURL::Trace(Visitor* visitor) const {
   visitor->Trace(search_params_);
   ScriptWrappable::Trace(visitor);
+}
+
+// static
+DOMURL* DOMURL::parse(const String& str) {
+  KURL url(str);
+  if (!url.IsValid()) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<DOMURL>(PassKey(), url);
+}
+
+// static
+DOMURL* DOMURL::parse(const String& str, const String& base) {
+  KURL base_url(base);
+  if (!base_url.IsValid()) {
+    return nullptr;
+  }
+  KURL url(base_url, str);
+  if (!url.IsValid()) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<DOMURL>(PassKey(), url);
 }
 
 // static

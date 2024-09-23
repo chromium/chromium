@@ -29,7 +29,8 @@ TEST(SurfaceLayerImplTest, Occlusion) {
 
   LayerTreeImplTestBase impl;
 
-  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>();
   surface_layer_impl->SetBounds(layer_size);
   surface_layer_impl->SetDrawsContent(true);
   viz::SurfaceId surface_id(kArbitraryFrameSinkId, kArbitraryLocalSurfaceId);
@@ -78,7 +79,8 @@ TEST(SurfaceLayerImplTest, Occlusion) {
 // are populated correctly if primary and fallback surfaces differ.
 TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   LayerTreeImplTestBase impl;
-  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>();
 
   // Populate the primary viz::SurfaceInfo.
   const viz::LocalSurfaceId kArbitraryLocalSurfaceId1(
@@ -176,10 +178,12 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
 // correctly.
 TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
   LayerTreeImplTestBase impl;
-  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>();
   CopyProperties(impl.root_layer(), surface_layer_impl);
 
-  SurfaceLayerImpl* surface_layer_impl2 = impl.AddLayer<SurfaceLayerImpl>();
+  SurfaceLayerImpl* surface_layer_impl2 =
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>();
   CopyProperties(impl.root_layer(), surface_layer_impl2);
 
   const viz::LocalSurfaceId kArbitraryLocalSurfaceId1(
@@ -220,7 +224,8 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
 // and fallback viz::SurfaceInfo.
 TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
   LayerTreeImplTestBase impl;
-  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>();
 
   // Populate the primary viz::SurfaceId.
   const viz::LocalSurfaceId kArbitraryLocalSurfaceId1(
@@ -261,7 +266,8 @@ TEST(SurfaceLayerImplTest, GetEnclosingRectInTargetSpace) {
   gfx::Size layer_size(902, 1000);
   gfx::Size viewport_size(902, 1000);
   LayerTreeImplTestBase impl;
-  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>();
   surface_layer_impl->SetBounds(layer_size);
   surface_layer_impl->SetDrawsContent(true);
   CopyProperties(impl.root_layer(), surface_layer_impl);
@@ -315,7 +321,7 @@ TEST(SurfaceLayerImplTest, WillDrawNotifiesSynchronouslyInCompositeImmediate) {
   impl.host_impl()->client()->set_is_synchronous_composite(true);
 
   SurfaceLayerImpl* surface_layer_impl =
-      impl.AddLayer<SurfaceLayerImpl>(std::move(callback));
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>(std::move(callback));
   surface_layer_impl->SetBounds(gfx::Size(500, 500));
   surface_layer_impl->SetDrawsContent(true);
 
@@ -353,7 +359,7 @@ TEST(SurfaceLayerImplTest, WillDrawNotifiesAsynchronously) {
   impl.host_impl()->client()->set_is_synchronous_composite(false);
 
   SurfaceLayerImpl* surface_layer_impl =
-      impl.AddLayer<SurfaceLayerImpl>(std::move(callback));
+      impl.AddLayerInActiveTree<SurfaceLayerImpl>(std::move(callback));
   surface_layer_impl->SetBounds(gfx::Size(500, 500));
   surface_layer_impl->SetDrawsContent(true);
 

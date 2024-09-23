@@ -68,6 +68,7 @@ class SystemShadowColorTest
         {chromeos::features::kJelly, chromeos::features::kJellyroll}, {});
     // Create a test widget as the owner of the shadow instances.
     widget_ = CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         /*delegate=*/nullptr,
         /*container_id=*/desks_util::GetActiveDeskContainerId(),
         /*bounds=*/gfx::Rect(100, 100, 320, 200));
@@ -100,7 +101,8 @@ class SystemShadowColorTest
   // Creates an instance of `SystemShadowOnNinePatchLayer`.
   std::unique_ptr<SystemShadow> MakeShadowOnNinePatchLayer(
       SystemShadow::Type type) {
-    auto shadow = SystemShadow::CreateShadowOnNinePatchLayer(type);
+    auto shadow = SystemShadow::CreateShadowOnNinePatchLayer(
+        type, SystemShadow::LayerRecreatedCallback());
     AddShadowToWidget(shadow.get(), widget_.get());
     return shadow;
   }

@@ -43,7 +43,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
-#include "extensions/browser/content_verifier.h"
+#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
@@ -125,13 +125,14 @@ void ExtensionSystemImpl::Shared::InitPrefs() {
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
-  policy::DeviceLocalAccount::Type device_local_account_type;
-  if (user &&
-      policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),
-                                       &device_local_account_type)) {
-    device_local_account_management_policy_provider_ =
-        std::make_unique<chromeos::DeviceLocalAccountManagementPolicyProvider>(
-            device_local_account_type);
+  if (user) {
+    auto device_local_account_type =
+        policy::GetDeviceLocalAccountType(user->GetAccountId().GetUserEmail());
+    if (device_local_account_type.has_value()) {
+      device_local_account_management_policy_provider_ = std::make_unique<
+          chromeos::DeviceLocalAccountManagementPolicyProvider>(
+          device_local_account_type.value());
+    }
   }
 #endif
 }
@@ -165,16 +166,16 @@ void ExtensionSystemImpl::Shared::RegisterManagementPolicyProviders() {
 void ExtensionSystemImpl::Shared::InitInstallGates() {
   update_install_gate_ = std::make_unique<UpdateInstallGate>(profile_);
   extension_service_->RegisterInstallGate(
-      ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE, update_install_gate_.get());
+      ExtensionPrefs::DelayReason::kWaitForIdle, update_install_gate_.get());
   extension_service_->RegisterInstallGate(
-      ExtensionPrefs::DELAY_REASON_WAIT_FOR_IMPORTS,
+      ExtensionPrefs::DelayReason::kWaitForImports,
       extension_service_->shared_module_service());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     kiosk_app_update_install_gate_ =
         std::make_unique<ash::KioskAppUpdateInstallGate>(profile_);
     extension_service_->RegisterInstallGate(
-        ExtensionPrefs::DELAY_REASON_WAIT_FOR_OS_UPDATE,
+        ExtensionPrefs::DelayReason::kWaitForOsUpdate,
         kiosk_app_update_install_gate_.get());
   }
 #endif
@@ -256,7 +257,7 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   // to a user session.
   skip_session_extensions = !ash::LoginState::Get()->IsUserLoggedIn() ||
                             !ash::ProfileHelper::IsUserProfile(profile_);
-  if (chrome::IsRunningInForcedAppMode()) {
+  if (IsRunningInForcedAppMode()) {
     extension_service_->component_loader()
         ->AddDefaultComponentExtensionsForKioskMode(skip_session_extensions);
   } else {

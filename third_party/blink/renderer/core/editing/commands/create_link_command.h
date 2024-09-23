@@ -36,6 +36,8 @@ class CreateLinkCommand final : public CompositeEditCommand {
 
  private:
   void DoApply(EditingState*) override;
+  InputEvent::InputType GetInputType() const override;
+  String TextDataForInputEvent() const override;
 
   String url_;
 };

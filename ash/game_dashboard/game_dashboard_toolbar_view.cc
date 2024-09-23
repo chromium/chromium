@@ -12,16 +12,19 @@
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/system_shadow.h"
 #include "base/check.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -30,14 +33,15 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
 
 namespace {
-
-using ToolbarSnapLocation = GameDashboardContext::ToolbarSnapLocation;
 
 // Corner radius of the toolbar view.
 constexpr int kCornerRadius = 20;
@@ -48,58 +52,67 @@ constexpr int kVerticalInset = 4;
 // Padding between children in the toolbar.
 constexpr int kBetweenChildSpacing = 4;
 
-std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
-                                             const gfx::VectorIcon* icon,
-                                             int view_id,
-                                             const std::u16string& text,
-                                             bool is_togglable) {
+std::unique_ptr<IconButton> CreateIconButton(
+    base::RepeatingClosure callback,
+    const gfx::VectorIcon* icon,
+    int view_id,
+    const std::u16string& text,
+    bool is_togglable,
+    ui::ColorId icon_color = cros_tokens::kCrosSysOnSurface) {
   // TODO(b/290696780): Update logic so the toolbar can drag from icon buttons.
   auto button = std::make_unique<IconButton>(
       std::move(callback), IconButton::Type::kMedium, icon, text,
       /*is_togglable=*/is_togglable, /*has_border=*/true);
   button->SetID(view_id);
+  button->SetIconColor(icon_color);
+  button->SetBackgroundColor(SK_ColorTRANSPARENT);
   return button;
 }
 
-ToolbarSnapLocation CalculateToolbarSnapLocation(
+GameDashboardToolbarSnapLocation CalculateGameDashboardToolbarSnapLocation(
     const gfx::Point& toolbar_center_point,
     const gfx::Rect& game_window_screen_bounds) {
   const auto game_window_center = game_window_screen_bounds.CenterPoint();
   if (toolbar_center_point.x() < game_window_center.x()) {
     return toolbar_center_point.y() < game_window_center.y()
-               ? ToolbarSnapLocation::kTopLeft
-               : ToolbarSnapLocation::kBottomLeft;
+               ? GameDashboardToolbarSnapLocation::kTopLeft
+               : GameDashboardToolbarSnapLocation::kBottomLeft;
   }
   return toolbar_center_point.y() < game_window_center.y()
-             ? ToolbarSnapLocation::kTopRight
-             : ToolbarSnapLocation::kBottomRight;
+             ? GameDashboardToolbarSnapLocation::kTopRight
+             : GameDashboardToolbarSnapLocation::kBottomRight;
 }
 
-ToolbarSnapLocation GetNextHorizontalSnapLocation(ToolbarSnapLocation current,
-                                                  bool going_left) {
+GameDashboardToolbarSnapLocation GetNextHorizontalSnapLocation(
+    GameDashboardToolbarSnapLocation current,
+    bool going_left) {
   switch (current) {
-    case ToolbarSnapLocation::kTopLeft:
-      return going_left ? current : ToolbarSnapLocation::kTopRight;
-    case ToolbarSnapLocation::kTopRight:
-      return going_left ? ToolbarSnapLocation::kTopLeft : current;
-    case ToolbarSnapLocation::kBottomLeft:
-      return going_left ? current : ToolbarSnapLocation::kBottomRight;
-    case ToolbarSnapLocation::kBottomRight:
-      return going_left ? ToolbarSnapLocation::kBottomLeft : current;
+    case GameDashboardToolbarSnapLocation::kTopLeft:
+      return going_left ? current : GameDashboardToolbarSnapLocation::kTopRight;
+    case GameDashboardToolbarSnapLocation::kTopRight:
+      return going_left ? GameDashboardToolbarSnapLocation::kTopLeft : current;
+    case GameDashboardToolbarSnapLocation::kBottomLeft:
+      return going_left ? current
+                        : GameDashboardToolbarSnapLocation::kBottomRight;
+    case GameDashboardToolbarSnapLocation::kBottomRight:
+      return going_left ? GameDashboardToolbarSnapLocation::kBottomLeft
+                        : current;
   }
 }
 
-ToolbarSnapLocation GetNextVerticalSnapLocation(ToolbarSnapLocation current,
-                                                bool going_up) {
+GameDashboardToolbarSnapLocation GetNextVerticalSnapLocation(
+    GameDashboardToolbarSnapLocation current,
+    bool going_up) {
   switch (current) {
-    case ToolbarSnapLocation::kTopLeft:
-      return going_up ? current : ToolbarSnapLocation::kBottomLeft;
-    case ToolbarSnapLocation::kTopRight:
-      return going_up ? current : ToolbarSnapLocation::kBottomRight;
-    case ToolbarSnapLocation::kBottomLeft:
-      return going_up ? ToolbarSnapLocation::kTopLeft : current;
-    case ToolbarSnapLocation::kBottomRight:
-      return going_up ? ToolbarSnapLocation::kTopRight : current;
+    case GameDashboardToolbarSnapLocation::kTopLeft:
+      return going_up ? current : GameDashboardToolbarSnapLocation::kBottomLeft;
+    case GameDashboardToolbarSnapLocation::kTopRight:
+      return going_up ? current
+                      : GameDashboardToolbarSnapLocation::kBottomRight;
+    case GameDashboardToolbarSnapLocation::kBottomLeft:
+      return going_up ? GameDashboardToolbarSnapLocation::kTopLeft : current;
+    case GameDashboardToolbarSnapLocation::kBottomRight:
+      return going_up ? GameDashboardToolbarSnapLocation::kTopRight : current;
   }
 }
 
@@ -121,11 +134,11 @@ class ToolbarDragHandler : public ui::EventHandler {
         capture_mode_util::GetEventScreenLocation(*event);
 
     switch (event->type()) {
-      case ui::ET_MOUSE_PRESSED:
+      case ui::EventType::kMousePressed:
         is_dragging_ = false;
         previous_location_in_screen_ = event_location;
         break;
-      case ui::ET_MOUSE_DRAGGED:
+      case ui::EventType::kMouseDragged:
         if (!is_dragging_) {
           // It's confirmed that the user is trying to drag rather than press a
           // button in the toolbar.
@@ -136,7 +149,7 @@ class ToolbarDragHandler : public ui::EventHandler {
         toolbar_view_->RepositionToolbar(GetOffset(event_location));
         previous_location_in_screen_ = event_location;
         break;
-      case ui::ET_MOUSE_RELEASED:
+      case ui::EventType::kMouseReleased:
         if (!is_dragging_) {
           // Allow the toolbar to receive this event so it can handle any button
           // clicks.
@@ -163,29 +176,29 @@ class ToolbarDragHandler : public ui::EventHandler {
         capture_mode_util::GetEventScreenLocation(*event);
 
     switch (event->type()) {
-      case ui::ET_GESTURE_SCROLL_BEGIN:
+      case ui::EventType::kGestureScrollBegin:
         is_dragging_ = true;
         previous_location_in_screen_ = event_location;
         break;
-      case ui::ET_GESTURE_SCROLL_UPDATE:
+      case ui::EventType::kGestureScrollUpdate:
         DCHECK(is_dragging_)
-            << "Received ET_GESTURE_SCROLL_UPDATE event but the "
+            << "Received EventType::kGestureScrollUpdate event but the "
                "toolbar isn't dragging.";
         toolbar_view_->RepositionToolbar(GetOffset(event_location));
         previous_location_in_screen_ = event_location;
         break;
-      case ui::ET_GESTURE_END:
+      case ui::EventType::kGestureEnd:
         if (!is_dragging_) {
           // Pass along event if it occurred outside of a dragging instance.
           return;
         }
-        // Treat dragging `ui::ET_GESTURE_END` events the same as
-        // `ui::ET_GESTURE_SCROLL_END` events.
+        // Treat dragging `ui::EventType::kGestureEnd` events the same as
+        // `ui::EventType::kGestureScrollEnd` events.
         [[fallthrough]];
-      case ui::ET_GESTURE_SCROLL_END:
+      case ui::EventType::kGestureScrollEnd:
         DCHECK(is_dragging_) << "Attempting to call end drag logic but the "
                                 "toolbar wasn't dragging. Event = "
-                             << event->type();
+                             << base::to_underlying(event->type());
         is_dragging_ = false;
         toolbar_view_->EndDraggingToolbar(GetOffset(event_location));
         previous_location_in_screen_.SetPoint(0, 0);
@@ -232,9 +245,11 @@ GameDashboardToolbarView::GameDashboardToolbarView(
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kCornerRadius));
-  SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
-  layer()->SetFillsBoundsOpaquely(false);
+  SetBorder(views::CreateThemedRoundedRectBorder(
+      1, kCornerRadius, ui::ColorIds::kColorCrosSystemHighlightBorder));
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kCornerRadius);
 
   AddShortcutTiles();
 }
@@ -263,9 +278,10 @@ void GameDashboardToolbarView::RepositionToolbar(const gfx::Vector2d& offset) {
 
 void GameDashboardToolbarView::EndDraggingToolbar(const gfx::Vector2d& offset) {
   RepositionToolbar(offset);
-  context_->SetToolbarSnapLocation(CalculateToolbarSnapLocation(
-      GetWidget()->GetWindowBoundsInScreen().CenterPoint(),
-      context_->game_window()->GetBoundsInScreen()));
+  context_->SetGameDashboardToolbarSnapLocation(
+      CalculateGameDashboardToolbarSnapLocation(
+          GetWidget()->GetWindowBoundsInScreen().CenterPoint(),
+          context_->game_window()->GetBoundsInScreen()));
 }
 
 void GameDashboardToolbarView::UpdateViewForGameControls(
@@ -296,13 +312,14 @@ bool GameDashboardToolbarView::OnKeyPressed(const ui::KeyEvent& event) {
   switch (event_key_code) {
     case ui::VKEY_LEFT:
     case ui::VKEY_RIGHT:
-      context_->SetToolbarSnapLocation(GetNextHorizontalSnapLocation(
-          current_snap_location,
-          /*going_left=*/event_key_code == ui::VKEY_LEFT));
+      context_->SetGameDashboardToolbarSnapLocation(
+          GetNextHorizontalSnapLocation(
+              current_snap_location,
+              /*going_left=*/event_key_code == ui::VKEY_LEFT));
       return true;
     case ui::VKEY_UP:
     case ui::VKEY_DOWN:
-      context_->SetToolbarSnapLocation(GetNextVerticalSnapLocation(
+      context_->SetGameDashboardToolbarSnapLocation(GetNextVerticalSnapLocation(
           current_snap_location, /*going_up=*/event_key_code == ui::VKEY_UP));
       return true;
     default:
@@ -321,32 +338,42 @@ void GameDashboardToolbarView::OnGamepadButtonPressed() {
       child->SetVisible(is_expanded_);
     }
   }
+  UpdateGamepadButtonTooltipText();
+  RecordGameDashboardToolbarClickToExpandState(context_->app_id(),
+                                               is_expanded_);
   context_->MaybeUpdateToolbarWidgetBounds();
 }
 
 void GameDashboardToolbarView::OnGameControlsButtonPressed() {
   auto* game_window = context_->game_window();
+  const bool was_toggled = game_controls_button_->toggled();
   game_window->SetProperty(
       kArcGameControlsFlagsKey,
       game_dashboard_utils::UpdateFlag(
           game_window->GetProperty(kArcGameControlsFlagsKey),
           static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kHint),
-          /*enable_flag=*/!game_controls_button_->toggled()));
+          /*enable_flag=*/!was_toggled));
+  RecordGameDashboardControlsHintToggleSource(
+      context_->app_id(), GameDashboardMenu::kToolbar, !was_toggled);
 }
 
 void GameDashboardToolbarView::OnRecordButtonPressed() {
+  context_->set_recording_from_main_menu(false);
+
   if (record_game_button_->toggled()) {
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kGameToolbarStopRecordingButton);
   } else {
-    GameDashboardController::Get()->StartCaptureSession(
-        context_, /*record_instantly=*/true);
+    GameDashboardController::Get()->StartCaptureSession(context_);
   }
 }
 
 void GameDashboardToolbarView::OnScreenshotButtonPressed() {
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
       context_->game_window());
+
+  RecordGameDashboardScreenshotTakeSource(context_->app_id(),
+                                          GameDashboardMenu::kToolbar);
 }
 
 void GameDashboardToolbarView::AddShortcutTiles() {
@@ -357,8 +384,10 @@ void GameDashboardToolbarView::AddShortcutTiles() {
       &kGdToolbarIcon, base::to_underlying(ToolbarViewId::kGamepadButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE),
-      /*is_togglable=*/false));
+      /*is_togglable=*/false, /*icon_color=*/cros_tokens::kCrosSysPrimary));
+  gamepad_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 
+  UpdateGamepadButtonTooltipText();
   MayAddGameControlsTile();
 
   if (base::FeatureList::IsEnabled(
@@ -371,9 +400,9 @@ void GameDashboardToolbarView::AddShortcutTiles() {
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE),
         /*is_togglable=*/true));
+    record_game_button_->GetViewAccessibility().SetRole(
+        ax::mojom::Role::kButton);
     record_game_button_->SetVectorIcon(kGdRecordGameIcon);
-    record_game_button_->SetIconColor(cros_tokens::kCrosSysOnSurface);
-
     record_game_button_->SetBackgroundToggledColor(cros_tokens::kCrosSysError);
     record_game_button_->SetToggledVectorIcon(kCaptureModeCircleStopIcon);
     record_game_button_->SetIconToggledColor(cros_tokens::kCrosSysOnError);
@@ -381,13 +410,15 @@ void GameDashboardToolbarView::AddShortcutTiles() {
         GameDashboardController::Get()->active_recording_context() == context_);
   }
 
-  AddChildView(CreateIconButton(
+  auto* screenshot_button = AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnScreenshotButtonPressed,
                           base::Unretained(this)),
       &kGdScreenshotIcon, base::to_underlying(ToolbarViewId::kScreenshotButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
       /*is_togglable=*/false));
+  screenshot_button->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE));
 }
 
 void GameDashboardToolbarView::MayAddGameControlsTile() {
@@ -406,6 +437,8 @@ void GameDashboardToolbarView::MayAddGameControlsTile() {
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE),
       /*is_togglable=*/true));
+  game_controls_button_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kButton);
 
   UpdateViewForGameControls(*flags);
 }
@@ -420,9 +453,20 @@ void GameDashboardToolbarView::UpdateRecordGameButton(
       is_recording_game_window ||
       CaptureModeController::Get()->can_start_new_recording());
   record_game_button_->SetToggled(is_recording_game_window);
+  record_game_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      is_recording_game_window
+          ? IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_STOP
+          : IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_START));
 }
 
-BEGIN_METADATA(GameDashboardToolbarView, views::BoxLayoutView)
+void GameDashboardToolbarView::UpdateGamepadButtonTooltipText() {
+  gamepad_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      is_expanded_
+          ? IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_CLOSE_TOOLBAR
+          : IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_OPEN_TOOLBAR));
+}
+
+BEGIN_METADATA(GameDashboardToolbarView)
 END_METADATA
 
 }  // namespace ash

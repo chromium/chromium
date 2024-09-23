@@ -60,6 +60,32 @@ mojom::PairingResult GetPairingResult(
     case device::ConnectionFailureReason::kNotConnectable:
       [[fallthrough]];
     case device::ConnectionFailureReason::kInprogress:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kNotFound:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kBluetoothDisabled:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kDeviceNotReady:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kAlreadyConnected:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kDeviceAlreadyExists:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kInvalidArgs:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kNonAuthTimeout:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kNoMemory:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kJniEnvironment:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kJniThreadAttach:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kWakelock:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kUnexpectedState:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kSocketError:
       return mojom::PairingResult::kNonAuthFailure;
   }
 }
@@ -190,7 +216,8 @@ void DevicePairingHandler::PairDevice(
   if (!IsBluetoothEnabled()) {
     BLUETOOTH_LOG(ERROR) << "Pairing failed due to Bluetooth not being "
                          << "enabled, device identifier: " << device_id;
-    FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
+    FinishCurrentPairingRequest(
+        device::ConnectionFailureReason::kBluetoothDisabled);
     return;
   }
 

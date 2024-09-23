@@ -8,7 +8,7 @@ module remoting.mojom;
 // optional primitive fields in Mojo structures for use cases like serializing
 // and deserializing protobufs.
 
-// TODO(https://crbug.com/657632): Remove this once a supported mechanism is
+// TODO(crbug.com/40489779): Remove this once a supported mechanism is
 // available.
 
 struct Bool {

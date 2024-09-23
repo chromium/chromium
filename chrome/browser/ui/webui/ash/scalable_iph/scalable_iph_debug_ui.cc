@@ -5,13 +5,14 @@
 #include "chrome/browser/ui/webui/ash/scalable_iph/scalable_iph_debug_ui.h"
 
 #include <sstream>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/scalable_iph/scalable_iph_factory.h"
+#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "content/public/browser/web_contents.h"
@@ -29,7 +30,7 @@ constexpr char kPreTagBegin[] = "<pre>";
 constexpr char kPreTagEnd[] = "</pre>";
 constexpr char kNewline[] = "\n";
 
-constexpr auto kSupportedPaths = base::MakeFixedFlatSet<base::StringPiece>(
+constexpr auto kSupportedPaths = base::MakeFixedFlatSet<std::string_view>(
     {kLoggingPath, kRecordFiveMinTickEventPath});
 
 std::string WrapWithPreTags(const std::string& content) {

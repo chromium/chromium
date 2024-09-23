@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] where float32 0D scalars
+  assert_true: assert_array_approx_equals_ulp: test where float32 actual -22.828125 should be close enough to expected -22.83924102783203 by the acceptable 0 ULP distance, but they have 5828 ULP distance expected true got false
+Harness: the test ran to completion.
+

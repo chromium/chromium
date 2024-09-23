@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 
 #include <string>
@@ -12,13 +17,13 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/compose/core/browser/compose_features.h"
-#include "components/compose/core/browser/config.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -27,21 +32,28 @@
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+ComposeUIUntrustedConfig::ComposeUIUntrustedConfig()
+    : DefaultTopChromeWebUIConfig(content::kChromeUIUntrustedScheme,
+                                  chrome::kChromeUIUntrustedComposeHost) {}
+
 bool ComposeUIUntrustedConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return ComposeEnabling::IsEnabledForProfile(
       Profile::FromBrowserContext(browser_context));
 }
 
+bool ComposeUIUntrustedConfig::ShouldAutoResizeHost() {
+  return true;
+}
+
 ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
-    : ui::UntrustedBubbleWebUIController(web_ui) {
+    : UntrustedTopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUntrustedComposeUrl);
 webui::SetupWebUIDataSource(
       source, base::make_span(kComposeResources, kComposeResourcesSize),
       IDR_COMPOSE_COMPOSE_HTML);
-  webui::SetupChromeRefresh2023(source);
 
   // Localized strings.
   static constexpr webui::LocalizedString kStrings[] = {
@@ -63,20 +75,30 @@ webui::SetupWebUIDataSource(
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
       {"onDeviceUsedFooter", IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED},
       {"resultFooter", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
+      {"refinementsResultFooter",
+       IDS_COMPOSE_REFINEMENTS_EXPERIMENTAL_DISCLAIMER_FOOTER},
       {"dogfoodFooter", IDS_COMPOSE_FOOTER_FISHFOOD},
       {"insertButton", IDS_COMPOSE_INSERT_BUTTON},
       {"replaceButton", IDS_COMPOSE_REPLACE_BUTTON},
       {"lengthMenuTitle", IDS_COMPOSE_MENU_LENGTH_TITLE},
+      {"toneMenuTitle", IDS_COMPOSE_MENU_TONE_TITLE},
+      {"modifierMenuTitle", IDS_COMPOSE_MODIFIERS_MENU_TITLE},
+      {"modifierMenuLabel", IDS_COMPOSE_MODIFIERS_MENU_LABEL},
+      {"retryOption", IDS_COMPOSE_MENU_RETRY_OPTION},
       {"shorterOption", IDS_COMPOSE_MENU_SHORTER_OPTION},
       {"longerOption", IDS_COMPOSE_MENU_LONGER_OPTION},
-      {"toneMenuTitle", IDS_COMPOSE_MENU_TONE_TITLE},
       {"casualToneOption", IDS_COMPOSE_MENU_CASUAL_OPTION},
       {"formalToneOption", IDS_COMPOSE_MENU_FORMAL_OPTION},
+      {"undo", IDS_COMPOSE_UNDO_LABEL},
+      {"undoButtonText", IDS_COMPOSE_UNDO_BUTTON_TEXT},
+      {"redo", IDS_COMPOSE_REDO_LABEL},
+      {"redoButtonText", IDS_COMPOSE_REDO_BUTTON_TEXT},
       {"errorTooShort", IDS_COMPOSE_ERROR_TOO_SHORT},
       {"errorTooLong", IDS_COMPOSE_ERROR_TOO_LONG},
       {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},
       {"errorTryAgainLater", IDS_COMPOSE_ERROR_TRY_AGAIN_LATER},
       {"errorFiltered", IDS_COMPOSE_ERROR_FILTERED},
+      {"errorFilteredGoBackButton", IDS_COMPOSE_ERROR_FILTERED_BACK_BUTTON},
       {"errorUnsupportedLanguage", IDS_COMPOSE_ERROR_UNSUPPORTED_LANGUAGE},
       {"errorPermissionDenied", IDS_COMPOSE_ERROR_PERMISSION_DENIED},
       {"errorRequestThrottled", IDS_COMPOSE_ERROR_REQUEST_THROTTLED},
@@ -84,12 +106,14 @@ webui::SetupWebUIDataSource(
       {"editButton", IDS_COMPOSE_EDIT},
       {"editCancelButton", IDS_CANCEL},
       {"editUpdateButton", IDS_COMPOSE_EDIT_UPDATE_BUTTON},
-      {"undo", IDS_COMPOSE_UNDO},
       {"resubmit", IDS_COMPOSE_RESUBMIT},
       {"thumbsDown", IDS_COMPOSE_THUMBS_DOWN},
       {"thumbsUp", IDS_COMPOSE_THUMBS_UP},
-      {"savedText", IDS_COMPOSE_SUGGESTION_SAVED_TEXT},
-      {"savedLabel", IDS_COMPOSE_SUGGESTION_SAVED_LABEL},
+      {"resultText", IDS_COMPOSE_RESULT_TEXT_LABEL},
+      {"resultLoadingA11yMessage", IDS_COMPOSE_RESULT_LOADING_A11Y_MESSAGE},
+      {"resultUpdatedA11yMessage", IDS_COMPOSE_RESULT_UPDATED_A11Y_MESSAGE},
+      {"undoResultA11yMessage", IDS_COMPOSE_UNDO_RESULT_A11Y_MESSAGE},
+      {"redoResultA11yMessage", IDS_COMPOSE_REDO_RESULT_A11Y_MESSAGE},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("enableAnimations",
@@ -99,14 +123,6 @@ webui::SetupWebUIDataSource(
       "enableOnDeviceDogfoodFooter",
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeOnDeviceDogfoodFooter));
-  source->AddBoolean(
-      "enableSavedStateNotification",
-      base::FeatureList::IsEnabled(
-          compose::features::kEnableComposeSavedStateNotification));
-
-  const compose::Config& config = compose::GetComposeConfig();
-  source->AddInteger("savedStateTimeoutInMilliseconds",
-                     config.saved_state_timeout_milliseconds);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
@@ -136,19 +152,20 @@ void ComposeUntrustedUI::BindInterface(
 }
 
 void ComposeUntrustedUI::BindInterface(
-    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandlerFactory>
-        factory) {
+    mojo::PendingReceiver<
+        compose::mojom::ComposeSessionUntrustedPageHandlerFactory> factory) {
   if (session_handler_factory_.is_bound()) {
     session_handler_factory_.reset();
   }
   session_handler_factory_.Bind(std::move(factory));
 }
 
-void ComposeUntrustedUI::CreateComposeSessionPageHandler(
-    mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
+void ComposeUntrustedUI::CreateComposeSessionUntrustedPageHandler(
+    mojo::PendingReceiver<compose::mojom::ComposeClientUntrustedPageHandler>
         close_handler,
-    mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
-    mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
+    mojo::PendingReceiver<compose::mojom::ComposeSessionUntrustedPageHandler>
+        handler,
+    mojo::PendingRemote<compose::mojom::ComposeUntrustedDialog> dialog) {
   DCHECK(dialog.is_valid());
 
   content::WebContents* web_contents = triggering_web_contents_

@@ -64,7 +64,6 @@ class PopularSites {
   virtual const std::map<SectionType, SitesVector>& sections() const = 0;
 
   // Various internals exposed publicly for diagnostic pages only.
-  virtual GURL GetLastURLFetched() const = 0;
   virtual GURL GetURLToFetch() = 0;
   virtual std::string GetDirectoryToFetch() = 0;
   virtual std::string GetCountryToFetch() = 0;

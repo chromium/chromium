@@ -13,15 +13,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_constants.h"
@@ -35,22 +34,22 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/welcome/helpers.h"
-#endif
 
 namespace policy {
 
 // Base class for testing the policy.
 class PromotionalTabsEnabledPolicyTest
     : public PolicyTest,
-      public testing::WithParamInterface<PolicyTest::BooleanPolicy> {
+      public testing::WithParamInterface<
+          std::pair</*PromotionalTabsEnabledPolicy*/ PolicyTest::BooleanPolicy,
+                    /*PromotionsEnabledPolicy*/ PolicyTest::BooleanPolicy>> {
  public:
   PromotionalTabsEnabledPolicyTest(const PromotionalTabsEnabledPolicyTest&) =
       delete;
@@ -61,9 +60,7 @@ class PromotionalTabsEnabledPolicyTest
   PromotionalTabsEnabledPolicyTest() {
     const std::vector<base::test::FeatureRef> kEnabledFeatures = {
       whats_new::kForceEnabled,
-#if !BUILDFLAG(IS_CHROMEOS)
       welcome::kForceEnabled,
-#endif
     };
     scoped_feature_list_.InitWithFeatures(kEnabledFeatures, {});
   }
@@ -83,18 +80,23 @@ class PromotionalTabsEnabledPolicyTest
     // Set policies before the browser starts up.
     PolicyMap policies;
 
-#if !BUILDFLAG(IS_CHROMEOS)
     // Suppress the first-run dialog by disabling metrics reporting.
     policies.Set(key::kMetricsReportingEnabled, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD, base::Value(false),
                  nullptr);
-#endif
 
     // Apply the policy setting under test.
-    if (GetParam() != BooleanPolicy::kNotConfigured) {
+    if (GetParam().first != BooleanPolicy::kNotConfigured) {
       policies.Set(key::kPromotionalTabsEnabled, POLICY_LEVEL_MANDATORY,
                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                   base::Value(GetParam() == BooleanPolicy::kTrue), nullptr);
+                   base::Value(GetParam().first == BooleanPolicy::kTrue),
+                   nullptr);
+    }
+    if (GetParam().second != BooleanPolicy::kNotConfigured) {
+      policies.Set(key::kPromotionsEnabled, POLICY_LEVEL_MANDATORY,
+                   POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                   base::Value(GetParam().second == BooleanPolicy::kTrue),
+                   nullptr);
     }
 
     UpdateProviderPolicy(policies);
@@ -105,7 +107,6 @@ class PromotionalTabsEnabledPolicyTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS)
 // Tests that the PromotionalTabsEnabled policy properly suppresses the welcome
 // page for browser first-runs.
 class PromotionalTabsEnabledPolicyWelcomeTest
@@ -117,17 +118,11 @@ class PromotionalTabsEnabledPolicyWelcomeTest
       const PromotionalTabsEnabledPolicyWelcomeTest&) = delete;
 
  protected:
-  PromotionalTabsEnabledPolicyWelcomeTest() {
-    scoped_feature_list_.InitAndEnableFeature(kForYouFre);
-  }
-  ~PromotionalTabsEnabledPolicyWelcomeTest() override = default;
+  PromotionalTabsEnabledPolicyWelcomeTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kForceFirstRun);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
@@ -145,63 +140,14 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     PromotionalTabsEnabledPolicyWelcomeTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
-
-// Tests that the PromotionalTabsEnabled policy properly suppresses the welcome
-// page for browser first-runs.
-class PromotionalTabsEnabledPolicyWelcomeNoFreTest
-    : public PromotionalTabsEnabledPolicyTest {
- public:
-  PromotionalTabsEnabledPolicyWelcomeNoFreTest(
-      const PromotionalTabsEnabledPolicyWelcomeNoFreTest&) = delete;
-  PromotionalTabsEnabledPolicyWelcomeNoFreTest& operator=(
-      const PromotionalTabsEnabledPolicyWelcomeNoFreTest&) = delete;
-
- protected:
-  PromotionalTabsEnabledPolicyWelcomeNoFreTest() {
-    scoped_feature_list_.InitAndDisableFeature(kForYouFre);
-  }
-  ~PromotionalTabsEnabledPolicyWelcomeNoFreTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kForceFirstRun);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeNoFreTest, RunTest) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  ASSERT_GE(tab_strip->count(), 1);
-  const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
-  switch (GetParam()) {
-    case BooleanPolicy::kFalse:
-      // Only the NTP should show.
-      EXPECT_EQ(tab_strip->count(), 1);
-      if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL)
-        EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
-      break;
-    case BooleanPolicy::kNotConfigured:
-    case BooleanPolicy::kTrue:
-      // One or more onboarding tabs should show.
-      EXPECT_NE(url.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
-      // Welcome should override What's New.
-      EXPECT_NE(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
-      EXPECT_FALSE(search::IsNTPOrRelatedURL(url, browser()->profile())) << url;
-      break;
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PromotionalTabsEnabledPolicyWelcomeNoFreTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+    testing::ValuesIn(std::vector<std::pair<PolicyTest::BooleanPolicy,
+                                            PolicyTest::BooleanPolicy>>{
+        {PolicyTest::BooleanPolicy::kNotConfigured,
+         PolicyTest::BooleanPolicy::kNotConfigured},
+        {PolicyTest::BooleanPolicy::kFalse, PolicyTest::BooleanPolicy::kFalse},
+        {PolicyTest::BooleanPolicy::kTrue, PolicyTest::BooleanPolicy::kTrue},
+        {PolicyTest::BooleanPolicy::kFalse,
+         PolicyTest::BooleanPolicy::kTrue}}));
 
 // Tests that the PromotionalTabsEnabled policy properly suppresses the What's
 // New page.
@@ -275,33 +221,37 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest,
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
   const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
-  switch (GetParam()) {
-    case BooleanPolicy::kFalse:
-      // Only the NTP should show.
-      EXPECT_EQ(tab_strip->count(), 1);
-      if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL)
-        EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
-      break;
-    case BooleanPolicy::kNotConfigured:
-    case BooleanPolicy::kTrue:
-      EXPECT_EQ(tab_strip->count(), 2);
-      // Whats's New should show and be the active tab.
-      EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
-      EXPECT_EQ(0, tab_strip->active_index());
-      // The second tab should be the NTP.
-      const auto& url_tab1 =
-          tab_strip->GetWebContentsAt(1)->GetLastCommittedURL();
-      EXPECT_EQ(url_tab1.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
-      break;
+  bool promotions_disabled = (GetParam().first == BooleanPolicy::kFalse) ||
+                             (GetParam().first == BooleanPolicy::kFalse);
+  if (promotions_disabled) {
+    // Only the NTP should show.
+    EXPECT_EQ(tab_strip->count(), 1);
+    if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL) {
+      EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
+    }
+  } else {
+    EXPECT_EQ(tab_strip->count(), 2);
+    // Whats's New should show and be the active tab.
+    EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
+    EXPECT_EQ(0, tab_strip->active_index());
+    // The second tab should be the NTP.
+    const auto& url_tab1 =
+        tab_strip->GetWebContentsAt(1)->GetLastCommittedURL();
+    EXPECT_EQ(url_tab1.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     PromotionalTabsEnabledPolicyWhatsNewTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
+    testing::ValuesIn(std::vector<std::pair<PolicyTest::BooleanPolicy,
+                                            PolicyTest::BooleanPolicy>>{
+        {PolicyTest::BooleanPolicy::kNotConfigured,
+         PolicyTest::BooleanPolicy::kNotConfigured},
+        {PolicyTest::BooleanPolicy::kFalse, PolicyTest::BooleanPolicy::kFalse},
+        {PolicyTest::BooleanPolicy::kTrue, PolicyTest::BooleanPolicy::kTrue},
+        {PolicyTest::BooleanPolicy::kFalse,
+         PolicyTest::BooleanPolicy::kTrue}}));
 
 // Tests that What's New doesn't show up regardless of the policy if the version
 // is not greater than the one in |prefs::kLastWhatsNewVersion|.
@@ -331,35 +281,24 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
   ASSERT_GE(tab_strip->count(), 1);
   const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
 
-  if ((!features::IsChromeRefresh2023() ||
-       GetParam() == BooleanPolicy::kFalse) ||
-      CHROME_VERSION_MAJOR > 121) {
-    // Only the NTP should show. There are no other relevant tabs since
-    // welcome and What's New have both already been shown or promotional tabs
-    // are disabled.
-    EXPECT_EQ(tab_strip->count(), 1);
-    if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL) {
-      EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
-    }
-  } else {
-    // TODO(mickeyburks): Cleanup test case after M121 is released.
-    // Always show What's New for CR2023 because the launch is active
-    // until after M121.
-    EXPECT_EQ(tab_strip->count(), 2);
-    // Whats's New should show and be the active tab.
-    EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
-    EXPECT_EQ(0, tab_strip->active_index());
-    // The second tab should be the NTP.
-    const auto& url_tab1 =
-        tab_strip->GetWebContentsAt(1)->GetLastCommittedURL();
-    EXPECT_EQ(url_tab1.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
+  // Only the NTP should show. There are no other relevant tabs since
+  // welcome and What's New have both already been shown or promotional tabs
+  // are disabled.
+  EXPECT_EQ(tab_strip->count(), 1);
+  if (url.possibly_invalid_spec() != chrome::kChromeUINewTabURL) {
+    EXPECT_PRED2(search::IsNTPOrRelatedURL, url, browser()->profile());
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
-    ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
-                      PolicyTest::BooleanPolicy::kFalse,
-                      PolicyTest::BooleanPolicy::kTrue));
+    testing::ValuesIn(std::vector<std::pair<PolicyTest::BooleanPolicy,
+                                            PolicyTest::BooleanPolicy>>{
+        {PolicyTest::BooleanPolicy::kNotConfigured,
+         PolicyTest::BooleanPolicy::kNotConfigured},
+        {PolicyTest::BooleanPolicy::kFalse, PolicyTest::BooleanPolicy::kFalse},
+        {PolicyTest::BooleanPolicy::kTrue, PolicyTest::BooleanPolicy::kTrue},
+        {PolicyTest::BooleanPolicy::kFalse,
+         PolicyTest::BooleanPolicy::kTrue}}));
 }  // namespace policy

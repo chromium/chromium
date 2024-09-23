@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -27,7 +28,6 @@ import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -90,7 +90,7 @@ public class AutofillUpstreamTest {
     }
 
     private PropertyModel getPropertyModelForDialog() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mActivityTestRule
                                 .getActivity()
@@ -176,8 +176,7 @@ public class AutofillUpstreamTest {
         DOMUtils.clickNode(webContents, "submit");
         waitForSaveCardInfoBar();
         // Click on the continue button.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> getAutofillSaveCardInfoBar().onButtonClicked(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> getAutofillSaveCardInfoBar().onButtonClicked(true));
         PropertyModel fixflowPromptPropertyModel = getPropertyModelForDialog();
 
         // Verify that dialog is not null.
@@ -217,8 +216,7 @@ public class AutofillUpstreamTest {
         DOMUtils.clickNode(webContents, "submit");
         waitForSaveCardInfoBar();
         // Click on the continue button.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> getAutofillSaveCardInfoBar().onButtonClicked(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> getAutofillSaveCardInfoBar().onButtonClicked(true));
         PropertyModel fixflowPromptPropertyModel = getPropertyModelForDialog();
 
         // Verify that dialog is not null.

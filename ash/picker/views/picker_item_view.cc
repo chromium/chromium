@@ -5,110 +5,171 @@
 #include "ash/picker/views/picker_item_view.h"
 
 #include <memory>
-#include <string>
 #include <utility>
 
-#include "ash/bubble/bubble_utils.h"
+#include "ash/picker/views/picker_focus_indicator.h"
+#include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/style/style_util.h"
-#include "ash/style/typography.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/color/color_id.h"
-#include "ui/compositor/layer.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/views/border.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/layout_manager.h"
-#include "ui/views/layout/layout_types.h"
-#include "ui/views/view_class_properties.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
 
-constexpr auto kPickerListItemBorderInsets = gfx::Insets::TLBR(8, 16, 8, 8);
+// How much to clip the focused PickerItemView by. Inset by at least the default
+// focus ring inset so the clipping is actually visible, then clip by the actual
+// desired amount. It would be better to absolute value the halo inset here, but
+// to keep this constexpr, also multiply by -1 to keep it positive.
+constexpr float kPseudoFocusClipInset =
+    views::FocusRing::kDefaultHaloInset * -1.0f + 2.0f;
 
-constexpr gfx::Size kLeadingIconSizeDip(20, 20);
-constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
+constexpr auto kPickerItemFocusIndicatorMargins = gfx::Insets::VH(6, 0);
 
 }  // namespace
 
-PickerItemView::PickerItemView(views::Button::PressedCallback callback)
-    : views::Button(std::move(callback)) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>());
-  auto* item_contents =
-      AddChildView(views::Builder<views::FlexLayoutView>()
-                       .SetOrientation(views::LayoutOrientation::kHorizontal)
-                       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-                       .SetCanProcessEventsWithinSubtree(false)
-                       .Build());
-
-  leading_container_ = item_contents->AddChildView(
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kVertical)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-          .Build());
-
-  auto* main_container = item_contents->AddChildView(
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kVertical)
-          .Build());
-  primary_container_ =
-      main_container->AddChildView(std::make_unique<views::FlexLayoutView>());
-  secondary_container_ =
-      main_container->AddChildView(std::make_unique<views::FlexLayoutView>());
-
-  SetBorder(views::CreateEmptyBorder(kPickerListItemBorderInsets));
-
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetMasksToBounds(true);
-
-  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                   /*highlight_on_hover=*/true,
-                                   /*highlight_on_focus=*/true);
+PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
+                               FocusIndicatorStyle focus_indicator_style)
+    : views::Button(select_item_callback),
+      select_item_callback_(select_item_callback),
+      focus_indicator_style_(focus_indicator_style) {
+  switch (focus_indicator_style_) {
+    case FocusIndicatorStyle::kFocusRingWithInsetGap:
+      [[fallthrough]];
+    case FocusIndicatorStyle::kFocusRing:
+      StyleUtil::SetUpFocusRingForView(this);
+      views::FocusRing::Get(this)->SetHasFocusPredicate(
+          base::BindRepeating([](const View* view) {
+            const auto* v = views::AsViewClass<PickerItemView>(view);
+            CHECK(v);
+            return (v->HasFocus() ||
+                    v->GetItemState() ==
+                        PickerItemView::ItemState::kPseudoFocused);
+          }));
+      break;
+    case FocusIndicatorStyle::kFocusBar:
+      // Disable default focus ring to use a custom focus indicator.
+      SetInstallFocusRingOnFocus(false);
+      break;
+  }
 }
 
 PickerItemView::~PickerItemView() = default;
 
-void PickerItemView::SetPrimaryText(const std::u16string& primary_text) {
-  primary_container_->RemoveAllChildViews();
-  primary_container_->AddChildView(
-      bubble_utils::CreateLabel(TypographyToken::kCrosBody2, primary_text,
-                                cros_tokens::kCrosSysOnSurface));
-  SetAccessibleName(primary_text);
+void PickerItemView::StateChanged(ButtonState old_state) {
+  UpdateBackground();
 }
 
-void PickerItemView::SetPrimaryImage(
-    std::unique_ptr<views::ImageView> primary_image) {
-  primary_container_->RemoveAllChildViews();
-  auto* image_view = primary_container_->AddChildView(std::move(primary_image));
-  image_view->SetCanProcessEventsWithinSubtree(false);
-  // TODO: b/316936418 - Get accessible name for image contents.
-  SetAccessibleName(u"image contents");
+void PickerItemView::PaintButtonContents(gfx::Canvas* canvas) {
+  views::Button::PaintButtonContents(canvas);
+
+  if (focus_indicator_style_ == FocusIndicatorStyle::kFocusBar &&
+      item_state_ == ItemState::kPseudoFocused) {
+    PaintPickerFocusIndicator(
+        canvas, gfx::Point(0, kPickerItemFocusIndicatorMargins.top()),
+        height() - kPickerItemFocusIndicatorMargins.height(),
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing));
+  }
 }
 
-void PickerItemView::SetLeadingIcon(const ui::ImageModel& icon) {
-  leading_container_->RemoveAllChildViews();
-  leading_container_->AddChildView(
-      views::Builder<views::ImageView>()
-          .SetImageSize(kLeadingIconSizeDip)
-          .SetImage(icon)
-          .SetCanProcessEventsWithinSubtree(false)
-          .SetProperty(views::kMarginsKey, kLeadingIconRightPadding)
-          .Build());
+void PickerItemView::SelectItem() {
+  select_item_callback_.Run();
 }
 
-void PickerItemView::SetSecondaryText(const std::u16string& secondary_text) {
-  secondary_container_->RemoveAllChildViews();
-  secondary_container_->AddChildView(bubble_utils::CreateLabel(
-      TypographyToken::kCrosAnnotation2, secondary_text,
-      cros_tokens::kCrosSysOnSurfaceVariant));
+void PickerItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  UpdateClipPathForFocusRingWithInsetGap();
+}
+
+void PickerItemView::OnMouseEntered(const ui::MouseEvent& event) {
+  if (submenu_controller_ != nullptr) {
+    submenu_controller_->Close();
+  }
+}
+
+void PickerItemView::SetCornerRadius(int corner_radius) {
+  if (corner_radius_ == corner_radius) {
+    return;
+  }
+
+  corner_radius_ = corner_radius;
+  StyleUtil::InstallRoundedCornerHighlightPathGenerator(
+      this, gfx::RoundedCornersF(corner_radius_));
+  UpdateBackground();
+}
+
+PickerSubmenuController* PickerItemView::GetSubmenuController() {
+  return submenu_controller_;
+}
+
+void PickerItemView::SetSubmenuController(
+    PickerSubmenuController* submenu_controller) {
+  submenu_controller_ = submenu_controller;
+}
+
+PickerItemView::ItemState PickerItemView::GetItemState() const {
+  return item_state_;
+}
+
+void PickerItemView::SetItemState(ItemState item_state) {
+  if (item_state_ == item_state) {
+    return;
+  }
+
+  item_state_ = item_state;
+  UpdateBackground();
+
+  switch (focus_indicator_style_) {
+    case FocusIndicatorStyle::kFocusRingWithInsetGap:
+      UpdateClipPathForFocusRingWithInsetGap();
+      [[fallthrough]];
+    case FocusIndicatorStyle::kFocusRing:
+      views::FocusRing::Get(this)->SchedulePaint();
+      break;
+    case FocusIndicatorStyle::kFocusBar:
+      SchedulePaint();
+      break;
+  }
+}
+
+void PickerItemView::UpdateClipPathForFocusRingWithInsetGap() {
+  if (focus_indicator_style_ != FocusIndicatorStyle::kFocusRingWithInsetGap) {
+    return;
+  }
+
+  SkPath clip_path;
+  if (item_state_ == ItemState::kPseudoFocused) {
+    gfx::RectF inset_bounds(GetLocalBounds());
+    const SkScalar radius =
+        SkIntToScalar(corner_radius_ - kPseudoFocusClipInset);
+    inset_bounds.Inset(kPseudoFocusClipInset);
+    clip_path.addRoundRect(gfx::RectFToSkRect(inset_bounds), radius, radius);
+  }
+  SetClipPath(clip_path);
+}
+
+void PickerItemView::UpdateBackground() {
+  if (GetState() == views::Button::ButtonState::STATE_HOVERED ||
+      item_state_ == PickerItemView::ItemState::kPseudoFocused) {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysHoverOnSubtle, corner_radius_));
+  } else {
+    SetBackground(nullptr);
+  }
 }
 
 BEGIN_METADATA(PickerItemView)

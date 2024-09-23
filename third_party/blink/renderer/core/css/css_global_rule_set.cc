@@ -29,8 +29,9 @@ void CSSGlobalRuleSet::InitWatchedSelectorsRuleSet(Document& document) {
   MediaQueryEvaluator* medium =
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
   for (unsigned i = 0; i < watched_selectors.size(); ++i) {
-    watched_selectors_rule_set_->AddStyleRule(watched_selectors[i], *medium,
-                                              kRuleHasNoSpecialState);
+    watched_selectors_rule_set_->AddStyleRule(
+        watched_selectors[i], /*parent_rule=*/nullptr, *medium,
+        kRuleHasNoSpecialState, /*within_mixin=*/false);
   }
 }
 
@@ -46,8 +47,9 @@ void CSSGlobalRuleSet::UpdateDocumentRulesSelectorsRuleSet(Document& document) {
   MediaQueryEvaluator* medium =
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
   for (StyleRule* selector : document_rules_selectors) {
-    document_rules_selectors_rule_set_->AddStyleRule(selector, *medium,
-                                                     kRuleHasNoSpecialState);
+    document_rules_selectors_rule_set_->AddStyleRule(
+        selector, /*parent_rule=*/nullptr, *medium, kRuleHasNoSpecialState,
+        /*within_mixin=*/false);
   }
 }
 

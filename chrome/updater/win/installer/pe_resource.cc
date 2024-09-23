@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/updater/win/installer/pe_resource.h"
 
 #include <algorithm>
@@ -56,7 +61,7 @@ bool PEResource::WriteToDisk(const wchar_t* full_path) {
     }
     total_written += write_amount;
   }
-  return ::CloseHandle(out_file) ? true : false;
+  return !!::CloseHandle(out_file);
 }
 
 }  // namespace updater

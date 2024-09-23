@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
@@ -48,6 +49,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -138,14 +140,9 @@ gfx::Insets GetPrimaryViewMargin() {
 }
 
 gfx::Insets GetSecurityViewMargin() {
-  if (features::IsChromeRefresh2023()) {
-    return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                           0);
-  }
-
-  return gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL));
+  return gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                             views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                         0);
 }
 }  // namespace
 
@@ -161,11 +158,9 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
                               base::Unretained(this))) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  SetVectorIcons(features::IsChromeRefresh2023()
-                     ? kDownloadToolbarButtonChromeRefreshIcon
-                     : kDownloadToolbarButtonIcon,
+  SetVectorIcons(kDownloadToolbarButtonChromeRefreshIcon,
                  kDownloadToolbarButtonIcon);
-  GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
+  GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);
   tooltip_texts_[0] = l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON);
   SetTooltipText(tooltip_texts_.at(0));
   SetVisible(false);
@@ -386,6 +381,11 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(
   }
 }
 
+void DownloadToolbarButtonView::AnnounceAccessibleAlertNow(
+    const std::u16string& alert_text) {
+  GetViewAccessibility().AnnounceText(alert_text);
+}
+
 bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() const {
 #if BUILDFLAG(IS_MAC)
   if (fullscreen_utils::IsInContentFullscreen(browser_)) {
@@ -473,8 +473,9 @@ bool DownloadToolbarButtonView::IsShowingDetails() const {
 }
 
 void DownloadToolbarButtonView::UpdateIcon() {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
 
   // Schedule paint to update the progress ring.
   if (redraw_progress_soon_) {
@@ -486,14 +487,10 @@ void DownloadToolbarButtonView::UpdateIcon() {
   bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
   if (state_ == IconState::kProgress || state_ == IconState::kDeepScanning) {
     new_icon = is_touch_mode ? &kDownloadInProgressTouchIcon
-                             : (features::IsChromeRefresh2023()
-                                    ? &kDownloadInProgressChromeRefreshIcon
-                                    : &kDownloadInProgressIcon);
+                             : &kDownloadInProgressChromeRefreshIcon;
   } else {
     new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchIcon
-                             : (features::IsChromeRefresh2023()
-                                    ? &kDownloadToolbarButtonChromeRefreshIcon
-                                    : &kDownloadToolbarButtonIcon);
+                             : &kDownloadToolbarButtonChromeRefreshIcon;
   }
 
   SetImageModel(ButtonState::STATE_NORMAL,
@@ -568,10 +565,11 @@ DownloadBubbleRowView* DownloadToolbarButtonView::ShowPrimaryDialogRow(
     return nullptr;
   }
   DownloadBubbleRowView* row = bubble_contents_->ShowPrimaryPage(content_id);
-  bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate_->SetButtons(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
+  bubble_delegate_->SetDefaultButton(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_delegate_->set_margins(GetPrimaryViewMargin());
-  ResizeDialog();
   return row;
 }
 
@@ -583,20 +581,13 @@ void DownloadToolbarButtonView::OpenSecurityDialog(
   }
   bubble_contents_->ShowSecurityPage(content_id);
   bubble_delegate_->set_margins(GetSecurityViewMargin());
-  ResizeDialog();
 }
 
 void DownloadToolbarButtonView::CloseDialog(
     views::Widget::ClosedReason reason) {
-  if (bubble_delegate_)
+  if (bubble_delegate_) {
     bubble_delegate_->GetWidget()->CloseWithReason(reason);
-}
-
-void DownloadToolbarButtonView::ResizeDialog() {
-  // Resize may be called when there is no delegate, e.g. during bubble
-  // construction.
-  if (bubble_delegate_)
-    bubble_delegate_->SizeToContents();
+  }
 }
 
 void DownloadToolbarButtonView::OnDialogInteracted() {
@@ -652,14 +643,16 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   }
 
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      this, views::BubbleBorder::TOP_RIGHT);
+      this, views::BubbleBorder::TOP_RIGHT, views::BubbleBorder::DIALOG_SHADOW,
+      /*autosize=*/true);
   bubble_delegate->SetTitle(
       l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_HEADER_LABEL));
   bubble_delegate->SetShowTitle(false);
   bubble_delegate->set_internal_name(kBubbleName);
   bubble_delegate->SetShowCloseButton(false);
-  bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  bubble_delegate->SetDefaultButton(
+      static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_delegate->RegisterWindowClosingCallback(base::BindOnce(
       &DownloadToolbarButtonView::OnBubbleClosing, weak_factory_.GetWeakPtr()));
   auto bubble_contents = std::make_unique<DownloadBubbleContentsView>(
@@ -683,7 +676,10 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
     bubble_delegate_->GetWidget()
         ->GetCompositor()
         ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-            [](base::TimeTicks click_time, base::TimeTicks presentation_time) {
+            [](base::TimeTicks click_time,
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_time =
+                  frame_timing_details.presentation_feedback.timestamp;
               UmaHistogramTimes(
                   "Download.Bubble.ToolbarButtonClickToFullViewShownLatency",
                   presentation_time - click_time);
@@ -693,6 +689,7 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
     button_click_time_ = base::TimeTicks();
   }
 
+  CloseAutofillPopup();
   if (ShouldShowBubbleAsInactive()) {
     bubble_delegate_->GetWidget()->ShowInactive();
     bubble_closer_ = std::make_unique<BubbleCloser>(this);
@@ -745,7 +742,8 @@ DownloadToolbarButtonView::BubbleCloser::BubbleCloser(
       toolbar_button->GetWidget()->GetNativeWindow()) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, toolbar_button->GetWidget()->GetNativeWindow(),
-        {ui::ET_MOUSE_PRESSED, ui::ET_KEY_PRESSED, ui::ET_TOUCH_PRESSED});
+        {ui::EventType::kMousePressed, ui::EventType::kKeyPressed,
+         ui::EventType::kTouchPressed});
   }
 }
 
@@ -873,6 +871,19 @@ bool DownloadToolbarButtonView::ShouldShowBubbleAsInactive() const {
   return is_primary_partial_view_;
 }
 
+void DownloadToolbarButtonView::CloseAutofillPopup() {
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+  if (auto* autofill_client =
+          autofill::ContentAutofillClient::FromWebContents(web_contents)) {
+    autofill_client->HideAutofillSuggestions(
+        autofill::SuggestionHidingReason::kOverlappingWithAnotherPrompt);
+  }
+}
+
 SkColor DownloadToolbarButtonView::GetIconColor() const {
   if (is_dormant_) {
     return GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive);
@@ -911,8 +922,6 @@ void DownloadToolbarButtonView::UpdateIconDormant() {
 void DownloadToolbarButtonView::OnAnyRowRemoved() {
   if (bubble_contents_->info().row_list_view_info().rows().empty()) {
     CloseDialog(views::Widget::ClosedReason::kUnspecified);
-  } else {
-    ResizeDialog();
   }
 }
 

@@ -1,155 +1,35 @@
-<style include="cr-hidden-style">
-  :host {
-    --ntp-logo-height: 200px;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    justify-content: flex-end;
-    min-height: var(--ntp-logo-height);
-  }
-
-  :host([reduced-logo-space-enabled_]) {
-    --ntp-logo-height: 168px;
-  }
-
-  :host([doodle-boxed_]) {
-    justify-content: flex-end;
-  }
-
-  #logo {
-    forced-color-adjust: none;
-    height: 92px;
-    width: 272px;
-  }
-
-  :host([single-colored]) #logo {
-    -webkit-mask-image: url(./icons/google_logo.svg);
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 100%;
-    background-color: var(--ntp-logo-color);
-  }
-
-  :host(:not([single-colored])) #logo {
-    background-image: url(./icons/google_logo.svg);
-  }
-
-  #imageDoodle {
-    cursor: pointer;
-    outline: none;
-  }
-
-  #imageDoodle[tabindex='-1'] {
-    cursor: auto;
-  }
-
-  :host([doodle-boxed_]) #imageDoodle {
-    background-color: var(--ntp-logo-box-color);
-    border-radius: 20px;
-    padding: 16px 24px;
-  }
-
-  :host-context(.focus-outline-visible) #imageDoodle:focus {
-    box-shadow: 0 0 0 2px rgba(var(--google-blue-600-rgb), .4);
-  }
-
-  #imageContainer {
-    display: flex;
-    height: fit-content;
-    position: relative;
-    width: fit-content;
-  }
-
-  #image {
-    max-height: var(--ntp-logo-height);
-    max-width: 100%;
-  }
-
-  :host([doodle-boxed_]) #image {
-    max-height: 160px;
-  }
-
-  :host([doodle-boxed_][reduced-logo-space-enabled_]) #image {
-    max-height: 128px;
-  }
-
-  #animation {
-    height: 100%;
-    pointer-events: none;
-    position: absolute;
-    width: 100%;
-  }
-
-  #shareButton {
-    background-color: var(--ntp-logo-share-button-background-color, none);
-    border: none;
-    height: var(--ntp-logo-share-button-height, 0);
-    left: var(--ntp-logo-share-button-x, 0);
-    min-width: var(--ntp-logo-share-button-width, 0);
-    opacity: 0.8;
-    outline: initial;
-    padding: 2px;
-    position: absolute;
-    top: var(--ntp-logo-share-button-y, 0);
-    width: var(--ntp-logo-share-button-width, 0);
-  }
-
-  #shareButton:hover {
-    opacity: 1;
-  }
-
-  #shareButton img {
-    height: 100%;
-    width: 100%;
-  }
-
-  #iframe {
-    border: none;
-    height: var(--height, var(--ntp-logo-height));
-    transition-duration: var(--duration, 100ms);
-    transition-property: height, width;
-    width: var(--width, 100%);
-  }
-
-  #iframe:not([expanded]) {
-    max-height: var(--ntp-logo-height);
-  }
-</style>
-
-<template is="dom-if" if="[[showLogo_]]" restamp>
+${this.showLogo_ ? html`
   <div id="logo"></div>
-</template>
-<template is="dom-if" if="[[showDoodle_]]" restamp>
-  <div id="doodle" title="[[doodle_.description]]">
-    <div id="imageDoodle" hidden="[[!imageDoodle_]]"
-        tabindex$="[[imageDoodleTabIndex_]]" on-click="onImageClick_"
-        on-keydown="onImageKeydown_">
+` : ''}
+${this.showDoodle_ ? html`
+  <div id="doodle" title="${this.doodle_!.description}">
+    <div id="imageDoodle" ?hidden="${!this.imageDoodle_}"
+        tabindex="${this.imageDoodleTabIndex_}" @click="${this.onImageClick_}"
+        @keydown="${this.onImageKeydown_}">
       <div id="imageContainer">
         <!-- The static image is always visible and the animated image is
              stacked on top of the static image so that there is no flicker
              when starting the animation. -->
-        <img id="image" src="[[imageUrl_]]" on-load="onImageLoad_"></img>
-        <ntp-iframe id="animation" src="[[animationUrl_]]"
-            hidden="[[!showAnimation_]]">
+        <img id="image" src="${this.imageUrl_}" @load="${this.onImageLoad_}">
+        <ntp-iframe id="animation" src="${this.animationUrl_}"
+            ?hidden="${!this.showAnimation_}">
         </ntp-iframe>
-        <cr-button id="shareButton" title="$i18n{shareDoodle}"
-            on-click="onShareButtonClick_"
-            hidden="[[!imageDoodle_.shareButton]]">
-          <img id="shareButtonImage"
-              src="[[imageDoodle_.shareButton.iconUrl.url]]">
-          </img>
-        </cr-button>
       </div>
+      <cr-button id="shareButton" title="$i18n{shareDoodle}"
+          @click="${this.onShareButtonClick_}">
+        <div id="shareButtonIcon"></div>
+      </cr-button>
     </div>
-    <template is="dom-if" if="[[iframeUrl_]]" restamp>
-      <ntp-iframe id="iframe" src="[[iframeUrl_]]" expanded$="[[expanded_]]"
+    ${this.iframeUrl_ ? html`
+      <ntp-iframe id="iframe" src="${this.iframeUrl_}" ?expanded="${this.expanded_}"
           allow="autoplay; clipboard-write">
       </ntp-iframe>
-    </template>
+    ` : ''}
   </div>
-</template>
-<template is="dom-if" if="[[showShareDialog_]]" restamp>
-  <ntp-doodle-share-dialog title="[[doodle_.description]]"
-      url="[[doodle_.image.shareUrl]]"
-      on-close="onShareDialogClose_" on-share="onShare_">
+` : ''}
+${this.showShareDialog_ ? html`
+  <ntp-doodle-share-dialog .title="${this.doodle_!.description}"
+      .url="${this.doodle_!.image!.shareUrl}"
+      @close="${this.onShareDialogClose_}" @share="${this.onShare_}">
   </ntp-doodle-share-dialog>
-</template>
+` : ''}

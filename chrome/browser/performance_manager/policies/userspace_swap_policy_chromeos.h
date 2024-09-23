@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -102,8 +101,6 @@ class UserspaceSwapPolicy : public GraphOwned,
   // limit, we don't want to completely exhaust free space on a device.
   base::TimeTicks last_device_space_check_;
   uint64_t backing_store_available_bytes_ = 0;
-
-  raw_ptr<Graph> graph_ = nullptr;
 
  private:
   // A helper method which sets the last trim time to the specified time.

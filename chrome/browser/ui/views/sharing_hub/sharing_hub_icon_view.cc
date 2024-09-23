@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace sharing_hub {
 
@@ -60,8 +61,7 @@ SharingHubIconView::SharingHubIconView(
   SetLabel(
       l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL));
   SetUpForInOutAnimation();
-  SetAccessibilityProperties(
-      /*role*/ std::nullopt,
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_SHARING_HUB_TOOLTIP));
 }
 

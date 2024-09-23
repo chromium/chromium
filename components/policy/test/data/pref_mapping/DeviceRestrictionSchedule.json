@@ -1,0 +1,166 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "device_restriction_schedule": {
+            "location": "local_state",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Empty policy.",
+        "policies": {
+          "DeviceRestrictionSchedule": []
+        },
+        "prefs": {
+          "device_restriction_schedule": {
+            "location": "local_state",
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "Policy set with values.",
+        "policies": {
+          "DeviceRestrictionSchedule": [
+            {
+              "start": {
+                  "day_of_week": "WEDNESDAY",
+                  "milliseconds_since_midnight": 43200000
+              },
+              "end": {
+                  "day_of_week": "WEDNESDAY",
+                  "milliseconds_since_midnight": 75600000
+              }
+            },
+            {
+              "start": {
+                  "day_of_week": "FRIDAY",
+                  "milliseconds_since_midnight": 64800000
+              },
+              "end": {
+                  "day_of_week": "MONDAY",
+                  "milliseconds_since_midnight": 21600000
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "device_restriction_schedule": {
+            "location": "local_state",
+            "value": [
+              {
+                "start": {
+                    "day_of_week": "WEDNESDAY",
+                    "milliseconds_since_midnight": 43200000
+                },
+                "end": {
+                    "day_of_week": "WEDNESDAY",
+                    "milliseconds_since_midnight": 75600000
+                }
+              },
+              {
+                "start": {
+                    "day_of_week": "FRIDAY",
+                    "milliseconds_since_midnight": 64800000
+                },
+                "end": {
+                    "day_of_week": "MONDAY",
+                    "milliseconds_since_midnight": 21600000
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "note": "Missing start.",
+        "policies": {
+          "DeviceRestrictionSchedule": [
+            {
+              "end": {
+                  "day_of_week": "WEDNESDAY",
+                  "milliseconds_since_midnight": 75600000
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "device_restriction_schedule": {
+            "location": "local_state",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Missing end.",
+        "policies": {
+          "DeviceRestrictionSchedule": [
+            {
+              "start": {
+                  "day_of_week": "WEDNESDAY",
+                  "milliseconds_since_midnight": 43200000
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "device_restriction_schedule": {
+            "location": "local_state",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Missing day_of_week.",
+        "policies": {
+          "DeviceRestrictionSchedule": [
+            {
+              "start": {
+                  "milliseconds_since_midnight": 43200000
+              },
+              "end": {
+                  "day_of_week": "WEDNESDAY",
+                  "milliseconds_since_midnight": 75600000
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "device_restriction_schedule": {
+            "location": "local_state",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Missing milliseconds_since_midnight.",
+        "policies": {
+          "DeviceRestrictionSchedule": [
+            {
+              "start": {
+                  "day_of_week": "WEDNESDAY",
+                  "milliseconds_since_midnight": 43200000
+              },
+              "end": {
+                  "day_of_week": "WEDNESDAY"
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "device_restriction_schedule": {
+            "location": "local_state",
+            "default_value": []
+          }
+        }
+      }
+    ]
+  }
+]

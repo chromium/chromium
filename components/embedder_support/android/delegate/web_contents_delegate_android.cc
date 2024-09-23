@@ -9,8 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/embedder_support/android/delegate/color_chooser_android.h"
-#include "components/embedder_support/android/web_contents_delegate_jni_headers/WebContentsDelegateAndroid_jni.h"
+#include "components/embedder_support/android/delegate/color_picker_bridge.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/invalidate_type.h"
@@ -18,17 +18,21 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/android/color_utils_android.h"
 #include "ui/android/view_android.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/web_contents_delegate_jni_headers/WebContentsDelegateAndroid_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -42,7 +46,9 @@ using content::WebContentsDelegate;
 
 namespace web_contents_delegate_android {
 
-WebContentsDelegateAndroid::WebContentsDelegateAndroid(JNIEnv* env, jobject obj)
+WebContentsDelegateAndroid::WebContentsDelegateAndroid(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : weak_java_delegate_(env, obj) {}
 
 WebContentsDelegateAndroid::~WebContentsDelegateAndroid() {}
@@ -61,7 +67,7 @@ WebContentsDelegateAndroid::OpenColorChooser(
     WebContents* source,
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  return std::make_unique<ColorChooserAndroid>(source, color, suggestions);
+  return std::make_unique<ColorPickerBridge>(source, color, suggestions);
 }
 
 // OpenURLFromTab() will be called when we're performing a browser-intiated
@@ -69,7 +75,9 @@ WebContentsDelegateAndroid::OpenColorChooser(
 // RenderViewImpl::decidePolicyForNavigation for more details).
 WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
     WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   const GURL& url = params.url;
   WindowOpenDisposition disposition = params.disposition;
 
@@ -83,8 +91,10 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-  if (obj.is_null())
-    return WebContentsDelegate::OpenURLFromTab(source, params);
+  if (obj.is_null()) {
+    return WebContentsDelegate::OpenURLFromTab(
+        source, params, std::move(navigation_handle_callback));
+  }
 
   if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
       disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
@@ -101,8 +111,12 @@ WebContents* WebContentsDelegateAndroid::OpenURLFromTab(
     return NULL;
   }
 
-  source->GetController().LoadURLWithParams(
+  auto navigation_handle = source->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
+
+  if (navigation_handle_callback && navigation_handle) {
+    std::move(navigation_handle_callback).Run(*navigation_handle);
+  }
 
   return source;
 }
@@ -251,7 +265,7 @@ bool WebContentsDelegateAndroid::DidAddMessageToConsole(
       jlevel = WEB_CONTENTS_DELEGATE_LOG_LEVEL_ERROR;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return Java_WebContentsDelegateAndroid_addMessageToConsole(
       env, GetJavaDelegate(env), jlevel, jmessage, line_no, jsource_id);
@@ -276,7 +290,7 @@ void WebContentsDelegateAndroid::UpdateTargetURL(WebContents* source,
 
 bool WebContentsDelegateAndroid::HandleKeyboardEvent(
     WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   const JavaRef<jobject>& key_event = event.os_event;
   if (!key_event.is_null()) {
     JNIEnv* env = AttachCurrentThread();
@@ -442,6 +456,92 @@ void WebContentsDelegateAndroid::DidChangeCloseSignalInterceptStatus() {
   }
 
   Java_WebContentsDelegateAndroid_didChangeCloseSignalInterceptStatus(env, obj);
+}
+
+bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return false;
+  }
+  std::unique_ptr<base::OnceCallback<void(const SkBitmap&)>> wrapped_callback =
+      std::make_unique<base::OnceCallback<void(const SkBitmap&)>>(
+          std::move(callback));
+  if (Java_WebContentsDelegateAndroid_maybeCopyContentAreaAsBitmap(
+          env, obj, reinterpret_cast<jlong>(wrapped_callback.get()))) {
+    // Ownership of callback has been transferred to java side and will be
+    // transferred back in |MaybeCopyContentAreaAsBitmapOutcome|.
+    wrapped_callback.release();
+    return true;
+  }
+  return false;
+}
+
+SkBitmap WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmapSync() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return SkBitmap();
+  }
+  ScopedJavaLocalRef<jobject> bitmap =
+      Java_WebContentsDelegateAndroid_maybeCopyContentAreaAsBitmapSync(env,
+                                                                       obj);
+  if (bitmap.is_null()) {
+    return SkBitmap();
+  }
+  gfx::JavaBitmap java_bitmap_lock(bitmap);
+  SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+  skbitmap.setImmutable();
+  return skbitmap;
+}
+
+void WebContentsDelegateAndroid::DidBackForwardTransitionAnimationChange() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsDelegateAndroid_didBackForwardTransitionAnimationChange(env,
+                                                                          obj);
+}
+
+content::BackForwardTransitionAnimationManager::FallbackUXConfig
+WebContentsDelegateAndroid::GetBackForwardTransitionFallbackUXConfig() {
+  JNIEnv* env = AttachCurrentThread();
+  // Java colors are already in 32bit ARBG, same as `SkColor`.
+  jint favicon_background =
+      Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXFaviconBackgroundColor(
+          env, GetJavaDelegate(env));
+  jint page_background =
+      Java_WebContentsDelegateAndroid_getBackForwardTransitionFallbackUXPageBackgroundColor(
+          env, GetJavaDelegate(env));
+  return {
+      .rounded_rectangle_color =
+          SkColor4f::FromColor(static_cast<SkColor>(favicon_background)),
+      .background_color =
+          SkColor4f::FromColor(static_cast<SkColor>(page_background)),
+  };
+}
+
+void JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome(
+    JNIEnv* env,
+    jlong callback_ptr,
+    const base::android::JavaParamRef<jobject>& bitmap) {
+  std::unique_ptr<base::OnceCallback<void(const SkBitmap&)>> callback(
+      reinterpret_cast<base::OnceCallback<void(const SkBitmap&)>*>(
+          callback_ptr));
+  if (bitmap.is_null()) {
+    // Failed because of Out of Memory Error.
+    // Pass in an empty bitmap, rather than null in this case.
+    std::move(*callback).Run(SkBitmap());
+  } else {
+    gfx::JavaBitmap java_bitmap_lock(bitmap);
+    SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+    skbitmap.setImmutable();
+    CHECK(!skbitmap.drawsNothing());
+    std::move(*callback).Run(skbitmap);
+  }
 }
 
 }  // namespace web_contents_delegate_android

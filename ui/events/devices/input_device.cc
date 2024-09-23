@@ -4,6 +4,7 @@
 
 #include "ui/events/devices/input_device.h"
 
+#include <ostream>
 #include <string>
 
 #include "base/strings/stringprintf.h"

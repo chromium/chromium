@@ -18,7 +18,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
-#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
@@ -82,11 +81,7 @@ class CONTENT_EXPORT CacheStorageManager
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner);
 
-  // QuotaClient and Browsing Data Deletion support.
-  void GetAllStorageKeysUsage(
-      storage::mojom::CacheStorageOwner owner,
-      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-          callback);
+  // QuotaClient support.
   void GetBucketUsage(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
@@ -94,10 +89,6 @@ class CONTENT_EXPORT CacheStorageManager
   void GetStorageKeys(
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback);
-  void DeleteStorageKeyData(
-      const blink::StorageKey& storage_key,
-      storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
   void DeleteOriginData(
       const std::set<url::Origin>& origins,
       storage::mojom::CacheStorageOwner owner,
@@ -106,8 +97,6 @@ class CONTENT_EXPORT CacheStorageManager
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
-  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            storage::mojom::CacheStorageOwner owner);
   void AddObserver(
       mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer);
 
@@ -150,22 +139,11 @@ class CONTENT_EXPORT CacheStorageManager
       std::unique_ptr<CacheStorage>>
       CacheStorageMap;
 
-  void GetAllStorageKeysUsageGetSizes(
-      storage::mojom::CacheStorageOwner owner,
-      storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-          callback,
-      std::vector<std::tuple<storage::BucketLocator,
-                             storage::mojom::StorageUsageInfoPtr>>
-          usage_tuples);
-
   void DeleteOriginsDataGotAllBucketInfo(
       const std::set<url::Origin>& origins,
       storage::mojom::CacheStorageOwner owner,
-      base::OnceCallback<void(std::vector<blink::mojom::QuotaStatusCode>)>
-          callback,
-      std::vector<std::tuple<storage::BucketLocator,
-                             storage::mojom::StorageUsageInfoPtr>>
-          usage_tuples);
+      base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback,
+      std::vector<storage::BucketLocator> buckets);
 
   void GetBucketUsageDidGetExists(
       const storage::BucketLocator& bucket_locator,
@@ -196,9 +174,7 @@ class CONTENT_EXPORT CacheStorageManager
 
   void ListStorageKeysOnTaskRunner(
       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
-      std::vector<std::tuple<storage::BucketLocator,
-                             storage::mojom::StorageUsageInfoPtr>>
-          usage_tuples);
+      std::vector<storage::BucketLocator> buckets);
 
   bool IsMemoryBacked() const { return profile_path_.empty(); }
 

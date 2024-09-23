@@ -18,6 +18,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/vector_icons.h"
 #include "ui/wm/core/window_animations.h"
@@ -41,12 +42,13 @@ void ShelfWindowWatcherItemDelegate::ItemSelected(
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
   if (wm::IsActiveWindow(window_)) {
-    if (event && event->type() == ui::ET_KEY_RELEASED) {
+    if (event && event->type() == ui::EventType::kKeyReleased) {
       ::wm::AnimateWindow(window_, ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
       std::move(callback).Run(SHELF_ACTION_NONE, {});
       return;
     }
-    window_->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+    window_->SetProperty(aura::client::kShowStateKey,
+                         ui::mojom::WindowShowState::kMinimized);
     std::move(callback).Run(SHELF_ACTION_WINDOW_MINIMIZED, {});
     return;
   }

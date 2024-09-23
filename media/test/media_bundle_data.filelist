@@ -77,7 +77,9 @@ data/bear-1280x720-hevc-10bit.mp4
 data/bear-1280x720-hevc-12bit-420.mp4
 data/bear-1280x720-hevc-12bit-422.mp4
 data/bear-1280x720-hevc-12bit-444.mp4
+data/bear-1280x720-hevc-8bit-422-no-audio.mp4
 data/bear-1280x720-hevc-8bit-422.mp4
+data/bear-1280x720-hevc-8bit-444-no-audio.mp4
 data/bear-1280x720-hevc-no-audio.mp4
 data/bear-1280x720-hevc.mp4
 data/bear-1280x720-hls-clear-mpl.m3u8
@@ -276,15 +278,10 @@ data/bear_audio_longer_than_video.ogv
 data/bear_audio_longer_than_video_vp8.ogv
 data/bear_audio_shorter_than_video.ogv
 data/bear_audio_shorter_than_video_vp8.ogv
-data/bear_divx_mp3.avi
 data/bear_dtsc.mp4
 data/bear_dtse.mp4
 data/bear_dtsx.mp4
-data/bear_gsm_ms.wav
 data/bear_h264_aac.3gp
-data/bear_mpeg4_amrnb.3gp
-data/bear_mpeg4_mp3.avi
-data/bear_mpeg4asp_mp3.avi
 data/bear_mulaw.wav
 data/bear_pcm.wav
 data/bear_pcm_s16be.mov
@@ -298,7 +295,6 @@ data/bear_silent.ogv
 data/bear_silent.webm
 data/blackwhite.html
 data/blackwhite.png
-data/blackwhite_yuv420p.avi
 data/blackwhite_yuv420p.mp4
 data/blackwhite_yuv420p.ogv
 data/blackwhite_yuv420p.webm
@@ -330,6 +326,7 @@ data/double-bear.ogv
 data/double-sfx.ogg
 data/dts.bin
 data/dtsx.bin
+data/ebu-3213-e-vp9.mp4
 data/eme_and_get_display_media.html
 data/eme_load_session_after_close_test.html
 data/eme_player.html
@@ -360,6 +357,12 @@ data/four-colors.mp4
 data/four-colors.png
 data/four-colors.y4m
 data/frame_size_change-av_enc-v.webm
+data/gbrp-av1.mp4
+data/gbrp-h264.mp4
+data/gbrp-h265.mp4
+data/gbrp-vp9.mp4
+data/gbrp.html
+data/gbrp.png
 data/glass-blowing2-dolby-vision-profile-5-frag.mp4
 data/glass-blowing2-dolby-vision-profile-8-1-frag.mp4
 data/green-a300hz.webm
@@ -370,6 +373,8 @@ data/h264-320x180-frame-3
 data/hls/README
 data/hls/bear0.mp4
 data/hls/bear0.ts
+data/hls/generate_hls.py
+data/hls/hls_support_matrix.html
 data/hls/init_0.mp4
 data/hls/mp_mp4_avc1.m3u8
 data/hls/mp_ts_avc1.m3u8
@@ -397,7 +402,6 @@ data/multi_frame_mse_player.html
 data/multiple_cdm_types.html
 data/multitrack-3video-2audio.webm
 data/multitrack-disabled.mp4
-data/negative-audio-timestamps.avi
 data/negative_ts.flac
 data/no_audio_video.webm
 data/no_streams.webm
@@ -431,6 +435,7 @@ data/rapid_video_change_test.html
 data/red-a500hz.webm
 data/red-green.h264
 data/red_green_gradient_lossy.webp
+data/reference-frame-scaling-test.ivf
 data/sfx-flac.mp4
 data/sfx-flac_frag.mp4
 data/sfx-opus-441.webm

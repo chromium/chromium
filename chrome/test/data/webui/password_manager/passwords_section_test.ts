@@ -6,7 +6,6 @@ import 'chrome://password-manager/password_manager.js';
 
 import type {AddPasswordDialogElement, AuthTimedOutDialogElement, PasswordListItemElement, PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, PluralStringProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -363,71 +362,6 @@ suite('PasswordsSectionTest', function() {
     assertTrue(addDialog.$.dialog.open);
   });
 
-  test('move passwords label shown', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
-    passwordManager.data.groups = [createCredentialGroup({
-      name: 'test.com',
-      credentials: [createPasswordEntry(
-          {username: 'user', id: 0, inProfileStore: true})],
-    })];
-    syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
-      isSyncingPasswords: false,
-    };
-
-    const section = await createPasswordsSection();
-
-    assertFalse(section.$.movePasswords.hidden);
-
-    // Assert that password section subscribed as a listener to opt in state and
-    // opt out from account storage.
-    assertTrue(!!passwordManager.listeners.accountStorageOptInStateListener);
-    passwordManager.data.isOptedInAccountStorage = false;
-    passwordManager.listeners.accountStorageOptInStateListener(false);
-    await flushTasks();
-
-    // Now move passwords option is hidden.
-    assertTrue(section.$.movePasswords.hidden);
-  });
-
-  test('move passwords label hidden if no passwords to move', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
-    passwordManager.data.groups = [createCredentialGroup({
-      name: 'test.com',
-      credentials: [createPasswordEntry(
-          {username: 'user', id: 0, inAccountStore: true})],
-    })];
-    syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
-      isSyncingPasswords: false,
-    };
-
-    const section = await createPasswordsSection();
-
-    assertTrue(section.$.movePasswords.hidden);
-
-    passwordManager.data.groups = [
-      createCredentialGroup({
-        name: 'test.com',
-        credentials: [createPasswordEntry(
-            {username: 'user', id: 0, inAccountStore: true})],
-      }),
-      createCredentialGroup({
-        name: 'test.org',
-        credentials: [createPasswordEntry(
-            {username: 'user', id: 1, inProfileStore: true})],
-      }),
-    ];
-    // Assert that password section listens to passwords update and invoke
-    // an update.
-    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
-    passwordManager.listeners.savedPasswordListChangedListener([]);
-    await flushTasks();
-
-    // Now move passwords option is visible.
-    assertFalse(section.$.movePasswords.hidden);
-  });
-
   test('import passwords label shown', async function() {
     const section = await createPasswordsSection();
 
@@ -450,62 +384,70 @@ suite('PasswordsSectionTest', function() {
     assertTrue(section.$.importPasswords.hidden);
   });
 
-  test('add button hidden when pref disabled', async function() {
+  test(
+      'add button visible when policy disabled and controlled by extension',
+      async function() {
+        const section: PasswordsSectionElement =
+            document.createElement('passwords-section');
+        section.prefs = makePasswordManagerPrefs();
+        section.prefs.credentials_enable_service.value = false;
+        section.prefs.credentials_enable_service.enforcement =
+            chrome.settingsPrivate.Enforcement.ENFORCED;
+        section.prefs.credentials_enable_service.controlledBy =
+            chrome.settingsPrivate.ControlledBy.EXTENSION;
+
+        document.body.appendChild(section);
+        await flushTasks();
+
+        assertTrue(isVisible(section.$.addPasswordButton));
+      });
+
+  test(
+      'add button hidden when policy disabled and not controlled by extension',
+      async function() {
+        const section: PasswordsSectionElement =
+            document.createElement('passwords-section');
+        section.prefs = makePasswordManagerPrefs();
+        section.prefs.credentials_enable_service.value = false;
+        section.prefs.credentials_enable_service.enforcement =
+            chrome.settingsPrivate.Enforcement.ENFORCED;
+        section.prefs.credentials_enable_service.controlledBy =
+            chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+
+        document.body.appendChild(section);
+        await flushTasks();
+
+        assertFalse(isVisible(section.$.addPasswordButton));
+      });
+
+  test('add button visible when policy enabled', async function() {
     const section: PasswordsSectionElement =
         document.createElement('passwords-section');
     section.prefs = makePasswordManagerPrefs();
-    section.prefs.credentials_enable_service.value = false;
-    section.prefs.credentials_enable_service.enforcement =
-        chrome.settingsPrivate.Enforcement.ENFORCED;
+    section.prefs.credentials_enable_service.value = true;
     document.body.appendChild(section);
     await flushTasks();
 
-    assertFalse(isVisible(section.$.addPasswordButton));
+    assertTrue(isVisible(section.$.addPasswordButton));
   });
 
-  test('import hidden when policy disabled', async function() {
-    const section: PasswordsSectionElement =
-        document.createElement('passwords-section');
-    section.prefs = makePasswordManagerPrefs();
-    section.prefs.credentials_enable_service.value = false;
-    section.prefs.credentials_enable_service.enforcement =
-        chrome.settingsPrivate.Enforcement.ENFORCED;
-    document.body.appendChild(section);
-    await flushTasks();
+  test(
+      'import hidden when policy disabled and not controlled by extension',
+      async function() {
+        const section: PasswordsSectionElement =
+            document.createElement('passwords-section');
+        section.prefs = makePasswordManagerPrefs();
+        section.prefs.credentials_enable_service.value = false;
+        section.prefs.credentials_enable_service.enforcement =
+            chrome.settingsPrivate.Enforcement.ENFORCED;
+        section.prefs.credentials_enable_service.controlledBy =
+            chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
 
-    assertFalse(isVisible(section.$.importPasswords));
-  });
+        document.body.appendChild(section);
+        await flushTasks();
 
-  test('clicking move passwords opens move passwords dialog', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
-    passwordManager.data.groups = [createCredentialGroup({
-      name: 'test.com',
-      credentials: [createPasswordEntry({
-        username: 'user',
-        id: 0,
-        inProfileStore: true,
-        affiliatedDomains: [createAffiliatedDomain('test.com')],
-      })],
-    })];
-    passwordManager.setRequestCredentialsDetailsResponse(
-        passwordManager.data.groups[0]!.entries);
-    syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
-      isSyncingPasswords: false,
-    };
-
-    const section = await createPasswordsSection();
-
-    assertTrue(isVisible(section.$.movePasswords));
-
-    section.$.movePasswords.click();
-    await flushTasks();
-
-    const movdeDialog =
-        section.shadowRoot!.querySelector('move-passwords-dialog');
-    assertTrue(!!movdeDialog);
-    assertTrue(movdeDialog.$.dialog.open);
-  });
+        assertFalse(isVisible(section.$.importPasswords));
+      });
 
   test('description is hidden during search', async function() {
     passwordManager.data.groups = [
@@ -527,36 +469,6 @@ suite('PasswordsSectionTest', function() {
     await flushTasks();
 
     assertFalse(isVisible(section.$.descriptionLabel));
-  });
-
-  test('Move passwords is hidden during search', async function() {
-    passwordManager.data.isOptedInAccountStorage = true;
-    passwordManager.data.groups = [createCredentialGroup({
-      name: 'test.com',
-      credentials: [createPasswordEntry({
-        username: 'user',
-        id: 0,
-        inProfileStore: true,
-        affiliatedDomains: [createAffiliatedDomain('test.com')],
-      })],
-    })];
-    passwordManager.setRequestCredentialsDetailsResponse(
-        passwordManager.data.groups[0]!.entries);
-    syncProxy.syncInfo = {
-      isEligibleForAccountStorage: true,
-      isSyncingPasswords: false,
-    };
-
-    const section = await createPasswordsSection();
-
-    assertTrue(isVisible(section.$.movePasswords));
-
-    const query = new URLSearchParams();
-    query.set(UrlParam.SEARCH_TERM, 'bar');
-    Router.getInstance().updateRouterParams(query);
-    await flushTasks();
-
-    assertFalse(isVisible(section.$.movePasswords));
   });
 
   test('No password is shown when no matches', async function() {
@@ -634,8 +546,7 @@ suite('PasswordsSectionTest', function() {
       });
 
   test('Should not show local credentials icon', async function() {
-    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
 
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
@@ -655,8 +566,7 @@ suite('PasswordsSectionTest', function() {
   });
 
   test('Should show local credentials icon', async function() {
-    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -694,7 +604,7 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!listEntry);
     assertEquals(
         listEntry.shadowRoot!.querySelector<HTMLElement>(
-                                 'paper-tooltip')!.innerHTML,
+                                 'cr-tooltip')!.innerHTML,
         '1 password');
   });
 });

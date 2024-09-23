@@ -67,10 +67,8 @@ namespace {
 inline int GetLayoutInlineSize(const Document& document,
                                const LocalFrameView& main_frame_view) {
   gfx::Size size = main_frame_view.GetLayoutSize();
-  const LayoutView* layout_view = document.GetLayoutView();
-  if (IsHorizontalWritingMode(layout_view->StyleRef().GetWritingMode()))
-    return size.width();
-  return size.height();
+  return document.GetLayoutView()->IsHorizontalWritingMode() ? size.width()
+                                                             : size.height();
 }
 
 }  // namespace
@@ -120,9 +118,10 @@ static bool IsPotentialClusterRoot(const LayoutObject* layout_object) {
   if (layout_object->IsInline() &&
       !layout_object->StyleRef().IsDisplayReplacedType())
     return false;
-  if (layout_object->IsListItemIncludingNG())
+  if (layout_object->IsListItem()) {
     return (layout_object->IsFloating() ||
             layout_object->IsOutOfFlowPositioned());
+  }
 
   return true;
 }
@@ -183,6 +182,11 @@ static bool BlockIsRowOfLinks(const LayoutBlock* block) {
   return (link_count >= 3);
 }
 
+static inline bool HasAnySizingKeyword(const Length& length) {
+  return length.HasAutoOrContentOrIntrinsic() || length.HasStretch() ||
+         length.IsNone();
+}
+
 static bool BlockHeightConstrained(const LayoutBlock* block) {
   // FIXME: Propagate constrainedness down the tree, to avoid inefficiently
   // walking back up from each box.
@@ -191,11 +195,13 @@ static bool BlockHeightConstrained(const LayoutBlock* block) {
   // the content is already overflowing before autosizing kicks in.
   for (; block; block = block->ContainingBlock()) {
     const ComputedStyle& style = block->StyleRef();
-    if (style.OverflowY() != EOverflow::kVisible
-        && style.OverflowY() != EOverflow::kHidden)
+    if (style.OverflowY() != EOverflow::kVisible &&
+        style.OverflowY() != EOverflow::kHidden) {
       return false;
-    if (style.UsedHeight().IsSpecified() ||
-        style.UsedMaxHeight().IsSpecified() || block->IsOutOfFlowPositioned()) {
+    }
+    if (!HasAnySizingKeyword(style.Height()) ||
+        !HasAnySizingKeyword(style.MaxHeight()) ||
+        block->IsOutOfFlowPositioned()) {
       // Some sites (e.g. wikipedia) set their html and/or body elements to
       // height:100%, without intending to constrain the height of the content
       // within them.
@@ -244,7 +250,7 @@ static bool BlockSuppressesAutosizing(const LayoutBlock* block) {
 static bool HasExplicitWidth(const LayoutBlock* block) {
   // FIXME: This heuristic may need to be expanded to other ways a block can be
   // wider or narrower than its parent containing block.
-  return block->Style() && block->StyleRef().UsedWidth().IsSpecified();
+  return block->Style() && !HasAnySizingKeyword(block->StyleRef().Width());
 }
 
 static LayoutObject* GetParent(const LayoutObject* object) {
@@ -494,7 +500,7 @@ float TextAutosizer::Inflate(LayoutObject* parent,
 
   if (has_text_child) {
     ApplyMultiplier(parent, multiplier);  // Parent handles line spacing.
-  } else if (!parent->IsListItemIncludingNG()) {
+  } else if (!parent->IsListItem()) {
     // For consistency, a block with no immediate text child should always have
     // a multiplier of 1.
     ApplyMultiplier(parent, 1);
@@ -520,8 +526,12 @@ float TextAutosizer::Inflate(LayoutObject* parent,
     }
   }
 
-  if (page_info_.has_autosized_)
+  if (page_info_.has_autosized_) {
     document_->CountUse(WebFeature::kTextAutosizing);
+    if (page_info_.shared_info_.device_scale_adjustment != 1.0f) {
+      document_->CountUse(WebFeature::kUsedDeviceScaleAdjustment);
+    }
+  }
 
   return multiplier;
 }
@@ -647,8 +657,8 @@ void TextAutosizer::UpdatePageInfo() {
       page_info_.shared_info_.main_frame_layout_width =
           GetLayoutInlineSize(*document_, *main_frame.View());
 
-      // If the page has a meta viewport or @viewport, don't apply the device
-      // scale adjustment.
+      // If the page has a meta viewport, don't apply the device scale
+      // adjustment.
       if (!main_frame.GetDocument()
                ->GetViewportData()
                .GetViewportDescription()
@@ -660,13 +670,11 @@ void TextAutosizer::UpdatePageInfo() {
       }
     }
     // TODO(pdr): Accessibility should be moved out of the text autosizer.
-    // See: crbug.com/645717.
-    // On Android, rely on the accessibility font scale factor when the
-    // AccessibilityPageZoom feature is not enabled.
-    if (!RuntimeEnabledFeatures::AccessibilityPageZoomEnabled()) {
-      page_info_.accessibility_font_scale_factor_ =
-          document_->GetSettings()->GetAccessibilityFontScaleFactor();
-    }
+    // See: crbug.com/645717. We keep the font scale factor available even
+    // when the AccessibilityPageZoom feature is enabled so sites that rely on
+    // text-size-adjust can still determine the user's desired text scaling.
+    page_info_.accessibility_font_scale_factor_ =
+        document_->GetSettings()->GetAccessibilityFontScaleFactor();
 
     // TODO(pdr): pageNeedsAutosizing should take into account whether
     // text-size-adjust is used anywhere on the page because that also needs to
@@ -762,8 +770,9 @@ TextAutosizer::BlockFlags TextAutosizer::ClassifyBlock(
 bool TextAutosizer::ClusterWouldHaveEnoughTextToAutosize(
     const LayoutBlock* root,
     const LayoutBlock* width_provider) {
-  Cluster hypothetical_cluster(root, ClassifyBlock(root), nullptr);
-  return ClusterHasEnoughTextToAutosize(&hypothetical_cluster, width_provider);
+  Cluster* hypothetical_cluster =
+      MakeGarbageCollected<Cluster>(root, ClassifyBlock(root), nullptr);
+  return ClusterHasEnoughTextToAutosize(hypothetical_cluster, width_provider);
 }
 
 bool TextAutosizer::ClusterHasEnoughTextToAutosize(
@@ -858,7 +867,7 @@ TextAutosizer::Fingerprint TextAutosizer::ComputeFingerprint(
         (static_cast<unsigned>(style->UnresolvedFloating()) << 4);
     data.packed_style_properties_ |=
         (static_cast<unsigned>(style->Display()) << 7);
-    const Length& width = style->UsedWidth();
+    const Length& width = style->Width();
     data.packed_style_properties_ |= (width.GetType() << 12);
     // packedStyleProperties effectively using 16 bits now.
 
@@ -873,9 +882,7 @@ TextAutosizer::Fingerprint TextAutosizer::ComputeFingerprint(
   if (layout_object->IsTableCell())
     data.column_ = layout_object->GetNode()->NodeIndex();
 
-  return StringHasher::ComputeHash<UChar>(
-      static_cast<const UChar*>(static_cast<const void*>(&data)),
-      sizeof data / sizeof(UChar));
+  return StringHasher::HashMemory(&data, sizeof(data));
 }
 
 TextAutosizer::Cluster* TextAutosizer::MaybeCreateCluster(LayoutBlock* block) {
@@ -1026,9 +1033,9 @@ float TextAutosizer::WidthFromBlock(const LayoutBlock* block) const {
   CHECK(block);
   CHECK(block->Style());
 
-  if (!(block->IsTable() || block->IsTableCell() ||
-        block->IsListItemIncludingNG()))
+  if (!(block->IsTable() || block->IsTableCell() || block->IsListItem())) {
     return ContentInlineSize(block);
+  }
 
   if (!block->ContainingBlock())
     return 0;
@@ -1042,7 +1049,7 @@ float TextAutosizer::WidthFromBlock(const LayoutBlock* block) const {
       if ((width = specified_width.Value()) > 0)
         return width;
     }
-    if (specified_width.IsPercentOrCalc()) {
+    if (specified_width.HasPercent()) {
       if (float container_width = ContentInlineSize(block->ContainingBlock())) {
         if ((width = FloatValueForLength(specified_width, container_width)) > 0)
           return width;
@@ -1144,8 +1151,9 @@ const LayoutObject* TextAutosizer::FindTextLeaf(
     size_t& depth,
     TextLeafSearch first_or_last) const {
   // List items are treated as text due to the marker.
-  if (parent->IsListItemIncludingNG())
+  if (parent->IsListItem()) {
     return parent;
+  }
 
   if (parent->IsText())
     return parent;
@@ -1206,15 +1214,23 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
   DCHECK(layout_object);
   const ComputedStyle& current_style = layout_object->StyleRef();
   if (!current_style.GetTextSizeAdjust().IsAuto()) {
-    // The accessibility font scale factor is applied by the autosizer so we
-    // need to apply that scale factor on top of the text-size-adjust
-    // multiplier. Only apply the accessibility factor if the autosizer has
-    // determined a multiplier should be applied so that text-size-adjust:none
-    // does not cause a multiplier to be applied when it wouldn't be otherwise.
-    bool should_apply_accessibility_font_scale_factor = multiplier > 1;
-    multiplier = current_style.GetTextSizeAdjust().Multiplier();
-    if (should_apply_accessibility_font_scale_factor)
-      multiplier *= page_info_.accessibility_font_scale_factor_;
+    if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
+      // Non-auto values of text-size-adjust should fully disable automatic
+      // text size adjustment, including the accessibility font scale factor.
+      multiplier = 1;
+    } else {
+      // The accessibility font scale factor is applied by the autosizer so we
+      // need to apply that scale factor on top of the text-size-adjust
+      // multiplier. Only apply the accessibility factor if the autosizer has
+      // determined a multiplier should be applied so that text-size-adjust:none
+      // does not cause a multiplier to be applied when it wouldn't be
+      // otherwise.
+      bool should_apply_accessibility_font_scale_factor = multiplier > 1;
+      multiplier = current_style.GetTextSizeAdjust().Multiplier();
+      if (should_apply_accessibility_font_scale_factor) {
+        multiplier *= page_info_.accessibility_font_scale_factor_;
+      }
+    }
   } else if (multiplier < 1) {
     // Unlike text-size-adjust, the text autosizer should only inflate fonts.
     multiplier = 1;

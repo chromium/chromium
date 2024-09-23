@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/branded_strings.h"
@@ -70,13 +72,11 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
                                         base::Unretained(this))),
       toolbar_view_(toolbar_view) {
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  if (features::IsChromeRefresh2023()) {
-    SetImageLabelSpacing(kChromeRefreshImageLabelPadding);
-    label()->SetPaintToLayer();
-    label()->SetSkipSubpixelRenderingOpacityCheck(true);
-    label()->layer()->SetFillsBoundsOpaquely(false);
-    label()->SetSubpixelRenderingEnabled(false);
-  }
+  SetImageLabelSpacing(kChromeRefreshImageLabelPadding);
+  label()->SetPaintToLayer();
+  label()->SetSkipSubpixelRenderingOpacityCheck(true);
+  label()->layer()->SetFillsBoundsOpaquely(false);
+  label()->SetSubpixelRenderingEnabled(false);
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() {}
@@ -140,39 +140,24 @@ void BrowserAppMenuButton::UpdateThemeBasedState() {
   // Call `UpdateIcon()` after `UpdateTextAndHighlightColor()` as the icon color
   // depends on if the container is in an expanded state.
   UpdateIcon();
-  if (features::IsChromeRefresh2023()) {
-    UpdateInkdrop();
-    // Outset focus ring should be present for the chip but not when only
-    // the icon is visible.
-    views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(
-        IsLabelPresentAndVisible() ? false : true);
-  }
+  UpdateInkdrop();
+  // Outset focus ring should be present for the chip but not when only
+  // the icon is visible.
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(
+      !IsLabelPresentAndVisible());
 }
 
 void BrowserAppMenuButton::UpdateIcon() {
-  const gfx::VectorIcon& icon =
-      ui::TouchUiController::Get()->touch_ui()
-          ? kBrowserToolsTouchIcon
-          : (features::IsChromeRefresh2023() ? kBrowserToolsChromeRefreshIcon
-                                             : kBrowserToolsIcon);
+  const gfx::VectorIcon& icon = ui::TouchUiController::Get()->touch_ui()
+                                    ? kBrowserToolsTouchIcon
+                                    : kBrowserToolsChromeRefreshIcon;
   for (auto state : kButtonStates) {
-    // `app_menu_icon_controller()->GetIconColor()` set different colors based
-    // on the severity. However with chrome refresh all the severities should
-    // have the same color. Decouple the logic from
-    // `app_menu_icon_controller()->GetIconColor()` to avoid impact from
-    // multiple call sites.
-    SkColor icon_color =
-        features::IsChromeRefresh2023()
-            ? GetForegroundColor(state)
-            : toolbar_view_->app_menu_icon_controller()->GetIconColor(
-                  GetForegroundColor(state));
+    SkColor icon_color = GetForegroundColor(state);
     SetImageModel(state, ui::ImageModel::FromVectorIcon(icon, icon_color));
   }
 }
 
 void BrowserAppMenuButton::UpdateInkdrop() {
-  CHECK(features::IsChromeRefresh2023());
-
   if (IsLabelPresentAndVisible()) {
     ConfigureToolbarInkdropForRefresh2023(this, kColorAppMenuChipInkDropHover,
                                           kColorAppMenuChipInkDropRipple);
@@ -190,8 +175,11 @@ bool BrowserAppMenuButton::IsLabelPresentAndVisible() const {
 }
 
 SkColor BrowserAppMenuButton::GetForegroundColor(ButtonState state) const {
-  if (features::IsChromeRefresh2023() && IsLabelPresentAndVisible()) {
+  if (IsLabelPresentAndVisible()) {
     const auto* const color_provider = GetColorProvider();
+    if (type_and_severity_.use_primary_colors) {
+      return color_provider->GetColor(kColorAppMenuExpandedForegroundPrimary);
+    }
     return color_provider->GetColor(kColorAppMenuExpandedForegroundDefault);
   }
 
@@ -225,40 +213,28 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
 #else
     text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_UPDATE);
 #endif
+  } else if (type_and_severity_.type ==
+             AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    tooltip_message_id = IDS_APP_MENU_TOOLTIP_DEFAULT_PROMPT;
+    text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_DEFAULT_PROMPT);
+#else
+    tooltip_message_id = IDS_APPMENU_TOOLTIP;
+#endif
   } else {
     tooltip_message_id = IDS_APPMENU_TOOLTIP_ALERT;
     text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_ERROR);
   }
 
-  std::optional<SkColor> color;
-  const auto* const color_provider = GetColorProvider();
-  switch (type_and_severity_.severity) {
-    case AppMenuIconController::Severity::NONE:
-      break;
-    case AppMenuIconController::Severity::LOW:
-      color = color_provider->GetColor(kColorAppMenuHighlightSeverityLow);
-      break;
-    case AppMenuIconController::Severity::MEDIUM:
-      color = color_provider->GetColor(kColorAppMenuHighlightSeverityMedium);
-      break;
-    case AppMenuIconController::Severity::HIGH:
-      color = color_provider->GetColor(kColorAppMenuHighlightSeverityHigh);
-      break;
-  }
-
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_message_id));
-  SetHighlight(text, color);
+  SetHighlight(text, GetHighlightColor());
 }
 
 bool BrowserAppMenuButton::ShouldPaintBorder() const {
-  return !features::IsChromeRefresh2023();
+  return false;
 }
 
 void BrowserAppMenuButton::UpdateLayoutInsets() {
-  if (!features::IsChromeRefresh2023()) {
-    return;
-  }
-
   if (IsLabelPresentAndVisible()) {
     SetLayoutInsets(::GetLayoutInsets(BROWSER_APP_MENU_CHIP_PADDING));
   } else {
@@ -267,11 +243,25 @@ void BrowserAppMenuButton::UpdateLayoutInsets() {
 }
 
 std::optional<SkColor> BrowserAppMenuButton::GetHighlightTextColor() const {
-  if (features::IsChromeRefresh2023() && IsLabelPresentAndVisible()) {
+  if (IsLabelPresentAndVisible()) {
     const auto* const color_provider = GetColorProvider();
+    if (type_and_severity_.use_primary_colors) {
+      return color_provider->GetColor(kColorAppMenuExpandedForegroundPrimary);
+    }
     return color_provider->GetColor(kColorAppMenuExpandedForegroundDefault);
   }
   return std::nullopt;
+}
+
+std::optional<SkColor> BrowserAppMenuButton::GetHighlightColor() const {
+  const auto* const color_provider = GetColorProvider();
+  if (type_and_severity_.severity == AppMenuIconController::Severity::NONE) {
+    return std::nullopt;
+  } else {
+    return color_provider->GetColor(type_and_severity_.use_primary_colors
+                                        ? kColorAppMenuHighlightPrimary
+                                        : kColorAppMenuHighlightDefault);
+  }
 }
 
 void BrowserAppMenuButton::OnTouchUiChanged() {

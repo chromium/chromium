@@ -2,6 +2,8 @@ import asyncio
 
 import pytest
 
+from tests.support.sync import AsyncPoll
+
 from .. import (
     assert_before_request_sent_event,
     assert_response_event,
@@ -11,6 +13,85 @@ from .. import (
     RESPONSE_COMPLETED_EVENT,
     RESPONSE_STARTED_EVENT,
 )
+
+
+@pytest.mark.asyncio
+async def test_cors_preflight_request(bidi_session, url, fetch, setup_network_test):
+    network_events = await setup_network_test(
+        events=[
+            BEFORE_REQUEST_SENT_EVENT,
+            RESPONSE_COMPLETED_EVENT,
+            RESPONSE_STARTED_EVENT,
+        ],
+        test_url=url(PAGE_EMPTY_HTML),
+    )
+
+    # Track all received network.beforeRequestSent, responseStarted &
+    # responseCompleted events in the events array.
+    events = []
+
+    async def on_event(method, data):
+        events.append(data)
+
+    remove_before_request_sent_listener = bidi_session.add_event_listener(
+        BEFORE_REQUEST_SENT_EVENT, on_event
+    )
+    remove_response_completed_listener = bidi_session.add_event_listener(
+        RESPONSE_COMPLETED_EVENT, on_event
+    )
+    remove_response_started_listener = bidi_session.add_event_listener(
+        RESPONSE_STARTED_EVENT, on_event
+    )
+
+    fetch_url = url(
+        "/webdriver/tests/support/http_handlers/headers.py?"
+        + "header=Access-Control-Allow-Origin:*&header=Access-Control-Allow-Headers:Content-Type",
+        domain="alt",
+    )
+    asyncio.ensure_future(
+        fetch(fetch_url, method="GET", headers={"Content-Type": "custom/type"})
+    )
+
+    wait = AsyncPoll(bidi_session, timeout=2)
+    await wait.until(lambda _: len(events) >= 6)
+
+    # Check that all events for the CORS preflight request are received before
+    # receiving events for the actual request
+
+    # Preflight beforeRequestSent
+    assert_before_request_sent_event(
+        events[0],
+        expected_request={"method": "OPTIONS", "url": fetch_url},
+    )
+    # Preflight responseStarted
+    assert_response_event(
+        events[1],
+        expected_request={"method": "OPTIONS", "url": fetch_url},
+    )
+    # Preflight responseCompleted
+    assert_response_event(
+        events[2],
+        expected_request={"method": "OPTIONS", "url": fetch_url},
+    )
+    # Actual request beforeRequestSent
+    assert_before_request_sent_event(
+        events[3],
+        expected_request={"method": "GET", "url": fetch_url},
+    )
+    # Actual request responseStarted
+    assert_response_event(
+        events[4],
+        expected_request={"method": "GET", "url": fetch_url},
+    )
+    # Actual request responseCompleted
+    assert_response_event(
+        events[5],
+        expected_request={"method": "GET", "url": fetch_url},
+    )
+
+    remove_before_request_sent_listener()
+    remove_response_completed_listener()
+    remove_response_started_listener()
 
 
 @pytest.mark.asyncio
@@ -267,3 +348,56 @@ async def test_subscribe_to_one_context(
     assert len(network_events[BEFORE_REQUEST_SENT_EVENT]) == 1
     assert len(network_events[RESPONSE_STARTED_EVENT]) == 1
     assert len(network_events[RESPONSE_COMPLETED_EVENT]) == 1
+
+
+@pytest.mark.asyncio
+async def test_event_order_with_redirect(
+    bidi_session, top_context, subscribe_events, url, fetch
+):
+    events = [
+        BEFORE_REQUEST_SENT_EVENT,
+        RESPONSE_STARTED_EVENT,
+        RESPONSE_COMPLETED_EVENT,
+    ]
+    await subscribe_events(events=events, contexts=[top_context["context"]])
+
+    network_events = []
+    listeners = []
+    response_completed_events = []
+    for event in events:
+
+        async def on_event(method, data, event=event):
+            network_events.append({"event": event, "url": data["request"]["url"]})
+
+            if event == RESPONSE_COMPLETED_EVENT:
+                response_completed_events.append(data)
+
+        listeners.append(bidi_session.add_event_listener(event, on_event))
+
+    text_url = url(PAGE_EMPTY_TEXT)
+    redirect_url = url(
+        f"/webdriver/tests/support/http_handlers/redirect.py?location={text_url}"
+    )
+
+    await fetch(redirect_url, method="GET")
+
+    # Wait until we receive two events, one for the initial request and one for
+    # the redirection.
+    wait = AsyncPoll(bidi_session, timeout=2)
+    await wait.until(lambda _: len(response_completed_events) >= 2)
+
+    events_in_expected_order = [
+        {"event": "network.beforeRequestSent", "url": redirect_url},
+        {"event": "network.responseStarted", "url": redirect_url},
+        {"event": "network.responseCompleted", "url": redirect_url},
+        {"event": "network.beforeRequestSent", "url": text_url},
+        {"event": "network.responseStarted", "url": text_url},
+        {"event": "network.responseCompleted", "url": text_url},
+    ]
+
+    for index in range(len(events_in_expected_order)):
+        assert events_in_expected_order[index] == network_events[index]
+
+    # cleanup
+    for remove_listener in listeners:
+        remove_listener()

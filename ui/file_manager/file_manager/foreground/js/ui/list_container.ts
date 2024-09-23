@@ -7,14 +7,15 @@ import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/
 
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {DialogType} from '../../../state/state.js';
-import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
-import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
+import type {FileListModel} from '../file_list_model.js';
+import {GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
+import type {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 
-import {FileGrid} from './file_grid.js';
-import {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
-import {FileTable} from './file_table.js';
-import {List} from './list.js';
-import {ListItem} from './list_item.js';
+import type {FileGrid} from './file_grid.js';
+import type {FileListSelectionModel, FileListSingleSelectionModel} from './file_list_selection_model.js';
+import type {FileTable} from './file_table.js';
+import type {List} from './list.js';
+import type {ListItem} from './list_item.js';
 import {ListSelectionModel} from './list_selection_model.js';
 
 class TextSearchState {
@@ -88,6 +89,20 @@ export class ListContainer {
     this.table.list.id = 'file-list';
     this.grid.setAttribute('role', 'listbox');
     this.grid.id = 'file-list';
+
+    // Ensure the list and grid are marked ARIA single select for save as.
+    if (type === DialogType.SELECT_SAVEAS_FILE) {
+      const list = table.querySelector('#file-list');
+      list?.setAttribute('aria-multiselectable', 'false');
+      grid.setAttribute('aria-multiselectable', 'false');
+    }
+  }
+
+  /**
+   * Avoid adding event listeners in the constructor because the ListContainer
+   * isn't fully usable until setCurrentListType() is called.
+   */
+  private addEventListeners_() {
     this.element.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.element.addEventListener('keypress', this.onKeyPress_.bind(this));
     this.element.addEventListener(
@@ -106,13 +121,6 @@ export class ListContainer {
         setTimeout(() => this.allowContextMenuByTouch_ = false);
       }
     });
-
-    // Ensure the list and grid are marked ARIA single select for save as.
-    if (type === DialogType.SELECT_SAVEAS_FILE) {
-      const list = table.querySelector('#file-list');
-      list?.setAttribute('aria-multiselectable', 'false');
-      grid.setAttribute('aria-multiselectable', 'false');
-    }
   }
 
   get currentView(): FileTable|FileGrid {
@@ -158,6 +166,8 @@ export class ListContainer {
   setCurrentListType(listType: ListType) {
     assert(this.dataModel);
     assert(this.selectionModel);
+
+    this.addEventListeners_();
 
     this.startBatchUpdates();
     this.currentListType = listType;

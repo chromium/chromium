@@ -65,7 +65,6 @@ FakeDistilledPage::FakeDistilledPage(EmbeddedTestServer* server)
   AppendScriptFile("dom_distiller_viewer.js");
 
   // Also load test helper scripts.
-  AppendScriptFile("chai.js");
   AppendScriptFile("mocha.js");
   AppendScriptFile("test_util.js");
 }

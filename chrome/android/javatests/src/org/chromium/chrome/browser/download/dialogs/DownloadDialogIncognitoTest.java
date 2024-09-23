@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.dialogs;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -30,25 +31,22 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.download.DuplicateDownloadDialog;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Test to verify download dialog scenarios. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class DownloadDialogIncognitoTest {
     private static final long TOTAL_BYTES = 1024L;
@@ -68,19 +66,19 @@ public class DownloadDialogIncognitoTest {
     public void setUpTest() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AppModalPresenter mAppModalPresenter =
                             new AppModalPresenter(mActivityTestRule.getActivity());
                     mModalDialogManager =
-                            TestThreadUtils.runOnUiThreadBlockingNoException(
+                            ThreadUtils.runOnUiThreadBlocking(
                                     () -> {
                                         return new ModalDialogManager(
                                                 mAppModalPresenter,
                                                 ModalDialogManager.ModalDialogType.APP);
                                     });
                 });
-        ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
+        ModalDialogView.disableButtonTapProtectionForTesting();
     }
 
     @Test
@@ -94,7 +92,7 @@ public class DownloadDialogIncognitoTest {
         waitForWarningVisibilityToBe(VISIBLE);
 
         // Dismiss the dialog and verify the callback is called with false.
-        onView(withId(R.id.negative_button)).perform(ViewActions.click());
+        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(ViewActions.click());
         verify(mResultCallback).onResult(false);
     }
 
@@ -120,7 +118,7 @@ public class DownloadDialogIncognitoTest {
         waitForWarningVisibilityToBe(VISIBLE);
 
         // Accept the dialog and verify the callback is called with true.
-        onView(withId(R.id.positive_button)).perform(ViewActions.click());
+        onView(withId(R.id.positive_button)).inRoot(isDialog()).perform(ViewActions.click());
         verify(mResultCallback).onResult(true);
     }
 
@@ -134,7 +132,7 @@ public class DownloadDialogIncognitoTest {
         waitForWarningVisibilityToBe(GONE);
 
         // Dismiss the dialog and verify the callback is called with false.
-        onView(withId(R.id.negative_button)).perform(ViewActions.click());
+        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(ViewActions.click());
         verify(mResultCallback).onResult(false);
     }
 
@@ -148,13 +146,13 @@ public class DownloadDialogIncognitoTest {
         waitForWarningVisibilityToBe(GONE);
 
         // Dismiss the dialog and verify the callback is called with false.
-        onView(withId(R.id.negative_button)).perform(ViewActions.click());
+        onView(withId(R.id.negative_button)).inRoot(isDialog()).perform(ViewActions.click());
         verify(mResultCallback).onResult(false);
     }
 
     private void showDuplicateDialog(OTRProfileID otrProfileID) {
         Context mContext = mActivityTestRule.getActivity().getApplicationContext();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new DuplicateDownloadDialog()
                             .show(
@@ -170,7 +168,7 @@ public class DownloadDialogIncognitoTest {
     }
 
     private void showInsecureDownloadDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Context mContext = mActivityTestRule.getActivity().getApplicationContext();
                     new InsecureDownloadDialog()
@@ -184,7 +182,7 @@ public class DownloadDialogIncognitoTest {
     }
 
     private void showDangerousContentDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Context mContext = mActivityTestRule.getActivity().getApplicationContext();
                     new DangerousDownloadDialog()
@@ -202,7 +200,7 @@ public class DownloadDialogIncognitoTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {
-                        onView(withId(R.id.message_paragraph_2))
+                        onView(withId(R.id.message_paragraph_2)).inRoot(isDialog())
                                 .check(matches(withEffectiveVisibility(visibility)));
                     } catch (NoMatchingViewException | AssertionError e) {
                         throw new CriteriaNotSatisfiedException(

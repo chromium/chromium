@@ -57,20 +57,20 @@ void PdfBlobDataFlattener::ReadAndFlattenPdf(
 }
 
 void PdfBlobDataFlattener::OnPdfRead(ReadAndFlattenPdfCallback callback,
-                                     std::unique_ptr<std::string> data,
+                                     std::string data,
                                      int64_t /*blob_total_size*/) {
-  if (!data || !LooksLikePdf(*data)) {
+  if (!LooksLikePdf(base::as_bytes(base::make_span(data)))) {
     std::move(callback).Run(/*result=*/nullptr);
     return;
   }
 
   base::MappedReadOnlyRegion memory =
-      base::ReadOnlySharedMemoryRegion::Create(data->size());
+      base::ReadOnlySharedMemoryRegion::Create(data.size());
   if (!memory.IsValid()) {
     std::move(callback).Run(/*result=*/nullptr);
     return;
   }
-  memcpy(memory.mapping.memory(), data->data(), data->size());
+  memcpy(memory.mapping.memory(), data.data(), data.size());
 
   if (g_disable_pdf_flattening_for_testing) {
     CHECK_IS_TEST();

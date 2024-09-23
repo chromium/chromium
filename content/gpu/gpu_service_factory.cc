@@ -20,12 +20,9 @@
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
 #include "base/functional/bind.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/services/gpu_mojo_media_client.h"  // nogncheck
 #include "media/mojo/services/media_service_factory.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-
-#if BUILDFLAG(IS_WIN)
-#include <d3d11_4.h>
-#endif
 
 namespace content {
 
@@ -58,16 +55,8 @@ void GpuServiceFactory::RunMediaService(
   // operations are blocked, user may hear audio glitch or see video
   // freezing, hence "user blocking".
   scoped_refptr<base::SequencedTaskRunner> task_runner = task_runner_;
-  // Only D3D11 device supports multi-treaded use.
-  bool dedicated_thread_allowed =
-#if BUILDFLAG(IS_WIN)
-      gpu_info_.gl_implementation_parts.angle ==
-      gl::ANGLEImplementation::kD3D11;
-#else
-      true;
-#endif
-  if (dedicated_thread_allowed &&
-      base::FeatureList::IsEnabled(media::kDedicatedMediaServiceThread)) {
+  if (media::IsDedicatedMediaServiceThreadEnabled(
+          gpu_info_.gl_implementation_parts.angle)) {
     if (base::FeatureList::IsEnabled(
             media::kUseSequencedTaskRunnerForMediaService)) {
       task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -76,33 +65,19 @@ void GpuServiceFactory::RunMediaService(
       task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::USER_BLOCKING});
     }
-#if BUILDFLAG(IS_WIN)
-    // Since the D3D11Device used for decoding is shared with SkiaRenderer(ANGLE
-    // or Dawn), we need multithread protection turned on to use it from another
-    // thread.
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<media::MediaGpuChannelManager> manager) {
-              CHECK(manager);
-              if (auto device = manager->d3d11_device()) {
-                Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
-                auto hr = device->QueryInterface(IID_PPV_ARGS(&multi_threaded));
-                CHECK(SUCCEEDED(hr));
-                multi_threaded->SetMultithreadProtected(TRUE);
-              }
-            },
-            media_gpu_channel_manager_));
-#endif
   }
+
+  media::GpuMojoMediaClientTraits traits(
+      gpu_preferences_, gpu_workarounds_, gpu_feature_info_, gpu_info_,
+      /*gpu_task_runner=*/task_runner_, android_overlay_factory_cb_,
+      media_gpu_channel_manager_);
+  auto gpu_client = media::GpuMojoMediaClient::Create(traits);
 
   using FactoryCallback =
       base::OnceCallback<std::unique_ptr<media::MediaService>()>;
   FactoryCallback factory =
       base::BindOnce(&media::CreateGpuMediaService, std::move(receiver),
-                     gpu_preferences_, gpu_workarounds_, gpu_feature_info_,
-                     gpu_info_, task_runner_, media_gpu_channel_manager_,
-                     gpu_memory_buffer_factory_, android_overlay_factory_cb_);
+                     std::move(gpu_client));
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(

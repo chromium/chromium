@@ -4,9 +4,8 @@
     "registrations": [
       {
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-source",
           "context_origin": "https://source.test",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -25,7 +24,6 @@
       // Trigger generates an event report.
       {
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -50,7 +48,6 @@
       // since event-trigger priority is greater.
       {
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -75,7 +72,6 @@
       // associated report was already replaced.
       {
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -99,7 +95,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
       {
         "report_time": "86400000",

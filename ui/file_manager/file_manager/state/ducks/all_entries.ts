@@ -2,21 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getParentEntry} from '../../common/js/api.js';
-import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrives, isGrandRootEntryInDrives, isVolumeEntry, readEntries, shouldSupportDriveSpecificIcons, sortEntries} from '../../common/js/entry_utils.js';
+import {canHaveSubDirectories, isDirectoryEntry, isDriveRootEntryList, isEntryScannable, isEntrySupportUiChildren, isFakeEntryInDrive, isGrandRootEntryInDrive, isInsideDrive, isVolumeEntry, isVolumeFileData, readEntries, shouldSupportDriveSpecificIcons, sortEntries, supportsUiChildren, urlToEntry} from '../../common/js/entry_utils.js';
 import {getIcon} from '../../common/js/file_type.js';
-import {EntryList, FilesAppDirEntry, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppDirEntry, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList} from '../../common/js/files_app_entry_types.js';
+import {isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
 import {COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_PATH, shouldProvideIcons, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, ICON_TYPES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from '../../foreground/js/constants.js';
-import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
+import type {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {isDebugStoreEnabled, Slice} from '../../lib/base_store.js';
 import {keepLatest, keyedKeepLatest} from '../../lib/concurrency_models.js';
-import {type CurrentDirectory, DialogType, EntryType, type FileData, type State, type Volume, type VolumeMap} from '../../state/state.js';
+import {type CurrentDirectory, EntryType, type FileData, type MaterializedView, type State, type Volume, type VolumeMap} from '../../state/state.js';
 import type {FileKey} from '../file_key.js';
 import {getEntry, getFileData, getStore, getVolume} from '../store.js';
 
@@ -83,9 +88,8 @@ function clearCachedEntriesReducer(state: State): State {
 
   // For all expanded entries, we need to keep them and all their direct
   // children.
-  for (const [key, fileData] of Object.entries(entries)) {
+  for (const fileData of Object.values(entries)) {
     if (fileData.expanded) {
-      entriesToKeep.add(key);
       if (fileData.children) {
         for (const child of fileData.children) {
           entriesToKeep.add(child);
@@ -103,6 +107,10 @@ function clearCachedEntriesReducer(state: State): State {
         entriesToKeep.add(child);
       }
     }
+  }
+
+  for (const view of state.materializedViews) {
+    entriesToKeep.add(view.key);
   }
 
   const isDebugStore = isDebugStoreEnabled();
@@ -125,7 +133,10 @@ function clearCachedEntriesReducer(state: State): State {
  */
 function scheduleClearCachedEntries() {
   if (clearCachedEntriesRequestId === 0) {
-    clearCachedEntriesRequestId = requestIdleCallback(startClearCache);
+    // For unittest force to run at least at 50ms to avoid flakiness on slow
+    // bots (msan).
+    const options = window.IN_TEST ? {timeout: 50} : {};
+    clearCachedEntriesRequestId = requestIdleCallback(startClearCache, options);
   }
 }
 
@@ -225,20 +236,47 @@ function getEntryIcon(
 }
 
 /**
- * Given an entry, check if its loading children should be delayed.
+ * Given fileData, check if its loading children should be delayed.
  * We are doing this for SMB to avoid potentially hanging whilst scanning a
  * large SMB file share and causing performance issues.
  */
-export function shouldDelayLoadingChildren(entry: Entry|
-                                           FilesAppEntry): boolean {
-  const {volumeManager} = window.fileManager;
+export function shouldDelayLoadingChildren(
+    fileData: FileData, state: State): boolean {
   // When this function is triggered when mounting new volumes, volumeInfo is
   // not available in the VolumeManager yet, we need to get volumeInfo from the
   // entry itself.
-  const volumeInfo = isVolumeEntry(entry) ? entry.volumeInfo :
-                                            volumeManager.getVolumeInfo(entry);
-  return volumeInfo?.source === Source.NETWORK &&
-      volumeInfo.volumeType === VolumeType.SMB;
+  const volume: Volume|VolumeInfo|undefined = isVolumeFileData(fileData) ?
+      // TODO: Confirm how to remove the usage of entry here.
+      (fileData.entry as VolumeEntry).volumeInfo :
+      state!.volumes[fileData.volumeId!];
+  return isVolumeSlowToScan(volume);
+}
+
+function isVolumeSlowToScan(volume?: Volume|VolumeInfo|null): boolean {
+  return volume?.source === Source.NETWORK &&
+      volume.volumeType === VolumeType.SMB;
+}
+
+function convertViewToFileData(view: MaterializedView): FileData {
+  const metadata: MetadataItem = {};
+  const fileData: FileData = {
+    key: view.key,
+    fullPath: new URL(view.key).pathname,
+    icon: view.icon,
+    type: EntryType.MATERIALIZED_VIEW,
+    isDirectory: true,
+    label: view.label,
+    volumeId: null,
+    rootType: null,
+    metadata,
+    expanded: false,
+    disabled: false,
+    isRootEntry: view.isRoot,
+    canExpand: true,
+    isEjectable: false,
+    children: [],
+  };
+  return fileData;
 }
 
 /**
@@ -273,7 +311,9 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
       metadataModel.getCache([entry as FileEntry], prefetchPropertyNames)[0]! :
       {} as MetadataItem;
 
-  return {
+  const fileData: FileData = {
+    key: entry.toURL(),
+    fullPath: entry.fullPath,
     entry,
     icon,
     type: getEntryType(entry),
@@ -285,11 +325,64 @@ export function convertEntryToFileData(entry: Entry|FilesAppEntry): FileData {
     expanded: false,
     disabled: 'disabled' in entry ? entry.disabled as boolean : false,
     isRootEntry: !!locationInfo?.isRootEntry,
+    canExpand: false,
     // `isEjectable` is determined by its corresponding volume, will be updated
     // when volume is added.
     isEjectable: false,
-    canExpand: shouldDelayLoadingChildren(entry),
     children: [],
+  };
+  // For slow volumes, we always mark the root and directories as canExpand, to
+  // avoid scanning to determine if it has sub-directories.
+  fileData.canExpand = isVolumeSlowToScan(volumeInfo);
+  return fileData;
+}
+
+function appendView(state: State, view: MaterializedView) {
+  const allEntries = state.allEntries || {};
+  const key = view.key;
+  const fileData = convertViewToFileData(view)!;
+  const existingFileData: Partial<FileData> = allEntries[key] || {};
+
+  allEntries[key] = {
+    ...fileData,
+    expanded: existingFileData.expanded ?? fileData.expanded,
+    isEjectable: existingFileData.isEjectable ?? fileData.isEjectable,
+    canExpand: existingFileData.canExpand ?? fileData.canExpand,
+    // Keep children to prevent sudden removal of the children items on the UI.
+    children: existingFileData.children ?? fileData.children,
+    key,
+  };
+
+  state.allEntries = allEntries;
+}
+
+/**
+ * Converts an EntryData object from FileManagerPrivate API to the store
+ * representation of an Entry: FileData.
+ */
+export async function convertEntryDataToFileData(
+    entryData: chrome.fileManagerPrivate.EntryData): Promise<FileData> {
+  const nativeEntry = await urlToEntry(entryData.entryUrl);
+  // TODO(b/328564447): This function should only rely on `entryData`, so
+  // gradually update the returned FileData to only use fields from `entryData`.
+  const nativeEntryFileData = convertEntryToFileData(nativeEntry);
+  return {
+    key: entryData.entryUrl,
+    fullPath: nativeEntryFileData.fullPath,
+    entry: nativeEntry,
+    icon: nativeEntryFileData.icon,
+    label: nativeEntryFileData.label,
+    volumeId: nativeEntryFileData.volumeId,
+    rootType: nativeEntryFileData.rootType,
+    metadata: nativeEntryFileData.metadata,
+    isDirectory: nativeEntryFileData.isDirectory,
+    type: EntryType.FS_API,
+    isRootEntry: nativeEntryFileData.isRootEntry,
+    isEjectable: false,
+    canExpand: nativeEntryFileData.canExpand,
+    children: [],
+    expanded: false,
+    disabled: nativeEntryFileData.disabled,
   };
 }
 
@@ -324,6 +417,7 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
     canExpand: existingFileData.canExpand ?? fileData.canExpand,
     // Keep children to prevent sudden removal of the children items on the UI.
     children: existingFileData.children ?? fileData.children,
+    key,
   };
 
   state.allEntries = allEntries;
@@ -344,6 +438,7 @@ export function updateFileDataInPlace(
   const newFileData = {
     ...state.allEntries[key]!,
     ...changes,
+    key,
   };
   state.allEntries[key] = newFileData;
   return newFileData;
@@ -357,6 +452,15 @@ export function cacheEntries(
     appendEntry(currentState, entry);
   }
 }
+
+export function cacheMaterializedViews(
+    currentState: State, views: MaterializedView[]) {
+  scheduleClearCachedEntries();
+  for (const entry of views) {
+    appendView(currentState, entry);
+  }
+}
+
 
 function getEntryType(entry: Entry|FilesAppEntry): EntryType {
   // Entries from FilesAppEntry have the `typeName` property.
@@ -384,6 +488,8 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
         case RootType.DRIVE_SHARED_WITH_ME:
           // TODO(lucmult): This isn't really Recent but it's the closest.
           return EntryType.RECENT;
+        case RootType.PROVIDED:
+          return EntryType.PLACEHOLDER;
       }
       console.warn(`Invalid fakeEntry.rootType='${entry.rootType} rootType`);
       return EntryType.PLACEHOLDER;
@@ -391,6 +497,8 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
       return EntryType.PLACEHOLDER;
     case 'TrashEntry':
       return EntryType.TRASH;
+    case 'OneDrivePlaceholder':
+      return EntryType.PLACEHOLDER;
     default:
       console.warn(`Invalid entry.typeName='${entry.typeName}`);
       return EntryType.FS_API;
@@ -419,6 +527,7 @@ function updateMetadataReducer(currentState: State, payload: {
     currentState.allEntries[key] = {
       ...fileData,
       metadata,
+      key,
     };
   }
   if (!currentState.currentDirectory) {
@@ -447,13 +556,26 @@ function findVolumeByType(volumes: VolumeMap, volumeType: VolumeType): Volume|
 
 /**
  * Returns the MyFiles entry and volume, the entry can either be a fake one
- * (EntryList) or a real one (VolumeEntry) depends on if the MyFiles volume is
- * mounted or not.
+ * (EntryList) or a real one (VolumeEntry) depending on if the MyFiles volume is
+ * mounted or not, and returns null if local files are disabled by policy.
  * Note: it will create a fake EntryList in the store if there's no
- * MyFiles entry in the store (e.g. no EntryList and no VolumeEntry).
+ * MyFiles entry in the store (e.g. no EntryList and no VolumeEntry), but local
+ * files are enabled.
  */
 export function getMyFiles(state: State):
-    {myFilesVolume: null|Volume, myFilesEntry: VolumeEntry|EntryList} {
+    {myFilesVolume: null|Volume, myFilesEntry: null|VolumeEntry|EntryList} {
+  const localFilesAllowed = state.preferences?.localUserFilesAllowed !== false;
+  if (!isSkyvaultV2Enabled()) {
+    // Return null for TT version.
+    // For GA version we show local files in read-only mode, if present.
+    if (!localFilesAllowed) {
+      return {
+        myFilesEntry: null,
+        myFilesVolume: null,
+      };
+    }
+  }
+
   const {volumes} = state;
   const myFilesVolume = findVolumeByType(volumes, VolumeType.DOWNLOADS);
   const myFilesVolumeEntry = myFilesVolume ?
@@ -461,7 +583,7 @@ export function getMyFiles(state: State):
       null;
   let myFilesEntryList =
       getEntry(state, myFilesEntryListKey) as EntryList | null;
-  if (!myFilesVolumeEntry && !myFilesEntryList) {
+  if (localFilesAllowed && !myFilesVolumeEntry && !myFilesEntryList) {
     myFilesEntryList =
         new EntryList(str('MY_FILES_ROOT_LABEL'), RootType.MY_FILES);
     appendEntry(state, myFilesEntryList);
@@ -516,9 +638,16 @@ function addChildEntriesReducer(currentState: State, payload: {
  */
 export async function*
     readSubDirectoriesInternal(
-        entry: Entry|FilesAppEntry|null, recursive: boolean = false,
+        fileKey: FileKey, recursive: boolean = false,
         metricNameForTracking: string = ''): ActionsProducerGen {
-  if (!isEntryScannable(entry)) {
+  let state = getStore().getState();
+  let fileData = getFileData(state, fileKey);
+  if (!fileData) {
+    console.debug(`failed to find FileData for ${fileKey}`);
+    console.warn(`readSubDirectoriesInternal: failed to find FileData`);
+    return;
+  }
+  if (!canHaveSubDirectories(fileData)) {
     return;
   }
 
@@ -528,27 +657,35 @@ export async function*
   }
 
   const childEntriesToReadDeeper: Array<Entry|FilesAppEntry> = [];
-  if (isDriveRootEntryList(entry)) {
+  const entry = fileData.entry;
+  if (fileKey === driveRootEntryListKey) {
+    assert(entry);
+    if (!isDriveRootEntryList(entry)) {
+      console.warn(
+          `ERROR: ${fileKey} didn't return a EntryList from the Store`);
+      return;
+    }
     for await (const action of readSubDirectoriesForDriveRootEntryList(entry)) {
       yield action;
       if (action) {
         childEntriesToReadDeeper.push(...action.payload.entries);
       }
     }
-  } else {
+  } else if (entry && isEntryScannable(entry)) {
     const childEntries = await readChildEntriesByFullScan(entry);
     // Only dispatch directories.
     const subDirectories =
         childEntries.filter(childEntry => childEntry.isDirectory);
-    yield addChildEntries({parentKey: entry.toURL(), entries: subDirectories});
+    yield addChildEntries({parentKey: fileKey, entries: subDirectories});
     childEntriesToReadDeeper.push(...subDirectories);
     // Fetch metadata if the entry supports Drive specific share icon.
-    const state = getStore().getState();
-    const parentFileData = getFileData(state, entry.toURL());
-    if (parentFileData && isEntryInsideDrive(parentFileData)) {
+    state = getStore().getState();
+    const parentFileData = getFileData(state, fileKey);
+    if (parentFileData && isInsideDrive(parentFileData)) {
       const entriesNeedMetadata = subDirectories.filter(subDirectory => {
-        const fileData = getFileData(state, subDirectory.toURL());
-        return fileData && shouldSupportDriveSpecificIcons(fileData);
+        const subDirFileData = getFileData(state, subDirectory.toURL());
+        return subDirFileData &&
+            shouldSupportDriveSpecificIcons(subDirFileData);
       });
       if (entriesNeedMetadata.length > 0) {
         window.fileManager.metadataModel.get(entriesNeedMetadata, [
@@ -557,6 +694,9 @@ export async function*
         ]);
       }
     }
+  } else {
+    // TODO(b/327534506): Add support for Materialize Views.
+    console.warn(`readSubDirectories not supported for ${fileKey}`);
   }
 
   // Track time for reading sub directories if metric for tracking is passed.
@@ -565,33 +705,45 @@ export async function*
   }
 
   // Read sub directories for children when recursive is true.
-  if (recursive) {
+  if (!recursive) {
+    return;
+  }
+
+  // Refresh the fileData from the store because it might have changed during
+  // the async operations above.
+  state = getStore().getState();
+  fileData = getFileData(state, fileKey);
+
+  // We only read deeper if the parent entry is expanded in the tree.
+  if (!fileData?.expanded) {
+    return;
+  }
+
+  // Recursive scan.
+  for (const childEntry of childEntriesToReadDeeper) {
     const state = getStore().getState();
-    // We only read deeper if the parent entry is expanded in the tree.
-    const fileData = getFileData(state, entry.toURL());
-    if (!fileData?.expanded) {
-      return;
+    const childFileData = getFileData(state, childEntry.toURL());
+    if (!childFileData) {
+      continue;
     }
-    for (const childEntry of childEntriesToReadDeeper) {
-      const childFileData = getFileData(state, childEntry.toURL());
-      if (childFileData?.expanded) {
-        // If child item is expanded, we need to do a full scan for it.
-        for await (const action of readSubDirectories(
-            childEntry, /* recursive= */ true)) {
-          yield action;
-        }
-      } else if (childFileData?.canExpand) {
-        // If we already know the child item can be expanded, no partial scan is
-        // required.
-        continue;
-      } else {
-        // If the child item is not expanded, we do a partial scan to check if
-        // it has children or not (so we know if we need to show expand icon
-        // or not).
-        for await (const action of readSubDirectoriesToCheckDirectoryChildren(
-            childEntry)) {
-          yield action;
-        }
+
+    if (childFileData.expanded) {
+      // If child item is expanded, we need to do a full scan for it.
+      for await (const action of readSubDirectories(
+          childEntry.toURL(), /* recursive= */ true)) {
+        yield action;
+      }
+    } else if (childFileData?.canExpand) {
+      // If we already know the child item can be expanded, no partial scan is
+      // required.
+      continue;
+    } else {
+      // If the child item is not expanded, we do a partial scan to check if
+      // it has children or not (so we know if we need to show expand icon
+      // or not).
+      for await (const action of readSubDirectoriesToCheckDirectoryChildren(
+          childEntry.toURL())) {
+        yield action;
       }
     }
   }
@@ -603,18 +755,18 @@ export async function*
  */
 export const readSubDirectories = keyedKeepLatest(
     readSubDirectoriesInternal,
-    (entry, recursive?, _metricNameForTracking?) =>
-        entry ? `${entry.toURL()}${recursive ? '-recursive' : ''}` : '');
+    (fileKey, recursive?, _metricNameForTracking?) =>
+        `${fileKey}${recursive ? '-recursive' : ''}`);
 
 /**
  * Read entries for Drive root entry list (aka "Google Drive"), there are some
- * differences compared to the `readSubDirectoriesForDirectoryEntry`:
- * * We don't need to call readEntries to get its child entries. Instead, all
+ * differences compared to the `readSubDirectoriesForDirectoryEntry()`:
+ * * We don't need to call readEntries() to get its child entries. Instead, all
  * its children are from its entry.getUiChildren().
  * * For fake entries children (e.g. Shared with me and Offline), we only show
  * them based on the dialog type.
- * * For curtain children (e.g. team drives and computers grand root), we only
- * show them when there's at least one child entries inside. So we need to read
+ * * For certain children (e.g. team drives and computers grand root), we only
+ * show them when there's at least one child entry inside. So we need to read
  * their children (grand children of drive fake root) first before we can decide
  * if we need to show them or not.
  */
@@ -633,20 +785,15 @@ async function*
    */
   const filteredChildren: Array<Entry|FilesAppEntry> = [];
 
-  const isFakeEntryVisible =
-      window.fileManager.dialogType !== DialogType.SELECT_SAVEAS_FILE;
-
   for (const childEntry of driveChildren) {
-    // For fake entries ("Shared with me" and)
-    if (isFakeEntryInDrives(childEntry)) {
-      if (isFakeEntryVisible) {
-        filteredChildren.push(childEntry);
-      }
+    // For fake entries ("Shared with me" and "Offline").
+    if (isFakeEntryInDrive(childEntry)) {
+      filteredChildren.push(childEntry);
       continue;
     }
     // For non grand roots (also not fake entries), we put them in the children
     // directly and dispatch an action to read the it later.
-    if (!isGrandRootEntryInDrives(childEntry)) {
+    if (!isGrandRootEntryInDrive(childEntry)) {
       filteredChildren.push(childEntry);
       continue;
     }
@@ -703,38 +850,54 @@ async function checkDirectoryChildByPartialScan(
  * or not.
  */
 async function*
-    readSubDirectoriesToCheckDirectoryChildrenInternal(
-        entry: Entry|FilesAppEntry|null): ActionsProducerGen {
-  if (!isEntryScannable(entry)) {
+    readSubDirectoriesToCheckDirectoryChildrenInternal(fileKey: FileKey|null):
+        ActionsProducerGen {
+  if (!fileKey) {
     return;
   }
 
   const state = getStore().getState();
-  const fileData = getFileData(state, entry.toURL());
-  // Do nothing because we already know it has children.
-  if (fileData && (fileData.children.length > 0 || fileData.canExpand)) {
+  const fileData = getFileData(state, fileKey);
+  if (!fileData) {
+    console.warn(`No file data: ${fileKey}`);
     return;
   }
+  if (!canHaveSubDirectories(fileData)) {
+    return;
+  }
+
+  // Do nothing because we already know it has children.
+  if (fileData.children.length > 0 || fileData.canExpand) {
+    return;
+  }
+
   const {directoryModel} = window.fileManager;
   const fileFilter = directoryModel.getFileFilter();
   const isDirectoryChild = (childEntry: Entry|FilesAppEntry): boolean =>
       childEntry.isDirectory && fileFilter.filter(childEntry);
   // The entry has UIChildren but has no FileData.children, we know it can be
   // expanded.
-  if (isEntrySupportUiChildren(entry) && entry.getUiChildren().length > 0) {
+  if (supportsUiChildren(fileData) && fileData.entry) {
+    const entry = fileData.entry;
+    assert(isEntrySupportUiChildren(entry));
     const uiChildrenDirectories =
         entry.getUiChildren().filter(isDirectoryChild);
     if (uiChildrenDirectories.length > 0) {
-      yield updateFileData(
-          {key: entry.toURL(), partialFileData: {canExpand: true}});
+      yield updateFileData({key: fileKey, partialFileData: {canExpand: true}});
     }
-    return;
   }
 
-  const hasDirectoryChild = await checkDirectoryChildByPartialScan(entry);
-  if (hasDirectoryChild) {
-    yield updateFileData(
-        {key: entry.toURL(), partialFileData: {canExpand: true}});
+  // TODO(lucmult): Add support to Materialize Views.
+  const entry = fileData.entry;
+  if (!entry) {
+    console.warn(`No entry: ${fileKey}`);
+    return;
+  }
+  if (isDirectoryEntry(entry)) {
+    const hasDirectoryChild = await checkDirectoryChildByPartialScan(entry);
+    if (hasDirectoryChild) {
+      yield updateFileData({key: fileKey, partialFileData: {canExpand: true}});
+    }
   }
 }
 
@@ -745,7 +908,7 @@ async function*
  */
 export const readSubDirectoriesToCheckDirectoryChildren = keyedKeepLatest(
     readSubDirectoriesToCheckDirectoryChildrenInternal,
-    (entry) => entry ? entry.toURL() : '');
+    (fileKey) => fileKey ?? '');
 
 /**
  * Read child entries for the newly renamed directory entry.
@@ -759,12 +922,12 @@ export async function*
   const parentDirectory = await getParentEntry(newEntry);
   // Read the children of the parent first to make sure the newly added entry
   // appears in the store.
-  for await (const action of readSubDirectories(parentDirectory)) {
+  for await (const action of readSubDirectories(parentDirectory.toURL())) {
     yield action;
   }
   // Read the children of the newly renamed entry.
-  for await (
-      const action of readSubDirectories(newEntry, /* recursive= */ true)) {
+  for await (const action of readSubDirectories(
+      newEntry.toURL(), /* recursive= */ true)) {
     yield action;
   }
 }
@@ -808,14 +971,13 @@ export async function*
     const state = getStore().getState();
     const currentEntryKey = pathEntryKeys[i]!;
     const parentEntryKey = pathEntryKeys[i - 1]!;
-    const parentEntry = getEntry(state, parentEntryKey)!;
     const parentFileData = getFileData(state, parentEntryKey)!;
     const fileData = getFileData(state, currentEntryKey);
     // Read sub directories if the child entry doesn't exist or it's not in
     // parent entry's children.
     if (!fileData || !parentFileData.children.includes(currentEntryKey)) {
       let foundCurrentEntry = false;
-      for await (const action of readSubDirectories(parentEntry)) {
+      for await (const action of readSubDirectories(parentEntryKey)) {
         yield action;
         const childEntries: Array<Entry|FilesAppEntry> =
             action?.payload.entries || [];
@@ -869,6 +1031,7 @@ function updateFileDataReducer(currentState: State, payload: {
   currentState.allEntries[key] = {
     ...fileData,
     ...partialFileData,
+    key,
   };
   return {...currentState};
 }

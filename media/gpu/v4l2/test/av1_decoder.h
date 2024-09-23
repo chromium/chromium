@@ -5,13 +5,12 @@
 #ifndef MEDIA_GPU_V4L2_TEST_AV1_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_AV1_DECODER_H_
 
-#include "media/gpu/v4l2/test/video_decoder.h"
-
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
-#include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
+#include "media/gpu/v4l2/test/video_decoder.h"
+#include "media/parsers/ivf_parser.h"
 // For libgav1::ObuSequenceHeader. std::optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
 // ObuSequenceHeader doesn't.
@@ -45,7 +44,8 @@ class Av1Decoder : public VideoDecoder {
                                        std::vector<uint8_t>& y_plane,
                                        std::vector<uint8_t>& u_plane,
                                        std::vector<uint8_t>& v_plane,
-                                       gfx::Size& size) override;
+                                       gfx::Size& size,
+                                       BitDepth& bit_depth) override;
 
  private:
   enum class ParsingResult {

@@ -28,7 +28,7 @@ future_on:
 - fuchsia
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
+- miersh@google.com
 schema:
   items:
     type: string

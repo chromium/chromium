@@ -5,10 +5,12 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_history_observer.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 
@@ -31,9 +33,12 @@ SubresourceFilterProfileContextFactory::SubresourceFilterProfileContextFactory()
           "SubresourceFilterProfileContext",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
@@ -45,7 +50,8 @@ KeyedService* SubresourceFilterProfileContextFactory::BuildServiceInstanceFor(
 
   auto* subresource_filter_profile_context =
       new subresource_filter::SubresourceFilterProfileContext(
-          HostContentSettingsMapFactory::GetForProfile(profile));
+          HostContentSettingsMapFactory::GetForProfile(profile),
+          CookieSettingsFactory::GetForProfile(profile));
 
   // Create and attach a SubresourceFilterHistoryObserver instance if possible.
   auto* history_service = HistoryServiceFactory::GetForProfile(

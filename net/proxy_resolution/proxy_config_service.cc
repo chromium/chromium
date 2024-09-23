@@ -132,7 +132,7 @@ ProxyConfigService::CreateSystemProxyConfigService(
       std::move(main_task_runner),
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #elif BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/889195): Implement a system proxy service for Fuchsia.
+  // TODO(crbug.com/42050626): Implement a system proxy service for Fuchsia.
   return std::make_unique<ProxyConfigServiceDirect>();
 #else
   LOG(WARNING) << "Failed to choose a system proxy settings fetcher "

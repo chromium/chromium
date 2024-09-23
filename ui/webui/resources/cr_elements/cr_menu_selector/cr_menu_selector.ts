@@ -4,27 +4,30 @@
 
 import {assert} from '//resources/js/assert.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
-import {IronSelectableBehavior} from '//resources/polymer/v3_0/iron-selector/iron-selectable.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-const CrMenuSelectorBase =
-    mixinBehaviors([IronSelectableBehavior], PolymerElement) as
-    {new (): PolymerElement & IronSelectableBehavior};
+import {getHtml} from './cr_menu_selector.html.js';
+import {CrSelectableMixin} from '../cr_selectable_mixin.js';
+
+const CrMenuSelectorBase = CrSelectableMixin(CrLitElement);
 
 export class CrMenuSelector extends CrMenuSelectorBase {
   static get is() {
     return 'cr-menu-selector';
   }
 
-  private focusOutlineManager_: FocusOutlineManager;
+  override render() {
+    return getHtml.bind(this)();
+  }
 
   override connectedCallback() {
     super.connectedCallback();
-    this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
+    FocusOutlineManager.forDocument(document);
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
     this.setAttribute('role', 'menu');
     this.addEventListener('focusin', this.onFocusin_.bind(this));
     this.addEventListener('keydown', this.onKeydown_.bind(this));
@@ -50,7 +53,8 @@ export class CrMenuSelector extends CrMenuSelectorBase {
     // ensures that the first menu item is always the first focused item when
     // focusing into the menu. A null relatedTarget means the focus was moved
     // from outside the WebContents.
-    const focusMovedWithKeyboard = this.focusOutlineManager_.visible;
+    const focusMovedWithKeyboard =
+        FocusOutlineManager.forDocument(document).visible;
     const focusMovedFromOutside = e.relatedTarget === null ||
         !this.contains(e.relatedTarget as HTMLElement);
     if (focusMovedWithKeyboard && focusMovedFromOutside) {

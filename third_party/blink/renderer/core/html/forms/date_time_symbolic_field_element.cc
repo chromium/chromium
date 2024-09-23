@@ -87,6 +87,12 @@ void DateTimeSymbolicFieldElement::HandleKeyboardEvent(
 
   keyboard_event.SetDefaultHandled();
 
+  if (Type() == DateTimeField::kAMPM) {
+    // Since AM/PM field has only 2 options, the type_ahead session should be
+    // reset to enable fast toggling between the options.
+    type_ahead_.ResetSession();
+  }
+
   int index = type_ahead_.HandleEvent(keyboard_event, keyboard_event.charCode(),
                                       TypeAhead::kMatchPrefix |
                                           TypeAhead::kCycleFirstChar |

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/websockets/websocket_basic_stream.h"
 
 #include <stddef.h>
@@ -14,6 +19,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -96,7 +102,7 @@ constexpr double kThresholdInBytesPerSecond = 1200 * 1000;
 // masked bit of the frames on.
 int CalculateSerializedSizeAndTurnOnMaskBit(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames) {
-  const uint64_t kMaximumTotalSize = std::numeric_limits<int>::max();
+  constexpr uint64_t kMaximumTotalSize = std::numeric_limits<int>::max();
 
   uint64_t total_size = 0;
   for (const auto& frame : *frames) {
@@ -213,34 +219,31 @@ int WebSocketBasicStream::WriteFrames(
   int total_size = CalculateSerializedSizeAndTurnOnMaskBit(frames);
   auto combined_buffer = base::MakeRefCounted<IOBufferWithSize>(total_size);
 
-  char* dest = combined_buffer->data();
-  int remaining_size = total_size;
+  base::span<uint8_t> dest = combined_buffer->span();
   for (const auto& frame : *frames) {
     net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_SENT_FRAME_HEADER,
                       [&] { return NetLogFrameHeaderParam(&frame->header); });
     WebSocketMaskingKey mask = generate_websocket_masking_key_();
-    int result =
-        WriteWebSocketFrameHeader(frame->header, &mask, dest, remaining_size);
+    int result = WriteWebSocketFrameHeader(frame->header, &mask, dest);
     DCHECK_NE(ERR_INVALID_ARGUMENT, result)
-        << "WriteWebSocketFrameHeader() says that " << remaining_size
+        << "WriteWebSocketFrameHeader() says that " << dest.size()
         << " is not enough to write the header in. This should not happen.";
     CHECK_GE(result, 0) << "Potentially security-critical check failed";
-    dest += result;
-    remaining_size -= result;
+    dest = dest.subspan(result);
 
     CHECK_LE(frame->header.payload_length,
-             static_cast<uint64_t>(remaining_size));
-    const int frame_size = static_cast<int>(frame->header.payload_length);
+             base::checked_cast<uint64_t>(dest.size()));
+    const size_t frame_size = frame->header.payload_length;
     if (frame_size > 0) {
-      const char* const frame_data = frame->payload;
-      std::copy(frame_data, frame_data + frame_size, dest);
-      MaskWebSocketFramePayload(mask, 0, dest, frame_size);
-      dest += frame_size;
-      remaining_size -= frame_size;
+      base::span<const char> frame_data =
+          base::make_span(frame->payload, frame_size);
+      dest.copy_prefix_from(base::as_bytes(frame_data));
+      MaskWebSocketFramePayload(mask, 0, dest.first(frame_size));
+      dest = dest.subspan(frame_size);
     }
   }
-  DCHECK_EQ(0, remaining_size) << "Buffer size calculation was wrong; "
-                               << remaining_size << " bytes left over.";
+  DCHECK(dest.empty()) << "Buffer size calculation was wrong; " << dest.size()
+                       << " bytes left over.";
   auto drainable_buffer = base::MakeRefCounted<DrainableIOBuffer>(
       std::move(combined_buffer), total_size);
   return WriteEverything(drainable_buffer);
@@ -287,9 +290,10 @@ int WebSocketBasicStream::ReadEverything(
     DCHECK_GE(http_read_buffer_->offset(), 0);
     is_http_read_buffer_decoded_ = true;
     std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
-    if (!parser_.Decode(http_read_buffer_->StartOfBuffer(),
-                        http_read_buffer_->offset(), &frame_chunks))
+    if (!parser_.Decode(http_read_buffer_->span_before_offset(),
+                        &frame_chunks)) {
       return WebSocketErrorToNetError(parser_.websocket_error());
+    }
     if (!frame_chunks.empty()) {
       int result = ConvertChunksToFrames(&frame_chunks, frames);
       if (result != ERR_IO_PENDING)
@@ -386,8 +390,11 @@ int WebSocketBasicStream::HandleReadResult(
   buffer_size_manager_.OnReadComplete(base::TimeTicks::Now(), result);
 
   std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
-  if (!parser_.Decode(read_buffer_->data(), result, &frame_chunks))
+  if (!parser_.Decode(
+          read_buffer_->span().first(base::checked_cast<size_t>(result)),
+          &frame_chunks)) {
     return WebSocketErrorToNetError(parser_.websocket_error());
+  }
   if (frame_chunks.empty())
     return ERR_IO_PENDING;
   return ConvertChunksToFrames(&frame_chunks, frames);

@@ -12,9 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/signin_ui.h"
-#include "chrome/browser/extensions/api/cookies/cookies_api.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/signin_ui.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "components/account_id/account_id.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace ash {
@@ -36,8 +36,6 @@ namespace login {
 struct GaiaContext {
   GaiaContext();
   GaiaContext(GaiaContext const&);
-  // Forces Gaia to reload.
-  bool force_reload = false;
 
   // Email of the current user.
   std::string email;
@@ -121,7 +119,13 @@ ChallengeResponseKeyOrError ExtractClientCertificates(
 
 // Builds the UserContext with the information from the given Gaia user
 // sign-in.
-void BuildUserContextForGaiaSignIn(
+// Returns a `unique_ptr` to the `UserContext` that was just built from the
+// provided parameters.
+// Note: The return value is a `unique_ptr` to `UserContext` and not a
+// `UserContext` by itself to signify that there should only be a single
+// instance of `UserContext` active at any given time. This contract is
+// currently not enforced, but may be enforced in the future.
+std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
     user_manager::UserType user_type,
     const AccountId& account_id,
     bool using_saml,
@@ -129,8 +133,7 @@ void BuildUserContextForGaiaSignIn(
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
     const std::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
-    const std::optional<ChallengeResponseKey> challenge_response_key,
-    UserContext* user_context);
+    const std::optional<ChallengeResponseKey>& challenge_response_key);
 
 // Returns user canonical e-mail. Finds already used account alias, if
 // user has already signed in.
@@ -156,7 +159,8 @@ class GaiaCookieRetriever : public network::mojom::CookieChangeListener {
   explicit GaiaCookieRetriever(
       std::string signin_partition_name,
       login::SigninPartitionManager* signin_partition_manager,
-      OnCookieTimeoutCallback on_cookie_timeout_callback);
+      OnCookieTimeoutCallback on_cookie_timeout_callback,
+      bool allow_empty_auth_code_for_testing = false);
 
   GaiaCookieRetriever(const GaiaCookieRetriever&) = delete;
   GaiaCookieRetriever& operator=(const GaiaCookieRetriever&) = delete;
@@ -190,6 +194,9 @@ class GaiaCookieRetriever : public network::mojom::CookieChangeListener {
   OnCookieTimeoutCallback on_cookie_timeout_callback_;
 
   std::optional<OnCookieRetrievedCallback> on_cookie_retrieved_callback_;
+
+  // To allow testing to continue without an oauth cookie.
+  bool allow_empty_auth_code_for_testing_ = false;
 
   base::WeakPtrFactory<GaiaCookieRetriever> weak_factory_{this};
 };

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "ios/public/provider/chrome/browser/omaha/omaha_api.h"
 
 namespace ios {
@@ -25,8 +27,7 @@ std::string GetOmahaApplicationId() {
   return kTestApplicationID;
 }
 
-void SetOmahaExtraAttributes(base::StringPiece element,
-                             AttributeSetter setter) {
+void SetOmahaExtraAttributes(std::string_view element, AttributeSetter setter) {
   if (element == "app") {
     setter.Run("brand", kTestBrandCode);
     setter.Run("appid", kTestApplicationID);

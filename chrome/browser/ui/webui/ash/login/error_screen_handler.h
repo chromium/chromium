@@ -13,7 +13,7 @@ namespace ash {
 
 // Interface for dependency injection between ErrorScreen and its actual
 // representation. Owned by ErrorScreen.
-class ErrorScreenView : public base::SupportsWeakPtr<ErrorScreenView> {
+class ErrorScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"error-message",
                                                        "ErrorMessageScreen"};
@@ -43,10 +43,14 @@ class ErrorScreenView : public base::SupportsWeakPtr<ErrorScreenView> {
 
   // Sets current UI state of the screen.
   virtual void SetUIState(NetworkError::UIState ui_state) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<ErrorScreenView> AsWeakPtr() = 0;
 };
 
 // A class that handles the WebUI hooks in error screen.
-class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
+class ErrorScreenHandler final : public BaseScreenHandler,
+                                 public ErrorScreenView {
  public:
   using TView = ErrorScreenView;
 
@@ -67,6 +71,7 @@ class ErrorScreenHandler : public BaseScreenHandler, public ErrorScreenView {
   void SetOfflineSigninAllowed(bool value) override;
   void SetShowConnectingIndicator(bool value) override;
   void SetUIState(NetworkError::UIState ui_state) override;
+  base::WeakPtr<ErrorScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

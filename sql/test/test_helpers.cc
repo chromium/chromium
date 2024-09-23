@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sql/test/test_helpers.h"
 
 #include <stddef.h>
@@ -9,17 +14,18 @@
 
 #include <limits>
 #include <memory>
-#include <string>
-#include <tuple>
-
 #include <optional>
-#include "base/big_endian.h"
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <vector>
+
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
-#include "base/strings/string_piece.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
@@ -43,7 +49,7 @@ size_t CountSQLItemsOfType(sql::Database* db, const char* type) {
 // Read the number of the root page of a B-tree (index/table).
 //
 // Returns a 0-indexed page number, not the raw SQLite page number.
-std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
+std::optional<int> GetRootPage(sql::Database& db, std::string_view tree_name) {
   sql::Statement select(
       db.GetUniqueStatement("SELECT rootpage FROM sqlite_schema WHERE name=?"));
   select.BindString(0, tree_name);
@@ -78,12 +84,13 @@ std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
   return header[kWriteVersionHeaderOffset] == 2;
 }
 
-[[nodiscard]] bool CorruptSizeInHeaderMemory(uint8_t* header, int64_t db_size) {
+[[nodiscard]] bool CorruptSizeInHeaderMemory(base::span<uint8_t> header,
+                                             int64_t db_size) {
   // See https://www.sqlite.org/fileformat2.html#page_size
   constexpr size_t kPageSizeOffset = 16;
   constexpr uint16_t kMinPageSize = 512;
-  uint16_t raw_page_size;
-  base::ReadBigEndian(header + kPageSizeOffset, &raw_page_size);
+  uint16_t raw_page_size =
+      base::numerics::U16FromBigEndian(header.subspan<kPageSizeOffset, 2u>());
   const int page_size = (raw_page_size == 1) ? 65536 : raw_page_size;
   // Sanity-check that the page size is valid.
   if (page_size < kMinPageSize || (page_size & (page_size - 1)) != 0)
@@ -95,8 +102,8 @@ std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
   const int64_t page_count = (db_size + page_size * 2 - 1) / page_size;
   if (page_count > std::numeric_limits<uint32_t>::max())
     return false;
-  base::WriteBigEndian(reinterpret_cast<char*>(header + kPageCountOffset),
-                       static_cast<uint32_t>(page_count));
+  header.subspan<kPageCountOffset, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(static_cast<uint32_t>(page_count)));
 
   // Update change count so outstanding readers know the info changed.
   // See https://www.sqlite.org/fileformat2.html#file_change_counter
@@ -104,13 +111,13 @@ std::optional<int> GetRootPage(sql::Database& db, base::StringPiece tree_name) {
   // https://www.sqlite.org/fileformat2.html#write_library_version_number_and_version_valid_for_number
   constexpr size_t kFileChangeCountOffset = 24;
   constexpr size_t kVersionValidForOffset = 92;
-  uint32_t old_change_count;
-  base::ReadBigEndian(header + kFileChangeCountOffset, &old_change_count);
+  uint32_t old_change_count = base::numerics::U32FromBigEndian(
+      header.subspan<kFileChangeCountOffset, 4u>());
   const uint32_t new_change_count = old_change_count + 1;
-  base::WriteBigEndian(reinterpret_cast<char*>(header + kFileChangeCountOffset),
-                       new_change_count);
-  base::WriteBigEndian(reinterpret_cast<char*>(header + kVersionValidForOffset),
-                       new_change_count);
+  header.subspan<kFileChangeCountOffset, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(new_change_count));
+  header.subspan<kVersionValidForOffset, 4u>().copy_from(
+      base::numerics::U32ToBigEndian(new_change_count));
   return true;
 }
 
@@ -126,8 +133,8 @@ std::optional<int> ReadDatabasePageSize(const base::FilePath& db_path) {
   if (!file.ReadAndCheck(kPageSizeOffset, raw_page_size_bytes))
     return std::nullopt;
 
-  uint16_t raw_page_size;
-  base::ReadBigEndian(raw_page_size_bytes, &raw_page_size);
+  uint16_t raw_page_size =
+      base::numerics::U16FromBigEndian(raw_page_size_bytes);
   // The SQLite database format initially allocated a 16 bits for storing the
   // page size. This worked out until SQLite wanted to support 64kb pages,
   // because 65536 (64kb) doesn't fit in a 16-bit unsigned integer.
@@ -207,7 +214,7 @@ bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path) {
 }
 
 bool CorruptIndexRootPage(const base::FilePath& db_path,
-                          base::StringPiece index_name) {
+                          std::string_view index_name) {
   std::optional<int> page_size = ReadDatabasePageSize(db_path);
   if (!page_size.has_value())
     return false;
@@ -251,7 +258,7 @@ size_t CountTableColumns(sql::Database* db, const char* table) {
   }
 
   std::string sql = "PRAGMA table_info(" + quoted_table + ")";
-  sql::Statement s(db->GetUniqueStatement(sql.c_str()));
+  sql::Statement s(db->GetUniqueStatement(sql));
   size_t rows = 0;
   while (s.Step()) {
     ++rows;
@@ -266,7 +273,7 @@ bool CountTableRows(sql::Database* db, const char* table, size_t* count) {
   // will throw an error.
   std::string sql = "SELECT COUNT(*) FROM ";
   sql += table;
-  sql::Statement s(db->GetUniqueStatement(sql.c_str()));
+  sql::Statement s(db->GetUniqueStatement(sql));
   if (!s.Step())
     return false;
 
@@ -293,7 +300,7 @@ bool CreateDatabaseFromSQL(const base::FilePath& db_path,
   // http://crbug.com/307303 is for exploring this test issue.
   std::ignore = db.Execute("PRAGMA auto_vacuum = 0");
 
-  return db.Execute(sql.c_str());
+  return db.Execute(sql);
 }
 
 std::string IntegrityCheck(sql::Database& db) {
@@ -303,15 +310,15 @@ std::string IntegrityCheck(sql::Database& db) {
   return base::JoinString(messages, "\n");
 }
 
-std::string ExecuteWithResult(sql::Database* db, const char* sql) {
+std::string ExecuteWithResult(sql::Database* db, const base::cstring_view sql) {
   sql::Statement s(db->GetUniqueStatement(sql));
   return s.Step() ? s.ColumnString(0) : std::string();
 }
 
 std::string ExecuteWithResults(sql::Database* db,
-                               const char* sql,
-                               const char* column_sep,
-                               const char* row_sep) {
+                               const base::cstring_view sql,
+                               const base::cstring_view column_sep,
+                               const base::cstring_view row_sep) {
   sql::Statement s(db->GetUniqueStatement(sql));
   std::string ret;
   while (s.Step()) {

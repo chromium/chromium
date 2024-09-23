@@ -3,16 +3,19 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/cr_chip/cr_chip.js';
 
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PageClassification} from './omnibox.mojom-webui.js';
 import {getTemplate} from './request.html.js';
 import type {Request} from './suggest_internals.mojom-webui.js';
 import {RequestStatus} from './suggest_internals.mojom-webui.js';
@@ -40,12 +43,18 @@ export class SuggestRequestElement extends PolymerElement {
         type: String,
         computed: `computeResponseJson_(request.response)`,
       },
+
+      pgcl_: {
+        type: String,
+        computed: `computePageClassification_(request.url)`,
+      },
     };
   }
 
   request: Request;
   private requestDataJson_: string = '';
   private responseJson_: string = '';
+  private pgcl_: string = '';
 
   private computeRquestDataJson_(): string {
     try {
@@ -71,8 +80,50 @@ export class SuggestRequestElement extends PolymerElement {
     }
   }
 
+  private computePageClassification_(): string {
+    // Find pgcl value in request url.
+    const url = new URL(this.request.url.url);
+    const queryMatches = url.search.match(/pgcl=(?<pgcl>[^&]*)/);
+    // If no pgcl value in request, set pgcl to empty
+    const pgcl = queryMatches?.groups ? queryMatches?.groups['pgcl'] : '';
+    return pgcl;
+  }
+
+  private getPageClassificationLabel_(): string {
+    return PageClassification[parseInt(this.pgcl_)];
+  }
+
+  private insertTextProtoLinks_(stringJSON: string): string {
+    // Create regex to match against strings of desired form
+    // Ex. "google:entityinfo" : "<base64 encoding>".
+    // Extract the type (groups or entity) and proto (base64 encoding).
+    const regexGroups =
+        /"(?<type>(?:google:entityinfo|google:groupsinfo|X-Client-Data))":\s"(?<proto>(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?)"/g;
+    // Replace base64 groupinfo or entityinfo encodings with links to
+    // textproto in protoshop and return final string.
+    return stringJSON.replace(
+        regexGroups, (_match, _p1, _p2, _offset, _string, groups) => {
+          let urlType = '';
+          switch (groups.type) {
+            case 'google:entityinfo':
+              urlType = 'gws.searchbox.chrome.EntityInfo';
+              break;
+            case 'google:groupsinfo':
+              urlType = 'gws.searchbox.chrome.GroupsInfo';
+              break;
+            case 'X-Client-Data':
+              urlType = 'webserver.gws.ClientDataHeader';
+          }
+          return `"${
+              groups
+                  .type}": <a target='_blank' href=https://protoshop.corp.google.com/embed?tabs=textproto&type=${
+              urlType}&protobytes=${groups.proto}>${groups.proto}</a>`;
+        });
+  }
+
   private getRequestDataHtml_(): TrustedHTML {
-    return sanitizeInnerHtml(this.requestDataJson_);
+    const htmlJSON = this.insertTextProtoLinks_(this.requestDataJson_);
+    return sanitizeInnerHtml(htmlJSON);
   }
 
   private getRequestPath_(): string {
@@ -86,7 +137,8 @@ export class SuggestRequestElement extends PolymerElement {
   }
 
   private getResponseHtml_(): TrustedHTML {
-    return sanitizeInnerHtml(this.responseJson_);
+    const htmlJSON = this.insertTextProtoLinks_(this.responseJson_);
+    return sanitizeInnerHtml(htmlJSON);
   }
 
   private getStatusIcon_(): string {
@@ -168,18 +220,20 @@ export class SuggestRequestElement extends PolymerElement {
     }));
   }
 
-  private onViewRequestClick_() {
-    this.dispatchEvent(new CustomEvent('open-view-request-dialog', {
+  private onChipClick_(e: CustomEvent<string>) {
+    this.dispatchEvent(new CustomEvent('chip-click', {
       bubbles: true,
       composed: true,
+      detail: this.pgcl_,
     }));
-  }
-
-  private onViewResponseClick_() {
-    this.dispatchEvent(new CustomEvent('open-view-response-dialog', {
-      bubbles: true,
-      composed: true,
-    }));
+    // Allow chip to be found with aria label (originally hidden).
+    const button =
+        this.shadowRoot!.querySelector<HTMLElement>('cr-expand-button')!;
+    const label = button.shadowRoot!.querySelector<HTMLElement>('#label')!;
+    label.ariaHidden = 'false';
+    // Prevent cr-expand-button from being clicked when chip is clicked.
+    e.stopPropagation();
+    e.preventDefault();
   }
 }
 

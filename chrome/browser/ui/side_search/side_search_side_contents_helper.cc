@@ -77,13 +77,15 @@ void SideSearchSideContentsHelper::DidOpenRequestedURL(
 
 bool SideSearchSideContentsHelper::Delegate::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 
 content::WebContents* SideSearchSideContentsHelper::Delegate::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   return nullptr;
 }
 
@@ -130,16 +132,19 @@ bool SideSearchSideContentsHelper::CanDragEnter(
 
 bool SideSearchSideContentsHelper::HandleKeyboardEvent(
     content::WebContents* source,
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   DCHECK(delegate_);
   return delegate_->HandleKeyboardEvent(source, event);
 }
 
 content::WebContents* SideSearchSideContentsHelper::OpenURLFromTab(
     content::WebContents* source,
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
   DCHECK(delegate_);
-  return delegate_->OpenURLFromTab(source, params);
+  return delegate_->OpenURLFromTab(source, params,
+                                   std::move(navigation_handle_callback));
 }
 
 void SideSearchSideContentsHelper::NavigateInTabContents(

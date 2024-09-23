@@ -6,24 +6,26 @@
 #define IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_DETAIL_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_instructions_coordinator_delegate.h"
 
 @protocol WhatsNewDetailViewActionHandler;
+@protocol WhatsNewCommands;
 
 @class WhatsNewItem;
 
 @interface WhatsNewDetailCoordinator
-    : ChromeCoordinator <WhatsNewDetailViewDelegate>
+    : ChromeCoordinator <WhatsNewInstructionsViewDelegate>
 
 // `navigationController`: Handles user movement to check subpages.
 // `browser`: browser state for preferences and password check.
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                            item:(WhatsNewItem*)item
-                                   actionHandler:
-                                       (id<WhatsNewDetailViewActionHandler>)
-                                           actionHandler
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                                item:(WhatsNewItem*)item
+                       actionHandler:
+                           (id<WhatsNewDetailViewActionHandler>)actionHandler
+                     whatsNewHandler:(id<WhatsNewCommands>)whatsNewHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

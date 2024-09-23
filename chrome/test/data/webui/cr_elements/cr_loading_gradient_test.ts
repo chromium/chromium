@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.j
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('CrLoadingGradientElement', () => {
   test('AssignsUniqueIds', async () => {
@@ -24,7 +24,7 @@ suite('CrLoadingGradientElement', () => {
         </svg>
       </cr-loading-gradient>
     `;
-    await flushTasks();
+    await microtasksFinished();
 
     const gradients = document.querySelectorAll('cr-loading-gradient');
     assertEquals(

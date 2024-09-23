@@ -160,7 +160,6 @@ MojomColorMode EnumTraits<MojomColorMode, ProtoColorMode>::ToMojom(
     case ProtoColorMode::ColorMode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoColorMode::ColorMode_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
-      return MojomColorMode::kColor;
   }
 }
 
@@ -180,7 +179,6 @@ bool EnumTraits<MojomColorMode, ProtoColorMode>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -200,7 +198,6 @@ MojomSourceType EnumTraits<MojomSourceType, ProtoSourceType>::ToMojom(
     case ProtoSourceType::SourceType_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoSourceType::SourceType_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
-      return MojomSourceType::kUnknown;
   }
 }
 
@@ -226,7 +223,6 @@ bool EnumTraits<MojomSourceType, ProtoSourceType>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -240,7 +236,6 @@ MojomFileType EnumTraits<MojomFileType, ProtoImageFormat>::ToMojom(
     case ProtoImageFormat::ImageFormat_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoImageFormat::ImageFormat_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
-      return MojomFileType::kJpg;
   }
 }
 
@@ -260,7 +255,6 @@ bool EnumTraits<MojomFileType, ProtoImageFormat>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static
@@ -286,7 +280,6 @@ MojomScanResult EnumTraits<MojomScanResult, ProtoScanFailureMode>::ToMojom(
       break;
   }
   NOTREACHED();
-  return MojomScanResult::kUnknownError;
 }
 
 // static
@@ -317,7 +310,6 @@ bool EnumTraits<MojomScanResult, ProtoScanFailureMode>::FromMojom(
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 // static

@@ -136,7 +136,7 @@ interface PageBroadcast {
   // `token`: The frame token. Used to map between RemoteFrame and
   //    RenderFrameProxyHost.
   // `opener_frame_token`: Frame token that identifies the opener frame if one
-  //    exists, or absl::nullopt otherwise.
+  //    exists, or std::nullopt otherwise.
   // `is_loading`: Whether to call DidStartLoading() on the new main frame.
   // `devtools_frame_token`: Used for devtools instrumentation and
   //    trace-ability. The token is shared across all frames (local or remotes)

@@ -5,6 +5,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "base/command_line.h"
@@ -13,7 +14,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkClipOp.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"

@@ -10,7 +10,7 @@
 #import "components/version_ui/version_handler_helper.h"
 #import "components/version_ui/version_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -68,9 +68,8 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
   base::ValueView load_args[] = {load_event, empty};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", load_args);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  base::Value is_incognito(browser_state->IsOffTheRecord());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  base::Value is_incognito(profile->IsOffTheRecord());
   base::Value incognito_event("notify-about-incognito");
   base::ValueView incognito_args[] = {incognito_event, is_incognito};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", incognito_args);
@@ -84,7 +83,7 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
 
 void InternalsUIHandler::StartSubscription() {
   LogRouter* log_router =
-      get_log_router_function_.Run(ChromeBrowserState::FromWebUIIOS(web_ui()));
+      get_log_router_function_.Run(ProfileIOS::FromWebUIIOS(web_ui()));
   if (!log_router)
     return;
 
@@ -97,7 +96,7 @@ void InternalsUIHandler::EndSubscription() {
     return;
   registered_with_log_router_ = false;
   LogRouter* log_router =
-      get_log_router_function_.Run(ChromeBrowserState::FromWebUIIOS(web_ui()));
+      get_log_router_function_.Run(ProfileIOS::FromWebUIIOS(web_ui()));
   if (log_router)
     log_router->UnregisterReceiver(this);
 }

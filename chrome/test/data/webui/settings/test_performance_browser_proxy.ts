@@ -14,9 +14,7 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     super([
       'getCurrentOpenSites',
       'getDeviceHasBattery',
-      'openBatterySaverFeedbackDialog',
-      'openMemorySaverFeedbackDialog',
-      'openSpeedFeedbackDialog',
+      'openFeedbackDialog',
       'validateTabDiscardExceptionRule',
     ]);
   }
@@ -35,16 +33,8 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(false);
   }
 
-  openBatterySaverFeedbackDialog() {
-    this.methodCalled('openBatterySaverFeedbackDialog');
-  }
-
-  openMemorySaverFeedbackDialog() {
-    this.methodCalled('openMemorySaverFeedbackDialog');
-  }
-
-  openSpeedFeedbackDialog() {
-    this.methodCalled('openSpeedFeedbackDialog');
+  openFeedbackDialog(categoryTag: string) {
+    this.methodCalled('openFeedbackDialog', categoryTag);
   }
 
   setValidationResults(results: Record<string, boolean>) {

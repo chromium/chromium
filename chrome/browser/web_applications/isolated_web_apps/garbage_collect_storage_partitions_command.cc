@@ -50,7 +50,7 @@ void GarbageCollectStoragePartitionsCommand::StartWithLock(
 
 void GarbageCollectStoragePartitionsCommand::ResetStorageGarbageCollectPref() {
   base::ConcurrentClosures concurrent;
-  // TODO(crbug.com/1477027): change this pref to be stateful instead of
+  // TODO(crbug.com/40280176): change this pref to be stateful instead of
   // resetting to false early.
   profile_->GetPrefs()->SetBoolean(
       prefs::kShouldGarbageCollectStoragePartitions, false);

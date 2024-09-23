@@ -22,6 +22,11 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/fonts/font.h"
 
 #include "cc/paint/paint_canvas.h"
@@ -224,7 +229,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     return true;
   }
 
-  if (UNLIKELY(run.DirectionalOverride())) {
+  if (run.DirectionalOverride()) [[unlikely]] {
     // If directional override, create a new string with Unicode directional
     // override characters.
     const String text_with_override =
@@ -481,8 +486,9 @@ void Font::ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
 void Font::WillUseFontData(const String& text) const {
   const FontDescription& font_description = GetFontDescription();
   const FontFamily& family = font_description.Family();
-  if (UNLIKELY(family.FamilyName().empty()))
+  if (family.FamilyName().empty()) [[unlikely]] {
     return;
+  }
   if (FontSelector* font_selector = GetFontSelector()) {
     font_selector->WillUseFontData(font_description, family, text);
     return;
@@ -531,12 +537,6 @@ int Font::EmphasisMarkHeight(const AtomicString& mark) const {
     return 0;
 
   return mark_font_data->GetFontMetrics().Height();
-}
-
-Vector<double> Font::IndividualCharacterAdvances(const TextRun& run) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-  return shaper.IndividualCharacterAdvances(run);
 }
 
 float Font::TabWidth(const SimpleFontData* font_data,

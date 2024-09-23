@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 #include <vector>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -24,20 +24,20 @@ void InitLogging() {
   logging::LoggingSettings settings;
   settings.logging_dest =
       logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
-  settings.log_file_path = nullptr;
   logging::InitLogging(settings);
 }
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
+  // SAFETY: libfuzzer provides a valid pointer and size pair.
+  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
   InitLogging();
 
-  FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data.data(), data.size());
   size_t num_records = data_provider.ConsumeIntegral<size_t>();
   std::vector<uint8_t> packet = data_provider.ConsumeRemainingBytes<uint8_t>();
 
-  net::DnsRecordParser parser(packet.data(), packet.size(), /*offset=*/0,
-                              num_records);
+  net::DnsRecordParser parser(packet, /*offset=*/0, num_records);
   if (!parser.IsValid()) {
     return 0;
   }

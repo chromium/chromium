@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+
 #include "base/feature_list.h"
+#include "nearby_share_features.h"
 
 namespace features {
 
-BASE_FEATURE(kIsNameEnabled,
-             "IsNameEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables Quick Share branding.
+BASE_FEATURE(kIsNameEnabled, "IsNameEnabled", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Nearby Sharing functionality.
 BASE_FEATURE(kNearbySharing, "NearbySharing", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -33,22 +34,17 @@ BASE_FEATURE(kNearbySharingSelfShare,
              "NearbySharingSelfShare",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables use of WebRTC in Nearby Share.
-BASE_FEATURE(kNearbySharingWebRtc,
-             "NearbySharingWebRtc",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables use of WifiLan in Nearby Share.
-BASE_FEATURE(kNearbySharingWifiLan,
-             "NearbySharingWifiLan",
+// Enables contact restriction when not in high-visibility mode.
+BASE_FEATURE(kNearbySharingRestrictToContacts,
+             "NearbySharingRestrictToContacts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNameEnabled() {
   return base::FeatureList::IsEnabled(kIsNameEnabled);
 }
 
-bool IsSelfShareEnabled() {
-  return base::FeatureList::IsEnabled(kNearbySharingSelfShare);
+bool IsRestrictToContactsEnabled() {
+  return base::FeatureList::IsEnabled(kNearbySharingRestrictToContacts);
 }
 
 }  // namespace features

@@ -16,6 +16,7 @@ const char kFwupdGetUpgradesMethodName[] = "GetUpgrades";
 const char kFwupdGetDevicesMethodName[] = "GetDevices";
 const char kFwupdInstallMethodName[] = "Install";
 const char kFwupdSetFeatureFlagsMethodName[] = "SetFeatureFlags";
+const char kFwupdUpdateMetadataMethodName[] = "UpdateMetadata";
 
 // Names of keys returned by the "DeviceRequest" signal:
 // The RequestID is stored in the AppstreamId key in fwupd for legacy reasons.
@@ -41,6 +42,44 @@ const char kFwupdDeviceRequestId_ReplugInstall[] =
     "org.freedesktop.fwupd.replug-install";
 const char kFwupdDeviceRequestId_ReplugPower[] =
     "org.freedesktop.fwupd.replug-power";
+
+const char kFwupdErrorName_Internal[] = "org.freedesktop.fwupd.Internal";
+const char kFwupdErrorName_VersionNewer[] =
+    "org.freedesktop.fwupd.VersionNewer";
+const char kFwupdErrorName_VersionSame[] = "org.freedesktop.fwupd.VersionSame";
+const char kFwupdErrorName_AlreadyPending[] =
+    "org.freedesktop.fwupd.AlreadyPending";
+const char kFwupdErrorName_AuthFailed[] = "org.freedesktop.fwupd.AuthFailed";
+const char kFwupdErrorName_Read[] = "org.freedesktop.fwupd.Read";
+const char kFwupdErrorName_Write[] = "org.freedesktop.fwupd.Write";
+const char kFwupdErrorName_InvalidFile[] = "org.freedesktop.fwupd.InvalidFile";
+const char kFwupdErrorName_NotFound[] = "org.freedesktop.fwupd.NotFound";
+const char kFwupdErrorName_NothingToDo[] = "org.freedesktop.fwupd.NothingToDo";
+const char kFwupdErrorName_NotSupported[] =
+    "org.freedesktop.fwupd.NotSupported";
+const char kFwupdErrorName_SignatureInvalid[] =
+    "org.freedesktop.fwupd.SignatureInvalid";
+const char kFwupdErrorName_AcPowerRequired[] =
+    "org.freedesktop.fwupd.AcPowerRequired";
+const char kFwupdErrorName_PermissionDenied[] =
+    "org.freedesktop.fwupd.PermissionDenied";
+const char kFwupdErrorName_BrokenSystem[] =
+    "org.freedesktop.fwupd.BrokenSystem";
+const char kFwupdErrorName_BatteryLevelTooLow[] =
+    "org.freedesktop.fwupd.BatteryLevelTooLow";
+const char kFwupdErrorName_NeedsUserAction[] =
+    "org.freedesktop.fwupd.NeedsUserAction";
+const char kFwupdErrorName_AuthExpired[] = "org.freedesktop.fwupd.AuthExpired";
+
+// "1" is the bitflag for an internal device. Defined here:
+// https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
+const uint64_t kInternalDeviceFlag = 1;
+// "100000000"(9th bit) is the bit release flag for a trusted report.
+// Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
+const uint64_t kTrustedReportsReleaseFlag = 1llu << 8;
+// "10000"(5th bit) is the fwupd feature flag to allow interactive requests.
+// Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
+const uint64_t kRequestsFeatureFlag = 1llu << 4;
 
 }  // namespace ash
 

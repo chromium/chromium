@@ -5,17 +5,23 @@
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <map>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -42,6 +48,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/zlib/google/zip.h"
+#include "ui/base/metadata/base_type_conversion.h"
 
 namespace policy {
 
@@ -62,13 +69,16 @@ constexpr char kPolicyDumpFileLocation[] = "/var/log/policy_dump.json";
 
 // The file names of the system logs to upload.
 // Note: do not add anything to this list without checking for PII in the file.
+//
+// After adding a new entry here please add the corresponding log name to the
+// `Enterprise.SystemLogUploader.LogSize` UMA metric and publish size of this
+// log in the `ReportLogSizes` function.
 const char* const kSystemLogFileNames[] = {"/var/log/bios_info.txt",
                                            "/var/log/chrome/chrome",
                                            "/var/log/chrome/chrome.PREVIOUS",
                                            "/var/log/eventlog.txt",
                                            "/var/log/extensions.log",
                                            "/var/log/extensions.1.log",
-                                           "/var/log/platform_info.txt",
                                            "/var/log/messages",
                                            "/var/log/messages.1",
                                            "/var/log/net.log",
@@ -149,6 +159,49 @@ std::unique_ptr<SystemLogUploader::SystemLogs> ReadFiles() {
   return system_logs;
 }
 
+void ReportLogSizes() {
+  // Maps file name without an extension to the combined size in kilobytes of
+  // all the logs with the given file name.
+  base::flat_map<std::string, int> log_name_to_size;
+
+  for (const char* file_path : kSystemLogFileNames) {
+    base::FilePath fullFilePath = base::FilePath(file_path);
+    if (!base::PathExists(fullFilePath)) {
+      continue;
+    }
+
+    base::FilePath baseFileNameWithoutExtension =
+        fullFilePath.RemoveExtension();
+    int64_t log_size;
+    if (GetFileSize(fullFilePath, &log_size)) {
+      log_name_to_size[baseFileNameWithoutExtension.value()] += log_size / 1024;
+    }
+  }
+
+  static constexpr std::string_view log_size_histogram_prefix =
+      "Enterprise.SystemLogUploader.LogSize.";
+  static constexpr auto log_name_to_uma_metrics_name =
+      base::MakeFixedFlatMap<std::string_view, std::string_view>(
+          {{"/var/log/bios_info", "BiosInfo"},
+           {"/var/log/chrome/chrome", "Chrome"},
+           {"/var/log/eventlog", "Eventlog"},
+           {"/var/log/extensions", "Extensions"},
+           {"/var/log/messages", "Messages"},
+           {"/var/log/net", "Net"},
+           {"/var/log/ui/ui", "UI"},
+           {"/var/log/update_engine", "UpdateEngine"}});
+
+  for (const auto& [log_name, log_size] : log_name_to_size) {
+    if (!log_name_to_uma_metrics_name.contains(log_name)) {
+      continue;
+    }
+
+    const std::string uma_metric_name = base::StrCat(
+        {log_size_histogram_prefix, log_name_to_uma_metrics_name.at(log_name)});
+    base::UmaHistogramMemoryKB(uma_metric_name, log_size);
+  }
+}
+
 // An implementation of the |SystemLogUploader::Delegate|, that is used to
 // create an upload job and load system logs from the disk.
 class SystemLogDelegate : public SystemLogUploader::Delegate {
@@ -201,6 +254,11 @@ std::string SystemLogDelegate::GetPolicyAsJSON() {
 }
 
 void SystemLogDelegate::LoadSystemLogs(LogUploadCallback upload_callback) {
+  // Report log sizes that are going to be uploaded via UMA.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&ReportLogSizes));
+
   // Run ReadFiles() in the thread that interacts with the file system and
   // return system logs to |upload_callback| on the current thread.
   base::ThreadPool::PostTaskAndReplyWithResult(

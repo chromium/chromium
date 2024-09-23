@@ -24,7 +24,7 @@ def CheckWebViewHistogramsAllowlist(src_path, output_api):
     sys.path.append(histograms_path)
     import print_histogram_names
 
-    all_histograms, _ = print_histogram_names.get_names(
+    all_histograms = print_histogram_names.get_names(
         print_histogram_names.histogram_xml_files())
 
     histograms_allowlist = get_histograms_allowlist_content(src_path)

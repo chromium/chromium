@@ -1,27 +1,23 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
-<translation id="1021782183249308751">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="1066101356081285416">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Siuntinio stebėjimo numeris ir svetainės pavadinimas bus siunčiami „Google“, kad būtų galima teikti šią funkciją ir tobulinti „Google“ apsipirkimo funkcijas visiems žmonėms. Tai galite bet kada atnaujinti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
-<translation id="1085696779717592361">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
-<translation id="1105362920864247682">Išvalyti naršymo duomenis naršyklėje „Chrome“.</translation>
-<translation id="1113057722807951993">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“.
-
-Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">Slaptažodis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
-<translation id="1177414119866731261">Atidarykite „Chrome“ meniu</translation>
+<translation id="1146503048444965320">Atidarykite naują skirtuką naršyklėje „Chrome“</translation>
+<translation id="1166460004393506534">Naršymo duomenų ištrynimas naršyklėje „Chrome“.</translation>
+<translation id="1179527450541388808">Greičiau pasiekite „Chrome“ naudodami „iPad“ pagrindinio ekrano doką.</translation>
 <translation id="1180362651362502943">Toliau naudokite „Chrome“ duomenis „Google“ paskyroje.</translation>
 <translation id="1200396280085622191">Naudokite „Chrome“ bet kada palietę nuorodas pranešimuose ir kitose programose.</translation>
 <translation id="1229222343402087523">Ieškoti pagal užklausą „${searchPhrase}“ naršyklėje „Chrome“</translation>
-<translation id="1282031177488366470">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
-<translation id="1320619893013575407">Išjungėte „Chrome“ prisijungimą.</translation>
+<translation id="1237769345474105984">Jei naudojate „Chrome“</translation>
+<translation id="1240190568154816272">„Chrome“ patarimai</translation>
+<translation id="124228879633599436">Jūsų „Chrome“ pasenusi. Atnaujinkite, kad užtikrintumėte saugą.</translation>
 <translation id="1333745675627230582">„Chrome“ dinozauro žaidimas</translation>
 <translation id="1352919863522755794">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti jūsų slaptažodžių. Pabandykite patikrinti interneto ryšį.</translation>
+<translation id="1394995526009609883">Pasirinkimus galite bet kada atnaujinti „Chrome“ nustatymuose.</translation>
 <translation id="1407843355326180937">Prisijunkite prie šios svetainės ir „Chrome“, kad gautumėte žymes ir kt. visuose savo įrenginiuose.</translation>
-<translation id="1436059927646026729">Atidaryti naujausią skirtuką naršyklėje „Chrome“</translation>
-<translation id="1449241544691504574">Žymių pridėjimas prie „Chrome“</translation>
+<translation id="1426599484714342603">Pasinaudokite „Chrome“ apsipirkimo pranašumais</translation>
 <translation id="1462727070346936664">Prisijunkite, kad išnaudotumėte visas „Chrome“ galimybes.</translation>
-<translation id="1491435845014430217">Įjunkite parinktį „Užrakinti inkognito skirtukus uždarius „Chrome“.</translation>
 <translation id="1493827051843127077">Nustatykite „Chrome“ kaip numatytąjį nustatymą, kad būtų sinchronizuojami skirtukai, slaptažodžiai ir mokėjimo informacija visuose įrenginiuose</translation>
 <translation id="1504372625950710826">„Chrome“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="1516692594929310090">Atidaromas „Chrome“ skirtukų tinklelis.</translation>
@@ -35,24 +31,23 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 
   • Jei sinchronizuosite istoriją „Google“ paskyroje, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Turite patikimiausią „Chrome“ apsaugą nuo žalingų svetainių</translation>
-<translation id="1615715390546812898">Paieška balsu naršyklėje „Chrome“.</translation>
-<translation id="1657395063736185342">Vaizdo medžiagos paieška naršyklėje „Chrome“</translation>
-<translation id="1675955119303651351">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
-        Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
-<translation id="1682483655351012182">Sinchronizuoti „Chrome“ duomenis</translation>
+<translation id="155816064895200734">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
+<translation id="1580570086594302477">Atidaromas naujas „Chrome“ inkognito skirtukas.</translation>
+<translation id="1634522710245925681">Naudokite „Chrome“ pagal numatytuosius nustatymus, kad lengvai gautumėte kainų įžvalgų</translation>
+<translation id="1646463005043273333">Atidaromas „Chrome“ nustatymas nustatyti „Chrome“ kaip numatytąją naršyklę.</translation>
+<translation id="1670609221633730681">„Chrome“ patarimas: pasirinkite adreso juostos padėtį</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Pridedami įvesti URL prie žymių naršyklėje „Chrome“.</translation>
-<translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1830634592642484976">Šis adresas šiuo metu išsaugotas naršyklėje „Chrome“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
-<translation id="1843217788865538014">Automatiškai naudokite „Chrome“ palietę nuorodą pranešimuose, dokumentuose ir kitose programose.</translation>
-<translation id="1910975740091000991">„Chrome“, skirta „iOS“</translation>
 <translation id="1917964099031477364">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chrome“ bei kitų šiame įrenginyje įdiegtų „Google“ programų.</translation>
+<translation id="1919130412786645364">Leisti „Chrome“ prisijungti</translation>
 <translation id="1965935827552890526">Pabaikite tai, ką darėte, kitame atidarytame „Chrome“ lange.</translation>
+<translation id="1984705450038014246">„Chrome“ duomenų sinchronizavimas</translation>
 <translation id="1987779152850321833">Atlikite toliau nurodytus siūlomus veiksmus, kad išnaudotumėte visas „Chrome“ galimybes.</translation>
+<translation id="2055826352861631739">„Chrome“, skirtos „iPad“, naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="2056123005618757196">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Google Chrome“.</translation>
 <translation id="2120238739383482109">Atidaromos „Chrome“ žymės.</translation>
 <translation id="2147651015520127414">„Chrome“ patvirtino, kad „<ph name="ISSUER" />“ išdavė šį svetainės sertifikatą.</translation>
-<translation id="2155145621546387786">Bendrinti „Chrome“</translation>
 <translation id="2199719347983604670">„Chrome“ sinchronizavimo duomenys</translation>
 <translation id="2213327331203157297">Jei norite išjungti užrakinimo režimą naršyklėje „Chrome“, išjunkite jį „iPhone“ įrenginyje.</translation>
 <translation id="2242467532204595597">Naudokite „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
@@ -60,7 +55,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2339201583852607431">Slaptažodis bus išsaugotas „Google“ paskyroje (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">„Chrome“ bendrina jūsų vietovę su svetainėmis, kurioms leidžiate gauti tokius duomenis.</translation>
 <translation id="2347208864470321755">Kai ši funkcija įjungta, „Chrome“ siūlo versti kitomis kalbomis parašytus puslapius naudojant „Google“ vertėją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
-<translation id="2414068465746584414">Įrenginio nustatymų skiltyje atidarykite „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ ir pasirinkite „Chrome“</translation>
 <translation id="2423077901494354337">Dabar galite išnaudoti visas „Chrome“ galimybes įrenginyje.</translation>
 <translation id="2427791862912929107">„Chrome“ yra funkcijų, kurias naudojant lengva tvarkyti internetinius duomenis ir tinklalapių įkėlimo spartą.
 <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -71,92 +65,90 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2576431527583832481">„Chrome“ patobulėjo! Galima nauja versija.</translation>
 <translation id="257708665678654955">Ar norėtumėte, kad kitą kartą „Google Chrome“ būtų siūloma išversti šios svetainės puslapius <ph name="LANGUAGE_NAME" /> k.?</translation>
 <translation id="2650286135394207535">Leiskite „Chrome“ padėti stebėti jūsų siuntinius</translation>
+<translation id="2668242166988961773">Paieška balsu naršyklėje „Chrome“.</translation>
 <translation id="2671426118752779020">Galite naudoti „Google“ slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPhone“ programose.</translation>
 <translation id="2689064829982324496">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK" />atsijunkite nuo „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">„Chrome“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
-<translation id="2702250627063295552">Pridėti skaitymo sąrašo elementą prie „Chrome“</translation>
 <translation id="2703746758996815929">Jei norite gauti naudingų „Chrome“ patarimų, įjunkite pranešimus „iOS“ nustatymuose.</translation>
 <translation id="2736805085127235148">„Chrome“ pranešimai šiuo metu išjungti įrenginio nustatymuose.</translation>
-<translation id="2750626042242931740">Pasirinkimus galite bet kada atnaujinti „Chrome“ nustatymuose.</translation>
-<translation id="2767464022270041271">Nėra išsaugotų slaptažodžių. „Google“ slaptažodžių tvarkyklė gali tikrinti slaptažodžius, kai juos išsaugote.</translation>
-<translation id="2789947168960170215">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Išvalyti naršymo duomenis naršyklėje „Chrome“</translation>
-<translation id="2869959624320573933">Prisijunkite prie „Chrome“</translation>
-<translation id="2876628302275096482">Sužinokite daugiau, <ph name="BEGIN_LINK" />kaip „Chrome“ užtikrina jūsų duomenų privatumą<ph name="END_LINK" /></translation>
-<translation id="2952581218264071393">1. Atidarykite „Chrome“ nustatymus</translation>
-<translation id="2957447865124070833">Pasirinkite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
-<translation id="2988274366244053197">„Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
+<translation id="2754428955276778271">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
 
-Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
+Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
+<translation id="2767464022270041271">Nėra išsaugotų slaptažodžių. „Google“ slaptažodžių tvarkyklė gali tikrinti slaptažodžius, kai juos išsaugote.</translation>
+<translation id="2788811701191021538">Atidaromas „Chrome“ mokėjimo metodų nustatymo puslapis.</translation>
+<translation id="2876628302275096482">Sužinokite daugiau, <ph name="BEGIN_LINK" />kaip „Chrome“ užtikrina jūsų duomenų privatumą<ph name="END_LINK" /></translation>
+<translation id="292371311537977079">„Chrome“ nustatymai</translation>
+<translation id="2923827943290349720">Užrakinti inkognito skirtukus uždarius „Chrome“</translation>
+<translation id="2940565985148833945">„Chrome“ patarimas: ieškokite naudodami „Lens“</translation>
+<translation id="2957447865124070833">Pasirinkite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
+<translation id="2986402782150919988">Žymių pridėjimas prie „Chrome“</translation>
 <translation id="3030414234702425231">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chrome“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>
+<translation id="3051521853355903257">Slaptažodžių tvarkymas naršyklėje „Chrome“</translation>
 <translation id="309672519329227863">Pasiekite „Chrome“ slaptažodžius ir kitas funkcijas kitose programose.</translation>
-<translation id="3146109040683991651">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
+<translation id="3109170945534582468">„Chrome“ veiksmai</translation>
+<translation id="3140589780564632473">Vaizdo medžiagos paieška naršyklėje „Chrome“</translation>
+<translation id="314782365035065913">Greičiau pasiekite „Chrome“ naudodami pagrindinio ekrano doką</translation>
 <translation id="3167189358072330585">Paskyra neveikia sistemoje „Google Chrome“. Susisiekite su domeno administratoriumi arba prisijungdami naudokite įprastą „Google“ paskyrą.</translation>
-<translation id="3173834708294760622">„Google Chrome“ puslapis</translation>
 <translation id="322254490661677575">Jei norite naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje, įveskite slaptafrazę.</translation>
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
-<translation id="3340938510625667914">Veiksmai „Chrome“ naršyklėje</translation>
-<translation id="3345341804167540816">Naudokite „Chrome“ visur</translation>
+<translation id="3303503998967553377">„Chrome“ veiksmų naudojimas „iOS“ įrenginyje</translation>
+<translation id="3348862487678490430">Pridėti skaitymo sąrašo elementą prie „Chrome“</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutę}one{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutę}few{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutes}many{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutės}other{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minučių}}</translation>
+<translation id="3367797402528056312">Užbaikite „Chrome“ sąranką</translation>
+<translation id="3371064404604898522">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="3399930248910934354">Atidarykite „Chrome“ nustatymus</translation>
-<translation id="344736123700721678">Greičiau pasiekite „Chrome“ naudodami pagrindinio ekrano doką</translation>
 <translation id="3472587960215700950">„Chrome“ naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>
 <translation id="3503014945441706099">Taip pat naudokite Sustiprintą saugų naršymą šiame „Chrome“ profilyje</translation>
 <translation id="3522659714780527202">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, įjunkite sinchronizavimą</translation>
-<translation id="3577555362230509265">Naudokite „Chrome“ kitose programose.</translation>
 <translation id="364480321352456989">Jūsų „Chrome“ pasenusi.</translation>
 <translation id="3646736009628185125">Šeimos grupės narys šiuo metu negali gauti slaptažodžių. Paprašykite atnaujinti „Chrome“ ir sinchronizuoti slaptažodžius. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">Tai reiškia, kad kiekvieną kartą „Chrome“ teiks svetainės mobiliesiems užklausą.</translation>
-<translation id="3720541637541300822">Užrakinti inkognito skirtukus uždarius „Chrome“</translation>
 <translation id="3740397331642243698">Atidaromi įvesti URL naršyklėje „Google Chrome“ inkognito režimu.</translation>
 <translation id="3741995255368156336">Atidaromas „Chrome“ skaitymo sąrašas.</translation>
-<translation id="3744018071945602754">Slaptažodžių tvarkymas naršyklėje „Chrome“</translation>
 <translation id="3827545470516145620">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
 <translation id="384394811301901750">„Google Chrome“ šiuo metu negali naudoti fotoaparato</translation>
 <translation id="3863841106411295595">Pridedami įvesti URL prie skaitymo sąrašo naršyklėje „Chrome“.</translation>
-<translation id="387280738075653372">Čia atsisiųskite „Chrome“.</translation>
 <translation id="3901001113120561395">Išnaudokite visas „Chrome“ galimybes.</translation>
 <translation id="3913386780052199712">Prisijungta prie „Chrome“</translation>
-<translation id="3967382818307165056">Mokėjimo metodų tvarkymas naršyklėje „Chrome“</translation>
-<translation id="3980220367029651214">Perjungiate sinchronizavimo paskyras iš <ph name="USER_EMAIL1" /> į <ph name="USER_EMAIL2" />. Esamus „Chrome“ duomenis valdo <ph name="DOMAIN" />. Duomenys bus ištrinti iš šio įrenginio, bet liks paskyroje <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Jūsų organizacija reikalauja likti atsijungus nuo „Chrome“.</translation>
 <translation id="3988789688219830639">„Google Chrome“ nepasiekia nuotraukų ar vaizdo įr. Įgal. prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
 <translation id="4064699917955374540">Jei norite naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje, patvirtinkite savo tapatybę.</translation>
-<translation id="4067858366537947361">„Chrome“ inkognito skirtuko atidarymas</translation>
-<translation id="4093042601582616698">Nustatyti „Chrome“ kaip numatytąją naršyklę?</translation>
 <translation id="417201473131094001">Nepalaikoma versijoje „Chrome Canary“</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> naudojo „Chromium“ ir paliko žymes, slaptažodžius bei kitus nustatymus šiame įrenginyje.</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
-<translation id="4251174643044751591">Atidaromas „Chrome“ mokėjimo metodų nustatymo puslapis.</translation>
-<translation id="4453284704333523777">„Chrome“ nustatymų tvarkymas</translation>
-<translation id="4508370294876102450">Atidarykite „Chrome“ naudodami bet kurią programą</translation>
+<translation id="447252321002412580">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
 <translation id="4523886039239821078">Dėl tam tikrų priedų „Chrome“ užstringa . Pašalinkite:</translation>
 <translation id="4633328489441962921">„Chrome“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="4636900170638246267">Prisijunkite prie šios svetainės ir „Chrome“.</translation>
+<translation id="4646014602299206846">„Chrome“ aptiks siuntinių stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Jūsų duomenys bus bendrinami su „Google“, kad būtų galima teikti šią funkciją ir tobulinti Apsipirkimo funkcijas visiems.</translation>
+<translation id="4647910807533196601">Atidaryti naujausią skirtuką naršyklėje „Chrome“</translation>
+<translation id="4724297637870447613">„Chrome“ naudojimas visuose įrenginiuose</translation>
+<translation id="4738647308035481133">„Google Chrome“ puslapis</translation>
+<translation id="4742795653798179840">Ištrinti „Chrome“ duomenys</translation>
 <translation id="4761869838909035636">Paleisti „Chrome“ Saugos patikrą</translation>
+<translation id="4798859546468762093">Jei norite naudoti suasmeninimo ir kitas funkcijas, įtraukite „Chrome“ į <ph name="FEATURE_NAME_1" /> ir <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Kad padėtų tobulinti programą, „Chrome“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_LINK" />Tvarkyti<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
-
-        Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
-<translation id="4834499902900503484">Kai esate prisijungę prie „Chrome“, išsaugoti slaptažodžiai pateikiami „Google“ paskyroje. Jei norite išjungti, <ph name="BEGIN_LINK" />eikite į nustatymus<ph name="END_LINK" />.</translation>
+<translation id="4830799082179398588">Nustatyti „Chrome“ kaip numatytąją naršyklę?</translation>
 <translation id="484033449593719797">Nepalaikoma „Chrome“ beta versijoje</translation>
 <translation id="4840404732697892756">„Google“ slaptažodžių tvarkyklė gali patikrinti slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{„Chrome“ gali padėti stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="4903674399067644695">Šioje kortelėje pateikiami pasiūlymai, kaip išnaudoti visas „Chrome“ galimybes.</translation>
 <translation id="49200511069271369">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios jungiatės, ir tai, kaip galima naudoti „Chrome“. Administratorius gali nustatyti arba apriboti tam tikras funkcijas.</translation>
+<translation id="4925322001044117929">Naudoti „Chrome“ „iPad“ įrenginyje pagal numatytuosius nustatymus</translation>
 <translation id="498985224078955265">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ abiejuose įrenginiuose</translation>
 <translation id="5030102366287574140">„Chrome“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir pan.</translation>
-<translation id="5108659628347594808">„Chrome“ tobulinimas</translation>
+<translation id="5109169629909011627">„Chrome“ žymių peržiūra</translation>
 <translation id="5112925986883715005">„Chrome“ skaitymo sąrašo peržiūra</translation>
 <translation id="5119391094379141756">Pasirinkite „Chrome“</translation>
-<translation id="5156818928311866442">Atidaromas „Chrome“ nustatymas nustatyti „Chrome“ kaip numatytąją naršyklę.</translation>
+<translation id="5123188916260706415">Paieška balsu naršyklėje „Chrome“</translation>
 <translation id="5162467219239570114">„Chrome“ versija yra pasenusi. Jei <ph name="BEGIN_LINK" />programų parduotuvėje<ph name="END_LINK" /> nėra jokio naujinio, gali būti, kad įrenginys nebepalaiko naujų versijų „Chrome“.</translation>
 <translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5190139289262548459">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios esate prisijungę, ir tai, kaip naudojama „Chrome“.</translation>
-<translation id="5256908199795498284">„Chrome“ aptiks siuntinių stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Jūsų duomenys bus bendrinami su „Google“, kad būtų galima teikti šią funkciją ir tobulinti Apsipirkimo funkcijas visiems.</translation>
-<translation id="5278862365980079760">Užrakinkite inkognito skirtukus, išėję iš „Chrome“ ar perjungę į kitą programą.</translation>
+<translation id="5305440589062022504">Atidaroma Slaptažodžių tvarkyklė naršyklėje „Chrome“</translation>
+<translation id="5310957470610282541">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
+Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="5389212809648216794">„Google Chrome“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
 <translation id="5395376160638294582">Užtikrinkite, kad visada galėtumėte naudoti „Chrome“ duomenis „Google“ paskyroje</translation>
+<translation id="5404252374083197467">Nustatyti „Chrome“ kaip numatytąją?</translation>
 <translation id="5439191312780166229">Įspėjama apie pavojingas svetaines, net ir apie tas, apie kurias anksčiau „Google“ nežinojo, analizuojant daugiau duomenų iš svetainių, nei taikant įprastą apsaugą. Galite pasirinkti praleisti „Chrome“ įspėjimus.</translation>
 <translation id="5442013002200339429">Jei paslėpsite „<ph name="MODULE_NAME" />“, „Chrome“ automatiškai nebestebės būsimų siuntinių ir ištrins visus ankstesnius siuntinių stebėjimo duomenis.</translation>
 <translation id="5460571915754665838">4. Pasirinkite „Chrome“</translation>
@@ -172,52 +164,60 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="5661521615548540542">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Vėliau bandykite dar kartą.</translation>
 <translation id="5690398455483874150">{count,plural, =1{Dabar rodomas vienas „Chrome“ langas}one{Dabar rodomas {count} „Chrome“ langas}few{Dabar rodomi {count} „Chrome“ langai}many{Dabar rodoma {count} „Chrome“ lango}other{Dabar rodoma {count} „Chrome“ langų}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5709557627224531708">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="571296537125272375">Neprisijungta, todėl „Chrome“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="5716154293141027663">Bet kada palietus nuorodas kitose programose, bus atidaroma „Chrome“</translation>
-<translation id="5733084997078800044">„Chrome“ patarimas</translation>
+<translation id="5772407442571703917">Čia atsisiųskite „Chrome“.</translation>
+<translation id="5779767936254214055">Užrakinkite inkognito skirtukus, išėję iš „Chrome“ ar perjungę į kitą programą.</translation>
 <translation id="5808435672482059465">„Chrome“ istorijos peržiūra</translation>
-<translation id="589695154992054845">Atidaroma Slaptažodžių tvarkyklė naršyklėje „Chrome“.</translation>
+<translation id="5833027901704861726">Kai kurie „Chrome“ duomenys dar neišsaugoti paskyroje <ph name="EMAIL" />.
+Pabandykite palaukti kelias minutes prieš perjungdami paskyras. Jei dabar perjungsite paskyras, šie duomenys bus ištrinti.</translation>
 <translation id="5998675059699164418">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chrome“.</translation>
-<translation id="6054613632208573261">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
-<translation id="6063091872902370735">Leisti „Chrome“ prisijungimą</translation>
+<translation id="6021312115739110405">„Google“ sukurtas tinkintas jums skirtas sklaidos kanalas. Įskaitant naujienas, sportą ir orų prognozę.</translation>
+<translation id="6022659036123304283">Suasmeninkite „Chrome“</translation>
 <translation id="6110625574506755980">Kai kurios „Chrome“ funkcijos nebebus pasiekiamos.</translation>
 <translation id="6132149203299792222">Prisijunkite naudodami „Google“ paskyrą, kad sinchronizuotumėte slaptažodžius, žymes ir kt.</translation>
+<translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Paieška naršyklėje „Chrome“</translation>
-<translation id="6181930887571472871">Perjungimas į „Chrome“</translation>
+<translation id="6181652351336379338">Vaizdo medžiagos paieška naršyklėje „Chrome“.</translation>
+<translation id="6200694931081795166">Jei norite nustatyti „Chrome“ kaip numatytąją naršyklę, atlikite toliau nurodytus veiksmus.
+  1. Atidarykite skiltį „Nustatymai“.
+  2. Palieskite „Numatytoji naršyklės programa“.
+  3. Pasirinkite „Chrome“</translation>
 <translation id="6238746320622508509">Leiskite „Chrome“ užrakinti jūsų inkognito skirtukus.</translation>
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
 <translation id="6272822675004864999">Jei norite gauti „Chrome“ pranešimus, įjunkite pranešimus „iOS“ nustatymuose.</translation>
 <translation id="630693926528731525">Slaptažodis nebuvo bendrintas. Patikrinkite interneto ryšį ir įsitikinkite, kad esate prisijungę prie „Chrome“. Tada bandykite dar kartą.</translation>
 <translation id="6348855835728304880">Pasiekite „Chrome“ slaptažodžius ir kitas programas kitose šio įrenginio programose.</translation>
+<translation id="6373751563207403289">Saugos patikra padeda apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Gaukite įspėjimus apie bet kokias privatumo ar saugos problemas, kurias „Chrome“ aptinka.</translation>
 <translation id="6389317667633680932">Peržiūrėkite naujas funkcijas, kad galėtumėte išnaudoti visas „Chrome“ galimybes.</translation>
 <translation id="6412673304250309937">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai.</translation>
 <translation id="6427126399757991875">Jūsų organizacija konfigūruoja „Chrome“...</translation>
+<translation id="6481963882741794338">Susiekite „Chrome“ ir kitas „Google“ paslaugas, kad būtų galima suasmeninti ir kitais tikslais</translation>
 <translation id="6484712497741564393">Prisijungta kaip <ph name="EMAIL" />.
 
 Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje.</translation>
-<translation id="6497850081273517953">„Chrome“ pasenusi, atnaujinkite į naujausią versiją, kad užtikrintumėte saugą.</translation>
-<translation id="6540120577248033958">Apsilankykite svetainėje ir „Chrome“ meniu spustelėkite „Stebėti“</translation>
 <translation id="6545449117344801102">„Chrome“ aptinka adresus ir naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos.</translation>
-<translation id="6600954340915313787">Nukopijuota į „Chrome“</translation>
 <translation id="6634107063912726160">Kai atsijungsite, „Chrome“ nesinchronizuos jokių naujų duomenų su jūsų „Google“ paskyra. Anksčiau sinchronizuoti duomenys lieka paskyroje.</translation>
+<translation id="6636941099779251629">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">Siunčiama klaidinanti URL dalis „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chrome“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, „Google“.</translation>
+<translation id="6647304104688527905">Atidaromas naujas „Chrome“ skirtukas.</translation>
 <translation id="6648150602980899529">Prisijungiate naudodami <ph name="DOMAIN" /> valdomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chrome“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chrome“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
-<translation id="6676840375528380067">Išvalyti jūsų „Chrome“ duomenis iš šio įrenginio?</translation>
-<translation id="6683891932310469419">Atidaromas „Chrome“ istorijos puslapis.</translation>
+<translation id="6684809838922667136">„Chrome“ tobulinimas</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutę. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}one{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutę. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}few{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutes. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}many{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minutės. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}other{Taip nutinka, kai „Chrome“ nenaudojama {THRESHOLD} minučių. Duomenys, išsaugoti tik šiame įrenginyje, kol buvote prisijungę, bus ištrinti. Tai gali apimti istoriją ir slaptažodžius.}}</translation>
 <translation id="6709398533399187136">Jūsų slaptažodis atskleistas įvykus duomenų saugos pažeidimui. „Google“ slaptažodžių tvarkytuvė rekomenduoja pakeisti jį dabar.</translation>
-<translation id="6815466750807582739">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
+<translation id="6788035488757621217">Įrenginio nustatymų skiltyje atidarykite „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ ir pasirinkite „Chrome“</translation>
+<translation id="6820553595690137150">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų.
 
-Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
-<translation id="6851982868877411675">Atidarykite „Chrome“ nustatymus sistemoje „iOS“, tada palieskite „Numatytoji naršyklės programa“ ir pasirinkite „Chrome“.</translation>
+Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
+<translation id="6838525730752203626">„Chrome“ naudojimas pagal numatytuosius nustatymus</translation>
 <translation id="686691656039982452">Galite <ph name="BEGIN_LINK" />tvarkyti, kokie „Chrome“ duomenys išsaugomi<ph name="END_LINK" /> „Google“ paskyroje.
 
 Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ funkcijoms tobulinti, eikite į <ph name="BEGIN_LINK" />„Google“ paslaugas<ph name="END_LINK" />.</translation>
-<translation id="6916015246697034114">Paieška balsu naršyklėje „Chrome“</translation>
-<translation id="6964931465519938134">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
+<translation id="6922332667202044570">Naršymo duomenų ištrynimas naršyklėje „Chrome“.</translation>
 <translation id="6975725306479268850">„Chrome“ pasirinkimas automatinio pildymo funkcijai</translation>
-<translation id="7004159181872656283">Ieškokite vaizdo medžiagos naršyklėje „Chrome“.</translation>
 <translation id="7056826488869329999">Atidaroma ir vykdoma saugos patikra naršyklėje „Chrome“.</translation>
-<translation id="7059914902409643750">Suasmeninkite „Chrome“</translation>
+<translation id="7061455974939528301">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
 <translation id="7161390184744336561">„Google Chrome“ versija yra pasenusi</translation>
 <translation id="7165736900384873061">Prad. naudoti „Google Chrome“ QR skait.</translation>
@@ -226,99 +226,92 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7200524487407690471">„Chrome“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
 <translation id="7203324561587388418">Nepraleiskite turinio ir naudingų „Chrome“ patarimų.</translation>
 <translation id="72119412072970160">Galite naudoti „Google“ slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPad“ programose.</translation>
+<translation id="7214019116829172458">„Chrome“ inkognito skirtuko atidarymas</translation>
+<translation id="722167379782941918">„Chrome“ rekomenduoja naudoti sustiprintą apsaugą</translation>
 <translation id="723787869754590019">„Chrome“ naudojimas automatinio pildymo funkcijai</translation>
-<translation id="7254380941803999489">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="7261678641327190792">„Chrome“ negali patikrinti jūsų slaptažodžių</translation>
 <translation id="7272930098487145294">Jei norite išsaugoti vaizdus, palieskite „Nustatymai“ ir leiskite „Chrome“ pridėti jūsų nuotraukas</translation>
 <translation id="7275945473750112644">Jūsų paskyrą tvarko <ph name="HOSTED_DOMAIN" />, todėl jūsų „Chrome“ duomenys bus išvalyti iš šio įrenginio</translation>
-<translation id="7304491752269485262">„Chrome“ automatinio pildymo išplėstinis rodinys</translation>
+<translation id="7284245284340063465">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
+<translation id="7296102444587051536">„Chrome“, skirta „iOS“</translation>
+<translation id="7299681342915173313">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas el. laiškuose, dokumentuose ir kitose programose.</translation>
+<translation id="7344094882820374540">Patikimiausios „Chromium“ apsaugos nuo pavojingų svetainių užtikrinimas</translation>
 <translation id="7349129508108954623">Leiskite „Chrome“ naudoti „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>
 <translation id="7394108421562933108">Žemėlapiai naršyklėje „Chrome“</translation>
 <translation id="7400722733683201933">Apie „Google Chrome“</translation>
 <translation id="7466693328838535498">Laukelyje „Paieškos valdikliai“ įveskite „Chrome“</translation>
-<translation id="746684838091935575">3. Pasirinkite „Chrome“</translation>
+<translation id="7477056987201678345">Ištrinami „Chrome“ duomenys…</translation>
 <translation id="7492574581995589075">Organizacija išjungė galimybę naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje. Nauji slaptažodžiai, žymės ir kt. bus išsaugoti tik šiame įrenginyje.</translation>
-<translation id="7501046334262221972">Norėdami padaryti „Chrome“ numatytąja naršykle, atidarykite skiltį „Nustatymai“. Palieskite „Numatytoji naršyklės programa“ ir pasirinkite „Chrome“.</translation>
-<translation id="756809126120519699">Išvalyti „Chrome“ duomenys</translation>
+<translation id="7540272326042438331">Bendrinti „Chrome“</translation>
+<translation id="7575971113404272499">„Chrome“ patarimas: naudokite „Chrome“ pagal numatytuosius nustatymus</translation>
 <translation id="7581063337314642333">Apsilankykite „Chrome“ skirtukų tinklelyje</translation>
+<translation id="7599894504325210080">„Chrome“ automatinio pildymo išplėstinis rodinys</translation>
+<translation id="7642373780953416937">Gaukite įspėjimus apie bet kokias privatumo ar saugos problemas, kurias „Chrome“ automatiškai aptinka.</translation>
 <translation id="7662994914830945754">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, prisijunkite ir įjunkite sinchronizavimą</translation>
-<translation id="7669869107155339016">Eikite į „Chrome“ nustatymus.</translation>
-<translation id="769104993356536261">„Chrome“ veiksmų naudojimas „iOS“ įrenginyje</translation>
 <translation id="7693590760643069321">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="7698568245838009292">„Chrome“ nori pasiekti fotoaparatą</translation>
-<translation id="7754633291442704733">Organizacija „<ph name="DOMAIN" />“ galės pasiekti „Chrome“ duomenis, žymes, istoriją, slaptažodžius ir kitus nustatymus, kuriuos saugote šioje paskyroje. Kai atsijungsite, šio įrenginio duomenys bus išvalyti.  Tačiau duomenys bus toliau saugomi jūsų valdomoje „Google“ paskyroje ir bus pasiekiami jūsų organizacijai. Jūsų organizacija taip pat gali nustatyti tos paskyros naudotojo politiką, pagal kurią galima keisti „Chrome“ veikimą.</translation>
+<translation id="7707877166818730835">Atidaryti naujausią skirtuką naršyklėje „Chrome“</translation>
+<translation id="776305366874821582">Greičiau pasiekite „Chrome“ naudodami „iPhone“ pagrindinio ekrano doką.</translation>
 <translation id="7780154209050837198">Jei norite išnaudoti visas „Chrome“ galimybes, prisijunkite prie „Chrome“ naudodami „Google“ paskyrą.</translation>
+<translation id="7787205077729386167">Atidarykite „Chrome“ nustatymus sistemoje „iOS“, tada palieskite „Numatytoji naršyklės programa“ ir pasirinkite „Chrome“.</translation>
 <translation id="778855399387580014">Pradėti paiešką naujame „Chrome“ skirtuke.</translation>
 <translation id="7792140019572081272">„Chrome“ apsaugo neskelbtinus duomenis, kai naudodamas „Face ID“.</translation>
 <translation id="7855730255114109580">„Google Chrome“ yra naujausios versijos</translation>
 <translation id="7897703007638178753">Žr. „Chrome“ naujausius skirtukus</translation>
-<translation id="7925119591961387184">Pasirinkite „Chrome“.</translation>
-<translation id="7933491483529363150">Atidarykite savo naujausią skirtuką naršyklėje „Chrome“.</translation>
 <translation id="7948283758957877064">„Chrome“ naujienos</translation>
+<translation id="8000174216052461231">„Chrome“ patarimas: gaukite patikimiausią „Chrome“ apsaugą</translation>
 <translation id="8006014511203279255">Naudokite „Chrome“ bet kada palietę nuorodas pranešimuose ir kitose programose.</translation>
+<translation id="8018153653741938705">Saugos užtikrinimas naudojant „Google Chrome“</translation>
 <translation id="8022947259858476807">Naudokite „Chrome“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>
 <translation id="804638182476029347">Leiskite „Chrome“ pranešimams gauti įspėjimus apie sumažintas kainas</translation>
+<translation id="804756029368067824">Nustatykite „Chrome“ kaip numatytąją naršyklę, kad galėtumėte lengvai stebėti kainas ir gauti norimų įsigyti prekių kainų įžvalgų.</translation>
 <translation id="8065292699993359127">Atidaryti URL naršyklėje „Chrome“ inkognito režimu</translation>
 <translation id="8069507567842347179">Šis siuntinys jau buvo stebimas naršyklėje „Chrome“.</translation>
-<translation id="81358522153858150">Dabar „Chrome“ palaiko valdomos paskyros naudotojo politiką</translation>
 <translation id="8136856065410661948">Šie duomenys bus naudojami įvykiams programoje „Apple Calendar“ kurti naudojant „Chrome“ ir „Google Lens“.</translation>
+<translation id="8154120522323162874">Naudokitės visomis „Chrome“ galimybėmis, užbaigę naršyklės sąranką.</translation>
 <translation id="8160472928944011082">Nepavyko atnaujinti „Chrome“</translation>
-<translation id="8174679664544842874">Atidaromas naujas „Chrome“ skirtukas.</translation>
-<translation id="8213758103105806860">„Chrome“ žymių peržiūra</translation>
-<translation id="8328903609881776074">Atidaromas naujas „Chrome“ inkognito skirtukas.</translation>
+<translation id="8248887045858762645">„Chrome“ patarimas</translation>
+<translation id="8265730590513812063">Atidaryti „Chrome“ meniu</translation>
+<translation id="8317674518145175158">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
+
+Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8357607116237445042">Pasirinkite, ar norite išvalyti „Chrome“ duomenis iš šio įrenginio ar juos palikti</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
+<translation id="8371138994040262994">Atidaroma „Nustatymų“ skiltis naršyklėje „Chrome“.</translation>
 <translation id="8387459386171870978">Toliau naudoti „Chrome“</translation>
 <translation id="840168496893712993">Dėl tam tikrų priedų „Chrome“ užstringa. Pabandykite juos pašalinti.</translation>
+<translation id="8413500425974960807">„Chrome“ patarimas: perkelkite „Chrome“ į doką</translation>
 <translation id="8413795581997394485">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Kai apsilankote svetainėje, „Chrome“ siunčia klaidinančią URL dalį „Google“ per privatumo serverį, slepiantį jūsų IP adresą. Jei svetainė atlieka ką nors įtartino, siunčiami ir visi URL bei puslapio turinio dalys.</translation>
-<translation id="8414886616817913619">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chrome“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">Toliau naudokite „Chrome“ duomenis „Google“ paskyroje</translation>
 <translation id="8459495907675268833">Pasirinkti duomenys pašalinti iš „Chrome“ ir sinchronizuojamų įrenginių. Adresu history.google.com gali būti pateikta kitų formų jūsų „Google“ paskyros istorija, pvz., paieškos ir veikla kitose „Google“ paslaugose.</translation>
 <translation id="8491300088149538575">Prisijungta kaip <ph name="EMAIL" />.
 
 Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, kad galėtumėte naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje.</translation>
-<translation id="850555388806794946">Jei norite nustatyti „Chrome“ kaip numatytąją naršyklę, atlikite toliau nurodytus veiksmus.
-  1. Atidarykite skiltį „Nustatymai“.
-  2. Palieskite „Numatytoji naršyklės programa“.
-  3. Pasirinkite „Chrome“.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Įspėjama apie bet kokias privatumo ar saugos problemas, kurias „Chrome“ aptinka.</translation>
 <translation id="8558480467877843976">Dabar galite naudoti „Chrome“ bet kada naršydami ar paliesdami nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
-<translation id="8577978202917232774">Pasiūlymai pagrįsti jūsų naršymo veikla kituose įrenginiuose. Jei norite gauti pasiūlymų, prisijunkite prie „Chrome“ visuose savo įrenginiuose.</translation>
-<translation id="8587647598504233556">Palieskite „Chrome“, tada – „Numatytoji naršyklės programa“.</translation>
 <translation id="8603022514504485810">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
+<translation id="8630122478628016441">Įjunkite parinktį „Užrakinti inkognito skirtukus uždarius „Chrome“.</translation>
 <translation id="8727043961453758442">Išnaudokite visas „Chrome“ galimybes</translation>
-<translation id="8736550665979974340">Saugos užtikrinimas naudojant „Google Chrome“</translation>
-<translation id="8760668027640688122">Atidarykite naują skirtuką naršyklėje „Chrome“</translation>
 <translation id="8765470054473112089">Kai įvedate tekstą adreso juostoje ar paieškos laukelyje, „Chrome“ siunčia tai, ką įvedate, į numatytąjį paieškos variklį, kad gautų geresnių pasiūlymų. Ši funkcija inkognito režimu išjungta.</translation>
 <translation id="8772179140489533211">Rodomi raginimai prisijungti prie „Chrome“.</translation>
 <translation id="8788269841521769222">Jums nereikia prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
-<translation id="878917453316810648">„Chrome“ patarimas: naudokite „Chrome“ pagal numatytuosius nustatymus</translation>
-<translation id="8808828119384186784">„Chrome“ nustatymai</translation>
+<translation id="880967149107462122">Eikite į „Chrome“ nustatymus</translation>
+<translation id="8842132678697187091">Čia galite atidaryti „Google Lens“.</translation>
+<translation id="8850736900032787670">Jei norite gauti pagal pomėgius suasmeninto turinio, prisijunkite prie „Chrome“.</translation>
 <translation id="8855781063981781621">Jei norite išjungti užrakinimo režimą naršyklėje „Chrome“, išjunkite jį „iPad“ įrenginyje.</translation>
-<translation id="8856877214925961642">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų.
-
-Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
 <translation id="8865415417596392024">„Chrome“ duomenys jūsų paskyroje</translation>
 <translation id="8874688701962049679">Patarimai, kaip išnaudoti visas „Chrome“ galimybes.</translation>
-<translation id="8891935667620843985">Galite automatiškai atidaryti nuorodas naršyklėje „Chrome“, nustatę ją kaip numatytąją naršyklės programą.</translation>
 <translation id="8897749957032330183">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkyklėje šiame įrenginyje.</translation>
-<translation id="8949681853939555434">„Chrome“ nustatymas kaip numatytosios naršyklės</translation>
-<translation id="8969290730818637510">Kai įjungta
-<ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chrome“ žmonėms, naudojantiems ją kaip jūs.<ph name="END_INDENT" />
-
-Į ką reikėtų atsižvelgti
-<ph name="BEGIN_INDENT" />  • Sistemai „Google“ siunčiama informacija apie „Chrome“ naudojimą, bet ji su jumis nesusiejama.
-
-  • Jei „Chrome“ užstringa, į strigties ataskaitą gali būti įtraukta tam tikros asmens informacijos.
-
-  • Jei įjungsite sinchronizavimą, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
-<translation id="9043368763795653245">Jei norite suasmeninti „Discover“ sklaidos kanalą ir „Chrome“, įjunkite sinchronizavimą.</translation>
+<translation id="9004772704776174843">Atsijungta nuo „Chrome“</translation>
 <translation id="9068336935206019333">Atidaryti „Chrome“ inkognito režimu</translation>
-<translation id="9071207983537882274">Atidaroma „Nustatymų“ skiltis naršyklėje „Chrome“.</translation>
-<translation id="9112744793181547300">Nustatyti „Chrome“ kaip numatytąją?</translation>
+<translation id="909127538042363610">Gaukite patikimiausią „Chromium“ apsaugą</translation>
 <translation id="9122931302567044771">Tai reiškia, kad kiekvieną kartą „Chrome“ teiks staliniams kompiuteriams skirtos svetainės užklausą.</translation>
+<translation id="9176561303811134420">Mokėjimo metodų tvarkymas naršyklėje „Chrome“</translation>
 <translation id="9181628561061032322">Atidaromi „Chrome“ naujausi skirtukai.</translation>
-<translation id="953008885340860025">Atsijungta nuo „Chrome“</translation>
+<translation id="9194404253580584015">„Google“ sukurtas tinkintas jums skirtas sklaidos kanalas.</translation>
+<translation id="948597495737267756">Atidaromas „Chrome“ istorijos puslapis.</translation>
 <translation id="97300214378190234">Naudokite „Chrome“ bet kada palietę nuorodas kitose programose.</translation>
+<translation id="998677222109959694">Tvarkyti „Chrome“ nustatymus</translation>
 </translationbundle>

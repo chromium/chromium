@@ -8,10 +8,12 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/trace_event_binding.h"
-#include "base/base_jni/EarlyTraceEvent_jni.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/tasks_jni/EarlyTraceEvent_jni.h"
 
 namespace base {
 namespace android {

@@ -19,7 +19,7 @@
 
 // Weak handles provides a way to refer to weak pointers from another sequence.
 // This is useful because it is not safe to reference a weak pointer from a
-// sequence other than the sequence on which it was created.
+// sequence other than the sequence on which it will be invalidated.
 //
 // Weak handles can be passed across sequences, so for example, you can use them
 // to do the "real" work on one thread and get notified on another thread:
@@ -36,10 +36,11 @@
 //   const WeakHandle<Foo> foo_;
 // };
 //
-// class Foo : public SupportsWeakPtr<Foo> {
+// class Foo {
 //  public:
 //   Foo() {
-//     SpawnFooIOWorkerOnIOThread(base::MakeWeakHandle(AsWeakPtr()));
+//     SpawnFooIOWorkerOnIOThread(
+//         MakeWeakHandle(weak_ptr_factory_.GetWeakPtr()));
 //   }
 //
 //   /* Will always be called on the correct sequence, and only if this
@@ -48,6 +49,8 @@
 //
 //  private:
 //   SEQUENCE_CHECKER(sequence_checker_);
+//
+//   base::WeakPtrFactory<Foo> weak_ptr_factory_{this};
 // };
 
 namespace base {

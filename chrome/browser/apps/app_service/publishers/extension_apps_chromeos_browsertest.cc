@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -43,9 +48,9 @@ namespace {
 
 // Write file to disk.
 base::FilePath WriteFile(const base::FilePath& directory,
-                         const base::StringPiece name,
-                         const base::StringPiece content) {
-  const base::FilePath path = directory.Append(base::StringPiece(name));
+                         const std::string_view name,
+                         const std::string_view content) {
+  const base::FilePath path = directory.Append(std::string_view(name));
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::WriteFile(path, content);
   return path;
@@ -212,10 +217,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, SetConsumerCalled) {
         InstallDefaultInstalledExtension(extension_dir.UnpackedPath());
     ASSERT_TRUE(extension);
 
-    // TODO(crbug.com/1179530): setConsumer is called, but launchParams is empty
-    // in the test. However, it is populated when run manually. Find a better
-    // way to automate launchParams testing such that it's populated in the
-    // test, like it is when executed manually.
+    // TODO(crbug.com/40169582): setConsumer is called, but launchParams is
+    // empty in the test. However, it is populated when run manually. Find a
+    // better way to automate launchParams testing such that it's populated in
+    // the test, like it is when executed manually.
     LaunchExtensionAndCatchResult(*extension);
   }
 }

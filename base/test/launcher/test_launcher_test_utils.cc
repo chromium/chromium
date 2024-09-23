@@ -4,12 +4,13 @@
 
 #include "base/test/launcher/test_launcher_test_utils.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -148,13 +149,13 @@ bool ValidateTestLocation(const Value::Dict& test_locations,
   return result;
 }
 
-absl::optional<Value::Dict> ReadSummary(const FilePath& path) {
-  absl::optional<Value::Dict> result;
+std::optional<Value::Dict> ReadSummary(const FilePath& path) {
+  std::optional<Value::Dict> result;
   File resultFile(path, File::FLAG_OPEN | File::FLAG_READ);
   const int size = 2e7;
   std::string json;
   CHECK(ReadFileToStringWithMaxSize(path, &json, size));
-  absl::optional<Value> value = JSONReader::Read(json);
+  std::optional<Value> value = JSONReader::Read(json);
   if (value && value->is_dict())
     result = std::move(*value).TakeDict();
 

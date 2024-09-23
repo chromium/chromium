@@ -80,7 +80,7 @@ bool TestRenderViewContextMenu::IsItemInRangePresent(
 
 bool TestRenderViewContextMenu::GetMenuModelAndItemIndex(
     int command_id,
-    MenuModel** found_model,
+    raw_ptr<MenuModel>* found_model,
     size_t* found_index) {
   std::vector<MenuModel*> models_to_search;
   models_to_search.push_back(&menu_model_);

@@ -4,12 +4,17 @@
 
 #include "components/metrics/structured/external_metrics.h"
 
+#include <errno.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -34,6 +39,19 @@ void FilterEvents(
     } else {
       ++it;
     }
+  }
+}
+
+// This function assumes that a LOCK_EX has been obtained for file descriptor at
+// |path|.
+void DeleteFileAndUnlock(const base::FilePath& path, const base::ScopedFD& fd) {
+  bool delete_result = base::DeleteFile(path);
+  if (!delete_result) {
+    LOG(ERROR) << "Failed to unlink event file " << path.value();
+  }
+  int result = flock(fd.get(), LOCK_UN);
+  if (result < 0) {
+    PLOG(ERROR) << "Failed to unlock for event file " << path.value();
   }
 }
 
@@ -93,51 +111,19 @@ void ProcessEventProtosProjectCounts(
     IncrementProjectCount(project_count_map, event.project_name_hash());
   }
 
-  for (const auto& event : proto.non_uma_events()) {
+  for (const auto& event : proto.events()) {
     IncrementProjectCount(project_count_map, event.project_name_hash());
-  }
-}
-
-// TODO(b/181724341): Remove this once the bluetooth metrics are fully enabled.
-void MaybeFilterBluetoothEvents(
-    google::protobuf::RepeatedPtrField<metrics::StructuredEventProto>* events) {
-  // Event name hashes of all bluetooth events listed in
-  // src/platform2/metrics/structured/structured.xml.
-  static constexpr auto kBluetoothEventHashes =
-      base::MakeFixedFlatSet<uint64_t>(
-          {// BluetoothAdapterStateChanged
-           UINT64_C(959829856916771459),
-           // BluetoothPairingStateChanged
-           UINT64_C(11839023048095184048),
-           // BluetoothAclConnectionStateChanged
-           UINT64_C(1880220404408566268),
-           // BluetoothProfileConnectionStateChanged
-           UINT64_C(7217682640379679663),
-           // BluetoothDeviceInfoReport
-           UINT64_C(1506471670382892394)});
-
-  if (base::FeatureList::IsEnabled(kBluetoothSessionizedMetrics)) {
-    return;
-  }
-
-  // Remove all bluetooth events.
-  auto it = events->begin();
-  while (it != events->end()) {
-    if (kBluetoothEventHashes.contains(it->event_name_hash())) {
-      it = events->erase(it);
-    } else {
-      ++it;
-    }
   }
 }
 
 bool FilterProto(EventsProto* proto,
                  const base::flat_set<uint64_t>& disallowed_projects) {
   FilterEvents(proto->mutable_uma_events(), disallowed_projects);
-  FilterEvents(proto->mutable_non_uma_events(), disallowed_projects);
-  return proto->uma_events_size() > 0 || proto->non_uma_events_size() > 0;
+  FilterEvents(proto->mutable_events(), disallowed_projects);
+  return proto->uma_events_size() > 0 || proto->events_size() > 0;
 }
 
+// See header comments on CollectEvents() for more details.
 EventsProto ReadAndDeleteEvents(
     const base::FilePath& directory,
     const base::flat_set<uint64_t>& disallowed_projects,
@@ -161,47 +147,67 @@ EventsProto ReadAndDeleteEvents(
 
   while (dir_reader.Next()) {
     base::FilePath path = directory.Append(dir_reader.name());
-    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_OPEN_ALWAYS);
+    base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 
-    // This will fail on '.' and '..' files.
+    // This needs to be checked before calling GetInfo to prevent a crash.
     if (!file.IsValid()) {
       continue;
     }
 
-    // Ignore any directory.
+    // Fetches file metadata.
     base::File::Info info;
-    if (!file.GetInfo(&info) || info.is_directory) {
+    if (!file.GetInfo(&info)) {
       continue;
     }
 
-    // If recording is disabled delete the file.
+    if (info.is_directory) {
+      continue;
+    }
+
+    base::ScopedFD fd(open(path.value().c_str(), O_RDWR));
+    if (fd.get() < 0) {
+      LOG(ERROR) << "Failed to open event file " << path.value();
+      continue;
+    }
+
+    // Obtain the file lock.
+    int err = flock(fd.get(), LOCK_EX);
+    if (err < 0) {
+      PLOG(ERROR) << "Failed to get lock for event file " << path.value();
+      continue;
+    }
+
+    // If recording is disabled, delete the file before reading.
     if (!recording_enabled) {
-      base::DeleteFile(path);
+      DeleteFileAndUnlock(path, fd);
       continue;
     }
 
     ++file_counter;
 
     std::string proto_str;
-    int64_t file_size;
     EventsProto proto;
 
-    // If an event is abnormally large, ignore it to prevent OOM.
-    bool fs_ok = base::GetFileSize(path, &file_size);
+    LogEventFileSizeKB(static_cast<int>(info.size / 1024));
 
-    // If file size get is successful, log the file size.
-    if (fs_ok) {
-      LogEventFileSizeKB(static_cast<int>(file_size / 1024));
-    }
-
-    if (!fs_ok || file_size > GetFileSizeByteLimit()) {
-      base::DeleteFile(path);
+    // If the file_size exceeds the limit, drop the payload.
+    if (info.size > GetFileSizeByteLimit()) {
+      LOG(ERROR)
+          << "Event file size exceeds the limit. Dropping events at file "
+          << path.value();
+      DeleteFileAndUnlock(path, fd);
       continue;
     }
 
     bool read_ok = base::ReadFileToString(path, &proto_str) &&
                    proto.ParseFromString(proto_str);
-    base::DeleteFile(path);
+
+    // Delete the file regardless of whether the read succeeded or failed.
+    DeleteFileAndUnlock(path, fd);
+    if (!read_ok) {
+      LOG(ERROR) << "Failed to read and parse the file " << path.value();
+      continue;
+    }
 
     // Process all events that were packed in the proto.
     ProcessEventProtosProjectCounts(produced_projects_count, proto);
@@ -210,9 +216,6 @@ EventsProto ReadAndDeleteEvents(
     // This could happen if the process in which Structured metrics resides
     // is either crash-looping or taking too long to process externally
     // recorded events.
-    //
-    // Events will be dropped in that case so that more recent events can be
-    // processed. Events will be dropped if recording has been disabled.
     if (file_counter > GetFileLimitPerScan()) {
       ++dropped_events;
 
@@ -221,10 +224,8 @@ EventsProto ReadAndDeleteEvents(
       continue;
     }
 
-    if (!read_ok) {
-      continue;
-    }
-
+    // Events will also be dropped if the project is not allowed to be recorded.
+    // FilterProto will return false if all events have been filtered out.
     if (!FilterProto(&proto, disallowed_projects)) {
       continue;
     }
@@ -232,7 +233,7 @@ EventsProto ReadAndDeleteEvents(
     // MergeFrom performs a copy that could be a move if done manually. But
     // all the protos here are expected to be small, so let's keep it simple.
     result.mutable_uma_events()->MergeFrom(proto.uma_events());
-    result.mutable_non_uma_events()->MergeFrom(proto.non_uma_events());
+    result.mutable_events()->MergeFrom(proto.events());
   }
 
   if (recording_enabled) {
@@ -252,10 +253,6 @@ EventsProto ReadAndDeleteEvents(
   }
 
   LogNumFilesPerExternalMetricsScan(file_counter);
-
-  MaybeFilterBluetoothEvents(result.mutable_uma_events());
-  MaybeFilterBluetoothEvents(result.mutable_non_uma_events());
-
   return result;
 }
 

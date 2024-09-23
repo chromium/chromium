@@ -12,8 +12,8 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 /**
- * Static utility methods for recording messages related metrics.
- * TODO(https://crbug.com/1382967): remove logs.
+ * Static utility methods for recording messages related metrics. TODO(crbug.com/40877562): remove
+ * logs.
  */
 public class MessagesMetrics {
     private static final String TAG = "MessagesMetrics";
@@ -31,8 +31,6 @@ public class MessagesMetrics {
     private static final String ENQUEUED_HIDDEN_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hidden";
     private static final String ENQUEUED_HIDING_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hiding";
     private static final String FULLY_VISIBLE_NAME = "Android.Messages.FullyVisible";
-    private static final String ERROR_FULLY_VISIBLE_NOT_INFORMED_NAME =
-            "Android.Messages.Error.FullyVisibleNotInformed";
     private static final String DISMISSED_WITHOUT_FULLY_VISIBLE =
             "Android.Messages.DismissedWithoutFullyVisible";
     private static final String DISMISSED_HISTOGRAM_PREFIX = "Android.Messages.Dismissed.";
@@ -272,15 +270,6 @@ public class MessagesMetrics {
                 FULLY_VISIBLE_NAME, messageIdentifier, MessageIdentifier.COUNT);
     }
 
-    /**
-     * Record the fully visible callback is not triggered when it is supposed to be. E.g. when the
-     * message is dismissed by gesture, primary action, secondary action, timer.
-     */
-    static void recordErrorFullyVisibleNotInformed(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                ERROR_FULLY_VISIBLE_NOT_INFORMED_NAME, messageIdentifier, MessageIdentifier.COUNT);
-    }
-
     /** Record when the message is dismissed without being fully visible before. */
     static void recordDismissedWithoutFullyVisible(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -336,8 +325,6 @@ public class MessagesMetrics {
                 return "SaveAddressProfile";
             case MessageIdentifier.MERCHANT_TRUST:
                 return "MerchantTrust";
-            case MessageIdentifier.ADD_TO_HOMESCREEN_IPH:
-                return "AddToHomescreenIPH";
             case MessageIdentifier.SEND_TAB_TO_SELF:
                 return "SendTabToSelf";
             case MessageIdentifier.READER_MODE:
@@ -392,8 +379,6 @@ public class MessagesMetrics {
                 return "DownloadIncognitoWarning";
             case MessageIdentifier.CVC_SAVE:
                 return "CvcSave";
-            case MessageIdentifier.TRACKING_PROTECTION_NOTICE:
-                return "TrackingProtectionNotice";
             case MessageIdentifier.DESKTOP_SITE_WINDOW_SETTING:
                 return "DesktopSiteWindowSetting";
             case MessageIdentifier.PROMPT_HATS_LOCATION_CUSTOM_INVITATION:
@@ -408,6 +393,16 @@ public class MessagesMetrics {
                 return "PromptHatsMicrophoneCustomInvitation";
             case MessageIdentifier.PROMPT_HATS_MICROPHONE_GENERIC_INVITATION:
                 return "PromptHatsMicrophoneGenericInvitation";
+            case MessageIdentifier.PERMISSION_BLOCKED:
+                return "PermissionBlocked";
+            case MessageIdentifier.SAVE_CARD_FAILURE:
+                return "SaveCardFailure";
+            case MessageIdentifier.VIRTUAL_CARD_ENROLL_FAILURE:
+                return "VirtualCardEnrollFailure";
+            case MessageIdentifier.PROMPT_HATS_QUICK_DELETE:
+                return "PromptHatsQuickDelete";
+            case MessageIdentifier.PROMPT_HATS_SAFETY_HUB:
+                return "PromptHatsSafetyHub";
             default:
                 return "Unknown";
         }

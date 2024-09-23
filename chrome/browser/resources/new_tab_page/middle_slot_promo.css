@@ -1,0 +1,81 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  font-size: 12px;
+  max-width: 537px;
+}
+
+#promoAndDismissContainer {
+  align-items: center;
+  background-color: var(--color-new-tab-page-promo-background);
+  border: solid var(--color-new-tab-page-border) 1px;
+  border-radius: 24px;
+  box-sizing: border-box;
+  color: var(--color-new-tab-page-primary-foreground);
+  display: flex;
+  flex-direction: row;
+  height: 30px;
+  justify-content: center;
+}
+
+#promoContainer {
+  align-items: center;
+  display: flex;
+  overflow-x: hidden;
+  padding-inline-end: 8px;
+  white-space: pre;
+}
+
+:host([shown-middle-slot-promo-id_]) #promoContainer {
+  padding-inline-end: 2px;
+}
+
+#promoContainer > :first-child {
+  margin-inline-start: 8px;
+}
+
+a {
+  color: var(--color-new-tab-page-link);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+a:focus {
+  border-radius: 2px;
+  box-shadow: var(--ntp-focus-shadow);
+  outline: none;
+}
+
+img {
+  background-color: var(--color-new-tab-page-promo-image-background);
+  border-radius: 50%;
+  height: 20px;
+  margin-inline-end: 4px;
+  pointer-events: none;
+  width: 20px;
+}
+
+#dismissPromoButton {
+  --cr-icon-button-icon-size: 14px;
+  --cr-icon-button-size: 20px;
+  --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+  color: var(--color-new-tab-page-primary-foreground);
+  margin-inline-end: 4px;
+  margin-inline-start: 8px;
+}
+
+#promoContainer > :last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

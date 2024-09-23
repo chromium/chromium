@@ -28,7 +28,6 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="2329392777730037872"><ph name="URL" /> sa nepodarilo v klientovi otvoriť.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2366718077645204424">Hostiteľa sa nepodarilo nájsť. Pravdepodobne je to spôsobené konfiguráciou siete, ktorú používate.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Naposledy bol(a) online <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Povolenie prístupu službe <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Pripojené k zariadeniu <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Chcete tento počítač zdieľať s ďalším používateľom, aby ho mohol zobraziť a ovládať?</translation>
@@ -53,7 +52,6 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="3423542133075182604">Proces vzdialeného prístupu bezpečnostného kľúča</translation>
 <translation id="3581045510967524389">Nepodarilo sa pripojiť k sieti. Skontrolujte, či je vaše zariadenie online.</translation>
 <translation id="3596628256176442606">Táto služba povoľuje prichádzajúce pripojenia od klientov funkcie Chromoting.</translation>
-<translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Ako na to</translation>
 <translation id="3776024066357219166">Vaša relácia Vzdialenej plochy Chrome bola ukončená.</translation>
 <translation id="3858860766373142691">Názov</translation>
@@ -105,7 +103,6 @@ Ak je políčko <ph name="SERVICE_SCRIPT_NAME" /> už začiarknuté, začiarknut
 <translation id="5601503069213153581">Kód PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Pracovnú plochu momentálne zdieľate s používateľom <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Prihlásený/-á ako <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znova pripojiť</translation>
 <translation id="5810269635982033450">Obrazovka funguje ako trackpad</translation>
 <translation id="5823554426827907568">Používateľ <ph name="CLIENT_USERNAME" /> požiadal o prístup k vašej obrazovke a ovládaniu klávesnice a myši. Ak ste túto žiadosť neočakávali, stlačte <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />. Inak povoľte pripojenie výberom možnosti <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> (keď budete chcieť).</translation>

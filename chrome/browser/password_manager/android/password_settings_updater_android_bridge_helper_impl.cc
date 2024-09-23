@@ -25,10 +25,6 @@ PasswordSettingsUpdaterAndroidBridgeHelper::Create() {
   return std::make_unique<PasswordSettingsUpdaterAndroidBridgeHelperImpl>();
 }
 
-bool PasswordSettingsUpdaterAndroidBridgeHelper::CanCreateAccessor() {
-  return PasswordSettingsUpdaterAndroidDispatcherBridge::CanCreateAccessor();
-}
-
 PasswordSettingsUpdaterAndroidBridgeHelperImpl::
     PasswordSettingsUpdaterAndroidBridgeHelperImpl()
     : receiver_bridge_(PasswordSettingsUpdaterAndroidReceiverBridge::Create()),
@@ -74,7 +70,8 @@ PasswordSettingsUpdaterAndroidBridgeHelperImpl::
       FROM_HERE, std::move(dispatcher_bridge_));
 
   if (!will_delete) {
-    NOTREACHED() << "Failed to post bridge deletion on background thread.";
+    NOTREACHED_IN_MIGRATION()
+        << "Failed to post bridge deletion on background thread.";
     base::debug::DumpWithoutCrashing(FROM_HERE);
   }
 }

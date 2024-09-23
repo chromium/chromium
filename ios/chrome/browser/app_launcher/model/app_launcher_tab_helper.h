@@ -150,6 +150,8 @@ class AppLauncherTabHelper
   // then be stored here until `AppLaunchCompleted()` is called. Then all
   // callbacks will run and `callbacks_waiting_for_app_launch_completion_` will
   // be cleared.
+  // Note: Some of these callbacks may trigger a new app launch call or even
+  // close the tab (and hence delete this TabHelper).
   std::vector<base::OnceClosure> callbacks_waiting_for_app_launch_completion_;
 
   // Must be last member to ensure it is destroyed last.

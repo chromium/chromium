@@ -99,14 +99,28 @@ public class LoadingView extends ProgressBar {
         super(context, attrs);
     }
 
-    /** Show loading UI. It shows the loading animation 500ms after. */
+    /** Shows loading UI with a delay by calling showLoadingUI(false). */
     public void showLoadingUI() {
+        showLoadingUI(/* skipDelay= */ false);
+    }
+
+    /**
+     * Show the loading UI. If skipDelay is set to true, the delay before the loading animation will
+     * be skipped. If skipDelay is set to false, the loading animation will be shown after a delay
+     * based on LOADING_ANIMATION_DELAY_MS (500ms).
+     */
+    public void showLoadingUI(boolean skipDelay) {
         removeCallbacks(mDelayedShow);
         removeCallbacks(mDelayedHide);
         mShouldShow = true;
 
         setVisibility(GONE);
-        postDelayed(mDelayedShow, LOADING_ANIMATION_DELAY_MS);
+
+        if (skipDelay) {
+            mDelayedShow.run();
+        } else {
+            postDelayed(mDelayedShow, LOADING_ANIMATION_DELAY_MS);
+        }
     }
 
     /**

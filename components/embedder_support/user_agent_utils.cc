@@ -89,7 +89,7 @@ int GetPreRS5UniversalApiContractVersion() {
   }
   // The list above should account for all Windows versions prior to
   // RS5.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -236,17 +236,17 @@ blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
                                blink::UserAgentBrandVersionType::kFullVersion);
 }
 
-std::vector<std::string> GetFormFactorClientHints(
+std::vector<std::string> GetFormFactorsClientHint(
     const blink::UserAgentMetadata& metadata,
     bool is_mobile) {
   // By default, use "Mobile" or "Desktop" depending on the `mobile` bit.
-  std::vector<std::string> form_factor = {
+  std::vector<std::string> form_factors = {
       is_mobile ? blink::kMobileFormFactor : blink::kDesktopFormFactor};
 
   if (base::FeatureList::IsEnabled(blink::features::kClientHintsXRFormFactor)) {
-    form_factor.push_back(blink::kXRFormFactor);
+    form_factors.push_back(blink::kXRFormFactor);
   }
-  return form_factor;
+  return form_factors;
 }
 
 }  // namespace
@@ -433,11 +433,11 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
 
 std::string GetPlatformForUAMetadata() {
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
+  // TODO(crbug.com/40704421): This can be removed/re-refactored once we use
   // "macOS" by default
   return "macOS";
 #elif BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1334198): The branding change to remove the space caused a
+  // TODO(crbug.com/40846294): The branding change to remove the space caused a
   // regression that's solved here. Ideally, we would just use the new OS name
   // without the space here too, but that needs a launch plan.
 # if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -459,6 +459,8 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   blink::UserAgentMetadata metadata;
 
   bool enable_updated_grease_by_policy = true;
+  // TODO(crbug.com/40838057): Remove this after M126 which deprecates the
+  // policy.
   if (pref_service) {
     if (pref_service->HasPrefPath(
             policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled))
@@ -499,7 +501,7 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   metadata.full_version = std::string(version_info::GetVersionNumber());
   metadata.architecture = content::GetCpuArchitecture();
   metadata.model = content::BuildModelInfo();
-  metadata.form_factor = GetFormFactorClientHints(metadata, metadata.mobile);
+  metadata.form_factors = GetFormFactorsClientHint(metadata, metadata.mobile);
 
 #if BUILDFLAG(IS_WIN)
   metadata.platform_version = GetWindowsPlatformVersion();
@@ -531,8 +533,8 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
       std::string();  // match content::GetOSVersion(false) on Linux
   spoofed_ua.ua_metadata_override->model = std::string();
   spoofed_ua.ua_metadata_override->mobile = false;
-  spoofed_ua.ua_metadata_override->form_factor =
-      GetFormFactorClientHints(metadata, /*is_mobile=*/false);
+  spoofed_ua.ua_metadata_override->form_factors =
+      GetFormFactorsClientHint(metadata, /*is_mobile=*/false);
   // Match the above "CpuInfo" string, which is also the most common Linux
   // CPU architecture and bitness.`
   spoofed_ua.ua_metadata_override->architecture = "x86";

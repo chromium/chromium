@@ -6,18 +6,26 @@ package org.chromium.chrome.browser;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
+import android.view.HapticFeedbackConstants;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,11 +36,15 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
+import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
- * An overscroll handler implemented in terms a modified version of the Android
- * compat library's SwipeRefreshLayout effect.
+ * An overscroll handler implemented in terms a modified version of the Android compat library's
+ * SwipeRefreshLayout effect.
  */
 public class SwipeRefreshHandler extends TabWebContentsUserData
         implements OverscrollRefreshHandler {
@@ -45,6 +57,35 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     // Max allowed duration of the refresh animation after a refresh signal,
     // guarding against cases where the page reload fails or takes too long.
     private static final int MAX_REFRESH_ANIMATION_DURATION_MS = 7500;
+
+    /**
+     * Enum for "Android.EdgeToEdge.OverscrollFromBottom.BottomControlsStatus", demonstrate the
+     * current status for the bottom browser controls. These values are persisted to logs. Entries
+     * should not be renumbered and numeric values should never be reused.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({
+        BottomControlsStatus.HEIGHT_ZERO,
+        BottomControlsStatus.HIDDEN,
+        BottomControlsStatus.VISIBLE_FULL_HEIGHT,
+        BottomControlsStatus.VISIBLE_PARTIAL_HEIGHT,
+        BottomControlsStatus.NUM_TOTAL
+    })
+    @interface BottomControlsStatus {
+        /** Controls has a height of 0. */
+        int HEIGHT_ZERO = 0;
+
+        /** Controls has height > 0, and it's hidden */
+        int HIDDEN = 1;
+
+        /** Controls has height > 0 and is fully visible. */
+        int VISIBLE_FULL_HEIGHT = 2;
+
+        /** Controls has height > 0 and is partially visible (e.g. showing its min Height) */
+        int VISIBLE_PARTIAL_HEIGHT = 3;
+
+        int NUM_TOTAL = 4;
+    }
 
     private @OverscrollAction int mSwipeType;
 
@@ -76,6 +117,10 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     // to this object. Remains null while navigation feature is disabled due to feature flag,
     // system settings (Q and forward), etc.
     private HistoryNavigationCoordinator mNavigationCoordinator;
+
+    // Handles overscroll PULL_FROM_BOTTOM_EDGE. This is used to track the browser controls
+    // state.
+    private BrowserControlsStateProvider mBrowserControls;
 
     public static SwipeRefreshHandler from(Tab tab) {
         SwipeRefreshHandler handler = get(tab);
@@ -119,14 +164,14 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         mSwipeRefreshLayout = new SwipeRefreshLayout(context);
         mSwipeRefreshLayout.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        final boolean incognito = mTab.isIncognito();
+        final boolean incognitoBranded = mTab.isIncognitoBranded();
         final @ColorInt int backgroundColor =
-                incognito
+                incognitoBranded
                         ? context.getColor(R.color.default_bg_color_dark_elev_2_baseline)
                         : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
         final @ColorInt int iconColor =
-                incognito
+                incognitoBranded
                         ? context.getColor(R.color.default_icon_color_blue_light)
                         : SemanticColorUtils.getDefaultIconColorAccent1(context);
         mSwipeRefreshLayout.setColorSchemeColors(iconColor);
@@ -144,6 +189,9 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                         mAccessibilityRefreshString = context.getResources().getString(resId);
                     }
                     mSwipeRefreshLayout.announceForAccessibility(mAccessibilityRefreshString);
+                    if (VERSION.SDK_INT >= VERSION_CODES.R) {
+                        mSwipeRefreshLayout.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
+                    }
                     mTab.reload();
                     RecordUserAction.record("MobilePullGestureReload");
                 });
@@ -173,6 +221,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         detachSwipeRefreshLayoutIfNecessary();
         mContainerView = null;
         mNavigationCoordinator = null;
+        mBrowserControls = null;
         setEnabled(false);
     }
 
@@ -198,7 +247,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
 
     @Override
     public boolean start(
-            @OverscrollAction int type, float startX, float startY, boolean navigateForward) {
+            @OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge) {
         mSwipeType = type;
         if (type == OverscrollAction.PULL_TO_REFRESH) {
             if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
@@ -207,10 +256,14 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
             if (mNavigationCoordinator != null) {
                 mNavigationCoordinator.startGesture();
-                boolean navigable =
-                        mNavigationCoordinator.triggerUi(navigateForward, startX, startY);
-                boolean showGlow = navigateForward && !mTab.canGoForward();
-                return showGlow || navigable;
+                // Note: triggerUi returns true as long as the handler is in a valid state, i.e.
+                // even if the navigation direction doesn't have further history entries.
+                boolean navigable = mNavigationCoordinator.triggerUi(initiatingEdge);
+                return navigable;
+            }
+        } else if (type == OverscrollAction.PULL_FROM_BOTTOM_EDGE) {
+            if (mBrowserControls != null) {
+                recordEdgeToEdgeOverscrollFromBottom(mBrowserControls);
             }
         }
         mSwipeType = OverscrollAction.NONE;
@@ -223,6 +276,15 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
      */
     public void setNavigationCoordinator(HistoryNavigationCoordinator navigationHandler) {
         mNavigationCoordinator = navigationHandler;
+    }
+
+    /**
+     * Sets {@link BrowserControlsStateProvider} instance to provide browser controls heights.
+     *
+     * @param browserControlsStateProvider browser controls instance.
+     */
+    public void setBrowserControls(BrowserControlsStateProvider browserControlsStateProvider) {
+        mBrowserControls = browserControlsStateProvider;
     }
 
     @Override
@@ -299,5 +361,30 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
         if (mSwipeRefreshLayout.getParent() != null) {
             mContainerView.removeView(mSwipeRefreshLayout);
         }
+    }
+
+    /**
+     * Record histogram "Android.OverscrollFromBottom.BottomControlsStatus" based on the current
+     * browser controls status.
+     */
+    @VisibleForTesting
+    static void recordEdgeToEdgeOverscrollFromBottom(
+            @NonNull BrowserControlsStateProvider browserControls) {
+        @BottomControlsStatus int sample;
+        if (browserControls.getBottomControlsHeight() == 0) {
+            sample = BottomControlsStatus.HEIGHT_ZERO;
+        } else if (browserControls.getBottomControlOffset() == 0) {
+            sample = BottomControlsStatus.VISIBLE_FULL_HEIGHT;
+        } else if (browserControls.getBottomControlOffset()
+                == browserControls.getBottomControlsHeight()) {
+            sample = BottomControlsStatus.HIDDEN;
+        } else {
+            sample = BottomControlsStatus.VISIBLE_PARTIAL_HEIGHT;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.OverscrollFromBottom.BottomControlsStatus",
+                sample,
+                BottomControlsStatus.NUM_TOTAL);
     }
 }

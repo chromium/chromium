@@ -16,7 +16,7 @@ bool StructTraits<blink::mojom::DeviceEmulationParamsDataView,
       !data.ReadViewPosition(&out->view_position) ||
       !data.ReadViewSize(&out->view_size) ||
       !data.ReadViewportOffset(&out->viewport_offset) ||
-      !data.ReadWindowSegments(&out->window_segments) ||
+      !data.ReadViewportSegments(&out->viewport_segments) ||
       !data.ReadDevicePosture(&out->device_posture)) {
     return false;
   }

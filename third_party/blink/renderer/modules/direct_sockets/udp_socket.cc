@@ -199,15 +199,24 @@ UDPSocket::UDPSocket(ScriptState* script_state)
     : Socket(script_state),
       ActiveScriptWrappable<UDPSocket>({}),
       udp_socket_(
-          MakeGarbageCollected<UDPSocketMojoRemote>(GetExecutionContext())) {}
+          MakeGarbageCollected<UDPSocketMojoRemote>(GetExecutionContext())),
+      opened_(MakeGarbageCollected<
+              ScriptPromiseProperty<UDPSocketOpenInfo, DOMException>>(
+          GetExecutionContext())) {}
 
 UDPSocket::~UDPSocket() = default;
 
-ScriptPromise UDPSocket::close(ScriptState*, ExceptionState& exception_state) {
+ScriptPromise<UDPSocketOpenInfo> UDPSocket::opened(
+    ScriptState* script_state) const {
+  return opened_->Promise(script_state->World());
+}
+
+ScriptPromise<IDLUndefined> UDPSocket::close(ScriptState*,
+                                             ExceptionState& exception_state) {
   if (GetState() == State::kOpening) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Socket is not properly initialized.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   auto* script_state = GetScriptState();
@@ -219,7 +228,7 @@ ScriptPromise UDPSocket::close(ScriptState*, ExceptionState& exception_state) {
       writable_stream_wrapper_->Locked()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Close called on locked streams.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   auto* reason = MakeGarbageCollected<DOMException>(
@@ -311,7 +320,7 @@ void UDPSocket::FinishOpen(
     open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
     open_info->setLocalPort(local_addr->port());
 
-    GetOpenedPromiseResolver()->Resolve(open_info);
+    opened_->Resolve(open_info);
 
     SetState(State::kOpen);
   } else {
@@ -347,9 +356,11 @@ void UDPSocket::FailOpenWith(int32_t error) {
   base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -error);
   ReleaseResources();
 
+  ScriptState::Scope scope(GetScriptState());
   auto* exception = CreateDOMExceptionFromNetErrorCode(error);
-  GetOpenedPromiseResolver()->Reject(exception);
-  GetClosedPromiseResolver()->Reject(exception);
+  opened_->Reject(exception);
+  GetClosedProperty().Reject(ScriptValue(GetScriptState()->GetIsolate(),
+                                         exception->ToV8(GetScriptState())));
 }
 
 mojo::PendingReceiver<network::mojom::blink::RestrictedUDPSocket>
@@ -375,7 +386,7 @@ void UDPSocket::ContextDestroyed() {
 
 void UDPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(udp_socket_);
-
+  visitor->Trace(opened_);
   visitor->Trace(readable_stream_wrapper_);
   visitor->Trace(writable_stream_wrapper_);
 
@@ -410,10 +421,10 @@ void UDPSocket::OnBothStreamsClosed(std::vector<ScriptValue> args) {
   // If neither stream was errored, resolves |closed|.
   if (auto it = base::ranges::find_if_not(args, &ScriptValue::IsEmpty);
       it != args.end()) {
-    GetClosedPromiseResolver()->Reject(*it);
+    GetClosedProperty().Reject(*it);
     SetState(State::kAborted);
   } else {
-    GetClosedPromiseResolver()->Resolve();
+    GetClosedProperty().ResolveWithUndefined();
     SetState(State::kClosed);
   }
   ReleaseResources();

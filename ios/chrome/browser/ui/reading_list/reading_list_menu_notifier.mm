@@ -32,8 +32,8 @@ class ReadingListObserverBridge;
 
 @end
 
-// TODO(crbug.com/590725): use the one-and-only protocol-based implementation of
-// ReadingListModelObserver
+// TODO(crbug.com/41241675): use the one-and-only protocol-based implementation
+// of ReadingListModelObserver
 class ReadingListObserverBridge : public ReadingListModelObserver {
  public:
   explicit ReadingListObserverBridge(ReadingListMenuNotifier* owner)
@@ -65,7 +65,7 @@ class ReadingListObserverBridge : public ReadingListModelObserver {
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithReadingList:(ReadingListModel*)readingListModel {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _readingListObserverBridge.reset(new ReadingListObserverBridge(self));
     _readingListModel = readingListModel;
     _readingListModel->AddObserver(_readingListObserverBridge.get());

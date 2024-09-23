@@ -13,12 +13,14 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_thread.h"
@@ -292,10 +294,10 @@ void HidDeviceManager::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
 void HidDeviceManager::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(thread_checker_.CalledOnValidThread());
   const auto& resource_entry = resource_ids_.find(device->guid);
-  DCHECK(resource_entry != resource_ids_.end());
+  CHECK(resource_entry != resource_ids_.end(), base::NotFatalUntil::M130);
   int resource_id = resource_entry->second;
   const auto& device_entry = devices_.find(resource_id);
-  DCHECK(device_entry != devices_.end());
+  CHECK(device_entry != devices_.end(), base::NotFatalUntil::M130);
   resource_ids_.erase(resource_entry);
   devices_.erase(device_entry);
 
@@ -318,7 +320,7 @@ void HidDeviceManager::DeviceChanged(device::mojom::HidDeviceInfoPtr device) {
   // Find |device| in |devices_|.
   DCHECK(thread_checker_.CalledOnValidThread());
   const auto& resource_entry = resource_ids_.find(device->guid);
-  DCHECK(resource_entry != resource_ids_.end());
+  CHECK(resource_entry != resource_ids_.end(), base::NotFatalUntil::M130);
   int resource_id = resource_entry->second;
   DCHECK(base::Contains(devices_, resource_id));
 
@@ -340,10 +342,11 @@ void HidDeviceManager::LazyInitialize() {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     auto receiver = hid_manager_.BindNewPipeAndPassReceiver();
     const auto& binder = GetHidManagerBinderOverride();
-    if (binder)
+    if (binder) {
       binder.Run(std::move(receiver));
-    else
+    } else {
       content::GetDeviceService().BindHidManager(std::move(receiver));
+    }
   }
   // Enumerate HID devices and set client.
   std::vector<device::mojom::HidDeviceInfoPtr> empty_devices;

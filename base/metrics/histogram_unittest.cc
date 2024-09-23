@@ -1021,16 +1021,16 @@ TEST_P(HistogramTest, CheckGetCountAndBucketData) {
   // Check the first bucket.
   const base::Value::Dict* bucket1 = buckets_list[0].GetIfDict();
   ASSERT_TRUE(bucket1 != nullptr);
-  EXPECT_EQ(bucket1->FindInt("low"), absl::optional<int>(20));
-  EXPECT_EQ(bucket1->FindInt("high"), absl::optional<int>(21));
-  EXPECT_EQ(bucket1->FindInt("count"), absl::optional<int>(30));
+  EXPECT_EQ(bucket1->FindInt("low"), std::optional<int>(20));
+  EXPECT_EQ(bucket1->FindInt("high"), std::optional<int>(21));
+  EXPECT_EQ(bucket1->FindInt("count"), std::optional<int>(30));
 
   // Check the second bucket.
   const base::Value::Dict* bucket2 = buckets_list[1].GetIfDict();
   ASSERT_TRUE(bucket2 != nullptr);
-  EXPECT_EQ(bucket2->FindInt("low"), absl::optional<int>(30));
-  EXPECT_EQ(bucket2->FindInt("high"), absl::optional<int>(31));
-  EXPECT_EQ(bucket2->FindInt("count"), absl::optional<int>(28));
+  EXPECT_EQ(bucket2->FindInt("low"), std::optional<int>(30));
+  EXPECT_EQ(bucket2->FindInt("high"), std::optional<int>(31));
+  EXPECT_EQ(bucket2->FindInt("count"), std::optional<int>(28));
 }
 
 TEST_P(HistogramTest, WriteAscii) {

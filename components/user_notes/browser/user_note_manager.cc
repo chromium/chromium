@@ -5,6 +5,7 @@
 #include "components/user_notes/browser/user_note_manager.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/user_notes/browser/user_note_instance.h"
 #include "content/public/browser/page.h"
@@ -16,7 +17,7 @@ namespace user_notes {
 UserNoteManager::UserNoteManager(content::Page& page,
                                  base::SafeRef<UserNoteService> service)
     : PageUserData<UserNoteManager>(page), service_(std::move(service)) {
-  // TODO(crbug.com/1313967): If / when user notes are supported in subframes,
+  // TODO(crbug.com/40832588): If / when user notes are supported in subframes,
   // caching the agent container of the primary main frame will not work. In
   // that case, the frame's container will probably need to be fetched on each
   // note instance initialization in
@@ -56,7 +57,7 @@ const std::vector<UserNoteInstance*> UserNoteManager::GetAllNoteInstances() {
 void UserNoteManager::RemoveNote(const base::UnguessableToken& id) {
   TRACE_EVENT("browser", "UserNoteManager::RemoveNote", "id", id);
   const auto& entry_it = instance_map_.find(id);
-  DCHECK(entry_it != instance_map_.end())
+  CHECK(entry_it != instance_map_.end(), base::NotFatalUntil::M130)
       << "Attempted to remove a note instance from a page where it didn't "
          "exist";
 
@@ -77,7 +78,7 @@ void UserNoteManager::AddNoteInstance(
     UserNoteInstance::AttachmentFinishedCallback initialize_callback) {
   TRACE_EVENT("browser", "UserNoteManager::AddNoteInstance", "id",
               note_instance->model().id());
-  // TODO(crbug.com/1313967): This DCHECK is only applicable if notes are only
+  // TODO(crbug.com/40832588): This DCHECK is only applicable if notes are only
   // supported in the top-level frame. If notes are ever supported in subframes,
   // it is possible for the same note ID to be added to the same page more than
   // once. For example, if website A has notes and website B embeds website A

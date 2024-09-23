@@ -9,8 +9,10 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,27 +34,6 @@ struct SecurityCodeCardTypePair {
   const char* card_network;
 };
 
-// From
-// https://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
-const char16_t* const kValidNumbers[] = {
-    u"378282246310005",     u"3714 4963 5398 431",  u"3787-3449-3671-000",
-    u"5610591081018250",    u"3056 9309 0259 04",   u"3852-0000-0232-37",
-    u"6011111111111117",    u"6011 0009 9013 9424", u"3530-1113-3330-0000",
-    u"3566002020360505",
-    u"5555 5555 5555 4444",  // Mastercard.
-    u"5105-1051-0510-5100",
-    u"4111111111111111",  // Visa.
-    u"4012 8888 8888 1881", u"4222-2222-2222-2",    u"5019717010103742",
-    u"6331101999990016",    u"6247130048162403",
-    u"4532261615476013542",  // Visa, 19 digits.
-    u"5067071446391278",     // Elo.
-};
-const char16_t* const kInvalidNumbers[] = {
-    u"4111 1111 112",        /* too short */
-    u"41111111111111111115", /* too long */
-    u"4111-1111-1111-1110",  /* wrong Luhn checksum */
-    u"3056 9309 0259 04aa",  /* non-digit characters */
-};
 const char kCurrentDate[] = "1 May 2013";
 const IntExpirationDate kValidCreditCardIntExpirationDate[] = {
     {2013, 5},   // Valid month in current year.
@@ -92,44 +73,6 @@ const char16_t* const kUnplausibleCreditCardCVCNumbers[] = {u"abc", u"21",
                                                             u"11111", u"21a1"};
 const char16_t* const kPlausibleCreditCardCVCNumbers[] = {u"1234", u"2099",
                                                           u"111", u"982"};
-}  // namespace
-
-TEST(AutofillValidation, IsValidCreditCardNumber) {
-  for (const char16_t* valid_number : kValidNumbers) {
-    SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
-    EXPECT_TRUE(IsValidCreditCardNumber(valid_number));
-  }
-  for (const char16_t* invalid_number : kInvalidNumbers) {
-    SCOPED_TRACE(base::UTF16ToUTF8(invalid_number));
-    EXPECT_FALSE(IsValidCreditCardNumber(invalid_number));
-  }
-}
-
-// Tests the plausibility of the length of the supplied credit card number.
-TEST(AutofillValidation, IsValidCreditCardNumberLength) {
-  for (const char16_t* valid_number : kValidNumbers) {
-    SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
-    EXPECT_TRUE(HasCorrectLength(CreditCard::StripSeparators(valid_number)));
-  }
-  // Only the first 2 invalid numbers in kInvalidNumbers have a bad length.
-  for (size_t i = 0; i < 2; ++i) {
-    const char16_t* invalid_number = kInvalidNumbers[i];
-    SCOPED_TRACE(base::UTF16ToUTF8(invalid_number));
-    EXPECT_FALSE(HasCorrectLength(CreditCard::StripSeparators(invalid_number)));
-  }
-}
-
-// Tests the validation of credit card numbers using the Luhn check.
-TEST(AutofillValidation, CreditCardNumberLuhnTest) {
-  for (const char16_t* valid_number : kValidNumbers) {
-    SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
-    EXPECT_TRUE(PassesLuhnCheck(CreditCard::StripSeparators(valid_number)));
-  }
-
-  const char16_t* invalid_luhn_number = kInvalidNumbers[2];
-  SCOPED_TRACE(base::UTF16ToUTF8(invalid_luhn_number));
-  EXPECT_FALSE(PassesLuhnCheck(invalid_luhn_number));
-}
 
 // Tests the plausibility of supplied credit card expiration years.
 TEST(AutofillValidation, IsPlausibleCreditCardExparationYear) {
@@ -326,8 +269,7 @@ INSTANTIATE_TEST_SUITE_P(InternationalBankAccountNumber,
 
 TEST_P(AutofillIsInternationalBankAccountNumber,
        IsInternationalBankAccountNumber) {
-  EXPECT_TRUE(IsInternationalBankAccountNumber(GetParam()))
-      << base::StringPiece16(GetParam());
+  EXPECT_TRUE(IsInternationalBankAccountNumber(GetParam())) << GetParam();
   EXPECT_TRUE(IsInternationalBankAccountNumber(u" " + GetParam() + u" "));
   EXPECT_FALSE(IsInternationalBankAccountNumber(u"DE" + GetParam()));
   EXPECT_FALSE(IsInternationalBankAccountNumber(GetParam() + u"."));
@@ -335,4 +277,5 @@ TEST_P(AutofillIsInternationalBankAccountNumber,
       GetParam() + u"0000000000000000000000000000000000000"));
 }
 
+}  // namespace
 }  // namespace autofill

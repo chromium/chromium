@@ -26,7 +26,8 @@ AcceleratorFilter::~AcceleratorFilter() {
 bool AcceleratorFilter::ShouldFilter(ui::KeyEvent* event) {
   const ui::EventType type = event->type();
   if (!event->target() ||
-      (type != ui::ET_KEY_PRESSED && type != ui::ET_KEY_RELEASED) ||
+      (type != ui::EventType::kKeyPressed &&
+       type != ui::EventType::kKeyReleased) ||
       event->is_char() || !event->target() ||
       // Key events with key code of VKEY_PROCESSKEY, usually created by virtual
       // keyboard (like handwriting input), have no effect on accelerator and

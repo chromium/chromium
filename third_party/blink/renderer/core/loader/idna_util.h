@@ -16,4 +16,4 @@ String GetConsoleWarningForIDNADeviationCharacters(const KURL& url);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IDNA_UTIL_H_

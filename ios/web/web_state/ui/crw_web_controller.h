@@ -198,10 +198,6 @@ class WebStateImpl;
 // Adds the webView back in the view hierarchy.
 - (void)addWebViewToViewHierarchy;
 
-// Notifies this controller that the surface size has changed due to
-// multiwindow action or orientation change.
-- (void)surfaceSizeChanged;
-
 // Injects an opaque NSData block into a WKWebView to restore or serialize. Only
 // supported on iOS15+. On earlier iOS versions, `setSessionStateData` is
 // a no-op, and `sessionStateData` will return nil.
@@ -287,7 +283,7 @@ class WebStateImpl;
 @property(nonatomic, readonly) web::WebState* webState;
 @property(nonatomic, readonly) web::WebStateImpl* webStateImpl;
 // Returns the current page loading phase.
-// TODO(crbug.com/956511): Remove this once refactor is done.
+// TODO(crbug.com/40624624): Remove this once refactor is done.
 @property(nonatomic, readonly, assign) web::WKNavigationState navigationState;
 // YES if the web container view fill the screen.
 @property(nonatomic, readonly) BOOL isCover;

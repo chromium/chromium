@@ -91,10 +91,9 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.SHARE_INTENT;
         }
 
-        @IntentHandler.ExternalAppId
-        int intentSender = IntentHandler.determineExternalIntentSource(launchIntent);
-        if (Intent.ACTION_VIEW.equals(launchIntent.getAction())
-                && intentSender != IntentHandler.ExternalAppId.CHROME) {
+        boolean isExternalIntentFromChrome =
+                IntentHandler.isExternalIntentSourceChrome(launchIntent);
+        if (Intent.ACTION_VIEW.equals(launchIntent.getAction()) && !isExternalIntentFromChrome) {
             return LaunchCause.EXTERNAL_VIEW_INTENT;
         }
 
@@ -102,7 +101,7 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
             return LaunchCause.NFC;
         }
 
-        if (intentSender == IntentHandler.ExternalAppId.CHROME) return LaunchCause.OTHER_CHROME;
+        if (isExternalIntentFromChrome) return LaunchCause.OTHER_CHROME;
         return LaunchCause.OTHER;
     }
 

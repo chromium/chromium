@@ -85,11 +85,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
-      const base::RepeatingCallback<void(PermissionStatus)>& callback);
-  SubscriptionId SubscribeToPermissionStatusChange(
-      PermissionType permission,
-      RenderProcessHost* render_process_host,
-      const url::Origin& requesting_origin,
+      bool should_include_device_status,
       const base::RepeatingCallback<void(PermissionStatus)>& callback) override;
 
   void UnsubscribeFromPermissionStatusChange(
@@ -118,6 +114,11 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
                                                const GURL& requesting_origin,
                                                const GURL& embedding_origin);
 
+  PermissionStatus GetPermissionStatusForCurrentDocumentInternal(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      bool should_include_device_status = false);
+
   // PermissionController implementation.
   PermissionStatus GetPermissionStatusForWorker(
       PermissionType permission,
@@ -137,8 +138,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
   // WARNING: Permission requests order is not guaranteed.
-  // TODO(crbug.com/1363094): Migrate to `std::set`.
-  // TODO(crbug.com/1462930): `RequestPermissions` and
+  // TODO(crbug.com/40864728): Migrate to `std::set`.
+  // TODO(crbug.com/40275129): `RequestPermissions` and
   // `RequestPermissionsFromCurrentDocument` do exactly the same things. Merge
   // them together.
   void RequestPermissions(
@@ -150,7 +151,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       PermissionRequestDescription request_description,
       base::OnceCallback<void(PermissionStatus)> callback) override;
   // WARNING: Permission requests order is not guaranteed.
-  // TODO(crbug.com/1363094): Migrate to `std::set`.
+  // TODO(crbug.com/40864728): Migrate to `std::set`.
   void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
@@ -164,19 +165,30 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin);
 
-  struct Subscription;
-  using SubscriptionsMap =
-      base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;
+  // The method does the same as `GetPermissionStatusForCurrentDocument` but it
+  // also takes into account the device's status (OS permission status).
+  // Currently, this function is only used for Page Embedded Permission Control.
+  PermissionStatus GetCombinedPermissionAndDeviceStatus(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host);
+
   using SubscriptionsStatusMap =
       base::flat_map<SubscriptionsMap::KeyType, PermissionStatus>;
 
   PermissionStatus GetSubscriptionCurrentValue(
-      const Subscription& subscription);
+      const content::PermissionStatusSubscription& subscription);
   SubscriptionsStatusMap GetSubscriptionsStatuses(
       const std::optional<GURL>& origin = std::nullopt);
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
-  void OnDelegatePermissionStatusChange(SubscriptionId subscription_id,
-                                        PermissionStatus status);
+  // Notifies the callback of the new permission status.
+  // If `ignore_status_override` is true, the status override is not applied,
+  // which means that the permission status change will be notified to
+  // subscribed users even the status has been overridden.
+  void PermissionStatusChange(
+      const base::RepeatingCallback<void(PermissionStatus)>& callback,
+      SubscriptionId subscription_id,
+      PermissionStatus status,
+      bool ignore_status_override = false);
   bool IsSubscribedToPermissionChangeEvent(
       blink::PermissionType permission,
       RenderFrameHost* render_frame_host) override;
@@ -186,7 +198,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   PermissionOverrides permission_overrides_;
 
-  std::optional<base::RepeatingClosure> onchange_listeners_callback_for_tests_;
+  base::RepeatingClosure onchange_listeners_callback_for_tests_;
 
   std::optional<gfx::Rect> exclusion_area_bounds_for_tests_;
 

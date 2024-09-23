@@ -53,7 +53,7 @@ class SignalDatabaseImpl : public SignalDatabase {
                   uint64_t name_hash,
                   base::Time start_time,
                   base::Time end_time,
-                  SamplesCallback callback) override;
+                  EntriesCallback callback) override;
   const std::vector<DbEntry>* GetAllSamples() override;
   void DeleteSamples(proto::SignalType signal_type,
                      uint64_t name_hash,
@@ -69,7 +69,7 @@ class SignalDatabaseImpl : public SignalDatabase {
                              leveldb_proto::Enums::InitStatus status);
 
   void OnGetSamples(
-      SamplesCallback callback,
+      EntriesCallback callback,
       base::Time start_time,
       base::Time end_time,
       bool success,
@@ -106,6 +106,7 @@ class SignalDatabaseImpl : public SignalDatabase {
   // Whether or not initialization has been completed.
   bool initialized_{false};
 
+  const bool enable_signal_cache_;
   std::vector<DbEntry> all_signals_;
 
   // A cache of recently added signals. Used for avoiding collisions between two
@@ -115,7 +116,7 @@ class SignalDatabaseImpl : public SignalDatabase {
   // than 1 second are cleaned up on the subsequent invocation to WriteSample().
   std::map<SignalKey, proto::SignalData> recently_added_signals_;
 
-  // Enables the compaction fix. TODO(https://crbug.com/1357272): remove this
+  // Enables the compaction fix. TODO(crbug.com/40860954): remove this
   // after fixing the bug.
   const bool should_fix_compaction_;
 

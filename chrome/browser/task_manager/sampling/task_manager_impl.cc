@@ -16,6 +16,7 @@
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -549,6 +550,10 @@ void TaskManagerImpl::TaskUnresponsive(Task* task) {
   NotifyObserversOnTaskUnresponsive(task->task_id());
 }
 
+void TaskManagerImpl::ActiveTaskFetched(TaskId active_task_id) {
+  NotifyObserversOnActiveTaskFetched(active_task_id);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void TaskManagerImpl::TaskIdsListToBeInvalidated() {
   sorted_task_ids_.clear();
@@ -689,7 +694,7 @@ Task* TaskManagerImpl::GetTaskByRoute(
 
 TaskGroup* TaskManagerImpl::GetTaskGroupByTaskId(TaskId task_id) const {
   auto it = task_groups_by_task_id_.find(task_id);
-  DCHECK(it != task_groups_by_task_id_.end());
+  CHECK(it != task_groups_by_task_id_.end(), base::NotFatalUntil::M130);
   return it->second;
 }
 

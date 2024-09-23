@@ -48,11 +48,11 @@ function template(tplStr) {
 }
 const tbodyEl = document.querySelector("tbody");
 const rowTplBaseline = template(
-  `<tr><td class="col-md-1"><?fake-part?> </td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
+  `<tr><td class="col-md-1"><span> </span></td><td class="col-md-4"><a href="#"> </a></td><td class="col-md-1"><a href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
 );
 // The space at the front of this template works around crbug.com/1490375, and can be removed once that's fixed:
 const rowTplParts = template(
-  ` <tr {{}}><td class="col-md-1"><?node-part?> </td><td class="col-md-4"><a {{}} href="#"> </a></td><td class="col-md-1"><a {{}} href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
+  ` <tr {{}}><td class="col-md-1"><span {{}}> </span></td><td class="col-md-4"><a {{}} href="#"> </a></td><td class="col-md-1"><a {{}} href="#"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td><td class="col-md-6"></td></tr>`
 );
 const partRoot = rowTplParts.content.getPartRoot();
 
@@ -82,7 +82,7 @@ function createRowBaseline(i) {
   // step (2): find references to the "interesting" elements
   perfs.push(0); // getParts
   const trEl = tplClone.firstChild;
-  const labelTxtNode = trEl.firstChild.firstChild;
+  const labelTxtNode = trEl.firstChild.firstChild.firstChild;
   const aEl1 = trEl.firstChild.nextSibling.firstChild;
   const aEl2 = trEl.firstChild.nextSibling.nextSibling.firstChild;
   next = performance.now();
@@ -128,7 +128,7 @@ function createRowParts(i) {
   now = next;
 
   const trEl = parts[0].node;
-  const labelTxtNode = parts[1].node;
+  const labelTxtNode = parts[1].node.firstChild;
   const aEl1 = parts[2].node;
   const aEl2 = parts[3].node;
   next = performance.now();

@@ -5,6 +5,7 @@
 #ifndef NET_DNS_PUBLIC_HOST_RESOLVER_RESULTS_H_
 #define NET_DNS_PUBLIC_HOST_RESOLVER_RESULTS_H_
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -45,6 +46,46 @@ struct NET_EXPORT_PRIVATE HostResolverEndpointResult {
 
 using HostResolverEndpointResults =
     std::vector<net::HostResolverEndpointResult>;
+
+// Represents a result of a service endpoint resolution. Almost the identical
+// to HostResolverEndpointResult, but has separate IPEndPoints for each address
+// family.
+struct NET_EXPORT_PRIVATE ServiceEndpoint {
+  ServiceEndpoint();
+  ~ServiceEndpoint();
+
+  ServiceEndpoint(std::vector<IPEndPoint> ipv4_endpoints,
+                  std::vector<IPEndPoint> ipv6_endpoints,
+                  ConnectionEndpointMetadata metadata);
+
+  ServiceEndpoint(const ServiceEndpoint&);
+  ServiceEndpoint& operator=(const ServiceEndpoint&) = default;
+  ServiceEndpoint(ServiceEndpoint&&);
+  ServiceEndpoint& operator=(ServiceEndpoint&&) = default;
+
+  bool operator==(const ServiceEndpoint& other) const {
+    return std::forward_as_tuple(ipv4_endpoints, ipv6_endpoints, metadata) ==
+           std::forward_as_tuple(other.ipv4_endpoints, other.ipv6_endpoints,
+                                 other.metadata);
+  }
+  bool operator!=(const ServiceEndpoint& other) const {
+    return !(*this == other);
+  }
+
+  base::Value::Dict ToValue() const;
+
+  // IPv4 endpoints at which to connect to the service.
+  std::vector<IPEndPoint> ipv4_endpoints;
+
+  // IPv6 endpoints at which to connect to the service.
+  std::vector<IPEndPoint> ipv6_endpoints;
+
+  // Additional metadata for creating connections to the endpoint. Typically
+  // sourced from DNS HTTPS records.
+  // TODO(crbug.com/41493696): Consider inlining EchConfigList and ALPNs rather
+  // than just using ConnectionEndpointMetadata.
+  ConnectionEndpointMetadata metadata;
+};
 
 }  // namespace net
 

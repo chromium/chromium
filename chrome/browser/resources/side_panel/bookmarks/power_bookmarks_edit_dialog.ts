@@ -18,6 +18,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './power_bookmarks_edit_dialog.html.js';
 import {getFolderDescendants} from './power_bookmarks_service.js';
 
+export const TEMP_FOLDER_ID_PREFIX = 'tmp_new_folder_';
+
 export interface PowerBookmarksEditDialogElement {
   $: {
     dialog: CrDialogElement,
@@ -185,12 +187,12 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
 
   private validateUrl_(): boolean {
     const urlInput = this.$.urlInput;
-    const originalValue = urlInput.inputElement.value;
 
     if (urlInput.validate()) {
       return true;
     }
 
+    const originalValue = urlInput.inputElement.value;
     urlInput.inputElement.value = 'http://' + originalValue;
 
     if (urlInput.validate()) {
@@ -230,7 +232,7 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     const parentId =
         parent ? parent.id : loadTimeData.getString('otherBookmarksId');
     const newFolder: chrome.bookmarks.BookmarkTreeNode = {
-      id: 'tmp_new_folder_' + this.newFolders_.length,
+      id: TEMP_FOLDER_ID_PREFIX + this.newFolders_.length,
       title: loadTimeData.getString('newFolderTitle'),
       children: [],
       parentId: parentId,

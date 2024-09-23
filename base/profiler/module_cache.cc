@@ -5,6 +5,7 @@
 #include "base/profiler/module_cache.h"
 
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -32,7 +33,7 @@ struct ModuleAddressCompare {
 
 }  // namespace
 
-std::string TransformModuleIDToSymbolServerFormat(StringPiece module_id) {
+std::string TransformModuleIDToSymbolServerFormat(std::string_view module_id) {
   std::string mangled_id(module_id);
   // Android and Linux Chrome builds use the "breakpad" format to index their
   // build id, so we transform the build id for these platforms. All other
@@ -74,7 +75,7 @@ const ModuleCache::Module* ModuleCache::GetModuleForAddress(uintptr_t address) {
     return nullptr;
 
   const auto result = native_modules_.insert(std::move(new_module));
-  // TODO(https://crbug.com/1131769): Reintroduce DCHECK(result.second) after
+  // TODO(crbug.com/40150346): Reintroduce DCHECK(result.second) after
   // fixing the issue that is causing it to fail.
   return result.first->get();
 }

@@ -9,7 +9,7 @@
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_uma.h"
+#include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,6 +22,7 @@
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -114,7 +115,7 @@ class EditFinishView::ChildButton : public views::LabelButton {
     label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
                                        kFontSize, gfx::Font::Weight::MEDIUM));
     SetEnabledTextColors(text_color);
-    SetAccessibleName(l10n_util::GetStringUTF16(text_source_id));
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(text_source_id));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kButtonSideInset)));
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetMinSize(gfx::Size(
@@ -179,7 +180,7 @@ class EditFinishView::ChildButton : public views::LabelButton {
   OnMouseReleasedCallback on_mouse_released_callback_;
 };
 
-BEGIN_METADATA(EditFinishView, ChildButton, views::LabelButton)
+BEGIN_METADATA(EditFinishView, ChildButton)
 END_METADATA
 
 // static
@@ -195,9 +196,10 @@ EditFinishView* EditFinishView::BuildView(
 EditFinishView::EditFinishView(
     DisplayOverlayController* display_overlay_controller)
     : display_overlay_controller_(display_overlay_controller) {
-  SetAccessibilityProperties(
-      ax::mojom::Role::kGroup,
-      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_LAYOUT_ACCTIONS_MENU),
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_LAYOUT_ACCTIONS_MENU));
+  GetViewAccessibility().SetDescription(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MENU_FOCUS));
 }
 

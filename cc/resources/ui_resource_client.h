@@ -16,6 +16,8 @@ typedef int UIResourceId;
 
 class CC_EXPORT UIResourceClient {
  public:
+  static constexpr UIResourceId kUninitializedUIResourceId = -1;
+
   // GetBitmap() will be called once soon after resource creation and then will
   // be called afterwards whenever the GL context is lost, on the same thread
   // that LayerTreeHost::CreateUIResource was called on.  It is only safe to

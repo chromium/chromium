@@ -133,7 +133,7 @@ class PepperVideoDecoderHost : public ppapi::host::ResourceHost {
   PendingDecodeList::iterator GetPendingDecodeById(int32_t decode_id);
 
   // Non-owning pointer.
-  raw_ptr<RendererPpapiHost, ExperimentalRenderer> renderer_ppapi_host_;
+  raw_ptr<RendererPpapiHost> renderer_ppapi_host_;
 
   media::VideoCodecProfile profile_;
 

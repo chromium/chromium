@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_USER_INTERACTIVE_BASE_TEST_H_
 
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 
 namespace ash {
 
@@ -26,9 +26,9 @@ class ChildUserInteractiveBaseTest : public InteractiveAshTest {
   void SetUpOnMainThread() override;
 
  protected:
-  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
-                                          LoggedInUserMixin::LogInType::kChild,
-                                          embedded_test_server(), this};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
+                                          embedded_test_server(),
+                                          LoggedInUserMixin::LogInType::kChild};
 };
 
 }  // namespace ash

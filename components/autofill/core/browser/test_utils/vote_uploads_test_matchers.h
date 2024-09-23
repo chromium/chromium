@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_VOTE_UPLOADS_TEST_MATCHERS_H_
 
 #include <initializer_list>
-#include <optional>
 #include <string>
 
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -48,7 +47,7 @@ inline ::testing::Matcher<AutofillUploadContents> FormSignatureIs(
 template <typename... Matchers>
 inline ::testing::Matcher<AutofillUploadContents> FieldsAre(
     Matchers... matchers) {
-  return ::testing::Property("field", &AutofillUploadContents::field,
+  return ::testing::Property("field_data", &AutofillUploadContents::field_data,
                              ::testing::ElementsAre(matchers...));
 }
 
@@ -60,7 +59,7 @@ template <typename... Matchers>
 inline ::testing::Matcher<AutofillUploadContents> FieldsContain(
     Matchers... matchers) {
   return ::testing::Property(
-      "field", &AutofillUploadContents::field,
+      "field_data", &AutofillUploadContents::field_data,
       ::testing::IsSupersetOf(
           std::initializer_list<
               ::testing::Matcher<AutofillUploadContents::Field>>{matchers...}));

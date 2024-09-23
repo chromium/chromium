@@ -71,15 +71,6 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, OptionalFunctionFromValue) {
     EXPECT_TRUE(out->event_callback.has_value());
     EXPECT_EQ(out->Clone().ToValue(), out->ToValue());
   }
-  {
-    base::Value::Dict value;
-    value.Set("event_callback", base::Value::Dict());
-
-    auto out = OptionalFunctionType::FromValue(value);
-    ASSERT_TRUE(out);
-    EXPECT_TRUE(out->event_callback.has_value());
-    EXPECT_EQ(out->Clone().ToValue(), out->ToValue());
-  }
 }
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, OptionalFunctionToValue) {

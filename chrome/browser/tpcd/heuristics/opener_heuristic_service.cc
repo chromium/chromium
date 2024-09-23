@@ -16,7 +16,7 @@
 OpenerHeuristicService::OpenerHeuristicService(
     base::PassKey<OpenerHeuristicServiceFactory>,
     content::BrowserContext* context)
-    : dips_(DIPSService::Get(context)),
+    : dips_(DIPSServiceImpl::Get(context)),
       cookie_settings_(CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(context))),
       tracking_protection_settings_(
@@ -48,7 +48,9 @@ void OpenerHeuristicService::OnTrackingProtection3pcdChanged() {
     return;
   }
 
-  if (!tpcd::experiment::kTpcdBackfillPopupHeuristicsGrants.Get()
+  if (!base::FeatureList::IsEnabled(
+          content_settings::features::kTpcdHeuristicsGrants) ||
+      !tpcd::experiment::kTpcdBackfillPopupHeuristicsGrants.Get()
            .is_positive()) {
     return;
   }

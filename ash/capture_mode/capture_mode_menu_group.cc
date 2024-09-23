@@ -16,7 +16,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -75,11 +74,11 @@ class CaptureModeMenuHeader
 
  public:
   CaptureModeMenuHeader(const gfx::VectorIcon& icon,
-                        std::u16string header_laber,
+                        std::u16string header_label,
                         bool managed_by_policy)
       : icon_view_(AddChildView(std::make_unique<views::ImageView>())),
         label_view_(AddChildView(
-            std::make_unique<views::Label>(std::move(header_laber)))),
+            std::make_unique<views::Label>(std::move(header_label)))),
         managed_icon_view_(
             managed_by_policy
                 ? AddChildView(std::make_unique<views::ImageView>())
@@ -102,6 +101,9 @@ class CaptureModeMenuHeader
     capture_mode_util::ConfigLabelView(label_view_);
     auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kHeader);
+    GetViewAccessibility().SetName(GetHeaderLabel());
   }
 
   CaptureModeMenuHeader(const CaptureModeMenuHeader&) = delete;
@@ -112,13 +114,6 @@ class CaptureModeMenuHeader
 
   const std::u16string& GetHeaderLabel() const {
     return label_view_->GetText();
-  }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    View::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kHeader;
-    node_data->SetName(GetHeaderLabel());
   }
 
   // CaptureModeSessionFocusCycler::HighlightableView:
@@ -152,7 +147,8 @@ class CaptureModeMenuItem
   // appear to be pushed inside under the header.
   CaptureModeMenuItem(views::Button::PressedCallback callback,
                       std::u16string item_label,
-                      bool indented)
+                      bool indented,
+                      bool enabled)
       : views::Button(std::move(callback)),
         label_view_(AddChildView(
             std::make_unique<views::Label>(std::move(item_label)))) {
@@ -161,8 +157,9 @@ class CaptureModeMenuItem
     capture_mode_util::ConfigLabelView(label_view_);
     capture_mode_util::CreateAndInitBoxLayoutForView(this);
     SetInkDropForButton(this);
-    GetViewAccessibility().OverrideIsLeaf(true);
-    SetAccessibleName(label_view_->GetText());
+    GetViewAccessibility().SetIsLeaf(true);
+    GetViewAccessibility().SetName(label_view_->GetText());
+    SetEnabled(enabled);
   }
 
   CaptureModeMenuItem(const CaptureModeMenuItem&) = delete;
@@ -221,8 +218,9 @@ class CaptureModeOption
     auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
     SetInkDropForButton(this);
-    GetViewAccessibility().OverrideIsLeaf(true);
-    SetAccessibleName(GetOptionLabel());
+    GetViewAccessibility().SetIsLeaf(true);
+    GetViewAccessibility().SetName(GetOptionLabel());
+    GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
 
     SetEnabled(enabled);
   }
@@ -261,12 +259,15 @@ class CaptureModeOption
   }
 
   void SetOptionLabel(std::u16string option_label) {
-    SetAccessibleName(option_label);
+    GetViewAccessibility().SetName(option_label);
     label_view_->SetText(std::move(option_label));
   }
 
   void SetOptionChecked(bool checked) {
     checked_icon_view_->SetVisible(checked);
+    GetViewAccessibility().SetCheckedState(
+        checked ? ax::mojom::CheckedState::kTrue
+                : ax::mojom::CheckedState::kFalse);
   }
 
   bool IsOptionChecked() { return checked_icon_view_->GetVisible(); }
@@ -284,15 +285,6 @@ class CaptureModeOption
   void OnThemeChanged() override {
     views::Button::OnThemeChanged();
     UpdateState();
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    Button::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kRadioButton;
-    node_data->SetName(GetOptionLabel());
-    node_data->SetCheckedState(IsOptionChecked()
-                                   ? ax::mojom::CheckedState::kTrue
-                                   : ax::mojom::CheckedState::kFalse);
   }
 
   // CaptureModeSessionFocusCycler::HighlightableView:
@@ -418,20 +410,29 @@ void CaptureModeMenuGroup::RemoveOptionIfAny(int option_id) {
     return;
 
   options_container_->RemoveChildViewT(option);
-  base::Erase(options_, option);
+  std::erase(options_, option);
 }
 
 void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
-                                       std::u16string item_label) {
+                                       std::u16string item_label,
+                                       bool enabled) {
   menu_items_.push_back(
       views::View::AddChildView(std::make_unique<CaptureModeMenuItem>(
           std::move(callback), std::move(item_label),
-          /*indented=*/!!menu_header_)));
+          /*indented=*/!!menu_header_, enabled)));
 }
 
 bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
   auto* option = GetOptionById(option_id);
   return option && option->IsOptionChecked();
+}
+
+views::View* CaptureModeMenuGroup::SetOptionCheckedForTesting(
+    int option_id,
+    bool checked) const {
+  auto* option = GetOptionById(option_id);
+  option->SetOptionChecked(checked);
+  return option;
 }
 
 bool CaptureModeMenuGroup::IsOptionEnabled(int option_id) const {
@@ -503,6 +504,10 @@ void CaptureModeMenuGroup::HandleOptionClick(int option_id) {
   // need to query the delegate.
   delegate_->OnOptionSelected(option_id);
   RefreshOptionsSelections();
+}
+
+views::View* CaptureModeMenuGroup::menu_header() const {
+  return menu_header_;
 }
 
 BEGIN_METADATA(CaptureModeMenuGroup)

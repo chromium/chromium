@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -17,8 +19,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/profile_invalidation_provider.h"
+#include "components/invalidation/test_support/fake_invalidation_listener.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -42,12 +47,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
-
 using ::testing::_;
 using ::testing::InvokeWithoutArgs;
 
@@ -60,8 +59,20 @@ namespace {
 constexpr char kTestUser[] = "test@example.com";
 constexpr int kCommandId = 1;
 
-std::unique_ptr<invalidation::InvalidationService>
-CreateInvalidationServiceForSenderId(const std::string& fcm_sender_id) {
+struct FeaturesTestParam {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+};
+
+std::variant<std::unique_ptr<invalidation::InvalidationService>,
+             std::unique_ptr<invalidation::InvalidationListener>>
+CreateInvalidationServiceForSenderId(std::string fcm_sender_id,
+                                     std::string /*project_id*/,
+                                     std::string /*log_prefix*/) {
+  if (base::FeatureList::IsEnabled(
+          invalidation::kInvalidationsWithDirectMessages)) {
+    return std::make_unique<invalidation::FakeInvalidationListener>();
+  }
   return std::make_unique<invalidation::FakeInvalidationService>();
 }
 
@@ -76,9 +87,14 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
 
 }  // namespace
 
-class UserRemoteCommandsServiceTest : public PlatformBrowserTest {
+class UserRemoteCommandsServiceTest
+    : public PlatformBrowserTest,
+      public testing::WithParamInterface<FeaturesTestParam> {
  public:
-  UserRemoteCommandsServiceTest() = default;
+  UserRemoteCommandsServiceTest() {
+    scoped_feature_list_.InitWithFeatures(GetParam().enabled_features,
+                                          GetParam().disabled_features);
+  }
   ~UserRemoteCommandsServiceTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -121,7 +137,7 @@ class UserRemoteCommandsServiceTest : public PlatformBrowserTest {
         g_browser_process->profile_manager()->user_data_dir();
     profile_ = Profile::CreateProfile(
         dest_path.Append(FILE_PATH_LITERAL("New Profile 1")),
-        /*delegate=*/nullptr, Profile::CreateMode::CREATE_MODE_SYNCHRONOUS);
+        /*delegate=*/nullptr, Profile::CreateMode::kSynchronous);
 #else
     profile_ = chrome_test_utils::GetProfile(this);
 #endif
@@ -203,11 +219,19 @@ class UserRemoteCommandsServiceTest : public PlatformBrowserTest {
 
   invalidation::FakeInvalidationService* GetInvalidationServiceForSenderId(
       std::string sender_id) {
-    return static_cast<invalidation::FakeInvalidationService*>(
+    auto* profile_invalidation_provider_factory =
         static_cast<invalidation::ProfileInvalidationProvider*>(
             invalidation::ProfileInvalidationProviderFactory::GetInstance()
-                ->GetForProfile(profile()))
-            ->GetInvalidationServiceForCustomSender(sender_id));
+                ->GetForProfile(profile()));
+    auto invalidation_service_or_listener =
+        profile_invalidation_provider_factory->GetInvalidationServiceOrListener(
+            std::move(sender_id),
+            /*project_id=*/"");
+    CHECK(std::holds_alternative<invalidation::InvalidationService*>(
+        invalidation_service_or_listener));
+    return static_cast<invalidation::FakeInvalidationService*>(
+        std::get<invalidation::InvalidationService*>(
+            invalidation_service_or_listener));
   }
 
   void AddPendingRemoteCommand(const em::RemoteCommand& command) {
@@ -238,9 +262,11 @@ class UserRemoteCommandsServiceTest : public PlatformBrowserTest {
 
   std::unique_ptr<policy::EmbeddedPolicyTestServer> test_server_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(UserRemoteCommandsServiceTest, Success) {
+IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
   em::RemoteCommand command;
   command.set_type(em::RemoteCommand_Type_BROWSER_CLEAR_BROWSING_DATA);
   command.set_command_id(kCommandId);
@@ -259,5 +285,13 @@ IN_PROC_BROWSER_TEST_F(UserRemoteCommandsServiceTest, Success) {
 
   EXPECT_EQ(em::RemoteCommandResult_ResultType_RESULT_SUCCESS, result.result());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    UserRemoteCommandsServiceTest,
+    testing::Values(FeaturesTestParam{},
+                    FeaturesTestParam{
+                        .enabled_features = {
+                            invalidation::kInvalidationsWithDirectMessages}}));
 
 }  // namespace enterprise_commands

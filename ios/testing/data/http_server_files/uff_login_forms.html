@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 
-<html><body>
+<html>
 
-Single username form.
-<form name='single_username_signin_form' id='single_username_signin_form'>
-  <input type='text' name='username' id='single_un' autocomplete='username'><br/>
-</form>
+<body>
 
-Single password form.
-<form name='single_password_signin_form' id='single_password_signin_form'>
-  <input type='password' name='password' id='single_pw'><br/>
-</form>
+  Step 1, Single username form.
+  <form name='single_username_signin_form'
+        id='single_username_signin_form'>
+    <input type='text'
+           name='username'
+           id='single_un'
+           autocomplete='username'><br />
+  </form>
 
-</body></html>
+  Step 2, Single password form.
+  <form name='single_password_signin_form'
+        id='single_password_signin_form'
+        action='destination.html'>
+    <input type='password'
+           name='password'
+           id='single_pw'><br />
+    <button type='submit'
+            id="login_btn">Login</button>
+  </form>
+
+</body>
+
+</html>

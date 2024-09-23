@@ -14,14 +14,14 @@
 
 namespace blink {
 
-class ScriptPromise;
+class ScriptPromiseUntyped;
 class ScriptState;
 
 // A thin wrapper around v8::Promise::Resolver that matches the semantics used
 // for promises in the standard. StreamPromiseResolver is used for promises that
 // need to be stored somewhere: promises on the stack should generally use
-// v8::Local<v8::Promise>, or ScriptPromise if they are to be returned to the
-// bindings code.
+// v8::Local<v8::Promise>, or ScriptPromiseUntyped if they are to be returned to
+// the bindings code.
 class CORE_EXPORT StreamPromiseResolver final
     : public GarbageCollected<StreamPromiseResolver> {
  public:
@@ -69,8 +69,8 @@ class CORE_EXPORT StreamPromiseResolver final
   // resolved.
   void Reject(ScriptState*, v8::Local<v8::Value> reason);
 
-  // Returns the promise wrapped in a ScriptPromise.
-  ScriptPromise GetScriptPromise(ScriptState* script_state) const;
+  // Returns the promise wrapped in a ScriptPromiseUntyped.
+  ScriptPromiseUntyped GetScriptPromiseUntyped(ScriptState* script_state) const;
 
   // Returns the promise as a v8::Promise.
   v8::Local<v8::Promise> V8Promise(v8::Isolate* isolate) const;

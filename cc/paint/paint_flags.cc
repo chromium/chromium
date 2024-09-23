@@ -4,6 +4,7 @@
 
 #include "cc/paint/paint_flags.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/memory/values_equivalent.h"
@@ -13,6 +14,7 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkPathEffect.h"
 #include "third_party/skia/include/core/SkPathUtils.h"
 
 namespace {
@@ -24,19 +26,11 @@ bool AreValuesEqualForTesting(const sk_sp<T>& a, const sk_sp<T>& b) {
   });
 }
 
-bool AreSkFlattenablesEqualForTesting(const sk_sp<SkFlattenable> a,  // IN-TEST
-                                      const sk_sp<SkFlattenable> b) {
-  return base::ValuesEquivalent(
-      a, b, [](const SkFlattenable& x, const SkFlattenable& y) {
-        return x.serialize()->equals(y.serialize().get());
-      });
-}
-
 }  // namespace
 
 namespace cc {
 
-PaintFlags::PaintFlags() {
+CorePaintFlags::CorePaintFlags() {
   // Match SkPaint defaults.
   bitfields_uint_ = 0u;
   bitfields_.cap_type_ = SkPaint::kDefault_Cap;
@@ -52,28 +46,35 @@ PaintFlags::PaintFlags() {
                 "Too many bitfields");
 }
 
+bool CorePaintFlags::operator==(const CorePaintFlags& other) const {
+  return color_ == other.color_ && width_ == other.width_ &&
+         miter_limit_ == other.miter_limit_ &&
+         bitfields_uint_ == other.bitfields_uint_;
+}
+
+PaintFlags::PaintFlags() = default;
+
 PaintFlags::PaintFlags(const PaintFlags& flags) = default;
 
+PaintFlags::PaintFlags(const CorePaintFlags& flags) : CorePaintFlags(flags) {}
+
 PaintFlags::PaintFlags(PaintFlags&& other) = default;
-
-PaintFlags::~PaintFlags() {
-  // TODO(enne): non-default dtor to investigate http://crbug.com/790915
-
-  // Sanity check accessing this object doesn't crash.
-  bitfields_.blend_mode_ = static_cast<uint32_t>(SkBlendMode::kLastMode);
-
-  // Free refcounted objects one by one.
-  path_effect_.reset();
-  shader_.reset();
-  mask_filter_.reset();
-  color_filter_.reset();
-  draw_looper_.reset();
-  image_filter_.reset();
-}
 
 PaintFlags& PaintFlags::operator=(const PaintFlags& other) = default;
 
 PaintFlags& PaintFlags::operator=(PaintFlags&& other) = default;
+
+PaintFlags::~PaintFlags() = default;
+
+bool PaintFlags::CanConvertToCorePaintFlags() const {
+  return IsValid() && !path_effect_ && !shader_ && !color_filter_ &&
+         !draw_looper_ && !image_filter_;
+}
+
+CorePaintFlags PaintFlags::ToCorePaintFlags() const {
+  DCHECK(CanConvertToCorePaintFlags());
+  return CorePaintFlags(*this);
+}
 
 void PaintFlags::setImageFilter(sk_sp<PaintFilter> filter) {
   image_filter_ = std::move(filter);
@@ -137,21 +138,24 @@ bool PaintFlags::SupportsFoldingAlpha() const {
 
 SkPaint PaintFlags::ToSkPaint() const {
   SkPaint paint;
-  paint.setPathEffect(path_effect_);
-  if (shader_)
+  if (path_effect_) {
+    paint.setPathEffect(path_effect_->GetSkPathEffect());
+  }
+  if (shader_) {
     paint.setShader(shader_->GetSkShader(getFilterQuality()));
-  paint.setMaskFilter(mask_filter_);
+  }
   if (color_filter_) {
     paint.setColorFilter(color_filter_->sk_color_filter_);
   }
-  if (image_filter_)
+  if (image_filter_) {
     paint.setImageFilter(image_filter_->cached_sk_filter_);
-  paint.setColor(color_);
-  paint.setStrokeWidth(width_);
-  paint.setStrokeMiter(miter_limit_);
+  }
+  paint.setColor(getColor4f());
+  paint.setStrokeWidth(getStrokeWidth());
+  paint.setStrokeMiter(getStrokeMiter());
   paint.setBlendMode(getBlendMode());
-  paint.setAntiAlias(bitfields_.antialias_);
-  paint.setDither(bitfields_.dither_);
+  paint.setAntiAlias(isAntiAlias());
+  paint.setDither(isDither());
   paint.setStrokeCap(static_cast<SkPaint::Cap>(getStrokeCap()));
   paint.setStrokeJoin(static_cast<SkPaint::Join>(getStrokeJoin()));
   paint.setStyle(static_cast<SkPaint::Style>(getStyle()));
@@ -170,11 +174,11 @@ SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
     case PaintFlags::FilterQuality::kNone:
       return SkSamplingOptions(SkFilterMode::kNearest, SkMipmapMode::kNone);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
-bool PaintFlags::IsValid() const {
+bool CorePaintFlags::IsValid() const {
   return PaintOp::IsValidPaintFlagsSkBlendMode(getBlendMode());
 }
 
@@ -191,22 +195,32 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          getStyle() == other.getStyle() &&
          getFilterQuality() == other.getFilterQuality() &&
          getDynamicRangeLimit() == other.getDynamicRangeLimit() &&
-         AreSkFlattenablesEqualForTesting(path_effect_,  // IN-TEST
-                                          other.path_effect_) &&
-         AreSkFlattenablesEqualForTesting(mask_filter_,  // IN-TEST
-                                          other.mask_filter_) &&
+         isArcClosed() == other.isArcClosed() &&
+         AreValuesEqualForTesting(path_effect_,  // IN-TEST
+                                  other.path_effect_) &&
          AreValuesEqualForTesting(color_filter_,  // IN-TEST
                                   other.color_filter_) &&
-         AreSkFlattenablesEqualForTesting(draw_looper_,  // IN-TEST
-                                          other.draw_looper_) &&
+         AreValuesEqualForTesting(draw_looper_,  // IN-TEST
+                                  other.draw_looper_) &&
          AreValuesEqualForTesting(image_filter_,  // IN-TEST
                                   other.image_filter_) &&
          AreValuesEqualForTesting(shader_, other.shader_);  // IN-TEST
 }
 
-bool PaintFlags::HasDiscardableImages() const {
-  return (shader_ && shader_->has_discardable_images()) ||
-         (image_filter_ && image_filter_->has_discardable_images());
+bool PaintFlags::HasDiscardableImages(
+    gfx::ContentColorUsage* content_color_usage) const {
+  bool has_discardable_images = false;
+  if (shader_) {
+    has_discardable_images = shader_->HasDiscardableImages(content_color_usage);
+  }
+  if (image_filter_ && image_filter_->has_discardable_images()) {
+    if (content_color_usage) {
+      *content_color_usage =
+          std::max(*content_color_usage, image_filter_->GetContentColorUsage());
+    }
+    has_discardable_images = true;
+  }
+  return has_discardable_images;
 }
 
 }  // namespace cc

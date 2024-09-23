@@ -56,7 +56,7 @@ class WebAuthFlow : public content::WebContentsObserver {
     INTERACTION_REQUIRED,  // Non-redirect page load in silent mode.
     LOAD_FAILED,
     TIMED_OUT,
-    CANNOT_CREATE_WINDOW  // Couldn't create a browser window.
+    CANNOT_CREATE_WINDOW,  // Couldn't create a browser window.
   };
 
   enum class AbortOnLoad {
@@ -114,6 +114,10 @@ class WebAuthFlow : public content::WebContentsObserver {
   // Prevents further calls to the delegate and deletes the flow.
   void DetachDelegateAndDelete();
 
+  // Immediately closes the webview and prevents further delegate calls. Can be
+  // called before `DetachDelegateAndDelete()` to release resources immediately.
+  void Stop();
+
   // This call will make the interactive mode, that opens up a browser tab for
   // auth, display an Infobar that shows the extension name.
   void SetShouldShowInfoBar(const std::string& extension_display_name);
@@ -145,7 +149,7 @@ class WebAuthFlow : public content::WebContentsObserver {
   void CloseInfoBar();
 
   raw_ptr<Delegate> delegate_ = nullptr;
-  const raw_ptr<Profile> profile_;
+  raw_ptr<Profile> profile_;
   const GURL provider_url_;
   const Mode mode_;
   const bool user_gesture_;

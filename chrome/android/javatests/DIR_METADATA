@@ -1,6 +1,6 @@
 monorail: {
-  component: "Test>Android"
+  component: "UI>Browser>Mobile"
 }
 buganizer_public: {
-  component_id: 1456111
+  component_id: 1457074
 }

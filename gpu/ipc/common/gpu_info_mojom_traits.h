@@ -6,11 +6,11 @@
 #define GPU_IPC_COMMON_GPU_INFO_MOJOM_TRAITS_H_
 
 #include <optional>
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
-#include "gpu/ipc/common/dx_diag_node_mojom_traits.h"
 #include "gpu/ipc/common/gpu_info.mojom.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -72,11 +72,6 @@ struct GPU_EXPORT
   static const std::string& driver_version(
       const gpu::GPUInfo::GPUDevice& input) {
     return input.driver_version;
-  }
-
-  static int cuda_compute_capability_major(
-      const gpu::GPUInfo::GPUDevice& input) {
-    return input.cuda_compute_capability_major;
   }
 
   static gl::GpuPreference gpu_preference(
@@ -261,6 +256,11 @@ struct GPU_EXPORT
       const gpu::OverlayInfo& input) {
     return input.rgb10a2_overlay_support;
   }
+
+  static gpu::OverlaySupport p010_overlay_support(
+      const gpu::OverlayInfo& input) {
+    return input.p010_overlay_support;
+  }
 };
 
 #endif
@@ -286,6 +286,11 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
   static const std::vector<gpu::GPUInfo::GPUDevice>& secondary_gpus(
       const gpu::GPUInfo& input) {
     return input.secondary_gpus;
+  }
+
+  static const std::vector<gpu::GPUInfo::GPUDevice>& npus(
+      const gpu::GPUInfo& input) {
+    return input.npus;
   }
 
   static const std::string& pixel_shader_version(const gpu::GPUInfo& input) {
@@ -368,15 +373,9 @@ struct GPU_EXPORT StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo> {
     return input.can_support_threaded_texture_mailbox;
   }
 
-#if BUILDFLAG(IS_MAC)
-  static uint32_t macos_specific_texture_target(const gpu::GPUInfo& input) {
-    return input.macos_specific_texture_target;
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
-  static const gpu::DxDiagNode& dx_diagnostics(const gpu::GPUInfo& input) {
-    return input.dx_diagnostics;
+  static uint32_t directml_feature_level(const gpu::GPUInfo& input) {
+    return input.directml_feature_level;
   }
 
   static uint32_t d3d12_feature_level(const gpu::GPUInfo& input) {

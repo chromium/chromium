@@ -9,11 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/mojom/test_autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -22,6 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -33,9 +36,10 @@ bool operator==(const PasswordAndMetadata& lhs,
          lhs.uses_account_store == rhs.uses_account_store;
 }
 
+namespace {
+
 const std::vector<const char*> kOptions = {"Option1", "Option2", "Option3",
                                            "Option4"};
-namespace {
 
 void CreateTestFieldDataPredictions(const std::string& signature,
                                     FormFieldDataPredictions* field_predict) {
@@ -142,8 +146,6 @@ void CheckEqualPasswordSuggestionRequest(
   EXPECT_EQ(expected.bounds, actual.bounds);
 }
 
-}  // namespace
-
 class AutofillTypeTraitsTestImpl : public testing::Test,
                                    public mojom::TypeTraitsTest {
  public:
@@ -215,18 +217,18 @@ class AutofillTypeTraitsTestImpl : public testing::Test,
 void ExpectFormFieldData(const FormFieldData& expected,
                          base::OnceClosure closure,
                          const FormFieldData& passed) {
-  EXPECT_TRUE(passed.host_frame.is_empty());
+  EXPECT_TRUE(passed.host_frame().is_empty());
   EXPECT_TRUE(FormFieldData::DeepEqual(test::WithoutUnserializedData(expected),
                                        passed));
-  EXPECT_EQ(expected.value, passed.value);
-  EXPECT_EQ(expected.user_input, passed.user_input);
+  EXPECT_EQ(expected.value(), passed.value());
+  EXPECT_EQ(expected.user_input(), passed.user_input());
   std::move(closure).Run();
 }
 
 void ExpectFormData(const FormData& expected,
                     base::OnceClosure closure,
                     const FormData& passed) {
-  EXPECT_TRUE(passed.host_frame.is_empty());
+  EXPECT_TRUE(passed.host_frame().is_empty());
   EXPECT_TRUE(
       FormData::DeepEqual(test::WithoutUnserializedData(expected), passed));
   std::move(closure).Run();
@@ -315,12 +317,12 @@ std::vector<Section> SectionTestCases() {
   // FieldIdentifier.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   FormFieldData field;
-  field.name = u"from_field_name";
+  field.set_name(u"from_field_name");
   // Randomizing the LocalFrameToken requires an AutofillTestEnvironment, which
   // doesn't exist yet because SectionTestCases() is called by
   // INSTANTIATE_TEST_SUITE_P().
-  field.host_frame = test::MakeLocalFrameToken(test::RandomizeFrame(false));
-  field.renderer_id = FieldRendererId(123);
+  field.set_host_frame(test::MakeLocalFrameToken(test::RandomizeFrame(false)));
+  field.set_renderer_id(FieldRendererId(123));
   s = Section::FromFieldIdentifier(field, frame_token_ids);
   test_cases.push_back(s);
 
@@ -335,38 +337,38 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   FormFieldData input = test::CreateTestSelectField(
       "TestLabel", "TestName", "TestValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
-  input.host_frame = test::MakeLocalFrameToken();
-  input.name = u"name";
-  input.id_attribute = u"id";
-  input.name_attribute = u"name";
-  input.value = u"value";
-  input.form_control_type = FormControlType::kInputText;
-  input.autocomplete_attribute = "on";
-  input.parsed_autocomplete =
+  input.set_host_frame(test::MakeLocalFrameToken());
+  input.set_name(u"name");
+  input.set_id_attribute(u"id");
+  input.set_name_attribute(u"name");
+  input.set_value(u"value");
+  input.set_form_control_type(FormControlType::kInputText);
+  input.set_autocomplete_attribute("on");
+  input.set_parsed_autocomplete(
       AutocompleteParsingResult{.section = "autocomplete_section",
                                 .mode = HtmlFieldMode::kShipping,
-                                .field_type = HtmlFieldType::kAddressLine1};
-  input.placeholder = u"placeholder";
-  input.css_classes = u"class1";
-  input.aria_label = u"aria label";
-  input.aria_description = u"aria description";
-  input.renderer_id = FieldRendererId(1234);
-  input.host_form_id = FormRendererId(123);
-  input.max_length = 12345;
-  input.is_autofilled = true;
-  input.is_user_edited = true;
-  input.check_status = FormFieldData::CheckStatus::kChecked;
-  input.should_autocomplete = true;
-  input.role = FormFieldData::RoleAttribute::kPresentation;
-  input.text_direction = base::i18n::RIGHT_TO_LEFT;
-  input.properties_mask = FieldPropertiesFlags::kHadFocus;
-  input.user_input = u"TestTypedValue";
-  input.bounds = gfx::RectF(1, 2, 10, 100);
+                                .field_type = HtmlFieldType::kAddressLine1});
+  input.set_placeholder(u"placeholder");
+  input.set_css_classes(u"class1");
+  input.set_aria_label(u"aria label");
+  input.set_aria_description(u"aria description");
+  input.set_renderer_id(FieldRendererId(1234));
+  input.set_host_form_id(FormRendererId(123));
+  input.set_max_length(12345);
+  input.set_is_autofilled(true);
+  input.set_is_user_edited(true);
+  input.set_check_status(FormFieldData::CheckStatus::kChecked);
+  input.set_should_autocomplete(true);
+  input.set_role(FormFieldData::RoleAttribute::kPresentation);
+  input.set_text_direction(base::i18n::RIGHT_TO_LEFT);
+  input.set_properties_mask(FieldPropertiesFlags::kHadFocus);
+  input.set_user_input(u"TestTypedValue");
+  input.set_bounds(gfx::RectF(1, 2, 10, 100));
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
-  input.section = Section::FromAutocomplete(
-      {.section = "autocomplete_section", .mode = HtmlFieldMode::kShipping});
+  input.set_section(Section::FromAutocomplete(
+      {.section = "autocomplete_section", .mode = HtmlFieldMode::kShipping}));
 
-  EXPECT_FALSE(input.host_frame.is_empty());
+  EXPECT_FALSE(input.host_frame().is_empty());
   base::RunLoop loop;
   mojo::Remote<mojom::TypeTraitsTest> remote(GetTypeTraitsTestRemote());
   remote->PassFormFieldData(
@@ -379,28 +381,28 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   FormFieldData input = test::CreateTestDatalistField(
       "DatalistLabel", "DatalistName", "DatalistValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
-  input.host_frame = test::MakeLocalFrameToken();
-  input.renderer_id = FieldRendererId(1234);
-  input.id_attribute = u"id";
-  input.name_attribute = u"name";
-  input.autocomplete_attribute = "on";
-  input.parsed_autocomplete = std::nullopt;
-  input.placeholder = u"placeholder";
-  input.css_classes = u"class1";
-  input.aria_label = u"aria label";
-  input.aria_description = u"aria description";
-  input.max_length = 12345;
-  input.is_autofilled = true;
-  input.is_user_edited = true;
-  input.check_status = FormFieldData::CheckStatus::kChecked;
-  input.should_autocomplete = true;
-  input.role = FormFieldData::RoleAttribute::kPresentation;
-  input.text_direction = base::i18n::RIGHT_TO_LEFT;
-  input.properties_mask = FieldPropertiesFlags::kHadFocus;
-  input.user_input = u"TestTypedValue";
-  input.bounds = gfx::RectF(1, 2, 10, 100);
+  input.set_host_frame(test::MakeLocalFrameToken());
+  input.set_renderer_id(FieldRendererId(1234));
+  input.set_id_attribute(u"id");
+  input.set_name_attribute(u"name");
+  input.set_autocomplete_attribute("on");
+  input.set_parsed_autocomplete(std::nullopt);
+  input.set_placeholder(u"placeholder");
+  input.set_css_classes(u"class1");
+  input.set_aria_label(u"aria label");
+  input.set_aria_description(u"aria description");
+  input.set_max_length(12345);
+  input.set_is_autofilled(true);
+  input.set_is_user_edited(true);
+  input.set_check_status(FormFieldData::CheckStatus::kChecked);
+  input.set_should_autocomplete(true);
+  input.set_role(FormFieldData::RoleAttribute::kPresentation);
+  input.set_text_direction(base::i18n::RIGHT_TO_LEFT);
+  input.set_properties_mask(FieldPropertiesFlags::kHadFocus);
+  input.set_user_input(u"TestTypedValue");
+  input.set_bounds(gfx::RectF(1, 2, 10, 100));
 
-  EXPECT_FALSE(input.host_frame.is_empty());
+  EXPECT_FALSE(input.host_frame().is_empty());
   base::RunLoop loop;
   mojo::Remote<mojom::TypeTraitsTest> remote(GetTypeTraitsTestRemote());
   remote->PassFormFieldData(
@@ -410,13 +412,15 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
 
 TEST_F(AutofillTypeTraitsTestImpl, PassFormData) {
   FormData input = test::CreateTestAddressFormData();
-  input.username_predictions = {autofill::FieldRendererId(1),
-                                autofill::FieldRendererId(13),
-                                autofill::FieldRendererId(2)};
-  input.button_titles.push_back(std::make_pair(
-      u"Sign-up", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE));
+  input.set_username_predictions({autofill::FieldRendererId(1),
+                                  autofill::FieldRendererId(13),
+                                  autofill::FieldRendererId(2)});
+  std::vector<ButtonTitleInfo> button_titles = input.button_titles();
+  button_titles.emplace_back(
+      u"Sign-up", mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE);
+  input.set_button_titles(std::move(button_titles));
 
-  EXPECT_FALSE(input.host_frame.is_empty());
+  EXPECT_FALSE(input.host_frame().is_empty());
   base::RunLoop loop;
   mojo::Remote<mojom::TypeTraitsTest> remote(GetTypeTraitsTestRemote());
   remote->PassFormData(
@@ -506,4 +510,18 @@ TEST_F(AutofillTypeTraitsTestImpl, PassPasswordSuggestionRequest) {
   loop.Run();
 }
 
+TEST(AutofillTypesMojomTraitsTest, AutocompleteParsingResult) {
+  // Simulate a parsed "name webauthn" attribute.
+  autofill::AutocompleteParsingResult original;
+  original.mode = HtmlFieldMode::kNone;
+  original.field_type = HtmlFieldType::kName;
+  original.webauthn = true;
+
+  autofill::AutocompleteParsingResult copy;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              autofill::mojom::AutocompleteParsingResult>(original, copy));
+  EXPECT_EQ(original, copy);
+}
+
+}  // namespace
 }  // namespace autofill

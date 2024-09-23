@@ -4,10 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {saveAppState, updateAppState} from '../../common/js/app_util.js';
-import {isRecentRoot} from '../../common/js/entry_utils.js';
+import {isRecentFileData, isRecentRoot} from '../../common/js/entry_utils.js';
 import {storage} from '../../common/js/storage.js';
-import {DialogType} from '../../state/state.js';
+import type {DialogType} from '../../state/state.js';
 
 import type {DirectoryChangeEvent, DirectoryModel} from './directory_model.js';
 import {GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from './file_list_model.js';
@@ -23,13 +22,13 @@ export class AppStateController {
 
   /**
    * Preferred sort field of file list. This will be ignored in the Recent
-   * folder, since it always uses descendant order of date-mofidied.
+   * folder, since it always uses descendant order of date-modified.
    */
   private fileListSortField_: string|null = DEFAULT_SORT_FIELD;
 
   /**
    * Preferred sort direction of file list. This will be ignored in the Recent
-   * folder, since it always uses descendant order of date-mofidied.
+   * folder, since it always uses descendant order of date-modified.
    */
   private fileListSortDirection_: string|null = DEFAULT_SORT_DIRECTION;
 
@@ -54,14 +53,6 @@ export class AppStateController {
         this.viewOptions_ = JSON.parse(value);
       } catch (ignore) {
       }
-
-      // Override with window-specific options.
-      if (window?.appState?.viewOptions) {
-        for (const [key, value] of Object.entries(
-                 window.appState.viewOptions)) {
-          this.viewOptions_[key] = value;
-        }
-      }
     } catch (error) {
       this.viewOptions_ = {};
       console.warn(error);
@@ -74,16 +65,6 @@ export class AppStateController {
     this.ui_ = ui;
     this.directoryModel_ = directoryModel;
     const {table} = ui.listContainer;
-
-    // Register event listeners.
-    table.addEventListener(
-        'column-resize-end', this.saveViewOptions.bind(this));
-    directoryModel.getFileList().addEventListener(
-        'sorted', this.onFileListSorted_.bind(this));
-    directoryModel.getFileFilter().addEventListener(
-        'changed', this.onFileFilterChanged_.bind(this));
-    directoryModel.addEventListener(
-        'directory-changed', this.onDirectoryChanged_.bind(this));
 
     // Restore preferences.
     ui.setCurrentListType(this.viewOptions_.listType || ListType.DETAIL);
@@ -105,6 +86,16 @@ export class AppStateController {
       // normalization here after restoration.
       table.columnModel.normalizeWidths(table.clientWidth);
     }
+
+    // Register event listeners.
+    table.addEventListener(
+        'column-resize-end', this.saveViewOptions.bind(this));
+    directoryModel.getFileList().addEventListener(
+        'sorted', this.onFileListSorted_.bind(this));
+    directoryModel.getFileFilter().addEventListener(
+        'changed', this.onFileFilterChanged_.bind(this));
+    directoryModel.addEventListener(
+        'directory-changed', this.onDirectoryChanged_.bind(this));
   }
 
   /**
@@ -126,12 +117,6 @@ export class AppStateController {
     const items: Record<string, string> = {};
     items[this.viewOptionStorageKey_] = JSON.stringify(prefs);
     storage.local.setAsync(items);
-
-    // Save the window-specific preference.
-    if (window.appState) {
-      window.appState.viewOptions = prefs;
-      saveAppState();
-    }
   }
 
   private async onFileListSorted_() {
@@ -163,22 +148,28 @@ export class AppStateController {
   }
 
   private onDirectoryChanged_(event: DirectoryChangeEvent) {
-    if (!event.detail.newDirEntry) {
-      return;
-    }
-
     assert(this.directoryModel_);
     assert(this.ui_);
 
     // Sort the file list by:
-    // 1) 'date-mofidied' and 'desc' order on Recent folder.
+    // 1) 'date-modified' and 'desc' order on Recent folder.
     // 2) preferred field and direction on other folders.
-    const isOnRecent = isRecentRoot(event.detail.newDirEntry);
+    const fileData = this.directoryModel_.getCurrentFileData();
+    if (!fileData) {
+      return;
+    }
+
+    const isOnRecent = isRecentFileData(fileData);
     const fileListModel = this.directoryModel_.getFileList();
     this.ui_.listContainer.isOnRecent = isOnRecent;
-    const isOnRecentBefore = event.detail.previousDirEntry &&
-        isRecentRoot(event.detail.previousDirEntry);
-    if (isOnRecent !== isOnRecentBefore) {
+    // TODO(b/354587005): Capture all recent categories in the store.
+    // Currently only fake-entry://recent/all is in the store, but
+    // `previousFileKey` can be other categories like fake-entry://recent/images
+    // which is not in the store, we can't rely on store data to fetch the entry
+    // by the file key here, hence matching the file key string directly here.
+    const wasOnRecentBefore =
+        event.detail.previousFileKey?.startsWith('fake-entry://recent/');
+    if (isOnRecent !== wasOnRecentBefore) {
       if (isOnRecent) {
         fileListModel.groupByField = GROUP_BY_FIELD_MODIFICATION_TIME;
         fileListModel.sort(DEFAULT_SORT_FIELD, DEFAULT_SORT_DIRECTION);
@@ -191,12 +182,6 @@ export class AppStateController {
             this.fileListSortField_!, this.fileListSortDirection_!);
       }
     }
-
-    updateAppState(
-        this.directoryModel_.getCurrentDirEntry() ?
-            this.directoryModel_.getCurrentDirEntry()!.toURL() :
-            '',
-        /*selectionURL=*/ '');
   }
 }
 

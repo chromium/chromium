@@ -6,11 +6,12 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_WEB_CONTENT_AREA_ALERT_OVERLAY_H_
 
 #import <UIKit/UIKit.h>
+
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 
@@ -72,7 +73,7 @@ struct ButtonConfig {
   // Creates a ButtonConfig with `title` and `style`. UMA User Action with
   // `user_action_name` will be recorded when this button is tapped.
   ButtonConfig(NSString* title,
-               base::StringPiece user_action_name,
+               std::string_view user_action_name,
                UIAlertActionStyle style = UIAlertActionStyleDefault);
   ButtonConfig(const ButtonConfig&);
   ButtonConfig() = delete;
@@ -80,7 +81,7 @@ struct ButtonConfig {
   // The button's title.
   NSString* title;
   // Name of UMA User Action to log when the button is tapped.
-  base::StringPiece user_action_name;
+  std::string_view user_action_name;
   // The button's style.
   UIAlertActionStyle style;
 };

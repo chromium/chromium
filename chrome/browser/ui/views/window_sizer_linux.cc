@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -18,7 +19,7 @@ void WindowSizer::GetBrowserWindowBoundsAndShowState(
     const gfx::Rect& specified_bounds,
     const Browser* browser,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) {
+    ui::mojom::WindowShowState* show_state) {
   DCHECK(bounds);
   DCHECK(show_state);
   WindowSizerLinux sizer(std::move(state_provider), browser);

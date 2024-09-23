@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/exo/surface_tree_host.h"
 
 #include <memory>
@@ -152,8 +157,7 @@ TEST_F(SurfaceTreeHostTest,
 
   // Create 25x25 sub surface.
   auto child_surface = std::make_unique<Surface>();
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer({25, 25}));
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(25, 25));
   auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
@@ -202,8 +206,7 @@ TEST_F(SurfaceTreeHostTest,
 
   // Create 1x1 sub surface.
   auto child_surface = std::make_unique<Surface>();
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer({1, 1}));
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(1, 1));
   auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
@@ -260,8 +263,7 @@ TEST_F(SurfaceTreeHostTest,
 
   // Create 25x25 sub surface.
   auto child_surface = std::make_unique<Surface>();
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer({25, 25}));
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(25, 25));
   auto sub_surface = std::make_unique<SubSurface>(child_surface.get(), surface);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
@@ -394,10 +396,6 @@ class FakeRasterContextProvider
     static gpu::GpuFeatureInfo dummy_feature_info;
     return dummy_feature_info;
   }
-  gpu::gles2::GLES2Interface* ContextGL() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
   gpu::raster::RasterInterface* RasterInterface() override {
     return GetInterceptingTestRasterInterface();
   }
@@ -444,8 +442,7 @@ TEST_F(SurfaceTreeHostTest, DoesntVerifyVerifiedSyncTokens) {
   raster_interface->ResetSyncTokensCount();
 
   // Create a buffer and attach it to the surface.
-  auto buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer({50, 50}));
+  auto buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(50, 50));
   surface->Attach(buffer.get());
 
   surface->Commit();

@@ -96,6 +96,7 @@ void TtsController::SkipAddNetworkChangeObserverForTests(bool enabled) {
 // IMPORTANT!
 // These values are written to logs.  Do not renumber or delete
 // existing items; add new entries to the end of the list.
+// LINT.IfChange(UMATextToSpeechEvent)
 enum class UMATextToSpeechEvent {
   START = 0,
   END = 1,
@@ -112,6 +113,7 @@ enum class UMATextToSpeechEvent {
   // increase, but none of the other enum values may change.
   COUNT
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:TextToSpeechEvent)
 
 //
 // TtsControllerImpl
@@ -365,7 +367,7 @@ void TtsControllerImpl::OnTtsEvent(int utterance_id,
       metric = UMATextToSpeechEvent::RESUME;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   UMA_HISTOGRAM_ENUMERATION("TextToSpeech.Event", metric,
@@ -384,7 +386,7 @@ void TtsControllerImpl::OnTtsUtteranceBecameInvalid(int utterance_id) {
   // browser becomes invalid, we need to stop
   RemoveUtteranceAndStopIfNeeded(utterance_id);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 

@@ -10,8 +10,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/link_header.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -62,7 +65,6 @@ class TickClock;
 
 namespace blink {
 
-class KURL;
 class WebDocumentLoader;
 class WebServiceWorkerNetworkProvider;
 
@@ -76,7 +78,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   WebURLRequest url_request;
 
   // The base url of the requestor. Only used for about:srcdoc and about:blank
-  // navigations, and if NewBaseUrlInheritanceBehavior is enabled.
+  // navigations.
   WebURL requestor_base_url;
 
   // The frame type. This must not be kNone. See RequestContextFrameType.
@@ -125,6 +127,10 @@ struct BLINK_EXPORT WebNavigationInfo {
   // Whether this is a navigation in the opener frame initiated
   // by the window.open'd frame.
   bool is_opener_navigation = false;
+
+  // True if the initiator explicitly asked for opener relationships to be
+  // preserved, via rel="opener".
+  bool has_rel_opener = false;
 
   // Whether this is a navigation to _unfencedTop, i.e. to the top-level frame
   // from a renderer process that does not get a handle to the frame.
@@ -186,22 +192,19 @@ struct BLINK_EXPORT WebNavigationInfo {
   // The frame token of the initiator Frame.
   std::optional<LocalFrameToken> initiator_frame_token;
 
-  // A handle for keeping the initiator RenderFrameHost's PolicyContainerHost
-  // alive until we create the NavigationRequest.
-  CrossVariantMojoRemote<mojom::PolicyContainerHostKeepAliveHandleInterfaceBase>
-      initiator_policy_container_keep_alive_handle;
+  // A handle for keeping the initiator RenderFrameHost's
+  // NavigationStateKeepAlive alive until we create the NavigationRequest.
+  CrossVariantMojoRemote<mojom::NavigationStateKeepAliveHandleInterfaceBase>
+      initiator_navigation_state_keep_alive_handle;
 
-  // The initiator frame's LocalDOMWindow's has_storage_access state.
-  bool has_storage_access = false;
+  // The initiator frame's LocalDOMWindow's Storage Access API status.
+  net::StorageAccessApiStatus storage_access_api_status =
+      net::StorageAccessApiStatus::kNone;
+
   // Whether this navigation was initiated by the container, e.g. iframe changed
   // src. Only container-initiated navigation report resource timing to the
   // parent.
   bool is_container_initiated = false;
-
-  // True if the initiator requested that the tab become fullscreen
-  // after navigation (e.g. the initial navigation of a fullscreen popup).
-  // See: https://chromestatus.com/feature/6002307972464640
-  bool is_fullscreen_requested = false;
 };
 
 // This structure holds all information provided by the embedder that is
@@ -212,11 +215,12 @@ struct BLINK_EXPORT WebNavigationParams {
   WebNavigationParams();
   ~WebNavigationParams();
 
-  // Construct with a specific `document_token` and `devtools_navigation_token`,
-  // rather than randomly creating new ones.
+  // Construct with a specific `document_token`, `devtools_navigation_token`,
+  // and `base_auction_nonce` rather than randomly creating new ones.
   explicit WebNavigationParams(
       const blink::DocumentToken& document_token,
-      const base::UnguessableToken& devtools_navigation_token);
+      const base::UnguessableToken& devtools_navigation_token,
+      const base::Uuid& base_auction_nonce);
 
   // Shortcut for navigating based on WebNavigationInfo parameters.
   //
@@ -228,16 +232,11 @@ struct BLINK_EXPORT WebNavigationParams {
       const WebNavigationInfo&);
 
   // Shortcut for loading html with "text/html" mime type and "UTF8" encoding.
+  static std::unique_ptr<WebNavigationParams> CreateWithEmptyHTMLForTesting(
+      const WebURL& base_url);
   static std::unique_ptr<WebNavigationParams> CreateWithHTMLStringForTesting(
       base::span<const char> html,
       const WebURL& base_url);
-
-#if INSIDE_BLINK
-  // Shortcut for loading html with "text/html" mime type and "UTF8" encoding.
-  static std::unique_ptr<WebNavigationParams> CreateWithHTMLBufferForTesting(
-      scoped_refptr<SharedBuffer> buffer,
-      const KURL& base_url);
-#endif
 
   // Fills |body_loader| based on the provided static data.
   static void FillBodyLoader(WebNavigationParams*, base::span<const char> data);
@@ -249,6 +248,12 @@ struct BLINK_EXPORT WebNavigationParams {
                                  WebString mime_type,
                                  WebString text_encoding,
                                  base::span<const char> data);
+#if INSIDE_BLINK
+  static void FillStaticResponse(WebNavigationParams*,
+                                 WebString mime_type,
+                                 WebString text_encoding,
+                                 SharedBuffer* data);
+#endif
 
   // This block defines the request used to load the main resource
   // for this navigation.
@@ -285,8 +290,7 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // If `url` is about:srcdoc or about:blank, this is the default base URL to
   // use for the new document. It corresponds to the initiator's base URL
-  // snapshotted when the navigation started. Note: this value is only used when
-  // the NewBaseUrlInheritanceBehavior feature is enabled in the embedder.
+  // snapshotted when the navigation started.
   WebURL fallback_base_url;
 
   // The net error code for failed navigation. Must be non-zero when
@@ -369,19 +373,14 @@ struct BLINK_EXPORT WebNavigationParams {
   // taking into account the origin computed by the renderer.
   StorageKey storage_key;
 
-  // The storage key here is the one the browser process believes the renderer
-  // should use when binding session storage. This may differ from `storage_key`
-  // as a deprecation trial can prevent the partitioning of session storage.
-  // The document loader should verify this storage key is (1) the same as
-  // `storage_key` or (2) a first-party storage key at `storage_key.origin`.
-  //
-  // TODO(crbug.com/1407150): Remove this when deprecation trial is complete.
-  StorageKey session_storage_key;
-
   blink::DocumentToken document_token;
   // The devtools token for this navigation. See DocumentLoader
   // for details.
   base::UnguessableToken devtools_navigation_token;
+
+  // Seed for all PAAPI Auction Nonces generated in this document.
+  base::Uuid base_auction_nonce;
+
   // Known timings related to navigation. If the navigation has
   // started in another process, timings are propagated from there.
   WebNavigationTimings navigation_timings;
@@ -434,7 +433,7 @@ struct BLINK_EXPORT WebNavigationParams {
       prefetched_signed_exchanges;
   // An optional tick clock to be used for document loader timing. This is used
   // for testing.
-  const base::TickClock* tick_clock = nullptr;
+  raw_ptr<const base::TickClock> tick_clock = nullptr;
   // The origin trial features activated in the document initiating this
   // navigation that should be applied in the document being navigated to.
   WebVector<int> initiator_origin_trial_features;
@@ -466,6 +465,10 @@ struct BLINK_EXPORT WebNavigationParams {
   // Whether the navigation is cross-site and swaps BrowsingContextGroups
   // (BrowsingInstances).
   bool is_cross_site_cross_browsing_context_group = false;
+
+  // Whether the new document should start with sticky user activation, because
+  // the previously committed document did, and the navigation was same-site.
+  bool should_have_sticky_user_activation = false;
 
   // Blink's copy of the policy container containing security policies to be
   // enforced on the document created by this navigation.
@@ -539,8 +542,9 @@ struct BLINK_EXPORT WebNavigationParams {
   base::flat_map<::blink::mojom::RuntimeFeature, bool>
       modified_runtime_features;
 
-  // Whether the document should be loaded with the has_storage_access bit set.
-  bool load_with_storage_access = false;
+  // The Storage Access API status that the document should be loaded with.
+  net::StorageAccessApiStatus load_with_storage_access =
+      net::StorageAccessApiStatus::kNone;
 
   // Indicates which browsing context group this frame belongs to. This starts
   // as nullopt and is only set when we commit a main frame in another browsing
@@ -556,6 +560,22 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // The cookie deprecation label for cookie deprecation facilitated testing.
   WebString cookie_deprecation_label;
+
+  // The :visited link hashtable is stored in shared memory and contains salted
+  // hashes for all visits. Each salt corresponds to a unique origin, and
+  // renderer processes are only informed of salts that correspond to their
+  // origins. As a result, any given renderer process can only
+  // learn about visits relevant to origins for which it has the salt.
+  //
+  // Here we store the salt corresponding to this navigation's origin to
+  // be committed. It will allow the renderer process that commits this
+  // navigation to learn about visits hashed with this salt. If the :visited
+  // link hashtable is not yet initialized (or the feature is disabled), the
+  // salt value will not be set here. Instead, PartitionedVisitedLinkWriter will
+  // send the salt values to the renderer (specifically to VisitedLinkReader via
+  // the VisitedLinkNotificationSink interface) after the :visited link
+  // hashtable is initialized.
+  std::optional<uint64_t> visited_link_salt;
 };
 
 }  // namespace blink

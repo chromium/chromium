@@ -4,7 +4,7 @@
 
 #include "components/openscreen_platform/task_runner.h"
 
-#include <chrono>  // NOLINT
+#include <chrono>
 #include <utility>
 
 #include "base/functional/bind.h"

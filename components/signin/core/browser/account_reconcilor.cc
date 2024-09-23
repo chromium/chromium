@@ -24,14 +24,20 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -88,6 +94,20 @@ bool IsAnyAccountInErrorState(
   }
   return false;
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// If Uno is enabled and there is no "clear on exit" setting affecting Gaia,
+// consider the migration done.
+void MaybeMigrateClearOnExit(SigninClient& client,
+                             signin::IdentityManager& identity_manager) {
+  PrefService& prefs = *client.GetPrefs();
+  if (!client.AreSigninCookiesDeletedOnExit() &&
+      signin::AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(identity_manager,
+                                                               prefs)) {
+    prefs.SetBoolean(prefs::kCookieClearOnExitMigrationNoticeComplete, true);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
 
@@ -177,6 +197,14 @@ AccountReconcilor::~AccountReconcilor() {
   DCHECK(!registered_with_identity_manager_);
 }
 
+// static
+void AccountReconcilor::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  registry->RegisterBooleanPref(
+      prefs::kCookieClearOnExitMigrationNoticeComplete, false);
+#endif
+}
+
 void AccountReconcilor::RegisterWithAllDependencies() {
   RegisterWithContentSettings();
   RegisterWithIdentityManager();
@@ -198,6 +226,12 @@ void AccountReconcilor::Initialize(bool start_reconcile_if_tokens_available) {
   DCHECK(delegate_);
   delegate_->set_reconcilor(this);
   timeout_ = delegate_->GetReconcileTimeout();
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  MaybeMigrateClearOnExit(*client_, *identity_manager_);
+
+  pref_observer_.Init(client_->GetPrefs());
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   if (delegate_->IsReconcileEnabled()) {
     SetState(AccountReconcilorState::kScheduled);
@@ -267,6 +301,12 @@ void AccountReconcilor::RegisterWithIdentityManager() {
     return;
 
   identity_manager_->AddObserver(this);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  pref_observer_.Add(
+      prefs::kExplicitBrowserSignin,
+      base::BindRepeating(&MaybeMigrateClearOnExit, std::ref(*client_),
+                          std::ref(*identity_manager_)));
+#endif
   registered_with_identity_manager_ = true;
 }
 
@@ -275,6 +315,9 @@ void AccountReconcilor::UnregisterWithIdentityManager() {
   if (!registered_with_identity_manager_)
     return;
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  pref_observer_.RemoveAll();
+#endif
   identity_manager_->RemoveObserver(this);
   registered_with_identity_manager_ = false;
 }
@@ -322,6 +365,11 @@ void AccountReconcilor::OnContentSettingChanged(
   if (!content_type_set.Contains(ContentSettingsType::COOKIES))
     return;
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Perform the "clear on exit" migration if applicable.
+  MaybeMigrateClearOnExit(*client_, *identity_manager_);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
   // If this does not affect GAIA, just ignore. The secondary pattern is not
   // needed.
   if (!primary_pattern.Matches(GaiaUrls::GetInstance()->gaia_url()))
@@ -329,6 +377,21 @@ void AccountReconcilor::OnContentSettingChanged(
 
   VLOG(1) << "AccountReconcilor::OnContentSettingChanged";
   StartReconcile(Trigger::kCookieSettingChange);
+}
+
+void AccountReconcilor::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Perform the "clear on exit" migration if applicable.
+  MaybeMigrateClearOnExit(*client_, *identity_manager_);
+
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      event_details.GetEventTypeFor(ConsentLevel::kSignin) ==
+          signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    VLOG(1) << "AccountReconcilor::OnPrimaryAccountChanged";
+    StartReconcile(Trigger::kPrimaryAccountChanged);
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 void AccountReconcilor::OnEndBatchOfRefreshTokenStateChanges() {
@@ -345,7 +408,8 @@ void AccountReconcilor::OnRefreshTokensLoaded() {
 
 void AccountReconcilor::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error) {
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   // Gaia cookies may be invalidated server-side and the client does not get any
   // notification when this happens.
   // Gaia cookies derived from refresh tokens are always invalidated server-side
@@ -395,7 +459,7 @@ void AccountReconcilor::StartReconcile(Trigger trigger) {
     return;
   }
 
-  // TODO(crbug.com/967603): remove when root cause is found.
+  // TODO(crbug.com/40629374): remove when root cause is found.
   CHECK(delegate_);
   CHECK(client_);
   if (!delegate_->IsReconcileEnabled() || !client_->AreSigninCookiesAllowed()) {
@@ -558,13 +622,12 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
           << "Error was " << error.ToString();
 
   // If cookies change while the reconcilor is running, ignore the changes and
-  // let it complete. Adding accounts to the cookie will trigger new
-  // notifications anyway, and these will be handled in a new reconciliation
-  // cycle. See https://crbug.com/923716
-  //
-  // TODO(droger): Should we also check if |logout_in_progress_|?
-  if (set_accounts_in_progress_)
+  // let it complete. Adding accounts or removing accounts on the web will
+  // trigger new notifications anyway, and these will be handled in a new
+  // reconciliation cycle. See https://crbug.com/923716
+  if (set_accounts_in_progress_ || log_out_in_progress_) {
     return;
+  }
 
   if (!is_reconcile_started_) {
     StartReconcile(Trigger::kCookieChange);
@@ -597,14 +660,6 @@ void AccountReconcilor::OnAccountsInCookieUpdated(
   // Revoking the token for the primary account is not supported (it should be
   // signed out or put to auth error state instead).
   delegate_->RevokeSecondaryTokensForReconcileIfNeeded(verified_gaia_accounts);
-  if (!delegate_->IsUpdateCookieAllowed()) {
-    // TODO(b/320279580): Record reconcilor operation if tokens were revoked to
-    // match cookies.
-    error_during_last_reconcile_ = GoogleServiceAuthError::AuthErrorNone();
-    CalculateIfMultiloginReconcileIsDone();
-    ScheduleStartReconcileIfChromeAccountsChanged();
-    return;
-  }
 
   std::vector<CoreAccountId> chrome_accounts =
       LoadValidAccountsFromTokenService();
@@ -659,7 +714,7 @@ AccountReconcilor::LoadValidAccountsFromTokenService() const {
 void AccountReconcilor::OnReceivedManageAccountsResponse(
     signin::GAIAServiceType service_type) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  // TODO(https://crbug.com/1224872): check if it's still required on Android
+  // TODO(crbug.com/40775484): check if it's still required on Android
   // and iOS.
   if (service_type == signin::GAIA_SERVICE_TYPE_ADDSESSION) {
     identity_manager_->GetAccountsCookieMutator()->TriggerCookieJarUpdate();

@@ -66,13 +66,6 @@ void QuotaTemporaryStorageEvictor::ReportPerRoundHistogram() {
   base::Time now = base::Time::Now();
   base::UmaHistogramTimes("Quota.TimeSpentToAEvictionRound",
                           now - round_statistics_.start_time);
-  if (!time_of_end_of_last_round_.is_null()) {
-    base::UmaHistogramCustomTimes("Quota.TimeDeltaOfEvictionRounds",
-                                  now - time_of_end_of_last_round_,
-                                  base::Minutes(1), base::Days(1), 50);
-  }
-  time_of_end_of_last_round_ = now;
-
   UmaHistogramMbytes("Quota.DiskspaceShortage",
                      round_statistics_.diskspace_shortage_at_round);
   UmaHistogramMbytes("Quota.EvictedBytesPerRound",
@@ -92,8 +85,6 @@ void QuotaTemporaryStorageEvictor::ReportPerHourHistogram() {
                              stats_in_hour.num_evicted_buckets);
   base::UmaHistogramCounts1M("Quota.EvictionRoundsPerHour",
                              stats_in_hour.num_eviction_rounds);
-  base::UmaHistogramCounts1M("Quota.SkippedEvictionRoundsPerHour",
-                             stats_in_hour.num_skipped_eviction_rounds);
 }
 
 void QuotaTemporaryStorageEvictor::OnEvictionRoundStarted() {

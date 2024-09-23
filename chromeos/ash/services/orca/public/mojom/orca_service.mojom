@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 9
+// Next MinVersion: 13
 
 module ash.orca.mojom;
 
@@ -22,6 +22,17 @@ enum PresetTextQueryType {
   kRephrase = 3,
   kFormalize = 4,
   kEmojify = 5,
+  [MinVersion=10] kProofread = 6,
+};
+
+[Stable, Extensible]
+enum MetricEvent {
+  [Default] kUnknown = 0,
+  kRefineRequest = 1,
+  kFeedbackThumbsUp = 2,
+  kFeedbackThumbsDown = 3,
+  kReturnToPreviousSuggestions = 4,
+  kWebUIRequest = 5,
 };
 
 [Stable]
@@ -108,6 +119,19 @@ struct Context {
   SurroundingText surrounding_text@0;
 };
 
+// Specifies any extra details required to configure the service.
+[Stable]
+struct EditorConfig {
+  array<PresetTextQueryType> allowed_query_types@0;
+  [MinVersion=12] string? language_code@1;
+};
+
+[Stable]
+struct TriggerContext {
+  bool freeform_selected;
+  PresetTextQueryType preset_type_selected@1;
+};
+
 // The UI uses this interface to talk to the service.
 [Stable]
 interface EditorClient {
@@ -164,6 +188,12 @@ interface EditorClient {
   // Converts the metadata associated with `result_id` into a string and
   // combines it with `user_description` to create the report description.
   [MinVersion=7] SubmitFeedback@13(string result_id, string user_description);
+
+  // Sends the `trigger_context`.
+  [MinVersion=11] OnTrigger@14(TriggerContext trigger_context);
+
+  // Sends an event `metric_event`.
+  [MinVersion=11] EmitMetricEvent@15(MetricEvent metric_event);
 };
 
 // Used by the UI to bootstrap the connection with the service.
@@ -205,6 +235,12 @@ interface SystemActuator {
   // Submits a feedback report with the specified `description`.
   // Includes any relevant system level metadata.
   [MinVersion=7] SubmitFeedback@6(string description);
+
+  // Sends the `trigger_context`.
+  [MinVersion=11] OnTrigger@7(TriggerContext trigger_context);
+
+  // Sends a event `metric event` for recording.
+  [MinVersion=11] EmitMetricEvent@8(MetricEvent metric_event);
 };
 
 // An interface that can respond to text query requests with responses.
@@ -221,5 +257,6 @@ interface OrcaService {
     pending_associated_remote<SystemActuator> system_actuator,
     pending_associated_remote<TextQueryProvider> text_query_provider,
     pending_associated_receiver<EditorClientConnector> client_connector,
-    pending_associated_receiver<EditorEventSink> event_sink);
+    pending_associated_receiver<EditorEventSink> event_sink,
+    [MinVersion=9] EditorConfig? editor_config);
 };

@@ -31,7 +31,7 @@
 <translation id="1830179671306812954">{HOURS,plural, =1{1 గంట మరియు }other{# గంటలు మరియు }}</translation>
 <translation id="185013357618350178">&amp;Select</translation>
 <translation id="1859234291848436338">రాసే దిశ</translation>
-<translation id="1860796786778352021">నోటిఫికేషన్‌ను మూసివేయి</translation>
+<translation id="1860796786778352021">నోటిఫికేషన్‌ను మూసివేయండి</translation>
 <translation id="186476001994626254">వెబ్ స్మార్ట్ పేస్ట్ కంటెంట్</translation>
 <translation id="1871244248791675517">Ins</translation>
 <translation id="1901303067676059328">&amp;అన్నీ ఎంచుకోండి</translation>
@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">సర్వే</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేస్తోంది</translation>
+<translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2388990488038464401">మీ ఫోన్ నుండి ఈ నంబర్‌‌కు కాల్ చేయాలా?</translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
 <translation id="24452542372838207">నోటిఫికేషన్‌ను విస్తరించు</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">కొత్తవి</translation>
 <translation id="2666092431469916601">పైన</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడింది</translation>
-<translation id="271033894570825754">కొత్తది</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 సంవత్సరం క్రితం}other{# సంవత్సరాల క్రితం}}</translation>
 <translation id="2878511608894704031">అన్నీ తొలగించండి</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 రోజులో}other{# రోజులో}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> సిస్టమ్</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">ఎడమ బాణం</translation>
+<translation id="5633029987065897167">ఖాళీగా ఉంది</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 నిమి.}other{# నిమి.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{ఈ రోజు యాక్టివ్‌గా ఉంది}=1{1 రోజు క్రితం యాక్టివ్‌గా ఉంది}other{# రోజుల క్రితం యాక్టివ్‌గా ఉంది}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 రోజు మరియు }other{# రోజులు మరియు }}</translation>
@@ -141,7 +142,7 @@
 <translation id="5941711191222866238">కనిష్టీకరించు</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 గంట}other{# గంటలు}}</translation>
 <translation id="6007284015834422026">ఎక్స్‌టెన్షన్ పిన్ చేయబడింది</translation>
-<translation id="6040143037577758943">మూసివేయి</translation>
+<translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6117103120090651229">మధ్య బటన్</translation>
 <translation id="6129953537138746214">ఖాళీ</translation>
 <translation id="6135826906199951471">Del</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF కంటెంట్</translation>
 <translation id="6539092367496845964">ఏదో తప్పు జరిగింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="654149438358937226">అన్ని నోటిఫికేషన్‌లను బ్లాక్ చేయండి</translation>
-<translation id="6612467943526193239">క్రమాంకనం నుండి నిష్క్రమించేందుకు, Esc నొక్కండి.</translation>
 <translation id="6620110761915583480">ఫైల్‌ను సేవ్ చేయండి</translation>
 <translation id="6699343763173986273">మీడియా తర్వాత ట్రాక్</translation>
 <translation id="6808150112686056157">మీడియా ఆపివేయి</translation>

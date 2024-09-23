@@ -71,12 +71,12 @@ public class HubTabSwitcherMetricsRecorder {
         if (currentPane == null) return;
 
         TabModel tabModel = mTabModelSelector.getCurrentModel();
-        Tab previousTab = TabModelUtils.getTabById(tabModel, lastId);
+        Tab previousTab = tabModel.getTabById(lastId);
         if (previousTab == null) return;
 
         if (mPaneIdWhenShown.intValue() == currentPane.getPaneId()) {
             if (tab.getId() == mTabIdWhenShown) {
-                // TODO(crbug.com/1085246): Differentiate list.
+                // TODO(crbug.com/40132120): Differentiate list.
                 if (!TabUiFeatureUtilities.shouldUseListMode()) {
                     RecordUserAction.record("MobileTabReturnedToCurrentTab.TabGrid");
                 }
@@ -89,7 +89,7 @@ public class HubTabSwitcherMetricsRecorder {
                 int previousIndex = filter.indexOf(previousTab);
                 int currentIndex = filter.indexOf(tab);
                 if (previousIndex != currentIndex) {
-                    if (filter.getRelatedTabList(tab.getId()).size() == 1) {
+                    if (!filter.isTabInTabGroup(tab)) {
                         RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
                     }
                     // The sign on this metric is inverted from the direction of travel in the tab
@@ -111,7 +111,7 @@ public class HubTabSwitcherMetricsRecorder {
 
             TabModelFilter filter =
                     mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
-            if (filter.getRelatedTabList(tab.getId()).size() == 1) {
+            if (!filter.isTabInTabGroup(tab)) {
                 RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
             }
         }

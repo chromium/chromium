@@ -5,7 +5,7 @@
 // This file has been copied from //base/compiler_specific.h (and then
 // significantly trimmed to just the APIs / macros needed by //build/rust/std).
 //
-// TODO(https://crbug.com/1475734): Avoid code duplication / reuse code.
+// TODO(crbug.com/40279749): Avoid code duplication / reuse code.
 
 #ifndef BUILD_RUST_STD_COMPILER_SPECIFIC_H_
 #define BUILD_RUST_STD_COMPILER_SPECIFIC_H_

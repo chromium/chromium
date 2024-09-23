@@ -38,7 +38,7 @@ class SessionSyncServiceImpl : public SessionSyncService {
   [[nodiscard]] base::CallbackListSubscription
   SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
  private:

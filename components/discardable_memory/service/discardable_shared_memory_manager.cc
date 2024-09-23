@@ -129,7 +129,7 @@ class DiscardableMemoryImpl : public base::DiscardableMemory {
   }
   void* data() const override {
     DCHECK(is_locked_);
-    return shared_memory_->memory();
+    return shared_memory_->memory().data();
   }
 
   void DiscardForTesting() override {

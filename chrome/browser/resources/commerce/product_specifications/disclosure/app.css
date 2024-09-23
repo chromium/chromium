@@ -1,0 +1,91 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  max-width: 470px;
+}
+
+#titleContainer {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+}
+
+#title {
+  color: var(--color-product-specifications-disclosure-foreground);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+#iconContainer {
+  align-items: center;
+  background: radial-gradient(circle at bottom right,
+      var(--color-product-specifications-disclosure-gradient-start) 34%,
+      var(--color-product-specifications-disclosure-gradient-end) 82%);
+  border-radius: 8px;
+  display: flex;
+  flex: 0 0 auto;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+#summary {
+  background-color:
+    var(--color-product-specifications-disclosure-summary-background);
+  border-radius: 8px;
+  color: var(--color-product-specifications-disclosure-foreground);
+  margin: 16px 0 10px;
+  padding: 16px;
+}
+
+#itemsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#itemsHeader {
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.item {
+  align-items: center;
+  color: var(--color-product-specifications-disclosure-foreground);
+  display: flex;
+  font-size: 12px;
+  gap: 12px;
+  line-height: 16px;
+  width: 100%;
+}
+
+.item-icon {
+  --icon-size: 16px;
+  --iron-icon-height: var(--icon-size);
+  --iron-icon-width: var(--icon-size);
+  flex-shrink: 0;
+}
+
+#learnMoreLink {
+  color: var(--cr-link-color);
+  font-size: 12px;
+  line-height: 16px;
+  margin-bottom: 20px;
+}
+
+#actionsContainer {
+  align-items: flex-start;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

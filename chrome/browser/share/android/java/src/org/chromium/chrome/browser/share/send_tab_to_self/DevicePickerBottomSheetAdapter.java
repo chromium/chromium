@@ -86,7 +86,7 @@ class DevicePickerBottomSheetAdapter extends BaseAdapter {
 
     private static Drawable getDrawableForDeviceType(
             Context context, TargetDeviceInfo targetDevice) {
-        // TODO(crbug.com/1368080): Update cases to handle a tablet device case.
+        // TODO(crbug.com/40868175): Update cases to handle a tablet device case.
         switch (targetDevice.formFactor) {
             case FormFactor.DESKTOP:
                 {

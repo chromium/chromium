@@ -11,8 +11,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/sharing/sharing_app.h"
-#include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -20,11 +18,14 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "components/sharing_message/sharing_app.h"
+#include "components/sharing_message/sharing_metrics.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
@@ -109,9 +110,11 @@ const gfx::VectorIcon& GetIconType(
 SharingDialogView::SharingDialogView(views::View* anchor_view,
                                      content::WebContents* web_contents,
                                      SharingDialogData data)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : LocationBarBubbleDelegateView(anchor_view,
+                                    web_contents,
+                                    /*autosize=*/true),
       data_(std::move(data)) {
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -238,9 +241,6 @@ void SharingDialogView::Init() {
   set_margins(gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0));
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, insets.left(), 0, insets.right())));
-
-  if (GetWidget())
-    SizeToContents();
 }
 
 void SharingDialogView::InitListView() {

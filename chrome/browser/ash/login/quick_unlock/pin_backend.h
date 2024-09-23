@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_BACKEND_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_BACKEND_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
@@ -28,6 +30,8 @@ enum class Purpose;
 class PinBackend : public ash::auth::PinBackendDelegate {
  public:
   using BoolCallback = base::OnceCallback<void(bool)>;
+  using AvailabilityCallback =
+      base::OnceCallback<void(bool, std::optional<base::Time>)>;
 
   // Fetch the PinBackend instance.
   static PinBackend* GetInstance();
@@ -81,7 +85,7 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   // restrictions.
   void CanAuthenticate(const AccountId& account_id,
                        Purpose purpose,
-                       BoolCallback result);
+                       AvailabilityCallback result_callback);
 
   // Try to check a pin `key` value for the given user. The `key` must be plain
   // text and not contain a salt. The `user_context` must not have an

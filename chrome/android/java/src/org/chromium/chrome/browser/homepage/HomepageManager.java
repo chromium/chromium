@@ -23,10 +23,8 @@ import org.chromium.chrome.browser.partnercustomizations.HomepageCharacterizatio
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
@@ -49,14 +47,12 @@ public class HomepageManager
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final ObserverList<HomepageStateListener> mHomepageStateListeners;
-    private SettingsLauncher mSettingsLauncher;
 
     private HomepageManager() {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mHomepageStateListeners = new ObserverList<>();
         HomepagePolicyManager.getInstance().addListener(this);
         PartnerBrowserCustomizations.getInstance().setPartnerHomepageListener(this);
-        mSettingsLauncher = new SettingsLauncherImpl();
     }
 
     /** Returns the singleton instance of HomepageManager, creating it if needed. */
@@ -65,6 +61,12 @@ public class HomepageManager
             sInstance = new HomepageManager();
         }
         return sInstance;
+    }
+
+    public static void setInstanceForTesting(HomepageManager homepageManager) {
+        HomepageManager prevValue = sInstance;
+        sInstance = homepageManager;
+        ResettersForTesting.register(() -> sInstance = prevValue);
     }
 
     /** Adds a HomepageStateListener to receive updates when the homepage state changes. */
@@ -82,10 +84,12 @@ public class HomepageManager
 
     /**
      * Menu click handler on home button.
+     *
      * @param context {@link Context} used for launching a settings activity.
      */
     public void onMenuClick(Context context) {
-        mSettingsLauncher.launchSettingsActivity(context, HomepageSettings.class);
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(context, HomepageSettings.class);
     }
 
     /** Notify any listeners about a homepage state change. */
@@ -98,17 +102,15 @@ public class HomepageManager
     /**
      * @return Whether or not homepage is enabled.
      */
-    public static boolean isHomepageEnabled() {
-        return HomepagePolicyManager.isHomepageManagedByPolicy()
-                || getInstance().getPrefHomepageEnabled();
+    public boolean isHomepageEnabled() {
+        return HomepagePolicyManager.isHomepageManagedByPolicy() || getPrefHomepageEnabled();
     }
 
     /**
      * @return Whether to close the app when the user has zero tabs.
      */
-    public static boolean shouldCloseAppWithZeroTabs() {
-        return HomepageManager.isHomepageEnabled()
-                && !UrlUtilities.isNtpUrl(HomepageManager.getHomepageGurl());
+    public boolean shouldCloseAppWithZeroTabs() {
+        return isHomepageEnabled() && !UrlUtilities.isNtpUrl(getHomepageGurl());
     }
 
     /**
@@ -117,8 +119,8 @@ public class HomepageManager
      * this function will fallback to return {@link ChromeUrlConstants.nativeNtpGurl()}. If the
      * default search engine (DSE) isn't Google, may fallback to the DSE's new Tab URL.
      *
-     * <p>This function needs to be called on UI thread since Profile.getLastUsedRegularProfile() is
-     * called.
+     * <p>This function needs to be called on UI thread since
+     * ProfileManager.getLastUsedRegularProfile() is called.
      *
      * <p>This function checks different sources to get the current homepage, which is listed below
      * according to their priority:
@@ -130,28 +132,29 @@ public class HomepageManager
      * @see #getPrefHomepageUseChromeNtp()
      * @see #getPrefHomepageUseDefaultUri()
      */
-    public static @Nullable GURL getHomepageGurl() {
+    public @Nullable GURL getHomepageGurl() {
         if (!isHomepageEnabled()) return GURL.emptyGURL();
 
-        GURL homepageGurl = getInstance().getHomepageGurlIgnoringEnabledState();
+        GURL homepageGurl = getHomepageGurlIgnoringEnabledState();
         if (homepageGurl.isEmpty()) {
             homepageGurl = ChromeUrlConstants.nativeNtpGurl();
         }
 
-        // We have to use Profile.getLastUsedRegularProfile() to get the last used regular Profile
+        // We have to use ProfileManager.getLastUsedRegularProfile() to get the last used regular
+        // Profile
         // before HomepageManager supports multiple Profiles. Thus, if DSE isn't Google, pressing
         // the home button may redirect to the DSE's new Tab URL, rather than showing an incognito
         // NTP.
         return DseNewTabUrlManager.maybeGetOverrideUrl(
                 homepageGurl,
-                ProfileManager.isInitialized() ? Profile.getLastUsedRegularProfile() : null);
+                ProfileManager.isInitialized() ? ProfileManager.getLastUsedRegularProfile() : null);
     }
 
     /**
      * @return A GURL for the default homepage URI if the homepage is partner provided, or the new
-     *         tab page if the homepage button is force enabled via flag.
+     *     tab page if the homepage button is force enabled via flag.
      */
-    public static GURL getDefaultHomepageGurl() {
+    public GURL getDefaultHomepageGurl() {
         if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
             return PartnerBrowserCustomizations.getInstance().getHomePageUrl();
         }
@@ -195,11 +198,12 @@ public class HomepageManager
     /**
      * Determines whether the homepage is set to something other than the NTP or empty/null.
      * Normally, when loading the homepage the NTP is loaded as a fallback if the homepage is null
-     * or empty. So while other helper methods that check if a given string is the NTP
-     * will reject null and empty, this method does the opposite.
+     * or empty. So while other helper methods that check if a given string is the NTP will reject
+     * null and empty, this method does the opposite.
+     *
      * @return Whether the current homepage is something other than the NTP.
      */
-    public static boolean isHomepageNonNtp() {
+    public boolean isHomepageNonNtp() {
         GURL currentHomepage = getHomepageGurl();
         return !currentHomepage.isEmpty() && !UrlUtilities.isNtpUrl(currentHomepage);
     }
@@ -330,10 +334,10 @@ public class HomepageManager
     /**
      * Record histogram "Settings.Homepage.LocationType" with the current homepage location type.
      */
-    public static void recordHomepageLocationTypeIfEnabled() {
+    public void recordHomepageLocationTypeIfEnabled() {
         if (!isHomepageEnabled()) return;
 
-        int homepageLocationType = getInstance().getHomepageLocationType();
+        int homepageLocationType = getHomepageLocationType();
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.Homepage.LocationType",
                 homepageLocationType,
@@ -380,16 +384,11 @@ public class HomepageManager
         notifyHomepageUpdated();
     }
 
-    public void setSettingsLauncherForTesting(SettingsLauncher launcher) {
-        var oldValue = mSettingsLauncher;
-        mSettingsLauncher = launcher;
-        ResettersForTesting.register(() -> mSettingsLauncher = oldValue);
-    }
-
     /**
      * Provides a helper for UMA reporting of partner customization and Homepage outcomes.
+     *
      * @return A {@link HomepageCharacterizationHelper} that provides access to a few helpful
-     *         methods.
+     *     methods.
      */
     public static HomepageCharacterizationHelper getHomepageCharacterizationHelper() {
         return new HomepageCharacterizationHelper() {

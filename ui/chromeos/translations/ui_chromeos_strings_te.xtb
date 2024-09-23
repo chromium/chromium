@@ -192,7 +192,7 @@
 <translation id="2470939964922472929">చాలా ఎక్కువ సార్లు తప్పు PIN ఎంటర్ చేయబడింది. కొత్త PINను సెటప్ చేయడానికి, మీ క్యారియర్ ద్వారా అందించబడే 8-అంకెల PIN అన్‌బ్లాక్ చేసే కీ(PUK)ని ఎంటర్ చేయండి.</translation>
 <translation id="2500392669976258912">గుజరాతీ ఫొనెటిక్</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2517472476991765520">స్కాన్ చేయి</translation>
+<translation id="2517472476991765520">స్కాన్ చేయండి</translation>
 <translation id="252641322760726369">షెల్ఫ్‌లో ఉన్న మీ ఫైల్స్‌కు క్విక్ యాక్సెస్‌ను పొందడానికి, ఫైల్‌ను తాకి, నొక్కి ఉంచి, <ph name="ICON" />‌ను ట్యాప్ చేసి, ఆపై "<ph name="PIN_COMMAND" />"ను ఎంచుకోండి.</translation>
 <translation id="2534460670861217804">సురక్షిత HTTP ప్రాక్సీ</translation>
 <translation id="2541377937973966830">ఈ ఫోల్డర్‌లో ఉన్న కంటెంట్‌లు కేవలం చదవడానికి మాత్రమే. కొన్ని యాక్టివిటీలకు సపోర్ట్ ఉండదు.</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebitలు</translation>
 <translation id="3085752524577180175">SOCKS హోస్ట్</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />‌లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు, వివరాలు</translation>
-<translation id="3113153474486991170">ఈ లొకేషన్ నుండి "<ph name="PATH" />"ను తెరవడం సాధ్యం కాలేదు. తెరుచుకోవాలంటే, దయచేసి "నా ఫైల్స్"కి కాపీ చేయండి.</translation>
 <translation id="3113592018909187986">మీకు 1 ప్రయత్నం మిగిలి ఉంది. మీరు కొత్త PINను సెటప్ చేసే వరకు ఈ నెట్‌వర్క్‌ను ఉపయోగించలేరు.</translation>
 <translation id="3124404833828281817">కలలుగంటున్న వ్యక్తి</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,13 +337,14 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ను రద్దు చేయండి.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, యాక్టివేట్ చేయబడలేదు, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3691184985318546178">సింహళం</translation>
+<translation id="3702842351052426940">మీ SIM కార్డ్ లేదా eSIM ప్రొఫైల్ డియాక్టివేట్ చేయబడవచ్చు. మీ SIM కార్డ్‌ను రీప్లేస్ చేయడానికి లేదా eSIM ప్రొఫైల్స్‌ను మార్చడానికి ప్రయత్నించండి.</translation>
 <translation id="3722341589402358578">ఎర్రర్ ఏర్పడింది. కొన్ని ఐటెమ్‌లు ట్రాష్ చేయబడకపోవచ్చు.</translation>
 <translation id="3726463242007121105">పరికరం తెరవడం సాధ్యం కాదు ఎందుకంటే దాని ఫైల్‌సిస్టమ్‌కు మద్దతు లేదు.</translation>
 <translation id="3727148787322499904">ఈ సెట్టింగ్‌ను మార్చడం వలన అన్ని భాగస్వామ్య నెట్‌వర్క్‌లు ప్రభావితం అవుతాయి</translation>
 <translation id="3737576078404241332">సైడ్‌బార్ నుండి తీసివేయండి</translation>
 <translation id="3749289110408117711">ఫైల్ పేరు</translation>
 <translation id="3786301125658655746">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు</translation>
-<translation id="3789841737615482174">ఇన్‌స్టాల్ చేయి</translation>
+<translation id="3789841737615482174">ఇన్‌స్టాల్ చేయండి</translation>
 <translation id="3793469551756281394">దాదాపు <ph name="REMAINING_TIME_HOUR" /> <ph name="REMAINING_TIME_MINUTE" /> సమయం మిగిలి ఉంది</translation>
 <translation id="3798449238516105146">వెర్షన్</translation>
 <translation id="3801082500826908679">ఫారోస్</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">ఈ ప్రాక్సీని మీ నిర్వాహకులు అమలు చేశారు</translation>
 <translation id="3830674330436234648">ప్లేబ్యాక్ అందుబాటులో లేదు</translation>
 <translation id="383652340667548381">సెర్బియన్</translation>
+<translation id="3839045880592694915">మీ మోడెమ్, మీ క్యారియర్ ద్వారా కనెక్ట్ చేయడానికి అనుమతించబడదు. మరిన్ని వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="385051799172605136">వెనుకకు</translation>
-<translation id="3851491607336266896">కనెక్ట్ చేయబడింది, పరిమిత కనెక్టివిటీ</translation>
 <translation id="3855472144336161447">జర్మన్ నియో 2</translation>
 <translation id="3858860766373142691">పేరు</translation>
 <translation id="3866249974567520381">వివరణ</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">ఇటీవల తెరిచిన Microsoft ఫైల్స్ OneDriveకు తరలించబడ్డాయి</translation>
 <translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="4017788180641807848">వర్క్‌మాన్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
-<translation id="4019998208269143058">క్విక్ ఫైల్స్‌కు పిన్ చేయండి</translation>
 <translation id="4040753847560036377">తప్పు PUK</translation>
 <translation id="4057991113334098539">సక్రియం చేస్తోంది...</translation>
 <translation id="4092890906744441904">ఐరిష్</translation>
+<translation id="4101601646343868113">మీ మొబైల్ నెట్‌వర్క్‌కు సైన్ ఇన్ చేసి, మీ మొబైల్ డేటా ప్లాన్ యాక్టివ్‌గా ఉందని నిర్ధారించండి</translation>
 <translation id="4124731372776320263">1 Drive ఫైల్‌ను సింక్ చేస్తోంది</translation>
 <translation id="4124935795427217608">యునికార్న్</translation>
 <translation id="4131235941541910880">మీకు అవసరం లేని ఐటెమ్‌లను ట్రాష్‌కు తరలించండి</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">తమిళ్99 కీబోర్డ్‌తో తమిళం</translation>
 <translation id="5633226425545095130">ఈ ఐటెమ్‌ను తరలిస్తే అది షేర్ చేయబడిన ఫోల్డర్ '<ph name="DESTINATION_NAME" />'ను చూడగలిగే ప్రతి ఒక్కరితో షేర్ చేయబడుతుంది.</translation>
 <translation id="5649768706273821470">వినండి</translation>
+<translation id="5650895901941743674">మీ APN కాన్ఫిగరేషన్‌ను చెక్ చేయండి</translation>
 <translation id="5669691691057771421">కొత్త PINని నమోదు చేయండి</translation>
 <translation id="5678784840044122290">Linux అప్లికేషన్ మీ టెర్మినల్‌లో అందుబాటులో ఉంటుంది మరియు మీ లాంచర్‌లో ఒక చిహ్నం కూడా చూపవచ్చు.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ఆర్కైవ్ లేదా వర్చువల్ డిస్క్ నుండి డిస్‌కనెక్ట్ చేయడం సాధ్యం కాదు<ph name="END_BOLD" />
@@ -653,7 +654,7 @@
 <translation id="6011074160056912900">ఈథర్‌నెట్ నెట్‌వర్క్</translation>
 <translation id="60357267506638014">చెక్ QWERTY</translation>
 <translation id="603895874132768835">మీరు కొత్త PINను సెటప్ చేసే వరకు ఈ నెట్‌వర్క్‌ను ఉపయోగించలేరు</translation>
-<translation id="6040143037577758943">మూసివేయి</translation>
+<translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> నెట్‌వర్క్, కనెక్ట్ కాలేదు</translation>
 <translation id="6073060579181816027">అనేక ఫైల్ లొకేషన్‌లు</translation>
 <translation id="6074825444536523002">Google ఫారమ్</translation>
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
 <translation id="6269630227984243955">మలయ్</translation>
 <translation id="6271903698064569429">ఫైల్స్‌ను అప్‌లోడ్ చేయడం సాధ్యం కాదు ఎందుకంటే "<ph name="SHARED_DRIVE_NAME" />"‌లో తగినంత స్టోరేజ్ లేదు.</translation>
+<translation id="6279140785485544797">మీ మొబైల్ డేటా ప్లాన్ గడువు ముగిసి పోవచ్చు. సపోర్ట్ కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="6287852322318138013">ఈ ఫైల్‌ను తెరవడానికి యాప్‌ను ఎంచుకోండి</translation>
 <translation id="6295542640242147836">లాక్ SIM</translation>
 <translation id="6296410173147755564">చెల్లని PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ఆర్కైవ్</translation>
 <translation id="6321303798550928047">చేయి ఊపడం</translation>
 <translation id="6327785803543103246">వెబ్ ప్రాక్సీ స్వీయశోధన</translation>
-<translation id="6337014272874260727">క్విక్ ఫైల్స్ నుండి పిన్‌ను తీసివేయండి</translation>
 <translation id="6339145975392024142">US అంతర్జాతీయం (PC)</translation>
 <translation id="6356685157277930264">ఫైల్స్ అభిప్రాయ విండో</translation>
 <translation id="6358884629796491903">డ్రాగన్</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">ప్రస్తుత డైరెక్టరీ</translation>
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
 <translation id="6755827872271341378">ChromeOS Flex పరికరం</translation>
+<translation id="6777029074498310250">మరింత సమాచారం కోసం <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> వెబ్‌సైట్‌ను చూడండి</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6794539005637808366">ఐటెమ్‌ను రీస్టోర్ చేయండి లేదా దాన్ని ట్రాష్ వెలుపల ఉన్న కొత్త ఫోల్డర్‌కు లాగండి</translation>
 <translation id="6795884519221689054">పాండా</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">ఇన్‌స్క్రిప్ట్ కీబోర్డ్‌తో తమిళం</translation>
 <translation id="7088615885725309056">పాతవి</translation>
 <translation id="7103992300314999525">మాసిడోనియన్</translation>
+<translation id="7104338189998813914">మీ OneDrive ఖాతాను యాక్సెస్ చేయడంలో సమస్య ఏర్పడింది</translation>
 <translation id="7106346894903675391">మరింత స్టోరేజ్‌ను కొనుగోలు చేయండి...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;డిస్క్‌లో వెతకండి&lt;/em&gt;</translation>
 <translation id="7135561821015524160">కన్నడ ఫొనెటిక్</translation>
@@ -838,7 +841,7 @@
 <translation id="749452993132003881">హిరగానా</translation>
 <translation id="7495372004724182530">మలయాళం ఫొనెటిక్</translation>
 <translation id="7505167922889582512">దాచిన ఫైళ్లను చూపు</translation>
-<translation id="7514365320538308">డౌన్‌లోడ్ చేయి</translation>
+<translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="751507702149411736">బెలారుషియన్</translation>
 <translation id="7521790570754130607">మొబైల్ డేటాను ఉపయోగించడానికి PIN అవసరం</translation>
 <translation id="7532029025027028521">పర్షియన్ ట్రాన్స్‌లిటరేషన్</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">ఒక క్షణం వేచి ఉండండి</translation>
 <translation id="7600126690270271294">సెర్బియన్</translation>
 <translation id="7603724359189955920">గ్రిడ్‌లు</translation>
+<translation id="7624010287655004652">మరొక మొబైల్ ప్రొవైడర్ ద్వారా లాక్ చేయబడింది</translation>
 <translation id="7627790789328695202">అయ్యో, <ph name="FILE_NAME" /> ఇప్పటికే ఉంది. దీని పేరు మార్చి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% పూర్తయింది.</translation>
 <translation id="7649070708921625228">సహాయం</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">ఫైల్ లిస్ట్‌, "సూక్ష్మచిత్ర వీక్షణ"కు మార్చబడింది.</translation>
 <translation id="8601932370724196034">Crostini చిత్రం ఫైల్</translation>
 <translation id="8609695766746872526">ఐస్‌లాండిక్</translation>
+<translation id="8630384863424041081">మీ SIM కార్డ్ PINను ఎంటర్ చేయండి లేదా మీ క్యారియర్ అందించే ఆటోమేటిక్ PINను ఎంటర్ చేయండి. సపోర్ట్ కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="863903787380594467">పిన్ తప్పు. మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - పోర్ట్</translation>
 <translation id="8656407365183407932">మీ ఆఫ్‌లైన్ ఫైళ్లను తీసివేయాలి</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">ఈ ఫైల్ గోప్యమైనది, అడ్మినిస్ట్రేటర్ పాలసీ పరిమితులకు లోబడి ఉంటుంది.</translation>
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8713112442029511308">మాల్టీస్</translation>
-<translation id="8714138378966541668">ప్రొవైడర్ లాక్ చేశారు</translation>
 <translation id="8714406895390098252">సైకిల్</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ఎంపిక చేయబడింది.</translation>
 <translation id="872537912056138402">క్రోవేషియన్</translation>

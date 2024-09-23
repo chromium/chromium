@@ -20,8 +20,13 @@
 #include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/download_target_info.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "ppapi/buildflags/buildflags.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
+#endif
 
 class Profile;
 class DownloadPrefs;
@@ -115,13 +120,6 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // Returns a .crdownload intermediate path for the |suggested_path|.
   static base::FilePath GetCrDownloadPath(const base::FilePath& suggested_path);
 
-#if BUILDFLAG(IS_WIN)
-  // Returns true if Adobe Reader is up to date. This information refreshed
-  // only when Start() gets called for a PDF and Adobe Reader is the default
-  // System PDF viewer.
-  static bool IsAdobeReaderUpToDate();
-#endif
-
   // Determine if the file type can be handled safely by the browser if it were
   // to be opened via a file:// URL. Execute the callback with the determined
   // value.
@@ -153,8 +151,10 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
     STATE_DETERMINE_LOCAL_PATH,
     STATE_DETERMINE_MIME_TYPE,
     STATE_DETERMINE_IF_HANDLED_SAFELY_BY_BROWSER,
-    STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE,
     STATE_CHECK_DOWNLOAD_URL,
+#if BUILDFLAG(IS_ANDROID)
+    STATE_CHECK_APP_VERIFICATION,
+#endif
     STATE_CHECK_VISITED_REFERRER_BEFORE,
     STATE_DETERMINE_INTERMEDIATE_PATH,
     STATE_NONE,
@@ -294,24 +294,12 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // Determine if the file type can be handled safely by the browser if it were
   // to be opened via a file:// URL.
   // Next state:
-  // - STATE_DETERMINE_IF_ADOBE_READER_UP_TO_DATE.
+  // - STATE_CHECK_DOWNLOAD_URL.
   Result DoDetermineIfHandledSafely();
 
   // Callback invoked when a decision is available about whether the file type
   // can be handled safely by the browser.
   void DetermineIfHandledSafelyDone(bool is_handled_safely);
-
-  // Determine if Adobe Reader is up to date. Only do the check on Windows for
-  // .pdf file targets.
-  // Next state:
-  // - STATE_CHECK_DOWNLOAD_URL.
-  Result DoDetermineIfAdobeReaderUpToDate();
-
-#if BUILDFLAG(IS_WIN)
-  // Callback invoked when a decision is available about whether Adobe Reader
-  // is up to date.
-  void DetermineIfAdobeReaderUpToDateDone(bool adobe_reader_up_to_date);
-#endif
 
   // Checks whether the downloaded URL is malicious. Invokes the
   // DownloadProtectionService via the delegate.
@@ -322,6 +310,14 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   // Callback invoked after the delegate has checked the download URL. Sets the
   // danger type of the download to |danger_type|.
   void CheckDownloadUrlDone(download::DownloadDangerType danger_type);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Checks if app verification by Google Play Protect is enabled.
+  Result DoCheckAppVerification();
+
+  // Callback invoked after checking if app verification is enabled.
+  void CheckAppVerificationDone(safe_browsing::VerifyAppsEnabledResult result);
+#endif
 
   // Checks if the user has visited the referrer URL of the download prior to
   // today. The actual check is only performed if it would be needed to
@@ -413,6 +409,10 @@ class DownloadTargetDeterminer : public download::DownloadItem::Observer {
   download::DownloadItem::InsecureDownloadStatus insecure_download_status_;
 #if BUILDFLAG(IS_ANDROID)
   bool is_checking_dialog_confirmed_path_;
+  // Records whether app verification by Play Protect is enabled. When
+  // enabled, we suppress warning based only on the file type since Play
+  // Protect will give higher quality warnings.
+  bool is_app_verification_enabled_;
 #endif
 #if BUILDFLAG(IS_MAC)
   // A list of tags specified by the user to be set on the file upon the

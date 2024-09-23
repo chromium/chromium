@@ -162,12 +162,12 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
 
   // Non-null until the WebEmbeddedWorkerImpl explicitly detach()es
   // as part of its finalization.
-  raw_ptr<WebEmbeddedWorkerImpl, ExperimentalRenderer> embedded_worker_;
+  raw_ptr<WebEmbeddedWorkerImpl> embedded_worker_;
 
   scoped_refptr<base::SingleThreadTaskRunner>
       parent_thread_default_task_runner_;
 
-  raw_ptr<WebServiceWorkerContextClient, ExperimentalRenderer> client_;
+  raw_ptr<WebServiceWorkerContextClient> client_;
 
   CrossThreadPersistent<ServiceWorkerGlobalScope> worker_global_scope_;
 

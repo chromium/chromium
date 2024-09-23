@@ -42,6 +42,15 @@ std::ostream& operator<<(std::ostream& oss,
     case FeaturePromoClosedReason::kOverrideForPrecedence:
       oss << "kOverrideForPrecedence";
       break;
+    case FeaturePromoClosedReason::kAbortedByFeature:
+      oss << "kAbortedByFeature";
+      break;
+    case FeaturePromoClosedReason::kAbortedByAnchorHidden:
+      oss << "kAbortedByAnchorHidden";
+      break;
+    case FeaturePromoClosedReason::kAbortedByBubbleDestroyed:
+      oss << "kAbortedByBubbleDestroyed";
+      break;
   }
   return oss;
 }

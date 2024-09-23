@@ -36,6 +36,12 @@ static_library("android") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/page_info_bg.xml",
+    "java/res/drawable/tp_cookie.xml",
+    "java/res/drawable/tp_cookie_off.xml",
+    "java/res/drawable/tp_fingerprint.xml",
+    "java/res/drawable/tp_fingerprint_off.xml",
+    "java/res/drawable/tp_ip.xml",
+    "java/res/drawable/tp_ip_off.xml",
     "java/res/layout/button_preference_text_button.xml",
     "java/res/layout/connection_info.xml",
     "java/res/layout/page_info.xml",
@@ -43,11 +49,15 @@ android_resources("java_resources") {
     "java/res/layout/page_info_row.xml",
     "java/res/layout/page_info_summary.xml",
     "java/res/layout/page_info_title.xml",
+    "java/res/layout/tracking_protection_managed_title.xml",
+    "java/res/layout/tracking_protection_status.xml",
     "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
     "java/res/xml/page_info_ad_personalization_preference.xml",
-    "java/res/xml/page_info_cookie_preference_user_bypass.xml",
+    "java/res/xml/page_info_cookie_preference.xml",
+    "java/res/xml/page_info_tracking_protection_launch_preference.xml",
+    "java/res/xml/page_info_tracking_protection_preference.xml",
   ]
   deps = [
     "//components/browser_ui/site_settings/android:java_resources",
@@ -80,9 +90,14 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/PageInfoPreferenceSubpageController.java",
     "java/src/org/chromium/components/page_info/PageInfoRowView.java",
     "java/src/org/chromium/components/page_info/PageInfoSubpageController.java",
+    "java/src/org/chromium/components/page_info/PageInfoTrackingProtectionController.java",
+    "java/src/org/chromium/components/page_info/PageInfoTrackingProtectionLaunchController.java",
+    "java/src/org/chromium/components/page_info/PageInfoTrackingProtectionLaunchSettings.java",
+    "java/src/org/chromium/components/page_info/PageInfoTrackingProtectionSettings.java",
     "java/src/org/chromium/components/page_info/PageInfoView.java",
     "java/src/org/chromium/components/page_info/PermissionParamsListBuilder.java",
     "java/src/org/chromium/components/page_info/SystemSettingsActivityRequiredListener.java",
+    "java/src/org/chromium/components/page_info/TrackingProtectionStatusPreference.java",
   ]
 
   deps = [
@@ -108,6 +123,7 @@ android_library("java") {
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
     "//components/strings:components_strings_grd",
+    "//components/strings:privacy_sandbox_strings_grd",
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
@@ -127,6 +143,27 @@ android_library("java") {
   resources_package = "org.chromium.components.page_info"
 }
 
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/page_info/TrackingProtectionStatusPreferenceTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//components/browser_ui/settings/android:test_support_java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+  ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/page_info/CertificateChainHelper.java",
@@ -138,6 +175,6 @@ generate_jni("jni_headers") {
 }
 
 android_library("page_info_action_enum_java") {
-  srcjar_deps = [ "//components/page_info:page_info_action_javagen" ]
+  srcjar_deps = [ "//components/page_info/core:page_info_action_javagen" ]
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }

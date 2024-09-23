@@ -18,6 +18,7 @@ import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_uti
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {AmbientModeAlbum, TopicSource} from '../../personalization_app.mojom-webui.js';
+import {logAmbientModeLinkToGooglePhotosClick} from '../personalization_metrics_logger.js';
 import {PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getNumberOfGridItemsPerRow} from '../utils.js';
@@ -142,6 +143,11 @@ export class AlbumsSubpageElement extends WithPersonalizationStore {
     if (ambientModeEnabled !== null && !ambientModeEnabled) {
       PersonalizationRouterElement.reloadAtAmbient();
     }
+  }
+
+  private onGooglePhotosLinkClicked_(event: Event) {
+    event.stopPropagation();
+    logAmbientModeLinkToGooglePhotosClick();
   }
 }
 

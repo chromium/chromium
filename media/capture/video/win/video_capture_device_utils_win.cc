@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/win/video_capture_device_utils_win.h"
 
 #include <cmath>
@@ -87,7 +92,7 @@ int GetCameraRotation(VideoFacingMode facing) {
   }
 
   // When display is only on external monitors, the auto-rotation state still
-  // may be ENALBED on the target device. In that case, we shouldn't query the
+  // may be ENABLED on the target device. In that case, we shouldn't query the
   // display orientation and the built-in camera will be treated as an external
   // one.
   DISPLAY_DEVICE internal_display_device;

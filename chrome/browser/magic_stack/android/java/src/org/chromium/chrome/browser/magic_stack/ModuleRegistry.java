@@ -10,18 +10,16 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-/**
- * A singleton class which is responsible for registering module builders {@link
- * ModuleProviderBuilder}.
- */
+/** A class which is responsible for registering module builders {@link ModuleProviderBuilder}. */
 public class ModuleRegistry {
     /** The callback interface which is called when the view of a module is inflated. */
     public interface OnViewCreatedCallback {
@@ -33,18 +31,30 @@ public class ModuleRegistry {
     /** A map of <ModuleType, ModuleProviderBuilder>. */
     private final Map<Integer, ModuleProviderBuilder> mModuleBuildersMap = new HashMap<>();
 
-    /** Static class that implements the initialization-on-demand holder idiom. */
-    private static class LazyHolder {
-        static ModuleRegistry sInstance = new ModuleRegistry();
-    }
+    private final HomeModulesConfigManager mHomeModulesConfigManager;
 
-    /** Gets the singleton instance for the ModuleRegistry. */
-    public static ModuleRegistry getInstance() {
-        return LazyHolder.sInstance;
-    }
+    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private LifecycleObserver mLifecycleObserver;
 
-    /** Private constructor, use GetInstance() instead. */
-    private ModuleRegistry() {}
+    public ModuleRegistry(
+            @NonNull HomeModulesConfigManager homeModulesConfigManager,
+            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+        mHomeModulesConfigManager = homeModulesConfigManager;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mLifecycleObserver =
+                new PauseResumeWithNativeObserver() {
+                    @Override
+                    public void onResumeWithNative() {}
+
+                    @Override
+                    public void onPauseWithNative() {
+                        for (ModuleProviderBuilder builder : mModuleBuildersMap.values()) {
+                            builder.onPauseWithNative();
+                        }
+                    }
+                };
+        mActivityLifecycleDispatcher.register(mLifecycleObserver);
+    }
 
     /**
      * Registers the builder {@link ModuleProviderBuilder} for a given module type.
@@ -54,6 +64,10 @@ public class ModuleRegistry {
      */
     public void registerModule(@ModuleType int moduleType, @NonNull ModuleProviderBuilder builder) {
         mModuleBuildersMap.put(moduleType, builder);
+        if (builder instanceof ModuleConfigChecker) {
+            mHomeModulesConfigManager.registerModuleEligibilityChecker(
+                    moduleType, (ModuleConfigChecker) builder);
+        }
     }
 
     /**
@@ -103,42 +117,14 @@ public class ModuleRegistry {
 
     /** Destroys the registry. */
     public void destroy() {
-        mModuleBuildersMap.clear();
-    }
+        if (mActivityLifecycleDispatcher == null) return;
 
-    /** Returns the set which contains all the module types that are registered. */
-    public @ModuleType Set<Integer> getRegisteredModuleTypes() {
-        return mModuleBuildersMap.keySet();
-    }
-
-    /** Returns whether it has any module to customize. */
-    public boolean hasCustomizableModule() {
-        for (@ModuleType int key : mModuleBuildersMap.keySet()) {
-            if (!isModuleConfigurable(key)) continue;
-            if (isModuleEligibleToBuild(key)) {
-                return true;
-            }
+        for (ModuleProviderBuilder builder : mModuleBuildersMap.values()) {
+            builder.destroy();
         }
-        return false;
-    }
-
-    /** Returns whether the provided module can be built due to special restrictions. */
-    public boolean isModuleEligibleToBuild(@ModuleType int key) {
-        return mModuleBuildersMap.get(key).isEligible();
-    }
-
-    /**
-     * Returns whether the provided module is configurable and might need to be shown in the config
-     * settings page.
-     */
-    public boolean isModuleConfigurable(@ModuleType int key) {
-        return key != ModuleType.SINGLE_TAB;
-    }
-
-    /** Sets a mocked instance for testing. */
-    public static void setInstanceForTesting(ModuleRegistry instance) {
-        var oldValue = LazyHolder.sInstance;
-        LazyHolder.sInstance = instance;
-        ResettersForTesting.register(() -> LazyHolder.sInstance = oldValue);
+        mModuleBuildersMap.clear();
+        mActivityLifecycleDispatcher.unregister(mLifecycleObserver);
+        mLifecycleObserver = null;
+        mActivityLifecycleDispatcher = null;
     }
 }

@@ -34,7 +34,32 @@ FakeBluetoothLEAdvertisingManagerClient::
 
 void FakeBluetoothLEAdvertisingManagerClient::Init(
     dbus::Bus* bus,
-    const std::string& bluetooth_service_name) {}
+    const std::string& bluetooth_service_name) {
+  InitializeProperties();
+}
+
+BluetoothLEAdvertisingManagerClient::Properties*
+FakeBluetoothLEAdvertisingManagerClient::GetProperties(
+    const dbus::ObjectPath& object_path) {
+  return properties_.get();
+}
+
+void FakeBluetoothLEAdvertisingManagerClient::InitializeProperties() {
+  properties_ = std::make_unique<Properties>(
+      nullptr,
+      bluetooth_advertising_manager::kBluetoothAdvertisingManagerInterface,
+      base::BindRepeating(
+          &FakeBluetoothLEAdvertisingManagerClient::OnPropertyChanged,
+          weak_ptr_factory_.GetWeakPtr(),
+          /*object_path=*/dbus::ObjectPath("")));
+}
+
+void FakeBluetoothLEAdvertisingManagerClient::OnPropertyChanged(
+    const dbus::ObjectPath& object_path,
+    const std::string& property_name) {
+  DVLOG(2) << "Bluetooth Advertising Manager Client property changed: "
+           << object_path.value() << ": " << property_name;
+}
 
 void FakeBluetoothLEAdvertisingManagerClient::AddObserver(Observer* observer) {}
 

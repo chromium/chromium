@@ -107,7 +107,7 @@ void InstallerState::set_level(Level level) {
       root_key_ = HKEY_LOCAL_MACHINE;
       return;
   }
-  NOTREACHED() << level;
+  NOTREACHED_IN_MIGRATION() << level;
 }
 
 bool InstallerState::system_install() const {

@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("arc") {
+  sources = [
+    "arc_external_protocol_dialog.cc",
+    "arc_external_protocol_dialog.h",
+    "arc_web_contents_data.cc",
+    "arc_web_contents_data.h",
+    "open_with_menu.cc",
+    "open_with_menu.h",
+    "start_smart_selection_action_menu.cc",
+    "start_smart_selection_action_menu.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//components/arc/common",
+    "//components/renderer_context_menu",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  deps = [
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/profiles:profile",
+    "//components/arc/common:arc_intent_helper_constants",
+    "//components/services/app_service",
+    "//components/sharing_message",
+    "//components/sync_device_info",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash/components/arc",
+      "//chrome/browser/ash/arc/intent_helper",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_external_protocol_dialog_unittest.cc",
+    "open_with_menu_unittest.cc",
+  ]
+
+  deps = [
+    ":arc",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/arc/common",
+    "//components/arc/common:arc_intent_helper_constants",
+    "//components/arc/common:arc_test_support",
+    "//components/renderer_context_menu",
+    "//components/sharing_message",
+    "//components/sharing_message:unit_tests",
+    "//components/sharing_message/proto",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}

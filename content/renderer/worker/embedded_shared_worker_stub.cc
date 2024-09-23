@@ -36,6 +36,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     blink::mojom::SharedWorkerInfoPtr info,
     const blink::SharedWorkerToken& token,
     const blink::StorageKey& constructor_key,
+    const url::Origin& origin,
     bool is_constructor_secure_context,
     const std::string& user_agent,
     const blink::UserAgentMetadata& ua_metadata,
@@ -58,6 +59,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
     ukm::SourceId ukm_source_id,
+    bool require_cross_site_request_for_cookies,
     const std::vector<std::string>& cors_exempt_header_list)
     : receiver_(this, std::move(receiver)) {
   DCHECK(main_script_load_params);
@@ -111,14 +113,15 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
   scoped_refptr<blink::WebWorkerFetchContext> web_worker_fetch_context =
       CreateWorkerFetchContext(constructor_key, std::move(renderer_preferences),
                                std::move(preference_watcher_receiver),
-                               cors_exempt_header_list);
+                               cors_exempt_header_list,
+                               require_cross_site_request_for_cookies);
 
   impl_ = blink::WebSharedWorker::CreateAndStart(
       token, info->url, info->options->type, info->options->credentials,
       blink::WebString::FromUTF8(info->options->name),
       blink::WebSecurityOrigin(constructor_key.origin()),
-      is_constructor_secure_context, blink::WebString::FromUTF8(user_agent),
-      ua_metadata,
+      blink::WebSecurityOrigin(origin), is_constructor_secure_context,
+      blink::WebString::FromUTF8(user_agent), ua_metadata,
       ToWebContentSecurityPolicies(std::move(info->content_security_policies)),
       FetchClientSettingsObjectFromMojomToWeb(
           info->outside_fetch_client_settings_object),
@@ -126,8 +129,8 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       std::move(browser_interface_broker), pause_on_start,
       std::move(worker_main_script_load_params),
       ToWebPolicyContainer(std::move(policy_container)),
-      std::move(web_worker_fetch_context), std::move(host), this,
-      ukm_source_id);
+      std::move(web_worker_fetch_context), std::move(host), this, ukm_source_id,
+      require_cross_site_request_for_cookies);
 
   // If the host drops its connection, then self-destruct.
   receiver_.set_disconnect_handler(base::BindOnce(
@@ -149,7 +152,8 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
     const blink::RendererPreferences& renderer_preferences,
     mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
         preference_watcher_receiver,
-    const std::vector<std::string>& cors_exempt_header_list) {
+    const std::vector<std::string>& cors_exempt_header_list,
+    bool require_cross_site_request_for_cookies) {
   // Make the factory used for service worker network fallback.
   std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory =
       subresource_loader_factory_bundle_->Clone();
@@ -174,7 +178,9 @@ EmbeddedSharedWorkerStub::CreateWorkerFetchContext(
               /*pending_resource_load_info_notifier=*/mojo::NullRemote());
 
   web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
-      constructor_key.ToNetSiteForCookies());
+      require_cross_site_request_for_cookies
+          ? net::SiteForCookies()
+          : constructor_key.ToNetSiteForCookies());
 
   return web_dedicated_or_shared_worker_fetch_context;
 }

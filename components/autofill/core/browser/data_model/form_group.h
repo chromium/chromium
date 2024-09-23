@@ -12,6 +12,7 @@
 namespace autofill {
 
 enum class VerificationStatus;
+class PossibleProfileValueSources;
 
 class AutofillType;
 
@@ -24,9 +25,11 @@ class FormGroup {
   // enters into the field, interpreted in the given |app_locale| if
   // appropriate. The field types can then be reported back to the server.  This
   // method is additive on |matching_types|.
-  virtual void GetMatchingTypes(const std::u16string& text,
-                                const std::string& app_locale,
-                                FieldTypeSet* matching_types) const;
+  virtual void GetMatchingTypesWithProfileSources(
+      const std::u16string& text,
+      const std::string& app_locale,
+      FieldTypeSet* matching_types,
+      PossibleProfileValueSources* profile_value_sources) const;
 
   // Returns a set of server field types for which this FormGroup has non-empty
   // data. This method is additive on |non_empty_types|.
@@ -37,11 +40,6 @@ class FormGroup {
   // returned value. For user-visible strings, use GetInfo() instead.
   virtual std::u16string GetRawInfo(FieldType type) const = 0;
 
-  // Same as |GetRawInfo()|, but as an integer. This is only supported for types
-  // that stores their data as an integer internally to avoid unnecessary
-  // conversions.
-  virtual int GetRawInfoAsInt(FieldType type) const;
-
   // Sets this FormGroup object's data for |type| to |value|, without
   // canonicalizing the |value|.  For data that has not already been
   // canonicalized, use SetInfo() instead.
@@ -49,11 +47,6 @@ class FormGroup {
   virtual void SetRawInfoWithVerificationStatus(FieldType type,
                                                 const std::u16string& value,
                                                 VerificationStatus status) = 0;
-
-  // Convenience wrapper to allow passing the |value| as an integer.
-  virtual void SetRawInfoAsIntWithVerificationStatus(FieldType type,
-                                                     int value,
-                                                     VerificationStatus status);
 
   // Convenience wrapper to allow passing the |status| as an integer.
   void SetRawInfoWithVerificationStatusInt(FieldType type,
@@ -65,31 +58,32 @@ class FormGroup {
   // |SetRawInfoWithVerificationStatus|.
   void SetRawInfo(FieldType type, const std::u16string& value);
 
-  // Same as |SetRawInfo()| without a verification status, but with an integer.
-  void SetRawInfoAsInt(FieldType type, int value);
-
   // Returns true iff the string associated with |type| is nonempty (without
   // canonicalizing its value).
   bool HasRawInfo(FieldType type) const;
 
   // Returns the string that should be auto-filled into a text field given the
   // type of that field, localized to the given |app_locale| if appropriate.
+  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   std::u16string GetInfo(FieldType type, const std::string& app_locale) const;
   std::u16string GetInfo(const AutofillType& type,
                          const std::string& app_locale) const;
 
   // Returns the verification status associated with the type.
   // Returns kNoStatus if the type does not support a verification status.
+  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   virtual VerificationStatus GetVerificationStatus(FieldType type) const;
   VerificationStatus GetVerificationStatus(const AutofillType& type) const;
 
   // Convenience wrappers to retrieve the Verification status in integer
   // representation.
+  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   int GetVerificationStatusInt(FieldType type) const;
   int GetVerificationStatusInt(const AutofillType& type) const;
 
   // Used to populate this FormGroup object with data. Canonicalizes the data
   // according to the specified |app_locale| prior to storing, if appropriate.
+  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   bool SetInfo(FieldType type,
                const std::u16string& value,
                const std::string& app_locale);
@@ -98,6 +92,7 @@ class FormGroup {
                const std::string& app_locale);
 
   // Same as |SetInfo| but supports a verification status.
+  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   bool SetInfoWithVerificationStatus(FieldType type,
                                      const std::u16string& value,
                                      const std::string& app_locale,
@@ -109,6 +104,7 @@ class FormGroup {
                                      const VerificationStatus status);
 
   // Returns true iff the string associated with |type| is nonempty.
+  // TODO(crbug.com/40264633): Remove the `AutofillType` version.
   bool HasInfo(FieldType type) const;
   bool HasInfo(const AutofillType& type) const;
 
@@ -123,11 +119,13 @@ class FormGroup {
 
   // Returns the string that should be auto-filled into a text field given the
   // type of that field, localized to the given |app_locale| if appropriate.
+  // TODO(crbug.com/40264633): Pass `FieldType` instead of `AutofillType`.
   virtual std::u16string GetInfoImpl(const AutofillType& type,
                                      const std::string& app_locale) const;
 
   // Used to populate this FormGroup object with data. Canonicalizes the data
   // according to the specified |app_locale| prior to storing, if appropriate.
+  // TODO(crbug.com/40264633): Pass `FieldType` instead of `AutofillType`.
   virtual bool SetInfoWithVerificationStatusImpl(
       const AutofillType& type,
       const std::u16string& value,

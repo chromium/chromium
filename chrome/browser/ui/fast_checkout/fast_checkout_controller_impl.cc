@@ -18,7 +18,7 @@ FastCheckoutControllerImpl::FastCheckoutControllerImpl(
 FastCheckoutControllerImpl::~FastCheckoutControllerImpl() = default;
 
 void FastCheckoutControllerImpl::Show(
-    const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+    const std::vector<const autofill::AutofillProfile*>& autofill_profiles,
     const std::vector<autofill::CreditCard*>& credit_cards) {
   GetOrCreateView()->Show(autofill_profiles, credit_cards);
 }
@@ -43,15 +43,11 @@ FastCheckoutView* FastCheckoutControllerImpl::GetOrCreateView() {
 }
 
 void FastCheckoutControllerImpl::OpenAutofillProfileSettings() {
-#if BUILDFLAG(IS_ANDROID)
   autofill::ShowAutofillProfileSettings(web_contents_);
-#endif
 }
 
 void FastCheckoutControllerImpl::OpenCreditCardSettings() {
-#if BUILDFLAG(IS_ANDROID)
   autofill::ShowAutofillCreditCardSettings(web_contents_);
-#endif
 }
 
 gfx::NativeView FastCheckoutControllerImpl::GetNativeView() {

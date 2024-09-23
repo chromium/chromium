@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DnsOverHttpsExcludedDomains": ["google.com", "*.google.com"]
+        },
+        "prefs": {
+          "dns_over_https.excluded_domains": {
+            "location": "local_state",
+            "value": ["google.com", "*.google.com"]
+          }
+        }
+      }
+    ]
+  }
+]

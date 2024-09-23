@@ -1,0 +1,6 @@
+include_rules = [
+ "+components/autofill",
+ "+components/device_reauth",
+ "+components/password_manager",
+ "+components/resources",
+]

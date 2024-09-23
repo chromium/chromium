@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:importantForAccessibility="no"
+      app:srcCompat="@drawable/chrome_sync_logo" />
+
+  <TextView
+      android:id="@+id/account_picker_confirm_management_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:layout_marginBottom="8dp"
+      android:gravity="center_horizontal"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      android:text="@string/sign_in_managed_account" />
+
+  <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/account_picker_confirm_management_description"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="24dp"
+      android:layout_marginEnd="24dp"
+      android:layout_marginBottom="16dp"
+      android:focusable="true"
+      android:gravity="center_horizontal"
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      app:leading="@dimen/text_size_medium_leading" />
+
+    <include layout="@layout/account_picker_bottom_sheet_continue_button" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/confirm_management_cancel_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/cancel" />
+
+</LinearLayout>

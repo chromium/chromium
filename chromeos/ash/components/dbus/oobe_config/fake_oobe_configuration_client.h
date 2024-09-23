@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
+#include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_metrics.h"
 
 namespace ash {
 
@@ -27,8 +28,9 @@ class COMPONENT_EXPORT(ASH_DBUS_OOBE_CONFIG) FakeOobeConfigurationClient
 
   void Init(dbus::Bus* bus) override;
 
-  // EasyUnlockClient overrides
+  // OobeConfigurationClient overrides
   void CheckForOobeConfiguration(ConfigurationCallback callback) override;
+  void DeleteFlexOobeConfig() override;
 
   void SetConfiguration(const std::string& configuration);
 

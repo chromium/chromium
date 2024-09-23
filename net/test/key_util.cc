@@ -9,8 +9,8 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "net/ssl/openssl_private_key.h"
 #include "net/ssl/ssl_private_key.h"
-#include "net/ssl/test_ssl_private_key.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/pem.h"

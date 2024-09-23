@@ -11,8 +11,11 @@
 
 #include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager.h"
 #include "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -28,7 +31,8 @@ class ChromePasswordReuseDetectionManagerClient
       public content::WebContentsObserver,
       public content::WebContentsUserData<
           ChromePasswordReuseDetectionManagerClient>,
-      public content::RenderWidgetHost::InputEventObserver {
+      public content::RenderWidgetHost::InputEventObserver,
+      public signin::IdentityManager::Observer {
  public:
   ChromePasswordReuseDetectionManagerClient(
       const ChromePasswordReuseDetectionManagerClient&) = delete;
@@ -39,9 +43,11 @@ class ChromePasswordReuseDetectionManagerClient
 
   static void CreateForWebContents(content::WebContents* contents);
 
+  static void CreateForProfilePickerWebContents(content::WebContents* contents);
+
   const GURL& GetLastCommittedURL() const;
 
-  // TODO(https://crbug.com/1419602): This function is overridden in unit tests.
+  // TODO(crbug.com/40895228): This function is overridden in unit tests.
   // This will be removed after the unit tests refactoring.
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const;
@@ -76,19 +82,33 @@ class ChromePasswordReuseDetectionManagerClient
 
  protected:
   explicit ChromePasswordReuseDetectionManagerClient(
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      signin::IdentityManager* identity_manager = nullptr);
 
  private:
   friend class content::WebContentsUserData<
       ChromePasswordReuseDetectionManagerClient>;
+  // Needed to exercise the logic of InternalOnPrimaryAccountChanged in
+  // unit tests.
+  friend class MockChromePasswordReuseDetectionManagerClient;
 
   // content::WebContentsObserver overrides.
+  void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void OnPaste() override;
 
   // content::RenderWidgetHost::InputEventObserver overrides.
   void OnInputEvent(const blink::WebInputEvent&) override;
+
+  // Implements signin::IdentityManager::Observer.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
+  // Attempts to save password hash if a sign-in event is detected.
+  void InternalOnPrimaryAccountChanged(
+      password_manager::PasswordManagerClient* password_manager_client,
+      const signin::PrimaryAccountChangeEvent& event_details);
 
   safe_browsing::PasswordReuseDetectionManager
       password_reuse_detection_manager_;
@@ -98,6 +118,9 @@ class ChromePasswordReuseDetectionManagerClient
 
   safe_browsing::PhishyInteractionTracker phishy_interaction_tracker_;
 
+  // This reference is only used if a sign-in via the ProfilePickerUI is
+  // detected. By observing the IdentityManager we can detect signin events.
+  raw_ptr<signin::IdentityManager> identity_manager_;
 #if BUILDFLAG(IS_ANDROID)
   // Last composing text from ime, this is updated when ime set composing text
   // event is triggered. It is sent to password reuse detection manager and

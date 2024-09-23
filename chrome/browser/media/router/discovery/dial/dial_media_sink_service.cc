@@ -20,7 +20,7 @@ DialMediaSinkService::~DialMediaSinkService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void DialMediaSinkService::Start(
+void DialMediaSinkService::Initialize(
     const OnSinksDiscoveredCallback& sink_discovery_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!impl_);
@@ -34,7 +34,21 @@ void DialMediaSinkService::Start(
   impl_ = CreateImpl(sink_discovery_cb_impl);
 
   impl_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DialMediaSinkServiceImpl::Start,
+      FROM_HERE, base::BindOnce(&DialMediaSinkServiceImpl::Initialize,
+                                base::Unretained(impl_.get())));
+}
+
+void DialMediaSinkService::StartDiscovery() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(impl_);
+
+  if (discovery_started_) {
+    return;
+  }
+  discovery_started_ = true;
+
+  impl_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DialMediaSinkServiceImpl::StartDiscovery,
                                 base::Unretained(impl_.get())));
 }
 

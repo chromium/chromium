@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("os_feedback_dialog") {
+  sources = [
+    "os_feedback_dialog.cc",
+    "os_feedback_dialog.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/webui/os_feedback_ui:url_constants",
+    "//base",
+    "//chrome/browser/ash/os_feedback",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//extensions/browser",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/os_feedback",
+    "//chrome/browser/ui/ash/login",
+  ]
+}

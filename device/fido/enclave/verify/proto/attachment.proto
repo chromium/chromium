@@ -1,0 +1,30 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package device.enclave;
+
+import "digest.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// The Transparent Release attachment for Oak Stage 0. Measurements
+// are produced with
+// https://github.com/project-oak/oak/snp_measurement.
+message FirmwareAttachment {
+  // Maps number of vCPUs to measurement of the modified firmware binary.
+  map<int32, HexDigest> configs = 1;
+}
+
+// The Transparent Release attachment for Oak Containers Linux kernel.
+// Measurements are produced with
+// https://github.com/project-oak/oak/oak_kernel_measurement.
+message KernelAttachment {
+  // Digest of the kernel image part of the bzImage.
+  HexDigest image = 1;
+
+  // Digest of the setup data part of the bzImage.
+  HexDigest setup_data = 2;
+}

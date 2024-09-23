@@ -52,10 +52,11 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/controlled_frame/controlled_frame_media_access_handler.h"
 #include "chrome/browser/media/extension_media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/media/webrtc/tab_capture_access_handler.h"
-#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry.h"  // nogncheck
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -100,6 +101,8 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
   media_access_handlers_.push_back(
       std::make_unique<DesktopCaptureAccessHandler>());
   media_access_handlers_.push_back(std::make_unique<TabCaptureAccessHandler>());
+  media_access_handlers_.push_back(
+      std::make_unique<controlled_frame::ControlledFrameMediaAccessHandler>());
 #endif
   media_access_handlers_.push_back(
       std::make_unique<PermissionBubbleMediaAccessHandler>());
@@ -109,9 +112,9 @@ MediaCaptureDevicesDispatcher::~MediaCaptureDevicesDispatcher() {}
 
 void MediaCaptureDevicesDispatcher::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(prefs::kDefaultAudioCaptureDevice,
+  registry->RegisterStringPref(prefs::kDefaultAudioCaptureDeviceDeprecated,
                                std::string());
-  registry->RegisterStringPref(prefs::kDefaultVideoCaptureDevice,
+  registry->RegisterStringPref(prefs::kDefaultVideoCaptureDeviceDeprecated,
                                std::string());
 }
 
@@ -215,12 +218,11 @@ MediaCaptureDevicesDispatcher::GetPreferredAudioDeviceForBrowserContext(
     content::BrowserContext* context,
     const std::vector<std::string>& eligible_device_ids) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (eligible_device_ids.empty()) {
-    return std::nullopt;
+  auto audio_devices = GetAudioCaptureDevices();
+  if (!eligible_device_ids.empty()) {
+    audio_devices =
+        webrtc::FilterMediaDevices(audio_devices, eligible_device_ids);
   }
-
-  auto audio_devices =
-      webrtc::FilterMediaDevices(GetAudioCaptureDevices(), eligible_device_ids);
   media_prefs::PreferenceRankAudioDeviceInfos(
       *user_prefs::UserPrefs::Get(context), audio_devices);
 
@@ -235,12 +237,11 @@ MediaCaptureDevicesDispatcher::GetPreferredVideoDeviceForBrowserContext(
     content::BrowserContext* context,
     const std::vector<std::string>& eligible_device_ids) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (eligible_device_ids.empty()) {
-    return std::nullopt;
+  auto video_devices = GetVideoCaptureDevices();
+  if (!eligible_device_ids.empty()) {
+    video_devices =
+        webrtc::FilterMediaDevices(video_devices, eligible_device_ids);
   }
-
-  auto video_devices =
-      webrtc::FilterMediaDevices(GetVideoCaptureDevices(), eligible_device_ids);
   media_prefs::PreferenceRankVideoDeviceInfos(
       *user_prefs::UserPrefs::Get(context), video_devices);
 
@@ -291,7 +292,7 @@ void MediaCaptureDevicesDispatcher::OnMediaRequestStateChanged(
 
 void MediaCaptureDevicesDispatcher::OnCreatingAudioStream(int render_process_id,
                                                           int render_frame_id) {
-  // TODO(https://crbug.com/837606): Figure out how to simplify threading here.
+  // TODO(crbug.com/41385872): Figure out how to simplify threading here.
   // Currently, this will either always be called on the UI thread, or always
   // on the IO thread, depending on how far along the work to migrate to the
   // audio service has progressed. The rest of the methods of the

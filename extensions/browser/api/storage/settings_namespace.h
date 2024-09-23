@@ -27,4 +27,4 @@ std::string ToString(Namespace settings_namespace);
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_API_STORAGE_NAMESPACE_H_
+#endif  // EXTENSIONS_BROWSER_API_STORAGE_SETTINGS_NAMESPACE_H_

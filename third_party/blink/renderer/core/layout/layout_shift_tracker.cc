@@ -53,9 +53,10 @@ gfx::PointF StartingPoint(const PhysicalOffset& paint_offset,
                           const PhysicalSize& size) {
   PhysicalOffset starting_point = paint_offset;
   auto writing_direction = box.StyleRef().GetWritingDirection();
-  if (UNLIKELY(writing_direction.IsFlippedBlocks()))
+  if (writing_direction.IsFlippedBlocks()) [[unlikely]] {
     starting_point.left += size.width;
-  if (UNLIKELY(writing_direction.IsRtl())) {
+  }
+  if (writing_direction.IsRtl()) [[unlikely]] {
     if (writing_direction.IsHorizontal())
       starting_point.left += size.width;
     else
@@ -142,8 +143,9 @@ LayoutShiftTracker::LayoutShiftTracker(LocalFrameView* frame_view)
     : frame_view_(frame_view),
       // This eliminates noise from the private Page object created by
       // SVGImage::DataChanged.
-      is_active_(
-          !frame_view->GetFrame().GetChromeClient().IsSVGImageChromeClient()),
+      is_active_(!frame_view->GetFrame()
+                      .GetChromeClient()
+                      .IsIsolatedSVGChromeClient()),
       score_(0.0),
       weighted_score_(0.0),
       timer_(frame_view->GetFrame().GetTaskRunner(TaskType::kInternalDefault),
@@ -166,10 +168,11 @@ bool LayoutShiftTracker::NeedsToTrack(const LayoutObject& object) const {
   if (object.IsSVGChild())
     return false;
 
-  if (object.StyleRef().Visibility() != EVisibility::kVisible)
+  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible) {
     return false;
+  }
 
-  if (const auto* layout_text = DynamicTo<LayoutText>(object)) {
+  if (IsA<LayoutText>(object)) {
     if (!ContainingBlockScope::top_)
       return false;
     if (object.IsBR())
@@ -770,7 +773,7 @@ std::unique_ptr<TracedValue> LayoutShiftTracker::PerFrameTraceData(
 }
 
 void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
-  const Attribution* it = attributions_.begin();
+  auto it = attributions_.begin();
   if (!*it)
     return;
 

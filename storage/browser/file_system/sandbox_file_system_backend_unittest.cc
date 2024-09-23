@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "storage/browser/file_system/sandbox_file_system_backend.h"
 
 #include <stddef.h>
@@ -181,7 +186,7 @@ class SandboxFileSystemBackendTest
     FileSystemURL test_url = FileSystemURL::CreateForTest(
         blink::StorageKey::CreateFromStringForTesting(origin_url), type,
         base::FilePath());
-    // TODO(https://crbug.com/1330608):
+    // TODO(crbug.com/40227222):
     // SandboxFileSystemBackendDelegate::OpenFileSystem() needs to be refactored
     // to take bucket information into account. Remove this if statement once
     // this refactor is complete - the ResolveURL() call should setup the

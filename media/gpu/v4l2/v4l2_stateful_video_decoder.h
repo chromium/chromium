@@ -7,6 +7,7 @@
 
 #include <linux/videodev2.h>
 
+#include "base/atomic_ref_count.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,7 +20,7 @@
 
 namespace base {
 class Location;
-class SequencedTaskRunner;
+class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace media {
@@ -49,14 +50,12 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
-  static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
-
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb,
+                  const PipelineOutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
@@ -69,6 +68,10 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   void ApplyResolutionChange() override;
   size_t GetMaxOutputFramePoolSize() const override;
   void SetDmaIncoherentV4L2(bool incoherent) override;
+
+  static int GetMaxNumDecoderInstancesForTesting() {
+    return GetMaxNumDecoderInstances();
+  }
 
  private:
   V4L2StatefulVideoDecoder(std::unique_ptr<MediaLog> media_log,
@@ -130,16 +133,25 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // Returns true if this class has successfully Initialize()d.
   bool IsInitialized() const;
 
+  // Pages with multiple decoder instances might run out of memory (e.g.
+  // b/170870476) or crash (e.g. crbug.com/1109312). this class method provides
+  // that number to prevent that erroneous behaviour during Initialize().
+  static int GetMaxNumDecoderInstances();
+  // Tracks the number of decoder instances globally in the process.
+  static base::AtomicRefCount num_decoder_instances_;
+
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   // This |wake_event_| is used to interrupt a blocking poll() call, such as the
   // one started by e.g. RearmCAPTUREQueueMonitoring().
   base::ScopedFD wake_event_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // VideoDecoderConfigs supported by the driver. Cached on first Initialize().
+  SupportedVideoDecoderConfigs supported_configs_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Bitstream information and other stuff collected during Initialize().
-  VideoCodecProfile profile_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      VIDEO_CODEC_PROFILE_UNKNOWN;
-  VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);
-  OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  VideoDecoderConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PipelineOutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   DecodeCB flush_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Set to true when the driver identifies itself as a Mediatek 8173.
   bool is_mtk8173_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -168,7 +180,7 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
 
   // A sequenced TaskRunner to wait for events coming from |CAPTURE_queue_| or
   // |wake_event_|.
-  scoped_refptr<base::SequencedTaskRunner> event_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> event_task_runner_;
   // Used to (try to) cancel the Tasks sent by RearmCAPTUREQueueMonitoring(),
   // and not serviced yet, when no longer needed.
   base::CancelableTaskTracker cancelable_task_tracker_

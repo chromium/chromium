@@ -259,7 +259,8 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest,
 
   // Remove the bookmark.
   delegate_.evaluation_requests().clear();
-  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
+  bookmark_model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther,
+                          FROM_HERE);
   EXPECT_THAT(delegate_.evaluation_requests(),
               UnorderedElementsAre(tabs[0].get()));
   EXPECT_TRUE(CheckPredicates(tabs[0].get(), false));
@@ -309,8 +310,8 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, ExtensiveChanges) {
     // removed nodes.
     delegate_.evaluation_requests().clear();
     bookmark_model_->BeginExtensiveChanges();
-    bookmark_model_->Remove(node,
-                            bookmarks::metrics::BookmarkEditSource::kOther);
+    bookmark_model_->Remove(
+        node, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
     EXPECT_TRUE(delegate_.evaluation_requests().empty());
     EXPECT_TRUE(CheckPredicates(tabs[0].get(), true));
     EXPECT_TRUE(CheckPredicates(tabs[1].get(), false));
@@ -344,8 +345,8 @@ TEST_F(DeclarativeContentIsBookmarkedConditionTrackerTest, ExtensiveChanges) {
     delegate_.evaluation_requests().clear();
     {
       bookmarks::ScopedGroupBookmarkActions scoped_group(bookmark_model_);
-      bookmark_model_->Remove(node,
-                              bookmarks::metrics::BookmarkEditSource::kOther);
+      bookmark_model_->Remove(
+          node, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
       EXPECT_TRUE(delegate_.evaluation_requests().empty());
       EXPECT_TRUE(CheckPredicates(tabs[0].get(), true));
       EXPECT_TRUE(CheckPredicates(tabs[1].get(), false));

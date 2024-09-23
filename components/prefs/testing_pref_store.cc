@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +51,7 @@ class ChangedValueWaiter : public PrefStore::Observer {
     QuitRunLoopIfNewValueIsPresent();
   }
 
-  void OnPrefValueChanged(const std::string& key) override {
+  void OnPrefValueChanged(std::string_view key) override {
     if (key == key_) {
       QuitRunLoopIfNewValueIsPresent();
     }
@@ -66,7 +66,7 @@ class ChangedValueWaiter : public PrefStore::Observer {
 }  // namespace
 
 TestingPrefStore::TestingPrefStore()
-    : read_only_(true),
+    : read_only_(false),
       read_success_(true),
       read_error_(PersistentPrefStore::PREF_READ_ERROR_NONE),
       block_async_read_(false),
@@ -74,7 +74,7 @@ TestingPrefStore::TestingPrefStore()
       init_complete_(false),
       committed_(true) {}
 
-bool TestingPrefStore::GetValue(base::StringPiece key,
+bool TestingPrefStore::GetValue(std::string_view key,
                                 const base::Value** value) const {
   return prefs_.GetValue(key, value);
 }
@@ -83,7 +83,7 @@ base::Value::Dict TestingPrefStore::GetValues() const {
   return prefs_.AsDict();
 }
 
-bool TestingPrefStore::GetMutableValue(const std::string& key,
+bool TestingPrefStore::GetMutableValue(std::string_view key,
                                        base::Value** value) {
   return prefs_.GetValue(key, value);
 }
@@ -104,7 +104,7 @@ bool TestingPrefStore::IsInitializationComplete() const {
   return init_complete_;
 }
 
-void TestingPrefStore::SetValue(const std::string& key,
+void TestingPrefStore::SetValue(std::string_view key,
                                 base::Value value,
                                 uint32_t flags) {
   if (prefs_.SetValue(key, std::move(value))) {
@@ -113,7 +113,7 @@ void TestingPrefStore::SetValue(const std::string& key,
   }
 }
 
-void TestingPrefStore::SetValueSilently(const std::string& key,
+void TestingPrefStore::SetValueSilently(std::string_view key,
                                         base::Value value,
                                         uint32_t flags) {
   CheckPrefIsSerializable(key, value);
@@ -121,14 +121,14 @@ void TestingPrefStore::SetValueSilently(const std::string& key,
     committed_ = false;
 }
 
-void TestingPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
+void TestingPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
   if (prefs_.RemoveValue(key)) {
     committed_ = false;
     NotifyPrefValueChanged(key);
   }
 }
 
-void TestingPrefStore::RemoveValuesByPrefixSilently(const std::string& prefix) {
+void TestingPrefStore::RemoveValuesByPrefixSilently(std::string_view prefix) {
   prefs_.ClearWithPrefix(prefix);
 }
 
@@ -147,7 +147,7 @@ PersistentPrefStore::PrefReadError TestingPrefStore::ReadPrefs() {
 
 void TestingPrefStore::ReadPrefsAsync(ReadErrorDelegate* error_delegate) {
   DCHECK(!pending_async_read_);
-  error_delegate_.reset(error_delegate);
+  error_delegate_.emplace(error_delegate);
   if (block_async_read_)
     pending_async_read_ = true;
   else
@@ -168,7 +168,7 @@ void TestingPrefStore::SetInitializationCompleted() {
   NotifyInitializationCompleted();
 }
 
-void TestingPrefStore::NotifyPrefValueChanged(const std::string& key) {
+void TestingPrefStore::NotifyPrefValueChanged(std::string_view key) {
   for (Observer& observer : observers_)
     observer.OnPrefValueChanged(key);
 }
@@ -176,13 +176,15 @@ void TestingPrefStore::NotifyPrefValueChanged(const std::string& key) {
 void TestingPrefStore::NotifyInitializationCompleted() {
   DCHECK(!init_complete_);
   init_complete_ = true;
-  if (read_success_ && read_error_ != PREF_READ_ERROR_NONE && error_delegate_)
-    error_delegate_->OnError(read_error_);
+  if (read_success_ && read_error_ != PREF_READ_ERROR_NONE &&
+      error_delegate_.has_value() && error_delegate_.value()) {
+    error_delegate_.value()->OnError(read_error_);
+  }
   for (Observer& observer : observers_)
     observer.OnInitializationCompleted(read_success_);
 }
 
-void TestingPrefStore::ReportValueChanged(const std::string& key,
+void TestingPrefStore::ReportValueChanged(std::string_view key,
                                           uint32_t flags) {
   const base::Value* value = nullptr;
   if (prefs_.GetValue(key, &value))
@@ -288,9 +290,13 @@ TestingPrefStore::~TestingPrefStore() {
     CheckPrefIsSerializable(pref.first, pref.second);
 }
 
-void TestingPrefStore::CheckPrefIsSerializable(const std::string& key,
+void TestingPrefStore::CheckPrefIsSerializable(std::string_view key,
                                                const base::Value& value) {
   std::string json;
   EXPECT_TRUE(base::JSONWriter::Write(value, &json))
       << "Pref \"" << key << "\" is not serializable as JSON.";
+}
+
+bool TestingPrefStore::HasReadErrorDelegate() const {
+  return error_delegate_.has_value();
 }

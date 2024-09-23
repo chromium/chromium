@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/http_request_headers_mojom_traits.h"
 
+#include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/crash_keys.h"
 

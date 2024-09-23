@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_RESTORE_NEW_USER_RESTORE_PREF_HANDLER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -46,7 +47,7 @@ class NewUserRestorePrefHandler
       delete;
 
   // sync_preferences::SyncedPrefObserver overrides:
-  void OnStartedSyncing(const std::string& path) override;
+  void OnStartedSyncing(std::string_view path) override;
 
   // sync_preferences::PrefServiceSyncableObserver overrides:
   void OnIsSyncingChanged() override;

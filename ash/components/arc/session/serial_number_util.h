@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {

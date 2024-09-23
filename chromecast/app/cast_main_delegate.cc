@@ -31,7 +31,6 @@
 #include "chromecast/common/global_descriptors.h"
 #include "chromecast/gpu/cast_content_gpu_client.h"
 #include "chromecast/renderer/cast_content_renderer_client.h"
-#include "chromecast/utility/cast_content_utility_client.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/app/initialize_mojo_core.h"
@@ -180,7 +179,8 @@ void CastMainDelegate::PreSandboxStartup() {
   bool enable_crash_reporter =
       !command_line->HasSwitch(switches::kDisableCrashReporter);
   if (enable_crash_reporter) {
-    // TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
+    // TODO(crbug.com/40188745): Complete crash reporting integration on
+    // Fuchsia.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     crash_reporter::SetCrashReporterClient(GetCastCrashReporter());
 
@@ -253,7 +253,7 @@ std::optional<int> CastMainDelegate::PostEarlyInitialization(
   CHECK(base::CreateDirectory(home_dir));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  // TODO(crbug/1249485): If we're able to create the MetricsStateManager
+  // TODO(crbug.com/40791269): If we're able to create the MetricsStateManager
   // earlier, clean up the below if and else blocks and call
   // MetricsStateManager::InstantiateFieldTrialList().
   //
@@ -357,11 +357,6 @@ content::ContentRendererClient*
 CastMainDelegate::CreateContentRendererClient() {
   renderer_client_ = CastContentRendererClient::Create();
   return renderer_client_.get();
-}
-
-content::ContentUtilityClient* CastMainDelegate::CreateContentUtilityClient() {
-  utility_client_ = CastContentUtilityClient::Create();
-  return utility_client_.get();
 }
 
 }  // namespace shell

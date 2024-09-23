@@ -357,6 +357,10 @@ struct PublicKeyCredentialRequestOptions {
   // authenticator.
   bool is_conditional;
 
+  // Aflag word corresponding to the flags in credential_type_flags.mojom,
+  // representing the types of credentials that were indicated in the request.
+  int32 requested_credential_type_flags;
+
   // An indefinite-length blob passed from the the relying party server,
   // to be sent to an authenticator for signing.
   array<uint8> challenge;
@@ -562,6 +566,9 @@ struct PublicKeyCredentialCreationOptions {
   // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
   SupplementalPubKeysRequest? supplemental_pub_keys;
+
+  // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptionsjson-attestationformats
+  array<string> attestation_formats;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
@@ -598,6 +605,33 @@ struct WebAuthnDOMExceptionDetails {
   string message;
 };
 
+// Parameters passed into calls to Report.
+struct PublicKeyCredentialReportOptions {
+  string relying_party_id;
+  array<uint8>? unknown_credential_id;
+  AllAcceptedCredentialsOptions? all_accepted_credentials;
+  CurrentUserDetailsOptions? current_user_details;
+};
+
+// Parameters passed into calls to report all accepted credentials.
+struct AllAcceptedCredentialsOptions {
+  array<uint8> user_id;
+  array<array<uint8>> all_accepted_credentials_ids;
+};
+
+// Parameters passed into calls to report current user details.
+struct CurrentUserDetailsOptions {
+  array<uint8> user_id;
+  string name;
+  string display_name;
+};
+
+// Describes a single WebAuthn client capability and its support status.
+struct WebAuthnClientCapability {
+  string name;
+  bool supported;
+};
+
 // Interface to direct authenticators to create or use a public key credential.
 interface Authenticator {
   // Gets the credential info for a new public key credential created by an
@@ -630,6 +664,16 @@ interface Authenticator {
   // "mediation" parameter of a webauthn get call and have the browser autofill
   // webauthn credentials on form inputs.
   IsConditionalMediationAvailable() => (bool available);
+
+  // Reports the credentials info so that credentials can be updated or removed
+  // from a credential storage provider for the given
+  // |PublicKeyCredentialReportOptions|.
+  Report(PublicKeyCredentialReportOptions options)
+      => (AuthenticatorStatus status,
+          WebAuthnDOMExceptionDetails? dom_exception_details);
+
+  // Returns an array of supported WebAuthn client capabilities.
+  GetClientCapabilities() => (array<WebAuthnClientCapability> capabilities);
 
   // Cancel an ongoing MakeCredential or GetAssertion request
   // Only one MakeCredential or GetAssertion call at a time is allowed,

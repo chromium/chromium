@@ -5,17 +5,22 @@
 #include "chrome/browser/password_manager/android/password_store_bridge.h"
 
 #include <jni.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreBridge_jni.h"
-#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreCredential_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreBridge_jni.h"
+#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreCredential_jni.h"
 
 namespace {
 using password_manager::PasswordForm;
@@ -27,7 +32,7 @@ PasswordForm ConvertJavaObjectToPasswordForm(
     const base::android::JavaParamRef<jobject>& credential) {
   PasswordForm form;
 
-  form.url = *url::GURLAndroid::ToNativeGURL(
+  form.url = url::GURLAndroid::ToNativeGURL(
       env, Java_PasswordStoreCredential_getUrl(env, credential));
   form.signon_realm = password_manager::GetSignonRealm(form.url);
   form.username_value = base::android::ConvertJavaStringToUTF16(
@@ -52,13 +57,27 @@ PasswordForm Blocklist(JNIEnv* env, std::string url) {
 // static
 static jlong JNI_PasswordStoreBridge_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& java_bridge) {
-  return reinterpret_cast<intptr_t>(new PasswordStoreBridge(java_bridge));
+    const base::android::JavaParamRef<jobject>& java_bridge,
+    Profile* profile) {
+  return reinterpret_cast<intptr_t>(
+      new PasswordStoreBridge(java_bridge, profile));
 }
 
 PasswordStoreBridge::PasswordStoreBridge(
-    const base::android::JavaParamRef<jobject>& java_bridge)
-    : java_bridge_(java_bridge) {
+    const base::android::JavaParamRef<jobject>& java_bridge,
+    Profile* profile)
+    : java_bridge_(java_bridge),
+      profile_(profile),
+      profile_store_(ProfilePasswordStoreFactory::GetForProfile(
+          profile,
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      account_store_(AccountPasswordStoreFactory::GetForProfile(
+          profile,
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      saved_passwords_presenter_(
+          AffiliationServiceFactory::GetForProfile(profile),
+          profile_store_,
+          account_store_) {
   saved_passwords_presenter_.Init();
   observed_saved_password_presenter_.Observe(&saved_passwords_presenter_);
 }
@@ -138,10 +157,17 @@ void PasswordStoreBridge::GetAllCredentials(
 }
 
 void PasswordStoreBridge::ClearAllPasswords(JNIEnv* env) {
-  profile_store_->RemoveLoginsCreatedBetween(base::Time(), base::Time::Max());
+  profile_store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                             base::Time::Max());
   if (account_store_) {
-    account_store_->RemoveLoginsCreatedBetween(base::Time(), base::Time::Max());
+    account_store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                               base::Time::Max());
   }
+}
+
+void PasswordStoreBridge::ClearAllPasswordsFromProfileStore(JNIEnv* env) {
+  profile_store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                             base::Time::Max());
 }
 
 void PasswordStoreBridge::Destroy(JNIEnv* env) {

@@ -160,7 +160,7 @@ bool HostBackendDelegateImpl::HasPendingHostRequest() {
 
   // If a request was pending for a specific host device, but that device is no
   // longer present on the user's account, there is no longer a pending request.
-  // TODO(https://crbug.com/936273): Track frequency of unrecognized host IDs.
+  // TODO(crbug.com/41443836): Track frequency of unrecognized host IDs.
   // If the following scenarios occur before the pending host request completes,
   // the persisted host ID will not be recognized, and the user will need to go
   // through setup again:

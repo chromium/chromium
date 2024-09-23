@@ -6,10 +6,12 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "content/common/features.h"
-#include "content/public/android/content_jni_headers/ContentFeatureMap_jni.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ContentFeatureMap_jni.h"
 
 namespace content::android {
 
@@ -19,26 +21,29 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &blink::features::kCursorAnchorInfoMojoPipe,
+    &blink::features::kDevicePosture,
     &blink::features::kStylusPointerAdjustment,
     &blink::features::kStylusRichGestures,
+    &blink::features::kViewportSegments,
     &features::kAccessibilityIncludeLongClickAction,
-    &features::kAccessibilityJNIOptimizations,
     &features::kAccessibilityPageZoom,
     &features::kAccessibilityPageZoomEnhancements,
     &features::kAccessibilityUnifiedSnapshots,
+    &features::kAccessibilityManageBroadcastReceiverOnBackground,
     &features::kAndroidOpenPdfInline,
-    &features::kDevicePosture,
     &features::kFedCm,
+    &features::kHidePastePopupOnGSB,
     &features::kMouseAndTrackpadDropdownMenu,
     &features::kOptimizeImmHideCalls,
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
-    &features::kRequestDesktopSiteWindowSetting,
+    &features::kContinueGestureOnLosingFocus,
     &features::kSelectionMenuItemModification,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
-    &features::kViewportSegments,
     &features::kWebBluetoothNewPermissionsBackend,
+    &features::kWebIdentityDigitalCredentials,
     &features::kWebNfc,
 };
 

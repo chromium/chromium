@@ -6,10 +6,10 @@
 #define CC_LAYERS_TEXTURE_LAYER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -127,9 +127,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
                                viz::ReleaseCallback release_callback);
   void SetNeedsSetTransferableResource();
 
-  // Set or unset HDR metadata.
-  void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
-
   void SetLayerTreeHost(LayerTreeHost* layer_tree_host) override;
   bool RequiresSetNeedsDisplayOnHdrHeadroomChange() const override;
   bool Update() override;
@@ -189,7 +186,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   ProtectedSequenceReadable<bool> premultiplied_alpha_;
   ProtectedSequenceReadable<bool> blend_background_color_;
   ProtectedSequenceReadable<bool> force_texture_to_opaque_;
-  ProtectedSequenceWritable<gfx::HDRMetadata> hdr_metadata_;
 
   ProtectedSequenceWritable<scoped_refptr<TransferableResourceHolder>>
       resource_holder_;

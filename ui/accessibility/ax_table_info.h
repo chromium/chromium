@@ -28,7 +28,6 @@ class AX_EXPORT AXTableInfo {
  public:
   struct CellData {
     raw_ptr<AXNode, DanglingUntriaged> cell;
-    AXNodeID cell_id;
     size_t col_index;
     size_t row_index;
     size_t col_span;

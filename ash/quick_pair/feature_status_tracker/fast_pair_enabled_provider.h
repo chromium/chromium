@@ -10,11 +10,11 @@
 #include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/google_api_key_availability_provider.h"
 #include "ash/quick_pair/feature_status_tracker/logged_in_user_enabled_provider.h"
+#include "ash/quick_pair/feature_status_tracker/scanning_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/screen_state_enabled_provider.h"
 #include "base/memory/weak_ptr.h"
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // Exposes an |is_enabled()| method and callback to query and observe when the
 // Fast Pair feature is enabled/disabled.
@@ -28,10 +28,18 @@ class FastPairEnabledProvider : public BaseEnabledProvider {
           logged_in_user_enabled_provider,
       std::unique_ptr<ScreenStateEnabledProvider> screen_state_enabled_provider,
       std::unique_ptr<GoogleApiKeyAvailabilityProvider>
-          google_api_key_availability_provider);
+          google_api_key_availability_provider,
+      std::unique_ptr<ScanningEnabledProvider> scanning_enabled_provider);
   ~FastPairEnabledProvider() override;
 
  private:
+  bool IsBluetoothEnabled();
+  bool AreAPIKeysAvailable();
+  bool IsFastPairPrefEnabled();
+  bool IsUserLoggedIn();
+  bool IsDisplayScreenOn();
+  bool IsScanningEnabled();
+
   bool AreSubProvidersEnabled();
   void OnSubProviderEnabledChanged(bool);
 
@@ -41,10 +49,10 @@ class FastPairEnabledProvider : public BaseEnabledProvider {
   std::unique_ptr<ScreenStateEnabledProvider> screen_state_enabled_provider_;
   std::unique_ptr<GoogleApiKeyAvailabilityProvider>
       google_api_key_availability_provider_;
+  std::unique_ptr<ScanningEnabledProvider> scanning_enabled_provider_;
   base::WeakPtrFactory<FastPairEnabledProvider> weak_factory_{this};
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_FEATURE_STATUS_TRACKER_FAST_PAIR_ENABLED_PROVIDER_H_

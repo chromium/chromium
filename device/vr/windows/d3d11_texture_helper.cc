@@ -6,12 +6,14 @@
 
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "device/vr/openxr/openxr_render_loop.h"
+#include "components/viz/common/gpu/context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "mojo/public/c/system/platform_handle.h"
 
 namespace {
+// These headers declare global variables representing the contained shaders, so
+// they are defined in the anonymous namespace to ensure that they don't leak.
 #include "device/vr/windows/flip_pixel_shader.h"
 #include "device/vr/windows/geometry_shader.h"
 #include "device/vr/windows/vertex_shader.h"
@@ -31,9 +33,6 @@ constexpr size_t kSizeOfVertex = sizeof(Vertex2D);
 
 // 2 triangles per eye
 constexpr size_t kNumVerticesPerLayer = 12;
-}
-
-namespace {
 
 // This enum is used in TRACE_EVENTs.  Try to keep enum values the same to make
 // analysis easier across builds.
@@ -72,14 +71,9 @@ D3D11TextureHelper::RenderState::~RenderState() {}
 D3D11TextureHelper::LayerData::LayerData() = default;
 D3D11TextureHelper::LayerData::~LayerData() = default;
 
-D3D11TextureHelper::D3D11TextureHelper(OpenXrRenderLoop* render_loop)
-    : render_loop_(render_loop) {}
+D3D11TextureHelper::D3D11TextureHelper() = default;
 
-D3D11TextureHelper::~D3D11TextureHelper() {}
-
-void D3D11TextureHelper::Reset() {
-  render_state_ = {};
-}
+D3D11TextureHelper::~D3D11TextureHelper() = default;
 
 void D3D11TextureHelper::SetSourceAndOverlayVisible(bool source_visible,
                                                     bool overlay_visible) {
@@ -179,7 +173,8 @@ bool D3D11TextureHelper::EnsureContentBlendState() {
   return true;
 }
 
-bool D3D11TextureHelper::CompositeToBackBuffer() {
+bool D3D11TextureHelper::CompositeToBackBuffer(
+    const scoped_refptr<viz::ContextProvider>& context_provider) {
   if (!EnsureInitialized())
     return false;
 
@@ -198,6 +193,11 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
       !render_state_.overlay_.source_texture_)
     return true;
 
+  gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
+  if (!gl) {
+    return false;
+  }
+
   HRESULT hr = S_OK;
   if (render_state_.source_.keyed_mutex_) {
     if (render_state_.source_.sync_token_.HasData()) {
@@ -205,7 +205,6 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
       // until GPU process has passed the sync token. This must happen before
       // AcquireSync(0) below otherwise the GPU process will be unable to
       // acquire the mutex and work will happen out of order.
-      gpu::gles2::GLES2Interface* gl = render_loop_->GetContextGL();
       gl->WaitSyncTokenCHROMIUM(
           render_state_.source_.sync_token_.GetConstData());
       gl->Finish();
@@ -228,7 +227,6 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
       // until GPU process has passed the sync token. This must happen before
       // AcquireSync(0) below otherwise the GPU process will be unable to
       // acquire the mutex and work will happen out of order.
-      gpu::gles2::GLES2Interface* gl = render_loop_->GetContextGL();
       gl->WaitSyncTokenCHROMIUM(
           render_state_.overlay_.sync_token_.GetConstData());
       gl->Finish();

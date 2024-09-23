@@ -9,6 +9,10 @@ This is a testharness.js-based test.
   promise_rejects_js: badDetails must cause acceptPromise to reject with expectedError function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" ("InvalidStateError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 [FAIL] Updating with a displayItem with an invalid currency results in RangeError.
   promise_rejects_js: badDetails must cause acceptPromise to reject with expectedError function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" ("InvalidStateError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
+[FAIL] Updating with duplicate shippingOptions (same IDs) results in a TypeError.
+  promise_rejects_js: badDetails must cause acceptPromise to reject with expectedError function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" ("InvalidStateError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+[FAIL] Updating with a shippingOption with an invalid currency value results in a RangError.
+  promise_rejects_js: badDetails must cause acceptPromise to reject with expectedError function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" ("InvalidStateError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
 [FAIL] Must throw a RangeError when a modifier's total item has an invalid currency.
   promise_rejects_js: badDetails must cause acceptPromise to reject with expectedError function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" ("InvalidStateError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
 [FAIL] Must throw a RangeError when a modifier display item has an invalid currency.

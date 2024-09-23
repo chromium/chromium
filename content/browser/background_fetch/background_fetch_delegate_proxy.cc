@@ -77,8 +77,9 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
         ->GetDelegate()
         ->CheckDownloadAllowed(
             std::move(web_contents_getter), origin.GetURL(), "GET",
-            std::nullopt, false /* from_download_cross_origin_redirect */,
-            true /* content_initiated */,
+            std::nullopt, /* from_download_cross_origin_redirect= */ false,
+            /* content_initiated= */ true, /* mime_type= */ std::string(),
+            /* page_transition= */ std::nullopt,
             base::BindOnce(&BackgroundFetchDelegateProxy::
                                DidGetPermissionFromDownloadRequestLimiter,
                            weak_ptr_factory_.GetWeakPtr(),

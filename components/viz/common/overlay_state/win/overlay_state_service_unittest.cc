@@ -141,11 +141,11 @@ TEST_F(OverlayStateServiceUnittest, AddObserver) {
   SetService();
 
   // Add observer for a new mailbox
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   PerformRegistration(mailbox);
 
   // Add observer for existing mailbox with set promotion state
-  gpu::Mailbox mailbox2 = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox2 = gpu::Mailbox::Generate();
   SetPromotionHint(mailbox2, true);
   VizTestSuite::RunUntilIdle();
   receiver_.reset();
@@ -157,7 +157,7 @@ TEST_F(OverlayStateServiceUnittest, AddObserver) {
 
 TEST_F(OverlayStateServiceUnittest, SetHint) {
   SetService();
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   PerformRegistration(mailbox);
   VizTestSuite::RunUntilIdle();
   SetPromotionHint(mailbox, true);
@@ -172,7 +172,7 @@ TEST_F(OverlayStateServiceUnittest, SetHint) {
 
 TEST_F(OverlayStateServiceUnittest, DeleteMailbox) {
   SetService();
-  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   PerformRegistration(mailbox);
   VizTestSuite::RunUntilIdle();
   SetPromotionHint(mailbox, true);

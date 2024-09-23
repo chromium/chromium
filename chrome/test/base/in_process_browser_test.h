@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -30,10 +29,6 @@
 #include "base/memory/stack_allocated.h"
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 
@@ -51,6 +46,11 @@ class Version;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+class WebContents;
+}  // namespace content
+
 #if defined(TOOLKIT_VIEWS)
 namespace views {
 class ViewsDelegate;
@@ -61,11 +61,16 @@ namespace display {
 class Screen;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash::full_restore {
+class ScopedLaunchBrowserForTesting;
+}  // namespace ash::full_restore
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class Browser;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class FakeAccountManagerUI;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-class MainThreadStackSamplingProfiler;
 class PrefService;
 class Profile;
 #if BUILDFLAG(IS_MAC)
@@ -402,9 +407,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_launch_browser_for_testing(
       std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
-          launch_browser_for_testing) {
-    launch_browser_for_testing_ = std::move(launch_browser_for_testing);
-  }
+          launch_browser_for_testing);
 #endif
 
   // Runs scheduled layouts on all Widgets using
@@ -505,8 +508,6 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   std::unique_ptr<views::ViewsDelegate> views_delegate_;
 #endif
 
-  std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
-
   // Used to set up test factories for each browser context.
   base::CallbackListSubscription create_services_subscription_;
 
@@ -527,9 +528,5 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   base::Process ash_process_;
 #endif
 };
-
-// When including either in_process_browser_test.h or android_browser_test.h
-// depending on the platform, use this type alias as the test base class.
-using PlatformBrowserTest = InProcessBrowserTest;
 
 #endif  // CHROME_TEST_BASE_IN_PROCESS_BROWSER_TEST_H_

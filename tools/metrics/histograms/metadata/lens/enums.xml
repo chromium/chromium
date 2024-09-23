@@ -1,0 +1,99 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- LINT.IfChange(LensOverlayDismissalSource) -->
+
+<enum name="LensOverlayDismissalSource">
+  <summary>The UI source of a Lens Overlay dismissal.</summary>
+  <int value="0" label="Overlay close button"/>
+  <int value="1" label="Overlay background click"/>
+  <int value="2" label="Side panel close button"/>
+  <int value="3" label="Toolbar button"/>
+  <int value="4" label="Page changed (navigation)"/>
+  <int value="5" label="Background tab contents discarded"/>
+  <int value="6" label="Tab backgrounded while screenshotting"/>
+  <int value="7" label="Error: Screenshot creation failed"/>
+  <int value="8" label="Error: Screenshot encoding failed"/>
+  <int value="9" label="Escape key press"/>
+  <int value="10" label="Unexpected side panel open"/>
+  <int value="11" label="Browser went into fullscreen"/>
+  <int value="12" label="Tab dragged into new window"/>
+  <int value="13" label="Tab closed"/>
+  <int value="14" label="Error: Renderer exited (obsolete after M130)"/>
+  <int value="15" label="Find in page invoked"/>
+  <int value="16" label="Preselection toast exit button"/>
+  <int value="17" label="Side panel entry replaced"/>
+  <int value="18" label="Search bubble close button"/>
+  <int value="19" label="Overlay renderer exited normally"/>
+  <int value="20" label="Error: Overlay renderer exited unexpectedly"/>
+  <int value="21" label="Underlying page renderer exited normally"/>
+  <int value="22" label="Error: Underlying page renderer exited unexpectedly"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
+
+<!-- LINT.IfChange(LensOverlayUserAction) -->
+
+<enum name="LensOverlayUserAction">
+  <summary>The user interaction with the Lens Overlay</summary>
+  <int value="0" label="Region selection"/>
+  <int value="1" label="Region selection change"/>
+  <int value="2" label="Text selection"/>
+  <int value="3" label="Object click"/>
+  <int value="4" label="Translate text action"/>
+  <int value="5" label="Copy text action"/>
+  <int value="6" label="My Activity action"/>
+  <int value="7" label="Learn more action"/>
+  <int value="8" label="Send feedback action"/>
+  <int value="9" label="Tap region selection"/>
+  <int value="10" label="Translate mode button enable action"/>
+  <int value="11" label="Translate mode button disable action"/>
+  <int value="12" label="Translate source language changed"/>
+  <int value="13" label="Translate target language changed"/>
+  <int value="14" label="Translate text selection"/>
+  <int value="15" label="Copy as image action"/>
+  <int value="16" label="Save as image action"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/lens/core/mojom/lens.mojom:UserAction) -->
+
+<!-- LINT.IfChange(LensPermissionBubbleUserAction) -->
+
+<enum name="LensPermissionBubbleUserAction">
+  <summary>The user interaction with the Lens Permission Bubble</summary>
+  <int value="0" label="Help Center link opened"/>
+  <int value="1" label="Accept button pressed"/>
+  <int value="2" label="Cancel button pressed"/>
+  <int value="3" label="Esc key pressed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_permission_bubble_controller.h:UserAction) -->
+
+</enums>
+
+</histogram-configuration>

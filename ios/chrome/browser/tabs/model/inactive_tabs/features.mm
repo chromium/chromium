@@ -79,3 +79,14 @@ const base::TimeDelta InactiveTabsTimeThreshold() {
   }
   return base::Days(21);
 }
+
+BASE_FEATURE(kInactiveTabButtonRefactoring,
+             "InactiveTabButtonRefactoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsInactiveTabButtonRefactoringEnabled() {
+  if (!IsInactiveTabsAvailable()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kInactiveTabButtonRefactoring);
+}

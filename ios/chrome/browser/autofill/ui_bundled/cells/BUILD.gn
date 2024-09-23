@@ -1,0 +1,62 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cells") {
+  sources = [
+    "autofill_credit_card_edit_item.h",
+    "autofill_credit_card_edit_item.mm",
+    "autofill_edit_profile_button_footer_item.h",
+    "autofill_edit_profile_button_footer_item.mm",
+    "autofill_profile_edit_item.h",
+    "autofill_profile_edit_item.mm",
+    "card_unmask_header_item.h",
+    "card_unmask_header_item.mm",
+    "country_item.h",
+    "country_item.mm",
+    "expiration_date_edit_item+Testing.h",
+    "expiration_date_edit_item.h",
+    "expiration_date_edit_item.mm",
+    "expiration_date_edit_item_delegate.h",
+    "target_account_item.h",
+    "target_account_item.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/autofill/core/common:common",
+    "//components/resources:components_scaled_resources_grit",
+    "//components/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:ui",
+    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "card_unmask_header_item_unittest.mm",
+    "expiration_date_edit_item_unittest.mm",
+    "target_account_item_unittest.mm",
+  ]
+
+  deps = [
+    ":cells",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/common:common",
+    "//ios/chrome/browser/autofill/ui_bundled:ui",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

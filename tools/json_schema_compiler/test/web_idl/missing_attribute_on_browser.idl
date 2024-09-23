@@ -1,0 +1,14 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example WebIDL schema which is invalid due to having the partial Browser
+// interface used to define the name the API should be exposed under, but not
+// including an attribute on it with that name.
+interface TestWebIdl {
+
+};
+
+partial interface Browser {
+  // A single static attribute should have been included here.
+};

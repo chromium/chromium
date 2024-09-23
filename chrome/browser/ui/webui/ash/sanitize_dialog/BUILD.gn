@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("sanitize_dialog") {
+  sources = [
+    "sanitize_dialog.cc",
+    "sanitize_dialog.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/webui/sanitize_ui",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//ui/display",
+    "//ui/gfx",
+  ]
+}

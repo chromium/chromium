@@ -12,7 +12,7 @@
 // This observer is Android-specific and intercepts each navigation on the main
 // frame. For sites configured so, it overrides the user agent to request the
 // desktop version of the site.
-// TODO(crbug.com/1349647): Add tests for this class.
+// TODO(crbug.com/40856033): Add tests for this class.
 class RequestDesktopSiteWebContentsObserverAndroid
     : public content::WebContentsObserver,
       public content::WebContentsUserData<

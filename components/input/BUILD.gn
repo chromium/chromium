@@ -1,0 +1,211 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(
+    use_blink,
+    "//components/input can't be built without blink and shouldn't be included if use_blink is false")
+
+component("input") {
+  defines = [ "IS_INPUT_IMPL" ]
+  sources = [
+    "cursor_manager.cc",
+    "cursor_manager.h",
+    "event_with_latency_info.h",
+    "features.cc",
+    "features.h",
+    "fling_controller.cc",
+    "fling_controller.h",
+    "fling_scheduler_base.h",
+    "gesture_event_queue.cc",
+    "gesture_event_queue.h",
+    "gesture_event_stream_validator.cc",
+    "gesture_event_stream_validator.h",
+    "input_disposition_handler.h",
+    "input_event_ack_state.cc",
+    "input_event_ack_state.h",
+    "input_event_stream_validator.cc",
+    "input_event_stream_validator.h",
+    "input_router.h",
+    "input_router_client.h",
+    "input_router_config_helper.cc",
+    "input_router_config_helper.h",
+    "input_router_impl.cc",
+    "input_router_impl.h",
+    "mouse_wheel_event_queue.cc",
+    "mouse_wheel_event_queue.h",
+    "native_web_keyboard_event.h",
+    "passthrough_touch_event_queue.cc",
+    "passthrough_touch_event_queue.h",
+    "peak_gpu_memory_tracker.h",
+    "render_input_router.cc",
+    "render_input_router.h",
+    "render_input_router_client.h",
+    "render_input_router_delegate.h",
+    "render_input_router_iterator.h",
+    "render_input_router_latency_tracker.cc",
+    "render_input_router_latency_tracker.h",
+    "render_widget_host_input_event_router.cc",
+    "render_widget_host_input_event_router.h",
+    "render_widget_host_view_input.cc",
+    "render_widget_host_view_input.h",
+    "render_widget_host_view_input_observer.cc",
+    "render_widget_host_view_input_observer.h",
+    "render_widget_targeter.cc",
+    "render_widget_targeter.h",
+    "switches.cc",
+    "switches.h",
+    "tap_suppression_controller.cc",
+    "tap_suppression_controller.h",
+    "timeout_monitor.cc",
+    "timeout_monitor.h",
+    "touch_action_filter.cc",
+    "touch_action_filter.h",
+    "touch_emulator.h",
+    "touch_emulator_client.h",
+    "touch_event_stream_validator.cc",
+    "touch_event_stream_validator.h",
+    "touch_timeout_handler.cc",
+    "touch_timeout_handler.h",
+    "touchpad_pinch_event_queue.cc",
+    "touchpad_pinch_event_queue.h",
+    "touchpad_tap_suppression_controller.cc",
+    "touchpad_tap_suppression_controller.h",
+    "touchscreen_tap_suppression_controller.cc",
+    "touchscreen_tap_suppression_controller.h",
+    "utils.cc",
+    "utils.h",
+    "web_touch_event_traits.cc",
+    "web_touch_event_traits.h",
+  ]
+  deps = [
+    ":mojom",
+    "//base",
+    "//cc",
+    "//services/viz/public/mojom",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//ui/base/cursor",
+    "//ui/events:events",
+    "//ui/events:events_base",
+    "//ui/events:gesture_detection",
+    "//ui/events/blink:blink",
+    "//ui/events/gestures/blink",
+  ]
+  if (use_aura) {
+    sources += [ "native_web_keyboard_event_aura.cc" ]
+  }
+  if (is_android) {
+    sources += [
+      "native_web_keyboard_event_android.cc",
+      "web_input_event_builders_android.cc",
+      "web_input_event_builders_android.h",
+    ]
+  }
+  if (is_ios) {
+    sources += [
+      "native_web_keyboard_event_ios.mm",
+      "web_input_event_builders_ios.h",
+      "web_input_event_builders_ios.mm",
+    ]
+  }
+  if (is_mac) {
+    sources += [
+      "native_web_keyboard_event_mac.mm",
+      "web_input_event_builders_mac.h",
+      "web_input_event_builders_mac.mm",
+    ]
+    frameworks = [
+      "AppKit.framework",
+      "CoreGraphics.framework",
+      "Foundation.framework",
+    ]
+  }
+}
+
+mojom_component("mojom") {
+  sources = [ "render_input_router.mojom" ]
+  public_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
+
+  # It's important to specify these settings for Blink bindings, because the
+  # dependency above requires linkage into the platform library.
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  output_prefix = "components_input_mojom"
+  macro_prefix = "COMPONENTS_INPUT_MOJOM"
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "event_with_latency_info_unittest.cc",
+    "fling_controller_unittest.cc",
+    "gesture_event_queue_unittest.cc",
+    "gesture_event_stream_validator_unittest.cc",
+    "mouse_wheel_event_queue_unittest.cc",
+    "passthrough_touch_event_queue_unittest.cc",
+    "tap_suppression_controller_unittest.cc",
+    "touch_action_filter_unittest.cc",
+    "touch_event_stream_validator_unittest.cc",
+    "touchpad_pinch_event_queue_unittest.cc",
+  ]
+  deps = [
+    ":input",
+    "//base:base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//ui/base:features",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:events",
+    "//ui/events:test_support",
+    "//ui/events:velocity_tracker",
+    "//ui/events/blink:blink",
+  ]
+  if (is_android) {
+    sources += [ "web_input_event_builders_android_unittest.cc" ]
+  }
+  if (is_mac) {
+    sources += [
+      "native_web_keyboard_event_mac_unittest.mm",
+      "web_input_event_builders_mac_unittest.mm",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_input_router.cc",
+    "mock_input_router.h",
+  ]
+  deps = [
+    ":input",
+    "//base",
+    "//cc",
+    "//third_party/blink/public/common:headers",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "test/input_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base",
+    "//components/input",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+  ]
+}

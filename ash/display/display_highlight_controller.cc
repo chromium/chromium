@@ -13,6 +13,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 #include "ui/wm/core/window_animations.h"
@@ -31,8 +32,8 @@ std::unique_ptr<views::Widget> CreateHighlightWidget(
   DCHECK_NE(display_id, display::kInvalidDisplayId);
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = false;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -84,7 +85,7 @@ DisplayHighlightController::DisplayHighlightController() {
   SessionControllerImpl* session_controller = shell->session_controller();
 
   session_controller->AddObserver(this);
-  shell->window_tree_host_manager()->AddObserver(this);
+  shell->display_manager()->AddDisplayManagerObserver(this);
 
   is_locked_ = session_controller->IsScreenLocked();
 }
@@ -92,7 +93,7 @@ DisplayHighlightController::DisplayHighlightController() {
 DisplayHighlightController::~DisplayHighlightController() {
   Shell* shell = Shell::Get();
 
-  shell->window_tree_host_manager()->RemoveObserver(this);
+  shell->display_manager()->RemoveDisplayManagerObserver(this);
   shell->session_controller()->RemoveObserver(this);
 }
 
@@ -134,7 +135,7 @@ void DisplayHighlightController::OnLockStateChanged(bool locked) {
   UpdateDisplayIdentificationHighlight();
 }
 
-void DisplayHighlightController::OnDisplayConfigurationChanged() {
+void DisplayHighlightController::OnDidApplyDisplayChanges() {
   UpdateDisplayIdentificationHighlight();
 }
 

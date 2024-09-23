@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Undersøgelse</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/sek.</translation>
 <translation id="2353636109065292463">Tjekker din internetforbindelse</translation>
+<translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2388990488038464401">Vil du ringe til dette nummer fra din telefon?</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="24452542372838207">Udvid notifikation</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NY</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nyt</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 år siden}one{# år siden}other{# år siden}}</translation>
 <translation id="2878511608894704031">Slet alt</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{om 1 dag}one{om # dag}other{om # dage}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-system</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Venstrepil</translation>
+<translation id="5633029987065897167">Tom</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}one{# min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktiv i dag}=1{Aktiv for 1 dag siden}one{Aktiv for # dag siden}other{Aktiv for # dage siden}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag og }one{# dage og }other{# dage og }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF-indhold</translation>
 <translation id="6539092367496845964">Noget gik galt. Prøv igen senere.</translation>
 <translation id="654149438358937226">Bloker alle notifikationer</translation>
-<translation id="6612467943526193239">Tryk på Esc for at afslutte kalibreringen.</translation>
 <translation id="6620110761915583480">Gem fil</translation>
 <translation id="6699343763173986273">Medie: Næste nummer</translation>
 <translation id="6808150112686056157">Medie: Stop</translation>

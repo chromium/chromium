@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -21,9 +21,8 @@ class LayerTreeOwner;
 }
 
 // ContentsWebView is used to present the WebContents of the active tab.
-class ContentsWebView
-    : public views::WebView,
-      public WebContentsCloseHandlerDelegate {
+class ContentsWebView : public views::WebView,
+                        public WebContentsCloseHandlerDelegate {
   METADATA_HEADER(ContentsWebView, views::WebView)
 
  public:
@@ -63,9 +62,7 @@ class ContentsWebView
 
  private:
   void UpdateBackgroundColor();
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION StatusBubbleViews* status_bubble_;
+  raw_ptr<StatusBubbleViews> status_bubble_;
 
   bool background_visible_ = true;
 

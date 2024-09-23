@@ -168,7 +168,7 @@ TEST_F(SurfaceControlTransactionTest, CallbackSetupAfterGetTransaction) {
 TEST(SurfaceControl, ColorSpaceToADataSpace) {
   // Invalid color spaces are mapped to sRGB.
   {
-    uint64_t dataspace = 0;
+    ADataSpace dataspace = ADATASPACE_UNKNOWN;
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         gfx::ColorSpace(), 1.f, dataspace, extended_range_brightness_ratio));
@@ -178,7 +178,7 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
 
   // sRGB.
   {
-    uint64_t dataspace = 0;
+    ADataSpace dataspace = ADATASPACE_UNKNOWN;
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         gfx::ColorSpace::CreateSRGB(), 1.f, dataspace,
@@ -189,7 +189,7 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
 
   // Display P3.
   {
-    uint64_t dataspace = 0;
+    ADataSpace dataspace = ADATASPACE_UNKNOWN;
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         gfx::ColorSpace::CreateDisplayP3D65(), 1.f, dataspace,
@@ -204,34 +204,27 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
     return;
   }
 
-  constexpr uint64_t kStandardSRGB = 1 << 16;
-  constexpr uint64_t kStandardP3 = 10 << 16;
-  constexpr uint64_t kStandardBT2020 = 6 << 16;
-  constexpr uint64_t kTransferSRGB = 2 << 22;
-  constexpr uint64_t kRangeFull = 1 << 27;
-  constexpr uint64_t kRangeExtended = 3 << 27;
-
   // Rec2020 with an sRGB transfer function.
   {
     gfx::ColorSpace rec2020(gfx::ColorSpace::PrimaryID::BT2020,
                             gfx::ColorSpace::TransferID::SRGB);
-    uint64_t dataspace = 0;
+    ADataSpace dataspace = ADATASPACE_UNKNOWN;
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         rec2020, 1.f, dataspace, extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, kStandardBT2020 | kTransferSRGB | kRangeFull);
+    EXPECT_EQ(dataspace, STANDARD_BT2020 | TRANSFER_SRGB | RANGE_FULL);
     EXPECT_EQ(extended_range_brightness_ratio, 1.f);
   }
 
   // sRGB, but it will come out as extended because there is a >1 desired
   // brightness ratio.
   {
-    uint64_t dataspace = 0;
+    ADataSpace dataspace = ADATASPACE_UNKNOWN;
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         gfx::ColorSpace::CreateSRGB(), 4.f, dataspace,
         extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, kStandardSRGB | kTransferSRGB | kRangeExtended);
+    EXPECT_EQ(dataspace, STANDARD_BT709 | TRANSFER_SRGB | RANGE_EXTENDED);
     EXPECT_EQ(extended_range_brightness_ratio, 1.f);
   }
 
@@ -243,11 +236,11 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
         gfx::ColorSpace::PrimaryID::P3, gfx::ColorSpace::TransferID::CUSTOM_HDR,
         gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL, nullptr,
         &trfn_srgb_scaled);
-    uint64_t dataspace = 0;
+    ADataSpace dataspace = ADATASPACE_UNKNOWN;
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         p3_scaled, 1.f, dataspace, extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, kStandardP3 | kTransferSRGB | kRangeExtended);
+    EXPECT_EQ(dataspace, STANDARD_DCI_P3 | TRANSFER_SRGB | RANGE_EXTENDED);
     EXPECT_NEAR(extended_range_brightness_ratio, 2.f, 0.0001f);
   }
 }

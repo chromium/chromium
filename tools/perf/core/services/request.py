@@ -8,7 +8,7 @@ import logging
 import six
 import six.moves.urllib.parse  # pylint: disable=import-error
 
-# TODO(crbug.com/996778): Figure out how to get httplib2 hermetically.
+# TODO(crbug.com/40641687): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error
 
 from core import path_util
@@ -152,6 +152,7 @@ def Request(url, method='GET', params=None, data=None, accept=None,
     raise BuildRequestError(url, response, content)
 
   if accept == 'json':
+    content = content.decode('utf-8')
     if content[:4] == JSON_SECURITY_PREFIX:
       content = content[4:]  # Strip off security prefix if found.
     content = json.loads(content)

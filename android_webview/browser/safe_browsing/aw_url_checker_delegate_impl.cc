@@ -16,8 +16,6 @@
 #include "android_webview/browser/network_service/aw_web_resource_request.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
-#include "android_webview/browser_jni_headers/AwSafeBrowsingConfigHelper_jni.h"
-#include "android_webview/browser_jni_headers/AwSafeBrowsingSafeModeAction_jni.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -36,6 +34,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/page_transition_types.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwSafeBrowsingConfigHelper_jni.h"
+#include "android_webview/browser_jni_headers/AwSafeBrowsingSafeModeAction_jni.h"
 
 namespace android_webview {
 
@@ -65,10 +67,10 @@ AwUrlCheckerDelegateImpl::AwUrlCheckerDelegateImpl(
     : database_manager_(std::move(database_manager)),
       ui_manager_(std::move(ui_manager)),
       threat_types_(safe_browsing::CreateSBThreatTypeSet(
-          {safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
-           safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
-           safe_browsing::SB_THREAT_TYPE_URL_UNWANTED,
-           safe_browsing::SB_THREAT_TYPE_BILLING})),
+          {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING})),
       allowlist_manager_(allowlist_manager) {}
 
 AwUrlCheckerDelegateImpl::~AwUrlCheckerDelegateImpl() = default;
@@ -80,11 +82,10 @@ void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const security_interstitials::UnsafeResource& resource,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
-    bool is_outermost_main_frame,
     bool has_user_gesture) {
   AwWebResourceRequest request(resource.url.spec(), method,
-                               is_outermost_main_frame, has_user_gesture,
-                               headers);
+                               /*in_is_outermost_main_frame=*/true,
+                               has_user_gesture, headers);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -94,8 +95,7 @@ void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
 
 void AwUrlCheckerDelegateImpl::
     StartObservingInteractionsForDelayedBlockingPageHelper(
-        const security_interstitials::UnsafeResource& resource,
-        bool is_main_frame) {
+        const security_interstitials::UnsafeResource& resource) {
   NOTREACHED() << "Delayed warnings not implemented for WebView";
 }
 
@@ -128,7 +128,8 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
       return true;
     }
   } else if (!render_frame_token.has_value()) {
-    client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
+    client = AwContentsIoThreadClient::FromID(
+        content::FrameTreeNodeId(frame_tree_node_id));
   } else {
     client =
         AwContentsIoThreadClient::FromToken(content::GlobalRenderFrameHostToken(
@@ -154,15 +155,10 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
   if (is_hardcoded_url)
     return false;
 
-  // Proceed with the request iff GMS is present, enabled, accessible to
-  // WebView and has minimum version to support safe browsing
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck) ||
-      base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
-    bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
-    if (!can_use_gms) {
-      return true;
-    }
+  // Skip the check if we can't call GMS APIs.
+  bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
+  if (!can_use_gms) {
+    return true;
   }
 
   // For other requests, follow user consent.
@@ -172,6 +168,11 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
 }
 
 void AwUrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {}
+
+void AwUrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+    std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {}
 
@@ -283,17 +284,6 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
     // blocking page is created in this case, we manually call it here.
     CallOnReceivedError(AwContentsClientBridge::FromWebContents(web_contents),
                         request, entry);
-  }
-
-  // Navigate back for back-to-safety on subresources
-  if (!proceed && resource.is_subframe) {
-    if (web_contents->GetController().CanGoBack()) {
-      web_contents->GetController().GoBack();
-    } else {
-      web_contents->GetController().LoadURL(
-          ui_manager->default_safe_page(), content::Referrer(),
-          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
-    }
   }
 
   GURL main_frame_url = entry ? entry->GetURL() : GURL();

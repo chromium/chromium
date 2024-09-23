@@ -79,10 +79,11 @@ void SimRequestBase::WriteInternal(base::span<const char> data) {
   DCHECK(started_);
   DCHECK(!error_);
   total_encoded_data_length_ += data.size();
-  if (navigation_body_loader_)
-    navigation_body_loader_->Write(data.data(), data.size());
-  else
-    client_->DidReceiveData(data.data(), data.size());
+  if (navigation_body_loader_) {
+    navigation_body_loader_->Write(data);
+  } else {
+    client_->DidReceiveDataForTesting(data);
+  }
 }
 
 void SimRequestBase::Finish(bool body_loader_finished) {

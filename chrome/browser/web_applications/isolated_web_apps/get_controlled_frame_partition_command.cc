@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -48,9 +49,16 @@ GetControlledFramePartitionWithLock(Profile* profile,
     WebApp* iwa = update->UpdateApp(url_info.app_id());
     CHECK(iwa && iwa->isolation_data().has_value());
 
-    WebApp::IsolationData isolation_data = *iwa->isolation_data();
-    isolation_data.controlled_frame_partitions.insert(partition_name);
-    iwa->SetIsolationData(isolation_data);
+    const IsolationData& isolation_data = *iwa->isolation_data();
+
+    std::set<std::string> cf_partitions =
+        isolation_data.controlled_frame_partitions();
+    cf_partitions.insert(partition_name);
+
+    iwa->SetIsolationData(
+        IsolationData::Builder(isolation_data)
+            .SetControlledFramePartitions(std::move(cf_partitions))
+            .Build());
   }
   return storage_partition_config;
 }

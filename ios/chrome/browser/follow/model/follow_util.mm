@@ -9,8 +9,8 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -32,7 +32,7 @@ NSString* const kFollowIPHHost = @"host";
 NSString* const kFollowIPHDate = @"date";
 
 FollowActionState GetFollowActionState(web::WebState* webState) {
-  // TODO(crbug.com/1402986): Hide Follow action in safe mode.
+  // TODO(crbug.com/40251372): Hide Follow action in safe mode.
 
   if (!webState || !IsWebChannelsEnabled() || IsFeedAblationEnabled()) {
     return FollowActionStateHidden;

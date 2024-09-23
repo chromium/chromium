@@ -16,15 +16,15 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/sync/base/features.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -63,7 +63,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -71,6 +71,10 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:snackbar_handler_
+                     forProtocol:@protocol(SnackbarCommands)];
   }
 
   void TearDown() override {
@@ -94,12 +98,15 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
                               view:view_controller_.view
                         withSource:signin_metrics::ProfileSignout::
                                        kUserClickedSignoutSettings];
-    signout_coordinator_.completion = ^(BOOL success) {
+    signout_coordinator_.signoutCompletion = ^(BOOL success) {
+      completion_callback_.Run(success);
     };
     return signout_coordinator_;
   }
 
-  PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return GetApplicationContext()->GetLocalState();
+  }
 
   PrefService* GetPrefs() { return browser_state_->GetPrefs(); }
 
@@ -109,6 +116,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   SignoutActionSheetCoordinator* signout_coordinator_ = nullptr;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_ = nullptr;
@@ -116,6 +125,9 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   id<SystemIdentity> identity_ = nil;
   id<SystemIdentity> managed_identity_ = nil;
+  id<SnackbarCommands> snackbar_handler_ =
+      OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  base::MockRepeatingCallback<void(bool)> completion_callback_;
 
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
 };
@@ -139,55 +151,6 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
   ASSERT_NE(nil, signout_coordinator_.title);
 }
 
-// Tests that a signed-in user with Sync disabled will have an action sheet with
-// no title.
-// TODO(crbug.com/40067025): Remove this test once
-// kReplaceSyncPromosWithSignInPromos is launched - with that feature, signed-in
-// non-syncing users do *not* get a signout action sheet anymore.
-TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithoutSync) {
-  base::test::ScopedFeatureList disable_sync_to_signin;
-  disable_sync_to_signin.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  authentication_service()->SignIn(
-      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(testing::Return(false));
-
-  CreateCoordinator();
-  [signout_coordinator_ start];
-
-  ASSERT_EQ(nil, signout_coordinator_.title);
-}
-
-// Tests that a signed-in user with the forced sign-in policy enabled will have
-// an action sheet with a title and a message.
-// TODO(crbug.com/40067025): Remove this test once
-// kReplaceSyncPromosWithSignInPromos is launched - with that feature, signed-in
-// non-syncing users do *not* get a signout action sheet anymore.
-TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
-  base::test::ScopedFeatureList disable_sync_to_signin;
-  disable_sync_to_signin.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  // Enable forced sign-in.
-  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
-                              static_cast<int>(BrowserSigninMode::kForced));
-
-  authentication_service()->SignIn(
-      identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(testing::Return(false));
-
-  CreateCoordinator();
-  [signout_coordinator_ start];
-
-  ASSERT_NE(nil, signout_coordinator_.title);
-  ASSERT_NE(nil, signout_coordinator_.message);
-}
-
 // Tests that a signed-in managed user with Sync enabled will have an action
 // sheet with a sign-out title.
 // TODO(crbug.com/40066949): Remove this test once ConsentLevel::kSync does not
@@ -209,61 +172,7 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
   ASSERT_NE(nil, signout_coordinator_.title);
 }
 
-// Tests that a signed-in managed user with Sync disabled will have an action
-// sheet with no title.
-// TODO(crbug.com/40067025): Remove this test once
-// kReplaceSyncPromosWithSignInPromos is launched - with that feature, signed-in
-// non-syncing users do *not* get a signout action sheet anymore.
-TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithoutSync) {
-  base::test::ScopedFeatureList disable_sync_to_signin;
-  disable_sync_to_signin.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  authentication_service()->SignIn(
-      managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
-  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(testing::Return(false));
-
-  CreateCoordinator();
-  [signout_coordinator_ start];
-
-  ASSERT_EQ(nil, signout_coordinator_.title);
-}
-
-class SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled
-    : public SignoutActionSheetCoordinatorTest {
- public:
-  SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled()
-      : feature_list_(syncer::kReplaceSyncPromosWithSignInPromos) {}
-
-  void SetUp() override {
-    SignoutActionSheetCoordinatorTest::SetUp();
-    snackbar_handler_ = OCMStrictProtocolMock(@protocol(SnackbarCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:snackbar_handler_
-                     forProtocol:@protocol(SnackbarCommands)];
-  }
-
-  // Sign-out coordinator.
-  SignoutActionSheetCoordinator* CreateCoordinator() {
-    SignoutActionSheetCoordinatorTest::CreateCoordinator();
-    signout_coordinator_.completion = ^(BOOL success) {
-      completion_callback_.Run(success);
-    };
-    return signout_coordinator_;
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-  id snackbar_handler_;
-  ::testing::StrictMock<base::MockRepeatingCallback<void(bool)>>
-      completion_callback_;
-};
-
-TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
+TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldNotShowActionSheetIfNoUnsyncedData) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -272,9 +181,9 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
   // Mock returning no unsynced datatype.
   ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .WillByDefault(
-          [](syncer::ModelTypeSet requested_types,
-             base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
-            std::move(callback).Run(syncer::ModelTypeSet());
+          [](syncer::DataTypeSet requested_types,
+             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
+            std::move(callback).Run(syncer::DataTypeSet());
           });
   EXPECT_CALL(completion_callback_, Run);
 
@@ -286,8 +195,7 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }
 
-TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
-       ShouldShowActionSheetIfUnsyncedData) {
+TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
@@ -295,9 +203,9 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
   // Mock returning unsynced datatypes.
   ON_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .WillByDefault(
-          [](syncer::ModelTypeSet requested_types,
-             base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
-            constexpr syncer::ModelTypeSet kUnsyncedTypes = {
+          [](syncer::DataTypeSet requested_types,
+             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
+            constexpr syncer::DataTypeSet kUnsyncedTypes = {
                 syncer::BOOKMARKS, syncer::PREFERENCES};
             std::move(callback).Run(
                 base::Intersection(kUnsyncedTypes, requested_types));
@@ -310,18 +218,18 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
 
   histogram_tester.ExpectTotalCount("Sync.UnsyncedDataOnSignout2", 1u);
   histogram_tester.ExpectBucketCount("Sync.UnsyncedDataOnSignout2",
-                                     syncer::ModelTypeForHistograms::kBookmarks,
+                                     syncer::DataTypeForHistograms::kBookmarks,
                                      1u);
   // Only a few "interesting" data types are recorded. PREFERENCES is not.
   histogram_tester.ExpectBucketCount(
       "Sync.UnsyncedDataOnSignout2",
-      syncer::ModelTypeForHistograms::kPreferences, 0u);
+      syncer::DataTypeForHistograms::kPreferences, 0u);
 
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }
 
 // Same as ShouldShowActionSheetIfUnsyncedData, but for a managed user.
-TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
+TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldShowActionSheetIfUnsyncedDataForManagedUser) {
   // Sign in with a *managed* account.
   authentication_service()->SignIn(
@@ -335,9 +243,9 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
   EXPECT_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
       .Times(testing::AtLeast(1))
       .WillRepeatedly(
-          [](syncer::ModelTypeSet requested_types,
-             base::OnceCallback<void(syncer::ModelTypeSet)> callback) {
-            constexpr syncer::ModelTypeSet kUnsyncedTypes = {
+          [](syncer::DataTypeSet requested_types,
+             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
+            constexpr syncer::DataTypeSet kUnsyncedTypes = {
                 syncer::BOOKMARKS, syncer::PREFERENCES};
             std::move(callback).Run(
                 base::Intersection(kUnsyncedTypes, requested_types));
@@ -347,7 +255,7 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
   [signout_coordinator_ start];
 }
 
-TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
+TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldShowActionSheetForManagedUserMigratedFromSyncing) {
   // Sign in with a *managed* account.
   authentication_service()->SignIn(
@@ -378,5 +286,22 @@ TEST_F(SignoutActionSheetCoordinatorTestWithReplaceSyncWithSigninEnabled,
   [signout_coordinator_ start];
 }
 
-// TODO(crbug.com/1496731): Add test for recording signout outcome upon warning
+TEST_F(SignoutActionSheetCoordinatorTest,
+       ShouldShowActionSheetForManagedUserWithClearDataonSignoutFeature) {
+  scoped_feature_list_.InitWithFeatures(
+      {kClearDeviceDataOnSignOutForManagedUsers}, {});
+
+  // Sign in with a *managed* account.
+  authentication_service()->SignIn(
+      managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
+
+  CreateCoordinator();
+
+  [signout_coordinator_ start];
+  ASSERT_NE(nil, signout_coordinator_.title);
+}
+
+// TODO(crbug.com/40075765): Add test for recording signout outcome upon warning
 // dialog for unsynced data (i.e. for Sync.SignoutWithUnsyncedData).

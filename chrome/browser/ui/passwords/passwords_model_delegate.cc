@@ -6,9 +6,9 @@
 
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 
-base::WeakPtr<PasswordsModelDelegate>
-PasswordsModelDelegateFromWebContents(content::WebContents* web_contents) {
+base::WeakPtr<PasswordsModelDelegate> PasswordsModelDelegateFromWebContents(
+    content::WebContents* web_contents) {
   DCHECK(web_contents);
-  return ManagePasswordsUIController::FromWebContents(web_contents)->
-      GetModelDelegateProxy();
+  return ManagePasswordsUIController::FromWebContents(web_contents)
+      ->GetModelDelegateProxy();
 }

@@ -9,10 +9,10 @@ export {BrowserProxy} from 'chrome://resources/cr_components/app_management/brow
 export {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 export {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 export {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
-export {WebAppSettingsAppElement} from './app.js';
-export {AppManagementPermissionItemElement} from './permission_item.js';
-export {AppManagementRunOnOsLoginItemElement} from './run_on_os_login_item.js';
-export {AppManagementSupportedLinksItemElement} from './supported_links_item.js';
-export {AppManagementSupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
-export {AppManagementToggleRowElement} from './toggle_row.js';
-export {AppManagementWindowModeElement} from './window_mode_item.js';
+export type {AppElement} from './app.js';
+export type {PermissionItemElement} from './permission_item.js';
+export type {RunOnOsLoginItemElement} from './run_on_os_login_item.js';
+export type {SupportedLinksItemElement} from './supported_links_item.js';
+export type {SupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
+export type {ToggleRowElement} from './toggle_row.js';
+export type {WindowModeItemElement} from './window_mode_item.js';

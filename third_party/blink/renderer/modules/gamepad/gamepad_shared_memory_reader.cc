@@ -10,7 +10,7 @@
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/gamepad/gamepad_listener.h"
 
@@ -61,10 +61,9 @@ void GamepadSharedMemoryReader::Start(blink::GamepadListener* listener) {
 
   renderer_shared_buffer_mapping_ = renderer_shared_buffer_region_.Map();
   CHECK(renderer_shared_buffer_mapping_.IsValid());
-  const void* memory = renderer_shared_buffer_mapping_.memory();
-  CHECK(memory);
-  gamepad_hardware_buffer_ =
-      static_cast<const device::GamepadHardwareBuffer*>(memory);
+  gamepad_hardware_buffer_ = renderer_shared_buffer_mapping_
+                                 .GetMemoryAs<device::GamepadHardwareBuffer>();
+  CHECK(gamepad_hardware_buffer_);
 }
 
 void GamepadSharedMemoryReader::Stop() {

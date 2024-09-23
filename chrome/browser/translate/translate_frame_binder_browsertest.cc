@@ -136,7 +136,8 @@ IN_PROC_BROWSER_TEST_F(TranslateFrameBinderPrerenderBrowserTest,
   // Navigate to an initial page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
-  int host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  content::FrameTreeNodeId host_id =
+      prerender_helper()->AddPrerender(kPrerenderingUrl);
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
@@ -176,7 +177,7 @@ class TranslateFrameBinderFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1443415): Flaky on multiple platforms.
+// TODO(crbug.com/40911156): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
                        DISABLED_NotBindingInFencedFrame) {
   TestTranslateDriverBindingContentBrowserClient test_browser_client;

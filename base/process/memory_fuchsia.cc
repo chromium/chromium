@@ -4,10 +4,10 @@
 
 #include "base/process/memory.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "partition_alloc/shim/allocator_shim.h"
 #endif
 
 #include <stdlib.h>
@@ -23,7 +23,7 @@ void EnableTerminationOnHeapCorruption() {
 }
 
 bool UncheckedMalloc(size_t size, void** result) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedAlloc(size);
 #else
   *result = malloc(size);
@@ -32,7 +32,7 @@ bool UncheckedMalloc(size_t size, void** result) {
 }
 
 void UncheckedFree(void* ptr) {
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   allocator_shim::UncheckedFree(ptr);
 #else
   free(ptr);

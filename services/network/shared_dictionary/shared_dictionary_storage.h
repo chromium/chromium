@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/pattern.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -22,15 +23,19 @@ class GURL;
 
 namespace net {
 class HttpResponseHeaders;
+class SharedDictionary;
 }  // namespace net
 
 namespace network {
 namespace mojom {
+enum class FetchResponseType : int32_t;
 enum class RequestDestination : int32_t;
+enum class RequestMode : int32_t;
+enum class SharedDictionaryError : int32_t;
 }  // namespace mojom
 
-class SharedDictionary;
 class SharedDictionaryWriter;
+class SimpleUrlPatternMatcher;
 
 // Shared Dictionary Storage manages dictionaries for a particular
 // net::SharedDictionaryIsolationKey.
@@ -40,9 +45,26 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   SharedDictionaryStorage(const SharedDictionaryStorage&) = delete;
   SharedDictionaryStorage& operator=(const SharedDictionaryStorage&) = delete;
 
+  // Returns a SharedDictionaryWriter if `headers` has a valid
+  // `use-as-dictionary` header, and `access_allowed_check_callback`
+  // returns true,
+  static base::expected<scoped_refptr<SharedDictionaryWriter>,
+                        mojom::SharedDictionaryError>
+  MaybeCreateWriter(const std::string& use_as_dictionary_header,
+                    bool shared_dictionary_writer_enabled,
+                    SharedDictionaryStorage* storage,
+                    mojom::RequestMode request_mode,
+                    mojom::FetchResponseType response_tainting,
+                    const GURL& url,
+                    const base::Time request_time,
+                    const base::Time response_time,
+                    const net::HttpResponseHeaders& headers,
+                    bool was_fetched_via_cache,
+                    base::OnceCallback<bool()> access_allowed_check_callback);
+
   // Returns a matching SharedDictionary for `url`. If the metadata has not been
   // read from the database, this method returns nullptr.
-  virtual std::unique_ptr<SharedDictionary> GetDictionarySync(
+  virtual scoped_refptr<net::SharedDictionary> GetDictionarySync(
       const GURL& url,
       mojom::RequestDestination destination) = 0;
 
@@ -53,18 +75,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   virtual void GetDictionary(
       const GURL& url,
       mojom::RequestDestination destination,
-      base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) = 0;
-
-  // Returns a SharedDictionaryWriter if `headers` has a valid
-  // `use-as-dictionary` header, and `access_allowed_check_callback`
-  // returns true,
-  scoped_refptr<SharedDictionaryWriter> MaybeCreateWriter(
-      const GURL& url,
-      const base::Time request_time,
-      const base::Time response_time,
-      const net::HttpResponseHeaders& headers,
-      bool was_fetched_via_cache,
-      base::OnceCallback<bool()> access_allowed_check_callback);
+      base::OnceCallback<void(scoped_refptr<net::SharedDictionary>)>
+          callback) = 0;
 
  protected:
   friend class base::RefCounted<SharedDictionaryStorage>;
@@ -73,22 +85,28 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   virtual ~SharedDictionaryStorage();
 
   // Called to create a SharedDictionaryWriter.
-  virtual scoped_refptr<SharedDictionaryWriter> CreateWriter(
-      const GURL& url,
-      base::Time response_time,
-      base::TimeDelta expiration,
-      const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id) = 0;
+  virtual base::expected<scoped_refptr<SharedDictionaryWriter>,
+                         mojom::SharedDictionaryError>
+  CreateWriter(const GURL& url,
+               base::Time last_fetch_time,
+               base::Time response_time,
+               base::TimeDelta expiration,
+               const std::string& match,
+               const std::set<mojom::RequestDestination>& match_dest,
+               const std::string& id,
+               std::unique_ptr<SimpleUrlPatternMatcher> matcher) = 0;
 
-  // Called to avoid registering the same dictionary from the disk cache.
-  virtual bool IsAlreadyRegistered(
+  // If the matching dictionary is already registered, this method updates the
+  // `last_fetch_time` of the registered dictionary, and returns true.
+  // Otherwise, this method returns false.
+  virtual bool UpdateLastFetchTimeIfAlreadyRegistered(
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
       const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id) = 0;
+      const std::string& id,
+      base::Time last_fetch_time) = 0;
 };
 
 // Returns a matching dictionary for `url` from `dictionary_info_map`.
@@ -114,7 +132,7 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
     if (matched_info &&
         ((matched_info->match().size() > info.match().size()) ||
          (matched_info->match().size() == info.match().size() &&
-          matched_info->response_time() > info.response_time()))) {
+          matched_info->last_fetch_time() > info.last_fetch_time()))) {
       continue;
     }
     // When `match_dest` is empty, we don't check the `destination`.
@@ -130,14 +148,13 @@ DictionaryInfoType* GetMatchingDictionaryFromDictionaryInfoMap(
   return matched_info;
 }
 
-// Returns true if the same dictionary is already registered in
-// `dictionary_info_map`. This is used to avoid registering the same dictionary
-// from the disk cache.
+// Returns the matching registered dictionary in `dictionary_info_map`. This is
+// used to avoid registering the same dictionary from the disk cache.
 // This is a template method because SharedDictionaryStorageInMemory and
 // SharedDictionaryStorageOnDisk are using different class for
 // DictionaryInfoType.
 template <class DictionaryInfoType>
-bool IsAlreadyRegisteredInDictionaryInfoMap(
+DictionaryInfoType* FindRegisteredInDictionaryInfoMap(
     std::map<
         url::SchemeHostPort,
         std::map<std::tuple<std::string, std::set<mojom::RequestDestination>>,
@@ -150,15 +167,19 @@ bool IsAlreadyRegisteredInDictionaryInfoMap(
     const std::string& id) {
   auto it1 = dictionary_info_map.find(url::SchemeHostPort(url));
   if (it1 == dictionary_info_map.end()) {
-    return false;
+    return nullptr;
   }
   auto it2 = it1->second.find(std::make_tuple(match, match_dest));
   if (it2 == it1->second.end()) {
-    return false;
+    return nullptr;
   }
-  return it2->second.url() == url &&
-         it2->second.response_time() == response_time &&
-         it2->second.expiration() == expiration && it2->second.id() == id;
+  if (it2->second.url() == url &&
+      it2->second.response_time() == response_time &&
+      it2->second.expiration() == expiration && it2->second.id() == id) {
+    return &it2->second;
+  } else {
+    return nullptr;
+  }
 }
 
 }  // namespace network

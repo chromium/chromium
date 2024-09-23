@@ -15,7 +15,9 @@
           "EnterpriseHardwarePlatformAPIEnabled": false
         },
         "prefs": {
-          "enterprise_hardware_platform_api.enabled": {}
+          "enterprise_hardware_platform_api.enabled": {
+            "value": false
+          }
         }
       }
     ]

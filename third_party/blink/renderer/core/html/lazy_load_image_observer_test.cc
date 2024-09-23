@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/html/lazy_load_image_observer.h"
 
 #include <optional>
 #include <tuple>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -28,7 +32,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -36,10 +39,9 @@ namespace blink {
 namespace {
 
 const Vector<char>& TestImage() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      const Vector<char>, test_image,
-      (test::ReadFromFile(test::CoreTestDataPath("notifications/500x500.png"))
-           ->CopyAs<Vector<char>>()));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const Vector<char>, test_image,
+                                  (*test::ReadFromFile(test::CoreTestDataPath(
+                                      "notifications/500x500.png"))));
   return test_image;
 }
 
@@ -87,64 +89,6 @@ TEST_F(LazyLoadImagesSimTest, ImgSrcset) {
 
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
-}
-
-TEST_F(LazyLoadImagesSimTest, LazyLoadedImageSizeHistograms) {
-  base::HistogramTester histogram_tester;
-  SimRequest lazy_a_resource("https://example.com/lazy_a.png", "image/png");
-  SimRequest eager_resource("https://example.com/eager.png", "image/png");
-  SimRequest lazy_b_resource("https://example.com/lazy_b.png", "image/png");
-  LoadMainResource(R"HTML(
-      <img src="lazy_a.png" loading="lazy">
-      <img src="eager.png" loading="eager">
-      <img src="lazy_b.png" loading="lazy">
-    )HTML");
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // Initially, no lazy images should have loaded.
-  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 0);
-
-  // Load the first lazy loaded image.
-  lazy_a_resource.Complete(TestImage());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // We should have one lazy load sample, and one before-load lazy load sample.
-  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 1);
-  int size_kb = TestImage().size() / 1024;
-  histogram_tester.ExpectUniqueSample("Blink.LazyLoadedImage.Size", size_kb, 1);
-  ASSERT_FALSE(GetDocument().LoadEventFinished());
-  histogram_tester.ExpectTotalCount(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", size_kb, 1);
-
-  // Load the eager image which completes the document load.
-  eager_resource.Complete(TestImage());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // Load should finish, but because the eager image is not lazy, the lazy load
-  // metrics should not change.
-  ASSERT_TRUE(GetDocument().LoadEventFinished());
-  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
-
-  // Load the second lazy loaded image.
-  lazy_b_resource.Complete(TestImage());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // We should still only have one before-load sample, but we should have two
-  // lazy load samples overall.
-  histogram_tester.ExpectTotalCount("Blink.LazyLoadedImage.Size", 2);
-  histogram_tester.ExpectUniqueSample("Blink.LazyLoadedImage.Size", size_kb, 2);
-  histogram_tester.ExpectTotalCount(
-      "Blink.LazyLoadedImageBeforeDocumentOnLoad.Size", 1);
 }
 
 class LazyLoadImagesParamsTest
@@ -696,350 +640,6 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
   EXPECT_TRUE(ConsoleMessages().Contains("unset onload"));
 }
 
-TEST_F(LazyLoadImagesTest, AboveTheFoldImageLoadedBeforeVisible) {
-  base::HistogramTester histogram_tester;
-
-  SimRequest main_resource("https://example.com/", "text/html");
-  SimSubresourceRequest image_resource("https://example.com/image.png",
-                                       "image/png");
-
-  LoadURL("https://example.com/");
-  // In-viewport lazy loaded images will be visible before being loaded because
-  // the intersection observer only starts loading them after they are visible.
-  // To work around this, we use a non-lazy image that synchronously loads which
-  // causes the in-viewport lazy image to also be loaded before it is visible.
-  main_resource.Complete(R"HTML(
-        <!doctype html>
-        <img src='https://example.com/image.png'/>
-        <img src='https://example.com/image.png' loading="lazy"/>
-      )HTML");
-  image_resource.Complete(TestImage());
-
-  // VisibleLoadTime should not have been recorded yet, since the image is not
-  // visible yet.
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0, 1);
-  histogram_tester.ExpectUniqueSample("Blink.VisibleLoadTime.LazyLoadImages", 0,
-                                      1);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3", 0, 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3", 0);
-}
-
-// A fully above-the-fold cached image should not report below-the-fold metrics.
-TEST_F(LazyLoadImagesTest, AboveTheFoldCachedImageMetrics) {
-  base::HistogramTester histogram_tester;
-  SimRequest main_resource("https://example.com/", "text/html");
-  SimSubresourceRequest image_resource("https://example.com/image.png",
-                                       "image/png");
-  LoadURL("https://example.com/");
-  // Load a page with a non-lazy image that loads immediately, inserting the
-  // image into the cache.
-  main_resource.Complete(R"HTML(
-        <!doctype html>
-        <img id='image' src='https://example.com/image.png'/>
-        <div id='container'></div>
-      )HTML");
-  image_resource.Complete(TestImage());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  auto* image =
-      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("image")));
-  EXPECT_TRUE(image->CachedImage()->IsLoaded());
-
-  // Insert a lazy loaded image with a src that is already cached.
-  auto* container = GetDocument().getElementById(AtomicString("container"));
-  container->setInnerHTML(R"HTML(
-    <img src='https://example.com/image.png' loading='lazy' id='lazy'/>
-  )HTML");
-
-  // The lazy image should have completed loading.
-  auto* lazy_image =
-      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("lazy")));
-  EXPECT_TRUE(lazy_image->CachedImage()->IsLoaded());
-
-  // We should have a load time, but not yet `is_initially_intersecting`.
-  auto& visible_load_time = lazy_image->EnsureVisibleLoadTimeMetrics();
-  EXPECT_FALSE(visible_load_time.time_when_first_load_finished.is_null());
-  EXPECT_FALSE(visible_load_time.has_initial_intersection_been_set);
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // After a frame, the visibility metrics observer should fire and correctly
-  // set `is_initially_intersecting`.
-  EXPECT_TRUE(visible_load_time.has_initial_intersection_been_set);
-  EXPECT_TRUE(visible_load_time.is_initially_intersecting);
-
-  // Nothing was below the fold so no BelowTheFold metrics should be reported.
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
-}
-
-// An image that loads immediately due to being cached should not report
-// Blink.VisibleBeforeLoaded.LazyLoadImages metrics.
-TEST_F(LazyLoadImagesTest, CachedImageVisibleBeforeLoadedMetrics) {
-  base::HistogramTester histogram_tester;
-  SimRequest main_resource("https://a.com/", "text/html");
-  SimSubresourceRequest image_resource("https://a.com/image.png", "image/png");
-  LoadURL("https://a.com/");
-
-  // Load a page with a non-lazy image that loads immediately, inserting the
-  // image into the cache.
-  main_resource.Complete(
-      String::Format(R"HTML(
-        <!doctype html>
-        <div id='spacer' style='height: %dpx;'></div>
-        <div id='container'></div>
-        <!-- This non-lazy image will load immediately. -->
-        <img src='https://a.com/image.png' />
-      )HTML",
-                     kViewportHeight + kLoadingDistanceThreshold - 50));
-  image_resource.Complete(TestImage());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // Insert a lazy loaded image with a src that is already cached.
-  auto* container = GetDocument().getElementById(AtomicString("container"));
-  container->setInnerHTML("<img src='https://a.com/image.png' loading='lazy'>");
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // VisibleBeforeLoaded should not be recorded since the image is not visible.
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
-
-  // Scroll down so that the image is in the viewport.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, kViewportHeight + kLoadingDistanceThreshold + 50),
-      mojom::blink::ScrollType::kProgrammatic);
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // The image is now visible but loaded before being visible, so no
-  // VisibleBeforeLoaded metrics should have been recorded.
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
-}
-
-TEST_F(LazyLoadImagesTest, AboveTheFoldImageVisibleBeforeLoaded) {
-  base::HistogramTester histogram_tester;
-
-  SimRequest main_resource("https://example.com/", "text/html");
-  SimSubresourceRequest image_resource("https://example.com/image.png",
-                                       "image/png");
-
-  LoadURL("https://example.com/");
-  main_resource.Complete(
-      "<body><img src='https://example.com/image.png' loading='lazy'/></body>");
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // VisibleBeforeLoaded should have been recorded immediately when the image
-  // became visible.
-  histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3",
-      static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
-
-  // VisibleLoadTime should not have been recorded yet, since the image is not
-  // finished loading yet.
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
-
-  image_resource.Complete(TestImage());
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3",
-      static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
-  histogram_tester.ExpectTotalCount("Blink.VisibleLoadTime.LazyLoadImages", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
-}
-
-TEST_F(LazyLoadImagesTest, BelowTheFoldImageLoadedBeforeVisible) {
-  base::HistogramTester histogram_tester;
-
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
-  main_resource.Complete(String::Format(
-      R"HTML(
-        <body>
-        <div style='height: %dpx;'></div>
-        <img src='https://example.com/image.png' loading="lazy"/>
-        </body>)HTML",
-      kViewportHeight + kLoadingDistanceThreshold + 100));
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  SimSubresourceRequest image_resource("https://example.com/image.png",
-                                       "image/png");
-
-  // Scroll down such that the image is within kLoadingDistanceThreshold of the
-  // viewport, but isn't visible yet.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic);
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  image_resource.Complete(TestImage());
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // VisibleLoadTime should not have been recorded yet, since the image is not
-  // visible yet.
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
-
-  // Scroll down such that the image is visible.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, kViewportHeight + kLoadingDistanceThreshold),
-      mojom::blink::ScrollType::kProgrammatic);
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
-  histogram_tester.ExpectUniqueSample("Blink.VisibleLoadTime.LazyLoadImages", 0,
-                                      1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3", 0);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3", 0, 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0, 1);
-}
-
-TEST_F(LazyLoadImagesTest, BelowTheFoldImageVisibleBeforeLoaded) {
-  base::HistogramTester histogram_tester;
-
-  SimRequest main_resource("https://example.com/", "text/html");
-  LoadURL("https://example.com/");
-  main_resource.Complete(String::Format(
-      R"HTML(
-        <body>
-        <div style='height: %dpx;'></div>
-        <img src='https://example.com/image.png' loading='lazy'/>
-        </body>)HTML",
-      kViewportHeight + kLoadingDistanceThreshold + 100));
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  SimSubresourceRequest image_resource("https://example.com/image.png",
-                                       "image/png");
-
-  // Scroll down such that the image is visible.
-  GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, kViewportHeight + kLoadingDistanceThreshold),
-      mojom::blink::ScrollType::kProgrammatic);
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  // VisibleBeforeLoaded should have been recorded immediately when the image
-  // became visible.
-  histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3",
-      static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
-
-  // VisibleLoadTime should not have been recorded yet, since the image is not
-  // finished loading yet.
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
-
-  image_resource.Complete(TestImage());
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
-  histogram_tester.ExpectUniqueSample(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3",
-      static_cast<int>(WebEffectiveConnectionType::kType4G), 1);
-  histogram_tester.ExpectTotalCount("Blink.VisibleLoadTime.LazyLoadImages", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3", 1);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 1);
-}
-
-// LazyLoadImages metrics should not be recorded for non-lazy image loads.
-TEST_F(LazyLoadImagesTest, NonLazyIgnoredForLazyLoadImagesMetrics) {
-  base::HistogramTester histogram_tester;
-
-  SimRequest main_resource("https://aa.com/", "text/html");
-  SimSubresourceRequest above_resource("https://aa.com/above.png", "image/png");
-  SimSubresourceRequest below_resource("https://aa.com/below.png", "image/png");
-  LoadURL("https://aa.com/");
-  main_resource.Complete(
-      String::Format(R"HTML(
-        <!doctype html>
-        <img src='https://aa.com/above.png'/>
-        <div style='height: %dpx;'></div>
-        <img src='https://aa.com/below.png'/>)HTML",
-                     kViewportHeight + kLoadingDistanceThreshold + 100));
-  above_resource.Complete(TestImage());
-  below_resource.Complete(TestImage());
-
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.AboveTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleBeforeLoaded.LazyLoadImages.BelowTheFold3", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3.4G", 0);
-  histogram_tester.ExpectTotalCount(
-      "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3.4G", 0);
-}
-
 // Allow lazy loading of file:/// urls.
 TEST_F(LazyLoadImagesTest, LazyLoadFileUrls) {
   SimRequest main_resource("file:///test.html", "text/html");
@@ -1101,6 +701,49 @@ TEST_F(LazyLoadImagesTest, GarbageCollectDeferredLazyLoadImages) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   EXPECT_EQ(nullptr, image);
+}
+
+// This is a regression test added for https://crbug.com/40071424, which was
+// filed as a result of outstanding decode promises *not* keeping an underlying
+// lazyload-deferred image alive, even after removal from the DOM. Images of
+// this sort must kept alive for the underlying decode request promise's sake.
+TEST_F(LazyLoadImagesTest, DeferredLazyLoadImagesKeptAliveForDecodeRequest) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body>
+        <div style='height: %dpx;'></div>
+        <img src='https://example.com/image.png' loading='lazy'>
+        </body>)HTML",
+      kViewportHeight + kLoadingDistanceThreshold + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  WeakPersistent<HTMLImageElement> image =
+      To<HTMLImageElement>(GetDocument().QuerySelector(AtomicString("img")));
+
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  v8::HandleScope handle_scope(script_state->GetIsolate());
+  // This creates an outstanding decode request for the underlying image, which
+  // keeps it alive solely for the sake of the promise's existence.
+  image->decode(script_state, ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(image->complete());
+  image->remove();
+  EXPECT_FALSE(image->isConnected());
+  EXPECT_FALSE(image->complete());
+  EXPECT_NE(image, nullptr);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  // After GC, the image is still non-null, since it is kept alive due to the
+  // outstanding decode request.
+  EXPECT_NE(image, nullptr);
 }
 
 }  // namespace

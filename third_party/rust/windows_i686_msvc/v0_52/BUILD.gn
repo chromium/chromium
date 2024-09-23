@@ -1,0 +1,39 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "windows_i686_msvc"
+  epoch = "0.52"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/windows_i686_msvc-0.52.6/src/lib.rs"
+  sources = [ "//third_party/rust/chromium_crates_io/vendor/windows_i686_msvc-0.52.6/src/lib.rs" ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.52.6"
+  cargo_pkg_authors = "Microsoft"
+  cargo_pkg_name = "windows_i686_msvc"
+  cargo_pkg_description = "Import lib for Windows"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/windows_i686_msvc-0.52.6/build.rs"
+  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/windows_i686_msvc-0.52.6/build.rs" ]
+  native_libs = [ "//third_party/rust/chromium_crates_io/vendor/windows_i686_msvc-0.52.6/src/../lib/windows.0.52.0.lib" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+}

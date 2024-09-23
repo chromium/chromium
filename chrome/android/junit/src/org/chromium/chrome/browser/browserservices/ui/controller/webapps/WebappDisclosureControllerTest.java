@@ -47,7 +47,7 @@ import org.chromium.components.webapk.lib.common.WebApkConstants;
 /** Tests for WebappDisclosureController */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-// TODO(crbug.com/1210371): Change to use paused looper. See crbug for details.
+// TODO(crbug.com/40182398): Change to use paused looper. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebappDisclosureControllerTest {
     private static final String UNBOUND_PACKAGE = "unbound";

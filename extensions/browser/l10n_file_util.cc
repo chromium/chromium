@@ -4,6 +4,7 @@
 
 #include "extensions/browser/l10n_file_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -11,7 +12,8 @@
 
 namespace extensions::l10n_file_util {
 
-MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMap(
+std::unique_ptr<MessageBundle::SubstitutionMap>
+LoadMessageBundleSubstitutionMap(
     const base::FilePath& extension_path,
     const ExtensionId& extension_id,
     const std::string& default_locale,
@@ -20,10 +22,9 @@ MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMap(
       {extension_path}, extension_id, default_locale, gzip_permission);
 }
 
-MessageBundle::SubstitutionMap* LoadNonLocalizedMessageBundleSubstitutionMap(
-    const ExtensionId& extension_id) {
-  MessageBundle::SubstitutionMap* return_value =
-      new MessageBundle::SubstitutionMap();
+std::unique_ptr<MessageBundle::SubstitutionMap>
+LoadNonLocalizedMessageBundleSubstitutionMap(const ExtensionId& extension_id) {
+  auto return_value = std::make_unique<MessageBundle::SubstitutionMap>();
 
   // Add @@extension_id reserved message here.
   return_value->insert(
@@ -32,17 +33,19 @@ MessageBundle::SubstitutionMap* LoadNonLocalizedMessageBundleSubstitutionMap(
   return return_value;
 }
 
-MessageBundle::SubstitutionMap* LoadMessageBundleSubstitutionMapFromPaths(
+std::unique_ptr<MessageBundle::SubstitutionMap>
+LoadMessageBundleSubstitutionMapFromPaths(
     const std::vector<base::FilePath>& paths,
     const ExtensionId& extension_id,
     const std::string& default_locale,
     extension_l10n_util::GzippedMessagesPermission gzip_permission) {
-  MessageBundle::SubstitutionMap* return_value =
+  std::unique_ptr<MessageBundle::SubstitutionMap> return_value =
       LoadNonLocalizedMessageBundleSubstitutionMap(extension_id);
 
   // Touch disk only if extension is localized.
-  if (default_locale.empty())
+  if (default_locale.empty()) {
     return return_value;
+  }
 
   std::string error;
   for (const base::FilePath& path : paths) {

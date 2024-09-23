@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='overlap'",
+      "name": "LayoutBlockFlow DIV class='overlap'",
       "bounds": [300, 500],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='item'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='item'",
       "position": [15, 35],
       "bounds": [100, 210],
       "contentsOpaqueForText": true,
@@ -43,13 +43,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='overlap'",
+      "name": "LayoutBlockFlow DIV class='overlap'",
       "bounds": [300, 500],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='item'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV class='item'",
       "position": [15, 35],
       "bounds": [100, 210],
       "contentsOpaqueForText": true,

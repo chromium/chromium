@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 
 #include <initializer_list>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
@@ -41,12 +42,12 @@ std::string GetColorModeString(ProtoColorMode color_mode) {
     case lorgnette::MODE_UNSPECIFIED:
     case ProtoColorMode::ColorMode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoColorMode::ColorMode_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
 static constexpr auto kPageSizeToPageSizeStrMap =
-    base::MakeFixedFlatMap<std::pair<double, double>, base::StringPiece>({
+    base::MakeFixedFlatMap<std::pair<double, double>, std::string_view>({
         {{297, 420}, "a3"},           // ISO A3: 297 x 420 mm
         {{210, 297}, "a4"},           // ISO A4: 210 x 297 mm.
         {{257, 364}, "b4"},           // ISO B4: 257 x 364 mm.
@@ -66,7 +67,7 @@ std::string GetPageSizeString(const ProtoScanRegion& scan_region) {
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string GetImageFormatString(ProtoImageFormat img_format) {
@@ -77,7 +78,7 @@ std::string GetImageFormatString(ProtoImageFormat img_format) {
       return "jpeg";
     case lorgnette::ImageFormat_INT_MIN_SENTINEL_DO_NOT_USE_:
     case lorgnette::ImageFormat_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -100,7 +101,7 @@ std::string GetScanSettingsMapKey(const lorgnette::ScanSettings& settings) {
 // be used to validate that a set of scan settings will always produce the
 // same output.
 static constexpr auto kScanSettingsToAlphaMap =
-    base::MakeFixedFlatMap<base::StringPiece, int>(
+    base::MakeFixedFlatMap<std::string_view, int>(
         {{"flatbed_jpeg_color_letter_300_dpi", /*alpha=*/1},
          {"adf_simplex_jpeg_grayscale_max_150_dpi", /*alpha=*/2},
          {"flatbed_jpeg_grayscale_max_150_dpi", /*alpha=*/3}});
@@ -352,7 +353,7 @@ void FakeLorgnetteScannerManager::SetCancelScanResponse(
 
 void FakeLorgnetteScannerManager::MaybeSetScanDataBasedOnSettings(
     const lorgnette::ScanSettings& settings) {
-  const auto* match =
+  const auto match =
       kScanSettingsToAlphaMap.find(GetScanSettingsMapKey(settings));
   if (match != kScanSettingsToAlphaMap.end()) {
     SetScanResponse(

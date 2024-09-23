@@ -109,6 +109,8 @@ bool CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
     DCHECK_EQ(-1.0, event.efficiency_cpp_in_bytes_per_us);
     DCHECK_EQ(-1.0, event.main_thread_efficiency_cpp_in_bytes_per_us);
     DCHECK_EQ(-1.0, event.collection_rate_cpp_in_percent);
+    DCHECK_EQ(-1.0, event.collection_weight_cpp_in_percent);
+    DCHECK_EQ(-1.0, event.main_thread_collection_weight_cpp_in_percent);
     return false;
   }
   // Check that all used values have been initialized.
@@ -131,6 +133,8 @@ bool CheckCppEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   DCHECK_LE(0, event.efficiency_cpp_in_bytes_per_us);
   DCHECK_LE(0, event.main_thread_efficiency_cpp_in_bytes_per_us);
   DCHECK_LE(0, event.collection_rate_cpp_in_percent);
+  DCHECK_LE(0.0, event.collection_weight_cpp_in_percent);
+  DCHECK_LE(0.0, event.main_thread_collection_weight_cpp_in_percent);
   return true;
 }
 
@@ -160,9 +164,6 @@ void CheckUnifiedEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   DCHECK_EQ(-1,
             event.main_thread_incremental.compact_wall_clock_duration_in_us);
   DCHECK_LE(-1, event.main_thread_incremental.sweep_wall_clock_duration_in_us);
-  // TODO(chromium:1154636): Also check for the following when they are
-  // populated:
-#if 0
   DCHECK_LE(0, event.objects.bytes_before);
   DCHECK_LE(0, event.objects.bytes_after);
   DCHECK_LE(0, event.objects.bytes_freed);
@@ -170,7 +171,8 @@ void CheckUnifiedEvents(const v8::metrics::GarbageCollectionFullCycle& event) {
   DCHECK_LE(0, event.efficiency_in_bytes_per_us);
   DCHECK_LE(0, event.main_thread_efficiency_in_bytes_per_us);
   DCHECK_LE(0, event.collection_rate_in_percent);
-#endif
+  DCHECK_LE(0, event.collection_weight_in_percent);
+  DCHECK_LE(0, event.main_thread_collection_weight_in_percent);
 }
 
 }  // namespace
@@ -234,9 +236,24 @@ void V8MetricsRecorder::AddMainThreadEvent(
             event.incremental_marking_start_stop_wall_clock_duration_in_us));
   }
 
-  // TODO(chromium:1154636): emit the following when they are populated:
-  // - event.objects
-  // - event.memory
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, object_size_before_histogram,
+      ("V8.GC.Cycle.Objects.Before.Full", kMinSize, kMaxSize, kNumBuckets));
+  object_size_before_histogram.Count(
+      CappedSizeInKB(event.objects.bytes_before));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, object_size_after_histogram,
+      ("V8.GC.Cycle.Objects.After.Full", kMinSize, kMaxSize, kNumBuckets));
+  object_size_after_histogram.Count(CappedSizeInKB(event.objects.bytes_after));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, object_size_freed_histogram,
+      ("V8.GC.Cycle.Objects.Freed.Full", kMinSize, kMaxSize, kNumBuckets));
+  object_size_freed_histogram.Count(CappedSizeInKB(event.objects.bytes_freed));
+
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, memory_size_freed_histogram,
+      ("V8.GC.Cycle.Memory.Freed.Full", kMinSize, kMaxSize, kNumBuckets));
+  memory_size_freed_histogram.Count(CappedSizeInKB(event.memory.bytes_freed));
 
   // Report efficacy metrics:
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
@@ -257,6 +274,19 @@ void V8MetricsRecorder::AddMainThreadEvent(
       ("V8.GC.Cycle.CollectionRate.Full", 1, 100, 20));
   collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
       100 * event.collection_rate_in_percent));
+
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, collection_weight_histogram,
+      ("V8.GC.Cycle.CollectionWeight.Full", 1, 1000, 20));
+  collection_weight_histogram.Count(
+      base::saturated_cast<base::Histogram::Sample>(
+          1000 * event.collection_weight_in_percent));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, main_thread_collection_weight_histogram,
+      ("V8.GC.Cycle.CollectionWeight.MainThread.Full", 1, 1000, 20));
+  main_thread_collection_weight_histogram.Count(
+      base::saturated_cast<base::Histogram::Sample>(
+          1000 * event.main_thread_collection_weight_in_percent));
 
   if (CheckCppEvents(event)) {
     // Report throughput metrics:
@@ -286,30 +316,30 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
     // Report size metrics:
     DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
-                                    object_size_before_histogram,
+                                    object_size_before_cpp_histogram,
                                     ("V8.GC.Cycle.Objects.Before.Full.Cpp",
                                      kMinSize, kMaxSize, kNumBuckets));
-    object_size_before_histogram.Count(
+    object_size_before_cpp_histogram.Count(
         CappedSizeInKB(event.objects_cpp.bytes_before));
 
     DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
-                                    object_size_after_histogram,
+                                    object_size_after_cpp_histogram,
                                     ("V8.GC.Cycle.Objects.After.Full.Cpp",
                                      kMinSize, kMaxSize, kNumBuckets));
-    object_size_after_histogram.Count(
+    object_size_after_cpp_histogram.Count(
         CappedSizeInKB(event.objects_cpp.bytes_after));
 
     DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
-                                    object_size_freed_histogram,
+                                    object_size_freed_cpp_histogram,
                                     ("V8.GC.Cycle.Objects.Freed.Full.Cpp",
                                      kMinSize, kMaxSize, kNumBuckets));
-    object_size_freed_histogram.Count(
+    object_size_freed_cpp_histogram.Count(
         CappedSizeInKB(event.objects_cpp.bytes_freed));
 
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, memory_size_freed_histogram,
+        CustomCountHistogram, memory_size_freed_cpp_histogram,
         ("V8.GC.Cycle.Memory.Freed.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
-    memory_size_freed_histogram.Count(
+    memory_size_freed_cpp_histogram.Count(
         CappedSizeInKB(event.memory_cpp.bytes_freed));
 
     // Report efficacy metrics:
@@ -332,6 +362,20 @@ void V8MetricsRecorder::AddMainThreadEvent(
     collection_rate_cpp_histogram.Count(
         base::saturated_cast<base::Histogram::Sample>(
             100 * event.collection_rate_cpp_in_percent));
+
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        CustomCountHistogram, collection_weight_cpp_histogram,
+        ("V8.GC.Cycle.CollectionWeight.Full.Cpp", 1, 1000, 20));
+    collection_weight_cpp_histogram.Count(
+        base::saturated_cast<base::Histogram::Sample>(
+            1000 * event.collection_weight_cpp_in_percent));
+
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        CustomCountHistogram, main_thread_collection_weight_cpp_histogram,
+        ("V8.GC.Cycle.CollectionWeight.MainThread.Full.Cpp", 1, 1000, 20));
+    main_thread_collection_weight_cpp_histogram.Count(
+        base::saturated_cast<base::Histogram::Sample>(
+            1000 * event.main_thread_collection_weight_cpp_in_percent));
   }
 
 #undef UMA_HISTOGRAM_TIMES_ALL_GC_PHASES

@@ -25,9 +25,9 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
-#include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/common/chrome_constants.h"
+#include "chromeos/ash/components/standalone_browser/migration_progress_tracker.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -37,7 +37,8 @@ namespace ash {
 MoveMigrator::MoveMigrator(
     const base::FilePath& original_profile_dir,
     const std::string& user_id_hash,
-    std::unique_ptr<MigrationProgressTracker> progress_tracker,
+    std::unique_ptr<standalone_browser::MigrationProgressTracker>
+        progress_tracker,
     scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag,
     PrefService* local_state,
     MigrationFinishedCallback finished_callback)
@@ -317,7 +318,8 @@ void MoveMigrator::OnPreMigrationCleanUp(MoveMigrator::TaskResult result) {
 // static
 MoveMigrator::TaskResult MoveMigrator::SetupLacrosDir(
     const base::FilePath& original_profile_dir,
-    std::unique_ptr<MigrationProgressTracker> progress_tracker,
+    std::unique_ptr<standalone_browser::MigrationProgressTracker>
+        progress_tracker,
     scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag) {
   LOG(WARNING) << "Running SetupLacrosDir()";
   base::ElapsedTimer timer;

@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/vector_icons",
+  "+third_party/skia/include",
+  "+ui/gfx"
+]

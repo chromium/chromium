@@ -106,6 +106,12 @@ class CONTENT_EXPORT ProcessLock {
     return site_info_.has_value() ? site_info_->site_url() : GURL();
   }
 
+  // Returns the AgentClusterKey shared by agents allowed in this ProcessLock.
+  std::optional<AgentClusterKey> agent_cluster_key() const {
+    return site_info_.has_value() ? site_info_->agent_cluster_key()
+                                  : std::nullopt;
+  }
+
   // Returns whether this ProcessLock is specific to an origin rather than
   // including subdomains, such as due to opt-in origin isolation. This resolves
   // an ambiguity of whether a process with a lock_url() like

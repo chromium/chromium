@@ -211,7 +211,6 @@ void VersionUpdater::UpdateStatusChanged(
     case update_engine::Operation::Operation_INT_MIN_SENTINEL_DO_NOT_USE_:
     case update_engine::Operation::Operation_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
-      break;
   }
 
   status_callback_.Run(

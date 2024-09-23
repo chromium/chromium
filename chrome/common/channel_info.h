@@ -12,9 +12,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
+#if BUILDFLAG(IS_LINUX)
 namespace base {
 class Environment;
 }
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace version_info {
 enum class Channel;
@@ -91,12 +93,6 @@ void ClearChannelIdForTesting();
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Set/clears information used in determining the browser's channel.
-void SetChannelForTesting(version_info::Channel, bool is_extended_stable);
-void ClearChannelForTesting();
-#endif  // BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns a channel-specific suffix to use when constructing the path of the
 // default user data directory, allowing multiple channels to run side-by-side.
@@ -106,15 +102,11 @@ std::string GetChannelSuffixForDataDir();
 
 #if BUILDFLAG(IS_LINUX)
 std::string GetChannelSuffixForExtraFlagsEnvVarName();
-#endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the channel-specific filename of the desktop shortcut used to launch
 // the browser.
 std::string GetDesktopName(base::Environment* env);
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace chrome
 

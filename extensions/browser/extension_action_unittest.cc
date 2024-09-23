@@ -21,7 +21,7 @@ std::unique_ptr<ExtensionAction> CreateAction(const ActionInfo& action_info) {
 }  // namespace
 
 TEST(ExtensionActionTest, Title) {
-  ActionInfo action_info(ActionInfo::TYPE_PAGE);
+  ActionInfo action_info(ActionInfo::Type::kPage);
   action_info.default_title = "Initial Title";
   std::unique_ptr<ExtensionAction> action = CreateAction(action_info);
 
@@ -40,7 +40,7 @@ TEST(ExtensionActionTest, Title) {
 
 TEST(ExtensionActionTest, Visibility) {
   std::unique_ptr<ExtensionAction> action =
-      CreateAction(ActionInfo(ActionInfo::TYPE_PAGE));
+      CreateAction(ActionInfo(ActionInfo::Type::kPage));
 
   ASSERT_FALSE(action->GetIsVisible(1));
   action->SetIsVisible(ExtensionAction::kDefaultTabId, true);
@@ -59,24 +59,24 @@ TEST(ExtensionActionTest, Visibility) {
   ASSERT_FALSE(action->GetIsVisible(100));
 
   std::unique_ptr<ExtensionAction> browser_action =
-      CreateAction(ActionInfo(ActionInfo::TYPE_BROWSER));
+      CreateAction(ActionInfo(ActionInfo::Type::kBrowser));
   ASSERT_TRUE(browser_action->GetIsVisible(1));
 }
 
 TEST(ExtensionActionTest, Icon) {
-  ActionInfo action_info(ActionInfo::TYPE_PAGE);
+  ActionInfo action_info(ActionInfo::Type::kPage);
   action_info.default_icon.Add(16, "icon16.png");
   std::unique_ptr<ExtensionAction> page_action = CreateAction(action_info);
   ASSERT_TRUE(page_action->default_icon());
   EXPECT_EQ("icon16.png", page_action->default_icon()->Get(
-                              16, ExtensionIconSet::MATCH_EXACTLY));
-  EXPECT_EQ(
-      "", page_action->default_icon()->Get(17, ExtensionIconSet::MATCH_BIGGER));
+                              16, ExtensionIconSet::Match::kExactly));
+  EXPECT_EQ("", page_action->default_icon()->Get(
+                    17, ExtensionIconSet::Match::kBigger));
 }
 
 TEST(ExtensionActionTest, Badge) {
   std::unique_ptr<ExtensionAction> action =
-      CreateAction(ActionInfo(ActionInfo::TYPE_PAGE));
+      CreateAction(ActionInfo(ActionInfo::Type::kPage));
   ASSERT_EQ("", action->GetExplicitlySetBadgeText(1));
   action->SetBadgeText(ExtensionAction::kDefaultTabId, "foo");
   ASSERT_EQ("foo", action->GetExplicitlySetBadgeText(1));
@@ -95,7 +95,7 @@ TEST(ExtensionActionTest, DisplayBadgeText) {
   constexpr int kSecondTabId = 2;
 
   std::unique_ptr<ExtensionAction> action =
-      CreateAction(ActionInfo(ActionInfo::TYPE_PAGE));
+      CreateAction(ActionInfo(ActionInfo::Type::kPage));
   ASSERT_EQ("", action->GetDisplayBadgeText(kFirstTabId));
   action->SetDNRActionCount(kFirstTabId, 10 /* action_count */);
   ASSERT_EQ("10", action->GetDisplayBadgeText(kFirstTabId));
@@ -114,7 +114,7 @@ TEST(ExtensionActionTest, DisplayBadgeText) {
 
 TEST(ExtensionActionTest, BadgeTextColor) {
   std::unique_ptr<ExtensionAction> action =
-      CreateAction(ActionInfo(ActionInfo::TYPE_PAGE));
+      CreateAction(ActionInfo(ActionInfo::Type::kPage));
   ASSERT_EQ(0x00000000u, action->GetBadgeTextColor(1));
   action->SetBadgeTextColor(ExtensionAction::kDefaultTabId, 0xFFFF0000u);
   ASSERT_EQ(0xFFFF0000u, action->GetBadgeTextColor(1));
@@ -130,7 +130,7 @@ TEST(ExtensionActionTest, BadgeTextColor) {
 
 TEST(ExtensionActionTest, BadgeBackgroundColor) {
   std::unique_ptr<ExtensionAction> action =
-      CreateAction(ActionInfo(ActionInfo::TYPE_PAGE));
+      CreateAction(ActionInfo(ActionInfo::Type::kPage));
   ASSERT_EQ(0x00000000u, action->GetBadgeBackgroundColor(1));
   action->SetBadgeBackgroundColor(ExtensionAction::kDefaultTabId, 0xFFFF0000u);
   ASSERT_EQ(0xFFFF0000u, action->GetBadgeBackgroundColor(1));
@@ -150,7 +150,7 @@ TEST(ExtensionActionTest, PopupUrl) {
   GURL url_bar("http://www.example.com/bar.html");
   GURL url_baz("http://www.example.com/baz.html");
 
-  ActionInfo action_info(ActionInfo::TYPE_PAGE);
+  ActionInfo action_info(ActionInfo::Type::kPage);
   action_info.default_popup_url = url_foo;
   std::unique_ptr<ExtensionAction> action = CreateAction(action_info);
 
@@ -180,7 +180,7 @@ TEST(ExtensionActionTest, PopupUrl) {
 
 TEST(ExtensionActiontest, DeclarativeShows) {
   std::unique_ptr<ExtensionAction> action =
-      CreateAction(ActionInfo(ActionInfo::TYPE_ACTION));
+      CreateAction(ActionInfo(ActionInfo::Type::kAction));
 
   // Set the default for the action to be not visible.
   action->SetIsVisible(ExtensionAction::kDefaultTabId, false);

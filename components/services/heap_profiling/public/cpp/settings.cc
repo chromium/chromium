@@ -4,19 +4,19 @@
 
 #include "components/services/heap_profiling/public/cpp/settings.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
+#include "partition_alloc/buildflags.h"
 
 namespace heap_profiling {
 
 Mode GetModeForStartup() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   if (cmdline->HasSwitch("enable-heap-profiling")) {
     LOG(ERROR) << "--enable-heap-profiling is no longer supported. Use "
                   "--memlog instead. See documentation at "

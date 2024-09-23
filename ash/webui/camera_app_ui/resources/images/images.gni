@@ -41,6 +41,7 @@ in_app_images = [
   "camera_shutter_photo_stop.svg",
   "camera_shutter_video_pause.svg",
   "camera_shutter_video_snapshot.svg",
+  "check_mark.svg",
   "circle_warning_icon.svg",
   "crop_document_clockwise_rotate.svg",
   "crop_document_counterclockwise_rotate.svg",
@@ -51,6 +52,7 @@ in_app_images = [
   "external_link_icon.svg",
   "more_horizontal.svg",
   "new_feature_toast_icon.svg",
+  "preview_ocr_icon.svg",
   "ptz_pan_left.svg",
   "ptz_pan_right.svg",
   "ptz_reset_all.svg",
@@ -66,6 +68,7 @@ in_app_images = [
   "settings_feedback.svg",
   "settings_help.svg",
   "settings_resolution.svg",
+  "super_res_intro_dialog.svg",
   "wifi.svg",
 ]
 

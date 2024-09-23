@@ -7,4 +7,6 @@ rootWebArea
 ++++++++staticText name='Link inside the dialog.'
 ++++++++++inlineTextBox name='Link inside the dialog.'
 ++++menuListPopup ignored invisible
-++++++menuListOption ignored
+++++++group ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++menuListOption ignored invisible

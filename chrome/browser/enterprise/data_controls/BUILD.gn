@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 assert(enterprise_data_controls)
 
@@ -10,67 +11,88 @@ source_set("data_controls") {
   sources = [
     "chrome_dlp_rules_manager.cc",
     "chrome_dlp_rules_manager.h",
-    "data_controls_dialog.cc",
-    "data_controls_dialog.h",
-    "dlp_reporting_manager.cc",
-    "dlp_reporting_manager.h",
-    "rules_service.cc",
-    "rules_service.h",
+    "chrome_rules_service.cc",
+    "chrome_rules_service.h",
   ]
 
   public_deps = [
-    "//components/enterprise/data_controls",
-    "//components/enterprise/data_controls:features",
+    "//components/enterprise/data_controls/content/browser",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:features",
   ]
 
   deps = [
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
-    "//components/constrained_window",
+    "//chrome/browser/safe_browsing",
     "//components/enterprise/content",
-    "//components/enterprise/data_controls:dlp_policy_event_proto",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/prefs",
-    "//components/reporting/client:report_queue",
-    "//components/reporting/client:report_queue_configuration",
-    "//components/reporting/client:report_queue_factory",
-    "//components/reporting/proto:record_constants",
-    "//components/reporting/util:status",
     "//components/strings:components_strings_grit",
     "//components/url_matcher",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",
-    "//ui/views",
     "//url",
   ]
+
+  if (!is_android) {
+    sources += [
+      "desktop_data_controls_dialog.cc",
+      "desktop_data_controls_dialog.h",
+      "desktop_data_controls_dialog_factory.cc",
+      "desktop_data_controls_dialog_factory.h",
+      "dlp_reporting_manager.cc",
+      "dlp_reporting_manager.h",
+      "reporting_service.cc",
+      "reporting_service.h",
+    ]
+    deps += [
+      "//components/constrained_window",
+      "//components/reporting/client:report_queue",
+      "//components/reporting/client:report_queue_configuration",
+      "//components/reporting/client:report_queue_factory",
+      "//components/reporting/proto:record_constants",
+      "//components/reporting/util:status",
+      "//ui/views",
+    ]
+  }
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+
+  allow_circular_includes_from = []
+
   if (is_chromeos) {
-    deps += [ "//chromeos/startup" ]
+    deps += [
+      "//chromeos/startup",
+
+      # Included for allow_circular_includes_from.
+      "//chrome/browser/chromeos/policy/dlp",
+    ]
+    allow_circular_includes_from += [ "//chrome/browser/chromeos/policy/dlp" ]
   }
   if (is_chromeos_ash) {
-    deps += [ "//components/user_manager" ]
+    deps += [
+      "//chrome/browser/ash/policy/dlp",
+      "//components/user_manager",
+    ]
+    allow_circular_includes_from += [ "//chrome/browser/ash/policy/dlp" ]
   }
 }
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "dlp_reporting_manager_test_helper.cc",
-    "dlp_reporting_manager_test_helper.h",
-    "test_utils.cc",
-    "test_utils.h",
-  ]
   public_deps = [
     ":data_controls",
     "//base",
     "//base/test:test_support",
-    "//chrome/test:test_support",
     "//components/account_id",
-    "//components/enterprise/data_controls:dlp_policy_event_proto",
+    "//components/enterprise/data_controls/core/browser:dlp_policy_event_proto",
+    "//components/enterprise/data_controls/core/browser:test_support",
     "//components/prefs",
-    "//components/reporting/client:test_support",
-    "//components/reporting/util:status",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -82,24 +104,37 @@ source_set("test_support") {
   if (is_chromeos_ash) {
     public_deps += [ "//components/user_manager" ]
   }
+  if (!is_android) {
+    sources = [
+      "desktop_data_controls_dialog_test_helper.cc",
+      "desktop_data_controls_dialog_test_helper.h",
+      "dlp_reporting_manager_test_helper.cc",
+      "dlp_reporting_manager_test_helper.h",
+    ]
+    public_deps += [
+      "//chrome/test:test_support",
+      "//components/reporting/client:test_support",
+      "//components/reporting/util:status",
+    ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "chrome_dlp_rules_manager_unittest.cc",
-    "rules_service_unittest.cc",
-  ]
+  sources = [ "chrome_rules_service_unittest.cc" ]
   deps = [
     ":data_controls",
     ":test_support",
-    "//components/enterprise/data_controls:unit_tests",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/enterprise/data_controls/core/browser:unit_tests",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash:test_support" ]
-  }
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
+  }
+  if (!is_android) {
+    sources += [ "reporting_service_unittest.cc" ]
+    deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
   }
 }

@@ -10,14 +10,12 @@
 
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
-#include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace crypto {
 
 Aead::Aead(AeadAlgorithm algorithm) {
-  EnsureOpenSSLInit();
   switch (algorithm) {
     case AES_128_CTR_HMAC_SHA256:
       aead_ = EVP_aead_aes_128_ctr_hmac_sha256();

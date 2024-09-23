@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -42,26 +43,17 @@ class FakeProfileOAuth2TokenServiceDelegate
   // Overriden to make sure it works on Android.
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
 
-  std::vector<CoreAccountId> GetAccounts() const override;
-  void RevokeAllCredentials() override;
-  void LoadCredentials(const CoreAccountId& primary_account_id,
-                       bool is_syncing) override;
-  void UpdateCredentials(
-      const CoreAccountId& account_id,
-      const std::string& refresh_token
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      ,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>()
+  std::vector<uint8_t> GetWrappedBindingKey(
+      const CoreAccountId& account_id) const override;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          ) override;
-  void RevokeCredentials(const CoreAccountId& account_id) override;
-  void ExtractCredentials(ProfileOAuth2TokenService* to_service,
-                          const CoreAccountId& account_id) override;
+
+  std::vector<CoreAccountId> GetAccounts() const override;
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
 
-  bool FixRequestErrorIfPossible() override;
+  bool FixAccountErrorIfPossible() override;
 
   std::string GetRefreshToken(const CoreAccountId& account_id) const;
 
@@ -69,13 +61,34 @@ class FakeProfileOAuth2TokenServiceDelegate
     return &test_url_loader_factory_;
   }
 
-  void set_fix_request_if_possible(bool value) {
-    fix_request_if_possible_ = value;
+  void set_fix_request_if_possible(base::RepeatingCallback<bool()> callback) {
+    fix_account_if_possible_ = std::move(callback);
   }
 
  private:
+  // ProfileOAuth2TokenServiceDelegate implementation:
+  void RevokeAllCredentialsInternal(
+      signin_metrics::SourceForRefreshTokenOperation source) override;
+  void LoadCredentialsInternal(const CoreAccountId& primary_account_id,
+                               bool is_syncing) override;
+  void UpdateCredentialsInternal(const CoreAccountId& account_id,
+                                 const std::string& refresh_token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                 ,
+                                 const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                 ) override;
+  void RevokeCredentialsInternal(const CoreAccountId& account_id) override;
+  void ExtractCredentialsInternal(ProfileOAuth2TokenService* to_service,
+                                  const CoreAccountId& account_id) override;
+
   void IssueRefreshTokenForUser(const CoreAccountId& account_id,
-                                const std::string& token);
+                                const std::string& token
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+                                ,
+                                const std::vector<uint8_t>& wrapped_binding_key
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  );
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
@@ -88,8 +101,12 @@ class FakeProfileOAuth2TokenServiceDelegate
   // Maps account ids to tokens.
   std::map<CoreAccountId, std::string> refresh_tokens_;
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::map<CoreAccountId, std::vector<uint8_t>> wrapped_binding_keys_;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
-  bool fix_request_if_possible_ = false;
+  base::RepeatingCallback<bool()> fix_account_if_possible_;
 };
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

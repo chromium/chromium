@@ -6,6 +6,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #include "url/gurl.h"
 
@@ -43,9 +44,9 @@ class VirtualCardEnrollBubbleController {
   virtual VirtualCardEnrollmentBubbleSource
   GetVirtualCardEnrollmentBubbleSource() const = 0;
 
-  // Returns the currently active virtual card enroll bubble view. Can be
-  // nullptr if no bubble is visible.
-  virtual AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const = 0;
+  // Returns the currently active virtual card enroll or confirmation bubble
+  // view. Can be nullptr if no bubble is visible.
+  virtual AutofillBubbleBase* GetVirtualCardBubbleView() const = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Hides the bubble and icon if it is showing.
@@ -54,6 +55,9 @@ class VirtualCardEnrollBubbleController {
   // Returns true if bubble is already accepted and the virtual card enrollment
   // process is in progress.
   virtual bool IsEnrollmentInProgress() const = 0;
+
+  // Returns true if server request for virtual card enrollment is complete.
+  virtual bool IsEnrollmentComplete() const = 0;
 #endif
 
   // Virtual card enroll button takes card information to enroll into a VCN.
@@ -64,6 +68,13 @@ class VirtualCardEnrollBubbleController {
   virtual void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                              const GURL& url) = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+  virtual base::OnceCallback<void(PaymentsBubbleClosedReason)>
+  GetOnBubbleClosedCallback() = 0;
+
+  // Returns the UI parameters needed to display the virtual card enroll
+  // confirmation view.
+  virtual const SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams&
+  GetConfirmationUiParams() const = 0;
 
   // Returns whether the omnibox icon should be visible.
   virtual bool IsIconVisible() const = 0;

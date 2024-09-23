@@ -1,6 +1,5 @@
 eugenis@chromium.org
 glider@chromium.org
-metzman@chromium.org
 rnk@chromium.org
 per-file tsan_suppressions.cc=*
 per-file lsan_suppressions.cc=*

@@ -420,6 +420,7 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
           *dict.FindString("match"),
           ToRequestDestinationList(dict.FindList("match_dest")),
           id_string ? *id_string : "", GURL(*dict.FindString("dictionary_url")),
+          ToTime(dict.FindString("last_fetch_time")->c_str()),
           ToTime(dict.FindString("response_time")->c_str()),
           base::Seconds(*dict.FindInt("expiration")),
           ToTime(dict.FindString("last_used_time")->c_str()),

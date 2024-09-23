@@ -40,9 +40,10 @@ class OffloadingVideoEncoderTest : public testing::Test {
     EXPECT_CALL(*mock_video_encoder_, DisablePostedCallbacks());
     offloading_encoder_ = std::make_unique<OffloadingVideoEncoder>(
         std::move(mock_video_encoder), work_runner_, callback_runner_);
-    EXPECT_CALL(*mock_video_encoder_, Dtor()).WillOnce(Invoke([this]() {
-      EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
-    }));
+    EXPECT_CALL(*mock_video_encoder_, Dtor())
+        .WillOnce(Invoke([work_runner = work_runner_]() {
+          EXPECT_TRUE(work_runner->RunsTasksInCurrentSequence());
+        }));
   }
 
   void RunLoop() { task_environment_.RunUntilIdle(); }
@@ -50,7 +51,7 @@ class OffloadingVideoEncoderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> work_runner_;
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
-  raw_ptr<MockVideoEncoder, DanglingUntriaged> mock_video_encoder_;
+  raw_ptr<MockVideoEncoder> mock_video_encoder_;
   std::unique_ptr<OffloadingVideoEncoder> offloading_encoder_;
 };
 

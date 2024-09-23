@@ -14,9 +14,7 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/display/manager/touch_device_manager.h"
-#endif
 
 namespace display {
 

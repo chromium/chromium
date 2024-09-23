@@ -6,5 +6,6 @@
     Exposed=Window,
     RuntimeEnabled=CSSScrollSnapEvents
 ] interface SnapEvent : Event {
-    readonly attribute NodeList snapTargets;
+    readonly attribute Node snapTargetBlock;
+    readonly attribute Node snapTargetInline;
 };

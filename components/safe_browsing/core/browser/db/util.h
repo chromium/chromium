@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/traced_value.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -50,6 +49,9 @@ using SubresourceFilterMatch =
 struct ThreatMetadata {
   ThreatMetadata();
   ThreatMetadata(const ThreatMetadata& other);
+  ThreatMetadata(ThreatMetadata&& other);
+  ThreatMetadata& operator=(const ThreatMetadata& other);
+  ThreatMetadata& operator=(ThreatMetadata&& other);
   ~ThreatMetadata();
 
   bool operator==(const ThreatMetadata& other) const;
@@ -69,10 +71,6 @@ struct ThreatMetadata {
   // Map of list sub-types related to the SUBRESOURCE_FILTER threat type.
   // Used instead of ThreatPatternType to allow multiple types at the same time.
   SubresourceFilterMatch subresource_filter_match;
-
-  // Opaque base64 string used for user-population experiments in pver4.
-  // This will be empty if it wasn't present in the response.
-  std::string population_id;
 };
 
 }  // namespace safe_browsing

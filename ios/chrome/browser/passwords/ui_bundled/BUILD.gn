@@ -1,0 +1,140 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "password_breach_consumer.h",
+    "password_breach_coordinator.h",
+    "password_breach_coordinator.mm",
+    "password_breach_mediator.h",
+    "password_breach_mediator.mm",
+    "password_breach_presenter.h",
+    "password_breach_view_controller.h",
+    "password_breach_view_controller.mm",
+    "password_protection_coordinator.h",
+    "password_protection_coordinator.mm",
+    "password_protection_coordinator_delegate.h",
+    "password_protection_view_controller.h",
+    "password_protection_view_controller.mm",
+    "password_suggestion_coordinator.h",
+    "password_suggestion_coordinator.mm",
+    "password_suggestion_view_controller.h",
+    "password_suggestion_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "resources",
+    "//base",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common:features",
+    "//components/password_manager/ios",
+    "//components/password_manager/ios:password_manager_feature_header",
+    "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+    "//components/strings",
+    "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/model:model_shared",
+    "//ios/chrome/browser/autofill/model/bottom_sheet",
+    "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/settings/password:title_view",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/web",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "password_constants.h",
+    "password_constants.mm",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "password_breach_app_interface.h",
+    "password_breach_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "password_breach_app_interface.h",
+    "password_breach_app_interface_stub.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "password_breach_egtest.mm",
+    "password_suggestion_egtest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common:features",
+    "//components/strings",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support",
+    "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//testing/gtest",
+    "//ui/base:base",
+  ]
+  frameworks = [
+    "UIKit.framework",
+    "XCTest.framework",
+  ]
+}

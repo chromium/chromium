@@ -1,0 +1,149 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./history_clusters_shared_style.css.js
+ * #scheme=relative
+ * #include=history-clusters-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  min-height: 48px;
+}
+
+:host(:hover) {
+  background-color: var(--cr-hover-background-color);
+}
+
+.suffix-icons {
+  display: flex;
+  opacity: 0; /* Hides the element while keeping it in tab order. */
+  position: absolute; /* Surrender its layout space to other elements. */
+  --cr-icon-button-margin-end: 8px;
+}
+
+:host(:hover) .suffix-icons,
+.suffix-icons:focus-within {
+  opacity: 1;
+  position: static;
+}
+
+.hide-visit-icon {
+  --cr-icon-image: url(chrome://resources/cr_components/history_clusters/hide_source_gm_grey_24dp.svg);
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+}
+
+.icon-more-vert {
+  --cr-icon-button-margin-start: 0;
+  --cr-icon-button-margin-end: 21px;
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+}
+
+:host([in-side-panel_]) .icon-more-vert {
+  --cr-icon-button-margin-end: 8px;
+}
+
+#header {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  min-width: 0;
+  padding-inline-start: var(--cluster-padding-horizontal);
+}
+
+:host([in-side-panel_]) #header {
+  padding-inline-start: 8px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#link-container {
+  align-items: center;
+  display: flex;
+  margin-inline-end: var(--cluster-padding-horizontal);
+  min-width: 0;
+  outline: none;
+  padding-inline: 2px; /* So focus outline does not intersect text */
+}
+
+:host(:hover) #link-container {
+  margin-inline-end: 0;
+}
+
+:host([in-side-panel_]) #icon {
+  background-color: var(--color-list-item-url-favicon-background,
+    var(--cr-fallback-color-neutral-container));
+  height: 40px;
+  width: 40px;
+}
+
+:host-context(.focus-outline-visible) #link-container:focus {
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+#page-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 4px;
+}
+
+#title-and-annotations {
+  align-items: center;
+  display: flex;
+  line-height: 2;  /* 32px */
+}
+
+.annotation {
+  align-items: center;
+  background-color: var(--annotation-background-color);
+  border-radius: 4px;
+  color: var(--annotation-text-color);
+  display: inline-flex;
+  flex-shrink: 0;
+  font-weight: 500;
+  margin-inline-start: 12px;
+  padding: 0 8px;
+}
+
+.annotation + .annotation {
+  margin-inline-start: 8px;
+}
+
+#title {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+:host([in-side-panel_]) #title {
+  font-size: .75rem; /* 12px */
+  line-height: calc(20/13);  /* 20px */
+  font-weight: 500;
+}
+
+#url {
+  font-size: 11px;
+  color: var(--cr-secondary-text-color);
+  line-height: 14px;
+}
+
+:host([in-side-panel_]) #url {
+  color: var(--color-history-clusters-side-panel-card-secondary-foreground);
+  line-height: calc(5/3);  /* 20px */
+}
+
+#debug-info {
+  color: var(--cr-secondary-text-color);
+}

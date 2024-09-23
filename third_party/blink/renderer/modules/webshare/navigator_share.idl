@@ -12,5 +12,5 @@
   boolean canShare(optional ShareData data = {});
 
   [SecureContext, CallWith=ScriptState, RaisesException, MeasureAs=WebShareShare]
-  Promise<void> share(optional ShareData data = {});
+  Promise<undefined> share(optional ShareData data = {});
 };

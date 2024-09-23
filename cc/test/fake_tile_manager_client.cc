@@ -44,7 +44,7 @@ size_t FakeTileManagerClient::GetFrameIndexForImage(
 }
 
 int FakeTileManagerClient::GetMSAASampleCountForRaster(
-    const scoped_refptr<DisplayItemList>& display_list) {
+    const DisplayItemList& display_list) const {
   return 0;
 }
 

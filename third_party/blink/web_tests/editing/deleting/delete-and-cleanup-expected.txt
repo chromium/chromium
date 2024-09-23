@@ -1,6 +1,6 @@
 This test checks that deletion does not leave unnecessary nested divs.
 
-PASS confirmedMarkup is ''
+PASS confirmedMarkup is '<br>'
 PASS confirmedMarkup is '<br>'
 PASS confirmedMarkup is '<div id="mydiv"><br></div>'
 PASS confirmedMarkup is '<br>'

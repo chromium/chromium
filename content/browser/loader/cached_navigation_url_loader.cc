@@ -57,7 +57,7 @@ void CachedNavigationURLLoader::Start() {
   // Respond with a fake response.
   switch (loader_type_) {
     case LoaderType::kRegular:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case LoaderType::kNoopForBackForwardCache:
       // We use PostTask here to mimic the flow of a normal navigation.
@@ -66,7 +66,7 @@ void CachedNavigationURLLoader::Start() {
       // loop iteration that the NavigationURLLoader is created, because they
       // have to make a network request.
       //
-      // TODO(https://crbug.com/1226442): Remove this post task and
+      // TODO(crbug.com/40188852): Remove this post task and
       // synchronously run the loader like kNoopForPrerender.
       GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
@@ -86,12 +86,16 @@ void CachedNavigationURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 bool CachedNavigationURLLoader::SetNavigationTimeout(base::TimeDelta timeout) {
   // `false` here means that no timeout was started.
   return false;
+}
+
+void CachedNavigationURLLoader::CancelNavigationTimeout() {
+  NOTREACHED();
 }
 
 }  // namespace content

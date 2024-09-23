@@ -31,10 +31,15 @@ function getApiPaths() {
         // - `runtime.getContexts()` (restricted to MV3)
         // - `runtime.onUserScriptConnect()` (restricted to MV3)
         // - `runtime.onUserScriptMessage()` (restricted to MV3)
-        // TODO(https://crbug.com/921466)
-        const skipPaths = ['idle.getAutoLockDelay', 'power.reportActivity',
-                           'runtime.getContexts', 'runtime.onUserScriptConnect',
-                           'runtime.onUserScriptMessage'];
+        // - `permissions.addSiteAccessRequest()` (restricted to MV3)
+        // - `permissions.removeSiteAccessRequest()` (restricted to MV3)
+        // TODO(crbug.com/40609281)
+        const skipPaths = [
+          'idle.getAutoLockDelay', 'power.reportActivity',
+          'runtime.getContexts', 'runtime.onUserScriptConnect',
+          'runtime.onUserScriptMessage', 'permissions.addSiteAccessRequest',
+          'permissions.removeSiteAccessRequest'
+        ];
         if (!skipPaths.includes(fullName)) {
           apiPaths.push(fullName);
         }

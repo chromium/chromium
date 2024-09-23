@@ -13,12 +13,10 @@
 #include "base/values.h"
 #include "components/webapps/common/web_app_id.h"
 
-namespace content {
-struct PartitionedLockHolder;
-}
-
 namespace web_app {
 
+struct PartitionedLockHolder;
+class VisitedManifestManager;
 class WebAppLockManager;
 class WebContentsManager;
 
@@ -81,14 +79,15 @@ class Lock {
 
   // Resources that are available on all locks:
   WebContentsManager& web_contents_manager();
+  VisitedManifestManager& visited_manifest_manager();
 
  protected:
-  explicit Lock(std::unique_ptr<content::PartitionedLockHolder> holder,
+  explicit Lock(std::unique_ptr<PartitionedLockHolder> holder,
                 base::WeakPtr<WebAppLockManager> lock_manager);
 
  private:
   friend class WebAppLockManager;
-  std::unique_ptr<content::PartitionedLockHolder> holder_;
+  std::unique_ptr<PartitionedLockHolder> holder_;
   base::WeakPtr<WebAppLockManager> lock_manager_;
 };
 

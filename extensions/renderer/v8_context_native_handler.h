@@ -22,7 +22,7 @@ class V8ContextNativeHandler : public ObjectBackedNativeHandler {
   void GetAvailability(const v8::FunctionCallbackInfo<v8::Value>& args);
   void GetModuleSystem(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  raw_ptr<ScriptContext, ExperimentalRenderer> context_;
+  raw_ptr<ScriptContext> context_;
 };
 
 }  // namespace extensions

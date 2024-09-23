@@ -20,31 +20,58 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
+#include "chrome/browser/ash/crosapi/lacros_selection_loader_factory.h"
 #include "chrome/browser/ash/crosapi/rootfs_lacros_loader.h"
 #include "chrome/browser/ash/crosapi/stateful_lacros_loader.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "components/component_updater/ash/component_manager_ash.h"
 
 namespace crosapi {
 
 namespace {
 // There are 2 lacros selections, rootfs lacros and stateful lacros.
 constexpr size_t kLacrosSelectionTypes = 2;
+
+class LacrosSelectionLoaderFactoryImpl : public LacrosSelectionLoaderFactory {
+ public:
+  explicit LacrosSelectionLoaderFactoryImpl(
+      scoped_refptr<component_updater::ComponentManagerAsh> manager)
+      : component_manager_(manager) {}
+
+  LacrosSelectionLoaderFactoryImpl(const LacrosSelectionLoaderFactoryImpl&) =
+      delete;
+  LacrosSelectionLoaderFactoryImpl& operator=(
+      const LacrosSelectionLoaderFactoryImpl&) = delete;
+
+  ~LacrosSelectionLoaderFactoryImpl() override = default;
+
+  std::unique_ptr<LacrosSelectionLoader> CreateRootfsLacrosLoader() override {
+    return std::make_unique<RootfsLacrosLoader>();
+  }
+
+  std::unique_ptr<LacrosSelectionLoader> CreateStatefulLacrosLoader() override {
+    return std::make_unique<StatefulLacrosLoader>(component_manager_);
+  }
+
+ private:
+  scoped_refptr<component_updater::ComponentManagerAsh> component_manager_;
+};
+
+bool IsUnloading(LacrosSelectionLoader* loader) {
+  return loader && loader->IsUnloading();
+}
+
 }  // namespace
 
 BrowserLoader::BrowserLoader(
-    scoped_refptr<component_updater::CrOSComponentManager> manager)
-    : BrowserLoader(std::make_unique<RootfsLacrosLoader>(),
-                    std::make_unique<StatefulLacrosLoader>(manager)) {}
+    scoped_refptr<component_updater::ComponentManagerAsh> manager)
+    : factory_(std::make_unique<LacrosSelectionLoaderFactoryImpl>(manager)) {}
 
 BrowserLoader::BrowserLoader(
-    std::unique_ptr<LacrosSelectionLoader> rootfs_lacros_loader,
-    std::unique_ptr<LacrosSelectionLoader> stateful_lacros_loader)
-    : rootfs_lacros_loader_(std::move(rootfs_lacros_loader)),
-      stateful_lacros_loader_(std::move(stateful_lacros_loader)) {}
+    std::unique_ptr<LacrosSelectionLoaderFactory> factory)
+    : factory_(std::move(factory)) {}
 
 BrowserLoader::~BrowserLoader() = default;
 
@@ -67,9 +94,9 @@ bool BrowserLoader::WillLoadStatefulComponentBuilds() {
 
   // If the lacros selection is forced by the user or by policy to rootfs it
   // will always be loaded and stateful component manager builds are ignored.
-  std::optional<browser_util::LacrosSelection> lacros_selection =
-      browser_util::DetermineLacrosSelection();
-  if (lacros_selection == browser_util::LacrosSelection::kRootfs) {
+  std::optional<ash::standalone_browser::LacrosSelection> lacros_selection =
+      ash::standalone_browser::DetermineLacrosSelection();
+  if (lacros_selection == ash::standalone_browser::LacrosSelection::kRootfs) {
     return false;
   }
 
@@ -78,6 +105,8 @@ bool BrowserLoader::WillLoadStatefulComponentBuilds() {
 
 void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback,
                                        LacrosSelectionSource source) {
+  CHECK(rootfs_lacros_loader_);
+
   LOG(WARNING) << "rootfs lacros is selected by " << source;
 
   rootfs_lacros_loader_->Load(
@@ -88,6 +117,8 @@ void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback,
 
 void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback,
                                          LacrosSelectionSource source) {
+  CHECK(stateful_lacros_loader_);
+
   LOG(WARNING) << "stateful lacros is selected by " << source;
 
   stateful_lacros_loader_->Load(
@@ -98,16 +129,41 @@ void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback,
   // Unmount the rootfs lacros-chrome when using stateful lacros-chrome.
   // This will keep stateful lacros-chrome only mounted and not hold the rootfs
   // lacros-chrome mount until an `Unload`.
-  rootfs_lacros_loader_->Unload();
+  if (rootfs_lacros_loader_) {
+    rootfs_lacros_loader_->Unload(
+        base::BindOnce(&BrowserLoader::OnUnloadCompleted,
+                       weak_factory_.GetWeakPtr(), LacrosSelection::kRootfs));
+  }
 }
 
 void BrowserLoader::Load(LoadCompletionCallback callback) {
-  // Reset lacros selection loaders before reloading.
-  rootfs_lacros_loader_->Reset();
-  stateful_lacros_loader_->Reset();
+  // Load should NOT be called after Unload is requested to BrowserLoader.
+  CHECK(!is_unload_requested_);
+
+  // If either of rootfs or stateful lacros loader is still unloading, wait
+  // until the unload completion.
+  if (IsUnloading(rootfs_lacros_loader_.get()) ||
+      IsUnloading(stateful_lacros_loader_.get())) {
+    LOG(WARNING) << "Wait load until unload completes";
+    callback_on_unload_completion_ =
+        base::BindOnce(&BrowserLoader::LoadNow, weak_factory_.GetWeakPtr(),
+                       std::move(callback));
+    return;
+  }
+
+  LoadNow(std::move(callback));
+}
+
+void BrowserLoader::LoadNow(LoadCompletionCallback callback) {
+  // Reset lacros selection loaders since it may be already initialized one if
+  // this is reloading.
+  // TODO(elkurin): We should call Unload before reloading if these loaders
+  // exist, then we can remove `reset` here.
+  rootfs_lacros_loader_.reset();
+  stateful_lacros_loader_.reset();
 
   lacros_start_load_time_ = base::TimeTicks::Now();
-  // TODO(crbug.com/1078607): Remove non-error logging from this class.
+  // TODO(crbug.com/40689435): Remove non-error logging from this class.
   LOG(WARNING) << "Starting lacros component load.";
 
   // If the user has specified a path for the lacros-chrome binary, use that
@@ -124,26 +180,31 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
   // If the LacrosSelection policy or the user have specified to force using
   // stateful or rootfs lacros-chrome binary, force the selection. Otherwise,
   // load the newest available binary.
-  if (std::optional<browser_util::LacrosSelection> lacros_selection =
-          browser_util::DetermineLacrosSelection()) {
-    // TODO(crbug.com/1293250): We should check the version compatibility here,
+  if (std::optional<ash::standalone_browser::LacrosSelection> lacros_selection =
+          ash::standalone_browser::DetermineLacrosSelection()) {
+    // TODO(crbug.com/40213424): We should check the version compatibility here,
     // too.
     switch (lacros_selection.value()) {
-      case browser_util::LacrosSelection::kRootfs:
+      case ash::standalone_browser::LacrosSelection::kRootfs:
+        rootfs_lacros_loader_ = factory_->CreateRootfsLacrosLoader();
         SelectRootfsLacros(std::move(callback), LacrosSelectionSource::kForced);
         return;
-      case browser_util::LacrosSelection::kStateful:
+      case ash::standalone_browser::LacrosSelection::kStateful:
+        stateful_lacros_loader_ = factory_->CreateStatefulLacrosLoader();
         SelectStatefulLacros(std::move(callback),
                              LacrosSelectionSource::kForced);
         return;
-      case browser_util::LacrosSelection::kDeployedLocally:
-        NOTREACHED();
+      case ash::standalone_browser::LacrosSelection::kDeployedLocally:
+        NOTREACHED_IN_MIGRATION();
         std::move(callback).Run(base::FilePath(),
                                 LacrosSelection::kDeployedLocally,
                                 base::Version());
         return;
     }
   }
+
+  rootfs_lacros_loader_ = factory_->CreateRootfsLacrosLoader();
+  stateful_lacros_loader_ = factory_->CreateStatefulLacrosLoader();
 
   // Proceed to load/mount the stateful lacros-chrome binary.
   // In the case that the stateful lacros-chrome binary wasn't installed, this
@@ -174,10 +235,17 @@ void BrowserLoader::OnLoadVersions(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(versions.size(), kLacrosSelectionTypes);
 
+  if (is_unload_requested_) {
+    LOG(WARNING) << "Unload is requested during collecting Lacros version.";
+    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful,
+                            base::Version());
+    return;
+  }
+
   // Compare the rootfs vs stateful lacros-chrome binary versions.
-  // If the rootfs lacros-chrome is greater than or equal to the stateful
-  // lacros-chrome version, prioritize using the rootfs lacros-chrome and let
-  // stateful lacros-chrome update in the background.
+  // If the rootfs lacros-chrome is greater than lacros-chrome version,
+  // prioritize using the rootfs lacros-chrome. If the stateful lacros-chrome is
+  // not installed, let stateful lacros-chrome load in the background.
   auto selected = base::ranges::max_element(
       versions,
       [](const LacrosSelectionVersion& lhs, const LacrosSelectionVersion& rhs) {
@@ -213,7 +281,7 @@ void BrowserLoader::OnLoadVersions(
   // sessions, accidentally. For experiment, now we intentionally ignore
   // the case and forcibly load the selected one, which is the best we could do
   // at this moment.
-  // TODO(crbug.com/1293250): Check the condition and report it via UMA stats.
+  // TODO(crbug.com/40213424): Check the condition and report it via UMA stats.
 
   switch (selected->selection) {
     case LacrosSelection::kRootfs: {
@@ -227,7 +295,7 @@ void BrowserLoader::OnLoadVersions(
       break;
     }
     case LacrosSelection::kDeployedLocally: {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       std::move(callback).Run(
           base::FilePath(), LacrosSelection::kDeployedLocally, base::Version());
       return;
@@ -236,10 +304,52 @@ void BrowserLoader::OnLoadVersions(
 }
 
 void BrowserLoader::Unload() {
+  is_unload_requested_ = true;
+
   // Can be called even if Lacros isn't enabled, to clean up the old install.
-  stateful_lacros_loader_->Unload();
-  // Unmount the rootfs lacros-chrome if it was mounted.
-  rootfs_lacros_loader_->Unload();
+  // Unmount the rootfs/stateful lacros-chrome if it was mounted.
+  if (rootfs_lacros_loader_) {
+    rootfs_lacros_loader_->Unload(
+        base::BindOnce(&BrowserLoader::OnUnloadCompleted,
+                       weak_factory_.GetWeakPtr(), LacrosSelection::kRootfs));
+  }
+
+  if (stateful_lacros_loader_) {
+    stateful_lacros_loader_->Unload(
+        base::BindOnce(&BrowserLoader::OnUnloadCompleted,
+                       weak_factory_.GetWeakPtr(), LacrosSelection::kStateful));
+  }
+}
+
+void BrowserLoader::OnUnloadCompleted(LacrosSelection selection) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (selection) {
+    case LacrosSelection::kRootfs:
+      CHECK(rootfs_lacros_loader_->IsUnloaded());
+      rootfs_lacros_loader_.reset();
+      break;
+    case LacrosSelection::kStateful:
+      CHECK(stateful_lacros_loader_->IsUnloaded());
+      stateful_lacros_loader_.reset();
+      break;
+    case LacrosSelection::kDeployedLocally:
+      NOTREACHED_IN_MIGRATION();
+      break;
+  }
+
+  // If either of rootfs or stateful lacros loader is still in the process of
+  // unload, wait running completion callback.
+  if (IsUnloading(rootfs_lacros_loader_.get()) ||
+      IsUnloading(stateful_lacros_loader_.get())) {
+    return;
+  }
+
+  // If both of the rootfs and stateful lacros load completed unloading, run the
+  // stored callback if exists.
+  if (callback_on_unload_completion_) {
+    std::move(callback_on_unload_completion_).Run();
+  }
 }
 
 base::FilePath DetermineLacrosBinaryPath(const base::FilePath& path) {
@@ -260,6 +370,13 @@ void BrowserLoader::OnLoadComplete(LoadCompletionCallback callback,
                                    base::Version version,
                                    const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_unload_requested_) {
+    LOG(WARNING) << "Unload is requested during loading.";
+    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful,
+                            base::Version());
+    return;
+  }
 
   // Bail out on empty `path` which implies there was an error on loading
   // lacros.
@@ -287,6 +404,13 @@ void BrowserLoader::FinishOnLoadComplete(LoadCompletionCallback callback,
                                          base::Version version,
                                          const base::FilePath& lacros_binary) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_unload_requested_) {
+    LOG(WARNING) << "Unload is requested during determining lacros path.";
+    std::move(callback).Run(base::FilePath(), LacrosSelection::kStateful,
+                            base::Version());
+    return;
+  }
 
   if (lacros_binary.empty()) {
     LOG(ERROR) << "Failed to find binary at " << path;

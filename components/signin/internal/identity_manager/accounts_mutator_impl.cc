@@ -4,8 +4,6 @@
 
 #include "components/signin/internal/identity_manager/accounts_mutator_impl.h"
 
-#include <optional>
-
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -13,6 +11,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -52,7 +51,7 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 ) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
   CoreAccountId account_id =
       account_tracker_service_->SeedAccountInfo(gaia_id, email, access_point);
@@ -94,7 +93,7 @@ void AccountsMutatorImpl::RemoveAccount(
     const CoreAccountId& account_id,
     signin_metrics::SourceForRefreshTokenOperation source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
   token_service_->RevokeCredentials(account_id, source);
 }
@@ -102,7 +101,7 @@ void AccountsMutatorImpl::RemoveAccount(
 void AccountsMutatorImpl::RemoveAllAccounts(
     signin_metrics::SourceForRefreshTokenOperation source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
   token_service_->RevokeAllCredentials(source);
 }
@@ -110,7 +109,7 @@ void AccountsMutatorImpl::RemoveAllAccounts(
 void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
     signin_metrics::SourceForRefreshTokenOperation source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   CoreAccountInfo primary_account_info =
@@ -124,6 +123,16 @@ void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void AccountsMutatorImpl::MoveAccount(AccountsMutator* target,
                                       const CoreAccountId& account_id) {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      primary_account_manager_->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin) == account_id) {
+    // Remove to avoid the primary account remaining in the original
+    // profile without a refresh token which might lead to a crash. The account
+    // and the refresh token will be removed from the profile after being moved
+    // to the new profile later in this function.
+    primary_account_manager_->RemovePrimaryAccountButKeepTokens(
+        signin_metrics::ProfileSignout::kMovePrimaryAccount);
+  }
   AccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
   DCHECK(!account_info.account_id.empty());

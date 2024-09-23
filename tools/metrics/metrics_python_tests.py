@@ -25,7 +25,7 @@ sys.exit(
         tests=resolve(
             'actions/extract_actions_test.py',
 
-            # TODO(crbug.com/1220251) - the test ordering is very sensitive due
+            # TODO(crbug.com/40772738) - the test ordering is very sensitive due
             # to potential name collisions between ukm/pretty_print.py and
             # histograms/pretty_print.py and the implementation in typ.
             #
@@ -33,14 +33,18 @@ sys.exit(
             # files show up *after* the 'ukm' files (in order for the histograms
             # directory to be added to sys.path *before* ukm), and that we run
             # the tests in a single process (jobs=1, below).
-            'ukm/codegen_test.py',
+            'common/codegen_shared_test.py',
+            'dwa/dwa_model_test.py',
+            'dwa/dwa_xml_validations_test.py',
+            'dwa/gen_builders_test.py',
             'ukm/gen_builders_test.py',
             'ukm/ukm_model_test.py',
             'ukm/xml_validations_test.py',
             'histograms/expand_owners_unittest.py',
             'histograms/extract_histograms_test.py',
             'histograms/generate_expired_histograms_array_unittest.py',
-            'histograms/generate_histograms_variants_allowlist_unittest.py',
+            'histograms/generate_allowlist_from_histograms_file_unittest.py',
+            'histograms/merge_xml_test.py',
             'histograms/pretty_print_test.py',
             'histograms/validate_token_test.py',
             '../json_comment_eater/json_comment_eater_test.py',

@@ -14,8 +14,8 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -34,11 +34,31 @@ constexpr const char* kProxyModeValidValues[] = {
     kProxyModeFixedServers, kProxyModeSystem,
 };
 
-bool VerifySHA256Signature(const std::string& data,
-                           const std::string& key,
-                           const std::string& signature) {
+crypto::SignatureVerifier::SignatureAlgorithm GetResponseSignatureType(
+    const enterprise_management::PolicyFetchResponse& fetch_response) {
+  if (!fetch_response.has_policy_data_signature_type()) {
+    VLOG(1) << "No signature type in response, assume SHA256.";
+    return crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+  }
+
+  switch (fetch_response.policy_data_signature_type()) {
+    case enterprise_management::PolicyFetchRequest::SHA1_RSA:
+      VLOG(1) << "Response is signed with deprecated SHA1 algorithm.";
+      return crypto::SignatureVerifier::RSA_PKCS1_SHA1;
+    case enterprise_management::PolicyFetchRequest::SHA256_RSA:
+      return crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+    default:
+      VLOG(1) << "Unrecognized signature type in response, assume SHA256.";
+      return crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+  }
+}
+
+bool VerifySignature(const std::string& data,
+                     const std::string& key,
+                     const std::string& signature,
+                     crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+  if (!verifier.VerifyInit(algorithm,
                            base::as_bytes(base::make_span(signature)),
                            base::as_bytes(base::make_span(key)))) {
     VLOG(1) << "Invalid verification signature/key format.";
@@ -247,9 +267,10 @@ PolicyValidationResult::PolicyValidationResult(
     const PolicyValidationResult& other) = default;
 PolicyValidationResult::~PolicyValidationResult() = default;
 
-DMResponseValidator::DMResponseValidator(const CachedPolicyInfo& policy_info,
-                                         const std::string& expected_dm_token,
-                                         const std::string& expected_device_id)
+DMResponseValidator::DMResponseValidator(
+    const device_management_storage::CachedPolicyInfo& policy_info,
+    const std::string& expected_dm_token,
+    const std::string& expected_device_id)
     : policy_info_(policy_info),
       expected_dm_token_(expected_dm_token),
       expected_device_id_(expected_device_id) {}
@@ -281,11 +302,13 @@ bool DMResponseValidator::ValidateNewPublicKey(
   }
 
   // Verifies that the new public key verification data is properly signed
-  // by the pinned key.
-  if (!VerifySHA256Signature(
+  // by the pinned key. The DM server always signs the new key using SHA256
+  // algorithm.
+  if (!VerifySignature(
           fetch_response.new_public_key_verification_data(),
           policy::GetPolicyVerificationKey(),
-          fetch_response.new_public_key_verification_data_signature())) {
+          fetch_response.new_public_key_verification_data_signature(),
+          crypto::SignatureVerifier::RSA_PKCS1_SHA256)) {
     VLOG(1) << "Public key verification data is not signed correctly.";
     validation_result.status =
         PolicyValidationResult::Status::kValidationBadKeyVerificationSignature;
@@ -306,8 +329,9 @@ bool DMResponseValidator::ValidateNewPublicKey(
   const std::string existing_key = policy_info_.public_key();
   if (!existing_key.empty()) {
     if (!fetch_response.has_new_public_key_signature() ||
-        !VerifySHA256Signature(public_key_data.new_public_key(), existing_key,
-                               fetch_response.new_public_key_signature())) {
+        !VerifySignature(public_key_data.new_public_key(), existing_key,
+                         fetch_response.new_public_key_signature(),
+                         GetResponseSignatureType(fetch_response))) {
       VLOG(1) << "Key verification against cached public key failed.";
       validation_result.status = PolicyValidationResult::Status::
           kValidationBadKeyVerificationSignature;
@@ -334,8 +358,10 @@ bool DMResponseValidator::ValidateSignature(
   }
 
   const std::string& policy_data = policy_response.policy_data();
-  if (!VerifySHA256Signature(policy_data, signature_key,
-                             policy_response.policy_data_signature())) {
+  if (!VerifySignature(policy_data, signature_key,
+                       policy_response.policy_data_signature(),
+                       GetResponseSignatureType(policy_response))) {
+    VLOG(1) << "Policy signature validation failed.";
     validation_result.status =
         PolicyValidationResult::Status::kValidationBadSignature;
     return false;
@@ -457,6 +483,14 @@ bool DMResponseValidator::ValidatePolicyResponse(
     return false;
   }
 
+  if (!fetch_policy_data.has_policy_type()) {
+    VLOG(1) << "Missing policy type in the policy response.";
+    validation_result.status =
+        PolicyValidationResult::Status::kValidationWrongPolicyType;
+    return false;
+  }
+  validation_result.policy_type = fetch_policy_data.policy_type();
+
   if (fetch_policy_data.has_policy_token()) {
     validation_result.policy_token = fetch_policy_data.policy_token();
   }
@@ -469,16 +503,6 @@ bool DMResponseValidator::ValidatePolicyResponse(
 
   std::string signature_key;
   if (!ValidateNewPublicKey(fetch_response, signature_key, validation_result)) {
-    return false;
-  }
-
-  if (fetch_policy_data.has_policy_type()) {
-    validation_result.policy_type = fetch_policy_data.policy_type();
-  }
-  if (validation_result.policy_type.empty()) {
-    VLOG(1) << "Missing policy type in the policy response.";
-    validation_result.status =
-        PolicyValidationResult::Status::kValidationWrongPolicyType;
     return false;
   }
 
@@ -495,6 +519,13 @@ bool DMResponseValidator::ValidatePolicyResponse(
   }
 
   return true;
+}
+
+bool DMResponseValidator::ValidatePolicyData(
+    const enterprise_management::PolicyFetchResponse& fetch_response) const {
+  PolicyValidationResult validation_result;
+  return ValidateSignature(fetch_response, policy_info_.public_key(),
+                           validation_result);
 }
 
 }  // namespace updater

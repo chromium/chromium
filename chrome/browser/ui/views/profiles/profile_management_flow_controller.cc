@@ -90,7 +90,7 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
     PostHostClearedCallback post_host_cleared_callback) {
   DCHECK(clear_host_callback_.value());  // The host shouldn't be cleared yet.
 
-  // TODO(crbug.com/1383969): Handle the return value and don't open a browser
+  // TODO(crbug.com/40246333): Handle the return value and don't open a browser
   // if it is already going to be opened.
   PreFinishWithBrowser();
 
@@ -113,7 +113,7 @@ void ProfileManagementFlowController::FinishFlowAndRunInBrowser(
 
   // Start by opening the browser window, to ensure that we have another
   // KeepAlive for `profile` by the time we clear the flow and its host.
-  // TODO(crbug.com/1374315): Make sure we do something or log an error if
+  // TODO(crbug.com/40242414): Make sure we do something or log an error if
   // opening a browser window was not possible.
   profiles::OpenBrowserWindowForProfile(
       std::move(post_browser_open_callback),
@@ -136,4 +136,26 @@ ProfileManagementFlowController::CreateSwitchToStepPopCallback(Step step) {
       /*reset_state=*/false,
       /*step_switch_finished_callback=*/StepSwitchFinishedCallback(),
       /*pop_step_callback=*/base::OnceClosure());
+}
+
+void ProfileManagementFlowController::CreateSignedOutFlowWebContents(
+    Profile* profile) {
+  signed_out_flow_web_contents_ =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+}
+
+content::WebContents*
+ProfileManagementFlowController::GetSignedOutFlowWebContents() const {
+  return signed_out_flow_web_contents_.get();
+}
+
+void ProfileManagementFlowController::Reset(
+    StepSwitchFinishedCallback callback) {
+  Step previous_step = current_step_;
+
+  // Activate the initial step.
+  SwitchToStep(Step::kProfilePicker, /*reset_state=*/true,
+               /*step_switch_finished_callback=*/std::move(callback));
+  // Unregister the previous active step.
+  UnregisterStep(previous_step);
 }

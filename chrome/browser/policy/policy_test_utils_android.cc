@@ -6,6 +6,7 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
 namespace policy {

@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/password_manager/core/browser/password_manager_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/bluez_dbus_thread_manager.h"
@@ -39,6 +40,18 @@
 
 #if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/new_window_delegate.h"
+#include "ash/webui/sanitize_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -82,13 +95,14 @@ void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
   std::unique_ptr<os_crypt::Config> config =
       std::make_unique<os_crypt::Config>();
   // Forward to os_crypt the flag to use a specific password store.
-  config->store = command_line->GetSwitchValueASCII(switches::kPasswordStore);
+  config->store =
+      command_line->GetSwitchValueASCII(password_manager::kPasswordStore);
   // Forward the product name
   config->product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
   // OSCrypt can be disabled in a special settings file.
   config->should_use_preference =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableEncryptionSelection);
+          password_manager::kEnableEncryptionSelection);
   chrome::GetDefaultUserDataDirectory(&config->user_data_path);
   OSCrypt::SetConfig(std::move(config));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -116,8 +130,9 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   ChromeBrowserMainPartsPosix::PreProfileInit();
 }
 
-#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#if (defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)) || BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeBrowserMainPartsLinux::PostBrowserStart() {
+#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
   // static_cast is safe because this is the only implementation of
   // MemoryPressureMonitor.
   auto* monitor =
@@ -129,10 +144,30 @@ void ChromeBrowserMainPartsLinux::PostBrowserStart() {
         std::make_unique<DbusMemoryPressureEvaluatorLinux>(
             monitor->CreateVoter()));
   }
-
+#endif  // defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CheckIfSanitizeCompleted();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ChromeBrowserMainPartsPosix::PostBrowserStart();
 }
-#endif  // defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // (defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeBrowserMainPartsLinux::CheckIfSanitizeCompleted() {
+  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize) &&
+      prefs->GetBoolean(ash::settings::prefs::kSanitizeCompleted)) {
+    prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
+    prefs->CommitPendingWrite();
+    ash::SystemAppLaunchParams params;
+    params.url = GURL(base::StrCat({ash::kChromeUISanitizeAppURL, "?done"}));
+    params.launch_source = apps::LaunchSource::kUnknown;
+    ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
+                                 ash::SystemWebAppType::OS_SANITIZE, params);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
 #if BUILDFLAG(IS_CHROMEOS)

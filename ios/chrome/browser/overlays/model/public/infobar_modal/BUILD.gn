@@ -19,11 +19,11 @@ source_set("infobar_modal") {
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/passwords/model:infobar_delegates",
-    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
     "//ui/gfx",
   ]
 }

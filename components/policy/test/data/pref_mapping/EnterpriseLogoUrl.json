@@ -1,0 +1,73 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "enterprise_logo.url": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseLogoUrl": "http://www.example.com"
+        },
+        "prefs": {
+          "enterprise_logo.url": {
+            "value": "http://www.example.com"
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseLogoUrl": "not_a_url"
+        },
+        "prefs": {
+          "enterprise_logo.url": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseLogoUrl": "http://www.example.com"
+        },
+        "policies_settings": {
+          "EnterpriseLogoUrl": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_logo.url": {
+            "location": "local_state",
+            "value": "http://www.example.com"
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseLogoUrl": "http://www.example.com"
+        },
+        "policies_settings": {
+          "EnterpriseLogoUrl": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "enterprise_logo.url": {
+            "location": "user_profile",
+            "value": "http://www.example.com"
+          }
+        }
+      }
+    ]
+  }
+]

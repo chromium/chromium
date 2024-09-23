@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/common/gl_surface_egl_readback.h"
 
 #include <utility>
@@ -27,7 +32,7 @@ bool GLSurfaceEglReadback::Resize(const gfx::Size& size,
                                   float scale_factor,
                                   const gfx::ColorSpace& color_space,
                                   bool has_alpha) {
-  pixels_.reset();
+  pixels_ = base::HeapArray<uint8_t>();
 
   if (!PbufferGLSurfaceEGL::Resize(size, scale_factor, color_space, has_alpha))
     return false;
@@ -42,7 +47,7 @@ bool GLSurfaceEglReadback::Resize(const gfx::Size& size,
 
   // Allocate a new buffer for readback.
   const size_t buffer_size = size.width() * size.height() * kBytesPerPixelBGRA;
-  pixels_ = std::make_unique<uint8_t[]>(buffer_size);
+  pixels_ = base::HeapArray<uint8_t>::Uninit(buffer_size);
 
   return true;
 }
@@ -52,9 +57,9 @@ gfx::SwapResult GLSurfaceEglReadback::SwapBuffers(PresentationCallback callback,
   gfx::SwapResult swap_result = gfx::SwapResult::SWAP_FAILED;
   gfx::PresentationFeedback feedback;
 
-  if (pixels_) {
-    ReadPixels(pixels_.get());
-    if (HandlePixels(pixels_.get())) {
+  if (!pixels_.empty()) {
+    ReadPixels(pixels_.as_span());
+    if (HandlePixels(pixels_.as_span().data())) {
       // Swap is successful, so return SWAP_ACK and provide the current time
       // with presentation feedback.
       swap_result = gfx::SwapResult::SWAP_ACK;
@@ -82,7 +87,7 @@ bool GLSurfaceEglReadback::HandlePixels(uint8_t* pixels) {
   return true;
 }
 
-void GLSurfaceEglReadback::ReadPixels(void* buffer) {
+void GLSurfaceEglReadback::ReadPixels(base::span<uint8_t> buffer) {
   const gfx::Size size = GetSize();
   GLint read_fbo = 0;
   GLint pixel_pack_buffer = 0;
@@ -98,8 +103,10 @@ void GLSurfaceEglReadback::ReadPixels(void* buffer) {
   if (pixel_pack_buffer)
     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
+  CHECK_GE(buffer.size() / base::checked_cast<size_t>(size.width()),
+           base::checked_cast<size_t>(size.height()));
   glReadPixels(0, 0, size.width(), size.height(), GL_BGRA, GL_UNSIGNED_BYTE,
-               buffer);
+               buffer.data());
 
   if (read_fbo)
     glBindFramebufferEXT(GL_READ_FRAMEBUFFER, read_fbo);

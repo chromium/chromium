@@ -9,12 +9,22 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 #include "url/origin.h"
+
+namespace extensions {
+class ExtensionPrefs;
+class ExtensionRegistry;
+}  // namespace extensions
 
 // The state of Safe Browsing settings.
 enum class SafeBrowsingState {
@@ -32,7 +42,9 @@ enum class SafeBrowsingState {
  * settings page.
  */
 
-class SafetyHubHandler : public settings::SettingsPageUIHandler {
+class SafetyHubHandler : public settings::SettingsPageUIHandler,
+                         public extensions::ExtensionPrefsObserver,
+                         public extensions::ExtensionRegistryObserver {
  public:
   enum class SafetyHubModule {
     kExtensions,
@@ -47,28 +59,32 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
 
   ~SafetyHubHandler() override;
 
-  struct PermissionsData {
-    PermissionsData();
-    ~PermissionsData();
-    PermissionsData(PermissionsData&&);
-    PermissionsData& operator=(PermissionsData&&);
-
-    url::Origin origin;
-    std::set<ContentSettingsType> permissions;
-    base::Value::Dict chooser_permissions_data;
-    content_settings::ContentSettingConstraints constraints;
-  };
-
   static std::unique_ptr<SafetyHubHandler> GetForProfile(Profile* profile);
+
+  // Testing functions to manipulate the handlers CWSInfoService and the
+  // triggering extension dictionary.
+  void SetTriggeringExtensionForTesting(std::string extension_id);
+  void ClearExtensionResultsForTesting();
 
  private:
   friend class SafetyHubHandlerTest;
+  friend class
+      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest;
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            PopulateUnusedSitePermissionsData);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleAllowPermissionsAgainForUnusedSite);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleAcknowledgeRevokedUnusedSitePermissionsList);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           PopulateAbusiveAndUnusedSitePermissionsData);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           HandleAllowPermissionsAgainForAbusiveSite);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           HandleAllowPermissionsAgainForAbusiveAndUnusedSite);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerTest,
+      HandleAcknowledgeRevokedAbusiveAndUnusedSitePermissionsList);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
                            HandleIgnoreOriginsForNotificationPermissionReview);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
@@ -93,6 +109,17 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest, PasswordCardCheckTime);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest, VersionCardUpToDate);
   FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest, VersionCardOutOfDate);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest,
+                           ExtensionPrefAndInitialization);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      PopulateSitePermissionsData);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      HandleAllowPermissionsAgainForSite);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafetyHubHandlerEitherAbusiveOrUnusedPermissionRevocationDisabledTest,
+      HandleAcknowledgeRevokedSitePermissionsList);
 
   // SettingsPageUIHandler implementation.
   void OnJavascriptAllowed() override;
@@ -128,7 +155,7 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
 
   // Returns the list of revoked permissions that belongs to origins which
   // haven't been visited recently.
-  // TODO(crbug.com/1443466): Get list of revoked permissions from the unused
+  // TODO(crbug.com/40267370): Get list of revoked permissions from the unused
   // site permission service instead.
   base::Value::List PopulateUnusedSitePermissionsData();
 
@@ -172,20 +199,17 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   // Returns the data for Safe Browsing card.
   void HandleGetSafeBrowsingCardData(const base::Value::List& args);
 
-  // Fetches data for the Safe Browsing card to return data to the UI.
-  base::Value::Dict GetSafeBrowsingCardData();
-
   // Returns the data for the password card.
   void HandleGetPasswordCardData(const base::Value::List& args);
-
-  // Fetches data for the password card to return data to the UI.
-  base::Value::Dict GetPasswordCardData();
 
   // Returns the data for the version card.
   void HandleGetVersionCardData(const base::Value::List& args);
 
   // Fetches data for the version card to return data to the UI.
   base::Value::Dict GetVersionCardData();
+
+  // Returns the data for Safety Hub entry point.
+  void HandleGetSafetyHubEntryPointData(const base::Value::List& args);
 
   // Returns true if Safety Hub has recommendations.
   void HandleGetSafetyHubHasRecommendations(const base::Value::List& args);
@@ -196,17 +220,69 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();
 
-  // Returns the number of extensions that should be reviewed by the user.
-  int GetNumberOfExtensionsThatNeedReview();
+  // Creates the safety hub results object which tracks triggering
+  // extensions.
+  void InitSafetyHubExtensionResults();
 
   // Returns the set of Safety Hub modules which require the user's attention.
   std::set<SafetyHubModule> GetSafetyHubModulesWithRecommendations();
+
+  // Calculate the number of extensions that need to be reviewed by the
+  // user.
+  void HandleGetNumberOfExtensionsThatNeedReview(const base::Value::List& args);
+
+  // Return the number of extensions that should be reviewed by the user.
+  // There are currently three triggers the `SafetyHubHandler` tracks:
+  // -- Extension Malware Violation
+  // -- Extension Policy Violation
+  // -- Extension Unpublished by the developer
+  // -- Extension that is considerard unwanted
+  // -- Extension that is considerard offstore
+  // When first called it will create the `extension_sh_result_` object.
+  int GetNumberOfExtensionsThatNeedReview();
+
+  // Let listeners know that the number of extensions that need review may
+  // have changed.
+  void UpdateNumberOfExtensionsThatNeedReview(
+      int num_extension_need_review_before,
+      int num_extension_need_review_after);
+
+  // ExtensionPrefsObserver implementation to track changes to extensions.
+  void OnExtensionPrefsUpdated(const std::string& extension_id) override;
+  void OnExtensionPrefsWillBeDestroyed(
+      extensions::ExtensionPrefs* prefs) override;
+
+  // ExtensionRegistryObserver implementation to track changes to extensions.
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const extensions::Extension* extension,
+                              extensions::UninstallReason reason) override;
+  void OnShutdown(extensions::ExtensionRegistry* registry) override;
+
+  // Record a visit to the Safety Hub page.
+  void HandleRecordSafetyHubVisit(const base::Value::List& args);
+
+  // Record an interaction with one of the Safety Hub modules.
+  void HandleRecordSafetyHubInteraction(const base::Value::List& args);
+
+  // The `extension_sh_result_` contains the needed information about how
+  // many extensions should be reviewed by the user.
+  std::unique_ptr<SafetyHubExtensionsResult> extension_sh_result_;
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   raw_ptr<base::Clock> clock_;
 
   void SetClockForTesting(base::Clock* clock);
+
+  // Listen to the extension prefs and the extension registry for when
+  // prefs are unloaded or changed or an extension is removed.
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
+  base::ScopedObservation<extensions::ExtensionPrefs,
+                          extensions::ExtensionPrefsObserver>
+      prefs_observation_{this};
+  base::WeakPtrFactory<SafetyHubHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_HUB_HANDLER_H_

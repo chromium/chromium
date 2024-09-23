@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/strings/string_piece.h"
 
 ApplicationControllerImpl::ApplicationControllerImpl(
     fuchsia::web::Frame* frame,

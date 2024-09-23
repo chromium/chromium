@@ -8,21 +8,14 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "AutoOpenAllowedForURLs": [
-            "google.com"
-          ]
-        },
-        "prefs": {
-          "download.allowed_urls_for_open_by_policy": {
-            "value": [
-              "google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "download.allowed_urls_for_open_by_policy",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "google.com"
+        ]
+      ]
+    }
   }
 ]

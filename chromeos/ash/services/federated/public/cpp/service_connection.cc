@@ -16,8 +16,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace ash {
-namespace federated {
+namespace ash::federated {
 
 namespace {
 
@@ -135,5 +134,4 @@ ScopedFakeServiceConnectionForTest::~ScopedFakeServiceConnectionForTest() {
   g_fake_service_connection_for_testing = nullptr;
 }
 
-}  // namespace federated
-}  // namespace ash
+}  // namespace ash::federated

@@ -56,6 +56,11 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                          int64_t request_id,
                          base::Value::List args,
                          OperationFinishedCallback callback) override;
+  void OpenFileFinishedSuccessfully(
+      mojom::FileSystemIdPtr file_system_id,
+      int64_t request_id,
+      base::Value::List args,
+      OperationFinishedCallback callback) override;
   void MountFinished(const std::string& extension_id,
                      int64_t request_id,
                      base::Value::List args,
@@ -104,6 +109,12 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                                     base::Value::List args,
                                     OperationFinishedCallback callback,
                                     Profile* profile);
+  void OpenFileFinishedSuccessfullyWithProfile(
+      mojom::FileSystemIdPtr file_system_id,
+      int64_t request_id,
+      base::Value::List args,
+      OperationFinishedCallback callback,
+      Profile* profile);
   void MountFinishedWithProfile(const std::string& extension_id,
                                 int64_t request_id,
                                 base::Value::List args,

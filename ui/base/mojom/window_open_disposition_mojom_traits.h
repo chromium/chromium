@@ -41,7 +41,6 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
         return ui::mojom::WindowOpenDisposition::IGNORE_ACTION;
       default:
         NOTREACHED();
-        return ui::mojom::WindowOpenDisposition::UNKNOWN;
     }
   }
 
@@ -83,7 +82,6 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
         return true;
       default:
         NOTREACHED();
-        return false;
     }
   }
 };

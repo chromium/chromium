@@ -11,12 +11,19 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
 
 namespace ash {
 
 class GaiaInfoScreenView;
 
-class GaiaInfoScreen : public BaseScreen {
+class GaiaInfoScreen
+    : public BaseScreen,
+      public screens_common::mojom::GaiaInfoPageHandler,
+      public OobeMojoBinder<screens_common::mojom::GaiaInfoPageHandler,
+                            screens_common::mojom::GaiaInfoPage> {
  public:
   using TView = GaiaInfoScreenView;
 
@@ -53,7 +60,10 @@ class GaiaInfoScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+
+  // screens_common::mojom::GaiaInfoPageHandler
+  void OnBackClicked() override;
+  void OnNextClicked(UserCreationFlowType user_flow) override;
 
   void SetQuickStartButtonVisibility(bool visible);
 

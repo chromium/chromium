@@ -1,5 +1,10 @@
 import pytest
-from webdriver.bidi.modules.storage import BrowsingContextPartitionDescriptor, StorageKeyPartitionDescriptor
+from webdriver.bidi.modules.network import NetworkStringValue
+from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.modules.storage import (
+    BrowsingContextPartitionDescriptor,
+    StorageKeyPartitionDescriptor,
+)
 from .. import assert_cookie_is_set, create_cookie
 from ... import recursive_compare
 
@@ -14,7 +19,7 @@ def assert_set_cookie_result(set_cookie_result, partition):
         # Browsing context does not require a `sourceOrigin` partition key, but it can be present depending on the
         # browser implementation.
         # `recursive_compare` allows the actual result to be any extension of the expected one.
-        recursive_compare({'partitionKey': {}, }, set_cookie_result)
+        recursive_compare({'partitionKey': {"userContext": "default"}, }, set_cookie_result)
         return
     if isinstance(partition, StorageKeyPartitionDescriptor):
         expected_partition_key = {}
@@ -31,13 +36,33 @@ def assert_set_cookie_result(set_cookie_result, partition):
 async def test_partition_context(bidi_session, set_cookie, top_context, test_page, domain_value):
     await bidi_session.browsing_context.navigate(context=top_context["context"], url=test_page, wait="complete")
 
+    cookie_name = "foo"
+    cookie_value = "bar"
     partition = BrowsingContextPartitionDescriptor(top_context["context"])
     set_cookie_result = await set_cookie(
-        cookie=create_cookie(domain=domain_value()),
-        partition=partition)
+        cookie=create_cookie(
+            domain=domain_value(),
+            name=cookie_name,
+            value=NetworkStringValue(cookie_value),
+        ),
+        partition=partition,
+    )
     assert_set_cookie_result(set_cookie_result, partition)
 
-    await assert_cookie_is_set(bidi_session, domain=domain_value())
+    await assert_cookie_is_set(
+        bidi_session,
+        domain=domain_value(),
+        name=cookie_name,
+        value=NetworkStringValue(cookie_value)
+    )
+
+    result = await bidi_session.script.evaluate(
+        expression="document.cookie",
+        target=ContextTarget(top_context["context"]),
+        await_promise=True,
+    )
+
+    assert result == {"type": "string", "value": f"{cookie_name}={cookie_value}"}
 
 
 async def test_partition_context_frame(bidi_session, set_cookie, top_context, test_page, domain_value, inline):
@@ -75,4 +100,19 @@ async def test_partition_storage_key_source_origin(bidi_session, set_cookie, tes
 
     await assert_cookie_is_set(bidi_session, domain=domain_value(), partition=partition)
 
-# TODO: test `test_partition_storage_key_user_context`.
+
+async def test_partition_user_context(
+    bidi_session,
+    domain_value,
+    create_user_context,
+    set_cookie
+):
+    user_context_1 = await create_user_context()
+
+    partition = StorageKeyPartitionDescriptor(user_context=user_context_1)
+    set_cookie_result = await set_cookie(
+        cookie=create_cookie(domain=domain_value()),
+        partition=partition)
+    assert_set_cookie_result(set_cookie_result, partition)
+
+    await assert_cookie_is_set(bidi_session, domain=domain_value(), partition=partition)

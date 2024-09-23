@@ -122,8 +122,7 @@ TEST_F(Etc1ThumbnailHelperTest, CompressAndDecompressThumbnail) {
           &compressed_data_copy, &data_size_copy)
           .Then(loop1.QuitClosure());
 
-  GetInterface().Compress(image, gfx::Size(kWidth, kHeight),
-                          std::move(compress_once));
+  GetInterface().Compress(image, true, std::move(compress_once));
   loop1.Run();
 
   // Decompress the image
@@ -192,8 +191,7 @@ TEST_F(Etc1ThumbnailHelperTest, WriteReadAndDeleteThumbnail) {
           &compressed_data_copy, &data_size_copy)
           .Then(loop1.QuitClosure());
 
-  GetInterface().Compress(image, gfx::Size(kWidth, kHeight),
-                          std::move(compress_once));
+  GetInterface().Compress(image, true, std::move(compress_once));
   loop1.Run();
 
   // Write the image

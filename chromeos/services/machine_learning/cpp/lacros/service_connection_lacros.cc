@@ -43,7 +43,7 @@ ServiceConnectionLacros::~ServiceConnectionLacros() = default;
 
 chromeos::machine_learning::mojom::MachineLearningService&
 ServiceConnectionLacros::GetMachineLearningService() {
-  // TODO(crbug.com/1374564): Determine whether it is safe to assume
+  // TODO(crbug.com/40872414): Determine whether it is safe to assume
   // LacrosService is always available here.
   auto* service = chromeos::LacrosService::Get();
   DCHECK(service);
@@ -56,7 +56,7 @@ ServiceConnectionLacros::GetMachineLearningService() {
 void ServiceConnectionLacros::BindMachineLearningService(
     mojo::PendingReceiver<
         chromeos::machine_learning::mojom::MachineLearningService> receiver) {
-  // TODO(crbug.com/1374564): Determine whether it is safe to assume
+  // TODO(crbug.com/40872414): Determine whether it is safe to assume
   // LacrosService is always available here.
   auto* service = chromeos::LacrosService::Get();
   DCHECK(service);

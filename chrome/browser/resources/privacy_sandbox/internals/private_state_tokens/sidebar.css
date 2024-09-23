@@ -1,0 +1,29 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./shared_vars.css.js
+ * #import=//resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit cr-nav-menu-item-style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+.icon {
+  flex-shrink: 0;
+  margin-inline-end: 20px;
+  pointer-events: none;
+  vertical-align: top;
+}
+
+#selector {
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding-top: 8px;
+  width: 250px;
+}

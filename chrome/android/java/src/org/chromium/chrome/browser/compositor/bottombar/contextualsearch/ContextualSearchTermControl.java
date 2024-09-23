@@ -80,7 +80,7 @@ public class ContextualSearchTermControl extends OverlayPanelTextViewInflater {
         super.onFinishInflate();
 
         View view = getView();
-        mSearchTerm = (TextView) view.findViewById(R.id.contextual_search_term);
+        mSearchTerm = view.findViewById(R.id.contextual_search_term);
     }
 
     // ========================================================================================

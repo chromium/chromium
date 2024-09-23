@@ -1,29 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="1088086359088493902">सेकेन्ड</translation>
-<translation id="1142001580032786438">हप्ता चयनकर्ता देखाउनुहोस्</translation>
+<translation id="1012241361789814178">डिबगर अर्को ट्याबमा पज गरिएको छ। सो ट्याबमा जान क्लिक गर्नुहोस्।</translation>
 <translation id="1171774979989969504">कृपया एउटा इमेल ठेगाना प्रविष्टि गर्नुहोस्।</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1306460908038601864">निष्क्रिय छ</translation>
 <translation id="1311894908970423688">मान अनिवार्य रूपमा <ph name="VALUE_DATE_OR_TIME" /> हुनु पर्छ।</translation>
-<translation id="1480676835519562650">धेरै विकल्प चयन गर्ने सुविधा, <ph name="COUNT" /> मध्ये <ph name="SELECTED" /> चयन गरियो।</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">यो महिना</translation>
 <translation id="1637811476055996098">फाइलहरू छान्नुहोस्</translation>
-<translation id="1681022320378710418">हालको समय</translation>
-<translation id="1727839386348365796">आइड्रपर</translation>
+<translation id="1680090928918677457">क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="1729654308190250600">कृपया एउटा खाली नभएको इमेल ठेगाना प्रविष्टि गर्नुहोस्।</translation>
 <translation id="1758486001363313524">अन्य ...</translation>
-<translation id="1787192514241997742">कुल समय: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">क्यामेरा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
-<translation id="1822429046913737220">बिहना/साँझ</translation>
-<translation id="1832974991323546415">टाढाको यन्त्रमा प्ले गर्नुहोस्</translation>
 <translation id="1921819250265091946">dd</translation>
 <translation id="1938124657309484470">मूल्य <ph name="MAXIMUM_DATE_OR_TIME" /> वा अधिल्लो हुनै पर्छ।</translation>
-<translation id="1946271899482435442">मिति चयनकर्ता देखाउनुहोस्</translation>
 <translation id="1993104285338243655">प्रतिविम्ब गर्ने सुविधामा बदल्ने कार्य गरियो</translation>
-<translation id="2031987842108996681">रातो च्यानल</translation>
 <translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />' मा '<ph name="DOT" />' एक गलत स्थानको रूपमा प्रयोग गरिन्छ।</translation>
 <translation id="2068711044993563745">न्यूनतम मान (<ph name="MINIMUM" />) अनिवार्य रूपमा अधिकतम मान (<ph name="MAXIMUM" />) भन्दा कम हुनु पर्छ।</translation>
 <translation id="2148716181193084225">आज</translation>
@@ -31,29 +22,16 @@
 <translation id="2247351761944213033">हप्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्र्याक <ph name="NUMBER" /></translation>
 <translation id="2353297238722298836">क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
-<translation id="2393030564806080191">रङको हेक्साडेसिमल मान</translation>
-<translation id="2398813069815436052">डायलग खोलिएको छ।</translation>
-<translation id="245932805758469625">भिडियोको बाँकी सेकेन्डको अवधि</translation>
-<translation id="248395913932153421">दिन</translation>
 <translation id="2507943997699731163">कृपया यस क्षेत्रमा भर्नुहोस्।</translation>
-<translation id="2530182415807757784">धेरै विकल्प चयन गर्ने सुविधा, कसैलाई पनि चयन गरिएन।</translation>
-<translation id="2561842179657104141">थप मिडिया नियन्त्रणहरू देखाउनुहोस्</translation>
-<translation id="2572483411312390101">प्ले गर्नुहोस्</translation>
 <translation id="2613802280814924224">कृपया एक वैध परिमाण प्रविष्टि गर्नुहोस्। सबैभन्दा नजिकको वैध परिमाण <ph name="VALID_VALUE" /> हो।</translation>
-<translation id="2634240155926812724">हरियो च्यानल</translation>
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
-<translation id="2723001399770238859">अडियो</translation>
 <translation id="2746543609216772311">मान <ph name="MINIMUM_DATE_OR_TIME" /> वा पछि हुनुरपर्छ।</translation>
 <translation id="2761667185364618470">यदि तपाईं अगाडि बढ्न चाहनुहुन्छ भने यस बाकसमा ठिक चिह्न लगाउनुहोस्।</translation>
 <translation id="2908441821576996758">कृपया अल्पविरामले विभाजित गरिएको इमले ठेगानाहरूको सूची प्रविष्टि गर्नुहोस्।</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> एमबी</translation>
-<translation id="3053226512517284904">"अडियोको वर्णन" मेनु देखाइयोस्</translation>
 <translation id="3075154866155599887">कृपया एउटा वैध मान प्रविष्टि गर्नुहोस्। क्षेत््र अपूर्ण छ वा त्यसमा एउटा अमान्य मिति छ।</translation>
 <translation id="310520048233152454">कृपया एउटा URL प्रविष्टि गर्नुहोस्।</translation>
-<translation id="3220661731597678625">हालको चरण</translation>
 <translation id="3321030238473337787">प्लेब्याकको गति</translation>
-<translation id="3329013043687509092">संतृप्तीकरण</translation>
-<translation id="3377518164566272702">माइक्रोफोन तथा क्यामेरा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="3450233048674729344">मूल्य <ph name="MAXIMUM" /> भन्दा थोरै वा बराबर हुनै पर्छ।</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Picture-in-picture बाट बाहिरिनुहोस्</translation>
@@ -62,132 +40,71 @@
 <translation id="383465348367842624">त्यसको पछाडि '<ph name="ATSIGN" />' आउने भागमा '<ph name="INVALIDCHARACTER" />' सङ्केत हुनुहुँदैन।</translation>
 <translation id="3846214748874656680">पूर्ण स्क्रिनबाट निस्कनुहोस्</translation>
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
-<translation id="4103419683916926126">मिलिसेकेन्ड</translation>
-<translation id="4201051445878709314">अघिल्लो महिना देखाउनुहोस्</translation>
 <translation id="4360991593054037559">कृपया एउटा वैध मान प्रविष्टि गर्नुहोस्। दुईवा सबैभण्दा नजिकका वैध मानहरू <ph name="VALID_VALUE_LOW" /> र <ph name="VALID_VALUE_HIGHER" /> हुन्।</translation>
 <translation id="4522570452068850558">विवरणहरू</translation>
 <translation id="4663373278480897665">क्यामेरा प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' पछ्याउने भागले '<ph name="INVALIDCHARACTER" />' चिन्ह समावेश गर्नु हुँदैन।</translation>
 <translation id="4718048029184481307">picture-in-picture मा प्ले गर्दै</translation>
-<translation id="4748357248530471599">प्रदर्शनसम्बन्धी कटआउटलाई टगल गरी पूर्णस्क्रिन बनाउनुहोस्</translation>
-<translation id="4763480195061959176">भिडियो</translation>
 <translation id="4792862212177489858">लोकेसन सेयर गर्नुहोस्</translation>
 <translation id="4812940957355064477">कृपया एक नम्बर प्रविष्टि गर्नुहोस्।</translation>
-<translation id="4912200001568447310">हालको वस्तु</translation>
-<translation id="4915360478455618802">समय चयनकर्ता देखाउनुहोस्</translation>
-<translation id="4924138096460353083">अनिश्चित</translation>
-<translation id="4950364064308314478">स्थानीय मिति र समय चयनकर्ता देखाउनुहोस्</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" /> चयन गरियो</translation>
+<translation id="49269513399674318">माइक्रोफोन प्रयोग गर्नुहोस्</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> चयन गरिएको</translation>
 <translation id="4992066212339426712">आवाज खोल्नुहोस्</translation>
 <translation id="49969490063480558">कृपया '<ph name="ATSIGN" />' पछ्याउने एउटा भाग प्रविष्टि गर्नुहोस्। '<ph name="INVALIDADDRESS" />' अपूर्ण छ।</translation>
-<translation id="5037575921016181960">भरपर्दो पासवर्ड</translation>
-<translation id="5090250355906949916">भिडियो टाइमलाइनसम्बन्धी स्क्रबर</translation>
-<translation id="509897012892853729">निलो च्यानल</translation>
-<translation id="5117590920725113268">अर्को महिना देखाउनुहोस्</translation>
 <translation id="5164977714490026579">मान <ph name="MINIMUM" /> भन्दा धेरै वा बराबर हुनै पर्छ।</translation>
 <translation id="5196716972587102051">2</translation>
-<translation id="5199514351668672591">"विकल्पहरू" मा फर्कनुहोस्</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> पीबी</translation>
-<translation id="5272594226096532950">चिन्ह नलगाइएको। समूहमा <ph name="COUNT" /> मध्ये <ph name="INDEX" /> औँ विकल्प</translation>
 <translation id="5307600278924710095">कृपया '<ph name="ATSIGN" />' पछिको भाग प्रविष्टि गर्नुहोस्। '<ph name="INVALIDADDRESS" />' अपूरो छ।</translation>
 <translation id="5334352251556557839">मिडिया प्ले गर्न सकिएन।</translation>
 <translation id="537648784377940524">न्यूनतम मिति (<ph name="MIN_DATE_OR_TIME" />) अधिकतम मिति (<ph name="MAX_DATE_OR_TIME" />) भन्दा अगाडिको मिति हुनु पर्छ।</translation>
-<translation id="5378437566635403538">विस्तृत गरियो, डायलग खोलियो।</translation>
-<translation id="5425179576310518467">आजको मिति</translation>
 <translation id="5466621249238537318">कृपया एक वा बढी फाइलहरू चयन गर्नुहोस्।</translation>
-<translation id="5468998798572797635">पूर्ण स्क्रिनबाट निस्कनुहोस्</translation>
 <translation id="5514612371225420585">तपाईंको डिभाइसमा भएको फाइल</translation>
 <translation id="5516235301412634559">०.७५</translation>
 <translation id="5537725057119320332">कास्ट गर्नु</translation>
-<translation id="5546461542133609677">ध्वनि नरोक्नुहोस्</translation>
 <translation id="5630795885300617244">१० सेकेन्ड छाडेर अगाडि पछाडि जान बायाँ वा दायाँतिर डबल ट्याप गर्नुहोस्</translation>
-<translation id="5677946354068040947">थप विकल्पहरू</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
-<translation id="5786442179789148008">प्लेब्याकको गति नामक मेनु देखाइयोस्</translation>
-<translation id="5787939484346677755">विस्तृत गरियो, यो शब्द स्वतः पूरा गर्ने विकल्पहरू उपलब्ध छन्।</translation>
-<translation id="5860033963881614850">बन्द</translation>
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5888666972993069672">अहिले <ph name="DEVICE_FRIENDLY_NAME" /> मा casting गर्दै</translation>
-<translation id="5916664084637901428">अन</translation>
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
 <translation id="5966707198760109579">हप्ता</translation>
 <translation id="5985507339671257014">०.५</translation>
-<translation id="6011459053400940133">भोल्युम स्लाइडर</translation>
-<translation id="6015796118275082299">वर्ष</translation>
-<translation id="6165053282446038410">विस्तृत गरियो, यो शब्द स्वतः पूरा गर्ने <ph name="COUNT" /> वटा विकल्प उपलब्ध छन्।</translation>
-<translation id="6212595056017402527">हालको पेज</translation>
-<translation id="6281588256137006900">फिक्कापन</translation>
 <translation id="6310801910862476708">Picture-in-Picture बाट बाहिरिनुहोस्‌</translation>
-<translation id="6398862346408813489">महिना चयन प्यानल देखाउनुहोस्</translation>
-<translation id="6404546809543547843">अडियो समय स्क्रबर</translation>
-<translation id="6443871981718447451">उपशीर्षकहरूको मेनु देखाउनुहोस्</translation>
-<translation id="6484738902856791350">प्रिटी प्रिन्ट गरियोस्</translation>
+<translation id="6484738902856791350">प्रिटी प्रिन्ट गर्नुहोस्</translation>
 <translation id="6550675742724504774">विकल्पहरू</translation>
-<translation id="6572309429103589720">व्याकरणसम्बन्धी त्रुटि</translation>
-<translation id="658823671542763450">पूरा स्क्रिनमा प्रवेश गर्नुहोस्</translation>
-<translation id="6606094904835912297">सिस्टमको रङ</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="668171684555832681">अन्य...</translation>
 <translation id="6709093583001123835">मान अनिवार्य रूपमा <ph name="VALUE" /> हुनु पर्छ।</translation>
 <translation id="6709570249143506788">प्लेब्याकको खराब गुणस्तर</translation>
-<translation id="6719914554879143100">चिन्ह लगाइएको। समूहमा <ph name="COUNT" /> मध्ये <ph name="INDEX" /> औँ विकल्प</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6820355525329141109">प्लगइन लोड गर्न सकेन।</translation>
-<translation id="6831465880655513317">रङको गाढापन वा फिक्कापन चयन गर्न प्रयोग गर्न सकिने द्विआयामिक स्लाइडर भएको कलर वेल</translation>
-<translation id="6843725295806269523">मौन</translation>
 <translation id="6919891270253167948">१.५</translation>
-<translation id="6941933287844615239">मिडिया डाउनलोड गर्नुहोस्</translation>
-<translation id="698788488269350478">विस्तृत गरियो।</translation>
 <translation id="6989848892321993519">कृपया यो पाठलाई <ph name="MIN_CHARACTERS" /> वर्ण वा अझ बढीमा लम्ब्याउनुहोस् (तपाईं हाल १ वर्ण प्रयोग गर्दै हुनुहुन्छ )।</translation>
 <translation id="7080893216867146095">लोकेसन सेयर गर्ने अनुमति दिइएको छैन</translation>
 <translation id="709897737746224366">कृपया अनुरोध गरिएको ढाँचासँग मिलाउनुहोस्।</translation>
-<translation id="7102274145889307184">हालको स्थान</translation>
+<translation id="7134810312945846184">माइक्रोफोन र क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="7263440858009898357">कृपया सूचीमा एक वस्तु चयन गर्नुहोस्।</translation>
-<translation id="7320576522385648310">बफर गर्दै</translation>
-<translation id="7341556277900466204">कलर वेल</translation>
 <translation id="7364796246159120393">फाइल छान्नुहोस्</translation>
 <translation id="739024184232394898">अन्य...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> टीबी</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
-<translation id="7673697353781729403">घन्टा</translation>
 <translation id="7750228210027921155">Picture in picture</translation>
-<translation id="775297008183122718">अमान्य प्रविष्टि</translation>
 <translation id="7782515065589691344">1.25</translation>
-<translation id="7789962463072032349">पज गर्नुहोस्</translation>
-<translation id="7852167693871241274">ह्यु स्लाइडर</translation>
 <translation id="7888071071722539607">कृपया इमेल ठेगानामा एक '<ph name="ATSIGN" />' समावेश गर्नुहोस्। <ph name="INVALIDADDRESS" />' ले एक '<ph name="ATSIGN" />' हराइरहेको छ।</translation>
 <translation id="795667975304826397">कुनैपनि फाइल छानिएको छैन</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" /> चयन गरिएन</translation>
 <translation id="8117451130807776954">यो हप्ता</translation>
 <translation id="8131955114056917397">०.२५</translation>
 <translation id="8199524924445686405">yyyy</translation>
-<translation id="8261464734335370856">हिज्जेसम्बन्धी त्रुटि</translation>
 <translation id="8284326494547611709">क्याप्सन</translation>
 <translation id="835897206747267392">अमान्य मान।</translation>
 <translation id="839593075537728968">मान अनिवार्य रूपमा <ph name="MINIMUM_TIME" /> र <ph name="MAXIMUM_TIME" /> का बिचमा हुनु पर्छ।</translation>
-<translation id="8403857369060869934">बितेको समय: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> फाइलहरू</translation>
 <translation id="8451268428117625855">कृपया एउटा फाइल चयन गर्नुहोस्।</translation>
-<translation id="8534579021159131403">मिनेट</translation>
-<translation id="8541249477527128034">मिडिया नियन्त्रण</translation>
-<translation id="8613126697340063924">टाढाको प्लेब्याक नियन्त्रण गर्नुहोस्</translation>
-<translation id="8634971699417195529">महिना चयनकर्ता देखाउनुहोस्</translation>
 <translation id="8637593834423658414">१.७५</translation>
-<translation id="8668988909814782445">लाइन र्‍याप गरियोस्</translation>
+<translation id="8668988909814782445">लाइन र्‍याप गर्नुहोस्</translation>
 <translation id="8750798805984357768">कृपया यी विकल्पहरू मध्ये एउटा चयन गर्नुहोस्।</translation>
 <translation id="8845239796550121995">हाल तपाईंको टिभी मा cast गर्दै</translation>
 <translation id="8875657656876809964">भिडियो प्लेब्याकसम्बन्धी त्रुटि</translation>
-<translation id="8889402386540077796">ह्यु</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> केबी</translation>
-<translation id="894736920926684893">ढाँचा टगल गर्ने बटन</translation>
-<translation id="8987927404178983737">महिना</translation>
-<translation id="901493112792887934">सेकेन्डमा हालको समय</translation>
-<translation id="9093215626363556771">picture-in-picture बाट बाहिरिनुहोस्‌</translation>
 <translation id="9132465097189459683">अन्य...</translation>
-<translation id="9155987714137265666"><ph name="WEEK" /> , <ph name="WEEK_START_DATE" />मा सुरु गर्दै</translation>
 <translation id="916607977885256133">Picture in Picture</translation>
-<translation id="918430632320614861">माइक्रोफोन प्रयोग गर्ने अनुमति दिनुहोस्</translation>
-<translation id="945780513535800434">सबै विकल्पहरूमा चिन्ह लगाइएको छैन</translation>
-<translation id="954003015749068518">picture-in-picture मा प्रवेश गर्नुहोस्‌</translation>
 </translationbundle>

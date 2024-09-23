@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
@@ -84,6 +85,7 @@ net::RequestPriority GetRequestPriority(
     case network::mojom::RequestDestination::kWebIdentity:
     case network::mojom::RequestDestination::kDictionary:
     case network::mojom::RequestDestination::kSpeculationRules:
+    case network::mojom::RequestDestination::kSharedStorageWorklet:
       return net::LOWEST;
   }
 }
@@ -101,6 +103,7 @@ bool IsHandledNavigation(content::NavigationHandle* navigation_handle) {
 
   return navigation_handle->IsInPrimaryMainFrame() &&
          !navigation_handle->IsSameDocument() &&
+         !navigation_handle->IsPageActivation() &&
          navigation_handle->GetURL().SchemeIsHTTPOrHTTPS();
 }
 
@@ -126,7 +129,7 @@ bool ShouldPrefetchDestination(network::mojom::RequestDestination destination) {
       return destination == network::mojom::RequestDestination::kScript ||
              destination == network::mojom::RequestDestination::kStyle;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -171,6 +174,7 @@ enum class LcppHintStatus {
 // would be sent to the renderer process upon navigation commit.
 void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
                                 LoadingPredictor& predictor) {
+  base::ElapsedTimer timer;
   if (!blink::LcppEnabled() || !navigation_handle.IsInOutermostMainFrame() ||
       navigation_handle.IsSameDocument()) {
     return;
@@ -179,27 +183,30 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
   if (!navigation_url.is_valid() || !navigation_url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  std::optional<LcppData> lcpp_data =
-      predictor.resource_prefetch_predictor()->GetLcppData(navigation_url);
-  if (!lcpp_data) {
+  std::optional<LcppStat> lcpp_stat =
+      predictor.resource_prefetch_predictor()->GetLcppStat(
+          navigation_handle.GetInitiatorOrigin(), navigation_url);
+  if (!lcpp_stat) {
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",
         LcppHintStatus::kNoLcppData);
     return;
   }
-  if (!IsValidLcppStat(lcpp_data->lcpp_stat())) {
+  if (!IsValidLcppStat(*lcpp_stat)) {
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",
         LcppHintStatus::kInvalidLcppStat);
     return;
   }
   std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint> hint =
-      ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(*lcpp_data);
+      ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(*lcpp_stat);
   if (hint) {
     navigation_handle.SetLCPPNavigationHint(*hint);
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",
         LcppHintStatus::kSucceedToSet);
+    base::UmaHistogramTimes("LoadingPredictor.SetLCPPNavigationHint.Time",
+                            timer.Elapsed());
   } else {
     base::UmaHistogramEnumeration(
         "LoadingPredictor.SetLCPPNavigationHint.Status",
@@ -216,7 +223,8 @@ void MaybePrewarmMainResourceAndSubresourcesOnNavigation(
       navigation_handle.IsSameDocument()) {
     return;
   }
-  predictor.MaybePrewarmResources(navigation_handle.GetURL());
+  predictor.MaybePrewarmResources(navigation_handle.GetInitiatorOrigin(),
+                                  navigation_handle.GetURL());
 }
 
 NavigationId GetNextId() {
@@ -283,8 +291,16 @@ LoadingPredictorTabHelper::DocumentPageDataHolder::DocumentPageDataHolder(
     content::RenderFrameHost* rfh)
     : content::DocumentUserData<DocumentPageDataHolder>(rfh),
       page_data_(base::MakeRefCounted<PageData>()) {}
-LoadingPredictorTabHelper::DocumentPageDataHolder::~DocumentPageDataHolder() =
-    default;
+
+LoadingPredictorTabHelper::DocumentPageDataHolder::~DocumentPageDataHolder() {
+  if (page_data_->predictor_) {
+    page_data_->predictor_->loading_data_collector()->RecordPageDestroyed(
+        page_data_->navigation_id_,
+        page_data_->last_optimization_guide_prediction_);
+  }
+  page_data_->last_optimization_guide_prediction_ = std::nullopt;
+}
+
 LoadingPredictorTabHelper::NavigationPageDataHolder::NavigationPageDataHolder(
     content::NavigationHandle& navigation_handle)
     : page_data_(base::MakeRefCounted<PageData>()),
@@ -331,13 +347,15 @@ void LoadingPredictorTabHelper::DidStartNavigation(
   }
 
   PageData& page_data = PageData::CreateForNavigationHandle(*navigation_handle);
+  page_data.predictor_ = predictor_;
 
   page_data.has_local_preconnect_predictions_for_current_navigation_ =
       predictor_->OnNavigationStarted(
           page_data.navigation_id_,
           ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
                                  ukm::SourceIdType::NAVIGATION_ID),
-          navigation_handle->GetURL(), navigation_handle->NavigationStart());
+          navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
+          navigation_handle->NavigationStart());
   if (page_data.has_local_preconnect_predictions_for_current_navigation_ &&
       !features::ShouldAlwaysRetrieveOptimizationGuidePredictions()) {
     return;
@@ -360,7 +378,7 @@ void LoadingPredictorTabHelper::DidStartNavigation(
       base::BindOnce(
           &LoadingPredictorTabHelper::OnOptimizationGuideDecision,
           weak_ptr_factory_.GetWeakPtr(), base::WrapRefCounted(&page_data),
-          navigation_handle->GetURL(),
+          navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
           !page_data.has_local_preconnect_predictions_for_current_navigation_));
 }
 
@@ -404,7 +422,7 @@ void LoadingPredictorTabHelper::DidRedirectNavigation(
       base::BindOnce(
           &LoadingPredictorTabHelper::OnOptimizationGuideDecision,
           weak_ptr_factory_.GetWeakPtr(), base::WrapRefCounted(page_data),
-          navigation_handle->GetURL(),
+          navigation_handle->GetInitiatorOrigin(), navigation_handle->GetURL(),
           !(page_data
                 ->has_local_preconnect_predictions_for_current_navigation_ &&
             is_same_origin_redirect)));
@@ -496,30 +514,12 @@ void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
     return;
 
   predictor_->loading_data_collector()->RecordMainFrameLoadComplete(
-      page_data->navigation_id_,
-      page_data->last_optimization_guide_prediction_);
-
-  // Clear out Optimization Guide Prediction, as it is no longer needed.
-  page_data->last_optimization_guide_prediction_ = std::nullopt;
-}
-
-void LoadingPredictorTabHelper::RecordFirstContentfulPaint(
-    content::RenderFrameHost* render_frame_host,
-    base::TimeTicks first_contentful_paint) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!predictor_)
-    return;
-
-  auto* page_data = PageData::GetForDocument(*render_frame_host);
-  if (!page_data)
-    return;
-
-  predictor_->loading_data_collector()->RecordFirstContentfulPaint(
-      page_data->navigation_id_, first_contentful_paint);
+      page_data->navigation_id_);
 }
 
 void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
     scoped_refptr<PageData> page_data,
+    const std::optional<url::Origin>& initiator_origin,
     const GURL& main_frame_url,
     bool should_add_preconnects_to_prediction,
     optimization_guide::OptimizationGuideDecision decision,
@@ -626,7 +626,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
   // use the predictions to pre* subresources.
   if (!page_data->document_page_data_holder_ &&
       features::ShouldUseOptimizationGuidePredictions()) {
-    predictor_->PrepareForPageLoad(main_frame_url,
+    predictor_->PrepareForPageLoad(initiator_origin, main_frame_url,
                                    HintOrigin::OPTIMIZATION_GUIDE,
                                    /*preconnectable=*/false, prediction);
   }

@@ -63,34 +63,40 @@ class PhoneCaptureStateToken {
     /**
      * Returns the first difference found between the two snapshots. If no difference is found, then
      * {@link ToolbarSnapshotDifference.UNKNOWN} is returned.
-     * @param that The other snapshot to compare against.
+     *
+     * @param current The current snapshot.
+     * @param next The new snapshot to compare against.
      * @return The difference.
      */
-    public @ToolbarSnapshotDifference int getAnyDifference(PhoneCaptureStateToken that) {
-        if (that == null) {
+    public static @ToolbarSnapshotDifference int getAnyDifference(
+            PhoneCaptureStateToken current, PhoneCaptureStateToken next) {
+        assert next != null;
+        if (current == null) {
             return ToolbarSnapshotDifference.NULL;
-        } else if (mTint != that.mTint) {
+        } else if (current.mTint != next.mTint) {
             return ToolbarSnapshotDifference.TINT;
-        } else if (mTabCount != that.mTabCount) {
+        } else if (current.mTabCount != next.mTabCount) {
             return ToolbarSnapshotDifference.TAB_COUNT;
-        } else if (mOptionalButtonDataHashCode != that.mOptionalButtonDataHashCode) {
+        } else if (current.mOptionalButtonDataHashCode != next.mOptionalButtonDataHashCode) {
             return ToolbarSnapshotDifference.OPTIONAL_BUTTON;
-        } else if (mVisualState != that.mVisualState) {
+        } else if (current.mVisualState != next.mVisualState) {
             return ToolbarSnapshotDifference.VISUAL_STATE;
-        } else if (mSecurityIcon != that.mSecurityIcon) {
+        } else if (current.mSecurityIcon != next.mSecurityIcon) {
             return ToolbarSnapshotDifference.SECURITY_ICON;
-        } else if (mIsShowingUpdateBadgeDuringLastCapture
-                != that.mIsShowingUpdateBadgeDuringLastCapture) {
+        } else if (current.mIsShowingUpdateBadgeDuringLastCapture
+                != next.mIsShowingUpdateBadgeDuringLastCapture) {
             return ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE;
-        } else if (mIsPaintPreview != that.mIsPaintPreview) {
+        } else if (current.mIsPaintPreview != next.mIsPaintPreview) {
             return ToolbarSnapshotDifference.PAINT_PREVIEW;
-        } else if (mUnfocusedLocationBarLayoutWidth != that.mUnfocusedLocationBarLayoutWidth) {
+        } else if (current.mUnfocusedLocationBarLayoutWidth
+                != next.mUnfocusedLocationBarLayoutWidth) {
             return ToolbarSnapshotDifference.LOCATION_BAR_WIDTH;
-        } else if (!Objects.equals(mVisibleUrlText, that.mVisibleUrlText)) {
+        } else if (!VisibleUrlText.isVisuallyEquivalent(
+                current.mVisibleUrlText, next.mVisibleUrlText)) {
             return ToolbarSnapshotDifference.URL_TEXT;
-        } else if (mHomeButtonColorStateList.getDefaultColor()
-                        != that.mHomeButtonColorStateList.getDefaultColor()
-                || mHomeButtonIsVisible != that.mHomeButtonIsVisible) {
+        } else if (current.mHomeButtonColorStateList.getDefaultColor()
+                        != next.mHomeButtonColorStateList.getDefaultColor()
+                || current.mHomeButtonIsVisible != next.mHomeButtonIsVisible) {
             // While there's more to the ColorStateList than just the default color, there's no
             // great way to check for equality. Currently default colors should be sufficient for
             // detecting changes to the toolbar.

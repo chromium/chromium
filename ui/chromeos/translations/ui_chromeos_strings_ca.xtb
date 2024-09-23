@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">dispositius Chromebit</translation>
 <translation id="3085752524577180175">Amfitrió SOCKS</translation>
 <translation id="3104793765551262433">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, bloquejada per l'administrador, detalls</translation>
-<translation id="3113153474486991170">No s'ha pogut obrir el fitxer <ph name="PATH" /> des d'aquesta ubicació. Copia'l a Els meus fitxers per obrir-lo.</translation>
 <translation id="3113592018909187986">Et queda 1 intent. No podràs utilitzar aquesta xarxa fins que no configuris un PIN nou.</translation>
 <translation id="3124404833828281817">Persona fantasiejant</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -281,7 +280,7 @@
 <translation id="3264582393905923483">Context</translation>
 <translation id="3272909651715601089"><ph name="PATH" /> no s'ha pogut obrir</translation>
 <translation id="3280431534455935878">S'està preparant</translation>
-<translation id="3280719573299097127">Tens connexió a una xarxa d'ús mesurat. La sincronització de fitxers s'ha posat en pausa.</translation>
+<translation id="3280719573299097127">Tens connexió de xarxa d'ús mesurat. La sincronització de fitxers s'ha posat en pausa.</translation>
 <translation id="3280987981688031357">Disc de vinil</translation>
 <translation id="3290356915286466215">No segura</translation>
 <translation id="3291218047831493686">Connecta amb aquesta xarxa per canviar la configuració del bloqueig de la SIM</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Cancel·la <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensitat del senyal <ph name="SIGNAL_STRENGTH" />%, detalls</translation>
 <translation id="3691184985318546178">Singalès</translation>
+<translation id="3702842351052426940">És possible que la targeta SIM o el perfil d'eSIM es desactivin. Prova de substituir la targeta SIM o canviar els perfils d'eSIM.</translation>
 <translation id="3722341589402358578">S'ha produït un error. És possible que alguns elements no s'hagin enviat a la paperera.</translation>
 <translation id="3726463242007121105">Aquest dispositiu no es pot obrir perquè el seu sistema de fitxers no és compatible.</translation>
 <translation id="3727148787322499904">Els canvis en aquesta opció de configuració afectaran totes les xarxes compartides</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">L'administrador aplica aquest servidor intermediari</translation>
 <translation id="3830674330436234648">No hi ha cap reproducció disponible</translation>
 <translation id="383652340667548381">Serbi</translation>
+<translation id="3839045880592694915">L'operador no permet que el mòdem es connecti. Contacta-hi per obtenir més informació.</translation>
 <translation id="385051799172605136">Enrere</translation>
-<translation id="3851491607336266896">Connectat, connectivitat limitada</translation>
 <translation id="3855472144336161447">Neo 2 alemany</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3866249974567520381">Descripció</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Els fitxers de Microsoft oberts recentment s'han mogut a OneDrive</translation>
 <translation id="4002066346123236978">Títol</translation>
 <translation id="4017788180641807848">Anglès (EUA) amb teclat Workman</translation>
-<translation id="4019998208269143058">Fixa als fitxers ràpids</translation>
 <translation id="4040753847560036377">El PUK no és correcte</translation>
 <translation id="4057991113334098539">S'està activant...</translation>
 <translation id="4092890906744441904">Irlandès</translation>
+<translation id="4101601646343868113">Inicia la sessió a la xarxa mòbil i confirma que el teu pla de dades mòbils està actiu</translation>
 <translation id="4124731372776320263">S'està sincronitzant 1 fitxer de Drive</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mou els elements que no necessitis a la paperera</translation>
@@ -579,7 +579,7 @@
 <translation id="5428105026674456456">Espanyol</translation>
 <translation id="5438282218546237410">No hi ha cap resultat per a <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">No hi ha prou espai d'emmagatzematge.</translation>
-<translation id="5449551289610225147">La contrasenya no és vàlida</translation>
+<translation id="5449551289610225147">Contrasenya no vàlida</translation>
 <translation id="5459064203055649751">Ja existeix un fitxer anomenat <ph name="FILENAME" />. Vols substituir-lo pel que estàs movent?</translation>
 <translation id="5463231940765244860">Introdueix</translation>
 <translation id="5469868506864199649">Italià</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tàmil amb teclat Tamil99</translation>
 <translation id="5633226425545095130">En moure aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escolta</translation>
+<translation id="5650895901941743674">Comprova la configuració de l'APN</translation>
 <translation id="5669691691057771421">Introdueix el PIN nou</translation>
 <translation id="5678784840044122290">L'aplicació per a Linux estarà disponible al terminal i és possible que també inclogui una icona al menú d'aplicacions.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />No es pot desconnectar d'un arxiu o d'un disc virtual<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, connecta</translation>
 <translation id="6269630227984243955">Malai</translation>
 <translation id="6271903698064569429">No es poden penjar els fitxers perquè "<ph name="SHARED_DRIVE_NAME" />" no té prou espai d'emmagatzematge.</translation>
+<translation id="6279140785485544797">Pot ser que el teu pla de dades mòbils hagi caducat. Contacta amb l'operador per obtenir assistència.</translation>
 <translation id="6287852322318138013">Selecció d'una aplicació per obrir el fitxer</translation>
 <translation id="6295542640242147836">Bloqueja la SIM</translation>
 <translation id="6296410173147755564">El PUK no és vàlid</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Arxiu <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Salutació</translation>
 <translation id="6327785803543103246">Detecció automàtica de servidors intermediaris web</translation>
-<translation id="6337014272874260727">Deixa de fixar als fitxers ràpids</translation>
 <translation id="6339145975392024142">Teclat internacional dels EUA (PC)</translation>
 <translation id="6356685157277930264">Finestra de suggeriments en fitxers</translation>
 <translation id="6358884629796491903">Drac</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Directori actual</translation>
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
 <translation id="6755827872271341378">Dispositiu ChromeOS Flex</translation>
+<translation id="6777029074498310250">Visita <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> per obtenir més informació</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6794539005637808366">Restaura l'element o arrossega'l a una carpeta nova fora de la paperera</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tàmil amb teclat InScript</translation>
 <translation id="7088615885725309056">Més antic</translation>
 <translation id="7103992300314999525">Macedoni</translation>
+<translation id="7104338189998813914">Hi ha un problema en accedir al compte de OneDrive</translation>
 <translation id="7106346894903675391">Compra més emmagatzematge...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;": &lt;em&gt;cerca a Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada fonètic</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Espereu un moment.</translation>
 <translation id="7600126690270271294">Serbi</translation>
 <translation id="7603724359189955920">Quadrícules</translation>
+<translation id="7624010287655004652">L'ha bloquejat un altre proveïdor de serveis per a mòbils</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> ja existeix. Canvieu-ne el nom i torneu-ho a provar.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% completat.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">La llista de fitxers ha canviat a la visualització de miniatures.</translation>
 <translation id="8601932370724196034">Fitxer d'imatge de Crostini</translation>
 <translation id="8609695766746872526">Islandès</translation>
+<translation id="8630384863424041081">Introdueix el PIN de la targeta SIM o el predeterminat que t'hagi proporcionat l'operador. Contacta amb l'operador per obtenir assistència.</translation>
 <translation id="863903787380594467">El PIN no és correcte. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Port</translation>
 <translation id="8656407365183407932">Els fitxers sense connexió s'han hagut de suprimir</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Aquest fitxer és confidencial i està subjecte a restriccions en funció de la política de l'administrador.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8713112442029511308">Maltès</translation>
-<translation id="8714138378966541668">Bloquejada pel proveïdor</translation>
 <translation id="8714406895390098252">Bicicleta</translation>
 <translation id="8719721339511222681">S'ha seleccionat <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croat</translation>

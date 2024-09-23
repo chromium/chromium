@@ -24,11 +24,12 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
@@ -37,6 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
@@ -62,11 +64,33 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
+  using RealTimeReportingContributions =
+      std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
+
+  using GetNextThreadIndexCallback = base::RepeatingCallback<size_t()>;
+
+  // Classification of how trusted signals related to this worklet.
+  // This is used for histograms, so entries should not be reordered or
+  // otherwise renumbered.
+  enum class SignalsOriginRelation {
+    kNoTrustedSignals,
+    kSameOriginSignals,
+
+    // If trusted signals are cross-origin, their classification starts at
+    // kUnknownPermissionCrossOriginSignals and gets changed to permitted or
+    // forbidden once the permission header is received (or is found missing).
+    kUnknownPermissionCrossOriginSignals,
+    kPermittedCrossOriginSignals,
+    kForbiddenCrossOriginSignals,
+
+    kMaxValue = kForbiddenCrossOriginSignals
+  };
+
   // Starts loading the worklet script on construction.
   SellerWorklet(
-      scoped_refptr<AuctionV8Helper> v8_helper,
-      mojo::PendingRemote<mojom::AuctionSharedStorageHost>
-          shared_storage_host_remote,
+      std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
+      std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
+          shared_storage_hosts,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -76,7 +100,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const std::optional<GURL>& trusted_scoring_signals_url,
       const url::Origin& top_window_origin,
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
-      std::optional<uint16_t> experiment_group_id);
+      std::optional<uint16_t> experiment_group_id,
+      GetNextThreadIndexCallback next_thread_index_callback);
 
   explicit SellerWorklet(const SellerWorklet&) = delete;
   SellerWorklet& operator=(const SellerWorklet&) = delete;
@@ -92,7 +117,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     close_pipe_callback_ = std::move(close_pipe_callback);
   }
 
-  int context_group_id_for_testing() const;
+  std::vector<int> context_group_ids_for_testing() const;
 
   // mojom::SellerWorklet implementation:
   void ScoreAd(
@@ -111,8 +136,13 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
       const GURL& browser_signal_render_url,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_buyer_and_seller_reporting_id,
       const std::vector<GURL>& browser_signal_ad_components,
       uint32_t browser_signal_bidding_duration_msecs,
+      const std::optional<blink::AdSize>& browser_signal_render_size,
       bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
       const std::optional<base::TimeDelta> seller_timeout,
       uint64_t trace_id,
@@ -132,6 +162,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const url::Origin& browser_signal_interest_group_owner,
       const std::optional<std::string>&
           browser_signal_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -145,8 +177,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       uint64_t trace_id,
       ReportResultCallback callback) override;
   void ConnectDevToolsAgent(
-      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
-      override;
+      mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
+      uint32_t thread_index) override;
 
  private:
   // Contains all data needed for a ScoreAd() call. Destroyed only when its
@@ -169,11 +201,15 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     std::optional<blink::AdCurrency> component_expect_bid_currency;
     url::Origin browser_signal_interest_group_owner;
     GURL browser_signal_render_url;
+    std::optional<std::string>
+        browser_signal_selected_buyer_and_seller_reporting_id;
+    std::optional<std::string> browser_signal_buyer_and_seller_reporting_id;
     // While these are URLs, it's more convenient to store these as strings
     // rather than GURLs, both for creating a v8 array from, and for sharing
     // ScoringSignals code with BidderWorklets.
     std::vector<std::string> browser_signal_ad_components;
     uint32_t browser_signal_bidding_duration_msecs;
+    std::optional<blink::AdSize> browser_signal_render_size;
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout;
     std::optional<base::TimeDelta> seller_timeout;
     uint64_t trace_id;
@@ -185,11 +221,18 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     base::TimeDelta wait_trusted_signals;
     base::TimeDelta wait_direct_from_seller_signals;
 
+    // Time where the SellerWorklet finished waiting for ScoreAd dependencies,
+    // used to compute start and end times for latency phase UKMs.
+    base::TimeTicks score_ad_start_time;
+
     mojo::Remote<auction_worklet::mojom::ScoreAdClient> score_ad_client;
 
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_scoring_signals_request;
     scoped_refptr<TrustedSignals::Result> trusted_scoring_signals_result;
+
+    // True if failed loading valid trusted scoring signals.
+    bool trusted_bidding_signals_fetch_failed = false;
 
     // Error message from downloading trusted scoring signals, if any. Prepended
     // to errors passed to the ScoreAdCallback.
@@ -229,6 +272,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller;
     url::Origin browser_signal_interest_group_owner;
     std::optional<std::string> browser_signal_buyer_and_seller_reporting_id;
+    std::optional<std::string>
+        browser_signal_selected_buyer_and_seller_reporting_id;
     GURL browser_signal_render_url;
     double browser_signal_bid;
     std::optional<blink::AdCurrency> browser_signal_bid_currency;
@@ -288,7 +333,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         std::optional<GURL> debug_loss_report_url,
         std::optional<GURL> debug_win_report_url,
         PrivateAggregationRequests pa_requests,
+        RealTimeReportingContributions real_time_contributions,
         base::TimeDelta scoring_latency,
+        bool script_timed_out,
         std::vector<std::string> errors)>;
     using ReportResultCallbackInternal =
         base::OnceCallback<void(std::optional<std::string> signals_for_winner,
@@ -296,6 +343,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
                                 base::flat_map<std::string, GURL> ad_beacon_map,
                                 PrivateAggregationRequests pa_requests,
                                 base::TimeDelta reporting_latency,
+                                bool script_timed_out,
                                 std::vector<std::string> errors)>;
 
     V8State(
@@ -305,12 +353,14 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
             shared_storage_host_remote,
         const GURL& decision_logic_url,
         const std::optional<GURL>& trusted_scoring_signals_url,
+        const std::optional<url::Origin>& trusted_scoring_signals_origin,
         const url::Origin& top_window_origin,
         mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
         std::optional<uint16_t> experiment_group_id,
         base::WeakPtr<SellerWorklet> parent);
 
-    void SetWorkletScript(WorkletLoader::Result worklet_script);
+    void SetWorkletScript(WorkletLoader::Result worklet_script,
+                          SignalsOriginRelation trusted_signals_relation);
 
     void ScoreAd(
         const std::string& ad_metadata_json,
@@ -327,16 +377,23 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const std::optional<std::string>&
             direct_from_seller_auction_signals_header_ad_slot,
         scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
+        bool trusted_scoring_signals_fetch_failed,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
         const std::optional<blink::AdCurrency>& component_expect_bid_currency,
         const url::Origin& browser_signal_interest_group_owner,
         const GURL& browser_signal_render_url,
+        const std::optional<std::string>&
+            browser_signal_selected_buyer_and_seller_reporting_id,
+        const std::optional<std::string>&
+            browser_signal_buyer_and_seller_reporting_id,
         const std::vector<std::string>& browser_signal_ad_components,
         uint32_t browser_signal_bidding_duration_msecs,
+        const std::optional<blink::AdSize>& browser_signal_render_size,
         bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
         const std::optional<base::TimeDelta> seller_timeout,
         uint64_t trace_id,
         base::ScopedClosureRunner cleanup_score_ad_task,
+        base::TimeTicks task_enqueued_time,
         ScoreAdCallbackInternal callback);
 
     void ReportResult(
@@ -354,6 +411,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         const url::Origin& browser_signal_interest_group_owner,
         const std::optional<std::string>&
             browser_signal_buyer_and_seller_reporting_id,
+        const std::optional<std::string>&
+            browser_signal_selected_buyer_and_seller_reporting_id,
         const GURL& browser_signal_render_url,
         double browser_signal_bid,
         const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -383,8 +442,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     void PostScoreAdCallbackToUserThreadOnError(
         ScoreAdCallbackInternal callback,
         base::TimeDelta scoring_latency,
+        bool script_timed_out,
         std::vector<std::string> errors,
-        PrivateAggregationRequests pa_requests = {});
+        PrivateAggregationRequests pa_requests = {},
+        RealTimeReportingContributions real_time_contributions = {});
 
     void PostScoreAdCallbackToUserThread(
         ScoreAdCallbackInternal callback,
@@ -397,7 +458,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         std::optional<GURL> debug_loss_report_url,
         std::optional<GURL> debug_win_report_url,
         PrivateAggregationRequests pa_requests,
+        RealTimeReportingContributions real_time_contributions,
         base::TimeDelta scoring_latency,
+        bool script_timed_out,
         std::vector<std::string> errors);
 
     void PostReportResultCallbackToUserThread(
@@ -407,6 +470,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         base::flat_map<std::string, GURL> ad_beacon_map,
         PrivateAggregationRequests pa_requests,
         base::TimeDelta reporting_latency,
+        bool script_timed_out,
         std::vector<std::string> errors);
 
     static void PostResumeToUserThread(
@@ -424,11 +488,21 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
     const GURL decision_logic_url_;
     const std::optional<GURL> trusted_scoring_signals_url_;
+    const std::optional<url::Origin> trusted_scoring_signals_origin_;
+    SignalsOriginRelation trusted_signals_relation_ =
+        SignalsOriginRelation::kNoTrustedSignals;
     const url::Origin top_window_origin_;
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const std::optional<uint16_t> experiment_group_id_;
 
     mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
+
+    // If `kFledgeAlwaysReuseSellerContext` is enabled, use this pointer to
+    // store our `ContextRecycler`. This `ContextRecycler` will be used on all
+    // calls to `ScoreAd`, but not for `ReportResult`. If
+    // `kFledgeAlwaysReuseSellerContext` is disabled, a fresh `ContextRecycler`
+    // will be created as needed.
+    std::unique_ptr<ContextRecycler> context_recycler_for_context_reuse_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };
@@ -436,9 +510,15 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   void ResumeIfPaused();
   void Start();
 
-  void OnDownloadComplete(WorkletLoader::Result worklet_script,
+  void OnDownloadComplete(std::vector<WorkletLoader::Result> worklet_scripts,
                           std::optional<std::string> error_msg);
   void MaybeRecordCodeWait();
+
+  void OnGotCrossOriginTrustedSignalsPermissions(
+      std::vector<url::Origin> permit_origins);
+
+  // Starts fetching signals for `score_ad_task`.
+  void StartFetchingSignalsForTask(ScoreAdTaskList::iterator score_ad_task);
 
   // Called when trusted scoring signals have finished downloading, or when
   // there are no scoring signals to download. Starts running scoreAd() on the
@@ -480,7 +560,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       std::optional<GURL> debug_loss_report_url,
       std::optional<GURL> debug_win_report_url,
       PrivateAggregationRequests pa_requests,
+      RealTimeReportingContributions real_time_contributions,
       base::TimeDelta scoring_latency,
+      bool script_timed_out,
       std::vector<std::string> errors);
 
   // Removes `task` from `score_ad_tasks_` only. Used in case where the
@@ -511,14 +593,15 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       base::flat_map<std::string, GURL> ad_beacon_map,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta reporting_latency,
+      bool script_timed_out,
       std::vector<std::string> errors);
 
   // Returns true if unpaused and the script has loaded.
   bool IsCodeReady() const;
 
-  scoped_refptr<base::SequencedTaskRunner> v8_runner_;
-  scoped_refptr<AuctionV8Helper> v8_helper_;
-  scoped_refptr<AuctionV8Helper::DebugId> debug_id_;
+  std::vector<scoped_refptr<base::SequencedTaskRunner>> v8_runners_;
+  std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers_;
+  std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
@@ -529,6 +612,15 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   std::unique_ptr<TrustedSignalsRequestManager>
       trusted_signals_request_manager_;
 
+  // If any trusted signals requests were deferred because of waiting
+  // on trusted signals classification, this is the first time it
+  // happened.
+  std::optional<base::TimeTicks> first_deferred_trusted_signals_time_;
+
+  const std::optional<url::Origin> trusted_scoring_signals_origin_;
+  SignalsOriginRelation trusted_signals_relation_ =
+      SignalsOriginRelation::kNoTrustedSignals;
+
   // Used for fetching DirectFromSellerSignals from subresource bundles (and
   // caching responses).
   DirectFromSellerSignalsRequester direct_from_seller_requester_seller_signals_;
@@ -536,6 +628,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       direct_from_seller_requester_auction_signals_;
 
   bool paused_;
+
+  size_t resumed_count_ = 0;
 
   // Pending calls to the corresponding Javascript method. Only accessed on
   // main thread, but iterators to its elements are bound to callbacks passed
@@ -546,10 +640,12 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   // Deleted once load has completed.
   std::unique_ptr<WorkletLoader> worklet_loader_;
+  base::TimeTicks code_download_start_;
+  std::optional<base::TimeDelta> js_fetch_latency_;
 
-  // Lives on `v8_runner_`. Since it's deleted there, tasks can be safely
+  // Lives on `v8_runners_`. Since it's deleted there, tasks can be safely
   // posted from main thread to it with an Unretained pointer.
-  std::unique_ptr<V8State, base::OnTaskRunnerDeleter> v8_state_;
+  std::vector<std::unique_ptr<V8State, base::OnTaskRunnerDeleter>> v8_state_;
 
   ClosePipeCallback close_pipe_callback_;
 
@@ -560,6 +656,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
   mojo::Remote<auction_worklet::mojom::AuctionNetworkEventsHandler>
       auction_network_events_handler_;
+
+  GetNextThreadIndexCallback get_next_thread_index_callback_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 

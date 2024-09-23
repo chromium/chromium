@@ -1,6 +1,8 @@
 source_set("feed_ios_public") {
   sources = [
     "experiments_translator.h",
+    "info_card_tracker.cc",
+    "info_card_tracker.h",
     "notice_card_tracker.cc",
     "notice_card_tracker.h",
     "pref_names.cc",
@@ -9,6 +11,7 @@ source_set("feed_ios_public") {
   ]
   public_deps = [
     "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/proto:proto_v2",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
   ]
   deps = [
@@ -21,7 +24,10 @@ source_set("feed_ios_public") {
 
 source_set("feed_ios_unit_tests") {
   testonly = true
-  sources = [ "notice_card_tracker_unittest.cc" ]
+  sources = [
+    "info_card_tracker_unittest.cc",
+    "notice_card_tracker_unittest.cc",
+  ]
   deps = [
     ":feed_ios_public",
     "//base/test:test_support",

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
 
 #include <stddef.h>
@@ -83,7 +88,7 @@ NativeMessageProcessHost::~NativeMessageProcessHost() {
 
   if (process_.IsValid()) {
 // Kill the host process if necessary to make sure we don't leave zombies.
-// TODO(https://crbug.com/806451): On OSX EnsureProcessTerminated() may
+// TODO(crbug.com/41367359): On OSX EnsureProcessTerminated() may
 // block, so we have to post a task on the blocking pool.
 #if BUILDFLAG(IS_MAC)
     base::ThreadPool::PostTask(
@@ -140,8 +145,9 @@ void NativeMessageProcessHost::LaunchHostProcess() {
 void NativeMessageProcessHost::OnHostProcessLaunched(
     NativeProcessLauncher::LaunchResult result,
     base::Process process,
-    base::File read_file,
-    base::File write_file) {
+    base::PlatformFile read_file,
+    std::unique_ptr<net::FileStream> read_stream,
+    std::unique_ptr<net::FileStream> write_stream) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   switch (result) {
@@ -163,20 +169,12 @@ void NativeMessageProcessHost::OnHostProcessLaunched(
 
   process_ = std::move(process);
 #if BUILDFLAG(IS_POSIX)
-  // |read_stream_| will take ownership of |read_file|, so note the underlying
-  // file descript for use with FileDescriptorWatcher.
-  read_file_ = read_file.GetPlatformFile();
+  // |read_stream| owns |read_file|, yet the underlying file descript is needed
+  // for FileDescriptorWatcher.
+  read_file_ = read_file;
 #endif
-
-  scoped_refptr<base::TaskRunner> task_runner(
-      base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
-
-  read_stream_ =
-      std::make_unique<net::FileStream>(std::move(read_file), task_runner);
-  write_stream_ =
-      std::make_unique<net::FileStream>(std::move(write_file), task_runner);
+  read_stream_ = std::move(read_stream);
+  write_stream_ = std::move(write_stream);
 
   WaitRead();
   DoWrite();

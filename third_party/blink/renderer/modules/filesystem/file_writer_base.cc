@@ -122,7 +122,7 @@ void FileWriterBase::DidWrite(int64_t bytes, bool complete) {
       break;
     case kCancelReceivedWriteResponse:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -148,7 +148,7 @@ void FileWriterBase::DidSucceed() {
       FinishCancel();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -173,7 +173,7 @@ void FileWriterBase::DidFail(base::File::Error error_code) {
       FinishCancel();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

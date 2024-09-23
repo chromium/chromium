@@ -50,7 +50,7 @@ class VideoRendererAlgorithmWrapper {
   enum RendererAlgorithm { kDefault, kLowLatency };
 
   const media::TimeSource::WallClockTimeCB wall_clock_time_cb_;
-  raw_ptr<media::MediaLog, ExperimentalRenderer> media_log_;
+  raw_ptr<media::MediaLog> media_log_;
   RendererAlgorithm renderer_algorithm_;
   std::unique_ptr<media::VideoRendererAlgorithm>
       default_rendering_frame_buffer_;

@@ -4,6 +4,7 @@
 
 import("//build/config/cast.gni")
 import("//build/config/ozone.gni")
+import("//chromecast/chromecast.gni")
 
 visibility = [
   "//chromecast/*",
@@ -31,8 +32,9 @@ source_set("cast") {
 
   defines = [ "OZONE_IMPLEMENTATION" ]
 
-  # For EGL header included in surface_factory_cast.cc (needs EGL types).
-  configs += [ "//third_party/khronos:khronos_headers" ]
+  if (enable_starboard_media) {
+    defines += [ "IS_STARBOARD" ]
+  }
 
   # For loading EGL functions using dlsym in surface_factory_cast.cc because we
   # do not want to statically link against EGL library.
@@ -43,6 +45,7 @@ source_set("cast") {
     "//chromecast:chromecast_buildflags",
     "//chromecast/base:base",
     "//chromecast/graphics:libcast_graphics_1.0",
+    "//third_party/angle:includes",
     "//ui/base/cursor",
     "//ui/base/ime",
     "//ui/events/ozone",

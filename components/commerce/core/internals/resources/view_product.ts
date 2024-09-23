@@ -24,6 +24,8 @@ function handleSubmit() {
         getRequiredElement('productClusterId').innerText =
             BigInt.asUintN(64, info.clusterId).toString();
         getRequiredElement('productImageUrl').innerText = info.imageUrl.url;
+        getRequiredElement('productCategories').innerText =
+            info.categoryLabels!.join(', \n');
       });
 }
 

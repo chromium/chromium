@@ -53,7 +53,7 @@ yee+dcuGhs9IGBOEEF7lFA==
 // file.
 base::FilePath InstallVendorKey(const base::FilePath& path) {
   base::FilePath key_file = path.Append("crosier.adb_key");
-  base::WriteFile(key_file, kArcKey, std::size(kArcKey));
+  base::WriteFile(key_file, kArcKey);
 
   constexpr char command_template[] = R"(
     KEY_DIR="%s"
@@ -156,8 +156,16 @@ bool AdbHelper::InstallApk(const base::FilePath& apk_path) {
   CHECK_EQ(result.return_code, 0);
 
   // Install the apk.
-  return Command(
-      base::StringPrintf(R"(install "%s")", apk_path.value().c_str()));
+  const bool success =
+      Command(base::StringPrintf(R"(install "%s")", apk_path.value().c_str()));
+  if (success) {
+    return true;
+  }
+
+  // Dump logcat to debug the installation failure. The output of `logcat` would
+  // be in sudo helper command output so not dumping it again here.
+  Command("logcat -d");
+  return false;
 }
 
 bool AdbHelper::Command(const std::string_view command) {

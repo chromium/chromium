@@ -88,8 +88,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
     return !show_caption_buttons_ || maximized_;
   }
   bool EverHasVisibleBackgroundTabShapes() const override { return false; }
-  void UpdateWindowControlsOverlay(
-      const gfx::Rect& bounding_rect) const override {}
+  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override {}
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
 #if BUILDFLAG(IS_LINUX)
   bool IsTiled() const override { return false; }
@@ -124,7 +123,8 @@ class OpaqueBrowserFrameViewLayoutTest
     auto layout = std::make_unique<OpaqueBrowserFrameViewLayout>();
     layout->set_delegate(delegate_.get());
     layout->set_forced_window_caption_spacing_for_test(0);
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     root_view_ = widget_->GetRootView();
     root_view_->SetSize(gfx::Size(kWindowWidth, kWindowWidth));
     layout_manager_ = root_view_->SetLayoutManager(std::move(layout));
@@ -279,7 +279,6 @@ class OpaqueBrowserFrameViewLayoutTest
     } else {
       const int tabstrip_nonexcluded_y =
           OpaqueBrowserFrameViewLayout::kFrameBorderThickness +
-          layout_manager_->GetNonClientRestoredExtraThickness() +
           OpaqueBrowserFrameViewLayout::kNonClientExtraTopThickness;
       EXPECT_LE(tabstrip_region_bounds.y(), tabstrip_nonexcluded_y);
     }
@@ -381,7 +380,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, BasicWindow) {
   // Tests the layout of a default chrome window with a tabstrip and no window
   // title.
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(false, 0);
+  ExpectCaptionButtons(false, GetParam() ? 1 : 0);
   ExpectTabStripAndMinimumSize(false);
   ExpectWindowIcon(false);
 }
@@ -396,7 +395,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowButtonsOnLeft) {
   layout_manager_->SetButtonOrdering(leading_buttons, trailing_buttons);
 
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(true, 0);
+  ExpectCaptionButtons(true, GetParam() ? 1 : 0);
   ExpectTabStripAndMinimumSize(true);
   ExpectWindowIcon(true);
 }
@@ -418,7 +417,7 @@ TEST_P(OpaqueBrowserFrameViewLayoutTest, WindowWithTitleAndIcon) {
   AddWindowTitleIcons();
 
   views::test::RunScheduledLayout(root_view_);
-  ExpectCaptionButtons(false, 0);
+  ExpectCaptionButtons(false, GetParam() ? 1 : 0);
   ExpectWindowIcon(false);
   ExpectWindowTitle();
 }

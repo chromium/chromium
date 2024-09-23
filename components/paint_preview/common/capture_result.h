@@ -36,8 +36,8 @@ struct RecordingParams {
 
   // The maximum capture size allowed for the SkPicture captured. A size of 0 is
   // unlimited.
-  // TODO(crbug/1071446): Ideally, this would cap the total size rather than
-  // being a per SkPicture limit. However, that is non-trivial due to the
+  // TODO(crbug.com/40126774): Ideally, this would cap the total size rather
+  // than being a per SkPicture limit. However, that is non-trivial due to the
   // async ordering of captures from different frames making it hard to keep
   // track of available headroom at the time of each capture triggering.
   size_t max_capture_size;

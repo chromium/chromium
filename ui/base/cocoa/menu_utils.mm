@@ -83,7 +83,25 @@ void ShowContextMenu(NSMenu* menu,
   [NSMenu popUpContextMenu:menu withEvent:event forView:view];
 
   if (context) {
-    ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
+    // We expect to see the following order of events:
+    //
+    // - menu will show
+    // - element shown
+    // - element activated (optional)
+    // - element hidden
+    // - menu completed
+    //
+    // However, the OS notification for "element activated" fires *after* the OS
+    // notification for "element hidden", so Chromium code handling the "element
+    // hidden" callback responds by doing a post to the main dispatch queue.
+    // Therefore, because there's already a post on the main dispatch queue,
+    // this event must be posted to the main dispatch queue as well to ensure
+    // correct ordering.
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
+        dispatch_get_main_queue(), ^{
+          ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
+        });
   }
 }
 

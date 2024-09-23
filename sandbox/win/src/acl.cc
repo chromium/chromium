@@ -30,7 +30,7 @@ std::optional<DWORD> GetIntegrityLevelRid(IntegrityLevel integrity_level) {
       return std::nullopt;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

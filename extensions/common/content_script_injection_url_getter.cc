@@ -34,7 +34,7 @@ GURL ContentScriptInjectionUrlGetter::Get(
       url::kFileSystemScheme,
   };
 
-  // TODO(https://crbug.com/1212918): Consider reducing tracing instrumentation
+  // TODO(crbug.com/40055997): Consider reducing tracing instrumentation
   // in the main function bodu and in the lambda below (once the bug is
   // understood and fixed).
   auto should_consider_origin = [&document_url, match_origin_as_fallback]() {
@@ -140,7 +140,7 @@ GURL ContentScriptInjectionUrlGetter::Get(
 
   // Traverse the frame/window hierarchy to find the closest non-about:-page
   // with the same origin as the precursor and return its URL.
-  // TODO(https://crbug.com/1186321): This can return the incorrect result, e.g.
+  // TODO(crbug.com/40753677): This can return the incorrect result, e.g.
   // if a parent frame navigates a grandchild frame to about:blank.
   std::unique_ptr<FrameContextData> parent_context_data =
       context_data.CloneFrameContextData();

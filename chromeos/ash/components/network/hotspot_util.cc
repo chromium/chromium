@@ -130,8 +130,16 @@ hotspot_config::mojom::DisableReason ShillTetheringIdleReasonToMojomState(
     return DisableReason::kDownstreamNetworkDisconnect;
   }
 
+  if (idle_reason == shill::kTetheringIdleReasonStartTimeout) {
+    return DisableReason::kStartTimeout;
+  }
+
+  if (idle_reason == shill::kTetheringIdleReasonUpstreamNotAvailable) {
+    return DisableReason::kUpstreamNotAvailable;
+  }
+
   NET_LOG(ERROR) << "Unexpected idle reason: " << idle_reason;
-  return DisableReason::kInternalError;
+  return DisableReason::kUnknownError;
 }
 
 hotspot_config::mojom::WiFiSecurityMode ShillSecurityToMojom(

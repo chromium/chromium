@@ -5,26 +5,32 @@
 #ifndef COMPONENTS_GRPC_SUPPORT_TEST_GET_STREAM_ENGINE_H_
 #define COMPONENTS_GRPC_SUPPORT_TEST_GET_STREAM_ENGINE_H_
 
-struct stream_engine;
+#include <memory>
+
+extern "C" typedef struct stream_engine stream_engine;
 
 namespace grpc_support {
 
-// Returns a stream_engine* for testing with the QuicTestServer.
-// The engine returned should resolve kTestServerHost as localhost:|port|,
-// and should have kTestServerHost configured as a QUIC server.
-stream_engine* GetTestStreamEngine(int port);
+class TestStreamEngineGetter {
+ public:
+  // Starts the stream_engine for testing with the QuicTestServer. The
+  // stream_engine is owned by this object and should not be used after
+  // destruction. The engine returned resolves kTestServerHost as
+  // localhost:|port|, and has kTestServerHost configured as a QUIC server.
+  static std::unique_ptr<TestStreamEngineGetter> Create(int port);
 
-// Starts the stream_engine* for testing with the QuicTestServer.
-// Has the same properties as GetTestStreamEngine.  This function is
-// used when the stream_engine* needs to be shut down and restarted
-// between test cases (including between all of the bidirectional
-// stream test cases and all other tests for the engine; this is the
-// situation for Cronet).
-void StartTestStreamEngine(int port);
+  TestStreamEngineGetter() = default;
 
-// Shuts a stream_engine* started with |StartTestStreamEngine| down.
-// See comment above.
-void ShutdownTestStreamEngine();
+  // Base class. Prevent slicing.
+  TestStreamEngineGetter(const TestStreamEngineGetter&) = delete;
+  TestStreamEngineGetter& operator=(const TestStreamEngineGetter&) = delete;
+
+  // Cleanly shuts down the stream_engine.
+  virtual ~TestStreamEngineGetter() = default;
+
+  // Returns the stream_engine.
+  virtual stream_engine* Get() = 0;
+};
 
 }  // namespace grpc_support
 

@@ -70,7 +70,7 @@ TEST_F(FileLocationsTest, TestFileNameLocaleWithExtension) {
 // Tests that locale/languages available on iOS are mapped to either a
 // translated Chrome Terms of Service or to English.
 TEST_F(FileLocationsTest, TestTermsOfServiceForSupportedLanguages) {
-  // TODO(crbug.com/522638): List of available localized terms_*.html files.
+  // TODO(crbug.com/41195990): List of available localized terms_*.html files.
   // This list is manually maintained as new locales are added to
   // components/resources/terms/.
   NSSet* localizedTermsHtml = [NSSet

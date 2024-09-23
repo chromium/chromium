@@ -6,6 +6,7 @@
 #define CHROME_TEST_CHROMEDRIVER_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 
@@ -66,38 +67,38 @@ double ConvertCentimeterToInch(double centimeter);
 //   (https://www.w3.org/TR/webdriver/#dfn-maximum-safe-integer), whose
 //   absolute value can occupy up to 53 bits.
 bool GetOptionalBool(const base::Value::Dict& dict,
-                     base::StringPiece path,
+                     std::string_view path,
                      bool* out_value,
                      bool* has_value = nullptr);
 bool GetOptionalInt(const base::Value::Dict& dict,
-                    base::StringPiece path,
+                    std::string_view path,
                     int* out_value,
                     bool* has_value = nullptr);
 bool GetOptionalDouble(const base::Value::Dict& dict,
-                       base::StringPiece path,
+                       std::string_view path,
                        double* out_value,
                        bool* has_value = nullptr);
 bool GetOptionalString(const base::Value::Dict& dict,
-                       base::StringPiece path,
+                       std::string_view path,
                        std::string* out_value,
                        bool* has_value = nullptr);
 bool GetOptionalDictionary(const base::Value::Dict& dict,
-                           base::StringPiece path,
+                           std::string_view path,
                            const base::Value::Dict** out_value,
                            bool* has_value = nullptr);
 bool GetOptionalList(const base::Value::Dict& dict,
-                     base::StringPiece path,
+                     std::string_view path,
                      const base::Value::List** out_value,
                      bool* has_value = nullptr);
 // Handles "safe integer" mentioned in W3C spec,
 // https://www.w3.org/TR/webdriver/#dfn-maximum-safe-integer.
 bool GetOptionalSafeInt(const base::Value::Dict& dict,
-                        base::StringPiece path,
+                        std::string_view path,
                         int64_t* out_value,
                         bool* has_value = nullptr);
 
 bool SetSafeInt(base::Value::Dict& dict,
-                const base::StringPiece path,
+                const std::string_view path,
                 int64_t in_value_64);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_UTIL_H_

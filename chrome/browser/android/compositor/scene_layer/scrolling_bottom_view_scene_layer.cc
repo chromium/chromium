@@ -8,8 +8,10 @@
 #include "base/android/jni_array.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
-#include "chrome/browser/ui/android/toolbar/jni_headers/ScrollingBottomViewSceneLayer_jni.h"
 #include "ui/android/resources/resource_manager_impl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/toolbar/jni_headers/ScrollingBottomViewSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

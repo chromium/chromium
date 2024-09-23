@@ -10,19 +10,6 @@
 
 namespace miracle_parameter {
 
-namespace {
-
-std::string GetFieldTrialParamByFeatureAsString(
-    const base::Feature& feature,
-    const std::string& param_name,
-    const std::string& default_value) {
-  const std::string value =
-      base::GetFieldTrialParamValueByFeature(feature, param_name);
-  return value.empty() ? default_value : value;
-}
-
-}  // namespace
-
 std::string GetParamNameWithSuffix(const std::string& param_name) {
   // `base::SysInfo::AmountOfPhysicalMemoryMB()` refers to CommandLine
   // internally. If the CommandLine is not initialized, we return early to avoid
@@ -45,9 +32,10 @@ std::string GetParamNameWithSuffix(const std::string& param_name) {
 std::string GetMiracleParameterAsString(const base::Feature& feature,
                                         const std::string& param_name,
                                         const std::string& default_value) {
-  return GetFieldTrialParamByFeatureAsString(
+  return base::GetFieldTrialParamByFeatureAsString(
       feature, GetParamNameWithSuffix(param_name),
-      GetFieldTrialParamByFeatureAsString(feature, param_name, default_value));
+      base::GetFieldTrialParamByFeatureAsString(feature, param_name,
+                                                default_value));
 }
 
 double GetMiracleParameterAsDouble(const base::Feature& feature,

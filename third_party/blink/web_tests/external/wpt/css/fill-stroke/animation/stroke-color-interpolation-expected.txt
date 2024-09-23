@@ -1,0 +1,348 @@
+This is a testharness.js-based test.
+Found 172 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <stroke-color> from neutral to [green] at (-0.3) should be [rgb(0, 0, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from neutral to [green] at (0) should be [rgb(0, 0, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from neutral to [green] at (0.3) should be [rgb(0, 38, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from neutral to [green] at (0.6) should be [rgb(0, 77, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from neutral to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from neutral to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from neutral to [green] at (-0.3) should be [rgb(0, 0, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from neutral to [green] at (0) should be [rgb(0, 0, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from neutral to [green] at (0.3) should be [rgb(0, 38, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from neutral to [green] at (0.6) should be [rgb(0, 77, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from neutral to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from neutral to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from neutral to [green] at (-0.3) should be [rgb(0, 0, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from neutral to [green] at (0) should be [rgb(0, 0, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from neutral to [green] at (0.3) should be [rgb(0, 38, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from neutral to [green] at (0.6) should be [rgb(0, 77, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from neutral to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from neutral to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from neutral to [green] at (-0.3) should be [rgb(0, 0, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from neutral to [green] at (0) should be [rgb(0, 0, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from neutral to [green] at (0.3) should be [rgb(0, 38, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from neutral to [green] at (0.6) should be [rgb(0, 77, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from neutral to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from neutral to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [initial] to [green] at (-0.3) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [initial] to [green] at (0) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [initial] to [green] at (0.3) should be [rgba(0, 128, 0, 0.3)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [initial] to [green] at (0.6) should be [rgba(0, 128, 0, 0.6)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [initial] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [initial] to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [initial] to [green] at (-0.3) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [initial] to [green] at (0) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [initial] to [green] at (0.3) should be [rgba(0, 128, 0, 0.3)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [initial] to [green] at (0.6) should be [rgba(0, 128, 0, 0.6)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [initial] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [initial] to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [initial] to [green] at (-0.3) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [initial] to [green] at (0) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [initial] to [green] at (0.3) should be [rgba(0, 128, 0, 0.3)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [initial] to [green] at (0.6) should be [rgba(0, 128, 0, 0.6)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [initial] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [initial] to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [initial] to [green] at (-0.3) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [initial] to [green] at (0) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [initial] to [green] at (0.3) should be [rgba(0, 128, 0, 0.3)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [initial] to [green] at (0.6) should be [rgba(0, 128, 0, 0.6)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [initial] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [initial] to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [inherit] to [green] at (-0.3) should be [rgb(255, 255, 255)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [inherit] to [green] at (0) should be [rgb(238, 238, 238)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [inherit] to [green] at (0.3) should be [rgb(167, 205, 167)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [inherit] to [green] at (0.6) should be [rgb(95, 172, 95)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [inherit] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [inherit] to [green] at (1.5) should be [rgb(0, 73, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [inherit] to [green] at (-0.3) should be [rgb(255, 255, 255)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [inherit] to [green] at (0) should be [rgb(238, 238, 238)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [inherit] to [green] at (0.3) should be [rgb(167, 205, 167)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [inherit] to [green] at (0.6) should be [rgb(95, 172, 95)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [inherit] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [inherit] to [green] at (1.5) should be [rgb(0, 73, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [inherit] to [green] at (-0.3) should be [rgb(255, 255, 255)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [inherit] to [green] at (0) should be [rgb(238, 238, 238)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [inherit] to [green] at (0.3) should be [rgb(167, 205, 167)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [inherit] to [green] at (0.6) should be [rgb(95, 172, 95)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [inherit] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [inherit] to [green] at (1.5) should be [rgb(0, 73, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [inherit] to [green] at (-0.3) should be [rgb(255, 255, 255)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [inherit] to [green] at (0) should be [rgb(238, 238, 238)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [inherit] to [green] at (0.3) should be [rgb(167, 205, 167)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [inherit] to [green] at (0.6) should be [rgb(95, 172, 95)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [inherit] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [inherit] to [green] at (1.5) should be [rgb(0, 73, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [unset] to [green] at (-0.3) should be [rgb(255, 255, 255)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [unset] to [green] at (0) should be [rgb(238, 238, 238)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [unset] to [green] at (0.3) should be [rgb(167, 205, 167)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [unset] to [green] at (0.6) should be [rgb(95, 172, 95)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [unset] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [unset] to [green] at (1.5) should be [rgb(0, 73, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [unset] to [green] at (-0.3) should be [rgb(255, 255, 255)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [unset] to [green] at (0) should be [rgb(238, 238, 238)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [unset] to [green] at (0.3) should be [rgb(167, 205, 167)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [unset] to [green] at (0.6) should be [rgb(95, 172, 95)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [unset] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [unset] to [green] at (1.5) should be [rgb(0, 73, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [unset] to [green] at (-0.3) should be [rgb(255, 255, 255)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [unset] to [green] at (0) should be [rgb(238, 238, 238)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [unset] to [green] at (0.3) should be [rgb(167, 205, 167)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [unset] to [green] at (0.6) should be [rgb(95, 172, 95)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [unset] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [unset] to [green] at (1.5) should be [rgb(0, 73, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [unset] to [green] at (-0.3) should be [rgb(255, 255, 255)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [unset] to [green] at (0) should be [rgb(238, 238, 238)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [unset] to [green] at (0.3) should be [rgb(167, 205, 167)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [unset] to [green] at (0.6) should be [rgb(95, 172, 95)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [unset] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [unset] to [green] at (1.5) should be [rgb(0, 73, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [white] to [orange] at (-0.3) should be [white]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [white] to [orange] at (0) should be [white]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [white] to [orange] at (0.3) should be [rgb(255, 228, 179)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [white] to [orange] at (0.6) should be [rgb(255, 201, 102)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [white] to [orange] at (1) should be [orange]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [white] to [orange] at (1.5) should be [rgb(255, 120, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [white] to [orange] at (-0.3) should be [white]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [white] to [orange] at (0) should be [white]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [white] to [orange] at (0.3) should be [rgb(255, 228, 179)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [white] to [orange] at (0.6) should be [rgb(255, 201, 102)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [white] to [orange] at (1) should be [orange]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [white] to [orange] at (1.5) should be [rgb(255, 120, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [white] to [orange] at (-0.3) should be [white]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [white] to [orange] at (0) should be [white]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [white] to [orange] at (0.3) should be [rgb(255, 228, 179)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [white] to [orange] at (0.6) should be [rgb(255, 201, 102)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [white] to [orange] at (1) should be [orange]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [white] to [orange] at (1.5) should be [rgb(255, 120, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [white] to [orange] at (-0.3) should be [white]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [white] to [orange] at (0) should be [white]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [white] to [orange] at (0.3) should be [rgb(255, 228, 179)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [white] to [orange] at (0.6) should be [rgb(255, 201, 102)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [white] to [orange] at (1) should be [orange]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [white] to [orange] at (1.5) should be [rgb(255, 120, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [transparent] to [green] at (-0.3) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [transparent] to [green] at (0) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [transparent] to [green] at (0.3) should be [rgba(0, 128, 0, 0.3)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [transparent] to [green] at (0.6) should be [rgba(0, 128, 0, 0.6)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [transparent] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [transparent] to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [transparent] to [green] at (-0.3) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [transparent] to [green] at (0) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [transparent] to [green] at (0.3) should be [rgba(0, 128, 0, 0.3)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [transparent] to [green] at (0.6) should be [rgba(0, 128, 0, 0.6)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [transparent] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [transparent] to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [transparent] to [green] at (-0.3) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [transparent] to [green] at (0) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [transparent] to [green] at (0.3) should be [rgba(0, 128, 0, 0.3)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [transparent] to [green] at (0.6) should be [rgba(0, 128, 0, 0.6)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [transparent] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [transparent] to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [transparent] to [green] at (-0.3) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [transparent] to [green] at (0) should be [rgba(0, 0, 0, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [transparent] to [green] at (0.3) should be [rgba(0, 128, 0, 0.3)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [transparent] to [green] at (0.6) should be [rgba(0, 128, 0, 0.6)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [transparent] to [green] at (1) should be [rgb(0, 128, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [transparent] to [green] at (1.5) should be [rgb(0, 192, 0)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (-0.5) should be [rgba(0, 0, 255, 0.38)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0) should be [rgba(0, 0, 255, 0.5)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.25) should be [rgba(0, 85, 170, 0.56)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.5) should be [rgba(0, 153, 102, 0.63)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.75) should be [rgba(0, 208, 47, 0.69)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (1) should be [rgba(0, 255, 0, 0.75)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (1.5) should be [rgba(0, 255, 0, 0.88)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (-0.5) should be [rgba(0, 0, 255, 0.38)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0) should be [rgba(0, 0, 255, 0.5)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.25) should be [rgba(0, 85, 170, 0.56)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.5) should be [rgba(0, 153, 102, 0.63)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.75) should be [rgba(0, 208, 47, 0.69)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (1) should be [rgba(0, 255, 0, 0.75)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (1.5) should be [rgba(0, 255, 0, 0.88)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (-0.5) should be [rgba(0, 0, 255, 0.38)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0) should be [rgba(0, 0, 255, 0.5)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.25) should be [rgba(0, 85, 170, 0.56)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.5) should be [rgba(0, 153, 102, 0.63)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.75) should be [rgba(0, 208, 47, 0.69)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (1) should be [rgba(0, 255, 0, 0.75)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (1.5) should be [rgba(0, 255, 0, 0.88)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (-0.5) should be [rgba(0, 0, 255, 0.38)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0) should be [rgba(0, 0, 255, 0.5)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.25) should be [rgba(0, 85, 170, 0.56)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.5) should be [rgba(0, 153, 102, 0.63)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (0.75) should be [rgba(0, 208, 47, 0.69)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (1) should be [rgba(0, 255, 0, 0.75)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <stroke-color> from [currentcolor] to [rgba(0, 255, 0, 0.75)] at (1.5) should be [rgba(0, 255, 0, 0.88)]
+  assert_true: 'from' value should be supported expected true got false
+Harness: the test ran to completion.
+

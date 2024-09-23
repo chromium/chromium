@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "skia/public/mojom/image_info_mojom_traits.h"
 
 #include <optional>
+
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -30,8 +36,8 @@ std::optional<SkImageInfo> MakeSkImageInfo(
   if (!color_transfer_function.is_null() && !color_to_xyz_matrix.is_null()) {
     const float* data = color_transfer_function.data();
     skcms_TransferFunction transfer_function;
-    // TODO(crbug.com/1394542): Mojo should validate this array size. We can CHECK it instead
-    // when it does.
+    // TODO(crbug.com/40061960): Mojo should validate this array size. We can
+    // CHECK it instead when it does.
     if (color_transfer_function.size() != 7u) {
       return std::nullopt;
     }
@@ -44,8 +50,8 @@ std::optional<SkImageInfo> MakeSkImageInfo(
     transfer_function.f = data[6];
 
     skcms_Matrix3x3 to_xyz_matrix;
-    // TODO(crbug.com/1394542): Mojo should validate this array size. We can CHECK it instead
-    // when it does.
+    // TODO(crbug.com/40061960): Mojo should validate this array size. We can
+    // CHECK it instead when it does.
     if (color_to_xyz_matrix.size() != 9u) {
       return std::nullopt;
     }
@@ -73,7 +79,7 @@ skia::mojom::AlphaType EnumTraits<skia::mojom::AlphaType, SkAlphaType>::ToMojom(
       // Unknown types should not be sent over mojo.
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -119,7 +125,7 @@ skia::mojom::ColorType EnumTraits<skia::mojom::ColorType, SkColorType>::ToMojom(
       // Skia has color types not used by Chrome.
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

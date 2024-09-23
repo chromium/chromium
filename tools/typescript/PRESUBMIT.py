@@ -15,6 +15,7 @@ def CheckRunTypescriptTests(input_api, output_api):
 
   sources = set([
       'path_mappings.py',
+      'path_utils.py',
       'tsconfig_base.json',
       'ts_library.py',
       'validate_tsconfig.py',
@@ -24,7 +25,7 @@ def CheckRunTypescriptTests(input_api, output_api):
     return []
 
   presubmit_path = input_api.PresubmitLocalPath()
-  sources = ['ts_library_test.py']
+  sources = ['ts_library_test.py', 'path_mappings_test.py']
   tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
   return input_api.canned_checks.RunUnitTests(input_api, output_api, tests)
 

@@ -41,7 +41,7 @@ void OpenXrDeviceProvider::Initialize(
     content::WebContents* initializing_web_contents) {
   CHECK(!initialized_);
 
-  // TODO(https://crbug.com/1454942): Support non-shared buffer rendering path.
+  // TODO(crbug.com/40917172): Support non-shared buffer rendering path.
   if (device::XrImageTransportBase::UseSharedBuffer()) {
     openxr_platform_helper_ = std::make_unique<OpenXrPlatformHelperAndroid>();
 

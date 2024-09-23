@@ -22,13 +22,15 @@ ChromeAndroidImpl::ChromeAndroidImpl(
         devtools_event_listeners,
     std::optional<MobileDevice> mobile_device,
     std::string page_load_strategy,
-    std::unique_ptr<Device> device)
+    std::unique_ptr<Device> device,
+    bool autoaccept_beforeunload)
     : ChromeImpl(std::move(browser_info),
                  std::move(window_types),
                  std::move(websocket_client),
                  std::move(devtools_event_listeners),
                  std::move(mobile_device),
-                 page_load_strategy),
+                 page_load_strategy,
+                 autoaccept_beforeunload),
       device_(std::move(device)) {}
 
 ChromeAndroidImpl::~ChromeAndroidImpl() = default;
@@ -42,7 +44,7 @@ std::string ChromeAndroidImpl::GetOperatingSystemName() {
 }
 
 Status ChromeAndroidImpl::GetWindow(const std::string& target_id,
-                                    Window* window) {
+                                    internal::Window& window) {
   WebView* web_view = nullptr;
   Status status = GetWebViewById(target_id, &web_view);
   if (status.IsError())
@@ -55,15 +57,30 @@ Status ChromeAndroidImpl::GetWindow(const std::string& target_id,
   if (status.IsError())
     return status;
 
-  window->left = static_cast<int>(result->GetList()[0].GetDouble());
-  window->top = static_cast<int>(result->GetList()[1].GetDouble());
-  window->width = static_cast<int>(result->GetList()[2].GetDouble());
-  window->height = static_cast<int>(result->GetList()[3].GetDouble());
+  window.left = static_cast<int>(result->GetList()[0].GetDouble());
+  window.top = static_cast<int>(result->GetList()[1].GetDouble());
+  window.width = static_cast<int>(result->GetList()[2].GetDouble());
+  window.height = static_cast<int>(result->GetList()[3].GetDouble());
   // Android does not use Window.id or have window states
-  window->id = 0;
-  window->state = "";
+  window.id = 0;
+  window.state = "";
 
   return status;
+}
+
+Status ChromeAndroidImpl::MaximizeWindow(const std::string& target_id) {
+  return Status{kUnsupportedOperation,
+                "Unable to maximize window on Android platform"};
+}
+
+Status ChromeAndroidImpl::MinimizeWindow(const std::string& target_id) {
+  return Status{kUnsupportedOperation,
+                "Unable to minimize window on Android platform"};
+}
+
+Status ChromeAndroidImpl::FullScreenWindow(const std::string& target_id) {
+  return Status{kUnsupportedOperation,
+                "Fullscreen mode is not supported on Android platform"};
 }
 
 bool ChromeAndroidImpl::HasTouchScreen() const {

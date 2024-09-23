@@ -10,18 +10,16 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image/android_video_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
+#include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gl/gl_bindings.h"
@@ -35,21 +33,14 @@ bool MakeContextCurrent(gpu::CommandBufferStub* stub) {
 }
 
 scoped_refptr<gpu::SharedContextState> GetSharedContext(
-    gpu::CommandBufferStub* stub,
-    gpu::ContextResult* result) {
+    gpu::CommandBufferStub* stub) {
+  gpu::ContextResult result;
   auto shared_context =
-      stub->channel()->gpu_channel_manager()->GetSharedContextState(result);
-  return (*result == gpu::ContextResult::kSuccess) ? shared_context : nullptr;
-}
-
-void ContextStateResultUMA(gpu::ContextResult result) {
-  base::UmaHistogramEnumeration(
-      "Media.GpuSharedImageVideoFactory.SharedContextStateResult", result);
+      stub->channel()->gpu_channel_manager()->GetSharedContextState(&result);
+  return (result == gpu::ContextResult::kSuccess) ? shared_context : nullptr;
 }
 
 }  // namespace
-
-using gpu::gles2::AbstractTexture;
 
 DirectSharedImageVideoProvider::DirectSharedImageVideoProvider(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -111,12 +102,10 @@ void GpuSharedImageVideoFactory::Initialize(
     return;
   }
 
-  gpu::ContextResult result;
-  auto shared_context = GetSharedContext(stub_, &result);
+  auto shared_context = GetSharedContext(stub_);
   if (!shared_context) {
     DLOG(ERROR)
         << "GpuSharedImageVideoFactory: Unable to get a shared context.";
-    ContextStateResultUMA(result);
     std::move(gpu_init_cb).Run(nullptr);
     return;
   }
@@ -127,10 +116,8 @@ void GpuSharedImageVideoFactory::Initialize(
   auto scoped_current = std::make_unique<ui::ScopedMakeCurrent>(
       shared_context->context(), shared_context->surface());
   if (!shared_context->IsCurrent(nullptr)) {
-    result = gpu::ContextResult::kTransientFailure;
     DLOG(ERROR)
         << "GpuSharedImageVideoFactory: Unable to make shared context current.";
-    ContextStateResultUMA(result);
     std::move(gpu_init_cb).Run(nullptr);
     return;
   }
@@ -145,42 +132,35 @@ void GpuSharedImageVideoFactory::CreateImage(
     scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Generate a shared image mailbox.
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  if (!stub_) {
+    return;
+  }
+
   auto codec_image =
       base::MakeRefCounted<CodecImage>(spec.coded_size, drdc_lock);
 
   TRACE_EVENT0("media", "GpuSharedImageVideoFactory::CreateVideoFrame");
 
-  if (!CreateImageInternal(spec, mailbox, codec_image, drdc_lock)) {
+  scoped_refptr<gpu::GpuChannelSharedImageInterface>
+      gpu_channel_shared_image_interface =
+          stub_->channel()->shared_image_stub()->shared_image_interface();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      gpu_channel_shared_image_interface->CreateSharedImageForAndroidVideo(
+          spec.coded_size, spec.color_space, codec_image, drdc_lock);
+  if (!shared_image) {
     return;
   }
 
-  // This callback destroys the shared image when video frame is
-  // released/destroyed. This callback has a weak pointer to the shared image
-  // stub because shared image stub could be destroyed before video frame. In
-  // those cases there is no need to destroy the shared image as the shared
-  // image stub destruction will cause all the shared images to be destroyed.
-  auto destroy_shared_image =
-      stub_->channel()->shared_image_stub()->GetSharedImageDestructionCallback(
-          mailbox);
-
-  // Guarantee that the SharedImage is destroyed even if the VideoFrame is
-  // dropped. Otherwise we could keep shared images we don't need alive.
-  auto release_cb = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      base::BindPostTaskToCurrentDefault(std::move(destroy_shared_image)),
-      gpu::SyncToken());
-
   SharedImageVideoProvider::ImageRecord record;
-  record.mailbox = mailbox;
-  record.release_cb = std::move(release_cb);
+  record.shared_image = std::move(shared_image);
   record.is_vulkan = is_vulkan_;
 
-  // Since |codec_image|'s ref holders can be destroyed by stub destruction, we
-  // create a ref to it for the MaybeRenderEarlyManager.  This is a hack; we
-  // should not be sending the CodecImage at all.  The MaybeRenderEarlyManager
-  // should work with some other object that happens to be used by CodecImage,
-  // and non-GL things, to hold the output buffer, etc.
+  // Since |codec_image|'s ref holders can be destroyed by stub destruction,
+  // we create a ref to it for the MaybeRenderEarlyManager.  This is a hack;
+  // we should not be sending the CodecImage at all.  The
+  // MaybeRenderEarlyManager should work with some other object that happens
+  // to be used by CodecImage, and non-GL things, to hold the output buffer,
+  // etc.
   record.codec_image_holder = base::MakeRefCounted<CodecImageHolder>(
       base::SequencedTaskRunner::GetCurrentDefault(), std::move(codec_image),
       std::move(drdc_lock));
@@ -199,12 +179,10 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
 
   const auto& coded_size = spec.coded_size;
 
-  gpu::ContextResult result;
-  auto shared_context = GetSharedContext(stub_, &result);
+  auto shared_context = GetSharedContext(stub_);
   if (!shared_context) {
     DLOG(ERROR)
         << "GpuSharedImageVideoFactory: Unable to get a shared context.";
-    ContextStateResultUMA(result);
     return false;
   }
 
@@ -213,8 +191,8 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
   // webview to work with shared images.
   auto shared_image = gpu::AndroidVideoImageBacking::Create(
       mailbox, coded_size, spec.color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, std::move(image), std::move(shared_context),
-      std::move(drdc_lock));
+      kPremul_SkAlphaType, /*debug_label=*/"DirectSIVideo", std::move(image),
+      std::move(shared_context), std::move(drdc_lock));
 
   // Register it with shared image mailbox. This keeps |shared_image| around
   // until its destruction cb is called. NOTE: Currently none of the video

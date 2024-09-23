@@ -36,5 +36,5 @@ void DisplayCapturePermissionContext::UpdateContentSetting(
     const GURL& embedding_origin,
     ContentSetting content_setting,
     bool is_one_time) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

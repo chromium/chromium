@@ -14,7 +14,7 @@ namespace ash::settings::prefs {
 // Please note that this is only relevant if IsSyncAllOsTypesEnabled() is false,
 // so callers have to check both this pref and IsSyncAllOsTypesEnabled() to
 // verify whether this wallpaper sync is enabled.
-// TODO(https://crbug.com/1318106): Create a helper method that checks both.
+// TODO(crbug.com/40835149): Create a helper method that checks both.
 const char kSyncOsWallpaper[] = "sync.os_wallpaper";
 
 // Boolean that indicates that ash is restarting after the completion of

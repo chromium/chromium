@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
-#include <set>
+#include <optional>
 
+#include "base/containers/flat_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/common/extension_id.h"
@@ -17,7 +18,7 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
@@ -33,14 +34,13 @@ class Extension;
 // - There are also hosted apps, which are a kind of extensions, and those
 //   usually have a process model similar to normal web sites: multiple
 //   processes per-profile.
-// - A single hosted app can have more than one SiteInstance in the same process
-//   if we're over the process limit and force them to share a process.
 // - An extension can also opt into Cross Origin Isolation in which case it can
 //   have multiple processes per profile since cross-origin-isolated and
 //   non-cross-origin-isolated contexts don't share a process.
 //
-// In general, we seem to play with the process model of extensions a lot, so
-// it is safest to assume it is many-to-many in most places in the codebase.
+// Under the current model, a single extension can correspond to multiple
+// processes (see explanation below), but a single process cannot be shared by
+// multiple extensions.
 //
 // Note that because of content scripts, frames, and other edge cases in
 // Chrome's process isolation, extension code can still end up running outside
@@ -78,12 +78,14 @@ class Extension;
 //               enforce single thread. Investigation required.
 class ProcessMap : public KeyedService {
  public:
-  ProcessMap();
+  explicit ProcessMap(content::BrowserContext* browser_context);
 
   ProcessMap(const ProcessMap&) = delete;
   ProcessMap& operator=(const ProcessMap&) = delete;
 
   ~ProcessMap() override;
+
+  void Shutdown() override;
 
   // Returns the instance for |browser_context|. An instance is shared between
   // an incognito and a regular context.
@@ -93,12 +95,16 @@ class ProcessMap : public KeyedService {
 
   bool Insert(const ExtensionId& extension_id, int process_id);
 
-  int RemoveAllFromProcess(int process_id);
+  int Remove(int process_id);
 
   bool Contains(const ExtensionId& extension_id, int process_id) const;
   bool Contains(int process_id) const;
 
-  std::set<ExtensionId> GetExtensionsInProcess(int process_id) const;
+  // Returns a pointer to an enabled extension running in `process_id` or
+  // nullptr.
+  const Extension* GetEnabledExtensionByProcessID(int process_id) const;
+
+  std::optional<ExtensionId> GetExtensionIdForProcess(int process_id) const;
 
   // Returns true if the given `process_id` is considered a privileged context
   // for the given `extension`. That is, if it would *probably* correspond to a
@@ -128,12 +134,12 @@ class ProcessMap : public KeyedService {
   //   should never, ever share a process with an extension or with webui.
   // - Multiple context types (with some difference in privilege levels) may be
   //   valid for a given process and extension pairing. For instance, a
-  //   privileged extension process could host any of blessed extension
+  //   privileged extension process could host any of privileged extension
   //   contexts, offscreen document contexts, and content script contexts. Thus,
   //   a compromised renderer could, in theory, claim a more privileged context
-  //   (such as claiming to be a blessed extension context from an offscreen
+  //   (such as claiming to be a privileged extension context from an offscreen
   //   document context). This *is not* a security bug; if the renderer is
-  //   compromised and could host blessed extension contexts, it could simply
+  //   compromised and could host privileged extension contexts, it could simply
   //   create (or hijack) one.
   // - This only looks at process-level guarantees. Thus, for contexts like
   //   untrusted webui (chrome-untrusted:// pages), the caller is responsible
@@ -176,19 +182,19 @@ class ProcessMap : public KeyedService {
   // iframes lauch, it won't be an issue.
   //
   // Anyhow, the expected behaviour is:
-  //   - For hosted app processes, this will be blessed_web_page.
+  //   - For hosted app processes, this will be `kPrivilegedWebPage`.
   //   - For processes of platform apps running on lock screen, this will be
-  //     lock_screen_extension.
-  //   - For other extension processes, this will be blessed_extension.
-  //   - For WebUI processes, this will be a webui.
-  //   - For chrome-untrusted:// URLs, this will be a webui_untrusted_context.
-  //   - For any other extension we have the choice of unblessed_extension or
-  //     content_script. Since content scripts are more common, guess that.
+  //     `kLockscreenExtension`.
+  //   - For other extension processes, this will be `kPrivilegedExtension`.
+  //   - For WebUI processes, this will be `kWebUi`.
+  //   - For chrome-untrusted:// URLs, this will be a `kUntrustedWebUi`.
+  //   - For any other extension we have the choice of `kUnprivilegedExtension`
+  //     or `kContentScript`. Since content scripts are more common, guess that.
   //     We *could* in theory track which web processes have extension frames
-  //     in them, and those would be unblessed_extension, but we don't at the
-  //     moment, and once OOP iframes exist then there won't even be such a
-  //     thing as an unblessed_extension context.
-  //   - For anything else, web_page.
+  //     in them, and those would be `kUnprivilegedExtension`, but we don't at
+  //     the moment, and once OOP iframes exist then there won't even be such a
+  //     thing as a `kUnprivilegedExtension` context.
+  //   - For anything else, `kWebPage`.
   virtual mojom::ContextType GetMostLikelyContextType(
       const Extension* extension,
       int process_id,
@@ -199,14 +205,15 @@ class ProcessMap : public KeyedService {
   }
 
  private:
-  struct Item;
+  using ProcessId = int;
 
-  typedef std::set<Item> ItemSet;
-  ItemSet items_;
+  base::flat_map<ProcessId, ExtensionId> items_;
 
   // Whether the process map belongs to the browser context used on Chrome OS
   // lock screen.
   bool is_lock_screen_context_ = false;
+
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

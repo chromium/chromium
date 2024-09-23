@@ -1,0 +1,33 @@
+// Copyright 2024 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package ash.cfm.proto;
+
+
+import 'logs_payload.proto';
+
+option optimize_for = LITE_RUNTIME;
+
+
+message TransportPayload {
+  reserved 1, 2, 3;
+
+  // Required. The number of milliseconds since the Unix epoch when this
+  // TransportPayload was first created. This is used for measuring e2e
+  // latency.
+  optional int64 collection_timestamp_ms = 4;
+
+  // Required. The Chrome OS permanent ID of the device.
+  optional string permanent_id = 5 /* type = ST_HARDWARE_ID */;
+
+  // Required. A payload for the request.
+  oneof oneof_request {
+    LogPayload log_payload = 6;
+  }
+
+  // Required. The Service Account Email associated with the device
+  optional string robot_email = 7 /* type = ST_IDENTIFYING_ID */;
+}

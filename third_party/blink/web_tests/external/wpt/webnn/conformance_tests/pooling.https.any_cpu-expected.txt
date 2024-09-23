@@ -1,0 +1,79 @@
+This is a testharness.js-based test.
+[FAIL] averagePool2d float32 4D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor all positive default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor all negative default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.windowDimensions
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] global averagePool2d float32 4D tensor all positive options.windowDimensions
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.padding
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.strides
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.layout=nchw
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] l2Pool2d float32 4D constant tensor all positive default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor default all positive options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor default all negative options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.windowDimensions
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.padding
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.strides
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.layout=nchw
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.layout=nhwc
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] l2Pool2d float32 4D tensor options.dilations with options.strides
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (l2Pool2d) is not supported."
+[FAIL] maxPool2d float32 4D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.windowDimensions
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.padding
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.strides
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.layout=nchw
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The nchw input layout is not supported."
+Harness: the test ran to completion.
+

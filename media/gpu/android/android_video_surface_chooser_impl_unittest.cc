@@ -51,7 +51,7 @@ class MockClient {
 };
 
 // Strongly-typed enums for TestParams.  It would be nice if Values() didn't
-// do something that causes these to work anyway if you mis-match them.  Maybe
+// do something that causes these to work anyway if you mismatch them.  Maybe
 // it'll work better in a future gtest.  At the very least, it's a lot more
 // readable than 'true' and 'false' in the test instantiations.
 //
@@ -477,7 +477,7 @@ INSTANTIATE_TEST_SUITE_P(RequiredUsesOverlay,
 
 // Secure textures should use an overlay if the compositor will promote them.
 // We don't care about relayout, since it's transient; either behavior is okay
-// if a relayout is epected.  Similarly, hidden frames are fine either way.
+// if a relayout is expected.  Similarly, hidden frames are fine either way.
 INSTANTIATE_TEST_SUITE_P(SecureUsesOverlayIfPromotable,
                          AndroidVideoSurfaceChooserImplTest,
                          Combine(Values(ShouldUseOverlay::Yes),

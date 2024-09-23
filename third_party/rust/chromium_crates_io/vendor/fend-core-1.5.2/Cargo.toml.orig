@@ -1,0 +1,11 @@
+[package]
+name = "fend-core"
+version.workspace = true
+description.workspace = true
+edition.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+license.workspace = true
+readme = "README.md"

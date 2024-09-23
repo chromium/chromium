@@ -101,8 +101,7 @@ IN_PROC_BROWSER_TEST_F(TemplateURLScraperTest, ScrapeWithOnSubmit) {
   // set up with.
   std::vector<std::unique_ptr<TemplateURLData>> prepopulate_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          browser()->profile()->GetPrefs(), search_engine_choice_service,
-          nullptr);
+          browser()->profile()->GetPrefs(), search_engine_choice_service);
   std::vector<std::unique_ptr<TemplateURLData>> starter_pack_urls =
       TemplateURLStarterPackData::GetStarterPackEngines();
 

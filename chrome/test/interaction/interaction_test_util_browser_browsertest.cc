@@ -2,22 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/test/interaction/feature_engagement_initialized_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/user_education/common/new_badge_controller.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -56,12 +68,63 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, GetBrowserFromContext) {
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
+  RunTestSequence(SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                          kSkipPixelTestsReason),
+                  // This adds a callback that calls
+                  // InteractionTestUtilBrowser::CompareScreenshot().
+                  Screenshot(kToolbarAppMenuButtonElementId,
+                             /*screenshot_name=*/"AppMenuButton",
+                             /*baseline_cl=*/"3924454"));
+}
+
+namespace {
+
+class ScreenshotSurfaceTestDialog : public views::BubbleDialogDelegateView {
+ public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleElementId);
+
+  explicit ScreenshotSurfaceTestDialog(View* anchor_view)
+      : views::BubbleDialogDelegateView(anchor_view,
+                                        views::BubbleBorder::TOP_CENTER) {
+    auto* const layout =
+        SetLayoutManager(std::make_unique<views::FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kVertical);
+    auto* const label = AddChildView(std::make_unique<views::Label>(
+        u"The quick brown fox", views::style::CONTEXT_DIALOG_TITLE));
+    label->SetProperty(views::kElementIdentifierKey, kTitleElementId);
+    AddChildView(
+        std::make_unique<views::Label>(u"...jumped over the lazy dogs."));
+  }
+
+  ~ScreenshotSurfaceTestDialog() override = default;
+};
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ScreenshotSurfaceTestDialog,
+                                      kTitleElementId);
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
+                       CompareScreenshot_Surface) {
+  views::Widget* widget = nullptr;
+
   RunTestSequence(
+      WithView(kTopContainerElementId,
+               [&widget](views::View* anchor) {
+                 widget = views::BubbleDialogDelegate::CreateBubble(
+                     std::make_unique<ScreenshotSurfaceTestDialog>(anchor));
+                 widget->Show();
+               }),
+      WaitForShow(ScreenshotSurfaceTestDialog::kTitleElementId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kSkipPixelTestsReason),
-      // This adds a callback that calls
-      // InteractionTestUtilBrowser::CompareScreenshot().
-      Screenshot(kToolbarAppMenuButtonElementId, "AppMenuButton", "3924454"));
+      ScreenshotSurface(ScreenshotSurfaceTestDialog::kTitleElementId,
+                        /*screenshot_name=*/"TestDialog",
+                        /*baseline_cl=*/"5495023"));
+
+  if (widget) {
+    widget->CloseNow();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
@@ -73,13 +136,15 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,
 
   const GURL url = embedded_test_server()->GetURL(kDocumentWithTitle1URL);
 
-  RunTestSequence(InstrumentTab(kWebContentsElementId),
-                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                                          kSkipPixelTestsReason),
-                  NavigateWebContents(kWebContentsElementId, url),
-                  // This adds a callback that calls
-                  // InteractionTestUtilBrowser::CompareScreenshot().
-                  Screenshot(kWebContentsElementId, std::string(), "3924454"));
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      NavigateWebContents(kWebContentsElementId, url),
+      // This adds a callback that calls
+      // InteractionTestUtilBrowser::CompareScreenshot().
+      Screenshot(kWebContentsElementId, /*screenshot_name=*/std::string(),
+                 /*baseline_cl=*/"3924454"));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, ConfirmOmnibox) {

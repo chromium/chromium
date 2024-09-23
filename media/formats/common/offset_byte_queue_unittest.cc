@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/common/offset_byte_queue.h"
 
 #include <stdint.h>
@@ -21,8 +26,8 @@ class OffsetByteQueueTest : public testing::Test {
       buf[i] = i;
     }
     queue_ = std::make_unique<OffsetByteQueue>();
-    ASSERT_TRUE(queue_->Push(buf, sizeof(buf))) << "Test should not hit OOM";
-    ASSERT_TRUE(queue_->Push(buf, sizeof(buf))) << "Test should not hit OOM";
+    ASSERT_TRUE(queue_->Push(buf)) << "Test should not hit OOM";
+    ASSERT_TRUE(queue_->Push(buf)) << "Test should not hit OOM";
     queue_->Pop(384);
 
     // Queue will start with 128 bytes of data and an offset of 384 bytes.
@@ -76,14 +81,14 @@ TEST_F(OffsetByteQueueTest, Trim) {
   EXPECT_EQ(400 - 256, buf[0]);
 
   // Trimming to the exact end of the buffer should return 'true'. This
-  // accomodates EOS cases.
+  // accommodates EOS cases.
   EXPECT_TRUE(queue_->Trim(512));
   EXPECT_EQ(512, queue_->head());
   queue_->Peek(&buf, &size);
   EXPECT_EQ(NULL, buf);
 
   // Trimming past the end of the buffer should return 'false'; we haven't seen
-  // the preceeding bytes.
+  // the preceding bytes.
   EXPECT_FALSE(queue_->Trim(513));
 
   // However, doing that shouldn't affect the EOS case. Only adding new data

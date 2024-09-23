@@ -229,8 +229,8 @@ Other options:
 
     src_dir = os.path.normpath(os.path.join(file_dir, root_obj['SRCDIR'].val))
     seen_files = set()
-    usage_gen = reader.GenerateResourceUsages(item_list, src_dir, args.fake,
-                                              seen_files)
+    usage_gen = reader.GenerateResourceUsages(item_list, args.input, src_dir,
+                                              args.fake, seen_files)
     if args.count:
       return self._DumpResourceCounts(usage_gen)
     for item, tag_name_to_usage in usage_gen:

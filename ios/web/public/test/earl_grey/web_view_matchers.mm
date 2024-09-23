@@ -15,7 +15,7 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 
-// TODO(crbug.com/757982): Remove this class, after LoadImage() is removed.
+// TODO(crbug.com/41340619): Remove this class, after LoadImage() is removed.
 // A helper delegate class that allows downloading responses with invalid
 // SSL certs.
 @interface TestURLSessionDelegateDeprecated : NSObject<NSURLSessionDelegate>

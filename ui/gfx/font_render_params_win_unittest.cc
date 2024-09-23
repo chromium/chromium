@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_util_win.h"
@@ -62,16 +63,25 @@ TEST_F(FontRenderParamsTest, DefaultRegistryState) {
     DWORD gamma;
     ASSERT_EQ(key.ReadValueDW(L"GammaLevel", &gamma), ERROR_SUCCESS);
 
-    EXPECT_FLOAT_EQ(params.text_contrast * kContrastMultiplier, contrast);
-    EXPECT_FLOAT_EQ(params.text_gamma * kGammaMultiplier, gamma);
+    // Registry values are unbounded, however our code will clamp values to be
+    // within Skia's expected range, so we must clamp expected values to match.
+    // Handle the exclusive value by subtracting epsilon.
+    EXPECT_FLOAT_EQ(params.text_contrast * kContrastMultiplier,
+                    FontUtilWin::ClampContrast(contrast));
+    EXPECT_FLOAT_EQ(params.text_gamma * kGammaMultiplier,
+                    FontUtilWin::ClampGamma(contrast));
   } else {
-    // If the registry keys aren't set, `IDWriteRenderingParams` defaults
-    // to the following hard-coded values:
-    constexpr float default_contrast = 0.5f;
-    constexpr float default_gamma = 1.8f;
-    EXPECT_FLOAT_EQ(params.text_contrast, default_contrast);
-    EXPECT_FLOAT_EQ(params.text_gamma, default_gamma);
+    // If the registry keys aren't set, we should be using default Skia values
+    // for contrast and gamma.
+    EXPECT_FLOAT_EQ(params.text_contrast, SK_GAMMA_CONTRAST);
+    EXPECT_FLOAT_EQ(params.text_gamma, SK_GAMMA_EXPONENT);
   }
+
+  // Values from `LegacyDisplayGlobals` should match `FontRenderParams`.
+  SkSurfaceProps surface_props =
+      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  EXPECT_EQ(surface_props.textContrast(), params.text_contrast);
+  EXPECT_EQ(surface_props.textGamma(), params.text_gamma);
 }
 
 TEST_F(FontRenderParamsTest, OverrideRegistryValues) {
@@ -102,6 +112,48 @@ TEST_F(FontRenderParamsTest, OverrideRegistryValues) {
     EXPECT_FLOAT_EQ(FontUtilWin::GetGammaFromRegistry() * kGammaMultiplier,
                     gamma);
   }
+}
+
+TEST_F(FontRenderParamsTest, OverrideRegistryValuesAndIncreaseContrast) {
+  // Ensure that registry values have precedence over the increased contrast
+  // flag.
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {features::kIncreaseWindowsTextContrast,
+       features::kUseGammaContrastRegistrySettings},
+      {});
+
+  // Override the registry to maintain test machine state.
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+
+  base::win::RegKey key = FontUtilWin::GetTextSettingsRegistryKey(KEY_WRITE);
+
+  if (key.Valid()) {
+    // Write non-default values for contrast and gamma.
+    DWORD contrast = 75;
+    ASSERT_EQ(key.WriteValue(L"EnhancedContrastLevel", contrast),
+              ERROR_SUCCESS);
+    DWORD gamma = 1900;
+    ASSERT_EQ(key.WriteValue(L"GammaLevel", gamma), ERROR_SUCCESS);
+    key.Close();
+
+    // Verify that the contrast and gamma getters return non-defaults above.
+    EXPECT_FLOAT_EQ(
+        FontUtilWin::GetContrastFromRegistry() * kContrastMultiplier, contrast);
+    EXPECT_FLOAT_EQ(FontUtilWin::GetGammaFromRegistry() * kGammaMultiplier,
+                    gamma);
+  }
+}
+
+TEST_F(FontRenderParamsTest, TextGammaContrast) {
+  EXPECT_EQ(FontUtilWin::TextGammaContrast(), SK_GAMMA_CONTRAST);
+}
+
+TEST_F(FontRenderParamsTest, IncreasedContrast) {
+  base::test::ScopedFeatureList scoped_features(
+      features::kIncreaseWindowsTextContrast);
+  EXPECT_EQ(FontUtilWin::TextGammaContrast(), 1.0f);
 }
 
 }  // namespace gfx

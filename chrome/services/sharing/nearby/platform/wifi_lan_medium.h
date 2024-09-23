@@ -10,13 +10,16 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/wifi_lan_socket.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/mdns.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/address_list.h"
@@ -41,21 +44,24 @@ namespace chrome {
 
 // An implementation of the abstract Nearby Connections's class
 // api::WifiLanMedium. The implementation uses the
-// sharing::mojom::TcpSocketFactory mojo interface to 1) connect to remote
+// ::sharing::mojom::TcpSocketFactory mojo interface to 1) connect to remote
 // server sockets, and 2) open local server sockets to listen for incoming
 // connection requests from remote devices. We block while 1) trying to connect,
 // 2) creating a server socket, and 3) cancelling pending tasks in the
 // destructor. We guarantee thread safety, and we guarantee that all blocking
 // connection and listening attempts return before destruction.
-class WifiLanMedium : public api::WifiLanMedium {
+class WifiLanMedium : public api::WifiLanMedium,
+                      public ::sharing::mojom::MdnsObserver {
  public:
-  WifiLanMedium(const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
-                    socket_factory,
-                const mojo::SharedRemote<
-                    chromeos::network_config::mojom::CrosNetworkConfig>&
-                    cros_network_config,
-                const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
-                    firewall_hole_factory);
+  WifiLanMedium(
+      const mojo::SharedRemote<::sharing::mojom::TcpSocketFactory>&
+          socket_factory,
+      const mojo::SharedRemote<
+          chromeos::network_config::mojom::CrosNetworkConfig>&
+          cros_network_config,
+      const mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>&
+          firewall_hole_factory,
+      const mojo::SharedRemote<::sharing::mojom::MdnsManager>& mdns_manager);
   WifiLanMedium(const WifiLanMedium&) = delete;
   WifiLanMedium& operator=(const WifiLanMedium&) = delete;
   ~WifiLanMedium() override;
@@ -74,6 +80,9 @@ class WifiLanMedium : public api::WifiLanMedium {
   std::unique_ptr<api::WifiLanServerSocket> ListenForService(int port) override;
   std::optional<std::pair<std::int32_t, std::int32_t>> GetDynamicPortRange()
       override;
+  bool StartDiscovery(const std::string& service_type,
+                      DiscoveredServiceCallback callback) override;
+  bool StopDiscovery(const std::string& service_type) override;
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -156,7 +165,7 @@ class WifiLanMedium : public api::WifiLanMedium {
       base::WaitableEvent* listen_waitable_event,
       mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
       const net::IPEndPoint& local_addr,
-      mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole);
+      mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole);
   /*==========================================================================*/
 
   /*==========================================================================*/
@@ -164,10 +173,11 @@ class WifiLanMedium : public api::WifiLanMedium {
   /*==========================================================================*/
   bool StartAdvertising(const NsdServiceInfo& nsd_service_info) override;
   bool StopAdvertising(const NsdServiceInfo& nsd_service_info) override;
-  bool StartDiscovery(const std::string& service_type,
-                      DiscoveredServiceCallback callback) override;
-  bool StopDiscovery(const std::string& service_type) override;
   /*==========================================================================*/
+
+  // sharing::mojom::MdnsObserver
+  void ServiceFound(::sharing::mojom::NsdServiceInfoPtr service_info) override;
+  void ServiceLost(::sharing::mojom::NsdServiceInfoPtr service_info) override;
 
   // Removes |event| from the set of pending events and signals |event|. Calls
   // to these methods are sequenced on |task_runner_| and thus thread safe.
@@ -179,16 +189,25 @@ class WifiLanMedium : public api::WifiLanMedium {
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  mojo::SharedRemote<sharing::mojom::TcpSocketFactory> socket_factory_;
+  mojo::SharedRemote<::sharing::mojom::TcpSocketFactory> socket_factory_;
   mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
-  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+  mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_;
+  // Unlike other remotes, mdns_manager_ must be implicitly destructed
+  // instead of destructed on the task_runner_ sequence.
+  mojo::SharedRemote<::sharing::mojom::MdnsManager> mdns_manager_;
+  mojo::Receiver<::sharing::mojom::MdnsObserver> mdns_observer_{this};
+
+  // Map from service_type to discovered_cb for StartDiscovery.
+  std::map<std::string, DiscoveredServiceCallback> discovery_callbacks_;
 
   // Track all pending connect/listen tasks in case Close() is called while
   // waiting.
-  base::flat_set<base::WaitableEvent*> pending_connect_waitable_events_;
-  base::flat_set<base::WaitableEvent*> pending_listen_waitable_events_;
+  base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>
+      pending_connect_waitable_events_;
+  base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>
+      pending_listen_waitable_events_;
 };
 
 }  // namespace chrome

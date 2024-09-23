@@ -6,16 +6,15 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
-#include "media/gpu/decode_surface_handler.h"
-#include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vaapi/vaapi_common.h"
+#include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 
 namespace media {
 
 VP8VaapiVideoDecoderDelegate::VP8VaapiVideoDecoderDelegate(
-    DecodeSurfaceHandler<VASurface>* const vaapi_dec,
+    VaapiDecodeSurfaceHandler* const vaapi_dec,
     scoped_refptr<VaapiWrapper> vaapi_wrapper)
     : VaapiVideoDecoderDelegate(vaapi_dec,
                                 std::move(vaapi_wrapper),
@@ -31,11 +30,12 @@ VP8VaapiVideoDecoderDelegate::~VP8VaapiVideoDecoderDelegate() {
 
 scoped_refptr<VP8Picture> VP8VaapiVideoDecoderDelegate::CreateVP8Picture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto va_surface = vaapi_dec_->CreateSurface();
-  if (!va_surface)
+  auto va_surface_handle = vaapi_dec_->CreateSurface();
+  if (!va_surface_handle) {
     return nullptr;
+  }
 
-  return new VaapiVP8Picture(std::move(va_surface));
+  return new VaapiVP8Picture(std::move(va_surface_handle));
 }
 
 bool VP8VaapiVideoDecoderDelegate::SubmitDecode(
@@ -44,7 +44,7 @@ bool VP8VaapiVideoDecoderDelegate::SubmitDecode(
   TRACE_EVENT0("media,gpu", "VP8VaapiVideoDecoderDelegate::SubmitDecode");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const auto va_surface_id = pic->AsVaapiVP8Picture()->va_surface()->id();
+  const auto va_surface_id = pic->AsVaapiVP8Picture()->va_surface_id();
   DCHECK_NE(va_surface_id, VA_INVALID_SURFACE);
 
   VAIQMatrixBufferVP8 iq_matrix_buf{};
@@ -101,7 +101,7 @@ bool VP8VaapiVideoDecoderDelegate::SubmitDecode(
        {slice_params_->id(),
         {slice_params_->type(), slice_params_->size(), &slice_param}},
        {encoded_data->id(),
-        {encoded_data->type(), header->frame_size, header->data}}});
+        {encoded_data->type(), header->frame_size, header->data.get()}}});
 }
 
 bool VP8VaapiVideoDecoderDelegate::OutputPicture(
@@ -109,13 +109,14 @@ bool VP8VaapiVideoDecoderDelegate::OutputPicture(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiVP8Picture* vaapi_pic = pic->AsVaapiVP8Picture();
-  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface(), vaapi_pic->bitstream_id(),
-                           vaapi_pic->visible_rect(),
+  vaapi_dec_->SurfaceReady(vaapi_pic->va_surface_id(),
+                           vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
                            vaapi_pic->get_colorspace());
   return true;
 }
 
 void VP8VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Destroy the member ScopedVABuffers below since they refer to a VAContextID
   // that will be destroyed soon.
   iq_matrix_.reset();

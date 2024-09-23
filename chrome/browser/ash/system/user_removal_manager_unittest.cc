@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -23,20 +24,6 @@ namespace ash {
 
 namespace {
 
-class FakeChromeUserRemovalManager : public FakeChromeUserManager {
- public:
-  FakeChromeUserRemovalManager() = default;
-
-  FakeChromeUserRemovalManager(const FakeChromeUserRemovalManager&) = delete;
-  FakeChromeUserRemovalManager& operator=(const FakeChromeUserRemovalManager&) =
-      delete;
-
-  void RemoveUser(const AccountId& account_id,
-                  user_manager::UserRemovalReason reason) override {
-    RemoveUserFromList(account_id);
-  }
-};
-
 class UserRemovalManagerTest : public testing::Test {
  public:
   UserRemovalManagerTest(const UserRemovalManagerTest&) = delete;
@@ -46,30 +33,29 @@ class UserRemovalManagerTest : public testing::Test {
   UserRemovalManagerTest();
   ~UserRemovalManagerTest() override;
 
-  FakeChromeUserManager* fake_user_manager() {
-    return static_cast<FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
+  FakeChromeUserManager* fake_user_manager() { return user_manager_.Get(); }
+
   void SetUp() override {
     testing::Test::SetUp();
     fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user1", "1"));
     fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user2", "2"));
     fake_user_manager()->AddUser(AccountId::FromUserEmailGaiaId("user3", "3"));
-    fake_user_manager()->AddPublicAccountUser(
-        AccountId::FromUserEmailGaiaId("public1", "4"));
   }
 
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-
   ScopedTestingLocalState local_state_;
-  const user_manager::ScopedUserManager scoped_user_manager_;
+  ash::ScopedStubInstallAttributes install_attributes_{
+      ash::StubInstallAttributes::CreateCloudManaged("test.domain",
+                                                     "device_id")};
+  ash::ScopedTestingCrosSettings cros_settings_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
+      std::make_unique<FakeChromeUserManager>()};
 };
 
 UserRemovalManagerTest::UserRemovalManagerTest()
     : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>(
           base::TestMockTimeTaskRunner::Type::kBoundToThread)),
-      local_state_(TestingBrowserProcess::GetGlobal()),
-      scoped_user_manager_(std::make_unique<FakeChromeUserRemovalManager>()) {}
+      local_state_(TestingBrowserProcess::GetGlobal()) {}
 
 UserRemovalManagerTest::~UserRemovalManagerTest() = default;
 

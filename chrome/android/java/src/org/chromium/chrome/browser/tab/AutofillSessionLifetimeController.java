@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
 import android.os.Build;
+import android.view.autofill.AutofillManager;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -57,7 +57,7 @@ public class AutofillSessionLifetimeController implements DestroyObserver {
                     public void onDidStartNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigationHandle) {
                         if (!navigationHandle.isRendererInitiated()) {
-                            ApiHelperForO.cancelAutofillSession(mActivity);
+                            cancel();
                         }
                     }
 
@@ -71,11 +71,20 @@ public class AutofillSessionLifetimeController implements DestroyObserver {
                                         == ActivityLifecycleDispatcher.ActivityState
                                                 .STOPPED_WITH_NATIVE;
                         if (!isInteractable && !isStopped) {
-                            ApiHelperForO.cancelAutofillSession(mActivity);
+                            cancel();
                         }
                     }
                 };
         lifecycleDispatcher.register(this);
+    }
+
+    private void cancel() {
+        // The AutofillManager has to be retrieved from an activity context.
+        // https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/android/app/Application.java;l=624;drc=5d123b67756dffcfdebdb936ab2de2b29c799321
+        AutofillManager afm = mActivity.getSystemService(AutofillManager.class);
+        if (afm != null) {
+            afm.cancel();
+        }
     }
 
     // DestroyObserver

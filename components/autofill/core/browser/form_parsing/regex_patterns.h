@@ -70,29 +70,21 @@ class MatchPatternRef {
 
 // The different sets of patterns available for parsing.
 // Each enum constant corresponds to a JSON file.
-// When adding a new value, it's require to add it to
-// `HeuristicSource` as well.
-enum class PatternSource : uint8_t {
+enum class PatternFile : uint8_t {
+#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   // Patterns whose stability is above suspicion.
   kLegacy,
-#if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   kMaxValue = kLegacy
 #else
-  // The patterns applied for most users.
   kDefault,
-  // Patterns that are being verified experimentally.
-  kExperimental,
-  // One step before `kExperimental`. These patterns are used only for
-  // non-user-visible metrics.
-  kNextGen,
-  kMaxValue = kNextGen
+  kPredictionImprovements,
+  kMaxValue = kPredictionImprovements
 #endif
 };
 
-// The active pattern and the available patterns depend on the build config and
-// the Finch config. If the active `HeuristicSource` is not a `PatternSource`,
-// then a nullopt is returned.
-std::optional<PatternSource> GetActivePatternSource();
+// The active file depend on the build config and enabled features. If the
+// active `HeuristicSource` is not based on a JSON file, nullopt is returned.
+std::optional<PatternFile> GetActivePatternFile();
 
 // Looks up the patterns for the given name and language.
 // The name is typically a field type.
@@ -107,23 +99,16 @@ std::optional<PatternSource> GetActivePatternSource();
 base::span<const MatchPatternRef> GetMatchPatterns(
     std::string_view name,
     std::optional<LanguageCode> language_code,
-    PatternSource pattern_source);
+    PatternFile pattern_file);
 
 base::span<const MatchPatternRef> GetMatchPatterns(
     FieldType type,
     std::optional<LanguageCode> language_code,
-    PatternSource pattern_source);
+    PatternFile pattern_file);
 
 // Returns true iff there at least one pattern for some PatternSource and
 // pattern name.
 bool IsSupportedLanguageCode(LanguageCode language_code);
-
-// Checks if all the matching patterns for the given PatternSources and
-// language are the same - meaning that computing predictions for both is
-// unnecessary, since it will yield the same result.
-bool AreMatchingPatternsEqual(PatternSource a,
-                              PatternSource b,
-                              LanguageCode language_code);
 
 }  // namespace autofill
 

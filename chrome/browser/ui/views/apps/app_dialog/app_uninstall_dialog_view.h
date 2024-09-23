@@ -67,7 +67,8 @@ class AppUninstallDialogView : public ProfileObserver,
 
   void InitializeView(Profile* profile,
                       apps::AppType app_type,
-                      const std::string& app_id);
+                      const std::string& app_id,
+                      const std::string& app_name);
 
   void InitializeCheckbox(const GURL& app_start_url);
   void InitializeSubAppList(const std::string& short_app_name,
@@ -96,6 +97,7 @@ class AppUninstallDialogView : public ProfileObserver,
   raw_ptr<views::Checkbox> report_abuse_checkbox_ = nullptr;
   raw_ptr<views::Checkbox> clear_site_data_checkbox_ = nullptr;
   raw_ptr<views::Label> sub_apps_description_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::ScrollView> sub_apps_scroll_view_ = nullptr;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};

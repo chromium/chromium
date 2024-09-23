@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
+
+#include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
@@ -51,6 +55,12 @@ void VcEffectsDelegate::AddEffect(std::unique_ptr<VcHostedEffect> effect) {
 }
 
 void VcEffectsDelegate::RemoveEffect(VcEffectId effect_id) {
+  if (features::IsVcDlcUiEnabled()) {
+    // Propagate effect removal to ensure dependant `VcUiTileController`'s are
+    // reset, and DLC downloads are canceled if they are in progress.
+    on_effect_will_be_removed_callback_.Run(this);
+  }
+
   effects_.erase(effect_id);
 }
 
@@ -102,6 +112,21 @@ void VcEffectsDelegate::RecordInitialStates() {
           video_conference_utils::GetEffectHistogramNameForInitialState(
               effect_id),
           current_state.value());
+      if (effect_id == VcEffectId::kStudioLook) {
+        // Records initial preference states associated with Stduio Look effect.
+        raw_ptr<CameraEffectsController> effects_controller_ =
+            Shell::Get()->camera_effects_controller();
+        base::UmaHistogramBoolean(
+            video_conference_utils::GetEffectHistogramNameForInitialState(
+                VcEffectId::kPortraitRelighting),
+            *effects_controller_->GetEffectState(
+                VcEffectId::kPortraitRelighting) != 0);
+        base::UmaHistogramBoolean(
+            video_conference_utils::GetEffectHistogramNameForInitialState(
+                VcEffectId::kFaceRetouch),
+            *effects_controller_->GetEffectState(VcEffectId::kFaceRetouch) !=
+                0);
+      }
     } else {
       RecordMetricsForSetValueEffectOnStartup(effect_id, current_state.value());
     }

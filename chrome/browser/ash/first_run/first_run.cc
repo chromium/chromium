@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -20,8 +19,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -103,6 +102,7 @@ class AppLauncher final : public ProfileObserver {
 
   void LaunchHelpApp() {
     ash::SystemAppLaunchParams params;
+    params.url = GURL("chrome://help-app?launchSource=first-run");
     params.launch_source = apps::LaunchSource::kFromFirstRun;
     LaunchSystemWebAppAsync(profile_, SystemWebAppType::HELP, params);
     profile_->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);

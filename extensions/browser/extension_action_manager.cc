@@ -87,13 +87,15 @@ void ExtensionActionManager::OnExtensionUnloaded(
 ExtensionAction* ExtensionActionManager::GetExtensionAction(
     const Extension& extension) const {
   auto iter = actions_.find(extension.id());
-  if (iter != actions_.end())
+  if (iter != actions_.end()) {
     return iter->second.get();
+  }
 
   const ActionInfo* action_info =
       ActionInfo::GetExtensionActionInfo(&extension);
-  if (!action_info)
+  if (!action_info) {
     return nullptr;
+  }
 
   // Only create action info for enabled extensions.
   // This avoids bugs where actions are recreated just after being removed

@@ -4,12 +4,13 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import type {Signals} from '../omnibox.mojom-webui.js';
+import type {Signals} from '../omnibox_internals.mojom-webui.js';
 import {clamp, signalNames} from '../omnibox_util.js';
 
-import type {MlBrowserProxy} from './ml_browser_proxy';
+import type {MlBrowserProxy} from './ml_browser_proxy.js';
+/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-ignore:next-line
-import sheet from './ml_chart.css' assert {type : 'css'};
+import sheet from './ml_chart.css' with {type : 'css'};
 import {getTemplate} from './ml_chart.html.js';
 
 // Represents a line of text when drawing multiline text onto the canvas.
@@ -138,7 +139,7 @@ export class MlChartElement extends CustomElement {
   }
 
   connectedCallback() {
-    const canvas = this.getRequiredElement<HTMLCanvasElement>('canvas');
+    const canvas = this.getRequiredElement('canvas');
     this.canvasSize = new Vector(canvas.width, canvas.height);
     this.context = canvas.getContext('2d')!;
     canvas.addEventListener(
@@ -535,6 +536,12 @@ export class MlChartElement extends CustomElement {
   // Helper to get colors consistent with the colored texts defined in ml.css.
   private getColor(h: number) {
     return `hsl(${h}, 50%, ${this.getCssProperty('--color-lightness')})`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ml-chart': MlChartElement;
   }
 }
 

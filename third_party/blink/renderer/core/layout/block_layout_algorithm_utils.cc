@@ -15,7 +15,7 @@ namespace blink {
 namespace {
 
 BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
-                                              bool is_table_cell,
+                                              bool behave_like_table_cell,
                                               UseCounter* use_counter) {
   const StyleContentAlignmentData& alignment = style.AlignContent();
   ContentPosition position = alignment.GetPosition();
@@ -42,25 +42,27 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
   }
 
   if (use_counter) {
-    if (!is_table_cell && position != ContentPosition::kNormal &&
-        position != ContentPosition::kStart &&
-        position != ContentPosition::kBaseline &&
-        position != ContentPosition::kFlexStart) {
-      UseCounter::Count(*use_counter,
-                        WebFeature::kEffectiveAlignContentForBlock);
-    } else if (is_table_cell && position != ContentPosition::kNormal &&
+    if (!behave_like_table_cell) {
+      if (position != ContentPosition::kNormal &&
+          position != ContentPosition::kStart &&
+          position != ContentPosition::kBaseline &&
+          position != ContentPosition::kFlexStart) {
+        UseCounter::Count(*use_counter,
+                          WebFeature::kEffectiveAlignContentForBlock);
+      }
+    } else if (position != ContentPosition::kNormal &&
                position != ContentPosition::kCenter) {
       UseCounter::Count(*use_counter,
                         WebFeature::kEffectiveAlignContentForTableCell);
     }
   }
-  if (!RuntimeEnabledFeatures::AlignContentForBlocksEnabled()) {
-    position = ContentPosition::kNormal;
-  }
 
   // https://drafts.csswg.org/css-align/#typedef-overflow-position
-  // The "smart" default value (OverflowAlignment::kDefault) is not implemented.
-  // We handle it as kUnsafe.
+  // UAs that have not implemented the "smart" default behavior must behave as
+  // safe for align-content on block containers
+  if (overflow == OverflowAlignment::kDefault) {
+    overflow = OverflowAlignment::kSafe;
+  }
   const bool is_safe = overflow == OverflowAlignment::kSafe;
   switch (position) {
     case ContentPosition::kCenter:
@@ -73,7 +75,7 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
                      : BlockContentAlignment::kUnsafeEnd;
 
     case ContentPosition::kNormal:
-      if (!is_table_cell) {
+      if (!behave_like_table_cell) {
         return BlockContentAlignment::kStart;
       }
       switch (style.VerticalAlign()) {
@@ -110,7 +112,7 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
     case ContentPosition::kLastBaseline:
     case ContentPosition::kLeft:
     case ContentPosition::kRight:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return BlockContentAlignment::kStart;
 }
@@ -165,13 +167,15 @@ BlockContentAlignment ComputeContentAlignmentForBlock(
   if (!style.IsDisplayBlockContainer()) {
     return BlockContentAlignment::kStart;
   }
-  return ComputeContentAlignment(style, /* is_table_cell */ false, use_counter);
+  bool behave_like_table_cell = style.IsPageMarginBox();
+  return ComputeContentAlignment(style, behave_like_table_cell, use_counter);
 }
 
 BlockContentAlignment ComputeContentAlignmentForTableCell(
     const ComputedStyle& style,
     UseCounter* use_counter) {
-  return ComputeContentAlignment(style, /* is_table_cell */ true, use_counter);
+  return ComputeContentAlignment(style, /*behave_like_table_cell=*/true,
+                                 use_counter);
 }
 
 void AlignBlockContent(const ComputedStyle& style,
@@ -185,14 +189,14 @@ void AlignBlockContent(const ComputedStyle& style,
 
   LayoutUnit free_space = builder.FragmentBlockSize() - content_block_size;
   if (style.AlignContentBlockCenter()) {
+    // Buttons have safe alignment.
+    if (builder.Node().IsButtonOrInputButton()) {
+      free_space = free_space.ClampNegativeToZero();
+    }
     builder.MoveChildrenInBlockDirection(free_space / 2);
     return;
   }
 
-  if (!RuntimeEnabledFeatures::AlignContentForBlocksEnabled()) {
-    ComputeContentAlignmentForBlock(style, &builder.Node().GetDocument());
-    return;
-  }
   if (!ShouldIncludeBlockEndBorderPadding(builder)) {
     // Do nothing for the first fragment without block-end border and padding.
     // See css/css-align/blocks/align-content-block-break-overflow-010.html

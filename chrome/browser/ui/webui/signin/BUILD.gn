@@ -1,0 +1,50 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(!is_fuchsia && !is_android)
+
+# TODO(crbug.com/364667551): complete modularization of //c/b/ui/w/signin.
+# At the moment, it's hard to complete it at once as it pulls deps, which
+# result in circular deps. Modularization of others to resolve that is
+# non-trivial and is hard to complete at once.
+source_set("signin") {
+  sources = [ "signin_utils.h" ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
+
+  if (!is_chromeos_ash) {
+    sources += [ "signin_email_confirmation_dialog.h" ]
+
+    public_deps += [ "//ui/web_dialogs" ]
+  }
+}
+
+source_set("impl") {
+  sources = [ "signin_utils.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":signin",
+    "//chrome/browser/profiles:profile",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//google_apis",
+  ]
+
+  if (!is_chromeos_ash) {
+    sources += [ "signin_email_confirmation_dialog.cc" ]
+    deps += [
+      "//chrome/browser/ui/webui",
+      "//chrome/common",
+    ]
+  }
+}

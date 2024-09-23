@@ -1,0 +1,42 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.annotator.mojom;
+
+import "ash/webui/annotator/public/mojom/annotator_structs.mojom";
+
+// AnnotatorPage interface implemented in the Javascript. Used by the browser
+// process to send events to Javascript.
+interface UntrustedAnnotatorPage {
+    // Clears the annotations on the annotator canvas.
+    Clear();
+    // Undo the last stroke on the annotator canvas.
+    Undo();
+    // Redo the last stroke on the annotator canvas.
+    Redo();
+    // Sets the tool the user uses to annotate.
+    SetTool(AnnotatorTool tool);
+};
+
+// AnnotatoPagerHandler interface implemented in C++ in the browser process.
+// Used by Javascript to communicate with the browser process.
+interface UntrustedAnnotatorPageHandler {
+   // Notifies the browser that that undo/redo availability
+   // changed for annotator.
+   OnUndoRedoAvailabilityChanged(bool undo_available,
+                                 bool redo_available);
+
+  // Notifies the browser process that the annotation canvas
+  // has been initialized.
+  OnCanvasInitialized(bool success);
+};
+
+// Interface used to setup the communication between Javascript and C++
+// in the browser process.
+interface UntrustedAnnotatorPageHandlerFactory {
+  // Creates the AnnotatorPageHandler in the browser process and binds it
+  // to receive calls from Javascript.
+  Create(pending_receiver<UntrustedAnnotatorPageHandler> handler,
+         pending_remote<UntrustedAnnotatorPage> annotator);
+};

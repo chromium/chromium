@@ -26,7 +26,7 @@ ASH_EXPORT bool IsBatterySaverAllowed();
 
 // Test method to allow testing without the Battery Saver feature.
 ASH_EXPORT void OverrideIsBatterySaverAllowedForTesting(
-    absl::optional<bool> isAllowed);
+    std::optional<bool> isAllowed);
 
 // BatterySaverController is a singleton that controls battery saver state via
 // PowerManagerClient by watching for updates to ash::prefs::kPowerBatterySaver
@@ -35,6 +35,7 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
  public:
   enum class UpdateReason {
     kCharging,
+    kChargeIncrease,
     kLowPower,
     kPowerManager,
     kSettings,
@@ -44,6 +45,11 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   static constexpr char kBatterySaverToastId[] =
       "battery_saver_mode_state_changed";
+
+  // When Battery Saver is enabled, the amount of percent increase in battery
+  // charge that will trigger disabling. Used to detect charging while asleep or
+  // shut down.
+  static constexpr int kBatterySaverSleepChargeThreshold = 3;
 
   explicit BatterySaverController(PrefService* local_state);
   BatterySaverController(const BatterySaverController&) = delete;
@@ -69,10 +75,12 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   void ClearBatterySaverModeToast();
 
+  void StopObservingPowerStatusForTest();
+
  private:
   // Types used for metrics tracking.
   struct EnableRecord {
-    base::Time time;
+    base::TimeTicks time;
     UpdateReason reason;
   };
 
@@ -86,8 +94,8 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   std::optional<int> GetRemainingMinutes(const PowerStatus* status);
 
-  raw_ptr<PrefService> local_state_;  // Non-owned and must
-                                      // out-live this.
+  // Non-owned and must out-live this. May be null in some test contexts.
+  raw_ptr<PrefService> local_state_;
 
   base::ScopedObservation<PowerStatus, PowerStatus::Observer>
       power_status_observation_{this};

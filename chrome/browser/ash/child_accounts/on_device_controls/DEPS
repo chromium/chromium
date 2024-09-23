@@ -1,0 +1,36 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  # TODO(b/346593904): Cleanup Chrome dependencies in c/b/a/child_accounts.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/child_accounts/on_device_controls",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash",
+  "+chrome/browser/apps",
+  "+chrome/browser/notifications",
+  "+chrome/browser/policy",
+  "+chrome/browser/profiles",
+  "+chrome/test/base",
+  "+chrome/test/views",
+  "+chrome/common/chrome_switches.h",
+]
+
+specific_include_rules = {
+  "app_activity_watcher_unittest.cc": [
+    "+chrome/browser/ui/views/apps/app_dialog/app_local_block_dialog_view.h",
+  ],
+  "app_controls_notifier.cc": [
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
+    "+ui/message_center/message_center.h",
+  ],
+}

@@ -11,8 +11,8 @@
 #import "base/notreached.h"
 #import "build/branding_buildflags.h"
 #import "components/prefs/pref_service.h"
-#import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
@@ -118,7 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       safeBrowsingState = safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   safe_browsing::SetSafeBrowsingState(self.userPrefService, safeBrowsingState);
@@ -132,17 +132,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_safeBrowsingItems) {
     NSMutableArray* items = [NSMutableArray array];
     NSInteger enhancedProtectionSummary;
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
-      enhancedProtectionSummary =
-          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY;
-    } else {
-      enhancedProtectionSummary =
-          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY;
-    }
+    enhancedProtectionSummary =
+        IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY;
     NSInteger standardProtectionSummary;
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection)) {
       standardProtectionSummary =
           IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -152,10 +144,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
             IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY_PROXY;
       }
 #endif
-    } else {
-      standardProtectionSummary =
-          IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_SUMMARY;
-    }
     TableViewInfoButtonItem* safeBrowsingEnhancedProtectionItem = [self
              infoButtonItemType:ItemTypeSafeBrowsingEnhancedProtection
                         titleId:
@@ -172,13 +160,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         accessibilityIdentifier:kSettingsSafeBrowsingStandardProtectionCellId];
     [items addObject:safeBrowsingStandardProtectionItem];
     NSInteger noProtectionSummary;
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
-      noProtectionSummary =
-          IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY;
-    } else {
-      noProtectionSummary = IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_SUMMARY;
-    }
+    noProtectionSummary =
+        IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_FRIENDLIER_SUMMARY;
     if (self.enterpriseEnabled) {
       TableViewInfoButtonItem* safeBrowsingNoProtectionItem = [self
                infoButtonItemType:ItemTypeSafeBrowsingNoProtection
@@ -271,7 +254,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       return safeBrowsingState ==
              safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return NO;
   }
 }
@@ -289,7 +272,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   if (notifyConsumer) {
-    [self.consumer reloadCellsForItems];
+    [self.consumer reconfigureCellsForItems];
     [self selectItem];
   }
 }
@@ -313,6 +296,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     } else {
       base::RecordAction(base::UserMetricsAction(
           "SafeBrowsing.Settings.EnhancedProtectionClicked"));
+      if (self.openedFromPromoInteraction) {
+        base::RecordAction(base::UserMetricsAction(
+            "SafeBrowsing.Settings.EnhancedProtectionClickedDueToPromo"));
+      }
       [self selectSettingItem:item];
     }
   }
@@ -357,7 +344,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.handler showSafeBrowsingStandardProtection];
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

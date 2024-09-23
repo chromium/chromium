@@ -114,4 +114,17 @@ void OpenAppSettingsForParentApp(const webapps::AppId& parent_app_id,
 #endif
 }
 
+void OpenAppSettingsForInstalledRelatedApp(const webapps::AppId& app_id,
+                                           Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowAppManagementPageInAsh(app_id);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  chrome::ShowAppManagementPage(
+      profile, app_id, ash::settings::AppManagementEntryPoint::kSiteDataDialog);
+#else
+  chrome::ShowWebAppSettings(profile, app_id,
+                             AppSettingsPageEntryPoint::kSiteDataDialog);
+#endif
+}
+
 }  // namespace web_app

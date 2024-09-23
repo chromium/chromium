@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/paint/image_transfer_cache_entry.h"
 
 #include <algorithm>
@@ -21,9 +26,9 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
@@ -149,7 +154,7 @@ size_t GetAlignmentForColorType(SkColorType color_type) {
     return 4;
   if (bpp <= 16)
     return 16;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -263,8 +268,7 @@ sk_sp<SkImage> ReadImage(
   if (gr_context) {
     max_size = gr_context->maxTextureSize();
   } else if (graphite_recorder) {
-    // TODO(b/279234024): Retrieve correct max texture size for graphite.
-    max_size = 8192;
+    max_size = graphite_recorder->maxTextureSize();
   } else {
     // Allow a nullptr context for testing using the software renderer.
     max_size = 0;
@@ -388,7 +392,7 @@ sk_sp<SkImage> ReadImage(
         // overhead with modern APIs leading to lesser scheduling concerns.
         // Also, eventually we want to move tile raster off the GPU main thread.
         // Based on these reasons, its okay to not flush for Graphite here.
-        // TODO(crbug.com/1463790): Revisit flushes for Graphite here if yield
+        // TODO(crbug.com/40922674): Revisit flushes for Graphite here if yield
         // to scheduler is needed.
         plane = SkImages::TextureFromImage(graphite_recorder, plane, props);
       }
@@ -633,52 +637,6 @@ size_t ServiceImageTransferCacheEntry::CachedSize() const {
   return size_;
 }
 
-sk_sp<SkImage> ServiceImageTransferCacheEntry::GetImageWithToneMapApplied(
-    float hdr_headroom,
-    bool needs_mips) const {
-  sk_sp<SkImage> image;
-
-  // Apply tone mapping.
-  // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
-  gfx::ColorConversionSkFilterCache cache;
-  if (has_gainmap_) {
-    image = cache.ApplyGainmap(
-        image_, gainmap_image_, gainmap_info_, hdr_headroom,
-        image_->isTextureBacked() ? gr_context_ : nullptr,
-        image_->isTextureBacked() ? graphite_recorder_ : nullptr);
-  } else if (use_tone_curve_) {
-    // Images are always rendered as SDR-relative and the output color space
-    // is SDR itself,
-    image = cache.ApplyToneCurve(
-        image_, tone_curve_hdr_metadata_,
-        gfx::ColorSpace::kDefaultSDRWhiteLevel, hdr_headroom,
-        image_->isTextureBacked() ? gr_context_ : nullptr,
-        image_->isTextureBacked() ? graphite_recorder_ : nullptr);
-  }
-  if (!image) {
-    DLOG(ERROR) << "Image tone mapping failed";
-    return nullptr;
-  }
-
-  // Create mipmaps if requested.
-  if (image->isTextureBacked() && needs_mips && !image->hasMipmaps()) {
-    if (gr_context_) {
-      image = SkImages::TextureFromImage(
-          gr_context_, image, skgpu::Mipmapped::kYes, skgpu::Budgeted::kNo);
-    } else {
-      CHECK(graphite_recorder_);
-      SkImage::RequiredProperties props{.fMipmapped = true};
-      image = SkImages::TextureFromImage(graphite_recorder_, image_, props);
-    }
-    if (!image) {
-      DLOG(ERROR) << "Failed to generate mipmaps after tone mapping";
-      return nullptr;
-    }
-  }
-
-  return image;
-}
-
 bool ServiceImageTransferCacheEntry::Deserialize(
     GrDirectContext* gr_context,
     skgpu::graphite::Recorder* graphite_recorder,
@@ -689,8 +647,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   // We don't need to populate the DeSerializeOptions here since the reader is
   // only used for de-serializing primitives.
   std::vector<uint8_t> scratch_buffer;
-  PaintOp::DeserializeOptions options(nullptr, nullptr, nullptr,
-                                      &scratch_buffer, false, nullptr);
+  PaintOp::DeserializeOptions options{.scratch_buffer = scratch_buffer};
   PaintOpReader reader(data.data(), data.size(), options);
 
   // Parameters common to RGBA and YUVA images.
@@ -702,7 +659,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
   if (has_hdr_metadata) {
     gfx::HDRMetadata hdr_metadata_value;
     reader.Read(&hdr_metadata_value);
-    tone_curve_hdr_metadata_ = hdr_metadata_value;
+    hdr_metadata_ = hdr_metadata_value;
   }
   sk_sp<SkColorSpace> target_color_space;
   reader.Read(&target_color_space);
@@ -742,18 +699,18 @@ bool ServiceImageTransferCacheEntry::Deserialize(
     reader.Read(&gainmap_info_);
   }
 
-  // Save the tone curve parameters, if they are to be used.
-  use_tone_curve_ =
-      !has_gainmap_ && gfx::ColorConversionSkFilterCache::UseToneCurve(image_);
+  // Determine if this image will be tone mapped.
+  const bool is_tone_mapped =
+      has_gainmap_ || ToneMapUtil::UseGlobalToneMapFilter(image_->colorSpace());
 
   // Perform color conversion (if no tone mapping is needed).
-  if (target_color_space && !NeedsToneMapApplied()) {
+  if (target_color_space && !is_tone_mapped) {
     if (graphite_recorder_) {
       SkImage::RequiredProperties props{.fMipmapped = needs_mips};
       image_ =
           image_->makeColorSpace(graphite_recorder_, target_color_space, props);
     } else {
-      // TODO(crbug.com/1443068): It's possible for both `gr_context` and
+      // TODO(crbug.com/40267231): It's possible for both `gr_context` and
       // `graphite_recorder` to be nullptr if `image_` is not texture backed.
       // Need to handle this case (currently just goes through gr_context path
       // with nullptr context).
@@ -790,7 +747,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         }
         SkPixmap pixmap;
         if (!image->peekPixels(&pixmap)) {
-          NOTREACHED()
+          NOTREACHED_IN_MIGRATION()
               << "Image should be referencing transfer buffer SkPixmap";
         }
         image = SkImages::RasterFromPixmapCopy(pixmap);
@@ -825,10 +782,6 @@ const sk_sp<SkImage>& ServiceImageTransferCacheEntry::GetPlaneImage(
 
 void ServiceImageTransferCacheEntry::EnsureMips() {
   if (!image_ || !image_->isTextureBacked()) {
-    return;
-  }
-  // Don't generate mipmaps for images that will not be used directly.
-  if (NeedsToneMapApplied()) {
     return;
   }
   if (image_->hasMipmaps()) {

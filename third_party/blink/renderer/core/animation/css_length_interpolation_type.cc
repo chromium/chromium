@@ -30,19 +30,24 @@ CSSLengthInterpolationType::CSSLengthInterpolationType(
 class InheritedLengthChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedLengthChecker(const CSSProperty& property, const Length& length)
-      : property_(property), length_(length) {}
+  InheritedLengthChecker(const CSSProperty& property,
+                         bool get_length_success,
+                         const Length& length)
+      : property_(property),
+        get_length_success_(get_length_success),
+        length_(length) {}
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     Length parent_length;
-    LengthPropertyFunctions::GetLength(property_, *state.ParentStyle(),
-                                       parent_length);
-    return parent_length == length_;
+    bool success = LengthPropertyFunctions::GetLength(
+        property_, *state.ParentStyle(), parent_length);
+    return get_length_success_ == success && parent_length == length_;
   }
 
   const CSSProperty& property_;
+  bool get_length_success_;
   const Length length_;
 };
 
@@ -60,8 +65,9 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInitial(
           CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle(),
           initial_length))
     return nullptr;
-  return InterpolationValue(
-      InterpolableLength::MaybeConvertLength(initial_length, 1));
+  return InterpolationValue(InterpolableLength::MaybeConvertLength(
+      initial_length, CssProperty(), 1,
+      state.StyleBuilder().InterpolateSize()));
 }
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
@@ -70,25 +76,35 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
   Length inherited_length;
-  LengthPropertyFunctions::GetLength(CssProperty(), *state.ParentStyle(),
-                                     inherited_length);
-  conversion_checkers.push_back(std::make_unique<InheritedLengthChecker>(
-      CssProperty(), inherited_length));
-  if (inherited_length.IsAuto()) {
+  bool success = LengthPropertyFunctions::GetLength(
+      CssProperty(), *state.ParentStyle(), inherited_length);
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedLengthChecker>(
+      CssProperty(), success, inherited_length));
+  if (!success) {
     // If the inherited value changes to a length, the InheritedLengthChecker
     // will invalidate the interpolation's cache.
     return nullptr;
   }
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      inherited_length, EffectiveZoom(state.ParentStyle()->EffectiveZoom())));
+      inherited_length, CssProperty(),
+      EffectiveZoom(state.ParentStyle()->EffectiveZoom()),
+      state.StyleBuilder().InterpolateSize()));
 }
 
 InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers& conversion_checkers) const {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
+
+    if (LengthPropertyFunctions::CanAnimateKeyword(CssProperty(), value_id)) {
+      return InterpolationValue(MakeGarbageCollected<InterpolableLength>(
+          value_id,
+          state ? std::make_optional(state->StyleBuilder().InterpolateSize())
+                : std::nullopt));
+    }
+
     double pixels;
     if (!LengthPropertyFunctions::GetPixelsForKeyword(CssProperty(), value_id,
                                                       pixels))
@@ -99,11 +115,46 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
   return InterpolationValue(InterpolableLength::MaybeConvertCSSValue(value));
 }
 
+InterpolationValue CSSLengthInterpolationType::MaybeConvertUnderlyingValue(
+    const InterpolationEnvironment& environment) const {
+  InterpolationValue result =
+      CSSInterpolationType::MaybeConvertUnderlyingValue(environment);
+
+  // At this point, MaybeConvertUnderlyingValue might or might not have set an
+  // interpolate-size, depending on which codepath it took.  However, it used
+  // the style from the base style, but we want the style from the animation
+  // controls style.
+  if (auto* length = To<InterpolableLength>(result.interpolable_value.Get())) {
+    const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
+    length->SetInterpolateSize(
+        css_environment.AnimationControlsStyle().InterpolateSize());
+  }
+
+  return result;
+}
+
+void CSSLengthInterpolationType::Composite(
+    UnderlyingValueOwner& underlying_value_owner,
+    double underlying_fraction,
+    const InterpolationValue& value,
+    double interpolation_fraction) const {
+  if (!InterpolableLength::CanMergeValues(
+          underlying_value_owner.Value().interpolable_value,
+          value.interpolable_value)) {
+    underlying_value_owner.Set(*this, value);
+    return;
+  }
+
+  return CSSInterpolationType::Composite(underlying_value_owner,
+                                         underlying_fraction, value,
+                                         interpolation_fraction);
+}
+
 PairwiseInterpolationValue CSSLengthInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  return InterpolableLength::MergeSingles(std::move(start.interpolable_value),
-                                          std::move(end.interpolable_value));
+  return InterpolableLength::MaybeMergeSingles(
+      std::move(start.interpolable_value), std::move(end.interpolable_value));
 }
 
 InterpolationValue
@@ -114,7 +165,8 @@ CSSLengthInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
                                           underlying_length))
     return nullptr;
   return InterpolationValue(InterpolableLength::MaybeConvertLength(
-      underlying_length, EffectiveZoom(style.EffectiveZoom())));
+      underlying_length, CssProperty(), EffectiveZoom(style.EffectiveZoom()),
+      style.InterpolateSize()));
 }
 
 const CSSValue* CSSLengthInterpolationType::CreateCSSValue(
@@ -150,26 +202,28 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     const ComputedStyle* after_style = builder.CloneStyle();
     DCHECK(
         LengthPropertyFunctions::GetLength(CssProperty(), *after_style, after));
-    DCHECK(before.IsSpecified());
-    DCHECK(after.IsSpecified());
-    // A relative error of 1/100th of a percent is likely not noticeable.
-    // This check can be triggered with a tight tolerance such as 1e-6 for
-    // suitably ill-conditioned animations (crbug.com/1204099).
-    const float kSlack = 0.0001;
-    const float before_length = FloatValueForLength(before, 100);
-    const float after_length = FloatValueForLength(after, 100);
-    // Length values may be constructed from integers, floating point values, or
-    // layout units (64ths of a pixel).  If converted from a layout unit, any
-    /// value greater than max_int64 / 64 cannot be precisely expressed
-    // (crbug.com/1349686).
-    if (std::isfinite(before_length) && std::isfinite(after_length) &&
-        std::abs(before_length) < kIntMaxForLayoutUnit) {
-      // Test relative difference for large values to avoid floating point
-      // inaccuracies tripping the check.
-      const float delta = std::abs(before_length) < kSlack
-                              ? after_length - before_length
-                              : (after_length - before_length) / before_length;
-      DCHECK_LT(std::abs(delta), kSlack);
+    if (before.IsSpecified() && after.IsSpecified()) {
+      // A relative error of 1/100th of a percent is likely not noticeable.
+      // This check can be triggered with a tight tolerance such as 1e-6 for
+      // suitably ill-conditioned animations (crbug.com/1204099).
+      const float kSlack = 0.0001;
+      const float before_length = FloatValueForLength(before, 100);
+      const float after_length = FloatValueForLength(after, 100);
+      // Length values may be constructed from integers, floating point values,
+      // or layout units (64ths of a pixel).  If converted from a layout unit,
+      // any
+      /// value greater than max_int64 / 64 cannot be precisely expressed
+      // (crbug.com/1349686).
+      if (std::isfinite(before_length) && std::isfinite(after_length) &&
+          std::abs(before_length) < LayoutUnit::kIntMax) {
+        // Test relative difference for large values to avoid floating point
+        // inaccuracies tripping the check.
+        const float delta =
+            std::abs(before_length) < kSlack
+                ? after_length - before_length
+                : (after_length - before_length) / before_length;
+        DCHECK_LT(std::abs(delta), kSlack);
+      }
     }
 #endif
     return;

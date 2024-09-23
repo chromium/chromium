@@ -6,7 +6,9 @@
 #define GPU_COMMAND_BUFFER_CLIENT_RASTER_INTERFACE_H_
 
 #include <GLES2/gl2.h>
+
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "gpu/command_buffer/client/interface_base.h"
@@ -17,16 +19,18 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace cc {
 class DisplayItemList;
 class ImageProvider;
+struct ElementId;
 }  // namespace cc
 
 namespace gfx {
 class ColorSpace;
 class Point;
+class PointF;
 class Rect;
 class Size;
 class Vector2dF;
@@ -64,14 +68,12 @@ class RasterInterface : public InterfaceBase {
                                GLboolean unpack_premultiply_alpha) = 0;
 
   // Asynchronously writes pixels from caller-owned memory inside
-  // |src_sk_pixmap| into |dest_mailbox| for given |plane_index|. |plane_index|
-  // applies to multiplanar textures in mailboxes, for example YUV images
-  // produced by the VideoDecoder. |plane_index| as 0 should be passed for known
-  // single-plane textures.
+  // |src_sk_pixmap| into |dest_mailbox|.
+  // NOTE: This is only for single planar shared images (RGB). For multiplanar
+  // shared images, perform WritePixelsYUV.
   virtual void WritePixels(const gpu::Mailbox& dest_mailbox,
                            int dst_x_offset,
                            int dst_y_offset,
-                           int dst_plane_index,
                            GLenum texture_target,
                            const SkPixmap& src_sk_pixmap) = 0;
 
@@ -79,33 +81,9 @@ class RasterInterface : public InterfaceBase {
   // |src_yuv_pixmaps| into |dest_mailbox| for all planes. Should be used only
   // with YUV source images.
   // NOTE: This does not perform color space conversions and just uploads
-  // pixesl. For color space conversions (if needed), perform a CopySharedImage.
+  // pixels. For color space conversions (if needed), perform a CopySharedImage.
   virtual void WritePixelsYUV(const gpu::Mailbox& dest_mailbox,
                               const SkYUVAPixmaps& src_yuv_pixmap) = 0;
-
-  // Copy `yuva_plane_mailboxes` to `dest_mailbox`. The color space for the
-  // source of the copy is split into `planes_yuv_color_space` which converts
-  // into full range RGB, and `planes_rgb_color_space` which an RGB color space.
-  // If `planes_rgb_color_space` is nullptr, then disable conversion to
-  // `dest_mailbox`'s color space.
-  virtual void ConvertYUVAMailboxesToRGB(
-      const gpu::Mailbox& dest_mailbox,
-      GLint src_x,
-      GLint src_y,
-      GLsizei width,
-      GLsizei height,
-      SkYUVColorSpace planes_yuv_color_space,
-      const SkColorSpace* planes_rgb_color_space,
-      SkYUVAInfo::PlaneConfig plane_config,
-      SkYUVAInfo::Subsampling subsampling,
-      const gpu::Mailbox yuva_plane_mailboxes[]) = 0;
-
-  virtual void ConvertRGBAToYUVAMailboxes(
-      SkYUVColorSpace planes_yuv_color_space,
-      SkYUVAInfo::PlaneConfig plane_config,
-      SkYUVAInfo::Subsampling subsampling,
-      const gpu::Mailbox yuva_plane_mailboxes[],
-      const gpu::Mailbox& source_mailbox) = 0;
 
   // OOP-Raster
 
@@ -123,15 +101,18 @@ class RasterInterface : public InterfaceBase {
   // Heuristic decided on UMA data. This covers 85% of the cases where we need
   // to serialize ops > 512k.
   static constexpr size_t kDefaultMaxOpSizeHint = 600 * 1024;
-  virtual void RasterCHROMIUM(const cc::DisplayItemList* list,
-                              cc::ImageProvider* provider,
-                              const gfx::Size& content_size,
-                              const gfx::Rect& full_raster_rect,
-                              const gfx::Rect& playback_rect,
-                              const gfx::Vector2dF& post_translate,
-                              const gfx::Vector2dF& post_scale,
-                              bool requires_clear,
-                              size_t* max_op_size_hint) = 0;
+  using ScrollOffsetMap = base::flat_map<cc::ElementId, gfx::PointF>;
+  virtual void RasterCHROMIUM(
+      const cc::DisplayItemList* list,
+      cc::ImageProvider* provider,
+      const gfx::Size& content_size,
+      const gfx::Rect& full_raster_rect,
+      const gfx::Rect& playback_rect,
+      const gfx::Vector2dF& post_translate,
+      const gfx::Vector2dF& post_scale,
+      bool requires_clear,
+      const ScrollOffsetMap* raster_inducing_scroll_offsets,
+      size_t* max_op_size_hint) = 0;
 
   // Schedules a hardware-accelerated image decode and a sync token that's
   // released when the image decode is complete. If the decode could not be
@@ -197,7 +178,7 @@ class RasterInterface : public InterfaceBase {
   // applies to multiplanar textures in mailboxes, for example YUV images
   // produced by the VideoDecoder. |plane_index| as 0 should be passed for known
   // single-plane textures.
-  virtual void ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
+  virtual bool ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
                                    const SkImageInfo& dst_info,
                                    GLuint dst_row_bytes,
                                    int src_x,

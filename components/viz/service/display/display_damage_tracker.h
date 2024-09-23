@@ -73,6 +73,9 @@ class VIZ_SERVICE_EXPORT DisplayDamageTracker : public SurfaceObserver {
   // Called after a frame finishes (may or may not result in a draw).
   void DidFinishFrame();
 
+  // Returns true if damage to this Surface could affect the display.
+  bool CheckForDisplayDamage(const SurfaceId& surface_id);
+
   bool root_frame_missing() const { return root_frame_missing_; }
   bool IsRootSurfaceValid() const;
 

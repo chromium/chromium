@@ -24,6 +24,8 @@ declare global {
 const finalizationStatusTextKeys: {[key in FinalizationStatus]: string} = {
   [FinalizationStatus.kInProgress]: 'finalizePageProgressText',
   [FinalizationStatus.kComplete]: 'finalizePageCompleteText',
+  [FinalizationStatus.kFailedBlocking]: '',
+  [FinalizationStatus.kFailedNonBlocking]: '',
 };
 
 /**

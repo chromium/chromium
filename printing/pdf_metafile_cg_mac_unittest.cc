@@ -91,7 +91,7 @@ void RenderedPdfSha1(const base::FilePath::StringType& pdf_filename,
   ASSERT_TRUE(pdf_cg->RenderPage(page_number, context.get(),
                                  gfx::Rect(dest_size).ToCGRect(), autorotate,
                                  fit_to_page));
-  *rendered_hash = base::SHA1HashSpan(rendered_bitmap);
+  *rendered_hash = base::SHA1Hash(rendered_bitmap);
 }
 
 void ExpectedPngSha1(const base::FilePath::StringType& expected_png_filename,
@@ -112,7 +112,7 @@ void ExpectedPngSha1(const base::FilePath::StringType& expected_png_filename,
       &expected_png_bitmap, &png_width, &png_height));
   ASSERT_EQ(expected_png_size.width(), png_width);
   ASSERT_EQ(expected_png_size.height(), png_height);
-  *expected_hash = base::SHA1HashSpan(expected_png_bitmap);
+  *expected_hash = base::SHA1Hash(expected_png_bitmap);
 }
 
 void TestRenderPageWithTransformParams(

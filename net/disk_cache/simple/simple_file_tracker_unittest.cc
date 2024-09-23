@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/cache_type.h"
@@ -91,8 +96,8 @@ TEST_F(SimpleFileTrackerTest, Basic) {
   file_tracker_.Register(entry.get(), SimpleFileTracker::SubFile::FILE_1,
                          std::move(file_1));
 
-  base::StringPiece msg_0 = "Hello";
-  base::StringPiece msg_1 = "Worldish Place";
+  std::string_view msg_0 = "Hello";
+  std::string_view msg_1 = "Worldish Place";
 
   {
     SimpleFileTracker::FileHandle borrow_0 = file_tracker_.Acquire(
@@ -141,8 +146,8 @@ TEST_F(SimpleFileTrackerTest, Collision) {
   file_tracker_.Register(entry2.get(), SimpleFileTracker::SubFile::FILE_0,
                          std::move(file2));
 
-  base::StringPiece msg = "Alpha";
-  base::StringPiece msg2 = "Beta";
+  std::string_view msg = "Alpha";
+  std::string_view msg2 = "Beta";
 
   {
     SimpleFileTracker::FileHandle borrow = file_tracker_.Acquire(
@@ -214,7 +219,7 @@ TEST_F(SimpleFileTrackerTest, PointerStability) {
   file_tracker_.Register(entries[0].get(), SimpleFileTracker::SubFile::FILE_0,
                          std::move(file_0));
 
-  base::StringPiece msg = "Message to write";
+  std::string_view msg = "Message to write";
   {
     SimpleFileTracker::FileHandle borrow = file_tracker_.Acquire(
         &ops, entries[0].get(), SimpleFileTracker::SubFile::FILE_0);

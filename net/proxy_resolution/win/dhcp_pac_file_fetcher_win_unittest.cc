@@ -415,6 +415,8 @@ class FetcherClient {
     return fetcher_.GetTaskRunner();
   }
 
+  URLRequestContext* context() { return context_.get(); }
+
   std::unique_ptr<URLRequestContext> context_;
   MockDhcpPacFileFetcherWin fetcher_;
   bool finished_ = false;
@@ -425,9 +427,8 @@ class FetcherClient {
 // We separate out each test's logic so that we can easily implement
 // the ReuseFetcher test at the bottom.
 void TestNormalCaseURLConfiguredOneAdapter(FetcherClient* client) {
-  auto context = CreateTestURLRequestContextBuilder()->Build();
   auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
-      context.get(), client->GetTaskRunner());
+      client->context(), client->GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
   client->fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client->RunTest();
@@ -597,9 +598,8 @@ TEST(DhcpPacFileFetcherWin, ShortCircuitLessPreferredAdapters) {
 }
 
 void TestImmediateCancel(FetcherClient* client) {
-  auto context = CreateTestURLRequestContextBuilder()->Build();
   auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
-      context.get(), client->GetTaskRunner());
+      client->context(), client->GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
   client->fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client->RunTest();
@@ -658,9 +658,8 @@ TEST(DhcpPacFileFetcherWin, OnShutdown) {
   base::test::TaskEnvironment task_environment;
 
   FetcherClient client;
-  auto context = CreateTestURLRequestContextBuilder()->Build();
   auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
-      context.get(), client.GetTaskRunner());
+      client.context(), client.GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
   client.fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client.RunTest();
@@ -671,7 +670,7 @@ TEST(DhcpPacFileFetcherWin, OnShutdown) {
 
   client.ResetTestState();
   EXPECT_THAT(client.RunTestThatMayFailSync(), IsError(ERR_CONTEXT_SHUT_DOWN));
-  EXPECT_EQ(0u, context->url_requests()->size());
+  EXPECT_EQ(0u, client.context()->url_requests()->size());
 }
 
 }  // namespace

@@ -5,19 +5,21 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_D3D_IMAGE_UTILS_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_D3D_IMAGE_UTILS_H_
 
-#include <d3d11.h>
 #include <windows.h>
+
+#include <d3d11.h>
+#include <d3d12.h>
 #include <wrl/client.h>
+
+// clang-format off
+#include <webgpu/webgpu_cpp.h>
+// clang-format on
 
 #include "base/containers/span.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/buildflags.h"
-
-#if BUILDFLAG(USE_DAWN)
-#include <dawn/native/D3DBackend.h>
-#include <webgpu/webgpu_cpp.h>
-#endif
 
 namespace gpu {
 
@@ -25,16 +27,32 @@ bool ClearD3D11TextureToColor(
     const Microsoft::WRL::ComPtr<ID3D11Texture2D>& d3d11_texture,
     const SkColor4f& color);
 
-#if BUILDFLAG(USE_DAWN)
-std::unique_ptr<dawn::native::d3d::ExternalImageDXGI>
-CreateDawnExternalImageDXGI(
-    const wgpu::Device& device,
-    uint32_t shared_image_usage,
-    const D3D11_TEXTURE2D_DESC& d3d11_texture_desc,
-    absl::variant<HANDLE, Microsoft::WRL::ComPtr<ID3D11Texture2D>>
-        handle_or_texture,
+wgpu::Texture CreateDawnSharedTexture(
+    const wgpu::SharedTextureMemory& shared_texture_memory,
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     base::span<wgpu::TextureFormat> view_formats);
-#endif
+
+wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
+    const wgpu::Device& device,
+    bool use_keyed_mutex,
+    HANDLE handle);
+
+wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(
+    const wgpu::Device& device,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture);
+
+wgpu::Buffer CreateDawnSharedBuffer(
+    const wgpu::SharedBufferMemory& shared_buffer_memory,
+    wgpu::BufferUsage usage);
+
+wgpu::SharedBufferMemory CreateDawnSharedBufferMemory(
+    const wgpu::Device& device,
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource);
+
+wgpu::SharedFence CreateDawnSharedFence(
+    const wgpu::Device& device,
+    scoped_refptr<gfx::D3DSharedFence> fence);
 
 }  // namespace gpu
 

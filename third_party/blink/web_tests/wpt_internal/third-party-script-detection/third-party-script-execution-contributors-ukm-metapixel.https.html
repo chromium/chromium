@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src=resources/third-party-script-test-utils.js></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+  third_party_script_test(
+    'script-execution',
+    'https://connect.facebook.net/en_US/fbevents.js',
+    1 << 5 /*Technology::kMetaPixel*/);
+</script>

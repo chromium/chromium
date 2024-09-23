@@ -140,8 +140,9 @@ enum IntegerConversionConfiguration {
 inline bool ToBoolean(v8::Isolate* isolate,
                       v8::Local<v8::Value> value,
                       ExceptionState& exception_state) {
-  if (LIKELY(value->IsBoolean()))
+  if (value->IsBoolean()) [[likely]] {
     return value.As<v8::Boolean>()->Value();
+  }
   return value->BooleanValue(isolate);
 }
 
@@ -189,8 +190,9 @@ inline int32_t ToInt32(v8::Isolate* isolate,
                        IntegerConversionConfiguration configuration,
                        ExceptionState& exception_state) {
   // Fast case. The value is already a 32-bit integer.
-  if (LIKELY(value->IsInt32()))
+  if (value->IsInt32()) [[likely]] {
     return value.As<v8::Int32>()->Value();
+  }
   return ToInt32Slow(isolate, value, configuration, exception_state);
 }
 
@@ -206,13 +208,15 @@ inline uint32_t ToUInt32(v8::Isolate* isolate,
                          IntegerConversionConfiguration configuration,
                          ExceptionState& exception_state) {
   // Fast case. The value is already a 32-bit unsigned integer.
-  if (LIKELY(value->IsUint32()))
+  if (value->IsUint32()) [[likely]] {
     return value.As<v8::Uint32>()->Value();
+  }
 
   // Fast case. The value is a 32-bit signed integer with NormalConversion
   // configuration.
-  if (LIKELY(value->IsInt32() && configuration == kNormalConversion))
+  if (value->IsInt32() && configuration == kNormalConversion) [[likely]] {
     return value.As<v8::Int32>()->Value();
+  }
 
   return ToUInt32Slow(isolate, value, configuration, exception_state);
 }
@@ -233,8 +237,9 @@ inline int64_t ToInt64(v8::Isolate* isolate,
   DCHECK_NE(configuration, kClamp);
 
   // Fast case. The value is a 32-bit integer.
-  if (LIKELY(value->IsInt32()))
+  if (value->IsInt32()) [[likely]] {
     return value.As<v8::Int32>()->Value();
+  }
 
   return ToInt64Slow(isolate, value, configuration, exception_state);
 }
@@ -251,11 +256,13 @@ inline uint64_t ToUInt64(v8::Isolate* isolate,
                          IntegerConversionConfiguration configuration,
                          ExceptionState& exception_state) {
   // Fast case. The value is a 32-bit unsigned integer.
-  if (LIKELY(value->IsUint32()))
+  if (value->IsUint32()) [[likely]] {
     return value.As<v8::Uint32>()->Value();
+  }
 
-  if (LIKELY(value->IsInt32() && configuration == kNormalConversion))
+  if (value->IsInt32() && configuration == kNormalConversion) [[likely]] {
     return value.As<v8::Int32>()->Value();
+  }
 
   return ToUInt64Slow(isolate, value, configuration, exception_state);
 }
@@ -269,7 +276,7 @@ inline uint64_t DoubleToInteger(double d) {
   constexpr uint64_t kMaxULL = std::numeric_limits<uint64_t>::max();
 
   // -2^{64} < fmod_value < 2^{64}.
-  double fmod_value = fmod(trunc(d), kMaxULL + 1.0);
+  double fmod_value = fmod(trunc(d), static_cast<double>(kMaxULL) + 1.0);
   if (fmod_value >= 0) {
     // 0 <= fmod_value < 2^{64}.
     // 0 <= value < 2^{64}. This cast causes no loss.
@@ -291,8 +298,9 @@ CORE_EXPORT double ToDoubleSlow(v8::Isolate*,
 inline double ToDouble(v8::Isolate* isolate,
                        v8::Local<v8::Value> value,
                        ExceptionState& exception_state) {
-  if (LIKELY(value->IsNumber()))
+  if (value->IsNumber()) [[likely]] {
     return value.As<v8::Number>()->Value();
+  }
   return ToDoubleSlow(isolate, value, exception_state);
 }
 
@@ -309,10 +317,12 @@ inline float ToFloat(v8::Isolate* isolate,
   if (exception_state.HadException())
     return 0;
   using Limits = std::numeric_limits<float>;
-  if (UNLIKELY(double_value > Limits::max()))
+  if (double_value > Limits::max()) [[unlikely]] {
     return Limits::infinity();
-  if (UNLIKELY(double_value < Limits::lowest()))
+  }
+  if (double_value < Limits::lowest()) [[unlikely]] {
     return -Limits::infinity();
+  }
   return static_cast<float>(double_value);
 }
 
@@ -487,6 +497,13 @@ CORE_EXPORT v8::Local<v8::Value> FromJSONString(v8::Isolate*,
                                                 const String& stringified_json,
                                                 ExceptionState&);
 
+// The `TryRethrowScope` parameter is unused, but expected to be on stack to
+// handle any exceptions thrown by V8 if JSON parsing fails.
+CORE_EXPORT v8::Local<v8::Value> FromJSONString(v8::Isolate*,
+                                                v8::Local<v8::Context>,
+                                                const String& stringified_json,
+                                                TryRethrowScope&);
+
 // Ensure that a typed array value is not backed by a SharedArrayBuffer. If it
 // is, an exception will be thrown. The return value will use the NotShared
 // wrapper type.
@@ -534,6 +551,10 @@ CORE_EXPORT scheduler::EventLoop& ToEventLoop(ScriptState*);
 CORE_EXPORT bool IsInParallelAlgorithmRunnable(
     ExecutionContext* execution_context,
     ScriptState* script_state);
+
+CORE_EXPORT void ApplyContextToException(ScriptState*,
+                                         v8::Local<v8::Value> exception,
+                                         const ExceptionContext&);
 
 }  // namespace blink
 

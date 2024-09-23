@@ -4,9 +4,11 @@
 
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 
+#include <set>
+#include <string>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/invalidation/impl/fake_ack_handler.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #include "components/invalidation/public/invalidation.h"
@@ -28,7 +30,8 @@ namespace policy {
 class MockRemoteCommandInvalidator : public RemoteCommandsInvalidator {
  public:
   MockRemoteCommandInvalidator()
-      : RemoteCommandsInvalidator("RemoteCommands.Test") {}
+      : RemoteCommandsInvalidator("RemoteCommands.Test",
+                                  PolicyInvalidationScope::kDevice) {}
   MockRemoteCommandInvalidator(const MockRemoteCommandInvalidator&) = delete;
   MockRemoteCommandInvalidator& operator=(const MockRemoteCommandInvalidator&) =
       delete;
@@ -38,11 +41,23 @@ class MockRemoteCommandInvalidator : public RemoteCommandsInvalidator {
   MOCK_METHOD0(OnStart, void());
   MOCK_METHOD0(OnStop, void());
   MOCK_METHOD1(DoRemoteCommandsFetch, void(const invalidation::Invalidation&));
+  MOCK_METHOD0(DoInitialRemoteCommandsFetch, void());
 
   void SetInvalidationTopic(const invalidation::Topic& topic) {
+    // An initial remote command fetch must be triggered when subscribed to a
+    // topic.
+    EXPECT_CALL(*this, DoInitialRemoteCommandsFetch()).Times(1);
+
     em::PolicyData policy_data;
     policy_data.set_command_invalidation_topic(topic);
     ReloadPolicyData(&policy_data);
+
+    // Reloading policy will make invalidator subscribe to topic. Pretend we got
+    // signal for successful subscription to verify the behaviour upon
+    // subscription.
+    OnSuccessfullySubscribed(topic);
+
+    Mock::VerifyAndClearExpectations(this);
   }
 
   void ClearInvalidationTopic() {
@@ -61,12 +76,12 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
 
   void EnableInvalidationService() {
     invalidation_service_.SetInvalidatorState(
-        invalidation::INVALIDATIONS_ENABLED);
+        invalidation::InvalidatorState::kEnabled);
   }
 
   void DisableInvalidationService() {
     invalidation_service_.SetInvalidatorState(
-        invalidation::TRANSIENT_INVALIDATION_ERROR);
+        invalidation::InvalidatorState::kDisabled);
   }
 
   invalidation::Invalidation CreateInvalidation(
@@ -75,6 +90,8 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
                                       /*payload=*/"foo_bar");
   }
 
+  // Will send invalidation to handler if `IsInvalidatorRegistered(topic) ==
+  // true`.
   invalidation::Invalidation FireInvalidation(
       const invalidation::Topic& topic) {
     const invalidation::Invalidation invalidation = CreateInvalidation(topic);
@@ -82,20 +99,14 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
     return invalidation;
   }
 
-  bool IsInvalidationSent(const invalidation::Invalidation& invalidation) {
-    return !invalidation_service_.GetFakeAckHandler()->IsUnsent(invalidation);
+  bool IsInvalidatorRegistered() const {
+    return invalidation_service_.HasObserver(&invalidator_);
   }
 
-  bool IsInvalidationAcknowledged(
-      const invalidation::Invalidation& invalidation) {
-    return invalidation_service_.GetFakeAckHandler()->IsAcknowledged(
-        invalidation);
-  }
-
-  bool IsInvalidatorRegistered() {
-    return !invalidation_service_.invalidator_registrar()
-                .GetRegisteredTopics(&invalidator_)
-                .empty();
+  bool IsInvalidatorRegistered(const invalidation::Topic& topic) {
+    return invalidation_service_.invalidator_registrar()
+        .GetRegisteredTopics(&invalidator_)
+        .contains(topic);
   }
 
   std::set<std::string> GetSubscribedTopics() {
@@ -143,42 +154,15 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
     VerifyExpectations();
   }
 
-  // Fire an invalidation to verify that invalidation is not working.
+  // Test that the invalidator is not registered to `topic`.
   void VerifyInvalidationDisabled(const invalidation::Topic& topic) {
-    const invalidation::Invalidation invalidation = FireInvalidation(topic);
-
-    base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(IsInvalidationSent(invalidation));
+    EXPECT_FALSE(IsInvalidatorRegistered(topic));
   }
 
-  // Fire an invalidation to verify that invalidation works.
+  // Test that the invalidator is enabled and registered to `topic`.
   void VerifyInvalidationEnabled(const invalidation::Topic& topic) {
     EXPECT_TRUE(invalidator_.invalidations_enabled());
-
-    EXPECT_CALL(invalidator_,
-                DoRemoteCommandsFetch(Eq(CreateInvalidation(topic))))
-        .Times(1);
-    const invalidation::Invalidation invalidation = FireInvalidation(topic);
-
-    base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(IsInvalidationSent(invalidation));
-    EXPECT_TRUE(IsInvalidationAcknowledged(invalidation));
-    VerifyExpectations();
-  }
-
-  // Fire an invalidation to verify that invalidation is not working. It is
-  // expected that invalidator did not receive/acknowledged the invalidation.
-  void VerifyTopicSubscribedButInvalidationDisabled(
-      const invalidation::Topic& topic) {
-    EXPECT_FALSE(invalidator_.invalidations_enabled());
-    EXPECT_CALL(invalidator_, DoRemoteCommandsFetch(_)).Times(0);
-    const invalidation::Invalidation invalidation = FireInvalidation(topic);
-
-    EXPECT_TRUE(
-        invalidation_service_.GetFakeAckHandler()->IsUnacked(invalidation));
-    EXPECT_FALSE(invalidation_service_.GetFakeAckHandler()->IsAcknowledged(
-        invalidation));
-    VerifyExpectations();
+    EXPECT_TRUE(IsInvalidatorRegistered(topic));
   }
 
   invalidation::Topic kTestingTopic1;
@@ -205,26 +189,17 @@ TEST_F(RemoteCommandsInvalidatorTest, FiredInvalidation) {
   // No invalidation will be received if no invalidation is fired.
   VerifyExpectations();
 
-  // Fire an invalidation with different object id, no invalidation will be
-  // received.
-  const invalidation::Invalidation invalidation1 =
-      FireInvalidation(kTestingTopic2);
-
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsInvalidationSent(invalidation1));
-  VerifyExpectations();
+  // Invalidator does not subscribe to other stuff.
+  VerifyInvalidationDisabled(kTestingTopic2);
 
   // Fire the invalidation, it should be acknowledged and trigger a remote
   // commands fetch.
   EXPECT_CALL(invalidator_,
               DoRemoteCommandsFetch(Eq(CreateInvalidation(kTestingTopic1))))
       .Times(1);
-  const invalidation::Invalidation invalidation2 =
       FireInvalidation(kTestingTopic1);
 
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsInvalidationSent(invalidation2));
-  EXPECT_TRUE(IsInvalidationAcknowledged(invalidation2));
   VerifyExpectations();
 
   StopAndShutdown();
@@ -233,7 +208,7 @@ TEST_F(RemoteCommandsInvalidatorTest, FiredInvalidation) {
 // Verifies that no invalidation will be received when invalidator is shutdown.
 TEST_F(RemoteCommandsInvalidatorTest, ShutDown) {
   EXPECT_FALSE(invalidator_.invalidations_enabled());
-  FireInvalidation(kTestingTopic1);
+  EXPECT_FALSE(IsInvalidatorRegistered());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(invalidator_.invalidations_enabled());
@@ -246,7 +221,7 @@ TEST_F(RemoteCommandsInvalidatorTest, Stopped) {
   VerifyExpectations();
 
   EXPECT_FALSE(invalidator_.invalidations_enabled());
-  FireInvalidation(kTestingTopic2);
+  EXPECT_FALSE(IsInvalidatorRegistered());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(invalidator_.invalidations_enabled());
@@ -272,7 +247,6 @@ TEST_F(RemoteCommandsInvalidatorTest, StartedStateChange) {
   invalidator_.Stop();
   VerifyExpectations();
 
-  VerifyTopicSubscribedButInvalidationDisabled(kTestingTopic1);
   EXPECT_FALSE(invalidator_.invalidations_enabled());
   EXPECT_EQ(GetSubscribedTopics(), std::set<std::string>{kTestingTopic1});
   EXPECT_EQ(GetRegisteredTopics(), std::set<std::string>{});

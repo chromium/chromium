@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--TODO:  Update to match the specs"-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottom_bar_buttons_container"
+    android:orientation="vertical"
+    android:background="@color/google_bottom_bar_background_color"
+    android:baselineAligned="false"
+    android:gravity="center"
+    android:layout_width="match_parent"/>

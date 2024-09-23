@@ -36,7 +36,7 @@
    @namespace "http://www.w3.org/1999/xhtml"
 */
 
-select:not(:-internal-list-box):not(:-internal-select-author-button) {
+select:not(:-internal-list-box) {
     /* Selects with popup menus look like buttons with a drop down triangle on Linux. */
     background-color: ButtonFace;
 }

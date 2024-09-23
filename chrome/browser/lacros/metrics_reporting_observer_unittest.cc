@@ -35,8 +35,8 @@ class MetricsReportingObserverTest : public ::testing::Test {
   }
 
  private:
-  raw_ptr<MockMetricsServiceProxy> mock_metrics_service_;
   std::unique_ptr<MetricsReportingObserver> observer_;
+  raw_ptr<MockMetricsServiceProxy> mock_metrics_service_;
 };
 
 TEST_F(MetricsReportingObserverTest, EnablingMetricsReporting) {

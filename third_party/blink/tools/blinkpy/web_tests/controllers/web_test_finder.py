@@ -50,12 +50,13 @@ class WebTestFinder(object):
                                       'web_tests')
 
     def find_tests(
-            self,
-            args,
-            test_lists=None,
-            filter_files=None,
-            fastest_percentile=None,
-            filters=None,
+        self,
+        args,
+        test_lists=None,
+        filter_files=None,
+        inverted_filter_files=None,
+        fastest_percentile=None,
+        filters=None,
     ):
         filters = filters or []
         paths = self._strip_test_dir_prefixes(args)
@@ -63,8 +64,7 @@ class WebTestFinder(object):
             new_paths = self._read_test_list_files(
                 test_lists, self._port.TEST_PATH_SEPARATOR)
             new_paths = [
-                self._strip_test_dir_prefix(new_path)
-                for new_path in new_paths
+                self._strip_test_dir_prefix(new_path) for new_path in new_paths
             ]
             paths += new_paths
 
@@ -103,6 +103,10 @@ class WebTestFinder(object):
             file_filters = self._read_filter_files(
                 filter_files, self._port.TEST_PATH_SEPARATOR)
             all_filters = all_filters + file_filters
+        if inverted_filter_files:
+            file_filters = self._read_filter_files(
+                inverted_filter_files, self._port.TEST_PATH_SEPARATOR)
+            all_filters = all_filters + self._invert_filters(file_filters)
 
         test_files = filter_tests(test_files, all_filters)
 
@@ -185,6 +189,20 @@ class WebTestFinder(object):
                 raise
         return filters
 
+    def _invert_filters(self, filters):
+        inverted_filters = []
+        for terms in filters:
+            inverted_filter = []
+            for term in terms:
+                if term.startswith('-'):
+                    inverted_filter.append(term[1:])
+                elif term.startswith('+'):
+                    inverted_filter.append('-' + term[1:])
+                else:
+                    inverted_filter.append('-' + term)
+            inverted_filters.append(inverted_filter)
+        return inverted_filters
+
     def _read_test_list_files(self, filenames, test_path_separator):
         fs = self._filesystem
         positive_matches = []
@@ -244,7 +262,7 @@ class WebTestFinder(object):
         for test in all_tests:
             # Manual tests and virtual tests skipped by platform config are
             # always skipped and not affected by the --skip parameter
-            if (self._port.is_manual_test(test)
+            if (self._port.skipped_due_to_manual_test(test)
                     or self._port.virtual_test_skipped_due_to_platform_config(
                         test)
                     or self._port.skipped_due_to_exclusive_virtual_tests(test)
@@ -360,9 +378,9 @@ def filter_tests(tests, filters):
         else:
             return (len(k), k)
 
-    for filter in filters:
+    for terms in filters:
         # Validate the filter
-        for term in filter:
+        for term in terms:
             if (term.startswith('-') and not term[1:]) or not term:
                 raise ValueError('Empty filter entry "%s"' % (term, ))
             for i, c in enumerate(term):
@@ -372,13 +390,13 @@ def filter_tests(tests, filters):
                     raise ValueError('Bad test filter "%s" specified; '
                                      'unescaped wildcards are only allowed at '
                                      'the end' % (term, ))
-            if term.startswith('-') and term[1:] in filter:
+            if term.startswith('-') and term[1:] in terms:
                 raise ValueError('Both "%s" and "%s" specified in test '
                                  'filter' % (term, term[1:]))
 
         # Separate the negative/positive globless terms and glob terms
-        include_by_default = all(term.startswith('-') for term in filter)
-        exact_neg_terms, exact_pos_terms, glob_terms = _extract_terms(filter)
+        include_by_default = all(term.startswith('-') for term in terms)
+        exact_neg_terms, exact_pos_terms, glob_terms = _extract_terms(terms)
 
         filtered_tests = []
         for test in tests:

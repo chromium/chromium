@@ -1214,8 +1214,10 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField*)field {
-  NSURL* URL = [NSURL URLWithString:field.text];
-  if (URL.scheme.length == 0) {
+  CWVOmniboxInput* input = [[CWVOmniboxInput alloc] initWithText:field.text
+                                   shouldUseHTTPSAsDefaultScheme:NO];
+  NSURL* URL = input.URL;
+  if (input.type != CWVOmniboxInputTypeURL) {
     NSString* enteredText = field.text;
     enteredText =
         [enteredText stringByAddingPercentEncodingWithAllowedCharacters:
@@ -1526,7 +1528,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
 - (void)webViewDidFinishNavigation:(CWVWebView*)webView {
   NSLog(@"%@", NSStringFromSelector(_cmd));
-  // TODO(crbug.com/679895): Add some visual indication that the page load has
+  // TODO(crbug.com/41294395): Add some visual indication that the page load has
   // finished.
   [self updateToolbar];
 }

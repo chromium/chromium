@@ -19,10 +19,8 @@ class VR_UI_EXPORT LinearLayout : public UiElement {
 
   void set_margin(float margin) { margin_ = margin; }
   void set_direction(Direction direction) { direction_ = direction; }
-  void set_layout_length(float extent) { layout_length_ = extent; }
 
   // UiElement overrides.
-  bool SizeAndLayOutChildren() override;
   void LayOutContributingChildren() override;
 
  private:
@@ -35,19 +33,10 @@ class VR_UI_EXPORT LinearLayout : public UiElement {
                       float* major_extent,
                       float* minor_extent) const;
 
-  // Sets the specified element to a size that ensures the overall layout totals
-  // its own specified extents.
-  bool AdjustResizableElement(UiElement* element_to_resize);
-
   Direction direction_;
 
   // The spacing between elements.
   float margin_ = 0.0f;
-
-  // If non-zero, LinearLayout will look for an element tagged as allowing
-  // sizing by its parent, and set that element's size such that the total
-  // layout's length is attained.
-  float layout_length_ = 0.0f;
 };
 
 }  // namespace vr

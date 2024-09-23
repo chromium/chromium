@@ -44,8 +44,11 @@ class DownloadCommands {
     CANCEL_DEEP_SCAN = 19,  // Cancel deep scan and return to scanning prompt.
     BYPASS_DEEP_SCANNING_AND_OPEN = 20,  // Bypass the prompt to deep scan and
                                          // open the file.
+    OPEN_WITH_MEDIA_APP = 21,  // Open file using the ChromeOS media app.
+    EDIT_WITH_MEDIA_APP = 22,  // Open file using the ChromeOS media app with
+                               // an editing hint.
 
-    kMaxValue = BYPASS_DEEP_SCANNING_AND_OPEN,  // Keep last.
+    kMaxValue = EDIT_WITH_MEDIA_APP,  // Keep last.
   };
 
   // |model| must outlive DownloadCommands.
@@ -63,7 +66,7 @@ class DownloadCommands {
   void ExecuteCommand(Command command);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_MAC)
   bool IsDownloadPdf() const;
   bool CanOpenPdfInSystemViewer() const;
   Browser* GetBrowser() const;

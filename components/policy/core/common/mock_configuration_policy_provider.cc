@@ -91,7 +91,7 @@ void MockConfigurationPolicyProvider::WaitForPoliciesUpdated(
   } else if (domain == POLICY_DOMAIN_EXTENSIONS) {
     extension_policies_updated_callback_ = loop.QuitClosure();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   policy_service_->AddObserver(domain, this);

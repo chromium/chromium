@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] e.style['position-visibility'] = "anchors-valid" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-visibility'] = "anchors-valid no-overflow" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-visibility'] = "no-overflow anchors-valid" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

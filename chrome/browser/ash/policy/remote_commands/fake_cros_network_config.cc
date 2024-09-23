@@ -112,10 +112,10 @@ NetworkTypeStatePropertiesPtr NetworkBuilder::CreateTypeStateForType(
     case NetworkType::kWireless:
       // These are not actual network types, but just shorthands used while
       // filtering.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

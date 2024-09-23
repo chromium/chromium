@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[PASS] Cross-site window opened correctly
+[FAIL] 3P fetch: Cross site window setting HTTP cookies
+  assert_equals: Expected cookie 3P_http to not be available expected false but got true
+[PASS] Cross-site verify opened correctly
+[PASS] 3P_fetch_with_heuristics: Cookies are accessible via HTTP
+[PASS] 3P_fetch_with_heuristics: Cross site window setting HTTP cookies
+Harness: the test ran to completion.

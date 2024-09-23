@@ -8,7 +8,7 @@
 #include "base/notreached.h"
 #include "base/win/com_init_util.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_uia_win.h"
@@ -17,18 +17,13 @@
 namespace content {
 
 // static
-std::unique_ptr<ui::AXTreeFormatter>
-AXInspectFactory::CreatePlatformFormatter() {
-  return CreateFormatter(ui::AXApiType::kWinIA2);
+ui::AXApiType::Type AXInspectFactory::DefaultPlatformFormatterType() {
+  return ui::AXApiType::kWinIA2;
 }
 
 // static
-std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(ui::AXApiType::kWinIA2, manager, pid,
-                                          selector);
+ui::AXApiType::Type AXInspectFactory::DefaultPlatformRecorderType() {
+  return ui::AXApiType::kWinIA2;
 }
 
 // static
@@ -37,7 +32,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
   // Developer mode: crash immediately on any accessibility fatal error.
   // This only runs during integration tests, or if a developer is
   // using an inspection tool, e.g. chrome://accessibility.
-  BrowserAccessibilityManager::AlwaysFailFast();
+  ui::AXTreeManager::AlwaysFailFast();
 
   switch (type) {
     case ui::AXApiType::kBlink:
@@ -49,7 +44,8 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
       base::win::AssertComInitialized();
       return std::make_unique<ui::AXTreeFormatterUia>();
     default:
-      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported API type " << std::string_view(type);
   }
   return nullptr;
 }
@@ -57,13 +53,13 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     ui::AXApiType::Type type,
-    BrowserAccessibilityManager* manager,
+    ui::AXPlatformTreeManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
   // Developer mode: crash immediately on any accessibility fatal error.
   // This only runs during integration tests, or if a developer is
   // using an inspection tool, e.g. chrome://accessibility.
-  BrowserAccessibilityManager::AlwaysFailFast();
+  ui::AXTreeManager::AlwaysFailFast();
 
   if (!selector.pattern.empty()) {
     LOG(FATAL) << "Recording accessibility events from an application name "
@@ -85,7 +81,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     case ui::AXApiType::kWinUIA:
       return std::make_unique<ui::AXEventRecorderWinUia>(selector);
     default:
-      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Unsupported API type " << std::string_view(type);
   }
   return nullptr;
 }

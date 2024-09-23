@@ -10,12 +10,12 @@
 
 #include <memory>
 #include <string>
-
-#include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
+#include <vector>
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
+#include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/common/extensions/api/image_loader_private.h"
-#include "chrome/services/printing/public/mojom/pdf_thumbnailer.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -69,9 +69,9 @@ class ImageLoaderPrivateGetPdfThumbnailFunction
   ResponseAction Run() override;
 
  private:
-  // For a given |content| starts fetching the first page PDF thumbnail by
-  // calling PdfThumbnailer from the printing service. The first parameters,
-  // |size| is supplied by the JavaScript caller.
+  // For a given `content` starts fetching the first page PDF thumbnail by
+  // calling PdfThumbnailer from PdfService. The first parameters, `size` is
+  // supplied by the JavaScript caller.
   void FetchThumbnail(const gfx::Size& size, const std::string& content);
 
   // Callback invoked by the thumbnailing service when a PDF thumbnail has been
@@ -85,7 +85,7 @@ class ImageLoaderPrivateGetPdfThumbnailFunction
 
   // Holds the channel to Printing PDF thumbnailing service. Bound only
   // when needed.
-  mojo::Remote<printing::mojom::PdfThumbnailer> pdf_thumbnailer_;
+  mojo::Remote<pdf::mojom::PdfThumbnailer> pdf_thumbnailer_;
 
   // The dots per inch (dpi) resolution at which the PDF is rendered to a
   // thumbnail. The value of 30 is selected so that a US Letter size page does

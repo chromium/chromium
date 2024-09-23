@@ -335,7 +335,7 @@ void PepperPlatformAudioOutputDev::CreateStreamOnIOThread(
     case CREATING_STREAM:
     case PAUSED:
     case PLAYING:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

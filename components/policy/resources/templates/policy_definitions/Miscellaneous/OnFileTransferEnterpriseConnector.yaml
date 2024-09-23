@@ -8,6 +8,8 @@ desc: |-
 
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD">block_until_verdict</ph> field being set to 1 means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will wait to get a response from the analysis service before allowing the transfer. Any other integer value means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> allows the transfer immediately.
 
+        The <ph name="ENTERPRISE_CONNECTOR_DEFAULT_ACTION_FIELD">default_action</ph> field being set to block means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will not allow users to transfer the file if an error occurs while communicating with the analysis service. Any other value means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> allows transfers of the file if an error occurs while communicating with the analysis service.
+
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD">block_password_protected</ph> field controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> blocks or allows files that are password protected.
 
         The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> blocks or allows files that are too large to be analyzed.
@@ -21,6 +23,7 @@ example_value:
 - block_large_files: false
   block_password_protected: true
   block_until_verdict: 0
+  default_action: allow
   custom_messages:
   - language: default
     learn_more_url: moreinfo.example.com
@@ -64,9 +67,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
+- dpr-eng@google.com
 - sseckler@google.com
-- rogerta@chromium.org
-- mad@chromium.org
 - domfc@chromium.org
 schema:
   items:
@@ -77,6 +79,11 @@ schema:
         type: boolean
       block_until_verdict:
         type: integer
+      default_action:
+        enum:
+        - allow
+        - block
+        type: string
       custom_messages:
         items:
           properties:

@@ -6,8 +6,8 @@
 #define COMPONENTS_FEEDBACK_REDACTION_TOOL_METRICS_TESTER_H_
 
 #include <memory>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/feedback/redaction_tool/redaction_tool_metrics_recorder.h"
 
 namespace redaction {
@@ -26,11 +26,11 @@ class MetricsTester {
   // Get the number of times a histogram value was recorded while this instance
   // exists and the values are recorded with the recorder from
   // `SetupRecorder()`.
-  virtual size_t GetBucketCount(base::StringPiece histogram_name,
+  virtual size_t GetBucketCount(std::string_view histogram_name,
                                 int histogram_value) = 0;
 
   // Get the number of entries for the `histogram_name`.
-  virtual size_t GetNumBucketEntries(base::StringPiece histogram_name) = 0;
+  virtual size_t GetNumBucketEntries(std::string_view histogram_name) = 0;
 
   // Create a `RedactionToolMetricsRecorder` that is configured so it can return
   // metric values in `GetBucketCount()`.

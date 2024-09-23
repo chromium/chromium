@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
+import "components/metrics/public/mojom/histogram_fetcher.mojom";
 
 enum AppShimLaunchType {
   // Process the app shim's LaunchAppmessage and associate the shim with the
@@ -17,6 +18,8 @@ enum AppShimLaunchType {
   kRegisterOnly,
   // Do the above and launch the app.
   kNormal,
+  // Like `kRegisterOnly`, but also process notification actions.
+  kNotificationAction,
 };
 
 enum AppShimLaunchResult {
@@ -54,6 +57,11 @@ enum AppShimLoginItemRestoreState {
   // The application was launched during OS login, with the
   // 'hide on startup' flag.
   kHidden,
+};
+
+enum AppShimScreenReaderSupportMode {
+  kPartial,
+  kComplete
 };
 
 // An entry in the profiles NSMenu.
@@ -115,8 +123,13 @@ interface AppShim {
 
   // Requests notification permissions from the system. This will ask the user
   // to accept permissions if not granted or denied already.
-  RequestNotificationPermission() =>
-      (mac_notifications.mojom.RequestPermissionResult result);
+  RequestNotificationPermission()
+      => (mac_notifications.mojom.RequestPermissionResult result);
+
+  // Called to connect to a ChildHistogramFetcherFactory, to allow chrome to
+  // fetch histogram data from the app shim.
+  BindChildHistogramFetcherFactory(
+      pending_receiver<metrics.mojom.ChildHistogramFetcherFactory> receiver);
 };
 
 // Interface through which the a process communicates to the browser process.
@@ -147,9 +160,17 @@ interface AppShimHost {
   // user clicks on an item in the application dock menu).
   OpenAppWithOverrideUrl(url.mojom.Url override_url);
 
+  // Sent when the user activates some mode of Assistive Technology.
+  EnableAccessibilitySupport(AppShimScreenReaderSupportMode mode);
+
   // Sent when the app is about to terminate. Used to persist what profiles
   // where open when the app was terminated.
   ApplicationWillTerminate();
+
+  // Sent any time the app detects a change in the status of its (system level)
+  // notification permission. Also sent shortly after startup.
+  NotificationPermissionStatusChanged(
+      mac_notifications.mojom.PermissionStatus status);
 };
 
 // Properties of an app shim that are specified when it connects to the browser
@@ -206,10 +227,9 @@ interface AppShimHostBootstrap {
   // process is requesting to be associated with the given profile and app_id.
   // Once the profile and app_id are stored, and all future messages from the
   // app shim relate to this app.
-  OnShimConnected(pending_receiver<AppShimHost> host_receiver,
-                  AppShimInfo app_shim_info) =>
-                      (AppShimLaunchResult launch_result,
-                       FeatureState feature_state,
-                       pending_receiver<AppShim> app_shim_receiver);
+  OnShimConnected(
+      pending_receiver<AppShimHost> host_receiver, AppShimInfo app_shim_info)
+      => (AppShimLaunchResult launch_result,
+          FeatureState feature_state,
+          pending_receiver<AppShim> app_shim_receiver);
 };
-

@@ -9,25 +9,29 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
+
 namespace media {
 
 class Cluster {
  public:
   Cluster() = delete;
 
-  Cluster(std::unique_ptr<uint8_t[]> data, int size);
+  // The size of the `bytes_used` might be less size of `data`.
+  Cluster(base::HeapArray<uint8_t> data, int bytes_used);
 
   Cluster(const Cluster&) = delete;
   Cluster& operator=(const Cluster&) = delete;
 
   ~Cluster();
 
-  const uint8_t* data() const { return data_.get(); }
-  int size() const { return size_; }
+  // TODO(frs): This should be changed to return a span.
+  const uint8_t* data() const { return data_.data(); }
+  int bytes_used() const { return bytes_used_; }
 
  private:
-  std::unique_ptr<uint8_t[]> data_;
-  int size_;
+  base::HeapArray<uint8_t> data_;
+  const int bytes_used_;
 };
 
 class ClusterBuilder {
@@ -72,7 +76,7 @@ class ClusterBuilder {
                              const uint8_t* data,
                              int size);
   void Reset();
-  void ExtendBuffer(int bytes_needed);
+  void ExtendBuffer(size_t bytes_needed);
   void UpdateUInt64(int offset, int64_t value);
   void WriteBlock(uint8_t* buf,
                   int track_num,
@@ -81,9 +85,8 @@ class ClusterBuilder {
                   const uint8_t* data,
                   int size);
 
-  std::unique_ptr<uint8_t[]> buffer_;
-  int buffer_size_;
-  int bytes_used_;
+  base::HeapArray<uint8_t> buffer_;
+  size_t bytes_used_;
   int64_t cluster_timecode_;
 };
 

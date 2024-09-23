@@ -29,10 +29,6 @@ BASE_FEATURE(kExoReactiveFrameSubmission,
              "ExoReactiveFrameSubmission",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExoAutoNeedsBeginFrame,
-             "ExoAutoNeedsBeginFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 ////////////////////////////////////////////////////////////////////////////////
 // LayerTreeFrameSinkHolder, public:
 
@@ -118,9 +114,13 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrame(viz::CompositorFrame frame,
     return;
   }
 
-  frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
-
   DiscardCachedFrame(&frame);
+
+  // Needs to be after DiscardCachedFrame(), because discarding a frame will
+  // reset the frame arrival information in `frame_timing_history_`.
+  frame_timing_history_->FrameArrived();
+
+  frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/true);
 
   ObserveBeginFrameSource(true);
 
@@ -184,9 +184,9 @@ void LayerTreeFrameSinkHolder::ReclaimResources(
   for (auto& resource : resources) {
     // Skip resources that are also in last frame. This can happen if
     // the frame sink id changed.
-    // TODO(crbug/1448681): if viz reclaims the resources b/c the viz::Surface
-    // never gets embedded, this prevents clients from receiving release
-    // callbacks. This needs to be addressed.
+    // TODO(crbug.com/40269434): if viz reclaims the resources b/c the
+    // viz::Surface never gets embedded, this prevents clients from receiving
+    // release callbacks. This needs to be addressed.
     if (base::Contains(last_frame_resources_, resource.id)) {
       continue;
     }
@@ -261,8 +261,14 @@ void LayerTreeFrameSinkHolder::DidLoseLayerTreeFrameSink() {
   resource_manager_.ClearAllCallbacks();
   is_lost_ = true;
 
-  if (lifetime_manager_)
+  if (surface_tree_host_) {
+    CHECK(!lifetime_manager_);
+    surface_tree_host_->OnFrameSinkLost();
+  }
+  if (lifetime_manager_) {
+    CHECK(!surface_tree_host_);
     ScheduleDelete();
+  }
 }
 
 void LayerTreeFrameSinkHolder::ClearPendingBeginFramesForTesting() {
@@ -298,6 +304,7 @@ bool LayerTreeFrameSinkHolder::OnBeginFrameDerivedImpl(
     const viz::BeginFrameArgs& args) {
   DCHECK(reactive_frame_submission_);
 
+  frame_timing_history_->BeginFrameArrived(args.frame_id);
   frame_timing_history_->MayRecordDidNotProduceToFrameArrvial(/*valid=*/false);
 
   pending_begin_frames_.emplace();
@@ -332,8 +339,8 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrameToRemote(
   DCHECK(!is_lost_);
 
   if (frame_timing_history_) {
-    frame_timing_history_->FrameSubmitted(frame->metadata.frame_token,
-                                          base::TimeTicks::Now());
+    frame_timing_history_->FrameSubmitted(
+        frame->metadata.begin_frame_ack.frame_id, frame->metadata.frame_token);
   }
 
   last_frame_resources_.clear();
@@ -344,7 +351,7 @@ void LayerTreeFrameSinkHolder::SubmitCompositorFrameToRemote(
   frame_sink_->SubmitCompositorFrame(std::move(*frame),
                                      /*hit_test_data_changed=*/true);
 
-  // TODO(crbug.com/1473386): Push an object to
+  // TODO(crbug.com/40278992): Push an object to
   // `pending_discarded_frame_notifications_` instead of using the counter here,
   // s.t. we don't have to wait until this counter drop to zero before
   // `SendDiscardedFrameNotifications()`, and frame_acks are properly ordered.
@@ -441,9 +448,10 @@ void LayerTreeFrameSinkHolder::OnSendDeadlineExpired(bool update_timer) {
     frame_sink_->DidNotProduceFrame(pending_begin_frame.begin_frame_ack,
                                     cc::FrameSkippedReason::kNoDamage);
 
-    pending_begin_frames_.pop();
+    frame_timing_history_->FrameDidNotProduce(
+        pending_begin_frame.begin_frame_ack.frame_id);
 
-    frame_timing_history_->FrameDidNotProduce();
+    pending_begin_frames_.pop();
 
     bool should_pause_begin_frame =
         frame_sink_->auto_needs_begin_frame() &&

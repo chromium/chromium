@@ -4,7 +4,7 @@
 
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace blink {
 
@@ -31,7 +31,7 @@ void ThreadSafeBrowserInterfaceBrokerProxy::GetInterface(
 }
 
 bool ThreadSafeBrowserInterfaceBrokerProxy::SetBinderForTesting(
-    base::StringPiece interface_name,
+    std::string_view interface_name,
     Binder binder) {
   std::string name(interface_name);
 

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,6 +12,7 @@
 #include "base/types/optional_util.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -19,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -82,9 +84,14 @@ ServiceState GetServiceState(Profile* profile, bool pref_enabled) {
 
 FirstPartySetsPolicyService::FirstPartySetsPolicyService(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {
+    : browser_context_(
+          raw_ref<content::BrowserContext>::from_ptr(browser_context)),
+      privacy_sandbox_settings_(
+          raw_ref<privacy_sandbox::PrivacySandboxSettings>::from_ptr(
+              PrivacySandboxSettingsFactory::GetForProfile(
+                  Profile::FromBrowserContext(browser_context)))) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(browser_context);
+  privacy_sandbox_settings_observer_.Observe(&*privacy_sandbox_settings_);
   Init();
 }
 
@@ -98,7 +105,7 @@ void FirstPartySetsPolicyService::InitForTesting() {
 void FirstPartySetsPolicyService::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   // profile is guaranteed to be non-null since we create this service with a
   // non-null `context`.
   CHECK(profile);
@@ -190,7 +197,7 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
   }
   // TODO(crbug.com/1366846) Add metrics here to track whether the pref is ever
   // enabled before the config is ready to be to be sent to the delegates.
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   CHECK(profile);
   service_state_ = GetServiceState(profile, enabled);
   for (auto& delegate : access_delegates_) {
@@ -235,7 +242,7 @@ void FirstPartySetsPolicyService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_delegates_.Clear();
   on_ready_callbacks_.clear();
-  browser_context_ = nullptr;
+  privacy_sandbox_settings_observer_.Reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -263,10 +270,10 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
     return;
   }
 
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  Profile* profile = Profile::FromBrowserContext(browser_context());
   CHECK(profile);
   if (!profile->IsRegularProfile() || profile->IsGuestSession()) {
-    // TODO(https://crbug.com/1348572): regular profiles and guest sessions
+    // TODO(crbug.com/40233408): regular profiles and guest sessions
     // aren't mutually exclusive on ChromeOS.
     OnReadyToNotifyDelegates(std::move(config),
                              net::FirstPartySetsCacheFilter());
@@ -293,15 +300,9 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
 std::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
     const net::SchemefulSite& site) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!config_.has_value()) {
-    // Track this to measure how often the First-Party Sets in the browser
-    // process are queried before they are ready to answer queries.
-    num_queries_before_sets_ready_++;
+  if (!config_.has_value() || !is_enabled()) {
     return std::nullopt;
   }
-
-  if (!is_enabled())
-    return std::nullopt;
 
   return content::FirstPartySetsHandler::GetInstance()->FindEntry(
       site, config_.value());
@@ -322,13 +323,7 @@ bool FirstPartySetsPolicyService::ForEachEffectiveSetEntry(
     base::FunctionRef<bool(const net::SchemefulSite&,
                            const net::FirstPartySetEntry&)> f) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!is_enabled()) {
-    return false;
-  }
-  if (!is_ready()) {
-    // Track this to measure how often the First-Party Sets in the browser
-    // process are queried before they are ready to answer queries.
-    num_queries_before_sets_ready_++;
+  if (!is_enabled() || !is_ready()) {
     return false;
   }
   return content::FirstPartySetsHandler::GetInstance()
@@ -342,9 +337,6 @@ void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(
   config_ = std::move(config);
   cache_filter_ = std::move(cache_filter);
   first_initialization_complete_for_testing_ = true;
-  base::UmaHistogramCounts100(
-      "Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization",
-      num_queries_before_sets_ready_);
   for (auto& delegate : access_delegates_) {
     delegate->NotifyReady(
         MakeReadyEvent(config_.value().Clone(), cache_filter_.value().Clone()));
@@ -373,7 +365,6 @@ void FirstPartySetsPolicyService::ResetForTesting() {
   on_first_init_complete_for_testing_.reset();
   // Note: `first_initialization_complete_for_testing_` is intentionally not
   // reset here.
-  num_queries_before_sets_ready_ = 0;
 }
 
 }  // namespace first_party_sets

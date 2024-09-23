@@ -51,10 +51,18 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) StableCdmContextImpl
       uint32_t offset,
       const std::vector<uint8_t>& stream_data,
       ParseEncryptedSliceHeaderCallback callback) override;
+  void DecryptVideoBuffer(
+      const scoped_refptr<media::DecoderBuffer>& decoder_buffer,
+      const std::vector<uint8_t>& bytes,
+      DecryptVideoBufferCallback callback) override;
 
  private:
   // Receives callbacks from the |cdm_context_| after we register with it.
   void CdmEventCallback(media::CdmContext::Event event);
+
+  void OnDecryptDone(DecryptVideoBufferCallback decrypt_video_buffer_cb,
+                     media::Decryptor::Status status,
+                     scoped_refptr<media::DecoderBuffer> decoder_buffer);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

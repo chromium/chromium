@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_MAP_H_
 
@@ -65,7 +70,9 @@ class CORE_EXPORT CascadeMap {
   // Added properties with CSSPropertyPriority::kHighPropertyPriority cause the
   // corresponding high_priority_-bit to be set. This provides a fast way to
   // check which high-priority properties have been added (if any).
-  uint64_t HighPriorityBits() const { return high_priority_; }
+  uint64_t HighPriorityBits() const {
+    return native_properties_.Bits().HighPriorityBits();
+  }
   // True if any important declaration has been added.
   bool HasImportant() const { return has_important_; }
   // True if any inline style declaration lost the cascade to something
@@ -175,7 +182,6 @@ class CORE_EXPORT CascadeMap {
  private:
   ALWAYS_INLINE void Add(CascadePriorityList* list, CascadePriority);
 
-  uint64_t high_priority_ = 0;
   bool has_important_ = false;
   bool inline_style_lost_ = false;
   NativeMap native_properties_;

@@ -7,14 +7,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
-namespace password_manager {
-
+namespace affiliations {
 class AffiliationService;
+}  // namespace affiliations
+
+namespace password_manager {
 
 // Helper objects which handles passwords grouping. There are two levels of
 // grouping: firstly passwords with affiliated |signon_realm| are grouped
@@ -25,7 +27,8 @@ class AffiliationService;
 // websites aren't grouped at all.
 class PasswordsGrouper {
  public:
-  explicit PasswordsGrouper(AffiliationService* affiliation_service);
+  explicit PasswordsGrouper(
+      affiliations::AffiliationService* affiliation_service);
   ~PasswordsGrouper();
 
   // Apply grouping algorithm to credentials. The grouping algorithm group
@@ -84,15 +87,16 @@ class PasswordsGrouper {
   // Returns a map of facet URI to group id. Stores branding information for the
   // affiliated group by updating |map_group_id_to_branding_info|.
   std::map<std::string, GroupId> MapFacetsToGroupId(
-      const std::vector<GroupedFacets>& groups);
+      const std::vector<affiliations::GroupedFacets>& groups);
 
-  void GroupPasswordsImpl(std::vector<PasswordForm> forms,
-                          std::vector<PasskeyCredential> passkeys,
-                          const std::vector<GroupedFacets>& groups);
+  void GroupPasswordsImpl(
+      std::vector<PasswordForm> forms,
+      std::vector<PasskeyCredential> passkeys,
+      const std::vector<affiliations::GroupedFacets>& groups);
 
   void InitializePSLExtensionList(std::vector<std::string> psl_extension_list);
 
-  raw_ptr<AffiliationService> affiliation_service_;
+  raw_ptr<affiliations::AffiliationService> affiliation_service_;
 
   // Structure used to keep track of the mapping between the credential's
   // sign-on realm and the group id.
@@ -100,7 +104,8 @@ class PasswordsGrouper {
 
   // Structure used to keep track of the mapping between the group id and the
   // grouped facet's branding information.
-  std::map<GroupId, FacetBrandingInfo> map_group_id_to_branding_info_;
+  std::map<GroupId, affiliations::FacetBrandingInfo>
+      map_group_id_to_branding_info_;
 
   // Structure used to keep track of the mapping between a group id and the
   // passwords and passkeys.

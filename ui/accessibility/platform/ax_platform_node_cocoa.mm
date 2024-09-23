@@ -68,8 +68,6 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kContentInsertion, @"AXInsertStyleGroup"},
       {ax::mojom::Role::kContentInfo, @"AXLandmarkContentInfo"},
       {ax::mojom::Role::kDefinition, @"AXDefinition"},
-      {ax::mojom::Role::kDescriptionListDetail, @"AXDefinition"},
-      {ax::mojom::Role::kDescriptionListTerm, @"AXTerm"},
       {ax::mojom::Role::kDialog, @"AXApplicationDialog"},
       {ax::mojom::Role::kDocument, @"AXDocument"},
       {ax::mojom::Role::kEmphasis, @"AXEmphasisStyleGroup"},
@@ -111,6 +109,8 @@ RoleMap BuildSubroleMap() {
       {ax::mojom::Role::kRegion, @"AXLandmarkRegion"},
       {ax::mojom::Role::kSearch, @"AXLandmarkSearch"},
       {ax::mojom::Role::kSearchBox, @"AXSearchField"},
+      {ax::mojom::Role::kSectionFooter, @"AXSectionFooter"},
+      {ax::mojom::Role::kSectionHeader, @"AXSectionHeader"},
       {ax::mojom::Role::kStatus, @"AXApplicationStatus"},
       {ax::mojom::Role::kStrong, @"AXStrongStyleGroup"},
       {ax::mojom::Role::kSubscript, @"AXSubscriptStyleGroup"},
@@ -404,8 +404,6 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kContentInsertion:
     case ax::mojom::Role::kContentInfo:
     case ax::mojom::Role::kDefinition:
-    case ax::mojom::Role::kDescriptionListDetail:
-    case ax::mojom::Role::kDescriptionListTerm:
     case ax::mojom::Role::kDesktop:
     case ax::mojom::Role::kDialog:
     case ax::mojom::Role::kDetails:
@@ -450,14 +448,12 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kFigcaption:
     case ax::mojom::Role::kFigure:
     case ax::mojom::Role::kFooter:
-    case ax::mojom::Role::kFooterAsNonLandmark:
     case ax::mojom::Role::kForm:
     case ax::mojom::Role::kGenericContainer:
     case ax::mojom::Role::kGraphicsDocument:
     case ax::mojom::Role::kGraphicsObject:
     case ax::mojom::Role::kGroup:
     case ax::mojom::Role::kHeader:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
     case ax::mojom::Role::kIframe:
     case ax::mojom::Role::kIframePresentational:
     case ax::mojom::Role::kLabelText:
@@ -506,6 +502,9 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kRuby:
     case ax::mojom::Role::kSearch:
     case ax::mojom::Role::kSection:
+    case ax::mojom::Role::kSectionFooter:
+    case ax::mojom::Role::kSectionHeader:
+    case ax::mojom::Role::kSectionWithoutName:
     case ax::mojom::Role::kStatus:
     case ax::mojom::Role::kSubscript:
     case ax::mojom::Role::kSuggestion:
@@ -544,15 +543,13 @@ void CollectAncestorRoles(
     case ax::mojom::Role::kComboBoxMenuButton:
       return NSAccessibilityComboBoxRole;
     case ax::mojom::Role::kComboBoxSelect:
-      // TODO(crbug.com/1362834): Can this be NSAccessibilityComboBoxRole?
+      // TODO(crbug.com/40864556): Can this be NSAccessibilityComboBoxRole?
       return NSAccessibilityPopUpButtonRole;
     case ax::mojom::Role::kDate:
       return @"AXDateField";
     case ax::mojom::Role::kDateTime:
       return @"AXDateField";
     case ax::mojom::Role::kDescriptionList:
-      return NSAccessibilityListRole;
-    case ax::mojom::Role::kDirectory:
       return NSAccessibilityListRole;
     case ax::mojom::Role::kDisclosureTriangle:
     case ax::mojom::Role::kDisclosureTriangleGrouped:
@@ -579,6 +576,8 @@ void CollectAncestorRoles(
       // a list as of 10.12.6, so following WebKit and using table role:
       // crbug.com/753925
       return NSAccessibilityTableRole;
+    case ax::mojom::Role::kGridCell:
+      return @"AXCell";
     case ax::mojom::Role::kHeading:
       return @"AXHeading";
     case ax::mojom::Role::kImage:
@@ -623,8 +622,6 @@ void CollectAncestorRoles(
       return NSAccessibilityButtonRole;
     case ax::mojom::Role::kPopUpButton:
       return NSAccessibilityPopUpButtonRole;
-    case ax::mojom::Role::kPortal:
-      return NSAccessibilityButtonRole;
     case ax::mojom::Role::kProgressIndicator:
       return NSAccessibilityProgressIndicatorRole;
     case ax::mojom::Role::kRadioButton:
@@ -685,8 +682,12 @@ void CollectAncestorRoles(
       // specially by screen readers, can break their ability to find the
       // content window. See http://crbug.com/875843 for more information.
       return NSAccessibilityGroupRole;
+    case ax::mojom::Role::kDescriptionListTermDeprecated:
+    case ax::mojom::Role::kDescriptionListDetailDeprecated:
+    case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
-      NOTREACHED_NORETURN();
+    case ax::mojom::Role::kPortalDeprecated:
+      NOTREACHED();
   }
 }
 
@@ -856,9 +857,9 @@ void CollectAncestorRoles(
 
     NSMutableDictionary* fontAttributes = [NSMutableDictionary dictionary];
 
-    // TODO(crbug.com/958811): Implement NSAccessibilityFontFamilyKey.
-    // TODO(crbug.com/958811): Implement NSAccessibilityFontNameKey.
-    // TODO(crbug.com/958811): Implement NSAccessibilityVisibleNameKey.
+    // TODO(crbug.com/41456329): Implement NSAccessibilityFontFamilyKey.
+    // TODO(crbug.com/41456329): Implement NSAccessibilityFontNameKey.
+    // TODO(crbug.com/41456329): Implement NSAccessibilityVisibleNameKey.
 
     if (text_attrs.font_size != ui::AXTextAttributes::kUnsetValue) {
       fontAttributes[NSAccessibilityFontSizeKey] = @(text_attrs.font_size);
@@ -900,9 +901,9 @@ void CollectAncestorRoles(
                     range:leafRange];
     }
 
-    // TODO(crbug.com/958811): Implement
+    // TODO(crbug.com/41456329): Implement
     // NSAccessibilitySuperscriptTextAttribute.
-    // TODO(crbug.com/958811): Implement NSAccessibilityShadowTextAttribute.
+    // TODO(crbug.com/41456329): Implement NSAccessibilityShadowTextAttribute.
 
     if (text_attrs.underline_style != ui::AXTextAttributes::kUnsetValue) {
       [attributedString addAttribute:NSAccessibilityUnderlineTextAttribute
@@ -913,7 +914,7 @@ void CollectAncestorRoles(
                                   range:leafRange];
     }
 
-    // TODO(crbug.com/958811): Implement
+    // TODO(crbug.com/41456329): Implement
     // NSAccessibilityUnderlineColorTextAttribute.
 
     if (text_attrs.strikethrough_style != ui::AXTextAttributes::kUnsetValue) {
@@ -926,11 +927,11 @@ void CollectAncestorRoles(
                     range:leafRange];
     }
 
-    // TODO(crbug.com/958811): Implement
+    // TODO(crbug.com/41456329): Implement
     // NSAccessibilityStrikethroughColorTextAttribute.
 
-    // TODO(crbug.com/958811): Implement NSAccessibilityLinkTextAttribute.
-    // TODO(crbug.com/958811): Implement
+    // TODO(crbug.com/41456329): Implement NSAccessibilityLinkTextAttribute.
+    // TODO(crbug.com/41456329): Implement
     // NSAccessibilityAutocorrectedTextAttribute.
 
     anchorStartOffset += leafTextLength;
@@ -938,14 +939,11 @@ void CollectAncestorRoles(
   [attributedString endEditing];
 }
 
-- (NSString*)descriptionIfFromAriaDescription {
+- (BOOL)descriptionIsFromAriaDescription {
   ax::mojom::DescriptionFrom descFrom = static_cast<ax::mojom::DescriptionFrom>(
       _node->GetIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom));
-  if (descFrom == ax::mojom::DescriptionFrom::kAriaDescription ||
-      descFrom == ax::mojom::DescriptionFrom::kRelatedElement) {
-    return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
-  }
-  return nil;
+  return descFrom == ax::mojom::DescriptionFrom::kAriaDescription ||
+         descFrom == ax::mojom::DescriptionFrom::kRelatedElement;
 }
 
 - (NSString*)getName {
@@ -1274,19 +1272,11 @@ void CollectAncestorRoles(
     [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
   }
 
-  // Drop effect.
-  if (_node->HasHtmlAttribute("aria-dropeffect"))
-    [axAttributes addObject:NSAccessibilityDropEffectsAttribute];
-
   // Error messages.
   if (_node->HasIntListAttribute(
           ax::mojom::IntListAttribute::kErrormessageIds)) {
     [axAttributes addObject:NSAccessibilityErrorMessageElementsAttribute];
   }
-
-  // Grabbed
-  if (_node->HasHtmlAttribute("aria-grabbed"))
-    [axAttributes addObject:NSAccessibilityGrabbedAttribute];
 
   if (ui::SupportsRequired(role)) {
     [axAttributes addObject:NSAccessibilityRequiredAttribute];
@@ -1445,7 +1435,7 @@ void CollectAncestorRoles(
 
   switch (static_cast<ax::mojom::AriaCurrentState>(ariaCurrent)) {
     case ax::mojom::AriaCurrentState::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return @"false";
     case ax::mojom::AriaCurrentState::kFalse:
       return @"false";
@@ -1463,7 +1453,7 @@ void CollectAncestorRoles(
       return @"time";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return @"false";
 }
 
@@ -1605,21 +1595,11 @@ void CollectAncestorRoles(
     return nil;
 
   std::string id;
-  if (_node->GetHtmlAttribute("id", &id))
+  if (_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId, &id)) {
     return base::SysUTF8ToNSString(id);
+  }
 
   return @"";
-}
-
-- (NSString*)AXDropEffects {
-  if (![self instanceActive])
-    return nil;
-
-  std::string dropEffects;
-  if (_node->GetHtmlAttribute("aria-dropeffect", &dropEffects))
-    return base::SysUTF8ToNSString(dropEffects);
-
-  return nil;
 }
 
 - (id)AXEditableAncestor {
@@ -1656,12 +1636,6 @@ void CollectAncestorRoles(
 }
 
 - (NSNumber*)AXGrabbed {
-  if (![self instanceActive])
-    return nil;
-  std::string grabbed;
-  if (_node->GetHtmlAttribute("aria-grabbed", &grabbed) && grabbed == "true")
-    return @YES;
-
   return @NO;
 }
 
@@ -1811,17 +1785,18 @@ void CollectAncestorRoles(
 }
 
 - (NSString*)AXHelp {
-  if (![self instanceActive])
-    return nil;
-
-  // AXCustomContent is only supported by VoiceOver since macOS 11. In
-  // macOS 11 or later we expose the aria description in AXCustomContent,
-  // before then we expose the description in AXHelp.
-  if (base::mac::MacOSMajorVersion() >= 11 &&
-      [[self descriptionIfFromAriaDescription] length]) {
+  if (![self instanceActive]) {
     return nil;
   }
 
+  // ARIA descriptions are returned as AXCustomContent (see
+  // -accessibilityCustomContent below), so if the description is from ARIA,
+  // don't provide it as AXHelp, and return nothing.
+  if ([self descriptionIsFromAriaDescription]) {
+    return nil;
+  }
+
+  // Otherwise, it's a non-ARIA description, which is returned as AXHelp.
   return [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
 }
 
@@ -2048,7 +2023,7 @@ void CollectAncestorRoles(
   if (![parameter isKindOfClass:[NSNumber class]])
     return nil;
 
-  // TODO(https://crbug.com/958811): Implement this for real.
+  // TODO(crbug.com/41456329): Implement this for real.
   return [NSValue
       valueWithRange:NSMakeRange(0, [self accessibilityNumberOfCharacters])];
 }
@@ -2057,7 +2032,7 @@ void CollectAncestorRoles(
   if (![parameter isKindOfClass:[NSValue class]])
     return nil;
 
-  // TODO(https://crbug.com/958811): Finish implementation.
+  // TODO(crbug.com/41456329): Finish implementation.
   // Currently, we only decorate the attributed string with misspelling
   // information.
   // TODO(tapted): views::WordLookupClient has a way to obtain the actual
@@ -2125,7 +2100,7 @@ void CollectAncestorRoles(
 // methods (the ones from NSObject) are implemented in terms of the new
 // NSAccessibility methods.
 //
-// TODO(https://crbug.com/386671): Does this class need to implement the various
+// TODO(crbug.com/41115917): Does this class need to implement the various
 // accessibilityPerformFoo methods, or are the stub implementations from
 // NSAccessibilityElement sufficient?
 
@@ -2243,7 +2218,7 @@ void CollectAncestorRoles(
   if ([value isKindOfClass:[NSString class]]) {
     data.value = base::SysNSStringToUTF8(value);
   } else if ([value isKindOfClass:[NSValue class]]) {
-    // TODO(https://crbug.com/386671): Is this case actually needed? The
+    // TODO(crbug.com/41115917): Is this case actually needed? The
     // NSObject accessibility implementation supported this, but can it actually
     // occur?
     NSRange range = [value rangeValue];
@@ -2258,11 +2233,13 @@ void CollectAncestorRoles(
       "accessibility", "AXPlatformNodeCocoa::isAccessibilitySelectorAllowed",
       "selector=", base::SysNSStringToUTF8(NSStringFromSelector(selector)));
 
-  if (!_node)
+  if (!_node) {
     return NO;
+  }
 
-  if (selector == @selector(setAccessibilityFocused:))
+  if (selector == @selector(setAccessibilityFocused:)) {
     return _node->IsFocusable();
+  }
 
   if (selector == @selector(setAccessibilityValue:)) {
     switch (_node->GetRole()) {
@@ -2303,21 +2280,27 @@ void CollectAncestorRoles(
   }
 
   // Don't allow calling AX setters on disabled elements.
-  // TODO(https://crbug.com/692362): Once the underlying bug in
+  // TODO(crbug.com/41301942): Once the underlying bug in
   // views::Textfield::SetSelectionRange() described in that bug is fixed,
   // remove the check here when the selector is setAccessibilitySelectedText*;
   // right now, this check serves to prevent accessibility clients from trying
   // to set the selection range, which won't work because of 692362.
-  if (_node->GetDelegate()->IsReadOnlyOrDisabled() && IsAXSetter(selector))
+  if (_node->GetDelegate() && _node->GetDelegate()->IsReadOnlyOrDisabled() &&
+      IsAXSetter(selector)) {
     return NO;
+  }
 
-  // TODO(https://crbug.com/386671): What about role-specific selectors?
+  // TODO(crbug.com/41115917): What about role-specific selectors?
   return [super isAccessibilitySelectorAllowed:selector];
 }
 
 // NSAccessibility: Determining Relationships.
 - (NSArray*)accessibilityChildren {
   return [self AXChildren];
+}
+
+- (id)accessibilityParent {
+  return [self AXParent];
 }
 
 // NSAccessibility: Assigning Roles.
@@ -2367,8 +2350,6 @@ void CollectAncestorRoles(
   NSString* role = [self accessibilityRole];
   switch ([self internalRole]) {
     case ax::mojom::Role::kColorWell:            // Use platform's "color well"
-    case ax::mojom::Role::kFooterAsNonLandmark:  // Default: IDS_AX_ROLE_FOOTER
-    case ax::mojom::Role::kHeaderAsNonLandmark:  // Default: IDS_AX_ROLE_HEADER
     case ax::mojom::Role::kImage:                // Default: IDS_AX_ROLE_GRAPHIC
     case ax::mojom::Role::kInputTime:            // Use platform's "time field"
     case ax::mojom::Role::kMeter:        // Use platform's "level indicator"
@@ -2658,28 +2639,29 @@ void CollectAncestorRoles(
 //
 
 - (NSArray*)accessibilityCustomContent {
-  if (![self instanceActive])
+  if (![self instanceActive]) {
     return nil;
-
-  if (@available(macOS 11.0, *)) {
-    NSString* description = [self descriptionIfFromAriaDescription];
-    if ([description length]) {
-      AXCustomContent* contentItem =
-          [AXCustomContent customContentWithLabel:@"description"
-                                            value:description];
-      // A custom content importance of high causes it to be spoken
-      // automatically, rather than "More content available".
-      [contentItem setImportance:AXCustomContentImportanceHigh];
-      return @[ contentItem ];
-    }
   }
 
-  return nil;
+  // Only descriptions originating from ARIA are returned as custom content.
+  // (Non-ARIA descriptions are returned as AXHelp.)
+  if (![self descriptionIsFromAriaDescription]) {
+    return nil;
+  }
+
+  NSString* description =
+      [self getStringAttribute:ax::mojom::StringAttribute::kDescription];
+  AXCustomContent* contentItem =
+      [AXCustomContent customContentWithLabel:@"description" value:description];
+  // A custom content importance of high causes it to be spoken
+  // automatically, rather than "More content available".
+  contentItem.importance = AXCustomContentImportanceHigh;
+  return @[ contentItem ];
 }
 
 // MathML attributes.
-// TODO(crbug.com/1051115): The MathML aam considers only in-flow children.
-// TODO(crbug.com/1051115): When/if it is needed to expose this for other a11y
+// TODO(crbug.com/40673555): The MathML aam considers only in-flow children.
+// TODO(crbug.com/40673555): When/if it is needed to expose this for other a11y
 // APIs, then some of the logic below should probably be moved to the
 // platform-independent classes.
 

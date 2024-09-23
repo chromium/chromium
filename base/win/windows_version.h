@@ -59,6 +59,7 @@ enum class Version {
   WIN11 = 22,        // Win11 21H2: Build 22000.
   WIN11_22H2 = 23,   // Win11 22H2: Build 22621.
   WIN11_23H2 = 24,   // Win11 23H2: Build 22631.
+  WIN11_24H2 = 25,   // Win11 24H2: Build 26100.
   WIN_LAST,          // Indicates error condition.
 };
 
@@ -163,6 +164,9 @@ class BASE_EXPORT OSInfo {
   // Returns the "ReleaseId" (Windows 10 release number) from the registry.
   const std::string& release_id() const { return release_id_; }
 
+  // It returns true if the Windows SKU is N edition.
+  bool IsWindowsNSku() const;
+
  private:
   friend class base::test::ScopedOSInfoOverride;
   FRIEND_TEST_ALL_PREFIXES(OSInfo, MajorMinorBuildToVersion);
@@ -235,6 +239,7 @@ class BASE_EXPORT OSInfo {
   WowProcessMachine wow_process_machine_;
   WowNativeMachine wow_native_machine_;
   std::string processor_model_name_;
+  DWORD os_type_;
 };
 
 // Because this is by far the most commonly-requested value from the above

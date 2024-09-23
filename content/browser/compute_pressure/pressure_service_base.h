@@ -6,15 +6,19 @@
 #define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_BASE_H_
 
 #include <array>
+#include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/unguessable_token.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 
 namespace content {
 
@@ -25,7 +29,7 @@ class RenderFrameHost;
 //
 // This class is not thread-safe, so each instance must be used on one sequence.
 class CONTENT_EXPORT PressureServiceBase
-    : public device::mojom::PressureManager {
+    : public blink::mojom::WebPressureManager {
  public:
   ~PressureServiceBase() override;
 
@@ -36,17 +40,20 @@ class CONTENT_EXPORT PressureServiceBase
   static bool HasImplicitFocus(RenderFrameHost* render_frame_host);
 
   void BindReceiver(
-      mojo::PendingReceiver<device::mojom::PressureManager> receiver);
+      mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver);
 
   virtual bool CanCallAddClient() const;
 
-  // device::mojom::PressureManager implementation.
-  void AddClient(mojo::PendingRemote<device::mojom::PressureClient> client,
-                 device::mojom::PressureSource source,
+  // blink::mojom::WebPressureManager implementation.
+  void AddClient(device::mojom::PressureSource source,
                  AddClientCallback callback) override;
 
   // Verifies if the data should be delivered according to focus status.
   virtual bool ShouldDeliverUpdate() const = 0;
+
+  // Returns a token for use with automation calls when one is set.
+  virtual std::optional<base::UnguessableToken> GetTokenFor(
+      device::mojom::PressureSource) const = 0;
 
   bool IsManagerReceiverBoundForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -69,6 +76,10 @@ class CONTENT_EXPORT PressureServiceBase
  private:
   void OnPressureManagerDisconnected();
 
+  void DidAddClient(device::mojom::PressureSource source,
+                    AddClientCallback client_callback,
+                    device::mojom::PressureManagerAddClientResultPtr);
+
   // Services side.
   // Callback from |manager_receiver_| is passed to |manager_remote_| and the
   // Receiver should be destroyed first so that the callback is invalidated
@@ -77,12 +88,14 @@ class CONTENT_EXPORT PressureServiceBase
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Blink side.
-  mojo::Receiver<device::mojom::PressureManager> GUARDED_BY_CONTEXT(
+  mojo::Receiver<blink::mojom::WebPressureManager> GUARDED_BY_CONTEXT(
       sequence_checker_) manager_receiver_{this};
 
   std::array<PressureClientImpl,
              static_cast<size_t>(device::mojom::PressureSource::kMaxValue) + 1>
       source_to_client_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<PressureServiceBase> weak_ptr_factory_{this};
 };
 
 }  // namespace content

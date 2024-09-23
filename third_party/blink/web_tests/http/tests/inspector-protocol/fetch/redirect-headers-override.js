@@ -19,7 +19,8 @@
     ]
   });
   const afterRedirect = (await dp.Fetch.onceRequestPaused()).params;
-  testRunner.log(afterRedirect.request.headers);
+  const stabilizeNames = [...TestRunner.stabilizeNames, 'User-Agent'];
+  testRunner.log(afterRedirect.request.headers, 'Redirected request headers:', stabilizeNames);
   dp.Fetch.continueRequest({
     requestId: afterRedirect.requestId,
   });

@@ -1,0 +1,21 @@
+<style>
+  :host {
+    height: 100%;
+    width: 100%;
+  }
+
+  #shaderCanvas {
+    height: 100%;
+    width: 100%;
+  }
+
+  #sparklesImgContainer {
+    display: none;
+  }
+</style>
+<canvas id="shaderCanvas"
+    style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"></canvas>
+<!-- Provides image source for canvas; element is not displayed. -->
+<div id="sparklesImgContainer">
+  <image id="sparklesSvg" src="sparkles.svg" on-load="onSparklesLoad">
+</div>

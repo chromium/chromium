@@ -20,6 +20,17 @@ class WebUI;
 
 namespace ash::personalization_app {
 
+// This enum is used to store the managed Sea Pen policy states for GenAI
+// Wallpaper and VC Background, defined in GenAIWallpaperSettings.yaml and
+// GenAIVcBackgroundSettings.yaml. Please make sure the enum value and
+// definition match with the policy yaml files.
+enum class ManagedSeaPenSettings {
+  kAllowed = 0,  // Allow [Feature Name] and improve AI models
+  kAllowedWithoutLogging =
+      1,          // Allow [Feature Name] without improving AI models
+  kDisabled = 2,  // Do not allow [Feature Name]
+};
+
 // Creates a PersonalizationAppUI. Used as a callback by
 // PersonalizationAppUIConfig.
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
@@ -41,8 +52,37 @@ AccountId GetAccountId(const Profile* profile);
 // profiles can, but kiosk and guest cannot.
 bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile);
 
-// Controls whether the profile can see and open SeaPen UI.
+// Verifies if the current language settings in English.
+bool IsSystemInEnglishLanguage();
+
+// Controls whether the profile can see and open SeaPen UI. Managed users have
+// age restrictions that underage users (<18) are not allowed to view and access
+// SeaPen features. The age check should be verified after network connection
+// is established.
 bool IsEligibleForSeaPen(Profile* profile);
+
+// Preliminary check whether the profile is allowed to install Sea Pen apps (VC
+// Background).
+bool IsAllowedToInstallSeaPen(Profile* profile);
+
+// Controls whether SeaPen feature is enabled with the current `settings` value.
+bool IsManagedSeaPenSettingsEnabled(const int settings);
+
+// Controls whether SeaPen Wallpaper is enabled for managed profiles.
+bool IsManagedSeaPenWallpaperEnabled(Profile* profile);
+
+// Controls whether SeaPen VC Background is enabled for managed profiles.
+bool IsManagedSeaPenVcBackgroundEnabled(Profile* profile);
+
+// Controls whether users are eligible for SeaPen text input. The age
+// requirements are stricter than for SeaPen.
+bool IsEligibleForSeaPenTextInput(Profile* profile);
+
+// Controls whether SeaPen Wallpaper Feedback is shown for managed profiles.
+bool IsManagedSeaPenWallpaperFeedbackEnabled(Profile* profile);
+
+// Controls whether SeaPen VC Background Feedback is shown for managed profiles.
+bool IsManagedSeaPenVcBackgroundFeedbackEnabled(Profile* profile);
 
 // Return a base64 encoded data url version of `encoded_jpg_data`. The result
 // can be displayed directly in a ChromeOS WebUI via img src attribute.

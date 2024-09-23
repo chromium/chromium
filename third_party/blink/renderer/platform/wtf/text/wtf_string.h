@@ -20,6 +20,11 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_
 
@@ -27,8 +32,10 @@
 // on systems without case-sensitive file systems.
 
 #include <iosfwd>
+#include <string_view>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -59,6 +66,7 @@ class WTF_EXPORT String {
   String() = default;
 
   // Construct a string with UTF-16 data.
+  explicit String(base::span<const UChar> utf16_data);
   String(const UChar* characters, unsigned length);
 
   // Construct a string by copying the contents of a vector.
@@ -75,6 +83,7 @@ class WTF_EXPORT String {
   String(const UChar*);
 
   // Construct a string with latin1 data.
+  explicit String(base::span<const LChar> latin1_data);
   String(const LChar* characters, unsigned length);
   String(const char* characters, unsigned length);
   explicit String(const std::string& s) : String(s.c_str(), s.length()) {}
@@ -143,6 +152,16 @@ class WTF_EXPORT String {
       return {};
     DCHECK(!impl_->Is8Bit());
     return impl_->Span16();
+  }
+
+  // This exposes the underlying representation of the string. Use with
+  // care. When interpreting the string as a sequence of code units
+  // Span8()/Span16() should be used.
+  base::span<const uint8_t> RawByteSpan() const {
+    if (!impl_) {
+      return {};
+    }
+    return impl_->RawByteSpan();
   }
 
   const LChar* Characters8() const {
@@ -276,6 +295,10 @@ class WTF_EXPORT String {
   bool StartsWithIgnoringCase(const StringView& prefix) const {
     return impl_ ? impl_->StartsWithIgnoringCase(prefix) : prefix.empty();
   }
+  bool StartsWithIgnoringCaseAndAccents(const StringView& prefix) const {
+    return impl_ ? impl_->StartsWithIgnoringCaseAndAccents(prefix)
+                 : prefix.empty();
+  }
   bool StartsWithIgnoringASCIICase(const StringView& prefix) const {
     return impl_ ? impl_->StartsWithIgnoringASCIICase(prefix) : prefix.empty();
   }
@@ -384,14 +407,14 @@ class WTF_EXPORT String {
   [[nodiscard]] String EncodeForDebugging() const;
 
   // Returns an uninitialized string. The characters needs to be written
-  // into the buffer returned in data before the returned string is used.
+  // into the buffer returned in `data` before the returned string is used.
   // Failure to do this will have unpredictable results.
   [[nodiscard]] static String CreateUninitialized(unsigned length,
-                                                  UChar*& data) {
+                                                  base::span<UChar>& data) {
     return StringImpl::CreateUninitialized(length, data);
   }
   [[nodiscard]] static String CreateUninitialized(unsigned length,
-                                                  LChar*& data) {
+                                                  base::span<LChar>& data) {
     return StringImpl::CreateUninitialized(length, data);
   }
 
@@ -502,14 +525,8 @@ class WTF_EXPORT String {
   }
 #endif
 
-  [[nodiscard]] static String Make8BitFrom16BitSource(const UChar*, wtf_size_t);
-  template <wtf_size_t inlineCapacity>
-  [[nodiscard]] static String Make8BitFrom16BitSource(
-      const Vector<UChar, inlineCapacity>& buffer) {
-    return Make8BitFrom16BitSource(buffer.data(), buffer.size());
-  }
-
-  [[nodiscard]] static String Make16BitFrom8BitSource(const LChar*, wtf_size_t);
+  [[nodiscard]] static String Make8BitFrom16BitSource(base::span<const UChar>);
+  [[nodiscard]] static String Make16BitFrom8BitSource(base::span<const LChar>);
 
   // String::fromUTF8 will return a null string if
   // the input data contains invalid UTF-8 sequences.
@@ -522,7 +539,7 @@ class WTF_EXPORT String {
   [[nodiscard]] static String FromUTF8(const char* s) {
     return FromUTF8(reinterpret_cast<const LChar*>(s));
   }
-  [[nodiscard]] static String FromUTF8(base::StringPiece);
+  [[nodiscard]] static String FromUTF8(std::string_view);
 
   // Tries to convert the passed in string to UTF-8, but will fall back to
   // Latin-1 if the string is not valid UTF-8.
@@ -532,6 +549,7 @@ class WTF_EXPORT String {
     return FromUTF8WithLatin1Fallback(reinterpret_cast<const LChar*>(s),
                                       length);
   }
+  [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view);
 
   bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
 
@@ -714,13 +732,14 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
 // double-quotes, and escapes characters other than ASCII printables.
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const String&);
 
-inline StringView::StringView(const String& string,
+inline StringView::StringView(const String& string LIFETIME_BOUND,
                               unsigned offset,
                               unsigned length)
     : StringView(string.Impl(), offset, length) {}
-inline StringView::StringView(const String& string, unsigned offset)
+inline StringView::StringView(const String& string LIFETIME_BOUND,
+                              unsigned offset)
     : StringView(string.Impl(), offset) {}
-inline StringView::StringView(const String& string)
+inline StringView::StringView(const String& string LIFETIME_BOUND)
     : StringView(string.Impl()) {}
 
 }  // namespace WTF

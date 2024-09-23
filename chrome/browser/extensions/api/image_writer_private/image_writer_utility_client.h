@@ -66,7 +66,7 @@ class ImageWriterUtilityClient
 
   // Cancels any pending write or verify operation.
   // |cancel_callback|: Called when the cancel has actually occurred.
-  // TODO(crbug.com/703514): Consider removing this API.
+  // TODO(crbug.com/40511721): Consider removing this API.
   virtual void Cancel(CancelCallback cancel_callback);
 
   // Shuts down the utility process that may have been created.

@@ -30,9 +30,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -41,6 +45,9 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -49,15 +56,15 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
-import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
@@ -102,6 +109,11 @@ public class AccessorySheetRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_AUTOFILL)
                     .build();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Profile mProfile;
+    @Mock private PersonalDataManager mPersonalDataManager;
+
     public AccessorySheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
         Map<String, Boolean> featureMap = new HashMap<>();
         featureMap.put(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
@@ -115,7 +127,7 @@ public class AccessorySheetRenderTest {
 
     private static class TestFaviconHelper extends FaviconHelper {
         public TestFaviconHelper(Context context) {
-            super(context);
+            super(context, null);
         }
 
         @Override
@@ -127,12 +139,16 @@ public class AccessorySheetRenderTest {
     @Before
     public void setUp() throws InterruptedException {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        FaviconHelper.setCreationStrategy(TestFaviconHelper::new);
+        FaviconHelper.setCreationStrategy((context, profile) -> new TestFaviconHelper(context));
+
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
+
         mActivityTestRule.launchActivity(null);
         // Calling #setTheme() explicitly because the test rule doesn't have the @Rule annotation
         // and won't apply the theme.
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AsyncViewStub sheetStub = initializeContentViewWithSheetStub();
 
@@ -170,7 +186,10 @@ public class AccessorySheetRenderTest {
     public void testAddingPasswordTabToModelRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.PASSWORDS, "Passwords", "");
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         sheet.getUserInfoList()
                 .add(new KeyboardAccessoryData.UserInfo("http://psl.origin.com/", true));
         sheet.getUserInfoList()
@@ -187,13 +206,48 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.FooterCommand("Manage Passwords", cb -> {}));
 
         PasswordAccessorySheetCoordinator coordinator =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new PasswordAccessorySheetCoordinator(
-                                        mActivityTestRule.getActivity(), null));
+                                        mActivityTestRule.getActivity(), mProfile, null));
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Passwords");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAddingPlusAddressesToPasswordTabRendersTabsView() throws Exception {
+        final KeyboardAccessoryData.AccessorySheetData sheet =
+                new KeyboardAccessoryData.AccessorySheetData(
+                        AccessoryTabType.PASSWORDS,
+                        /* userInfoTitle= */ "No saved passwords for google.com",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
+        sheet.getPlusAddressInfoList()
+                .add(
+                        new KeyboardAccessoryData.PlusAddressInfo(
+                                /* origin= */ "google.com",
+                                new UserInfoField(
+                                        "example@gmail.com",
+                                        "example@gmail.com",
+                                        "",
+                                        false,
+                                        unused -> {})));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Suggest strong password", cb -> {}));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Manage Passwords", cb -> {}));
+
+        PasswordAccessorySheetCoordinator coordinator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new PasswordAccessorySheetCoordinator(
+                                        mActivityTestRule.getActivity(), mProfile, null));
+        showSheetTab(coordinator, sheet);
+
+        mRenderTestRule.render(mContentView, "Passwords with plus address");
     }
 
     // Tests rendering of Payments tab with both credit cards and promo code offers.
@@ -204,7 +258,10 @@ public class AccessorySheetRenderTest {
     public void testAddingCreditCardAndPromoCodeToModelRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.CREDIT_CARDS, "Payments", "");
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         sheet.getUserInfoList().add(new KeyboardAccessoryData.UserInfo("", true));
         sheet.getUserInfoList()
                 .get(0)
@@ -237,13 +294,48 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
 
         CreditCardAccessorySheetCoordinator coordinator =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new CreditCardAccessorySheetCoordinator(
-                                        mActivityTestRule.getActivity(), null));
+                                        mActivityTestRule.getActivity(), mProfile, null));
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "credit_cards_and_promo_codes");
+    }
+
+    // Tests rendering of Payments tab with IBANs.
+    // IBANs should appear in Payment Methods section.
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAddingIbansToModelRendersTabsView() throws Exception {
+        final KeyboardAccessoryData.AccessorySheetData sheet =
+                new KeyboardAccessoryData.AccessorySheetData(
+                        AccessoryTabType.CREDIT_CARDS,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
+        sheet.getIbanInfoList().add(new KeyboardAccessoryData.IbanInfo());
+        sheet.getIbanInfoList()
+                .get(0)
+                .setValue(
+                        new UserInfoField(
+                                /* displayText= */ "CH56 •••• •••• •••• •800 9",
+                                /* a11yDescription= */ "",
+                                /* id= */ "123456",
+                                /* isObfuscated= */ false,
+                                result -> {}));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
+
+        CreditCardAccessorySheetCoordinator coordinator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new CreditCardAccessorySheetCoordinator(
+                                        mActivityTestRule.getActivity(), mProfile, null));
+        showSheetTab(coordinator, sheet);
+
+        mRenderTestRule.render(mContentView, "ibans");
     }
 
     @Test
@@ -254,7 +346,10 @@ public class AccessorySheetRenderTest {
         // screenshot (but supply the fields itself since the field count should be fixed).
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
-                        AccessoryTabType.ADDRESSES, "Addresses", "");
+                        AccessoryTabType.ADDRESSES,
+                        /* userInfoTitle= */ "",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
         sheet.getUserInfoList().add(new KeyboardAccessoryData.UserInfo("", true));
         sheet.getUserInfoList()
                 .get(0)
@@ -304,13 +399,46 @@ public class AccessorySheetRenderTest {
                 .add(new KeyboardAccessoryData.FooterCommand("Manage addresses", cb -> {}));
 
         AddressAccessorySheetCoordinator coordinator =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 new AddressAccessorySheetCoordinator(
-                                        mActivityTestRule.getActivity(), null));
+                                        mActivityTestRule.getActivity(), mProfile, null));
         showSheetTab(coordinator, sheet);
 
         mRenderTestRule.render(mContentView, "Addresses");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAddingPlusAddressToModelRendersTabsView() throws Exception {
+        final KeyboardAccessoryData.AccessorySheetData sheet =
+                new KeyboardAccessoryData.AccessorySheetData(
+                        AccessoryTabType.ADDRESSES,
+                        /* userInfoTitle= */ "No saved addresses",
+                        /* plusAddressTitle= */ "",
+                        /* warning= */ "");
+        sheet.getPlusAddressInfoList()
+                .add(
+                        new KeyboardAccessoryData.PlusAddressInfo(
+                                /* origin= */ "google.com",
+                                new UserInfoField(
+                                        "example@gmail.com",
+                                        "example@gmail.com",
+                                        "",
+                                        false,
+                                        unused -> {})));
+        sheet.getFooterCommands()
+                .add(new KeyboardAccessoryData.FooterCommand("Manage addresses", cb -> {}));
+
+        AddressAccessorySheetCoordinator coordinator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new AddressAccessorySheetCoordinator(
+                                        mActivityTestRule.getActivity(), mProfile, null));
+        showSheetTab(coordinator, sheet);
+
+        mRenderTestRule.render(mContentView, "Addresses with plus address");
     }
 
     private AsyncViewStub initializeContentViewWithSheetStub() {
@@ -349,7 +477,7 @@ public class AccessorySheetRenderTest {
     private void showSheetTab(
             AccessorySheetTabCoordinator sheetComponent,
             KeyboardAccessoryData.AccessorySheetData sheetData) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSheetModel.get(TABS).add(sheetComponent.getTab());
                     Provider<KeyboardAccessoryData.AccessorySheetData> provider =

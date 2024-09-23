@@ -34,7 +34,7 @@
 namespace web {
 
 // The currently-running WebMainLoop.  There can be one or zero.
-// TODO(crbug.com/965889): Desktop uses this to implement
+// TODO(crbug.com/41460416): Desktop uses this to implement
 // ImmediateShutdownAndExitProcess.  If we don't need that functionality, we can
 // remove this.
 WebMainLoop* g_current_web_main_loop = nullptr;
@@ -111,11 +111,11 @@ int WebMainLoop::PreCreateThreads() {
     parts_->PreCreateThreads();
   }
 
-  // TODO(crbug.com/807279): Do we need PowerMonitor on iOS, or can we get rid
+  // TODO(crbug.com/40560534): Do we need PowerMonitor on iOS, or can we get rid
   // of it?
-  // TODO(crbug.com/1370276): Remove this once we have confidence PowerMonitor
+  // TODO(crbug.com/40240952): Remove this once we have confidence PowerMonitor
   // is not needed for iOS
-  base::PowerMonitor::Initialize(
+  base::PowerMonitor::GetInstance()->Initialize(
       std::make_unique<base::PowerMonitorDeviceSource>());
 
   return result_code_;
@@ -171,7 +171,7 @@ void WebMainLoop::ShutdownThreadsAndCleanUp() {
                      &base::PermanentThreadAllowance::AllowBlocking)));
 
   // Also allow waiting to join threads.
-  // TODO(crbug.com/800808): Ideally this (and the above AllowBlocking() would
+  // TODO(crbug.com/40557572): Ideally this (and the above AllowBlocking() would
   // be scoped allowances). That would be one of the first step to ensure no
   // persistent work is being done after ThreadPoolInstance::Shutdown() in order
   // to move towards atomic shutdown.

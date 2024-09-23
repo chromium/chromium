@@ -1,0 +1,89 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+# Minimal Java library for the PdfContentProvider which will be included in
+# the base module.
+android_library("pdf_provider_java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/pdf/PdfContentProvider.java" ]
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+}
+
+generate_jni("pdf_jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/pdf/PdfUtils.java" ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/pdf/PdfCoordinator.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfInfo.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfPage.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfUtils.java",
+  ]
+  deps = [
+    ":java_resources",
+    ":pdf_provider_java",
+    "//base:base_java",
+    "//base:content_uri_utils_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/util:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/embedder_support/android:util_java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
+  ]
+  srcjar_deps = [ ":pdf_jni_headers" ]
+  resources_package = "org.chromium.chrome.browser.pdf"
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/pdf_page.xml" ]
+  deps = []
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.pdf"
+  sources = [
+    "java/src/org/chromium/chrome/browser/pdf/PdfContentProviderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfPageUnitTest.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfUtilsUnitTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    ":pdf_provider_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/util:java",
+    "//components/embedder_support/android:util_java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}

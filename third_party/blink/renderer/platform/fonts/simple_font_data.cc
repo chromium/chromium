@@ -27,6 +27,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
 #include <unicode/utf16.h>
@@ -36,7 +41,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -76,14 +81,14 @@ constexpr int32_t kFontObjectsMemoryConsumption =
 constexpr int32_t kFontObjectsMemoryConsumption = 2128;
 #endif
 
-SimpleFontData::SimpleFontData(const FontPlatformData& platform_data,
-                               scoped_refptr<CustomFontData> custom_data,
+SimpleFontData::SimpleFontData(const FontPlatformData* platform_data,
+                               const CustomFontData* custom_data,
                                bool subpixel_ascent_descent,
                                const FontMetricsOverride& metrics_override)
     : platform_data_(platform_data),
-      font_(platform_data_.size() ? platform_data.CreateSkFont()
+      font_(platform_data->size() ? platform_data->CreateSkFont()
                                   : skia::DefaultFont()),
-      custom_font_data_(std::move(custom_data)) {
+      custom_font_data_(custom_data) {
   // Every time new SimpleFontData instance is created, Skia will ask
   // FreeType to get the metrics for glyphs by invoking
   // af_face_globals_get_metrics. There FT will allocate style_metrics_size
@@ -95,8 +100,7 @@ SimpleFontData::SimpleFontData(const FontPlatformData& platform_data,
   // that we are informing GC about external allocated memory using
   // style_metrics_size as the font memory consumption.
   if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
-    isolate->AdjustAmountOfExternalAllocatedMemory(
-        kFontObjectsMemoryConsumption);
+    external_memory_accounter_.Increase(isolate, kFontObjectsMemoryConsumption);
   }
   PlatformInit(subpixel_ascent_descent, metrics_override);
   PlatformGlyphInit();
@@ -104,14 +108,13 @@ SimpleFontData::SimpleFontData(const FontPlatformData& platform_data,
 
 SimpleFontData::~SimpleFontData() {
   if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
-    isolate->AdjustAmountOfExternalAllocatedMemory(
-        -kFontObjectsMemoryConsumption);
+    external_memory_accounter_.Decrease(isolate, kFontObjectsMemoryConsumption);
   }
 }
 
 void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
                                   const FontMetricsOverride& metrics_override) {
-  if (!platform_data_.size()) {
+  if (!platform_data_->size()) {
     font_metrics_.Reset();
     avg_char_width_ = 0;
     max_char_width_ = 0;
@@ -126,7 +129,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   float descent;
 
   FontMetrics::AscentDescentWithHacks(
-      ascent, descent, platform_data_, font_, subpixel_ascent_descent,
+      ascent, descent, *platform_data_, font_, subpixel_ascent_descent,
       metrics_override.ascent_override, metrics_override.descent_override);
 
   font_metrics_.SetAscent(ascent);
@@ -164,7 +167,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 
   float line_gap;
   if (metrics_override.line_gap_override) {
-    line_gap = *metrics_override.line_gap_override * platform_data_.size();
+    line_gap = *metrics_override.line_gap_override * platform_data_->size();
   } else {
     line_gap = SkScalarToFloat(metrics.fLeading);
   }
@@ -261,45 +264,39 @@ bool SimpleFontData::IsSegmented() const {
   return false;
 }
 
-scoped_refptr<SimpleFontData> SimpleFontData::SmallCapsFontData(
+SimpleFontData* SimpleFontData::SmallCapsFontData(
     const FontDescription& font_description) const {
-  if (!derived_font_data_)
-    derived_font_data_ = std::make_unique<DerivedFontData>();
-  if (!derived_font_data_->small_caps) {
-    derived_font_data_->small_caps =
+  if (!small_caps_) {
+    small_caps_ =
         CreateScaledFontData(font_description, kSmallCapsFontSizeMultiplier);
   }
-
-  return derived_font_data_->small_caps;
+  return small_caps_;
 }
 
-scoped_refptr<SimpleFontData> SimpleFontData::EmphasisMarkFontData(
+SimpleFontData* SimpleFontData::EmphasisMarkFontData(
     const FontDescription& font_description) const {
-  if (!derived_font_data_)
-    derived_font_data_ = std::make_unique<DerivedFontData>();
-  if (!derived_font_data_->emphasis_mark) {
-    derived_font_data_->emphasis_mark =
+  if (!emphasis_mark_) {
+    emphasis_mark_ =
         CreateScaledFontData(font_description, kEmphasisMarkFontSizeMultiplier);
   }
-
-  return derived_font_data_->emphasis_mark;
+  return emphasis_mark_;
 }
 
-scoped_refptr<SimpleFontData> SimpleFontData::CreateScaledFontData(
+SimpleFontData* SimpleFontData::CreateScaledFontData(
     const FontDescription& font_description,
     float scale_factor) const {
   const float scaled_size =
       lroundf(font_description.ComputedSize() * scale_factor);
-  return SimpleFontData::Create(
-      FontPlatformData(platform_data_, scaled_size),
-      IsCustomFont() ? CustomFontData::Create() : nullptr);
+  return MakeGarbageCollected<SimpleFontData>(
+      MakeGarbageCollected<FontPlatformData>(*platform_data_, scaled_size),
+      IsCustomFont() ? MakeGarbageCollected<CustomFontData>() : nullptr);
 }
 
-scoped_refptr<SimpleFontData> SimpleFontData::MetricsOverriddenFontData(
+SimpleFontData* SimpleFontData::MetricsOverriddenFontData(
     const FontMetricsOverride& metrics_override) const {
-  return base::AdoptRef(new SimpleFontData(platform_data_, custom_font_data_,
-                                           false /* subpixel_ascent_descent */,
-                                           metrics_override));
+  return MakeGarbageCollected<SimpleFontData>(
+      platform_data_, custom_font_data_, false /* subpixel_ascent_descent */,
+      metrics_override);
 }
 
 // Internal leadings can be distributed to ascent and descent.
@@ -344,15 +341,16 @@ static std::pair<int16_t, int16_t> TypoAscenderAndDescender(
   size_t size = typeface->getTableData(SkSetFourByteTag('O', 'S', '/', '2'), 68,
                                        sizeof(buffer), buffer);
   if (size == sizeof(buffer)) {
-    return std::make_pair(static_cast<int16_t>(base::NetToHost16(buffer[0])),
-                          -static_cast<int16_t>(base::NetToHost16(buffer[1])));
+    // The buffer values are in big endian.
+    return std::make_pair(base::ByteSwap(buffer[0]),
+                          -base::ByteSwap(buffer[1]));
   }
   return std::make_pair(0, 0);
 }
 
 void SimpleFontData::ComputeNormalizedTypoAscentAndDescent() const {
   // Compute em height metrics from OS/2 sTypoAscender and sTypoDescender.
-  SkTypeface* typeface = platform_data_.Typeface();
+  SkTypeface* typeface = platform_data_->Typeface();
   auto [typo_ascender, typo_descender] = TypoAscenderAndDescender(typeface);
   if (typo_ascender > 0 &&
       TrySetNormalizedTypoAscentAndDescent(typo_ascender, typo_descender)) {
@@ -407,17 +405,32 @@ LayoutUnit SimpleFontData::VerticalPosition(
     case FontVerticalPositionType::BottomOfEmHeight:
       return -NormalizedTypoDescent(baseline_type);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return LayoutUnit();
 }
 
-std::optional<float> SimpleFontData::IdeographicAdvanceWidth() const {
+const std::optional<float>& SimpleFontData::IdeographicAdvanceWidth() const {
   std::call_once(ideographic_advance_width_once_, [this] {
+    // Use the advance of the CJK water character U+6C34 as the approximated
+    // advance of fullwidth ideographic characters, as specified at
+    // https://drafts.csswg.org/css-values-4/#ic.
     if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
       ideographic_advance_width_ = WidthForGlyph(cjk_water_glyph);
     }
   });
   return ideographic_advance_width_;
+}
+
+const std::optional<float>& SimpleFontData::IdeographicAdvanceHeight() const {
+  std::call_once(ideographic_advance_height_once_, [this] {
+    if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter)) {
+      const HarfBuzzFace* hb_face = platform_data_->GetHarfBuzzFace();
+      const OpenTypeVerticalData& vertical_data = hb_face->VerticalData();
+      ideographic_advance_height_ =
+          vertical_data.AdvanceHeight(cjk_water_glyph);
+    }
+  });
+  return ideographic_advance_height_;
 }
 
 const std::optional<float>& SimpleFontData::IdeographicInlineSize() const {
@@ -430,18 +443,8 @@ const std::optional<float>& SimpleFontData::IdeographicInlineSize() const {
       return;
     }
 
-    // Use the advance of the CJK water character U+6C34 as the approximated
-    // advance of fullwidth ideographic characters, as specified at
-    // https://drafts.csswg.org/css-values-4/#ic.
-    const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter);
-    if (!cjk_water_glyph) {
-      return;
-    }
-
     // Compute vertical advance if the orientation is `kVerticalUpright`.
-    const HarfBuzzFace* hb_face = platform_data_.GetHarfBuzzFace();
-    const OpenTypeVerticalData& vertical_data = hb_face->VerticalData();
-    ideographic_inline_size_ = vertical_data.AdvanceHeight(cjk_water_glyph);
+    ideographic_inline_size_ = IdeographicAdvanceHeight();
   });
   return ideographic_inline_size_;
 }
@@ -467,8 +470,9 @@ const HanKerning::FontData& SimpleFontData::HanKerningData(
 }
 
 gfx::RectF SimpleFontData::PlatformBoundsForGlyph(Glyph glyph) const {
-  if (!platform_data_.size())
+  if (!platform_data_->size()) {
     return gfx::RectF();
+  }
 
   static_assert(sizeof(glyph) == 2, "Glyph id should not be truncated.");
 
@@ -481,16 +485,18 @@ void SimpleFontData::BoundsForGlyphs(const Vector<Glyph, 256>& glyphs,
                                      Vector<SkRect, 256>* bounds) const {
   DCHECK_EQ(glyphs.size(), bounds->size());
 
-  if (!platform_data_.size())
+  if (!platform_data_->size()) {
     return;
+  }
 
   DCHECK_EQ(bounds->size(), glyphs.size());
   SkFontGetBoundsForGlyphs(font_, glyphs, bounds->data());
 }
 
 float SimpleFontData::WidthForGlyph(Glyph glyph) const {
-  if (!platform_data_.size())
+  if (!platform_data_->size()) {
     return 0;
+  }
 
   static_assert(sizeof(glyph) == 2, "Glyph id should not be truncated.");
 

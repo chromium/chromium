@@ -36,6 +36,13 @@ class AshBrowserTestStarter : public aura::WindowObserver {
   // Returns true if everything works.
   [[nodiscard]] bool PrepareEnvironmentForLacros();
 
+  // Adds features as command line flags for the Lacros Chrome instance.
+  // Must be called after `SetUpInProcessBrowserTestFixture()` and before
+  // `SetUpOnMainThread()`, has no effect otherwise.
+  // Does not handle duplicate `--enable-features` flags.
+  void EnableFeaturesInLacros(
+      const std::vector<base::test::FeatureRef>& features);
+
   // Starts Lacros and waits for it's fully started. You should call
   // this no earlier than SetUpOnMainThread().
   void StartLacros(InProcessBrowserTest* test_class_obj);

@@ -10,7 +10,7 @@ window.completePromise = new Promise((res, rej) => {
 });
 
 // Based on BrowserTestReporter() in //chrome/test/data/webui/mocha_adapter.js
-// TODO(crbug.com/1027612): Look into using that class directly.
+// TODO(crbug.com/40108835): Look into using that class directly.
 function TestReporter(runner) {
   let passes = 0;
   let failures = 0;
@@ -19,7 +19,7 @@ function TestReporter(runner) {
     passes++;
   });
 
-  // TODO(crbug.com/1027612): Show diff between actual and expected results.
+  // TODO(crbug.com/40108835): Show diff between actual and expected results.
   runner.on('fail', function(test, err) {
     failures++;
     let message = 'Mocha test failed: ' + test.fullTitle() + '\n';

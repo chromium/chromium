@@ -30,6 +30,7 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
 
   // help_app::mojom::PageHandler:
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
+  void ShowOnDeviceAppControls() override;
   void ShowParentalControls() override;
   void TriggerWelcomeTipCallToAction(
       help_app::mojom::ActionTypeId action_type_id) override;
@@ -37,10 +38,10 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void IsLauncherSearchEnabled(
       IsLauncherSearchEnabledCallback callback) override;
   void LaunchMicrosoft365Setup() override;
-  void MaybeShowDiscoverNotification() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;
   void OpenUrlInBrowserAndTriggerInstallDialog(const GURL& url) override;
+  void OpenSettings(help_app::mojom::SettingsComponent component) override;
 
  private:
   mojo::Receiver<help_app::mojom::PageHandler> receiver_;

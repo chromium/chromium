@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/process/memory.h"
+
 #include <stddef.h>
 
 #include <limits>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/process/memory.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/allocator/allocator_interception_mac.h"
 #endif
 
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 // Test that the allocator shim is in-place so that base::UncheckedMalloc works.
 TEST(OutOfMemoryHandledTest, UncheckedMalloc) {
   // Enable termination on OOM - just as setup.exe does at early initialization
@@ -42,4 +43,4 @@ TEST(OutOfMemoryHandledTest, UncheckedMalloc) {
   base::allocator::UninterceptMallocZonesForTesting();
 #endif
 }
-#endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)

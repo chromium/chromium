@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-unbalanced-access</h1>
+
+<p>Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU access
+texture.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_transferToGPUTexture_unbalanced_access(
+          adapterInfo,
+          device,
+          document.getElementById('c'));
+    });
+  },
+  'Unbalanced calls to transferToGPUTexture() will destroy the old WebGPU ' +
+  'access texture.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_transferToGPUTexture_unbalanced_access(
+          adapterInfo,
+          device,
+          new OffscreenCanvas(50, 50));
+    });
+  },
+  'Unbalanced calls to transferToGPUTexture() on an offscreen context will ' +
+  'destroy the old WebGPU access texture.'
+);
+
+</script>

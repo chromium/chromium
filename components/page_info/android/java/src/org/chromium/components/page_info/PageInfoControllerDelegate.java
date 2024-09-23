@@ -96,8 +96,14 @@ public abstract class PageInfoControllerDelegate {
         return false;
     }
 
+    /** Return the type of the pdf page. Return 0 if not a pdf page. */
+    public int getPdfPageType() {
+        return 0;
+    }
+
     /**
      * Initialize viewParams with Offline Page UI info, if any.
+     *
      * @param viewParams The PageInfoView.Params to set state on.
      * @param runAfterDismiss Used to set "open Online" button callback for offline page.
      */
@@ -124,6 +130,15 @@ public abstract class PageInfoControllerDelegate {
         return null;
     }
 
+    /**
+     * Return the connection message shown for a pdf page, if appropriate. Returns null if there's
+     * no pdf page.
+     */
+    @Nullable
+    public String getPdfPageConnectionMessage() {
+        return null;
+    }
+
     /** Whether Site settings are available. */
     public boolean isSiteSettingsAvailable() {
         return mIsSiteSettingsAvailable;
@@ -135,8 +150,12 @@ public abstract class PageInfoControllerDelegate {
     /** Show Tracking Protection settings. */
     public abstract void showTrackingProtectionSettings();
 
+    /** Show RWS (related website sets) sites in all site settings filtered by {@param rwsOwner}. */
+    public abstract void showAllSettingsForRws(String rwsOwner);
+
     /**
      * Shows cookie feedback UI.
+     *
      * @param activity The Activity where the feedback is shown.
      */
     public abstract void showCookieFeedback(Activity activity);
@@ -186,9 +205,18 @@ public abstract class PageInfoControllerDelegate {
 
     public abstract boolean isIncognito();
 
-    /** @return Whether the Tracking Protection UI should be shown instead of the cookies one. */
+    /**
+     * @return Whether the Tracking Protection UI should be shown instead of the cookies one.
+     */
     public abstract boolean showTrackingProtectionUI();
 
-    /** @return Whether all 3PCs are blocked when Tracking Protection is on. */
+    /**
+     * @return Whether the Tracking Protection with ACT Features UI should be shown.
+     */
+    public abstract boolean showTrackingProtectionACTFeaturesUI();
+
+    /**
+     * @return Whether all 3PCs are blocked when Tracking Protection is on.
+     */
     public abstract boolean allThirdPartyCookiesBlockedTrackingProtection();
 }

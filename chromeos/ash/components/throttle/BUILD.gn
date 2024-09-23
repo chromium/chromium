@@ -1,0 +1,49 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("throttle") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_THROTTLE_IMPL" ]
+
+  sources = [
+    "throttle_observer.cc",
+    "throttle_observer.h",
+    "throttle_service.cc",
+    "throttle_service.h",
+    "window_throttle_observer_base.cc",
+    "window_throttle_observer_base.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//ui/wm/public",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//components/exo",
+    "//ui/aura",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "throttle_observer_unittest.cc",
+    "throttle_service_unittest.cc",
+  ]
+
+  deps = [
+    ":throttle",
+    "//base",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

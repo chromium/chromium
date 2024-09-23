@@ -8,6 +8,7 @@
         "policies": {
           "SystemFeaturesDisableList": [
             "os_settings",
+            "recorder",
             "scanning"
           ]
         },
@@ -20,6 +21,7 @@
             "location": "local_state",
             "value": [
               3,
+              14,
               4
             ]
           }

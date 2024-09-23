@@ -5,6 +5,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "default_for_enterprise_users overrides the default pref value",
+        "policies": {},
+        "prefs": {
+          "arc.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
         "policies": {
           "ArcEnabled": false
         },

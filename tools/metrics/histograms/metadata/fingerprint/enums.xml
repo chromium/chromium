@@ -1,0 +1,209 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AuthenticateCredentialStatus">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Incorrect state"/>
+  <int value="3" label="Establish nonce context failed"/>
+  <int value="4" label="Upload templates failed (deprecated)"/>
+  <int value="5" label="Match command failed (deprecated)"/>
+  <int value="6" label="No templates to match"/>
+  <int value="7" label="Match secret not available"/>
+  <int value="8" label="Internal error"/>
+</enum>
+
+<enum name="CreateCredentialStatus">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Incorrect state"/>
+  <int value="3" label="Template not available"/>
+  <int value="4" label="Match secret not available"/>
+  <int value="5" label="Persist record failed"/>
+</enum>
+
+<enum name="DeleteCredentialStatus">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Incorrect state"/>
+  <int value="3" label="Template doesn't exist"/>
+  <int value="4" label="Deletion failed"/>
+</enum>
+
+<enum name="EnrollLegacyTemplateStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Incorrect state"/>
+  <int value="2" label="Record not found"/>
+  <int value="3" label="Templates full"/>
+  <int value="4" label="Establish nonce context failed"/>
+  <int value="5" label="Unlock templates failed"/>
+  <int value="6" label="Migrate command failed"/>
+</enum>
+
+<enum name="FingerprintError">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Hardware unavailable"/>
+  <int value="2" label="Unable to process"/>
+  <int value="3" label="Timeout"/>
+  <int value="4" label="No space available for a template"/>
+  <int value="5" label="Canceled"/>
+  <int value="6" label="Unable to remove record"/>
+  <int value="7" label="Hardware is locked"/>
+  <int value="8" label="No templates"/>
+</enum>
+
+<enum name="FingerprintRecordFormatVersion">
+  <int value="0" label="None"/>
+  <int value="1" label="Record format version without validation value"/>
+  <int value="2" label="Record format version with validation value"/>
+</enum>
+
+<enum name="FingerprintRetrievePrimarySessionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="DBus error - no reply"/>
+  <int value="3" label="DBus error - unknown service"/>
+  <int value="4" label="Missing response"/>
+  <int value="5" label="Parsing error"/>
+</enum>
+
+<enum name="FingerprintScanResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Partial"/>
+  <int value="2" label="Insufficient"/>
+  <int value="3" label="Sensor Dirty"/>
+  <int value="4" label="Too Slow"/>
+  <int value="5" label="Too Fast"/>
+  <int value="6" label="Immobile"/>
+  <int value="7" label="No Match"/>
+</enum>
+
+<enum name="FingerprintSensorMode">
+  <int value="0" label="None"/>
+  <int value="1" label="Deepsleep"/>
+  <int value="2" label="FingerDown"/>
+  <int value="3" label="FingerUp"/>
+  <int value="4" label="CaptureVendorFormat">
+    This is the same as the default Capture mode with no capture type.
+
+    ec::FpMode::Mode::kCapture == ec::FpMode::Mode::kCaptureVendorFormat
+  </int>
+  <int value="5" label="EnrollSession"/>
+  <int value="6" label="EnrollSessionFingerUp"/>
+  <int value="7" label="EnrollSessionEnrollImage"/>
+  <int value="8" label="EnrollImage"/>
+  <int value="9" label="Match"/>
+  <int value="10" label="ResetSensor"/>
+  <int value="11" label="DontChange"/>
+  <int value="12" label="SensorMaintenance"/>
+  <int value="13" label="ModeInvalid">
+    Reported when the get FPMode command fails or other.
+
+    ec::FpMode::Mode::kModeInvalid
+  </int>
+  <int value="14" label="CaptureSimpleImage"/>
+  <int value="15" label="CapturePattern0"/>
+  <int value="16" label="CapturePattern1"/>
+  <int value="17" label="CaptureQualityTest"/>
+  <int value="18" label="CaptureResetTest"/>
+</enum>
+
+<enum name="FingerprintUnlockResult">
+  <int value="0" label="Success">
+    Successful fingerprint unlock occurred.
+
+    FingerprintUnlockResult::kSuccess = 0
+  </int>
+  <int value="1" label="Fingerprint auth not available">
+    FingerprintUnlockResult::kFingerprintUnavailable = 1
+  </int>
+  <int value="2" label="Authentication is temporarily disabled">
+    FingerprintUnlockResult::kAuthTemporarilyDisabled = 2
+  </int>
+  <int value="3" label="Fingerprint match failed">
+    FingerprintUnlockResult::kMatchFailed = 3
+  </int>
+  <int value="4" label="Fingerprint match is not of the the primary user">
+    FingerprintUnlockResult::kMatchNotForPrimaryUser = 4
+  </int>
+</enum>
+
+<enum name="FingerprintUpdaterReason">
+  <int value="0" label="None"/>
+  <int value="1" label="Mismatched RW Version"/>
+  <int value="2" label="Mismatched RO Version"/>
+  <int value="3" label="Mismatched RW and RO Version"/>
+  <int value="4" label="Active Image RO"/>
+  <int value="5" label="Mismatched RW Version + Active Image RO"/>
+  <int value="6" label="Mismatched RO Version + Active Image RO"/>
+  <int value="7" label="Mismatched RW and RO Version + Active Image RO"/>
+</enum>
+
+<enum name="FingerprintUpdaterStatus">
+  <int value="0" label="Update was unnecessary"/>
+  <int value="1" label="Update was successful"/>
+  <int value="2" label="Failed - Found more than one viable firmware file"/>
+  <int value="3" label="Failed - Firmware file disappeared before decoding"/>
+  <int value="4" label="Failed - Error opening firmware file"/>
+  <int value="5" label="Failed - Error decoding fmap"/>
+  <int value="6" label="Failed - Error checking MCU version before update"/>
+  <int value="7" label="Failed - Error checking MCU version after update"/>
+  <int value="8" label="Failed - Error checking MCU version during update"/>
+  <int value="9" label="Failed - Error checking MCU flash protect status"/>
+  <int value="10" label="Failed - Error flashing RO"/>
+  <int value="11" label="Failed - Error flashing RW"/>
+</enum>
+
+<enum name="ListLegacyRecordsStatus">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Incorrect state"/>
+</enum>
+
+<enum name="StartAuthSessionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Incorrect state"/>
+  <int value="2" label="Load user failed"/>
+  <int value="3" label="Waiting finger to lift"/>
+  <int value="4" label="Establish nonce context failed"/>
+  <int value="5" label="Unlock templates failed"/>
+  <int value="6" label="Set match mode failed"/>
+</enum>
+
+<enum name="StartEnrollSessionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Incorrect state"/>
+  <int value="2" label="Templates full"/>
+  <int value="3" label="Establish nonce context failed"/>
+  <int value="4" label="Unlock templates failed"/>
+  <int value="5" label="Set enroll mode failed"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

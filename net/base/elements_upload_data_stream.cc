@@ -24,12 +24,11 @@ ElementsUploadDataStream::ElementsUploadDataStream(
 ElementsUploadDataStream::~ElementsUploadDataStream() = default;
 
 std::unique_ptr<UploadDataStream> ElementsUploadDataStream::CreateWithReader(
-    std::unique_ptr<UploadElementReader> reader,
-    int64_t identifier) {
+    std::unique_ptr<UploadElementReader> reader) {
   std::vector<std::unique_ptr<UploadElementReader>> readers;
   readers.push_back(std::move(reader));
   return std::make_unique<ElementsUploadDataStream>(std::move(readers),
-                                                    identifier);
+                                                    /*identifier=*/0);
 }
 
 int ElementsUploadDataStream::InitInternal(const NetLogWithSource& net_log) {
@@ -131,8 +130,12 @@ void ElementsUploadDataStream::OnReadElementCompleted(
   ProcessReadResult(buf, result);
 
   result = ReadElements(buf);
-  if (result != ERR_IO_PENDING)
+  if (result != ERR_IO_PENDING) {
+    if (result < ERR_IO_PENDING) {
+      LOG(ERROR) << "OnReadElementCompleted failed with Error: " << result;
+    }
     OnReadCompleted(result);
+  }
 }
 
 void ElementsUploadDataStream::ProcessReadResult(

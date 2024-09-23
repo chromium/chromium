@@ -23,7 +23,6 @@ void RequestSurroundingText(PP_Instance instance,
   if (!dispatcher) {
     // The dispatcher should always be valid.
     NOTREACHED();
-    return;
   }
 
   dispatcher->Send(new PpapiMsg_PPPTextInput_RequestSurroundingText(

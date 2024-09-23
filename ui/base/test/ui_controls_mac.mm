@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/test/ui_controls.h"
 
 #import <Cocoa/Cocoa.h>
@@ -409,15 +414,13 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
     } else {
       event_type = NSEventTypeOtherMouseDown;
     }
-  } else if (type == RIGHT) {
+  } else {
+    CHECK_EQ(type, RIGHT);
     if (button_state == UP) {
       event_type = NSEventTypeRightMouseUp;
     } else {
       event_type = NSEventTypeRightMouseDown;
     }
-  } else {
-    NOTREACHED();
-    return false;
   }
   g_mouse_button_down[type] = button_state == DOWN;
 

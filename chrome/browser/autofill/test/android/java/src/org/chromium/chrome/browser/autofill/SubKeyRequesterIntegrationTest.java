@@ -9,16 +9,14 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.SubKeyRequester;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -27,13 +25,11 @@ import java.util.concurrent.TimeoutException;
 public class SubKeyRequesterIntegrationTest {
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
-    @Rule public final TestRule mFeaturesProcessorRule = new Features.InstrumentationProcessor();
-
     private SubKeyRequester mSubKeyRequester;
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSubKeyRequester = SubKeyRequesterFactory.getInstance();
                 });
@@ -44,7 +40,7 @@ public class SubKeyRequesterIntegrationTest {
     @Feature({"Autofill"})
     public void testLoadSubKeysForRegion() {
         // Trivial test to ensure this API does not crash.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSubKeyRequester.loadRulesForSubKeys("CA");
                 });
@@ -62,10 +58,10 @@ public class SubKeyRequesterIntegrationTest {
                         callbackHelper.notifyCalled();
                     }
                 };
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSubKeyRequester.getRegionSubKeys("MX", delegate);
                 });
-        callbackHelper.waitForFirst();
+        callbackHelper.waitForOnly();
     }
 }

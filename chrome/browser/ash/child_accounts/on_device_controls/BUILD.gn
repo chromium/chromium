@@ -1,0 +1,89 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("on_device_controls") {
+  sources = [
+    "app_activity_watcher.cc",
+    "app_activity_watcher.h",
+    "app_controls_metrics_utils.h",
+    "app_controls_notifier.cc",
+    "app_controls_notifier.h",
+    "app_controls_service.cc",
+    "app_controls_service.h",
+    "app_controls_service_factory.cc",
+    "app_controls_service_factory.h",
+    "blocked_app_registry.cc",
+    "blocked_app_registry.h",
+    "blocked_app_store.cc",
+    "blocked_app_store.h",
+    "blocked_app_types.cc",
+    "blocked_app_types.h",
+    "on_device_utils.cc",
+    "on_device_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles",
+    "//components/services/app_service/public/cpp:instance_update",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
+    "//ash/strings:strings_grit",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base/version_info",
+    "//chromeos/ash/components/system",
+    "//components/pref_registry",
+    "//ui/chromeos",
+    "//ui/chromeos",
+    "//ui/message_center",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_activity_watcher_unittest.cc",
+    "app_controls_notifier_unittest.cc",
+    "app_controls_service_factory_unittest.cc",
+    "app_controls_test_base.cc",
+    "app_controls_test_base.h",
+    "blocked_app_registry_unittest.cc",
+    "blocked_app_store_unittest.cc",
+    "blocked_app_types_unittest.cc",
+    "on_device_utils_unittest.cc",
+  ]
+
+  deps = [
+    ":on_device_controls",
+    "//ash/components/arc:arc_test_support",
+    "//ash/constants",
+    "//ash/public/cpp:test_support",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//base/test:test_support",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/child_accounts/apps",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/system",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+  ]
+}

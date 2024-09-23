@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/pepper/plugin_object.h"
 
 #include <stdint.h>
@@ -265,7 +270,7 @@ void PluginObject::Call(const std::string& identifier,
   for (uint32_t i = 0; i < argument_vars.size(); ++i) {
     v8::Local<v8::Value> arg;
     if (!args->GetNext(&arg)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
 
     argument_vars.Set(i, try_catch.FromV8(arg));

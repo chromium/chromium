@@ -1,0 +1,30 @@
+In file included from unsafe_buffers_unchecked.cpp:14:
+./unsafe_buffers_not_clean_dir/clean_header.h:11:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
+  return i[s];  // This is in a "clean" file, so it should make a warning.
+         ^
+./unsafe_buffers_not_clean_dir/clean_header.h:11:10: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/clean_header.h:21:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  in_a_dir_unsafe_fn();  // Unannotated call causes error.
+  ^~~~~~~~~~~~~~~~~~~~
+./unsafe_buffers_not_clean_dir/clean_header.h:21:3: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/clean_header.h:22:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+  in_a_dir_unsafe_fn();  // Second one uses caching and still makes an error.
+  ^~~~~~~~~~~~~~~~~~~~
+./unsafe_buffers_not_clean_dir/clean_header.h:22:3: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/clean_header.h:42:1: warning: unsafe pointer arithmetic [-Wunsafe-buffer-usage]
+INSIDE_MACRO_CHECKED(FooChecked, ptr, int*);
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./unsafe_buffers_not_clean_dir/clean_header.h:33:12: note: expanded from macro 'INSIDE_MACRO_CHECKED'
+    return FIELD##s_ + index;                    /
+           ^~~~~~~~~
+<scratch space>:12:1: note: expanded from here
+ptrs_
+^~~~~
+./unsafe_buffers_not_clean_dir/clean_header.h:42:1: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_not_clean_dir/clean_header.h:33:12: note: expanded from macro 'INSIDE_MACRO_CHECKED'
+    return FIELD##s_ + index;                    /
+           ^
+<scratch space>:12:1: note: expanded from here
+ptrs_
+^
+4 warnings generated.

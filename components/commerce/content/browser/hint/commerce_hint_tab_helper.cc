@@ -17,7 +17,7 @@ void CommerceHintTabHelper::DidFinishLoad(
     const GURL& validated_url) {
   if (!render_frame_host->IsInPrimaryMainFrame())
     return;
-  // TODO(crbug.com/1308942): Hook up with ShoppingPrompt.
+  // TODO(crbug.com/40219258): Hook up with ShoppingPrompt.
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintTabHelper);

@@ -26,7 +26,7 @@ class MockCryptAuthClient : public CryptAuthClient {
 
   ~MockCryptAuthClient() override;
 
-  // TODO(https://crbug.com/997268): Update these to use MOCK_METHOD.
+  // TODO(crbug.com/41477954): Update these to use MOCK_METHOD.
   // CryptAuthClient:
   void GetMyDevices(const cryptauth::GetMyDevicesRequest& request,
                     GetMyDevicesCallback callback,

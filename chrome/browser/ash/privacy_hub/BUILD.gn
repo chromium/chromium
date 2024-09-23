@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("privacy_hub") {
+  sources = [
+    "privacy_hub_hats_trigger.cc",
+    "privacy_hub_hats_trigger.h",
+    "privacy_hub_util.cc",
+    "privacy_hub_util.h",
+  ]
+
+  deps = [
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/components/camera_presence_notifier",
+    "//components/session_manager/core",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "privacy_hub_hats_trigger_browsertest.cc" ]
+
+  deps = [
+    ":privacy_hub",
+    "//base",
+    "//chrome/browser/ash/hats",
+    "//chrome/test:test_support",
+  ]
+}

@@ -4,15 +4,16 @@
 
 #include "content/public/browser/authenticator_request_client_delegate.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "device/fido/fido_discovery_factory.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "url/origin.h"
@@ -77,17 +78,20 @@ bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
   return true;
 }
 
-std::optional<bool> WebAuthenticationDelegate::
+void WebAuthenticationDelegate::
     IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-        RenderFrameHost* render_frame_host) {
+        RenderFrameHost* render_frame_host,
+        base::OnceCallback<void(std::optional<bool>)> callback) {
   FrameTreeNode* frame_tree_node =
       static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
   if (AuthenticatorEnvironment::GetInstance()->IsVirtualAuthenticatorEnabledFor(
           frame_tree_node)) {
-    return AuthenticatorEnvironment::GetInstance()
-        ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
+    std::move(callback).Run(
+        AuthenticatorEnvironment::GetInstance()
+            ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node));
+    return;
   }
-  return std::nullopt;
+  std::move(callback).Run(std::nullopt);
 }
 
 WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
@@ -96,9 +100,29 @@ WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
   return nullptr;
 }
 
-bool WebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
-    BrowserContext* browser_context) {
-  return false;
+void WebAuthenticationDelegate::DeletePasskey(
+    content::WebContents* web_contents,
+    const std::vector<uint8_t>& passkey_credential_id,
+    const std::string& relying_party_id) {}
+
+void WebAuthenticationDelegate::DeleteUnacceptedPasskeys(
+    content::WebContents* web_contents,
+    const std::string& relying_party_id,
+    const std::vector<uint8_t>& user_id,
+    const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {}
+
+void WebAuthenticationDelegate::UpdateUserPasskeys(
+    content::WebContents* web_contents,
+    const url::Origin& origin,
+    const std::string& relying_party_id,
+    std::vector<uint8_t>& user_id,
+    const std::string& name,
+    const std::string& display_name) {}
+
+void WebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
+    BrowserContext* browser_context,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -141,15 +165,10 @@ void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
     base::RepeatingClosure start_over_callback,
     AccountPreselectedCallback account_preselected_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
-    base::RepeatingClosure bluetooth_adapter_power_on_callback) {}
-
-void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
-    const std::string& relying_party_id,
-    const device::FidoAuthenticator* authenticator,
-    bool is_enterprise_attestation,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(!is_enterprise_attestation);
-}
+    base::RepeatingClosure bluetooth_adapter_power_on_callback,
+    base::RepeatingCallback<
+        void(device::FidoRequestHandlerBase::BlePermissionCallback)>
+        request_ble_permission_callback) {}
 
 void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     const url::Origin& origin,
@@ -158,6 +177,7 @@ void AuthenticatorRequestClientDelegate::ConfigureDiscoveries(
     device::FidoRequestType request_type,
     std::optional<device::ResidentKeyRequirement> resident_key_requirement,
     device::UserVerificationRequirement user_verification_requirement,
+    std::optional<std::string_view> user_name,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* fido_discovery_factory) {}
@@ -170,7 +190,7 @@ void AuthenticatorRequestClientDelegate::SelectAccount(
         callback) {
   // Automatically choose the first account to allow resident keys for virtual
   // authenticators without a browser implementation, e.g. on content shell.
-  // TODO(crbug.com/991666): Provide a way to determine which account gets
+  // TODO(crbug.com/40639383): Provide a way to determine which account gets
   // picked.
   DCHECK(virtual_environment_);
   std::move(callback).Run(std::move(responses.at(0)));
@@ -194,11 +214,19 @@ bool AuthenticatorRequestClientDelegate::IsVirtualEnvironmentEnabled() {
 void AuthenticatorRequestClientDelegate::SetConditionalRequest(
     bool is_conditional) {}
 
+void AuthenticatorRequestClientDelegate::SetAmbientCredentialTypes(
+    int credential_type_flags) {}
+
 void AuthenticatorRequestClientDelegate::SetCredentialIdFilter(
     std::vector<device::PublicKeyCredentialDescriptor>) {}
 
 void AuthenticatorRequestClientDelegate::SetUserEntityForMakeCredentialRequest(
     const device::PublicKeyCredentialUserEntity&) {}
+
+std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
+AuthenticatorRequestClientDelegate::CreatePlatformDiscoveries() {
+  return {};
+}
 
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}
@@ -208,14 +236,14 @@ bool AuthenticatorRequestClientDelegate::EmbedderControlsAuthenticatorDispatch(
   return false;
 }
 
-void AuthenticatorRequestClientDelegate::BluetoothAdapterPowerChanged(
-    bool is_powered_on) {}
+void AuthenticatorRequestClientDelegate::BluetoothAdapterStatusChanged(
+    device::FidoRequestHandlerBase::BleStatus ble_status) {}
 
 void AuthenticatorRequestClientDelegate::FidoAuthenticatorAdded(
     const device::FidoAuthenticator& authenticator) {}
 
 void AuthenticatorRequestClientDelegate::FidoAuthenticatorRemoved(
-    base::StringPiece device_id) {}
+    std::string_view device_id) {}
 
 bool AuthenticatorRequestClientDelegate::SupportsPIN() const {
   return false;
@@ -224,7 +252,7 @@ bool AuthenticatorRequestClientDelegate::SupportsPIN() const {
 void AuthenticatorRequestClientDelegate::CollectPIN(
     CollectPINOptions options,
     base::OnceCallback<void(std::u16string)> provide_pin_cb) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void AuthenticatorRequestClientDelegate::StartBioEnrollment(

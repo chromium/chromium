@@ -29,6 +29,7 @@ mojom("video_capture_buffer") {
     "//gpu/ipc/common:interfaces",
     "//media//mojo/mojom:mojom",
     "//mojo/public/mojom/base",
+    "//services/viz/public/mojom:shared_image_format",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
@@ -112,6 +113,15 @@ mojom("video_capture_types") {
 
   cpp_typemaps = [ shared_video_capture_cpp_typemap ]
   blink_cpp_typemaps = [ shared_video_capture_cpp_typemap ]
+}
+
+mojom("video_effects_manager") {
+  sources = [ "video_effects_manager.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
 }
 
 component("video_capture_mojom_support") {

@@ -11,6 +11,7 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -125,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionCapabilitiesBrowserTest,
   auto* pwa_page_rfh = ui_test_utils::NavigateToURL(browser(), GetPwaGURL());
   ASSERT_TRUE(pwa_page_rfh);
   pwa_page_rfh->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
-                                          base::NullCallback());
+                                          base::NullCallback(),
+                                          content::ISOLATED_WORLD_ID_GLOBAL);
 
   // Wait until the extension receives the message.
   ASSERT_TRUE(listener.WaitUntilSatisfied());

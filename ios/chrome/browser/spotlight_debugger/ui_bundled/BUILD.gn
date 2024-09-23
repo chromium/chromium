@@ -1,0 +1,48 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+swift_source_set("spotlight_debugger_swift") {
+  bridge_header = "spotlight_debugger_swift_bridge.h"
+  sources = [
+    "spotlight_debugger_all_items_view_controller.swift",
+    "spotlight_debugger_searchable_item_detail_view_controller.swift",
+  ]
+  deps = [
+    "//ios/chrome/app/spotlight",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
+}
+
+source_set("ui_bundled") {
+  sources = [
+    "spotlight_debugger_coordinator.h",
+    "spotlight_debugger_coordinator.mm",
+    "spotlight_debugger_view_controller.h",
+    "spotlight_debugger_view_controller.mm",
+  ]
+  deps = [
+    ":spotlight_debugger_swift",
+    "//ios/chrome/app/spotlight",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//ui/strings",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

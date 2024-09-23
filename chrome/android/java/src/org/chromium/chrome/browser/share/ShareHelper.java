@@ -30,7 +30,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -48,7 +47,7 @@ import java.util.Map;
 /** A helper class that provides additional Chrome-specific share functionality. */
 public class ShareHelper extends org.chromium.components.browser_ui.share.ShareHelper {
     private static final String TAG = "AndroidShare";
-    // TODO(https://crbug.com/1420388): Remove when Android OS provides this string.
+    // TODO(crbug.com/40063301): Remove when Android OS provides this string.
     private static final String INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS =
             "android.intent.extra.CHOOSER_CUSTOM_ACTIONS";
     private static final String INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION =
@@ -62,11 +61,12 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
 
     /**
      * Shares the params using the system share sheet.
+     *
      * @param params The share parameters.
      * @param profile The profile last shared component will be saved to, if |saveLastUsed| is set.
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      */
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     public static void shareWithSystemShareSheetUi(
             ShareParams params, @Nullable Profile profile, boolean saveLastUsed) {
         shareWithSystemShareSheetUi(params, profile, saveLastUsed, null);
@@ -98,12 +98,13 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
 
     /**
      * Share directly with the provided share target.
+     *
      * @param params The container holding the share parameters.
      * @param component The component to share to, bypassing any UI.
      * @param profile The profile last shared component will be saved to, if |saveLastUsed| is set.
      * @param saveLastUsed True if the chosen share component should be saved for future reuse.
      */
-    // TODO(crbug/1022172): Should be package-protected once modularization is complete.
+    // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.
     public static void shareDirectly(
             @NonNull ShareParams params,
             @NonNull ComponentName component,
@@ -199,10 +200,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             try {
                 // TODO(dtrainor): Make asynchronous and have a callback to update the menu.
                 // https://crbug.com/729737
-                try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    directShareIcon = pm.getActivityIcon(component);
-                    directShareTitle = pm.getActivityInfo(component, 0).loadLabel(pm);
-                }
+                directShareIcon = pm.getActivityIcon(component);
+                directShareTitle = pm.getActivityInfo(component, 0).loadLabel(pm);
             } catch (NameNotFoundException exception) {
                 // Use the default null values.
             }

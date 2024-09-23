@@ -19,7 +19,7 @@ import sys
 
 _CLOUD_PROJECT_ID = 'chrome-trooper-analytics'
 
-# TODO(crbug.com/1480065): Replace with queried, per-suite overheads, once
+# TODO(crbug.com/40281184): Replace with queried, per-suite overheads, once
 # infra is set up to support automated overhead measurements.
 # See go/nplus1shardsproposal
 DEFAULT_OVERHEAD_SEC = 60
@@ -35,6 +35,7 @@ ANDROID_OVERHEAD_SEC = 60 * 2
 # All suites triggered by the builder will not be autosharded.
 BUILDER_EXCLUDE_SET = set([
     'mac-rel',
+    'mac14-arm64-rel',
     'ios-simulator',
     'ios-simulator-full-configs',
     'android-arm64-rel',
@@ -77,8 +78,8 @@ def _query_overheads(lookback_start_date, lookback_end_date):
       lookback_end_date=lookback_end_date,
   )
   return _run_query([
-      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
-      "--max_rows=100000", "--nouse_legacy_sql", query
+      'bq', 'query', '--project_id=' + _CLOUD_PROJECT_ID, '--format=json',
+      '--max_rows=100000', '--nouse_legacy_sql', query
   ])
 
 
@@ -93,8 +94,8 @@ def _query_suite_durations(lookback_start_date, lookback_end_date, percentile):
       percentile=percentile,
   )
   return _run_query([
-      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
-      "--max_rows=100000", "--nouse_legacy_sql", query
+      'bq', 'query', '--project_id=' + _CLOUD_PROJECT_ID, '--format=json',
+      '--max_rows=100000', '--nouse_legacy_sql', query
   ])
 
 
@@ -108,8 +109,8 @@ def _query_avg_num_builds_per_hour(lookback_start_date, lookback_end_date):
       lookback_end_date=lookback_end_date,
   )
   return _run_query([
-      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
-      "--max_rows=100000", "--nouse_legacy_sql", query
+      'bq', 'query', '--project_id=' + _CLOUD_PROJECT_ID, '--format=json',
+      '--max_rows=100000', '--nouse_legacy_sql', query
   ])
 
 
@@ -123,7 +124,7 @@ def _run_query(args):
     output = subprocess.check_output(args)
   except subprocess.CalledProcessError as e:
     print(e.output)
-    raise (e)
+    raise e
   return json.loads(output)
 
 
@@ -172,9 +173,10 @@ def _calculate_and_filter_optimal_shard_counts(overhead_dict, durations,
       continue
     r['optimal_shard_count'] = optimal_shard_count
 
+    overhead_change = (optimal_shard_count - shard_count) * overhead
     simulated_max_shard_duration = round(
-        (float(r['percentile_duration_minutes']) * shard_count /
-         optimal_shard_count), 2)
+        ((float(r['percentile_duration_minutes']) * shard_count +
+          overhead_change) / optimal_shard_count), 2)
     r['simulated_max_shard_duration'] = simulated_max_shard_duration
 
     filtered_durations.append(r)
@@ -227,7 +229,7 @@ def _meets_optimal_shard_count_and_simulated_duration_requirements(
 
   # Don't bother resharding if the simulated runtime is greater than the
   # desired runtime.
-  if (float(row['simulated_max_shard_duration']) > desired_runtime):
+  if float(row['simulated_max_shard_duration']) > desired_runtime:
     return False
 
   # Shard values may have changed over the lookback period, so the query

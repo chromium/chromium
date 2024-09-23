@@ -9,35 +9,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "safebrowsing.proceed_anyway_disabled": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "DisableSafeBrowsingProceedAnyway": false
-        },
-        "prefs": {
-          "safebrowsing.proceed_anyway_disabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "DisableSafeBrowsingProceedAnyway": true
-        },
-        "prefs": {
-          "safebrowsing.proceed_anyway_disabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "safebrowsing.proceed_anyway_disabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -37,8 +37,8 @@ public class PriceCardView extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         LayoutInflater.from(getContext()).inflate(R.layout.price_card, this);
-        mPriceInfoBox = (TextView) findViewById(R.id.current_price);
-        mPreviousPriceInfoBox = (TextView) findViewById(R.id.previous_price);
+        mPriceInfoBox = findViewById(R.id.current_price);
+        mPreviousPriceInfoBox = findViewById(R.id.previous_price);
         mPreviousPriceInfoBox.setPaintFlags(
                 mPreviousPriceInfoBox.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         mPriceInfoBox.setTextColor(getContext().getColor(R.color.price_drop_annotation_text_green));

@@ -15,6 +15,7 @@
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -26,6 +27,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/table_layout.h"
@@ -144,7 +146,7 @@ std::unique_ptr<SystemDialogDelegateView> CreateDialogView() {
   // the shortcut view has already been set by the `content_view` margins.
   dialog->SetTitleMargins(gfx::Insets());
   dialog->SetAcceptButtonVisible(false);
-  dialog->SetModalType(ui::ModalType::MODAL_TYPE_SYSTEM);
+  dialog->SetModalType(ui::mojom::ModalType::kSystem);
   return dialog;
 }
 
@@ -290,7 +292,9 @@ void CaptureModeEducationController::ShowQuickSettingsNudge() {
 void CaptureModeEducationController::CreateAndShowTutorialDialog() {
   // As we are creating a system modal dialog, it will automatically be parented
   // to `kShellWindowId_SystemModalContainer`.
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.delegate = CreateDialogView().release();
   params.name = "CaptureModeEducationTutorialWidget";
   params.activatable = views::Widget::InitParams::Activatable::kYes;

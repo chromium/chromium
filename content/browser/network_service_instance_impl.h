@@ -5,7 +5,10 @@
 #ifndef CONTENT_BROWSER_NETWORK_SERVICE_INSTANCE_IMPL_H_
 #define CONTENT_BROWSER_NETWORK_SERVICE_INSTANCE_IMPL_H_
 
+#include <stdint.h>
+
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -70,6 +73,8 @@ GetCertVerifierParamsWithUpdater(
     mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceUpdater>
         cert_verifier_updater_remote);
 
+CONTENT_EXPORT uint64_t GetNetLogMaximumFileSizeFromCommandLineForTesting(
+    const base::CommandLine& command_line);
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_NETWORK_SERVICE_INSTANCE_IMPL_H_

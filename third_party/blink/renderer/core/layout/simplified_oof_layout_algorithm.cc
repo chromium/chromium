@@ -21,37 +21,34 @@ SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
   container_builder_.SetHasOutOfFlowFragmentChild(true);
+}
 
-  // TODO(layout-dev): The rest of this function is quite mysterious. We should
-  // try to get rid of it.
-  const BlockBreakToken* old_fragment_break_token =
-      last_fragmentainer.GetBreakToken();
-  if (old_fragment_break_token) {
-    container_builder_.SetHasColumnSpanner(
-        old_fragment_break_token->IsCausedByColumnSpanner());
+void SimplifiedOofLayoutAlgorithm::ResumeColumnLayout(
+    const BlockBreakToken* old_fragment_break_token) {
+  if (!old_fragment_break_token ||
+      !old_fragment_break_token->IsCausedByColumnSpanner()) {
+    return;
   }
 
-  // In this algorithm we'll add all break tokens manually, to ensure that we
-  // retain the original order (we may have a break before a node that precedes
-  // a node which actually got a fragment). Disable the automatic child break
-  // token addition that we normally get as part of adding child fragments. Note
-  // that we will not add break tokens for OOFs that fragment. There's no need
-  // for those break tokens, since the calling code will resume the OOFs on its
-  // own.
-  container_builder_.SetShouldAddBreakTokensManually();
-
-  // Copy the original child break tokens.
-  if (old_fragment_break_token) {
-    for (const auto& child_break_token :
-         old_fragment_break_token->ChildBreakTokens()) {
+  // Since the last column break was caused by a spanner, and we're about to add
+  // additional columns now, we have some work to do: In order to correctly
+  // resume layout after the spanner after having added additional columns to
+  // hold OOFs, we need to copy over any in-flow child break tokens, so that the
+  // outgoing break token from the last column before the spanner actually
+  // points at the content that we're supposed to resume at after the spanner.
+  for (const auto& child_break_token :
+       old_fragment_break_token->ChildBreakTokens()) {
+    if (!child_break_token->InputNode().IsOutOfFlowPositioned()) {
       container_builder_.AddBreakToken(child_break_token);
     }
   }
+
+  // Carry over the IsCausedByColumnSpanner flag (stored in the break token).
+  container_builder_.SetHasColumnSpanner(true);
 }
 
 const LayoutResult* SimplifiedOofLayoutAlgorithm::Layout() {
-  FinishFragmentationForFragmentainer(GetConstraintSpace(),
-                                      &container_builder_);
+  FinishFragmentationForFragmentainer(&container_builder_);
   return container_builder_.ToBoxFragment();
 }
 

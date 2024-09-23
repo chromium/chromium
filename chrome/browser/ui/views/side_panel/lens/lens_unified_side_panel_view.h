@@ -81,8 +81,9 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   void RegisterModalDialogManager(Browser* browser);
 
   // content::WebContentsObserver:
-  // TODO(crbug/1452161): Clean up unused listeners and flags after determining
-  // which ones we want to listen to for server-side rendering backends.
+  // TODO(crbug.com/40916154): Clean up unused listeners and flags after
+  // determining which ones we want to listen to for server-side rendering
+  // backends.
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
@@ -104,7 +105,9 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   // content::WebContentsDelegate:
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

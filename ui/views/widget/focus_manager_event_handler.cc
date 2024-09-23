@@ -4,6 +4,8 @@
 
 #include "ui/views/widget/focus_manager_event_handler.h"
 
+#include <string_view>
+
 #include "ui/aura/window.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -12,7 +14,7 @@ namespace views {
 
 FocusManagerEventHandler::FocusManagerEventHandler(Widget* widget,
                                                    aura::Window* window)
-    : widget_(widget), window_(window) {
+    : widget_(widget->GetWeakPtr()), window_(window) {
   DCHECK(window_);
   window_->AddPreTargetHandler(this);
 }
@@ -29,7 +31,7 @@ void FocusManagerEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   }
 }
 
-base::StringPiece FocusManagerEventHandler::GetLogContext() const {
+std::string_view FocusManagerEventHandler::GetLogContext() const {
   return "FocusManagerEventHandler";
 }
 

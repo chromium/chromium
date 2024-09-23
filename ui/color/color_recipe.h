@@ -37,6 +37,9 @@ class COMPONENT_EXPORT(COLOR) ColorRecipe {
   // is passed to each transform, since it might need to request other colors.
   SkColor GenerateResult(SkColor input, const ColorMixer& mixer) const;
 
+  // Returns true if this recipe is invariant to input color.
+  bool Invariant() const;
+
  private:
   std::list<ColorTransform> transforms_;
 };

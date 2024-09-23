@@ -35,7 +35,7 @@ void WaylandBufferFactory::CreateDmabufBuffer(
   } else {
     // This method must never be called if neither zwp_linux_dmabuf or wl_drm
     // are supported.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -44,8 +44,9 @@ wl::Object<struct wl_buffer> WaylandBufferFactory::CreateShmBuffer(
     size_t length,
     const gfx::Size& size,
     bool with_alpha_channel) const {
-  if (UNLIKELY(!wayland_shm_))
+  if (!wayland_shm_) [[unlikely]] {
     return {};
+  }
   return wayland_shm_->CreateBuffer(fd, length, size, with_alpha_channel);
 }
 

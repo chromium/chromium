@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.h"
 
+#include <string>
+
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -31,7 +33,6 @@
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 #include "third_party/webrtc/p2p/base/transport_description.h"
-#include "third_party/webrtc/pc/ice_server_parsing.h"
 #include "third_party/webrtc/pc/webrtc_sdp.h"
 
 namespace blink {
@@ -41,9 +42,15 @@ const char* kIceRoleControllingStr = "controlling";
 const char* kIceRoleControlledStr = "controlled";
 
 RTCIceCandidate* ConvertToRtcIceCandidate(const cricket::Candidate& candidate) {
+  std::string url = candidate.url();
+  std::optional<String> optional_url;
+  if (!url.empty()) {
+    optional_url = String(url);
+  }
   // The "" mid and sdpMLineIndex 0 are wrong, see https://crbug.com/1385446
   return RTCIceCandidate::Create(MakeGarbageCollected<RTCIceCandidatePlatform>(
-      String::FromUTF8(webrtc::SdpSerializeCandidate(candidate)), "", 0));
+      String::FromUTF8(webrtc::SdpSerializeCandidate(candidate)), "", 0,
+      String(candidate.username()), optional_url));
 }
 
 class DtlsIceTransportAdapterCrossThreadFactory
@@ -121,7 +128,7 @@ String RTCIceTransport::role() const {
     case cricket::ICEROLE_UNKNOWN:
       return String();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return String();
 }
 
@@ -142,7 +149,7 @@ String RTCIceTransport::state() const {
     case webrtc::IceTransportState::kClosed:
       return "closed";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return g_empty_string;
 }
 
@@ -155,7 +162,7 @@ String RTCIceTransport::gatheringState() const {
     case cricket::kIceGatheringComplete:
       return "complete";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return g_empty_string;
   }
 }

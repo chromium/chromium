@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -28,9 +28,9 @@ class ActiveDevicesInvalidationInfo {
   // a corresponding interested data type list.
   static ActiveDevicesInvalidationInfo Create(
       std::vector<std::string> all_fcm_registration_tokens,
-      ModelTypeSet all_interested_data_types,
-      std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types,
-      ModelTypeSet old_invalidations_interested_data_types);
+      DataTypeSet all_interested_data_types,
+      std::map<std::string, DataTypeSet> fcm_token_and_interested_data_types,
+      DataTypeSet old_invalidations_interested_data_types);
 
   ~ActiveDevicesInvalidationInfo();
 
@@ -44,7 +44,7 @@ class ActiveDevicesInvalidationInfo {
   // the given |types|. Otherwise returns false (and in case when it's unknown,
   // e.g. while DeviceInfo is not initialized). When reflections are enabled,
   // returns false even if current client is the only one.
-  bool IsSingleClientForTypes(const ModelTypeSet& types) const;
+  bool IsSingleClientForTypes(const DataTypeSet& types) const;
 
   // Returns true if there are no other active DeviceInfos with enabled sync
   // standalone invalidations interested in the given |types|. Returns false in
@@ -55,12 +55,12 @@ class ActiveDevicesInvalidationInfo {
   //   subscribed for the given |types| (including current client if reflections
   //   are enabled).
   bool IsSingleClientWithStandaloneInvalidationsForTypes(
-      const ModelTypeSet& types) const;
+      const DataTypeSet& types) const;
 
   // Returns true if there are no other active DeviceInfos with *disabled* synce
   // standalone invalidations interested in the given |types|.
   bool IsSingleClientWithOldInvalidationsForTypes(
-      const ModelTypeSet& types) const;
+      const DataTypeSet& types) const;
 
   // Returns a list with all remote FCM registration tokens known to the current
   // device. The list may contain the local device's token if a reflection
@@ -73,18 +73,18 @@ class ActiveDevicesInvalidationInfo {
   // device which are interested in at least one of the given |types|. This is a
   // subset of the list returned by all_fcm_registration_tokens().
   std::vector<std::string> GetFcmRegistrationTokensForInterestedClients(
-      ModelTypeSet types) const;
+      DataTypeSet types) const;
 
  private:
   explicit ActiveDevicesInvalidationInfo(bool initialized);
 
-  ModelTypeSet GetAllInterestedDataTypesForStandaloneInvalidations() const;
+  DataTypeSet GetAllInterestedDataTypesForStandaloneInvalidations() const;
 
   bool initialized_ = false;
   std::vector<std::string> all_fcm_registration_tokens_;
-  ModelTypeSet all_interested_data_types_;
-  std::map<std::string, ModelTypeSet> fcm_token_and_interested_data_types_;
-  ModelTypeSet old_invalidations_interested_data_types_;
+  DataTypeSet all_interested_data_types_;
+  std::map<std::string, DataTypeSet> fcm_token_and_interested_data_types_;
+  DataTypeSet old_invalidations_interested_data_types_;
 };
 
 }  // namespace syncer

@@ -8,8 +8,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "bluetooth_types.h"    // NOLINT(build/include)
-#include "chromecast_export.h"  // NOLINT(build/include)
+#include "bluetooth_types.h"
+#include "chromecast_export.h"
 
 namespace chromecast {
 namespace bluetooth_v2_shlib {

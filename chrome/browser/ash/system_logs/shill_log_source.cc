@@ -214,10 +214,11 @@ base::Value::Dict ShillLogSource::ScrubAndExpandProperties(
     dict.Set(shill::kNameProperty, log_name);
   } else if (base::StartsWith(object_path, kDevicePrefix,
                               base::CompareCase::SENSITIVE)) {
+    dict.Set(shill::kNameProperty, kMaskedString);
     // Only mask "Address" in the top level Device dictionary, not globally
     // (which would mask IPConfigs which get anonymized separately).
     if (dict.contains(shill::kAddressProperty)) {
-      dict.Set(shill::kNameProperty, kMaskedString);
+      dict.Set(shill::kAddressProperty, kMaskedString);
     }
   }
 

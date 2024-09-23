@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -32,13 +32,16 @@ class CORE_EXPORT SizesMathFunctionParser {
   STACK_ALLOCATED();
 
  public:
-  SizesMathFunctionParser(CSSParserTokenRange, MediaValues*);
+  SizesMathFunctionParser(CSSParserTokenStream&, MediaValues*);
 
   float Result() const;
   bool IsValid() const { return is_valid_; }
 
  private:
-  bool CalcToReversePolishNotation(CSSParserTokenRange);
+  bool CalcToReversePolishNotation(CSSParserTokenStream&);
+  bool ConsumeCalc(CSSParserTokenStream&, Vector<CSSParserToken>& stack);
+  bool ConsumeBlockContent(CSSParserTokenStream&,
+                           Vector<CSSParserToken>& stack);
   bool Calculate();
   void AppendNumber(const CSSParserToken&);
   bool AppendLength(const CSSParserToken&);

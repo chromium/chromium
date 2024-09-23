@@ -12,7 +12,7 @@ namespace autofill::payments {
 namespace {
 
 const char kUploadIbanRequestPath[] =
-    "payments/apis-secure/chromepaymentsservice/saveiban"
+    "payments/apis-secure/chromepaymentsservice/createpaymentinstrument"
     "?s7e_suffix=chromewallet";
 const char kUploadIbanRequestFormat[] =
     "requestContentType=application/json; charset=utf-8&request=%s"
@@ -23,7 +23,8 @@ const char kUploadIbanRequestFormat[] =
 UploadIbanRequest::UploadIbanRequest(
     const PaymentsNetworkInterface::UploadIbanRequestDetails& details,
     bool full_sync_enabled,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback)
+    base::OnceCallback<
+        void(payments::PaymentsAutofillClient::PaymentsRpcResult)> callback)
     : request_details_(details),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {}
@@ -40,7 +41,11 @@ std::string UploadIbanRequest::GetRequestContentType() {
 
 std::string UploadIbanRequest::GetRequestContent() {
   base::Value::Dict request_dict;
-  request_dict.Set("value", "__param:s7e_443_value");
+
+  base::Value::Dict iban_info;
+  iban_info.Set("value", "__param:s7e_443_value");
+  request_dict.Set("iban_info", std::move(iban_info));
+
   base::Value::Dict context;
   if (!request_details_.nickname.empty()) {
     context.Set("nickname", request_details_.nickname);
@@ -78,7 +83,7 @@ bool UploadIbanRequest::IsResponseComplete() {
 }
 
 void UploadIbanRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result);
 }
 

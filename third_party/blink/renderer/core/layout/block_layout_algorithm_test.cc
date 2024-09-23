@@ -8,19 +8,18 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
+#include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
-#include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -538,8 +537,7 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase2WithFloats) {
   EXPECT_THAT(LayoutUnit(90), offset.top);
 
   // ** Verify layout tree **
-  Element* first_child =
-      GetDocument().getElementById(AtomicString("first-child"));
+  Element* first_child = GetElementById("first-child");
   // -7 = body_top_offset
   EXPECT_EQ(-7, first_child->OffsetTop());
 }
@@ -568,11 +566,10 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase3) {
   const PhysicalBoxFragment* child_fragment = nullptr;
   const PhysicalBoxFragment* fragment = nullptr;
   auto run_test = [&](const Length& container_height) {
-    UpdateStyleForElement(
-        GetDocument().getElementById(AtomicString("container")),
-        [&](ComputedStyleBuilder& builder) {
-          builder.SetHeight(container_height);
-        });
+    UpdateStyleForElement(GetElementById("container"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetHeight(container_height);
+                          });
     fragment = GetHtmlPhysicalFragment();
     ASSERT_EQ(1UL, fragment->Children().size());
     body_fragment = To<PhysicalBoxFragment>(fragment->Children()[0].get());
@@ -621,11 +618,10 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsCase4) {
   PhysicalOffset child_offset;
   const PhysicalBoxFragment* fragment = nullptr;
   auto run_test = [&](const Length& container_padding_top) {
-    UpdateStyleForElement(
-        GetDocument().getElementById(AtomicString("container")),
-        [&](ComputedStyleBuilder& builder) {
-          builder.SetPaddingTop(container_padding_top);
-        });
+    UpdateStyleForElement(GetElementById("container"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetPaddingTop(container_padding_top);
+                          });
     fragment = GetHtmlPhysicalFragment();
     ASSERT_EQ(1UL, fragment->Children().size());
     const auto* body_fragment =
@@ -891,46 +887,44 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
     <div id="inflow"></div>
   )HTML");
 
-  const LayoutNGBlockFlow* zero;
-  const LayoutNGBlockFlow* abs;
-  const LayoutNGBlockFlow* inflow;
+  const LayoutBlockFlow* zero;
+  const LayoutBlockFlow* abs;
+  const LayoutBlockFlow* inflow;
   auto run_test = [&](const Length& zero_top_margin_bottom,
                       const Length& zero_inner_margin_top,
                       const Length& zero_inner_margin_bottom,
                       const Length& zero_margin_bottom,
                       const Length& inflow_margin_top) {
     // Set the style of the elements we care about.
-    UpdateStyleForElement(
-        GetDocument().getElementById(AtomicString("zero-top")),
-        [&](ComputedStyleBuilder& builder) {
-          builder.SetMarginBottom(zero_top_margin_bottom);
-        });
-    UpdateStyleForElement(
-        GetDocument().getElementById(AtomicString("zero-inner")),
-        [&](ComputedStyleBuilder& builder) {
-          builder.SetMarginTop(zero_inner_margin_top);
-          builder.SetMarginBottom(zero_inner_margin_bottom);
-        });
-    UpdateStyleForElement(GetDocument().getElementById(AtomicString("zero")),
+    UpdateStyleForElement(GetElementById("zero-top"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetMarginBottom(zero_top_margin_bottom);
+                          });
+    UpdateStyleForElement(GetElementById("zero-inner"),
+                          [&](ComputedStyleBuilder& builder) {
+                            builder.SetMarginTop(zero_inner_margin_top);
+                            builder.SetMarginBottom(zero_inner_margin_bottom);
+                          });
+    UpdateStyleForElement(GetElementById("zero"),
                           [&](ComputedStyleBuilder& builder) {
                             builder.SetMarginBottom(zero_margin_bottom);
                           });
-    UpdateStyleForElement(GetDocument().getElementById(AtomicString("inflow")),
+    UpdateStyleForElement(GetElementById("inflow"),
                           [&](ComputedStyleBuilder& builder) {
                             builder.SetMarginTop(inflow_margin_top);
                           });
     UpdateAllLifecyclePhasesForTest();
 
-    LayoutNGBlockFlow* child;
+    LayoutBlockFlow* child;
     // #float
-    child = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("float"));
+    child = To<LayoutBlockFlow>(GetLayoutObjectByElementId("float"));
     EXPECT_EQ(PhysicalSize(LayoutUnit(50), LayoutUnit(50)), child->Size());
     EXPECT_EQ(PhysicalOffset(0, 0), child->PhysicalLocation());
 
     // We need to manually test the position of #zero, #abs, #inflow.
-    zero = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("zero"));
-    inflow = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("inflow"));
-    abs = To<LayoutNGBlockFlow>(GetLayoutObjectByElementId("abs"));
+    zero = To<LayoutBlockFlow>(GetLayoutObjectByElementId("zero"));
+    inflow = To<LayoutBlockFlow>(GetLayoutObjectByElementId("inflow"));
+    abs = To<LayoutBlockFlow>(GetLayoutObjectByElementId("abs"));
   };
 
   // Base case of no margins.
@@ -1246,8 +1240,7 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFloatInsideEmptyBlocks) {
                                      LayoutUnit(15)));
 
   // ** Verify layout tree **
-  Element* left_float =
-      GetDocument().getElementById(AtomicString("left-float"));
+  Element* left_float = GetElementById("left-float");
   // 88 = body's margin(8) +
   // empty1's padding and margin + empty2's padding and margins + float's
   // padding
@@ -1319,8 +1312,7 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFloatFragments) {
   ASSERT_EQ(5UL, container_fragment->Children().size());
 
   // ** Verify layout tree **
-  Element* left_float =
-      GetDocument().getElementById(AtomicString("left-float"));
+  Element* left_float = GetElementById("left-float");
   // 8 = body's margin-top
   EXPECT_EQ(8, left_float->OffsetTop());
 
@@ -1329,8 +1321,7 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFloatFragments) {
   iterator.NextChild(&offset);
   EXPECT_THAT(LayoutUnit(), offset.top);
 
-  Element* left_wide_float =
-      GetDocument().getElementById(AtomicString("left-wide-float"));
+  Element* left_wide_float = GetElementById("left-wide-float");
   // left-wide-float is positioned right below left-float as it's too wide.
   // 38 = left_float_block_offset 8 +
   //      left-float's height 30
@@ -1340,15 +1331,14 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFloatFragments) {
   // 30 = left-float's height.
   EXPECT_THAT(LayoutUnit(30), offset.top);
 
-  Element* regular = GetDocument().getElementById(AtomicString("regular"));
+  Element* regular = GetElementById("regular");
   // regular_block_offset = body's margin-top 8
   EXPECT_EQ(8, regular->OffsetTop());
 
   iterator.NextChild(&offset);
   EXPECT_THAT(LayoutUnit(), offset.top);
 
-  Element* right_float =
-      GetDocument().getElementById(AtomicString("right-float"));
+  Element* right_float = GetElementById("right-float");
   // 158 = body's margin-left 8 + container's width 200 - right_float's width 50
   // it's positioned right after our left_wide_float
   // 68 = left_wide_float_block_offset 38 + left-wide-float's height 30
@@ -1361,8 +1351,7 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFloatFragments) {
   // 150 = right_float_inline_offset(158) - body's margin(8)
   EXPECT_THAT(LayoutUnit(150), offset.left);
 
-  Element* left_float_with_margin =
-      GetDocument().getElementById(AtomicString("left-float-with-margin"));
+  Element* left_float_with_margin = GetElementById("left-float-with-margin");
   // 18 = body's margin(8) + left-float-with-margin's margin(10)
   EXPECT_EQ(18, left_float_with_margin->OffsetLeft());
   // 78 = left_wide_float_block_offset 38 + left-wide-float's height 30 +
@@ -1432,7 +1421,7 @@ TEST_F(BlockLayoutAlgorithmTest, PositionFragmentsWithClear) {
   PhysicalOffset adjoining_clearance_offset;
   auto run_with_clearance = [&](EClear clear_value) {
     UpdateStyleForElement(
-        GetDocument().getElementById(AtomicString("clearance")),
+        GetElementById("clearance"),
         [&](ComputedStyleBuilder& builder) { builder.SetClear(clear_value); });
     const auto* fragment = GetHtmlPhysicalFragment();
     ASSERT_EQ(1UL, fragment->Children().size());
@@ -1750,8 +1739,7 @@ TEST_F(BlockLayoutAlgorithmTest,
   PhysicalOffset container_clear_offset = body_fragment->Children()[3].Offset();
   // 60 = block1's height 30 + std::max(block1's margin 20, zero's margin 30)
   EXPECT_THAT(PhysicalOffset(0, 60), container_clear_offset);
-  Element* container_clear =
-      GetDocument().getElementById(AtomicString("container-clear"));
+  Element* container_clear = GetElementById("container-clear");
   // 190 = block1's margin 130 + block1's height 30 +
   //       std::max(block1's margin 20, zero's margin 30)
   EXPECT_THAT(container_clear->OffsetTop(), 190);
@@ -2240,7 +2228,7 @@ TEST_F(BlockLayoutAlgorithmTest, NewFcBlockWithAdjoiningFloatCollapsesMargins) {
 
   auto run_test = [&](const Length& block_width) {
     UpdateStyleForElement(
-        GetDocument().getElementById(AtomicString("new-fc")),
+        GetElementById("new-fc"),
         [&](ComputedStyleBuilder& builder) { builder.SetWidth(block_width); });
     const auto* fragment = GetHtmlPhysicalFragment();
     ASSERT_EQ(1UL, fragment->Children().size());
@@ -2401,7 +2389,7 @@ TEST_F(BlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
 
   ASSERT_TRUE(innerNGRoot->IsLayoutNGObject());
   const PhysicalBoxFragment* fragment =
-      CurrentFragmentFor(To<LayoutNGBlockFlow>(innerNGRoot));
+      CurrentFragmentFor(To<LayoutBlockFlow>(innerNGRoot));
 
   ASSERT_TRUE(fragment);
   // TODO(crbug.com/781241: Re-enable when we calculate inline offset at
@@ -2431,7 +2419,7 @@ input::first-line {
 <input id="i1" readonly>
 <input id="num" type="number" placeholder="foo">)HTML");
   UpdateAllLifecyclePhasesForTest();
-  auto* input = GetDocument().getElementById(AtomicString("i1"));
+  auto* input = GetElementById("i1");
   input->setAttribute(html_names::kPlaceholderAttr, AtomicString("z"));
   UpdateAllLifecyclePhasesForTest();
 }

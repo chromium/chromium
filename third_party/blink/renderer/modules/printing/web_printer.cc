@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/printing/web_printer.h"
+#include <limits>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_document_description.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_collection_requested.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_media_size_requested.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_resolution.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -24,6 +27,10 @@ constexpr char kUserPermissionDeniedError[] =
     "User denied access to Web Printing API.";
 
 constexpr char kPrinterUnreachableError[] = "Unable to connect to the printer.";
+
+bool IsPositiveInt32(uint32_t value) {
+  return value > 0 && value <= std::numeric_limits<int32_t>::max();
+}
 
 bool ValidatePrintJobTemplateAttributes(
     const WebPrintJobTemplateAttributes* pjt_attributes,
@@ -49,8 +56,20 @@ bool ValidatePrintJobTemplateAttributes(
       return false;
     }
   }
+  if (pjt_attributes->hasMediaCol()) {
+    const auto& media_col = *pjt_attributes->mediaCol();
+    const auto& media_size = *media_col.mediaSize();
+    if (!IsPositiveInt32(media_size.yDimension()) ||
+        !IsPositiveInt32(media_size.xDimension())) {
+      exception_state.ThrowTypeError(
+          "Both `xDimension` and `yDimension` must be positive integer "
+          "values.");
+      return false;
+    }
+  }
   return true;
 }
+
 }  // namespace
 
 WebPrinter::WebPrinter(ExecutionContext* execution_context,
@@ -71,30 +90,32 @@ void WebPrinter::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-ScriptPromise WebPrinter::fetchAttributes(ScriptState* script_state,
-                                          ExceptionState& exception_state) {
+ScriptPromise<WebPrinterAttributes> WebPrinter::fetchAttributes(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Context has shut down.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (fetch_attributes_resolver_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "A call to fetchAttributes() is already in progress.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  fetch_attributes_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  fetch_attributes_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver<WebPrinterAttributes>>(
+          script_state, exception_state.GetContext());
   printer_->FetchAttributes(
       fetch_attributes_resolver_->WrapCallbackInScriptScope(
           WTF::BindOnce(&WebPrinter::OnFetchAttributes, WrapPersistent(this))));
   return fetch_attributes_resolver_->Promise();
 }
 
-ScriptPromise WebPrinter::printJob(
+ScriptPromise<WebPrintJob> WebPrinter::printJob(
     ScriptState* script_state,
     const String& job_name,
     const WebPrintDocumentDescription* document,
@@ -103,11 +124,11 @@ ScriptPromise WebPrinter::printJob(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Context has shut down.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (!ValidatePrintJobTemplateAttributes(pjt_attributes, exception_state)) {
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   auto attributes =
@@ -115,7 +136,7 @@ ScriptPromise WebPrinter::printJob(
           pjt_attributes);
   attributes->job_name = job_name;
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<WebPrintJob>>(
       script_state, exception_state.GetContext());
   printer_->Print(document->data()->AsMojoBlob(), std::move(attributes),
                   resolver->WrapCallbackInScriptScope(WTF::BindOnce(
@@ -124,7 +145,7 @@ ScriptPromise WebPrinter::printJob(
 }
 
 void WebPrinter::OnFetchAttributes(
-    ScriptPromiseResolver*,
+    ScriptPromiseResolver<WebPrinterAttributes>*,
     mojom::blink::WebPrinterFetchResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {
@@ -150,7 +171,7 @@ void WebPrinter::OnFetchAttributes(
   fetch_attributes_resolver_ = nullptr;
 }
 
-void WebPrinter::OnPrint(ScriptPromiseResolver* resolver,
+void WebPrinter::OnPrint(ScriptPromiseResolver<WebPrintJob>* resolver,
                          mojom::blink::WebPrintResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {

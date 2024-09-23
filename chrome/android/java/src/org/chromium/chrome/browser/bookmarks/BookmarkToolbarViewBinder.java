@@ -11,9 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class BookmarkToolbarViewBinder {
     /** Binds the given property to the given model for the given view. */
     public static void bind(PropertyModel model, BookmarkToolbar bookmarkToolbar, PropertyKey key) {
-        if (key == BookmarkToolbarProperties.BOOKMARK_MODEL) {
-            bookmarkToolbar.setBookmarkModel(model.get(BookmarkToolbarProperties.BOOKMARK_MODEL));
-        } else if (key == BookmarkToolbarProperties.BOOKMARK_OPENER) {
+        if (key == BookmarkToolbarProperties.BOOKMARK_OPENER) {
             bookmarkToolbar.setBookmarkOpener(model.get(BookmarkToolbarProperties.BOOKMARK_OPENER));
         } else if (key == BookmarkToolbarProperties.SELECTION_DELEGATE) {
             bookmarkToolbar.setSelectionDelegate(
@@ -31,9 +29,6 @@ class BookmarkToolbarViewBinder {
             bookmarkToolbar.setIsDialogUi(model.get(BookmarkToolbarProperties.IS_DIALOG_UI));
         } else if (key == BookmarkToolbarProperties.DRAG_ENABLED) {
             bookmarkToolbar.setDragEnabled(model.get(BookmarkToolbarProperties.DRAG_ENABLED));
-        } else if (key == BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE) {
-            bookmarkToolbar.setSearchButtonVisible(
-                    model.get(BookmarkToolbarProperties.SEARCH_BUTTON_VISIBLE));
         } else if (key == BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE) {
             bookmarkToolbar.setEditButtonVisible(
                     model.get(BookmarkToolbarProperties.EDIT_BUTTON_VISIBLE));
@@ -57,8 +52,6 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID) {
             bookmarkToolbar.setCheckedViewMenuId(
                     model.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
-        } else if (key == BookmarkToolbarProperties.CURRENT_FOLDER) {
-            bookmarkToolbar.setCurrentFolder(model.get(BookmarkToolbarProperties.CURRENT_FOLDER));
         } else if (key == BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE) {
             bookmarkToolbar.setNavigateBackRunnable(
                     model.get(BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE));
@@ -67,6 +60,24 @@ class BookmarkToolbarViewBinder {
                     model.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION));
         } else if (key == BookmarkToolbarProperties.FAKE_SELECTION_STATE_CHANGE) {
             bookmarkToolbar.fakeSelectionStateChange();
+        } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT) {
+            bookmarkToolbar.setSelectionShowEdit(
+                    model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT));
+        } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB) {
+            bookmarkToolbar.setSelectionShowOpenInNewTab(
+                    model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB));
+        } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO) {
+            bookmarkToolbar.setSelectionShowOpenInIncognito(
+                    model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO));
+        } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE) {
+            bookmarkToolbar.setSelectionShowMove(
+                    model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MOVE));
+        } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ) {
+            bookmarkToolbar.setSelectionShowMarkRead(
+                    model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_READ));
+        } else if (key == BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD) {
+            bookmarkToolbar.setSelectionShowMarkUnread(
+                    model.get(BookmarkToolbarProperties.SELECTION_MODE_SHOW_MARK_UNREAD));
         }
     }
 }

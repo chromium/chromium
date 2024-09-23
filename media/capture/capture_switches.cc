@@ -33,7 +33,7 @@ bool IsVideoCaptureUseGpuMemoryBufferEnabled() {
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kMediaFoundationCameraUsageMonitoring,
              "MediaFoundationCameraUsageMonitoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsMediaFoundationCameraUsageMonitoringEnabled() {
   return base::FeatureList::IsEnabled(kMediaFoundationCameraUsageMonitoring);
@@ -41,3 +41,15 @@ bool IsMediaFoundationCameraUsageMonitoringEnabled() {
 #endif
 
 }  // namespace switches
+
+namespace features {
+
+#if defined(WEBRTC_USE_PIPEWIRE)
+// Controls whether the PipeWire support for cameras is enabled on the
+// Wayland display server.
+BASE_FEATURE(kWebRtcPipeWireCamera,
+             "WebRtcPipeWireCamera",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // defined(WEBRTC_USE_PIPEWIRE)
+
+}  // namespace features

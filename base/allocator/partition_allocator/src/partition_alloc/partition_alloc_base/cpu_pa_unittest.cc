@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +16,7 @@ namespace partition_alloc {
 TEST(CPUPA, RunExtendedInstructions) {
   // Retrieve the CPU information.
   internal::base::CPU cpu;
-#if defined(ARCH_CPU_X86_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
 
   ASSERT_TRUE(cpu.has_mmx());
   ASSERT_TRUE(cpu.has_sse());
@@ -24,7 +24,7 @@ TEST(CPUPA, RunExtendedInstructions) {
   ASSERT_TRUE(cpu.has_sse3());
 
 // GCC and clang instruction test.
-#if defined(COMPILER_GCC)
+#if PA_BUILDFLAG(PA_COMPILER_GCC)
   // Execute an MMX instruction.
   __asm__ __volatile__("emms\n" : : : "mm0");
 
@@ -80,9 +80,9 @@ TEST(CPUPA, RunExtendedInstructions) {
                          : "c"(0), "d"(0));
   }
 // Visual C 32 bit and ClangCL 32/64 bit test.
-#elif defined(COMPILER_MSVC) &&   \
-    (defined(ARCH_CPU_32_BITS) || \
-     (defined(ARCH_CPU_64_BITS) && defined(__clang__)))
+#elif PA_BUILDFLAG(PA_COMPILER_MSVC) &&   \
+    (PA_BUILDFLAG(PA_ARCH_CPU_32_BITS) || \
+     (PA_BUILDFLAG(PA_ARCH_CPU_64_BITS) && defined(__clang__)))
 
   // Execute an MMX instruction.
   __asm emms;
@@ -130,10 +130,10 @@ TEST(CPUPA, RunExtendedInstructions) {
     // Execute an AVX 2 instruction.
     __asm vpunpcklbw ymm0, ymm0, ymm0
   }
-#endif  // defined(COMPILER_GCC)
-#endif  // defined(ARCH_CPU_X86_FAMILY)
+#endif  // PA_BUILDFLAG(PA_COMPILER_GCC)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
 
-#if defined(ARCH_CPU_ARM64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
   // Check that the CPU is correctly reporting support for the Armv8.5-A memory
   // tagging extension. The new MTE instructions aren't encoded in NOP space
   // like BTI/Pointer Authentication and will crash older cores with a SIGILL if

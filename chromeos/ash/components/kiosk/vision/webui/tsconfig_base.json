@@ -1,0 +1,8 @@
+{
+  "extends": "../../../../../../tools/typescript/tsconfig_base.json",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": false,
+    "noUnusedLocals": false,
+    "strictPropertyInitialization": false
+  }
+}

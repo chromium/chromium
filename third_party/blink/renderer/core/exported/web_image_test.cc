@@ -33,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/gfx/geometry/size.h"
@@ -41,17 +42,18 @@ namespace blink {
 
 static scoped_refptr<SharedBuffer> ReadFile(const char* file_name) {
   String file_path = test::CoreTestDataPath(file_name);
-
-  return test::ReadFromFile(file_path);
+  std::optional<Vector<char>> data = test::ReadFromFile(file_path);
+  CHECK(data);
+  return SharedBuffer::Create(std::move(*data));
 }
 
-class WebImageTest : public testing::Test,
-                     private ScopedMockOverlayScrollbars {};
+class WebImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 TEST_F(WebImageTest, PNGImage) {
   scoped_refptr<SharedBuffer> data = ReadFile("white-1x1.png");
-  ASSERT_TRUE(data.get());
-
   SkBitmap image = WebImage::FromData(WebData(data), gfx::Size());
   EXPECT_EQ(image.width(), 1);
   EXPECT_EQ(image.height(), 1);
@@ -60,8 +62,6 @@ TEST_F(WebImageTest, PNGImage) {
 
 TEST_F(WebImageTest, ICOImage) {
   scoped_refptr<SharedBuffer> data = ReadFile("black-and-white.ico");
-  ASSERT_TRUE(data.get());
-
   WebVector<SkBitmap> images = WebImage::FramesFromData(WebData(data));
   ASSERT_EQ(2u, images.size());
   EXPECT_EQ(images[0].width(), 2);
@@ -75,8 +75,6 @@ TEST_F(WebImageTest, ICOImage) {
 TEST_F(WebImageTest, ICOValidHeaderMissingBitmap) {
   scoped_refptr<SharedBuffer> data =
       ReadFile("valid_header_missing_bitmap.ico");
-  ASSERT_TRUE(data.get());
-
   WebVector<SkBitmap> images = WebImage::FramesFromData(WebData(data));
   ASSERT_TRUE(images.empty());
 }

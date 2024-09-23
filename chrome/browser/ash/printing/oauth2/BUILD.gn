@@ -1,0 +1,109 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+static_library("oauth2") {
+  sources = [
+    "authorization_server_data.cc",
+    "authorization_server_data.h",
+    "authorization_server_session.cc",
+    "authorization_server_session.h",
+    "authorization_zone.h",
+    "authorization_zone_impl.cc",
+    "authorization_zone_impl.h",
+    "authorization_zones_manager.cc",
+    "authorization_zones_manager.h",
+    "authorization_zones_manager_factory.cc",
+    "authorization_zones_manager_factory.h",
+    "client_ids_database.cc",
+    "client_ids_database.h",
+    "constants.h",
+    "http_exchange.cc",
+    "http_exchange.h",
+    "ipp_endpoint_token_fetcher.cc",
+    "ipp_endpoint_token_fetcher.h",
+    "log_entry.cc",
+    "log_entry.h",
+    "profile_auth_servers_sync_bridge.cc",
+    "profile_auth_servers_sync_bridge.h",
+    "signin_dialog.cc",
+    "signin_dialog.h",
+    "status_code.cc",
+    "status_code.h",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/sync:factories",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//chromeos/printing",
+    "//components/device_event_log",
+    "//components/prefs",
+    "//components/sync/base",
+    "//components/sync/protocol",
+    "//components/sync/protocol:util",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
+    "//chrome/browser/profiles:profile",
+    "//components/sync/model",
+    "//components/web_modal",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_authorization_zones_manager.cc",
+    "mock_authorization_zones_manager.h",
+  ]
+
+  deps = [
+    ":oauth2",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "authorization_server_data_unittest.cc",
+    "authorization_server_session_unittest.cc",
+    "authorization_zone_unittest.cc",
+    "authorization_zones_manager_unittest.cc",
+    "client_ids_database_unittest.cc",
+    "http_exchange_unittest.cc",
+    "ipp_endpoint_token_fetcher_unittest.cc",
+    "log_entry_unittest.cc",
+    "mock_client_ids_database.cc",
+    "mock_client_ids_database.h",
+    "profile_auth_servers_sync_bridge_unittest.cc",
+    "test_authorization_server.cc",
+    "test_authorization_server.h",
+    "test_authorization_server_unittest.cc",
+  ]
+
+  deps = [
+    ":oauth2",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/printing",
+    "//components/sync:test_support",
+    "//content/test:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

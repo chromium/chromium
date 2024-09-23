@@ -1,0 +1,57 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-theme-color-border-radius: 50%;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: block;
+  outline: none;
+  padding: 8px;
+  width: 100%;
+}
+
+:host(:focus):host-context(.focus-outline-visible) {
+  box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
+}
+
+svg {
+  border-radius: var(--cr-theme-color-border-radius);
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+}
+
+#background {
+  fill: var(--cr-theme-color-background-color);
+}
+
+#foreground {
+  fill: var(--cr-theme-color-foreground-color);
+}
+
+#base {
+  fill: var(--cr-theme-color-base-color);
+}
+
+:host([background-color-hidden]) #background {
+  display: none;
+}
+
+:host([background-color-hidden]) #base {
+  display: none;
+}
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  :host(:focus):host-context(.focus-outline-visible) {
+    /* Set outline to hcm (high contrast mode) value. */
+    outline: var(--cr-focus-outline-hcm) !important;
+  }
+}

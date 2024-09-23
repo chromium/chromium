@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API: Tests that re-authentication works when third party cookies are blocked but the ISS OT is enabled</title>
+<!--
+This is in wpt_internal because this test uses an internal API and also
+because the interaction between 3pc and FedCM is Chrome-specific.
+-->
+<link rel="help" href="https://fedidcg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<!--
+Token generated with:
+generate_token.py https://web-platform.test:8444/ FedCmIdpSigninStatus --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial"
+  content="AxsFYFt0hYa+TYkw+/9aNgaGvhJMjPQO9ec5OuuMNFcbVKnhXzUWEricRljJdLkft10VZ1DWQ7vOJPbLbzByNgMAAABleyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiRmVkQ21JZHBTaWduaW5TdGF0dXMiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=">
+
+<script type="module">
+import {request_options_with_mediation_optional,
+        fedcm_test,
+        select_manifest,
+        fedcm_get_and_select_first_account,
+        mark_signed_in} from '/fedcm/support/fedcm-helper.sub.js';
+
+fedcm_test(async t => {
+  await mark_signed_in();
+
+  let test_options = request_options_with_mediation_optional("manifest_with_single_account.json");
+  await select_manifest(t, test_options);
+
+  // Signs in john_doe so that they will be a returning user
+  let cred = await fedcm_get_and_select_first_account(t, test_options);
+  assert_equals(cred.token, "account_id=john_doe");
+
+  // Now block third-party cookies (regression test for https://crbug.com/1472928).
+  testRunner.setBlockThirdPartyCookies(true);
+
+  test_options = request_options_with_mediation_optional("manifest_with_two_accounts.json");
+  await select_manifest(t, test_options);
+
+  // There are two accounts "Jane" and "John" returned in that order. Without
+  // auto re-authn, the first account "Jane" would be selected and an token
+  // would be issued to that account. However, since "John" is returning and
+  // "Jane" is a new user, the second account "John" will be selected.
+  cred = await navigator.credentials.get(test_options);
+  assert_equals(cred.token, "account_id=john_doe");
+}, "Test that the returning account from the two accounts will be auto re-authenticated.");
+</script>

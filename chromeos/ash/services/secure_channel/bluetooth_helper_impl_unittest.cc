@@ -59,7 +59,7 @@ CreateFakeBackgroundScanFilter() {
 }
 
 std::vector<multidevice::BeaconSeed> CreateFakeBeaconSeeds(int id) {
-  std::string id_str = std::to_string(id);
+  std::string id_str = base::NumberToString(id);
 
   multidevice::BeaconSeed seed1(
       fake_beacon_seed1_data + id_str /* data */,

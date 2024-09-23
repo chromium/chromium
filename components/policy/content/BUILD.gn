@@ -9,6 +9,8 @@ assert(use_blink,
 
 source_set("safe_sites_navigation_throttle") {
   sources = [
+    "proceed_until_response_navigation_throttle.cc",
+    "proceed_until_response_navigation_throttle.h",
     "safe_search_service.cc",
     "safe_search_service.h",
     "safe_sites_navigation_throttle.cc",
@@ -47,7 +49,11 @@ source_set("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "policy_blocklist_navigation_throttle_unittest.cc" ]
+  sources = [
+    "policy_blocklist_navigation_throttle_unittest.cc",
+    "proceed_until_response_navigation_throttle_unittest.cc",
+  ]
+
   deps = [
     ":content",
     ":safe_sites_navigation_throttle",

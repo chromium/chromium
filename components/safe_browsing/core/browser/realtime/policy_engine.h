@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 
 class PrefService;
 
@@ -21,7 +20,7 @@ namespace safe_browsing {
 
 // This class implements the logic to decide whether the real time lookup
 // feature is enabled for a given user/profile.
-// TODO(crbug.com/1050859): To make this class build in IOS, remove
+// TODO(crbug.com/40673388): To make this class build in IOS, remove
 // browser_context dependency in this class, and replace it with pref_service
 // and simple_factory_key.
 class RealTimePolicyEngine {
@@ -34,12 +33,6 @@ class RealTimePolicyEngine {
   // CanPerformFullURLLookupWithToken().
   using ClientConfiguredForTokenFetchesCallback =
       base::OnceCallback<bool(bool user_has_enabled_enhanced_protection)>;
-
-  // Return true if full URL lookups are enabled for |request_destination|.
-  // TODO(crbug.com/324108312): Remove this function as part of the cleanup
-  // after subresource checks are disabled.
-  static bool CanPerformFullURLLookupForRequestDestination(
-      network::mojom::RequestDestination request_destination);
 
   // Return true if the profile is not Incognito and real-time fetches are
   // available in the user's country, and the user has opted in to ESB or MBB.
@@ -58,7 +51,8 @@ class RealTimePolicyEngine {
 
   static bool CanPerformEnterpriseFullURLLookup(const PrefService* pref_service,
                                                 bool has_valid_dm_token,
-                                                bool is_off_the_record);
+                                                bool is_off_the_record,
+                                                bool is_guest_profile);
 
   friend class SafeBrowsingService;
 

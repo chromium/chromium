@@ -55,6 +55,20 @@ bool PermissionPromptDesktop::ShouldFinalizeRequestAfterDecided() const {
   return true;
 }
 
+std::vector<permissions::ElementAnchoredBubbleVariant>
+PermissionPromptDesktop::GetPromptVariants() const {
+  return {};
+}
+
+std::optional<permissions::feature_params::PermissionElementPromptPosition>
+PermissionPromptDesktop::GetPromptPosition() const {
+  return std::nullopt;
+}
+
+bool PermissionPromptDesktop::IsAskPrompt() const {
+  return true;
+}
+
 LocationBarView* PermissionPromptDesktop::GetLocationBarView() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
   return browser_view ? browser_view->GetLocationBarView() : nullptr;

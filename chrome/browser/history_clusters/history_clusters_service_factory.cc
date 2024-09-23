@@ -10,12 +10,10 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -37,7 +35,6 @@ std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
                                 ->GetURLLoaderFactoryForBrowserProcess();
   return std::make_unique<history_clusters::HistoryClustersService>(
       g_browser_process->GetApplicationLocale(), history_service,
-      PageContentAnnotationsServiceFactory::GetForProfile(profile),
       url_loader_factory, site_engagement::SiteEngagementService::Get(profile),
       TemplateURLServiceFactory::GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
@@ -63,15 +60,16 @@ HistoryClustersServiceFactory* HistoryClustersServiceFactory::GetInstance() {
 HistoryClustersServiceFactory::HistoryClustersServiceFactory()
     : ProfileKeyedServiceFactory(
           "HistoryClustersService",
-          // Give incognito its own isolated service.
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(PageContentAnnotationsServiceFactory::GetInstance());
   DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());

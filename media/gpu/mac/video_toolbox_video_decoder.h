@@ -118,6 +118,10 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   // Used to link re-entrant OnAcceleratorDecode() callbacks to Decode() calls.
   scoped_refptr<DecoderBuffer> active_decode_;
 
+  // Accounts for frames that have been decoded but not yet converted. These
+  // contribute to backpressure.
+  size_t num_conversions_ = 0;
+
   // Decode callbacks, which are released in decode order. There is no mapping
   // to decode requests or frames, it is simply a backpressure mechanism.
   base::queue<DecodeCB> decode_cbs_;

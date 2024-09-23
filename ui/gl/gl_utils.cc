@@ -14,10 +14,7 @@
 #include "ui/gl/gl_display_manager.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
-
-#if defined(USE_EGL)
 #include "ui/gl/gl_surface_egl.h"
-#endif  // defined(USE_EGL)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/posix/eintr_wrapper.h"
@@ -36,6 +33,7 @@ namespace {
 
 // The global set of workarounds.
 GlWorkarounds g_workarounds;
+bool g_is_angle_enabled = true;
 
 int GetIntegerv(unsigned int name) {
   int value = 0;
@@ -84,9 +82,18 @@ base::ScopedFD MergeFDs(base::ScopedFD a, base::ScopedFD b) {
     LOG(ERROR) << "Failed to merge fences.";
   return merged;
 }
+
+void DisableANGLE() {
+  DCHECK_NE(GetGLImplementation(), kGLImplementationEGLANGLE);
+  g_is_angle_enabled = false;
+}
 #endif
 
 bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
+  if (!g_is_angle_enabled) {
+    return false;
+  }
+
   std::string switch_value;
   if (command_line->HasSwitch(switches::kUseCmdDecoder)) {
     switch_value = command_line->GetSwitchValueASCII(switches::kUseCmdDecoder);
@@ -111,7 +118,6 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
 }
 
 bool PassthroughCommandDecoderSupported() {
-#if defined(USE_EGL)
   GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
   // Using the passthrough command buffer requires that specific ANGLE
   // extensions are exposed
@@ -120,10 +126,6 @@ bool PassthroughCommandDecoderSupported() {
          display->ext->b_EGL_ANGLE_robust_resource_initialization &&
          display->ext->b_EGL_ANGLE_display_texture_share_group &&
          display->ext->b_EGL_ANGLE_create_context_client_arrays;
-#else
-  // The passthrough command buffer is only supported on top of ANGLE/EGL
-  return false;
-#endif  // defined(USE_EGL)
 }
 
 const GlWorkarounds& GetGlWorkarounds() {
@@ -192,25 +194,15 @@ GLDisplay* GetDisplay(GpuPreference gpu_preference) {
 
 GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference,
                                 gl::DisplayKey display_key) {
-#if defined(USE_GLX)
-  if (!GLDisplayManagerX11::GetInstance()->IsEmpty()) {
-    return GLDisplayManagerX11::GetInstance()->GetDisplay(gpu_preference,
-                                                          display_key);
-  }
-#endif
-#if defined(USE_EGL)
+  // TODO(344606399): Consider making callers directly create the EGL display.
   return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference,
                                                         display_key);
-#endif
-  NOTREACHED();
-  return nullptr;
 }
 
 GLDisplay* GetDefaultDisplay() {
   return GetDisplay(GpuPreference::kDefault);
 }
 
-#if defined(USE_EGL)
 void SetGpuPreferenceEGL(GpuPreference preference, uint64_t system_device_id) {
   GLDisplayManagerEGL::GetInstance()->SetGpuPreference(preference,
                                                        system_device_id);
@@ -228,7 +220,6 @@ GLDisplayEGL* GetDefaultDisplayEGL() {
 GLDisplayEGL* GetDisplayEGL(GpuPreference gpu_preference) {
   return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference);
 }
-#endif  // USE_EGL
 
 #if BUILDFLAG(IS_MAC)
 

@@ -10,17 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.ui.base.WindowDelegate;
 
 import java.util.Objects;
 
 /** Provider of capabilities required to embed the omnibox suggestion list into the UI. */
 public interface OmniboxSuggestionsDropdownEmbedder {
+
     /**
      * POD type that encapsulates the "alignment" (position, width, padding) of the omnibox
      * dropdown.
      */
     class OmniboxAlignment {
+
         public static final OmniboxAlignment UNSPECIFIED =
                 new OmniboxAlignment(-1, -1, -1, -1, -1, -1);
         public final int left;
@@ -108,10 +109,6 @@ public interface OmniboxSuggestionsDropdownEmbedder {
     @NonNull
     OmniboxAlignment getCurrentAlignment();
 
-    /** Return the delegate used to interact with the Window. */
-    @NonNull
-    WindowDelegate getWindowDelegate();
-
     /** Return whether the suggestions are being rendered in the tablet UI. */
     boolean isTablet();
 
@@ -127,4 +124,7 @@ public interface OmniboxSuggestionsDropdownEmbedder {
      * alignment recalculation.
      */
     void onDetachedFromWindow();
+
+    /** The vertical translation that should be used during focus animations. */
+    float getVerticalTranslationForAnimation();
 }

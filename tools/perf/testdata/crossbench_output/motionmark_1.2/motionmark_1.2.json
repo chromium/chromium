@@ -1,0 +1,1398 @@
+{
+  "chrome_v125_linux.x64.local_0": {
+    "info": {
+      "label": "linux.x64.local_0",
+      "browser": "Google-Chrome",
+      "version": "125.0.6422.76",
+      "os": "linux 6.6.15-2rodete2-amd64 x64",
+      "device": "Google Google Compute Engine",
+      "cpu": " AMD EPYC 7B13 128 cores",
+      "binary": "/usr/bin/google-chrome",
+      "flags": "--no-default-browser-check --disable-component-update --disable-sync --disable-extensions --no-first-run --disable-search-engine-choice-screen --disable-background-timer-throttling --disable-renderer-backgrounding --no-experiments --enable-benchmarking --disable-field-trial-config",
+      "runs": 1,
+      "failed runs": 0
+    },
+    "data": {
+      "Canvas Arcs/complexity/bootstrap/confidenceHigh": {
+        "values": [
+          780.2189524330445
+        ],
+        "min": 780.2189524330445,
+        "average": 780.2189524330445,
+        "geomean": 780.2189524330445,
+        "max": 780.2189524330445,
+        "sum": 780.2189524330445,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/complexity/bootstrap/confidenceLow": {
+        "values": [
+          772.7397607007681
+        ],
+        "min": 772.7397607007681,
+        "average": 772.7397607007681,
+        "geomean": 772.7397607007681,
+        "max": 772.7397607007681,
+        "sum": 772.7397607007681,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/complexity/bootstrap/confidencePercentage": {
+        "values": [
+          0.8
+        ],
+        "min": 0.8,
+        "average": 0.8,
+        "geomean": 0.8,
+        "max": 0.8,
+        "sum": 0.8,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/complexity/bootstrap/mean": {
+        "values": [
+          776.4611343901898
+        ],
+        "min": 776.4611343901898,
+        "average": 776.4611343901898,
+        "geomean": 776.4611343901898,
+        "max": 776.4611343901898,
+        "sum": 776.4611343901898,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/complexity/bootstrap/median": {
+        "values": [
+          776.4097954614244
+        ],
+        "min": 776.4097954614244,
+        "average": 776.4097954614244,
+        "geomean": 776.4097954614244,
+        "max": 776.4097954614244,
+        "sum": 776.4097954614244,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/complexity/complexity": {
+        "values": [
+          768.8850534078431
+        ],
+        "min": 768.8850534078431,
+        "average": 768.8850534078431,
+        "geomean": 768.8850534078431,
+        "max": 768.8850534078431,
+        "sum": 768.8850534078431,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/complexity/stdev": {
+        "values": [
+          1.5519967300872177
+        ],
+        "min": 1.5519967300872177,
+        "average": 1.5519967300872177,
+        "geomean": 1.5519967300872177,
+        "max": 1.5519967300872177,
+        "sum": 1.5519967300872177,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/controller/average": {
+        "values": [
+          767.7628484686576
+        ],
+        "min": 767.7628484686576,
+        "average": 767.7628484686576,
+        "geomean": 767.7628484686576,
+        "max": 767.7628484686576,
+        "sum": 767.7628484686576,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/controller/percent": {
+        "values": [
+          5.852965168243713
+        ],
+        "min": 5.852965168243713,
+        "average": 5.852965168243713,
+        "geomean": 5.852965168243713,
+        "max": 5.852965168243713,
+        "sum": 5.852965168243713,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/controller/score": {
+        "values": [
+          767.7628484686576
+        ],
+        "min": 767.7628484686576,
+        "average": 767.7628484686576,
+        "geomean": 767.7628484686576,
+        "max": 767.7628484686576,
+        "sum": 767.7628484686576,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/controller/stdev": {
+        "values": [
+          44.936892095586295
+        ],
+        "min": 44.936892095586295,
+        "average": 44.936892095586295,
+        "geomean": 44.936892095586295,
+        "max": 44.936892095586295,
+        "sum": 44.936892095586295,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/score": {
+        "values": [
+          776.4097954614244
+        ],
+        "min": 776.4097954614244,
+        "average": 776.4097954614244,
+        "geomean": 776.4097954614244,
+        "max": 776.4097954614244,
+        "sum": 776.4097954614244,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/scoreLowerBound": {
+        "values": [
+          772.7397607007681
+        ],
+        "min": 772.7397607007681,
+        "average": 772.7397607007681,
+        "geomean": 772.7397607007681,
+        "max": 772.7397607007681,
+        "sum": 772.7397607007681,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Arcs/scoreUpperBound": {
+        "values": [
+          780.2189524330445
+        ],
+        "min": 780.2189524330445,
+        "average": 780.2189524330445,
+        "geomean": 780.2189524330445,
+        "max": 780.2189524330445,
+        "sum": 780.2189524330445,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/complexity/bootstrap/confidenceHigh": {
+        "values": [
+          3392.0326646800063
+        ],
+        "min": 3392.0326646800063,
+        "average": 3392.0326646800063,
+        "geomean": 3392.0326646800063,
+        "max": 3392.0326646800063,
+        "sum": 3392.0326646800063,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/complexity/bootstrap/confidenceLow": {
+        "values": [
+          3360.6516639518495
+        ],
+        "min": 3360.6516639518495,
+        "average": 3360.6516639518495,
+        "geomean": 3360.6516639518495,
+        "max": 3360.6516639518495,
+        "sum": 3360.6516639518495,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/complexity/bootstrap/confidencePercentage": {
+        "values": [
+          0.8
+        ],
+        "min": 0.8,
+        "average": 0.8,
+        "geomean": 0.8,
+        "max": 0.8,
+        "sum": 0.8,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/complexity/bootstrap/mean": {
+        "values": [
+          3376.2962025680877
+        ],
+        "min": 3376.2962025680877,
+        "average": 3376.2962025680877,
+        "geomean": 3376.2962025680877,
+        "max": 3376.2962025680877,
+        "sum": 3376.2962025680877,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/complexity/bootstrap/median": {
+        "values": [
+          3376.1956549088095
+        ],
+        "min": 3376.1956549088095,
+        "average": 3376.1956549088095,
+        "geomean": 3376.1956549088095,
+        "max": 3376.1956549088095,
+        "sum": 3376.1956549088095,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/complexity/complexity": {
+        "values": [
+          3349.6850196197106
+        ],
+        "min": 3349.6850196197106,
+        "average": 3349.6850196197106,
+        "geomean": 3349.6850196197106,
+        "max": 3349.6850196197106,
+        "sum": 3349.6850196197106,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/complexity/stdev": {
+        "values": [
+          1.4521091022279127
+        ],
+        "min": 1.4521091022279127,
+        "average": 1.4521091022279127,
+        "geomean": 1.4521091022279127,
+        "max": 1.4521091022279127,
+        "sum": 1.4521091022279127,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/controller/average": {
+        "values": [
+          3332.140414049659
+        ],
+        "min": 3332.140414049659,
+        "average": 3332.140414049659,
+        "geomean": 3332.140414049659,
+        "max": 3332.140414049659,
+        "sum": 3332.140414049659,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/controller/percent": {
+        "values": [
+          6.096374515296677
+        ],
+        "min": 6.096374515296677,
+        "average": 6.096374515296677,
+        "geomean": 6.096374515296677,
+        "max": 6.096374515296677,
+        "sum": 6.096374515296677,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/controller/score": {
+        "values": [
+          3332.140414049659
+        ],
+        "min": 3332.140414049659,
+        "average": 3332.140414049659,
+        "geomean": 3332.140414049659,
+        "max": 3332.140414049659,
+        "sum": 3332.140414049659,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/controller/stdev": {
+        "values": [
+          203.13975901602458
+        ],
+        "min": 203.13975901602458,
+        "average": 203.13975901602458,
+        "geomean": 203.13975901602458,
+        "max": 203.13975901602458,
+        "sum": 203.13975901602458,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/score": {
+        "values": [
+          3376.1956549088095
+        ],
+        "min": 3376.1956549088095,
+        "average": 3376.1956549088095,
+        "geomean": 3376.1956549088095,
+        "max": 3376.1956549088095,
+        "sum": 3376.1956549088095,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/scoreLowerBound": {
+        "values": [
+          3360.6516639518495
+        ],
+        "min": 3360.6516639518495,
+        "average": 3360.6516639518495,
+        "geomean": 3360.6516639518495,
+        "max": 3360.6516639518495,
+        "sum": 3360.6516639518495,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Canvas Lines/scoreUpperBound": {
+        "values": [
+          3392.0326646800063
+        ],
+        "min": 3392.0326646800063,
+        "average": 3392.0326646800063,
+        "geomean": 3392.0326646800063,
+        "max": 3392.0326646800063,
+        "sum": 3392.0326646800063,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/complexity/bootstrap/confidenceHigh": {
+        "values": [
+          279.82285452828637
+        ],
+        "min": 279.82285452828637,
+        "average": 279.82285452828637,
+        "geomean": 279.82285452828637,
+        "max": 279.82285452828637,
+        "sum": 279.82285452828637,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/complexity/bootstrap/confidenceLow": {
+        "values": [
+          270.65604795719355
+        ],
+        "min": 270.65604795719355,
+        "average": 270.65604795719355,
+        "geomean": 270.65604795719355,
+        "max": 270.65604795719355,
+        "sum": 270.65604795719355,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/complexity/bootstrap/confidencePercentage": {
+        "values": [
+          0.8
+        ],
+        "min": 0.8,
+        "average": 0.8,
+        "geomean": 0.8,
+        "max": 0.8,
+        "sum": 0.8,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/complexity/bootstrap/mean": {
+        "values": [
+          275.27471230458457
+        ],
+        "min": 275.27471230458457,
+        "average": 275.27471230458457,
+        "geomean": 275.27471230458457,
+        "max": 275.27471230458457,
+        "sum": 275.27471230458457,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/complexity/bootstrap/median": {
+        "values": [
+          275.25969914686226
+        ],
+        "min": 275.25969914686226,
+        "average": 275.25969914686226,
+        "geomean": 275.25969914686226,
+        "max": 275.25969914686226,
+        "sum": 275.25969914686226,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/complexity/complexity": {
+        "values": [
+          276.07240444562206
+        ],
+        "min": 276.07240444562206,
+        "average": 276.07240444562206,
+        "geomean": 276.07240444562206,
+        "max": 276.07240444562206,
+        "sum": 276.07240444562206,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/complexity/stdev": {
+        "values": [
+          3.517174825947151
+        ],
+        "min": 3.517174825947151,
+        "average": 3.517174825947151,
+        "geomean": 3.517174825947151,
+        "max": 3.517174825947151,
+        "sum": 3.517174825947151,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/controller/average": {
+        "values": [
+          272.8634234798991
+        ],
+        "min": 272.8634234798991,
+        "average": 272.8634234798991,
+        "geomean": 272.8634234798991,
+        "max": 272.8634234798991,
+        "sum": 272.8634234798991,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/controller/percent": {
+        "values": [
+          8.817092365056995
+        ],
+        "min": 8.817092365056995,
+        "average": 8.817092365056995,
+        "geomean": 8.817092365056995,
+        "max": 8.817092365056995,
+        "sum": 8.817092365056995,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/controller/score": {
+        "values": [
+          272.8634234798991
+        ],
+        "min": 272.8634234798991,
+        "average": 272.8634234798991,
+        "geomean": 272.8634234798991,
+        "max": 272.8634234798991,
+        "sum": 272.8634234798991,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/controller/stdev": {
+        "values": [
+          24.05862007867932
+        ],
+        "min": 24.05862007867932,
+        "average": 24.05862007867932,
+        "geomean": 24.05862007867932,
+        "max": 24.05862007867932,
+        "sum": 24.05862007867932,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/score": {
+        "values": [
+          275.25969914686226
+        ],
+        "min": 275.25969914686226,
+        "average": 275.25969914686226,
+        "geomean": 275.25969914686226,
+        "max": 275.25969914686226,
+        "sum": 275.25969914686226,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/scoreLowerBound": {
+        "values": [
+          270.65604795719355
+        ],
+        "min": 270.65604795719355,
+        "average": 270.65604795719355,
+        "geomean": 270.65604795719355,
+        "max": 270.65604795719355,
+        "sum": 270.65604795719355,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Design/scoreUpperBound": {
+        "values": [
+          279.82285452828637
+        ],
+        "min": 279.82285452828637,
+        "average": 279.82285452828637,
+        "geomean": 279.82285452828637,
+        "max": 279.82285452828637,
+        "sum": 279.82285452828637,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/complexity/bootstrap/confidenceHigh": {
+        "values": [
+          127.59292113436459
+        ],
+        "min": 127.59292113436459,
+        "average": 127.59292113436459,
+        "geomean": 127.59292113436459,
+        "max": 127.59292113436459,
+        "sum": 127.59292113436459,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/complexity/bootstrap/confidenceLow": {
+        "values": [
+          123.09245114917307
+        ],
+        "min": 123.09245114917307,
+        "average": 123.09245114917307,
+        "geomean": 123.09245114917307,
+        "max": 123.09245114917307,
+        "sum": 123.09245114917307,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/complexity/bootstrap/confidencePercentage": {
+        "values": [
+          0.8
+        ],
+        "min": 0.8,
+        "average": 0.8,
+        "geomean": 0.8,
+        "max": 0.8,
+        "sum": 0.8,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/complexity/bootstrap/mean": {
+        "values": [
+          125.35776302592443
+        ],
+        "min": 125.35776302592443,
+        "average": 125.35776302592443,
+        "geomean": 125.35776302592443,
+        "max": 125.35776302592443,
+        "sum": 125.35776302592443,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/complexity/bootstrap/median": {
+        "values": [
+          125.34793119440369
+        ],
+        "min": 125.34793119440369,
+        "average": 125.34793119440369,
+        "geomean": 125.34793119440369,
+        "max": 125.34793119440369,
+        "sum": 125.34793119440369,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/complexity/complexity": {
+        "values": [
+          122.20925547116921
+        ],
+        "min": 122.20925547116921,
+        "average": 122.20925547116921,
+        "geomean": 122.20925547116921,
+        "max": 122.20925547116921,
+        "sum": 122.20925547116921,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/complexity/stdev": {
+        "values": [
+          4.367583681735771
+        ],
+        "min": 4.367583681735771,
+        "average": 4.367583681735771,
+        "geomean": 4.367583681735771,
+        "max": 4.367583681735771,
+        "sum": 4.367583681735771,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/controller/average": {
+        "values": [
+          120.1079008047448
+        ],
+        "min": 120.1079008047448,
+        "average": 120.1079008047448,
+        "geomean": 120.1079008047448,
+        "max": 120.1079008047448,
+        "sum": 120.1079008047448,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/controller/percent": {
+        "values": [
+          5.326194177899006
+        ],
+        "min": 5.326194177899006,
+        "average": 5.326194177899006,
+        "geomean": 5.326194177899006,
+        "max": 5.326194177899006,
+        "sum": 5.326194177899006,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/controller/score": {
+        "values": [
+          120.1079008047448
+        ],
+        "min": 120.1079008047448,
+        "average": 120.1079008047448,
+        "geomean": 120.1079008047448,
+        "max": 120.1079008047448,
+        "sum": 120.1079008047448,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/controller/stdev": {
+        "values": [
+          6.397180019859031
+        ],
+        "min": 6.397180019859031,
+        "average": 6.397180019859031,
+        "geomean": 6.397180019859031,
+        "max": 6.397180019859031,
+        "sum": 6.397180019859031,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/score": {
+        "values": [
+          125.34793119440369
+        ],
+        "min": 125.34793119440369,
+        "average": 125.34793119440369,
+        "geomean": 125.34793119440369,
+        "max": 125.34793119440369,
+        "sum": 125.34793119440369,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/scoreLowerBound": {
+        "values": [
+          123.09245114917307
+        ],
+        "min": 123.09245114917307,
+        "average": 123.09245114917307,
+        "geomean": 123.09245114917307,
+        "max": 123.09245114917307,
+        "sum": 123.09245114917307,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Images/scoreUpperBound": {
+        "values": [
+          127.59292113436459
+        ],
+        "min": 127.59292113436459,
+        "average": 127.59292113436459,
+        "geomean": 127.59292113436459,
+        "max": 127.59292113436459,
+        "sum": 127.59292113436459,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/complexity/bootstrap/confidenceHigh": {
+        "values": [
+          1239.9964060658867
+        ],
+        "min": 1239.9964060658867,
+        "average": 1239.9964060658867,
+        "geomean": 1239.9964060658867,
+        "max": 1239.9964060658867,
+        "sum": 1239.9964060658867,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/complexity/bootstrap/confidenceLow": {
+        "values": [
+          1177.1798866991487
+        ],
+        "min": 1177.1798866991487,
+        "average": 1177.1798866991487,
+        "geomean": 1177.1798866991487,
+        "max": 1177.1798866991487,
+        "sum": 1177.1798866991487,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/complexity/bootstrap/confidencePercentage": {
+        "values": [
+          0.8
+        ],
+        "min": 0.8,
+        "average": 0.8,
+        "geomean": 0.8,
+        "max": 0.8,
+        "sum": 0.8,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/complexity/bootstrap/mean": {
+        "values": [
+          1207.8271922282252
+        ],
+        "min": 1207.8271922282252,
+        "average": 1207.8271922282252,
+        "geomean": 1207.8271922282252,
+        "max": 1207.8271922282252,
+        "sum": 1207.8271922282252,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/complexity/bootstrap/median": {
+        "values": [
+          1207.2762285230942
+        ],
+        "min": 1207.2762285230942,
+        "average": 1207.2762285230942,
+        "geomean": 1207.2762285230942,
+        "max": 1207.2762285230942,
+        "sum": 1207.2762285230942,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/complexity/complexity": {
+        "values": [
+          1177.2761063022326
+        ],
+        "min": 1177.2761063022326,
+        "average": 1177.2761063022326,
+        "geomean": 1177.2761063022326,
+        "max": 1177.2761063022326,
+        "sum": 1177.2761063022326,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/complexity/stdev": {
+        "values": [
+          5.235595369029881
+        ],
+        "min": 5.235595369029881,
+        "average": 5.235595369029881,
+        "geomean": 5.235595369029881,
+        "max": 5.235595369029881,
+        "sum": 5.235595369029881,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/controller/average": {
+        "values": [
+          1169.3969444413865
+        ],
+        "min": 1169.3969444413865,
+        "average": 1169.3969444413865,
+        "geomean": 1169.3969444413865,
+        "max": 1169.3969444413865,
+        "sum": 1169.3969444413865,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/controller/percent": {
+        "values": [
+          7.572440737260676
+        ],
+        "min": 7.572440737260676,
+        "average": 7.572440737260676,
+        "geomean": 7.572440737260676,
+        "max": 7.572440737260676,
+        "sum": 7.572440737260676,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/controller/score": {
+        "values": [
+          1169.3969444413865
+        ],
+        "min": 1169.3969444413865,
+        "average": 1169.3969444413865,
+        "geomean": 1169.3969444413865,
+        "max": 1169.3969444413865,
+        "sum": 1169.3969444413865,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/controller/stdev": {
+        "values": [
+          88.55189060116115
+        ],
+        "min": 88.55189060116115,
+        "average": 88.55189060116115,
+        "geomean": 88.55189060116115,
+        "max": 88.55189060116115,
+        "sum": 88.55189060116115,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/score": {
+        "values": [
+          1207.2762285230942
+        ],
+        "min": 1207.2762285230942,
+        "average": 1207.2762285230942,
+        "geomean": 1207.2762285230942,
+        "max": 1207.2762285230942,
+        "sum": 1207.2762285230942,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/scoreLowerBound": {
+        "values": [
+          1177.1798866991487
+        ],
+        "min": 1177.1798866991487,
+        "average": 1177.1798866991487,
+        "geomean": 1177.1798866991487,
+        "max": 1177.1798866991487,
+        "sum": 1177.1798866991487,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Leaves/scoreUpperBound": {
+        "values": [
+          1239.9964060658867
+        ],
+        "min": 1239.9964060658867,
+        "average": 1239.9964060658867,
+        "geomean": 1239.9964060658867,
+        "max": 1239.9964060658867,
+        "sum": 1239.9964060658867,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/complexity/bootstrap/confidenceHigh": {
+        "values": [
+          1702.9567717512336
+        ],
+        "min": 1702.9567717512336,
+        "average": 1702.9567717512336,
+        "geomean": 1702.9567717512336,
+        "max": 1702.9567717512336,
+        "sum": 1702.9567717512336,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/complexity/bootstrap/confidenceLow": {
+        "values": [
+          1647.4421651281252
+        ],
+        "min": 1647.4421651281252,
+        "average": 1647.4421651281252,
+        "geomean": 1647.4421651281252,
+        "max": 1647.4421651281252,
+        "sum": 1647.4421651281252,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/complexity/bootstrap/confidencePercentage": {
+        "values": [
+          0.8
+        ],
+        "min": 0.8,
+        "average": 0.8,
+        "geomean": 0.8,
+        "max": 0.8,
+        "sum": 0.8,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/complexity/bootstrap/mean": {
+        "values": [
+          1675.6842274037376
+        ],
+        "min": 1675.6842274037376,
+        "average": 1675.6842274037376,
+        "geomean": 1675.6842274037376,
+        "max": 1675.6842274037376,
+        "sum": 1675.6842274037376,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/complexity/bootstrap/median": {
+        "values": [
+          1676.028781843228
+        ],
+        "min": 1676.028781843228,
+        "average": 1676.028781843228,
+        "geomean": 1676.028781843228,
+        "max": 1676.028781843228,
+        "sum": 1676.028781843228,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/complexity/complexity": {
+        "values": [
+          1627.1772799090284
+        ],
+        "min": 1627.1772799090284,
+        "average": 1627.1772799090284,
+        "geomean": 1627.1772799090284,
+        "max": 1627.1772799090284,
+        "sum": 1627.1772799090284,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/complexity/stdev": {
+        "values": [
+          3.832917528329121
+        ],
+        "min": 3.832917528329121,
+        "average": 3.832917528329121,
+        "geomean": 3.832917528329121,
+        "max": 3.832917528329121,
+        "sum": 3.832917528329121,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/controller/average": {
+        "values": [
+          1595.0982621019928
+        ],
+        "min": 1595.0982621019928,
+        "average": 1595.0982621019928,
+        "geomean": 1595.0982621019928,
+        "max": 1595.0982621019928,
+        "sum": 1595.0982621019928,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/controller/percent": {
+        "values": [
+          8.102839214602001
+        ],
+        "min": 8.102839214602001,
+        "average": 8.102839214602001,
+        "geomean": 8.102839214602001,
+        "max": 8.102839214602001,
+        "sum": 8.102839214602001,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/controller/score": {
+        "values": [
+          1595.0982621019928
+        ],
+        "min": 1595.0982621019928,
+        "average": 1595.0982621019928,
+        "geomean": 1595.0982621019928,
+        "max": 1595.0982621019928,
+        "sum": 1595.0982621019928,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/controller/stdev": {
+        "values": [
+          129.24824749303528
+        ],
+        "min": 129.24824749303528,
+        "average": 129.24824749303528,
+        "geomean": 129.24824749303528,
+        "max": 129.24824749303528,
+        "sum": 129.24824749303528,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/score": {
+        "values": [
+          1676.028781843228
+        ],
+        "min": 1676.028781843228,
+        "average": 1676.028781843228,
+        "geomean": 1676.028781843228,
+        "max": 1676.028781843228,
+        "sum": 1676.028781843228,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/scoreLowerBound": {
+        "values": [
+          1647.4421651281252
+        ],
+        "min": 1647.4421651281252,
+        "average": 1647.4421651281252,
+        "geomean": 1647.4421651281252,
+        "max": 1647.4421651281252,
+        "sum": 1647.4421651281252,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Multiply/scoreUpperBound": {
+        "values": [
+          1702.9567717512336
+        ],
+        "min": 1702.9567717512336,
+        "average": 1702.9567717512336,
+        "geomean": 1702.9567717512336,
+        "max": 1702.9567717512336,
+        "sum": 1702.9567717512336,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/complexity/bootstrap/confidenceHigh": {
+        "values": [
+          2590.726814581229
+        ],
+        "min": 2590.726814581229,
+        "average": 2590.726814581229,
+        "geomean": 2590.726814581229,
+        "max": 2590.726814581229,
+        "sum": 2590.726814581229,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/complexity/bootstrap/confidenceLow": {
+        "values": [
+          2564.9048441008645
+        ],
+        "min": 2564.9048441008645,
+        "average": 2564.9048441008645,
+        "geomean": 2564.9048441008645,
+        "max": 2564.9048441008645,
+        "sum": 2564.9048441008645,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/complexity/bootstrap/confidencePercentage": {
+        "values": [
+          0.8
+        ],
+        "min": 0.8,
+        "average": 0.8,
+        "geomean": 0.8,
+        "max": 0.8,
+        "sum": 0.8,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/complexity/bootstrap/mean": {
+        "values": [
+          2577.6332102748547
+        ],
+        "min": 2577.6332102748547,
+        "average": 2577.6332102748547,
+        "geomean": 2577.6332102748547,
+        "max": 2577.6332102748547,
+        "sum": 2577.6332102748547,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/complexity/bootstrap/median": {
+        "values": [
+          2577.402084122777
+        ],
+        "min": 2577.402084122777,
+        "average": 2577.402084122777,
+        "geomean": 2577.402084122777,
+        "max": 2577.402084122777,
+        "sum": 2577.402084122777,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/complexity/complexity": {
+        "values": [
+          2556.0905385221913
+        ],
+        "min": 2556.0905385221913,
+        "average": 2556.0905385221913,
+        "geomean": 2556.0905385221913,
+        "max": 2556.0905385221913,
+        "sum": 2556.0905385221913,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/complexity/stdev": {
+        "values": [
+          1.6263771245962908
+        ],
+        "min": 1.6263771245962908,
+        "average": 1.6263771245962908,
+        "geomean": 1.6263771245962908,
+        "max": 1.6263771245962908,
+        "sum": 1.6263771245962908,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/controller/average": {
+        "values": [
+          2541.966720273172
+        ],
+        "min": 2541.966720273172,
+        "average": 2541.966720273172,
+        "geomean": 2541.966720273172,
+        "max": 2541.966720273172,
+        "sum": 2541.966720273172,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/controller/percent": {
+        "values": [
+          3.615625849660513
+        ],
+        "min": 3.615625849660513,
+        "average": 3.615625849660513,
+        "geomean": 3.615625849660513,
+        "max": 3.615625849660513,
+        "sum": 3.615625849660513,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/controller/score": {
+        "values": [
+          2541.966720273172
+        ],
+        "min": 2541.966720273172,
+        "average": 2541.966720273172,
+        "geomean": 2541.966720273172,
+        "max": 2541.966720273172,
+        "sum": 2541.966720273172,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/controller/stdev": {
+        "values": [
+          91.90800582796435
+        ],
+        "min": 91.90800582796435,
+        "average": 91.90800582796435,
+        "geomean": 91.90800582796435,
+        "max": 91.90800582796435,
+        "sum": 91.90800582796435,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/score": {
+        "values": [
+          2577.402084122777
+        ],
+        "min": 2577.402084122777,
+        "average": 2577.402084122777,
+        "geomean": 2577.402084122777,
+        "max": 2577.402084122777,
+        "sum": 2577.402084122777,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/scoreLowerBound": {
+        "values": [
+          2564.9048441008645
+        ],
+        "min": 2564.9048441008645,
+        "average": 2564.9048441008645,
+        "geomean": 2564.9048441008645,
+        "max": 2564.9048441008645,
+        "sum": 2564.9048441008645,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Paths/scoreUpperBound": {
+        "values": [
+          2590.726814581229
+        ],
+        "min": 2590.726814581229,
+        "average": 2590.726814581229,
+        "geomean": 2590.726814581229,
+        "max": 2590.726814581229,
+        "sum": 2590.726814581229,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/complexity/bootstrap/confidenceHigh": {
+        "values": [
+          902.1763589304013
+        ],
+        "min": 902.1763589304013,
+        "average": 902.1763589304013,
+        "geomean": 902.1763589304013,
+        "max": 902.1763589304013,
+        "sum": 902.1763589304013,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/complexity/bootstrap/confidenceLow": {
+        "values": [
+          867.8008736767184
+        ],
+        "min": 867.8008736767184,
+        "average": 867.8008736767184,
+        "geomean": 867.8008736767184,
+        "max": 867.8008736767184,
+        "sum": 867.8008736767184,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/complexity/bootstrap/confidencePercentage": {
+        "values": [
+          0.8
+        ],
+        "min": 0.8,
+        "average": 0.8,
+        "geomean": 0.8,
+        "max": 0.8,
+        "sum": 0.8,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/complexity/bootstrap/mean": {
+        "values": [
+          884.9007656697308
+        ],
+        "min": 884.9007656697308,
+        "average": 884.9007656697308,
+        "geomean": 884.9007656697308,
+        "max": 884.9007656697308,
+        "sum": 884.9007656697308,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/complexity/bootstrap/median": {
+        "values": [
+          884.8798336963456
+        ],
+        "min": 884.8798336963456,
+        "average": 884.8798336963456,
+        "geomean": 884.8798336963456,
+        "max": 884.8798336963456,
+        "sum": 884.8798336963456,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/complexity/complexity": {
+        "values": [
+          863.2040648993772
+        ],
+        "min": 863.2040648993772,
+        "average": 863.2040648993772,
+        "geomean": 863.2040648993772,
+        "max": 863.2040648993772,
+        "sum": 863.2040648993772,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/complexity/stdev": {
+        "values": [
+          3.6638824541754356
+        ],
+        "min": 3.6638824541754356,
+        "average": 3.6638824541754356,
+        "geomean": 3.6638824541754356,
+        "max": 3.6638824541754356,
+        "sum": 3.6638824541754356,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/controller/average": {
+        "values": [
+          842.6128232500547
+        ],
+        "min": 842.6128232500547,
+        "average": 842.6128232500547,
+        "geomean": 842.6128232500547,
+        "max": 842.6128232500547,
+        "sum": 842.6128232500547,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/controller/percent": {
+        "values": [
+          3.9989024812695635
+        ],
+        "min": 3.9989024812695635,
+        "average": 3.9989024812695635,
+        "geomean": 3.9989024812695635,
+        "max": 3.9989024812695635,
+        "sum": 3.9989024812695635,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/controller/score": {
+        "values": [
+          842.6128232500547
+        ],
+        "min": 842.6128232500547,
+        "average": 842.6128232500547,
+        "geomean": 842.6128232500547,
+        "max": 842.6128232500547,
+        "sum": 842.6128232500547,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/controller/stdev": {
+        "values": [
+          33.69526509644196
+        ],
+        "min": 33.69526509644196,
+        "average": 33.69526509644196,
+        "geomean": 33.69526509644196,
+        "max": 33.69526509644196,
+        "sum": 33.69526509644196,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/score": {
+        "values": [
+          884.8798336963456
+        ],
+        "min": 884.8798336963456,
+        "average": 884.8798336963456,
+        "geomean": 884.8798336963456,
+        "max": 884.8798336963456,
+        "sum": 884.8798336963456,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/scoreLowerBound": {
+        "values": [
+          867.8008736767184
+        ],
+        "min": 867.8008736767184,
+        "average": 867.8008736767184,
+        "geomean": 867.8008736767184,
+        "max": 867.8008736767184,
+        "sum": 867.8008736767184,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "Suits/scoreUpperBound": {
+        "values": [
+          902.1763589304013
+        ],
+        "min": 902.1763589304013,
+        "average": 902.1763589304013,
+        "geomean": 902.1763589304013,
+        "max": 902.1763589304013,
+        "sum": 902.1763589304013,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "score": {
+        "values": [
+          896.5337146572772
+        ],
+        "min": 896.5337146572772,
+        "average": 896.5337146572772,
+        "geomean": 896.5337146572772,
+        "max": 896.5337146572772,
+        "sum": 896.5337146572772,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "scoreLowerBound": {
+        "values": [
+          884.16085505357
+        ],
+        "min": 884.16085505357,
+        "average": 884.16085505357,
+        "geomean": 884.16085505357,
+        "max": 884.16085505357,
+        "sum": 884.16085505357,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      },
+      "scoreUpperBound": {
+        "values": [
+          909.0555542538938
+        ],
+        "min": 909.0555542538938,
+        "average": 909.0555542538938,
+        "geomean": 909.0555542538938,
+        "max": 909.0555542538938,
+        "sum": 909.0555542538938,
+        "stddev": 0.0,
+        "stddevPercent": 0.0
+      }
+    }
+  }
+}

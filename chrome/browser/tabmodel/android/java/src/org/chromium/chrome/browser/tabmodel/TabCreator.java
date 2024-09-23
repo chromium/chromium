@@ -36,6 +36,7 @@ public abstract class TabCreator {
 
     /**
      * Creates a new tab and posts to UI.
+     *
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
@@ -44,6 +45,23 @@ public abstract class TabCreator {
      */
     public abstract @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position);
+
+    /**
+     * Creates a new tab and posts to UI.
+     *
+     * @param loadUrlParams parameters of the url load.
+     * @param title The title to use for a lazily loaded tab.
+     * @param type Information about how the tab was launched.
+     * @param parent the parent tab, if present.
+     * @param position the requested position (index in the tab model)
+     * @return The new tab or null if no tab was created.
+     */
+    public abstract @Nullable Tab createNewTab(
+            LoadUrlParams loadUrlParams,
+            String title,
+            @TabLaunchType int type,
+            Tab parent,
+            int position);
 
     /**
      * On restore, allows us to create a frozen version of a tab using saved tab state we read from

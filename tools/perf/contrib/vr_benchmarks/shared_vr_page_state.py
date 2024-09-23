@@ -60,7 +60,7 @@ class _SharedVrPageState(shared_page_state.SharedPageState):
     return self._finder_options.recording_wpr
 
   def ShouldNavigateToBlankPageBeforeFinishing(self):
-    # TODO(https://crbug.com/941715): Always navigate once the issue with
+    # TODO(crbug.com/41446778): Always navigate once the issue with
     # tracing metadata for the XR device process not being present when
     # navigation occurs is fixed.
     return False

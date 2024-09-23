@@ -13,7 +13,7 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _baseViewController = viewController;
     _childCoordinators = [MutableCoordinatorArray array];
     if (browser) {

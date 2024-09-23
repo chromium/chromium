@@ -2,7 +2,6 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Helper for quickly generating all known JS externs."""
 
 import argparse
@@ -31,6 +30,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(DIR))
 # Import the helper module.
 sys.path.insert(0, os.path.join(REPO_ROOT, 'extensions', 'common', 'api'))
 from externs_checker import ExternsChecker
+
 sys.path.pop(0)
 
 
@@ -72,6 +72,7 @@ class FakeOutputApi:
   """
 
   class PresubmitResult:
+
     def __init__(self, msg, long_text=None):
       self.msg = msg
       self.long_text = long_text
@@ -112,7 +113,7 @@ def Generate(input_api, output_api, force=False, dryrun=False):
     externs_relpath = input_api.os_path.relpath(externs, src_root)
 
     print('\r' + ' ' * msg_len, end='\r')
-    msg = 'Checking %s ...' % (source_relpath,)
+    msg = 'Checking %s ...' % (source_relpath, )
     msg_len = len(msg)
     print(msg, end='')
     sys.stdout.flush()
@@ -123,9 +124,9 @@ def Generate(input_api, output_api, force=False, dryrun=False):
       if not dryrun:
         print('\n%s: %s' % (source_relpath, e))
       ret.append(
-          output_api.PresubmitResult(
-              '%s: unable to generate' % (source_relpath,),
-              long_text=str(e)))
+          output_api.PresubmitResult('%s: unable to generate' %
+                                     (source_relpath, ),
+                                     long_text=str(e)))
       continue
 
     # Ignore the first line (copyright) to avoid yearly thrashing.
@@ -148,7 +149,7 @@ def Generate(input_api, output_api, force=False, dryrun=False):
       if not dryrun:
         print('\r' + ' ' * msg_len, end='\r')
         msg_len = 0
-        print('Updating %s' % (externs_relpath,))
+        print('Updating %s' % (externs_relpath, ))
         with open(externs, 'w', encoding='utf-8') as fp:
           fp.write(copyright + '\n')
           fp.write(new_data)
@@ -161,11 +162,16 @@ def Generate(input_api, output_api, force=False, dryrun=False):
 def get_parser():
   """Get CLI parser."""
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('-n', '--dry-run', dest='dryrun', action='store_true',
+  parser.add_argument('-n',
+                      '--dry-run',
+                      dest='dryrun',
+                      action='store_true',
                       help="Don't make changes; only show changed files")
-  parser.add_argument('-f', '--force', action='store_true',
+  parser.add_argument('-f',
+                      '--force',
+                      action='store_true',
                       help='Regenerate files even if they have a TODO '
-                           'disabling generation')
+                      'disabling generation')
   return parser
 
 
@@ -174,7 +180,9 @@ def main(argv):
   parser = get_parser()
   opts = parser.parse_args(argv)
 
-  results = Generate(FakeInputApi(), FakeOutputApi(), force=opts.force,
+  results = Generate(FakeInputApi(),
+                     FakeOutputApi(),
+                     force=opts.force,
                      dryrun=opts.dryrun)
   if opts.dryrun and results:
     for result in results:

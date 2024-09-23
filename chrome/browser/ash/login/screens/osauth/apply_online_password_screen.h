@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_APPLY_ONLINE_PASSWORD_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_OSAUTH_APPLY_ONLINE_PASSWORD_SCREEN_H_
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"

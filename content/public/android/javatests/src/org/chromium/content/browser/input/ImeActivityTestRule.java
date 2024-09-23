@@ -21,6 +21,7 @@ import androidx.annotation.RequiresApi;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -35,7 +36,6 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper.InputConnectionProvider;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.base.ime.TextInputType;
 
@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Integration tests for text input for Android L (or above) features. */
@@ -126,7 +125,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         Assert.assertEquals(0, mConnectionFactory.getOutAttrs().initialSelStart);
         Assert.assertEquals(0, mConnectionFactory.getOutAttrs().initialSelEnd);
 
-        waitForEventLogs("selectionchange");
+        waitForEventLogState("selectionchange");
         clearEventLogs();
 
         waitAndVerifyUpdateSelection(0, 0, 0, -1, -1);
@@ -152,7 +151,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     void fullyLoadUrl(final String url) throws Exception {
         CallbackHelper done = mCallbackContainer.getOnFirstVisuallyNonEmptyPaintHelper();
         int currentCallCount = done.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().getActiveShell().loadUrl(url);
                 });
@@ -399,24 +398,12 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     ChromiumBaseInputConnection getInputConnection() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    new Callable<ChromiumBaseInputConnection>() {
-                        @Override
-                        public ChromiumBaseInputConnection call() {
-                            return (ChromiumBaseInputConnection)
-                                    getImeAdapter().getInputConnectionForTest();
-                        }
-                    });
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            Assert.fail();
-            return null;
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> (ChromiumBaseInputConnection) getImeAdapter().getInputConnectionForTest());
     }
 
     void restartInput() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImeAdapter.restartInput();
                 });
@@ -426,7 +413,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     // to get updated. See cubug.com/621046
     void copy() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.copy();
                 });
@@ -434,7 +421,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     void cut() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.cut();
                 });
@@ -443,17 +430,17 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     void notifyVirtualKeyboardOverlayRect(int x, int y, int width, int height) {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
         RenderFrameHostTestExt rfh =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new RenderFrameHostTestExt(webContents.getMainFrame()));
         Assert.assertTrue("Did not get a focused frame", rfh != null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     rfh.notifyVirtualKeyboardOverlayRect(x, y, width, height);
                 });
     }
 
     void setClip(final CharSequence text) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final ClipboardManager clipboardManager =
                             (ClipboardManager)
@@ -464,7 +451,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     void paste() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.paste();
                 });
@@ -472,7 +459,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     void selectAll() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.selectAll();
                 });
@@ -480,7 +467,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
 
     void collapseSelection() {
         final WebContentsImpl webContents = (WebContentsImpl) getWebContents();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     webContents.collapseSelection();
                 });
@@ -644,7 +631,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     void dispatchKeyEvent(final KeyEvent event) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImeAdapter.dispatchKeyEvent(event);
                 });
@@ -669,7 +656,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
     }
 
     private void onConfigurationChanged(final Configuration config) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewEventSinkImpl.from(getWebContents()).onConfigurationChanged(config);
                 });

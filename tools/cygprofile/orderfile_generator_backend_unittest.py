@@ -12,7 +12,7 @@ import orderfile_generator_backend
 class TestOrderfileGenerator(unittest.TestCase):
   def testStepRecorder(self):
     """Checks that the step recorder records step timings correctly."""
-    step_recorder = orderfile_generator_backend.StepRecorder(False)
+    step_recorder = orderfile_generator_backend.StepRecorder()
     self.assertFalse(step_recorder.ErrorRecorded())
     step_recorder.BeginStep('foo')
     self.assertFalse(step_recorder.ErrorRecorded())

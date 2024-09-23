@@ -316,7 +316,7 @@ public class ShareDelegateImpl implements ShareDelegate {
             if (chromeShareExtras.shareDirectly()) {
                 ShareHelper.shareWithLastUsedComponent(params);
             } else if (sharingHubEnabled) {
-                // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
+                // TODO(crbug.com/40132040): Sharing hub is suppressed for tab group sharing.
                 // Re-enable it when tab group sharing is supported by sharing hub.
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.SharingHubAndroid.Opened", shareOrigin, ShareOrigin.COUNT);

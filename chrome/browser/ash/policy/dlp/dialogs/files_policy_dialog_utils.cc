@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/link.h"
 
 namespace policy::files_dialog_utils {
@@ -43,7 +44,13 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
           kEnterpriseConnectorsLargeFile;
     }
 
-    NOTREACHED()
+    if (result.final_result().value() ==
+        enterprise_connectors::FinalContentAnalysisResult::FAIL_CLOSED) {
+      return policy::FilesPolicyDialog::BlockReason::
+          kEnterpriseConnectorsScanFailed;
+    }
+
+    NOTREACHED_IN_MIGRATION()
         << "Enterprise connector result representing a blocked transfer "
            "without a tag but with an unexpected final result value.";
 
@@ -61,8 +68,9 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
     return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware;
   }
 
-  NOTREACHED() << "Enterprise connector result representing a blocked transfer "
-                  "with an unexpected tag.";
+  NOTREACHED_IN_MIGRATION()
+      << "Enterprise connector result representing a blocked transfer "
+         "with an unexpected tag.";
 
   return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
 }
@@ -121,7 +129,7 @@ void AddLearnMoreLink(const std::u16string& text,
   learn_more_link->SetEnabledColor(
       ash::ColorProvider::Get()->GetContentLayerColor(
           ash::ColorProvider::ContentLayerType::kTextColorURL));
-  learn_more_link->SetAccessibleName(accessible_name);
+  learn_more_link->GetViewAccessibility().SetName(accessible_name);
 }
 
 }  // namespace policy::files_dialog_utils

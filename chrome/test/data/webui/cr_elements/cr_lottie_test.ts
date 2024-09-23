@@ -6,11 +6,10 @@
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 
 import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type { MockMethod} from 'chrome://webui-test/mock_controller.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-lottie. */
@@ -86,8 +85,6 @@ suite('cr_lottie_test', function() {
     container.appendChild(crLottieElement);
 
     canvas = crLottieElement.$.canvas;
-
-    flush();
   }
 
   /**
@@ -303,6 +300,7 @@ suite('cr_lottie_test', function() {
 
     assertFalse(canvas.hidden);
     crLottieElement.hidden = true;
+    await microtasksFinished();
     assertTrue(canvas.hidden);
   });
 
@@ -367,6 +365,7 @@ suite('cr_lottie_test', function() {
     // Attempting to load a new image should abort the first request and start a
     // new one.
     crLottieElement.animationUrl = SAMPLE_LOTTIE_BLUE;
+    await microtasksFinished();
 
     mockController.verifyMocks();
   });

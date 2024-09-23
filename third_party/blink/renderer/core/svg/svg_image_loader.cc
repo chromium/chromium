@@ -29,11 +29,16 @@ SVGImageLoader::SVGImageLoader(SVGImageElement* node) : ImageLoader(node) {}
 
 void SVGImageLoader::DispatchLoadEvent() {
   if (GetContent()->ErrorOccurred()) {
-    GetElement()->DispatchEvent(*Event::Create(event_type_names::kError));
-  } else {
-    auto* image_element = To<SVGImageElement>(GetElement());
-    image_element->SendSVGLoadEventToSelfAndAncestorChainIfPossible();
+    DispatchErrorEvent();
+    return;
   }
+
+  auto* image_element = To<SVGImageElement>(GetElement());
+  image_element->SendSVGLoadEventToSelfAndAncestorChainIfPossible();
+}
+
+void SVGImageLoader::DispatchErrorEvent() {
+  GetElement()->DispatchEvent(*Event::Create(event_type_names::kError));
 }
 
 }  // namespace blink

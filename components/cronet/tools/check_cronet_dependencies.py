@@ -8,68 +8,116 @@ import argparse
 import os
 import subprocess
 import sys
+import tempfile
+from typing import List, Set
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
-sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
-from util import build_utils  # pylint: disable=wrong-import-position
+sys.path.insert(0, REPOSITORY_ROOT)
+import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wrong-import-position
+import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
+
+_THIRD_PARTY_STR = 'third_party/'
+_GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 
 
-def normalize_third_party_dep(dependency):
-  third_party_str = 'third_party/'
-  if third_party_str not in dependency:
-    raise ValueError('Dependency is not third_party dependency')
-  root_end_index = dependency.rfind(third_party_str) + len(third_party_str)
+def _get_current_gn_args() -> List[str]:
+  """Returns the GN args in the current working directory"""
+  return subprocess.check_output(["cat", "args.gn"]).decode('utf-8').split("\n")
+
+
+def normalize_third_party_dep(dependency: str) -> str:
+  """Normalizes a GN label that includes `third_party` string
+
+  Required because Chromium allows multiple libraries to live under the
+  same third_party directory (eg: `third_party/android_deps` contains
+  more than a single library), In order to decrease the failure rate
+  each time a dependency is added, normalize the `third_party` paths
+  to its root.
+
+  If more than one `third_party` string appears in the GN label, the
+  last one is picked for normalization. See examples below:
+
+  * "//third_party/foo" -> "//third_party/foo"
+  * "//third_party/foo/bar" -> "//third_party/foo"
+  * "//third_party/foo/bar/X" -> "//third_party/foo"
+  * "//third_party/foo/third_party/bar" -> "//third_party/foo/third_party/bar"
+
+  Args:
+    dependency: GN label that represents relative path to a dependency.
+
+  Raises:
+    ValueError: Raised if the dependency is not a third_party dependency.
+
+  Returns:
+    The normalized third_party path.
+  """
+  if _THIRD_PARTY_STR not in dependency:
+    raise ValueError('Dependency is not a third_party dependency')
+  root_end_index = dependency.rfind(_THIRD_PARTY_STR) + len(_THIRD_PARTY_STR)
   dependency_name_end_index = dependency.find("/", root_end_index)
   if dependency_name_end_index == -1:
     return dependency
   return dependency[:dependency_name_end_index]
 
 
-def dedup_third_party_deps_internal(dependencies, root_deps=None):
-  if root_deps is None:
-    root_deps = set()
-  deduped_deps = []
-  for dependency in dependencies:
-    # crbug.com(1406537): `gn desc deps` can spit out non-deps stuff if it finds unknown
-    # GN args
-    if not dependency or not dependency.startswith('//'):
-      continue
-    if dependency[-1] == '/':
-      raise ValueError('Dependencies must not have a trailing forward slash')
+def _get_transitive_deps_from_root_targets(out_dir: str,
+                                           gn_targets: List[str]) -> Set[str]:
+  """Executes gn desc |out_dir| |gn_target| deps --all for each gn target"""
+  all_deps = set()
+  for gn_target in gn_targets:
+    all_deps.update(
+        subprocess.check_output(
+            [_GN_PATH, "desc", out_dir, gn_target, "deps",
+             "--all"]).decode("utf-8").split("\n"))
+  return all_deps
 
-    if 'third_party/' not in dependency:
-      # We don't apply any filtering to non third_party deps.
-      deduped_deps.append(dependency)
+
+def normalize_and_dedup_deps(deps: Set[str]) -> Set[str]:
+  """Deduplicate after normalizing third_party dependencies
+
+  This process involve the following steps:
+
+  (1) Remove the target name from the gn label to retrieve
+  the proper path.
+  (2) If the gn label involves a third_party dependency then
+  normalize it according to |normalize_third_party_dep|.
+  (3) Add the final path after processing to the set.
+
+  AndroidX dependencies are a special case and they don't go
+  through any processing, they are added as is.
+
+  Args:
+    deps: A set of all the dependencies.
+
+  Returns:
+    A sorted collection of normalized deps.
+  """
+  cleaned_deps = set()
+  for dep in deps:
+    if not dep:
+      # Ignore empty lines.
       continue
 
-    # Take the last occurrence to consider //third_party/foo and
-    # //third_party/foo/third_party/bar as two distinct dependencies.
-    third_party_dep_segments = dependency.split('third_party/')
-    third_party_dep = third_party_dep_segments[-1]
-    if '/' not in third_party_dep:
-      # Root dependencies are always unique.
-      # Note: We append the amount of splits to differentiate between
-      # //third_party/foo and //third_party/bar/third_party/foo.
-      root_dep = str(len(third_party_dep_segments)) + third_party_dep
-      root_deps.add(root_dep)
-      deduped_deps.append(normalize_third_party_dep(dependency))
+    if dep.startswith("//third_party/androidx:") and dep.endswith("_java"):
+      # We treat androidx dependency differently because
+      # Cronet MUST NOT depend on any androidx dependency except
+      # androidx_annotations which is compile-time only. This is
+      # needed because this is one of mainline restrictions.
+      # Java/Android targets in GN must end with _java, this is needed
+      # so we don't bloat the dependencies file with auto-generated targets.
+      # (eg: androidx_annotation_annotation_java__assetres)
+
+      # Don't do any cleaning, add the exact GN label to the dependencies.
+      cleaned_deps.add(dep)
     else:
-      third_party_dep_root = (str(len(third_party_dep_segments)) +
-                              third_party_dep.split('/')[0])
-      if third_party_dep_root not in root_deps:
-        root_deps.add(third_party_dep_root)
-        deduped_deps.append(normalize_third_party_dep(dependency))
-  return (deduped_deps, root_deps)
-
-
-def dedup_third_party_deps(old_dependencies, new_dependencies):
-  """Maintains only a single target for each third_party dependency."""
-  (_, root_deps) = dedup_third_party_deps_internal(old_dependencies)
-  (deduped_deps, _) = dedup_third_party_deps_internal(new_dependencies,
-                                                      root_deps=root_deps)
-  return '\n'.join(deduped_deps)
+      dep = cronet_utils.get_path_from_gn_label(dep)
+      if _THIRD_PARTY_STR in dep:
+        cleaned_deps.add(normalize_third_party_dep(dep))
+      else:
+        cleaned_deps.add(dep)
+  return sorted(cleaned_deps)
 
 
 def main():
@@ -78,13 +126,14 @@ def main():
       description=
       "Checks whether Cronet's current dependencies match the known ones.")
   parser.add_argument(
-      '--new_dependencies_script',
-      type=str,
-      help='Relative path to the script that outputs new dependencies',
+      '--root-deps',
+      nargs="+",
+      help="""Those are the root dependencies which the script will
+      use to find the closure of all transitive dependencies.""",
       required=True,
   )
   parser.add_argument(
-      '--old_dependencies',
+      '--old-dependencies',
       type=str,
       help='Relative path to file that contains the old dependencies',
       required=True,
@@ -95,20 +144,44 @@ def main():
       help='Path to touch on success',
   )
   args = parser.parse_args()
+  gn_args = _get_current_gn_args()
+  # Generate a new GN output directory in order
+  # not to mess with the current one.
+  with tempfile.TemporaryDirectory() as tmp_dir_name:
+    if cronet_utils.gn(tmp_dir_name, " ".join(gn_args)) != 0:
+      print("Failed to execute `gn gen` in a temporary directory")
+      return -1
 
-  new_dependencies = subprocess.check_output(
-      [args.new_dependencies_script, args.old_dependencies]).decode('utf-8')
-  with open(args.old_dependencies, 'r') as f:
-    new_dependencies = dedup_third_party_deps(f.read().splitlines(),
-                                              new_dependencies.splitlines())
-  if new_dependencies != '':
-    print('New dependencies detected:')
-    print(new_dependencies)
-    print('Please update: ' + args.old_dependencies)
-    sys.exit(-1)
-  else:
+    final_deps = normalize_and_dedup_deps(
+        _get_transitive_deps_from_root_targets(tmp_dir_name, args.root_deps))
+    golden_deps = cronet_utils.read_file(args.old_dependencies).split("\n")
+    if not all(dep in golden_deps for dep in final_deps):
+      # Only generate this text if we found a new dependency
+      # that does not exist in the golden text. This means
+      # that we will know not if a dependency gets removed
+      # as we don't care about that scenario and we don't
+      # want to block people while cleaning-up code.
+      print("""
+Cronet Dependency check has failed. Please re-generate the golden file:
+#######################################################
+#                                                     #
+#      Run the command below to generate the file     #
+#                                                     #
+#######################################################
+
+########### START ###########
+patch -p1 << 'END_DIFF'
+%s
+END_DIFF
+############ END ############
+""" % cronet_utils.compare_text_and_generate_diff(
+          '\n'.join(final_deps), cronet_utils.read_file(args.old_dependencies),
+          args.old_dependencies))
+      return -1
+
     build_utils.Touch(args.stamp)
+    return 0
 
 
 if __name__ == '__main__':
-  main()
+  sys.exit(main())

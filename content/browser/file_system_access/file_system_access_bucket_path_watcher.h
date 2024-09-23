@@ -21,9 +21,6 @@ class FileSystemAccessWatcherManager;
 // Watches changes to all bucket file system paths and reports changes to its
 // observers. This class must be created, used, and destroyed on the same
 // sequence as the `FileSystemContext` it holds a reference to.
-//
-// TODO(https://crbug.com/1019297): Account for changes made by
-// SyncAccessHandles.
 class FileSystemAccessBucketPathWatcher : public FileSystemAccessChangeSource,
                                           public storage::FileChangeObserver {
  public:
@@ -45,6 +42,8 @@ class FileSystemAccessBucketPathWatcher : public FileSystemAccessChangeSource,
   void OnCreateFile(const storage::FileSystemURL& url) override;
   void OnCreateFileFrom(const storage::FileSystemURL& url,
                         const storage::FileSystemURL& src) override;
+  void OnMoveFileFrom(const storage::FileSystemURL& url,
+                      const storage::FileSystemURL& src) override;
   void OnRemoveFile(const storage::FileSystemURL& url) override;
   void OnModifyFile(const storage::FileSystemURL& url) override;
   void OnCreateDirectory(const storage::FileSystemURL& url) override;

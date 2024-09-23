@@ -46,7 +46,7 @@ subsetTest(promise_test, async test => {
           'sellerSignals === 45',
         reportWin:
           `sendReportTo('${createBidderReportURL(uuid)}');` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [createSellerReportURL(uuid), createBidderReportURL(uuid)]
   );
 }, 'Seller passes number to bidder.');
@@ -62,7 +62,7 @@ subsetTest(promise_test, async test => {
           'sellerSignals === "foo"',
         reportWin:
           `sendReportTo('${createBidderReportURL(uuid)}');` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [createSellerReportURL(uuid), createBidderReportURL(uuid)]
   );
 }, 'Seller passes string to bidder.');
@@ -78,7 +78,7 @@ subsetTest(promise_test, async test => {
           'JSON.stringify(sellerSignals) === "[3,1,2]"',
         reportWin:
           `sendReportTo('${createBidderReportURL(uuid)}');` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [createSellerReportURL(uuid), createBidderReportURL(uuid)]
   );
 }, 'Seller passes array to bidder.');
@@ -94,7 +94,7 @@ subsetTest(promise_test, async test => {
           `JSON.stringify(sellerSignals) === '{"a":4,"b":["c",null,{}]}'`,
         reportWin:
           `sendReportTo('${createBidderReportURL(uuid)}');` },
-      // expectedReportUrls:
+      // expectedReportURLs:
       [createSellerReportURL(uuid), createBidderReportURL(uuid)]
   );
 }, 'Seller passes object to bidder.');
@@ -259,7 +259,7 @@ subsetTest(promise_test, async test => {
     // reportResultSuccessCondition:
     `browserSignals.interestGroupName === undefined`,
     // reportWinSuccessCondition:
-    `browserSignals.interestGroupName === ''`
+    `browserSignals.interestGroupName === 'default name'`
   );
 }, 'browserSignals.interestGroupName test.');
 
@@ -303,3 +303,53 @@ await runReportArgumentValidationTest(
     uuid
   );
 }, 'browserSignals.madeHighestScoringOtherBid with other bid.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await runReportTest(
+      test, uuid,
+      { reportResultSuccessCondition:
+          `browserSignals.reportingTimeout === undefined`,
+        reportResult:
+          `sendReportTo('${createSellerReportURL(uuid)}');`,
+        reportWinSuccessCondition:
+          'browserSignals.reportingTimeout === 100',
+        reportWin:
+          `sendReportTo('${createBidderReportURL(uuid)}');` },
+      // expectedReportURLs:
+      [createSellerReportURL(uuid), createBidderReportURL(uuid)],
+      // renderURLOverride
+      null,
+      // auctionConfigOverrides
+      {reportingTimeout: 100});
+}, 'browserSignals.reportingTimeout with custom value from auction config.');
+
+subsetTest(promise_test, async test => {
+  const uuid = generateUuid(test);
+  await runReportTest(
+      test, uuid,
+      { reportResultSuccessCondition:
+          `browserSignals.reportingTimeout === undefined`,
+        reportResult:
+          `sendReportTo('${createSellerReportURL(uuid)}');`,
+        reportWinSuccessCondition:
+          'browserSignals.reportingTimeout === 5000',
+        reportWin:
+          `sendReportTo('${createBidderReportURL(uuid)}');` },
+      // expectedReportURLs:
+      [createSellerReportURL(uuid), createBidderReportURL(uuid)],
+      // renderURLOverride
+      null,
+      // auctionConfigOverrides
+      {reportingTimeout: 1234567890});
+}, 'browserSignals.reportingTimeout above the cap value.');
+
+subsetTest(promise_test, async test => {
+  await runReportArgumentValidationTest(
+    test,
+    // reportResultSuccessCondition:
+    `browserSignals.reportingTimeout === undefined`,
+    // reportWinSuccessCondition:
+    `browserSignals.reportingTimeout === 50`
+  );
+}, 'browserSignals.reportingTimeout default value.');

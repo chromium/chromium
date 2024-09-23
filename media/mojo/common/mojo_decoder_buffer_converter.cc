@@ -60,7 +60,7 @@ uint32_t GetDefaultDecoderBufferConverterCapacity(DemuxerStream::Type type) {
     // TODO(xhwang, sandersd): Provide a better way to customize this value.
     capacity = 2 * (1024 * 1024);
   } else {
-    NOTREACHED() << "Unsupported type: " << type;
+    NOTREACHED_IN_MIGRATION() << "Unsupported type: " << type;
     // Choose an arbitrary size.
     capacity = 512 * 1024;
   }
@@ -145,7 +145,7 @@ void MojoDecoderBufferReader::ReadDecoderBuffer(
               "media,gpu", "MojoDecoderBufferReader::Read",
               buffer->timestamp().InMicroseconds(), "timestamp",
               buffer->timestamp().InMicroseconds(), "read_bytes",
-              buffer->data_size());
+              buffer->size());
           std::move(read_cb).Run(std::move(buffer));
         },
         std::move(read_cb));
@@ -206,7 +206,7 @@ void MojoDecoderBufferReader::CompleteCurrentRead() {
   scoped_refptr<DecoderBuffer> buffer = std::move(pending_buffers_.front());
   pending_buffers_.pop_front();
 
-  DCHECK(buffer->end_of_stream() || buffer->data_size() == bytes_read_);
+  DCHECK(buffer->end_of_stream() || buffer->size() == bytes_read_);
   bytes_read_ = 0;
 
   std::move(read_cb).Run(std::move(buffer));
@@ -253,9 +253,10 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
   while (!pending_buffers_.empty()) {
     DecoderBuffer* buffer = pending_buffers_.front().get();
 
-    uint32_t buffer_size = 0u;
-    if (!pending_buffers_.front()->end_of_stream())
-      buffer_size = base::checked_cast<uint32_t>(buffer->data_size());
+    size_t buffer_size = 0u;
+    if (!pending_buffers_.front()->end_of_stream()) {
+      buffer_size = buffer->size();
+    }
 
     // Immediately complete empty reads.
     // A non-EOS buffer can have zero size. See http://crbug.com/663438
@@ -266,14 +267,12 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
       continue;
     }
 
-    // We may be starting to read a new buffer (|bytes_read_| == 0), or
-    // recovering from a previous partial read (|bytes_read_| > 0).
-    DCHECK_GT(buffer_size, bytes_read_);
-    uint32_t num_bytes = buffer_size - bytes_read_;
-
-    MojoResult result =
-        consumer_handle_->ReadData(buffer->writable_data() + bytes_read_,
-                                   &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+    size_t actually_read_bytes = 0;
+    MojoResult result = consumer_handle_->ReadData(
+        MOJO_WRITE_DATA_FLAG_NONE,
+        // We may be starting to read a new buffer (|bytes_read_| == 0), or
+        // recovering from a previous partial read (|bytes_read_| > 0).
+        buffer->writable_span().subspan(bytes_read_), actually_read_bytes);
 
     if (IsPipeReadWriteError(result)) {
       OnPipeError(result);
@@ -286,9 +285,9 @@ void MojoDecoderBufferReader::ProcessPendingReads() {
     }
 
     DCHECK_EQ(result, MOJO_RESULT_OK);
-    DVLOG(4) << __func__ << ": " << num_bytes << " bytes read.";
-    DCHECK_GT(num_bytes, 0u);
-    bytes_read_ += num_bytes;
+    DVLOG(4) << __func__ << ": " << actually_read_bytes << " bytes read.";
+    DCHECK_GT(actually_read_bytes, 0u);
+    bytes_read_ += actually_read_bytes;
 
     // TODO(sandersd): Make sure there are no possible re-entrancy issues
     // here.
@@ -308,7 +307,7 @@ void MojoDecoderBufferReader::OnPipeError(MojoResult result) {
 
   if (!pending_buffers_.empty()) {
     DVLOG(1) << __func__ << ": reading from data pipe failed. result=" << result
-             << ", buffer size=" << pending_buffers_.front()->data_size()
+             << ", buffer size=" << pending_buffers_.front()->size()
              << ", num_bytes(read)=" << bytes_read_;
     bytes_read_ = 0;
     pending_buffers_.clear();
@@ -389,8 +388,9 @@ mojom::DecoderBufferPtr MojoDecoderBufferWriter::WriteDecoderBuffer(
       mojom::DecoderBuffer::From(*media_buffer);
 
   // A non-EOS buffer can have zero size. See http://crbug.com/663438
-  if (media_buffer->end_of_stream() || media_buffer->data_size() == 0)
+  if (media_buffer->end_of_stream() || media_buffer->empty()) {
     return mojo_buffer;
+  }
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media,gpu",
                                     "MojoDecoderBufferWriter::Write",
@@ -434,16 +434,17 @@ void MojoDecoderBufferWriter::ProcessPendingWrites() {
   while (!pending_buffers_.empty()) {
     DecoderBuffer* buffer = pending_buffers_.front().get();
 
-    uint32_t buffer_size = base::checked_cast<uint32_t>(buffer->data_size());
-    DCHECK_GT(buffer_size, 0u) << "Unexpected EOS or empty buffer";
+    base::span<const uint8_t> bytes_to_write(*buffer);
+    DCHECK_GT(bytes_to_write.size(), 0u) << "Unexpected EOS or empty buffer";
 
     // We may be starting to write a new buffer (|bytes_written_| == 0), or
     // recovering from a previous partial write (|bytes_written_| > 0).
-    uint32_t num_bytes = buffer_size - bytes_written_;
-    DCHECK_GT(num_bytes, 0u);
+    bytes_to_write = bytes_to_write.subspan(bytes_written_);
+    DCHECK_GT(bytes_to_write.size(), 0u);
 
+    size_t actually_written_bytes = 0;
     MojoResult result = producer_handle_->WriteData(
-        buffer->data() + bytes_written_, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+        bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
 
     if (IsPipeReadWriteError(result)) {
       OnPipeError(result);
@@ -456,10 +457,10 @@ void MojoDecoderBufferWriter::ProcessPendingWrites() {
     }
 
     DCHECK_EQ(MOJO_RESULT_OK, result);
-    DVLOG(4) << __func__ << ": " << num_bytes << " bytes written.";
-    DCHECK_GT(num_bytes, 0u);
-    bytes_written_ += num_bytes;
-    if (bytes_written_ == buffer_size) {
+    DVLOG(4) << __func__ << ": " << actually_written_bytes << " bytes written.";
+    DCHECK_GT(actually_written_bytes, 0u);
+    bytes_written_ += actually_written_bytes;
+    if (actually_written_bytes == bytes_to_write.size()) {
       TRACE_EVENT_NESTABLE_ASYNC_END2(
           "media,gpu", "MojoDecoderBufferWriter::Write",
           buffer->timestamp().InMicroseconds(), "timestamp",
@@ -480,7 +481,7 @@ void MojoDecoderBufferWriter::OnPipeError(MojoResult result) {
 
   if (!pending_buffers_.empty()) {
     DVLOG(1) << __func__ << ": writing to data pipe failed. result=" << result
-             << ", buffer size=" << pending_buffers_.front()->data_size()
+             << ", buffer size=" << pending_buffers_.front()->size()
              << ", num_bytes(written)=" << bytes_written_;
     if (MediaTraceIsEnabled()) {
       for (const auto& buffer : pending_buffers_) {

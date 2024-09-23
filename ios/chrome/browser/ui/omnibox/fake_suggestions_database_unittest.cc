@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/ui/omnibox/fake_suggestions_database.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12,38 +13,42 @@
 
 class FakeSuggestionsDatabaseTest : public testing::Test {
  public:
-  FakeSuggestionsDatabaseTest()
-      : template_url_service_(/*prefs=*/nullptr,
-                              /*search_engine_choice_service=*/nullptr) {
+  FakeSuggestionsDatabaseTest() {
     fake_suggestions_database_ =
-        std::make_unique<FakeSuggestionsDatabase>(&template_url_service_);
+        std::make_unique<FakeSuggestionsDatabase>(&template_url_service());
   }
 
   GURL GetSearchURL(const std::u16string& search_terms);
+
   FakeSuggestionsDatabase& fake_suggestions_database() {
     return *fake_suggestions_database_;
   }
+
   const TemplateURL* default_search_provider() {
-    return template_url_service_.GetDefaultSearchProvider();
+    return template_url_service().GetDefaultSearchProvider();
+  }
+
+  TemplateURLService& template_url_service() {
+    return *search_engines_test_environment_.template_url_service();
   }
 
  protected:
   void SetUp() override {
-    TemplateURL* default_provider = template_url_service_.Add(
+    TemplateURL* default_provider = template_url_service().Add(
         std::make_unique<TemplateURL>(default_search_provider()->data()));
-    template_url_service_.SetUserSelectedDefaultSearchProvider(
+    template_url_service().SetUserSelectedDefaultSearchProvider(
         default_provider);
   }
 
  private:
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<FakeSuggestionsDatabase> fake_suggestions_database_;
-  TemplateURLService template_url_service_;
 };
 
 GURL FakeSuggestionsDatabaseTest::GetSearchURL(
     const std::u16string& search_terms) {
   TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
-  const auto& search_terms_data = template_url_service_.search_terms_data();
+  const auto& search_terms_data = template_url_service().search_terms_data();
   std::string search_url =
       default_search_provider()->suggestions_url_ref().ReplaceSearchTerms(
           search_terms_args, search_terms_data);

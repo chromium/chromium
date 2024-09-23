@@ -1,0 +1,5 @@
+WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
+++View text:"test-label" textSize:16.0 style:0 htmlInfo:[{htmlTag="section"}, {display="block"}, {aria-label="test-label"}, {tabindex="-1"}]
+++View text:"test-label-2" textSize:16.0 style:0 htmlInfo:[{htmlTag="section"}, {display="block"}, {aria-label="test-label-2"}]
+++++TextView text:"Test" textSize:18.0 style:1 htmlInfo:[{htmlTag="h3"}, {display="block"}]
+++++TextView text:"This is test content within a section, no tab index." textSize:16.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]

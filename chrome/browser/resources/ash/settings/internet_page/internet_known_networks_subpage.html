@@ -8,9 +8,7 @@
   <div class="settings-box-text">$i18n{knownNetworksMessage}</div>
 </div>
 
-<div class="settings-box settings-box-text">
-  <div class="secondary">$i18n{knownNetworksPreferred}</div>
-</div>
+<h2 class="settings-box">$i18n{knownNetworksPreferred}</h2>
 <div class="list-frame vertical-list"
     hidden$="[[havePreferred_(networkStateList_)]]">
   <div class="list-item settings-box-text">
@@ -41,9 +39,7 @@
   </template>
 </div>
 
-<div class="settings-box settings-box-text">
-  <div class="secondary">$i18n{knownNetworksAll}</div>
-</div>
+<h2 class="settings-box">$i18n{knownNetworksAll}</h2>
 <div id="notPreferredNetworkList" class="list-frame vertical-list"
     hidden$="[[!haveNotPreferred_(networkStateList_)]]">
   <template is="dom-repeat" items="[[networkStateList_]]"
@@ -71,19 +67,18 @@
 
 <template is="dom-if"
     if="[[shouldShowPasspointSection_(passpointSubscriptionsList_)]]">
-  <div class="settings-box settings-box-text">
-    <div class="secondary">$i18n{passpointSectionLabel}</div>
-  </div>
+  <h2 class="settings-box">$i18n{passpointSectionLabel}</h2>
   <div id="passpointSubscriptionList" class="list-frame vertical-list">
     <template is="dom-repeat" items="[[passpointSubscriptionsList_]]">
       <div class="list-item">
-        <cr-link-row embedded label="[[getSubscriptionDisplayName_(item)]]"
+        <cr-link-row id="subscriptionItem" embedded
+            label="[[getSubscriptionDisplayName_(item)]]"
             on-click="onSubscriptionListItemClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <div class="separator"></div>
-        <cr-icon-button class="icon-more-vert" tabindex$="[[tabindex]]"
-            on-click="onSubscriptionMenuButtonClick_"
+        <cr-icon-button id="subscriptionMoreButton" class="icon-more-vert"
+            tabindex$="[[tabindex]]" on-click="onSubscriptionMenuButtonClick_"
             title="[[getSubscriptionMenuButtonTitle_(item)]]">
         </cr-icon-button>
       </div>
@@ -107,7 +102,8 @@
 </cr-action-menu>
 
 <cr-action-menu id="subscriptionDotsMenu" role-description="$i18n{menu}">
-  <button class="dropdown-item" on-click="onSubscriptionForgetClick_">
+  <button id="subscriptionForget" class="dropdown-item"
+      on-click="onSubscriptionForgetClick_">
     $i18n{knownNetworksMenuForget}
   </button>
 </cr-action-menu>

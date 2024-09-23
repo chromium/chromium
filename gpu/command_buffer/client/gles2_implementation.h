@@ -10,13 +10,13 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
@@ -670,6 +670,8 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void RemoveMappedBufferRangeByTarget(GLenum target);
   void RemoveMappedBufferRangeById(GLuint buffer);
   void ClearMappedBufferRangeMap();
+  void ClearMappedBufferMap();
+  void ClearMappedTextureMap();
 
   void DrawElementsImpl(GLenum mode, GLsizei count, GLenum type,
                         const void* indices, const char* func_name);

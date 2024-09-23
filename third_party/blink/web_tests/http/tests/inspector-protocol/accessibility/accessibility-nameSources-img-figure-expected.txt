@@ -330,6 +330,13 @@ Tests name sources in images and figures.
     nodeId : <string>
     parentId : <string>
     properties : [
+        [0] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
+            }
+        }
     ]
     role : {
         type : role
@@ -377,6 +384,13 @@ Tests name sources in images and figures.
     nodeId : <string>
     parentId : <string>
     properties : [
+        [0] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
+            }
+        }
     ]
     role : {
         type : role
@@ -437,6 +451,13 @@ Tests name sources in images and figures.
     nodeId : <string>
     parentId : <string>
     properties : [
+        [0] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
+            }
+        }
     ]
     role : {
         type : role
@@ -506,6 +527,13 @@ Tests name sources in images and figures.
     nodeId : <string>
     parentId : <string>
     properties : [
+        [0] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
+            }
+        }
     ]
     role : {
         type : role
@@ -592,6 +620,13 @@ Tests name sources in images and figures.
     parentId : <string>
     properties : [
         [0] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
+            }
+        }
+        [1] : {
             name : labelledby
             value : {
                 relatedNodes : [
@@ -698,6 +733,60 @@ Tests name sources in images and figures.
     nodeId : <string>
     parentId : <string>
     properties : [
+    ]
+    role : {
+        type : role
+        value : image
+    }
+}
+{
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 99
+    }
+    domNode : img
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : alt
+                type : attribute
+            }
+            [3] : {
+                attribute : title
+                attributeValue : {
+                    type : string
+                    value : title
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : title
+                }
+            }
+        ]
+        type : computedString
+        value : title
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : url
+            value : {
+                type : string
+                value : http://127.0.0.1:8000/inspector-protocol/resources/resources/cake.png
+            }
+        }
     ]
     role : {
         type : role

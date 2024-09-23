@@ -51,7 +51,9 @@ class PLATFORM_EXPORT WebGraphicsContext3DProviderWrapper {
  private:
   std::unique_ptr<GraphicsContext3DUtils> utils_;
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider_;
-  base::ObserverList<DestructionObserver>::Unchecked observers_;
+  // RAW_PTR_EXCLUSION: Performance reasons(based on analysis of speedometer3).
+  base::ObserverList<DestructionObserver>::UncheckedAndRawPtrExcluded
+      observers_;
   base::WeakPtrFactory<WebGraphicsContext3DProviderWrapper> weak_ptr_factory_{
       this};
 };

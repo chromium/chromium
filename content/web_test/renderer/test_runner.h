@@ -101,10 +101,6 @@ class TestRunner {
   // Notification that another renderer has explicitly asked the test to end.
   void TestFinishedFromSecondaryRenderer(WebFrameTestProxy& source);
 
-  // Performs a reset at the end of a test, in order to prepare for the next
-  // test.
-  void ResetRendererAfterWebTest();
-
   // Track the set of all main frames in the process, which is also the set of
   // windows rooted in this process.
   void AddMainFrame(WebFrameTestProxy& frame);
@@ -129,6 +125,8 @@ class TestRunner {
   // can be done locally in the renderer via DumpPixelsInRenderer().
   bool CanDumpPixelsFromRenderer() const;
 
+  bool IsPrinting() const;
+
 #if BUILDFLAG(ENABLE_PRINTING)
   // Returns the default page size to be used for printing. This is either the
   // size that was explicitly set via SetPrintingSize or the size of the frame
@@ -143,6 +141,10 @@ class TestRunner {
   // via a tag of the form <meta name=reftest-pages content="1,2-3,5-">. If no
   // tag is found, print all pages.
   printing::PageRanges GetPrintingPageRanges(blink::WebLocalFrame* frame) const;
+
+  // Go through a test-only path to dump the frame's pixel output as if it was
+  // printed.
+  SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* frame);
 #endif
 
   // Snapshots the content of |main_frame| using the mode requested by the
@@ -323,7 +325,7 @@ class TestRunner {
     // Collection of flags to be synced with the browser process.
     TrackedDictionary states_;
 
-    raw_ptr<TestRunner, ExperimentalRenderer> controller_;
+    raw_ptr<TestRunner> controller_;
   };
 
   // If the main test window's main frame is hosted in this renderer process,
@@ -461,7 +463,6 @@ class TestRunner {
   void DumpResourceResponseMIMETypes();
 
   // WebContentSettingsClient related.
-  void SetImagesAllowed(bool allowed, WebFrameTestProxy& source);
   void SetStorageAllowed(bool allowed, WebFrameTestProxy& source);
   void SetAllowRunningOfInsecureContent(bool allowed,
                                         WebFrameTestProxy& source);
@@ -479,6 +480,10 @@ class TestRunner {
                            WebFrameTestProxy& source);
   void SetPrintingSize(int width, int height, WebFrameTestProxy& source);
   void SetPrintingMargin(int size, WebFrameTestProxy& source);
+  void SetShouldCenterAndShrinkToFitPaper(bool b) {
+    should_center_and_shrink_to_fit_paper_ = b;
+  }
+  void SetPrintingScaleFactor(float factor) { printing_scale_factor_ = factor; }
 
   void SetShouldStayOnPageAfterHandlingBeforeUnload(bool value,
                                                     WebFrameTestProxy& source);
@@ -553,13 +558,24 @@ class TestRunner {
   // a series of 1px-wide, view-tall paints across the width of the view.
   bool sweep_horizontally_;
 
+  // If set, pretend that the specified default page size when printing (see
+  // `SetPrintingSize()`) is also the size of the imaginary paper, so that any
+  // CSS @page size that overrides the default page size will be centered on
+  // paper, and scaled down to fit if required. This is the default behavior
+  // when printing to an actual printer (as opposed to generating a PDF) in
+  // Chrome.
+  bool should_center_and_shrink_to_fit_paper_ = false;
+
+  // The scale factor to apply to printed content.
+  float printing_scale_factor_ = 1.0;
+
   std::set<std::string> http_headers_to_clear_;
   bool clear_referrer_ = false;
 
   // WAV audio data is stored here.
   std::vector<uint8_t> audio_data_;
 
-  base::flat_set<WebFrameTestProxy*> main_frames_;
+  base::flat_set<raw_ptr<WebFrameTestProxy, CtnExperimental>> main_frames_;
 
   // Keeps track of which WebViews that are main windows.
   std::vector<std::unique_ptr<MainWindowTracker>> main_windows_;

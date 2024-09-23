@@ -3,6 +3,8 @@
 #
 # Please think twice before you add or remove these rules.
 
+[memory]
+
 # False positive in ffmpeg due to assembly code. http://crbug.com/344505
 fun:ff_get_cpu_flags_x86
 
@@ -10,3 +12,4 @@ fun:ff_get_cpu_flags_x86
 src:*/third_party/breakpad/breakpad/src/*
 src:*/components/crash/core/app/breakpad_linux.cc
 
+src:*/third_party/swiftshader/*

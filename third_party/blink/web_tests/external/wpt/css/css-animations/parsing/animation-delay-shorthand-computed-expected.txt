@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Property animation-delay value '1s 2s'
-  assert_true: '1s 2s' is a supported value for animation-delay. expected true got false
-[FAIL] Property animation-delay value '1s 2s, 3s'
-  assert_true: '1s 2s, 3s' is a supported value for animation-delay. expected true got false
-[FAIL] Property animation-delay value '1s, 2s 3s'
-  assert_true: '1s, 2s 3s' is a supported value for animation-delay. expected true got false
-Harness: the test ran to completion.
-

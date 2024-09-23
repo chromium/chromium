@@ -15,6 +15,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
@@ -29,7 +30,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -81,7 +82,7 @@ public class OfflinePageDownloadBridge {
      */
     @CalledByNative
     private static void openItem(
-            final String url,
+            final @JniType("std::string") String url,
             final long offlineId,
             final int location,
             final boolean isIncognito,
@@ -103,7 +104,7 @@ public class OfflinePageDownloadBridge {
                         openItemInNewTab(offlineId, params, isIncognito);
                     }
                 },
-                Profile.getLastUsedRegularProfile());
+                ProfileManager.getLastUsedRegularProfile());
     }
 
     /**
@@ -161,7 +162,7 @@ public class OfflinePageDownloadBridge {
         intent.setPackage(context.getPackageName());
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.OFFLINE_PAGE);
-        // TODO(crbug.com/1148275): Pass isIncognito boolean here after finding a way not to
+        // TODO(crbug.com/40731212): Pass isIncognito boolean here after finding a way not to
         // reload the downloaded page for Incognito CCT.
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
 
@@ -221,6 +222,6 @@ public class OfflinePageDownloadBridge {
 
         void destroy(long nativeOfflinePageDownloadBridge, OfflinePageDownloadBridge caller);
 
-        void startDownload(Tab tab, String origin);
+        void startDownload(Tab tab, @JniType("std::string") String origin);
     }
 }

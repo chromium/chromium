@@ -77,17 +77,16 @@ void MachBootstrapAcceptor::HandleRequest() {
     return;
   }
 
-  pid_t sender_pid = audit_token_to_pid(request.trailer.msgh_audit);
-
   mojo::PlatformChannelEndpoint remote_endpoint(mojo::PlatformHandle(
       base::apple::ScopedMachSendRight(request.header.msgh_remote_port)));
   if (!remote_endpoint.is_valid()) {
     return;
   }
 
+  audit_token_t audit_token = request.trailer.msgh_audit;
   scoped_message.Disarm();
 
-  delegate_->OnClientConnected(std::move(remote_endpoint), sender_pid);
+  delegate_->OnClientConnected(std::move(remote_endpoint), audit_token);
 }
 
 mach_port_t MachBootstrapAcceptor::port() {

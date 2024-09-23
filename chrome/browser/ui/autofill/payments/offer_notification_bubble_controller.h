@@ -70,10 +70,6 @@ class OfferNotificationBubbleController {
 
   // Removes the reference the controller has to the bubble.
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
-
-  // Handles the event of clicking the promo code offer button, including
-  // logging metrics for the successful copy-to-clipboard event.
-  virtual void OnPromoCodeButtonClicked() = 0;
 };
 
 }  // namespace autofill

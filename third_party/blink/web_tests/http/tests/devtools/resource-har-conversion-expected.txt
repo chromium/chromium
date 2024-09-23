@@ -57,6 +57,9 @@ error: Failed getting cookie attribute: Version
                 url : "http://127.0.0.1:8000/devtools/resources/inspected-page.html"
             }
             response : {
+                _fetchedViaServiceWorker : true
+                _responseCacheStorageCacheName : "v1"
+                _serviceWorkerResponseSource : "cache-storage"
                 _transferSize : <number>
                 bodySize : <number>
                 content : {
@@ -132,6 +135,9 @@ error: Failed getting cookie attribute: Version
                 url : "http://127.0.0.1:8000/devtools/resources/post-target.cgi"
             }
             response : {
+                _fetchedViaServiceWorker : false
+                _responseCacheStorageCacheName : undefined
+                _serviceWorkerResponseSource : undefined
                 _transferSize : <number>
                 bodySize : <number>
                 content : {

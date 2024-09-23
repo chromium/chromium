@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
-#include "media/filters/ivf_parser.h"
+#include "media/parsers/ivf_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -28,9 +30,8 @@ class ResolutionMonitorTestWithInvalidFrame
 
 TEST_P(ResolutionMonitorTestWithInvalidFrame, ReturnNullOpt) {
   const media::VideoCodec codec = GetParam();
-  auto invalid_buffer = media::DecoderBuffer::CopyFrom(
-      reinterpret_cast<const uint8_t*>(kInvalidData.data()),
-      kInvalidData.size());
+  auto invalid_buffer =
+      media::DecoderBuffer::CopyFrom(base::as_byte_span(kInvalidData));
   invalid_buffer->set_is_key_frame(true);
 
   auto resolution_monitor = ResolutionMonitor::Create(codec);
@@ -119,7 +120,8 @@ std::vector<scoped_refptr<media::DecoderBuffer>> ReadIVF(const std::string& fnam
   const uint8_t* data;
   while (ivf_parser.ParseNextFrame(&ivf_frame_header, &data)) {
     buffers.push_back(media::DecoderBuffer::CopyFrom(
-        reinterpret_cast<const uint8_t*>(data), ivf_frame_header.frame_size));
+        // TODO(crbug.com/40284755): Spanify `ParseNextFrame`.
+        UNSAFE_TODO(base::span(data, ivf_frame_header.frame_size))));
   }
   return buffers;
 }
@@ -170,6 +172,31 @@ INSTANTIATE_TEST_SUITE_P(VP9,
 INSTANTIATE_TEST_SUITE_P(AV1,
                          ResolutionMonitorTestWithValidVideo,
                          ::testing::ValuesIn(kAV1Videos));
+
+TEST(ResolutionMonitorTestWithTruncatedH264, ZeroLengthNalUnit) {
+  auto resolution_monitor = ResolutionMonitor::Create(media::VideoCodec::kH264);
+  ASSERT_TRUE(resolution_monitor);
+  const uint8_t invalid_data[] = {
+      0x00, 0x00, 0x00, 0x01,  // Just a NAL header.
+      0x00, 0x00, 0x00, 0x01,
+      0x68,  // PPS since FindNaluIndices does not like just an empty NAL
+             // header.
+  };
+  auto invalid_buffer = media::DecoderBuffer::CopyFrom(invalid_data);
+  invalid_buffer->set_is_key_frame(true);
+  EXPECT_EQ(resolution_monitor->GetResolution(*invalid_buffer), std::nullopt);
+}
+
+TEST(ResolutionMonitorTestWithTruncatedH264, IncompleteSps) {
+  auto resolution_monitor = ResolutionMonitor::Create(media::VideoCodec::kH264);
+  ASSERT_TRUE(resolution_monitor);
+  const uint8_t invalid_data[] = {
+      0x00, 0x00, 0x00, 0x01, 0x67,  // NAL header and type but no content.
+  };
+  auto invalid_buffer = media::DecoderBuffer::CopyFrom(invalid_data);
+  invalid_buffer->set_is_key_frame(true);
+  EXPECT_EQ(resolution_monitor->GetResolution(*invalid_buffer), std::nullopt);
+}
 
 }  // namespace
 

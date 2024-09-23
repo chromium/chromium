@@ -1,0 +1,12 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * The default style sheet used to render <select> when the CustomizableSelect
+ * feature is enabled and the forced colors are enabled. It can be merged into
+ * forced_colors.css when CustomizableSelect is enabled and the flag is removed.
+ */
+
+select {
+  background-color: -internal-appearance-auto-base-select(Canvas, transparent);
+}

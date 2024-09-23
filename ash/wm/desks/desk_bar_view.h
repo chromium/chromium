@@ -7,25 +7,31 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
 
+class WindowOcclusionCalculator;
+
 // Desk bar that contains desk related UI including desk thumbnails, new desk
 // button, library button, and scroll arrow buttons when the available space is
 // not enough. For now this is only used for desk bar triggered by desk button
-// on the shelf. Going forward, this will support overview desk bar as well.
+// on the shelf.
 class ASH_EXPORT DeskBarView : public DeskBarViewBase {
   METADATA_HEADER(DeskBarView, DeskBarViewBase)
 
  public:
-  explicit DeskBarView(aura::Window* root);
+  DeskBarView(
+      aura::Window* root,
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
 
   DeskBarView(const DeskBarView&) = delete;
   DeskBarView& operator=(const DeskBarView&) = delete;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // DeskBarViewBase:
   gfx::Rect GetAvailableBounds() const override;

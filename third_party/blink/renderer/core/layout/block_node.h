@@ -27,6 +27,7 @@ class PhysicalBoxFragment;
 class PhysicalFragment;
 enum class BaselineAlgorithmType;
 enum class MathScriptType;
+enum class SizeType;
 struct LayoutAlgorithmParams;
 
 // Represents a node to be laid out.
@@ -86,21 +87,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // To be called when we're done repeating a node, when at the last fragment.
   void FinishRepeatableRoot() const;
 
-  // This method is just for use within the |OutOfFlowLayoutPart|.
-  //
-  // As OOF-positioned objects have their position, and size computed
-  // pre-layout, we need a way to quickly determine if we need to perform this
-  // work.
-  //
-  // We have this "first-tier" cache explicitly for this purpose.
-  // This method compares the containing-block size to determine if we can skip
-  // the position, and size calculation.
-  //
-  // If the containing-block size hasn't changed, and we are layout-clean we
-  // can reuse the previous layout result.
-  const LayoutResult* CachedLayoutResultForOutOfFlowPositioned(
-      LogicalSize container_content_size) const;
-
   LayoutInputNode NextSibling() const;
 
   // Computes the value of min-content and max-content for this node's border
@@ -123,7 +109,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // space is not optional.
   MinMaxSizesResult ComputeMinMaxSizes(
       WritingMode container_writing_mode,
-      const MinMaxSizesType,
+      const SizeType,
       const ConstraintSpace&,
       const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput()) const;
 
@@ -131,8 +117,6 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   BlockNode GetRenderedLegend() const;
   BlockNode GetFieldsetContent() const;
-
-  bool IsTableCell() const { return box_->IsTableCell(); }
 
   bool IsFrameSet() const { return box_->IsFrameSet(); }
   bool IsParentNGFrameSet() const { return box_->Parent()->IsFrameSet(); }
@@ -157,6 +141,8 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   std::optional<gfx::Transform> GetTransformForChildFragment(
       const PhysicalBoxFragment& child_fragment,
       PhysicalSize size) const;
+
+  bool MayHaveAnchorQuery() const { return box_->MayHaveAnchorQuery(); }
 
   bool HasLeftOverflow() const { return box_->HasLeftOverflow(); }
   bool HasTopOverflow() const { return box_->HasTopOverflow(); }
@@ -191,6 +177,15 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // Returns true if the custom layout node is in its loaded state (all script
   // for the web-developer defined layout is ready).
   bool IsCustomLayoutLoaded() const;
+
+  // Return the ::scroll-marker-group associated with this node, if any.
+  BlockNode GetScrollMarkerGroup() const {
+    return BlockNode(DynamicTo<LayoutBlock>(box_->GetScrollMarkerGroup()));
+  }
+
+  // Populate with scroll markers (and relayout if necessary)
+  // the::scroll-marker-group associated with this node, if any.
+  void HandleScrollMarkerGroup() const;
 
   // Get script type for scripts (msub, msup, msubsup, munder, mover and
   // munderover).
@@ -239,6 +234,12 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // legacy, for example for an OOF positioned element, we need to update the
   // legacy flow thread to encompass those extra columns.
   void MakeRoomForExtraColumns(LayoutUnit block_size) const;
+
+  // Page containers and page border boxes are laid out directly by special
+  // algorithms, rather than going via BlockNode::Layout(), so whatever
+  // side-effects Layout() causes needs to be triggered manually from these
+  // algorithms.
+  void FinishPageContainerLayout(const LayoutResult*) const;
 
   bool operator==(const BlockNode& other) const { return box_ == other.box_; }
   bool operator==(const LayoutInputNode& other) const {

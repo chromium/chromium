@@ -13,7 +13,7 @@ source_set("local_state") {
     "//components/prefs",
     "//components/resources",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/web/public/webui",
   ]

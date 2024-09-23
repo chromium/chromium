@@ -5,58 +5,24 @@
 # found in the LICENSE file.
 
 import argparse
-import difflib
-import pathlib
 import os
 import sys
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
-sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
-from util import build_utils  # pylint: disable=wrong-import-position
+sys.path.insert(0, REPOSITORY_ROOT)
+import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wrong-import-position
+import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
 
 # Set this environment variable in order to regenerate the golden text
 # files.
-_REBASELINE_CRONET_PROGUARD = os.environ.get('REBASELINE_CRONET_PROGUARD',
-                                             '0') != '0'
-
-
-def _ReadFile(path):
-  """Reads a file as a string"""
-  return pathlib.Path(path).read_text()
-
-
-def _CompareText(generated_text, golden_text, golden_file_path):
-  """
-  Compares the generated text with the golden text.
-
-  returns a diff that can be applied with `patch` if exists.
-  """
-  golden_lines = [line.rstrip() for line in golden_text.splitlines()]
-  generated_lines = [line.rstrip() for line in generated_text.splitlines()]
-  if golden_lines == generated_lines:
-    return None
-
-  expected_path = os.path.relpath(
-      golden_file_path, build_utils.DIR_SOURCE_ROOT)
-
-  diff = difflib.unified_diff(
-      golden_lines,
-      generated_lines,
-      fromfile=os.path.join('before', expected_path),
-      tofile=os.path.join('after', expected_path),
-      n=0,
-      lineterm='',
-  )
-
-  return '\n'.join(diff)
-
+_REBASELINE_PROGUARD = os.environ.get('REBASELINE_PROGUARD', '0') != '0'
 
 def CompareGeneratedWithGolden(generated_file_path, golden_file_path):
-  golden_text = _ReadFile(golden_file_path)
-  generated_text = _ReadFile(generated_file_path)
-  if _REBASELINE_CRONET_PROGUARD:
+  golden_text = cronet_utils.read_file(golden_file_path)
+  generated_text = cronet_utils.read_file(generated_file_path)
+  if _REBASELINE_PROGUARD:
     if golden_text != generated_text:
       print('Updated', golden_file_path)
       with open(golden_file_path, 'w') as f:
@@ -66,7 +32,9 @@ def CompareGeneratedWithGolden(generated_file_path, golden_file_path):
   if golden_text is None:
     print(f'Golden file does not exist: {golden_file_path}')
 
-  return _CompareText(generated_text, golden_text, golden_file_path)
+  return cronet_utils.compare_text_and_generate_diff(generated_text,
+                                                     golden_text,
+                                                     golden_file_path)
 
 
 def main():
@@ -92,7 +60,7 @@ Cronet Proguard golden test failed. To generate it:
 #######################################################
 
 ########### START ###########
-patch -p1 << 'END_DIFF'
+patch -p1 <<'END_DIFF'
 {text_diff}
 END_DIFF
 ############ END ############
@@ -104,7 +72,7 @@ If you wish to build the action locally in generation mode, See the instructions
 #                                                                   #
 #####################################################################
 ./components/cronet/tools/cr_cronet.py -d out/proguard_config gn && \
-REBASELINE_CRONET_PROGUARD=1 autoninja -C out/proguard_config \
+REBASELINE_PROGUARD=1 autoninja -C out/proguard_config \
 cronet_combined_proguard_flags_golden_test
 
 This will generate a GN output directory with the appropriate GN\

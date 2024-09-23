@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -46,12 +45,10 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.PathUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -84,7 +81,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Observer;
 import java.util.concurrent.TimeoutException;
 
 /** Unit tests for WebApkUpdateManager. */
@@ -99,8 +95,6 @@ public class WebApkUpdateManagerUnitTest {
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-
-    @Rule public final TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
     private static final String UNBOUND_WEBAPK_PACKAGE_NAME = "com.webapk.test_package";
@@ -176,6 +170,7 @@ public class WebApkUpdateManagerUnitTest {
                 String scope,
                 String name,
                 String shortName,
+                boolean hasCustomName,
                 String manifestId,
                 String appKey,
                 String primaryIconUrl,
@@ -376,6 +371,7 @@ public class WebApkUpdateManagerUnitTest {
         public String scopeUrl;
         public String name;
         public String shortName;
+        public boolean hasCustomName;
         public String id;
         public String appKey;
         public Map<String, String> iconUrlToMurmur2HashMap;
@@ -433,7 +429,7 @@ public class WebApkUpdateManagerUnitTest {
             BackgroundShadowAsyncTask.runBackgroundTasks();
             ShadowLooper.runUiThreadTasks();
 
-            helper.waitForFirst();
+            helper.waitForOnly();
         } catch (TimeoutException e) {
             fail();
         }
@@ -536,6 +532,7 @@ public class WebApkUpdateManagerUnitTest {
         manifestData.scopeUrl = SCOPE_URL;
         manifestData.name = NAME;
         manifestData.shortName = SHORT_NAME;
+        manifestData.hasCustomName = false;
         manifestData.id = MANIFEST_ID;
         manifestData.appKey = MANIFEST_ID;
 
@@ -593,6 +590,7 @@ public class WebApkUpdateManagerUnitTest {
                 null,
                 manifestData.name,
                 manifestData.shortName,
+                manifestData.hasCustomName,
                 manifestData.displayMode,
                 manifestData.orientation,
                 -1,
@@ -749,7 +747,6 @@ public class WebApkUpdateManagerUnitTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        UmaRecorderHolder.resetForTesting();
 
         PathUtils.setPrivateDataDirectorySuffix("chrome");
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
@@ -1172,8 +1169,7 @@ public class WebApkUpdateManagerUnitTest {
 
     /**
      * Test that an upgrade is not requested when the Web Manifest did not change and the Web
-     * Manifest scope is empty.
-     * TODO(crbug.com/1306225): Re-enable test.
+     * Manifest scope is empty. TODO(crbug.com/40827678): Re-enable test.
      */
     @Ignore
     @Test
@@ -1897,5 +1893,27 @@ public class WebApkUpdateManagerUnitTest {
         onGotDifferentData(updateManager);
         assertTrue(updateManager.updateRequested());
         assertEquals(WEB_MANIFEST_URL, updateManager.requestedAppKey());
+    }
+
+    /**
+     * Tests that WebAPK updates keeps the default appKey when no value specified from the WebAPK's
+     * Android Manifest <meta-data>.
+     */
+    @Test
+    public void testUpdateWithCustomName() {
+        ManifestData androidData = defaultManifestData();
+        androidData.name = "custom name";
+        androidData.hasCustomName = true;
+
+        registerWebApk(WEBAPK_PACKAGE_NAME, androidData, REQUEST_UPDATE_FOR_SHELL_APK_VERSION - 1);
+        mClockRule.advanceMillis(WebappDataStorage.UPDATE_INTERVAL);
+
+        TestWebApkUpdateManager updateManager = new TestWebApkUpdateManager(mActivityMock);
+        updateIfNeeded(WEBAPK_PACKAGE_NAME, updateManager);
+        assertTrue(updateManager.updateCheckStarted());
+
+        onGotDifferentData(updateManager);
+        assertTrue(updateManager.updateRequested());
+        assertEquals(androidData.name, updateManager.requestedUpdateName());
     }
 }

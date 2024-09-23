@@ -42,7 +42,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Robolectric tests of the class {@link CookiesFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CookiesFragmentTest {
-    // TODO(crbug.com/1357003): Use Espresso for view interactions
+    // TODO(crbug.com/40860773): Use Espresso for view interactions
     @Rule public JniMocker mMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

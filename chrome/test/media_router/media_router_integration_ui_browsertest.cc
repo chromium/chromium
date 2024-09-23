@@ -16,7 +16,7 @@
 
 namespace media_router {
 
-// TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
+// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
   MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
   test_ui_->HideDialog();
 }
 
-// TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
+// TODO(crbug.com/40567200): Flaky in Chromium waterfall.
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        MANUAL_Dialog_RouteCreationTimedOut) {
   MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
   std::string issue_title = test_ui_->GetIssueTextForSink(receiver_);
   ASSERT_EQ(l10n_util::GetStringFUTF8(
                 IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_WITH_HOSTNAME,
-                u"file://"),
+                u"file:///"),
             issue_title);
 
   ASSERT_EQ(test_ui_->GetRouteIdForSink(receiver_), "");

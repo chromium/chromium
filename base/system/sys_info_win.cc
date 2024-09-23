@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/system/sys_info.h"
+
+#include <windows.h>
 
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 
 #include <algorithm>
 #include <bit>
@@ -114,7 +120,6 @@ uint64_t AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field) {
   memory_info.dwLength = sizeof(memory_info);
   if (!GlobalMemoryStatusEx(&memory_info)) {
     NOTREACHED();
-    return 0;
   }
 
   return memory_info.*memory_field;

@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] triangular float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 3D tensor default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor explict options.upper=true
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor options.upper=false
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor explict options.diagonal=0
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor options.diagonal=1
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor options.diagonal=-1
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor fully zero options.diagonal=3
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor fully copied options.diagonal=-2
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor options.upper=true options.diagonal=1
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor options.upper=false options.diagonal=1
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor options.upper=false options.diagonal=-1
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor fully copied options.upper=false options.diagonal=3
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] triangular float32 4D tensor fully zero options.upper=false options.diagonal=-2
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'triangular' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

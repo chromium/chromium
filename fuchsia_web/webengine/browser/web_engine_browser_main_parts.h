@@ -40,7 +40,7 @@ namespace media {
 class FuchsiaCdmManager;
 }
 
-namespace sys {
+namespace inspect {
 class ComponentInspector;
 }
 
@@ -125,7 +125,7 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   std::unique_ptr<aura::ScreenOzone> screen_;
 
   // Used to publish diagnostics including the active Contexts and FrameHosts.
-  std::unique_ptr<sys::ComponentInspector> component_inspector_;
+  std::unique_ptr<inspect::ComponentInspector> component_inspector_;
   std::unique_ptr<WebEngineMemoryInspector> memory_inspector_;
 
   // Browsing contexts for the connected clients. There is at most one

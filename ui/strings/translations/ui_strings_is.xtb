@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Könnun</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/sek.</translation>
 <translation id="2353636109065292463">Verið er að athuga nettenginguna</translation>
+<translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2388990488038464401">Viltu hringja í þetta númer úr símanum þínum?</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="24452542372838207">Stækka tilkynningu</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NÝTT</translation>
 <translation id="2666092431469916601">Efst</translation>
 <translation id="2701330563083355633">Deilt úr <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Nýtt</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{Fyrir einu ári}one{Fyrir # ári}other{Fyrir # árum}}</translation>
 <translation id="2878511608894704031">Eyða öllu</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{eftir einn dag}one{eftir # dag}other{eftir # daga}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> stýrikerfi</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
 <translation id="5613020302032141669">Ör til vinstri</translation>
+<translation id="5633029987065897167">Autt</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 mín.}one{# mín.}other{# mín.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Virkt í dag}=1{Virkt fyrir 1 degi}one{Virkt fyrir # degi}other{Virkt fyrir # dögum}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dagur og }one{# dagur og }other{# dagar og }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF-efni</translation>
 <translation id="6539092367496845964">Eitthvað fór úrskeiðis. Reyndu aftur síðar.</translation>
 <translation id="654149438358937226">Loka á allar tilkynningar</translation>
-<translation id="6612467943526193239">Ýttu á Esc til að hætta kvörðun.</translation>
 <translation id="6620110761915583480">Vista skrá</translation>
 <translation id="6699343763173986273">Næsta lag í efnisspilun</translation>
 <translation id="6808150112686056157">Stöðva spilun efnis</translation>

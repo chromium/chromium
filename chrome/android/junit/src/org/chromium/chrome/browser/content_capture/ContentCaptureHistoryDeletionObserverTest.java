@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.content_capture;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -78,11 +76,9 @@ public class ContentCaptureHistoryDeletionObserverTest {
         String[] urls = new String[] {"one", "two", "three"};
         doReturn(urls).when(mHistoryDeletionInfo).getDeletedURLs();
 
-        try {
-            mContentCaptureHistoryDeletionObserver.onURLsDeleted(mHistoryDeletionInfo);
-            fail("Expected exception to be thrown.");
-        } catch (RuntimeException e) {
-            assertTrue(e.toString().contains("Deleted URLs length: " + urls.length));
-        }
+        // Runtime exception should be caught and logged.
+        mContentCaptureHistoryDeletionObserver.onURLsDeleted(mHistoryDeletionInfo);
+        verify(mContentCaptureController).clearContentCaptureDataForURLs(urls);
+        verify(mContentCaptureController).clearAllContentCaptureData();
     }
 }

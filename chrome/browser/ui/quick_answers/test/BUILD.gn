@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("mock_quick_answers_client") {
+  testonly = true
+
+  sources = [
+    "mock_quick_answers_client.cc",
+    "mock_quick_answers_client.h",
+  ]
+
+  deps = [
+    "//chromeos/components/quick_answers",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+  ]
+}

@@ -6,11 +6,11 @@
 #define BASE_TEST_MEMORY_DANGLING_PTR_INSTRUMENTATION_H_
 
 #include <cstdint>
+#include <string_view>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
+#include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::test {
@@ -40,7 +40,7 @@ class DanglingPtrInstrumentation {
   //
   // This function should typically be called from the `testing::Test::SetUp()`
   // override so that it can skip the test with `GTEST_SKIP()` on failure.
-  static base::expected<DanglingPtrInstrumentation, base::StringPiece> Create();
+  static base::expected<DanglingPtrInstrumentation, std::string_view> Create();
 
   ~DanglingPtrInstrumentation();
   DanglingPtrInstrumentation(const DanglingPtrInstrumentation&) = delete;

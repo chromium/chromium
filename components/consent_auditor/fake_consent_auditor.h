@@ -50,8 +50,12 @@ class FakeConsentAuditor : public ConsentAuditor {
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
       override;
+  MOCK_METHOD2(
+      RecordRecorderSpeakerLabelConsent,
+      void(const CoreAccountId&,
+           const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&));
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   // Methods for fake.

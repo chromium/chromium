@@ -133,7 +133,7 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
 
   if (error.WasBlockedByORB()) {
     // ORB loading errors are reported from the network service directly to
-    // DevTools (CorsURLLoader::ReportCorbErrorToDevTools).
+    // DevTools (CorsURLLoader::ReportOrbErrorToDevTools).
     return;
   }
 

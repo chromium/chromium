@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/renderer_host/pepper/pepper_isolated_file_system_message_filter.h"
 
 #include <stddef.h>
@@ -127,7 +132,7 @@ int32_t PepperIsolatedFileSystemMessageFilter::OnOpenFileSystem(
     case PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX:
       return OpenCrxFileSystem(context);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   context->reply_msg =
       PpapiPluginMsg_IsolatedFileSystem_BrowserOpenReply(std::string());
   return PP_ERROR_FAILED;

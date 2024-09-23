@@ -135,8 +135,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // These two functions are overridden for inline-block.
   LayoutUnit FirstLineHeight() const override;
 
-  bool UseLogicalBottomMarginEdgeForInlineBlockBaseline() const;
-
   const char* GetName() const override;
 
  protected:
@@ -199,11 +197,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  protected:
   void WillBeDestroyed() override;
-
-  void UpdateLayout() override {
-    NOT_DESTROYED();
-    NOTREACHED_NORETURN();
-  }
 
  public:
   void Paint(const PaintInfo&) const override;

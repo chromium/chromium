@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_delegate.h"
 
@@ -38,7 +38,7 @@ class PrefRegistrySyncable;
 enum class SigninPromoViewState {
   // Initial state. When -[SigninPromoViewMediator disconnect] is called with
   // that state, no metrics is recorded.
-  kNeverVisible = 0,
+  kNeverVisible,
   // None of the buttons has been used yet.
   kUnused,
   // Sign-in buttons have been used at least once.
@@ -51,8 +51,6 @@ enum class SigninPromoViewState {
 
 // The action performed when accepting the promo.
 enum class SigninPromoAction {
-  // Performs AuthenticationOperationSigninAndSync.
-  kSync = 0,
   // Primary button signs the user in instantly.
   // Secondary button opens a floating dialog with the available accounts. When
   // an account is tapped, it is signed in instantly.
@@ -70,7 +68,7 @@ enum class SigninPromoAction {
 // SigninPromoViewConfigurator. This class makes the link between the model and
 // the view. The consumer will receive notification if default identity is
 // changed or updated.
-// TODO(crbug.com/1425862): This class needs to be split with a coordinator.
+// TODO(crbug.com/40898970): This class needs to be split with a coordinator.
 @interface SigninPromoViewMediator : NSObject<SigninPromoViewDelegate>
 
 // Consumer to handle identity update notifications.
@@ -86,7 +84,7 @@ enum class SigninPromoAction {
 // (not necessarily the default one).
 @property(nonatomic, strong, readonly) id<SystemIdentity> displayedIdentity;
 
-// Sign-in promo view state.
+// Sign-in promo view state. kNeverVisible by default.
 @property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
 
 // YES if the promo spinner should be displayed. Either the sign-in or the
@@ -97,15 +95,15 @@ enum class SigninPromoAction {
 @property(nonatomic, assign, readonly, getter=isInvalidClosedOrNeverVisible)
     BOOL invalidClosedOrNeverVisible;
 
-// The action performed when accepting the promo.
+// The action performed when accepting the promo. kInstantSignin by default.
 @property(nonatomic, assign) SigninPromoAction signinPromoAction;
 
 // Set the data type that should be synced before the sign-in completes.
-// The default value is `syncer::ModelType::UNSPECIFIED`, therefore the sign-in
+// The default value is `syncer::DataType::UNSPECIFIED`, therefore the sign-in
 // promo will not wait for the initial sync.
 // This value has to be set while the mediator is being set (right after the
 // init method).
-@property(nonatomic, assign) syncer::ModelType dataTypeToWaitForInitialSync;
+@property(nonatomic, assign) syncer::DataType dataTypeToWaitForInitialSync;
 
 // Registers the feature preferences.
 + (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;

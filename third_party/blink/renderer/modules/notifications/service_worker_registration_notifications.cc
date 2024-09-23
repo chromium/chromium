@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_get_notification_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_notification_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/notifications/notification.h"
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 #include "third_party/blink/renderer/modules/notifications/notification_manager.h"
 #include "third_party/blink/renderer/modules/notifications/notification_metrics.h"
@@ -29,7 +30,8 @@ ServiceWorkerRegistrationNotifications::ServiceWorkerRegistrationNotifications(
     ServiceWorkerRegistration* registration)
     : Supplement(*registration), ExecutionContextLifecycleObserver(context) {}
 
-ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
+ScriptPromise<IDLUndefined>
+ServiceWorkerRegistrationNotifications::showNotification(
     ScriptState* script_state,
     ServiceWorkerRegistration& registration,
     const String& title,
@@ -40,7 +42,7 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "showNotification() is not allowed in fenced frames.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   // If context object's active worker is null, reject the promise with a
@@ -51,7 +53,7 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
     exception_state.ThrowTypeError(
         "No active registration available on "
         "the ServiceWorkerRegistration.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   // If permission for notification's origin is not "granted", reject the
@@ -62,14 +64,14 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
         PersistentNotificationDisplayResult::kPermissionNotGranted);
     exception_state.ThrowTypeError(
         "No notification permission has been granted for this origin.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   // Validate the developer-provided options to get the NotificationData.
   mojom::blink::NotificationDataPtr data = CreateNotificationData(
       execution_context, title, options, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return EmptyPromise();
 
   // Log number of actions developer provided in linear histogram:
   //     0    -> underflow bucket,
@@ -79,9 +81,9 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
       "Notifications.PersistentNotificationActionCount",
       options->actions().size(), 17);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   ServiceWorkerRegistrationNotifications::From(execution_context, registration)
       .PrepareShow(std::move(data), resolver);
@@ -89,12 +91,15 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
   return promise;
 }
 
-ScriptPromise ServiceWorkerRegistrationNotifications::getNotifications(
+ScriptPromise<IDLSequence<Notification>>
+ServiceWorkerRegistrationNotifications::getNotifications(
     ScriptState* script_state,
     ServiceWorkerRegistration& registration,
     const GetNotificationOptions* options) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<Notification>>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   NotificationManager::From(execution_context)
@@ -134,7 +139,7 @@ ServiceWorkerRegistrationNotifications::From(
 
 void ServiceWorkerRegistrationNotifications::PrepareShow(
     mojom::blink::NotificationDataPtr data,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
   scoped_refptr<const SecurityOrigin> origin =
       GetExecutionContext()->GetSecurityOrigin();
   NotificationResourcesLoader* loader =
@@ -149,7 +154,7 @@ void ServiceWorkerRegistrationNotifications::PrepareShow(
 void ServiceWorkerRegistrationNotifications::DidLoadResources(
     scoped_refptr<const SecurityOrigin> origin,
     mojom::blink::NotificationDataPtr data,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<IDLUndefined>* resolver,
     NotificationResourcesLoader* loader) {
   DCHECK(loaders_.Contains(loader));
 

@@ -34,7 +34,7 @@ void FakeConnectionToHost::Connect(
 
   event_callback_ = event_callback;
 
-  SetState(CONNECTING, protocol::OK);
+  SetState(CONNECTING, ErrorCode::OK);
 }
 
 void FakeConnectionToHost::Disconnect(protocol::ErrorCode error) {}
@@ -98,7 +98,7 @@ protocol::ConnectionToHost::State FakeConnectionToHost::state() const {
 
 void FakeConnectionToHost::SetState(State state, protocol::ErrorCode error) {
   // |error| should be specified only when |state| is set to FAILED.
-  DCHECK(state == FAILED || error == protocol::OK);
+  DCHECK(state == FAILED || error == ErrorCode::OK);
 
   if (state != state_) {
     state_ = state;

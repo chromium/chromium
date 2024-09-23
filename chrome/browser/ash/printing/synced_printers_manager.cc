@@ -12,7 +12,6 @@
 #include "base/synchronization/lock.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/ash/printing/enterprise_printers_provider.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/ash/printing/specifics_translation.h"
 #include "chrome/browser/browser_process.h"

@@ -6,8 +6,10 @@
 
 #include <va/va.h>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -31,7 +33,7 @@ static bool IsVaapiSupportedWebP(const Vp8FrameHeader& webp_header) {
   }
 
   // Validate the size.
-  // TODO(crbug.com/984971): Make sure visible size and coded size are treated
+  // TODO(crbug.com/41471307): Make sure visible size and coded size are treated
   // similarly here: we don't currently know if we really have to provide the
   // coded size to the VAAPI. So far, it seems to work by just passing the
   // visible size, but we have to learn more, probably by looking into the
@@ -80,11 +82,38 @@ gpu::ImageDecodeAcceleratorType VaapiWebPDecoder::GetType() const {
 }
 
 SkYUVColorSpace VaapiWebPDecoder::GetYUVColorSpace() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   return SkYUVColorSpace::kRec601_SkYUVColorSpace;
+}
+
+// static
+std::optional<gpu::ImageDecodeAcceleratorSupportedProfile>
+VaapiWebPDecoder::GetSupportedProfile() {
+  if (!base::FeatureList::IsEnabled(
+          features::kVaapiWebPImageDecodeAcceleration)) {
+    return std::nullopt;
+  }
+  gpu::ImageDecodeAcceleratorSupportedProfile profile;
+  profile.image_type = gpu::ImageDecodeAcceleratorType::kWebP;
+
+  const bool got_supported_resolutions = VaapiWrapper::GetSupportedResolutions(
+      kWebPVAProfile, VaapiWrapper::CodecMode::kDecode,
+      profile.min_encoded_dimensions, profile.max_encoded_dimensions);
+  if (!got_supported_resolutions) {
+    return std::nullopt;
+  }
+
+  // TODO(andrescj): Ideally, we would advertise support for all the formats
+  // supported by the driver. However, for now, we will only support exposing
+  // YUV 4:2:0 surfaces as DmaBufs.
+  CHECK(VaapiWrapper::GetDecodeSupportedInternalFormats(kWebPVAProfile).yuv420);
+  profile.subsamplings.push_back(gpu::ImageDecodeAcceleratorSubsampling::k420);
+  return profile;
 }
 
 VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
     base::span<const uint8_t> encoded_image) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(vaapi_wrapper_);
   std::unique_ptr<Vp8FrameHeader> parse_result = ParseWebPImage(encoded_image);
   if (!parse_result)
@@ -132,7 +161,8 @@ VaapiImageDecodeStatus VaapiWebPDecoder::AllocateVASurfaceAndSubmitVABuffers(
        {VAProbabilityBufferType, sizeof(prob_buf), &prob_buf},
        {VAPictureParameterBufferType, sizeof(pic_param), &pic_param},
        {VASliceParameterBufferType, sizeof(slice_param), &slice_param},
-       {VASliceDataBufferType, parse_result->frame_size, parse_result->data}});
+       {VASliceDataBufferType, parse_result->frame_size,
+        parse_result->data.get()}});
 
   return success ? VaapiImageDecodeStatus::kSuccess
                  : VaapiImageDecodeStatus::kSubmitVABuffersFailed;

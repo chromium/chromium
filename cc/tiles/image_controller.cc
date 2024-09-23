@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/trace_event/trace_event.h"
@@ -278,7 +279,8 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
 
   // Take the next request from the queue.
   auto decode_it = worker_state->image_decode_queue.begin();
-  DCHECK(decode_it != worker_state->image_decode_queue.end());
+  CHECK(decode_it != worker_state->image_decode_queue.end(),
+        base::NotFatalUntil::M130);
   scoped_refptr<TileTask> decode_task = decode_it->second.task;
   ImageDecodeRequestId decode_id = decode_it->second.id;
 

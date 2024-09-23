@@ -24,6 +24,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
@@ -60,8 +61,9 @@ NonMainThreadImpl::NonMainThreadImpl(const ThreadCreationParams& params)
     message_pump_type = base::MessagePumpType::IO;
   }
   thread_ = std::make_unique<SimpleThreadImpl>(
-      params.name ? params.name : String(), options, supports_gc_,
-      const_cast<scheduler::NonMainThreadImpl*>(this), message_pump_type);
+      params.name ? params.name : String(), options, params.realtime_period,
+      supports_gc_, const_cast<scheduler::NonMainThreadImpl*>(this),
+      message_pump_type);
   if (supports_gc_) {
     MemoryPressureListenerRegistry::Instance().RegisterThread(
         const_cast<scheduler::NonMainThreadImpl*>(this));
@@ -108,10 +110,16 @@ void NonMainThreadImpl::ShutdownOnThread() {
 NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
     const WTF::String& name_prefix,
     const base::SimpleThread ::Options& options,
+    base::TimeDelta realtime_period,
     bool supports_gc,
     NonMainThreadImpl* worker_thread,
     base::MessagePumpType message_pump_type)
     : SimpleThread(name_prefix.Utf8(), options),
+#if BUILDFLAG(IS_APPLE)
+      realtime_period_((options.thread_type == base::ThreadType::kRealtimeAudio)
+                           ? realtime_period
+                           : base::TimeDelta()),
+#endif
       message_pump_type_(message_pump_type),
       thread_(worker_thread),
       supports_gc_(supports_gc) {
@@ -145,7 +153,6 @@ void NonMainThreadImpl::SimpleThreadImpl::CreateScheduler() {
 
 NonMainThreadImpl::GCSupport::GCSupport(NonMainThreadImpl* thread) {
   ThreadState* thread_state = ThreadState::AttachCurrentThread();
-  gc_task_runner_ = std::make_unique<GCTaskRunner>(thread);
   blink_gc_memory_dump_provider_ = std::make_unique<BlinkGCMemoryDumpProvider>(
       thread_state, base::SingleThreadTaskRunner::GetCurrentDefault(),
       BlinkGCMemoryDumpProvider::HeapType::kBlinkWorkerThread);
@@ -153,7 +160,6 @@ NonMainThreadImpl::GCSupport::GCSupport(NonMainThreadImpl* thread) {
 
 NonMainThreadImpl::GCSupport::~GCSupport() {
   // Ensure no posted tasks will run from this point on.
-  gc_task_runner_.reset();
   blink_gc_memory_dump_provider_.reset();
 
   ThreadState::DetachCurrentThread();

@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">ສີນໍ້າຕານໂຣຊີບຣາວ</translation>
 <translation id="249330843868392562">ເປີດການຕັ້ງຄ່າການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="2497706219848005458">ສີເຫຼືອງອົມຂຽວ</translation>
+<translation id="2512979179176933762">ສະແດງໜ້າຈໍ</translation>
 <translation id="2523609930580546572">ການສອນການນຳໃຊ້ ChromeVox</translation>
 <translation id="2525706221823668172">ທາງລັດແປ້ນພິມ Chromebook</translation>
 <translation id="2553108862507765288">ຄວາມ​ຜິດ​ດ້ານ​ໄວ​ຍາ​ກອນ</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດປັດດ້ວຍນິ້ວດຽວຈາກຂວາຫາຊ້າຍເພື່ອເລື່ອນໄປລາຍການກ່ອນໜ້າໄດ້ນຳ. ລອງເຮັດຕອນນີ້.</translation>
 <translation id="280499067616661124">ໜ້າຊອກຫາໃນ ChromeVox</translation>
-<translation id="2811019999044652585">ເພື່ອໂດດໄປຫາສ່ວນອື່ນຂອງໜ້າຈໍ ເຊັ່ນວ່າ ແຖບເຄື່ອງມື ຫຼື ຖາດລະບົບ, ໃຫ້ກົດ Control+Forward. ໃນ Chromebook, ປຸ່ມ Forward ຢູ່ເທິງຕິດກັບປຸ່ມເລກ 2.</translation>
 <translation id="2811204574343810641">ແຖວ</translation>
 <translation id="2816868829355607410">ພື້ນທີ່ຝຶກປະຕິບັດ: ຄຳສັ່ງຂ້າມ</translation>
 <translation id="2841013758207633010">ເວລາ</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">ສີຟ້າສຕີວບລູ</translation>
 <translation id="4253168017788158739">ບັນທຶກ</translation>
 <translation id="4254798249533888099">ຕົ້ນໄມ້</translation>
+<translation id="4259220820964911921">ເປີດການນຳໃຊ້ການຄວບຄຸມໃບໜ້າບໍ?</translation>
 <translation id="4271220233568730077">ຄະນິດສາດຕໍ່ໄປ</translation>
 <translation id="4275397969489577657">ເປີດນຳໃຊ້ການບັນທຶກການຖ່າຍທອດເຫດການ</translation>
 <translation id="4278486392851938658">ບໍ່ມີລິ້ງທີ່ເຂົ້າເບິ່ງແລ້ວກ່ອນໜ້າ</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">ສີແດງອິນເດຍເຣດ</translation>
 <translation id="4432896207833262240">ເນື້ອຫາທີ່ໝາຍໄວ້</translation>
 <translation id="4437615272777527928">ພິມເພື່ອຊອກຫາເມນູ. ໃຊ້ລູກສອນຂຶ້ນ ແລະ ລົງເພື່ອວົນເບິ່ງຜົນການຊອກຫາ. ໃຊ້ລູກສອນຊ້າຍ ແລະ ຂວາເພື່ອປັບເຄື່ອງໝາຍກຸບຂອງຂໍ້ຄວາມ ແລະ ຍ້າຍໄປມາລະຫວ່າງເມນູ.</translation>
+<translation id="4453530046591759283">ເພື່ອຂ້າມໄປພາກສ່ວນອື່ນໆຂອງໜ້າຈໍ ເຊັ່ນ: ແຖບເຄື່ອງມື ຫຼື ຖາດລະບົບ, ໃຫ້ກົດ Control+F1. F1 ແມ່ນປຸ່ມທຳອິດທີ່ຢູ່ທາງຂວາຂອງປຸ່ມ Escape.</translation>
 <translation id="4457472090507035117">ເລືອກສຽງປັດຈຸບັນ:</translation>
 <translation id="4476183483923481720">ແຖວໃຫມ່</translation>
 <translation id="4479068155583208887">ສີແດງໄຟບຣິກ</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">ພາກຄັດຕິດ</translation>
 <translation id="5761219715606611783">ດີຫຼາຍ! ທ່ານໄດ້ຮຽນຮູ້ພື້ນຖານຂອງການສຳຜັດ ChromeVox ແລ້ວ. ທ່ານສາມາດເຂົ້າມາຮຽນການສອນການນຳໃຊ້ໄດ້ໃໝ່ ຫຼື ອອກຈາກການສອນການນຳໃຊ້ໂດຍການໃຊ້ປຸ່ມທາງລຸ່ມ.</translation>
 <translation id="5776001898637896684">ສ່ວນຂະຫຍາຍການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າເຄືອຂ່າຍ Google ທີ່ປັບປຸງໃຫ້ດີຂຶ້ນ</translation>
+<translation id="5783252477644995371">ການຄວບຄຸມໃບໜ້າໃຫ້ທ່ານຄວບຄຸມເຄີເຊີດ້ວຍການຊີ້ໃບໜ້າ ແລະ ຄວາມສາມາດໃນການດຳເນີນການຕ່າງໆ, ເຊັ່ນ: ການຄລິກຊ້າຍດ້ວຍການສະແດງສີໜ້າເຊັ່ນ: ການຍິ້ມ</translation>
 <translation id="5805940204952508776">ແຕະດ້ວຍສອງນິ້ວມື</translation>
 <translation id="5819072574982403430">ລາຍ​ການ​ຕົ້ນໄມ້</translation>
 <translation id="5822819874379903994">ສີຟ້າອົມຂຽວເຂັ້ມ</translation>
@@ -847,7 +850,7 @@
 <translation id="6865519907510167493">ສະກົດຜິດ</translation>
 <translation id="6873188295213080042">ຄຳບອກໃບ້: ກົດປຸ່ມຊອກຫາຄ້າງໄວ້ ແລ້ວກົດປຸ່ມລູກສອນເພື່ອໄປຍັງສ່ວນຕ່າງໆ.</translation>
 <translation id="6894148351896207544">ເວົ້າວັນທີ ແລະ ເວລາປັດຈຸບັນ</translation>
-<translation id="6896758677409633944">ກັອບປີ້</translation>
+<translation id="6896758677409633944">ສຳເນົາ</translation>
 <translation id="6897341342232909480">ຍ້າຍ​ໄປທາງຊ້າຍ</translation>
 <translation id="6901540140423170855">ວັນ​ທີ</translation>
 <translation id="6910211073230771657">ລຶບແລ້ວ</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">ສີຂາວນາວາໂຈ</translation>
 <translation id="7095834689119144465">ແກ້ໄຂຂໍ້ຄວາມເປັນຕົວເລກເທົ່ານັ້ນ</translation>
 <translation id="7096001299300236431">ມີເດຍຜ່ານມາ</translation>
+<translation id="7096668131290451939">ກົດ Escape ອີກເທື່ອໜຶ່ງເພື່ອອກຈາກໂໝດຮຽນຮູ້</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">ສຽງສະທ້ອນຄໍາເວົ້າ</translation>
 <translation id="7137397390322864165">ສີຊາມອນ</translation>
@@ -1071,7 +1075,6 @@
 <translation id="847040613207937740">ບໍ່ມີກ່ອງໝາຍຖັດໄປ</translation>
 <translation id="8473540203671727883">ເວົ້າຂໍ້ຄວາມຢູ່ກ້ອງເມົ້າ</translation>
 <translation id="8476408756881832830">ຢຸດການຫຼິ້ນໄວ້ຊົ່ວຄາວ ເມື່ອ ChromeVox ກຳລັງເວົ້າ</translation>
-<translation id="8476508772960940536">ແຜນຜັງໜ້າຕ່າງ</translation>
 <translation id="8480873377842220259">ຕອນນີ້ທ່ານຈະໄດ້ຮຽນຮູ້ການນຳທາງພື້ນຖານບາງຢ່າງ. ທ່ານສາມາດກົດປຸ່ມຊອກຫາຄ້າງໄວ້ ແລ້ວກົດປຸ່ມລູກສອນເພື່ອຍ້າຍໄປມາໃນໜ້າຈໍ. ເພື່ອສືບຕໍ່, ກະລຸນາກົດປຸ່ມຊອກຫາ + ລູກສອນຂວາ.</translation>
 <translation id="8503360654911991865">ຫຼຸດເມັດການນໍາ​ທາງລົງ</translation>
 <translation id="8520472399088452386">ປຸ່ມປິ່ນ</translation>

@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit-ови</translation>
 <translation id="3085752524577180175">SOCKS хост</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, блокирао администратор, детаљи</translation>
-<translation id="3113153474486991170">Отварање путање <ph name="PATH" /> са ове локације није успело. Копирајте у Моји фајлови да бисте отворили.</translation>
 <translation id="3113592018909187986">Имате још 1 покушај. Нећете моћи да користите ову мрежу док не подесите нови PIN.</translation>
 <translation id="3124404833828281817">Особа сањари</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Откажите <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, није активирана, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>
 <translation id="3691184985318546178">синхала</translation>
+<translation id="3702842351052426940">SIM картица или eSIM профил је можда деактивиран. Пробајте да замените SIM картицу или да промените eSIM профиле.</translation>
 <translation id="3722341589402358578">Дошло је до грешке. Неке ставке можда нису премештене у отпад.</translation>
 <translation id="3726463242007121105">Овај уређај не може да се отвори јер његов систем датотека није подржан.</translation>
 <translation id="3727148787322499904">Ако промените ово подешавање, то ће утицати на све дељене мреже</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Администратор је наметнуо овај прокси</translation>
 <translation id="3830674330436234648">Репродукција није доступна</translation>
 <translation id="383652340667548381">српски</translation>
+<translation id="3839045880592694915">Мобилни оператер није дозволио да се модем повеже. Више детаља потражите од мобилног оператера.</translation>
 <translation id="385051799172605136">Назад</translation>
-<translation id="3851491607336266896">Повезано, ограничена веза</translation>
 <translation id="3855472144336161447">немачка Neo 2</translation>
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3866249974567520381">Опис</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Недавно отворени Microsoft фајлови су премештени на OneDrive</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4017788180641807848">енглески (САД) са тастатуром Workman</translation>
-<translation id="4019998208269143058">Закачи у брз приступ фајловима</translation>
 <translation id="4040753847560036377">Нетачан PUK</translation>
 <translation id="4057991113334098539">Активирање...</translation>
 <translation id="4092890906744441904">ирски</translation>
+<translation id="4101601646343868113">Пријавите се на своју мобилну мрежу и потврдите да је ваш тарифни пакет активан</translation>
 <translation id="4124731372776320263">Синхронизује се 1 фајл са Диска</translation>
 <translation id="4124935795427217608">Једнорог</translation>
 <translation id="4131235941541910880">Преместите ставке које вам не требају у отпад</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">тамилски са тастатуром Tamil99</translation>
 <translation id="5633226425545095130">Премештањем ове ставке делите је са свима који могу да виде дељени фолдер <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Слушај</translation>
+<translation id="5650895901941743674">Проверите конфигурацију APN-a</translation>
 <translation id="5669691691057771421">Унесите нови PIN</translation>
 <translation id="5678784840044122290">Linux апликација ће бити доступна на терминалу, а можда ће приказивати и икону у Покретачу.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Није успео прекид везе са архивским или виртуелним диском<ph name="END_BOLD" />
@@ -666,7 +667,7 @@
 <translation id="6133877453787250710">Администратор прати:</translation>
 <translation id="613750717151263950">јапански са америчком тастатуром</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, нема мреже</translation>
-<translation id="6146563240635539929">Видео снимци</translation>
+<translation id="6146563240635539929">Видеи</translation>
 <translation id="6150853954427645995">Да бисте сачували ову датотеку за офлајн коришћење, повежите се поново на интернет, кликните десним тастером на датотеку и изаберите опцију <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Лептири</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, повежи</translation>
 <translation id="6269630227984243955">малајски</translation>
 <translation id="6271903698064569429">Не можете да отпремите фајлове зато што <ph name="SHARED_DRIVE_NAME" /> нема довољно меморијског простора.</translation>
+<translation id="6279140785485544797">Пакет мобилних података је можда истекао. Подршку потражите од мобилног оператера.</translation>
 <translation id="6287852322318138013">Изаберите апликацију за отварање ове датотеке</translation>
 <translation id="6295542640242147836">Закључај SIM</translation>
 <translation id="6296410173147755564">Неважећи PUK</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> архива</translation>
 <translation id="6321303798550928047">Махање</translation>
 <translation id="6327785803543103246">Аутоматско откривање веб-проксија</translation>
-<translation id="6337014272874260727">Откачи из брзог приступа фајловима</translation>
 <translation id="6339145975392024142">Америчка интернационална тастатура (PC)</translation>
 <translation id="6356685157277930264">Прозор за повратне информације датотека</translation>
 <translation id="6358884629796491903">Змај</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Актуелни директоријум</translation>
 <translation id="6751256176799620176">Изабран је 1 фолдер</translation>
 <translation id="6755827872271341378">Chrome OS Flex уређај</translation>
+<translation id="6777029074498310250">Више информација потражите на <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">Пусти</translation>
 <translation id="6794539005637808366">Вратите ставку или је превуците у нов фолдер изван отпада</translation>
 <translation id="6795884519221689054">Панда</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">тамилски са индијском тастатуром</translation>
 <translation id="7088615885725309056">Старије</translation>
 <translation id="7103992300314999525">македонски</translation>
+<translation id="7104338189998813914">Дошло је до проблема при приступу OneDrive налогу</translation>
 <translation id="7106346894903675391">Купи још меморијског простора...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;претражи Диск&lt;/em&gt;</translation>
 <translation id="7135561821015524160">канада фонетска</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Сачекајте тренутак</translation>
 <translation id="7600126690270271294">српски</translation>
 <translation id="7603724359189955920">Мреже</translation>
+<translation id="7624010287655004652">Закључао је други мобилни оператер</translation>
 <translation id="7627790789328695202">Упс, <ph name="FILE_NAME" /> већ постоји. Преименујте датотеку и покушајте поново.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% је довршено.</translation>
 <translation id="7649070708921625228">Помоћ</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Листа датотека се променила у приказ сличица.</translation>
 <translation id="8601932370724196034">Crostini датотека слике</translation>
 <translation id="8609695766746872526">исландски</translation>
+<translation id="8630384863424041081">Унесите PIN СИМ картице или подразумевани PIN који вам је дао мобилни оператер. Подршку потражите од мобилног оператера.</translation>
 <translation id="863903787380594467">Нетачан PIN. Преосталих покушаја: <ph name="RETRIES" />.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – порт</translation>
 <translation id="8656407365183407932">Офлајн фајлови су морали да се уклоне</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Овај фајл је поверљив и подлеже ограничењима смерница администратора.</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8713112442029511308">малтешки</translation>
-<translation id="8714138378966541668">Закључао је добављач</translation>
 <translation id="8714406895390098252">Бицикл</translation>
 <translation id="8719721339511222681">Изабрали сте ставку <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">хрватски</translation>

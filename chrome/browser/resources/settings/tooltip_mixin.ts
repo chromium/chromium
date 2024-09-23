@@ -7,21 +7,21 @@
  * settings pages.
  */
 
-import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
 export interface TooltipMixinInterface {
-  showTooltipAtTarget(tooltip: PaperTooltipElement, target: EventTarget): void;
+  showTooltipAtTarget(tooltip: CrTooltipElement, target: Element): void;
 }
 
 export const TooltipMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<TooltipMixinInterface> => {
       class TooltipMixin extends superClass {
-        showTooltipAtTarget(tooltip: PaperTooltipElement, target: EventTarget) {
+        showTooltipAtTarget(tooltip: CrTooltipElement, target: Element) {
           if (!tooltip.for) {
             // In the case that the tooltip and target are not associated with
             // the for property, manually set the target of the tooltip and

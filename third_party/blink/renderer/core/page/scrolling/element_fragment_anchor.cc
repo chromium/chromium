@@ -61,7 +61,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (doc.IsSVGDocument()) {
     if (auto* svg = DynamicTo<SVGSVGElement>(doc.documentElement())) {
       String decoded = DecodeURLEscapeSequences(fragment, DecodeURLMode::kUTF8);
-      svg->SetupInitialView(decoded, target);
+      svg->SetViewSpec(svg->ParseViewSpec(decoded, target));
     }
   }
 

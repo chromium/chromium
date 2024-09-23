@@ -17,8 +17,10 @@
 
 namespace cc {
 
-// Each asset in a Skottie animation has a unique "resource_id" in string
-// format. This is a map from resource_id to its corresponding location.
+// Each external asset in a Skottie animation has a unique "resource_id" in
+// string format. This is a map from resource_id to its corresponding location.
+// Note that embedded images, where the image data is encoded directly in the
+// lottie file, are not included here.
 class CC_PAINT_EXPORT SkottieResourceMetadataMap {
  public:
   // Metadata for a single image asset.
@@ -48,6 +50,7 @@ class CC_PAINT_EXPORT SkottieResourceMetadataMap {
                      std::string_view resource_id,
                      std::optional<gfx::Size> size);
 
+  // Returns all external image assets.
   const Storage& asset_storage() const { return asset_storage_; }
 
  private:

@@ -28,11 +28,9 @@ const execution_context::ExecutionContext* GetExecutionContext(
 // allow this.
 class GraphOwnedWrapper : public GraphOwned {
  public:
-  GraphOwnedWrapper() {
-    VotingChannel voting_channel = observer_.BuildVotingChannel();
-    voter_id_ = voting_channel.voter_id();
-    frame_audible_voter_.SetVotingChannel(std::move(voting_channel));
-  }
+  GraphOwnedWrapper()
+      : frame_audible_voter_(observer_.BuildVotingChannel()),
+        voter_id_(frame_audible_voter_.voter_id()) {}
 
   ~GraphOwnedWrapper() override = default;
 
@@ -41,10 +39,10 @@ class GraphOwnedWrapper : public GraphOwned {
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override {
-    graph->AddInitializingFrameNodeObserver(&frame_audible_voter_);
+    frame_audible_voter_.InitializeOnGraph(graph);
   }
   void OnTakenFromGraph(Graph* graph) override {
-    graph->RemoveInitializingFrameNodeObserver(&frame_audible_voter_);
+    frame_audible_voter_.TearDownOnGraph(graph);
   }
 
   // Exposes the DummyVoteObserver to validate expectations.
@@ -71,7 +69,6 @@ class FrameAudibleVoterTest : public GraphTestHarness {
   FrameAudibleVoterTest& operator=(const FrameAudibleVoterTest&) = delete;
 
   void SetUp() override {
-    Super::GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
     wrapper_ = graph()->PassToGraph(std::make_unique<GraphOwnedWrapper>());
   }
@@ -98,7 +95,7 @@ TEST_F(FrameAudibleVoterTest, AudibleChanged) {
       voter_id(), GetExecutionContext(frame_node.get()),
       base::TaskPriority::LOWEST, FrameAudibleVoter::kFrameAudibleReason));
 
-  // Make the frame visible. This should increase the priority.
+  // Make the frame audible. This should increase the priority.
   mock_graph.frame->SetIsAudible(true);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(voter_id(),

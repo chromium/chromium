@@ -159,9 +159,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
 
     // Draw bookmark title.
     gfx::FontList font_list = views::TypographyProvider::Get().GetFont(
-        views::style::CONTEXT_LABEL, features::IsChromeRefresh2023()
-                                         ? views::style::STYLE_BODY_4_EMPHASIS
-                                         : views::style::STYLE_PRIMARY);
+        views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4_EMPHASIS);
     gfx::Rect text_rect(kBookmarkDragImageSize);
     text_rect.Inset(gfx::Insets::TLBR(
         kCountContainerRadius,
@@ -300,10 +298,9 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
   // bookmarks::BaseBookmarkModelObserver overrides:
   void BookmarkModelChanged() override {}
 
-  void BookmarkModelBeingDeleted(BookmarkModel* model) override { delete this; }
+  void BookmarkModelBeingDeleted() override { delete this; }
 
-  void BookmarkNodeFaviconChanged(BookmarkModel* model,
-                                  const BookmarkNode* node) override {
+  void BookmarkNodeFaviconChanged(const BookmarkNode* node) override {
     if (icon_loaded_ || node->id() != drag_node_id_) {
       return;
     }

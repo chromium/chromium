@@ -43,6 +43,7 @@
             "type": "array",
             "items": {"type": "string"},
             "optional": true,
+            "minItems": 1,
             "description": "When present, only data for origins in this list is deleted. Only supported for cookies, storage and cache. Cookies are cleared for the whole registrable domain."
           },
           "excludeOrigins": {

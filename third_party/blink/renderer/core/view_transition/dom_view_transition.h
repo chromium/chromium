@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_type_set.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
@@ -28,8 +29,7 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   using PromiseProperty = ScriptPromiseProperty<IDLUndefined, IDLAny>;
 
  public:
-  // Constructor for navigation-initiated view transition (used only in the new
-  // document).
+  // Constructor for navigation-initiated view transition.
   explicit DOMViewTransition(ExecutionContext&, ViewTransition&);
 
   // Constructor for script-initiated view transition. Also delegated from the
@@ -45,9 +45,11 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
 
   // IDL implementation. Refer to view_transition.idl for additional comments.
   void skipTransition();
-  ScriptPromiseTyped<IDLUndefined> finished(ScriptState*) const;
-  ScriptPromiseTyped<IDLUndefined> ready(ScriptState*) const;
-  ScriptPromiseTyped<IDLUndefined> updateCallbackDone(ScriptState*) const;
+  ScriptPromise<IDLUndefined> finished(ScriptState*) const;
+  ScriptPromise<IDLUndefined> ready(ScriptState*) const;
+  ScriptPromise<IDLUndefined> updateCallbackDone(ScriptState*) const;
+
+  ViewTransitionTypeSet* types() const;
 
   // Called from ViewTransition when the transition is skipped/aborted for any
   // reason.

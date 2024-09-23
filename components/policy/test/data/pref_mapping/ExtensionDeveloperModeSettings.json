@@ -1,0 +1,56 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (policy not set)",
+        "policies": {},
+        "prefs": {
+          "extensions.ui.developer_mode": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Check pref value when the policy is set to allow developer mode",
+        "policies": {
+          "ExtensionDeveloperModeSettings": 0
+        },
+        "prefs": {
+          "extensions.ui.developer_mode": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Check pref value when the policy is set to disallow developer mode",
+        "policies": {
+          "ExtensionDeveloperModeSettings": 1
+        },
+        "prefs": {
+          "extensions.ui.developer_mode": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Check that ExtensionDeveloperModeSettings takes precedence over DeveloperToolsAvailability",
+        "policies": {
+          "ExtensionDeveloperModeSettings": 0, // Allow developer mode. This should take precedence.
+          "DeveloperToolsAvailability": 2 // Disallow developer mode
+        },
+        "prefs": {
+          "extensions.ui.developer_mode": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

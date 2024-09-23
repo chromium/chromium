@@ -46,10 +46,11 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
 
   std::optional<base::Value> input = base::JSONReader::Read(
       native_input, base::JSONParserOptions::JSON_PARSE_RFC);
-  if (!input || !input->is_dict())
+  if (!input) {
     return;
+  }
 
-  std::ignore = TriggerRegistration::Parse(std::move(*input).TakeDict());
+  std::ignore = TriggerRegistration::Parse(*std::move(input));
 }
 
 }  // namespace attribution_reporting

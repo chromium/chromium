@@ -5,22 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_LOG_ROUTER_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_LOG_ROUTER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace autofill {
 
 class LogRouter;
 
 // A factory that associates autofill::LogRouter instances with
-// ChromeBrowserStates. This returns nullptr of off-the-record browser states.
+// profiles. This returns nullptr for off-the-record profiles.
 class AutofillLogRouterFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static autofill::LogRouter* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static autofill::LogRouter* GetForBrowserState(ProfileIOS* profile);
 
+  static autofill::LogRouter* GetForProfile(ProfileIOS* profile);
   static AutofillLogRouterFactory* GetInstance();
 
   AutofillLogRouterFactory(const AutofillLogRouterFactory&) = delete;

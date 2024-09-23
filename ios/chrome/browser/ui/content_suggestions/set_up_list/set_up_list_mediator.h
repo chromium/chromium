@@ -10,18 +10,23 @@
 #import "base/ios/block_types.h"
 
 class AuthenticationService;
-@protocol ContentSuggestionsConsumer;
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMetricsRecorder;
 @protocol ContentSuggestionsViewControllerAudience;
 class PrefService;
 @class SceneState;
+@class SetUpListConfig;
 @class SetUpListItem;
 @class SetUpListItemViewData;
 
+namespace segmentation_platform {
+class DeviceSwitcherResultDispatcher;
+class SegmentationPlatformService;
+}  // namespace segmentation_platform
+
 namespace signin {
 class IdentityManager;
-}
+}  // namespace signin
 
 namespace syncer {
 class SyncService;
@@ -39,27 +44,62 @@ class SyncService;
 
 @end
 
+// Audience for Set Up List events
+@protocol SetUpListMediatorAudience
+
+// Indicates that the Set Up List should be removed.
+- (void)removeSetUpList;
+
+// Indicates that the displayed Set Up List should be replaced by
+// `allSetConfig`.
+- (void)replaceSetUpListWithAllSet:(SetUpListConfig*)allSetConfig;
+
+@end
+
 // Mediator for managing the state of the Set Up List for its Magic Stack
 // module.
 @interface SetUpListMediator : NSObject
 
-// Default initializer.
+// Receiver for Set Up List actions.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    commandHandler;
+
+// Audience used to communicate Set Up List events.
+@property(nonatomic, weak) id<SetUpListMediatorAudience> audience;
+
+// Delegate used to communicate Content Suggestions events to the delegate.
+@property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
+
+// Recorder for content suggestions metrics.
+@property(nonatomic, weak)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+
+// Initializer with optional `segmentationService` and
+// `deviceSwitcherResultDispatcher` used for personalizing messaging in the Set
+// Up List Default Browser item.
 - (instancetype)initWithPrefService:(PrefService*)prefService
                         syncService:(syncer::SyncService*)syncService
                     identityManager:(signin::IdentityManager*)identityManager
               authenticationService:(AuthenticationService*)authService
                          sceneState:(SceneState*)sceneState
+              isDefaultSearchEngine:(BOOL)isDefaultSearchEngine
+                segmentationService:
+                    (segmentation_platform::SegmentationPlatformService*)
+                        segmentationService
+     deviceSwitcherResultDispatcher:
+         (segmentation_platform::DeviceSwitcherResultDispatcher*)dispatcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects this mediator.
 - (void)disconnect;
 
 // Returns YES if the conditions are right to display the Set Up List.
 - (BOOL)shouldShowSetUpList;
 
-// Sends the SetUpList items up to the consumer.
-- (void)showSetUpList;
+// Returns the Set Up List module configuration(s) to show.
+- (NSArray<SetUpListConfig*>*)setUpListConfigs;
 
 // Returns the complete list of tasks, inclusive of the ones the user has
 // already completed.
@@ -74,19 +114,8 @@ class SyncService;
 // Indicates to the mediator to disable SetUpList entirely.
 - (void)disableModule;
 
-// Consumer for this mediator.
-@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
-
-// Receiver for Set Up List actions.
-@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
-    commandHandler;
-
-// Delegate used to communicate Content Suggestions events to the delegate.
-@property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
-
-// Recorder for content suggestions metrics.
-@property(nonatomic, weak)
-    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+// Retrieves user segmentation data from the Segmentation Platform.
+- (void)retrieveUserSegment;
 
 @end
 

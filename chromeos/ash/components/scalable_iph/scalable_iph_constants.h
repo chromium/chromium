@@ -61,7 +61,8 @@ enum class ActionType {
   kOpenChromebookPerksWeb = 12,
   kOpenChromebookPerksGfnPriority2022 = 13,
   kOpenChromebookPerksMinecraft2023 = 14,
-  kLastAction = kOpenChromebookPerksMinecraft2023,
+  kOpenChromebookPerksMinecraftRealms2023 = 15,
+  kLastAction = kOpenChromebookPerksMinecraftRealms2023,
 };
 
 std::ostream& operator<<(std::ostream& out, ActionType action_type);
@@ -86,6 +87,9 @@ inline constexpr char kActionTypeOpenChromebookPerksGfnPriority2022[] =
     "OpenChromebookPerksGfnPriority2022";
 inline constexpr char kActionTypeOpenChromebookPerksMinecraft2023[] =
     "OpenChromebookPerksMinecraft2023";
+// Use shorter string to keep Finch config payload size smaller.
+inline constexpr char kActionTypeOpenChromebookPerksMinecraftRealms2023[] =
+    "PerksMinecraftRealms2023";
 
 // Constants for events.
 // Naming convention: Camel case starting with a capital letter. Note that

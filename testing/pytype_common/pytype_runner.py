@@ -15,11 +15,8 @@ CHROMIUM_SRC_DIR = os.path.realpath(
 
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'build', 'util'))
 
-# pylint: disable=wrong-import-position
 from lib.results import result_sink
 from lib.results import result_types
-
-# pylint: disable=wrong-import-position
 
 
 # pylint: disable=too-many-arguments

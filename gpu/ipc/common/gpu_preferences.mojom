@@ -89,8 +89,6 @@ struct GpuPreferences {
   bool enable_gpu_service_logging;
   bool enable_gpu_service_tracing;
   bool use_passthrough_cmd_decoder;
-  bool disable_biplanar_gpu_memory_buffers_for_video_frames;
-  array<gfx.mojom.BufferUsageAndFormat> texture_target_exception_list;
 
   bool ignore_gpu_blocklist;
   bool watchdog_starts_backgrounded;
@@ -118,9 +116,6 @@ struct GpuPreferences {
   mojo_base.mojom.MessagePumpType message_pump_type;
 
   bool enable_native_gpu_memory_buffers;
-
-  [EnableIf=is_chromeos]
-  bool enable_chromeos_direct_video_decoder;
 
   bool force_separate_egl_display_for_webgl_testing;
 };

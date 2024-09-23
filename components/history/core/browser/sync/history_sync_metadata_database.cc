@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/big_endian.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/time/time.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -18,9 +18,11 @@ namespace history {
 
 namespace {
 
-// Key in sql::MetaTable, the value is a serialization of syner::ModelTypeState,
-// which tracks the overall sync state of the history datatype.
-const char kHistoryModelTypeStateKey[] = "history_model_type_state";
+// Key in sql::MetaTable, the value is a serialization of syner::DataTypeState,
+// which tracks the overall sync state of the history datatype. Note that the
+// table name uses the legacy name "model type state" as a historic artifact to
+// avoid a data migration.
+const char kHistoryDataTypeStateKey[] = "history_model_type_state";
 
 }  // namespace
 
@@ -59,12 +61,12 @@ bool HistorySyncMetadataDatabase::GetAllSyncMetadata(
     return false;
   }
 
-  sync_pb::ModelTypeState model_type_state;
-  if (!GetModelTypeState(&model_type_state)) {
+  sync_pb::DataTypeState data_type_state;
+  if (!GetDataTypeState(&data_type_state)) {
     return false;
   }
 
-  metadata_batch->SetModelTypeState(model_type_state);
+  metadata_batch->SetDataTypeState(data_type_state);
   return true;
 }
 
@@ -76,11 +78,11 @@ bool HistorySyncMetadataDatabase::ClearAllEntityMetadata() {
 }
 
 bool HistorySyncMetadataDatabase::UpdateEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
-  DCHECK_EQ(model_type, syncer::HISTORY)
-      << "Only the HISTORY model type is supported";
+  DCHECK_EQ(data_type, syncer::HISTORY)
+      << "Only the HISTORY data type is supported";
   DCHECK(!storage_key.empty());
 
   sql::Statement s(
@@ -93,10 +95,10 @@ bool HistorySyncMetadataDatabase::UpdateEntityMetadata(
 }
 
 bool HistorySyncMetadataDatabase::ClearEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key) {
-  DCHECK_EQ(model_type, syncer::HISTORY)
-      << "Only the HISTORY model type is supported";
+  DCHECK_EQ(data_type, syncer::HISTORY)
+      << "Only the HISTORY data type is supported";
   DCHECK(!storage_key.empty());
 
   sql::Statement s(db_->GetUniqueStatement(
@@ -106,41 +108,41 @@ bool HistorySyncMetadataDatabase::ClearEntityMetadata(
   return s.Run();
 }
 
-bool HistorySyncMetadataDatabase::UpdateModelTypeState(
-    syncer::ModelType model_type,
-    const sync_pb::ModelTypeState& model_type_state) {
-  DCHECK_EQ(model_type, syncer::HISTORY)
-      << "Only the HISTORY model type is supported";
+bool HistorySyncMetadataDatabase::UpdateDataTypeState(
+    syncer::DataType data_type,
+    const sync_pb::DataTypeState& data_type_state) {
+  DCHECK_EQ(data_type, syncer::HISTORY)
+      << "Only the HISTORY data type is supported";
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
 
-  std::string serialized_state = model_type_state.SerializeAsString();
-  return meta_table_->SetValue(kHistoryModelTypeStateKey, serialized_state);
+  std::string serialized_state = data_type_state.SerializeAsString();
+  return meta_table_->SetValue(kHistoryDataTypeStateKey, serialized_state);
 }
 
-bool HistorySyncMetadataDatabase::ClearModelTypeState(
-    syncer::ModelType model_type) {
-  DCHECK_EQ(model_type, syncer::HISTORY)
-      << "Only the HISTORY model type is supported";
+bool HistorySyncMetadataDatabase::ClearDataTypeState(
+    syncer::DataType data_type) {
+  DCHECK_EQ(data_type, syncer::HISTORY)
+      << "Only the HISTORY data type is supported";
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
-  return meta_table_->DeleteKey(kHistoryModelTypeStateKey);
+  return meta_table_->DeleteKey(kHistoryDataTypeStateKey);
 }
 
 // static
 uint64_t HistorySyncMetadataDatabase::StorageKeyToMicrosSinceWindowsEpoch(
     const std::string& storage_key) {
-  uint64_t microseconds_since_windows_epoch = 0;
-  DCHECK_EQ(storage_key.size(), sizeof(microseconds_since_windows_epoch));
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(storage_key.data()),
-                      &microseconds_since_windows_epoch);
-  return microseconds_since_windows_epoch;
+  // TODO(danakj): This method could receive a span<const char, 8u> (or
+  // span<const uint8_t, 8u>) instead of checking this size at runtime.
+  DCHECK_EQ(storage_key.size(), sizeof(uint64_t));
+  return base::U64FromBigEndian(
+      base::as_byte_span(storage_key).first<sizeof(uint64_t)>());
 }
 
 // static
 std::string HistorySyncMetadataDatabase::StorageKeyFromMicrosSinceWindowsEpoch(
     uint64_t micros) {
-  std::string storage_key(sizeof(uint64_t), 0);
-  base::WriteBigEndian<uint64_t>(storage_key.data(), micros);
-  return storage_key;
+  std::array<uint8_t, sizeof(uint64_t)> storage_key =
+      base::U64ToBigEndian(micros);
+  return std::string(storage_key.begin(), storage_key.end());
 }
 
 // static
@@ -169,7 +171,7 @@ bool HistorySyncMetadataDatabase::GetAllEntityMetadata(
     std::string serialized_metadata = s.ColumnString(1);
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
     if (!entity_metadata->ParseFromString(serialized_metadata)) {
-      DLOG(WARNING) << "Failed to deserialize HISTORY model type "
+      DLOG(WARNING) << "Failed to deserialize HISTORY data type "
                        "sync_pb::EntityMetadata.";
       return false;
     }
@@ -178,12 +180,12 @@ bool HistorySyncMetadataDatabase::GetAllEntityMetadata(
   return true;
 }
 
-bool HistorySyncMetadataDatabase::GetModelTypeState(
-    sync_pb::ModelTypeState* state) {
+bool HistorySyncMetadataDatabase::GetDataTypeState(
+    sync_pb::DataTypeState* state) {
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
   std::string serialized_state;
-  if (!meta_table_->GetValue(kHistoryModelTypeStateKey, &serialized_state)) {
-    *state = sync_pb::ModelTypeState();
+  if (!meta_table_->GetValue(kHistoryDataTypeStateKey, &serialized_state)) {
+    *state = sync_pb::DataTypeState();
     return true;
   }
 

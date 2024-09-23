@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -52,20 +53,11 @@ class SubscriptionInterceptingPermissionManager
     callback_ = std::move(callback);
   }
 
-  SubscriptionId SubscribeToPermissionStatusChange(
-      blink::PermissionType permission,
-      content::RenderProcessHost* render_process_host,
-      content::RenderFrameHost* render_frame_host,
-      const GURL& requesting_origin,
-      base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
-      override {
-    SubscriptionId result =
-        permissions::PermissionManager::SubscribeToPermissionStatusChange(
-            permission, render_process_host, render_frame_host,
-            requesting_origin, callback);
+  void OnPermissionStatusChangeSubscriptionAdded(
+      content::PermissionController::SubscriptionId subscription_id) override {
+    permissions::PermissionManager::OnPermissionStatusChangeSubscriptionAdded(
+        subscription_id);
     std::move(callback_).Run();
-
-    return result;
   }
 
  private:
@@ -106,8 +98,9 @@ class PermissionManagerBrowserTest : public InProcessBrowserTest {
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
+// TODO(crbug.com/41485058): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
-                       ServiceWorkerPermissionQueryIncognitoClose) {
+                       DISABLED_ServiceWorkerPermissionQueryIncognitoClose) {
   base::RunLoop run_loop;
   permissions::PermissionManager* pm =
       PermissionManagerFactory::GetForProfile(incognito_browser()->profile());
@@ -120,21 +113,32 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
           "/permissions/permissions_service_worker.html")));
   run_loop.Run();
 
-  // TODO(crbug.com/889276) : We are relying here on the test shuts down to
+  // TODO(crbug.com/40092556) : We are relying here on the test shuts down to
   // close the browser. We need to make the test more robust by closing the
   // browser explicitly.
 }
 
+// TODO(crbug.com/329645039): Re-enable this test once fixed
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)) || \
+    (defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS))
+#define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
+  DISABLED_ServiceWorkerPermissionAfterRendererCrash
+#else
+#define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
+  ServiceWorkerPermissionAfterRendererCrash
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
-                       ServiceWorkerPermissionAfterRendererCrash) {
+                       MAYBE_ServiceWorkerPermissionAfterRendererCrash) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 
   content::RenderProcessHostWatcher crash_observer(
       incognito_browser()->tab_strip_model()->GetActiveWebContents(),
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  incognito_browser()->OpenURL(content::OpenURLParams(
-      GURL(blink::kChromeUICrashURL), content::Referrer(),
-      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+  incognito_browser()->OpenURL(
+      content::OpenURLParams(
+          GURL(blink::kChromeUICrashURL), content::Referrer(),
+          WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
   crash_observer.Wait();
 
   base::RunLoop run_loop;

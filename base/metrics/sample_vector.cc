@@ -5,14 +5,17 @@
 #include "base/metrics/sample_vector.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_span.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -176,7 +179,7 @@ void SampleVectorBase::Accumulate(Sample value, Count count) {
   Count old_bucket_count = new_bucket_count - count;
   bool record_negative_sample =
       (new_bucket_count >= 0) != (old_bucket_count >= 0) && count > 0;
-  if (UNLIKELY(record_negative_sample)) {
+  if (record_negative_sample) [[unlikely]] {
     RecordNegativeSample(SAMPLES_ACCUMULATE_OVERFLOW, count);
   }
 }
@@ -230,6 +233,16 @@ std::unique_ptr<SampleCountIterator> SampleVectorBase::Iterator() const {
   // Handle the single-sample case.
   SingleSample sample = single_sample().Load();
   if (sample.count != 0) {
+    static_assert(std::is_unsigned<decltype(SingleSample::bucket)>::value);
+    if (sample.bucket >= bucket_ranges_->bucket_count()) {
+      // Return an empty iterator if the specified bucket is invalid (e.g. due
+      // to corruption). If a different sample is eventually emitted, we will
+      // move from SingleSample to a counts storage, and that time, we will
+      // discard this invalid sample (see MoveSingleSampleToCounts()).
+      return std::make_unique<SampleVectorIterator>(
+          base::span<const HistogramBase::AtomicCount>(), bucket_ranges_);
+    }
+
     return std::make_unique<SingleSampleIterator>(
         bucket_ranges_->range(sample.bucket),
         bucket_ranges_->range(sample.bucket + 1), sample.count, sample.bucket,
@@ -250,6 +263,15 @@ std::unique_ptr<SampleCountIterator> SampleVectorBase::ExtractingIterator() {
   // Handle the single-sample case.
   SingleSample sample = single_sample().Extract();
   if (sample.count != 0) {
+    static_assert(std::is_unsigned<decltype(SingleSample::bucket)>::value);
+    if (sample.bucket >= bucket_ranges_->bucket_count()) {
+      // Return an empty iterator if the specified bucket is invalid (e.g. due
+      // to corruption). Note that we've already removed the sample from the
+      // underlying data, so this invalid sample is discarded.
+      return std::make_unique<ExtractingSampleVectorIterator>(
+          base::span<HistogramBase::AtomicCount>(), bucket_ranges_);
+    }
+
     // Note that we have already extracted the samples (i.e., reset the
     // underlying data back to 0 samples), even before the iterator has been
     // used. This means that the caller needs to ensure that this value is
@@ -304,6 +326,18 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
   size_t iter_index;
   if (iter->GetBucketIndex(&iter_index)) {
     index_offset = dest_index - iter_index;
+    // TODO(crbug.com/367379194): Temporary instrumentation to see how often
+    // `index_offset` is non-0.
+    if (index_offset != 0) {
+      int offset_value = static_cast<int>(index_offset);
+      if (offset_value > 0) {
+        UMA_HISTOGRAM_COUNTS_100("UMA.AddSubtractImpl.PositiveOffset",
+                                 offset_value);
+      } else {
+        UMA_HISTOGRAM_COUNTS_100("UMA.AddSubtractImpl.NegativeOffset",
+                                 -offset_value);
+      }
+    }
   }
   if (dest_index >= counts_size()) {
     return false;
@@ -340,7 +374,7 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
     if (min != bucket_ranges_->range(dest_index) ||
         max != bucket_ranges_->range(dest_index + 1)) {
 #if !BUILDFLAG(IS_NACL)
-      // TODO(crbug/1432981): Remove these. They are used to investigate
+      // TODO(crbug.com/40064026): Remove these. They are used to investigate
       // unexpected failures.
       SCOPED_CRASH_KEY_NUMBER("SampleVector", "min", min);
       SCOPED_CRASH_KEY_NUMBER("SampleVector", "max", max);
@@ -349,9 +383,10 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
       SCOPED_CRASH_KEY_NUMBER("SampleVector", "range_max",
                               bucket_ranges_->range(dest_index + 1));
 #endif  // !BUILDFLAG(IS_NACL)
-      NOTREACHED() << "sample=" << min << "," << max
-                   << "; range=" << bucket_ranges_->range(dest_index) << ","
-                   << bucket_ranges_->range(dest_index + 1);
+      DUMP_WILL_BE_NOTREACHED()
+          << "sample=" << min << "," << max
+          << "; range=" << bucket_ranges_->range(dest_index) << ","
+          << bucket_ranges_->range(dest_index + 1);
       return false;
     }
 
@@ -497,7 +532,7 @@ bool SampleVector::MountExistingCountsStorage() const {
   return counts().has_value();
 }
 
-std::string SampleVector::GetAsciiHeader(StringPiece histogram_name,
+std::string SampleVector::GetAsciiHeader(std::string_view histogram_name,
                                          int32_t flags) const {
   Count sample_count = TotalCount();
   std::string output;
@@ -630,10 +665,6 @@ PersistentSampleVector::~PersistentSampleVector() = default;
 bool PersistentSampleVector::IsDefinitelyEmpty() const {
   // Not implemented.
   NOTREACHED();
-
-  // Always return false. If we are wrong, this will just make the caller
-  // perform some extra work thinking that |this| is non-empty.
-  return false;
 }
 
 bool PersistentSampleVector::MountExistingCountsStorage() const {
@@ -672,6 +703,7 @@ PersistentSampleVector::CreateCountsStorageWhileLocked() {
     // There will be no sharing or persistence but worse things are already
     // happening.
     auto array = HeapArray<HistogramBase::AtomicCount>::WithSize(counts_size());
+    ANNOTATE_LEAKING_OBJECT_PTR(array.data());
     return std::move(array).leak();
   }
 

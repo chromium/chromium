@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +22,10 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -93,11 +103,11 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
   info.os_firewall = ToInfoSettingValue(signals.os_firewall);
   info.system_dns_servers = std::move(signals.system_dns_servers);
   switch (signals.realtime_url_check_mode) {
-    case safe_browsing::REAL_TIME_CHECK_DISABLED:
+    case enterprise_connectors::REAL_TIME_CHECK_DISABLED:
       info.realtime_url_check_mode = extensions::api::
           enterprise_reporting_private::RealtimeUrlCheckMode::kDisabled;
       break;
-    case safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED:
+    case enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED:
       info.realtime_url_check_mode = extensions::api::
           enterprise_reporting_private::RealtimeUrlCheckMode::kEnabledMainFrame;
       break;
@@ -141,12 +151,26 @@ api::enterprise_reporting_private::ContextInfo ToContextInfo(
                 PasswordProtectionTrigger::kPhishingReuse;
         break;
       case safe_browsing::PASSWORD_PROTECTION_TRIGGER_MAX:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
 
   return info;
+}
+
+bool AllowClientCertificateReportingForUsers() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return base::FeatureList::IsEnabled(
+      enterprise_signals::features::kAllowClientCertificateReportingForUsers);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
+bool IsProfilePrefManaged(Profile* profile, std::string_view pref_name) {
+  const auto* pref = profile->GetPrefs()->FindPreference(pref_name);
+  return pref && pref->IsManaged();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -200,8 +224,9 @@ ExtensionFunction::ResponseAction
 EnterpriseReportingPrivateGetDeviceIdFunction::Run() {
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-  if (client_id.empty())
+  if (client_id.empty()) {
     return RespondNow(Error(enterprise_reporting::kDeviceIdNotFound));
+  }
   return RespondNow(WithArguments(client_id));
 }
 
@@ -474,11 +499,23 @@ EnterpriseReportingPrivateGetCertificateFunction::Run() {
               args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // If AutoSelectCertificateForUrl is not set at the machine level, this
-  // operation is not supported and should return immediately with the
-  // appropriate status field value.
-  if (!chrome::enterprise_util::IsMachinePolicyPref(
-          prefs::kManagedAutoSelectCertificateForUrls)) {
+  auto* profile = Profile::FromBrowserContext(browser_context());
+  if (AllowClientCertificateReportingForUsers()) {
+    if (!IsProfilePrefManaged(profile,
+                              prefs::kManagedAutoSelectCertificateForUrls)) {
+      // If the policy is not set, then fail fast as the policy is required to
+      // select which certificate to report.
+      api::enterprise_reporting_private::Certificate ret;
+      ret.status = extensions::api::enterprise_reporting_private::
+          CertificateStatus::kPolicyUnset;
+      return RespondNow(WithArguments(ret.ToValue()));
+    }
+  } else if (!enterprise_util::IsMachinePolicyPref(
+                 prefs::kManagedAutoSelectCertificateForUrls)) {
+    // If certificate reporting is not enabled for the user and
+    // AutoSelectCertificateForUrl is not set at the machine level, this
+    // operation is not supported and should return immediately with the
+    // appropriate status field value.
     api::enterprise_reporting_private::Certificate ret;
     ret.status = extensions::api::enterprise_reporting_private::
         CertificateStatus::kPolicyUnset;
@@ -505,7 +542,7 @@ void EnterpriseReportingPrivateGetCertificateFunction::OnClientCertFetched(
   ret.status =
       extensions::api::enterprise_reporting_private::CertificateStatus::kOk;
   if (cert) {
-    base::StringPiece der_cert = net::x509_util::CryptoBufferAsStringPiece(
+    std::string_view der_cert = net::x509_util::CryptoBufferAsStringPiece(
         cert->certificate()->cert_buffer());
     ret.encoded_certificate.emplace(der_cert.begin(), der_cert.end());
   }
@@ -627,7 +664,7 @@ bool EnterpriseReportingPrivateEnqueueRecordFunction::IsProfileAffiliated(
   if (profile_is_affiliated_for_testing_) {
     return true;
   }
-  return chrome::enterprise_util::IsProfileAffiliated(profile);
+  return enterprise_util::IsProfileAffiliated(profile);
 }
 
 void EnterpriseReportingPrivateEnqueueRecordFunction::
@@ -901,5 +938,25 @@ void EnterpriseReportingPrivateGetHotfixesFunction::OnSignalRetrieved(
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+// reportDataMaskingEvent
+
+EnterpriseReportingPrivateReportDataMaskingEventFunction::
+    EnterpriseReportingPrivateReportDataMaskingEventFunction() = default;
+EnterpriseReportingPrivateReportDataMaskingEventFunction::
+    ~EnterpriseReportingPrivateReportDataMaskingEventFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateReportDataMaskingEventFunction::Run() {
+  auto params =
+      api::enterprise_reporting_private::ReportDataMaskingEvent::Params::Create(
+          args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  enterprise_connectors::ReportDataMaskingEvent(browser_context(),
+                                                std::move(params->event));
+
+  return RespondNow(NoArguments());
+}
 
 }  // namespace extensions

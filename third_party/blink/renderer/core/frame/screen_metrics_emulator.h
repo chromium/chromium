@@ -97,8 +97,9 @@ class ScreenMetricsEmulator : public GarbageCollected<ScreenMetricsEmulator> {
   gfx::Size original_visible_viewport_size_;
   gfx::Rect original_view_screen_rect_;
   gfx::Rect original_window_screen_rect_;
-  std::vector<gfx::Rect> original_root_window_segments_ ALLOW_DISCOURAGED_TYPE(
-      "WebFrameWidgetImpl::SetWindowSegments() uses STL");
+  std::vector<gfx::Rect> original_root_viewport_segments_
+      ALLOW_DISCOURAGED_TYPE(
+          "WebFrameWidgetImpl::SetViewportSegments() uses STL");
 };
 
 }  // namespace blink

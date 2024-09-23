@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -130,7 +130,7 @@ void GetWebApps::SerializeAndScheduleWrite(const base::Value& output_info) {
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
         base::BindOnce(
             base::IgnoreResult(&base::ImportantFileWriter::WriteFileAtomically),
-            output_file_, std::move(output_info_str), base::StringPiece()));
+            output_file_, std::move(output_info_str), std::string_view()));
   }
 }
 

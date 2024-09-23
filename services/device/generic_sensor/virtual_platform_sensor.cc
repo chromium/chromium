@@ -14,10 +14,10 @@ namespace device {
 VirtualPlatformSensor::VirtualPlatformSensor(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
-    PlatformSensorProvider* provider,
+    base::WeakPtr<PlatformSensorProvider> provider,
     std::optional<SensorReading> pending_reading,
     const mojom::VirtualSensorMetadata& metadata)
-    : PlatformSensor(type, reading_buffer, provider),
+    : PlatformSensor(type, reading_buffer, std::move(provider)),
       minimum_supported_frequency_(metadata.minimum_frequency),
       maximum_supported_frequency_(metadata.maximum_frequency),
       reporting_mode_(metadata.reporting_mode),
@@ -55,8 +55,9 @@ void VirtualPlatformSensor::SimulateSensorRemoval() {
 
 bool VirtualPlatformSensor::StartSensor(
     const PlatformSensorConfiguration& optimal_configuration) {
+  const bool is_already_running = optimal_configuration_.has_value();
   optimal_configuration_ = optimal_configuration;
-  if (current_reading_.has_value()) {
+  if (!is_already_running && current_reading_.has_value()) {
     AddReading(*current_reading_);
   }
   return true;

@@ -12,10 +12,12 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -28,7 +30,6 @@ constexpr std::string_view kTestChallenge = "VGhpcyBpcyBhIHRlc3QgY2hhbGxlbmdl";
 constexpr std::string_view kCredentialId =
     "VGhpcyBpcyBhIHRlc3QgQ3JlZGVudGlhbCBJRC4=";
 constexpr std::string_view kGooglePaymentsRpid = "google.com";
-}  // namespace
 
 class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
  public:
@@ -37,10 +38,15 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
 
   void SetUp() override {
     requester_ = std::make_unique<TestAuthenticationRequester>();
-    autofill_client_.set_test_payments_network_interface(
-        std::make_unique<payments::TestPaymentsNetworkInterface>(
-            autofill_client_.GetURLLoaderFactory(),
-            autofill_client_.GetIdentityManager(), &personal_data_manager_));
+    autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    personal_data().SetPrefService(autofill_client_.GetPrefs());
+    personal_data().SetSyncServiceForTest(&sync_service_);
+    autofill_client_.GetPaymentsAutofillClient()
+        ->set_test_payments_network_interface(
+            std::make_unique<payments::TestPaymentsNetworkInterface>(
+                autofill_client_.GetURLLoaderFactory(),
+                autofill_client_.GetIdentityManager(),
+                &personal_data_manager_));
     authenticator_ =
         std::make_unique<CreditCardRiskBasedAuthenticator>(&autofill_client_);
     card_ = test::GetMaskedServerCard();
@@ -60,15 +66,22 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
 
  protected:
   payments::TestPaymentsNetworkInterface* payments_network_interface() {
-    return static_cast<payments::TestPaymentsNetworkInterface*>(
-        autofill_client_.GetPaymentsNetworkInterface());
+    return autofill_client_.GetPaymentsAutofillClient()
+        ->GetPaymentsNetworkInterface();
   }
+
+  TestPersonalDataManager& personal_data() {
+    return *autofill_client_.GetPersonalDataManager();
+  }
+
+  TestAutofillClient* autofill_client() { return &autofill_client_; }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAuthenticationRequester> requester_;
-  TestAutofillClient autofill_client_;
+  syncer::TestSyncService sync_service_;
   TestPersonalDataManager personal_data_manager_;
+  TestAutofillClient autofill_client_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> authenticator_;
   CreditCard card_;
 };
@@ -102,12 +115,13 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
 
   // Mock server response with valid masked server card information.
   payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
-  response.card_type = AutofillClient::PaymentsRpcCardType::kServerCard;
+  response.card_type =
+      payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
   response.real_pan = kTestNumber;
 
   task_environment_.FastForwardBy(base::Minutes(1));
   authenticator_->OnUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response);
 
   histogram_tester.ExpectTimeBucketCount(
       "Autofill.RiskBasedAuth.ServerCard.Latency", base::Minutes(1), 1);
@@ -120,11 +134,12 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
 
   // Mock server response with valid masked server card information.
   payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
-  response.card_type = AutofillClient::PaymentsRpcCardType::kServerCard;
+  response.card_type =
+      payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
   response.real_pan = kTestNumber;
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response);
   EXPECT_EQ(requester_->risk_based_authentication_response().result,
             CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
                 Result::kNoAuthenticationRequired);
@@ -149,7 +164,8 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardFailure) {
   payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kPermanentFailure, response);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      response);
   EXPECT_EQ(requester_->risk_based_authentication_response().result,
             CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
                 Result::kError);
@@ -189,7 +205,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
   response.context_token = "fake_context_token";
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response);
   EXPECT_EQ(requester_->risk_based_authentication_response().result,
             CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
                 Result::kAuthenticationRequired);
@@ -214,14 +230,14 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
   response.fido_request_options = GetTestRequestOptions();
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, response);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response);
   EXPECT_EQ(requester_->risk_based_authentication_response().result,
             CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
                 Result::kAuthenticationRequired);
   EXPECT_FALSE(
       requester_->risk_based_authentication_response().card.has_value());
-  EXPECT_TRUE(requester_->risk_based_authentication_response()
-                  .fido_request_options.has_value());
+  EXPECT_FALSE(requester_->risk_based_authentication_response()
+                   .fido_request_options.empty());
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
@@ -263,13 +279,15 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, VirtualCardUnmaskSuccess) {
   // Mock server response with valid virtual card information.
   payments::PaymentsNetworkInterface::UnmaskResponseDetails mocked_response;
   mocked_response.real_pan = kTestVirtualCardNumber;
-  mocked_response.card_type = AutofillClient::PaymentsRpcCardType::kVirtualCard;
+  mocked_response.card_type =
+      payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
   mocked_response.expiration_year = test::NextYear();
   mocked_response.expiration_month = "10";
   mocked_response.dcvv = "123";
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kSuccess, mocked_response);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      mocked_response);
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_TRUE(requester_->did_succeed().value());
   EXPECT_EQ(mocked_response.real_pan, requester_->response_details().real_pan);
@@ -304,11 +322,12 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, VirtualCardUnmaskFailure) {
   payments::PaymentsNetworkInterface::UnmaskResponseDetails mocked_response;
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult::kPermanentFailure, mocked_response);
+      payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
+      mocked_response);
   ASSERT_TRUE(requester_->did_succeed().has_value());
   EXPECT_FALSE(requester_->did_succeed().value());
   EXPECT_TRUE(requester_->response_details().real_pan.empty());
-  EXPECT_EQ(AutofillClient::PaymentsRpcCardType::kUnknown,
+  EXPECT_EQ(payments::PaymentsAutofillClient::PaymentsRpcCardType::kUnknown,
             requester_->response_details().card_type);
   EXPECT_TRUE(requester_->response_details().expiration_year.empty());
   EXPECT_TRUE(requester_->response_details().expiration_month.empty());
@@ -381,4 +400,75 @@ TEST_P(CreditCardRiskBasedAuthenticatorCardMetadataTest, MetadataSignal) {
   }
 }
 
+// Params:
+// 1. Function reference to call which creates the appropriate credit card
+// benefit for the unittest.
+// 2. Whether the flag to render benefits is enabled.
+// 3. Issuer ID which is set for the credit card with benefits.
+class CreditCardRiskBasedAuthenticatorCardBenefitsTest
+    : public CreditCardRiskBasedAuthenticatorTest,
+      public ::testing::WithParamInterface<
+          std::tuple<base::FunctionRef<CreditCardBenefit()>,
+                     bool,
+                     std::string>> {
+ public:
+  void SetUp() override {
+    CreditCardRiskBasedAuthenticatorTest::SetUp();
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kAutofillEnableCardBenefitsForAmericanExpress,
+          IsCreditCardBenefitsEnabled()},
+         {features::kAutofillEnableCardBenefitsForCapitalOne,
+          IsCreditCardBenefitsEnabled()}});
+    card_ = test::GetMaskedServerCard();
+    autofill_client()->set_last_committed_primary_main_frame_url(
+        test::GetOriginsForMerchantBenefit().begin()->GetURL());
+    test::SetUpCreditCardAndBenefitData(
+        card_, GetBenefit(), GetIssuerId(), personal_data(),
+        autofill_client()->GetAutofillOptimizationGuide());
+  }
+
+  CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
+
+  bool IsCreditCardBenefitsEnabled() const { return std::get<1>(GetParam()); }
+
+  const std::string& GetIssuerId() const { return std::get<2>(GetParam()); }
+
+  const CreditCard& card() { return card_; }
+
+ private:
+  CreditCard card_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardRiskBasedAuthenticatorTest,
+    CreditCardRiskBasedAuthenticatorCardBenefitsTest,
+    testing::Combine(
+        ::testing::Values(&test::GetActiveCreditCardFlatRateBenefit,
+                          &test::GetActiveCreditCardCategoryBenefit,
+                          &test::GetActiveCreditCardMerchantBenefit),
+        ::testing::Bool(),
+        ::testing::Values("amex", "capitalone")));
+
+// Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a
+// signal if a card benefit was shown when unmasking a credit card suggestion
+// through the risk based authenticator.
+TEST_P(CreditCardRiskBasedAuthenticatorCardBenefitsTest,
+       Benefits_ClientBehaviorConstants) {
+  authenticator_->Authenticate(card(), requester_->GetWeakPtr());
+  ASSERT_TRUE(
+      payments_network_interface()->unmask_request()->context_token.empty());
+  ASSERT_FALSE(
+      payments_network_interface()->unmask_request()->risk_data.empty());
+
+  std::vector<ClientBehaviorConstants> signals =
+      payments_network_interface()->unmask_request()->client_behavior_signals;
+
+  EXPECT_EQ(base::ranges::find(signals,
+                               ClientBehaviorConstants::kShowingCardBenefits) !=
+                signals.end(),
+            IsCreditCardBenefitsEnabled());
+}
+
+}  // namespace
 }  // namespace autofill

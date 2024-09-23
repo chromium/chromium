@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/generated_password_leak_detection_pref.h"
+
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
@@ -89,10 +90,10 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
   // Check that the observer fires for identity updates.
   identity_test_env()->EnableRemovalOfExtendedAccountInfo();
 
-  // Create a sync consented account so revoking the refresh token also triggers
+  // Create a signed-in account so revoking the refresh token also triggers
   // the preference updated observer.
-  identity_test_env()->MakePrimaryAccountAvailable(kTestProfileName,
-                                                   signin::ConsentLevel::kSync);
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestProfileName, signin::ConsentLevel::kSignin);
   EXPECT_EQ(test_observer.GetUpdatedPrefName(),
             kGeneratedPasswordLeakDetectionPref);
 

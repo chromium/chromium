@@ -34,6 +34,8 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'deleteItem',
       'deleteItems',
       'dismissSafetyHubExtensionsMenuNotification',
+      'dismissMv2DeprecationNotice',
+      'dismissMv2DeprecationNoticeForExtension',
       'uninstallItem',
       'downloadActivities',
       'getExtensionActivityLog',
@@ -115,6 +117,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       isDeveloperModeControlledByPolicy: false,
       isIncognitoAvailable: false,
       isChildAccount: false,
+      isMv2DeprecationNoticeDismissed: false,
     });
   }
 
@@ -156,7 +159,6 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean) {
     this.methodCalled('setItemAllowedOnFileUrls', [id, isAllowedOnFileUrls]);
   }
-
 
   setItemSafetyCheckWarningAcknowledged(id: string) {
     this.methodCalled('setItemSafetyCheckWarningAcknowledged', id);
@@ -394,5 +396,13 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   dismissSafetyHubExtensionsMenuNotification() {
     this.methodCalled('dismissSafetyHubExtensionsMenuNotification');
+  }
+
+  dismissMv2DeprecationNoticeForExtension(id: string) {
+    this.methodCalled('dismissMv2DeprecationNoticeForExtension', id);
+  }
+
+  dismissMv2DeprecationNotice() {
+    this.methodCalled('dismissMv2DeprecationNotice');
   }
 }

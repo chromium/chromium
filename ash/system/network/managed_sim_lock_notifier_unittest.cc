@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/network/cellular_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -162,10 +163,13 @@ class ManagedSimLockNotifierTest : public NoSessionAshTestBase {
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
 TEST_F(ManagedSimLockNotifierTest, PolicyChanged) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   AddCellularDevice();
   AddCellularService();
   EXPECT_FALSE(GetManagedSimLockNotification());
@@ -181,6 +185,8 @@ TEST_F(ManagedSimLockNotifierTest, PolicyChanged) {
 }
 
 TEST_F(ManagedSimLockNotifierTest, NewActiveSession) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   AddCellularDevice();
   AddCellularService();
   SetCellularSimLockEnabled(true);
@@ -233,6 +239,8 @@ TEST_F(ManagedSimLockNotifierTest, NewActiveSession) {
 }
 
 TEST_F(ManagedSimLockNotifierTest, HideNotificationOnLockDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   AddCellularDevice();
   AddCellularService();
   SetCellularSimLockEnabled(true);
@@ -246,6 +254,8 @@ TEST_F(ManagedSimLockNotifierTest, HideNotificationOnLockDisabled) {
 }
 
 TEST_F(ManagedSimLockNotifierTest, PrimarySimIccidChanged) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   AddCellularDevice();
   AddCellularService();
   SetCellularSimLockEnabled(true);
@@ -279,6 +289,8 @@ TEST_F(ManagedSimLockNotifierTest, PrimarySimIccidChanged) {
 }
 
 TEST_F(ManagedSimLockNotifierTest, NotificationOnCellularOnOrOff) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   base::HistogramTester histograms;
 
   AddCellularDevice();
@@ -301,6 +313,8 @@ TEST_F(ManagedSimLockNotifierTest, NotificationOnCellularOnOrOff) {
 }
 
 TEST_F(ManagedSimLockNotifierTest, NotificationClicked) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   base::HistogramTester histograms;
 
   AddCellularDevice();
@@ -326,6 +340,8 @@ TEST_F(ManagedSimLockNotifierTest, NotificationClicked) {
 }
 
 TEST_F(ManagedSimLockNotifierTest, NotificationDismissedByUser) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   base::HistogramTester histograms;
 
   AddCellularDevice();
@@ -349,6 +365,8 @@ TEST_F(ManagedSimLockNotifierTest, NotificationDismissedByUser) {
 }
 
 TEST_F(ManagedSimLockNotifierTest, SIMLockTypeMetrics) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kAllowApnModificationPolicy);
   base::HistogramTester histograms;
 
   AddCellularDevice();

@@ -31,6 +31,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/reload_type.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -147,8 +148,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void Reload(ReloadType reload_type, bool check_for_repost) override;
   void NotifyEntryChanged(NavigationEntry* entry) override;
   void CopyStateFrom(NavigationController* source, bool needs_reload) override;
-  void CopyStateFromAndPrune(NavigationController* source,
-                             bool replace_entry) override;
   bool CanPruneAllButLastCommitted() override;
   void PruneAllButLastCommitted() override;
   void DeleteNavigationEntries(
@@ -196,6 +195,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                               std::optional<blink::scheduler::TaskAttributionId>
                                   soft_navigation_heuristics_task_id);
 
+  // A variation of `NavigationController::GoToIndex()`, that also returns all
+  // the created `NavigationRequest`s. If no navigation request is created, the
+  // vector is empty.
+  std::vector<base::WeakPtr<NavigationRequest>> GoToIndexAndReturnAllRequests(
+      int index);
+
 #if BUILDFLAG(IS_ANDROID)
   // The difference between (Can)GoToOffsetWithSkipping and
   // (Can)GoToOffset/(Can)GoToOffsetInSandboxedFrame is that this respects the
@@ -234,6 +239,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_unfenced_top_navigation = false,
       bool force_new_browsing_instance = false,
       bool is_container_initiated = false,
+      bool has_rel_opener = false,
+      net::StorageAccessApiStatus storage_access_api_status =
+          net::StorageAccessApiStatus::kNone,
       std::optional<std::u16string> embedder_shared_storage_context =
           std::nullopt);
 
@@ -458,7 +466,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Whether the current call stack includes NavigateToPendingEntry, to avoid
   // re-entrant calls to NavigateToPendingEntry.
-  // TODO(https://crbug.com/1327907): Don't expose this once we figure out the
+  // TODO(crbug.com/40841494): Don't expose this once we figure out the
   // root cause for the navigation re-entrancy case in the linked bug.
   bool in_navigate_to_pending_entry() const {
     return in_navigate_to_pending_entry_;
@@ -471,8 +479,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // prerendering or for a fenced frame.
   // Explainer:
   // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history)
-  //
-  // TODO(crbug.com/914108): Consider portals here as well.
   bool ShouldMaintainTrivialSessionHistory(
       const FrameTreeNode* frame_tree_node) const;
 
@@ -578,34 +584,40 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
     // to their respective FrameTreeNodes, and FrameTreeNode ids to their
     // current document sequences numbers.
     std::map<std::string, FrameTreeNode*> names_to_nodes_;
-    std::map<int, int64_t> frame_tree_node_id_to_doc_seq_nos_;
+    std::map<FrameTreeNodeId, int64_t> frame_tree_node_id_to_doc_seq_nos_;
 
     // The output of PopulateKeySet(), which maps FrameTreeNode ids to the keys
     // that frame knows about in the renderer. Used in the destructor.
-    std::map<int, std::set<std::string>> frame_tree_node_id_to_keys_;
+    std::map<FrameTreeNodeId, std::set<std::string>>
+        frame_tree_node_id_to_keys_;
   };
 
-  // Navigates in session history to the given index.
+  // Navigates in session history to the given index. Returns all the created
+  // `NavigationRequest`s. If no request was created, the returned vector is
+  // empty.
   // |initiator_rfh| is nullptr for browser-initiated navigations.
   // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
   // If this navigation originated from the navigation API, |navigation_api_key|
   // will be set and indicate the navigation api key that |initiator_rfh|
   // asked to be navigated to.
-  void GoToIndex(int index,
-                 RenderFrameHostImpl* initiator_rfh,
-                 std::optional<blink::scheduler::TaskAttributionId>
-                     soft_navigation_heuristics_task_id,
-                 const std::string* navigation_api_key);
+  std::vector<base::WeakPtr<NavigationRequest>> GoToIndex(
+      int index,
+      RenderFrameHostImpl* initiator_rfh,
+      std::optional<blink::scheduler::TaskAttributionId>
+          soft_navigation_heuristics_task_id,
+      const std::string* navigation_api_key);
 
-  // Starts a navigation to an already existing pending NavigationEntry.
+  // Starts a navigation to an already existing pending NavigationEntry. Returns
+  // all the created `NavigationRequest`s. If no request was created, the
+  // returned vector is empty.
   // |initiator_rfh| is nullptr for browser-initiated navigations.
   // If this navigation originated from the navigation API, |navigation_api_key|
   // will be set and indicate the navigation api key that |initiator_rfh|
   // asked to be navigated to.
   // |soft_navigation_heuristics_task_id|: The task in the renderer that
   // initiated this call (if any).
-  void NavigateToExistingPendingEntry(
+  std::vector<base::WeakPtr<NavigationRequest>> NavigateToExistingPendingEntry(
       ReloadType reload_type,
       RenderFrameHostImpl* initiator_rfh,
       std::optional<blink::scheduler::TaskAttributionId>
@@ -679,6 +691,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_unfenced_top_navigation = false,
       bool is_container_initiated = false,
+      net::StorageAccessApiStatus storage_access_api_status =
+          net::StorageAccessApiStatus::kNone,
       std::optional<std::u16string> embedder_shared_storage_context =
           std::nullopt);
 
@@ -840,6 +854,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   std::unique_ptr<PolicyContainerPolicies>
   ComputePolicyContainerPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
                                               bool is_same_document,
+                                              bool navigation_encountered_error,
                                               const GURL& url);
 
   // Adds details from a committed navigation to `entry` and the

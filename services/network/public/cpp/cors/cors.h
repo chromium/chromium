@@ -29,7 +29,7 @@ namespace header_names {
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlAllowCredentials[];
-// TODO(https://crbug.com/1263483): Remove this.
+// TODO(crbug.com/40202951): Remove this.
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlAllowExternal[];
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -42,7 +42,7 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlAllowPrivateNetwork[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlMaxAge[];
-// TODO(https://crbug.com/1263483): Remove this.
+// TODO(crbug.com/40202951): Remove this.
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlRequestExternal[];
 COMPONENT_EXPORT(NETWORK_CPP)

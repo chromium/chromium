@@ -1,0 +1,259 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("saml") {
+  sources = [
+    "in_session_password_change_manager.cc",
+    "in_session_password_change_manager.h",
+    "in_session_password_sync_manager.cc",
+    "in_session_password_sync_manager.h",
+    "password_change_success_notification.cc",
+    "password_change_success_notification.h",
+    "password_expiry_notification.cc",
+    "password_expiry_notification.h",
+    "password_sync_token_checkers_collection.cc",
+    "password_sync_token_checkers_collection.h",
+    "password_sync_token_fetcher.cc",
+    "password_sync_token_fetcher.h",
+    "password_sync_token_login_checker.cc",
+    "password_sync_token_login_checker.h",
+    "password_sync_token_verifier.cc",
+    "password_sync_token_verifier.h",
+    "password_sync_token_verifier_factory.cc",
+    "password_sync_token_verifier_factory.h",
+    "public_saml_url_fetcher.cc",
+    "public_saml_url_fetcher.h",
+    "saml_metric_utils.cc",
+    "saml_metric_utils.h",
+    "saml_profile_prefs.cc",
+    "saml_profile_prefs.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/login/auth",
+    "//components/account_id",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//components/signin/public/identity_manager",
+    "//components/user_manager",
+    "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/common:chrome_features",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/settings",
+    "//chromeos/strings",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//net/traffic_annotation",
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/base",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_saml_idp_mixin.cc",
+    "lockscreen_reauth_dialog_test_helper.cc",
+    "lockscreen_reauth_dialog_test_helper.h",
+    "mock_lock_handler.cc",
+    "mock_lock_handler.h",
+    "security_token_saml_test.cc",
+    "security_token_saml_test.h",
+    "test_client_cert_saml_idp_mixin.cc",
+    "test_client_cert_saml_idp_mixin.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/proximity_auth",
+    "//chromeos/ash/components/proximity_auth/public/mojom:mojom_shared",
+    "//chromeos/ash/components/proximity_auth/public/mojom:mojom_shared_cpp_sources",
+    "//components/account_id",
+    "//components/policy/core/common:test_support",
+    "//extensions/common",
+    "//net:test_support",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users",
+    "//chrome/browser/ash/net",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/lock_screen_reauth",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/dbus/attestation",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//google_apis:test_support",
+    "//net",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "password_change_extension_browsertest.cc",
+    "password_change_success_detection_browsertest.cc",
+    "saml_browsertest.cc",
+    "saml_lockscreen_browsertest.cc",
+    "security_token_saml_browsertest.cc",
+  ]
+
+  deps = [
+    ":saml",
+    ":test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//build:buildflag_header_h",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/login/enrollment",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ash/login/session:test_support",
+    "//chrome/browser/ash/login/users",
+    "//chrome/browser/ash/net",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/lock_screen_reauth",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/http_auth_dialog",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/account_id",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/network_session_configurator/common",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//dbus",
+    "//extensions/browser",
+    "//google_apis",
+    "//google_apis:test_support",
+    "//net",
+    "//net:test_support",
+    "//services/network/public/mojom:cookies_mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform_shared",
+    "//third_party/blink/public/mojom:mojom_platform_shared_cpp_sources",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "in_session_password_change_manager_unittest.cc",
+    "in_session_password_sync_manager_unittest.cc",
+    "password_change_success_notification_unittest.cc",
+    "password_expiry_notification_unittest.cc",
+    "password_sync_token_login_checker_unittest.cc",
+    "password_sync_token_verifier_unittest.cc",
+  ]
+
+  deps = [
+    ":saml",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/prefs",
+    "//components/user_manager",
+    "//components/user_manager:common",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}

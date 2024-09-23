@@ -80,12 +80,6 @@ enum class NewTabPageConcretePage {
   kMaxValue = kOffTheRecordNtp,
 };
 
-bool IsCacheableNTP(content::WebContents* contents) {
-  content::NavigationEntry* entry =
-      contents->GetController().GetLastCommittedEntry();
-  return search::NavEntryIsInstantNTP(contents, entry);
-}
-
 // Returns true if |contents| are rendered inside an Instant process.
 bool InInstantProcess(const InstantService* instant_service,
                       content::WebContents* contents) {
@@ -106,13 +100,6 @@ void RecordNewTabLoadTime(content::WebContents* contents) {
   if (core_tab_helper->new_tab_start_time().is_null())
     return;
 
-  if (IsCacheableNTP(contents)) {
-    if (google_util::IsGoogleDomainUrl(
-            contents->GetController().GetLastCommittedEntry()->GetURL(),
-            google_util::ALLOW_SUBDOMAIN,
-            google_util::DISALLOW_NON_STANDARD_PORTS)) {
-    }
-  }
   core_tab_helper->set_new_tab_start_time(base::TimeTicks());
 }
 
@@ -322,9 +309,7 @@ bool SearchTabHelper::IsInputInProgress() const {
 
 void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
   const base::Feature& customize_chrome_feature =
-      features::IsChromeRefresh2023() && features::IsChromeWebuiRefresh2023()
-          ? feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature
-          : feature_engagement::kIPHDesktopCustomizeChromeFeature;
+      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature;
   if (web_contents()->GetController().GetVisibleEntry()->GetURL() ==
       GURL(chrome::kChromeUINewTabPageURL)) {
     return;

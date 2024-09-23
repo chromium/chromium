@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -20,6 +21,10 @@ class Profile;
 namespace favicon {
 class LargeIconService;
 }  // namespace favicon
+
+namespace supervised_user {
+class UrlFormatter;
+}  // namespace supervised_user
 
 class SupervisedUserFaviconRequestHandler;
 
@@ -31,7 +36,7 @@ class SupervisedUserWebContentHandlerImpl
       content::WebContents* web_contents,
       const GURL& url,
       favicon::LargeIconService& large_icon_service,
-      int frame_id,
+      content::FrameTreeNodeId frame_id,
       int64_t interstitial_navigation_id);
 
   SupervisedUserWebContentHandlerImpl(
@@ -43,6 +48,7 @@ class SupervisedUserWebContentHandlerImpl
   // ChromeSupervisedUserWebContentHandlerBase implementation:
   void RequestLocalApproval(const GURL& url,
                             const std::u16string& child_display_name,
+                            const supervised_user::UrlFormatter& url_formatter,
                             ApprovalRequestInitiatedCallback callback) override;
 
  private:

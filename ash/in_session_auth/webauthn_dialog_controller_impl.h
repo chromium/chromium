@@ -5,9 +5,12 @@
 #ifndef ASH_IN_SESSION_AUTH_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_
 #define ASH_IN_SESSION_AUTH_WEBAUTHN_DIALOG_CONTROLLER_IMPL_H_
 
+#include <cstdint>
 #include <memory>
+#include <string>
 
 #include "ash/in_session_auth/in_session_auth_dialog.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"

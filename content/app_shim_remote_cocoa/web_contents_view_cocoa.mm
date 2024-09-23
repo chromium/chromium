@@ -23,6 +23,8 @@
 #include "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/events/event_utils.h"
+#include "ui/events/platform_event.h"
 #include "ui/gfx/image/image.h"
 #include "ui/resources/grit/ui_resources.h"
 
@@ -125,7 +127,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
   gfx::Rect _windowControlsOverlayRect;
 
-  // TODO(https://crbug.com/883031): Remove this when kMacWebContentsOcclusion
+  // TODO(crbug.com/40593221): Remove this when kMacWebContentsOcclusion
   // is enabled by default.
   BOOL _inFullScreenTransition;
   BOOL _willSetWebContentsOccludedAfterDelay;
@@ -206,7 +208,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   [self registerForDraggedTypes:@[
     NSPasteboardTypeFileURL, NSPasteboardTypeHTML, NSPasteboardTypeRTF,
     NSPasteboardTypeString, NSPasteboardTypeURL,
-    ui::kUTTypeChromiumInitiatedDrag, ui::kUTTypeChromiumWebCustomData,
+    ui::kUTTypeChromiumInitiatedDrag, ui::kUTTypeChromiumDataTransferCustomData,
     ui::kUTTypeWebKitWebURLsWithTitles
   ]];
 }
@@ -214,8 +216,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 - (void)mouseEvent:(NSEvent*)theEvent {
   if (!_host)
     return;
-  _host->OnMouseEvent([theEvent type] == NSEventTypeMouseMoved,
-                      [theEvent type] == NSEventTypeMouseExited);
+  _host->OnMouseEvent(ui::EventFromNative(base::apple::OwnedNSEvent(theEvent)));
 }
 
 - (void)setMouseDownCanMoveWindow:(BOOL)canMove {

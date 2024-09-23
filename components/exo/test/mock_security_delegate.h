@@ -8,6 +8,7 @@
 #include "components/exo/security_delegate.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/clipboard/file_info.h"
 
 namespace exo::test {
 
@@ -22,6 +23,22 @@ class MockSecurityDelegate : public SecurityDelegate {
               CanSetBounds,
               (aura::Window * window),
               (const, override));
+  MOCK_METHOD(std::vector<ui::FileInfo>,
+              GetFilenames,
+              (ui::EndpointType source, const std::vector<uint8_t>& data),
+              (const, override));
+  MOCK_METHOD(void,
+              SendFileInfo,
+              (ui::EndpointType target,
+               const std::vector<ui::FileInfo>& files,
+               SendDataCallback callback),
+              (const, override));
+  MOCK_METHOD(void,
+              SendPickle,
+              (ui::EndpointType target,
+               const base::Pickle& pickle,
+               SendDataCallback callback),
+              (override));
 };
 
 }  // namespace exo::test

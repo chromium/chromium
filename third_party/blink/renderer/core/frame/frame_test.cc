@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -33,8 +32,7 @@ class FrameTest : public PageTestBase {
   void Navigate(const String& destinationUrl, bool user_activated) {
     const KURL& url = KURL(NullURL(), destinationUrl);
     auto navigation_params =
-        WebNavigationParams::CreateWithHTMLBufferForTesting(
-            SharedBuffer::Create(), url);
+        WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
     if (user_activated)
       navigation_params->is_user_activated = true;
     GetDocument().GetFrame()->Loader().CommitNavigation(

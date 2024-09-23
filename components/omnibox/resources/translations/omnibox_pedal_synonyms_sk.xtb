@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
-<translation id="101606685846791463">vymazať vyrovnávaciu pamäť, vymazať históriu, odstrániť súbory cookie, vymazať históriu prehliadania</translation>
 <translation id="132297926492792130">ovládať môj účet google, opraviť účet google, spravovať účet google, spravovať môj účet google</translation>
 <translation id="1455865776268085776">prejsť do režimu inkognito, nové okno inkognito, otvoriť kartu inkognito</translation>
 <translation id="1545931455576308147">zdieľanie tejto stránky, zdieľanie tejto karty</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">pridať adresu, zmeniť dodaciu adresu, upraviť adresy, spravovať adresy</translation>
 <translation id="7242693601647412075">spravovať nastavenia zabezpečenia</translation>
 <translation id="7441773108452086364">zmeniť heslo v gmaile, zmeniť moje heslo v gmaile, zmena hesla google, resetovať heslo účtu gmail</translation>
+<translation id="7469628627013714019">odstránenie vyrovnávacej pamäte prehliadača, odstránenie histórie, odstránenie súborov cookie, vymazanie histórie prehliadania</translation>
 <translation id="7660956169713698963">prispôsobenie dostupnosti v systéme Chrome OS, správa nastavení dostupnosti</translation>
 <translation id="7700496593710078083">zobrazenie histórie Chromu, zobrazenie histórie prehliadania</translation>
 <translation id="7739523284295786564">správa stiahnutých súborov v Chrome, zobrazenie stiahnutých súborov</translation>

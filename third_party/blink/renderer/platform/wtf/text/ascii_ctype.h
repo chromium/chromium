@@ -26,6 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_CTYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ASCII_CTYPE_H_
 
@@ -155,7 +160,10 @@ inline bool IsASCIIAlphaCaselessEqual(CharType css_character, char character) {
   // lowercase letter to any input character.
   DCHECK_GE(character, 'a');
   DCHECK_LE(character, 'z');
-  return LIKELY((css_character | 0x20) == character);
+  if ((css_character | 0x20) == character) [[likely]] {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace WTF

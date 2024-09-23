@@ -28,7 +28,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="2329392777730037872">Imeshindwa kufungua <ph name="URL" /> kwenye kiteja.</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2366718077645204424">Haiwezi kufikia seva pangishi. Labda hii ni kwa sababu ya usanidi wa mtandao unaotumia.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Mara ya mwisho alionekana mtandaoni <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Idhinisha 'Ufikivu' kwenye <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Imeunganisha kwenye <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Ungependa kushiriki kompyuta hii kwa mtumiaji mwingine ili kuangalia na kudhibiti?</translation>
@@ -53,7 +52,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="3423542133075182604">Mchakato wa Mbali wa Ufunguo wa Usalama</translation>
 <translation id="3581045510967524389">Haikuweza kuunganisha kwenye mtandao. Tafadhali angalia kuwa kifaa chako kipo mtandaoni.</translation>
 <translation id="3596628256176442606">Huduma hii inawasha miunganisho inayoingia kutoka kwenye viteja vya Chromoting.</translation>
-<translation id="369442766917958684">Nje ya mtandao.</translation>
 <translation id="3695446226812920698">Pata maelezo</translation>
 <translation id="3776024066357219166">Kipindi chako cha Eneo-kazi la Mbali la Chrome kimekamilika.</translation>
 <translation id="3858860766373142691">Jina</translation>
@@ -105,7 +103,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Kwa sasa kompyuta yako inashirikiwa na <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Umeingia katika akaunti ukitumia <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Unganisha upya</translation>
 <translation id="5810269635982033450">Skrini inafanya kazi kama padi ya kusogeza</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ameomba idhini ya kuona skrini yako na kudhibiti kibodi na kipanya chako. Bonyeza ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ikiwa hukutarajia ombi hili. La sivyo, chagua ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ili uruhusu muunganisho utakapokuwa tayari.</translation>

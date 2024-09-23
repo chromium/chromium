@@ -5,7 +5,7 @@
 var assertEq = chrome.test.assertEq;
 
 function pageUrl(letter) {
-  return chrome.extension.getURL(letter + ".html");
+  return chrome.runtime.getURL(letter + ".html");
 }
 
 chrome.runtime.onMessage.addListener(function listener(tab,

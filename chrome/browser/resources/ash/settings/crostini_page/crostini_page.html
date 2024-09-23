@@ -43,7 +43,7 @@
 
   <template is="dom-if" route-path="/crostini/sharedUsbDevices">
     <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-      <settings-crostini-shared-usb-devices>
+      <settings-crostini-shared-usb-devices prefs="{{prefs}}">
       </settings-crostini-shared-usb-devices>
     </os-settings-subpage>
   </template>
@@ -64,7 +64,8 @@
 
   <template is="dom-if" route-path="/bruschetta/sharedUsbDevices">
     <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-      <settings-guest-os-shared-usb-devices guest-os-type="bruschetta">
+      <settings-guest-os-shared-usb-devices guest-os-type="bruschetta"
+        prefs="{{prefs}}">
       </settings-guest-os-shared-usb-devices>
     </os-settings-subpage>
   </template>

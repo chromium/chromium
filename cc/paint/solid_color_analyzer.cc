@@ -68,10 +68,10 @@ bool IsSolidColorPaint(const PaintFlags& flags) {
   // Paint is solid color if the following holds:
   // - Style is fill, and there are no special effects.
   // - Blend mode is either kSrc or kSrcOver.
-  bool is_solid_color =
-      IsSolidColorBlendMode(blendmode) && !flags.HasShader() &&
-      !flags.getLooper() && !flags.getMaskFilter() && !flags.getColorFilter() &&
-      !flags.getImageFilter() && flags.getStyle() == PaintFlags::kFill_Style;
+  bool is_solid_color = IsSolidColorBlendMode(blendmode) &&
+                        !flags.HasShader() && !flags.getLooper() &&
+                        !flags.getColorFilter() && !flags.getImageFilter() &&
+                        flags.getStyle() == PaintFlags::kFill_Style;
 
 #if BUILDFLAG(IS_MAC)
   // Additionally, on Mac, we require that the color is opaque due to
@@ -281,8 +281,12 @@ std::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       case PaintOpType::kDrawImageRect:
       case PaintOpType::kDrawIRect:
       case PaintOpType::kDrawLine:
+      case PaintOpType::kDrawLineLite:
+      case PaintOpType::kDrawArc:
+      case PaintOpType::kDrawArcLite:
       case PaintOpType::kDrawOval:
       case PaintOpType::kDrawPath:
+      case PaintOpType::kDrawScrollingContents:
       case PaintOpType::kDrawVertices:
         return std::nullopt;
       // TODO(vmpstr): Add more tests on exceeding max_ops_to_analyze.
@@ -302,6 +306,7 @@ std::optional<SkColor4f> SolidColorAnalyzer::DetermineIfSolidColor(
       // TODO(vmpstr): We could investigate handling these.
       case PaintOpType::kSaveLayer:
       case PaintOpType::kSaveLayerAlpha:
+      case PaintOpType::kSaveLayerFilters:
       // Complex clips will probably result in non solid color as it might not
       // cover the canvas.
       // TODO(vmpstr): We could investigate handling these.

@@ -213,6 +213,8 @@ inline constexpr int kUnifiedFeaturePodsPageSpacing = 48;
 inline constexpr int kFeatureTileMaxRows = 4;
 inline constexpr int kFeatureTileMaxRowsWhenMediaViewIsShowing = 3;
 inline constexpr int kFeatureTileMinRows = 1;
+inline constexpr int kPrimaryFeatureTileWidth = 180;
+inline constexpr int kCompactFeatureTileWidth = 86;
 inline constexpr int kFeatureTileHeight = 64;
 
 // Constants used in system tray page transition animations.

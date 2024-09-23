@@ -7,9 +7,9 @@
 #include <cstdint>
 #include <limits>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/partition_alloc.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_page.h"
@@ -18,7 +18,8 @@
 
 // This test is disabled when MEMORY_TOOL_REPLACES_ALLOCATOR is defined because
 // we cannot locate the freeslot bitmap address in that case.
-#if BUILDFLAG(USE_FREESLOT_BITMAP) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if PA_BUILDFLAG(USE_FREESLOT_BITMAP) && \
+    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 namespace partition_alloc::internal {
 
@@ -202,5 +203,5 @@ TEST_F(PartitionAllocFreeSlotBitmapTest, ResetSingleBitInMiddleOfCell) {
 
 }  // namespace partition_alloc::internal
 
-#endif  // BUILDFLAG(USE_FREESLOT_BITMAP) &&
+#endif  // PA_BUILDFLAG(USE_FREESLOT_BITMAP) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

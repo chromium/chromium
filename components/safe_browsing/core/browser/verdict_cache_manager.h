@@ -5,6 +5,12 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_VERDICT_CACHE_MANAGER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_VERDICT_CACHE_MANAGER_H_
 
+#include <memory>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -115,8 +121,8 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
       const std::set<std::string>& hash_prefixes);
 
   // Overridden from history::HistoryServiceObserver.
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
   void HistoryServiceBeingDeleted(
       history::HistoryService* history_service) override;
@@ -134,7 +140,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
  private:
   friend class ::SafeBrowsingServiceTest;
-  friend class SafeBrowsingBlockingPageAsyncChecksTest;
+  friend class SafeBrowsingBlockingPageAsyncChecksTestBase;
   friend class SafeBrowsingBlockingPageRealTimeUrlCheckTest;
   friend class SafeBrowsingBlockingPageHashRealTimeCheckTest;
   friend class VerdictCacheManagerTest;

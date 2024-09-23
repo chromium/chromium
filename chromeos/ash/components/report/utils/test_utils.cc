@@ -47,7 +47,7 @@ GetPreservedFileTestCase(
   LOG(ERROR) << "Error finding test_name "
              << private_computing::PrivateComputingClientRegressionTestData::
                     TestName_Name(test_name);
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return private_computing::PrivateComputingClientRegressionTestData::
       TestCase();
 }

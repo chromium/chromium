@@ -7,7 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "components/crash/core/common/crash_key.h"
 
 // CrashReportMultiParameter keeps state of multiple report values that will be
@@ -27,18 +28,18 @@
 // JSON dictionary is regenerated. The total size of the serialized dictionary
 // must be under 512 bytes. Setting a value to 0 will not remove the key.
 // Use [removeValue:key] instead.
-- (void)setValue:(base::StringPiece)key withValue:(int)value;
+- (void)setValue:(std::string_view)key withValue:(int)value;
 
 // Removes the key element from the dictionary. Note that this is different from
 // setting the parameter to 0 or false.
-- (void)removeValue:(base::StringPiece)key;
+- (void)removeValue:(std::string_view)key;
 
 // Increases the key element by one.
-- (void)incrementValue:(base::StringPiece)key;
+- (void)incrementValue:(std::string_view)key;
 
 // Decreases the key element by one. If the element is 0, the element is removed
 // from the dictionary.
-- (void)decrementValue:(base::StringPiece)key;
+- (void)decrementValue:(std::string_view)key;
 @end
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_REPORT_MULTI_PARAMETER_H_

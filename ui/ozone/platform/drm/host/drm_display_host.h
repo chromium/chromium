@@ -44,9 +44,12 @@ class DrmDisplayHost : public GpuThreadObserver {
                     display::SetHDCPStateCallback callback);
   void SetColorTemperatureAdjustment(
       const display::ColorTemperatureAdjustment& cta);
+  void SetColorCalibration(const display::ColorCalibration& calibration);
   void SetGammaAdjustment(const display::GammaAdjustment& adjustment);
   void SetPrivacyScreen(bool enabled,
                         display::SetPrivacyScreenCallback callback);
+  void GetSeamlessRefreshRates(
+      display::GetSeamlessRefreshRatesCallback callback) const;
 
   // Called when the IPC from the GPU process arrives to answer the above
   // commands.

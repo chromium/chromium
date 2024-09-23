@@ -5,12 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_TETHER_NOTIFICATION_PRESENTER_H_
 #define CHROMEOS_ASH_COMPONENTS_TETHER_NOTIFICATION_PRESENTER_H_
 
-#include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/network/network_state.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 class NotificationPresenter {
  public:
@@ -29,9 +26,9 @@ class NotificationPresenter {
 
   // Notifies the user that a nearby device can potentially provide a tether
   // hotspot, and shows the signal strength with a blue icon.
-  virtual void NotifyPotentialHotspotNearby(
-      multidevice::RemoteDeviceRef remote_device,
-      int signal_strength) = 0;
+  virtual void NotifyPotentialHotspotNearby(const std::string& device_id,
+                                            const std::string& device_name,
+                                            int signal_strength) = 0;
 
   // Notifies the user that multiple nearby devices can potentially provide
   // tether hotspots.
@@ -63,8 +60,6 @@ class NotificationPresenter {
   virtual void RemoveConnectionToHostFailedNotification() = 0;
 };
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
 
 #endif  // CHROMEOS_ASH_COMPONENTS_TETHER_NOTIFICATION_PRESENTER_H_

@@ -1,0 +1,89 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("camera_app") {
+  sources = [
+    "camera_app_survey_handler.cc",
+    "camera_app_survey_handler.h",
+    "camera_app_untrusted_ui_config.cc",
+    "camera_app_untrusted_ui_config.h",
+    "camera_system_web_app_info.cc",
+    "camera_system_web_app_info.h",
+    "chrome_camera_app_ui_constants.h",
+    "chrome_camera_app_ui_delegate.cc",
+    "chrome_camera_app_ui_delegate.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//ash/webui/camera_app_ui",
+    "//ash/webui/camera_app_ui:pdf_builder",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/hats",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/screen_ai/public:optical_character_recognizer",
+    "//chrome/services/pdf/public/mojom",
+    "//content/public/browser",
+    "//mojo/public/cpp/base",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/camera_app_ui:ocr",
+    "//ash/webui/camera_app_ui/resources/strings",
+    "//ash/webui/resources:camera_app_resources",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/devtools",
+    "//chrome/browser/feedback",
+    "//chrome/browser/pdf:pdf_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/internet",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/common:constants",
+    "//chromeos/constants",
+    "//chromeos/ui/base",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//components/version_info",
+    "//content/public/common",
+    "//extensions/common",
+    "//services/screen_ai/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_styles_views_generator",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "camera_app_integration_browsertest.cc" ]
+
+  deps = [
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
+}

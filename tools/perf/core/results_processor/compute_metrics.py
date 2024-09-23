@@ -99,7 +99,7 @@ def ComputeTBMv3Metrics(test_result,
     return
 
   if CONCATENATED_PROTO_NAME not in artifacts:
-    # TODO(crbug.com/990304): This is only a warning now, because proto trace
+    # TODO(crbug.com/40638725): This is only a warning now, because proto trace
     # generation is enabled only on selected bots. Make this an error
     # when Telemetry is switched over to proto trace generation everywhere.
     # Also don't forget to call util.SetUnexpectedFailure(test_result).

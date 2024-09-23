@@ -74,27 +74,6 @@ void JsSandboxArrayBufferAllocator::Free(void* const data,
   FreeBudget(length);
 }
 
-void* JsSandboxArrayBufferAllocator::Reallocate(void* const data,
-                                                const size_t old_length,
-                                                const size_t new_length) {
-  // Don't assume we will only need new_length minus old_length extra bytes
-  // during the operation, or that if the new_length is less than old_length
-  // that everything will just happen in place.  In fact, the V8 docs stipulate
-  // that the default implementation will always allocate a new block and copy
-  // the old data over.
-  if (!AllocateBudget(new_length)) {
-    return nullptr;
-  }
-  void* const new_data =
-      inner_allocator_->Reallocate(data, old_length, new_length);
-  if (!new_data) {
-    FreeBudget(new_length);
-    return nullptr;
-  }
-  FreeBudget(old_length);
-  return new_data;
-}
-
 bool JsSandboxArrayBufferAllocator::AllocateBudget(const size_t amount) {
   const size_t rounded_amount = RoundUpToPage(amount, page_size_);
   if (remaining_ < rounded_amount) {

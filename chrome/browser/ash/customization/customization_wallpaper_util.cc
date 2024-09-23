@@ -38,9 +38,8 @@ bool SaveResizedWallpaper(const gfx::ImageSkia& image,
       image, skia::ImageOperations::RESIZE_LANCZOS3, size);
   scoped_refptr<base::RefCountedBytes> image_data = new base::RefCountedBytes();
   gfx::JPEGCodec::Encode(*resized_image.bitmap(), 90 /*quality=*/,
-                         &image_data->data());
-  return base::WriteFile(
-      file_path, base::make_span(image_data->front(), image_data->size()));
+                         &image_data->as_vector());
+  return base::WriteFile(file_path, *image_data);
 }
 
 // Returns true if both file paths exist.

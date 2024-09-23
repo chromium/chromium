@@ -7,9 +7,11 @@
 
 #include <jni.h>
 
+#include <optional>
+
+#include "base/android/jni_android.h"
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::android {
 
@@ -24,18 +26,22 @@ namespace base::android {
 // errors.
 //
 // If needed, there are also variants below starting with Maybe that return
-// absl::nullopt in that case and do not crash.
-base::span<const uint8_t> BASE_EXPORT JavaByteBufferToSpan(JNIEnv* env,
-                                                           jobject buffer);
+// std::nullopt in that case and do not crash.
+base::span<const uint8_t> BASE_EXPORT
+JavaByteBufferToSpan(JNIEnv* env,
+                     const base::android::JavaRef<jobject>& buffer);
 
-base::span<uint8_t> BASE_EXPORT JavaByteBufferToMutableSpan(JNIEnv* env,
-                                                            jobject buffer);
+base::span<uint8_t> BASE_EXPORT
+JavaByteBufferToMutableSpan(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& buffer);
 
-absl::optional<base::span<const uint8_t>> BASE_EXPORT
-MaybeJavaByteBufferToSpan(JNIEnv* env, jobject buffer);
+std::optional<base::span<const uint8_t>> BASE_EXPORT
+MaybeJavaByteBufferToSpan(JNIEnv* env,
+                          const base::android::JavaRef<jobject>& buffer);
 
-absl::optional<base::span<uint8_t>> BASE_EXPORT
-MaybeJavaByteBufferToMutableSpan(JNIEnv* env, jobject buffer);
+std::optional<base::span<uint8_t>> BASE_EXPORT
+MaybeJavaByteBufferToMutableSpan(JNIEnv* env,
+                                 const base::android::JavaRef<jobject>& buffer);
 
 }  // namespace base::android
 

@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media/webrtc/webrtc_rtp_dump_handler.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -98,9 +104,9 @@ class WebRtcRtpDumpHandlerTest : public testing::Test {
     *outgoing_dump = dir.AppendASCII("send");
     const char dummy[] = "dummy";
     EXPECT_TRUE(base::WriteFile(*incoming_dump,
-                                base::StringPiece(dummy, std::size(dummy))));
+                                std::string_view(dummy, std::size(dummy))));
     EXPECT_TRUE(base::WriteFile(*outgoing_dump,
-                                base::StringPiece(dummy, std::size(dummy))));
+                                std::string_view(dummy, std::size(dummy))));
   }
 
   void FlushTaskRunners() {

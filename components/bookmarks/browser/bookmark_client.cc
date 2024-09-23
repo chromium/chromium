@@ -10,6 +10,10 @@ namespace bookmarks {
 
 void BookmarkClient::Init(BookmarkModel* model) {}
 
+void BookmarkClient::RequiredRecoveryToLoad(
+    const std::multimap<int64_t, int64_t>&
+        local_or_syncable_reassigned_ids_per_old_id) {}
+
 const BookmarkNode* BookmarkClient::GetSuggestedSaveLocation(const GURL& url) {
   return nullptr;
 }
@@ -27,7 +31,7 @@ bool BookmarkClient::SupportsTypedCountForUrls() {
 
 void BookmarkClient::GetTypedCountForUrls(
     UrlTypedCountMap* url_typed_count_map) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace bookmarks

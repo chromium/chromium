@@ -202,15 +202,10 @@ void MagnificationManager::SetProfile(Profile* profile) {
   pref_change_registrar_.reset();
 
   if (profile) {
-    // TODO(yoshiki): Move following code to PrefHandler.
     pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
     pref_change_registrar_->Init(profile->GetPrefs());
     pref_change_registrar_->Add(
         prefs::kAccessibilityScreenMagnifierEnabled,
-        base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
-                            base::Unretained(this)));
-    pref_change_registrar_->Add(
-        prefs::kAccessibilityScreenMagnifierCenterFocus,
         base::BindRepeating(&MagnificationManager::UpdateMagnifierFromPrefs,
                             base::Unretained(this)));
     pref_change_registrar_->Add(
@@ -249,17 +244,6 @@ void MagnificationManager::SetMagnifierEnabledInternal(bool enabled) {
   Shell::Get()->fullscreen_magnifier_controller()->SetEnabled(enabled);
 }
 
-void MagnificationManager::SetMagnifierKeepFocusCenteredInternal(
-    bool keep_focus_centered) {
-  if (keep_focus_centered_ == keep_focus_centered)
-    return;
-
-  keep_focus_centered_ = keep_focus_centered;
-
-  Shell::Get()->fullscreen_magnifier_controller()->SetKeepFocusCentered(
-      keep_focus_centered_);
-}
-
 void MagnificationManager::SetMagnifierScaleInternal(double scale) {
   if (scale_ == scale)
     return;
@@ -283,8 +267,6 @@ void MagnificationManager::UpdateMagnifierFromPrefs() {
   PrefService* prefs = profile_->GetPrefs();
   const bool enabled =
       prefs->GetBoolean(prefs::kAccessibilityScreenMagnifierEnabled);
-  const bool keep_focus_centered =
-      prefs->GetBoolean(prefs::kAccessibilityScreenMagnifierCenterFocus);
   const double scale =
       prefs->GetDouble(prefs::kAccessibilityScreenMagnifierScale);
   const MagnifierMouseFollowingMode mouse_following_mode =
@@ -293,7 +275,6 @@ void MagnificationManager::UpdateMagnifierFromPrefs() {
 
   SetMagnifierMouseFollowingModeInternal(mouse_following_mode);
   SetMagnifierScaleInternal(scale);
-  SetMagnifierKeepFocusCenteredInternal(keep_focus_centered);
   SetMagnifierEnabledInternal(enabled);
 
   AccessibilityStatusEventDetails details(

@@ -13,10 +13,6 @@ import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-struct AdKeywordReplacement {
-  string match;
-  string replacement;
-};
 
 // Represents which AuctionConfig is getting concrete value filled in after a
 // promise param resolved --- either the top-level auction (if `main_auction`)
@@ -83,6 +79,12 @@ interface AbortableAdAuction {
       AuctionAdConfigAuctionId auction,
       string? direct_from_seller_signals_header_ad_slot);
 
+  // Used to provide result of resolving a promise specifying
+  // `deprecated_render_url_replacements` field of an AuctionConfig.
+  ResolvedDeprecatedRenderURLReplacementsPromise(
+    AuctionAdConfigAuctionId auction,
+    array<AdKeywordReplacement> deprecated_render_url_replacements);
+
   // Used to provide result of resolving a promise specifying the Server
   // Response for an AuctionConfig that uses AuctionAdServerResponseConfig.
   // `result` is an encrypted payload containing the response from the bidding
@@ -125,14 +127,6 @@ interface AdAuctionService {
   // re-requesting a new set of ads.
   FinalizeAd(string ads_guid, AuctionAdConfig config)
      => (url.mojom.Url? ad_display_url);
-
-  // Creates an auction nonce, a one-time ID uniquely associated with a single
-  // call to RunAdAuction. This nonce will need to be passed back in via a
-  // subsequent call to RunAdAuction via the AuctionAdConfig. This is currently
-  // only needed for auctions that use additional bids, for which the auction
-  // nonce will be included in each additional bid as a way of ensuring that
-  // those bids are only used in the auctions for which they were intended.
-  CreateAuctionNonce() => (mojo_base.mojom.Uuid nonce);
 
   // Triggers the ad auction to run in a sandboxed JavaScript process. The
   // auction scripts run in this process come from the `bidding_logic_url`'s of
@@ -261,7 +255,8 @@ interface AdAuctionService {
   // auction server. Upon success the request will contain the encrypted ad
   // auction data and `error_message` will be empty.
   GetInterestGroupAdAuctionData(url.mojom.Origin seller,
-                                url.mojom.Origin? coordinator)
+                                url.mojom.Origin? coordinator,
+                                AuctionDataConfig config)
       => (mojo_base.mojom.BigBuffer request,
           mojo_base.mojom.Uuid? request_id,
           string error_message);

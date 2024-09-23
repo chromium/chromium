@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/controlled_frame/controlled_frame_menu_icon_loader.h"
-#include "chrome/browser/extensions/api/context_menus/context_menus_api_helpers.h"
+#include "chrome/browser/extensions/context_menu_helpers.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/common/extensions/api/chrome_web_view_internal.h"
 #include "content/public/browser/render_frame_host.h"
@@ -38,7 +38,7 @@ ControlledFrameInternalContextMenusCreateFunction::Run() {
   id.string_uid = *params->create_properties.id;
 
   std::string error;
-  bool success = extensions::context_menus_api_helpers::CreateMenuItem(
+  bool success = extensions::context_menu_helpers::CreateMenuItem(
       params->create_properties, Profile::FromBrowserContext(browser_context()),
       /*extension=*/nullptr, id, &error);
   return RespondNow(success ? NoArguments() : Error(error));

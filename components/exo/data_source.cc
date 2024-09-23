@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/exo/data_source.h"
 
 #include <limits>
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -19,6 +25,7 @@
 #include "components/exo/data_source_delegate.h"
 #include "components/exo/data_source_observer.h"
 #include "components/exo/mime_utils.h"
+#include "components/exo/security_delegate.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
@@ -109,8 +116,8 @@ int GetImageTypeRank(const std::string& mime_type) {
 std::u16string CodepageToUTF16(const std::vector<uint8_t>& data,
                                const std::string& charset_input) {
   std::u16string output;
-  base::StringPiece piece(reinterpret_cast<const char*>(data.data()),
-                          data.size());
+  std::string_view piece(reinterpret_cast<const char*>(data.data()),
+                         data.size());
   const char* charset = charset_input.c_str();
 
   // Despite claims in the documentation to the contrary, the ICU UTF-16
@@ -212,6 +219,12 @@ void DataSource::DndFinished() {
   finished_ = true;
   read_data_weak_ptr_factory_.InvalidateWeakPtrs();
   delegate_->OnDndFinished();
+}
+
+std::vector<ui::FileInfo> DataSource::GetFilenames(
+    ui::EndpointType source,
+    const std::vector<uint8_t>& data) const {
+  return delegate_->GetSecurityDelegate()->GetFilenames(source, data);
 }
 
 void DataSource::ReadDataForTesting(const std::string& mime_type,

@@ -24,7 +24,7 @@ class MockUsbDeviceHandle : public UsbDeviceHandle {
   scoped_refptr<UsbDevice> GetDevice() const override;
   MOCK_METHOD0(Close, void());
 
-  // TODO(crbug.com/729950): Use MOCK_METHOD directly once GMock gets the
+  // TODO(crbug.com/40524294): Use MOCK_METHOD directly once GMock gets the
   // move-only type support.
   void SetConfiguration(int configuration_value,
                         ResultCallback callback) override {

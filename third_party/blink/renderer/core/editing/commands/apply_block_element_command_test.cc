@@ -301,12 +301,9 @@ TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesCrash) {
       GetDocument(), IndentOutdentCommand::kOutdent);
 
   // Shouldn't crash, and the empty line between b and c should be preserved.
-  // TODO(editing-dev): Get rid of the empty blockquote.
   EXPECT_TRUE(outdent->Apply());
   EXPECT_EQ(
       "<div contenteditable>"
-      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: "
-      "0px;\"></blockquote>"
       "^a<br>"
       "b|<br><br>"
       "c"
@@ -346,11 +343,9 @@ TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesWithJunkCrash) {
   EXPECT_TRUE(outdent->Apply());
 
   // TODO(editing-dev): The result is wrong. We should preserve the empty line
-  // between b and c, and get rid of the empty blockquote.
+  // between b and c.
   EXPECT_EQ(
       "<div contenteditable>"
-      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: "
-      "0px;\"></blockquote>"
       "^a<br>"
       "b|"
       "<!----><br>"

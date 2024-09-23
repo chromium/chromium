@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.price_change;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 /** View for the price change module. */
 public class PriceChangeModuleView extends FrameLayout {
@@ -53,7 +57,11 @@ public class PriceChangeModuleView extends FrameLayout {
     }
 
     void setProductImage(Bitmap bitmap) {
-        mProductImageView.setImageBitmap(bitmap);
+        if (bitmap != null) {
+            mProductImageView.setImageBitmap(bitmap);
+            return;
+        }
+        initializeDefaultImage();
     }
 
     void setFaviconImage(Bitmap bitmap) {
@@ -68,5 +76,28 @@ public class PriceChangeModuleView extends FrameLayout {
         mPreviousPriceView.setPaintFlags(
                 mPreviousPriceView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         mPreviousPriceView.setText(price);
+    }
+
+    private void initializeDefaultImage() {
+        Context context = getContext();
+        // Initialize default background.
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(PriceChangeModuleViewUtils.getBackgroundColor(context));
+        background.setCornerRadius(
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.price_change_module_product_image_corner_radius));
+        mProductImageView.setBackgroundDrawable(background);
+
+        // Initialize default icon.
+        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_tab_placeholder);
+        int padding =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.price_change_module_image_placeholder_padding);
+        mProductImageView.setImageDrawable(drawable);
+        mProductImageView.setPadding(padding, padding, padding, padding);
+        mProductImageView.setColorFilter(
+                PriceChangeModuleViewUtils.getIconColor(context), PorterDuff.Mode.SRC_IN);
     }
 }

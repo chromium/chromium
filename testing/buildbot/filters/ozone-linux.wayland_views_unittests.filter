@@ -2,7 +2,7 @@
 
 # Tests activation of windows.  Wayland doesn't allow the client to activate its
 # windows so this test makes no sense.
-# TODO(crbug.com/1360854): maybe re-evaluate the above after xdg-activation is
+# TODO(crbug.com/40863331): maybe re-evaluate the above after xdg-activation is
 # supported in the compositor that is used on the test bot.
 -DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura
 

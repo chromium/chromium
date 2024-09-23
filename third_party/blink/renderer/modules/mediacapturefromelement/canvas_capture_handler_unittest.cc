@@ -137,17 +137,17 @@ class CanvasCaptureHandlerTest
     EXPECT_EQ(expected_width, size.width());
     EXPECT_EQ(expected_height, size.height());
     const uint8_t* y_plane =
-        video_frame->visible_data(media::VideoFrame::kYPlane);
+        video_frame->visible_data(media::VideoFrame::Plane::kY);
     EXPECT_NEAR(74, y_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
     const uint8_t* u_plane =
-        video_frame->visible_data(media::VideoFrame::kUPlane);
+        video_frame->visible_data(media::VideoFrame::Plane::kU);
     EXPECT_NEAR(193, u_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
     const uint8_t* v_plane =
-        video_frame->visible_data(media::VideoFrame::kVPlane);
+        video_frame->visible_data(media::VideoFrame::Plane::kV);
     EXPECT_NEAR(105, v_plane[0], kTestCanvasCaptureFrameColorErrorTolerance);
     if (!opaque) {
       const uint8_t* a_plane =
-          video_frame->visible_data(media::VideoFrame::kAPlane);
+          video_frame->visible_data(media::VideoFrame::Plane::kA);
       EXPECT_EQ(kTestAlphaValue, a_plane[0]);
     }
   }

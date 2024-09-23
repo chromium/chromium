@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <link rel="help" href="https://html.spec.whatwg.org/C/#the-input-element-as-a-text-entry-widget">
-<title>Test `size` attribute behaivor</title>
+<title>Test `size` attribute behavior</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
@@ -34,7 +34,7 @@ test(() => {
 test(() => {
   const computedString = getComputedStyle(computed).width;
   assert_equals(computed.offsetWidth,
-      parseInt(computedString.substring(0, computedString.length - 2)));
+      Math.round(computedString.substring(0, computedString.length - 2)));
 }, 'Size attribute value affects layout-dependent computed style');
 
 test(() => {

@@ -31,12 +31,16 @@
         padding-inline-start: var(--cr-section-padding);
       }
 
-      #fpsLearnMore {
+      #relatedWebsiteSetsLearnMore {
         margin: 0 var(--cr-icon-button-margin-start);
         padding-bottom: 16px;
         padding-inline-end: var(--cr-section-padding);
         padding-inline-start: var(--cr-section-padding);
         width: 60%;
+      }
+
+      #clearAllButton cr-button {
+        white-space: nowrap;
       }
     </style>
     <div id="sort">
@@ -58,17 +62,18 @@
       <div id="clearLabel">
           [[getClearStorageDescription_(totalUsage_, filter)]]
       </div>
-      <div id="clearAllButton">
+      <div id="clearAllButton"
+          hidden$="[[!shouldShowClearAllButton_(filteredList_.length)]]">
         <cr-button type="button" on-click="onConfirmClearAllData_">
           [[getClearDataButtonString_(filter)]]
         </cr-button>
       </div>
     </div>
-    <div id="fpsLearnMore"
-        hidden$="[[!shouldShowFpsLearnMore_(filter, filteredList_)]]">
-      [[getFpsLearnMoreLabel_(filter)]]
-      <a href="$i18n{firstPartySetsLearnMoreURL}"
-          aria-label="$i18n{siteSettingsFirstPartySetsLearnMoreAccessibility}">
+    <div id="relatedWebsiteSetsLearnMore"
+        hidden$="[[!shouldShowRwsLearnMore_(filter, filteredList_)]]">
+      [[getRwsLearnMoreLabel_(filter)]]
+      <a href="$i18n{relatedWebsiteSetsLearnMoreURL}"
+          aria-label="$i18n{siteSettingsRelatedWebsiteSetsLearnMoreAccessibility}">
         $i18n{learnMore}
       </a>
     </div>
@@ -91,7 +96,7 @@
               last-focused="{{lastFocused_}}"
               list-blurred="{{listBlurred_}}"
               sort-method="[[sortMethod_]]"
-              is-fps-filtered="[[isFpsFiltered_(filter)]]">
+              is-fps-filtered="[[isRwsFiltered_(filter)]]">
           </site-entry>
         </template>
       </iron-list>
@@ -103,10 +108,10 @@
         <cr-action-menu role-description="$i18n{menu}">
           <button class="dropdown-item" role="menuitem"
               on-click="onShowRelatedSites_">
-            $i18n{firstPartySetsShowRelatedSitesButton}
+            $i18n{relatedWebsiteSetsShowRelatedSitesButton}
           </button>
           <button class="dropdown-item" role="menuitem" on-click="onRemove_">
-            $i18n{firstPartySetsSiteDeleteStorageButton}
+            $i18n{relatedWebsiteSetsSiteDeleteStorageButton}
           </button>
         </cr-action-menu>
       </template>
@@ -121,18 +126,18 @@
           </div>
           <div slot="body">
             <div id="logoutBulletPoint" class="detail">
-              <iron-icon icon="all-sites:logout" aria-hidden="true"
-                role="presentation"></iron-icon>
+              <cr-icon icon="all-sites:logout" aria-hidden="true"
+                role="presentation"></cr-icon>
               [[getRemoveSiteLogoutBulletPoint_(actionMenuModel_)]]
             </div>
             <div class="detail">
-              <iron-icon icon="all-sites:offline" aria-hidden="true"
-                role="presentation"></iron-icon>
+              <cr-icon icon="all-sites:offline" aria-hidden="true"
+                role="presentation"></cr-icon>
               $i18n{siteSettingsRemoveSiteOfflineData}
             </div>
             <div id="permissionsBulletPoint" class="detail"
                 hidden$="[[!showPermissionsBulletPoint_(actionMenuModel_)]]">
-              <iron-icon icon="settings:permissions"></iron-icon>
+              <cr-icon icon="privacy:page-info"></cr-icon>
               $i18n{siteSettingsRemoveSitePermissions}
             </div>
           </div>
@@ -160,13 +165,13 @@
             </div>
             <div class="detail-list">
               <div id="clearAllStorageDialogSignOutLabel" class="detail">
-                <iron-icon icon="all-sites:logout" aria-hidden="true"
-                  role="presentation"></iron-icon>
+                <cr-icon icon="all-sites:logout" aria-hidden="true"
+                  role="presentation"></cr-icon>
                 [[getClearAllStorageDialogSignOutLabel_(filter)]]
               </div>
               <div class="detail">
-                <iron-icon icon="all-sites:offline" aria-hidden="true"
-                  role="presentation"></iron-icon>
+                <cr-icon icon="all-sites:offline" aria-hidden="true"
+                  role="presentation"></cr-icon>
                 $i18n{siteSettingsSiteGroupDeleteOfflineData}
               </div>
             </div>

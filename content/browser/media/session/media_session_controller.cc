@@ -49,7 +49,7 @@ bool MediaSessionController::OnPlaybackStarted() {
 
 void MediaSessionController::OnSuspend(int player_id) {
   DCHECK_EQ(player_id_, player_id);
-  // TODO(crbug.com/953645): Set triggered_by_user to true ONLY if that action
+  // TODO(crbug.com/40623496): Set triggered_by_user to true ONLY if that action
   // was actually triggered by user as this will activate the frame.
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
@@ -160,6 +160,15 @@ void MediaSessionController::OnRequestMediaRemoting(int player_id) {
       ->RequestMediaRemoting();
 }
 
+void MediaSessionController::OnRequestVisibility(
+    int player_id,
+    RequestVisibilityCallback request_visibility_callback) {
+  DCHECK_EQ(player_id_, player_id);
+  web_contents_->media_web_contents_observer()
+      ->GetMediaPlayerRemote(id_)
+      ->RequestVisibility(std::move(request_visibility_callback));
+}
+
 RenderFrameHost* MediaSessionController::render_frame_host() const {
   return RenderFrameHost::FromID(id_.frame_routing_id);
 }
@@ -173,6 +182,11 @@ std::optional<media_session::MediaPosition> MediaSessionController::GetPosition(
 bool MediaSessionController::IsPictureInPictureAvailable(int player_id) const {
   DCHECK_EQ(player_id_, player_id);
   return is_picture_in_picture_available_;
+}
+
+bool MediaSessionController::HasSufficientlyVisibleVideo(int player_id) const {
+  DCHECK_EQ(player_id_, player_id);
+  return has_sufficiently_visible_video_;
 }
 
 void MediaSessionController::OnPlaybackPaused(bool reached_end_of_stream) {
@@ -231,6 +245,12 @@ void MediaSessionController::OnRemotePlaybackMetadataChanged(
   AddOrRemovePlayer();
 }
 
+void MediaSessionController::OnVideoVisibilityChanged(
+    bool meets_visibility_threshold) {
+  has_sufficiently_visible_video_ = meets_visibility_threshold;
+  media_session_->OnVideoVisibilityChanged();
+}
+
 bool MediaSessionController::IsMediaSessionNeeded() const {
   if (web_contents_->HasPictureInPictureVideo())
     return true;
@@ -285,6 +305,11 @@ bool MediaSessionController::HasAudio(int player_id) const {
 bool MediaSessionController::HasVideo(int player_id) const {
   DCHECK_EQ(player_id_, player_id);
   return has_video_;
+}
+
+bool MediaSessionController::IsPaused(int player_id) const {
+  DCHECK_EQ(player_id_, player_id);
+  return is_paused_;
 }
 
 std::string MediaSessionController::GetAudioOutputSinkId(int player_id) const {

@@ -9,7 +9,9 @@
           "KeyboardFocusHighlightEnabled": true
         },
         "prefs": {
-          "settings.a11y.focus_highlight": {}
+          "settings.a11y.focus_highlight": {
+            "value": true
+          }
         }
       }
     ]

@@ -60,7 +60,7 @@ std::u16string GetNormalizedStateSelectControlValue(
   // We attempt to normalize `value`. If normalization was not successful, it
   // means the rules were probably not loaded. Give up. Note that the normalizer
   // will fetch the rule next time it's called.
-  // TODO(crbug.com/788417): We should probably sanitize |value| before
+  // TODO(crbug.com/40551524): We should probably sanitize |value| before
   // normalizing.
   if (!NormalizeAdminAreaForCountryCode(value, country_code,
                                         address_normalizer)) {
@@ -78,7 +78,7 @@ std::u16string GetNormalizedStateSelectControlValue(
   }
 
   // Normalize `field_options` using a copy.
-  // TODO(crbug.com/788417): We should probably sanitize the values in
+  // TODO(crbug.com/40551524): We should probably sanitize the values in
   // `field_options_copy` before normalizing.
   bool normalized = false;
   std::vector<SelectOption> field_options_copy(field_options.begin(),
@@ -86,7 +86,7 @@ std::u16string GetNormalizedStateSelectControlValue(
   for (SelectOption& option : field_options_copy) {
     normalized |= NormalizeAdminAreaForCountryCode(option.value, country_code,
                                                    address_normalizer);
-    normalized |= NormalizeAdminAreaForCountryCode(option.content, country_code,
+    normalized |= NormalizeAdminAreaForCountryCode(option.text, country_code,
                                                    address_normalizer);
   }
 
@@ -249,7 +249,7 @@ std::u16string GetCountrySelectControlValue(
     if (country_code == CountryNames::GetInstance()->GetCountryCode(
                             strip_phone_country_code(option.value)) ||
         country_code == CountryNames::GetInstance()->GetCountryCode(
-                            strip_phone_country_code(option.content))) {
+                            strip_phone_country_code(option.text))) {
       return option.value;
     }
   }
@@ -348,7 +348,7 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
 //   else
 // - pick the FIRST option whose value or content CONTAINS the phone country
 //   code with prefix (old behavior).
-// TODO(crbug.com/1395740) Clean up the comment above when the feature is
+// TODO(crbug.com/40249216) Clean up the comment above when the feature is
 // launched.
 std::u16string GetPhoneCountryCodeSelectControlValue(
     const std::u16string& phone_country_code,
@@ -368,7 +368,7 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
   auto value_or_content_matches = [&](const SelectOption& option) {
     return data_util::FindPossiblePhoneCountryCode(option.value) ==
                phone_country_code ||
-           data_util::FindPossiblePhoneCountryCode(option.content) ==
+           data_util::FindPossiblePhoneCountryCode(option.text) ==
                phone_country_code;
   };
   auto first_match =
@@ -379,8 +379,8 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
               kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes)) {
     // If a single option contained the phone country code, return that.
     if (first_match != field_options.end() &&
-        base::ranges::none_of(first_match + 1, field_options.end(),
-                              value_or_content_matches)) {
+        std::ranges::none_of(first_match + 1, field_options.end(),
+                             value_or_content_matches)) {
       return first_match->value;
     }
 
@@ -432,17 +432,17 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
   }
   if (field_type.group() == FieldTypeGroup::kPhone) {
     return GetPhoneNumberValueForInput(
-        field_data.max_length, value,
+        field_data.max_length(), value,
         profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
   }
   if (field_type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
     return GetStreetAddressForInput(value, profile.language_code(),
-                                    field_data.form_control_type);
+                                    field_data.form_control_type());
   }
   if (field_type.GetStorableType() == ADDRESS_HOME_STATE) {
     return GetStateTextForInput(
         value, data_util::GetCountryCodeWithFallback(profile, app_locale),
-        field_data.max_length, failure_to_fill);
+        field_data.max_length(), failure_to_fill);
   }
   return value;
 }
@@ -491,7 +491,7 @@ std::pair<std::u16string, FieldType> GetFillingValueAndTypeForProfile(
 
   if (field_data.IsSelectOrSelectListElement() && !value.empty()) {
     value = GetValueForProfileSelectControl(
-        profile, value, app_locale, field_data.options,
+        profile, value, app_locale, field_data.options(),
         filling_type.GetStorableType(), address_normalizer, failure_to_fill);
   }
 

@@ -13,14 +13,17 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
-#include "components/signin/core/browser/about_signin_internals.h"
 
-// SigninDataCollector collects authentication, sign in and token information
-// from AboutSigninInternals.
+class Profile;
+
+// `SigninDataCollector` collects authentication, sign in and token information
+// from `AboutSigninInternals`. It will return an error if the user is not
+// signed in or is incognito.
 class SigninDataCollector : public DataCollector {
  public:
   explicit SigninDataCollector(Profile* profile);
@@ -59,7 +62,7 @@ class SigninDataCollector : public DataCollector {
 
   SEQUENCE_CHECKER(sequence_checker_);
   PIIMap pii_map_;
-  raw_ptr<AboutSigninInternals> about_signin_internals_;
+  const raw_ptr<Profile> profile_;
   std::string signin_status_;
   base::WeakPtrFactory<SigninDataCollector> weak_ptr_factory_{this};
 };

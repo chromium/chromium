@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,29 +18,51 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveIbanBottomSheetMediatorTest {
-    private static final String IBAN_LABEL = "CH56 0483 5012 3456 7800 9";
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private AutofillSaveIbanBottomSheetMediator mMediator;
+    @Mock private AutofillSaveIbanBottomSheetBridge mDelegate;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private TabModel mTabModel;
 
-    @Mock private AutofillSaveIbanBottomSheetBridge mBridge;
+    private AutofillSaveIbanBottomSheetContent mBottomSheetContent;
+    private AutofillSaveIbanBottomSheetMediator mMediator;
 
     @Before
     public void setUp() {
-        mMediator = new AutofillSaveIbanBottomSheetMediator(mBridge);
+        mMediator =
+                new AutofillSaveIbanBottomSheetMediator(
+                        mDelegate,
+                        mBottomSheetContent,
+                        mBottomSheetController,
+                        mLayoutStateProvider,
+                        mTabModel);
     }
 
     @Test
-    public void testDestroy_doesNotCallOnUiIgnored_afterDestroy() {
-        mMediator.destroy();
-        verify(mBridge).onUiIgnored();
+    public void testRequestShowContent_showsContent() {
+        when(mBottomSheetController.requestShowContent(
+                        any(AutofillSaveIbanBottomSheetContent.class), /* animate= */ eq(true)))
+                .thenReturn(true);
+        mMediator.requestShowContent();
 
-        mMediator.destroy();
+        verify(mBottomSheetController).requestShowContent(mBottomSheetContent, /* animate= */ true);
+    }
 
-        verifyNoMoreInteractions(mBridge);
+    @Test
+    public void testHide_hidesBottomSheetContent() {
+        mMediator.hide(BottomSheetController.StateChangeReason.NONE);
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        mBottomSheetContent,
+                        /* animate= */ true,
+                        BottomSheetController.StateChangeReason.NONE);
     }
 }

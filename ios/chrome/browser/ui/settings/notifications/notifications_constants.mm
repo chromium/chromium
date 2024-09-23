@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
 
-NSString* const kNotificationsTableViewId = @"kNotificationsTableViewId";
-
 NSString* const kSettingsNotificationsPriceTrackingCellId =
     @"kSettingsNotificationsPriceTrackingCellId";
 
@@ -13,3 +11,6 @@ NSString* const kSettingsNotificationsContentCellId =
     @"kSettingsNotificationsContentCellId";
 
 NSString* const kNewspaperSFSymbol = @"newspaper";
+
+NSString* const kNotificationsBannerTableViewId =
+    @"kNotificationsBannerTableViewId";

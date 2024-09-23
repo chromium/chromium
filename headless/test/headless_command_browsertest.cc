@@ -533,12 +533,12 @@ IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfCommandBrowserTest, PrintToPdf) {
   ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
       << print_to_pdf_filename_;
 
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
-      << print_to_pdf_filename_;
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(print_to_pdf_filename_);
+  ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
 
   PDFPageBitmap page_bitmap;
-  ASSERT_TRUE(page_bitmap.Render(pdf_data, 0));
+  ASSERT_TRUE(page_bitmap.Render(pdf_data.value(), 0));
 
   // Expect blue rectangle on white background.
   EXPECT_TRUE(page_bitmap.CheckColoredRect(0xff0000ff, 0xffffffff));
@@ -568,12 +568,12 @@ IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfWithBackgroundCommandBrowserTest,
   ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
       << print_to_pdf_filename_;
 
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
-      << print_to_pdf_filename_;
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(print_to_pdf_filename_);
+  ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
 
   PDFPageBitmap page_bitmap;
-  ASSERT_TRUE(page_bitmap.Render(pdf_data, 0));
+  ASSERT_TRUE(page_bitmap.Render(pdf_data.value(), 0));
 
   // Expect blue rectangle on red background sans margin.
   EXPECT_TRUE(page_bitmap.CheckColoredRect(0xff0000ff, 0xffff0000, 120));

@@ -51,7 +51,7 @@ gn args ./out/dangling/
 ```
 
 ```gn
-use_goma = true
+use_remoteexec = true
 is_debug = false  # Important! (*)
 is_component_build = false  # Important! (*)
 dcheck_always_on = true
@@ -150,7 +150,7 @@ enable_backup_ref_ptr_support=false
 is_asan=true
 is_component_build=false
 use_asan_backup_ref_ptr=false
-use_asan_unowned_ptr=true
+use_raw_ptr_asan_unowned_impl=true
 ```
 
 This will crash when the object containing the dangling ptr is destructed,

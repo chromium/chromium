@@ -12,6 +12,7 @@
 #include "base/i18n/string_search.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "chrome/common/extensions/api/file_manager_private.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
@@ -51,6 +52,7 @@ class RecentSource {
            int32_t call_id,
            const GURL& origin,
            const std::string& query,
+           const size_t max_files,
            const base::Time& cutoff_time,
            const base::TimeTicks& end_time,
            FileType file_type);
@@ -72,6 +74,9 @@ class RecentSource {
     // The query to be applied to recent files to further narrow the returned
     // matches.
     const std::string& query() const { return query_; }
+
+    // The maximum number of files to be returned by this source.
+    size_t max_files() const { return max_files_; }
 
     // Cut-off last modified time. RecentSource is expected to return files
     // modified at this time or later. It is fine to return older files than
@@ -96,6 +101,7 @@ class RecentSource {
     const int32_t call_id_;
     const GURL origin_;
     const std::string query_;
+    const size_t max_files_;
     const base::Time cutoff_time_;
     const FileType file_type_;
     const base::TimeTicks end_time_;
@@ -108,7 +114,7 @@ class RecentSource {
   // You can assume that, once this function is called, it is not called again
   // until the callback is invoked. This means that you can safely save internal
   // states to compute recent files in member variables.
-  virtual void GetRecentFiles(Params params,
+  virtual void GetRecentFiles(const Params& params,
                               GetRecentFilesCallback callback) = 0;
 
   // Called by the RecentModel if it wants to interrupt search for recent files.
@@ -118,8 +124,18 @@ class RecentSource {
   // of the `call_id` passed in the `params` of the GetRecentFiles` method.
   virtual std::vector<RecentFile> Stop(const int32_t call_id) = 0;
 
+  // Returns the volume type that is serviced by this recent source.
+  extensions::api::file_manager_private::VolumeType volume_type() const {
+    return volume_type_;
+  }
+
  protected:
-  RecentSource();
+  // Creates a new recent source that handles a volume of the given type.
+  explicit RecentSource(
+      extensions::api::file_manager_private::VolumeType volume_type);
+
+ private:
+  extensions::api::file_manager_private::VolumeType volume_type_;
 };
 
 // A common to all recent sources function for checking a file name against the

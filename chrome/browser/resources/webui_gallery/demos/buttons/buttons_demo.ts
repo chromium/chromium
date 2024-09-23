@@ -3,32 +3,41 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import '../demo.css.js';
+import '//resources/cr_elements/icons_lit.html.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './buttons_demo.html.js';
+import {getCss} from './buttons_demo.css.js';
+import {getHtml} from './buttons_demo.html.js';
 
-class ButtonsDemoElement extends PolymerElement {
+export class ButtonsDemoElement extends CrLitElement {
   static get is() {
     return 'buttons-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      expanded_: Boolean,
+      expanded_: {type: Boolean},
     };
   }
 
-  private exapanded_: boolean;
+  protected expanded_: boolean = false;
+
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded_ = e.detail.value;
+  }
 }
 
 export const tagName = ButtonsDemoElement.is;

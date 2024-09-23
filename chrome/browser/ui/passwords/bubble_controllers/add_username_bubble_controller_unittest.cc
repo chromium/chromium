@@ -80,7 +80,7 @@ TEST_F(AddUsernameBubbleControllerTest, SavePassword) {
   base::HistogramTester histogram_tester;
   CreateController();
 
-  EXPECT_CALL(*delegate(), OnAddUsernameSaveClicked(Eq(kUsername)));
+  EXPECT_CALL(*delegate(), OnAddUsernameSaveClicked(Eq(kUsername), _));
   controller()->OnSaveClicked();
 
   EXPECT_CALL(*delegate(), OnBubbleHidden());

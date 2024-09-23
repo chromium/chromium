@@ -17,6 +17,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -36,7 +37,7 @@ class PinTextfield : public views::Textfield {
     SetDefaultWidthInChars(20);
 
     set_controller(controller);
-    SetAccessibleName(label);
+    GetViewAccessibility().SetName(*label);
   }
   PinTextfield(const PinTextfield&) = delete;
   PinTextfield& operator=(const PinTextfield&) = delete;

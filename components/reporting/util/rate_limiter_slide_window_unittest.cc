@@ -59,5 +59,12 @@ TEST_F(RateLimiterSlideWindowTest, RandomizedEventsStream) {
                                     base::Milliseconds(base::RandInt(0, 100)));
   }
 }
+
+TEST_F(RateLimiterSlideWindowTest, SparseEventsStream) {
+  for (size_t i = 0; i < 2 * kBucketCount; ++i) {
+    ASSERT_TRUE(rate_limiter_.Acquire(1u));
+    task_environment_.FastForwardBy(kTimeWindow - base::Milliseconds(1));
+  }
+}
 }  // namespace
 }  // namespace reporting

@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -29,9 +30,9 @@ IN_PROC_BROWSER_TEST_F(AutoplayExtensionBrowserTest, AutoplayAllowed) {
   ASSERT_TRUE(RunExtensionTest("autoplay")) << message_;
 }
 
-// TODO(crbug.com/1166927): AutoplayAllowedInIframe sporadically (~10%?) times
+// TODO(crbug.com/40742402): AutoplayAllowedInIframe sporadically (~10%?) times
 // out on Linux.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AutoplayAllowedInIframe DISABLED_AutoplayAllowedInIframe

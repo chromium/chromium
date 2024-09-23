@@ -1,0 +1,58 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_polygon.proto";
+
+// Information about a center bounding box rotated around its center.
+message CenterRotatedBox {
+  float center_x = 1;
+  float center_y = 2;
+  float width = 3;
+  float height = 4;
+
+  // Clockwise rotation around the center in radians. The rotation angle is
+  // computed before normalizing the coordinates.
+  float rotation_z = 5;
+
+  // Specifies the coordinate type of center and size.
+  // @note default is COORDINATE_TYPE_UNSPECIFIED, please initialize this value
+  // to NORMALIZED or IMAGE for Lens detection API usage.
+  CoordinateType coordinate_type = 6;
+}
+
+// Geometric shape(s) used for tracking and detection.
+message Geometry {
+  // Specifies the bounding box for this geometry.
+  CenterRotatedBox bounding_box = 1;
+
+  // Specifies the segmentation polygon. The vertices of the outer-boundaries
+  // are in clockwise, and the ones of inner-boundaries are in counter-clockwise
+  // ordering.
+  repeated Polygon segmentation_polygon = 5;
+
+  reserved 2, 3, 4, 6;
+}
+
+// A cropped and potentially re-scaled image region, rectangular subregion of a
+// canonical image.
+message ZoomedCrop {
+  // The cropped region of the parent image in parent coordinates.
+  CenterRotatedBox crop = 1;
+
+  // Width of the parent image.
+  int32 parent_width = 2;
+
+  // Height of the parent image.
+  int32 parent_height = 3;
+
+  // The ratio of the pixel dimensions of the child image to the pixel
+  // dimensions of the 'crop' in parent coordinates.
+  float zoom = 4;
+}

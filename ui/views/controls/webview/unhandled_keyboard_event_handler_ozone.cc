@@ -4,7 +4,7 @@
 
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "ui/events/event.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_utils.h"
@@ -14,7 +14,7 @@ namespace views {
 
 // static
 bool UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event,
+    const input::NativeWebKeyboardEvent& event,
     FocusManager* focus_manager) {
   auto& key_event = *event.os_event->AsKeyEvent();
   if (!event.skip_if_unhandled) {

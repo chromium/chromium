@@ -11,8 +11,10 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -56,6 +58,18 @@ const char
 constexpr char kObsoleteFederatedIdentityActiveSesssionExceptionsPref[] =
     "profile.content_settings.exceptions.fedcm_active_session";
 
+#if !BUILDFLAG(IS_IOS)
+// This setting was accidentally bound to a UI surface intended for a different
+// setting (https://crbug.com/364820109). It should not have been settable
+// except via enterprise policy, so it is temporarily cleaned up here to revert
+// it to its default value.
+// TODO(https://crbug.com/367181093): clean this up.
+constexpr char kBug364820109ExceptionSettingToClear[] =
+    "profile.content_settings.exceptions.javascript_jit";
+constexpr char kBug364820109AlreadyWorkedAroundPref[] =
+    "profile.did_work_around_bug_364820109_exceptions";
+#endif  // !BUILDFLAG(IS_IOS)
+
 }  // namespace
 
 // ////////////////////////////////////////////////////////////////////////////
@@ -92,6 +106,10 @@ void PrefProvider::RegisterProfilePrefs(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
   registry->RegisterListPref(
       kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
+#if !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/367181093): clean this up.
+  registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 PrefProvider::PrefProvider(PrefService* prefs,
@@ -216,13 +234,11 @@ bool PrefProvider::SetWebsiteSetting(
                                 ? GetCoarseVisitedTime(clock_->Now())
                                 : base::Time();
 
-  // If SessionModel is OneTime, we know for sure that a one time permission
-  // has been set by the One Time Provider, therefore we reset a potentially
-  // existing Allow Always setting.
-  if (constraints.session_model() == SessionModel::OneTime) {
-    DCHECK(content_type == ContentSettingsType::GEOLOCATION ||
-           content_type == ContentSettingsType::MEDIASTREAM_MIC ||
-           content_type == ContentSettingsType::MEDIASTREAM_CAMERA);
+  // If mojom::SessionModel is ONE_TIME, we know for sure that a one time
+  // permission has been set by the One Time Provider, therefore we reset a
+  // potentially existing Allow Always setting.
+  if (constraints.session_model() == mojom::SessionModel::ONE_TIME) {
+    DCHECK(base::Contains(GetTypesWithTemporaryGrantsInHcsm(), content_type));
     in_value = base::Value();
   }
 
@@ -401,7 +417,7 @@ void PrefProvider::ShutdownOnUIThread() {
 
 ContentSettingsPref* PrefProvider::GetPref(ContentSettingsType type) const {
   auto it = content_settings_prefs_.find(type);
-  DCHECK(it != content_settings_prefs_.end());
+  CHECK(it != content_settings_prefs_.end(), base::NotFatalUntil::M130);
   return it->second.get();
 }
 
@@ -427,10 +443,21 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
   prefs_->ClearPref(kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
+
+#if !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/367181093): clean this up.
+  if (!prefs_->GetBoolean(kBug364820109AlreadyWorkedAroundPref)) {
+    prefs_->ClearPref(kBug364820109ExceptionSettingToClear);
+    prefs_->SetBoolean(kBug364820109AlreadyWorkedAroundPref, true);
+  }
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
-void PrefProvider::SetClockForTesting(base::Clock* clock) {
+void PrefProvider::SetClockForTesting(const base::Clock* clock) {
   clock_ = clock;
+  for (auto& pref : content_settings_prefs_) {
+    pref.second->SetClockForTesting(clock);  // IN-TEST
+  }
 }
 
 }  // namespace content_settings

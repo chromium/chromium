@@ -53,7 +53,8 @@ std::string DialInternalMessageTypeToString(DialInternalMessageType type) {
     case DialInternalMessageType::kOther:
       break;
   }
-  NOTREACHED() << "Unknown message type: " << static_cast<int>(type);
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown message type: " << static_cast<int>(type);
   return "unknown";
 }
 
@@ -90,7 +91,8 @@ std::string DialReceiverActionToString(DialReceiverAction action) {
     case DialReceiverAction::kStop:
       return "stop";
   }
-  NOTREACHED() << "Unknown DialReceiverAction: " << static_cast<int>(action);
+  NOTREACHED_IN_MIGRATION()
+      << "Unknown DialReceiverAction: " << static_cast<int>(action);
   return "";
 }
 
@@ -104,8 +106,8 @@ std::string DialAppInfoErrorToString(DialAppInfoResultCode error) {
       return "http_error";
     case DialAppInfoResultCode::kOk:
     case DialAppInfoResultCode::kCount:
-      NOTREACHED() << "Unexpected DialAppInfoResultCode: "
-                   << static_cast<int>(error);
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected DialAppInfoResultCode: " << static_cast<int>(error);
       return "";
   }
 }

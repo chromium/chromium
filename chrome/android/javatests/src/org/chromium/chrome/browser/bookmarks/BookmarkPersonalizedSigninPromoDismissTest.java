@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -45,7 +46,6 @@ import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 /** Tests different scenarios when the bookmark personalized signin promo is not shown. */
@@ -71,7 +71,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         BookmarkPromoHeader.forcePromoStateForTesting(null);
         SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BookmarkModel bookmarkModel =
                             BookmarkModel.getForProfile(

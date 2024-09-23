@@ -1,0 +1,81 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("power") {
+  sources = [
+    "cpu_data_collector.cc",
+    "cpu_data_collector.h",
+    "extension_event_observer.cc",
+    "extension_event_observer.h",
+    "freezer_cgroup_process_manager.cc",
+    "freezer_cgroup_process_manager.h",
+    "idle_action_warning_dialog_view.cc",
+    "idle_action_warning_dialog_view.h",
+    "idle_action_warning_observer.cc",
+    "idle_action_warning_observer.h",
+    "power_data_collector.cc",
+    "power_data_collector.h",
+    "power_metrics_reporter.cc",
+    "power_metrics_reporter.h",
+    "renderer_freezer.cc",
+    "renderer_freezer.h",
+    "suspend_perf_reporter.cc",
+    "suspend_perf_reporter.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cpu_data_collector_unittest.cc",
+    "extension_event_observer_unittest.cc",
+    "power_data_collector_unittest.cc",
+    "renderer_freezer_unittest.cc",
+    "suspend_perf_reporter_unittest.cc",
+  ]
+
+  deps = [
+    ":power",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}

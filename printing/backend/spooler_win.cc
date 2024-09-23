@@ -5,6 +5,7 @@
 #include "printing/backend/spooler_win.h"
 
 #include <windows.h>
+
 #include <winspool.h>
 #include <winsvc.h>
 

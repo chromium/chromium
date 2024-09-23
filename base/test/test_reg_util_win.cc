@@ -4,7 +4,11 @@
 
 #include "base/test/test_reg_util_win.h"
 
+#include <windows.h>
+
 #include <stdint.h>
+
+#include <string_view>
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
@@ -15,8 +19,6 @@
 #include "base/time/time_override.h"
 #include "base/uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include <windows.h>
 
 namespace registry_util {
 
@@ -44,7 +46,7 @@ void DeleteStaleTestKeys(const base::Time& now,
                                                         test_key_root.c_str());
   for (; iterator_test_root_key.Valid(); ++iterator_test_root_key) {
     std::wstring key_name = iterator_test_root_key.Name();
-    std::vector<base::StringPiece16> tokens = base::SplitStringPiece(
+    std::vector<std::u16string_view> tokens = base::SplitStringPiece(
         base::AsStringPiece16(key_name), kTimestampDelimiter,
         base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (tokens.empty())

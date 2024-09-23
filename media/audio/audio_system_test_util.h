@@ -21,7 +21,7 @@ namespace media {
 
 // For tests only. Creates AudioSystem callbacks to be passed to AudioSystem
 // methods. When AudioSystem calls such a callback, it verifies treading
-// expectations and checks recieved parameters against expected values passed
+// expectations and checks received parameters against expected values passed
 // during its creation. After that it calls |on_cb_received| closure.
 // Note AudioSystemCallbackExpectations object must outlive all the callbacks
 // it produced, since they contain raw pointers to it.
@@ -176,15 +176,6 @@ TYPED_TEST_P(AudioSystemTestTemplate, GetOutputStreamParameters) {
       "non-default-device-id",
       this->expectations_.GetAudioParamsCallback(
           FROM_HERE, wait_loop.QuitClosure(), this->output_params_));
-  wait_loop.Run();
-}
-
-TYPED_TEST_P(AudioSystemTestTemplate, GetDefaultOutputStreamParameters) {
-  base::RunLoop wait_loop;
-  this->audio_system()->GetOutputStreamParameters(
-      AudioDeviceDescription::kDefaultDeviceId,
-      this->expectations_.GetAudioParamsCallback(
-          FROM_HERE, wait_loop.QuitClosure(), this->default_output_params_));
   wait_loop.Run();
 }
 
@@ -351,7 +342,6 @@ REGISTER_TYPED_TEST_SUITE_P(
     GetInputStreamParametersNormal,
     GetInputStreamParametersNoDevice,
     GetOutputStreamParameters,
-    GetDefaultOutputStreamParameters,
     GetOutputStreamParametersForDefaultDeviceNoDevices,
     GetOutputStreamParametersForNonDefaultDeviceNoDevices,
     HasInputDevices,

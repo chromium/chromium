@@ -74,7 +74,7 @@ class PDFiumTestBase : public testing::TestWithParam<bool> {
                                           size_t page_index);
 
  private:
-  void InitializePDFium();
+  void InitializePDFiumSDK();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::FilePath test_fonts_path_;

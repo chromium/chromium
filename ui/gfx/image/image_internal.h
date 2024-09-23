@@ -90,7 +90,7 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   const ImageRep* AddRepresentation(std::unique_ptr<ImageRep> rep) const;
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/1495334): Remove callers of this function.
+  // TODO(crbug.com/40286491): Remove callers of this function.
   void set_default_representation_color_space(CGColorSpaceRef color_space) {}
 #endif  // BUILDFLAG(IS_MAC)
 

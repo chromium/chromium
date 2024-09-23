@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.graduation.enablement_status",
+      "default_value": {},
+      "values_to_test": [
+        {
+          "is_enabled": true,
+          "start_date": {
+            "day": 7,
+            "month": 8,
+            "year": 2024
+          },
+          "end_date": {
+            "day": 7,
+            "month": 10,
+            "year": 2024
+          }
+        },
+        {
+          "is_enabled": false
+        }
+      ]
+    }
+  }
+]

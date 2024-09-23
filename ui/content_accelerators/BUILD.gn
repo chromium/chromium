@@ -10,6 +10,7 @@ source_set("content_accelerators") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//components/input",
     "//third_party/blink/public:blink_headers",
     "//ui/base",
     "//ui/events",

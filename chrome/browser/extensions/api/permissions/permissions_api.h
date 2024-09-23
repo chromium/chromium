@@ -7,8 +7,10 @@
 
 #include "base/auto_reset.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace extensions {
 
@@ -76,6 +78,13 @@ class PermissionsRequestFunction : public ExtensionFunction {
   // FOR TESTS ONLY to bypass the confirmation UI.
   [[nodiscard]] static base::AutoReset<DialogAction> SetDialogActionForTests(
       DialogAction dialog_action);
+
+  // The callback fired when the `DialogAction` is `kProgrammatic`.
+  using ShowDialogCallback = base::RepeatingCallback<void(gfx::NativeWindow)>;
+
+  [[nodiscard]] static base::AutoReset<ShowDialogCallback*>
+  SetShowDialogCallbackForTests(ShowDialogCallback* callback);
+
   static void ResolvePendingDialogForTests(bool accept_dialog);
   static void SetIgnoreUserGestureForTests(bool ignore);
 
@@ -109,6 +118,32 @@ class PermissionsRequestFunction : public ExtensionFunction {
   // be recorded if and only if the prompt is being bypassed for a test (see
   // also SetAutoConfirmForTests()).
   std::unique_ptr<const PermissionSet> prompted_permissions_for_testing_;
+};
+
+// chrome.permissions.addSiteAccessRequest
+class PermissionsAddSiteAccessRequestFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("permissions.addSiteAccessRequest",
+                             PERMISSIONS_ADDSITEACCESSREQUEST)
+
+ protected:
+  ~PermissionsAddSiteAccessRequestFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
+// chrome.permissions.removeSiteAccessRequest
+class PermissionsRemoveSiteAccessRequestFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("permissions.removeSiteAccessRequest",
+                             PERMISSIONS_REMOVESITEACCESSREQUEST)
+
+ protected:
+  ~PermissionsRemoveSiteAccessRequestFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
 };
 
 }  // namespace extensions

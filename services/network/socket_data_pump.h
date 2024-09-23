@@ -73,7 +73,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketDataPump {
   void ReceiveMore();
   void OnReceiveStreamWritable(MojoResult result);
   void OnReceiveStreamClosed(MojoResult result);
-  void OnNetworkReadIfReadyCompleted(int result);
+  // `pending_receive_buffer` contains the read data. `nullptr` if this is
+  // invoked to indicate that `ReadIfReady()` completed asynchronously, as the
+  // buffer isn't used in that case (completion merely indicates that data is
+  // available).
+  void OnNetworkReadCompleted(
+      scoped_refptr<NetToMojoPendingBuffer> pending_receive_buffer,
+      int result);
   void ShutdownReceive();
 
   // "Writing" is reading from the Mojo |send_stream_| and writing to the
@@ -95,6 +101,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketDataPump {
   // can be cleaned up before the handles are.
 
   // For reading from the network and writing to Mojo pipe.
+  //
+  // Note: `receive_stream_` is valid if receive wasn't shutdown (see
+  // `receive_is_shutdown_`) and there is no pending read (in that case,
+  // ownership of the stream is transferred to the read buffer).
   mojo::ScopedDataPipeProducerHandle receive_stream_;
   mojo::SimpleWatcher receive_stream_watcher_;
   // A separate watcher is needed to observe |receive_stream_|'s close event, so
@@ -103,6 +113,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketDataPump {
   // of ReadIfReady, |this| can be notified of the shutdown.
   mojo::SimpleWatcher receive_stream_close_watcher_;
   bool read_if_ready_pending_ = false;
+  bool receive_is_shutdown_ = false;
 
   // For reading from the Mojo pipe and writing to the network.
   mojo::ScopedDataPipeConsumerHandle send_stream_;

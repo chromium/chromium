@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import copy
-import unittest
-import tempfile
 import json
 import os
+import tempfile
+import unittest
+from unittest import mock
 
 import six
 
@@ -16,8 +17,6 @@ if six.PY2:
   from cStringIO import StringIO  # pylint: disable=wrong-import-order,import-error
 else:
   from io import StringIO  # pylint: disable=wrong-import-order
-
-import mock
 
 from core import perf_data_generator
 from core.perf_data_generator import BenchmarkMetadata

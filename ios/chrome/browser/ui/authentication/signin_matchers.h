@@ -15,12 +15,6 @@ namespace chrome_test_util {
 // Returns a matcher for a TableViewIdentityCell based on the `email`.
 id<GREYMatcher> IdentityCellMatcherForEmail(NSString* email);
 
-// Returns a matcher for the done button in advanced settings.
-id<GREYMatcher> AdvancedSyncSettingsDoneButtonMatcher();
-
-// Returns a matcher for the link to Advanced Sync Settings options.
-id<GREYMatcher> SettingsLink();
-
 // Returns a matcher for the skip button in the web sign-in consistency dialog.
 id<GREYMatcher> WebSigninSkipButtonMatcher();
 
@@ -44,9 +38,8 @@ id<GREYMatcher> SigninScreenPromoPrimaryButtonMatcher();
 // history sync opt-in, upgrade promo…).
 id<GREYMatcher> SigninScreenPromoSecondaryButtonMatcher();
 
-// Matcher for the Settings row which, upon tap, leads the user to sign-in. If
-// kReplaceSyncPromosWithSignInPromos is disabled, it also leads the user to
-// enable sync. The row is only shown to signed-out users.
+// Matcher for the Settings row which, upon tap, leads the user to sign-in. The
+// row is only shown to signed-out users.
 id<GREYMatcher> SettingsSignInRowMatcher();
 
 // Matcher for the history opt-in screen.

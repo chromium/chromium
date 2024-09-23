@@ -26,11 +26,12 @@ class QuickAnswersTestBase : public testing::Test {
   void TearDown() override;
 
   FakeQuickAnswersState* fake_quick_answers_state() {
-    return fake_quick_answers_state_.get();
+    CHECK(fake_quick_answers_state_);
+    return &fake_quick_answers_state_.value();
   }
 
  private:
-  std::unique_ptr<FakeQuickAnswersState> fake_quick_answers_state_;
+  std::optional<FakeQuickAnswersState> fake_quick_answers_state_;
 };
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_QUICK_ANSWERS_TEST_BASE_H_

@@ -56,6 +56,7 @@ SVGLengthConversionData::SVGLengthConversionData(const Element& context,
                                     context.GetDocument().GetLayoutView()),
                                 CSSToLengthConversionData::ContainerSizes(
                                     context.ParentOrShadowHostElement()),
+                                CSSToLengthConversionData::AnchorData(),
                                 1.0f,
                                 ignored_flags_) {}
 

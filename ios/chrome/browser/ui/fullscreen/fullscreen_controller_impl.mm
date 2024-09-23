@@ -7,7 +7,6 @@
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_system_notification_observer.h"
@@ -15,7 +14,7 @@
 
 // static
 FullscreenController* FullscreenController::FromBrowser(Browser* browser) {
-  // TODO(crbug.com/1469841): Do not create FullscreenController and
+  // TODO(crbug.com/40277656): Do not create FullscreenController and
   // FullscreenWebStateListObserver for an inactive browser.
   FullscreenController* fullscreen_controller =
       static_cast<FullscreenController*>(
@@ -167,7 +166,6 @@ bool FullscreenControllerImpl::IsForceFullscreenMode() const {
 }
 
 void FullscreenControllerImpl::EnterForceFullscreenMode() {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (IsForceFullscreenMode()) {
     return;
   }
@@ -181,7 +179,6 @@ void FullscreenControllerImpl::EnterForceFullscreenMode() {
 }
 
 void FullscreenControllerImpl::ExitForceFullscreenMode() {
-  CHECK(IsBottomOmniboxSteadyStateEnabled());
   if (!IsForceFullscreenMode()) {
     return;
   }
@@ -191,7 +188,7 @@ void FullscreenControllerImpl::ExitForceFullscreenMode() {
 }
 
 void FullscreenControllerImpl::ResizeHorizontalViewport() {
-  // TODO(crbug.com/1114054) this hack temporarily force change webview's
+  // TODO(crbug.com/40143738) this hack temporarily force change webview's
   // width insets to trigger a width recomputation of its content. It will cause
   // two relayouts.
   mediator_.ResizeHorizontalInsets();

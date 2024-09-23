@@ -45,6 +45,7 @@ em::AppInfo::Status ExtractStatus(const apps::Readiness readiness) {
     case apps::Readiness::kDisabledByPolicy:
     case apps::Readiness::kDisabledByUser:
     case apps::Readiness::kTerminated:
+    case apps::Readiness::kDisabledByLocalSettings:
       return em::AppInfo::Status::AppInfo_Status_STATUS_DISABLED;
     case apps::Readiness::kUnknown:
       return em::AppInfo::Status::AppInfo_Status_STATUS_UNKNOWN;

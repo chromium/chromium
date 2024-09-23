@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -62,24 +63,6 @@ constexpr base::FilePath::CharType kLoginSuccess[] = FPL("login-success");
 // and this is used to ensure the data is always written if this amount is
 // elapsed after login.
 constexpr int64_t kLoginTimeWriteDelayMs = 20000;
-
-// Appends the given buffer into the file. Returns the number of bytes
-// written, or -1 on error.<
-// TODO(satorux): Move this to file_util.
-int AppendFile(const base::FilePath& file_path, const char* data, int size) {
-  // Appending boot times to (probably) a symlink in /tmp is a security risk for
-  // developers with chromeos=1 builds.
-  if (!base::SysInfo::IsRunningOnChromeOS())
-    return -1;
-
-  FILE* file = base::OpenFile(file_path, "a");
-  if (!file)
-    return -1;
-
-  const int num_bytes_written = fwrite(data, 1, size, file);
-  base::CloseFile(file);
-  return num_bytes_written;
-}
 
 void WriteTimes(const std::string base_name,
                 const std::string uma_name,
@@ -133,18 +116,6 @@ void WriteTimes(const std::string base_name,
     }
   };
 
-  const auto report_uma =
-      [](const LoginEventRecorder::TimeMarker& tm,
-         const std::string& event_name, base::TimeTicks& out_ts_event,
-         const std::string& uma_metric_suffix, const base::TimeTicks ts_base) {
-        if (tm.name() == event_name) {
-          out_ts_event = tm.time();
-          DCHECK(!ts_base.is_null());
-          base::UmaHistogramTimes(kUmaLoginPrefix + uma_metric_suffix,
-                                  out_ts_event - ts_base);
-        }
-      };
-
   for (unsigned int i = 0; i < times.size(); ++i) {
     const LoginEventRecorder::TimeMarker& tm = times[i];
 
@@ -163,14 +134,10 @@ void WriteTimes(const std::string base_name,
     }
     if (is_login) {
       store_ts(tm, "LoginStarted", ts_login_started);
-      report_uma(tm, "OnAuthSuccess", ts_on_auth_success,
-                 "OnAuthSuccessAfterLoginStarted", ts_login_started);
-      report_uma(tm, "UserProfileGotten", ts_user_profile_gotten,
-                 "UserProfileGottenAfterAuthSuccess", ts_on_auth_success);
-      report_uma(tm, "TPMOwn-Start", ts_tpmown_start,
-                 "TPMOwn-StartAfterUserProfileGotten", ts_user_profile_gotten);
-      report_uma(tm, "BrowserLaunched", ts_browser_launched,
-                 "BrowserLaunchedAfterTPMOwn-Start", ts_tpmown_start);
+      store_ts(tm, "OnAuthSuccess", ts_on_auth_success);
+      store_ts(tm, "UserProfileGotten", ts_user_profile_gotten);
+      store_ts(tm, "TPMOwn-Start", ts_tpmown_start);
+      store_ts(tm, "BrowserLaunched", ts_browser_launched);
     }
 
     base::TimeDelta since_first = tm.time() - first;
@@ -200,6 +167,25 @@ void WriteTimes(const std::string base_name,
   output += '\n';
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
+
+  // Do not record login state times if any of the stage timestamp is missing.
+  // This happens in tests and crash-n-restore case.
+  if (is_login && !ts_login_started.is_null() &&
+      !ts_on_auth_success.is_null() && !ts_user_profile_gotten.is_null() &&
+      !ts_tpmown_start.is_null() && !ts_browser_launched.is_null()) {
+    base::UmaHistogramTimes(
+        base::StrCat({kUmaLoginPrefix, "OnAuthSuccessAfterLoginStarted"}),
+        ts_on_auth_success - ts_login_started);
+    base::UmaHistogramTimes(
+        base::StrCat({kUmaLoginPrefix, "UserProfileGottenAfterAuthSuccess"}),
+        ts_user_profile_gotten - ts_on_auth_success);
+    base::UmaHistogramTimes(
+        base::StrCat({kUmaLoginPrefix, "TPMOwn-StartAfterUserProfileGotten"}),
+        ts_tpmown_start - ts_user_profile_gotten);
+    base::UmaHistogramTimes(
+        base::StrCat({kUmaLoginPrefix, "BrowserLaunchedAfterTPMOwn-Start"}),
+        ts_browser_launched - ts_tpmown_start);
+  }
 
   base::WriteFile(log_path.Append(base_name), output);
 }
@@ -319,13 +305,27 @@ void LoginEventRecorder::Stats::RecordStatsAsync(
   const base::FilePath disk_output =
       log_path.Append(base::FilePath(kDiskPrefix + name));
 
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    return;
+  }
+
   // Append numbers to the files.
-  AppendFile(uptime_output, uptime_.data(), uptime_.size());
-  AppendFile(disk_output, disk_.data(), disk_.size());
+  if (base::PathExists(uptime_output)) {
+    base::AppendToFile(uptime_output, uptime_.data());
+  } else {
+    base::WriteFile(uptime_output, uptime_.data());
+  }
+  if (base::PathExists(disk_output)) {
+    base::AppendToFile(disk_output, disk_.data());
+  } else {
+    base::WriteFile(disk_output, disk_.data());
+  }
   if (write_flag_file) {
     const base::FilePath flag_path =
         log_path.Append(base::FilePath(kStatsPrefix + name + kWrittenSuffix));
-    AppendFile(flag_path, "", 0);
+    if (!base::PathExists(flag_path)) {
+      base::WriteFile(flag_path, "");
+    }
   }
 }
 
@@ -417,6 +417,22 @@ void LoginEventRecorder::RunScheduledWriteLoginTimes() {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(std::move(callback_), std::move(login_time_markers_)));
+}
+
+std::optional<base::TimeDelta> LoginEventRecorder::GetDuration(
+    const std::string& begin_marker_name,
+    const std::string& end_marker_name) {
+  std::optional<base::TimeTicks> begin, end;
+  for (const auto& m : login_time_markers_) {
+    if (m.name() == begin_marker_name) {
+      begin = m.time();
+    } else if (m.name() == end_marker_name) {
+      end = m.time();
+    }
+  }
+  return (begin && end)
+             ? std::make_optional<base::TimeDelta>(end.value() - begin.value())
+             : std::nullopt;
 }
 
 void LoginEventRecorder::WriteLogoutTimes(const std::string base_name,

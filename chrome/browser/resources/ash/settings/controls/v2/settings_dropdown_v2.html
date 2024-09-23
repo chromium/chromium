@@ -1,0 +1,27 @@
+<style include="md-select cros-color-overrides">
+  :host {
+    align-items: center;
+    display: flex;
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: 32px;
+  }
+</style>
+
+<template is="dom-if" if="[[isPrefEnforced]]" restamp>
+  <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
+</template>
+
+<select id="select"
+    class="md-select"
+    aria-label="[[ariaLabel]]"
+    aria-description="[[ariaDescription]]"
+    on-change="onChange_"
+    disabled="[[isSelectDisabled_(disabled, options)]]">
+  <template is="dom-repeat" items="[[options]]" as="option">
+    <option value="[[option.value]]" hidden="[[option.hidden]]">
+      [[option.label]]
+    </option>
+  </template>
+</select>

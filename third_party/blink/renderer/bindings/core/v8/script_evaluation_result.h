@@ -7,13 +7,12 @@
 
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {
-
-class ScriptPromise;
 class ScriptState;
 
 // ScriptEvaluationResult encapsulates the result of a classic or module script
@@ -137,7 +136,7 @@ class CORE_EXPORT ScriptEvaluationResult final {
   // - For module script with TLA is enabled, and
   // - If GetResultType() == kSuccess or kException.
   //   (For kNotRun/kAborted, we should do nothing)
-  ScriptPromise GetPromise(ScriptState* script_state) const;
+  ScriptPromise<IDLAny> GetPromise(ScriptState* script_state) const;
 
  private:
   ScriptEvaluationResult(mojom::blink::ScriptType,

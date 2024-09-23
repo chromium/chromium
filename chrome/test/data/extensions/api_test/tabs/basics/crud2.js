@@ -72,7 +72,7 @@ chrome.test.runTests([
     }));
   },
 
-  // TODO(crbug.com/1093066): This test must either be run in a window context
+  // TODO(crbug.com/40698663): This test must either be run in a window context
   // where the current window is guaranteed, or be moved to the interactive
   // test so there's consistent focus to guarantee which window is the default.
   function getAllInWindowNullArg() {
@@ -211,7 +211,7 @@ chrome.test.runTests([
     }));
   },
 
-  // TODO(crbug.com/1093066): This test only runs in a window context.
+  // TODO(crbug.com/40698663): This test only runs in a window context.
   // We should collect it with other such tests and put them together
   // in a new test suite. Also, chrome.tabs.detectLanguage has been
   // broken for a while, so this test really isn't accomplishing
@@ -224,7 +224,7 @@ chrome.test.runTests([
     }));
   },
 
-  // TODO(crbug.com/1093066): This test must either be run in a window context
+  // TODO(crbug.com/40698663): This test must either be run in a window context
   // where the current window is guaranteed, or be moved to the interactive
   // test so there's consistent focus to guarantee which window is the default.
   function getCurrentWindow() {

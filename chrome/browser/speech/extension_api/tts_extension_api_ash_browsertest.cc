@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 using crosapi::AshRequiresLacrosExtensionApiTest;
 

@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.tab.tab_restore;
 import androidx.annotation.IntDef;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -30,12 +33,14 @@ import java.util.List;
 @JNINamespace("historical_tab_saver")
 public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     private static final List<String> UNSUPPORTED_SCHEMES =
-            new ArrayList<>(
-                    Arrays.asList(
-                            UrlConstants.CHROME_SCHEME,
-                            UrlConstants.CHROME_NATIVE_SCHEME,
-                            ContentUrlConstants.ABOUT_SCHEME));
+            Arrays.asList(
+                    UrlConstants.CHROME_SCHEME,
+                    UrlConstants.CHROME_NATIVE_SCHEME,
+                    ContentUrlConstants.ABOUT_SCHEME);
+
+    private final List<Supplier<TabModel>> mSecondaryTabModelSuppliers = new ArrayList<>();
     private final TabModel mTabModel;
+
     private boolean mIgnoreUrlSchemesForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -63,6 +68,22 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     }
 
     // HistoricalTabSaver implementation.
+
+    @Override
+    public void destroy() {
+        mSecondaryTabModelSuppliers.clear();
+    }
+
+    @Override
+    public void addSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+        mSecondaryTabModelSuppliers.add(tabModelSupplier);
+    }
+
+    @Override
+    public void removeSecodaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+        mSecondaryTabModelSuppliers.remove(tabModelSupplier);
+    }
+
     @Override
     public void createHistoricalTab(Tab tab) {
         if (!shouldSave(tab)) return;
@@ -84,12 +105,16 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         // All tabs to be saved - one entry per tab.
         List<Tab> allTabs = new ArrayList<>();
         // Group IDs corresponding to each element of allTabs.
-        List<Integer> perTabGroupId = new ArrayList<>();
+        List<Integer> perTabRootId = new ArrayList<>();
 
         // Distinct group IDs that will be saved - one per group.
-        List<Integer> groupIds = new ArrayList<>();
-        // Titles corresponding to each element in groupIds.
+        List<Integer> rootIds = new ArrayList<>();
+        List<Token> tabGroupIds = new ArrayList<>();
+        List<String> savedTabGroupIds = new ArrayList();
+        // Titles corresponding to each element in rootIds.
         List<String> groupTitles = new ArrayList<>();
+        // Colors corresponding to each element in rootIds.
+        List<Integer> groupColors = new ArrayList<>();
 
         // Byte buffer associated with WebContentsState per tab by index.
         List<ByteBuffer> byteBuffers = new ArrayList<>();
@@ -100,18 +125,23 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             if (entry.isSingleTab()) {
                 WebContentsState tabWebContentsState = getWebContentsState(entry.getTabs().get(0));
                 allTabs.add(entry.getTabs().get(0));
-                perTabGroupId.add(Tab.INVALID_TAB_ID);
+                perTabRootId.add(Tab.INVALID_TAB_ID);
                 byteBuffers.add(tabWebContentsState.buffer());
                 savedStateVersions.add(tabWebContentsState.version());
                 continue;
             }
 
-            groupIds.add(entry.getGroupId());
+            rootIds.add(entry.getRootId());
+            tabGroupIds.add(entry.getTabGroupId());
+            // TODO(b/336589861): Set a real saved tab group ID from its corresponding sync entity
+            // here.
+            savedTabGroupIds.add("");
             groupTitles.add(entry.getGroupTitle() == null ? "" : entry.getGroupTitle());
+            groupColors.add(entry.getGroupColor());
             for (Tab tab : entry.getTabs()) {
                 WebContentsState tabWebContentsState = getWebContentsState(tab);
                 allTabs.add(tab);
-                perTabGroupId.add(entry.getGroupId());
+                perTabRootId.add(entry.getRootId());
                 byteBuffers.add(tabWebContentsState.buffer());
                 savedStateVersions.add(tabWebContentsState.version());
             }
@@ -132,14 +162,16 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             HistoricalTabSaverImplJni.get()
                     .createHistoricalGroup(
                             mTabModel,
+                            tabGroupIds.get(0),
+                            savedTabGroupIds.get(0),
                             groupTitles.get(0),
+                            groupColors.get(0),
                             allTabs.toArray(new Tab[0]),
                             byteBuffers.toArray(new ByteBuffer[0]),
                             CollectionUtil.integerCollectionToIntArray(savedStateVersions));
             return;
         }
 
-        // IDs are passed only to group tabs. New IDs are generated when saving.
         RecordHistogram.recordEnumeratedHistogram(
                 "Tabs.RecentlyClosed.HistoricalSaverCloseType",
                 HistoricalSaverCloseType.BULK,
@@ -147,9 +179,12 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         HistoricalTabSaverImplJni.get()
                 .createHistoricalBulkClosure(
                         mTabModel,
-                        CollectionUtil.integerCollectionToIntArray(groupIds),
+                        CollectionUtil.integerCollectionToIntArray(rootIds),
+                        tabGroupIds.toArray(new Token[0]),
+                        savedTabGroupIds.toArray(new String[0]),
                         groupTitles.toArray(new String[0]),
-                        CollectionUtil.integerCollectionToIntArray(perTabGroupId),
+                        CollectionUtil.integerCollectionToIntArray(groupColors),
+                        CollectionUtil.integerCollectionToIntArray(perTabRootId),
                         allTabs.toArray(new Tab[0]),
                         byteBuffers.toArray(new ByteBuffer[0]),
                         CollectionUtil.integerCollectionToIntArray(savedStateVersions));
@@ -171,6 +206,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
      */
     private boolean shouldSave(Tab tab) {
         if (tab.isIncognito()) return false;
+        // Check the secondary tab model to see if the tab was moved instead of deleted.
+        if (tabIdExistsInSecondaryModel(tab.getId())) return false;
 
         // {@link GURL#getScheme()} is not available in unit tests.
         if (mIgnoreUrlSchemesForTesting) return true;
@@ -190,6 +227,16 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 && !UNSUPPORTED_SCHEMES.contains(committedUrlOrFrozenUrl.getScheme());
     }
 
+    private boolean tabIdExistsInSecondaryModel(int tabId) {
+        for (Supplier<TabModel> tabModelSupplier : mSecondaryTabModelSuppliers) {
+            if (tabModelSupplier.hasValue() && tabModelSupplier.get().getTabById(tabId) != null) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Generate a valid list of {@link HistoricalEntry}s. Filter out {@link Tab}s that do not pass
      * the {@link #shouldSave(Tab)}.
@@ -207,7 +254,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     /**
      * Generate a valid list of {@link HistoricalEntry}s.
      * - Filter out {@link Tab}s that do not pass the {@link #shouldSave(Tab)}.
-     * - Remove title and id from a single tab entry.
      * - Drop {@link HistoricalEntry} if empty after validation.
      */
     private List<HistoricalEntry> getValidatedEntries(List<HistoricalEntry> entries) {
@@ -216,12 +262,18 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             List<Tab> validTabs = getValidatedTabs(entry.getTabs());
             if (validTabs.isEmpty()) continue;
 
-            if (validTabs.size() == 1) {
+            boolean saveAsSingleTab = validTabs.size() == 1 && entry.getTabGroupId() == null;
+            if (saveAsSingleTab) {
                 validatedEntries.add(new HistoricalEntry(validTabs.get(0)));
                 continue;
             }
             validatedEntries.add(
-                    new HistoricalEntry(entry.getGroupId(), entry.getGroupTitle(), validTabs));
+                    new HistoricalEntry(
+                            entry.getRootId(),
+                            entry.getTabGroupId(),
+                            entry.getGroupTitle(),
+                            entry.getGroupColor(),
+                            validTabs));
         }
         return validatedEntries;
     }
@@ -247,18 +299,24 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         void createHistoricalGroup(
                 TabModel model,
-                String title,
+                Token token,
+                @JniType("std::u16string") String savedTabGroupId,
+                @JniType("std::u16string") String title,
+                int color,
                 Tab[] tabs,
                 ByteBuffer[] byteBuffers,
-                int[] savedStationsVersions);
+                @JniType("std::vector<int32_t>") int[] savedStationsVersions);
 
         void createHistoricalBulkClosure(
                 TabModel model,
-                int[] groupIds,
-                String[] titles,
-                int[] perTabGroupId,
+                @JniType("std::vector<int32_t>") int[] rootIds,
+                Token[] tabGroupIds,
+                @JniType("std::vector<std::u16string>") String[] savedTabGroupIds,
+                @JniType("std::vector<std::u16string>") String[] titles,
+                @JniType("std::vector<int32_t>") int[] colors,
+                @JniType("std::vector<int32_t>") int[] perTabRootId,
                 Tab[] tabs,
                 ByteBuffer[] byteBuffers,
-                int[] savedStateVersions);
+                @JniType("std::vector<int32_t>") int[] savedStateVersions);
     }
 }

@@ -117,7 +117,7 @@ class BASE_EXPORT OperationRecord {
   //
   // The value is mutable since pre C++20 there is no const getter in
   // atomic_flag. All ways to get the value involve setting it.
-  // TODO(https://crbug.com/1284275): Remove mutable and make IsRecording() use
+  // TODO(crbug.com/42050406): Remove mutable and make IsRecording() use
   // atomic_flag::test();
   mutable std::atomic_flag is_recording_ = ATOMIC_FLAG_INIT;
 };
@@ -146,13 +146,12 @@ ALWAYS_INLINE void OperationRecord::StoreStackTrace() {
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   // Currently we limit ourselves to use TraceStackFramePointers. We know that
   // TraceStackFramePointers has an acceptable performance impact on Android.
-  base::debug::TraceStackFramePointers(&stack_trace_[0], stack_trace_.size(),
-                                       0);
+  base::debug::TraceStackFramePointers(stack_trace_, 0);
 #elif BUILDFLAG(IS_LINUX)
   // Use base::debug::CollectStackTrace as an alternative for tests on Linux. We
   // still have a check in /base/debug/debug.gni to prevent that
   // AllocationStackTraceRecorder is enabled accidentally on Linux.
-  base::debug::CollectStackTrace(&stack_trace_[0], stack_trace_.size());
+  base::debug::CollectStackTrace(stack_trace_);
 #else
 #error "No supported stack tracer found."
 #endif
@@ -202,7 +201,7 @@ struct BASE_EXPORT AllocationTraceRecorderStatistics {
 // Note: As a process might be terminated for whatever reason while stack
 // traces are being written, the recorded data may contain some garbage.
 //
-// TODO(https://crbug.com/1419908): Evaluate the impact of the shared cache
+// TODO(crbug.com/40258550): Evaluate the impact of the shared cache
 // lines between entries.
 class BASE_EXPORT AllocationTraceRecorder {
  public:

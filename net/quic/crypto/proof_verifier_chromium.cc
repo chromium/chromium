@@ -2,11 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/quic/crypto/proof_verifier_chromium.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -128,6 +135,11 @@ class ProofVerifierChromium::Job {
 
   int CheckCTRequirements();
 
+  // Must be before `cert_verifier_request_`, to avoid dangling pointer
+  // warnings, as the Request may be storing a raw pointer to which may have a
+  // raw_ptr to its `cert_verify_result`.
+  std::unique_ptr<ProofVerifyDetailsChromium> verify_details_;
+
   // Proof verifier to notify when this jobs completes.
   raw_ptr<ProofVerifierChromium> proof_verifier_;
 
@@ -149,7 +161,6 @@ class ProofVerifierChromium::Job {
   std::string cert_sct_;
 
   std::unique_ptr<quic::ProofVerifierCallback> callback_;
-  std::unique_ptr<ProofVerifyDetailsChromium> verify_details_;
   std::string error_details_;
 
   // X509Certificate from a chain of DER encoded certificates.
@@ -285,9 +296,9 @@ bool ProofVerifierChromium::Job::GetX509Certificate(
   }
 
   // Convert certs to X509Certificate.
-  std::vector<base::StringPiece> cert_pieces(certs.size());
+  std::vector<std::string_view> cert_pieces(certs.size());
   for (unsigned i = 0; i < certs.size(); i++) {
-    cert_pieces[i] = base::StringPiece(certs[i]);
+    cert_pieces[i] = std::string_view(certs[i]);
   }
   cert_ = X509Certificate::CreateFromDERCertChain(cert_pieces);
   if (!cert_.get()) {
@@ -479,7 +490,7 @@ bool ProofVerifierChromium::Job::VerifySignature(
 
   verifier.VerifyUpdate(base::as_byte_span(quic::kProofSignatureLabel));
   uint32_t len = chlo_hash.length();
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(&len, 1u)));
+  verifier.VerifyUpdate(base::byte_span_from_ref(len));
   verifier.VerifyUpdate(base::as_byte_span(chlo_hash));
   verifier.VerifyUpdate(base::as_byte_span(signed_data));
 

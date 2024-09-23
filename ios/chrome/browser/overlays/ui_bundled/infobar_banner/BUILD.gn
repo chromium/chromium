@@ -1,0 +1,81 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinators") {
+  sources = [
+    "features.h",
+    "features.mm",
+    "infobar_banner_overlay_coordinator.h",
+    "infobar_banner_overlay_coordinator.mm",
+  ]
+
+  deps = [
+    ":mediators",
+    "//base",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled:util",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/autofill_address_profile",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/parcel_tracking",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/passwords",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/safe_browsing",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/sync_error",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/tailored_security",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate:mediators",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/ui/infobars:constants",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/presentation",
+  ]
+}
+
+source_set("mediators") {
+  sources = [
+    "infobar_banner_overlay_mediator+consumer_support.h",
+    "infobar_banner_overlay_mediator.h",
+    "infobar_banner_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/infobars/core",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "infobar_banner_overlay_mediator_unittest.mm" ]
+
+  deps = [
+    ":mediators",
+    "//components/infobars/core",
+    "//ios/chrome/browser/infobars/model/test",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/infobar_banner",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

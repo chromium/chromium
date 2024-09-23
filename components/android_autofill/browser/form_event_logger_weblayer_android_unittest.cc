@@ -2,29 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/android_autofill/browser/form_event_logger_weblayer_android.h"
-
 #include "base/test/metrics/histogram_tester.h"
+#include "components/android_autofill/browser/android_form_event_logger.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
-class FormEventLoggerWeblayerAndroidTest : public testing::Test {
+class AndroidFormEventLoggerTest : public testing::Test {
  public:
-  ~FormEventLoggerWeblayerAndroidTest() override = default;
+  ~AndroidFormEventLoggerTest() override = default;
 };
 
-class FormEventLoggerWeblayerAndroidFunnelTest
-    : public testing::TestWithParam<int> {
+class AndroidFormEventLoggerFunnelTest : public testing::TestWithParam<int> {
  public:
-  ~FormEventLoggerWeblayerAndroidFunnelTest() override = default;
+  ~AndroidFormEventLoggerFunnelTest() override = default;
 };
 
-INSTANTIATE_TEST_SUITE_P(FormEventLoggerWeblayerAndroidTest,
-                         FormEventLoggerWeblayerAndroidFunnelTest,
+INSTANTIATE_TEST_SUITE_P(AndroidFormEventLoggerTest,
+                         AndroidFormEventLoggerFunnelTest,
                          testing::Values(0, 1, 2, 3, 4));
 
-TEST_P(FormEventLoggerWeblayerAndroidFunnelTest, LogFunnelAndKeyMetrics) {
+TEST_P(AndroidFormEventLoggerFunnelTest, LogFunnelAndKeyMetrics) {
   // Phase 1: Simulate events according to GetParam().
   const bool parsed_form = GetParam() >= 1;
   const bool user_interacted_with_form = GetParam() >= 2;
@@ -34,7 +32,7 @@ TEST_P(FormEventLoggerWeblayerAndroidFunnelTest, LogFunnelAndKeyMetrics) {
   base::HistogramTester histogram_tester;
 
   {
-    FormEventLoggerWeblayerAndroid logger("FormType");
+    AndroidFormEventLogger logger("FormType");
     if (parsed_form) {
       logger.OnDidParseForm();
     }
@@ -114,12 +112,11 @@ TEST_P(FormEventLoggerWeblayerAndroidFunnelTest, LogFunnelAndKeyMetrics) {
 
 // Test that Autofill.WebView.KeyMetrics.FillingCorrectness is correctly
 // recorded in the scenario that the user edits an autofilled field.
-TEST_F(FormEventLoggerWeblayerAndroidTest,
-       FillingCorrectnessEditedAutofilledField) {
+TEST_F(AndroidFormEventLoggerTest, FillingCorrectnessEditedAutofilledField) {
   base::HistogramTester histogram_tester;
 
   {
-    FormEventLoggerWeblayerAndroid logger("FormType");
+    AndroidFormEventLogger logger("FormType");
     logger.OnDidParseForm();
     logger.OnDidInteractWithAutofillableForm();
     logger.OnDidFillSuggestion();
@@ -137,12 +134,12 @@ TEST_F(FormEventLoggerWeblayerAndroidTest,
 // Test that Autofill.WebView.FillingAssistance metric is correctly recorded in
 // the scenario that the user interacts with the form and submits it but does
 // not use autofill.
-TEST_F(FormEventLoggerWeblayerAndroidTest,
+TEST_F(AndroidFormEventLoggerTest,
        FillingAssistanceFormSubmissionInteractedNoAutofill) {
   base::HistogramTester histogram_tester;
 
   {
-    FormEventLoggerWeblayerAndroid logger("FormType");
+    AndroidFormEventLogger logger("FormType");
     logger.OnDidParseForm();
     logger.OnDidInteractWithAutofillableForm();
     logger.OnWillSubmitForm();
@@ -158,11 +155,11 @@ TEST_F(FormEventLoggerWeblayerAndroidTest,
 // Test that Autofill.WebView.KeyMetrics.FormSubmission metric is correctly
 // recorded in the scenario that the user manually fills the form (without the
 // help of autofill) and submits it.
-TEST_F(FormEventLoggerWeblayerAndroidTest, FormSubmissionManualFill) {
+TEST_F(AndroidFormEventLoggerTest, FormSubmissionManualFill) {
   base::HistogramTester histogram_tester;
 
   {
-    FormEventLoggerWeblayerAndroid logger("FormType");
+    AndroidFormEventLogger logger("FormType");
     logger.OnDidParseForm();
     logger.OnDidInteractWithAutofillableForm();
     logger.OnTypedIntoNonFilledField();
@@ -180,11 +177,11 @@ TEST_F(FormEventLoggerWeblayerAndroidTest, FormSubmissionManualFill) {
 // Test that Autofill.WebView.KeyMetrics.FormSubmission metric is correctly
 // recorded in the scenario that the user manually fills the form and navigates
 // away from the page without submitting the form.
-TEST_F(FormEventLoggerWeblayerAndroidTest, FilledFormNavigatedAway) {
+TEST_F(AndroidFormEventLoggerTest, FilledFormNavigatedAway) {
   base::HistogramTester histogram_tester;
 
   {
-    FormEventLoggerWeblayerAndroid logger("FormType");
+    AndroidFormEventLogger logger("FormType");
     logger.OnDidParseForm();
     logger.OnDidInteractWithAutofillableForm();
     logger.OnTypedIntoNonFilledField();

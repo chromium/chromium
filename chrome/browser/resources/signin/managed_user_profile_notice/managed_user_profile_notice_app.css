@@ -1,0 +1,119 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=/signin_shared.css.js
+ * #import=/signin_vars.css.js
+ * #import=/tangible_sync_style_shared_lit.css.js
+ * #scheme=relative
+ * #include=signin-shared tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host([use-updated-ui_]) {
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex-direction: column;
+  min-height: 560px;
+  min-width: 600px;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+:host([use-updated-ui_]:not([is-modal-dialog_])) .main-container {
+  margin-block-start: auto;
+}
+
+:host([use-updated-ui_][is-modal-dialog_]) .main-container {
+  flex: 1 1 auto;
+}
+
+.main-container {
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-block-start: 40px;
+  width: 100vw;
+}
+
+.action-container {
+  align-items: flex-end;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  margin-block-start: auto;
+  width: 100vw;
+}
+
+.action-container cr-button {
+  /* Reverts inherited pointer-events value from .action-container. */
+  pointer-events: all;
+}
+
+.tangible-sync-style #content-container {
+  height: 100%;
+  position: relative;
+}
+
+.action-container #cancel-button {
+  font-weight: normal;
+}
+
+.tangible-sync-style-left-banner {
+  content: url(images/left-banner.svg);
+}
+
+.tangible-sync-style-right-banner {
+  content: url(images/right-banner.svg);
+}
+
+.success-icon {
+  content: url(images/enrollment_success.svg);
+  height: 130px;
+  width: 180px;
+}
+
+.timeout-icon {
+  content: url(images/enrollment_timeout.svg);
+  height: 130px;
+  width: 180px;
+}
+
+.error-icon {
+  content: url(images/enrollment_failure.svg);
+  height: 130px;
+  width: 180px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tangible-sync-style-right-banner {
+    content: url(images/right-banner-dark.svg);
+  }
+
+  .tangible-sync-style-left-banner {
+    content: url(images/left-banner-dark.svg);
+  }
+
+  .success-icon {
+    content: url(images/enrollment_success_dark.svg);
+  }
+
+  .timeout-icon {
+    content: url(images/enrollment_timeout_dark.svg);
+  }
+
+  .error-icon {
+    content: url(images/enrollment_failure_dark.svg);
+  }
+
+  paper-spinner-lite {
+    --paper-spinner-color: var(--google-blue-300);
+  }
+}
+
+paper-spinner-lite {
+  --paper-spinner-stroke-width: 8px;
+  height: 60px;
+  width: 60px;
+}

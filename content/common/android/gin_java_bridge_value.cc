@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/common/android/gin_java_bridge_value.h"
 
 #include "base/containers/span.h"
+#include "base/pickle.h"
 
 namespace content {
 
@@ -69,8 +75,7 @@ bool GinJavaBridgeValue::ContainsGinJavaBridgeValue(const base::Value* value) {
     return false;
   if (value->GetBlob().size() < sizeof(Header))
     return false;
-  base::Pickle pickle(reinterpret_cast<const char*>(value->GetBlob().data()),
-                      value->GetBlob().size());
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(value->GetBlob());
   // Broken binary value: payload or header size is wrong
   if (!pickle.data() || pickle.size() - pickle.payload_size() != sizeof(Header))
     return false;
@@ -131,8 +136,7 @@ GinJavaBridgeValue::GinJavaBridgeValue(Type type) :
 }
 
 GinJavaBridgeValue::GinJavaBridgeValue(const base::Value* value)
-    : pickle_(reinterpret_cast<const char*>(value->GetBlob().data()),
-              value->GetBlob().size()) {
+    : pickle_(base::Pickle::WithUnownedBuffer(value->GetBlob())) {
   DCHECK(ContainsGinJavaBridgeValue(value));
 }
 

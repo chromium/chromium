@@ -28,20 +28,34 @@ public abstract class ThemeColorProvider {
     /** An interface to be notified about changes to the tint. */
     public interface TintObserver {
         /**
-         * @param tint The new tint the observer should use.
+         * @param tint The new tint the observer should use, without applying Activity state
+         *     (focused vs unfocused) rules. This should be used for elements that don't adjust tint
+         *     based on Activity focus.
+         * @param activityFocusTint The tint the observer should use including consideration for
+         *     whether the Activity is focused. This should be used for elements that do adjust tint
+         *     based on Activity focus.
          * @param brandedColorScheme The {@link BrandedColorScheme} the observer should use.
          */
-        void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme);
+        void onTintChanged(
+                ColorStateList tint,
+                ColorStateList activityFocusTint,
+                @BrandedColorScheme int brandedColorScheme);
     }
 
     /** Current primary color. */
     private @ColorInt int mPrimaryColor;
 
-    /** The current {@link BrandedColorScheme}. */
+    /** The {@link BrandedColorScheme} for the current theme. */
     private @Nullable @BrandedColorScheme Integer mBrandedColorScheme;
 
-    /** The current tint. */
+    /**
+     * The primary icon tint for the current theme, that does not take the activity focus state into
+     * account.
+     */
     private ColorStateList mTint;
+
+    /** The icon tint for the current theme, that takes the activity focus state into account. */
+    private ColorStateList mActivityFocusTint;
 
     /** List of {@link ThemeColorObserver}s. These are used to broadcast events to listeners. */
     private final ObserverList<ThemeColorObserver> mThemeColorObservers;
@@ -60,7 +74,7 @@ public abstract class ThemeColorProvider {
 
     /**
      * @param observer Adds a {@link ThemeColorObserver} that will be notified when the theme color
-     *                 changes. This method does not trigger the observer.
+     *     changes. This method does not trigger the observer.
      */
     public void addThemeColorObserver(ThemeColorObserver observer) {
         mThemeColorObservers.addObserver(observer);
@@ -96,10 +110,18 @@ public abstract class ThemeColorProvider {
     }
 
     /**
-     * @return The current tint of this provider.
+     * @return The current tint of this provider, that does not take the activity focus state into
+     *     account.
      */
     public ColorStateList getTint() {
         return mTint;
+    }
+
+    /**
+     * @return The tint that takes the current activity's focus state into account.
+     */
+    public ColorStateList getActivityFocusTint() {
+        return mActivityFocusTint;
     }
 
     /**
@@ -124,13 +146,16 @@ public abstract class ThemeColorProvider {
     }
 
     protected void updateTint(
-            @NonNull ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        if (tint == mTint) return;
+            @NonNull ColorStateList tint,
+            @NonNull ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        if (tint == mTint && activityFocusTint == mActivityFocusTint) return;
         mTint = tint;
+        mActivityFocusTint = activityFocusTint;
         mBrandedColorScheme = brandedColorScheme;
 
         for (TintObserver observer : mTintObservers) {
-            observer.onTintChanged(tint, brandedColorScheme);
+            observer.onTintChanged(tint, activityFocusTint, brandedColorScheme);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace chromeos::editor_menu {
 PreTargetHandlerView::PreTargetHandlerView(const CardType& card_type)
     : pre_target_handler_(
           std::make_unique<chromeos::editor_menu::PreTargetHandler>(
-              this,
+              /*delegate=*/*this,
               card_type)) {}
 
 PreTargetHandlerView::~PreTargetHandlerView() = default;
@@ -47,6 +47,15 @@ void PreTargetHandlerView::OnWidgetActivationChanged(views::Widget* widget,
 
   // Close widget when it is deactivated.
   GetWidget()->Close();
+}
+
+views::View* PreTargetHandlerView::GetRootView() {
+  return this;
+}
+
+std::vector<views::View*>
+PreTargetHandlerView::GetTraversableViewsByUpDownKeys() {
+  return {this};
 }
 
 void PreTargetHandlerView::ResetPreTargetHandler() {

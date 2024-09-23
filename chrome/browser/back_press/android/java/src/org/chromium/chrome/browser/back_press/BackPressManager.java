@@ -45,7 +45,7 @@ public class BackPressManager implements Destroyable {
     private static final int sMetricsMaxValue;
 
     static {
-        // Max value is 22 - 1 obsolete value +1 for 0 indexing = 21 elements.
+        // Max value is 23 - 1 obsolete value +1 for 0 indexing = 22 elements.
         SparseIntArray map = new SparseIntArray(20);
         map.put(Type.TEXT_BUBBLE, 0);
         // map.put(Type.VR_DELEGATE, 1);
@@ -60,19 +60,18 @@ public class BackPressManager implements Destroyable {
         map.put(Type.TAB_SWITCHER, 10);
         map.put(Type.CLOSE_WATCHER, 11);
         map.put(Type.TAB_HISTORY, 12);
-        map.put(Type.TAB_RETURN_TO_CHROME_START_SURFACE, 13);
+        // map.put(Type.TAB_RETURN_TO_CHROME_START_SURFACE, 13);
         map.put(Type.SHOW_READING_LIST, 14);
         map.put(Type.MINIMIZE_APP_AND_CLOSE_TAB, 15);
         map.put(Type.FIND_TOOLBAR, 16);
         map.put(Type.LOCATION_BAR, 17);
         map.put(Type.XR_DELEGATE, 18);
-        // TODO(b/307046796): Remove this once we have found better way to integrate with back
-        // handling logic.
-        map.put(Type.PAGE_INSIGHTS_BOTTOM_SHEET, 19);
         map.put(Type.BOTTOM_CONTROLS, 20);
         map.put(Type.HUB, 21);
+        map.put(Type.ARCHIVED_TABS_DIALOG, 22);
+
         // Add new one here and update array size.
-        sMetricsMaxValue = 22;
+        sMetricsMaxValue = 23;
         sMetricsMap = map;
     }
 
@@ -131,6 +130,10 @@ public class BackPressManager implements Destroyable {
             };
 
     static final String HISTOGRAM = "Android.BackPress.Intercept";
+    static final String HISTOGRAM_CUSTOM_TAB_SAME_TASK =
+            "Android.BackPress.Intercept.CustomTab.SameTask";
+    static final String HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK =
+            "Android.BackPress.Intercept.CustomTab.SeparateTask";
     static final String FAILURE_HISTOGRAM = "Android.BackPress.Failure";
 
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
@@ -181,6 +184,19 @@ public class BackPressManager implements Destroyable {
     public static void record(@Type int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM, sMetricsMap.get(type), sMetricsMaxValue);
+    }
+
+    /**
+     * Record when the back press is consumed by a custom tab.
+     *
+     * @param type The {@link Type} which consumes the back press event.
+     * @param separateTask Whether the custom tab runs in a separate task.
+     */
+    public static void recordForCustomTab(@Type int type, boolean separateTask) {
+        RecordHistogram.recordEnumeratedHistogram(
+                separateTask ? HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK : HISTOGRAM_CUSTOM_TAB_SAME_TASK,
+                sMetricsMap.get(type),
+                sMetricsMaxValue);
     }
 
     /**
@@ -267,7 +283,7 @@ public class BackPressManager implements Destroyable {
     /**
      * Set a callback fired when a back press is triggered. This is introduced to investigate data
      * inconsistency between experimental groups. and is not intended to be re-used.
-     * TODO(crbug.com/1504020): remove after sufficient data is collected.
+     * TODO(crbug.com/40944523): remove after sufficient data is collected.
      */
     public void setOnBackPressedListener(Runnable callback) {
         mOnBackPressed = callback;
@@ -293,7 +309,7 @@ public class BackPressManager implements Destroyable {
     }
 
     /**
-     * Record if back press occurs before first visible content is drawn. TODO(crbug.com/1504020):
+     * Record if back press occurs before first visible content is drawn. TODO(crbug.com/40944523):
      * remove after it is fixed.
      */
     public void recordSystemBackCountIfBeforeFirstVisibleContent() {
@@ -399,4 +415,11 @@ public class BackPressManager implements Destroyable {
         return HISTOGRAM;
     }
 
+    public static String getCustomTabSameTaskHistogramForTesting() {
+        return HISTOGRAM_CUSTOM_TAB_SAME_TASK;
+    }
+
+    public static String getCustomTabSeparateTaskHistogramForTesting() {
+        return HISTOGRAM_CUSTOM_TAB_SEPARATE_TASK;
+    }
 }

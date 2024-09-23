@@ -56,6 +56,15 @@ COMPONENT_EXPORT(CHROMEOS_ONC)
 void ExpandStringsInNetworks(const VariableExpander& variable_expander,
                              base::Value::List& network_configs);
 
+// Fills in all missing CustomAPNList fields that are mentioned in the
+// ONC specification with the value of |custom_apn_list|. The object of
+// |onc_object| is modified in place.
+COMPONENT_EXPORT(CHROMEOS_ONC)
+void FillInCellularCustomAPNListFieldsInOncObject(
+    const OncValueSignature& signature,
+    base::Value::Dict& onc_object,
+    const base::Value::List* custom_apn_list);
+
 // Fills in all missing HexSSID fields that are mentioned in the ONC
 // specification. The object of |onc_object| is modified in place.
 COMPONENT_EXPORT(CHROMEOS_ONC)

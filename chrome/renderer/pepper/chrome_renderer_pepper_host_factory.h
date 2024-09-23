@@ -32,7 +32,7 @@ class ChromeRendererPepperHostFactory : public ppapi::host::HostFactory {
 
  private:
   // Not owned by this object.
-  raw_ptr<content::RendererPpapiHost, ExperimentalRenderer> host_;
+  raw_ptr<content::RendererPpapiHost> host_;
 };
 
 #endif  // CHROME_RENDERER_PEPPER_CHROME_RENDERER_PEPPER_HOST_FACTORY_H_

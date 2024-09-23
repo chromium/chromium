@@ -215,6 +215,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
     ActionItemBuilder& SetInvokeActionCallback(InvokeActionCallback callback) &;
     ActionItemBuilder&& SetInvokeActionCallback(
         InvokeActionCallback callback) &&;
+    ActionItemBuilder& SetIsShowingBubble(bool showing_bubble) &;
+    ActionItemBuilder&& SetIsShowingBubble(bool showing_bubble) &&;
     [[nodiscard]] std::unique_ptr<ActionItem> Build() &&;
 
    private:
@@ -265,6 +267,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   bool GetVisible() const;
   void SetVisible(bool visible);
   void SetInvokeActionCallback(InvokeActionCallback callback);
+  bool GetIsShowingBubble() const;
+  void SetIsShowingBubble(bool showing_bubble);
 
   [[nodiscard]] base::CallbackListSubscription AddActionChangedCallback(
       ActionChangedCallback callback);
@@ -275,6 +279,9 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   // Do a "batch" update of the ActionItem state without triggering
   // ActionChanged callbacks for each state change.
   [[nodiscard]] ScopedActionUpdate BeginUpdate();
+
+  // ui::PropertyHandler:
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
 
   // Invoke an action.
   void InvokeAction(
@@ -315,6 +322,14 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   InvokeActionCallback callback_;
   int invoke_count_ = 0;
   std::optional<base::TimeTicks> last_invoke_time_;
+  // Represents whether this action is currently showing associated ephemeral
+  // UI. Pinned action buttons which execute on mouse release won't execute if
+  // `is_showing_bubble_` was true on mouse press. Used to avoid immediately
+  // re-triggering actions when mouse press was intended to dismiss their
+  // ephemeral UI.
+  // TODO(b/361251892): Rename this to appropriately reflect bubbles that do not
+  // close on deactivate.
+  bool is_showing_bubble_ = false;
   base::WeakPtrFactory<ActionItem> weak_ptr_factory_{this};
 };
 

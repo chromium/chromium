@@ -5,7 +5,6 @@
 #include "ash/accelerators/modifier_key_combo_recorder.h"
 
 #include <optional>
-#include <string_view>
 #include <tuple>
 
 #include "ash/events/event_rewriter_controller_impl.h"
@@ -15,7 +14,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_constants.h"
@@ -58,6 +56,10 @@ constexpr auto kControlKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
     ui::VKEY_CONTROL,
     ui::VKEY_LCONTROL,
     ui::VKEY_RCONTROL,
+});
+
+constexpr auto kFunctionKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
+    ui::VKEY_FUNCTION,
 });
 
 // The ModifierKeyCombo metric is formed as follows:
@@ -169,7 +171,8 @@ void ModifierKeyComboRecorder::Initialize() {
 
 void ModifierKeyComboRecorder::OnPrerewriteKeyInputEvent(
     const ui::KeyEvent& key_event) {
-  if (key_event.type() == ui::ET_KEY_RELEASED || key_event.is_repeat()) {
+  if (key_event.type() == ui::EventType::kKeyReleased ||
+      key_event.is_repeat()) {
     return;
   }
 
@@ -222,6 +225,11 @@ uint32_t ModifierKeyComboRecorder::GenerateModifierFlagsFromKeyEvent(
   if (event.flags() & ui::EF_SHIFT_DOWN &&
       !kShiftKeys.contains(event.key_code())) {
     modifier_flags += GetModifierFlagFromModifier(Modifier::kShift);
+  }
+
+  if (event.flags() & ui::EF_FUNCTION_DOWN &&
+      !kFunctionKeys.contains(event.key_code())) {
+    modifier_flags += 1 << static_cast<uint32_t>(ModifierFlag::kFunction);
   }
 
   return modifier_flags;

@@ -14,12 +14,12 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/oobe_icons.html.js';
 
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './adb_sideloading.html.js';
 
@@ -39,17 +39,8 @@ enum AdbsideloadingScreenState {
   SETUP = 2,
 }
 
-const AdbSideloadingBase = mixinBehaviors(
-    [OobeI18nBehavior,
-        OobeDialogHostBehavior,
-        LoginScreenBehavior,
-        MultiStepBehavior],
-    PolymerElement) as { new (): PolymerElement
-        & OobeDialogHostBehaviorInterface
-        & OobeI18nBehaviorInterface
-        & LoginScreenBehaviorInterface
-        & MultiStepBehaviorInterface,
-    };
+const AdbSideloadingBase = OobeDialogHostMixin(
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement))));
 
 export class AdbSideloading extends AdbSideloadingBase {
   static get is() {
@@ -90,6 +81,7 @@ export class AdbSideloading extends AdbSideloadingBase {
   }
 
   override onBeforeShow(): void {
+    super.onBeforeShow();
     this.setScreenState(AdbsideloadingScreenState.SETUP);
   }
 
@@ -97,9 +89,9 @@ export class AdbSideloading extends AdbSideloadingBase {
    * Sets UI state for the dialog to show corresponding content.
    */
   setScreenState(state: AdbsideloadingScreenState): void {
-    if (state == AdbsideloadingScreenState.ERROR) {
+    if (state === AdbsideloadingScreenState.ERROR) {
       this.setUIStep(AdbSideloadingState.ERROR);
-    } else if (state == AdbsideloadingScreenState.SETUP) {
+    } else if (state === AdbsideloadingScreenState.SETUP) {
       this.setUIStep(AdbSideloadingState.SETUP);
     }
   }

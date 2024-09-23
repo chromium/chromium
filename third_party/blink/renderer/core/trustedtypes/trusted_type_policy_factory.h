@@ -43,7 +43,6 @@ class CORE_EXPORT TrustedTypePolicyFactory final
   bool isHTML(ScriptState*, const ScriptValue&);
   bool isScript(ScriptState*, const ScriptValue&);
   bool isScriptURL(ScriptState*, const ScriptValue&);
-  bool isURL(ScriptState*, const ScriptValue&);
 
   TrustedHTML* emptyHTML() const;
 
@@ -77,9 +76,6 @@ class CORE_EXPORT TrustedTypePolicyFactory final
   static bool IsEventHandlerAttributeName(const AtomicString& attributeName);
 
  private:
-  const WrapperTypeInfo* GetWrapperTypeInfoFromScriptValue(ScriptState*,
-                                                           const ScriptValue&);
-
   Member<TrustedHTML> empty_html_;
   Member<TrustedScript> empty_script_;
   HeapHashMap<String, Member<TrustedTypePolicy>> policy_map_;

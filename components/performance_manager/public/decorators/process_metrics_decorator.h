@@ -5,12 +5,10 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PROCESS_METRICS_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PROCESS_METRICS_DECORATOR_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 
@@ -20,13 +18,13 @@ class GlobalMemoryDump;
 
 namespace performance_manager {
 
+class Graph;
 class SystemNode;
 
 // The ProcessMetricsDecorator is responsible for adorning process nodes with
 // performance metrics.
 class ProcessMetricsDecorator
-    : public GraphOwned,
-      public GraphRegisteredImpl<ProcessMetricsDecorator>,
+    : public GraphOwnedAndRegistered<ProcessMetricsDecorator>,
       public NodeDataDescriberDefaultImpl {
  public:
   ProcessMetricsDecorator();
@@ -66,7 +64,6 @@ class ProcessMetricsDecorator
   base::Value::Dict DescribeSystemNodeData(
       const SystemNode* node) const override;
 
-  void SetGraphForTesting(Graph* graph);
   bool IsTimerRunningForTesting() const;
   base::TimeDelta GetTimerDelayForTesting() const;
 
@@ -131,9 +128,6 @@ class ProcessMetricsDecorator
 
   // The timer responsible for refreshing the metrics.
   base::OneShotTimer refresh_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The Graph instance owning this decorator.
-  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The number of clients currently interested by the metrics tracked by this
   // class.

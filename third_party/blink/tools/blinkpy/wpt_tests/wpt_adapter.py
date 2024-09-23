@@ -62,9 +62,10 @@ class GroupingFormatter(mozlog.formatters.GroupingFormatter):
         offset = datetime.now() - self._start
         minutes, seconds = divmod(max(0, offset.total_seconds()), 60)
         hours, minutes = divmod(minutes, 60)
+        milliseconds, _ = divmod(offset.microseconds, 1000)
         # A relative timestamp is more useful for comparing event timings than
         # an absolute one.
-        timestamp = f'{int(hours):02}:{int(minutes):02}:{int(seconds):02}'
+        timestamp = f'{int(hours):02}:{int(minutes):02}:{int(seconds):02}.{int(milliseconds):03}'
         # Place mandatory fields first so that logs are vertically aligned as
         # much as possible.
         message = f'{timestamp} {data["level"]}: {data["message"]}'
@@ -125,7 +126,9 @@ class StructuredLogAdapter(logging.Handler):
         log = getattr(self._logger, record.levelname.lower(),
                       self._logger.debug)
         try:
-            log(record.getMessage(), component=record.name)
+            log(record.getMessage(),
+                component=record.name,
+                exc_info=record.exc_info)
         except mozlog.structuredlog.LoggerShutdownError:
             self._fallback_handler.emit(record)
 
@@ -133,7 +136,7 @@ class StructuredLogAdapter(logging.Handler):
 class WPTAdapter:
     PORT_NAME_BY_PRODUCT = {
         'android_webview': 'webview',
-        'chrome': 'chrome',
+        'chrome_android': 'android',
     }
 
     def __init__(self, product, port, options, paths):
@@ -144,8 +147,13 @@ class WPTAdapter:
         self.finder = path_finder.PathFinder(self.fs)
         self.options = options
         self.paths = paths
-        self.failure_threshold = 0
-        self.crash_timeout_threshold = 0
+        self._processor = WPTResultsProcessor(
+            self.fs,
+            self.port,
+            artifacts_dir=self.port.artifacts_directory(),
+            reset_results=self.options.reset_results,
+            repeat_each=self.options.repeat_each,
+            processes=product.processes)
         self._expectations = TestExpectations(self.port)
 
     @classmethod
@@ -155,30 +163,34 @@ class WPTAdapter:
                   port_name: Optional[str] = None):
         options, tests = parse_arguments(args)
         cls._ensure_value(options, 'wpt_only', True)
-        # only run virtual tests for content shell
-        cls._ensure_value(options, 'no_virtual_tests',
-                          options.product != 'content_shell')
+        # only run virtual tests for headless shell
+        cls._ensure_value(options, 'no_virtual_tests', options.product
+                          not in ['headless_shell', 'chrome'])
+
+        env_shard_index = host.environ.get('GTEST_SHARD_INDEX')
+        if env_shard_index is not None:
+            cls._ensure_value(options, 'shard_index', int(env_shard_index))
+        env_total_shards = host.environ.get('GTEST_TOTAL_SHARDS')
+        if env_total_shards is not None:
+            cls._ensure_value(options, 'total_shards', int(env_total_shards))
 
         if options.product in cls.PORT_NAME_BY_PRODUCT:
-            port = host.port_factory.get(
-                cls.PORT_NAME_BY_PRODUCT[options.product], options)
-        else:
-            port = host.port_factory.get(port_name, options)
-
-        if options.product == 'chrome':
-            port.set_option_default('driver_name', port.CHROME_NAME)
+            port_name = cls.PORT_NAME_BY_PRODUCT[options.product]
+        port = host.port_factory.get(port_name, options)
         product = make_product(port, options)
         return WPTAdapter(product, port, options, tests)
 
     def set_up_derived_options(self):
-        if not self.paths and not self.options.test_list and self.options.smoke is None:
+        explicit_tests = self.paths or self.options.test_list
+        if (not explicit_tests and self.options.smoke is None
+                and not self.using_upstream_wpt):
             self.options.smoke = self.port.default_smoke_test_only()
         if self.options.smoke:
-            if not self.paths and not self.options.test_list and self.options.num_retries is None:
-                # Retry failures 1 times if we're running a smoke test without
+            if not explicit_tests and self.options.num_retries is None:
+                # Retry failures 3 times if we're running a smoke test without
                 # additional tests. SmokeTests is an explicit list of tests, so we
                 # wouldn't retry by default without this special case.
-                self.options.num_retries = 1
+                self.options.num_retries = 3
 
             if not self.options.test_list:
                 self.options.test_list = []
@@ -186,13 +198,6 @@ class WPTAdapter:
 
         if self.options.gtest_filter:
             self.paths.extend(self.options.gtest_filter.split(':'))
-
-        if not self.options.total_shards and 'GTEST_TOTAL_SHARDS' in self.host.environ:
-            self.options.total_shards = int(
-                self.port.host.environ['GTEST_TOTAL_SHARDS'])
-        if not self.options.shard_index and 'GTEST_SHARD_INDEX' in self.port.host.environ:
-            self.options.shard_index = int(
-                self.port.host.environ['GTEST_SHARD_INDEX'])
 
     def log_config(self):
         logger.info(f'Running tests for {self.product.name}')
@@ -249,12 +254,7 @@ class WPTAdapter:
             self._set_up_runner_ssl_options(runner_options)
         self._set_up_runner_debugging_options(runner_options)
         self._set_up_runner_tests(runner_options, tmp_dir)
-
-        for name, value in self.product.product_specific_options().items():
-            self._ensure_value(runner_options, name, value)
-
-        runner_options.webdriver_args.extend(
-            self.product.additional_webdriver_args())
+        self.product.update_runner_options(runner_options)
         return runner_options
 
     @classmethod
@@ -271,8 +271,14 @@ class WPTAdapter:
         if verbose_level >= 2:
             runner_options.log_mach_level = 'debug'
         if verbose_level >= 3:
+            runner_options.webdriver_args.append('--verbose')
+        else:
+            # Disable all `chromedriver` logs except from `chrome_launcher.cc`,
+            # which logs the `chrome` command that `WPTResultsProcessor` will
+            # extract.
             runner_options.webdriver_args.extend([
-                '--verbose',
+                '--log-level=INFO',
+                '--vmodule=chrome_launcher=0,*/chrome/test/chromedriver/*=-1',
             ])
 
         if self.using_upstream_wpt:
@@ -281,6 +287,10 @@ class WPTAdapter:
                     self.fs.join(self.port.results_directory(),
                                  'wpt_reports.json'))
             ]
+
+        # Dump `*-{actual,expected}.png` screenshots for all failures like
+        # `run_web_tests.py` does. See crbug.com/40947531.
+        runner_options.reftest_screenshot = 'fail'
         runner_options.log = wptlogging.setup(dict(vars(runner_options)),
                                               {'grouped': sys.stdout})
         logging.root.handlers.clear()
@@ -311,8 +321,14 @@ class WPTAdapter:
             'MAP *.test 127.0.0.1, MAP *.test. 127.0.0.1',
             *self.port.additional_driver_flags(),
         ])
-        # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` to Chrome.
+
+        # Implicitly pass `--enable-blink-features=MojoJS,MojoJSTest` and
+        # `--enable-experimental-web-platform-features` to the browser binary.
+        # The latter is needed in addition to `--enable-blink-test-features`
+        # because it enables some Chromium-side `base::Feature()`s:
+        # https://chromium.googlesource.com/chromium/src/+/main/content/public/common/content_switch_dependent_feature_overrides.cc
         runner_options.mojojs_path = self.port.generated_sources_directory()
+        runner_options.enable_experimental = True
 
         # TODO: RWT has subtle control on how tests are retried. For example
         # there won't be automatic retry of failed tests when they are specified
@@ -320,13 +336,11 @@ class WPTAdapter:
         # work correctly.
         runner_options.repeat = self.options.iterations
         runner_options.fully_parallel = self.options.fully_parallel
+        runner_options.leak_check = self.options.enable_leak_detection
 
         if self.options.run_wpt_internal:
             runner_options.config = self.finder.path_from_web_tests(
                 'wptrunner.blink.ini')
-
-        if self.options.enable_leak_detection:
-            runner_options.binary_args.append('--enable-leak-detection')
 
         if (self.options.enable_sanitizer
                 or self.options.configuration == 'Debug'):
@@ -346,9 +360,10 @@ class WPTAdapter:
             runner_options.fail_on_unexpected = False
             runner_options.restart_on_unexpected = False
         else:
-            # By default, wpt will treat unexpected passes as errors, so we
-            # disable that to be consistent with Chromium CI.
-            runner_options.fail_on_unexpected_pass = False
+            # Unexpected subtest passes in wptrunner are equivalent to baseline
+            # mismatches in `run_web_tests.py`, so don't pass
+            # `--no-fail-on-unexpected-pass`. The test loader always adds
+            # test-level pass expectations to compensate.
             runner_options.restart_on_unexpected = False
             runner_options.restart_on_new_group = False
             # Add `--run-by-dir=0` so that tests can be more evenly distributed
@@ -361,6 +376,10 @@ class WPTAdapter:
         # rerun will not restart browsers. Might also need to restart the
         # browser at Wptrunner side.
         runner_options.rerun = self.options.repeat_each
+
+        # TODO(crbug.com/367745137): Reenable webtransport-h3 server once
+        # unclean startup has been fixed.
+        runner_options.enable_webtransport_h3 = False
 
     def _set_up_runner_ssl_options(self, runner_options):
         # wptrunner doesn't recognize the `pregenerated.*` values in
@@ -390,6 +409,8 @@ class WPTAdapter:
                 self.paths,
                 test_lists=self.options.test_list,
                 filter_files=self.options.isolated_script_test_filter_file,
+                inverted_filter_files=self.options.
+                inverted_test_launcher_filter_file,
                 fastest_percentile=None,
                 filters=self.options.isolated_script_test_filter)
         except IOError:
@@ -397,7 +418,7 @@ class WPTAdapter:
 
         if self.options.num_retries is None:
             # If --test-list is passed, or if no test narrowing is specified,
-            # default to 1 retries. Otherwise [e.g. if tests are being passed by
+            # default to 3 retries. Otherwise [e.g. if tests are being passed by
             # name], default to 0 retries.
             if self.options.test_list or len(self.paths) < len(all_test_names):
                 self.options.num_retries = 3
@@ -449,6 +470,8 @@ class WPTAdapter:
                 'config': {
                     'binary_args': subsuite_args,
                 },
+                # The Blink implementation of `TestLoader` needs the
+                # `virtual_suite` property to derive virtual test names.
                 'run_info': {
                     'virtual_suite': subsuite_name,
                 },
@@ -472,9 +495,9 @@ class WPTAdapter:
             runner_options.test_types = self.options.test_types
             runner_options.retry_unexpected = self.options.num_retries
 
-            self.failure_threshold = self.port.max_allowed_failures(
+            self._processor.failure_threshold = self.port.max_allowed_failures(
                 len(include_tests))
-            self.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
+            self._processor.crash_timeout_threshold = self.port.max_allowed_crash_or_timeouts(
                 len(include_tests))
 
             # sharding is done inside wrapper
@@ -520,24 +543,30 @@ class WPTAdapter:
                 tests_root = self.tools_root
             else:
                 tests_root = self.finder.path_from_wpt_tests()
+                TestLoader.install(self.port, self._expectations,
+                                   runner_options.include)
             runner_options.tests_root = tests_root
             runner_options.metadata_root = tests_root
             logger.debug('Using WPT tests (external) from %s', tests_root)
             logger.debug('Using WPT tools from %s', self.tools_root)
 
             runner_options.run_info = tmp_dir
-            # The filename must be `mozinfo.json` for wptrunner to read it from the
-            # `--run-info` directory.
-            self._create_extra_run_info(self.fs.join(tmp_dir, 'mozinfo.json'),
-                                        tests_root)
+            self._initialize_tmp_dir(tmp_dir, tests_root)
 
-            TestLoader.install(self.port, self._expectations)
             stack.enter_context(
                 self.process_and_upload_results(runner_options))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
+            # Restore the original CWD as soon as the call into `wpt run` is
+            # over. This ensures relative paths for `--json-test-results` and
+            # other options work correctly.
+            stack.callback(self.fs.chdir, self.fs.getcwd())
             # Changing the CWD is not ideal, but necessary for `wptserve` to
             # resolve relative paths in `external/wpt/config.json` correctly.
+            #
+            # TODO(crbug.com/362344569): Replace this workaround. One option is
+            # to add a `wpt run` parameter to point to a wptserve config with
+            # absolutized paths.
             self.fs.chdir(self.port.web_tests_dir())
             yield runner_options
 
@@ -560,19 +589,23 @@ class WPTAdapter:
             self.tools_root) != self.fs.realpath(vended_wpt)
 
     def run_tests(self) -> int:
-        with self.test_env() as runner_options:
-            run = _load_entry_point()
-            exit_code = run(**vars(runner_options))
-            # Reopen the `web-platform-tests` logger so that `update-metadata`
-            # can use it.
-            #
-            # TODO(crbug.com/1480061): Find a better way to handle logger
-            # lifecycles.
-            from wptrunner.metadata import logger
-            logger._state.has_shutdown = False
-            return 1 if exit_code else 0
+        exit_code = 0
+        try:
+            with self.test_env() as runner_options:
+                run = _load_entry_point()
+                exit_code = 1 if run(**vars(runner_options)) else 0
+        except KeyboardInterrupt:
+            logger.critical('Harness exited after signal interrupt')
+            exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
+        # Write the partial results for an interrupted run. This also ensures
+        # the results directory is rotated next time.
+        self._processor.copy_results_viewer()
+        results_json = self._processor.process_results_json(
+            self.port.get_option('json_test_results'))
+        return exit_code or int(results_json['num_regressions'] > 0)
 
-    def _create_extra_run_info(self, run_info_path, tests_root):
+    def _initialize_tmp_dir(self, tmp_dir: str, tests_root: str):
+        assert self.fs.isdir(tmp_dir), tmp_dir
         run_info = {
             # This property should always be a string so that the metadata
             # updater works, even when wptrunner is not running a flag-specific
@@ -592,36 +625,35 @@ class WPTAdapter:
             run_info['revision'] = self.host.git(
                 path=tests_root).current_revision()
 
+        # The filename must be `mozinfo.json` for wptrunner to read it from the
+        # `--run-info` directory.
+        run_info_path = self.fs.join(tmp_dir, 'mozinfo.json')
         with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
             json.dump(run_info, file_handle)
 
+        # The `//third_party/fontconfig/` library embedded into Chromium
+        # recursively searches `$XDG_DATA_HOME/fonts` for locally vended fonts.
+        ahem_path = self.fs.join(tmp_dir, 'fonts', 'Ahem.ttf')
+        self.fs.maybe_make_directory(self.fs.dirname(ahem_path))
+        self.fs.copyfile(self.fs.join(tests_root, 'fonts', 'Ahem.ttf'),
+                         ahem_path)
+        self.host.environ['XDG_DATA_HOME'] = tmp_dir
+
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):
-        artifacts_dir = self.port.artifacts_directory()
-        processor = WPTResultsProcessor(
-            self.fs,
-            self.port,
-            artifacts_dir=artifacts_dir,
-            failure_threshold=self.failure_threshold,
-            crash_timeout_threshold=self.crash_timeout_threshold,
-            reset_results=self.options.reset_results)
-        with processor.stream_results() as events:
-            runner_options.log.add_handler(events.put)
-            try:
+        if self.using_upstream_wpt:
+            yield
+        else:
+            with self._processor.stream_results() as events:
+                runner_options.log.add_handler(events.put)
                 yield
-            finally:
-                # Always copy `results.html` into `layout-test-results/` so that
-                # the partial results can be viewed, and the directory is
-                # archived next run. See crbug.com/1475556.
-                processor.copy_results_viewer()
-                processor.process_results_json(
-                    self.port.get_option('json_test_results'))
         if runner_options.log_wptreport:
-            processor.process_wpt_report(runner_options.log_wptreport[0].name)
+            self._processor.process_wpt_report(
+                runner_options.log_wptreport[0].name)
         if (self.port.get_option('show_results')
-                and processor.num_initial_failures > 0):
+                and self._processor.num_initial_failures > 0):
             self.port.show_results_html_file(
-                self.fs.join(artifacts_dir, 'results.html'))
+                self.fs.join(self.port.artifacts_directory(), 'results.html'))
         if self.options.reset_results:
             self._optimize(runner_options)
 
@@ -714,6 +746,7 @@ def _install_xcode(xcode_build_version: str):
     else:
         logger.warning('Skip the Xcode installation, no xcode_build_version.')
 
+
 def _run_with_upstream_wpt(host: Host, argv: List[str]) -> int:
     checkout_path = _checkout_upstream_wpt(host)
     finder = path_finder.PathFinder(host.filesystem)
@@ -763,12 +796,6 @@ def main(argv) -> int:
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
     try:
         adapter = WPTAdapter.from_args(host, argv)
-        if adapter.product.name == 'chrome' and not host.platform.is_linux():
-            logger.error(
-                '`run_wpt_tests.py --product=chrome` does not yet support '
-                'non-Linux platforms; follow https://crbug.com/1512219 for '
-                'status.')
-            return exit_code
         if (adapter.product.name == 'chrome_ios'
                 and adapter.options.xcode_build_version):
             _install_xcode(adapter.options.xcode_build_version)
@@ -778,7 +805,7 @@ def main(argv) -> int:
             adapter.set_up_derived_options()
             exit_code = adapter.run_tests()
     except KeyboardInterrupt:
-        logger.critical('Harness exited after signal interrupt')
+        # This clause catches interrupts outside `WPTAdapter.run_tests()`.
         exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
     except Exception as error:
         logger.exception(error)

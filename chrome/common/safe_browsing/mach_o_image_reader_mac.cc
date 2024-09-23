@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 
 namespace safe_browsing {
@@ -42,7 +43,7 @@ class ByteSlice {
   const T* GetPointerAt(size_t at) {
     if (!RangeCheck(at, sizeof(T)))
       return nullptr;
-    return reinterpret_cast<const T*>(data_ + at);
+    return reinterpret_cast<const T*>((data_ + at).get());
   }
 
   // Copies data from an offset to a buffer.
@@ -67,7 +68,7 @@ class ByteSlice {
   size_t size() const { return size_; }
 
  private:
-  const uint8_t* data_;
+  raw_ptr<const uint8_t, AllowPtrArithmetic> data_;
   size_t size_;
 
   // Copy and assign allowed.

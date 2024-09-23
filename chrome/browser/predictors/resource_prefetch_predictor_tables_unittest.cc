@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
+
 #include <memory>
 #include <set>
 #include <utility>
@@ -11,11 +13,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/predictor_database.h"
 #include "chrome/browser/predictors/predictors_features.h"
-#include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "content/public/test/browser_task_environment.h"
@@ -50,11 +52,14 @@ class ResourcePrefetchPredictorTablesTest : public testing::Test {
   void TestDeleteData();
   void TestDeleteAllData();
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   TestingProfile profile_;
   std::unique_ptr<PredictorDatabase> db_;
   scoped_refptr<ResourcePrefetchPredictorTables> tables_;
+
+  base::HistogramTester tester_;
 
  private:
   // Initializes the tables, |test_url_data_|, |test_host_data_|,
@@ -532,6 +537,36 @@ TEST_F(ResourcePrefetchPredictorTablesTest, DatabaseIsResetWhenIncompatible) {
   GetAllData(&host_redirect_data, &origin_data);
   EXPECT_TRUE(host_redirect_data.empty());
   EXPECT_TRUE(origin_data.empty());
+}
+
+TEST_F(ResourcePrefetchPredictorTablesTest, ReportUMA) {
+  const std::string name = "LoadingPredictor.PredictorDatabaseFileSize";
+  const std::vector<base::Bucket> samples = tester_.GetAllSamples(name);
+  EXPECT_EQ(1u, samples.size());
+  const base::Bucket& sample = samples[0];
+  EXPECT_EQ(1, sample.count);
+  const base::HistogramBase::Sample file_size = sample.min;
+  EXPECT_GT(file_size, 0);
+
+  // Write some data.
+  {
+    OriginData data;
+    data.set_host("a.test");
+    for (int i = 0; i < 300; i++) {
+      InitializeOriginStat(data.add_origins(), "https://cdn.a.test", 10, 1, 0,
+                           12., false, true);
+    }
+    tables_->ExecuteDBTaskOnDBSequence(base::BindOnce(
+        &KeyValueTable<OriginData>::UpdateData,
+        base::Unretained(tables_->origin_table()), data.host(), data));
+  }
+  task_environment_.FastForwardBy(base::Days(1));
+  const std::vector<base::Bucket> samples2 = tester_.GetAllSamples(name);
+  EXPECT_EQ(2u, samples2.size());
+  const base::Bucket& sample2 = samples2[1];
+  EXPECT_EQ(1, sample2.count);
+  const base::HistogramBase::Sample file_size2 = sample2.min;
+  EXPECT_GT(file_size2, file_size);
 }
 
 TEST_F(ResourcePrefetchPredictorTablesReopenTest, GetAllData) {

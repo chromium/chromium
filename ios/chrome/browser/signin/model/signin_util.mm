@@ -9,13 +9,16 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "components/signin/public/identity_manager/account_capabilities.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/signin_util_internal.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
 namespace {
@@ -102,10 +105,10 @@ signin::Tribool IsFirstSessionAfterDeviceRestore() {
   return is_first_session_after_device_restore;
 }
 
-void StorePreRestoreIdentity(PrefService* local_state,
+void StorePreRestoreIdentity(PrefService* profile_pref,
                              AccountInfo account,
                              bool history_sync_enabled) {
-  ScopedDictPrefUpdate update(local_state, prefs::kIosPreRestoreAccountInfo);
+  ScopedDictPrefUpdate update(profile_pref, prefs::kIosPreRestoreAccountInfo);
   update->Set(kAccountInfoKeyAccountId, account.account_id.ToString());
   update->Set(kAccountInfoKeyGaia, account.gaia);
   update->Set(kAccountInfoKeyEmail, account.email);
@@ -115,25 +118,44 @@ void StorePreRestoreIdentity(PrefService* local_state,
   update->Set(kHistorySyncEnabled, history_sync_enabled);
 }
 
-void ClearPreRestoreIdentity(PrefService* local_state) {
-  local_state->ClearPref(prefs::kIosPreRestoreAccountInfo);
+void ClearPreRestoreIdentity(PrefService* profile_pref) {
+  profile_pref->ClearPref(prefs::kIosPreRestoreAccountInfo);
 }
 
-std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state) {
+std::optional<AccountInfo> GetPreRestoreIdentity(PrefService* profile_pref) {
   const base::Value::Dict& dict =
-      local_state->GetDict(prefs::kIosPreRestoreAccountInfo);
+      profile_pref->GetDict(prefs::kIosPreRestoreAccountInfo);
   if (dict.empty()) {
     return std::optional<AccountInfo>();
   }
   return DictToAccountInfo(dict);
 }
 
-bool GetPreRestoreHistorySyncEnabled(PrefService* local_state) {
+bool GetPreRestoreHistorySyncEnabled(PrefService* profile_pref) {
   const base::Value::Dict& dict =
-      local_state->GetDict(prefs::kIosPreRestoreAccountInfo);
+      profile_pref->GetDict(prefs::kIosPreRestoreAccountInfo);
   if (dict.empty()) {
     return false;
   }
   std::optional<bool> history_sync_enabled = dict.FindBool(kHistorySyncEnabled);
   return history_sync_enabled.value_or(false);
+}
+
+const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch() {
+  return AccountCapabilities::GetSupportedAccountCapabilityNames();
+}
+
+void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities) {
+  const std::vector<std::string>& supported_capabilities =
+      GetAccountCapabilityNamesForPrefetch();
+  std::set<std::string> supported_capabilities_set(
+      supported_capabilities.begin(), supported_capabilities.end());
+
+  for (id<SystemIdentity> identity : identities) {
+    GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
+        identity, supported_capabilities_set,
+        base::BindOnce(^(std::map<std::string, SystemIdentityCapabilityResult>){
+            // Ignore the result.
+        }));
+  }
 }

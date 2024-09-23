@@ -102,7 +102,7 @@ void BrowserPolicyConnectorIOS::Init(
 }
 
 bool BrowserPolicyConnectorIOS::IsDeviceEnterpriseManaged() const {
-  NOTREACHED() << "This method is only defined for Chrome OS";
+  NOTREACHED_IN_MIGRATION() << "This method is only defined for Chrome OS";
   return false;
 }
 

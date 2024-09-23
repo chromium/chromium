@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/desks/desks_util.h"
 
 #include <array>
@@ -10,14 +15,18 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_types.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/check.h"
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -72,10 +81,7 @@ std::vector<aura::Window*> GetDesksContainers(aura::Window* root) {
 }
 
 const char* GetDeskContainerName(int container_id) {
-  if (!IsDeskContainerId(container_id)) {
-    NOTREACHED();
-    return "";
-  }
+  CHECK(IsDeskContainerId(container_id));
 
   static const char* kDeskContainerNames[] = {
       "Desk_Container_A", "Desk_Container_B", "Desk_Container_C",
@@ -184,13 +190,33 @@ const Desk* GetDeskForContext(aura::Window* context) {
 }
 
 bool ShouldDesksBarBeCreated() {
+  // Never show desk bar in an informed restore session.
+  auto* overview_session = GetOverviewSession();
+  if (overview_session && overview_session->enter_exit_overview_type() ==
+                              OverviewEnterExitType::kInformedRestore) {
+    return false;
+  }
+
+  // If it is in tablet mode, hide the desk bar in split view. Otherwise, only
+  // show desk bar with more than one desks.
   if (display::Screen::GetScreen()->InTabletMode()) {
+    for (auto& root : Shell::GetAllRootWindows()) {
+      if (SplitViewController::Get(root)->InSplitViewMode()) {
+        return false;
+      }
+    }
     return DesksController::Get()->desks().size() > 1;
   }
 
   // If in clamshell mode, and overview was started by faster splitscreen setup,
   // don't show the desk bar.
   return !window_util::IsInFasterSplitScreenSetupSession();
+}
+
+bool ShouldRenderDeskBarWithMiniViews() {
+  return ShouldDesksBarBeCreated() &&
+         DeskBarViewBase::GetPreferredState(DeskBarViewBase::Type::kOverview) ==
+             DeskBarViewBase::State::kExpanded;
 }
 
 ui::Compositor* GetSelectedCompositorForPerformanceMetrics() {
@@ -211,7 +237,7 @@ bool IsDraggingAnyDesk() {
     return false;
 
   for (auto& grid : overview_session->grid_list()) {
-    const LegacyDeskBarView* desks_bar_view = grid->desks_bar_view();
+    const OverviewDeskBarView* desks_bar_view = grid->desks_bar_view();
     if (desks_bar_view && desks_bar_view->IsDraggingDesk())
       return true;
   }

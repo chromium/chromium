@@ -8,14 +8,15 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/update_client/update_client_errors.h"
 
 namespace component_updater {
 
@@ -48,6 +49,7 @@ class UpdaterState {
     base::Time last_checked;
     bool is_autoupdate_check_enabled = false;
     int update_policy = 0;
+    update_client::CategorizedError last_update_check_error = {};
   };
 
   class StateReader {
@@ -66,6 +68,7 @@ class UpdaterState {
     virtual base::Time GetUpdaterLastStartedAU(bool is_machine) const = 0;
     virtual base::Time GetUpdaterLastChecked(bool is_machine) const = 0;
     virtual int GetUpdatePolicy() const = 0;
+    virtual update_client::CategorizedError GetLastUpdateCheckError() const = 0;
   };
 
 #if BUILDFLAG(IS_MAC)
@@ -78,6 +81,7 @@ class UpdaterState {
     base::Time GetUpdaterLastStartedAU(bool is_machine) const override;
     base::Time GetUpdaterLastChecked(bool is_machine) const override;
     int GetUpdatePolicy() const override;
+    update_client::CategorizedError GetLastUpdateCheckError() const override;
   };
 #elif BUILDFLAG(IS_WIN)
   class StateReaderOmaha final : public StateReader {
@@ -89,6 +93,7 @@ class UpdaterState {
     base::Time GetUpdaterLastStartedAU(bool is_machine) const override;
     base::Time GetUpdaterLastChecked(bool is_machine) const override;
     int GetUpdatePolicy() const override;
+    update_client::CategorizedError GetLastUpdateCheckError() const override;
   };
 #endif
   class StateReaderChromiumUpdater final : public StateReader {
@@ -103,8 +108,9 @@ class UpdaterState {
     base::Time GetUpdaterLastStartedAU(bool is_machine) const override;
     base::Time GetUpdaterLastChecked(bool is_machine) const override;
     int GetUpdatePolicy() const override;
+    update_client::CategorizedError GetLastUpdateCheckError() const override;
 
-    base::Time FindTimeKey(base::StringPiece key) const;
+    base::Time FindTimeKey(std::string_view key) const;
     const base::Value::Dict parsed_json_;
   };
 

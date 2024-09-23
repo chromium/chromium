@@ -58,8 +58,7 @@
 
 #define DEFINE_INCOGNITO_BROWSER_TEST_(test_class, test_name)               \
   IN_PROC_BROWSER_TEST_F(test_class, test_name##Incognito) {                \
-    auto* browser = CreateIncognitoBrowser();                               \
-    SetBrowser(browser);                                                    \
+    SetIncognito();                                                         \
     MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread(this); \
   }
 
@@ -71,7 +70,7 @@
   void MULTI_CLASS_RUNNER_NAME_(test_name)::ActuallyRunTestOnMainThread(      \
       base_class* t)
 
-// TODO(https://crbug.com/1158016): The "MULTI_CLASS" macros are not really
+// TODO(crbug.com/40736732): The "MULTI_CLASS" macros are not really
 // needed anymore, and the individual tests should be wrapped with a check to
 // the openxr buildflag. However, there is a non-trivial amount of churn to move
 // the tests off of the "ALL_RUNTIMES" macros. So this lets us stage the work in

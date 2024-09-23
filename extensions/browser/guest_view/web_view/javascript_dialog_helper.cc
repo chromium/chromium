@@ -29,7 +29,7 @@ std::string JavaScriptDialogTypeToString(
     case content::JAVASCRIPT_DIALOG_TYPE_PROMPT:
       return "prompt";
     default:
-      NOTREACHED() << "Unknown JavaScript Message Type.";
+      NOTREACHED_IN_MIGRATION() << "Unknown JavaScript Message Type.";
       return "unknown";
   }
 }

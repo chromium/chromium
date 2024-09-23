@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_ANDROID_DEVICE_INFO_H_
 #define MEDIA_GPU_ANDROID_DEVICE_INFO_H_
 
+#include <vector>
+
 #include "media/base/video_codecs.h"
 #include "media/gpu/media_gpu_export.h"
 

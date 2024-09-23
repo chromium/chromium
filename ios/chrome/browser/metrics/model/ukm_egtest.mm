@@ -39,7 +39,7 @@ using chrome_test_util::SettingsDoneButton;
 - (void)setUp {
   [super setUp];
 
-  // These tests enable Chrome Sync through Recent Tabs. If there are too many
+  // These tests enable history sync through Recent Tabs. If there are too many
   // tabs in the list, the button at the bottom of the view is offscreen and its
   // animation causes tests to hang for the same reasons as crbug.com/640977.
   // Clear browsing history to ensure that there are no recent tabs.
@@ -50,12 +50,13 @@ using chrome_test_util::SettingsDoneButton;
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
              @"Failed to assert that UKM was not enabled.");
-  // Sign in to Chrome and turn sync on.
+  // Sign in to Chrome and enable history sync.
   //
   // Note: URL-keyed anonymized data collection is turned on as part of the
-  // flow to Sign in to Chrome and Turn sync on. This matches the main user
-  // flow that enables UKM.
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  // flow to Sign in to Chrome and enable history sync. This matches the main
+  // user flow that enables UKM.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                         enableHistorySync:YES];
   [ChromeEarlGrey
       waitForSyncEngineInitialized:YES
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
@@ -83,11 +84,11 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
              @"Failed to assert that UKM was not enabled.");
 
-  // Sign out of Chrome and Turn off sync.
+  // Sign out of Chrome.
   //
   // Note: URL-keyed anonymized data collection is turned off as part of the
-  // flow to Sign out of Chrome and Turn sync off. This matches the main user
-  // flow that disables UKM.
+  // flow to Sign out of Chrome. This matches the main user flow that disables
+  // UKM.
   [SigninEarlGrey signOut];
 
   [ChromeEarlGrey
@@ -173,7 +174,7 @@ using chrome_test_util::SettingsDoneButton;
   // close this newly-opened regular tab plus the regular tab that was opened
   // after the first incognito tab was opened.
   //
-  // TODO(crbug.com/640977): Due to continuous animations, it is not feasible
+  // TODO(crbug.com/41271925): Due to continuous animations, it is not feasible
   // (i) to use the tab switcher to switch between modes or (ii) to omit the
   // below code block and simply call [ChromeEarlGrey closeAllIncognitoTabs];
   // from incognito mode.
@@ -203,7 +204,7 @@ using chrome_test_util::SettingsDoneButton;
   // Note: Tests begin with an open regular tab. This tab is opened in setUp.
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
-  // TODO(crbug.com/640977): Due to continuous animations, it is not feasible
+  // TODO(crbug.com/41271925): Due to continuous animations, it is not feasible
   // to close the regular tab that is already open. The functions closeAllTabs,
   // closeCurrentTab, and closeAllTabsInCurrentMode close the tab and then hang.
   //
@@ -256,11 +257,9 @@ using chrome_test_util::SettingsDoneButton;
 // The tests corresponding to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/ukm_browsertest.cc. are in demographics_egtest.mm.
 
-// Make sure that providing metrics consent doesn't enable UKM w/o sync.
-//
-// Corresponds to ConsentAddedButNoSyncCheck in //chrome/browser/metrics/
-// ukm_browsertest.cc.
-- (void)testConsentAddedButNoSync {
+// Make sure that providing metrics consent doesn't enable UKM when the user
+// is signed-in but history sync is disabled.
+- (void)testConsentAddedButNoHistorySync {
   [SigninEarlGrey signOut];
   [MetricsAppInterface setMetricsAndCrashReportingForTesting:NO];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
@@ -270,20 +269,23 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
              @"Failed to assert that UKM was not enabled.");
 
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  // Once history sync is enabled, UKM is too.
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                         enableHistorySync:YES];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");
 }
 
-// Make sure that UKM is disabled when sync is disabled.
+// Make sure that UKM is disabled when "Make searches and browsing better" is
+// disabled.
 //
-// Corresponds to ConsentAddedButNoSyncCheck in //chrome/browser/metrics/
+// Corresponds to ClientIdResetWhenConsentRemoved in //chrome/browser/metrics/
 // ukm_browsertest.cc.
-- (void)testSingleDisableSync {
+- (void)testClientIdResetWhenConsentRemoved {
   const uint64_t originalClientID = [MetricsAppInterface UKMClientID];
 
   [ChromeEarlGreyUI openSettingsMenu];
-  // Open Sync and Google services settings
+  // Open Google services settings.
   [ChromeEarlGreyUI tapSettingsMenuButton:GoogleServicesSettingsButton()];
   // Toggle "Make searches and browsing better" switch off.
 
@@ -313,11 +315,8 @@ using chrome_test_util::SettingsDoneButton;
       performAction:grey_tap()];
 }
 
-// Make sure that UKM is disabled when sync is not enabled.
-//
-// Corresponds to SingleSyncSignoutCheck in //chrome/browser/metrics/
-// ukm_browsertest.cc.
-- (void)testSingleSyncSignout {
+// Make sure that UKM is disabled when the user is signed out.
+- (void)testSingleSignout {
   const uint64_t clientID1 = [MetricsAppInterface UKMClientID];
 
   [SigninEarlGrey signOut];
@@ -328,8 +327,10 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssertNotEqual(clientID1, [MetricsAppInterface UKMClientID],
                      @"Client ID was not reset.");
 
+  // UKM requires enabling history sync.
   const uint64_t clientID2 = [MetricsAppInterface UKMClientID];
-  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
+                         enableHistorySync:YES];
 
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");

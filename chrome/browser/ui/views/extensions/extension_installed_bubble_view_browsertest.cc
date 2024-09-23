@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/ui/extensions/extension_install_ui_default.h"
+#include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -35,9 +35,9 @@ class ExtensionInstalledBubbleViewsBrowserTest
     extensions::ExtensionBuilder builder(type);
 
     if (type == "BrowserAction") {
-      builder.SetAction(extensions::ActionInfo::TYPE_BROWSER);
+      builder.SetAction(extensions::ActionInfo::Type::kBrowser);
     } else if (type == "PageAction") {
-      builder.SetAction(extensions::ActionInfo::TYPE_PAGE);
+      builder.SetAction(extensions::ActionInfo::Type::kPage);
     }
 
     if (type == "SignInPromo" || type == "NoAction") {
@@ -66,8 +66,7 @@ void ExtensionInstalledBubbleViewsBrowserTest::ShowUi(const std::string& name) {
       MakeExtensionOfType(name);
 
   views::Widget::Widgets old_widgets = views::test::WidgetTest::GetAllWidgets();
-  ExtensionInstallUIDefault::ShowPlatformBubble(extension, browser(),
-                                                SkBitmap());
+  ExtensionInstallUI::ShowBubble(extension, browser(), SkBitmap());
   views::Widget::Widgets new_widgets = views::test::WidgetTest::GetAllWidgets();
   views::Widget::Widgets added_widgets;
   std::set_difference(new_widgets.begin(), new_widgets.end(),

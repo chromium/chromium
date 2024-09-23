@@ -9,9 +9,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/common/content_export.h"
 #include "net/base/hash_value.h"
@@ -36,7 +36,7 @@ class CONTENT_EXPORT SignedExchangeSignatureHeaderField {
     std::string integrity;
     GURL cert_url;
     std::optional<net::SHA256HashValue> cert_sha256;
-    // TODO(https://crbug.com/819467): Support ed25519key.
+    // TODO(crbug.com/40565993): Support ed25519key.
     // std::string ed25519_key;
     signed_exchange_utils::URLWithRawString validity_url;
     uint64_t date;
@@ -46,7 +46,7 @@ class CONTENT_EXPORT SignedExchangeSignatureHeaderField {
   // Parses a value of the Signature header.
   // https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#signature-header
   static std::optional<std::vector<Signature>> ParseSignature(
-      base::StringPiece signature_str,
+      std::string_view signature_str,
       SignedExchangeDevToolsProxy* devtools_proxy);
 };
 

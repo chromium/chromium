@@ -31,6 +31,10 @@ namespace content {
 class RenderFrameHost;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace performance_manager {
 
 class FrameNodeImpl;
@@ -109,7 +113,7 @@ class V8MemoryTestBase {
   // methods that could be bound into |responder| callbacks.)
   void ExpectQuery(
       MockV8DetailedMemoryReporter* mock_reporter,
-      base::RepeatingCallback<
+      base::OnceCallback<
           void(MockV8DetailedMemoryReporter::GetV8MemoryUsageCallback callback)>
           responder,
       ExpectedMode expected_mode = ExpectedMode::DEFAULT);
@@ -306,7 +310,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   }
 
   WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
-                                std::string url,
+                                std::string script_url,
                                 Bytes bytes,
                                 FrameNodeImpl* parent);
 
@@ -314,7 +318,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
                                            FrameNodeImpl* parent);
 
   WorkerNodeImpl* AddWorkerNode(WorkerNode::WorkerType worker_type,
-                                std::string url,
+                                std::string script_url,
                                 Bytes bytes,
                                 WorkerNodeImpl* parent);
 
@@ -336,8 +340,9 @@ class WebMemoryTestHarness : public GraphTestHarness {
                                   std::optional<std::string> src_attribute,
                                   Bytes canvas_bytes = std::nullopt);
   WorkerNodeImpl* AddWorkerNodeImpl(WorkerNode::WorkerType worker_type,
-                                    std::string url,
-                                    Bytes bytes);
+                                    const url::Origin& origin,
+                                    std::string script_url = std::string(),
+                                    Bytes bytes = std::nullopt);
   int GetNextUniqueId();
   TestNodeWrapper<ProcessNodeImpl> process_;
   TestNodeWrapper<ProcessNodeImpl> other_process_;

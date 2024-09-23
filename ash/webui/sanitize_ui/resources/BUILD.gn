@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+build_webui("build") {
+  static_files = [
+    "index.html",
+    "app_icon_192.png",
+    "svg/card_chrome_product.svg",
+    "svg/card_extension_off.svg",
+    "svg/card_settings.svg",
+    "svg/extension_off_32.svg",
+    "svg/finished_32.svg",
+    "svg/illo.svg",
+  ]
+
+  css_files = [ "sanitize_shared.css" ]
+
+  web_component_files = [
+    "sanitize_app.ts",
+    "sanitize_done.ts",
+    "sanitize_initial.ts",
+  ]
+
+  mojo_files = [
+    "$root_gen_dir/ash/webui/common/mojom/accessibility_features.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/sanitize_ui/mojom/sanitize_ui.mojom-webui.ts",
+  ]
+
+  mojo_files_deps = [
+    "//ash/webui/common/mojom:mojom_ts__generator",
+    "//ash/webui/sanitize_ui/mojom:mojom_ts__generator",
+  ]
+
+  ts_composite = true
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/cros-components:cros_components_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  webui_context_type = "trusted"
+  grd_prefix = "ash_sanitize_app"
+  grit_output_dir = "$root_gen_dir/ash/webui"
+}

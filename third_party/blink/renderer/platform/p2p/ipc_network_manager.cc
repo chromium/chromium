@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/net_address_utils.h"
 #include "net/base/ip_address.h"
@@ -154,6 +153,15 @@ void IpcNetworkManager::OnNetworkListChanged(
           rtc::IPIsLinkLocal(iface_addr) || rtc::IPIsLoopback(iface_addr)) {
         continue;
       }
+
+      // On Fuchsia skip private IPv6 addresses as they break some application.
+      // TODO(b/350111561): Remove once the applications are updated to handle
+      // ULA addresses properly.
+#if BUILDFLAG(IS_FUCHSIA)
+      if (rtc::IPIsPrivate(iface_addr)) {
+        continue;
+      }
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
       use_default_ipv6_address |= (default_ipv6_local_address == it->address);
     }

@@ -1,6 +1,6 @@
 #include "rar.hpp"
 
-#if defined(_WIN_ALL)
+#if defined(_WIN_ALL) && !defined(CHROMIUM_UNRAR)
 typedef BOOL (WINAPI *CRYPTPROTECTMEMORY)(LPVOID pData,DWORD cbData,DWORD dwFlags);
 typedef BOOL (WINAPI *CRYPTUNPROTECTMEMORY)(LPVOID pData,DWORD cbData,DWORD dwFlags);
 
@@ -25,7 +25,6 @@ class CryptLoader
     }
     ~CryptLoader()
     {
-      // We need to call FreeLibrary when RAR is exiting.
       if (hCrypt!=NULL)
         FreeLibrary(hCrypt);
       hCrypt=NULL;
@@ -47,19 +46,16 @@ class CryptLoader
       }
     }
 
-    static CryptLoader& GetInstance() {
-      static CryptLoader cryptLoader;
-      return cryptLoader;
-    }
-
     CRYPTPROTECTMEMORY pCryptProtectMemory;
     CRYPTUNPROTECTMEMORY pCryptUnprotectMemory;
 };
+
+// We need to call FreeLibrary when RAR is exiting.
+static CryptLoader GlobalCryptLoader;
 #endif
 
 SecPassword::SecPassword()
 {
-  CrossProcess=false;
   Set(L"");
 }
 
@@ -73,7 +69,8 @@ SecPassword::~SecPassword()
 void SecPassword::Clean()
 {
   PasswordSet=false;
-  cleandata(Password,sizeof(Password));
+  if (!Password.empty())
+    cleandata(Password.data(),Password.size()*sizeof(Password[0]));
 }
  
 
@@ -82,7 +79,7 @@ void SecPassword::Clean()
 // So we use our own function for this purpose.
 void cleandata(void *data,size_t size)
 {
-  if (data==NULL || size==0)
+  if (data==nullptr || size==0)
     return;
 #if defined(_WIN_ALL) && defined(_MSC_VER)
   SecureZeroMemory(data,size);
@@ -107,7 +104,7 @@ void SecPassword::Process(const wchar *Src,size_t SrcSize,wchar *Dst,size_t DstS
   // Source string can be shorter than destination as in case when we process
   // -p<pwd> parameter, so we need to take into account both sizes.
   memcpy(Dst,Src,Min(SrcSize,DstSize)*sizeof(*Dst));
-  SecHideData(Dst,DstSize*sizeof(*Dst),Encode,CrossProcess);
+  SecHideData(Dst,DstSize*sizeof(*Dst),Encode,false);
 }
 
 
@@ -115,7 +112,7 @@ void SecPassword::Get(wchar *Psw,size_t MaxSize)
 {
   if (PasswordSet)
   {
-    Process(Password,ASIZE(Password),Psw,MaxSize,false);
+    Process(&Password[0],Password.size(),Psw,MaxSize,false);
     Psw[MaxSize-1]=0;
   }
   else
@@ -123,19 +120,26 @@ void SecPassword::Get(wchar *Psw,size_t MaxSize)
 }
 
 
+void SecPassword::Get(std::wstring &Psw)
+{
+  wchar PswBuf[MAXPASSWORD];
+  Get(PswBuf,ASIZE(PswBuf));
+  Psw=PswBuf;
+}
+
+
 
 
 void SecPassword::Set(const wchar *Psw)
 {
-  if (*Psw==0)
-  {
-    PasswordSet=false;
-    memset(Password,0,sizeof(Password));
-  }
-  else
+  // Eliminate any traces of previously stored password for security reason
+  // in case it was longer than new one.
+  Clean();
+
+  if (*Psw!=0)
   {
     PasswordSet=true;
-    Process(Psw,wcslen(Psw)+1,Password,ASIZE(Password),true);
+    Process(Psw,wcslen(Psw)+1,&Password[0],Password.size(),true);
   }
 }
 
@@ -145,7 +149,7 @@ size_t SecPassword::Length()
   wchar Plain[MAXPASSWORD];
   Get(Plain,ASIZE(Plain));
   size_t Length=wcslen(Plain);
-  cleandata(Plain,ASIZE(Plain));
+  cleandata(Plain,sizeof(Plain));
   return Length;
 }
 
@@ -160,27 +164,31 @@ bool SecPassword::operator == (SecPassword &psw)
   Get(Plain1,ASIZE(Plain1));
   psw.Get(Plain2,ASIZE(Plain2));
   bool Result=wcscmp(Plain1,Plain2)==0;
-  cleandata(Plain1,ASIZE(Plain1));
-  cleandata(Plain2,ASIZE(Plain2));
+  cleandata(Plain1,sizeof(Plain1));
+  cleandata(Plain2,sizeof(Plain2));
   return Result;
 }
 
 
+// Set CrossProcess to true if we need to pass a password to another process.
+// We use CrossProcess when transferring parameters to UAC elevated WinRAR
+// and Windows GUI SFX modules.
 void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
 {
   // CryptProtectMemory is not available in UWP and CryptProtectData
   // increases data size not allowing in place conversion.
-#if defined(_WIN_ALL)
+#if defined(_WIN_ALL) && !defined(CHROMIUM_UNRAR)
   // Try to utilize the secure Crypt[Un]ProtectMemory if possible.
-  if (CryptLoader::GetInstance().pCryptProtectMemory == NULL)
-    CryptLoader::GetInstance().Load();
+  if (GlobalCryptLoader.pCryptProtectMemory==NULL)
+    GlobalCryptLoader.Load();
   size_t Aligned=DataSize-DataSize%CRYPTPROTECTMEMORY_BLOCK_SIZE;
   DWORD Flags=CrossProcess ? CRYPTPROTECTMEMORY_CROSS_PROCESS : CRYPTPROTECTMEMORY_SAME_PROCESS;
   if (Encode)
   {
-    if (CryptLoader::GetInstance().pCryptProtectMemory != NULL) {
-      if (!CryptLoader::GetInstance().pCryptProtectMemory(Data, DWORD(Aligned),
-                                                          Flags)) {
+    if (GlobalCryptLoader.pCryptProtectMemory!=NULL)
+    {
+      if (!GlobalCryptLoader.pCryptProtectMemory(Data,DWORD(Aligned),Flags))
+      {
         ErrHandler.GeneralErrMsg(L"CryptProtectMemory failed");
         ErrHandler.SysErrMsg();
         ErrHandler.Exit(RARX_FATAL);
@@ -190,9 +198,10 @@ void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
   }
   else
   {
-    if (CryptLoader::GetInstance().pCryptUnprotectMemory != NULL) {
-      if (!CryptLoader::GetInstance().pCryptUnprotectMemory(
-              Data, DWORD(Aligned), Flags)) {
+    if (GlobalCryptLoader.pCryptUnprotectMemory!=NULL)
+    {
+      if (!GlobalCryptLoader.pCryptUnprotectMemory(Data,DWORD(Aligned),Flags))
+      {
         ErrHandler.GeneralErrMsg(L"CryptUnprotectMemory failed");
         ErrHandler.SysErrMsg();
         ErrHandler.Exit(RARX_FATAL);

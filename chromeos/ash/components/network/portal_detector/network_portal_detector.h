@@ -5,10 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
 
-#include <string>
-
 #include "base/component_export.h"
-#include "base/notreached.h"
 
 namespace ash {
 
@@ -16,23 +13,10 @@ namespace ash {
 // See network_portal_detector_impl.h for details.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
  public:
-  enum CaptivePortalStatus {
-    CAPTIVE_PORTAL_STATUS_UNKNOWN = 0,
-    CAPTIVE_PORTAL_STATUS_OFFLINE = 1,
-    CAPTIVE_PORTAL_STATUS_ONLINE = 2,
-    CAPTIVE_PORTAL_STATUS_PORTAL = 3,
-    CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED = 4,
-    CAPTIVE_PORTAL_STATUS_COUNT,
-    kMaxValue = CAPTIVE_PORTAL_STATUS_COUNT  // For UMA_HISTOGRAM_ENUMERATION
-  };
-
   NetworkPortalDetector(const NetworkPortalDetector&) = delete;
   NetworkPortalDetector& operator=(const NetworkPortalDetector&) = delete;
 
   virtual ~NetworkPortalDetector() {}
-
-  // Returns CaptivePortalStatus for the the default network or UNKNOWN.
-  virtual CaptivePortalStatus GetCaptivePortalStatus() = 0;
 
   // Returns true if portal detection is enabled.
   virtual bool IsEnabled() = 0;
@@ -40,12 +24,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkPortalDetector {
   // Enable portal detection. Once enabled, portal detection for the default
   // network will be handled any time the default network state changes.
   virtual void Enable() = 0;
-
-  // Request captive portal detection after a navigation event or proy signin.
-  virtual void RequestCaptivePortalDetection() = 0;
-
-  // Returns non-localized string representation of |status|.
-  static std::string CaptivePortalStatusString(CaptivePortalStatus status);
 
  protected:
   NetworkPortalDetector() {}

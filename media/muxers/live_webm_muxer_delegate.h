@@ -6,7 +6,6 @@
 #define MEDIA_MUXERS_LIVE_WEBM_MUXER_DELEGATE_H_
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "media/base/media_export.h"
 #include "media/muxers/webm_muxer.h"

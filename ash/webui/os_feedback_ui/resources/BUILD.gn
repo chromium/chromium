@@ -56,6 +56,7 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_context_type = "trusted"
   grd_prefix = "ash_os_feedback"
   grit_output_dir = "$root_gen_dir/ash/webui"
 }

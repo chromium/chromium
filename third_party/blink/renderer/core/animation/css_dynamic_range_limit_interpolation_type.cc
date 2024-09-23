@@ -53,7 +53,7 @@ InterpolationValue CSSDynamicRangeLimitInterpolationType::MaybeConvertInherit(
   DynamicRangeLimit inherited_limit =
       state.ParentStyle()->GetDynamicRangeLimit();
   conversion_checkers.push_back(
-      std::make_unique<InheritedDynamicRangeLimitChecker>(inherited_limit));
+      MakeGarbageCollected<InheritedDynamicRangeLimitChecker>(inherited_limit));
   return ConvertDynamicRangeLimit(inherited_limit);
 }
 

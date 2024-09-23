@@ -9,9 +9,9 @@
 
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/idle_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
+#include "chromeos/ash/experiences/idle_detector/idle_detector.h"
 
 namespace ash {
 

@@ -53,6 +53,13 @@ class ServiceDiscoveryDeviceListerImpl : public ServiceDiscoveryDeviceLister {
                         const std::string& service_name) {
     VLOG(1) << "OnServiceUpdated: service_type: " << service_type_
             << ", service_name: " << service_name << ", update: " << update;
+
+    if (update == ServiceWatcher::UPDATE_PERMISSION_REJECTED) {
+      resolvers_.clear();
+      delegate_->OnPermissionRejected();
+      return;
+    }
+
     if (update == ServiceWatcher::UPDATE_INVALIDATED) {
       resolvers_.clear();
       CreateServiceWatcher();

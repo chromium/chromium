@@ -85,8 +85,21 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
     return fullscreened_contents_ && web_contents == fullscreened_contents_;
   }
 
+  // Used for forcing a specific |blink::mojom::DisplayMode| during a test.
+  blink::mojom::DisplayMode GetDisplayMode(
+      const WebContents* web_contents) override {
+    return display_mode_;
+  }
+
+  void SetDisplayMode(blink::mojom::DisplayMode display_mode) {
+    display_mode_ = display_mode;
+  }
+
  private:
   raw_ptr<WebContents, DanglingUntriaged> fullscreened_contents_ = nullptr;
+
+ private:
+  blink::mojom::DisplayMode display_mode_ = blink::mojom::DisplayMode::kBrowser;
 };
 
 void LockResultCallback(std::optional<ScreenOrientationLockResult>* out_result,
@@ -339,6 +352,49 @@ TEST_F(ScreenOrientationProviderTest, UnlockWhenNavigation) {
             result);
   // Delegate did apply unlock once.
   EXPECT_EQ(1, delegate.unlock_count());
+}
+
+TEST_F(ScreenOrientationProviderTest,
+       DelegateRequireDisplayModeFullScreenLockOnce) {
+  // ScreenOrientationDelegate requires full screen.
+  FakeScreenOrientationDelegate delegate(true, true);
+  std::unique_ptr<FakeWebContentsDelegate> wc_delegate(
+      new FakeWebContentsDelegate());
+  contents()->SetDelegate(wc_delegate.get());
+
+  // Navigate to a site.
+  const GURL url("http://www.google.com");
+  controller().LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED,
+                       std::string());
+
+  // Current web contents is not in full screen.
+  ASSERT_FALSE(contents()->IsFullscreen());
+  EXPECT_EQ(blink::mojom::DisplayMode::kBrowser, contents()->GetDisplayMode());
+
+  std::optional<ScreenOrientationLockResult> result_1;
+  CallLockAndGetResult(
+      device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_1);
+  EXPECT_EQ(ScreenOrientationLockResult::
+                SCREEN_ORIENTATION_LOCK_RESULT_ERROR_FULLSCREEN_REQUIRED,
+            *result_1);
+  // Delegate did not apply any lock.
+  EXPECT_EQ(0, delegate.lock_count());
+
+  // Simulates DisplayMode updating to full screen.
+  wc_delegate->SetDisplayMode(blink::mojom::DisplayMode::kFullscreen);
+
+  std::optional<ScreenOrientationLockResult> result_2;
+  CallLockAndGetResult(
+      device::mojom::ScreenOrientationLockType::LANDSCAPE_SECONDARY, &result_2);
+
+  // Lock request is pending.
+  EXPECT_FALSE(result_2.has_value());
+  // Delegate did apply lock once.
+  EXPECT_EQ(1, delegate.lock_count());
+
+  EXPECT_EQ(blink::mojom::DisplayMode::kFullscreen,
+            contents()->GetDisplayMode());
+  ASSERT_FALSE(contents()->IsFullscreen());
 }
 
 }  // namespace content

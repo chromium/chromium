@@ -127,9 +127,7 @@ OSCryptImpl* OSCryptImpl::GetInstance() {
                          base::LeakySingletonTraits<OSCryptImpl>>::get();
 }
 
-OSCryptImpl::OSCryptImpl()
-    : storage_provider_factory_(base::BindOnce(&OSCryptImpl::CreateKeyStorage,
-                                               base::Unretained(this))) {}
+OSCryptImpl::OSCryptImpl() = default;
 
 OSCryptImpl::~OSCryptImpl() = default;
 
@@ -158,7 +156,7 @@ bool OSCryptImpl::EncryptString(const std::string& plaintext,
 
   // If we are able to create a V11 key (i.e. a KeyStorage was available), then
   // we'll use it. If not, we'll use V10.
-  crypto::SymmetricKey* encryption_key = GetPasswordV11();
+  crypto::SymmetricKey* encryption_key = GetPasswordV11(/*probe=*/false);
   std::string obfuscation_prefix = kObfuscationPrefixV11;
   if (!encryption_key) {
     encryption_key = GetPasswordV10();
@@ -202,7 +200,7 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
     obfuscation_prefix = kObfuscationPrefixV10;
   } else if (base::StartsWith(ciphertext, kObfuscationPrefixV11,
                               base::CompareCase::SENSITIVE)) {
-    encryption_key = GetPasswordV11();
+    encryption_key = GetPasswordV11(/*probe=*/false);
     obfuscation_prefix = kObfuscationPrefixV11;
   } else {
     // If the prefix is not found then we'll assume we're dealing with
@@ -246,7 +244,7 @@ void OSCryptImpl::SetConfig(std::unique_ptr<os_crypt::Config> config) {
 }
 
 bool OSCryptImpl::IsEncryptionAvailable() {
-  return GetPasswordV11();
+  return GetPasswordV11(/*probe=*/true);
 }
 
 void OSCryptImpl::SetRawEncryptionKey(const std::string& raw_key) {
@@ -263,13 +261,13 @@ void OSCryptImpl::SetRawEncryptionKey(const std::string& raw_key) {
   }
   // Always set |is_password_v11_cached_|, even if given an empty string.
   // Note that |raw_key| can be an empty string if real V11 encryption is not
-  // available, and setting |is_password_v11_cached_| causes GetPasswordV11() to
+  // available, and setting |is_password_v11_cached_| causes GetPasswordV11 to
   // correctly return nullptr in that case.
   is_password_v11_cached_ = true;
 }
 
 std::string OSCryptImpl::GetRawEncryptionKey() {
-  if (crypto::SymmetricKey* key = GetPasswordV11()) {
+  if (crypto::SymmetricKey* key = GetPasswordV11(/*probe=*/false)) {
     return key->key();
   }
   return std::string();
@@ -285,22 +283,8 @@ void OSCryptImpl::ClearCacheForTesting() {
 void OSCryptImpl::UseMockKeyStorageForTesting(
     base::OnceCallback<std::unique_ptr<KeyStorageLinux>()>
         storage_provider_factory) {
-  if (storage_provider_factory) {
-    storage_provider_factory_ = std::move(storage_provider_factory);
-  } else {
-    storage_provider_factory_ =
-        base::BindOnce(&OSCryptImpl::CreateKeyStorage, base::Unretained(this));
-  }
-}
-
-// Create the KeyStorage. Will be null if no service is found. A Config must be
-// set before every call to this function.
-std::unique_ptr<KeyStorageLinux> OSCryptImpl::CreateKeyStorage() {
-  CHECK(config_);
-  std::unique_ptr<KeyStorageLinux> key_storage =
-      KeyStorageLinux::CreateService(*config_);
-  config_.reset();
-  return key_storage;
+  base::AutoLock auto_lock(OSCryptImpl::GetLock());
+  storage_provider_factory_for_testing_ = std::move(storage_provider_factory);
 }
 
 void OSCryptImpl::SetEncryptionPasswordForTesting(const std::string& password) {
@@ -320,19 +304,31 @@ crypto::SymmetricKey* OSCryptImpl::GetPasswordV10() {
 
 // Caches and returns the password from the KeyStorage or null if there is no
 // service. Is thread-safe.
-crypto::SymmetricKey* OSCryptImpl::GetPasswordV11() {
+crypto::SymmetricKey* OSCryptImpl::GetPasswordV11(bool probe) {
   base::AutoLock auto_lock(OSCryptImpl::GetLock());
-  if (!is_password_v11_cached_) {
-    std::unique_ptr<KeyStorageLinux> key_storage =
-        std::move(storage_provider_factory_).Run();
-    if (key_storage) {
-      std::optional<std::string> key = key_storage->GetKey();
-      if (key.has_value()) {
-        password_v11_cache_ = GenerateEncryptionKey(*key);
-      }
-    }
-    is_password_v11_cached_ = true;
+  if (is_password_v11_cached_) {
+    return password_v11_cache_.get();
   }
+
+  std::unique_ptr<KeyStorageLinux> key_storage;
+  if (storage_provider_factory_for_testing_) {
+    key_storage = std::move(storage_provider_factory_for_testing_).Run();
+  } else {
+    CHECK(probe || config_);
+    if (config_) {
+      key_storage = KeyStorageLinux::CreateService(*config_);
+      config_.reset();
+    }
+  }
+
+  if (key_storage) {
+    std::optional<std::string> key = key_storage->GetKey();
+    if (key.has_value()) {
+      password_v11_cache_ = GenerateEncryptionKey(*key);
+    }
+  }
+
+  is_password_v11_cached_ = true;
   return password_v11_cache_.get();
 }
 

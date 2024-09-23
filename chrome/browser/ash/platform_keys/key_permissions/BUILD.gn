@@ -1,0 +1,125 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("key_permissions") {
+  sources = [
+    "arc_key_permissions_manager_delegate.cc",
+    "arc_key_permissions_manager_delegate.h",
+    "key_permissions_manager.h",
+    "key_permissions_manager_impl.cc",
+    "key_permissions_manager_impl.h",
+    "key_permissions_policy_handler.cc",
+    "key_permissions_policy_handler.h",
+    "key_permissions_service.cc",
+    "key_permissions_service.h",
+    "key_permissions_service_factory.cc",
+    "key_permissions_service_factory.h",
+    "key_permissions_service_impl.cc",
+    "key_permissions_service_impl.h",
+    "key_permissions_util.cc",
+    "key_permissions_util.h",
+    "user_private_token_kpm_service_factory.cc",
+    "user_private_token_kpm_service_factory.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/kcer:chaps_proto",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/chromeos/platform_keys" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_user_private_token_kpm_service.cc",
+    "fake_user_private_token_kpm_service.h",
+    "mock_key_permissions_manager.cc",
+    "mock_key_permissions_manager.h",
+    "mock_key_permissions_service.cc",
+    "mock_key_permissions_service.h",
+  ]
+
+  deps = [
+    ":key_permissions",
+    "//base",
+    "//chrome/browser/chromeos/platform_keys",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//testing/gmock",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "key_permissions_manager_browsertest.cc" ]
+
+  deps = [
+    ":key_permissions",
+    "//ash/components/kcer:chaps_proto",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys:test_support",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_key_permissions_manager_delegate_unittest.cc",
+    "key_permissions_manager_unittest.cc",
+    "key_permissions_service_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":key_permissions",
+    ":test_support",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/kcer:chaps_proto",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/platform_keys",
+    "//chrome/browser/ash/platform_keys:test_support",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/test:test_support",
+    "//components/policy/core/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

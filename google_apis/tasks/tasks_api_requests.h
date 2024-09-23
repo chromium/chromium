@@ -74,7 +74,8 @@ class ListTaskListsRequest : public UrlFetchRequestBase {
 
 // Fetches all tasks in the specified task list (`task_list_id`) and invokes
 // `callback_` when done.
-// `page_token` - token specifying the result page to return. Optional.
+// `page_token`       - token specifying the result page to return. Optional.
+// `include_assigned` - requests assigned/shared tasks.
 // https://developers.google.com/tasks/reference/rest/v1/tasks/list
 class ListTasksRequest : public UrlFetchRequestBase {
  public:
@@ -84,6 +85,7 @@ class ListTasksRequest : public UrlFetchRequestBase {
   ListTasksRequest(RequestSender* sender,
                    const std::string& task_list_id,
                    const std::string& page_token,
+                   bool include_assigned,
                    Callback callback);
   ListTasksRequest(const ListTasksRequest&) = delete;
   ListTasksRequest& operator=(const ListTasksRequest&) = delete;
@@ -107,6 +109,7 @@ class ListTasksRequest : public UrlFetchRequestBase {
 
   const std::string task_list_id_;
   const std::string page_token_;
+  const bool include_assigned_;
   Callback callback_;
 
   base::WeakPtrFactory<ListTasksRequest> weak_ptr_factory_{this};

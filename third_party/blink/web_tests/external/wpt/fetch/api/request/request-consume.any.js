@@ -9,32 +9,29 @@ function checkBodyText(request, expectedBody) {
   });
 }
 
-function checkBodyBlob(request, expectedBody, checkContentType) {
-  return request.blob().then(function(bodyAsBlob) {
-    if (checkContentType)
-      assert_equals(bodyAsBlob.type, "text/plain", "Blob body type should be computed from the request Content-Type");
+async function checkBodyBlob(request, expectedBody, checkContentType) {
+  const bodyAsBlob = await request.blob();
 
-    var promise = new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-      reader.onload = function(evt) {
-        resolve(reader.result)
-      };
-      reader.onerror = function() {
-        reject("Blob's reader failed");
-      };
-      reader.readAsText(bodyAsBlob);
-    });
-    return promise.then(function(body) {
-      assert_equals(body, expectedBody, "Retrieve and verify request's body");
-      assert_true(request.bodyUsed, "body as blob: bodyUsed turned true");
-    });
-  });
+  if (checkContentType)
+    assert_equals(bodyAsBlob.type, "text/plain", "Blob body type should be computed from the request Content-Type");
+
+  const body = await bodyAsBlob.text();
+  assert_equals(body, expectedBody, "Retrieve and verify request's body");
+  assert_true(request.bodyUsed, "body as blob: bodyUsed turned true");
 }
 
 function checkBodyArrayBuffer(request, expectedBody) {
   return request.arrayBuffer().then(function(bodyAsArrayBuffer) {
     validateBufferFromString(bodyAsArrayBuffer, expectedBody, "Retrieve and verify request's body");
     assert_true(request.bodyUsed, "body as arrayBuffer: bodyUsed turned true");
+  });
+}
+
+function checkBodyBytes(request, expectedBody) {
+  return request.bytes().then(function(bodyAsUint8Array) {
+    assert_true(bodyAsUint8Array instanceof Uint8Array);
+    validateBufferFromString(bodyAsUint8Array.buffer, expectedBody, "Retrieve and verify request's body");
+    assert_true(request.bodyUsed, "body as bytes: bodyUsed turned true");
   });
 }
 
@@ -69,6 +66,11 @@ function checkRequestBody(body, expected, bodyType) {
     assert_false(request.bodyUsed, "bodyUsed is false at init");
     return checkBodyArrayBuffer(request, expected);
   }, "Consume " + bodyType  + " request's body as arrayBuffer");
+  promise_test(function(test) {
+    var request = new Request("", {"method": "POST", "body": body });
+    assert_false(request.bodyUsed, "bodyUsed is false at init");
+    return checkBodyBytes(request, expected);
+  }, "Consume " + bodyType  + " request's body as bytes");
   promise_test(function(test) {
     var request = new Request("", {"method": "POST", "body": body });
     assert_false(request.bodyUsed, "bodyUsed is false at init");
@@ -124,6 +126,7 @@ checkBlobResponseBody(blob, textData, "blob", checkBodyBlob);
 checkBlobResponseBody(blob, textData, "text", checkBodyText);
 checkBlobResponseBody(blob, textData, "json", checkBodyJSON);
 checkBlobResponseBody(blob, textData, "arrayBuffer", checkBodyArrayBuffer);
+checkBlobResponseBody(blob, textData, "bytes", checkBodyBytes);
 checkBlobResponseBody(new Blob([""]), "", "blob (empty blob as input)", checkBodyBlob);
 
 var goodJSONValues = ["null", "1", "true", "\"string\""];

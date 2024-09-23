@@ -326,7 +326,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         }
         mLayoutStateProvider = layoutStateProvider;
         if (layoutStateProvider == null) return;
-        // TODO(crbug.com/1199059): The crash is possible when #setLayoutStateProvider() is called
+        // TODO(crbug.com/40761037): The crash is possible when #setLayoutStateProvider() is called
         // after #destroy() was called. This sequence of calls is unexpected. Below check throws an
         // exception to help identify the caller.
         if (mQueueController == null) {
@@ -370,7 +370,8 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 int topControlsMinHeightOffset,
                 int bottomOffset,
                 int bottomControlsMinHeightOffset,
-                boolean needsAnimate) {
+                boolean needsAnimate,
+                boolean isVisibilityForced) {
             if (mRunOnControlsFullyVisible != null
                     && BrowserControlsUtils.areBrowserControlsFullyVisible(
                             mBrowserControlsManager)) {

@@ -1,0 +1,71 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Telemetry Services are ash-chrome only")
+
+source_set("telemetry") {
+  sources = [
+    "probe_service_ash.cc",
+    "probe_service_ash.h",
+  ]
+
+  public_configs = [ "//build/config/linux/dbus" ]
+
+  deps = [
+    ":telemetry_converters",
+    "//base",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("telemetry_converters") {
+  sources = [
+    "probe_service_converters.cc",
+    "probe_service_converters.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/services/network_health/public/mojom:types",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "probe_service_ash_unittest.cc",
+    "probe_service_converters_unittest.cc",
+  ]
+
+  public_configs = [ "//build/config/linux/dbus" ]
+
+  deps = [
+    ":telemetry",
+    ":telemetry_converters",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/mojo_service_manager:test_support",
+    "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}

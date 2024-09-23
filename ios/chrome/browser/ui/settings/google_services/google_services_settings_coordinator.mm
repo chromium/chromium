@@ -13,11 +13,10 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -34,7 +33,6 @@
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mediator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/parcel_tracking_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -91,12 +89,12 @@ using signin_metrics::PromoAction;
       AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
+      initWithIdentityManager:IdentityManagerFactory::GetForProfile(
+                                  self.browser->GetBrowserState())
+              userPrefService:self.browser->GetBrowserState()->GetPrefs()
              localPrefService:GetApplicationContext()->GetLocalState()];
   self.mediator.consumer = viewController;
   self.mediator.authService = self.authService;
-  self.mediator.identityManager = IdentityManagerFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
   self.mediator.commandHandler = self;
   viewController.modelDelegate = self.mediator;
   viewController.serviceDelegate = self.mediator;
@@ -106,8 +104,6 @@ using signin_metrics::PromoAction;
       HandlerForProtocol(dispatcher, ApplicationCommands);
   viewController.browserHandler =
       HandlerForProtocol(dispatcher, BrowserCommands);
-  viewController.browsingDataHandler =
-      HandlerForProtocol(dispatcher, BrowsingDataCommands);
   viewController.settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   viewController.snackbarHandler =
@@ -146,20 +142,22 @@ using signin_metrics::PromoAction;
 }
 
 - (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return IdentityManagerFactory::GetForProfile(self.browser->GetBrowserState());
 }
 
 #pragma mark - GoogleServicesSettingsCommandHandler
 
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
-                       completion:(signin_ui::CompletionCallback)completion {
+                       completion:
+                           (signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   BOOL isSyncConsentGiven =
       syncService &&
       syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
+  BOOL shouldClearDataOnSignOut =
+      self.authService->ShouldClearDataForSignedInPeriodOnSignOut();
 
   self.signOutCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -168,6 +166,7 @@ using signin_metrics::PromoAction;
                          message:nil
                             rect:targetRect
                             view:self.viewController.view];
+
   // Because setting `title` to nil automatically forces the title-style text on
   // `message` in the UIAlertController, the attributed message below
   // specifically denotes the font style to apply.
@@ -175,6 +174,16 @@ using signin_metrics::PromoAction;
     self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
         initWithString:l10n_util::GetNSString(
                            IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC)
+            attributes:@{
+              NSFontAttributeName :
+                  [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+            }];
+    [self.signOutCoordinator updateAttributedText];
+  } else if (shouldClearDataOnSignOut) {
+    self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
+        initWithString:
+            l10n_util::GetNSString(
+                IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT)
             attributes:@{
               NSFontAttributeName :
                   [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
@@ -226,8 +235,9 @@ using signin_metrics::PromoAction;
 
 // Displays the option to keep or clear data for a syncing user.
 - (void)showDataRetentionOptionsWithTargetRect:(CGRect)targetRect
-                                    completion:(signin_ui::CompletionCallback)
-                                                   completion {
+                                    completion:
+                                        (signin_ui::SignoutCompletionCallback)
+                                            completion {
   DCHECK(completion);
   self.signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -238,7 +248,7 @@ using signin_metrics::PromoAction;
                                      kUserClickedSignoutSettings];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   self.signoutActionSheetCoordinator.delegate = self;
-  self.signoutActionSheetCoordinator.completion = ^(BOOL success) {
+  self.signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
     if (completion)
       completion(success);
     [weakSelf.signoutActionSheetCoordinator stop];
@@ -248,7 +258,7 @@ using signin_metrics::PromoAction;
 }
 
 // Signs the user out of Chrome, only clears data for managed accounts.
-- (void)signOutWithCompletion:(signin_ui::CompletionCallback)completion {
+- (void)signOutWithCompletion:(signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
   [self.googleServicesSettingsViewController preventUserInteraction];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;

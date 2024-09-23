@@ -20,6 +20,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
+#include "gpu/ipc/client/gpu_channel_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -43,6 +44,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
     : public WebVideoFrameSubmitter,
       public viz::ContextLostObserver,
       public viz::SharedBitmapReporter,
+      public gpu::GpuChannelLostObserver,
       public viz::mojom::blink::CompositorFrameSinkClient {
  public:
   VideoFrameSubmitter(WebContextProviderCallback,
@@ -71,6 +73,9 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
 
+  // gpu::GpuChannelLostObserver implementation.
+  void OnGpuChannelLost() override;
+
   // cc::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
       WTF::Vector<viz::ReturnedResource> resources) override;
@@ -97,7 +102,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // requested.
   void OnReceivedContextProvider(
       bool use_gpu_compositing,
-      scoped_refptr<viz::RasterContextProvider> context_provider);
+      scoped_refptr<viz::RasterContextProvider> context_provider,
+      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
 
   // Adopts `context_provider` if it's non-null and in a usable state. Returns
   // true on success and false on failure, implying that a new ContextProvider
@@ -145,16 +151,32 @@ class PLATFORM_EXPORT VideoFrameSubmitter
       scoped_refptr<media::VideoFrame> video_frame,
       media::VideoTransformation transform);
 
-  raw_ptr<cc::VideoFrameProvider, ExperimentalRenderer> video_frame_provider_ =
-      nullptr;
+  // Opacity state with respect to what we've told `surface_embedder_`.
+  enum class Opacity {
+    // We have not told the embedder anything yet.
+    kNotReported,
+
+    // We told the embedder that we have submitted an opaque frame.
+    kIsOpaque,
+
+    // We told the embedder that we have submitted a non-opaque frame.
+    kIsNotOpaque
+  };
+
+  // Notify `surface_embedder_` if the opacity of the most recent video frame
+  // has changed.
+  void NotifyOpacityIfNeeded(Opacity new_opacity);
+
+  raw_ptr<cc::VideoFrameProvider> video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> remote_frame_sink_;
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};
   WebContextProviderCallback context_provider_callback_;
   std::unique_ptr<VideoFrameResourceProvider> resource_provider_;
-  bool waiting_for_compositor_ack_ = false;
+  int waiting_for_compositor_ack_ = 0;
 
   // When UseVideoFrameSinkBundle is enabled, this is initialized to a local
   // implementation which batches outgoing Viz requests with those from other
@@ -164,8 +186,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   // Points to either `remote_frame_sink_` or `bundle_proxy_` depending
   // on whether UseVideoFrameSinkBundle is enabled.
-  raw_ptr<viz::mojom::blink::CompositorFrameSink, ExperimentalRenderer>
-      compositor_frame_sink_ = nullptr;
+  raw_ptr<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_ =
+      nullptr;
 
   // Current rendering state. Set by StartRendering() and StopRendering().
   bool is_rendering_ = false;
@@ -228,6 +250,14 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // frames should be ignored by the video tracker even if they are reported as
   // presented.
   base::flat_set<uint32_t> ignorable_submitted_frames_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // The average delta between receiving a frame and presenting it. Can be used
+  // to estimate the expected display time of a frame.
+  base::TimeDelta average_delta_between_receive_and_present_;
+
+  Opacity opacity_ = Opacity::kNotReported;
 
   THREAD_CHECKER(thread_checker_);
 

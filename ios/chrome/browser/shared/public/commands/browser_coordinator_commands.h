@@ -12,8 +12,8 @@
 class GURL;
 
 // Protocol for commands that will be handled by the BrowserCoordinator.
-// TODO(crbug.com/906662) : Rename this protocol to one that is more descriptive
-// and representative of the contents.
+// TODO(crbug.com/41427057) : Rename this protocol to one that is more
+// descriptive and representative of the contents.
 @protocol BrowserCoordinatorCommands
 
 // Prints the currently active tab.
@@ -31,14 +31,6 @@ class GURL;
 
 // Shows the Reading List UI.
 - (void)showReadingList;
-
-// Shows an IPH pointing to where the Follow entry point is, if
-// applicable.
-- (void)showFollowWhileBrowsingIPH;
-
-// Shows an IPH to explain to the user how to change the default site view, if
-// applicable.
-- (void)showDefaultSiteViewIPH;
 
 // Shows bookmarks manager.
 - (void)showBookmarksManager;
@@ -79,18 +71,9 @@ class GURL;
 - (void)focusFakebox;
 
 // Closes the current tab.
-// TODO(crbug.com/1272498): Refactor this command away; call sites should close
+// TODO(crbug.com/40806293): Refactor this command away; call sites should close
 // via the WebStateList.
 - (void)closeCurrentTab;
-
-// Shows what's new.
-- (void)showWhatsNew;
-
-// Dismisses what's new.
-- (void)dismissWhatsNew;
-
-// Shows what's new IPH.
-- (void)showWhatsNewIPH;
 
 // Shows the spotlight debugger.
 - (void)showSpotlightDebugger;
@@ -100,6 +83,12 @@ class GURL;
 
 // Dismiss the payments suggestions.
 - (void)dismissPaymentSuggestions;
+
+// Dismiss the password suggestions.
+- (void)dismissPasswordSuggestions;
+
+// Dismiss the card unmask authentication prompt.
+- (void)dismissCardUnmaskAuthentication;
 
 // Dismiss the plus address bottom sheet.
 - (void)dismissPlusAddressBottomSheet;
@@ -112,6 +101,14 @@ class GURL;
 
 // Dismisses the omnibox position choice screen.
 - (void)dismissOmniboxPositionChoice;
+
+// Shows and dismisses the Lens Promo.
+- (void)showLensPromo;
+- (void)dismissLensPromo;
+
+// Shows and dismisses the Enhanced Safe Browsing Promo.
+- (void)showEnhancedSafeBrowsingPromo;
+- (void)dismissEnhancedSafeBrowsingPromo;
 
 @end
 

@@ -18,13 +18,8 @@ BASE_DECLARE_FEATURE(kContentCapture);
 // us to trigger the ContentCapture independently to get the unbiased result.
 BASE_DECLARE_FEATURE(kContentCaptureTriggeringForExperiment);
 
-// ContentCapture in WebLayer, this flag is independent from the kContentCapture
-// flag.
-BASE_DECLARE_FEATURE(kContentCaptureInWebLayer);
-
 bool IsContentCaptureEnabled();
 bool ShouldTriggerContentCaptureForExperiment();
-bool IsContentCaptureEnabledInWebLayer();
 
 int TaskInitialDelayInMilliseconds();
 

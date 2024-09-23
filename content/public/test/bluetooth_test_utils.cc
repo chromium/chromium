@@ -10,7 +10,7 @@
 namespace content {
 
 void SetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter) {
-  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(
       std::move(adapter));
 }
 

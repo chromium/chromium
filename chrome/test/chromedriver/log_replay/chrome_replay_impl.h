@@ -28,7 +28,8 @@ class ChromeReplayImpl : public ChromeDesktopImpl {
                    const base::CommandLine& command,
                    base::ScopedTempDir* user_data_dir,
                    base::ScopedTempDir* extension_dir,
-                   bool network_emulation_enabled);
+                   bool network_emulation_enabled,
+                   bool autoaccept_beforeunload);
   ~ChromeReplayImpl() override;
 
   // A no-op: all this does in DesktopChromeImpl is kill the Chrome process.

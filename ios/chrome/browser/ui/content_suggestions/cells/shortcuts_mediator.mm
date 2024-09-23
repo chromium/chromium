@@ -5,27 +5,36 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/crb_protocol_observers.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
-@interface ShortcutsMediator () <ReadingListModelBridgeObserver>
+@interface ShortcutsConsumerList : CRBProtocolObservers <ShortcutsConsumer>
+@end
+
+@implementation ShortcutsConsumerList
+@end
+
+@interface ShortcutsMediator () <ReadingListModelBridgeObserver,
+                                 ShortcutsConsumerSource>
 @end
 
 @implementation ShortcutsMediator {
@@ -41,6 +50,7 @@
   //  ShortcutsConfig* _shortcutsConfig;
   feature_engagement::Tracker* _tracker;
   AuthenticationService* _authService;
+  ShortcutsConsumerList* _consumers;
 }
 
 - (instancetype)initWithReadingListModel:(ReadingListModel*)readingListModel
@@ -55,7 +65,10 @@
 
     _shortcutsConfig = [[ShortcutsConfig alloc] init];
     _shortcutsConfig.shortcutItems = [self shortcutItems];
+    _shortcutsConfig.consumerSource = self;
     _shortcutsConfig.commandHandler = self;
+    _consumers = [ShortcutsConsumerList
+        observersWithProtocol:@protocol(ShortcutsConsumer)];
   }
   return self;
 }
@@ -67,15 +80,29 @@
 }
 
 - (NSArray<ContentSuggestionsMostVisitedActionItem*>*)shortcutItems {
-  _readingListItem = ReadingListActionItem();
+  _readingListItem = [[ContentSuggestionsMostVisitedActionItem alloc]
+      initWithCollectionShortcutType:NTPCollectionShortcutTypeReadingList];
   _readingListItem.count = _readingListUnreadCount;
   _readingListItem.disabled = !_readingListModelIsLoaded;
   NSArray<ContentSuggestionsMostVisitedActionItem*>* shortcuts = @[
-    [self shouldShowWhatsNewActionItem] ? WhatsNewActionItem()
-                                        : BookmarkActionItem(),
-    _readingListItem, RecentTabsActionItem(), HistoryActionItem()
+    [self shouldShowWhatsNewActionItem]
+        ? [[ContentSuggestionsMostVisitedActionItem alloc]
+              initWithCollectionShortcutType:NTPCollectionShortcutTypeWhatsNew]
+        : [[ContentSuggestionsMostVisitedActionItem alloc]
+              initWithCollectionShortcutType:NTPCollectionShortcutTypeBookmark],
+    _readingListItem,
+    [[ContentSuggestionsMostVisitedActionItem alloc]
+        initWithCollectionShortcutType:NTPCollectionShortcutTypeRecentTabs],
+    [[ContentSuggestionsMostVisitedActionItem alloc]
+        initWithCollectionShortcutType:NTPCollectionShortcutTypeHistory]
   ];
   return shortcuts;
+}
+
+#pragma mark - ShortcutsConsumerSource
+
+- (void)addConsumer:(id<ShortcutsConsumer>)consumer {
+  [_consumers addObserver:consumer];
 }
 
 #pragma mark - ReadingListModelBridgeObserver
@@ -96,16 +123,13 @@
   if (shortcutsItem.disabled) {
     return;
   }
-  [self.NTPMetricsDelegate shortcutTileOpened];
-  if (IsMagicStackEnabled()) {
-    [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
-                                                      kShortcuts];
-  }
+  [self.NTPActionsDelegate shortcutTileOpened];
+  [self.delegate
+      logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts];
   [self.contentSuggestionsMetricsRecorder
       recordShortcutTileTapped:shortcutsItem.collectionShortcutType];
   switch (shortcutsItem.collectionShortcutType) {
     case NTPCollectionShortcutTypeBookmark:
-      LogBookmarkUseForDefaultBrowserPromo();
       [self.dispatcher showBookmarksManager];
       break;
     case NTPCollectionShortcutTypeReadingList:
@@ -121,7 +145,7 @@
       [self.dispatcher showWhatsNew];
       break;
     case NTPCollectionShortcutTypeCount:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return;
@@ -135,7 +159,7 @@
   _readingListModelIsLoaded = model->loaded();
   if (_readingListItem) {
     _shortcutsConfig.shortcutItems = [self shortcutItems];
-    [self.consumer setShortcutTilesConfig:_shortcutsConfig];
+    [_consumers shortcutsItemConfigDidChange:_readingListItem];
   }
 }
 
@@ -145,7 +169,7 @@
     return NO;
   }
 
-  // TODO(crbug.com/1510484): The FET is not ready upon app launch in the NTP.
+  // TODO(crbug.com/41483080): The FET is not ready upon app launch in the NTP.
   // Consequently, we must load a URL first and then load the NTP where the FET
   // becomes ready.
   DCHECK(_tracker);

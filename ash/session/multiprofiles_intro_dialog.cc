@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -37,7 +38,8 @@ void MultiprofilesIntroDialog::Show(OnAcceptCallback on_accept) {
   widget->Show();
 }
 
-gfx::Size MultiprofilesIntroDialog::CalculatePreferredSize() const {
+gfx::Size MultiprofilesIntroDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(
       kDefaultWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));
@@ -48,7 +50,7 @@ MultiprofilesIntroDialog::MultiprofilesIntroDialog(OnAcceptCallback on_accept)
           l10n_util::GetStringUTF16(IDS_ASH_DIALOG_DONT_SHOW_AGAIN))),
       on_accept_(std::move(on_accept)) {
   never_show_again_checkbox_->SetChecked(true);
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
   SetTitle(l10n_util::GetStringUTF16(IDS_ASH_MULTIPROFILES_INTRO_HEADLINE));
   SetShowCloseButton(false);
   SetAcceptCallback(base::BindOnce(

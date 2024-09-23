@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/mp2t/mp2t_stream_parser.h"
 
 #include <memory>
@@ -173,10 +178,8 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
     return false;
   }
 
-  bool status = section_parser_->Parse(
-      ts_packet.payload_unit_start_indicator(),
-      ts_packet.payload(),
-      ts_packet.payload_size());
+  bool status = section_parser_->Parse(ts_packet.payload_unit_start_indicator(),
+                                       ts_packet.payload());
 
   // At the minimum, when parsing failed, auto reset the section parser.
   // Components that use the StreamParser can take further action if needed.
@@ -320,19 +323,20 @@ bool Mp2tStreamParser::GetGenerateTimestampsFlag() const {
   return false;
 }
 
-bool Mp2tStreamParser::AppendToParseBuffer(const uint8_t* buf, size_t size) {
-  DVLOG(1) << __func__ << " size=" << size;
+bool Mp2tStreamParser::AppendToParseBuffer(base::span<const uint8_t> buf) {
+  DVLOG(1) << __func__ << " size=" << buf.size();
 
   // Ensure that we are not still in the middle of iterating Parse calls for
   // previously appended data. May consider changing this to a DCHECK once
   // stabilized, though since impact of proceeding when this condition fails
   // could lead to memory corruption, preferring CHECK.
-  CHECK_EQ(uninspected_pending_bytes_, 0);
+  CHECK_EQ(uninspected_pending_bytes_, 0u);
 
   // Add the data to the parser state.
-  uninspected_pending_bytes_ = base::checked_cast<int>(size);
-  if (!ts_byte_queue_.Push(buf, uninspected_pending_bytes_)) {
-    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size " << size;
+  uninspected_pending_bytes_ = base::checked_cast<int>(buf.size());
+  if (!ts_byte_queue_.Push(buf)) {
+    DVLOG(2) << "AppendToParseBuffer(): Failed to push buf of size "
+             << buf.size();
     return false;
   }
 
@@ -344,26 +348,27 @@ StreamParser::ParseStatus Mp2tStreamParser::Parse(
   DVLOG(1) << __func__;
   DCHECK_GE(max_pending_bytes_to_inspect, 0);
 
-  const uint8_t* ts_buffer = nullptr;
-  int queue_size = 0;
-  ts_byte_queue_.Peek(&ts_buffer, &queue_size);
+  auto queue_data = ts_byte_queue_.Data();
+  const uint8_t* ts_buffer = queue_data.data();
+  size_t queue_size = queue_data.size();
+  CHECK_GE(queue_size, uninspected_pending_bytes_);
 
   // First, determine the amount of bytes not yet popped, though already
   // inspected by previous call(s) to Parse().
-  int ts_buffer_size = queue_size - uninspected_pending_bytes_;
-  DCHECK_GE(ts_buffer_size, 0);
+  size_t ts_buffer_size = queue_size - uninspected_pending_bytes_;
 
   // Next, allow up to `max_pending_bytes_to_inspect` more of `queue_` contents
   // beyond those previously inspected to be involved in this Parse() call.
   int inspection_increment =
-      std::min(max_pending_bytes_to_inspect, uninspected_pending_bytes_);
+      std::min(base::checked_cast<size_t>(max_pending_bytes_to_inspect),
+               uninspected_pending_bytes_);
   ts_buffer_size += inspection_increment;
 
   // If successfully parsed, remember that we will have inspected this
   // incremental part of `ts_byte_queue_` contents. Note that parse failures are
   // fatal.
   uninspected_pending_bytes_ -= inspection_increment;
-  DCHECK_GE(uninspected_pending_bytes_, 0);
+  DCHECK_GE(uninspected_pending_bytes_, 0u);
 
   int bytes_to_pop = 0;
 
@@ -373,7 +378,7 @@ StreamParser::ParseStatus Mp2tStreamParser::Parse(
     }
 
     // Synchronization.
-    int skipped_bytes = TsPacket::Sync(ts_buffer, ts_buffer_size);
+    size_t skipped_bytes = TsPacket::Sync(ts_buffer, ts_buffer_size);
     if (skipped_bytes > 0) {
       DVLOG(1) << "Packet not aligned on a TS syncword:"
                << " skipped_bytes=" << skipped_bytes;
@@ -389,7 +394,7 @@ StreamParser::ParseStatus Mp2tStreamParser::Parse(
         TsPacket::Parse(ts_buffer, ts_buffer_size));
     if (!ts_packet) {
       DVLOG(1) << "Error: invalid TS packet";
-      CHECK_GE(ts_buffer_size, 1);
+      CHECK_GE(ts_buffer_size, 1u);
       ts_buffer_size--;
       ts_buffer++;
       bytes_to_pop++;
@@ -576,7 +581,7 @@ void Mp2tStreamParser::RegisterPes(int pes_pid,
 
   // Ignore stream types not specified in the creation of the SourceBuffer.
   // See https://crbug.com/1169393.
-  // TODO(https://crbug.com/535738): Remove this hack when MSE stream/mime type
+  // TODO(crbug.com/41204005): Remove this hack when MSE stream/mime type
   // checks have been relaxed.
   if (allowed_stream_types_.has_value() &&
       !allowed_stream_types_->contains(stream_type)) {
@@ -771,12 +776,12 @@ std::unique_ptr<MediaTracks> GenerateMediaTrackInfo(
   // TODO(servolk): Implement proper sourcing of media track info as described
   // in crbug.com/590085
   if (audio_config.IsValidConfig()) {
-    media_tracks->AddAudioTrack(audio_config, kMp2tAudioTrackId,
+    media_tracks->AddAudioTrack(audio_config, true, kMp2tAudioTrackId,
                                 MediaTrack::Kind("main"), MediaTrack::Label(""),
                                 MediaTrack::Language(""));
   }
   if (video_config.IsValidConfig()) {
-    media_tracks->AddVideoTrack(video_config, kMp2tVideoTrackId,
+    media_tracks->AddVideoTrack(video_config, true, kMp2tVideoTrackId,
                                 MediaTrack::Kind("main"), MediaTrack::Label(""),
                                 MediaTrack::Language(""));
   }
@@ -829,15 +834,10 @@ void Mp2tStreamParser::OnEmitAudioBuffer(
   DCHECK_EQ(pes_pid, selected_audio_pid_);
 
   DVLOG(LOG_LEVEL_ES)
-      << "OnEmitAudioBuffer: "
-      << " size="
-      << stream_parser_buffer->data_size()
-      << " dts="
-      << stream_parser_buffer->GetDecodeTimestamp().InMilliseconds()
-      << " pts="
-      << stream_parser_buffer->timestamp().InMilliseconds()
-      << " dur="
-      << stream_parser_buffer->duration().InMilliseconds();
+      << "OnEmitAudioBuffer: " << " size=" << stream_parser_buffer->size()
+      << " dts=" << stream_parser_buffer->GetDecodeTimestamp().InMilliseconds()
+      << " pts=" << stream_parser_buffer->timestamp().InMilliseconds()
+      << " dur=" << stream_parser_buffer->duration().InMilliseconds();
 
   // Ignore the incoming buffer if it is not associated with any config.
   if (buffer_queue_chain_.empty()) {
@@ -854,21 +854,15 @@ void Mp2tStreamParser::OnEmitVideoBuffer(
   DCHECK_EQ(pes_pid, selected_video_pid_);
 
   DVLOG(LOG_LEVEL_ES)
-      << "OnEmitVideoBuffer"
-      << " size="
-      << stream_parser_buffer->data_size()
-      << " dts="
-      << stream_parser_buffer->GetDecodeTimestamp().InMilliseconds()
-      << " pts="
-      << stream_parser_buffer->timestamp().InMilliseconds()
-      << " dur="
-      << stream_parser_buffer->duration().InMilliseconds()
-      << " is_key_frame="
-      << stream_parser_buffer->is_key_frame();
+      << "OnEmitVideoBuffer" << " size=" << stream_parser_buffer->size()
+      << " dts=" << stream_parser_buffer->GetDecodeTimestamp().InMilliseconds()
+      << " pts=" << stream_parser_buffer->timestamp().InMilliseconds()
+      << " dur=" << stream_parser_buffer->duration().InMilliseconds()
+      << " is_key_frame=" << stream_parser_buffer->is_key_frame();
 
   // Ignore the incoming buffer if it is not associated with any config.
   if (buffer_queue_chain_.empty()) {
-    NOTREACHED() << "Cannot provide buffers before configs";
+    NOTREACHED_IN_MIGRATION() << "Cannot provide buffers before configs";
     return;
   }
 

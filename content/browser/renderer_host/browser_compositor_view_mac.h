@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -120,7 +121,7 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
                            base::TimeTicks activation_time) override;
   float GetDeviceScaleFactor() const override;
   void InvalidateLocalSurfaceIdOnEviction() override;
-  std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() override;
+  viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction() override;
   bool ShouldShowStaleContentOnEviction() override;
 
   base::WeakPtr<BrowserCompositorMac> GetWeakPtr() {

@@ -1,0 +1,7 @@
+Document
+++Group IsControlElement=false
+++++ComboBox Name='Fruit' ExpandCollapse.ExpandCollapseState='Expanded' Value.Value='Apple'
+++++++List IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++ListItem Name='Apple' SelectionItem.IsSelected=true
+++++++++ListItem Name='Orange' SelectionItem.IsSelected=false
+++++++++ListItem Name='Banana' SelectionItem.IsSelected=false

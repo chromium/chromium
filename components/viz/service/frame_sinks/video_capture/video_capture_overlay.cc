@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/service/frame_sinks/video_capture/video_capture_overlay.h"
 
 #include <algorithm>
@@ -10,6 +15,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -34,10 +40,9 @@ namespace viz {
 VideoCaptureOverlay::FrameSource::~FrameSource() = default;
 
 VideoCaptureOverlay::VideoCaptureOverlay(
-    FrameSource* frame_source,
+    FrameSource& frame_source,
     mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay> receiver)
     : frame_source_(frame_source), receiver_(this, std::move(receiver)) {
-  DCHECK(frame_source_);
   receiver_.set_disconnect_handler(
       base::BindOnce(&FrameSource::OnOverlayConnectionLost,
                      base::Unretained(frame_source_), this));
@@ -318,7 +323,7 @@ VideoCaptureOverlay::Sprite::Sprite(const SkBitmap& image,
                                     const gfx::Size& size,
                                     const VideoPixelFormat format)
     : image_(image), size_(size), format_(format) {
-  DCHECK(!image_.isNull());
+  CHECK(!image_.isNull());
 }
 
 VideoCaptureOverlay::Sprite::~Sprite() {
@@ -364,18 +369,18 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
                                         const gfx::Rect& dst_rect,
                                         VideoFrame* frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(frame);
-  DCHECK(frame->visible_rect().Contains(dst_rect))
+  CHECK(frame);
+  CHECK(frame->visible_rect().Contains(dst_rect))
       << "frame->visible_rect()=" << frame->visible_rect().ToString()
       << ", dst_rect=" << dst_rect.ToString();
-  DCHECK(gfx::Rect(size_).Contains(src_rect))
+  CHECK(gfx::Rect(size_).Contains(src_rect))
       << "size_=" << size_.ToString() << ", src_rect=" << src_rect.ToString();
 
-  DCHECK_EQ(format_, frame->format());
-  DCHECK(!dst_rect.IsEmpty())
+  CHECK_EQ(format_, frame->format());
+  CHECK(!dst_rect.IsEmpty())
       << ": frame->visible_rect()=" << frame->visible_rect().ToString()
       << ", dst_rect=" << dst_rect.ToString();
-  DCHECK(frame->ColorSpace().IsValid());
+  CHECK(frame->ColorSpace().IsValid());
 
   TRACE_EVENT("gpu.capture", "VideoCaptureOverlay::Sprite::Blend", "x",
               dst_rect.x(), "y", dst_rect.y());
@@ -394,12 +399,12 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
     case media::PIXEL_FORMAT_I420: {
       // Core assumption: All coordinates are aligned to even-numbered
       // coordinates.
-      DCHECK_EQ(src_origin.x() % 2, 0);
-      DCHECK_EQ(src_origin.y() % 2, 0);
-      DCHECK_EQ(dst_rect.x() % 2, 0);
-      DCHECK_EQ(dst_rect.y() % 2, 0);
-      DCHECK_EQ(dst_rect.width() % 2, 0);
-      DCHECK_EQ(dst_rect.height() % 2, 0);
+      CHECK_EQ(src_origin.x() % 2, 0);
+      CHECK_EQ(src_origin.y() % 2, 0);
+      CHECK_EQ(dst_rect.x() % 2, 0);
+      CHECK_EQ(dst_rect.y() % 2, 0);
+      CHECK_EQ(dst_rect.width() % 2, 0);
+      CHECK_EQ(dst_rect.height() % 2, 0);
 
       // Helper function to execute a "SrcOver" blit from |src| to |dst|, and
       // store the results back in |dst|.
@@ -425,9 +430,9 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
       const float* src = under_weight + num_pixels;
       // Likewise, start |dst| at the upper-left-most pixel within the video
       // frame's Y plane that will be SrcOver'ed.
-      int dst_stride = frame->stride(VideoFrame::kYPlane);
+      int dst_stride = frame->stride(VideoFrame::Plane::kY);
       uint8_t* dst = PositionPointerInPlane(
-          frame->GetWritableVisibleData(VideoFrame::kYPlane), dst_stride,
+          frame->GetWritableVisibleData(VideoFrame::Plane::kY), dst_stride,
           dst_rect.origin());
       BlitOntoPlane(dst_rect.size(), src_stride, src, under_weight, dst_stride,
                     dst);
@@ -440,19 +445,19 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
           transformed_image_.get() + 2 * num_pixels, src_stride, src_origin);
       const int num_chroma_pixels = size_.GetArea() / 4;
       src = under_weight + num_chroma_pixels;
-      dst_stride = frame->stride(VideoFrame::kUPlane);
+      dst_stride = frame->stride(VideoFrame::Plane::kU);
       const gfx::Rect chroma_blit_rect(dst_rect.x() / 2, dst_rect.y() / 2,
                                        dst_rect.width() / 2,
                                        dst_rect.height() / 2);
       dst = PositionPointerInPlane(
-          frame->GetWritableVisibleData(VideoFrame::kUPlane), dst_stride,
+          frame->GetWritableVisibleData(VideoFrame::Plane::kU), dst_stride,
           chroma_blit_rect.origin());
       BlitOntoPlane(chroma_blit_rect.size(), src_stride, src, under_weight,
                     dst_stride, dst);
       src += num_chroma_pixels;
-      dst_stride = frame->stride(VideoFrame::kVPlane);
+      dst_stride = frame->stride(VideoFrame::Plane::kV);
       dst = PositionPointerInPlane(
-          frame->GetWritableVisibleData(VideoFrame::kVPlane), dst_stride,
+          frame->GetWritableVisibleData(VideoFrame::Plane::kV), dst_stride,
           chroma_blit_rect.origin());
       BlitOntoPlane(chroma_blit_rect.size(), src_stride, src, under_weight,
                     dst_stride, dst);
@@ -469,14 +474,14 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
 
       // Likewise, start |dst| at the upper-left-most pixel within the video
       // frame that will be SrcOver'ed.
-      const int dst_stride = frame->stride(VideoFrame::kARGBPlane);
-      DCHECK_EQ(dst_stride % sizeof(uint32_t), 0u);
+      const int dst_stride = frame->stride(VideoFrame::Plane::kARGB);
+      CHECK_EQ(dst_stride % sizeof(uint32_t), 0u);
       uint8_t* dst = PositionPointerARGB(
-          frame->GetWritableVisibleData(VideoFrame::kARGBPlane), dst_stride,
+          frame->GetWritableVisibleData(VideoFrame::Plane::kARGB), dst_stride,
           dst_rect.origin());
-      DCHECK_EQ((dst - frame->visible_data(VideoFrame::kARGBPlane)) %
-                    sizeof(uint32_t),
-                0u);
+      CHECK_EQ((dst - frame->visible_data(VideoFrame::Plane::kARGB)) %
+                   sizeof(uint32_t),
+               0u);
 
       // Blend each sprite pixel over the corresponding pixel in the video
       // frame, and store the result back in the video frame. Note that the
@@ -512,7 +517,7 @@ void VideoCaptureOverlay::Sprite::Blend(const gfx::Rect& src_rect,
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -548,13 +553,12 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
   // scaling operation failed, this sprite should draw nothing, and so fully
   // transparent pixels will be generated instead.
   const int num_pixels = size_.GetArea();
-  std::unique_ptr<float[]> alphas(new float[num_pixels]);
-  std::unique_ptr<gfx::ColorTransform::TriStim[]> colors(
-      new gfx::ColorTransform::TriStim[num_pixels]);
+  auto alphas = base::HeapArray<float>::Uninit(num_pixels);
+  auto colors =
+      base::HeapArray<gfx::ColorTransform::TriStim>::WithSize(num_pixels);
   if (scaled_image.drawsNothing()) {
-    std::fill(alphas.get(), alphas.get() + num_pixels, 0.0f);
-    std::fill(colors.get(), colors.get() + num_pixels,
-              gfx::ColorTransform::TriStim());
+    std::fill(alphas.begin(), alphas.end(), 0.0f);
+    std::fill(colors.begin(), colors.end(), gfx::ColorTransform::TriStim());
   } else {
     int pos = 0;
     for (int y = 0; y < size_.height(); ++y) {
@@ -584,7 +588,7 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
   if (image_color_space != color_space_) {
     const auto color_transform =
         gfx::ColorTransform::NewColorTransform(image_color_space, color_space_);
-    color_transform->Transform(colors.get(), num_pixels);
+    color_transform->Transform(colors.data(), num_pixels);
   }
 
   switch (format_) {
@@ -593,8 +597,8 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
       // subsampled "one minus alpha" plane, the U plane, and the V plane.
       // Pre-multiply the colors by the alpha to prevent extra work in multiple
       // later Blit() calls.
-      DCHECK_EQ(size_.width() % 2, 0);
-      DCHECK_EQ(size_.height() % 2, 0);
+      CHECK_EQ(size_.width() % 2, 0);
+      CHECK_EQ(size_.height() % 2, 0);
       const int num_chroma_pixels = size_.GetArea() / 4;
       transformed_image_.reset(
           new float[num_pixels * 2 + num_chroma_pixels * 3]);
@@ -613,13 +617,12 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
       float* out_uv_1_minus_alpha = out_luma + num_pixels;
       float* out_u = out_uv_1_minus_alpha + num_chroma_pixels;
       float* out_v = out_u + num_chroma_pixels;
-      const float* alpha_row0 = alphas.get();
-      const float* const alpha_row_end = alpha_row0 + num_pixels;
-      const gfx::ColorTransform::TriStim* color_row0 = colors.get();
+      auto alpha_row0 = alphas.begin();
+      auto alpha_row_end = alphas.end();
+      auto color_row0 = colors.begin();
       while (alpha_row0 < alpha_row_end) {
-        const float* alpha_row1 = alpha_row0 + size_.width();
-        const gfx::ColorTransform::TriStim* color_row1 =
-            color_row0 + size_.width();
+        const auto alpha_row1 = alpha_row0 + size_.width();
+        const auto color_row1 = color_row0 + size_.width();
         for (int col = 0; col < size_.width(); col += 2) {
           // First, the downscaled alpha is the average of the four original
           // alpha values:
@@ -685,7 +688,7 @@ void VideoCaptureOverlay::Sprite::TransformImage() {
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View role_description='object' name='object without space'
+++++android.view.View role_description='object' name='object with space'

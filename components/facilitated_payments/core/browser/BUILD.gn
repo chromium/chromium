@@ -4,27 +4,58 @@
 
 static_library("browser") {
   sources = [
+    "facilitated_payments_api_client.h",
+    "facilitated_payments_client.cc",
+    "facilitated_payments_client.h",
     "facilitated_payments_driver.cc",
     "facilitated_payments_driver.h",
     "facilitated_payments_manager.cc",
     "facilitated_payments_manager.h",
+    "network_api/facilitated_payments_initiate_payment_request.cc",
+    "network_api/facilitated_payments_initiate_payment_request.h",
+    "network_api/facilitated_payments_initiate_payment_request_details.cc",
+    "network_api/facilitated_payments_initiate_payment_request_details.h",
+    "network_api/facilitated_payments_initiate_payment_response_details.cc",
+    "network_api/facilitated_payments_initiate_payment_response_details.h",
+    "network_api/facilitated_payments_network_interface.cc",
+    "network_api/facilitated_payments_network_interface.h",
   ]
 
   public_deps = [
     "//base",
+    "//components/autofill/core/browser",
+    "//components/facilitated_payments/core/features",
+    "//components/facilitated_payments/core/metrics",
+    "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
+    "//components/facilitated_payments/core/util",
     "//components/optimization_guide/core",
+    "//components/signin/public/identity_manager",
+    "//services/data_decoder/public/cpp",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "facilitated_payments_manager_unittest.cc" ]
+  sources = [
+    "facilitated_payments_manager_unittest.cc",
+    "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
+    "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
+    "network_api/facilitated_payments_network_interface_unittest.cc",
+  ]
 
   deps = [
     ":browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common",
     "//components/optimization_guide/core",
+    "//components/signin/public/identity_manager",
+    "//components/sync:test_support",
+    "//components/ukm:test_support",
     "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
   ]
 }

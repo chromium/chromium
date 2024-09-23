@@ -18,14 +18,14 @@
 @synthesize URLs = _URLs;
 
 - (instancetype)initWithURL:(const GURL&)URL title:(NSString*)title {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _URLs = @[ [[URLWithTitle alloc] initWithURL:URL title:title] ];
   }
   return self;
 }
 
 - (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _URLs = [URLs copy];
   }
   return self;

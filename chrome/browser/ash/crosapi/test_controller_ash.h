@@ -14,6 +14,7 @@
 #include "ash/wm/splitview/split_view_types.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -31,9 +32,13 @@ namespace crosapi {
 
 // This class is the ash-chrome implementation of the TestController interface.
 // This class must only be used from the main thread.
+// There can only be one instance of this class created.
 class TestControllerAsh : public mojom::TestController,
                           public CrosapiAsh::TestControllerReceiver {
  public:
+  // Returns the single instance of this class, if it exists.
+  static TestControllerAsh* Get();
+
   TestControllerAsh();
   TestControllerAsh(const TestControllerAsh&) = delete;
   TestControllerAsh& operator=(const TestControllerAsh&) = delete;
@@ -159,10 +164,30 @@ class TestControllerAsh : public mojom::TestController,
 
   void IsShelfVisible(IsShelfVisibleCallback callback) override;
 
-  mojo::Remote<mojom::StandaloneBrowserTestController>&
-  GetStandaloneBrowserTestController() {
+  void SetAppInstallDialogAutoAccept(
+      bool auto_accept,
+      SetAppInstallDialogAutoAcceptCallback callback) override;
+
+  void UpdateDisplay(int number_of_displays,
+                     UpdateDisplayCallback callback) override;
+
+  void EnableStatisticsProviderForTesting(
+      bool enable,
+      EnableStatisticsProviderForTestingCallback callback) override;
+
+  void ClearAllMachineStatistics(
+      ClearAllMachineStatisticsCallback callback) override;
+
+  void SetMachineStatistic(mojom::MachineStatisticKeyType key,
+                           const std::string& value,
+                           SetMachineStatisticCallback callback) override;
+
+  void SetMinFlingVelocity(float velocity,
+                           SetMinFlingVelocityCallback callback) override;
+
+  mojom::StandaloneBrowserTestController* GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
-    return standalone_browser_test_controller_;
+    return standalone_browser_test_controller_.get();
   }
 
   // Signals when standalone browser test controller becomes bound.
@@ -217,6 +242,8 @@ class TestControllerAsh : public mojom::TestController,
   // Ash utterance event delegates by utterance id.
   std::map<int, std::unique_ptr<AshUtteranceEventDelegate>>
       ash_utterance_event_delegates_;
+
+  ash::system::FakeStatisticsProvider fake_statistics_provider_;
 };
 
 class TestShillControllerAsh : public crosapi::mojom::TestShillController {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/core/channel.h"
 
 #include <mach/mach.h>
@@ -24,6 +29,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/message_loop/message_pump_for_io.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
@@ -430,7 +436,6 @@ class ChannelMac : public Channel,
         default:
           NOTREACHED() << "Unsupported handle type "
                        << static_cast<int>(handle.type());
-          OnWriteErrorLocked(Error::kDisconnected);
       }
     }
 
@@ -444,8 +449,11 @@ class ChannelMac : public Channel,
       descriptor->type = MACH_MSG_OOL_DESCRIPTOR;
       ++body->msgh_descriptor_count;
     } else {
-      auto* data_size = buffer.MutableObject<uint64_t>();
-      *data_size = message->data_num_bytes();
+      // Mach message structs are all 4-byte aligned, but `uint64_t` is 8-byte
+      // aligned on 64-bit architectures. To avoid alignment issues, write the
+      // size as bytes.
+      buffer.MutableSpan<uint8_t, 8>()->copy_from(
+          base::U64ToNativeEndian(message->data_num_bytes()));
 
       auto data = buffer.MutableSpan<char>(message->data_num_bytes());
       memcpy(data.data(), message->data(), message->data_num_bytes());
@@ -671,8 +679,12 @@ class ChannelMac : public Channel,
           reinterpret_cast<vm_address_t>(descriptor->address),
           descriptor->size);
     } else {
-      auto* data_size_ptr = buffer.Object<uint64_t>();
-      payload = buffer.Span<const char>(*data_size_ptr);
+      // Mach message structs are all 4-byte aligned, but `uint64_t` is 8-byte
+      // aligned on 64-bit architectures. To avoid alignment issues, write the
+      // size as bytes.
+      uint64_t data_size =
+          base::U64FromNativeEndian(*buffer.Span<uint8_t, 8>());
+      payload = buffer.Span<const char>(data_size);
     }
 
     if (payload.empty()) {

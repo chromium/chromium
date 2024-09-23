@@ -1,0 +1,8 @@
+ALERT: Invalid test: #errors
+#document-fragment
+html
+#document
+| <head>
+| <body>
+
+../resources/tests_innerHTML_1.dat: PASS

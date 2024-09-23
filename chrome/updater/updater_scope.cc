@@ -37,7 +37,6 @@ std::optional<tagging::NeedsAdmin> NeedsAdminFromTagArgs(
   if (tag_args->runtime_mode) {
     return tag_args->runtime_mode->needs_admin;
   }
-
   return {};
 }
 

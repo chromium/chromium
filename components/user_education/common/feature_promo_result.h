@@ -51,7 +51,15 @@ class FeaturePromoResult {
              // since the last heavyweight promo.
     kRecentlyAborted = 11,  // The promo recently aborted due to a UI change and
                             // cannot be shown again for a short period of time.
-    kMaxValue = kRecentlyAborted
+    kExceededMaxShowCount = 12,  // The promo has been shown so many times that
+                                 // it should be considered permanently
+                                 // dismissed.
+    kBlockedByNewProfile = 13,  // The promo could not be shown because the user
+                                // is still inside the new profile grace period.
+    kBlockedByReshowDelay = 14,  // The promo is allowed to reshow after
+                                 // dismissal, but the required time has not
+                                 // elapsed yet.
+    kMaxValue = kBlockedByReshowDelay
   };
 
   constexpr FeaturePromoResult() = default;
@@ -71,6 +79,18 @@ class FeaturePromoResult {
   //     : FeaturePromoResult::Success();
   static FeaturePromoResult Success();
 
+  // Returns true if the promo can never show again.
+  constexpr bool is_permanently_blocked() const {
+    return failure_ == kPermanentlyDismissed ||
+           failure_ == kExceededMaxShowCount;
+  }
+
+  // Returns true if the promo is unlikely to show in this browser instance.
+  constexpr bool is_blocked_this_instance() const {
+    return is_permanently_blocked() || failure_ == kFeatureDisabled ||
+           failure_ == kBlockedByContext;
+  }
+
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator bool() const { return !failure_.has_value(); }
   constexpr bool operator!() const { return failure_.has_value(); }
@@ -80,6 +100,8 @@ class FeaturePromoResult {
   constexpr bool operator!=(const FeaturePromoResult& other) const {
     return failure_ != other.failure_;
   }
+  constexpr bool operator==(Failure other) const { return failure_ == other; }
+  constexpr bool operator!=(Failure other) const { return failure_ != other; }
   constexpr auto failure() const { return failure_; }
 
  private:

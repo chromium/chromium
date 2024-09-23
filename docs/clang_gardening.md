@@ -31,7 +31,7 @@ We prefer searching like this to having gardeners compose status email at the
 end of their week.
 
 In addition to the waterfall, make sure
-[dry run attempts at updating clang](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py+is:wip)
+[dry run attempts at updating clang](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py)
 are green. As part of the Clang release process we run upstream LLVM tests.
 Ideally these tests are covered by upstream LLVM bots and breakages are
 quickly noticed and fixed by the original author of a breaking commit,
@@ -140,7 +140,13 @@ things:
        clang/utils/creduce-clang-crash.py --llvm-bin bin \
            angle_deqp_gtest-d421b0.sh angle_deqp_gtest-d421b0.cpp
 
-   Attach the reproducer to the llvm bug you filed in the previous step.
+   Attach the reproducer to the llvm bug you filed in the previous step. You can
+   disable Creduce's renaming passes with the options
+   `--remove-pass pass_clang rename-fun --remove-pass pass_clang rename-param
+   --remove-pass pass_clang rename-var --remove-pass pass_clang rename-class
+   --remove-pass pass_clang rename-cxx-method --remove-pass pass_clex
+   rename-toks` which makes it easier for the author to reason about and to
+   further reduce it manually.
 
    If you need to do something the wrapper doesn't support,
    follow the [official CReduce docs](https://embed.cs.utah.edu/creduce/using/)

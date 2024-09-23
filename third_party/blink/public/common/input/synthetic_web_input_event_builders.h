@@ -65,6 +65,8 @@ class BLINK_COMMON_EXPORT SyntheticWebGestureEventBuilder {
       float dy,
       int modifiers,
       blink::WebGestureDevice source_device);
+  static blink::WebGestureEvent BuildScrollEnd(
+      blink::WebGestureDevice source_device);
   static blink::WebGestureEvent BuildPinchUpdate(
       float scale,
       float anchor_x,

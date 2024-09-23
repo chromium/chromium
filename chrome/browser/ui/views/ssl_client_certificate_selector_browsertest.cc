@@ -30,6 +30,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 
 using ::testing::Mock;
@@ -199,8 +200,7 @@ class SSLClientCertificateSelectorMultiProfileTest
     gfx::NativeWindow window = browser_1_->window()->GetNativeWindow();
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     ASSERT_NE(nullptr, widget);
-    views::test::WidgetActivationWaiter waiter(widget, true);
-    waiter.Wait();
+    views::test::WaitForWidgetActive(widget, true);
 
     auth_requestor_1_ =
         new StrictMock<SSLClientAuthRequestorMock>(cert_request_info_1_);

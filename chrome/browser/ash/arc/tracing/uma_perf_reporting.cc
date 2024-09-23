@@ -77,6 +77,15 @@ void ReportJanksPerMinute(const std::string& category_name,
       static_cast<int>(std::round(janks_per_minute)));
 }
 
+void ReportJanksPercentage(const std::string& category_name,
+                           double janks_percentage) {
+  DCHECK(!category_name.empty());
+  DCHECK_GE(janks_percentage, 0);
+  base::UmaHistogramCounts100(
+      GetHistogramName(category_name, "JanksPercentage2"),
+      static_cast<int>(std::round(janks_percentage)));
+}
+
 }  // namespace
 
 UmaPerfReporting::UmaPerfReporting() : weak_ptr_factory_(this) {}
@@ -110,7 +119,8 @@ void UmaPerfReporting::OnDone(ArcAppPerformanceTracingSession* session,
             << ", commit_deviation: " << result->commit_deviation
             << ", present_deviation: " << result->present_deviation
             << ", render_quality: " << result->render_quality
-            << ", janks_per_minute: " << result->janks_per_minute;
+            << ", janks_per_minute: " << result->janks_per_minute
+            << ", janks_percentage: " << result->janks_percentage;
 
     ReportFPS(category, result->fps);
     ReportPerceivedFPS(category, result->perceived_fps);
@@ -118,6 +128,7 @@ void UmaPerfReporting::OnDone(ArcAppPerformanceTracingSession* session,
     ReportPresentDeviation(category, result->present_deviation);
     ReportQuality(category, result->render_quality);
     ReportJanksPerMinute(category, result->janks_per_minute);
+    ReportJanksPercentage(category, result->janks_percentage);
 
     reported_categories_.insert(category);
   }

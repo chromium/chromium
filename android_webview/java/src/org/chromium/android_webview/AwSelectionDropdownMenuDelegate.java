@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,6 @@ import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.compat.ApiHelperForS;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.display.DisplayAndroidManager;
@@ -208,12 +208,10 @@ public class AwSelectionDropdownMenuDelegate implements SelectionDropdownMenuDel
             ItemClickListener clickListener) {
         // `createWindowContext` on some devices writes to disk. See crbug.com/1408587.
         try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
+            Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
             mWindowContext =
-                    ApiHelperForS.createWindowContext(
-                            context,
-                            DisplayAndroidManager.getDefaultDisplayForContext(context),
-                            WindowManager.LayoutParams.TYPE_APPLICATION,
-                            null);
+                    context.createWindowContext(
+                            display, WindowManager.LayoutParams.TYPE_APPLICATION, null);
         }
 
         assert mWindowContext != null : "Window context cannot be null.";

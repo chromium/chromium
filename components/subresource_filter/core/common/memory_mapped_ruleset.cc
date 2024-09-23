@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 
 namespace subresource_filter {
 
@@ -23,7 +24,7 @@ scoped_refptr<MemoryMappedRuleset> MemoryMappedRuleset::CreateAndInitialize(
   if (g_fail_memory_map_initialization_for_testing ||
       !ruleset->ruleset_.Initialize(std::move(ruleset_file)))
     return nullptr;
-  DCHECK(ruleset->ruleset_.IsValid());
+  CHECK(ruleset->ruleset_.IsValid(), base::NotFatalUntil::M129);
   return ruleset;
 }
 

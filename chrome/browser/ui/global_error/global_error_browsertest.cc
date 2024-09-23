@@ -128,7 +128,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
       extensions::ExtensionRegistry::Get(profile);
 
   extensions::ExtensionBuilder builder("Browser Action");
-  builder.SetAction(extensions::ActionInfo::TYPE_BROWSER);
+  builder.SetAction(extensions::ActionInfo::Type::kBrowser);
   builder.SetLocation(extensions::mojom::ManifestLocation::kInternal);
   scoped_refptr<const extensions::Extension> test_extension = builder.Build();
   extension_service->AddExtension(test_extension.get());

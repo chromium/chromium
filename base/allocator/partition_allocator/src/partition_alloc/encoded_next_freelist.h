@@ -2,27 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ENCODED_NEXT_FREELIST_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ENCODED_NEXT_FREELIST_H_
+#ifndef PARTITION_ALLOC_ENCODED_NEXT_FREELIST_H_
+#define PARTITION_ALLOC_ENCODED_NEXT_FREELIST_H_
 
 #include <cstddef>
 #include <cstdint>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/freeslot_bitmap.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "partition_alloc/partition_alloc_base/immediate_crash.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
-#include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/partition_ref_count.h"
 
-#if !defined(ARCH_CPU_BIG_ENDIAN)
+#if !PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)
 #include "partition_alloc/reverse_bytes.h"
-#endif  // !defined(ARCH_CPU_BIG_ENDIAN)
+#endif
 
 namespace partition_alloc::internal {
 
@@ -52,7 +48,7 @@ class EncodedFreelistPtr {
   // encoding and decoding.
   PA_ALWAYS_INLINE static constexpr uintptr_t Transform(uintptr_t address) {
     // We use bswap on little endian as a fast transformation for two reasons:
-    // 1) On 64 bit architectures, the pointer is very unlikely to be a
+    // 1) On 64 bit architectures, the swapped pointer is very unlikely to be a
     //    canonical address. Therefore, if an object is freed and its vtable is
     //    used where the attacker doesn't get the chance to run allocations
     //    between the free and use, the vtable dereference is likely to fault.
@@ -60,7 +56,7 @@ class EncodedFreelistPtr {
     //    corrupt a freelist pointer, partial pointer overwrite attacks are
     //    thwarted.
     // For big endian, similar guarantees are arrived at with a negation.
-#if defined(ARCH_CPU_BIG_ENDIAN)
+#if PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)
     uintptr_t transformed = ~address;
 #else
     uintptr_t transformed = ReverseBytes(address);
@@ -155,19 +151,24 @@ class EncodedNextFreelistEntry {
   // corruption. Meant to be used to report the failed allocation size.
   template <bool crash_on_corruption>
   PA_ALWAYS_INLINE EncodedNextFreelistEntry* GetNextForThreadCache(
-      size_t slot_size) const;
-  PA_ALWAYS_INLINE EncodedNextFreelistEntry* GetNext(size_t slot_size) const;
+      size_t slot_size) const {
+    return GetNextInternal<crash_on_corruption, /*for_thread_cache=*/true>(
+        slot_size);
+  }
+  PA_ALWAYS_INLINE EncodedNextFreelistEntry* GetNext(size_t slot_size) const {
+    return GetNextInternal<true, /*for_thread_cache=*/false>(slot_size);
+  }
 
   PA_NOINLINE void CheckFreeList(size_t slot_size) const {
     for (auto* entry = this; entry; entry = entry->GetNext(slot_size)) {
-      // |GetNext()| checks freelist integrity.
+      // `GetNext()` calls `IsWellFormed()`.
     }
   }
 
   PA_NOINLINE void CheckFreeListForThreadCache(size_t slot_size) const {
     for (auto* entry = this; entry;
          entry = entry->GetNextForThreadCache<true>(slot_size)) {
-      // |GetNextForThreadCache()| checks freelist integrity.
+      // `GetNextForThreadCache()` calls `IsWellFormed()`.
     }
   }
 
@@ -175,16 +176,16 @@ class EncodedNextFreelistEntry {
     // SetNext() is either called on the freelist head, when provisioning new
     // slots, or when GetNext() has been called before, no need to pass the
     // size.
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     // Regular freelists always point to an entry within the same super page.
     //
     // This is most likely a PartitionAlloc bug if this triggers.
-    if (PA_UNLIKELY(entry &&
-                    (SlotStartPtr2Addr(this) & kSuperPageBaseMask) !=
-                        (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))) {
+    if (entry && (SlotStartPtr2Addr(this) & kSuperPageBaseMask) !=
+                     (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))
+        [[unlikely]] {
       FreelistCorruptionDetected(0);
     }
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
     encoded_next_ = EncodedFreelistPtr(entry);
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
@@ -208,52 +209,85 @@ class EncodedNextFreelistEntry {
   }
 
  private:
-  template <bool crash_on_corruption>
+  template <bool crash_on_corruption, bool for_thread_cache>
   PA_ALWAYS_INLINE EncodedNextFreelistEntry* GetNextInternal(
-      size_t slot_size,
-      bool for_thread_cache) const;
+      size_t slot_size) const {
+    // GetNext() can be called on discarded memory, in which case
+    // |encoded_next_| is 0, and none of the checks apply. Don't prefetch
+    // nullptr either.
+    if (IsEncodedNextPtrZero()) {
+      return nullptr;
+    }
 
-  PA_ALWAYS_INLINE static bool IsSane(const EncodedNextFreelistEntry* here,
-                                      const EncodedNextFreelistEntry* next,
-                                      bool for_thread_cache) {
-    // Don't allow the freelist to be blindly followed to any location.
-    // Checks two constraints:
-    // - here and next must belong to the same superpage, unless this is in the
-    //   thread cache (they even always belong to the same slot span).
-    // - next cannot point inside the metadata area.
+    auto* ret = encoded_next_.Decode();
+    if (!IsWellFormed<for_thread_cache>(this, ret)) [[unlikely]] {
+      if constexpr (crash_on_corruption) {
+        // Put the corrupted data on the stack, it may give us more information
+        // about what kind of corruption that was.
+        PA_DEBUG_DATA_ON_STACK("first",
+                               static_cast<size_t>(encoded_next_.encoded_));
+#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
+        PA_DEBUG_DATA_ON_STACK("second", static_cast<size_t>(shadow_));
+#endif
+        FreelistCorruptionDetected(slot_size);
+      }
+      return nullptr;
+    }
+
+    // In real-world profiles, the load of |encoded_next_| above is responsible
+    // for a large fraction of the allocation cost. However, we cannot
+    // anticipate it enough since it is accessed right after we know its
+    // address.
     //
-    // Also, the lightweight UaF detection (pointer shadow) is checked.
+    // In the case of repeated allocations, we can prefetch the access that will
+    // be done at the *next* allocation, which will touch *ret, prefetch it.
+    PA_PREFETCH(ret);
+    return ret;
+  }
 
-    uintptr_t here_address = SlotStartPtr2Addr(here);
-    uintptr_t next_address = SlotStartPtr2Addr(next);
+  template <bool for_thread_cache>
+  PA_ALWAYS_INLINE static bool IsWellFormed(
+      const EncodedNextFreelistEntry* here,
+      const EncodedNextFreelistEntry* next) {
+    // Don't allow the freelist to be blindly followed to any location.
+    // Checks following constraints:
+    // - `here->shadow_` must match an inversion of `here->next_` (if present).
+    // - `next` mustn't point inside the super page metadata area.
+    // - Unless this is a thread-cache freelist, `here` and `next` must belong
+    //   to the same super page (as a matter of fact, they must belong to the
+    //   same slot span, but that'd be too expensive to check here).
+    // - `next` is marked as free in the free slot bitmap (if present).
+
+    const uintptr_t here_address = SlotStartPtr2Addr(here);
+    const uintptr_t next_address = SlotStartPtr2Addr(next);
 
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
     bool shadow_ptr_ok = here->encoded_next_.Inverted() == here->shadow_;
 #else
-    bool shadow_ptr_ok = true;
-#endif
-
-    bool same_superpage = (here_address & kSuperPageBaseMask) ==
-                          (next_address & kSuperPageBaseMask);
-#if BUILDFLAG(USE_FREESLOT_BITMAP)
-    bool marked_as_free_in_bitmap =
-        for_thread_cache ? true : !FreeSlotBitmapSlotIsUsed(next_address);
-#else
-    bool marked_as_free_in_bitmap = true;
+    constexpr bool shadow_ptr_ok = true;
 #endif
 
     // This is necessary but not sufficient when quarantine is enabled, see
     // SuperPagePayloadBegin() in partition_page.h. However we don't want to
     // fetch anything from the root in this function.
-    bool not_in_metadata =
+    const bool not_in_metadata =
         (next_address & kSuperPageOffsetMask) >= PartitionPageSize();
 
-    if (for_thread_cache) {
+    if constexpr (for_thread_cache) {
       return shadow_ptr_ok & not_in_metadata;
-    } else {
-      return shadow_ptr_ok & same_superpage & marked_as_free_in_bitmap &
-             not_in_metadata;
     }
+
+    const bool same_super_page = (here_address & kSuperPageBaseMask) ==
+                                 (next_address & kSuperPageBaseMask);
+
+#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
+    bool marked_as_free_in_bitmap = !FreeSlotBitmapSlotIsUsed(next_address);
+#else
+    constexpr bool marked_as_free_in_bitmap = true;
+#endif
+
+    return shadow_ptr_ok & same_super_page & marked_as_free_in_bitmap &
+           not_in_metadata;
   }
 
   EncodedFreelistPtr encoded_next_;
@@ -265,56 +299,6 @@ class EncodedNextFreelistEntry {
 #endif
 };
 
-template <bool crash_on_corruption>
-PA_ALWAYS_INLINE EncodedNextFreelistEntry*
-EncodedNextFreelistEntry::GetNextInternal(size_t slot_size,
-                                          bool for_thread_cache) const {
-  // GetNext() can be called on discarded memory, in which case |encoded_next_|
-  // is 0, and none of the checks apply. Don't prefetch nullptr either.
-  if (IsEncodedNextPtrZero()) {
-    return nullptr;
-  }
-
-  auto* ret = encoded_next_.Decode();
-  // We rely on constant propagation to remove the branches coming from
-  // |for_thread_cache|, since the argument is always a compile-time constant.
-  if (PA_UNLIKELY(!IsSane(this, ret, for_thread_cache))) {
-    if constexpr (crash_on_corruption) {
-      // Put the corrupted data on the stack, it may give us more information
-      // about what kind of corruption that was.
-      PA_DEBUG_DATA_ON_STACK("first",
-                             static_cast<size_t>(encoded_next_.encoded_));
-#if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
-      PA_DEBUG_DATA_ON_STACK("second", static_cast<size_t>(shadow_));
-#endif
-      FreelistCorruptionDetected(slot_size);
-    } else {
-      return nullptr;
-    }
-  }
-
-  // In real-world profiles, the load of |encoded_next_| above is responsible
-  // for a large fraction of the allocation cost. However, we cannot anticipate
-  // it enough since it is accessed right after we know its address.
-  //
-  // In the case of repeated allocations, we can prefetch the access that will
-  // be done at the *next* allocation, which will touch *ret, prefetch it.
-  PA_PREFETCH(ret);
-
-  return ret;
-}
-
-template <bool crash_on_corruption>
-PA_ALWAYS_INLINE EncodedNextFreelistEntry*
-EncodedNextFreelistEntry::GetNextForThreadCache(size_t slot_size) const {
-  return GetNextInternal<crash_on_corruption>(slot_size, true);
-}
-
-PA_ALWAYS_INLINE EncodedNextFreelistEntry* EncodedNextFreelistEntry::GetNext(
-    size_t slot_size) const {
-  return GetNextInternal<true>(slot_size, false);
-}
-
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ENCODED_NEXT_FREELIST_H_
+#endif  // PARTITION_ALLOC_ENCODED_NEXT_FREELIST_H_

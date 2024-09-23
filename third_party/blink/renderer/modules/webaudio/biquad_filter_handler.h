@@ -15,8 +15,7 @@ namespace blink {
 class AudioNode;
 class AudioParamHandler;
 
-class BiquadFilterHandler : public AudioBasicProcessorHandler,
-                            public base::SupportsWeakPtr<BiquadFilterHandler> {
+class BiquadFilterHandler final : public AudioBasicProcessorHandler {
  public:
   static scoped_refptr<BiquadFilterHandler> Create(AudioNode&,
                                                    float sample_rate,
@@ -48,6 +47,8 @@ class BiquadFilterHandler : public AudioBasicProcessorHandler,
   bool did_warn_bad_filter_state_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<BiquadFilterHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

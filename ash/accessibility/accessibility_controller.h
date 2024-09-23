@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_notification_controller.h"
@@ -20,6 +21,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/display/display_observer.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 
 class PrefChangeRegistrar;
@@ -59,7 +61,11 @@ class DictationBubbleController;
 enum class DictationBubbleHintType;
 enum class DictationBubbleIconType;
 enum class DictationNotificationType;
-class DictationNudgeController;
+class DisableTrackpadEventRewriter;
+enum class DisableTrackpadMode;
+class FaceGazeBubbleController;
+class FilterKeysEventRewriter;
+class FlashScreenController;
 class FloatingAccessibilityController;
 class PointScanController;
 class ScopedBacklightsForcedOff;
@@ -91,6 +97,10 @@ enum class A11yNotificationType {
   kDicationOnlyPumpkinDownloaded,
   // Shown when the SODA DLC (but no other DLCs) have downloaded.
   kDictationOnlySodaDownloaded,
+  // Shown when the facegaze-assets DLC has successfully downloaded.
+  kFaceGazeAssetsDownloaded,
+  // Shown when the facegaze-assets DLC failed to download.
+  kFaceGazeAssetsFailed,
   // Shown when braille display is connected while spoken feedback is not
   // enabled yet. Note: in this case braille display connected would enable
   // spoken feedback.
@@ -141,6 +151,10 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     // update own enabled state.
     void ObserveConflictingFeature();
 
+    // Logs the amount of time this feature has been on, if it was turned on
+    // during the logged in state. Clears the `enabled_time_`.
+    void LogDurationMetric();
+
    protected:
     const A11yFeatureType type_;
     // Some features cannot be enabled while others are on. When a conflicting
@@ -162,18 +176,10 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     // available in the quicksettings menu.
     const bool toggleable_in_quicksettings_;
 
-    const raw_ptr<AccessibilityController> owner_;
-  };
+    // The time at which this feature was last enabled. Used for metrics.
+    base::Time enabled_time_;
 
-  // Helper struct to store information about a11y dialog -- pref name, resource
-  // ids for title and body. Also stores the information whether this dialog is
-  // mandatory for every SetEnabled call.
-  struct Dialog {
-    std::string pref_name;
-    int title_resource_id;
-    int body_resource_id;
-    // Whether this dialog should be shown on every SetEnabled action.
-    bool mandatory;
+    const raw_ptr<AccessibilityController> owner_;
   };
 
   // Some features have confirmation dialog associated with them.
@@ -186,7 +192,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
                       const gfx::VectorIcon* icon,
                       const int name_resource_id,
                       const bool toggleable_in_quicksettings,
-                      const Dialog& dialog,
+                      const std::string& dialog_pref_name,
                       AccessibilityController* controller);
     ~FeatureWithDialog() override;
 
@@ -194,7 +200,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
     bool WasDialogAccepted() const;
 
    private:
-    Dialog dialog_;
+    const std::string dialog_pref_;
   };
 
   // Contains data used to give an accessibility-related notification.
@@ -237,24 +243,28 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   // Getters for the corresponding features.
   Feature& autoclick() const;
   Feature& caret_highlight() const;
+  Feature& color_correction() const;
+  Feature& cursor_color() const;
   Feature& cursor_highlight() const;
   Feature& dictation() const;
-  Feature& color_correction() const;
+  Feature& disable_trackpad() const;
   Feature& face_gaze() const;
+  Feature& flash_notifications() const;
   Feature& floating_menu() const;
   Feature& focus_highlight() const;
-  FeatureWithDialog& fullscreen_magnifier() const;
-  FeatureWithDialog& docked_magnifier() const;
-  FeatureWithDialog& high_contrast() const;
   Feature& large_cursor() const;
   Feature& live_caption() const;
   Feature& mono_audio() const;
+  Feature& mouse_keys() const;
+  Feature& reduced_animations() const;
   Feature& spoken_feedback() const;
   Feature& select_to_speak() const;
   Feature& sticky_keys() const;
   Feature& switch_access() const;
   Feature& virtual_keyboard() const;
-  Feature& cursor_color() const;
+  FeatureWithDialog& docked_magnifier() const;
+  FeatureWithDialog& fullscreen_magnifier() const;
+  FeatureWithDialog& high_contrast() const;
 
   void SetDisplayRotationAcceleratorDialogBeenAccepted();
   bool HasDisplayRotationAcceleratorDialogBeenAccepted() const;
@@ -336,6 +346,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool IsStickyKeysSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForStickyKeys();
 
+  bool IsReducedAnimationsSettingVisibleInTray();
+  bool IsEnterpriseIconVisibleForReducedAnimations();
+
   // Switch access may be disabled in prefs but still running when the disable
   // dialog is displaying.
   bool IsSwitchAccessRunning() const;
@@ -343,6 +356,10 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool IsEnterpriseIconVisibleForSwitchAccess();
   void SetAccessibilityEventRewriter(
       AccessibilityEventRewriter* accessibility_event_rewriter);
+  void SetDisableTrackpadEventRewriter(DisableTrackpadEventRewriter* rewriter);
+  void EnableInternalTrackpad();
+  DisableTrackpadMode GetDisableTrackpadMode();
+  void SetFilterKeysEventRewriter(FilterKeysEventRewriter* rewriter);
   bool IsPointScanEnabled();
 
   bool IsVirtualKeyboardSettingVisibleInTray();
@@ -382,14 +399,6 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   // Toggle dictation.
   void ToggleDictation();
-
-  // Called when we first detect two fingers are held down, which can be used to
-  // toggle spoken feedback on some touch-only devices.
-  void OnTwoFingerTouchStart();
-
-  // Called when the user is no longer holding down two fingers (including
-  // releasing one, holding down three, or moving them).
-  void OnTwoFingerTouchStop();
 
   // Whether or not to enable toggling spoken feedback via holding down two
   // fingers on the screen.
@@ -496,10 +505,15 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   // Starts or stops dictation. Records metrics for toggling via SwitchAccess.
   void ToggleDictationFromSource(DictationToggleSource source);
 
+  // Enables Select to Speak if the feature is currently disabled. If Select to
+  // Speak has not been enabled on the current profile before, then this method
+  // shows a dialog giving background about the feature. Once the dialog is
+  // accepted, it is never shown again for that profile. This method does
+  // nothing if the Select to Speak is currently enabled.
+  void EnableSelectToSpeakWithDialog();
+
   // Enables Dictation if the feature is currently disabled. Toggles (starts or
-  // stops) Dictation if the feature is currently enabled. Note: this behavior
-  // is currently behind a feature flag - if the feature flag is off, then this
-  // method behaves like ToggleDictationFromSource.
+  // stops) Dictation if the feature is currently enabled.
   void EnableOrToggleDictationFromSource(DictationToggleSource source);
 
   // Shows a nudge explaining that a user's dictation language was upgraded to
@@ -516,6 +530,12 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   // Shows or hides the virtual keyboard.
   void SetVirtualKeyboardVisible(bool is_visible);
+
+  // Toggle Mouse Keys.
+  void ToggleMouseKeys();
+
+  // Perform the action assigned to the accessibility key.
+  void PerformAccessibilityAction();
 
   // Performs the given accelerator action.
   void PerformAcceleratorAction(AcceleratorAction accelerator_action);
@@ -559,8 +579,18 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
       const std::optional<std::u16string>& text,
       const std::optional<std::vector<DictationBubbleHintType>>& hints);
 
+  // Updates the FaceGaze UI bubble.
+  void UpdateFaceGazeBubble(const std::u16string& text);
+
+  // Shows a notification notifying the user about the FaceGaze DLC download.
+  void ShowNotificationForFaceGaze(FaceGazeNotificationType type);
+
   // Cancels all of spoken feedback's current and queued speech immediately.
   void SilenceSpokenFeedback();
+
+  // Determines the action key that corresponds to F7 for the caret browsing
+  // dialog.
+  std::optional<ui::KeyboardCode> GetCaretBrowsingActionKey();
 
   // Shows an accessibility-related toast.
   void ShowToast(AccessibilityToastType type);
@@ -582,10 +612,14 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   // voices.
   void ShowConfirmationDialog(const std::u16string& title,
                               const std::u16string& description,
+                              const std::u16string& confirm_name,
                               const std::u16string& cancel_name,
                               base::OnceClosure on_accept_callback,
                               base::OnceClosure on_cancel_callback,
                               base::OnceClosure on_close_callback);
+  gfx::Rect GetConfirmationDialogBoundsInScreen();
+
+  void PreviewFlashNotification() const;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
@@ -594,10 +628,15 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   // Test helpers:
   AccessibilityEventRewriter* GetAccessibilityEventRewriterForTest();
+  DisableTrackpadEventRewriter* GetDisableTrackpadEventRewriterForTest();
+  FilterKeysEventRewriter* GetFilterKeysEventRewriterForTest();
   SwitchAccessMenuBubbleController* GetSwitchAccessBubbleControllerForTest() {
     return switch_access_bubble_controller_.get();
   }
 
+  // Disables the dialog shown when Auto Click is turned on.
+  // Used in tests.
+  void DisableAutoClickConfirmationDialogForTest();
   // Disables the dialog shown when Switch Access is turned off.
   // Used in tests.
   void DisableSwitchAccessDisableConfirmationDialogTesting();
@@ -615,15 +654,14 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool enable_chromevox_volume_slide_gesture() {
     return enable_chromevox_volume_slide_gesture_;
   }
-  DictationNudgeController* GetDictationNudgeControllerForTest() {
-    return dictation_nudge_controller_.get();
-  }
 
   int dictation_soda_download_progress() {
     return dictation_soda_download_progress_;
   }
 
   DictationBubbleController* GetDictationBubbleControllerForTest();
+
+  FaceGazeBubbleController* GetFaceGazeBubbleControllerForTest();
 
   bool IsDictationKeyboardDialogShowingForTesting() {
     return dictation_keyboard_dialog_showing_for_testing_;
@@ -642,6 +680,21 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
       base::RepeatingCallback<void()> callback);
 
   bool VerifyFeaturesDataForTesting();
+
+  SelectToSpeakEventHandler* GetSelectToSpeakEventHandlerForTesting() const {
+    return select_to_speak_event_handler_.get();
+  }
+
+  FlashScreenController* GetFlashScreenControllerForTesting() const {
+    return flash_screen_controller_.get();
+  }
+
+  void SetVirtualKeyboardVisibleCallbackForTesting(
+      base::RepeatingCallback<void()> callback);
+
+  // Scrolls at the target location in the specified direction.
+  void ScrollAtPoint(const gfx::Point& target,
+                     AccessibilityScrollDirection direction);
 
  private:
   // Populate |features_| with the feature of the correct type.
@@ -666,12 +719,20 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void UpdateAutoclickStabilizePositionFromPref();
   void UpdateAutoclickMovementThresholdFromPref();
   void UpdateAutoclickMenuPositionFromPref();
+  void UpdateMouseKeysDisableInTextFieldsFromPref();
+  void UpdateMouseKeysAccelerationFromPref();
+  void UpdateMouseKeysMaxSpeedFromPref();
+  void UpdateMouseKeysUsePrimaryKeysFromPref();
+  void UpdateMouseKeysDominantHandFromPref();
   void UpdateFloatingMenuPositionFromPref();
   void UpdateLargeCursorFromPref();
   void UpdateLiveCaptionFromPref();
   void UpdateCursorColorFromPrefs(bool notify);
   void UpdateFaceGazeFromPrefs();
+  void UpdateFlashNotificationsFromPrefs();
+  void UpdateDisableTrackpadFromPrefs();
   void UpdateColorCorrectionFromPrefs();
+  void UpdateCaretBlinkIntervalFromPrefs() const;
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();
   void UpdateSwitchAccessAutoScanSpeedFromPref();
@@ -691,6 +752,13 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   void ShowDictationKeyboardDialog();
   void OnDictationKeyboardDialogAccepted();
   void OnDictationKeyboardDialogDismissed();
+
+  void ShowSelectToSpeakKeyboardDialog();
+  void OnSelectToSpeakKeyboardDialogAccepted();
+  void OnSelectToSpeakKeyboardDialogDismissed();
+
+  void RecordSelectToSpeakSpeechDuration(SelectToSpeakState old_state,
+                                         SelectToSpeakState new_state);
 
   // Dictation's SODA download progress. Values are between 0 and 100. Tracked
   // for testing purposes only.
@@ -724,9 +792,16 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   std::unique_ptr<SwitchAccessMenuBubbleController>
       switch_access_bubble_controller_;
   raw_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_ = nullptr;
+  raw_ptr<DisableTrackpadEventRewriter> disable_trackpad_event_rewriter_ =
+      nullptr;
+  raw_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter_ = nullptr;
+  // Used in tests to disable the dialog shown when Auto Click is turned on.
+  bool no_auto_click_confirmation_dialog_for_testing_ = false;
   bool no_switch_access_disable_confirmation_dialog_for_testing_ = false;
   bool switch_access_disable_dialog_showing_ = false;
   bool skip_switch_access_notification_ = false;
+
+  base::RepeatingCallback<void()> set_virtual_keyboard_visible_callback_;
 
   // Used to control the highlights of caret, cursor and focus.
   std::unique_ptr<AccessibilityHighlightController>
@@ -747,17 +822,17 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   // Used to force the backlights off to darken the screen.
   std::unique_ptr<ScopedBacklightsForcedOff> scoped_backlights_forced_off_;
 
-  // Used to show the offline dictation language upgrade nudge. This is created
-  // with ShowDictationLanguageUpgradedNudge() and reset at Shutdown() or when
-  // the Dictation feature is disabled.
-  std::unique_ptr<DictationNudgeController> dictation_nudge_controller_;
-
   // Used to control the Dictation bubble UI.
   std::unique_ptr<DictationBubbleController> dictation_bubble_controller_;
+
+  // Used to control the FaceGaze bubble UI.
+  std::unique_ptr<FaceGazeBubbleController> facegaze_bubble_controller_;
 
   // Used to control accessibility-related notifications.
   std::unique_ptr<AccessibilityNotificationController>
       accessibility_notification_controller_;
+
+  std::unique_ptr<FlashScreenController> flash_screen_controller_;
 
   // True if ChromeVox should enable its volume slide gesture.
   bool enable_chromevox_volume_slide_gesture_ = false;
@@ -777,6 +852,8 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   base::RepeatingCallback<void()>
       show_confirmation_dialog_callback_for_testing_;
+
+  base::Time select_to_speak_speech_start_time_;
 
   base::WeakPtrFactory<AccessibilityController> weak_ptr_factory_{this};
 };

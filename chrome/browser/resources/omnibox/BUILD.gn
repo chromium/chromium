@@ -7,6 +7,10 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "omnibox"
 
+  # TODO(crbug.com/339686362): Remove this once `terser` (JS minifier) has been
+  # updated to support the new `with` syntax.
+  optimize = false
+
   web_component_files = [
     "ml/ml_calculator.ts",
     "ml/ml_chart.ts",
@@ -42,14 +46,21 @@ build_webui("build") {
     "omnibox_util.ts",
   ]
 
-  mojo_files_deps =
-      [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_ts__generator" ]
-  mojo_files =
-      [ "$root_gen_dir/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/omnibox:mojo_bindings_ts__generator",
+    "//components/omnibox/browser:mojo_bindings_ts__generator",
+  ]
+
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/omnibox/omnibox_internals.mojom-webui.ts",
+    "$root_gen_dir/components/omnibox/browser/omnibox.mojom-webui.ts",
+  ]
 
   ts_tsconfig_base = "tsconfig_base.json"
   ts_deps = [
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
+  webui_context_type = "trusted"
 }

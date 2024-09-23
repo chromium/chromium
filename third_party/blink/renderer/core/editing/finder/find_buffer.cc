@@ -12,15 +12,30 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/finder/find_results.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_searcher_icu.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_meter_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
+#include "third_party/blink/renderer/core/html/html_progress_element.h"
+#include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/html/html_wbr_element.h"
+#include "third_party/blink/renderer/core/html/media/html_audio_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -35,10 +50,35 @@ bool ShouldIgnoreContents(const Node& node) {
     return true;
   }
 
+  // A modal dialog and fullscreen element can escape inertness of ancestors.
+  // See https://issues.chromium.org/issues/40506558.
+  if (RuntimeEnabledFeatures::InertElementNonSearchableEnabled()) {
+    const Element* modal_element = node.GetDocument().ActiveModalDialog();
+    if (!modal_element) {
+      modal_element = Fullscreen::FullscreenElementFrom(node.GetDocument());
+    }
+    if (modal_element && modal_element != &node) {
+      // If `modal_element` is the child of `node`, `node` should not ignore
+      // contents to avoid skipping `modal_element`.
+      if (FlatTreeTraversal::IsDescendantOf(*modal_element, node)) {
+        return false;
+      }
+      // https://html.spec.whatwg.org/multipage/interaction.html#modal-dialogs-and-inert-subtrees
+      // > While document is so blocked, every node that is connected to
+      // > document, with the exception of the subject element and its flat tree
+      // > descendants, must become inert.
+      if (!FlatTreeTraversal::IsDescendantOf(node, *modal_element)) {
+        return true;
+      }
+    }
+  }
+
   const auto* element = DynamicTo<HTMLElement>(node);
   if (!element)
     return false;
-  return (!element->ShouldSerializeEndTag() &&
+  return (RuntimeEnabledFeatures::InertElementNonSearchableEnabled() &&
+          element->IsInertRoot()) ||
+         (!element->ShouldSerializeEndTag() &&
           !IsA<HTMLInputElement>(*element)) ||
          (IsA<TextControlElement>(*element) &&
           !To<TextControlElement>(*element).SuggestedValue().empty()) ||
@@ -53,6 +93,19 @@ bool ShouldIgnoreContents(const Node& node) {
           element->GetDisplayLockContext()->IsLocked() &&
           !element->GetDisplayLockContext()->IsActivatable(
               DisplayLockActivationReason::kFindInPage));
+}
+
+std::optional<UChar> CharConstantForNode(const Node& node) {
+  if (!IsA<HTMLElement>(node)) {
+    return std::nullopt;
+  }
+  if (IsA<HTMLWBRElement>(To<HTMLElement>(node))) {
+    return std::nullopt;
+  }
+  if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
+    return kNewlineCharacter;
+  }
+  return kNonCharacter;
 }
 
 // Returns the first ancestor element that isn't searchable. In other words,
@@ -110,7 +163,7 @@ Node* GetVisibleTextNode(Node& start_node) {
       node = Direction::NextSkippingSubtree(*node);
       continue;
     }
-    if (style && style->Visibility() == EVisibility::kVisible &&
+    if (style && style->UsedVisibility() == EVisibility::kVisible &&
         node->IsTextNode()) {
       return node;
     }
@@ -141,14 +194,15 @@ bool AreInOrder(const Node& start, const Node& end) {
 }  // namespace
 
 // FindBuffer implementation.
-FindBuffer::FindBuffer(const EphemeralRangeInFlatTree& range) {
+FindBuffer::FindBuffer(const EphemeralRangeInFlatTree& range,
+                       RubySupport ruby_support) {
   DCHECK(range.IsNotNull() && !range.IsCollapsed()) << range;
-  CollectTextUntilBlockBoundary(range);
+  CollectTextUntilBlockBoundary(range, ruby_support);
 }
 
 bool FindBuffer::IsInvalidMatch(MatchResultICU match) const {
   // Invalid matches are a result of accidentally matching elements that are
-  // replaced with the max code point, and may lead to crashes. To avoid
+  // replaced with the kNonCharacter, and may lead to crashes. To avoid
   // crashing, we should skip the matches that are invalid - they would have
   // either an empty position or a non-offset-in-anchor position.
   const unsigned start_index = match.start;
@@ -209,15 +263,16 @@ EphemeralRangeInFlatTree FindBuffer::FindMatchInRange(
       break;
 
     FindBuffer buffer(
-        EphemeralRangeInFlatTree(start_position, range.EndPosition()));
-    Results match_results = buffer.FindMatches(search_text, options);
+        EphemeralRangeInFlatTree(start_position, range.EndPosition()),
+        RubySupport(options.IsRubySupported()));
+    FindResults match_results = buffer.FindMatches(search_text, options);
     if (!match_results.IsEmpty()) {
-      if (!(options & kBackwards)) {
-        BufferMatchResult match = match_results.front();
+      if (!options.IsBackwards()) {
+        FindResults::BufferMatchResult match = match_results.front();
         return buffer.RangeFromBufferIndex(match.start,
                                            match.start + match.length);
       }
-      BufferMatchResult match = match_results.back();
+      FindResults::BufferMatchResult match = match_results.back();
       last_match_range =
           buffer.RangeFromBufferIndex(match.start, match.start + match.length);
     }
@@ -271,8 +326,9 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
     const ComputedStyle* style = node->GetComputedStyle();
     if (ShouldIgnoreContents(*node) || !style ||
         style->Display() == EDisplay::kNone ||
-        style->Visibility() != EVisibility::kVisible)
+        style->UsedVisibility() != EVisibility::kVisible) {
       continue;
+    }
 
     if (node->GetLayoutObject() &&
         *OffsetMapping::GetInlineFormattingContextOf(
@@ -310,22 +366,25 @@ Node* FindBuffer::BackwardVisibleTextNode(Node& start_node) {
   return GetVisibleTextNode<BackwardDirection>(start_node);
 }
 
-FindBuffer::Results FindBuffer::FindMatches(const WebString& search_text,
-                                            const blink::FindOptions options) {
+FindResults FindBuffer::FindMatches(const WebString& search_text,
+                                    const blink::FindOptions options) {
   // We should return empty result if it's impossible to get a match (buffer is
   // empty or too short), or when something went wrong in layout, in which case
   // |offset_mapping_| is null.
   if (buffer_.empty() || search_text.length() > buffer_.size() ||
       !offset_mapping_)
-    return Results();
+    return FindResults();
   String search_text_16_bit = search_text;
   search_text_16_bit.Ensure16Bit();
   FoldQuoteMarksAndSoftHyphens(search_text_16_bit);
-  return Results(*this, &text_searcher_, buffer_, search_text_16_bit, options);
+  // TODO(crbug.com/40755728): Provide additional text buffers.
+  return FindResults(this, &text_searcher_, buffer_,
+                     /* extra_buffers */ nullptr, search_text_16_bit, options);
 }
 
 void FindBuffer::CollectTextUntilBlockBoundary(
-    const EphemeralRangeInFlatTree& range) {
+    const EphemeralRangeInFlatTree& range,
+    RubySupport ruby_support) {
   // Collects text until block boundary located at or after |start_node|
   // to |buffer_|. Saves the next starting node after the block to
   // |node_after_block_|.
@@ -367,7 +426,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       }
       // Replace the node with char constants so we wouldn't encounter this node
       // or its descendants later.
-      ReplaceNodeWithCharConstants(*node);
+      ReplaceNodeWithCharConstants(*node, buffer_);
       node = FlatTreeTraversal::NextSkippingChildren(*node);
       continue;
     }
@@ -388,7 +447,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       continue;
     }
 
-    if (style->Visibility() == EVisibility::kVisible &&
+    if (style->UsedVisibility() == EVisibility::kVisible &&
         node->GetLayoutObject()) {
       // This node is in its own sub-block separate from our starting position.
       if (last_added_text_node && last_added_text_node->GetLayoutObject() &&
@@ -398,10 +457,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       const auto* text_node = DynamicTo<Text>(node);
       if (text_node) {
         last_added_text_node = node;
-        LayoutBlockFlow& block_flow =
-            *OffsetMapping::GetInlineFormattingContextOf(
-                *text_node->GetLayoutObject());
-        AddTextToBuffer(*text_node, block_flow, range);
+        AddTextToBuffer(*text_node, range, buffer_, &buffer_node_mappings_);
       }
     }
     if (node == end_node) {
@@ -411,22 +467,14 @@ void FindBuffer::CollectTextUntilBlockBoundary(
     node = FlatTreeTraversal::Next(*node);
   }
   node_after_block_ = node;
-  FoldQuoteMarksAndSoftHyphens(buffer_.data(), buffer_.size());
+  FoldQuoteMarksAndSoftHyphens(base::span(buffer_));
 }
 
-void FindBuffer::ReplaceNodeWithCharConstants(const Node& node) {
-  if (!IsA<HTMLElement>(node))
-    return;
-
-  if (IsA<HTMLWBRElement>(To<HTMLElement>(node)))
-    return;
-
-  if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
-    buffer_.push_back(kNewlineCharacter);
-    return;
+void FindBuffer::ReplaceNodeWithCharConstants(const Node& node,
+                                              Vector<UChar>& buffer) {
+  if (std::optional<UChar> ch = CharConstantForNode(node)) {
+    buffer.push_back(*ch);
   }
-
-  buffer_.push_back(kMaxCodepoint);
 }
 
 EphemeralRangeInFlatTree FindBuffer::RangeFromBufferIndex(
@@ -444,15 +492,15 @@ const FindBuffer::BufferNodeMapping* FindBuffer::MappingForIndex(
     unsigned index) const {
   // Get the first entry that starts at a position higher than offset, and
   // move back one entry.
-  auto* it = std::upper_bound(
+  auto it = std::upper_bound(
       buffer_node_mappings_.begin(), buffer_node_mappings_.end(), index,
       [](const unsigned offset, const BufferNodeMapping& entry) {
         return offset < entry.offset_in_buffer;
       });
   if (it == buffer_node_mappings_.begin())
     return nullptr;
-  auto* entry = std::prev(it);
-  return entry;
+  auto entry = std::prev(it);
+  return &*entry;
 }
 
 PositionInFlatTree FindBuffer::PositionAtStartOfCharacterAtIndex(
@@ -478,12 +526,15 @@ PositionInFlatTree FindBuffer::PositionAtEndOfCharacterAtIndex(
 }
 
 void FindBuffer::AddTextToBuffer(const Text& text_node,
-                                 LayoutBlockFlow& block_flow,
-                                 const EphemeralRangeInFlatTree& range) {
+                                 const EphemeralRangeInFlatTree& range,
+                                 Vector<UChar>& buffer,
+                                 Vector<BufferNodeMapping>* mappings) {
+  LayoutBlockFlow& block_flow = *OffsetMapping::GetInlineFormattingContextOf(
+      *text_node.GetLayoutObject());
   if (!offset_mapping_) {
     offset_mapping_ = InlineNode::GetOffsetMapping(&block_flow);
 
-    if (UNLIKELY(!offset_mapping_)) {
+    if (!offset_mapping_) [[unlikely]] {
       // TODO(crbug.com/955678): There are certain cases where we fail to
       // compute the |OffsetMapping| due to failures in layout. As the root
       // cause is hard to fix at the moment, we just work around it here.
@@ -506,96 +557,21 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
        offset_mapping_->GetMappingUnitsForDOMRange(
            EphemeralRange(node_start, node_end))) {
     if (first_unit || last_unit_end != unit.TextContentStart()) {
-      // This is the first unit, or the units are not consecutive, so we need to
-      // insert a new BufferNodeMapping.
-      buffer_node_mappings_.push_back(
-          BufferNodeMapping({buffer_.size(), unit.TextContentStart()}));
+      if (mappings) {
+        // This is the first unit, or the units are not consecutive, so we need
+        // to insert a new BufferNodeMapping.
+        mappings->push_back(
+            BufferNodeMapping({buffer.size(), unit.TextContentStart()}));
+      }
       first_unit = false;
     }
     String text_for_unit =
         mapped_text.Substring(unit.TextContentStart(),
                               unit.TextContentEnd() - unit.TextContentStart());
     text_for_unit.Ensure16Bit();
-    buffer_.Append(text_for_unit.Characters16(), text_for_unit.length());
+    buffer.AppendSpan(text_for_unit.Span16());
     last_unit_end = unit.TextContentEnd();
   }
-}
-
-// FindBuffer::Results implementation.
-FindBuffer::Results::Results() {
-  empty_result_ = true;
-}
-
-FindBuffer::Results::Results(const FindBuffer& find_buffer,
-                             TextSearcherICU* text_searcher,
-                             const Vector<UChar>& buffer,
-                             const String& search_text,
-                             const blink::FindOptions options) {
-  // We need to own the |search_text| because |text_searcher_| only has a
-  // StringView (doesn't own the search text).
-  search_text_ = search_text;
-  find_buffer_ = &find_buffer;
-  text_searcher_ = text_searcher;
-  text_searcher_->SetPattern(search_text_, options);
-  text_searcher_->SetText(buffer.data(), buffer.size());
-  text_searcher_->SetOffset(0);
-}
-
-FindBuffer::Results::Iterator FindBuffer::Results::begin() const {
-  if (empty_result_)
-    return end();
-  text_searcher_->SetOffset(0);
-  return Iterator(*find_buffer_, text_searcher_);
-}
-
-FindBuffer::Results::Iterator FindBuffer::Results::end() const {
-  return Iterator();
-}
-
-bool FindBuffer::Results::IsEmpty() const {
-  return begin() == end();
-}
-
-FindBuffer::BufferMatchResult FindBuffer::Results::front() const {
-  return *begin();
-}
-
-FindBuffer::BufferMatchResult FindBuffer::Results::back() const {
-  Iterator last_result;
-  for (Iterator it = begin(); it != end(); ++it) {
-    last_result = it;
-  }
-  return *last_result;
-}
-
-unsigned FindBuffer::Results::CountForTesting() const {
-  unsigned result = 0;
-  for (Iterator it = begin(); it != end(); ++it) {
-    ++result;
-  }
-  return result;
-}
-
-// Findbuffer::Results::Iterator implementation.
-FindBuffer::Results::Iterator::Iterator(const FindBuffer& find_buffer,
-                                        TextSearcherICU* text_searcher)
-    : find_buffer_(&find_buffer),
-      text_searcher_(text_searcher),
-      has_match_(true) {
-  operator++();
-}
-
-const FindBuffer::BufferMatchResult FindBuffer::Results::Iterator::operator*()
-    const {
-  DCHECK(has_match_);
-  return FindBuffer::BufferMatchResult({match_.start, match_.length});
-}
-
-void FindBuffer::Results::Iterator::operator++() {
-  DCHECK(has_match_);
-  has_match_ = text_searcher_->NextMatchResult(match_);
-  if (has_match_ && find_buffer_ && find_buffer_->IsInvalidMatch(match_))
-    operator++();
 }
 
 }  // namespace blink

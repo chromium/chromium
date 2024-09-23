@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -77,7 +77,7 @@ class ReadingListWebStateObserverTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
 
     test_web_state_.SetBrowserState(browser_state_.get());
 

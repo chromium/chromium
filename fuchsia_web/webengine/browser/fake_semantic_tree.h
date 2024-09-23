@@ -8,10 +8,11 @@
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 #include <fuchsia/accessibility/semantics/cpp/fidl_test_base.h>
 #include <lib/fidl/cpp/binding.h>
+
+#include <string_view>
 #include <unordered_map>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 
 class FakeSemanticTree
     : public fuchsia::accessibility::semantics::testing::SemanticTree_TestBase {
@@ -37,7 +38,7 @@ class FakeSemanticTree
   void Disconnect();
 
   void RunUntilNodeCountAtLeast(size_t count);
-  void RunUntilNodeWithLabelIsInTree(base::StringPiece label);
+  void RunUntilNodeWithLabelIsInTree(std::string_view label);
   void RunUntilCommitCountIs(size_t count);
   void RunUntilConditionIsTrue(base::RepeatingCallback<bool()> condition);
   void SetNodeUpdatedCallback(uint32_t node_id,
@@ -49,7 +50,7 @@ class FakeSemanticTree
   // Get the the first node in the document matching |label|, using a
   // depth-first search.
   fuchsia::accessibility::semantics::Node* GetNodeFromLabel(
-      base::StringPiece label);
+      std::string_view label);
   fuchsia::accessibility::semantics::Node* GetNodeFromRole(
       fuchsia::accessibility::semantics::Role role);
 
@@ -73,7 +74,7 @@ class FakeSemanticTree
   // a depth first search.
   fuchsia::accessibility::semantics::Node* GetNodeFromLabelRecursive(
       fuchsia::accessibility::semantics::Node& node,
-      base::StringPiece label);
+      std::string_view label);
 
   fidl::Binding<fuchsia::accessibility::semantics::SemanticTree>
       semantic_tree_binding_;

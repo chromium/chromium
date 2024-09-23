@@ -8,6 +8,7 @@
 
 #include <unordered_set>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -19,6 +20,22 @@
 
 namespace net {
 
+namespace {
+
+size_t AddVectorHeaderIfNonEmpty(const char* name,
+                                 const std::vector<std::string>& value,
+                                 HttpRequestHeaders* headers) {
+  if (value.empty()) {
+    return 0u;
+  }
+  std::string joined = base::JoinString(value, ", ");
+  const size_t size = joined.size();
+  headers->SetHeader(name, std::move(joined));
+  return size;
+}
+
+}  // namespace
+
 // static
 std::string WebSocketHandshakeStreamBase::MultipleHeaderValuesMessage(
     const std::string& header_name) {
@@ -28,13 +45,16 @@ std::string WebSocketHandshakeStreamBase::MultipleHeaderValuesMessage(
 }
 
 // static
-void WebSocketHandshakeStreamBase::AddVectorHeaderIfNonEmpty(
-    const char* name,
-    const std::vector<std::string>& value,
+void WebSocketHandshakeStreamBase::AddVectorHeaders(
+    const std::vector<std::string>& extensions,
+    const std::vector<std::string>& protocols,
     HttpRequestHeaders* headers) {
-  if (value.empty())
-    return;
-  headers->SetHeader(name, base::JoinString(value, ", "));
+  AddVectorHeaderIfNonEmpty(websockets::kSecWebSocketExtensions, extensions,
+                            headers);
+  const size_t protocol_header_size = AddVectorHeaderIfNonEmpty(
+      websockets::kSecWebSocketProtocol, protocols, headers);
+  base::UmaHistogramCounts10000("Net.WebSocket.ProtocolHeaderSize",
+                                protocol_header_size);
 }
 
 // static

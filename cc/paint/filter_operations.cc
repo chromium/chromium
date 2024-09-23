@@ -61,20 +61,20 @@ bool FilterOperations::IsEmpty() const {
 }
 
 gfx::Rect FilterOperations::MapRect(const gfx::Rect& rect,
-                                    const SkMatrix& matrix) const {
-  auto accumulate_rect = [matrix](const gfx::Rect& rect,
-                                  const FilterOperation& op) {
-    return op.MapRect(rect, matrix);
+                                    const std::optional<SkMatrix>& ctm) const {
+  auto accumulate_rect = [&ctm](const gfx::Rect& rect,
+                                const FilterOperation& op) {
+    return op.MapRect(rect, ctm);
   };
   return std::accumulate(operations_.begin(), operations_.end(), rect,
                          accumulate_rect);
 }
 
 gfx::Rect FilterOperations::MapRectReverse(const gfx::Rect& rect,
-                                           const SkMatrix& matrix) const {
-  auto accumulate_rect = [&matrix](const gfx::Rect& rect,
-                                   const FilterOperation& op) {
-    return op.MapRectReverse(rect, matrix);
+                                           const SkMatrix& ctm) const {
+  auto accumulate_rect = [&ctm](const gfx::Rect& rect,
+                                const FilterOperation& op) {
+    return op.MapRectReverse(rect, ctm);
   };
   return std::accumulate(operations_.rbegin(), operations_.rend(), rect,
                          accumulate_rect);
@@ -113,7 +113,7 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
 gfx::Rect FilterOperations::ExpandRectForPixelMovement(
     const gfx::Rect& rect) const {
   if (base::FeatureList::IsEnabled(features::kUseMapRectForPixelMovement)) {
-    return MapRect(rect, SkMatrix::I());
+    return MapRect(rect);
   }
 
   gfx::RectF expanded_rect(rect);
@@ -145,7 +145,7 @@ float FilterOperations::MaximumPixelMovement() const {
         max_movement = fmax(max_movement, 100);
         continue;
       case FilterOperation::OFFSET:
-        // TODO(crbug/1379125): Work out how to correctly set maximum pixel
+        // TODO(crbug.com/40244221): Work out how to correctly set maximum pixel
         // movement when an offset filter may be combined with other pixel
         // moving filters.
         max_movement =

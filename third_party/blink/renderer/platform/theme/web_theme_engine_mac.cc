@@ -15,16 +15,18 @@ void WebThemeEngineMac::Paint(cc::PaintCanvas* canvas,
                               const gfx::Rect& rect,
                               const WebThemeEngine::ExtraParams* extra_params,
                               mojom::ColorScheme color_scheme,
+                              bool in_forced_colors,
                               const ui::ColorProvider* color_provider,
                               const std::optional<SkColor>& accent_color) {
   if (IsScrollbarPart(part)) {
-    PaintMacScrollBarParts(canvas, GetColorProviderForPainting(color_scheme),
-                           part, state, rect, extra_params, color_scheme);
+    PaintMacScrollBarParts(canvas, color_provider, part, state, rect,
+                           extra_params, color_scheme);
     return;
   }
 
   WebThemeEngineDefault::Paint(canvas, part, state, rect, extra_params,
-                               color_scheme, color_provider, accent_color);
+                               color_scheme, in_forced_colors, color_provider,
+                               accent_color);
 }
 
 bool WebThemeEngineMac::IsScrollbarPart(WebThemeEngine::Part part) {

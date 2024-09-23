@@ -15,18 +15,20 @@
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/common/content_export.h"
 
-namespace content {
+namespace content::indexed_db {
 
 struct CONTENT_EXPORT IndexedDBValue {
   // Destructively converts an IndexedDBValue to a Mojo Value.
   static blink::mojom::IDBValuePtr ConvertAndEraseValue(IndexedDBValue* value);
 
   IndexedDBValue();
-  IndexedDBValue(const std::string& input_bits,
-                 const std::vector<IndexedDBExternalObject>& external_objects);
   IndexedDBValue(const IndexedDBValue& other);
   ~IndexedDBValue();
   IndexedDBValue& operator=(const IndexedDBValue& other);
+
+  // Only used for test.
+  IndexedDBValue(const std::string& input_bits,
+                 const std::vector<IndexedDBExternalObject>& external_objects);
 
   void swap(IndexedDBValue& value) {
     bits.swap(value.bits);
@@ -44,10 +46,10 @@ struct CONTENT_EXPORT IndexedDBValue {
            external_objects.size() * sizeof(IndexedDBExternalObject);
   }
 
-  std::string bits;
+  std::vector<uint8_t> bits;
   std::vector<IndexedDBExternalObject> external_objects;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_VALUE_H_

@@ -30,11 +30,11 @@ void NotificationHandler::OnClick(Profile* profile,
 
 void NotificationHandler::DisableNotifications(Profile* profile,
                                                const GURL& origin) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void NotificationHandler::OpenSettings(Profile* profile, const GURL& origin) {
   // Notification types that display a settings button must override this method
   // to handle user interaction with it.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

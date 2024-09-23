@@ -29,6 +29,7 @@ QuicChromiumPacketReader::QuicChromiumPacketReader(
     Visitor* visitor,
     int yield_after_packets,
     quic::QuicTime::Delta yield_after_duration,
+    bool report_ecn,
     const NetLogWithSource& net_log)
     : socket_(std::move(socket)),
       visitor_(visitor),
@@ -38,7 +39,7 @@ QuicChromiumPacketReader::QuicChromiumPacketReader(
       yield_after_(quic::QuicTime::Infinite()),
       read_buffer_(base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize)),
       net_log_(net_log),
-      report_ecn_(base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {}
+      report_ecn_(report_ecn) {}
 
 QuicChromiumPacketReader::~QuicChromiumPacketReader() = default;
 

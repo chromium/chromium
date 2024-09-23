@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DelegatedInkRenderer">
+  <variant name="OS" summary="using the native OS Delegated Ink API"/>
+  <variant name="Skia"
+      summary="using the Skia implementation for Delegated Ink"/>
+</variants>
+
 <variants name="RendererHostedContentType">
   <variant name="" summary="all renderers"/>
   <variant name=".Empty"
@@ -45,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -56,7 +62,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion"
-    units="swaps" expires_after="2024-06-23">
+    units="swaps" expires_after="2025-03-02">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -69,8 +75,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.BlockingResourcesLoadTime" units="ms"
-    expires_after="2024-03-17">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-01">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Time (in milliseconds) from timeOrigin until all the render blocking
@@ -81,8 +87,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.CriticalFontDelay" units="ms"
-    expires_after="2024-06-30">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-01">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Time difference (in milliseconds) between `PreloadedFontLoadTime` and
@@ -94,8 +100,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.PreloadedFontsLoadTime" units="ms"
-    expires_after="2024-07-28">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-01">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Time (in milliseconds) from timeOrigin until all the preloaded fonts were
@@ -106,74 +112,40 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.DelegatedInkTrail.LatencyImprovement.{Renderer}.{Prediction}"
-    units="ms" expires_after="2024-08-01">
+    units="ms" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
-    The latency improvement provided by the delegated ink trail API, both with
-    and without prediction, in milliseconds. This latency improvement is the
+    The latency improvement provided by the delegated ink trail API
+    {Prediction}, in milliseconds {Renderer}. This latency improvement is the
     difference between the timestamp of the pointerevent provided to the API,
     and the final point of the trail that is drawn. Points are forwarded from
     the browser to viz when this API is being used, so viz will have points
     ahead of what the app provided the API, and they are used to draw the trail.
+    This metric measures how much closer the trail is to the pointer, in time,
+    compared to the last API drawn point. The bigger the histogram's value, the
+    closer Delegated Ink got us to the last pointer position.
   </summary>
-  <token key="Renderer">
-    <variant name="Skia"/>
-  </token>
+  <token key="Renderer" variants="DelegatedInkRenderer"/>
   <token key="Prediction">
-    <variant name="WithoutPrediction"/>
-    <variant name="WithPrediction"/>
+    <variant name="WithoutPrediction" summary="without point prediction"/>
+    <variant name="WithPrediction" summary="using point draw prediction"/>
   </token>
-</histogram>
-
-<histogram
-    name="Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment{Number}"
-    units="ms" expires_after="2024-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <summary>
-    The latency improvement provided by predicting extra delegated ink points
-    when using the delegated ink trail API with SkiaRenderer in milliseconds.
-    The improvement is the difference between the timestamp of the final real
-    point and the final predicted point.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
-  </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
-</histogram>
-
-<histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
-    enum="BooleanDirection" expires_after="2024-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <summary>
-    Boolean that indicates whether the prediction is in the same direction as
-    the real trajectory at the same prediction time. True means the direction is
-    not the same (wrong direction).
-
-    Temporarily not logged in favor of
-    Renderer.DelegatedInkTrail.PredictionExperiment*.WrongDirection since 02-26.
-    Will be reenabled in M95, after experimentation.
-  </summary>
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
-    units="pixels" expires_after="2024-08-01">
+    units="pixels" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
   <summary>
     {Direction}shoot distance in pixels between a predicted point and the
     corresponding interpolated real point that occurred at the prediction time.
 
-    Temporarily not logged in favor of
-    Renderer.DelegatedInkTrail.PredictionExperiment*.{Direction}Prediction since
-    02-26. Will be reenabled in M95, after experimentation.
+    Warning: this histogram was expired from 02-26-2021 to 09-11-2024; data may
+    be missing.
   </summary>
   <token key="Direction">
     <variant name="Over"/>
@@ -182,18 +154,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Type}Jitter"
-    units="pixels" expires_after="2024-08-01">
+    units="pixels" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
+  <owner>gastonr@microsoft.com</owner>
   <summary>
     Euclidean distance in pixels between two successive variations of delegated
     ink trail deltas which are the difference beween a predicted delegated ink
     point and its corresponding interpolated real position that occurred at
     {Type} time.
 
-    Temporarily not logged in favor of
-    Renderer.DelegatedInkTrail.PredictionExperiment*.{Type}Jitter since 02-26.
-    Will be reenabled in M95, after experimentation.
+    Warning: this histogram was expired from 02-26-2021 to 09-11-2024; data may
+    be missing.
   </summary>
   <token key="Type">
     <variant name="Prediction" summary="prediction"/>
@@ -201,107 +173,57 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.Frame{ScoreType}"
-    units="pixels" expires_after="2024-08-01">
+<histogram name="Renderer.DelegatedInkTrail.{Renderer}.OutstandingPointsToDraw"
+    units="count" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>sahir.vellani@microsoft.com</owner>
   <summary>
-    Distance in pixels between a predicted point and the corresponding
-    interpolated real point that occurred at the prediction time.
-
-    The difference between {ScoreType} and Frame{ScoreType} is that the former
-    uses prediction time and the later uses frame time.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
+    Amount of points that are drawn per frame by the Delegated Ink API
+    {Renderer}. This metric can be used as a measurement of how much improvement
+    using the Delegated Ink API by telling us how many points ahead the
+    Delegated Ink API is from the JS API.
   </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
-  <token key="ScoreType">
-    <variant name="OverPrediction" summary="Positive score values"/>
-    <variant name="PredictionScore" summary="Score abolute value"/>
-    <variant name="UnderPrediction" summary="Negative score values"/>
-  </token>
+  <token key="Renderer" variants="DelegatedInkRenderer"/>
 </histogram>
 
 <histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.WrongDirection"
-    enum="BooleanDirection" expires_after="2024-08-01">
+    name="Renderer.DelegatedInkTrail.{Renderer}.TimeFromDelegatedInkToApiPaint"
+    units="ms" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>sahir.vellani@microsoft.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
-    Whether the prediction is in the same direction as the real trajectory at
-    the same prediction time.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
+    Time in milliseconds between the first moment a point is drawn in the screen
+    via the Delegated Ink API using the {Renderer} and the call to
+    updateInkTrailStartPoint is made. This histogram assumes that the point
+    represented by the metadata is painted in the same frame that the metadata
+    is reported in. Note that not all points received as metadata will match a
+    point in the trail. Thus, not all metadata points will generate a histogram
+    fire.
   </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
+  <token key="Renderer" variants="DelegatedInkRenderer"/>
 </histogram>
 
-<histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{ScoreType}"
-    units="pixels" expires_after="2024-08-01">
+<histogram name="Renderer.DelegatedInkTrail.{Renderer}.TimeToDrawPointsMillis"
+    units="ms" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
   <owner>sahir.vellani@microsoft.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
-    Distance in pixels between a predicted point and the corresponding
-    interpolated real point that occurred at the prediction time.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
+    Span of time in milliseconds between the creation of pointer events in the
+    browser process and sending the draw operation to the OS {Renderer}.
   </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
-  <token key="ScoreType">
-    <variant name="OverPrediction" summary="Positive score values"/>
-    <variant name="PredictionScore" summary="Score abolute value"/>
-    <variant name="UnderPrediction" summary="Negative score values"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Renderer.DelegatedInkTrail.PredictionExperiment{Number}.{Type}Jitter"
-    units="pixels" expires_after="2024-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <summary>
-    Euclidean distance in pixels between two successive variations of delegated
-    ink trail deltas which are the difference beween a predicted delegated ink
-    point and its corresponding interpolated real position that occurred at
-    {Type} time.
-
-    Part of a series of predicted point experimentation histograms. This
-    experiment predicts {Number} in the future.
-  </summary>
-  <token key="Number">
-    <variant name="0" summary="1 predicted point, 12ms"/>
-    <variant name="1" summary="2 predicted points, 6ms and 12ms"/>
-    <variant name="2" summary="1 predicted point, 6ms"/>
-    <variant name="3" summary="2 predicted points, 3ms and 6ms"/>
-  </token>
-  <token key="Type">
-    <variant name="Prediction" summary="prediction"/>
-    <variant name="Visual" summary="frame"/>
-  </token>
+  <token key="Renderer" variants="DelegatedInkRenderer"/>
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -313,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -325,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -337,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2025-03-09">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -349,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.DomContentLoaded" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2024-09-01">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -361,7 +283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
-    expires_after="2024-04-28">
+    expires_after="2025-03-09">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -373,8 +295,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.HasOverfetchedCappedPixels" enum="Boolean"
-    expires_after="2024-08-04">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-03">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that OverfetchedCappedPixels was a positive integer.
@@ -383,8 +305,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.HasOverfetchedPixels" enum="Boolean"
-    expires_after="2024-09-03">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-03">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that OverfetchedPixels was a positive integer. Reported
@@ -393,8 +315,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.HasSizesAttributeMiss" enum="Boolean"
-    expires_after="2024-09-03">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-03">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Boolean indicating that SizesAttributeMiss was a positive integer. Only set
@@ -404,8 +326,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.OverfetchedCappedPixels" units="px^2"
-    expires_after="2024-09-03">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-03">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement image pixels squared (width * height) that
@@ -417,8 +339,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.OverfetchedPixels" units="px^2"
-    expires_after="2024-07-28">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-03">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement image pixels squared (width * height) that
@@ -430,8 +352,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Images.SizesAttributeMiss" units="px"
-    expires_after="2024-09-03">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-03-03">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The amount of HTMLImageElement pixels by which the eventual layout width was
@@ -440,37 +362,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapBalance" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-03-02">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to balance lines of paragraphs.</summary>
 </histogram>
 
-<histogram name="Renderer.Layout.TextWrapBalance.Fail" units="ms"
-    expires_after="2024-06-30">
-  <owner>kojii@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    The time spent to try balancing lines of paragraphs but failed to balance.
-  </summary>
-</histogram>
-
 <histogram name="Renderer.Layout.TextWrapPretty" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-03-02">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to optimize line breaks.</summary>
 </histogram>
 
-<histogram name="Renderer.Layout.TextWrapPretty.Fail" units="ms"
-    expires_after="2024-06-30">
-  <owner>kojii@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>The time spent to try optimizing lines breaks but failed.</summary>
-</histogram>
-
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
-    units="ms" expires_after="2024-08-11">
+    units="ms" expires_after="2025-02-16">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -481,7 +387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.MainFrameSuccess"
-    enum="BooleanSuccess" expires_after="2024-04-04">
+    enum="BooleanSuccess" expires_after="2025-03-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -491,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.SubframeBlinkCaptureDuration"
-    units="ms" expires_after="2024-04-04">
+    units="ms" expires_after="2025-03-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -502,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.SubframeSuccess"
-    enum="BooleanSuccess" expires_after="2024-04-04">
+    enum="BooleanSuccess" expires_after="2025-03-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -511,23 +417,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.PossibleSynchronizedScroll2" enum="BooleanSuccess"
-    expires_after="2024-06-30">
-  <owner>vollick@chromium.org</owner>
-  <owner>flackr@chromium.org</owner>
-  <summary>
-    Counts the number of times we estimate that a page (whose main frame is the
-    outermost main frame) is attempting to synchronously make updates in
-    response to scroll (eg, to implement a JavaScript-based parallax effect). We
-    make this estimation based on a heuristic that checks that we a) have a
-    scroll handler, b) have accessed scroll position, and c) have made an update
-    (and this update can be realized by scheduling rAF).
-  </summary>
-</histogram>
-
 <histogram name="Renderer.Preload.UnusedResource" enum="BooleanSuccess"
-    expires_after="2024-08-11">
-  <owner>yoavweiss@chromium.org</owner>
+    expires_after="2025-02-16">
+  <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Counts the number of unused preloads per ResourceType.
@@ -540,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResource2{Trigger}" enum="ResourceType"
-    expires_after="2024-07-28">
+    expires_after="2025-02-02">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -558,7 +450,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResourceCount" units="count"
-    expires_after="2024-07-28">
+    expires_after="2025-02-10">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -569,7 +461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
-    units="ms" expires_after="2023-02-28">
+    units="ms" expires_after="2025-02-02">
   <owner>fdoray@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -581,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ReduceSubresourceResponseIPC.DidNotifyBrowser"
-    enum="Boolean" expires_after="2024-06-30">
+    enum="Boolean" expires_after="2025-03-09">
   <owner>amanvr@chromium.org</owner>
   <owner>carlscab@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -595,7 +487,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2025-01-26">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -604,8 +496,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Unresponsive.PageVisible.WidgetVisibility"
+    enum="BooleanVisible" expires_after="2024-11-30">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the visibility of the RenderWidgetHost when a renderer is deemed
+    unresponsive (WebContentsImpl::RendererUnresponsive is called). Only
+    recorded if the WebContents is visible.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Unresponsive.Visibility" enum="BooleanVisible"
+    expires_after="2024-11-30">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the visibility of the WebContents when a renderer is deemed
+    unresponsive (WebContentsImpl::RendererUnresponsive is called).
+  </summary>
+</histogram>
+
 <histogram name="RendererScheduler.QueueingDuration.{Priority}Priority"
-    units="microseconds" expires_after="2024-06-30">
+    units="microseconds" expires_after="2025-03-09">
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -633,7 +546,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad5" units="%"
-    expires_after="2024-07-28">
+    expires_after="2025-02-02">
   <owner>altimin@chromium.org</owner>
   <summary>
     Renderer main thread load (percentage of time spent in tasks), reported in

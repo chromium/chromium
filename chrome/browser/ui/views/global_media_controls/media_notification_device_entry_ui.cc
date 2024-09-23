@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/vector_icons/vector_icons.h"
@@ -23,7 +24,6 @@ namespace {
 
 constexpr int kDeviceIconSize = 20;
 constexpr auto kDeviceIconBorder = gfx::Insets(6);
-constexpr gfx::Size kDeviceEntryViewSize{400, 30};
 
 void ChangeEntryColor(views::ImageView* image_view,
                       views::StyledLabel* title_view,
@@ -53,37 +53,17 @@ void ChangeEntryColor(views::ImageView* image_view,
   }
 }
 
-const gfx::VectorIcon* GetVectorIcon(
-    global_media_controls::mojom::IconType icon) {
-  switch (icon) {
-    case global_media_controls::mojom::IconType::kInfo:
-      return &vector_icons::kInfoOutlineIcon;
-    case global_media_controls::mojom::IconType::kSpeaker:
-      return &kSpeakerIcon;
-    case global_media_controls::mojom::IconType::kSpeakerGroup:
-      return &kSpeakerGroupIcon;
-    case global_media_controls::mojom::IconType::kInput:
-      return &kInputIcon;
-    case global_media_controls::mojom::IconType::kTv:
-      return &kTvIcon;
-    // In these cases the icon is a placeholder and doesn't actually get shown.
-    case global_media_controls::mojom::IconType::kThrobber:
-    case global_media_controls::mojom::IconType::kUnknown:
-      return &kTvIcon;
-  }
-}
-
 // foreground_color_id is only set for CastDeviceEntryViewAsh.
 std::unique_ptr<views::ImageView> CreateIconView(
-    const gfx::VectorIcon* icon,
+    const gfx::VectorIcon& icon,
     std::optional<ui::ColorId> foreground_color_id = std::nullopt) {
   auto icon_view = std::make_unique<views::ImageView>();
   if (foreground_color_id.has_value()) {
     icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        *icon, foreground_color_id.value(), kDeviceIconSize));
+        icon, foreground_color_id.value(), kDeviceIconSize));
   } else {
     icon_view->SetImage(ui::ImageModel::FromVectorIcon(
-        *icon, gfx::kPlaceholderColor, kDeviceIconSize));
+        icon, gfx::kPlaceholderColor, kDeviceIconSize));
   }
   icon_view->SetBorder(views::CreateEmptyBorder(kDeviceIconBorder));
   return icon_view;
@@ -100,14 +80,14 @@ std::unique_ptr<views::View> CreateIconView(
 }
 
 std::unique_ptr<views::ImageView> GetAudioDeviceIcon() {
-  return CreateIconView(&vector_icons::kHeadsetIcon);
+  return CreateIconView(vector_icons::kHeadsetIcon);
 }
 
 }  // namespace
 
 DeviceEntryUI::DeviceEntryUI(const std::string& raw_device_id,
                              const std::string& device_name,
-                             const gfx::VectorIcon* icon,
+                             const gfx::VectorIcon& icon,
                              const std::string& subtext)
     : raw_device_id_(raw_device_id), device_name_(device_name), icon_(icon) {}
 
@@ -119,18 +99,16 @@ AudioDeviceEntryView::AudioDeviceEntryView(PressedCallback callback,
                                            SkColor background_color,
                                            const std::string& raw_device_id,
                                            const std::string& device_name)
-    : DeviceEntryUI(raw_device_id, device_name, &vector_icons::kHeadsetIcon),
+    : DeviceEntryUI(raw_device_id, device_name, vector_icons::kHeadsetIcon),
       HoverButton(std::move(callback),
                   GetAudioDeviceIcon(),
                   base::UTF8ToUTF16(device_name)) {
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                   subtitle(), icon_, foreground_color, background_color);
+                   subtitle(), &icon(), foreground_color, background_color);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   SetHasInkDropActionOnClick(true);
-  SetPreferredSize(kDeviceEntryViewSize);
 }
 
 void AudioDeviceEntryView::SetHighlighted(bool highlighted) {
@@ -157,10 +135,8 @@ bool AudioDeviceEntryView::GetHighlighted() const {
 
 void AudioDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                            SkColor background_color) {
-  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
-
   ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                   subtitle(), icon_, foreground_color, background_color);
+                   subtitle(), &icon(), foreground_color, background_color);
 
   // Reapply highlight formatting as some effects rely on these colors.
   SetHighlighted(is_highlighted_);
@@ -188,16 +164,13 @@ CastDeviceEntryView::CastDeviceEntryView(
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   SetHasInkDropActionOnClick(true);
-  SetPreferredSize(kDeviceEntryViewSize);
 }
 
 CastDeviceEntryView::~CastDeviceEntryView() = default;
 
 void CastDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                           SkColor background_color) {
-  views::InkDrop::Get(this)->SetBaseColor(foreground_color);
   ChangeCastEntryColor(foreground_color, background_color);
 }
 
@@ -214,7 +187,7 @@ void CastDeviceEntryView::ChangeCastEntryColor(SkColor foreground_color,
                      background_color);
   } else {
     ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                     subtitle(), icon_, foreground_color, background_color);
+                     subtitle(), &icon(), foreground_color, background_color);
   }
 }
 
@@ -237,9 +210,7 @@ CastDeviceEntryViewAsh::CastDeviceEntryViewAsh(
       device_(device->Clone()) {
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColorId(background_color_id);
   SetHasInkDropActionOnClick(true);
-  SetPreferredSize(kDeviceEntryViewSize);
 }
 
 CastDeviceEntryViewAsh::~CastDeviceEntryViewAsh() = default;

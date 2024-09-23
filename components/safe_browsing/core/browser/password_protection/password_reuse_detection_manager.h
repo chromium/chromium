@@ -22,7 +22,7 @@ class Clock;
 
 namespace safe_browsing {
 
-// TODO(https://crbug.com/1422140): Refactor the
+// TODO(crbug.com/40896734): Refactor the
 // password_reuse_detection_manager files. Class for managing password reuse
 // detection. Now it receives keystrokes and does nothing with them.
 // PasswordReuseDetectionManager is instantiated once one per WebContents.

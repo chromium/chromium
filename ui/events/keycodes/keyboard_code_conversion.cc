@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
 #include <algorithm>
@@ -279,12 +284,15 @@ int ModifierDomKeyToEventFlag(DomKey key) {
       return EF_SHIFT_DOWN;
     case DomKey::SHIFT_LEVEL5:
       return EF_MOD3_DOWN;
+#if BUILDFLAG(IS_CHROMEOS)
+    case DomKey::FN:
+      return EF_FUNCTION_DOWN;
+#endif
     default:
       return EF_NONE;
   }
   // Not represented:
   //   DomKey::ACCEL
-  //   DomKey::FN
   //   DomKey::FN_LOCK
   //   DomKey::HYPER
   //   DomKey::NUM_LOCK

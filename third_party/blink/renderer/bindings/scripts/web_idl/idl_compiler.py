@@ -12,6 +12,7 @@ import typing
 from blinkbuild.name_style_converter import NameStyleConverter
 
 from .async_iterator import AsyncIterator
+from .argument import Argument
 from .attribute import Attribute
 from .callback_function import CallbackFunction
 from .callback_interface import CallbackInterface
@@ -25,8 +26,16 @@ from .enumeration import Enumeration
 from .exposure import ExposureMutable
 from .extended_attribute import ExtendedAttribute
 from .extended_attribute import ExtendedAttributesMutable
+from .function_like import FunctionLike
+from .idl_type import _ArrayLikeType
 from .idl_type import IdlType
 from .idl_type import IdlTypeFactory
+from .idl_type import NullableType
+from .idl_type import PromiseType
+from .idl_type import RecordType
+from .idl_type import SimpleType
+from .idl_type import ReferenceType
+from .idl_type import UnionType
 from .interface import Interface
 from .interface import LegacyWindowAlias
 from .ir_map import IRMap
@@ -111,6 +120,9 @@ class IdlCompiler(object):
         # Process inheritances.
         self._process_interface_inheritances()
 
+        # Assign v8::CppHeapPointerTag values
+        self._assign_tags()
+
         # Temporary mitigation of misuse of [HTMLConstructor]
         # This should be removed once the IDL definitions get fixed.
         self._supplement_missing_html_constructor_operation()
@@ -125,6 +137,8 @@ class IdlCompiler(object):
         self._fill_exposed_constructs()
 
         self._sort_dictionary_members()
+
+        self._calculate_dict_and_union_usage()
 
         # Updates on IRs are finished.  Create API objects.
         self._create_public_objects()
@@ -173,16 +187,54 @@ class IdlCompiler(object):
                     # https://webidl.spec.whatwg.org/#iterator-result
                     return_type=self._idl_type_factory.promise_type(
                         result_type=self._idl_type_factory.simple_type(
-                            'object')),
+                            'object'),
+                        extended_attributes=ExtendedAttributesMutable([
+                            ExtendedAttribute(
+                                key='IDLTypeImplementedAsV8Promise'),
+                        ])),
                     extended_attributes=ExtendedAttributesMutable([
                         ExtendedAttribute(key="CallWith",
                                           values="ScriptState"),
                         ExtendedAttribute(key="RaisesException"),
                     ]),
                     component=component))
-            # TODO(yukishiino): Define the 'return' property if and only if
-            # an asynchronous iterator return algorithm is defined for the
-            # interface.
+            # Define the 'return' property if and only if an asynchronous
+            # iterator return algorithm is defined for the interface.
+            if ("HasAsyncIteratorReturnAlgorithm"
+                    in iterable.extended_attributes):
+                operations.append(
+                    Operation.IR(
+                        identifier=Identifier('return'),
+                        # Can be called without arguments (e.g.
+                        # AsyncIteratorClose()) or with one argument (e.g.
+                        # yield*).
+                        # https://tc39.es/ecma262/#sec-asynciteratorclose
+                        # https://tc39.es/ecma262/#sec-generator-function-definitions-runtime-semantics-evaluation
+                        arguments=[
+                            Argument.IR(
+                                identifier=Identifier('value'),
+                                index=0,
+                                idl_type=self._idl_type_factory.simple_type(
+                                    'any', is_optional=True))
+                        ],
+                        # The return type is a promise type resolving to an
+                        # iterator result.
+                        # https://webidl.spec.whatwg.org/#iterator-result
+                        return_type=self._idl_type_factory.promise_type(
+                            result_type=self._idl_type_factory.simple_type(
+                                'object'),
+                            extended_attributes=ExtendedAttributesMutable([
+                                ExtendedAttribute(
+                                    key='IDLTypeImplementedAsV8Promise'),
+                            ])),
+                        extended_attributes=ExtendedAttributesMutable([
+                            ExtendedAttribute(key="CallWith",
+                                              values="ScriptState"),
+                            ExtendedAttribute(key="RaisesException"),
+                            ExtendedAttribute(key="ImplementedAs",
+                                              values="returnForBinding"),
+                        ]),
+                        component=component))
 
             iterator_ir = AsyncIterator.IR(
                 interface=self._ref_to_idl_def_factory.create(
@@ -338,6 +390,9 @@ class IdlCompiler(object):
                       default_value=True)
             propagate(('CrossOriginIsolatedOrRuntimeEnabled',
                        'add_only_in_coi_contexts_or_runtime_enabled_feature'))
+            propagate(('InjectionMitigated',
+                       'set_only_in_injection_mitigated_contexts'),
+                      default_value=True)
             propagate(('IsolatedContext', 'set_only_in_isolated_contexts'),
                       default_value=True)
             propagate(('SecureContext', 'set_only_in_secure_contexts'),
@@ -523,7 +578,8 @@ class IdlCompiler(object):
 
         self._ir_map.move_to_new_phase()
 
-        identifier_to_derived_set = {}
+        identifier_to_subclass_set = {}
+        identifier_to_direct_subclass_set = {}
 
         for old_interface in old_interfaces.values():
             new_interface = make_copy(old_interface)
@@ -547,16 +603,25 @@ class IdlCompiler(object):
                     if is_own_member(operation)
                 ])
 
-                identifier_to_derived_set.setdefault(
+                identifier_to_subclass_set.setdefault(
                     interface.identifier, set()).add(new_interface.identifier)
+                if new_interface.inherited.identifier == interface.identifier:
+                    identifier_to_direct_subclass_set.setdefault(
+                        interface.identifier, set()).add(new_interface)
+
 
         for new_interface in self._ir_map.irs_of_kind(IRMap.IR.Kind.INTERFACE):
-            assert not new_interface.deriveds
-            derived_set = identifier_to_derived_set.get(
+            assert not new_interface.subclasses
+            assert not new_interface.direct_subclasses
+            subclass_set = identifier_to_subclass_set.get(
                 new_interface.identifier, set())
-            new_interface.deriveds = list(
+            new_interface.subclasses = list(
                 map(lambda id_: self._ref_to_idl_def_factory.create(id_),
-                    sorted(derived_set)))
+                    sorted(subclass_set)))
+            direct_subclass_set = identifier_to_direct_subclass_set.get(
+                new_interface.identifier, set())
+            new_interface.direct_subclasses = sorted(
+                direct_subclass_set, key=lambda subclass: subclass.identifier)
 
     def _supplement_missing_html_constructor_operation(self):
         # Temporary mitigation of misuse of [HTMLConstructor]
@@ -652,9 +717,10 @@ class IdlCompiler(object):
                         OperationGroup.IR, item.operations)
 
     def _propagate_extattrs_to_overload_group(self):
-        ANY_OF = ('CrossOrigin', 'CrossOriginIsolated', 'IsolatedContext',
-                  'LegacyLenientThis', 'LegacyUnforgeable', 'NotEnumerable',
-                  'PerWorldBindings', 'SecureContext', 'Unscopable')
+        ANY_OF = ('CrossOrigin', 'CrossOriginIsolated', 'InjectionMitigated',
+                  'IsolatedContext', 'LegacyLenientThis', 'LegacyUnforgeable',
+                  'NotEnumerable', 'PerWorldBindings', 'SecureContext',
+                  'Unscopable')
 
         old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
                                             IRMap.IR.Kind.INTERFACE,
@@ -688,17 +754,29 @@ class IdlCompiler(object):
                     group.extended_attributes.append(
                         ExtendedAttribute(key='Affects', values=affects_value))
 
-                # [NoAllocDirectCall] must be consistent among overloaded
-                # operations.
-                nadc_values = set()
+                # Check that overloads with the same number of parameters have
+                # set the [NoAllocDirectCall] attribute consistently.
+                nadc_set = set()
+                no_nadc_set = set()
                 for overload in group:
-                    nadc_values.add(
-                        'NoAllocDirectCall' in overload.extended_attributes)
-                assert len(nadc_values) == 1, (
-                    "Overloaded operations have inconsistent extended "
-                    "attributes of [NoAllocDirectCall]. {}.{}".format(
+
+                    set_to_update = nadc_set
+                    if "NoAllocDirectCall" not in overload.extended_attributes:
+                        set_to_update = no_nadc_set
+
+                    for argument in reversed(overload.arguments):
+                        set_to_update.add(argument.index + 1)
+                        if not argument.idl_type.is_optional:
+                            break
+                    else:
+                        set_to_update.add(0)
+                assert nadc_set.isdisjoint(no_nadc_set), (
+                    "Overloaded operations with same parameter count "
+                    "have inconsistent extended attributes of "
+                    "[NoAllocDirectCall]. {}.{}".format(
                         new_ir.identifier, group.identifier))
-                if True in nadc_values:
+
+                if len(nadc_set) > 0:
                     group.extended_attributes.append(
                         ExtendedAttribute(key='NoAllocDirectCall'))
 
@@ -766,6 +844,14 @@ class IdlCompiler(object):
                     (group.exposure.
                      add_only_in_coi_contexts_or_runtime_enabled_feature
                      )(feature)
+
+                # [InjectionMitigated]
+                if any(not exposure.only_in_injection_mitigated_contexts
+                       for exposure in exposures):
+                    pass  # Exposed by default.
+                else:
+                    group.exposure.set_only_in_injection_mitigated_contexts(
+                        True)
 
                 # [IsolatedContext]
                 if any(not exposure.only_in_isolated_contexts
@@ -879,6 +965,112 @@ class IdlCompiler(object):
 
             new_ir.own_members.sort(key=lambda x: x.identifier)
 
+    def _calculate_dict_and_union_usage(self):
+        """Calculate what dictionaries and unions are used for input or output, so that
+           unnecessary methods don't have to be generated.
+        """
+
+        typedefs = self._ir_map.find_by_kind(IRMap.IR.Kind.TYPEDEF)
+        dicts = self._ir_map.find_by_kind(IRMap.IR.Kind.DICTIONARY)
+
+        class UsageSet:
+
+            def __init__(self):
+                self.dicts = set()
+                self.unions = set()
+
+        inputs = UsageSet()
+        outputs = UsageSet()
+
+        def unwrap(idl_type):
+            while True:
+                if isinstance(idl_type, ReferenceType):
+                    if typedef := typedefs.get(idl_type.identifier):
+                        idl_type = typedef.idl_type
+                    else:
+                        return idl_type
+                elif isinstance(idl_type, _ArrayLikeType):
+                    idl_type = idl_type.element_type
+                elif isinstance(idl_type, PromiseType):
+                    idl_type = idl_type.result_type
+                elif isinstance(idl_type, NullableType):
+                    idl_type = idl_type.inner_type
+                else:
+                    return idl_type
+
+        def visit_dict(dict_ir, target_set):
+            assert isinstance(dict_ir, Dictionary.IR)
+            if "ConvertibleToObject" in dict_ir.extended_attributes and target_set != outputs:
+                visit_dict(dict_ir, outputs)
+            if dict_ir.identifier in target_set.dicts:
+                return
+            target_set.dicts.add(dict_ir.identifier)
+            if dict_ir.inherited:
+                visit_dict(dicts.get(dict_ir.inherited.identifier), target_set)
+            for member in dict_ir.own_members:
+                visit_type(member.idl_type, target_set)
+
+        def visit_type(idl_type, target_set):
+            idl_type = unwrap(idl_type)
+            if isinstance(idl_type, ReferenceType):
+                if dict := dicts.get(idl_type.identifier):
+                    visit_dict(dict, target_set)
+            elif isinstance(idl_type, UnionType):
+                if idl_type in target_set.unions:
+                    return
+                target_set.unions.add(idl_type)
+                if "ConvertibleToObject" in idl_type.extended_attributes:
+                    visit_type(idl_type, outputs)
+                for member_type in idl_type.flattened_member_types:
+                    visit_type(member_type, target_set)
+            elif isinstance(idl_type, RecordType):
+                visit_type(idl_type.value_type, target_set)
+            else:
+                assert isinstance(idl_type, SimpleType), type(idl_type)
+
+        def visit_func(function_like, ret_set, args_set):
+            assert isinstance(function_like, FunctionLike.IR)
+            visit_type(function_like.return_type, ret_set)
+            for arg in function_like.arguments:
+                visit_type(arg.idl_type, args_set)
+
+        for interface in self._ir_map.irs_of_kind(IRMap.IR.Kind.INTERFACE):
+            for op in interface.constructors:
+                visit_func(op, outputs, inputs)
+            for op in interface.operations:
+                visit_func(op, outputs, inputs)
+            if interface.async_iterable:
+                for arg in interface.async_iterable.arguments:
+                    visit_type(arg.idl_type, inputs)
+            for attr in interface.attributes:
+                visit_type(attr.idl_type, inputs)
+                visit_type(attr.idl_type, outputs)
+
+        for interface in self._ir_map.irs_of_kind(
+                IRMap.IR.Kind.CALLBACK_INTERFACE):
+            for op in interface.operations:
+                visit_func(op, inputs, outputs)
+
+        for cb in self._ir_map.irs_of_kind(IRMap.IR.Kind.CALLBACK_FUNCTION):
+            visit_func(cb, inputs, outputs)
+
+        # Dirty hack for internally used dictionaries -- if a dictionary
+        # appears unused, presume it's used for output for now.
+        for dict_id, dict in dicts.items():
+            if dict_id not in inputs.dicts and dict_id not in outputs.dicts:
+                visit_dict(dict, outputs)
+
+        for dict in dicts.values():
+            if dict.identifier in inputs.dicts:
+                dict.add_usage(Dictionary.Usage.INPUT)
+            if dict.identifier in outputs.dicts:
+                dict.add_usage(Dictionary.Usage.OUTPUT)
+
+        for u in inputs.unions:
+            u.add_usage(UnionType.Usage.INPUT)
+        for u in outputs.unions:
+            u.add_usage(UnionType.Usage.OUTPUT)
+
     def _create_public_objects(self):
         """Creates public representations of compiled objects."""
         for ir in self._ir_map.irs_of_kind(IRMap.IR.Kind.INTERFACE):
@@ -951,7 +1143,7 @@ class IdlCompiler(object):
         all_union_types = []  # all instances of UnionType
 
         def collect_unions(idl_type):
-            if idl_type.is_union:
+            if idl_type.is_union and not idl_type.is_phantom:
                 all_union_types.append(idl_type)
 
         self._idl_type_factory.for_each(collect_unions)
@@ -967,7 +1159,7 @@ class IdlCompiler(object):
 
         all_typedefs = self._db.find_by_kind(DatabaseBody.Kind.TYPEDEF)
         for typedef in all_typedefs.values():
-            if not typedef.idl_type.is_union:
+            if not typedef.idl_type.is_union or typedef.idl_type.is_phantom:
                 continue
             token = Union.unique_token(typedef.idl_type)
             irs[token].typedefs.append(typedef)
@@ -1033,3 +1225,34 @@ class IdlCompiler(object):
                     observable_array)
             self._db.register(DatabaseBody.Kind.OBSERVABLE_ARRAY,
                               observable_array)
+
+    def _assign_tags(self):
+
+        def assign_tags_for_tree(old_ir, next_tag):
+            new_ir = self._maybe_make_copy(old_ir)
+            self._ir_map.add(new_ir)
+            assert new_ir.tag is None
+            assert new_ir.max_subclass_tag is None
+
+            new_ir.tag = next_tag
+            new_ir.max_subclass_tag = next_tag + len(new_ir.subclasses)
+            next_tag += 1
+            for direct_subclass in new_ir.direct_subclasses:
+                next_tag = assign_tags_for_tree(direct_subclass, next_tag)
+            assert next_tag == new_ir.max_subclass_tag + 1
+            return next_tag
+
+        next_tag = 256
+
+        old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
+                                            IRMap.IR.Kind.INTERFACE,
+                                            IRMap.IR.Kind.CALLBACK_INTERFACE,
+                                            IRMap.IR.Kind.NAMESPACE,
+                                            IRMap.IR.Kind.SYNC_ITERATOR)
+        self._ir_map.move_to_new_phase()
+
+        for old_ir in old_irs:
+            # Inheritance trees will be processed together. Always start from
+            # the root.
+            if old_ir.inherited is None:
+                next_tag = assign_tags_for_tree(old_ir, next_tag)

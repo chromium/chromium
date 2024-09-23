@@ -29,7 +29,7 @@ using LockScreen = AshIntegrationTest;
 //     (ChromeOS > Software > Commercial (Enterprise) > Identity > LURS)
 // Contacts:
 //     cros-lurs@google.com
-//     anastasiian@chromium.org
+//     antrim@chromium.org
 //     chromeos-sw-engprod@google.com
 //     cros-exp-wg+testresults@google.com (for fieldtrial_testing_config)
 IN_PROC_BROWSER_TEST_F(LockScreen, CloseLidDbusIntegration) {

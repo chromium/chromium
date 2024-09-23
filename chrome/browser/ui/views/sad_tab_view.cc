@@ -6,13 +6,13 @@
 
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/bulleted_label_list_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -28,6 +28,7 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -35,6 +36,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -536,10 +538,12 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
       CreateFormattedLabel(l10n_util::GetStringUTF16(GetInfoMessage())));
   std::vector<int> bullet_string_ids = GetSubMessages();
   if (!bullet_string_ids.empty()) {
+    std::vector<std::u16string> texts;
+    std::ranges::transform(bullet_string_ids, std::back_inserter(texts),
+                           l10n_util::GetStringUTF16);
     auto* list_view =
-        container->AddChildView(std::make_unique<BulletedLabelListView>());
-    for (const auto& id : bullet_string_ids)
-      list_view->AddLabel(l10n_util::GetStringUTF16(id));
+        container->AddChildView(std::make_unique<views::BulletedLabelListView>(
+            std::move(texts), views::style::TextStyle::STYLE_PRIMARY));
     list_view->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(2, 1));
   }
 
@@ -586,7 +590,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   // Make the accessibility role of this view an alert dialog, and
   // put focus on the action button. This causes screen readers to
   // immediately announce the text of this view.
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   if (action_button_->GetWidget() && action_button_->GetWidget()->IsActive())
     action_button_->RequestFocus();
 }
@@ -672,7 +676,7 @@ void SadTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   constexpr int kMaxContentWidth = 600;
   const int max_width =
       std::min(width() - ChromeLayoutProvider::Get()->GetDistanceMetric(
-                             DISTANCE_UNRELATED_CONTROL_HORIZONTAL) *
+                             views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL) *
                              2,
                kMaxContentWidth);
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_BUFFER_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
@@ -15,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "media/media_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -32,20 +34,31 @@ class FrameSinkResourceManager;
 // and not defined as part of this class.
 class Buffer {
  public:
-  explicit Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
-  Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
-         unsigned texture_target,
-         unsigned query_type,
-         bool use_zero_copy,
-         bool is_overlay_candidate,
-         bool y_invert);
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
   virtual ~Buffer();
 
-  const gfx::GpuMemoryBuffer* gfx_buffer() const {
-    return gpu_memory_buffer_.get();
-  }
+  // Clients can use this method to create Buffer using GMBHandles. This is
+  // required to move away clients from using GMB directly as a part of
+  // MappableSI work.
+  static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      const gfx::Size& buffer_size,
+      gfx::BufferFormat buffer_format,
+      gfx::BufferUsage buffer_usage,
+      unsigned query_type,
+      bool use_zero_copy,
+      bool is_overlay_candidate,
+      bool y_invert);
+
+  static std::unique_ptr<Buffer> CreateBuffer(
+      gfx::Size buffer_size,
+      gfx::BufferFormat buffer_format,
+      gfx::BufferUsage buffer_usage,
+      std::string_view debug_label,
+      gpu::SurfaceHandle surface_handle,
+      base::WaitableEvent* shutdown_event,
+      bool is_overlay_candidate = false);
 
   // Set the callback to run when the buffer is no longer used by the
   // compositor. The client is free to re-use or destroy this buffer and
@@ -86,6 +99,10 @@ class Buffer {
   // Returns the format of the buffer.
   gfx::BufferFormat GetFormat() const;
 
+  // Returns the |gpu_memory_buffer_| pointer to be used as id. It can also be
+  // used as a bool to identify if |gpu_memory_buffer_| is null or not.
+  const void* GetBufferId() const;
+
   // The default color to be used should transferable resource production fail.
   virtual SkColor4f GetColor() const;
 
@@ -107,8 +124,27 @@ class Buffer {
 
   virtual base::WeakPtr<Buffer> AsWeakPtr();
 
+ protected:
+  // Currently only derived class access this constructor.
+  Buffer();
+
  private:
+  // TODO(vikassoni): Once MappableSI is fully landed, these clients do not need
+  // to access the Buffer constructors. So it should be removed from the friend
+  // list.
+  friend class Display;
+  friend class SharedMemory;
+
   class Texture;
+
+  Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
+         gfx::BufferFormat buffer_format,
+         gfx::Size size,
+         gfx::BufferUsage buffer_usage,
+         unsigned query_type,
+         bool use_zero_copy,
+         bool is_overlay_candidate,
+         bool y_invert);
 
   struct BufferRelease {
     BufferRelease(
@@ -168,11 +204,12 @@ class Buffer {
   void OnIsProtectedNativePixmapHandle(bool is_protected);
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
-  // The GPU memory buffer that contains the contents of this buffer.
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
-
-  // Texture target that must be used when creating a texture for buffer.
-  const unsigned texture_target_;
+  // Contains the content of this buffer instead of |gpu_memory_buffer_| when
+  // MappableSI is enabled.
+  gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle_;
+  const gfx::BufferFormat buffer_format_;
+  const gfx::Size size_;
+  gfx::BufferUsage buffer_usage_;
 
   // Query type that must be used when releasing buffer from a texture.
   const unsigned query_type_;

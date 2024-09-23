@@ -4,13 +4,15 @@
 
 #import "ios/chrome/browser/webui/ui_bundled/translate_internals/ios_translate_internals_handler.h"
 
+#import <string_view>
+
 #import "components/translate/core/common/language_detection_details.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
@@ -29,28 +31,28 @@ IOSTranslateInternalsHandler::GetVariationsService() {
 }
 
 void IOSTranslateInternalsHandler::RegisterMessageCallback(
-    base::StringPiece message,
+    std::string_view message,
     MessageCallback callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
 void IOSTranslateInternalsHandler::CallJavascriptFunction(
-    base::StringPiece function_name,
+    std::string_view function_name,
     base::span<const base::ValueView> args) {
   web_ui()->CallJavascriptFunction(function_name, args);
 }
 
 void IOSTranslateInternalsHandler::RegisterMessages() {
   web::BrowserState* browser_state = web_ui()->GetWebState()->GetBrowserState();
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state)
-          ->GetOriginalChromeBrowserState();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(browser_state)->GetOriginalProfile();
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(chrome_browser_state);
-  std::set<Browser*> browsers = chrome_browser_state->IsOffTheRecord()
-                                    ? browser_list->AllIncognitoBrowsers()
-                                    : browser_list->AllRegularBrowsers();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+
+  const BrowserList::BrowserType browser_types =
+      profile->IsOffTheRecord() ? BrowserList::BrowserType::kIncognito
+                                : BrowserList::BrowserType::kRegularAndInactive;
+  std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();
@@ -60,7 +62,7 @@ void IOSTranslateInternalsHandler::RegisterMessages() {
   }
 
   AllWebStateListObservationRegistrar::Mode mode =
-      chrome_browser_state->IsOffTheRecord()
+      profile->IsOffTheRecord()
           ? AllWebStateListObservationRegistrar::Mode::INCOGNITO
           : AllWebStateListObservationRegistrar::Mode::REGULAR;
   registrar_ = std::make_unique<AllWebStateListObservationRegistrar>(
@@ -142,5 +144,17 @@ void IOSTranslateInternalsHandler::Observer::WebStateListDidChange(
           insert_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // Do nothing when a group is created.
+      break;
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // Do nothing when a tab group's visual data are updated.
+      break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // Do nothing when a group is deleted.
+      break;
   }
 }

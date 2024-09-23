@@ -4,17 +4,17 @@
 
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/reset/reset_section.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 
 // #include "components/user_manager/fake_chrome_user_manager.h"
 namespace ash::settings {
@@ -25,17 +25,13 @@ class OsSettingsFeaturesUtilTest : public testing::Test {
   ~OsSettingsFeaturesUtilTest() override = default;
 
   void SetUp() override {
-    auto fake_chrome_user_manager =
-        std::make_unique<ash::FakeChromeUserManager>();
-    fake_chrome_user_manager_ = fake_chrome_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_chrome_user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
-  void TearDown() override { scoped_user_manager_.reset(); }
+  void TearDown() override { fake_user_manager_.Reset(); }
 
   ash::FakeChromeUserManager* FakeChromeUserManager() {
-    return fake_chrome_user_manager_;
+    return fake_user_manager_.Get();
   }
 
   const AccountId MakeAccountId() {
@@ -43,12 +39,15 @@ class OsSettingsFeaturesUtilTest : public testing::Test {
                                           "1234567890");
   }
 
- private:
-  // Owned by |scoped_user_manager_|.
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
-      fake_chrome_user_manager_ = nullptr;
+  ash::StubInstallAttributes& stub_install_attributes() {
+    return *stub_install_attributes_.Get();
+  }
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+ private:
+  ash::ScopedStubInstallAttributes stub_install_attributes_;
+  // Owned by |scoped_user_manager_|.
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashAllowedForRegularUser) {
@@ -79,10 +78,11 @@ TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForChildUser) {
 }
 
 TEST_F(OsSettingsFeaturesUtilTest, PowerwashDisallowedForManagedUser) {
+  stub_install_attributes().SetCloudManaged("fake-managed.com", "device-id");
+
   const AccountId account_id = MakeAccountId();
   auto* fake_chrome_user_manager_ = FakeChromeUserManager();
   fake_chrome_user_manager_->AddUser(account_id);
-  fake_chrome_user_manager_->set_is_enterprise_managed(true);
   fake_chrome_user_manager_->LoginUser(account_id);
 
   EXPECT_FALSE(IsPowerwashAllowed());

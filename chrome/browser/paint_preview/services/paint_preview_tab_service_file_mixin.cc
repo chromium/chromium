@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/paint_preview/services/paint_preview_tab_service_file_mixin.h"
+
+#include <string_view>
+
 #include "components/paint_preview/browser/paint_preview_file_mixin.h"
 
 namespace paint_preview {
 
 PaintPreviewTabServiceFileMixin::PaintPreviewTabServiceFileMixin(
     const base::FilePath& path,
-    base::StringPiece ascii_feature_name)
+    std::string_view ascii_feature_name)
     : PaintPreviewFileMixin(path, ascii_feature_name) {}
 
 PaintPreviewTabServiceFileMixin::~PaintPreviewTabServiceFileMixin() = default;

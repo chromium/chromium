@@ -9,10 +9,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
@@ -32,13 +34,16 @@ using sessions::SerializedNavigationEntry;
 // resynced. Used in UMA metrics. Do not re-order or delete these entries; they
 // are used in a UMA histogram. Please edit SyncPlaceholderTabResyncResult in
 // enums.xml if a value is added.
+// LINT.IfChange(SyncPlaceholderTabResyncResult)
 enum PlaceholderTabResyncResultHistogramValue {
   PLACEHOLDER_TAB_FOUND = 0,
   PLACEHOLDER_TAB_RESYNCED = 1,
   PLACEHOLDER_TAB_NOT_SYNCED = 2,
+  PLACEHOLDER_TAB_RESYNC_FAILED = 3,
 
-  kMaxValue = PLACEHOLDER_TAB_NOT_SYNCED
+  kMaxValue = PLACEHOLDER_TAB_RESYNC_FAILED
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncPlaceholderTabResyncResult)
 
 // The maximum number of navigations in each direction we care to sync.
 const int kMaxSyncNavigationCount = 6;
@@ -108,7 +113,8 @@ LocalSessionEventHandlerImpl::Delegate::~Delegate() = default;
 LocalSessionEventHandlerImpl::LocalSessionEventHandlerImpl(
     Delegate* delegate,
     SyncSessionsClient* sessions_client,
-    SyncedSessionTracker* session_tracker)
+    SyncedSessionTracker* session_tracker,
+    bool is_new_session)
     : delegate_(delegate),
       sessions_client_(sessions_client),
       session_tracker_(session_tracker) {
@@ -118,6 +124,10 @@ LocalSessionEventHandlerImpl::LocalSessionEventHandlerImpl(
 
   current_session_tag_ = session_tracker_->GetLocalSessionTag();
   DCHECK(!current_session_tag_.empty());
+
+  if (is_new_session) {
+    session_tracker_->SetLocalSessionStartTime(base::Time::Now());
+  }
 
   if (!IsSessionRestoreInProgress(sessions_client)) {
     OnSessionRestoreComplete();
@@ -155,6 +165,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
                                                     WriteBatch* batch,
                                                     bool is_session_restore) {
   DCHECK(!IsSessionRestoreInProgress(sessions_client_));
+  base::ElapsedTimer timer;
 
   const bool has_tabbed_window =
       ScanForTabbedWindow(sessions_client_->GetSyncedWindowDelegatesGetter());
@@ -201,12 +212,13 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
       continue;
     }
 
+    const int tab_count_in_window = window_delegate->GetTabCount();
     DCHECK_EQ(window_id, window_delegate->GetSessionId());
     DVLOG(1) << "Associating window " << window_id.id() << " with "
-             << window_delegate->GetTabCount() << " tabs.";
+             << tab_count_in_window << " tabs.";
 
     bool found_tabs = false;
-    for (int j = 0; j < window_delegate->GetTabCount(); ++j) {
+    for (int j = 0; j < tab_count_in_window; ++j) {
       SessionID tab_id = window_delegate->GetTabIdAt(j);
       SyncedTabDelegate* synced_tab = window_delegate->GetTabAt(j);
 
@@ -244,12 +256,13 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
       if (synced_tab->IsPlaceholderTab()) {
         if (tab && is_session_restore) {
           RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_FOUND);
-        } else if (!tab && base::FeatureList::IsEnabled(
-                               syncer::kRestoreSyncedPlaceholderTabs)) {
+        } else if (!tab) {
           // The placeholder tab doesn't have a tracked counterpart. This is
           // possible, for example, if the tab was created as a placeholder tab.
           bool was_tab_resynced = AssociatePlaceholderTab(
-              synced_tab->CreatePlaceholderTabSyncedTabDelegate(), batch);
+              synced_tab->ReadPlaceholderTabSnapshotIfItShouldSync(
+                  sessions_client_),
+              batch);
 
           if (was_tab_resynced) {
             // If the tab was presumed to have resynced successfully, perform
@@ -257,11 +270,13 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
             tab = session_tracker_->LookupSessionTab(current_session_tag_,
                                                      tab_id);
 
-            if (tab && is_session_restore) {
-              RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_RESYNCED);
+            if (is_session_restore) {
+              RecordPlaceholderTabResyncResult(
+                  tab ? PLACEHOLDER_TAB_RESYNCED
+                      : PLACEHOLDER_TAB_RESYNC_FAILED);
             }
           } else if (is_session_restore) {
-            RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_NOT_SYNCED);
+            RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_RESYNC_FAILED);
           }
         } else if (is_session_restore) {
           // This metric logic path will likely record no tab data as long as
@@ -303,6 +318,14 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
   specifics->set_session_tag(current_session_tag_);
   current_session->ToSessionHeaderProto().Swap(specifics->mutable_header());
   batch->Put(std::move(specifics));
+
+  if (is_session_restore) {
+    UmaHistogramMediumTimes("Sync.AssociateWindowsTime.OnSessionRestore",
+                            timer.Elapsed());
+  } else {
+    UmaHistogramMediumTimes("Sync.AssociateWindowsTime.OnTabModification",
+                            timer.Elapsed());
+  }
 }
 
 void LocalSessionEventHandlerImpl::AssociateTab(
@@ -401,11 +424,10 @@ sync_pb::SessionTab LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegate(
   specifics.set_pinned(
       window_delegate ? window_delegate->IsTabPinned(&tab_delegate) : false);
   specifics.set_extension_app_id(tab_delegate.GetExtensionAppId());
-  if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
-    specifics.set_last_active_time_unix_epoch_millis(
-        (tab_delegate.GetLastActiveTime() - base::Time::UnixEpoch())
-            .InMilliseconds());
-  }
+  specifics.set_last_active_time_unix_epoch_millis(
+      (tab_delegate.GetLastActiveTime() - base::Time::UnixEpoch())
+          .InMilliseconds());
+
   const int current_index = tab_delegate.GetCurrentEntryIndex();
   const int min_index = std::max(0, current_index - kMaxSyncNavigationCount);
   const int max_index = std::min(current_index + kMaxSyncNavigationCount,

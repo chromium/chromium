@@ -168,6 +168,7 @@ XMLPUBFUN int
 					 int *inlen, int quoteChar);
 XMLPUBFUN int
 			htmlIsScriptAttribute(const xmlChar *name);
+XML_DEPRECATED
 XMLPUBFUN int
 			htmlHandleOmittedElem(int val);
 
@@ -246,6 +247,9 @@ XMLPUBFUN htmlDocPtr
 					 const char *URL,
 					 const char *encoding,
 					 int options);
+XMLPUBFUN htmlDocPtr
+		htmlCtxtParseDocument	(htmlParserCtxtPtr ctxt,
+					 xmlParserInputPtr input);
 XMLPUBFUN htmlDocPtr
 		htmlCtxtReadDoc		(xmlParserCtxtPtr ctxt,
 					 const xmlChar *cur,

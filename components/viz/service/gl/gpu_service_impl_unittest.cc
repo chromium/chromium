@@ -63,12 +63,12 @@ class GpuServiceTest : public testing::Test {
     ASSERT_TRUE(io_thread_.Start());
     gpu::GPUInfo gpu_info;
     gpu_info.in_process_gpu = false;
+    GpuServiceImpl::InitParams init_params;
+    init_params.io_runner = io_thread_.task_runner();
+    init_params.exit_callback = base::DoNothing();
     gpu_service_ = std::make_unique<GpuServiceImpl>(
-        gpu_info, /*watchdog_thread=*/nullptr, io_thread_.task_runner(),
-        gpu::GpuFeatureInfo(), gpu::GpuPreferences(), gpu::GPUInfo(),
-        gpu::GpuFeatureInfo(), gfx::GpuExtraInfo(),
-        /*vulkan_implementation=*/nullptr,
-        /*exit_callback=*/base::DoNothing());
+        gpu::GpuPreferences(), gpu_info, gpu::GpuFeatureInfo(), gpu::GPUInfo(),
+        gpu::GpuFeatureInfo(), gfx::GpuExtraInfo(), std::move(init_params));
   }
 
   void TearDown() override {

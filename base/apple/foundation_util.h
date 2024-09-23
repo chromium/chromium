@@ -14,6 +14,8 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 
@@ -140,14 +142,12 @@ BASE_EXPORT const char* BaseBundleID();
 // make its own copy of new_base_bundle_id.
 BASE_EXPORT void SetBaseBundleID(const char* new_base_bundle_id);
 
-// CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more
-// specific CoreFoundation type. The compatibility of the passed
-// object is found by comparing its opaque type against the
-// requested type identifier. If the supplied object is not
-// compatible with the requested return type, CFCast<>() returns
-// NULL and CFCastStrict<>() will DCHECK. Providing a NULL pointer
-// to either variant results in NULL being returned without
-// triggering any DCHECK.
+// CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more specific
+// CoreFoundation type. The compatibility of the passed object is found by
+// comparing its opaque type against the requested type identifier. If the
+// supplied object is not compatible with the requested return type, CFCast<>()
+// returns null and CFCastStrict<>() will CHECK. Providing a null pointer to
+// either variant results in null being returned without triggering any CHECK.
 //
 // Example usage:
 // CFNumberRef some_number = base::apple::CFCast<CFNumberRef>(
@@ -197,28 +197,27 @@ CF_CAST_DECL(SecPolicy);
 
 #if defined(__OBJC__)
 
-// ObjCCast<>() and ObjCCastStrict<>() cast a basic id to a more
-// specific (NSObject-derived) type. The compatibility of the passed
-// object is found by checking if it's a kind of the requested type
-// identifier. If the supplied object is not compatible with the
-// requested return type, ObjCCast<>() returns nil and
-// ObjCCastStrict<>() will DCHECK. Providing a nil pointer to either
-// variant results in nil being returned without triggering any DCHECK.
+// ObjCCast<>() and ObjCCastStrict<>() cast a basic id to a more specific
+// (NSObject-derived) type. The compatibility of the passed object is found by
+// checking if it's a kind of the requested type identifier. If the supplied
+// object is not compatible with the requested return type, ObjCCast<>() returns
+// nil and ObjCCastStrict<>() will CHECK. Providing a nil pointer to either
+// variant results in nil being returned without triggering any CHECK.
 //
-// The strict variant is useful when retrieving a value from a
-// collection which only has values of a specific type, e.g. an
-// NSArray of NSStrings. The non-strict variant is useful when
-// retrieving values from data that you can't fully control. For
-// example, a plist read from disk may be beyond your exclusive
-// control, so you'd only want to check that the values you retrieve
+// The strict variant is useful when retrieving a value from a collection which
+// only has values of a specific type, e.g. an NSArray of NSStrings. The
+// non-strict variant is useful when retrieving values from data that you can't
+// fully control. For example, a plist read from disk may be beyond your
+// exclusive control, so you'd only want to check that the values you retrieve
 // from it are of the expected types, but not crash if they're not.
 //
 // Example usage:
-// NSString* version = base::apple::ObjCCast<NSString>(
-//     [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
+//   NSString* version = base::apple::ObjCCast<NSString>(
+//       [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"]);
 //
-// NSString* str = base::apple::ObjCCastStrict<NSString>(
-//     [ns_arr_of_ns_strs objectAtIndex:0]);
+//   // (If it's not possible to use an NSArray<NSString>.)
+//   NSString* str = base::apple::ObjCCastStrict<NSString>(
+//       [ns_arr_of_ns_strs objectAtIndex:0]);
 template <typename T>
 T* ObjCCast(id objc_val) {
   if ([objc_val isKindOfClass:[T class]]) {
@@ -230,7 +229,7 @@ T* ObjCCast(id objc_val) {
 template <typename T>
 T* ObjCCastStrict(id objc_val) {
   T* rv = ObjCCast<T>(objc_val);
-  DCHECK(objc_val == nil || rv);
+  CHECK(objc_val == nil || rv);
   return rv;
 }
 
@@ -276,11 +275,23 @@ BASE_EXPORT FilePath NSURLToFilePath(NSURL* url);
 
 #endif  // __OBJC__
 
-// Converts a non-null |path| to a CFURLRef. |path| must not be empty.
-//
-// This function only uses manually-owned resources, so it does not depend on an
-// NSAutoreleasePool being set up on the current thread.
+// CoreFoundation versions of the above calls. These only uses manually-owned
+// resources, so they do not depend on an NSAutoreleasePool being set up on the
+// current thread.
+
+// Converts |path| to a CFURLRef. Returns nil if |path| is empty.
 BASE_EXPORT ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path);
+
+// Converts |path| to a CFStringRef. Returns nil if |path| is empty.
+BASE_EXPORT ScopedCFTypeRef<CFStringRef> FilePathToCFString(
+    const FilePath& path);
+
+// Converts |str| to a FilePath. Returns an empty path if |str| is nil.
+BASE_EXPORT FilePath CFStringToFilePath(CFStringRef str);
+
+// Converts |url| to a FilePath. Returns an empty path if |url| is nil or if
+// |url| is not of scheme "file".
+BASE_EXPORT FilePath CFURLToFilePath(CFURLRef url);
 
 #if defined(__OBJC__)
 // Converts |range| to an NSRange, returning the new range in |range_out|.
@@ -288,7 +299,37 @@ BASE_EXPORT ScopedCFTypeRef<CFURLRef> FilePathToCFURL(const FilePath& path);
 // could not be converted to NSUIntegers.
 [[nodiscard]] BASE_EXPORT bool CFRangeToNSRange(CFRange range,
                                                 NSRange* range_out);
+
+// Returns an immutable `base::span<const uint8_t>` pointing to the memory
+// owned by `data`. `data` must outlive the returned span.
+// Returns an empty span if `data` is nil or empty.
+inline span<const uint8_t> NSDataToSpan(NSData* data) {
+  // SAFETY: `NSData` guarantees that `bytes` is exactly `length` in size.
+  return UNSAFE_BUFFERS(
+      make_span(static_cast<const uint8_t*>(data.bytes), data.length));
+}
+
+// Returns a mutable `base::span<uint8_t>` pointing to the memory
+// owned by `data`. `data` must outlive the returned span.
+// Returns an empty span if `data` is nil or empty.
+inline span<uint8_t> NSMutableDataToSpan(NSMutableData* data) {
+  // SAFETY: `NSMutableData` guarantees that `mutableBytes` is exactly `length`
+  // in size.
+  return UNSAFE_BUFFERS(
+      make_span(static_cast<uint8_t*>(data.mutableBytes), data.length));
+}
+
 #endif  // defined(__OBJC__)
+
+// Returns an immutable `base::span<const uint8_t>` pointing to the memory
+// owned by `data`. `data` must outlive the returned span.
+// Returns an empty span if `data` is null or empty.
+BASE_EXPORT span<const uint8_t> CFDataToSpan(CFDataRef data);
+
+// Returns a mutable `base::span<uint8_t>` pointing to the memory
+// owned by `data`. `data` must outlive the returned span.
+// Returns an empty span if `data` is null or empty.
+BASE_EXPORT span<uint8_t> CFMutableDataToSpan(CFMutableDataRef data);
 
 }  // namespace base::apple
 

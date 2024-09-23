@@ -1,0 +1,97 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("platform_keys") {
+  sources = [
+    "platform_keys_service.cc",
+    "platform_keys_service.h",
+    "platform_keys_service_factory.cc",
+    "platform_keys_service_factory.h",
+    "platform_keys_service_nss.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/kcer",
+    "//ash/constants:constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/kcer",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/chaps_util",
+    "//chromeos/ash/components/network",
+    "//components/keyed_service/core",
+    "//components/policy/core/common",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//crypto",
+    "//net",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_platform_keys_service.cc",
+    "mock_platform_keys_service.h",
+    "platform_keys_service_test_util.cc",
+    "platform_keys_service_test_util.h",
+  ]
+
+  deps = [
+    ":platform_keys",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/chromeos/platform_keys",
+    "//crypto",
+    "//testing/gmock",
+  ]
+}
+
+group("unit_tests") {
+  testonly = true
+
+  deps = [
+    # Gather unit tests from subdirectories.
+    "//chrome/browser/ash/platform_keys/key_permissions:unit_tests",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "platform_keys_service_browsertest.cc" ]
+
+  deps = [
+    ":platform_keys",
+    ":test_support",
+    "//ash/components/kcer:chaps_proto",
+    "//base",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/chaps_util:test_support",
+    "//components/policy/core/common",
+    "//crypto",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+
+    # Gather browser tests from subdirectories.
+    "//chrome/browser/ash/platform_keys/key_permissions:browser_tests",
+  ]
+}

@@ -6,9 +6,12 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -20,13 +23,13 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -52,24 +55,10 @@ class MockSearchEngineChoiceDialogService
             *search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
                 profile),
             *TemplateURLServiceFactory::GetForProfile(profile)) {
-    ON_CALL(*this, GetSearchEngines).WillByDefault([]() {
-      std::vector<std::unique_ptr<TemplateURL>> choices;
-      auto choice = TemplateURLData();
-
-      for (int i = 0; i < 12; i++) {
-        const std::u16string kShortName = u"Test" + base::NumberToString16(i);
-        // Start from 1 because a `prepopulate_id` of 0 is for custom search
-        // engines.
-        choice.prepopulate_id = i + 1;
-        choice.SetShortName(kShortName);
-        if (i % 2 == 0) {
-          // The bing icon should be bundled with Chrome.
-          choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
-        } else {
-          // Uses the default generic favicon.
-          choice.SetKeyword(TemplateURLPrepopulateData::incredibar.keyword);
-        }
-        choices.push_back(std::make_unique<TemplateURL>(choice));
+    ON_CALL(*this, GetSearchEngines).WillByDefault([&]() {
+      TemplateURL::TemplateURLVector choices;
+      for (auto& choice : GetSearchEnginesInternal()) {
+        choices.push_back(choice.get());
       }
       return choices;
     });
@@ -83,16 +72,51 @@ class MockSearchEngineChoiceDialogService
         Profile::FromBrowserContext(context));
   }
 
-  MOCK_METHOD(std::vector<std::unique_ptr<TemplateURL>>,
-              GetSearchEngines,
-              (),
-              (override));
+  MOCK_METHOD(TemplateURL::TemplateURLVector, GetSearchEngines, (), (override));
+
+ private:
+  const TemplateURL::OwnedTemplateURLVector& GetSearchEnginesInternal() {
+    if (choices_.empty()) {
+      auto choice = TemplateURLData();
+
+      // Current design is built around having 8 items, but the max is defined
+      // acknowledging that we have some exceptions where there are more items.
+      const size_t kItemsCount = 8;
+      static_assert(kItemsCount <=
+                    TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines);
+
+      for (size_t i = 0; i < kItemsCount; i++) {
+        const std::u16string kShortName = u"Test" + base::NumberToString16(i);
+        // Start from 1 because a `prepopulate_id` of 0 is for custom search
+        // engines.
+        choice.prepopulate_id = i + 1;
+        choice.SetShortName(kShortName);
+        if (i % 2 == 0) {
+          // The bing icon should be bundled with Chrome.
+          choice.SetKeyword(TemplateURLPrepopulateData::bing.keyword);
+        } else {
+          // Uses the default generic favicon.
+          choice.SetKeyword(TemplateURLPrepopulateData::incredibar.keyword);
+        }
+        choices_.push_back(std::make_unique<TemplateURL>(choice));
+      }
+    }
+
+    return choices_;
+  }
+
+  TemplateURL::OwnedTemplateURLVector choices_;
 };
 
 struct TestParam {
   std::string test_suffix;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
+  bool select_first_search_engine = false;
+  bool first_snippet_text_larger = false;
+  bool display_info_dialog = false;
+  bool wait_for_banners_displayed = true;
+  bool is_guest_session = false;
   gfx::Size dialog_dimensions = gfx::Size(988, 900);
 };
 
@@ -109,14 +133,112 @@ const TestParam kTestParams[] = {
     {.test_suffix = "Default"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
     {.test_suffix = "RightToLeft", .use_right_to_left_language = true},
-    {.test_suffix = "MediumSize", .dialog_dimensions = gfx::Size(800, 700)},
-    {.test_suffix = "NarrowSize", .dialog_dimensions = gfx::Size(300, 900)},
+    {.test_suffix = "MediumSize",
+     .wait_for_banners_displayed = false,
+     .dialog_dimensions = gfx::Size(800, 700)},
+    {.test_suffix = "NarrowSize",
+     .wait_for_banners_displayed = false,
+     .dialog_dimensions = gfx::Size(300, 900)},
+    {.test_suffix = "ShortAndNarrowSize",
+     .wait_for_banners_displayed = false,
+     .dialog_dimensions = gfx::Size(500, 500)},
+    {.test_suffix = "LargerFirstEngineSnippet",
+     .first_snippet_text_larger = true},
+    // TODO(b/360286412): This test case is flaky.
+    // {.test_suffix = "FirstEngineSelectedWithLargerSnippet",
+    //  .select_first_search_engine = true,
+    //  .first_snippet_text_larger = true},
+    {.test_suffix = "InfoDialog", .display_info_dialog = true},
+    {.test_suffix = "InfoDialogDarkTheme",
+     .use_dark_theme = true,
+     .display_info_dialog = true},
+    {.test_suffix = "Guest", .is_guest_session = true},
+    {.test_suffix = "GuestRtl",
+     .use_right_to_left_language = true,
+     .is_guest_session = true},
 #endif
     // We enable the test on platforms other than Windows with the smallest
     // height due to a small maximum window height set by the operating system.
     // The test will crash if we exceed that height.
     {.test_suffix = "ShortSize", .dialog_dimensions = gfx::Size(988, 376)},
 };
+
+class SearchEngineChoiceNavigationObserver
+    : public content::TestNavigationObserver {
+ public:
+  explicit SearchEngineChoiceNavigationObserver(GURL url)
+      : content::TestNavigationObserver(url) {}
+
+  void NavigationOfInterestDidFinish(
+      content::NavigationHandle* navigation_handle) override {
+    web_contents_ = navigation_handle->GetWebContents();
+  }
+
+  content::WebContents* web_contents() const { return web_contents_; }
+
+ private:
+  raw_ptr<content::WebContents> web_contents_;
+};
+
+const char kSelectFirstSearchEngineJsString[] =
+    "(() => {"
+    "  const app = document.querySelector('search-engine-choice-app');"
+    "  const searchEngineList = app.shadowRoot.querySelectorAll("
+    "      'cr-radio-button');"
+    "  searchEngineList[0].click();"
+    "  return true;"
+    "})();";
+
+const char kMakeFirstSnippetLargerJsString[] =
+    "(() => {"
+    "const app = document.querySelector('search-engine-choice-app');"
+    "const marketingSnippet = "
+    "app.shadowRoot.querySelectorAll('.marketing-snippet');"
+    "marketingSnippet[0].textContent = "
+    "marketingSnippet[0].textContent.repeat(3);"
+    "return true;"
+    "})();";
+
+const char kDisplayInfoDialogJsString[] =
+    "(() => {"
+    "const app = document.querySelector('search-engine-choice-app');"
+    "app.shadowRoot.querySelector('#infoLink').click();"
+    "return true;"
+    "})();";
+
+// We remove the hover property to prevent the test from being flaky.
+const char kRemoveHoverPropertyJsString[] =
+    "(() => {"
+    "const app = document.querySelector('search-engine-choice-app');"
+    "const radioButtons = app.shadowRoot.querySelectorAll('cr-radio-button');"
+    "radioButtons.forEach(button => button.classList.remove('hoverable'));"
+    "return true;"
+    "})();";
+
+const char kAreBannersDisplayedJsString[] =
+    "(() => {"
+    "const app = document.querySelector('search-engine-choice-app');"
+    "const leftBannerStyle = "
+    "getComputedStyle(app.shadowRoot.querySelector('#leftBanner'));"
+    "const rightBannerStyle = "
+    "getComputedStyle(app.shadowRoot.querySelector('#rightBanner'));"
+    "return rightBannerStyle.display === 'block' && leftBannerStyle.display "
+    "=== 'block';"
+    "})();";
+
+void WaitForBannersDisplayed(content::WebContents* web_contents,
+                             base::OnceClosure quit_closure) {
+  if (content::EvalJs(web_contents, kAreBannersDisplayedJsString) == true) {
+    std::move(quit_closure).Run();
+    return;
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&WaitForBannersDisplayed, web_contents,
+                     std::move(quit_closure)),
+      TestTimeouts::tiny_timeout());
+}
+
 }  // namespace
 
 class SearchEngineChoiceUIPixelTest
@@ -130,10 +252,28 @@ class SearchEngineChoiceUIPixelTest
                                               /*force_chrome_build=*/true)),
         pixel_test_mixin_(&mixin_host_,
                           GetParam().use_dark_theme,
-                          GetParam().use_right_to_left_language) {
-  }
+                          GetParam().use_right_to_left_language) {}
 
   ~SearchEngineChoiceUIPixelTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    if (GetParam().is_guest_session) {
+      ui_test_utils::BrowserChangeObserver browser_added_observer(
+          nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+      CreateGuestBrowser();
+      Browser* new_browser = browser_added_observer.Wait();
+      ASSERT_TRUE(new_browser);
+      ASSERT_NE(new_browser, browser());
+      ASSERT_TRUE(new_browser->profile()->IsGuestSession());
+
+      CloseBrowserSynchronously(browser());
+      SelectFirstBrowser();
+      ASSERT_EQ(new_browser, browser());
+    }
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -157,7 +297,7 @@ class SearchEngineChoiceUIPixelTest
         /*dialog_disabled=*/false);
 
     GURL url = GURL(chrome::kChromeUISearchEngineChoiceURL);
-    content::TestNavigationObserver observer(url);
+    SearchEngineChoiceNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
 
     views::NamedWidgetShownWaiter widget_waiter(
@@ -183,13 +323,41 @@ class SearchEngineChoiceUIPixelTest
     ShowSearchEngineChoiceDialog(
         *browser(), gfx::Size(dialog_width, dialog_height), zoom_factor);
     widget_waiter.WaitIfNeededAndGet();
+
+    content::WebContents* web_contents = observer.web_contents();
+    CHECK(web_contents);
+
+    EXPECT_EQ(true,
+              content::EvalJs(web_contents, kRemoveHoverPropertyJsString));
+
+    if (GetParam().select_first_search_engine) {
+      EXPECT_EQ(true, content::EvalJs(web_contents,
+                                      kSelectFirstSearchEngineJsString));
+    }
+
+    if (GetParam().first_snippet_text_larger) {
+      EXPECT_EQ(true,
+                content::EvalJs(web_contents, kMakeFirstSnippetLargerJsString));
+    }
+
+    if (GetParam().display_info_dialog) {
+      EXPECT_EQ(true,
+                content::EvalJs(web_contents, kDisplayInfoDialogJsString));
+    }
+
+    if (GetParam().wait_for_banners_displayed) {
+      base::RunLoop run_loop;
+      WaitForBannersDisplayed(web_contents, run_loop.QuitClosure());
+      run_loop.Run();
+    }
+
     observer.Wait();
   }
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_;
   base::test::ScopedFeatureList feature_list_{
-      switches::kSearchEngineChoiceTrigger};
+      switches::kSearchEngineChoiceGuestExperience};
   PixelTestConfigurationMixin pixel_test_mixin_;
   base::CallbackListSubscription create_services_subscription_;
 };

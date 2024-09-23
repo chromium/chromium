@@ -5,12 +5,14 @@
 #include "content/browser/media/media_browsertest.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -24,11 +26,12 @@
 #include "media/base/supported_types.h"
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/url_util.h"
 
 // Proprietary codecs require acceleration on Android.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 #define REQUIRE_ACCELERATION_ON_ANDROID() \
   if (!is_accelerated())                  \
   return
@@ -50,12 +53,10 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kExposeInternalsForTesting);
 
   std::vector<base::test::FeatureRef> enabled_features = {
+    media::kBuiltInH264Decoder,
+
 #if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-    media::kCrOSLegacyMediaFormats,
 #endif
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER) && BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -139,6 +140,11 @@ void MediaBrowserTest::AddTitlesToAwait(content::TitleWatcher* title_watcher) {
   title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(media::kFailedTitle));
 }
 
+void MediaBrowserTest::PreRunTestOnMainThread() {
+  ContentBrowserTest::PreRunTestOnMainThread();
+  media::AddSupplementalCodecsForTesting(GetGpuPreferencesFromCommandLine());
+}
+
 // Tests playback and seeking of an audio or video file. Test starts with
 // playback then, after X seconds or the ended event fires, seeks near end of
 // file; see player.html for details. The test completes when either the last
@@ -154,7 +160,7 @@ class MediaTest : public testing::WithParamInterface<bool>,
     MediaBrowserTest::SetUpCommandLine(command_line);
   }
 
-  void MaybePlayVideo(base::StringPiece codec_string,
+  void MaybePlayVideo(std::string_view codec_string,
                       const std::string& file_name) {
     constexpr char kTestVideoPlaybackScript[] = R"({
       const video = document.createElement('video');
@@ -212,25 +218,6 @@ class MediaTest : public testing::WithParamInterface<bool>,
   }
 };
 
-// Android doesn't support Theora.
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearTheora) {
-  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
-    PlayVideo("bear.ogv");
-  } else {
-    GTEST_SKIP() << "Theora isn't supported";
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentTheora) {
-  if (base::FeatureList::IsEnabled(media::kTheoraVideoCodec)) {
-    PlayVideo("bear_silent.ogv");
-  } else {
-    GTEST_SKIP() << "Theora isn't supported";
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWebm) {
   PlayVideo("bear.webm");
 }
@@ -262,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentWebm) {
 // We don't expect android devices to support highbit yet.
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(https://crbug.com/1373513): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
+// TODO(crbug.com/40242077): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
 // Fuchsia Arm64.
 #if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_VideoBearHighBitDepthVP9 DISABLED_VideoBearHighBitDepthVP9
@@ -273,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBearHighBitDepthVP9) {
   PlayVideo("bear-320x180-hi10p-vp9.webm");
 }
 
-// TODO(https://crbug.com/1373513): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
+// TODO(crbug.com/40242077): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
 // Fuchsia Arm64.
 #if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
 #define MAYBE_VideoBear12DepthVP9 DISABLED_VideoBear12DepthVP9
@@ -359,47 +346,62 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear3gpAacH264) {
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+// HEVC video stream with 8-bit 422 range extension profile
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit422) {
+  MaybePlayVideo("hev1.4.10.L93.9d.8",
+                 "bear-1280x720-hevc-8bit-422-no-audio.mp4");
+}
+
+// HEVC video stream with 8-bit 444 range extension profile
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit444) {
+  MaybePlayVideo("hev1.4.10.L93.9e.8",
+                 "bear-1280x720-hevc-8bit-444-no-audio.mp4");
+}
+
 // HEVC video stream with 10-bit 422 range extension profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit422) {
-  MaybePlayVideo("hev1.4.10.L120.90",
+  MaybePlayVideo("hev1.4.10.L93.9d.8",
                  "bear-1280x720-hevc-10bit-422-no-audio.mp4");
 }
 
 // HEVC video stream with 10-bit 444 range extension profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit444) {
-  MaybePlayVideo("hev1.4.10.L120.90",
+  MaybePlayVideo("hev1.4.10.L93.9c.8",
                  "bear-1280x720-hevc-10bit-444-no-audio.mp4");
 }
 
 // HEVC video stream with 8-bit main profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc8bit) {
-  // TODO(crbug.com/1449878) : For Android, the `canPlayType()` test in
+  // TODO(crbug.com/40269930) : For Android, the `canPlayType()` test in
   // `MaybePlayVideo` should be reporting the correct status for HEVC. The below
   // `REQUIRE_ACCELERATION_ON_ANDROID` flag is a temporary fix.
   REQUIRE_ACCELERATION_ON_ANDROID();
-  MaybePlayVideo("hev1.1.6.L120.90", "bear-1280x720-hevc-no-audio.mp4");
+  MaybePlayVideo("hev1.1.6.L93.90", "bear-1280x720-hevc-no-audio.mp4");
 }
 
 // HEVC video stream with 10-bit main10 profile
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearMp4Hevc10bit) {
-  // TODO(crbug.com/1449878) : For Android, the `canPlayType()` test in
+  // TODO(crbug.com/40269930) : For Android, the `canPlayType()` test in
   // `MaybePlayVideo` should be reporting the correct status for HEVC. The below
   // `REQUIRE_ACCELERATION_ON_ANDROID` flag is a temporary fix.
   REQUIRE_ACCELERATION_ON_ANDROID();
-  MaybePlayVideo("hev1.2.4.L120.90", "bear-1280x720-hevc-10bit-no-audio.mp4");
+  MaybePlayVideo("hev1.2.4.L93.90", "bear-1280x720-hevc-10bit-no-audio.mp4");
 }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
 // Android devices usually only support baseline, main and high.
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthMp4) {
   PlayVideo("bear-320x180-hi10p.mp4");
 }
 
+#endif
+
 // Android can't reliably load lots of videos on a page.
 // See http://crbug.com/749265
-// TODO(crbug.com/1222852): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40774322): Flaky on Mac.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_LoadManyVideos DISABLED_LoadManyVideos
 #else
 #define MAYBE_LoadManyVideos LoadManyVideos
@@ -412,21 +414,6 @@ IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_LoadManyVideos) {
   RunMediaTestPage("load_many_videos.html", query_params, media::kEndedTitle,
                    true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4) {
-  PlayVideo("bear_mpeg4_mp3.avi");
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Mpeg4Asp) {
-  PlayVideo("bear_mpeg4asp_mp3.avi");
-}
-
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearAviMp3Divx) {
-  PlayVideo("bear_divx_mp3.avi");
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 IN_PROC_BROWSER_TEST_P(MediaTest, AudioBearFlac) {
@@ -459,6 +446,10 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm192kHz) {
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoTulipWebm) {
   PlayVideo("tulip2.webm");
+}
+
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoEbu3213Primary) {
+  PlayVideo("ebu-3213-e-vp9.mp4");
 }
 
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorMissingResource) {

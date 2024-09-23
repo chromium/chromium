@@ -8,11 +8,11 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -131,18 +131,16 @@ void GCMKeyStore::CreateKeysAfterInitialize(
   std::unique_ptr<crypto::ECPrivateKey> key(crypto::ECPrivateKey::Create());
 
   if (!key) {
-    NOTREACHED() << "Unable to initialize a P-256 key pair.";
+    NOTREACHED_IN_MIGRATION() << "Unable to initialize a P-256 key pair.";
 
     std::move(callback).Run(nullptr /* key */, std::string() /* auth_secret */);
     return;
   }
 
-  std::string auth_secret;
-
   // Create the authentication secret, which has to be a cryptographically
   // secure random number of at least 128 bits (16 bytes).
-  crypto::RandBytes(base::WriteInto(&auth_secret, kAuthSecretBytes + 1),
-                    kAuthSecretBytes);
+  std::string auth_secret(kAuthSecretBytes, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(auth_secret));
 
   // Store the keys in a new EncryptionData object.
   EncryptionData encryption_data;

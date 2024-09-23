@@ -30,10 +30,10 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   enum class Format : uint8_t {
     // A normal bitmap. When the results are returned in system memory, the
     // AsSkBitmap() will return a bitmap in "N32Premul" form. When the results
-    // are returned in a texture,  it will be an GL_RGBA texture referred to by
-    // a gpu::Mailbox. Client code can optionally take ownership of the texture
-    // (via a call to |TakeTextureOwnership()|) if it is needed beyond the
-    // lifetime of the CopyOutputResult.
+    // are returned in a texture, it will be a SharedImageFormat::kRGBA_8888
+    // texture referred to by a gpu::Mailbox. Client code can optionally take
+    // ownership of the texture (via a call to `TakeTextureOwnership()`) if it
+    // is needed beyond the lifetime of the CopyOutputResult.
     RGBA,
     // I420 format planes. This is intended to be used internally within the VIZ
     // component to support video capture. When requesting this format, results
@@ -41,17 +41,11 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     // DirectRenderer implementation. For now, I420 format can be requested only
     // for system memory.
     I420_PLANES,
-    // NV12 format planes. This is intended to be used internally within the VIZ
+    // An NV12 image. This is intended to be used internally within the VIZ
     // component to support video capture. When requesting this format, results
     // can only be delivered on the same task runner sequence that runs the
     // DirectRenderer implementation.
-    NV12_PLANES,
-    // An NV12 image associated with a single mailbox via
-    // MultiplanarSharedImage. This is intended to be used internally within the
-    // VIZ component to support video capture. When requesting this format,
-    // results can only be delivered on the same task runner sequence that runs
-    // the DirectRenderer implementation.
-    NV12_MULTIPLANE,
+    NV12,
   };
 
   // Specifies how the results are delivered to the issuer of the request.
@@ -68,14 +62,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     kNativeTextures,
   };
 
-  // Maximum number of planes allowed when returning results in native textures.
-  // We need at most 3 planes to support the formats we're interested in (RGBA
-  // format requires 1 plane, NV12 requires 2, I420 requires 3 planes).
-  static constexpr size_t kMaxPlanes = 3;
-  static constexpr size_t kRGBAMaxPlanes = 1;
-  static constexpr size_t kNV12MultiplaneMaxPlanes = 1;
+  // Maximum number of planes allowed when returning software NV12 results.
   static constexpr size_t kNV12MaxPlanes = 2;
-  static constexpr size_t kI420MaxPlanes = 3;
 
   CopyOutputResult(Format format,
                    Destination destination,
@@ -110,8 +98,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // after ScopedSkBitmap is released.
   ScopedSkBitmap ScopedAccessSkBitmap() const;
 
-  // Returns a pointer with a set of gpu::MailboxHolders referencing a
-  // texture-backed result, or null if this is not a texture-backed result.
+  // Returns a pointer with a mailbox referencing a texture-backed result, or
+  // null if this is not a texture-backed result.
   // Clients can either:
   //   1. Let CopyOutputResult retain ownership and the texture will only be
   //      valid for use during CopyOutputResult's lifetime.
@@ -121,29 +109,14 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // Even when the returned pointer is non-null, the object that it points to
   // can be default-constructed (the resulting mailboxes can be empty) in the
   // case of a failed reply, in which case IsEmpty() would report true.
-  // NOTE: The SharedImages referenced by these mailboxes are read-only from the
-  // client's POV (e.g., they cannot be written via the raster or GLES2
-  // interface).
+  // NOTE: The shared image referenced by the mailbox are read-only and only
+  // accessible by raster interface (from the client's POV).
   struct VIZ_COMMON_EXPORT TextureResult {
-    // |texture_target| is guaranteed to be GL_TEXTURE_2D for each returned
-    // mailbox. The mailboxes are placed continuously from the beginning of the
-    // array
-    // - i.e. if k mailboxes are valid, indices from 0 (inclusive), to k
-    // (exclusive) will contain the data. If the result is not empty, at least
-    // one mailbox must be filled out (non-zero).
-    std::array<gpu::MailboxHolder, kMaxPlanes> mailbox_holders;
-
+    gpu::Mailbox mailbox;
     gfx::ColorSpace color_space;
 
-    // Single plane variant:
     TextureResult(const gpu::Mailbox& mailbox,
-                  const gpu::SyncToken& sync_token,
                   const gfx::ColorSpace& color_space);
-
-    // General purpose variant:
-    TextureResult(
-        const std::array<gpu::MailboxHolder, kMaxPlanes>& mailbox_holders,
-        const gfx::ColorSpace& color_space);
 
     TextureResult(const TextureResult& other);
     TextureResult& operator=(const TextureResult& other);
@@ -199,10 +172,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
                               uint8_t* v_out,
                               int v_out_stride) const;
 
-  // Copies the image planes of an NV12_PLANES result to the caller-provided
-  // memory. Returns true if successful, or false if: 1) this result is empty,
-  // or 2) the result format is not NV12_PLANES and does not provide a
-  // conversion implementation.
+  // Copies the image planes of an NV12 result to the caller-provided memory.
+  // Returns true if successful, or false if: 1) this result is empty, or 2) the
+  // result format is not NV12 and does not provide a conversion implementation.
   //
   // |y_out| and |uv_out| point to the start of the memory regions to
   // receive each plane. These memory regions must have the following sizes:

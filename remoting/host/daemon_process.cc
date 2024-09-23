@@ -182,6 +182,11 @@ DaemonProcess::DaemonProcess(
   // TODO(sammc): On OSX, mojo::core::SetMachPortProvider() should be called
   // with a base::PortProvider implementation. Add it here when this code is
   // used on OSX.
+
+  // Tests may use their own thread pool so create one if needed.
+  if (!base::ThreadPoolInstance::Get()) {
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Daemon");
+  }
 }
 
 void DaemonProcess::CreateDesktopSession(int terminal_id,
@@ -266,8 +271,6 @@ void DaemonProcess::Initialize() {
   config_watcher_->Watch(this);
   host_event_logger_ =
       HostEventLogger::Create(status_monitor_, kApplicationName);
-
-  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Daemon");
 
   StartChromotingHostServices();
 

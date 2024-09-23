@@ -20,10 +20,11 @@ void FakeDeviceDescriptorTest::SetUp() {
   VideoCaptureServiceTest::SetUp();
 
   base::RunLoop wait_loop;
-  EXPECT_CALL(device_info_receiver_, Run(_))
-      .WillOnce(
-          Invoke([this, &wait_loop](
-                     const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+  EXPECT_CALL(device_info_receiver_, Run)
+      .WillOnce(Invoke(
+          [this, &wait_loop](
+              video_capture::mojom::VideoSourceProvider::GetSourceInfosResult,
+              const std::vector<media::VideoCaptureDeviceInfo>& infos) {
             CHECK(infos.size() >= 3);
             i420_fake_device_info_ = infos[0];
             mjpeg_fake_device_info_ = infos[2];

@@ -14,6 +14,7 @@ import android.view.Surface;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -37,6 +38,9 @@ import java.util.List;
 @JNINamespace("content")
 public class ContentChildProcessServiceDelegate implements ChildProcessServiceDelegate {
     private static final String TAG = "ContentCPSDelegate";
+
+    // The binder box passed to us by the browser. May be null.
+    private IBinder mBinderBox;
 
     private IGpuProcessCallback mGpuCallback;
 
@@ -63,7 +67,9 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
     }
 
     @Override
-    public void onConnectionSetup(Bundle connectionBundle, List<IBinder> clientInterfaces) {
+    public void onConnectionSetup(
+            Bundle connectionBundle, List<IBinder> clientInterfaces, IBinder binderBox) {
+        mBinderBox = binderBox;
         mGpuCallback =
                 clientInterfaces != null && !clientInterfaces.isEmpty()
                         ? IGpuProcessCallback.Stub.asInterface(clientInterfaces.get(0))
@@ -136,6 +142,7 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
     @Override
     public void runMain() {
+        ContentMain.setBindersFromParent(mBinderBox);
         ContentMain.start(false);
     }
 
@@ -151,7 +158,8 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private void forwardSurfaceForSurfaceRequest(UnguessableToken requestToken, Surface surface) {
+    private void forwardSurfaceForSurfaceRequest(
+            @JniType("base::UnguessableToken") UnguessableToken requestToken, Surface surface) {
         if (mGpuCallback == null) {
             Log.e(TAG, "No callback interface has been provided.");
             return;

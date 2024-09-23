@@ -38,8 +38,9 @@ class CONTENT_EXPORT WebCursor {
   gfx::NativeCursor GetNativeCursor();
 
 #if defined(USE_AURA)
-  // Updates |device_scale_factor_| and |rotation_| based on |display|.
-  void SetDisplayInfo(const display::Display& display);
+  // Updates |device_scale_factor_| and |rotation_| based on |window|'s
+  // preferred scale (if any) and its display information.
+  void UpdateDisplayInfoForWindow(aura::Window* window);
 
   bool has_custom_cursor_for_test() const { return !!custom_cursor_; }
 #endif

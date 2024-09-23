@@ -41,7 +41,7 @@ class WaylandDataDeviceBase {
   const std::vector<std::string>& GetAvailableMimeTypes() const;
 
   // Synchronously reads and returns selection data with |mime_type| format.
-  // TODO(crbug.com/443355): Drop once Clipboard API becomes async.
+  // TODO(crbug.com/40398800): Drop once Clipboard API becomes async.
   PlatformClipboard::Data ReadSelectionData(const std::string& mime_type);
 
  protected:

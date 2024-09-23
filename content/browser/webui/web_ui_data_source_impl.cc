@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -94,11 +94,7 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
                         URLDataSource::GotDataCallback callback) override {
     return parent_->StartDataRequest(url, wc_getter, std::move(callback));
   }
-  bool ShouldReplaceExistingSource() override {
-    return parent_->replace_existing_source_;
-  }
   bool AllowCaching() override { return false; }
-  bool ShouldAddContentSecurityPolicy() override { return parent_->add_csp_; }
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override {
     if (parent_->csp_overrides_.contains(directive)) {
@@ -157,20 +153,20 @@ WebUIDataSourceImpl::WebUIDataSourceImpl(const std::string& source_name)
 
 WebUIDataSourceImpl::~WebUIDataSourceImpl() = default;
 
-void WebUIDataSourceImpl::AddString(base::StringPiece name,
-                                    const std::u16string& value) {
+void WebUIDataSourceImpl::AddString(std::string_view name,
+                                    std::u16string_view value) {
   // TODO(dschuyler): Share only one copy of these strings.
   localized_strings_.Set(name, value);
   replacements_[std::string(name)] = base::UTF16ToUTF8(value);
 }
 
-void WebUIDataSourceImpl::AddString(base::StringPiece name,
-                                    const std::string& value) {
+void WebUIDataSourceImpl::AddString(std::string_view name,
+                                    std::string_view value) {
   localized_strings_.Set(name, value);
   replacements_[std::string(name)] = value;
 }
 
-void WebUIDataSourceImpl::AddLocalizedString(base::StringPiece name, int ids) {
+void WebUIDataSourceImpl::AddLocalizedString(std::string_view name, int ids) {
   std::string utf8_str =
       base::UTF16ToUTF8(GetContentClient()->GetLocalizedString(ids));
   localized_strings_.Set(name, utf8_str);
@@ -190,7 +186,7 @@ void WebUIDataSourceImpl::AddLocalizedStrings(
                                               &replacements_);
 }
 
-void WebUIDataSourceImpl::AddBoolean(base::StringPiece name, bool value) {
+void WebUIDataSourceImpl::AddBoolean(std::string_view name, bool value) {
   localized_strings_.Set(name, value);
   // TODO(dschuyler): Change name of |localized_strings_| to |load_time_data_|
   // or similar. These values haven't been found as strings for
@@ -199,11 +195,11 @@ void WebUIDataSourceImpl::AddBoolean(base::StringPiece name, bool value) {
   // replacements.
 }
 
-void WebUIDataSourceImpl::AddInteger(base::StringPiece name, int32_t value) {
+void WebUIDataSourceImpl::AddInteger(std::string_view name, int32_t value) {
   localized_strings_.Set(name, value);
 }
 
-void WebUIDataSourceImpl::AddDouble(base::StringPiece name, double value) {
+void WebUIDataSourceImpl::AddDouble(std::string_view name, double value) {
   localized_strings_.Set(name, value);
 }
 
@@ -211,7 +207,7 @@ void WebUIDataSourceImpl::UseStringsJs() {
   use_strings_js_ = true;
 }
 
-void WebUIDataSourceImpl::AddResourcePath(base::StringPiece path,
+void WebUIDataSourceImpl::AddResourcePath(std::string_view path,
                                           int resource_id) {
   path_to_idr_map_[std::string(path)] = resource_id;
 }
@@ -235,16 +231,8 @@ void WebUIDataSourceImpl::SetRequestFilter(
   filter_callback_ = handle_request_callback;
 }
 
-void WebUIDataSourceImpl::DisableReplaceExistingSource() {
-  replace_existing_source_ = false;
-}
-
 bool WebUIDataSourceImpl::IsWebUIDataSourceImpl() const {
   return true;
-}
-
-void WebUIDataSourceImpl::DisableContentSecurityPolicy() {
-  add_csp_ = false;
 }
 
 void WebUIDataSourceImpl::OverrideContentSecurityPolicy(
@@ -269,7 +257,7 @@ void WebUIDataSourceImpl::OverrideCrossOriginResourcePolicy(
 }
 
 void WebUIDataSourceImpl::DisableTrustedTypesCSP() {
-  // TODO(crbug.com/1098685): Trusted Type remaining WebUI
+  // TODO(crbug.com/40137141): Trusted Type remaining WebUI
   // This removes require-trusted-types-for and trusted-types directives
   // from the CSP header.
   OverrideContentSecurityPolicy(
@@ -309,44 +297,61 @@ std::string WebUIDataSourceImpl::GetSource() {
   return source_name_;
 }
 
-void WebUIDataSourceImpl::SetSupportedScheme(base::StringPiece scheme) {
+void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {
   CHECK(!supported_scheme_.has_value());
 
   supported_scheme_ = scheme;
 }
 
 std::string WebUIDataSourceImpl::GetMimeType(const GURL& url) const {
-  const base::StringPiece file_path = url.path_piece();
+  const std::string_view file_path = url.path_piece();
 
-  if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     return "text/css";
+  }
 
-  if (base::EndsWith(file_path, ".js", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".js", base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/javascript";
+  }
 
-  if (base::EndsWith(file_path, ".json", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".ts", base::CompareCase::INSENSITIVE_ASCII)) {
+    return "application/typescript";
+  }
+
+  if (base::EndsWith(file_path, ".json",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/json";
+  }
 
-  if (base::EndsWith(file_path, ".pdf", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".pdf", base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/pdf";
+  }
 
-  if (base::EndsWith(file_path, ".svg", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".svg", base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/svg+xml";
+  }
 
-  if (base::EndsWith(file_path, ".jpg", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".jpg", base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/jpeg";
+  }
 
-  if (base::EndsWith(file_path, ".png", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".png", base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/png";
+  }
 
-  if (base::EndsWith(file_path, ".mp4", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".mp4", base::CompareCase::INSENSITIVE_ASCII)) {
     return "video/mp4";
+  }
 
-  if (base::EndsWith(file_path, ".wasm", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".wasm",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/wasm";
+  }
 
-  if (base::EndsWith(file_path, ".woff2", base::CompareCase::INSENSITIVE_ASCII))
+  if (base::EndsWith(file_path, ".woff2",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
     return "application/font-woff2";
+  }
 
   return "text/html";
 }

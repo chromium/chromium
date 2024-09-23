@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace ash {
 namespace time_limit_test_utils {
@@ -53,7 +54,8 @@ std::string CreatePolicyTimestamp(const char* time_string) {
 }
 
 std::string CreatePolicyTimestamp(base::Time time) {
-  return std::to_string((time - base::Time::UnixEpoch()).InMilliseconds());
+  return base::NumberToString(
+      (time - base::Time::UnixEpoch()).InMilliseconds());
 }
 
 base::TimeDelta CreateTime(int hour, int minute) {

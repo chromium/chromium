@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -34,7 +35,7 @@ InstallIsolatedWebAppVirtualTask::InstallIsolatedWebAppVirtualTask() {
 }
 
 bool InstallIsolatedWebAppVirtualTask::IsEnabled(Profile* profile) const {
-  return content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile);
+  return web_app::IsIwaUnmanagedInstallEnabled(profile);
 }
 
 std::string InstallIsolatedWebAppVirtualTask::id() const {
@@ -49,8 +50,13 @@ std::string InstallIsolatedWebAppVirtualTask::title() const {
 
 GURL InstallIsolatedWebAppVirtualTask::icon_url() const {
   // This gets overridden in file_tasks.ts.
-  // TODO(crbug.com/1479140): Specify the icon here instead of overriding it.
+  // TODO(crbug.com/40280769): Specify the icon here instead of overriding it.
   return GURL();
+}
+
+bool InstallIsolatedWebAppVirtualTask::IsDlpBlocked(
+    const std::vector<std::string>& dlp_source_urls) const {
+  return false;
 }
 
 bool InstallIsolatedWebAppVirtualTask::Execute(

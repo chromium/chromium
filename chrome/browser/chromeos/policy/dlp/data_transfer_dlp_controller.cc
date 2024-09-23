@@ -18,12 +18,13 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "components/enterprise/data_controls/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -189,7 +190,7 @@ DlpRulesManager::Level IsDataTransferAllowed(
     }
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return level;
@@ -239,10 +240,10 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
   // data.
   base::optional_ref<const ui::DataTransferEndpoint> source =
       data_src.has_value() && !data_src->off_the_record() ? data_src
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
   base::optional_ref<const ui::DataTransferEndpoint> destination =
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
 
   std::string src_pattern;
   std::string dst_pattern;
@@ -321,10 +322,10 @@ void DataTransferDlpController::PasteIfAllowed(
   // data.
   base::optional_ref<const ui::DataTransferEndpoint> source =
       data_src.has_value() && !data_src->off_the_record() ? data_src
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
   base::optional_ref<const ui::DataTransferEndpoint> destination =
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
 
   if (absl::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
       !IsFilesApp(destination)) {
@@ -338,10 +339,11 @@ void DataTransferDlpController::PasteIfAllowed(
     return;
   }
 
-  if (absl::holds_alternative<size_t>(pasted_content)) {
-    size_t size = absl::get<size_t>(pasted_content);
-    ContinuePasteIfClipboardRestrictionsAllow(source, destination, size, rfh,
-                                              std::move(paste_cb));
+  if (absl::holds_alternative<size_t>(pasted_content) &&
+      absl::get<size_t>(pasted_content) > 0) {
+    ContinuePasteIfClipboardRestrictionsAllow(source, destination,
+                                              absl::get<size_t>(pasted_content),
+                                              rfh, std::move(paste_cb));
     return;
   }
 
@@ -349,29 +351,27 @@ void DataTransferDlpController::PasteIfAllowed(
 }
 
 void DataTransferDlpController::DropIfAllowed(
-    const ui::OSExchangeData* drag_data,
-    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+    std::optional<ui::DataTransferEndpoint> data_src,
+    std::optional<ui::DataTransferEndpoint> data_dst,
+    std::optional<std::vector<ui::FileInfo>> filenames,
     base::OnceClosure drop_cb) {
-  DCHECK(drag_data);
   // To simplify logic that would have to check OTR in every sub-call of DLP
   // checks, simply null the endpoints so that subsequent code never misuses
   // data.
-  base::optional_ref<const ui::DataTransferEndpoint> source =
-      drag_data->GetSource() && !drag_data->GetSource()->off_the_record()
-          ? base::optional_ref<const ui::DataTransferEndpoint>(
-                drag_data->GetSource())
-          : std::nullopt;
-  base::optional_ref<const ui::DataTransferEndpoint> destination =
+  std::optional<ui::DataTransferEndpoint> source =
+      data_src.has_value() && !data_src->off_the_record() ? data_src
+                                                          : std::nullopt;
+  std::optional<ui::DataTransferEndpoint> destination =
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
                                                           : std::nullopt;
 
-  if (drag_data->HasFile() && !IsFilesApp(destination)) {
+  if (filenames.has_value() && !filenames->empty() &&
+      !IsFilesApp(destination)) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
-      std::vector<ui::FileInfo> dropped_files;
-      drag_data->GetFilenames(&dropped_files);
+      CHECK(destination.has_value());
       files_controller->CheckIfPasteOrDropIsAllowed(
-          GetFilePathsFromFileInfos(dropped_files), destination.as_ptr(),
+          GetFilePathsFromFileInfos(filenames.value()), &destination.value(),
           base::BindOnce(
               [](base::OnceClosure drop_cb, bool is_allowed) {
                 if (is_allowed) {
@@ -422,7 +422,7 @@ void DataTransferDlpController::ReportWarningProceededEvent(
   }
 
   if (data_dst.has_value() && IsVM(data_dst->type())) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   } else {
     const std::string src_url = (data_src.has_value() && data_src->IsUrlType())
                                     ? data_src->GetURL()->spec()
@@ -598,8 +598,8 @@ void DataTransferDlpController::MaybeReportEvent(
 }
 
 void DataTransferDlpController::ContinueDropIfAllowed(
-    base::optional_ref<const ui::DataTransferEndpoint> data_src,
-    base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+    std::optional<ui::DataTransferEndpoint> data_src,
+    std::optional<ui::DataTransferEndpoint> data_dst,
     base::OnceClosure drop_cb) {
   std::string src_pattern;
   std::string dst_pattern;
@@ -627,7 +627,7 @@ void DataTransferDlpController::ContinueDropIfAllowed(
       break;
 
     case DlpRulesManager::Level::kNotSet:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   const bool is_drop_allowed = (level == DlpRulesManager::Level::kAllow) ||

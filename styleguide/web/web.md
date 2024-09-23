@@ -130,7 +130,7 @@ amount of addressing (adding an ID just to wire up event handling).
 ```
 
 * Element IDs use `dash-form`
-    * Exception: `camelCase` is allowed in Polymer code for easier
+    * Exception: `camelCase` is allowed in Polymer and Lit code for easier
       `this.$.idName` access.
 
 * Localize all strings using $i18n{}
@@ -387,6 +387,12 @@ if (!enterKey) {
 
 ## Polymer
 
+***note
+Lit is now recommended (over Polymer) for any new WebUI development. See
+the Lit section below for additional detail on when to use Lit vs Polymer. The
+guide below still applies for any new or existing Polymer code.
+***
+
 Also see the [Google Polymer Style Guide](http://go/polymer-style).
 
 * Elements with UI should have their HTML in a .html file and logic in a TS file
@@ -399,7 +405,7 @@ Also see the [Google Polymer Style Guide](http://go/polymer-style).
   }
 ```
 
-* In new code, use class based syntax for custom elements. Example:
+* Use class based syntax for custom elements. Example:
 ```js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './my_app.html.js';
@@ -450,22 +456,27 @@ interface MyAppElement {
 }
 ```
 
-* Use `this.foo` instead of `newFoo` arguments in observers when possible.
-  This makes changing the type of `this.foo` easier (as the `@type` is
-  duplicated in less places, i.e. `@param`).
+* Use `this.foo` instead of `newFoo` arguments when possible in observers,
+  property computation methods, and in element instance methods called from
+  HTML.
 
-```js
-static get properties() {
-  return {
-    foo: {type: Number, observer: 'fooChanged_'},
-  };
-}
+  The signature of the `computeBar_()` function in the TS file does not matter,
+  so omit parameters there, as they would be unused. What matters is for the
+  call site to declare the right properties as dependencies, so that the
+  binding correctly triggers whenever it changes.
 
-/** @private */
-fooChanged_() {
-  this.bar = this.derive(this.foo);
-}
-```
+  ```ts
+  static get properties() {
+    return {
+      foo: {type: Number, value: 42},
+      bar: {type: Boolean, computed: 'computeBar_(foo)'},
+    };
+  }
+
+  private computeBar_(): boolean {
+    return this.derive(this.foo);
+  }
+  ```
 
 * Use native `on-click` for click events instead of `on-tap`. 'tap' is a
   synthetic event provided by Polymer for backward compatibility with some
@@ -487,12 +498,44 @@ https://www.polymer-project.org/2.0/docs/devguide/templates#dom-if):
     https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden)
     yields better performance, than adding a custom `dom-if` element.
 
+* Do not add new dependencies on `iron-` or `paper-` Polymer elements, styles,
+  and behaviors. These are being removed from Chromium. In many cases, Lit-based
+  equivalents already exist in `ui/webui/resources/cr_elements` (e.g.
+  `cr-collapse` should be used instead of `iron-collapse`). In other cases,
+  there is a native solution which should be used instead of the Polymer
+  solution (e.g. use `window.matchMedia()` instead of `iron-media-query`).
+  Contact the WebUI OWNERS if you are unsure what to use instead of a specific
+  Polymer feature. Exceptions:
+  * Polymer UIs can use Polymer's `iron-iconset-svg` to avoid adding a
+    dependency on Lit, which is required for using `cr-iconset`. Note that
+    Polymer UIs can and should use `cr-icon` instead of `iron-icon`, as
+    `cr-icon` can be used with icons provided in either an `iron-iconset-svg`
+    or a `cr-iconset`.
+  * UIs with a compelling use case (i.e. extremely long list of items) may use
+    `iron-list`, as a native/Lit equivalent has not yet been developed. Do not
+    use `iron-list` for relatively short lists (~20 or fewer items); use
+    `dom-repeat` in Polymer code or `items.map(...)` in Lit HTML.
+
 * Do not add iron-icons dependency to third_party/polymer/.
   * Polymer provides icons via the `iron-icons` library, but importing each of the iconsets means importing hundreds of SVGs, which is unnecessary because Chrome uses only a small subset.
   * Alternatives:
     * Include the SVG in a WebUI page-specific icon file. e.g. `chrome/browser/resources/settings/icons.html`.
     * If reused across multiple WebUI pages, include the SVG in `ui/webui/resources/cr_elements/icons.html` .
   * You may copy the SVG code from [iron-icons files](https://github.com/PolymerElements/iron-icons/blob/master/iron-icons.js).
+
+## Lit
+Lit is now recommended (over Polymer) for new WebUI development. Lit should
+generally be used for any new WebUI pages and any new custom elements being
+added to existing pages, with the following exceptions:
+
+* New custom elements that need to be a direct parent of an `iron-list` can
+  use Polymer while a Lit-based alternative is developed.
+* New custom elements in the Settings, Print Preview, and Password Manager UIs
+  that need to interact with those pages `prefs` and `model` mechanisms can
+  use Polymer, since these mechanisms rely heavily on subproperty observation
+  and are unlikely to be migrated to Lit in the near future.
+
+Further guidance on Lit use in Chromium can be found in a [dedicated doc](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_using_lit.md).
 
 ## Grit processing
 

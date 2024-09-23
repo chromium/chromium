@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module private_state_tokens.mojom;
+
+struct IssuerTokenCount {
+  string issuer;
+  int32 count;
+};
+
+// Provides access to browser-side private state tokens data for
+// chrome://privacy-sandbox-internals/private-state-tokens
+interface PrivateStateTokensPageHandler {
+  // Returns an array of issuer origin and the count of tokens issued by them.
+  GetIssuerTokenCounts() => (
+      array<IssuerTokenCount> private_state_tokens_count);
+  // TODO(crbugo.com/348590926): Refactor PrivateStateTokensHandler to use a
+  // single mojo call to get all information from the NetworkContext in a
+  // single method.
+};

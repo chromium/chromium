@@ -6,7 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/proto/loading_predictor_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -14,18 +14,7 @@
 
 namespace optimization_guide {
 
-class OptimizationGuideUtilTest : public testing::Test {
- public:
-  void SetUp() override {
-    prefs::RegisterLocalStatePrefs(pref_service_.registry());
-  }
-
- protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  TestingPrefServiceSimple pref_service_;
-};
+class OptimizationGuideUtilTest : public testing::Test {};
 
 TEST_F(OptimizationGuideUtilTest, ParsedAnyMetadataMismatchedTypeTest) {
   proto::Any any_metadata;
@@ -94,29 +83,6 @@ TEST_F(OptimizationGuideUtilTest, ParsedAnyMetadataTestWithNoPackageName) {
   EXPECT_EQ(parsed_subresource.resource_type(),
             proto::ResourceType::RESOURCE_TYPE_CSS);
   EXPECT_TRUE(parsed_subresource.preconnect_only());
-}
-
-TEST_F(OptimizationGuideUtilTest, GetModelQualityClientId) {
-  int64_t compose_client_id = GetOrCreateModelQualityClientId(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-      &pref_service_);
-  int64_t wallpaper_search_client_id = GetOrCreateModelQualityClientId(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      &pref_service_);
-  int64_t tab_organization_client_id = GetOrCreateModelQualityClientId(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
-      &pref_service_);
-  EXPECT_NE(compose_client_id, wallpaper_search_client_id);
-  EXPECT_NE(wallpaper_search_client_id, tab_organization_client_id);
-  EXPECT_NE(tab_organization_client_id, compose_client_id);
-
-  // Advance clock by more than one day to check that the client ids are
-  // different.
-  task_environment_.AdvanceClock(base::Days(2));
-  int64_t new_compose_client_id = GetOrCreateModelQualityClientId(
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-      &pref_service_);
-  EXPECT_NE(compose_client_id, new_compose_client_id);
 }
 
 }  // namespace optimization_guide

@@ -5,24 +5,25 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOCOMPLETE_HISTORY_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOCOMPLETE_HISTORY_MANAGER_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace autofill {
 
 class AutocompleteHistoryManager;
 
 // Singleton that owns all AutocompleteHistoryManagers and associates them with
-// ChromeBrowserState.
+// profiles.
 class AutocompleteHistoryManagerFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static AutocompleteHistoryManager* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static AutocompleteHistoryManager* GetForBrowserState(ProfileIOS* profile);
+
+  static AutocompleteHistoryManager* GetForProfile(ProfileIOS* profile);
   static AutocompleteHistoryManagerFactory* GetInstance();
 
   AutocompleteHistoryManagerFactory(const AutocompleteHistoryManagerFactory&) =

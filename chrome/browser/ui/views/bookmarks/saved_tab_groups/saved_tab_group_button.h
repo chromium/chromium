@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/views/event_utils.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -22,11 +23,12 @@
 #include "ui/views/drag_controller.h"
 
 class Browser;
-class SavedTabGroupKeyedService;
 
 namespace gfx {
 class Canvas;
 }
+
+namespace tab_groups {
 
 // The visual representation of a SavedTabGroup shown in the bookmarks bar.
 class SavedTabGroupButton : public views::MenuButton,
@@ -36,7 +38,6 @@ class SavedTabGroupButton : public views::MenuButton,
  public:
   SavedTabGroupButton(
       const SavedTabGroup& group,
-      base::RepeatingCallback<content::PageNavigator*()> page_navigator,
       PressedCallback callback,
       Browser* browser,
       bool animations_enabled = true);
@@ -47,7 +48,6 @@ class SavedTabGroupButton : public views::MenuButton,
 
   // views::MenuButton:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
@@ -55,6 +55,9 @@ class SavedTabGroupButton : public views::MenuButton,
 
   // views::View
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+
+  // views::LabelButton
+  bool IsTriggerableEvent(const ui::Event& e) override;
 
   // views::DragController
   void WriteDragDataForView(View* sender,
@@ -75,18 +78,13 @@ class SavedTabGroupButton : public views::MenuButton,
 
   const base::Uuid guid() const { return guid_; }
 
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
-
  private:
-  std::u16string GetAccessibleNameForButton();
+  FRIEND_TEST_ALL_PREFIXES(SavedTabGroupBarUnitTest, AccessibleName);
+  std::u16string GetAccessibleNameForButton() const;
   void SetTextProperties(const SavedTabGroup& group);
   void UpdateButtonLayout();
-  void TabMenuItemPressed(const GURL& url, int event_flags);
-  void MoveGroupToNewWindowPressed(int event_flags);
-  void DeleteGroupPressed(int event_flags);
-
-  std::unique_ptr<ui::DialogModel> CreateDialogModelForContextMenu();
+  void UpdateAccessibleName();
+  void SetText(const std::u16string& text) override;
 
   // The animations for button movement.
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
@@ -104,16 +102,10 @@ class SavedTabGroupButton : public views::MenuButton,
   // title, url, and favicon.
   std::vector<SavedTabGroupTab> tabs_;
 
-  const raw_ref<Browser> browser_;
-
-  const raw_ref<SavedTabGroupKeyedService> service_;
-
-  // A callback used to fetch the current PageNavigator used to open URLs.
-  const base::RepeatingCallback<content::PageNavigator*()>
-      page_navigator_callback_;
-
   // Context menu controller used for this View.
   views::DialogModelContextMenuController context_menu_controller_;
 };
+
+}  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_BUTTON_H_

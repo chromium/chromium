@@ -6,15 +6,13 @@ package org.chromium.chrome.test.util;
 
 import android.view.View;
 
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /**
  * A TestRule for creating Render Tests for Chrome.
  *
- * <pre>
- * {@code
- *
+ * <pre>{@code
  * @RunWith(ChromeJUnit4ClassRunner.class)
  * @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
  * public class MyTest {
@@ -49,8 +47,7 @@ import org.chromium.ui.test.util.RenderTestRule;
  *     }
  * }
  *
- * }
- * </pre>
+ * }</pre>
  */
 public class ChromeRenderTestRule extends RenderTestRule {
     protected ChromeRenderTestRule(
@@ -67,7 +64,7 @@ public class ChromeRenderTestRule extends RenderTestRule {
      * example it will disable the blinking cursor in EditTexts.
      */
     public static void sanitize(View view) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view));
+        ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view));
     }
 
     /** Builder to create a ChromeRenderTestRule. */

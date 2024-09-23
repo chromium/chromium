@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+    document.documentElement.style = 'content: attr(test) / attr(';
+}, 'This test passes if it does not crash.');
+</script>

@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "net/base/net_export.h"
 #include "net/url_request/url_request_interceptor.h"
 
 class GURL;
@@ -37,7 +36,7 @@ class URLRequestInterceptor;
 // If the URLRequestFilter::MaybeInterceptRequest can't find a handler for a
 // request, it returns NULL and lets the configured ProtocolHandler handle the
 // request.
-class NET_EXPORT URLRequestFilter : public URLRequestInterceptor {
+class URLRequestFilter : public URLRequestInterceptor {
  public:
   // Singleton instance for use.
   static URLRequestFilter* GetInstance();
@@ -88,9 +87,6 @@ class NET_EXPORT URLRequestFilter : public URLRequestInterceptor {
   URLInterceptorMap url_interceptor_map_;
 
   mutable int hit_count_ = 0;
-
-  // Singleton instance.
-  static URLRequestFilter* shared_instance_;
 };
 
 }  // namespace net

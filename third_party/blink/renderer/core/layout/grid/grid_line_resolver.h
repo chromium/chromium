@@ -77,7 +77,7 @@ class GridLineResolver {
   const NamedGridLinesMap& ExplicitNamedLinesMap(
       GridTrackSizingDirection track_direction) const;
 
-  std::optional<NamedGridAreaMap> NamedAreasMap() const;
+  const NamedGridAreaMap* NamedAreasMap() const;
 
  private:
   const NamedGridLinesMap& AutoRepeatLineNamesMap(

@@ -28,6 +28,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -266,14 +267,6 @@ std::map<std::string, std::vector<Bucket>> MergeHistogramSamples(
 }
 
 bool ShouldRestoreFromPersistence(HoldingSpaceItem::Type type) {
-  if (HoldingSpaceItem::IsCameraAppType(type) &&
-      !features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
-    return false;
-  }
-  if (type == HoldingSpaceItem::Type::kPhotoshopWeb &&
-      !features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
-    return false;
-  }
   if (HoldingSpaceItem::IsSuggestionType(type) &&
       !features::IsHoldingSpaceSuggestionsEnabled()) {
     return false;
@@ -588,14 +581,18 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{arc::ArcFileSystemBridge::GetFactory(),
-             base::BindRepeating(&BuildArcFileSystemBridge)},
-            {file_manager::VolumeManagerFactory::GetInstance(),
-             base::BindRepeating(&BuildVolumeManager)},
-            {FileSuggestKeyedServiceFactory::GetInstance(),
-             base::BindRepeating(
-                 &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
-                 temp_dir_.GetPath())}};
+    return {
+        TestingProfile::TestingFactory{
+            arc::ArcFileSystemBridge::GetFactory(),
+            base::BindRepeating(&BuildArcFileSystemBridge)},
+        TestingProfile::TestingFactory{
+            file_manager::VolumeManagerFactory::GetInstance(),
+            base::BindRepeating(&BuildVolumeManager)},
+        TestingProfile::TestingFactory{
+            FileSuggestKeyedServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+                temp_dir_.GetPath())}};
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -735,18 +732,12 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
     : public HoldingSpaceKeyedServiceTest,
       public testing::WithParamInterface<
-          std::tuple</*enable_camera_app_integration=*/bool,
-                     /*enable_predictability=*/bool,
-                     /*enable_suggestions=*/bool>> {
+          /*enable_suggestions=*/bool> {
  public:
   HoldingSpaceKeyedServiceWithExperimentalFeatureTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
-        .push_back(features::kHoldingSpaceCameraAppIntegration);
-    (std::get<1>(GetParam()) ? enabled_features : disabled_features)
-        .push_back(features::kHoldingSpacePredictability);
-    (std::get<2>(GetParam()) ? enabled_features : disabled_features)
+    (GetParam() ? enabled_features : disabled_features)
         .push_back(features::kHoldingSpaceSuggestions);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -755,12 +746,9 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
-    testing::Combine(/*enable_camera_app_integration=*/testing::Bool(),
-                     /*enable_predictability=*/testing::Bool(),
-                     /*enabled_suggestions=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
+                         /*enabled_suggestions=*/testing::Bool());
 
 class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     : public HoldingSpaceKeyedServiceWithExperimentalFeatureTest {
@@ -804,10 +792,12 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     guest_profile_builder.SetGuestSession();
     guest_profile_builder.SetProfileName(profile_name);
     guest_profile_builder.AddTestingFactories(
-        {{arc::ArcFileSystemBridge::GetFactory(),
-          base::BindRepeating(&BuildArcFileSystemBridge)},
-         {file_manager::VolumeManagerFactory::GetInstance(),
-          base::BindRepeating(&BuildVolumeManager)}});
+        {TestingProfile::TestingFactory{
+             arc::ArcFileSystemBridge::GetFactory(),
+             base::BindRepeating(&BuildArcFileSystemBridge)},
+         TestingProfile::TestingFactory{
+             file_manager::VolumeManagerFactory::GetInstance(),
+             base::BindRepeating(&BuildVolumeManager)}});
     profile_ = guest_profile_builder.Build();
     OnUserProfileCreated(profile_name, profile_.get());
     return profile_.get();
@@ -829,9 +819,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest,
-    testing::Combine(/*enable_camera_app_integration=*/testing::Bool(),
-                     /*enable_predictability=*/testing::Bool(),
-                     /*enabled_suggestions=*/testing::Bool()));
+    /*enabled_suggestions=*/testing::Bool());
 
 TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest,
        GuestUserProfile) {
@@ -2171,9 +2159,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 }
 
 // Verifies that files restored from persistence are not older than
-// `kMaxFileAge`, when the predictability feature is off.
-// Verifies that files restored from persistence are restored, regardless of
-// `kMaxFileAge`, when the predictability feature is on.
+// `kMaxFileAge`.
 // TODO(crbug.com/1427927): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_RemoveOlderFilesFromPersistence \
@@ -2222,12 +2208,10 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
           bool should_restore = ShouldRestoreFromPersistence(type);
 
           if (should_restore) {
-            // Pinned files are exempt from age checks. If the predictability
-            // feature is disabled, we expect all holding space items of other
-            // types to be removed from persistence during restoration due to
-            // being older than `kMaxFileAge`.
-            should_restore = features::IsHoldingSpacePredictabilityEnabled() ||
-                             type == HoldingSpaceItem::Type::kPinnedFile;
+            // We expect all holding space items of other types to be removed
+            // from persistence during restoration due to being older than
+            // `kMaxFileAge`.
+            should_restore = type == HoldingSpaceItem::Type::kPinnedFile;
           }
 
           if (should_restore) {
@@ -2815,32 +2799,18 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 }
 
 // Base class for tests which verify adding and removing items from holding
-// space works as intended, parameterized by:
-// (a) holding space item type,
-// (b) whether Camera app integration is enabled, and
-// (c) whether Photoshop Web integration is enabled.
+// space works as intended, parameterized by holding space item type.
 class HoldingSpaceKeyedServiceAddAndRemoveItemTest
     : public HoldingSpaceKeyedServiceTest,
-      public ::testing::WithParamInterface<
-          std::tuple<HoldingSpaceItem::Type,
-                     /*enable_camera_app_integration=*/bool,
-                     /*enable_photoshop_web_integration=*/bool>> {
+      public ::testing::WithParamInterface<HoldingSpaceItem::Type> {
  public:
-  HoldingSpaceKeyedServiceAddAndRemoveItemTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHoldingSpaceCameraAppIntegration,
-          /*enable_camera_app_integration=*/std::get<1>(GetParam())},
-         {features::kHoldingSpacePhotoshopWebIntegration,
-          /*enable_photoshop_web_integration=*/std::get<2>(GetParam())}});
-  }
-
   // Returns the holding space service associated with the specified `profile`.
   HoldingSpaceKeyedService* GetService(Profile* profile) {
     return HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
   }
 
   // Returns the type of holding space item under test.
-  HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
+  HoldingSpaceItem::Type GetType() const { return GetParam(); }
 
   // Adds an item of `type` to the holding space belonging to `profile`, backed
   // by the file at the specified absolute `file_path`. Returns the `id` of the
@@ -2862,18 +2832,6 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
             holding_space_model->ContainsItem(type, file_path),
             holding_space_service->AddItemOfType(type, file_path).empty());
         break;
-      case HoldingSpaceItem::Type::kCameraAppPhoto:
-      case HoldingSpaceItem::Type::kCameraAppScanJpg:
-      case HoldingSpaceItem::Type::kCameraAppScanPdf:
-      case HoldingSpaceItem::Type::kCameraAppVideoGif:
-      case HoldingSpaceItem::Type::kCameraAppVideoMp4: {
-        const auto& id = holding_space_service->AddItemOfType(type, file_path);
-        if (!features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
-          EXPECT_TRUE(id.empty());
-          return id;
-        }
-        break;
-      }
       case HoldingSpaceItem::Type::kDiagnosticsLog:
       case HoldingSpaceItem::Type::kNearbyShare:
         holding_space_service->AddItemOfType(type, file_path);
@@ -2899,18 +2857,11 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
                                 file_path, HoldingSpaceProgress())
                 .empty());
         break;
-      case HoldingSpaceItem::Type::kPhotoshopWeb: {
-        const auto& id = holding_space_service->AddItemOfType(type, file_path);
-        if (!features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
-          EXPECT_TRUE(id.empty());
-          return id;
-        }
-        break;
-      }
       case HoldingSpaceItem::Type::kPrintedPdf:
         holding_space_service->AddPrintedPdf(file_path,
                                              /*from_incognito_profile=*/false);
         break;
+      case HoldingSpaceItem::Type::kPhotoshopWeb:
       case HoldingSpaceItem::Type::kScan:
       case HoldingSpaceItem::Type::kScreenRecording:
       case HoldingSpaceItem::Type::kScreenRecordingGif:
@@ -2923,17 +2874,12 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
     EXPECT_TRUE(item);
     return item->id();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServiceAddAndRemoveItemTest,
-    testing::Combine(testing::ValuesIn(holding_space_util::GetAllItemTypes()),
-                     /*enable_camera_app_integration=*/testing::Bool(),
-                     /*enable_photoshop_web_integration=*/testing::Bool()));
+    testing::ValuesIn(holding_space_util::GetAllItemTypes()));
 
 TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Wait for the holding space model to attach.
@@ -2962,25 +2908,12 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Add a holding space item of the type under test.
   const std::string id = AddItem(profile, GetType(), file_path);
 
-  // Insertion into the model should only fail if the item is:
-  // (a) a Camera app item and Camera app integration is disabled, or
-  // (b) a Photoshop Web item and Photoshop Web integration is disabled.
-  if (id.empty()) {
-    EXPECT_EQ(model->items().size(), 0u);
-    EXPECT_THAT(
-        GetType(),
-        AnyOf(
-            AllOf(ResultOf(&HoldingSpaceItem::IsCameraAppType, IsTrue()),
-                  And(features::IsHoldingSpaceCameraAppIntegrationEnabled(),
-                      IsFalse())),
-            AllOf(Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
-                  And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
-                      IsFalse()))));
-    return;
-  }
-
   // Verify a holding space item has been added to the model.
   ASSERT_EQ(model->items().size(), 1u);
+
+  HoldingSpaceKeyedService* const service = GetService(profile);
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->ContainsItem(id));
 
   // Verify holding space `item` metadata.
   HoldingSpaceItem* const item = model->items()[0].get();
@@ -3013,21 +2946,17 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   ASSERT_EQ(model->items().size(), 1u);
 
-  const bool is_suggestion = HoldingSpaceItem::IsSuggestionType(GetType());
-  if (is_suggestion) {
-    // For suggestion items, the new suggestions should always replace old ones.
-    EXPECT_NE(model->items()[0].get(), item);
-    EXPECT_NE(id, id2);
-  } else {
-    // For non-suggestion items, attempts to add already represented items
-    // should be ignored.
-    EXPECT_EQ(model->items()[0].get(), item);
-    EXPECT_EQ(id, id2);
-  }
+  // Attempts to add already represented items should be ignored.
+  EXPECT_EQ(model->items()[0].get(), item);
+  EXPECT_EQ(id, id2);
+  EXPECT_TRUE(service->ContainsItem(id));
+  EXPECT_TRUE(service->ContainsItem(id2));
 
   // Remove the holding space item.
-  GetService(profile)->RemoveItem(is_suggestion ? id2 : id);
+  service->RemoveItem(id);
   EXPECT_TRUE(model->items().empty());
+  EXPECT_FALSE(service->ContainsItem(id));
+  EXPECT_FALSE(service->ContainsItem(id2));
 
   // Verify `expected_histograms` after "waiting" for metrics debounce.
   // NOTE: Histograms are cumulative so we need to merge `expected_histograms`
@@ -3061,23 +2990,6 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItemOfType) {
 
   // Add a holding space item of the type under test.
   const auto& id = GetService(profile)->AddItemOfType(GetType(), file_path);
-
-  // Insertion into the model should only fail if the item is:
-  // (a) a Camera app item and Camera app integration is disabled, or
-  // (b) a Photoshop Web item and Photoshop Web integration is disabled.
-  if (id.empty()) {
-    EXPECT_EQ(model->items().size(), 0u);
-    EXPECT_THAT(
-        GetType(),
-        AnyOf(
-            AllOf(ResultOf(&HoldingSpaceItem::IsCameraAppType, IsTrue()),
-                  And(features::IsHoldingSpaceCameraAppIntegrationEnabled(),
-                      IsFalse())),
-            AllOf(Eq(HoldingSpaceItem::Type::kPhotoshopWeb),
-                  And(features::IsHoldingSpacePhotoshopWebIntegrationEnabled(),
-                      IsFalse()))));
-    return;
-  }
 
   // Verify a holding space item has been added to the model.
   ASSERT_EQ(model->items().size(), 1u);
@@ -3201,44 +3113,24 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   EXPECT_EQ(u"File 2.png", item_2->GetText());
 }
 
-// Base class for tests of Photoshop Web integration. Parameterized by:
-// (a) whether to enable Photoshop Web integration, and
-// (b) the binding context to use for the file picker during testing.
+// Base class for tests of Photoshop Web integration. Parameterized by the
+// binding context to use for the file picker during testing.
 class HoldingSpaceKeyedServicePhotoshopWebIntegrationTest
     : public HoldingSpaceKeyedServiceTest,
-      public ::testing::WithParamInterface<std::tuple<
-          /*enable_photoshop_web_integration=*/bool,
-          /*file_picker_binding_context=*/GURL>> {
+      public ::testing::WithParamInterface<
+          /*file_picker_binding_context=*/GURL> {
  public:
-  HoldingSpaceKeyedServicePhotoshopWebIntegrationTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpacePhotoshopWebIntegration,
-        IsPhotoshopWebIntegrationEnabled());
-  }
-
   // The binding context to use for the file picker given test parameterization.
-  const GURL& GetFilePickerBindingContext() const {
-    return std::get<1>(GetParam());
-  }
-
-  // Whether Photoshop Web integration is enabled given test parameterization.
-  bool IsPhotoshopWebIntegrationEnabled() const {
-    return std::get<0>(GetParam());
-  }
-
- private:
-  // Used to enable/disable Photoshop Web integration.
-  base::test::ScopedFeatureList scoped_feature_list_;
+  const GURL& GetFilePickerBindingContext() const { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
-    ::testing::Combine(/*enable_photoshop_web_integration=*/::testing::Bool(),
-                       /*file_picker_binding_context=*/::testing::Values(
-                           GURL(),
-                           GURL("https://google.com/"),
-                           GURL("https://photoshop.adobe.com/"))));
+    /*file_picker_binding_context=*/
+    ::testing::Values(GURL(),
+                      GURL("https://google.com/"),
+                      GURL("https://photoshop.adobe.com/")));
 
 // Verifies that a Photoshop Web item will be added to the user's Holding Space
 // under expected circumstances.
@@ -3280,21 +3172,17 @@ TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
           file_manager::util::GetFileManagerFileSystemContext(profile)
               ->CrackURLInFirstPartyContext(file_system_url));
 
-  // A Photoshop Web item should be added to the user's Holding Space iff:
-  // (a) Photoshop Web integration is enabled, and
-  // (b) the binding context for the file picker is from the domain associated
-  //     with Photoshop Web.
+  // A Photoshop Web item should be added to the user's Holding Space iff the
+  // binding context for the file picker is from the domain associated with
+  // Photoshop Web.
   const bool is_file_picker_binding_context_photoshop_web =
       GetFilePickerBindingContext().DomainIs("photoshop.adobe.com");
-  const bool expect_to_add_photoshop_web_item =
-      IsPhotoshopWebIntegrationEnabled() &&
-      is_file_picker_binding_context_photoshop_web;
 
   // Verify model state.
   EXPECT_THAT(
       model->items(),
       Conditional(
-          expect_to_add_photoshop_web_item,
+          is_file_picker_binding_context_photoshop_web,
           ElementsAre(Pointee(AllOf(
               Property(&HoldingSpaceItem::type,
                        HoldingSpaceItem::Type::kPhotoshopWeb),
@@ -3570,18 +3458,23 @@ class HoldingSpaceSuggestionsDelegateTest
   void SetUp() override {
     HoldingSpaceKeyedServiceTest::SetUp();
 
-    // Create a mount point to host test files.
+    // Create mount points to host test files.
     TestingProfile* profile = GetProfile();
-    mount_point_ = std::make_unique<ScopedTestMountPoint>(
-        "test_mount", storage::kFileSystemTypeLocal,
+    drive_mount_point_ = std::make_unique<ScopedTestMountPoint>(
+        "drive_test_mount", storage::kFileSystemTypeDriveFs,
         file_manager::VOLUME_TYPE_TESTING);
-    mount_point_->Mount(GetProfile());
+    drive_mount_point_->Mount(profile);
+    local_mount_point_ = std::make_unique<ScopedTestMountPoint>(
+        "local_test_mount", storage::kFileSystemTypeLocal,
+        file_manager::VOLUME_TYPE_TESTING);
+    local_mount_point_->Mount(profile);
 
     HoldingSpaceModelAttachedWaiter(profile).Wait();
   }
 
   void TearDown() override {
-    mount_point_.reset();
+    drive_mount_point_.reset();
+    local_mount_point_.reset();
     HoldingSpaceKeyedServiceTest::TearDown();
   }
 
@@ -3591,58 +3484,178 @@ class HoldingSpaceSuggestionsDelegateTest
             GetProfile()));
   }
 
-  ScopedTestMountPoint* mount_point() { return mount_point_.get(); }
+  ScopedTestMountPoint* drive_mount_point() { return drive_mount_point_.get(); }
+  ScopedTestMountPoint* local_mount_point() { return local_mount_point_.get(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<ScopedTestMountPoint> mount_point_;
+  std::unique_ptr<ScopedTestMountPoint> drive_mount_point_;
+  std::unique_ptr<ScopedTestMountPoint> local_mount_point_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceSuggestionsDelegateTest,
                          /*enable_suggestion_feature=*/testing::Bool());
 
-// Verifies that suggestion removal through the holding space client works as
-// expected.
-TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
+// Verifies that suggestion refresh through the holding space client is WAI.
+TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRefresh) {
+  using Type = HoldingSpaceItem::Type;
+
   // Populate drive and local file suggestions.
-  const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
-  const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = local_mount_point()->CreateArbitraryFile();
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kLocalFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
+  // Verify initial suggestions.  Note that suggestions are reversed in the
+  // holding space model to account for the fact that items are presented in
+  // reverse-chronological order.
   const bool suggestion_feature_enabled =
       features::IsHoldingSpaceSuggestionsEnabled();
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
-  EXPECT_EQ(GetSuggestionsInModel(*model).size(),
-            suggestion_feature_enabled ? 2u : 0u);
+  EXPECT_THAT(GetSuggestionsInModel(*model),
+              ::testing::Conditional(
+                  suggestion_feature_enabled,
+                  ::testing::ElementsAre(
+                      std::make_pair(Type::kLocalSuggestion, file_path_2),
+                      std::make_pair(Type::kDriveSuggestion, file_path_1)),
+                  ::testing::IsEmpty()));
+
+  // Create additional files to back refreshed suggestions.
+  const base::FilePath file_path_3 = drive_mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_4 = local_mount_point()->CreateArbitraryFile();
+
+  // Refresh suggestions through the holding space client. Verify that
+  // `FileSuggestKeyedService::GetSuggestFileData()` is called if and only if
+  // the suggestions feature is enabled.
+  EXPECT_CALL(*GetFileSuggestKeyedService(),
+              GetSuggestFileData(FileSuggestionType::kDriveFile, ::testing::_))
+      .Times(suggestion_feature_enabled ? 1u : 0u)
+      .WillOnce(base::test::RunOnceCallback<1u>(
+          std::make_optional(std::vector<FileSuggestData>{
+              {FileSuggestionType::kDriveFile, file_path_3,
+               /*title=*/std::nullopt,
+               /*new_prediction_reason=*/std::nullopt,
+               /*modified_time=*/std::nullopt,
+               /*viewed_time=*/std::nullopt,
+               /*shared_time=*/std::nullopt,
+               /*new_score=*/std::nullopt,
+               /*drive_file_id=*/std::nullopt,
+               /*icon_url=*/std::nullopt}})));
+  EXPECT_CALL(*GetFileSuggestKeyedService(),
+              GetSuggestFileData(FileSuggestionType::kLocalFile, ::testing::_))
+      .Times(suggestion_feature_enabled ? 1u : 0u)
+      .WillOnce(base::test::RunOnceCallback<1u>(
+          std::make_optional(std::vector<FileSuggestData>{
+              {FileSuggestionType::kLocalFile, file_path_4,
+               /*title=*/std::nullopt,
+               /*new_prediction_reason=*/std::nullopt,
+               /*modified_time=*/std::nullopt,
+               /*viewed_time=*/std::nullopt,
+               /*shared_time=*/std::nullopt,
+               /*new_score=*/std::nullopt,
+               /*drive_file_id=*/std::nullopt,
+               /*icon_url=*/std::nullopt}})));
+  HoldingSpaceController::Get()->client()->RefreshSuggestions();
+
+  // Verify that all suggestions have been updated in the model if and only if
+  // the suggestions feature is enabled.
+  EXPECT_THAT(GetSuggestionsInModel(*model),
+              ::testing::Conditional(
+                  suggestion_feature_enabled,
+                  ::testing::ElementsAre(
+                      std::make_pair(Type::kLocalSuggestion, file_path_4),
+                      std::make_pair(Type::kDriveSuggestion, file_path_3)),
+                  ::testing::IsEmpty()));
+}
+
+// Verifies that suggestion removal through the holding space client is WAI.
+TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
+  using Type = HoldingSpaceItem::Type;
+
+  // Populate drive and local file suggestions.
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = local_mount_point()->CreateArbitraryFile();
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      FileSuggestionType::kDriveFile,
+      /*suggestions=*/std::vector<FileSuggestData>{
+          {FileSuggestionType::kDriveFile, file_path_1,
+           /*title=*/std::nullopt,
+           /*new_prediction_reason=*/std::nullopt,
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      FileSuggestionType::kLocalFile,
+      /*suggestions=*/std::vector<FileSuggestData>{
+          {FileSuggestionType::kLocalFile, file_path_2,
+           /*title=*/std::nullopt,
+           /*new_prediction_reason=*/std::nullopt,
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Verify initial suggestions.  Note that suggestions are reversed in the
+  // holding space model to account for the fact that items are presented in
+  // reverse-chronological order.
+  const bool suggestion_feature_enabled =
+      features::IsHoldingSpaceSuggestionsEnabled();
+  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
+  EXPECT_THAT(GetSuggestionsInModel(*model),
+              ::testing::Conditional(
+                  suggestion_feature_enabled,
+                  ::testing::ElementsAre(
+                      std::make_pair(Type::kLocalSuggestion, file_path_2),
+                      std::make_pair(Type::kDriveSuggestion, file_path_1)),
+                  ::testing::IsEmpty()));
 
   // Remove all suggestions through the holding space client. Verify that
-  // `HoldingSpaceClient::RemoveFileSuggestions()` is called.
-  HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
+  // `FileSuggestKeyedService::RemoveSuggestionsAndNotify()` is called if and
+  // only if the suggestions feature is enabled.
   EXPECT_CALL(*GetFileSuggestKeyedService(),
               RemoveSuggestionsAndNotify(
-                  std::vector<base::FilePath>({file_path_1, file_path_2})));
-  client->RemoveFileSuggestions({file_path_1, file_path_2});
+                  std::vector<base::FilePath>({file_path_1, file_path_2})))
+      .Times(suggestion_feature_enabled ? 1u : 0u);
+  HoldingSpaceController::Get()->client()->RemoveSuggestions(
+      {file_path_1, file_path_2});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Verify that all suggestions have been removed from the `model`.
+  EXPECT_THAT(GetSuggestionsInModel(*model), IsEmpty());
 }
 
 TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
-  const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
 
   // Update Drive file suggestions. Fast-forward to ensure the suggestion fetch
   // completes.
@@ -3650,10 +3663,14 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3671,17 +3688,21 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   EXPECT_EQ(GetSuggestionsInModel(*model), expected);
 
-  const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = local_mount_point()->CreateArbitraryFile();
 
   // Update local file suggestions and check the model.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kLocalFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
   task_environment()->RunUntilIdle();
 
   if (suggestion_feature_enabled) {
@@ -3690,22 +3711,30 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   }
   EXPECT_EQ(GetSuggestionsInModel(*model), expected);
 
-  const base::FilePath file_path_3 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_3 = drive_mount_point()->CreateArbitraryFile();
 
   // Update Drive file suggestions again and check the model.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kDriveFile,
       /*suggestions=*/
       std::vector<FileSuggestData>{{FileSuggestionType::kDriveFile, file_path_1,
+                                    /*title=*/std::nullopt,
                                     /*new_prediction_reason=*/std::nullopt,
-                                    /*timestamp=*/std::nullopt,
-                                    /*secondary_timestamp=*/std::nullopt,
-                                    /*new_score=*/std::nullopt},
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt},
                                    {FileSuggestionType::kDriveFile, file_path_3,
+                                    /*title=*/std::nullopt,
                                     /*new_prediction_reason=*/std::nullopt,
-                                    /*timestamp=*/std::nullopt,
-                                    /*secondary_timestamp=*/std::nullopt,
-                                    /*new_score=*/std::nullopt}});
+                                    /*modified_time=*/std::nullopt,
+                                    /*viewed_time=*/std::nullopt,
+                                    /*shared_time=*/std::nullopt,
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt,
+                                    /*icon_url=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   if (suggestion_feature_enabled) {
@@ -3740,31 +3769,44 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
 }
 
 TEST_P(HoldingSpaceSuggestionsDelegateTest, DownloadsFolderNotSuggested) {
-  auto downloads_mount = mount_point()->CreateAndMountDownloads(profile());
+  auto downloads_mount =
+      local_mount_point()->CreateAndMountDownloads(GetProfile());
   auto downloads_path =
       file_manager::util::GetDownloadsFolderForProfile(GetProfile());
   auto other_folder_path = downloads_path.Append("contained_folder");
   ASSERT_TRUE(base::CreateDirectory(other_folder_path));
-  const base::FilePath file_path = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path = local_mount_point()->CreateArbitraryFile();
 
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kLocalFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, downloads_path,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt},
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt},
           {FileSuggestionType::kLocalFile, other_folder_path,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt},
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt},
           {FileSuggestionType::kLocalFile, file_path,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>> expected;
@@ -3778,7 +3820,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, DownloadsFolderNotSuggested) {
 }
 
 TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
-  const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_1 = drive_mount_point()->CreateArbitraryFile();
   const GURL file_system_url_1 = GetFileSystemUrl(GetProfile(), file_path_1);
   const HoldingSpaceFile::FileSystemType file_system_type_1 =
       holding_space_util::ResolveFileSystemType(GetProfile(),
@@ -3790,10 +3832,14 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3811,17 +3857,21 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
   HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
   EXPECT_EQ(GetSuggestionsInModel(*model), expected);
 
-  const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = local_mount_point()->CreateArbitraryFile();
 
   // Update local file suggestions and check the model.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kLocalFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
+           /*title=*/std::nullopt,
            /*new_prediction_reason=*/std::nullopt,
-           /*timestamp=*/std::nullopt,
-           /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*modified_time=*/std::nullopt,
+           /*viewed_time=*/std::nullopt,
+           /*shared_time=*/std::nullopt,
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt,
+           /*icon_url=*/std::nullopt}});
   task_environment()->RunUntilIdle();
 
   if (suggestion_feature_enabled) {
@@ -3895,7 +3945,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
 
 // Verifies the file suggestion update on a profile with restored suggestions.
 TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
-  const base::FilePath drive_file = mount_point()->CreateArbitraryFile();
+  const base::FilePath drive_file = drive_mount_point()->CreateArbitraryFile();
   const GURL drive_file_system_url = GetFileSystemUrl(GetProfile(), drive_file);
   const HoldingSpaceFile::FileSystemType drive_file_system_type =
       holding_space_util::ResolveFileSystemType(GetProfile(),
@@ -3932,17 +3982,21 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
 
   // Update local file suggestions on the secondary profile. Fast-forward to
   // ensure the suggestion fetch completes.
-  const base::FilePath local_file = mount_point()->CreateArbitraryFile();
+  const base::FilePath local_file = local_mount_point()->CreateArbitraryFile();
   static_cast<MockFileSuggestKeyedService*>(
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           secondary_profile))
       ->SetSuggestionsForType(FileSuggestionType::kLocalFile,
                               /*suggestions=*/std::vector<FileSuggestData>{
                                   {FileSuggestionType::kLocalFile, local_file,
+                                   /*title=*/std::nullopt,
                                    /*new_prediction_reason=*/std::nullopt,
-                                   /*timestamp=*/std::nullopt,
-                                   /*secondary_timestamp=*/std::nullopt,
-                                   /*new_score=*/std::nullopt}});
+                                   /*modified_time=*/std::nullopt,
+                                   /*viewed_time=*/std::nullopt,
+                                   /*shared_time=*/std::nullopt,
+                                   /*new_score=*/std::nullopt,
+                                   /*drive_file_id=*/std::nullopt,
+                                   /*icon_url=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const auto& model_items = secondary_holding_space_model->items();
@@ -3994,17 +4048,21 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, UpdateSuggestionsWithDelayedMount) {
             suggestion_feature_enabled ? 1u : 0u);
 
   // Update with a local file suggestion.
-  const base::FilePath local_file = mount_point()->CreateArbitraryFile();
+  const base::FilePath local_file = local_mount_point()->CreateArbitraryFile();
   static_cast<MockFileSuggestKeyedService*>(
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           secondary_profile))
       ->SetSuggestionsForType(FileSuggestionType::kLocalFile,
                               /*suggestions=*/std::vector<FileSuggestData>{
                                   {FileSuggestionType::kLocalFile, local_file,
+                                   /*title=*/std::nullopt,
                                    /*new_prediction_reason=*/std::nullopt,
-                                   /*timestamp=*/std::nullopt,
-                                   /*secondary_timestamp=*/std::nullopt,
-                                   /*new_score=*/std::nullopt}});
+                                   /*modified_time=*/std::nullopt,
+                                   /*viewed_time=*/std::nullopt,
+                                   /*shared_time=*/std::nullopt,
+                                   /*new_score=*/std::nullopt,
+                                   /*drive_file_id=*/std::nullopt,
+                                   /*icon_url=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const auto& model_items = secondary_holding_space_model->items();

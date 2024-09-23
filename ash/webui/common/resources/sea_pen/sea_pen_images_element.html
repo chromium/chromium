@@ -7,6 +7,11 @@
     width: 100%;
   }
 
+  #seaPenImagesHeading {
+    margin-top: 10px;
+    padding-top: 14px;
+  }
+
   .thumbnail-item-container,
   .thumbnail-placeholder-container {
     box-sizing: border-box;
@@ -36,18 +41,17 @@
     height: 48px;
     position: absolute;
     right: 10px;
-    visibility: hidden;
+    opacity: 0;
     width: 88px;
     z-index: 2;
   }
 
-  .thumbnail-item-container:hover > .feedback-icon-container {
-    visibility: visible;
+  .thumbnail-item-container:hover > .feedback-icon-container,
+  .thumbnail-item-container:focus-within > .feedback-icon-container {
+    opacity: 1;
   }
 
-  .thumbnail-item-container paper-spinner-lite {
-    width: 60px;
-    height: 60px;
+  sea-pen-image-loading {
     left: 50%;
     position: absolute;
     top: 50%;
@@ -93,91 +97,108 @@
   }
 
   .feedback-icon-container-shadow-left {
+    bottom: 0;
     right: 76px;
   }
 
   .feedback-icon-container-shadow-top {
     bottom: 36px;
+    right: 0;
   }
 
-  .error-container {
-    align-items: center;
-    display: flex;
-    flex-flow: column nowrap;
+  wallpaper-grid-item[data-sea-pen-image],
+  div.loading-placeholder {
+    position: absolute;
+  }
+
+  div.loading-placeholder {
+    box-sizing: border-box;
+    border: 2px solid transparent;
     height: 100%;
-    justify-content: center;
+    padding: calc(var(--personalization-app-grid-item-spacing) / 2);
     width: 100%;
   }
 
-  iron-icon[icon^='personalization-shared-illo:'] {
-    --iron-icon-width: 400px;
-    --iron-icon-height: 177px;
-    top: -24px;
+  div.loading-placeholder sparkle-placeholder {
+    border-radius: var(--personalization-app-grid-item-border-radius);
   }
 
-  .error-message {
-    font: var(--cros-body-1-font);
-    margin: 0 12px 0 12px;
-    max-width: 316px;
-    position: relative;
-    top: -12px;
+  .sea-pen-image[aria-selected='true']::part(ironIcon) {
+    --iron-icon-height: 24px;
+    --iron-icon-width: 24px;
+    left: -4px;
+    top: -4px;
+  }
+
+  #historyTitle {
+    color: var(--cros-sys-on_surface);
+    display: flex;
+    font: var(--cros-body-0-font);
+    height: 24px;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    padding: 6px 10px 6px;
+  }
+
+  #historyTooltip {
+    --iron-icon-fill-color: var(--cros-sys-secondary);
+    --iron-icon-stroke-color: var(--cros-sys-secondary);
+    --iron-icon-width: 16px;
+    height: 24px;
+    margin-inline-start: 4px;
+  }
+
+  .query-history.wallpaper-collections-heading {
+    cursor: pointer;
+    font-weight: 600;
+    height: auto;
+    margin: 6px 10px;
+    overflow: hidden;
+    padding: 0;
   }
 </style>
 <template is="dom-if" if="[[showError_]]" restamp>
-  <div class="error-container">
-    <!-- TODO(b/319171051): Add other error images when available. -->
-    <iron-icon icon$="[[getErrorIllo_(thumbnailResponseStatusCode_)]]"></iron-icon>
-    <p class="error-message">[[getErrorMessage_(thumbnailResponseStatusCode_)]]</p>
-  </div>
+  <sea-pen-error thumbnail-response-status-code="[[thumbnailResponseStatusCode_]]"></sea-pen-error>
 </template>
 <template is="dom-if" if="[[!showError_]]" restamp>
-  <h2 class="wallpaper-collections-heading">
-    [[i18n('seaPenWallpaperPoweredByGoogle')]]
-  </h2>
-  <template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
-    <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
-      <template>
-        <div class="thumbnail-placeholder-container">
-          <sparkle-placeholder class="thumbnail-placeholder" index="[[index]]">
-          </sparkle-placeholder>
-        </div>
-      </template>
-    </iron-list>
-  </template>
-  <template is="dom-if" if="[[shouldShowThumbnailPlaceholders_(thumbnailsLoading_, thumbnails_)]]">
-    <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
-      <template>
-        <div class="thumbnail-placeholder-container">
-          <div class="thumbnail-placeholder"></div>
-        </div>
-      </template>
-    </iron-list>
+  <template is="dom-if" if="[[shouldShowZeroState_(thumbnailsLoading_, thumbnails_)]]">
+    <div class="illustration-container" aria-live="polite">
+      <sea-pen-zero-state-svg></sea-pen-zero-state-svg>
+      <p class="zero-state-message illustration-message">[[i18n('seaPenZeroStateMessage')]]</p>
+    </div>
   </template>
   <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]" restamp>
+    <template is="dom-if" if="[[shouldShowImagesHeading_(isSeaPenTextInputEnabled_, templateId)]]">
+      <h2 id="seaPenImagesHeading" class="wallpaper-collections-heading">
+        [[getPoweredByGoogleMessage_()]]
+      </h2>
+    </template>
     <iron-list id="grid"
-        items="[[thumbnails_]]"
+        items="[[tiles_]]"
         grid
+        aria-labelledby="seaPenImagesHeading"
+        aria-setsize$="[[tiles_.length]]"
         role="listbox">
       <template>
         <div class="thumbnail-item-container">
           <template
               is="dom-if"
-              if="[[isThumbnailLoading_(item, pendingSelected_)]]"
+              if="[[isThumbnailPendingSelected_(item, pendingSelected_)]]"
               restamp>
-            <paper-spinner-lite active></paper-spinner-lite>
+            <sea-pen-image-loading></sea-pen-image-loading>
           </template>
-          <div class="feedback-icon-container">
-            <sea-pen-feedback
-                on-selected-feedback-changed="onSelectedFeedbackChanged_">
-            </sea-pen-feedback>
-            <div class="feedback-icon-container-shadow-left"></div>
-            <div class="feedback-icon-container-shadow-top"></div>
+          <div class="loading-placeholder">
+            <sparkle-placeholder index="[[index]]"
+                active="[[!isTileVisible_(item, thumbnailsLoading_)]]">
+            </sparkle-placeholder>
           </div>
           <wallpaper-grid-item
-              class="sea-pen-image"
-              disabled="[[isThumbnailLoading_(item, pendingSelected_)]]"
+              class="sea-pen-image fade-in-900ms"
+              hidden$="[[!isTileVisible_(item, thumbnailsLoading_)]]"
+              disabled="[[isThumbnailPendingSelected_(item, pendingSelected_)]]"
               index="[[index]]"
               data-sea-pen-image
+              aria-description$="[[getAriaDescription_(item, currentSelected_, pendingSelected_)]]"
               aria-posinset$="[[getAriaIndex_(index)]]"
               on-wallpaper-grid-item-selected="onThumbnailSelected_"
               role="option"
@@ -185,8 +206,84 @@
               src="[[item.image]]"
               tabindex$="[[tabIndex]]">
           </wallpaper-grid-item>
+          <template
+              is="dom-if"
+              if="[[shouldShowThumbnailFeedback_(isManagedSeaPenFeedbackEnabled_, thumbnailsLoading_)]]"
+              restamp>
+            <div class="feedback-icon-container">
+              <sea-pen-feedback
+                  inherit-tab-index="[[tabIndex]]"
+                  thumbnail="[[item]]"
+                  on-selected-feedback-changed="onSelectedFeedbackChanged_">
+              </sea-pen-feedback>
+              <div class="feedback-icon-container-shadow-left"></div>
+              <div class="feedback-icon-container-shadow-top"></div>
+            </div>
+          </template>
         </div>
       </template>
     </iron-list>
+    <template is="dom-if" if="[[showHistory_]]" restamp>
+      <h2 id="historyTitle">
+        [[i18n('seaPenFreeformPreviousPrompts')]]
+        <iron-icon
+          role="tooltip"
+          id="historyTooltip"
+          title="[[i18n('seaPenFreeformPreviousPromptsTooltip')]]"
+          icon="sea-pen:info">
+      </iron-icon>
+      </h2>
+      <template is="dom-repeat" items="[[textQueryHistory_]]">
+        <h3 id="queryHistoryHeading[[index]]"
+            class="wallpaper-collections-heading query-history"
+            on-click="onHistoryPromptClicked_"
+            on-keypress="onHistoryPromptClicked_"
+            role="button"
+            tabindex="0">
+          [[item.query]]
+        </h3>
+        <iron-list id="historyGrid[[index]]"
+            items="[[item.thumbnails]]"
+            grid
+            aria-labelledby="queryHistoryHeading[[index]]"
+            aria-setsize$="[[item.thumbnails.length]]"
+            role="listbox">
+          <template>
+            <div class="thumbnail-item-container history-item">
+              <template
+                  is="dom-if"
+                  if="[[isThumbnailPendingSelected_(item, pendingSelected_)]]"
+                  restamp>
+                <sea-pen-image-loading></sea-pen-image-loading>
+              </template>
+              <wallpaper-grid-item
+                  class="sea-pen-image fade-in-900ms"
+                  disabled="[[isThumbnailPendingSelected_(item, pendingSelected_)]]"
+                  index="[[index]]"
+                  data-sea-pen-image
+                  aria-description$="[[getAriaDescription_(item, currentSelected_, pendingSelected_)]]"
+                  aria-posinset$="[[getAriaIndex_(index)]]"
+                  on-wallpaper-grid-item-selected="onThumbnailSelected_"
+                  role="option"
+                  selected="[[isThumbnailSelected_(item, currentSelected_, pendingSelected_)]]"
+                  src="[[item.image]]"
+                  tabindex$="[[tabIndex]]">
+              </wallpaper-grid-item>
+              <template is="dom-if" if="[[isManagedSeaPenFeedbackEnabled_]]" restamp>
+                <div class="feedback-icon-container">
+                  <sea-pen-feedback
+                      inherit-tab-index="[[tabIndex]]"
+                      thumbnail="[[item]]"
+                      on-selected-feedback-changed="onSelectedFeedbackChanged_">
+                  </sea-pen-feedback>
+                  <div class="feedback-icon-container-shadow-left"></div>
+                  <div class="feedback-icon-container-shadow-top"></div>
+                </div>
+              </template>
+            </div>
+          </template>
+        </iron-list>
+      </template>
+    </template>
   </template>
 </template>

@@ -50,17 +50,17 @@ class TestGenerationPopupObserver : public PasswordGenerationPopupObserver {
       PasswordGenerationPopupController::kOfferGeneration;
 };
 
-// An Autofill client that can block until ShowAutofillPopup() is called.
+// An Autofill client that can block until ShowAutofillSuggestions() is called.
 class ObservingAutofillClient : public autofill::ChromeAutofillClient {
  public:
   explicit ObservingAutofillClient(content::WebContents* web_contents);
 
-  // Blocks the current thread until ShowAutofillPopup() is called.
+  // Blocks the current thread until ShowAutofillSuggestions() is called.
   void WaitForAutofillPopup();
 
-  void ShowAutofillPopup(
+  SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
-      base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
+      base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;
 
  private:
   raw_ptr<base::RunLoop> run_loop_ = nullptr;

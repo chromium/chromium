@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_candidate.h"
@@ -19,12 +20,12 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/gfx/swap_result.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -73,7 +74,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     OutputSurfaceOverlayPlane& operator=(const OutputSurfaceOverlayPlane&);
     ~OutputSurfaceOverlayPlane();
     // Display's rotation information.
-    gfx::OverlayTransform transform;
+    gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
     // Rect on the display to position to. This takes in account of Display's
     // rotation.
     gfx::RectF display_rect;
@@ -83,18 +84,18 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     // Size of output surface in pixels.
     gfx::Size resource_size;
     // Format of the buffer to scanout.
-    gfx::BufferFormat format;
+    SharedImageFormat format = SinglePlaneFormat::kBGRA_8888;
     // ColorSpace of the buffer for scanout.
     gfx::ColorSpace color_space;
     // Enable blending when we have underlay.
-    bool enable_blending;
+    bool enable_blending = false;
     // Opacity of the overlay independent of buffer alpha. When rendered:
     // src-alpha = |opacity| * buffer-component-alpha.
-    float opacity;
+    float opacity = 1.0f;
     // Mailbox corresponding to the buffer backing the primary plane.
     gpu::Mailbox mailbox;
     // Hints for overlay prioritization.
-    gfx::OverlayPriorityHint priority_hint;
+    gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
     // Specifies the rounded corners.
     gfx::RRectF rounded_corners;
     // Optional damage rect. If none is provided the damage is assumed to be
@@ -108,7 +109,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   static OutputSurfaceOverlayPlane ProcessOutputSurfaceAsOverlay(
       const gfx::Size& viewport_size,
       const gfx::Size& resource_size,
-      const gfx::BufferFormat& buffer_format,
+      const SharedImageFormat si_format,
       const gfx::ColorSpace& color_space,
       bool has_alpha,
       float opacity,
@@ -155,9 +156,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) = 0;
 
-  // For Mac, if we successfully generated a candidate list for CALayerOverlay,
-  // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the std::optional instance so the instance can be reset.
+  // If we successfully generated a candidates list for delegated compositing
+  // during |ProcessForOverlays|, we no longer need the |output_surface_plane|.
+  // This function takes a pointer to the std::optional instance so the instance
+  // can be reset.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
   virtual void AdjustOutputSurfaceOverlay(
@@ -197,6 +199,18 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // For Lacros, get damage that was not assigned to any overlay candidates
   // during ProcessForOverlays.
   virtual gfx::RectF GetUnassignedDamage() const;
+
+  // Supports gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90 and
+  // gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270 transforms.
+  virtual bool SupportsFlipRotateTransform() const;
+
+  // This is used by the overlay processor on platforms that support delegated
+  // ink. It marks the current frame as having delegated ink, and is cleared in
+  // the next ProcessForOverlays call.
+  virtual void SetFrameHasDelegatedInk() {}
+
+  // Notifies the OverlayProcessor about the status of the last swap.
+  virtual void OnSwapBuffersComplete(gfx::SwapResult swap_result) {}
 
  protected:
   OverlayProcessorInterface() = default;

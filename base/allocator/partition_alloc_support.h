@@ -8,20 +8,17 @@
 #include <map>
 #include <string>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/thread_cache.h"
 
 namespace base::allocator {
-
-#if BUILDFLAG(USE_STARSCAN)
-BASE_EXPORT void RegisterPCScanStatsReporter();
-#endif
 
 // Starts a periodic timer on the current thread to purge all thread caches.
 BASE_EXPORT void StartThreadCachePeriodicPurge();
@@ -45,7 +42,6 @@ class BASE_EXPORT PartitionAllocSupport {
  public:
   struct BrpConfiguration {
     bool enable_brp = false;
-    bool ref_count_in_same_slot = false;
     bool process_affected_by_brp_flag = false;
   };
 
@@ -81,10 +77,12 @@ class BASE_EXPORT PartitionAllocSupport {
   void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
   // |has_main_frame| tells us if the renderer contains a main frame.
-  void OnForegrounded(bool has_main_frame);
+  // The default value is intended for other process types, where the parameter
+  // does not make sense.
+  void OnForegrounded(bool has_main_frame = false);
   void OnBackgrounded();
 
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
   static std::string ExtractDanglingPtrSignatureForTests(
       std::string stacktrace);
 #endif
@@ -100,6 +98,11 @@ class BASE_EXPORT PartitionAllocSupport {
   // For calling from within third_party/blink/.
   static bool ShouldEnableMemoryTaggingInRendererProcess();
 
+  // Returns true if PA advanced checks should be enabled if available for the
+  // given process type. May be called multiple times per process.
+  static bool ShouldEnablePartitionAllocWithAdvancedChecks(
+      const std::string& process_type);
+
  private:
   PartitionAllocSupport();
 
@@ -112,10 +115,38 @@ class BASE_EXPORT PartitionAllocSupport {
   std::string established_process_type_ GUARDED_BY(lock_) = "INVALID";
 
 #if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
-    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   size_t largest_cached_size_ =
-      ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;
+      ::partition_alloc::kThreadCacheDefaultSizeThreshold;
 #endif
+};
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kDisableMemoryReclaimerInBackground);
+
+// Visible in header for testing.
+class BASE_EXPORT MemoryReclaimerSupport {
+ public:
+  static MemoryReclaimerSupport& Instance();
+  MemoryReclaimerSupport();
+  ~MemoryReclaimerSupport();
+  void Start(scoped_refptr<TaskRunner> task_runner);
+  void SetForegrounded(bool in_foreground);
+
+  void ResetForTesting();
+  bool has_pending_task_for_testing() const { return has_pending_task_; }
+  static TimeDelta GetInterval();
+
+  // Visible for testing
+  static constexpr base::TimeDelta kFirstPAPurgeOrReclaimDelay =
+      base::Minutes(1);
+
+ private:
+  void Run();
+  void MaybeScheduleTask(TimeDelta delay = TimeDelta());
+
+  scoped_refptr<TaskRunner> task_runner_;
+  bool in_foreground_ = true;
+  bool has_pending_task_ = false;
 };
 
 }  // namespace base::allocator

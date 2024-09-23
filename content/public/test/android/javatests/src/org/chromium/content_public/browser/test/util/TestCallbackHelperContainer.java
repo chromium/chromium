@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser.test.util;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content_public.browser.JavaScriptCallback;
 import org.chromium.content_public.browser.WebContents;
@@ -22,7 +23,7 @@ public class TestCallbackHelperContainer {
         // TODO(yfriedman): Change callers to be executed on the UI thread. Unfortunately this is
         // super convenient as the caller is nearly always on the test thread which is fine to block
         // and it's cumbersome to keep bouncing to the UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTestWebContentsObserver = new TestWebContentsObserver(webContents);
                 });
@@ -88,7 +89,27 @@ public class TestCallbackHelperContainer {
         private String mJsonResult;
 
         /**
+         * Starts evaluation of a given JavaScript code on a given webContents using production
+         * logic.
+         *
+         * @param webContents A WebContents instance to be used.
+         * @param code A JavaScript code to be evaluated.
+         */
+        public void evaluateJavaScript(WebContents webContents, String code) {
+            JavaScriptCallback callback =
+                    new JavaScriptCallback() {
+                        @Override
+                        public void handleJavaScriptResult(String jsonResult) {
+                            notifyCalled(jsonResult);
+                        }
+                    };
+            mJsonResult = null;
+            ThreadUtils.runOnUiThreadBlocking(() -> webContents.evaluateJavaScript(code, callback));
+        }
+
+        /**
          * Starts evaluation of a given JavaScript code on a given webContents.
+         *
          * @param webContents A WebContents instance to be used.
          * @param code A JavaScript code to be evaluated.
          */
@@ -101,7 +122,7 @@ public class TestCallbackHelperContainer {
                         }
                     };
             mJsonResult = null;
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> webContents.evaluateJavaScriptForTests(code, callback));
         }
 

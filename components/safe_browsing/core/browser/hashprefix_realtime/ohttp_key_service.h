@@ -64,7 +64,9 @@ class OhttpKeyService : public KeyedService {
 
   OhttpKeyService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      PrefService* local_state,
+      base::RepeatingCallback<std::optional<std::string>()> country_getter);
 
   OhttpKeyService(const OhttpKeyService&) = delete;
   OhttpKeyService& operator=(const OhttpKeyService&) = delete;
@@ -156,8 +158,13 @@ class OhttpKeyService : public KeyedService {
   // the OHTTP key service.
   raw_ptr<PrefService> pref_service_;
 
-  // Observes changes prefs that configure whether the service is enabled.
+  // Observes changes to profile prefs that configure whether the service is
+  // enabled.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Observes changes to local state prefs that configure whether the service is
+  // enabled.
+  PrefChangeRegistrar local_state_pref_change_registrar_;
 
   // Keeps track of the state of the service. It's enabled when standard
   // protection is on and the policy kHashPrefixRealTimeChecksAllowedByPolicy
@@ -173,6 +180,15 @@ class OhttpKeyService : public KeyedService {
 
   // Helper object that manages backoff state.
   std::unique_ptr<BackoffOperator> backoff_operator_;
+
+  // Callback used to help determine if the service should be enabled.
+  base::RepeatingCallback<std::optional<std::string>()> country_getter_;
+
+  // Indicates whether a lookup response has been received using the current
+  // |ohttp_key_|. Set to false when a new key is obtained. Set back to true
+  // when the first response is received using this key. Used for logging
+  // metrics.
+  bool has_received_lookup_response_from_current_key_ = true;
 
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };

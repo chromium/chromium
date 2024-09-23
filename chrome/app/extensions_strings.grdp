@@ -502,6 +502,9 @@
   <message name="IDS_EXTENSIONS_REMOVE" desc="The generic label for a button to remove an entry.">
     Remove
   </message>
+  <message name="IDS_EXTENSIONS_MORE_OPTIONS" desc="The generic label for a button to open an action menu.">
+    More options
+  </message>
   <message name="IDS_EXTENSIONS_RUNTIME_HOSTS_DIALOG_TITLE" desc="The title of the dialog used to allow a user to add a new site that an extension is allowed to run on.">
     Add a site
   </message>
@@ -550,6 +553,9 @@
   <message name="IDS_EXTENSIONS_SUBPAGE_BUTTON" is_accessibility_with_no_ui="true" desc="Accessibility description for a button navigating the user from an extension's settings page to its settings subpage.">
     Subpage button
   </message>
+  <message name="IDS_EXTENSIONS_SECTION_HEADER" desc="The label for the extensions section in chrome://extensions.">
+    All Extensions
+  </message>
   <!-- Extension Safety Check Review Panel strings -->
   <message name="IDS_EXTENSIONS_SC_MALWARE" desc="The text explaining the reason for extension being potentially unsafe. The extension in question contains malware.">
     Off • This extension contains malware
@@ -566,15 +572,16 @@
   <message name="IDS_EXTENSIONS_SC_UNPUBLISHED_ON" desc="The text explaining the reason for extension being potentially unsafe. The extension was unpublished by its developer and is turned on.">
     On • This extension was unpublished by its developer
   </message>
+  <message name="IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_ON" desc="The text explaining that an enabled extension has not disclosed its privacy practices.">
+    On • This extension hasn't published privacy practices, such as how it collects and uses data
+  </message>
+  <message name="IDS_EXTENSIONS_SAFETY_CHECK_NO_PRIVACY_PRACTICES_OFF" desc="The text explaining that a disabled extension has not disclosed its privacy practices.">
+    Off • This extension hasn't published privacy practices, such as how it collects and uses data
+  </message>
   <message name="IDS_EXTENSIONS_SC_TITLE" desc="Header text displayed in the Safety Check title.">
     {NUM_EXTENSIONS, plural,
-     =1 {Review 1 extension that was taken down from the Chrome Web Store}
-     other {Review {NUM_EXTENSIONS} extensions that were taken down from the Chrome Web Store}}
-  </message>
-  <message name="IDS_EXTENSIONS_SC_DESCRIPTION" desc="Detailed message displayed in the Safety Check description section.">
-    {NUM_EXTENSIONS, plural,
-     =1 {This extension might be unsafe. Chrome recommends that you remove it.}
-     other {These extensions might be unsafe. Chrome recommends that you remove them.}}
+     =1 {Review 1 extension that may be unsafe}
+     other {Review {NUM_EXTENSIONS} extensions that may be unsafe}}
   </message>
   <!-- Extension Safety Check review panel labels and texts for icons -->
   <message name="IDS_EXTENSIONS_SC_KEEP_EXT" desc="The label on the overflow menu to keep an extension.">
@@ -588,14 +595,63 @@
      =1 {1 extension reviewed}
      other {{NUM_EXTENSIONS} extensions reviewed}}
   </message>
-  <message name="IDS_EXTENSIONS_SC_ALL_EXTENSIONS" desc="The label for extensions cards below the safety check panel.">
-    All Extensions
-  </message>
   <message name="IDS_EXTENSIONS_SC_REMOVE_BUTTON_A11Y_LABEL" desc="The (accessibility) label for remove extension button.">
     Remove <ph name="EXTENSION_NAME">$1<ex>Voice Over</ex></ph> extension
   </message>
   <message name="IDS_EXTENSIONS_SC_OPTION_MENU_A11Y_LABEL" desc="The (accessibility) label for the three dots option menu.">
     More actions for <ph name="EXTENSION_NAME">$1<ex>Voice Over</ex></ph> extension
+  </message>
+  <!-- Extensions Manifest V2 Deprecation Panel strings -->
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_TITLE" desc="Title text displayed before the manifest v2 deprecation panel">
+    Updates
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_HEADER" desc="Header text displayed in the manifest v2 deprecation panel for the warning stage.">
+    {NUM_EXTENSIONS, plural,
+      =1 {This extension may soon no longer be supported}
+      other {These extensions may soon no longer be supported}
+    }
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation panel for the warning stage.">
+    {NUM_EXTENSIONS, plural,
+      =1 {Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>.}
+      other {Remove or replace them with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>}
+    }
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation panel for the disabled stage.">
+    {NUM_EXTENSIONS, plural,
+      =1 {This extension was turned off because it's no longer supported}
+      other {These extensions were turned off because they're no longer supported}
+    }
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_HEADER" desc="Header text displayed in the manifest v2 deprecation message for a specific extension during the warning stage.">
+    This extension may soon no longer be supported
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_WARNING_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the warning stage.">
+    Remove or replace it with similar extensions from the <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Chrome Web Store<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_HEADER" desc="Header text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
+    This extension was turned off because it is no longer supported
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_REMOVE_BUTTON" desc="The label for a button to remove an extension in the manifest v2 deprecation message.">
+    Remove
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_DISMISS_BUTTON" desc="The label for a button to dismiss the manifest v2 deprecation panel">
+    Got it
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_FIND_ALTERNATIVE_BUTTON" desc="The label for a button to find an alternative extension in the manifest v2 deprecation panel">
+    Find alternative
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_KEEP_FOR_NOW_BUTTON" desc="The label for a button to dismiss the deprecation warning for a given extension, keeping it installed for the time being.">
+    Keep for now
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_ACTION_MENU_BUTTON_LABEL" desc="The (accessible) label for the button whichs opens an extension's action menu.">
+    More options for <ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_FIND_ALTERNATIVE_BUTTON_ACC_LABEL" desc="The (accessible) label for the button to find an alternative extension.">
+    Find alternative for  <ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>
+  </message>
+  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_UNSUPPORTED_EXTENSION_OFF_TEXT" desc="The text that informs the user the extension was turned off because it's no longer supported.">
+    This extension was turned off because it is no longer supported
   </message>
 <if expr="is_macosx">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">

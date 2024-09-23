@@ -34,7 +34,7 @@ void SecurePaymentConfirmationNoCreds::ShowDialog(
     ResponseCallback response_callback,
     OptOutCallback opt_out_callback) {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // BUILDFLAG(IS_ANDROID)
   DCHECK(!view_);
 

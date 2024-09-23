@@ -6,6 +6,7 @@
 #
 # ::
 #
+#   LIBXML2_FOUND              - True if libxml2 headers and libraries were found
 #   LIBXML2_INCLUDE_DIR        - Directory where LibXml2 headers are located.
 #   LIBXML2_INCLUDE_DIRS       - list of the include directories needed to use LibXml2.
 #   LIBXML2_LIBRARY            - path to the LibXml2 library.
@@ -120,6 +121,10 @@ endif()
 set(LIBXML2_MODULES @WITH_MODULES@)
 
 mark_as_advanced(LIBXML2_LIBRARY LIBXML2_XMLCATALOG_EXECUTABLE LIBXML2_XMLLINT_EXECUTABLE)
+
+if(DEFINED LIBXML2_LIBRARY AND DEFINED LIBXML2_INCLUDE_DIRS)
+  set(LIBXML2_FOUND TRUE)
+endif()
 
 if(NOT TARGET LibXml2::LibXml2 AND DEFINED LIBXML2_LIBRARY AND DEFINED LIBXML2_INCLUDE_DIRS)
   add_library(LibXml2::LibXml2 UNKNOWN IMPORTED)

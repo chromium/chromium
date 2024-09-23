@@ -17,7 +17,6 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -68,7 +67,7 @@ inline const wchar_t* as_wcstr(const char16_t* str) {
   return reinterpret_cast<const wchar_t*>(str);
 }
 
-inline const wchar_t* as_wcstr(StringPiece16 str) {
+inline const wchar_t* as_wcstr(std::u16string_view str) {
   return reinterpret_cast<const wchar_t*>(str.data());
 }
 
@@ -91,16 +90,16 @@ inline const char16_t* as_u16cstr(std::wstring_view str) {
 }
 
 // Utility functions to convert between std::wstring_view and
-// base::StringPiece16.
-inline std::wstring_view AsWStringView(StringPiece16 str) {
+// std::u16string_view.
+inline std::wstring_view AsWStringView(std::u16string_view str) {
   return std::wstring_view(as_wcstr(str.data()), str.size());
 }
 
-inline StringPiece16 AsStringPiece16(std::wstring_view str) {
-  return StringPiece16(as_u16cstr(str.data()), str.size());
+inline std::u16string_view AsStringPiece16(std::wstring_view str) {
+  return std::u16string_view(as_u16cstr(str.data()), str.size());
 }
 
-inline std::wstring AsWString(StringPiece16 str) {
+inline std::wstring AsWString(std::u16string_view str) {
   return std::wstring(as_wcstr(str.data()), str.size());
 }
 
@@ -123,10 +122,12 @@ inline bool EqualsCaseInsensitiveASCII(std::wstring_view a,
                                        std::wstring_view b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
 }
-inline bool EqualsCaseInsensitiveASCII(std::wstring_view a, StringPiece b) {
+inline bool EqualsCaseInsensitiveASCII(std::wstring_view a,
+                                       std::string_view b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
 }
-inline bool EqualsCaseInsensitiveASCII(StringPiece a, std::wstring_view b) {
+inline bool EqualsCaseInsensitiveASCII(std::string_view a,
+                                       std::wstring_view b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
 }
 
@@ -161,7 +162,7 @@ BASE_EXPORT std::wstring CollapseWhitespace(
 BASE_EXPORT bool ContainsOnlyChars(std::wstring_view input,
                                    std::wstring_view characters);
 
-BASE_EXPORT bool EqualsASCII(StringPiece16 str, StringPiece ascii);
+BASE_EXPORT bool EqualsASCII(std::u16string_view str, std::string_view ascii);
 
 BASE_EXPORT bool StartsWith(
     std::wstring_view str,

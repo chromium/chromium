@@ -44,16 +44,6 @@ class IdentityUrlLoaderThrottleTestParameterized
     : public IdentityUrlLoaderThrottleTest,
       public testing::WithParamInterface<std::tuple<IdpSigninStatus, bool>> {};
 
-TEST_F(IdentityUrlLoaderThrottleTest, DisabledByKillSwitch) {
-  base::test::ScopedFeatureList list;
-  list.InitWithFeatures({}, {features::kFedCmIdpSigninStatusMetrics,
-                             features::kFedCmIdpSigninStatusEnabled});
-
-  std::unique_ptr<blink::URLLoaderThrottle> throttle =
-      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
-  EXPECT_EQ(nullptr, throttle);
-}
-
 TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
   IdpSigninStatus signin_status = std::get<0>(GetParam());
   bool has_user_gesture = std::get<1>(GetParam());

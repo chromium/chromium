@@ -67,12 +67,10 @@ TEST(NetworkUtilsTest, GenerateResourceRequest) {
   EXPECT_EQ(resource_request->url, url);
   EXPECT_EQ(resource_request->method, net::HttpRequestHeaders::kPostMethod);
 
-  std::string api_key, content_type;
-  resource_request->headers.GetHeader("x-goog-api-key", &api_key);
-  resource_request->headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                      &content_type);
-  EXPECT_EQ(api_key, GetAPIKey());
-  EXPECT_EQ(content_type, "application/x-protobuf");
+  EXPECT_EQ(resource_request->headers.GetHeader("x-goog-api-key"), GetAPIKey());
+  EXPECT_EQ(resource_request->headers.GetHeader(
+                net::HttpRequestHeaders::kContentType),
+            "application/x-protobuf");
 }
 
 }  // namespace ash::report::utils

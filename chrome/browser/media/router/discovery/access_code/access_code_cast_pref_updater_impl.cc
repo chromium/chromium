@@ -100,7 +100,7 @@ void AccessCodeCastPrefUpdaterImpl::ClearDeviceAddedTimeDict(
   std::move(on_cleared_callback).Run();
 }
 
-void AccessCodeCastPrefUpdaterImpl::UpdateDevicesDictForTest(
+void AccessCodeCastPrefUpdaterImpl::UpdateDevicesDictForTesting(
     const MediaSinkInternal& sink) {
   ScopedDictPrefUpdate update(pref_service_, prefs::kAccessCodeCastDevices);
 

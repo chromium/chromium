@@ -2,33 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("./cart/cart.gni")
 import("./drive/drive.gni")
-import("./feed/feed.gni")
-import("./history_clusters/history_clusters.gni")
-import("./photos/photos.gni")
-import("./recipes/recipes.gni")
-import("./v2/drive/drive.gni")
-import("./v2/history_clusters/history_clusters.gni")
-import("./v2/tab_resumption/tab_resumption.gni")
+import("./v2/calendar/calendar.gni")
+import("./v2/file_suggestion/file_suggestion.gni")
+import("./v2/most_relevant_tab_resumption/most_relevant_tab_resumption.gni")
 
 if (!is_official_build) {
   import("./v2/dummy/dummy.gni")
 }
 
-modules_test_files = [
-                       "modules/info_dialog_test.ts",
-                       "modules/module_descriptor_test.ts",
-                       "modules/module_header_test.ts",
-                       "modules/module_registry_test.ts",
-                       "modules/module_wrapper_test.ts",
-                       "modules/modules_test.ts",
-                       "modules/v2/modules_test.ts",
-                       "modules/v2/module_header_test.ts",
-                     ] + cart_test_files + drive_test_files +
-                     drive_v2_test_files + feed_test_files + photos_test_files +
-                     recipes_test_files + history_clusters_test_files +
-                     history_clusters_v2_test_files + tab_resumption_test_files
+modules_test_files =
+    [
+      "modules/info_dialog_test.ts",
+      "modules/module_descriptor_test.ts",
+      "modules/module_header_test.ts",
+      "modules/module_registry_test.ts",
+      "modules/module_wrapper_test.ts",
+      "modules/modules_test.ts",
+      "modules/v2/modules_test.ts",
+      "modules/v2/module_header_test.ts",
+    ] + calendar_v2_test_files + drive_test_files +
+    file_suggestion_v2_test_files + most_relevant_tab_resumption_test_files
 
 if (!is_official_build) {
   modules_test_files += dummy_v2_test_files

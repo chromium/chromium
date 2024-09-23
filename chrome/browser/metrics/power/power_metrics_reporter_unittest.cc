@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -35,21 +36,22 @@ base::BatteryLevelProvider::BatteryState MakeBatteryDischargingState(
       .capture_time = base::TimeTicks::Now()};
 }
 
-ProcessMonitor::Metrics GetFakeProcessMetrics() {
+ProcessMonitor::Metrics GetFakeProcessMetrics(bool with_cpu_usage = true) {
   ProcessMonitor::Metrics metrics;
-  metrics.cpu_usage = 5;
+  if (with_cpu_usage) {
+    metrics.cpu_usage = 5;
+  }
   return metrics;
 }
 
 struct HistogramSampleExpectation {
   std::string histogram_name_prefix;
-  base::Histogram::Sample sample;
+  std::optional<base::Histogram::Sample> sample;
 };
 
-#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
 // For each histogram named after the combination of prefixes from
 // `expectations` and suffixes from `suffixes`, verifies that there is a unique
-// sample `expectation.sample`.
+// sample `expectation.sample`, or no sample if `expectation.sample` is nullopt.
 void ExpectHistogramSamples(
     base::HistogramTester* histogram_tester,
     const std::vector<const char*>& suffixes,
@@ -59,12 +61,15 @@ void ExpectHistogramSamples(
       std::string histogram_name =
           base::StrCat({expectation.histogram_name_prefix, suffix});
       SCOPED_TRACE(histogram_name);
-      histogram_tester->ExpectUniqueSample(histogram_name, expectation.sample,
-                                           1);
+      if (expectation.sample.has_value()) {
+        histogram_tester->ExpectUniqueSample(histogram_name,
+                                             expectation.sample.value(), 1);
+      } else {
+        histogram_tester->ExpectTotalCount(histogram_name, 0);
+      }
     }
   }
 }
-#endif  // !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
 
 using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 
@@ -226,13 +231,45 @@ TEST_F(PowerMetricsReporterWithoutBatteryLevelProviderUnitTest,
 
   task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
-// Windows ARM64 does not support Constant Rate TSC so
-// PerformanceMonitor.AverageCPU8.Total is not recorded there.
-#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
   const char* kScenarioSuffix = ".VideoCapture";
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  // Windows ARM64 does not support Constant Rate TSC so
+  // PerformanceMonitor.AverageCPU8.Total is not recorded there.
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.AverageCPU8.Total", std::nullopt}});
+#else
   ExpectHistogramSamples(&histogram_tester_, suffixes,
                          {{"PerformanceMonitor.AverageCPU8.Total", 500}});
+#endif
+}
+
+TEST_F(PowerMetricsReporterWithoutBatteryLevelProviderUnitTest,
+       CPUTimeMissing) {
+  process_monitor_.SetMetricsToReturn(
+      GetFakeProcessMetrics(/*with_cpu_usage=*/false));
+
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::Seconds(1);
+  long_data_store_.SetIntervalDataToReturn(interval_data);
+
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
+
+  const char* kScenarioSuffix = ".VideoCapture";
+  const std::vector<const char*> suffixes({"", kScenarioSuffix});
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  // Windows ARM64 does not support Constant Rate TSC so
+  // PerformanceMonitor.AverageCPU8.Total is not recorded there.
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.AverageCPU8.Total", std::nullopt}});
+#else
+  // Missing `cpu_usage` recorded as 0.
+  ExpectHistogramSamples(&histogram_tester_, suffixes,
+                         {{"PerformanceMonitor.AverageCPU8.Total", 0}});
 #endif
 }
 
@@ -248,11 +285,15 @@ TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
 
   task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
-// Windows ARM64 does not support Constant Rate TSC so
-// PerformanceMonitor.AverageCPU8.Total is not recorded there.
-#if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
   const char* kScenarioSuffix = ".VideoCapture";
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  // Windows ARM64 does not support Constant Rate TSC so
+  // PerformanceMonitor.AverageCPU8.Total is not recorded there.
+  ExpectHistogramSamples(
+      &histogram_tester_, suffixes,
+      {{"PerformanceMonitor.AverageCPU8.Total", std::nullopt}});
+#else
   ExpectHistogramSamples(&histogram_tester_, suffixes,
                          {{"PerformanceMonitor.AverageCPU8.Total", 500}});
 #endif
@@ -319,7 +360,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kCPUTimeMsName,
       kLongPowerMetricsIntervalDuration.InSeconds() * 1000 *
-          fake_metrics.cpu_usage);
+          fake_metrics.cpu_usage.value());
 #if BUILDFLAG(IS_MAC)
   test_ukm_recorder_.ExpectEntryMetric(entries[0], UkmEntry::kIdleWakeUpsName,
                                        fake_metrics.idle_wakeups);
@@ -654,4 +695,27 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
 
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kDeviceSleptDuringIntervalName, true);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsWithoutCPU) {
+  process_monitor_.SetMetricsToReturn(
+      GetFakeProcessMetrics(/*with_cpu_usage=*/false));
+  battery_states_.push(MakeBatteryDischargingState(30));
+
+  UsageScenarioDataStore::IntervalData fake_interval_data = {};
+  fake_interval_data.source_id_for_longest_visible_origin =
+      ukm::ConvertToSourceId(42, ukm::SourceIdType::NAVIGATION_ID);
+  long_data_store_.SetIntervalDataToReturn(fake_interval_data);
+
+  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+
+  EXPECT_EQ(entries[0]->source_id,
+            fake_interval_data.source_id_for_longest_visible_origin);
+  // Missing `cpu_usage` should be skipped, not logged as 0% CPU.
+  EXPECT_FALSE(
+      test_ukm_recorder_.EntryHasMetric(entries[0], UkmEntry::kCPUTimeMsName));
 }

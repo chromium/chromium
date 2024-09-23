@@ -60,10 +60,10 @@ TEST_F(AndroidCombinedPolicyProviderTest, FlushPolices) {
       "}";
 
   PolicyNamespace ns(POLICY_DOMAIN_CHROME, std::string());
-  std::string error;
-  Schema schema = Schema::Parse(kSchemaTemplate, &error);
+  const auto schema = Schema::Parse(kSchemaTemplate);
+  ASSERT_TRUE(schema.has_value());
   SchemaRegistry registry;
-  registry.RegisterComponent(ns, schema);
+  registry.RegisterComponent(ns, *schema);
   AndroidCombinedPolicyProvider manager(&registry);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jpolicy =

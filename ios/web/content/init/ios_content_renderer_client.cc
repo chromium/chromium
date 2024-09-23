@@ -12,7 +12,7 @@ IOSContentRendererClient::IOSContentRendererClient() = default;
 IOSContentRendererClient::~IOSContentRendererClient() = default;
 
 void IOSContentRendererClient::RenderThreadStarted() {
-  // TODO(crbug.com/1423527): Create and register a v8::Extension for receiving
+  // TODO(crbug.com/40260088): Create and register a v8::Extension for receiving
   // messages from JavaScript.
 }
 
@@ -32,7 +32,7 @@ void IOSContentRendererClient::RunScriptsAtDocumentStart(
 
 void IOSContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {
-  // TODO(crbug.com/1423527): Inject document end scripts from
+  // TODO(crbug.com/40260088): Inject document end scripts from
   // JavaScriptFeatures.
 }
 

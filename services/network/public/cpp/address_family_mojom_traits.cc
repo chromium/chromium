@@ -38,7 +38,7 @@ EnumTraits<network::mojom::AddressFamily, net::AddressFamily>::ToMojom(
     case net::ADDRESS_FAMILY_IPV6:
       return AddressFamily::IPV6;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AddressFamily::UNSPECIFIED;
 }
 

@@ -10,6 +10,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 
 namespace autofill {
@@ -24,8 +25,9 @@ class MockAutofillSaveCardDelegateAndroid
   explicit MockAutofillSaveCardDelegateAndroid(
       content::WebContents* web_contents)
       : AutofillSaveCardDelegateAndroid(
-            (AutofillClient::LocalSaveCardPromptCallback)base::DoNothing(),
-            AutofillClient::SaveCreditCardOptions(),
+            (payments::PaymentsAutofillClient::LocalSaveCardPromptCallback)
+                base::DoNothing(),
+            payments::PaymentsAutofillClient::SaveCreditCardOptions(),
             web_contents) {}
 
   MOCK_METHOD(void, OnUiAccepted, (base::OnceClosure), (override));
@@ -56,8 +58,9 @@ class AutofillCvcSaveMessageDelegateTest
   MockAutofillSaveCardDelegateAndroid* ShowMessage(
       const AutofillSaveCardUiInfo& ui_info =
           AutofillSaveCardUiInfo::CreateForLocalSave(
-              AutofillClient::SaveCreditCardOptions().with_card_save_type(
-                  AutofillClient::CardSaveType::kCvcSaveOnly),
+              payments::PaymentsAutofillClient::SaveCreditCardOptions()
+                  .with_card_save_type(payments::PaymentsAutofillClient::
+                                           CardSaveType::kCvcSaveOnly),
               CreditCard())) {
     autofill_cvc_save_message_delegate_ =
         std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
@@ -151,8 +154,9 @@ TEST_F(AutofillCvcSaveMessageDelegateTest, MessageIgnored) {
 
 TEST_F(AutofillCvcSaveMessageDelegateTest, MessagePropertiesAreSet) {
   AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
-      AutofillClient::SaveCreditCardOptions().with_card_save_type(
-          AutofillClient::CardSaveType::kCvcSaveOnly),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(
+              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
       CreditCard());
 
   // Show the message, and save the created `MessageWrapper`.

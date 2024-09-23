@@ -44,9 +44,6 @@ class NetworkStateHandler;
 // 3. Observes the NetworkStateHandler class and triggers Chrome captive portal
 //    detection (captive_portal::CaptivePortalService) when the Shill state
 //    changes (if required) then updates NetworkStateHandler accordingly.
-// It also maintains a separate CaptivePortalStatus for historical reasons.
-// The status reflects the combined Shill + Chrome detection results
-// (as does NetworkState::GetPortalState()).
 class NetworkPortalDetectorImpl : public NetworkPortalDetector,
                                   public NetworkStateHandlerObserver {
  public:
@@ -60,10 +57,8 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   ~NetworkPortalDetectorImpl() override;
 
   // NetworkPortalDetector implementation:
-  CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
-  void RequestCaptivePortalDetection() override;
 
  private:
   friend class NetworkPortalDetectorImplTest;
@@ -103,8 +98,12 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   void PortalStateChanged(const NetworkState* default_network,
                           NetworkState::PortalState portal_state) override;
 
+  void MaybeReportMetrics(const NetworkState* network,
+                          NetworkState::PortalState portal_state,
+                          bool detection_completed);
+
   void DetectionCompleted(const NetworkState* network,
-                          const CaptivePortalStatus& results);
+                          NetworkState::PortalState portal_state);
 
   void ResetCountersAndSendMetrics();
 
@@ -149,7 +148,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // Unique identifier of the default network.
   std::string default_network_id_;
 
-  CaptivePortalStatus default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   int response_code_for_testing_ = -1;
 
   State state_ = STATE_IDLE;
@@ -178,6 +176,9 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
 
   // Number of detection attempts.
   int captive_portal_detector_run_count_ = 0;
+
+  // Whether metrics have been reported for the current detection cycle.
+  bool metrics_reported_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

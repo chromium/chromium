@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
@@ -43,7 +44,7 @@ static const char kOCSPTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
 
 }  // namespace
 
-class OCSPBrowserTest : public PlatformBrowserTest,
+class OCSPBrowserTest : public InProcessBrowserTest,
                         public network::mojom::SSLConfigClient {
  public:
   OCSPBrowserTest() = default;
@@ -122,7 +123,7 @@ class OCSPBrowserTest : public PlatformBrowserTest,
   }
 
   void DoConnection(
-      base::StringPiece hostname,
+      std::string_view hostname,
       const net::EmbeddedTestServer::ServerCertificateConfig& config) {
     net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
 
@@ -504,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, TestHTTPSOCSPOldStapledButValidAIA) {
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || \
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 IN_PROC_BROWSER_TEST_F(OCSPBrowserTest, HardFailOnOCSPInvalid) {
   if (!ssl_test_util::SystemSupportsHardFailRevocationChecking()) {
@@ -707,26 +708,15 @@ IN_PROC_BROWSER_TEST_F(OCSPBrowserTest,
   net::CertStatus cert_status = GetCurrentCertStatus();
   EXPECT_TRUE(cert_status & net::CERT_STATUS_REV_CHECKING_ENABLED);
 }
-#endif  //  BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
-        //  BUILDFLAG(IS_FUCHSIA) ||  BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-
-using AIABrowserTest = OCSPBrowserTest;
-
-IN_PROC_BROWSER_TEST_F(AIABrowserTest, TestHTTPSAIA) {
-  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-  cert_config.intermediate = net::EmbeddedTestServer::IntermediateType::kByAIA;
-
-  DoConnection(cert_config);
-  ssl_test_util::CheckAuthenticatedState(
-      chrome_test_utils::GetActiveWebContents(this), AuthState::NONE);
-}
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
+        // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 class EVBrowserTest : public OCSPBrowserTest {
  public:
   void SetUpOnMainThread() override {
     OCSPBrowserTest::SetUpOnMainThread();
 
-    // TODO(https://crbug.com/1085233): when the CertVerifierService is moved
+    // TODO(crbug.com/40693524): when the CertVerifierService is moved
     // out of process, the ScopedTestEVPolicy needs to be instantiated in
     // that process.
     scoped_refptr<net::X509Certificate> root_cert = net::ImportCertFromFile(

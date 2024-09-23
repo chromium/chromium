@@ -27,8 +27,9 @@ SkBitmap TestImageLoader::LoadAndGetExtensionBitmap(
 void TestImageLoader::OnImageLoaded(const gfx::Image& image) {
   image_ = image;
   image_loaded_ = true;
-  if (waiting_)
+  if (waiting_) {
     std::move(loader_message_loop_quit_).Run();
+  }
 }
 
 SkBitmap TestImageLoader::LoadAndGetBitmap(const Extension* extension,

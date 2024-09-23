@@ -78,6 +78,10 @@ ASH_EXPORT const Desk* GetDeskForContext(aura::Window* context);
 // Returns true if the DesksBar widget should be created in overview mode.
 ASH_EXPORT bool ShouldDesksBarBeCreated();
 
+// Returns true if the DesksBar widget should be created in overview mode and
+// the desk bar should contain "mini views" of each desk.
+ASH_EXPORT bool ShouldRenderDeskBarWithMiniViews();
+
 // Selects and returns the compositor to measure performance metrics.
 ui::Compositor* GetSelectedCompositorForPerformanceMetrics();
 

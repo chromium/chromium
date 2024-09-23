@@ -73,7 +73,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1376703628032300005">अगले वर्ण पर जाएं</translation>
 <translation id="1377925789329510816">यह आखिरी टाइटल है. पहले टाइटल पर जाने के लिए Search+H दबाएं या इस पेज के दूसरे टाइटल पर जाने के लिए Search+Shift+H दबाएं.</translation>
 <translation id="138218114945450791">हल्का नीला</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">खोजें</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">हल्का हरा</translation>
 <translation id="1411043317877497323">प्रैक्टिस करने की जगह</translation>
@@ -220,6 +220,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2490721194269245365">गुलाबी भूरा</translation>
 <translation id="249330843868392562">लिखाई को बोली में बदलने की सेटिंग खोलें</translation>
 <translation id="2497706219848005458">पीला-हरा</translation>
+<translation id="2512979179176933762">विंडो दिखाएं</translation>
 <translation id="2523609930580546572">ChromeVox ट्यूटोरियल</translation>
 <translation id="2525706221823668172">Chromebook कीबोर्ड शॉर्टकट</translation>
 <translation id="2553108862507765288">व्याकरण की गलती</translation>
@@ -264,7 +265,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">पिछले आइटम पर जाने के लिए, आप एक उंगली को दाईं से बाईं ओर स्वाइप भी कर सकते हैं. इसे अभी आज़माएं.</translation>
 <translation id="280499067616661124">पेज में ChromeVox ढूंढें</translation>
-<translation id="2811019999044652585">टूलबार या सिस्टम ट्रे जैसे स्क्रीन के अन्य हिस्सों पर सीधे जाने के लिए, Control+Forward बटन दबाएं. Chromebook पर Forward बटन की जगह, 2 नंबर के बटन के ठीक ऊपर होती है.</translation>
 <translation id="2811204574343810641">पंक्ति</translation>
 <translation id="2816868829355607410">प्रैक्टिस करने की जगह: जंप कमांड</translation>
 <translation id="2841013758207633010">समय</translation>
@@ -498,6 +498,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4246217262268234757">स्लेटी नीला</translation>
 <translation id="4253168017788158739">नोट</translation>
 <translation id="4254798249533888099">ट्री</translation>
+<translation id="4259220820964911921">क्या आपको फ़ेस कंट्रोल की सुविधा चालू करनी है?</translation>
 <translation id="4271220233568730077">अगला गणित</translation>
 <translation id="4275397969489577657">इवेंट स्ट्रीम में लॉग इन करना चालू करें</translation>
 <translation id="4278486392851938658">पहले देखा गया कोई लिंक नहीं है</translation>
@@ -520,6 +521,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4432457053224379116">हल्का मरून</translation>
 <translation id="4432896207833262240">मार्क किया गया कॉन्टेंट</translation>
 <translation id="4437615272777527928">मेन्यू खोजने के लिए टाइप करें. नतीजों पर जाने के लिए अप और डाउन ऐरो का इस्तेमाल करें. टेक्स्ट कैरेट को व्यवस्थित करने और एक से दूसरे मेन्यू पर जाने के लिए, लेफ़्ट और राइट ऐरो का इस्तेमाल करें.</translation>
+<translation id="4453530046591759283">टूलबार या सिस्टम ट्रे जैसे स्क्रीन के अन्य हिस्सों पर जाने के लिए, Control+F1 दबाएं. F1, Escape बटन की दाईं ओर मौजूद पहला बटन है.</translation>
 <translation id="4457472090507035117">मौजूदा ध्वनि चुनें:</translation>
 <translation id="4476183483923481720">नई पंक्ति</translation>
 <translation id="4479068155583208887">फ़ायर ब्रिक</translation>
@@ -710,6 +712,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5760594853119905566">परिशिष्ट</translation>
 <translation id="5761219715606611783">बहुत खूब! ChromeVox टच से जुड़ी ज़रूरी बातें जान ली हैं. आप ट्यूटोरियल को दोबारा देख सकते हैं या नीचे दिए गए बटन इस्तेमाल करके इसे बंद कर सकते हैं.</translation>
 <translation id="5776001898637896684">'Google बेहतर नेटवर्क' का लिखाई को बोली में बदलने वाला एक्सटेंशन</translation>
+<translation id="5783252477644995371">फ़ेस कंट्रोल की सुविधा इस्तेमाल करके, चेहरे के जेस्चर से कर्सर को कंट्रोल करने और कार्रवाइयां करने की सुविधा मिलती है. जैसे, मुस्कुराने के जेस्चर से स्क्रीन पर बाईं ओर क्लिक किया जा सकता है</translation>
 <translation id="5805940204952508776">दो उंगलियों से टैप करें</translation>
 <translation id="5819072574982403430">ट्री आइटम</translation>
 <translation id="5822819874379903994">गहरा फ़िरोज़ी</translation>
@@ -880,6 +883,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7091296112653361280">नावाजो जैसा सफेद रंग</translation>
 <translation id="7095834689119144465">सिर्फ़ लेख की संख्याओं में बदलाव करें</translation>
 <translation id="7096001299300236431">पिछला मीडिया</translation>
+<translation id="7096668131290451939">सीखने वाले मोड से बाहर निकलने के लिए, escape बटन फिर से दबाएं</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">शब्द इको</translation>
 <translation id="7137397390322864165">सामन जैसा रंग</translation>
@@ -931,7 +935,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7429415133937917139">स्क्रीन पर सबसे ऊपर मौजूद ChromeVox पैनल में रीफ़्रेश किए जा सकने वाले ब्रेल डिसप्ले के आउटपुट की नकल पेश करता है</translation>
 <translation id="7434509671034404296">डेवलपर</translation>
 <translation id="743783356331413498">उदाहरण</translation>
-<translation id="7439060726180460871">निर्देशिका</translation>
+<translation id="7439060726180460871">डायरेक्ट्री</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">क्या आप अच्छी क्वालिटी वाली आवाज़ इस्तेमाल करना चाहते हैं?</translation>
 <translation id="7491962110804786152">टैब</translation>
@@ -1071,7 +1075,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="847040613207937740">आगे कोई चेकबॉक्स नहीं है</translation>
 <translation id="8473540203671727883">माउस के नीचे वाला टेक्स्ट बोलें</translation>
 <translation id="8476408756881832830">जब ChromeVox बोल रहा हो, तब प्लेबैक रोकें</translation>
-<translation id="8476508772960940536">विंडो अवलोकन</translation>
 <translation id="8480873377842220259">अब आप स्क्रीन पर एक से दूसरी जगह जाने (नेविगेशन) के सामान्य तरीके के बारे में जानेंगे. स्क्रीन पर एक से दूसरी जगह जाने के लिए, एक उंगली से खोज बटन दबाकर रखें और दूसरी उंगली से ऐरो बटन दबाएं. जारी रखने के लिए, खोज बटन और राइट ऐरो दबाएं.</translation>
 <translation id="8503360654911991865">मार्गदर्शक विवरण का स्तर घटाएं</translation>
 <translation id="8520472399088452386">स्पिन बटन</translation>

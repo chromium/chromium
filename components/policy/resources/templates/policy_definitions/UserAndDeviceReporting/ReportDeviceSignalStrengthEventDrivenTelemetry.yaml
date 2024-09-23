@@ -25,7 +25,7 @@ items:
   value: https_latency
 owners:
 - anasr@google.com
-- cros-reporting-team@google.com
+- cros-reporting-eng@google.com
 schema:
   items:
     enum:
@@ -36,3 +36,4 @@ schema:
 tags:
 - admin-sharing
 type: string-enum-list
+generate_device_proto: False

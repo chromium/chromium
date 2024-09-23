@@ -1,0 +1,362 @@
+{
+  "description": "Source registrations with invalid filter_data are dropped",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // wrong type (must be dictionary)
+                "filter_data": []
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // too many keys
+                "filter_data": {
+                  "01": [], "02": [], "03": [], "04": [], "05": [],
+                  "06": [], "07": [], "08": [], "09": [], "10": [],
+                  "11": [], "12": [], "13": [], "14": [], "15": [],
+                  "16": [], "17": [], "18": [], "19": [], "20": [],
+                  "21": [], "22": [], "23": [], "24": [], "25": [],
+                  "26": [], "27": [], "28": [], "29": [], "30": [],
+                  "31": [], "32": [], "33": [], "34": [], "35": [],
+                  "36": [], "37": [], "38": [], "39": [], "40": [],
+                  "41": [], "42": [], "43": [], "44": [], "45": [],
+                  "46": [], "47": [], "48": [], "49": [], "50": [],
+                  "51": []
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // OK: max keys
+                "filter_data": {
+                  "01": [], "02": [], "03": [], "04": [], "05": [],
+                  "06": [], "07": [], "08": [], "09": [], "10": [],
+                  "11": [], "12": [], "13": [], "14": [], "15": [],
+                  "16": [], "17": [], "18": [], "19": [], "20": [],
+                  "21": [], "22": [], "23": [], "24": [], "25": [],
+                  "26": [], "27": [], "28": [], "29": [], "30": [],
+                  "31": [], "32": [], "33": [], "34": [], "35": [],
+                  "36": [], "37": [], "38": [], "39": [], "40": [],
+                  "41": [], "42": [], "43": [], "44": [], "45": [],
+                  "46": [], "47": [], "48": [], "49": [], "50": []
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // wrong values type
+                "filter_data": {"01": ""}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "4",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // list too long without duplicates
+                "filter_data": {"01": [
+                  "01", "02", "03", "04", "05",
+                  "06", "07", "08", "09", "10",
+                  "11", "12", "13", "14", "15",
+                  "16", "17", "18", "19", "20",
+                  "21", "22", "23", "24", "25",
+                  "26", "27", "28", "29", "30",
+                  "31", "32", "33", "34", "35",
+                  "36", "37", "38", "39", "40",
+                  "41", "42", "43", "44", "45",
+                  "46", "47", "48", "49", "50",
+                  "51"
+                ]}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "5",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // list OK, as set has size 50 after deduplication
+                "filter_data": {"01": [
+                  "01", "02", "03", "04", "05",
+                  "06", "07", "08", "09", "10",
+                  "11", "12", "13", "14", "15",
+                  "16", "17", "18", "19", "20",
+                  "21", "22", "23", "24", "25",
+                  "26", "27", "28", "29", "30",
+                  "31", "32", "33", "34", "35",
+                  "36", "37", "38", "39", "40",
+                  "41", "42", "43", "44", "45",
+                  "46", "47", "48", "49", "50",
+                  "50"
+                ]}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // value too long
+                "filter_data": {"01": ["abcdefghijklmnopqrstuvwxyz"]}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "7",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // value OK
+                "filter_data": {"01": ["abcdefghijklmnopqrstuvwxy"]}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "8",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // key too long
+                "filter_data": {"abcdefghijklmnopqrstuvwxyz": []}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "9",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // key OK
+                "filter_data": {"abcdefghijklmnopqrstuvwxy": []}
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "10",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://d.test",
+                // wrong value type
+                "filter_data": {"a": [0]}
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://d.test\",\"filter_data\":[]}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "0",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://d.test\",\"filter_data\":{\"01\":[],\"02\":[],\"03\":[],\"04\":[],\"05\":[],\"06\":[],\"07\":[],\"08\":[],\"09\":[],\"10\":[],\"11\":[],\"12\":[],\"13\":[],\"14\":[],\"15\":[],\"16\":[],\"17\":[],\"18\":[],\"19\":[],\"20\":[],\"21\":[],\"22\":[],\"23\":[],\"24\":[],\"25\":[],\"26\":[],\"27\":[],\"28\":[],\"29\":[],\"30\":[],\"31\":[],\"32\":[],\"33\":[],\"34\":[],\"35\":[],\"36\":[],\"37\":[],\"38\":[],\"39\":[],\"40\":[],\"41\":[],\"42\":[],\"43\":[],\"44\":[],\"45\":[],\"46\":[],\"47\":[],\"48\":[],\"49\":[],\"50\":[],\"51\":[]}}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "1",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://d.test\",\"filter_data\":{\"01\":\"\"}}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "3",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://d.test\",\"filter_data\":{\"01\":[\"01\",\"02\",\"03\",\"04\",\"05\",\"06\",\"07\",\"08\",\"09\",\"10\",\"11\",\"12\",\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\"]}}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "4",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://d.test\",\"filter_data\":{\"01\":[\"abcdefghijklmnopqrstuvwxyz\"]}}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "6",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://d.test\",\"filter_data\":{\"abcdefghijklmnopqrstuvwxyz\":[]}}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "8",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [{
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://d.test\",\"filter_data\":{\"a\":[0]}}"
+           },
+           "type": "header-parsing-error"
+        }],
+        "report_time": "10",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

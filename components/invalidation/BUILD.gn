@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("invalidation") {
+  sources = [
+    "invalidation_factory.cc",
+    "invalidation_factory.h",
+    "invalidation_listener.cc",
+    "invalidation_listener.h",
+    "invalidation_listener_impl.cc",
+    "invalidation_listener_impl.h",
+    "profile_invalidation_provider.cc",
+    "profile_invalidation_provider.h",
+  ]
+
+  public_deps = [ "//components/invalidation/public" ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/gcm_driver",
+    "//components/invalidation/impl",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test_support/fake_invalidation_listener.cc",
+    "test_support/fake_invalidation_listener.h",
+    "test_support/fake_registration_token_handler.cc",
+    "test_support/fake_registration_token_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/invalidation:invalidation",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "invalidation_factory_unittest.cc",
+    "invalidation_listener_impl_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//components/gcm_driver:test_support",
+    "//components/gcm_driver/instance_id:test_support",
+    "//components/invalidation",
+    "//components/invalidation:test_support",
+    "//components/invalidation/impl",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+    "//google_apis:test_support",
+    "//google_apis/gcm:gcm",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

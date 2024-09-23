@@ -7,10 +7,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/media_router/browser/android/flinging_controller_bridge.h"
-#include "components/media_router/browser/android/jni_headers/BrowserMediaRouter_jni.h"
 #include "components/media_router/browser/android/media_router_android.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_controller.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/media_router/browser/android/jni_headers/BrowserMediaRouter_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

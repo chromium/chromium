@@ -23,7 +23,8 @@ enum ColorSpacePrimaryID {
   ADOBE_RGB,
   APPLE_GENERIC_RGB,
   WIDE_GAMUT_COLOR_SPIN,
-  CUSTOM
+  CUSTOM,
+  EBU_3213_E
 };
 
 enum ColorSpaceTransferID {
@@ -65,7 +66,6 @@ enum ColorSpaceMatrixID {
   SMPTE240M,
   YCOCG,
   BT2020_NCL,
-  BT2020_CL,
   YDZDX,
   GBR
 };

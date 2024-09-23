@@ -59,7 +59,7 @@ class TestReceiverCollector : public mojom::TestInterfaceForDefer,
   }
 
   // mojom::TestInterfaceForDefer implementation.
-  void Ping(PingCallback callback) override { NOTREACHED(); }
+  void Ping(PingCallback callback) override { NOTREACHED_IN_MIGRATION(); }
 
   // Will be called when MojoBinderPolicyApplier::ApplyPolicyToBinder()
   // handles a kCancel binding request.

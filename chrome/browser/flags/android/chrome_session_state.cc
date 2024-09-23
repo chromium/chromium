@@ -7,10 +7,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/flags/jni_headers/ChromeSessionState_jni.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/flags/jni_headers/ChromeSessionState_jni.h"
 
 using chrome::android::ActivityType;
 using chrome::android::DarkModeState;
@@ -38,11 +40,12 @@ CustomTabsVisibilityHistogram GetCustomTabsVisibleValue(
       return VISIBLE_CHROME_TAB;
     case ActivityType::kCustomTab:
     case ActivityType::kTrustedWebActivity:
+    case ActivityType::kAuthTab:
       return VISIBLE_CUSTOM_TAB;
     case ActivityType::kPreFirstTab:
       return NO_VISIBLE_TAB;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return VISIBLE_CHROME_TAB;
 }
 

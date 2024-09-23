@@ -15,7 +15,11 @@ UNSAFE_BUFFER_USAGE int uses_pointer_as_array(int* i) {
 
 void CallToUnsafeBufferFunctionDisallowed() {
   int arr[] = {1, 2};
+#ifdef UNSAFE_BUFFERS_BUILD
   uses_pointer_as_array(arr);  // expected-error {{function introduces unsafe buffer manipulation}}
+#else
+  uses_pointer_as_array(arr);  // expected-no-diagnostics: No error when not enabled.
+#endif
 }
 
 }  // namespace base

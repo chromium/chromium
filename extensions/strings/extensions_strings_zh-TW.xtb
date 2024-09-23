@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">供應商 <ph name="VENDOR_ID" /> 提供的不明產品 <ph name="PRODUCT_ID" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">無法取代 crx 檔案，請檢查檔案是否正在使用中。</translation>
 <translation id="3163201441334626963">供應商 <ph name="VENDOR_ID" /> 提供的不明產品 <ph name="PRODUCT_ID" /></translation>
-<translation id="3369521687965833290">無法為擴充功能解除封裝。如要安全解除封裝，設定檔目錄的路徑必須以磁碟代號開頭，且不能包含連接點、掛載點或符號連結。你的設定檔中沒有符合條件的路徑。</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">供應商 <ph name="VENDOR_ID" /> 提供的 <ph name="PRODUCT_NAME" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">私密金鑰的輸入值必須是有效的路徑。</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">這個裝置的管理員要求安裝「<ph name="EXTENSION_NAME" />」，因此無法解除安裝這個擴充功能。</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> 提供的不明產品 <ph name="PRODUCT_ID" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">供應商 <ph name="VENDOR_ID" /> 提供的 <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">無法為擴充功能解除封裝。如要安全解除封裝，設定檔目錄的路徑不能包含符號連結。你的設定檔中沒有符合條件的路徑。</translation>
 <translation id="6322279351188361895">讀取私密金鑰失敗。</translation>
 <translation id="6391538222494443604">輸入項目目錄必須存在</translation>
 <translation id="641087317769093025">無法將擴充功能解壓縮</translation>

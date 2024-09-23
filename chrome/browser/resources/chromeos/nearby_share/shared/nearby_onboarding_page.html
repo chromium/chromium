@@ -1,0 +1,78 @@
+<style include="cr-icons cr-shared-style"></style>
+<style>
+  #center-content {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    margin: 0 24px;
+    overflow: hidden;
+  }
+
+  #splash-image-column {
+    height: 200px;
+    margin: 8px;
+    width: 200px;
+  }
+
+  #device-name-column {
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+    position: relative;
+    top: -12px;
+    width: calc(50% - 16px);
+  }
+
+  #link-row {
+    border: 1px solid lightgray;
+    border-radius: 5px;
+  }
+
+  #deviceNameHelp {
+    bottom: 8px;
+    color: var(--cros-text-color-secondary);
+    font-size: 10px;
+    line-height: 10px;
+    margin-inline-start: 8px;
+    position: absolute;
+  }
+
+  #device-name-group {
+    padding-inline-end: 10px;
+    padding-inline-start: 10px;
+  }
+
+  cr-input {
+    color: var(--cros-text-color-secondary);
+  }
+</style>
+<nearby-page-template title="$i18n{nearbyShareOnboardingPageTitle}"
+    sub-title="$i18n{nearbyShareOnboardingPageSubtitle}"
+    action-button-label="$i18n{nearbyShareActionsNext}"
+    action-button-event-name="next"
+    action-disabled="[[hasErrorMessage_(errorMessage)]]"
+    cancel-button-label="$i18n{nearbyShareActionsCancel}"
+    cancel-button-event-name="close">
+  <div id=center-content slot="content">
+    <iron-icon id="splash-image-column"
+        icon="nearby-images:nearby-onboarding-splash"
+        aria-hidden="true">>
+    </iron-icon>
+    <div id="device-name-column">
+      <cr-input label="$i18n{nearbyShareOnboardingPageDeviceName}"
+          id="deviceName" value="[[settings.deviceName]]"
+          on-input="onDeviceNameInput_" error-message="[[errorMessage]]"
+          invalid="[[hasErrorMessage_(errorMessage)]]"
+          aria-label="$i18n{nearbyShareOnboardingPageDeviceName}
+              $i18n{nearbyShareOnboardingPageDeviceNameHelp}">
+      </cr-input>
+      <!-- TODO(crbug.com/1155756) move this help text into cr-input -->
+      <div id="deviceNameHelp" hidden="[[hasErrorMessage_(errorMessage)]]"
+        aria-hidden="true">
+        $i18n{nearbyShareOnboardingPageDeviceNameHelp}
+      </div>
+    </div>
+  </div>
+</nearby-page-template>

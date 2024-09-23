@@ -22,6 +22,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
@@ -270,16 +271,16 @@ void ExceptionHandlerServer::InitializeWithInheritedDataForInitialClient(
   first_pipe_instance_.reset(initial_client_data.first_pipe_instance());
 
   // TODO(scottmg): Vista+. Might need to pass through or possibly find an Nt*.
-  size_t bytes = sizeof(wchar_t) * _MAX_PATH + sizeof(FILE_NAME_INFO);
-  std::unique_ptr<uint8_t[]> data(new uint8_t[bytes]);
+  auto data = base::HeapArray<uint8_t>::Uninit(sizeof(wchar_t) * _MAX_PATH +
+                                               sizeof(FILE_NAME_INFO));
   if (!GetFileInformationByHandleEx(first_pipe_instance_.get(),
                                     FileNameInfo,
-                                    data.get(),
-                                    static_cast<DWORD>(bytes))) {
+                                    data.data(),
+                                    static_cast<DWORD>(data.size()))) {
     PLOG(FATAL) << "GetFileInformationByHandleEx";
   }
   FILE_NAME_INFO* file_name_info =
-      reinterpret_cast<FILE_NAME_INFO*>(data.get());
+      reinterpret_cast<FILE_NAME_INFO*>(data.data());
   pipe_name_ =
       L"\\\\.\\pipe" + std::wstring(file_name_info->FileName,
                                     file_name_info->FileNameLength /

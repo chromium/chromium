@@ -23,6 +23,7 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/webid:public_java",
     "//chrome/browser/util:java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -36,8 +37,10 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
@@ -63,7 +66,16 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
+    "java/res/drawable/arrow_range.xml",
     "java/res/layout/account_selection_account_item.xml",
+    "java/res/layout/account_selection_add_account_button.xml",
+    "java/res/layout/account_selection_add_account_row_item.xml",
+    "java/res/layout/account_selection_button_mode_account_chip.xml",
+    "java/res/layout/account_selection_button_mode_account_item.xml",
+    "java/res/layout/account_selection_button_mode_continue_button.xml",
+    "java/res/layout/account_selection_button_mode_data_sharing_consent_item.xml",
+    "java/res/layout/account_selection_button_mode_header_item.xml",
+    "java/res/layout/account_selection_button_mode_sheet.xml",
     "java/res/layout/account_selection_continue_button.xml",
     "java/res/layout/account_selection_data_sharing_consent_item.xml",
     "java/res/layout/account_selection_header_item.xml",
@@ -78,8 +90,13 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionButtonModeControllerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionButtonModeViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionControllerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionJUnitTestBase.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionWidgetModeControllerTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionWidgetModeViewTest.java",
   ]
 
   deps = [
@@ -90,6 +107,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/webid:public_java",
     "//chrome/browser/ui/android/webid/internal:java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -101,6 +119,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
@@ -115,7 +134,12 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
 
-  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionButtonModeIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTest.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionIntegrationTestBase.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionWidgetModeIntegrationTest.java",
+  ]
 
   deps = [
     ":java",
@@ -130,9 +154,11 @@ android_library("javatests") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/webid:public_java",
+    "//chrome/browser/webid:java",
     "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/image_fetcher:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
@@ -140,6 +166,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",

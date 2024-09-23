@@ -27,7 +27,7 @@ std::string DisplayConnectionTypeString(DisplayConnectionType type) {
     case DISPLAY_CONNECTION_TYPE_NETWORK:
       return "network";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 

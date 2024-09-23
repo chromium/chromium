@@ -47,12 +47,14 @@
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -155,7 +157,7 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
                 base::DefaultClock::GetInstance())
           : nullptr;
 
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 }
 
 PhoneHubTray::~PhoneHubTray() {
@@ -169,7 +171,7 @@ PhoneHubTray::~PhoneHubTray() {
     phone_hub_manager_->GetFeatureStatusProvider()->RemoveObserver(
         onboarding_nudge_controller_.get());
   }
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
 }
 
 void PhoneHubTray::SetPhoneHubManager(
@@ -189,7 +191,7 @@ void PhoneHubTray::SetPhoneHubManager(
   }
 }
 
-void PhoneHubTray::ClickedOutsideBubble() {
+void PhoneHubTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 
@@ -290,7 +292,7 @@ void PhoneHubTray::OnVisibilityAnimationFinished(
   }
 }
 
-void PhoneHubTray::OnDisplayConfigurationChanged() {
+void PhoneHubTray::OnDidApplyDisplayChanges() {
   if (!bubble_ || !bubble_->GetBubbleView())
     return;
   bubble_->GetBubbleView()->ChangeAnchorRect(
@@ -355,10 +357,6 @@ TrayBubbleView* PhoneHubTray::GetBubbleView() {
 
 views::Widget* PhoneHubTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->GetBubbleWidget() : nullptr;
-}
-
-const char* PhoneHubTray::GetClassName() const {
-  return "PhoneHubTray";
 }
 
 bool PhoneHubTray::CanOpenConnectedDeviceSettings() {
@@ -430,7 +428,7 @@ void PhoneHubTray::SetEcheIconActivationCallback(
   eche_icon_callback_ = std::move(callback);
 }
 
-void PhoneHubTray::CloseBubble() {
+void PhoneHubTray::CloseBubbleInternal() {
   if (!bubble_)
     return;
 
@@ -490,7 +488,7 @@ std::unique_ptr<ui::SimpleMenuModel> PhoneHubTray::CreateContextMenuModel() {
   context_menu_model->AddItemWithIcon(
       kHidePhoneHubIconCommandId,
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ICON_DISMISS_TEXT),
-      ui::ImageModel::FromVectorIcon(kVisibilityOffIcon,
+      ui::ImageModel::FromVectorIcon(vector_icons::kVisibilityOffIcon,
                                      ui::kColorAshSystemUIMenuIcon,
                                      kHidePhoneHubContexMenuIconSize));
 

@@ -57,7 +57,6 @@ class ChromeIOSTranslateClient
   PrefService* GetPrefs() override;
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
   language::AcceptLanguagesService* GetAcceptLanguagesService() override;
-  int GetInfobarIconID() const override;
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
       const override;

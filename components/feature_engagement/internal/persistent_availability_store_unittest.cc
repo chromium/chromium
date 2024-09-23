@@ -75,6 +75,10 @@ class PersistentAvailabilityStoreTest : public testing::Test {
       std::unique_ptr<std::map<std::string, uint32_t>> availabilities) {
     load_successful_ = success;
     load_results_ = std::move(availabilities);
+    // This callback only gets called once and the DB, created in CreateDB(),
+    // will be freed before the callstack unwinds. Clear the cached pointer to
+    // avoid a dangling pointer error later.
+    db_ = nullptr;
   }
 
  protected:
@@ -92,7 +96,7 @@ class PersistentAvailabilityStoreTest : public testing::Test {
   std::map<std::string, Availability> db_availabilities_;
 
   // The database that is in use.
-  raw_ptr<leveldb_proto::test::FakeDB<Availability>, DanglingUntriaged> db_;
+  raw_ptr<leveldb_proto::test::FakeDB<Availability>> db_;
 
   // Constant test data.
   base::FilePath storage_dir_;

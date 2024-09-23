@@ -8,13 +8,14 @@
 #include "base/types/pass_key.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "v8/include/v8.h"
 
 namespace blink {
-
+class MemoryMeasurement;
 class ScriptState;
 class ExceptionState;
 
@@ -32,11 +33,12 @@ class MeasureMemoryController final
   MeasureMemoryController(base::PassKey<MeasureMemoryController>,
                           v8::Isolate*,
                           v8::Local<v8::Context>,
-                          v8::Local<v8::Promise::Resolver>);
+                          ScriptPromiseResolver<MemoryMeasurement>*);
 
   ~MeasureMemoryController() = default;
 
-  static ScriptPromise StartMeasurement(ScriptState*, ExceptionState&);
+  static ScriptPromise<MemoryMeasurement> StartMeasurement(ScriptState*,
+                                                           ExceptionState&);
 
   void Trace(Visitor* visitor) const;
 
@@ -44,9 +46,8 @@ class MeasureMemoryController final
       performance_manager::mojom::blink::WebMemoryMeasurementPtr);
 
  private:
-  v8::Isolate* isolate_;
   ScopedPersistent<v8::Context> context_;
-  TraceWrapperV8Reference<v8::Promise::Resolver> promise_resolver_;
+  Member<ScriptPromiseResolver<MemoryMeasurement>> resolver_;
 };
 
 }  // namespace blink

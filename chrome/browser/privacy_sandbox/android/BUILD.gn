@@ -6,14 +6,12 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java" ]
 }
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/ActivityTypeMapper.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/AdMeasurementFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgeAllSitesFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/FledgeBlockedSitesFragment.java",
@@ -38,31 +36,42 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicSwitchPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsBlockedFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsHeaderPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsLearnMoreFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsUtils.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionBridge.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
+    "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/android/content:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
     "//components/favicon/android:java",
     "//components/prefs/android:java",
     "//components/privacy_sandbox/android:java",
+    "//components/thin_webview:factory_java",
+    "//components/thin_webview:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -89,14 +98,13 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/AdMeasurementFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FakePrivacySandboxBridge.java",
-    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FakeTrackingProtectionBridge.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FledgeFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridgeTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TopicsFragmentTest.java",
-    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionNoticeTest.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragmentTest.java",
   ]
   deps = [
     ":java",
@@ -105,9 +113,12 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//base/test:test_support_java",
     "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_util_java",
+    "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:factory_java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_integration_test_support",
@@ -117,11 +128,17 @@ android_library("javatests") {
     "//components/prefs/android:java",
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
+    "//components/thin_webview:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
@@ -129,6 +146,7 @@ android_library("javatests") {
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
@@ -136,6 +154,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/privacy_sandbox_interests_illustration.xml",
     "java/res/drawable-night/privacy_sandbox_notice_eea_illustration.xml",
+    "java/res/drawable/ic_arrow_back.xml",
     "java/res/drawable/ic_arrow_down.xml",
     "java/res/drawable/ic_auto_delete_24dp.xml",
     "java/res/drawable/ic_background_replace_24dp.xml",
@@ -178,6 +197,7 @@ android_resources("java_resources") {
     "java/res/layout/privacy_sandbox_notice_row.xml",
     "java/res/layout/privacy_sandbox_notice_row_dropdown.xml",
     "java/res/layout/topics_explanation_summary.xml",
+    "java/res/raw/keep_topic_taxonomy.xml",
     "java/res/values/dimens.xml",
     "java/res/xml/ad_measurement_preference.xml",
     "java/res/xml/block_list_preference.xml",
@@ -187,7 +207,6 @@ android_resources("java_resources") {
     "java/res/xml/privacy_sandbox_preferences_restricted.xml",
     "java/res/xml/topics_learn_more_preference.xml",
     "java/res/xml/topics_manage_preference.xml",
-    "java/res/xml/topics_preference.xml",
     "java/res/xml/topics_preference_v2.xml",
   ]
   deps = [
@@ -198,13 +217,11 @@ android_resources("java_resources") {
     "//components/browser_ui/widget/android:java_resources",
     "//components/messages/android/internal:java_resources",
     "//components/strings:components_strings_grd",
+    "//components/strings:privacy_sandbox_strings_grd",
     "//third_party/android_deps:material_design_java",
   ]
 }
 
 java_cpp_enum("privacy_sandbox_enums") {
-  sources = [
-    "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h",
-    "//components/privacy_sandbox/tracking_protection_onboarding.h",
-  ]
+  sources = [ "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h" ]
 }

@@ -41,7 +41,7 @@ DevToolsWindowTesting::~DevToolsWindowTesting() {
   DevToolsWindowTestings* instances =
       g_devtools_window_testing_instances.Pointer();
   auto it = base::ranges::find(*instances, this);
-  DCHECK(it != instances->end());
+  CHECK(it != instances->end());
   instances->erase(it);
   if (!close_callback_.is_null())
     std::move(close_callback_).Run();
@@ -108,7 +108,7 @@ void DevToolsWindowTesting::WaitForDevToolsWindowLoad(DevToolsWindow* window) {
   if (!window) {
     return;
   }
-  auto* main_web_contents = window->main_web_contents_;
+  auto* main_web_contents = window->main_web_contents_.get();
   if (!window->ready_for_test_) {
     scoped_refptr<content::MessageLoopRunner> runner =
         new content::MessageLoopRunner;

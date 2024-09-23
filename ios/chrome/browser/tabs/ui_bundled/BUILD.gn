@@ -1,0 +1,134 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "background_tab_animation_view.h",
+    "background_tab_animation_view.mm",
+    "foreground_tab_animation_view.h",
+    "foreground_tab_animation_view.mm",
+    "switch_to_tab_animation_view.h",
+    "switch_to_tab_animation_view.mm",
+    "tab_strip_container_view.h",
+    "tab_strip_container_view.mm",
+    "tab_strip_controller.h",
+    "tab_strip_controller.mm",
+    "tab_strip_view.h",
+    "tab_strip_view.mm",
+    "tab_view.h",
+    "tab_view.mm",
+    "tab_view_delegate.h",
+    "target_frame_cache.h",
+    "target_frame_cache.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/tabs/model" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/favicon/ios",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tabs/ui_bundled/requirements",
+    "//ios/chrome/browser/tabs/ui_bundled/resources",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/popup_menu/public",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/web_state_list/model",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/resources",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/public",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("coordinator") {
+  sources = [
+    "tab_strip_legacy_coordinator.h",
+    "tab_strip_legacy_coordinator.mm",
+  ]
+  deps = [
+    ":ui_bundled",
+    "//ios/chrome/browser/bubble/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/tabs/ui_bundled/requirements",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "tab_strip_constants.h",
+    "tab_strip_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_strip_controller_unittest.mm" ]
+  deps = [
+    ":ui_bundled",
+    "//base",
+    "//ios/chrome/browser/sessions/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tab_strip_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

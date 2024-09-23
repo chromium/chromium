@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Note: These mojo definitions are intended for exclusive use in testing.
+
+// FrameSinkManager's test api.
+interface FrameSinkManagerTestApi {
+  // Returns true if there are any unclaimed ViewTransition resources.
+  [Sync]
+  HasUnclaimedViewTransitionResources() => (bool has_resources);
+
+  // Customizes the CopyOutputRequest's result size during tests.
+  [Sync]
+  SetSameDocNavigationScreenshotSize(gfx.mojom.Size result_size) => ();
+};

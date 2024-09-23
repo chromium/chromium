@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 
 #include <cmath>
@@ -55,8 +60,11 @@ class SiteEngagementDetailsProviderImpl
       GetSiteEngagementDetailsCallback callback) override {
     site_engagement::SiteEngagementService* service =
         site_engagement::SiteEngagementService::Get(profile_);
+
     std::vector<site_engagement::mojom::SiteEngagementDetails> scores =
-        service->GetAllDetails();
+        service->GetAllDetails(
+            site_engagement::SiteEngagementService::URLSets::HTTP |
+            site_engagement::SiteEngagementService::URLSets::WEB_UI);
 
     std::vector<site_engagement::mojom::SiteEngagementDetailsPtr>
         engagement_info;

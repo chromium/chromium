@@ -34,6 +34,8 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                    FetchConfigCallback callback) override;
   void FetchClientMetadata(const GURL& endpoint,
                            const std::string& client_id,
+                           int rp_brand_icon_ideal_size,
+                           int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override;
   void SendAccountsRequest(const GURL& accounts_url,
                            const std::string& client_id,
@@ -59,6 +61,8 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                              const std::string& account_hint,
                              const std::string& client_id,
                              DisconnectCallback callback) override;
+
+  void DownloadAndDecodeImage(const GURL& url, ImageCallback callback) override;
 
  private:
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> delegate_;

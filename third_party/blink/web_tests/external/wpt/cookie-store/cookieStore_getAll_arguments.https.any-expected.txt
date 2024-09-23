@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] cookieStore.getAll with absolute url with fragment in options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getAll' on 'CookieStore': URL must match the document URL"
+[FAIL] cookieStore.getAll with absolute different url in options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getAll' on 'CookieStore': URL must match the document URL"
+Harness: the test ran to completion.
+

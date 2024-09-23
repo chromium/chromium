@@ -8,35 +8,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "media_router.access_code_cast.enabled": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "AccessCodeCastEnabled": false
-        },
-        "prefs": {
-          "media_router.access_code_cast.enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "AccessCodeCastEnabled": true
-        },
-        "prefs": {
-          "media_router.access_code_cast.enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "media_router.access_code_cast.enabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

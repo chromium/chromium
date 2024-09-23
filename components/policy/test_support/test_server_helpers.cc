@@ -4,7 +4,9 @@
 
 #include "components/policy/test_support/test_server_helpers.h"
 
+#include <ranges>
 #include <utility>
+
 #include "base/ranges/algorithm.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "net/base/url_util.h"
@@ -39,9 +41,10 @@ void CustomHttpResponse::SendResponse(
   // net::GetHttpReasonPhrase, which requires status code to be a standard HTTP
   // status code and crashes otherwise. Hence we avoid calling it if a custom
   // HTTP code is used.
-  // TODO(crbug/1280752): Make GetHttpReasonPhrase support custom codes instead.
+  // TODO(crbug.com/40209048): Make GetHttpReasonPhrase support custom codes
+  // instead.
   if (base::ranges::lower_bound(kStandardHttpStatusCodes, code()) !=
-      base::ranges::end(kStandardHttpStatusCodes)) {
+      std::ranges::end(kStandardHttpStatusCodes)) {
     reason = BasicHttpResponse::reason();
   }
   delegate->SendHeadersContentAndFinish(code(), reason, BuildHeaders(),

@@ -9,7 +9,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -18,6 +17,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -106,14 +106,14 @@ AppStreamLauncherItem::AppStreamLauncherItem(
   }
   recent_app_button_ = AddChildView(std::make_unique<PhoneHubRecentAppButton>(
       image, app_metadata.visible_app_name, callback));
-  recent_app_button_->SetAccessibleName(accessible_name);
+  recent_app_button_->GetViewAccessibility().SetName(accessible_name);
   recent_app_button_->SetTooltipText(accessible_name);
   recent_app_button_->SetEnabled(enabled);
 
   label_ = AddChildView(std::make_unique<AppNameLabel>(
       std::move(callback), app_metadata.visible_app_name));
   label_->SetEnabled(enabled);
-  label_->SetAccessibleName(accessible_name);
+  label_->GetViewAccessibility().SetName(accessible_name);
   label_->SetTooltipText(accessible_name);
 }
 
@@ -125,10 +125,6 @@ bool AppStreamLauncherItem::HasFocus() const {
 
 void AppStreamLauncherItem::RequestFocus() {
   recent_app_button_->RequestFocus();
-}
-
-const char* AppStreamLauncherItem::GetClassName() const {
-  return "AppStreamLauncherItem";
 }
 
 views::LabelButton* AppStreamLauncherItem::GetLabelForTest() {

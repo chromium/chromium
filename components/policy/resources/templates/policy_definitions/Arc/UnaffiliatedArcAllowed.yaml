@@ -14,10 +14,12 @@ items:
 - caption: Do not allow unaffiliated users to use Android apps
   value: false
 owners:
-- phweiss@chromium.org
+- arc-commercial@google.com
+- mhasank@chromium.org
 schema:
   type: boolean
 supported_on:
 - chrome_os:64-
 tags: []
 type: main
+generate_device_proto: False

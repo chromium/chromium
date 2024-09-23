@@ -4,39 +4,48 @@
 
 #include "base/android/unguessable_token_android.h"
 
+#include "build/robolectric_buildflags.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/TokenBase_jni.h"  // nogncheck
+#include "base/base_robolectric_jni/UnguessableToken_jni.h"  // nogncheck
+#else
+#include "base/base_jni/TokenBase_jni.h"
 #include "base/base_jni/UnguessableToken_jni.h"
+#endif
+
 
 namespace base {
 namespace android {
 
-ScopedJavaLocalRef<jobject> UnguessableTokenAndroid::Create(
+jni_zero::ScopedJavaLocalRef<jobject> UnguessableTokenAndroid::Create(
     JNIEnv* env,
     const base::UnguessableToken& token) {
   const uint64_t high = token.GetHighForSerialization();
   const uint64_t low = token.GetLowForSerialization();
   DCHECK(high);
   DCHECK(low);
-  return Java_UnguessableToken_create(env, static_cast<jlong>(high),
-                                      static_cast<jlong>(low));
+  return Java_UnguessableToken_Constructor(env, static_cast<jlong>(high),
+                                           static_cast<jlong>(low));
 }
 
-absl::optional<base::UnguessableToken>
-UnguessableTokenAndroid::FromJavaUnguessableToken(
+base::UnguessableToken UnguessableTokenAndroid::FromJavaUnguessableToken(
     JNIEnv* env,
-    const JavaRef<jobject>& token) {
-  const uint64_t high = static_cast<uint64_t>(
-      Java_UnguessableToken_getHighForSerialization(env, token));
-  const uint64_t low = static_cast<uint64_t>(
-      Java_UnguessableToken_getLowForSerialization(env, token));
+    const jni_zero::JavaRef<jobject>& token) {
+  const uint64_t high =
+      static_cast<uint64_t>(Java_TokenBase_getHighForSerialization(env, token));
+  const uint64_t low =
+      static_cast<uint64_t>(Java_TokenBase_getLowForSerialization(env, token));
   DCHECK(high);
   DCHECK(low);
-  return base::UnguessableToken::Deserialize(high, low);
+  return base::UnguessableToken::Deserialize(high, low).value();
 }
 
-ScopedJavaLocalRef<jobject>
+jni_zero::ScopedJavaLocalRef<jobject>
 UnguessableTokenAndroid::ParcelAndUnparcelForTesting(
     JNIEnv* env,
-    const JavaRef<jobject>& token) {
+    const jni_zero::JavaRef<jobject>& token) {
   return Java_UnguessableToken_parcelAndUnparcelForTesting(env, token);
 }
 

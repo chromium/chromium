@@ -80,7 +80,7 @@ void NukeProfileFromDiskImpl(const base::FilePath& profile_path,
                              size_t retry_count,
                              size_t max_retry_count,
                              base::OnceClosure done_callback) {
-  // TODO(crbug.com/1191455): Make FileSystemProxy/FileSystemImpl expose its
+  // TODO(crbug.com/40756611): Make FileSystemProxy/FileSystemImpl expose its
   // LockTable, and/or fire events when locks are released. That way we could
   // wait for all the locks in |profile_path| to be released, rather than having
   // this retry logic.

@@ -172,7 +172,7 @@ void TrustedVaultDegradedRecoverabilityHandler::
           trusted_vault_pb::DegradedRecoverabilityValue::kNotDegraded;
       break;
     case TrustedVaultRecoverabilityStatus::kError:
-      // TODO(crbug.com/1247990): To be handled.
+      // TODO(crbug.com/40790270): To be handled.
       break;
   }
   if (!pending_get_is_recoverability_degraded_callback_.is_null()) {

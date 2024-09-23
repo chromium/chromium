@@ -1,0 +1,376 @@
+This is a testharness.js-based test.
+Found 186 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (-0.25) should be [150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (0) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (0.75) should be [350px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (1) should be [400px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (1.25) should be [450px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (-0.25) should be [150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (0) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (0.75) should be [350px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (1) should be [400px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (1.25) should be [450px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (-0.25) should be [150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (0) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (0.75) should be [350px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (1) should be [400px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (1.25) should be [450px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (-0.25) should be [150px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (0) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (0.75) should be [350px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (1) should be [400px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(stretch, size * 2)] at (1.25) should be [450px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(any, 50px)] at (-0.25) should be [237.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(any, 50px)] at (0) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(any, 50px)] at (0.75) should be [87.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(any, 50px)] at (1) should be [50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(any, 50px)] at (1.25) should be [12.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(any, 50px)] at (-0.25) should be [237.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(any, 50px)] at (0) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(any, 50px)] at (0.75) should be [87.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(any, 50px)] at (1) should be [50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(any, 50px)] at (1.25) should be [12.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (-0.25) should be [237.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (0) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (0.75) should be [87.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (1) should be [50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (1.25) should be [12.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (-0.25) should be [237.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (0) should be [200px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (0.75) should be [87.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (1) should be [50px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(any, 50px)] at (1.25) should be [12.5px]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (-0.1) should be [15.000000000000007px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (0) should be [50px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (0.75) should be [312.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (1) should be [400px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (1.25) should be [487.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (-0.1) should be [15.000000000000007px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (0) should be [50px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (0.75) should be [312.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (1) should be [400px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (1.25) should be [487.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (-0.1) should be [15.000000000000007px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (0) should be [50px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (0.75) should be [312.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (1) should be [400px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (1.25) should be [487.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (-0.1) should be [15.000000000000007px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (0) should be [50px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (0.75) should be [312.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (1) should be [400px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [calc-size(any, 50px)] to [calc-size(stretch, size * 2)] at (1.25) should be [487.5px]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (-0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (0) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (0.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (0.6) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (1) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (1.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (-0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (0) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (0.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (0.6) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (1) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(50px, size)] at (1.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(50px, size)] at (-0.3) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(50px, size)] at (0) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(50px, size)] at (0.3) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(50px, size)] at (0.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(50px, size)] at (0.6) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(50px, size)] at (1) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(50px, size)] at (1.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(50px, size)] at (-0.3) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(50px, size)] at (0) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(50px, size)] at (0.3) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(50px, size)] at (0.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(50px, size)] at (0.6) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(50px, size)] at (1) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(50px, size)] at (1.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(50px, size)] at (-0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(50px, size)] at (0) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(50px, size)] at (0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(50px, size)] at (0.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(50px, size)] at (0.6) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(50px, size)] at (1) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(50px, size)] at (1.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(50px, size)] at (-0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(50px, size)] at (0) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(50px, size)] at (0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(50px, size)] at (0.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(50px, size)] at (0.6) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(50px, size)] at (1) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(50px, size)] at (1.5) should be [calc-size(50px, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (-0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (0) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (0.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (0.6) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (1) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (1.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (-0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (0) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (0.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (0.6) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (1) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [stretch] to [calc-size(auto, size)] at (1.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(auto, size)] at (-0.3) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(auto, size)] at (0) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(auto, size)] at (0.3) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(auto, size)] at (0.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(auto, size)] at (0.6) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(auto, size)] at (1) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [stretch] to [calc-size(auto, size)] at (1.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(auto, size)] at (-0.3) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(auto, size)] at (0) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(auto, size)] at (0.3) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(auto, size)] at (0.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(auto, size)] at (0.6) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(auto, size)] at (1) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [stretch] to [calc-size(auto, size)] at (1.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(auto, size)] at (-0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(auto, size)] at (0) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(auto, size)] at (0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(auto, size)] at (0.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(auto, size)] at (0.6) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(auto, size)] at (1) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [stretch] to [calc-size(auto, size)] at (1.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(auto, size)] at (-0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(auto, size)] at (0) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(auto, size)] at (0.3) should be [stretch]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(auto, size)] at (0.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(auto, size)] at (0.6) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(auto, size)] at (1) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [stretch] to [calc-size(auto, size)] at (1.5) should be [calc-size(auto, size)]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (-0.3) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (0) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (0.3) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (0.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (0.6) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (1) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (1.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (-0.3) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (0) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (0.3) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (0.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (0.6) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (1) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <width> from [max-content] to [calc-size(stretch, size)] at (1.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [max-content] to [calc-size(stretch, size)] at (-0.3) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [max-content] to [calc-size(stretch, size)] at (0) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [max-content] to [calc-size(stretch, size)] at (0.3) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [max-content] to [calc-size(stretch, size)] at (0.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [max-content] to [calc-size(stretch, size)] at (0.6) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [max-content] to [calc-size(stretch, size)] at (1) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions: property <width> from [max-content] to [calc-size(stretch, size)] at (1.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [max-content] to [calc-size(stretch, size)] at (-0.3) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [max-content] to [calc-size(stretch, size)] at (0) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [max-content] to [calc-size(stretch, size)] at (0.3) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [max-content] to [calc-size(stretch, size)] at (0.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [max-content] to [calc-size(stretch, size)] at (0.6) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [max-content] to [calc-size(stretch, size)] at (1) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <width> from [max-content] to [calc-size(stretch, size)] at (1.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (-0.3) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (0) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (0.3) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (0.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (0.6) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (1) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] CSS Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (1.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (-0.3) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (0) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (0.3) should be [max-content]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (0.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (0.6) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (1) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+[FAIL] Web Animations: property <width> from [max-content] to [calc-size(stretch, size)] at (1.5) should be [calc-size(stretch, size)]
+  assert_true: 'to' value should be supported expected true got false
+Harness: the test ran to completion.
+

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -180,7 +180,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   std::string GetMultilingualDictionaries() {
     const base::Value::List& list_value =
         prefs_->GetList(spellcheck::prefs::kSpellCheckDictionaries);
-    std::vector<base::StringPiece> dictionaries;
+    std::vector<std::string_view> dictionaries;
     for (const auto& item_value : list_value) {
       EXPECT_TRUE(item_value.is_string());
       dictionaries.push_back(item_value.GetString());

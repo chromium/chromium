@@ -5,11 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_VIEW_CONTROLLER_H_
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_consumer.h"
 
-@class SearchEngineChoiceTableViewController;
+#import <UIKit/UIKit.h>
+
+@protocol SearchEngineChoiceMutator;
 
 // Delegate protocol for SearchEngineViewController.
 @protocol SearchEngineChoiceActionDelegate <NSObject>
@@ -23,27 +23,18 @@
 
 // A base view controller for showing a choice screen.
 @interface SearchEngineChoiceViewController
-    : UIViewController <SearchEngineChoiceConsumer,
-                        UITextViewDelegate>
+    : UIViewController <SearchEngineChoiceConsumer>
 
 // Delegate for all the user actions.
 @property(nonatomic, weak) id<SearchEngineChoiceActionDelegate> actionDelegate;
+// Delegate to update the selected search engine.
+@property(nonatomic, weak) id<SearchEngineChoiceMutator> mutator;
 
-// Whether the user has selected a row.
-@property(nonatomic, assign, readwrite) BOOL didUserSelectARow;
-
-- (instancetype)initWithSearchEngineTableViewController:
-                    (SearchEngineChoiceTableViewController*)tableViewController
-                                                 forFRE:(BOOL)isForFRE
+- (instancetype)initWithFirstRunMode:(BOOL)isForFRE
     NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
-
-// Update the primary action button based on whether the user has scrolled to
-// the bottom and whether they have selected a row.
-- (void)updatePrimaryActionButton;
 
 @end
 

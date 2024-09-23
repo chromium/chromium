@@ -37,6 +37,7 @@ source_set("browser_tests") {
 
   sources = [
     "app_browser_controller_browsertest.cc",
+    "app_browser_document_picture_in_picture_browsertest.cc",
     "create_shortcut_browsertest.cc",
     "pwa_mixed_content_browsertest.cc",
     "status_bar_browsertest.cc",
@@ -55,6 +56,10 @@ source_set("browser_tests") {
     "web_app_ui_manager_impl_browsertest.cc",
     "web_app_uninstall_browsertest.cc",
   ]
+
+  if (is_chromeos) {
+    sources += [ "sub_apps_admin_policy_browsertest.cc" ]
+  }
 
   if (!is_chromeos_lacros) {
     sources += [
@@ -77,8 +82,6 @@ source_set("browser_tests") {
 
   deps = [
     "//chrome/app:command_ids",
-    "//chrome/browser:browser_themes",
-    "//chrome/browser:theme_properties",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",
@@ -89,6 +92,12 @@ source_set("browser_tests") {
     "//chrome/browser/metrics/structured:features",
     "//chrome/browser/metrics/structured:test_support",
     "//chrome/browser/permissions",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/picture_in_picture:test_support_ui",
+    "//chrome/browser/shortcuts",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/window_sizer",
     "//chrome/browser/web_applications:prevent_close_test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/browser/web_applications/app_service:test_support",
@@ -96,6 +105,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/embedder_support",
     "//components/metrics/structured:structured_events",
+    "//components/metrics/structured:test_support",
     "//components/page_load_metrics/browser:test_support",
     "//components/services/app_service",
     "//components/site_engagement/content",
@@ -105,9 +115,13 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/file_manager:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
+      "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/system_web_apps",
+      "//chromeos/ash/components/browser_context_helper",
       "//components/session_manager/core:core",
       "//components/user_manager:user_manager",
     ]
@@ -171,6 +185,10 @@ source_set("app_service_browser_tests") {
     "//components/webapps/browser:test_support",
     "//components/webapps/common",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash/fileapi" ]
+  }
 
   if (is_chromeos_lacros) {
     deps += [

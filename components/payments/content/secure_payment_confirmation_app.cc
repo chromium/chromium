@@ -49,25 +49,33 @@ void RecordSystemPromptResult(
 SecurePaymentConfirmationApp::SecurePaymentConfirmationApp(
     content::WebContents* web_contents_to_observe,
     const std::string& effective_relying_party_identity,
-    std::unique_ptr<SkBitmap> icon,
-    const std::u16string& label,
+    const std::u16string& payment_instrument_label,
+    std::unique_ptr<SkBitmap> payment_instrument_icon,
     std::vector<uint8_t> credential_id,
     const url::Origin& merchant_origin,
     base::WeakPtr<PaymentRequestSpec> spec,
     mojom::SecurePaymentConfirmationRequestPtr request,
-    std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
+    std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
+    const std::u16string& network_label,
+    const SkBitmap& network_icon,
+    const std::u16string& issuer_label,
+    const SkBitmap& issuer_icon)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::INTERNAL),
       content::WebContentsObserver(web_contents_to_observe),
       authenticator_frame_routing_id_(
           authenticator->GetRenderFrameHost()->GetGlobalId()),
       effective_relying_party_identity_(effective_relying_party_identity),
-      icon_(std::move(icon)),
-      label_(label),
+      payment_instrument_label_(payment_instrument_label),
+      payment_instrument_icon_(std::move(payment_instrument_icon)),
       credential_id_(std::move(credential_id)),
       merchant_origin_(merchant_origin),
       spec_(spec),
       request_(std::move(request)),
-      authenticator_(std::move(authenticator)) {
+      authenticator_(std::move(authenticator)),
+      network_label_(network_label),
+      network_icon_(network_icon),
+      issuer_label_(issuer_label),
+      issuer_icon_(issuer_icon) {
   DCHECK(!credential_id_.empty());
 
   app_method_names_.insert(methods::kSecurePaymentConfirmation);
@@ -111,9 +119,12 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   options->allow_credentials = std::move(credentials);
 
   options->challenge = request_->challenge;
-  // TODO(crbug.com/1325854): The 'showOptOut' flag status must also be signed
+  // TODO(crbug.com/40225659): The 'showOptOut' flag status must also be signed
   // in the assertion, so that the verifier can check that the caller offered
   // the experience if desired.
+  // TODO(crbug.com/333945861): The network and issuer information must also be
+  // signed in the assertion, so that the verifier can check that the caller
+  // passed the correct information.
   authenticator_->SetPaymentOptions(blink::mojom::PaymentOptions::New(
       spec_->GetTotal(/*selected_app=*/this)->amount.Clone(),
       request_->instrument.Clone(), request_->payee_name,
@@ -134,7 +145,7 @@ bool SecurePaymentConfirmationApp::CanPreselect() const {
 }
 
 std::u16string SecurePaymentConfirmationApp::GetMissingInfoLabel() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::u16string();
 }
 
@@ -157,7 +168,7 @@ std::string SecurePaymentConfirmationApp::GetId() const {
 }
 
 std::u16string SecurePaymentConfirmationApp::GetLabel() const {
-  return label_;
+  return payment_instrument_label_;
 }
 
 std::u16string SecurePaymentConfirmationApp::GetSublabel() const {
@@ -165,7 +176,7 @@ std::u16string SecurePaymentConfirmationApp::GetSublabel() const {
 }
 
 const SkBitmap* SecurePaymentConfirmationApp::icon_bitmap() const {
-  return icon_.get();
+  return payment_instrument_icon_.get();
 }
 
 bool SecurePaymentConfirmationApp::IsValidForModifier(
@@ -201,11 +212,11 @@ bool SecurePaymentConfirmationApp::IsWaitingForPaymentDetailsUpdate() const {
 
 void SecurePaymentConfirmationApp::UpdateWith(
     mojom::PaymentRequestDetailsUpdatePtr details_update) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SecurePaymentConfirmationApp::OnPaymentDetailsNotUpdated() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void SecurePaymentConfirmationApp::AbortPaymentApp(
@@ -216,19 +227,11 @@ void SecurePaymentConfirmationApp::AbortPaymentApp(
 mojom::PaymentResponsePtr
 SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
     mojom::PaymentResponsePtr response) const {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationExtensions)) {
-    response->get_assertion_authenticator_response =
-        blink::mojom::GetAssertionAuthenticatorResponse::New(
-            response_->info.Clone(), response_->authenticator_attachment,
-            response_->signature, response_->user_handle,
-            response_->extensions.Clone());
-    return response;
-  }
-  response->secure_payment_confirmation =
-      mojom::SecurePaymentConfirmationResponse::New(
-          response_->info.Clone(), response_->signature,
-          response_->authenticator_attachment, response_->user_handle);
+  response->get_assertion_authenticator_response =
+      blink::mojom::GetAssertionAuthenticatorResponse::New(
+          response_->info.Clone(), response_->authenticator_attachment,
+          response_->signature, response_->user_handle,
+          response_->extensions.Clone());
   return response;
 }
 

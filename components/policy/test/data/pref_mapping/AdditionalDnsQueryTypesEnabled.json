@@ -9,28 +9,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "prefs": {
-          "async_dns.additional_dns_query_types_enabled": {
-            "default_value": true,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "AdditionalDnsQueryTypesEnabled": false
-        },
-        "prefs": {
-          "async_dns.additional_dns_query_types_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "async_dns.additional_dns_query_types_enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

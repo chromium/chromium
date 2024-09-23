@@ -130,7 +130,7 @@ bool GetOrCreateV8Value(v8::Local<v8::Context> context,
     case PP_VARTYPE_STRING: {
       StringVar* string = StringVar::FromPPVar(var);
       if (!string) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         result->Clear();
         return false;
       }
@@ -148,7 +148,7 @@ bool GetOrCreateV8Value(v8::Local<v8::Context> context,
     case PP_VARTYPE_ARRAY_BUFFER: {
       ArrayBufferVar* buffer = ArrayBufferVar::FromPPVar(var);
       if (!buffer) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         result->Clear();
         return false;
       }
@@ -170,13 +170,13 @@ bool GetOrCreateV8Value(v8::Local<v8::Context> context,
       // is nested inside an array or dictionary.
       if (object_vars_allowed == V8VarConverter::kDisallowObjectVars ||
           visited_ids->size() != 0) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         result->Clear();
         return false;
       }
       scoped_refptr<V8ObjectVar> v8_object_var = V8ObjectVar::FromPPVar(var);
       if (!v8_object_var.get()) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         result->Clear();
         return false;
       }
@@ -376,7 +376,7 @@ bool V8VarConverter::ToV8Value(const PP_Var& var,
       parent_ids.insert(stack[current_var_index].val.value.as_id);
       ArrayVar* array_var = ArrayVar::FromPPVar(stack[current_var_index].val);
       if (!array_var) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       }
       DCHECK(current_v8->IsArray());
@@ -408,7 +408,7 @@ bool V8VarConverter::ToV8Value(const PP_Var& var,
       DictionaryVar* dict_var =
           DictionaryVar::FromPPVar(stack[current_var_index].val);
       if (!dict_var) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       }
       DCHECK(current_v8->IsObject());
@@ -538,7 +538,7 @@ bool V8VarConverter::FromV8ValueInternal(
 
       ArrayVar* array_var = ArrayVar::FromPPVar(current_var);
       if (!array_var) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       }
 
@@ -574,7 +574,7 @@ bool V8VarConverter::FromV8ValueInternal(
 
       DictionaryVar* dict_var = DictionaryVar::FromPPVar(current_var);
       if (!dict_var) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       }
 
@@ -586,9 +586,10 @@ bool V8VarConverter::FromV8ValueInternal(
 
         // Extend this test to cover more types as necessary and if sensible.
         if (!key->IsString() && !key->IsNumber()) {
-          NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
-                       << "\" "
-                          "is neither a string nor a number";
+          NOTREACHED_IN_MIGRATION()
+              << "Key \"" << *v8::String::Utf8Value(isolate, key)
+              << "\" "
+                 "is neither a string nor a number";
           return false;
         }
 

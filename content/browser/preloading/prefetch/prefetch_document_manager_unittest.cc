@@ -8,15 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
-#include "content/browser/preloading/prefetch/prefetch_test_utils.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -28,7 +26,9 @@
 namespace content {
 namespace {
 
+using testing::FieldsAre;
 using testing::IsEmpty;
+using testing::IsNull;
 using testing::UnorderedElementsAreArray;
 
 class TestPrefetchService : public PrefetchService {
@@ -108,9 +108,6 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
   // to DevTools console.
   std::string TriggerNoVarySearchParseErrorAndGetConsoleMessage(
       network::mojom::NoVarySearchParseError parse_error) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        network::features::kPrefetchNoVarySearch);
     // Used to create responses.
     const net::IsolationInfo info;
     // Process the candidates with the |PrefetchDocumentManager| for the current
@@ -282,9 +279,6 @@ TEST_F(PrefetchDocumentManagerTest,
 }
 
 TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      network::features::kPrefetchNoVarySearch);
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
 
@@ -459,53 +453,52 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
       GetCrossOriginUrl("/candidate3.html")));
 }
 
-// Struct describing the settings for No-Vary-Search experiment's flags used to
-// support shipping and origin trial.
-struct NoVarySearchExperimentConfigTestInfo {
-  bool shipped_by_default;
-  bool origin_trial_enabled;
-  bool experiment_expected_status;
-};
+// Link speculationrules prefetch is not started in fenced frame.
+// `CanPrefetchNow()` check blocks speculationrules prefetch from fenced frames.
+TEST_F(PrefetchDocumentManagerTest, FencedFrameDoesNotStartPrefetch) {
+  // Create list of SpeculationCandidatePtrs.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
 
-class PrefetchDocumentManagerNoVarySearchTest
-    : public PrefetchDocumentManagerTest,
-      public testing::WithParamInterface<NoVarySearchExperimentConfigTestInfo> {
-};
+  auto referrer = blink::mojom::Referrer::New();
+  referrer->url = GetSameOriginUrl("/referrer");
+  const GURL cross_origin_url = GetCrossOriginUrl("/candidate.html");
 
-// Tests that the NoVarySearch feature is properly enabled/disabled when
-// setting shipping and Origin Trial flags.
-TEST_P(PrefetchDocumentManagerNoVarySearchTest,
-       NoVarySearchFeatureStatusCheck) {
-  base::test::ScopedFeatureList scoped_feature_list;
+  // Create candidate for private cross-origin prefetch. This candidate should
+  // be added to the queue of |PrefetchDocumentManager|. However, it will not be
+  // prefetched because it is from a fenced frame.
+  auto candidate = blink::mojom::SpeculationCandidate::New();
+  candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate->requires_anonymous_client_ip_when_cross_origin = true;
+  candidate->url = cross_origin_url;
+  candidate->referrer = referrer->Clone();
+  candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidates.push_back(std::move(candidate));
 
-  bool shipped_by_default = GetParam().shipped_by_default;
-  bool origin_trial_enabled = GetParam().origin_trial_enabled;
-  bool experiment_expected_status = GetParam().experiment_expected_status;
-
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      network::features::kPrefetchNoVarySearch,
-      {{network::features::kPrefetchNoVarySearchShippedByDefault.name,
-        shipped_by_default ? "true" : "false"}});
-
+  // Process the candidate with the |PrefetchDocumentManager| for the current
+  // document.
+  TestRenderFrameHost* fenced_frame_rfh =
+      static_cast<TestRenderFrameHost&>(GetPrimaryMainFrame())
+          .AppendFencedFrame();
   auto* prefetch_document_manager =
-      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-          &GetPrimaryMainFrame());
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(fenced_frame_rfh);
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
 
-  if (origin_trial_enabled) {
-    prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
-  }
+  // Check that the candidate was sent to |PrefetchService|.
+  const auto& prefetch_urls = GetPrefetches();
+  ASSERT_EQ(prefetch_urls.size(), 1U);
+  EXPECT_EQ(prefetch_urls[0]->GetURL(), cross_origin_url);
+  EXPECT_EQ(prefetch_urls[0]->GetPrefetchType(),
+            PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                         /*use_prefetch_proxy=*/true,
+                         blink::mojom::SpeculationEagerness::kEager));
+  EXPECT_TRUE(
+      prefetch_urls[0]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
-  EXPECT_EQ(prefetch_document_manager->NoVarySearchSupportEnabled(),
-            experiment_expected_status);
+  // `CanPrefetchNow()` blocks the speculationrules prefetch from fenced frame.
+  EXPECT_THAT(prefetch_document_manager->CanPrefetchNow(prefetch_urls[0].get()),
+              FieldsAre(false, IsNull()));
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    PrefetchDocumentManagerTest,
-    PrefetchDocumentManagerNoVarySearchTest,
-    ::testing::Values(NoVarySearchExperimentConfigTestInfo{false, false, false},
-                      NoVarySearchExperimentConfigTestInfo{false, true, true},
-                      NoVarySearchExperimentConfigTestInfo{true, false, true},
-                      NoVarySearchExperimentConfigTestInfo{true, true, true}));
 
 }  // namespace
 }  // namespace content

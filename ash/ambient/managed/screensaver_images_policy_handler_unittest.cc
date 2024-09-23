@@ -266,7 +266,7 @@ class ScreensaverImagesPolicyHandlerForAnySessionTest
   void ResetScreensaverImagesPolicyHandler() { policy_handler_.reset(); }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
-    auto hash = base::SHA1HashSpan(base::as_byte_span(url));
+    auto hash = base::SHA1Hash(base::as_byte_span(url));
     return temp_dir_.GetPath()
         .AppendASCII(GetParam().base_directory)
         .AppendASCII(base::HexEncode(hash) + kCacheFileExt);

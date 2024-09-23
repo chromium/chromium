@@ -38,8 +38,12 @@ class UkmDatabaseImpl : public UkmDatabase {
                              const std::string& profile_id) override;
   void OnUrlValidated(const GURL& url, const std::string& profile_id) override;
   void RemoveUrls(const std::vector<GURL>& urls, bool all_urls) override;
-  void RunReadonlyQueries(QueryList&& queries, QueryCallback callback) override;
+  void AddUmaMetric(const std::string& profile_id,
+                    const UmaMetricEntry& row) override;
+  void RunReadOnlyQueries(QueryList&& queries, QueryCallback callback) override;
   void DeleteEntriesOlderThan(base::Time time) override;
+  void CleanupItems(const std::string& profile_id,
+                    std::vector<CleanupItem> cleanup_items) override;
   void CommitTransactionForTesting() override;
 
  private:

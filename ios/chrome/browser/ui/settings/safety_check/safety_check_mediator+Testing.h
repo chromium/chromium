@@ -48,6 +48,10 @@
 // Row button to start the safety check.
 @property(nonatomic, strong, readonly) TableViewTextItem* checkStartItem;
 
+// Row button to opt-in to Safety Check notifications.
+@property(nonatomic, strong, readonly)
+    TableViewTextItem* notificationsOptInItem;
+
 // Current state of the start safety check row button.
 @property(nonatomic, assign) CheckStartStates checkStartState;
 

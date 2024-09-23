@@ -21,7 +21,8 @@ import "structured_data.proto";
 // On-device storage for events that have been recorded but not yet uploaded.
 message EventsProto {
   // Events not associated with the UMA client_id.
-  repeated StructuredEventProto non_uma_events = 1;
+  // TODO(b/334983021) rename field on platform2.
+  repeated StructuredEventProto events = 1;
 
   // Events associated with the UMA client_id.
   repeated StructuredEventProto uma_events = 2 [deprecated = true];

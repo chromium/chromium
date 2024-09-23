@@ -1,0 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[Exposed=(Window,Worker), RuntimeEnabled=RTCRtpTransport]
+interface RTCRtpSent {
+  readonly attribute DOMHighResTimeStamp time;
+
+  // Can be correlated with acks
+  readonly attribute unsigned long long? ackId;
+  readonly attribute unsigned long long size;
+};

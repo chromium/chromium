@@ -47,7 +47,7 @@ class CrashReporterURLObserver : public WebStateListObserver,
   // Records the given URL associated to the given id to the list of URLs to
   // send to the crash server. If `pending` is true, the URL is one that is
   // expected to start loading, but hasn't actually been seen yet.
-  void RecordURL(const GURL& url, web::WebState* web_state, bool pending);
+  void RecordURL(const GURL& url, const web::WebState* web_state, bool pending);
 
   // Observes `webState` by this instance of the CrashReporterURLObserver.
   void ObservePreloadWebState(web::WebState* web_state);
@@ -74,17 +74,17 @@ class CrashReporterURLObserver : public WebStateListObserver,
   // A unique string identifying `web_state_list` as a group of WebStates.
   std::string GroupForWebStateList(WebStateList* web_state_list);
   // Convenient method to report the URL displayed by `web_state`.
-  void RecordURLForWebState(web::WebState* web_state);
+  void RecordURLForWebState(const web::WebState* web_state);
   // Remove the reporting of URLs of every WebStates in `group`.
   void RemoveGroup(const std::string& group);
   // Map associating each crash key with the group it is currently reporting
   // URLs for.
   NSMutableDictionary<NSString*, NSNumber*>* crash_key_by_group_;
   // Map associating each WebState to its group.
-  std::map<web::WebState*, std::string> web_state_to_group_;
+  std::map<const web::WebState*, std::string> web_state_to_group_;
   // Map associating each group to the WebState currently reported in crash
   // reports.
-  std::map<std::string, web::WebState*> current_web_states_;
+  std::map<std::string, const web::WebState*> current_web_states_;
   // List of keys to use for recording URLs. This list is sorted such that a new
   // tab must use the first key in this list to record its URLs.
   NSMutableArray<NSNumber*>* crash_keys_;

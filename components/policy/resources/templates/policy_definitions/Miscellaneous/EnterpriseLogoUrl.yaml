@@ -1,0 +1,30 @@
+caption: Enterprise Logo URL
+default: null
+desc: |-
+  A URL to an image that will be used as an enterprise badge for the profile. The URL must point to an image.
+
+  This badge will be shown in the toolbar.
+
+  If this policy is set at the browser level, all profiles will have this logo in the toolbar.
+
+  If this policy is set at the profile level, only that profile will have this logo.
+
+  If this policy is not set, a default building icon will be shown.
+
+  If an error happens while trying to get and show the image, a default building icon will be shown.
+
+  Unlike other policies, this policy set at the profile level takes precedence over a policy set at the browser level.
+example_value: https://example.com/image.png
+features:
+  dynamic_refresh: true
+  per_profile: true
+  user_only: true
+supported_on:
+- chrome.*:125-
+owners:
+- file://components/policy/OWNERS
+- ydago@chromium.org
+schema:
+  type: string
+tags: []
+type: string

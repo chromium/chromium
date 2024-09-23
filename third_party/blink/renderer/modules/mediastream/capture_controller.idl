@@ -36,6 +36,13 @@ interface CaptureController : EventTarget {
     MeasureAs = CapturedSurfaceControl,
     CallWith = ScriptState
   ]
+  Promise<undefined> captureWheel(HTMLElement? element);
+
+  [
+    RuntimeEnabled = CapturedSurfaceControl,
+    MeasureAs = CapturedSurfaceControl,
+    CallWith = ScriptState
+  ]
   Promise<undefined> sendWheel(CapturedWheelAction action);
 
   [

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/task/cancelable_task_tracker.h"
 
 namespace content {
 class WebContents;
@@ -41,14 +40,6 @@ class OverlayPanelContent {
       jint width,
       jint height);
 
-  // Removes a search URL from history. |search_start_time_ms| represents the
-  // time at which |search_url| was committed.
-  void RemoveLastHistoryEntry(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& search_url,
-      jlong search_start_time_ms);
-
   // Takes ownership of the WebContents which holds the panel content.
   void SetWebContents(
       JNIEnv* env,
@@ -76,9 +67,6 @@ class OverlayPanelContent {
  private:
   // Our global reference to the Java OverlayPanelContent.
   base::android::ScopedJavaGlobalRef<jobject> java_manager_;
-
-  // Used if we need to clear history.
-  base::CancelableTaskTracker history_task_tracker_;
 
   // The WebContents that holds the panel content.
   std::unique_ptr<content::WebContents> web_contents_;

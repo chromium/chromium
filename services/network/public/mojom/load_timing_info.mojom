@@ -51,4 +51,14 @@ struct LoadTimingInfo {
   // If the response is not provided by the service worker, kept empty.
   // If respondWith() was not called, kept empty.
   mojo_base.mojom.TimeTicks service_worker_respond_with_settled;
+
+  // The time immediately before ServiceWorker static routing API starts
+  // matching a request with the registered router rules. If the API is not
+  // used, kept empty.
+  mojo_base.mojom.TimeTicks service_worker_router_evaluation_start;
+
+  // The time immediately before ServiceWorker static routing API starts
+  // looking up the cache storage when "cache" is specified as its source. If
+  // the API is not used, or the source is not "cache", kept empty.
+  mojo_base.mojom.TimeTicks service_worker_cache_lookup_start;
 };

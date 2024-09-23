@@ -86,7 +86,7 @@ class AnomalyDetectorClientImpl : public AnomalyDetectorClient {
         anomaly_detector::kAnomalyGuestFileCorruptionSignalName) {
       is_guest_file_corruption_signal_connected_ = is_connected;
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 

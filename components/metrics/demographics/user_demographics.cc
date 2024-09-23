@@ -22,8 +22,9 @@ constexpr auto kSyncDemographicsPrefFlags =
 #else
 constexpr auto kSyncOsDemographicsPrefFlags =
     user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF;
-// TODO(crbug/1367338): Make this non-syncable (on Ash only) after full rollout
-// of the syncable os priority pref; then delete it locally from Ash devices.
+// TODO(crbug.com/40240008): Make this non-syncable (on Ash only) after full
+// rollout of the syncable os priority pref; then delete it locally from Ash
+// devices.
 constexpr auto kSyncDemographicsPrefFlags =
     user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF;
 #endif
@@ -37,7 +38,7 @@ namespace {
 
 const base::Value::Dict& GetDemographicsDict(PrefService* profile_prefs) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug/1367338): On Ash only, clear sync demographics pref once
+  // TODO(crbug.com/40240008): On Ash only, clear sync demographics pref once
   // os-level syncable pref is fully rolled out and Ash drops support for
   // non-os-level syncable prefs.
   if (profile_prefs->HasPrefPath(kSyncOsDemographicsPrefName)) {
@@ -54,7 +55,7 @@ void MigrateBirthYearOffset(PrefService* to_local_state,
   if (profile_offset == kUserDemographicsBirthYearNoiseOffsetDefaultValue)
     return;
 
-  // TODO(crbug/1367338): clear/remove deprecated pref after 2023/09
+  // TODO(crbug.com/40240008): clear/remove deprecated pref after 2023/09
 
   const int local_offset =
       to_local_state->GetInteger(kUserDemographicsBirthYearOffsetPrefName);
@@ -254,7 +255,7 @@ UserDemographicsResult GetUserNoisedBirthYearAndGenderFromPrefs(
 
   // Get the offset from local_state/profile_prefs and do one last check that
   // the birth year is eligible.
-  // TODO(crbug/1367338): remove profile_prefs after 2023/09
+  // TODO(crbug.com/40240008): remove profile_prefs after 2023/09
   MigrateBirthYearOffset(local_state, profile_prefs);
   int offset = GetBirthYearOffset(local_state);
   if (!HasEligibleBirthYear(now, *birth_year, offset)) {

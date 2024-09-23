@@ -35,7 +35,7 @@ struct WorkerThreadData {
   WorkerThreadObservers observers;
 };
 
-ABSL_CONST_INIT thread_local WorkerThreadData* worker_data = nullptr;
+constinit thread_local WorkerThreadData* worker_data = nullptr;
 
 // A task-runner that refuses to run any tasks.
 class DoNothingTaskRunner : public base::SequencedTaskRunner {

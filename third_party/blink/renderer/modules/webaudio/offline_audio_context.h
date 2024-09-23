@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OFFLINE_AUDIO_CONTEXT_H_
 
 #include "base/synchronization/lock.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -34,7 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-
+class AudioBuffer;
 class ExceptionState;
 class OfflineAudioContextOptions;
 class OfflineAudioDestinationHandler;
@@ -64,10 +66,13 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   uint32_t length() const { return total_render_frames_; }
 
-  ScriptPromise startOfflineRendering(ScriptState*, ExceptionState&);
+  ScriptPromise<AudioBuffer> startOfflineRendering(ScriptState*,
+                                                   ExceptionState&);
 
-  ScriptPromise suspendContext(ScriptState*, double, ExceptionState&);
-  ScriptPromise resumeContext(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> suspendContext(ScriptState*,
+                                             double,
+                                             ExceptionState&);
+  ScriptPromise<IDLUndefined> resumeContext(ScriptState*, ExceptionState&);
 
   void RejectPendingResolvers() override;
 
@@ -80,8 +85,11 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // Fire completion event when the rendering is finished.
   void FireCompletionEvent();
 
-  bool HandlePreRenderTasks(const AudioIOPosition* output_position,
-                            const AudioCallbackMetric* metric) final;
+  bool HandlePreRenderTasks(uint32_t frames_to_process,
+                            const AudioIOPosition* output_position,
+                            const AudioCallbackMetric* metric,
+                            base::TimeDelta playout_delay,
+                            const media::AudioGlitchInfo& glitch_info) final;
   void HandlePostRenderTasks() final;
 
   // Resolve a suspend scheduled at the specified frame. With this specified
@@ -95,10 +103,8 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // The HashMap with 'zero' key is needed because `CurrentSampleFrame()` can be
   // zero.
   using SuspendMap = HeapHashMap<size_t,
-                                 Member<ScriptPromiseResolver>,
+                                 Member<ScriptPromiseResolver<IDLUndefined>>,
                                  IntWithZeroKeyHashTraits<size_t>>;
-
-  using OfflineGraphAutoLocker = DeferredTaskHandler::OfflineGraphAutoLocker;
 
   bool HasPendingActivity() const final;
 
@@ -114,7 +120,7 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // main thread and accessed by the audio thread with the graph lock.
   //
   // The map consists of key-value pairs of:
-  // { size_t quantized_frame: ScriptPromiseResolver resolver }
+  // { size_t quantized_frame: ScriptPromiseResolverBase resolver }
   //
   // Note that `quantized_frame` is a unique key, since you can have only one
   // suspend scheduled for a certain frame. Accessing to this must be
@@ -127,7 +133,7 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   HashSet<size_t, IntWithZeroKeyHashTraits<size_t>> scheduled_suspend_frames_
       GUARDED_BY(suspend_frames_lock_);
 
-  Member<ScriptPromiseResolver> complete_resolver_;
+  Member<ScriptPromiseResolver<AudioBuffer>> complete_resolver_;
 
   // This flag is necessary to indicate the rendering has actually started or
   // running. Note that initial state of context is 'Suspended', which is the

@@ -1,0 +1,44 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("multidevice_internals") {
+  sources = [
+    "multidevice_internals_logs_handler.cc",
+    "multidevice_internals_logs_handler.h",
+    "multidevice_internals_phone_hub_handler.cc",
+    "multidevice_internals_phone_hub_handler.h",
+    "multidevice_internals_ui.cc",
+    "multidevice_internals_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/components/phonehub",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base:i18n",
+    "//chrome/browser/ash/phonehub",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/multidevice_internals:resources",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chromeos/ash/components/phonehub:debug",
+    "//chromeos/ash/components/phonehub/proto",
+    "//components/prefs",
+    "//skia:skia_core_public_headers",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}

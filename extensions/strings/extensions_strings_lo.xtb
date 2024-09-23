@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກຜູ້​ຂາຍ <ph name="VENDOR_ID" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">ປ່ຽນແທນໄຟລ໌ crx ບໍ່ໄດ້. ກວດກາເບິ່ງວ່າ ໄຟລ໌ໃຊ້ງານຢູ່ຫຼືບໍ່.</translation>
 <translation id="3163201441334626963">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ​ຜູ້​ຂາຍ <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">ບໍ່ສາມາດແກະກ່ອງສ່ວນຂະຫຍາຍໄດ້. ເພື່ອແກະກ່ັງສ່ວນຂະຫຍາຍຢ່າງປອດໄພ, ຕ້ອງມີຊ່ອງທາງໃຫ້ກັບໄດເຣັກຕໍຣີໂປຣໄຟລ໌ຂອງທ່ານທີ່ເລີ່ມຕົ້ນກັບໜັງສືດຣ້າຍ ແລະບໍ່ມີບ່ອນຕໍ່ກັນ, ຈຸດຕໍ່, ຫຼືຊິມລິ້ງ (symlink). ບໍ່ມີຊ່ອງທາງດັ່ງກ່າວຢູ່ສໍາລັບໂປຣໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> ຈາກຜູ້​ຂາຍ <ph name="VENDOR_ID" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">ຄ່າປ້ອນເຂົ້າສໍາລັບປຸ່ມສ່ວນຕົວຕ້ອງເປັນຊ່ອງທາງທີ່ຖືກຕ້ອງ.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">ຜູ້​ຄວບ​ຄຸມ​ອຸ​ປະ​ກອນ​ນີ້​ຕ້ອງ​ການ​ໃຫ້​ຕິດ​ຕັ້ງ <ph name="EXTENSION_NAME" />. ​ບໍ່​ສາ​ມາດ​ຖອນ​ຕິດ​ຕັ້ງມັນ​ໄດ້.</translation>
 <translation id="6027032947578871493">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ <ph name="VENDOR_NAME" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ຈາກຜູ້​ຂາຍ<ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">ບໍ່ສາມາດແກະກ່ອງສ່ວນຂະຫຍາຍໄດ້. ເພື່ອແກະກ່ອງສ່ວນຂະຫຍາຍຢ່າງປອດໄພ, ຕ້ອງມີຊ່ອງທາງໃຫ້ກັບໄດເຣັກຕໍຣີໂປຣໄຟລ໌ຂອງທ່ານທີ່ບໍ່ມີ symlink. ບໍ່ມີຊ່ອງທາງດັ່ງກ່າວຢູ່ສໍາລັບໂປຣໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="6322279351188361895">ອ່ານປຸ່ມສ່ວນຕົວບໍ່ໄດ້.</translation>
 <translation id="6391538222494443604">ບັນຊີລາຍຊື່ການປ້ອນ​ຕ້ອງ​ມີຢູ່​.</translation>
 <translation id="641087317769093025">ບໍ່​ສາ​ມາດແຍກຊິບສ່ວນຂະ​ຫຍາຍໄດ້</translation>

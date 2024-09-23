@@ -16,6 +16,7 @@
 #include "base/containers/stack.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/form_forest_util_inl.h"
@@ -35,7 +36,7 @@ FormForest::FrameData* FormForest::GetOrCreateFrameData(LocalFrameToken frame) {
   if (it == frame_datas_.end()) {
     it = frame_datas_.insert(it, std::make_unique<FrameData>(frame));
   }
-  DCHECK(it != frame_datas_.end());
+  CHECK(it != frame_datas_.end(), base::NotFatalUntil::M130);
   DCHECK(it->get());
   return it->get();
 }
@@ -82,9 +83,10 @@ void FormForest::EraseReferencesTo(
   for (std::unique_ptr<FrameData>& some_frame : frame_datas_) {
     for (FormData& some_form : some_frame->child_forms) {
       size_t num_removed =
-          std::erase_if(some_form.fields, [&](const FormFieldData& some_form) {
-            return Match(some_form.renderer_form_id());
-          });
+          std::erase_if(some_form.mutable_fields(/*pass_key=*/{}),
+                        [&](const FormFieldData& some_form) {
+                          return Match(some_form.renderer_form_id());
+                        });
       if (num_removed > 0 && forms_with_removed_fields) {
         CHECK(!some_frame->parent_form);
         forms_with_removed_fields->insert(some_form.global_id());
@@ -149,15 +151,15 @@ void FormForest::EraseFormsOfFrame(LocalFrameToken frame, bool keep_frame) {
 // (amongst others), which will then also set the child frame's
 // FrameData::parent_form.
 void FormForest::UpdateTreeOfRendererForm(FormData* form,
-                                          AutofillDriver* driver) {
+                                          AutofillDriver& driver) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.UpdateTreeOfRendererForm.Duration");
-  CHECK(form->host_frame);
-  CHECK_EQ(form->host_frame, driver->GetFrameToken());
+  CHECK(form->host_frame());
+  CHECK_EQ(form->host_frame(), driver.GetFrameToken());
 
-  FrameData* frame = GetOrCreateFrameData(form->host_frame);
-  CHECK(!frame->driver || frame->driver == driver);
-  frame->driver = driver;
+  FrameData* frame = GetOrCreateFrameData(form->host_frame());
+  CHECK(!frame->driver || frame->driver == &driver);
+  frame->driver = &driver;
 
   // Moves |form| into its |frame|'s FrameData::child_forms, with a special
   // treatment of the fields: |form|'s fields are replaced with |old_form|'s
@@ -173,13 +175,13 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // simplicity, we do not move fields from |form|'s root back to the former
   // children. Instead, we rely on the forms in descendant frames being
   // re-extracted when they become visible again.
-  std::vector<FormFieldData> form_fields = std::move(form->fields);
+  std::vector<FormFieldData> form_fields = std::move(form->fields());
   bool child_frames_changed;
   if (FormData* old_form = GetFormData(form->global_id(), frame)) {
-    form->fields = std::move(old_form->fields);
-    child_frames_changed = old_form->child_frames != form->child_frames;
+    form->set_fields(std::move(old_form->fields()));
+    child_frames_changed = old_form->child_frames() != form->child_frames();
     for_each_in_set_difference(
-        old_form->child_frames, form->child_frames,
+        old_form->child_frames(), form->child_frames(),
         [this, frame](FrameToken removed_child_token) {
           std::optional<LocalFrameToken> local_child =
               frame->driver->Resolve(removed_child_token);
@@ -192,9 +194,9 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     *old_form = std::move(*form);
     form = old_form;
   } else {
-    DCHECK(!base::Contains(frame->child_forms, form->renderer_id,
+    DCHECK(!base::Contains(frame->child_forms, form->renderer_id(),
                            &FormData::renderer_id));
-    form->fields = {};
+    form->set_fields({});
     child_frames_changed = false;
     frame->child_forms.push_back(std::move(*form));
     form = &frame->child_forms.back();
@@ -221,9 +223,9 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // recursing into the subframes of the form that come after/before that field.
   // Only if |form|'s tree is trivial (consists of a single form), we can take
   // an abbreviation and just move the fields.
-  if (!frame->parent_form && form->child_frames.empty() &&
+  if (!frame->parent_form && form->child_frames().empty() &&
       !child_frames_changed) {
-    form->fields = std::move(form_fields);
+    form->set_fields(std::move(form_fields));
   } else {
     // Moves the first |max_number_of_fields_to_be_moved| fields that originated
     // from the renderer form |source_form| from |source| to |target|.
@@ -332,7 +334,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
 
     // New fields of the root form. To be populated in the tree traversal.
     std::vector<FormFieldData> root_fields;
-    root_fields.reserve(root.form->fields.size() + form_fields.size());
+    root_fields.reserve(root.form->fields().size() + form_fields.size());
 
     // We bound the number of visited nodes. We want to visit the field ranges
     // of `root.form` plus up to 64 nodes from its descendant frames. (This
@@ -348,7 +350,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     // - |num_did_visit| is the number `frontier.pop()` operations,
     // - |num_will_visit| is the number of `frontier.push()` operations.
     auto NumChildrenOfForm = [](const FormData& form) {
-      return form.child_frames.size() + 1;
+      return form.child_frames().size() + 1;
     };
     auto NumChildrenOfFrame = [&NumChildrenOfForm](const FrameData& frame) {
       size_t num = 0;
@@ -372,7 +374,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       // Pushes the current form on |roots_on_path| only if this is the first
       // time we encounter the form in the traversal (Node::next_frame == 0).
       if (n.next_frame == 0 &&
-          (n.form == root.form || !n.form->fields.empty())) {
+          (n.form == root.form || !n.form->fields().empty())) {
         roots_on_path.push(n.form);
       }
       CHECK(!roots_on_path.empty());
@@ -380,7 +382,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       std::vector<FormFieldData>& source =
           n.form->global_id() == form->global_id()
               ? form_fields
-              : roots_on_path.top()->fields;
+              : roots_on_path.top()->mutable_fields(/*pass_key=*/{});
       // Moves the next fields from `n.form` to |root_fields|.
       //
       // If `n.next_frame` is in bounds, pushes on the |frontier|
@@ -407,15 +409,15 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       // (a) this would add a lot of complexity just to handle a rare special
       // case, and (b) the fields will re-occur in |child_frame|'s subtree once
       // UpdateTreeOfRendererForm() is called for their renderer forms.
-      if (n.next_frame < n.form->child_frames.size()) {
+      if (n.next_frame < n.form->child_frames().size()) {
         // [begin, end) is the range of fields from `n.form` before
         // `n.next_frame`.
         size_t begin = base::checked_cast<size_t>(
             n.next_frame > 0
-                ? n.form->child_frames[n.next_frame - 1].predecessor + 1
+                ? n.form->child_frames()[n.next_frame - 1].predecessor + 1
                 : 0);
         size_t end = base::checked_cast<size_t>(
-            n.form->child_frames[n.next_frame].predecessor + 1);
+            n.form->child_frames()[n.next_frame].predecessor + 1);
         CHECK_LE(begin, end);
         MoveFields(end - begin, n.form->global_id(), source, root_fields);
 
@@ -433,8 +435,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         // If visiting |child_frame|'s field ranges would push us over the
         // kMaxVisits limit, we disconnect the |child_frame| from `n.form` by
         // unsetting FrameData::parent_form.
-        std::optional<LocalFrameToken> local_child =
-            n.frame->driver->Resolve(n.form->child_frames[n.next_frame].token);
+        std::optional<LocalFrameToken> local_child = n.frame->driver->Resolve(
+            n.form->child_frames()[n.next_frame].token);
         if (FrameData* child_frame = nullptr;
             local_child && (child_frame = GetOrCreateFrameData(*local_child))) {
           num_will_visit += NumChildrenOfFrame(*child_frame);
@@ -454,13 +456,13 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         MoveFields(std::numeric_limits<size_t>::max(), n.form->global_id(),
                    source, root_fields);
         if (n.form == roots_on_path.top()) {
-          roots_on_path.top()->fields.clear();
+          roots_on_path.top()->set_fields({});
           roots_on_path.pop();
         }
       }
     }
     CHECK_EQ(num_did_visit, num_will_visit);
-    root.form->fields = std::move(root_fields);
+    root.form->set_fields(std::move(root_fields));
     base::UmaHistogramCounts100(
         "Autofill.FormForest.UpdateTreeOfRendererForm.Visits", num_did_visit);
   }
@@ -487,8 +489,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   // disallow document access, there is no immediate need to support it. See
   // https://crrev.com/c/3055422 for a draft implementation.
   if (AutofillDriver* parent_driver = nullptr;
-      !frame->parent_form && (parent_driver = driver->GetParent())) {
-    parent_driver->TriggerFormExtractionInDriverFrame();
+      !frame->parent_form && (parent_driver = driver.GetParent())) {
+    parent_driver->TriggerFormExtractionInDriverFrame(/*pass_key=*/{});
   }
 }
 
@@ -503,9 +505,13 @@ const FormData& FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
 }
 
 FormForest::SecurityOptions::SecurityOptions(
+    const url::Origin* main_origin,
     const url::Origin* triggered_origin,
     const base::flat_map<FieldGlobalId, FieldType>* field_type_map)
-    : triggered_origin_(triggered_origin), field_type_map_(field_type_map) {
+    : main_origin_(main_origin),
+      triggered_origin_(triggered_origin),
+      field_type_map_(field_type_map) {
+  CHECK(main_origin);
   CHECK(triggered_origin);
 }
 
@@ -524,26 +530,25 @@ FormForest::RendererForms& FormForest::RendererForms::operator=(
     RendererForms&&) = default;
 FormForest::RendererForms::~RendererForms() = default;
 
-FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
-    const FormData& browser_form,
+FormForest::RendererForms FormForest::GetRendererFormsOfBrowserFields(
+    base::span<const FormFieldData> browser_fields,
     const SecurityOptions& security_options) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration");
-  CHECK(browser_form.host_frame);
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
 
-  // Reinstates the fields of |browser_form| in copies of their renderer forms.
-  // See the function's documentation in the header for details on the security
-  // policy |IsSafeToFill|.
+  // Reinstates the `browser_fields` in copies of their renderer forms. See the
+  // function's documentation in the header for details on the security policy
+  // `IsSafeToFill`.
   RendererForms result;
-  result.safe_fields.reserve(browser_form.fields.size());
-  for (const FormFieldData& browser_field : browser_form.fields) {
+  result.safe_fields.reserve(browser_fields.size());
+  for (const FormFieldData& browser_field : browser_fields) {
     FormGlobalId form_id = browser_field.renderer_form_id();
 
-    // Finds or creates the renderer form from which |browser_field| originated.
-    // The form with |form_id| may have been removed from the tree, for example,
+    // Finds or creates the renderer form from which `browser_field` originated.
+    // The form with `form_id` may have been removed from the tree, for example,
     // between a fill and a refill.
     auto renderer_form = base::ranges::find(result.renderer_forms.rbegin(),
                                             result.renderer_forms.rend(),
@@ -555,15 +560,15 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
       }
       result.renderer_forms.push_back(*original_form);
       renderer_form = result.renderer_forms.rbegin();
-      renderer_form->fields.clear();  // In case |original_form| is a root form.
+      renderer_form->set_fields({});  // In case `original_form` is a root form.
     }
     DCHECK(renderer_form != result.renderer_forms.rend());
 
-    auto IsSafeToFill = [&mutable_this, &browser_form, &renderer_form,
+    auto IsSafeToFill = [&mutable_this, &renderer_form,
                          &security_options](const FormFieldData& field) {
       // Non-sensitive values may be filled into fields that belong to the
       // main frame's origin. This is independent of the origin of the
-      // field that triggered the autofill, |triggered_origin|.
+      // field that triggered the autofill.
       auto IsSensitiveFieldType = [](FieldType field_type) {
         switch (field_type) {
           case CREDIT_CARD_TYPE:
@@ -588,20 +593,20 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
             return frame && frame->driver &&
                    frame->driver->HasSharedAutofillPermission();
           };
-      const url::Origin& main_origin = browser_form.main_frame_origin;
       return security_options.all_origins_are_trusted() ||
-             field.origin == security_options.triggered_origin() ||
-             (field.origin == main_origin &&
+             field.origin() == security_options.triggered_origin() ||
+             (field.origin() == security_options.main_origin() &&
               !IsSensitiveFieldType(
                   security_options.GetFieldType(field.global_id())) &&
-              HasSharedAutofillPermission(renderer_form->host_frame)) ||
-             (security_options.triggered_origin() == main_origin &&
-              HasSharedAutofillPermission(renderer_form->host_frame));
+              HasSharedAutofillPermission(renderer_form->host_frame())) ||
+             (security_options.triggered_origin() ==
+                  security_options.main_origin() &&
+              HasSharedAutofillPermission(renderer_form->host_frame()));
     };
 
-    renderer_form->fields.push_back(browser_field);
-    if (!IsSafeToFill(renderer_form->fields.back())) {
-      renderer_form->fields.back().value.clear();
+    renderer_form->mutable_fields(/*pass_key=*/{}).push_back(browser_field);
+    if (!IsSafeToFill(renderer_form->fields().back())) {
+      renderer_form->mutable_fields(/*pass_key=*/{}).back().set_value({});
     } else {
       result.safe_fields.insert(browser_field.global_id());
     }

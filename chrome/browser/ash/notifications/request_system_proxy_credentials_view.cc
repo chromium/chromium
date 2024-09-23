@@ -19,12 +19,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -111,7 +113,7 @@ void RequestSystemProxyCredentialsView::Init() {
   SetBorder(views::CreateEmptyBorder(provider->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText)));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_OK_BUTTON));
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -159,7 +161,7 @@ void RequestSystemProxyCredentialsView::Init() {
   username_textfield_ =
       auth_container->AddChildView(std::make_unique<views::Textfield>());
   username_textfield_->SetEnabled(true);
-  username_textfield_->SetAccessibleName(username_label);
+  username_textfield_->GetViewAccessibility().SetName(*username_label);
 
   const int related_vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
@@ -173,7 +175,7 @@ void RequestSystemProxyCredentialsView::Init() {
   password_textfield_ = auth_container->AddChildView(
       std::make_unique<chromeos::PassphraseTextfield>());
   password_textfield_->SetEnabled(true);
-  password_textfield_->SetAccessibleName(password_label);
+  password_textfield_->GetViewAccessibility().SetName(*password_label);
   auth_container->AddPaddingRow(views::TableLayout::kFixedSize,
                                 related_vertical_spacing);
 

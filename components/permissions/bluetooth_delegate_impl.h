@@ -120,6 +120,7 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
   void RevokeDevicePermissionWebInitiated(
       content::RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override;
+  bool MayUseBluetooth(content::RenderFrameHost* frame) override;
   bool IsAllowedToAccessService(content::RenderFrameHost* frame,
                                 const blink::WebBluetoothDeviceId& device_id,
                                 const device::BluetoothUUID& service) override;
@@ -162,7 +163,8 @@ class BluetoothDelegateImpl : public content::BluetoothDelegate {
    private:
     raw_ptr<BluetoothDelegateImpl> owning_delegate_;
     base::ObserverList<FramePermissionObserver> observer_list_;
-    std::list<FramePermissionObserver*> observers_pending_removal_;
+    std::list<raw_ptr<FramePermissionObserver, CtnExperimental>>
+        observers_pending_removal_;
     bool is_traversing_observers_ = false;
     base::ScopedObservation<ObjectPermissionContextBase,
                             ObjectPermissionContextBase::PermissionObserver>

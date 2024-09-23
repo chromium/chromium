@@ -89,17 +89,18 @@ void LacrosLogFilesLogSource::FindFiles(const base::FilePath& log_base_path,
 void LacrosLogFilesLogSource::ReadFile(const base::FilePath& log_file_path,
                                        const std::string& log_key,
                                        SystemLogsResponse* response) {
-  std::string value;
-  const bool read_success =
-      feedback_util::ReadEndOfFile(log_file_path, kMaxLogSize, &value);
+  std::optional<std::string> maybe_value =
+      feedback_util::ReadEndOfFile(log_file_path, kMaxLogSize);
 
-  if (read_success && value.length() == kMaxLogSize) {
-    value.replace(0, strlen(kLogTruncated), kLogTruncated);
+  if (maybe_value.has_value() && maybe_value.value().size() == kMaxLogSize) {
+    maybe_value.value().replace(0, strlen(kLogTruncated), kLogTruncated);
     LOG(WARNING) << "Large log file was likely truncated: " << log_file_path;
   }
 
-  response->emplace(log_key, (read_success && !value.empty()) ? std::move(value)
-                                                              : kNotAvailable);
+  response->emplace(log_key,
+                    (maybe_value.has_value() && !maybe_value.value().empty())
+                        ? std::move(maybe_value.value())
+                        : kNotAvailable);
 }
 
 }  // namespace system_logs

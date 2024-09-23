@@ -5,7 +5,6 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 
 #include <functional>
-#include <optional>
 #include <string>
 
 #include "components/content_settings/core/common/content_settings.h"
@@ -20,11 +19,12 @@ namespace content_settings {
 
 namespace {
 
-ContentSettingPatternSource CreateSetting(const std::string& primary_pattern,
-                                          const std::string& secondary_pattern,
-                                          ContentSetting setting,
-                                          base::Time expiration = base::Time(),
-                                          std::string source = std::string()) {
+ContentSettingPatternSource CreateSetting(
+    const std::string& primary_pattern,
+    const std::string& secondary_pattern,
+    ContentSetting setting,
+    base::Time expiration = base::Time(),
+    ProviderType source = ProviderType::kNone) {
   content_settings::RuleMetaData metadata;
   metadata.SetExpirationAndLifetime(
       expiration, expiration.is_null() ? base::TimeDelta()
@@ -43,6 +43,7 @@ ContentSettingsForOneType ToVector(const HostIndexedContentSettings& index) {
     source.secondary_pattern = entry.first.secondary_pattern;
     source.setting_value = entry.second.value.Clone();
     source.metadata = entry.second.metadata;
+    source.source = index.source();
     v.push_back(std::move(source));
   }
   return v;
@@ -67,6 +68,8 @@ TEST_F(HostIndexedContentSettingsTest, EmptyHostIndexedContentSettings) {
 
   EXPECT_EQ(index.Find(test_primary_url, test_secondary_url), nullptr);
   EXPECT_EQ(index.begin(), index.end());
+  EXPECT_TRUE(index.empty());
+  EXPECT_EQ(index.size(), 0u);
   EXPECT_THAT(ToVector(index), ::testing::IsEmpty());
 }
 
@@ -147,6 +150,7 @@ TEST_F(HostIndexedContentSettingsTest, SetDelete) {
                                               GURL("https://toplevel.com"))
                                         ->second.value),
               CONTENT_SETTING_ALLOW);
+    EXPECT_FALSE(index.empty());
 
     // Check that inserting the same setting returns false.
     EXPECT_FALSE(index.SetValue(ContentSettingsPattern::FromString(primary),
@@ -167,6 +171,8 @@ TEST_F(HostIndexedContentSettingsTest, SetDelete) {
     EXPECT_EQ(
         index.Find(GURL("https://example.com"), GURL("https://toplevel.com")),
         nullptr);
+    EXPECT_TRUE(index.empty());
+
     // Check that deleting the setting again returns false.
     EXPECT_FALSE(
         index.DeleteValue(ContentSettingsPattern::FromString(primary),
@@ -314,66 +320,36 @@ class FindContentSettingTest : public testing::Test {
   FindContentSettingTest() = default;
 };
 
-TEST_F(FindContentSettingTest, MatchInMultiItemVector) {
-  ContentSettingsForOneType matching_vector = {
-      CreateSetting("https://www.example.com:*/*", "*", CONTENT_SETTING_BLOCK),
-      CreateSetting("*://www.example.com:123/*", "[*.]example.com",
-                    CONTENT_SETTING_ALLOW),
-      CreateSetting("[*.]example.com", "[*.]example.com",
-                    CONTENT_SETTING_ALLOW)};
-  EXPECT_EQ(FindContentSetting(GURL("https://www.example.com/"),
-                               GURL("http://toplevel.com"), matching_vector)
-                ->GetContentSetting(),
-            CONTENT_SETTING_BLOCK);
-}
-
-TEST_F(FindContentSettingTest, MatchInSingleItemVector) {
-  ContentSettingsForOneType single_item_vector = {
-      CreateSetting("https://www.example.com:*/*", "*", CONTENT_SETTING_ALLOW)};
-  EXPECT_EQ(FindContentSetting(GURL("https://www.example.com/"),
-                               GURL("http://toplevel.com"), single_item_vector)
-                ->GetContentSetting(),
-            CONTENT_SETTING_ALLOW);
-}
-
-TEST_F(FindContentSettingTest, NoMatchInSingleItemVector) {
-  ContentSettingsForOneType not_matching_vector = {
-      CreateSetting("https://www.example.com:*/*", "[*.]example.com",
-                    CONTENT_SETTING_ALLOW),
-      CreateSetting("*://www.example.com:123/*", "[*.]example.com",
-                    CONTENT_SETTING_ALLOW),
-      CreateSetting("[*.]example.com", "[*.]example.com",
-                    CONTENT_SETTING_ALLOW)};
-  EXPECT_EQ(
-      FindContentSetting(GURL("https://www.example.com/"),
-                         GURL("http://toplevel.com"), not_matching_vector),
-      nullptr);
-}
-
 TEST_F(FindContentSettingTest, VectorOfIndices) {
-  ContentSettingsForOneType settings = {
+  auto setting1 =
       CreateSetting("https://example.com:*/*", "*", CONTENT_SETTING_BLOCK,
-                    base::Time(), "policy"),
-      CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(), "policy"),
+                    base::Time(), ProviderType::kPolicyProvider);
+  auto setting2 = CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(),
+                                ProviderType::kPolicyProvider);
+  auto setting3 =
       CreateSetting("[*.]example.com", "[*.]example.com", CONTENT_SETTING_BLOCK,
-                    base::Time(), "pref"),
-      CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY, base::Time(),
-                    "default")};
+                    base::Time(), ProviderType::kPrefProvider);
+  auto setting4 = CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY,
+                                base::Time(), ProviderType::kDefaultProvider);
+
+  ContentSettingsForOneType settings = {setting1, setting2, setting3, setting4};
+
   auto indices = HostIndexedContentSettings::Create(settings);
 
   EXPECT_EQ(3u, indices.size());
 
-  ContentSettingsForOneType expected_0 = {
-      CreateSetting("https://example.com:*/*", "*", CONTENT_SETTING_BLOCK),
-      CreateSetting("*", "*", CONTENT_SETTING_ALLOW)};
+  ContentSettingsForOneType expected_0 = {setting1, setting2};
+  EXPECT_EQ(indices[0].source(),
+            content_settings::ProviderType::kPolicyProvider);
   EXPECT_EQ(ToVector(indices[0]), expected_0);
 
-  ContentSettingsForOneType expected_1 = {CreateSetting(
-      "[*.]example.com", "[*.]example.com", CONTENT_SETTING_BLOCK)};
+  ContentSettingsForOneType expected_1 = {setting3};
+  EXPECT_EQ(indices[1].source(), content_settings::ProviderType::kPrefProvider);
   EXPECT_EQ(ToVector(indices[1]), expected_1);
 
-  ContentSettingsForOneType expected_2 = {
-      CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)};
+  ContentSettingsForOneType expected_2 = {setting4};
+  EXPECT_EQ(indices[2].source(),
+            content_settings::ProviderType::kDefaultProvider);
   EXPECT_EQ(ToVector(indices[2]), expected_2);
 }
 

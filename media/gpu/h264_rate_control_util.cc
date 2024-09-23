@@ -9,6 +9,7 @@
 #include "base/logging.h"
 
 namespace media::h264_rate_control_util {
+
 float QP2QStepSize(uint32_t qp) {
   // 0.625 is Q-step value for QP=0 for H.26x codecs.
   return 0.625f * std::pow(2, qp / 6.0f);
@@ -31,6 +32,15 @@ base::TimeDelta ClampedTimestampDiff(base::TimeDelta ts_new,
     DLOG(WARNING) << "Unexpected elapsed time " << elapsed_time;
   }
   return clamped_elapsed_time;
+}
+
+float ClampedLinearInterpolation(float x,
+                                 float x0,
+                                 float x1,
+                                 float y0,
+                                 float y1) {
+  return std::clamp(y0 + (x - x0) * (y1 - y0) / (x1 - x0), std::min(y0, y1),
+                    std::max(y0, y1));
 }
 
 }  // namespace media::h264_rate_control_util

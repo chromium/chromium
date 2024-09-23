@@ -13,9 +13,9 @@ static_library("os_feedback_ui") {
     "os_feedback_ui.h",
     "os_feedback_untrusted_ui.cc",
     "os_feedback_untrusted_ui.h",
-    "url_constants.cc",
-    "url_constants.h",
   ]
+
+  public_deps = [ ":url_constants" ]
 
   deps = [
     "//ash/constants:constants",
@@ -30,5 +30,14 @@ static_library("os_feedback_ui") {
     "//ui/resources",
     "//ui/web_dialogs",
     "//ui/webui",
+  ]
+}
+
+# Url constants pulled out to enable depending on production url constants in
+# browser tests.
+source_set("url_constants") {
+  sources = [
+    "url_constants.cc",
+    "url_constants.h",
   ]
 }

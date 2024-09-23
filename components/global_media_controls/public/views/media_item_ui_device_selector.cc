@@ -8,6 +8,15 @@
 
 namespace global_media_controls {
 
+void MediaItemUIDeviceSelector::SetMediaItemUIView(MediaItemUIView* view) {
+  NOTIMPLEMENTED();
+}
+
+void MediaItemUIDeviceSelector::SetMediaItemUIUpdatedView(
+    MediaItemUIUpdatedView* view) {
+  NOTIMPLEMENTED();
+}
+
 BEGIN_METADATA(MediaItemUIDeviceSelector)
 END_METADATA
 

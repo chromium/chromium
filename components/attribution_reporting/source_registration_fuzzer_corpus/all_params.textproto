@@ -142,4 +142,102 @@ object_value {
       }
     }
   }
+  field {
+    name: "trigger_data"
+    value {
+      object_value {
+        array_value {
+          value {
+            number_value {
+              integer_value {
+                value: 5
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  field {
+    name: "aggregatable_debug_reporting"
+    value {
+      object_value {
+        field {
+          name: "budget"
+          value {
+            number_value {
+              integer_value {
+                value: 1024
+              }
+            }
+          }
+        }
+        field {
+          name: "key_piece"
+          value {
+            string_value {
+              value: "0x1"
+            }
+          }
+        }
+        field {
+          name: "aggregation_coordinator_origin"
+          value {
+            string_value {
+              value: "https://publickeyservice.aws.privacysandboxservices.com"
+            }
+          }
+        }
+        field {
+          name: "debug_data"
+          value {
+            array_value {
+              value {
+                object_value {
+                  field {
+                    name: "key_piece"
+                    value {
+                      string_value {
+                        value: "0x2"
+                      }
+                    }
+                  }
+                  field {
+                    name: "value"
+                    value {
+                      number_value {
+                        integer_value {
+                          value: 1
+                        }
+                      }
+                    }
+                  }
+                  field {
+                    name: "types"
+                    value {
+                      array_value {
+                        value {
+                          string_value {
+                            value: "source-success"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  field {
+    name: "destination_limit_priority"
+    value {
+      string_value {
+        value: "10"
+      }
+    }
+  }
 }

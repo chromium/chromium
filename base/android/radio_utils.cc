@@ -4,8 +4,10 @@
 
 #include "base/android/radio_utils.h"
 
+#include <optional>
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/base_jni/RadioUtils_jni.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace android {
@@ -51,22 +53,22 @@ RadioConnectionType RadioUtils::GetConnectionType() {
   }
 }
 
-absl::optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
+std::optional<RadioSignalLevel> RadioUtils::GetCellSignalLevel() {
   if (!IsSupported())
-    return absl::nullopt;
+    return std::nullopt;
 
   JNIEnv* env = AttachCurrentThread();
   int signal_level = Java_RadioUtils_getCellSignalLevel(env);
   if (signal_level < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   } else {
     return static_cast<RadioSignalLevel>(signal_level);
   }
 }
 
-absl::optional<RadioDataActivity> RadioUtils::GetCellDataActivity() {
+std::optional<RadioDataActivity> RadioUtils::GetCellDataActivity() {
   if (!IsSupported())
-    return absl::nullopt;
+    return std::nullopt;
 
   JNIEnv* env = AttachCurrentThread();
   return static_cast<RadioDataActivity>(

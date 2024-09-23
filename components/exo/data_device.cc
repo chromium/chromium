@@ -240,7 +240,7 @@ void DataDevice::PerformDropOrExitDrag(
 
   delegate_->OnDrop();
 
-  // TODO(crbug.com/1160925): Avoid using nested loop by adding asynchronous
+  // TODO(crbug.com/40162278): Avoid using nested loop by adding asynchronous
   // callback to aura::client::DragDropDelegate.
   base::WeakPtr<DataDevice> alive(weak_factory_.GetWeakPtr());
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);

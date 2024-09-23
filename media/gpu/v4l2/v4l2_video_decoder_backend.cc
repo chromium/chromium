@@ -19,7 +19,7 @@ V4L2VideoDecoderBackend::V4L2VideoDecoderBackend(
   if (!input_queue_ || !output_queue_) {
     VLOGF(1) << "Failed to get V4L2 queue. This should not happen since the "
              << "queues are supposed to be initialized when we are called.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

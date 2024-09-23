@@ -20,34 +20,26 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Test methods that perform sign in actions on Chrome UI.
 @interface SigninEarlGreyUI : NSObject
 
-// Calls +[SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES].
+// Calls
+// +[SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO].
+// `fakeIdentity` is added if it was not added yet.
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Signs the account for `fakeIdentity` into Chrome through the Settings screen,
-// with sync enabled or not according to `enableSync`.
+// with history/tab sync enabled or not according to `enableHistorySync` (most
+// tests should not require it).
 // There will be a GREYAssert if the tools menus is open when calling this
 // method or if the account is not successfully signed in.
+// `fakeIdentity` is added if it was not added yet.
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity
-                    enableSync:(BOOL)enableSync;
+             enableHistorySync:(BOOL)enableHistorySync;
 
 // Signs the primary account out of Chrome through the accounts list screen.
-// Taps the "Sign Out" button and dismisses the confirmation snackbar. Assumes
-// that sync is replaced by sign-in.
+// Taps the "Sign Out" button and dismisses the confirmation snackbar.
 + (void)signOut;
 
-// Signs the primary account out of Chrome through the accounts list screen.
-// Taps the "Sign Out" button, and then validated the confirmation dialog
-// according to `confirmation`. Assumes that sync is not replaced by sign-in.
-+ (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation;
-
-// Taps the sign in confirmation page, scrolls first to make the OK button
-// visible on short devices (e.g. iPhone 5s).
-+ (void)tapSigninConfirmationDialog;
-
-// Taps on the "ADD ACCOUNT" button in the unified consent, to display the
-// SSO dialog.
-// This method should only be used with UnifiedConsent flag.
-+ (void)tapAddAccountButton;
+// dismisses the confirmation snackbar on sign-out.
++ (void)dismissSignoutSnackbar;
 
 // Opens the confirmation dialog to remove an account from the device, without
 // confirming it.

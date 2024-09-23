@@ -1,0 +1,15 @@
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  sources = [
+    "screens_common.mojom",
+    "screens_factory.mojom",
+    "screens_login.mojom",
+    "screens_oobe.mojom",
+    "screens_osauth.mojom",
+  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+}

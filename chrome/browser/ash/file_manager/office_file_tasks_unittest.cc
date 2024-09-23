@@ -305,6 +305,23 @@ TEST_F(FileManagerOfficeFileTasksTest,
 }
 
 TEST_F(FileManagerOfficeFileTasksTest,
+       LogOneDriveMetricsAfterFallback_kAndroidOneDriveUnsupportedLocation) {
+  LogOneDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kAndroidOneDriveUnsupportedLocation,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen,
+      std::move(cloud_open_metrics_for_one_drive_));
+
+  histogram_.ExpectUniqueSample(ash::cloud_upload::kOneDriveErrorMetricName,
+                                ash::cloud_upload::OfficeOneDriveOpenErrors::
+                                    kAndroidOneDriveUnsupportedLocation,
+                                1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen,
+      1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
        LogGoogleDriveMetricsAfterFallback_kOffline) {
   LogGoogleDriveMetricsAfterFallback(
       ash::office_fallback::FallbackReason::kOffline,
@@ -406,6 +423,28 @@ TEST_F(FileManagerOfficeFileTasksTest,
       ash::cloud_upload::kDriveErrorMetricName,
       ash::cloud_upload::OfficeDriveOpenErrors::kDriveDisabledForAccountType,
       1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest, IsOfficeFileMimeType) {
+  // Powerpoint.
+  EXPECT_TRUE(IsOfficeFileMimeType("application/vnd.ms-powerpoint"));
+  EXPECT_TRUE(IsOfficeFileMimeType(
+      "application/"
+      "vnd.openxmlformats-officedocument.presentationml.presentation"));
+  // Excel.
+  EXPECT_TRUE(IsOfficeFileMimeType("application/vnd.ms-excel"));
+  EXPECT_TRUE(IsOfficeFileMimeType(
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+  // Word.
+  EXPECT_TRUE(IsOfficeFileMimeType("application/msword"));
+  EXPECT_TRUE(IsOfficeFileMimeType(
+      "application/"
+      "vnd.openxmlformats-officedocument.wordprocessingml.document"));
+
+  EXPECT_FALSE(IsOfficeFileMimeType("text/plain"));
+  EXPECT_FALSE(IsOfficeFileMimeType("video/webm"));
+  EXPECT_FALSE(IsOfficeFileMimeType("image/png'"));
+  EXPECT_FALSE(IsOfficeFileMimeType("image/png"));
 }
 
 }  // namespace file_manager::file_tasks

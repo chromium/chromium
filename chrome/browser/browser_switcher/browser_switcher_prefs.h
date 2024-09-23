@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_service.h"
@@ -40,9 +40,9 @@ class NoCopyUrl {
   NoCopyUrl(const NoCopyUrl&) = delete;
 
   const GURL& original() const { return *original_; }
-  base::StringPiece host_and_port() const { return host_and_port_; }
-  base::StringPiece spec() const { return original_->spec(); }
-  base::StringPiece spec_without_port() const { return spec_without_port_; }
+  std::string_view host_and_port() const { return host_and_port_; }
+  std::string_view spec() const { return original_->spec(); }
+  std::string_view spec_without_port() const { return spec_without_port_; }
 
  private:
   const raw_ref<const GURL> original_;
@@ -72,7 +72,7 @@ struct RawRuleSet {
 // canonicalization.
 class Rule {
  public:
-  explicit Rule(base::StringPiece original_rule);
+  explicit Rule(std::string_view original_rule);
   virtual ~Rule() = default;
 
   // Returns true if |no_copy_url| matches this rule. Ignores the value of

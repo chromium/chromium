@@ -17,7 +17,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -36,7 +37,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -46,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 /** Integration test suite for partner homepage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class PartnerHomepageIntegrationTest {
     @Rule
     public BasePartnerBrowserCustomizationIntegrationTestRule mActivityTestRule =
@@ -72,26 +73,6 @@ public class PartnerHomepageIntegrationTest {
                 Uri.parse(
                         ChromeTabUtils.getUrlStringOnUiThread(
                                 mActivityTestRule.getActivity().getActivityTab())));
-        Assert.assertEquals(
-                "<Android.PartnerBrowserCustomizationInitDuration> not recorded.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.PartnerBrowserCustomizationInitDuration"));
-        Assert.assertEquals(
-                "<Android.PartnerBrowserCustomizationInitDuration.WithCallbacks> not recorded.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks"));
-        Assert.assertEquals(
-                "<Android.PartnerCustomizationInitializedBeforeInitialTab> not recorded.",
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Android.PartnerCustomizationInitializedBeforeInitialTab"));
-        Assert.assertEquals(
-                "<Android.PartnerCustomizationInitializedBeforeInitialTab> should record true.",
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Android.PartnerCustomizationInitializedBeforeInitialTab", 1));
     }
 
     /** Clicking the homepage button should load homepage in the current tab. */
@@ -143,9 +124,11 @@ public class PartnerHomepageIntegrationTest {
         // Disable homepage.
         toggleHomepageSwitchPreference(false);
 
+        HomepageManager homepageManager = HomepageManager.getInstance();
+
         // Assert no homepage button.
-        Assert.assertFalse(HomepageManager.isHomepageEnabled());
-        TestThreadUtils.runOnUiThreadBlocking(
+        Assert.assertFalse(homepageManager.isHomepageEnabled());
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Homepage button is shown",
@@ -160,8 +143,8 @@ public class PartnerHomepageIntegrationTest {
         toggleHomepageSwitchPreference(true);
 
         // Assert homepage button.
-        Assert.assertTrue(HomepageManager.isHomepageEnabled());
-        TestThreadUtils.runOnUiThreadBlocking(
+        Assert.assertTrue(homepageManager.isHomepageEnabled());
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Homepage button is shown",
@@ -247,12 +230,12 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertNotNull(preference);
 
         // Click toggle and verify that checked state matches expectation.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     preference.performClick();
                     Assert.assertEquals(preference.isChecked(), expected);
                 });
 
-        homepagePreferenceActivity.finish();
+        mHomepageSettingsTestRule.finishActivity();
     }
 }

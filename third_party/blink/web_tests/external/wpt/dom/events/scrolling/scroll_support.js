@@ -20,23 +20,56 @@ async function waitForScrollendEventNoTimeout(target) {
   });
 }
 
+// Waits until a rAF callback with no "scroll" event in the last 200ms.
+function waitForDelayWithoutScrollEvent(eventTarget) {
+  const TIMEOUT_IN_MS = 200;
+
+  return new Promise(resolve => {
+    let lastScrollEventTime = performance.now();
+
+    const scrollListener = () => {
+      lastScrollEventTime = performance.now();
+    };
+    eventTarget.addEventListener('scroll', scrollListener);
+
+    const tick = () => {
+      if (performance.now() - lastScrollEventTime > TIMEOUT_IN_MS) {
+        eventTarget.removeEventListener('scroll', scrollListener);
+        resolve();
+        return;
+      }
+      requestAnimationFrame(tick); // wait another frame
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+// Waits for the end of scrolling. Uses the "scrollend" event if available.
+// Otherwise, fall backs to waitForDelayWithoutScrollEvent().
+function waitForScrollEndFallbackToDelayWithoutScrollEvent(eventTarget) {
+  if (window.onscrollend !== undefined) {
+    return waitForScrollendEventNoTimeout(eventTarget);
+  }
+  return waitForScrollEvent(eventTarget).then(() => {
+    return waitForDelayWithoutScrollEvent(eventTarget);
+  });
+}
+
 async function waitForPointercancelEvent(test, target, timeoutMs = 500) {
   return waitForEvent("pointercancel", test, target, timeoutMs);
 }
 
 // Resets the scroll position to (0,0).  If a scroll is required, then the
 // promise is not resolved until the scrollend event is received.
-async function waitForScrollReset(test, scroller, timeoutMs = 500) {
+async function waitForScrollReset(test, scroller, x = 0, y = 0) {
   return new Promise(resolve => {
-    if (scroller.scrollTop == 0 &&
-        scroller.scrollLeft == 0) {
+    if (scroller.scrollTop == x && scroller.scrollLeft == y) {
       resolve();
     } else {
       const eventTarget =
         scroller == document.scrollingElement ? document : scroller;
-      scroller.scrollTop = 0;
-      scroller.scrollLeft = 0;
-      waitForScrollendEvent(test, eventTarget, timeoutMs).then(resolve);
+      scroller.scrollTo(x, y);
+      waitForScrollendEventNoTimeout(eventTarget).then(resolve);
     }
   });
 }
@@ -121,7 +154,7 @@ function waitForCompositorCommit() {
 // deferred running the tests until after paint holding.
 async function waitForCompositorReady() {
   const animation =
-      document.body.animate({ opacity: [ 1, 1 ] }, {duration: 1 });
+      document.body.animate({ opacity: [ 0, 1 ] }, {duration: 1 });
   return animation.finished;
 }
 
@@ -222,7 +255,7 @@ function touchScrollInTarget(pixels_to_scroll, target, direction, pause_time_in_
 
 // Trigger fling by doing pointerUp right after pointerMoves.
 function touchFlingInTarget(pixels_to_scroll, target, direction) {
-  touchScrollInTarget(pixels_to_scroll, target, direction, 0 /* pause_time */);
+  return touchScrollInTarget(pixels_to_scroll, target, direction, 0 /* pause_time */);
 }
 
 function mouseActionsInTarget(target, origin, delta, pause_time_in_ms = 100) {

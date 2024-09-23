@@ -5,6 +5,7 @@
 #include "components/favicon/core/large_icon_service_impl.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -29,16 +30,24 @@ namespace favicon {
 namespace {
 
 using favicon_base::GoogleFaviconServerRequestStatus;
+using StandardIconSize = favicon::LargeIconService::StandardIconSize;
+using NoBigEnoughIconBehavior =
+    favicon::LargeIconService::NoBigEnoughIconBehavior;
 
 const char kImageFetcherUmaClient[] = "LargeIconService";
 
 const char kGoogleServerV2Url[] = "https://t0.gstatic.com/faviconV2";
 
+// `check_seen` is a legacy parameter which prevents the Google-favicon-server
+// from crawling a URL as a result of a Google-favicon-server request in order
+// to prevent Google from trying to crawl enterprise/private URLs. Currently the
+// Google-favicon-server ignores the `check_seen` parameter and never triggers
+// Google crawling a URL. check_seen is set explicitly set explicitly in the
+// request URL to make sure `LargeIconService` behavior is not affected if this
+// changes at any point in time.
 const char kGoogleServerV2RequestFormat[] =
-    "%s?client=%s&nfrp=2&%ssize=%d&min_size=%d&max_size=%d&"
+    "%s?client=%s&nfrp=2&check_seen=true&size=%d&min_size=%d&max_size=%d&"
     "fallback_opts=TYPE,SIZE,URL&url=%s";
-
-const char kCheckSeenParam[] = "check_seen=true&";
 
 const int kGoogleServerV2EnforcedMinSizeInPixel = 16;
 
@@ -65,7 +74,6 @@ GURL GetRequestUrlForGoogleServerV2(
     const GURL& page_url,
     const std::string& google_server_client_param,
     int desired_size_in_pixel,
-    bool may_page_url_be_private,
     const GURL& server_url) {
   // Server expects a size value from the server-side enum
   // favicon_service.FaviconSize
@@ -85,8 +93,7 @@ GURL GetRequestUrlForGoogleServerV2(
 
   std::string request_url = base::StringPrintf(
       kGoogleServerV2RequestFormat, server_url.spec().c_str(),
-      google_server_client_param.c_str(),
-      may_page_url_be_private ? kCheckSeenParam : "", desired_size_in_pixel,
+      google_server_client_param.c_str(), desired_size_in_pixel,
       kGoogleServerV2EnforcedMinSizeInPixel, max_size_in_pixel,
       page_url.spec().c_str());
   return GURL(request_url);
@@ -157,6 +164,15 @@ float GetMaxDeviceScale() {
   return favicon_scales.back();
 }
 
+int IconSizeToInt(StandardIconSize icon_size) {
+  switch (icon_size) {
+    case StandardIconSize::k16x16:
+      return 16;
+    case StandardIconSize::k32x32:
+      return 32;
+  }
+}
+
 }  // namespace
 
 LargeIconServiceImpl::LargeIconServiceImpl(
@@ -185,10 +201,10 @@ LargeIconServiceImpl::GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
     int desired_size_in_pixel,
     favicon_base::LargeIconCallback raw_bitmap_callback,
     base::CancelableTaskTracker* tracker) {
-  return GetLargeIconOrFallbackStyleImpl(
+  return GetLargeIconRawBitmapForPageUrl(
       page_url, min_source_size_in_pixel, desired_size_in_pixel,
-      std::move(raw_bitmap_callback), favicon_base::LargeIconImageCallback(),
-      tracker);
+      NoBigEnoughIconBehavior::kReturnFallbackColor,
+      std::move(raw_bitmap_callback), tracker);
 }
 
 base::CancelableTaskTracker::TaskId
@@ -200,6 +216,7 @@ LargeIconServiceImpl::GetLargeIconImageOrFallbackStyleForPageUrl(
     base::CancelableTaskTracker* tracker) {
   return GetLargeIconOrFallbackStyleImpl(
       page_url, min_source_size_in_pixel, desired_size_in_pixel,
+      NoBigEnoughIconBehavior::kReturnFallbackColor,
       favicon_base::LargeIconCallback(), std::move(image_callback), tracker);
 }
 
@@ -207,17 +224,14 @@ base::CancelableTaskTracker::TaskId
 LargeIconServiceImpl::GetLargeIconRawBitmapForPageUrl(
     const GURL& page_url,
     int min_source_size_in_pixel,
-    favicon_base::FaviconRawBitmapCallback callback,
+    std::optional<int> size_in_pixel_to_resize_to,
+    NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+    favicon_base::LargeIconCallback callback,
     base::CancelableTaskTracker* tracker) {
-  static const base::NoDestructor<std::vector<favicon_base::IconTypeSet>>
-      icon_types({{favicon_base::IconType::kWebManifestIcon},
-                  {favicon_base::IconType::kFavicon},
-                  {favicon_base::IconType::kTouchIcon},
-                  {favicon_base::IconType::kTouchPrecomposedIcon}});
-
-  return favicon_service_->GetLargestRawFaviconForPageURL(
-      page_url, *icon_types, min_source_size_in_pixel, std::move(callback),
-      tracker);
+  return GetLargeIconOrFallbackStyleImpl(
+      page_url, min_source_size_in_pixel, size_in_pixel_to_resize_to,
+      no_big_enough_icon_behavior, std::move(callback),
+      favicon_base::LargeIconImageCallback(), tracker);
 }
 
 base::CancelableTaskTracker::TaskId
@@ -232,6 +246,7 @@ LargeIconServiceImpl::GetLargeIconRawBitmapOrFallbackStyleForIconUrl(
 
   scoped_refptr<LargeIconWorker> worker = base::MakeRefCounted<LargeIconWorker>(
       min_source_size_in_pixel, desired_size_in_pixel,
+      NoBigEnoughIconBehavior::kReturnFallbackColor,
       std::move(raw_bitmap_callback), favicon_base::LargeIconImageCallback(),
       tracker);
 
@@ -251,7 +266,8 @@ LargeIconServiceImpl::GetIconRawBitmapOrFallbackStyleForPageUrl(
   DCHECK_LE(0, desired_size_in_pixel);
 
   scoped_refptr<LargeIconWorker> worker = base::MakeRefCounted<LargeIconWorker>(
-      desired_size_in_pixel, desired_size_in_pixel, std::move(callback),
+      desired_size_in_pixel, desired_size_in_pixel,
+      NoBigEnoughIconBehavior::kReturnFallbackColor, std::move(callback),
       favicon_base::LargeIconImageCallback(), tracker);
 
   return favicon_service_->GetRawFaviconForPageURL(
@@ -263,7 +279,6 @@ LargeIconServiceImpl::GetIconRawBitmapOrFallbackStyleForPageUrl(
 void LargeIconServiceImpl::
     GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
         const GURL& page_url,
-        bool may_page_url_be_private,
         bool should_trim_page_url_path,
         const net::NetworkTrafficAnnotationTag& traffic_annotation,
         favicon_base::GoogleFaviconServerCallback callback) {
@@ -294,8 +309,7 @@ void LargeIconServiceImpl::
 
   const GURL server_request_url = GetRequestUrlForGoogleServerV2(
       trimmed_page_url, google_server_client_param_,
-      desired_size_in_pixel_for_server_requests_, may_page_url_be_private,
-      server_url_);
+      desired_size_in_pixel_for_server_requests_, server_url_);
   if (!server_request_url.is_valid()) {
     FinishServerRequestAsynchronously(
         std::move(callback),
@@ -304,7 +318,7 @@ void LargeIconServiceImpl::
   }
 
   // Do not download if there is a previous cache miss recorded for
-  // |server_request_url|.
+  // `server_request_url`.
   if (favicon_service_->WasUnableToDownloadFavicon(server_request_url)) {
     FinishServerRequestAsynchronously(
         std::move(callback),
@@ -317,6 +331,108 @@ void LargeIconServiceImpl::
       base::BindOnce(&LargeIconServiceImpl::OnCanSetOnDemandFaviconComplete,
                      weak_ptr_factory_.GetWeakPtr(), server_request_url,
                      page_url, traffic_annotation, std::move(callback)));
+}
+
+void LargeIconServiceImpl::GetLargeIconFromCacheFallbackToGoogleServer(
+    const GURL& page_url,
+    StandardIconSize min_source_size,
+    std::optional<StandardIconSize> size_to_resize_to,
+    NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+    bool should_trim_page_url_path,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    favicon_base::LargeIconCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  const std::optional<int> size_to_resize_to_int =
+      size_to_resize_to
+          ? std::optional(IconSizeToInt(size_to_resize_to.value()))
+          : std::nullopt;
+  // If the `no_big_enough_icon_behavior` is equal to `kReturnEmpty`, it gets
+  // overridden to `kReturnFallbackColor`. This is done to optimize the number
+  // of the database lookups in the case the database contains an icon for
+  // `page_url`, but it's not big enough. In this case,
+  // `GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache()` favicon
+  // service will fail because only 1 icon can be stored per domain in the
+  // database and
+  // GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache() is not
+  // allowed to overwrite icons stored in the database
+  const NoBigEnoughIconBehavior requested_no_big_enough_icon_behavior =
+      no_big_enough_icon_behavior == NoBigEnoughIconBehavior::kReturnEmpty
+          ? NoBigEnoughIconBehavior::kReturnFallbackColor
+          : no_big_enough_icon_behavior;
+  GetLargeIconRawBitmapForPageUrl(
+      page_url, IconSizeToInt(min_source_size), size_to_resize_to_int,
+      requested_no_big_enough_icon_behavior,
+      base::BindOnce(&LargeIconServiceImpl::OnIconFetchedFromCache,
+                     weak_ptr_factory_.GetWeakPtr(), page_url,
+                     IconSizeToInt(min_source_size), size_to_resize_to_int,
+                     no_big_enough_icon_behavior, should_trim_page_url_path,
+                     traffic_annotation, std::move(callback), tracker),
+      tracker);
+}
+
+void LargeIconServiceImpl::OnIconFetchedFromCache(
+    const GURL& page_url,
+    int min_source_size_in_pixel,
+    std::optional<int> size_in_pixel_to_resize_to,
+    NoBigEnoughIconBehavior no_big_enough_icon_behavior,
+    bool should_trim_page_url_path,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    favicon_base::LargeIconCallback callback,
+    base::CancelableTaskTracker* tracker,
+    const favicon_base::LargeIconResult& icon_result) {
+  if (icon_result.bitmap.is_valid() ||
+      (no_big_enough_icon_behavior ==
+           NoBigEnoughIconBehavior::kReturnFallbackColor &&
+       icon_result.fallback_icon_style)) {
+    std::move(callback).Run(icon_result);
+    return;
+  }
+  if (no_big_enough_icon_behavior == NoBigEnoughIconBehavior::kReturnEmpty &&
+      icon_result.fallback_icon_style) {
+    // An icon (smaller than `min_source_size_in_pixel`) is already stored in
+    // the database,
+    // GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache() will
+    // fail.
+    std::move(callback).Run(
+        favicon_base::LargeIconResult(favicon_base::FaviconRawBitmapResult()));
+    return;
+  }
+
+  // `was_task_canceled_callback` tracks whether `tracker` has been destroyed.
+  base::CancelableTaskTracker::IsCanceledCallback was_task_canceled_callback;
+  tracker->NewTrackedTaskId(&was_task_canceled_callback);
+
+  GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
+      page_url, should_trim_page_url_path, traffic_annotation,
+      base::BindOnce(&LargeIconServiceImpl::OnIconFetchedFromServer,
+                     base::Unretained(this), page_url, min_source_size_in_pixel,
+                     size_in_pixel_to_resize_to, std::move(callback),
+                     std::move(was_task_canceled_callback),
+                     base::UnsafeDangling(tracker)));
+}
+
+void LargeIconServiceImpl::OnIconFetchedFromServer(
+    const GURL& page_url,
+    int min_source_size_in_pixel,
+    std::optional<int> size_in_pixel_to_resize_to,
+    favicon_base::LargeIconCallback callback,
+    base::CancelableTaskTracker::IsCanceledCallback was_task_canceled_callback,
+    MayBeDangling<base::CancelableTaskTracker> tracker,
+    favicon_base::GoogleFaviconServerRequestStatus status) {
+  // Check whether `tracker` has been destroyed.
+  if (was_task_canceled_callback.Run()) {
+    return;
+  }
+
+  if (status == favicon_base::GoogleFaviconServerRequestStatus::SUCCESS) {
+    GetLargeIconOrFallbackStyleImpl(
+        page_url, min_source_size_in_pixel, size_in_pixel_to_resize_to,
+        NoBigEnoughIconBehavior::kReturnEmpty, std::move(callback),
+        favicon_base::LargeIconImageCallback(), tracker);
+    return;
+  }
+  std::move(callback).Run(
+      favicon_base::LargeIconResult(favicon_base::FaviconRawBitmapResult()));
 }
 
 void LargeIconServiceImpl::TouchIconFromGoogleServer(const GURL& icon_url) {
@@ -332,14 +448,15 @@ base::CancelableTaskTracker::TaskId
 LargeIconServiceImpl::GetLargeIconOrFallbackStyleImpl(
     const GURL& page_url,
     int min_source_size_in_pixel,
-    int desired_size_in_pixel,
+    std::optional<int> size_in_pixel_to_resize_to,
+    NoBigEnoughIconBehavior no_big_enough_icon_behavior,
     favicon_base::LargeIconCallback raw_bitmap_callback,
     favicon_base::LargeIconImageCallback image_callback,
     base::CancelableTaskTracker* tracker) {
   return LargeIconWorker::GetLargeIconRawBitmap(
       favicon_service_, page_url, min_source_size_in_pixel,
-      desired_size_in_pixel, std::move(raw_bitmap_callback),
-      std::move(image_callback), tracker);
+      size_in_pixel_to_resize_to.value_or(0), no_big_enough_icon_behavior,
+      std::move(raw_bitmap_callback), std::move(image_callback), tracker);
 }
 
 void LargeIconServiceImpl::OnCanSetOnDemandFaviconComplete(

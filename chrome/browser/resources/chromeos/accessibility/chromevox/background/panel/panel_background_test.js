@@ -9,32 +9,18 @@ GEN_INCLUDE(['../../../common/testing/documents.js']);
 /**
  * Test fixture for PanelBackground.
  */
-ChromeVoxPanelBackgroundTest = class extends ChromeVoxE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    // Alphabetical based on file path.
-    await Promise.all([
-      importModule(
-          'PanelBackground', '/chromevox/background/panel/panel_background.js'),
-      importModule(
-          'PanelNodeMenuBackground',
-          '/chromevox/background/panel/panel_node_menu_background.js'),
-    ]);
-  }
-};
+ChromeVoxPanelBackgroundTest = class extends ChromeVoxE2ETest {};
 
 AX_TEST_F('ChromeVoxPanelBackgroundTest', 'OnTutorialReady', async function() {
   const callbackPromise = new Promise(
-      resolve => PanelBackground.instance.tutorialReadyCallback_ = resolve);
+      resolve => PanelBackground.instance.tutorialReadyCallback = resolve);
 
-  assertFalse(PanelBackground.instance.tutorialReadyForTesting_);
+  assertFalse(PanelBackground.instance.tutorialReadyForTesting);
 
   PanelBackground.instance.onTutorialReady_();
   await callbackPromise;
 
-  assertTrue(PanelBackground.instance.tutorialReadyForTesting_);
+  assertTrue(PanelBackground.instance.tutorialReadyForTesting);
 });
 
 AX_TEST_F(

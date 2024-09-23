@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 
 #include <windows.h>
+
 #include <shellapi.h>
 
 #include "base/functional/bind.h"

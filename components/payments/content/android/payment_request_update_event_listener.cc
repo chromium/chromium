@@ -6,6 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/payments/content/android/service_jni/PaymentRequestUpdateEventListener_jni.h"
 
 namespace payments {

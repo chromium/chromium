@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/resource/data_pack.h"
 
 #include <errno.h>
@@ -10,6 +15,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -19,11 +25,9 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
-#include "base/sys_byteorder.h"
-#include "build/build_config.h"
 #include "net/filter/gzip_header.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -167,7 +171,7 @@ class DataPack::BufferDataSource : public DataPack::DataSource {
   const uint8_t* GetData() const override { return buffer_.data(); }
 
  private:
-  base::span<const uint8_t> buffer_;
+  base::raw_span<const uint8_t> buffer_;
 };
 
 DataPack::DataPack(ResourceScaleFactor resource_scale_factor)
@@ -205,8 +209,8 @@ std::unique_ptr<DataPack::DataSource> DataPack::LoadFromPathInternal(
     return nullptr;
   }
   if (MmapHasGzipHeader(mmap.get())) {
-    base::StringPiece compressed(reinterpret_cast<char*>(mmap->data()),
-                                 mmap->length());
+    std::string_view compressed(reinterpret_cast<char*>(mmap->data()),
+                                mmap->length());
     std::string data;
     if (!compression::GzipUncompress(compressed, &data)) {
       LOG(ERROR) << "Failed to unzip compressed datapack: " << path;
@@ -255,7 +259,7 @@ bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
   size_t resource_table_size = (resource_count_ + 1) * sizeof(Entry);
   size_t alias_table_size = alias_count_ * sizeof(Alias);
   if (margin_to_skip + resource_table_size + alias_table_size > data_length) {
-    // TODO(crbug.com/1315912): Add more information to LOG. Ditto below.
+    // TODO(crbug.com/40221977): Add more information to LOG. Ditto below.
     LOG(ERROR) << "Data pack file corruption: "
                << "too short for number of entries. "
                << "data length is " << data_length
@@ -368,7 +372,7 @@ bool DataPack::HasResource(uint16_t resource_id) const {
 }
 
 // static
-base::StringPiece DataPack::GetStringPieceFromOffset(
+std::string_view DataPack::GetStringPieceFromOffset(
     uint32_t target_offset,
     uint32_t next_offset,
     const uint8_t* data_source) {
@@ -376,14 +380,8 @@ base::StringPiece DataPack::GetStringPieceFromOffset(
   return {reinterpret_cast<const char*>(data_source + target_offset), length};
 }
 
-std::optional<base::StringPiece> DataPack::GetStringPiece(
+std::optional<std::string_view> DataPack::GetStringPiece(
     uint16_t resource_id) const {
-  // It won't be hard to make this endian-agnostic, but it's not worth
-  // bothering to do right now.
-#if !defined(ARCH_CPU_LITTLE_ENDIAN)
-#error "datapack assumes little endian"
-#endif
-
   const Entry* target = LookupEntryById(resource_id);
   if (!target)
     return std::nullopt;
@@ -419,7 +417,7 @@ std::optional<base::StringPiece> DataPack::GetStringPiece(
 base::RefCountedStaticMemory* DataPack::GetStaticMemory(
     uint16_t resource_id) const {
   if (auto piece = GetStringPiece(resource_id); piece.has_value()) {
-    return new base::RefCountedStaticMemory(piece->data(), piece->length());
+    return new base::RefCountedStaticMemory(base::as_byte_span(*piece));
   }
   return nullptr;
 }
@@ -453,11 +451,8 @@ void DataPack::CheckForDuplicateResources(
 
 // static
 bool DataPack::WritePack(const base::FilePath& path,
-                         const std::map<uint16_t, base::StringPiece>& resources,
+                         const std::map<uint16_t, std::string_view>& resources,
                          TextEncodingType text_encoding_type) {
-#if !defined(ARCH_CPU_LITTLE_ENDIAN)
-#error "datapack assumes little endian"
-#endif
   if (text_encoding_type != UTF8 && text_encoding_type != UTF16 &&
       text_encoding_type != BINARY) {
     LOG(ERROR) << "Invalid text encoding type, got " << text_encoding_type
@@ -483,7 +478,7 @@ bool DataPack::WritePack(const base::FilePath& path,
   if (resources_count > 0) {
     // A reverse map from string pieces to the index of the corresponding
     // original id in the final resource list.
-    std::map<base::StringPiece, uint16_t> rev_map;
+    std::map<std::string_view, uint16_t> rev_map;
     for (const auto& entry : resources) {
       auto it = rev_map.find(entry.second);
       if (it != rev_map.end()) {
@@ -536,7 +531,7 @@ bool DataPack::WritePack(const base::FilePath& path,
   }
 
   for (const auto& resource_id : resource_ids) {
-    const base::StringPiece data = resources.find(resource_id)->second;
+    const std::string_view data = resources.find(resource_id)->second;
     file.Write(data.data(), data.length());
   }
 

@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "components/permissions/permission_request_manager.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -49,7 +53,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, ClipboardReadWrite) {
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
 
-  constexpr base::StringPiece kClipboardData = "Isolated Web App";
+  app_frame->GetView()->Focus();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return app_frame->GetView()->HasFocus(); }));
+
+  constexpr std::string_view kClipboardData = "Isolated Web App";
   EXPECT_TRUE(ExecJs(
       app_frame,
       content::JsReplace("navigator.clipboard.writeText($1)", kClipboardData)));

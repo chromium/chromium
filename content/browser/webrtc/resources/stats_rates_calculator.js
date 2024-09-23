@@ -530,7 +530,7 @@ export class StatsRatesCalculator {
           estimatedPlayoutTimestamp: new DateCalculator(
               'estimatedPlayoutTimestamp'),
           totalProcessingDelay: new RateCalculator(
-              'totalProcessingDelay', 'framesDecoded',
+              'totalProcessingDelay', 'jitterBufferEmittedCount',
               CalculatorModifier.kMillisecondsFromSeconds),
           totalAssemblyTime: new RateCalculator(
               'totalAssemblyTime', 'framesAssembledFromMultiplePackets',

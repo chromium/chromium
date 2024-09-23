@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file defines utility functions for X11 (Linux only). This code has been
 // ported from XCB since we can't use XCB on Ubuntu while its 32-bit support
 // remains woefully incomplete.
@@ -18,6 +23,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -114,7 +120,7 @@ void DrawPixmap(x11::Connection* connection,
 
   auto color_type = ColorTypeForVisual(visual);
   if (color_type == kUnknown_SkColorType) {
-    // TODO(https://crbug.com/1066670): Add a fallback path in case any users
+    // TODO(crbug.com/40124639): Add a fallback path in case any users
     // are running a server that uses visual types for which Skia doesn't have
     // a corresponding color format.
     return;
@@ -133,7 +139,7 @@ void DrawPixmap(x11::Connection* connection,
   for (int row = 0; row < height; row += rows_per_request) {
     size_t n_rows = std::min<size_t>(rows_per_request, height - row);
     auto data = base::MakeRefCounted<base::RefCountedStaticMemory>(
-        vec.data() + row * row_bytes, n_rows * row_bytes);
+        base::span(vec).subspan(row * row_bytes, n_rows * row_bytes));
     connection->PutImage({
         .format = x11::ImageFormat::ZPixmap,
         .drawable = drawable,
@@ -294,7 +300,11 @@ bool GetRawBytesOfProperty(x11::Window window,
   if (!response || !response->format) {
     return false;
   }
-  *out_data = response->value;
+  // SAFETY: The GetProperty response has a `format` which specified the number
+  // of bits per object in the `value` and `value_len` for the number of
+  // objects, so `value_len * format / 8` gives the number of bytes in `value`.
+  *out_data = UNSAFE_BUFFERS(x11::SizedRefCountedMemory::From(
+      response->value, response->value_len * response->format / 8u));
   if (out_type) {
     *out_type = response->type;
   }
@@ -545,7 +555,6 @@ UMALinuxWindowManager GetWindowManagerUMA() {
       return UMALinuxWindowManager::kXmonad;
   }
   NOTREACHED();
-  return UMALinuxWindowManager::kOther;
 }
 
 bool IsX11WindowFullScreen(x11::Window window) {

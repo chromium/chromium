@@ -40,7 +40,7 @@ PASS input.value is currentYear + "-02-28"
 PASS input.value is "2012-09-05"
 PASS input.value is "2012-09-07"
 PASS document.activeElement.id is "after"
-== Shfit+Tab key ==
+== Shift+Tab key ==
 PASS input.value is "0003-09-30"
 PASS document.activeElement.id is "before"
 == Up key on maximum value ==

@@ -31,9 +31,11 @@ gfx::NativeViewId ScreenCaptureNotificationUIAsh::OnStarted(
       base::BindRepeating(
           &ScreenCaptureNotificationUIAsh::ProcessStopRequestFromUI,
           weak_ptr_factory_.GetWeakPtr()),
-      source_callback ? base::BindRepeating(std::move(source_callback),
-                                            content::DesktopMediaID())
-                      : base::RepeatingClosure(),
+      source_callback
+          ? base::BindRepeating(std::move(source_callback),
+                                content::DesktopMediaID(),
+                                /*captured_surface_control_active=*/false)
+          : base::RepeatingClosure(),
       text_);
   return 0;
 }

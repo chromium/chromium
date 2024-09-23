@@ -31,7 +31,7 @@ v8::MeasureMemoryExecution ToV8MeasureMemoryExecution(
     case WebMemoryMeasurement::Mode::kEager:
       return v8::MeasureMemoryExecution::kEager;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 }  // anonymous namespace
 

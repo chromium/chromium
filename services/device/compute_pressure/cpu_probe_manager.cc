@@ -8,7 +8,10 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "components/system_cpu/cpu_probe.h"
@@ -31,27 +34,53 @@ constexpr uint64_t kMaxRandomizationTimeInSeconds = 240;
 // Thresholds to use with no randomization.
 constexpr std::array<double,
                      static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>
-    kStateBaseThresholds = {0.3,   // kNominal
-                            0.6,   // kFair
+    kStateBaseThresholds = {0.6,   // kNominal
+                            0.75,  // kFair
                             0.9,   // kSerious
                             1.0};  // kCritical
 
 // Thresholds to use during randomization.
 constexpr std::array<double,
                      static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>
-    kStateRandomizedThresholds = {0.2,   // kNominal
-                                  0.7,   // kFair
+    kStateRandomizedThresholds = {0.5,   // kNominal
+                                  0.8,   // kFair
                                   0.85,  // kSerious
                                   1.0};  // kCritical
 
 }  // namespace
 
+// static
+std::unique_ptr<CpuProbeManager> CpuProbeManager::Create(
+    base::TimeDelta sampling_interval,
+    base::RepeatingCallback<void(mojom::PressureState)> sampling_callback) {
+  std::unique_ptr<CpuProbe> system_cpu_probe = CpuProbe::Create();
+  if (!system_cpu_probe) {
+    return nullptr;
+  }
+  return base::WrapUnique(new CpuProbeManager(
+      std::move(system_cpu_probe), sampling_interval, sampling_callback));
+}
+
+// static
+std::unique_ptr<CpuProbeManager> CpuProbeManager::CreateForTesting(
+    std::unique_ptr<CpuProbe> system_cpu_probe,
+    base::TimeDelta sampling_interval,
+    base::RepeatingCallback<void(mojom::PressureState)> sampling_callback) {
+  if (!system_cpu_probe) {
+    return nullptr;
+  }
+  return base::WrapUnique(new CpuProbeManager(
+      std::move(system_cpu_probe), sampling_interval, sampling_callback));
+}
+
 CpuProbeManager::CpuProbeManager(
+    std::unique_ptr<CpuProbe> system_cpu_probe,
     base::TimeDelta sampling_interval,
     base::RepeatingCallback<void(mojom::PressureState)> sampling_callback)
-    : system_cpu_probe_(CpuProbe::Create()),
+    : system_cpu_probe_(std::move(system_cpu_probe)),
       sampling_interval_(sampling_interval),
       sampling_callback_(std::move(sampling_callback)) {
+  CHECK(system_cpu_probe_);
   CHECK(sampling_callback_);
 }
 
@@ -63,22 +92,21 @@ void CpuProbeManager::EnsureStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (timer_.IsRunning()) {
+    // Already started.
     return;
   }
 
-  CHECK(!got_probe_baseline_) << "got_probe_baseline_ incorrectly reset";
+  // The CpuSample reported by many CpuProbe implementations relies on the
+  // differences observed between two Update() calls. For this reason, the
+  // CpuSample reported from StartSampling() is not reported via
+  // `sampling_callback_`.
+  system_cpu_probe_->StartSampling(base::DoNothing());
 
-  system_cpu_probe_->StartSampling(base::BindOnce(
-      &CpuProbeManager::OnSamplingStarted, base::Unretained(this)));
-
-  // base::Unretained usage is safe here because the callback is only run
-  // while `system_cpu_probe_` is alive, and `system_cpu_probe_` is owned by
-  // this instance.
   timer_.Start(FROM_HERE, sampling_interval_,
                base::BindRepeating(
                    &CpuProbe::RequestSample, system_cpu_probe_->GetWeakPtr(),
                    base::BindRepeating(&CpuProbeManager::OnCpuSampleAvailable,
-                                       base::Unretained(this))));
+                                       weak_factory_.GetWeakPtr())));
 
   if (base::FeatureList::IsEnabled(
           features::kComputePressureBreakCalibrationMitigation)) {
@@ -88,7 +116,7 @@ void CpuProbeManager::EnsureStarted() {
     randomization_timer_.Start(
         FROM_HERE, randomization_time_,
         base::BindRepeating(&CpuProbeManager::ToggleStateRandomization,
-                            base::Unretained(this)));
+                            weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -98,7 +126,25 @@ void CpuProbeManager::Stop() {
   timer_.AbandonAndStop();
   randomization_timer_.AbandonAndStop();
   state_randomization_requested_ = false;
-  got_probe_baseline_ = false;
+  // Drop the replies to any RequestSample calls that were posted before the
+  // timer stopped.
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+system_cpu::CpuProbe* CpuProbeManager::cpu_probe() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return system_cpu_probe_.get();
+}
+
+const std::array<double,
+                 static_cast<size_t>(mojom::PressureState::kMaxValue) + 1>&
+CpuProbeManager::state_thresholds() const {
+  return state_randomization_requested_ ? kStateRandomizedThresholds
+                                        : kStateBaseThresholds;
+}
+
+double CpuProbeManager::hysteresis_threshold_delta() const {
+  return kThresholdDelta;
 }
 
 void CpuProbeManager::ToggleStateRandomization() {
@@ -110,30 +156,15 @@ void CpuProbeManager::ToggleStateRandomization() {
   randomization_timer_.Start(
       FROM_HERE, randomization_time_,
       base::BindRepeating(&CpuProbeManager::ToggleStateRandomization,
-                          base::Unretained(this)));
-}
-
-void CpuProbeManager::OnSamplingStarted() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Don't set got_probe_baseline_ when Stop() was already called.
-  if (!timer_.IsRunning()) {
-    return;
-  }
-
-  got_probe_baseline_ = true;
+                          weak_factory_.GetWeakPtr()));
 }
 
 void CpuProbeManager::OnCpuSampleAvailable(std::optional<CpuSample> sample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Stop sending data when Stop() was already called.
-  if (!timer_.IsRunning()) {
-    return;
-  }
-
-  CHECK(got_probe_baseline_) << "got_probe_baseline_ incorrectly reset";
-
+  // If the timer was stopped, OnCpuSampleAvailable should have been cancelled
+  // by InvalidateWeakPtrs().
+  CHECK(timer_.IsRunning());
   sampling_callback_.Run(CalculateState(sample));
 }
 
@@ -141,18 +172,15 @@ mojom::PressureState CpuProbeManager::CalculateState(
     std::optional<CpuSample> maybe_sample) {
   const CpuSample sample = maybe_sample.value_or(kUnsupportedValue);
 
-  // TODO(crbug.com/1342528): A more advanced algorithm that calculates
+  // TODO(crbug.com/40231044): A more advanced algorithm that calculates
   // PressureState using CpuSample needs to be determined.
   // At this moment the algorithm is the simplest possible
   // with thresholds defining the state.
-  const auto& kStateThresholds = state_randomization_requested_
-                                     ? kStateRandomizedThresholds
-                                     : kStateBaseThresholds;
+  const auto& kStateThresholds = state_thresholds();
 
-  auto* it =
-      base::ranges::lower_bound(kStateThresholds, sample.cpu_utilization);
+  auto it = base::ranges::lower_bound(kStateThresholds, sample.cpu_utilization);
   if (it == kStateThresholds.end()) {
-    NOTREACHED_NORETURN() << "unexpected value: " << sample.cpu_utilization;
+    NOTREACHED() << "unexpected value: " << sample.cpu_utilization;
   }
 
   size_t state_index = std::distance(kStateThresholds.begin(), it);
@@ -174,13 +202,7 @@ void CpuProbeManager::SetCpuProbeForTesting(
     std::unique_ptr<system_cpu::CpuProbe> cpu_probe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!timer_.IsRunning());
-  CHECK(!got_probe_baseline_);
   system_cpu_probe_ = std::move(cpu_probe);
-}
-
-system_cpu::CpuProbe* CpuProbeManager::GetCpuProbeForTesting() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return system_cpu_probe_.get();
 }
 
 }  // namespace device

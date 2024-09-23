@@ -100,6 +100,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     changePasswordUrl: params.changePasswordUrl,
     password: params.password || '',
     affiliatedDomains: params.affiliatedDomains || [domain],
+    creationTime: params.isPasskey ? 1000000000 : undefined,
   };
 }
 
@@ -158,7 +159,7 @@ export function makePasswordManagerPrefs() {
       },
     },
     password_manager: {
-      // <if expr="is_win or is_macosx">
+      // <if expr="is_win or is_macosx or is_chromeos">
       biometric_authentication_filling: {
         key: 'password_manager.biometric_authentication_filling',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -216,6 +217,7 @@ export function makeInsecureCredential(params: InsecureCredentialsParams):
     password: params.password,
     note: '',
     compromisedInfo: types.length ? compromisedInfo : undefined,
+    creationTime: undefined,
   };
 }
 

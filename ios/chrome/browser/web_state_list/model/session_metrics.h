@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_SESSION_METRICS_H_
 #define IOS_CHROME_BROWSER_WEB_STATE_LIST_MODEL_SESSION_METRICS_H_
 
-#include "base/supports_user_data.h"
-
-class ChromeBrowserState;
+#import "base/supports_user_data.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 // Flags used to control which metrics are recorded by RecordSessionMetrics.
 // They can be combined with bitwise "or" operator to record multiple metrics
@@ -32,8 +31,8 @@ MetricsToRecordFlagSet operator|(MetricsToRecordFlags lhs,
 class SessionMetrics : public base::SupportsUserData::Data {
  public:
   // Retrieves the instance of SessionMetrics that is attached
-  // to the specified ChromeBrowserState.
-  static SessionMetrics* FromBrowserState(ChromeBrowserState* browser_state);
+  // to the specified ProfileIOS.
+  static SessionMetrics* FromProfile(ProfileIOS* profile);
 
   // Constructable by tests.
   SessionMetrics();

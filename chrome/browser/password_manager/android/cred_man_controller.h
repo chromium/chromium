@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 
 namespace webauthn {
 class WebAuthnCredManDelegate;
@@ -26,9 +27,9 @@ class ContentPasswordManagerDriver;
 // used in Android U+ only.
 class CredManController {
  public:
-  explicit CredManController(
-      base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
-          visibility_controller);
+  CredManController(base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
+                        visibility_controller,
+                    password_manager::PasswordManagerClient* password_client);
 
   CredManController(const CredManController&) = delete;
   CredManController& operator=(const CredManController&) = delete;
@@ -46,10 +47,20 @@ class CredManController {
 
  private:
   void Dismiss(bool success);
-  void Fill(const std::u16string& username, const std::u16string& password);
+  void TriggerFilling(const std::u16string& username,
+                      const std::u16string& password);
+  void FillUsernameAndPassword(const std::u16string& username,
+                               const std::u16string& password);
+  void OnReauthCompleted(const std::u16string& username,
+                         const std::u16string& password,
+                         bool auth_successful);
 
   base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;
+  // The password manager client is used to check whether re-auth is required.
+  const raw_ptr<password_manager::PasswordManagerClient> password_client_;
+  // The authenticator used to trigger a biometric re-auth before filling.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
   std::unique_ptr<PasswordCredentialFiller> filler_;
   base::WeakPtrFactory<CredManController> weak_ptr_factory_{this};
 };

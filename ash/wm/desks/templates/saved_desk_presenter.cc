@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 
+#include <vector>
+
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/desk_template.h"
@@ -16,7 +18,7 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
@@ -25,7 +27,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/raw_ptr.h"
@@ -367,7 +368,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
       overview_grid->HideSavedDeskLibrary(/*exit_overview=*/false);
     }
 
-    if (LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view()) {
+    if (OverviewDeskBarView* desks_bar_view = overview_grid->desks_bar_view()) {
       // Library UI needs an update. If it's currently in the library page, keep
       // the UI visible.
       desks_bar_view->set_library_ui_visibility(
@@ -564,7 +565,8 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
       OverviewGrid* overview_grid =
           overview_session->GetGridWithRootWindow(root_window);
 
-      const LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
+      const OverviewDeskBarView* desks_bar_view =
+          overview_grid->desks_bar_view();
       DCHECK(desks_bar_view);
       DeskMiniView* mini_view = desks_bar_view->FindMiniViewForDesk(new_desk);
       DCHECK(mini_view);
@@ -692,7 +694,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
           Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
 
       // Get rid of transient windows and all-desks windows.
-      base::EraseIf(windows, [](aura::Window* window) {
+      std::erase_if(windows, [](aura::Window* window) {
         return wm::GetTransientParent(window) != nullptr ||
                desks_util::IsWindowVisibleOnAllWorkspaces(window);
       });

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
 #include <drm_fourcc.h>
@@ -12,12 +17,17 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/display/display_features.h"
 #include "ui/display/types/display_color_management.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
@@ -39,11 +49,23 @@ gfx::Rect OverlayPlaneToDrmSrcRect(const DrmOverlayPlane& plane) {
                    crop_rect.width() << 16, crop_rect.height() << 16);
 }
 
+skcms_Matrix3x3 PlaneToOutputMatrix(
+    const HardwareDisplayPlaneManager::CrtcState& crtc_state) {
+  skcms_Matrix3x3 plane_to_xyzd50;
+  crtc_state.planes_primaries.toXYZD50(&plane_to_xyzd50);
+
+  skcms_Matrix3x3 output_to_xyzd50;
+  crtc_state.output_primaries.toXYZD50(&output_to_xyzd50);
+
+  skcms_Matrix3x3 xyzd50_to_output;
+  skcms_Matrix3x3_invert(&output_to_xyzd50, &xyzd50_to_output);
+
+  return skcms_Matrix3x3_concat(&xyzd50_to_output, &plane_to_xyzd50);
+}
+
 }  // namespace
 
-HardwareDisplayPlaneList::HardwareDisplayPlaneList() {
-  atomic_property_set.reset(drmModeAtomicAlloc());
-}
+HardwareDisplayPlaneList::HardwareDisplayPlaneList() = default;
 
 HardwareDisplayPlaneList::~HardwareDisplayPlaneList() = default;
 
@@ -86,6 +108,11 @@ bool HardwareDisplayPlaneManager::Initialize() {
   uint64_t value = 0;
   has_universal_planes_ =
       drm_->GetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, &value) && value;
+
+  // Mediatek drivers produce broken results when given negative values. It
+  // is suspected that this is due to incorrect parsing of the CTM blob.
+  // TODO(b/324594144): Address clamping in the driver/kernel
+  ctm_negative_values_broken_ = drm_->GetDriverName() == "mediatek";
 
   // This is to test whether or not it is safe to remove non-universal planes
   // supporting code in a following CL. See crbug.com/1129546 for more details.
@@ -186,7 +213,6 @@ void HardwareDisplayPlaneManager::ResetCurrentPlaneList(
 
   plane_list->plane_list.clear();
   plane_list->legacy_page_flips.clear();
-  plane_list->atomic_property_set.reset(drmModeAtomicAlloc());
 }
 
 void HardwareDisplayPlaneManager::RestoreCurrentPlaneList(
@@ -199,7 +225,6 @@ void HardwareDisplayPlaneManager::RestoreCurrentPlaneList(
   }
   plane_list->plane_list.clear();
   plane_list->legacy_page_flips.clear();
-  plane_list->atomic_property_set.reset(drmModeAtomicAlloc());
 }
 
 void HardwareDisplayPlaneManager::BeginFrame(
@@ -212,7 +237,8 @@ void HardwareDisplayPlaneManager::BeginFrame(
 bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     HardwareDisplayPlaneList* plane_list,
     const DrmOverlayPlaneList& overlay_list,
-    uint32_t crtc_id) {
+    uint32_t crtc_id,
+    std::optional<gfx::Point> crtc_offset) {
   auto hw_planes_iter = planes_.begin();
   for (const auto& plane : overlay_list) {
     HardwareDisplayPlane* hw_plane = nullptr;
@@ -230,10 +256,18 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
       return false;
     }
 
-    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id,
+    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id, crtc_offset,
                       OverlayPlaneToDrmSrcRect(plane))) {
       RestoreCurrentPlaneList(plane_list);
       return false;
+    }
+
+    // Set the color space for all planes based on the color space of the plane
+    // with z-index 0. This assumes that all planes have the same primaries.
+    // This assumption will need to be enforced in the compositor's overlay
+    // processor.
+    if (plane.z_order == 0 && plane.color_space.IsValid()) {
+      SetColorSpaceForAllPlanes(crtc_id, plane.color_space.GetPrimaries());
     }
 
     plane_list->plane_list.push_back(hw_plane);
@@ -292,6 +326,11 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
     GetDrmPropertyForName(drm_, props.get(), "link-status",
                           &state_props.link_status);
 
+    const std::vector<uint32_t> possible_encoder_ids(
+        connector->encoders, connector->encoders + connector->count_encoders);
+    state_props.possible_crtcs_bitmask =
+        GetPossibleCrtcsBitmaskFromEncoders(*drm_, possible_encoder_ids);
+
     connectors_props_.emplace_back(std::move(state_props));
     valid_ids.emplace(connector_id);
   }
@@ -299,34 +338,73 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
   return valid_ids;
 }
 
+void HardwareDisplayPlaneManager::SetOutputColorSpace(
+    uint32_t crtc_id,
+    const SkColorSpacePrimaries& primaries) {
+  if (primaries == SkNamedPrimariesExt::kInvalid) {
+    LOG(ERROR) << "Invalid output primaries for CRTC " << crtc_id;
+    return;
+  }
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  if (crtc_state.output_primaries == primaries) {
+    return;
+  }
+  crtc_state.output_primaries = primaries;
+  if (base::FeatureList::IsEnabled(display::features::kCtmColorManagement)) {
+    UpdatePendingCrtcState(crtc_state);
+  }
+}
+
+void HardwareDisplayPlaneManager::SetColorSpaceForAllPlanes(
+    uint32_t crtc_id,
+    const SkColorSpacePrimaries& primaries) {
+  if (primaries == SkNamedPrimariesExt::kInvalid) {
+    LOG(ERROR) << "Invalid plane primaries for CRTC " << crtc_id;
+    return;
+  }
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  if (crtc_state.planes_primaries == primaries) {
+    return;
+  }
+  CHECK(primaries != SkNamedPrimariesExt::kInvalid);
+  crtc_state.planes_primaries = primaries;
+  if (base::FeatureList::IsEnabled(display::features::kCtmColorManagement)) {
+    UpdatePendingCrtcState(crtc_state);
+  }
+}
+
 void HardwareDisplayPlaneManager::SetColorTemperatureAdjustment(
     uint32_t crtc_id,
     const display::ColorTemperatureAdjustment& cta) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-  crtc_state->color_temperature_adjustment = cta;
-  UpdateAndCommitCrtcState(crtc_id, crtc_state);
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.color_temperature_adjustment = cta;
+  UpdatePendingCrtcState(crtc_state);
+  CommitPendingCrtcState(crtc_state);
+}
+
+void HardwareDisplayPlaneManager::SetColorCalibration(
+    uint32_t crtc_id,
+    const display::ColorCalibration& calibration) {
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.color_calibration = calibration;
+  UpdatePendingCrtcState(crtc_state);
+  CommitPendingCrtcState(crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetGammaAdjustment(
     uint32_t crtc_id,
     const display::GammaAdjustment& adjustment) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-  crtc_state->gamma_adjustment = adjustment;
-  UpdateAndCommitCrtcState(crtc_id, crtc_state);
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.gamma_adjustment = adjustment;
+  UpdatePendingCrtcState(crtc_state);
+  CommitPendingCrtcState(crtc_state);
 }
 
 void HardwareDisplayPlaneManager::SetBackgroundColor(
     uint32_t crtc_id,
     const uint64_t background_color) {
-  const auto crtc_index = LookupCrtcIndex(crtc_id);
-  DCHECK(crtc_index.has_value());
-  CrtcState* crtc_state = &crtc_state_[*crtc_index];
-
-  crtc_state->properties.background_color.value = background_color;
+  CrtcState& crtc_state = CrtcStateForCrtcId(crtc_id);
+  crtc_state.properties.background_color.value = background_color;
 }
 
 bool HardwareDisplayPlaneManager::InitializeCrtcState() {
@@ -455,7 +533,7 @@ void HardwareDisplayPlaneManager::UpdateCrtcAndPlaneStatesAfterModeset(
       if (crtc_request.plane_list())
         disable_planes_lists.insert(crtc_request.plane_list());
 
-      // TODO(crbug/1135291): Use atomic APIs to reset cursor plane.
+      // TODO(crbug.com/40151802): Use atomic APIs to reset cursor plane.
       if (!drm_->SetCursor(crtc_request.crtc_id(), 0, gfx::Size())) {
         PLOG(ERROR) << "Failed to drmModeSetCursor: device:"
                     << drm_->device_path().value()
@@ -481,71 +559,122 @@ void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
 HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
     uint32_t crtc_id) {
   std::optional<std::string> driver = drm_->GetDriverName();
-  if (!driver.has_value())
-    return {.is_valid = false};
-
   HardwareCapabilities hc;
-  hc.is_valid = true;
-  hc.num_overlay_capable_planes = base::ranges::count_if(
-      planes_, [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {
-        return plane->type() != DRM_PLANE_TYPE_CURSOR &&
-               plane->CanUseForCrtcId(crtc_id);
+  if (!driver.has_value()) {
+    hc.is_valid = false;
+    return hc;
+  }
+
+  base::ranges::for_each(
+      planes_, [crtc_id, &num_overlay_planes = hc.num_overlay_capable_planes,
+                &buffer_formats = hc.supported_buffer_formats](
+                   const std::unique_ptr<HardwareDisplayPlane>& plane) {
+        if (plane->type() != DRM_PLANE_TYPE_CURSOR &&
+            plane->CanUseForCrtcId(crtc_id)) {
+          num_overlay_planes++;
+          for (const auto& format : plane->supported_formats()) {
+            if (ui::IsValidBufferFormat(format)) {
+              buffer_formats.emplace(GetBufferFormatFromFourCCFormat(format));
+            }
+          }
+        }
       });
+
   // While AMD advertises a cursor plane, it's actually a "fake" plane that the
   // display hardware blits to the topmost plane at presentation time. If that
   // topmost plane is scaled/translated (e.g. video), the cursor will then be
   // transformed along with it, leading to an incorrect cursor location in the
   // final presentation. For more info, see b/194335274.
   hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
+  hc.is_valid = true;
   return hc;
 }
 
-void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(
-    uint32_t crtc_id,
-    CrtcState* crtc_state) {
-  CrtcProperties* crtc_props = &crtc_state->properties;
+uint32_t HardwareDisplayPlaneManager::GetPossibleCrtcsBitmaskForConnector(
+    uint32_t connector_id) const {
+  const auto& connector_prop =
+      std::find_if(connectors_props_.begin(), connectors_props_.end(),
+                   [connector_id](const ConnectorProperties& prop) {
+                     return prop.id == connector_id;
+                   });
+  if (connector_prop == connectors_props_.end()) {
+    LOG(WARNING) << __func__
+                 << ": Failed to retrieve connector property for id "
+                 << connector_id;
+    return {};
+  }
+  return connector_prop->possible_crtcs_bitmask;
+}
 
-  // Set the CTM to the concatenation of the color profile matrix and the color
-  // temperature adjustment matrix.
-  // TODO(https://crbug.com/1505062): This is incorrect if the color profile
-  // DEGAMMA/GAMMA curves are ever not the identity.
+void HardwareDisplayPlaneManager::UpdatePendingCrtcState(
+    CrtcState& crtc_state) {
+  const auto& crtc_props = crtc_state.properties;
+
+  // Set the CTM to convert from the planes' color space primaries to the
+  // output color space primaries, followed by application of the color
+  // temperature adjustment matrix. This is not the correct math to perform
+  // color conversion in the following ways:
+  //   * The primary conversion should be done in linear space. This can only
+  //     be done if both DEGAMMA and GAMMA are functional, but DEGAMMA is
+  //     very often broken.
+  //   * The color temperature adjustment matrix is computed to be applied in
+  //     sRGB space, not the output space.
+  // This is being done as a trade-off sacrificing precise correctness in
+  // color conversion for power savings.
+  const skcms_Matrix3x3 plane_to_device_matrix =
+      base::FeatureList::IsEnabled(display::features::kCtmColorManagement)
+          ? PlaneToOutputMatrix(crtc_state)
+          : crtc_state.color_calibration.srgb_to_device_matrix;
   const skcms_Matrix3x3 ctm = skcms_Matrix3x3_concat(
-      &crtc_state->color_calibration.srgb_to_device_matrix,
-      &crtc_state->color_temperature_adjustment.srgb_matrix);
-  if (crtc_state->properties.ctm.id) {
-    ScopedDrmColorCtmPtr ctm_blob_data = CreateCTMBlob(ctm);
-    crtc_state->pending_ctm_blob =
+      &plane_to_device_matrix,
+      &crtc_state.color_temperature_adjustment.srgb_matrix);
+  if (crtc_state.properties.ctm.id) {
+    ScopedDrmColorCtmPtr ctm_blob_data =
+        CreateCTMBlob(ctm, ctm_negative_values_broken_);
+    crtc_state.pending_ctm_blob =
         drm_->CreatePropertyBlob(ctm_blob_data.get(), sizeof(drm_color_ctm));
   }
 
-  // Do not set DEGAMMA curve, because many devices have broken implementations.
-  // Only enable the DEGAMMA curve on devices known to have functional
-  // implementations.
-  // See https://crbug.com/41393617#comment32 for an example of banding.
-  // See https://crbug.com/1505062#comment17 for an example of corruption.
-  if (crtc_props->gamma_lut.id && crtc_props->gamma_lut_size.id &&
-      crtc_props->degamma_lut.id && crtc_props->degamma_lut_size.id) {
-    crtc_state->pending_degamma_lut_blob = nullptr;
+  // Set the DEGAMMA curve to the one specified in the color profile, only if
+  // we will also be setting the GAMMA curve.
+  // TODO(crbug.com/40945652): This always has to be the identity because
+  // many devices have broken implementations. Identitify devices where this
+  // functionality is not broken.
+  if (crtc_props.gamma_lut.id && crtc_props.gamma_lut_size.id &&
+      crtc_props.degamma_lut.id && crtc_props.degamma_lut_size.id) {
+    const auto& degamma_curve = crtc_state.color_calibration.srgb_to_linear;
+    if (degamma_curve.IsDefaultIdentity()) {
+      crtc_state.pending_degamma_lut_blob = nullptr;
+    } else {
+      ScopedDrmColorLutPtr degamma_blob_data =
+          CreateLutBlob(degamma_curve, crtc_props.degamma_lut_size.value);
+      crtc_state.pending_degamma_lut_blob = drm_->CreatePropertyBlob(
+          degamma_blob_data.get(),
+          sizeof(drm_color_lut) * crtc_props.degamma_lut_size.value);
+    }
   }
 
   // Set the GAMMA curve to the concatenation of the color profile with the
   // gamma adjustment.
-  // TODO(https://crbug.com/1505062):
+  // TODO(crbug.com/40945652): Identify devices where this functionality
+  // is reliable.
   const auto gamma_curve = display::GammaCurve::MakeConcat(
-      crtc_state->color_calibration.linear_to_device,
-      crtc_state->gamma_adjustment.curve);
-  if (crtc_props->gamma_lut.id && crtc_props->gamma_lut_size.id) {
-    ScopedDrmColorLutPtr gamma_blob_data =
-        CreateLutBlob(gamma_curve, crtc_props->gamma_lut_size.value);
-    crtc_state->pending_gamma_lut_blob = drm_->CreatePropertyBlob(
-        gamma_blob_data.get(),
-        sizeof(drm_color_lut) * crtc_props->gamma_lut_size.value);
+      crtc_state.color_calibration.linear_to_device,
+      crtc_state.gamma_adjustment.curve);
+  if (crtc_props.gamma_lut.id && crtc_props.gamma_lut_size.id) {
+    if (gamma_curve.IsDefaultIdentity()) {
+      crtc_state.pending_gamma_lut_blob = nullptr;
+    } else {
+      ScopedDrmColorLutPtr gamma_blob_data =
+          CreateLutBlob(gamma_curve, crtc_props.gamma_lut_size.value);
+      crtc_state.pending_gamma_lut_blob = drm_->CreatePropertyBlob(
+          gamma_blob_data.get(),
+          sizeof(drm_color_lut) * crtc_props.gamma_lut_size.value);
+    }
   } else {
     // Fall back to legacy gamma if needed.
-    drm_->SetGammaRamp(crtc_id, gamma_curve);
+    drm_->SetGammaRamp(crtc_props.id, gamma_curve);
   }
-
-  CommitPendingCrtcState(crtc_state);
 }
 
 }  // namespace ui

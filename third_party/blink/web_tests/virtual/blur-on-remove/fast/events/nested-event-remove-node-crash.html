@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../../resources/gc.js"></script>
+<script>
+function sendXHR()
+{
+    XHR[numXHRs] = new XMLHttpRequest();
+    XHR[numXHRs].onreadystatechange = handleStateChange;
+    XHR[numXHRs].open("GET", "nested-event-remove-node-crash-expected.txt", true);
+    XHR[numXHRs].send(null);
+    numXHRs = numXHRs + 1;
+}
+
+function callback(response)
+{
+    document.getElementById("replaceMe").innerHTML = "";
+    document.getElementById("replaceMe").innerHTML = response;
+    if (window.testRunner && (run == 2))
+        testRunner.notifyDone();
+}
+
+function handleStateChange()
+{
+    if ((XHR[0].readyState == 4) && (run < 2)) { // yes this looks wrong but it's how to reproduce the bug
+        run = run + 1;
+        callback(XHR[0].responseText);
+    }
+}
+
+function test()
+{
+/*
+    1. focus a node
+    2. send an XHR who's handler will remove the node
+    3. the focused node's onblur will fire
+    4. the onblur event handler will send off an XHR who's handler will remove the node
+*/
+    document.getElementById("theSelect").focus();
+    sendXHR();
+
+    if (window.testRunner) {
+        testRunner.waitUntilDone();
+        testRunner.dumpAsText();
+    }
+}
+
+/* GLOBALS */
+var XHR = new Array();
+var numXHRs = 0;
+var run = 0;
+
+</script>
+</head>
+<body onload="test()">
+
+<div id="replaceMe">
+
+<div>
+<select id="theSelect" onblur="sendXHR();gc();">
+</select>
+</div>
+
+</div>
+</body>
+</html>

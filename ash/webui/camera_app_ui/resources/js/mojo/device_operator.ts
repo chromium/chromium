@@ -104,7 +104,14 @@ function getMetadataData(
     return [];
   }
   for (let i = 0; i < metadata.entryCount; i++) {
-    const entry = metadata.entries[i];
+    // Disabling check because this code assumes that metadata.entries is
+    // either undefined or defined, but at runtime Mojo will always set this
+    // to null or defined.
+    // TODO(crbug.com/40267104): If this function only handles data
+    // from Mojo, the assertion above should be changed to null and the
+    // null error suppression can be removed.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const entry = metadata.entries![i];
     if (entry.tag === tag) {
       return parseMetadata(entry);
     }
@@ -659,7 +666,7 @@ export class DeviceOperator {
         }
       }
     }
-    state.addOneTimeObserver(state.State.SUSPEND, suspendObserver);
+    state.addObserver(state.State.SUSPEND, suspendObserver);
 
     const device = await this.getDevice(deviceId);
     await device.takePortraitModePhoto(
@@ -712,34 +719,6 @@ export class DeviceOperator {
       closeEndpoint(device);
       this.removeDevice(deviceId);
     }
-  }
-
-  /**
-   * Enables/Disables virtual device on target camera device. The extra
-   * stream will be reported as virtual video device from
-   * navigator.mediaDevices.enumerateDevices().
-   *
-   * @param deviceId The id of target camera device.
-   * @param enabled True for enabling virtual device.
-   */
-  async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
-      Promise<void> {
-    assert(this.deviceProvider !== null);
-    // TODO(pihsun): Check if there's actually case that deviceId is empty
-    // string here.
-    if (deviceId !== '') {
-      await this.deviceProvider.setVirtualDeviceEnabled(deviceId, enabled);
-    }
-  }
-
-  /**
-   * Enables/Disables the multiple streams feature for video recording on the
-   * target camera device.
-   */
-  async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
-      Promise<void> {
-    const device = await this.getDevice(deviceId);
-    await device.setMultipleStreamsEnabled(enabled);
   }
 
   /**
@@ -831,6 +810,26 @@ export class DeviceOperator {
   async resetCropRegion(deviceId: string): Promise<void> {
     const device = await this.getDevice(deviceId);
     await device.resetCropRegion();
+  }
+
+  /**
+   * Returns whether digital zoom is supported in the camera.
+   */
+  async isDigitalZoomSupported(deviceId: string): Promise<boolean> {
+    // Checks if the device can do zoom through the stream manipulator.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    const digitalZoomTag = 0x80070000 as CameraMetadataTag;
+    const digitalZoomData =
+        await this.getStaticMetadata(deviceId, digitalZoomTag);
+
+    // Some devices can do zoom given the crop region in their HALs. This
+    // ability can be checked with AVAILABLE_MAX_DIGITAL_ZOOM value being
+    // greater than 1.
+    const maxZoomRatio = await this.getStaticMetadata(
+        deviceId, CameraMetadataTag.ANDROID_SCALER_AVAILABLE_MAX_DIGITAL_ZOOM);
+    const hasInternalZoom = maxZoomRatio.length > 0 && maxZoomRatio[0] > 1;
+
+    return digitalZoomData.length > 0 || hasInternalZoom;
   }
 
   /**

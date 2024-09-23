@@ -18,7 +18,10 @@
         },
         "prefs": {
           "hsts.policy.upgrade_bypass_list": {
-            "location": "user_profile"
+            "location": "user_profile",
+            "value": [
+              "example"
+            ]
           }
         }
       }

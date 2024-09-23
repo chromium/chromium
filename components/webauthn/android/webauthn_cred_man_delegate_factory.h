@@ -44,6 +44,7 @@ class WebAuthnCredManDelegateFactory
 
  private:
   friend class content::WebContentsUserData<WebAuthnCredManDelegateFactory>;
+  friend class WebAuthnCredManDelegateFactoryTestApi;
 
   explicit WebAuthnCredManDelegateFactory(content::WebContents* web_contents);
 

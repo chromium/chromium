@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/features.h"
 
@@ -27,21 +28,19 @@ NetToMojoPendingBuffer::~NetToMojoPendingBuffer() {
 MojoResult NetToMojoPendingBuffer::BeginWrite(
     mojo::ScopedDataPipeProducerHandle* handle,
     scoped_refptr<NetToMojoPendingBuffer>* pending) {
-  void* buf = nullptr;
-  const uint32_t kMaxBufSize = features::GetNetAdapterMaxBufSize();
-  uint32_t num_bytes = kMaxBufSize;
+  base::span<uint8_t> buf;
+  const size_t kMaxBufSize = features::GetNetAdapterMaxBufSize();
   MojoResult result =
-      (*handle)->BeginWriteData(&buf, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      (*handle)->BeginWriteData(kMaxBufSize, MOJO_WRITE_DATA_FLAG_NONE, buf);
   if (result != MOJO_RESULT_OK) {
     *pending = nullptr;
     return result;
   }
-  if (num_bytes > kMaxBufSize) {
-    num_bytes = kMaxBufSize;
+  if (buf.size() > kMaxBufSize) {
+    buf = buf.first(kMaxBufSize);
   }
-  *pending = new NetToMojoPendingBuffer(
-      std::move(*handle),
-      {static_cast<char*>(buf), static_cast<size_t>(num_bytes)});
+  *pending = new NetToMojoPendingBuffer(std::move(*handle),
+                                        base::as_writable_chars(buf));
   return MOJO_RESULT_OK;
 }
 
@@ -77,17 +76,15 @@ MojoToNetPendingBuffer::~MojoToNetPendingBuffer() = default;
 MojoResult MojoToNetPendingBuffer::BeginRead(
     mojo::ScopedDataPipeConsumerHandle* handle,
     scoped_refptr<MojoToNetPendingBuffer>* pending) {
-  const void* buffer = nullptr;
-  uint32_t num_bytes = 0;
+  base::span<const uint8_t> buffer;
   MojoResult result =
-      (*handle)->BeginReadData(&buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+      (*handle)->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   if (result != MOJO_RESULT_OK) {
     *pending = nullptr;
     return result;
   }
-  *pending = new MojoToNetPendingBuffer(
-      std::move(*handle),
-      {static_cast<const char*>(buffer), static_cast<size_t>(num_bytes)});
+  *pending = new MojoToNetPendingBuffer(std::move(*handle),
+                                        base::as_string_view(buffer));
   return MOJO_RESULT_OK;
 }
 

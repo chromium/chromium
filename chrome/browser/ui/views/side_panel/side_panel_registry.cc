@@ -4,37 +4,27 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_id.h"
 
-const char kSidePanelRegistryKey[] = "side_panel_registry_key";
-
 SidePanelRegistry::SidePanelRegistry() = default;
 
 SidePanelRegistry::~SidePanelRegistry() {
-  for (SidePanelRegistryObserver& observer : observers_) {
-    observer.OnRegistryDestroying(this);
-  }
+  observers_.Notify(&SidePanelRegistryObserver::OnRegistryDestroying, this);
 }
 
 // static
-SidePanelRegistry* SidePanelRegistry::Get(content::WebContents* web_contents) {
-  if (!web_contents)
-    return nullptr;
-  SidePanelRegistry* registry = static_cast<SidePanelRegistry*>(
-      web_contents->GetUserData(kSidePanelRegistryKey));
-  if (!registry) {
-    auto new_registry = std::make_unique<SidePanelRegistry>();
-    registry = new_registry.get();
-    web_contents->SetUserData(kSidePanelRegistryKey, std::move(new_registry));
-  }
-  return registry;
+SidePanelRegistry* SidePanelRegistry::GetDeprecated(
+    content::WebContents* web_contents) {
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+  return tab->GetTabFeatures()->side_panel_registry();
 }
 
 SidePanelEntry* SidePanelRegistry::GetEntryForKey(
@@ -76,9 +66,10 @@ bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
   // SidePanelRegistryObservers of the entry's registration because some
   // registry observers can call SidePanelEntryObserver methods for `entry`.
   entry->AddObserver(this);
-  for (SidePanelRegistryObserver& observer : observers_)
-    observer.OnEntryRegistered(this, entry.get());
+  SidePanelEntry* entry_ptr = entry.get();
   entries_.push_back(std::move(entry));
+  observers_.Notify(&SidePanelRegistryObserver::OnEntryRegistered, this,
+                    entry_ptr);
   return true;
 }
 
@@ -118,9 +109,8 @@ std::unique_ptr<SidePanelEntry> SidePanelRegistry::DeregisterAndReturnEntry(
   // panel view instead of being cached.
   // SidePanelCoordinator::OnEntryWillDeregister will retrieve the view from the
   // side panel and cache it into `entry`.
-  for (SidePanelRegistryObserver& observer : observers_) {
-    observer.OnEntryWillDeregister(this, entry);
-  }
+  observers_.Notify(&SidePanelRegistryObserver::OnEntryWillDeregister, this,
+                    entry);
 
   return RemoveEntry(entry);
 }
@@ -131,11 +121,6 @@ void SidePanelRegistry::SetActiveEntry(SidePanelEntry* entry) {
 
 void SidePanelRegistry::OnEntryShown(SidePanelEntry* entry) {
   active_entry_ = entry;
-}
-
-void SidePanelRegistry::OnEntryIconUpdated(SidePanelEntry* entry) {
-  for (SidePanelRegistryObserver& observer : observers_)
-    observer.OnEntryIconUpdated(entry);
 }
 
 std::unique_ptr<SidePanelEntry> SidePanelRegistry::RemoveEntry(

@@ -13,12 +13,15 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/observer_list.h"
+#include "ui/android/color_utils_android.h"
 #include "ui/android/display_android_manager.h"
-#include "ui/android/ui_android_jni_headers/WindowAndroid_jni.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/display_color_spaces.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "ui/android/ui_android_jni_headers/WindowAndroid_jni.h"
 
 namespace ui {
 
@@ -56,6 +59,13 @@ WindowAndroid::ScopedWindowAndroidForTesting::ScopedWindowAndroidForTesting(
 WindowAndroid::ScopedWindowAndroidForTesting::~ScopedWindowAndroidForTesting() {
   JNIEnv* env = AttachCurrentThread();
   Java_WindowAndroid_destroy(env, window_->GetJavaObject());
+}
+
+void WindowAndroid::ScopedWindowAndroidForTesting::SetModalDialogManager(
+    base::android::ScopedJavaLocalRef<jobject> modal_dialog_manager) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WindowAndroid_setModalDialogManagerForTesting(  // IN-TEST
+      env, window_->GetJavaObject(), modal_dialog_manager);
 }
 
 // static
@@ -242,6 +252,35 @@ void WindowAndroid::SendUnfoldLatencyBeginTimestamp(JNIEnv* env,
   for (WindowAndroidObserver& observer : observer_list_) {
     observer.OnUnfoldStarted(begin_timestamp);
   }
+}
+
+ProgressBarConfig WindowAndroid::GetProgressBarConfig() {
+  if (progress_bar_config_for_testing_) {
+    return *progress_bar_config_for_testing_;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  std::vector<int> values;
+  base::android::JavaIntArrayToIntVector(
+      env, Java_WindowAndroid_getProgressBarConfig(env, GetJavaObject()),
+      &values);
+
+  ProgressBarConfig config;
+  config.background_color =
+      SkColor4f::FromColor(*JavaColorToOptionalSkColor(values[0]));
+  config.height_physical = values[1];
+  config.color = SkColor4f::FromColor(*JavaColorToOptionalSkColor(values[2]));
+  config.hairline_height_physical = values[3];
+  config.hairline_color =
+      SkColor4f::FromColor(*JavaColorToOptionalSkColor(values[4]));
+  return config;
+}
+
+ModalDialogManagerBridge* WindowAndroid::GetModalDialogManagerBridge() {
+  JNIEnv* env = AttachCurrentThread();
+  return reinterpret_cast<ModalDialogManagerBridge*>(
+      Java_WindowAndroid_getNativeModalDialogManagerBridge(env,
+                                                           GetJavaObject()));
 }
 
 void WindowAndroid::SetWideColorEnabled(bool enabled) {

@@ -22,9 +22,9 @@ class Notification;
 class MESSAGE_CENTER_EXPORT MessagePopupView
     : public views::FocusChangeListener,
       public views::WidgetDelegateView {
- public:
-  METADATA_HEADER(MessagePopupView);
+  METADATA_HEADER(MessagePopupView, views::WidgetDelegateView)
 
+ public:
   MessagePopupView(MessageView* message_view,
                    MessagePopupCollection* popup_collection,
                    bool a11y_feedback_on_init);
@@ -56,7 +56,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
 
   // Shows popup. After this call, MessagePopupView should be owned by the
   // widget.
-  void Show();
+  std::unique_ptr<views::Widget> Show();
 
   // Closes popup. It should be callable even if Show() is not called, and
   // in such case MessagePopupView should be deleted. Virtual for unit testing.
@@ -81,6 +81,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
 
   MessageView* message_view() { return message_view_; }
 
+  bool view_added_to_widget() { return view_added_to_widget_; }
+
  protected:
   // For unit testing.
   explicit MessagePopupView(MessagePopupCollection* popup_collection);
@@ -98,6 +100,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   const bool a11y_feedback_on_init_;
   bool is_hovered_ = false;
   bool is_focused_ = false;
+  // Was this view ever hosted in a Widget? If so, the Widget will "own" this
+  // view and delete it accordingly. Otherwise, the MessagePopupCollection is
+  // responsible for its destruction.
+  bool view_added_to_widget_ = false;
 
   // Owned by the widget associated with this view.
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;

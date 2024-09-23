@@ -66,6 +66,8 @@ source_set("lib") {
       "features/v8_bindings_utils.h",
       "features/v8_manager.cc",
       "features/v8_manager.h",
+      "features/v8_utils.cc",
+      "features/v8_utils.h",
       "os_accessibility_service.cc",
       "os_accessibility_service.h",
     ]
@@ -129,8 +131,8 @@ source_set("tests") {
   if (supports_os_accessibility_service) {
     sources = [
       "assistive_technology_controller_impl_unittest.cc",
-      "features/automation_internal_bindings_unittest.cc",
       "features/v8_manager_unittest.cc",
+      "features/v8_utils_unittest.cc",
       "os_accessibility_service_unittest.cc",
     ]
     deps += [ "//base" ]
@@ -140,6 +142,7 @@ source_set("tests") {
       # load JS files.
       sources += [
         "features/atp_js_api_test.cc",
+        "features/automation_internal_bindings_unittest.cc",
         "features/devtools/os_devtools_unittest.cc",
       ]
       deps += [

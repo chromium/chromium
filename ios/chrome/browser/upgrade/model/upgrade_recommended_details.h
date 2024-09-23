@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_RECOMMENDED_DETAILS_H_
 #define IOS_CHROME_BROWSER_UPGRADE_MODEL_UPGRADE_RECOMMENDED_DETAILS_H_
 
-#include <string>
+#import <string>
 
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 struct UpgradeRecommendedDetails {
   GURL upgrade_url;

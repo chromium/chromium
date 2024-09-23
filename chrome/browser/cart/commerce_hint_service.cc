@@ -32,7 +32,7 @@
 namespace cart {
 
 namespace {
-// TODO(crbug/1164236): support multiple cart systems in the same domain.
+// TODO(crbug.com/40163450): support multiple cart systems in the same domain.
 // Returns eTLB+1 domain.
 std::string GetDomain(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(

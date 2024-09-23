@@ -5,6 +5,7 @@
 #ifndef NET_SOCKET_SOCKET_BIO_ADAPTER_H_
 #define NET_SOCKET_SOCKET_BIO_ADAPTER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -89,12 +90,12 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
   size_t GetAllocationSize() const;
 
  private:
-  int BIORead(char* out, int len);
+  int BIORead(base::span<uint8_t> out);
   void HandleSocketReadResult(int result);
   void OnSocketReadComplete(int result);
   void OnSocketReadIfReadyComplete(int result);
 
-  int BIOWrite(const char* in, int len);
+  int BIOWrite(base::span<const uint8_t> in);
   void SocketWrite();
   void HandleSocketWriteResult(int result);
   void OnSocketWriteComplete(int result);

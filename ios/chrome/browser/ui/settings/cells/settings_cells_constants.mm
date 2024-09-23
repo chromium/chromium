@@ -5,3 +5,6 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 
 const CGFloat kSettingsCellDefaultHeight = 70;
+
+NSString* const kSettingsSearchEngineCellIdentifierPrefix =
+    @"SettingsSearchEngineCellIdentifierPrefix_";

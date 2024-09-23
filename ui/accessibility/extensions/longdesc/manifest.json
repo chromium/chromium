@@ -1,9 +1,9 @@
 {
   "name": "__MSG_LONGDESC_APPNAME__",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "__MSG_LONGDESC_APPDESC__",
   "background": {
-    "scripts": [ "background.js" ]
+    "service_worker": "background.js"
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
@@ -14,12 +14,14 @@
     "16": "icon.png"
   },
   "permissions": [
-    "tabs",
     "contextMenus",
     "storage",
+    "tabs"
+  ],
+  "host_permissions": [
     "<all_urls>"
   ],
-  "manifest_version": 2,
+  "manifest_version": 3,
   "default_locale": "en",
   "options_page": "options.html",
   "icons": {

@@ -1,0 +1,65 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("kerberos") {
+  sources = [
+    "kerberos_in_browser_dialog.cc",
+    "kerberos_in_browser_dialog.h",
+    "kerberos_in_browser_ui.cc",
+    "kerberos_in_browser_ui.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/common:chrome_os_webui_config",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common",
+    "//content/public/common",
+    "//ui/web_dialogs",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//build:branding_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/kerberos:resources",
+    "//chrome/browser/ui/webui:webui_util",
+    "//content/public/browser",
+    "//net",
+    "//ui/aura",
+    "//ui/base:types",
+    "//ui/display",
+    "//ui/views",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "kerberos_in_browser_browsertest.cc" ]
+
+  deps = [
+    ":kerberos",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}

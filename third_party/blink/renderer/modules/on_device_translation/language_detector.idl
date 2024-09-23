@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Explainer: https://github.com/WICG/translation-api/blob/5151a1b1b37cd604542715141b0a203a8c6e9061/README.md
+// TODO(https://crbug.com/349927087): Migrate to latest API when it is decided.
+dictionary LanguageDetectionResult {
+  DOMString? detectedLanguage;
+  double confidence;
+};
+
+[
+  RuntimeEnabled=LanguageDetectionAPI,
+  Exposed=Window
+]
+interface LanguageDetector {
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<sequence<LanguageDetectionResult>> detect(DOMString input);
+};

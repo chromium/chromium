@@ -21,13 +21,13 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -124,17 +124,15 @@ void SetConnected(const std::string& service_path) {
 
 void WaitForConfirmationDialogToOpen() {
   test::OobeJS()
-      .CreateWaiter(
-          test::GetOobeElementPath({kEolDeleteUsersDataConfirmDialog}) +
-          ".open")
+      .CreateWaiter(test::GetOobeElementPath(kEolDeleteUsersDataConfirmDialog) +
+                    ".open")
       ->Wait();
 }
 
 void WaitForConfirmationDialogToClose() {
   test::OobeJS()
-      .CreateWaiter(
-          test::GetOobeElementPath({kEolDeleteUsersDataConfirmDialog}) +
-          ".open === false")
+      .CreateWaiter(test::GetOobeElementPath(kEolDeleteUsersDataConfirmDialog) +
+                    ".open === false")
       ->Wait();
 }
 
@@ -156,7 +154,7 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
 
     // Set up fake networks.
     network_state_test_helper_ = std::make_unique<NetworkStateTestHelper>(
-        true /*use_default_devices_and_services*/);
+        /*use_default_devices_and_services=*/true);
     network_state_test_helper_->manager_test()->SetupDefaultEnvironment();
     // Fake networks have been set up. Connect to WiFi network.
     SetConnected(kWifiServicePath);

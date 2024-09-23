@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Verify same-origin Partitioned Popins proxies only have access to postMessage and closed methods.
+  assert_equals: expected "Closed,Then," but got "Closed,Blur,OnBlur,Opener,Length,Name,AnonymousName,CustomMethod,Then,"
+Harness: the test ran to completion.
+

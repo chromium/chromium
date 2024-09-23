@@ -18,7 +18,10 @@ class BrowsingTopicsService;
 // Profiles.
 class BrowsingTopicsServiceFactory : public ProfileKeyedServiceFactory {
  public:
+  // Returns the topics service for the given profile, or nullptr if the Topics
+  // API or its dependencies are disabled.
   static BrowsingTopicsService* GetForProfile(Profile* profile);
+
   static BrowsingTopicsServiceFactory* GetInstance();
 
   BrowsingTopicsServiceFactory(const BrowsingTopicsServiceFactory&) = delete;

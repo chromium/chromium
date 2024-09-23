@@ -97,10 +97,10 @@ struct FaviconBitmap {
   // The id of the favicon to which the bitmap belongs to.
   favicon_base::FaviconID icon_id = 0;
 
-  // Time at which |bitmap_data| was last updated.
+  // Time at which `bitmap_data` was last updated.
   base::Time last_updated;
 
-  // Time at which |bitmap_data| was last requested.
+  // Time at which `bitmap_data` was last requested.
   base::Time last_requested;
 
   // The bits of the bitmap.

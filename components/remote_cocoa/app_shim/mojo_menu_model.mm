@@ -16,6 +16,10 @@ MojoMenuModel::MojoMenuModel(std::vector<mojom::MenuItemPtr> menu_items,
 
 MojoMenuModel::~MojoMenuModel() = default;
 
+base::WeakPtr<ui::MenuModel> MojoMenuModel::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 size_t MojoMenuModel::GetItemCount() const {
   return menu_items_.size();
 }
@@ -29,7 +33,7 @@ ui::MenuModel::ItemType MojoMenuModel::GetTypeAt(size_t index) const {
     case mojom::MenuItem::Tag::kSubmenu:
       return TYPE_SUBMENU;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 ui::MenuSeparatorType MojoMenuModel::GetSeparatorTypeAt(size_t index) const {
@@ -133,7 +137,7 @@ mojom::MenuItemCommonFields* MojoMenuModel::GetCommonFieldsAt(
     case mojom::MenuItem::Tag::kSubmenu:
       return menu_items_[index]->get_submenu()->common.get();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace remote_cocoa

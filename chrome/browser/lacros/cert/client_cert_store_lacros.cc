@@ -32,28 +32,28 @@ ClientCertStoreLacros::ClientCertStoreLacros(
 ClientCertStoreLacros::~ClientCertStoreLacros() = default;
 
 void ClientCertStoreLacros::GetClientCerts(
-    const net::SSLCertRequestInfo& cert_request_info,
+    scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
     ClientCertListCallback callback) {
   if (!are_certs_loaded_) {
-    pending_requests_.push_back(std::make_pair(
-        WrapRefCounted(&cert_request_info), std::move(callback)));
+    pending_requests_.push_back(
+        std::make_pair(cert_request_info, std::move(callback)));
     return;
   }
 
   underlying_store_->GetClientCerts(
       cert_request_info,
-      base::BindOnce(
-          &ClientCertStoreLacros::AppendAdditionalCerts, base::Unretained(this),
-          base::Unretained(&cert_request_info), std::move(callback)));
+      base::BindOnce(&ClientCertStoreLacros::AppendAdditionalCerts,
+                     weak_factory_.GetWeakPtr(), std::move(cert_request_info),
+                     std::move(callback)));
 }
 
 void ClientCertStoreLacros::AppendAdditionalCerts(
-    const net::SSLCertRequestInfo* request,
+    scoped_refptr<const net::SSLCertRequestInfo> request,
     ClientCertListCallback callback,
     net::ClientCertIdentityList client_certs) {
   auto get_certs_and_filter = base::BindOnce(
-      &ClientCertStoreLacros::GotAdditionalCerts, base::Unretained(request),
-      std::move(callback), std::move(client_certs));
+      &ClientCertStoreLacros::GotAdditionalCerts, weak_factory_.GetWeakPtr(),
+      std::move(request), std::move(callback), std::move(client_certs));
   if (cert_provider_) {
     cert_provider_->GetCertificates(std::move(get_certs_and_filter));
   } else {
@@ -61,9 +61,8 @@ void ClientCertStoreLacros::AppendAdditionalCerts(
   }
 }
 
-// static
 void ClientCertStoreLacros::GotAdditionalCerts(
-    const net::SSLCertRequestInfo* request,
+    scoped_refptr<const net::SSLCertRequestInfo> request,
     ClientCertListCallback callback,
     net::ClientCertIdentityList client_certs,
     net::ClientCertIdentityList additional_certs) {
@@ -71,15 +70,22 @@ void ClientCertStoreLacros::GotAdditionalCerts(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&ClientCertStoreLacros::FilterAndJoinCertsOnWorkerThread,
-                     base::Unretained(request), std::move(client_certs),
+                     std::move(request), std::move(client_certs),
                      std::move(additional_certs)),
-      std::move(callback));
+      base::BindOnce(&ClientCertStoreLacros::OnClientCertsResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ClientCertStoreLacros::OnClientCertsResponse(
+    ClientCertListCallback callback,
+    net::ClientCertIdentityList identities) {
+  std::move(callback).Run(std::move(identities));
 }
 
 // static
 net::ClientCertIdentityList
 ClientCertStoreLacros::FilterAndJoinCertsOnWorkerThread(
-    const net::SSLCertRequestInfo* request,
+    scoped_refptr<const net::SSLCertRequestInfo> request,
     net::ClientCertIdentityList client_certs,
     net::ClientCertIdentityList additional_certs) {
   // This method may acquire the NSS lock or reenter this code via extension
@@ -120,6 +126,6 @@ void ClientCertStoreLacros::OnCertDbReady() {
 
   // Dispatch all the queued requests.
   for (auto& request : local_requests) {
-    GetClientCerts(*request.first, std::move(request.second));
+    GetClientCerts(request.first, std::move(request.second));
   }
 }

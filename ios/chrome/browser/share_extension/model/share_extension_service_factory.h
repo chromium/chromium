@@ -5,22 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_SHARE_EXTENSION_MODEL_SHARE_EXTENSION_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SHARE_EXTENSION_MODEL_SHARE_EXTENSION_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class ShareExtensionService;
 
 // Singleton that creates the ShareExtensionService and associates that service
-// with ChromeBrowserState.
+// with ProfileIOS.
 class ShareExtensionServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ShareExtensionService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static ShareExtensionService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static ShareExtensionService* GetForProfile(ProfileIOS* profile);
+  static ShareExtensionService* GetForProfileIfExists(ProfileIOS* profile);
   static ShareExtensionServiceFactory* GetInstance();
 
   ShareExtensionServiceFactory(const ShareExtensionServiceFactory&) = delete;

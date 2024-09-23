@@ -181,8 +181,8 @@ class ProxyConfigServiceMac::Helper
 };
 
 void ProxyConfigServiceMac::Forwarder::SetDynamicStoreNotificationKeys(
-    SCDynamicStoreRef store) {
-  proxy_config_service_->SetDynamicStoreNotificationKeys(store);
+    base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store) {
+  proxy_config_service_->SetDynamicStoreNotificationKeys(std::move(store));
 }
 
 void ProxyConfigServiceMac::Forwarder::OnNetworkConfigChange(
@@ -234,7 +234,7 @@ ProxyConfigServiceMac::GetLatestProxyConfig(ProxyConfigWithAnnotation* config) {
 }
 
 void ProxyConfigServiceMac::SetDynamicStoreNotificationKeys(
-    SCDynamicStoreRef store) {
+    base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store) {
   // Called on notifier thread.
 
   base::apple::ScopedCFTypeRef<CFStringRef> proxies_key(
@@ -242,7 +242,7 @@ void ProxyConfigServiceMac::SetDynamicStoreNotificationKeys(
   base::apple::ScopedCFTypeRef<CFArrayRef> key_array(CFArrayCreate(
       nullptr, (const void**)(&proxies_key), 1, &kCFTypeArrayCallBacks));
 
-  bool ret = SCDynamicStoreSetNotificationKeys(store, key_array.get(),
+  bool ret = SCDynamicStoreSetNotificationKeys(store.get(), key_array.get(),
                                                /*patterns=*/nullptr);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);

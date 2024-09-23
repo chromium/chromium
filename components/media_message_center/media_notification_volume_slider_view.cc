@@ -59,8 +59,9 @@ bool MediaNotificationVolumeSliderView::OnMouseDragged(
 
 void MediaNotificationVolumeSliderView::OnGestureEvent(
     ui::GestureEvent* event) {
-  if (event->type() == ui::EventType::ET_GESTURE_TAP)
+  if (event->type() == ui::EventType::kGestureTap) {
     HandleMouseOrGestureEvent(event->x());
+  }
 }
 
 bool MediaNotificationVolumeSliderView::OnKeyPressed(
@@ -157,7 +158,7 @@ void MediaNotificationVolumeSliderView::HandleVolumeChangeWithDelta(
   set_volume_callback_.Run(new_volume);
 }
 
-BEGIN_METADATA(MediaNotificationVolumeSliderView, views::View)
+BEGIN_METADATA(MediaNotificationVolumeSliderView)
 END_METADATA
 
 }  // namespace media_message_center

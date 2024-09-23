@@ -60,7 +60,7 @@ ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
   return GetExtensionsToolbarContainer(browser_view);
 }
 
-// TODO(crbug.com/1325171): Use extensions::IconImage instead of getting the
+// TODO(crbug.com/40839674): Use extensions::IconImage instead of getting the
 // action's image. The icon displayed should be the "product" icon and not the
 // "action" action based on the web contents.
 ui::ImageModel GetIcon(ToolbarActionViewController* action,
@@ -112,4 +112,21 @@ void ShowDialog(ExtensionsToolbarContainer* container,
     // Show the widget using the default dialog anchor view.
     widget->Show();
   }
+}
+
+void ShowDialog(Browser* browser,
+                std::unique_ptr<ui::DialogModel> dialog_model) {
+  ToolbarButtonProvider* toolbar_button_provider =
+      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
+  CHECK(toolbar_button_provider);
+
+  views::View* const anchor_view =
+      toolbar_button_provider->GetDefaultExtensionDialogAnchorView();
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      std::move(dialog_model), std::move(anchor_view),
+      views::BubbleBorder::TOP_RIGHT);
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+
+  widget->Show();
 }

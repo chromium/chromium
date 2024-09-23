@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
@@ -171,7 +172,7 @@ void ServiceWorkerScriptCacheMap::OnMetadataWritten(
 void ServiceWorkerScriptCacheMap::RunCallback(uint64_t callback_id,
                                               int result) {
   auto it = callbacks_.find(callback_id);
-  DCHECK(it != callbacks_.end());
+  CHECK(it != callbacks_.end(), base::NotFatalUntil::M130);
   std::move(it->second).Run(result);
   callbacks_.erase(it);
 }

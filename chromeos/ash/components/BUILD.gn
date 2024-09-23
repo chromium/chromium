@@ -6,20 +6,27 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
-# To add a unit test to this target, make a "unit_test" source_set in your
+# To add a unit test to this target, make a "unit_tests" source_set in your
 # component and add a reference here.
 source_set("unit_tests") {
   testonly = true
   deps = [
     "//chromeos/ash/components/attestation:unit_tests",
     "//chromeos/ash/components/audio:unit_tests",
+    "//chromeos/ash/components/boca:unit_tests",
+    "//chromeos/ash/components/boca/babelorca:unit_tests",
+    "//chromeos/ash/components/boca/on_task:unit_tests",
+    "//chromeos/ash/components/boca/session_api:unit_tests",
     "//chromeos/ash/components/browser_context_helper:unit_tests",
     "//chromeos/ash/components/carrier_lock:unit_tests",
+    "//chromeos/ash/components/channel:unit_tests",
     "//chromeos/ash/components/cryptohome:unit_tests",
+    "//chromeos/ash/components/data_migration:unit_tests",
     "//chromeos/ash/components/dbus:unit_tests",
     "//chromeos/ash/components/disks:unit_tests",
     "//chromeos/ash/components/drivefs:unit_tests",
     "//chromeos/ash/components/emoji:unit_tests",
+    "//chromeos/ash/components/enhanced_network_tts:unit_tests",
     "//chromeos/ash/components/feature_usage:unit_tests",
     "//chromeos/ash/components/file_manager:unit_tests",
     "//chromeos/ash/components/fwupd:unit_tests",
@@ -29,11 +36,11 @@ source_set("unit_tests") {
     "//chromeos/ash/components/hid_detection:unit_tests",
     "//chromeos/ash/components/human_presence:unit_tests",
     "//chromeos/ash/components/install_attributes:unit_tests",
+    "//chromeos/ash/components/kiosk/vision:unit_tests",
     "//chromeos/ash/components/language_packs:unit_tests",
     "//chromeos/ash/components/local_search_service:unit_tests",
     "//chromeos/ash/components/local_search_service/public/mojom:unit_tests",
     "//chromeos/ash/components/login/auth:unit_tests",
-    "//chromeos/ash/components/login/hibernate:unit_tests",
     "//chromeos/ash/components/login/login_state:unit_tests",
     "//chromeos/ash/components/login/session:unit_tests",
     "//chromeos/ash/components/memory:unit_tests",
@@ -46,21 +53,26 @@ source_set("unit_tests") {
     "//chromeos/ash/components/phonehub:unit_tests",
     "//chromeos/ash/components/policy:unit_tests",
     "//chromeos/ash/components/power:unit_tests",
+    "//chromeos/ash/components/process_snapshot:unit_tests",
     "//chromeos/ash/components/proximity_auth:unit_tests",
     "//chromeos/ash/components/quick_start:unit_tests",
     "//chromeos/ash/components/report:unit_tests",
     "//chromeos/ash/components/settings:unit_tests",
     "//chromeos/ash/components/smbfs:unit_tests",
+    "//chromeos/ash/components/sparky:unit_tests",
     "//chromeos/ash/components/standalone_browser:unit_tests",
     "//chromeos/ash/components/string_matching:unit_tests",
     "//chromeos/ash/components/sync_wifi:unit_tests",
     "//chromeos/ash/components/system:unit_tests",
+    "//chromeos/ash/components/system_info:unit_tests",
+    "//chromeos/ash/components/telemetry_extension:unit_tests",
     "//chromeos/ash/components/tether:unit_tests",
+    "//chromeos/ash/components/throttle:unit_tests",
     "//chromeos/ash/components/timezone:unit_tests",
     "//chromeos/ash/components/tpm:unit_tests",
     "//chromeos/ash/components/trash_service:unit_tests",
     "//chromeos/ash/components/trial_group:unit_tests",
-    "//chromeos/components/sensors:ash_unit_tests",
+    "//chromeos/ash/components/wifi_p2p:unit_tests",
   ]
 
   if (target_cpu == "x64") {

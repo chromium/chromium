@@ -81,3 +81,15 @@ WindowManagementSettings:
   - DefaultWindowPlacementSetting
   - WindowPlacementAllowedForUrls
   - WindowPlacementBlockedForUrls
+WebPrintingSettings:
+  caption: Web Printing settings
+  policies:
+  - DefaultWebPrintingSetting
+  - WebPrintingAllowedForUrls
+  - WebPrintingBlockedForUrls
+DirectSocketsSettings:
+  caption: Direct Sockets settings
+  policies:
+  - DefaultDirectSocketsSetting
+  - DirectSocketsAllowedForUrls
+  - DirectSocketsBlockedForUrls

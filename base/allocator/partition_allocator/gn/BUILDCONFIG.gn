@@ -1,0 +1,107 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is the BUILDCONFIG for building partition_alloc as a standalone project.
+#
+# The config is based on:
+# - skia:     //gn/BUILDCONFIG.gn
+# - chromium: //build/config/BUILDCONFIG.gn
+
+build_with_chromium = false
+is_asan = false
+
+# It's best to keep the names and defaults of is_foo flags consistent with:
+# - Chrome
+# - Skia.
+
+declare_args() {
+  is_official_build = false
+  is_component_build = false
+  dcheck_always_on = true
+}
+
+declare_args() {
+  is_debug = !is_official_build
+}
+
+# Platform detection defaults:
+if (target_os == "") {
+  target_os = host_os
+}
+if (current_os == "") {
+  current_os = target_os
+}
+if (target_cpu == "") {
+  target_cpu = host_cpu
+}
+if (target_cpu == "x86_64") {
+  target_cpu = "x64"
+}
+if (current_cpu == "") {
+  current_cpu = target_cpu
+}
+
+is_android = current_os == "android"
+is_chromeos = false
+is_fuchsia = current_os == "fuchsia"
+is_ios = current_os == "ios"
+is_linux = current_os == "linux"
+is_mac = current_os == "mac"
+is_nacl = false
+is_win = current_os == "win" || current_os == "winuwp"
+is_cast_android = false
+is_castos = false
+is_chromeos_ash = false
+is_cronet_build = false
+enable_expensive_dchecks = false
+dcheck_is_configurable = false
+can_unwind_with_frame_pointers = false
+is_posix = !is_win && !is_fuchsia
+is_apple = is_mac || is_ios
+
+# TODO(crbug.com/41481467): Consider expanding the standalone configuration for
+# additional OSes.
+assert(is_linux, "PartitionAlloc standalone only support Linux for now")
+is_clang = true
+
+# A component is either:
+# - A static library (is_component_build=false)
+# - A shared library (is_component_build=true)
+template("component") {
+  if (is_component_build) {
+    _component_mode = "shared_library"
+  } else {
+    _component_mode = "static_library"
+  }
+
+  target(_component_mode, target_name) {
+    forward_variables_from(invoker, "*")
+  }
+}
+
+# Default configs
+default_configs = [
+  "//gn/partition_alloc:default",
+  "//gn/partition_alloc:no_exceptions",
+  "//gn/partition_alloc:no_rtti",
+]
+
+if (!is_debug) {
+  default_configs += [
+    "//gn/partition_alloc:optimize",
+    "//gn/partition_alloc:NDEBUG",
+  ]
+}
+
+# GCC-like toolchains, including Clang.
+set_default_toolchain("//gn/toolchain:clang")
+default_toolchain_name = "clang"
+
+set_defaults("source_set") {
+  configs = default_configs
+}
+
+set_defaults("component") {
+  configs = default_configs
+}

@@ -45,6 +45,8 @@ from .protocol import (AccessibilityProtocolPart,
                        PrintProtocolPart,
                        DebugProtocolPart,
                        VirtualSensorProtocolPart,
+                       DevicePostureProtocolPart,
+                       VirtualPressureSourceProtocolPart,
                        merge_dicts)
 
 
@@ -548,7 +550,9 @@ class MarionetteCoverageProtocolPart(CoverageProtocolPart):
             return
 
         script = """
-            const {PerTestCoverageUtils} = ChromeUtils.import("chrome://remote/content/marionette/PerTestCoverageUtils.jsm");
+            const {PerTestCoverageUtils} = ChromeUtils.importESModule(
+                "chrome://remote/content/marionette/PerTestCoverageUtils.sys.mjs"
+            );
             return PerTestCoverageUtils.enabled;
             """
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
@@ -558,7 +562,9 @@ class MarionetteCoverageProtocolPart(CoverageProtocolPart):
         script = """
             var callback = arguments[arguments.length - 1];
 
-            const {PerTestCoverageUtils} = ChromeUtils.import("chrome://remote/content/marionette/PerTestCoverageUtils.jsm");
+            const {PerTestCoverageUtils} = ChromeUtils.importESModule(
+                "chrome://remote/content/marionette/PerTestCoverageUtils.sys.mjs"
+            );
             PerTestCoverageUtils.beforeTest().then(callback, callback);
             """
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
@@ -578,7 +584,9 @@ class MarionetteCoverageProtocolPart(CoverageProtocolPart):
         script = """
             var callback = arguments[arguments.length - 1];
 
-            const {PerTestCoverageUtils} = ChromeUtils.import("chrome://remote/content/marionette/PerTestCoverageUtils.jsm");
+            const {PerTestCoverageUtils} = ChromeUtils.importESModule(
+                "chrome://remote/content/marionette/PerTestCoverageUtils.sys.mjs"
+            );
             PerTestCoverageUtils.afterTest().then(callback, callback);
             """
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
@@ -695,11 +703,9 @@ class MarionetteDebugProtocolPart(DebugProtocolPart):
 
     def load_devtools(self):
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
-            # Once ESR is 107 is released, we can replace the ChromeUtils.import(DevToolsShim.jsm)
-            # with ChromeUtils.importESModule(DevToolsShim.sys.mjs) in this snippet:
             self.parent.base.execute_script("""
-const { DevToolsShim } = ChromeUtils.import(
-  "chrome://devtools-startup/content/DevToolsShim.jsm"
+const { DevToolsShim } = ChromeUtils.importESModule(
+  "chrome://devtools-startup/content/DevToolsShim.sys.mjs"
 );
 
 const callback = arguments[arguments.length - 1];
@@ -745,6 +751,31 @@ class MarionetteVirtualSensorProtocolPart(VirtualSensorProtocolPart):
         raise NotImplementedError("get_virtual_sensor_information not yet implemented")
 
 
+class MarionetteDevicePostureProtocolPart(DevicePostureProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def set_device_posture(self, posture):
+        raise NotImplementedError("set_device_posture not yet implemented")
+
+    def clear_device_posture(self):
+        raise NotImplementedError("clear_device_posture not yet implemented")
+
+
+class MarionetteVirtualPressureSourceProtocolPart(VirtualPressureSourceProtocolPart):
+    def setup(self):
+        self.marionette = self.parent.marionette
+
+    def create_virtual_pressure_source(self, source_type, metadata):
+        raise NotImplementedError("create_virtual_pressure_source not yet implemented")
+
+    def update_virtual_pressure_source(self, source_type, sample):
+        raise NotImplementedError("update_virtual_pressure_source not yet implemented")
+
+    def remove_virtual_pressure_source(self, source_type):
+        raise NotImplementedError("remove_virtual_pressure_source not yet implemented")
+
+
 class MarionetteProtocol(Protocol):
     implements = [MarionetteBaseProtocolPart,
                   MarionetteTestharnessProtocolPart,
@@ -765,7 +796,9 @@ class MarionetteProtocol(Protocol):
                   MarionettePrintProtocolPart,
                   MarionetteDebugProtocolPart,
                   MarionetteAccessibilityProtocolPart,
-                  MarionetteVirtualSensorProtocolPart]
+                  MarionetteVirtualSensorProtocolPart,
+                  MarionetteDevicePostureProtocolPart,
+                  MarionetteVirtualPressureSourceProtocolPart]
 
     def __init__(self, executor, browser, capabilities=None, timeout_multiplier=1, e10s=True, ccov=False):
         do_delayed_imports()
@@ -935,8 +968,8 @@ class MarionetteTestharnessExecutor(TestharnessExecutor):
         if marionette is None:
             do_delayed_imports()
 
-    def setup(self, runner):
-        super().setup(runner)
+    def setup(self, runner, protocol=None):
+        super().setup(runner, protocol)
         for extension_path in self.install_extensions:
             self.logger.info("Installing extension from %s" % extension_path)
             addons = Addons(self.protocol.marionette)
@@ -1064,8 +1097,8 @@ class MarionetteRefTestExecutor(RefTestExecutor):
         return (InternalRefTestImplementation if reftest_internal
                 else RefTestImplementation)(self)
 
-    def setup(self, runner):
-        super().setup(runner)
+    def setup(self, runner, protocol=None):
+        super().setup(runner, protocol)
         for extension_path in self.install_extensions:
             self.logger.info("Installing extension from %s" % extension_path)
             addons = Addons(self.protocol.marionette)
@@ -1318,8 +1351,8 @@ class MarionettePrintRefTestExecutor(MarionetteRefTestExecutor):
                                            debug=debug,
                                            **kwargs)
 
-    def setup(self, runner):
-        super().setup(runner)
+    def setup(self, runner, protocol=None):
+        super().setup(runner, protocol)
         if not isinstance(self.implementation, InternalRefTestImplementation):
             self.protocol.pdf_print.load_runner()
 

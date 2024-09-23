@@ -85,29 +85,6 @@ Path SVGEllipseElement::AsPath() const {
   return path;
 }
 
-void SVGEllipseElement::CollectStyleForPresentationAttribute(
-    const QualifiedName& name,
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
-  if (property == cx_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kCx,
-                                            cx_->CssValue());
-  } else if (property == cy_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kCy,
-                                            cy_->CssValue());
-  } else if (property == rx_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRx,
-                                            rx_->CssValue());
-  } else if (property == ry_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRy,
-                                            ry_->CssValue());
-  } else {
-    SVGGeometryElement::CollectStyleForPresentationAttribute(name, value,
-                                                             style);
-  }
-}
-
 void SVGEllipseElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
@@ -154,14 +131,9 @@ void SVGEllipseElement::SynchronizeAllSVGAttributes() const {
 
 void SVGEllipseElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  for (auto* property : (SVGAnimatedPropertyBase*[]){cx_.Get(), cy_.Get(),
-                                                     rx_.Get(), ry_.Get()}) {
-    DCHECK(property->HasPresentationAttributeMapping());
-    if (property->IsAnimating()) {
-      CollectStyleForPresentationAttribute(property->AttributeName(),
-                                           g_empty_atom, style);
-    }
-  }
+  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
+      {cx_.Get(), cy_.Get(), rx_.Get(), ry_.Get()});
+  AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
   SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

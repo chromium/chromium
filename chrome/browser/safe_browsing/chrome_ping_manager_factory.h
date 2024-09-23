@@ -29,8 +29,25 @@ class ChromePingManagerFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory override:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
 
   static bool ShouldFetchAccessTokenForReport(Profile* profile);
+  static bool ShouldSendPersistedReport(Profile* profile);
+};
+
+// Used only for tests. By default, the factory returns null for tests . To
+// override it, create an object of this type and keep it in scope for as long
+// as the override should exist. The constructor will set the override, and the
+// destructor will clear it.
+class ChromePingManagerAllowerForTesting {
+ public:
+  ChromePingManagerAllowerForTesting();
+  ChromePingManagerAllowerForTesting(
+      const ChromePingManagerAllowerForTesting&) = delete;
+  ChromePingManagerAllowerForTesting& operator=(
+      const ChromePingManagerAllowerForTesting&) = delete;
+  ~ChromePingManagerAllowerForTesting();
 };
 
 }  // namespace safe_browsing

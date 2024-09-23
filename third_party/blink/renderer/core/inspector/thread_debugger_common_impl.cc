@@ -3,12 +3,6 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
-#include "third_party/blink/renderer/core/dom/attr.h"
-#include "third_party/blink/renderer/core/dom/attribute.h"
-#include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_list.h"
-#include "third_party/blink/renderer/core/html/html_collection.h"
-#include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 
 #include <memory>
 
@@ -33,9 +27,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
+#include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -132,12 +133,13 @@ unsigned ThreadDebuggerCommonImpl::PromiseRejected(
     const String& error_message,
     v8::Local<v8::Value> exception,
     std::unique_ptr<SourceLocation> location) {
-  const String default_message = "Uncaught (in promise)";
+  const StringView default_message = "Uncaught (in promise)";
   String message = error_message;
-  if (message.empty())
-    message = default_message;
-  else if (message.StartsWith("Uncaught "))
-    message = message.Substring(0, 8) + " (in promise)" + message.Substring(8);
+  if (message.empty()) {
+    message = "Uncaught (in promise)";
+  } else if (message.StartsWith("Uncaught ")) {
+    message = "Uncaught (in promise)" + StringView(message, 8);
+  }
 
   ReportConsoleMessage(
       ToExecutionContext(context), mojom::ConsoleMessageSource::kJavaScript,
@@ -197,6 +199,7 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   static const char kShadowRootMode[] = "mode";
   static const char kShadowRootOpen[] = "open";
   static const char kShadowRootClosed[] = "closed";
+  static const char kFrameIdParameterName[] = "frameId";
 
   v8::LocalVector<v8::Name> serialized_value_keys(isolate);
   v8::LocalVector<v8::Value> serialized_value_values(isolate);
@@ -239,6 +242,18 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
 
   if (node->IsElementNode()) {
     Element* element = To<Element>(node);
+
+    if (HTMLFrameOwnerElement* frameOwnerElement =
+            DynamicTo<HTMLFrameOwnerElement>(node)) {
+      if (frameOwnerElement->ContentFrame()) {
+        serialized_value_keys.push_back(
+            V8String(isolate, kFrameIdParameterName));
+        serialized_value_values.push_back(V8String(
+            isolate,
+            IdentifiersFactory::IdFromToken(
+                frameOwnerElement->ContentFrame()->GetDevToolsFrameToken())));
+      }
+    }
 
     if (ShadowRoot* shadow_root = node->GetShadowRoot()) {
       // Do not decrease `max_node_depth` for shadow root. Shadow root should be
@@ -290,13 +305,13 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
     if (include_shadow_tree == kNone) {
       include_children = false;
     } else if (include_shadow_tree == kOpen &&
-               shadow_root->GetType() != ShadowRootType::kOpen) {
+               shadow_root->GetMode() != ShadowRootMode::kOpen) {
       include_children = false;
     }
 
     serialized_value_keys.push_back(V8String(isolate, kShadowRootMode));
     serialized_value_values.push_back(
-        V8String(isolate, shadow_root->GetType() == ShadowRootType::kOpen
+        V8String(isolate, shadow_root->GetMode() == ShadowRootMode::kOpen
                               ? kShadowRootOpen
                               : kShadowRootClosed));
   }
@@ -535,33 +550,42 @@ ThreadDebuggerCommonImpl::deepSerialize(
         std::move(error_message));
   }
 
+  if (!v8_value->IsObject()) {
+    return nullptr;
+  }
+  v8::Local<v8::Object> object = v8_value.As<v8::Object>();
+
   // Serialize according to https://w3c.github.io/webdriver-bidi.
-  if (Node* node = V8Node::ToWrappable(isolate_, v8_value)) {
+  if (Node* node = V8Node::ToWrappable(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         DeepSerializeNode(node, isolate_, max_node_depth, include_shadow_tree));
   }
 
   // Serialize as a regular array
   if (HTMLCollection* html_collection =
-          V8HTMLCollection::ToWrappable(isolate_, v8_value)) {
+          V8HTMLCollection::ToWrappable(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         DeepSerializeHtmlCollection(html_collection, isolate_, max_depth,
                                     max_node_depth, include_shadow_tree));
   }
 
   // Serialize as a regular array
-  if (NodeList* node_list = V8NodeList::ToWrappable(isolate_, v8_value)) {
+  if (NodeList* node_list = V8NodeList::ToWrappable(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         DeepSerializeNodeList(node_list, isolate_, max_depth, max_node_depth,
                               include_shadow_tree));
   }
 
-  if (DOMWindow* window = V8Window::ToWrappable(isolate_, v8_value)) {
+  if (DOMWindow* window = V8Window::ToWrappable(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         DeepSerializeWindow(window, isolate_));
   }
 
-  if (V8DOMWrapper::IsWrapper(isolate_, v8_value)) {
+  // TODO(caseq): consider object->IsApiWrapper() + checking for all kinds
+  // of (Typed)?Array(Buffers)?. IsApiWrapper() returns true for these, but
+  // we want them to fall through to default serialization and not be treated
+  // as "platform objects".
+  if (V8DOMWrapper::IsWrapper(isolate_, object)) {
     return std::make_unique<v8_inspector::DeepSerializationResult>(
         std::make_unique<v8_inspector::DeepSerializedValue>(
             ToV8InspectorStringBuffer("platformobject")));
@@ -659,15 +683,7 @@ double ThreadDebuggerCommonImpl::currentTimeMS() {
 
 bool ThreadDebuggerCommonImpl::isInspectableHeapObject(
     v8::Local<v8::Object> object) {
-  if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
-    return true;
-  v8::Local<v8::Value> wrapper =
-      object->GetInternalField(kV8DOMWrapperObjectIndex).As<v8::Value>();
-  // Skip wrapper boilerplates which are like regular wrappers but don't have
-  // native object.
-  if (!wrapper.IsEmpty() && wrapper->IsUndefined())
-    return false;
-  return true;
+  return !object->IsApiWrapper() || V8DOMWrapper::IsWrapper(isolate_, object);
 }
 
 static void ReturnDataCallback(
@@ -759,11 +775,13 @@ void ThreadDebuggerCommonImpl::installAdditionalCommandLineAPI(
       "function getAccessibleRole(node) { [Command Line API] }",
       v8::SideEffectType::kHasNoSideEffect);
 
+  v8::Isolate* isolate = context->GetIsolate();
   ScriptEvaluationResult result =
       ClassicScript::CreateUnspecifiedScript(
           "(function(e) { console.log(e.type, e); })",
           ScriptSourceLocationType::kInternal)
-          ->RunScriptOnScriptStateAndReturnValue(ScriptState::From(context));
+          ->RunScriptOnScriptStateAndReturnValue(
+              ScriptState::From(isolate, context));
   if (result.GetResultType() != ScriptEvaluationResult::ResultType::kSuccess) {
     // On pages where scripting is disabled or CSP sandbox directive is used,
     // this can be blocked and thus early exited here.
@@ -894,7 +912,8 @@ void ThreadDebuggerCommonImpl::GetAccessibleNameCallback(
   if (node && !node->GetLayoutObject())
     return;
   if (auto* element = DynamicTo<Element>(node)) {
-    V8SetReturnValueString(info, element->computedName(), isolate);
+    bindings::V8SetReturnValue(info, element->computedName(), isolate,
+                               bindings::V8ReturnValue::kNonNullable);
   }
 }
 
@@ -911,7 +930,8 @@ void ThreadDebuggerCommonImpl::GetAccessibleRoleCallback(
   if (node && !node->GetLayoutObject())
     return;
   if (auto* element = DynamicTo<Element>(node)) {
-    V8SetReturnValueString(info, element->computedRole(), isolate);
+    bindings::V8SetReturnValue(info, element->computedRole(), isolate,
+                               bindings::V8ReturnValue::kNonNullable);
   }
 }
 
@@ -974,36 +994,33 @@ void ThreadDebuggerCommonImpl::GetEventListenersCallback(
 }
 
 static uint64_t GetTraceId(ThreadDebuggerCommonImpl* this_thread_debugger,
-                           const v8_inspector::StringView& title_view) {
-  WTF::String title = ToCoreString(title_view);
-  unsigned title_hash = WTF::GetHash(title);
-  return title_hash ^ (reinterpret_cast<uintptr_t>(this_thread_debugger));
+                           v8::Local<v8::String> label) {
+  unsigned label_hash = label->GetIdentityHash();
+  return label_hash ^ (reinterpret_cast<uintptr_t>(this_thread_debugger));
 }
 
-void ThreadDebuggerCommonImpl::consoleTime(
-    const v8_inspector::StringView& title_view) {
+void ThreadDebuggerCommonImpl::consoleTime(v8::Isolate* isolate,
+                                           v8::Local<v8::String> label) {
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-      "blink.console", ToCoreString(title_view).Utf8().c_str(),
+      "blink.console", ToCoreString(isolate, label).Utf8().c_str(),
       TRACE_ID_WITH_SCOPE("console.time",
-                          TRACE_ID_LOCAL(GetTraceId(this, title_view))));
+                          TRACE_ID_LOCAL(GetTraceId(this, label))));
 }
 
-void ThreadDebuggerCommonImpl::consoleTimeEnd(
-    const v8_inspector::StringView& title_view) {
+void ThreadDebuggerCommonImpl::consoleTimeEnd(v8::Isolate* isolate,
+                                              v8::Local<v8::String> label) {
   TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-      "blink.console", ToCoreString(title_view).Utf8().c_str(),
+      "blink.console", ToCoreString(isolate, label).Utf8().c_str(),
       TRACE_ID_WITH_SCOPE("console.time",
-                          TRACE_ID_LOCAL(GetTraceId(this, title_view))));
+                          TRACE_ID_LOCAL(GetTraceId(this, label))));
 }
 
-void ThreadDebuggerCommonImpl::consoleTimeStamp(
-    const v8_inspector::StringView& title) {
-  ExecutionContext* ec = CurrentExecutionContext(isolate_);
-  // TODO(dgozman): we can save on a copy here if TracedValue would take a
-  // StringView.
+void ThreadDebuggerCommonImpl::consoleTimeStamp(v8::Isolate* isolate,
+                                                v8::Local<v8::String> label) {
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
-      "TimeStamp", inspector_time_stamp_event::Data, ec, ToCoreString(title));
-  probe::ConsoleTimeStamp(ec, ToCoreString(title));
+      "TimeStamp", inspector_time_stamp_event::Data,
+      CurrentExecutionContext(isolate_), ToCoreString(isolate, label));
+  probe::ConsoleTimeStamp(isolate_, label);
 }
 
 void ThreadDebuggerCommonImpl::startRepeatingTimer(
@@ -1036,7 +1053,7 @@ void ThreadDebuggerCommonImpl::cancelTimer(void* data) {
 
 int64_t ThreadDebuggerCommonImpl::generateUniqueId() {
   int64_t result;
-  base::RandBytes(&result, sizeof result);
+  base::RandBytes(base::byte_span_from_ref(result));
   return result;
 }
 

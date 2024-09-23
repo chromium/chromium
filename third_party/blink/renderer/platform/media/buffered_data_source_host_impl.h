@@ -14,7 +14,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/ranges.h"
-#include "third_party/blink/public/platform/media/interval_map.h"
+#include "third_party/blink/renderer/platform/media/interval_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -91,7 +91,7 @@ class PLATFORM_EXPORT BufferedDataSourceHostImpl
   base::circular_deque<std::pair<base::TimeTicks, uint64_t>> download_history_;
   base::RepeatingClosure progress_cb_;
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   FRIEND_TEST_ALL_PREFIXES(BufferedDataSourceHostImplTest, CanPlayThrough);
   FRIEND_TEST_ALL_PREFIXES(BufferedDataSourceHostImplTest,

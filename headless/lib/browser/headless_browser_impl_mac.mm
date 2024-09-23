@@ -11,9 +11,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "headless/lib/browser/headless_screen.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 #import "ui/base/cocoa/base_view.h"
+#include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
 // Overrides events and actions for NSPopUpButtonCell.
@@ -69,11 +71,15 @@ const NSActivityOptions kActivityOptions =
 }  // namespace
 
 void HeadlessBrowserImpl::PlatformInitialize() {
-  if (!geolocation_manager_) {
-    geolocation_manager_ =
-        device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac();
+  if (!geolocation_system_permission_manager_) {
+    geolocation_system_permission_manager_ =
+        device::SystemGeolocationSourceApple::
+            CreateGeolocationSystemPermissionManager();
   }
-  screen_ = std::make_unique<display::ScopedNativeScreen>();
+
+  HeadlessScreen* screen = HeadlessScreen::Create(options()->window_size);
+  display::Screen::SetScreenInstance(screen);
+
   HeadlessPopUpMethods::Init();
 }
 
@@ -125,13 +131,16 @@ ui::Compositor* HeadlessBrowserImpl::PlatformGetCompositor(
   return nullptr;
 }
 
-device::GeolocationManager* HeadlessBrowserImpl::GetGeolocationManager() {
-  return geolocation_manager_.get();
+device::GeolocationSystemPermissionManager*
+HeadlessBrowserImpl::GetGeolocationSystemPermissionManager() {
+  return geolocation_system_permission_manager_.get();
 }
 
-void HeadlessBrowserImpl::SetGeolocationManagerForTesting(
-    std::unique_ptr<device::GeolocationManager> fake_geolocation_manager) {
-  geolocation_manager_ = std::move(fake_geolocation_manager);
+void HeadlessBrowserImpl::SetGeolocationSystemPermissionManagerForTesting(
+    std::unique_ptr<device::GeolocationSystemPermissionManager>
+        fake_geolocation_system_permission_manager) {
+  geolocation_system_permission_manager_ =
+      std::move(fake_geolocation_system_permission_manager);
 }
 
 }  // namespace headless

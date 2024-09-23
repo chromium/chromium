@@ -23,13 +23,14 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -52,21 +53,23 @@ base::trace_event::MemoryAllocatorDumpGuid GetSubBackingGUIDForTracing(
                          mailbox.ToDebugString().c_str(), backing_index));
 }
 
-bool IsBufferPlaneAndFormatSupported(gfx::BufferPlane plane,
-                                     gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::YVU_420:
-      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::U ||
-             plane == gfx::BufferPlane::V;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-    case gfx::BufferFormat::P010:
-      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV ||
-             plane == gfx::BufferPlane::A;
-    default:
-      return plane == gfx::BufferPlane::DEFAULT;
+#if BUILDFLAG(IS_WIN)
+// Only allow shmem overlays for NV12 on Windows.
+// This moves the SCANOUT flag from the GPU backing to the shmem backing in the
+// CompoundImageBacking.
+constexpr bool kAllowShmOverlays = true;
+#else
+constexpr bool kAllowShmOverlays = false;
+#endif
+
+gpu::SharedImageUsageSet GetShmSharedImageUsage(SharedImageUsageSet usage) {
+  if (kAllowShmOverlays) {
+    return usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)
+               ? SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_SCANOUT
+               : SHARED_IMAGE_USAGE_CPU_WRITE;
   }
+
+  return SHARED_IMAGE_USAGE_CPU_WRITE;
 }
 
 }  // namespace
@@ -288,12 +291,18 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
   }
 
   // DawnImageRepresentation implementation.
-  wgpu::Texture BeginAccess(wgpu::TextureUsage webgpu_usage) final {
+  wgpu::Texture BeginAccess(wgpu::TextureUsage webgpu_usage,
+                            wgpu::TextureUsage internal_usage) final {
     AccessMode access_mode =
         webgpu_usage & kWriteUsage ? AccessMode::kWrite : AccessMode::kRead;
+    if (base::FeatureList::IsEnabled(
+            features::kDawnSIRepsUseClientProvidedInternalUsages) &&
+        (internal_usage & kWriteUsage)) {
+      access_mode = AccessMode::kWrite;
+    }
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kDawn,
                                           access_mode);
-    return wrapped_->BeginAccess(webgpu_usage);
+    return wrapped_->BeginAccess(webgpu_usage, internal_usage);
   }
   void EndAccess() final { wrapped_->EndAccess(); }
 
@@ -359,27 +368,24 @@ bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
 }
 
 // static
-bool CompoundImageBacking::IsValidSharedMemoryBufferFormat(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane) {
-  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, format)) {
-    DVLOG(1) << "Invalid image size: " << size.ToString()
-             << " for format: " << gfx::BufferFormatToString(format);
-    return false;
+SharedImageUsageSet CompoundImageBacking::GetGpuSharedImageUsage(
+    SharedImageUsageSet usage) {
+  // Add allow copying from the shmem backing to the gpu backing.
+  usage |= SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+  if (kAllowShmOverlays) {
+    // Remove SCANOUT usage since it was previously moved to the shmem backing.
+    // See: |GetShmSharedImageUsage|
+    usage.RemoveAll(SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_SCANOUT));
+    return usage;
   }
-  if (!IsBufferPlaneAndFormatSupported(plane, format)) {
-    DVLOG(1) << "Unsupported buffer plane: " << gfx::BufferPlaneToString(plane)
-             << " for format: " << gfx::BufferFormatToString(format);
-    return false;
-  }
-  return true;
+
+  return usage;
 }
 
 // static
 std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     SharedImageBackingFactory* gpu_backing_factory,
-    bool allow_shm_overlays,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
     viz::SharedImageFormat format,
@@ -387,77 +393,37 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label) {
   DCHECK(IsValidSharedMemoryBufferFormat(size, format));
 
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format),
-                              gfx::BufferPlane::DEFAULT)) {
+  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format))) {
     DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
     return nullptr;
   }
 
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type,
-      SHARED_IMAGE_USAGE_CPU_WRITE, debug_label, std::move(shm_wrapper));
+      GetShmSharedImageUsage(usage), debug_label, std::move(shm_wrapper));
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), allow_shm_overlays, std::move(shm_backing),
+      std::move(debug_label), std::move(shm_backing),
       gpu_backing_factory->GetWeakPtr()));
 }
 
 // static
 std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     SharedImageBackingFactory* gpu_backing_factory,
-    bool allow_shm_overlays,
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    std::string debug_label) {
-  DCHECK(IsValidSharedMemoryBufferFormat(size, format, plane));
-
-  SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, format, plane)) {
-    DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
-    return nullptr;
-  }
-
-  const gfx::Size plane_size = GetPlaneSize(plane, size);
-  const auto plane_format =
-      viz::GetSinglePlaneSharedImageFormat(GetPlaneBufferFormat(plane, format));
-
-  auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, SHARED_IMAGE_USAGE_CPU_WRITE, debug_label,
-      std::move(shm_wrapper));
-  shm_backing->SetNotRefCounted();
-
-  return base::WrapUnique(new CompoundImageBacking(
-      mailbox, plane_format, plane_size, color_space, surface_origin,
-      alpha_type, usage, std::move(debug_label), allow_shm_overlays,
-      std::move(shm_backing), gpu_backing_factory->GetWeakPtr()));
-}
-
-// static
-std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
-    SharedImageBackingFactory* gpu_backing_factory,
-    bool allow_shm_overlays,
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     gfx::BufferUsage buffer_usage) {
   DCHECK(IsValidSharedMemoryBufferFormat(size, format));
@@ -467,21 +433,20 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
       gfx::GpuMemoryBufferId(0), size, buffer_format, buffer_usage);
 
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, buffer_format,
-                              gfx::BufferPlane::DEFAULT)) {
+  if (!shm_wrapper.Initialize(handle, size, buffer_format)) {
     DLOG(ERROR) << "Failed to create SharedMemoryRegionWrapper";
     return nullptr;
   }
 
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type,
-      SHARED_IMAGE_USAGE_CPU_WRITE, debug_label, std::move(shm_wrapper),
+      GetShmSharedImageUsage(usage), debug_label, std::move(shm_wrapper),
       std::move(handle));
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), allow_shm_overlays, std::move(shm_backing),
+      std::move(debug_label), std::move(shm_backing),
       gpu_backing_factory->GetWeakPtr(), std::move(buffer_usage)));
 }
 
@@ -492,9 +457,8 @@ CompoundImageBacking::CompoundImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
-    bool allow_shm_overlays,
     std::unique_ptr<SharedMemoryImageBacking> shm_backing,
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
     std::optional<gfx::BufferUsage> buffer_usage)
@@ -513,8 +477,9 @@ CompoundImageBacking::CompoundImageBacking(
   DCHECK_EQ(size, shm_backing->size());
   elements_[0].backing = std::move(shm_backing);
   elements_[0].access_streams = kMemoryStreamSet;
-  if (allow_shm_overlays)
+  if (kAllowShmOverlays && usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
     elements_[0].access_streams.Put(SharedImageAccessStream::kOverlay);
+  }
   elements_[0].content_id_ = latest_content_id_;
 
   elements_[1].create_callback = base::BindOnce(
@@ -524,7 +489,11 @@ CompoundImageBacking::CompoundImageBacking(
       base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
 }
 
-CompoundImageBacking::~CompoundImageBacking() = default;
+CompoundImageBacking::~CompoundImageBacking() {
+  if (pending_copy_to_gmb_callback_) {
+    std::move(pending_copy_to_gmb_callback_).Run(/*success=*/false);
+  }
+}
 
 void CompoundImageBacking::NotifyBeginAccess(SharedImageAccessStream stream,
                                              RepresentationAccessMode mode) {
@@ -592,6 +561,43 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
   SetLatestContent(SharedImageAccessStream::kMemory, /*write_access=*/false);
 
   return true;
+}
+
+void CompoundImageBacking::CopyToGpuMemoryBufferAsync(
+    base::OnceCallback<void(bool)> callback) {
+  auto& shm_element = GetElement(SharedImageAccessStream::kMemory);
+
+  if (HasLatestContent(shm_element)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  if (pending_copy_to_gmb_callback_) {
+    DLOG(ERROR) << "Existing CopyToGpuMemoryBuffer operation pending";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto* gpu_backing = elements_[1].GetBacking();
+  if (!gpu_backing) {
+    DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  pending_copy_to_gmb_callback_ = std::move(callback);
+
+  gpu_backing->ReadbackToMemoryAsync(
+      GetSharedMemoryPixmaps(),
+      base::BindOnce(&CompoundImageBacking::OnCopyToGpuMemoryBufferComplete,
+                     base::Unretained(this)));
+}
+
+void CompoundImageBacking::OnCopyToGpuMemoryBufferComplete(bool success) {
+  if (success) {
+    SetLatestContent(SharedImageAccessStream::kMemory, /*write_access=*/false);
+  }
+  std::move(pending_copy_to_gmb_callback_).Run(success);
 }
 
 gfx::Rect CompoundImageBacking::ClearedRect() const {
@@ -764,7 +770,7 @@ CompoundImageBacking::ElementHolder& CompoundImageBacking::GetElement(
       return element;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return elements_.back();
 }
 
@@ -784,7 +790,8 @@ void CompoundImageBacking::LazyCreateBacking(
 
   backing = factory->CreateSharedImage(
       mailbox(), format(), kNullSurfaceHandle, size(), color_space(),
-      surface_origin(), alpha_type(), usage() | SHARED_IMAGE_USAGE_CPU_UPLOAD,
+      surface_origin(), alpha_type(),
+      GetGpuSharedImageUsage(SharedImageUsageSet(usage())),
       std::move(debug_label), /*is_thread_safe=*/false);
   if (!backing) {
     DLOG(ERROR) << "Failed to allocate GPU backing";

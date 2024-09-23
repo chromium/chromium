@@ -57,7 +57,7 @@ TEST_F(MemorySaverPolicyHandlerTest, PolicySetToTrueSetsPrefToEnabledOnTimer) {
       &value_ptr));
   EXPECT_EQ(value_ptr->GetInt(),
             static_cast<int>(performance_manager::user_tuning::prefs::
-                                 MemorySaverModeState::kEnabledOnTimer));
+                                 MemorySaverModeState::kEnabled));
 }
 
 }  // namespace performance_manager

@@ -2,14 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/trace_event/process_memory_dump.h"
 
 #include <errno.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
@@ -23,7 +30,6 @@
 #include "base/trace_event/traced_value.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
@@ -93,7 +99,7 @@ size_t ProcessMemoryDump::GetSystemPageSize() {
 }
 
 // static
-absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
+std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     void* start_address,
     size_t mapped_size) {
   const size_t page_size = GetSystemPageSize();
@@ -110,13 +116,14 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
   const size_t kMaxChunkSize = 8 * 1024 * 1024;
   size_t max_vec_size =
       GetSystemPageCount(std::min(mapped_size, kMaxChunkSize), page_size);
+
 #if BUILDFLAG(IS_WIN)
-  std::unique_ptr<PSAPI_WORKING_SET_EX_INFORMATION[]> vec(
-      new PSAPI_WORKING_SET_EX_INFORMATION[max_vec_size]);
+  auto vec =
+      base::HeapArray<PSAPI_WORKING_SET_EX_INFORMATION>::WithSize(max_vec_size);
 #elif BUILDFLAG(IS_APPLE)
-  std::unique_ptr<char[]> vec(new char[max_vec_size]);
+  auto vec = base::HeapArray<char>::WithSize(max_vec_size);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  std::unique_ptr<unsigned char[]> vec(new unsigned char[max_vec_size]);
+  auto vec = base::HeapArray<unsigned char>::WithSize(max_vec_size);
 #endif
 
   while (offset < mapped_size) {
@@ -129,14 +136,15 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
       vec[i].VirtualAddress =
           reinterpret_cast<void*>(chunk_start + i * page_size);
     }
-    DWORD vec_size = static_cast<DWORD>(
-        page_count * sizeof(PSAPI_WORKING_SET_EX_INFORMATION));
-    failure = !QueryWorkingSetEx(GetCurrentProcess(), vec.get(), vec_size);
+
+    auto span = vec.first(page_count);
+    failure = !QueryWorkingSetEx(GetCurrentProcess(), span.data(),
+                                 static_cast<DWORD>(span.size_bytes()));
 
     for (size_t i = 0; i < page_count; i++)
       resident_page_count += vec[i].VirtualAttributes.Valid;
 #elif BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/851760): Implement counting resident bytes.
+    // TODO(crbug.com/42050620): Implement counting resident bytes.
     // For now, log and avoid unused variable warnings.
     NOTIMPLEMENTED_LOG_ONCE();
     std::ignore = chunk_start;
@@ -144,7 +152,7 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
 #elif BUILDFLAG(IS_APPLE)
     // mincore in MAC does not fail with EAGAIN.
     failure =
-        !!mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.get());
+        !!mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.data());
     for (size_t i = 0; i < page_count; i++)
       resident_page_count += vec[i] & MINCORE_INCORE ? 1 : 0;
 #elif BUILDFLAG(IS_POSIX)
@@ -155,9 +163,9 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
       result =
 #if BUILDFLAG(IS_AIX)
           mincore(reinterpret_cast<char*>(chunk_start), chunk_size,
-                  reinterpret_cast<char*>(vec.get()));
+                  reinterpret_cast<char*>(vec.data()));
 #else
-          mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.get());
+          mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.data());
 #endif
     } while (result == -1 && errno == EAGAIN && error_counter++ < 100);
     failure = !!result;
@@ -173,16 +181,15 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytes(
     offset += kMaxChunkSize;
   }
 
-  DCHECK(!failure);
   if (failure) {
-    LOG(ERROR) << "CountResidentBytes failed. The resident size is invalid";
-    return absl::nullopt;
+    PLOG(ERROR) << "CountResidentBytes";
+    return std::nullopt;
   }
   return total_resident_pages;
 }
 
 // static
-absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
+std::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
     void* start_address,
     size_t mapped_size) {
   // `MapAt()` performs some internal arithmetic to allow non-page-aligned
@@ -211,7 +218,7 @@ absl::optional<size_t> ProcessMemoryDump::CountResidentBytesInSharedMemory(
   if (result == MachVMRegionResult::Error) {
     LOG(ERROR) << "CountResidentBytesInSharedMemory failed. The resident size "
                   "is invalid";
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   }
 
   size_t resident_pages =
@@ -441,7 +448,7 @@ void ProcessMemoryDump::SerializeAllocatorDumpsInto(
 
     memory_edge->set_source_id(edge.source.ToUint64());
     memory_edge->set_target_id(edge.target.ToUint64());
-    // TODO(crbug.com/1333557): Fix .proto and remove this cast.
+    // TODO(crbug.com/40845742): Fix .proto and remove this cast.
     memory_edge->set_importance(static_cast<uint32_t>(edge.importance));
   }
 }

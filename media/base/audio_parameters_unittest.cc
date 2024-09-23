@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/audio_parameters.h"
 
 #include <stddef.h>
@@ -63,6 +68,7 @@ TEST(AudioParameters, Constructor_ParameterValuesPlusHardwareCapabilities) {
   int expected_samples = 880;
 
   AudioParameters::HardwareCapabilities hardware_capabilities(0, true);
+  hardware_capabilities.require_audio_offload = true;
   AudioParameters params(
       expected_format,
       ChannelLayoutConfig::FromLayout<expected_channel_layout>(), expected_rate,
@@ -74,6 +80,7 @@ TEST(AudioParameters, Constructor_ParameterValuesPlusHardwareCapabilities) {
   EXPECT_EQ(expected_rate, params.sample_rate());
   EXPECT_EQ(expected_samples, params.frames_per_buffer());
   EXPECT_TRUE(params.RequireEncapsulation());
+  EXPECT_TRUE(params.RequireOffload());
 }
 
 TEST(AudioParameters, GetBytesPerBuffer) {

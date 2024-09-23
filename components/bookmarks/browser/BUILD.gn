@@ -118,7 +118,6 @@ static_library("test_support") {
 }
 
 bundle_data("unit_tests_bundle_data") {
-  visibility = [ ":unit_tests" ]
   testonly = true
   sources = [
     "//components/test/data/bookmarks/meta_info_as_string.json",

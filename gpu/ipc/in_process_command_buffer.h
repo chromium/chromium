@@ -10,10 +10,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -157,6 +157,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
   void ScheduleGrContextCleanup() override;
   void HandleReturnData(base::span<const uint8_t> data) override;
+  bool ShouldYield() override;
 
   const gles2::FeatureInfo* GetFeatureInfo() const;
 

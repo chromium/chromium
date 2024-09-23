@@ -77,7 +77,7 @@ void DeviceAuthenticatorWin::AuthenticateWithMessage(
 }
 
 void DeviceAuthenticatorWin::Cancel() {
-  // TODO(crbug.com/1354552): Add implementation of the Cancel method.
+  // TODO(crbug.com/40235610): Add implementation of the Cancel method.
   NOTIMPLEMENTED();
 }
 

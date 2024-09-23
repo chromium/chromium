@@ -6,7 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 
 namespace ash {
 namespace {
@@ -30,6 +32,10 @@ const char* const kMetricEnrollmentRollbackAttestation =
     "Enterprise.EnrollmentRollbackAttestation";
 const char* const kMetricEnrollmentRollbackManualFallback =
     "Enterprise.EnrollmentRollbackManualFallback";
+const char* const kMetricEnrollmentTokenBased =
+    "Enterprise.EnrollmentTokenBased";
+const char* const kMetricEnrollmentTokenBasedManualFallback =
+    "Enterprise.EnrollmentTokenBasedManualFallback";
 
 }  // namespace
 
@@ -76,12 +82,44 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
     case policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK:
       base::UmaHistogramSparse(kMetricEnrollmentRollbackManualFallback, sample);
       break;
-    case policy::EnrollmentConfig::DEPRECATED_MODE_ENROLLED_ROLLBACK:
-    case policy::EnrollmentConfig::DEPRECATED_MODE_OFFLINE_DEMO:
+    case policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
+      base::UmaHistogramSparse(kMetricEnrollmentTokenBased, sample);
+      break;
+    case policy::EnrollmentConfig::
+        MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
+      base::UmaHistogramSparse(kMetricEnrollmentTokenBasedManualFallback,
+                               sample);
+      break;
     case policy::EnrollmentConfig::MODE_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
+}
+
+std::string GetOOBEConfigSourceVariantString(
+    policy::OOBEConfigSource oobe_config_source) {
+  switch (oobe_config_source) {
+    case policy::OOBEConfigSource::kNone:
+      return ".None";
+    case policy::OOBEConfigSource::kUnknown:
+      return ".Unknown";
+    case policy::OOBEConfigSource::kRemoteDeployment:
+      return ".RemoteDeployment";
+    case policy::OOBEConfigSource::kPackagingTool:
+      return ".PackagingTool";
+  }
+}
+
+void TokenBasedEnrollmentOOBEConfigUMA(
+    policy::EnrollmentStatus status,
+    policy::OOBEConfigSource oobe_config_source) {
+  const bool success =
+      status.enrollment_code() == policy::EnrollmentStatus::Code::kSuccess;
+  std::string metric_name = base::StrCat(
+      {policy::kUMAPrefixEnrollmentTokenBasedOOBEConfig,
+       GetOOBEConfigSourceVariantString(oobe_config_source), ".Success"});
+
+  base::UmaHistogramBoolean(metric_name, success);
 }
 
 }  // namespace ash

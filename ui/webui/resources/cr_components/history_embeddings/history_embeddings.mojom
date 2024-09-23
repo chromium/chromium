@@ -1,0 +1,116 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module history_embeddings.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+enum AnswerStatus {
+  kUnspecified,
+  kSuccess,
+  kUnanswerable,
+  kModelUnavailable,
+  kExecutionFailure,
+  kExecutionCanceled,
+};
+
+// Some SearchResultItem may be specialized and marked as the query answer.
+// When that happens, it will have an AnswerData instance for details.
+struct AnswerData {
+  // If this item is the answer, the base URL may be expanded to include one
+  // or more scroll-to-text-fragment directives.
+  array<string> answer_text_directives;
+};
+
+// A single completed history entry reference that forms part of a search
+// result and can be presented to the user with source context.
+struct SearchResultItem {
+  // The title of the page.
+  string title;
+
+  // The URL from the history database.
+  url.mojom.Url url;
+
+  // The URL formatted for display.
+  string url_for_display;
+
+  // A localized string for the last visit time for the above URL, from history.
+  string relative_time;
+
+  // The last visit time for the above URL, from history. Used for removing
+  // history item.
+  // TODO(crbug.com/335282446): BrowsingHistoryService requires a double here.
+  double last_url_visit_timestamp;
+
+  // The full source passage that was used to recall this item.
+  string source_passage;
+
+  // When present, this contains information about how to mark this
+  // SearchResultItem as the query answer. Most items will not have it.
+  AnswerData? answer_data;
+};
+
+// Represents a search query for the history embeddings database.
+struct SearchQuery {
+  // Search query text.
+  string query;
+
+  // Optional time window to narrow search: last week, last month, etc.
+  // The end of the time range is implicitly now.
+  mojo_base.mojom.Time? time_range_start;
+};
+
+// Represents the results of a search query.
+struct SearchResult {
+  // Query associated with this set of results.
+  string query;
+  // Status of the answer generation attempt.
+  AnswerStatus answer_status;
+  // Latest generated answer.
+  string answer;
+  // The set of history results.
+  array<SearchResultItem> items;
+};
+
+enum UserFeedback {
+  // Unspecified.
+  kUserFeedbackUnspecified,
+  // A thumbs down.
+  kUserFeedbackNegative,
+  // A thumbs up.
+  kUserFeedbackPositive,
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // The HistoryEmbeddingsBrowserProxy singleton calls this when
+  // it's first initialized.
+  SetPage(pending_remote<Page> page);
+
+  // Initiate a history embeddings search. Results will be received
+  // asynchronously by SearchResultChanged below.
+  Search(SearchQuery query);
+
+  // Sends a quality log using the history embeddings service to log if a user
+  // clicked on some of the embeddings suggestions.
+  SendQualityLog(array<uint32> selected_indices, uint32 num_entered_chars);
+
+  // Records the results from an embeddings query: whether the UI received
+  // non-empty embeddings results, and if the user clicked one of the results.
+  RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult);
+
+  // Store the user feedback supplied by the user.
+  SetUserFeedback(UserFeedback feedback);
+
+  // Attempt to show the IPH bubble to promote the feature. Called from the
+  // main history app on page load.
+  MaybeShowFeaturePromo();
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Called to update UI when search results are received.
+  SearchResultChanged(SearchResult result);
+};

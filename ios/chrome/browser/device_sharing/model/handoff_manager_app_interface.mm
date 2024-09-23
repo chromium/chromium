@@ -9,19 +9,17 @@
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
-NSURL* DeviceSharingAppInterfaceWrapper::GetCurrentUserActivityURL(
-    ChromeBrowserState* browser_state) {
+NSURL* GetCurrentUserActivityURL(ProfileIOS* profile) {
   DeviceSharingManagerImpl* sharing_manager =
       static_cast<DeviceSharingManagerImpl*>(
-          DeviceSharingManagerFactory::GetForBrowserState(browser_state));
+          DeviceSharingManagerFactory::GetForBrowserState(profile));
   return [sharing_manager->handoff_manager_ userActivityWebpageURL];
 }
 
 @implementation HandoffManagerAppInterface
 
 + (NSURL*)currentUserActivityWebPageURL {
-  return DeviceSharingAppInterfaceWrapper::GetCurrentUserActivityURL(
-      chrome_test_util::GetOriginalBrowserState());
+  return GetCurrentUserActivityURL(chrome_test_util::GetOriginalBrowserState());
 }
 
 @end

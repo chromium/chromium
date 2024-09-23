@@ -10,11 +10,12 @@
 #include <atomic>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include <optional>
 #include "base/base_paths.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -34,12 +35,14 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/test_shared_memory_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "ipc/ipc_channel_mojo_unittest.test-mojom.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
@@ -53,6 +56,7 @@
 #include "ipc/urgent_message_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -66,6 +70,7 @@
 #include "ipc/ipc_platform_file_attachment_posix.h"
 #endif
 
+namespace ipc_channel_mojo_unittest {
 namespace {
 
 void SendString(IPC::Sender* sender, const std::string& str) {
@@ -271,7 +276,7 @@ class ListenerThatBindsATestStructPasser : public IPC::Listener,
 
   void OnChannelConnected(int32_t peer_pid) override {}
 
-  void OnChannelError() override { NOTREACHED(); }
+  void OnChannelError() override { NOTREACHED_IN_MIGRATION(); }
 
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
@@ -284,7 +289,7 @@ class ListenerThatBindsATestStructPasser : public IPC::Listener,
 
  private:
   // IPC::mojom::TestStructPasser:
-  void Pass(IPC::mojom::TestStructPtr) override { NOTREACHED(); }
+  void Pass(IPC::mojom::TestStructPtr) override { NOTREACHED_IN_MIGRATION(); }
 
   mojo::AssociatedReceiver<IPC::mojom::TestStructPasser> receiver_{this};
 };
@@ -309,7 +314,7 @@ class ListenerThatExpectsNoError : public IPC::Listener {
     std::move(connect_closure_).Run();
   }
 
-  void OnChannelError() override { NOTREACHED(); }
+  void OnChannelError() override { NOTREACHED_IN_MIGRATION(); }
 
  private:
   base::OnceClosure connect_closure_;
@@ -429,8 +434,7 @@ class HandleSendingHelper {
   }
 
   static void WriteFile(IPC::Message* message, base::File& file) {
-    std::string content = GetSendingFileContent();
-    file.WriteAtCurrentPos(content.data(), content.size());
+    file.WriteAtCurrentPos(base::as_byte_span(GetSendingFileContent()));
     file.Flush();
     message->WriteAttachment(new IPC::internal::PlatformFileAttachment(
         base::ScopedFD(file.TakePlatformFile())));
@@ -464,7 +468,7 @@ class HandleSendingHelper {
         static_cast<IPC::internal::PlatformFileAttachment*>(attachment.get())
             ->TakePlatformFile());
     std::string content(GetSendingFileContent().size(), ' ');
-    file.Read(0, &content[0], content.size());
+    file.Read(0, base::as_writable_byte_span(content));
     EXPECT_EQ(content, GetSendingFileContent());
   }
 #endif
@@ -669,129 +673,6 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(IPCChannelMojoTestSendOkClient) {
   Close();
 }
 
-class ListenerWithSimpleAssociatedInterface
-    : public IPC::Listener,
-      public IPC::mojom::SimpleTestDriver {
- public:
-  static const int kNumMessages;
-
-  explicit ListenerWithSimpleAssociatedInterface(base::OnceClosure quit_closure)
-      : quit_closure_(std::move(quit_closure)) {}
-
-  ~ListenerWithSimpleAssociatedInterface() override = default;
-
-  bool OnMessageReceived(const IPC::Message& message) override {
-    base::PickleIterator iter(message);
-    int32_t should_be_expected;
-    EXPECT_TRUE(iter.ReadInt(&should_be_expected));
-    EXPECT_EQ(should_be_expected, next_expected_value_);
-    num_messages_received_++;
-    return true;
-  }
-
-  void OnChannelError() override { CHECK(!quit_closure_); }
-
-  void RegisterInterfaceFactory(IPC::Channel* channel) {
-    channel->GetAssociatedInterfaceSupport()->AddAssociatedInterface(
-        base::BindRepeating(
-            &ListenerWithSimpleAssociatedInterface::BindReceiver,
-            base::Unretained(this)));
-  }
-
- private:
-  // IPC::mojom::SimpleTestDriver:
-  void ExpectValue(int32_t value) override {
-    next_expected_value_ = value;
-  }
-
-  void GetExpectedValue(GetExpectedValueCallback callback) override {
-    NOTREACHED();
-  }
-
-  void RequestValue(RequestValueCallback callback) override { NOTREACHED(); }
-
-  void RequestQuit(RequestQuitCallback callback) override {
-    EXPECT_EQ(kNumMessages, num_messages_received_);
-    std::move(callback).Run();
-    std::move(quit_closure_).Run();
-  }
-
-  void BindReceiver(
-      mojo::PendingAssociatedReceiver<IPC::mojom::SimpleTestDriver> receiver) {
-    DCHECK(!receiver_.is_bound());
-    receiver_.Bind(std::move(receiver));
-  }
-
-  int32_t next_expected_value_ = 0;
-  int num_messages_received_ = 0;
-  base::OnceClosure quit_closure_;
-
-  mojo::AssociatedReceiver<IPC::mojom::SimpleTestDriver> receiver_{this};
-};
-
-const int ListenerWithSimpleAssociatedInterface::kNumMessages = 1000;
-
-class ListenerSendingAssociatedMessages : public IPC::Listener {
- public:
-  explicit ListenerSendingAssociatedMessages(base::OnceClosure quit_closure)
-      : quit_closure_(std::move(quit_closure)) {}
-
-  bool OnMessageReceived(const IPC::Message& message) override { return true; }
-
-  void OnChannelConnected(int32_t peer_pid) override {
-    DCHECK(channel_);
-    channel_->GetAssociatedInterfaceSupport()->GetRemoteAssociatedInterface(
-        driver_.BindNewEndpointAndPassReceiver());
-
-    // Send a bunch of interleaved messages, alternating between the associated
-    // interface and a legacy IPC::Message.
-    for (int i = 0; i < ListenerWithSimpleAssociatedInterface::kNumMessages;
-         ++i) {
-      driver_->ExpectValue(i);
-      SendValue(channel_, i);
-    }
-    driver_->RequestQuit(base::BindOnce(
-        &ListenerSendingAssociatedMessages::OnQuitAck, base::Unretained(this)));
-  }
-
-  void set_channel(IPC::Channel* channel) { channel_ = channel; }
-
- private:
-  void OnQuitAck() { std::move(quit_closure_).Run(); }
-
-  raw_ptr<IPC::Channel> channel_ = nullptr;
-  mojo::AssociatedRemote<IPC::mojom::SimpleTestDriver> driver_;
-  base::OnceClosure quit_closure_;
-};
-
-TEST_F(IPCChannelMojoTest, SimpleAssociatedInterface) {
-  Init("SimpleAssociatedInterfaceClient");
-
-  base::RunLoop run_loop;
-  ListenerWithSimpleAssociatedInterface listener(run_loop.QuitClosure());
-  CreateChannel(&listener);
-  ASSERT_TRUE(ConnectChannel());
-
-  listener.RegisterInterfaceFactory(channel());
-
-  run_loop.Run();
-  channel()->Close();
-
-  EXPECT_TRUE(WaitForClientShutdown());
-  DestroyChannel();
-}
-
-DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(SimpleAssociatedInterfaceClient) {
-  base::RunLoop run_loop;
-  ListenerSendingAssociatedMessages listener(run_loop.QuitClosure());
-  Connect(&listener);
-  listener.set_channel(channel());
-
-  run_loop.Run();
-
-  Close();
-}
-
 class ChannelProxyRunner {
  public:
   ChannelProxyRunner(mojo::ScopedMessagePipeHandle handle,
@@ -916,7 +797,9 @@ class ListenerWithSimpleProxyAssociatedInterface
     std::move(callback).Run(next_expected_value_);
   }
 
-  void RequestValue(RequestValueCallback callback) override { NOTREACHED(); }
+  void RequestValue(RequestValueCallback callback) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   void RequestQuit(RequestQuitCallback callback) override {
     std::move(callback).Run();
@@ -1293,7 +1176,7 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
   void BindSync(
       mojo::PendingAssociatedReceiver<IPC::mojom::SimpleTestClient> receiver,
       BindSyncCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void GetReceiverWithQueuedSyncMessage(
@@ -1384,7 +1267,72 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(SyncAssociatedInterface,
   DestroyProxy();
 }
 
-// TODO(https://crbug.com/1500560): Disabled for flaky behavior of forced
+class ListenerWithClumsyBinder : public IPC::Listener {
+ public:
+  ListenerWithClumsyBinder() = default;
+  ~ListenerWithClumsyBinder() override = default;
+
+  void RunUntilClientQuit() { run_loop_.Run(); }
+
+ private:
+  // IPC::Listener:
+  bool OnMessageReceived(const IPC::Message& message) override {
+    run_loop_.Quit();
+    return true;
+  }
+
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override {
+    // Ignore and drop the endpoint so it's closed.
+  }
+
+  base::RunLoop run_loop_;
+};
+
+TEST_F(IPCChannelProxyMojoTest, DropAssociatedReceiverWithSyncCallInFlight) {
+  // Regression test for https://crbug.com/331636067. Verifies that endpoint
+  // lifetime is properly managed when associated endpoints are serialized into
+  // a message that gets dropped before transmission.
+
+  Init("SyncCallToDroppedReceiver");
+  ListenerWithClumsyBinder listener;
+  CreateProxy(&listener);
+  RunProxy();
+  listener.RunUntilClientQuit();
+  EXPECT_TRUE(WaitForClientShutdown());
+  DestroyProxy();
+}
+
+DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
+    SyncCallToDroppedReceiver,
+    ChannelProxyClient) {
+  DummyListener listener;
+  CreateProxy(&listener);
+  RunProxy();
+
+  mojo::AssociatedRemote<mojom::Binder> binder;
+  proxy()->GetRemoteAssociatedInterface(
+      binder.BindNewEndpointAndPassReceiver());
+
+  // Wait for disconnection to be observed. This way we know any subsequent
+  // outgoing messages on `binder` will not be sent.
+  base::RunLoop loop;
+  binder.set_disconnect_handler(loop.QuitClosure());
+  loop.Run();
+
+  // Send another endpoint over. This receiver will be dropped, and the remote
+  // should be properly notified of peer closure to terminate the sync call. The
+  // call should return false (because no reply), but shouldn't hang.
+  mojo::AssociatedRemote<mojom::Binder> another_binder;
+  binder->Bind(another_binder.BindNewEndpointAndPassReceiver());
+  EXPECT_FALSE(another_binder->Ping());
+
+  SendString(proxy(), "ok bye");
+  DestroyProxy();
+}
+
+// TODO(crbug.com/40940810): Disabled for flaky behavior of forced
 // process termination. Will be re-enabled with a fix.
 TEST_F(IPCChannelProxyMojoTest, DISABLED_SyncAssociatedInterfacePipeError) {
   // Regression test for https://crbug.com/1494461.
@@ -1863,7 +1811,7 @@ class ListenerThatVerifiesPeerPid : public TestListenerBase {
   }
 
   bool OnMessageReceived(const IPC::Message& message) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;
   }
 };
@@ -2061,3 +2009,4 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
 }
 
 }  // namespace
+}  // namespace ipc_channel_mojo_unittest

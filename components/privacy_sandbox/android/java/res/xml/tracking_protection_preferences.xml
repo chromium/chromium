@@ -35,6 +35,34 @@ found in the LICENSE file.
             app:allowDividerBelow="false" />
 
         <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:key="ip_protection_toggle"
+            android:title="@string/tracking_protection_ip_protection_toggle_title"
+            android:summary="@string/tracking_protection_ip_protection_toggle_summary"
+            app:allowDividerBelow="false"
+            app:isPreferenceVisible="false" />
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:id="@+id/ip_protection_learn_more"
+            android:key="ip_protection_learn_more"
+            android:summary="@string/tracking_protection_ip_protection_learn_more"
+            app:allowDividerBelow="false"
+            app:isPreferenceVisible="false" />
+
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:key="fingerprinting_protection_toggle"
+            android:title="@string/tracking_protection_fingerprinting_protection_title"
+            android:summary="@string/tracking_protection_fingerprinting_protection_toggle_summary"
+            app:allowDividerBelow="false"
+            app:isPreferenceVisible="false" />
+
+        <org.chromium.components.browser_ui.settings.TextMessagePreference
+            android:id="@+id/fingerprinting_protection_learn_more"
+            android:key="fingerprinting_protection_learn_more"
+            android:summary="@string/tracking_protection_fingerprinting_protection_learn_more"
+            app:allowDividerBelow="false"
+            app:isPreferenceVisible="false" />
+
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
             android:key="dnt_toggle"
             android:title="@string/tracking_protection_dnt_toggle_title"
             android:summary="@string/tracking_protection_dnt_toggle_summary"

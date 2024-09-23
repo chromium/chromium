@@ -7,9 +7,12 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Tab resumption module dimens -->
+    <dimen name="tab_resumption_module_margin_top">16dp</dimen>
+    <dimen name="tab_resumption_module_margin_lateral">@dimen/mvt_container_lateral_margin</dimen>
     <dimen name="tab_resumption_module_padding_top">16dp</dimen>
     <dimen name="tab_resumption_module_padding_bottom">11dp</dimen>
     <dimen name="tab_resumption_module_padding_lateral">11dp</dimen>
+    <dimen name="tab_resumption_module_title_margin_bottom">6dp</dimen>
     <dimen name="tab_resumption_module_tile_bleed">7dp</dimen>
     <dimen name="tab_resumption_module_icon_source_size">64dp</dimen>
     <dimen name="tab_resumption_module_divider_margin_start">73dp</dimen>
@@ -22,4 +25,11 @@ found in the LICENSE file.
     <dimen name="tab_resumption_module_single_icon_size">116dp</dimen>
     <dimen name="tab_resumption_module_single_icon_padding">40dp</dimen>
     <dimen name="tab_resumption_module_single_icon_sep">16dp</dimen>
+    <dimen name="tab_resumption_module_appchip_padding_start">2dp</dimen>
+
+    <dimen name="local_tile_tab_thumbnail_padding_start">9dp</dimen>
+    <dimen name="local_tile_tab_thumbnail_padding_top">6dp</dimen>
+
+    <dimen name="tab_resumption_module_reason_padding_top">2dp</dimen>
+    <dimen name="tab_resumption_module_reason_padding_start">8dp</dimen>
 </resources>

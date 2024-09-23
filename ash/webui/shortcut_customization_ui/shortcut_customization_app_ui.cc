@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 
 #include <memory>
@@ -20,6 +25,9 @@
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -31,6 +39,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -150,11 +162,15 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"subcategoryDesks", IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_DESKS},
       {"subcategoryChromeVox",
        IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_CHROMEVOX},
+      {"subcategoryMouseKeys",
+       IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_MOUSE_KEYS},
       {"subcategoryVisibility",
        IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_VISIBILITY},
       {"subcategoryAccessibilityNavigation",
        IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_ACCESSIBILITY_NAVIGATION},
       {"noShortcutAssigned", IDS_SHORTCUT_CUSTOMIZATION_NO_SHORTCUT_ASSIGNED},
+      {"iconLabelAccessibility",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY},
       {"iconLabelArrowDown", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_DOWN},
       {"iconLabelArrowLeft", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_LEFT},
       {"iconLabelArrowRight",
@@ -182,6 +198,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH},
       {"iconLabelContextMenu",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU},
+      {"iconLabelEnableSelectToSpeak",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_SELECT_TO_SPEAK},
       {"iconLabelEnableOrToggleDictation",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_OR_TOGGLE_DICTATION},
       {"iconLabelEmojiPicker",
@@ -232,6 +250,26 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE},
   };
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // For official builds, only add the real string if the feature is enabled.
+  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
+    source->AddLocalizedString(
+        "blockRightAltKey",
+        IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY_ERROR_MESSAGE);
+    source->AddLocalizedString("iconLabelRightAlt",
+                               IDS_KEYBOARD_RIGHT_ALT_LABEL);
+  } else {
+    source->AddLocalizedString("blockRightAltKey",
+                               IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
+    source->AddLocalizedString(
+        "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
+  }
+#else
+  source->AddLocalizedString("blockRightAltKey",
+                             IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
+  source->AddLocalizedString("iconLabelRightAlt",
+                             IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
+#endif
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddString("shortcutCustomizationLearnMoreUrl",
                     kShortcutCustomizationLearnMoreURL);
@@ -247,6 +285,9 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
       ash::features::IsJellyEnabledForShortcutCustomization());
   html_source->AddBoolean("isInputDeviceSettingsSplitEnabled",
                           features::IsInputDeviceSettingsSplitEnabled());
+  html_source->AddBoolean(
+      "hasFunctionKey",
+      Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard());
 }
 
 }  // namespace

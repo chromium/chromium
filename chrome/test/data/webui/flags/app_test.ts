@@ -7,7 +7,8 @@ import 'chrome://flags/app.js';
 import type {FlagsAppElement} from 'chrome://flags/app.js';
 import type {ExperimentalFeaturesData, Feature} from 'chrome://flags/flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestFlagsBrowserProxy} from './test_flags_browser_proxy.js';
@@ -66,8 +67,13 @@ suite('FlagsAppTest', function() {
     'needsRestart': false,
     'showBetaChannelPromotion': false,
     'showDevChannelPromotion': false,
-    'showOwnerWarning': false,
+    // <if expr="chromeos_ash">
+    'showOwnerWarning': true,
+    'showSystemFlagsLink': false,
+    // </if>
+    // <if expr="chromeos_lacros">
     'showSystemFlagsLink': true,
+    // </if>
   };
 
   let app: FlagsAppElement;
@@ -103,6 +109,31 @@ suite('FlagsAppTest', function() {
     selectEl.dispatchEvent(
         new CustomEvent('change', {composed: true, bubbles: true}));
   }
+
+  test('Layout', function() {
+    // Flag search
+    assertTrue(isVisible(searchTextArea));
+    assertFalse(isVisible(clearSearch));
+    assertTrue(isVisible(resetAllButton));
+
+    // <if expr="chromeos_ash">
+    assertFalse(isVisible(app.getRequiredElement('#os-link-container')));
+    // </if>
+    // <if expr="chromeos_lacros">
+    assertTrue(isVisible(app.getRequiredElement('#os-link-container')));
+    // </if>
+
+    // Title and version
+    assertTrue(isVisible(app.getRequiredElement('.section-header-title')));
+    assertTrue(isVisible(app.getRequiredElement('#version')));
+
+    // Blurb warning
+    assertTrue(isVisible(app.getRequiredElement('.blurb-container')));
+    // <if expr="chromeos_ash">
+    // Owner warning
+    assertTrue(!!app.getRequiredElement('#owner-warning'));
+    // </if>
+  });
 
   test('check available/unavailable tabs are rendered properly', function() {
     const availableTab = app.getRequiredElement('#tab-available');
@@ -187,17 +218,20 @@ suite('FlagsAppTest', function() {
 
   test('restart toast shown and relaunch event fired', function() {
     const restartToast = app.getRequiredElement('#needs-restart');
+    const restartButton =
+        app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
 
     // The restart toast is not visible initially.
     assertFalse(restartToast.classList.contains('show'));
+    // The restartButton should be disabled so that it is not in the tab order.
+    assertTrue(restartButton.disabled);
 
     // The reset all button is clicked and restart toast becomes visible.
     resetAllButton.click();
     assertTrue(restartToast.classList.contains('show'));
 
     // The restart button is clicked and a browserRestart event fired.
-    const restartButton =
-        app.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
+    assertFalse(restartButton.disabled);
     restartButton.click();
     return browserProxy.whenCalled('restartBrowser');
   });
@@ -240,5 +274,30 @@ suite('FlagsAppTest', function() {
           app.$all(`#tab-content-unavailable flags-experiment:not(.hidden)`)
               .length);
     });
+  });
+
+  test('SearchFieldFocusTest', function() {
+    // Search field is focused on page load.
+    assertEquals(searchTextArea, getDeepActiveElement());
+
+    // Remove focus on search field.
+    searchTextArea.blur();
+
+    // Clear search.
+    searchBoxInput('test');
+    clearSearch.click();
+
+    // Search field is focused after search is cleared.
+    assertEquals(searchTextArea, getDeepActiveElement());
+
+    // Dispatch 'Enter' keyboard event and check that search remains focused.
+    searchBoxInput('test');
+    window.dispatchEvent(new KeyboardEvent('keyup', {key: 'Enter'}));
+    assertEquals(searchTextArea, getDeepActiveElement());
+
+    // Dispatch 'Escape' keyboard event and check that search is cleard and not
+    // focused.
+    window.dispatchEvent(new KeyboardEvent('keyup', {key: 'Escape'}));
+    assertNotEquals(searchTextArea, getDeepActiveElement());
   });
 });

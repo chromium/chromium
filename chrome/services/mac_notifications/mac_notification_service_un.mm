@@ -5,12 +5,14 @@
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 
 #import <Foundation/Foundation.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <UserNotifications/UserNotifications.h>
 
 #include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -32,6 +34,7 @@
 - (instancetype)initWithActionHandler:
     (base::RepeatingCallback<
         void(mac_notifications::mojom::NotificationActionInfoPtr)>)handler;
+- (bool)recentlyHandledClickAction;
 @end
 
 namespace {
@@ -54,7 +57,7 @@ NotificationOperation GetNotificationOperationFromAction(
           isEqualToString:mac_notifications::kNotificationSettingsButtonTag]) {
     return NotificationOperation::kSettings;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return NotificationOperation::kClick;
 }
 
@@ -87,19 +90,28 @@ constexpr base::TimeDelta MacNotificationServiceUN::kSynchronizationInterval;
 
 MacNotificationServiceUN::MacNotificationServiceUN(
     mojo::PendingRemote<mojom::MacNotificationActionHandler> handler,
+    base::RepeatingCallback<void(mojom::PermissionStatus)>
+        permission_status_changed_callback,
     UNUserNotificationCenter* notification_center)
     : binding_(this),
       action_handler_(std::move(handler)),
       notification_center_(notification_center),
-      category_manager_(notification_center) {
+      category_manager_(notification_center),
+      permission_status_changed_callback_(
+          std::move(permission_status_changed_callback)) {
   delegate_ = [[AlertUNNotificationCenterDelegate alloc]
       initWithActionHandler:base::BindRepeating(
                                 &MacNotificationServiceUN::OnNotificationAction,
                                 weak_factory_.GetWeakPtr())];
   notification_center_.delegate = delegate_;
-  LogUNNotificationSettings(notification_center_);
-  // Schedule a timer to regularly check for any closed notifications.
+
+  // Query current notification settings and authorization status.
+  SynchronizePermissionStatus(/*log_result=*/true);
+
+  // Schedule a timer to regularly check for any closed notifications and
+  // updates to the current notification settings.
   ScheduleSynchronizeNotifications();
+
   // Initialize currently displayed notifications as we might have been
   // restarted after a crash and want to continue managing shown notifications.
   // Note that this works even if this app doesn't have (or no longer has)
@@ -141,7 +153,6 @@ void MacNotificationServiceUN::Bind(
 void MacNotificationServiceUN::DisplayNotification(
     mojom::NotificationPtr notification) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   std::string notification_id = DeriveMacNotificationId(notification->meta->id);
 
   // If this notification is not set to renotify, and we think it is currently
@@ -157,6 +168,11 @@ void MacNotificationServiceUN::DisplayNotification(
                        base::Unretained(this), std::move(notification)));
     return;
   }
+
+  // To avoid the cached permission status from going too stale, any time we
+  // display a notification is as good a time as any to poll the current
+  // permission status.
+  SynchronizePermissionStatus(/*log_result=*/false);
 
   DoDisplayNotification(std::move(notification));
 }
@@ -192,15 +208,14 @@ void MacNotificationServiceUN::DoDisplayNotification(
   if (!notification->icon.isNull()) {
     gfx::Image icon(notification->icon);
     base::FilePath path = image_retainer_.RegisterTemporaryImage(icon);
-    NSURL* url = [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
+    NSURL* url = base::apple::FilePathToNSURL(path);
     // When the files are saved using NotificationImageRetainer, they're saved
     // without the .png extension. So |options| here is used to tell the system
     // that the file is of type PNG, as NotificationImageRetainer converts files
     // to PNG before writing them.
-    NSDictionary* options = @{
-      UNNotificationAttachmentOptionsTypeHintKey :
-          (__bridge NSString*)kUTTypePNG
-    };
+    NSDictionary* options =
+        @{UNNotificationAttachmentOptionsTypeHintKey : UTTypePNG.identifier};
+
     UNNotificationAttachment* attachment =
         [UNNotificationAttachment attachmentWithIdentifier:notification_id_ns
                                                        URL:url
@@ -218,6 +233,12 @@ void MacNotificationServiceUN::DoDisplayNotification(
                (shouldPreventNotificationDismissalAfterDefaultAction)]) {
     [content setValue:@YES
                forKey:@"shouldPreventNotificationDismissalAfterDefaultAction"];
+  }
+  // This uses another private API to prevent the default action from forcing
+  // the app shim into the foreground. We only want the app shim to get focus
+  // when we explicitly ask it to, rather than on any notification click.
+  if ([content respondsToSelector:@selector(shouldBackgroundDefaultAction)]) {
+    [content setValue:@YES forKey:@"shouldBackgroundDefaultAction"];
   }
 
   auto completion_handler = ^(NSError* _Nullable error) {
@@ -255,6 +276,11 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
     const std::optional<GURL>& origin,
     GetDisplayedNotificationsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // To avoid the cached permission status from going too stale, poll the
+  // current status when getting displayed notifications.
+  SynchronizePermissionStatus(/*log_result=*/false);
+
   // Move |callback| into block storage so we can use it from the block below.
   __block GetDisplayedNotificationsCallback block_callback =
       std::move(callback);
@@ -320,6 +346,9 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
   __block auto closed_callback = base::BindPostTaskToCurrentDefault(
       base::BindOnce(&MacNotificationServiceUN::OnNotificationsClosed,
                      weak_factory_.GetWeakPtr()));
+  // Make a local copy of `notification_center_` to avoid implicitly capturing
+  // `this` in the objective-c block below.
+  auto* notification_center = notification_center_;
 
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
                             NSArray<UNNotification*>* _Nonnull toasts) {
@@ -341,7 +370,7 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
       }
     }
 
-    [notification_center_
+    [notification_center
         removeDeliveredNotificationsWithIdentifiers:identifiers];
     std::move(closed_callback).Run(closed_notification_ids);
   }];
@@ -370,6 +399,10 @@ void MacNotificationServiceUN::OkayToTerminateService(
       }).Then(std::move(callback)));
 }
 
+bool MacNotificationServiceUN::DidRecentlyHandleClickAction() const {
+  return [delegate_ recentlyHandledClickAction];
+}
+
 void MacNotificationServiceUN::RequestPermission(
     RequestPermissionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -390,6 +423,7 @@ void MacNotificationServiceUN::RequestPermission(
       return;
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
+    service->OnGotAuthorizationStatus(status);
     switch (status) {
       case UNAuthorizationStatusDenied:
         service->ReportRequestPermissionResult(
@@ -420,6 +454,20 @@ void MacNotificationServiceUN::ReportRequestPermissionResult(
   for (auto& callback : callbacks) {
     std::move(callback).Run(result);
   }
+  switch (result) {
+    using Result = mojom::RequestPermissionResult;
+    case Result::kRequestFailed:
+      OnGotAuthorizationStatus(UNAuthorizationStatusNotDetermined);
+      break;
+    case Result::kPermissionGranted:
+    case Result::kPermissionPreviouslyGranted:
+      OnGotAuthorizationStatus(UNAuthorizationStatusAuthorized);
+      break;
+    case Result::kPermissionDenied:
+    case Result::kPermissionPreviouslyDenied:
+      OnGotAuthorizationStatus(UNAuthorizationStatusDenied);
+      break;
+  }
 }
 
 void MacNotificationServiceUN::DoRequestPermission() {
@@ -432,11 +480,11 @@ void MacNotificationServiceUN::DoRequestPermission() {
                                        UNAuthorizationOptionBadge;
 
   auto resultHandler = ^(BOOL granted, NSError* _Nullable error) {
-    auto result = mojom::RequestPermissionResult::kRequestFailed;
-    if (!error) {
-      result = granted ? mojom::RequestPermissionResult::kPermissionGranted
-                       : mojom::RequestPermissionResult::kPermissionDenied;
-    }
+    // The presence or absence of `error` doesn't say anything about whether the
+    // request itself failed. So assume the request always succeeds and only
+    // look at `granted` to determine the result.
+    auto result = granted ? mojom::RequestPermissionResult::kPermissionGranted
+                          : mojom::RequestPermissionResult::kPermissionDenied;
     std::move(block_callback).Run(result);
   };
 
@@ -450,10 +498,13 @@ void MacNotificationServiceUN::InitializeDeliveredNotifications() {
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &MacNotificationServiceUN::DoInitializeDeliveredNotifications,
           weak_factory_.GetWeakPtr()));
+  // Make a local copy of `notification_center_` to avoid implicitly capturing
+  // `this` in the objective-c block below.
+  auto* notification_center = notification_center_;
 
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
                             NSArray<UNNotification*>* _Nonnull notifications) {
-    [notification_center_
+    [notification_center
         getNotificationCategoriesWithCompletionHandler:^(
             NSSet<UNNotificationCategory*>* _Nonnull categories) {
           std::move(do_initialize).Run(notifications, categories);
@@ -549,6 +600,33 @@ void MacNotificationServiceUN::DoSynchronizeNotifications(
   }
 }
 
+void MacNotificationServiceUN::SynchronizePermissionStatus(bool log_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_synchronizing_permission_status_) {
+    return;
+  }
+
+  is_synchronizing_permission_status_ = true;
+  __block auto permission_status_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&MacNotificationServiceUN::OnGotAuthorizationStatus,
+                     weak_factory_.GetWeakPtr())
+          .Then(base::BindOnce(
+              [](base::WeakPtr<MacNotificationServiceUN> service) {
+                if (service) {
+                  DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
+                  service->is_synchronizing_permission_status_ = false;
+                }
+              },
+              weak_factory_.GetWeakPtr())));
+  [notification_center_ getNotificationSettingsWithCompletionHandler:^(
+                            UNNotificationSettings* _Nonnull settings) {
+    if (log_result) {
+      LogUNNotificationSettings(settings);
+    }
+    std::move(permission_status_callback).Run(settings.authorizationStatus);
+  }];
+}
+
 void MacNotificationServiceUN::OnNotificationAction(
     mojom::NotificationActionInfoPtr action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -567,12 +645,42 @@ void MacNotificationServiceUN::OnNotificationsClosed(
     delivered_notifications_.erase(notification_id);
 }
 
+void MacNotificationServiceUN::OnGotAuthorizationStatus(
+    UNAuthorizationStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojom::PermissionStatus mojo_status = mojom::PermissionStatus::kNotDetermined;
+  switch (status) {
+    case UNAuthorizationStatusNotDetermined:
+      mojo_status = mojom::PermissionStatus::kNotDetermined;
+      break;
+    case UNAuthorizationStatusDenied:
+      mojo_status = mojom::PermissionStatus::kDenied;
+      break;
+    case UNAuthorizationStatusAuthorized:
+    case UNAuthorizationStatusProvisional:
+      mojo_status = mojom::PermissionStatus::kGranted;
+      break;
+  }
+  if (mojo_status != mojom::PermissionStatus::kGranted &&
+      !pending_permission_requests_.empty()) {
+    mojo_status = mojom::PermissionStatus::kPromptPending;
+  }
+  if (mojo_status == last_permission_status_) {
+    return;
+  }
+  last_permission_status_ = mojo_status;
+  permission_status_changed_callback_.Run(mojo_status);
+}
+
 }  // namespace mac_notifications
 
 @implementation AlertUNNotificationCenterDelegate {
   base::RepeatingCallback<void(
       mac_notifications::mojom::NotificationActionInfoPtr)>
       _handler;
+  std::atomic<bool> _recentlyHandledClickAction;
+  scoped_refptr<base::SequencedTaskRunner>
+      _resetRecentlyHandledClickActionRunner;
 }
 
 - (instancetype)initWithActionHandler:
@@ -582,8 +690,15 @@ void MacNotificationServiceUN::OnNotificationsClosed(
     // We're binding to the current sequence here as we need to reply on the
     // same sequence and the methods below get called by macOS.
     _handler = base::BindPostTaskToCurrentDefault(std::move(handler));
+    _recentlyHandledClickAction = false;
+    _resetRecentlyHandledClickActionRunner =
+        base::SequencedTaskRunner::GetCurrentDefault();
   }
   return self;
+}
+
+- (bool)recentlyHandledClickAction {
+  return _recentlyHandledClickAction;
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
@@ -592,16 +707,29 @@ void MacNotificationServiceUN::OnNotificationsClosed(
              (void (^)(UNNotificationPresentationOptions options))
                  completionHandler {
   // Receiving a notification when the app is in the foreground.
-  UNNotificationPresentationOptions presentationOptions =
-      UNNotificationPresentationOptionSound |
-      UNNotificationPresentationOptionAlert |
-      UNNotificationPresentationOptionBadge;
-  completionHandler(presentationOptions);
+  completionHandler(UNNotificationPresentationOptionSound |
+                    UNNotificationPresentationOptionList |
+                    UNNotificationPresentationOptionBanner |
+                    UNNotificationPresentationOptionBadge);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
     didReceiveNotificationResponse:(UNNotificationResponse*)response
              withCompletionHandler:(void (^)(void))completionHandler {
+  if ([response.actionIdentifier
+          isEqual:UNNotificationDefaultActionIdentifier]) {
+    _recentlyHandledClickAction = true;
+    _resetRecentlyHandledClickActionRunner->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](__weak AlertUNNotificationCenterDelegate* delegate) {
+              if (__strong AlertUNNotificationCenterDelegate* self = delegate) {
+                self->_recentlyHandledClickAction = false;
+              }
+            },
+            self),
+        base::Milliseconds(100));
+  }
   mac_notifications::mojom::NotificationMetadataPtr meta =
       mac_notifications::GetMacNotificationMetadata(
           response.notification.request.content.userInfo);

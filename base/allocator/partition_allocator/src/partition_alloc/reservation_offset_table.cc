@@ -4,15 +4,15 @@
 
 #include "partition_alloc/reservation_offset_table.h"
 
-#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
 namespace partition_alloc::internal {
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
-ReservationOffsetTable ReservationOffsetTable::singleton_;
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+PA_CONSTINIT ReservationOffsetTable ReservationOffsetTable::singleton_;
 #else
-ReservationOffsetTable::_ReservationOffsetTable
+PA_CONSTINIT ReservationOffsetTable::_ReservationOffsetTable
     ReservationOffsetTable::reservation_offset_table_;
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
 }  // namespace partition_alloc::internal

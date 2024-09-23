@@ -76,7 +76,7 @@ int ImageEncoder::MaxDimension(ImageEncodingMimeType mime_type) {
     case kMimeTypeWebp:
       return WEBP_MAX_DIMENSION;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return -1;
 }

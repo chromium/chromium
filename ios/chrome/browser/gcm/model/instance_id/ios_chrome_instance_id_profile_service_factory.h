@@ -5,12 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_GCM_MODEL_INSTANCE_ID_IOS_CHROME_INSTANCE_ID_PROFILE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_GCM_MODEL_INSTANCE_ID_IOS_CHROME_INSTANCE_ID_PROFILE_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace instance_id {
 class InstanceIDProfileService;
@@ -21,9 +20,12 @@ class InstanceIDProfileService;
 class IOSChromeInstanceIDProfileServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358301380): remove this method.
   static instance_id::InstanceIDProfileService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+      ProfileIOS* profile);
 
+  static instance_id::InstanceIDProfileService* GetForProfile(
+      ProfileIOS* profile);
   static IOSChromeInstanceIDProfileServiceFactory* GetInstance();
 
   IOSChromeInstanceIDProfileServiceFactory(

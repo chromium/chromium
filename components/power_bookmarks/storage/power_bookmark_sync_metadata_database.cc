@@ -17,9 +17,9 @@ namespace power_bookmarks {
 
 namespace {
 
-// Key in sql::MetaTable, the value is a serialization of syner::ModelTypeState,
+// Key in sql::MetaTable, the value is a serialization of syner::DataTypeState,
 // which tracks the overall sync state of the power bookmark datatype.
-const char kPowerBookmarkModelTypeStateKey[] = "power_bookmark_type_state";
+const char kPowerBookmarkDataTypeStateKey[] = "power_bookmark_type_state";
 
 }  // namespace
 
@@ -54,7 +54,7 @@ bool PowerBookmarkSyncMetadataDatabase::Init() {
 }
 
 bool PowerBookmarkSyncMetadataDatabase::UpdateEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
   DCHECK(!storage_key.empty());
@@ -74,7 +74,7 @@ bool PowerBookmarkSyncMetadataDatabase::UpdateEntityMetadata(
 }
 
 bool PowerBookmarkSyncMetadataDatabase::ClearEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key) {
   DCHECK(!storage_key.empty());
 
@@ -90,20 +90,20 @@ bool PowerBookmarkSyncMetadataDatabase::ClearEntityMetadata(
   return s.Run();
 }
 
-bool PowerBookmarkSyncMetadataDatabase::UpdateModelTypeState(
-    syncer::ModelType model_type,
-    const sync_pb::ModelTypeState& model_type_state) {
+bool PowerBookmarkSyncMetadataDatabase::UpdateDataTypeState(
+    syncer::DataType data_type,
+    const sync_pb::DataTypeState& data_type_state) {
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
 
-  std::string serialized_state = model_type_state.SerializeAsString();
-  return meta_table_->SetValue(kPowerBookmarkModelTypeStateKey,
+  std::string serialized_state = data_type_state.SerializeAsString();
+  return meta_table_->SetValue(kPowerBookmarkDataTypeStateKey,
                                serialized_state);
 }
 
-bool PowerBookmarkSyncMetadataDatabase::ClearModelTypeState(
-    syncer::ModelType model_type) {
+bool PowerBookmarkSyncMetadataDatabase::ClearDataTypeState(
+    syncer::DataType data_type) {
   DCHECK_GT(meta_table_->GetVersionNumber(), 0);
-  return meta_table_->DeleteKey(kPowerBookmarkModelTypeStateKey);
+  return meta_table_->DeleteKey(kPowerBookmarkDataTypeStateKey);
 }
 
 std::unique_ptr<syncer::MetadataBatch>
@@ -113,7 +113,7 @@ PowerBookmarkSyncMetadataDatabase::GetAllSyncMetadata() {
     return nullptr;
   }
 
-  if (!GetModelTypeState(metadata_batch.get())) {
+  if (!GetDataTypeState(metadata_batch.get())) {
     return nullptr;
   }
 
@@ -137,7 +137,7 @@ bool PowerBookmarkSyncMetadataDatabase::GetAllSyncEntityMetadata(
     std::string serialized_metadata = s.ColumnString(1);
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
     if (!entity_metadata->ParseFromString(serialized_metadata)) {
-      DLOG(WARNING) << "Failed to deserialize POWER_BOOKMARK model type "
+      DLOG(WARNING) << "Failed to deserialize POWER_BOOKMARK data type "
                        "sync_pb::EntityMetadata.";
       return false;
     }
@@ -147,14 +147,14 @@ bool PowerBookmarkSyncMetadataDatabase::GetAllSyncEntityMetadata(
   return true;
 }
 
-bool PowerBookmarkSyncMetadataDatabase::GetModelTypeState(
+bool PowerBookmarkSyncMetadataDatabase::GetDataTypeState(
     syncer::MetadataBatch* metadata_batch) const {
-  sync_pb::ModelTypeState state;
+  sync_pb::DataTypeState state;
   std::string serialized_state;
-  meta_table_->GetValue(kPowerBookmarkModelTypeStateKey, &serialized_state);
+  meta_table_->GetValue(kPowerBookmarkDataTypeStateKey, &serialized_state);
 
   if (state.ParseFromString(serialized_state)) {
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
     return true;
   }
 

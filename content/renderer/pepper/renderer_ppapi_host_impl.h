@@ -133,11 +133,11 @@ class RendererPpapiHostImpl : public RendererPpapiHost {
   // make sure it's not trying to spoof another instance.
   PepperPluginInstanceImpl* GetAndValidateInstance(PP_Instance instance) const;
 
-  raw_ptr<PluginModule, ExperimentalRenderer> module_;  // Non-owning pointer.
+  raw_ptr<PluginModule> module_;  // Non-owning pointer.
 
   // The dispatcher we use to send messagse when the plugin is out-of-process.
   // Will be null when running in-process. Non-owning pointer.
-  raw_ptr<ppapi::proxy::HostDispatcher, ExperimentalRenderer> dispatcher_;
+  raw_ptr<ppapi::proxy::HostDispatcher> dispatcher_;
 
   std::unique_ptr<ppapi::host::PpapiHost> ppapi_host_;
 

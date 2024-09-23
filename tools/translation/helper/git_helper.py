@@ -4,6 +4,7 @@
 
 import subprocess
 import sys
+import os
 
 if sys.platform.startswith('win'):
   # Use the |git.bat| in the depot_tools/ on Windows.
@@ -18,6 +19,11 @@ def list_grds_in_repository(repo_path):
   # shell to do it.
   # TODO(meacer): This should use list_grds_in_repository() from the internal
   #               translate.py.
+  if os.getcwd().startswith('/google/cog/cloud'):
+    files = []
+    for _, _, filenames in os.walk(repo_path):
+      files.extend([f for f in filenames if f.endswith('.grd')])
+    return files
   output = subprocess.check_output([GIT, 'ls-files', '--', '*.grd'],
                                    cwd=repo_path)
   # Need to decode because Python3 returns subprocess output as bytes.

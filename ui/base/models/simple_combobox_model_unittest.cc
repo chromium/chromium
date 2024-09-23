@@ -37,13 +37,23 @@ TEST(SimpleComboboxModelTest, ComboboxItems) {
 
   SimpleComboboxModel model({item16, item20});
   EXPECT_EQ(u"Text16", model.GetItemAt(0));
-  EXPECT_EQ(u"Text16", model.GetDropDownTextAt(0));
   EXPECT_EQ(u"SecondaryText16", model.GetDropDownSecondaryTextAt(0));
   EXPECT_EQ(16, model.GetIconAt(0).Size().width());
   EXPECT_EQ(u"Text20", model.GetItemAt(1));
-  EXPECT_EQ(u"Text20", model.GetDropDownTextAt(1));
   EXPECT_EQ(u"SecondaryText20", model.GetDropDownSecondaryTextAt(1));
   EXPECT_EQ(20, model.GetIconAt(1).Size().width());
+}
+
+TEST(SimpleComboboxModelTest, GetDefaultIndex) {
+  SimpleComboboxModel model{/*items=*/{}};
+  EXPECT_EQ(std::nullopt, model.GetDefaultIndex());
+
+  ui::SimpleComboboxModel::Item item(u"Text16");
+  model.UpdateItemList(/*items=*/{item});
+  EXPECT_EQ(0u, model.GetDefaultIndex());
+
+  model.UpdateItemList(/*items=*/{});
+  EXPECT_EQ(std::nullopt, model.GetDefaultIndex());
 }
 
 }  // namespace ui

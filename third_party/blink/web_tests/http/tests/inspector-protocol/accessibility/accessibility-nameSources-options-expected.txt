@@ -1,0 +1,248 @@
+Tests name sources in <option>s.
+{
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 127
+    }
+    domNode : option#option1
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : label
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : label
+                }
+            }
+            [2] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : x
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
+            name : selected
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : option
+    }
+}
+{
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 127
+    }
+    domNode : option#option2
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : x
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : x
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
+            name : selected
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : option
+    }
+}
+{
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 127
+    }
+    domNode : option#option3
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                attributeValue : {
+                    type : string
+                    value : label
+                }
+                type : attribute
+                value : {
+                    type : computedString
+                    value : label
+                }
+            }
+            [2] : {
+                superseded : true
+                type : contents
+                value : {
+                    type : computedString
+                    value : x
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : label
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
+            name : selected
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : option
+    }
+}
+{
+    childIds : <object>
+    chromeRole : {
+        type : internalRole
+        value : 127
+    }
+    domNode : option#option4
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                type : contents
+                value : {
+                    type : computedString
+                    value : x
+                }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : x
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : focusable
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
+            name : selected
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : option
+    }
+}
+

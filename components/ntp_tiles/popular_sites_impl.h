@@ -19,7 +19,7 @@
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
-}
+}  // namespace network
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -52,7 +52,6 @@ class PopularSitesImpl : public PopularSites {
   // PopularSites implementation.
   bool MaybeStartFetch(bool force_download, FinishedCallback callback) override;
   const std::map<SectionType, SitesVector>& sections() const override;
-  GURL GetLastURLFetched() const override;
   GURL GetURLToFetch() override;
   std::string GetDirectoryToFetch() override;
   std::string GetCountryToFetch() override;

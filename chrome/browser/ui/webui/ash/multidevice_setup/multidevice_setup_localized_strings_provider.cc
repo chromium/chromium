@@ -49,6 +49,7 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SINGLE_DEVICE_HEADER},
     {"startSetupPageOfflineDeviceOption",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_OFFLINE_DEVICE_OPTION},
+    {"startSetupPageFootnote", IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE},
     {"startSetupPageFeatureMirrorPhoneNotifications",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MIRROR_PHONE_NOTIFICATIONS},
     {"startSetupPageFeatureWifiSyncTitle",
@@ -111,12 +112,6 @@ GetLocalizedStringsWithPlaceholders() {
                     GetBoardSpecificBetterTogetherSuiteLearnMoreUrl().spec())));
 
         localized_strings.emplace_back(
-            "startSetupPageFootnote",
-            l10n_util::GetStringFUTF16(
-                IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE,
-                kFootnoteMarker));
-
-        localized_strings.emplace_back(
             "startSetupPageFeatureListAwm",
             l10n_util::GetStringFUTF16(
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AWM_DESCRIPTION,
@@ -167,10 +162,6 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
                 ui::GetChromeOSDeviceName(), kFootnoteMarker,
                 base::UTF8ToUTF16(
                     GetBoardSpecificBetterTogetherSuiteLearnMoreUrl().spec()));
-
-  builder->AddF("startSetupPageFootnote",
-                IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE,
-                kFootnoteMarker);
 
   builder->AddF(
       "startSetupPageFeatureListAwm",

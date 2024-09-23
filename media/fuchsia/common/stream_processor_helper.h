@@ -124,12 +124,12 @@ class MEDIA_EXPORT StreamProcessorHelper {
 
   // Sets buffer collection tocken to use for input buffers.
   void SetInputBufferCollectionToken(
-      fuchsia::sysmem::BufferCollectionTokenPtr token);
+      fuchsia::sysmem2::BufferCollectionTokenPtr token);
 
   // Provide output BufferCollectionToken to finish StreamProcessor buffer
   // setup flow. Should be called only after AllocateOutputBuffers.
   void CompleteOutputBuffersAllocation(
-      fuchsia::sysmem::BufferCollectionTokenPtr token);
+      fuchsia::sysmem2::BufferCollectionTokenPtr token);
 
   // Closes the current stream and starts a new one. After that all packets
   // passed to Process() will be sent with a new |stream_lifetime_ordinal|

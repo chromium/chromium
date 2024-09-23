@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -27,7 +28,7 @@ void StyleRuleFontFeature::UpdateAlias(AtomicString alias,
                                        const Vector<uint32_t>& features) {
   feature_aliases_.Set(
       alias, FeatureIndicesWithPriority{features,
-                                        std::numeric_limits<unsigned>::max()});
+                                        std::numeric_limits<uint16_t>::max()});
 }
 
 void StyleRuleFontFeature::OverrideAliasesIn(FontFeatureAliases& destination) {
@@ -51,35 +52,35 @@ FontFeatureValuesStorage::FontFeatureValuesStorage(
       annotation_(annotation) {}
 
 Vector<uint32_t> FontFeatureValuesStorage::ResolveStylistic(
-    AtomicString alias) const {
+    const AtomicString& alias) const {
   return ResolveInternal(stylistic_, alias);
 }
 
 Vector<uint32_t> FontFeatureValuesStorage::ResolveStyleset(
-    AtomicString alias) const {
+    const AtomicString& alias) const {
   return ResolveInternal(styleset_, alias);
 }
 
 Vector<uint32_t> FontFeatureValuesStorage::ResolveCharacterVariant(
-    AtomicString alias) const {
+    const AtomicString& alias) const {
   return ResolveInternal(character_variant_, alias);
 }
 
 Vector<uint32_t> FontFeatureValuesStorage::ResolveSwash(
-    AtomicString alias) const {
+    const AtomicString& alias) const {
   return ResolveInternal(swash_, alias);
 }
 
 Vector<uint32_t> FontFeatureValuesStorage::ResolveOrnaments(
-    AtomicString alias) const {
+    const AtomicString& alias) const {
   return ResolveInternal(ornaments_, alias);
 }
 Vector<uint32_t> FontFeatureValuesStorage::ResolveAnnotation(
-    AtomicString alias) const {
+    const AtomicString& alias) const {
   return ResolveInternal(annotation_, alias);
 }
 
-void FontFeatureValuesStorage::SetLayerOrder(unsigned layer_order) {
+void FontFeatureValuesStorage::SetLayerOrder(uint16_t layer_order) {
   auto set_layer_order = [layer_order](FontFeatureAliases& aliases) {
     for (auto& entry : aliases) {
       entry.value.layer_order = layer_order;
@@ -98,7 +99,7 @@ void FontFeatureValuesStorage::FuseUpdate(const FontFeatureValuesStorage& other,
                                           unsigned other_layer_order) {
   auto merge_maps = [other_layer_order](FontFeatureAliases& own,
                                         const FontFeatureAliases& other) {
-    for (auto entry : other) {
+    for (auto& entry : other) {
       FeatureIndicesWithPriority entry_updated_order(entry.value);
       entry_updated_order.layer_order = other_layer_order;
       auto insert_result = own.insert(entry.key, entry_updated_order);
@@ -123,7 +124,7 @@ void FontFeatureValuesStorage::FuseUpdate(const FontFeatureValuesStorage& other,
 /* static */
 Vector<uint32_t> FontFeatureValuesStorage::ResolveInternal(
     const FontFeatureAliases& aliases,
-    AtomicString alias) {
+    const AtomicString& alias) {
   auto find_result = aliases.find(alias);
   if (find_result == aliases.end()) {
     return {};
@@ -160,7 +161,7 @@ void StyleRuleFontFeatureValues::SetFamilies(Vector<AtomicString> families) {
 String StyleRuleFontFeatureValues::FamilyAsString() const {
   StringBuilder families;
   for (wtf_size_t i = 0; i < families_.size(); ++i) {
-    families.Append(families_[i]);
+    families.Append(SerializeFontFamily(families_[i]));
     if (i < families_.size() - 1) {
       families.Append(", ");
     }

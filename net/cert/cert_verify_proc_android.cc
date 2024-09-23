@@ -91,7 +91,7 @@ std::shared_ptr<const bssl::ParsedCertificate> FindLastCertWithUnknownIssuer(
     // Continue the search for |last_issuer|'s issuer.
     last = last_issuer;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -238,7 +238,7 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
     last_cert_with_unknown_issuer = new_last_cert_with_unknown_issuer;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return android::CERT_VERIFY_STATUS_ANDROID_NO_TRUSTED_ROOT;
 }
 
@@ -285,7 +285,7 @@ bool VerifyFromAndroidTrustManager(
       verify_result->cert_status |= CERT_STATUS_INVALID;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       verify_result->cert_status |= CERT_STATUS_INVALID;
       break;
   }
@@ -358,8 +358,7 @@ int CertVerifyProcAndroid::VerifyInternal(X509Certificate* cert,
                                           const std::string& sct_list,
                                           int flags,
                                           CertVerifyResult* verify_result,
-                                          const NetLogWithSource& net_log,
-                                          std::optional<base::Time>) {
+                                          const NetLogWithSource& net_log) {
   std::vector<std::string> cert_bytes;
   GetChainDEREncodedBytes(cert, &cert_bytes);
   if (!VerifyFromAndroidTrustManager(cert_bytes, hostname, flags,

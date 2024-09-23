@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
@@ -248,6 +249,7 @@ void AppServiceWrapper::OnAppUpdate(const apps::AppUpdate& update) {
     case apps::Readiness::kDisabledByUser:
     case apps::Readiness::kDisabledByPolicy:
     case apps::Readiness::kDisabledByBlocklist:
+    case apps::Readiness::kDisabledByLocalSettings:
       for (auto& listener : listeners_)
         listener.OnAppBlocked(app_id);
       break;

@@ -5,28 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace page_info {
 class AboutThisSiteService;
 }
 
 // This factory helps construct and find the AboutThisSiteService instance for a
-// Browser State.
-class AboutThisSiteServiceFactory : public BrowserStateKeyedServiceFactory {
+// Profile.
+class AboutThisSiteServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static page_info::AboutThisSiteService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static page_info::AboutThisSiteService* GetForProfile(ProfileIOS* profile);
   static AboutThisSiteServiceFactory* GetInstance();
-
-  AboutThisSiteServiceFactory(const AboutThisSiteServiceFactory&) = delete;
-  AboutThisSiteServiceFactory& operator=(const AboutThisSiteServiceFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<AboutThisSiteServiceFactory>;

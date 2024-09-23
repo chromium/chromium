@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/calendar/calendar_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
@@ -15,6 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/account_id/account_id.h"
+#include "google_apis/calendar/calendar_api_requests.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
 namespace ash {
@@ -24,27 +28,46 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* id,
     const base::Time start_time,
     const base::Time end_time,
-    const char* summary) {
+    const char* summary,
+    const GURL video_conference_url = GURL()) {
   return calendar_test_utils::CreateEvent(
       id, summary, start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted, false,
-      GURL());
+      video_conference_url);
 }
 
 }  // namespace
 
 class CalendarViewPixelTest
     : public AshTestBase,
-      public testing::WithParamInterface</*glanceables_v2_enabled=*/bool> {
+      public testing::WithParamInterface</*glanceables_enabled=*/bool> {
  public:
   CalendarViewPixelTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kGlanceablesV2, AreGlanceablesV2Enabled()},
-         {features::kGlanceablesV2CalendarView, AreGlanceablesV2Enabled()}});
+        {{features::kGlanceablesTimeManagementClassroomStudentView,
+          AreGlanceablesEnabled()},
+         {features::kGlanceablesTimeManagementTasksView,
+          AreGlanceablesEnabled()}});
   }
 
-  bool AreGlanceablesV2Enabled() { return GetParam(); }
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    Shell::Get()->calendar_controller()->SetActiveUserAccountIdForTesting(
+        account_id_);
+    Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
+                                                               &client_);
+  }
+
+  void TearDown() override {
+    Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
+                                                               nullptr);
+
+    AshTestBase::TearDown();
+  }
+
+  bool AreGlanceablesEnabled() { return GetParam(); }
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -55,7 +78,7 @@ class CalendarViewPixelTest
   void OpenCalendarView() {
     // Presses the `DateTray` to open the `CalendarView`.
     GetPrimaryShelf()->GetStatusAreaWidget()->date_tray()->OnButtonPressed(
-        ui::KeyEvent(ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN,
+        ui::KeyEvent(ui::EventType::kMousePressed, ui::VKEY_UNKNOWN,
                      ui::EF_NONE));
     calendar_view_ = GetPrimaryUnifiedSystemTray()
                          ->bubble()
@@ -77,6 +100,7 @@ class CalendarViewPixelTest
     Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(
         calendar_utils::GetStartOfMonthUTC(
             base::subtle::TimeNowIgnoringOverride().LocalMidnight()),
+        google_apis::calendar::kPrimaryCalendarId,
         google_apis::ApiErrorCode::HTTP_SUCCESS,
         calendar_test_utils::CreateMockEventList(std::move(events)).get());
   }
@@ -86,11 +110,15 @@ class CalendarViewPixelTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  const AccountId account_id_ = AccountId::FromUserEmail("user1@email.com");
+  calendar_test_utils::CalendarClientTestImpl client_;
   raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
   static base::Time fake_time_;
 };
 
-INSTANTIATE_TEST_SUITE_P(GlanceablesV2, CalendarViewPixelTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(GlanceablesEnabled,
+                         CalendarViewPixelTest,
+                         testing::Bool());
 
 base::Time CalendarViewPixelTest::fake_time_;
 
@@ -107,7 +135,7 @@ TEST_P(CalendarViewPixelTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_view",
-      /*revision_number=*/9, GetCalendarView()));
+      /*revision_number=*/10, GetCalendarView()));
 }
 
 // Tests that the scroll view scrolls up when there are not at least 2 weeks
@@ -128,7 +156,7 @@ TEST_P(CalendarViewPixelTest, Basics_ShowMoreFutureDates) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_view_more_future_dates",
-      /*revision_number=*/0, GetCalendarView()));
+      /*revision_number=*/1, GetCalendarView()));
 }
 
 TEST_P(CalendarViewPixelTest, EventList) {
@@ -150,7 +178,8 @@ TEST_P(CalendarViewPixelTest, EventList) {
   events.push_back(CreateEvent(
       "id_1", start_time2, end_time2,
       "Event with a very very very very very very very long name that should "
-      "ellipsis"));
+      "ellipsis",
+      GURL("https://meet.google.com/abc-123")));
   InsertEvents(std::move(events));
 
   OpenCalendarView();
@@ -158,7 +187,7 @@ TEST_P(CalendarViewPixelTest, EventList) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "event_list_view",
-      /*revision_number=*/10, GetEventListView()));
+      /*revision_number=*/11, GetEventListView()));
 }
 
 }  // namespace ash

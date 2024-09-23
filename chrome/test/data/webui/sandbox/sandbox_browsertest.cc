@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(SandboxStatusUITest, testBPFSandboxEnabled) {
 #if BUILDFLAG(IS_WIN)
 // This test is for Windows only.
 using SandboxStatusWindowsUITest = WebUIMochaBrowserTest;
-// TODO(https://crbug.com/1045564) Flaky on Windows.
+// TODO(crbug.com/40670321) Flaky on Windows.
 IN_PROC_BROWSER_TEST_F(SandboxStatusWindowsUITest, DISABLED_testSandboxStatus) {
   set_test_loader_host(chrome::kChromeUISandboxHost);
   RunTestWithoutTestLoader("sandbox/sandbox_test.js",

@@ -36,7 +36,7 @@ static std::string BackgroundSavePageResultToString(
     case RequestNotifier::BackgroundSavePageResult::DOWNLOAD_THROTTLED:
       return "DOWNLOAD_THROTTLED";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::NumberToString(static_cast<int>(result));
   }
 }
@@ -50,7 +50,7 @@ static std::string UpdateRequestResultToString(UpdateRequestResult result) {
     case UpdateRequestResult::REQUEST_DOES_NOT_EXIST:
       return "REQUEST_DOES_NOT_EXIST";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return base::NumberToString(static_cast<int>(result));
   }
 }

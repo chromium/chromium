@@ -47,8 +47,7 @@ class APIRequestHandler::ArgumentAdapter {
   mojom::ExtraResponseDataPtr TakeExtraData() { return std::move(extra_data_); }
 
  private:
-  raw_ptr<const base::Value::List, ExperimentalRenderer> base_arguments_ =
-      nullptr;
+  raw_ptr<const base::Value::List> base_arguments_ = nullptr;
   mutable std::optional<v8::LocalVector<v8::Value>> v8_arguments_;
   mojom::ExtraResponseDataPtr extra_data_ = nullptr;
 };
@@ -75,8 +74,9 @@ APIRequestHandler::ArgumentAdapter::GetArguments(
         content::V8ValueConverter::Create();
     v8_arguments_.emplace(isolate);
     v8_arguments_->reserve(base_arguments_->size());
-    for (const auto& arg : *base_arguments_)
+    for (const auto& arg : *base_arguments_) {
       v8_arguments_->push_back(converter->ToV8Value(arg, context));
+    }
   }
 
   DCHECK(v8_arguments_.has_value());
@@ -159,7 +159,7 @@ class APIRequestHandler::AsyncResultHandler {
   // This is guaranteed to be valid while the AsyncResultHandler is valid
   // because the ExceptionHandler lives for the duration of the bindings
   // system, similar to the APIRequestHandler (which owns this).
-  raw_ptr<ExceptionHandler, ExperimentalRenderer> exception_handler_ = nullptr;
+  raw_ptr<ExceptionHandler> exception_handler_ = nullptr;
 
   // Custom callback handlers.
   v8::Global<v8::Function> custom_callback_;
@@ -179,10 +179,12 @@ APIRequestHandler::AsyncResultHandler::AsyncResultHandler(
       result_modifier_(std::move(result_modifier)) {
   DCHECK(!extension_callback.IsEmpty() || !custom_callback.IsEmpty());
   DCHECK(exception_handler_);
-  if (!extension_callback.IsEmpty())
+  if (!extension_callback.IsEmpty()) {
     extension_callback_.Reset(isolate, extension_callback);
-  if (!custom_callback.IsEmpty())
+  }
+  if (!custom_callback.IsEmpty()) {
     custom_callback_.Reset(isolate, custom_callback);
+  }
 }
 
 APIRequestHandler::AsyncResultHandler::AsyncResultHandler(
@@ -196,8 +198,9 @@ APIRequestHandler::AsyncResultHandler::AsyncResultHandler(
   // v8::Promise::Resolver::New() isn't guaranteed.
   DCHECK(!promise_resolver.IsEmpty());
   promise_resolver_.Reset(isolate, promise_resolver);
-  if (!custom_callback.IsEmpty())
+  if (!custom_callback.IsEmpty()) {
     custom_callback_.Reset(isolate, custom_callback);
+  }
 }
 
 APIRequestHandler::AsyncResultHandler::~AsyncResultHandler() = default;
@@ -260,8 +263,9 @@ void APIRequestHandler::AsyncResultHandler::ResolveRequest(
 
   // Since arbitrary JS was run the context might have been invalidated, so only
   // clear last error if the context is still valid.
-  if (set_last_error && binding::IsContextValid(context))
+  if (set_last_error && binding::IsContextValid(context)) {
     last_error->ClearError(context, true);
+  }
 }
 
 // static
@@ -279,10 +283,11 @@ void APIRequestHandler::AsyncResultHandler::ResolvePromise(
 
   if (error.empty()) {
     v8::Local<v8::Value> result;
-    if (!response_args.empty())
+    if (!response_args.empty()) {
       result = response_args[0];
-    else
+    } else {
       result = v8::Undefined(isolate);
+    }
 
     v8::Maybe<bool> promise_result = resolver->Resolve(context, result);
     // TODO(devlin): It's potentially possible that this could throw if V8
@@ -336,8 +341,9 @@ void APIRequestHandler::AsyncResultHandler::CustomCallbackAdaptor(
     // `exception_handler` could be null if the context were invalidated.
     // Since this can be invoked arbitrarily from running JS, we need to
     // handle this case gracefully.
-    if (!exception_handler)
+    if (!exception_handler) {
       return;
+    }
 
     CallExtensionCallback(context, arguments.GetAll(),
                           resolver.As<v8::Function>(), exception_handler);
@@ -418,8 +424,9 @@ APIRequestHandler::PendingRequest::PendingRequest(
       async_handler(std::move(async_handler)) {
   // Only curry the user gesture through if there's something to handle the
   // response.
-  if (this->async_handler)
+  if (this->async_handler) {
     user_gesture_token = std::move(gesture_token);
+  }
 }
 
 APIRequestHandler::PendingRequest::~PendingRequest() = default;
@@ -532,10 +539,11 @@ APIRequestHandler::RequestDetails APIRequestHandler::AddPendingRequest(
 void APIRequestHandler::InvalidateContext(v8::Local<v8::Context> context) {
   for (auto iter = pending_requests_.begin();
        iter != pending_requests_.end();) {
-    if (iter->second.context == context)
+    if (iter->second.context == context) {
       iter = pending_requests_.erase(iter);
-    else
+    } else {
       ++iter;
+    }
   }
 }
 
@@ -547,8 +555,9 @@ void APIRequestHandler::SetResponseValidator(
 
 std::set<int> APIRequestHandler::GetPendingRequestIdsForTesting() const {
   std::set<int> result;
-  for (const auto& pair : pending_requests_)
+  for (const auto& pair : pending_requests_) {
     result.insert(pair.first);
+  }
   return result;
 }
 
@@ -600,8 +609,9 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
   auto iter = pending_requests_.find(request_id);
   // The request may have been removed if the context was invalidated before a
   // response is ready.
-  if (iter == pending_requests_.end())
+  if (iter == pending_requests_.end()) {
     return;
+  }
 
   PendingRequest pending_request = std::move(iter->second);
   pending_requests_.erase(iter);
@@ -647,14 +657,16 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
 
   // Since arbitrary JS has ran, the context may have been invalidated. If it
   // was, bail.
-  if (!binding::IsContextValid(context))
+  if (!binding::IsContextValid(context)) {
     return;
+  }
 
   if (try_catch.HasCaught()) {
     v8::Local<v8::Message> v8_message = try_catch.Message();
     std::optional<std::string> message;
-    if (!v8_message.IsEmpty())
+    if (!v8_message.IsEmpty()) {
       message = gin::V8ToString(isolate, v8_message->Get());
+    }
     exception_handler_->HandleException(context, "Error handling response",
                                         &try_catch);
   }

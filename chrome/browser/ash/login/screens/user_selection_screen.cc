@@ -14,6 +14,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login/login_utils.h"
+#include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/login_screen_model.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -35,23 +37,23 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/views/user_board_view.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/ui/ash/login_screen_client_impl.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -152,12 +154,6 @@ AccountId GetOwnerAccountId() {
   return owner;
 }
 
-bool IsDeviceEnterpriseManaged() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->IsDeviceEnterpriseManaged();
-}
-
 bool IsSigninToAdd() {
   return LoginDisplayHost::default_host() &&
          user_manager::UserManager::Get()->IsUserLoggedIn();
@@ -170,7 +166,7 @@ bool CanRemoveUser(const user_manager::User* user) {
   // Single user check here is necessary because owner info might not be
   // available when running into login screen on first boot.
   // See http://crosbug.com/12723
-  if (is_single_user && !IsDeviceEnterpriseManaged()) {
+  if (is_single_user && !ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     return false;
   }
   if (!user->GetAccountId().is_valid()) {
@@ -193,7 +189,7 @@ std::tuple<bool, user_manager::MultiUserSignInPolicy> GetMultiUserSignInPolicy(
     const user_manager::User* user) {
   const std::string& user_id = user->GetAccountId().GetUserEmail();
   user_manager::MultiUserSignInPolicyController* controller =
-      ChromeUserManager::Get()->GetMultiUserSignInPolicyController();
+      user_manager::UserManager::Get()->GetMultiUserSignInPolicyController();
   return {
       controller->IsUserAllowedInSession(user_id),
       controller->GetCachedValue(user_id),
@@ -293,9 +289,8 @@ class UserSelectionScreen::DircryptoMigrationChecker {
     // If the user may be enterprise-managed, don't display the banner, because
     // migration may be blocked by user policy (and user policy is not available
     // at this time yet).
-    if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-            account_id.GetUserEmail()) ==
-        signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown) {
+    if (signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+            account_id.GetUserEmail())) {
       UpdateUI(account_id, false);
       return;
     }
@@ -508,7 +503,8 @@ void UserSelectionScreen::InitEasyUnlock() {
 void UserSelectionScreen::SetTpmLockedState(bool is_locked,
                                             base::TimeDelta time_left) {
   for (user_manager::User* user : users_) {
-    view_->SetTpmLockedState(user->GetAccountId(), is_locked, time_left);
+    LoginScreen::Get()->GetModel()->SetTpmLockedState(user->GetAccountId(),
+                                                      is_locked, time_left);
   }
 }
 
@@ -697,7 +693,13 @@ void UserSelectionScreen::SetAuthType(const AccountId& account_id,
              proximity_auth::mojom::AuthType::FORCE_OFFLINE_PASSWORD ||
          auth_type == proximity_auth::mojom::AuthType::FORCE_OFFLINE_PASSWORD);
   user_auth_type_map_[account_id] = auth_type;
-  view_->SetAuthType(account_id, auth_type, initial_value);
+
+  LoginScreen::Get()->GetModel()->SetTapToUnlockEnabledForUser(
+      account_id, auth_type == proximity_auth::mojom::AuthType::USER_CLICK);
+
+  if (auth_type == proximity_auth::mojom::AuthType::ONLINE_SIGN_IN) {
+    LoginScreen::Get()->GetModel()->ForceOnlineSignInForUser(account_id);
+  }
 }
 
 proximity_auth::mojom::AuthType UserSelectionScreen::GetAuthType(
@@ -718,19 +720,24 @@ UserSelectionScreen::GetScreenType() const {
   }
 }
 
+// As of M69, ShowBannerMessage is used only for showing ext4 migration
+// warning banner message.
+// TODO(fukino): Remove ShowWarningMessage and related implementation along
+// with the migration screen once the transition to ext4 is compilete.
 void UserSelectionScreen::ShowBannerMessage(const std::u16string& message,
                                             bool is_warning) {
-  view_->ShowBannerMessage(message, is_warning);
+  LoginScreen::Get()->GetModel()->UpdateWarningMessage(message);
 }
 
 void UserSelectionScreen::SetSmartLockState(const AccountId& account_id,
                                             SmartLockState state) {
-  view_->SetSmartLockState(account_id, state);
+  LoginScreen::Get()->GetModel()->SetSmartLockState(account_id, state);
 }
 
 void UserSelectionScreen::NotifySmartLockAuthResult(const AccountId& account_id,
                                                     bool success) {
-  view_->NotifySmartLockAuthResult(account_id, success);
+  LoginScreen::Get()->GetModel()->NotifySmartLockAuthResult(account_id,
+                                                            success);
 }
 
 void UserSelectionScreen::EnableInput() {
@@ -849,7 +856,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     } else {
       std::tie(user_info.is_multi_user_sign_in_allowed,
                user_info.multi_user_sign_in_policy) =
-          GetMultiUserSignInPolicy(user);
+          ash::GetMultiUserSignInPolicy(user);
     }
 
     // Fill public session data.

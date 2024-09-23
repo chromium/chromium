@@ -18,15 +18,17 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/base/media.h"
+#include "media/base/video_codecs.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/test/utility/audio_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
 namespace media {
 namespace cast {
@@ -127,7 +129,7 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
 
   virtual ~AudioEncoderTest() = default;
 
-  void RunTestForCodec(Codec codec) {
+  void RunTestForCodec(AudioCodec codec) {
     const TestScenario& scenario = GetParam();
     SCOPED_TRACE(::testing::Message() << "Durations: " << scenario.ToString());
 
@@ -152,7 +154,7 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
         testing_clock_.Advance(duration);
       }
 
-      if (codec == Codec::kAudioOpus) {
+      if (codec == AudioCodec::kOpus) {
         const int bitrate = audio_encoder_->GetBitrate();
         EXPECT_GT(bitrate, 0);
         // Typically Opus has a max of 120000, but this may change if the
@@ -170,7 +172,7 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
   }
 
  private:
-  void CreateObjectsForCodec(Codec codec) {
+  void CreateObjectsForCodec(AudioCodec codec) {
     audio_bus_factory_.reset(
         new TestAudioBusFactory(kNumChannels, kDefaultAudioSamplingRate,
                                 TestAudioBusFactory::kMiddleANoteFreq, 0.5f));
@@ -195,16 +197,12 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario> {
 };
 
 TEST_P(AudioEncoderTest, EncodeOpus) {
-  RunTestForCodec(Codec::kAudioOpus);
-}
-
-TEST_P(AudioEncoderTest, EncodePcm16) {
-  RunTestForCodec(Codec::kAudioPcm16);
+  RunTestForCodec(AudioCodec::kOpus);
 }
 
 #if BUILDFLAG(IS_MAC)
 TEST_P(AudioEncoderTest, EncodeAac) {
-  RunTestForCodec(Codec::kAudioAac);
+  RunTestForCodec(AudioCodec::kAAC);
 }
 #endif
 

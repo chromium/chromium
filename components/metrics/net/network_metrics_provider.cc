@@ -47,10 +47,10 @@ ConvertEffectiveConnectionType(
     case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
       return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_OFFLINE;
     case net::EFFECTIVE_CONNECTION_TYPE_LAST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 }
 
@@ -63,8 +63,6 @@ NetworkMetricsProvider::NetworkMetricsProvider(
       connection_type_is_ambiguous_(false),
       connection_type_(network::mojom::ConnectionType::CONNECTION_UNKNOWN),
       network_connection_tracker_initialized_(false),
-      wifi_phy_layer_protocol_is_ambiguous_(false),
-      wifi_phy_layer_protocol_(net::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN),
       network_quality_estimator_provider_(
           std::move(network_quality_estimator_provider)),
       effective_connection_type_(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
@@ -73,7 +71,6 @@ NetworkMetricsProvider::NetworkMetricsProvider(
   network_connection_tracker_async_getter.Run(
       base::BindOnce(&NetworkMetricsProvider::SetNetworkConnectionTracker,
                      weak_ptr_factory_.GetWeakPtr()));
-  ProbeWifiPHYLayerProtocol();
 
   if (network_quality_estimator_provider_) {
     // Use |network_quality_estimator_provider_| to get network quality
@@ -112,9 +109,6 @@ void NetworkMetricsProvider::ProvideSystemProfileMetrics(
   SystemProfileProto::Network* network = system_profile->mutable_network();
   network->set_connection_type_is_ambiguous(connection_type_is_ambiguous_);
   network->set_connection_type(GetConnectionType());
-  network->set_wifi_phy_layer_protocol_is_ambiguous(
-      wifi_phy_layer_protocol_is_ambiguous_);
-  network->set_wifi_phy_layer_protocol(GetWifiPHYLayerProtocol());
 
   network->set_min_effective_connection_type(
       ConvertEffectiveConnectionType(min_effective_connection_type_));
@@ -138,7 +132,6 @@ void NetworkMetricsProvider::ProvideSystemProfileMetrics(
     network_connection_tracker_initialized_ = true;
   // Reset the "ambiguous" flags, since a new metrics log session has started.
   connection_type_is_ambiguous_ = false;
-  wifi_phy_layer_protocol_is_ambiguous_ = false;
   min_effective_connection_type_ = effective_connection_type_;
   max_effective_connection_type_ = effective_connection_type_;
 }
@@ -174,8 +167,6 @@ void NetworkMetricsProvider::OnConnectionChanged(
 
   network_connection_tracker_initialized_ = true;
   connection_type_ = type;
-
-  ProbeWifiPHYLayerProtocol();
 }
 
 SystemProfileProto::Network::ConnectionType
@@ -201,58 +192,8 @@ NetworkMetricsProvider::GetConnectionType() const {
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return SystemProfileProto::Network::CONNECTION_BLUETOOTH;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SystemProfileProto::Network::CONNECTION_UNKNOWN;
-}
-
-SystemProfileProto::Network::WifiPHYLayerProtocol
-NetworkMetricsProvider::GetWifiPHYLayerProtocol() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (wifi_phy_layer_protocol_) {
-    case net::WIFI_PHY_LAYER_PROTOCOL_NONE:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_NONE;
-    case net::WIFI_PHY_LAYER_PROTOCOL_ANCIENT:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_ANCIENT;
-    case net::WIFI_PHY_LAYER_PROTOCOL_A:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_A;
-    case net::WIFI_PHY_LAYER_PROTOCOL_B:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_B;
-    case net::WIFI_PHY_LAYER_PROTOCOL_G:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_G;
-    case net::WIFI_PHY_LAYER_PROTOCOL_N:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_N;
-    case net::WIFI_PHY_LAYER_PROTOCOL_AC:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AC;
-    case net::WIFI_PHY_LAYER_PROTOCOL_AD:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AD;
-    case net::WIFI_PHY_LAYER_PROTOCOL_AX:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_AX;
-    case net::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN:
-      return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
-  }
-  NOTREACHED();
-  return SystemProfileProto::Network::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN;
-}
-
-void NetworkMetricsProvider::ProbeWifiPHYLayerProtocol() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&net::GetWifiPHYLayerProtocol),
-      base::BindOnce(&NetworkMetricsProvider::OnWifiPHYLayerProtocolResult,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void NetworkMetricsProvider::OnWifiPHYLayerProtocolResult(
-    net::WifiPHYLayerProtocol mode) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (wifi_phy_layer_protocol_ != net::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN &&
-      mode != wifi_phy_layer_protocol_) {
-    wifi_phy_layer_protocol_is_ambiguous_ = true;
-  }
-  wifi_phy_layer_protocol_ = mode;
 }
 
 void NetworkMetricsProvider::OnEffectiveConnectionTypeChanged(

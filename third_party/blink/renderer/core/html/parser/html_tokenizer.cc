@@ -25,6 +25,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
@@ -336,7 +341,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       else if (cc == kEndOfFileMarker)
         return EmitEndOfFile(source);
       else
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     END_STATE()
 
@@ -1113,7 +1118,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       else if (additional_allowed_character_ == '>')
         HTML_SWITCH_TO(kAttributeValueUnquotedState);
       else
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
     END_STATE()
 
@@ -1685,7 +1690,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
     END_STATE()
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -1812,7 +1817,7 @@ bool HTMLTokenizer::EmitData(SegmentedString& source, UChar cc) {
         cc = source.AdvancePastNonNewline();
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1844,7 +1849,7 @@ bool HTMLTokenizer::EmitPLAINTEXT(SegmentedString& source, UChar cc) {
           return EmitEndOfFile(source);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -1911,14 +1916,8 @@ inline bool HTMLTokenizer::IsAppropriateEndTag() {
   if (buffered_end_tag_name_.size() != appropriate_end_tag_name_.size())
     return false;
 
-  wtf_size_t num_characters = buffered_end_tag_name_.size();
-
-  for (wtf_size_t i = 0; i < num_characters; i++) {
-    if (buffered_end_tag_name_[i] != appropriate_end_tag_name_[i])
-      return false;
-  }
-
-  return true;
+  return Equal(buffered_end_tag_name_.data(), appropriate_end_tag_name_.data(),
+               buffered_end_tag_name_.size());
 }
 
 inline void HTMLTokenizer::ParseError() {

@@ -1,0 +1,93 @@
+[{
+  "id": 101,
+  "priority": 3,
+  "condition": {
+    "requestDomains": ["br-allow.com"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "allow"
+  }
+}, {
+  "id": 102,
+  "priority": 4,
+  "condition": {
+    "requestDomains": ["hr-allow.com"],
+    "resourceTypes": ["sub_frame", "main_frame"],
+    "excludedResponseHeaders": [{"header": "header"}]
+  },
+  "action": {
+    "type": "allow"
+  }
+}, {
+  "id": 103,
+  "priority": 1,
+  "condition": {
+    "requestDomains": ["block-mh.com"],
+    "resourceTypes": ["sub_frame", "main_frame"],
+    "excludedResponseHeaders": [{"header": "header"}]
+  },
+  "action": {
+    "type": "block"
+  }
+}, {
+  "id": 104,
+  "priority": 1,
+  "condition": {
+    "requestDomains": ["merge-mh.com", "block-mh.com", "hr-allow.com"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "modifyHeaders",
+    "requestHeaders": [{
+      "header": "referer",
+      "operation": "remove"
+    }]
+  }
+}, {
+  "id": 105,
+  "priority": 5,
+  "condition": {
+    "requestDomains": ["merge-mh.com"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "modifyHeaders",
+    "requestHeaders": [{
+      "header": "cookie",
+      "operation": "remove"
+    }]
+  }
+}, {
+  "id": 106,
+  "priority": 2,
+  "condition": {
+    "requestDomains": ["merge-mh.com", "block-mh.com", "br-allow.com"],
+    "resourceTypes": ["sub_frame", "main_frame"],
+    "excludedResponseHeaders": [{"header": "header"}]
+  },
+  "action": {
+    "type": "modifyHeaders",
+    "responseHeaders": [{
+      "header": "set-cookie",
+      "operation": "append",
+      "value": "cookie-1"
+    }]
+  }
+}, {
+  "id": 107,
+  "priority": 6,
+  "condition": {
+    "requestDomains": ["merge-mh.com", "br-allow.com"],
+    "resourceTypes": ["sub_frame", "main_frame"],
+    "excludedResponseHeaders": [{"header": "header"}]
+  },
+  "action": {
+    "type": "modifyHeaders",
+    "responseHeaders": [{
+      "header": "set-cookie",
+      "operation": "append",
+      "value": "cookie-2"
+    }]
+  }
+}]

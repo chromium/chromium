@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/account_id/account_id.h"
@@ -274,7 +275,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
   auto result = test_future.Get();
   EXPECT_FALSE(result);
 
-  histogram_tester_.ExpectBucketCount("Ash.Wallpaper.Online.Result",
+  histogram_tester_.ExpectBucketCount("Ash.Wallpaper.Online.Result2",
                                       SetWallpaperResult::kInvalidState, 1);
 }
 

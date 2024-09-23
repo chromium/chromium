@@ -222,7 +222,7 @@ void AccessibilityFocusHighlight::AddOrRemoveObservers() {
   if (prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled)) {
     // Listen for focus changes. Automatically deregisters when destroyed,
     // or when the preference toggles off.
-    // TODO(crbug.com/1194802): This will fire even for focused-element changes
+    // TODO(crbug.com/40758630): This will fire even for focused-element changes
     // in windows other than browser_view_, which might not be ideal behavior.
     focus_changed_subscription_ =
         content::BrowserAccessibilityState::GetInstance()
@@ -242,7 +242,7 @@ void AccessibilityFocusHighlight::OnFocusChangedInPage(
     const content::FocusedNodeDetails& details) {
   // Unless this is a test, only draw the focus ring if this BrowserView is
   // the active one.
-  // TODO(crbug.com/1194802): Even if this BrowserView is active, it doesn't
+  // TODO(crbug.com/40758630): Even if this BrowserView is active, it doesn't
   // necessarily own the node we're about to highlight.
   if (!browser_view_->IsActive() && !skip_activation_check_for_testing_)
     return;

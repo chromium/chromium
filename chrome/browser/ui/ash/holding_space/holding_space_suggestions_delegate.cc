@@ -54,6 +54,18 @@ HoldingSpaceSuggestionsDelegate::HoldingSpaceSuggestionsDelegate(
 
 HoldingSpaceSuggestionsDelegate::~HoldingSpaceSuggestionsDelegate() = default;
 
+void HoldingSpaceSuggestionsDelegate::RefreshSuggestions() {
+  MaybeFetchSuggestions(FileSuggestionType::kDriveFile);
+  MaybeFetchSuggestions(FileSuggestionType::kLocalFile);
+}
+
+void HoldingSpaceSuggestionsDelegate::RemoveSuggestions(
+    const std::vector<base::FilePath>& absolute_file_paths) {
+  FileSuggestKeyedServiceFactory::GetInstance()
+      ->GetService(profile())
+      ->RemoveSuggestionsAndNotify(absolute_file_paths);
+}
+
 void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   if (base::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
@@ -150,13 +162,20 @@ void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
   if (!suggestions)
     return;
 
-  // Update `suggestions_by_type_`.
+  // Extract file paths from `suggestions`.
   std::vector<base::FilePath> updated_suggestions(suggestions->size());
   base::ranges::transform(*suggestions, updated_suggestions.begin(),
                           &FileSuggestData::file_path);
-  suggestions_by_type_[GetItemTypeFromSuggestionType(type)] =
-      std::move(updated_suggestions);
 
+  // No-op if `updated_suggestions` are unchanged.
+  const HoldingSpaceItem::Type item_type = GetItemTypeFromSuggestionType(type);
+  if (auto it = suggestions_by_type_.find(item_type);
+      it != suggestions_by_type_.end() && it->second == updated_suggestions) {
+    return;
+  }
+
+  // Update cache and model.
+  suggestions_by_type_[item_type] = std::move(updated_suggestions);
   UpdateSuggestionsInModel();
 }
 

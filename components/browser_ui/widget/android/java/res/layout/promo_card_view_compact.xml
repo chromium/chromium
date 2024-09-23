@@ -73,7 +73,7 @@ found in the LICENSE file.
           android:singleLine="true"
           android:ellipsize="end"
           android:layout_gravity="top|end"
-          style="@style/FilledButton.Flat" />
+          style="@style/FilledButton" />
 
       <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/promo_secondary_button"

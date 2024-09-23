@@ -42,9 +42,11 @@ blink_python_runner("make_runtime_feature_state_contexts_headers") {
   script = "../../renderer/build/scripts/make_runtime_feature_state_contexts_headers.py"
 
   inputs = scripts_for_json5_files + [
-             "../../renderer/platform/runtime_enabled_features.json5",
+             "../../renderer/build/scripts/make_runtime_features_utilities.py",
+             "../../renderer/build/scripts/make_runtime_features.py",
              "../../renderer/build/scripts/templates/runtime_feature_state_context.h.tmpl",
              "../../renderer/build/scripts/templates/runtime_feature_state_read_context.h.tmpl",
+             "../../renderer/platform/runtime_enabled_features.json5",
            ]
 
   outputs = [
@@ -84,8 +86,8 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "RTC_USE_H264=$rtc_use_h264",
+    "RTC_USE_H265=$rtc_use_h265",
     "ENABLE_RUST_CRASH=$enable_rust_crash",
-    "USE_FONTATIONS_BACKEND=$use_typeface_fontations",
   ]
 }
 
@@ -118,7 +120,6 @@ source_set("headers") {
     "blob/blob_utils.h",
     "bluetooth/web_bluetooth_device_id.h",
     "bluetooth/web_bluetooth_device_id_mojom_traits.h",
-    "browser_interface_broker_proxy.h",
     "cache_storage/cache_storage_utils.h",
     "chrome_debug_urls.h",
     "client_hints/client_hints.h",
@@ -153,7 +154,6 @@ source_set("headers") {
     "frame/frame_visual_properties.h",
     "frame/from_ad_state.h",
     "frame/history_user_activation_state.h",
-    "frame/transient_allow_fullscreen.h",
     "frame/user_activation_state.h",
     "frame/user_activation_update_source.h",
     "frame/view_transition_state.h",
@@ -187,6 +187,7 @@ source_set("headers") {
     "interest_group/auction_config.h",
     "interest_group/auction_config_mojom_traits.h",
     "interest_group/auction_server_request_flags.h",
+    "interest_group/devtools_serialization.h",
     "interest_group/interest_group.h",
     "interest_group/interest_group_mojom_traits.h",
     "interest_group/seller_capabilities.h",
@@ -236,7 +237,6 @@ source_set("headers") {
     "metrics/accept_language_and_content_language_usage.h",
     "metrics/document_update_reason.h",
     "metrics/form_element_pii_type.h",
-    "metrics/post_message_counter.h",
     "mime_util/mime_util.h",
     "navigation/impression.h",
     "navigation/navigation_params.h",
@@ -269,6 +269,7 @@ source_set("headers") {
     "page_state/page_state_serialization.h",
     "peerconnection/webrtc_ip_handling_policy.h",
     "performance/largest_contentful_paint_type.h",
+    "performance/performance_scenarios.h",
     "performance/performance_timeline_constants.h",
     "permissions/permission_utils.h",
     "permissions_policy/document_policy.h",
@@ -338,6 +339,7 @@ source_set("headers") {
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_headers",
     "//third_party/blink/public/mojom/origin_trial_feature",
     "//third_party/liburlpattern",
+    "//ui/base/mojom:ui_base_types",
     "//ui/display/mojom",
     "//ui/events:event_constants",
     "//ui/events/types:headers",

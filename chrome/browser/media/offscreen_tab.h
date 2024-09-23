@@ -47,8 +47,8 @@ class OffscreenTab final : public ProfileObserver,
                            protected content::WebContentsDelegate,
                            protected content::WebContentsObserver {
  public:
-  // TODO(crbug.com/1234929): Hold the OffscreenTab by a WeakPtr, then Owner can
-  // be deleted.
+  // TODO(crbug.com/40781745): Hold the OffscreenTab by a WeakPtr, then Owner
+  // can be deleted.
   class Owner {
    public:
     virtual ~Owner() {}
@@ -97,7 +97,7 @@ class OffscreenTab final : public ProfileObserver,
                          const content::ContextMenuParams& params) final;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) final;
+      const input::NativeWebKeyboardEvent& event) final;
   bool PreHandleGestureEvent(content::WebContents* source,
                              const blink::WebGestureEvent& event) final;
   bool CanDragEnter(content::WebContents* source,
@@ -161,7 +161,7 @@ class OffscreenTab final : public ProfileObserver,
   // Poll timer to monitor the capturer count on |offscreen_tab_web_contents_|.
   // When the capturer count returns to zero, this OffscreenTab is automatically
   // destroyed.
-  // TODO(https://crbug.com/540965): add a method to WebContentsObserver to
+  // TODO(crbug.com/41207731): add a method to WebContentsObserver to
   // report capturer count and get rid of this polling-based approach.
   base::OneShotTimer capture_poll_timer_;
 

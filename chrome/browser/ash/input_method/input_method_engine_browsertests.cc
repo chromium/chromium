@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <memory>
@@ -14,9 +19,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_item.h"
-#include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
+#include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -131,7 +137,7 @@ class InputMethodEngineBrowserTest
         return LoadExtensionAsComponent(
             test_data_dir_.AppendASCII(extension_name));
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
 
@@ -149,8 +155,9 @@ class KeyEventDoneCallback {
   ~KeyEventDoneCallback() = default;
 
   void Run(ui::ime::KeyEventHandledState consumed) {
-    if (consumed == expected_argument_)
+    if (consumed == expected_argument_) {
       run_loop_.Quit();
+    }
   }
 
   void WaitUntilCalled() { run_loop_.Run(); }
@@ -231,7 +238,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
       ui::ime::KeyEventHandledState::kNotHandled);  // EchoBackIME doesn't
                                                     // consume keys.
   ExtensionTestMessageListener keyevent_listener("onKeyEvent");
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   TextInputMethod::KeyEventDoneCallback keyevent_callback =
       base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
   engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
@@ -279,7 +286,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, BasicScenarioTest) {
 
 // Test is flaky. https://crbug.com/1462135.
 IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
-  // TODO(crbug.com/956825): Makes real end to end test without mocking the
+  // TODO(crbug.com/41455212): Makes real end to end test without mocking the
   // input context handler. The test should mock the TextInputClient instance
   // hooked up with `InputMethodAsh`, or even using the real `TextInputClient`
   // if possible.
@@ -316,8 +323,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
         "onKeyEvent::true:keydown:a:KeyA:false:false:false:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-                           ui::EF_NONE);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A, ui::EF_NONE);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
@@ -332,8 +339,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
         "onKeyEvent::true:keydown:a:KeyA:true:false:false:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-                           ui::EF_CONTROL_DOWN);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A, ui::EF_CONTROL_DOWN);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
@@ -348,8 +355,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
         "onKeyEvent::true:keydown:a:KeyA:false:true:false:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-                           ui::EF_ALT_DOWN);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A, ui::EF_ALT_DOWN);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
@@ -364,8 +371,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
         "onKeyEvent::true:keydown:A:KeyA:false:false:false:true:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-                           ui::EF_SHIFT_DOWN);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A, ui::EF_SHIFT_DOWN);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
@@ -380,8 +387,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
         "onKeyEvent::true:keydown:A:KeyA:false:false:false:false:true";
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-                           ui::EF_CAPS_LOCK_ON);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A, ui::EF_CAPS_LOCK_ON);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
@@ -396,7 +403,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
         "onKeyEvent::true:keydown:a:KeyA:true:true:false:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A,
                            ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
@@ -412,7 +420,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
         "onKeyEvent::true:keydown:a:KeyA:false:false:false:true:true";
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A,
                            ui::EF_SHIFT_DOWN | ui::EF_CAPS_LOCK_ON);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
@@ -428,8 +437,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
         "onKeyEvent::true:keydown:a:KeyA:false:false:true:false:false";
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::DomCode::US_A,
-                           ui::EF_ALTGR_DOWN);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A,
+                           ui::DomCode::US_A, ui::EF_ALTGR_DOWN);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
         base::BindOnce(&KeyEventDoneCallback::Run, base::Unretained(&callback));
     engine_handler->ProcessKeyEvent(key_event, std::move(keyevent_callback));
@@ -475,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
     ExtensionTestMessageListener keyevent_listener(expected_value);
 
     ui::KeyEvent key_event(
-        ui::ET_KEY_PRESSED, kMediaKeyCases[i].keycode,
+        ui::EventType::kKeyPressed, kMediaKeyCases[i].keycode,
         ui::KeycodeConverter::CodeStringToDomCode(kMediaKeyCases[i].code),
         ui::EF_NONE);
     TextInputMethod::KeyEventDoneCallback keyevent_callback =
@@ -523,7 +532,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
     ASSERT_EQ(1u, mock_input_context->sent_key_events().size());
     const ui::KeyEvent& key_event =
         mock_input_context->sent_key_events().back();
-    EXPECT_EQ(ui::ET_KEY_PRESSED, key_event.type());
+    EXPECT_EQ(ui::EventType::kKeyPressed, key_event.type());
     EXPECT_EQ(L'z', key_event.GetCharacter());
     EXPECT_EQ(ui::DomCode::US_Z, key_event.code());
     EXPECT_EQ(ui::VKEY_Z, key_event.key_code());
@@ -551,7 +560,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
     ASSERT_EQ(1u, mock_input_context->sent_key_events().size());
     const ui::KeyEvent& key_event =
         mock_input_context->sent_key_events().back();
-    EXPECT_EQ(ui::ET_KEY_RELEASED, key_event.type());
+    EXPECT_EQ(ui::EventType::kKeyReleased, key_event.type());
     EXPECT_EQ(L'a', key_event.GetCharacter());
     EXPECT_EQ(ui::DomCode::US_Q, key_event.code());
     EXPECT_EQ(ui::VKEY_A, key_event.key_code());
@@ -580,7 +589,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
     ASSERT_EQ(1u, mock_input_context->sent_key_events().size());
     const ui::KeyEvent& key_event =
         mock_input_context->sent_key_events().back();
-    EXPECT_EQ(ui::ET_KEY_RELEASED, key_event.type());
+    EXPECT_EQ(ui::EventType::kKeyReleased, key_event.type());
     EXPECT_EQ(L'a', key_event.GetCharacter());
     EXPECT_EQ(ui::DomCode::US_Q, key_event.code());
     EXPECT_EQ(ui::VKEY_A, key_event.key_code());

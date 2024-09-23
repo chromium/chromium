@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -54,15 +55,15 @@ class PaymentsNetworkInterfaceTestBase {
   void IssueOAuthToken();
   void ReturnResponse(
       PaymentsNetworkInterfaceBase* payments_network_interface_base,
-      net::HttpStatusCode response_code,
+      int response_code,
       const std::string& response_body);
 
   void assertIncludedInRequest(std::string field_name_or_value);
 
   void assertNotIncludedInRequest(std::string field_name_or_value);
 
-  AutofillClient::PaymentsRpcResult result_ =
-      AutofillClient::PaymentsRpcResult::kNone;
+  PaymentsAutofillClient::PaymentsRpcResult result_ =
+      PaymentsAutofillClient::PaymentsRpcResult::kNone;
 
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -75,15 +76,6 @@ class PaymentsNetworkInterfaceTestBase {
   net::HttpRequestHeaders intercepted_headers_;
   bool has_variations_header_;
   std::string intercepted_body_;
-  std::vector<AutofillProfile> BuildTestProfiles();
-
-  AutofillProfile BuildProfile(std::string_view first_name,
-                               std::string_view last_name,
-                               std::string_view address_line,
-                               std::string_view city,
-                               std::string_view state,
-                               std::string_view zip,
-                               std::string_view phone_number);
 };
 
 }  // namespace autofill::payments

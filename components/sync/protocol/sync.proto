@@ -252,7 +252,7 @@ message ClientStatus {
   // is set.  The client may not assume that any particular action will be
   // taken.  There is no guarantee the problem will be addressed in a reasonable
   // amount of time.
-  // TODO(crbug.com/1315573): Deprecated in M103.
+  // TODO(crbug.com/40833583): Deprecated in M103.
   optional bool hierarchy_conflict_detected = 1 [deprecated = true];
 
   // Whether the client has full sync (or, sync the feature) enabled or not.
@@ -266,6 +266,7 @@ message ClientToServerMessage {
   required string share = 1;
 
   optional int32 protocol_version = 2 [default = 99];
+  // LINT.IfChange(SyncClientToServerMessageContents)
   enum Contents {
     COMMIT = 1;
     GET_UPDATES = 2;
@@ -273,6 +274,7 @@ message ClientToServerMessage {
     DEPRECATED_4 = 4;
     CLEAR_SERVER_DATA = 5;
   }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncClientToServerMessageContents)
 
   // Each ClientToServerMessage contains one request defined by the
   // message_contents. Each type has a corresponding message field that will be
@@ -360,7 +362,7 @@ message CommitResponse {
 
     // Last modification time (in milliseconds since Unix epoch).  Allows the
     // server to override the client-supplied mtime during a commit operation.
-    // TODO(crbug.com/1182252): Delete this field too.
+    // TODO(crbug.com/40751358): Delete this field too.
     optional int64 mtime = 10 [deprecated = true];
 
     message DatatypeSpecificError {

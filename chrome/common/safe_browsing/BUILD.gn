@@ -6,6 +6,8 @@ import("//chrome/common/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 proto_library("proto") {
   sources = [ "crx_info.proto" ]
 }
@@ -32,22 +34,6 @@ if (safe_browsing_mode == 1) {
       "//components/safe_browsing/content/common/proto:download_file_types_proto",
       "//components/safe_browsing/core/common/proto:csd_proto",
     ]
-  }
-
-  if (is_linux || is_win) {
-    source_set("document_analyzer_results") {
-      sources = [
-        "document_analyzer_results.cc",
-        "document_analyzer_results.h",
-      ]
-      configs += [ "//build/config/compiler:wexit_time_destructors" ]
-      deps = [
-        ":download_type_util",
-        "//base",
-        "//components/safe_browsing/content/common:file_type_policies",
-      ]
-      public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
-    }
   }
 
   source_set("download_type_util") {
@@ -90,7 +76,7 @@ if (safe_browsing_mode == 1) {
     } else if (is_win) {
       sources += [ "binary_feature_extractor_win.cc" ]
     }
-    if (is_posix || is_fuchsia) {
+    if (is_posix) {
       sources += [ "binary_feature_extractor_posix.cc" ]
     }
 
@@ -143,8 +129,11 @@ source_set("safe_browsing") {
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/core/common",
       "//third_party/lzma_sdk/google:seven_zip_reader",
-      "//third_party/unrar:unrar",
     ]
+
+    if (safe_browsing_use_unrar) {
+      deps += [ "//third_party/unrar" ]
+    }
 
     public_deps = [
       ":proto",
@@ -155,9 +144,5 @@ source_set("safe_browsing") {
       "//ipc",
       "//third_party/zlib/google:zip",
     ]
-
-    if (is_linux || is_win) {
-      public_deps += [ ":document_analyzer_results" ]
-    }
   }
 }

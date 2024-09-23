@@ -5,34 +5,36 @@
 #ifndef IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace segmentation_platform {
+
+namespace home_modules {
+class HomeModulesCardRegistry;
+}  // namespace home_modules
 
 class DeviceSwitcherResultDispatcher;
 class SegmentationPlatformService;
 
 // Factory for SegmentationPlatformService.
 class SegmentationPlatformServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-  static SegmentationPlatformService* GetForBrowserState(
-      ChromeBrowserState* context);
+  static SegmentationPlatformService* GetForProfile(ProfileIOS* profile);
 
   static SegmentationPlatformServiceFactory* GetInstance();
 
-  SegmentationPlatformServiceFactory(SegmentationPlatformServiceFactory&) =
-      delete;
-  SegmentationPlatformServiceFactory& operator=(
-      SegmentationPlatformServiceFactory&) = delete;
-
   // Returns the dispatcher used to retrieve or store the classification result
-  // for the user in the given browser state. Do not call for OTR context.
-  static DeviceSwitcherResultDispatcher* GetDispatcherForBrowserState(
-      ChromeBrowserState* context);
+  // for the user in the given profile. Do not call for OTR profiles.
+  static DeviceSwitcherResultDispatcher* GetDispatcherForProfile(
+      ProfileIOS* profile);
+
+  // Returns the registry used to manage the home cards for the given `context`.
+  // Do not call for OTR context.
+  static home_modules::HomeModulesCardRegistry*
+  GetHomeCardRegistryForBrowserState(ChromeBrowserState* context);
 
   // Returns the default factory used to build SegmentationPlatformService. Can
   // be registered with SetTestingFactory to use real instances during testing.
@@ -47,7 +49,8 @@ class SegmentationPlatformServiceFactory
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+  void RegisterBrowserStatePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 }  // namespace segmentation_platform

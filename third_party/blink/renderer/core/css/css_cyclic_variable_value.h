@@ -10,6 +10,10 @@
 #include "third_party/blink/renderer/core/css/css_invalid_variable_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class CSSValuePool;
@@ -25,7 +29,7 @@ class CORE_EXPORT CSSCyclicVariableValue : public CSSInvalidVariableValue {
   explicit CSSCyclicVariableValue(base::PassKey<CSSValuePool>)
       : CSSInvalidVariableValue(kCyclicVariableValueClass) {}
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   bool Equals(const CSSCyclicVariableValue&) const { return true; }
 

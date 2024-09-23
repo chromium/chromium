@@ -16,6 +16,7 @@ if (is_win) {
     ]
     deps = [
       "//base",
+      "//build/win:default_exe_manifest",
       "//chrome/updater:constants_test",
       "//chrome/updater/win/installer:lib",
     ]

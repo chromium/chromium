@@ -20,8 +20,8 @@ import {getTemplate} from './network_info.html.js';
  */
 
 export class NetworkInfoElement extends PolymerElement {
-  static get is(): string {
-    return 'network-info';
+  static get is(): 'network-info' {
+    return 'network-info' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -55,7 +55,7 @@ export class NetworkInfoElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'network-info': NetworkInfoElement;
+    [NetworkInfoElement.is]: NetworkInfoElement;
   }
 }
 

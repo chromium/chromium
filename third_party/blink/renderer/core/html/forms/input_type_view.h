@@ -39,10 +39,14 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/theme_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -53,12 +57,12 @@ class ComputedStyleBuilder;
 class Element;
 class Event;
 class FormControlState;
+class HTMLElement;
 class HTMLFormElement;
 class HTMLInputElement;
 class KeyboardEvent;
 class LayoutObject;
 class MouseEvent;
-class TextControlInnerEditorElement;
 
 class ClickHandlingState final : public EventDispatchHandlingState {
  public:
@@ -109,10 +113,6 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   virtual void SubtreeHasChanged();
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&) const;
-  // TODO(crbug.com/953707): Avoid marking style dirty in
-  // HTMLImageFallbackHelper and remove CustomStyleForLayoutObject.
-  virtual const ComputedStyle* CustomStyleForLayoutObject(
-      const ComputedStyle* original_style) const;
   virtual void AdjustStyle(ComputedStyleBuilder&) {}
   virtual ControlPart AutoAppearance() const;
   virtual TextDirection ComputedTextDirection();
@@ -122,14 +122,20 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   // Functions for shadow trees
 
-  TextControlInnerEditorElement* EnsureInnerEditorElement();
   bool HasCreatedShadowSubtree() const { return has_created_shadow_subtree_; }
-  void CreateShadowSubtreeIfNeeded();
+  // If a shadow tree is needed and it hasn't been created yet, one is created.
+  // `is_type_changing` indicates whether this is being called as a result of
+  // changing the input-type.
+  void CreateShadowSubtreeIfNeeded(bool is_type_changing = false);
+  void set_needs_update_view_in_create_shadow_subtree(bool value) {
+    DCHECK(RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled());
+    needs_update_view_in_create_shadow_subtree_ = value;
+  }
+  virtual bool IsInnerEditorValueEmpty() const { return false; }
   virtual bool NeedsShadowSubtree() const;
-  virtual void CreateShadowSubtree();
   virtual void DestroyShadowSubtree();
   virtual HTMLInputElement* UploadButton() const;
-  virtual String FileStatusText() const;
+  virtual WTF::String FileStatusText() const;
 
   virtual void MinOrMaxAttributeChanged();
   virtual void StepAttributeChanged();
@@ -141,12 +147,15 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void ReadonlyAttributeChanged();
   virtual void RequiredAttributeChanged();
   virtual void ValueAttributeChanged();
-  virtual void DidSetValue(const String&, bool value_changed);
+  virtual void DidSetValue(const WTF::String&, bool value_changed);
   virtual void ListAttributeTargetChanged();
   virtual void CapsLockStateMayHaveChanged();
   virtual bool ShouldDrawCapsLockIndicator() const;
   virtual void UpdateClearButtonVisibility();
-  virtual void UpdatePlaceholderText(bool is_suggested_value);
+
+  // Updates the text in the placeholder, returning the Element representing the
+  // placeholder. Returns null if there is no placeholder.
+  virtual HTMLElement* UpdatePlaceholderText(bool is_suggested_value);
   virtual AXObject* PopupRootAXObject();
   virtual void EnsureFallbackContent() {}
   virtual void EnsurePrimaryContent() {}
@@ -160,14 +169,20 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   virtual wtf_size_t FocusedFieldIndex() const { return 0; }
 
+  virtual bool IsMultipleFieldsTemporal() const { return false; }
+
  protected:
   InputTypeView(HTMLInputElement& element) : element_(&element) {}
   HTMLInputElement& GetElement() const { return *element_; }
+
+  virtual void CreateShadowSubtree();
 
   bool will_be_destroyed_ = false;
 
  private:
   bool has_created_shadow_subtree_ = false;
+  // If true, CreateShadowSubtreeIfNeeded() may also call UpdateView().
+  bool needs_update_view_in_create_shadow_subtree_ = false;
   Member<HTMLInputElement> element_;
 };
 

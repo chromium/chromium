@@ -256,9 +256,10 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // may differ from this value.
   gfx::Size capture_size_;
 
-  // When false, effectively disables HiDPI capture mode by making
-  // CalculatePreferredScaleFactor always return 1.0f.
-  bool is_high_dpi_enabled_ = true;
+  // When true, the WebContents may be rendered at a higher device scale factor
+  // to produce a sharper image. When false, disables HiDPI capture mode and no
+  // scale factor adjustments will be made.
+  bool is_high_dpi_enabled_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

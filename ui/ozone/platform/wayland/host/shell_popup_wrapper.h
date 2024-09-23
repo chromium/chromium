@@ -17,7 +17,6 @@
 namespace ui {
 
 class WaylandConnection;
-class WaylandWindow;
 class XDGPopupWrapperImpl;
 
 struct ShellPopupParams {
@@ -83,13 +82,17 @@ class ShellPopupWrapper {
   // Casts `this` to XDGPopupWrapperImpl, if it is of that type.
   virtual XDGPopupWrapperImpl* AsXDGPopupWrapper();
 
+  bool has_grab() const { return has_grab_; }
+
  protected:
   // Asks the compositor to take explicit-grab for this popup.
   virtual void Grab(uint32_t serial) = 0;
 
   // Returns the serial value for a popup grab, if there is one available.
+  // `parent_shell_popup_has_grab` has value if this popup is dangling off
+  // another shell_popup, true if that popup has grab.
   void GrabIfPossible(WaylandConnection* connection,
-                      WaylandWindow* parent_window);
+                      std::optional<bool> parent_shell_popup_has_grab);
 
  private:
   // Tells if explicit grab was taken for this popup. As per

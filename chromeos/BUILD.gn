@@ -173,21 +173,31 @@ if (is_chromeos_ash && is_chromeos_device) {
     tast_tests = [ "platform.ReportDiskUsage" ]
   }
 
+  _tast_disabled_tests_on_this_board = []
+  foreach(_test, tast_disabled_tests_from_chrome_all) {
+    _test_name_and_board = []
+    _test_name_and_board = string_split(_test, "@") + [ "" ]
+    _test_name = _test_name_and_board[0]
+    _test_board = _test_name_and_board[1]
+    if (_test_board == "" || _test_board == cros_board) {
+      _tast_disabled_tests_on_this_board += [ _test_name ]
+    }
+  }
+
   # Tast test sources live in the Chromium OS repository.
   # To diagnose tast failures or disable tests, see go/tast-failures
   # For any builders that run this target, it should also build Lacros.
   tast_test("chrome_all_tast_tests") {
+    tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !informational"
     if (is_skylab) {
       # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
-      tast_attr_expr = "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !informational)"
-    } else {
-      deploy_lacros_chrome = true
+      tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
     }
 
     # To disable a specific test, add it to the
     # tast_disabled_tests_from_chrome_all list in "tast_control.gni" and cite
     # a bug.
-    tast_disabled_tests = tast_disabled_tests_from_chrome_all
+    tast_disabled_tests = _tast_disabled_tests_on_this_board
   }
 
   tast_test("chrome_all_tast_tests_informational") {
@@ -195,26 +205,33 @@ if (is_chromeos_ash && is_chromeos_device) {
   }
 
   tast_test("chrome_criticalstaging_tast_tests") {
+    tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !\"dep:lacros\" && \"informational\" && \"group:criticalstaging\""
     if (is_skylab) {
       # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
       # TODO(b/294489383): Re-enable lacros tests once lacros chrome is deployed to ash skylab builders.
-      tast_attr_expr = "(\"group:mainline\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !\"dep:lacros\" && \"informational\" && \"group:criticalstaging\")"
-    } else {
-      deploy_lacros_chrome = true
+      tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
     }
 
-    # To disable a specific test, add it to the
-    # tast_disabled_tests_from_chrome_all list in "tast_control.gni" and cite
-    # a bug.
-    tast_disabled_tests = tast_disabled_tests_from_chrome_all
+    tast_disabled_tests = _tast_disabled_tests_on_this_board
   }
 
   tast_test("chrome_disabled_tast_tests") {
-    tast_tests = tast_disabled_tests_from_chrome_all
+    tast_tests = _tast_disabled_tests_on_this_board
   }
 
   tast_test("chrome_variations_tast_tests") {
     tast_tests = [ "ui.ChromeVariationsSmoke" ]
+  }
+
+  # Test suite to test the CrOS basic functionality (See http://go/cq-medium).
+  tast_test("cq_medium_tast_tests") {
+    tast_attr_expr = "\"group:cq-medium\" && \"dep:chrome\" && \"group:mainline\" && !informational"
+    if (is_skylab) {
+      # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
+      tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
+    }
+
+    tast_disabled_tests = _tast_disabled_tests_on_this_board
   }
 
   group("cros_chrome_deploy") {

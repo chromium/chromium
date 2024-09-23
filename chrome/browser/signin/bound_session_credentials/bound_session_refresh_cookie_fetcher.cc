@@ -20,6 +20,12 @@ bool BoundSessionRefreshCookieFetcher::IsPersistentError(Result result) {
   }
 }
 
+// static
+bool BoundSessionRefreshCookieFetcher::IsTransientError(Result result) {
+  return result == Result::kConnectionError ||
+         result == Result::kServerTransientError;
+}
+
 std::ostream& operator<<(
     std::ostream& os,
     const BoundSessionRefreshCookieFetcher::Result& result) {
@@ -29,8 +35,8 @@ std::ostream& operator<<(
     case BoundSessionRefreshCookieFetcher::Result::kConnectionError:
       return os << "Cookie rotation request finished with Connection error.";
     case BoundSessionRefreshCookieFetcher::Result::kServerTransientError:
-      return os
-             << "Cookie rotation request finished with Server transient error.";
+      return os << "Cookie rotation request finished with Server transient "
+                   "error.";
     case BoundSessionRefreshCookieFetcher::Result::kServerPersistentError:
       return os << "Cookie rotation request finished with Server Persistent "
                    "error.";

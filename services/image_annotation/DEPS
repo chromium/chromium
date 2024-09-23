@@ -1,9 +1,11 @@
 include_rules = [
   "+components/google",
+  "+components/manta",
   "+net",
   "+services/data_decoder",
   "+services/network",
   "+third_party/skia",
+  "+ui/accessibility",
   "+ui/gfx",
   "+url",
 ]

@@ -1,0 +1,68 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/chromeos/crosier_tests.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("assistant") {
+  sources = [
+    "assistant_util.cc",
+    "assistant_util.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//components/language/core/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "assistant_util_unittest.cc" ]
+
+  deps = [
+    ":assistant",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//components/language/core/browser",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+if (is_chromeos_device) {
+  crosier_tests("integration_tests") {
+    sources = [ "assistant_integration_test.cc" ]
+
+    sources_metadata = [ "assistant_integration_test.yaml" ]
+
+    deps = [
+      "//ash",
+      "//ash:test_support",
+      "//ash/public/cpp",
+      "//base",
+      "//chrome/browser/ash/login/test:test_support",
+      "//chrome/test:ash_integration_test_support",
+      "//chrome/test:test_support",
+      "//chromeos/ash/services/assistant/public/cpp",
+      "//ui/base:test_support",
+      "//ui/events",
+    ]
+  }
+}

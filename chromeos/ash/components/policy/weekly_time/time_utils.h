@@ -19,7 +19,6 @@ class Clock;
 
 namespace policy {
 
-class WeeklyTime;
 class WeeklyTimeInterval;
 
 namespace weekly_time_utils {
@@ -36,18 +35,6 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
 bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
                                 base::Clock* clock,
                                 int* offset);
-
-// The output is in the format "EEEE jj:mm a".
-// Example: For a WeeklyTime(4 /* day_of_week */,
-//                           5 * 3600*1000 /* milliseconds */,
-//                           0 /* timezone_offset */)
-// the output should be "Thursday 5:00 AM" in an US locale in GMT timezone.
-// Similarly, the output will be "Donnerstag 05:00" in a German locale in a GMT
-// timezone (there may be slight changes in formatting due to different
-// standards in different locales).
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
-std::u16string WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
-                                           base::Clock* clock);
 
 // Convert time intervals from |timezone| to GMT timezone. Timezone agnostic
 // intervals are not supported.

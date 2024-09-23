@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -73,7 +75,7 @@ void SystemMenuModelBuilder::BuildMenu(ui::SimpleMenuModel* model) {
 
 void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     ui::SimpleMenuModel* model) {
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   model->AddItemWithStringId(IDC_MINIMIZE_WINDOW, IDS_MINIMIZE_WINDOW_MENU);
@@ -85,11 +87,15 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
   model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
   model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
+  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
+    model->AddSeparator(ui::NORMAL_SEPARATOR);
+    model->AddItemWithStringId(IDC_COMPACT_MODE, IDS_COMPACT_MODE);
+  }
   if (chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
   }
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   model->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -121,11 +127,19 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   model->AddItemWithStringId(IDC_FORWARD, IDS_CONTENT_CONTEXT_FORWARD);
   model->AddItemWithStringId(IDC_RELOAD, IDS_APP_MENU_RELOAD);
   if (!web_app::AppBrowserController::IsWebApp(browser())) {
-    model->AddSeparator(ui::NORMAL_SEPARATOR);
-    if (browser()->is_type_app() || browser()->is_type_app_popup()) {
-      model->AddItemWithStringId(IDC_NEW_TAB, IDS_APP_MENU_NEW_WEB_PAGE);
-    } else {
-      model->AddItemWithStringId(IDC_SHOW_AS_TAB, IDS_SHOW_AS_TAB);
+    bool is_captive_portal_signin = false;
+#if BUILDFLAG(IS_CHROMEOS)
+    is_captive_portal_signin =
+        browser()->profile()->IsOffTheRecord() &&
+        browser()->profile()->GetOTRProfileID().IsCaptivePortal();
+#endif
+    if (!is_captive_portal_signin) {
+      model->AddSeparator(ui::NORMAL_SEPARATOR);
+      if (browser()->is_type_app() || browser()->is_type_app_popup()) {
+        model->AddItemWithStringId(IDC_NEW_TAB, IDS_APP_MENU_NEW_WEB_PAGE);
+      } else {
+        model->AddItemWithStringId(IDC_SHOW_AS_TAB, IDS_SHOW_AS_TAB);
+      }
     }
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_CUT, IDS_CUT);
@@ -142,8 +156,18 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
     model->AddSubMenuWithStringId(IDC_ZOOM_MENU, IDS_ZOOM_MENU,
                                   zoom_menu_contents_.get());
   }
-  if ((browser()->is_type_app() || browser()->is_type_app_popup()) &&
-      chrome::CanOpenTaskManager()) {
+
+  bool should_show_task_manager =
+      (browser()->is_type_app() || browser()->is_type_app_popup()) &&
+      chrome::CanOpenTaskManager();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Hide TaskManager option for the app if it is locked for OnTask. Only
+  // relevant for non-web browser scenarios.
+  if (browser()->IsLockedForOnTask()) {
+    should_show_task_manager = false;
+  }
+#endif
+  if (should_show_task_manager) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
   }

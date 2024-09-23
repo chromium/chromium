@@ -4,6 +4,7 @@
 import './content_setting_pattern_source.js';
 import './pref_display.js';
 import './mojo_timedelta.js';
+import './cr_frame_list.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {ContentSettingsType} from './content_settings_types.mojom-webui.js';
@@ -26,38 +27,49 @@ const tpcdExperimentPrefs: Map<string, PrefConfig> = new Map(Object.entries({
   'profile.cookie_block_truncated': {},
 }));
 
-const trackingProtectionPrefNames: Map<string, PrefConfig> =
-    new Map(Object.entries({
-      'tracking_protection.ip_protection_enabled': {},
-      'tracking_protection.tracking_protection_onboarding_status': {},
-      'tracking_protection.tracking_protection_eligible_since':
-          {logicalFn: timestampLogicalFn},
-      'tracking_protection.tracking_protection_onboarded_since':
-          {logicalFn: timestampLogicalFn},
-      'tracking_protection.tracking_protection_notice_last_shown':
-          {logicalFn: timestampLogicalFn},
-      'tracking_protection.tracking_protection_onboarding_acked_since':
-          {logicalFn: timestampLogicalFn},
-      'tracking_protection.tracking_protection_onboarding_acked': {},
-      'tracking_protection.tracking_protection_onboarding_ack_action': {},
-      'tracking_protection.tracking_protection_offboarded': {},
-      'tracking_protection.tracking_protection_offboarded_since':
-          {logicalFn: timestampLogicalFn},
-      'tracking_protection.tracking_protection_offboarding_ack_action': {},
-      'tracking_protection.block_all_3pc_toggle_enabled': {},
-      'tracking_protection.tracking_protection_level': {},
-      'tracking_protection.tracking_protection_3pcd_enabled': {},
-      'tracking_protection.tracking_protection_sentiment_survey_group': {},
-      'tracking_protection.tracking_protection_sentiment_survey_start_time':
-          {logicalFn: timestampLogicalFn},
-      'tracking_protection.tracking_protection_sentiment_survey_end_time':
-          {logicalFn: timestampLogicalFn},
-      'tracking_protection.tracking_protection_silent_onboarding_status': {},
-      'tracking_protection.tracking_protection_silent_eligible_since':
-          {logicalFn: timestampLogicalFn},
-      'tracking_protection.tracking_protection_silent_onboarded_since':
-          {logicalFn: timestampLogicalFn},
-    }));
+const trackingProtectionPrefNames: Map<
+    string, PrefConfig> = new Map(Object.entries({
+  'profile.managed_cookies_allowed_for_urls': {},
+  'enable_do_not_track': {},
+  'tracking_protection.fingerprinting_protection_enabled': {},
+  'tracking_protection.ip_protection_enabled': {},
+  'tracking_protection.ip_protection_initialized_by_dogfood': {},
+  'tracking_protection.reminder_status': {},
+  'tracking_protection.survey_window_start_time':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_onboarding_status': {},
+  'tracking_protection.tracking_protection_eligible_since':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_onboarded_since':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_notice_last_shown':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_onboarding_acked_since':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_onboarding_acked': {},
+  'tracking_protection.tracking_protection_onboarding_ack_action': {},
+  'tracking_protection.tracking_protection_onboarding_notice_first_requested':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_onboarding_notice_last_requested':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_offboarded': {},
+  'tracking_protection.tracking_protection_offboarded_since':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_offboarding_ack_action': {},
+  'tracking_protection.block_all_3pc_toggle_enabled': {},
+  'tracking_protection.tracking_protection_level': {},
+  'tracking_protection.tracking_protection_3pcd_enabled': {},
+  'tracking_protection.tracking_protection_sentiment_survey_group': {},
+  'tracking_protection.tracking_protection_sentiment_survey_start_time':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_sentiment_survey_end_time':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_silent_onboarding_status': {},
+  'tracking_protection.tracking_protection_silent_eligible_since':
+      {logicalFn: timestampLogicalFn},
+  'tracking_protection.tracking_protection_silent_onboarded_since':
+      {logicalFn: timestampLogicalFn},
+}));
 
 const advertisingPrefNames: Map<string, PrefConfig> = new Map(Object.entries({
   'privacy_sandbox.m1.consent_decision_made': {},
@@ -92,6 +104,8 @@ const advertisingPrefNames: Map<string, PrefConfig> = new Map(Object.entries({
       {logicalFn: timestampLogicalFn},
   'privacy_sandbox.topics_consent.last_update_reason': {},
   'privacy_sandbox.topics_consent.text_at_last_update': {},
+  'privacy_sandbox.activity_type.record': {},
+  'privacy_sandbox.activity_type.record2': {},
 }));
 
 function getPrefLogicalFn(prefName: string) {
@@ -134,59 +148,6 @@ class DataLoader {
   }
 
   async load() {
-    const cookieParent =
-        document.querySelector<HTMLElement>('#cookie-content-settings')!;
-    const cookieSettings =
-        await this.pageHandler.readContentSettings(ContentSettingsType.COOKIES);
-    cookieSettings.contentSettings.forEach((cs) => {
-      const item = document.createElement('content-setting-pattern-source');
-      cookieParent.appendChild(item);
-      item.configure(this.pageHandler, cs);
-      item.setAttribute('collapsed', 'true');
-    });
-
-    const tpcdMetadataParent =
-        document.querySelector<HTMLElement>('#tpcd-metadata-grants')!;
-    const tpcdMetadataGrants = await this.pageHandler.getTpcdMetadataGrants();
-    tpcdMetadataGrants.contentSettings.forEach((cs) => {
-      const item = document.createElement('content-setting-pattern-source');
-      tpcdMetadataParent.appendChild(item);
-      item.configure(this.pageHandler, cs);
-      item.setAttribute('collapsed', 'true');
-    });
-
-    const tpcdHeuristicsParent =
-        document.querySelector<HTMLElement>('#tpcd-heuristics-grants')!;
-    const tpcdHeuristicsGrants = await this.pageHandler.readContentSettings(
-        ContentSettingsType.TPCD_HEURISTICS_GRANTS);
-    tpcdHeuristicsGrants.contentSettings.forEach((cs) => {
-      const item = document.createElement('content-setting-pattern-source');
-      tpcdHeuristicsParent.appendChild(item);
-      item.configure(this.pageHandler, cs);
-      item.setAttribute('collapsed', 'true');
-    });
-
-    const tpcdTrialParent = document.querySelector<HTMLElement>('#tpcd-trial')!;
-    const tpcdTrial = await this.pageHandler.readContentSettings(
-        ContentSettingsType.TPCD_TRIAL);
-    tpcdTrial.contentSettings.forEach((cs) => {
-      const item = document.createElement('content-setting-pattern-source');
-      tpcdTrialParent.appendChild(item);
-      item.configure(this.pageHandler, cs);
-      item.setAttribute('collapsed', 'true');
-    });
-
-    const topLevelTpcdTrialParent =
-        document.querySelector<HTMLElement>('#top-level-tpcd-trial')!;
-    const topLevelTpcdTrial = await this.pageHandler.readContentSettings(
-        ContentSettingsType.TOP_LEVEL_TPCD_TRIAL);
-    topLevelTpcdTrial.contentSettings.forEach((cs) => {
-      const item = document.createElement('content-setting-pattern-source');
-      topLevelTpcdTrialParent.appendChild(item);
-      item.configure(this.pageHandler, cs);
-      item.setAttribute('collapsed', 'true');
-    });
-
     this.maybeAddPrefsToDom(
         document.querySelector<HTMLElement>('#advertising-prefs'),
         [...advertisingPrefNames.keys()]);
@@ -196,6 +157,46 @@ class DataLoader {
     this.maybeAddPrefsToDom(
         document.querySelector<HTMLElement>('#tpcd-experiment-prefs'),
         [...tpcdExperimentPrefs.keys()]);
+
+
+    const tabBox = document.querySelector<HTMLSelectElement>('#ps-page')!;
+    const csPanels = new Map<string, HTMLElement>();
+    for (let i = ContentSettingsType.MIN_VALUE;
+         i <= ContentSettingsType.MAX_VALUE; i++) {
+      const tab = document.createElement('div');
+      tab.innerText = ContentSettingsType[i];
+      tab.setAttribute('slot', 'tab');
+      tabBox.appendChild(tab);
+
+      const panel = document.createElement('div');
+      panel.setAttribute('slot', 'panel');
+      panel.setAttribute('style', 'content-settings');
+      panel.setAttribute('title', ContentSettingsType[i]);
+      const panelTitle = document.createElement('h2');
+      panelTitle.innerText = ContentSettingsType[i];
+      panel.appendChild(panelTitle);
+      tabBox.appendChild(panel);
+
+      csPanels.set(ContentSettingsType[i], panel);
+    }
+
+    for (let i = ContentSettingsType.MIN_VALUE;
+         i <= ContentSettingsType.MAX_VALUE; i++) {
+      let mojoResponse;
+      if (i === ContentSettingsType.TPCD_METADATA_GRANTS) {
+        // This one is special and can't be read through readContentSettings().
+        mojoResponse = await this.pageHandler.getTpcdMetadataGrants();
+      } else {
+        mojoResponse = await this.pageHandler.readContentSettings(i);
+      }
+      mojoResponse.contentSettings.forEach((cs) => {
+        const panel = csPanels.get(ContentSettingsType[i])!;
+        const item = document.createElement('content-setting-pattern-source');
+        panel.appendChild(item);
+        item.configure(this.pageHandler, cs);
+        item.setAttribute('collapsed', 'true');
+      });
+    }
   }
 }
 

@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 
@@ -25,7 +26,7 @@ namespace unexportable_keys {
 // infos). It doesn't guarantee that two objects with different ids have
 // different underlying keys.
 // This id can be written to disk and re-used across browser sessions.
-class RefCountedUnexportableSigningKey
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableSigningKey
     : public base::RefCountedThreadSafe<RefCountedUnexportableSigningKey> {
  public:
   // `key` must be non-null.

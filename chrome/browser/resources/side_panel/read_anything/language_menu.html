@@ -1,0 +1,54 @@
+<cr-dialog id="languageMenu" show-on-attach ignore-popstate>
+  <div slot="title" class="language-menu-title-bar">
+    <div class="language-menu-title">$i18n{readingModeLanguageMenuTitle}</div>
+    <cr-icon-button id="close" class="action-icon language-menu-close-button"
+        iron-icon="cr:close"
+        @click="${this.closeLanguageMenu_}"
+        title="$i18n{readingModeLanguageMenuClose}"
+        aria-label="$i18n{readingModeLanguageMenuClose}">
+    </cr-icon-button>
+  </div>
+  <div slot="header">
+    <cr-input autofocus class="search-field" type="search"
+        placeholder="$i18n{readingModeLanguageMenuSearchLabel}"
+        @value-changed="${this.onLanguageSearchValueChanged_}"
+        .value="${this.languageSearchValue_}">
+      <cr-icon slot="inline-prefix" alt="" icon="cr:search"></cr-icon>
+      <cr-icon-button iron-icon="cr:clear"
+          ?hidden="${!this.languageSearchValue_}"
+          slot="inline-suffix"
+          @click="${this.onClearSearchClick_}"
+          title="$i18n{readingModeLanguageMenuSearchClear}">
+      </cr-icon-button>
+    </cr-input>
+  </div>
+  <div slot="body" class="language-menu-body">
+    <span id="noResultsMessage" ?hidden="${this.searchHasLanguages()}"
+      aria-live="polite">
+      $i18n{languageMenuNoResults}
+    </span>
+    ${this.availableLanguages_.map((item, index) => html`
+      <div class="language-line dropdown-line">
+        <span id="language-name-${index}" class="language-name">
+          ${item.readableLanguage}
+        </span>
+        <cr-toggle ?checked="${item.checked}" @change="${this.onToggleChange_}"
+          data-index="${index}"
+          ?disabled="${item.disabled}"
+          aria-labelledby="language-name-${index}">
+        </cr-toggle>
+      </div>
+      <span id="notificationText"
+          class="notification-error-${item.notification.isError}"
+          aria-live="polite">
+        ${this.i18nWraper(item.notification.text)}
+      </span>
+    `)}
+    <cr-toast id="toast-in-dialog" duration="${this.toastDuration_}">
+      <div id="toastDiv">
+        <span id="toastTitle">${this.toastTitle_}</span>
+        <span id="toastMessage">$i18n{readingModeVoiceDownloadedMessage}</span>
+      </div>
+    </cr-toast>
+  </div>
+</cr-dialog>

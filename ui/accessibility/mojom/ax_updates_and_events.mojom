@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ax.mojom;
+
+import "ui/accessibility/mojom/ax_event.mojom";
+import "ui/accessibility/mojom/ax_tree_id.mojom";
+import "ui/accessibility/mojom/ax_tree_update.mojom";
+
+// Structure containing the large parameters to HandleAXEvents, that allows them
+// to be moved rather than copied.
+struct AXUpdatesAndEvents {
+  // This field exists because tree updates below optionally contain tree
+  // data which has a tree id.
+  ax.mojom.AXTreeID tree_id;
+  array<ax.mojom.AXTreeUpdate> updates;
+  array<ax.mojom.AXEvent> events;
+};

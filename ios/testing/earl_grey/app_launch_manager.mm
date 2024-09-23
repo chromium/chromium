@@ -127,7 +127,7 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
       // An EDOServiceGenericException here comes from the communication between
       // test and app process, which means there should be issues in host app,
       // but it wasn't reflected in XCUIApplicationState.
-      // TODO(crbug.com/1075716): Investigate why the exception is thrown.
+      // TODO(crbug.com/40687845): Investigate why the exception is thrown.
       appIsRunning = NO;
     }
   }

@@ -35,12 +35,13 @@ DOMViewTransition::DOMViewTransition(ExecutionContext& execution_context,
     : DOMViewTransition(execution_context,
                         view_transition,
                         /*update_dom_callback=*/nullptr) {
-  CHECK(view_transition.IsForNavigationOnNewDocument());
-  // In a cross-document view transition, the DOM is "updated" by the
-  // navigation so by the time we create this object (in the pagereveal
-  // event), the update is complete.
-  dom_updated_promise_property_->ResolveWithUndefined();
-  dom_callback_result_ = DOMCallbackResult::kSucceeded;
+  if (view_transition.IsForNavigationOnNewDocument()) {
+    // In a cross-document view transition, the DOM is "updated" by the
+    // navigation so by the time we create this object (in the pagereveal
+    // event), the update is complete.
+    dom_updated_promise_property_->ResolveWithUndefined();
+    dom_callback_result_ = DOMCallbackResult::kSucceeded;
+  }
 }
 
 DOMViewTransition::DOMViewTransition(
@@ -70,17 +71,17 @@ void DOMViewTransition::skipTransition() {
   view_transition_->SkipTransition();
 }
 
-ScriptPromiseTyped<IDLUndefined> DOMViewTransition::finished(
+ScriptPromise<IDLUndefined> DOMViewTransition::finished(
     ScriptState* script_state) const {
   return finished_promise_property_->Promise(script_state->World());
 }
 
-ScriptPromiseTyped<IDLUndefined> DOMViewTransition::ready(
+ScriptPromise<IDLUndefined> DOMViewTransition::ready(
     ScriptState* script_state) const {
   return ready_promise_property_->Promise(script_state->World());
 }
 
-ScriptPromiseTyped<IDLUndefined> DOMViewTransition::updateCallbackDone(
+ScriptPromise<IDLUndefined> DOMViewTransition::updateCallbackDone(
     ScriptState* script_state) const {
   return dom_updated_promise_property_->Promise(script_state->World());
 }
@@ -170,43 +171,42 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
 
   dom_callback_result_ = DOMCallbackResult::kRunning;
 
-  v8::Maybe<ScriptPromise> result = v8::Nothing<ScriptPromise>();
-  ScriptState* script_state = nullptr;
+  ScriptPromiseUntyped result;
+
+  // It's ok to use the main world when there is no callback, since we're only
+  // using it to call DOMChangeFinishedCallback which doesn't use the script
+  // state or execute any script.
+  ScriptState* script_state =
+      update_dom_callback_ ? update_dom_callback_->CallbackRelevantScriptState()
+                           : ToScriptStateForMainWorld(execution_context_);
+  ScriptState::Scope scope(script_state);
 
   if (update_dom_callback_) {
-    script_state = update_dom_callback_->CallbackRelevantScriptState();
-    result = update_dom_callback_->Invoke(nullptr);
+    v8::Maybe<ScriptPromiseUntyped> maybe_result =
+        update_dom_callback_->Invoke(nullptr);
 
     // If the callback couldn't be run for some reason, treat it as an empty
     // promise rejected with an abort exception.
-    if (result.IsNothing()) {
-      auto value = ScriptValue::From(
+    if (maybe_result.IsNothing()) {
+      result = ScriptPromise<IDLUndefined>::RejectWithDOMException(
           script_state, MakeGarbageCollected<DOMException>(
                             DOMExceptionCode::kAbortError, kAbortedMessage));
-      result = v8::Just(ScriptPromise::Reject(script_state, value));
+    } else {
+      result = maybe_result.FromJust();
     }
   } else {
-    // It's ok to use the main world here since we're only using it to call
-    // DOMChangeFinishedCallback which doesn't use the script state or execute
-    // any script.
-    script_state = ToScriptStateForMainWorld(execution_context_);
-
-    ScriptState::Scope scope(script_state);
-
     // If there's no callback provided, treat the same as an empty promise
     // resolved without a value.
-    result = v8::Just(ScriptPromise::CastUndefined(script_state));
+    result = ToResolvedUndefinedPromise(script_state);
   }
 
   // Note, the DOMChangeFinishedCallback will be invoked asynchronously.
-  ScriptState::Scope scope(script_state);
-  result.ToChecked().Then(
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<DOMChangeFinishedCallback>(*this, true)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state,
-          MakeGarbageCollected<DOMChangeFinishedCallback>(*this, false)));
+  result.Then(MakeGarbageCollected<ScriptFunction>(
+                  script_state,
+                  MakeGarbageCollected<DOMChangeFinishedCallback>(*this, true)),
+              MakeGarbageCollected<ScriptFunction>(
+                  script_state, MakeGarbageCollected<DOMChangeFinishedCallback>(
+                                    *this, false)));
 }
 
 void DOMViewTransition::Trace(Visitor* visitor) const {
@@ -287,6 +287,10 @@ void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,
       break;
     }
   }
+}
+
+ViewTransitionTypeSet* DOMViewTransition::types() const {
+  return view_transition_->Types();
 }
 
 // DOMChangeFinishedCallback implementation.

@@ -4,14 +4,16 @@
 
 #include "ui/base/cocoa/remote_accessibility_api.h"
 
+#import "base/apple/foundation_util.h"
+
 namespace ui {
 
 // static
 std::vector<uint8_t> RemoteAccessibility::GetTokenForLocalElement(id element) {
   NSData* data =
       [NSAccessibilityRemoteUIElement remoteTokenForLocalUIElement:element];
-  const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data.bytes);
-  return std::vector<uint8_t>(bytes, bytes + data.length);
+  auto span = base::apple::NSDataToSpan(data);
+  return {span.begin(), span.end()};
 }
 
 // static

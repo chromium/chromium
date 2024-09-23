@@ -9,10 +9,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "net/dns/mock_host_resolver.h"
-
-namespace chrome {
 
 class ChainedBackNavigationTrackerBrowserTest : public InProcessBrowserTest {
  public:
@@ -126,5 +125,3 @@ IN_PROC_BROWSER_TEST_F(ChainedBackNavigationTrackerBrowserTest,
   ASSERT_EQ(url_a, web_contents()->GetLastCommittedURL());
   ASSERT_EQ(0u, tracker->chained_back_navigation_count_);
 }
-
-}  // namespace chrome

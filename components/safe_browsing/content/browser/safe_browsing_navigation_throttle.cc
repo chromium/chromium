@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -70,6 +71,9 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
     std::string error_page_content = blocking_page->GetHTMLContents();
     security_interstitials::SecurityInterstitialTabHelper::
         AssociateBlockingPage(handle, base::WrapUnique(blocking_page));
+
+    base::UmaHistogramBoolean("SafeBrowsing.NavigationThrottle.IsSameURL",
+                              handle->GetURL() == resource.url);
 
     return content::NavigationThrottle::ThrottleCheckResult(
         CANCEL, net::ERR_BLOCKED_BY_CLIENT, error_page_content);

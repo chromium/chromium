@@ -92,6 +92,7 @@ class MimeHandlerViewGuest
       content::RenderFrameHost* owner_rfh);
 
   static const char Type[];
+  static const guest_view::GuestViewHistogramValue HistogramValue;
 
   // GuestViewBase overrides.
   bool CanBeEmbeddedInsideCrossProcessFrames() const override;
@@ -150,7 +151,9 @@ class MimeHandlerViewGuest
   // WebContentsDelegate implementation.
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) final;
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) final;
   void NavigationStateChanged(content::WebContents* source,
                               content::InvalidateTypes changed_flags) final;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,

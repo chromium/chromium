@@ -1,8 +1,4 @@
 {
-  "$build/chromium_orchestrator": {
-    "compilator": "android-12-x64-rel-compilator",
-    "compilator_watcher_git_revision": "27c191f304c8d7329a393d8a69020fc14032c3c3"
-  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
@@ -48,20 +44,14 @@
           "builder": "android-12-x64-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-12-x64-rel/targets"
     }
   },
-  "$build/code_coverage": {
-    "coverage_test_types": [
-      "unit",
-      "overall"
-    ],
-    "use_clang_coverage": true,
-    "use_java_coverage": true
-  },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
@@ -70,7 +60,8 @@
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
-    "project": "rbe-chromium-untrusted"
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -80,6 +71,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
-  "cq": "required",
-  "recipe": "chromium/orchestrator"
+  "recipe": "chromium_trybot"
 }

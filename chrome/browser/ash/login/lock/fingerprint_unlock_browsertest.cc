@@ -307,6 +307,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, BiodFailsBeforeLockScreenReady) {
   EXPECT_FALSE(tester.IsLocked());
 }
 
+// TODO(crbug.com/361782081): Fix and re-enable this test.
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
                        ExceedAttemptsAndBiodRestart) {
   ScreenLockerTester tester;

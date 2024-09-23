@@ -1,0 +1,76 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
+
+source_set("core") {
+  sources = [
+    "analysis_settings.cc",
+    "analysis_settings.h",
+    "common.cc",
+    "common.h",
+    "connectors_manager_base.cc",
+    "connectors_manager_base.h",
+    "connectors_prefs.cc",
+    "connectors_prefs.h",
+    "connectors_service_base.cc",
+    "connectors_service_base.h",
+    "enterprise_connectors_policy_handler.cc",
+    "enterprise_connectors_policy_handler.h",
+    "reporting_constants.h",
+    "reporting_service_settings.cc",
+    "reporting_service_settings.h",
+    "service_provider_config.cc",
+    "service_provider_config.h",
+  ]
+
+  public_deps = [ "//components/enterprise/common/proto:connectors_proto" ]
+
+  deps = [
+    "//base",
+    "//build:blink_buildflags",
+    "//components/enterprise/buildflags",
+    "//components/enterprise/device_trust",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/strings:components_strings_grit",
+    "//ui/gfx/range",
+  ]
+
+  if (use_blink) {
+    deps += [ "//components/download/public/common:public" ]
+  }
+
+  if (enterprise_client_certificates) {
+    deps += [ "//components/enterprise/client_certificates/core" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "connectors_manager_base_unittest.cc",
+    "connectors_service_base_unittest.cc",
+    "enterprise_connectors_policy_handler_unittest.cc",
+    "reporting_service_settings_unittest.cc",
+    "service_provider_config_unittest.cc",
+  ]
+
+  public_deps = [ ":core" ]
+
+  deps = [
+    "//base",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//testing/gtest",
+    "//url",
+  ]
+}

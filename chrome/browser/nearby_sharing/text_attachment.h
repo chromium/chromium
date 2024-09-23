@@ -14,7 +14,7 @@
 // Represents a text attachment.
 class TextAttachment : public Attachment {
  public:
-  using Type = sharing::mojom::TextMetadata::Type;
+  using Type = ::sharing::mojom::TextMetadata::Type;
 
   TextAttachment(Type type,
                  std::string text_body,

@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -308,10 +309,6 @@ void AppStreamLauncherView::ChildVisibilityChanged(View* child) {
   PreferredSizeChanged();
 }
 
-const char* AppStreamLauncherView::GetClassName() const {
-  return "AppStreamLauncherView";
-}
-
 phone_hub_metrics::Screen AppStreamLauncherView::GetScreenForMetrics() const {
   return phone_hub_metrics::Screen::kMiniLauncher;
 }
@@ -358,5 +355,8 @@ void AppStreamLauncherView::CreateGridView(
     items_container_->AddChildView(CreateItemView(app));
   }
 }
+
+BEGIN_METADATA(AppStreamLauncherView)
+END_METADATA
 
 }  // namespace ash

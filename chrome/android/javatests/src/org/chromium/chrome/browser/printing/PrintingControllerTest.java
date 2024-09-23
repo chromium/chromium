@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -31,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.printing.PrintDocumentAdapterWrapper.LayoutResultCallbackWrapper;
 import org.chromium.printing.PrintDocumentAdapterWrapper.WriteResultCallbackWrapper;
 import org.chromium.printing.PrintManagerDelegate;
@@ -92,7 +92,7 @@ public class PrintingControllerTest {
 
     private static class WaitForOnWriteHelper extends CallbackHelper {
         public void waitForCallback(String msg) throws TimeoutException {
-            waitForFirst(msg, TEST_TIMEOUT, TimeUnit.MILLISECONDS);
+            waitForOnly(msg, TEST_TIMEOUT, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -223,7 +223,7 @@ public class PrintingControllerTest {
         final PrintManagerDelegate mockPrintManagerDelegate =
                 mockPrintManagerDelegate(() -> Assert.fail("Shouldn't start a printing job."));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     printingController.setPendingPrint(
                             new TabPrinter(currentTab), mockPrintManagerDelegate, -1, -1);
@@ -270,7 +270,7 @@ public class PrintingControllerTest {
         final ParcelFileDescriptor fileDescriptor =
                 ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_WRITE);
         try {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         // Close tab.
                         TabModelUtils.closeCurrentTab(
@@ -317,7 +317,7 @@ public class PrintingControllerTest {
         final WaitForOnWriteHelper onWriteHelper = new WaitForOnWriteHelper();
         final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
         final PrintingControllerImpl printingController =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> new PrintingControllerImplPdfWritingDone(onWriteHelper));
 
         startControllerOnUiThread(printingController, currentTab);
@@ -374,11 +374,11 @@ public class PrintingControllerTest {
 
         // Calling pdfWritingDone() with |pageCount| = 0 before onWrite() was called. It shouldn't
         // crash.
-        TestThreadUtils.runOnUiThreadBlocking(() -> controller.pdfWritingDone(0));
+        ThreadUtils.runOnUiThreadBlocking(() -> controller.pdfWritingDone(0));
     }
 
     private PrintingControllerImpl createControllerOnUiThread() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> (PrintingControllerImpl) PrintingControllerImpl.getInstance());
     }
 
@@ -403,7 +403,7 @@ public class PrintingControllerTest {
     }
 
     private void startControllerOnUiThread(final PrintingControllerImpl controller, final Tab tab) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     controller.startPrint(
                             new TabPrinter(tab),
@@ -412,7 +412,7 @@ public class PrintingControllerTest {
     }
 
     private void callStartOnUiThread(final PrintingControllerImpl controller) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> controller.onStart());
+        ThreadUtils.runOnUiThreadBlocking(() -> controller.onStart());
     }
 
     private void callLayoutOnUiThread(
@@ -420,7 +420,7 @@ public class PrintingControllerTest {
             final PrintAttributes oldAttributes,
             final PrintAttributes newAttributes,
             final LayoutResultCallbackWrapper layoutResultCallback) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     controller.onLayout(
                             oldAttributes,
@@ -432,6 +432,6 @@ public class PrintingControllerTest {
     }
 
     private void callFinishOnUiThread(final PrintingControllerImpl controller) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> controller.onFinish());
+        ThreadUtils.runOnUiThreadBlocking(() -> controller.onFinish());
     }
 }

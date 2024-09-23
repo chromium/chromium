@@ -398,7 +398,10 @@ need to be translated for each locale.-->
       <message name="IDS_APP_MENU_EMPTY_SUBMENU" desc="Used when a submenu has no entries">
         (empty)
       </message>
-        <message name="IDS_CLIPBOARD_MENU_HTML" desc="Used when HTML is stored in the clipboard history">
+      <message name="IDS_APP_MENU_AX_ANNOUNCE_EMPTY_SUBMENU" is_accessibility_with_no_ui="true" desc="Screen reader announcement when a submenu that has been opened has no entries">
+        Empty
+      </message>
+      <message name="IDS_CLIPBOARD_MENU_HTML" desc="Used when HTML is stored in the clipboard history">
         HTML Content
       </message>
       <message name="IDS_CLIPBOARD_MENU_IMAGE" desc="Used when an image is stored in the clipboard history">
@@ -424,10 +427,7 @@ need to be translated for each locale.-->
       </message>
 
       <!-- New Badge (user education) -->
-      <message name="IDS_NEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting new features">
-        New
-      </message>
-      <message name="IDS_NEW_BADGE_UPPERCASE" desc="Appears as a badge on UI elements like menus, denoting new features, in uppercase">
+      <message name="IDS_NEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting new features, in uppercase">
         NEW
       </message>
       <message name="IDS_NEW_BADGE_SCREEN_READER_MESSAGE"
@@ -662,6 +662,9 @@ need to be translated for each locale.-->
       </message>
       <message name="IDS_APP_CLOSE" desc="A generic term for Close on buttons and menus.">
         Close
+      </message>
+      <message name="IDS_APP_CONTINUE" desc="A generic term for Continue on buttons.">
+        Continue
       </message>
 
       <!-- Key names -->
@@ -946,8 +949,14 @@ need to be translated for each locale.-->
       </message>
 
       <!-- Strings describing the touch calibration UX -->
-      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL" desc="A message to notify the user about using the escape key to exit the calibration mode.">
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL" translateable="false" desc="A message to notify the user about using the escape key to exit the calibration mode.">
         To exit calibration press Esc.
+      </message>
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_SECONDARY_SKIP_LABEL" translateable="false" desc="A message to notify the user about using the escape key to exit the calibration mode.">
+        If the current display is not a touchscreen, press Esc.
+      </message>
+      <message name="IDS_DISPLAY_TOUCH_CALIBRATION_PRIMARY_SKIP_LABEL" translateable="false" desc="A message to notify the user about using the escape key to exit the calibration mode.">
+        If this display is not a touchscreen, press Esc.
       </message>
       <message name="IDS_DISPLAY_TOUCH_CALIBRATION_HINT_LABEL_TEXT" desc="Title of the hint message to inform the user what the next step is in touch calibration is">
        Calibrate your touchscreen

@@ -176,7 +176,7 @@ class ExtensionImpl : public v8::Extension {
       return v8::FunctionTemplate::New(isolate, Apply);
     if (name->StringEquals(v8_helpers::ToV8StringUnsafe(isolate, "Save")))
       return v8::FunctionTemplate::New(isolate, Save);
-    NOTREACHED() << *v8::String::Utf8Value(isolate, name);
+    NOTREACHED_IN_MIGRATION() << *v8::String::Utf8Value(isolate, name);
     return v8::Local<v8::FunctionTemplate>();
   }
 

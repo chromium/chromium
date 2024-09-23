@@ -8,6 +8,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -29,7 +29,7 @@ namespace coverage {
 
 namespace {
 
-base::StringPiece SpanToStringPiece(const base::span<const uint8_t>& s) {
+std::string_view SpanToStringPiece(const base::span<const uint8_t>& s) {
   return {reinterpret_cast<const char*>(s.data()), s.size()};
 }
 
@@ -285,11 +285,11 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
     std::string text;
     {
       base::Value::Dict* result = value_.FindDict("result");
-      // TODO(crbug/1206082): In some cases the v8 isolate may clear out the
-      // script source during execution. This can lead to the Debugger seeing a
-      // scriptId during execution but when it comes time to retrieving the
-      // source can no longer find the ID. For now we simply ignore these, but
-      // we need to find a better way to handle this.
+      // TODO(crbug.com/40180762): In some cases the v8 isolate may clear out
+      // the script source during execution. This can lead to the Debugger
+      // seeing a scriptId during execution but when it comes time to retrieving
+      // the source can no longer find the ID. For now we simply ignore these,
+      // but we need to find a better way to handle this.
       if (!result) {
         LOG(ERROR) << "Can't find result from Debugger.getScriptSource: "
                    << value_;

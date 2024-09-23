@@ -6,10 +6,11 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
-#include <optional>
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 
@@ -18,7 +19,7 @@ constexpr char FakeApplicationConfigManager::kFakeAgentUrl[] =
 
 // static
 chromium::cast::ApplicationConfig FakeApplicationConfigManager::CreateConfig(
-    base::StringPiece id,
+    std::string_view id,
     const GURL& url) {
   chromium::cast::ApplicationConfig app_config;
   app_config.set_id(std::string(id));
@@ -43,7 +44,7 @@ void FakeApplicationConfigManager::AddAppConfig(
   id_to_config_[app_config.id()] = std::move(app_config);
 }
 
-void FakeApplicationConfigManager::AddApp(base::StringPiece id,
+void FakeApplicationConfigManager::AddApp(std::string_view id,
                                           const GURL& url) {
   AddAppConfig(CreateConfig(id, url));
 }

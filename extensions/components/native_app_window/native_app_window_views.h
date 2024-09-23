@@ -13,8 +13,9 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/app_window/size_constraints.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -24,7 +25,12 @@ class SkRegion;
 
 namespace views {
 class WebView;
-}
+}  // namespace views
+
+namespace gfx {
+class RoundedCornersF;
+class Rect;
+}  // namespace gfx
 
 namespace native_app_window {
 
@@ -34,8 +40,9 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
                              public content::WebContentsObserver,
                              public views::WidgetDelegateView,
                              public views::WidgetObserver {
+  METADATA_HEADER(NativeAppWindowViews, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(NativeAppWindowViews);
   NativeAppWindowViews();
   NativeAppWindowViews(const NativeAppWindowViews&) = delete;
   NativeAppWindowViews& operator=(const NativeAppWindowViews&) = delete;
@@ -71,7 +78,7 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   bool IsFullscreen() const override;
   gfx::NativeWindow GetNativeWindow() const override;
   gfx::Rect GetRestoredBounds() const override;
-  ui::WindowShowState GetRestoredState() const override;
+  ui::mojom::WindowShowState GetRestoredState() const override;
   gfx::Rect GetBounds() const override;
   void Show() override;
   void ShowInactive() override;
@@ -95,7 +102,7 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   bool ShouldShowWindowTitle() const override;
   bool ShouldSaveWindowPlacement() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,
-                           ui::WindowShowState show_state) override;
+                           ui::mojom::WindowShowState show_state) override;
   bool ShouldDescendIntoChildForEventHandling(
       gfx::NativeView child,
       const gfx::Point& location) override;
@@ -119,18 +126,17 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   bool IsFullscreenOrPending() const override;
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
-  void UpdateDraggableRegions(
-      const std::vector<extensions::mojom::DraggableRegionPtr>& regions)
-      override;
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions) override;
   SkRegion* GetDraggableRegion() override;
   void UpdateShape(std::unique_ptr<ShapeRects> rects) override;
-  bool HandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
   bool IsFrameless() const override;
   bool HasFrameColor() const override;
   SkColor ActiveFrameColor() const override;
   SkColor InactiveFrameColor() const override;
   gfx::Insets GetFrameInsets() const override;
+  gfx::RoundedCornersF GetWindowRadii() const override;
   gfx::Size GetContentMinimumSize() const override;
   gfx::Size GetContentMaximumSize() const override;
   void SetContentSizeConstraints(const gfx::Size& min_size,

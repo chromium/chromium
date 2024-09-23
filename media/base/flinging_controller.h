@@ -13,7 +13,7 @@ namespace media {
 
 // Interface that groups all the necessary hooks to control media that is being
 // flung to a cast device, as part of RemotePlayback.
-// TODO(https://crbug.com/820277): Rename this interface to MediaRouteController
+// TODO(crbug.com/41375562): Rename this interface to MediaRouteController
 // and change media_router::MediaRouteController to MojoMediaRouteController.
 class FlingingController {
  public:

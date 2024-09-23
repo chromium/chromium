@@ -2,40 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-imageset("signin_confirmation_more") {
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
   sources = [
-    "signin_confirmation_more.imageset/Contents.json",
-    "signin_confirmation_more.imageset/signin_confirmation_more.png",
-    "signin_confirmation_more.imageset/signin_confirmation_more@2x.png",
-    "signin_confirmation_more.imageset/signin_confirmation_more@3x.png",
-  ]
-}
-
-imageset("signin_promo_close_gray") {
-  sources = [
-    "signin_promo_close_gray.imageset/Contents.json",
-    "signin_promo_close_gray.imageset/signin_promo_close_gray.png",
-    "signin_promo_close_gray.imageset/signin_promo_close_gray@2x.png",
-    "signin_promo_close_gray.imageset/signin_promo_close_gray@3x.png",
-  ]
-}
-
-imageset("signin_promo_logo_chrome_color") {
-  sources = [
-    "signin_promo_logo_chrome_color.imageset/Contents.json",
-    "signin_promo_logo_chrome_color.imageset/signin_promo_logo_chrome_color.png",
-    "signin_promo_logo_chrome_color.imageset/signin_promo_logo_chrome_color@2x.png",
-    "signin_promo_logo_chrome_color.imageset/signin_promo_logo_chrome_color@3x.png",
-  ]
-}
-
-imageset("signin_promo_logo_chromium_color") {
-  sources = [
-    "signin_promo_logo_chromium_color.imageset/Contents.json",
-    "signin_promo_logo_chromium_color.imageset/signin_promo_logo_chromium_color.png",
-    "signin_promo_logo_chromium_color.imageset/signin_promo_logo_chromium_color@2x.png",
-    "signin_promo_logo_chromium_color.imageset/signin_promo_logo_chromium_color@3x.png",
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/signin_confirmation_more.imageset/Contents.json",
+    "Assets.xcassets/signin_confirmation_more.imageset/signin_confirmation_more.png",
+    "Assets.xcassets/signin_confirmation_more.imageset/signin_confirmation_more@2x.png",
+    "Assets.xcassets/signin_confirmation_more.imageset/signin_confirmation_more@3x.png",
   ]
 }

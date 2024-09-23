@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_external.h"
 
 #include "base/logging.h"
@@ -109,7 +114,7 @@ ImageDecoderExternal* ImageDecoderExternal::Create(
 }
 
 ImageDecoderExternal::DecodeRequest::DecodeRequest(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<ImageDecodeResult>* resolver,
     uint32_t frame_index,
     bool complete_frames_only)
     : resolver(resolver),
@@ -133,9 +138,11 @@ bool ImageDecoderExternal::DecodeRequest::IsFinal() const {
 }
 
 // static
-ScriptPromise ImageDecoderExternal::isTypeSupported(ScriptState* script_state,
-                                                    String type) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromise<IDLBoolean> ImageDecoderExternal::isTypeSupported(
+    ScriptState* script_state,
+    String type) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto promise = resolver->Promise();
   resolver->Resolve(IsTypeSupportedInternal(type));
   return promise;
@@ -236,7 +243,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       }
       break;
     case V8ImageBufferSource::ContentType::kReadableStream:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -286,9 +293,12 @@ ImageDecoderExternal::~ImageDecoderExternal() {
   DCHECK_EQ(pending_metadata_requests_, 0);
 }
 
-ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
+ScriptPromise<ImageDecodeResult> ImageDecoderExternal::decode(
+    const ImageDecodeOptions* options) {
   DVLOG(1) << __func__;
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<ImageDecodeResult>>(
+          script_state_);
   auto promise = resolver->Promise();
 
   if (closed_) {
@@ -352,7 +362,7 @@ bool ImageDecoderExternal::complete() const {
   return data_complete_;
 }
 
-ScriptPromiseTyped<IDLUndefined> ImageDecoderExternal::completed(
+ScriptPromise<IDLUndefined> ImageDecoderExternal::completed(
     ScriptState* script_state) {
   return completed_property_->Promise(script_state->World());
 }
@@ -526,7 +536,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
                                       decode_weak_factory_.GetWeakCell())));
   }
 
-  auto* new_end = std::stable_partition(
+  auto new_end = std::stable_partition(
       pending_decodes_.begin(), pending_decodes_.end(),
       [](const auto& request) { return !request->IsFinal(); });
 

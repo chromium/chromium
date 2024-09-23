@@ -56,14 +56,14 @@ void HeadlessClientHintsControllerDelegate::GetAllowedClientHintsFromSource(
   }
 }
 
-// TODO(https://crbug.com/1419042): Currently always returns true.
+// TODO(crbug.com/40257952): Currently always returns true.
 bool HeadlessClientHintsControllerDelegate::IsJavaScriptAllowed(
     const GURL& url,
     content::RenderFrameHost* parent_rfh) {
   return true;
 }
 
-// TODO(https://crbug.com/1419042): Currently always returns false.
+// TODO(crbug.com/40257952): Currently always returns false.
 bool HeadlessClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
     const GURL& url,
     content::RenderFrameHost* rfh) {

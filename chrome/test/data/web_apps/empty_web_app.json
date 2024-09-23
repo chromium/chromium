@@ -23,13 +23,13 @@
       "MONOCHROME": [  ]
    },
    "file_handler_approval_state": "kRequiresPrompt",
-   "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [  ],
    "first_install_time": "1601-01-01 00:00:00.000000 UTC",
    "generated_icon_fix": null,
+   "install_state": "2",
+   "is_diy_app": false,
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": false,
-   "is_locally_installed": false,
    "is_uninstalling": false,
    "isolation_data": null,
    "last_badging_time": "1601-01-01 00:00:00.000000 UTC",
@@ -49,7 +49,6 @@
    "parent_app_id": null,
    "protocol_handlers": [  ],
    "run_on_os_login_mode": "not run",
-   "run_on_os_login_os_integration_state": null,
    "scope": "",
    "scope_extensions": [  ],
    "scope_extensions_validated": [  ],
@@ -59,19 +58,11 @@
    "start_url": "",
    "supported_links_offer_dismiss_count": 0,
    "supported_links_offer_ignore_count": 0,
-   "sync_fallback_data": {
-      "manifest_icons": [  ],
-      "name": "",
-      "scope": "",
-      "theme_color": "none"
+   "sync_proto": {
    },
    "tab_strip": null,
    "theme_color": "none",
    "url_handlers": [  ],
-   "user_display_mode_cros": null,
-   "user_display_mode_non_cros": null,
-   "user_launch_ordinal": "INVALID[]",
    "user_link_capturing_preference": "0",
-   "user_page_ordinal": "INVALID[]",
    "window_controls_overlay_enabled": false
 }

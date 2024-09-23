@@ -1,5 +1,5 @@
 AXWebArea
-++AXTextArea AXValue='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.'
+++AXGroup AXValue='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.'
 ++++AXGroup
 ++++++AXStaticText AXValue='A contenteditable with a '
 ++++++AXLink AXDescription='link'

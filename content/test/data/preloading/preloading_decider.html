@@ -5,16 +5,28 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Preloading Decider Browser Test</title>
+  <style>
+    #container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a {
+      flex: auto;
+    }
+  </style>
 </head>
 <body>
   <script type="speculationrules">
   {
-    "prefetch":[
-      {"source":"list", "urls":["/preloading/preloading_decider.html?foo"]}
+    "prefetch": [
+      {"source": "list", "urls": ["/preloading/preloading_decider.html?foo"]}
     ]
   }
   </script>
-  <a href="/preloading/preloading_decider.html?foo" id="foo"><div style="width:100vw;height:50vh;">Foo<div></a>
-  <a href="/preloading/preloading_decider.html?bar" id="bar"><div style="width:100vw;height:50vh;">Bar<div></a>
+  <div id="container">
+    <a href="/preloading/preloading_decider.html?foo" id="foo">Foo</a>
+    <a href="/preloading/preloading_decider.html?bar" id="bar">Bar</a>
+  </div>
 </body>
 </html>

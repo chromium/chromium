@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "All/FeaturedIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "jamescook@chromium.org"
+  - email: "shraash@google.com"
+  - email: "chromeos-data-eng@google.com"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: True
+criteria: |
+  Verifies features are enabled/disabled as expected and parameters are unchanged
+cases:
+  - id: "FeatureLibraryLateBoot/experiment_default"
+    tags: ["crosier:crosierdemosuite"]
+  - id: "FeatureLibraryLateBoot/experiment_disabled_without_params"
+    tags: ["crosier:crosierdemosuite"]
+  - id: "FeatureLibraryLateBoot/experiment_enabled_with_params"
+    tags: ["crosier:crosierdemosuite"]
+  - id: "FeatureLibraryLateBoot/experiment_enabled_without_params"
+    tags: ["crosier:crosierdemosuite"]
+...

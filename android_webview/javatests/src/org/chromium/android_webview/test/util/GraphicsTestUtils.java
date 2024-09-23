@@ -14,8 +14,8 @@ import org.junit.Assert;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.AwActivityTestRule;
 import org.chromium.android_webview.test.AwTestContainerView;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.concurrent.TimeoutException;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeoutException;
 /** Graphics-related test utils. */
 public class GraphicsTestUtils {
     public static float dipScaleForContext(Context context) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return DisplayAndroid.getNonMultiDisplay(context).getDipScale();
                 });
@@ -42,8 +42,7 @@ public class GraphicsTestUtils {
 
     public static Bitmap drawAwContentsOnUiThread(
             final AwContents awContents, final int width, final int height) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> drawAwContents(awContents, width, height));
+        return ThreadUtils.runOnUiThreadBlocking(() -> drawAwContents(awContents, width, height));
     }
 
     /**
@@ -77,14 +76,14 @@ public class GraphicsTestUtils {
 
     public static int sampleBackgroundColorOnUiThread(final AwContents awContents)
             throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> drawAwContents(awContents, 10, 10, 0, 0).getPixel(0, 0));
     }
 
     // Gets the pixel color at the center of AwContents.
     public static int getPixelColorAtCenterOfView(
             final AwContents awContents, final AwTestContainerView testContainerView) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         drawAwContents(
                                         awContents,
@@ -118,7 +117,7 @@ public class GraphicsTestUtils {
         for (int i = 0; i < 100; ++i) {
             final CallbackHelper callbackHelper = new CallbackHelper();
             final Object[] resultHolder = new Object[1];
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         testView.readbackQuadrantColors(
                                 (int[] result) -> {
@@ -127,7 +126,7 @@ public class GraphicsTestUtils {
                                 });
                     });
             try {
-                callbackHelper.waitForFirst();
+                callbackHelper.waitForOnly();
             } catch (TimeoutException e) {
                 continue;
             }

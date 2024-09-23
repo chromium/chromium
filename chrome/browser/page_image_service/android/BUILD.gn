@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/page_image_service/ImageServiceBridge.java",
+    "java/src/org/chromium/chrome/browser/page_image_service/ImageServiceMetrics.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/image_fetcher:java",
+    "//components/page_image_service/mojom:mojo_bindings_java",
+    "//mojo/public/java:bindings_java",
+    "//mojo/public/java:system_java",
+    "//mojo/public/java/system:system_impl_java",
+    "//mojo/public/mojom/base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//url:gurl_java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/page_image_service/ImageServiceBridge.java" ]
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.page_image_service"
+
+  sources = [ "junit/src/org/chromium/chrome/browser/page_image_service/ImageServiceBridgeUnitTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//components/image_fetcher:java",
+    "//components/page_image_service/mojom:mojo_bindings_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}

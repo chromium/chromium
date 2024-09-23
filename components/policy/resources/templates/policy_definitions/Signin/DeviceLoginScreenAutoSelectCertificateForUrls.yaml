@@ -32,7 +32,6 @@ features:
   dynamic_refresh: true
 owners:
 - file://components/policy/OWNERS
-- pmarko@chromium.org
 schema:
   items:
     type: string
@@ -56,3 +55,4 @@ validation_schema:
         type: string
     type: object
   type: array
+generate_device_proto: False

@@ -34,8 +34,11 @@ buildflag_header("buildflags") {
 
 static_library("service") {
   sources = [
-    "google_groups_updater_service.cc",
-    "google_groups_updater_service.h",
+    "google_groups_manager.cc",
+    "google_groups_manager.h",
+    "google_groups_manager_prefs.h",
+    "limited_entropy_randomization.cc",
+    "limited_entropy_randomization.h",
     "limited_entropy_synthetic_trial.cc",
     "limited_entropy_synthetic_trial.h",
     "safe_seed_manager.cc",
@@ -59,6 +62,7 @@ static_library("service") {
   public_deps = [ "//base" ]
   deps = [
     ":buildflags",
+    "//base/version_info:channel",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
@@ -70,6 +74,7 @@ static_library("service") {
     "//components/network_time",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/sync/service",
     "//components/variations",
     "//components/variations/field_trial_config",
     "//components/variations/proto",
@@ -84,7 +89,8 @@ static_library("service") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "google_groups_updater_service_unittest.cc",
+    "google_groups_manager_unittest.cc",
+    "limited_entropy_randomization_unittest.cc",
     "limited_entropy_synthetic_trial_unittest.cc",
     "safe_seed_manager_unittest.cc",
     "ui_string_overrider_unittest.cc",
@@ -102,6 +108,7 @@ source_set("unit_tests") {
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/prefs:test_support",
+    "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/variations",
     "//components/variations:test_support",

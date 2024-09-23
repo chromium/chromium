@@ -26,35 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="HoldingSpaceWallpaperNudgeIneligibleReason">
-  <int value="0" label="kManagedAccount"/>
-  <int value="1" label="kUserNewnessNotAvailable"/>
-  <int value="2" label="kUserNotNewCrossDevice"/>
-  <int value="3" label="kUserNotNewLocally"/>
-  <int value="4" label="kUserTypeNotRegular"/>
-</enum>
-
-<enum name="HoldingSpaceWallpaperNudgeInteraction">
-  <int value="0" label="kDroppedFileOnHoldingSpace"/>
-  <int value="1" label="kDroppedFileOnWallpaper"/>
-  <int value="2" label="kDraggedFileOverWallpaper"/>
-  <int value="3" label="kOpenedHoldingSpace"/>
-  <int value="4" label="kPinnedFileFromAnySource"/>
-  <int value="5" label="kPinnedFileFromContextMenu"/>
-  <int value="6" label="kPinnedFileFromFilesApp"/>
-  <int value="7" label="kPinnedFileFromHoldingSpaceDrop"/>
-  <int value="8" label="kPinnedFileFromPinButton"/>
-  <int value="9" label="kPinnedFileFromWallpaperDrop"/>
-  <int value="10" label="kUsedOtherItem"/>
-  <int value="11" label="kUsedPinnedItem"/>
-</enum>
-
-<enum name="HoldingSpaceWallpaperNudgeSuppressedReason">
-  <int value="0" label="kCountLimitReached"/>
-  <int value="1" label="kNotPrimaryAccount"/>
-  <int value="2" label="kTimePeriod"/>
-  <int value="3" label="kUserHasPinned"/>
-  <int value="4" label="kUserNotEligible"/>
+<enum name="TimeBucket">
+  <int value="0" label="kOneMinute"/>
+  <int value="1" label="kTenMinutes"/>
+  <int value="2" label="kOneHour"/>
+  <int value="3" label="kOneDay"/>
+  <int value="4" label="kOneWeek"/>
+  <int value="5" label="kTwoWeeks"/>
+  <int value="6" label="kOverTwoWeeks"/>
 </enum>
 
 <enum name="WelcomeTourAbortedReason">
@@ -64,6 +43,17 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kTabletModeEnabled"/>
   <int value="4" label="kUserDeclinedTour"/>
   <int value="5" label="kShutdown"/>
+</enum>
+
+<enum name="WelcomeTourChromeVoxEnabled">
+  <int value="0" label="kBeforeTour"/>
+  <int value="1" label="kDuringTour"/>
+</enum>
+
+<enum name="WelcomeTourExperimentalArm">
+  <int value="0" label="kHoldback"/>
+  <int value="1" label="kV1"/>
+  <int value="2" label="kV2"/>
 </enum>
 
 <enum name="WelcomeTourInteraction">
@@ -87,6 +77,11 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="kUserNotNewLocally"/>
 </enum>
 
+<enum name="WelcomeTourResult">
+  <int value="0" label="kAborted"/>
+  <int value="1" label="kCompleted"/>
+</enum>
+
 <enum name="WelcomeTourStep">
   <int value="0" label="kDialog"/>
   <int value="1" label="kExploreApp"/>
@@ -96,16 +91,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kSettingsApp"/>
   <int value="6" label="kShelf"/>
   <int value="7" label="kStatusArea"/>
-</enum>
-
-<enum name="WelcomeTourTimeBucket">
-  <int value="0" label="kOneMinute"/>
-  <int value="1" label="kTenMinutes"/>
-  <int value="2" label="kOneHour"/>
-  <int value="3" label="kOneDay"/>
-  <int value="4" label="kOneWeek"/>
-  <int value="5" label="kTwoWeeks"/>
-  <int value="6" label="kOverTwoWeeks"/>
+  <int value="8" label="kFilesApp"/>
 </enum>
 
 </enums>

@@ -4,11 +4,17 @@
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
+#include "third_party/blink/renderer/core/layout/grid/subgrid_min_max_sizes_cache.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 
 namespace blink {
 
 LayoutGrid::LayoutGrid(Element* element) : LayoutBlock(element) {}
+
+void LayoutGrid::Trace(Visitor* visitor) const {
+  visitor->Trace(cached_subgrid_min_max_sizes_);
+  LayoutBlock::Trace(visitor);
+}
 
 void LayoutGrid::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
   NOT_DESTROYED();
@@ -106,21 +112,26 @@ void LayoutGrid::SetCachedPlacementData(GridPlacementData&& placement_data) {
   SetGridPlacementDirty(false);
 }
 
-bool LayoutGrid::HasCachedMinMaxSizes() const {
-  return cached_min_max_sizes_.has_value();
+bool LayoutGrid::HasCachedSubgridMinMaxSizes() const {
+  return cached_subgrid_min_max_sizes_ && !IsSubgridMinMaxSizesCacheDirty();
 }
 
-const MinMaxSizes& LayoutGrid::CachedMinMaxSizes() const {
-  DCHECK(HasCachedMinMaxSizes());
-  return *cached_min_max_sizes_;
+const MinMaxSizes& LayoutGrid::CachedSubgridMinMaxSizes() const {
+  DCHECK(HasCachedSubgridMinMaxSizes());
+  return **cached_subgrid_min_max_sizes_;
 }
 
-void LayoutGrid::SetMinMaxSizesCache(MinMaxSizes&& min_max_sizes) {
-  cached_min_max_sizes_ = std::move(min_max_sizes);
+void LayoutGrid::SetSubgridMinMaxSizesCache(MinMaxSizes&& min_max_sizes,
+                                            const GridLayoutData& layout_data) {
+  cached_subgrid_min_max_sizes_ = MakeGarbageCollected<SubgridMinMaxSizesCache>(
+      std::move(min_max_sizes), layout_data);
+  SetSubgridMinMaxSizesCacheDirty(false);
 }
 
-void LayoutGrid::InvalidateMinMaxSizesCache() {
-  cached_min_max_sizes_.reset();
+bool LayoutGrid::ShouldInvalidateSubgridMinMaxSizesCacheFor(
+    const GridLayoutData& layout_data) const {
+  return HasCachedSubgridMinMaxSizes() &&
+         !cached_subgrid_min_max_sizes_->IsValidFor(layout_data);
 }
 
 const GridLayoutData* LayoutGrid::LayoutData() const {
@@ -133,7 +144,7 @@ const GridLayoutData* LayoutGrid::LayoutData() const {
 }
 
 wtf_size_t LayoutGrid::AutoRepeatCountForDirection(
-    const GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!HasCachedPlacementData())
     return 0;
@@ -141,7 +152,7 @@ wtf_size_t LayoutGrid::AutoRepeatCountForDirection(
 }
 
 wtf_size_t LayoutGrid::ExplicitGridStartForDirection(
-    const GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!HasCachedPlacementData())
     return 0;
@@ -149,7 +160,7 @@ wtf_size_t LayoutGrid::ExplicitGridStartForDirection(
 }
 
 wtf_size_t LayoutGrid::ExplicitGridEndForDirection(
-    const GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   if (!HasCachedPlacementData())
     return 0;
@@ -159,8 +170,7 @@ wtf_size_t LayoutGrid::ExplicitGridEndForDirection(
       cached_placement_data_->ExplicitGridTrackCount(track_direction));
 }
 
-LayoutUnit LayoutGrid::GridGap(
-    const GridTrackSizingDirection track_direction) const {
+LayoutUnit LayoutGrid::GridGap(GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   const auto* grid_layout_data = LayoutData();
   if (!grid_layout_data)
@@ -172,14 +182,14 @@ LayoutUnit LayoutGrid::GridGap(
 }
 
 LayoutUnit LayoutGrid::GridItemOffset(
-    const GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   // Distribution offset is baked into the gutter_size in GridNG.
   return LayoutUnit();
 }
 
 Vector<LayoutUnit, 1> LayoutGrid::TrackSizesForComputedStyle(
-    const GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
   Vector<LayoutUnit, 1> track_sizes;
   const auto* grid_layout_data = LayoutData();
@@ -260,7 +270,7 @@ Vector<LayoutUnit> LayoutGrid::ComputeTrackSizeRepeaterForRange(
 }
 
 Vector<LayoutUnit> LayoutGrid::ComputeExpandedPositions(
-    const GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction) const {
   Vector<LayoutUnit> expanded_positions;
   const auto* grid_layout_data = LayoutData();
   if (!grid_layout_data)

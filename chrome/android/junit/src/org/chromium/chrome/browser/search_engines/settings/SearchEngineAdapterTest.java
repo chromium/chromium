@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.search_engines.settings;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.atLeastOnce;
@@ -18,15 +16,15 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.components.search_engines.TemplateUrlTestHelpers.buildMockTemplateUrl;
 
+import android.content.Context;
 import android.view.View;
 
-import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -34,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
@@ -43,6 +40,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.ui.base.TestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,17 +49,22 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SearchEngineAdapterTest {
-    public @Rule TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public final @Rule JniMocker mJniMocker = new JniMocker();
+
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     private @Mock Profile mProfile;
     private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
+    private Context mContext;
 
     @Before
     public void setUp() {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNativeMock);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mContext = activity);
     }
 
     @Test
@@ -82,36 +85,14 @@ public class SearchEngineAdapterTest {
 
         List<TemplateUrl> modifiedList = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList,
-                p3,
-                /* isEeaChoiceCountry= */ true,
-                /* shouldShowUpdatedSettings= */ true);
+                modifiedList, p3, /* isEeaChoiceCountry= */ true);
         assertThat(modifiedList, contains(expectedNonSortedUrls));
 
         // In all the other cases (old settings or out of EEA), keep sorting by ID.
 
         modifiedList = new ArrayList<>(templateUrls);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList,
-                p3,
-                /* isEeaChoiceCountry= */ false,
-                /* shouldShowUpdatedSettings= */ true);
-        assertThat(modifiedList, contains(expectedSortedUrls));
-
-        modifiedList = new ArrayList<>(templateUrls);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList,
-                p3,
-                /* isEeaChoiceCountry= */ true,
-                /* shouldShowUpdatedSettings= */ false);
-        assertThat(modifiedList, contains(expectedSortedUrls));
-
-        modifiedList = new ArrayList<>(templateUrls);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList,
-                p3,
-                /* isEeaChoiceCountry= */ false,
-                /* shouldShowUpdatedSettings= */ false);
+                modifiedList, p3, /* isEeaChoiceCountry= */ false);
         assertThat(modifiedList, contains(expectedSortedUrls));
     }
 
@@ -164,10 +145,7 @@ public class SearchEngineAdapterTest {
         // Instead of using the test helper, call the method directly and explicitly compare
         // identity for the output instead of equality here, as all instances are equal.
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                templateUrls,
-                p3,
-                /* isInEeaChoiceCountry= */ true,
-                /* shouldShowUpdatedSettings= */ true);
+                templateUrls, p3, /* isInEeaChoiceCountry= */ true);
 
         Assert.assertSame(templateUrls.get(0), p2);
         Assert.assertSame(templateUrls.get(1), p1);
@@ -227,48 +205,22 @@ public class SearchEngineAdapterTest {
             List<TemplateUrl> expectedOutput) {
         List<TemplateUrl> modifiedList = new ArrayList<>(input);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList,
-                defaultSearchEngine,
-                /* isEeaChoiceCountry= */ true,
-                /* shouldShowUpdatedSettings= */ true);
+                modifiedList, defaultSearchEngine, /* isEeaChoiceCountry= */ true);
         assertThat(modifiedList, contains(expectedOutput.toArray()));
 
         modifiedList = new ArrayList<>(input);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList,
-                defaultSearchEngine,
-                /* isEeaChoiceCountry= */ false,
-                /* shouldShowUpdatedSettings= */ true);
+                modifiedList, defaultSearchEngine, /* isEeaChoiceCountry= */ false);
         assertThat(modifiedList, contains(expectedOutput.toArray()));
 
         modifiedList = new ArrayList<>(input);
         SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList,
-                defaultSearchEngine,
-                /* isEeaChoiceCountry= */ true,
-                /* shouldShowUpdatedSettings= */ false);
-        assertThat(modifiedList, contains(expectedOutput.toArray()));
-
-        modifiedList = new ArrayList<>(input);
-        SearchEngineAdapter.sortAndFilterUnnecessaryTemplateUrl(
-                modifiedList,
-                defaultSearchEngine,
-                /* isEeaChoiceCountry= */ false,
-                /* shouldShowUpdatedSettings= */ false);
+                modifiedList, defaultSearchEngine, /* isEeaChoiceCountry= */ true);
         assertThat(modifiedList, contains(expectedOutput.toArray()));
     }
 
     @Test
     public void testGetView() {
-        baseTestGetView(/* shouldShowUpdatedSettings= */ false, /* expectLogos= */ false);
-    }
-
-    @Test
-    public void testGetView_WithSecFeature() {
-        baseTestGetView(/* shouldShowUpdatedSettings= */ true, /* expectLogos= */ true);
-    }
-
-    private void baseTestGetView(boolean shouldShowUpdatedSettings, boolean expectLogos) {
         TemplateUrl p1 = buildMockTemplateUrl("prepopulated1", 1);
         TemplateUrl p2 = buildMockTemplateUrl("", 2);
         TemplateUrl c1 = buildMockTemplateUrl("custom1", 0);
@@ -277,11 +229,9 @@ public class SearchEngineAdapterTest {
         doReturn(new ArrayList<>(List.of(p1, p2, c1))).when(mTemplateUrlService).getTemplateUrls();
         doReturn(p2).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         doReturn(false).when(mTemplateUrlService).isEeaChoiceCountry();
-        doReturn(shouldShowUpdatedSettings).when(mTemplateUrlService).shouldShowUpdatedSettings();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 
-        var adapter =
-                new SearchEngineAdapter(ApplicationProvider.getApplicationContext(), mProfile);
+        var adapter = new SearchEngineAdapter(mContext, mProfile);
         adapter.start();
 
         assertEquals(adapter.getCount(), 4);
@@ -292,14 +242,14 @@ public class SearchEngineAdapterTest {
         View v = adapter.getView(0, null, null);
         verify(p1, atLeastOnce()).getShortName();
         assertEquals(v.findViewById(R.id.url).getVisibility(), View.VISIBLE);
-        assertThat(v.findViewById(R.id.logo), is(expectLogos ? notNullValue() : nullValue()));
+        assertThat(v.findViewById(R.id.logo), notNullValue());
 
         assertEquals(adapter.getItemViewType(1), SearchEngineAdapter.VIEW_TYPE_ITEM);
         verify(p2, never()).getShortName();
         v = adapter.getView(1, null, null);
         verify(p2, atLeastOnce()).getShortName();
         assertEquals(v.findViewById(R.id.url).getVisibility(), View.GONE); // Because no keyword.
-        assertThat(v.findViewById(R.id.logo), is(expectLogos ? notNullValue() : nullValue()));
+        assertThat(v.findViewById(R.id.logo), notNullValue());
 
         assertEquals(adapter.getItemViewType(2), SearchEngineAdapter.VIEW_TYPE_DIVIDER);
         assertNotNull(adapter.getView(2, null, null));
@@ -309,6 +259,6 @@ public class SearchEngineAdapterTest {
         v = adapter.getView(3, null, null);
         verify(c1, atLeastOnce()).getShortName();
         assertEquals(v.findViewById(R.id.url).getVisibility(), View.VISIBLE);
-        assertThat(v.findViewById(R.id.logo), is(expectLogos ? notNullValue() : nullValue()));
+        assertThat(v.findViewById(R.id.logo), notNullValue());
     }
 }

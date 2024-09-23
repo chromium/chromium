@@ -26,15 +26,13 @@ class GlanceablesKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
     OnUserProfileCreated(profile_name, profile);
     return profile;
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
 };
 
 TEST_F(GlanceablesKeyedServiceFactoryTest, NoSupportWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {}, {features::kGlanceablesV2, features::kGlanceablesV2TrustedTesters});
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kGlanceablesTimeManagementTasksView});
 
   EXPECT_FALSE(
       GlanceablesKeyedServiceFactory::GetInstance()->GetService(GetProfile()));

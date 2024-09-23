@@ -62,8 +62,9 @@ AudioService* AudioAPI::GetService() const {
 
 void AudioAPI::OnLevelChanged(const std::string& id, int level) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
-  if (!event_router)
+  if (!event_router) {
     return;
+  }
 
   audio::LevelChangedEvent raw_event;
   raw_event.device_id = id;
@@ -78,8 +79,9 @@ void AudioAPI::OnLevelChanged(const std::string& id, int level) {
 
 void AudioAPI::OnMuteChanged(bool is_input, bool is_muted) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
-  if (!event_router)
+  if (!event_router) {
     return;
+  }
 
   // Dispatch onMuteChanged event.
   audio::MuteChangedEvent raw_event;
@@ -95,8 +97,9 @@ void AudioAPI::OnMuteChanged(bool is_input, bool is_muted) {
 
 void AudioAPI::OnDevicesChanged(const DeviceInfoList& devices) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
-  if (!event_router)
+  if (!event_router) {
     return;
+  }
 
   auto args = audio::OnDeviceListChanged::Create(devices);
   auto event = std::make_unique<Event>(events::AUDIO_ON_DEVICES_CHANGED,

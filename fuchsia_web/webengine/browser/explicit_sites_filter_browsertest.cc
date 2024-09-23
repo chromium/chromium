@@ -6,8 +6,10 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/run_loop.h"
 #include "components/policy/content/safe_search_service.h"
 #include "components/safe_search_api/stub_url_checker.h"
 #include "components/safe_search_api/url_checker.h"
@@ -35,7 +37,7 @@ constexpr char kCustomExplicitSitesErrorPage[] = R"(<html>
 
 // Creates a Fuchsia memory data from |data|.
 // |data| should be a short string to avoid exceeding Zircon channel limits.
-fuchsia::mem::Data MemDataBytesFromShortString(base::StringPiece data) {
+fuchsia::mem::Data MemDataBytesFromShortString(std::string_view data) {
   return fuchsia::mem::Data::WithBytes(
       std::vector<uint8_t>(data.begin(), data.end()));
 }

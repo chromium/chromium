@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-first-throws</h1>
+
+<p>Calling transferBackFromGPUTexture() without any preceding call to
+transferToGPUTexture() should raise an exception.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_transferBackFromGPUTexture_first_throws(
+          device,
+          document.getElementById('c'));
+    });
+  },
+  'Calling transferBackFromGPUTexture() without any preceding call to ' +
+  'transferToGPUTexture() should raise an exception.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      return test_transferBackFromGPUTexture_first_throws(
+          device,
+          new OffscreenCanvas(50, 50));
+    });
+  },
+  'Calling transferBackFromGPUTexture() on an offscreen context without any ' +
+  'preceding call to transferToGPUTexture() should raise an exception.'
+);
+
+</script>

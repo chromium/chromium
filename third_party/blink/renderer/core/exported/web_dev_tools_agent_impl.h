@@ -63,7 +63,6 @@ class CORE_EXPORT WebDevToolsAgentImpl final
       private Thread::TaskObserver {
  public:
   static WebDevToolsAgentImpl* CreateForFrame(WebLocalFrameImpl*);
-  static WebDevToolsAgentImpl* CreateForWorker(WebLocalFrameImpl*);
 
   WebDevToolsAgentImpl(WebLocalFrameImpl*, bool include_view_agents);
   ~WebDevToolsAgentImpl() override;
@@ -95,6 +94,10 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void DidShowNewWindow();
 
   void WaitForDebuggerWhenShown();
+  void ActivatePausedDebuggerWindow();
+
+  // Activate the paused debugger window if possible.
+  static void ActivatePausedDebuggerWindow(WebLocalFrameImpl* local_root);
 
  private:
   friend class ClientMessageLoopAdapter;

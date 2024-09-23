@@ -34,6 +34,8 @@ class ASH_EXPORT AutozoomToastView : public views::View,
   // Returns true if the toggle button is focused.
   bool IsButtonFocused() const;
 
+  std::u16string accessible_name() const;
+
  private:
   // views::ViewObserver:
   void OnViewFocused(views::View* observed_view) override;

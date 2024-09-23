@@ -31,7 +31,6 @@ bool IsMitScreensaverActive(x11::ScreenSaver::State state) {
       return true;
   }
   NOTREACHED();
-  return false;
 }
 
 class ScreensaverStatusWatcher : public x11::EventObserver {

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_SPACE_STATS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_SPACE_STATS_H_
+#ifndef PARTITION_ALLOC_ADDRESS_SPACE_STATS_H_
+#define PARTITION_ALLOC_ADDRESS_SPACE_STATS_H_
 
 #include <cstddef>
 
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 
 namespace partition_alloc {
 
@@ -19,25 +19,25 @@ struct PoolStats {
   // On 32-bit, pools are mainly logical entities, intermingled with
   // allocations not managed by PartitionAlloc. The "largest available
   // reservation" is not possible to measure in that case.
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   size_t largest_available_reservation = 0;
 #endif
 };
 
 struct AddressSpaceStats {
   PoolStats regular_pool_stats;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PoolStats brp_pool_stats;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   PoolStats configurable_pool_stats;
 #else
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   size_t blocklist_size;  // measured in super pages
   size_t blocklist_hit_count;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   PoolStats thread_isolated_pool_stats;
 #endif
 };
@@ -52,4 +52,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressSpaceStatsDumper {
 
 }  // namespace partition_alloc
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_SPACE_STATS_H_
+#endif  // PARTITION_ALLOC_ADDRESS_SPACE_STATS_H_

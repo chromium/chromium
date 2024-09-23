@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/model_enums.h"
@@ -117,9 +116,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // Return the optimization targets that are registered.
   base::flat_set<proto::OptimizationTarget> GetRegisteredOptimizationTargets()
       const;
-
-  // Override |clock_| for testing.
-  void SetClockForTesting(const base::Clock* clock);
 
   // Override the model file returned to observers for |optimization_target|.
   // Use |TestModelInfoBuilder| to construct the model files. For
@@ -342,19 +338,12 @@ class PredictionManager : public PredictionModelDownloadObserver {
   ComponentUpdatesEnabledProvider component_updates_enabled_provider_;
 
   // Time the prediction manager got initialized.
-  // TODO(crbug/1358568): Remove this old model store once the new model store
-  // is launched.
+  // TODO(crbug.com/40861855): Remove this old model store once the new model
+  // store is launched.
   base::TimeTicks init_time_;
 
   PredictionModelFetchTimer prediction_model_fetch_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The clock used to schedule fetching from the remote Optimization Guide
-  // Service.
-  raw_ptr<const base::Clock> clock_;
-
-  // Whether the |model_and_features_store_| is initialized and ready for use.
-  bool store_is_ready_ = false;
 
   // Whether the profile for this PredictionManager is off the record.
   bool off_the_record_ = false;
@@ -367,6 +356,9 @@ class PredictionManager : public PredictionModelDownloadObserver {
 
   // The path to the directory containing the models.
   base::FilePath models_dir_path_;
+
+  // Whether to check for Google API key configuration.
+  bool should_check_google_api_key_configuration_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

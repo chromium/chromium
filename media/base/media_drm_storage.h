@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "media/base/media_drm_key_type.h"
 #include "media/base/media_export.h"
 #include "url/origin.h"
@@ -26,8 +25,7 @@ namespace media {
 
 // Allows MediaDrmBridge to store and retrieve persistent data. This is needed
 // for features like per-origin provisioning and persistent license support.
-class MEDIA_EXPORT MediaDrmStorage
-    : public base::SupportsWeakPtr<MediaDrmStorage> {
+class MEDIA_EXPORT MediaDrmStorage {
  public:
   // When using per-origin provisioning, this is the ID for the origin.
   // If not specified, the device specific origin ID is to be used.
@@ -97,6 +95,11 @@ class MEDIA_EXPORT MediaDrmStorage
   // to the storage backend.
   virtual void RemovePersistentSession(const std::string& session_id,
                                        ResultCB result_cb) = 0;
+
+  // Return a WeakPtr instance. This must be implemented by the deepest
+  // class in the hierarchy. This is used for JNI calls in
+  // `MediaDrmStorageBridge`.
+  virtual base::WeakPtr<MediaDrmStorage> AsWeakPtr() = 0;
 };
 
 using CreateStorageCB =

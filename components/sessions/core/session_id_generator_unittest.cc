@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -151,6 +152,55 @@ TEST_F(SessionIdGeneratorTest, ShouldHandleOverflowDuringPadding) {
   SessionIdGenerator* generator = SessionIdGenerator::GetInstance();
   generator->Init(&prefs_);
   EXPECT_EQ(kExpectedIdPadding + 1, generator->NewUnique().id());
+}
+
+TEST_F(SessionIdGeneratorTest, HighestRestoredID) {
+  std::string histogram("Session.ID.RestoredDifference");
+  base::HistogramTester tester;
+
+  base::MockCallback<SessionIdGenerator::RandomGenerator> random_generator;
+  SessionIdGenerator* generator = SessionIdGenerator::GetInstance();
+  generator->SetRandomGeneratorForTest(random_generator.Get());
+
+  // Highest restored ID is lower than the next value.
+  EXPECT_CALL(random_generator, Run()).WillOnce(Return(123));
+  generator->Init(&prefs_);
+
+  SessionID highest = SessionID::FromSerializedValue(123 + kExpectedIdPadding);
+  generator->SetHighestRestoredID(highest);
+
+  EXPECT_EQ(123 + 1 + kExpectedIdPadding, generator->NewUnique().id());
+  tester.ExpectBucketCount(histogram, 0, 1);
+  tester.ExpectTotalCount(histogram, 1);
+
+  // Highest restored ID is higher than the next value.
+  generator->Shutdown();
+  WriteLastValueToPrefs(-1);
+  EXPECT_CALL(random_generator, Run()).WillOnce(Return(123));
+  generator->Init(&prefs_);
+
+  highest = SessionID::FromSerializedValue(200);
+  generator->SetHighestRestoredID(highest);
+
+  EXPECT_EQ(201, generator->NewUnique().id());
+  tester.ExpectBucketCount(histogram, 27, 1);
+  tester.ExpectTotalCount(histogram, 2);
+
+  // Highest restored ID is higher than the next value because it overflown.
+  generator->Shutdown();
+  WriteLastValueToPrefs(-1);
+  EXPECT_CALL(random_generator, Run()).WillOnce(Return(123));
+  generator->Init(&prefs_);
+
+  SessionID::id_type very_high_restore =
+      std::numeric_limits<SessionID::id_type>::max() / 2 + 123 +
+      kExpectedIdPadding + 2;
+  highest = SessionID::FromSerializedValue(very_high_restore);
+  generator->SetHighestRestoredID(highest);
+
+  EXPECT_EQ(123 + 1 + kExpectedIdPadding, generator->NewUnique().id());
+  tester.ExpectBucketCount(histogram, 0, 2);
+  tester.ExpectTotalCount(histogram, 3);
 }
 
 // Verifies correctness of the test-only codepath.

@@ -1,27 +1,23 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
-<translation id="1021782183249308751">Chrome આઇકન દબાવી રાખો અને "હોમ સ્ક્રીનમાં ફેરફાર કરો" પર ક્લિક કરો</translation>
 <translation id="1066101356081285416">Chrome, તમે મુલાકાત લેતા હો તે સાઇટ પરના ટ્રૅકિંગ નંબરની ભાળ મેળવશે અને તમને નવા ટૅબ પેજ પર પૅકેજ સંબંધિત અપડેટ બતાવશે. દરેક જણને આ સુવિધા પ્રદાન કરવા અને Google પર શૉપિંગની સુવિધાઓને બહેતર બનાવવા માટે, Googleને પૅકેજ ટ્રૅકિંગ નંબર અને વેબસાઇટનું નામ મોકલવામાં આવશે. તમે કોઈપણ સમયે <ph name="BEGIN_LINK" />પૅકેજ ટ્રૅકિંગના સેટિંગ<ph name="END_LINK" />માં જઈને આને અપડેટ કરી શકો છો.</translation>
-<translation id="1085696779717592361">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
-<translation id="1105362920864247682">Chromeમાં બ્રાઉઝિંગ ડેટા સાફ કરો.</translation>
-<translation id="1113057722807951993">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને સરનામાં શામેલ હોતા નથી.
-
-આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="1143896152279775643">તમારો પાસવર્ડ <ph name="EMAIL" /> માટેના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે.</translation>
-<translation id="1177414119866731261">Chrome મેનૂ ખોલો</translation>
+<translation id="1146503048444965320">Chromeમાં નવું ટૅબ ખોલો</translation>
+<translation id="1166460004393506534">Chromeમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>
+<translation id="1179527450541388808">તમારા iPadની હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="1180362651362502943">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો.</translation>
 <translation id="1200396280085622191">જ્યારે પણ તમે મેસેજ અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
 <translation id="1229222343402087523">Chromeમાં ${searchPhrase} શોધો</translation>
-<translation id="1282031177488366470">Chromeની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો</translation>
-<translation id="1320619893013575407">તમે Chromeમાં સાઇન ઇન કરવાની સુવિધા બંધ કરી.</translation>
+<translation id="1237769345474105984">Chromeમાંથી</translation>
+<translation id="1240190568154816272">Chrome વિશે ટિપ</translation>
+<translation id="124228879633599436">તમારું Chrome જૂનું થઈ ગયું છે. સુરક્ષિત રહેવા માટે તેને અપડેટ કરો.</translation>
 <translation id="1333745675627230582">Chrome Dino ગેમ રમો</translation>
 <translation id="1352919863522755794">Google Password Manager તમારા પાસવર્ડ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
+<translation id="1394995526009609883">તમે Chromeના સેટિંગમાં જઈને કોઈપણ સમયે તમારી પસંદગીઓને અપડેટ કરી શકો છો.</translation>
 <translation id="1407843355326180937">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક વગેરે મેળવવા માટે, આ સાઇટ અને Chromeમાં સાઇન ઇન કરો.</translation>
-<translation id="1436059927646026729">Chromeમાં મારું નવીનતમ ટૅબ ખોલો</translation>
-<translation id="1449241544691504574">Chromeમાં બુકમાર્ક ઉમેરો</translation>
+<translation id="1426599484714342603">Chrome Shoppingની સશક્તતા મેળવો</translation>
 <translation id="1462727070346936664">Chromeનો સૌથી વધુ લાભ મેળવવા માટે સાઇન ઇન કરો.</translation>
-<translation id="1491435845014430217">“જ્યારે તમે Chrome બંધ કરો, ત્યારે છૂપા ટૅબ લૉક કરો” ચાલુ કરો.</translation>
 <translation id="1493827051843127077">તમારા બધા ડિવાઇસ પર તમારી ટૅબ, પાસવર્ડ અને ચુકવણી સંબંધિત માહિતી સિંક કરવા માટે, Chromeને ડિફૉલ્ટ તરીકે સેટ કરો</translation>
 <translation id="1504372625950710826">Chrome અપડેટ ચેક કરી શક્યું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="1516692594929310090">Chromeમાં ટૅબ ગ્રિડ ખોલે છે.</translation>
@@ -35,24 +31,23 @@
 
   • જો તમે તમારા ઇતિહાસને તમારા Google એકાઉન્ટ સાથે સિંક કરો, તો મેટ્રિકમાં તમે જે URLsની મુલાકાત લીધી હોય, તેની માહિતીનો પણ સમાવેશ થઈ શકે છે.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">નુકસાનકારક વેબસાઇટ સામે તમે Chromeની સૌથી સશક્ત સુરક્ષા ધરાવો છો</translation>
-<translation id="1615715390546812898">Chromeમાં વૉઇસની સુવિધા વડે શોધો.</translation>
-<translation id="1657395063736185342">Chromeમાં વિઝ્યુઅલ શોધો</translation>
-<translation id="1675955119303651351">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.
-        સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
-<translation id="1682483655351012182">તમારા Chrome ડેટાને સિંક કરો</translation>
+<translation id="155816064895200734">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
+<translation id="1580570086594302477">Chromeમાં નવું છૂપું ટૅબ ખોલે છે.</translation>
+<translation id="1634522710245925681">કિંમતો વિશે સરળતાથી જાણકારી મેળવવા માટે Chromeનો ડિફૉલ્ટ તરીકે ઉપયોગ કરો</translation>
+<translation id="1646463005043273333">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે, Chromeનું સેટિંગ ખોલે છે.</translation>
+<translation id="1670609221633730681">Chrome વિશે ટિપ: તમારા ઍડ્રેસ બાર માટે જગ્યા પસંદ કરો</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Chromeમાં ઇનપુટ કરેલા URLsને તમારા બુકમાર્કમાં ઉમેરે છે.</translation>
-<translation id="1799920918471566157">Chrome વિશે ટિપ</translation>
 <translation id="1830634592642484976">આ સરનામું હાલમાં Chromeમાં સાચવેલું છે. Googleની સમગ્ર પ્રોડક્ટ પર તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટ <ph name="USER_EMAIL" />માં સાચવો.</translation>
-<translation id="1843217788865538014">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાંની લિંક પર ટૅપ કરો, ત્યારે ઑટોમૅટિક રીતે Chromeનો ઉપયોગ કરો.</translation>
-<translation id="1910975740091000991">iOS માટે Chrome</translation>
 <translation id="1917964099031477364">આ ડિવાઇસ પરની Chrome અને અન્ય Google ઍપમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
+<translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
 <translation id="1965935827552890526">તમે અન્ય ખુલ્લી Chrome વિંડોમાં જે કાર્ય કરતા તા તે પૂર્ણ કરો.</translation>
+<translation id="1984705450038014246">તમારા Chromeના ડેટાને સિંક કરો</translation>
 <translation id="1987779152850321833">Chromeનો સૌથી વધુ લાભ મેળવવા માટે નીચે સૂચવેલી આ ક્રિયાઓ પૂર્ણ કરો.</translation>
+<translation id="2055826352861631739">iPad માટે ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="2056123005618757196">Google Chromeના સરળ, સુરક્ષિત અને અત્યાર સુધીના સૌથી ઝડપી વર્ઝન વડે વધુ કાર્યો પૂર્ણ કરો.</translation>
 <translation id="2120238739383482109">Chrome બુકમાર્ક ખોલે છે.</translation>
 <translation id="2147651015520127414">Chrome એ ચકાસણી કરી છે કે <ph name="ISSUER" /> એ આ વેબસાઇટનું પ્રમાણપત્ર ઇસ્યુ કર્યું છે.</translation>
-<translation id="2155145621546387786">Chrome શેર કરો</translation>
 <translation id="2199719347983604670">Chrome સિંકમાંનો ડેટા</translation>
 <translation id="2213327331203157297">Chromeમાં લૉકડાઉન મોડ બંધ કરવા માટે, તેને તમારા iPhone પર બંધ કરો.</translation>
 <translation id="2242467532204595597">જ્યારે પણ તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
@@ -60,7 +55,6 @@
 <translation id="2339201583852607431">તમારો પાસવર્ડ તમારા Google એકાઉન્ટ (<ph name="EMAIL" />)માં સાચવવામાં આવશે.</translation>
 <translation id="2342919707875585281">Chrome તમે મંજૂરી આપો છો તે સાઇટ સાથે તમારા સ્થાનની માહિતી શેર કરે છે.</translation>
 <translation id="2347208864470321755">જ્યારે આ સુવિધા ચાલુ કરી હોય, ત્યારે Chrome, Google Translateનો ઉપયોગ કરીને અન્ય ભાષાઓમાં લખેલા પેજના અનુવાદ ઑફર કરશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="2414068465746584414">તમારા ડિવાઇસના સેટિંગમાંથી, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ખોલો અને "Chrome" પસંદ કરો</translation>
 <translation id="2423077901494354337">તમે હવે તમારા ડિવાઇસ પર Chromeનો વધુને વધુ લાભ મેળવશો.</translation>
 <translation id="2427791862912929107">Chromeમાં એવી સુવિધાઓ છે કે જે તમને તમારા ઇન્ટરનેટ ડેટાને મેનેજ કરવામાં અને વેબપેજને ઝડપથી લોડ કરવામાં સહાય કરે છે.
 <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
@@ -71,92 +65,90 @@
 <translation id="2576431527583832481">Chrome હમણાં જ વધુ સારું થયું છે! એક નવું વર્ઝન ઉપલબ્ધ છે.</translation>
 <translation id="257708665678654955">શું તમે Google Chromeને આ સાઇટ પર આગલી વખતે <ph name="LANGUAGE_NAME" /> પેજને અનુવાદ કરવાનું ઑફર કરવા માગો છો?</translation>
 <translation id="2650286135394207535">તમારા પૅકેજને ટ્રૅક કરવામાં Chromeને તમારી સહાય કરવા દો</translation>
+<translation id="2668242166988961773">Chromeમાં વૉઇસની સુવિધા વડે શોધો.</translation>
 <translation id="2671426118752779020">તમે Google પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPhone પરની અન્ય ઍપમાં કરી શકો છો.</translation>
 <translation id="2689064829982324496">બધી વેબસાઇટ પર તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવા માટે, <ph name="BEGIN_LINK" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome અપડેટ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
-<translation id="2702250627063295552">Chromeમાં વાંચન સૂચિની આઇટમ ઉમેરો</translation>
 <translation id="2703746758996815929">Chromeની સહાયક ટિપ મેળવવા માટે, તમારા iOS સેટિંગમાં નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="2736805085127235148">તમારા ડિવાઇસ સેટિંગમાં Chromeના નોટિફિકેશન હાલમાં બંધ કરવામાં આવ્યા છે.</translation>
-<translation id="2750626042242931740">તમે Chromeના સેટિંગમાં કોઈપણ સમયે તમારી પસંદગીઓને અપડેટ કરી શકો છો.</translation>
-<translation id="2767464022270041271">કોઈ સાચવેલો પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો, ત્યારે Google Password Manager તેને ચેક કરી શકે છે.</translation>
-<translation id="2789947168960170215">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
-<translation id="2868822340714096138">Chromeમાં બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
-<translation id="2869959624320573933">Chromeમાં સાઇન ઇન કરો</translation>
-<translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
-<translation id="2952581218264071393">1. Chrome સેટિંગ ખોલો</translation>
-<translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome <ph name="END_BOLD" />પસંદ કરો</translation>
-<translation id="2988274366244053197">Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
+<translation id="2754428955276778271">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.
 
-તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં અથવા તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ છો અથવા આ સેટિંગ બદલવા માંગો છો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
+સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
+<translation id="2767464022270041271">કોઈ સાચવેલો પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો, ત્યારે Google Password Manager તેને ચેક કરી શકે છે.</translation>
+<translation id="2788811701191021538">Chromeમાં ચુકવણી પદ્ધતિઓનું સેટિંગ પેજ ખોલે છે.</translation>
+<translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
+<translation id="292371311537977079">Chrome સેટિંગ</translation>
+<translation id="2923827943290349720">તમે Chrome બંધ કરો ત્યારે છૂપી ટૅબ લૉક કરો</translation>
+<translation id="2940565985148833945">Chrome ટિપ: Lens વડે શોધો</translation>
+<translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome <ph name="END_BOLD" />પસંદ કરો</translation>
+<translation id="2986402782150919988">Chromeમાં બુકમાર્ક ઉમેરો</translation>
 <translation id="3030414234702425231">કારણ કે તમે <ph name="SIGNOUT_MANAGED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવેલ એકાઉન્ટમાંથી સાઇન આઉટ કરી રહ્યાં છો, આ ડિવાઇસમાંથી તમારા Chrome ડેટા ડિલીટ થઈ જશે. તમારો ડેટા તમારા Google એકાઉન્ટમાં જળવાઈ રહેશે.</translation>
+<translation id="3051521853355903257">Chromeમાં પાસવર્ડ મેનેજ કરો</translation>
 <translation id="309672519329227863">તમારા Chrome પાસવર્ડ અને બીજું ઘણું અન્ય ઍપ પર ઍક્સેસ કરો.</translation>
-<translation id="3146109040683991651">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
+<translation id="3109170945534582468">Chrome ઍક્શન</translation>
+<translation id="3140589780564632473">Chromeમાં વિઝ્યુઅલ શોધો</translation>
+<translation id="314782365035065913">તમારી હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો</translation>
 <translation id="3167189358072330585">તમારું એકાઉન્ટ, Google Chrome પર કાર્ય કરતું નથી. કૃપા કરીને તમારા ડોમેન એડમિનનો સંપર્ક કરો અથવા સાઇન ઇન કરવા માટે નિયમિત Google એકાઉન્ટનો ઉપયોગ કરો.</translation>
-<translation id="3173834708294760622">Google Chrome પેજ</translation>
 <translation id="322254490661677575">તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
 <translation id="3282568296779691940">Chrome માં સાઇન ઇન કરો</translation>
-<translation id="3340938510625667914">Chrome ઍક્શન</translation>
-<translation id="3345341804167540816">સર્વત્ર Chrome નો ઉપયોગ કરો</translation>
+<translation id="3303503998967553377">iOS પર Chrome ઍક્શનનો ઉપયોગ કરો</translation>
+<translation id="3348862487678490430">Chromeમાં વાંચન સૂચિની આઇટમ ઉમેરો</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે}}</translation>
+<translation id="3367797402528056312">Chromeનું સેટઅપ કરવાનું પૂર્ણ કરો</translation>
+<translation id="3371064404604898522">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="3399930248910934354">Chrome સેટિંગ ખોલો</translation>
-<translation id="344736123700721678">તમારા હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો</translation>
 <translation id="3472587960215700950">Chrome ભાળ મેળવેલા સરનામાઓ વિશે તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે, Google Mapsનો ઉપયોગ કરે છે.</translation>
 <translation id="3503014945441706099">આ Chrome પ્રોફાઇલ માટે પણ Safe Browsingમાં વધારેલી સુરક્ષા મેળવો</translation>
 <translation id="3522659714780527202">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
-<translation id="3577555362230509265">અન્ય ઍપમાં Chromeનો ઉપયોગ કરો.</translation>
 <translation id="364480321352456989">તમારું Chrome જૂનું થઈ ગયું છે.</translation>
 <translation id="3646736009628185125">તમારા કુટુંબના સભ્ય અત્યારે પાસવર્ડ મેળવી શકશે નહીં. તેમને Chrome અપડેટ કરવા તેમજ તેમના પાસવર્ડ સિંક કરવા માટે કહો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3655656110921623717">આનો અર્થ છે કે Chrome દરેક વખતે મોબાઇલ સાઇટની વિનંતી કરશે.</translation>
-<translation id="3720541637541300822">તમે Chrome બંધ કરો ત્યારે છૂપી ટૅબ લૉક કરો</translation>
 <translation id="3740397331642243698">ઇનપુટ કરેલા URLsને Google Chrome છૂપા મોડમાં ખોલે છે.</translation>
 <translation id="3741995255368156336">Chrome વાંચન સૂચિ ખોલે છે.</translation>
-<translation id="3744018071945602754">Chromeમાં પાસવર્ડ મેનેજ કરો</translation>
 <translation id="3827545470516145620">તમે આ ડિવાઇસ માટે સ્ટૅન્ડર્ડ સુરક્ષા સંરક્ષણ મેળવી રહ્યા છો</translation>
 <translation id="384394811301901750">Google Chrome, અત્યારે તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી</translation>
 <translation id="3863841106411295595">Chromeમાં તમારી વાંચન સૂચિમાં ઇનપુટ કરેલા URLs ઉમેરે છે.</translation>
-<translation id="387280738075653372">અહીં Chrome ડાઉનલોડ કરો.</translation>
 <translation id="3901001113120561395">Chromeનો વધુને વધુ લાભ મેળવો.</translation>
 <translation id="3913386780052199712">Chromeમાં સાઇન ઇન કર્યું</translation>
-<translation id="3967382818307165056">Chromeમાં ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
-<translation id="3980220367029651214">તમે સિંક એકાઉન્ટ <ph name="USER_EMAIL1" />થી <ph name="USER_EMAIL2" /> પર સ્વિચ કરી રહ્યાં છો. તમારો અસ્તિત્વમાંનો Chrome ડેટા <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે. આ ડિવાઇસ પરથી આ તમારા ડેટાને ડિલીટ કરશે, પરંતુ તમારો ડેટા <ph name="USER_EMAIL1" /> માં રહેશે.</translation>
 <translation id="3984746313391923992">તમારી સંસ્થા માટે જરૂરી છે કે તમે Chromeમાં સાઇન આઉટ કરીને રાખો.</translation>
 <translation id="3988789688219830639">Google Chromeને તમારા ફોટા અથવા વીડિયોનો ઍક્સેસ નથી. iOS સેટિંગ &gt; પ્રાઇવસી &gt; ફોટામાં ઍક્સેસને ચાલુ કરો.</translation>
 <translation id="4064699917955374540">તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો.</translation>
-<translation id="4067858366537947361">Chromeમાં છૂપું ટૅબ ખોલો</translation>
-<translation id="4093042601582616698">Chromeને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવીએ?</translation>
 <translation id="417201473131094001">Chrome Canary પર સપોર્ટ કરવામાં આવતી નથી</translation>
-<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chromeનો ઉપયોગ કરી રહ્યાં હતા અને તેઓ આ ડિવાઇસ પર બુકમાર્ક, પાસવર્ડ અને અન્ય સેટિંગ છોડી ગયા છે.</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
-<translation id="4251174643044751591">Chromeમાં ચુકવણી પદ્ધતિઓનું સેટિંગ પેજ ખોલે છે.</translation>
-<translation id="4453284704333523777">Chromeના સેટિંગ મેનેજ કરો</translation>
-<translation id="4508370294876102450">કોઈપણ ઍપમાંથી Chrome ખોલો</translation>
+<translation id="447252321002412580">Chromeની સુવિધાઓ અને પ્રદર્શનને સુધારવામાં સહાય કરો</translation>
 <translation id="4523886039239821078">કેટલાંક એડ-ઓનને કારણે Chrome ક્રૅશ થાય છે. કૃપા કરી આને અનઇન્સ્ટૉલ કરો:</translation>
 <translation id="4633328489441962921">Chrome અપડેટ ચેક કરી શકતું નથી</translation>
 <translation id="4636900170638246267">આ સાઇટ અને Chromeમાં સાઇન ઇન કરો.</translation>
+<translation id="4646014602299206846">Chrome, તમે મુલાકાત લેતા હો તે સાઇટ પરના પૅકેજ ટ્રૅકિંગ નંબરની ભાળ મેળવશે અને તમને નવા ટૅબ પેજ પર પૅકેજ સંબંધિત અપડેટ બતાવશે. તમારો ડેટા Google સાથે શેર કરવામાં આવશે, જેથી આ સુવિધા પ્રદાન કરી શકાય તેમજ દરેક જણ માટે Shoppingનો અનુભવ બહેતર બનાવી શકાય.</translation>
+<translation id="4647910807533196601">Chromeમાં મારું નવીનતમ ટૅબ ખોલો.</translation>
+<translation id="4724297637870447613">સર્વત્ર Chromeનો ઉપયોગ કરો</translation>
+<translation id="4738647308035481133">Google Chrome પેજ</translation>
+<translation id="4742795653798179840">Chromeનો ડેટા ડિલીટ કર્યો</translation>
 <translation id="4761869838909035636">Chromeની સલામતી માટે તપાસ ચલાવો</translation>
+<translation id="4798859546468762093">મનગમતું બનાવવાની અને અન્ય સુવિધાઓ મેળવવા માટે, Chromeનો <ph name="FEATURE_NAME_1" /> અને <ph name="FEATURE_NAME_2" />માં સમાવેશ કરો</translation>
 <translation id="4819268619367838612">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_LINK" />મેનેજ કરો<ph name="END_LINK" /></translation>
-<translation id="4831642696589369971">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.
-
-        સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
-<translation id="4834499902900503484">જ્યારે તમે Chromeમાં સાઇન ઇન કરેલું હોય, ત્યારે તમે સાચવો છો તે પાસવર્ડ તમારા Google એકાઉન્ટ માં જશે. આ બંધ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ પર જાઓ<ph name="END_LINK" />.</translation>
+<translation id="4830799082179398588">Chromeને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવીએ?</translation>
 <translation id="484033449593719797">Chrome બીટા પર સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="4840404732697892756">જ્યારે તમે તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો, ત્યારે Google Password Manager તમારા પાસવર્ડ ચેક કરી શકે છે.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}one{Chrome તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}other{Chrome તમને નવા ટૅબ પેજ પર આ પૅકેજને ટ્રૅક કરવામાં સહાય કરી શકે છે.}}</translation>
 <translation id="4903674399067644695">આ કાર્ડ તમને Chromeનો મહત્તમ લાભ મેળવવા માટેના સૂચનો બતાવે છે.</translation>
 <translation id="49200511069271369">તમે જેમાં સાઇન ઇન કરી રહ્યાં હો તે એકાઉન્ટને અને Chromeના વપરાશની રીતને તમારી સંસ્થા <ph name="DOMAIN" /> મેનેજ કરે છે. તમારા ઍડમિનિસ્ટ્રેટર અમુક સુવિધાઓનું સેટઅપ અથવા તેને પ્રતિબંધિત કરી શકે છે.</translation>
+<translation id="4925322001044117929">iPad પર ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="498985224078955265">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, બંને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="5030102366287574140">ડેટા ઉલ્લંઘનો, અસુરક્ષિત વેબસાઇટ જેવી બીજી ઘણી બાબતોથી તમને સુરક્ષિત રાખવામાં Chrome તમારી સહાય કરી શકે છે.</translation>
-<translation id="5108659628347594808">Chromeને બહેતર બનાવો</translation>
+<translation id="5109169629909011627">Chrome Bookmarks જુઓ</translation>
 <translation id="5112925986883715005">Chrome વાંચન સૂચિ જુઓ</translation>
 <translation id="5119391094379141756">Chrome પસંદ કરો</translation>
-<translation id="5156818928311866442">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરવા માટે, Chromeના સેટિંગ ખોલે છે.</translation>
+<translation id="5123188916260706415">Chromeમાં વૉઇસની સુવિધા વડે શોધો.</translation>
 <translation id="5162467219239570114">Chrome જૂનું થઈ ગયું છે. જો <ph name="BEGIN_LINK" />ઍપ સ્ટોર<ph name="END_LINK" />માં કોઈ અપડેટ ઉપલબ્ધ ન હોય, તો એવું બની શકે છે કે તમારું ડિવાઇસ હવેથી Chromeના નવા વર્ઝનને સપોર્ટ ન કરતું હોય.</translation>
 <translation id="5184329579814168207">Chrome માં ખોલો</translation>
 <translation id="5190139289262548459">તમારી સંસ્થા <ph name="DOMAIN" />, તમે જેમાં સાઇન ઇન કર્યું હોય તે એકાઉન્ટને અને Chromeના વપરાશની રીતને મેનેજ કરે છે.</translation>
-<translation id="5256908199795498284">Chrome, તમે મુલાકાત લેતા હો તે સાઇટ પરના પૅકેજ ટ્રૅકિંગ નંબરની ભાળ મેળવશે અને તમને નવા ટૅબ પેજ પર પૅકેજ સંબંધિત અપડેટ બતાવશે. તમારો ડેટા Google સાથે શેર કરવામાં આવશે, જેથી આ સુવિધા પ્રદાન કરી શકાય તેમજ દરેક જણ માટે શૉપિંગનો અનુભવ બહેતર બનાવી શકાય.</translation>
-<translation id="5278862365980079760">જ્યારે તમે Chromeમાંથી બહાર નીકળો અથવા કોઈ અન્ય ઍપ પર સ્વિચ કરો, ત્યારે તમારા છૂપા ટૅબ લૉક કરો.</translation>
+<translation id="5305440589062022504">Chromeમાં Password Manager ખોલે છે.</translation>
+<translation id="5310957470610282541">Chromeનો તમારો અમુક ડેટા હજી સુધી તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો નથી.
+સાઇન આઉટ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં જ સાઇન આઉટ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
 <translation id="5389212809648216794">Google Chrome, તમારા કૅમેરાનો ઉપયોગ કરી શકતું નથી કારણ કે તે બીજી ઍપ્લિકેશન દ્વારા ઉપયોગમાં છે</translation>
 <translation id="5395376160638294582">ખાતરી કરો કે તમે હંમેશાં તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરી શકો</translation>
+<translation id="5404252374083197467">Chromeને ડિફૉલ્ટ તરીકે સેટ કરીએ?</translation>
 <translation id="5439191312780166229">સાઇટ પરથી માનક સંરક્ષણ કરતા વધુ ડેટા વિશ્લેષિત કરીને, Googleને પણ પહેલાંથી જાણ ન હોય તેવી ખતરનાક સાઇટ માટે તમને ચેતવણી આપે છે. તમે Chrome ચેતવણીઓને છોડી દેવાનું પસંદ કરી શકો છો.</translation>
 <translation id="5442013002200339429">જો તમે "<ph name="MODULE_NAME" />" છુપાવી દેશો, તો Chrome હવે પછીથી ભવિષ્યના તમારા પૅકેજને ઑટોમૅટિક રીતે ટ્રૅક કરશે નહીં તેમજ તે પૅકેજ ટ્રૅકિંગના ભૂતકાળના તમારા તમામ ડેટાને ડિલીટ કરશે.</translation>
 <translation id="5460571915754665838">4. Chrome પસંદ કરો</translation>
@@ -172,52 +164,60 @@
 <translation id="5661521615548540542">Google Password Manager બધા પાસવર્ડ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="5690398455483874150">{count,plural, =1{હમણાં 1 Chrome વિન્ડો બતાવવામાં આવી રહી છે}one{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}other{હમણાં {count} Chrome વિન્ડો બતાવવામાં આવી રહી છે}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5709557627224531708">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="571296537125272375">ઑનલાઇન, Chrome અપડેટ ચેક કરી શકતાં નથી</translation>
 <translation id="5716154293141027663">કોઈપણ સમયે તમે અન્ય ઍપમાં લિંક પર ટૅપ કરો ત્યારે Chrome ખૂલશે</translation>
-<translation id="5733084997078800044">Chrome વિશેની ટિપ</translation>
+<translation id="5772407442571703917">અહીં Chrome ડાઉનલોડ કરો.</translation>
+<translation id="5779767936254214055">જ્યારે તમે Chromeમાંથી બહાર નીકળો અથવા કોઈ અન્ય ઍપ પર સ્વિચ કરો, ત્યારે તમારા છૂપા ટૅબ લૉક કરો.</translation>
 <translation id="5808435672482059465">તમારો Chrome ઇતિહાસ જુઓ</translation>
-<translation id="589695154992054845">Chromeમાં Password Manager ખોલે છે.</translation>
+<translation id="5833027901704861726">Chromeનો તમારો અમુક ડેટા હજી સુધી <ph name="EMAIL" />માં સાચવવામાં આવ્યો નથી.
+એકાઉન્ટ સ્વિચ કરતા પહેલાં થોડી મિનિટ રાહ જોવાનો પ્રયાસ કરી જુઓ. જો તમે હમણાં એકાઉન્ટ સ્વિચ કરશો, તો આ ડેટા ડિલીટ કરવામાં આવશે.</translation>
 <translation id="5998675059699164418">તમારી સંસ્થા માટે જરૂરી છે કે Chromeનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો.</translation>
-<translation id="6054613632208573261">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
-<translation id="6063091872902370735">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
+<translation id="6021312115739110405">Google દ્વારા તમારા માટે બનાવવામાં આવેલું કસ્ટમ ફીડ. ન્યૂઝ, રમતગમત અને હવામાન સહિત.</translation>
+<translation id="6022659036123304283">Chromeને તમારી જરૂરિયાત અનુરૂપ બનાવો</translation>
 <translation id="6110625574506755980">Chromeની અમુક સુવિધાઓ હવે ઉપલબ્ધ રહેશે નહીં.</translation>
 <translation id="6132149203299792222">તમારા પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું સિંક કરવા માટે, તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
+<translation id="6145223986912084844">Chrome</translation>
 <translation id="6177442314419606057">Chromeમાં શોધો</translation>
-<translation id="6181930887571472871">Chrome પર સ્વિચ કરો</translation>
+<translation id="6181652351336379338">Chromeમાં વિઝ્યુઅલ શોધો.</translation>
+<translation id="6200694931081795166">Chromeને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવવા માટે:
+  1. સેટિંગ ખોલો
+  2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો
+  3. Chrome પસંદ કરો</translation>
 <translation id="6238746320622508509">Chromeને તમારી છૂપી ટૅબ લૉક કરવા દો.</translation>
 <translation id="6247557882553405851">Google પાસવર્ડ મેનેજર</translation>
 <translation id="6272822675004864999">Chrome તરફથી નોટિફિકેશન મેળવવા માટે, તમારા iOS સેટિંગમાં નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="630693926528731525">તમારો પાસવર્ડ શેર કરવામાં આવ્યો નહોતો. તમારું ઇન્ટરનેટ કનેક્શન તપાસો અને ખાતરી કરો કે તમે Chrome પર સાઇન ઇન કર્યું છે. પછી, ફરી પ્રયાસ કરો.</translation>
 <translation id="6348855835728304880">આ ડિવાઇસ પર અન્ય ઍપ માટેના Chromeના તમારા પાસવર્ડ જેવી બીજી ઘણી બાબતોને ઍક્સેસ કરો.</translation>
+<translation id="6373751563207403289">સલામતી માટે તપાસની સુવિધા તમને ડેટાના ઉલ્લંઘનો અને અસુરક્ષિત વેબસાઇટ જેવા બીજા ઘણા જોખમોથી સલામત રાખે છે. તમારા માટે Chrome ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટે અલર્ટ મેળવો.</translation>
 <translation id="6389317667633680932">Chromeનો સૌથી વધુ લાભ મેળવવામાં તમારી સહાય કરે એવી નવી સુવિધાઓ વિશે શોધખોળ કરો.</translation>
 <translation id="6412673304250309937">URLsને Chromeમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="6427126399757991875">તમારી સંસ્થા Chromeનું સેટઅપ કરી રહી છે…</translation>
+<translation id="6481963882741794338">મનગમતું બનાવવા અને અન્ય હેતુઓ માટે, Chrome અને Googleની અન્ય સેવાઓ લિંક કરો</translation>
 <translation id="6484712497741564393"><ph name="EMAIL" /> તરીકે સાઇન ઇન થયાં.
 
 તમારો ડેટા તમારા પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
-<translation id="6497850081273517953">Chrome જૂનું થઈ ગયું છે, સુરક્ષિત રહેવા માટે તેને નવીનતમ વર્ઝન પર અપડેટ કરો.</translation>
-<translation id="6540120577248033958">કોઈ સાઇટની મુલાકાત લો અને Chrome મેનૂમાં 'ફૉલો કરો' પર ક્લિક કરો</translation>
 <translation id="6545449117344801102">Chrome તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે, Google Maps પર સરનામાં શોધે છે અને પછી તેનો ઉપયોગ કરે છે.</translation>
-<translation id="6600954340915313787">Chrome માં કોપી કરાયું</translation>
 <translation id="6634107063912726160">તમે સાઇન આઉટ કરશો, ત્યારે Chrome કોઈપણ નવા ડેટાને તમારા Google એકાઉન્ટ સાથે સિંક કરશે નહીં. અગાઉ સિંક કરેલો ડેટા એકાઉન્ટમાં રહે છે.</translation>
+<translation id="6636941099779251629">તમારી સંસ્થાની પૉલિસી અનુસાર જરૂરી છે કે Chromeનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6646696210740573446">પ્રાઇવસી સર્વર મારફતે Googleને URLનો વાંચવામાં મુશ્કેલ બનાવેલો ભાગ મોકલે છે, જે તમારા IP ઍડ્રેસને છુપાવે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chrome પેજ કન્ટેન્ટના બિટ સહિત URLs પણ Googleને મોકલી શકે છે.</translation>
+<translation id="6647304104688527905">Chromeમાં નવું ટૅબ ખોલે છે.</translation>
 <translation id="6648150602980899529">તમે <ph name="DOMAIN" /> દ્વારા મેનેજ એકાઉન્ટમાં સાઇન ઇન કરી રહ્યાં છો અને તમારા Chrome ડેટા પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો ડેટા આ એકાઉન્ટ સાથે કાયમીરૂપે જોડાયેલું રહેશે. Chromeમાંથી સાઇન આઉટ કરવાનું આ ડિવાઇસ પરથી તમારો ડેટા ડિલીટ કરશે, પરંતુ એ તમારા Google એકાઉન્ટમાં સ્ટોર રહેશે.</translation>
-<translation id="6676840375528380067">આ ડિવાઇસમાંથી તમારા Chrome ડેટાને સાફ કરીએ?</translation>
-<translation id="6683891932310469419">તમારા Chrome ઇતિહાસનું પેજ ખોલે છે.</translation>
+<translation id="6684809838922667136">Chromeને બહેતર બનાવો</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}one{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}other{જ્યારે {THRESHOLD} મિનિટ સુધી Chromeનો ઉપયોગ ન કરવામાં આવે, ત્યારે આવું થાય છે. તમે સાઇન ઇન કરેલું હોય ત્યારે માત્ર આ ડિવાઇસમાં સચવાયેલો ડેટા ડિલીટ થશે. આમાં ઇતિહાસ અને પાસવર્ડનો સમાવેશ હોઈ શકે છે.}}</translation>
 <translation id="6709398533399187136">ડેટા ઉલ્લંઘનમાં તમારો પાસવર્ડ જાહેર થઈ ગયો હતો. Google પાસવર્ડ મેનેજર હમણાં જ તેને ચેક કરવાનો સુઝાવ આપે છે.</translation>
-<translation id="6815466750807582739">ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
+<translation id="6788035488757621217">તમારા ડિવાઇસના સેટિંગમાંથી, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ખોલો અને "Chrome" પસંદ કરો</translation>
+<translation id="6820553595690137150">પાસફ્રેઝ એન્ક્રિપ્શનમાં ચુકવણી પદ્ધતિઓ અને સરનામા શામેલ હોતા નથી.
 
-તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં અથવા તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chromeનો ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
-<translation id="6851982868877411675">iOSમાં Chrome સેટિંગ ખોલો, પછી "ડિફૉલ્ટ બ્રાઉઝર APP" પર ટૅપ કરો અને Chrome પસંદ કરો.</translation>
+આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chrome ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
+<translation id="6838525730752203626">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="686691656039982452">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />Chromeનો કયો ડેટા સાચવવામાં આવે છે<ph name="END_LINK" /> તેને તમે મેનેજ કરી શકો છો.
 
 તમારા Chromeના અનુભવને બહેતર બનાવવા માટે ડેટાનો ઉપયોગ કરતા વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> પર જાઓ.</translation>
-<translation id="6916015246697034114">Chromeમાં વૉઇસની સુવિધા વડે શોધો</translation>
-<translation id="6964931465519938134">હવે તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromeનો ઉપયોગ કરી શકશો.</translation>
+<translation id="6922332667202044570">Chromeમાં બ્રાઉઝિંગ ડેટા ડિલીટ કરો.</translation>
 <translation id="6975725306479268850">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chrome પસંદ કરો</translation>
-<translation id="7004159181872656283">Chromeમાં વિઝ્યુઅલ શોધો.</translation>
 <translation id="7056826488869329999">Chromeમાં સલામતી માટે તપાસ ખોલે છે અને ચલાવે છે.</translation>
-<translation id="7059914902409643750">Chrome કસ્ટમાઇઝ કરો</translation>
+<translation id="7061455974939528301">Chrome આઇકન દબાવી રાખો અને "હોમ સ્ક્રીનમાં ફેરફાર કરો" પર ક્લિક કરો</translation>
 <translation id="7124339256045485976">Chrome અપ ટૂ ડેટ રાખો</translation>
 <translation id="7161390184744336561">Google Chrome જૂનું થઈ ગયું છે</translation>
 <translation id="7165736900384873061">Google Chrome QR સ્કૅનરને ઉપયોગમાં લેવાનું શરૂ કરો</translation>
@@ -226,96 +226,92 @@
 <translation id="7200524487407690471">Chrome દરરોજ ઑટોમૅટિક રીતે સલામતી માટે તપાસ ચલાવે છે, જેથી તમને ડેટા ઉલ્લંઘનની ઘટનાઓ, અસલામત વેબસાઇટ અને બીજા ઘણા જોખમોથી સલામત રાખી શકાય. તમે સેટિંગમાં જઈને સલામતી માટે તપાસની સુવિધા વિશે વધુ જાણી શકો છો.</translation>
 <translation id="7203324561587388418">કન્ટેન્ટ અને Chromeની સહાયક ટિપ જોતા રહો.</translation>
 <translation id="72119412072970160">તમે Google પાસવર્ડ મેનેજરમાં સાચવેલા તમારા પાસવર્ડનો ઉપયોગ તમારા iPad પરની અન્ય ઍપમાં કરી શકો છો.</translation>
+<translation id="7214019116829172458">Chromeમાં છૂપું ટૅબ ખોલો</translation>
+<translation id="722167379782941918">Chrome વધારેલા સંરક્ષણનો સુઝાવ આપે છે</translation>
 <translation id="723787869754590019">ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે Chromeનો ઉપયોગ કરો</translation>
-<translation id="7254380941803999489">Chromeને ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="7261678641327190792">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
 <translation id="7272930098487145294">છબીઓ સાચવવા માટે, સેટિંગ પર ટૅપ કરો જેથી Chrome તમારા ફોટા ઉમેરી શકે</translation>
 <translation id="7275945473750112644">તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, આ ડિવાઇસમાંથી તમારો Chrome ડેટા સાફ કરવામાં આવશે</translation>
+<translation id="7284245284340063465">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
+<translation id="7296102444587051536">iOS માટે Chrome</translation>
+<translation id="7299681342915173313">હવે તમે જ્યારે પણ ઇમેઇલ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરી શકો છો.</translation>
+<translation id="7344094882820374540">જોખમી સાઇટથી Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
 <translation id="7349129508108954623">ભાળ મેળવેલા સરનામાઓ વિશે તમને દિશાનિર્દેશો તેમજ સ્થાનિક માહિતી આપવા માટે Chromeને Google Mapsનો ઉપયોગ કરવાની મંજૂરી આપો.</translation>
 <translation id="7394108421562933108">Chromeમાં Maps</translation>
 <translation id="7400722733683201933">Google Chrome વિશે</translation>
 <translation id="7466693328838535498">શોધ વિજેટ બૉક્સમાં, Chrome દાખલ કરો</translation>
-<translation id="746684838091935575">3. Chrome પસંદ કરો</translation>
+<translation id="7477056987201678345">Chromeનો ડેટા ડિલીટ કરી રહ્યાં છીએ…</translation>
 <translation id="7492574581995589075">તમારી સંસ્થાએ તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવાની અને તેને સાચવવાની ક્ષમતા બંધ કરી છે. નવા બુકમાર્ક, પાસવર્ડ વગેરે માત્ર આ ડિવાઇસમાં સાચવવામાં આવશે.</translation>
-<translation id="7501046334262221972">Chromeને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવવા માટે, સેટિંગ ખોલો. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો અને પછી Chromeને પસંદ કરો.</translation>
-<translation id="756809126120519699">Chrome ડેટા સાફ કર્યો</translation>
+<translation id="7540272326042438331">Chrome શેર કરો</translation>
+<translation id="7575971113404272499">Chrome વિશે ટિપ: ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="7581063337314642333">Chromeમાં ટૅબ ગ્રિડની મુલાકાત લો</translation>
+<translation id="7599894504325210080">Chrome પર ઑટોમૅટિક રીતે ભરવાની સુવિધાનો મોટો કરેલો વ્યૂ</translation>
+<translation id="7642373780953416937">તમારા માટે Chrome ઑટોમૅટિક રીતે ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટે અલર્ટ મેળવો.</translation>
 <translation id="7662994914830945754">તમે જ્યાંથી Chromeનો ઉપયોગ કરો ત્યાંથી તમારી ટૅબ જોવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
-<translation id="7669869107155339016">Chrome સેટિંગ પર જાઓ.</translation>
-<translation id="769104993356536261">iOS પર Chrome ઍક્શનનો ઉપયોગ કરો</translation>
 <translation id="7693590760643069321">હવે તમે જ્યારે પણ મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરી શકશો.</translation>
 <translation id="7698568245838009292">Chromeને કૅમેરાનો ઍક્સેસ જોઈશે</translation>
-<translation id="7754633291442704733">તમારી સંસ્થા <ph name="DOMAIN" />ને તમારા Chrome ડેટા, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને તમે આ એકાઉન્ટમાં સ્ટોર કરો છો તે અન્ય સેટિંગનો ઍક્સેસ મળશે. જ્યારે તમે સાઇન આઉટ કરશો, ત્યારે આ ડિવાઇસમાંથી તમારો ડેટા સાફ કરવામાં આવશે.  જોકે, તમારો ડેટા તમારા મેનેજ કરેલા Google એકાઉન્ટમાં સ્ટોર કરેલો રહેશે અને તમારી સંસ્થા માટે ઉપલબ્ધ રહેશે. તમારી સંસ્થા વિશેષ કરીને તે એકાઉન્ટ માટે વપરાશકર્તાની પૉલિસીઓ સેટ કરી શકે છે કે જે Chromeના વર્તનને બદલી શકે છે.</translation>
+<translation id="7707877166818730835">Chromeમાં મારું નવીનતમ ટૅબ ખોલો</translation>
+<translation id="776305366874821582">તમારા iPhoneની હોમ સ્ક્રીનના ડૉકમાંથી Chrome વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="7780154209050837198">Chromeનો વધુમાં વધુ લાભ લેવા માટે, તમારા Google એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરો.</translation>
+<translation id="7787205077729386167">iOSમાં Chrome સેટિંગ ખોલો, પછી "ડિફૉલ્ટ બ્રાઉઝર ઍપ" પર ટૅપ કરો અને Chrome પસંદ કરો.</translation>
 <translation id="778855399387580014">નવા Chrome ટૅબમાં શોધ શરૂ કરો.</translation>
 <translation id="7792140019572081272">Chrome ચહેરાના ID વડે તમારો સંવેદનશીલ વ્યક્તિગત ડેટા સુરક્ષિત રાખે છે.</translation>
 <translation id="7855730255114109580">Google Chrome અપ ટૂ ડેટ છે</translation>
 <translation id="7897703007638178753">Chromeના તાજેતરના ટૅબ જુઓ</translation>
-<translation id="7925119591961387184">"Chrome" પસંદ કરો.</translation>
-<translation id="7933491483529363150">Chromeમાં મારું નવીનતમ ટૅબ ખોલો.</translation>
 <translation id="7948283758957877064">Chromeમાં નવું શું છે</translation>
+<translation id="8000174216052461231">Chrome ટિપ: Chromeની સૌથી સશક્ત સુરક્ષા મેળવો</translation>
 <translation id="8006014511203279255">મેસેજ અથવા અન્ય ઍપમાં જ્યારે પણ તમે કોઈ લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
+<translation id="8018153653741938705">Google Chromeનો ઉપયોગ કરીને સલામત રહો</translation>
 <translation id="8022947259858476807">લિંક ખોલવા, વિજેટથી શોધવા અને અન્ય ઍપમાં પાસવર્ડ ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="804638182476029347">Chrome નોટિફિકેશનને કિંમતમાં ઘટાડા વિશે અલર્ટ મેળવવાની મંજૂરી આપો</translation>
+<translation id="804756029368067824">તમે ખરીદવા ઇચ્છતા હો એવી બાબતોની કિંમતો સરળતાથી ટ્રૅક કરવા અને કિંમત સંબંધિત જાણકારીઓ મેળવવા માટે, Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો.</translation>
 <translation id="8065292699993359127">છૂપા મોડમાં Chromeમાં URLs ખોલો</translation>
 <translation id="8069507567842347179">આ પૅકેજને Chrome પર પહેલેથી જ ટ્રૅક કરવામાં આવ્યું છે.</translation>
-<translation id="81358522153858150">Chrome હવે તમારા મેનેજ કરેલા એકાઉન્ટ માટે વપરાશકર્તાની પૉલિસીઓને સપોર્ટ કરે છે</translation>
 <translation id="8136856065410661948">Chrome અને Google Lensમાંથી તમારા Apple Calendarમાં ઇવેન્ટ બનાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
+<translation id="8154120522323162874">તમારા બ્રાઉઝરનું સેટઅપ કરવાનું ચાલુ રાખીને, Chromeનો સૌથી વધુ લાભ મેળવો.</translation>
 <translation id="8160472928944011082">Chrome અપડેટ થઈ શકતું નથી</translation>
-<translation id="8174679664544842874">Chromeમાં નવું ટૅબ ખોલે છે.</translation>
-<translation id="8213758103105806860">Chrome Bookmarks જુઓ</translation>
-<translation id="8328903609881776074">Chromeમાં નવું છૂપું ટૅબ ખોલે છે.</translation>
+<translation id="8248887045858762645">Chrome વિશેની ટિપ</translation>
+<translation id="8265730590513812063">Chrome મેનૂ ખોલો</translation>
+<translation id="8317674518145175158">ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
+
+તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
 <translation id="8357607116237445042">આ ડિવાઇસમાંથી તમારો Chrome ડેટા સાફ કરવો છે કે તેને જાળવી રાખવો છે તે પસંદ કરો</translation>
 <translation id="8370517070665726704">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>
+<translation id="8371138994040262994">Chromeમાં સેટિંગ ખોલે છે.</translation>
 <translation id="8387459386171870978">Chromeનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="840168496893712993">કેટલાંક એડ-ઓનને કારણે Chrome ક્રૅશ થાય છે. કૃપા કરીને તેમને અનઇન્સ્ટૉલ કરવાનો પ્રયાસ કરો.</translation>
+<translation id="8413500425974960807">Chrome વિશે ટિપ: Chromeને ડૉક પર ખસેડો</translation>
 <translation id="8413795581997394485">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે સુરક્ષિત રાખે છે. જ્યારે તમે કોઈ સાઇટની મુલાકાત લો, ત્યારે Chrome પ્રાઇવસી સર્વર મારફતે Googleને તે સાઇટના URLનો વાંચવામાં મુશ્કેલ બનાવેલો ભાગ મોકલે છે, જે તમારા IP ઍડ્રેસને છુપાવે છે. જો સાઇટ પર કોઈ શંકાસ્પદ પ્રવૃત્તિ દેખાય, તો સંપૂર્ણ URLs અને પેજ કન્ટેન્ટના બિટ પણ મોકલવામાં આવે છે.</translation>
-<translation id="8414886616817913619">તમારી સંસ્થા માટે જરૂરી છે કે Chromeનો ઉપયોગ કરવા માટે તમે સાઇન ઇન કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="84594714173170813">તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="8459495907675268833">પસંદ કરેલ ડેટા Chrome અને સિંક ડિવાઇસમાંથી દૂર કરવામાં આવ્યો છે. તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો જેમ કે શોધ અને history.google.com પરની બીજા Google સેવાઓમાંથી પ્રવૃત્તિ હોય શકે છે.</translation>
 <translation id="8491300088149538575"><ph name="EMAIL" /> તરીકે સાઇન ઇન થયાં.
 
 <ph name="TIME" />ના રોજ તમારા પાસફ્રેઝ સાથે તમારો ડેટા એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો.</translation>
-<translation id="850555388806794946">Chromeને તમારું ડિફૉલ્ટ બ્રાઉઝર બનાવવા માટે:
-  1. સેટિંગ ખોલો
-  2. ડિફૉલ્ટ બ્રાઉઝર ઍપ પર ટૅપ કરો
-  3. Chrome પસંદ કરો.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">તમારા માટે Chrome ભાળ મેળવે તેવી પ્રાઇવસી કે સુરક્ષા સંબંધિત કોઈપણ સમસ્યાઓ માટેના અલર્ટ.</translation>
 <translation id="8558480467877843976">હવે તમે કોઈપણ સમયે બ્રાઉઝ કરીને અથવા મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરીને Chromeનો ઉપયોગ કરી શકો છો.</translation>
-<translation id="8577978202917232774">તમારા અન્ય ડિવાઇસ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિના આધારે સૂચનો બતાવવામાં આવે છે. સૂચનો મેળવવા માટે, તમારા બધા ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
-<translation id="8587647598504233556">"Chrome" પર ટૅપ કર્યા પછી "ડિફૉલ્ટ બ્રાઉઝર ઍપ" પર ટૅપ કરો.</translation>
 <translation id="8603022514504485810">Google Password Manager બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો.<ph name="END_LINK" /></translation>
+<translation id="8630122478628016441">“જ્યારે તમે Chrome બંધ કરો, ત્યારે છૂપા ટૅબ લૉક કરો” ચાલુ કરો.</translation>
 <translation id="8727043961453758442">Chromeનો વધુને વધુ લાભ મેળવો</translation>
-<translation id="8736550665979974340">Google Chromeનો ઉપયોગ કરીને સલામત રહો</translation>
-<translation id="8760668027640688122">Chromeમાં નવું ટૅબ ખોલો</translation>
 <translation id="8765470054473112089">જ્યારે તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે બહેતર સૂચનો મેળવવા માટે Chrome તમે જે ટાઇપ કરો છો તેને તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
 <translation id="8772179140489533211">Chromeમાં સાઇન ઇન કરવા માટે સંકેતો બતાવો.</translation>
 <translation id="8788269841521769222">તમારે આ પાસવર્ડ યાદ રાખવાની જરૂર રહેશે નહીં. તે <ph name="EMAIL" /> માટેના Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવશે</translation>
-<translation id="878917453316810648">Chrome વિશે ટિપ: ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
-<translation id="8808828119384186784">Chrome સેટિંગ</translation>
+<translation id="880967149107462122">Chrome સેટિંગ પર જાઓ</translation>
+<translation id="8842132678697187091">તમે અહીં Google Lens ખોલી શકો છો.</translation>
+<translation id="8850736900032787670">તમારી રુચિઓના આધારે મનગમતું બનાવેલું કન્ટેન્ટ મેળવવા માટે, Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="8855781063981781621">Chromeમાં લૉકડાઉન મોડ બંધ કરવા માટે, તેને તમારા iPad પર બંધ કરો.</translation>
-<translation id="8856877214925961642">પાસફ્રેઝ એન્ક્રિપ્શનમાં ચુકવણી પદ્ધતિઓ અને સરનામા શામેલ હોતા નથી.
-
-આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Password Manager બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરો.</translation>
 <translation id="8865415417596392024">તમારા એકાઉન્ટમાંનો Chrome ડેટા</translation>
 <translation id="8874688701962049679">Chromeનો વધુને વધુ લાભ મેળવવા માટેની ટિપ.</translation>
-<translation id="8891935667620843985">તમે Chromeને તમારી ડિફૉલ્ટ બ્રાઉઝર ઍપ બનાવીને ઑટોમૅટિક રીતે તેમાં લિંક ખોલી શકો છો.</translation>
 <translation id="8897749957032330183">પાસવર્ડ આ ડિવાઇસના Google Password Managerમાં સાચવવામાં આવે છે</translation>
-<translation id="8949681853939555434">Chromeને તમારા ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
-<translation id="8969290730818637510">જ્યારે ચાલુ હોય:
-<ph name="BEGIN_INDENT" />  • તમે જે રીતે કરો છો, તે રીતે Chromeનો ઉપયોગ કરતા લોકો માટે તેને બહેતર બનાવવામાં સહાય કરો.<ph name="END_INDENT" />
-
-ધ્યાનમાં લેવા જેવી બાબતો:
-<ph name="BEGIN_INDENT" />  • Chromeના તમારા વપરાશની માહિતી Googleને મોકલવામાં આવે છે, પણ તેને તમારી સાથે સાંકળવામાં આવતી નથી.
-  • જો Chrome ક્રૅશ થાય, તો ક્રૅશની વિગતોમાં અમુક વ્યક્તિગત માહિતીનો સમાવેશ થઈ શકે છે
-  • જો તમે સિંક કરવાની સુવિધા ચાલુ કરો, તો મેટ્રિકમાં તમે જે URLsની મુલાકાત લીધી હોય, તેની માહિતીનો પણ સમાવેશ થઈ શકે છે.<ph name="END_INDENT" /></translation>
-<translation id="9043368763795653245">તમારું Discover ફીડ અને Chromeને મનગમતું બનાવવા માટે, સિંકની સુવિધા ચાલુ કરો.</translation>
+<translation id="9004772704776174843">Chromeમાંથી સાઇન આઉટ થયા</translation>
 <translation id="9068336935206019333">Chromeના છૂપા મોડમાં ખોલો</translation>
-<translation id="9071207983537882274">Chromeમાં સેટિંગ ખોલે છે.</translation>
-<translation id="9112744793181547300">Chromeને ડિફૉલ્ટ તરીકે સેટ કરીએ?</translation>
+<translation id="909127538042363610">Chromeની સૌથી સશક્ત સુરક્ષા મેળવો</translation>
 <translation id="9122931302567044771">આનો અર્થ છે કે Chrome દરેક વખતે ડેસ્કટૉપ સાઇટની વિનંતી કરશે.</translation>
+<translation id="9176561303811134420">Chromeમાં ચુકવણી પદ્ધતિઓ મેનેજ કરો</translation>
 <translation id="9181628561061032322">Chromeના તાજેતરના ટૅબ ખોલે છે.</translation>
-<translation id="953008885340860025">Chromeમાંથી સાઇન આઉટ થયા</translation>
+<translation id="9194404253580584015">Google દ્વારા તમારા માટે બનાવવામાં આવેલું કસ્ટમ ફીડ.</translation>
+<translation id="948597495737267756">તમારા Chrome ઇતિહાસનું પેજ ખોલે છે.</translation>
 <translation id="97300214378190234">જ્યારે પણ તમે અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
+<translation id="998677222109959694">Chrome સેટિંગ મેનેજ કરો</translation>
 </translationbundle>

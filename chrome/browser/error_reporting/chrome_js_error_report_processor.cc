@@ -109,13 +109,14 @@ std::string TruncateErrorMessage(const std::string& message) {
                        message.substr(begin_end_fragment)});
 }
 
-std::string MapWindowTypeToString(WindowType window_type) {
+std::string MapWindowTypeToString(
+    JavaScriptErrorReport::WindowType window_type) {
   switch (window_type) {
-    case WindowType::kRegularTabbed:
+    case JavaScriptErrorReport::WindowType::kRegularTabbed:
       return kRegularTabbedWindow;
-    case WindowType::kWebApp:
+    case JavaScriptErrorReport::WindowType::kWebApp:
       return kWebAppWindow;
-    case WindowType::kSystemWebApp:
+    case JavaScriptErrorReport::WindowType::kSystemWebApp:
       return kSystemWebAppWindow;
     default:
       return kNoBrowserNoWindow;
@@ -155,7 +156,7 @@ ChromeJsErrorReportProcessor::CheckConsentAndRedact(
   }
 
   error_report.message = RedactErrorMessage(error_report.message);
-  // TODO(https://crbug.com/1121816): Also redact stack trace, but don't
+  // TODO(crbug.com/40146362): Also redact stack trace, but don't
   // completely remove the URL (only query & fragment).
   return error_report;
 }
@@ -170,7 +171,7 @@ ChromeJsErrorReportProcessor::PlatformInfo
 ChromeJsErrorReportProcessor::GetPlatformInfo() {
   PlatformInfo info;
 
-  // TODO(https://crbug.com/1121816): Get correct product_name for non-POSIX
+  // TODO(crbug.com/40146362): Get correct product_name for non-POSIX
   // platforms.
 #if BUILDFLAG(IS_POSIX)
   crash_reporter::GetClientProductNameAndVersion(&info.product_name,
@@ -256,7 +257,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     params["column"] = base::NumberToString(*error_report->column_number);
   if (error_report->debug_id)
     params["debug_id"] = std::move(*error_report->debug_id);
-  // TODO(crbug/1121816): Chrome crashes have "Process uptime" and "Process
+  // TODO(crbug.com/40146362): Chrome crashes have "Process uptime" and "Process
   // type" fields, eventually consider using that for process uptime.
   params["browser_process_uptime_ms"] =
       base::NumberToString(browser_process_uptime.InMilliseconds());

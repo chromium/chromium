@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_EXTENSIONS_SERVICE_WORKER_APITEST_H_
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/common/page_type.h"
 #include "extensions/browser/process_manager.h"
 
 class GURL;

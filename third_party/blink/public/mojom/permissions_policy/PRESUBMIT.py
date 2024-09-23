@@ -92,8 +92,7 @@ def uma_histogram_checks_factory(mojom_file,
                 strip_k_prefix=True)
         if presubmit_error:
             return [
-                output_api.PresubmitPromptWarning(presubmit_error,
-                                                  items=[source_path])
+                output_api.PresubmitError(presubmit_error, items=[source_path])
             ]
         return []
 
@@ -145,7 +144,7 @@ def json5_config_checks_factory(mojom_source_path, json5_config_path,
             list(mojom_missing_enums)) if mojom_missing_enums else ""
 
         return [] if json5_enums == mojom_enums else [
-            output_api.PresubmitPromptWarning(
+            output_api.PresubmitError(
                 "{} and {} are out of sync: {}{}".format(
                     json5_config_path, mojom_source_path, json5_messages,
                     mojom_messages),

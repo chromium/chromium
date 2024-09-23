@@ -92,7 +92,8 @@ TEST_F(PasswordRequirementsServiceTest, ExerciseEverything) {
     raw_ptr<autofill::PasswordRequirementsSpec> expected;
   } tests[] = {
       {
-          .test_name = "No data prefechted", .expected = &spec_l0_p0,
+          .test_name = "No data prefechted",
+          .expected = &spec_l0_p0,
       },
       {
           .test_name = "Only domain wide spec",

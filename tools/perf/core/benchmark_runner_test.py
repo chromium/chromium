@@ -7,8 +7,7 @@ import os
 import shutil
 import tempfile
 import unittest
-
-import mock
+from unittest import mock
 
 from telemetry import decorators
 from telemetry.testing import test_stories
@@ -75,7 +74,7 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
 
   def RunBenchmark(self, benchmark_class):
     """Run a benchmark, process results, and return generated histograms."""
-    # TODO(crbug.com/985712): Ideally we should be able to just call
+    # TODO(crbug.com/40636798): Ideally we should be able to just call
     # telemetry.command_line.RunCommand(self.options) with the right set
     # of options chosen. However, argument parsing and command running are
     # currently tangled in Telemetry. In particular the class property
@@ -99,7 +98,7 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     return histograms
 
   @decorators.Disabled(
-      'chromeos',  # TODO(https://crbug.com/1098412): Fix the test.
+      'chromeos',  # TODO(crbug.com/40137013): Fix the test.
       'android-nougat',  # Flaky: https://crbug.com/1342706
       'mac')  # Failing: https://crbug.com/1370958
   def testTimelineBasedEndToEnd(self):

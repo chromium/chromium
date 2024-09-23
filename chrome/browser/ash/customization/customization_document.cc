@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_paths.h"
@@ -262,12 +263,12 @@ bool CustomizationDocument::LoadManifestFromString(
       base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     LOG(ERROR) << parsed_json.error().message;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
   if (!parsed_json->is_dict()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -342,7 +343,7 @@ void StartupCustomizationDocument::Init(
     if (keyboard_layout_ptr)
       keyboard_layout_ = *keyboard_layout_ptr;
 
-    if (const std::optional<base::StringPiece> hwid =
+    if (const std::optional<std::string_view> hwid =
             statistics_provider->GetMachineStatistic(
                 system::kHardwareClassKey)) {
       base::Value::List* hwid_list = root_->FindList(kHwidMapAttr);
@@ -386,16 +387,16 @@ void StartupCustomizationDocument::Init(
   }
 
   // If manifest doesn't exist still apply values from VPD.
-  if (const std::optional<base::StringPiece> locale_statistic =
+  if (const std::optional<std::string_view> locale_statistic =
           statistics_provider->GetMachineStatistic(system::kInitialLocaleKey)) {
     initial_locale_ = std::string(locale_statistic.value());
   }
-  if (const std::optional<base::StringPiece> timezone_statistic =
+  if (const std::optional<std::string_view> timezone_statistic =
           statistics_provider->GetMachineStatistic(
               system::kInitialTimezoneKey)) {
     initial_timezone_ = std::string(timezone_statistic.value());
   }
-  if (const std::optional<base::StringPiece> keyboard_statistic =
+  if (const std::optional<std::string_view> keyboard_statistic =
           statistics_provider->GetMachineStatistic(
               system::kKeyboardLayoutKey)) {
     keyboard_layout_ = std::string(keyboard_statistic.value());
@@ -543,7 +544,7 @@ base::FilePath
 ServicesCustomizationDocument::GetCustomizedWallpaperDownloadedFileName() {
   const base::FilePath dir = GetCustomizedWallpaperCacheDir();
   if (dir.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return dir;
   }
   return dir.Append(kCustomizationDefaultWallpaperDownloadedFile);
@@ -574,7 +575,7 @@ void ServicesCustomizationDocument::StartFetching() {
   if (!url_.is_valid()) {
     system::StatisticsProvider* provider =
         system::StatisticsProvider::GetInstance();
-    const std::optional<base::StringPiece> customization_id =
+    const std::optional<std::string_view> customization_id =
         provider->GetMachineStatistic(system::kCustomizationIdKey);
     if (customization_id && !customization_id->empty()) {
       url_ = GURL(base::StringPrintf(
@@ -858,7 +859,7 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
   const base::FilePath dir = GetCustomizedWallpaperCacheDir();
   const base::FilePath file = GetCustomizedWallpaperDownloadedFileName();
   if (dir.empty() || file.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     applying->Finished(false);
     return;
   }

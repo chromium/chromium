@@ -4,15 +4,32 @@
 
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/search_engines/prepopulated_engines.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+
+namespace {
+
+// Returns the search engine button element interaction for the settings table
+// view controller.
+GREYElementInteraction* GetInteractionForSearchEngineSettingButton() {
+  return
+      [[EarlGrey selectElementWithMatcher:
+                     grey_allOf(chrome_test_util::SettingsSearchEngineButton(),
+                                grey_sufficientlyVisible(), nil)]
+             usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+          onElementWithMatcher:chrome_test_util::SettingsCollectionView()];
+}
+
+}  // namespace
 
 @implementation SearchEngineChoiceEarlGreyUI
 
@@ -28,7 +45,7 @@
                  grey_sufficientlyVisible(), nil);
   // Scroll down to find the search engine cell.
   id<GREYMatcher> scrollView =
-      grey_accessibilityID(kSearchEngineTableViewIdentifier);
+      grey_accessibilityID(kSearchEngineChoiceScrollViewIdentifier);
   [[[EarlGrey selectElementWithMatcher:searchEngineRowMatcher]
          usingSearchAction:grey_scrollInDirection(scrollDirection, scrollAmount)
       onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
@@ -66,63 +83,50 @@
   return;
 }
 
++ (void)openSearchEngineSettings {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [GetInteractionForSearchEngineSettingButton() performAction:grey_tap()];
+}
+
 + (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName {
   // Opens the default search engine settings menu.
   [ChromeEarlGreyUI openSettingsMenu];
   // Verifies that the correct search engine is selected. The default engine's
   // name appears in the name of the selected row.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
+  [GetInteractionForSearchEngineSettingButton()
       assertWithMatcher:grey_allOf(grey_accessibilityValue(searchEngineName),
                                    grey_sufficientlyVisible(), nil)];
 }
 
-+ (void)verifyFakeOmniboxIllustrationState:(FakeOmniboxState)state {
-  switch (state) {
-    case kHidden:
-      [[EarlGrey selectElementWithMatcher:
-                     grey_allOf(grey_accessibilityID(
-                                    kFakeEmptyOmniboxAccessibilityIdentifier),
-                                grey_sufficientlyVisible(), nil)]
-          assertWithMatcher:grey_nil()];
-      [[EarlGrey
-          selectElementWithMatcher:grey_allOf(
-                                       grey_accessibilityID(
-                                           kFakeOmniboxAccessibilityIdentifier),
-                                       grey_sufficientlyVisible(), nil)]
-          assertWithMatcher:grey_nil()];
-      break;
-    case kEmpty:
-      [[EarlGrey
-          selectElementWithMatcher:
-              grey_accessibilityID(kFakeEmptyOmniboxAccessibilityIdentifier)]
-          assertWithMatcher:grey_sufficientlyVisible()];
-      break;
-    case kFull:
-      [[EarlGrey
-          selectElementWithMatcher:grey_accessibilityID(
-                                       kFakeOmniboxAccessibilityIdentifier)]
-          assertWithMatcher:grey_sufficientlyVisible()];
-      break;
-  }
++ (id<GREYMatcher>)settingsSearchEngineMatcherWithName:(NSString*)name {
+  NSString* label = [NSString
+      stringWithFormat:@"%@%@", kSettingsSearchEngineCellIdentifierPrefix,
+                       name];
+  return grey_accessibilityID(label);
 }
 
-+ (id<GREYMatcher>)settingsCustomSearchEngineAccessibilityLabelWithName:
-    (const char*)name {
-  NSString* label = [NSString stringWithFormat:@"%s, 127.0.0.1", name];
-  return grey_accessibilityLabel(label);
-}
-
-+ (GREYElementInteraction*)interactionForSettingsCustomSearchEngineWithName:
-    (const char*)name {
-  id<GREYMatcher> customSearchEngineCell =
-      [self settingsCustomSearchEngineAccessibilityLabelWithName:name];
++ (GREYElementInteraction*)interactionForSettingsSearchEngineWithName:
+    (NSString*)name {
+  id<GREYMatcher> searchEngineCellMatcher =
+      [self settingsSearchEngineMatcherWithName:name];
   return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(customSearchEngineCell,
+      selectElementWithMatcher:grey_allOf(searchEngineCellMatcher,
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(
                                kSearchEngineTableViewControllerId)];
+}
+
++ (GREYElementInteraction*)interactionForSettingsWithPrepopulatedSearchEngine:
+    (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine {
+  NSString* name =
+      [self searchEngineNameWithPrepopulatedEngine:prepopulatedEngine];
+  return [self interactionForSettingsSearchEngineWithName:name];
+}
+
++ (NSString*)searchEngineNameWithPrepopulatedEngine:
+    (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine {
+  return base::SysUTF16ToNSString(prepopulatedEngine.name);
 }
 
 @end

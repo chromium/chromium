@@ -56,10 +56,6 @@ namespace blink {
 
 class ExceptionState;
 
-namespace bindings {
-class DictionaryBase;
-}
-
 // This file contains bindings helper functions that do not have dependencies
 // to core/ or bindings/core. For core-specific helper functions, see
 // bindings/core/v8/V8BindingForCore.h.
@@ -72,118 +68,6 @@ struct V8TypeOf {
   // V8TypeOf for each wrapper class.
   typedef void Type;
 };
-
-template <typename CallbackInfo, typename S>
-inline void V8SetReturnValue(const CallbackInfo& info,
-                             const v8::Persistent<S>& handle) {
-  info.GetReturnValue().Set(handle);
-}
-
-template <typename CallbackInfo, typename S>
-inline void V8SetReturnValue(const CallbackInfo& info,
-                             const v8::Local<S> handle) {
-  info.GetReturnValue().Set(handle);
-}
-
-template <typename CallbackInfo, typename S>
-inline void V8SetReturnValue(const CallbackInfo& info,
-                             v8::MaybeLocal<S> maybe) {
-  if (LIKELY(!maybe.IsEmpty()))
-    info.GetReturnValue().Set(maybe.ToLocalChecked());
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& info, bool value) {
-  info.GetReturnValue().Set(value);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& info, double value) {
-  info.GetReturnValue().Set(value);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& info, int32_t value) {
-  info.GetReturnValue().Set(value);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& info, uint32_t value) {
-  info.GetReturnValue().Set(value);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValue(const CallbackInfo& info, uint64_t value) {
-  info.GetReturnValue().Set(static_cast<double>(value));
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueBool(const CallbackInfo& info, bool v) {
-  info.GetReturnValue().Set(v);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueInt(const CallbackInfo& info, int v) {
-  info.GetReturnValue().Set(v);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueUnsigned(const CallbackInfo& info, unsigned v) {
-  info.GetReturnValue().Set(v);
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueNull(const CallbackInfo& info) {
-  info.GetReturnValue().SetNull();
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueUndefined(const CallbackInfo& info) {
-  info.GetReturnValue().SetUndefined();
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueEmptyString(const CallbackInfo& info) {
-  info.GetReturnValue().SetEmptyString();
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueString(const CallbackInfo& info,
-                                   const String& string,
-                                   v8::Isolate* isolate) {
-  if (string.IsNull()) {
-    V8SetReturnValueEmptyString(info);
-    return;
-  }
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), string.Impl());
-}
-
-template <typename CallbackInfo>
-inline void V8SetReturnValueStringOrNull(const CallbackInfo& info,
-                                         const String& string,
-                                         v8::Isolate* isolate) {
-  if (string.IsNull()) {
-    V8SetReturnValueNull(info);
-    return;
-  }
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), string.Impl());
-}
-
-// Dictionary
-template <class CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      bindings::DictionaryBase* value,
-                      v8::Local<v8::Object> creation_context) {
-  V8SetReturnValue(info, ToV8(value, creation_context, info.GetIsolate()));
-}
-
-template <class CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      bindings::DictionaryBase* value) {
-  V8SetReturnValue(info, ToV8(value, info.Holder(), info.GetIsolate()));
-}
 
 // Convert v8::String to a WTF::String. If the V8 string is not already
 // an external string then it is transformed into an external string at this
@@ -236,6 +120,20 @@ inline String ToCoreStringWithUndefinedOrNullCheck(v8::Isolate* isolate,
 }
 
 // Convert a string to a V8 string.
+
+inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
+                                      const String& string) {
+  if (string.empty()) {
+    return v8::String::Empty(isolate);
+  }
+  return V8PerIsolateData::From(isolate)->GetStringCache()->V8ExternalString(
+      isolate, string.Impl());
+}
+
+inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
+                                      const AtomicString& string) {
+  return V8String(isolate, string.GetString());
+}
 
 inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
                                       const StringView& string) {
@@ -346,6 +244,27 @@ enum class NamedPropertyDeleterResult {
   kDeleted,          // Successfully deleted.
   kDidNotDelete,     // Intercepted but failed to delete.
 };
+
+constexpr v8::Intercepted BlinkInterceptorResultToV8Intercepted(
+    IndexedPropertySetterResult value) {
+  return value == IndexedPropertySetterResult::kDidNotIntercept
+             ? v8::Intercepted::kNo
+             : v8::Intercepted::kYes;
+}
+
+constexpr v8::Intercepted BlinkInterceptorResultToV8Intercepted(
+    NamedPropertySetterResult value) {
+  return value == NamedPropertySetterResult::kDidNotIntercept
+             ? v8::Intercepted::kNo
+             : v8::Intercepted::kYes;
+}
+
+constexpr v8::Intercepted BlinkInterceptorResultToV8Intercepted(
+    NamedPropertyDeleterResult value) {
+  return value == NamedPropertyDeleterResult::kDidNotIntercept
+             ? v8::Intercepted::kNo
+             : v8::Intercepted::kYes;
+}
 
 // Gets the url of the currently executing script. Returns empty string, if no
 // script is executing (e.g. during parsing of a meta tag in markup), or the

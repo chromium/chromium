@@ -37,6 +37,12 @@ class CONTENT_EXPORT NavigationThrottle {
     // NavigationHandle::Resume or NavigationHandle::CancelDeferredRequest. If
     // the NavigationHandle is destroyed while the navigation is deferred, the
     // navigation will be canceled in the network stack.
+    // Note: since this slows page load it should be avoided unless there's no
+    // other option. An example necessary case would be locked down users where
+    // a server check needs to be done before starting the navigation. For other
+    // cases, please consider alternatives like sending data to the renderer
+    // asynchronously, showing interstitials later when possible etc. It's good
+    // practice to add histograms to know how long the delay takes.
     DEFER,
 
     // Cancels the navigation.

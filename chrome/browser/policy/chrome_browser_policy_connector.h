@@ -136,10 +136,13 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   static void EnableCommandLineSupportForTesting();
 
   virtual base::flat_set<std::string> device_affiliation_ids() const;
+  void SetDeviceAffiliatedIdsForTesting(
+      const base::flat_set<std::string>& device_affiliation_ids);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Checks if the main / primary user is managed or not.
-  // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
+  // TODO(crbug.com/40788404): Remove once Lacros handles all profiles the same
+  // way.
   bool IsMainUserManaged() const;
 
   // The device settings used in Lacros.
@@ -162,6 +165,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // BrowserPolicyConnectorBase::
   std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
   CreatePolicyProviders() override;
+
+  base::flat_set<std::string> device_affiliation_ids_for_testing_;
 
  private:
   // Returns the policy provider that supplies platform policies.

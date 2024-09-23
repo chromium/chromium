@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/nearby_sharing/local_device_data/nearby_share_local_device_data_manager.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
 class NearbyShareClient;
@@ -60,7 +62,8 @@ class ListPublicCertificatesResponse;
 class NearbyShareCertificateManagerImpl
     : public NearbyShareCertificateManager,
       public NearbyShareContactManager::Observer,
-      public NearbyShareLocalDeviceDataManager::Observer {
+      public NearbyShareLocalDeviceDataManager::Observer,
+      public device::BluetoothAdapter::Observer {
  public:
   class Factory {
    public:
@@ -131,6 +134,12 @@ class NearbyShareCertificateManagerImpl
                                 bool did_full_name_change,
                                 bool did_icon_change) override;
 
+  // device::BluetoothAdapter::Observer:
+  void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
+                             bool powered) override;
+
+  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+
   // Used by the private certificate expiration scheduler to determine the next
   // private certificate expiration time. Returns base::Time::Min() if
   // certificates are missing. This function never returns std::nullopt.
@@ -144,11 +153,23 @@ class NearbyShareCertificateManagerImpl
   // Invoked by the private certificate expiration scheduler when an expired
   // private certificate needs to be removed or if no private certificates exist
   // yet. New certificate(s) will be created, and an upload to the Nearby Share
-  // server will be requested.
-  void OnPrivateCertificateExpiration();
-
-  void FinishPrivateCertificateRefresh(
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+  // server will be requested. If the `adapter_` field is not ready to refresh
+  // private certificates NearbyShareCertificateManagerImpl` stores a pending
+  // call to refresh the private certificates until the `adapter_` is ready:
+  //     - Case 1: [BlueZ] the `adapter_` is ready when the `BluetoothAdapter`
+  //       has been retrieved in  `OnGetAdapter()`.
+  //     - Case 2: [Floss] the `adapter_` is ready when the `BluetoothAdapter`
+  //       has been retrieved in  `OnGetAdapter()` and the `adapter_` is
+  //       powered on.
+  //     - Case 3: [Floss] if the `BluetoothAdapter` has been retrieved in
+  //       `OnGetAdapter()` and the `adapter_` is powered off,
+  //       `NearbyShareCertificateManagerImpl` adds itself as a
+  //       `AdapterPoweredChanged()` observer, and waits for the `adapter_` to
+  //       be powered on. Then, the `adapter_` is ready.
+  // Once the `adapter_` is ready as outlined above, a call to
+  // `AttemptPrivateCertificateRefresh()` is fired to flush the pending
+  // private certificate refresh.
+  void AttemptPrivateCertificateRefresh();
 
   // Invoked by the certificate upload scheduler when private certificates need
   // to be converted to public certificates and uploaded to the Nearby Share
@@ -208,6 +229,19 @@ class NearbyShareCertificateManagerImpl
   std::unique_ptr<ash::nearby::NearbyScheduler>
       download_public_certificates_scheduler_;
   std::unique_ptr<NearbyShareClient> client_;
+
+  // See documentation in declaration of `AttemptPrivateCertificateRefresh()`.
+  // `adapter_` is set asynchronously in a call to `GetBluetoothAdapter()`
+  // during the construction of `NearbyShareCertificateManagerImpl`. If
+  // private certificates refreshes are requested when `adapter_` is not ready,
+  // store a pending call via
+  // `is_pending_call_to_refresh_private_certificates_`.
+  scoped_refptr<device::BluetoothAdapter> adapter_;
+  bool is_pending_call_to_refresh_private_certificates_ = false;
+  base::ScopedObservation<device::BluetoothAdapter,
+                          device::BluetoothAdapter::Observer>
+      adapter_observation_{this};
+
   base::WeakPtrFactory<NearbyShareCertificateManagerImpl> weak_ptr_factory_{
       this};
 };

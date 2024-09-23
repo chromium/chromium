@@ -58,6 +58,10 @@ void TaskProvider::NotifyObserverTaskIdsListToBeInvalidated() const {
   DCHECK(observer_);
   observer_->TaskIdsListToBeInvalidated();
 }
+
+void TaskProvider::NotifyObserverActiveTaskFetched(TaskId task_id) const {
+  observer_->ActiveTaskFetched(task_id);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace task_manager

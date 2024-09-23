@@ -107,3 +107,5 @@ void StubNotificationDispatcherMac::GetAllDisplayedNotifications(
       std::move(notification_ids));
   std::move(callback).Run(std::move(notification_set));
 }
+
+void StubNotificationDispatcherMac::UserInitiatedShutdown() {}

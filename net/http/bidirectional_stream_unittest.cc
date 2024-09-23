@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/http/bidirectional_stream.h"
 
 #include <memory>
@@ -14,11 +19,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/features.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
@@ -43,6 +50,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,7 +131,7 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
   }
 
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {
+      const quiche::HttpHeaderBlock& response_headers) override {
     CHECK(!not_expect_callback_);
 
     response_headers_ = response_headers.Clone();
@@ -148,7 +156,7 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
     ++on_data_sent_count_;
   }
 
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
     CHECK(!not_expect_callback_);
 
     trailers_ = trailers.Clone();
@@ -259,10 +267,10 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
   // Const getters for internal states.
   const std::string& data_received() const { return data_received_; }
   int error() const { return error_; }
-  const spdy::Http2HeaderBlock& response_headers() const {
+  const quiche::HttpHeaderBlock& response_headers() const {
     return response_headers_;
   }
-  const spdy::Http2HeaderBlock& trailers() const { return trailers_; }
+  const quiche::HttpHeaderBlock& trailers() const { return trailers_; }
   int on_data_read_count() const { return on_data_read_count_; }
   int on_data_sent_count() const { return on_data_sent_count_; }
 
@@ -287,8 +295,8 @@ class TestDelegateBase : public BidirectionalStream::Delegate {
   std::unique_ptr<base::OneShotTimer> timer_;
   std::string data_received_;
   std::unique_ptr<base::RunLoop> loop_;
-  spdy::Http2HeaderBlock response_headers_;
-  spdy::Http2HeaderBlock trailers_;
+  quiche::HttpHeaderBlock response_headers_;
+  quiche::HttpHeaderBlock trailers_;
   NextProto next_proto_;
   int64_t received_bytes_ = 0;
   int64_t sent_bytes_ = 0;
@@ -325,7 +333,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
   ~DeleteStreamDelegate() override = default;
 
   void OnHeadersReceived(
-      const spdy::Http2HeaderBlock& response_headers) override {
+      const quiche::HttpHeaderBlock& response_headers) override {
     TestDelegateBase::OnHeadersReceived(response_headers);
     if (phase_ == ON_HEADERS_RECEIVED) {
       DeleteStream();
@@ -333,11 +341,11 @@ class DeleteStreamDelegate : public TestDelegateBase {
     }
   }
 
-  void OnDataSent() override { NOTREACHED(); }
+  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
 
   void OnDataRead(int bytes_read) override {
     if (phase_ == ON_HEADERS_RECEIVED) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     TestDelegateBase::OnDataRead(bytes_read);
@@ -347,9 +355,9 @@ class DeleteStreamDelegate : public TestDelegateBase {
     }
   }
 
-  void OnTrailersReceived(const spdy::Http2HeaderBlock& trailers) override {
+  void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
     if (phase_ == ON_HEADERS_RECEIVED || phase_ == ON_DATA_READ) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     TestDelegateBase::OnTrailersReceived(trailers);
@@ -361,7 +369,7 @@ class DeleteStreamDelegate : public TestDelegateBase {
 
   void OnFailed(int error) override {
     if (phase_ != ON_FAILED) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
     TestDelegateBase::OnFailed(error);
@@ -403,6 +411,11 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
       : default_url_(kDefaultUrl),
         host_port_pair_(HostPortPair::FromURL(default_url_)),
         ssl_data_(SSLSocketDataProvider(ASYNC, OK)) {
+    // Explicitly disable HappyEyeballsV3 because it doesn't support
+    // bidirectional streams.
+    // TODO(crbug.com/346835898): Support bidirectional streams in
+    // HappyEyeballsV3.
+    feature_list_.InitAndDisableFeature(features::kHappyEyeballsV3);
     ssl_data_.next_proto = kProtoHTTP2;
     ssl_data_.ssl_info.cert =
         ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
@@ -452,6 +465,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
  private:
   SSLSocketDataProvider ssl_data_;
   base::WeakPtr<SpdySession> session_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BidirectionalStreamTest, CreateInsecureStream) {
@@ -459,10 +473,10 @@ TEST_F(BidirectionalStreamTest, CreateInsecureStream) {
   request_info->method = "GET";
   request_info->url = GURL("http://www.example.org/");
 
-  TestDelegateBase delegate(nullptr, 0);
   auto session = std::make_unique<HttpNetworkSession>(
       SpdySessionDependencies::CreateSessionParams(&session_deps_),
       SpdySessionDependencies::CreateSessionContext(&session_deps_));
+  TestDelegateBase delegate(nullptr, 0);
   delegate.SetRunUntilCompletion(true);
   delegate.Start(std::move(request_info), session.get());
 
@@ -490,7 +504,7 @@ TEST_F(BidirectionalStreamTest, SimplePostRequest) {
   auto request_info = std::make_unique<BidirectionalStreamRequestInfo>();
   request_info->method = "POST";
   request_info->url = default_url_;
-  request_info->extra_headers.SetHeader(net::HttpRequestHeaders::kContentLength,
+  request_info->extra_headers.SetHeader(HttpRequestHeaders::kContentLength,
                                         base::NumberToString(kBodyDataSize));
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
   auto delegate =
@@ -609,8 +623,9 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   spdy::SpdySerializedFrame body_frame(
       spdy_util_.ConstructSpdyDataFrame(1, true));
   MockRead reads[] = {
-      CreateMockRead(resp, 1), CreateMockRead(body_frame, 2),
-      MockRead(SYNCHRONOUS, net::OK, 3),
+      CreateMockRead(resp, 1),
+      CreateMockRead(body_frame, 2),
+      MockRead(SYNCHRONOUS, OK, 3),
   };
 
   SSLSocketDataProvider ssl_data2(ASYNC, OK);
@@ -646,7 +661,8 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   ASSERT_FALSE(client_cert);
   ASSERT_FALSE(client_private_key);
 
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(0, delegate->on_data_sent_count());
@@ -725,7 +741,8 @@ TEST_F(BidirectionalStreamTest, TestReadDataAfterClose) {
   rv = delegate->ReadData();
   EXPECT_THAT(rv, IsOk());  // EOF.
 
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(1, delegate->on_data_read_count());
@@ -752,7 +769,7 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
   spdy::SpdySerializedFrame response_body_frame2(
       spdy_util_.ConstructSpdyDataFrame(1, false));
 
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["foo"] = "bar";
   spdy::SpdySerializedFrame response_trailers(
       spdy_util_.ConstructSpdyResponseHeaders(1, std::move(trailers), true));
@@ -774,7 +791,7 @@ TEST_F(BidirectionalStreamTest, TestNetLogContainEntries) {
   request_info->url = default_url_;
   request_info->priority = LOWEST;
   request_info->extra_headers.SetHeader(
-      net::HttpRequestHeaders::kContentLength,
+      HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
@@ -910,7 +927,7 @@ TEST_F(BidirectionalStreamTest, TestInterleaveReadDataAndSendData) {
   request_info->url = default_url_;
   request_info->priority = LOWEST;
   request_info->extra_headers.SetHeader(
-      net::HttpRequestHeaders::kContentLength,
+      HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
@@ -1000,7 +1017,7 @@ TEST_F(BidirectionalStreamTest, TestCoalesceSmallDataBuffers) {
   request_info->url = default_url_;
   request_info->priority = LOWEST;
   request_info->extra_headers.SetHeader(
-      net::HttpRequestHeaders::kContentLength,
+      HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 1));
 
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
@@ -1185,7 +1202,8 @@ TEST_F(BidirectionalStreamTest, TestBuffering) {
   EXPECT_EQ(kUploadDataSize * 3,
             static_cast<int>(delegate->data_received().size()));
 
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(0, delegate->on_data_sent_count());
@@ -1208,7 +1226,7 @@ TEST_F(BidirectionalStreamTest, TestBufferingWithTrailers) {
   spdy::SpdySerializedFrame body_frame(
       spdy_util_.ConstructSpdyDataFrame(1, false));
 
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["foo"] = "bar";
   spdy::SpdySerializedFrame response_trailers(
       spdy_util_.ConstructSpdyResponseHeaders(1, std::move(trailers), true));
@@ -1257,7 +1275,8 @@ TEST_F(BidirectionalStreamTest, TestBufferingWithTrailers) {
   EXPECT_EQ(1, delegate->on_data_read_count());
   EXPECT_EQ(kUploadDataSize * 3,
             static_cast<int>(delegate->data_received().size()));
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ("bar", delegate->trailers().find("foo")->second);
@@ -1296,7 +1315,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamAfterSendData) {
   request_info->url = default_url_;
   request_info->priority = LOWEST;
   request_info->extra_headers.SetHeader(
-      net::HttpRequestHeaders::kContentLength,
+      HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
@@ -1358,7 +1377,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringReadData) {
   request_info->url = default_url_;
   request_info->priority = LOWEST;
   request_info->extra_headers.SetHeader(
-      net::HttpRequestHeaders::kContentLength,
+      HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
@@ -1417,7 +1436,7 @@ TEST_F(BidirectionalStreamTest, PropagateProtocolError) {
   request_info->method = "POST";
   request_info->url = default_url_;
   request_info->extra_headers.SetHeader(
-      net::HttpRequestHeaders::kContentLength,
+      HttpRequestHeaders::kContentLength,
       base::NumberToString(kBodyDataSize * 3));
 
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);
@@ -1488,7 +1507,8 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnHeadersReceived) {
   delegate->Start(std::move(request_info), http_session_.get());
   // Makes sure delegate does not get called.
   base::RunLoop().RunUntilIdle();
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(0u, delegate->data_received().size());
@@ -1541,7 +1561,8 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnDataRead) {
   delegate->Start(std::move(request_info), http_session_.get());
   // Makes sure delegate does not get called.
   base::RunLoop().RunUntilIdle();
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ(kUploadDataSize * 1,
@@ -1573,7 +1594,7 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnTrailersReceived) {
   spdy::SpdySerializedFrame response_body_frame(
       spdy_util_.ConstructSpdyDataFrame(1, false));
 
-  spdy::Http2HeaderBlock trailers;
+  quiche::HttpHeaderBlock trailers;
   trailers["foo"] = "bar";
   spdy::SpdySerializedFrame response_trailers(
       spdy_util_.ConstructSpdyResponseHeaders(1, std::move(trailers), true));
@@ -1599,7 +1620,8 @@ TEST_F(BidirectionalStreamTest, DeleteStreamDuringOnTrailersReceived) {
   delegate->Start(std::move(request_info), http_session_.get());
   // Makes sure delegate does not get called.
   base::RunLoop().RunUntilIdle();
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ("header-value", response_headers.find("header-name")->second);
   EXPECT_EQ("bar", delegate->trailers().find("foo")->second);
@@ -1701,7 +1723,8 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
   delegate->SetRunUntilCompletion(true);
   delegate->Start(std::move(request_info), http_session_.get());
 
-  const spdy::Http2HeaderBlock& response_headers = delegate->response_headers();
+  const quiche::HttpHeaderBlock& response_headers =
+      delegate->response_headers();
   EXPECT_EQ("200", response_headers.find(":status")->second);
   EXPECT_EQ(alt_svc_header_value, response_headers.find("alt-svc")->second);
   EXPECT_EQ(0, delegate->on_data_sent_count());
@@ -1747,7 +1770,7 @@ TEST_F(BidirectionalStreamTest, Tagging) {
   auto request_info = std::make_unique<BidirectionalStreamRequestInfo>();
   request_info->method = "POST";
   request_info->url = default_url_;
-  request_info->extra_headers.SetHeader(net::HttpRequestHeaders::kContentLength,
+  request_info->extra_headers.SetHeader(HttpRequestHeaders::kContentLength,
                                         base::NumberToString(kBodyDataSize));
   request_info->socket_tag = tag;
   auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize);

@@ -15,9 +15,6 @@ found in the LICENSE file.
     <style name="FilledButtonThemeOverlay">
         <item name="android:buttonStyle">@style/FilledButton</item>
     </style>
-    <style name="FilledButtonThemeOverlay.Flat" tools:ignore="UnusedResources">
-        <item name="android:buttonStyle">@style/FilledButton.Flat</item>
-    </style>
     <style name="TextButtonThemeOverlay" tools:ignore="UnusedResources">
         <item name="android:buttonStyle">@style/TextButton</item>
     </style>
@@ -41,10 +38,6 @@ found in the LICENSE file.
         <item name="buttonTextColor">?attr/globalFilledButtonTextColor</item>
         <item name="buttonColor">?attr/globalFilledButtonBgColor</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
-        <item name="buttonRaised">true</item>
-    </style>
-    <style name="FilledButton.Flat" tools:ignore="UnusedResources">
-        <item name="buttonRaised">false</item>
     </style>
     <style name="TextButton" parent="ButtonCompatBase" tools:ignore="UnusedResources">
         <item name="android:paddingStart">8dp</item>
@@ -58,7 +51,6 @@ found in the LICENSE file.
           the buttons with a solid background.
         -->
         <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
-        <item name="buttonRaised">false</item>
     </style>
     <style name="OutlinedButton" parent="TextButton" tools:ignore="UnusedResources">
         <item name="borderWidth">@dimen/button_outlined_border_width</item>
@@ -69,12 +61,11 @@ found in the LICENSE file.
     <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif</item>
     </style>
-    <!-- Used by Chrome and Content -->
-    <style name="TextAppearance.RobotoMediumStyle" tools:ignore="UnusedResources">
+    <style name="TextAppearance.MediumStyle" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
     <!-- This style is overridden downstream to set accent_font_medium as the font family. -->
-    <style name="TextAppearance.AccentMediumStyle" parent="TextAppearance.RobotoMediumStyle" />
+    <style name="TextAppearance.AccentMediumStyle" parent="TextAppearance.MediumStyle" />
 
     <!-- Base Text Styles -->
     <!--
@@ -107,7 +98,7 @@ found in the LICENSE file.
     <style name="TextAppearance.TextAccentLarge" parent="TextAppearance.TextLarge">
         <item name="android:fontFamily">@font/accent_font</item>
     </style>
-    <style name="TextAppearance.TextMediumThick" parent="TextAppearance.RobotoMediumStyle">
+    <style name="TextAppearance.TextMediumThick" parent="TextAppearance.MediumStyle">
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="leading">@dimen/text_size_medium_leading</item>
     </style>

@@ -4,10 +4,8 @@
 
 #include "ash/system/hotspot/hotspot_icon.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -23,14 +21,6 @@ class HotspotIconTest : public AshTestBase {
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
   ~HotspotIconTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kHotspot);
-    AshTestBase::SetUp();
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(HotspotIconTest, HotspotEnabledIcon) {

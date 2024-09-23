@@ -26,43 +26,43 @@ using preferences_helper::ChangeBooleanPref;
 
 namespace {
 
-// Utility functions to make a model type set out of a small number of
-// model types.
+// Utility functions to make a data type set out of a small number of
+// data types.
 
-// TODO(crbug/1444105): MakeSet() seems pretty redundant, can be replaced with
-// its body.
-syncer::ModelTypeSet MakeSet(syncer::ModelType type) {
+// TODO(crbug.com/40911681): MakeSet() seems pretty redundant, can be replaced
+// with its body.
+syncer::DataTypeSet MakeSet(syncer::DataType type) {
   return {type};
 }
 
-syncer::ModelTypeSet MakeSet(syncer::ModelType type1, syncer::ModelType type2) {
+syncer::DataTypeSet MakeSet(syncer::DataType type1, syncer::DataType type2) {
   return {type1, type2};
 }
 
-// An ordered list of model types sets to migrate.  Used by
+// An ordered list of data types sets to migrate.  Used by
 // RunMigrationTest().
-using MigrationList = base::circular_deque<syncer::ModelTypeSet>;
+using MigrationList = base::circular_deque<syncer::DataTypeSet>;
 
 // Utility functions to make a MigrationList out of a small number of
-// model types / model type sets.
+// data types / data type sets.
 
-MigrationList MakeList(syncer::ModelTypeSet model_types) {
-  return MigrationList(1, model_types);
+MigrationList MakeList(syncer::DataTypeSet data_types) {
+  return MigrationList(1, data_types);
 }
 
-MigrationList MakeList(syncer::ModelTypeSet model_types1,
-                       syncer::ModelTypeSet model_types2) {
+MigrationList MakeList(syncer::DataTypeSet data_types1,
+                       syncer::DataTypeSet data_types2) {
   MigrationList migration_list;
-  migration_list.push_back(model_types1);
-  migration_list.push_back(model_types2);
+  migration_list.push_back(data_types1);
+  migration_list.push_back(data_types2);
   return migration_list;
 }
 
-MigrationList MakeList(syncer::ModelType type) {
+MigrationList MakeList(syncer::DataType type) {
   return MakeList(MakeSet(type));
 }
 
-MigrationList MakeList(syncer::ModelType type1, syncer::ModelType type2) {
+MigrationList MakeList(syncer::DataType type1, syncer::DataType type2) {
   return MakeList(MakeSet(type1), MakeSet(type2));
 }
 
@@ -87,16 +87,16 @@ class MigrationTest : public SyncTest {
     }
   }
 
-  syncer::ModelTypeSet GetPreferredDataTypes() {
+  syncer::DataTypeSet GetPreferredDataTypes() {
     // SyncServiceImpl must already have been created before we can call
     // GetPreferredDataTypes().
     DCHECK(GetSyncService(0));
-    syncer::ModelTypeSet preferred_data_types =
+    syncer::DataTypeSet preferred_data_types =
         GetSyncService(0)->GetPreferredDataTypes();
 
     // Make sure all clients have the same preferred data types.
     for (int i = 1; i < num_clients(); ++i) {
-      const syncer::ModelTypeSet other_preferred_data_types =
+      const syncer::DataTypeSet other_preferred_data_types =
           GetSyncService(i)->GetPreferredDataTypes();
       EXPECT_EQ(other_preferred_data_types, preferred_data_types);
     }
@@ -107,11 +107,12 @@ class MigrationTest : public SyncTest {
     // should not request that they be migrated.
     preferred_data_types.Remove(syncer::SUPERVISED_USER_SETTINGS);
 
-    // Autofill wallet will be unready during this test, so we should not
-    // request that it be migrated.
-    preferred_data_types.Remove(syncer::AUTOFILL_WALLET_DATA);
-    preferred_data_types.Remove(syncer::AUTOFILL_WALLET_METADATA);
-    preferred_data_types.Remove(syncer::AUTOFILL_WALLET_OFFER);
+    // Autofill wallet and plus address will be unready during this test, so we
+    // should not request that it be migrated.
+    preferred_data_types.RemoveAll(
+        {syncer::AUTOFILL_WALLET_DATA, syncer::AUTOFILL_WALLET_METADATA,
+         syncer::AUTOFILL_WALLET_OFFER, syncer::PLUS_ADDRESS,
+         syncer::PLUS_ADDRESS_SETTING});
 
     // ARC package will be unready during this test, so we should not request
     // that it be migrated.
@@ -127,15 +128,15 @@ class MigrationTest : public SyncTest {
   // set.
   MigrationList GetPreferredDataTypesList() {
     MigrationList migration_list;
-    const syncer::ModelTypeSet preferred_data_types = GetPreferredDataTypes();
-    for (syncer::ModelType type : preferred_data_types) {
+    const syncer::DataTypeSet preferred_data_types = GetPreferredDataTypes();
+    for (syncer::DataType type : preferred_data_types) {
       migration_list.push_back(MakeSet(type));
     }
     return migration_list;
   }
 
   // Trigger a migration for the given types with the given method.
-  void TriggerMigration(syncer::ModelTypeSet model_types,
+  void TriggerMigration(syncer::DataTypeSet data_types,
                         TriggerMethod trigger_method) {
     switch (trigger_method) {
       case MODIFY_PREF:
@@ -150,7 +151,7 @@ class MigrationTest : public SyncTest {
         ASSERT_TRUE(AddURL(0, IndexedURLTitle(0), GURL(IndexedURL(0))));
         break;
       case TRIGGER_REFRESH:
-        TriggerSyncForModelTypes(/*index=*/0, model_types);
+        TriggerSyncForDataTypes(/*index=*/0, data_types);
         break;
       default:
         ADD_FAILURE();
@@ -159,7 +160,7 @@ class MigrationTest : public SyncTest {
 
   // Block until all clients have completed migration for the given
   // types.
-  void AwaitMigration(syncer::ModelTypeSet migrate_types) {
+  void AwaitMigration(syncer::DataTypeSet migrate_types) {
     for (int i = 0; i < num_clients(); ++i) {
       ASSERT_TRUE(
           MigrationWaiter(migrate_types, migration_watchers_[i].get()).Wait());
@@ -172,21 +173,21 @@ class MigrationTest : public SyncTest {
                         TriggerMethod trigger_method) {
     // Make sure migration hasn't been triggered prematurely.
     for (int i = 0; i < num_clients(); ++i) {
-      ASSERT_TRUE(migration_watchers_[i]->GetMigratedTypes().Empty());
+      ASSERT_TRUE(migration_watchers_[i]->GetMigratedTypes().empty());
     }
 
     // Phase 1: Trigger the migrations on the server.
-    for (const syncer::ModelTypeSet& model_types : migration_list) {
-      TriggerMigrationDoneError(model_types);
+    for (const syncer::DataTypeSet& data_types : migration_list) {
+      TriggerMigrationDoneError(data_types);
     }
 
     // Phase 2: Trigger each migration individually and wait for it to
     // complete.  (Multiple migrations may be handled by each
     // migration cycle, but there's no guarantee of that, so we have
     // to trigger each migration individually.)
-    for (const syncer::ModelTypeSet& model_types : migration_list) {
-      TriggerMigration(model_types, trigger_method);
-      AwaitMigration(model_types);
+    for (const syncer::DataTypeSet& data_types : migration_list) {
+      TriggerMigration(data_types, trigger_method);
+      AwaitMigration(data_types);
     }
 
     // Phase 3: Wait for all clients to catch up.
@@ -297,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest,
 
 IN_PROC_BROWSER_TEST_F(MigrationSingleClientTest, AllTypesWithNigoriAtOnce) {
   ASSERT_TRUE(SetupClients());
-  syncer::ModelTypeSet all_types = GetPreferredDataTypes();
+  syncer::DataTypeSet all_types = GetPreferredDataTypes();
   all_types.Put(syncer::NIGORI);
   RunSingleClientMigrationTest(MakeList(all_types), MODIFY_PREF);
 }

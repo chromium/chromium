@@ -18,13 +18,13 @@
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 CreateWebAppInfoForScanningSystemWebApp() {
-  std::unique_ptr<web_app::WebAppInstallInfo> info =
-      std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIScanningAppUrl);
+  GURL start_url = GURL(ash::kChromeUIScanningAppUrl);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
   info->scope = GURL(ash::kChromeUIScanningAppUrl);
   info->title = l10n_util::GetStringUTF16(IDS_SCANNING_APP_TITLE);
   web_app::CreateIconInfoForSystemWebApp(
-      info->start_url,
+      info->start_url(),
       {
           {"scanning_app_icon_16.png", 16,
            IDR_ASH_SCANNING_APP_SCANNING_APP_ICON_16_PNG},

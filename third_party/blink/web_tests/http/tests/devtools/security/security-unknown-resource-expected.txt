@@ -2,7 +2,7 @@ Tests that requests to unresolved origins result in unknown security state and s
 
 Group: Main origin
 Group: Unknown / canceled
-<SPAN >
+<SPAN class=highlighted-url >
     <SPAN class=url-scheme-unknown >
 http
     </SPAN>

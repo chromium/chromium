@@ -43,7 +43,6 @@ namespace fileManagerPrivateInternal {
   callback AddFileWatchCallback = void(optional boolean success);
   callback RemoveFileWatchCallback = void(optional boolean success);
   callback GetCustomActionsCallback = void(fileSystemProvider.Action[] actions);
-  callback ComputeChecksumCallback = void(DOMString checksum);
   callback GetMimeTypeCallback = void(DOMString result);
   callback GetContentMimeTypeCallback = void(DOMString result);
   callback GetContentMetadataCallback = void(
@@ -73,119 +72,108 @@ namespace fileManagerPrivateInternal {
   callback SearchFilesCallback = void(EntryDescription[] entries);
 
   interface Functions {
-    [supportsPromises] static void resolveIsolatedEntries(
+    static void resolveIsolatedEntries(
         DOMString[] urls,
         ResolveIsolatedEntriesCallback callback);
-    [supportsPromises] static void getEntryProperties(
+    static void getEntryProperties(
         DOMString[] urls,
         fileManagerPrivate.EntryPropertyName[] names,
         GetEntryPropertiesCallback callback);
-    [supportsPromises] static void addFileWatch(
+    static void addFileWatch(
         DOMString url,
         AddFileWatchCallback callback);
-    [supportsPromises] static void removeFileWatch(
+    static void removeFileWatch(
         DOMString url,
         RemoveFileWatchCallback callback);
-    [supportsPromises] static void getCustomActions(
+    static void getCustomActions(
         DOMString[] urls,
         GetCustomActionsCallback callback);
-    [supportsPromises] static void executeCustomAction(
+    static void executeCustomAction(
         DOMString[] urls,
         DOMString actionId,
         SimpleCallback callback);
-    [supportsPromises] static void computeChecksum(
-        DOMString url,
-        ComputeChecksumCallback callback);
-    [supportsPromises] static void getContentMimeType(
+    static void getContentMimeType(
         DOMString blobUUID,
         GetContentMimeTypeCallback callback);
-    [supportsPromises] static void getContentMetadata(
+    static void getContentMetadata(
         DOMString blobUUID,
         DOMString mimeType,
         boolean includeImages,
         GetContentMetadataCallback callback);
-    [supportsPromises] static void pinDriveFile(
+    static void pinDriveFile(
         DOMString url,
         boolean pin,
         SimpleCallback callback);
-    [supportsPromises] static void executeTask(
+    static void executeTask(
         fileManagerPrivate.FileTaskDescriptor descriptor,
         DOMString[] urls,
         ExecuteTaskCallback callback);
-    [supportsPromises] static void searchFiles(
+    static void searchFiles(
         SearchFilesParams searchParams, SearchFilesCallback callback);
-    [supportsPromises] static void setDefaultTask(
+    static void setDefaultTask(
         fileManagerPrivate.FileTaskDescriptor descriptor,
         DOMString[] urls,
         DOMString[] mimeTypes,
         SimpleCallback callback);
-    [supportsPromises] static void getFileTasks(
+    static void getFileTasks(
         DOMString[] urls,
         DOMString[] dlpSourceUrls,
         GetFileTasksCallback callback);
-    [supportsPromises] static void getDisallowedTransfers(
+    static void getDisallowedTransfers(
         DOMString[] entries,
         DOMString destinationEntry,
         boolean isMove,
         GetDisallowedTransfersCallback callback);
-    [supportsPromises] static void getDlpMetadata(
+    static void getDlpMetadata(
         DOMString[] entries,
         GetDlpMetadataCallback callback);
-    [supportsPromises] static void getDriveQuotaMetadata(
+    static void getDriveQuotaMetadata(
         DOMString url,
         GetDriveQuotaMetadataCallback callback);
-    [supportsPromises] static void validatePathNameLength(
+    static void validatePathNameLength(
         DOMString parentUrl,
         DOMString name,
         ValidatePathNameLengthCallback callback);
-    [supportsPromises] static void getDirectorySize(
+    static void getDirectorySize(
         DOMString url,
         GetDirectorySizeCallback callback);
-    [supportsPromises] static void getVolumeRoot(
+    static void getVolumeRoot(
         fileManagerPrivate.GetVolumeRootOptions options,
         GetVolumeRootCallback callback);
-    [supportsPromises] static void getRecentFiles(
+    static void getRecentFiles(
         fileManagerPrivate.SourceRestriction restriction,
         DOMString query,
         long cutoff_days,
         fileManagerPrivate.FileCategory file_category,
         boolean invalidate_cache,
         GetRecentFilesCallback callback);
-    [supportsPromises] static void sharePathsWithCrostini(
+    static void sharePathsWithCrostini(
         DOMString vmName, DOMString[] urls,
         boolean persist,
         SimpleCallback callback);
-    [supportsPromises] static void unsharePathWithCrostini(
+    static void unsharePathWithCrostini(
         DOMString vmName, DOMString url,
         SimpleCallback callback);
     static void getCrostiniSharedPaths(
         boolean observeFirstForSession,
         DOMString vmName,
         GetCrostiniSharedPathsCallback callback);
-    [supportsPromises] static void getLinuxPackageInfo(
+    static void getLinuxPackageInfo(
         DOMString url,
         GetLinuxPackageInfoCallback callback);
-    [supportsPromises] static void installLinuxPackage(
+    static void installLinuxPackage(
         DOMString url,
         InstallLinuxPackageCallback callback);
     static void importCrostiniImage(DOMString url);
-    [supportsPromises] static void sharesheetHasTargets(
-        DOMString[] urls,
-        BooleanCallback callback);
-    [supportsPromises] static void invokeSharesheet(
-        DOMString[] urls,
-        fileManagerPrivate.SharesheetLaunchSource launchSource,
-        DOMString[] dlpSourceUrls,
-        SimpleCallback callback);
-    [supportsPromises] static void toggleAddedToHoldingSpace(
+    static void toggleAddedToHoldingSpace(
         DOMString[] urls, boolean add,
                                           optional SimpleCallback callback);
-    [supportsPromises] static void startIOTask(
+    static void startIOTask(
         fileManagerPrivate.IoTaskType type,
         DOMString[] urls,
         IOTaskParams params,
         optional IOTaskIdCallback callback);
-    [supportsPromises] static void parseTrashInfoFiles(
+    static void parseTrashInfoFiles(
         DOMString[] urls,
         ParseTrashInfoFilesCallback callback);
   };

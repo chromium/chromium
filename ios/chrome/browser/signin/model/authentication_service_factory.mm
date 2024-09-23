@@ -9,13 +9,12 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 
 namespace {
 
@@ -25,9 +24,8 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<AuthenticationService>(
       browser_state->GetPrefs(),
-      SyncSetupServiceFactory::GetForBrowserState(browser_state),
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForProfile(browser_state),
       SyncServiceFactory::GetForBrowserState(browser_state));
 }
 
@@ -35,9 +33,15 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(
 
 // static
 AuthenticationService* AuthenticationServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+AuthenticationService* AuthenticationServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   AuthenticationService* service = static_cast<AuthenticationService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
   CHECK(!service || service->initialized());
   return service;
 }
@@ -70,7 +74,6 @@ AuthenticationServiceFactory::AuthenticationServiceFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(SyncSetupServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
 

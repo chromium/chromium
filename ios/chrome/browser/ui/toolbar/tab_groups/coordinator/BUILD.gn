@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "tab_group_indicator_coordinator.h",
+    "tab_group_indicator_coordinator.mm",
+    "tab_group_indicator_mediator.h",
+    "tab_group_indicator_mediator.mm",
+    "tab_group_indicator_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/saved_tab_groups:core",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:forward",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups:tab_group_creation",
+    "//ios/chrome/browser/ui/toolbar/tab_groups/ui",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

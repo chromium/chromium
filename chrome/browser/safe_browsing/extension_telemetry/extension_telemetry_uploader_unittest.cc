@@ -63,11 +63,9 @@ TEST_F(ExtensionTelemetryUploaderTest, FetchAccessTokenForReport) {
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        std::string header_value;
-        bool found_header = request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &header_value);
-        EXPECT_EQ(found_header, true);
-        EXPECT_EQ(header_value, "Bearer " + access_token);
+        EXPECT_THAT(
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
+            testing::Optional("Bearer " + access_token));
       }));
 
   test_url_loader_factory.AddResponse(
@@ -91,12 +89,11 @@ TEST_F(ExtensionTelemetryUploaderTest, AttachZwiebackCookieForReport) {
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        std::string header_value;
-        bool found_header = request.headers.GetHeader(
-            net::HttpRequestHeaders::kAuthorization, &header_value);
         // When access token is not fetched, header does not include access
         // token.
-        EXPECT_EQ(found_header, false);
+        EXPECT_EQ(
+            request.headers.GetHeader(net::HttpRequestHeaders::kAuthorization),
+            std::nullopt);
         // Set the credential mode to kInclude by default.
         EXPECT_EQ(request.credentials_mode,
                   network::mojom::CredentialsMode::kInclude);

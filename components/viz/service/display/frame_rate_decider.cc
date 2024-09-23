@@ -48,14 +48,15 @@ FrameRateDecider::ScopedAggregate::~ScopedAggregate() {
 FrameRateDecider::FrameRateDecider(SurfaceManager* surface_manager,
                                    Client* client,
                                    bool hw_support_for_multiple_refresh_rates,
-                                   bool supports_set_frame_rate)
+                                   bool output_surface_supports_set_frame_rate)
     : supported_intervals_{BeginFrameArgs::DefaultInterval()},
       min_num_of_frames_to_toggle_interval_(kMinNumOfFramesToToggleInterval),
       surface_manager_(surface_manager),
       client_(client),
       hw_support_for_multiple_refresh_rates_(
           hw_support_for_multiple_refresh_rates),
-      supports_set_frame_rate_(supports_set_frame_rate) {
+      output_surface_supports_set_frame_rate_(
+          output_surface_supports_set_frame_rate) {
   surface_manager_->AddObserver(this);
 }
 
@@ -64,11 +65,10 @@ FrameRateDecider::~FrameRateDecider() {
 }
 
 void FrameRateDecider::SetSupportedFrameIntervals(
-    std::vector<base::TimeDelta> supported_intervals) {
+    base::flat_set<base::TimeDelta> supported_intervals) {
   DCHECK(!inside_surface_aggregation_);
 
   supported_intervals_ = std::move(supported_intervals);
-  std::sort(supported_intervals_.begin(), supported_intervals_.end());
   UpdatePreferredFrameIntervalIfNeeded();
 }
 
@@ -127,6 +127,7 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   if (!multiple_refresh_rates_supported())
     return;
 
+  // Prepare the list of frame intervals from the frame sinks with a video(s),
   std::vector<base::TimeDelta> fixed_interval_frame_sink_intervals;
   for (const auto& frame_sink_id : frame_sinks_drawn_in_previous_frame_) {
     auto type = mojom::CompositorFrameSinkType::kUnspecified;
@@ -144,11 +145,11 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
         fixed_interval_frame_sink_intervals.push_back(interval);
         break;
       case mojom::CompositorFrameSinkType::kLayerTree:
-        DCHECK_NE(interval, BeginFrameArgs::MaxInterval());
         break;
     }
   }
 
+  // From the list above, get the video case for lowering the frame rate.
   ToggleFrameRateCase toggle_case =
       GetToggleFrameRateCase(fixed_interval_frame_sink_intervals);
   bool should_toggle = true;
@@ -184,6 +185,8 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
     UMA_HISTOGRAM_ENUMERATION(
         "Compositing.FrameRateDecider.ToggleFrameRateCase", toggle_case);
   }
+
+  // This is not the case we want to (or we can) lower the frame rate for video.
   if (!should_toggle) {
     TRACE_EVENT_INSTANT0(
         "viz",
@@ -205,7 +208,6 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   for (const auto& frame_sink_id : frame_sinks_updated_in_previous_frame_) {
     auto interval =
         client_->GetPreferredFrameIntervalForFrameSinkId(frame_sink_id);
-    DCHECK_NE(interval, BeginFrameArgs::MaxInterval());
     if (!min_frame_sink_interval) {
       min_frame_sink_interval = interval;
       continue;
@@ -233,21 +235,25 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   // will be rounded to the nearest refresh rate that is a factor of the maximum
   // rate of the device.
   can_set_preferred_frame_rate = true;
+#elif BUILDFLAG(IS_MAC)
+  can_set_preferred_frame_rate = all_frame_sinks_have_same_interval &&
+                                 hw_support_for_multiple_refresh_rates_;
 #else
   // If only one frame sink is being updated and its frame rate can be directly
   // forwarded to the system, then prefer that over choosing one of the refresh
   // rates advertised by the system.
-  can_set_preferred_frame_rate =
-      all_frame_sinks_have_same_interval && supports_set_frame_rate_;
+  can_set_preferred_frame_rate = all_frame_sinks_have_same_interval &&
+                                 output_surface_supports_set_frame_rate_;
 #endif
   if (can_set_preferred_frame_rate) {
     SetPreferredInterval(*min_frame_sink_interval);
     return;
   }
 
-  // If we don't have an explicit preference from the active frame sinks, then
-  // we use a 0 value for preferred frame interval to let the framework pick the
-  // ideal refresh rate.
+  // Iterate through |supported_intervals_| to pick a frame rate that is closed
+  // to min_frame_sink_interval. If we don't have an explicit preference from
+  // the active frame sinks, then we use a 0 value for preferred frame interval
+  // to let the framework pick the ideal refresh rate.
   base::TimeDelta new_preferred_interval = UnspecifiedFrameInterval();
   if (*min_frame_sink_interval != BeginFrameArgs::MinInterval()) {
     base::TimeDelta min_delta = base::TimeDelta::Max();
@@ -266,8 +272,9 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
         // Pick the display interval which is closest to the preferred interval
         // and less than or equal to the min_frame_sink_interval.
         base::TimeDelta delta = (*min_frame_sink_interval - supported_interval);
-        if (AreAlmostEqual(*min_frame_sink_interval, supported_interval) ||
-            (delta.is_positive() && delta < min_delta)) {
+        if ((AreAlmostEqual(*min_frame_sink_interval, supported_interval) ||
+             delta.is_positive()) &&
+            delta.magnitude() < min_delta) {
           new_preferred_interval = supported_interval;
           min_delta = delta.magnitude();
         }
@@ -293,7 +300,7 @@ ToggleFrameRateCase FrameRateDecider::GetToggleFrameRateCase(
   // For single video cases, check if it is a perfect cadence one.
   if (num_of_frame_sinks_with_fixed_interval == 1) {
     base::TimeDelta interval = fixed_interval_frame_sink_intervals.back();
-    if (AreAlmostEqual(supported_intervals_.front(), interval)) {
+    if (AreAlmostEqual(*supported_intervals_.begin(), interval)) {
       return ToggleFrameRateCase::kSingleVideoPerfectCadenceMatchesDisplay;
     }
     for (auto supported_interval : supported_intervals_) {
@@ -351,9 +358,18 @@ bool FrameRateDecider::multiple_refresh_rates_supported() const {
   // rate is supported via OutputSurface::SetFrameRate, which is not applicable
   // to iOS.
   return true;
+#elif BUILDFLAG(IS_MAC)
+  // In some Mac monitor/screen doesn't announce supported intervals.
+  return supported_intervals_.size() > 1u ||
+         hw_support_for_multiple_refresh_rates_;
 #else
-  return supports_set_frame_rate_ || supported_intervals_.size() > 1u;
+  return output_surface_supports_set_frame_rate_ ||
+         supported_intervals_.size() > 1u;
 #endif
+}
+
+void FrameRateDecider::SetHwSupportForMultipleRefreshRates(bool support) {
+  hw_support_for_multiple_refresh_rates_ = support;
 }
 
 }  // namespace viz

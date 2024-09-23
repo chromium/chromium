@@ -11,6 +11,8 @@
 #include <optional>
 #include <string>
 #include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "content/public/browser/global_routing_id.h"
@@ -93,6 +95,27 @@ struct WebRequestInfo {
   void AddResponseInfoFromResourceResponse(
       const network::mojom::URLResponseHead& response);
 
+  // Erases all actions in `dnr_actions` that are associated with the given
+  // `extension_id`.
+  void EraseDNRActionsForExtension(const ExtensionId& extension_id);
+
+  // Erases all actions in `dnr_actions` that have a priority less than that of
+  // the max priority allow rule for that action's extension in
+  // `allow_rule_max_priority`. This prevents lower priority actions matched in
+  // a different request stage to modify a request if they should've been
+  // bypassed by higher priority allow rules.
+  void EraseOutprioritizedDNRActions();
+
+  // Returns if the provided `allow_action` which was already matched against
+  // the request, should be recorded as a match, relative to the already matched
+  // actions in `dnr_actions`.
+  // This method currently makes two assumptions:
+  //  - `allow_action` outprioritizes all actions in `dnr_actions` after a prior
+  //    call to EraseOutprioritizedDNRActions().
+  //  - this is called in onHeadersReceived
+  bool ShouldRecordMatchedAllowRuleInOnHeadersReceived(
+      const declarative_net_request::RequestAction& allow_action) const;
+
   // A unique identifier for this request.
   const uint64_t id;
 
@@ -158,12 +181,20 @@ struct WebRequestInfo {
   const int web_view_rules_registry_id;
   const int web_view_embedder_process_id;
 
-  // The Declarative Net Request actions associated with this request. Mutable
-  // since this is lazily computed. Cached to avoid redundant computations.
-  // Valid when not null. In case no actions are taken, populated with an empty
-  // vector.
+  // The Declarative Net Request (DNR) actions associated with this request that
+  // are matched during the onBeforeRequest stage. Mutable since this is lazily
+  // computed. Cached to avoid redundant computations. Valid when not null. In
+  // case no actions are taken, populated with an empty vector.
   mutable std::optional<std::vector<declarative_net_request::RequestAction>>
       dnr_actions;
+
+  // A map from an extension ID to the highest priority matching allow or
+  // allowAllRequests rule for this request. This is set from the same field as
+  // what's in declarative_net_request::RequestParams so it can be used between
+  // different request stages where DNR rules will be matched.
+  mutable base::flat_map<ExtensionId,
+                         std::optional<declarative_net_request::RequestAction>>
+      max_priority_allow_action;
 
   const bool is_service_worker_script;
 

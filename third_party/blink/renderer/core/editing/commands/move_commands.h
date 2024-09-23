@@ -34,7 +34,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -56,200 +59,200 @@ class CORE_EXPORT MoveCommands {
   static bool ExecuteMoveBackward(LocalFrame&,
                                   Event*,
                                   EditorCommandSource,
-                                  const String&);
+                                  const WTF::String&);
   static bool ExecuteMoveBackwardAndModifySelection(LocalFrame&,
                                                     Event*,
                                                     EditorCommandSource,
-                                                    const String&);
+                                                    const WTF::String&);
   static bool ExecuteMoveDown(LocalFrame&,
                               Event*,
                               EditorCommandSource,
-                              const String&);
+                              const WTF::String&);
   static bool ExecuteMoveDownAndModifySelection(LocalFrame&,
                                                 Event*,
                                                 EditorCommandSource,
-                                                const String&);
+                                                const WTF::String&);
   static bool ExecuteMoveForward(LocalFrame&,
                                  Event*,
                                  EditorCommandSource,
-                                 const String&);
+                                 const WTF::String&);
   static bool ExecuteMoveForwardAndModifySelection(LocalFrame&,
                                                    Event*,
                                                    EditorCommandSource,
-                                                   const String&);
+                                                   const WTF::String&);
   static bool ExecuteMoveLeft(LocalFrame&,
                               Event*,
                               EditorCommandSource,
-                              const String&);
+                              const WTF::String&);
   static bool ExecuteMoveLeftAndModifySelection(LocalFrame&,
                                                 Event*,
                                                 EditorCommandSource,
-                                                const String&);
+                                                const WTF::String&);
   static bool ExecuteMovePageDown(LocalFrame&,
                                   Event*,
                                   EditorCommandSource,
-                                  const String&);
+                                  const WTF::String&);
   static bool ExecuteMovePageDownAndModifySelection(LocalFrame&,
                                                     Event*,
                                                     EditorCommandSource,
-                                                    const String&);
+                                                    const WTF::String&);
   static bool ExecuteMovePageUp(LocalFrame&,
                                 Event*,
                                 EditorCommandSource,
-                                const String&);
+                                const WTF::String&);
   static bool ExecuteMovePageUpAndModifySelection(LocalFrame&,
                                                   Event*,
                                                   EditorCommandSource,
-                                                  const String&);
+                                                  const WTF::String&);
   static bool ExecuteMoveParagraphBackward(LocalFrame&,
                                            Event*,
                                            EditorCommandSource,
-                                           const String&);
+                                           const WTF::String&);
   static bool ExecuteMoveParagraphBackwardAndModifySelection(
       LocalFrame&,
       Event*,
       EditorCommandSource,
-      const String&);
+      const WTF::String&);
   static bool ExecuteMoveParagraphForward(LocalFrame&,
                                           Event*,
                                           EditorCommandSource,
-                                          const String&);
+                                          const WTF::String&);
   static bool ExecuteMoveParagraphForwardAndModifySelection(LocalFrame&,
                                                             Event*,
                                                             EditorCommandSource,
-                                                            const String&);
+                                                            const WTF::String&);
   static bool ExecuteMoveRight(LocalFrame&,
                                Event*,
                                EditorCommandSource,
-                               const String&);
+                               const WTF::String&);
   static bool ExecuteMoveRightAndModifySelection(LocalFrame&,
                                                  Event*,
                                                  EditorCommandSource,
-                                                 const String&);
+                                                 const WTF::String&);
   static bool ExecuteMoveToBeginningOfDocument(LocalFrame&,
                                                Event*,
                                                EditorCommandSource,
-                                               const String&);
+                                               const WTF::String&);
   static bool ExecuteMoveToBeginningOfDocumentAndModifySelection(
       LocalFrame&,
       Event*,
       EditorCommandSource,
-      const String&);
+      const WTF::String&);
   static bool ExecuteMoveToBeginningOfLine(LocalFrame&,
                                            Event*,
                                            EditorCommandSource,
-                                           const String&);
+                                           const WTF::String&);
   static bool ExecuteMoveToBeginningOfLineAndModifySelection(
       LocalFrame&,
       Event*,
       EditorCommandSource,
-      const String&);
+      const WTF::String&);
   static bool ExecuteMoveToBeginningOfParagraph(LocalFrame&,
                                                 Event*,
                                                 EditorCommandSource,
-                                                const String&);
+                                                const WTF::String&);
   static bool ExecuteMoveToBeginningOfParagraphAndModifySelection(
       LocalFrame&,
       Event*,
       EditorCommandSource,
-      const String&);
+      const WTF::String&);
   static bool ExecuteMoveToBeginningOfSentence(LocalFrame&,
                                                Event*,
                                                EditorCommandSource,
-                                               const String&);
+                                               const WTF::String&);
   static bool ExecuteMoveToBeginningOfSentenceAndModifySelection(
       LocalFrame&,
       Event*,
       EditorCommandSource,
-      const String&);
+      const WTF::String&);
   static bool ExecuteMoveToEndOfDocument(LocalFrame&,
                                          Event*,
                                          EditorCommandSource,
-                                         const String&);
+                                         const WTF::String&);
   static bool ExecuteMoveToEndOfDocumentAndModifySelection(LocalFrame&,
                                                            Event*,
                                                            EditorCommandSource,
-                                                           const String&);
+                                                           const WTF::String&);
   static bool ExecuteMoveToEndOfLine(LocalFrame&,
                                      Event*,
                                      EditorCommandSource,
-                                     const String&);
+                                     const WTF::String&);
   static bool ExecuteMoveToEndOfLineAndModifySelection(LocalFrame&,
                                                        Event*,
                                                        EditorCommandSource,
-                                                       const String&);
+                                                       const WTF::String&);
   static bool ExecuteMoveToEndOfParagraph(LocalFrame&,
                                           Event*,
                                           EditorCommandSource,
-                                          const String&);
+                                          const WTF::String&);
   static bool ExecuteMoveToEndOfParagraphAndModifySelection(LocalFrame&,
                                                             Event*,
                                                             EditorCommandSource,
-                                                            const String&);
+                                                            const WTF::String&);
   static bool ExecuteMoveToEndOfSentence(LocalFrame&,
                                          Event*,
                                          EditorCommandSource,
-                                         const String&);
+                                         const WTF::String&);
   static bool ExecuteMoveToEndOfSentenceAndModifySelection(LocalFrame&,
                                                            Event*,
                                                            EditorCommandSource,
-                                                           const String&);
+                                                           const WTF::String&);
   static bool ExecuteMoveToLeftEndOfLine(LocalFrame&,
                                          Event*,
                                          EditorCommandSource,
-                                         const String&);
+                                         const WTF::String&);
   static bool ExecuteMoveToLeftEndOfLineAndModifySelection(LocalFrame&,
                                                            Event*,
                                                            EditorCommandSource,
-                                                           const String&);
+                                                           const WTF::String&);
   static bool ExecuteMoveToRightEndOfLine(LocalFrame&,
                                           Event*,
                                           EditorCommandSource,
-                                          const String&);
+                                          const WTF::String&);
   static bool ExecuteMoveToRightEndOfLineAndModifySelection(LocalFrame&,
                                                             Event*,
                                                             EditorCommandSource,
-                                                            const String&);
+                                                            const WTF::String&);
   static bool ExecuteMoveUp(LocalFrame&,
                             Event*,
                             EditorCommandSource,
-                            const String&);
+                            const WTF::String&);
   static bool ExecuteMoveUpAndModifySelection(LocalFrame&,
                                               Event*,
                                               EditorCommandSource,
-                                              const String&);
+                                              const WTF::String&);
   static bool ExecuteMoveWordBackward(LocalFrame&,
                                       Event*,
                                       EditorCommandSource,
-                                      const String&);
+                                      const WTF::String&);
   static bool ExecuteMoveWordBackwardAndModifySelection(LocalFrame&,
                                                         Event*,
                                                         EditorCommandSource,
-                                                        const String&);
+                                                        const WTF::String&);
   static bool ExecuteMoveWordForward(LocalFrame&,
                                      Event*,
                                      EditorCommandSource,
-                                     const String&);
+                                     const WTF::String&);
   static bool ExecuteMoveWordForwardAndModifySelection(LocalFrame&,
                                                        Event*,
                                                        EditorCommandSource,
-                                                       const String&);
+                                                       const WTF::String&);
   static bool ExecuteMoveWordLeft(LocalFrame&,
                                   Event*,
                                   EditorCommandSource,
-                                  const String&);
+                                  const WTF::String&);
   static bool ExecuteMoveWordLeftAndModifySelection(LocalFrame&,
                                                     Event*,
                                                     EditorCommandSource,
-                                                    const String&);
+                                                    const WTF::String&);
   static bool ExecuteMoveWordRight(LocalFrame&,
                                    Event*,
                                    EditorCommandSource,
-                                   const String&);
+                                   const WTF::String&);
   static bool ExecuteMoveWordRightAndModifySelection(LocalFrame&,
                                                      Event*,
                                                      EditorCommandSource,
-                                                     const String&);
+                                                     const WTF::String&);
 
  private:
   static unsigned VerticalScrollDistance(LocalFrame&);

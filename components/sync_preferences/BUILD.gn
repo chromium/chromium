@@ -28,6 +28,7 @@ static_library("sync_preferences") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/metrics/demographics",
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/prefs",
@@ -61,7 +62,9 @@ source_set("common_syncable_prefs_database") {
     "//components/password_manager/core/common",
     "//components/payments/core",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/saved_tab_groups:model",
     "//components/search_engines",
+    "//components/sharing_message",
     "//components/translate/core/browser",
     "//components/variations/service",
   ]

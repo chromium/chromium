@@ -94,7 +94,7 @@ struct MEDIA_EXPORT SampleEncryptionEntry {
 
   // Parse SampleEncryptionEntry from |reader|.
   // |iv_size| specifies the size of initialization vector. |has_subsamples|
-  // indicates whether this sample encryption entry constains subsamples.
+  // indicates whether this sample encryption entry contains subsamples.
   // Returns false if parsing fails.
   bool Parse(BufferReader* reader, uint8_t iv_size, bool has_subsamples);
 
@@ -475,7 +475,7 @@ struct MEDIA_EXPORT AudioSampleEntry : Box {
   AC4SpecificBox ac4;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-  IamfSpecificBox iamf;
+  IamfSpecificBox iacb;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 };
 

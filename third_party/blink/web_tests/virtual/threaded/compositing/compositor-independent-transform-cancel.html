@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+#parent>div {
+  width: 100px;
+  height: 100px;
+  background-color: green;
+}
+</style>
+
+<div id="parent"></div>
+<script>
+const keyframeValueMap = {
+  translate: ['0px 0px 0px', '10px 10px 10px'],
+  scale: ['1 1 1', '1 2 3'],
+  rotate: ['-45deg', '45deg'],
+  transform: ['translate(20px, 10px)', 'translate(10px, 20px)'],
+  opacity: ['0', '1']
+};
+
+/* Test that animation on compositableProperty on compositor is cancelled when 
+   cancelProperty is applied (not animated) to the element */
+function assertAnimationComposited(compositableProperty, cancelProperty, isStillComposited) {
+  var element = document.createElement('div');
+  document.getElementById('parent').appendChild(element);
+
+  const keyframe1 = {};
+  const keyframe2 = {};
+  keyframe1[compositableProperty] = keyframeValueMap[compositableProperty][0];
+  keyframe2[compositableProperty] = keyframeValueMap[compositableProperty][1];
+
+  const animation = element.animate([keyframe1, keyframe2], {
+    duration: 4000,
+    iterations: Infinity
+  });
+
+  var description = "Compositor Animation on " + compositableProperty + (isStillComposited ? " is not " : " is ") + "cancelled by " + cancelProperty;
+  var asyncHandle = async_test(description);
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+
+      asyncHandle.step(function() {
+        assert_true(internals.isCompositedAnimation(animation), compositableProperty + " animation should be composited");
+      });
+      element.style[cancelProperty] = keyframeValueMap[cancelProperty][1];
+
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+
+          asyncHandle.step(function() {
+            assert_equals(internals.isCompositedAnimation(animation), isStillComposited, description)
+          });
+
+          animation.cancel();
+          asyncHandle.done();
+        });
+      });
+    });
+  });
+}
+
+assertAnimationComposited('transform', 'transform', true);
+assertAnimationComposited('translate', 'translate', true);
+assertAnimationComposited('rotate', 'rotate', true);
+assertAnimationComposited('scale', 'scale', true);
+
+assertAnimationComposited('transform', 'translate', true);
+assertAnimationComposited('transform', 'rotate', true);
+assertAnimationComposited('transform', 'scale', true);
+
+assertAnimationComposited('translate', 'transform', true);
+assertAnimationComposited('translate', 'rotate', true);
+assertAnimationComposited('translate', 'scale', true);
+
+assertAnimationComposited('rotate', 'transform', true);
+assertAnimationComposited('rotate', 'scale', true);
+assertAnimationComposited('rotate', 'translate', true);
+
+assertAnimationComposited('scale', 'transform', true);
+assertAnimationComposited('scale', 'rotate', true);
+assertAnimationComposited('scale', 'translate', true);
+
+assertAnimationComposited('opacity', 'transform', true);
+assertAnimationComposited('opacity', 'translate', true);
+assertAnimationComposited('opacity', 'rotate', true);
+assertAnimationComposited('opacity', 'scale', true);
+</script>

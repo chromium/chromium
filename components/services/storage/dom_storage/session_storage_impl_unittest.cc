@@ -483,7 +483,7 @@ TEST_F(SessionStorageImplTest, Scavenging) {
   {
     base::RunLoop loop;
     // Cause the connection to start loading, so we start scavenging mid-load.
-    session_storage()->Flush(base::DoNothing());
+    session_storage()->Flush();
     session_storage()->ScavengeUnusedNamespaces(loop.QuitClosure());
     loop.Run();
   }
@@ -971,12 +971,14 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
 
   // Clear all the data from the backing database.
   base::RunLoop loop;
-  session_storage_impl()->DatabaseForTesting()->DeletePrefixed(
-      StringViewToUint8Vector("map"),
-      base::BindLambdaForTesting([&](leveldb::Status status) {
-        loop.Quit();
-        EXPECT_TRUE(status.ok());
-      }));
+  session_storage_impl()->DatabaseForTesting()->RunDatabaseTask(
+      base::BindOnce([](const DomStorageDatabase& db) {
+        leveldb::WriteBatch batch;
+        db.DeletePrefixed(StringViewToUint8Vector("map"), &batch);
+        EXPECT_TRUE(db.Commit(&batch).ok());
+        return 0;
+      }),
+      base::IgnoreArgs<int>(loop.QuitClosure()));
   loop.Run();
 
   // Now open many new wrappers (for different storage_keys) to trigger clean
@@ -1001,7 +1003,7 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   EXPECT_EQ(0ul, data.size());
 }
 
-// TODO(https://crbug.com/1008697): Flakes when verifying no data found.
+// TODO(crbug.com/40650136): Flakes when verifying no data found.
 TEST_F(SessionStorageImplTest, ClearDiskState) {
   SetBackingMode(SessionStorageImpl::BackingMode::kClearDiskStateOnOpen);
   std::string namespace_id1 =

@@ -39,7 +39,6 @@ std::u16string PillButtonColorTypeFlagToString(PillButton::TypeFlag type_flag) {
     default:
       NOTREACHED() << "unknown color type" << type_flag;
   }
-  return u"";
 }
 
 std::u16string PillButtonSizeTypeFlagToString(

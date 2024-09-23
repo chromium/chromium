@@ -33,9 +33,9 @@
 @property(nonatomic, strong, readonly)
     UIBarButtonItem* customRightToolbarButton;
 
-// Back button on navigation panel. This is used to store back button while it
-// is replaced with Cancel during editing.
-@property(nonatomic, strong) UIBarButtonItem* backButtonItem;
+// Custom left button on navigation panel. This is used to store the custom left
+// bar button while it is replaced with "Cancel" during editing.
+@property(nonatomic, strong) UIBarButtonItem* customLeftBarButtonItem;
 
 // Whether this table view controller should hide the "Done" button (the right
 // navigation bar button). Default is NO.
@@ -52,8 +52,6 @@
 // Updates the edit or done button to reflect editing state.  If the
 // tableView is not in edit mode (and thus showing the 'Done' button) it is
 // using shouldHideDoneButton to know if it should display the edit button.
-// TODO(crbug.com/952227): This method should probably be called from the
-// setEditing:animated: method instead of being manually triggered.
 - (void)updateUIForEditState;
 
 // Updates the buttons in the toolbar to reflect its editing state.

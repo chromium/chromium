@@ -52,9 +52,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
                                         const std::vector<uint8_t>& new_value,
                                         bool indicate) override;
   device::BluetoothLocalGattService* GetService() const override;
-
-  const std::vector<std::unique_ptr<BluetoothLocalGattDescriptorBlueZ>>&
-  GetDescriptors() const;
+  std::vector<device::BluetoothLocalGattDescriptor*> GetDescriptors()
+      const override;
 
  private:
   friend class BluetoothLocalGattDescriptorBlueZ;

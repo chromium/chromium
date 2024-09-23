@@ -1,0 +1,85 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("secure_channel") {
+  sources = [
+    "nearby_connection_broker.cc",
+    "nearby_connection_broker.h",
+    "nearby_connection_broker_impl.cc",
+    "nearby_connection_broker_impl.h",
+    "nearby_connector_factory.cc",
+    "nearby_connector_factory.h",
+    "nearby_connector_impl.cc",
+    "nearby_connector_impl.h",
+    "nearby_endpoint_finder.cc",
+    "nearby_endpoint_finder.h",
+    "nearby_endpoint_finder_impl.cc",
+    "nearby_endpoint_finder_impl.h",
+    "secure_channel_client_provider.cc",
+    "secure_channel_client_provider.h",
+  ]
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/services/nearby/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/ash/services/nearby/public/mojom:mojom_shared",
+    "//chromeos/ash/services/nearby/public/mojom:mojom_shared_cpp_sources",
+    "//chromeos/ash/services/secure_channel/public/cpp/client",
+    "//chromeos/ash/services/secure_channel/public/mojom",
+    "//chromeos/ash/services/secure_channel/public/mojom:mojom_shared_cpp_sources",
+    "//components/keyed_service/core",
+    "//mojo/public/cpp/bindings",
+  ]
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/ash/nearby",
+    "//chrome/browser/ash/secure_channel/util",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/secure_channel",
+  ]
+}
+
+static_library("test_support") {
+  sources = [
+    "fake_nearby_connection_broker.cc",
+    "fake_nearby_connection_broker.h",
+    "fake_nearby_endpoint_finder.cc",
+    "fake_nearby_endpoint_finder.h",
+  ]
+  public_deps = [
+    "//chrome/browser/ash/secure_channel",
+    "//chromeos/ash/services/secure_channel/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "nearby_connection_broker_impl_unittest.cc",
+    "nearby_connector_impl_unittest.cc",
+    "nearby_endpoint_finder_impl_unittest.cc",
+  ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/secure_channel",
+    "//chrome/browser/ash/secure_channel:test_support",
+    "//chrome/browser/ash/secure_channel/util",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
+    "//chromeos/ash/services/nearby/public/mojom:mojom_shared",
+    "//chromeos/ash/services/nearby/public/mojom:mojom_shared_cpp_sources",
+    "//chromeos/ash/services/secure_channel/public/mojom",
+    "//chromeos/ash/services/secure_channel/public/mojom:mojom_shared",
+    "//chromeos/ash/services/secure_channel/public/mojom:mojom_shared_cpp_sources",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

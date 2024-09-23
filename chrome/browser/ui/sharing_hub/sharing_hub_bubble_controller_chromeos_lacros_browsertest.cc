@@ -51,7 +51,7 @@ class FakeSharesheet : public crosapi::mojom::Sharesheet {
       sharesheet::LaunchSource source,
       crosapi::mojom::IntentPtr intent,
       crosapi::mojom::Sharesheet::ShowBubbleCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void ShowBubbleWithOnClosed(
       const std::string& window_id,
@@ -106,36 +106,5 @@ class SharingHubBubbleControllerChromeOsBrowserTest
   FakeSharesheet service_;
   mojo::Receiver<crosapi::mojom::Sharesheet> receiver_{&service_};
 };
-
-// TODO (crbug/1521328): Test is failing under ChromeRefresh2023. Evaluate, fix
-//                       and re-enable.
-IN_PROC_BROWSER_TEST_F(SharingHubBubbleControllerChromeOsBrowserTest,
-                       OpenSharesheet_Lacros) {
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-  auto* const service = chromeos::LacrosService::Get();
-  if (!service || !service->IsAvailable<crosapi::mojom::Sharesheet>()) {
-    return;
-  }
-
-  // Open the sharesheet using the sharing hub controller.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  sharing_hub::SharingHubBubbleControllerChromeOsImpl::
-      CreateOrGetFromWebContents(web_contents)
-          ->ShowBubble(share::ShareAttempt(web_contents));
-
-  // Verify that the sharesheet is opened.
-  service_.AwaitShow();
-
-  // Close the sharesheet using the sharing hub controller.
-  sharing_hub::SharingHubBubbleControllerChromeOsImpl::
-      CreateOrGetFromWebContents(web_contents)
-          ->HideBubble();
-
-  // Verify that the sharesheet is closed.
-  service_.AwaitClose();
-}
 
 }  // namespace

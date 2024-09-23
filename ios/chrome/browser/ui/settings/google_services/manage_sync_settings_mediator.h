@@ -47,6 +47,8 @@ class SyncService;
 // YES if the forced sign-in policy is enabled which requires contextual
 // information.
 @property(nonatomic, assign) BOOL forcedSigninEnabled;
+// YES if the account belongs to an EEA user. Defaults to NO.
+@property(nonatomic, assign) BOOL isEEAAccount;
 // Returns the default title for the Sync Settings based on the account state.
 @property(nonatomic, strong, readonly) NSString* overrideViewControllerTitle;
 // Number of local items to upload excluding passwords.

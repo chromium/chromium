@@ -13,12 +13,12 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/force_signin_verifier.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
@@ -52,17 +52,18 @@ GURL GetReauthURL(const std::string& email_to_reauth, GURL continue_url) {
                    {.email = email_to_reauth, .continue_url = continue_url});
 }
 
-ReauthUIError ComputeReauthUIError(ProfilePickerReauthResult result) {
+ForceSigninUIError ComputeReauthUIError(ProfilePickerReauthResult result,
+                                        const std::string& reauth_email) {
   switch (result) {
     case ProfilePickerReauthResult::kSuccess:
     case ProfilePickerReauthResult::kSuccessTokenAlreadyValid:
-      return ReauthUIError::kNone;
+      return ForceSigninUIError::ErrorNone();
     case ProfilePickerReauthResult::kErrorUsedNewEmail:
     case ProfilePickerReauthResult::kErrorUsedOtherSignedInEmail:
-      return ReauthUIError::kWrongAccount;
+      return ForceSigninUIError::ReauthWrongAccount(reauth_email);
     case ProfilePickerReauthResult::kTimeoutForceSigninVerifierCheck:
     case ProfilePickerReauthResult::kTimeoutSigninError:
-      return ReauthUIError::kTimeout;
+      return ForceSigninUIError::ReauthTimeout();
   }
 }
 
@@ -73,7 +74,8 @@ ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
     Profile* profile,
     const std::string& gaia_id_to_reauth,
     const std::string& email_to_reauth,
-    base::OnceCallback<void(bool, ReauthUIError)> on_reauth_completed)
+    base::OnceCallback<void(bool, const ForceSigninUIError&)>
+        on_reauth_completed)
     : host_(*host),
       profile_(*profile),
       identity_manager_(*IdentityManagerFactory::GetForProfile(profile)),
@@ -116,7 +118,7 @@ void ProfilePickerDiceReauthProvider::OnRefreshTokensLoaded() {
 }
 
 void ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut() {
-  // TODO(https://crbug.com/1478217): Improve the error message if this timeout
+  // TODO(crbug.com/40280498): Improve the error message if this timeout
   // occurs. Currently the error that will be displayed is the one that is shown
   // if the wrong account is being reauth-ed.
   Finish(false, ProfilePickerReauthResult::kTimeoutForceSigninVerifierCheck);
@@ -263,6 +265,6 @@ void ProfilePickerDiceReauthProvider::Finish(bool success,
   // Hide the toolbar in case it was visible after showing the reauth page.
   host_->SetNativeToolbarVisible(false);
 
-  ReauthUIError error = ComputeReauthUIError(result);
+  ForceSigninUIError error = ComputeReauthUIError(result, email_to_reauth_);
   std::move(on_reauth_completed_).Run(success, error);
 }

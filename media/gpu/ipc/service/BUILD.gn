@@ -22,17 +22,7 @@ target(link_target_type, "service") {
     "media_gpu_channel_manager.h",
   ]
 
-  # The legacy VDA API is not supported on Android or Windows.
-  if (!is_android && !is_win) {
-    sources += [
-      "picture_buffer_manager.cc",
-      "picture_buffer_manager.h",
-      "vda_video_decoder.cc",
-      "vda_video_decoder.h",
-    ]
-  }
-
-  include_dirs = [ "//third_party/mesa_headers" ]
+  include_dirs = [ "//third_party/angle:includes" ]
 
   public_deps = [
     "//base",
@@ -56,27 +46,4 @@ target(link_target_type, "service") {
   if (is_mac) {
     deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
   }
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = []
-
-  # The legacy VDA API is not supported on Android or Windows.
-  if (!is_android && !is_win) {
-    sources += [
-      "picture_buffer_manager_unittest.cc",
-      "vda_video_decoder_unittest.cc",
-    ]
-  }
-
-  deps = [
-    ":service",
-    "//base",
-    "//base/test:test_support",
-    "//media:test_support",
-    "//media/gpu:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 }

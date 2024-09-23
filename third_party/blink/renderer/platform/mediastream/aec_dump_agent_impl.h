@@ -38,7 +38,7 @@ class PLATFORM_EXPORT AecDumpAgentImpl : public mojom::blink::AecDumpAgent {
       Delegate* delegate,
       mojo::PendingReceiver<mojom::blink::AecDumpAgent> receiver);
 
-  raw_ptr<Delegate, ExperimentalRenderer> delegate_;
+  raw_ptr<Delegate> delegate_;
   mojo::Receiver<mojom::blink::AecDumpAgent> receiver_{this};
 };
 

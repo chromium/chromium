@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/wake_lock/wake_lock.h"
 #include "services/device/wake_lock/wake_lock_context.h"
+#include "services/device/wake_lock/wake_lock_features.h"
 
 namespace device {
 
@@ -52,7 +54,20 @@ WakeLockProvider::WakeLockProvider(
       std::make_unique<WakeLockDataPerType>();
 }
 
-WakeLockProvider::~WakeLockProvider() = default;
+WakeLockProvider::~WakeLockProvider() {
+  // Guard against a situation on some platforms where
+  // WakeLockProvider is destroyed before OnConnectionError has been called
+  // as expected when a WakeLock is disconnected.
+  // Issue appears to primarily affect MacOS and ChromeOS Ash, but we are adding
+  // this code defensively on all platforms.
+  // TODO(crbug.com/352093447): Resolve the issue(s) that
+  // necessitate this code being here and remove this code.
+  if (base::FeatureList::IsEnabled(features::kRemoveWakeLockInDestructor)) {
+    for (auto& wake_lock_data : wake_lock_store_) {
+      GetWakeLockDataPerType(wake_lock_data.first).wake_locks.clear();
+    }
+  }
+}
 
 void WakeLockProvider::AddBinding(
     mojo::PendingReceiver<mojom::WakeLockProvider> receiver) {
@@ -118,8 +133,9 @@ void WakeLockProvider::OnWakeLockDeactivated(mojom::WakeLockType type) {
   // Notify observers of the last cancelation i.e. deactivation of wake lock
   // type |type|.
   if (new_count == 0) {
-    for (auto& observer : GetWakeLockDataPerType(type).observers)
+    for (auto& observer : GetWakeLockDataPerType(type).observers) {
       observer->OnWakeLockDeactivated(type);
+    }
   }
 }
 
@@ -142,7 +158,7 @@ WakeLockProvider::WakeLockDataPerType& WakeLockProvider::GetWakeLockDataPerType(
     mojom::WakeLockType type) {
   auto it = wake_lock_store_.find(type);
   // An entry for |type| should always be created in the constructor.
-  DCHECK(it != wake_lock_store_.end());
+  CHECK(it != wake_lock_store_.end(), base::NotFatalUntil::M130);
   return *(it->second);
 }
 

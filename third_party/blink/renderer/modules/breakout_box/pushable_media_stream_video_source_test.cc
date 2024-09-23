@@ -57,9 +57,9 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
   }
 
  private:
-  const raw_ptr<base::TimeTicks, ExperimentalRenderer> capture_time_;
-  const raw_ptr<media::VideoFrameMetadata, ExperimentalRenderer> metadata_;
-  const raw_ptr<gfx::Size, ExperimentalRenderer> natural_size_;
+  const raw_ptr<base::TimeTicks> capture_time_;
+  const raw_ptr<media::VideoFrameMetadata> metadata_;
+  const raw_ptr<gfx::Size> natural_size_;
   base::OnceClosure got_frame_cb_;
 };
 

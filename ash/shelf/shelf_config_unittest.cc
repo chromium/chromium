@@ -88,7 +88,8 @@ TEST_F(ShelfConfigTest, ShelfSizeChangesWithContext) {
   UpdateDisplay("300x1000");
   SetTabletMode(true);
   ASSERT_TRUE(IsTabletMode());
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   GetAppListTestHelper()->CheckVisibility(false);
   const int tablet_dense_in_app = ShelfConfig::Get()->shelf_size();
   const int system_shelf_tablet_dense_in_app =
@@ -104,7 +105,8 @@ TEST_F(ShelfConfigTest, ShelfSizeChangesWithContext) {
 
   UpdateDisplay("1100x1000");
   ASSERT_TRUE(IsTabletMode());
-  widget = CreateTestWidget();
+  widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   GetAppListTestHelper()->CheckVisibility(false);
   const int tablet_standard_in_app = ShelfConfig::Get()->shelf_size();
   const int system_shelf_tablet_standard_in_app =
@@ -126,7 +128,8 @@ TEST_F(ShelfConfigTest, ShelfSizeChangesWithContext) {
       ShelfConfig::Get()->system_shelf_size();
   const int control_clamshell_home = ShelfConfig::Get()->control_size();
 
-  widget = CreateTestWidget();
+  widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Maximize();
   const int clamshell_in_app = ShelfConfig::Get()->shelf_size();
   const int system_shelf_clamshell_in_app =
@@ -162,7 +165,8 @@ TEST_F(ShelfConfigTest, InAppMode) {
 
   // Go into tablet mode, open a window. Now we're in an app.
   SetTabletMode(true);
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   EXPECT_TRUE(ShelfConfig::Get()->is_in_app());
 
   // Close the window. We should be back on the home screen.
@@ -170,7 +174,8 @@ TEST_F(ShelfConfigTest, InAppMode) {
   EXPECT_FALSE(ShelfConfig::Get()->is_in_app());
 
   // Open a window again.
-  widget = CreateTestWidget();
+  widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   EXPECT_TRUE(ShelfConfig::Get()->is_in_app());
 
   // Now go into overview.

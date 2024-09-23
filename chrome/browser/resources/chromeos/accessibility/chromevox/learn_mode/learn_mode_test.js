@@ -22,31 +22,6 @@ ChromeVoxLearnModeTest = class extends ChromeVoxE2ETest {
     globalThis.doBrailleKeyEvent = this.doBrailleKeyEvent.bind(this);
   }
 
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'BrailleCommandHandler',
-          '/chromevox/background/braille/braille_command_handler.js'),
-      importModule(
-          'CommandHandlerInterface',
-          '/chromevox/background/input/command_handler_interface.js'),
-      importModule(
-          'GestureCommandHandler',
-          '/chromevox/background/input/gesture_command_handler.js'),
-      importModule(
-          ['BrailleKeyEvent', 'BrailleKeyCommand'],
-          '/chromevox/common/braille/braille_key_types.js'),
-      importModule('LearnModeBridge', '/chromevox/common/learn_mode_bridge.js'),
-      importModule('QueueMode', '/chromevox/common/tts_types.js'),
-      importModule('AsyncUtil', '/common/async_util.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
-  }
-
   async runOnLearnModePage() {
     return new Promise(async resolve => {
       const mockFeedback = this.createMockFeedback();

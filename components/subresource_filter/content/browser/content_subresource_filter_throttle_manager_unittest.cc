@@ -26,16 +26,17 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
-#include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
-#include "components/subresource_filter/content/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/throttle_manager_test_support.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
+#include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
+#include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -194,13 +195,7 @@ class ContentSubresourceFilterThrottleManagerTest
       public content::WebContentsObserver,
       public ::testing::WithParamInterface<PageActivationNotificationTiming> {
  public:
-  ContentSubresourceFilterThrottleManagerTest()
-      // We need the task environment to use a separate IO thread so that the
-      // ChildProcessSecurityPolicy checks which perform different logic
-      // based on whether they are called on the UI thread or the IO thread do
-      // the right thing.
-      : content::RenderViewHostTestHarness(
-            content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
+  ContentSubresourceFilterThrottleManagerTest() {}
 
   ContentSubresourceFilterThrottleManagerTest(
       const ContentSubresourceFilterThrottleManagerTest&) = delete;
@@ -235,7 +230,8 @@ class ContentSubresourceFilterThrottleManagerTest
     // tests, to ensure that the NavigationSimulator properly runs all necessary
     // tasks while waiting for throttle checks to finish.
     dealer_handle_ = std::make_unique<VerifiedRulesetDealer::Handle>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        kSafeBrowsingRulesetConfig);
     dealer_handle_->TryOpenAndSetRulesetFile(test_ruleset_pair_.indexed.path,
                                              /*expected_checksum=*/0,
                                              base::DoNothing());
@@ -292,7 +288,7 @@ class ContentSubresourceFilterThrottleManagerTest
 
   void CreateTestNavigation(const GURL& url,
                             content::RenderFrameHost* render_frame_host) {
-    DCHECK(render_frame_host);
+    CHECK(render_frame_host);
     navigation_simulator_ =
         content::NavigationSimulator::CreateRendererInitiated(
             url, render_frame_host);
@@ -382,7 +378,7 @@ class ContentSubresourceFilterThrottleManagerTest
     created_safe_browsing_throttle_for_last_navigation_ = false;
     for (auto& it : throttles) {
       if (strcmp(it->GetNameForLogging(),
-                 "SubresourceFilterSafeBrowsingActivationThrottle") == 0) {
+                 "SafeBrowsingPageActivationThrottle") == 0) {
         created_safe_browsing_throttle_for_last_navigation_ = true;
       }
 

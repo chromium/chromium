@@ -41,8 +41,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/fake_diagnostic_routines_service_factory.h"
+#include "chromeos/ash/components/telemetry_extension/routines/telemetry_diagnostic_routine_service_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -404,6 +404,40 @@ TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest, CancelRoutineSuccess) {
                                               create_result.value());
   EXPECT_FALSE(
       IsUuidRegisteredForExtension(kExtensionId1, create_result.value()));
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+       ReplyToRoutineInquiryNoExtension) {
+  EXPECT_FALSE(routine_manager().ReplyToRoutineInquiryForExtension(
+      kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid),
+      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+          true)));
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+       ReplyToRoutineInquiryNoRoutine) {
+  CreateExtension(kExtensionId1, {kPwaPattern1});
+
+  EXPECT_FALSE(routine_manager().ReplyToRoutineInquiryForExtension(
+      kExtensionId1, base::Uuid::ParseLowercase(kUnmappedUuid),
+      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+          true)));
+}
+
+TEST_F(TelemetryExtensionDiagnosticRoutinesManagerTest,
+       ReplyToRoutineInquirySuccess) {
+  CreateExtension(kExtensionId1, {kPwaPattern1});
+  OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
+                                          /*cert_status=*/net::OK);
+
+  auto create_result =
+      routine_manager().CreateRoutine(kExtensionId1, GetMemoryArgument());
+  EXPECT_TRUE(create_result.has_value());
+
+  EXPECT_TRUE(routine_manager().ReplyToRoutineInquiryForExtension(
+      kExtensionId1, create_result.value(),
+      crosapi::TelemetryDiagnosticRoutineInquiryReply::NewUnrecognizedReply(
+          true)));
 }
 
 }  // namespace chromeos

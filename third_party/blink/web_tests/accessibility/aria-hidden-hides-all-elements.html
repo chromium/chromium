@@ -44,19 +44,22 @@ test(function(t) {
     var content = accessibilityController.accessibleElementById("main");
     assert_equals(content.childrenCount, 8);
     assert_true(content.isIgnored);
-    expectUnignoredChildren(content, [0, 1, 2, 3, 6]);
+    expectUnignoredChildren(content, []);
 
     document.getElementById("ul").tabIndex = 0;
+    document.getElementById("ul").focus();
+    content = accessibilityController.accessibleElementById("main");
     assert_equals(content.childrenCount, 8,
-                      "Making list focusable should make it unignored");
-    assert_true(content.isIgnored);
-    expectUnignoredChildren(content, [0, 1, 2, 3, 5, 6]);
+                      "Focusing list should make everything unignored");
+    assert_false(content.isIgnored, "There is no reason to mark the main content as ignored now that its aria-hidden has been marked as illegal.");
+    expectUnignoredChildren(content, [0, 1, 2, 3, 4, 5, 6, 7]);
 
     document.getElementById("ul").removeAttribute("tabindex");
+    content = accessibilityController.accessibleElementById("main");
     assert_equals(content.childrenCount, 8,
-                          "Making list unfocusable should make it ignored again");
-    assert_true(content.isIgnored);
-    expectUnignoredChildren(content, [0, 1, 2, 3, 6]);
+                          "Making list unfocusable should not change which items are ignored, since the aria-hidden is permanently repaired to the value of false");
+    assert_false(content.isIgnored);
+    expectUnignoredChildren(content, [0, 1, 2, 3, 4, 5, 6, 7]);
 });
 </script>
 

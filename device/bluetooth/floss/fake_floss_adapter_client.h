@@ -66,6 +66,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void CreateBond(ResponseCallback<bool> callback,
                   FlossDeviceId device,
                   BluetoothTransport transport) override;
+  void CreateBond(ResponseCallback<FlossDBusClient::BtifStatus> callback,
+                  FlossDeviceId device,
+                  BluetoothTransport transport) override;
   void CancelBondProcess(ResponseCallback<bool> callback,
                          FlossDeviceId device) override;
   void RemoveBond(ResponseCallback<bool> callback,
@@ -91,6 +94,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
                     const FlossDeviceId& device) override;
   void ConnectAllEnabledProfiles(ResponseCallback<Void> callback,
                                  const FlossDeviceId& device) override;
+  void ConnectAllEnabledProfiles(
+      ResponseCallback<FlossDBusClient::BtifStatus> callback,
+      const FlossDeviceId& device) override;
   void DisconnectAllEnabledProfiles(ResponseCallback<Void> callback,
                                     const FlossDeviceId& device) override;
   void SetPairingConfirmation(ResponseCallback<Void> callback,

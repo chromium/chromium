@@ -100,6 +100,7 @@ robolectric_library("junit") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",

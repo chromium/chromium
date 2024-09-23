@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item_impl.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/download_target_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -116,4 +117,11 @@ QuarantineConnectionCallback
 DownloadItemImplDelegate::GetQuarantineConnectionCallback() {
   return base::NullCallback();
 }
+
+std::unique_ptr<DownloadItemRenameHandler>
+DownloadItemImplDelegate::GetRenameHandlerForDownload(
+    DownloadItemImpl* download_item) {
+  return nullptr;
+}
+
 }  // namespace download

@@ -7,9 +7,9 @@ index 594c8eac6..f986b11e7 100644
            if (dest_len - used < 4) // need space for 4 letter escape
              return -1;
 -          sprintf(dest + used, (use_hex ? "\\x%02x" : "\\%03o"),
--                  static_cast<uint8>(*src));
+-                  static_cast<uint8_t>(*src));
 +          snprintf(dest + used, 5, (use_hex ? "\\x%02x" : "\\%03o"),
-+                   static_cast<uint8>(*src));
++                   static_cast<uint8_t>(*src));
            is_hex_escape = use_hex;
            used += 4;
          } else {

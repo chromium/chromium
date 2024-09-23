@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("research") {
+  testonly = true
+}
+
+source_set("domatolpm_context") {
+  sources = [
+    "//testing/libfuzzer/research/domatolpm/domatolpm.cc",
+    "//testing/libfuzzer/research/domatolpm/domatolpm.h",
+  ]
+  deps = [ "//base" ]
+}

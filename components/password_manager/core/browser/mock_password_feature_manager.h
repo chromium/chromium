@@ -53,6 +53,10 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
               (override));
   MOCK_METHOD(bool, ShouldChangeDefaultPasswordStore, (), (override, const));
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(bool, ShouldUpdateGmsCore, (), (override));
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

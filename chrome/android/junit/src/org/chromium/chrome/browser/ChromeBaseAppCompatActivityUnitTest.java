@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 
@@ -47,6 +48,8 @@ public class ChromeBaseAppCompatActivityUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mContext.getSystemService(eq(Context.WINDOW_SERVICE))).thenReturn(mWindowManager);
+        when(mContext.getResources())
+                .thenReturn(ContextUtils.getApplicationContext().getResources());
         when(mWindowManager.getDefaultDisplay()).thenReturn(mDisplay);
         doAnswer(
                         (invocation) -> {

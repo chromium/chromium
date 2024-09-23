@@ -19,7 +19,7 @@ DisplayErrorObserver::DisplayErrorObserver() = default;
 
 DisplayErrorObserver::~DisplayErrorObserver() = default;
 
-void DisplayErrorObserver::OnDisplayModeChangeFailed(
+void DisplayErrorObserver::OnDisplayConfigurationChangeFailed(
     const display::DisplayConfigurator::DisplayStateList& displays,
     display::MultipleDisplayState new_state) {
   bool internal_display_failed = false;

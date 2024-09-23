@@ -41,7 +41,7 @@ class X509Certificate;
 
 namespace cast_channel {
 
-using ::cast::channel::CastMessage;
+using ::openscreen::cast::proto::CastMessage;
 
 class Logger;
 class MojoDataPump;

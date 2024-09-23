@@ -18,4 +18,4 @@ using DedicatedWorkerCreator =
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_SERVICE_WORKER_CLIENT_INFO_H_
+#endif  // CONTENT_PUBLIC_BROWSER_DEDICATED_WORKER_CREATOR_H_

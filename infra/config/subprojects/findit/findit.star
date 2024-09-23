@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "defaults", "reclient")
+load("//lib/builders.star", "builder", "defaults", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/swarming.star", swarming_lib = "swarming")
 
@@ -22,6 +22,26 @@ luci.bucket(
     ],
 )
 
+# Define the shadow bucket of `findit`.
+luci.bucket(
+    name = "findit.shadow",
+    shadows = "findit",
+    # Only the builds with allowed pool and service account can be created
+    # in this bucket.
+    constraints = luci.bucket_constraints(
+        pools = ["luci.chromium.findit"],
+        service_accounts = ["findit-builder@chops-service-accounts.iam.gserviceaccount.com"],
+    ),
+    bindings = [
+        # for led permissions.
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "project-findit-owners",
+        ),
+    ],
+    dynamic = True,
+)
+
 consoles.list_view(
     name = "findit",
 )
@@ -36,15 +56,18 @@ swarming_lib.task_triggerers(
     groups = ["project-findit-owners"],
 )
 
-defaults.auto_builder_dimension.set(False)
-defaults.bucket.set("findit")
-defaults.build_numbers.set(True)
-defaults.builderless.set(True)
-defaults.list_view.set("findit")
-defaults.ssd.set(True)
-defaults.execution_timeout.set(8 * time.hour)
-defaults.pool.set("luci.chromium.findit")
-defaults.service_account.set("findit-builder@chops-service-accounts.iam.gserviceaccount.com")
+defaults.set(
+    bucket = "findit",
+    pool = "luci.chromium.findit",
+    builderless = True,
+    ssd = True,
+    list_view = "findit",
+    auto_builder_dimension = False,
+    build_numbers = True,
+    execution_timeout = 8 * time.hour,
+    service_account = "findit-builder@chops-service-accounts.iam.gserviceaccount.com",
+    siso_enabled = True,
+)
 
 # Builders are defined in lexicographic order by name
 
@@ -52,14 +75,14 @@ defaults.service_account.set("findit-builder@chops-service-accounts.iam.gservice
 builder(
     name = "gofindit-culprit-verification",
     executable = "recipe:gofindit/chromium/single_revision",
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 # Builder to run a test for a single revision.
 builder(
     name = "test-single-revision",
     executable = "recipe:gofindit/chromium/test_single_revision",
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_project = siso.project.DEFAULT_TRUSTED,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

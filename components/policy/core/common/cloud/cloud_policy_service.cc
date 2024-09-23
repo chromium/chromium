@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -19,6 +21,23 @@
 namespace em = enterprise_management;
 
 namespace policy {
+
+namespace {
+std::string DumpObservers(
+    const base::ObserverList<CloudPolicyService::Observer, true>::Unchecked&
+        observers) {
+  if (observers.empty()) {
+    return "empty";
+  }
+
+  std::vector<std::string_view> names;
+  for (const auto& observer : observers) {
+    names.emplace_back(observer.name());
+  }
+
+  return base::JoinString(names, ",");
+}
+}  // namespace
 
 CloudPolicyService::CloudPolicyService(const std::string& policy_type,
                                        const std::string& settings_entity_id,
@@ -36,7 +55,11 @@ CloudPolicyService::CloudPolicyService(const std::string& policy_type,
 
   // Make sure we initialize |client_| from the policy data that might be
   // already present in |store_|.
-  OnStoreLoaded(store_);
+  if (store_->status() == CloudPolicyStore::STATUS_OK) {
+    OnStoreLoaded(store_);
+  } else {
+    OnStoreError(store_);
+  }
 }
 
 CloudPolicyService::~CloudPolicyService() {
@@ -45,6 +68,12 @@ CloudPolicyService::~CloudPolicyService() {
   client_->RemovePolicyTypeToFetch(policy_type_, settings_entity_id_);
   client_->RemoveObserver(this);
   store_->RemoveObserver(this);
+
+  if (!observers_.empty()) {
+    LOG_POLICY(ERROR, POLICY_FETCHING)
+        << "CloudPolicyService observers on destruction: "
+        << DumpObservers(observers_);
+  }
 }
 
 void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback,
@@ -143,24 +172,30 @@ void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
                                user_affiliation_ids);
   }
 
-  if (refresh_state_ == REFRESH_POLICY_STORE)
+  ValidationAction action = kLoad;
+  if (refresh_state_ == REFRESH_POLICY_STORE) {
+    action = kStore;
     RefreshCompleted(true);
+  }
 
   CheckInitializationCompleted();
-
-  ReportValidationResult(store);
+  ReportValidationResult(store, action);
 }
 
 void CloudPolicyService::OnStoreError(CloudPolicyStore* store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (refresh_state_ == REFRESH_POLICY_STORE)
+  ValidationAction action = kLoad;
+  if (refresh_state_ == REFRESH_POLICY_STORE) {
+    action = kStore;
     RefreshCompleted(false);
+  }
   CheckInitializationCompleted();
-  ReportValidationResult(store);
+  ReportValidationResult(store, action);
 }
 
-void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store) {
+void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store,
+                                                ValidationAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const CloudPolicyValidatorBase::ValidationResult* validation_result =
@@ -184,7 +219,7 @@ void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store) {
     return;
   }
 
-  // TODO(hendrich,pmarko): https://crbug.com/794848
+  // TODO(hendrich): https://crbug.com/794848
   // Update the status to reflect value validation errors/warnings. For now we
   // don't want to reject policies on value validation errors, therefore the
   // validation result will be |VALIDATION_OK| even though we might have value
@@ -205,7 +240,7 @@ void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store) {
 
   VLOG_POLICY(2, CBCM_ENROLLMENT) << "Uploading Policy Validation Report.";
   client_->UploadPolicyValidationReport(
-      status, validation_result->value_validation_issues, policy_type_,
+      status, validation_result->value_validation_issues, action, policy_type_,
       validation_result->policy_token);
 }
 

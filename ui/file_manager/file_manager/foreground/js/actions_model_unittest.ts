@@ -9,16 +9,18 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
-import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import type {MockFileSystem} from '../../common/js/mock_entry.js';
+import {MockDirectoryEntry, MockFileEntry} from '../../common/js/mock_entry.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
 
 import {ActionsModel, CommonActionId, InternalActionId} from './actions_model.js';
-import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
-import {MetadataModel} from './metadata/metadata_model.js';
+import {FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE, FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, FSP_ACTION_HIDDEN_ONEDRIVE_URL, FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL} from './constants.js';
+import type {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
 import {MockMetadataModel} from './metadata/mock_metadata.js';
 import type {ActionModelUi} from './ui/action_model_ui.js';
-import {FilesAlertDialog} from './ui/files_alert_dialog.js';
-import {ListContainer} from './ui/list_container.js';
+import type {FilesAlertDialog} from './ui/files_alert_dialog.js';
+import type {ListContainer} from './ui/list_container.js';
 
 type GetCustomActionsCallback =
     (actions: chrome.fileManagerPrivate.FileSystemProviderAction[]) => void;
@@ -601,6 +603,22 @@ export async function testProvidedEntry() {
             id: 'some-custom-id',
             title: 'Turn into chocolate!',
           },
+          {
+            id: FSP_ACTION_HIDDEN_ONEDRIVE_URL,
+            title: 'url',
+          },
+          {
+            id: FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL,
+            title: 'email',
+          },
+          {
+            id: FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED,
+            title: 'false',
+          },
+          {
+            id: FSP_ACTION_HIDDEN_ONEDRIVE_ACCOUNT_STATE,
+            title: 'account state',
+          },
         ]);
       };
 
@@ -617,6 +635,7 @@ export async function testProvidedEntry() {
 
   await model.initialize();
   const actions = model.getActions();
+  // The fake actions are hidden.
   assertEquals(2, Object.keys(actions).length);
 
   const shareAction = actions[CommonActionId.SHARE]!;

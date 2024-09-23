@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
 std::unique_ptr<KeyedService> BuildDeviceSharingManager(
@@ -22,9 +22,15 @@ std::unique_ptr<KeyedService> BuildDeviceSharingManager(
 
 // static
 DeviceSharingManager* DeviceSharingManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+DeviceSharingManager* DeviceSharingManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<DeviceSharingManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

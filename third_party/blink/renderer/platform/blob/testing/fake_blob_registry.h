@@ -36,11 +36,6 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
   void GetBlobFromUUID(mojo::PendingReceiver<mojom::blink::Blob>,
                        const String& uuid,
                        GetBlobFromUUIDCallback) override;
-
-  void URLStoreForOrigin(
-      const scoped_refptr<const SecurityOrigin>&,
-      mojo::PendingAssociatedReceiver<mojom::blink::BlobURLStore>) override;
-
   struct Registration {
     String uuid;
     String content_type;

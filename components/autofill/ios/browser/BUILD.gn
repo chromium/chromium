@@ -27,6 +27,8 @@ source_set("browser") {
     "form_suggestion_provider.h",
     "form_suggestion_provider_query.h",
     "form_suggestion_provider_query.mm",
+    "password_autofill_agent.h",
+    "password_autofill_agent.mm",
     "personal_data_manager_observer_bridge.h",
     "personal_data_manager_observer_bridge.mm",
     "suggestion_controller_java_script_feature.h",
@@ -45,11 +47,14 @@ source_set("browser") {
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:form_util_feature",
+    "//components/feature_engagement/public",
+    "//components/plus_addresses",
     "//components/prefs:prefs",
     "//components/prefs/ios",
     "//components/resources:components_resources_grit",
     "//components/ukm/ios:ukm_url_recorder",
     "//google_apis",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/deprecated",
@@ -89,7 +94,10 @@ optimize_js("autofill_js") {
 
   deps = [
     "//components/autofill/ios/form_util:fill_js_dependencies",
+    "//components/autofill/ios/form_util:fill_js_namespace",
+    "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -102,11 +110,17 @@ optimize_ts("suggestion_controller_js") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "autofill_driver_ios_factory_test_api.h",
+    "autofill_driver_ios_test_api.h",
     "credit_card_save_manager_test_observer_bridge.h",
     "credit_card_save_manager_test_observer_bridge.mm",
     "fake_autofill_agent.h",
     "fake_autofill_agent.mm",
     "ios_test_event_waiter.h",
+    "mock_password_autofill_agent_delegate.h",
+    "mock_password_autofill_agent_delegate.mm",
+    "new_frame_catcher.h",
+    "new_frame_catcher.mm",
     "test_autofill_manager_injector.h",
   ]
   public_deps = [ ":browser" ]
@@ -114,6 +128,7 @@ source_set("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
     "//components/leveldb_proto:leveldb_proto",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -125,8 +140,11 @@ source_set("unit_tests") {
   sources = [
     "autofill_across_iframes_unittest.mm",
     "autofill_agent_unittests.mm",
+    "autofill_driver_ios_factory_unittest.mm",
     "autofill_util_unittests.mm",
+    "autofill_xhr_sumission_detection_unittest.mm",
     "form_suggestion_provider_query_unittests.mm",
+    "password_autofill_agent_unittest.mm",
   ]
   deps = [
     ":browser",
@@ -134,15 +152,17 @@ source_set("unit_tests") {
     ":util",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
-    "//components/autofill/ios/form_util",
+    "//components/autofill/core/common:features",
+    "//components/autofill/core/common:test_support",
+    "//components/autofill/core/common/mojom:mojo_types_shared_cpp_sources",
+    "//components/autofill/ios/common",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/autofill/ios/form_util:test_support",
-    "//components/leveldb_proto:leveldb_proto",
-    "//components/prefs",
     "//components/prefs:test_support",
     "//ios/testing:embedded_test_server_support",
     "//ios/web/public",

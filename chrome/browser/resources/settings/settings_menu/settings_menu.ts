@@ -10,18 +10,18 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
+import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_vars.css.js';
 import '../icons.html.js';
 
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import type {PageVisibility} from '../page_visibility.js';
 import type {Route, SettingsRoutes} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
@@ -61,7 +61,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     };
   }
 
-  pageVisibility: PageVisibility;
+  pageVisibility?: PageVisibility;
   private showAdvancedFeaturesMainControl_: boolean;
   private routes_: SettingsRoutes;
 
@@ -76,29 +76,19 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   override currentRouteChanged(newRoute: Route) {
-    // <if expr="_google_chrome">
-    if (loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
-        newRoute === this.routes_.GET_MOST_CHROME) {
-      const about =
-          this.shadowRoot!.querySelector<HTMLAnchorElement>('#about-menu');
-      assert(about);
-      this.setSelectedUrl_(about.href);
-      return;
-    }
-    // </if>
-
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {
-      const anchorRoute = Router.getInstance().getRouteForPath(
-          anchors[i].getAttribute('href')!);
+      // Purposefully grabbing the 'href' attribute and not the property.
+      const pathname = anchors[i].getAttribute('href')!;
+      const anchorRoute = Router.getInstance().getRouteForPath(pathname);
       if (anchorRoute && anchorRoute.contains(newRoute)) {
-        this.setSelectedUrl_(anchors[i].href);
+        this.setSelectedPath_(pathname);
         return;
       }
     }
 
-    this.setSelectedUrl_('');  // Nothing is selected.
+    this.setSelectedPath_('');  // Nothing is selected.
   }
 
   focusFirstItem() {
@@ -111,7 +101,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   /**
    * Prevent clicks on sidebar items from navigating. These are only links for
-   * accessibility purposes, taps are handled separately by <iron-selector>.
+   * accessibility purposes, taps are handled separately.
    */
   private onLinkClick_(event: Event) {
     if ((event.target as HTMLElement).matches('a:not(#extensionsLink)')) {
@@ -120,17 +110,18 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   /**
-   * Keeps both menus in sync. |url| needs to come from |element.href| because
-   * |iron-list| uses the entire url. Using |getAttribute| will not work.
+   * Keeps both menus in sync. `path` needs to come from
+   * `element.getAttribute('href')`. Using `element.href` will not work as it
+   * would pass the entire URL instead of just the path.
    */
-  private setSelectedUrl_(url: string) {
-    this.$.menu.selected = url;
+  private setSelectedPath_(path: string) {
+    this.$.menu.selected = path;
   }
 
   private onSelectorActivate_(event: CustomEvent<{selected: string}>) {
-    this.setSelectedUrl_(event.detail.selected);
+    const path = event.detail.selected;
+    this.setSelectedPath_(path);
 
-    const path = new URL(event.detail.selected).pathname;
     const route = Router.getInstance().getRouteForPath(path);
     assert(route, 'settings-menu has an entry with an invalid route.');
     Router.getInstance().navigateTo(

@@ -42,7 +42,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     kMakeCredential,
     kMakePaymentCredential,
     kGetAssertion,
-    kGetPaymentCredentialAssertion
+    kGetPaymentCredentialAssertion,
+    kReport
   };
 
   // A RemoteValidation represents a pending remote validation of an RP ID.
@@ -118,7 +119,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // whether `caller_origin` is authorized to use that extension.
   //
   // If the RP ID cannot be validated using the rule above then a remote
-  // validation will be attempted by fetching `.well-known/webauthn-origins`
+  // validation will be attempted by fetching `.well-known/webauthn`
   // from the RP ID. In this case the return value will be non-null and the
   // caller needs to retain it. If the return value is deleted then the
   // operation will be canceled.

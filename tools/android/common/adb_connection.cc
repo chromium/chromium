@@ -58,7 +58,7 @@ int ConnectAdbHostSocket(const char* forward_to) {
 
   int host_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (host_socket < 0) {
-    LOG(ERROR) << "Failed to create adb socket: " << strerror(errno);
+    PLOG(ERROR) << "Failed to create adb socket";
     return -1;
   }
 
@@ -72,7 +72,7 @@ int ConnectAdbHostSocket(const char* forward_to) {
   addr.sin_port = htons(kAdbPort);
   if (HANDLE_EINTR(connect(host_socket, reinterpret_cast<sockaddr*>(&addr),
                            sizeof(addr))) < 0) {
-    LOG(ERROR) << "Failed to connect adb socket: " << strerror(errno);
+    PLOG(ERROR) << "Failed to connect adb socket";
     CloseSocket(host_socket);
     return -1;
   }
@@ -83,7 +83,7 @@ int ConnectAdbHostSocket(const char* forward_to) {
     int ret = HANDLE_EINTR(send(host_socket, request + bytes_sent,
                                 bytes_remaining, 0));
     if (ret < 0) {
-      LOG(ERROR) << "Failed to send request: " << strerror(errno);
+      PLOG(ERROR) << "Failed to send request";
       CloseSocket(host_socket);
       return -1;
     }

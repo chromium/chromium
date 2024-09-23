@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "url/mojom/url.mojom.h"
 
 namespace ash {
 
@@ -43,6 +44,10 @@ class MediaAppPageHandler : public media_app_ui::mojom::PageHandler {
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       const std::string& mime_type,
       EditInPhotosCallback callback) override;
+  void SubmitForm(const GURL& url,
+                  const std::vector<int8_t>& payload,
+                  const std::string& header,
+                  SubmitFormCallback callback) override;
 
  private:
   mojo::Receiver<media_app_ui::mojom::PageHandler> receiver_;

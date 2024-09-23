@@ -78,6 +78,9 @@ class PrivateNetworkDevicePermissionContext
                            const blink::mojom::PrivateNetworkDevice& device,
                            bool is_device_valid);
 
+  // KeyedService:
+  void Shutdown() override;
+
   // Tracks the set of devices to which an origin has temporary access to.
   std::map<url::Origin, std::set<net::IPAddress>> ephemeral_devices_;
 

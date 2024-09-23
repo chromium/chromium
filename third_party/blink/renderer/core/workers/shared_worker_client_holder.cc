@@ -32,15 +32,16 @@
 
 #include <memory>
 #include <utility>
+
 #include "base/check.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/blink.h"
@@ -89,7 +90,9 @@ void SharedWorkerClientHolder::Connect(
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token,
     mojom::blink::WorkerOptionsPtr options,
     mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
-    ukm::SourceId client_ukm_source_id) {
+    ukm::SourceId client_ukm_source_id,
+    const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
+        connector_override) {
   DCHECK(IsMainThread());
   DCHECK(options);
 
@@ -122,7 +125,9 @@ void SharedWorkerClientHolder::Connect(
           insecure_requests_policy),
       same_site_cookies);
 
-  connector_->Connect(
+  const HeapMojoRemote<mojom::blink::SharedWorkerConnector>& connector =
+      connector_override ? *connector_override : connector_;
+  connector->Connect(
       std::move(info), std::move(client),
       worker->GetExecutionContext()->IsSecureContext()
           ? mojom::blink::SharedWorkerCreationContextType::kSecure

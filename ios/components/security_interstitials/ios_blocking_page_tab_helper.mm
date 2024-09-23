@@ -87,6 +87,14 @@ void IOSBlockingPageTabHelper::CommittedNavigationIDListener::
 
   // Interstitials may change the visibility of the URL or other security state.
   web_state->DidChangeVisibleSecurityState();
+
+  IOSSecurityInterstitialPage* page = tab_helper_->GetCurrentBlockingPage();
+  if (!page) {
+    // `page` will be null if a IOSSecurityInterstitialPage is not being
+    // displayed to the user.
+    return;
+  }
+  page->ShowInfobar();
 }
 
 void IOSBlockingPageTabHelper::CommittedNavigationIDListener::WebStateDestroyed(

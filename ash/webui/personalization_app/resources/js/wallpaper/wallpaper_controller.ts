@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 import {isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -270,6 +271,9 @@ export async function getDefaultImageThumbnail(
     store: PersonalizationStore): Promise<void> {
   store.dispatch(action.beginLoadDefaultImageThubmnailAction());
   const {data} = await provider.getDefaultImageThumbnail();
+  if (data.url.length === 0) {
+    console.error('Failed to load default image thumbnail');
+  }
   store.dispatch(action.setDefaultImageThumbnailAction(data));
 }
 
@@ -353,6 +357,8 @@ export async function selectWallpaper(
   const shouldPreview = tabletMode && !isDefaultImage(image);
   if (shouldPreview) {
     provider.makeTransparent();
+    store.dispatch(
+        action.setFullscreenStateAction(FullscreenPreviewState.LOADING));
   }
   store.endBatchUpdate();
   const {success} = await (() => {
@@ -374,14 +380,9 @@ export async function selectWallpaper(
   })();
   store.beginBatchUpdate();
   store.dispatch(action.endSelectImageAction(image, success));
-  // Delay opening full screen preview until done loading. This looks better if
-  // the image load takes a long time, otherwise the user will see the old
-  // wallpaper image for a while.
-  if (success && shouldPreview) {
-    store.dispatch(action.setFullscreenEnabledAction(/*enabled=*/ true));
-  }
   if (!success) {
     console.warn('Error setting wallpaper');
+    store.dispatch(action.setFullscreenStateAction(FullscreenPreviewState.OFF));
     store.dispatch(
         action.setAttributionAction(store.data.wallpaper.attribution));
     store.dispatch(
@@ -527,15 +528,15 @@ export async function updateDailyRefreshWallpaper(
 /** Confirm and set preview wallpaper as actual wallpaper. */
 export async function confirmPreviewWallpaper(
     provider: WallpaperProviderInterface): Promise<void> {
-  await provider.confirmPreviewWallpaper();
   provider.makeOpaque();
+  provider.confirmPreviewWallpaper();
 }
 
 /** Cancel preview wallpaper and show the previous wallpaper. */
 export async function cancelPreviewWallpaper(
     provider: WallpaperProviderInterface): Promise<void> {
-  await provider.cancelPreviewWallpaper();
   provider.makeOpaque();
+  provider.cancelPreviewWallpaper();
 }
 
 export async function getShouldShowTimeOfDayWallpaperDialog(

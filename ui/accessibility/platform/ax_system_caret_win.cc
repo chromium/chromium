@@ -141,7 +141,7 @@ bool AXSystemCaretWin::ShouldIgnoreHoveredStateForTesting() {
   return false;
 }
 
-const ui::AXUniqueId& AXSystemCaretWin::GetUniqueId() const {
+AXPlatformNodeId AXSystemCaretWin::GetUniqueId() const {
   return unique_id_;
 }
 

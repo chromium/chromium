@@ -102,7 +102,7 @@ WaylandWindow* WaylandWindowManager::GetCurrentPointerOrTouchFocusedWindow()
     // In case there is an ongoing window dragging session, favor the window
     // according to the active drag source.
     //
-    // TODO(https://crbug.com/1317063): Apply the same logic to data drag
+    // TODO(crbug.com/40222425): Apply the same logic to data drag
     // sessions too?
     if (auto drag_source =
             connection_->window_drag_controller()->drag_source()) {

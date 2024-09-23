@@ -1,0 +1,58 @@
+Test css.getLocationForSelector method
+range 1 of selector 'div.class1':
+    start line: 4
+    end line: 4
+    start column: 0
+    end column: 10
+range 1 of selector '& .class11':
+    start line: 6
+    end line: 6
+    start column: 4
+    end column: 12
+range 2 of selector '& .class11':
+    start line: 13
+    end line: 13
+    start column: 4
+    end column: 12
+range 1 of selector 'div.class1 .class2':
+    start line: 11
+    end line: 11
+    start column: 0
+    end column: 18
+range 1 of selector 'div.class6':
+    start line: 18
+    end line: 18
+    start column: 56
+    end column: 66
+range 1 of selector '.second-in-selector-list':
+    start line: 21
+    end line: 21
+    start column: 0
+    end column: 34
+range 2 of selector '.second-in-selector-list':
+    start line: 25
+    end line: 25
+    start column: 0
+    end column: 32
+range 1 of selector 'div#item3':
+    start line: 6
+    end line: 6
+    start column: 159
+    end column: 168
+range 2 of selector 'div#item3':
+    start line: 9
+    end line: 9
+    start column: 52
+    end column: 61
+range 1 of selector 'div #item3':
+    start line: 6
+    end line: 7
+    start column: 183
+    end column: 10
+range 1 of selector '.class7':
+    start line: 0
+    end line: 0
+    start column: 0
+    end column: 7
+Failed to find selector '.not-in-stylesheet' in style sheet
+

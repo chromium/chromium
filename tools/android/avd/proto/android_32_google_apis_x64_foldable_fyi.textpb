@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-12L (S_V2, API 32) AVD on google_apis on x86_64
+# This should be kept in sync with foldable_landscape proto except the screen size.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "N2X90_ADQtGKgoxkXZH3-TM5dbrynU-zGC4mj0B5KMIC"  # 32.1.15
+  dest_path: "android_32_google_apis_x64_foldable_fyi"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-32/google_apis/x86_64"
+  version: "KK_VeEUvdJrxL7eEKvVnt_4bjZPRLsGPymVm6Ios5HEC"  # r7, SE1B.220616.007
+  dest_path: "android_32_google_apis_x64_foldable_fyi"
+}
+system_image_name: "system-images;android-32;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-32/google_apis/x86_64"
+  # Created in https://ci.chromium.org/ui/b/8740766173119328593
+  # Patched gmscore version 24.08.12 in https://crrev.com/c/5758044
+  version: "Ah5iJq-UmBERJOX-Fx1EzJI05TQjFmAo6W7pc0jYB-AC"
+  dest_path: "android_32_google_apis_x64_foldable_fyi"
+}
+avd_name: "android_32_google_apis_x64_foldable_fyi"

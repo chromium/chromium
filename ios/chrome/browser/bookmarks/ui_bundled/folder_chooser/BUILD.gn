@@ -1,0 +1,137 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Public target.
+group("folder_chooser") {
+  public_deps = [ ":coordinator_headers" ]
+  deps = [ ":coordinator_impl" ]
+}
+
+# Do not include this target. Prefer :folder_chooser instead.
+# This target is only used for internal builds in bookmark.
+# Contains coordinator headers.
+source_set("coordinator_headers") {
+  visibility = [
+    ":coordinator_impl",
+    ":folder_chooser",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_editor:coordinator_impl",
+  ]
+  sources = [
+    "bookmarks_folder_chooser_coordinator.h",
+    "bookmarks_folder_chooser_coordinator_delegate.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+}
+
+# Do not include this target. Prefer :folder_chooser instead.
+# This target is only used for internal builds in bookmark.
+# Contains coordinator implementation.
+source_set("coordinator_impl") {
+  visibility = [ ":folder_chooser" ]
+  sources = [ "bookmarks_folder_chooser_coordinator.mm" ]
+  deps = [
+    ":coordinator_headers",
+    ":ui",
+    "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/bookmarks/ui_bundled/folder_editor:coordinator_headers",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model:model",
+  ]
+}
+
+# Private to this coordinator.
+# Contains folder chooser ui implementation.
+source_set("ui") {
+  visibility = [
+    ":coordinator_impl",
+    ":unit_tests",
+  ]
+  sources = [
+    "bookmarks_folder_chooser_consumer.h",
+    "bookmarks_folder_chooser_mediator.h",
+    "bookmarks_folder_chooser_mediator.mm",
+    "bookmarks_folder_chooser_mediator_delegate.h",
+    "bookmarks_folder_chooser_mutator.h",
+    "bookmarks_folder_chooser_sub_data_source_impl.h",
+    "bookmarks_folder_chooser_sub_data_source_impl.mm",
+    "bookmarks_folder_chooser_view_controller.h",
+    "bookmarks_folder_chooser_view_controller.mm",
+    "bookmarks_folder_chooser_view_controller_presentation_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/sync/base:features",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/bookmarks/ui_bundled/cells",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/ui/symbols:icons",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model:model",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bookmarks_folder_chooser_mediator_unittest.mm",
+    "bookmarks_folder_chooser_sub_data_source_impl_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/sync:test_support",
+    "//components/sync/base:features",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/model:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test:test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "bookmarks_folder_chooser_egtest.mm" ]
+  deps = [
+    "//components/strings",
+    "//components/sync/base:features",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

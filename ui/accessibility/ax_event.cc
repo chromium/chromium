@@ -26,6 +26,10 @@ AXEvent::AXEvent(AXNodeData::AXID id,
 
 AXEvent::~AXEvent() = default;
 
+AXEvent::AXEvent(AXEvent&& other) = default;
+
+AXEvent& AXEvent::operator=(AXEvent&& other) = default;
+
 AXEvent::AXEvent(const AXEvent& event) = default;
 
 AXEvent& AXEvent::operator=(const AXEvent& event) = default;

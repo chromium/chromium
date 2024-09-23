@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor_impl.h"
 
 #include <stddef.h>
@@ -292,7 +297,7 @@ TEST_P(FastPairDataEncryptorImplTest, NoKeyPair) {
   EXPECT_FALSE(data_encryptor_);
 }
 
-// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+// TODO(crbug.com/40822900) flaky on ASan + LSan bots
 #if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_ParseDecryptedPasskey_ProcessStopped \
   DISABLED_ParseDecryptedPasskey_ProcessStopped
@@ -318,7 +323,7 @@ TEST_P(FastPairDataEncryptorImplTest,
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/1298377) flaky on ASan + LSan bots
+// TODO(crbug.com/40822900) flaky on ASan + LSan bots
 #if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_ParseDecryptedResponse_ProcessStopped \
   DISABLED_ParseDecryptedResponse_ProcessStopped

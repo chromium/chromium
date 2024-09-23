@@ -24,7 +24,8 @@ class IsolatedWebAppInstallerShelfItemControllerTest : public ash::AshTestBase {
  public:
   void CreateWindowAndAddToShelf(const std::string& app_id) {
     widget_ = CreateTestWidget(
-        nullptr, ash::desks_util::GetActiveDeskContainerId(), gfx::Rect());
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+        ash::desks_util::GetActiveDeskContainerId(), gfx::Rect());
 
     ash::ShelfID shelf_id(app_id);
     std::unique_ptr<IsolatedWebAppInstallerShelfItemController> delegate =

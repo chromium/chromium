@@ -12,8 +12,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Implemented internally.
  *
- * Interface for logging latency and availability signals for feed launches. All timestamps are in
- * terms of nanoseconds since system boot. One instance exists per feed surface and lasts for the
+ * <p>Interface for logging latency and availability signals for feed launches. All timestamps are
+ * in terms of nanoseconds since system boot. One instance exists per feed surface and lasts for the
  * surface's lifetime.
  */
 public interface FeedLaunchReliabilityLogger {
@@ -22,14 +22,15 @@ public interface FeedLaunchReliabilityLogger {
     public @interface SurfaceType {
         int UNSPECIFIED = 0;
         int NEW_TAB_PAGE = 1;
-        int START_SURFACE = 2;
+        @Deprecated int START_SURFACE = 2;
     }
 
     @IntDef({
         StreamType.UNSPECIFIED,
         StreamType.FOR_YOU,
         StreamType.WEB_FEED,
-        StreamType.SINGLE_WEB_FEED
+        StreamType.SINGLE_WEB_FEED,
+        StreamType.SUPERVISED_USER_FEED
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface StreamType {
@@ -37,13 +38,15 @@ public interface FeedLaunchReliabilityLogger {
         int FOR_YOU = 1;
         int WEB_FEED = 2;
         int SINGLE_WEB_FEED = 3;
+        int SUPERVISED_USER_FEED = 4;
     }
 
     /**
      * Set details about the stream being launched and send any pending events.
-     * @param streamType Feed type (e.g. "for you" or "following").
+     *
+     * @param streamType Feed type (e.g. "for you", "following" or "supervised user").
      * @param streamId Identifier for the stream used to disambiguate events from concurrent
-     *         streams.
+     *     streams.
      */
     default void sendPendingEvents(
             @org.chromium.chrome.browser.xsurface.feed.StreamType int streamType, int streamId) {}
@@ -149,8 +152,12 @@ public interface FeedLaunchReliabilityLogger {
     /** Drop anything kept with pendingFinished(). */
     default void cancelPendingFinished() {}
 
+    /** Include experiment IDs sent from the server in the reliability log. */
+    default void reportExperiments(int[] experimentIds) {}
+
     /**
      * Log when the feed is launched because its UI surface was created.
+     *
      * @param surfaceType Feed surface type (e.g. new tab page or Start Surface).
      * @param timestamp Time at which the surface began to be created.
      */

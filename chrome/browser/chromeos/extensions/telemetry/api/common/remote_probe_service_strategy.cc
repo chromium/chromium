@@ -8,10 +8,13 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/telemetry_extension/telemetry/probe_service_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chromeos/ash/components/telemetry_extension/telemetry/probe_service_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -22,62 +25,55 @@ namespace chromeos {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class RemoteProbeServiceStrategyAsh : public RemoteProbeServiceStrategy {
- public:
-  RemoteProbeServiceStrategyAsh()
-      : probe_service_(ash::ProbeServiceAsh::Factory::Create(
-            remote_probe_service_.BindNewPipeAndPassReceiver())) {}
+RemoteProbeServiceStrategy* g_instance = nullptr;
+}
 
-  ~RemoteProbeServiceStrategyAsh() override = default;
+RemoteProbeServiceStrategy::RemoteProbeServiceStrategy() = default;
+RemoteProbeServiceStrategy::~RemoteProbeServiceStrategy() = default;
 
-  // RemoteProbeServiceStrategy override:
-  mojo::Remote<crosapi::mojom::TelemetryProbeService>& GetRemoteService()
-      override {
-    return remote_probe_service_;
+RemoteProbeServiceStrategy* RemoteProbeServiceStrategy::Get() {
+  if (!g_instance) {
+    g_instance = new RemoteProbeServiceStrategy();
   }
+  return g_instance;
+}
 
- private:
-  mojo::Remote<crosapi::mojom::TelemetryProbeService> remote_probe_service_;
-
-  std::unique_ptr<crosapi::mojom::TelemetryProbeService> probe_service_;
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class RemoteProbeServiceStrategyLacros : public RemoteProbeServiceStrategy {
- public:
-  RemoteProbeServiceStrategyLacros() = default;
-
-  ~RemoteProbeServiceStrategyLacros() override = default;
-
-  // RemoteProbeServiceStrategy override:
-  mojo::Remote<crosapi::mojom::TelemetryProbeService>& GetRemoteService()
-      override {
-    return LacrosService::Get()
-        ->GetRemote<crosapi::mojom::TelemetryProbeService>();
-  }
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-}  // namespace
-
-// static
-std::unique_ptr<RemoteProbeServiceStrategy>
-RemoteProbeServiceStrategy::Create() {
+// Returns the probe service currently enabled in this platform.
+crosapi::mojom::TelemetryProbeService*
+RemoteProbeServiceStrategy::GetRemoteProbeService() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return std::make_unique<RemoteProbeServiceStrategyAsh>();
+  if (test_service_) {
+    return test_service_.get();
+  }
+  return crosapi::CrosapiManager::Get()->crosapi_ash()->probe_service_ash();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!LacrosService::Get()
            ->IsAvailable<crosapi::mojom::TelemetryProbeService>()) {
     return nullptr;
   }
-  return std::make_unique<RemoteProbeServiceStrategyLacros>();
+  return LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TelemetryProbeService>()
+      .get();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-RemoteProbeServiceStrategy::RemoteProbeServiceStrategy() = default;
-RemoteProbeServiceStrategy::~RemoteProbeServiceStrategy() = default;
+// Override platform service to use a fake service, should only be called in
+// test. We cannot override Ash service since the ash crosapi manager does not
+// exist in test.
+void RemoteProbeServiceStrategy::SetServiceForTesting(
+    mojo::PendingRemote<crosapi::mojom::TelemetryProbeService> test_service) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (test_service_.is_bound()) {
+    test_service_.reset();
+  }
+  test_service_.Bind(std::move(test_service));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService::Get()->InjectRemoteForTesting(
+      std::move(test_service));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
 
 }  // namespace chromeos

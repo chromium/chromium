@@ -1,0 +1,14 @@
+-PythonUtils.Python3RunTime
+# See b/352673853
+-WebSocketEndToEndTest.BasicSmokeTest
+-WebSocketEndToEndTest.DnsSchemeUpgradeSupported
+-WebSocketEndToEndTest.HeaderContinuations
+-WebSocketEndToEndTest.HostResolverEndpointResult
+-WebSocketEndToEndTest.HstsHttpsToWebSocket
+-WebSocketEndToEndTest.HstsWebSocketToHttps
+-WebSocketEndToEndTest.HstsWebSocketToWebSocket
+-WebSocketEndToEndTest.HttpsProxyUnauthedFails
+-WebSocketEndToEndTest.HttpsProxyUsed
+-WebSocketEndToEndTest.HttpsWssProxyUnauthedFails
+-WebSocketEndToEndTest.TrailingWhitespace
+-WebSocketEndToEndTest.TruncatedResponse

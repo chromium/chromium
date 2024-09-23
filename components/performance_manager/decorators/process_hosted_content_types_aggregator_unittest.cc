@@ -8,6 +8,7 @@
 
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -53,8 +54,8 @@ TEST_F(ProcessHostedContentTypesAggregatorTest,
   // an extension.
   frame_node.reset();
   page_node.reset();
-  EXPECT_TRUE(graph()->GetAllFrameNodes().empty());
-  EXPECT_TRUE(graph()->GetAllPageNodes().empty());
+  EXPECT_EQ(graph()->GetAllFrameNodes().size(), 0u);
+  EXPECT_EQ(graph()->GetAllPageNodes().size(), 0u);
 
   EXPECT_TRUE(IsHosting(process_node, ContentType::kExtension));
   EXPECT_TRUE(IsHosting(process_node, ContentType::kMainFrame));
@@ -90,7 +91,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
 
   // Create a main frame in a first process.
   auto process_node_1 = CreateNode<ProcessNodeImpl>();
-  EXPECT_TRUE(process_node_1->GetHostedContentTypes().Empty());
+  EXPECT_TRUE(process_node_1->GetHostedContentTypes().empty());
   auto main_frame_node =
       CreateFrameNodeAutoId(process_node_1.get(), page_node.get());
 
@@ -103,7 +104,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
 
   // Create a child frame node in another process.
   auto process_node_2 = CreateNode<ProcessNodeImpl>();
-  EXPECT_TRUE(process_node_2->GetHostedContentTypes().Empty());
+  EXPECT_TRUE(process_node_2->GetHostedContentTypes().empty());
   auto child_frame_node = CreateFrameNodeAutoId(
       process_node_2.get(), page_node.get(), main_frame_node.get());
 
@@ -117,7 +118,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, MainFrameAndChildFrame) {
   // Remove the frames. This shouldn't affect hosted content types.
   child_frame_node.reset();
   main_frame_node.reset();
-  EXPECT_TRUE(graph()->GetAllFrameNodes().empty());
+  EXPECT_EQ(graph()->GetAllFrameNodes().size(), 0u);
 
   EXPECT_FALSE(IsHosting(process_node_1, ContentType::kExtension));
   EXPECT_TRUE(IsHosting(process_node_1, ContentType::kMainFrame));
@@ -146,8 +147,10 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, AdFrame) {
   auto process_node = CreateNode<ProcessNodeImpl>();
   auto ad_frame_node = CreateFrameNodeAutoId(
       process_node.get(), page_node.get(), main_frame_node.get());
-  ad_frame_node->OnNavigationCommitted(GURL("https://example.com"),
-                                       /* same_document=*/false);
+  const GURL kUrl("https://example.com");
+  ad_frame_node->OnNavigationCommitted(
+      kUrl, url::Origin::Create(kUrl),
+      /*same_document=*/false, /*is_served_from_back_forward_cache=*/false);
   ad_frame_node->SetIsAdFrame(true);
 
   EXPECT_FALSE(IsHosting(process_node, ContentType::kExtension));
@@ -185,7 +188,7 @@ TEST_F(ProcessHostedContentTypesAggregatorTest, Worker) {
   // Remove the worker node. The process is still counted as having hosted a
   // worker.
   worker_node.reset();
-  EXPECT_TRUE(graph()->GetAllWorkerNodes().empty());
+  EXPECT_EQ(graph()->GetAllWorkerNodes().size(), 0u);
 
   EXPECT_FALSE(IsHosting(process_node, ContentType::kExtension));
   EXPECT_FALSE(IsHosting(process_node, ContentType::kMainFrame));

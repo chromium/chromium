@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_EXO_TEST_TEST_DATA_OFFER_DELEGATE_H_
 #define COMPONENTS_EXO_TEST_TEST_DATA_OFFER_DELEGATE_H_
 
+#include <memory>
+
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_delegate.h"
+#include "components/exo/test/test_security_delegate.h"
 
 namespace exo::test {
 
@@ -32,11 +35,14 @@ class TestDataOfferDelegate : public DataOfferDelegate {
     return source_actions_;
   }
   DndAction dnd_action() const { return dnd_action_; }
+  TestSecurityDelegate* GetSecurityDelegate() const override;
 
  private:
   base::flat_set<std::string> mime_types_;
   base::flat_set<DndAction> source_actions_;
   DndAction dnd_action_ = DndAction::kNone;
+  std::unique_ptr<TestSecurityDelegate> security_delegate_ =
+      std::make_unique<TestSecurityDelegate>();
 };
 
 }  // namespace exo::test

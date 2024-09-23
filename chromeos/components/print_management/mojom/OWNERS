@@ -4,7 +4,7 @@ jimmyxgong@chromium.org
 khorimoto@chromium.org
 
 # Secondary Owners
-zentaro@chromium.org
+xiangdongkong@google.com
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

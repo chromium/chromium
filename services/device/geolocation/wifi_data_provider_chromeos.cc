@@ -8,7 +8,6 @@
 
 #include <stdint.h>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -16,7 +15,6 @@
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
-#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 
 using ::ash::NetworkHandler;
@@ -30,10 +28,6 @@ const int kDefaultPollingIntervalMilliseconds = 10 * 1000;           // 10s
 const int kNoChangePollingIntervalMilliseconds = 2 * 60 * 1000;      // 2 mins
 const int kTwoNoChangePollingIntervalMilliseconds = 10 * 60 * 1000;  // 10 mins
 const int kNoWifiPollingIntervalMilliseconds = 20 * 1000;            // 20s
-
-// Experimental polling interval for kCrOSGeolocationReducedWifiPollingInterval
-// flag.
-const int kOneMinPollingIntervalMilliseconds = 60 * 1000;  // 1 min
 
 // The mobile location service (MLS) imposes a hard-coded limit on the number of
 // access points that can be used to generate a position estimate.
@@ -125,15 +119,6 @@ void WifiDataProviderChromeOs::ForceRescan() {}
 
 std::unique_ptr<WifiPollingPolicy>
 WifiDataProviderChromeOs::CreatePollingPolicy() {
-  // Experiment for using shorter wifi polling interval to get updated wifi data
-  // sooner.
-  if (base::FeatureList::IsEnabled(
-          features::kCrOSGeolocationReducedWifiPollingInterval)) {
-    return std::make_unique<GenericWifiPollingPolicy<
-        kDefaultPollingIntervalMilliseconds, kOneMinPollingIntervalMilliseconds,
-        kOneMinPollingIntervalMilliseconds,
-        kNoWifiPollingIntervalMilliseconds>>();
-  }
   return std::make_unique<GenericWifiPollingPolicy<
       kDefaultPollingIntervalMilliseconds, kNoChangePollingIntervalMilliseconds,
       kTwoNoChangePollingIntervalMilliseconds,

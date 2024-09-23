@@ -47,7 +47,7 @@ class IsolatedWebAppUpdateApplyWaiterTest : public WebAppTest {
 
   IsolatedWebAppUrlInfo url_info_ =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          *web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId));
+          test::GetDefaultEd25519WebBundleId());
 };
 
 TEST_F(IsolatedWebAppUpdateApplyWaiterTest, AwaitsWindowsClosed) {

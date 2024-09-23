@@ -33,6 +33,11 @@ enum {
 #define MATCH_MODEMASK           0x0000ffff
 #define MATCH_FORCECASESENSITIVE 0x80000000
 
-bool CmpName(const wchar *Wildcard,const wchar *Name,int CmpMode);
+bool CmpName(const wchar *Wildcard,const wchar *Name,uint CmpMode);
+
+inline bool CmpName(const std::wstring &Wildcard,const std::wstring &Name,uint CmpMode)
+{
+  return CmpName(Wildcard.c_str(),Name.c_str(),CmpMode);
+}
 
 #endif

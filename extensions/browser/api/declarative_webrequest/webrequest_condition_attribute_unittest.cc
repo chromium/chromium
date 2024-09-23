@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/browser/api/declarative_webrequest/webrequest_condition_attribute.h"
 
 #include <stddef.h>
@@ -268,7 +273,7 @@ base::Value::Dict GetDictFromArray(
           entry->GetList().Append(*value);
           break;
         default:
-          NOTREACHED();  // We never put other Values here.
+          NOTREACHED_IN_MIGRATION();  // We never put other Values here.
           return base::Value::Dict();
       }
     } else {

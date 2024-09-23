@@ -38,7 +38,9 @@ source_set("reading_list") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -46,7 +48,7 @@ source_set("reading_list") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -56,6 +58,7 @@ source_set("reading_list") {
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/side_swipe/ui_bundled",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tabs/model",
@@ -64,13 +67,9 @@ source_set("reading_list") {
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
-    "//ios/chrome/browser/ui/favicon",
-    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/menu",
-    "//ios/chrome/browser/ui/settings/google_services",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/sharing/activity_services",
-    "//ios/chrome/browser/ui/side_swipe",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/window_activities/model",
     "//ios/chrome/common/ui/favicon",
@@ -85,7 +84,8 @@ source_set("reading_list") {
     "//ui/strings",
     "//url",
   ]
-  allow_circular_includes_from = [ "//ios/chrome/browser/ui/side_swipe" ]
+  allow_circular_includes_from =
+      [ "//ios/chrome/browser/side_swipe/ui_bundled" ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -100,7 +100,6 @@ source_set("infobar") {
     "//components/prefs",
     "//components/reading_list/core",
     "//components/ukm/ios:ukm_url_recorder",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/web/public",
     "//services/metrics/public/cpp:ukm_builders",
@@ -137,7 +136,6 @@ source_set("reading_list_ui") {
   ]
   deps = [
     ":reading_list_constants",
-    "resources:reading_list_empty",
     "//base",
     "//base:i18n",
     "//components/prefs",
@@ -149,10 +147,10 @@ source_set("reading_list_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/drag_and_drop/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -160,7 +158,7 @@ source_set("reading_list_ui") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/keyboard",
+    "//ios/chrome/browser/ui/reading_list/resources",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
@@ -199,7 +197,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/reading_list/model",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/tabs/model",

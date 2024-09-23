@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">ເປີດ <ph name="URL" /> ຢູ່ລູກຂ່າຍບໍ່ສຳເລັດ.</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2366718077645204424">ບໍ່ສາມາດເຂົ້າຫາແມ່ຂ່າຍໄດ້. ອັນນີ້ອາດຈະເນື່ອງຈາກການປັບຕັ້ງຄ່າເຄືອຂ່າຍທີ່ທ່ານກໍາລັງໃຊ້.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ເຫັນ​ອອນ​ລາຍ​ຫຼ້າ​ສຸດ <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">ໃຫ້ການອະນຸຍາດ 'ການຊ່ວຍເຂົ້າເຖິງ' ແກ່ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">ເຊື່ອມຕໍ່ກັບ <ph name="HOSTNAME" /> ແລ້ວ</translation>
 <translation id="2540992418118313681">ທ່ານ​ຢາກ​ຈະ​ແບ່ງ​ປັນ​ຄອມ​ພິວ​ເຕີ​ນີ້ ເພື່ອ​ໃຫ້​ຜູ້​ໃຊ້​ຄົນ​ອື່ນ​ເຫັນ ແລະ​ຄວບ​ຄຸມ​ບໍ?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">ຂະບວນການທາງໄກຂອງກະແຈຄວາມປອດໄພ</translation>
 <translation id="3581045510967524389">ບໍ່​ສາ​ມາດ​ເຊື່ອມ​ຕໍ່​ກັບ​ເຄືອ​ຂ່າຍ​ໄດ້. ກະ​ລຸ​ນາ​ກວດ​ເບິ່ງ​ວ່າ​ອຸ​ປະ​ກອນ​ຂອງ​ທ່ານ​ອອນ​ລາຍ​ບໍ່​.</translation>
 <translation id="3596628256176442606">ການ​ບໍ​ລິ​ການ​ນີ້​ເປີດໃຊ້ງານການ​ເຊື່ອມ​ຕໍ່ທີ່ເຂົ້າ​ມາ​ຈາກ​ລູກ​ຂ່າຍ Chromoting​.</translation>
-<translation id="369442766917958684">ອອບລາຍ</translation>
 <translation id="3695446226812920698">ສຶກສາວິທີການ</translation>
 <translation id="3776024066357219166">ໝົດໄລຍະເວລາ Chrome Remote Desktop ຂອງທ່ານແລ້ວ.</translation>
 <translation id="3858860766373142691">ຊື່</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">ປະຈຸບັນ ເດັສທັອບຂອງທ່ານແຊຣ໌ຢູ່ກັບ <ph name="USER" />.</translation>
-<translation id="5750083143895808682">ເຂົ້າສູ່ລະບົບເປັນ <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">ເຊື່ອມຕໍ່ໃໝ່</translation>
 <translation id="5810269635982033450">ໜ້າຈໍເຮັດໜ້າທີ່ເປັນແທຣັກແຜດ</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ຮ້ອງຂໍການເຂົ້າເຖິງເພື່ອເບິ່ງໜ້າຈໍຂອງທ່ານ ແລະ ຄວບຄຸມແປ້ນພິມ ແລະ ເມົ້າຂອງທ່ານແລ້ວ. ກົດ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ຫາກທ່ານບໍ່ຄາດວ່າຈະມີຄຳຮ້ອງຂໍນີ້. ບໍ່ດັ່ງນັ້ນໃຫ້ເລືອກ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ເພື່ອອະນຸຍາດການເຊື່ອມຕໍ່ເມື່ອພ້ອມ.</translation>

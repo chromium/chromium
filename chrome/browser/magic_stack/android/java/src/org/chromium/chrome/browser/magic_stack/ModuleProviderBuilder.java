@@ -46,11 +46,12 @@ public interface ModuleProviderBuilder {
             @NonNull ViewGroup view,
             @NonNull PropertyKey propertyKey);
 
+    /** Destroys the builder. This is called when ModuleRegistry is destroyed. */
+    default void destroy() {}
+
     /**
-     * Returns whether the module can be built due to special restrictions, like location. This
-     * method should be called after profile is initialized.
+     * Called when Chrome is paused (e.g. moved to the background). It allows the
+     * ModuleProviderBuilder to do some cleanup.
      */
-    default boolean isEligible() {
-        return true;
-    }
+    default void onPauseWithNative() {}
 }

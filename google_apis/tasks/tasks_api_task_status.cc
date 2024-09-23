@@ -34,7 +34,7 @@ std::string TaskStatusToString(TaskStatus task_status) {
     case TaskStatus::kNeedsAction:
       return kTaskStatusNeedsAction;
     case TaskStatus::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

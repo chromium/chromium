@@ -23,6 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 
 #include "third_party/blink/public/platform/task_type.h"
@@ -323,12 +328,10 @@ void MediaStream::addTrack(MediaStreamTrack* track,
   }
 
   for (auto& observer : observers_) {
-    observer->OnStreamAddTrack(this, track, exception_state);
-
     // If processing by the observer failed, it is most likely because it was
     // not necessary and it became a no-op. The exception can be suppressed,
     // there is nothing to do.
-    exception_state.ClearException();
+    observer->OnStreamAddTrack(this, track, IGNORE_EXCEPTION);
   }
 }
 
@@ -366,12 +369,10 @@ void MediaStream::removeTrack(MediaStreamTrack* track,
   }
 
   for (auto& observer : observers_) {
-    observer->OnStreamRemoveTrack(this, track, exception_state);
-
     // If processing by the observer failed, it is most likely because it was
     // not necessary and it became a no-op. The exception can be suppressed,
     // there is nothing to do.
-    exception_state.ClearException();
+    observer->OnStreamRemoveTrack(this, track, IGNORE_EXCEPTION);
   }
 }
 

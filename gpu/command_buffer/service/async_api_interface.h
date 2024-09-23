@@ -10,7 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_export.h"
 
@@ -37,7 +38,7 @@ class GPU_EXPORT AsyncAPIInterface {
                                   int num_entries,
                                   int* entries_processed) = 0;
 
-  virtual base::StringPiece GetLogPrefix() = 0;
+  virtual std::string_view GetLogPrefix() = 0;
 };
 
 }  // namespace gpu

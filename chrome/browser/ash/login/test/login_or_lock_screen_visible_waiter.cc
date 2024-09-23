@@ -30,7 +30,6 @@ void LoginOrLockScreenVisibleWaiter::WaitImpl(
     bool should_wait_if_already_shown) {
   // Increase the timeout of this RunLoop (TestTimeouts::action_max_timeout())
   // to match the overall timeout of browser tests. (::test_launcher_timeout())
-  // TODO(crbug.com/1305245) - Remove once OOBE migrates to Polymer3.
   base::test::ScopedRunLoopTimeout increase_timeout(
       FROM_HERE, TestTimeouts::test_launcher_timeout());
 
@@ -47,15 +46,10 @@ void LoginOrLockScreenVisibleWaiter::WaitImpl(
   if (!session_observation_.IsObserving())
     session_observation_.Observe(session_manager);
 
-  // TODO(crbug.com/1305245) - Remove once the issue is fixed.
-  LOG(WARNING) << "LoginOrLockScreenVisibleWaiter::Wait() waiting...";
   run_loop_.Run();
 }
 
 void LoginOrLockScreenVisibleWaiter::OnLoginOrLockScreenVisible() {
-  // TODO(crbug.com/1305245) - Remove once the issue is fixed.
-  LOG(WARNING)
-      << "LoginOrLockScreenVisibleWaiter::OnLoginOrLockScreenVisible()";
   run_loop_.Quit();
 }
 

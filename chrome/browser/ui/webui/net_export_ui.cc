@@ -97,10 +97,8 @@ class NetExportMessageHandler final
   void OnShowFile(const base::Value::List& list);
 
   // ui::SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
   // net_log::NetExportFileWriter::StateObserver implementation.
   void OnNewState(const base::Value::Dict& state) override;
@@ -267,8 +265,7 @@ void NetExportMessageHandler::OnShowFile(const base::Value::List& list) {
 }
 
 void NetExportMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                           int index,
-                                           void* params) {
+                                           int index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(select_file_dialog_);
   *last_save_dir.Pointer() = file.path().DirName();
@@ -280,7 +277,7 @@ void NetExportMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
   select_file_dialog_ = nullptr;
 }
 
-void NetExportMessageHandler::FileSelectionCanceled(void* params) {
+void NetExportMessageHandler::FileSelectionCanceled() {
   DCHECK(select_file_dialog_);
   select_file_dialog_ = nullptr;
 }
@@ -357,12 +354,12 @@ void NetExportMessageHandler::ShowSelectFileDialog(
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(webcontents));
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions = {{FILE_PATH_LITERAL("json")}};
+  ui::SelectFileDialog::FileTypeInfo file_type_info{
+      {FILE_PATH_LITERAL("json")}};
   gfx::NativeWindow owning_window = webcontents->GetTopLevelNativeWindow();
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), default_path,
-      &file_type_info, 0, base::FilePath::StringType(), owning_window, nullptr);
+      &file_type_info, 0, base::FilePath::StringType(), owning_window);
 }
 
 }  // namespace

@@ -78,21 +78,11 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
     // constrain blending precision.
     const int kBufferSizeOffset = 1;
     const int kAlphaSizeOffset = 3;
-    EGLint config_attribs[] = {EGL_BUFFER_SIZE,
-                               ~0,
-                               EGL_ALPHA_SIZE,
-                               8,
-                               EGL_BLUE_SIZE,
-                               8,
-                               EGL_GREEN_SIZE,
-                               8,
-                               EGL_RED_SIZE,
-                               8,
-                               EGL_RENDERABLE_TYPE,
-                               EGL_OPENGL_ES2_BIT,
-                               EGL_SURFACE_TYPE,
-                               EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
-                               EGL_NONE};
+    std::array<EGLint, 15> config_attribs{
+        {EGL_BUFFER_SIZE, ~0, EGL_ALPHA_SIZE, 8, EGL_BLUE_SIZE, 8,
+         EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8, EGL_RENDERABLE_TYPE,
+         EGL_OPENGL_ES2_BIT, EGL_SURFACE_TYPE, EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
+         EGL_NONE}};
     config_attribs[kBufferSizeOffset] = geometry->depth;
 
     EGLDisplay display = GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
@@ -100,7 +90,8 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
     connection->GetOrCreateVisualManager().ChooseVisualForWindow(
         true, &visual_id, nullptr, nullptr, nullptr);
     EGLint num_configs;
-    if (!eglChooseConfig(display, config_attribs, nullptr, 0, &num_configs)) {
+    if (!eglChooseConfig(display, config_attribs.data(), nullptr, 0,
+                         &num_configs)) {
       LOG(ERROR) << "eglChooseConfig failed with error "
                  << GetLastEGLErrorString();
       return nullptr;
@@ -108,7 +99,7 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
     std::vector<EGLConfig> configs(num_configs);
 
     if (num_configs) {
-      if (!eglChooseConfig(display, config_attribs, &configs.front(),
+      if (!eglChooseConfig(display, config_attribs.data(), &configs.front(),
                            num_configs, &num_configs)) {
         LOG(ERROR) << "eglChooseConfig failed with error "
                    << GetLastEGLErrorString();
@@ -139,7 +130,8 @@ EGLConfig NativeViewGLSurfaceEGLX11GLES2::GetConfig() {
 
     // Try without an alpha channel.
     config_attribs[kAlphaSizeOffset] = 0;
-    if (!eglChooseConfig(display, config_attribs, &config_, 1, &num_configs)) {
+    if (!eglChooseConfig(display, config_attribs.data(), &config_, 1,
+                         &num_configs)) {
       LOG(ERROR) << "eglChooseConfig failed with error "
                  << GetLastEGLErrorString();
       return nullptr;
@@ -189,6 +181,7 @@ void NativeViewGLSurfaceEGLX11GLES2::OnEvent(const x11::Event& x11_event) {
 }
 
 NativeViewGLSurfaceEGLX11GLES2::~NativeViewGLSurfaceEGLX11GLES2() {
+  InvalidateWeakPtrs();
   Destroy();
 }
 

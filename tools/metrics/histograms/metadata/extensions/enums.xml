@@ -49,16 +49,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Has withheld hosts"/>
 </enum>
 
-<enum name="CorruptExtensionDisabledReason">
+<enum name="ContentVerifyJobResult">
   <summary>
-    The reason why content verification flagged an extension as corrupted. See
-    ContentVerifyJob::FailureReason in
-    src/extensions/browser/content_verify_job.h.
+    The result of a content verification job, either indicating success (no
+    failure) or the reason why content verification flagged an extension as
+    corrupted. See ContentVerifyJob::FailureReason in
+    src/extensions/browser/content_verifier/content_verify_job.h.
   </summary>
-  <int value="0" label="Unknown Reason"/>
+  <int value="0" label="No Failure"/>
   <int value="1" label="Missing All Hashes"/>
-  <int value="2" label="Missing File Hash"/>
-  <int value="3" label="Hash Mismatch"/>
+  <int value="2" label="Corrupted Hashes"/>
+  <int value="3" label="No Hashes For File"/>
+  <int value="4" label="Hash Mismatch"/>
 </enum>
 
 <enum name="DeclarativeAPIFunctionType">
@@ -625,7 +627,7 @@ Called by update_extension_histograms.py.-->
       label="DELETED_AUTOFILL_ASSISTANT_PRIVATE_ON_STATUS_MESSAGE_CHANGED"/>
   <int value="450" label="BLUETOOTH_PRIVATE_ON_DEVICE_ADDRESS_CHANGED"/>
   <int value="451"
-      label="PASSWORDS_PRIVATE_ON_ACCOUNT_STORAGE_OPT_IN_STATE_CHANGED"/>
+      label="PASSWORDS_PRIVATE_ON_ACCOUNT_STORAGE_ENABLED_STATE_CHANGED"/>
   <int value="452"
       label="ACCESSIBILITY_PRIVATE_ON_CUSTOM_SPOKEN_FEEDBACK_TOGGLED"/>
   <int value="453"
@@ -690,7 +692,7 @@ Called by update_extension_histograms.py.-->
       label="SMART_CARD_PROVIDER_PRIVATE_ON_LIST_READERS_REQUESTED"/>
   <int value="503"
       label="SMART_CARD_PROVIDER_PRIVATE_ON_GET_STATUS_CHANGE_REQUESTED"/>
-  <int value="504" label="PDF_VIEWER_PRIVATE_ON_PDF_OCR_PREF_CHANGED"/>
+  <int value="504" label="DELETED_PDF_VIEWER_PRIVATE_ON_PDF_OCR_PREF_CHANGED"/>
   <int value="505" label="SMART_CARD_PROVIDER_PRIVATE_ON_CONNECT_REQUESTED"/>
   <int value="506" label="SMART_CARD_PROVIDER_PRIVATE_ON_DISCONNECT_REQUESTED"/>
   <int value="507" label="SMART_CARD_PROVIDER_PRIVATE_ON_CANCEL_REQUESTED"/>
@@ -750,6 +752,12 @@ Called by update_extension_histograms.py.-->
   <int value="553" label="PDF_VIEWER_PRIVATE_ON_SAVE"/>
   <int value="554"
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_FOCUS_CHANGED"/>
+  <int value="555" label="TTS_ON_VOICES_CHANGED"/>
+  <int value="556" label="OS_DIAGNOSTICS_ON_ROUTINE_FINISHED"/>
+  <int value="557" label="ACCESSIBILITY_PRIVATE_ON_CHROMEVOX_FOCUS_CHANGED"/>
+  <int value="558"
+      label="ACCESSIBILITY_PRIVATE_ON_TOGGLE_GESTURE_INFO_FOR_SETTINGS"/>
+  <int value="559" label="ACTION_ON_USER_SETTINGS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">
@@ -1769,7 +1777,7 @@ Called by update_extension_histograms.py.-->
   <int value="971" label="INPUTMETHODPRIVATE_FETCHALLDICTIONARYWORDS"/>
   <int value="972" label="INPUTMETHODPRIVATE_ADDWORDTODICTIONARY"/>
   <int value="973"
-      label="DASHBOARDPRIVATE_SHOWPERMISSIONPROMPTFORDELEGATEDINSTALL"/>
+      label="DELETED_DASHBOARDPRIVATE_SHOWPERMISSIONPROMPTFORDELEGATEDINSTALL"/>
   <int value="974" label="PRINTERPROVIDERINTERNAL_GETPRINTDATA"/>
   <int value="975" label="VIRTUALKEYBOARDPRIVATE_SETMODE"/>
   <int value="976" label="NETWORKINGPRIVATE_STARTACTIVATE"/>
@@ -1815,7 +1823,7 @@ Called by update_extension_histograms.py.-->
   <int value="1015" label="AUTOFILLPRIVATE_SAVECREDITCARD"/>
   <int value="1016" label="AUTOFILLPRIVATE_REMOVEENTRY"/>
   <int value="1017" label="DELETED_AUTOFILLPRIVATE_VALIDATEPHONENUMBERS"/>
-  <int value="1018" label="AUTOFILLPRIVATE_MASKCREDITCARD"/>
+  <int value="1018" label="DELETED_AUTOFILLPRIVATE_MASKCREDITCARD"/>
   <int value="1019" label="INSTANCEID_GETID"/>
   <int value="1020" label="INSTANCEID_GETCREATIONTIME"/>
   <int value="1021" label="INSTANCEID_GETTOKEN"/>
@@ -1860,7 +1868,7 @@ Called by update_extension_histograms.py.-->
   <int value="1058"
       label="FILESYSTEMPROVIDERINTERNAL_GETACTIONSREQUESTEDSUCCESS"/>
   <int value="1059"
-      label="DASHBOARDPRIVATE_SHOWPERMISSIONPROMPTFORDELEGATEDBUNDLEINSTALL"/>
+      label="DELETED_DASHBOARDPRIVATE_SHOWPERMISSIONPROMPTFORDELEGATEDBUNDLEINSTALL"/>
   <int value="1060" label="FILEMANAGERPRIVATEINTERNAL_GETCUSTOMACTIONS"/>
   <int value="1061" label="FILEMANAGERPRIVATEINTERNAL_EXECUTECUSTOMACTION"/>
   <int value="1062" label="MDNS_FORCEDISCOVERY"/>
@@ -2206,7 +2214,8 @@ Called by update_extension_histograms.py.-->
   <int value="1381" label="AUTOTESTPRIVATE_GETARCSTARTTIME"/>
   <int value="1382" label="AUTOTESTPRIVATE_SETOVERVIEWMODESTATE"/>
   <int value="1383" label="AUTOTESTPRIVATE_TAKESCREENSHOTFORDISPLAY"/>
-  <int value="1384" label="AUTOFILLPRIVATE_SETCREDITCARDFIDOAUTHENABLEDSTATE"/>
+  <int value="1384"
+      label="DELETED_AUTOFILLPRIVATE_SETCREDITCARDFIDOAUTHENABLEDSTATE"/>
   <int value="1385" label="USERSPRIVATE_ISUSERINLIST"/>
   <int value="1386" label="PRINTINGMETRICS_GETPRINTJOBS"/>
   <int value="1387" label="AUTOTESTPRIVATE_WAITFORASSISTANTQUERYSTATUS"/>
@@ -2265,7 +2274,7 @@ Called by update_extension_histograms.py.-->
   <int value="1440" label="DELETED_AUTOFILLASSISTANTPRIVATE_GETSTATE"/>
   <int value="1441" label="DELETED_AUTOFILLASSISTANTPRIVATE_PERFORMACTION"/>
   <int value="1442" label="DELETED_AUTOFILLASSISTANTPRIVATE_PROVIDEUSERDATA"/>
-  <int value="1443" label="PASSWORDSPRIVATE_ISOPTEDINFORACCOUNTSTORAGE"/>
+  <int value="1443" label="PASSWORDSPRIVATE_ISACCOUNTSTORAGEENABLED"/>
   <int value="1444" label="AUTOTESTPRIVATE_PINSHELFICON"/>
   <int value="1445" label="AUTOTESTPRIVATE_WAITFOROVERVIEWSTATE"/>
   <int value="1446" label="AUTOTESTPRIVATE_GETSCROLLABLESHELFINFOFORSTATE"/>
@@ -2284,7 +2293,7 @@ Called by update_extension_histograms.py.-->
   <int value="1459" label="DELETED_PASSWORDSPRIVATE_STOPPASSWORDCHECK"/>
   <int value="1460" label="PASSWORDSPRIVATE_GETPASSWORDCHECKSTATUS"/>
   <int value="1461" label="TERMINALPRIVATE_OPENVMSHELLPROCESS"/>
-  <int value="1462" label="PASSWORDSPRIVATE_OPTINFORACCOUNTSTORAGE"/>
+  <int value="1462" label="PASSWORDSPRIVATE_SETACCOUNTSTORAGEENABLED"/>
   <int value="1463" label="DELETED_CRYPTOTOKENPRIVATE_RECORDREGISTERREQUEST"/>
   <int value="1464" label="DELETED_CRYPTOTOKENPRIVATE_RECORDSIGNREQUEST"/>
   <int value="1465" label="VIRTUALKEYBOARDPRIVATE_SETWINDOWBOUNDSINSCREEN"/>
@@ -2452,8 +2461,8 @@ Called by update_extension_histograms.py.-->
   <int value="1616" label="FILEMANAGERPRIVATE_GETFRAMECOLOR"/>
   <int value="1617" label="DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITES"/>
   <int value="1618" label="DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITES"/>
-  <int value="1619" label="AUTOTESTPRIVATE_STARTARC"/>
-  <int value="1620" label="AUTOTESTPRIVATE_STOPARC"/>
+  <int value="1619" label="DELETED_AUTOTESTPRIVATE_STARTARC"/>
+  <int value="1620" label="DELETED_AUTOTESTPRIVATE_STOPARC"/>
   <int value="1621" label="PASSWORDSPRIVATE_MUTEINSECURECREDENTIAL"/>
   <int value="1622" label="WEB_AUTHENTICATION_PROXY_COMPLETE_GET_REQUEST"/>
   <int value="1623" label="PASSWORDSPRIVATE_UNMUTEINSECURECREDENTIAL"/>
@@ -2601,8 +2610,8 @@ Called by update_extension_histograms.py.-->
   <int value="1757" label="OS_TELEMETRY_GETAUDIOINFO"/>
   <int value="1758" label="OS_TELEMETRY_GETMARKETINGINFO"/>
   <int value="1759" label="OS_TELEMETRY_GETUSBBUSINFO"/>
-  <int value="1760" label="PDFVIEWERPRIVATE_ISPDFOCRALWAYSACTIVE"/>
-  <int value="1761" label="PDFVIEWERPRIVATE_SETPDFOCRPREF"/>
+  <int value="1760" label="DELETED_PDFVIEWERPRIVATE_ISPDFOCRALWAYSACTIVE"/>
+  <int value="1761" label="DELETED_PDFVIEWERPRIVATE_SETPDFOCRPREF"/>
   <int value="1762" label="AUTOFILLPRIVATE_GETACCOUNTINFO"/>
   <int value="1763" label="FILEMANAGERPRIVATE_PROGRESSPAUSEDTASKS"/>
   <int value="1764" label="BOOKMARKMANAGERPRIVATE_IMPORT"/>
@@ -2718,6 +2727,46 @@ Called by update_extension_histograms.py.-->
   <int value="1868" label="OS_MANAGEMENT_SETAUDIOVOLUME"/>
   <int value="1869" label="AUTOTESTPRIVATE_SETDEVICELANGUAGE"/>
   <int value="1870" label="AUTOFILLPRIVATE_SETAUTOFILLSYNCTOGGLEENABLED"/>
+  <int value="1871"
+      label="ODFSCONFIGPRIVATE_ISFILESYSTEMPROVIDERCLOUDFILESYSTEMENABLED"/>
+  <int value="1872" label="PDFVIEWERPRIVATE_SETPDFDOCUMENTTITLE"/>
+  <int value="1873" label="FILEMANAGERPRIVATE_GETMATERIALIZEDVIEWS"/>
+  <int value="1874" label="FILEMANAGERPRIVATE_READMATERIALIZEDVIEW"/>
+  <int value="1875"
+      label="FILESYSTEMPROVIDERINTERNAL_OPENFILEREQUESTEDSUCCESS"/>
+  <int value="1876" label="OS_DIAGNOSTICS_CREATEROUTINE"/>
+  <int value="1877" label="OS_DIAGNOSTICS_ISROUTINEARGUMENTSUPPORTED"/>
+  <int value="1878" label="PASSWORDSPRIVATE_CHANGEPASSWORDMANAGERPIN"/>
+  <int value="1879" label="PASSWORDSPRIVATE_ISPASSWORDMANAGERPINAVAILABLE"/>
+  <int value="1880" label="OS_DIAGNOSTICS_REPLYTOROUTINEINQUIRY"/>
+  <int value="1881" label="USERSCRIPTS_GETWORLDCONFIGURATIONS"/>
+  <int value="1882" label="USERSCRIPTS_RESETWORLDCONFIGURATION"/>
+  <int value="1883" label="AUTOTESTPRIVATE_WAITFORLOGINANIMATIONEND"/>
+  <int value="1884" label="CHROMEOSINFOPRIVATE_ISRUNNINGONLACROS"/>
+  <int value="1885" label="WEBSTOREPRIVATE_GETFULLCHROMEVERSION"/>
+  <int value="1886"
+      label="ODFSCONFIGPRIVATE_ISFILESYSTEMPROVIDERCONTENTCACHEENABLED"/>
+  <int value="1887" label="PASSWORDSPRIVATE_DISCONNECTCLOUDAUTHENTICATOR"/>
+  <int value="1888" label="PASSWORDSPRIVATE_ISCONNECTEDTOCLOUDAUTHENTICATOR"/>
+  <int value="1889" label="WEBSTOREPRIVATE_GETMV2DEPRECATIONSTATUS"/>
+  <int value="1890" label="PERMISSIONS_ADDSITEACCESSREQUEST"/>
+  <int value="1891" label="PERMISSIONS_REMOVESITEACCESSREQUEST"/>
+  <int value="1892" label="ACCESSIBILITY_PRIVATE_SETCHROMEVOXFOCUS"/>
+  <int value="1893" label="PASSWORDSPRIVATE_DELETEALLPASSWORDMANAGERDATA"/>
+  <int value="1894"
+      label="DEVELOPERPRIVATE_DISMISSMV2DEPRECATIONNOTICEFOREXTENSION"/>
+  <int value="1895" label="AUTOTESTPRIVATE_STARTOVERDRAWTRACKING"/>
+  <int value="1896" label="AUTOTESTPRIVATE_STOPOVERDRAWTRACKING"/>
+  <int value="1897" label="ACCESSIBILITY_PRIVATE_SCROLLATPOINT"/>
+  <int value="1898" label="STORAGE_GETKEYS"/>
+  <int value="1899" label="ACCESSIBILITY_PRIVATE_SENDGESTUREINFOTOSETTINGS"/>
+  <int value="1900" label="ENTERPRISEREPORTINGPRIVATE_REPORTDATAMASKINGEVENT"/>
+  <int value="1901" label="AUTOFILLPRIVATE_GETUSERANNOTATIONSENTRIES"/>
+  <int value="1902" label="AUTOFILLPRIVATE_DELETEUSERANNOTATIONSENTRY"/>
+  <int value="1903" label="AUTOFILLPRIVATE_DELETEALLUSERANNOTATIONSENTRIES"/>
+  <int value="1904" label="EXPERIMENTALAIDATA_PRIVATE_GETAIDATA"/>
+  <int value="1905" label="AUTOTESTPRIVATE_GETDEVICEEVENTLOG"/>
+  <int value="1906" label="ACCESSIBILITY_PRIVATE_UPDATEFACEGAZEBUBBLE"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
@@ -2795,11 +2844,10 @@ Called by update_extension_histograms.py.-->
   <int value="2" label="Continue to install"/>
 </enum>
 
-<enum name="ExtensionLaunchType">
-  <int value="0" label="PINNED"/>
-  <int value="1" label="REGULAR"/>
-  <int value="2" label="FULLSCREEN"/>
-  <int value="3" label="WINDOW"/>
+<enum name="ExtensionLoadStatusOnScriptEval">
+  <int value="0" label="Unknown extension"/>
+  <int value="1" label="Extension loaded"/>
+  <int value="2" label="Extension unloaded"/>
 </enum>
 
 <enum name="ExtensionLocation">
@@ -2814,6 +2862,11 @@ Called by update_extension_histograms.py.-->
   <int value="8" label="COMMAND_LINE"/>
   <int value="9" label="EXTERNAL_POLICY"/>
   <int value="10" label="EXTERNAL_COMPONENT"/>
+</enum>
+
+<enum name="ExtensionMV2DeprecationAction">
+  <int value="0" label="Extension Removed"/>
+  <int value="1" label="Extension ReEnabled"/>
 </enum>
 
 <enum name="ExtensionNavigationScheme">
@@ -3094,6 +3147,7 @@ Called by update_extension_permission.py.-->
   <int value="255" label="kEnterpriseKioskInput"/>
   <int value="256" label="kOdfsConfigPrivate"/>
   <int value="257" label="kChromeOSManagementAudio"/>
+  <int value="258" label="kChromeOSDiagnosticsNetworkInfoForMlab"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">
@@ -3208,6 +3262,14 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Not Available, Incognito mode"/>
 </enum>
 
+<enum name="GuestViewType">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="webview"/>
+  <int value="2" label="mime handler view"/>
+  <int value="3" label="extension options"/>
+  <int value="4" label="app view"/>
+</enum>
+
 <enum name="HostPermissionsAccess">
   <int value="0" label="CANNOT_AFFECT"/>
   <int value="1" label="NOT_REQUESTED"/>
@@ -3265,11 +3327,28 @@ Called by update_extension_permission.py.-->
   <int value="13" label="Bad App Status"/>
 </enum>
 
+<enum name="ManifestVersion">
+  <int value="1" label="Manifest Version 1"/>
+  <int value="2" label="Manifest Version 2"/>
+  <int value="3" label="Manifest Version 3"/>
+  <int value="4" label="Manifest Version 4"/>
+  <int value="5" label="Manifest Version 5"/>
+  <int value="6" label="Manifest Version 6"/>
+  <int value="7" label="Manifest Version 7"/>
+</enum>
+
 <enum name="ManifestVersionPopulationSplit">
   <int value="0" label="No extensions"/>
   <int value="1" label="Manifest Version 2 extensions only"/>
   <int value="2" label="Manifest Version 2 and Manifest Version 3 extensions"/>
   <int value="3" label="Manifest Version 3 extensions only"/>
+</enum>
+
+<enum name="MV2ExtensionState">
+  <int value="0" label="Unaffected"/>
+  <int value="1" label="Soft-disabled by Chrome"/>
+  <int value="2" label="Re-enabled by user"/>
+  <int value="3" label="Other (e.g. disabled for another reason)"/>
 </enum>
 
 <enum name="ReadDynamicRulesJSONStatus">
@@ -3302,6 +3381,16 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Null context"/>
 </enum>
 
+<enum name="ServiceWorkerVersionStatus">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kNew"/>
+  <int value="2" label="kInstalling"/>
+  <int value="3" label="kInstalled"/>
+  <int value="4" label="kActivating"/>
+  <int value="5" label="kActivated"/>
+  <int value="6" label="kRedundant"/>
+</enum>
+
 <enum name="SessionType">
   <int value="0" label="Existing Regular"/>
   <int value="1" label="Guest"/>
@@ -3310,7 +3399,7 @@ Called by update_extension_permission.py.-->
   <int value="4" label="(Obsolete) Locally Managed"/>
   <int value="5" label="Kiosk App"/>
   <int value="6" label="Regular Supervised"/>
-  <int value="7" label="ARC Kiosk"/>
+  <int value="7" label="(Obsolete) ARC Kiosk"/>
   <int value="8" label="Active Directory"/>
   <int value="9" label="Web App Kiosk"/>
 </enum>
@@ -3342,6 +3431,21 @@ Called by update_extension_permission.py.-->
   <int value="16" label="kErrorSerializeToJson"/>
   <int value="17" label="kErrorWriteJson"/>
   <int value="18" label="kErrorWriteFlatbuffer"/>
+</enum>
+
+<enum name="VerifiedFileType">
+  <summary>
+    The type of file that was verified in content verification. Keep in sync
+    with ContentVerifier::VerifiedFileType.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Background Page"/>
+  <int value="2" label="Background Script"/>
+  <int value="3" label="Service Worker Script"/>
+  <int value="4" label="Content Script"/>
+  <int value="5" label="Misc Html File"/>
+  <int value="6" label="Misc Js File"/>
+  <int value="7" label="Misc File"/>
 </enum>
 
 <enum name="WebRequest.RequestHeader">

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/browser/buildflags.gni")
 
 assert(is_chromeos)
@@ -52,6 +53,7 @@ source_set("quick_answers") {
   deps = [
     "//base",
     "//chrome/common:constants",
+    "//chromeos/components/quick_answers/public/cpp:constants",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/quick_answers/public/mojom",
@@ -90,8 +92,6 @@ source_set("unit_tests") {
     "search_result_parsers/result_parser_unittest.cc",
     "search_result_parsers/search_response_parser_unittest.cc",
     "search_result_parsers/unit_conversion_result_parser_unittest.cc",
-    "test/fake_quick_answers_state.cc",
-    "test/fake_quick_answers_state.h",
     "test/quick_answers_test_base.cc",
     "test/quick_answers_test_base.h",
     "test/test_helpers.cc",
@@ -107,9 +107,12 @@ source_set("unit_tests") {
 
   deps = [
     ":quick_answers",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/common:constants",
+    "//chromeos/components/kiosk:test_support",
+    "//chromeos/components/magic_boost/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/constants:constants",
@@ -124,4 +127,51 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/color:color_headers",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ ":quick_answers_state_unittest" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test/fake_quick_answers_state.cc",
+    "test/fake_quick_answers_state.h",
+  ]
+
+  deps = [
+    ":quick_answers",
+    "//base",
+    "//chromeos/components/quick_answers/public/cpp:cpp",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+  ]
+}
+
+# quick_answers_state_unittest depends on
+# //components/user_manager:test_support, which is not available from lacros
+# build. quick_answers_state_unittest is independent from lacros/ash. Testing
+# only in ash should be enough.
+if (is_chromeos_ash) {
+  source_set("quick_answers_state_unittest") {
+    testonly = true
+
+    sources = [ "public/cpp/quick_answers_state_unittest.cc" ]
+    deps = [
+      ":quick_answers",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chromeos/components/kiosk:test_support",
+      "//chromeos/components/magic_boost/public/cpp:cpp",
+      "//chromeos/components/magic_boost/test:fake_magic_boost_state",
+      "//chromeos/components/quick_answers/public/cpp:cpp",
+      "//chromeos/components/quick_answers/public/cpp:prefs",
+      "//chromeos/constants:constants",
+      "//components/user_manager:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }

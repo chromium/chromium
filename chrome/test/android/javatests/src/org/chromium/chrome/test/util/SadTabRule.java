@@ -8,9 +8,9 @@ import android.content.Context;
 
 import org.junit.rules.ExternalResource;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Initialize a SadTab instance stubbed for facilitating tests. */
 public class SadTabRule extends ExternalResource {
@@ -34,7 +34,7 @@ public class SadTabRule extends ExternalResource {
         assert mTab != null;
 
         if (mSadTab == null) {
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mSadTab =
                                 new SadTab(mTab) {
@@ -61,7 +61,7 @@ public class SadTabRule extends ExternalResource {
                         SadTab.initForTesting(mTab, mSadTab);
                     });
         }
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (show) {
                         mSadTab.show(mTab.getContext(), () -> {}, () -> {});

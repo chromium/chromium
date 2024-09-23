@@ -14,10 +14,10 @@ found in the LICENSE file.
   <h1 slot="title">
     [[i18nDynamic(locale, 'enableAdbSideloadingSetupTitle')]]
   </h1>
-  <p slot="subtitle">
+  <p slot="subtitle" id="confirmationSubtitle">
     [[i18nDynamic(locale, 'enableAdbSideloadingSetupMessage')]]
     <a on-click="onLearnMoreClick" class="oobe-local-link"
-        is="action-link">
+        is="action-link" aria-describedby="confirmationSubtitle">
       [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
     </a>
   </p>
@@ -43,9 +43,10 @@ found in the LICENSE file.
   <h1 slot="title">
     [[i18nDynamic(locale, 'enableAdbSideloadingErrorTitle')]]
   </h1>
-  <p slot="subtitle">
+  <p slot="subtitle" id="errorSubtitle">
     [[i18nDynamic(locale, 'enableAdbSideloadingErrorMessage')]]
-    <a on-click="onLearnMoreClick" class="oobe-local-link" is="action-link">
+    <a on-click="onLearnMoreClick" class="oobe-local-link" is="action-link"
+        aria-describedby="errorSubtitle">
       [[i18nDynamic(locale, 'enableAdbSideloadingLearnMore')]]
     </a>
   </p>

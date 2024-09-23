@@ -11,16 +11,16 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/security_events/security_event_sync_bridge.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store_with_in_memory_cache.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
-                                    public syncer::ModelTypeSyncBridge {
+                                    public syncer::DataTypeSyncBridge {
  public:
   SecurityEventSyncBridgeImpl(
-      syncer::OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      syncer::OnceDataTypeStoreFactory store_factory,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   SecurityEventSyncBridgeImpl(const SecurityEventSyncBridgeImpl&) = delete;
   SecurityEventSyncBridgeImpl& operator=(const SecurityEventSyncBridgeImpl&) =
@@ -30,10 +30,10 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
 
   void RecordSecurityEvent(sync_pb::SecurityEventSpecifics specifics) override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -42,34 +42,25 @@ class SecurityEventSyncBridgeImpl : public SecurityEventSyncBridge,
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
 
  private:
-  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
+  using StoreWithCache =
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::SecurityEventSpecifics>;
 
-  void OnReadData(
-      DataCallback callback,
-      const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
-      std::unique_ptr<syncer::ModelTypeStore::IdList> missing_id_list);
+  void OnStoreLoaded(const std::optional<syncer::ModelError>& error,
+                     std::unique_ptr<StoreWithCache> store,
+                     std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
-  void OnReadAllData(
-      DataCallback callback,
-      const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
+  void OnStoreCommit(const std::optional<syncer::ModelError>& error);
 
-  void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
-                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-
-  void OnCommit(const std::optional<syncer::ModelError>& error);
-
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<StoreWithCache> store_;
 
   base::WeakPtrFactory<SecurityEventSyncBridgeImpl> weak_ptr_factory_{this};
 };

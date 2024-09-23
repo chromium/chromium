@@ -31,7 +31,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationPermissionState;
@@ -56,7 +55,6 @@ public class NotificationPermissionControllerTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         mShadowUserManager =
                 shadowOf(
                         ApplicationProvider.getApplicationContext()

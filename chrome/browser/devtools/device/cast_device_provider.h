@@ -43,9 +43,11 @@ class CastDeviceProvider
   void OnDeviceRemoved(const std::string& service_type,
                        const std::string& service_name) override;
   void OnDeviceCacheFlushed(const std::string& service_type) override;
+  void OnPermissionRejected() override;
 
  private:
   class DeviceListerDelegate;
+  friend class CastDeviceProviderTest;
 
   ~CastDeviceProvider() override;
 

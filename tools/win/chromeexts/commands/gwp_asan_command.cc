@@ -4,15 +4,17 @@
 
 #include "tools/win/chromeexts/commands/gwp_asan_command.h"
 
+#include <windows.h>
+
 #include <dbgeng.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <fstream>
 #include <istream>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -146,6 +148,25 @@ HRESULT GwpAsanCommand::Execute() {
         break;
     }
   }
+  if (info.has_mode()) {
+    Printf("%-50s", "GWP-ASan Mode:");
+    switch (info.mode()) {
+      case gwp_asan::Crash_Mode_CLASSIC:
+        Printf("Classic\n");
+        break;
+      case gwp_asan::Crash_Mode_LIGHTWEIGHT_DETECTOR_BRP:
+        Printf("Lightweight UAF Detector (BRP sampling)\n");
+        break;
+      case gwp_asan::Crash_Mode_LIGHTWEIGHT_DETECTOR_RANDOM:
+        Printf("Lightweight UAF Detector (random sampling)\n");
+        break;
+      case gwp_asan::Crash_Mode_EXTREME_LIGHTWEIGHT_DETECTOR:
+        Printf("Extreme Lightweight UAF Detector\n");
+        break;
+      default:
+        Printf("Unknown\n");
+    }
+  }
 
   ULONG64 base_address = 0;
   hr = GetBaseAddress(&base_address);
@@ -197,9 +218,6 @@ void GwpAsanCommand::PrintErrorType(const int& error_type) {
     case gwp_asan::Crash::FREE_INVALID_ADDRESS:
       Printf("Free Invalid Address");
       break;
-    case gwp_asan::Crash::LIGHTWEIGHT_USE_AFTER_FREE:
-      Printf("Lightweight Use After Free");
-      break;
   }
   Printf("\n");
 }
@@ -219,7 +237,7 @@ HRESULT GwpAsanCommand::GetBaseAddress(ULONG64* base_address) {
 
 HRESULT GwpAsanCommand::UseWinDbgSymbolize(uint64_t* stack_address,
                                            int stack_trace_size) {
-  int METHOD_SIZE = 1024;
+  constexpr ULONG METHOD_SIZE = 1024;
   char method_name[METHOD_SIZE], file_name[METHOD_SIZE];
   std::string file_name_str;
   ULONG line;
@@ -247,8 +265,7 @@ HRESULT GwpAsanCommand::UseWinDbgSymbolize(uint64_t* stack_address,
       if (position != std::string::npos) {
         file_name_str = file_name_str.substr(position + 6, std::string::npos);
       }
-      base::ReplaceChars(base::StringPiece(file_name_str.c_str()), "\\", "/",
-                         &file_name_str);
+      base::ReplaceChars(file_name_str, "\\", "/", &file_name_str);
       Printf(" at %s:%d", file_name_str.c_str(), line);
     }
     Printf("\n");
@@ -294,7 +311,7 @@ HRESULT GwpAsanCommand::SymbolizeStackTrace(
   }
 
   std::optional<base::Value> symbolized_json =
-      base::JSONReader::Read(base::StringPiece(json_string));
+      base::JSONReader::Read(json_string);
   if (!symbolized_json.has_value() && !symbolized_json->is_list()) {
     return E_FAIL;
   }

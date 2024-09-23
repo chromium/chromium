@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash::office_fallback {
@@ -22,6 +22,8 @@ enum class FallbackReason {
   kMeteredConnection,
   kDisableDrivePreferenceSet,
   kDriveDisabledForAccountType,
+  kWaitingForUpload,
+  kAndroidOneDriveUnsupportedLocation,
 };
 
 using DialogChoiceCallback =
@@ -38,7 +40,7 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
   // effectively created.
   static bool Show(const std::vector<storage::FileSystemURL>& file_urls,
                    FallbackReason fallback_reason,
-                   const std::string& action_id,
+                   const std::string& task_title,
                    DialogChoiceCallback callback);
 
   // Receives user's dialog choice and runs callback.
@@ -51,6 +53,8 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
                        const std::string& title_text,
                        const std::string& reason_message,
                        const std::string& instructions_message,
+                       const bool& enable_retry_option,
+                       const bool& enable_quick_office_option,
                        const int& width,
                        const int& height,
                        DialogChoiceCallback callback);
@@ -64,6 +68,8 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
   const std::string title_text_;
   const std::string reason_message_;
   const std::string instructions_message_;
+  const bool enable_retry_option_;
+  const bool enable_quick_office_option_;
   const int width_;
   const int height_;
   DialogChoiceCallback callback_;

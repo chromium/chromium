@@ -1,0 +1,7 @@
+include_rules = [
+  '+chromeos/ash/components/browser_context_helper',
+  '+components/account_id/account_id.h',
+  '+components/user_manager',
+  '+sql',
+  '+url',
+];

@@ -70,13 +70,11 @@ class TestDisplayObserver : public display::DisplayObserver {
     display_ = new_display;
   }
 
-  void OnDisplayRemoved(const display::Display& old_display) override {
-    removed_display_ = old_display;
-  }
-
-  void OnDidRemoveDisplays() override {
-    if (did_remove_display_closure_)
-      did_remove_display_closure_.Run();
+  void OnDisplaysRemoved(const display::Displays& removed_displays) override {
+    removed_display_ = removed_displays.back();
+    if (displays_removed_closure_) {
+      displays_removed_closure_.Run();
+    }
   }
 
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -88,8 +86,8 @@ class TestDisplayObserver : public display::DisplayObserver {
     }
   }
 
-  void set_did_remove_display_closure(base::RepeatingClosure closure) {
-    did_remove_display_closure_ = std::move(closure);
+  void set_displays_removed_closure(base::RepeatingClosure closure) {
+    displays_removed_closure_ = std::move(closure);
   }
 
   void set_display_metrics_changed_closure(base::RepeatingClosure closure) {
@@ -100,8 +98,8 @@ class TestDisplayObserver : public display::DisplayObserver {
   uint32_t changed_metrics_ = 0;
   display::Display display_;
   display::Display removed_display_;
-  base::RepeatingClosure did_remove_display_closure_{};
-  base::RepeatingClosure display_metrics_changed_closure_{};
+  base::RepeatingClosure displays_removed_closure_;
+  base::RepeatingClosure display_metrics_changed_closure_;
 };
 
 }  // namespace
@@ -679,7 +677,7 @@ TEST_P(WaylandScreenTest, GetPrimaryDisplayAfterRemoval) {
 
   // This results in an ASAN error unless GetPrimaryDisplay() is correctly
   // implemented for empty display list. More details in the crbug above.
-  observer.set_did_remove_display_closure(base::BindLambdaForTesting([&]() {
+  observer.set_displays_removed_closure(base::BindLambdaForTesting([&]() {
     ASSERT_EQ(0u, platform_screen_->GetAllDisplays().size());
     auto display = platform_screen_->GetPrimaryDisplay();
     EXPECT_EQ(display::kDefaultDisplayId, display.id());
@@ -987,7 +985,6 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
   });
 
   EXPECT_EQ(window_->applied_state().window_scale, kTripleScale);
-  EXPECT_EQ(window_->ui_scale_, kTripleScale);
 
   // Now simulate the --force-device-scale-factor=1.5
   const float kForcedUIScale = 1.5;
@@ -1009,7 +1006,6 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
   });
 
   EXPECT_EQ(window_->applied_state().window_scale, kDoubleScale);
-  EXPECT_EQ(window_->ui_scale_, kForcedUIScale);
 
   display::Display::ResetForceDeviceScaleFactorForTesting();
 }
@@ -1052,7 +1048,6 @@ TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
   });
 
   EXPECT_EQ(window_->applied_state().window_scale, 2);
-  EXPECT_EQ(window_->ui_scale(), 2);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1403,36 +1398,28 @@ TEST_P(WaylandAuraShellScreenTest, UseCorrectScreenBeforeEnterEvent) {
   // Make sure that entered output is zero but the scale factor is correctly
   // set based on the bounds.
   EXPECT_EQ(window_->root_surface()->entered_outputs().size(), 0u);
-  EXPECT_EQ(2.f, window_->ui_scale());
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandScreenTest,
                          Values(wl::ServerConfig{}));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#else
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandScreenTest,
-    Values(wl::ServerConfig{.enable_aura_shell =
-                                wl::EnableAuraShellProtocol::kEnabled},
-           wl::ServerConfig{
-               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-               .aura_output_manager_protocol =
-                   wl::AuraOutputManagerProtocol::kEnabledV2}));
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTest,
     WaylandAuraShellScreenTest,
-    Values(wl::ServerConfig{.enable_aura_shell =
-                                wl::EnableAuraShellProtocol::kEnabled},
-           wl::ServerConfig{
-               .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-               .aura_output_manager_protocol =
-                   wl::AuraOutputManagerProtocol::kEnabledV2}));
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+// This test suite verifies that the following use counter work correctly:
+// - kDOMClobberedWindowPropertyAccessed
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kDOMClobberedWindowPropertyAccessed);
+    assert_false(internals.isUseCounted(document, WebFeature.kDOMClobberedWindowPropertyAccessed));
+
+    const div = document.createElement("div");
+    div.id = "test1234";
+    document.body.appendChild(div);
+    // Check if the property is actually clobbered, and this should also
+    // trigger the use counter.
+    assert_equals(window.test1234, div);
+
+    assert_true(internals.isUseCounted(document, WebFeature.kDOMClobberedWindowPropertyAccessed));
+}, 'Clobbered property in window should be use-counted');
+
+</script>

@@ -42,9 +42,9 @@ class ASH_EXPORT DisplayAnimator
 
  protected:
   // display::DisplayConfigurator::Observer overrides:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& outputs) override;
-  void OnDisplayModeChangeFailed(
+  void OnDisplayConfigurationChangeFailed(
       const display::DisplayConfigurator::DisplayStateList& displays,
       display::MultipleDisplayState failed_new_state) override;
 

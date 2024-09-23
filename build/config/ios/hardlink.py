@@ -2,28 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Recursively create hardlink to target named output."""
+"""Recursively create hardlinks to targets at output."""
 
 
 import argparse
 import os
 import shutil
+import sys
 
 
 def CreateHardlinkHelper(target, output):
-  """Recursively create a hardlink named output pointing to target.
+  """
+  Creates hardlink to `target` at `output`.
 
-  Args:
-    target: path to an existing file or directory
-    output: path to the newly created hardlink
+  If `target` is a directory, the directory structure will be copied and
+  each file will be hardlinked independently. If `target` is a symlink,
+  a new symlink will be created.
 
-  This function assumes that output does not exists but that the parent
-  directory containing output does. If those conditions are false, then
-  the function will fails with an exception corresponding to an OS error.
+  The parent directory of `output` must exists or the function will fail.
   """
   if os.path.islink(target):
     os.symlink(os.readlink(target), output)
-  elif not os.path.isdir(target):
+  elif os.path.isfile(target):
     try:
       os.link(target, output)
     except:
@@ -37,35 +37,69 @@ def CreateHardlinkHelper(target, output):
 
 
 def CreateHardlink(target, output):
-  """Recursively create a hardlink named output pointing to target.
-
-  Args:
-    target: path to an existing file or directory
-    output: path to the newly created hardlink
-
-  If output already exists, it is first removed. In all cases, the
-  parent directory containing output is created.
   """
-  if os.path.isdir(output):
-    shutil.rmtree(output)
-  elif os.path.exists(output):
-    os.unlink(output)
+  Creates hardlink to `target` at `output`.
 
-  parent_dir = os.path.dirname(os.path.abspath(output))
-  if not os.path.isdir(parent_dir):
-    os.makedirs(parent_dir)
+  If `target` is a directory, the directory structure will be copied and
+  each file will be hardlinked independently. If `target` is a symlink,
+  a new symlink will be created.
 
+  If `output` already exists, it is first deleted. The parent directory
+  of `output` is created if it does not exists.
+  """
+  if os.path.exists(output):
+    if os.path.isdir(output):
+      shutil.rmtree(output)
+    else:
+      os.unlink(output)
+  dirname = os.path.dirname(output)
+  if not os.path.isdir(dirname):
+    os.makedirs(dirname)
   CreateHardlinkHelper(target, output)
 
 
-def Main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('target', help='path to the file or directory to link to')
-  parser.add_argument('output', help='name of the hardlink to create')
-  args = parser.parse_args()
+def CreateHardlinks(output_dir, relative_to, targets):
+  """
+  Creates hardlinks to `targets` in `output_dir`.
 
-  CreateHardlink(args.target, args.output)
+  The `targets` should starts with `relative_to` and the hardlink will
+  be created at `{output_dir}/{os.path.relpath(sources, relative_to)}`.
+
+  Fails with an error if any file in `targets` not located inside the
+  `relative_to` directory or if creating any of the hardlinks fails.
+  """
+  for target in targets:
+    if not target.startswith(relative_to):
+      print(f'error: "{target}" not relative to "{relative_to}',
+            file=sys.stderr)
+      sys.exit(1)
+
+  for target in targets:
+    output = os.path.join(output_dir, os.path.relpath(target, relative_to))
+    CreateHardlink(target, output)
+
+
+def main(args):
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument('--output-dir',
+                      required=True,
+                      help='directory where the hardlinks should be created')
+
+  parser.add_argument('--relative-to',
+                      required=True,
+                      help='sources file will be rebased to this directory')
+
+  parser.add_argument(
+      'sources',
+      nargs='+',
+      help='files that should be hardlinked, must be below RELATIVE_TO')
+
+  parsed = parser.parse_args(args)
+  CreateHardlinks(os.path.normpath(parsed.output_dir),
+                  os.path.normpath(parsed.relative_to) + os.sep,
+                  [os.path.normpath(source) for source in parsed.sources])
 
 
 if __name__ == '__main__':
-  Main()
+  main(sys.argv[1:])

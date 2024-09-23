@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <!-- Cookies section. -->
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+            android:id="@+id/cookie_status"
+            style="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:drawablePadding="8dp"
+            android:visibility="gone"
+            app:drawableWidth="20dp"
+            app:drawableHeight="20dp"/>
+    <!-- IP protection section. -->
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+            android:id="@+id/ip_status"
+            style="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:drawablePadding="8dp"
+            android:visibility="gone"
+            app:drawableWidth="20dp"
+            app:drawableHeight="20dp"/>
+    <!-- Fingerprinting -->
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+            android:id="@+id/fingerprint_status"
+            style="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:drawablePadding="8dp"
+            android:visibility="gone"
+            app:drawableWidth="20dp"
+            app:drawableHeight="20dp"/>
+</LinearLayout>

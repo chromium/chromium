@@ -6,9 +6,9 @@
 
 #include <iterator>
 #include <utility>
+#include <vector>
 
 #include "base/containers/adapters.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
@@ -39,14 +39,14 @@ class MediaPowerDelegate : public base::PowerSuspendObserver {
  public:
   explicit MediaPowerDelegate(base::WeakPtr<AudioFocusManager> owner)
       : owner_(owner) {
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
   MediaPowerDelegate(const MediaPowerDelegate&) = delete;
   MediaPowerDelegate& operator=(const MediaPowerDelegate&) = delete;
 
   ~MediaPowerDelegate() override {
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   }
 
   // base::PowerSuspendObserver:
@@ -508,7 +508,7 @@ void AudioFocusManager::EnforceSingleSession(AudioFocusRequest* session,
 }
 
 void AudioFocusManager::CleanupSourceObservers() {
-  base::EraseIf(source_observers_,
+  std::erase_if(source_observers_,
                 [](const auto& holder) { return !holder->is_valid(); });
 }
 

@@ -58,6 +58,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/media/MediaImageManagerTest.java",
     "java/src/org/chromium/components/browser_ui/media/MediaNotificationButtonComputationTest.java",
+    "java/src/org/chromium/components/browser_ui/media/MediaNotificationInfoTest.java",
   ]
   deps = [
     ":java",

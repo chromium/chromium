@@ -5,6 +5,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -21,12 +22,15 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices_factory.h"
+#include "chrome/browser/hid/web_view_chooser_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -35,7 +39,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
+
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -46,6 +50,8 @@ constexpr char kHidGuidKey[] = "guid";
 constexpr char kHidVendorIdKey[] = "vendor-id";
 constexpr char kHidProductIdKey[] = "product-id";
 constexpr char kHidSerialNumberKey[] = "serial-number";
+
+using content_settings::SettingSource;
 
 bool IsPolicyGrantedObject(const base::Value::Dict& object) {
   return object.size() == 1 && object.FindString(kHidDeviceNameKey);
@@ -124,6 +130,7 @@ HidChooserContext::~HidChooserContext() {
     observer.OnHidChooserContextShutdown();
     DCHECK(!device_observer_list_.HasObserver(&observer));
   }
+  web_view_chooser_context_.OnHidChooserContextShutdown();
   DCHECK(permission_observer_list_.empty());
 }
 
@@ -228,8 +235,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
         DCHECK(base::Contains(devices_, guid));
         objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
-            content_settings::SettingSource::SETTING_SOURCE_USER,
-            IsOffTheRecord()));
+            content_settings::SettingSource::kUser, IsOffTheRecord()));
       }
     }
   }
@@ -243,8 +249,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
       auto object =
           VendorAndProductIdsToValue(entry.first.first, entry.first.second);
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
 
     for (const auto& entry : policy->vendor_policy()) {
@@ -253,8 +258,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
 
       auto object = VendorIdToValue(entry.first);
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
 
     for (const auto& entry : policy->usage_policy()) {
@@ -264,8 +268,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
       auto object =
           UsagePageAndUsageToValue(entry.first.first, entry.first.second);
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
 
     for (const auto& entry : policy->usage_page_policy()) {
@@ -274,8 +277,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
 
       auto object = UsagePageToValue(entry.first);
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
 
     if (base::Contains(policy->all_devices_policy(), origin)) {
@@ -284,8 +286,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
           kHidDeviceNameKey,
           l10n_util::GetStringUTF16(IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE));
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, std::move(object), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, std::move(object), SettingSource::kPolicy, IsOffTheRecord()));
     }
   }
 
@@ -305,10 +306,9 @@ HidChooserContext::GetAllGrantedObjects() {
 
     for (const auto& guid : map_entry.second) {
       DCHECK(base::Contains(devices_, guid));
-      objects.push_back(std::make_unique<Object>(
-          origin, DeviceInfoToValue(*devices_[guid]),
-          content_settings::SettingSource::SETTING_SOURCE_USER,
-          IsOffTheRecord()));
+      objects.push_back(
+          std::make_unique<Object>(origin, DeviceInfoToValue(*devices_[guid]),
+                                   SettingSource::kUser, IsOffTheRecord()));
     }
   }
 
@@ -319,8 +319,7 @@ HidChooserContext::GetAllGrantedObjects() {
           VendorAndProductIdsToValue(entry.first.first, entry.first.second);
       for (const auto& origin : entry.second) {
         objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
+            origin, object.Clone(), SettingSource::kPolicy, IsOffTheRecord()));
       }
     }
 
@@ -328,8 +327,7 @@ HidChooserContext::GetAllGrantedObjects() {
       auto object = VendorIdToValue(entry.first);
       for (const auto& origin : entry.second) {
         objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
+            origin, object.Clone(), SettingSource::kPolicy, IsOffTheRecord()));
       }
     }
 
@@ -338,8 +336,7 @@ HidChooserContext::GetAllGrantedObjects() {
           UsagePageAndUsageToValue(entry.first.first, entry.first.second);
       for (const auto& origin : entry.second) {
         objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
+            origin, object.Clone(), SettingSource::kPolicy, IsOffTheRecord()));
       }
     }
 
@@ -347,8 +344,7 @@ HidChooserContext::GetAllGrantedObjects() {
       auto object = UsagePageToValue(entry.first);
       for (const auto& origin : entry.second) {
         objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-            origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-            IsOffTheRecord()));
+            origin, object.Clone(), SettingSource::kPolicy, IsOffTheRecord()));
       }
     }
 
@@ -358,8 +354,7 @@ HidChooserContext::GetAllGrantedObjects() {
         l10n_util::GetStringUTF16(IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE));
     for (const auto& origin : policy->all_devices_policy()) {
       objects.push_back(std::make_unique<ObjectPermissionContextBase::Object>(
-          origin, object.Clone(), content_settings::SETTING_SOURCE_POLICY,
-          IsOffTheRecord()));
+          origin, object.Clone(), SettingSource::kPolicy, IsOffTheRecord()));
     }
   }
 
@@ -373,7 +368,7 @@ void HidChooserContext::RevokeObjectPermission(
 
   if (!guid) {
     ObjectPermissionContextBase::RevokeObjectPermission(origin, object);
-    // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED).
+    // TODO(crbug.com/40627829): Record UMA (WEBHID_PERMISSION_REVOKED).
     return;
   }
 
@@ -388,12 +383,18 @@ void HidChooserContext::RevokeObjectPermission(
     NotifyPermissionRevoked(origin);
   }
 
-  // TODO(crbug.com/964041): Record UMA (WEBHID_PERMISSION_REVOKED_EPHEMERAL).
+  // TODO(crbug.com/40627829): Record UMA (WEBHID_PERMISSION_REVOKED_EPHEMERAL).
 }
 
 void HidChooserContext::GrantDevicePermission(
     const url::Origin& origin,
-    const device::mojom::HidDeviceInfo& device) {
+    const device::mojom::HidDeviceInfo& device,
+    const std::optional<url::Origin>& embedding_origin_of_web_view) {
+  if (embedding_origin_of_web_view) {
+    web_view_chooser_context_.GrantDevicePermission(
+        origin, *embedding_origin_of_web_view, device);
+    return;
+  }
   if (CanStorePersistentEntry(device)) {
     GrantObjectPermission(origin, DeviceInfoToValue(device));
   } else {
@@ -404,7 +405,13 @@ void HidChooserContext::GrantDevicePermission(
 
 void HidChooserContext::RevokeDevicePermission(
     const url::Origin& origin,
-    const device::mojom::HidDeviceInfo& device) {
+    const device::mojom::HidDeviceInfo& device,
+    const std::optional<url::Origin>& embedding_origin_of_web_view) {
+  if (embedding_origin_of_web_view) {
+    web_view_chooser_context_.RevokeDevicePermission(
+        origin, *embedding_origin_of_web_view, device);
+    return;
+  }
   if (CanStorePersistentEntry(device)) {
     RevokePersistentDevicePermission(origin, device);
   } else {
@@ -456,7 +463,8 @@ void HidChooserContext::RevokeEphemeralDevicePermission(
 
 bool HidChooserContext::HasDevicePermission(
     const url::Origin& origin,
-    const device::mojom::HidDeviceInfo& device) {
+    const device::mojom::HidDeviceInfo& device,
+    const std::optional<url::Origin>& embedding_origin_of_web_view) {
   if (device.is_excluded_by_blocklist) {
     const bool has_fido_collection =
         base::Contains(device.collections, device::mojom::kPageFido,
@@ -473,6 +481,11 @@ bool HidChooserContext::HasDevicePermission(
 
   if (!CanRequestObjectPermission(origin))
     return false;
+
+  if (embedding_origin_of_web_view) {
+    return web_view_chooser_context_.HasDevicePermission(
+        origin, *embedding_origin_of_web_view, device);
+  }
 
   auto it = ephemeral_devices_.find(origin);
   if (it != ephemeral_devices_.end() &&
@@ -502,7 +515,7 @@ bool HidChooserContext::HasDevicePermission(
 bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   static constexpr auto kPrivilegedExtensionIds =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           "ckcendljdlmgnhghiaomidhiiclmapok",  // gnubbyd-v3 dev
           "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 prod
       });
@@ -575,8 +588,22 @@ void HidChooserContext::OnHidManagerInitializedForTesting(
   std::move(callback).Run({});
 }
 
+void HidChooserContext::PermissionForWebViewChanged() {
+  NotifyPermissionChanged();
+}
+
+void HidChooserContext::PermissionForWebViewRevoked(
+    const url::Origin& web_view_origin) {
+  NotifyPermissionRevoked(web_view_origin);
+}
+
 base::WeakPtr<HidChooserContext> HidChooserContext::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void HidChooserContext::Shutdown() {
+  FlushScheduledSaveSettingsCalls();
+  permissions::ObjectPermissionContextBase::Shutdown();
 }
 
 void HidChooserContext::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {

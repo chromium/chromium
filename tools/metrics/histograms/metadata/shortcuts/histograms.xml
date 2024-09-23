@@ -1,0 +1,68 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Shortcuts histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Shortcuts.Creation.Result" enum="ShortcutCreatorResult"
+    expires_after="2025-01-12">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records if shortcut creation on the user's desktop was successful. This is
+    only recorded if the user accepts the shortcut creation dialog. Shortcut
+    creation occurs when the user creates a shortcut to a webpage using the
+    3-dot-menu -&gt; &quot;Save and Share&quot; -&gt; &quot;Create
+    Shortcut&quot; functionality.
+  </summary>
+</histogram>
+
+<histogram name="Shortcuts.CreationTask.Result"
+    enum="ShortcutCreationTaskResult" expires_after="2025-01-12">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of shortcut creation for the web &quot;shortcut&quot;
+    feature. This is recorded when the user attempts to create a shortcut using
+    the 3-dot-menu -&gt; &quot;Save and Share&quot; -&gt; &quot;Create
+    Shortcut&quot; functionality. If a shortcut cannot be created, the stage at
+    which it failed is logged as an error here.
+  </summary>
+</histogram>
+
+<histogram name="Shortcuts.Icons.StorageCount" units="count"
+    expires_after="2025-03-02">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    This is a record of the number of files in the directory used to store icons
+    for the web &quot;shortcut&quot; feature. This is recorded when the user
+    creates a shortcut using the 3-dot-menu -&gt; &quot;Save and Share&quot;
+    -&gt; &quot;Create Shortcut&quot; functionality. If this metric shows that
+    users have a large number of files here, then a new design or some other
+    mitigation may be required. This requires the kShortcutsNotApps feature to
+    be enabled.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

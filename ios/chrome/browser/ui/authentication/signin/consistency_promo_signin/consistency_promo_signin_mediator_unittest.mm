@@ -13,8 +13,8 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -46,7 +46,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -79,7 +79,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_.get());
     ConsistencyPromoSigninMediator* mediator =
         [[ConsistencyPromoSigninMediator alloc]
             initWithAccountManagerService:chrome_account_manager_service
@@ -132,15 +132,17 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     OCMExpect([authentication_flow_
-        startSignInWithCompletion:[OCMArg checkWithBlock:^BOOL(
-                                              signin_ui::CompletionCallback
-                                                  callback) {
-          if (success) {
-            auth_service->SignIn(identity, access_point);
-          }
-          callback(success);
-          return YES;
-        }]]);
+        startSignInWithCompletion:[OCMArg
+                                      checkWithBlock:^BOOL(
+                                          signin_ui::SigninCompletionCallback
+                                              callback) {
+                                        if (success) {
+                                          auth_service->SignIn(identity,
+                                                               access_point);
+                                        }
+                                        callback(success);
+                                        return YES;
+                                      }]]);
   }
 
  protected:
@@ -152,7 +154,6 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
  private:
   // Needed for test browser state.
   web::WebTaskEnvironment task_environment_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -280,23 +281,19 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
-  FakeSystemIdentity* new_identity =
-      [FakeSystemIdentity identityWithEmail:@"foo3@gmail.com"
-                                     gaiaID:@"foo1ID3"
-                                       name:@"Fake Foo 3"];
-  GetSystemIdentityManager()->AddIdentity(new_identity);
-  [mediator systemIdentityAdded:new_identity];
+  [mediator systemIdentityAdded:kDefaultIdentity];
 
   ExpectAuthFlowStartAndSetSuccess(
-      new_identity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN, true);
+      kDefaultIdentity, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
+      true);
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
 
   OCMExpect([mediator_delegate_mock_
       consistencyPromoSigninMediatorSignInDone:mediator
-                                  withIdentity:new_identity]);
+                                  withIdentity:kDefaultIdentity]);
 
-  SimulateCookieFetchSuccess(mediator, new_identity);
+  SimulateCookieFetchSuccess(mediator, kDefaultIdentity);
 
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 

@@ -1,0 +1,46 @@
+<style include="storybook-styles">
+</style>
+
+<h2>Simple</h2>
+<settings-row label="Lorem ipsum" sublabel="">
+</settings-row>
+
+<h2>With optional sublabel</h2>
+<settings-row label="Lorem ipsum" sublabel="Lorem ipsum dolor sit amet">
+</settings-row>
+
+<h2>With optional leading icon</h2>
+<settings-row label="Lorem ipsum"
+    sublabel="Lorem ipsum dolor sit amet"
+    icon="os-settings:display">
+</settings-row>
+
+<h2>With optional slotted icon</h2>
+<settings-row label="Lorem ipsum"
+    sublabel="Lorem ipsum dolor sit amet">
+  <img src="chrome://resources/images/extension.svg"
+      width="20" height="20"
+      slot="icon">
+  </img>
+</settings-row>
+
+<h2>With optional learn more link</h2>
+<settings-row label="Lorem ipsum"
+    sublabel="Lorem ipsum dolor sit amet"
+    learn-more-url="https://google.com">
+</settings-row>
+
+<h2>With optional slotted control element</h2>
+<settings-row label="Lorem ipsum"
+    sublabel="Lorem ipsum dolor sit amet"
+    learn-more-url="https://google.com">
+  <settings-toggle-v2 slot="control"></settings-toggle-v2>
+</settings-row>
+
+<h2>"Kitchen sink"</h2>
+<settings-row label="Lorem ipsum"
+    sublabel="Lorem ipsum dolor sit amet"
+    learn-more-url="https://google.com"
+    icon="os-settings:display">
+  <settings-toggle-v2 slot="control"></settings-toggle-v2>
+</settings-row>

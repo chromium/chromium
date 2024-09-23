@@ -29,6 +29,8 @@ async function test() {
   request.onerror = unexpectedErrorCallback;
 }
 
+let gcWhenDone = false;
+
 function getBlob() {
   const transaction = db.transaction('storeName', 'readwrite');
   transaction.onabort = unexpectedAbortCallback;
@@ -43,10 +45,17 @@ function getBlob() {
         fail(`expected blob to contain 'abc', got '${reader.result}'`);
         return;
       }
+      if (gcWhenDone) gc();
       done();
     });
     reader.readAsText(request.result.blob);
   }
+}
+
+function testThenGc() {
+  document.location.hash = '';
+  gcWhenDone = true;
+  test();
 }
 
 </script>

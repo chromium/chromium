@@ -23,7 +23,7 @@ class PasswordEditDialogBridgeDelegate {
 
   // Returns true if the specified credential will be saved/updated in the
   // profile store.
-  virtual bool IsUsingProfileStore(const std::u16string& username) = 0;
+  virtual bool IsUsingAccountStorage(const std::u16string& username) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_EDIT_DIALOG_ANDROID_PASSWORD_EDIT_DIALOG_BRIDGE_DELEGATE_H_

@@ -31,6 +31,12 @@
         "application/octet-stream": [".bar"]
       },
       "launch_type": "multiple-clients"
+    },
+    {
+      "action": "https://www.example.com/",
+      "accept": {
+        "image/jpeg": [".jpg", ".jpeg"]
+      }
     }
   ]
 }

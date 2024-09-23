@@ -28,6 +28,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -35,7 +36,8 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
@@ -82,13 +84,12 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
                         r.getString(R.string.app_name)));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mSiteDataSizeText = (TextView) findViewById(R.id.site_data_storage_size_text);
+        mSiteDataSizeText = findViewById(R.id.site_data_storage_size_text);
         mSiteDataSizeText.setText(R.string.storage_management_computing_size);
-        mUnimportantSiteDataSizeText =
-                (TextView) findViewById(R.id.unimportant_site_data_storage_size_text);
+        mUnimportantSiteDataSizeText = findViewById(R.id.unimportant_site_data_storage_size_text);
         mUnimportantSiteDataSizeText.setText(R.string.storage_management_computing_size);
-        mManageSiteDataButton = (Button) findViewById(R.id.manage_site_data_storage);
-        mClearUnimportantButton = (Button) findViewById(R.id.clear_unimportant_site_data_storage);
+        mManageSiteDataButton = findViewById(R.id.manage_site_data_storage);
+        mClearUnimportantButton = findViewById(R.id.clear_unimportant_site_data_storage);
 
         // We initially disable all of our buttons except for the 'Clear All Data' button, and wait
         // until the browser is finished initializing to enable them. We want to make sure the
@@ -99,7 +100,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
         mManageSiteDataButton.setOnClickListener(this);
         mClearUnimportantButton.setOnClickListener(this);
 
-        mClearAllDataButton = (Button) findViewById(R.id.clear_all_data);
+        mClearAllDataButton = findViewById(R.id.clear_all_data);
         mClearAllDataButton.setOnClickListener(this);
         super.onCreate(savedInstanceState);
 
@@ -189,8 +190,9 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
 
     /** This refreshes the storage numbers by fetching all site permissions. */
     private void refreshStorageNumbers() {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(profile);
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        var siteSettingsDelegate = new ChromeSiteSettingsDelegate(this, profile);
+        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(siteSettingsDelegate);
         fetcher.fetchPreferencesForCategory(
                 SiteSettingsCategory.createFromType(profile, SiteSettingsCategory.Type.USE_STORAGE),
                 new SizeCalculator());
@@ -240,7 +242,7 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
             initialArguments.putString(
                     SingleCategorySettings.EXTRA_TITLE,
                     getString(R.string.website_settings_storage));
-            SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+            SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
             settingsLauncher.launchSettingsActivity(this, AllSiteSettings.class, initialArguments);
         } else if (view == mClearAllDataButton) {
             final ActivityManager activityManager =
@@ -277,9 +279,15 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
             long importantSiteStorageTotal = 0;
             for (Website site : sites) {
                 siteStorageSize += site.getTotalUsage();
-                if (site.getLocalStorageInfo() != null
-                        && site.getLocalStorageInfo().isDomainImportant()) {
-                    importantSiteStorageTotal += site.getTotalUsage();
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.BROWSING_DATA_MODEL)) {
+                    if (site.isDomainImportant()) {
+                        importantSiteStorageTotal += site.getTotalUsage();
+                    }
+                } else {
+                    if (site.getLocalStorageInfo() != null
+                            && site.getLocalStorageInfo().isDomainImportant()) {
+                        importantSiteStorageTotal += site.getTotalUsage();
+                    }
                 }
             }
             onSiteStorageSizeCalculated(
@@ -299,8 +307,11 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
          * asynchronously, and at the end we update the UI with the new storage numbers.
          */
         public void clearData() {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(profile, true);
+            Profile profile = ProfileManager.getLastUsedRegularProfile();
+            var siteSettingsDelegate =
+                    new ChromeSiteSettingsDelegate(getApplicationContext(), profile);
+            WebsitePermissionsFetcher fetcher =
+                    new WebsitePermissionsFetcher(siteSettingsDelegate, true);
             fetcher.fetchPreferencesForCategory(
                     SiteSettingsCategory.createFromType(
                             profile, SiteSettingsCategory.Type.USE_STORAGE),
@@ -318,13 +329,25 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
         @Override
         public void onWebsitePermissionsAvailable(Collection<Website> sites) {
             long siteStorageLeft = 0;
+            var siteSettingsDelegate =
+                    new ChromeSiteSettingsDelegate(
+                            getApplicationContext(), ProfileManager.getLastUsedRegularProfile());
             for (Website site : sites) {
-                if (site.getLocalStorageInfo() == null
-                        || !site.getLocalStorageInfo().isDomainImportant()) {
-                    mNumSitesClearing++;
-                    site.clearAllStoredData(Profile.getLastUsedRegularProfile(), this);
+                if (siteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+                    if (!site.isDomainImportant()) {
+                        mNumSitesClearing++;
+                        site.clearAllStoredData(siteSettingsDelegate, this);
+                    } else {
+                        siteStorageLeft += site.getTotalUsage();
+                    }
                 } else {
-                    siteStorageLeft += site.getTotalUsage();
+                    if (site.getLocalStorageInfo() == null
+                            || !site.getLocalStorageInfo().isDomainImportant()) {
+                        mNumSitesClearing++;
+                        site.clearAllStoredData(siteSettingsDelegate, this);
+                    } else {
+                        siteStorageLeft += site.getTotalUsage();
+                    }
                 }
             }
             if (mNumSitesClearing == 0) {

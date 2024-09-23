@@ -43,6 +43,8 @@ class PermissionRequestManagerTestApi {
   void AddSimpleRequest(content::RenderFrameHost* source_frame,
                         permissions::RequestType type);
 
+  void SetOrigin(const GURL& permission_request_origin);
+
   // Return the Widget for the permission prompt bubble, or nullptr if
   // there is no prompt currently showing.
   views::Widget* GetPromptWindow();
@@ -52,6 +54,7 @@ class PermissionRequestManagerTestApi {
  private:
   raw_ptr<permissions::PermissionRequestManager, AcrossTasksDanglingUntriaged>
       manager_;
+  GURL permission_request_origin_ = GURL("https://example.com");
 };
 
 }  // namespace test

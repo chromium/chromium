@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/events/input_event.h"
 
 #include <algorithm>
@@ -32,6 +37,7 @@ const struct {
     {InputEvent::InputType::kInsertTranspose, "insertTranspose"},
     {InputEvent::InputType::kInsertReplacementText, "insertReplacementText"},
     {InputEvent::InputType::kInsertCompositionText, "insertCompositionText"},
+    {InputEvent::InputType::kInsertLink, "insertLink"},
     {InputEvent::InputType::kDeleteWordBackward, "deleteWordBackward"},
     {InputEvent::InputType::kDeleteWordForward, "deleteWordForward"},
     {InputEvent::InputType::kDeleteSoftLineBackward, "deleteSoftLineBackward"},

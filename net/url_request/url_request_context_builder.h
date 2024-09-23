@@ -28,6 +28,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "net/base/net_export.h"
@@ -64,6 +65,12 @@ class URLRequestContext;
 struct ReportingPolicy;
 class PersistentReportingAndNelStore;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+namespace device_bound_sessions {
+class SessionService;
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 // A URLRequestContextBuilder creates a single URLRequestContext. It provides
 // methods to manage various URLRequestContext components which should be called
@@ -141,6 +148,17 @@ class NET_EXPORT URLRequestContextBuilder {
 
   // Sets whether Zstd compression is enabled. Disabled by default.
   void set_enable_zstd(bool enable_zstd) { enable_zstd_ = enable_zstd; }
+
+  // Sets whether Compression Dictionary is enabled. Disabled by default.
+  void set_enable_shared_dictionary(bool enable_shared_dictionary) {
+    enable_shared_dictionary_ = enable_shared_dictionary;
+  }
+
+  // Sets whether SZSTD of Compression Dictionary is enabled. Disabled by
+  // default.
+  void set_enable_shared_zstd(bool enable_shared_zstd) {
+    enable_shared_zstd_ = enable_shared_zstd;
+  }
 
   // Sets the |check_cleartext_permitted| flag, which controls whether to check
   // system policy before allowing a cleartext http or ws request.
@@ -276,10 +294,6 @@ class NET_EXPORT URLRequestContextBuilder {
 
   void SetSpdyAndQuicEnabled(bool spdy_enabled, bool quic_enabled);
 
-  void set_throttling_enabled(bool throttling_enabled) {
-    throttling_enabled_ = throttling_enabled;
-  }
-
   void set_sct_auditing_delegate(
       std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate);
   void set_quic_context(std::unique_ptr<QuicContext> quic_context);
@@ -304,6 +318,9 @@ class NET_EXPORT URLRequestContextBuilder {
   void set_persistent_reporting_and_nel_store(
       std::unique_ptr<PersistentReportingAndNelStore>
           persistent_reporting_and_nel_store);
+
+  void set_enterprise_reporting_endpoints(
+      const base::flat_map<std::string, GURL>& enterprise_reporting_endpoints);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   // Override the default in-memory cookie store. If |cookie_store| is NULL,
@@ -348,6 +365,16 @@ class NET_EXPORT URLRequestContextBuilder {
   void set_cookie_deprecation_label(const std::string& label) {
     cookie_deprecation_label_ = label;
   }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void set_device_bound_session_service(
+      std::unique_ptr<device_bound_sessions::SessionService>
+          device_bound_session_service);
+
+  void set_has_device_bound_session_service(bool enable) {
+    has_device_bound_session_service_ = enable;
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // Binds the context to `network`. All requests scheduled through the context
   // built by this builder will be sent using `network`. Requests will fail if
@@ -402,6 +429,8 @@ class NET_EXPORT URLRequestContextBuilder {
 
   bool enable_brotli_ = false;
   bool enable_zstd_ = false;
+  bool enable_shared_dictionary_ = false;
+  bool enable_shared_zstd_ = false;
   bool check_cleartext_permitted_ = false;
   bool require_network_anonymization_key_ = false;
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
@@ -413,7 +442,6 @@ class NET_EXPORT URLRequestContextBuilder {
   std::optional<std::string> cookie_deprecation_label_;
 
   bool http_cache_enabled_ = true;
-  bool throttling_enabled_ = false;
   bool cookie_store_set_by_client_ = false;
   bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
 
@@ -452,10 +480,16 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service_;
   std::unique_ptr<PersistentReportingAndNelStore>
       persistent_reporting_and_nel_store_;
+  base::flat_map<std::string, GURL> enterprise_reporting_endpoints_ = {};
 #endif  // BUILDFLAG(ENABLE_REPORTING)
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  bool has_device_bound_session_service_ = false;
+  std::unique_ptr<device_bound_sessions::SessionService>
+      device_bound_session_service_;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   raw_ptr<ClientSocketFactory> client_socket_factory_raw_ = nullptr;
 };

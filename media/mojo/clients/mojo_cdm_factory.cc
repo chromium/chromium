@@ -33,12 +33,12 @@ void OnCdmCreated(
     CdmCreatedCB cdm_created_cb,
     mojo::PendingRemote<mojom::ContentDecryptionModule> cdm_remote,
     media::mojom::CdmContextPtr cdm_context,
-    const std::string& error_message) {
+    CreateCdmStatus status) {
   // Convert from a PendingRemote to Remote so we can verify that it is
   // connected, this will also check if |cdm_remote| is null.
   mojo::Remote<mojom::ContentDecryptionModule> remote(std::move(cdm_remote));
   if (!remote || !remote.is_connected() || !cdm_context) {
-    std::move(cdm_created_cb).Run(nullptr, error_message);
+    std::move(cdm_created_cb).Run(nullptr, status);
     return;
   }
 
@@ -47,15 +47,17 @@ void OnCdmCreated(
                std::move(remote), std::move(cdm_context), cdm_config,
                session_message_cb, session_closed_cb, session_keys_change_cb,
                session_expiration_update_cb),
-           "");
+           status);
 }
 
 }  // namespace
 
 MojoCdmFactory::MojoCdmFactory(
-    media::mojom::InterfaceFactory* interface_factory)
-    : interface_factory_(interface_factory) {
+    media::mojom::InterfaceFactory* interface_factory,
+    KeySystems* key_systems)
+    : interface_factory_(interface_factory), key_systems_(key_systems) {
   DCHECK(interface_factory_);
+  DCHECK(key_systems_);
 }
 
 MojoCdmFactory::~MojoCdmFactory() = default;
@@ -74,12 +76,13 @@ void MojoCdmFactory::Create(
   // testing. See http://crbug.com/441957.
   // Note: Previously MojoRenderer doesn't work with local CDMs, this has
   // been solved by using DecryptingRenderer. See http://crbug.com/913775.
-  if (CanUseAesDecryptor(cdm_config.key_system)) {
+  if (key_systems_->CanUseAesDecryptor(cdm_config.key_system)) {
     scoped_refptr<ContentDecryptionModule> cdm(
         new AesDecryptor(session_message_cb, session_closed_cb,
                          session_keys_change_cb, session_expiration_update_cb));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(cdm_created_cb), cdm, ""));
+        FROM_HERE, base::BindOnce(std::move(cdm_created_cb), cdm,
+                                  CreateCdmStatus::kSuccess));
     return;
   }
 
@@ -92,7 +95,7 @@ void MojoCdmFactory::Create(
                          session_closed_cb, session_keys_change_cb,
                          session_expiration_update_cb,
                          std::move(cdm_created_cb)),
-          mojo::NullRemote(), nullptr, "disconnection error"));
+          mojo::NullRemote(), nullptr, CreateCdmStatus::kDisconnectionError));
 }
 
 }  // namespace media

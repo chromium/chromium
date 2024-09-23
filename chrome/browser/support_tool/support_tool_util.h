@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SUPPORT_TOOL_SUPPORT_TOOL_UTIL_H_
 #define CHROME_BROWSER_SUPPORT_TOOL_SUPPORT_TOOL_UTIL_H_
 
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -18,11 +19,13 @@ class Profile;
 
 // Returns SupportToolHandler that is created for collecting logs from the
 // given information. Adds the corresponding DataCollectors that were listed in
-// `included_data_collectors` to the returned SupportToolHandler.
+// `included_data_collectors` to the returned SupportToolHandler. Callers can
+// attach an optional `upload_id` to attach to the support packet.
 std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
     std::string case_id,
     std::string email_address,
     std::string issue_description,
+    std::optional<std::string> upload_id,
     Profile* profile,
     std::set<support_tool::DataCollectorType> included_data_collectors);
 
@@ -39,5 +42,8 @@ base::FilePath GetFilepathToExport(base::FilePath target_directory,
                                    const std::string& filename_prefix,
                                    const std::string& case_id,
                                    base::Time timestamp);
+
+// Returns the string representation of support tool errors.
+std::string SupportToolErrorsToString(const std::set<SupportToolError>& errors);
 
 #endif  // CHROME_BROWSER_SUPPORT_TOOL_SUPPORT_TOOL_UTIL_H_

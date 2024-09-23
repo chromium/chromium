@@ -16,8 +16,7 @@ namespace content {
 
 CONTENT_EXPORT
 std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> CreateGpuClient(
-    mojo::PendingReceiver<viz::mojom::Gpu> receiver,
-    viz::GpuClient::ConnectionErrorHandlerClosure connection_error_handler);
+    mojo::PendingReceiver<viz::mojom::Gpu> receiver);
 
 }  // namespace content
 

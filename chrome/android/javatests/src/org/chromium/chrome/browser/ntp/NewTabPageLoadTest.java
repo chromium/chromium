@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static junit.framework.Assert.assertTrue;
-
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.graphics.Bitmap;
 import android.os.Handler;

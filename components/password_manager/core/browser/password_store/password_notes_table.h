@@ -17,6 +17,8 @@ class Database;
 
 namespace password_manager {
 
+class EncryptDecryptInterface;
+
 // Represents the 'password_notes' table in the Login Database.
 class PasswordNotesTable {
  public:
@@ -30,7 +32,8 @@ class PasswordNotesTable {
   ~PasswordNotesTable() = default;
 
   // Initializes `db_`. `db_` should not be null and outlive this class.
-  void Init(sql::Database* db);
+  void Init(sql::Database* db,
+            EncryptDecryptInterface* encrypt_decrypt_intrface);
 
   // Migrates this table from `current_version` to `kCurrentVersionNumber`
   // defined in the login db.
@@ -51,6 +54,7 @@ class PasswordNotesTable {
 
  private:
   raw_ptr<sql::Database> db_ = nullptr;
+  raw_ptr<EncryptDecryptInterface> encrypt_decrypt_intrface_ = nullptr;
 };
 
 }  // namespace password_manager

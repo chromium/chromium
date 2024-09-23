@@ -34,6 +34,9 @@ class AuthenticatorTestBase : public testing::Test {
   ~AuthenticatorTestBase() override;
 
  protected:
+  static inline constexpr char kHostId[] = "alice@gmail.com/123";
+  static inline constexpr char kClientId[] = "alice@gmail.com/abc";
+
   class MockChannelDoneCallback {
    public:
     MockChannelDoneCallback();
@@ -53,6 +56,9 @@ class AuthenticatorTestBase : public testing::Test {
   void OnHostConnected(int error, std::unique_ptr<P2PStreamSocket> socket);
   void OnClientConnected(int error, std::unique_ptr<P2PStreamSocket> socket);
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string host_public_key_;
   std::string host_cert_;
@@ -66,9 +72,6 @@ class AuthenticatorTestBase : public testing::Test {
   MockChannelDoneCallback host_callback_;
   std::unique_ptr<P2PStreamSocket> client_socket_;
   std::unique_ptr<P2PStreamSocket> host_socket_;
-
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 }  // namespace protocol

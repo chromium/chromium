@@ -25,19 +25,12 @@ class PersonalDataManager;
 // associated PersonalDataManager.
 class PersonalDataManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the PersonalDataManager for |profile|, creating it if it is not
-  // yet created.
-  static PersonalDataManager* GetForProfile(Profile* profile);
-
   // Returns the PersonalDataManager for |context|, creating it if it is not
   // yet created.
   static PersonalDataManager* GetForBrowserContext(
       content::BrowserContext* context);
 
   static PersonalDataManagerFactory* GetInstance();
-
-  static KeyedService* BuildPersonalDataManager(
-      content::BrowserContext* context);
 
  private:
   friend base::NoDestructor<PersonalDataManagerFactory>;
@@ -46,7 +39,7 @@ class PersonalDataManagerFactory : public ProfileKeyedServiceFactory {
   ~PersonalDataManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

@@ -46,7 +46,7 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
     ExtensionServiceInitParams params;
     ASSERT_TRUE(
         params.ConfigureByTestDataDirectory(data_dir().AppendASCII("good")));
-    InitializeExtensionService(params);
+    InitializeExtensionService(std::move(params));
     extension_prefs_ = ExtensionPrefs::Get(profile());
 
     if (enhanced_protection_enabled) {
@@ -797,6 +797,6 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
   EXPECT_FALSE(allowlist()->ShouldDisplayWarning(extension->id()));
 }
 
-// TODO(crbug.com/1194051): Add more ExtensionAllowlist::Observer coverage
+// TODO(crbug.com/40175473): Add more ExtensionAllowlist::Observer coverage
 
 }  // namespace extensions

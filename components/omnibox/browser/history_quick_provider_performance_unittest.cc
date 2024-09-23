@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <algorithm>
 #include <memory>
 #include <random>
 #include <string>
+#include <string_view>
 
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -62,10 +69,10 @@ URLRow GeneratePopularURLRow() {
   return row;
 }
 
-using StringPieces = std::vector<base::StringPiece>;
+using StringPieces = std::vector<std::string_view>;
 
 StringPieces AllPrefixes(const std::string& str) {
-  std::vector<base::StringPiece> res;
+  std::vector<std::string_view> res;
   res.reserve(str.size());
   for (auto char_it = str.begin(); char_it != str.end(); ++char_it)
     res.push_back(base::MakeStringPiece(str.begin(), char_it));
@@ -122,8 +129,8 @@ void HQPPerfTestOnePopularURL::SetUp() {
   ASSERT_NO_FATAL_FAILURE(PrepareData());
 
   client_->set_in_memory_url_index(std::make_unique<InMemoryURLIndex>(
-      client_->GetLocalOrSyncableBookmarkModel(), client_->GetHistoryService(),
-      nullptr, history_dir_.GetPath(), SchemeSet()));
+      client_->GetBookmarkModel(), client_->GetHistoryService(), nullptr,
+      history_dir_.GetPath(), SchemeSet()));
   client_->GetInMemoryURLIndex()->Init();
 
   // Block until History has processed InMemoryURLIndex initialization.
@@ -166,7 +173,8 @@ void HQPPerfTestOnePopularURL::PrintMeasurements(
 
   std::string durations;
   for (const auto& measurement : measurements)
-    durations += std::to_string(measurement.InMillisecondsRoundedUp()) + ',';
+    durations +=
+        base::NumberToString(measurement.InMillisecondsRoundedUp()) + ',';
   // Strip off trailing comma.
   durations.pop_back();
 
@@ -203,12 +211,12 @@ void HQPPerfTestOnePopularURL::RunAllTests(PieceIt first, PieceIt last) {
     PieceIt group_end = std::min(group_start + kTestGroupSize, last);
 
     std::transform(group_start, group_end, std::back_inserter(measurements),
-                   [this](const base::StringPiece& prefix) {
+                   [this](std::string_view prefix) {
                      return RunTest(base::UTF8ToUTF16(prefix));
                    });
 
-    PrintMeasurements(std::to_string(group_start->size()) + '-' +
-                          std::to_string((group_end - 1)->size()),
+    PrintMeasurements(base::NumberToString(group_start->size()) + '-' +
+                          base::NumberToString((group_end - 1)->size()),
                       measurements);
 
     measurements.clear();

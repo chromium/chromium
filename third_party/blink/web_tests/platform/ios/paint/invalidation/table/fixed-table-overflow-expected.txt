@@ -12,7 +12,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) TD id='moveMe' class='fixed'",
+      "name": "LayoutBlockFlow (positioned) TD id='moveMe' class='fixed'",
       "position": [-100, 0],
       "bounds": [200, 100],
       "contentsOpaque": true,

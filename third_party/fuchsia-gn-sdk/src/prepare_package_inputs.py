@@ -11,6 +11,7 @@
 import argparse
 from fnmatch import fnmatch
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -20,19 +21,18 @@ import sys
 def make_package_path(file_path, roots):
     """Computes a path for |file_path| relative to one of the |roots|.
 
-  Args:
-    file_path: The file path to relativize.
-    roots: A list of directory paths which may serve as a relative root for
-      |file_path|.
+    Args:
+      file_path: The file path to relativize.
+      roots: A list of directory paths which may serve as a relative root for
+        |file_path|.
 
-    For example:
-        * make_package_path('/foo/bar.txt', ['/foo/']) 'bar.txt'
-        * make_package_path('/foo/dir/bar.txt', ['/foo/']) 'dir/bar.txt'
-        * make_package_path('/foo/out/Debug/bar.exe', ['/foo/', '/foo/out/Debug/']) 'bar.exe'
-  """
+      For example:
+          * make_package_path('/foo/bar.txt', ['/foo/']) 'bar.txt'
+          * make_package_path('/foo/dir/bar.txt', ['/foo/']) 'dir/bar.txt'
+          * make_package_path('/foo/out/Debug/bar.exe', ['/foo/', '/foo/out/Debug/']) 'bar.exe'
+    """
 
-    # Prevents greedily matching against a shallow path when a deeper, better
-    # matching path exists.
+    # Prevents greedily matching against a shallow path when a deeper, better matching path exists.
     roots.sort(key=len, reverse=True)
 
     for next_root in roots:
@@ -49,8 +49,8 @@ def make_package_path(file_path, roots):
 def _get_stripped_path(bin_path):
     """Finds the stripped version of |bin_path| in the build output directory.
 
-        returns |bin_path| if no stripped path is found.
-  """
+    returns |bin_path| if no stripped path is found.
+    """
     stripped_path = bin_path.replace('lib.unstripped/',
                                      'lib/').replace('exe.unstripped/', '')
     if os.path.exists(stripped_path):
@@ -62,8 +62,8 @@ def _get_stripped_path(bin_path):
 def _is_binary(path):
     """Checks if the file at |path| is an ELF executable.
 
-        This is done by inspecting its FourCC header.
-  """
+    This is done by inspecting its FourCC header.
+    """
 
     with open(path, 'rb') as f:
         file_tag = f.read(4)
@@ -89,16 +89,20 @@ def _write_build_ids_txt(readelf_exec, binary_paths, ids_txt_path):
             unprocessed_binary_paths.discard(stripped_binary_path)
 
     with open(ids_txt_path, 'w') as ids_file:
-        # Create a set to dedupe stripped binary paths in case both the stripped and
-        # unstripped versions of a binary are specified.
+        # Note, even there isn't any file to process, the ids file will always be created.
+        if not unprocessed_binary_paths:
+            logging.debug('No binary files to process.')
+            return
+
+        # Create a set to dedupe stripped binary paths in case both the stripped and unstripped
+        # versions of a binary are specified.
         readelf_stdout = subprocess.check_output(
             [readelf_exec, '-n'] +
             sorted(unprocessed_binary_paths)).decode('utf8')
 
-        if len(binary_paths) == 1:
-            # Readelf won't report a binary's path if only one was provided to the
-            # tool.
-            binary_path = binary_paths[0]
+        if len(unprocessed_binary_paths) == 1:
+            # Readelf won't report a binary's path if only one was provided to the tool.
+            [binary_path] = unprocessed_binary_paths
         else:
             binary_path = None
 
@@ -110,8 +114,8 @@ def _write_build_ids_txt(readelf_exec, binary_paths, ids_txt_path):
                 assert binary_path in unprocessed_binary_paths
 
             elif line.startswith(READELF_BUILD_ID_PREFIX):
-                # Paths to the unstripped executables listed in "ids.txt" are specified
-                # as relative paths to that file.
+                # Paths to the unstripped executables listed in "ids.txt" are specified as relative
+                # paths to that file.
                 unstripped_rel_path = os.path.relpath(
                     os.path.abspath(binary_path),
                     os.path.dirname(os.path.abspath(ids_txt_path)))
@@ -136,13 +140,25 @@ def _get_component_manifests(component_info):
     return [c for c in component_info if c.get('type') == 'manifest']
 
 
+# TODO(richkadel): Changed, from the Fuchsia GN SDK version to add this function
+# and related code, to include support for a file of resources that aren't known
+# until compile time.
+def _get_resource_items_from_json_items(component_info):
+    nested_resources = []
+    files = [c.get('source') for c in component_info if c.get('type') == 'json_of_resources']
+    for json_file in files:
+        for resource in _parse_component(json_file):
+            nested_resources.append(resource)
+    return nested_resources
+
+
 def _get_resource_items(component_info):
-    return [c for c in component_info if c.get('type') == 'resource']
+    return ([c for c in component_info if c.get('type') == 'resource'] +
+            _get_resource_items_from_json_items(component_info))
 
 
 def _get_expanded_files(runtime_deps_file):
-    """ Process the runtime deps file for file paths, recursively walking
-    directories as needed.
+    """ Process the runtime deps file for file paths, recursively walking directories as needed.
 
     Returns a set of expanded files referenced by the runtime deps file.
     """
@@ -178,11 +194,11 @@ def _write_gn_deps_file(
 
 
 def _write_meta_package_manifest(
-        manifest_entries, manifest_path, app_name, out_dir):
+        manifest_entries, manifest_path, app_name, out_dir, package_version):
     # Write meta/package manifest file and add to archive manifest.
     meta_package = os.path.join(os.path.dirname(manifest_path), 'package')
     with open(meta_package, 'w') as package_json:
-        json_payload = {'version': '0', 'name': app_name}
+        json_payload = {'version': package_version, 'name': app_name}
         json.dump(json_payload, package_json)
         package_json_filepath = os.path.relpath(package_json.name, out_dir)
         manifest_entries['meta/package'] = package_json_filepath
@@ -200,11 +216,18 @@ def _write_component_manifest(
         manifest_basename = os.path.basename(manifest_source)
         if 'output_name' in component_manifest:
             _, extension = os.path.splitext(manifest_basename)
-            manifest_basename = component_manifest.get('output_name') + \
-                                extension
+            manifest_basename = component_manifest.get('output_name')
+            if manifest_basename.startswith('meta/'):
+                # No removeprefix until python 3.9.
+                manifest_basename = manifest_basename[len('meta/'):]
+            _, output_ext = os.path.splitext(manifest_basename)
+            if output_ext != extension:
+                manifest_basename = manifest_basename + extension
 
         manifest_dest_file_path = os.path.join(
             os.path.dirname(manifest_path), manifest_basename)
+        # Add the 'meta/' subdir, for example, if `output_name` includes it
+        os.makedirs(os.path.dirname(manifest_dest_file_path), exist_ok=True)
         shutil.copy(manifest_source, manifest_dest_file_path)
 
         manifest_entry_key = os.path.join('meta', manifest_basename)
@@ -214,8 +237,7 @@ def _write_component_manifest(
 
 
 def _is_excluded(in_package_path, excluded_paths):
-    """Returns true if |in_package_path| is filtered out by any entries of
-    |excluded_paths|."""
+    """Returns true if |in_package_path| is filtered out by any entries of |excluded_paths|."""
 
     return any([fnmatch(in_package_path, excl) for excl in excluded_paths])
 
@@ -249,8 +271,7 @@ def _write_package_manifest(
 
     for current_file in expanded_files:
         current_file = _get_stripped_path(current_file)
-        # make_package_path() may relativize to either the source root or
-        # output directory.
+        # make_package_path() may relativize to either the source root or output directory.
         in_package_path = make_package_path(current_file, roots)
 
         # Include the file if it isn't filtered out.
@@ -265,11 +286,10 @@ def _build_manifest(args):
     component_info = _parse_component(args.json_file)
     component_manifests = []
 
-    # Collect the manifest entries in a map since duplication happens
-    # because of runtime libraries.
+    # Collect the manifest entries in a map since duplication happens because of runtime libraries.
     manifest_entries = {}
     _write_meta_package_manifest(
-        manifest_entries, args.manifest_path, args.app_name, args.out_dir)
+        manifest_entries, args.manifest_path, args.app_name, args.out_dir, args.package_version)
     for component_item in component_info:
         _write_package_manifest(
             manifest_entries, expanded_files, args.exclude_path, args.out_dir,
@@ -301,29 +321,24 @@ def _build_manifest(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--root-dir', required=True, help='Build root directory')
-    parser.add_argument(
-        '--out-dir', required=True, help='Build output directory')
+    parser.add_argument('--root-dir', required=True, help='Build root directory')
+    parser.add_argument('--out-dir', required=True, help='Build output directory')
     parser.add_argument('--app-name', required=True, help='Package name')
     parser.add_argument(
         '--runtime-deps-file',
         required=True,
         help='File with the list of runtime dependencies.')
-    parser.add_argument(
-        '--depfile-path', required=True, help='Path to write GN deps file.')
+    parser.add_argument('--depfile-path', required=True, help='Path to write GN deps file.')
     parser.add_argument(
         '--exclude-path',
         action='append',
         default=[],
         help='List of filter expressions for excluding files or directories.')
-    parser.add_argument(
-        '--manifest-path', required=True, help='Manifest output path.')
-    parser.add_argument(
-        '--build-ids-file', required=True, help='Debug symbol index path.')
+    parser.add_argument('--manifest-path', required=True, help='Manifest output path.')
+    parser.add_argument('--build-ids-file', required=True, help='Debug symbol index path.')
     parser.add_argument('--json-file', required=True)
-    parser.add_argument(
-        '--readelf-exec', default='readelf', help='readelf executable to use.')
+    parser.add_argument('--readelf-exec', default='readelf', help='readelf executable to use.')
+    parser.add_argument('--package-version', default='0', help='Version of the package')
 
     args = parser.parse_args()
 

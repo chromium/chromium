@@ -1,0 +1,34 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GenAILocalFoundationalModelSettings": 0
+        },
+        "prefs": {
+          "optimization_guide.gen_ai_local_foundational_model_settings": {
+            "value": 0,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAILocalFoundationalModelSettings": 1
+        },
+        "prefs": {
+          "optimization_guide.gen_ai_local_foundational_model_settings": {
+            "value": 1,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

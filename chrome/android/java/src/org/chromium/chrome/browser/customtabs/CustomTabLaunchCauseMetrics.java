@@ -18,10 +18,13 @@ public class CustomTabLaunchCauseMetrics extends LaunchCauseMetrics {
 
     @Override
     public @LaunchCause int computeIntentLaunchCause() {
-        if (mActivity.getActivityType() == ActivityType.TRUSTED_WEB_ACTIVITY) {
+        int type = mActivity.getActivityType();
+        if (type == ActivityType.TRUSTED_WEB_ACTIVITY) {
             return LaunchCause.TWA;
         }
-        assert mActivity.getActivityType() == ActivityType.CUSTOM_TAB;
-        return LaunchCause.CUSTOM_TAB;
+        if (type == ActivityType.CUSTOM_TAB) {
+            return LaunchCause.CUSTOM_TAB;
+        }
+        return LaunchCause.AUTH_TAB;
     }
 }

@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 
 #include <algorithm>
 #include <cmath>
+#include <numbers>
 #include <utility>
 #include <vector>
 
-#include "base/numerics/math_constants.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -34,7 +39,7 @@ constexpr float kMaxSquareAreaFactor = 361.0f / 576;
 // Ratio of icon visible area to full icon size for a circular shaped icon.
 constexpr float kMaxCircleAreaFactor = 380.0f / 576;
 
-constexpr float kCircleAreaByRect = base::kPiFloat / 4;
+constexpr float kCircleAreaByRect = std::numbers::pi_v<float> / 4;
 
 // Slope used to calculate icon visible area to full icon size for any generic
 // shaped icon.

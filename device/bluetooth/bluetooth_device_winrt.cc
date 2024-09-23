@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/win/core_winrt_util.h"
@@ -747,8 +746,8 @@ void BluetoothDeviceWinrt::OnGattServicesChanged(IBluetoothLEDevice* ble_device,
                                                  IInspectable* object) {
   BLUETOOTH_LOG(DEBUG) << "OnGattServicesChanged()";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(crbug/1085596): This event fires once for every newly discovered GATT
-  // service. Hence, the initial GATT service discovery aborts and restarts
+  // TODO(crbug.com/40693710): This event fires once for every newly discovered
+  // GATT service. Hence, the initial GATT service discovery aborts and restarts
   // itself here once for every service discovered, which is unnecessary and
   // slow.
 

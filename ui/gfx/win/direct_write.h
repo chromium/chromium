@@ -8,8 +8,8 @@
 #include <dwrite.h>
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -32,7 +32,7 @@ GFX_EXPORT std::optional<std::string> RetrieveLocalizedString(
 // Retrieves the localized font name for a given locale. If locale is empty,
 // retrieves the default native font name.
 GFX_EXPORT std::optional<std::string> RetrieveLocalizedFontName(
-    base::StringPiece font_name,
+    std::string_view font_name,
     const std::string& locale);
 
 }  // namespace win

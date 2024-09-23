@@ -1,0 +1,76 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/mac/rules.gni")
+import("//chrome/updater/branding.gni")
+
+tweak_info_plist("registration_test_plist") {
+  info_plist = "Info.plist"
+}
+
+template("bundle_data_tree") {
+  assert(defined(invoker.source_base), "source_base is required")
+  _source_base = invoker.source_base
+  assert(defined(invoker.output_base), "output_base is required")
+  _output_base = invoker.output_base
+  assert(defined(invoker.paths), "paths are required")
+  _subtargets = []
+  _n = 0
+  foreach(_p, invoker.paths) {
+    _n += 1
+    _bundle_data_name = "${target_name}__${_n}"
+    _subtargets += [ ":${_bundle_data_name}" ]
+    bundle_data(_bundle_data_name) {
+      forward_variables_from(invoker,
+                             [
+                               "deps",
+                               "public_deps",
+                               "data_deps",
+                             ])
+      sources = [ "${_source_base}/${_p}" ]
+      outputs = [ "${_output_base}/${_p}" ]
+    }
+  }
+  group(target_name) {
+    public_deps = _subtargets
+  }
+}
+
+bundle_data_tree("bundled_updater_contents") {
+  public_deps = [ "//chrome/updater/mac:updater_bundle_test" ]
+  source_base = "$root_out_dir/${updater_product_full_name}_test.app/Contents"
+  output_base = "{{bundle_contents_dir}}/Helpers/${updater_product_full_name}_test.app/Contents"
+  paths = [
+    "Info.plist",
+    "PkgInfo",
+    "MacOS/${updater_product_full_name}_test",
+    "Helpers/launcher",
+    "Helpers/${keystone_app_name}.bundle/Contents/Info.plist",
+    "Helpers/${keystone_app_name}.bundle/Contents/Helpers/ksadmin",
+    "Helpers/${keystone_app_name}.bundle/Contents/Helpers/ksinstall",
+    "Helpers/${keystone_app_name}.bundle/Contents/MacOS/${keystone_app_name}",
+    "Helpers/${keystone_app_name}.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
+    "Helpers/${keystone_app_name}.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
+  ]
+  if (is_asan) {
+    paths += [
+      "MacOS/libclang_rt.asan_osx_dynamic.dylib",
+      "Helpers/${keystone_app_name}.bundle/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib",
+      "Helpers/${keystone_app_name}.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib",
+    ]
+  }
+}
+
+mac_app_bundle("registration_test_app_bundle") {
+  testonly = true
+  info_plist_target = ":registration_test_plist"
+  sources = [ "registration_test_app.mm" ]
+  public_deps = [ ":bundled_updater_contents" ]
+  deps = [
+    "//base",
+    "//chrome/updater/mac/client_lib:public_sources",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Testing fontBoundingBox for OffscreenCanvas with zero descent metric
-  assert_equals: ctx.measureText('A').fontBoundingBoxAscent === 30 (got 68[number], expected 30[number]) expected 30 but got 68
-Harness: the test ran to completion.
-

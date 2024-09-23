@@ -72,6 +72,9 @@ class OverlayRequestQueueImpl : public OverlayRequestQueue {
   static OverlayRequestQueueImpl* FromWebState(web::WebState* web_state,
                                                OverlayModality modality);
 
+  // Create the request queue implementation for `web_state`.
+  static void CreateForWebState(web::WebState* web_state);
+
   // Sets the delegate.
   void SetDelegate(Delegate* delegate);
 

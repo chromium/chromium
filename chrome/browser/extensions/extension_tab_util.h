@@ -12,7 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/window_controller.h"
+#include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
@@ -33,6 +36,11 @@ namespace blink::mojom {
 class WindowFeatures;
 }
 
+namespace tab_groups {
+class TabGroupId;
+class TabGroupVisualData;
+}  // namespace tab_groups
+
 namespace extensions {
 class Extension;
 class WindowController;
@@ -40,11 +48,6 @@ class WindowController;
 // Provides various utility functions that help manipulate tabs.
 class ExtensionTabUtil {
  public:
-  enum PopulateTabBehavior {
-    kPopulateTabs,
-    kDontPopulateTabs,
-  };
-
   enum ScrubTabBehaviorType {
     kScrubTabFully,
     kScrubTabUrlToOrigin,
@@ -82,13 +85,12 @@ class ExtensionTabUtil {
   static int GetWindowId(const Browser* browser);
   static int GetWindowIdOfTabStripModel(const TabStripModel* tab_strip_model);
   static int GetTabId(const content::WebContents* web_contents);
-  static std::string GetTabStatusText(content::WebContents* web_contents);
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
   static base::Value::List CreateTabList(const Browser* browser,
                                          const Extension* extension,
                                          mojom::ContextType context);
 
-  static Browser* GetBrowserFromWindowID(
+  static WindowController* GetControllerFromWindowID(
       const ChromeExtensionFunctionDetails& details,
       int window_id,
       std::string* error_message);
@@ -97,10 +99,11 @@ class ExtensionTabUtil {
   // `profile`. Optionally, this will also look at browsers associated with the
   // incognito version of `profile` if `also_match_incognito_profile` is true.
   // Populates `error_message` if no matching browser is found.
-  static Browser* GetBrowserInProfileWithId(Profile* profile,
-                                            int window_id,
-                                            bool also_match_incognito_profile,
-                                            std::string* error_message);
+  static WindowController* GetControllerInProfileWithId(
+      Profile* profile,
+      int window_id,
+      bool also_match_incognito_profile,
+      std::string* error_message);
 
   // Returns the tabs:: API constant for the window type of the |browser|.
   static std::string GetBrowserWindowTypeText(const Browser& browser);
@@ -133,7 +136,7 @@ class ExtensionTabUtil {
   static base::Value::Dict CreateWindowValueForExtension(
       const Browser& browser,
       const Extension* extension,
-      PopulateTabBehavior populate_tab_behavior,
+      WindowController::PopulateTabBehavior populate_tab_behavior,
       mojom::ContextType context);
 
   // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)
@@ -164,11 +167,16 @@ class ExtensionTabUtil {
   static bool GetTabStripModel(const content::WebContents* web_contents,
                                TabStripModel** tab_strip_model,
                                int* tab_index);
-  static bool GetDefaultTab(Browser* browser,
-                            content::WebContents** contents,
-                            int* tab_id);
+
+  // Returns the active tab's WebContents if there is an active tab. Returns
+  // null if there is no active tab.
+  static content::WebContents* GetActiveTab(Browser* browser);
+
   // Any out parameter (|browser|, |tab_strip|, |contents|, & |tab_index|) may
   // be NULL and will not be set within the function.
+  //
+  // The output `*browser` value may be null if the tab is a prerender tab that
+  // has no corresponding browser window.
   static bool GetTabById(int tab_id,
                          content::BrowserContext* browser_context,
                          bool include_incognito,
@@ -180,6 +188,41 @@ class ExtensionTabUtil {
                          content::BrowserContext* browser_context,
                          bool include_incognito,
                          content::WebContents** contents);
+
+  // Gets the extensions-specific Group ID.
+  static int GetGroupId(const tab_groups::TabGroupId& id);
+
+  // Gets the window ID that the group belongs to.
+  static int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
+
+  // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
+  // found. `browser`, `id`, or `visual_data` may be nullptr and will not be set
+  // within the function if so.
+  static bool GetGroupById(int group_id,
+                           content::BrowserContext* browser_context,
+                           bool include_incognito,
+                           Browser** browser,
+                           tab_groups::TabGroupId* id,
+                           const tab_groups::TabGroupVisualData** visual_data,
+                           std::string* error);
+
+  // Creates a TabGroup object
+  // (see chrome/common/extensions/api/tab_groups.json) with information about
+  // the state of a tab group for the given group `id`. Most group metadata is
+  // derived from the `visual_data`, which specifies group color, title, etc.
+  static api::tab_groups::TabGroup CreateTabGroupObject(
+      const tab_groups::TabGroupId& id,
+      const tab_groups::TabGroupVisualData& visual_data);
+  static std::optional<api::tab_groups::TabGroup> CreateTabGroupObject(
+      const tab_groups::TabGroupId& id);
+
+  // Conversions between the api::tab_groups::Color enum and the TabGroupColorId
+  // enum.
+  static api::tab_groups::Color ColorIdToColor(
+      const tab_groups::TabGroupColorId& color_id);
+  static tab_groups::TabGroupColorId ColorToColorId(
+      api::tab_groups::Color color);
+
   // Returns all active web contents for the given |browser_context|.
   static std::vector<content::WebContents*> GetAllActiveWebContentsForContext(
       content::BrowserContext* browser_context,

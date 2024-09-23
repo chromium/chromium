@@ -124,7 +124,7 @@ class AppModalDialogController {
 
   // A map of extra Chrome-only data associated with the delegate_. Can be
   // inspected via |extra_data_map_[web_contents_]|.
-  raw_ptr<ExtraDataMap> extra_data_map_;
+  raw_ptr<ExtraDataMap, LeakedDanglingUntriaged> extra_data_map_;
 
   // Information about the message box is held in the following variables.
   const content::JavaScriptDialogType javascript_dialog_type_;

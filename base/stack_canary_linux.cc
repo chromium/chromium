@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/stack_canary_linux.h"
 
 #include <dlfcn.h>
@@ -63,9 +68,9 @@ __stack_chk_fail() {
 }
 #endif  // !defined(NDEBUG)
 
-void NO_STACK_PROTECTOR ResetStackCanaryIfPossible() {
+NO_STACK_PROTECTOR void ResetStackCanaryIfPossible() {
   uintptr_t canary;
-  base::RandBytes(as_writable_bytes(make_span(&canary, 1u)));
+  base::RandBytes(base::byte_span_from_ref(canary));
   // First byte should be the null byte for string functions.
   canary &= ~static_cast<uintptr_t>(0xff);
 

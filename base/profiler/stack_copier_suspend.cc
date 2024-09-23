@@ -76,4 +76,9 @@ bool StackCopierSuspend::CopyStack(StackBuffer* stack_buffer,
   return true;
 }
 
+std::vector<uintptr_t*> StackCopierSuspend::GetRegistersToRewrite(
+    RegisterContext* thread_context) {
+  return thread_delegate_->GetRegistersToRewrite(thread_context);
+}
+
 }  // namespace base

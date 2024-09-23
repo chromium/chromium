@@ -14,72 +14,125 @@ import "url/mojom/url.mojom";
 // There is one instance of this interface per RenderFrameHost in the browser
 // process. All methods are called by renderer on browser.
 interface AutofillDriver {
-  // Notification that forms have been seen that are candidates for
-  // filling/submitting by the AutofillManager.
+  // Notification that changes of the forms have been detected: the forms in
+  // `updated_forms` are either new or have changed, and the forms in
+  // `removed_forms` have been removed from the DOM (but may be re-added to the
+  // DOM later).
   FormsSeen(array<FormData> updated_forms, array<FormRendererId> removed_forms);
 
-  // Notification that a form has been submitted. The |known_success| indicates
+  // Notification that a form has been submitted. The `known_success` indicates
   // whether the submission succeeded or not. Currently, we assume submission
   // succeeds if the form is removed.
   FormSubmitted(FormData form,
                 bool known_success,
                 SubmissionSource source);
 
-  // Notification that a form field's value has changed.
+  // Notification that a form field's caret moved or selection has changed.
+  //
+  // `field_id` must identify a field of `form`. This is enforced by
+  // ContentAutofillDriver.
+  //
+  // `caret_bounds` is the bounds of the caret if the selection is empty and
+  // otherwise the bounds of the focus
+  // (https://w3c.github.io/selection-api/#dfn-focus). That is, its width is
+  // typically zero or near-zero, and its height is about one line. It is not
+  // validated in any way; in particular, the coordinates may be negative or
+  // otherwise outside of the bounds of the viewport.
+  CaretMovedInFormField(FormData form,
+                        FieldRendererId field_id,
+                        gfx.mojom.Rect caret_bounds);
+
+  // Notification that a form field's value has changed by a user edit.
+  //
+  // Similarly to JavaScript's "input" event, and unlike JavaScript's "change"
+  // event, it's fired for each individual alteration of the field.
+  //
+  // Fired on text-type input elements and textareas. Additionally it is fired
+  // on contenteditables for all non-IOS platforms.
+  //
+  // `field_id` must identify a field of `form`. This is enforced by
+  // ContentAutofillDriver.
   TextFieldDidChange(FormData form,
-                     FormFieldData field,
-                     gfx.mojom.RectF bounding_box,
+                     FieldRendererId field_id,
                      mojo_base.mojom.TimeTicks timestamp);
 
+  // Notification that editing a text-type input element ended.
+  //
+  // Fired (only) on element blur or document unload events.
+  //
+  // TODO(crbug.com/339820079): Eliminate in favour of FocusNoLongerOnForm()?
+  DidEndTextFieldEditing();
+
   // Notification that a form field has scrolled.
+  //
+  // `field_id` must identify a field of `form`. This is enforced by
+  // ContentAutofillDriver.
   TextFieldDidScroll(FormData form,
-                     FormFieldData field,
-                     gfx.mojom.RectF bounding_box);
+                     FieldRendererId field_id);
 
   // Notification that a form select control has changed.
+  //
+  // `field_id` must identify a field of `form`. This is enforced by
+  // ContentAutofillDriver.
   SelectControlDidChange(FormData form,
-                         FormFieldData field,
-                         gfx.mojom.RectF bounding_box);
+                         FieldRendererId field_id);
 
   // Notification that a select or selectlist element's options were modified.
   SelectOrSelectListFieldOptionsDidChange(FormData form);
 
+  // `FocusOnFormField()` xor `FocusOnNonFormField()` is fired when the focused
+  // element changes (https://html.spec.whatwg.org/#focused):
+  //
+  // - `FocusOnFormField()` iff the newly focused element is a non-null form
+  //   control element or contenteditable whose `FormData` can be extracted.
+  // - `FocusOnNonFormField()` iff it does not call `FocusOnFormField()`.
+  //
+  // `field_id` must identify a field of `form`. This is enforced by
+  // ContentAutofillDriver.
+  FocusOnFormField(FormData form, FieldRendererId field_id);
+  FocusOnNonFormField();
+
   // Queries the browser for Autofill suggestions for a form input field.
   // For autofill this means asking the user which values to fill.
+  //
+  // `field_id` must identify a field of `form`. This is enforced by
+  // ContentAutofillDriver.
+  //
+  // `caret_bounds` is the bounds of the caret if the selection is empty and
+  // otherwise the bounds of the focus
+  // (https://w3c.github.io/selection-api/#dfn-focus). That is, its width is
+  // typically zero or near-zero, and its height is about one line. It is not
+  // validated in any way; in particular, the coordinates may be negative or
+  // otherwise outside of the bounds of the viewport.
   AskForValuesToFill(FormData form,
-                     FormFieldData field,
-                     gfx.mojom.RectF bounding_box,
+                     FieldRendererId field_id,
+                     gfx.mojom.Rect caret_bounds,
                      AutofillSuggestionTriggerSource trigger_source);
 
   // Instructs the browser to hide the Autofill popup if it is open.
   HidePopup();
 
-  // Sent when either (a) focus moves off of any form element, or (b) focus
-  // moves off of the form that the user had previously interacted with to a
-  // different form. |had_interacted_form| indicates whether there was such a
-  // previously-interacted form.
-  // TODO(crbug.com/1140473): Remove need to pass |had_interacted_form|.
-  FocusNoLongerOnForm(bool had_interacted_form);
-
-  // Notification that a form field is focused.
-  FocusOnFormField(FormData form,
-                   FormFieldData field,
-                   gfx.mojom.RectF bounding_box);
-
   // Sent when a form is filled with Autofill suggestions.
   DidFillAutofillFormData(FormData form, mojo_base.mojom.TimeTicks timestamp);
 
-  // Sent when a text field is done editing.
-  DidEndTextFieldEditing();
-
-  // Sent when |field| was in autofilled state but JavaScript modified the
-  // value. Note that from a renderer's perspective, modifying the value with
+  // Sent when a field was in autofilled state but JavaScript modified the
+  // value.
+  //
+  // Note that from a renderer's perspective, modifying the value with
   // JavaScript leads to a state where the field is not considered autofilled
   // anymore. So this notification won't be sent again until the field gets
   // autofilled again.
+  //
+  // `field_id` must identify a field of `form`. This is enforced by
+  // ContentAutofillDriver.
+  //
+  // `formatting_only` is true if JavaScript only modified whitespaces, symbols
+  // and capitalization, and in that case, the field is still considered
+  // autofilled.
   JavaScriptChangedAutofilledValue(FormData form,
-                     FormFieldData field,
-                     mojo_base.mojom.String16 old_value);
+                                   FieldRendererId field_id,
+                                   mojo_base.mojom.String16 old_value,
+                                   bool formatting_only);
 };
 
 // There is one instance of this interface per web contents in the browser
@@ -111,10 +164,10 @@ interface PasswordManagerDriver {
   // a successful submission for change password forms.
   PasswordFormCleared(FormData form_data);
 
-  // Sends |log| to browser for displaying to the user. Only strings passed as
+  // Sends `log` to browser for displaying to the user. Only strings passed as
   // an argument to methods overriding SavePasswordProgressLogger::SendLog may
-  // become |log|, because those are guaranteed to be sanitized.
-  // Never pass a free-form string as |log|.
+  // become `log`, because those are guaranteed to be sanitized.
+  // Never pass a free-form string as `log`.
   RecordSavePasswordProgress(string log);
 
   // Notification that the user (not JavaScript) modified the value of a
@@ -122,7 +175,7 @@ interface PasswordManagerDriver {
   UserModifiedPasswordField();
 
   // Notification that the user (not JavaScript) modified the value of a
-  // non-password field with |renderer_id|, and |value| is the current value.
+  // non-password field with `renderer_id`, and `value` is the current value.
   UserModifiedNonPasswordField(
     FieldRendererId renderer_id,
     mojo_base.mojom.String16 value,
@@ -130,20 +183,20 @@ interface PasswordManagerDriver {
     bool is_likely_otp);
 
   // Instructs the browser to show a popup or accessory with password
-  // suggestions. The popup will use |request.text_direction| for displaying
-  // text. The accessory uses the |request.form| and the indices of username and
-  // password elements in the form (|request.username_field_index| and
-  // |request.password_field_index| respectively) to calculate submission
-  // readiness for the |request.form|. If the username field is not found,
-  // |request.username_field_index| is set to |request.form.fields.size()|.
+  // suggestions. The popup will use `request.text_direction` for displaying
+  // text. The accessory uses the `request.form` and the indices of username and
+  // password elements in the form (`request.username_field_index` and
+  // `request.password_field_index` respectively) to calculate submission
+  // readiness for the `request.form`. If the username field is not found,
+  // `request.username_field_index` is set to `request.form.fields.size()`.
   // Similar for the password field.
   ShowPasswordSuggestions(PasswordSuggestionRequest request);
 
   // Instructs the browser to show a keyboard replacing surface (e.g.
   // TouchToFill) and whether the form is ready for submission after filling. If
-  // |is_webauthn|, Android U+ can display Credential Manager UI instead of
+  // `is_webauthn`, Android U+ can display Credential Manager UI instead of
   // TouchToFill UI.
-  // TODO(crbug/1462532): Remove this API once PasswordSuggestionBottomSheetV2
+  // TODO(crbug.com/40274966): Remove this API once PasswordSuggestionBottomSheetV2
   // is launched.
   [EnableIf=is_android]
   ShowKeyboardReplacingSurface(SubmissionReadinessState submission_readiness,
@@ -160,7 +213,7 @@ interface PasswordManagerDriver {
                       FocusedFieldType focused_field_type);
 
   // Sends the success state of filling credentials into a form. This happens
-  // only if the form being filled has a renderer_id. |result| is an
+  // only if the form being filled has a renderer_id. `result` is an
   // integer serialization of autofill::FillingResult. It is passed as an
   // integer as no further interpretation of the value is necessary in the
   // browser.
@@ -177,8 +230,9 @@ interface PasswordGenerationDriver {
 
   // Instructs the browser to show the popup for editing a generated password.
   // The location should be specified in the renderers coordinate system. Form
-  // is the form associated with the password field. |field_renderer_id| is the
-  // ID of the password field triggering generation.
+  // is the form associated with the password field. `field_renderer_id` is the
+  // ID of the password field triggering generation. This method does nothing on
+  // Android platform because showing popups there obscures the view too much.
   ShowPasswordEditingPopup(
     gfx.mojom.RectF bounds,
     FormData form_data,

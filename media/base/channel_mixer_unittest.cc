@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/channel_mixer.h"
 
 #include <memory>
@@ -40,7 +45,9 @@ TEST(ChannelMixerTest, ConstructAllPossibleLayouts) {
 
       SCOPED_TRACE(base::StringPrintf(
           "Input Layout: %d, Output Layout: %d", input_layout, output_layout));
-      ChannelMixer mixer(input_layout, output_layout);
+      ChannelMixer mixer(
+          input_layout, ChannelLayoutToChannelCount(input_layout),
+          output_layout, ChannelLayoutToChannelCount(output_layout));
       std::unique_ptr<AudioBus> input_bus =
           AudioBus::Create(ChannelLayoutToChannelCount(input_layout), kFrames);
       std::unique_ptr<AudioBus> output_bus =

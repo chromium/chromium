@@ -38,6 +38,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 typedef unsigned RGBA32;  // RGBA quadruplet
@@ -59,6 +63,9 @@ class PLATFORM_EXPORT Color {
   // of this enum, as how it's ordered helps performance (the compiler can
   // decide that the first few elements are for ColorFunctionSpace and the last
   // few elements are for RGB-like serialization.)
+  // For details on serialization, see:
+  // https://www.w3.org/TR/css-color-4/#serializing-color-values
+  // https://www.w3.org/TR/css-color-5/#serial-relative-color
   enum class ColorSpace : uint8_t {
     // All these are to be serialized with the color() syntax of a given
     // predefined color space. The
@@ -85,16 +92,20 @@ class PLATFORM_EXPORT Color {
     kLch,
     // Serializes to oklch(). Parameter meanings are the same as for kLCH.
     kOklch,
-    // All these below are to be serialized to rgb() or rgba().
+    // Serializes to rgb() or rgba().
     // The values of `params0_`, `params1_`, and `params2_` are red, green, and
     // blue sRGB values, and are guaranteed to be present and in the [0, 1]
     // interval.
     kSRGBLegacy,
+    // Serializes to rgb() or rgba() for non-relative colors and to hsl() for
+    // unresolved relative colors.
     // The values of `params0_`, `params1_`, and `params2_` are Hue, Saturation,
     // and Ligthness. These can be none. Hue is a namber in the range from 0.0
     // to 6.0, and the rest are in the rance from 0.0 to 1.0.
     // interval.
     kHSL,
+    // Serializes to rgb() or rgba() for non-relative colors and to hwb() for
+    // unresolved relative colors.
     // The values of `params0_`, `params1_`, and `params2_` are Hue, White,
     // and Black. These can be none. Hue is a namber in the range from 0.0
     // to 6.0, and the rest are in the rance from 0.0 to 1.0.
@@ -104,7 +115,11 @@ class PLATFORM_EXPORT Color {
     kNone,
   };
 
-  static bool HasRGBOrXYZComponents(ColorSpace color_space) {
+  // For testing purposes and for serializer.
+  static WTF::String ColorSpaceToString(Color::ColorSpace color_space);
+
+  // https://www.w3.org/TR/css-color-4/#predefined
+  static bool IsPredefinedColorSpace(ColorSpace color_space) {
     return color_space == ColorSpace::kSRGB ||
            color_space == ColorSpace::kSRGBLinear ||
            color_space == ColorSpace::kDisplayP3 ||
@@ -112,8 +127,7 @@ class PLATFORM_EXPORT Color {
            color_space == ColorSpace::kProPhotoRGB ||
            color_space == ColorSpace::kRec2020 ||
            color_space == ColorSpace::kXYZD50 ||
-           color_space == ColorSpace::kXYZD65 ||
-           color_space == ColorSpace::kSRGBLegacy;
+           color_space == ColorSpace::kXYZD65;
   }
 
   static bool IsLightnessFirstComponent(ColorSpace color_space) {
@@ -268,28 +282,28 @@ class PLATFORM_EXPORT Color {
   // them.
   static bool IsBakedGamutMappingEnabled();
 
-  String SerializeInternal() const;
+  WTF::String SerializeInternal() const;
   // Returns the color serialized according to HTML5:
   // http://www.whatwg.org/specs/web-apps/current-work/#serialization-of-a-color
-  String SerializeAsCSSColor() const;
+  WTF::String SerializeAsCSSColor() const;
   // Canvas colors are serialized somewhat differently:
   // https://html.spec.whatwg.org/multipage/canvas.html#serialisation-of-a-color
-  String SerializeAsCanvasColor() const;
+  WTF::String SerializeAsCanvasColor() const;
   // For appending color interpolation spaces and hue interpolation methods to
   // the serialization of gradients and color-mix functions.
-  static String SerializeInterpolationSpace(
+  static WTF::String SerializeInterpolationSpace(
       Color::ColorSpace color_space,
       Color::HueInterpolationMethod hue_interpolation_method =
           Color::HueInterpolationMethod::kShorter);
 
   // Returns the color serialized as either #RRGGBB or #RRGGBBAA. The latter
   // format is not a valid CSS color, and should only be seen in DRT dumps.
-  String NameForLayoutTreeAsText() const;
+  WTF::String NameForLayoutTreeAsText() const;
 
   // Returns whether parsing succeeded. The resulting Color is arbitrary
   // if parsing fails.
-  bool SetFromString(const String&);
-  bool SetNamedColor(const String&);
+  bool SetFromString(const WTF::String&);
+  bool SetNamedColor(const WTF::String&);
 
   bool IsFullyTransparent() const { return Alpha() <= 0.0f; }
   bool IsOpaque() const { return Alpha() >= 1.0f; }
@@ -393,7 +407,7 @@ class PLATFORM_EXPORT Color {
   FRIEND_TEST_ALL_PREFIXES(BlinkColor, SubstituteMissingParameters);
 
  private:
-  String SerializeLegacyColorAsCSSColor() const;
+  WTF::String SerializeLegacyColorAsCSSColor() const;
   constexpr explicit Color(RGBA32 color)
       : param0_is_none_(0),
         param1_is_none_(0),
@@ -421,9 +435,6 @@ class PLATFORM_EXPORT Color {
 
   // Common helper function to toSkColor4f and ToGradientStopSkColor4f.
   SkColor4f ToSkColor4fInternal(bool gamut_map_oklab_oklch) const;
-
-  // For testing purposes and for serializer.
-  static String ColorSpaceToString(Color::ColorSpace color_space);
 
   float PremultiplyColor();
   void UnpremultiplyColor();

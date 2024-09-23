@@ -7,9 +7,9 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -41,7 +41,7 @@ class BLINK_COMMON_EXPORT ThreadSafeBrowserInterfaceBrokerProxy
   // Binder was non-null and an existing Binder was already registered for the
   // named interface.
   using Binder = base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>;
-  bool SetBinderForTesting(base::StringPiece interface_name, Binder);
+  bool SetBinderForTesting(std::string_view interface_name, Binder);
 
  protected:
   friend class base::RefCountedThreadSafe<

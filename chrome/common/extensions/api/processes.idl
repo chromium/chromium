@@ -115,14 +115,14 @@ namespace processes {
     // Returns the ID of the renderer process for the specified tab.
     // |tabId|: The ID of the tab for which the renderer process ID is to be
     // returned.
-    [supportsPromises] static void getProcessIdForTab(
+    static void getProcessIdForTab(
         long tabId,
         GetProcessIdForTabCallback callback);
 
     // Terminates the specified renderer process. Equivalent to visiting
     // about:crash, but without changing the tab's URL.
     // |processId|: The ID of the process to be terminated.
-    [supportsPromises] static void terminate(
+    static void terminate(
         long processId,
         optional TerminateCallback callback);
 
@@ -133,7 +133,7 @@ namespace processes {
     // |includeMemory|: True if detailed memory usage is required. Note,
     // collecting memory usage information incurs extra CPU usage and should
     // only be queried for when needed.
-    [supportsPromises] static void getProcessInfo(
+    static void getProcessInfo(
         (long or long[]) processIds,
         boolean includeMemory,
         GetProcessInfoCallback callback);

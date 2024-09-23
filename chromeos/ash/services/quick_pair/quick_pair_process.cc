@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
+#include "chromeos/ash/services/quick_pair/quick_pair_process.h"
 
-#include "ash/quick_pair/common/logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -12,7 +11,8 @@
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
-#include "chromeos/ash/services/quick_pair/quick_pair_process.h"
+#include "chromeos/ash/services/quick_pair/quick_pair_process_manager.h"
+#include "components/cross_device/logging/logging.h"
 
 namespace ash {
 namespace quick_pair {
@@ -25,8 +25,9 @@ QuickPairProcessManager* g_process_manager = nullptr;
 std::unique_ptr<QuickPairProcessManager::ProcessReference> GetProcessReference(
     ProcessStoppedCallback process_stopped_callback) {
   if (!g_process_manager) {
-    QP_LOG(ERROR) << "QuickPairProcess::SetProcessManager() must be called "
-                     "before any QuickPairProcess use.";
+    CD_LOG(ERROR, Feature::FP)
+        << "QuickPairProcess::SetProcessManager() must be called "
+           "before any QuickPairProcess use.";
     return nullptr;
   }
 
@@ -48,7 +49,8 @@ void GetHexModelIdFromServiceData(
       GetProcessReference(std::move(process_stopped_callback));
 
   if (!process_reference) {
-    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to get new process reference.";
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -75,7 +77,8 @@ void ParseDecryptedResponse(
       GetProcessReference(std::move(process_stopped_callback));
 
   if (!process_reference) {
-    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to get new process reference.";
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -101,7 +104,8 @@ void ParseDecryptedPasskey(const std::vector<uint8_t>& aes_key,
       GetProcessReference(std::move(process_stopped_callback));
 
   if (!process_reference) {
-    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to get new process reference.";
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -128,7 +132,8 @@ void ParseNotDiscoverableAdvertisement(
       GetProcessReference(std::move(process_stopped_callback));
 
   if (!process_reference) {
-    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to get new process reference.";
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -155,7 +160,8 @@ void ParseMessageStreamMessages(
       GetProcessReference(std::move(process_stopped_callback));
 
   if (!process_reference) {
-    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
+    CD_LOG(WARNING, Feature::FP)
+        << __func__ << ": Failed to get new process reference.";
     std::move(callback).Run({});
     return;
   }

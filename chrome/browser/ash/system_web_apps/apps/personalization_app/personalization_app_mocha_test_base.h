@@ -28,11 +28,14 @@ class PersonalizationAppMochaTestBase : public WebUIMochaBrowserTest {
   void SetUpOnMainThread() override;
 
  private:
+  void CreateDefaultWallpapers();
+
   base::test::ScopedFeatureList scoped_feature_list_;
   TestChromeWebUIControllerFactory test_factory_;
   TestPersonalizationAppWebUIProvider test_webui_provider_;
   content::ScopedWebUIControllerFactoryRegistration
       scoped_controller_factory_registration_{&test_factory_};
+  base::ScopedTempDir default_wallpaper_dir_;
 };
 
 }  // namespace ash::personalization_app

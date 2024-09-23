@@ -30,24 +30,20 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
-#include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
+#include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_service_observer.h"
+#include "chrome/browser/themes/theme_service_utils.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -76,7 +72,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
-#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #endif
 
 using TP = ThemeProperties;
@@ -303,26 +299,28 @@ void ThemeService::Init() {
       base::BindRepeating(&ThemeService::HandlePolicyColorUpdate,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kBrowserColorScheme,
+      GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorScheme),
       base::BindRepeating(&ThemeService::NotifyThemeChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kBrowserColorVariant,
+      GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorVariant),
       base::BindRepeating(&ThemeService::NotifyThemeChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kGrayscaleThemeEnabled,
+      GetThemePrefNameInMigration(ThemePrefInMigration::kGrayscaleThemeEnabled),
       base::BindRepeating(&ThemeService::NotifyThemeChanged,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      prefs::kUserColor, base::BindRepeating(&ThemeService::NotifyThemeChanged,
-                                             base::Unretained(this)));
+      GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
+      base::BindRepeating(&ThemeService::NotifyThemeChanged,
+                          base::Unretained(this)));
 }
 
 void ThemeService::Shutdown() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   theme_observer_.reset();
 #endif
+  theme_syncable_service_.reset();
 }
 
 CustomThemeSupplier* ThemeService::GetThemeSupplier() const {
@@ -563,51 +561,49 @@ void ThemeService::SetBrowserColorScheme(
     ThemeService::BrowserColorScheme color_scheme) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
-    profile_->GetPrefs()->SetInteger(prefs::kBrowserColorScheme,
-                                     static_cast<int>(color_scheme));
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorScheme),
+        static_cast<int>(color_scheme));
   }
   NotifyThemeChanged();
 }
 
 ThemeService::BrowserColorScheme ThemeService::GetBrowserColorScheme() const {
-  // If not running ChromeRefresh2023 we should always defer to the system color
-  // scheme.
-  return features::IsChromeRefresh2023()
-             ? static_cast<BrowserColorScheme>(
-                   profile_->GetPrefs()->GetInteger(prefs::kBrowserColorScheme))
-             : BrowserColorScheme::kSystem;
+  return static_cast<BrowserColorScheme>(profile_->GetPrefs()->GetInteger(
+      GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorScheme)));
 }
 
 void ThemeService::SetUserColor(std::optional<SkColor> user_color) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
     ClearThemeData(/*clear_ntp_background=*/false);
-    profile_->GetPrefs()->SetInteger(prefs::kUserColor,
-                                     user_color.value_or(SK_ColorTRANSPARENT));
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
+        user_color.value_or(SK_ColorTRANSPARENT));
     profile_->GetPrefs()->SetString(prefs::kCurrentThemeID, kUserColorThemeID);
   }
   NotifyThemeChanged();
 }
 
 std::optional<SkColor> ThemeService::GetUserColor() const {
-  auto user_color = profile_->GetPrefs()->GetInteger(prefs::kUserColor);
-  return user_color == SK_ColorTRANSPARENT ? std::nullopt
-                                           : std::optional<SkColor>(user_color);
+  return CurrentThemeUserColor(profile_->GetPrefs());
 }
 
 void ThemeService::SetBrowserColorVariant(
     ui::mojom::BrowserColorVariant color_variant) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
-    profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
-                                     static_cast<int>(color_variant));
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorVariant),
+        static_cast<int>(color_variant));
   }
   NotifyThemeChanged();
 }
 
 ui::mojom::BrowserColorVariant ThemeService::GetBrowserColorVariant() const {
   return static_cast<ui::mojom::BrowserColorVariant>(
-      profile_->GetPrefs()->GetInteger(prefs::kBrowserColorVariant));
+      profile_->GetPrefs()->GetInteger(GetThemePrefNameInMigration(
+          ThemePrefInMigration::kBrowserColorVariant)));
 }
 
 void ThemeService::SetUserColorAndBrowserColorVariant(
@@ -616,10 +612,13 @@ void ThemeService::SetUserColorAndBrowserColorVariant(
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
     ClearThemeData(/*clear_ntp_background=*/false);
-    profile_->GetPrefs()->SetInteger(prefs::kUserColor, user_color);
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor),
+        user_color);
     profile_->GetPrefs()->SetString(prefs::kCurrentThemeID, kUserColorThemeID);
-    profile_->GetPrefs()->SetInteger(prefs::kBrowserColorVariant,
-                                     static_cast<int>(color_variant));
+    profile_->GetPrefs()->SetInteger(
+        GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorVariant),
+        static_cast<int>(color_variant));
   }
   NotifyThemeChanged();
 }
@@ -628,14 +627,16 @@ void ThemeService::SetIsGrayscale(bool is_grayscale) {
   {
     base::AutoReset<bool> resetter(&should_suppress_theme_updates_, true);
     ClearThemeData(/*clear_ntp_background=*/false);
-    profile_->GetPrefs()->SetBoolean(prefs::kGrayscaleThemeEnabled,
-                                     is_grayscale);
+    profile_->GetPrefs()->SetBoolean(
+        GetThemePrefNameInMigration(
+            ThemePrefInMigration::kGrayscaleThemeEnabled),
+        is_grayscale);
   }
   NotifyThemeChanged();
 }
 
 bool ThemeService::GetIsGrayscale() const {
-  return profile_->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabled);
+  return CurrentThemeIsGrayscale(profile_->GetPrefs());
 }
 
 bool ThemeService::GetIsBaseline() const {
@@ -651,28 +652,40 @@ void ThemeService::DisableThemePackForTesting() {
 
 std::unique_ptr<ThemeService::ThemeReinstaller>
 ThemeService::BuildReinstallerForCurrentTheme() {
-  base::OnceClosure reinstall_callback;
+  std::string current_id = GetThemeID();
   if (UsingExtensionTheme()) {
-    reinstall_callback =
-        base::BindOnce(&ThemeService::RevertToExtensionTheme,
-                       weak_ptr_factory_.GetWeakPtr(), GetThemeID());
-  } else if (UsingAutogeneratedTheme()) {
-    reinstall_callback = base::BindOnce(
-        static_cast<void (ThemeService::*)(SkColor)>(
-            &ThemeService::BuildAutogeneratedThemeFromColor),
-        weak_ptr_factory_.GetWeakPtr(), GetAutogeneratedThemeColor());
-  } else {
-    auto system_theme = ui::SystemTheme::kDefault;
-    if (auto* theme_supplier = GetThemeSupplier()) {
-      if (auto* native_theme = theme_supplier->GetNativeTheme())
-        system_theme = native_theme->system_theme();
+    return std::make_unique<ThemeReinstaller>(
+        profile_, base::BindOnce(&ThemeService::RevertToExtensionTheme,
+                                 weak_ptr_factory_.GetWeakPtr(), current_id));
+  }
+  // TODO(crbug.com/352471699): Also restore the NTP background image.
+  if (UsingAutogeneratedTheme()) {
+    return std::make_unique<ThemeReinstaller>(
+        profile_,
+        base::BindOnce(static_cast<void (ThemeService::*)(SkColor)>(
+                           &ThemeService::BuildAutogeneratedThemeFromColor),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       GetAutogeneratedThemeColor()));
+  }
+  if (current_id == kUserColorThemeID) {
+    if (const std::optional<SkColor> user_color = GetUserColor()) {
+      return std::make_unique<ThemeReinstaller>(
+          profile_,
+          base::BindOnce(&ThemeService::SetUserColorAndBrowserColorVariant,
+                         weak_ptr_factory_.GetWeakPtr(), user_color.value(),
+                         GetBrowserColorVariant()));
     }
-    reinstall_callback = base::BindOnce(
-        &ThemeService::UseTheme, weak_ptr_factory_.GetWeakPtr(), system_theme);
   }
 
-  return std::make_unique<ThemeReinstaller>(profile_,
-                                            std::move(reinstall_callback));
+  auto system_theme = ui::SystemTheme::kDefault;
+  if (auto* theme_supplier = GetThemeSupplier()) {
+    if (auto* native_theme = theme_supplier->GetNativeTheme()) {
+      system_theme = native_theme->system_theme();
+    }
+  }
+  return std::make_unique<ThemeReinstaller>(
+      profile_, base::BindOnce(&ThemeService::UseTheme,
+                               weak_ptr_factory_.GetWeakPtr(), system_theme));
 }
 
 void ThemeService::AddObserver(ThemeServiceObserver* observer) {
@@ -710,9 +723,11 @@ void ThemeService::ClearThemeData(bool clear_ntp_background) {
 
   SwapThemeSupplier(nullptr);
   ClearThemePrefs();
-  if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel) &&
-      clear_ntp_background) {
-    NtpCustomBackgroundService::ResetNtpTheme(profile_);
+  if (clear_ntp_background) {
+    // Redraw and notify sync that theme has changed.
+    for (auto& observer : observers_) {
+      observer.OnCustomNtpBackgroundObsolete();
+    }
   }
 
   // Disable extension after modifying the prefs so that unloading the extension
@@ -734,8 +749,7 @@ void ThemeService::InitFromPrefs() {
   std::string current_id = GetThemeID();
   if (current_id == ThemeHelper::kDefaultThemeID) {
     if (GetIsGrayscale()) {
-      chrome_colors::ChromeColorsService::
-          RecordDynamicColorOnLoadHistogramForGrayscale();
+      chrome_colors::RecordDynamicColorOnLoadHistogramForGrayscale();
     }
     UseTheme(GetDefaultSystemTheme());
     return;
@@ -744,14 +758,14 @@ void ThemeService::InitFromPrefs() {
   if (current_id == kAutogeneratedThemeID) {
     SkColor color = GetAutogeneratedThemeColor();
     BuildAutogeneratedThemeFromColor(color);
-    chrome_colors::ChromeColorsService::RecordColorOnLoadHistogram(color);
+    chrome_colors::RecordColorOnLoadHistogram(color);
     return;
   }
 
   if (current_id == kUserColorThemeID) {
     const auto user_color = GetUserColor();
     if (user_color.has_value()) {
-      chrome_colors::ChromeColorsService::RecordDynamicColorOnLoadHistogram(
+      chrome_colors::RecordDynamicColorOnLoadHistogram(
           *user_color, GetBrowserColorVariant());
     }
     return;
@@ -919,20 +933,8 @@ void ThemeService::OnThemeBuiltFromExtension(
 
   // Offer to revert to the old theme.
   if (can_revert_theme && !suppress_infobar && extension->is_theme()) {
-    // FindTabbedBrowser() is called with |match_original_profiles| true because
-    // a theme install in either a normal or incognito window for a profile
-    // affects all normal and incognito windows for that profile.
-    Browser* browser = chrome::FindTabbedBrowser(profile_, true);
-    if (browser) {
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetActiveWebContents();
-      if (web_contents) {
-        ThemeInstalledInfoBarDelegate::Create(
-            infobars::ContentInfoBarManager::FromWebContents(web_contents),
-            ThemeServiceFactory::GetForProfile(profile_), extension->name(),
-            extension->id(), std::move(reinstaller));
-      }
-    }
+    ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
+        profile_, extension->name(), extension->id(), std::move(reinstaller));
   }
 }
 
@@ -953,9 +955,12 @@ void ThemeService::HandlePolicyColorUpdate() {
 void ThemeService::ClearThemePrefs() {
   profile_->GetPrefs()->ClearPref(prefs::kCurrentThemePackFilename);
   profile_->GetPrefs()->ClearPref(prefs::kAutogeneratedThemeColor);
-  profile_->GetPrefs()->ClearPref(prefs::kUserColor);
-  profile_->GetPrefs()->ClearPref(prefs::kGrayscaleThemeEnabled);
-  profile_->GetPrefs()->ClearPref(prefs::kBrowserColorVariant);
+  profile_->GetPrefs()->ClearPref(
+      GetThemePrefNameInMigration(ThemePrefInMigration::kUserColor));
+  profile_->GetPrefs()->ClearPref(GetThemePrefNameInMigration(
+      ThemePrefInMigration::kGrayscaleThemeEnabled));
+  profile_->GetPrefs()->ClearPref(
+      GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorVariant));
   profile_->GetPrefs()->SetString(prefs::kCurrentThemeID,
                                   ThemeHelper::kDefaultThemeID);
 }
@@ -963,14 +968,15 @@ void ThemeService::ClearThemePrefs() {
 void ThemeService::SetThemePrefsForExtension(
     const extensions::Extension* extension) {
   ClearThemePrefs();
-  if (base::FeatureList::IsEnabled(features::kCustomizeChromeSidePanel)) {
-    NtpCustomBackgroundService::ResetNtpTheme(profile_);
-    // Extensions are incompatible with device themes so turn them off.
-    // TODO(crbug.com/1477021): Remove this if we can otherwise separate
-    // extension and device themes from attempting to apply at the same time.
-    profile_->GetPrefs()->SetBoolean(prefs::kBrowserFollowsSystemThemeColors,
-                                     false);
+  // Redraw and notify sync that theme has changed.
+  for (auto& observer : observers_) {
+    observer.OnCustomNtpBackgroundObsolete();
   }
+  // Extensions are incompatible with device themes so turn them off.
+  // TODO(crbug.com/40280173): Remove this if we can otherwise separate
+  // extension and device themes from attempting to apply at the same time.
+  profile_->GetPrefs()->SetBoolean(prefs::kBrowserFollowsSystemThemeColors,
+                                   false);
 
   profile_->GetPrefs()->SetString(prefs::kCurrentThemeID, extension->id());
 

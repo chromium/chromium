@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/test/web_contents_observer_consistency_checker.h"
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
 #include "base/pending_task.h"
 #include "base/strings/stringprintf.h"
@@ -172,7 +172,7 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
 }
 
 void WebContentsObserverConsistencyChecker::FrameDeleted(
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   // A frame can be deleted before RenderFrame in the renderer process is
   // created, so there is not much that can be enforced here.
   CHECK(!web_contents_destroyed_);
@@ -354,7 +354,7 @@ void WebContentsObserverConsistencyChecker::MediaStoppedPlaying(
     WebContentsObserver::MediaStoppedReason reason) {
   CHECK(!web_contents_destroyed_);
   CHECK(base::Contains(active_media_players_, id));
-  base::Erase(active_media_players_, id);
+  std::erase(active_media_players_, id);
 }
 
 bool WebContentsObserverConsistencyChecker::OnMessageReceived(
@@ -378,15 +378,15 @@ void WebContentsObserverConsistencyChecker::WebContentsDestroyed() {
 void WebContentsObserverConsistencyChecker::DidStartLoading() {
   // TODO(clamy): add checks for the loading state in the rest of observer
   // methods.
-  // TODO(crbug.com/1145572): Add back CHECK(!is_loading_). The CHECK was
+  // TODO(crbug.com/40155922): Add back CHECK(!is_loading_). The CHECK was
   // removed because of flaky failures during some browser_tests.
   CHECK(web_contents()->IsLoading());
   is_loading_ = true;
 }
 
 void WebContentsObserverConsistencyChecker::DidStopLoading() {
-  // TODO(crbug.com/466089): Add back CHECK(is_loading_). The CHECK was removed
-  // because of flaky failures during browser_test shutdown.
+  // TODO(crbug.com/40409075): Add back CHECK(is_loading_). The CHECK was
+  // removed because of flaky failures during browser_test shutdown.
   CHECK(!web_contents()->IsLoading());
   is_loading_ = false;
 }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
@@ -13,12 +14,30 @@
 
 namespace blink {
 
+namespace {
+
+base::TimeDelta GetPreferredTimestamp(bool prefer_capture_timestamp,
+                                      const media::VideoFrame& video_frame) {
+  if (prefer_capture_timestamp) {
+    if (video_frame.metadata().capture_begin_time) {
+      return *video_frame.metadata().capture_begin_time - base::TimeTicks();
+    }
+    if (video_frame.metadata().reference_time) {
+      return *video_frame.metadata().reference_time - base::TimeTicks();
+    }
+  }
+  return video_frame.timestamp();
+}
+
+}  // namespace
+
 VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
                                    ExecutionContext* context,
-                                   std::string monitoring_source_id)
+                                   std::string monitoring_source_id,
+                                   bool prefer_capture_timestamp)
     : frame_(std::move(frame)),
       monitoring_source_id_(std::move(monitoring_source_id)),
-      timestamp_(frame_->timestamp()),
+      timestamp_(GetPreferredTimestamp(prefer_capture_timestamp, *frame_)),
       duration_(frame_->metadata().frame_duration) {
   DCHECK(frame_);
   DCHECK(context);
@@ -32,23 +51,39 @@ VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
 VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
                                    sk_sp<SkImage> sk_image,
                                    ExecutionContext* context,
-                                   std::string monitoring_source_id)
+                                   std::string monitoring_source_id,
+                                   bool use_capture_timestamp)
     : VideoFrameHandle(std::move(frame),
                        context,
-                       std::move(monitoring_source_id)) {
+                       std::move(monitoring_source_id),
+                       use_capture_timestamp) {
   sk_image_ = std::move(sk_image);
 }
 
 VideoFrameHandle::VideoFrameHandle(
     scoped_refptr<media::VideoFrame> frame,
     sk_sp<SkImage> sk_image,
+    base::TimeDelta timestamp,
     scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor,
     std::string monitoring_source_id)
     : sk_image_(std::move(sk_image)),
       frame_(std::move(frame)),
       close_auditor_(std::move(close_auditor)),
       monitoring_source_id_(std::move(monitoring_source_id)),
-      timestamp_(frame_->timestamp()),
+      timestamp_(timestamp),
+      duration_(frame_->metadata().frame_duration) {
+  DCHECK(frame_);
+  MaybeMonitorOpenFrame();
+}
+
+VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
+                                   sk_sp<SkImage> sk_image,
+                                   base::TimeDelta timestamp,
+                                   std::string monitoring_source_id)
+    : sk_image_(std::move(sk_image)),
+      frame_(std::move(frame)),
+      monitoring_source_id_(std::move(monitoring_source_id)),
+      timestamp_(timestamp),
       duration_(frame_->metadata().frame_duration) {
   DCHECK(frame_);
   MaybeMonitorOpenFrame();
@@ -57,14 +92,21 @@ VideoFrameHandle::VideoFrameHandle(
 VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
                                    sk_sp<SkImage> sk_image,
                                    std::string monitoring_source_id)
-    : sk_image_(std::move(sk_image)),
-      frame_(std::move(frame)),
-      monitoring_source_id_(std::move(monitoring_source_id)),
-      timestamp_(frame_->timestamp()),
-      duration_(frame_->metadata().frame_duration) {
-  DCHECK(frame_);
-  MaybeMonitorOpenFrame();
-}
+    : VideoFrameHandle(frame,
+                       sk_image,
+                       frame->timestamp(),
+                       monitoring_source_id) {}
+
+VideoFrameHandle::VideoFrameHandle(
+    scoped_refptr<media::VideoFrame> frame,
+    sk_sp<SkImage> sk_image,
+    scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor,
+    std::string monitoring_source_id)
+    : VideoFrameHandle(frame,
+                       sk_image,
+                       frame->timestamp(),
+                       close_auditor,
+                       monitoring_source_id) {}
 
 VideoFrameHandle::~VideoFrameHandle() {
   MaybeMonitorCloseFrame();
@@ -97,10 +139,10 @@ void VideoFrameHandle::SetCloseOnClone() {
 
 scoped_refptr<VideoFrameHandle> VideoFrameHandle::Clone() {
   base::AutoLock locker(lock_);
-  auto cloned_handle =
-      frame_ ? base::MakeRefCounted<VideoFrameHandle>(
-                   frame_, sk_image_, close_auditor_, monitoring_source_id_)
-             : nullptr;
+  auto cloned_handle = frame_ ? base::MakeRefCounted<VideoFrameHandle>(
+                                    frame_, sk_image_, timestamp_,
+                                    close_auditor_, monitoring_source_id_)
+                              : nullptr;
 
   if (close_on_clone_)
     InvalidateLocked();
@@ -110,8 +152,8 @@ scoped_refptr<VideoFrameHandle> VideoFrameHandle::Clone() {
 
 scoped_refptr<VideoFrameHandle> VideoFrameHandle::CloneForInternalUse() {
   base::AutoLock locker(lock_);
-  return frame_ ? base::MakeRefCounted<VideoFrameHandle>(frame_, sk_image_,
-                                                         monitoring_source_id_)
+  return frame_ ? base::MakeRefCounted<VideoFrameHandle>(
+                      frame_, sk_image_, timestamp_, monitoring_source_id_)
                 : nullptr;
 }
 

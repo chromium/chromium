@@ -14,20 +14,25 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
+#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
+#include "chrome/browser/ash/mall/mall_url.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/common/constants.h"
 
 namespace apps {
@@ -41,7 +46,7 @@ void WebAppsCrosapi::RegisterWebAppsCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
   // At the moment the app service publisher will only accept one client
   // publishing apps to ash chrome. Any extra clients will be ignored.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   if (receiver_.is_bound()) {
     return;
   }
@@ -68,6 +73,21 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
                             LaunchSource launch_source,
                             WindowInfoPtr window_info) {
   if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  // Redirect launches of the Mall app so that we can add additional context to
+  // the URL. Loading the context will cause a slight delay on first launch, but
+  // it is then cached in the DeviceInfoManager for subsequent launches.
+  // TODO(b/331702863): Remove this custom integration.
+  if (chromeos::features::IsCrosMallWebAppEnabled() &&
+      app_id == web_app::kMallAppId) {
+    apps::DeviceInfoManager* device_info_manager =
+        apps::DeviceInfoManagerFactory::GetForProfile(proxy_->profile());
+    CHECK(device_info_manager);
+    device_info_manager->GetDeviceInfo(base::BindOnce(
+        &WebAppsCrosapi::LaunchMallWithContext, weak_factory_.GetWeakPtr(),
+        event_flags, launch_source, std::move(window_info)));
     return;
   }
 
@@ -112,7 +132,7 @@ void WebAppsCrosapi::LaunchAppWithIntent(const std::string& app_id,
   params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, proxy_->profile());
   controller_->Launch(std::move(params), base::DoNothing());
-  // TODO(crbug/1261263): handle the case where launch fails.
+  // TODO(crbug.com/40202131): handle the case where launch fails.
   std::move(callback).Run(LaunchResult(State::kSuccess));
 }
 
@@ -167,12 +187,16 @@ void WebAppsCrosapi::GetMenuModel(
   bool is_system_web_app = false;
   bool can_use_uninstall = false;
   bool can_close = true;
+  bool allow_window_mode_selection = true;
   WindowMode display_mode = WindowMode::kUnknown;
 
   proxy_->AppRegistryCache().ForOneApp(
-      app_id, [&is_system_web_app, &can_use_uninstall, &can_close,
-               &display_mode](const AppUpdate& update) {
+      app_id,
+      [&is_system_web_app, &allow_window_mode_selection, &can_use_uninstall,
+       &can_close, &display_mode](const AppUpdate& update) {
         is_system_web_app = update.InstallReason() == InstallReason::kSystem;
+        allow_window_mode_selection =
+            update.AllowWindowModeSelection().value_or(true);
         can_use_uninstall = update.AllowUninstall().value_or(false);
         can_close = update.AllowClose().value_or(true);
         display_mode = update.WindowMode();
@@ -181,7 +205,7 @@ void WebAppsCrosapi::GetMenuModel(
   MenuItems menu_items;
 
   if (display_mode != WindowMode::kUnknown && !is_system_web_app && can_close) {
-    if (chromeos::features::IsCrosShortstandEnabled()) {
+    if (!allow_window_mode_selection) {
       apps::AddCommandItem(ash::LAUNCH_NEW,
                            IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
     } else {
@@ -414,6 +438,17 @@ void WebAppsCrosapi::PublishImpl(std::vector<AppPtr> deltas) {
 void WebAppsCrosapi::PublishCapabilityAccessesImpl(
     std::vector<CapabilityAccessPtr> deltas) {
   proxy()->OnCapabilityAccesses(std::move(deltas));
+}
+
+void WebAppsCrosapi::LaunchMallWithContext(int32_t event_flags,
+                                           apps::LaunchSource launch_source,
+                                           apps::WindowInfoPtr window_info,
+                                           apps::DeviceInfo device_info) {
+  LaunchAppWithIntent(
+      web_app::kMallAppId, event_flags,
+      std::make_unique<apps::Intent>(apps_util::kIntentActionView,
+                                     ash::GetMallLaunchUrl(device_info)),
+      launch_source, std::move(window_info), base::DoNothing());
 }
 
 }  // namespace apps

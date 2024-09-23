@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <optional>
+
 #include "base/android/jni_android.h"
 #include "ui/display/screen_base.h"
 #include "ui/gfx/geometry/size.h"
@@ -31,6 +33,8 @@ class DisplayAndroidManager : public display::ScreenBase {
       const gfx::Point& point) const override;
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
+  std::optional<float> GetPreferredScaleFactorForView(
+      gfx::NativeView view) const override;
 
   // Methods called from Java.
 

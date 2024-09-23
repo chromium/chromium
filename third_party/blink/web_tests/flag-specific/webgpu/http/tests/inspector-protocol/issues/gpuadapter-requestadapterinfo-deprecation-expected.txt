@@ -1,0 +1,21 @@
+Tests that GPUAdapter requestAdapterInfo() deprecation issues are reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 19
+                    lineNumber : 2
+                    scriptId : <string>
+                    url : 
+                }
+                type : V8GPUAdapter_RequestAdapterInfo_Method
+            }
+        }
+    }
+}
+

@@ -753,7 +753,7 @@ TEST_P(MediaEngagementServiceTest, HistoryExpirationIsNoOp) {
     history::HistoryService* history = HistoryServiceFactory::GetForProfile(
         profile(), ServiceAccessType::IMPLICIT_ACCESS);
 
-    service()->OnURLsDeleted(
+    service()->OnHistoryDeletions(
         history, history::DeletionInfo(history::DeletionTimeRange::Invalid(),
                                        true, history::URLRows(),
                                        std::set<GURL>(), std::nullopt));

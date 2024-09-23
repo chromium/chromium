@@ -52,7 +52,8 @@ std::unique_ptr<ui::OSExchangeData> CreateOSExchangeData(
         std::unordered_map<std::u16string, std::u16string>(
             {{u"fs/sources", file_system_sources}}),
         &pickle);
-    data->SetPickledData(ui::ClipboardFormatType::WebCustomDataType(), pickle);
+    data->SetPickledData(ui::ClipboardFormatType::DataTransferCustomType(),
+                         pickle);
   }
 
   if (!filenames.empty()) {
@@ -198,11 +199,6 @@ TEST_F(HoldingSpaceUtilTest, GetAllItemTypes) {
 
     switch (type) {
       case HoldingSpaceItem::Type::kArcDownload:
-      case HoldingSpaceItem::Type::kCameraAppPhoto:
-      case HoldingSpaceItem::Type::kCameraAppScanJpg:
-      case HoldingSpaceItem::Type::kCameraAppScanPdf:
-      case HoldingSpaceItem::Type::kCameraAppVideoGif:
-      case HoldingSpaceItem::Type::kCameraAppVideoMp4:
       case HoldingSpaceItem::Type::kDiagnosticsLog:
       case HoldingSpaceItem::Type::kDownload:
       case HoldingSpaceItem::Type::kDriveSuggestion:
@@ -306,21 +302,6 @@ TEST_F(HoldingSpaceUtilTest, ItemTypeToString) {
     switch (type) {
       case HoldingSpaceItem::Type::kArcDownload:
         expected_string = "ArcDownload";
-        break;
-      case HoldingSpaceItem::Type::kCameraAppPhoto:
-        expected_string = "CameraAppPhoto";
-        break;
-      case HoldingSpaceItem::Type::kCameraAppScanJpg:
-        expected_string = "CameraAppScanJpg";
-        break;
-      case HoldingSpaceItem::Type::kCameraAppScanPdf:
-        expected_string = "CameraAppScanPdf";
-        break;
-      case HoldingSpaceItem::Type::kCameraAppVideoGif:
-        expected_string = "CameraAppVideoGif";
-        break;
-      case HoldingSpaceItem::Type::kCameraAppVideoMp4:
-        expected_string = "CameraAppVideoMp4";
         break;
       case HoldingSpaceItem::Type::kDiagnosticsLog:
         expected_string = "DiagnosticsLog";

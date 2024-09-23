@@ -16,6 +16,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -30,7 +31,9 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -74,8 +77,6 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
   }
 
   void TearDown() override {
-    LoginTestBase::TearDown();
-
     // If the test did not explicitly dismissed the widget, destroy it now.
     LocalAuthenticationRequestWidget* local_authentication_request_widget =
         LocalAuthenticationRequestWidget::Get();
@@ -87,6 +88,7 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
     SystemSaltGetter::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
+    LoginTestBase::TearDown();
   }
 
   void SetExpectedCredentialsWithDbusClient(const AccountId& account_id,
@@ -101,18 +103,23 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
                   SystemSaltGetter::ConvertRawSaltToHexString(
                       FakeCryptohomeMiscClient::GetStubSystemSalt()));
 
-    cryptohome::Key cryptohome_key;
-    cryptohome_key.mutable_data()->set_label(kCryptohomeLocalPasswordKeyLabel);
-    cryptohome_key.set_secret(key.GetSecret());
+    user_data_auth::AuthFactor auth_factor;
+    user_data_auth::AuthInput auth_input;
 
+    auth_factor.set_label(ash::kCryptohomeLocalPasswordKeyLabel);
+    auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+    auth_input.mutable_password_input()->set_secret(key.GetSecret());
+
+    // Add the password key to the user.
     test_api->AddExistingUser(cryptohome_id);
-    test_api->AddKey(cryptohome_id, cryptohome_key);
+    test_api->AddAuthFactor(cryptohome_id, auth_factor, auth_input);
     session_ids_ = test_api->AddSession(cryptohome_id, false);
   }
 
   // Simulates mouse press event on a |button|.
   void SimulateButtonPress(views::Button* button) {
-    ui::MouseEvent event(/*type=*/ui::ET_MOUSE_PRESSED,
+    ui::MouseEvent event(/*type=*/ui::EventType::kMousePressed,
                          /*location=*/gfx::Point(),
                          /*root_location=*/gfx::Point(),
                          /*time_stamp=*/ui::EventTimeForNow(),
@@ -263,6 +270,28 @@ TEST_F(LocalAuthenticationRequestControllerImplTest,
   EXPECT_EQ(1, close_action_);
 
   EXPECT_FALSE(LocalAuthenticationRequestWidget::Get());
+}
+
+TEST_F(LocalAuthenticationRequestControllerImplTest,
+       LocalAuthenticationRequestViewAccessibleProperties) {
+  StartLocalAuthenticationRequest();
+  LocalAuthenticationRequestView* view =
+      LocalAuthenticationRequestWidget::GetViewForTesting();
+  ui::AXNodeData data;
+
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(
+                IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_DESCRIPTION,
+                u"user@test.com"));
+
+  data = ui::AXNodeData();
+  view->UpdateState(LocalAuthenticationRequestViewState::kNormal, u"",
+                    u"Sample Description");
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample Description");
 }
 
 }  // namespace

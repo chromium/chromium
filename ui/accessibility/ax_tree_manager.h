@@ -41,6 +41,12 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // in any AXTreeManager.
   static void SetFocusChangeCallbackForTesting(base::RepeatingClosure callback);
 
+  // Ensure that any accessibility fatal error crashes the renderer. Once this
+  // is turned on, it stays on all renderers, because at this point it is
+  // assumed that the user is a developer.
+  static void AlwaysFailFast() { is_fail_fast_mode_ = true; }
+  static bool IsFailFastMode() { return is_fail_fast_mode_; }
+
   // This default constructor does not create an empty accessibility tree. Call
   // `SetTree` if you need to manage a specific tree.
   AXTreeManager();
@@ -62,8 +68,8 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Return |node| by default, but some platforms want to update the target node
   // based on the event type.
   virtual AXNode* RetargetForEvents(AXNode* node, RetargetEventType type) const;
-  virtual void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                                  const ui::AXNode* node) {}
+  virtual void FireGeneratedEvent(AXEventGenerator::Event event_type,
+                                  const AXNode* node) {}
   virtual bool CanFireEvents() const;
 
   // Returns whether or not this tree manager is for a view.
@@ -82,12 +88,12 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
   // Returns true if the manager has a tree with a valid (not unknown) ID.
   bool HasValidTreeID() const {
-    return ax_tree_ && ax_tree_->GetAXTreeID() != ui::AXTreeIDUnknown();
+    return ax_tree_ && ax_tree_->GetAXTreeID() != AXTreeIDUnknown();
   }
 
   // Returns the tree id of the tree managed by this AXTreeManager.
-  AXTreeID GetTreeID() const {
-    return ax_tree_ ? ax_tree_->GetAXTreeID() : ui::AXTreeIDUnknown();
+  const AXTreeID& GetTreeID() const {
+    return ax_tree_ ? ax_tree_->GetAXTreeID() : AXTreeIDUnknown();
   }
 
   // Returns the AXTreeData for the tree managed by this AXTreeManager.
@@ -155,7 +161,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
  protected:
   // This is only made protected to accommodate the `AtomicViewAXTreeManager`.
   // It should be made private once that class is removed.
-  // TODO(crbug.com/1468416): Make private.
+  // TODO(crbug.com/40924888): Make private.
   static AXTreeManagerMap& GetMap();
 
   virtual AXTreeManager* GetParentManager() const;
@@ -178,10 +184,6 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // attributes accordingly when the parent connection changes.
   virtual void UpdateAttributesOnParent(AXNode* parent) {}
 
-  // Perform some additional clean up on the derived classes to be called in the
-  // destructor.
-  virtual void CleanUp() {}
-
   // True if the root's parent is in another accessibility tree and that
   // parent's child is the root. Ensures that the parent node is notified
   // once when this subtree is first connected.
@@ -202,6 +204,9 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
 
  private:
   friend class TestSingleAXTreeManager;
+
+  // A flag to ensure that accessibility fatal errors crash immediately.
+  static bool is_fail_fast_mode_;
 
   // Automatically stops observing notifications from the AXTree when this class
   // is destructed.

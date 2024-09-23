@@ -1,0 +1,32 @@
+{
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "js": ["sniff_common.js", "doc_start.js"],
+      "matches": ["http://*/*", "https://*/*"],
+      "run_at": "document_start"
+    },
+    {
+      "js": ["sniff_common.js", "feed_finder.js"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ],
+  "default_locale": "en",
+  "description": "__MSG_rss_subscription_description__",
+  "icons": {
+    "128": "feed-icon-128x128.png"
+  },
+  "manifest_version": 3,
+  "name": "__MSG_rss_subscription_name__",
+  "options_page": "options.html",
+  "action": {
+    "default_icon": "feed-icon-16x16-disabled.png",
+    "default_popup": "popup.html",
+    "default_title": "__MSG_rss_subscription_default_title__"
+  },
+  "permissions": ["tabs", "storage", "scripting"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "version": "2.2.8"
+}

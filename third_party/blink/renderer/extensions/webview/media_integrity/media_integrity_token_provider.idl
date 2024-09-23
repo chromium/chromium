@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Blink bindings for the Android WebView Media Integrity API's token provider.
+[
+    RuntimeEnabled=BlinkExtensionWebViewMediaIntegrity,
+    Exposed=AndroidWebView
+] interface MediaIntegrityTokenProvider {
+    // The cloudProjectNumber used when requesting this token provider.
+    readonly attribute unsigned long long cloudProjectNumber;
+    // Request a new integrity token.
+    //
+    // Returns a promise containing a token that attests the integrity of the
+    // device, which includes the pased-in contentBinding as a defense against
+    // replay attacks.
+    // Throws MediaIntegrityError.
+    [CallWith=ScriptState, HighEntropy, RaisesException, Measure]
+    Promise<DOMString> requestToken(optional DOMString? contentBinding = null);
+};

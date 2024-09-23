@@ -5,13 +5,15 @@
 #ifndef COMPONENTS_METRICS_FIELD_TRIALS_PROVIDER_H_
 #define COMPONENTS_METRICS_FIELD_TRIALS_PROVIDER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
-// TODO(crbug/507665): Once MetricsProvider/SystemProfileProto are moved into
+// TODO(crbug.com/41187035): Once MetricsProvider/SystemProfileProto are moved
+// into
 // //services/metrics, then //components/variations can depend on them, and
 // this should be moved there.
 namespace variations {
@@ -23,7 +25,7 @@ class FieldTrialsProvider : public metrics::MetricsProvider {
  public:
   // |registry| must outlive this metrics provider.
   FieldTrialsProvider(SyntheticTrialRegistry* registry,
-                      base::StringPiece suffix);
+                      std::string_view suffix);
 
   FieldTrialsProvider(const FieldTrialsProvider&) = delete;
   FieldTrialsProvider& operator=(const FieldTrialsProvider&) = delete;

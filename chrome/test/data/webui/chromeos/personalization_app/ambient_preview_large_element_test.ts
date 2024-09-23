@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 
 import {AmbientObserver, AmbientPreviewLargeElement, Paths, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -39,8 +39,7 @@ suite('AmbientPreviewLargeElementTest', function() {
 
   test(
       'displays zero state message when ambient mode is disabled', async () => {
-        loadTimeData.overrideValues(
-            {isPersonalizationJellyEnabled: true, isAmbientModeAllowed: true});
+        loadTimeData.overrideValues({isAmbientModeAllowed: true});
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
@@ -133,65 +132,8 @@ suite('AmbientPreviewLargeElementTest', function() {
     assertDeepEquals({}, queryParams, 'no query params set');
   });
 
-  test('click ambient collage goes to ambient albums subpage', async () => {
-    // Disables `isPersonalizationJellyEnabled` to show the previous UI.
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: false});
-
-    personalizationStore.data.ambient = {
-      ...personalizationStore.data.ambient,
-      albums: ambientProvider.albums,
-      topicSource: TopicSource.kArtGallery,
-      ambientModeEnabled: true,
-      previews: ambientProvider.previews,
-    };
-    ambientPreviewLargeElement = initElement(AmbientPreviewLargeElement);
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientPreviewLargeElement);
-
-    function setFakeRouter() {
-      const original = PersonalizationRouterElement.instance;
-      return new Promise<TopicSource>(resolve => {
-        PersonalizationRouterElement.instance = () => {
-          return {
-            selectAmbientAlbums(topicSource: TopicSource) {
-              resolve(topicSource);
-              PersonalizationRouterElement.instance = original;
-            },
-          } as PersonalizationRouterElement;
-        };
-      });
-    }
-
-    const artGalleryPromise = setFakeRouter();
-
-    ambientPreviewLargeElement.shadowRoot!.getElementById(
-                                              'collageContainer')!.click();
-
-    let topicSource = await artGalleryPromise;
-    assertEquals(
-        topicSource, TopicSource.kArtGallery,
-        'navigates to art gallery topic source');
-
-    // Set the topic source to kGooglePhotos and check that clicking the photo
-    // collage goes to kGooglePhotos subpage.
-    personalizationStore.data.ambient.topicSource = TopicSource.kGooglePhotos;
-    personalizationStore.notifyObservers();
-    const googlePhotosPromise = setFakeRouter();
-
-    ambientPreviewLargeElement.shadowRoot!.getElementById(
-                                              'collageContainer')!.click();
-
-    topicSource = await googlePhotosPromise;
-    assertEquals(
-        topicSource, TopicSource.kGooglePhotos,
-        'navigates to google photos topic source');
-  });
-
-  test('jelly shows 2 or 3 preview images', async () => {
-    loadTimeData.overrideValues({
-      isPersonalizationJellyEnabled: true,
-      isAmbientModeAllowed: true,
-    });
+  test('shows 2 or 3 preview images', async () => {
+    loadTimeData.overrideValues({isAmbientModeAllowed: true});
     personalizationStore.data.ambient = {
       ...personalizationStore.data.ambient,
       albums: ambientProvider.albums,
@@ -209,11 +151,6 @@ suite('AmbientPreviewLargeElementTest', function() {
             .querySelector<HTMLImageElement>(
                 '#imageContainer .preview-image')!.getAttribute('auto-src'),
         'large container shows album preview image from first selected album');
-
-    assertFalse(
-        !!ambientPreviewLargeElement.shadowRoot!.getElementById(
-            'collageContainer'),
-        'collageContainer does not exist with jelly enabled');
 
     const thumbnailContainer =
         ambientPreviewLargeElement.shadowRoot!.getElementById(
@@ -247,8 +184,6 @@ suite('AmbientPreviewLargeElementTest', function() {
   });
 
   test('click ambient thumbnail goes to ambient subpage', async () => {
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
-
     personalizationStore.data.ambient = {
       ...personalizationStore.data.ambient,
       albums: ambientProvider.albums,
@@ -284,36 +219,9 @@ suite('AmbientPreviewLargeElementTest', function() {
         {scrollTo: 'topic-source-list'}, queryParams, 'query params set');
   });
 
-  test('displays zero state message before UI change', async () => {
-    // Disables `isPersonalizationJellyEnabled` to show the previous UI.
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: false});
-
-    personalizationStore.data.ambient.albums = ambientProvider.albums;
-    personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
-    personalizationStore.data.ambient.ambientModeEnabled = false;
-    personalizationStore.data.ambient.previews = ambientProvider.previews;
-    ambientPreviewLargeElement = initElement(AmbientPreviewLargeElement);
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(ambientPreviewLargeElement);
-
-    const messageContainer =
-        ambientPreviewLargeElement.shadowRoot!.getElementById(
-            'messageContainer');
-    assertTrue(!!messageContainer);
-    const textSpan =
-        messageContainer.querySelector<HTMLSpanElement>('#turnOnDescription');
-    assertTrue(!!textSpan);
-    assertEquals(
-        ambientPreviewLargeElement.i18n('ambientModeMainPageZeroStateMessage'),
-        textSpan.innerText.trim());
-  });
-
   test('displays not available message for non-allowed user', async () => {
     // Disable `isAmbientModeAllowed` to mock an enterprise controlled user.
-    loadTimeData.overrideValues({
-      isPersonalizationJellyEnabled: true,
-      isAmbientModeAllowed: false,
-    });
+    loadTimeData.overrideValues({isAmbientModeAllowed: false});
 
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;

@@ -98,16 +98,25 @@
     Preferred caption language
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_TITLE" desc="Name of the caption settings section for managing language packs.">
-    Manage languages
+    Supported Live Caption languages
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_MANAGE_LANGUAGES_SUBTITLE" desc="Subtitle for the caption settings section for managing language packs.">
-    Language packs are used for Live Caption and are stored on your device
+    Chrome can create and translate captions for the languages shown here
   </message>
   <message name="IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE" desc="Description of the target language setting for the Live Translate feature.">
-    Translate to
+    Translate captions to
   </message>
-  <message name="IDS_SETTINGS_CAPTIONS_REMOVE_LANGUAGE_ARIA_LABEL" desc="Text read by screen readers when focusing on the remove icon for language packs. Activating this button will remove the selected language pack. This text only announced by screen readers and is not visible in the UI.">
-    Remove <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph>
+  <message name="IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE_SUBTITLE" desc="Description of the target language setting for the Live Translate feature.">
+    Only supported Live Caption languages can be translated
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_REMOVE_LANGUAGE_LABEL" desc="Label for the button to remove a language pack.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_MAKE_DEFAULT_LANGUAGE_LABEL" desc="Label for the button that makes a language pack the default language pack to use with Live Caption.">
+    Make default
+  </message>
+  <message name="IDS_SETTINGS_CAPTIONS_DEFAULT_LANGUAGE_LABEL" desc="Label indicating the default language pack to use with Live Caption.">
+    (default)
   </message>
 
   <!-- Nearby Share -->
@@ -313,6 +322,9 @@
   <message name="IDS_SETTINGS_SAVED_TAB_GROUPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing saved tab groups between multiple browser instances.">
     Saved tab groups
   </message>
+  <message name="IDS_SETTINGS_PRODUCT_COMPARISONS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing comparison tables between multiple browser instances.">
+    Comparison tables
+  </message>
   <message name="IDS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of Wi-Fi networks across devices.">
     Wi-Fi networks
   </message>
@@ -415,6 +427,9 @@
   <if expr="is_chromeos">
     <message name="IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the browser sync feature.">
       Your data will be synced across all Chrome browsers where you have turned on sync for this account. For ChromeOS sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>ChromeOS settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+    </message>
+    <message name="IDS_SETTINGS_COOKIES_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing cookies between multiple browser instances.">
+      Cookies
     </message>
   </if>
 

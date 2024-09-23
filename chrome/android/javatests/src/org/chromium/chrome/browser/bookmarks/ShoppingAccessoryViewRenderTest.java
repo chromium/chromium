@@ -14,12 +14,12 @@ import androidx.test.filters.MediumTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -27,18 +27,15 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 import org.chromium.url.GURLJavaTestHelper;
@@ -57,9 +54,6 @@ public class ShoppingAccessoryViewRenderTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
 
-    @Rule
-    public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -72,8 +66,6 @@ public class ShoppingAccessoryViewRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .setRevision(1)
                     .build();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private CurrencyFormatter mFormatter;
     private ShoppingAccessoryView mShoppingAccessoryView;
@@ -96,7 +88,7 @@ public class ShoppingAccessoryViewRenderTest {
 
         mFormatter = new CurrencyFormatter("USD", LocaleUtils.forLanguageTag("en-US"));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContentView = new LinearLayout(mActivityTestRule.getActivity());
                     mContentView.setBackgroundColor(Color.WHITE);
@@ -121,7 +113,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
                     mModel.set(
@@ -138,7 +130,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPrice_UntrackAfterInfoSet() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
                     mModel.set(
@@ -156,7 +148,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPrice_TrackAfterInfoSet() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, false);
                     mModel.set(
@@ -174,7 +166,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testNormal_WithCents() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
                     mModel.set(
@@ -191,7 +183,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceDrop() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
                     mModel.set(
@@ -208,7 +200,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceDrop_Untracked() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, false);
                     mModel.set(
@@ -225,7 +217,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceDrop_UntrackedAfterInfoSet() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
                     mModel.set(
@@ -243,7 +235,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceDrop_TrackedAfterInfoSet() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, false);
                     mModel.set(
@@ -261,7 +253,7 @@ public class ShoppingAccessoryViewRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceDrop_withCents() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(ShoppingAccessoryViewProperties.PRICE_TRACKED, true);
                     mModel.set(

@@ -43,14 +43,15 @@ const ui::ClipboardFormatType& GetAppItemFormatType() {
 
 std::optional<DraggableAppItemInfo> GetAppInfoFromDropDataForAppType(
     const ui::OSExchangeData& data) {
-  base::Pickle data_pickle;
-  if (!data.GetPickledData(GetAppItemFormatType(), &data_pickle)) {
+  std::optional<base::Pickle> data_pickle =
+      data.GetPickledData(GetAppItemFormatType());
+  if (!data_pickle.has_value()) {
     return std::nullopt;
   }
 
   std::string app_id;
   int type_value = -1;
-  base::PickleIterator iter(data_pickle);
+  base::PickleIterator iter(data_pickle.value());
   if (!iter.ReadString(&app_id) || !iter.ReadInt(&type_value) ||
       type_value < 0 || type_value > static_cast<int>(DraggableAppType::kMax)) {
     return std::nullopt;

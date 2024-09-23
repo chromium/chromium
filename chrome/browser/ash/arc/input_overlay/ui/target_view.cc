@@ -23,6 +23,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
@@ -79,8 +80,8 @@ TargetView::TargetView(DisplayOverlayController* controller,
   center_.set_x(bounds.width() / 2);
   center_.set_y(bounds.height() / 2);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetAccessibilityProperties(
-      ax::mojom::Role::kPane,
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_A11Y_LABEL));
 }
 
@@ -90,7 +91,8 @@ void TargetView::UpdateWidgetBounds() {
   auto* widget = GetWidget();
   DCHECK(widget);
 
-  widget->SetBounds(controller_->touch_injector()->content_bounds());
+  controller_->UpdateWidgetBoundsInRootWindow(
+      widget, controller_->touch_injector()->content_bounds());
 }
 
 gfx::Rect TargetView::GetTargetCircleBounds() const {
@@ -106,7 +108,7 @@ int TargetView::GetCircleRadius() const {
     case ActionType::MOVE:
       return kActionMoveCircleRadius;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -117,7 +119,7 @@ int TargetView::GetCircleRingRadius() const {
     case ActionType::MOVE:
       return kActionMoveCircleRingRadius;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -164,8 +166,10 @@ void TargetView::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 
   // When the gesture event is released, add a new action.
-  if (type == ui::ET_GESTURE_SCROLL_END || type == ui::ET_SCROLL_FLING_START ||
-      type == ui::ET_GESTURE_PINCH_END || type == ui::ET_GESTURE_END) {
+  if (type == ui::EventType::kGestureScrollEnd ||
+      type == ui::EventType::kScrollFlingStart ||
+      type == ui::EventType::kGesturePinchEnd ||
+      type == ui::EventType::kGestureEnd) {
     controller_->AddNewAction(action_type_, center_);
   }
 }
@@ -266,6 +270,12 @@ void TargetView::OnPaintBackground(gfx::Canvas* canvas) {
   // Draw the touch point.
   TouchPoint::DrawTouchPoint(canvas, color_provider, action_type_,
                              UIState::kDefault, center_);
+}
+
+void TargetView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  // Repaint to update colors.
+  SchedulePaint();
 }
 
 BEGIN_METADATA(TargetView)

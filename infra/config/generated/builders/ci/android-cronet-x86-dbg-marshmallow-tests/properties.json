@@ -84,7 +84,8 @@
           "builder": "android-cronet-x86-dbg-marshmallow-tests",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-x86-dbg-marshmallow-tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

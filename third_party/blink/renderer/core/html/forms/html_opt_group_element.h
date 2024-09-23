@@ -52,8 +52,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
-  bool SupportsFocus(UpdateBehavior update_behavior =
-                         UpdateBehavior::kStyleAndLayout) const override;
+  FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   void ChildrenChanged(const ChildrenChange& change) override;
   bool ChildrenChangedAllChildrenRemovedNeedsList() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
@@ -66,6 +65,11 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   void UpdateGroupLabel();
 
   Member<HTMLSlotElement> opt_group_slot_;
+
+  // customizable_select_rendering_ is set to true when the CustomizableSelect
+  // flag is enabled and this element is in the DOM subtree of a <select> which
+  // UsesMenuList.
+  bool customizable_select_rendering_;
 };
 
 }  // namespace blink

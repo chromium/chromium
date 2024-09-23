@@ -20,7 +20,7 @@ to set the default value. Can also be accessed through `try_.defaults`.
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builders.star", "builders", "os")
-load("./orchestrator.star", "register_compilator", "register_orchestrator")
+load("./orchestrator.star", "SOURCELESS_BUILDER_CACHE_NAME", "register_compilator", "register_orchestrator")
 load("//project.star", "settings")
 
 def default_location_filters(builder_name = None):
@@ -46,11 +46,15 @@ def default_location_filters(builder_name = None):
         )
 
     filters = [
-        # Contains documentation that doesn't affect the outputs
-        location_filter(path_regexp = "docs/.+", exclude = True),
         # Contains configuration files that aren't active until after committed
         location_filter(path_regexp = "infra/config/.+", exclude = True),
     ]
+    if settings.project.startswith("chromium"):
+        filters.append(
+            # Contains documentation that doesn't affect the outputs
+            location_filter(path_regexp = "docs/.+", exclude = True),
+        )
+
     if builder_name:
         pieces = builder_name.split("/")
         if len(pieces) == 2:
@@ -83,18 +87,16 @@ def location_filters_without_defaults(tryjob_builder_proto):
 # creating a regular builder cache with a 4 minute wait_for_warm_cache.
 # `wait_for_warm_cache = None` ensures that swarming will not look for a bot
 # with a builder cache.
-SOURCELESS_BUILDER_CACHES = [
-    swarming.cache(
-        name = "unused_builder_cache",
-        path = "builder",
-        wait_for_warm_cache = None,
-    ),
-]
+SOURCELESS_BUILDER_CACHE = swarming.cache(
+    name = SOURCELESS_BUILDER_CACHE_NAME,
+    path = "builder",
+    wait_for_warm_cache = None,
+)
 
 defaults = args.defaults(
     extends = builders.defaults,
     check_for_flakiness = True,
-    # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
+    # TODO(crbug.com/40273153) - Once we've migrated to the ResultDB-based solution
     # this should be deprecated in favor for the original check_for_flakiness
     # argument.
     check_for_flakiness_with_resultdb = True,
@@ -107,14 +109,15 @@ defaults = args.defaults(
     # argument, if the more-specific default has not been set it will fall back
     # to the standard default.
     compilator_cores = args.DEFAULT,
-    compilator_reclient_jobs = args.DEFAULT,
     orchestrator_cores = args.DEFAULT,
+    orchestrator_siso_remote_jobs = args.DEFAULT,
 )
 
 def tryjob(
         *,
         disable_reuse = None,
         experiment_percentage = None,
+        includable_only = False,
         location_filters = None,
         cancel_stale = None,
         add_default_filters = True,
@@ -131,6 +134,7 @@ def tryjob(
     Args:
       disable_reuse: See cq.tryjob_verifier.
       experiment_percentage: See cq.tryjob_verifier.
+      includable_only: See cq.tryjob_verifier.
       location_filters: A list of cq.location_filter objects and/or strings.
         This is the same as the location_filters value of cq.tryjob_verifier
         except that strings can be provided, which will be converted to a
@@ -139,7 +143,8 @@ def tryjob(
       add_default_filters: A bool indicating whether to add default filters that
         exclude certain directories that would have no impact when building
         chromium with the patch applied (docs, config files that don't take
-        effect until landing, etc., see default_location_filters).
+        effect until landing, etc., see default_location_filters). This arg has
+        no effect when includable_only=True, and will instead be set to False.
       equivalent_builder: See cq.tryjob_verifier.
       equivalent_builder_percentage: See cq.tryjob_verifier.
       equivalent_builder_whitelist: See cq.tryjob_verifier.
@@ -159,12 +164,18 @@ def tryjob(
             return cq.location_filter(path_regexp = f)
         return f
 
+    if includable_only:
+        add_default_filters = False
+
     if location_filters:
+        if includable_only:
+            fail("Tryjobs with location_filters cannot be includable_only")
         location_filters = [normalize_location_filter(f) for f in location_filters]
 
     return struct(
         disable_reuse = disable_reuse,
         experiment_percentage = experiment_percentage,
+        includable_only = includable_only,
         add_default_filters = add_default_filters,
         location_filters = location_filters,
         cancel_stale = cancel_stale,
@@ -199,7 +210,7 @@ def try_builder(
       check_for_flakiness - If True, it checks for new tests in a given try
         build and reruns them multiple times to ensure that they are not
         flaky.
-      # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
+      # TODO(crbug.com/40273153) - Once we've migrated to the ResultDB-based solution
       # this should be deprecated in favor for the original check_for_flakiness
       # argument.
       check_for_flakiness_with_resultdb - If True, it checks for new tests in a
@@ -233,27 +244,35 @@ def try_builder(
 
     experiments = experiments or {}
 
-    # TODO(crbug.com/1346781): Remove when the experiment is the default.
-    experiments.setdefault("chromium_swarming.expose_merge_script_failures", 100)
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments.setdefault(
+        "chromium_swarming.expose_merge_script_failures",
+        5 if settings.project.startswith("chrome") else 100,
+    )
 
-    # TODO(crbug.com/1466962): Remove when the experiment is the default.
-    experiments.setdefault("swarming.prpc.cli", 100)
+    # TODO(crbug.com/40276579): Remove when the experiment is the default.
+    if settings.project.startswith("chromium"):
+        experiments.setdefault("swarming.prpc.cli", 100)
 
+    bq_dataset_name = "chrome"
+    if settings.project.startswith("chromium"):
+        bq_dataset_name = "chromium"
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
-            bq_table = "chrome-luci-data.chromium.try_test_results",
+            bq_table = "chrome-luci-data.{}.try_test_results".format(bq_dataset_name),
         ),
         resultdb.export_test_results(
-            bq_table = "chrome-luci-data.chromium.gpu_try_test_results",
+            bq_table = "chrome-luci-data.{}.gpu_try_test_results".format(bq_dataset_name),
             predicate = resultdb.test_result_predicate(
                 # Only match the telemetry_gpu_integration_test target and its
                 # Fuchsia and Android variants that have a suffix added to the
-                # end. Those are caught with [^/]*.
-                test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test[^/]*/.+",
+                # end. Those are caught with [^/]*. The Fuchsia version is in
+                # //content/test since Fuchsia cannot depend on //chrome.
+                test_id_regexp = "ninja://(chrome|content)/test:telemetry_gpu_integration_test[^/]*/.+",
             ),
         ),
         resultdb.export_test_results(
-            bq_table = "chrome-luci-data.chromium.blink_web_tests_try_test_results",
+            bq_table = "chrome-luci-data.{}.blink_web_tests_try_test_results".format(bq_dataset_name),
             predicate = resultdb.test_result_predicate(
                 # Match the "blink_web_tests" target and all of its
                 # flag-specific versions, e.g. "vulkan_swiftshader_blink_web_tests".
@@ -293,25 +312,26 @@ def try_builder(
         cq_reason = "required" if not tryjob.location_filters else "path-based"
         properties["cq"] = cq_reason
 
-        # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
-        # check_for_flakiness_with_resultdb should be deprecated in favor for the
-        # original check_for_flakiness argument.
-        check_for_flakiness = defaults.get_value(
-            "check_for_flakiness",
-            check_for_flakiness,
-        )
-        check_for_flakiness_with_resultdb = defaults.get_value(
-            "check_for_flakiness_with_resultdb",
-            check_for_flakiness_with_resultdb,
-        )
+        if settings.project.startswith("chromium"):
+            # TODO(crbug.com/40273153) - Once we've migrated to the ResultDB-based solution
+            # check_for_flakiness_with_resultdb should be deprecated in favor for the
+            # original check_for_flakiness argument.
+            check_for_flakiness = defaults.get_value(
+                "check_for_flakiness",
+                check_for_flakiness,
+            )
+            check_for_flakiness_with_resultdb = defaults.get_value(
+                "check_for_flakiness_with_resultdb",
+                check_for_flakiness_with_resultdb,
+            )
 
-        flakiness = {}
-        if defaults.get_value("check_for_flakiness", check_for_flakiness):
-            flakiness["check_for_flakiness"] = True
-        if defaults.get_value("check_for_flakiness_with_resultdb", check_for_flakiness_with_resultdb):
-            flakiness["check_for_flakiness_with_resultdb"] = True
-        if flakiness:
-            properties["$build/flakiness"] = flakiness
+            flakiness = {}
+            if defaults.get_value("check_for_flakiness", check_for_flakiness):
+                flakiness["check_for_flakiness"] = True
+            if defaults.get_value("check_for_flakiness_with_resultdb", check_for_flakiness_with_resultdb):
+                flakiness["check_for_flakiness_with_resultdb"] = True
+            if flakiness:
+                properties["$build/flakiness"] = flakiness
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -321,42 +341,67 @@ def try_builder(
         list_view = list_view,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         experiments = experiments,
-        resultdb_index_by_timestamp = True,
+        resultdb_index_by_timestamp = settings.project.startswith("chromium"),
         properties = properties,
         **kwargs
     )
 
     bucket = defaults.get_value_from_kwargs("bucket", kwargs)
     builder = "{}/{}".format(bucket, name)
-    cq_group = defaults.get_value("cq_group", cq_group)
-    if tryjob != None:
-        location_filters = tryjob.location_filters
-        if tryjob.add_default_filters:
-            location_filters = (location_filters or []) + default_location_filters(builder)
-        if not tryjob.omit_from_luci_cv:
-            luci.cq_tryjob_verifier(
-                builder = builder,
-                cq_group = cq_group,
-                disable_reuse = tryjob.disable_reuse,
-                experiment_percentage = tryjob.experiment_percentage,
-                location_filters = location_filters,
-                cancel_stale = tryjob.cancel_stale,
-                # These are the default if includable_only is False, but we list
-                # them here so we can add additional modes in a later generator.
-                mode_allowlist = tryjob.custom_cq_run_modes or [cq.MODE_DRY_RUN, cq.MODE_FULL_RUN],
-                equivalent_builder = tryjob.equivalent_builder,
-                equivalent_builder_percentage = tryjob.equivalent_builder_percentage,
-                equivalent_builder_whitelist = tryjob.equivalent_builder_whitelist,
-            )
-    else:
-        # Allow CQ to trigger this builder if user opts in via CQ-Include-Trybots.
-        luci.cq_tryjob_verifier(
-            builder = builder,
-            cq_group = cq_group,
-            includable_only = True,
-        )
+    cq_groups = defaults.get_value("cq_group", cq_group)
+    if cq_groups != None:
+        if type(cq_groups) != type([]):
+            cq_groups = [cq_groups]
+        if tryjob != None:
+            location_filters = tryjob.location_filters
+            if tryjob.add_default_filters:
+                location_filters = (location_filters or []) + default_location_filters(builder)
+            if not tryjob.omit_from_luci_cv:
+                kwargs = {}
+                if settings.project.startswith("chromium"):
+                    # These are the default if includable_only is False, but we list
+                    # them here so we can add additional modes in a later generator.
+                    kwargs["mode_allowlist"] = tryjob.custom_cq_run_modes or [cq.MODE_DRY_RUN, cq.MODE_FULL_RUN]
+                for cq_group in cq_groups:
+                    luci.cq_tryjob_verifier(
+                        builder = builder,
+                        cq_group = cq_group,
+                        disable_reuse = tryjob.disable_reuse,
+                        experiment_percentage = tryjob.experiment_percentage,
+                        includable_only = tryjob.includable_only,
+                        location_filters = location_filters,
+                        cancel_stale = tryjob.cancel_stale,
+                        equivalent_builder = tryjob.equivalent_builder,
+                        equivalent_builder_percentage = tryjob.equivalent_builder_percentage,
+                        equivalent_builder_whitelist = tryjob.equivalent_builder_whitelist,
+                        **kwargs
+                    )
+        else:
+            for cq_group in cq_groups:
+                # Allow CQ to trigger this builder if user opts in via CQ-Include-Trybots.
+                luci.cq_tryjob_verifier(
+                    builder = builder,
+                    cq_group = cq_group,
+                    includable_only = True,
+                )
 
     return ret
+
+def presubmit_builder(*, name, tryjob, **kwargs):
+    """Define a presubmit builder.
+
+    Presubmit builders are builders that run fast checks that don't require
+    building. Their results aren't re-used because they tend to provide guards
+    against generated files being out of date, so they MUST run quickly so that
+    the submit after a CQ dry run doesn't take long.
+    """
+    if tryjob:
+        tryjob_args = {a: getattr(tryjob, a) for a in dir(tryjob)}
+        if tryjob_args.get("disable_reuse") == None:
+            tryjob_args["disable_reuse"] = True
+        tryjob_args["add_default_filters"] = False
+        tryjob = try_.job(**tryjob_args)
+    return try_builder(name = name, tryjob = tryjob, **kwargs)
 
 def _orchestrator_builder(
         *,
@@ -399,25 +444,26 @@ def _orchestrator_builder(
     if not builder_group:
         fail("builder_group must be specified")
 
-    # TODO(crbug/1287228): Make this the default once all CQ builders are
+    # TODO(crbug.com/40211151): Make this the default once all CQ builders are
     # migrated to be srcless
     if use_orchestrator_pool:
         kwargs.setdefault("pool", "luci.chromium.try.orchestrator")
         kwargs.setdefault("builderless", None)
-
-        # Orchestrator builders that don't use a src checkout don't need a
-        # builder cache.
-        kwargs.setdefault("caches", SOURCELESS_BUILDER_CACHES)
     else:
         kwargs.setdefault("builderless", not settings.is_main)
+
+    # Orchestrator builders that don't use a src checkout don't need a
+    # builder cache.
+    kwargs.setdefault("caches", [SOURCELESS_BUILDER_CACHE])
 
     kwargs.setdefault("cores", defaults.orchestrator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/orchestrator")
 
-    kwargs.setdefault("reclient_instance", None)
     kwargs.setdefault("os", os.LINUX_DEFAULT)
     kwargs.setdefault("service_account", "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com")
     kwargs.setdefault("ssd", None)
+
+    kwargs.setdefault("siso_remote_jobs", defaults.orchestrator_siso_remote_jobs.get())
 
     ret = try_.builder(name = name, **kwargs)
     if ret:
@@ -445,10 +491,12 @@ def _compilator_builder(*, name, **kwargs):
     Args:
       name: The name of the compilator.
       **kwargs: Additional kwargs to be forwarded to try_.builder.
+        With the exception of builder_group, kwargs that would normally cause
+        properties to be set will result in an error. Properties should instead
+        be configured on the orchestrator.
         The following kwargs will have defaults applied if not set:
         * builderless: True on branches, False on main
         * cores: The compilator_cores module-level default.
-        * reclient_jobs: The compilator_reclient_jobs module-level default.
         * executable: "recipe:chromium/compilator"
         * ssd: True
     """
@@ -459,8 +507,11 @@ def _compilator_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", not settings.is_main)
     kwargs.setdefault("cores", defaults.compilator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/compilator")
-    kwargs.setdefault("reclient_jobs", defaults.compilator_reclient_jobs.get())
     kwargs.setdefault("ssd", True)
+
+    kwargs["siso_project"] = None
+    kwargs["siso_enabled"] = False
+    kwargs["test_presentation"] = resultdb.test_presentation()
 
     ret = try_.builder(name = name, **kwargs)
     if ret:
@@ -482,6 +533,7 @@ try_ = struct(
 
     # Functions for declaring try builders
     builder = try_builder,
+    presubmit_builder = presubmit_builder,
     job = tryjob,
     orchestrator_builder = _orchestrator_builder,
     compilator_builder = _compilator_builder,

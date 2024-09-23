@@ -3,6 +3,8 @@
 <translationbundle lang="te">
 <translation id="1016765312371154165">Chrome సరిగ్గా షట్ డౌన్ కాలేదు.</translation>
 <translation id="130631256467250065">మీ మార్పులు మీరు మీ పరికరాన్ని పునఃప్రారంభించే తర్వాతిసారి అమలులోకి వస్తాయి.</translation>
+<translation id="1516530951338665275">పెయిరింగ్‌ను కొనసాగించడానికి Google Chromeకు 
+ బ్లూటూత్ యాక్సెస్ అవసరం. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1635457557763038537">మీరు చేసిన మార్పులు మీరు Chromeను మరుసటిసారి రీ-లాంచ్ చేసినప్పుడు ప్రభావాన్ని చూపుతాయి.</translation>
 <translation id="2399868464369312507">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయడానికి Google Chrome ట్రై చేస్తోంది.</translation>
 <translation id="2447485272386224171"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ఓపెన్ సోర్స్ ప్రాజెక్ట్, ఇతర <ph name="BEGIN_LINK_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_OSS" /> ద్వారా Chromeను రూపొందించడం సాధ్యమయ్యింది.</translation>

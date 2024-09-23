@@ -23,18 +23,13 @@
 
       :host([is-card-start]) #date-accessed {
         display: block;
-        font-size: 123%;
-        font-weight: 400;
-        letter-spacing: .25px;
-        padding-bottom: 4px;
-        padding-top: 8px;
       }
 
       #item-container {
         align-items: center;
         display: flex;
         min-height: var(--item-height);
-        padding-inline-start: 10px;
+        padding-inline-start: 14px;
         pointer-events: auto;
       }
 
@@ -65,12 +60,12 @@
       }
 
       #checkbox {
-        margin: 12px;
+        margin: 0 10px;
       }
 
-      /* #checkbox[unresolved] styling is necessary since cr-checkbox is being
-         lazy-loaded. */
-      #checkbox[unresolved] {
+      /* Styling the element before cr-checkbox is defined is necessary since
+         cr-checkbox is being lazy-loaded. */
+      #checkbox:not(:defined) {
         border: 2px solid var(--cr-secondary-text-color);
         border-radius: 2px;
         content: '';
@@ -81,20 +76,25 @@
 
       #time-accessed {
         color: var(--history-item-time-color);
+        font-size: 12px;
         margin-inline-start: 6px;
         min-width: 96px;
       }
 
       #domain {
         color: var(--cr-secondary-text-color);
-        margin-inline-start: 16px;
+        font-size: 12px;
+        margin-inline-start: 8px;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       #menu-button {
-        --cr-icon-button-margin-end: 12px;
+        --cr-icon-button-margin-end: 20px;
         --cr-icon-button-margin-start: 12px;
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-size: 24px;
       }
 
       #bookmark-star {
@@ -201,7 +201,7 @@
       <div role="row" on-mousedown="onRowMousedown_" on-click="onRowClick_">
         <div id="item-container" focus-row-container>
           <div role="gridcell">
-            <cr-checkbox id="checkbox" checked="[[selected]]" unresolved
+            <cr-checkbox id="checkbox" checked="[[selected]]"
                 focus-row-control focus-type="cr-checkbox"
                 on-mousedown="onCheckboxClick_" on-keydown="onCheckboxClick_"
                 on-change="onCheckboxChange_" class="no-label"
@@ -220,7 +220,7 @@
               <a href="[[item.url]]" id="link" class="website-link"
                   focus-row-control focus-type="link"
                   title="[[item.title]]" on-click="onLinkClick_"
-                  on-contextmenu="onLinkRightClick_"
+                  on-auxclick="onLinkClick_" on-contextmenu="onLinkRightClick_"
                   aria-describedby$="[[ariaDescribedByForHeading_]]">
                 <div class="website-icon" id="icon"></div>
                 <history-searched-label class="website-title"

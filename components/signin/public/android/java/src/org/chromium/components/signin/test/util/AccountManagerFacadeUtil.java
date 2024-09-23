@@ -15,7 +15,7 @@ final class AccountManagerFacadeUtil {
     /** Stubs AccountManagerFacade for native tests. */
     @CalledByNative
     private static void setUpMockFacade(boolean useFakeImpl) {
-        // TODO(crbug.com/1466421): Remove Mockito and use FakeAccountManagerFacade instead.
+        // TODO(crbug.com/40276391): Remove Mockito and use FakeAccountManagerFacade instead.
         AccountManagerFacadeProvider.setInstanceForTests(
                 useFakeImpl
                         ? new FakeAccountManagerFacade()

@@ -6,9 +6,12 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/authentication/cells/central_account_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -23,13 +26,11 @@
 namespace {
 
 // Table view customized header heights.
-CGFloat kAccountSectionHeaderHeightPointSize = 22.17;
-CGFloat kSyncDataTypeSectionHeaderHeightPointSize = 48.;
 CGFloat kAdvancedSettingsSectionHeaderHeightPointSize = 26.;
 CGFloat kSignOutSectionHeaderHeightPointSize = 26.;
+CGFloat kDefaultSectionHeaderHeightPointSize = 10.;
 
 // Table view customized footer heights.
-CGFloat kAccountSectionFooterHeightPointSize = 28.;
 CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 }  // namespace
@@ -112,7 +113,7 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   NSInteger sectionIdentifier =
       [self.tableViewModel sectionIdentifierForSectionIndex:section];
 
-  if (sectionIdentifier == SignOutSectionIdentifier) {
+  if (sectionIdentifier == ManageAndSignOutSectionIdentifier) {
     TableViewLinkHeaderFooterView* linkView =
         base::apple::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
     linkView.delegate = self;
@@ -130,24 +131,32 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
 
 #pragma mark - ManageSyncSettingsConsumer
 
-- (void)insertSections:(NSIndexSet*)sections {
+- (void)insertSections:(NSIndexSet*)sections rowAnimation:(BOOL)rowAnimation {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  [self.tableView insertSections:sections
-                withRowAnimation:UITableViewRowAnimationNone];
+  if (rowAnimation) {
+    [self.tableView insertSections:sections
+                  withRowAnimation:UITableViewRowAnimationMiddle];
+  } else {
+    [UIView performWithoutAnimation:^{
+      [self.tableView beginUpdates];
+      [self.tableView insertSections:sections
+                    withRowAnimation:UITableViewRowAnimationNone];
+      [self.tableView endUpdates];
+    }];
+  }
 }
 
-- (void)deleteSections:(NSIndexSet*)sections
-      withRowAnimation:(BOOL)withRowAnimation {
+- (void)deleteSections:(NSIndexSet*)sections rowAnimation:(BOOL)rowAnimation {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
     return;
   }
-  if (withRowAnimation) {
+  if (rowAnimation) {
     [self.tableView deleteSections:sections
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+                  withRowAnimation:UITableViewRowAnimationMiddle];
   } else {
     // To avoid animation glitches related to crbug.com/1469539.
     [UIView performWithoutAnimation:^{
@@ -173,8 +182,8 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
   if (!indexPath) {
     // No need to reload if the item is not in the model. This would also cause
     // a crash below since NSArrays cannot contain nil.
-    // TODO(crbug.com/1485554): Better understand the crash root cause and CHECK
-    // instead of no-op.
+    // TODO(crbug.com/40073025): Better understand the crash root cause and
+    // CHECK instead of no-op.
     return;
   }
   // To avoid animation glitches related to crbug.com/1469539.
@@ -195,6 +204,21 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                 withRowAnimation:UITableViewRowAnimationNone];
 }
 
+- (void)updatePrimaryAccountWithAvatarImage:(UIImage*)avatarImage
+                                       name:(NSString*)name
+                                      email:(NSString*)email
+                            managementState:(ManagementState)managementState {
+  CentralAccountView* identityAccountItem = [[CentralAccountView alloc]
+        initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
+          avatarImage:avatarImage
+                 name:name
+                email:email
+      managementState:std::move(managementState)
+      useLargeMargins:YES];
+  self.tableView.tableHeaderView = identityAccountItem;
+  [self.tableView reloadData];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -212,20 +236,19 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     NSInteger sectionIdentifier =
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
-      case AccountSectionIdentifier:
-        return kAccountSectionHeaderHeightPointSize;
       case SyncDataTypeSectionIdentifier:
-        return kSyncDataTypeSectionHeaderHeightPointSize;
+        return UITableViewAutomaticDimension;
       case AdvancedSettingsSectionIdentifier:
         return kAdvancedSettingsSectionHeaderHeightPointSize;
-      case SignOutSectionIdentifier:
+      case ManageAndSignOutSectionIdentifier:
         if (![self.tableViewModel hasSectionForSectionIdentifier:
                                       AdvancedSettingsSectionIdentifier]) {
           return kSignOutSectionHeaderHeightPointSize;
         }
         break;
       case SyncErrorsSectionIdentifier:
-        break;
+      case BatchUploadSectionIdentifier:
+        return kDefaultSectionHeaderHeightPointSize;
     }
   }
   return ChromeTableViewHeightForHeaderInSection(section);
@@ -237,10 +260,8 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
     NSInteger sectionIdentifier =
         [self.tableViewModel sectionIdentifierForSectionIndex:section];
     switch (sectionIdentifier) {
-      case AccountSectionIdentifier:
-        return kAccountSectionFooterHeightPointSize;
       case SyncDataTypeSectionIdentifier:
-      case SignOutSectionIdentifier:
+      case ManageAndSignOutSectionIdentifier:
         return UITableViewAutomaticDimension;
       case AdvancedSettingsSectionIdentifier:
       case SyncErrorsSectionIdentifier:

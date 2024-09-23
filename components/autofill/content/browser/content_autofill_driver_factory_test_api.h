@@ -6,16 +6,17 @@
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_FACTORY_TEST_API_H_
 
 #include <memory>
-#include <string>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/autofill_driver_factory_test_api.h"
 
 namespace autofill {
 
-class ContentAutofillDriverFactoryTestApi {
+// Exposes some testing operations for ContentAutofillDriverFactory.
+class ContentAutofillDriverFactoryTestApi
+    : public AutofillDriverFactoryTestApi {
  public:
   static std::unique_ptr<ContentAutofillDriverFactory> Create(
       content::WebContents* web_contents,
@@ -24,7 +25,7 @@ class ContentAutofillDriverFactoryTestApi {
   explicit ContentAutofillDriverFactoryTestApi(
       ContentAutofillDriverFactory* factory);
 
-  size_t num_drivers() const { return factory_->driver_map_.size(); }
+  size_t num_drivers() { return factory().driver_map_.size(); }
 
   // Replaces the existing driver with `new_driver`. An existing driver must
   // exist. This does not invalidate references. More precisely:
@@ -38,20 +39,13 @@ class ContentAutofillDriverFactoryTestApi {
       content::RenderFrameHost* rfh,
       std::unique_ptr<ContentAutofillDriver> new_driver);
 
+  ContentAutofillDriver* DriverForFrame(content::RenderFrameHost* rfh);
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
 
-  base::ObserverList<ContentAutofillDriverFactory::Observer>& observers() {
-    return factory_->observers_;
-  }
-
-  // Like the normal AddObserver(), but enqueues `observer` at position `index`
-  // in the list, so that `observer` is notified before production-code
-  // observers.
-  void AddObserverAtIndex(ContentAutofillDriverFactory::Observer* observer,
-                          size_t index);
-
  private:
-  const raw_ref<ContentAutofillDriverFactory> factory_;
+  ContentAutofillDriverFactory& factory() {
+    return static_cast<ContentAutofillDriverFactory&>(*factory_);
+  }
 };
 
 inline ContentAutofillDriverFactoryTestApi test_api(

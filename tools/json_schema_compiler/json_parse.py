@@ -9,8 +9,8 @@ import sys
 _FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 _SYS_PATH = sys.path[:]
 try:
-  _COMMENT_EATER_PATH = os.path.join(
-      _FILE_PATH, os.pardir, 'json_comment_eater')
+  _COMMENT_EATER_PATH = os.path.join(_FILE_PATH, os.pardir,
+                                     'json_comment_eater')
   sys.path.insert(0, _COMMENT_EATER_PATH)
   import json_comment_eater
 finally:
@@ -36,17 +36,14 @@ except ImportError:
 
   _SYS_PATH = sys.path[:]
   try:
-    _SIMPLE_JSON_PATH = os.path.join(_FILE_PATH,
-                                     os.pardir,
-                                     os.pardir,
+    _SIMPLE_JSON_PATH = os.path.join(_FILE_PATH, os.pardir, os.pardir,
                                      'third_party')
     sys.path.insert(0, _SIMPLE_JSON_PATH)
     # Add this path in case this is being used in the docs server.
-    sys.path.insert(0, os.path.join(_FILE_PATH,
-                                    os.pardir,
-                                    os.pardir,
-                                    'third_party',
-                                    'json_schema_compiler'))
+    sys.path.insert(
+        0,
+        os.path.join(_FILE_PATH, os.pardir, os.pardir, 'third_party',
+                     'json_schema_compiler'))
     import simplejson
     from simplejson import OrderedDict
   finally:

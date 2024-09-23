@@ -7,12 +7,12 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -27,10 +27,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
 
-  auto* icon = &views::kIcCloseIcon;
-  if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    icon = &vector_icons::kCloseChromeRefreshIcon;
-  }
+  auto* icon = &vector_icons::kCloseChromeRefreshIcon;
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(*icon, kColorPipWindowForeground,
                                                kCloseButtonIconSize));
@@ -38,7 +35,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
   // Accessibility.
   const std::u16string close_button_label(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_CLOSE_CONTROL_TEXT));
-  SetAccessibleName(close_button_label);
+  GetViewAccessibility().SetName(close_button_label);
   SetTooltipText(close_button_label);
 }
 

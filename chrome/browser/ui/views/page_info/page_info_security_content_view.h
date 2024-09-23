@@ -48,7 +48,7 @@ class PageInfoSecurityContentView : public views::View, public PageInfoUI {
   // The certificate provided by the site, if one exists.
   scoped_refptr<net::X509Certificate> certificate_;
 
-  // TODO(crbug.com/1188101): Add plumbing to check this in tests or rewrite
+  // TODO(crbug.com/40754666): Add plumbing to check this in tests or rewrite
   // tests not use it.
   PageInfoUI::SecurityDescriptionType security_description_type_ =
       PageInfoUI::SecurityDescriptionType::CONNECTION;

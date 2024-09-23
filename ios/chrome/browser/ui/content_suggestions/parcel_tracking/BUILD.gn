@@ -15,16 +15,22 @@ source_set("parcel_tracking") {
     "parcel_tracking_view.mm",
   ]
   deps = [
-    "resources:untrack_parcel",
     "//base",
     "//base:i18n",
     "//components/commerce/core:shopping_service",
+    "//components/prefs",
+    "//components/prefs/ios",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/parcel_tracking:metrics",
     "//ios/chrome/browser/parcel_tracking:prefs",
     "//ios/chrome/browser/parcel_tracking:tracking_source",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -33,8 +39,7 @@ source_set("parcel_tracking") {
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
-    "//ios/chrome/browser/ui/ntp",
-    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
+    "//ios/chrome/browser/ui/content_suggestions/parcel_tracking/resources",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/common/ui/colors",
@@ -48,13 +53,20 @@ source_set("parcel_tracking") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "parcel_tracking_mediator_unittest.mm" ]
+  sources = [
+    "parcel_tracking_mediator_unittest.mm",
+    "parcel_tracking_view+testing.h",
+    "parcel_tracking_view_unittest.mm",
+  ]
   deps = [
     ":parcel_tracking",
     "//components/commerce/core:shopping_service_test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/parcel_tracking:prefs",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/test:test_support",

@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
+#include "content/browser/preloading/preloading_data_impl.h"
 #include "preloading_test_util.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -202,6 +203,11 @@ void PreloadingConfigOverride::SetHoldback(std::string_view preloading_type,
                                            bool holdback) {
   preloading_config_->SetHoldbackForTesting(preloading_type, predictor,
                                             holdback);
+}
+
+void SetHasSpeculationRulesPrerender(PreloadingData* preloading_data) {
+  static_cast<PreloadingDataImpl*>(preloading_data)
+      ->SetHasSpeculationRulesPrerender();
 }
 
 }  // namespace content::test

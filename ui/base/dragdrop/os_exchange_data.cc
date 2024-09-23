@@ -69,23 +69,27 @@ void OSExchangeData::SetPickledData(const ClipboardFormatType& format,
   provider_->SetPickledData(format, data);
 }
 
-bool OSExchangeData::GetString(std::u16string* data) const {
-  return provider_->GetString(data);
+std::optional<std::u16string> OSExchangeData::GetString() const {
+  return provider_->GetString();
 }
 
-bool OSExchangeData::GetURLAndTitle(FilenameToURLPolicy policy,
-                                    GURL* url,
-                                    std::u16string* title) const {
-  return provider_->GetURLAndTitle(policy, url, title);
+std::optional<OSExchangeData::UrlInfo> OSExchangeData::GetURLAndTitle(
+    FilenameToURLPolicy policy) const {
+  return provider_->GetURLAndTitle(policy);
 }
 
-bool OSExchangeData::GetFilenames(std::vector<FileInfo>* filenames) const {
-  return provider_->GetFilenames(filenames);
+std::optional<std::vector<GURL>> OSExchangeData::GetURLs(
+    FilenameToURLPolicy policy) const {
+  return provider_->GetURLs(policy);
 }
 
-bool OSExchangeData::GetPickledData(const ClipboardFormatType& format,
-                                    base::Pickle* data) const {
-  return provider_->GetPickledData(format, data);
+std::optional<std::vector<FileInfo>> OSExchangeData::GetFilenames() const {
+  return provider_->GetFilenames();
+}
+
+std::optional<base::Pickle> OSExchangeData::GetPickledData(
+    const ClipboardFormatType& format) const {
+  return provider_->GetPickledData(format);
 }
 
 bool OSExchangeData::HasString() const {
@@ -135,9 +139,9 @@ void OSExchangeData::SetFileContents(const base::FilePath& filename,
   provider_->SetFileContents(filename, file_contents);
 }
 
-bool OSExchangeData::GetFileContents(base::FilePath* filename,
-                                     std::string* file_contents) const {
-  return provider_->GetFileContents(filename, file_contents);
+std::optional<OSExchangeData::FileContentsInfo>
+OSExchangeData::GetFileContents() const {
+  return provider_->GetFileContents();
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -145,9 +149,9 @@ bool OSExchangeData::HasVirtualFilenames() const {
   return provider_->HasVirtualFilenames();
 }
 
-bool OSExchangeData::GetVirtualFilenames(
-    std::vector<FileInfo>* filenames) const {
-  return provider_->GetVirtualFilenames(filenames);
+std::optional<std::vector<FileInfo>> OSExchangeData::GetVirtualFilenames()
+    const {
+  return provider_->GetVirtualFilenames();
 }
 
 void OSExchangeData::GetVirtualFilesAsTempFiles(
@@ -167,8 +171,8 @@ void OSExchangeData::SetHtml(const std::u16string& html, const GURL& base_url) {
   provider_->SetHtml(html, base_url);
 }
 
-bool OSExchangeData::GetHtml(std::u16string* html, GURL* base_url) const {
-  return provider_->GetHtml(html, base_url);
+std::optional<OSExchangeData::HtmlInfo> OSExchangeData::GetHtml() const {
+  return provider_->GetHtml();
 }
 #endif
 

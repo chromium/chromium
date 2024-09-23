@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Schema can be found at: platform/dev/test/gtest/gtest_schema.yaml
+---
+name: "LoginIntegrationTest"
+harness: "crosier"
+category: "integration"
+owners:
+  - email: "xiyuan@chromium.org"
+  - email: "chromeos-sw-engprod@google.com"
+hw_agnostic: False
+criteria: |
+  Integration test for ChromeOS login using oobe test api,
+  same as Tast's default login.
+cases:
+  - id: "TestLogin"
+    tags: ["crosier:crosierdemosuite", "crosier:cq"]
+...

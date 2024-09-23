@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/performance_manager/public/execution_context/execution_context.h"
+#include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {
 
@@ -33,13 +34,18 @@ Vote GetVote(bool is_capturing_media_stream) {
 const char FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason[] =
     "Frame capturing media stream.";
 
-FrameCapturingMediaStreamVoter::FrameCapturingMediaStreamVoter() = default;
+FrameCapturingMediaStreamVoter::FrameCapturingMediaStreamVoter(
+    VotingChannel voting_channel)
+    : voting_channel_(std::move(voting_channel)) {}
 
 FrameCapturingMediaStreamVoter::~FrameCapturingMediaStreamVoter() = default;
 
-void FrameCapturingMediaStreamVoter::SetVotingChannel(
-    VotingChannel voting_channel) {
-  voting_channel_ = std::move(voting_channel);
+void FrameCapturingMediaStreamVoter::InitializeOnGraph(Graph* graph) {
+  graph->AddInitializingFrameNodeObserver(this);
+}
+
+void FrameCapturingMediaStreamVoter::TearDownOnGraph(Graph* graph) {
+  graph->RemoveInitializingFrameNodeObserver(this);
 }
 
 void FrameCapturingMediaStreamVoter::OnFrameNodeInitializing(

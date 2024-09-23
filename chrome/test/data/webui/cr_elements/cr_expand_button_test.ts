@@ -109,4 +109,19 @@ suite('cr-expand-button', function() {
     await button.updateComplete;
     assertEquals(collapseTitle, button.title);
   });
+
+  test('no tooltip', async () => {
+    assertEquals(undefined, button.expandTitle);
+    assertEquals(undefined, button.collapseTitle);
+
+    await button.updateComplete;
+    assertFalse(button.expanded);
+    assertEquals('', button.title);
+
+    button.click();
+    await button.updateComplete;
+    assertTrue(button.expanded);
+    assertEquals('', button.title);
+  });
+
 });

@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AccessibilityAndroidServiceInfoEnum)-->
+
 <enum name="AccessibilityAndroidServiceInfoEnum">
   <summary>
     Track flags and capabilities of enabled accessibility services on Android.
@@ -96,6 +98,10 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="FLAG_INPUT_METHOD_EDITOR"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_android.cc) -->
+
+<!-- LINT.IfChange(AccessibilityATKAPIEnum)-->
+
 <enum name="AccessibilityATKAPIEnum">
   <summary>
     Track which ATK APIs are being called by clients on Linux Desktop.
@@ -114,6 +120,10 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kRefStateSet">atk_object_ref_state_set</int>
 </enum>
 
+<!-- LINT.ThenChange(//ui/accessibility/platform/ax_platform_node_auralinux.cc:UmaAtkApi) -->
+
+<!-- LINT.IfChange(AccessibilityImageLabelModeAndroid)-->
+
 <enum name="AccessibilityImageLabelModeAndroid">
   <summary>
     Tracks what mode the user has selected for accessibility image labels on
@@ -127,18 +137,21 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Cancel"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/image_descriptions/android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsDialog.java:ImageDescriptionsDialogAction) -->
+
+<!-- LINT.IfChange(AccessibilityPageZoomAppMenuEnabledState)-->
+
 <enum name="AccessibilityPageZoomAppMenuEnabledState">
   <summary>Track enabled state of page zoom option on app menu.</summary>
-<!-- This must be kept in sync with
-PageZoomUma.AccessibilityPageZoomAppMenuEnabledState in
-components/browser_ui/accessibility/android/java/src/org/chromium/
-components/browser_ui/accessibility/PageZoomUma.java -->
-
   <int value="0" label="Not Enabled"/>
   <int value="1" label="User Enabled"/>
   <int value="2" label="OS Enabled"/>
   <int value="3" label="User Disabled"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/PageZoomUma.java:AccessibilityPageZoomAppMenuEnabledState) -->
+
+<!-- LINT.IfChange(AccessibilityTreeUnserializeError) -->
 
 <enum name="AccessibilityTreeUnserializeError">
   <summary>
@@ -154,6 +167,10 @@ components/browser_ui/accessibility/PageZoomUma.java -->
   <int value="6" label="Pending Nodes"/>
   <int value="7" label="Pending Changes"/>
 </enum>
+
+<!-- LINT.ThenChange(//ui/accessibility/ax_tree.h:AXTreeUnserializeError) -->
+
+<!-- LINT.IfChange(AccessibilityWinAPIEnum) -->
 
 <enum name="AccessibilityWinAPIEnum">
   <summary>
@@ -675,6 +692,8 @@ components/browser_ui/accessibility/PageZoomUma.java -->
   </int>
 </enum>
 
+<!-- LINT.ThenChange(//ui/accessibility/platform/ax_platform_node_win.h) -->
+
 <enum name="AccessibilityWinAPIGetPropertyValueEnum">
 <!-- Property IDs are defined in UIAutomationClient.h in the Windows SDK.
 Unknown properties are collapsed to zero. -->
@@ -857,6 +876,8 @@ Unknown properties are collapsed to zero. -->
   <int value="30174" label="IsDialog"/>
 </enum>
 
+<!-- LINT.IfChange(AutoclickActionType) -->
+
 <enum name="AutoclickActionType">
   <int value="0" label="Left click"/>
   <int value="1" label="Right click"/>
@@ -865,6 +886,10 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Pause"/>
   <int value="5" label="Scroll"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/public/cpp/accessibility_controller_enums.h:AutoclickEventType) -->
+
+<!-- LINT.IfChange(AXTreeSnapshotErrorReason) -->
 
 <enum name="AXTreeSnapshotErrorReason">
   <int value="0" label="Generic Serialization error"/>
@@ -876,10 +901,207 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Max nodes and timeout limits both reached"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/renderer/accessibility/ax_tree_snapshotter_impl.cc:AXTreeSnapshotErrorReason) -->
+
+<!-- LINT.IfChange(CaptionBubbleErrorType) -->
+
 <enum name="CaptionBubbleErrorType">
   <int value="0" label="Generic"/>
   <int value="1" label="Media foundation renderer unsupported"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/live_caption/views/caption_bubble_model.h:CaptionBubbleErrorType) -->
+
+<!-- LINT.IfChange(ChromeVoxCommand) -->
+
+<enum name="ChromeVoxCommand">
+  <summary>
+    List of ChromeVox commands. Ensure this enum stays in sync with the Command
+    enum in:
+    chrome/browser/resources/chromeos/accessibility/chromevox/common/command.ts
+  </summary>
+  <int value="0" label="ANNOUNCE_BATTERY_DESCRIPTION"/>
+  <int value="1" label="ANNOUNCE_HEADERS"/>
+  <int value="2" label="ANNOUNCE_RICH_TEXT_DESCRIPTION"/>
+  <int value="3" label="AUTORUNNER"/>
+  <int value="4" label="BACKWARD"/>
+  <int value="5" label="BOTTOM"/>
+  <int value="6" label="CONTEXT_MENU"/>
+  <int value="7" label="COPY"/>
+  <int value="8" label="CYCLE_PUNCTUATION_ECHO"/>
+  <int value="9" label="CYCLE_TYPING_ECHO"/>
+  <int value="10" label="DEBUG"/>
+  <int value="11" label="DECREASE_TTS_PITCH"/>
+  <int value="12" label="DECREASE_TTS_RATE"/>
+  <int value="13" label="DECREASE_TTS_VOLUME"/>
+  <int value="14" label="DISABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP"/>
+  <int value="15" label="DISABLE_LOGGING"/>
+  <int value="16" label="DUMP_TREE"/>
+  <int value="17" label="ENABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP"/>
+  <int value="18" label="ENABLE_CONSOLE_TTS"/>
+  <int value="19" label="ENABLE_LOGGING"/>
+  <int value="20" label="ENTER_SHIFTER"/>
+  <int value="21" label="EXIT_SHIFTER"/>
+  <int value="22" label="EXIT_SHIFTER_CONTENT"/>
+  <int value="23" label="FORCE_CLICK_ON_CURRENT_ITEM"/>
+  <int value="24" label="FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM"/>
+  <int value="25" label="FORCE_LONG_CLICK_ON_CURRENT_ITEM"/>
+  <int value="26" label="FORWARD"/>
+  <int value="27" label="FULLY_DESCRIBE"/>
+  <int value="28" label="GO_TO_COL_FIRST_CELL"/>
+  <int value="29" label="GO_TO_COL_LAST_CELL"/>
+  <int value="30" label="GO_TO_FIRST_CELL"/>
+  <int value="31" label="GO_TO_LAST_CELL"/>
+  <int value="32" label="GO_TO_ROW_FIRST_CELL"/>
+  <int value="33" label="GO_TO_ROW_LAST_CELL"/>
+  <int value="34" label="HANDLE_TAB"/>
+  <int value="35" label="HANDLE_TAB_PREV"/>
+  <int value="36" label="HELP"/>
+  <int value="37" label="INCREASE_TTS_PITCH"/>
+  <int value="38" label="INCREASE_TTS_RATE"/>
+  <int value="39" label="INCREASE_TTS_VOLUME"/>
+  <int value="40" label="JUMP_TO_BOTTOM"/>
+  <int value="41" label="JUMP_TO_DETAILS"/>
+  <int value="42" label="JUMP_TO_TOP"/>
+  <int value="43" label="LEFT"/>
+  <int value="44" label="LINE_DOWN"/>
+  <int value="45" label="LINE_UP"/>
+  <int value="46" label="MOVE_TO_END_OF_LINE"/>
+  <int value="47" label="MOVE_TO_START_OF_LINE"/>
+  <int value="48" label="NOP"/>
+  <int value="49" label="NATIVE_NEXT_CHARACTER"/>
+  <int value="50" label="NATIVE_NEXT_WORD"/>
+  <int value="51" label="NATIVE_PREVIOUS_CHARACTER"/>
+  <int value="52" label="NATIVE_PREVIOUS_WORD"/>
+  <int value="53" label="NEXT_ARTICLE"/>
+  <int value="54" label="NEXT_AT_GRANULARITY"/>
+  <int value="55" label="NEXT_BUTTON"/>
+  <int value="56" label="NEXT_CHARACTER"/>
+  <int value="57" label="NEXT_CHECKBOX"/>
+  <int value="58" label="NEXT_COL"/>
+  <int value="59" label="NEXT_COMBO_BOX"/>
+  <int value="60" label="NEXT_CONTROL"/>
+  <int value="61" label="NEXT_EDIT_TEXT"/>
+  <int value="62" label="NEXT_FORM_FIELD"/>
+  <int value="63" label="NEXT_GRANULARITY"/>
+  <int value="64" label="NEXT_GRAPHIC"/>
+  <int value="65" label="NEXT_GROUP"/>
+  <int value="66" label="NEXT_HEADING"/>
+  <int value="67" label="NEXT_HEADING_1"/>
+  <int value="68" label="NEXT_HEADING_2"/>
+  <int value="69" label="NEXT_HEADING_3"/>
+  <int value="70" label="NEXT_HEADING_4"/>
+  <int value="71" label="NEXT_HEADING_5"/>
+  <int value="72" label="NEXT_HEADING_6"/>
+  <int value="73" label="NEXT_INVALID_ITEM"/>
+  <int value="74" label="NEXT_LANDMARK"/>
+  <int value="75" label="NEXT_LINE"/>
+  <int value="76" label="NEXT_LINK"/>
+  <int value="77" label="NEXT_LIST"/>
+  <int value="78" label="NEXT_LIST_ITEM"/>
+  <int value="79" label="NEXT_MATH"/>
+  <int value="80" label="NEXT_MEDIA"/>
+  <int value="81" label="NEXT_OBJECT"/>
+  <int value="82" label="NEXT_PAGE"/>
+  <int value="83" label="NEXT_RADIO"/>
+  <int value="84" label="NEXT_ROW"/>
+  <int value="85" label="NEXT_SECTION"/>
+  <int value="86" label="NEXT_SENTENCE"/>
+  <int value="87" label="NEXT_SIMILAR_ITEM"/>
+  <int value="88" label="NEXT_SLIDER"/>
+  <int value="89" label="NEXT_TABLE"/>
+  <int value="90" label="NEXT_VISITED_LINK"/>
+  <int value="91" label="NEXT_WORD"/>
+  <int value="92" label="OPEN_CHROMEVOX_MENUS"/>
+  <int value="93" label="OPEN_KEYBOARD_SHORTCUTS"/>
+  <int value="94" label="OPEN_LONG_DESC"/>
+  <int value="95" label="PAN_LEFT"/>
+  <int value="96" label="PAN_RIGHT"/>
+  <int value="97" label="PASS_THROUGH_MODE"/>
+  <int value="98" label="PAUSE_ALL_MEDIA"/>
+  <int value="99" label="PREVIOUS_ARTICLE"/>
+  <int value="100" label="PREVIOUS_AT_GRANULARITY"/>
+  <int value="101" label="PREVIOUS_BUTTON"/>
+  <int value="102" label="PREVIOUS_CHARACTER"/>
+  <int value="103" label="PREVIOUS_CHECKBOX"/>
+  <int value="104" label="PREVIOUS_COMBO_BOX"/>
+  <int value="105" label="PREVIOUS_COL"/>
+  <int value="106" label="PREVIOUS_CONTROL"/>
+  <int value="107" label="PREVIOUS_EDIT_TEXT"/>
+  <int value="108" label="PREVIOUS_FORM_FIELD"/>
+  <int value="109" label="PREVIOUS_GRANULARITY"/>
+  <int value="110" label="PREVIOUS_GRAPHIC"/>
+  <int value="111" label="PREVIOUS_GROUP"/>
+  <int value="112" label="PREVIOUS_HEADING"/>
+  <int value="113" label="PREVIOUS_HEADING_1"/>
+  <int value="114" label="PREVIOUS_HEADING_2"/>
+  <int value="115" label="PREVIOUS_HEADING_3"/>
+  <int value="116" label="PREVIOUS_HEADING_4"/>
+  <int value="117" label="PREVIOUS_HEADING_5"/>
+  <int value="118" label="PREVIOUS_HEADING_6"/>
+  <int value="119" label="PREVIOUS_INVALID_ITEM"/>
+  <int value="120" label="PREVIOUS_LANDMARK"/>
+  <int value="121" label="PREVIOUS_LINE"/>
+  <int value="122" label="PREVIOUS_LINK"/>
+  <int value="123" label="PREVIOUS_LIST"/>
+  <int value="124" label="PREVIOUS_LIST_ITEM"/>
+  <int value="125" label="PREVIOUS_MATH"/>
+  <int value="126" label="PREVIOUS_MEDIA"/>
+  <int value="127" label="PREVIOUS_OBJECT"/>
+  <int value="128" label="PREVIOUS_PAGE"/>
+  <int value="129" label="PREVIOUS_RADIO"/>
+  <int value="130" label="PREVIOUS_ROW"/>
+  <int value="131" label="PREVIOUS_SECTION"/>
+  <int value="132" label="PREVIOUS_SENTENCE"/>
+  <int value="133" label="PREVIOUS_SIMILAR_ITEM"/>
+  <int value="134" label="PREVIOUS_SLIDER"/>
+  <int value="135" label="PREVIOUS_TABLE"/>
+  <int value="136" label="PREVIOUS_VISITED_LINK"/>
+  <int value="137" label="PREVIOUS_WORD"/>
+  <int value="138" label="READ_CURRENT_TITLE"/>
+  <int value="139" label="READ_CURRENT_URL"/>
+  <int value="140" label="READ_FROM_HERE"/>
+  <int value="141" label="READ_LINK_URL"/>
+  <int value="142" label="READ_PHONETIC_PRONUNCIATION"/>
+  <int value="143" label="REPORT_ISSUE"/>
+  <int value="144" label="RESET_TEXT_TO_SPEECH_SETTINGS"/>
+  <int value="145" label="RIGHT"/>
+  <int value="146" label="ROUTING"/>
+  <int value="147" label="SCROLL_BACKWARD"/>
+  <int value="148" label="SCROLL_FORWARD"/>
+  <int value="149" label="SHOW_ACTIONS_MENU"/>
+  <int value="150" label="SHOW_FORMS_LIST"/>
+  <int value="151" label="SHOW_HEADINGS_LIST"/>
+  <int value="152" label="SHOW_LANDMARKS_LIST"/>
+  <int value="153" label="SHOW_LEARN_MODE_PAGE"/>
+  <int value="154" label="SHOW_LINKS_LIST"/>
+  <int value="155" label="SHOW_LOG_PAGE"/>
+  <int value="156" label="SHOW_OPTIONS_PAGE"/>
+  <int value="157" label="SHOW_PANEL_MENU_MOST_RECENT"/>
+  <int value="158" label="SHOW_TABLES_LIST"/>
+  <int value="159" label="SHOW_TALKBACK_KEYBOARD_SHORTCUTS"/>
+  <int value="160" label="SHOW_TTS_SETTINGS"/>
+  <int value="161" label="SPEAK_TABLE_LOCATION"/>
+  <int value="162" label="SPEAK_TIME_AND_DATE"/>
+  <int value="163" label="START_HISTORY_RECORDING"/>
+  <int value="164" label="STOP_HISTORY_RECORDING"/>
+  <int value="165" label="STOP_SPEECH"/>
+  <int value="166" label="TOGGLE_BRAILLE_CAPTIONS"/>
+  <int value="167" label="TOGGLE_BRAILLE_TABLE"/>
+  <int value="168" label="TOGGLE_DICTATION"/>
+  <int value="169" label="TOGGLE_EARCONS"/>
+  <int value="170" label="TOGGLE_KEYBOARD_HELP"/>
+  <int value="171" label="TOGGLE_SCREEN"/>
+  <int value="172" label="TOGGLE_SEARCH_WIDGET"/>
+  <int value="173" label="TOGGLE_SELECTION"/>
+  <int value="174" label="TOGGLE_SEMANTICS"/>
+  <int value="175" label="TOGGLE_SPEECH_ON_OR_OFF"/>
+  <int value="176" label="TOGGLE_STICKY_MODE"/>
+  <int value="177" label="TOP"/>
+  <int value="178" label="VIEW_GRAPHIC_AS_BRAILLE"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/chromeos/accessibility/chromevox/common/command.ts:Command) -->
 
 <enum name="ChromeVoxGestureType">
   <int value="1" label="click"/>
@@ -956,6 +1178,18 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="AccessibilityCommon extension"/>
 </enum>
 
+<enum name="CrosSelectToSpeakAction">
+  <int value="0" label="None"/>
+  <int value="1" label="Previous paragraph"/>
+  <int value="2" label="Previous sentence"/>
+  <int value="3" label="Pause"/>
+  <int value="4" label="Resume"/>
+  <int value="5" label="Next sentence"/>
+  <int value="6" label="Next paragraph"/>
+  <int value="7" label="Exit"/>
+  <int value="8" label="Change speed"/>
+</enum>
+
 <enum name="CrosSelectToSpeakActivationMethod">
   <int value="0" label="Unknown"/>
   <int value="1" label="Canceled with menu button"/>
@@ -1008,6 +1242,50 @@ Unknown properties are collapsed to zero. -->
   <int value="14" label="Previous invalid"/>
   <int value="15" label="Invalid selection bounds"/>
 </enum>
+
+<!-- LINT.IfChange(DependencyParserModelState) -->
+
+<enum name="DependencyParserModelState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Model file invalid"/>
+  <int value="2" label="Model file valid"/>
+  <int value="3" label="Model file valid and available"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h:DependencyParserModelState) -->
+
+<!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
+
+<enum name="KeyboardShortcutsSemanticMeaning">
+  <summary>Track keyboard shortcuts used on Android.</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Open recently closed tab"/>
+  <int value="2" label="Open new tab"/>
+  <int value="3" label="Open new tab incognito"/>
+  <int value="4" label="Open new window"/>
+  <int value="5" label="Reload tab"/>
+  <int value="6" label="Close tab"/>
+  <int value="7" label="Move to tab left"/>
+  <int value="8" label="Move to tab right"/>
+  <int value="9" label="Move to specific tab"/>
+  <int value="10" label="Move to last tab"/>
+  <int value="11" label="Jump to omnibox"/>
+  <int value="12" label="Go back"/>
+  <int value="13" label="Go forward"/>
+  <int value="14" label="Open menu"/>
+  <int value="15" label="Open help"/>
+  <int value="16" label="Find in page"/>
+  <int value="17" label="Open bookmarks"/>
+  <int value="18" label="Bookmark page"/>
+  <int value="19" label="Open history"/>
+  <int value="20" label="Save page"/>
+  <int value="21" label="Print"/>
+  <int value="22" label="Zoom in"/>
+  <int value="23" label="Zoom out"/>
+  <int value="24" label="Zoom reset"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyCode">
   <int value="0" label="UNKNOWN"/>
@@ -1274,16 +1552,17 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Bubble expanded"/>
 </enum>
 
-<enum name="LiveCaptionPinBubbleEvent">
-  <int value="0" label="Bubble unpinned"/>
-  <int value="1" label="Bubble pinned"/>
-</enum>
+<!-- LINT.IfChange(LiveCaptionSessionEvent) -->
 
 <enum name="LiveCaptionSessionEvent">
   <int value="0" label="Stream started"/>
   <int value="1" label="Stream finished"/>
   <int value="2" label="User closed bubble"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/live_caption/views/caption_bubble.h:LiveCaptionSessionEvent) -->
+
+<!-- LINT.IfChange(LoadSodaResult) -->
 
 <enum name="LoadSodaResult">
   <int value="0" label="Unknown"/>
@@ -1294,22 +1573,28 @@ Unknown properties are collapsed to zero. -->
              null."/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/services/speech/soda/soda_client.h:LoadSodaResult) -->
+
+<!-- LINT.IfChange(MainNodeAnnotationResult) -->
+
+<enum name="MainNodeAnnotationResult">
+  <int value="0" label="Main node successfully identified"/>
+  <int value="1" label="Invalid node returned"/>
+  <int value="2" label="Main node was already set"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/renderer/accessibility/annotations/ax_main_node_annotator.cc:MainNodeAnnotationResult) -->
+
+<!-- LINT.IfChange(PdfOcrRequestStatus) -->
+
 <enum name="PdfOcrRequestStatus">
   <int value="0" label="OCR requested"/>
   <int value="1" label="OCR performed"/>
 </enum>
 
-<enum name="PdfOcrUserSelection">
-  <int value="0"
-      label="(Obsolete) Turned on once from the context menu. Removed in
-             2023/09."/>
-  <int value="1" label="Turned on always from the context menu"/>
-  <int value="2" label="Turned off from the context menu"/>
-  <int value="3" label="Turned on always from the more actions"/>
-  <int value="4" label="Turned off from the more actions"/>
-  <int value="5" label="Turned on always from the settings"/>
-  <int value="6" label="Turned off from the settings"/>
-</enum>
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_ocr_helper.h:PdfOcrRequestStatus) -->
+
+<!-- LINT.IfChange(ReadAnythingColor) -->
 
 <enum name="ReadAnythingColor">
   <int value="0" label="Default"/>
@@ -1319,10 +1604,18 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Blue"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:Colors) -->
+
+<!-- LINT.IfChange(ReadAnythingEmptyState) -->
+
 <enum name="ReadAnythingEmptyState">
   <int value="0" label="Empty state shown"/>
   <int value="1" label="User selection after empty state shown"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingEmptyState) -->
+
+<!-- LINT.IfChange(ReadAnythingFontName) -->
 
 <enum name="ReadAnythingFontName">
   <int value="0" label="Poppins"/>
@@ -1334,12 +1627,29 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="STIX Two Text"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingFont) -->
+
+<!-- LINT.IfChange(ReadAnythingHighlightState) -->
+
+<enum name="ReadAnythingHighlightState">
+  <int value="0" label="Reading highlight shown"/>
+  <int value="1" label="Reading highlight hidden"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudHighlightState) -->
+
+<!-- LINT.IfChange(ReadAnythingLetterSpacing) -->
+
 <enum name="ReadAnythingLetterSpacing">
   <int value="0" label="Tight (Deprecated)"/>
   <int value="1" label="Standard"/>
   <int value="2" label="Wide"/>
   <int value="3" label="Very Wide"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:LetterSpacing) -->
+
+<!-- LINT.IfChange(ReadAnythingLineSpacing) -->
 
 <enum name="ReadAnythingLineSpacing">
   <int value="0" label="Tight (Deprecated)"/>
@@ -1348,6 +1658,39 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Very Loose"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything.mojom:LineSpacing) -->
+
+<!-- LINT.IfChange(ReadAnythingNewPage) -->
+
+<enum name="ReadAnythingNewPage">
+  <int value="0" label="New page distilled"/>
+  <int value="1" label="Speech played on new page"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingNewPage) -->
+
+<!-- LINT.IfChange(ReadAnythingReadAloudSettingsChange) -->
+
+<enum name="ReadAnythingReadAloudSettingsChange">
+  <int value="0" label="Voice speed change"/>
+  <int value="1" label="Voice name change"/>
+  <int value="2" label="Highlight change"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudSettingsChange) -->
+
+<!-- LINT.IfChange(ReadAnythingReadAloudVoice) -->
+
+<enum name="ReadAnythingReadAloudVoice">
+  <int value="0" label="Natural voice"/>
+  <int value="1" label="eSpeak voice"/>
+  <int value="2" label="ChromeOS voice"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingVoiceType) -->
+
+<!-- LINT.IfChange(ReadAnythingScrollEvent) -->
+
 <enum name="ReadAnythingScrollEvent">
   <int value="0" label="Side panel selected"/>
   <int value="1" label="Main panel selected"/>
@@ -1355,18 +1698,48 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Main panel scrolled"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/common/accessibility/read_anything_constants.h:ReadAnythingScrollEvent) -->
+
+<!-- LINT.IfChange(ReadAnythingSettingsChange) -->
+
 <enum name="ReadAnythingSettingsChange">
   <int value="0" label="Font change"/>
   <int value="1" label="Font size change"/>
   <int value="2" label="Theme change"/>
   <int value="3" label="Line height change"/>
   <int value="4" label="Letter spacing change"/>
+  <int value="5" label="Links enabled change"/>
+  <int value="6" label="Images enabled change"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSettingsChange) -->
+
+<!-- LINT.IfChange(ReadAnythingSpeechError) -->
+
+<enum name="ReadAnythingSpeechError">
+  <int value="0" label="Text too long"/>
+  <int value="1" label="Language unavailable"/>
+  <int value="2" label="Voice unavailable"/>
+  <int value="3" label="Invalid argument"/>
+  <int value="4" label="Synthesis failed"/>
+  <int value="5" label="Synthesis unavailable"/>
+  <int value="6" label="Audio busy"/>
+  <int value="7" label="Audio hardware"/>
+  <int value="8" label="Network"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSpeechError) -->
+
+<!-- LINT.IfChange(ReaderModeEntryPoint) -->
 
 <enum name="ReaderModeEntryPoint">
   <int value="0" label="Omnibox icon"/>
   <int value="1" label="Menu option"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/dom_distiller/content/browser/uma_helper.h:ReaderModeEntryPoint) -->
+
+<!-- LINT.IfChange(ReaderModeMessageDismissalCondition) -->
 
 <enum name="ReaderModeMessageDismissalCondition">
   <int value="0"
@@ -1381,6 +1754,10 @@ Unknown properties are collapsed to zero. -->
              deselected"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java:MessageDismissalCondition) -->
+
+<!-- LINT.IfChange(SodaLanguageCode) -->
+
 <enum name="SodaLanguageCode">
   <int value="0" label="None"/>
   <int value="1" label="en-US"/>
@@ -1389,7 +1766,40 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="es-ES"/>
   <int value="5" label="fr-FR"/>
   <int value="6" label="it-IT"/>
+  <int value="7" label="en-CA"/>
+  <int value="8" label="en-AU"/>
+  <int value="9" label="en-GB"/>
+  <int value="10" label="en-IE"/>
+  <int value="11" label="en-SG"/>
+  <int value="12" label="fr-BE"/>
+  <int value="13" label="fr-CH"/>
+  <int value="14" label="en-IN"/>
+  <int value="15" label="it-CH"/>
+  <int value="16" label="de-AT"/>
+  <int value="17" label="de-BE"/>
+  <int value="18" label="de-CH"/>
+  <int value="19" label="es-US"/>
+  <int value="20" label="hi-IN"/>
+  <int value="21" label="pt-BR"/>
+  <int value="22" label="id-ID"/>
+  <int value="23" label="ko-KR"/>
+  <int value="24" label="pl-PL"/>
+  <int value="25" label="th-TH"/>
+  <int value="26" label="tr-TR"/>
+  <int value="27" label="zh-CN"/>
+  <int value="28" label="zh-TW"/>
+  <int value="29" label="da-DK"/>
+  <int value="30" label="fr-CA"/>
+  <int value="31" label="nb-NO"/>
+  <int value="32" label="nl-NL"/>
+  <int value="33" label="sv-SE"/>
+  <int value="34" label="ru-RU"/>
+  <int value="35" label="vi-VN"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/soda/constants.h:LanguageCode) -->
+
+<!-- LINT.IfChange(TextToSpeechEvent) -->
 
 <enum name="TextToSpeechEvent">
   <int value="0" label="Start"/>
@@ -1403,6 +1813,8 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Pause"/>
   <int value="9" label="Resume"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/speech/tts_controller_impl.cc:UMATextToSpeechEvent) -->
 
 <enum name="TextToSpeechFromExtensionAPI">
   <int value="0" label="Web speech API"/>
@@ -1427,11 +1839,15 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Native Speech"/>
 </enum>
 
+<!-- LINT.IfChange(TextToSpeechSource) -->
+
 <enum name="TextToSpeechSource">
   <int value="0" label="Other"/>
   <int value="1" label="ChromeVox"/>
   <int value="2" label="SelectToSpeak"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/speech/extension_api/tts_extension_api.cc:TextToSpeechSource) -->
 
 </enums>
 

@@ -1,0 +1,2 @@
+file://components/autofill/core/browser/payments/OWNERS
+per-file *sync*=file://components/sync/OWNERS

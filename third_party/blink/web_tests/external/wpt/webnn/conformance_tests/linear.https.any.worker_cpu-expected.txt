@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] linear float32 1D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 1D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 3D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 4D tensor specified options.alpha and default options.beta
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 positive 4D tensor specified positive options.beta and default options.alpha
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 negative 4D tensor specified negative options.beta and default options.alpha
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 positive 4D tensor all options (positive options.alpha and positive options.beta)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 positive 4D tensor all options (negative options.alpha and negative options.beta)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+[FAIL] linear float32 negative 4D tensor all options (positive options.alpha and negative options.beta)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The operator (linear) is not supported."
+Harness: the test ran to completion.
+

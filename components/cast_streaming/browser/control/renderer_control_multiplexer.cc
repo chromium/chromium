@@ -86,6 +86,11 @@ void RendererControlMultiplexer::SetCdm(
   renderer_remote_->SetCdm(cdm_id, std::move(callback));
 }
 
+void RendererControlMultiplexer::SetLatencyHint(
+    std::optional<base::TimeDelta> latency_hint) {
+  NOTIMPLEMENTED();
+}
+
 void RendererControlMultiplexer::Initialize(
     mojo::PendingAssociatedRemote<media::mojom::RendererClient> client,
     std::optional<

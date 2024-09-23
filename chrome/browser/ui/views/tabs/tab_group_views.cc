@@ -21,7 +21,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/view_utils.h"
@@ -31,9 +30,7 @@ TabGroupViews::TabGroupViews(views::View* container_view,
                              TabSlotController& tab_slot_controller,
                              const tab_groups::TabGroupId& group)
     : tab_slot_controller_(tab_slot_controller), group_(group) {
-  style_ = features::IsChromeRefresh2023()
-               ? std::make_unique<const ChromeRefresh2023TabGroupStyle>(*this)
-               : std::make_unique<const TabGroupStyle>(*this);
+  style_ = std::make_unique<const TabGroupStyle>(*this);
   const TabGroupStyle* style = style_.get();
 
   header_ = container_view->AddChildView(

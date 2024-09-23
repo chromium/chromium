@@ -74,10 +74,10 @@ class PasswordOperation : public UndoOperation {
             PasswordOperation<PasswordOperationType::kAddOperation>>(
             profile_store_, account_store_, undo_manager_, form_));
     if (form.IsUsingAccountStore()) {
-      account_store_->RemoveLogin(form);
+      account_store_->RemoveLogin(FROM_HERE, form);
     }
     if (form.IsUsingProfileStore()) {
-      profile_store_->RemoveLogin(form);
+      profile_store_->RemoveLogin(FROM_HERE, form);
     }
   }
 

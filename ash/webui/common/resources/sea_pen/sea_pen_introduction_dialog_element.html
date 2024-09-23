@@ -1,0 +1,48 @@
+<style include="common cros-button-style">
+  cr-dialog::part(dialog) {
+    position: fixed;
+  }
+
+  .title-container {
+    padding: 0;
+  }
+
+  h3, p {
+    margin: 0;
+  }
+
+  #introTitle {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-display-7-font);
+    padding: 32px 32px 16px;
+  }
+
+  .body-container {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-sys-body-1-font);
+    padding: 16px 32px;
+  }
+
+  .button-container {
+    padding: 16px 32px 28px;
+  }
+
+  #close {
+    border-radius: 16px;
+  }
+
+</style>
+<cr-dialog id="dialog" show-on-attach no-cancel>
+  <div class="title-container" slot="title">
+    <sea-pen-introduction-svg></sea-pen-introduction-svg>
+    <h3 id="introTitle" >[[i18n('seaPenIntroductionTitle')]]<h3>
+  </div>
+  <div class="body-container" slot="body">
+    <p inner-h-t-m-l="[[getIntroDialogContent_()]]"></p>
+  </div>
+  <div class="button-container" slot="button-container">
+    <cr-button id="close" on-click="onClickClose_" class="action-button">
+      <span>[[i18n('seaPenIntroductionDialogCloseButton')]]</span>
+    </cr-button>
+  </div>
+</cr-dialog>

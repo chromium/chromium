@@ -57,7 +57,7 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   void ConfigureDisplays(
       const std::vector<display::DisplayConfigurationParams>& config_requests,
       display::ConfigureCallback callback,
-      uint32_t modeset_flag);
+      display::ModesetFlags modeset_flags);
 
   // DeviceEventObserver overrides:
   void OnDeviceEvent(const DeviceEvent& event) override;
@@ -149,6 +149,9 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   // This is used to cache the primary DRM device until the channel is
   // established.
   std::unique_ptr<DrmWrapper> primary_drm_device_;
+
+  // Used to disable input devices when the display is externally controlled.
+  std::unique_ptr<ScopedDisableInputDevices> scoped_input_devices_disabler_;
 
   base::WeakPtrFactory<DrmDisplayHostManager> weak_ptr_factory_{this};
 };

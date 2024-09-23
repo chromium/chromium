@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
@@ -19,9 +21,17 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "device_management_backend.pb.h"
+#include "extensions/common/extension_id.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -169,7 +179,7 @@ class KioskEnterpriseInputApiBrowserTest : public WebKioskBaseTest {
         base::BindRepeating(&ServeSimpleHtmlPage));
     ASSERT_TRUE(web_app_server_handle_ =
                     web_app_server_.StartAndReturnHandle());
-    SetAppInstallUrl(web_app_server_.base_url().spec());
+    SetAppInstallUrl(web_app_server_.base_url());
   }
 
   void ForceInstallAndWaitExtensionReady() {

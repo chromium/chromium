@@ -80,7 +80,7 @@ class BackgroundNetworkStatusListener implements NetworkChangeNotifierAutoDetect
         ThreadUtils.assertOnBackgroundThread();
         assert mNotifier != null;
 
-        // TODO(crbug/1493005): remove this call if it is not necessary.
+        // TODO(crbug.com/40936429): remove this call if it is not necessary.
         mNotifier.updateCurrentNetworkState();
         return mNotifier.getCurrentNetworkState().getConnectionType();
     }

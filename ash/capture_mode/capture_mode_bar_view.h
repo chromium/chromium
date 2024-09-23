@@ -42,7 +42,9 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   virtual void OnCaptureTypeChanged(CaptureModeType new_type);
 
   // Called when settings is toggled on or off.
-  void SetSettingsMenuShown(bool shown);
+  virtual void SetSettingsMenuShown(bool shown);
+
+  bool IsEventOnSettingsButton(gfx::Point screen_location) const;
 
   // views::View:
   void AddedToWidget() override;
@@ -52,7 +54,8 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   CaptureModeBarView();
 
   // Adds the common elements of different capture bars to the bar view.
-  void AppendCommonElements();
+  void AppendSettingsButton();
+  void AppendCloseButton();
 
  private:
   void OnSettingsButtonPressed(const ui::Event& event);

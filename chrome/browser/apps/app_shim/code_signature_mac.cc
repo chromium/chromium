@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_shim/code_signature_mac.h"
 
+#include <variant>
+
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
@@ -146,17 +148,77 @@ base::apple::ScopedCFTypeRef<SecRequirementRef> RequirementFromString(
   return requirement;
 }
 
-// Verify the code signature of |pid| against |requirement|.
-OSStatus ProcessIsSignedAndFulfillsRequirement(pid_t pid,
-                                               SecRequirementRef requirement) {
-  base::apple::ScopedCFTypeRef<CFNumberRef> pid_cf(
-      CFNumberCreate(nullptr, kCFNumberIntType, &pid));
-  const void* attribute_keys[] = {kSecGuestAttributePid};
-  const void* attribute_values[] = {pid_cf.get()};
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes(CFDictionaryCreate(
-      nullptr, attribute_keys, attribute_values, std::size(attribute_keys),
-      &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+namespace {
+
+// Return a dictionary of attributes suitable for looking up `process` with
+// `SecCodeCopyGuestWithAttributes`.
+base::apple::ScopedCFTypeRef<CFDictionaryRef> AttributesForGuestValidation(
+    absl::variant<audit_token_t, pid_t> process,
+    SignatureValidationType validation_type,
+    std::string_view info_plist_xml) {
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
+      CFDictionaryCreateMutable(nullptr, 3, &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+
+  if (audit_token_t* token = absl::get_if<audit_token_t>(&process)) {
+    base::apple::ScopedCFTypeRef<CFDataRef> audit_token_cf(CFDataCreate(
+        nullptr, reinterpret_cast<const UInt8*>(token), sizeof(audit_token_t)));
+    CFDictionarySetValue(attributes.get(), kSecGuestAttributeAudit,
+                         audit_token_cf.get());
+  } else {
+    CHECK(absl::holds_alternative<pid_t>(process));
+    base::apple::ScopedCFTypeRef<CFNumberRef> pid_cf(
+        CFNumberCreate(nullptr, kCFNumberIntType, &absl::get<pid_t>(process)));
+    CFDictionarySetValue(attributes.get(), kSecGuestAttributePid, pid_cf.get());
+  }
+
+  if (validation_type == SignatureValidationType::DynamicOnly) {
+    base::apple::ScopedCFTypeRef<CFDataRef> info_plist(CFDataCreate(
+        nullptr, reinterpret_cast<const UInt8*>(info_plist_xml.data()),
+        info_plist_xml.length()));
+
+    CFDictionarySetValue(attributes.get(), kSecGuestAttributeDynamicCode,
+                         kCFBooleanTrue);
+    CFDictionarySetValue(attributes.get(),
+                         kSecGuestAttributeDynamicCodeInfoPlist,
+                         info_plist.get());
+  }
+
+  return attributes;
+}
+
+}  // namespace
+
+// Verify the code signature of |audit_token| against |requirement|.
+OSStatus ProcessIsSignedAndFulfillsRequirement(
+    audit_token_t audit_token,
+    SecRequirementRef requirement,
+    SignatureValidationType validation_type,
+    std::string_view info_plist_xml) {
   base::apple::ScopedCFTypeRef<SecCodeRef> code;
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes =
+      AttributesForGuestValidation(audit_token, validation_type,
+                                   info_plist_xml);
+
+  OSStatus status = SecCodeCopyGuestWithAttributes(
+      nullptr, attributes.get(), kSecCSDefaultFlags, code.InitializeInto());
+  if (status != errSecSuccess) {
+    DumpOSStatusError(status, "SecCodeCopyGuestWithAttributes");
+    return status;
+  }
+  return SecCodeCheckValidity(code.get(), kSecCSDefaultFlags, requirement);
+}
+
+// Verify the code signature of |pid| against |requirement|.
+OSStatus ProcessIsSignedAndFulfillsRequirement(
+    pid_t pid,
+    SecRequirementRef requirement,
+    SignatureValidationType validation_type,
+    std::string_view info_plist_xml) {
+  base::apple::ScopedCFTypeRef<SecCodeRef> code;
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes =
+      AttributesForGuestValidation(pid, validation_type, info_plist_xml);
+
   OSStatus status = SecCodeCopyGuestWithAttributes(
       nullptr, attributes.get(), kSecCSDefaultFlags, code.InitializeInto());
   if (status != errSecSuccess) {

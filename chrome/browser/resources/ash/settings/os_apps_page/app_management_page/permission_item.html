@@ -23,7 +23,28 @@
       managed="[[isManaged_(app, permissionType)]]"
       disabled="[[isDisabled_(app, permissionType)]]"
       value="[[getValue_(app, permissionType)]]"
-      aria-description="Click to toggle [[permissionLabel]] permissions."
-      i18n-aria-descrirption="Label for toggle button to change [[permissionLabel]] permissions.">
+      aria-description=
+        "$i18n{appManagementPermissionItemClickTogglePermission}">
+    <template is="dom-if" if="[[showPermissionDescriptionString_]]">
+      <localized-link
+          id="permissionDescription"
+          slot="description"
+          localized-string="[[getPermissionDescriptionString_(app,
+            permissionType, prefs.ash.user.camera_allowed.value,
+            prefs.ash.user.microphone_allowed.value,
+            prefs.ash.user.geolocation_access_level.value,
+            sensorAvailable_, microphoneHardwareToggleActive,
+            microphoneMutedBySecurityCurtain, cameraSwitchForceDisabled)]]"
+          on-link-clicked="launchAllowSensorAccessDialog_">
+      </localized-link>
+    </template>
   </app-management-toggle-row>
+  <template is="dom-if" if="[[showAllowSensorAccessDialog_]]" restamp>
+    <settings-privacy-hub-allow-sensor-access-dialog
+        id="dialog"
+        prefs="{{prefs}}"
+        permission-type="[[permissionType]]"
+        on-close="onAllowSensorAccessDialogClose_">
+    </settings-privacy-hub-allow-sensor-access-dialog>
+  </template>
 </template>

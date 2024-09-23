@@ -4,6 +4,7 @@
 
 #include "services/device/public/cpp/test/mock_hid_connection.h"
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "services/device/hid/hid_device_info.h"
 
@@ -26,9 +27,8 @@ void MockHidConnection::PlatformWrite(
 
 void MockHidConnection::PlatformGetFeatureReport(uint8_t report_id,
                                                  ReadCallback callback) {
-  const uint8_t data[] = "TestGetFeatureReport";
-  auto buffer =
-      base::MakeRefCounted<base::RefCountedBytes>(data, sizeof(data) - 1);
+  auto buffer = base::MakeRefCounted<base::RefCountedBytes>(
+      base::byte_span_from_cstring("TestGetFeatureReport"));
   std::move(callback).Run(true, buffer, buffer->size());
 }
 

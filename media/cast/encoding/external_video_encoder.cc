@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cast/encoding/external_video_encoder.h"
 
 #include <array>
@@ -29,6 +34,7 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -41,8 +47,9 @@
 #include "media/cast/encoding/encoding_util.h"
 #include "media/cast/encoding/vpx_quantizer_parser.h"
 #include "media/cast/logging/logging_defines.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 
+namespace media::cast {
 namespace {
 
 // The percentage of each frame to sample.  This value is based on an
@@ -68,9 +75,12 @@ constexpr int kBacklogRedlineThreshold = 4;
 // histograms must encompass the range [-255, 255] (inclusive).
 constexpr int kQuantizationHistogramSize = 511;
 
-}  // namespace
+bool IsVpxProfile(VideoCodecProfile codec_profile) {
+  const VideoCodec codec = VideoCodecProfileToVideoCodec(codec_profile);
+  return codec == VideoCodec::kVP8 || codec == VideoCodec::kVP9;
+}
 
-namespace media::cast {
+}  // namespace
 
 // Container for the associated data of a video frame being processed.
 struct InProgressExternalVideoFrameEncode {
@@ -151,9 +161,10 @@ class ExternalVideoEncoder::VEAClientImpl final
     const media::Bitrate bitrate = media::Bitrate::ConstantBitrate(
         base::saturated_cast<uint32_t>(start_bit_rate));
     media::VideoEncodeAccelerator::Config config(
-        media::PIXEL_FORMAT_I420, frame_size, codec_profile, bitrate);
-    config.content_type =
-        media::VideoEncodeAccelerator::Config::ContentType::kDisplay;
+        media::PIXEL_FORMAT_I420, frame_size, codec_profile, bitrate,
+        static_cast<uint32_t>(max_frame_rate_ + 0.5),
+        media::VideoEncodeAccelerator::Config::StorageType::kShmem,
+        media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
     config.drop_frame_thresh_percentage = GetEncoderDropFrameThreshold();
     encoder_active_ = video_encode_accelerator_->Initialize(
         config, this, std::make_unique<media::NullMediaLog>());
@@ -235,12 +246,14 @@ class ExternalVideoEncoder::VEAClientImpl final
     // something VEA can't handle (as of this writing, it expects an unsafe
     // region).
     //
-    // TODO(crbug.com/888829): Revisit whether we can remove this memcpy, if VEA
-    // can accept other "memory backing" methods.
+    // TODO(crbug.com/40595267): Revisit whether we can remove this memcpy, if
+    // VEA can accept other "memory backing" methods.
     scoped_refptr<media::VideoFrame> frame = video_frame;
     if (video_frame->coded_size() != frame_coded_size_ ||
         video_frame->storage_type() !=
             media::VideoFrame::StorageType::STORAGE_SHMEM) {
+      TRACE_EVENT1("media", "VideoFrame copy", "coded size",
+                   video_frame->coded_size().ToString());
       const int index = free_input_buffer_index_.back();
       auto& mapped_region = input_buffers_[index];
       DCHECK(mapped_region.IsValid());
@@ -340,7 +353,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       return;
     }
 
-    if (metadata.payload_size_bytes == 0) {
+    if (metadata.dropped_frame()) {
       CHECK(key_frame_encountered_);
       // The encoder drops a frame.
       InProgressExternalVideoFrameEncode& request =
@@ -359,6 +372,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       return;
     }
 
+    CHECK_NE(metadata.payload_size_bytes, 0u);
     const char* output_buffer_memory =
         output_buffers_[bitstream_buffer_id]
             .second.GetMemoryAsSpan<char>(metadata.payload_size_bytes)
@@ -445,7 +459,7 @@ class ExternalVideoEncoder::VEAClientImpl final
         // Otherwise, switch back to entropy estimation for the key frame
         // and all the following delta frames.
         if (metadata.key_frame || key_frame_quantizer_parsable_) {
-          if (codec_profile_ == media::VP8PROFILE_ANY) {
+          if (IsVpxProfile(codec_profile_)) {
             quantizer = ParseVpxHeaderQuantizer(
                 reinterpret_cast<const uint8_t*>(encoded_frame->data.data()),
                 encoded_frame->data.size());
@@ -476,8 +490,8 @@ class ExternalVideoEncoder::VEAClientImpl final
         }
         if (quantizer >= 0) {
           const double max_quantizer =
-              codec_profile_ == media::VP8PROFILE_ANY
-                  ? static_cast<int>(QuantizerEstimator::MAX_VP8_QUANTIZER)
+              IsVpxProfile(codec_profile_)
+                  ? static_cast<int>(QuantizerEstimator::MAX_VPX_QUANTIZER)
                   : static_cast<int>(kMaxH264Quantizer);
           encoded_frame->lossiness =
               bitrate_utilization * (quantizer / max_quantizer);
@@ -761,15 +775,19 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
   }
 
   VideoCodecProfile codec_profile;
-  switch (video_config.codec) {
-    case Codec::kVideoVp8:
+  switch (video_config.video_codec()) {
+    case VideoCodec::kVP8:
       codec_profile = media::VP8PROFILE_ANY;
       break;
-    case Codec::kVideoH264:
+    case VideoCodec::kVP9:
+      codec_profile = media::VP9PROFILE_PROFILE0;
+      break;
+    case VideoCodec::kH264:
       codec_profile = media::H264PROFILE_MAIN;
       break;
-    case Codec::kVideoFake:
-      NOTREACHED() << "Fake software video encoder cannot be external";
+    case VideoCodec::kUnknown:
+      NOTREACHED_IN_MIGRATION()
+          << "Fake software video encoder cannot be external";
       [[fallthrough]];
     default:
       cast_environment_->PostTask(
@@ -876,8 +894,8 @@ double QuantizerEstimator::EstimateForKeyFrame(const VideoFrame& frame) {
   const int row_skip = size.height() / rows_in_subset;
   int y = 0;
   for (int i = 0; i < rows_in_subset; ++i, y += row_skip) {
-    const uint8_t* const row_begin = frame.visible_data(VideoFrame::kYPlane) +
-                                     y * frame.stride(VideoFrame::kYPlane);
+    const uint8_t* const row_begin = frame.visible_data(VideoFrame::Plane::kY) +
+                                     y * frame.stride(VideoFrame::Plane::kY);
     const uint8_t* const row_end = row_begin + size.width();
     int left_hand_pixel_value = static_cast<int>(*row_begin);
     for (const uint8_t* p = row_begin + 1; p < row_end; ++p) {
@@ -922,8 +940,8 @@ double QuantizerEstimator::EstimateForDeltaFrame(const VideoFrame& frame) {
   const int row_skip = size.height() / rows_in_subset;
   int y = 0;
   for (int i = 0; i < rows_in_subset; ++i, y += row_skip) {
-    const uint8_t* const row_begin = frame.visible_data(VideoFrame::kYPlane) +
-                                     y * frame.stride(VideoFrame::kYPlane);
+    const uint8_t* const row_begin = frame.visible_data(VideoFrame::Plane::kY) +
+                                     y * frame.stride(VideoFrame::Plane::kY);
     const uint8_t* const row_end = row_begin + size.width();
     uint8_t* const last_frame_row_begin =
         last_frame_pixel_buffer_.get() + i * size.width();
@@ -949,7 +967,7 @@ double QuantizerEstimator::EstimateForDeltaFrame(const VideoFrame& frame) {
 // static
 bool QuantizerEstimator::CanExamineFrame(const VideoFrame& frame) {
   DCHECK_EQ(8, VideoFrame::PlaneHorizontalBitsPerPixel(frame.format(),
-                                                       VideoFrame::kYPlane));
+                                                       VideoFrame::Plane::kY));
   return media::IsYuvPlanar(frame.format()) && !frame.visible_rect().IsEmpty();
 }
 
@@ -981,9 +999,9 @@ double QuantizerEstimator::ToQuantizerEstimate(double shannon_entropy) {
   // |shannon_entropy| values.
   constexpr double kEntropyAtMaxQuantizer = 7.5;
   constexpr double kSlope =
-      (MAX_VP8_QUANTIZER - MIN_VP8_QUANTIZER) / kEntropyAtMaxQuantizer;
+      (MAX_VPX_QUANTIZER - MIN_VPX_QUANTIZER) / kEntropyAtMaxQuantizer;
   const double quantizer = std::min<double>(
-      MAX_VP8_QUANTIZER, MIN_VP8_QUANTIZER + kSlope * shannon_entropy);
+      MAX_VPX_QUANTIZER, MIN_VPX_QUANTIZER + kSlope * shannon_entropy);
   return quantizer;
 }
 

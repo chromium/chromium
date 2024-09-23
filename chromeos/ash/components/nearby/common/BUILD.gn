@@ -11,6 +11,7 @@ component("common") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_NEARBY_COMMON_IMPL" ]
   deps = [
     "//chromeos/ash/components/nearby/common/client",
+    "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/nearby/common/scheduling",
   ]
 }
@@ -21,6 +22,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//chromeos/ash/components/nearby/common/client:unit_tests",
+    "//chromeos/ash/components/nearby/common/connections_manager:unit_tests",
     "//chromeos/ash/components/nearby/common/scheduling:unit_tests",
   ]
 }

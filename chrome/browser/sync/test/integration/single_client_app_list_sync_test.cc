@@ -127,7 +127,7 @@ class SingleClientAppListSyncTestWithVerifier
   ~SingleClientAppListSyncTestWithVerifier() override = default;
 
   bool UseVerifier() override {
-    // TODO(crbug.com/1137772): rewrite tests to not use verifier.
+    // TODO(crbug.com/40724974): rewrite tests to not use verifier.
     return true;
   }
 };

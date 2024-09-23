@@ -4,6 +4,8 @@
 
 #include "components/continuous_search/common/title_validator.h"
 
+#include <string_view>
+
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -67,11 +69,11 @@ std::basic_string<CharT> ValidateTitleT(T input) {
 
 }  // namespace
 
-std::string ValidateTitleAscii(base::StringPiece title) {
+std::string ValidateTitleAscii(std::string_view title) {
   return ValidateTitleT(title);
 }
 
-std::u16string ValidateTitle(base::StringPiece16 title) {
+std::u16string ValidateTitle(std::u16string_view title) {
   return ValidateTitleT(title);
 }
 

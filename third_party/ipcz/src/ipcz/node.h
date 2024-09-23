@@ -13,12 +13,12 @@
 
 #include "ipcz/api_object.h"
 #include "ipcz/driver_memory.h"
+#include "ipcz/features.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/node_name.h"
 #include "ipcz/node_type.h"
-#include "ipcz/operation_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
@@ -59,6 +59,7 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   Type type() const { return type_; }
   const IpczDriver& driver() const { return driver_; }
   const IpczCreateNodeOptions& options() const { return options_; }
+  const Features& features() const { return features_; }
 
   // APIObject:
   IpczResult Close() override;
@@ -135,6 +136,7 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
                           LinkSide side,
                           Node::Type remote_node_type,
                           uint32_t remote_protocol_version,
+                          const Features& remote_features,
                           Ref<DriverTransport> transport,
                           Ref<NodeLinkMemory> memory);
 
@@ -152,8 +154,7 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
 
   // Drops the connection running over `connection_link` between this node and
   // another.
-  void DropConnection(const OperationContext& context,
-                      const NodeLink& connection_link);
+  void DropConnection(const NodeLink& connection_link);
 
   // Asynchronously waits for this Node to acquire a broker link and then
   // invokes `callback` with it. If this node already has a broker link then the
@@ -189,6 +190,7 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   const Type type_;
   const IpczDriver& driver_;
   const IpczCreateNodeOptions options_;
+  const Features features_;
 
   absl::Mutex mutex_;
 

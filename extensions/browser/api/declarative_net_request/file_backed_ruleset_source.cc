@@ -96,7 +96,7 @@ ReadJSONRulesResult ParseRulesFromJSON(const RulesetID& ruleset_id,
   if (rules_list.size() > rule_limit && !is_dynamic_ruleset) {
     result.status = ReadJSONRulesResult::Status::kRuleCountLimitExceeded;
     result.error = ErrorUtils::FormatErrorMessage(
-        kIndexingRuleLimitExceeded, std::to_string(ruleset_id.value()));
+        kIndexingRuleLimitExceeded, base::NumberToString(ruleset_id.value()));
 
     return result;
   }
@@ -198,9 +198,10 @@ IndexAndPersistJSONRulesetResult IndexAndPersistRuleset(
     warnings.erase(warnings.begin() + kMaxUnparsedRulesWarnings,
                    warnings.end());
     warnings.push_back(CreateInstallWarning(
-        source.json_path(), ErrorUtils::FormatErrorMessage(
-                                kTooManyParseFailuresWarning,
-                                std::to_string(kMaxUnparsedRulesWarnings))));
+        source.json_path(),
+        ErrorUtils::FormatErrorMessage(
+            kTooManyParseFailuresWarning,
+            base::NumberToString(kMaxUnparsedRulesWarnings))));
   }
 
   return IndexAndPersistJSONRulesetResult::CreateSuccessResult(
@@ -301,8 +302,9 @@ std::vector<FileBackedRulesetSource> FileBackedRulesetSource::CreateStatic(
 
   std::vector<FileBackedRulesetSource> sources;
   for (const auto& info : rulesets) {
-    if (!only_enabled || info.enabled)
+    if (!only_enabled || info.enabled) {
       sources.push_back(CreateStatic(extension, info));
+    }
   }
 
   return sources;
@@ -439,15 +441,18 @@ LoadRulesetResult FileBackedRulesetSource::CreateVerifiedMatcher(
 
   base::ElapsedTimer timer;
 
-  if (!base::PathExists(indexed_path()))
+  if (!base::PathExists(indexed_path())) {
     return LoadRulesetResult::kErrorInvalidPath;
+  }
 
   std::string ruleset_data;
-  if (!base::ReadFileToString(indexed_path(), &ruleset_data))
+  if (!base::ReadFileToString(indexed_path(), &ruleset_data)) {
     return LoadRulesetResult::kErrorCannotReadFile;
+  }
 
-  if (!StripVersionHeaderAndParseVersion(&ruleset_data))
+  if (!StripVersionHeaderAndParseVersion(&ruleset_data)) {
     return LoadRulesetResult::kErrorVersionMismatch;
+  }
 
   if (expected_ruleset_checksum !=
       GetChecksum(base::as_byte_span(ruleset_data))) {

@@ -6,6 +6,6 @@ rootWebArea
 ++++++++++genericContainer
 ++++++textFieldWithComboBox name='TextFieldWithComboBox' haspopup=listbox
 ++++++++genericContainer
-++++++comboBoxMenuButton name='ComboBoxMenuButton"' value='Select' haspopup=listbox
+++++++comboBoxMenuButton name='ComboBoxMenuButton' value='Select' haspopup=listbox
 ++++++++staticText name='Select'
 ++++++++++inlineTextBox name='Select'

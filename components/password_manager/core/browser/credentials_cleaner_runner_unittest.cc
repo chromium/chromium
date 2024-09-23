@@ -54,12 +54,14 @@ TEST_F(CredentialsCleanerRunnerTest, NonEmptyTasks) {
   }
 
   ::testing::InSequence dummy;
-  for (MockCredentialsCleaner* cleaner : raw_cleaners)
+  for (MockCredentialsCleaner* cleaner : raw_cleaners) {
     EXPECT_CALL(*cleaner, StartCleaning(cleaning_tasks_runner));
+  }
 
   cleaning_tasks_runner->StartCleaning();
-  for (int i = 0; i < kCleanersCount; ++i)
+  for (int i = 0; i < kCleanersCount; ++i) {
     cleaning_tasks_runner->CleaningCompleted();
+  }
 
   EXPECT_FALSE(cleaning_tasks_runner->HasPendingTasks());
 }

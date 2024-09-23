@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/cast/message_port/blink_message_port_adapter.h"
+
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/cast/message_port/cast/message_port_cast.h"
@@ -101,7 +104,7 @@ class MessagePortAdapter : public MessagePort::Receiver {
     delete this;
   }
 
-  bool OnMessage(base::StringPiece message,
+  bool OnMessage(std::string_view message,
                  std::vector<std::unique_ptr<MessagePort>> ports) override {
     DCHECK(peer_);
     std::vector<std::unique_ptr<MessagePort>> transferables;

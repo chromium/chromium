@@ -21,4 +21,9 @@ void TestGameDashboardDelegate::RecordGameWindowOpenedEvent(
 
 void TestGameDashboardDelegate::ShowResizeToggleMenu(aura::Window* window) {}
 
+ukm::SourceId TestGameDashboardDelegate::GetUkmSourceId(
+    const std::string& app_id) {
+  return 123;
+}
+
 }  // namespace ash

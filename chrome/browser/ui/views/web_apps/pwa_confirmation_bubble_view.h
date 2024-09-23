@@ -13,6 +13,8 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
 class PageActionIconView;
@@ -27,6 +29,7 @@ class Tracker;
 
 namespace views {
 class Checkbox;
+class BubbleDialogDelegateView;
 }  // namespace views
 
 namespace webapps {
@@ -36,22 +39,22 @@ class MlInstallOperationTracker;
 // PWAConfirmationBubbleView provides a bubble dialog for accepting or rejecting
 // the installation of a PWA (Progressive Web App) anchored off the PWA install
 // icon in the omnibox.
+// TODO(crbug.com/341254289): Completely remove after Universal Install has
+// launched to 100% on Stable.
 class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
  public:
-  static bool IsShowing();
-  static PWAConfirmationBubbleView* GetBubble();
-
   PWAConfirmationBubbleView(
       views::View* anchor_view,
-      content::WebContents* web_contents,
-      PageActionIconView* highlight_icon_button,
+      base::WeakPtr<content::WebContents> web_contents,
+      PageActionIconView* pwa_install_icon_view,
       std::unique_ptr<web_app::WebAppInstallInfo> web_app_info,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       web_app::AppInstallationAcceptanceCallback callback,
       web_app::PwaInProductHelpState iph_state,
       PrefService* prefs,
       feature_engagement::Tracker* tracker);
-
+  METADATA_HEADER(PWAConfirmationBubbleView, views::BubbleDialogDelegateView)
+ public:
   PWAConfirmationBubbleView(const PWAConfirmationBubbleView&) = delete;
   PWAConfirmationBubbleView& operator=(const PWAConfirmationBubbleView&) =
       delete;
@@ -60,6 +63,9 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallButton);
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kInstalledPWAEventId);
+
+  static bool IsShowing();
+  static PWAConfirmationBubbleView* GetBubble();
 
   // WidgetDelegate
   void OnWidgetInitialized() override;
@@ -70,14 +76,13 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   void WindowClosing() override;
   bool Accept() override;
 
-  static base::AutoReset<bool> SetDontCloseOnDeactivateForTesting();
-
  protected:
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
 
  private:
-  raw_ptr<PageActionIconView> highlight_icon_button_ = nullptr;
+  base::WeakPtr<content::WebContents> web_contents_;
+  raw_ptr<PageActionIconView> pwa_install_icon_view_ = nullptr;
   std::unique_ptr<web_app::WebAppInstallInfo> web_app_info_;
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   web_app::AppInstallationAcceptanceCallback callback_;

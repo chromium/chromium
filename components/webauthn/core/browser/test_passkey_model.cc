@@ -32,10 +32,18 @@ void TestPasskeyModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-TestPasskeyModel::GetModelTypeControllerDelegate() {
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+TestPasskeyModel::GetDataTypeControllerDelegate() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+bool TestPasskeyModel::IsReady() const {
+  return true;
+}
+
+bool TestPasskeyModel::IsEmpty() const {
+  return credentials_.empty();
 }
 
 base::flat_set<std::string> TestPasskeyModel::GetAllSyncIds() const {
@@ -119,7 +127,8 @@ std::string TestPasskeyModel::AddNewPasskeyForTesting(
   return credentials_.back().credential_id();
 }
 
-bool TestPasskeyModel::DeletePasskey(const std::string& credential_id) {
+bool TestPasskeyModel::DeletePasskey(const std::string& credential_id,
+                                     const base::Location& location) {
   // Don't implement the shadow chain deletion logic. Instead, remove the
   // credential with the matching id.
   const auto credential_it =
@@ -135,16 +144,25 @@ bool TestPasskeyModel::DeletePasskey(const std::string& credential_id) {
   return true;
 }
 
+void TestPasskeyModel::DeleteAllPasskeys() {
+  credentials_.clear();
+}
+
 bool TestPasskeyModel::UpdatePasskey(const std::string& credential_id,
-                                     PasskeyUpdate change) {
+                                     PasskeyUpdate change,
+                                     bool updated_by_user) {
   const auto credential_it =
       base::ranges::find(credentials_, credential_id,
                          &sync_pb::WebauthnCredentialSpecifics::credential_id);
   if (credential_it == credentials_.end()) {
     return false;
   }
+  if (credential_it->edited_by_user() && !updated_by_user) {
+    return false;
+  }
   credential_it->set_user_name(std::move(change.user_name));
   credential_it->set_user_display_name(std::move(change.user_display_name));
+  credential_it->set_edited_by_user(updated_by_user);
   NotifyPasskeysChanged({PasskeyModelChange(
       PasskeyModelChange::ChangeType::UPDATE, *credential_it)});
   return true;

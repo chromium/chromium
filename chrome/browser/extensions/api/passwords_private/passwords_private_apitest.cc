@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -130,12 +129,12 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     test_delegate_->SetStartPasswordCheckState(state);
   }
 
-  bool IsOptedInForAccountStorage() {
-    return test_delegate_->IsOptedInForAccountStorage();
+  bool IsAccountStorageEnabled() {
+    return test_delegate_->IsAccountStorageEnabled();
   }
 
-  void SetOptedInForAccountStorage(bool opted_in) {
-    test_delegate_->SetAccountStorageOptIn(opted_in, nullptr);
+  void SetAccountStorageEnabled(bool enabled) {
+    test_delegate_->SetAccountStorageEnabled(enabled, nullptr);
   }
 
   void ResetPlaintextPassword() { test_delegate_->ResetPlaintextPassword(); }
@@ -162,6 +161,18 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
 
   bool get_exported_file_shown_in_shell() const {
     return test_delegate_->get_exported_file_shown_in_shell();
+  }
+
+  bool get_change_password_manager_pin_called() const {
+    return test_delegate_->get_change_password_manager_pin_called();
+  }
+
+  bool get_disconnect_cloud_authenticator_called() const {
+    return test_delegate_->get_disconnect_cloud_authenticator_called();
+  }
+
+  bool get_delete_all_password_manager_data_called() const {
+    return test_delegate_->get_delete_all_password_manager_data_called();
   }
 
  private:
@@ -329,27 +340,27 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, RequestExportProgressStatus) {
   EXPECT_TRUE(RunPasswordsSubtest("requestExportProgressStatus")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, IsNotOptedInForAccountStorage) {
-  EXPECT_TRUE(RunPasswordsSubtest("isNotOptedInForAccountStorage")) << message_;
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AccountStorageIsDisabled) {
+  EXPECT_TRUE(RunPasswordsSubtest("accountStorageIsDisabled")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, IsOptedInForAccountStorage) {
-  SetOptedInForAccountStorage(true);
-  EXPECT_TRUE(RunPasswordsSubtest("isOptedInForAccountStorage")) << message_;
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AccountStorageIsEnabled) {
+  SetAccountStorageEnabled(true);
+  EXPECT_TRUE(RunPasswordsSubtest("accountStorageIsEnabled")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, GetInsecureCredentials) {
   EXPECT_TRUE(RunPasswordsSubtest("getInsecureCredentials")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, OptInForAccountStorage) {
-  SetOptedInForAccountStorage(false);
-  EXPECT_TRUE(RunPasswordsSubtest("optInForAccountStorage")) << message_;
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, EnableAccountStorage) {
+  SetAccountStorageEnabled(false);
+  EXPECT_TRUE(RunPasswordsSubtest("enableAccountStorage")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, OptOutForAccountStorage) {
-  SetOptedInForAccountStorage(true);
-  EXPECT_TRUE(RunPasswordsSubtest("optOutForAccountStorage")) << message_;
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, DisableAccountStorage) {
+  SetAccountStorageEnabled(true);
+  EXPECT_TRUE(RunPasswordsSubtest("disableAccountStorage")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MuteInsecureCredentialFails) {
@@ -399,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ExtendAuthValidity) {
   EXPECT_TRUE(get_authenticator_interaction_status());
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
                        SwitchBiometricAuthBeforeFillingState) {
   EXPECT_FALSE(get_authenticator_interaction_status());
@@ -407,7 +418,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
       << message_;
   EXPECT_TRUE(get_authenticator_interaction_status());
 }
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)  ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AddShortcut) {
   EXPECT_FALSE(get_add_shortcut_dialog_shown());
@@ -429,6 +441,29 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ShowExportedFileInShell) {
   EXPECT_FALSE(get_exported_file_shown_in_shell());
   EXPECT_TRUE(RunPasswordsSubtest("showExportedFileInShell")) << message_;
   EXPECT_TRUE(get_exported_file_shown_in_shell());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ChangePasswordManagerPin) {
+  EXPECT_TRUE(RunPasswordsSubtest("changePasswordManagerPin"));
+  EXPECT_TRUE(get_change_password_manager_pin_called());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, IsPasswordManagerPinAvailable) {
+  EXPECT_TRUE(RunPasswordsSubtest("isPasswordManagerPinAvailable"));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, DisconnectCloudAuthenticator) {
+  EXPECT_TRUE(RunPasswordsSubtest("disconnectCloudAuthenticator"));
+  EXPECT_TRUE(get_disconnect_cloud_authenticator_called());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       IsConnectedToCloudAuthenticator) {
+  EXPECT_TRUE(RunPasswordsSubtest("isConnectedToCloudAuthenticator"));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, DeleteAllPasswordManagerData) {
+  EXPECT_TRUE(RunPasswordsSubtest("deleteAllPasswordManagerData"));
 }
 
 }  // namespace extensions

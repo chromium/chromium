@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr_exclusion.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -44,25 +45,35 @@ class PdfStreamDelegate {
     bool full_frame = false;
     bool allow_javascript = false;
     bool use_skia = false;
+    bool require_corp = false;
   };
 
-  PdfStreamDelegate();
-  PdfStreamDelegate(const PdfStreamDelegate&) = delete;
-  PdfStreamDelegate& operator=(const PdfStreamDelegate&) = delete;
-  virtual ~PdfStreamDelegate();
+  virtual ~PdfStreamDelegate() = default;
 
   // Maps the navigation to the original URL. This method should associate a
   // `StreamInfo` with the `blink::Document` for `navigation_handle`'s parent
   // `RenderFrameHost`, for later retrieval by `GetStreamInfo()`.
   virtual std::optional<GURL> MapToOriginalUrl(
-      content::NavigationHandle& navigation_handle);
+      content::NavigationHandle& navigation_handle) = 0;
 
   // Gets the stream information associated with the given `RenderFrameHost`.
   // The frame must be a PDF extension frame or Print Preview's frame.
   // Returns null if there is no associated stream or if `embedder_frame` is
   // `nullptr`.
   virtual std::optional<StreamInfo> GetStreamInfo(
-      content::RenderFrameHost* embedder_frame);
+      content::RenderFrameHost* embedder_frame) = 0;
+
+  // Called after calculating sandbox flags for the PDF embedder frame and it's
+  // determined that the frame is sandboxed. This signals that the PDF
+  // navigation will fail and gives `PdfStreamDelegate` a chance to clean up.
+  virtual void OnPdfEmbedderSandboxed(
+      content::FrameTreeNodeId frame_tree_node_id) = 0;
+
+  // Determines whether navigation attempts in the PDF frames should be allowed.
+  // Navigation attempts in PDF extension and content frames should be canceled
+  // if they are not related to PDF viewer setup.
+  virtual bool ShouldAllowPdfFrameNavigation(
+      content::NavigationHandle* navigation_handle) = 0;
 };
 
 }  // namespace pdf

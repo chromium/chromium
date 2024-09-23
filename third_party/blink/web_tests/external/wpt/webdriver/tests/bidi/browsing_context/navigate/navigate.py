@@ -1,6 +1,7 @@
 import asyncio
 
 import pytest
+from webdriver.bidi.modules.script import ContextTarget
 
 from . import navigate_and_assert
 from ... import any_string
@@ -86,3 +87,87 @@ async def test_relative_url(bidi_session, new_tab, url):
 
     url_after = url_before.replace("empty.html", "other.html")
     await navigate_and_assert(bidi_session, new_tab, url_after, "interactive")
+
+
+async def test_same_document_navigation_in_before_unload(bidi_session, new_tab, url):
+    url_before = url(
+        "/webdriver/tests/bidi/browsing_context/support/empty.html"
+    )
+
+    await navigate_and_assert(bidi_session, new_tab, url_before, "complete")
+
+    await bidi_session.script.evaluate(
+        expression="""window.addEventListener(
+          'beforeunload',
+          () => history.replaceState(null, 'initial', window.location.href),
+          false
+        );""",
+        target=ContextTarget(new_tab["context"]),
+        await_promise=False)
+
+    url_after = url_before.replace("empty.html", "other.html")
+    await navigate_and_assert(bidi_session, new_tab, url_after, "complete")
+
+
+@pytest.mark.capabilities({"unhandledPromptBehavior": {'beforeUnload': 'ignore'}})
+async def test_wait_none_with_beforeunload_prompt(
+    bidi_session, new_tab, setup_beforeunload_page, inline
+):
+    await setup_beforeunload_page(new_tab)
+
+    url_after = inline("<div>foo</div>")
+
+    result = await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=url_after, wait="none"
+    )
+
+    assert result["url"] == url_after
+    any_string(result["navigation"])
+
+
+@pytest.mark.capabilities({"unhandledPromptBehavior": {'beforeUnload': 'ignore'}})
+async def test_wait_none_with_beforeunload_prompt_in_iframe(
+    bidi_session, new_tab, setup_beforeunload_page, inline
+):
+    page = inline(f"""<iframe src={inline("foo")}></iframe>""")
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=page, wait="complete"
+    )
+
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    iframe_context = contexts[0]["children"][0]
+
+    await setup_beforeunload_page(iframe_context)
+
+    url_after = inline("<div>foo</div>")
+
+    result = await bidi_session.browsing_context.navigate(
+        context=iframe_context["context"], url=url_after, wait="none"
+    )
+
+    assert result["url"] == url_after
+    any_string(result["navigation"])
+
+
+@pytest.mark.capabilities({"unhandledPromptBehavior": {'beforeUnload': 'ignore'}})
+async def test_wait_none_with_beforeunload_prompt_in_iframe_navigate_in_top_context(
+    bidi_session, new_tab, setup_beforeunload_page, inline
+):
+    page = inline(f"""<iframe src={inline("foo")}></iframe>""")
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=page, wait="complete"
+    )
+
+    contexts = await bidi_session.browsing_context.get_tree(root=new_tab["context"])
+    iframe_context = contexts[0]["children"][0]
+
+    await setup_beforeunload_page(iframe_context)
+
+    url_after = inline("<div>foo</div>")
+
+    result = await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=url_after, wait="none"
+    )
+
+    assert result["url"] == url_after
+    any_string(result["navigation"])

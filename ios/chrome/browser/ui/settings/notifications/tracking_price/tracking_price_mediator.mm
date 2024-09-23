@@ -12,9 +12,9 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
@@ -175,7 +175,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
     default:
       // Not a switch.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

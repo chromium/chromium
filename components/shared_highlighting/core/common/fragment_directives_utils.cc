@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <sstream>
+#include <string_view>
 
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
@@ -89,7 +90,7 @@ std::vector<std::string> ExtractTextFragments(std::string ref_string) {
 }
 
 GURL RemoveFragmentSelectorDirectives(const GURL& url) {
-  const std::vector<base::StringPiece> directive_parameter_names{
+  const std::vector<std::string_view> directive_parameter_names{
       kTextDirectiveParameterName, kSelectorDirectiveParameterName};
   size_t start_pos = url.ref().find(kFragmentsUrlDelimiter);
   if (start_pos == std::string::npos)
@@ -108,7 +109,7 @@ GURL RemoveFragmentSelectorDirectives(const GURL& url) {
                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     if (base::ranges::none_of(
             directive_parameter_names,
-            [&directive](const base::StringPiece& directive_parameter_name) {
+            [&directive](std::string_view directive_parameter_name) {
               return base::StartsWith(directive, directive_parameter_name);
             })) {
       should_keep_directives.push_back(directive);

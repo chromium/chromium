@@ -32,6 +32,7 @@ class Version;
 
 namespace update_client {
 class ActivityDataService;
+struct CategorizedError;
 }  // namespace update_client
 
 namespace updater {
@@ -67,7 +68,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
                                const base::FilePath& ecp);
 
   // These functions access the brand code for the specified id.
-  std::string GetBrandCode(const std::string& id) const;
+  std::string GetBrandCode(const std::string& id);
   void SetBrandCode(const std::string& id, const std::string& bc);
 
   // These functions access the brand path for the specified id.
@@ -107,6 +108,12 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   // stats opt-in state of each product.
   bool GetUsageStatsEnabled() const;
   void SetUsageStatsEnabled(bool usage_stats_enabled);
+
+  // EulaRequired reflects whether some user responsible for this system has
+  // accepted a EULA that covers the updater's operation or not. EulaRequired
+  // defaults to false; refer to functional_spec.md for details.
+  bool GetEulaRequired() const;
+  void SetEulaRequired(bool eula_required);
 
   // LastChecked is set when the updater completed successfully a call to
   // `UpdateService::UpdateAll` as indicated by the `UpdateService::Result`
@@ -159,11 +166,14 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
                        int datenum,
                        base::OnceClosure callback) override;
   int GetInstallDate(const std::string& id) const override;
+  void SetInstallDate(const std::string& id, int install_date) override;
   void GetActiveBits(const std::vector<std::string>& ids,
                      base::OnceCallback<void(const std::set<std::string>&)>
                          callback) const override;
   base::Time GetThrottleUpdatesUntil() const override;
   void SetThrottleUpdatesUntil(const base::Time& time) override;
+  void SetLastUpdateCheckError(
+      const update_client::CategorizedError& error) override;
 
  private:
   friend class base::RefCountedThreadSafe<PersistedData>;

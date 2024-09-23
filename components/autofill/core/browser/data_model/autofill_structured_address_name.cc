@@ -109,7 +109,7 @@ void NameLast::ParseValueAndAssignSubcomponentsByFallbackMethod() {
   SetValueForType(NAME_LAST_SECOND, GetValue(), VerificationStatus::kParsed);
 }
 
-// TODO(crbug.com/1113617): Honorifics are temporally disabled.
+// TODO(crbug.com/40143553): Honorifics are temporally disabled.
 NameFull::NameFull() : AddressComponent(NAME_FULL, {}, MergeMode::kDefault) {
   RegisterChildNode(&first_);
   RegisterChildNode(&middle_);
@@ -213,7 +213,7 @@ std::u16string NameFull::GetFormatString() const {
 
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
   CHECK(pattern_provider);
-  // TODO(crbug/1464568): Add i18n support for name format strings.
+  // TODO(crbug.com/40275657): Add i18n support for name format strings.
   return pattern_provider->GetPattern(GetStorageType(), /*country_code=*/"",
                                       info);
 }

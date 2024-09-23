@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
@@ -98,7 +99,7 @@ void BackgroundSyncContextImpl::OneShotSyncServiceHadConnectionError(
   DCHECK(service);
 
   auto iter = one_shot_sync_services_.find(service);
-  DCHECK(iter != one_shot_sync_services_.end());
+  CHECK(iter != one_shot_sync_services_.end(), base::NotFatalUntil::M130);
   one_shot_sync_services_.erase(iter);
 }
 
@@ -108,7 +109,7 @@ void BackgroundSyncContextImpl::PeriodicSyncServiceHadConnectionError(
   DCHECK(service);
 
   auto iter = periodic_sync_services_.find(service);
-  DCHECK(iter != periodic_sync_services_.end());
+  CHECK(iter != periodic_sync_services_.end(), base::NotFatalUntil::M130);
   periodic_sync_services_.erase(iter);
 }
 

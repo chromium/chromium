@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/test_support/test_worker_node_factory.h"
 
+#include "base/memory/raw_ptr.h"
+
 namespace performance_manager {
 
 namespace {
@@ -12,12 +14,13 @@ namespace {
 void CleanupWorker(WorkerNodeImpl* worker_node) {
   // Create a copy since RemoveClientFrame()/RemoveClientWorker() will modify
   // the container.
-  base::flat_set<FrameNodeImpl*> client_frames = worker_node->client_frames();
+  std::vector<FrameNodeImpl*> client_frames =
+      worker_node->client_frames().AsVector();
   for (FrameNodeImpl* client_frame_node : client_frames)
     worker_node->RemoveClientFrame(client_frame_node);
 
-  base::flat_set<WorkerNodeImpl*> client_workers =
-      worker_node->client_workers();
+  std::vector<WorkerNodeImpl*> client_workers =
+      worker_node->client_workers().AsVector();
   for (WorkerNodeImpl* client_worker_node : client_workers)
     worker_node->RemoveClientWorker(client_worker_node);
 }

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "components/plus_addresses/plus_address_metrics.h"
+#import "components/plus_addresses/metrics/plus_address_metrics.h"
 
 // Consumer for the plus_address bottom sheet. It is notified as required data
 // elements become available.
@@ -22,9 +22,8 @@
 // Used to indicate an error, specifying whether error occur during reservation
 // or confirmation.
 - (void)notifyError:
-    (plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus)
-        status;
+    (plus_addresses::metrics::PlusAddressModalCompletionStatus)status;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_CONSUMER_H_

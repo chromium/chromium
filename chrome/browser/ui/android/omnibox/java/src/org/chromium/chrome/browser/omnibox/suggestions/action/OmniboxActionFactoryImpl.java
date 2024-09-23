@@ -74,12 +74,10 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
                 nativeInstance, hint, accessibilityHint, actionType, actionUri);
     }
 
+    @NonNull
     @Override
-    public @Nullable OmniboxAction buildHistoryClustersAction(
-            long nativeInstance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            @NonNull String query) {
-        return new HistoryClustersAction(nativeInstance, hint, accessibilityHint, query);
+    public OmniboxAction buildOmniboxAnswerAction(
+            long nativeInstance, @NonNull String hint, @NonNull String accessibilityHint) {
+        return new OmniboxAnswerAction(nativeInstance, hint, accessibilityHint);
     }
 }

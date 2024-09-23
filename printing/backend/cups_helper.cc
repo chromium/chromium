@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "printing/backend/cups_helper.h"
 
 #include <cups/ppd.h>
@@ -23,6 +28,8 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "printing/backend/cups_deleters.h"
+#include "printing/backend/cups_weak_functions.h"
 #include "printing/backend/print_backend.h"
 #include "printing/backend/print_backend_consts.h"
 #include "printing/mojom/print.mojom.h"
@@ -39,14 +46,6 @@ namespace printing {
 
 // This section contains helper code for PPD parsing for semantic capabilities.
 namespace {
-
-// Function availability can be tested by checking whether its address is not
-// nullptr. Weak symbols remove the need for platform specific build flags and
-// allow for appropriate CUPS usage on platforms with non-uniform version
-// support, namely Linux.
-#define WEAK_CUPS_FN(x) extern "C" __attribute__((weak)) decltype(x) x
-
-WEAK_CUPS_FN(httpConnect2);
 
 // Timeout for establishing a CUPS connection.  It is expected that cupsd is
 // able to start and respond on all systems within this duration.
@@ -761,8 +760,7 @@ const int kDefaultIPPServerPort = 631;
 // functionality.
 HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
                                        http_encryption_t encryption,
-                                       bool blocking)
-    : http_(nullptr) {
+                                       bool blocking) {
   // If we have an empty url, use default print server.
   if (print_server_url.is_empty())
     return;
@@ -771,35 +769,16 @@ HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
   if (port == url::PORT_UNSPECIFIED)
     port = kDefaultIPPServerPort;
 
-  if (httpConnect2) {
-    http_ = httpConnect2(print_server_url.host().c_str(), port,
-                         /*addrlist=*/nullptr, AF_UNSPEC, encryption,
-                         blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
-                         /*cancel=*/nullptr);
-  } else {
-    // Continue to use deprecated CUPS calls because because older Linux
-    // distribution such as RHEL/CentOS 7 are shipped with CUPS 1.6.
-    http_ =
-        httpConnectEncrypt(print_server_url.host().c_str(), port, encryption);
-  }
-
-  if (!http_) {
-    LOG(ERROR) << "CP_CUPS: Failed connecting to print server: "
-               << print_server_url;
-    return;
-  }
-
-  if (!httpConnect2)
-    httpBlocking(http_, blocking ? 1 : 0);
+  http_ = HttpConnect2(print_server_url.host().c_str(), port,
+                       /*addrlist=*/nullptr, AF_UNSPEC, encryption,
+                       blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
+                       /*cancel=*/nullptr);
 }
 
-HttpConnectionCUPS::~HttpConnectionCUPS() {
-  if (http_)
-    httpClose(http_);
-}
+HttpConnectionCUPS::~HttpConnectionCUPS() = default;
 
 http_t* HttpConnectionCUPS::http() {
-  return http_;
+  return http_.get();
 }
 
 bool ParsePpdCapabilities(cups_dest_t* dest,
@@ -968,6 +947,38 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
 
   *printer_info = caps;
   return true;
+}
+
+ScopedHttpPtr HttpConnect2(const char* host,
+                           int port,
+                           http_addrlist_t* addrlist,
+                           int family,
+                           http_encryption_t encryption,
+                           int blocking,
+                           int msec,
+                           int* cancel) {
+  ScopedHttpPtr http;
+  if (httpConnect2) {
+    http.reset(httpConnect2(host, port,
+                            /*addrlist=*/nullptr, AF_UNSPEC, encryption,
+                            blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
+                            /*cancel=*/nullptr));
+  } else {
+    // Continue to use deprecated CUPS calls because because older Linux
+    // distribution such as RHEL/CentOS 7 are shipped with CUPS 1.6.
+    http.reset(httpConnectEncrypt(host, port, encryption));
+  }
+
+  if (!http) {
+    LOG(ERROR) << "CP_CUPS: Failed connecting to print server: " << host;
+    return nullptr;
+  }
+
+  if (!httpConnect2) {
+    httpBlocking(http.get(), blocking ? 1 : 0);
+  }
+
+  return http;
 }
 
 }  // namespace printing

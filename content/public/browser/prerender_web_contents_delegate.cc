@@ -12,11 +12,12 @@ namespace content {
 
 WebContents* PrerenderWebContentsDelegate::OpenURLFromTab(
     WebContents* source,
-    const OpenURLParams& params) {
-  NOTREACHED_NORETURN();
+    const OpenURLParams& params,
+    base::OnceCallback<void(NavigationHandle&)> navigation_handle_callback) {
+  NOTREACHED();
 }
 
-void PrerenderWebContentsDelegate::AddNewContents(
+WebContents* PrerenderWebContentsDelegate::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -25,19 +26,19 @@ void PrerenderWebContentsDelegate::AddNewContents(
     bool user_gesture,
     bool* was_blocked) {
   // A prerendered page cannot open a new window.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrerenderWebContentsDelegate::ActivateContents(WebContents* contents) {
   // WebContents should not be activated with this delegate.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrerenderWebContentsDelegate::LoadingStateChanged(
     WebContents* source,
     bool should_show_loading_ui) {
   // Loading events should be deferred until prerender activation.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrerenderWebContentsDelegate::CloseContents(WebContents* source) {
@@ -50,7 +51,7 @@ void PrerenderWebContentsDelegate::CloseContents(WebContents* source) {
 bool PrerenderWebContentsDelegate::ShouldSuppressDialogs(WebContents* source) {
   // Dialogs (JS dialogs and BeforeUnload confirm) should not be shown on a
   // prerendered page.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool PrerenderWebContentsDelegate::ShouldFocusPageAfterCrash(
@@ -73,33 +74,32 @@ void PrerenderWebContentsDelegate::WebContentsCreated(
     const GURL& target_url,
     WebContents* new_contents) {
   // A prerendered page should not create a new WebContents.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool PrerenderWebContentsDelegate::CanEnterFullscreenModeForTab(
-    RenderFrameHost* requesting_frame,
-    const blink::mojom::FullscreenOptions& options) {
+    RenderFrameHost* requesting_frame) {
   // This should not be called for a prerendered page.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrerenderWebContentsDelegate::EnterFullscreenModeForTab(
     RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
   // This should not be called for a prerendered page.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrerenderWebContentsDelegate::FullscreenStateChangedForTab(
     RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
   // This should not be called for a prerendered page.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrerenderWebContentsDelegate::ExitFullscreenModeForTab(WebContents*) {
   // This should not be called for a prerendered page.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool PrerenderWebContentsDelegate::IsFullscreenForTabOrPending(
@@ -114,7 +114,7 @@ void PrerenderWebContentsDelegate::OnDidBlockNavigation(
     blink::mojom::NavigationBlockedReason reason) {
   // DCHECK against LifecycleState in RenderFrameHostImpl::DidBlockNavigation()
   // ensures this is never called during prerendering.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool PrerenderWebContentsDelegate::ShouldAllowRunningInsecureContent(
@@ -124,21 +124,13 @@ bool PrerenderWebContentsDelegate::ShouldAllowRunningInsecureContent(
     const GURL& resource_url) {
   // MixedContentChecker::ShouldBlockNavigation() should cancel prerendering
   // for mixed contents before this is called.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PreloadingEligibility PrerenderWebContentsDelegate::IsPrerender2Supported(
     WebContents& web_contents) {
   // This should be checked in the initiator's WebContents.
-  NOTREACHED_NORETURN();
-}
-
-void PrerenderWebContentsDelegate::UpdateInspectedWebContentsIfNecessary(
-    WebContents* old_contents,
-    WebContents* new_contents,
-    base::OnceCallback<void()> callback) {
-  // This is called only for Portal that is not available on a prerendered page.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

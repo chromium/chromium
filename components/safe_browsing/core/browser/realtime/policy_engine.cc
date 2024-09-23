@@ -8,13 +8,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/service/variations_service.h"
-#include "services/network/public/cpp/request_destination.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/metrics/field_trial_params.h"
@@ -29,11 +30,12 @@ enum class ConsumerVersionReason {
   // The total number of checks. This value should be used as the denominator
   // when calculating the percentage of a specific reason below.
   TOTAL_CHECKS = 0,
-  IS_OFF_THE_RECORD = 1,
+  // IS_OFF_THE_RECORD = 1, deprecated.
   INVALID_DM_TOKEN = 2,
   POLICY_DISABLED = 3,
+  IS_INCOGNITO = 4,
 
-  kMaxValue = POLICY_DISABLED
+  kMaxValue = IS_INCOGNITO
 };
 
 }  // namespace
@@ -67,8 +69,9 @@ bool RealTimePolicyEngine::CanPerformFullURLLookup(
 
   // |variations_service| can be nullptr in tests.
   if (variations_service &&
-      IsInExcludedCountry(variations_service->GetStoredPermanentCountry()))
+      IsInExcludedCountry(variations_service->GetLatestCountry())) {
     return false;
+  }
 
   return IsUserEpOptedIn(pref_service) || IsUserMbbOptedIn(pref_service);
 }
@@ -91,13 +94,14 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupWithToken(
 bool RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
     const PrefService* pref_service,
     bool has_valid_dm_token,
-    bool is_off_the_record) {
+    bool is_off_the_record,
+    bool is_guest_profile) {
   base::UmaHistogramEnumeration("SafeBrowsing.RT.ConsumerVersionReason",
                                 ConsumerVersionReason::TOTAL_CHECKS);
 
-  if (is_off_the_record) {
+  if (is_off_the_record && !is_guest_profile) {
     base::UmaHistogramEnumeration("SafeBrowsing.RT.ConsumerVersionReason",
-                                  ConsumerVersionReason::IS_OFF_THE_RECORD);
+                                  ConsumerVersionReason::IS_INCOGNITO);
     return false;
   }
 
@@ -108,22 +112,14 @@ bool RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
   }
 
   if (pref_service->GetInteger(
-          prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode) !=
-      REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED) {
+          enterprise_connectors::kEnterpriseRealTimeUrlCheckMode) !=
+      enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED) {
     base::UmaHistogramEnumeration("SafeBrowsing.RT.ConsumerVersionReason",
                                   ConsumerVersionReason::POLICY_DISABLED);
     return false;
   }
 
   return true;
-}
-
-// static
-bool RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
-    network::mojom::RequestDestination request_destination) {
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.RequestDestinations.Requested",
-                            request_destination);
-  return request_destination == network::mojom::RequestDestination::kDocument;
 }
 
 }  // namespace safe_browsing

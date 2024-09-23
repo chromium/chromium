@@ -78,6 +78,9 @@ class CastDecryptConfig {
 
   // Returns the clear and encrypted portions of the sample as described above.
   virtual const std::vector<SubsampleEntry>& subsamples() const = 0;
+
+  // Returns the encryption scheme for this sample.
+  virtual EncryptionScheme encryption_scheme() const = 0;
 };
 
 }  // namespace media

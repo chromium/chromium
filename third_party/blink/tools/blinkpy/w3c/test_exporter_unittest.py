@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import json
+import textwrap
+import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.log_testing import LoggingTestCase
@@ -40,29 +42,27 @@ class TestExporterTest(LoggingTestCase):
                         labels=[]),
         ])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.gerrit.exportable_open_cls = [
-            MockGerritCL(
-                data={
-                    'change_id': 'I001',
-                    'subject': 'subject',
-                    '_number': 1234,
-                    'current_revision': '1',
-                    'has_review_started': True,
-                    'revisions': {
-                        '1': {
-                            'commit_with_footers': 'a commit with footers'
-                        }
-                    },
-                    'owner': {
-                        'email': 'test@chromium.org'
-                    },
+        test_exporter.gerrit.exportable_cls = [
+            MockGerritCL(data={
+                'change_id': 'I001',
+                'subject': 'subject',
+                '_number': 1234,
+                'current_revision': '1',
+                'has_review_started': True,
+                'revisions': {
+                    '1': {
+                        'commit_with_footers': 'a commit with footers'
+                    }
                 },
-                api=test_exporter.gerrit,
-                chromium_commit=MockChromiumCommit(
-                    self.host,
-                    subject='subject',
-                    body='fake body',
-                    change_id='I001'))
+                'owner': {
+                    'email': 'test@chromium.org'
+                },
+            },
+                         api=test_exporter.gerrit,
+                         chromium_commit=MockChromiumCommit(self.host,
+                                                            subject='subject',
+                                                            body='fake body',
+                                                            change_id='I001'))
         ]
         test_exporter.get_exportable_commits = lambda: ([
             MockChromiumCommit(
@@ -96,8 +96,10 @@ class TestExporterTest(LoggingTestCase):
                 self.host, position='refs/heads/main@{#3}', change_id='I003', subject='subject 3', body='body 3'),
         ], [])
         test_exporter.pr_cleaner.run = lambda x, y: None
-        success = test_exporter.main(
-            ['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
         self.assertTrue(success)
         self.assertEqual(
@@ -122,6 +124,15 @@ class TestExporterTest(LoggingTestCase):
             ('chromium-export-f8c201ca95', 'subject 3',
              'body 3\n\nChange-Id: I003\n'),
         ])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            textwrap.dedent("""\
+                Pull requests created:
+                * https://github.com/web-platform-tests/wpt/pull/5678
+                * https://github.com/web-platform-tests/wpt/pull/5679
+                * https://github.com/web-platform-tests/wpt/pull/5680
+
+                """))
 
     def test_creates_and_merges_pull_requests(self):
         # This tests 4 exportable commits:
@@ -184,8 +195,10 @@ class TestExporterTest(LoggingTestCase):
                 self.host, position='refs/heads/main@{#458479}', change_id='I0147'),
         ], [])
         test_exporter.pr_cleaner.run = lambda x, y: None
-        success = test_exporter.main(
-            ['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
         self.assertTrue(success)
         self.assertEqual(
@@ -219,6 +232,22 @@ class TestExporterTest(LoggingTestCase):
              'Fake body\n\nChange-Id: I0476\n'),
         ])
         self.assertEqual(test_exporter.github.pull_requests_merged, [3456])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            textwrap.dedent("""\
+                Pull requests created:
+                * https://github.com/web-platform-tests/wpt/pull/5678
+
+                Pull requests that failed to merge:
+                * https://github.com/web-platform-tests/wpt/pull/4747
+
+                Pull requests marked as ready for review:
+                * https://github.com/web-platform-tests/wpt/pull/1234
+
+                Pull requests merged:
+                * https://github.com/web-platform-tests/wpt/pull/3456
+
+                """))
 
     def test_new_gerrit_cl(self):
         test_exporter = TestExporter(self.host)
@@ -226,53 +255,56 @@ class TestExporterTest(LoggingTestCase):
         test_exporter.github = MockWPTGitHub(pull_requests=[])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.gerrit.exportable_open_cls = [
-            MockGerritCL(
-                data={
-                    'change_id': 'I001',
-                    'subject': 'subject',
-                    '_number': 1234,
-                    'current_revision': '1',
-                    'has_review_started': True,
-                    'revisions': {
-                        '1': {
-                            'commit_with_footers': 'a commit with footers'
-                        }
-                    },
-                    'owner': {
-                        'email': 'test@chromium.org'
-                    },
+        test_exporter.gerrit.exportable_cls = [
+            MockGerritCL(data={
+                'change_id': 'I001',
+                'subject': 'subject',
+                '_number': 1234,
+                'current_revision': '1',
+                'has_review_started': True,
+                'revisions': {
+                    '1': {
+                        'commit_with_footers': 'a commit with footers'
+                    }
                 },
-                api=test_exporter.gerrit,
-                chromium_commit=MockChromiumCommit(
-                    self.host,
-                    subject='subject',
-                    body='fake body <html>',
-                    change_id='I001')),
-            MockGerritCL(
-                data={
-                    'change_id': 'I002',
-                    'subject': 'subject',
-                    '_number': 1235,
-                    'current_revision': '1',
-                    'has_review_started': True,
-                    'revisions': {
-                        '1': {
-                            'commit_with_footers': 'a commit with footers'
-                        }
-                    },
-                    'owner': {
-                        'email': 'test@chromium.org'
-                    },
+                'owner': {
+                    'email': 'test@chromium.org'
                 },
-                api=test_exporter.gerrit,
-                chromium_commit=MockChromiumCommit(
-                    self.host, subject='subject', body='body',
-                    change_id=None)),
+            },
+                         api=test_exporter.gerrit,
+                         chromium_commit=MockChromiumCommit(
+                             self.host,
+                             subject='subject',
+                             body='fake body <html>',
+                             change_id='I001')),
+            MockGerritCL(data={
+                'change_id': 'I002',
+                'subject': 'subject',
+                '_number': 1235,
+                'current_revision': '1',
+                'has_review_started': True,
+                'revisions': {
+                    '1': {
+                        'commit_with_footers': 'a commit with footers'
+                    }
+                },
+                'owner': {
+                    'email': 'test@chromium.org'
+                },
+            },
+                         api=test_exporter.gerrit,
+                         chromium_commit=MockChromiumCommit(self.host,
+                                                            subject='subject',
+                                                            body='body',
+                                                            change_id=None)),
         ]
         test_exporter.pr_cleaner.run = lambda x, y: None
-        test_exporter.main(['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
+        self.assertTrue(success)
         self.assertEqual(test_exporter.github.calls, [
             'pr_with_change_id',
             'create_pr',
@@ -294,6 +326,14 @@ class TestExporterTest(LoggingTestCase):
              'WPT-Export-Revision: 1'),
         ])
         self.assertEqual(test_exporter.github.pull_requests_merged, [])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            textwrap.dedent("""\
+                Pull requests created:
+                * https://github.com/web-platform-tests/wpt/pull/5678
+                * https://github.com/web-platform-tests/wpt/pull/5679
+
+                """))
 
     def test_gerrit_cl_no_update_if_pr_with_same_revision(self):
         test_exporter = TestExporter(self.host)
@@ -308,29 +348,30 @@ class TestExporterTest(LoggingTestCase):
         ])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.gerrit.exportable_open_cls = [
-            MockGerritCL(
-                data={
-                    'change_id': '1',
-                    'subject': 'subject',
-                    '_number': 1,
-                    'current_revision': '1',
-                    'has_review_started': True,
-                    'revisions': {
-                        '1': {
-                            'commit_with_footers': 'a commit with footers'
-                        }
-                    },
-                    'owner': {
-                        'email': 'test@chromium.org'
-                    },
+        test_exporter.gerrit.exportable_cls = [
+            MockGerritCL(data={
+                'change_id': '1',
+                'subject': 'subject',
+                '_number': 1,
+                'current_revision': '1',
+                'has_review_started': True,
+                'revisions': {
+                    '1': {
+                        'commit_with_footers': 'a commit with footers'
+                    }
                 },
-                api=test_exporter.gerrit,
-                chromium_commit=MockChromiumCommit(self.host))
+                'owner': {
+                    'email': 'test@chromium.org'
+                },
+            },
+                         api=test_exporter.gerrit,
+                         chromium_commit=MockChromiumCommit(self.host))
         ]
         test_exporter.pr_cleaner.run = lambda x, y: None
-        success = test_exporter.main(
-            ['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
         self.assertTrue(success)
         self.assertEqual(test_exporter.github.calls, [
@@ -338,6 +379,9 @@ class TestExporterTest(LoggingTestCase):
         ])
         self.assertEqual(test_exporter.github.pull_requests_created, [])
         self.assertEqual(test_exporter.github.pull_requests_merged, [])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            'No pull requests modified.\n')
 
     def test_gerrit_cl_updates_if_cl_has_new_revision(self):
         test_exporter = TestExporter(self.host)
@@ -352,34 +396,37 @@ class TestExporterTest(LoggingTestCase):
         ])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.gerrit.exportable_open_cls = [
-            MockGerritCL(
-                data={
-                    'change_id': '1',
-                    'subject': 'subject',
-                    '_number': 1,
-                    'current_revision': '2',
-                    'has_review_started': True,
-                    'revisions': {
-                        '1': {
-                            'commit_with_footers': 'a commit with footers 1',
-                            'description': 'subject 1',
-                        },
-                        '2': {
-                            'commit_with_footers': 'a commit with footers 2',
-                            'description': 'subject 2',
-                        },
+        test_exporter.gerrit.exportable_cls = [
+            MockGerritCL(data={
+                'change_id': '1',
+                'subject': 'subject',
+                '_number': 1,
+                'current_revision': '2',
+                'has_review_started': True,
+                'revisions': {
+                    '1': {
+                        'commit_with_footers': 'a commit with footers 1',
+                        'description': 'subject 1',
                     },
-                    'owner': {
-                        'email': 'test@chromium.org'
+                    '2': {
+                        'commit_with_footers': 'a commit with footers 2',
+                        'description': 'subject 2',
                     },
                 },
-                api=test_exporter.gerrit,
-                chromium_commit=MockChromiumCommit(self.host))
+                'owner': {
+                    'email': 'test@chromium.org'
+                },
+            },
+                         api=test_exporter.gerrit,
+                         chromium_commit=MockChromiumCommit(self.host))
         ]
         test_exporter.pr_cleaner.run = lambda x, y: None
-        test_exporter.main(['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
+        self.assertTrue(success)
         self.assertEqual(test_exporter.github.calls, [
             'pr_with_change_id',
             'get_pr_branch',
@@ -387,6 +434,13 @@ class TestExporterTest(LoggingTestCase):
         ])
         self.assertEqual(test_exporter.github.pull_requests_created, [])
         self.assertEqual(test_exporter.github.pull_requests_merged, [])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            textwrap.dedent("""\
+                Pull requests updated to a new revision:
+                * https://github.com/web-platform-tests/wpt/pull/1234
+
+                """))
 
     def test_attempts_to_merge_landed_gerrit_cl(self):
         test_exporter = TestExporter(self.host)
@@ -404,8 +458,10 @@ class TestExporterTest(LoggingTestCase):
             MockChromiumCommit(self.host, change_id='decafbad'), ], [])
         test_exporter.gerrit = MockGerritAPI()
         test_exporter.pr_cleaner.run = lambda x, y: None
-        success = test_exporter.main(
-            ['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
         self.assertTrue(success)
         self.assertEqual(test_exporter.github.calls, [
@@ -416,6 +472,13 @@ class TestExporterTest(LoggingTestCase):
         ])
         self.assertEqual(test_exporter.github.pull_requests_created, [])
         self.assertEqual(test_exporter.github.pull_requests_merged, [])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            textwrap.dedent("""\
+                Pull requests marked as ready for review:
+                * https://github.com/web-platform-tests/wpt/pull/1234
+
+                """))
 
     def test_merges_non_provisional_pr(self):
         test_exporter = TestExporter(self.host)
@@ -433,8 +496,10 @@ class TestExporterTest(LoggingTestCase):
             MockChromiumCommit(self.host, change_id='decafbad'), ], [])
         test_exporter.gerrit = MockGerritAPI()
         test_exporter.pr_cleaner.run = lambda x, y: None
-        success = test_exporter.main(
-            ['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
         self.assertTrue(success)
         self.assertEqual(test_exporter.github.calls, [
@@ -444,6 +509,13 @@ class TestExporterTest(LoggingTestCase):
         ])
         self.assertEqual(test_exporter.github.pull_requests_created, [])
         self.assertEqual(test_exporter.github.pull_requests_merged, [1234])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            textwrap.dedent("""\
+                Pull requests merged:
+                * https://github.com/web-platform-tests/wpt/pull/1234
+
+                """))
 
     def test_does_not_create_pr_if_cl_review_has_not_started(self):
         test_exporter = TestExporter(self.host)
@@ -451,40 +523,45 @@ class TestExporterTest(LoggingTestCase):
         test_exporter.github = MockWPTGitHub(pull_requests=[])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.gerrit.exportable_open_cls = [
-            MockGerritCL(
-                data={
-                    'change_id': '1',
-                    'subject': 'subject',
-                    '_number': 1,
-                    'current_revision': '2',
-                    'has_review_started': False,
-                    'revisions': {
-                        '1': {
-                            'commit_with_footers': 'a commit with footers 1',
-                            'description': 'subject 1',
-                        },
-                        '2': {
-                            'commit_with_footers': 'a commit with footers 2',
-                            'description': 'subject 2',
-                        },
+        test_exporter.gerrit.exportable_cls = [
+            MockGerritCL(data={
+                'change_id': '1',
+                'subject': 'subject',
+                '_number': 1,
+                'current_revision': '2',
+                'has_review_started': False,
+                'revisions': {
+                    '1': {
+                        'commit_with_footers': 'a commit with footers 1',
+                        'description': 'subject 1',
                     },
-                    'owner': {
-                        'email': 'test@chromium.org'
+                    '2': {
+                        'commit_with_footers': 'a commit with footers 2',
+                        'description': 'subject 2',
                     },
                 },
-                api=test_exporter.gerrit,
-                chromium_commit=MockChromiumCommit(self.host))
+                'owner': {
+                    'email': 'test@chromium.org'
+                },
+            },
+                         api=test_exporter.gerrit,
+                         chromium_commit=MockChromiumCommit(self.host))
         ]
         test_exporter.pr_cleaner.run = lambda x, y: None
-        success = test_exporter.main(
-            ['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
         self.assertTrue(success)
         self.assertEqual(test_exporter.github.calls, [])
         self.assertEqual(test_exporter.github.pull_requests_created, [])
         self.assertEqual(test_exporter.github.pull_requests_merged, [])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            'No pull requests modified.\n')
 
+    @unittest.skip('Unskip after crbug.com/346392205 is fixed')
     def test_run_returns_false_on_gerrit_search_error(self):
         def raise_gerrit_error():
             raise GerritError('Gerrit API fails.')
@@ -494,10 +571,12 @@ class TestExporterTest(LoggingTestCase):
         test_exporter.github = MockWPTGitHub(pull_requests=[])
         test_exporter.get_exportable_commits = lambda: ([], [])
         test_exporter.gerrit = MockGerritAPI()
-        test_exporter.gerrit.query_exportable_open_cls = raise_gerrit_error
+        test_exporter.gerrit.query_exportable_cls = raise_gerrit_error
         test_exporter.pr_cleaner.run = lambda x, y: None
-        success = test_exporter.main(
-            ['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
         self.assertFalse(success)
         self.assertLog([
@@ -508,6 +587,9 @@ class TestExporterTest(LoggingTestCase):
             'ERROR: Gerrit API fails.\n',
             'INFO: Searching for exportable Chromium commits.\n'
         ])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            'No pull requests modified.\n')
 
     def test_run_returns_false_on_patch_failure(self):
         test_exporter = TestExporter(self.host)
@@ -517,8 +599,10 @@ class TestExporterTest(LoggingTestCase):
             [], ['There was an error with the rutabaga.'])
         test_exporter.gerrit = MockGerritAPI()
         test_exporter.pr_cleaner.run = lambda x, y: None
-        success = test_exporter.main(
-            ['--credentials-json', '/tmp/credentials.json'])
+        success = test_exporter.main([
+            '--credentials-json=/tmp/credentials.json',
+            '--summary-markdown=/tmp/summary.md',
+        ])
 
         self.assertFalse(success)
         self.assertLog([
@@ -529,3 +613,6 @@ class TestExporterTest(LoggingTestCase):
             'INFO: Attention: The following errors have prevented some commits from being exported:\n',
             'ERROR: There was an error with the rutabaga.\n'
         ])
+        self.assertEqual(
+            self.host.filesystem.read_text_file('/tmp/summary.md'),
+            'No pull requests modified.\n')

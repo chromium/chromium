@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/api/scripts_internal/script_serialization.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -17,11 +19,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "extensions/common/api/scripts_internal.h"
-#include "extensions/common/api/scripts_internal/script_serialization.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/user_script.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using extensions::api::scripts_internal::SerializedUserScript;
 
@@ -32,12 +32,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
 
   // Generate input parameters for the call.
-  absl::optional<base::Value> serialized_script_value =
+  std::optional<base::Value> serialized_script_value =
       base::JSONReader::Read(provider.ConsumeRandomLengthString());
   if (!serialized_script_value.has_value()) {
     return 0;
   }
-  absl::optional<SerializedUserScript> serialized_script =
+  std::optional<SerializedUserScript> serialized_script =
       SerializedUserScript::FromValue(std::move(*serialized_script_value));
   if (!serialized_script.has_value()) {
     return 0;

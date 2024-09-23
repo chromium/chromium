@@ -1,4 +1,4 @@
-android.webkit.WebView focusable scrollable
+android.webkit.WebView focusable
 ++android.widget.TextView name='State'
 ++android.view.View expanded hint='State'
 ++++android.widget.EditText clickable editable_text focusable focused input_type=1

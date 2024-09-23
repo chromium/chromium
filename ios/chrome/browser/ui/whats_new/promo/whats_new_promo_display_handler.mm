@@ -20,7 +20,7 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _promosManager = promosManager;
   }
   return self;

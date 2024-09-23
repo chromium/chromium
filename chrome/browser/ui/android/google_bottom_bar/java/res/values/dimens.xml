@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+  <dimen name="google_bottom_bar_buttons_container_height">48dp</dimen>
+  <dimen name="google_bottom_bar_searchbox_container_height">54dp</dimen>
+  <dimen name="google_bottom_bar_padding">16dp</dimen>
+  <dimen name="google_bottom_bar_button_padding">12dp</dimen>
+  <dimen name="google_bottom_bar_button_size">48dp</dimen>
+  <dimen name="google_bottom_bar_button_margin_vertical">8dp</dimen>
+  <dimen name="google_bottom_bar_searchbox_top_margin">8dp</dimen>
+  <dimen name="google_bottom_bar_searchbox_radius">26dp</dimen>
+  <dimen name="google_bottom_bar_searchbox_horizontal_padding">16dp</dimen>
+  <dimen name="google_bottom_bar_single_decker_top_padding_large">8dp</dimen>
+  <dimen name="google_bottom_bar_single_decker_top_padding_small">4dp</dimen>
+</resources>

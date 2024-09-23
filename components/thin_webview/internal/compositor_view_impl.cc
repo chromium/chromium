@@ -9,11 +9,13 @@
 #include "base/android/jni_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
-#include "components/thin_webview/internal/jni_headers/CompositorViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/thin_webview/internal/jni_headers/CompositorViewImpl_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -57,7 +59,7 @@ CompositorViewImpl::CompositorViewImpl(JNIEnv* env,
   root_layer_->SetIsDrawable(true);
   std::optional<SkColor> background_color =
       ui::JavaColorToOptionalSkColor(java_background_color);
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   root_layer_->SetBackgroundColor(
       SkColor4f::FromColor(background_color.value()));
 }

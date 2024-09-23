@@ -9,6 +9,8 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 
 import androidx.annotation.RequiresExtension;
 
+import org.chromium.net.ConnectionCloseSource;
+
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidQuicExceptionWrapper extends org.chromium.net.QuicException {
     private final AndroidNetworkExceptionWrapper mBackend;
@@ -37,5 +39,11 @@ class AndroidQuicExceptionWrapper extends org.chromium.net.QuicException {
     @Override
     public boolean immediatelyRetryable() {
         return mBackend.immediatelyRetryable();
+    }
+
+    @Override
+    public @ConnectionCloseSource int getConnectionCloseSource() {
+        // Not available in HTTP Engine.
+        return ConnectionCloseSource.UNKNOWN;
     }
 }

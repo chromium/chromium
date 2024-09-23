@@ -50,7 +50,11 @@ enum class AdditionalBidResult {
   // currency that didn't match the currency associated with that buyer.
   kRejectedDueToCurrencyMismatch = 8,
 
-  kMaxValue = kRejectedDueToCurrencyMismatch
+  // Decoding failed because the decoder service is not available due to
+  // page being in process of unload.
+  kRejectedDecoderShutDown = 9,
+
+  kMaxValue = kRejectedDecoderShutDown
 };
 
 }  // namespace content

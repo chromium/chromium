@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 
 #include "base/feature_list.h"
@@ -37,7 +42,7 @@ bool CanUseRgbReadback(media::VideoFrame& frame) {
 SkImageInfo GetImageInfoForFrame(const media::VideoFrame& frame,
                                  const gfx::Size& size) {
   SkColorType color_type =
-      SkColorTypeForPlane(frame.format(), media::VideoFrame::kARGBPlane);
+      SkColorTypeForPlane(frame.format(), media::VideoFrame::Plane::kARGB);
   SkAlphaType alpha_type = kUnpremul_SkAlphaType;
   return SkImageInfo::Make(size.width(), size.height(), color_type, alpha_type);
 }
@@ -201,8 +206,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
       "timestamp", txt_frame->timestamp());
 
   uint8_t* dst_pixels =
-      result->GetWritableVisibleData(media::VideoFrame::kARGBPlane);
-  int rgba_stide = result->stride(media::VideoFrame::kARGBPlane);
+      result->GetWritableVisibleData(media::VideoFrame::Plane::kARGB);
+  int rgba_stide = result->stride(media::VideoFrame::Plane::kARGB);
   DCHECK_GT(rgba_stide, 0);
 
   auto origin = txt_frame->metadata().texture_origin_is_top_left
@@ -219,7 +224,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
       texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stide),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
-                    MakeUnwrappingCrossThreadHandle(this), std::move(result_cb),
+                    WrapWeakPersistent(this), std::move(result_cb),
                     std::move(txt_frame), std::move(result)));
 }
 
@@ -244,7 +249,7 @@ void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
 
   result_frame->set_color_space(txt_frame->ColorSpace());
   result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
-  result_frame->metadata().ClearTextureFrameMedatada();
+  result_frame->metadata().ClearTextureFrameMetadata();
   std::move(result_cb).Run(success ? std::move(result_frame) : nullptr);
 }
 
@@ -255,7 +260,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
     base::span<uint8_t> dest_buffer,
     ReadbackDoneCallback done_cb) {
   if (dest_layout.NumPlanes() != 1) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "This method shouldn't be called on anything but RGB frames";
     base::BindPostTaskToCurrentDefault(std::move(std::move(done_cb)))
         .Run(false);
@@ -300,8 +305,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
       texture_size, src_point, info, base::saturated_cast<GLuint>(stride),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsBufferReadCompleted,
-                    MakeUnwrappingCrossThreadHandle(this), std::move(txt_frame),
-                    src_rect, dest_layout, dest_buffer, std::move(done_cb)));
+                    WrapWeakPersistent(this), std::move(txt_frame), src_rect,
+                    dest_layout, dest_buffer, std::move(done_cb)));
 }
 
 void BackgroundReadback::OnARGBPixelsBufferReadCompleted(
@@ -368,10 +373,8 @@ scoped_refptr<media::VideoFrame> SyncReadbackThread::ReadbackToFrame(
     return nullptr;
 
   auto* ri = context_provider_->RasterInterface();
-  auto* gr_context = context_provider_->GetGrContext();
   return media::ReadbackTextureBackedFrameToMemorySync(
-      *frame, ri, gr_context, context_provider_->GetCapabilities(),
-      &result_frame_pool_);
+      *frame, ri, context_provider_->GetCapabilities(), &result_frame_pool_);
 }
 
 bool SyncReadbackThread::ReadbackToBuffer(
@@ -387,8 +390,6 @@ bool SyncReadbackThread::ReadbackToBuffer(
     return false;
 
   auto* ri = context_provider_->RasterInterface();
-  auto* gr_context = context_provider_->GetGrContext();
-
   if (!ri)
     return false;
 
@@ -399,7 +400,7 @@ bool SyncReadbackThread::ReadbackToBuffer(
     uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
     if (!media::ReadbackTexturePlaneToMemorySync(
             *frame, i, plane_src_rect, dest_pixels, dest_layout.Stride(i), ri,
-            gr_context, context_provider_->GetCapabilities())) {
+            context_provider_->GetCapabilities())) {
       // It's possible to fail after copying some but not all planes, leaving
       // the output buffer in a corrupt state D:
       return false;

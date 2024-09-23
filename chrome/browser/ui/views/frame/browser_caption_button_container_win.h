@@ -15,9 +15,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserFrameViewWin;
-class TabSearchBubbleHost;
 class WindowsCaptionButton;
-class WindowsTabSearchCaptionButton;
 
 // Provides a container for Windows caption buttons that can be moved between
 // frame and browser window as needed. When extended horizontally, becomes a
@@ -39,8 +37,6 @@ class BrowserCaptionButtonContainer : public views::View,
   int NonClientHitTest(const gfx::Point& point) const;
 
   void OnWindowControlsOverlayEnabledChanged();
-
-  TabSearchBubbleHost* GetTabSearchBubbleHost();
 
  private:
   friend class BrowserFrameViewWin;
@@ -68,7 +64,6 @@ class BrowserCaptionButtonContainer : public views::View,
   void UpdateButtonToolTipsForWindowControlsOverlay();
 
   const raw_ptr<BrowserFrameViewWin> frame_view_;
-  raw_ptr<WindowsTabSearchCaptionButton> tab_search_button_ = nullptr;
   const raw_ptr<WindowsCaptionButton> minimize_button_;
   const raw_ptr<WindowsCaptionButton> maximize_button_;
   const raw_ptr<WindowsCaptionButton> restore_button_;

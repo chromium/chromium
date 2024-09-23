@@ -43,6 +43,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 namespace page_load_metrics {
@@ -55,19 +56,26 @@ int GetHttpStatusCode(content::NavigationHandle* navigation_handle) {
   CHECK(navigation_handle->HasCommitted());
   const net::HttpResponseHeaders* response_headers =
       navigation_handle->GetResponseHeaders();
-  if (!response_headers)
+  if (!response_headers) {
     return -1;
+  }
   return response_headers->response_code();
 }
 
 UserInitiatedInfo CreateUserInitiatedInfo(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsRendererInitiated())
+  if (!navigation_handle->IsRendererInitiated()) {
     return UserInitiatedInfo::BrowserInitiated();
+  }
 
   return UserInitiatedInfo::RenderInitiated(
       navigation_handle->HasUserGesture(),
       !navigation_handle->NavigationInputStart().is_null());
+}
+
+bool IsUrlSchemeSupported(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kDataScheme) ||
+         url.SchemeIs(url::kFileScheme);
 }
 
 }  // namespace
@@ -86,8 +94,9 @@ void MetricsWebContentsObserver::RecordFeatureUsage(
     for (auto web_feature : web_features) {
       CHECK_NE(web_feature, blink::mojom::WebFeature::kPageVisits)
           << "WebFeature::kPageVisits is a reserved feature.";
-      if (web_feature == blink::mojom::WebFeature::kPageVisits)
+      if (web_feature == blink::mojom::WebFeature::kPageVisits) {
         continue;
+      }
 
       features.emplace_back(blink::mojom::UseCounterFeatureType::kWebFeature,
                             static_cast<uint32_t>(web_feature));
@@ -102,6 +111,39 @@ void MetricsWebContentsObserver::RecordFeatureUsage(
     blink::mojom::WebFeature feature) {
   MetricsWebContentsObserver::RecordFeatureUsage(
       render_frame_host, std::vector<blink::mojom::WebFeature>{feature});
+}
+
+// static
+void MetricsWebContentsObserver::RecordFeatureUsage(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::WebDXFeature>& webdx_features) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  MetricsWebContentsObserver* observer =
+      MetricsWebContentsObserver::FromWebContents(web_contents);
+
+  if (observer) {
+    std::vector<blink::UseCounterFeature> features;
+    for (auto webdx_feature : webdx_features) {
+      CHECK_NE(webdx_feature, blink::mojom::WebDXFeature::kPageVisits)
+          << "WebFeature::kPageVisits is a reserved feature.";
+      if (webdx_feature == blink::mojom::WebDXFeature::kPageVisits) {
+        continue;
+      }
+
+      features.emplace_back(blink::mojom::UseCounterFeatureType::kWebDXFeature,
+                            static_cast<uint32_t>(webdx_feature));
+    }
+    observer->OnBrowserFeatureUsage(render_frame_host, features);
+  }
+}
+
+// static
+void MetricsWebContentsObserver::RecordFeatureUsage(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::WebDXFeature feature) {
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      render_frame_host, std::vector<blink::mojom::WebDXFeature>{feature});
 }
 
 // static
@@ -125,18 +167,20 @@ void MetricsWebContentsObserver::BindPageLoadMetrics(
     mojo::PendingAssociatedReceiver<mojom::PageLoadMetrics> receiver,
     content::RenderFrameHost* rfh) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   auto* observer = MetricsWebContentsObserver::FromWebContents(web_contents);
-  if (!observer)
+  if (!observer) {
     return;
+  }
   observer->page_load_metrics_receivers_.Bind(rfh, std::move(receiver));
 }
 
 MetricsWebContentsObserver::~MetricsWebContentsObserver() {}
 
 void MetricsWebContentsObserver::WebContentsWillSoonBeDestroyed() {
-  // TODO(https://crbug.com/1363952): Should not rely on this call.
+  // TODO(crbug.com/40238907): Should not rely on this call.
   // This method is called only in a certain situation, and most embedders
   // doesn't support to call this method before WebContentsDestroyed().
   web_contents_will_soon_be_destroyed_ = true;
@@ -148,8 +192,9 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
 
   // Do this before clearing `primary_page_`, so that the observers don't hit
   // the CHECK in MetricsWebContentsObserver::GetDelegateForCommittedLoad.
-  for (auto& observer : lifecycle_observers_)
+  for (auto& observer : lifecycle_observers_) {
     observer.OnGoingAway();
+  }
 
   UnregisterInputEventObserver(web_contents()->GetPrimaryMainFrame());
 
@@ -166,14 +211,16 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
 
 void MetricsWebContentsObserver::RegisterInputEventObserver(
     content::RenderFrameHost* host) {
-  if (host != nullptr)
+  if (host != nullptr) {
     host->GetRenderWidgetHost()->AddInputEventObserver(this);
+  }
 }
 
 void MetricsWebContentsObserver::UnregisterInputEventObserver(
     content::RenderFrameHost* host) {
-  if (host != nullptr)
+  if (host != nullptr) {
     host->GetRenderWidgetHost()->RemoveInputEventObserver(this);
+  }
 }
 
 void MetricsWebContentsObserver::RenderFrameHostChanged(
@@ -187,11 +234,13 @@ void MetricsWebContentsObserver::RenderFrameHostChanged(
   RegisterInputEventObserver(new_host);
 }
 
-void MetricsWebContentsObserver::FrameDeleted(int frame_tree_node_id) {
+void MetricsWebContentsObserver::FrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   content::RenderFrameHost* rfh =
       web_contents()->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
-  if (!rfh)
+  if (!rfh) {
     return;
+  }
 
   // Deletion of FrameTreeNode follows deletion of RenderFrameHost. If the node
   // is root of the page, corresponding PageLoadTracker has gone at this timing.
@@ -204,11 +253,13 @@ void MetricsWebContentsObserver::FrameDeleted(int frame_tree_node_id) {
 
 void MetricsWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* rfh) {
-  if (auto* memory_tracker = GetMemoryTracker())
+  if (auto* memory_tracker = GetMemoryTracker()) {
     memory_tracker->OnRenderFrameDeleted(rfh, this);
+  }
 
-  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh))
+  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
     tracker->RenderFrameDeleted(rfh);
+  }
 
   content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
   auto new_end_it = std::remove_if(queued_memory_updates_.begin(),
@@ -220,8 +271,9 @@ void MetricsWebContentsObserver::RenderFrameDeleted(
 
   // PageLoadTracker and smoothness data can be associated only with a main
   // frame.
-  if (rfh->GetParent())
+  if (rfh->GetParent()) {
     return;
+  }
   active_pages_.erase(rfh);
   inactive_pages_.erase(rfh);
   ukm_smoothness_data_.erase(rfh);
@@ -235,8 +287,9 @@ void MetricsWebContentsObserver::MediaStartedPlaying(
 
   // Ignore media that starts playing in a page that was navigated away
   // from.
-  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host))
+  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
     tracker->MediaStartedPlaying(video_type, render_frame_host);
+  }
 }
 
 void MetricsWebContentsObserver::WillStartNavigationRequest(
@@ -245,8 +298,9 @@ void MetricsWebContentsObserver::WillStartNavigationRequest(
   // WillStartNavigationRequest.
   CHECK(!navigation_handle->IsSameDocument());
 
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInMainFrame()) {
     return;
+  }
 
   WillStartNavigationRequestImpl(navigation_handle);
   has_navigated_ = true;
@@ -264,8 +318,9 @@ MetricsWebContentsObserver::MetricsWebContentsObserver(
       page_load_metrics_receivers_(web_contents, this) {
   // NoStatePrefetch loads erroneously report that they are initially visible,
   // so we manually override visibility state for prerender.
-  if (embedder_interface_->IsNoStatePrefetch(web_contents))
+  if (embedder_interface_->IsNoStatePrefetch(web_contents)) {
     in_foreground_ = false;
+  }
 
   RegisterInputEventObserver(web_contents->GetPrimaryMainFrame());
 }
@@ -278,8 +333,9 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       NotifyAbortedProvisionalLoadsNewNavigation(navigation_handle,
                                                  user_initiated_info);
 
-  if (!ShouldTrackMainFrameNavigation(navigation_handle))
+  if (!ShouldTrackMainFrameNavigation(navigation_handle)) {
     return;
+  }
 
   // Pass in the last committed url to the PageLoadTracker. If the MWCO has
   // never observed a committed load, use the last committed url from this
@@ -322,15 +378,16 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       source_id = ukm::NoURLSourceId();
     }
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   // For prerendered page activations, we don't create a new PageLoadTracker,
   // but reuse an existing one that was created for the initial prerendering
   // navigation so that the same instance will bee OnPrerenderStart and
   // DidActivatePrerenderedPage.
-  if (navigation_handle->IsPrerenderedPageActivation())
+  if (navigation_handle->IsPrerenderedPageActivation()) {
     return;
+  }
 
   // Passing raw pointers to `embedder_interface_` is safe because the
   // MetricsWebContentsObserver owns them both list and they are torn down after
@@ -344,15 +401,17 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
           parent_tracker)));
   CHECK(insertion_result.second)
       << "provisional_loads_ already contains NavigationHandle.";
-  for (auto& observer : lifecycle_observers_)
+  for (auto& observer : lifecycle_observers_) {
     observer.OnTrackerCreated(insertion_result.first->second.get());
+  }
 }
 
 void MetricsWebContentsObserver::WillProcessNavigationResponse(
     content::NavigationHandle* navigation_handle) {
   auto it = provisional_loads_.find(navigation_handle);
-  if (it == provisional_loads_.end())
+  if (it == provisional_loads_.end()) {
     return;
+  }
   it->second->WillProcessNavigationResponse(navigation_handle);
 }
 
@@ -386,24 +445,27 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
     // load, `primary_page_` or `active_pages_`. If the resource
     // request was started before this navigation of them, then it should be
     // ignored. Check `primary_page_` here as its start time is the oldest one.
-    if (!primary_page_ || creation_time < primary_page_->navigation_start())
+    if (!primary_page_ || creation_time < primary_page_->navigation_start()) {
       return nullptr;
+    }
 
     // Sub-frame resources have a null RFH when browser-side navigation is
     // enabled, so we can't perform the RFH check below for them.
     //
-    // TODO(https://crbug.com/1301880): consider tracking GlobalRequestIDs for
+    // TODO(crbug.com/40216775): consider tracking GlobalRequestIDs for
     // sub-frame navigations in each PageLoadTracker, and performing a lookup
     // for sub-frames similar to the main-frame lookup above. Now we have
     // `active_pages_` in addition to `primary_page_`, and the following code
     // cannot handle sub-frames inside FencedFrames.
-    if (blink::IsRequestDestinationFrame(request_destination))
+    if (blink::IsRequestDestinationFrame(request_destination)) {
       return primary_page_.get();
+    }
 
     // This was originally a CHECK but it fails when the document load happened
     // after client certificate selection.
-    if (!render_frame_host_or_null)
+    if (!render_frame_host_or_null) {
       return nullptr;
+    }
 
     // There is a race here: a completed resource for the previously committed
     // page can arrive after the new page has committed. In this case, we may
@@ -413,8 +475,8 @@ PageLoadTracker* MetricsWebContentsObserver::GetTrackerOrNullForRequest(
     // RFH is used across page loads (same origin navigations, as well as some
     // cross-origin render-initiated navigations).
     //
-    // TODO(crbug.com/738577): use a DocumentId here instead, to eliminate this
-    // race.
+    // TODO(crbug.com/40528374): use a DocumentId here instead, to eliminate
+    // this race.
     return GetPageLoadTracker(render_frame_host_or_null);
   }
   return nullptr;
@@ -434,9 +496,8 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
       request_id, render_frame_host, resource_load_info.request_destination,
       resource_load_info.load_timing_info.request_start);
   if (tracker) {
-    // TODO(crbug.com/721403): Fill in data reduction proxy fields when this is
-    // available in the network service.
-    // int original_content_length =
+    // TODO(crbug.com/41318940): Fill in data reduction proxy fields when this
+    // is available in the network service. int original_content_length =
     //     was_cached ? 0
     //                : data_reduction_proxy::util::EstimateOriginalBodySize(
     //                      request, lofi_decider);
@@ -458,22 +519,25 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
 
 void MetricsWebContentsObserver::FrameReceivedUserActivation(
     content::RenderFrameHost* render_frame_host) {
-  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host))
+  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
     tracker->FrameReceivedUserActivation(render_frame_host);
+  }
 }
 
 void MetricsWebContentsObserver::FrameDisplayStateChanged(
     content::RenderFrameHost* render_frame_host,
     bool is_display_none) {
-  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host))
+  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
     tracker->FrameDisplayStateChanged(render_frame_host, is_display_none);
+  }
 }
 
 void MetricsWebContentsObserver::FrameSizeChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Size& frame_size) {
-  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host))
+  if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
     tracker->FrameSizeChanged(render_frame_host, frame_size);
+  }
 }
 
 void MetricsWebContentsObserver::OnCookiesAccessed(
@@ -487,19 +551,22 @@ void MetricsWebContentsObserver::OnCookiesAccessed(
     // For uncommitted main frame navigations, find a tracker from
     // `provisional_loads_`.
     auto it = provisional_loads_.find(navigation);
-    if (it != provisional_loads_.end())
+    if (it != provisional_loads_.end()) {
       tracker = it->second.get();
+    }
   }
 
-  if (tracker)
+  if (tracker) {
     OnCookiesAccessedImpl(*tracker, details);
+  }
 }
 
 void MetricsWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* rfh,
     const content::CookieAccessDetails& details) {
-  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh))
+  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
     OnCookiesAccessedImpl(*tracker, details);
+  }
 }
 
 void MetricsWebContentsObserver::OnCookiesAccessedImpl(
@@ -507,7 +574,10 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
     const content::CookieAccessDetails& details) {
   // TODO(altimin): Propagate `CookieAccessDetails` further.
   bool is_partitioned_access = base::ranges::all_of(
-      details.cookie_list, &net::CanonicalCookie::IsPartitioned);
+      details.cookie_access_result_list,
+      [](const net::CookieWithAccessResult& cookie_with_access_result) {
+        return cookie_with_access_result.cookie.IsPartitioned();
+      });
 
   switch (details.type) {
     case content::CookieAccessDetails::Type::kRead:
@@ -517,8 +587,10 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
                             is_partitioned_access);
       break;
     case content::CookieAccessDetails::Type::kChange:
-      for (const auto& cookie : details.cookie_list) {
-        tracker.OnCookieChange(details.url, details.first_party_url, cookie,
+      for (const auto& cookie_with_access_result :
+           details.cookie_access_result_list) {
+        tracker.OnCookieChange(details.url, details.first_party_url,
+                               cookie_with_access_result.cookie,
                                details.blocked_by_policy, details.is_ad_tagged,
                                details.cookie_setting_overrides,
                                is_partitioned_access);
@@ -529,7 +601,10 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
 
 void MetricsWebContentsObserver::DidActivatePreviewedPage(
     base::TimeTicks activation_time) {
-  primary_page_->DidActivatePreviewedPage(activation_time);
+  // TODO(b:334709645): Investigate how nullptr cases happen.
+  if (primary_page_) {
+    primary_page_->DidActivatePreviewedPage(activation_time);
+  }
 }
 
 void MetricsWebContentsObserver::OnStorageAccessed(
@@ -555,22 +630,25 @@ void MetricsWebContentsObserver::ReadyToCommitNavigation(
   if (navigation_handle->IsInPrimaryMainFrame()) {
     // Notify `primary_page_` that we are ready to commit a navigation to a
     // new page in the primary main frame.
-    if (primary_page_)
+    if (primary_page_) {
       primary_page_->ReadyToCommitNavigation(navigation_handle);
+    }
   } else if (navigation_handle->IsInMainFrame()) {
     // For non-primary main frame, we notify the PageLoadTracker associated with
     // the RenderFrameHost that triggers the navigation.
     PageLoadTracker* tracker =
         GetPageLoadTracker(navigation_handle->GetRenderFrameHost());
-    if (tracker)
+    if (tracker) {
       tracker->ReadyToCommitNavigation(navigation_handle);
+    }
   } else {
     // For subframe navigations, notify the PageLoadTracker associated with the
     // main frame.
     PageLoadTracker* tracker =
         GetPageLoadTracker(navigation_handle->GetParentFrame());
-    if (tracker)
+    if (tracker) {
       tracker->ReadyToCommitNavigation(navigation_handle);
+    }
   }
 }
 
@@ -589,7 +667,7 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   // example, navigations to about:blank). DidFinishNavigation is guaranteed to
   // be called for every navigation, so we also update has_navigated_ here, to
   // ensure it is set consistently for all navigations.
-  // TODO(https://crbug.com/1301880): This flag seems broken for Prerender and
+  // TODO(crbug.com/40216775): This flag seems broken for Prerender and
   // FencedFrames.
   has_navigated_ = true;
 
@@ -601,17 +679,20 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   CHECK(navigation_handle->IsInMainFrame());
   if (navigation_handle->HasCommitted() &&
       navigation_handle->IsSameDocument()) {
-    if (navigation_handle_tracker)
+    if (navigation_handle_tracker) {
       navigation_handle_tracker->StopTracking();
+    }
     if (navigation_handle->IsInPrimaryMainFrame()) {
-      if (primary_page_)
+      if (primary_page_) {
         primary_page_->DidCommitSameDocumentNavigation(navigation_handle);
+      }
     } else {
       // Handle the event for non-primary main frames, i.e., FencedFrames.
       PageLoadTracker* tracker =
           GetPageLoadTracker(navigation_handle->GetRenderFrameHost());
-      if (tracker)
+      if (tracker) {
         tracker->DidCommitSameDocumentNavigation(navigation_handle);
+      }
     }
     return;
   }
@@ -652,12 +733,14 @@ void MetricsWebContentsObserver::DidFinishNavigation(
 
     // If `navigation_handle` already has an associated PageLoadTracker in
     // `inactive_pages_`, move it into `primary_page_`.
-    if (MaybeActivatePageLoadTracker(navigation_handle))
+    if (MaybeActivatePageLoadTracker(navigation_handle)) {
       return;
+    }
   }
 
-  if (!navigation_handle_tracker)
+  if (!navigation_handle_tracker) {
     return;
+  }
 
   if (!ShouldTrackMainFrameNavigation(navigation_handle)) {
     navigation_handle_tracker->StopTracking();
@@ -699,8 +782,9 @@ void MetricsWebContentsObserver::HandleFailedNavigationForTrackedLoad(
       is_aborted_provisional_load ? END_OTHER : END_PROVISIONAL_LOAD_FAILED,
       UserInitiatedInfo::NotUserInitiated(), now, true);
 
-  if (is_aborted_provisional_load)
+  if (is_aborted_provisional_load) {
     aborted_provisional_loads_.push_back(std::move(tracker));
+  }
 }
 
 void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
@@ -729,8 +813,9 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
     // just fails. It results in destructing the moved tracker unexpectedly.
     // To avoid this problem, we ensure destructing existing tracker beforehand.
     auto it = active_pages_.find(navigation_handle->GetRenderFrameHost());
-    if (it != active_pages_.end())
+    if (it != active_pages_.end()) {
       active_pages_.erase(it);
+    }
 
     active_pages_.emplace(navigation_handle->GetRenderFrameHost(),
                           std::move(tracker));
@@ -738,8 +823,9 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
   raw_tracker->Commit(navigation_handle);
   CHECK(raw_tracker->did_commit());
 
-  for (auto& observer : lifecycle_observers_)
+  for (auto& observer : lifecycle_observers_) {
     observer.OnCommit(raw_tracker);
+  }
 
   auto* render_frame_host = navigation_handle->GetRenderFrameHost();
   const bool is_main_frame =
@@ -776,8 +862,9 @@ void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
                "MaybeRestorePageLoadTrackerForBackForwardCache",
                "next_navigation", next_navigation_handle);
 
-  if (!previously_committed_load)
+  if (!previously_committed_load) {
     return;
+  }
 
   content::RenderFrameHost* previous_frame = content::RenderFrameHost::FromID(
       next_navigation_handle->GetPreviousRenderFrameHostId());
@@ -790,8 +877,9 @@ void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
       (previous_frame->GetLifecycleState() ==
        content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
-  if (!is_back_forward_cache)
+  if (!is_back_forward_cache) {
     return;
+  }
 
   previously_committed_load->OnEnterBackForwardCache();
   inactive_pages_.emplace(previous_frame, std::move(previously_committed_load));
@@ -815,8 +903,9 @@ bool MetricsWebContentsObserver::MaybeActivatePageLoadTracker(
   // `navigation_handle` is served from the back/forward cache. For example,
   // if a page is put into the cache before MetricsWebContents is created,
   // `inactive_pages_` is empty.
-  if (it == inactive_pages_.end())
+  if (it == inactive_pages_.end()) {
     return false;
+  }
 
   active_pages_.clear();
 
@@ -829,11 +918,13 @@ bool MetricsWebContentsObserver::MaybeActivatePageLoadTracker(
   primary_main_frame->ForEachRenderFrameHost(
       [&](content::RenderFrameHost* rfh) {
         // Skip RenderFrameHosts that aren't main frames.
-        if (rfh != rfh->GetMainFrame())
+        if (rfh != rfh->GetMainFrame()) {
           return;
+        }
         auto it = inactive_pages_.find(rfh);
-        if (it == inactive_pages_.end())
+        if (it == inactive_pages_.end()) {
           return;
+        }
         PageLoadTracker* tracker;
         if (rfh == primary_main_frame) {
           primary_page_ = std::move(it->second);
@@ -850,8 +941,9 @@ bool MetricsWebContentsObserver::MaybeActivatePageLoadTracker(
         }
       });
 
-  for (auto& observer : lifecycle_observers_)
+  for (auto& observer : lifecycle_observers_) {
     observer.OnActivate(primary_page_.get());
+  }
 
   return true;
 }
@@ -887,12 +979,14 @@ void MetricsWebContentsObserver::NavigationStopped() {
 void MetricsWebContentsObserver::OnInputEvent(
     const blink::WebInputEvent& event) {
   // Ignore browser navigation or reload which comes with type Undefined.
-  if (event.GetType() == blink::WebInputEvent::Type::kUndefined)
+  if (event.GetType() == blink::WebInputEvent::Type::kUndefined) {
     return;
+  }
 
   // For now, we assume input events occur only in primary page.
-  if (primary_page_)
+  if (primary_page_) {
     primary_page_->OnInputEvent(event);
+  }
 }
 
 void MetricsWebContentsObserver::FlushMetricsOnAppEnterBackground() {
@@ -902,8 +996,9 @@ void MetricsWebContentsObserver::FlushMetricsOnAppEnterBackground() {
   // anything about foreground / background state of the associated tab as part
   // of this method call.
 
-  if (primary_page_)
+  if (primary_page_) {
     primary_page_->FlushMetricsOnAppEnterBackground();
+  }
   for (const auto& kv : active_pages_) {
     kv.second->FlushMetricsOnAppEnterBackground();
   }
@@ -920,43 +1015,65 @@ void MetricsWebContentsObserver::FlushMetricsOnAppEnterBackground() {
 
 void MetricsWebContentsObserver::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInMainFrame()) {
     return;
+  }
   auto it = provisional_loads_.find(navigation_handle);
-  if (it == provisional_loads_.end())
+  if (it == provisional_loads_.end()) {
     return;
+  }
   it->second->Redirect(navigation_handle);
+}
+
+void MetricsWebContentsObserver::DidUpdateNavigationHandleTiming(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame()) {
+    return;
+  }
+  auto it = provisional_loads_.find(navigation_handle);
+  if (it == provisional_loads_.end()) {
+    return;
+  }
+  it->second->DidUpdateNavigationHandleTiming(navigation_handle);
 }
 
 void MetricsWebContentsObserver::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (web_contents_will_soon_be_destroyed_)
+  if (web_contents_will_soon_be_destroyed_) {
     return;
+  }
 
   bool was_in_foreground = in_foreground_;
   in_foreground_ = visibility == content::Visibility::VISIBLE;
-  if (in_foreground_ == was_in_foreground)
+  if (in_foreground_ == was_in_foreground) {
     return;
+  }
 
   if (in_foreground_) {
-    if (primary_page_)
+    if (primary_page_) {
       primary_page_->PageShown();
-    for (const auto& kv : active_pages_)
+    }
+    for (const auto& kv : active_pages_) {
       kv.second->PageShown();
+    }
     for (const auto& kv : provisional_loads_) {
       // Prerendered pages are always invisible regardless of the WebContents'
       // visibility status.
-      if (!kv.first->IsInPrerenderedMainFrame())
+      if (!kv.first->IsInPrerenderedMainFrame()) {
         kv.second->PageShown();
+      }
     }
   } else {
-    if (primary_page_)
+    if (primary_page_) {
       primary_page_->PageHidden();
-    for (const auto& kv : active_pages_)
+    }
+    for (const auto& kv : active_pages_) {
       kv.second->PageHidden();
+    }
     for (const auto& kv : provisional_loads_) {
-      if (!kv.first->IsInPrerenderedMainFrame())
+      if (!kv.first->IsInPrerenderedMainFrame()) {
         kv.second->PageHidden();
+      }
     }
   }
 
@@ -1038,16 +1155,19 @@ MetricsWebContentsObserver::NotifyAbortedProvisionalLoadsNewNavigation(
     content::NavigationHandle* new_navigation,
     UserInitiatedInfo user_initiated_info) {
   // Prerendering navigations do not abort provisional loads in the active page.
-  if (new_navigation->IsInPrerenderedMainFrame())
+  if (new_navigation->IsInPrerenderedMainFrame()) {
     return nullptr;
+  }
 
   // If there are multiple aborted loads that can be attributed to this one,
   // just count the latest one for simplicity. Other loads will fall into the
   // OTHER bucket, though there shouldn't be very many.
-  if (aborted_provisional_loads_.empty())
+  if (aborted_provisional_loads_.empty()) {
     return nullptr;
-  if (aborted_provisional_loads_.size() > 1)
+  }
+  if (aborted_provisional_loads_.size() > 1) {
     RecordInternalError(ERR_NAVIGATION_SIGNALS_MULIPLE_ABORTED_LOADS);
+  }
 
   std::unique_ptr<PageLoadTracker> last_aborted_load =
       std::move(aborted_provisional_loads_.back());
@@ -1076,31 +1196,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
     mojom::SoftNavigationMetricsPtr soft_navigation_metrics) {
-  // Replacing this call by GetPageLoadTracker breaks some tests.
-  //
-  // Note that if a PLMO only observes events at outermost page, misusing
-  // primary page's PageLoadTracker for OnTimingUpdated is safe because
-  // PageLoadTracker::UpdateMetrics forwards events unconditionally and
-  // unmodified, and outermost page's MetricsUpdateDispatcher manages all
-  // subframe's timing update.
-  PageLoadTracker* tracker = GetPageLoadTrackerLegacy(render_frame_host);
-  // We may receive notifications from frames that have been navigated away
-  // from. In that case the PageLoadTracker is already destroyed in
-  // DidFinishNavigation (unless it's stored in bfcache). We simply ignore them.
-  if (!tracker && !render_frame_host->GetMainFrame()->IsActive()) {
-    RecordInternalError(ERR_IPC_FROM_WRONG_FRAME);
-    return;
-  }
-
-  const bool is_main_frame = (render_frame_host->GetParent() == nullptr);
-  if (is_main_frame) {
-    if (DoesTimingUpdateHaveError(tracker))
-      return;
-  } else if (!tracker) {
-    RecordInternalError(ERR_SUBFRAME_IPC_WITH_NO_RELEVANT_LOAD);
-  }
-
-  if (tracker) {
+  if (PageLoadTracker* tracker = GetPageLoadTrackerIfValid(render_frame_host)) {
     tracker->UpdateMetrics(
         render_frame_host, std::move(timing), std::move(metadata),
         std::move(new_features), resources, std::move(render_data),
@@ -1109,16 +1205,27 @@ void MetricsWebContentsObserver::OnTimingUpdated(
   }
 }
 
+void MetricsWebContentsObserver::OnCustomUserTimingUpdated(
+    content::RenderFrameHost* rfh,
+    mojom::CustomUserTimingMarkPtr custom_timing) {
+  // Buffer timing data before seinding to the tracker as the tracker may not
+  // exist in some cases, in that case the buffered timings are sent next time.
+  page_load_custom_timings_.push_back(std::move(custom_timing));
+  if (PageLoadTracker* tracker = GetPageLoadTrackerIfValid(rfh)) {
+    tracker->AddCustomUserTimings(std::move(page_load_custom_timings_));
+  }
+}
+
 bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     PageLoadTracker* tracker) {
-  // TODO(crbug/1061090): Update page load metrics IPC validation to ues
+  // TODO(crbug.com/40679416): Update page load metrics IPC validation to ues
   // mojo::ReportBadMessage.
   if (!tracker) {
     RecordInternalError(ERR_IPC_WITH_NO_RELEVANT_LOAD);
     return true;
   }
 
-  if (!tracker->GetUrl().SchemeIsHTTPOrHTTPS() &&
+  if (!IsUrlSchemeSupported(tracker->GetUrl()) &&
       !embedder_interface_->IsNonTabWebUI()) {
     RecordInternalError(ERR_IPC_FROM_BAD_URL_SCHEME);
     return true;
@@ -1146,6 +1253,13 @@ void MetricsWebContentsObserver::UpdateTiming(
                   subresource_load_metrics, std::move(soft_navigation_metrics));
 }
 
+void MetricsWebContentsObserver::AddCustomUserTiming(
+    mojom::CustomUserTimingMarkPtr custom_timing) {
+  content::RenderFrameHost* render_frame_host =
+      page_load_metrics_receivers_.GetCurrentTargetFrame();
+  OnCustomUserTimingUpdated(render_frame_host, std::move(custom_timing));
+}
+
 void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
     base::ReadOnlySharedMemoryRegion shared_memory) {
   content::RenderFrameHost* render_frame_host =
@@ -1153,7 +1267,7 @@ void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
   const bool is_outermost_main_frame =
       render_frame_host->GetParentOrOuterDocument() == nullptr;
   if (!is_outermost_main_frame) {
-    // TODO(https://crbug.com/1115136): Merge smoothness metrics from OOPIFs and
+    // TODO(crbug.com/40144214): Merge smoothness metrics from OOPIFs and
     // FencedFrames with the main-frame. Also need to check if FencedFrames
     // send this request correctly.
     return;
@@ -1172,36 +1286,42 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
   CHECK(navigation_handle->IsInMainFrame());
   CHECK(!navigation_handle->HasCommitted() ||
         !navigation_handle->IsSameDocument());
-  // Ignore non-HTTP schemes (e.g. chrome://) for non-webUI surfaces.
-  if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
+  // For non-webUI surfaces, only track http/https/data/file schemes.
+  // For webUI surfaces, track all schemes.
+  if (!IsUrlSchemeSupported(navigation_handle->GetURL()) &&
       !embedder_interface_->IsNonTabWebUI()) {
     return false;
   }
 
   // Ignore NTP loads.
-  if (embedder_interface_->IsNewTabPageUrl(navigation_handle->GetURL()))
+  if (embedder_interface_->IsNewTabPageUrl(navigation_handle->GetURL())) {
     return false;
+  }
 
   // The navigation served from the back-forward cache will use the previously
   // created tracker for the document.
-  if (navigation_handle->IsServedFromBackForwardCache())
+  if (navigation_handle->IsServedFromBackForwardCache()) {
     return false;
+  }
 
   // For a prerendering activation navigation, we will use a tracker in
   // `inactive_pages_` created in the initial prerendering navigation.
-  if (navigation_handle->IsPrerenderedPageActivation())
+  if (navigation_handle->IsPrerenderedPageActivation()) {
     return false;
+  }
 
   if (navigation_handle->HasCommitted()) {
     // Ignore Chrome error pages (e.g. No Internet connection).
-    if (navigation_handle->IsErrorPage())
+    if (navigation_handle->IsErrorPage()) {
       return false;
+    }
 
     // Ignore network error pages (e.g. 4xx, 5xx).
     int http_status_code = GetHttpStatusCode(navigation_handle);
     if (http_status_code > 0 &&
-        (http_status_code < 200 || http_status_code >= 400))
+        (http_status_code < 200 || http_status_code >= 400)) {
       return false;
+    }
   }
 
   return true;
@@ -1220,8 +1340,9 @@ void MetricsWebContentsObserver::OnBrowserFeatureUsage(
 
 void MetricsWebContentsObserver::AddLifecycleObserver(
     MetricsLifecycleObserver* observer) {
-  if (!lifecycle_observers_.HasObserver(observer))
+  if (!lifecycle_observers_.HasObserver(observer)) {
     lifecycle_observers_.AddObserver(observer);
+  }
 }
 
 void MetricsWebContentsObserver::RemoveLifecycleObserver(
@@ -1233,8 +1354,9 @@ void MetricsWebContentsObserver::OnPrefetchLikely() {
   // Prefetching can be triggered by speculation rules (by SpeculationHostImpl::
   // UpdateSpeculationCandidates()) or by NavigationPredictor, both of which
   // work only on behalf of a primary page.
-  if (primary_page_)
+  if (primary_page_) {
     primary_page_->OnPrefetchLikely();
+  }
 }
 
 void MetricsWebContentsObserver::OnV8MemoryChanged(
@@ -1243,8 +1365,9 @@ void MetricsWebContentsObserver::OnV8MemoryChanged(
   for (const MemoryUpdate& update : memory_updates) {
     content::RenderFrameHost* rfh =
         content::RenderFrameHost::FromID(update.routing_id);
-    if (!rfh)
+    if (!rfh) {
       continue;
+    }
     PageLoadTracker* tracker = GetPageLoadTracker(rfh);
     if (tracker) {
       per_tracker_updates[tracker].push_back(update);
@@ -1259,17 +1382,46 @@ void MetricsWebContentsObserver::OnV8MemoryChanged(
     }
   }
 
-  for (const auto& map_pair : per_tracker_updates)
+  for (const auto& map_pair : per_tracker_updates) {
     map_pair.first->OnV8MemoryChanged(map_pair.second);
+  }
 }
 
 void MetricsWebContentsObserver::OnSharedStorageWorkletHostCreated(
     content::RenderFrameHost* rfh) {
-  if (!rfh)
+  if (!rfh) {
     return;
+  }
 
-  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh))
+  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
     tracker->OnSharedStorageWorkletHostCreated();
+  }
+}
+
+void MetricsWebContentsObserver::OnSharedStorageSelectURLCalled(
+    content::RenderFrameHost* main_rfh) {
+  if (!main_rfh) {
+    return;
+  }
+
+  if (PageLoadTracker* tracker = GetPageLoadTracker(main_rfh)) {
+    tracker->OnSharedStorageSelectURLCalled();
+  }
+}
+
+void MetricsWebContentsObserver::OnAdAuctionComplete(
+    content::RenderFrameHost* rfh,
+    bool is_server_auction,
+    bool is_on_device_auction,
+    content::AuctionResult result) {
+  if (!rfh) {
+    return;
+  }
+
+  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
+    tracker->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
+                                 result);
+  }
 }
 
 base::TimeTicks MetricsWebContentsObserver::GetCreated() {
@@ -1292,47 +1444,84 @@ base::TimeTicks MetricsWebContentsObserver::GetCreated() {
 //
 // This is mitigated by using GetPageLoadTracker.
 //
-// TODO(https://crbug.com/1301880): Use GetPageLoadTracker always.
+// TODO(crbug.com/40216775): Use GetPageLoadTracker always.
 PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTrackerLegacy(
     content::RenderFrameHost* rfh) {
-  if (!rfh)
+  if (!rfh) {
     return nullptr;
+  }
 
   if (rfh->GetMainFrame()->IsActive()) {
     auto it = active_pages_.find(rfh->GetMainFrame());
-    if (it != active_pages_.end())
+    if (it != active_pages_.end()) {
       return it->second.get();
+    }
     return primary_page_.get();
   }
 
   auto it = inactive_pages_.find(rfh->GetMainFrame());
-  if (it != inactive_pages_.end())
+  if (it != inactive_pages_.end()) {
     return it->second.get();
+  }
 
   return nullptr;
 }
 
 PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTracker(
     content::RenderFrameHost* rfh) {
-  if (!rfh)
+  if (!rfh) {
     return nullptr;
+  }
 
-  if (rfh->GetPage().IsPrimary())
+  if (rfh->GetPage().IsPrimary()) {
     return primary_page_.get();
+  }
 
   {
     auto it = active_pages_.find(rfh->GetMainFrame());
-    if (it != active_pages_.end())
+    if (it != active_pages_.end()) {
       return it->second.get();
+    }
   }
 
   {
     auto it = inactive_pages_.find(rfh->GetMainFrame());
-    if (it != inactive_pages_.end())
+    if (it != inactive_pages_.end()) {
       return it->second.get();
+    }
   }
 
   return nullptr;
+}
+
+PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTrackerIfValid(
+    content::RenderFrameHost* render_frame_host) {
+  // Replacing this call by GetPageLoadTracker breaks some tests.
+  //
+  // Note that if a PLMO only observes events at outermost page, misusing
+  // primary page's PageLoadTracker for OnTimingUpdated is safe because
+  // PageLoadTracker::UpdateMetrics forwards events unconditionally and
+  // unmodified, and outermost page's MetricsUpdateDispatcher manages all
+  // subframe's timing update.
+  PageLoadTracker* tracker = GetPageLoadTrackerLegacy(render_frame_host);
+  // We may receive notifications from frames that have been navigated away
+  // from. In that case the PageLoadTracker is already destroyed in
+  // DidFinishNavigation (unless it's stored in bfcache). We simply ignore them.
+  if (!tracker && !render_frame_host->GetMainFrame()->IsActive()) {
+    RecordInternalError(ERR_IPC_FROM_WRONG_FRAME);
+    return nullptr;
+  }
+
+  const bool is_main_frame = (render_frame_host->GetParent() == nullptr);
+  if (is_main_frame) {
+    if (DoesTimingUpdateHaveError(tracker)) {
+      return nullptr;
+    }
+  } else if (!tracker) {
+    RecordInternalError(ERR_SUBFRAME_IPC_WITH_NO_RELEVANT_LOAD);
+  }
+
+  return tracker;
 }
 
 PageLoadTracker* MetricsWebContentsObserver::GetAncestralAlivePageLoadTracker(

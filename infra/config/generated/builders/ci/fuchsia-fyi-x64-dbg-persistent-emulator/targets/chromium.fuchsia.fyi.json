@@ -1,0 +1,183 @@
+{
+  "fuchsia-fyi-x64-dbg-persistent-emulator": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "gtest_tests": [
+      {
+        "args": [
+          "--everlasting"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "aura_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-20.04",
+            "pool": "chromium.tests.fuchsia"
+          },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "aura_unittests",
+        "test_id_prefix": "ninja://ui/aura:aura_unittests/"
+      },
+      {
+        "args": [
+          "--everlasting"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "blink_common_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-20.04",
+            "pool": "chromium.tests.fuchsia"
+          },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "blink_common_unittests",
+        "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
+      },
+      {
+        "args": [
+          "--everlasting"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "crypto_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-20.04",
+            "pool": "chromium.tests.fuchsia"
+          },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "crypto_unittests",
+        "test_id_prefix": "ninja://crypto:crypto_unittests/"
+      },
+      {
+        "args": [
+          "--everlasting"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "filesystem_service_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-20.04",
+            "pool": "chromium.tests.fuchsia"
+          },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "filesystem_service_unittests",
+        "test_id_prefix": "ninja://components/services/filesystem:filesystem_service_unittests/"
+      },
+      {
+        "args": [
+          "--everlasting"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "web_engine_integration_tests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-20.04",
+            "pool": "chromium.tests.fuchsia"
+          },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "web_engine_integration_tests",
+        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_integration_tests/"
+      },
+      {
+        "args": [
+          "--everlasting"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "web_engine_unittests",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-20.04",
+            "pool": "chromium.tests.fuchsia"
+          },
+          "named_caches": [
+            {
+              "name": "fuchsia_emulator_cache",
+              "path": ".fuchsia_emulator/fuchsia-everlasting-emulator"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "web_engine_unittests",
+        "test_id_prefix": "ninja://fuchsia_web/webengine:web_engine_unittests/"
+      }
+    ]
+  }
+}

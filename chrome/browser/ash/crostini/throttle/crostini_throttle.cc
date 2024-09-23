@@ -6,7 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/concierge_helper_service.h"
+#include "chrome/browser/ash/concierge_helper/concierge_helper_service.h"
 #include "chrome/browser/ash/crostini/throttle/crostini_active_window_throttle_observer.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -58,9 +58,12 @@ class CrostiniThrottleFactory : public ProfileKeyedServiceFactory {
             "CrostiniThrottleFactory",
             ProfileSelections::Builder()
                 .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/1418376): Check if this service is needed in
+                // TODO(crbug.com/40257657): Check if this service is needed in
                 // Guest mode.
                 .WithGuest(ProfileSelection::kOriginalOnly)
+                // TODO(crbug.com/41488885): Check if this service is needed for
+                // Ash Internals.
+                .WithAshInternals(ProfileSelection::kOriginalOnly)
                 .Build()) {}
   ~CrostiniThrottleFactory() override = default;
 

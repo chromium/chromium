@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_MEMORY_RECLAIMER_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_MEMORY_RECLAIMER_H_
+#ifndef PARTITION_ALLOC_MEMORY_RECLAIMER_H_
+#define PARTITION_ALLOC_MEMORY_RECLAIMER_H_
 
 #include <memory>
 #include <set>
@@ -51,6 +51,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
 
   // Triggers an explicit reclaim now reclaiming all free memory
   void ReclaimAll();
+  // Same as ReclaimNormal(), but return early if reclaim takes too long.
+  void ReclaimFast();
 
  private:
   MemoryReclaimer();
@@ -68,4 +70,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
 
 }  // namespace partition_alloc
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_MEMORY_RECLAIMER_H_
+#endif  // PARTITION_ALLOC_MEMORY_RECLAIMER_H_

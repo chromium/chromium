@@ -52,18 +52,19 @@ void AppListPresenterEventFilter::OnMouseEvent(ui::MouseEvent* event) {
   if (event->IsAnyButton())
     controller_->SetKeyboardTraversalMode(false);
 
-  if (event->type() == ui::ET_MOUSE_PRESSED)
+  if (event->type() == ui::EventType::kMousePressed) {
     ProcessLocatedEvent(event);
+  }
 }
 
 void AppListPresenterEventFilter::OnGestureEvent(ui::GestureEvent* event) {
   controller_->SetKeyboardTraversalMode(false);
 
-  // Checks tap types instead of ui::ET_TOUCH_PRESSED so that swipes on the
-  // shelf do not close the launcher. https://crbug.com/750274
-  if (event->type() == ui::ET_GESTURE_TAP ||
-      event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
-      event->type() == ui::ET_GESTURE_LONG_PRESS) {
+  // Checks tap types instead of ui::EventType::kTouchPressed so that swipes on
+  // the shelf do not close the launcher. https://crbug.com/750274
+  if (event->type() == ui::EventType::kGestureTap ||
+      event->type() == ui::EventType::kGestureTwoFingerTap ||
+      event->type() == ui::EventType::kGestureLongPress) {
     ProcessLocatedEvent(event);
   }
 }

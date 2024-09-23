@@ -5,28 +5,40 @@
 #include "chrome/browser/ui/browser_commands.h"
 
 #include "base/path_service.h"
+#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace chrome {
 
@@ -34,7 +46,13 @@ class BrowserCommandsTest : public InProcessBrowserTest {
  public:
   BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+        {
+            features::kTabOrganization,
+            toast_features::kToastFramework,
+            toast_features::kReadingListToast,
+            toast_features::kLinkCopiedToast,
+        },
+        {});
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -239,8 +257,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
   };
 
   // Create another window, and add tabs.
-  chrome::NewEmptyWindow(browser()->profile());
-  Browser* second_window = BrowserList::GetInstance()->GetLastActive();
+  Browser* second_window =
+      ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
+          browser()->profile());
   AddTabs(browser(), 2);
   AddTabs(second_window, 1);
   ASSERT_TRUE(browser()->tab_strip_model()->count() == 3);
@@ -281,11 +300,14 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveActiveTabToNewWindow) {
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
             url2);
 
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
+  Browser* active_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
 
   // Now we should have: two browsers, each with one tab (url1 in browser(),
   // and url2 in the new one).
-  Browser* active_browser = browser_list->GetLastActive();
   EXPECT_EQ(browser_list->size(), 2u);
   EXPECT_NE(active_browser, browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -311,13 +333,17 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   EXPECT_FALSE(browser()->tab_strip_model()->IsTabSelected(1));
   EXPECT_TRUE(browser()->tab_strip_model()->IsTabSelected(2));
 
+  ui_test_utils::BrowserChangeObserver new_browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
   chrome::ExecuteCommand(browser(), IDC_MOVE_TAB_TO_NEW_WINDOW);
+  Browser* active_browser = new_browser_observer.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(active_browser);
+
   // Now we should have two browsers:
   // The original, now with only a single tab: url2
   // The new one with the two tabs we moved: url1 and url3. This one should
   // be active.
   BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* active_browser = browser_list->GetLastActive();
   EXPECT_EQ(browser_list->size(), 2u);
   EXPECT_NE(active_browser, browser());
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -347,6 +373,79 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Tab.Organization.ThreeDotMenu.Clicked",
                                       true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       ConvertPopupToTabbedBrowserShutdownRace) {
+  // Confirm we do not incorrectly start shutdown when converting a popup into a
+  // tab, in the case where the popup is the only active Browser object
+  Browser* popup_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  chrome::AddTabAt(popup_browser, GURL(url::kAboutBlankURL), -1, true);
+  popup_browser->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->CloseAllTabs();
+  ConvertPopupToTabbedBrowser(popup_browser);
+  EXPECT_EQ(false, browser_shutdown::HasShutdownStarted());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       OpenProductSpecifications_ShowNewTab) {
+  // Mock that the disclosure dialog has shown.
+  browser()->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kV1));
+
+  int tab_count = browser()->tab_strip_model()->count();
+  chrome::OpenCommerceProductSpecificationsTab(
+      browser(), {GURL("foo.com"), GURL("bar.com")}, 0);
+
+  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
+      current_instance_for_testing();
+  ASSERT_FALSE(dialog);
+  // No new tab is created since the dialog will block creating new product
+  // specifications tab.
+  ASSERT_EQ(tab_count + 1, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       OpenProductSpecifications_ShowDialog) {
+  int tab_count = browser()->tab_strip_model()->count();
+  chrome::OpenCommerceProductSpecificationsTab(
+      browser(), {GURL("foo.com"), GURL("bar.com")}, 0);
+
+  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
+      current_instance_for_testing();
+  ASSERT_TRUE(dialog);
+  // No new tab is created.
+  ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, AddingToReadingListOpensToast) {
+  GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       AddingToReadingListWithSidePanelShowsNoToast) {
+  GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  auto* side_panel_coordinator =
+      browser()->GetFeatures().side_panel_coordinator();
+  side_panel_coordinator->Show(SidePanelEntryId::kReadingList);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_coordinator->IsSidePanelShowing(); }));
+  chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
+  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, CopyingUrlOpensToast) {
+  GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  chrome::ExecuteCommand(browser(), IDC_COPY_URL);
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 
 }  // namespace chrome

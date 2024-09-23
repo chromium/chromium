@@ -1,0 +1,20 @@
+Tests that cookies can be updated
+Result of Network.setCookie: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Cookies before update: Num of cookies 1
+name: foo, value: bar1, domain: 127.0.0.1, path: /, session
+Result of Network.setCookie to update existing one: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Cookies after update: Num of cookies 1
+name: foo, value: second bar2, domain: 127.0.0.1, path: /, session
+

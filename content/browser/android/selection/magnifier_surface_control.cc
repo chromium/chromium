@@ -20,7 +20,6 @@
 #include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/MagnifierSurfaceControl_jni.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -39,6 +38,9 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/MagnifierSurfaceControl_jni.h"
 
 namespace content {
 
@@ -70,9 +72,8 @@ static jlong JNI_MagnifierSurfaceControl_Create(
   gl::ScopedJavaSurfaceControl scoped_java_surface_control(j_surface_control,
                                                            release_on_destroy);
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
-  gpu::SurfaceHandle surface_handle =
-      tracker->AddSurfaceForNativeWidget(gpu::GpuSurfaceTracker::SurfaceRecord(
-          std::move(scoped_java_surface_control)));
+  gpu::SurfaceHandle surface_handle = tracker->AddSurfaceForNativeWidget(
+      gpu::SurfaceRecord(std::move(scoped_java_surface_control)));
 
   return reinterpret_cast<jlong>(new MagnifierSurfaceControl(
       web_contents, surface_handle, device_scale, width, height, corner_radius,
@@ -108,15 +109,7 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
       surface_layer_(cc::slim::SurfaceLayer::Create()) {
   local_surface_id_allocator_.GenerateId();
 
-  {
-    cc::slim::LayerTree::InitParams params;
-    params.cc_task_graph_runner =
-        CompositorDependenciesAndroid::Get().GetTaskGraphRunner();
-    params.task_runner =
-        content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
-    params.client = this;
-    layer_tree_ = cc::slim::LayerTree::Create(std::move(params));
-  }
+  layer_tree_ = cc::slim::LayerTree::Create(this);
   layer_tree_->set_background_color(SkColors::kTransparent);
   layer_tree_->SetViewportRectAndScale(
       gfx::Rect(surface_size_), device_scale,
@@ -182,8 +175,7 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
   root_layer_->AddChild(rounded_corner_layer_);
 
   zoom_layer_->SetBounds(gfx::Size(width, height));
-  zoom_layer_->SetTransformOrigin(
-      gfx::Point3F(width / 2.0f, height / 2.0f, 0.0f));
+  zoom_layer_->SetTransformOrigin(gfx::PointF(width / 2.0f, height / 2.0f));
   zoom_layer_->SetTransform(gfx::Transform::MakeScale(zoom));
 
   layer_tree_->SetRoot(root_layer_);
@@ -255,7 +247,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   CompositorDependenciesAndroid::Get().TryEstablishVizConnectionIfNeeded();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
+      GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
 
   auto root_params = viz::mojom::RootCompositorFrameSinkParams::New();
 

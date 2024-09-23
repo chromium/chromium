@@ -26,6 +26,7 @@ class InputMethodSurfaceManager;
 class Surface;
 class ToastSurface;
 class ToastSurfaceManager;
+class Buffer;
 
 namespace test {
 
@@ -51,7 +52,8 @@ class ClientControlledShellSurfaceDelegate
                        int64_t display_id,
                        const gfx::Rect& bounds_in_display,
                        bool is_resize,
-                       int bounds_change) override;
+                       int bounds_change,
+                       bool is_adjusted_bounds) override;
   void OnDragStarted(int component) override;
   void OnDragFinished(int x, int y, bool canceled) override;
   void OnZoomLevelChanged(ZoomChange zoom_change) override;
@@ -72,9 +74,28 @@ class ExoTestHelper {
   ~ExoTestHelper();
 
   // Creates a GpuMemoryBuffer instance that can be used for tests.
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
+  static std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
+
+  // Creates an exo::Buffer that has the size of the given
+  // shell surface.
+  static std::unique_ptr<Buffer> CreateBuffer(
+      ShellSurfaceBase* shell_surface,
+      gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
+
+  // Creates an exo::Buffer that will be backed by either GpuMemoryBuffer or
+  // MappableSI if enabled.
+  static std::unique_ptr<Buffer> CreateBuffer(
+      gfx::Size buffer_size,
+      gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888,
+      bool is_overlay_candidate = false);
+
+  // Creates an exo::Buffer from GMBHandle.
+  static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
+      gfx::GpuMemoryBufferHandle handle,
+      gfx::Size buffer_size,
+      gfx::BufferFormat buffer_format);
 
   std::unique_ptr<ClientControlledShellSurface>
   CreateClientControlledShellSurface(Surface* surface,

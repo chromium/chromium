@@ -7,27 +7,10 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
 
-BOOL CanUseOmniboxLayoutGuide() {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return YES;
-  } else {
-    return !base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements);
-  }
-}
-
-BOOL ShouldApplyOmniboxLayoutGuide(UITraitCollection* traitCollection) {
-  CHECK(CanUseOmniboxLayoutGuide());
-
-  if (IsRegularXRegularSizeClass(traitCollection)) {
-    return !IsIpadPopoutOmniboxEnabled();
-  } else {
-    return !base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements);
-  }
-}
-
 BOOL ShouldApplyOmniboxPopoutLayout(UITraitCollection* traitCollection) {
-  return IsIpadPopoutOmniboxEnabled() &&
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
          IsRegularXRegularSizeClass(traitCollection);
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // Functions for canonicalizing "file:" URLs.
 
 #include <string_view>
@@ -146,7 +151,7 @@ bool DoCanonicalizeFileURL(const URLComponentSource<CHAR>& source,
   //
   // Note: we do this on every platform per URL Standard, not just Windows.
   //
-  // TODO(https://crbug.com/688961): According to the latest URL spec, this
+  // TODO(crbug.com/41299821): According to the latest URL spec, this
   // transformation should be done regardless of the path.
   Component host_range = parsed.host;
   if (IsLocalhost(source.host, host_range.begin, host_range.end()) &&

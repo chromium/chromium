@@ -11,8 +11,11 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -163,6 +166,8 @@ public class ConfirmSyncDataStateMachineDelegate {
 
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
+    private final Profile mProfile;
+
     private @Nullable ProgressDialogCoordinator mProgressDialogCoordinator;
     private @Nullable TimeoutDialogCoordinator mTimeoutDialogCoordinator;
     private @Nullable ConfirmImportSyncDataDialogCoordinator
@@ -171,10 +176,9 @@ public class ConfirmSyncDataStateMachineDelegate {
             mConfirmManagedSyncDataDialogCoordinator;
 
     public ConfirmSyncDataStateMachineDelegate(
-            Context context,
-            FragmentManager fragmentManager,
-            ModalDialogManager modalDialogManager) {
+            Context context, Profile profile, ModalDialogManager modalDialogManager) {
         mContext = context;
+        mProfile = profile;
         mModalDialogManager = modalDialogManager;
     }
 
@@ -216,9 +220,20 @@ public class ConfirmSyncDataStateMachineDelegate {
             String oldAccountName,
             String newAccountName) {
         dismissAllDialogs();
+        boolean isCurrentAccountManaged =
+                IdentityServicesProvider.get().getSigninManager(mProfile).getManagementDomain()
+                        != null;
+        boolean usesSplitStoresAndUPMForLocal =
+                PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile));
         mConfirmImportSyncDataDialogCoordinator =
                 new ConfirmImportSyncDataDialogCoordinator(
-                        mContext, mModalDialogManager, listener, oldAccountName, newAccountName);
+                        mContext,
+                        mModalDialogManager,
+                        listener,
+                        oldAccountName,
+                        newAccountName,
+                        isCurrentAccountManaged,
+                        usesSplitStoresAndUPMForLocal);
     }
 
     /**

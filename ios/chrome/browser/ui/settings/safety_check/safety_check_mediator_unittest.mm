@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+Testing.h"
 
 #import <memory>
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -17,8 +15,8 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -31,16 +29,17 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
@@ -52,6 +51,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+Testing.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/string_util.h"
@@ -143,9 +143,12 @@ class SafetyCheckMediatorTest : public PlatformTest {
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
-    browser_state_ = test_cbs_builder.Build();
+
+    browser_state_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
+
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -265,10 +268,11 @@ class SafetyCheckMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<ChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
   raw_ptr<AuthenticationService> auth_service_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
+  TestProfileManagerIOS profile_manager_;
   SafetyCheckMediator* mediator_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
@@ -366,7 +370,7 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
 // completes its run.
 TEST_F(SafetyCheckMediatorTest, TimestampSetForLatestRun) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kMagicStack, kSafetyCheckMagicStack}, {});
+  feature_list.InitWithFeatures({kSafetyCheckMagicStack}, {});
 
   mediator_.checkDidRun = true;
 
@@ -822,4 +826,48 @@ TEST_F(SafetyCheckMediatorTest, CheckNowClickableAll) {
   mediator_.checkStartState = CheckStartStateDefault;
   [mediator_ reconfigureCheckStartSection];
   EXPECT_TRUE([mediator_ isItemClickable:checkStartItem]);
+}
+
+// Tests that the notifications opt-in button correctly displays the "Turn Off"
+// notifications prompt when notifications are currently enabled.
+TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOff) {
+  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
+
+  mediator_ = [[SafetyCheckMediator alloc]
+      initWithUserPrefService:pref_service_
+             localPrefService:local_pref_service_
+         passwordCheckManager:password_check_
+                  authService:auth_service_
+                  syncService:syncService()
+                     referrer:password_manager::PasswordCheckReferrer::
+                                  kSafetyCheck];
+
+  [mediator_ reconfigureNotificationsSection:YES];
+
+  EXPECT_NSEQ(
+      mediator_.notificationsOptInItem.text,
+      GetNSString(
+          IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS));
+}
+
+// Tests that the notifications opt-in button correctly displays the "Turn On"
+// notifications prompt when notifications are currently disabled.
+TEST_F(SafetyCheckMediatorTest, NotificationsOptInButtonPromptsTurnOn) {
+  feature_list_.InitWithFeatures({kSafetyCheckNotifications}, {});
+
+  mediator_ = [[SafetyCheckMediator alloc]
+      initWithUserPrefService:pref_service_
+             localPrefService:local_pref_service_
+         passwordCheckManager:password_check_
+                  authService:auth_service_
+                  syncService:syncService()
+                     referrer:password_manager::PasswordCheckReferrer::
+                                  kSafetyCheck];
+
+  [mediator_ reconfigureNotificationsSection:NO];
+
+  EXPECT_NSEQ(
+      mediator_.notificationsOptInItem.text,
+      GetNSString(
+          IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS));
 }

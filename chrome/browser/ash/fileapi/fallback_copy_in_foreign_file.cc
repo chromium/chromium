@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/fileapi/fallback_copy_in_foreign_file.h"
 
 #include <tuple>
@@ -9,6 +14,7 @@
 #include "base/files/file_error_or.h"
 #include "base/files/safe_base_name.h"
 #include "base/memory/raw_ref.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
 #include "net/base/io_buffer.h"
@@ -222,12 +228,13 @@ void Copier::CallRead() {
   static constexpr auto read_file_off_the_io_thread =
       [](scoped_refptr<net::IOBuffer> buffer,
          base::File file) -> base::FileErrorOr<FileAndInt> {
-    int num_bytes_read =
-        file.ReadAtCurrentPosNoBestEffort(buffer->data(), kBufferSize);
-    if (num_bytes_read >= 0) {
-      return FileAndInt(std::move(file), num_bytes_read);
+    std::optional<size_t> num_bytes_read =
+        file.ReadAtCurrentPosNoBestEffort(buffer->span().first(kBufferSize));
+    if (!num_bytes_read.has_value()) {
+      return base::unexpected(base::File::GetLastFileError());
     }
-    return base::unexpected(base::File::GetLastFileError());
+    return FileAndInt(std::move(file),
+                      base::checked_cast<int>(num_bytes_read.value()));
   };
 
   scoped_refptr<net::IOBuffer> buffer = io_buffer_;
@@ -286,7 +293,7 @@ void Copier::OnWrite(scoped_refptr<net::DrainableIOBuffer> drainable_buffer,
     Finish(storage::NetErrorToFileError(result));
     return;
   } else if (result > drainable_buffer->BytesRemaining()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   drainable_buffer->DidConsume(result);

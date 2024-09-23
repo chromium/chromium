@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/manager/content_protection_manager.h"
 
 #include "base/containers/flat_map.h"
@@ -13,15 +18,13 @@
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_display_layout_manager.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
-#include "ui/display/manager/util/display_manager_test_util.h"
 
 namespace display::test {
 
 namespace {
 
 constexpr int64_t kDisplayIds[] = {123, 234, 345, 456};
-const DisplayMode kDisplayMode =
-    CreateDisplayModeForTest({1366, 768}, false, 60.0f);
+const DisplayMode kDisplayMode({1366, 768}, false, 60.0f);
 
 }  // namespace
 
@@ -43,7 +46,7 @@ class TestObserver : public ContentProtectionManager::Observer {
   void Reset() { security_changes_.clear(); }
 
  private:
-  void OnDisplaySecurityChanged(int64_t display_id, bool secure) override {
+  void OnDisplaySecurityMaybeChanged(int64_t display_id, bool secure) override {
     security_changes_.emplace(display_id, secure);
   }
 
@@ -106,7 +109,7 @@ class ContentProtectionManagerTest : public testing::Test {
   }
 
   void TriggerDisplayConfiguration() {
-    manager_.OnDisplayModeChanged(layout_manager_.GetDisplayStates());
+    manager_.OnDisplayConfigurationChanged(layout_manager_.GetDisplayStates());
   }
 
   bool TriggerDisplaySecurityTimeout() {

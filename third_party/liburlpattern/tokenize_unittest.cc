@@ -4,11 +4,13 @@
 
 #include "third_party/liburlpattern/tokenize.h"
 
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace liburlpattern {
 
-void RunTokenizeTest(absl::string_view pattern,
+void RunTokenizeTest(std::string_view pattern,
                      absl::StatusOr<std::vector<Token>> expected,
                      TokenizePolicy policy = TokenizePolicy::kStrict) {
   auto result = Tokenize(pattern, policy);
@@ -36,7 +38,7 @@ void RunTokenizeTest(absl::string_view pattern,
 
 TEST(TokenizeTest, EmptyPattern) {
   std::vector<Token> expected_tokens = {
-      Token(TokenType::kEnd, 0, absl::string_view()),
+      Token(TokenType::kEnd, 0, std::string_view()),
   };
   RunTokenizeTest("", expected_tokens);
 }
@@ -47,7 +49,7 @@ TEST(TokenizeTest, Chars) {
       Token(TokenType::kChar, 1, "f"),
       Token(TokenType::kChar, 2, "o"),
       Token(TokenType::kChar, 3, "o"),
-      Token(TokenType::kEnd, 4, absl::string_view()),
+      Token(TokenType::kEnd, 4, std::string_view()),
   };
   RunTokenizeTest("/foo", expected_tokens);
 }
@@ -59,7 +61,7 @@ TEST(TokenizeTest, CharsWithClosingParen) {
       Token(TokenType::kChar, 2, "o"),
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kChar, 4, ")"),
-      Token(TokenType::kEnd, 5, absl::string_view()),
+      Token(TokenType::kEnd, 5, std::string_view()),
   };
   RunTokenizeTest("/foo)", expected_tokens);
 }
@@ -70,7 +72,7 @@ TEST(TokenizeTest, EscapedChar) {
       Token(TokenType::kEscapedChar, 1, "f"),
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kChar, 4, "o"),
-      Token(TokenType::kEnd, 5, absl::string_view()),
+      Token(TokenType::kEnd, 5, std::string_view()),
   };
   RunTokenizeTest("/\\foo", expected_tokens);
 }
@@ -82,7 +84,7 @@ TEST(TokenizeTest, EscapedColon) {
       Token(TokenType::kChar, 3, "f"),
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kChar, 5, "o"),
-      Token(TokenType::kEnd, 6, absl::string_view()),
+      Token(TokenType::kEnd, 6, std::string_view()),
   };
   RunTokenizeTest("/\\:foo", expected_tokens);
 }
@@ -95,7 +97,7 @@ TEST(TokenizeTest, EscapedParen) {
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kChar, 5, "o"),
       Token(TokenType::kEscapedChar, 6, ")"),
-      Token(TokenType::kEnd, 8, absl::string_view()),
+      Token(TokenType::kEnd, 8, std::string_view()),
   };
   RunTokenizeTest("/\\(foo\\)", expected_tokens);
 }
@@ -108,7 +110,7 @@ TEST(TokenizeTest, EscapedCurlyBrace) {
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kChar, 5, "o"),
       Token(TokenType::kEscapedChar, 6, "}"),
-      Token(TokenType::kEnd, 8, absl::string_view()),
+      Token(TokenType::kEnd, 8, std::string_view()),
   };
   RunTokenizeTest("/\\{foo\\}", expected_tokens);
 }
@@ -121,7 +123,7 @@ TEST(TokenizeTest, EscapedCharAtEnd) {
 TEST(TokenizeTest, Name) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kName, 0, "Foo_1"),
-      Token(TokenType::kEnd, 6, absl::string_view()),
+      Token(TokenType::kEnd, 6, std::string_view()),
   };
   RunTokenizeTest(":Foo_1", expected_tokens);
 }
@@ -135,7 +137,7 @@ TEST(TokenizeTest, NameWithUnicodeChar) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kChar, 0, "/"),
       Token(TokenType::kName, 1, "fooßar"),
-      Token(TokenType::kEnd, 9, absl::string_view()),
+      Token(TokenType::kEnd, 9, std::string_view()),
   };
   RunTokenizeTest("/:fooßar", expected_tokens);
 }
@@ -149,7 +151,7 @@ TEST(TokenizeTest, NameWithDollarFirst) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kChar, 0, "/"),
       Token(TokenType::kName, 1, "$foo"),
-      Token(TokenType::kEnd, 6, absl::string_view()),
+      Token(TokenType::kEnd, 6, std::string_view()),
   };
   RunTokenizeTest("/:$foo", expected_tokens);
 }
@@ -158,7 +160,7 @@ TEST(TokenizeTest, NameWithDollarLater) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kChar, 0, "/"),
       Token(TokenType::kName, 1, "foo$"),
-      Token(TokenType::kEnd, 6, absl::string_view()),
+      Token(TokenType::kEnd, 6, std::string_view()),
   };
   RunTokenizeTest("/:foo$", expected_tokens);
 }
@@ -167,7 +169,7 @@ TEST(TokenizeTest, NameWithUnderscoreFirst) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kChar, 0, "/"),
       Token(TokenType::kName, 1, "_foo"),
-      Token(TokenType::kEnd, 6, absl::string_view()),
+      Token(TokenType::kEnd, 6, std::string_view()),
   };
   RunTokenizeTest("/:_foo", expected_tokens);
 }
@@ -176,7 +178,7 @@ TEST(TokenizeTest, NameWithUnderscoreLater) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kChar, 0, "/"),
       Token(TokenType::kName, 1, "foo_"),
-      Token(TokenType::kEnd, 6, absl::string_view()),
+      Token(TokenType::kEnd, 6, std::string_view()),
   };
   RunTokenizeTest("/:foo_", expected_tokens);
 }
@@ -186,7 +188,7 @@ TEST(TokenizeTest, NameFollowedByEscapedChar) {
       Token(TokenType::kChar, 0, "/"),
       Token(TokenType::kName, 1, "foo"),
       Token(TokenType::kEscapedChar, 5, ":"),
-      Token(TokenType::kEnd, 7, absl::string_view()),
+      Token(TokenType::kEnd, 7, std::string_view()),
   };
   RunTokenizeTest("/:foo\\:", expected_tokens);
 }
@@ -198,7 +200,7 @@ TEST(TokenizeTest, NameAndFileExtension) {
       Token(TokenType::kChar, 5, "j"),
       Token(TokenType::kChar, 6, "p"),
       Token(TokenType::kChar, 7, "g"),
-      Token(TokenType::kEnd, 8, absl::string_view()),
+      Token(TokenType::kEnd, 8, std::string_view()),
   };
   RunTokenizeTest(":foo.jpg", expected_tokens);
 }
@@ -211,7 +213,7 @@ TEST(TokenizeTest, NameInPath) {
       Token(TokenType::kChar, 6, "b"),
       Token(TokenType::kChar, 7, "a"),
       Token(TokenType::kChar, 8, "r"),
-      Token(TokenType::kEnd, 9, absl::string_view()),
+      Token(TokenType::kEnd, 9, std::string_view()),
   };
   RunTokenizeTest("/:foo/bar", expected_tokens);
 }
@@ -219,7 +221,7 @@ TEST(TokenizeTest, NameInPath) {
 TEST(TokenizeTest, Regex) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kRegex, 0, "foo"),
-      Token(TokenType::kEnd, 5, absl::string_view()),
+      Token(TokenType::kEnd, 5, std::string_view()),
   };
   RunTokenizeTest("(foo)", expected_tokens);
 }
@@ -245,7 +247,7 @@ TEST(TokenizeTest, RegexWithNestedCapturingGroup) {
 TEST(TokenizeTest, RegexWithNestedNamedCapturingGroup) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kRegex, 0, "f(?oo)"),
-      Token(TokenType::kEnd, 8, absl::string_view()),
+      Token(TokenType::kEnd, 8, std::string_view()),
   };
   RunTokenizeTest("(f(?oo))", expected_tokens);
 }
@@ -253,7 +255,7 @@ TEST(TokenizeTest, RegexWithNestedNamedCapturingGroup) {
 TEST(TokenizeTest, RegexWithNestedNonCapturingGroup) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kRegex, 0, "f(?:oo)"),
-      Token(TokenType::kEnd, 9, absl::string_view()),
+      Token(TokenType::kEnd, 9, std::string_view()),
   };
   RunTokenizeTest("(f(?:oo))", expected_tokens);
 }
@@ -261,7 +263,7 @@ TEST(TokenizeTest, RegexWithNestedNonCapturingGroup) {
 TEST(TokenizeTest, RegexWithAssertion) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kRegex, 0, "f(?<y)x"),
-      Token(TokenType::kEnd, 9, absl::string_view()),
+      Token(TokenType::kEnd, 9, std::string_view()),
   };
   RunTokenizeTest("(f(?<y)x)", expected_tokens);
 }
@@ -277,7 +279,7 @@ TEST(TokenizeTest, RegexWithTrailingParen) {
 TEST(TokenizeTest, RegexWithEscapedChar) {
   std::vector<Token> expected_tokens = {
       Token(TokenType::kRegex, 0, "f\\(oo"),
-      Token(TokenType::kEnd, 7, absl::string_view()),
+      Token(TokenType::kEnd, 7, std::string_view()),
   };
   RunTokenizeTest("(f\\(oo)", expected_tokens);
 }
@@ -311,7 +313,7 @@ TEST(TokenizeTest, RegexInPath) {
       Token(TokenType::kChar, 10, "b"),
       Token(TokenType::kChar, 11, "a"),
       Token(TokenType::kChar, 12, "r"),
-      Token(TokenType::kEnd, 13, absl::string_view()),
+      Token(TokenType::kEnd, 13, std::string_view()),
   };
   RunTokenizeTest("/foo/(.*)/bar", expected_tokens);
 }
@@ -328,7 +330,7 @@ TEST(TokenizeTest, WildcardInPath) {
       Token(TokenType::kChar, 7, "b"),
       Token(TokenType::kChar, 8, "a"),
       Token(TokenType::kChar, 9, "r"),
-      Token(TokenType::kEnd, 10, absl::string_view()),
+      Token(TokenType::kEnd, 10, std::string_view()),
   };
   RunTokenizeTest("/foo/*/bar", expected_tokens);
 }
@@ -342,7 +344,7 @@ TEST(TokenizeTest, ModifierStar) {
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
       Token(TokenType::kAsterisk, 6, "*"),
-      Token(TokenType::kEnd, 7, absl::string_view()),
+      Token(TokenType::kEnd, 7, std::string_view()),
   };
   RunTokenizeTest("/{foo}*", expected_tokens);
 }
@@ -356,7 +358,7 @@ TEST(TokenizeTest, ModifierPlus) {
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
       Token(TokenType::kOtherModifier, 6, "+"),
-      Token(TokenType::kEnd, 7, absl::string_view()),
+      Token(TokenType::kEnd, 7, std::string_view()),
   };
   RunTokenizeTest("/{foo}+", expected_tokens);
 }
@@ -370,7 +372,7 @@ TEST(TokenizeTest, ModifierQuestion) {
       Token(TokenType::kChar, 4, "o"),
       Token(TokenType::kClose, 5, "}"),
       Token(TokenType::kOtherModifier, 6, "?"),
-      Token(TokenType::kEnd, 7, absl::string_view()),
+      Token(TokenType::kEnd, 7, std::string_view()),
   };
   RunTokenizeTest("/{foo}?", expected_tokens);
 }
@@ -388,7 +390,7 @@ TEST(TokenizeTest, Everything) {
       Token(TokenType::kName, 16, "bar"),
       Token(TokenType::kClose, 20, "}"),
       Token(TokenType::kAsterisk, 21, "*"),
-      Token(TokenType::kEnd, 22, absl::string_view()),
+      Token(TokenType::kEnd, 22, std::string_view()),
   };
   RunTokenizeTest("/\\foo/(a(?.*)){/:bar}*", expected_tokens);
 }
@@ -424,7 +426,7 @@ TEST(TokenizeTest, LenientPolicy) {
       Token(TokenType::kChar, 26, "b"),
       Token(TokenType::kChar, 27, "a"),
       Token(TokenType::kChar, 28, "z"),
-      Token(TokenType::kEnd, 29, absl::string_view()),
+      Token(TokenType::kEnd, 29, std::string_view()),
   };
   RunTokenizeTest("http://a.com:8080/foo?bar#baz", expected_tokens,
                   TokenizePolicy::kLenient);
@@ -436,7 +438,7 @@ TEST(TokenizeTest, LenientPolicyTrailingEscape) {
       Token(TokenType::kChar, 1, "o"),
       Token(TokenType::kChar, 2, "o"),
       Token(TokenType::kInvalidChar, 3, "\\"),
-      Token(TokenType::kEnd, 4, absl::string_view()),
+      Token(TokenType::kEnd, 4, std::string_view()),
   };
   RunTokenizeTest("foo\\", expected_tokens, TokenizePolicy::kLenient);
 }
@@ -447,7 +449,7 @@ TEST(TokenizeTest, LenientPolicyRegexWithoutClose) {
       Token(TokenType::kChar, 1, "f"),
       Token(TokenType::kChar, 2, "o"),
       Token(TokenType::kChar, 3, "o"),
-      Token(TokenType::kEnd, 4, absl::string_view()),
+      Token(TokenType::kEnd, 4, std::string_view()),
   };
   RunTokenizeTest("(foo", expected_tokens, TokenizePolicy::kLenient);
 }
@@ -459,7 +461,7 @@ TEST(TokenizeTest, LenientPolicyRegexWithTrailingEscape) {
       Token(TokenType::kChar, 2, "o"),
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kInvalidChar, 4, "\\"),
-      Token(TokenType::kEnd, 5, absl::string_view()),
+      Token(TokenType::kEnd, 5, std::string_view()),
   };
   RunTokenizeTest("(foo\\", expected_tokens, TokenizePolicy::kLenient);
 }
@@ -472,7 +474,7 @@ TEST(TokenizeTest, LenientPolicyRegexWithCaptureGroup) {
       Token(TokenType::kChar, 3, "o"),
       Token(TokenType::kRegex, 4, "bar"),
       Token(TokenType::kChar, 9, ")"),
-      Token(TokenType::kEnd, 10, absl::string_view()),
+      Token(TokenType::kEnd, 10, std::string_view()),
   };
   RunTokenizeTest("(foo(bar))", expected_tokens, TokenizePolicy::kLenient);
 }

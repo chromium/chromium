@@ -14,7 +14,6 @@
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/internal/system_trust_store_nss.h"
 #include "net/cert/internal/trust_store_chrome.h"
-#include "net/cert/internal/trust_store_features.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -102,8 +101,6 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
 // Tests that SystemTrustStore created for NSS with a user-slot restriction
 // allows certificates stored on the specified user slot to be trusted.
 TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {
-  ScopedLocalAnchorConstraintsEnforcementForTesting
-      scoped_enforce_local_anchor_constraints(true);
   std::unique_ptr<SystemTrustStore> system_trust_store =
       CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
           std::make_unique<TrustStoreChrome>(),
@@ -120,23 +117,6 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {
             trust.ToDebugString());
 }
 
-TEST_F(SystemTrustStoreNSSTest,
-       UserSlotRestrictionAllowsWithAnchorConstraintsDisabled) {
-  ScopedLocalAnchorConstraintsEnforcementForTesting
-      scoped_enforce_local_anchor_constraints(false);
-  std::unique_ptr<SystemTrustStore> system_trust_store =
-      CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-          std::make_unique<TrustStoreChrome>(),
-          crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())));
-
-  ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
-
-  bssl::CertificateTrust trust =
-      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
-  EXPECT_EQ(bssl::CertificateTrust::ForTrustAnchor().ToDebugString(),
-            trust.ToDebugString());
-}
-
 // Tests that SystemTrustStore created for NSS with a user-slot restriction
 // does not allows certificates stored only on user slots different from the one
 // specified to be trusted.
@@ -147,21 +127,6 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
           crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())));
 
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(other_test_nssdb_.slot()));
-
-  bssl::CertificateTrust trust =
-      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
-  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
-            trust.ToDebugString());
-}
-
-// Tests that SystemTrustStore created for NSS without allowing trust for
-// certificate stored on user slots.
-TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
-  std::unique_ptr<SystemTrustStore> system_trust_store =
-      CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
-          std::make_unique<TrustStoreChrome>(), nullptr);
-
-  ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
   bssl::CertificateTrust trust =
       system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());

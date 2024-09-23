@@ -26,8 +26,6 @@ namespace userfeedback {
 class ExtensionSubmit;
 }
 
-inline constexpr int kOrcaFeedbackProductId = 5314436;
-
 // This is the base class for FeedbackData. It primarily knows about
 // data common to all feedback reports and how to zip things.
 class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
@@ -63,6 +61,9 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   static bool IncludeInSystemLogs(const std::string& key, bool is_google_email);
 
   static int GetChromeBrowserProductId();
+
+  // Mahi feature has the dedicated product id.
+  static int GetMahiProductId();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static int GetChromeOSProductId();

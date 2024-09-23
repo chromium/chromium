@@ -10,15 +10,17 @@
 #include <tuple>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -26,6 +28,8 @@
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -34,7 +38,11 @@ namespace web_app {
 
 namespace {
 
+using base::test::ErrorIs;
+using base::test::HasValue;
 using testing::_;
+using testing::Eq;
+using testing::HasSubstr;
 
 const char kSignedWebBundleId[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
@@ -52,118 +60,98 @@ const std::string kUrlFromAnotherIsolatedWebApp =
     std::string(chrome::kIsolatedAppScheme) + url::kStandardSchemeSeparator +
     kAnotherSignedWebBundleId;
 
-constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
+constexpr std::array<uint8_t, 32> kPublicKeyBytes1 = {
     0x01, 0x23, 0x43, 0x43, 0x33, 0x42, 0x7A, 0x14, 0x42, 0x14, 0xa2,
     0xb6, 0xc2, 0xd9, 0xf2, 0x02, 0x03, 0x42, 0x18, 0x10, 0x12, 0x26,
     0x62, 0x88, 0xf6, 0xa3, 0xa5, 0x47, 0x14, 0x69, 0x00, 0x73};
 
-constexpr std::array<uint8_t, 64> kEd25519Signature = {
-    0x01, 0x23, 0x43, 0x43, 0x33, 0x42, 0x7A, 0x14, 0x42, 0x14, 0xa2,
+constexpr std::array<uint8_t, 32> kPublicKeyBytes2 = {
+    0x02, 0x23, 0x43, 0x43, 0x33, 0x42, 0x7A, 0x14, 0x42, 0x14, 0xa2,
     0xb6, 0xc2, 0xd9, 0xf2, 0x02, 0x03, 0x42, 0x18, 0x10, 0x12, 0x26,
-    0x62, 0x88, 0xf6, 0xa3, 0xa5, 0x47, 0x14, 0x69, 0x00, 0x73, 0x01,
-    0x23, 0x43, 0x43, 0x33, 0x42, 0x7A, 0x14, 0x42, 0x14, 0xa2, 0xb6,
-    0xc2, 0xd9, 0xf2, 0x02, 0x03, 0x42, 0x18, 0x10, 0x12, 0x26, 0x62,
-    0x88, 0xf6, 0xa3, 0xa5, 0x47, 0x14, 0x69, 0x00, 0x73};
-
-// This class needs to be a IsolatedWebAppTrustChecker, but also must
-// provide a TestingPrefServiceSimple that outlives it. So rather than
-// making TestingPrefServiceSimple a member, make it the leftmost base class.
-class MockIsolatedWebAppTrustChecker : private TestingPrefServiceSimple,
-                                       public IsolatedWebAppTrustChecker {
- public:
-  MockIsolatedWebAppTrustChecker()
-      : IsolatedWebAppTrustChecker(
-            // Disambiguate the constructor using the form that takes the
-            // already-initialized leftmost base class, rather than the copy
-            // constructor for the uninitialized rightmost base class.
-            *static_cast<TestingPrefServiceSimple*>(this)) {}
-
-  MOCK_METHOD(
-      IsolatedWebAppTrustChecker::Result,
-      IsTrusted,
-      (const web_package::SignedWebBundleId& web_bundle_id,
-       const web_package::SignedWebBundleIntegrityBlock& integrity_block),
-      (const, override));
-};
-
-web_package::SignedWebBundleIntegrityBlock MakeIntegrityBlock() {
-  auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
-  raw_integrity_block->size = 123;
-
-  auto raw_signature_stack_entry =
-      web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
-  raw_signature_stack_entry->public_key =
-      web_package::Ed25519PublicKey::Create(base::make_span(kEd25519PublicKey));
-  raw_signature_stack_entry->signature =
-      web_package::Ed25519Signature::Create(base::make_span(kEd25519Signature));
-
-  raw_integrity_block->signature_stack.push_back(
-      std::move(raw_signature_stack_entry));
-
-  auto integrity_block = web_package::SignedWebBundleIntegrityBlock::Create(
-      std::move(raw_integrity_block));
-  CHECK(integrity_block.has_value()) << integrity_block.error();
-
-  return *integrity_block;
-}
+    0x62, 0x88, 0xf6, 0xa3, 0xa5, 0x47, 0x14, 0x69, 0x00, 0x73};
 
 }  // namespace
 
 class IsolatedWebAppValidatorTest : public ::testing::Test {
- private:
-  base::test::SingleThreadTaskEnvironment task_environment;
+ protected:
+  using IntegrityBlockFuture =
+      base::test::TestFuture<base::expected<void, std::string>>;
+
+  web_package::SignedWebBundleIntegrityBlock MakeIntegrityBlock(
+      const std::vector<web_package::Ed25519PublicKey>& public_keys = {
+          kPublicKey1}) {
+    auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
+    raw_integrity_block->size = 123;
+    raw_integrity_block
+        ->signature_stack = base::ToVector(public_keys, [](const auto&
+                                                               public_key) {
+      auto entry =
+          web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
+      entry->signature_info = web_package::mojom::SignatureInfo::NewEd25519(
+          web_package::mojom::SignatureInfoEd25519::New());
+      entry->signature_info->get_ed25519()->public_key = public_key;
+      return entry;
+    });
+
+    auto signed_web_bundle_id =
+        web_package::SignedWebBundleId::CreateForPublicKey(public_keys[0]);
+    raw_integrity_block->attributes =
+        web_package::test::GetAttributesForSignedWebBundleId(
+            signed_web_bundle_id.id());
+    auto integrity_block = web_package::SignedWebBundleIntegrityBlock::Create(
+        std::move(raw_integrity_block));
+    CHECK(integrity_block.has_value()) << integrity_block.error();
+
+    return *integrity_block;
+  }
+
+  static inline const web_package::Ed25519PublicKey kPublicKey1 =
+      web_package::Ed25519PublicKey::Create(base::make_span(kPublicKeyBytes1));
+  static inline const web_package::Ed25519PublicKey kPublicKey2 =
+      web_package::Ed25519PublicKey::Create(base::make_span(kPublicKeyBytes2));
+
+  static inline const web_package::SignedWebBundleId kWebBundleId1 =
+      web_package::SignedWebBundleId::CreateForPublicKey(kPublicKey1);
+  static inline const web_package::SignedWebBundleId kWebBundleId2 =
+      web_package::SignedWebBundleId::CreateForPublicKey(kPublicKey2);
+
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  IsolatedWebAppValidator validator_;
+  IsolatedWebAppTrustChecker trust_checker_ =
+      IsolatedWebAppTrustChecker(profile_);
 };
 
-class IsolatedWebAppValidatorIntegrityBlockTest
-    : public IsolatedWebAppValidatorTest {};
+using IsolatedWebAppValidatorIntegrityBlockTest = IsolatedWebAppValidatorTest;
+
+TEST_F(IsolatedWebAppValidatorIntegrityBlockTest,
+       WebBundleIdAndPublicKeyDiffer) {
+  auto integrity_block = MakeIntegrityBlock({kPublicKey2});
+
+  EXPECT_THAT(
+      validator_.ValidateIntegrityBlock(kWebBundleId1, integrity_block,
+                                        /*dev_mode=*/false, trust_checker_),
+      ErrorIs(HasSubstr("does not match the expected Web Bundle ID")));
+}
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsTrusted) {
-  ASSERT_OK_AND_ASSIGN(
-      auto web_bundle_id,
-      web_package::SignedWebBundleId::Create(kSignedWebBundleId));
   auto integrity_block = MakeIntegrityBlock();
+  SetTrustedWebBundleIdsForTesting({kWebBundleId1});
 
-  auto isolated_web_app_trust_checker =
-      std::make_unique<MockIsolatedWebAppTrustChecker>();
-  EXPECT_CALL(*isolated_web_app_trust_checker,
-              IsTrusted(web_bundle_id, integrity_block))
-      .WillOnce([](auto web_bundle_id,
-                   auto integrity_block) -> IsolatedWebAppTrustChecker::Result {
-        return {.status = IsolatedWebAppTrustChecker::Result::Status::kTrusted};
-      });
-
-  IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
-  base::test::TestFuture<std::optional<std::string>> future;
-  validator.ValidateIntegrityBlock(web_bundle_id, integrity_block,
-                                   future.GetCallback());
-  EXPECT_EQ(future.Get(), std::nullopt);
+  EXPECT_THAT(
+      validator_.ValidateIntegrityBlock(kWebBundleId1, integrity_block,
+                                        /*dev_mode=*/false, trust_checker_),
+      HasValue());
 }
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
-  ASSERT_OK_AND_ASSIGN(
-      auto web_bundle_id,
-      web_package::SignedWebBundleId::Create(kSignedWebBundleId));
   auto integrity_block = MakeIntegrityBlock();
+  SetTrustedWebBundleIdsForTesting({});
 
-  auto isolated_web_app_trust_checker =
-      std::make_unique<MockIsolatedWebAppTrustChecker>();
-  EXPECT_CALL(*isolated_web_app_trust_checker,
-              IsTrusted(web_bundle_id, integrity_block))
-      .WillOnce(
-          [](auto web_bundle_id,
-             auto public_key_stack) -> IsolatedWebAppTrustChecker::Result {
-            return {
-                .status = IsolatedWebAppTrustChecker::Result::Status::
-                    kErrorPublicKeysNotTrusted,
-                .message = "test error",
-            };
-          });
-
-  IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
-  base::test::TestFuture<std::optional<std::string>> future;
-  validator.ValidateIntegrityBlock(web_bundle_id, integrity_block,
-                                   future.GetCallback());
-  EXPECT_EQ(future.Get(), "test error");
+  EXPECT_THAT(
+      validator_.ValidateIntegrityBlock(kWebBundleId1, integrity_block,
+                                        /*dev_mode=*/false, trust_checker_),
+      ErrorIs(HasSubstr("public key(s) are not trusted")));
 }
 
 class IsolatedWebAppValidatorMetadataTest
@@ -188,14 +176,7 @@ class IsolatedWebAppValidatorMetadataTest
 };
 
 TEST_P(IsolatedWebAppValidatorMetadataTest, Validate) {
-  ASSERT_OK_AND_ASSIGN(
-      auto web_bundle_id,
-      web_package::SignedWebBundleId::Create(kSignedWebBundleId));
-
-  auto isolated_web_app_trust_checker =
-      std::make_unique<MockIsolatedWebAppTrustChecker>();
-  IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
-  EXPECT_EQ(validator.ValidateMetadata(web_bundle_id, primary_url_, entries_),
+  EXPECT_EQ(validator_.ValidateMetadata(kWebBundleId1, primary_url_, entries_),
             status_);
 }
 

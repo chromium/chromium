@@ -6,9 +6,9 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
-import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting, NetworkPredictionOptions} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {Router, routes, StatusAction} from 'chrome://settings/settings.js';
+import {Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -57,8 +57,10 @@ export function setupSync({
   if (typedUrlsSynced) {
     assertTrue(syncOn);
   }
+  const signedInState =
+      syncOn ? SignedInState.SYNCING : SignedInState.SIGNED_OUT;
   syncBrowserProxy.testSyncStatus = {
-    signedIn: syncOn,
+    signedInState: signedInState,
     hasError: false,
     statusAction: StatusAction.NO_ACTION,
   };
@@ -71,11 +73,17 @@ export function setupSync({
   webUIListenerCallback('sync-prefs-changed', event);
 }
 
-// Set the cookies setting for the privacy guide.
-export function setCookieSetting(
-    page: SettingsPrivacyGuidePageElement,
-    setting: CookiePrimarySetting): void {
-  page.set('prefs.generated.cookie_primary_setting', {
+export function setFirstPartyCookieSetting(
+    page: SettingsPrivacyGuidePageElement, setting: ContentSetting) {
+  page.set('prefs.generated.cookie_default_content_setting', {
+    type: chrome.settingsPrivate.PrefType.STRING,
+    value: setting,
+  });
+}
+
+export function setThirdPartyCookieSetting(
+    page: SettingsPrivacyGuidePageElement, setting: CookieControlsMode): void {
+  page.set('prefs.profile.cookie_controls_mode', {
     type: chrome.settingsPrivate.PrefType.NUMBER,
     value: setting,
   });
@@ -83,9 +91,10 @@ export function setCookieSetting(
 
 export function shouldShowCookiesCard(page: SettingsPrivacyGuidePageElement):
     boolean {
-  const setting = page.getPref('generated.cookie_primary_setting').value;
-  return setting === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
-      setting === CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+  return page.getPref('profile.cookie_controls_mode').value !==
+      CookieControlsMode.OFF &&
+      page.getPref('generated.cookie_default_content_setting').value !==
+      ContentSetting.BLOCK;
 }
 
 // Set the safe browsing setting for the privacy guide.
@@ -107,24 +116,7 @@ export function shouldShowSafeBrowsingCard(
 export function shouldShowHistorySyncCard(
     syncBrowserProxy: TestSyncBrowserProxy): boolean {
   return !syncBrowserProxy.testSyncStatus ||
-      !!syncBrowserProxy.testSyncStatus.signedIn;
-}
-
-// Set the preload setting for the privacy guide.
-export function setPreloadSetting(
-    page: SettingsPrivacyGuidePageElement,
-    setting: NetworkPredictionOptions): void {
-  page.set('prefs.net.network_prediction_options', {
-    type: chrome.settingsPrivate.PrefType.NUMBER,
-    value: setting,
-  });
-}
-
-export function shouldShowPreloadCard(page: SettingsPrivacyGuidePageElement):
-    boolean {
-  const setting = page.getPref('net.network_prediction_options').value;
-  return setting === NetworkPredictionOptions.DISABLED ||
-      setting === NetworkPredictionOptions.STANDARD;
+      syncBrowserProxy.testSyncStatus.signedInState === SignedInState.SYNCING;
 }
 
 // Bundles functionality to create the page object for tests.
@@ -146,11 +138,12 @@ export function setupPrivacyGuidePageForTest(
     page: SettingsPrivacyGuidePageElement,
     syncBrowserProxy: TestSyncBrowserProxy): void {
   setSafeBrowsingSetting(page, SafeBrowsingSetting.STANDARD);
-  // TODO(b:306414714): Remove once 3pcd launched.
+  // TODO(b:306414714): Clean up with Mode B.
   if (!loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-    setCookieSetting(page, CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO);
+    setThirdPartyCookieSetting(page, CookieControlsMode.INCOGNITO_ONLY);
   }
-  setupSync({
+  setFirstPartyCookieSetting(page, ContentSetting.ALLOW);
+    setupSync({
     syncBrowserProxy: syncBrowserProxy,
     syncOn: true,
     syncAllDataTypes: true,
@@ -186,9 +179,9 @@ export function setParametersForSafeBrowsingStep(
 export function setParametersForCookiesStep(
     page: SettingsPrivacyGuidePageElement, isEligible: boolean): void {
   page.setPrefValue(
-      'generated.cookie_primary_setting',
-      isEligible ? CookiePrimarySetting.BLOCK_THIRD_PARTY :
-                   CookiePrimarySetting.ALLOW_ALL);
+      'profile.cookie_controls_mode',
+      isEligible ? CookieControlsMode.BLOCK_THIRD_PARTY :
+                   CookieControlsMode.OFF);
   assertEquals(
       isEligible, shouldShowCookiesCard(page),
       'Parameters for Cookies are set incorrectly.');

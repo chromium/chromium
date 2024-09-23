@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file contains unit tests for InterceptionManager.
 // The tests require private information so the whole interception.cc file is
 // included from this file.
@@ -14,9 +19,9 @@
 
 #include <algorithm>
 #include <bit>
-#include <memory>
 #include <set>
 
+#include "base/containers/heap_array.h"
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/target_process.h"
@@ -32,22 +37,20 @@ size_t GetGranularAlignedRandomOffset(size_t size);
 // objects.
 // Arguments:
 // buffer (in): the buffer to walk.
-// size (in): buffer size
 // num_dlls (out): count of the dlls on the buffer.
 // num_function (out): count of intercepted functions.
 // num_names (out): count of named interceptor functions.
-void WalkBuffer(void* buffer,
-                size_t size,
+void WalkBuffer(base::span<BYTE> buffer,
                 int* num_dlls,
                 int* num_functions,
                 int* num_names) {
-  ASSERT_TRUE(buffer);
+  ASSERT_TRUE(buffer.data());
   ASSERT_TRUE(num_functions);
   ASSERT_TRUE(num_names);
   *num_dlls = *num_functions = *num_names = 0;
-  SharedMemory* memory = reinterpret_cast<SharedMemory*>(buffer);
+  SharedMemory* memory = reinterpret_cast<SharedMemory*>(buffer.data());
 
-  ASSERT_GT(size, sizeof(SharedMemory));
+  ASSERT_GT(buffer.size(), sizeof(SharedMemory));
   DllPatchInfo* dll = &memory->dll_list[0];
 
   for (size_t i = 0; i < memory->num_intercepted_dlls; i++) {
@@ -68,7 +71,8 @@ void WalkBuffer(void* buffer,
       name += length + 1;
 
       // look for overflows
-      ASSERT_GT(reinterpret_cast<char*>(buffer) + size, name + strlen(name));
+      ASSERT_GT(reinterpret_cast<char*>(buffer.data()) + buffer.size(),
+                name + strlen(name));
 
       // look for a named interceptor
       if (strlen(name)) {
@@ -178,10 +182,11 @@ TEST(InterceptionManagerTest, BufferLayout1) {
   // Verify that all interceptions were added
   ASSERT_EQ(15u, interceptions.interceptions_.size());
 
-  size_t buffer_size = interceptions.GetBufferSize();
-  std::unique_ptr<BYTE[]> local_buffer(new BYTE[buffer_size]);
+  auto local_buffer =
+      base::HeapArray<BYTE>::Uninit(interceptions.GetBufferSize());
 
-  ASSERT_TRUE(interceptions.SetupConfigBuffer(local_buffer.get(), buffer_size));
+  ASSERT_TRUE(interceptions.SetupConfigBuffer(local_buffer.data(),
+                                              local_buffer.size()));
 
   // At this point, the interceptions should have been separated into two
   // groups: one group with the local ("cold") interceptions, consisting of
@@ -194,8 +199,7 @@ TEST(InterceptionManagerTest, BufferLayout1) {
   EXPECT_EQ(2u, interceptions.interceptions_.size());
 
   int num_dlls, num_functions, num_names;
-  WalkBuffer(local_buffer.get(), buffer_size, &num_dlls, &num_functions,
-             &num_names);
+  WalkBuffer(local_buffer, &num_dlls, &num_functions, &num_names);
 
   // The 13 interceptions on the buffer (to the child) should be grouped on 6
   // dlls. Only four interceptions are using an explicit name for the
@@ -227,10 +231,11 @@ TEST(InterceptionManagerTest, BufferLayout2) {
   // Verify that all interceptions were added
   ASSERT_EQ(4u, interceptions.interceptions_.size());
 
-  size_t buffer_size = interceptions.GetBufferSize();
-  std::unique_ptr<BYTE[]> local_buffer(new BYTE[buffer_size]);
+  auto local_buffer =
+      base::HeapArray<BYTE>::Uninit(interceptions.GetBufferSize());
 
-  ASSERT_TRUE(interceptions.SetupConfigBuffer(local_buffer.get(), buffer_size));
+  ASSERT_TRUE(interceptions.SetupConfigBuffer(local_buffer.data(),
+                                              local_buffer.size()));
 
   // At this point, the interceptions should have been separated into two
   // groups: one group with the local ("cold") interceptions, and another
@@ -240,8 +245,7 @@ TEST(InterceptionManagerTest, BufferLayout2) {
   EXPECT_EQ(1u, interceptions.interceptions_.size());
 
   int num_dlls, num_functions, num_names;
-  WalkBuffer(local_buffer.get(), buffer_size, &num_dlls, &num_functions,
-             &num_names);
+  WalkBuffer(local_buffer, &num_dlls, &num_functions, &num_names);
 
   EXPECT_EQ(3, num_dlls);
   EXPECT_EQ(3, num_functions);

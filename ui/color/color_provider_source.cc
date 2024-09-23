@@ -34,4 +34,9 @@ ui::ColorProviderKey::ColorMode ColorProviderSource::GetColorMode() const {
   return GetColorProviderKey().color_mode;
 }
 
+ui::ColorProviderKey::ForcedColors ColorProviderSource::GetForcedColors()
+    const {
+  return GetColorProviderKey().forced_colors;
+}
+
 }  // namespace ui

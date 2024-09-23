@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
@@ -185,12 +185,16 @@ void LoginManagerTest::SetExpectedCredentialsWithDbusClient(
                 ash::SystemSaltGetter::ConvertRawSaltToHexString(
                     ash::FakeCryptohomeMiscClient::GetStubSystemSalt()));
 
-  cryptohome::Key cryptohome_key;
-  cryptohome_key.mutable_data()->set_label(ash::kCryptohomeGaiaKeyLabel);
-  cryptohome_key.set_secret(key.GetSecret());
+  user_data_auth::AuthFactor auth_factor;
+  user_data_auth::AuthInput auth_input;
+
+  auth_factor.set_label(ash::kCryptohomeGaiaKeyLabel);
+  auth_factor.set_type(user_data_auth::AUTH_FACTOR_TYPE_PASSWORD);
+
+  auth_input.mutable_password_input()->set_secret(key.GetSecret());
 
   test_api->AddExistingUser(cryptohome_id);
-  test_api->AddKey(cryptohome_id, cryptohome_key);
+  test_api->AddAuthFactor(cryptohome_id, auth_factor, auth_input);
 }
 
 }  // namespace ash

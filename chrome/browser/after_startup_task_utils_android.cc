@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/after_startup_task_utils.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/util/jni_headers/AfterStartupTaskUtils_jni.h"
 
 using jni_zero::JavaParamRef;

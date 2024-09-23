@@ -38,7 +38,7 @@
     margin-inline-end: 16px;
   }
 
-  /* TODO(crbug.com/986596): Don't use browser icons here. Fork them. */
+  /* TODO(crbug.com/40637166): Don't use browser icons here. Fork them. */
   iron-icon[icon='settings:check-circle'] {
     fill: var(--cros-icon-color-prominent);
   }
@@ -123,26 +123,30 @@
           <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
             <div class="icon-container"
                 hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
-              <!-- TODO(crbug.com/986596): Don't use browser icons here. Fork
+              <!-- TODO(crbug.com/40637166): Don't use browser icons here. Fork
                 them. -->
-              <iron-icon
+              <iron-icon id="updateRowIcon"
                   icon$="[[getUpdateStatusIcon_(
-                      hasEndOfLife_, currentUpdateStatusEvent_)]]"
+                      hasEndOfLife_, currentUpdateStatusEvent_,
+                      showExtendedUpdatesOption_)]]"
                   src="[[getThrobberSrcIfUpdating_(
                       isDarkModeActive_,
                       hasEndOfLife_,
-                      currentUpdateStatusEvent_)]]">
+                      currentUpdateStatusEvent_,
+                      showExtendedUpdatesOption_)]]">
               </iron-icon>
             </div>
           </template>
           <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
             <iron-icon id="updateRowIcon"
                 icon$="[[getUpdateStatusIcon_(
-                    hasEndOfLife_, currentUpdateStatusEvent_)]]"
+                    hasEndOfLife_, currentUpdateStatusEvent_,
+                    showExtendedUpdatesOption_)]]"
                 src="[[getThrobberSrcIfUpdating_(
                     isDarkModeActive_,
                     hasEndOfLife_,
-                    currentUpdateStatusEvent_)]]">
+                    currentUpdateStatusEvent_,
+                    showExtendedUpdatesOption_)]]">
             </iron-icon>
           </template>
           <div class="start padded">
@@ -165,6 +169,16 @@
                 id="endOfLifeMessage" hidden="[[!hasEndOfLife_]]"
                 localized-string="$i18n{endOfLifeMessage}">
             </localized-link>
+            <div hidden="[[!showExtendedUpdatesOption_]]">
+              <div id="extendedUpdatesMainMessage">
+                $i18n{extendedUpdatesMainMessage}
+              </div>
+              <localized-link
+                  id="extendedUpdatesSecondaryMessage"
+                  class="secondary"
+                  localized-string="$i18n{extendedUpdatesSecondaryMessage}">
+              </localized-link>
+            </div>
             <div class="secondary" hidden="[[!hasDeferredUpdate_]]">
               $i18n{aboutDeferredUpdate}
             </div>
@@ -181,6 +195,11 @@
                 on-click="onCheckUpdatesClick_"
                 deep-link-focus-id$="[[Setting.kCheckForOsUpdate]]">
               $i18n{aboutCheckForUpdates}
+            </cr-button>
+            <cr-button id="extendedUpdatesButton"
+                hidden="[[!showExtendedUpdatesOption_]]"
+                on-click="onExtendedUpdatesButtonClick_">
+              $i18n{aboutExtendedUpdatesButton}
             </cr-button>
           </span>
         </div>
@@ -389,7 +408,7 @@
 
       <template is="dom-if" route-path="/crostini/sharedUsbDevices">
         <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-          <settings-crostini-shared-usb-devices>
+          <settings-crostini-shared-usb-devices prefs="{{prefs}}">
           </settings-crostini-shared-usb-devices>
         </os-settings-subpage>
       </template>
@@ -410,7 +429,8 @@
 
       <template is="dom-if" route-path="/bruschetta/sharedUsbDevices">
         <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
-          <settings-guest-os-shared-usb-devices guest-os-type="bruschetta">
+          <settings-guest-os-shared-usb-devices guest-os-type="bruschetta"
+            prefs="{{prefs}}">
           </settings-guest-os-shared-usb-devices>
         </os-settings-subpage>
       </template>
@@ -422,6 +442,14 @@
           </settings-guest-os-shared-paths>
         </os-settings-subpage>
       </template>
+    </template>
+
+    <!-- Internal subpages -->
+    <template is="dom-if" route-path="/_internal/_storybook">
+      <os-settings-subpage page-title="Storybook"
+          hide-back-button>
+        <settings-storybook-subpage></settings-storybook-subpage>
+      </os-settings-subpage>
     </template>
   </os-settings-animated-pages>
 

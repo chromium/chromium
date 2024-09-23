@@ -1,0 +1,92 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module side_panel.customize_chrome.mojom;
+
+import "url/mojom/url.mojom";
+
+// Unique identifiers for actions that can be pinned to the toolbar.
+enum ActionId {
+  kShowBookmarks,
+  kShowHistoryCluster,
+  kShowReadAnything,
+  kShowReadingList,
+  kShowLensOverlay,
+  kShowSearchCompanion,
+  kHome,
+  kForward,
+  kNewIncognitoWindow,
+  kShowPasswordManager,
+  kShowPaymentMethods,
+  kShowAddresses,
+  kShowDownloads,
+  kClearBrowsingData,
+  kPrint,
+  kShowTranslate,
+  kSendTabToSelf,
+  kQrCodeGenerator,
+  kRouteMedia,
+  kTaskManager,
+  kDevTools,
+  kShowChromeLabs,
+  kCopyLink,
+};
+
+// Unique identifiers for categories the actions can belong to.
+enum CategoryId {
+  kNavigation,
+  kYourChrome,
+  kTools,
+};
+
+// An action that can be pinned to the toolbar.
+struct Action {
+  // Which action this is.
+  ActionId id;
+  // The name for the webui to display for this action.
+  string display_name;
+  // Whether the action is currently pinned to the toolbar.
+  bool pinned;
+  // The category the action belongs to.
+  CategoryId category;
+  // The icon to display for this action, encoded as a data scheme URL.
+  url.mojom.Url icon_url;
+};
+
+// A category actions can belong to.
+struct Category {
+  // Which category this is.
+  CategoryId id;
+  // The name for the webui to display for this category.
+  string display_name;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface CustomizeToolbarHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreateCustomizeToolbarHandler(pending_remote<CustomizeToolbarClient> client,
+                    pending_receiver<CustomizeToolbarHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface CustomizeToolbarHandler {
+  // Returns the list of all actions that can be pinned to the toolbar.
+  ListActions() => (array<Action> actions);
+  // Returns the list of categories the actions are sorted into.
+  ListCategories() => (array<Category> categories);
+  // Pins the action with id `action_id` to (or unpins it from) the toolbar.
+  PinAction(ActionId action_id, bool pinned);
+  // Returns true if any action items have a non-default pin state.
+  GetIsCustomized() => (bool customized);
+  // Resets the set of pinned action items to default.
+  ResetToDefault();
+};
+
+// WebUI-side handler for requests from the browser.
+interface CustomizeToolbarClient {
+  // Sets the pinned state of the action with id `action_id`.
+  SetActionPinned(ActionId action_id, bool pinned);
+  // Notifies the WebUI that an action has changed and the UI should repopulate.
+  NotifyActionsUpdated();
+};

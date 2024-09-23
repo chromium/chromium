@@ -44,23 +44,9 @@ const std::vector<TutorialIdentifier> TutorialRegistry::GetTutorialIdentifiers()
 
 void TutorialRegistry::AddTutorial(TutorialIdentifier id,
                                    TutorialDescription description) {
-  if (base::Contains(tutorial_registry_, id))
+  if (base::Contains(tutorial_registry_, id)) {
     return;
-
-#if DCHECK_IS_ON()
-  if (description.histograms) {
-    for (const auto& [other_id, other_desc] : tutorial_registry_) {
-      if (!other_desc.histograms)
-        continue;
-      DCHECK_NE(description.histograms->GetTutorialPrefix(),
-                other_desc.histograms->GetTutorialPrefix())
-          << "Trying to register Tutorial with same histogram name \""
-          << description.histograms->GetTutorialPrefix()
-          << "\" but different ids: \"" << id << "\" and \"" << other_id
-          << "\"";
-    }
   }
-#endif
 
   tutorial_registry_.emplace(id, std::move(description));
 }

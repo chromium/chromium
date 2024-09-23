@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/media_router/common/providers/cast/certificate/net_trust_store.h"
 
 #include <string_view>
@@ -67,7 +72,7 @@ std::unique_ptr<openscreen::cast::TrustStore> TrustStore::CreateInstanceForTest(
 std::unique_ptr<openscreen::cast::TrustStore>
 TrustStore::CreateInstanceFromPemFile(std::string_view file_path) {
   std::string pem_data;
-  CHECK(base::ReadFileToString(base::FilePath::FromASCII(base::StringPiece(
+  CHECK(base::ReadFileToString(base::FilePath::FromASCII(std::string_view(
                                    file_path.data(), file_path.size())),
                                &pem_data));
   bssl::PEMTokenizer tokenizer(pem_data, {std::string("CERTIFICATE")});

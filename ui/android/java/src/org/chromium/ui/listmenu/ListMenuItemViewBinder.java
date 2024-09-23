@@ -16,7 +16,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -110,8 +109,7 @@ public class ListMenuItemViewBinder {
                 ImageViewCompat.setImageTintList(endIcon, null);
             }
         } else if (propertyKey == ListMenuItemProperties.TEXT_APPEARANCE_ID) {
-            ApiCompatibilityUtils.setTextAppearance(
-                    textView, model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+            textView.setTextAppearance(model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
         } else if (propertyKey == ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END) {
             if (model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END)) {
                 textView.setMaxLines(1);

@@ -54,10 +54,7 @@ RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
 
 RendererWebMediaPlayerDelegate::~RendererWebMediaPlayerDelegate() {}
 
-bool RendererWebMediaPlayerDelegate::IsFrameHidden() {
-  if (is_frame_hidden_for_testing_)
-    return true;
-
+bool RendererWebMediaPlayerDelegate::IsPageHidden() {
   // There is always a render frame except perhaps during teardown (though
   // |this| should be deleted before that would be observable).
   if (!render_frame())
@@ -74,7 +71,20 @@ bool RendererWebMediaPlayerDelegate::IsFrameHidden() {
     case blink::mojom::PageVisibilityState::kHidden:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+bool RendererWebMediaPlayerDelegate::IsFrameHidden() {
+  // There is always a render frame except perhaps during teardown (though
+  // `this` should be deleted before that would be observable).
+  CHECK(render_frame());
+
+  // If the view is gone it means we are tearing down.
+  if (!render_frame()->GetWebView()) {
+    return true;
+  }
+
+  return is_frame_hidden_;
 }
 
 int RendererWebMediaPlayerDelegate::AddObserver(Observer* observer) {
@@ -214,19 +224,19 @@ void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
     RecordAction(base::UserMetricsAction("Media.Shown"));
 
     for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-         it.Advance())
-      it.GetCurrentValue()->OnFrameShown();
-
-    ScheduleUpdateTask();
+         it.Advance()) {
+      it.GetCurrentValue()->OnPageShown();
+    }
   } else {
     RecordAction(base::UserMetricsAction("Media.Hidden"));
 
     for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
-         it.Advance())
-      it.GetCurrentValue()->OnFrameHidden();
-
-    ScheduleUpdateTask();
+         it.Advance()) {
+      it.GetCurrentValue()->OnPageHidden();
+    }
   }
+
+  ScheduleUpdateTask();
 }
 
 void RendererWebMediaPlayerDelegate::SetIdleCleanupParamsForTesting(
@@ -245,11 +255,13 @@ bool RendererWebMediaPlayerDelegate::IsIdleCleanupTimerRunningForTesting()
   return idle_cleanup_timer_.IsRunning();
 }
 
-void RendererWebMediaPlayerDelegate::SetFrameHiddenForTesting(bool is_hidden) {
-  if (is_hidden == is_frame_hidden_for_testing_)
+void RendererWebMediaPlayerDelegate::SetFrameHiddenForTesting(
+    bool is_frame_hidden) {
+  if (is_frame_hidden == is_frame_hidden_) {
     return;
+  }
 
-  is_frame_hidden_for_testing_ = is_hidden;
+  is_frame_hidden_ = is_frame_hidden;
 
   ScheduleUpdateTask();
 }
@@ -324,6 +336,30 @@ void RendererWebMediaPlayerDelegate::CleanUpIdlePlayers(
       player->OnIdleTimeout();
     }
   }
+}
+
+void RendererWebMediaPlayerDelegate::OnFrameVisibilityChanged(
+    blink::mojom::FrameVisibility render_status) {
+  bool is_frame_hidden =
+      (render_status == blink::mojom::FrameVisibility::kNotRendered);
+  if (is_frame_hidden == is_frame_hidden_) {
+    return;
+  }
+
+  is_frame_hidden_ = is_frame_hidden;
+  if (is_frame_hidden_) {
+    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+         it.Advance()) {
+      it.GetCurrentValue()->OnFrameHidden();
+    }
+  } else {
+    for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
+         it.Advance()) {
+      it.GetCurrentValue()->OnFrameShown();
+    }
+  }
+
+  ScheduleUpdateTask();
 }
 
 void RendererWebMediaPlayerDelegate::OnDestruct() {

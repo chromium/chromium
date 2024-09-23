@@ -15,7 +15,7 @@
 struct CommandUpdaterImpl::Command {
   // Empty optional means not specified yet and thus implicitly disabled.
   std::optional<bool> enabled;
-  base::ObserverList<CommandObserver>::Unchecked observers;
+  base::ObserverList<CommandObserver>::UncheckedAndDanglingUntriaged observers;
 };
 
 CommandUpdaterImpl::CommandUpdaterImpl(CommandUpdaterDelegate* delegate)

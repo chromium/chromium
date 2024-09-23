@@ -4,14 +4,21 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 
+#include <cstdint>
 #include <limits>
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -23,8 +30,10 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
+#include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/recoverable_key_store.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -108,6 +117,9 @@ struct FakeUserDataAuthClient::UserCryptohomeState {
   // If users are created in test constructor, UserDataDir is not available
   // yet, so actual directory creation needs to be postponed.
   bool postponed_directory_creation = false;
+
+  // Is the user ephemeral.
+  bool ephemeral = false;
 };
 
 namespace {
@@ -168,44 +180,6 @@ template <class ReturnType, class... Functors>
 FunctorWithReturnType<ReturnType, OverloadedFunctor<Functors...>> Overload(
     Functors... functors) {
   return {{std::move(functors)...}};
-}
-
-std::optional<cryptohome::KeyData> FakeAuthFactorToKeyData(
-    std::string label,
-    const FakeAuthFactor& factor) {
-  return absl::visit(
-      Overload<std::optional<cryptohome::KeyData>>(
-          [&](const PasswordFactor& password) {
-            cryptohome::KeyData data;
-            data.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-            data.set_label(std::move(label));
-            return data;
-          },
-          [&](const PinFactor& pin) {
-            cryptohome::KeyData data;
-            data.set_type(cryptohome::KeyData::KEY_TYPE_PASSWORD);
-            data.set_label(std::move(label));
-            data.mutable_policy()->set_low_entropy_credential(true);
-            data.mutable_policy()->set_auth_locked(pin.locked);
-            return data;
-          },
-          [&](const RecoveryFactor&) { return std::nullopt; },
-          [&](const SmartCardFactor& smart_card) {
-            cryptohome::KeyData data;
-            data.set_type(cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
-            data.set_label(std::move(label));
-            data.add_challenge_response_key()->set_public_key_spki_der(
-                smart_card.public_key_spki_der);
-            // TODO (b/241259026): populate algorithms.
-            return data;
-          },
-          [&](const KioskFactor& kiosk) {
-            cryptohome::KeyData data;
-            data.set_type(cryptohome::KeyData::KEY_TYPE_KIOSK);
-            data.set_label(std::move(label));
-            return data;
-          }),
-      factor);
 }
 
 std::optional<user_data_auth::AuthFactor> FakeAuthFactorToAuthFactor(
@@ -277,37 +251,6 @@ FakeAuthFactorToRecoverableKeyStore(const FakeAuthFactor& factor) {
       factor);
 }
 
-// Turns a cryptohome::Key into a pair of label and FakeAuthFactor.
-std::pair<std::string, FakeAuthFactor> KeyToFakeAuthFactor(
-    const cryptohome::Key& key,
-    bool save_secret) {
-  const cryptohome::KeyData& data = key.data();
-  const std::string& label = data.label();
-  CHECK_NE(label, "") << "Key label must not be empty string";
-  std::optional<std::string> secret = std::nullopt;
-  if (save_secret && key.has_secret()) {
-    secret = key.secret();
-  }
-
-  switch (data.type()) {
-    case cryptohome::KeyData::KEY_TYPE_FINGERPRINT:
-      LOG(FATAL) << "Unsupported key type: " << data.type();
-      __builtin_unreachable();
-    case cryptohome::KeyData::KEY_TYPE_CHALLENGE_RESPONSE:
-      return {label,
-              SmartCardFactor{
-                  .public_key_spki_der =
-                      data.challenge_response_key(0).public_key_spki_der()}};
-    case cryptohome::KeyData::KEY_TYPE_PASSWORD:
-      if (data.has_policy() && data.policy().low_entropy_credential()) {
-        return {label, PinFactor{.pin = secret, .locked = false}};
-      }
-      return {label, PasswordFactor{.password = secret}};
-    case cryptohome::KeyData::KEY_TYPE_KIOSK:
-      return {label, KioskFactor{}};
-  }
-}
-
 // Turns AuthFactor+AuthInput into a pair of label and FakeAuthFactor.
 std::pair<std::string, FakeAuthFactor> AuthFactorWithInputToFakeAuthFactor(
     const user_data_auth::AuthFactor& factor,
@@ -342,7 +285,7 @@ std::pair<std::string, FakeAuthFactor> AuthFactorWithInputToFakeAuthFactor(
       return {label, SmartCardFactor{.public_key_spki_der = key}};
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       __builtin_unreachable();
   }
 }
@@ -401,6 +344,29 @@ bool AuthInputMatchesFakeFactorType(
       fake_factor);
 }
 
+// Helper that fills AuthFactorWithStatus' field with an auth factor.
+void BuildAuthFactorWithStatus(
+    const std::optional<user_data_auth::AuthFactor>& auth_factor,
+    user_data_auth::AuthFactorWithStatus* factor_with_status) {
+  *factor_with_status->mutable_auth_factor() = *auth_factor;
+  // Add all possible intents for conveniences.
+  factor_with_status->add_available_for_intents(
+      user_data_auth::AUTH_INTENT_DECRYPT);
+  factor_with_status->add_available_for_intents(
+      user_data_auth::AUTH_INTENT_VERIFY_ONLY);
+  factor_with_status->add_available_for_intents(
+      user_data_auth::AUTH_INTENT_WEBAUTHN);
+  factor_with_status->mutable_status_info()->set_time_available_in(0);
+  if (auth_factor->type() == user_data_auth::AUTH_FACTOR_TYPE_PIN) {
+    if (auth_factor->pin_metadata().auth_locked()) {
+      factor_with_status->mutable_status_info()->set_time_available_in(
+          std::numeric_limits<uint64_t>::max());
+      factor_with_status->mutable_status_info()->set_time_expiring_in(
+          std::numeric_limits<uint64_t>::max());
+    }
+  }
+}
+
 // Helper that automatically sends a reply struct to a supplied callback when
 // it goes out of scope. Basically a specialized `absl::Cleanup` or
 // `std::scope_exit`.
@@ -424,6 +390,17 @@ class ReplyOnReturn {
   chromeos::DBusMethodCallback<ReplyType> callback_;
 };
 
+user_data_auth::VaultEncryptionType HomeEncryptionMethodToVaultEncryptionType(
+    const FakeUserDataAuthClient::HomeEncryptionMethod home_encryption) {
+  switch (home_encryption) {
+    case FakeUserDataAuthClient::HomeEncryptionMethod::kDirCrypto:
+      return user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_FSCRYPT;
+    case FakeUserDataAuthClient::HomeEncryptionMethod::kEcryptfs:
+      return user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_ECRYPTFS;
+    case FakeUserDataAuthClient::HomeEncryptionMethod::kDmCrypt:
+      return user_data_auth::CRYPTOHOME_VAULT_ENCRYPTION_DMCRYPT;
+  }
+}
 }  // namespace
 
 // =============== `AuthSessionData` =====================
@@ -559,13 +536,14 @@ void FakeUserDataAuthClient::TestApi::CreatePostponedDirectories() {
   }
 }
 
-void FakeUserDataAuthClient::TestApi::AddKey(
+void FakeUserDataAuthClient::TestApi::AddAuthFactor(
     const cryptohome::AccountIdentifier& account_id,
-    const cryptohome::Key& key) {
+    const user_data_auth::AuthFactor& factor,
+    const user_data_auth::AuthInput& input) {
   UserCryptohomeState& user_state = GetUserState(account_id);
 
-  const auto [factor_it, was_inserted] =
-      user_state.auth_factors.insert(KeyToFakeAuthFactor(key, true));
+  const auto [factor_it, was_inserted] = user_state.auth_factors.insert(
+      AuthFactorWithInputToFakeAuthFactor(factor, input, true));
   CHECK(was_inserted) << "Factor already exists";
 }
 
@@ -612,6 +590,21 @@ std::pair<std::string, std::string> FakeUserDataAuthClient::TestApi::AddSession(
   session.authenticated = authenticated;
 
   return {auth_session_id, session.broadcast_id};
+}
+
+bool FakeUserDataAuthClient::TestApi::IsAuthenticated(
+    const cryptohome::AccountIdentifier& account_id) {
+  CHECK(FakeUserDataAuthClient::Get()->users_.contains(account_id));
+
+  auto& auth_sessions = FakeUserDataAuthClient::Get()->auth_sessions_;
+
+  auto [auth_session_id, session] =
+      *find_if(std::begin(auth_sessions), std::end(auth_sessions),
+               [&account_id](auto session_entry) {
+                 return session_entry.second.account == account_id;
+               });
+
+  return session.authenticated;
 }
 
 bool FakeUserDataAuthClient::TestApi::IsCurrentSessionEphemeral() {
@@ -682,6 +675,26 @@ void FakeUserDataAuthClient::RemoveFingerprintAuthObserver(
   fingerprint_observers_.RemoveObserver(observer);
 }
 
+void FakeUserDataAuthClient::AddPrepareAuthFactorProgressObserver(
+    PrepareAuthFactorProgressObserver* observer) {
+  progress_observers_.AddObserver(observer);
+}
+
+void FakeUserDataAuthClient::RemovePrepareAuthFactorProgressObserver(
+    PrepareAuthFactorProgressObserver* observer) {
+  progress_observers_.RemoveObserver(observer);
+}
+
+void FakeUserDataAuthClient::AddAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  auth_factor_status_observer_list_.AddObserver(observer);
+}
+
+void FakeUserDataAuthClient::RemoveAuthFactorStatusUpdateObserver(
+    AuthFactorStatusUpdateObserver* observer) {
+  auth_factor_status_observer_list_.RemoveObserver(observer);
+}
+
 void FakeUserDataAuthClient::IsMounted(
     const ::user_data_auth::IsMountedRequest& request,
     IsMountedCallback callback) {
@@ -696,6 +709,52 @@ void FakeUserDataAuthClient::IsMounted(
         mounted_user_dirs_.find(request.username()) != mounted_user_dirs_.end();
   }
   reply.set_is_mounted(result);
+}
+
+void FakeUserDataAuthClient::GetVaultProperties(
+    const ::user_data_auth::GetVaultPropertiesRequest& request,
+    GetVaultPropertiesCallback callback) {
+  ::user_data_auth::GetVaultPropertiesReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+
+  if (request.username().empty()) {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+    return;
+  }
+  cryptohome::AccountIdentifier account;
+  account.set_account_id(request.username());
+  const auto user_it = users_.find(account);
+
+  // User does not exist, return an error.
+  if (user_it != std::end(users_)) {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+    return;
+  }
+
+  // User is not mounted, return an error.
+  if (mounted_user_dirs_.find(request.username()) == mounted_user_dirs_.end()) {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+    return;
+  }
+
+  const auto user_state = user_it->second;
+
+  // If ephemeral, then return error.
+  if (user_state.ephemeral) {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+    return;
+  }
+
+  reply.set_encryption_type(HomeEncryptionMethodToVaultEncryptionType(
+      user_state.home_encryption_method));
 }
 
 void FakeUserDataAuthClient::Unmount(
@@ -822,9 +881,7 @@ void FakeUserDataAuthClient::StartAuthSession(
   AuthSessionData& session = auth_sessions_[auth_session_id];
   session.id = auth_session_id;
   session.broadcast_id = "b-" + auth_session_id;
-  session.ephemeral =
-      (request.flags() & ::user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER) !=
-      0;
+  session.ephemeral = request.is_ephemeral_user();
   session.account = request.account_id();
   session.requested_auth_session_intent = request.intent();
 
@@ -865,17 +922,13 @@ void FakeUserDataAuthClient::StartAuthSession(
     }
 
     for (const auto& [label, factor] : user_state.auth_factors) {
-      std::optional<cryptohome::KeyData> key_data =
-          FakeAuthFactorToKeyData(label, factor);
       std::optional<user_data_auth::AuthFactor> auth_factor =
           FakeAuthFactorToAuthFactor(label, factor);
-      if (key_data) {
-        *reply.add_auth_factors() = *auth_factor;
-      } else {
-        LOG(WARNING)
-            << "Ignoring auth factor incompatible with AuthFactor API: "
-            << label;
-      }
+      DCHECK(auth_factor);
+      *reply.add_auth_factors() = *auth_factor;
+      auto* factor_with_status =
+          reply.add_configured_auth_factors_with_status();
+      BuildAuthFactorWithStatus(auth_factor, factor_with_status);
     }
   }
 }
@@ -908,22 +961,9 @@ void FakeUserDataAuthClient::ListAuthFactors(
         FakeAuthFactorToAuthFactor(label, factor);
     if (auth_factor) {
       *reply.add_configured_auth_factors() = *auth_factor;
-      // Hack as cryptohome sends information via list of available intents.
       auto* factor_with_status =
           reply.add_configured_auth_factors_with_status();
-      *factor_with_status->mutable_auth_factor() = *auth_factor;
-      factor_with_status->add_available_for_intents(
-          user_data_auth::AUTH_INTENT_DECRYPT);
-      factor_with_status->add_available_for_intents(
-          user_data_auth::AUTH_INTENT_VERIFY_ONLY);
-      factor_with_status->add_available_for_intents(
-          user_data_auth::AUTH_INTENT_WEBAUTHN);
-      if (absl::holds_alternative<PinFactor>(factor)) {
-        if (absl::get<PinFactor>(factor).locked) {
-          factor_with_status->mutable_status_info()->set_time_available_in(
-              std::numeric_limits<uint64_t>::max());
-        }
-      }
+      BuildAuthFactorWithStatus(auth_factor, factor_with_status);
     } else {
       LOG(WARNING) << "Ignoring auth factor incompatible with AuthFactor API: "
                    << label;
@@ -1013,8 +1053,10 @@ void FakeUserDataAuthClient::PrepareEphemeralVault(
   auth_session.lifetime =
       base::Time::Now() + cryptohome::kAuthsessionInitialLifetime;
 
+  auto user_state = UserCryptohomeState();
+  user_state.ephemeral = true;
   const auto [_, was_inserted] =
-      users_.insert({auth_session.account, UserCryptohomeState()});
+      users_.insert({auth_session.account, user_state});
 
   if (!was_inserted) {
     LOG(ERROR) << "User already exists: " << auth_session.account.account_id();
@@ -1083,52 +1125,6 @@ void FakeUserDataAuthClient::CreatePersistentUser(
       auth_session.requested_auth_session_intent);
   reply.mutable_auth_properties()->set_seconds_left(
       cryptohome::kAuthsessionInitialLifetime.InSeconds());
-}
-
-void FakeUserDataAuthClient::RestoreDeviceKey(
-    const ::user_data_auth::RestoreDeviceKeyRequest& request,
-    RestoreDeviceKeyCallback callback) {
-  ::user_data_auth::RestoreDeviceKeyReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-  RememberRequest<Operation::kRestoreDeviceKey>(request);
-
-  if (auto error = TakeOperationError(Operation::kRestoreDeviceKey);
-      cryptohome::HasError(error)) {
-    SetErrorWrapperToReply(reply, error);
-    return;
-  }
-
-  cryptohome::ErrorWrapper error = cryptohome::ErrorWrapper::success();
-  auto* authenticated_auth_session =
-      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
-
-  if (authenticated_auth_session == nullptr) {
-    SetErrorWrapperToReply(reply, error);
-    return;
-  }
-
-  if (authenticated_auth_session->ephemeral) {
-    LOG(ERROR) << "Ephemeral AuthSession used with RestoreDeviceKey";
-    SetErrorWrapperToReply(
-        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                   CryptohomeErrorCode::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
-    return;
-  }
-
-  const auto user_it = users_.find(authenticated_auth_session->account);
-  if (user_it == std::end(users_)) {
-    SetErrorWrapperToReply(
-        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                   CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND));
-    return;
-  }
-
-  if (!authenticated_auth_session->authorized_auth_session_intent.Has(
-          user_data_auth::AUTH_INTENT_DECRYPT)) {
-    reply.set_error(
-        CryptohomeErrorCode::CRYPTOHOME_ERROR_UNAUTHENTICATED_AUTH_SESSION);
-    return;
-  }
 }
 
 void FakeUserDataAuthClient::PreparePersistentVault(
@@ -1313,82 +1309,118 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
   DCHECK(user_it != std::end(users_));
   const UserCryptohomeState& user_state = user_it->second;
 
-  const std::string& label = request.auth_factor_label();
-  const auto factor_it = user_state.auth_factors.find(label);
-  if (factor_it == user_state.auth_factors.end()) {
-    LOG(ERROR) << "Factor not found: " << label;
-    SetErrorWrapperToReply(
-        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                   ::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
-    return;
+  std::vector<std::string> auth_factor_labels;
+  auth_factor_labels.reserve(request.auth_factor_labels_size());
+  for (auto label : request.auth_factor_labels()) {
+    auth_factor_labels.push_back(label);
   }
-  const FakeAuthFactor& factor = factor_it->second;
 
   const ::user_data_auth::AuthInput& auth_input = request.auth_input();
 
-  if (!AuthInputMatchesFakeFactorType(auth_input, factor)) {
-    LOG(ERROR) << "Auth input does not match factor type";
-    SetErrorWrapperToReply(
-        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                   ::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
-    return;
+  // Checks that the arity of auth factor labels match the AuthInput type.
+  // Legacy fingerprint does not have any auth factor associated.
+  // And only sign-in fingerprint allows more than 1 auth factor label.
+  if (auth_factor_labels.size() == 0) {
+    if (!auth_input.has_legacy_fingerprint_input()) {
+      SetErrorWrapperToReply(
+          reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                     ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+      return;
+    }
+  } else if (auth_factor_labels.size() > 1) {
+    if (!auth_input.has_fingerprint_input()) {
+      SetErrorWrapperToReply(
+          reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                     ::user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT));
+      return;
+    }
   }
 
-  // Factor-specific verification logic. Will set the result_error variable
-  // variable if a check didn't pass.
-  cryptohome::ErrorWrapper result_error = cryptohome::ErrorWrapper::success();
-  absl::visit(
-      Overload<void>(
-          [&](const PasswordFactor& password_factor) {
-            const auto& password_input = auth_input.password_input();
+  for (const auto& label : auth_factor_labels) {
+    const auto factor_it = user_state.auth_factors.find(label);
+    if (factor_it == user_state.auth_factors.end()) {
+      LOG(ERROR) << "Factor not found: " << label;
+      SetErrorWrapperToReply(
+          reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                     ::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
+      return;
+    }
+    const FakeAuthFactor& factor = factor_it->second;
 
-            if (enable_auth_check_ &&
-                password_input.secret() != password_factor.password) {
-              result_error = cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-              return;
-            }
-          },
-          [&](const PinFactor& pin_factor) {
-            const auto& pin_input = auth_input.pin_input();
+    if (!AuthInputMatchesFakeFactorType(auth_input, factor)) {
+      LOG(ERROR) << "Auth input does not match factor type";
+      SetErrorWrapperToReply(
+          reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                     ::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
+      return;
+    }
 
-            if (enable_auth_check_ && pin_input.secret() != pin_factor.pin) {
-              result_error = cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-              return;
-            }
+    // Factor-specific verification logic. Will set the result_error variable
+    // variable if a check didn't pass.
+    cryptohome::ErrorWrapper result_error = cryptohome::ErrorWrapper::success();
+    absl::visit(
+        Overload<void>(
+            [&](const PasswordFactor& password_factor) {
+              const auto& password_input = auth_input.password_input();
 
-            if (pin_factor.locked) {
-              result_error = cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                  ::user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-              return;
-            }
-          },
-          [&](const RecoveryFactor& recovery) {
-            const auto& recovery_input = auth_input.cryptohome_recovery_input();
+              if (enable_auth_check_ &&
+                  password_input.secret() != password_factor.password) {
+                result_error =
+                    cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                        ::user_data_auth::
+                            CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+                return;
+              }
+            },
+            [&](const PinFactor& pin_factor) {
+              const auto& pin_input = auth_input.pin_input();
 
-            if (recovery_input.epoch_response().empty()) {
-              LOG(ERROR) << "Missing epoch response";
-              result_error = cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-              return;
-            }
-            if (recovery_input.recovery_response().empty()) {
-              LOG(ERROR) << "Missing recovery response";
-              result_error = cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-              return;
-            }
-          },
-          [&](const KioskFactor& kiosk) {},
-          [&](const SmartCardFactor& smart_card) {
-            LOG(ERROR) << "Checking smart card key is not implemented yet";
-          }),
-      factor);
+              if (enable_auth_check_ && pin_input.secret() != pin_factor.pin) {
+                result_error =
+                    cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                        ::user_data_auth::
+                            CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+                return;
+              }
 
-  if (cryptohome::HasError(result_error)) {
-    SetErrorWrapperToReply(reply, result_error);
-    return;
+              if (pin_factor.locked) {
+                result_error =
+                    cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                        ::user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+                return;
+              }
+            },
+            [&](const RecoveryFactor& recovery) {
+              const auto& recovery_input =
+                  auth_input.cryptohome_recovery_input();
+
+              if (recovery_input.epoch_response().empty()) {
+                LOG(ERROR) << "Missing epoch response";
+                result_error =
+                    cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                        ::user_data_auth::
+                            CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+                return;
+              }
+              if (recovery_input.recovery_response().empty()) {
+                LOG(ERROR) << "Missing recovery response";
+                result_error =
+                    cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                        ::user_data_auth::
+                            CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+                return;
+              }
+            },
+            [&](const KioskFactor& kiosk) {},
+            [&](const SmartCardFactor& smart_card) {
+              LOG(ERROR) << "Checking smart card key is not implemented yet";
+            }),
+        factor);
+
+    if (cryptohome::HasError(result_error)) {
+      SetErrorWrapperToReply(reply, result_error);
+      return;
+    }
   }
 
   session.authenticated = true;
@@ -1400,10 +1432,6 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
       session.requested_auth_session_intent);
   reply.mutable_auth_properties()->set_seconds_left(
       cryptohome::kAuthsessionInitialLifetime.InSeconds());
-  // TODO(b/301078137): Remove usage of these fields in favor of
-  // auth_properties.
-  reply.add_authorized_for(session.requested_auth_session_intent);
-  reply.set_seconds_left(cryptohome::kAuthsessionInitialLifetime.InSeconds());
 }
 
 void FakeUserDataAuthClient::UpdateAuthFactor(
@@ -1472,6 +1500,52 @@ void FakeUserDataAuthClient::UpdateAuthFactorMetadata(
   return;
 }
 
+void FakeUserDataAuthClient::ReplaceAuthFactor(
+    const ::user_data_auth::ReplaceAuthFactorRequest& request,
+    ReplaceAuthFactorCallback callback) {
+  ::user_data_auth::ReplaceAuthFactorReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
+  RememberRequest<Operation::kReplaceAuthFactor>(request);
+
+  if (auto error = TakeOperationError(Operation::kReplaceAuthFactor);
+      cryptohome::HasError(error)) {
+    SetErrorWrapperToReply(reply, error);
+    return;
+  }
+
+  auto error = cryptohome::ErrorWrapper::success();
+  auto* session =
+      GetAuthenticatedAuthSession(request.auth_session_id(), &error);
+  SetErrorWrapperToReply(reply, error);
+  if (session == nullptr) {
+    return;
+  }
+
+  auto user_it = users_.find(session->account);
+  DCHECK(user_it != std::end(users_));
+  UserCryptohomeState& user_state = user_it->second;
+
+  const std::string& old_label = request.auth_factor_label();
+  DCHECK(!old_label.empty());
+  CHECK(user_state.auth_factors.contains(old_label))
+      << "Key does not exist: " << old_label;
+
+  auto [new_label, new_factor] = AuthFactorWithInputToFakeAuthFactor(
+      request.auth_factor(), request.auth_input(), enable_auth_check_);
+  CHECK(!user_state.auth_factors.contains(new_label))
+      << "Key already exists: " << new_label;
+
+  // Remove the fake old auth factor and replace with the new one.
+  bool erased = user_state.auth_factors.erase(old_label) > 0;
+  if (erased) {
+    user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
+  } else {
+    SetErrorWrapperToReply(
+        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                   CryptohomeErrorCode::CRYPTOHOME_ERROR_KEY_NOT_FOUND));
+  }
+}
+
 void FakeUserDataAuthClient::RemoveAuthFactor(
     const ::user_data_auth::RemoveAuthFactorRequest& request,
     RemoveAuthFactorCallback callback) {
@@ -1507,17 +1581,6 @@ void FakeUserDataAuthClient::GetAuthFactorExtendedInfo(
   ReplyOnReturn auto_reply(&reply, std::move(callback));
 }
 
-void FakeUserDataAuthClient::GetRecoveryRequest(
-    const ::user_data_auth::GetRecoveryRequestRequest& request,
-    GetRecoveryRequestCallback callback) {
-  ::user_data_auth::GetRecoveryRequestReply reply;
-  SetErrorWrapperToReply(reply,
-                         cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                             CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET));
-  reply.set_recovery_request("fake-recovery-request");
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-}
-
 void FakeUserDataAuthClient::GetAuthSessionStatus(
     const ::user_data_auth::GetAuthSessionStatusRequest& request,
     GetAuthSessionStatusCallback callback) {
@@ -1533,23 +1596,11 @@ void FakeUserDataAuthClient::GetAuthSessionStatus(
                    CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN));
     return;
   }
-  if (!auth_session->second.authenticated) {
-    reply.set_status(
-        ::user_data_auth::AUTH_SESSION_STATUS_FURTHER_FACTOR_REQUIRED);
-    return;
-  }
+
   base::TimeDelta time_left = auth_session->second.lifetime - base::Time::Now();
-  if (time_left.is_negative()) {
-    reply.set_status(
-        ::user_data_auth::AUTH_SESSION_STATUS_INVALID_AUTH_SESSION);
-    return;
-  }
-  reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED);
   reply.mutable_auth_properties()->add_authorized_for(
       auth_session->second.requested_auth_session_intent);
   reply.mutable_auth_properties()->set_seconds_left(time_left.InSeconds());
-  // TODO(b/301078137): Remove usage of these field in favor of auth_properties.
-  reply.set_time_left(time_left.InSeconds());
 }
 
 void FakeUserDataAuthClient::PrepareAuthFactor(
@@ -1568,15 +1619,27 @@ void FakeUserDataAuthClient::PrepareAuthFactor(
     return;
   }
 
-  CHECK_EQ(request.auth_factor_type(),
-           user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT)
-      << "Only Legacy FP is supported in FakeUDAC";
-  CHECK(!fingerprint_observers_.empty())
-      << "Add relevant observer before calling PrepareAuthFactor";
+  switch (request.auth_factor_type()) {
+    case user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY:
+      SetErrorWrapperToReply(
+          reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+                     CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET));
+      reply.mutable_prepare_output()
+          ->mutable_cryptohome_recovery_output()
+          ->set_recovery_request("fake-recovery-request");
+      break;
+    case user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT:
+      CHECK(!fingerprint_observers_.empty())
+          << "Add relevant observer before calling PrepareAuthFactor";
 
-  CHECK(!auth_session->second.is_listening_for_fingerprint_events)
-      << "Duplicate call to PrepareAuthFactor";
-  auth_session->second.is_listening_for_fingerprint_events = true;
+      CHECK(!auth_session->second.is_listening_for_fingerprint_events)
+          << "Duplicate call to PrepareAuthFactor";
+      auth_session->second.is_listening_for_fingerprint_events = true;
+      break;
+    default:
+      LOG(FATAL) << "Only Recovery and Legacy FP support PrepareAuthFactor in "
+                    "FakeUDAC";
+  }
 }
 
 void FakeUserDataAuthClient::TerminateAuthFactor(
@@ -1836,6 +1899,13 @@ void FakeUserDataAuthClient::GetRecoverableKeyStores(
       *reply.add_key_stores() = std::move(*store);
     }
   }
+}
+
+void FakeUserDataAuthClient::SetUserDataStorageWriteEnabled(
+    const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
+    SetUserDataStorageWriteEnabledCallback callback) {
+  ::user_data_auth::SetUserDataStorageWriteEnabledReply reply;
+  std::move(callback).Run(std::move(reply));
 }
 
 }  // namespace ash

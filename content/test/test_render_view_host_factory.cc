@@ -56,7 +56,8 @@ RenderViewHostImpl* TestRenderViewHostFactory::CreateRenderViewHost(
           frame_tree, widget_delegate,
           frame_sink_id.value_or(
               RenderWidgetHostImpl::DefaultFrameSinkId(*group, routing_id)),
-          group->GetSafeRef(), widget_routing_id, false),
+          group->GetSafeRef(), widget_routing_id, /*hidden=*/false,
+          /*renderer_initiated_creation=*/false),
       delegate, routing_id, main_frame_routing_id,
       std::move(main_browsing_context_state), create_case);
 }

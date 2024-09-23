@@ -18,6 +18,12 @@
 
 using device::mojom::SensorType;
 
+namespace features {
+BASE_FEATURE(kAllowSensorsToEnterBfcache,
+             "AllowSensorsToEnterBfcache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}
+
 namespace content {
 
 namespace {
@@ -44,8 +50,6 @@ SensorTypeToPermissionsPolicyFeatures(SensorType type) {
     case SensorType::RELATIVE_ORIENTATION_QUATERNION:
       return {blink::mojom::PermissionsPolicyFeature::kAccelerometer,
               blink::mojom::PermissionsPolicyFeature::kGyroscope};
-    default:
-      NOTREACHED_NORETURN() << "Unknown sensor type " << type;
   }
 }
 
@@ -103,7 +107,7 @@ void FrameSensorProviderProxy::OnPermissionRequestCompleted(
 
   // Unblock the orientation sensors as these are tested to play well with
   // back-forward cache. This is conservative.
-  // TODO(crbug.com/1027985): Test and unblock all of the sensors to work with
+  // TODO(crbug.com/40660549): Test and unblock all of the sensors to work with
   // back-forward cache.
   switch (type) {
     case SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
@@ -112,10 +116,13 @@ void FrameSensorProviderProxy::OnPermissionRequestCompleted(
     case SensorType::RELATIVE_ORIENTATION_QUATERNION:
       break;
     default:
-      static_cast<RenderFrameHostImpl*>(&render_frame_host())
-          ->OnBackForwardCacheDisablingStickyFeatureUsed(
-              blink::scheduler::WebSchedulerTrackedFeature::
-                  kRequestedBackForwardCacheBlockedSensors);
+      if (!base::FeatureList::IsEnabled(
+              features::kAllowSensorsToEnterBfcache)) {
+        static_cast<RenderFrameHostImpl*>(&render_frame_host())
+            ->OnBackForwardCacheDisablingStickyFeatureUsed(
+                blink::scheduler::WebSchedulerTrackedFeature::
+                    kRequestedBackForwardCacheBlockedSensors);
+      }
   }
 
   auto* web_contents_sensor_provider =

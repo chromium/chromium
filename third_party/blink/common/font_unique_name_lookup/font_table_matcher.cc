@@ -3,16 +3,19 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
-#include "base/strings/utf_string_conversions.h"
-#include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 
 #include <algorithm>
+
+#include "base/containers/span.h"
+#include "base/strings/utf_string_conversions.h"
+#include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 
 namespace blink {
 
 FontTableMatcher::FontTableMatcher(
     const base::ReadOnlySharedMemoryMapping& mapping) {
-  font_table_.ParseFromArray(mapping.memory(), mapping.size());
+  base::span<const uint8_t> mem(mapping);
+  font_table_.ParseFromArray(mem.data(), mem.size());
 }
 
 // static
@@ -24,8 +27,8 @@ FontTableMatcher::MemoryMappingFromFontUniqueNameTable(
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(serialization_size);
   CHECK(mapped_region.IsValid());
-  font_unique_name_table.SerializeToArray(mapped_region.mapping.memory(),
-                                          mapped_region.mapping.mapped_size());
+  base::span<uint8_t> mem(mapped_region.mapping);
+  font_unique_name_table.SerializeToArray(mem.data(), mem.size());
   return mapped_region.region.Map();
 }
 

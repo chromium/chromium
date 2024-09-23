@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "crypto/scoped_mock_unexportable_key_provider.h"
+
 #include <vector>
 
-#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 
 namespace crypto {

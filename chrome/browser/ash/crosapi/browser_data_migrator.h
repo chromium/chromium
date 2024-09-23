@@ -17,13 +17,21 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/account_id/account_id.h"
 
 class PrefService;
 class PrefRegistrySimple;
 
 namespace ash {
+
+namespace standalone_browser {
+class MigrationProgressTracker;
+
+namespace migrator_util {
+enum class PolicyInitState;
+}  // namespace migrator_util
+
+}  // namespace standalone_browser
 
 // Local state pref name, which is used to keep track of what step migration is
 // at. This ensures that ash does not get restarted repeatedly for migration.
@@ -61,7 +69,7 @@ class BrowserDataMigrator {
     std::optional<uint64_t> required_size;
   };
 
-  // TODO(crbug.com/1296174): Currently, dependency around callback is not
+  // TODO(crbug.com/40214666): Currently, dependency around callback is not
   // clean enough. Clean it up.
   using MigrateCallback = base::OnceCallback<void(Result)>;
 
@@ -121,10 +129,11 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // to update the progress bar on the screen. `completion_callback` passed as
   // an argument will be called on the UI thread where `Migrate()` is called
   // once migration has completed or failed.
-  BrowserDataMigratorImpl(const base::FilePath& original_profile_dir,
-                          const std::string& user_id_hash,
-                          const ProgressCallback& progress_callback,
-                          PrefService* local_state);
+  BrowserDataMigratorImpl(
+      const base::FilePath& original_profile_dir,
+      const std::string& user_id_hash,
+      const standalone_browser::ProgressCallback& progress_callback,
+      PrefService* local_state);
   BrowserDataMigratorImpl(const BrowserDataMigratorImpl&) = delete;
   BrowserDataMigratorImpl& operator=(const BrowserDataMigratorImpl&) = delete;
   ~BrowserDataMigratorImpl() override;
@@ -132,40 +141,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // Calls `chrome::AttemptRestart()` unless `ScopedRestartAttemptForTesting` is
   // in scope.
   static void AttemptRestart();
-
-  // Check if move migration has to be resumed. This has to be checked before a
-  // Profile object is created using the user's profile data directory. Like
-  // `MaybeRestartToMigrate()` it returns true if the D-Bus call to the
-  // session_manager is made and successful. The return value of true means that
-  // `chrome::AttemptRestart()` has been called.
-  static bool MaybeForceResumeMoveMigration(
-      PrefService* local_state,
-      const AccountId& account_id,
-      const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
-
-  // Checks if migration is required for the user identified by `user_id_hash`
-  // and if it is required, calls a D-Bus method to session_manager and
-  // terminates ash-chrome. It returns true if the D-Bus call to the
-  // session_manager is made and successful. The return value of true means that
-  // `chrome::AttemptRestart()` has been called.
-  static bool MaybeRestartToMigrate(
-      const AccountId& account_id,
-      const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
-
-  // Very similar to `MaybeRestartToMigrate`, but this checks the disk space in
-  // addition, and reports an error if out of disk space case.
-  // |callback| will be called on completion.
-  // On success, the first argument of the |callback| will be true, and the
-  // second argument should be ignored.
-  // On error, the first argument of the |callback| will be false. If the error
-  // is caused by out-of-disk, the required size to be freed up is passed
-  // to the second argument. Otherwise the second argument is nullopt.
-  static void MaybeRestartToMigrateWithDiskCheck(
-      const AccountId& account_id,
-      const std::string& user_id_hash,
-      base::OnceCallback<void(bool, const std::optional<uint64_t>&)> callback);
 
   // `BrowserDataMigrator` methods.
   void Migrate(MigrateCallback callback) override;
@@ -176,6 +151,14 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
 
   // Clears the value of `kMigrationStep` in Local State.
   static void ClearMigrationStep(PrefService* local_state);
+
+  // Returns true IFF this is the first launch after a migration attempt.
+  // This does not guarantee the migration was successful.
+  static bool IsFirstLaunchAfterMigration(const PrefService* local_state);
+
+  // Sets the `kMigrationStep` value in the given `local_state` in such a way
+  // that `IsFirstLaunchAfterMigration()` will evaluate to `true`.
+  static void SetFirstLaunchAfterMigrationForTesting(PrefService* local_state);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, Migrate);
@@ -195,7 +178,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   static bool MaybeRestartToMigrateInternal(
       const AccountId& account_id,
       const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // A part of `MaybeRestartToMigrateWithDiskCheck`, runs after the disk check.
   static void MaybeRestartToMigrateWithDiskCheckAfterDiskCheck(
@@ -208,7 +192,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);
 
   // Gets the value of `kMigrationStep` in Local State.
-  static MigrationStep GetMigrationStep(PrefService* local_state);
+  static MigrationStep GetMigrationStep(const PrefService* local_state);
 
   // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
   // the migration. It returns true if D-Bus call was successful.
@@ -216,7 +200,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
       const AccountId& account_id,
       const std::string& user_id_hash,
       PrefService* local_state,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // Called on UI thread once migration is finished.
   void MigrateInternalFinishedUIThread(MigrationResult result);
@@ -227,7 +212,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // A hash string of the profile user ID.
   const std::string user_id_hash_;
   // `progress_tracker_` is used to report progress status to the screen.
-  std::unique_ptr<MigrationProgressTracker> progress_tracker_;
+  std::unique_ptr<standalone_browser::MigrationProgressTracker>
+      progress_tracker_;
   // Callback to be called once migration is done. It is called regardless of
   // whether migration succeeded or not.
   MigrateCallback completion_callback_;

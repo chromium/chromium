@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -144,10 +143,18 @@ ClipboardProvider::~ClipboardProvider() {}
 
 void ClipboardProvider::Start(const AutocompleteInput& input,
                               bool minimal_changes) {
+  using OEP = ::metrics::OmniboxEventProto;
+
   matches_.clear();
 
   // If the user started typing, do not offer clipboard based match.
   if (!input.IsZeroSuggest()) {
+    return;
+  }
+
+  auto page_class = input.current_page_classification();
+  if (page_class == OEP::OTHER_ON_CCT ||
+      page_class == OEP::SEARCH_RESULT_PAGE_ON_CCT) {
     return;
   }
 
@@ -206,7 +213,7 @@ void ClipboardProvider::DeleteMatch(const AutocompleteMatch& match) {
   const auto pred = [&match](const AutocompleteMatch& i) {
     return i.contents == match.contents && i.type == match.type;
   };
-  base::EraseIf(matches_, pred);
+  std::erase_if(matches_, pred);
 }
 
 void ClipboardProvider::AddProviderInfo(ProvidersInfo* provider_info) const {
@@ -243,8 +250,6 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
                                            clipboard_contents_age);
 
   if (is_android &&
-      OmniboxFieldTrial::kOmniboxModernizeVisualUpdateMergeClipboardOnNTP
-          .Get() &&
       omnibox::IsNTPPage(input.current_page_classification())) {
     // Assign the Clipboard to the PZPS group on NTP pages to improve the use
     // of the suggest space.
@@ -578,7 +583,7 @@ void ClipboardProvider::ConstructImageMatchCallback(
   match.search_terms_args =
       std::make_unique<TemplateURLRef::SearchTermsArgs>(u"");
   match.search_terms_args->image_thumbnail_content.assign(
-      image_bytes->front_as<char>(), image_bytes->size());
+      base::as_string_view(*image_bytes));
   TemplateURLRef::PostContent post_content;
   GURL result(default_url->image_url_ref().ReplaceSearchTerms(
       *match.search_terms_args.get(), url_service->search_terms_data(),
@@ -678,8 +683,23 @@ bool ClipboardProvider::UpdateClipboardTextContent(const std::u16string& text,
 
   // The text in the clipboard is a url. We don't want to prompt the user to
   // search for a url.
-  if (GURL(text).is_valid())
+  if (GURL(text).is_valid()) {
+    // Note: on Android, the clipboard content is evaluated by Android
+    // Framework. The Framework is familiar with only a handful of URL schemes,
+    // and any non-explicitly annotated URL with scheme not recognized by the
+    // Android is immediately annotated as Text. Additionally, any application
+    // setting clipboard content may supply its own annotation, which may be
+    // inaccurate.
+    // we do not have the control over all sources from where such URLs can come
+    // from. The change below allows us to still open these URLs. Without this
+    // change Clipboard suggestions may be non interactable, if the clipboard
+    // contains an unannotated or mis-classified URL not recognized by Android.
+    if constexpr (is_android) {
+      UpdateClipboardURLContent(GURL(text), match);
+      return true;
+    }
     return false;
+  }
 
   match->fill_into_edit = text;
 

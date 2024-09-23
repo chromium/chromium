@@ -35,8 +35,9 @@ runTests([
       chrome.test.assertFalse('documentId' in details);
       chrome.test.assertEq(getURLFencedFrame(), details.url);
       chrome.test.assertEq(details.stage, expectedEvents.shift());
-      if (expectedEvents.length == 0)
+      if (expectedEvents.length == 0) {
         chrome.test.succeed();
+      }
     });
 
     var rule = {

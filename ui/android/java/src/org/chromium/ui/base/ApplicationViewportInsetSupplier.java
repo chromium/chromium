@@ -209,12 +209,7 @@ public class ApplicationViewportInsetSupplier extends ObservableSupplierImpl<Vie
     }
 
     public boolean insetsAffectWebContentsSize() {
-        // TODO(bokan): OVERLAYS_CONTENT is included only to ensure dispatch of the keyboard
-        // geometrychange event. The WebContents doesn't actually change size in OVERLAYS_CONTENT
-        // so we should factor the event dispatch code out of CompositorViewHolder
-        // #updateWebContentsSize and then replace this call.
         return mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT
-                || mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT
                 || mBottomSheetInsetSupplier != null;
     }
 }

@@ -85,11 +85,14 @@ class AX_BASE_EXPORT AXMode {
   // PDF and add it to the accessibility tree.
   static constexpr uint32_t kPDFOcr = 1 << 8;
 
+  // The accessibility tree will have the main node annotated.
+  static constexpr uint32_t kAnnotateMainNode = 1 << 9;
+
   // Update this to include the last supported mode flag. If you add
   // another, be sure to update the stream insertion operator for
   // logging and debugging, as well as AccessibilityModeFlagEnum (and
   // related metrics callsites, see: |ModeFlagHistogramValue|).
-  static constexpr uint32_t kLastModeFlag = 1 << 8;
+  static constexpr uint32_t kLastModeFlag = 1 << 9;
 
   constexpr AXMode() : flags_(kNone), experimental_flags_(kNone) {}
   constexpr AXMode(uint32_t flags)
@@ -143,6 +146,7 @@ class AX_BASE_EXPORT AXMode {
     UMA_AX_MODE_LABEL_IMAGES = 6,
     UMA_AX_MODE_PDF = 7,
     UMA_AX_MODE_PDF_OCR = 8,
+    UMA_AX_MODE_ANNOTATE_MAIN_NODE = 9,
 
     // This must always be the last enum. It's okay for its value to
     // increase, but none of the other enum values may change.
@@ -177,7 +181,7 @@ class AX_BASE_EXPORT AXMode {
   static constexpr uint32_t kExperimentalLastFlag = 1 << 0;
 
  private:
-  friend struct mojo::StructTraits<ax::mojom::AXModeDataView, ui::AXMode>;
+  friend struct mojo::StructTraits<ax::mojom::AXModeDataView, AXMode>;
 
   uint32_t flags_ = 0U;
   uint32_t experimental_flags_ = 0U;

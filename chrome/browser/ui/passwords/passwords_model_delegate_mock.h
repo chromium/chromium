@@ -51,6 +51,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
       GetCurrentForms,
       (),
       (const override));
+  MOCK_METHOD(const std::optional<password_manager::PasswordForm>&,
+              GetManagePasswordsSingleCredentialDetailsModeCredential,
+              (),
+              (const override));
   MOCK_METHOD(password_manager::InteractionsStats*,
               GetCurrentInteractionStats,
               (),
@@ -58,6 +62,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(size_t, GetTotalNumberCompromisedPasswords, (), (const override));
   MOCK_METHOD(bool, DidAuthForAccountStoreOptInFail, (), (const override));
   MOCK_METHOD(bool, BubbleIsManualFallbackForSaving, (), (const override));
+  MOCK_METHOD(bool,
+              GpmPinCreatedDuringRecentPasskeyCreation,
+              (),
+              (const override));
   MOCK_METHOD(void, OnBubbleShown, (), (override));
   MOCK_METHOD(void, OnBubbleHidden, (), (override));
   MOCK_METHOD(void, OnNoInteraction, (), (override));
@@ -86,6 +94,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               (password_manager::ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(void,
+              NavigateToPasswordDetailsPageInPasswordManager,
+              (const std::string&, password_manager::ManagePasswordsReferrer),
+              (override));
+  MOCK_METHOD(void,
               NavigateToPasswordManagerSettingsAccountStoreToggle,
               (password_manager::ManagePasswordsReferrer),
               (override));
@@ -93,7 +105,11 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               NavigateToPasswordCheckup,
               (password_manager::PasswordCheckReferrer),
               (override));
-  MOCK_METHOD(void, SignIn, (const AccountInfo& account), (override));
+  MOCK_METHOD(void,
+              MovePendingPasswordToAccountStoreUsingHelper,
+              (const password_manager::PasswordForm&,
+               password_manager::metrics_util::MoveToAccountStoreTrigger),
+              (override));
   MOCK_METHOD(void, OnDialogHidden, (), (override));
   MOCK_METHOD(void,
               AuthenticateUserWithMessage,
@@ -116,7 +132,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
   MOCK_METHOD(void, OnBiometricAuthBeforeFillingDeclined, (), (override));
   MOCK_METHOD(void,
               OnAddUsernameSaveClicked,
-              (const std::u16string&),
+              (const std::u16string&, const password_manager::PasswordForm&),
               (override));
   MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
   MOCK_METHOD(void, RelaunchChrome, (), (override));

@@ -11,11 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
-#include "chrome/android/chrome_jni_headers/SendTabToSelfNotificationReceiver_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -33,6 +30,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/NotificationManager_jni.h"
+#include "chrome/android/chrome_jni_headers/SendTabToSelfNotificationReceiver_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -136,7 +137,7 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
       message->SetIconResourceId(
           ResourceMapper::MapToJavaDrawableId(IDR_SEND_TAB_TO_SELF));
 
-      // TODO(crbug.com/1220129): A valid WebContents shouldn't be needed here.
+      // TODO(crbug.com/40772682): A valid WebContents shouldn't be needed here.
       if (web_contents_) {
         messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
             message.get(), web_contents_->GetTopLevelNativeWindow(),
@@ -184,7 +185,7 @@ void AndroidNotificationHandler::OnMessageOpened(GURL url, std::string guid) {
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
   params.should_replace_current_entry = false;
-  web_contents_->OpenURL(params);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
   auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
                     ->GetSendTabToSelfModel();
   model->DismissEntry(guid);

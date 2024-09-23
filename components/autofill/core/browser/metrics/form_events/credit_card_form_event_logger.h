@@ -63,22 +63,20 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // are fetched for a virtual card standalone CVC field.
   // `metadata_logging_context` contains information about whether any card has
   // a non-empty product description or art image, and whether they are shown.
-  void OnDidFetchSuggestion(const std::vector<Suggestion>& suggestions,
-                            bool with_offer,
-                            bool with_cvc,
-                            bool is_virtual_card_standalone_cvc_field,
-                            const autofill_metrics::CardMetadataLoggingContext&
-                                metadata_logging_context);
+  void OnDidFetchSuggestion(
+      const std::vector<Suggestion>& suggestions,
+      bool with_offer,
+      bool with_cvc,
+      bool is_virtual_card_standalone_cvc_field,
+      autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
 
-  // TODO(crbug.com/1495879): Remove redundant parameters.
+  // TODO(crbug.com/40937936): Remove redundant parameters.
   // form_parsed_timestamp and off_the_record value can be removed, as their
   // values can be retrieved from 'form' or 'client_'.
-  void OnDidShowSuggestions(
-      const FormStructure& form,
-      const AutofillField& field,
-      const base::TimeTicks& form_parsed_timestamp,
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      bool off_the_record) override;
+  void OnDidShowSuggestions(const FormStructure& form,
+                            const AutofillField& field,
+                            base::TimeTicks form_parsed_timestamp,
+                            bool off_the_record) override;
 
   // Logs the original "Masked server card suggestion selected" form event
   // metrics. These metrics were replaced in M123 due to crbug/1513307, but this
@@ -110,7 +108,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   //
   // Therefore, the intersection of `newly_filled_fields` and `safe_fields`
   // contains the actually filled fields.
-  void OnDidFillSuggestion(
+  void OnDidFillFormFillingSuggestion(
       const CreditCard& credit_card,
       const FormStructure& form,
       const AutofillField& field,
@@ -137,6 +135,11 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
         latest_selected_card_was_virtual_card;
   }
 
+  void set_signin_state_for_metrics(
+      AutofillMetrics::PaymentsSigninState state) {
+    signin_state_for_metrics_ = state;
+  }
+
  protected:
   // FormEventLoggerBase pure-virtual overrides.
   void RecordPollSuggestions() override;
@@ -153,6 +156,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
              FormEvent event,
              const FormStructure& form) const override;
   bool HasLoggedDataToFillAvailable() const override;
+  DenseSet<FormTypeNameForLogging> GetSupportedFormTypeNamesForLogging()
+      const override;
+  DenseSet<FormTypeNameForLogging> GetFormTypesForLogging(
+      const FormStructure& form) const override;
 
   // Bringing base class' Log function into scope to allow overloading.
   using FormEventLoggerBase::Log;
@@ -171,7 +178,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_suggestion_with_metadata_shown_ = false;
   bool has_logged_suggestion_with_metadata_selected_ = false;
   bool has_logged_legacy_masked_server_card_suggestion_selected_ = false;
+  bool has_logged_local_card_suggestion_selected_ = false;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
+  bool has_logged_masked_server_card_suggestion_filled_ = false;
   bool has_logged_virtual_card_suggestion_selected_ = false;
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_shown_ = false;
   bool has_logged_suggestion_for_virtual_card_standalone_cvc_selected_ = false;
@@ -179,11 +188,15 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool has_logged_suggestion_for_card_with_cvc_shown_ = false;
   bool has_logged_suggestion_for_card_with_cvc_selected_ = false;
   bool has_logged_suggestion_for_card_with_cvc_filled_ = false;
+  bool has_logged_suggestion_shown_for_benefits_ = false;
   bool logged_suggestion_filled_was_masked_server_card_ = false;
   bool logged_suggestion_filled_was_virtual_card_ = false;
   // If true, the most recent card to be selected as an Autofill suggestion was
   // a virtual card. False for all other card types.
   bool latest_selected_card_was_virtual_card_ = false;
+  // If true, the most recent card that was filled as an Autofill suggestion
+  // was a masked server card. False for all other card types.
+  bool latest_filled_card_was_masked_server_card_ = false;
   std::vector<Suggestion> suggestions_;
   bool has_eligible_offer_ = false;
   bool card_selected_has_offer_ = false;
@@ -200,6 +213,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // Set when a list of suggestion is shown.
   base::TimeTicks suggestion_shown_timestamp_;
+
+  AutofillMetrics::PaymentsSigninState signin_state_for_metrics_ =
+      AutofillMetrics::PaymentsSigninState::kUnknown;
 
   // Weak references.
   raw_ptr<PersonalDataManager> personal_data_manager_;

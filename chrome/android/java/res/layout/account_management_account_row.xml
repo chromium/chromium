@@ -62,7 +62,7 @@ found in the LICENSE file.
         android:id="@+id/alert_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:importantForAccessibility="no"
+        android:contentDescription="@string/accessibility_account_management_row_account_error"
         android:src="@drawable/ic_error"
         android:visibility="gone"/>
 

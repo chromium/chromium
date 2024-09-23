@@ -6,10 +6,10 @@
 #define NET_QUIC_WEB_TRANSPORT_CLIENT_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/quic/web_transport_error.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier.h"
@@ -55,7 +55,7 @@ NET_EXPORT std::ostream& operator<<(std::ostream& os, WebTransportState state);
 // https://datatracker.ietf.org/doc/html/draft-ietf-webtrans-http3/#section-5
 struct NET_EXPORT WebTransportCloseInfo final {
   WebTransportCloseInfo();
-  WebTransportCloseInfo(uint32_t code, base::StringPiece reason);
+  WebTransportCloseInfo(uint32_t code, std::string_view reason);
   ~WebTransportCloseInfo();
 
   uint32_t code = 0;
@@ -87,7 +87,7 @@ class NET_EXPORT WebTransportClientVisitor {
 
   virtual void OnIncomingBidirectionalStreamAvailable() = 0;
   virtual void OnIncomingUnidirectionalStreamAvailable() = 0;
-  virtual void OnDatagramReceived(base::StringPiece datagram) = 0;
+  virtual void OnDatagramReceived(std::string_view datagram) = 0;
   virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
   virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
   virtual void OnDatagramProcessed(

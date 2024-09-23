@@ -25,8 +25,7 @@ namespace {
 void SetUsageStatsEnabled(scoped_refptr<PersistedData> persisted_data,
                           bool enabled) {
   persisted_data->SetUsageStatsEnabled(enabled);
-  CrashClient::GetInstance()->database()->GetSettings()->SetUploadsEnabled(
-      enabled);
+  CrashClient::GetInstance()->SetUploadsEnabled(enabled);
 }
 
 }  // namespace

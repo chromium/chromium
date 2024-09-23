@@ -13,8 +13,9 @@
 namespace feature_engagement {
 class Tracker;
 }
-namespace syncer {
-class SyncService;
+namespace base {
+class Time;
+class TimeDelta;
 }
 
 // Enum for the different types of default browser modal promo. These are stored
@@ -24,7 +25,6 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType) {
   DefaultPromoTypeStaySafe = 1,
   DefaultPromoTypeMadeForIOS = 2,
   DefaultPromoTypeAllTabs = 3,
-  DefaultPromoTypeVideo = 4,
 };
 
 // Enum actions for default browser promo UMA metrics. Entries should not be
@@ -113,6 +113,48 @@ extern const char kVideoFullscreenPromo[];
 extern const char kVideoHalfscreenPromo[];
 extern const char kDefaultBrowserVideoPromoVariant[];
 
+// Key in storage containing a bool indicating if the user has
+// previously interacted with a regular fullscreen promo.
+extern NSString* const kUserHasInteractedWithFullscreenPromo;
+
+// Key in storage containing a bool indicating if the user has
+// previously interacted with a tailored fullscreen promo.
+extern NSString* const kUserHasInteractedWithTailoredFullscreenPromo;
+
+// Key in storage containing a bool indicating if the user has
+// previously interacted with first run promo.
+extern NSString* const kUserHasInteractedWithFirstRunPromo;
+
+// Key in storage containing an int indicating the number of times a fullscreen
+// promo has been displayed.
+extern NSString* const kDisplayedFullscreenPromoCount;
+
+// Key in storage containing an int indicating the number of times a generic
+// promo has been displayed.
+extern NSString* const kGenericPromoInteractionCount;
+
+// Key in storage containing an int indicating the number of times a tailored
+// promo has been displayed.
+extern NSString* const kTailoredPromoInteractionCount;
+
+// Key in storage containing the timestamp of when trigger criteria experiment
+// started.
+extern NSString* const kTimestampTriggerCriteriaExperimentStarted;
+
+// Specifies how long blue dot occurrence should last.
+extern base::TimeDelta const kBlueDotPromoDuration;
+
+// Specifies how often blue dot should reoccur.
+extern base::TimeDelta const kBlueDotPromoReoccurrancePeriod;
+
+// Loads from NSUserDefaults the time of the non-expired events for the
+// given promo type.
+std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type);
+
+// Stores the time of the last recorded events for `type`.
+void StoreTimestampsForPromoType(DefaultPromoType type,
+                                 std::vector<base::Time> times);
+
 // Helper function to set `data` for `key` into the storage object.
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data);
 
@@ -128,42 +170,37 @@ void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 // Logs to the FET that a default browser promo has been shown.
 void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker);
 
-// Logs to the FET that the user has pasted a URL into the omnibox if certain
-// conditions are met.
-void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker);
+// Returns whether blue dot display timestamp has already been set.
+bool HasDefaultBrowserBlueDotDisplayTimestamp();
 
-// Returns true if the passed default browser badge `feature` should be shown.
-// Also makes the necessary calls to the FET for keeping track of usage, as well
-// as checking that the correct preconditions are met.
+// Resets  blue dot display timestamp to its default value when needed.
+void ResetDefaultBrowserBlueDotDisplayTimestampIfNeeded();
+
+// Set the current timestamp as blue dot first display timestamp if this was the
+// first instance.
+void RecordDefaultBrowserBlueDotFirstDisplay();
+
+// Returns true if the default browser blue dot should be shown.
 bool ShouldTriggerDefaultBrowserHighlightFeature(
-    const base::Feature& feature,
-    feature_engagement::Tracker* tracker,
-    syncer::SyncService* syncService);
-
-// Returns true if the default browser video promo is enabled.
-bool IsDefaultBrowserVideoPromoEnabled();
-
-// Returns true if the default browser video promo full screen is enabled.
-bool IsDBVideoPromoFullscreenEnabled();
-
-// Returns true if the default browser video promo half screen is enabled.
-bool IsDBVideoPromoHalfscreenEnabled();
+    feature_engagement::Tracker* tracker);
 
 // Returns true if the non-modal default browser promo cooldown refactor is
 // enabled.
 bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled();
 
-// Returns true if the default browser promo triggering criteria should be
-// skipped.
-bool ShouldForceDefaultPromoType();
-
-// Returns the promo type (DefaultPromoType) of the default browser promo after
-// skipping the triggering criteria.
-DefaultPromoType ForceDefaultPromoType();
-
 // Returns true if client is in Default Browser promo trigger criteria
 // experiment.
 bool IsDefaultBrowserTriggerCriteraExperimentEnabled();
+
+// Sets trigger criteria experiment start timestamp to now.
+void SetTriggerCriteriaExperimentStartTimestamp();
+
+// Returns true if trigger criteria experiment has been started.
+bool HasTriggerCriteriaExperimentStarted();
+
+// Returns true if trigger criteria experiment has been started for at least 21
+// days.
+bool HasTriggerCriteriaExperimentStarted21days();
 
 // Returns true if the default browser promo generic tailored experiment is
 // enabled.
@@ -172,13 +209,6 @@ bool IsDefaultBrowserPromoGenericTailoredTrainEnabled();
 // Returns true if the only-generic arm of the default browser promo generic
 // tailored experiment is enabled.
 bool IsDefaultBrowserPromoOnlyGenericArmTrain();
-
-// Returns true if default Browser full-screen promo should be shown on omnibox
-// copy-paste instead of non-modal promo.
-bool IsFullScreenPromoOnOmniboxCopyPasteEnabled();
-
-// Returns true if client is in default browser video in settings experiment.
-bool IsDefaultBrowserVideoInSettingsEnabled();
 
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.
@@ -192,6 +222,10 @@ bool HasUserInteractedWithTailoredFullscreenPromoBefore();
 // non-modal promo before.
 NSInteger UserInteractionWithNonModalPromoCount();
 
+// Returns the number of times a fullscreen default browser promo has been
+// displayed.
+NSInteger DisplayedFullscreenPromoCount();
+
 // Logs that one of the fullscreen default browser promos was displayed.
 void LogFullscreenDefaultBrowserPromoDisplayed();
 
@@ -201,40 +235,28 @@ void LogUserInteractionWithFullscreenPromo();
 // Logs that the user has interacted with a Tailored Fullscreen Promo.
 void LogUserInteractionWithTailoredFullscreenPromo();
 
-// Logs that the user has interacted with a Non-Modals Promo.
-void LogUserInteractionWithNonModalPromo();
+// Logs that the user has interacted with a non-modal promo. The expected
+// parameters are the current counts, because they will be incremented by 1 and
+// then saved to NSUserDefaults. If kNonModalDefaultBrowserPromoCooldownRefactor
+// is disabled, kDisplayedFullscreenPromoCount will also be incremented by 1.
+void LogUserInteractionWithNonModalPromo(
+    NSInteger currentNonModalPromoInteractionsCount,
+    NSInteger currentFullscreenPromoInteractionsCount);
 
 // Logs that the user has interacted with the first run promo.
-void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);
+void LogUserInteractionWithFirstRunPromo();
 
 // Logs in NSUserDefaults that user copy-pasted in the omnibox.
-void LogCopyPasteInOmniboxForDefaultBrowserPromo();
+void LogCopyPasteInOmniboxForCriteriaExperiment();
 
 // Logs in NSUserDefaults that user used bookmarks or bookmark manager.
-void LogBookmarkUseForDefaultBrowserPromo();
+void LogBookmarkUseForCriteriaExperiment();
 
 // Logs in NSUserDefaults that user used autofill suggestions
 void LogAutofillUseForCriteriaExperiment();
 
 // Logs that the user has used remote tabs.
-void LogRemoteTabsUsedForDefaultBrowserPromo();
-
-// Logs that the user has used pinned tabs.
-void LogPinnedTabsUsedForDefaultBrowserPromo();
-
-// Returns YES if the user has opened the app through first-party intent 2
-// times in the last 7 days, but across 2 user sessions (default 6 hours). Also
-// records that a new launch has happened if the last one was more than one
-// session ago.
-bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch();
-
-// Returns YES if the user has pasted a valid URL into the omnibox twice in
-// the last 7 days and records the current paste.
-bool HasRecentValidURLPastesAndRecordsCurrentPaste();
-
-// Returns YES if the last timestamp passed as `eventKey` is part of the current
-// user session (default 6 hours). If not, it records the timestamp.
-bool HasRecentTimestampForKey(NSString* eventKey);
+void LogRemoteTabsUseForCriteriaExperiment();
 
 // Returns true if the last URL open is within the specified number of `days`
 // which would indicate Chrome is likely still the default browser. Returns
@@ -255,27 +277,10 @@ bool IsChromeLikelyDefaultBrowser7Days();
 bool IsChromePotentiallyNoLongerDefaultBrowser(int likelyDefaultInterval,
                                                int likelyNotDefaultInterval);
 
-// Returns true if Chrome was likely the default browser in the last 21 days but
-// not in the last 7 days.
-bool IsChromePotentiallyNoLongerDefaultBrowser21To7();
-
-// Returns true if Chrome was likely the default browser in the last 28 days but
-// not in the last 14 days.
-bool IsChromePotentiallyNoLongerDefaultBrowser28To14();
-
-// Returns true if Chrome was likely the default browser in the last 35 days but
-// not in the last 14 days.
-bool IsChromePotentiallyNoLongerDefaultBrowser35To14();
-
 // Returns true if the past behavior of the user indicates that the user fits
 // the categorization that would likely benefit from having Chrome set as their
 // default browser for the passed `type`. Returns false otherwise.
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
-
-// Returns the most recent promo the user showed interest in. Defaults to
-// DefaultPromoTypeGeneral if no interest is found. If `skipAllTabsPromo` is
-// true, this type of promo will be ignored.
-DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromo);
 
 // Return YES if the user has seen a full screen promo recently, and shouldn't
 // see another one.
@@ -291,19 +296,6 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 
 // Returns the impression limit for the non-modal default browser promo.
 int GetNonModalDefaultBrowserPromoImpressionLimit();
-
-// Return true if the default browser promo should be registered with the promo
-// manager to display a default browser promo.
-bool ShouldRegisterPromoWithPromoManager(bool is_signed_in,
-                                         bool is_omnibox_copy_paste);
-
-// Returns true if it was determined that the user is eligible for a
-// tailored promo.
-bool IsTailoredPromoEligibleUser(bool is_signed_in);
-
-// Returns true if it was determined that the user is eligible for the
-// general promo.
-bool IsGeneralPromoEligibleUser(bool is_signed_in);
 
 // Returns true if it was determined that the user is eligible for the
 // post restore default browser promo.
@@ -348,5 +340,45 @@ void LogBrowserLaunched(bool is_cold_start);
 // promo experiment stats to NSUserDefaults. `LogBrowserIndirectlylaunched` and
 // `LogBrowserLaunched` will have overlap.
 void LogBrowserIndirectlylaunched();
+
+// Migration to FET.
+
+// Returns Default Browser FRE promo timestamp if it was the last default
+// browser promo user seen. Otherwise, returns unix epoch.
+base::Time GetDefaultBrowserFREPromoTimestampIfLast();
+
+// Returns generic Default Browser timestamp if user seen a generic promo
+// before. Otherwise, returns unix epoch.
+base::Time GetGenericDefaultBrowserPromoTimestamp();
+
+// Returns tailored Default Browser timestamp if user seen a tailored promo
+// before. Otherwise, returns unix epoch.
+base::Time GetTailoredDefaultBrowserPromoTimestamp();
+
+// Log to UserDefaults FRE timestamp migration is done.
+void LogFRETimestampMigrationDone();
+
+// Returns whether FRE timestamp migratin is done.
+BOOL FRETimestampMigrationDone();
+
+// Log to UserDefaults promo interest event migration is done.
+void LogPromoInterestEventMigrationDone();
+
+// Returns whether promo interest event migratin is done.
+BOOL IsPromoInterestEventMigrationDone();
+
+// Log to UserDefaults promo impressions migration is done.
+void LogPromoImpressionsMigrationDone();
+
+// Returns whether promo impressions migratin is done.
+BOOL IsPromoImpressionsMigrationDone();
+
+// Records the last action the user took when a Default Browser Promo was
+// presented.
+void RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction action);
+
+// Returns the last action, if any, that the user took when a Default Browser
+// Promo was presented.
+std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction();
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_

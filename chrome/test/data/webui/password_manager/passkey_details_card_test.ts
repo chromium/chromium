@@ -43,6 +43,11 @@ suite('PasskeyDetailsCardTest', function() {
   test('Content displayed properly', async function() {
     assertEquals(passkey.username, card.$.usernameValue.value);
     assertEquals(passkey.displayName, card.$.displayNameValue.value);
+    assertEquals(
+        // 1/12/70 is the date that matches the creation time set by
+        // `createPasswordEntry`.
+        card.i18n('passkeyManagementInfoLabel', '1/12/70'),
+        card.$.infoLabel.innerText.trim());
     assertTrue(isVisible(card.$.editButton));
     assertTrue(isVisible(card.$.deleteButton));
 
@@ -102,5 +107,4 @@ suite('PasskeyDetailsCardTest', function() {
     await domChange;
     assertEquals(card.shadowRoot!.querySelector('delete-passkey-dialog'), null);
   });
-
 });

@@ -93,7 +93,7 @@ disk_cache::EntryResult SharedDictionaryDiskCache::OpenOrCreateEntry(
     disk_cache::EntryResultCallback callback) {
   switch (state_) {
     case State::kBeforeInitialize:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return disk_cache::EntryResult::MakeError(net::ERR_FAILED);
     case State::kInitializing:
       // It is safe to use Unretained() below because
@@ -120,7 +120,7 @@ int SharedDictionaryDiskCache::DoomEntry(const std::string& key,
                                          net::CompletionOnceCallback callback) {
   switch (state_) {
     case State::kBeforeInitialize:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return net::ERR_FAILED;
     case State::kInitializing:
       // It is safe to use Unretained() below because
@@ -144,7 +144,7 @@ int SharedDictionaryDiskCache::DoomEntry(const std::string& key,
 int SharedDictionaryDiskCache::ClearAll(net::CompletionOnceCallback callback) {
   switch (state_) {
     case State::kBeforeInitialize:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return net::ERR_FAILED;
     case State::kInitializing:
       // It is safe to use Unretained() below because
@@ -170,7 +170,7 @@ void SharedDictionaryDiskCache::CreateIterator(
         callback) {
   switch (state_) {
     case State::kBeforeInitialize:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case State::kInitializing:
       // It is safe to use Unretained() below because

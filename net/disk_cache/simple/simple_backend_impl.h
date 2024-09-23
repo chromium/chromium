@@ -56,9 +56,8 @@ class SimpleEntryImpl;
 class SimpleFileTracker;
 class SimpleIndex;
 
-class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
-    public SimpleIndexDelegate,
-    public base::SupportsWeakPtr<SimpleBackendImpl> {
+class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
+                                                   public SimpleIndexDelegate {
  public:
   // Note: only pass non-nullptr for |file_tracker| if you don't want the global
   // one (which things other than tests would want). |file_tracker| must outlive
@@ -150,6 +149,10 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
     app_status_listener_getter_ = std::move(app_status_listener_getter);
   }
 #endif
+
+  base::WeakPtr<SimpleBackendImpl> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   class SimpleIterator;
@@ -293,6 +296,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
 #if BUILDFLAG(IS_ANDROID)
   ApplicationStatusListenerGetter app_status_listener_getter_;
 #endif
+
+  base::WeakPtrFactory<SimpleBackendImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace disk_cache

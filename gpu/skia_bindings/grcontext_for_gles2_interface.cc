@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <string.h>
+
 #include <utility>
 
 #include "base/lazy_instance.h"
@@ -15,10 +16,10 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h"
 #include "gpu/skia_bindings/gles2_implementation_with_grcontext_support.h"
-#include "third_party/skia/include/gpu/GrContextOptions.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
-#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
 
 namespace skia_bindings {
 

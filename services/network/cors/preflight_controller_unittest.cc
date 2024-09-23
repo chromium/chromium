@@ -12,8 +12,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source_type.h"
@@ -31,6 +33,7 @@
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/client_security_state_builder.h"
@@ -64,14 +67,12 @@ TEST(PreflightControllerCreatePreflightRequestTest, LexicographicalOrder) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_TRUE(
-      preflight->headers.GetHeader(net::HttpRequestHeaders::kOrigin, &header));
-  EXPECT_EQ("null", header);
+  EXPECT_EQ("null",
+            preflight->headers.GetHeader(net::HttpRequestHeaders::kOrigin));
 
-  EXPECT_TRUE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
-  EXPECT_EQ("apple,content-type,kiwifruit,orange,strawberry", header);
+  EXPECT_EQ(
+      "apple,content-type,kiwifruit,orange,strawberry",
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, ExcludeSimpleHeaders) {
@@ -91,9 +92,8 @@ TEST(PreflightControllerCreatePreflightRequestTest, ExcludeSimpleHeaders) {
   // Do not emit empty-valued headers; an empty list of non-"CORS safelisted"
   // request headers should cause "Access-Control-Request-Headers:" to be
   // left out in the preflight request.
-  std::string header;
-  EXPECT_FALSE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
+  EXPECT_FALSE(
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, Credentials) {
@@ -122,9 +122,8 @@ TEST(PreflightControllerCreatePreflightRequestTest,
       PreflightController::CreatePreflightRequestForTesting(request);
 
   // Empty list also; see comment in test above.
-  std::string header;
-  EXPECT_FALSE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
+  EXPECT_FALSE(
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, IncludeSecFetchModeHeader) {
@@ -137,9 +136,7 @@ TEST(PreflightControllerCreatePreflightRequestTest, IncludeSecFetchModeHeader) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_TRUE(preflight->headers.GetHeader("Sec-Fetch-Mode", &header));
-  EXPECT_EQ("cors", header);
+  EXPECT_EQ("cors", preflight->headers.GetHeader("Sec-Fetch-Mode"));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, IncludeNonSimpleHeader) {
@@ -152,10 +149,8 @@ TEST(PreflightControllerCreatePreflightRequestTest, IncludeNonSimpleHeader) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_TRUE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
-  EXPECT_EQ("x-custom-header", header);
+  EXPECT_EQ("x-custom-header", preflight->headers.GetHeader(
+                                   header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest,
@@ -170,10 +165,8 @@ TEST(PreflightControllerCreatePreflightRequestTest,
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_TRUE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
-  EXPECT_EQ("content-type", header);
+  EXPECT_EQ("content-type", preflight->headers.GetHeader(
+                                header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, ExcludeForbiddenHeaders) {
@@ -186,9 +179,8 @@ TEST(PreflightControllerCreatePreflightRequestTest, ExcludeForbiddenHeaders) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request);
 
-  std::string header;
-  EXPECT_FALSE(preflight->headers.GetHeader(
-      header_names::kAccessControlRequestHeaders, &header));
+  EXPECT_FALSE(
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders));
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, Tainted) {
@@ -200,10 +192,8 @@ TEST(PreflightControllerCreatePreflightRequestTest, Tainted) {
   std::unique_ptr<ResourceRequest> preflight =
       PreflightController::CreatePreflightRequestForTesting(request, true);
 
-  std::string header;
-  EXPECT_TRUE(
-      preflight->headers.GetHeader(net::HttpRequestHeaders::kOrigin, &header));
-  EXPECT_EQ(header, "null");
+  EXPECT_EQ(preflight->headers.GetHeader(net::HttpRequestHeaders::kOrigin),
+            "null");
 }
 
 TEST(PreflightControllerCreatePreflightRequestTest, FetchWindowId) {
@@ -219,6 +209,55 @@ TEST(PreflightControllerCreatePreflightRequestTest, FetchWindowId) {
       PreflightController::CreatePreflightRequestForTesting(request);
 
   EXPECT_EQ(request.fetch_window_id, preflight->fetch_window_id);
+}
+
+TEST(PreflightControllerCreatePreflightRequestTest, SubframeNavigation) {
+  const auto kTopFrameOrigin = url::Origin::Create(GURL("https://a.com/"));
+  const auto kFrameOrigin = url::Origin::Create(GURL("https://b.com/"));
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kNavigate;
+  request.destination = network::mojom::RequestDestination::kIframe;
+  request.request_initiator = kTopFrameOrigin;
+  request.site_for_cookies = net::SiteForCookies::FromOrigin(kTopFrameOrigin);
+
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kSubFrame, kTopFrameOrigin, kFrameOrigin,
+      request.site_for_cookies);
+
+  std::unique_ptr<ResourceRequest> preflight =
+      PreflightController::CreatePreflightRequestForTesting(request);
+
+  EXPECT_EQ(preflight->mode, mojom::RequestMode::kCors);
+  EXPECT_EQ(preflight->destination,
+            network::mojom::RequestDestination::kIframe);
+  EXPECT_EQ(preflight->request_initiator, kTopFrameOrigin);
+  EXPECT_TRUE(preflight->site_for_cookies.IsEquivalent(net::SiteForCookies()));
+  EXPECT_TRUE(preflight->trusted_params->isolation_info.IsEqualForTesting(
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 kTopFrameOrigin, kFrameOrigin,
+                                 net::SiteForCookies())));
+}
+
+// Requests might have TrustedParams but an empty IsolationInfo (for instance,
+// requests associated with the system network context, or requests from
+// embedders that haven't enabled network state partitioning). Verify that
+// creating a preflight for such a request doesn't crash and otherwise behaves
+// correctly.
+TEST(PreflightControllerCreatePreflightRequestTest, EmptyIsolationInfo) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.request_initiator = url::Origin();
+
+  request.trusted_params = ResourceRequest::TrustedParams();
+  ASSERT_TRUE(request.trusted_params->isolation_info.IsEmpty());
+
+  std::unique_ptr<ResourceRequest> preflight =
+      PreflightController::CreatePreflightRequestForTesting(request);
+
+  EXPECT_TRUE(preflight->trusted_params->isolation_info.IsEmpty());
 }
 
 TEST(PreflightControllerOptionsTest, CheckOptions) {
@@ -349,6 +388,9 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       override {
     on_raw_response_called_ = true;
   }
+  void OnEarlyHintsResponse(
+      const std::string& devtools_request_id,
+      std::vector<network::mojom::HttpRawHeaderPairPtr> headers) override {}
   void OnCorsPreflightRequest(
       const base::UnguessableToken& devtool_request_id,
       const net::HttpRequestHeaders& request_headers,
@@ -391,6 +433,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       const std::string& error_message,
       const std::optional<std::string>& bundle_request_devtools_id) override {}
 
+  void OnSharedDictionaryError(
+      const std::string& devtool_request_id,
+      const GURL& url,
+      network::mojom::SharedDictionaryError error) override {}
+
   void OnCorsError(const std::optional<std::string>& devtool_request_id,
                    const std::optional<::url::Origin>& initiator_origin,
                    mojom::ClientSecurityStatePtr client_security_state,
@@ -398,8 +445,8 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
                    const network::CorsErrorStatus& status,
                    bool is_warning) override {}
 
-  void OnCorbError(const std::optional<std::string>& devtools_request_id,
-                   const GURL& url) override {}
+  void OnOrbError(const std::optional<std::string>& devtools_request_id,
+                  const GURL& url) override {}
 
   void Clone(mojo::PendingReceiver<DevToolsObserver> observer) override {
     receivers_.Add(this, std::move(observer));
@@ -454,7 +501,7 @@ class PreflightControllerTest : public testing::Test {
     // used by the PreflightController. Hence here we disable CORS as otherwise
     // the URLLoader would create a CORS-preflight for the preflight request.
     params->disable_web_security = true;
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     // Allow setting TrustedParams on requests, specifically to pass
     // ClientSecurityState to the underlying URLLoader.
     params->is_trusted = true;
@@ -1089,7 +1136,7 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
             result0.error().cors_error);
 }
 
-// TODO(https://crbug.com/1455123): Add test for private network access
+// TODO(crbug.com/40272627): Add test for private network access
 // permission.
 
 }  // namespace

@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner_helpers.h"
@@ -19,6 +20,7 @@
 
 namespace blink {
 class LowPrecisionTimer;
+class ScriptedIdleTaskController;
 class TimerBase;
 class TimerBasedTickProvider;
 class WebRtcTaskQueue;
@@ -31,6 +33,9 @@ class AlsaPcmOutputStream;
 class AlsaPcmInputStream;
 class FakeAudioWorker;
 }  // namespace media
+namespace viz {
+class ExternalBeginFrameSourceWin;
+}  // namespace viz
 namespace webrtc {
 class ThreadWrapper;
 }  // namespace webrtc
@@ -63,6 +68,7 @@ class PostDelayedTaskPassKey {
   friend class base::DeadlineTimer;
   friend class base::MetronomeTimer;
   friend class blink::LowPrecisionTimer;
+  friend class blink::ScriptedIdleTaskController;
   friend class blink::TimerBase;
   friend class blink::TimerBasedTickProvider;
   friend class blink::WebRtcTaskQueue;
@@ -84,6 +90,7 @@ class RunOrPostTaskPassKey {
 
   friend class IPC::ChannelAssociatedGroupController;
   friend class RunOrPostTaskPassKeyForTesting;
+  friend class viz::ExternalBeginFrameSourceWin;
 };
 
 class PostDelayedTaskPassKeyForTesting : public PostDelayedTaskPassKey {};
@@ -232,8 +239,8 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // implementation of PostCancelableDelayedTaskAt(). The default behavior
   // subtracts TimeTicks::Now() from |delayed_run_time| to get a delay. See
   // base::Timer to post precise/repeating timeouts.
-  // TODO(1153139): Make pure virtual once all SequencedTaskRunners implement
-  // this.
+  // TODO(crbug.com/40158967): Make pure virtual once all SequencedTaskRunners
+  // implement this.
   virtual bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
                                  const Location& from_here,
                                  OnceClosure task,
@@ -247,7 +254,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   // `PostTask`. Since `task` may run synchronously, it is generally not
   // appropriate to invoke this if `task` may take a long time to run.
   //
-  // TODO(crbug.com/1503967): This API is still in development. It doesn't yet
+  // TODO(crbug.com/40944462): This API is still in development. It doesn't yet
   // support SequenceLocalStorage.
   virtual bool RunOrPostTask(subtle::RunOrPostTaskPassKey,
                              const Location& from_here,
@@ -368,7 +375,9 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
                          MayAlreadyExist);
 
     scoped_refptr<SequencedTaskRunner> task_runner_;
-    raw_ptr<CurrentDefaultHandle> previous_handle_;
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of
+    // speedometer3).
+    RAW_PTR_EXCLUSION CurrentDefaultHandle* previous_handle_ = nullptr;
   };
 
  protected:

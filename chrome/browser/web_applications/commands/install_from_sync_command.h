@@ -16,21 +16,23 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 class Profile;
 
+namespace webapps {
+class WebAppUrlLoader;
+enum class WebAppUrlLoaderResult;
+}  // namespace webapps
+
 namespace web_app {
 
 class WebAppDataRetriever;
-enum class WebAppUrlLoaderResult;
 
 class InstallFromSyncCommand
     : public WebAppCommand<SharedWebContentsWithAppLock,
@@ -75,12 +77,12 @@ class InstallFromSyncCommand
       std::unique_ptr<SharedWebContentsWithAppLock> lock) override;
 
  private:
-  void OnWebAppUrlLoadedGetWebAppInstallInfo(WebAppUrlLoaderResult result);
+  void OnWebAppUrlLoadedGetWebAppInstallInfo(
+      webapps::WebAppUrlLoaderResult result);
 
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> web_app_info);
 
   void OnDidPerformInstallableCheck(blink::mojom::ManifestPtr opt_manifest,
-                                    const GURL& manifest_url,
                                     bool valid_manifest_for_web_app,
                                     webapps::InstallableStatusCode error_code);
 
@@ -94,8 +96,7 @@ class InstallFromSyncCommand
 
   void OnInstallFinalized(FinalizeMode mode,
                           const webapps::AppId& app_id,
-                          webapps::InstallResultCode code,
-                          OsHooksErrors os_hooks_errors);
+                          webapps::InstallResultCode code);
 
   void InstallFallback(webapps::InstallResultCode error_code);
 
@@ -107,7 +108,7 @@ class InstallFromSyncCommand
   const raw_ptr<Profile> profile_;
   const Params params_;
 
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   std::unique_ptr<WebAppInstallInfo> install_info_;

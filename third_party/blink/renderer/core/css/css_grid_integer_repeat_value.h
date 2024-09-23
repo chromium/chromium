@@ -10,6 +10,10 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 namespace cssvalue {
 
@@ -29,7 +33,7 @@ class CSSGridIntegerRepeatValue : public CSSValueList {
     DCHECK_GT(repetitions, 0UL);
   }
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
   bool Equals(const CSSGridIntegerRepeatValue&) const;
 
   wtf_size_t Repetitions() const { return repetitions_; }

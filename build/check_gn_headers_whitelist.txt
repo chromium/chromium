@@ -3,6 +3,7 @@
 
 ash/accelerators/accelerator_table.h
 ash/ash_export.h
+ash/ash_util.h
 ash/constants/ash_switches.h
 ash/metrics/task_switch_metrics_recorder.h
 ash/metrics/task_switch_source.h
@@ -42,7 +43,6 @@ chrome/browser/media_galleries/media_file_system_context.h
 chrome/browser/notifications/displayed_notifications_dispatch_callback.h
 chrome/browser/ui/app_icon_loader_delegate.h
 chrome/browser/ash/app_list/app_list_syncable_service_factory.h
-chrome/browser/ui/ash/ash_util.h
 chrome/browser/ui/ash/multi_user/multi_user_util.h
 chrome/browser/ui/network_profile_bubble.h
 chrome/browser/ui/views/frame/browser_frame_header_ash.h
@@ -109,8 +109,6 @@ gpu/gpu_export.h
 ipc/ipc_channel_proxy_unittest_messages.h
 ipc/ipc_message_null_macros.h
 media/audio/audio_logging.h
-media/base/routing_token_callback.h
-media/base/video_renderer_sink.h
 media/cast/common/mod_util.h
 media/cast/net/rtcp/rtcp_session.h
 media/filters/ffmpeg_aac_bitstream_converter.h
@@ -186,8 +184,6 @@ third_party/khronos/KHR/khrplatform.h
 third_party/leveldatabase/chromium_logger.h
 third_party/libaddressinput/chromium/addressinput_util.h
 third_party/libphonenumber/phonenumber_api.h
-third_party/libudev/libudev0.h
-third_party/libudev/libudev1.h
 third_party/libvpx/source/config/linux/x64/vp8_rtcd.h
 third_party/libvpx/source/config/linux/x64/vp9_rtcd.h
 third_party/libvpx/source/config/linux/x64/vpx_config.h

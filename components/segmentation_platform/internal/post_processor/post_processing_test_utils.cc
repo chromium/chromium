@@ -88,8 +88,8 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
 
   std::array<const char*, 4> labels{kShareUser, kNewTabUser, kVoiceUser,
                                     kShoppingUser};
-  writer.AddOutputConfigForMultiClassClassifier(labels.begin(), labels.size(),
-                                                top_k_outputs, threshold);
+  writer.AddOutputConfigForMultiClassClassifier(labels, top_k_outputs,
+                                                threshold);
   return model_metadata.output_config();
 }
 

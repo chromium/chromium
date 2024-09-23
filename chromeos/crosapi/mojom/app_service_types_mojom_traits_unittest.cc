@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -15,6 +16,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -69,6 +71,9 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
 
   input->is_platform_app = true;
   input->allow_close = true;
+  input->allow_window_mode_selection = true;
+  input->installer_package_id =
+      apps::PackageId(apps::PackageType::kArc, "com.foo.bar");
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -131,6 +136,9 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
 
   EXPECT_TRUE(output->is_platform_app.value());
   EXPECT_TRUE(output->allow_close.value());
+  EXPECT_TRUE(output->allow_window_mode_selection.value());
+  EXPECT_EQ(output->installer_package_id,
+            apps::PackageId(apps::PackageType::kArc, "com.foo.bar"));
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -161,6 +169,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   input->app_size_in_bytes = std::nullopt;
   input->data_size_in_bytes = std::nullopt;
   input->allow_close = std::nullopt;
+  input->allow_window_mode_selection = std::nullopt;
+  input->installer_package_id = std::nullopt;
 
   apps::AppPtr output;
   ASSERT_TRUE(
@@ -199,6 +209,23 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripNoOptional) {
   EXPECT_TRUE(output->handles_intents);
   EXPECT_FALSE(output->is_platform_app.has_value());
   EXPECT_FALSE(output->allow_close.has_value());
+  EXPECT_FALSE(output->allow_window_mode_selection.has_value());
+  EXPECT_FALSE(output->installer_package_id.has_value());
+}
+
+// Test that serialization and deserialization ignores unknown PackageId values.
+TEST(AppServiceTypesMojomTraitsTest, RoundTripUnknownPackageId) {
+  auto input = std::make_unique<apps::App>(apps::AppType::kWeb, "abcdefg");
+  // In practice, nobody should ever create an Unknown PackageId like this. The
+  // most likely cause of this case is version skew in crosapi.
+  input->installer_package_id =
+      apps::PackageId(apps::PackageType::kUnknown, "foo");
+
+  apps::AppPtr output;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(input, output));
+
+  ASSERT_EQ(output->installer_package_id, std::nullopt);
 }
 
 // Test that serialization and deserialization works with updating app type.
@@ -1299,4 +1326,29 @@ TEST(AppServiceTypesMojomTraitsTest, ShortcutRoundTripNoOptional) {
   EXPECT_EQ(output->shortcut_id,
             apps::GenerateShortcutId("host_app_id", "local_id"));
   EXPECT_EQ(output->shortcut_source, apps::ShortcutSource::kUser);
+}
+
+TEST(AppServiceTypesMojomTraitsTest, PackageIdRoundTrip) {
+  {
+    auto package_id = apps::PackageId(apps::PackageType::kArc, "com.foo.bar");
+    apps::PackageId output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::PackageId>(
+        package_id, output));
+    EXPECT_EQ(package_id, output);
+  }
+  {
+    auto package_id =
+        apps::PackageId(apps::PackageType::kWeb, "https://www.foo.com/bar");
+    apps::PackageId output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::PackageId>(
+        package_id, output));
+    EXPECT_EQ(package_id, output);
+  }
+  {
+    auto package_id = apps::PackageId(apps::PackageType::kUnknown, "someapp");
+    apps::PackageId output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::PackageId>(
+        package_id, output));
+    EXPECT_EQ(package_id, output);
+  }
 }

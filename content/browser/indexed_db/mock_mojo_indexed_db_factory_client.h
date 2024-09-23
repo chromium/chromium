@@ -18,18 +18,16 @@ namespace blink {
 struct IndexedDBDatabaseMetadata;
 }
 
-namespace content {
+namespace content::indexed_db {
 
-class MockMojoIndexedDBFactoryClient : public blink::mojom::IDBFactoryClient {
+class MockMojoFactoryClient : public blink::mojom::IDBFactoryClient {
  public:
-  explicit MockMojoIndexedDBFactoryClient();
+  explicit MockMojoFactoryClient();
 
-  MockMojoIndexedDBFactoryClient(const MockMojoIndexedDBFactoryClient&) =
-      delete;
-  MockMojoIndexedDBFactoryClient& operator=(
-      const MockMojoIndexedDBFactoryClient&) = delete;
+  MockMojoFactoryClient(const MockMojoFactoryClient&) = delete;
+  MockMojoFactoryClient& operator=(const MockMojoFactoryClient&) = delete;
 
-  ~MockMojoIndexedDBFactoryClient() override;
+  ~MockMojoFactoryClient() override;
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
   CreateInterfacePtrAndBind();
@@ -79,6 +77,6 @@ class MockMojoIndexedDBFactoryClient : public blink::mojom::IDBFactoryClient {
   mojo::AssociatedReceiver<blink::mojom::IDBFactoryClient> receiver_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_MOCK_MOJO_INDEXED_DB_FACTORY_CLIENT_H_

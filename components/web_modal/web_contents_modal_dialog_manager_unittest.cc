@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 
 #include <map>
@@ -13,9 +18,19 @@
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "components/web_modal/test_web_contents_modal_dialog_manager_delegate.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_modal {
+
+class MockCloseOnNavigationObserver
+    : public WebContentsModalDialogManager::CloseOnNavigationObserver {
+ public:
+  MockCloseOnNavigationObserver() = default;
+  ~MockCloseOnNavigationObserver() override = default;
+
+  MOCK_METHOD(void, OnWillClose, (), (override));
+};
 
 // Tracks persistent state changes of the native WC-modal dialog manager.
 class NativeManagerTracker {
@@ -28,16 +43,19 @@ class NativeManagerTracker {
     CLOSED
   };
 
-  NativeManagerTracker() : state_(UNKNOWN), was_shown_(false) {}
+  NativeManagerTracker() = default;
 
   void SetState(DialogState state) {
     state_ = state;
-    if (state_ == SHOWN)
-      was_shown_ = true;
+    if (state_ == SHOWN) {
+      ++shown_times_;
+    }
   }
 
-  DialogState state_;
-  bool was_shown_;
+  bool was_shown() { return shown_times_ > 0; }
+
+  DialogState state_ = DialogState::UNKNOWN;
+  int shown_times_ = 0;
 };
 
 NativeManagerTracker unused_tracker;
@@ -149,7 +167,7 @@ TEST_F(WebContentsModalDialogManagerTest, WebContentsVisible) {
   EXPECT_EQ(NativeManagerTracker::SHOWN, tracker.state_);
   EXPECT_TRUE(manager->IsDialogActive());
   EXPECT_TRUE(delegate->web_contents_blocked());
-  EXPECT_TRUE(tracker.was_shown_);
+  EXPECT_TRUE(tracker.was_shown());
 
   native_manager->StopTracking();
 }
@@ -170,7 +188,7 @@ TEST_F(WebContentsModalDialogManagerTest, WebContentsNotVisible) {
   EXPECT_EQ(NativeManagerTracker::NOT_SHOWN, tracker.state_);
   EXPECT_TRUE(manager->IsDialogActive());
   EXPECT_TRUE(delegate->web_contents_blocked());
-  EXPECT_FALSE(tracker.was_shown_);
+  EXPECT_FALSE(tracker.was_shown());
 
   native_manager->StopTracking();
 }
@@ -259,6 +277,39 @@ TEST_F(WebContentsModalDialogManagerTest, OccludedToVisible) {
   native_manager->StopTracking();
 }
 
+// Tests that the dialog is not shown when switching from visible to occluded.
+// Regression test for crbug.com/350745485.
+TEST_F(WebContentsModalDialogManagerTest, VisibleToOccluded) {
+  const gfx::NativeWindow dialog = MakeFakeDialog();
+
+  delegate->set_web_contents_visible(true);
+  test_api->WebContentsVisibilityChanged(content::Visibility::VISIBLE);
+
+  NativeManagerTracker tracker;
+  TestNativeWebContentsModalDialogManager* native_manager =
+      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
+
+  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
+
+  EXPECT_TRUE(manager->IsDialogActive());
+  EXPECT_TRUE(delegate->web_contents_blocked());
+  EXPECT_EQ(NativeManagerTracker::SHOWN, tracker.state_);
+  EXPECT_EQ(tracker.shown_times_, 1);
+
+  // Simulate e.g. the user clicking on another window.
+  native_manager->SetIsActive(false);
+  test_api->WebContentsVisibilityChanged(content::Visibility::OCCLUDED);
+
+  // The dialog should still be shown, but Show() should not have been called
+  // again.
+  EXPECT_TRUE(manager->IsDialogActive());
+  EXPECT_TRUE(delegate->web_contents_blocked());
+  EXPECT_EQ(NativeManagerTracker::SHOWN, tracker.state_);
+  EXPECT_EQ(tracker.shown_times_, 1);
+
+  native_manager->StopTracking();
+}
+
 // Test that the first dialog is always shown, regardless of the order in which
 // dialogs are closed.
 TEST_F(WebContentsModalDialogManagerTest, CloseDialogs) {
@@ -302,7 +353,7 @@ TEST_F(WebContentsModalDialogManagerTest, CloseDialogs) {
   EXPECT_EQ(NativeManagerTracker::SHOWN, tracker2.state_);
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker3.state_);
   EXPECT_EQ(NativeManagerTracker::NOT_SHOWN, tracker4.state_);
-  EXPECT_FALSE(tracker3.was_shown_);
+  EXPECT_FALSE(tracker3.was_shown());
 
   native_manager2->Close();
 
@@ -312,7 +363,7 @@ TEST_F(WebContentsModalDialogManagerTest, CloseDialogs) {
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker2.state_);
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker3.state_);
   EXPECT_EQ(NativeManagerTracker::SHOWN, tracker4.state_);
-  EXPECT_FALSE(tracker3.was_shown_);
+  EXPECT_FALSE(tracker3.was_shown());
 
   native_manager4->Close();
 
@@ -322,10 +373,10 @@ TEST_F(WebContentsModalDialogManagerTest, CloseDialogs) {
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker2.state_);
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker3.state_);
   EXPECT_EQ(NativeManagerTracker::CLOSED, tracker4.state_);
-  EXPECT_TRUE(tracker1.was_shown_);
-  EXPECT_TRUE(tracker2.was_shown_);
-  EXPECT_FALSE(tracker3.was_shown_);
-  EXPECT_TRUE(tracker4.was_shown_);
+  EXPECT_TRUE(tracker1.was_shown());
+  EXPECT_TRUE(tracker2.was_shown());
+  EXPECT_FALSE(tracker3.was_shown());
+  EXPECT_TRUE(tracker4.was_shown());
 }
 
 // Test that CloseAllDialogs does what it says.
@@ -351,6 +402,42 @@ TEST_F(WebContentsModalDialogManagerTest, CloseAllDialogs) {
   EXPECT_FALSE(manager->IsDialogActive());
   for (int i = 0; i < kWindowCount; i++)
     EXPECT_EQ(NativeManagerTracker::CLOSED, trackers[i].state_);
+}
+
+// Test that dialogs are closed on WebContents navigation.
+TEST_F(WebContentsModalDialogManagerTest, CloseOnNavigation) {
+  MockCloseOnNavigationObserver observer;
+  EXPECT_CALL(observer, OnWillClose());
+
+  const gfx::NativeWindow dialog = MakeFakeDialog();
+  NativeManagerTracker tracker;
+  TestNativeWebContentsModalDialogManager* native_manager =
+      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
+  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
+
+  manager->AddCloseOnNavigationObserver(&observer);
+
+  NavigateAndCommit(GURL("https://example.com/"));
+  EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);
+}
+
+// Test that the CloseOnNavigation observer is not triggered if the dialog is
+// closed for another reason.
+TEST_F(WebContentsModalDialogManagerTest,
+       ObserverNotNotifiedOfNonNavigationClose) {
+  MockCloseOnNavigationObserver observer;
+  EXPECT_CALL(observer, OnWillClose()).Times(0);
+
+  const gfx::NativeWindow dialog = MakeFakeDialog();
+  NativeManagerTracker tracker;
+  TestNativeWebContentsModalDialogManager* native_manager =
+      new TestNativeWebContentsModalDialogManager(dialog, manager, &tracker);
+  manager->ShowDialogWithManager(dialog, base::WrapUnique(native_manager));
+
+  manager->AddCloseOnNavigationObserver(&observer);
+
+  native_manager->Close();
+  EXPECT_EQ(NativeManagerTracker::CLOSED, tracker.state_);
 }
 
 }  // namespace web_modal

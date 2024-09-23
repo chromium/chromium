@@ -110,9 +110,18 @@ bool NintendoDataFetcher::AddDevice(mojom::HidDeviceInfoPtr device_info) {
       device_info->product_id);
   RecordConnectedGamepad(gamepad_id);
   int source_id = next_source_id_++;
-  auto emplace_result = controllers_.emplace(
-      source_id, NintendoController::Create(source_id, std::move(device_info),
-                                            hid_manager_.get()));
+
+  std::unique_ptr<NintendoController> nintendo_controller =
+      NintendoController::Create(source_id, std::move(device_info),
+                                 hid_manager_.get());
+  // If `nintendo_controller` is nullptr, the device is not a valid Nintendo
+  // device.
+  if (!nintendo_controller) {
+    return false;
+  }
+
+  auto emplace_result =
+      controllers_.emplace(source_id, std::move(nintendo_controller));
   if (emplace_result.second) {
     auto& new_device = emplace_result.first->second;
     DCHECK(new_device);

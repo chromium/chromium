@@ -1,0 +1,72 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module video_effects.mojom;
+
+import "media/capture/mojom/video_capture_buffer.mojom";
+import "media/capture/mojom/video_capture_types.mojom";
+import "media/mojo/mojom/media_types.mojom";
+
+// Returned as the active variant of `PostProcessResult` if the call to
+// `VideoEffectsProcessor::PostProcess()` failed.
+enum PostProcessError {
+  kUnknown = 1,
+  // Returned when a postprocessor is no longer usable for some reason.
+  // This is not a recoverable error and the postprocessor should only return
+  // this temporarily - postprocessor teardown should happen shortly and it
+  // will be disconnected.
+  kUnusable = 2,
+  // Returned when a postprocessor is not yet ready to accept the calls.
+  // This can happen e.g. when it was not yet initialized. This should be
+  // treated like a recoverable error (i.e. the processor should eventually
+  // recover from this state, or become disconnected).
+  kNotReady = 3,
+};
+
+// Returned as the active variant of `PostProcessResult` if the call to
+// `VideoEffectsProcessor::PostProcess()` succeeded.
+struct PostProcessSuccess {
+  // Describes the video frame placed into `result_frame_data` passed in to
+  // the call to `VideoEffectsProcessor::PostProcess()`.
+  media.mojom.VideoFrameInfo frame_info;
+};
+
+// Union used to return the result of a call to
+// `VideoEffectsProcessor::PostProcess()`.
+// TODO(crbug.com/40841428): Ideally, this should be replaced by a result<T, E>
+// where T is media.mojom.VideoFrameInfo and E is a PostProcessError.
+union PostProcessResult {
+  PostProcessError error;
+  PostProcessSuccess success;
+};
+
+// The workhorse of Video Effects Service. It can be created by calling into
+// `VideoEffectsService` interface. It is intended to be used from the Video
+// Capture Service to drive the post-processing of captured video frames; the
+// Video Capture Service itself is also hosted in a utility process, but with
+// no sandboxing.
+interface VideoEffectsProcessor {
+  // Runs post-processing of a single video frame. The configuration of video
+  // effects is implicit to the processor - it is being driven by
+  // `VideoEffectsManager` passed to Video Effects Service at creation time of
+  // the processor.
+  // The input frame is available in `input_frame_data` and is described by
+  // `input_frame_info`. The results of post-processing are going to be placed
+  // in `result_frame_data`. `result_frame_data` is also described by
+  // `input_frame_info`, with exception of the pixel format, which is passed in
+  // `result_pixel_format` - this is how the caller can request a pixel format
+  // conversion.
+  // Note that both the `input_frame_data` and `result_frame_data` are
+  // allocated by the caller of this method.
+  // On success, the `result_frame_data` is guaranteed to be populated with the
+  // video frame contents. In that case, the `result.success.frame_info` will
+  // contain the frame information for the frame written into
+  // `result_frame_data`. The input frame's timestamp will be retained.
+  PostProcess(
+    media.mojom.VideoBufferHandle input_frame_data,
+    media.mojom.VideoFrameInfo input_frame_info,
+    media.mojom.VideoBufferHandle result_frame_data,
+    media.mojom.VideoPixelFormat result_pixel_format)
+      => (PostProcessResult result);
+};

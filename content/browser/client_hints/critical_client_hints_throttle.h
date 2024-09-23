@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -34,7 +35,7 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
   CriticalClientHintsThrottle(
       BrowserContext* context,
       ClientHintsControllerDelegate* client_hint_delegate,
-      int frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id);
   ~CriticalClientHintsThrottle() override;
 
   // blink::URLLoaderThrottle
@@ -43,11 +44,11 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
   void BeforeWillProcessResponse(
       const GURL& response_url,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer) override;
+      RestartWithURLReset* restart_with_url_reset) override;
   void BeforeWillRedirectRequest(
       net::RedirectInfo* redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      bool* defer,
+      RestartWithURLReset* restart_with_url_reset,
       std::vector<std::string>* to_be_removed_request_headers,
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
@@ -56,11 +57,12 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
   // Contains the logic for whether or not the navigation should restart, and
   // persists the Accept-CH header if there is a restart.
   void MaybeRestartWithHints(
-      const network::mojom::URLResponseHead& response_head);
+      const network::mojom::URLResponseHead& response_head,
+      RestartWithURLReset* restart_with_url_reset);
 
   raw_ptr<BrowserContext> context_;
   raw_ptr<ClientHintsControllerDelegate> client_hint_delegate_;
-  int frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   // Ensure that there's only one restart per origin
   base::flat_set<url::Origin> restarted_origins_;

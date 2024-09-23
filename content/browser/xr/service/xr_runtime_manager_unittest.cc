@@ -39,7 +39,7 @@ class XRRuntimeManagerTest : public testing::Test {
     provider_ = new device::FakeVRDeviceProvider();
     providers.emplace_back(base::WrapUnique(provider_.get()));
     xr_runtime_manager_ =
-        XRRuntimeManagerImpl::CreateInstance(std::move(providers));
+        XRRuntimeManagerImpl::CreateInstance(std::move(providers), nullptr);
   }
 
   void TearDown() override {
@@ -64,7 +64,7 @@ class XRRuntimeManagerTest : public testing::Test {
 
   scoped_refptr<XRRuntimeManagerImpl> GetRuntimeManager() {
     EXPECT_NE(XRRuntimeManager::GetInstanceIfCreated(), nullptr);
-    return XRRuntimeManagerImpl::GetOrCreateInstance();
+    return XRRuntimeManagerImpl::GetOrCreateInstanceForTesting();
   }
 
   device::mojom::XRRuntime* GetRuntimeForTest(
@@ -93,14 +93,7 @@ class XRRuntimeManagerTest : public testing::Test {
 };
 
 TEST_F(XRRuntimeManagerTest, InitializationTest) {
-  EXPECT_FALSE(Provider()->Initialized());
-
-  // Calling GetDevices should initialize the service if it hasn't been
-  // initialized yet or the providesr have been released.
-  // The mojom::VRService should initialize each of it's providers upon it's own
-  // initialization. And SetClient method in VRService class will invoke
-  // GetVRDevices too.
-  auto service = BindService();
+  // Returns true because XRRuntimeManagerImpl is created at the constructor.
   EXPECT_TRUE(Provider()->Initialized());
 }
 

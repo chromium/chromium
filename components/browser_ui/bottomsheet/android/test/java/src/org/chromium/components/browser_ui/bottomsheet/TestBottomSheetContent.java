@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** A simple sheet content to test with. This only displays two empty white views. */
 public class TestBottomSheetContent implements BottomSheetContent {
@@ -79,7 +79,7 @@ public class TestBottomSheetContent implements BottomSheetContent {
         mPriority = priority;
         mHasCustomLifecycle = hasCustomLifecycle;
         mCanSuppressInAnyState = false;
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mToolbarView = new View(context);
                     ViewGroup.LayoutParams params =

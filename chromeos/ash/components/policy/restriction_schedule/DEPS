@@ -1,0 +1,9 @@
+include_rules = [
+  "+ash/public/cpp",
+  "+chromeos/ash/components/install_attributes",
+  "+components/user_manager",
+  "+components/vector_icons",
+  "+ui/base/l10n",
+  "+ui/chromeos",
+  "+ui/message_center",
+]

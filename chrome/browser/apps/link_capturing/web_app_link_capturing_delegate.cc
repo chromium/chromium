@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace web_app {
 namespace {
@@ -26,7 +27,7 @@ void LaunchAppAndMaybeTriggerIPH(base::WeakPtr<Profile> profile,
     return;
   }
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile.get());
-  provider->scheduler().LaunchUrlInApp(
+  provider->scheduler().LaunchApp(
       app_id, url,
       base::BindOnce(
           [](const webapps::AppId& app_id, base::WeakPtr<Profile> profile,
@@ -43,7 +44,7 @@ void LaunchAppAndMaybeTriggerIPH(base::WeakPtr<Profile> profile,
                   WebAppProvider::GetForWebApps(profile.get());
               provider->ui_manager()
                   .MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-                      web_contents.get(), profile.get(), app_id);
+                      /*browser=*/nullptr, profile.get(), app_id);
             }
 
             std::move(callback).Run();
@@ -57,7 +58,9 @@ WebAppLinkCapturingDelegate::~WebAppLinkCapturingDelegate() = default;
 
 bool WebAppLinkCapturingDelegate::ShouldCancelThrottleCreation(
     content::NavigationHandle* handle) {
-  return false;
+  Profile* profile = Profile::FromBrowserContext(
+      handle->GetWebContents()->GetBrowserContext());
+  return !web_app::AreWebAppsUserInstallable(profile);
 }
 
 std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>

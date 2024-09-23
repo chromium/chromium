@@ -29,6 +29,7 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
       // <if expr="chromeos_ash">
       'restartSystemBluetooth',
       // </if>
+      'startBtsnoop', 'isBtsnoopFeatureEnabled',
     ]);
 
     this.receiver_ = new BluetoothInternalsHandlerReceiver(this);
@@ -70,6 +71,16 @@ export class TestBluetoothInternalsHandler extends TestBrowserProxy {
   async requestLocationServices() {
     this.methodCalled('requestLocationServices');
     return {};
+  }
+
+  async startBtsnoop() {
+    this.methodCalled('startBtsnoop');
+    return {btsnoop: null};
+  }
+
+  async isBtsnoopFeatureEnabled() {
+    this.methodCalled('isBtsnoopFeatureEnabled');
+    return {enabled: false};
   }
 
   // <if expr="chromeos_ash">
@@ -186,6 +197,14 @@ export class TestAdapter extends TestBrowserProxy {
 
   async createRfcommServiceInsecurely(service_name, service_uuid) {
     return {result: null};
+  }
+
+  async createLocalGattService(service_id, observer) {
+    return {result: null};
+  }
+
+  async isLeScatternetDualRoleSupported() {
+    return false;
   }
 
   setTestConnectResult(connectResult) {

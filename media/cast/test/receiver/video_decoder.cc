@@ -2,9 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cast/test/receiver/video_decoder.h"
 
 #include <stdint.h>
+
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,6 +20,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_util.h"
 #include "media/cast/cast_environment.h"
@@ -32,9 +40,8 @@ namespace cast {
 class VideoDecoder::ImplBase
     : public base::RefCountedThreadSafe<VideoDecoder::ImplBase> {
  public:
-  ImplBase(const scoped_refptr<CastEnvironment>& cast_environment, Codec codec)
+  ImplBase(const scoped_refptr<CastEnvironment>& cast_environment)
       : cast_environment_(cast_environment),
-        codec_(codec),
         operational_status_(STATUS_UNINITIALIZED) {}
 
   ImplBase(const ImplBase&) = delete;
@@ -57,8 +64,8 @@ class VideoDecoder::ImplBase
     last_frame_id_ = encoded_frame->frame_id;
 
     const scoped_refptr<VideoFrame> decoded_frame =
-        Decode(encoded_frame->mutable_bytes(),
-               static_cast<int>(encoded_frame->data.size()));
+        Decode(encoded_frame->mutable_bytes().data(),
+               base::checked_cast<int>(encoded_frame->mutable_bytes().size()));
     if (!decoded_frame) {
       VLOG(2) << "Decoding of frame " << encoded_frame->frame_id << " failed.";
       cast_environment_->PostTask(
@@ -92,7 +99,6 @@ class VideoDecoder::ImplBase
   virtual scoped_refptr<VideoFrame> Decode(uint8_t* data, int len) = 0;
 
   const scoped_refptr<CastEnvironment> cast_environment_;
-  const Codec codec_;
 
   // Subclass' ctor is expected to set this to STATUS_INITIALIZED.
   OperationalStatus operational_status_;
@@ -107,7 +113,7 @@ class VideoDecoder::ImplBase
 class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
  public:
   explicit Vp8Impl(const scoped_refptr<CastEnvironment>& cast_environment)
-      : ImplBase(cast_environment, Codec::kVideoVp8) {
+      : ImplBase(cast_environment) {
     if (ImplBase::operational_status_ != STATUS_UNINITIALIZED)
       return;
 
@@ -144,7 +150,8 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
     if (!image)
       return nullptr;
     if (image->fmt != VPX_IMG_FMT_I420) {
-      NOTREACHED() << "Only pixel format supported is I420, got " << image->fmt;
+      NOTREACHED_IN_MIGRATION()
+          << "Only pixel format supported is I420, got " << image->fmt;
       return nullptr;
     }
     DCHECK(vpx_codec_get_frame(&context_, &iter) == nullptr)
@@ -162,12 +169,12 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
         image->planes[VPX_PLANE_Y], image->stride[VPX_PLANE_Y],
         image->planes[VPX_PLANE_U], image->stride[VPX_PLANE_U],
         image->planes[VPX_PLANE_V], image->stride[VPX_PLANE_V],
-        decoded_frame->GetWritableVisibleData(media::VideoFrame::kYPlane),
-        decoded_frame->stride(media::VideoFrame::kYPlane),
-        decoded_frame->GetWritableVisibleData(media::VideoFrame::kUPlane),
-        decoded_frame->stride(media::VideoFrame::kUPlane),
-        decoded_frame->GetWritableVisibleData(media::VideoFrame::kVPlane),
-        decoded_frame->stride(media::VideoFrame::kVPlane), frame_size.width(),
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY),
+        decoded_frame->stride(media::VideoFrame::Plane::kY),
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::Plane::kU),
+        decoded_frame->stride(media::VideoFrame::Plane::kU),
+        decoded_frame->GetWritableVisibleData(media::VideoFrame::Plane::kV),
+        decoded_frame->stride(media::VideoFrame::Plane::kV), frame_size.width(),
         frame_size.height());
     return decoded_frame;
   }
@@ -180,7 +187,7 @@ class VideoDecoder::Vp8Impl final : public VideoDecoder::ImplBase {
 class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
  public:
   explicit FakeImpl(const scoped_refptr<CastEnvironment>& cast_environment)
-      : ImplBase(cast_environment, Codec::kVideoFake), last_decoded_id_(-1) {
+      : ImplBase(cast_environment), last_decoded_id_(-1) {
     if (ImplBase::operational_status_ != STATUS_UNINITIALIZED)
       return;
     ImplBase::operational_status_ = STATUS_INITIALIZED;
@@ -197,7 +204,7 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
     if (!len || data[0] != '{')
       return nullptr;
     std::optional<base::Value> values = base::JSONReader::Read(
-        base::StringPiece(reinterpret_cast<char*>(data), len));
+        std::string_view(reinterpret_cast<char*>(data), len));
     if (!values || !values->is_dict())
       return nullptr;
 
@@ -212,20 +219,20 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
 
 VideoDecoder::VideoDecoder(
     const scoped_refptr<CastEnvironment>& cast_environment,
-    Codec codec)
+    VideoCodec codec)
     : cast_environment_(cast_environment) {
   switch (codec) {
-    case Codec::kVideoFake:
+    case VideoCodec::kUnknown:
       impl_ = new FakeImpl(cast_environment);
       break;
-    case Codec::kVideoVp8:
+    case VideoCodec::kVP8:
       impl_ = new Vp8Impl(cast_environment);
       break;
-    case Codec::kVideoH264:
+    case VideoCodec::kH264:
       NOTIMPLEMENTED();
       break;
     default:
-      NOTREACHED() << "Unknown or unspecified codec.";
+      NOTREACHED_IN_MIGRATION() << "Unknown or unspecified codec.";
       break;
   }
 }

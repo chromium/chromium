@@ -22,10 +22,6 @@ class CommandLine;
 class FilePath;
 }
 
-namespace content {
-class WebContents;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
@@ -85,16 +81,6 @@ bool IsChromeFirstRun();
 bool IsFirstRunSuppressed(const base::CommandLine& command_line);
 #endif
 
-// Returns whether metrics reporting is currently opt-in. This is used to
-// determine if the enable metrics reporting checkbox on first-run should be
-// initially checked. Opt-in means it is not initially checked, opt-out means it
-// is. This is not guaranteed to be correct outside of the first-run situation,
-// as the default may change over time. For that, use
-// GetMetricsReportingDefaultState in
-// chrome/browser/metrics/metrics_reporting_state.h, which gives a value that
-// was stored during first-run.
-bool IsMetricsReportingOptIn();
-
 // Creates the first run sentinel if needed. This should only be called after
 // the process singleton has been grabbed by the current process
 // (http://crbug.com/264694).
@@ -107,9 +93,6 @@ base::Time GetFirstRunSentinelCreationTime();
 // Resets the first run status and cached first run sentinel creation time.
 // This is needed for unit tests which are runned in the same process.
 void ResetCachedSentinelDataForTesting();
-
-// Returns true if |contents| hosts one of the welcome pages.
-bool IsOnWelcomePage(content::WebContents* contents);
 
 // Automatically imports items requested by |profile|'s configuration (sum of
 // policies and initial prefs). Also imports bookmarks from file if

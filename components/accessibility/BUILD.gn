@@ -1,0 +1,62 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# TODO(b/358211208): Re-enable when shared_library is properly used.
+# allow_internal = is_chrome_branded
+allow_internal = false
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("reading") {
+  sources = [ "reading/distillable_pages.h" ]
+
+  if (allow_internal) {
+    sources += [ "internal/reading/distillable_pages.cc" ]
+  } else {
+    sources += [ "reading/distillable_pages.cc" ]
+  }
+
+  deps = [
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("penguin") {
+  sources = [
+    "penguin/penguin_client.cc",
+    "penguin/penguin_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser:browser",
+  ]
+
+  if (is_android) {
+    deps += [ ":penguin_jni_headers" ]
+  }
+}
+
+if (is_android) {
+  generate_jni("penguin_jni_headers") {
+    sources = [ "android/java/src/org/chromium/components/accessibility/penguin/PenguinClient.java" ]
+  }
+
+  android_library("penguin_java") {
+    srcjar_deps = [ ":penguin_jni_headers" ]
+
+    sources = [ "android/java/src/org/chromium/components/accessibility/penguin/PenguinClient.java" ]
+
+    deps = [
+      "//content/public/android:content_full_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+}

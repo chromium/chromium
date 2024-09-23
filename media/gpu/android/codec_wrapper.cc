@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -30,7 +31,9 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
                    CodecWrapper::OutputReleasedCB output_buffer_release_cb,
                    scoped_refptr<base::SequencedTaskRunner> release_task_runner,
                    const gfx::Size& initial_expected_size,
-                   std::optional<gfx::Size> coded_size_alignment);
+                   const gfx::ColorSpace& config_color_space,
+                   std::optional<gfx::Size> coded_size_alignment,
+                   bool use_block_model);
 
   CodecWrapperImpl(const CodecWrapperImpl&) = delete;
   CodecWrapperImpl& operator=(const CodecWrapperImpl&) = delete;
@@ -113,6 +116,12 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
   // The alignment to use for width, height when guessing coded size.
   const std::optional<gfx::Size> coded_size_alignment_;
 
+  // Used when the color space can't be retrieved from the codec.
+  const gfx::ColorSpace config_color_space_;
+
+  // Enables Block Model (LinearBlock).
+  const bool use_block_model_;
+
   // Task runner on which we'll release codec buffers without rendering.  May be
   // null to always do this on the calling task runner.
   scoped_refptr<base::SequencedTaskRunner> release_task_runner_;
@@ -177,7 +186,9 @@ CodecWrapperImpl::CodecWrapperImpl(
     CodecWrapper::OutputReleasedCB output_buffer_release_cb,
     scoped_refptr<base::SequencedTaskRunner> release_task_runner,
     const gfx::Size& initial_expected_size,
-    std::optional<gfx::Size> coded_size_alignment)
+    const gfx::ColorSpace& config_color_space,
+    std::optional<gfx::Size> coded_size_alignment,
+    bool use_block_model)
     : state_(State::kFlushed),
       codec_(std::move(codec_surface_pair.first)),
       surface_bundle_(std::move(codec_surface_pair.second)),
@@ -185,6 +196,8 @@ CodecWrapperImpl::CodecWrapperImpl(
       size_(initial_expected_size),
       output_buffer_release_cb_(std::move(output_buffer_release_cb)),
       coded_size_alignment_(coded_size_alignment),
+      config_color_space_(config_color_space),
+      use_block_model_(use_block_model),
       release_task_runner_(std::move(release_task_runner)) {
   DVLOG(2) << __func__;
 }
@@ -275,7 +288,7 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
       case MediaCodecResult::Codes::kOk:
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -286,10 +299,16 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
     // kFlushed => elided eos => kDrained, and it would still be the first
     // buffer from MediaCodec's perspective.  While kDrained does not imply that
     // it's the first buffer in all cases, it's still safe to elide.
-    if (state_ == State::kFlushed || state_ == State::kDrained)
+    if (state_ == State::kFlushed || state_ == State::kDrained) {
       elided_eos_pending_ = true;
-    else
-      codec_->QueueEOS(input_buffer);
+    } else {
+      if (use_block_model_) {
+        codec_->QueueInputBlock(input_buffer, base::span<const uint8_t>(),
+                                base::TimeDelta(), true);
+      } else {
+        codec_->QueueEOS(input_buffer);
+      }
+    }
     state_ = State::kDraining;
     return QueueStatus::Codes::kOk;
   }
@@ -298,16 +317,21 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
   const DecryptConfig* decrypt_config = buffer.decrypt_config();
   MediaCodecResult result;
   if (decrypt_config) {
-    // TODO(crbug.com/813845): Use encryption scheme settings from
+    // TODO(crbug.com/40563697): Use encryption scheme settings from
     // DecryptConfig.
     result = codec_->QueueSecureInputBuffer(
-        input_buffer, buffer.data(), buffer.data_size(),
-        decrypt_config->key_id(), decrypt_config->iv(),
-        decrypt_config->subsamples(), decrypt_config->encryption_scheme(),
+        input_buffer, buffer.data(), buffer.size(), decrypt_config->key_id(),
+        decrypt_config->iv(), decrypt_config->subsamples(),
+        decrypt_config->encryption_scheme(),
         decrypt_config->encryption_pattern(), buffer.timestamp());
   } else {
-    result = codec_->QueueInputBuffer(input_buffer, buffer.data(),
-                                      buffer.data_size(), buffer.timestamp());
+    if (use_block_model_) {
+      result = codec_->QueueInputBlock(input_buffer, buffer.AsSpan(),
+                                       buffer.timestamp(), false);
+    } else {
+      result = codec_->QueueInputBuffer(input_buffer, buffer.data(),
+                                        buffer.size(), buffer.timestamp());
+    }
   }
 
   switch (result.code()) {
@@ -322,7 +346,7 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
       owned_input_buffer_ = input_buffer;
       return QueueStatus::Codes::kNoKey;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -405,10 +429,15 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
                      MediaCodecResult::Codes::kError;
         UMA_HISTOGRAM_BOOLEAN("Media.Android.GetColorSpaceError", error);
         if (error && !size_.IsEmpty()) {
-          // If we get back an unsupported color space, then just default to
-          // sRGB for < 720p, or 709 otherwise.  It's better than nothing.
-          color_space_ = size_.width() >= 1280 ? gfx::ColorSpace::CreateREC709()
-                                               : gfx::ColorSpace::CreateSRGB();
+          if (config_color_space_.IsValid()) {
+            color_space_ = config_color_space_;
+          } else {
+            // If we get back an unsupported color space, then just default to
+            // sRGB for < 720p, or 709 otherwise.  It's better than nothing.
+            color_space_ = size_.width() >= 1280
+                               ? gfx::ColorSpace::CreateREC709()
+                               : gfx::ColorSpace::CreateSRGB();
+          }
         }
         continue;
       }
@@ -416,7 +445,7 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
         continue;
       }
       case MediaCodecResult::Codes::kNoKey: {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
     }
   }
@@ -463,7 +492,7 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
     // earlier release(s) (with no intervening renders, since those are
     // ordered).  In this case, though, the loop below will still release
     // everything earlier than the rendered buffer, so the codec still sees the
-    // same sequence of calls -- some releases follwed by a render.
+    // same sequence of calls -- some releases followed by a render.
     //
     // Of course, if releases and renders are posted from different threads,
     // then it's unclear what the ordering was anyway.
@@ -520,12 +549,16 @@ CodecWrapper::CodecWrapper(
     OutputReleasedCB output_buffer_release_cb,
     scoped_refptr<base::SequencedTaskRunner> release_task_runner,
     const gfx::Size& initial_expected_size,
-    std::optional<gfx::Size> coded_size_alignment)
+    const gfx::ColorSpace& config_color_space,
+    std::optional<gfx::Size> coded_size_alignment,
+    bool use_block_model)
     : impl_(new CodecWrapperImpl(std::move(codec_surface_pair),
                                  std::move(output_buffer_release_cb),
                                  std::move(release_task_runner),
                                  initial_expected_size,
-                                 coded_size_alignment)) {}
+                                 config_color_space,
+                                 coded_size_alignment,
+                                 use_block_model)) {}
 
 CodecWrapper::~CodecWrapper() {
   // The codec must have already been taken.

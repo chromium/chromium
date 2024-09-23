@@ -7,13 +7,14 @@
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "components/bookmarks/browser/bookmark_client.h"
-#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
@@ -45,7 +46,8 @@ DragOperation DropBookmarks(Profile* profile,
                             const BookmarkNodeData& data,
                             const BookmarkNode* parent_node,
                             size_t index,
-                            bool copy) {
+                            bool copy,
+                            BookmarkReorderDropTarget target) {
   DCHECK(profile);
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
 #if !BUILDFLAG(IS_ANDROID)
@@ -72,6 +74,20 @@ DragOperation DropBookmarks(Profile* profile,
         }
       }
       RecordBookmarkDropped(data, parent_node, is_reorder);
+      if (is_reorder) {
+        base::UmaHistogramEnumeration("Bookmarks.ReorderDropTarget", target);
+        const BookmarkNode* parent = dragged_nodes[0]->parent();
+        if (parent == model->bookmark_bar_node()) {
+          base::UmaHistogramEnumeration(
+              "Bookmarks.ReorderDropTarget.InBookmarkBarNode", target);
+        } else if (parent == model->other_node()) {
+          base::UmaHistogramEnumeration(
+              "Bookmarks.ReorderDropTarget.InOtherBookmarkNode", target);
+        } else if (parent == model->mobile_node()) {
+          base::UmaHistogramEnumeration(
+              "Bookmarks.ReorderDropTarget.InMobileBookmarkNode", target);
+        }
+      }
       return copy ? DragOperation::kCopy : DragOperation::kMove;
     }
     return DragOperation::kNone;

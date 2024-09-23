@@ -19,7 +19,7 @@ class StaticDataNavigationBodyLoaderTest
 
   void Write(const String& buffer) {
     std::string string = buffer.Utf8();
-    loader_->Write(string.c_str(), string.length());
+    loader_->Write(string);
   }
 
   void BodyDataReceived(base::span<const char> data) override {

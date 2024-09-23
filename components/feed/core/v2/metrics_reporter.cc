@@ -8,6 +8,7 @@
 #include <memory>
 #include <ratio>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -42,7 +43,8 @@ namespace {
 StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kSupervisedUser,
                              StreamKind::kFollowing,
                              StreamKind::kSingleWebFeed};
-// TODO(crbug.com/1369777) Add kSingleWebFeed streams to metrics reporting below
+// TODO(crbug.com/40869325) Add kSingleWebFeed streams to metrics reporting
+// below
 using feed::FeedEngagementType;
 using feed::FeedUserActionType;
 const int kMaxSuggestionsTotal = 50;
@@ -77,7 +79,7 @@ constexpr base::TimeDelta kMinStableContentSliceVisibilityTime =
 constexpr base::TimeDelta kMaxStableContentSliceVisibilityTime =
     base::Seconds(30);
 
-base::StringPiece HistogramReplacement(const StreamType& stream_type) {
+std::string_view HistogramReplacement(const StreamType& stream_type) {
   switch (stream_type.GetKind()) {
     case StreamKind::kSupervisedUser:
       return "Feed.SupervisedFeed.";
@@ -153,10 +155,10 @@ std::string LoadLatencyStepName(LoadLatencyTimes::StepKind kind) {
   }
 }
 
-base::StringPiece ContentOrderToString(ContentOrder content_order) {
+std::string_view ContentOrderToString(ContentOrder content_order) {
   switch (content_order) {
     case ContentOrder::kUnspecified:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       [[fallthrough]];
     case ContentOrder::kGrouped:
       return "Grouped";
@@ -178,7 +180,7 @@ FeedSortType GetSortTypeFromContentOrder(ContentOrder content_order) {
 
 void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
   for (const LoadLatencyTimes::Step& step : latencies->steps()) {
-    // TODO(crbug/1152592): Add a WebFeed-specific histogram for this.
+    // TODO(crbug.com/40158714): Add a WebFeed-specific histogram for this.
     base::UmaHistogramCustomTimes("ContentSuggestions.Feed.LoadStepLatency." +
                                       LoadLatencyStepName(step.kind),
                                   step.latency, base::Milliseconds(50),
@@ -215,7 +217,7 @@ void ReportContentLifetimeInvalidAge(
       /*buckets=*/50);
 }
 
-base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
+std::string_view NetworkRequestTypeUmaName(NetworkRequestType type) {
   switch (type) {
     case NetworkRequestType::kFeedQuery:
       return "FeedQuery";
@@ -249,7 +251,7 @@ base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
 }
 
 std::string InfoCardActionUmaName(const StreamType& stream_type,
-                                  base::StringPiece action_name) {
+                                  std::string_view action_name) {
   return base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
                        "InfoCard.", action_name});
 }
@@ -657,14 +659,14 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
       RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedHideStory:
-      // TODO(crbug.com/1111101): This action is not visible to client code, so
+      // TODO(crbug.com/40708979): This action is not visible to client code, so
       // not yet used.
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.HideStory"));
       RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kTappedNotInterestedIn:
-      // TODO(crbug.com/1111101): This action is not visible to client code, so
+      // TODO(crbug.com/40708979): This action is not visible to client code, so
       // not yet used.
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.NotInterestedIn"));
@@ -763,8 +765,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
     case FeedUserActionType::kTappedFollowOnRecommendationFollowAccelerator:
     case FeedUserActionType::kTappedGotItFeedPostFollowActiveHelp:
     case FeedUserActionType::kTappedRefreshFollowingFeedOnSnackbar:
-    case FeedUserActionType::kTappedFeedSignInPromoUIContinue:
-    case FeedUserActionType::kTappedFeedSignInPromoUICancel:
     case FeedUserActionType::kNonSwipeManualRefresh:
       // Nothing additional for these actions. Note that some of these are iOS
       // only.
@@ -903,7 +903,7 @@ void MetricsReporter::NetworkRequestComplete(
         << " response_size=" << response_info.encoded_size_bytes
         << " duration=" << response_info.fetch_duration;
 
-  base::StringPiece request_name = NetworkRequestTypeUmaName(type);
+  std::string_view request_name = NetworkRequestTypeUmaName(type);
   base::UmaHistogramSparse(
       base::StrCat(
           {"ContentSuggestions.Feed.Network.ResponseStatus.", request_name}),

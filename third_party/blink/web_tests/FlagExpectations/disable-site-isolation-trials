@@ -82,8 +82,14 @@ crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigati
 crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 virtual/fedcm-login-status/external/wpt/credential-management/fedcm-login-status/confirm-idp-login.https.html [ Timeout ]
-crbug.com/626703 virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/single-get-before-onload.https.html [ Timeout ]
+crbug.com/360956939 external/wpt/digital-credentials/identity-get.tentative.https.html [ Crash Timeout ]
+wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Failure Timeout ]
+wpt_internal/html/semantics/forms/the-select-element/customizable-select/native-popup-with-datalist.tentative.html [ Failure ]
+crbug.com/332970422 external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-feature-policy-attribute.https.sub.html [ Timeout ]
+crbug.com/626703 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-iframe-content-attribute.tentative.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/webnn/conformance_tests/prelu.https.any.html?gpu [ Crash ]
+crbug.com/626703 external/wpt/fedcm/fedcm-login-status/confirm-idp-login.https.html [ Timeout ]
+crbug.com/626703 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/single-get-before-onload.https.html [ Timeout ]
 crbug.com/626703 external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/preload/modulepreload-as.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
@@ -138,8 +144,14 @@ crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-
 crbug.com/1444753 http/tests/inspector-protocol/tracing/prerender.js [ Skip ]
 
 
-crbug.com/1487775 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Failure Timeout ]
+crbug.com/1487775 virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/unfenced-top.https.html [ Failure Timeout ]
 
 # No plans to run wdspec tests for this flag-specific suite.
 external/wpt/webdriver/tests/* [ Skip ]
 
+# Currently, Document-Isolation-Policy relies on SiteIsolation to work.
+virtual/document-isolation-policy/* [ Skip ]
+
+# All tests in isolated-context require SiteIsolation to establish an
+# IsolatedContext, so skip them here.
+virtual/isolated-context/* [ Skip ]

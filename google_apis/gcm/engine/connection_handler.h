@@ -19,7 +19,7 @@ namespace google {
 namespace protobuf {
 class MessageLite;
 }  // namespace protobuf
-}  // namepsace google
+}  // namespace google
 
 namespace mcs_proto {
 class LoginRequest;

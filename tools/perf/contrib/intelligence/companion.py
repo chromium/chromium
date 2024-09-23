@@ -14,7 +14,7 @@ import page_sets
     emails=['mgeorgaklis@google.com'],
     component='UI>Browser',
     documentation_url=
-    'https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/side_panel/companion/'
+    'https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/side_panel/companion/'
 )
 class Companion(perf_benchmark.PerfBenchmark):
   """Companion Benchmark."""

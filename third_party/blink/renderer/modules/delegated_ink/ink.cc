@@ -4,13 +4,11 @@
 
 #include "third_party/blink/renderer/modules/delegated_ink/ink.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ink_presenter_param.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -27,14 +25,15 @@ Ink* Ink::ink(Navigator& navigator) {
 
 Ink::Ink(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
-ScriptPromise Ink::requestPresenter(ScriptState* state,
-                                    InkPresenterParam* presenter_param,
-                                    ExceptionState& exception_state) {
+ScriptPromise<DelegatedInkTrailPresenter> Ink::requestPresenter(
+    ScriptState* state,
+    InkPresenterParam* presenter_param,
+    ExceptionState& exception_state) {
   if (!state->ContextIsValid()) {
     exception_state.ThrowException(
         ToExceptionCode(ESErrorType::kError),
         "The object is no longer associated with a window.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   if (presenter_param->presentationArea() &&
@@ -43,15 +42,13 @@ ScriptPromise Ink::requestPresenter(ScriptState* state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Presentation area element does not belong to the document.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(state);
-  ScriptPromise promise = resolver->Promise();
-  resolver->Resolve(MakeGarbageCollected<DelegatedInkTrailPresenter>(
-      presenter_param->presentationArea(),
-      GetSupplementable()->DomWindow()->GetFrame()));
-  return promise;
+  return ToResolvedPromise<DelegatedInkTrailPresenter>(
+      state, MakeGarbageCollected<DelegatedInkTrailPresenter>(
+                 presenter_param->presentationArea(),
+                 GetSupplementable()->DomWindow()->GetFrame()));
 }
 
 void Ink::Trace(Visitor* visitor) const {

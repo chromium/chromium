@@ -15,6 +15,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/to_string.h"
+#include "base/types/is_arc_pointer.h"
 #include "base/types/supports_ostream_operator.h"
 
 // This header defines the (DP)CHECK_EQ etc. macros.
@@ -38,6 +39,11 @@
 // you use e.g. both CHECK_EQ and CHECK, including this header is enough. If you
 // only use CHECK however, please include the smaller check.h instead.
 
+namespace base {
+template <class Char>
+class basic_cstring_view;
+}
+
 namespace logging {
 
 // Functions for turning check operand values into NUL-terminated C strings.
@@ -59,6 +65,7 @@ BASE_EXPORT char* CheckOpValueStr(double v);
 // versions here too.
 BASE_EXPORT char* CheckOpValueStr(const std::string& v);
 BASE_EXPORT char* CheckOpValueStr(std::string_view v);
+BASE_EXPORT char* CheckOpValueStr(base::basic_cstring_view<char> v);
 
 // Convert a streamable value to string out-of-line to avoid <sstream>.
 BASE_EXPORT char* StreamValToStr(const void* v,
@@ -73,7 +80,7 @@ BASE_EXPORT char* StreamValToStr(const void* v,
 
 template <typename T>
   requires(base::internal::SupportsOstreamOperator<const T&> &&
-           !std::is_function_v<std::remove_pointer_t<T>>)
+           !std::is_function_v<T> && !std::is_pointer_v<T>)
 inline char* CheckOpValueStr(const T& v) {
   auto f = [](std::ostream& s, const void* p) {
     s << *reinterpret_cast<const T*>(p);
@@ -93,6 +100,27 @@ inline char* CheckOpValueStr(const T& v) {
 }
 
 #undef SUPPORTS_BUILTIN_ADDRESSOF
+
+// Even if the pointer type supports operator<<, print the pointer by
+// value. This is especially useful for `char*` and `unsigned char*`,
+// which would otherwise print the pointed-to data.
+template <typename T>
+  requires(std::is_pointer_v<T> &&
+           !std::is_function_v<std::remove_pointer_t<T>>)
+inline char* CheckOpValueStr(const T& v) {
+#if defined(__OBJC__)
+  const void* vp;
+  if constexpr (base::IsArcPointer<T>) {
+    vp = const_cast<const void*>((__bridge const volatile void*)(v));
+  } else {
+    vp = const_cast<const void*>(reinterpret_cast<const volatile void*>(v));
+  }
+#else
+  const void* vp =
+      const_cast<const void*>(reinterpret_cast<const volatile void*>(v));
+#endif
+  return CheckOpValueStr(vp);
+}
 
 // Overload for types that have no operator<< but do have .ToString() defined.
 template <typename T>
@@ -127,8 +155,7 @@ inline char* CheckOpValueStr(const T& v) {
 // use with CheckOpValueStr() which allocates these strings using strdup().
 // Returns allocated string (with strdup) for passing into
 // ::logging::CheckError::(D)CheckOp methods.
-// TODO(pbos): Annotate this ABSL_ATTRIBUTE_RETURNS_NONNULL after solving
-// compile failure.
+// TODO(pbos): Annotate this RETURNS_NONNULL after solving compile failure.
 BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
                                                 char* v1_str,
                                                 char* v2_str);
@@ -173,7 +200,7 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
     requires(!std::is_fundamental_v<T> || !std::is_fundamental_v<U>)    \
   constexpr char* Check##name##Impl(const T& v1, const U& v2,           \
                                     const char* expr_str) {             \
-    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                         \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2)) [[likely]]                      \
       return nullptr;                                                   \
     return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1), \
                                          CheckOpValueStr(v2));          \
@@ -181,7 +208,7 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
   template <typename T, typename U>                                     \
     requires(std::is_fundamental_v<T> && std::is_fundamental_v<U>)      \
   constexpr char* Check##name##Impl(T v1, U v2, const char* expr_str) { \
-    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                         \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2)) [[likely]]                      \
       return nullptr;                                                   \
     return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1), \
                                          CheckOpValueStr(v2));          \

@@ -109,6 +109,18 @@ constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
     {"credential_id_mismatch",
      SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
          kCredentialIdMismatch},
+    {"account_not_supported_federated_dasher",
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
+         kFederatedEnterpriseAccountNotSupported},
+    {"account_not_supported_kid",
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
+         kUnicornAccountNotEnabled},
+    {"account_lookup_account_not_found",
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
+         kAccountNotFound},
+    {"account_lookup_captcha_required",
+     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason::
+         kCaptchaRequired},
 });
 
 // Network annotations.
@@ -361,7 +373,8 @@ void RunAuthCodeCallbackWithRejectionResponse(
   if (!kRejectionReasonErrorMap.contains(rejection_reason_lowercase)) {
     QS_LOG(ERROR)
         << "Could not fetch OAuth authorization code. Request rejected "
-           "with unknown reason";
+           "with unknown reason - "
+        << rejection_reason_lowercase;
     HandleGaiaAuthenticationRejectionError(
         metrics, std::move(auth_code_callback), rejection_response);
     return;
@@ -517,9 +530,8 @@ void SecondDeviceAuthBroker::FetchChallengeBytes(
       /*timeout=*/kGetChallengeDataTimeout,
       /*post_data=*/kGetChallengeDataRequest,
       /*headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kChallengeDataAnnotation,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
+      /*cors_exempt_headers=*/std::vector<std::string>(),
+      /*annotation_tag=*/kChallengeDataAnnotation, chrome::GetChannel());
 
   metrics_.RecordChallengeBytesRequested();
   endpoint_fetcher_->PerformRequest(
@@ -577,9 +589,8 @@ void SecondDeviceAuthBroker::FetchAuthCode(
       /*post_data=*/
       CreateStartSessionRequestData(fido_assertion_info, certificate),
       /*headers=*/std::vector<std::string>(),
-      /*annotation_tag=*/kStartSessionAnnotation,
-      /*is_stable_channel=*/chrome::GetChannel() ==
-          version_info::Channel::STABLE);
+      /*cors_exempt_headers=*/std::vector<std::string>(),
+      /*annotation_tag=*/kStartSessionAnnotation, chrome::GetChannel());
 
   metrics_.RecordGaiaAuthenticationStarted();
   endpoint_fetcher_->PerformRequest(

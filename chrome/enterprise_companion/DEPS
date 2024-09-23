@@ -1,0 +1,13 @@
+include_rules = [
+    "+chrome/installer/util",
+    "+chrome/updater",
+    "+components/named_mojo_ipc_server",
+    "+components/named_system_lock",
+    "+components/policy",
+    "+mojo",
+    "+net",
+    "+services/network/public",
+    "+services/network/test",
+    "+services/network/transitional_url_loader_factory_owner.h",
+    "+third_party/crashpad",
+]

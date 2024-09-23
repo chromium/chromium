@@ -2,6 +2,8 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
+INCLUDE PERFETTO MODULE slices.with_context;
+
 -- Function to retrieve the upid for a surfaceflinger, as these are attributed
 -- to the GPU but are recorded on a different data source (and track group).
 CREATE PERFETTO FUNCTION _get_process_id_for_surfaceflinger()

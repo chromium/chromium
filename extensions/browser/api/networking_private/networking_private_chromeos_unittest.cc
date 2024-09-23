@@ -1110,6 +1110,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularProperties) {
           .Set("Name", "cellular")
           .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
+          .Set("TrafficCounterResetTime", 0.0)
           .Set("Type", "Cellular");
 
   EXPECT_EQ(base::Value(std::move(expected_result)), *result);
@@ -1132,6 +1133,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
                                        .Set("AccessPointName", "test-apn")
                                        .Set("Username", "test-user")
                                        .Set("Password", "test-password")
+                                       .Set("ApnTypes", base::Value::List())
                                        .Set("Authentication", "CHAP");
   base::Value::Dict expected_result =
       base::Value::Dict()
@@ -1166,6 +1168,7 @@ TEST_F(NetworkingPrivateApiTest, GetCellularPropertiesFromWebUi) {
           .Set("Name", "cellular")
           .Set("NameServersConfigType", "DHCP")
           .Set("Source", "User")
+          .Set("TrafficCounterResetTime", 0.0)
           .Set("Type", "Cellular");
 
   EXPECT_EQ(base::Value(std::move(expected_result)), *result);

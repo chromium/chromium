@@ -38,7 +38,7 @@ class SharingHubModelTest : public ::testing::Test {
   sharing_hub::SharingHubModel model_{&profile_};
 };
 
-// TODO(https://crbug.com/1326249): This unit test won't work while
+// TODO(crbug.com/40840434): This unit test won't work while
 // GetFirstPartyActions() depends on the WebContents being part of a valid
 // browser. We need to break that dependency before this test can be enabled.
 TEST_F(SharingHubModelTest, DISABLED_FirstPartyOptionsOfferedOnAllURLs) {

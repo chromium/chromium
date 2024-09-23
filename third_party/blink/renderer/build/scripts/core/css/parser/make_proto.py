@@ -66,6 +66,9 @@ class CSSProtoWriter(json5_generator.Writer):
             elif keyword.original == 'nan':
                 # Conflicts with a system header
                 symbol = 'NOT_A_NUMBER'
+            elif keyword.original == 'unicode':
+                # Conflicts with UNICODE macro.
+                symbol = 'UNICODE_'
             keyword_symbols.append('    %s = %d;' % (symbol, i + 1))
         keyword_symbols.append('    INVALID_VALUE = %d;' %
                                (len(self._keywords) + 1))

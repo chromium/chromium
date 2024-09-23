@@ -42,7 +42,7 @@ template("system_image_stub_apk") {
         invoker.static_library_name,
       ]
 
-      # TODO(crbug.com/1408164): Make static_library_version mandatory.
+      # TODO(crbug.com/40253411): Make static_library_version mandatory.
       if (defined(invoker.static_library_version)) {
         args += [
           "--static-library-version",
@@ -63,7 +63,68 @@ template("system_image_stub_apk") {
     script = "//build/android/gyp/compile_resources.py"
     inputs = [
       _manifest_path,
+      android_sdk_tools_bundle_aapt2,
       android_sdk_jar,
+
+      # TODO(b/315080809#comment4): remove these files after fixing
+      # build/print_python_deps.py.
+      "//third_party/protobuf/python/google/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/compiler/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/compiler/plugin_pb2.py",
+      "//third_party/protobuf/python/google/protobuf/descriptor.py",
+      "//third_party/protobuf/python/google/protobuf/descriptor_database.py",
+      "//third_party/protobuf/python/google/protobuf/descriptor_pb2.py",
+      "//third_party/protobuf/python/google/protobuf/descriptor_pool.py",
+      "//third_party/protobuf/python/google/protobuf/internal/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/internal/_parameterized.py",
+      "//third_party/protobuf/python/google/protobuf/internal/api_implementation.py",
+      "//third_party/protobuf/python/google/protobuf/internal/builder.py",
+      "//third_party/protobuf/python/google/protobuf/internal/containers.py",
+      "//third_party/protobuf/python/google/protobuf/internal/decoder.py",
+      "//third_party/protobuf/python/google/protobuf/internal/descriptor_database_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/descriptor_pool_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/descriptor_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/encoder.py",
+      "//third_party/protobuf/python/google/protobuf/internal/enum_type_wrapper.py",
+      "//third_party/protobuf/python/google/protobuf/internal/extension_dict.py",
+      "//third_party/protobuf/python/google/protobuf/internal/generator_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/import_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/import_test_package/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/internal/json_format_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/keywords_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/message_factory_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/message_listener.py",
+      "//third_party/protobuf/python/google/protobuf/internal/message_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/proto_builder_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/python_message.py",
+      "//third_party/protobuf/python/google/protobuf/internal/reflection_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/service_reflection_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/symbol_database_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/test_util.py",
+      "//third_party/protobuf/python/google/protobuf/internal/testing_refleaks.py",
+      "//third_party/protobuf/python/google/protobuf/internal/text_encoding_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/text_format_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/type_checkers.py",
+      "//third_party/protobuf/python/google/protobuf/internal/unknown_fields_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/well_known_types.py",
+      "//third_party/protobuf/python/google/protobuf/internal/well_known_types_test.py",
+      "//third_party/protobuf/python/google/protobuf/internal/wire_format.py",
+      "//third_party/protobuf/python/google/protobuf/internal/wire_format_test.py",
+      "//third_party/protobuf/python/google/protobuf/json_format.py",
+      "//third_party/protobuf/python/google/protobuf/message.py",
+      "//third_party/protobuf/python/google/protobuf/message_factory.py",
+      "//third_party/protobuf/python/google/protobuf/proto_builder.py",
+      "//third_party/protobuf/python/google/protobuf/pyext/__init__.py",
+      "//third_party/protobuf/python/google/protobuf/pyext/cpp_message.py",
+      "//third_party/protobuf/python/google/protobuf/reflection.py",
+      "//third_party/protobuf/python/google/protobuf/service.py",
+      "//third_party/protobuf/python/google/protobuf/service_reflection.py",
+      "//third_party/protobuf/python/google/protobuf/symbol_database.py",
+      "//third_party/protobuf/python/google/protobuf/text_encoding.py",
+      "//third_party/protobuf/python/google/protobuf/text_format.py",
+      "//third_party/protobuf/python/google/protobuf/unknown_fields.py",
+      "//third_party/protobuf/python/google/protobuf/util/__init__.py",
     ]
     outputs = [ _resource_apk_path ]
     args = [
@@ -82,7 +143,7 @@ template("system_image_stub_apk") {
       _version_code = invoker.version_code
       _version_name = invoker.version_name
 
-      # TODO(crbug.com/1408164): Make static_library_version mandatory.
+      # TODO(crbug.com/40253411): Make static_library_version mandatory.
       if (defined(invoker.static_library_version)) {
         assert(invoker.static_library_version == _version_code,
                "$invoker.static_library_version must equal $_version_code.")
@@ -98,7 +159,7 @@ template("system_image_stub_apk") {
       _version_code = "@FileArg($_rebased_build_config:deps_info:version_code)"
       _version_name = "@FileArg($_rebased_build_config:deps_info:version_name)"
 
-      # TODO(crbug.com/1408164): Make static_library_version mandatory.
+      # TODO(crbug.com/40253411): Make static_library_version mandatory.
       # Pass this through to ensure that the version code in the build config is
       # the same as the static library version.
       if (defined(invoker.static_library_version)) {
@@ -155,7 +216,7 @@ template("system_image_apks") {
                              [
                                "static_library_name",
                                "static_library_version",
-                               "override_target_sdk"
+                               "override_target_sdk",
                              ])
       package_info_from_target = invoker.apk_or_bundle_target
       stub_output = invoker.stub_output

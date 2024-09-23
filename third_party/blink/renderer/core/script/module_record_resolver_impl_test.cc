@@ -150,7 +150,7 @@ TEST_F(ModuleRecordResolverImplTest, RegisterResolveSuccess) {
 
   v8::Local<v8::Module> resolved = resolver->Resolve(
       ModuleRequest("./target.js", TextPosition::MinimumPosition(),
-                    Vector<ImportAssertion>()),
+                    Vector<ImportAttribute>()),
       referrer_module_script->V8Module(), scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_EQ(resolved, target_module_script->V8Module());

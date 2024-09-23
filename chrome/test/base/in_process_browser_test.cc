@@ -5,6 +5,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include <map>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -22,9 +23,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/after_startup_task_utils.h"
@@ -67,7 +70,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_test_suite.h"
@@ -80,8 +82,8 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/search_engines/search_engine_choice_utils.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/content_paths.h"
@@ -91,6 +93,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
@@ -98,15 +101,19 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "components/version_info/version_info.h"
 #include "ui/base/win/atl_module.h"
 #endif
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_service.h"
@@ -157,7 +164,6 @@
 #include "base/version.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
-#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -181,7 +187,7 @@ class FakeDeviceSyncImplFactory
   // ash::device_sync::DeviceSyncImpl::Factory:
   std::unique_ptr<ash::device_sync::DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
-      gcm::GCMDriver* gcm_driver,
+      instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
       const ash::device_sync::GcmDeviceInfoProvider* gcm_device_info_provider,
       ash::device_sync::ClientAppMetadataProvider* client_app_metadata_provider,
@@ -200,7 +206,7 @@ FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class ChromeBrowserMainExtraPartsBrowserProcessInjection
     : public ChromeBrowserMainExtraParts {
  public:
@@ -208,17 +214,22 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
 
   // ChromeBrowserMainExtraParts implementation
   void PreCreateMainMessageLoop() override {
-    // The real GeolocationManager initializes a CLLocationManager. It has
-    // been observed that when thousands of instances of this object are
-    // created, as happens when running browser tests, the CoreLocationAgent
-    // process uses lots of CPU. This makes test execution slower and causes
-    // jobs to time out. We therefore insert a fake.
-    auto fake_geolocation_manager =
-        std::make_unique<device::FakeGeolocationManager>();
-    fake_geolocation_manager->SetSystemPermission(
-        device::LocationSystemPermissionStatus::kAllowed);
-    device::GeolocationManager::SetInstance(
-        std::move(fake_geolocation_manager));
+    if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
+      // Tests should not depend on the current state of the system-level
+      // location permission on platforms where the permission cannot be
+      // programmatically changed by tests. Insert a fake
+      // GeolocationSystemPermissionManager and simulate a granted system-level
+      // location permission.
+      //
+      // On ChromeOS, preserve the real manager so that tests can enable or
+      // disable the system preference.
+      auto fake_geolocation_system_permission_manager =
+          std::make_unique<device::FakeGeolocationSystemPermissionManager>();
+      fake_geolocation_system_permission_manager->SetSystemPermission(
+          device::LocationSystemPermissionStatus::kAllowed);
+      device::GeolocationSystemPermissionManager::SetInstance(
+          std::move(fake_geolocation_system_permission_manager));
+    }
   }
 
   ChromeBrowserMainExtraPartsBrowserProcessInjection(
@@ -226,13 +237,13 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
   ChromeBrowserMainExtraPartsBrowserProcessInjection& operator=(
       const ChromeBrowserMainExtraPartsBrowserProcessInjection&) = delete;
 };
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // For browser tests that depend on AccountManager on Lacros - e.g. tests that
 // manage accounts by calling methods like `signin::MakePrimaryAccountAvailable`
 // from identity_test_utils.
-// TODO(https://crbug.com/982233): consider using this class on Ash, and remove
+// TODO(crbug.com/40635309): consider using this class on Ash, and remove
 // the initialization from profile_impl.
 class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
  public:
@@ -283,6 +294,52 @@ bool IsTestControllerAvailable() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// This extra parts adds a test key provider to make sure that async
+// initialization of OSCrypt Async always happens during browser_tests, but
+// otherwise does nothing.
+class OSCryptAsyncExtraSetUp : public ChromeBrowserMainExtraParts {
+ public:
+  void PostEarlyInitialization() override {
+    g_browser_process->set_additional_os_crypt_async_provider_for_test(
+        // Lowest precedence, any other registered key provider should always
+        // take precedence over this one.
+        /*precedence=*/1u,
+        std::make_unique<SlowTestKeyProvider>(base::Milliseconds(10)));
+  }
+
+ private:
+  class SlowTestKeyProvider : public os_crypt_async::KeyProvider {
+   public:
+    explicit SlowTestKeyProvider(base::TimeDelta sleep_time)
+        : sleep_time_(sleep_time) {}
+
+   private:
+    void GetKey(KeyCallback callback) override {
+      // Fixed key.
+      os_crypt_async::Encryptor::Key key(
+          std::vector<uint8_t>(
+              os_crypt_async::Encryptor::Key::kAES256GCMKeySize, 0xCE),
+          os_crypt_async::mojom::Algorithm::kAES256GCM);
+
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](KeyCallback callback, os_crypt_async::Encryptor::Key key) {
+                std::move(callback).Run("test_key_provider", std::move(key));
+              },
+              std::move(callback), std::move(key)),
+          sleep_time_);
+    }
+
+    // It's important this does not get used for encrypt because otherwise tests
+    // that verify rollback from async to sync will fail as data might be
+    // encrypted with the test key above.
+    bool UseForEncryption() override { return false; }
+    bool IsCompatibleWithOsCryptSync() override { return false; }
+    const base::TimeDelta sleep_time_;
+  };
+};
+
 void EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt() {
   NotificationDisplayServiceTester::EnsureFactoryBuilt();
 }
@@ -296,10 +353,7 @@ bool WaitForWindowCreation(Browser* browser) {
     CHECK(IsTestControllerAvailable());
     // Wait for window creation to complete in Ash in order to avoid
     // wayland-crosapi race conditions in subsequent test steps.
-    aura::Window* window = browser->window()->GetNativeWindow();
-    std::string id =
-        lacros_window_utility::GetRootWindowUniqueId(window->GetRootWindow());
-    return browser_test_util::WaitForWindowCreation(id);
+    return browser_test_util::WaitForWindowCreation(browser);
   }
 #endif
   return true;
@@ -325,6 +379,14 @@ InProcessBrowserTest::InProcessBrowserTest(
     std::unique_ptr<views::ViewsDelegate> views_delegate) {
   Initialize();
   views_delegate_ = std::move(views_delegate);
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void InProcessBrowserTest::set_launch_browser_for_testing(
+    std::unique_ptr<ash::full_restore::ScopedLaunchBrowserForTesting>
+        launch_browser_for_testing) {
+  launch_browser_for_testing_ = std::move(launch_browser_for_testing);
 }
 #endif
 
@@ -469,10 +531,13 @@ void InProcessBrowserTest::Initialize() {
   launch_browser_for_testing_ =
       std::make_unique<ash::full_restore::ScopedLaunchBrowserForTesting>();
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CertDbInitializerFactory::GetInstance()
-      ->SetCreateWithBrowserContextForTesting(/*should_create=*/false);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_WIN)
+  // Browser tests use a custom user data dir, which would normally result in
+  // App-Bound encryption being disabled, so in order to get full test coverage
+  // in browser tests, bypass this check.
+  os_crypt::SetNonStandardUserDataDirSupportedForTesting(/*supported=*/true);
+#endif
 }
 
 InProcessBrowserTest::~InProcessBrowserTest() {
@@ -507,14 +572,9 @@ void InProcessBrowserTest::SetUp() {
   // On some platforms pthreads can malloc internally to access higher-numbered
   // TLS slots, which can cause reentry in the heap profiler. (See the comment
   // on ReentryGuard::InitTLSSlot().)
-  // TODO(https://crbug.com/1411454): Clean up other paths that call this Init()
+  // TODO(crbug.com/40062835): Clean up other paths that call this Init()
   // function, which are now redundant.
   base::PoissonAllocationSampler::Init();
-
-  // Initialize sampling profiler in browser tests. This mimics the behavior
-  // in standalone Chrome, where this is done in chrome/app/chrome_main.cc,
-  // which does not get called by browser tests.
-  sampling_profiler_ = std::make_unique<MainThreadStackSamplingProfiler>();
 
   // Create a temporary user data directory if required.
   ASSERT_TRUE(test_launcher_utils::CreateUserDataDir(&temp_user_data_dir_))
@@ -625,11 +685,8 @@ void InProcessBrowserTest::SetUp() {
   // The Search Engine Choice service may attempt to show a modal dialog to the
   // profile on browser start, which is unexpected by mosts tests. Tests which
   // expect this can allow the prompt as desired.
-  if (search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kDialog)) {
-    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
-        /*dialog_disabled=*/true);
-  }
+  SearchEngineChoiceDialogService::SetDialogDisabledForTests(
+      /*dialog_disabled=*/true);
 #endif
 
   EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt();
@@ -674,8 +731,8 @@ void InProcessBrowserTest::TearDown() {
 
 // static
 size_t InProcessBrowserTest::GetTestPreCount() {
-  constexpr base::StringPiece kPreTestPrefix = "PRE_";
-  base::StringPiece test_name =
+  constexpr std::string_view kPreTestPrefix = "PRE_";
+  std::string_view test_name =
       testing::UnitTest::GetInstance()->current_test_info()->name();
   size_t count = 0;
   while (base::StartsWith(test_name, kPreTestPrefix)) {
@@ -688,14 +745,16 @@ size_t InProcessBrowserTest::GetTestPreCount() {
 void InProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
   BrowserTestBase::CreatedBrowserMainParts(parts);
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
       std::make_unique<ChromeBrowserMainExtraPartsBrowserProcessInjection>());
-#endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
       std::make_unique<IdentityExtraSetUp>());
 #endif
+  static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+      std::make_unique<OSCryptAsyncExtraSetUp>());
 }
 
 void InProcessBrowserTest::SelectFirstBrowser() {
@@ -779,6 +838,7 @@ bool InProcessBrowserTest::AddTabAtIndexToBrowser(
   params.tabstrip_index = index;
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+  RunScheduledLayouts();
 
   return content::WaitForLoadStop(params.navigated_or_inserted_contents);
 }
@@ -794,7 +854,7 @@ bool InProcessBrowserTest::SetUpUserDataDirectory() {
 }
 
 void InProcessBrowserTest::SetScreenInstance() {
-  // TODO(crbug.com/1317416): On wayland platform, we need to check if the
+  // TODO(crbug.com/40222482): On wayland platform, we need to check if the
   // wayland-ozone platform is initialized at this point due to the async
   // initialization of the display. Investigate if we can eliminate
   // IsOzoneInitialized.
@@ -888,7 +948,7 @@ void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
       browser, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   content::TestNavigationObserver observer(blank_tab);
   observer.Wait();
-
+  RunScheduledLayouts();
   browser->window()->Show();
   ASSERT_TRUE(WaitForWindowCreation(browser));
 }
@@ -992,7 +1052,7 @@ void InProcessBrowserTest::PostRunTestOnMainThread() {
 
   // Sometimes tests leave Quit tasks in the MessageLoop (for shame), so let's
   // run all pending messages here to avoid preempting the QuitBrowsers tasks.
-  // TODO(https://crbug.com/922118): Remove this once it is no longer possible
+  // TODO(crbug.com/41435726): Remove this once it is no longer possible
   // to post QuitCurrent* tasks.
   content::RunAllPendingInMessageLoop();
 
@@ -1121,6 +1181,9 @@ void InProcessBrowserTest::StartUniqueAshChrome(
   all_enabled_features.insert(all_enabled_features.end(),
                               enabled_features.begin(),
                               enabled_features.end());
+  // During the Lacros sunset process, LacrosOnly feature flag is retired before
+  // Lacros itself is retired b/354842935.
+  ash_cmdline.AppendSwitch("enable-lacros-for-testing");
   ash_cmdline.AppendSwitchASCII(switches::kEnableFeatures,
                                 base::JoinString(all_enabled_features, ","));
   ash_cmdline.AppendSwitchASCII(switches::kDisableFeatures,

@@ -178,8 +178,8 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   ~PillButton() override;
 
   // views::LabelButton:
-  gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int width) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Insets GetInsets() const override;
   void UpdateBackgroundColor() override;
   views::PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
@@ -207,6 +207,9 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // enables the background blur, it will use `BlurredBackgroundShield` as the
   // background which is performance consuming so only use it as needed.
   void SetEnableBackgroundBlur(bool enable);
+
+  void SetTextWithStringId(int message_id);
+  void SetUseLabelAsDefaultTooltip(bool use_label_as_default_tooltip);
 
  private:
   // Initializes the button layout, focus ring and background according to the
@@ -238,6 +241,9 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   bool enable_background_blur_ = false;
   std::unique_ptr<BlurredBackgroundShield> blurred_background_;
 
+  // Indicates if we are going to use the label contents for tooltip as default.
+  bool use_label_as_default_tooltip_ = true;
+
   // Called to update background color when the button is enabled/disabled.
   base::CallbackListSubscription enabled_changed_subscription_;
 };
@@ -251,6 +257,8 @@ VIEW_BUILDER_PROPERTY(const SkColor, IconColor)
 VIEW_BUILDER_PROPERTY(ui::ColorId, IconColorId)
 VIEW_BUILDER_PROPERTY(PillButton::Type, PillButtonType)
 VIEW_BUILDER_PROPERTY(bool, EnableBackgroundBlur)
+VIEW_BUILDER_PROPERTY(int, TextWithStringId)
+VIEW_BUILDER_PROPERTY(bool, UseLabelAsDefaultTooltip)
 END_VIEW_BUILDER
 
 }  // namespace ash

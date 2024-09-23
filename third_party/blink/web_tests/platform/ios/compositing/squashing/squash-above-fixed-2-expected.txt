@@ -10,14 +10,14 @@ CASE 1, original layer tree:
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV id='fixed'",
       "bounds": [400, 200],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",
       "backgroundColor": "#0000FF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
       "position": [100, 50],
       "bounds": [200, 4000],
       "contentsOpaque": true,
@@ -42,14 +42,14 @@ CASE 2, scrolling y to 80, the "container" element should remain positioned with
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV id='fixed'",
       "bounds": [400, 200],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",
       "backgroundColor": "#0000FF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
       "position": [100, 50],
       "bounds": [200, 4000],
       "contentsOpaque": true,

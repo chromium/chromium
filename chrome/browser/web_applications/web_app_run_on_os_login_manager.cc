@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -88,7 +89,7 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
       continue;
     }
 
-    // TODO(crbug.com/1091964): Implement Run on OS Login mode selection and
+    // TODO(crbug.com/40698043): Implement Run on OS Login mode selection and
     // launch app appropriately.
     // For ROOL on ChromeOS, we only have managed web apps which need to be run
     // as standalone windows, never as tabs

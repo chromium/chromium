@@ -5,11 +5,13 @@
 #ifndef UI_GL_SWAP_CHAIN_PRESENTER_H_
 #define UI_GL_SWAP_CHAIN_PRESENTER_H_
 
+#include <windows.h>
+
 #include <d3d11.h>
 #include <dcomp.h>
-#include <windows.h>
 #include <wrl/client.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
@@ -90,7 +92,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Upload given YUV buffers to an NV12 texture that can be used to create
   // video processor input view.  Returns nullptr on failure.
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> UploadVideoImage(
+  UNSAFE_BUFFER_USAGE Microsoft::WRL::ComPtr<ID3D11Texture2D> UploadVideoImage(
       const gfx::Size& size,
       const uint8_t* nv12_pixmap,
       size_t stride);
@@ -144,15 +146,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // as in AdjustTargetForFullScreenLetterboxing.
   void AdjustTargetToOptimalSizeIfNeeded(
       const DCLayerOverlayParams& params,
-      const gfx::Rect& overlay_onscreen_rect,
-      gfx::Size* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect,
-      std::optional<gfx::Size>* dest_size,
-      std::optional<gfx::Rect>* target_rect) const;
-
-  void AdjustTargetToOptimalSizeIfNeededF(
-      const DCLayerOverlayParams& params,
       const gfx::RectF& overlay_onscreen_rect,
       gfx::SizeF* swap_chain_size,
       gfx::Transform* visual_transform,
@@ -164,14 +157,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // same, the swap chain should be adjusted to fit the screen size in order to
   // get the full screen DWM optimizations.
   bool AdjustTargetToFullScreenSizeIfNeeded(
-      const gfx::Size& monitor_size,
-      const DCLayerOverlayParams& params,
-      const gfx::Rect& overlay_onscreen_rect,
-      gfx::Size* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect) const;
-
-  bool AdjustTargetToFullScreenSizeIfNeededF(
       const gfx::SizeF& monitor_size,
       const DCLayerOverlayParams& params,
       const gfx::RectF& overlay_onscreen_rect,
@@ -188,16 +173,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // Desktop Window Manager(DWM) take over the letterboxing/positioning job, and
   // turn off the topmost desktop plane at the same time.
   void AdjustTargetForFullScreenLetterboxing(
-      const gfx::Size& monitor_size,
-      const DCLayerOverlayParams& params,
-      const gfx::Rect& overlay_onscreen_rect,
-      gfx::Size* swap_chain_size,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect,
-      std::optional<gfx::Size>* dest_size,
-      std::optional<gfx::Rect>* target_rect) const;
-
-  void AdjustTargetForFullScreenLetterboxingF(
       const gfx::SizeF& monitor_size,
       const DCLayerOverlayParams& params,
       const gfx::RectF& overlay_onscreen_rect,
@@ -213,13 +188,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
                                    gfx::Rect* visual_clip_rect,
                                    std::optional<gfx::Size>* dest_size,
                                    std::optional<gfx::Rect>* target_rect) const;
-
-  gfx::Size CalculateSwapChainSizeF(
-      const DCLayerOverlayParams& params,
-      gfx::Transform* visual_transform,
-      gfx::Rect* visual_clip_rect,
-      std::optional<gfx::Size>* dest_size,
-      std::optional<gfx::Rect>* target_rect) const;
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
@@ -254,7 +222,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
   void RecordPresentationStatistics();
 
   // base::PowerStateObserver
-  void OnPowerStateChange(bool on_battery_power) override;
+  void OnBatteryPowerStatusChange(
+      PowerStateObserver::BatteryPowerStatus battery_power_status) override;
 
   // If connected with a power source, let the Intel video processor to do
   // the upscaling because it produces better results.

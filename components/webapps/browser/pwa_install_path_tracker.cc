@@ -11,82 +11,51 @@
 
 namespace webapps {
 
-namespace {
-
-void LogHistogram(PwaInstallPathTracker::InstallPathMetric metric) {
-  base::UmaHistogramEnumeration("WebApk.Install.PathToInstall", metric);
-}
-
-}  // anonymous namespace
-
-PwaInstallPathTracker::PwaInstallPathTracker() = default;
-
-PwaInstallPathTracker::~PwaInstallPathTracker() = default;
-
 void PwaInstallPathTracker::TrackInstallPath(
     bool bottom_sheet,
     WebappInstallSource install_source) {
-  bottom_sheet_ = bottom_sheet;
-  install_source_ = install_source;
-  PwaInstallPathTracker::InstallPathMetric metric = GetInstallPathMetric();
-  if (metric != InstallPathMetric::kUnknownMetric)
-    LogHistogram(metric);
-}
-
-void PwaInstallPathTracker::TrackIphWasShown() {
-  iph_was_shown_ = true;
+  base::UmaHistogramEnumeration(
+      "WebApk.Install.PathToInstall",
+      GetInstallPathMetric(bottom_sheet, install_source));
 }
 
 PwaInstallPathTracker::InstallPathMetric
-PwaInstallPathTracker::GetInstallPathMetric() {
-  if (bottom_sheet_) {
-    switch (install_source_) {
+PwaInstallPathTracker::GetInstallPathMetric(
+    bool bottom_sheet,
+    WebappInstallSource install_source) {
+  if (bottom_sheet) {
+    switch (install_source) {
       case WebappInstallSource::MENU_BROWSER_TAB:
       case WebappInstallSource::MENU_CUSTOM_TAB:
-        return iph_was_shown_ ? InstallPathMetric::kAppMenuBottomSheetWithIph
-                              : InstallPathMetric::kAppMenuBottomSheet;
+        return InstallPathMetric::kAppMenuBottomSheet;
       case WebappInstallSource::API_BROWSER_TAB:
       case WebappInstallSource::API_CUSTOM_TAB:
-        return iph_was_shown_
-                   ? InstallPathMetric::kApiInitiatedBottomSheetWithIph
-                   : InstallPathMetric::kApiInitiatedBottomSheet;
+        return InstallPathMetric::kApiInitiatedBottomSheet;
       case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
-      case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
-        return iph_was_shown_ ? InstallPathMetric::kAmbientBottomSheetWithIph
-                              : InstallPathMetric::kAmbientBottomSheet;
+        return InstallPathMetric::kAmbientBottomSheet;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   } else {
-    switch (install_source_) {
+    switch (install_source) {
       case WebappInstallSource::MENU_BROWSER_TAB:
       case WebappInstallSource::MENU_CUSTOM_TAB:
-        return iph_was_shown_ ? InstallPathMetric::kAppMenuInstallWithIph
-                              : InstallPathMetric::kAppMenuInstall;
+        return InstallPathMetric::kAppMenuInstall;
       case WebappInstallSource::API_BROWSER_TAB:
       case WebappInstallSource::API_CUSTOM_TAB:
-        return iph_was_shown_ ? InstallPathMetric::kApiInitiatedInstallWithIph
-                              : InstallPathMetric::kApiInitiatedInstall;
+        return InstallPathMetric::kApiInitiatedInstall;
       case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
       case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
-      case WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
-        return iph_was_shown_ ? InstallPathMetric::kAmbientInfobarWithIph
-                              : InstallPathMetric::kAmbientInfobar;
+        return InstallPathMetric::kAmbientMessage;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
 
   return InstallPathMetric::kUnknownMetric;
-}
-
-void PwaInstallPathTracker::Reset() {
-  install_source_ = WebappInstallSource::COUNT;
-  bottom_sheet_ = false;
-  iph_was_shown_ = false;
 }
 
 }  // namespace webapps

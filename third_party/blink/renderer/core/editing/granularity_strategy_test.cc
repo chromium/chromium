@@ -704,7 +704,7 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForCharacter) {
   // Simulate VIDEO element which has a RANGE as slider of video time.
   Element* const host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<input type=range>");
   Element* const sample = GetDocument().getElementById(AtomicString("sample"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -742,7 +742,7 @@ TEST_F(GranularityStrategyTest, UpdateExtentWithNullPositionForDirectional) {
   // Simulate VIDEO element which has a RANGE as slider of video time.
   Element* const host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML("<input type=range>");
   Element* const sample = GetDocument().getElementById(AtomicString("sample"));
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);

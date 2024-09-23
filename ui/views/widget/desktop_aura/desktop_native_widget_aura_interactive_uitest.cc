@@ -5,6 +5,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 
 #include "ui/views/test/native_widget_factory.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -20,15 +21,15 @@ using DesktopNativeWidgetAuraTest = DesktopWidgetTestInteractive;
 // crbug.com/1284537).
 TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
   auto widget1 = std::make_unique<Widget>();
-  Widget::InitParams params1(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  Widget::InitParams params1(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                             Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params1.context = GetContext();
   params1.native_widget = new DesktopNativeWidgetAura(widget1.get());
-  params1.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget1->Init(std::move(params1));
 
   auto widget1_child = std::make_unique<Widget>();
-  Widget::InitParams params_child(Widget::InitParams::TYPE_BUBBLE);
-  params_child.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params_child(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_BUBBLE);
   params_child.parent = widget1->GetNativeView();
   params_child.native_widget =
       CreatePlatformNativeWidgetImpl(widget1_child.get(), kDefault, nullptr);
@@ -36,10 +37,10 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
   widget1_child->widget_delegate()->SetCanActivate(true);
 
   auto widget2 = std::make_unique<Widget>();
-  Widget::InitParams params2(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  Widget::InitParams params2(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                             Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params2.context = GetContext();
   params2.native_widget = new DesktopNativeWidgetAura(widget2.get());
-  params2.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget2->Init(std::move(params2));
 
   auto* activation_client1 =
@@ -57,13 +58,10 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
 
   const auto show_widget = [&](Widget* target) {
     target->Show();
-    views::test::WidgetActivationWaiter(widget1.get(), target == widget1.get())
-        .Wait();
-    views::test::WidgetActivationWaiter(widget1_child.get(),
-                                        target == widget1_child.get())
-        .Wait();
-    views::test::WidgetActivationWaiter(widget2.get(), target == widget2.get())
-        .Wait();
+    views::test::WaitForWidgetActive(widget1.get(), target == widget1.get());
+    views::test::WaitForWidgetActive(widget1_child.get(),
+                                     target == widget1_child.get());
+    views::test::WaitForWidgetActive(widget2.get(), target == widget2.get());
   };
 
   show_widget(widget1.get());
@@ -106,15 +104,15 @@ TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
 TEST_F(DesktopNativeWidgetAuraTest,
        DesktopWidgetsRegainFocusWhenChildWidgetClosed) {
   auto widget = std::make_unique<Widget>();
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.context = GetContext();
   params.native_widget = new DesktopNativeWidgetAura(widget.get());
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(params));
 
   auto widget_child = std::make_unique<Widget>();
-  Widget::InitParams params_child(Widget::InitParams::TYPE_BUBBLE);
-  params_child.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params_child(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_BUBBLE);
   params_child.parent = widget->GetNativeView();
   params_child.native_widget =
       CreatePlatformNativeWidgetImpl(widget_child.get(), kDefault, nullptr);
@@ -131,23 +129,23 @@ TEST_F(DesktopNativeWidgetAuraTest,
   ASSERT_EQ(activation_client, activation_client_child);
 
   widget->Show();
-  views::test::WidgetActivationWaiter(widget.get(), true).Wait();
-  views::test::WidgetActivationWaiter(widget_child.get(), false).Wait();
+  views::test::WaitForWidgetActive(widget.get(), true);
+  views::test::WaitForWidgetActive(widget_child.get(), false);
   EXPECT_TRUE(widget->IsActive());
   EXPECT_FALSE(widget_child->IsActive());
   EXPECT_EQ(activation_client->GetActiveWindow(), widget->GetNativeView());
 
   widget_child->Show();
-  views::test::WidgetActivationWaiter(widget.get(), false).Wait();
-  views::test::WidgetActivationWaiter(widget_child.get(), true).Wait();
+  views::test::WaitForWidgetActive(widget.get(), false);
+  views::test::WaitForWidgetActive(widget_child.get(), true);
   EXPECT_FALSE(widget->IsActive());
   EXPECT_TRUE(widget_child->IsActive());
   EXPECT_EQ(activation_client->GetActiveWindow(),
             widget_child->GetNativeView());
 
   widget_child->Close();
-  views::test::WidgetActivationWaiter(widget.get(), true).Wait();
-  views::test::WidgetActivationWaiter(widget_child.get(), false).Wait();
+  views::test::WaitForWidgetActive(widget.get(), true);
+  views::test::WaitForWidgetActive(widget_child.get(), false);
   EXPECT_TRUE(widget->IsActive());
   EXPECT_FALSE(widget_child->IsActive());
   EXPECT_EQ(activation_client->GetActiveWindow(), widget->GetNativeView());

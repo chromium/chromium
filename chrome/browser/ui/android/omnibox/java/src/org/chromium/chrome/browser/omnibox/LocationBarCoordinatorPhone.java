@@ -54,7 +54,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Returns {@link FrameLayout.LayoutParams} of the LocationBar view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getLayoutParams()
      */
@@ -65,7 +65,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * The opacity of the view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getAlpha()
      */
@@ -76,7 +76,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Bottom position of this view relative to its parent.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getBottom()
      * @return The bottom of this view, in pixels.
@@ -88,7 +88,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Returns the resolved layout direction for this view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getLayoutDirection()
      * @return {@link View#LAYOUT_DIRECTION_LTR}, or {@link View#LAYOUT_DIRECTION_RTL}.
@@ -100,7 +100,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Returns the end padding of this view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getPaddingEnd()
      * @return The end padding in pixels.
@@ -112,7 +112,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Returns the start padding of this view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getPaddingStart()
      * @return The start padding in pixels.
@@ -124,7 +124,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Top position of this view relative to its parent.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getTop()
      * @return The top of this view, in pixels.
@@ -136,7 +136,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * The vertical location of this view relative to its top position, in pixels.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getTranslationY()
      */
@@ -147,7 +147,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Returns the visibility status for this view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getVisibility()
      */
@@ -158,7 +158,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Returns true if this view has focus itself, or is the ancestor of the view that has focus.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#hasFocus()
      */
@@ -169,7 +169,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Invalidate the whole view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#invalidate()
      */
@@ -180,7 +180,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Sets the opacity of the view.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#setAlpha(float)
      */
@@ -191,7 +191,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Sets the padding.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#setPadding(int, int, int, int)
      */
@@ -202,7 +202,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Sets the horizontal location of this view relative to its left position.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#setTranslationX(float)
      */
@@ -213,7 +213,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Sets the vertical location of this view relative to its top position.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#setTranslationY(float)
      */
@@ -224,7 +224,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     /**
      * Returns the LocationBar view for use in drawing.
      *
-     * <p>TODO(1133482): Hide this View interaction if possible.
+     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see ViewGroup#drawChild(Canvas, View, long)
      */

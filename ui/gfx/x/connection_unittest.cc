@@ -5,6 +5,7 @@
 #include "ui/gfx/x/connection.h"
 
 #include "base/memory/ref_counted_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
@@ -74,8 +75,8 @@ TEST(X11ConnectionTest, Event) {
       .property = Atom::WM_NAME,
       .type = Atom::STRING,
       .format = CHAR_BIT,
-      .data_len = 1,
-      .data = base::RefCountedBytes::TakeVector(&data),
+      .data_len = base::checked_cast<uint32_t>(data.size()),
+      .data = base::MakeRefCounted<base::RefCountedBytes>(std::move(data)),
   });
   EXPECT_FALSE(prop_future.Sync().error);
 
@@ -100,6 +101,26 @@ TEST(X11ConnectionTest, Error) {
   // TODO(thomasanderson): Implement As<> for errors, similar to events.
   auto* drawable_error = reinterpret_cast<DrawableError*>(error);
   EXPECT_EQ(drawable_error->bad_value, static_cast<uint32_t>(invalid_window));
+}
+
+TEST(X11ConnectionTest, LargeQueryTree) {
+  Connection connection;
+  ASSERT_TRUE(connection.Ready());
+
+  Window root = CreateWindow(&connection);
+  for (size_t i = 0; i < 0x10000; i++) {
+    connection.CreateWindow({
+        .depth = connection.default_root_depth().depth,
+        .wid = connection.GenerateId<Window>(),
+        .parent = root,
+        .width = 1,
+        .height = 1,
+        .override_redirect = Bool32(true),
+    });
+  }
+
+  // Ensure large QueryTree requests don't cause a crash.
+  connection.QueryTree(root).Sync();
 }
 
 }  // namespace x11

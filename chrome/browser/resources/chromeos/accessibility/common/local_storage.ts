@@ -5,6 +5,7 @@
 /**
  * @fileoverview Class to handle accessing/storing/caching local storage data.
  */
+import {TestImportManager} from './testing/test_import_manager.js';
 
 type StorageChange = chrome.storage.StorageChange;
 
@@ -178,3 +179,5 @@ export class LocalStorage {
     }
   }
 }
+
+TestImportManager.exportForTesting(LocalStorage);

@@ -168,8 +168,8 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
       break;
 
     default:
-      NOTREACHED() << "Unexpected DequeueInputBuffer result: "
-                   << MediaSerialize(result);
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected DequeueInputBuffer result: " << MediaSerialize(result);
       SetState(STATE_ERROR);
       break;
   }
@@ -244,8 +244,8 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       break;
 
     default:
-      NOTREACHED() << "Unknown Queue(Secure)InputBuffer status "
-                   << MediaSerialize(result);
+      NOTREACHED_IN_MIGRATION() << "Unknown Queue(Secure)InputBuffer status "
+                                << MediaSerialize(result);
       client_->OnInputDataQueued(false);
       SetState(STATE_ERROR);
       break;
@@ -314,8 +314,8 @@ bool MediaCodecLoop::ProcessOneOutputBuffer() {
       break;
 
     default:
-      NOTREACHED() << "Unexpected DequeueOutputBuffer result: "
-                   << MediaSerialize(result);
+      NOTREACHED_IN_MIGRATION() << "Unexpected DequeueOutputBuffer result: "
+                                << MediaSerialize(result);
       SetState(STATE_ERROR);
       break;
   }
@@ -374,7 +374,7 @@ const char* MediaCodecLoop::AsString(State state) {
   }
 #undef RETURN_STRING
 
-  NOTREACHED() << "Unknown state " << state;
+  NOTREACHED_IN_MIGRATION() << "Unknown state " << state;
   return nullptr;
 }
 

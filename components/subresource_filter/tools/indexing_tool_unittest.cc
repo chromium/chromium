@@ -30,9 +30,7 @@ std::vector<uint8_t> ReadFileContents(const base::FilePath& file_path) {
 
   size_t length = base::checked_cast<size_t>(file.GetLength());
   std::vector<uint8_t> contents(length);
-  static_assert(sizeof(uint8_t) == sizeof(char), "Expected char = byte.");
-  file.Read(0, reinterpret_cast<char*>(contents.data()),
-            base::checked_cast<int>(length));
+  file.Read(0, contents);
   return contents;
 }
 

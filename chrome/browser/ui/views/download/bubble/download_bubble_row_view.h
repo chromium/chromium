@@ -68,7 +68,8 @@ class DownloadBubbleRowView : public views::View,
   void OnMouseCaptureLost() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override;
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
@@ -155,17 +156,12 @@ class DownloadBubbleRowView : public views::View,
   void OnActionButtonPressed(DownloadCommands::Command command,
                              const ui::Event& event);
 
-  void AnnounceInProgressAlert();
-
   // Registers/unregisters copy accelerator for copy/paste support.
   void RegisterAccelerators(views::FocusManager* focus_manager);
   void UnregisterAccelerators(views::FocusManager* focus_manager);
 
   // DownloadBubbleRowViewInfoObserver implementation:
   void OnInfoChanged() override;
-  void OnDownloadStateChanged(
-      download::DownloadItem::DownloadState old_state,
-      download::DownloadItem::DownloadState new_state) override;
 
   // The icon for the file. We get platform-specific file type icons from
   // IconLoader (see below).
@@ -238,18 +234,10 @@ class DownloadBubbleRowView : public views::View,
   bool dragging_ = false;
   // Position that a possible drag started at.
   std::optional<gfx::Point> drag_start_point_;
-  // A CloseOnDeactivate pin that prevents the download bubble from closing on
-  // deactivating, for the duration of its lifetime. This is used to prevent
-  // the dialog from closing when the row is being dragged.
-  std::unique_ptr<DownloadBubbleNavigationHandler::CloseOnDeactivatePin>
-      download_dragging_pin_;
 
   // Whether the download's completion has already been logged. This is used to
   // avoid inaccurate repeated logging.
   bool has_download_completion_been_logged_ = false;
-
-  // A timer for accessible alerts of progress updates
-  base::RepeatingTimer accessible_alert_in_progress_timer_;
 
   // A timer for updating the status text string.
   base::RepeatingTimer update_status_text_timer_;
@@ -265,7 +253,7 @@ class DownloadBubbleRowView : public views::View,
   // False in tests.
   const bool is_in_partial_view_ = false;
 
-  // TODO(crbug.com/1349528): The size constraint is not passed down from the
+  // TODO(crbug.com/40233803): The size constraint is not passed down from the
   // views tree in the first round of layout, so setting a fixed width to bound
   // the view. This is assuming that the row view is loaded inside a bubble. It
   // will break if the row view is loaded inside a different parent view.

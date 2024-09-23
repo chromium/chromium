@@ -8,7 +8,7 @@
 #include <memory>
 
 class AuthenticatorRequestSheetView;
-class AuthenticatorRequestDialogModel;
+struct AuthenticatorRequestDialogModel;
 
 namespace autofill {
 class WebauthnDialogModel;

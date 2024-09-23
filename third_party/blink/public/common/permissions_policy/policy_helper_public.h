@@ -5,18 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_POLICY_HELPER_PUBLIC_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PERMISSIONS_POLICY_POLICY_HELPER_PUBLIC_H_
 
+#include <string_view>
+
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 
 namespace blink {
 
 using PermissionsPolicyFeatureToNameMap =
-    base::flat_map<mojom::PermissionsPolicyFeature, base::StringPiece>;
+    base::flat_map<mojom::PermissionsPolicyFeature, std::string_view>;
 
 using PermissionsPolicyNameToFeatureMap =
-    base::flat_map<base::StringPiece, mojom::PermissionsPolicyFeature>;
+    base::flat_map<std::string_view, mojom::PermissionsPolicyFeature>;
 
 // This method defines the feature names which will be recognized by the parser
 // for the Permissions-Policy HTTP header and the <iframe> "allow" attribute, as

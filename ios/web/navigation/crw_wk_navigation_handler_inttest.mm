@@ -67,7 +67,9 @@ class FailedWebStateObserver : public web::WebStateObserver {
     }
   }
 
-  void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
+  void WebStateDestroyed(web::WebState* web_state) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   bool did_finish() const { return did_finish_; }
   web::HttpsUpgradeType failed_https_upgrade_type() const {

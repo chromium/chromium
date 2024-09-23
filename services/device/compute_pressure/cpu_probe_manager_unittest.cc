@@ -6,53 +6,75 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
-#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "components/system_cpu/pressure_test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
+
+namespace {
 
 using system_cpu::CpuSample;
 using system_cpu::FakeCpuProbe;
 using system_cpu::StreamingCpuProbe;
 
-class CpuProbeManagerTest : public testing::Test {
- public:
-  // Constructs CpuProbeManagerTest with |traits| being forwarded to its
-  // TaskEnvironment.
-  template <typename... TaskEnvironmentTraits>
-  NOINLINE explicit CpuProbeManagerTest(TaskEnvironmentTraits&&... traits)
-      : CpuProbeManagerTest(std::make_unique<base::test::TaskEnvironment>(
-            std::forward<TaskEnvironmentTraits>(traits)...)) {}
+// Different amounts of delay to insert to test interactions between responses
+// to subsequent RequestSample() calls.
+enum class ResponseDelay {
+  // Responses will be posted immediately. With MOCK_TIME, they'll arrive on the
+  // same time tick as the RequestSample() call.
+  kNone,
+  // Responses will be delayed but arrive before the next RequestSample() call.
+  kLessThanSampleInterval,
+  // Responses will arrive after the next RequestSample() call.
+  kGreaterThanSampleInterval,
+  // Responses will arrive on the same time tick as the next RequestSample()
+  // call.
+  kEqualToSampleInterval,
+};
 
-  explicit CpuProbeManagerTest(
-      std::unique_ptr<base::test::TaskEnvironment> task_environment)
-      : task_environment_(std::move(task_environment)),
-        cpu_probe_manager_(std::make_unique<CpuProbeManager>(
-            base::Milliseconds(1),
-            base::BindRepeating(&CpuProbeManagerTest::CollectorCallback,
-                                base::Unretained(this)))) {
-    cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<FakeCpuProbe>());
+base::TimeDelta GetResponseDelayDelta(ResponseDelay delay) {
+  switch (delay) {
+    case ResponseDelay::kNone:
+      return base::TimeDelta();
+    case ResponseDelay::kLessThanSampleInterval:
+      return TestTimeouts::tiny_timeout() / 2;
+    case ResponseDelay::kGreaterThanSampleInterval:
+      return TestTimeouts::tiny_timeout() * 2;
+    case ResponseDelay::kEqualToSampleInterval:
+      return TestTimeouts::tiny_timeout();
   }
+}
+
+}  // namespace
+
+class CpuProbeManagerTest : public ::testing::TestWithParam<ResponseDelay> {
+ public:
+  CpuProbeManagerTest()
+      : cpu_probe_manager_(CpuProbeManager::CreateForTesting(
+            std::make_unique<FakeCpuProbe>(GetResponseDelayDelta(GetParam())),
+            TestTimeouts::tiny_timeout(),
+            base::BindRepeating(&CpuProbeManagerTest::CollectorCallback,
+                                base::Unretained(this)))) {}
 
   void WaitForUpdate() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    base::RunLoop run_loop;
-    SetNextUpdateCallback(run_loop.QuitClosure());
-    run_loop.Run();
+    SetNextUpdateCallback(task_environment_.QuitClosure());
+    task_environment_.RunUntilQuit();
   }
 
   void CollectorCallback(mojom::PressureState sample) {
@@ -64,10 +86,16 @@ class CpuProbeManagerTest : public testing::Test {
     }
   }
 
+  void SetProbeSample(CpuSample cpu_sample) {
+    static_cast<FakeCpuProbe*>(cpu_probe_manager_->cpu_probe())
+        ->SetLastSample(cpu_sample);
+  }
+
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // This member is a std::unique_ptr instead of a plain CpuProbeManager
   // so it can be replaced inside tests.
@@ -89,26 +117,48 @@ class CpuProbeManagerTest : public testing::Test {
   base::OnceClosure update_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-class CpuProbeManagerWithMockTimeTest : public CpuProbeManagerTest {
- public:
-  CpuProbeManagerWithMockTimeTest()
-      : CpuProbeManagerTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-};
+using CpuProbeManagerDeathTest = CpuProbeManagerTest;
+using CpuProbeManagerDelayedResponseTest = CpuProbeManagerTest;
 
-TEST_F(CpuProbeManagerTest, EnsureStarted) {
+// Most tests won't include a response delay.
+INSTANTIATE_TEST_SUITE_P(NoResponseDelay,
+                         CpuProbeManagerTest,
+                         ::testing::Values(ResponseDelay::kNone));
+
+INSTANTIATE_TEST_SUITE_P(NoResponseDelay,
+                         CpuProbeManagerDeathTest,
+                         ::testing::Values(ResponseDelay::kNone));
+
+INSTANTIATE_TEST_SUITE_P(
+    AllResponseDelays,
+    CpuProbeManagerDelayedResponseTest,
+    ::testing::Values(ResponseDelay::kNone,
+                      ResponseDelay::kLessThanSampleInterval,
+                      ResponseDelay::kGreaterThanSampleInterval,
+                      ResponseDelay::kEqualToSampleInterval));
+
+TEST_P(CpuProbeManagerTest, CreateCpuProbeExists) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(absl::make_optional(CpuSample{0.9}));
+  std::unique_ptr<CpuProbeManager> cpu_probe_manager =
+      CpuProbeManager::Create(TestTimeouts::tiny_timeout(), base::DoNothing());
+  if (cpu_probe_manager) {
+    EXPECT_TRUE(!!cpu_probe_manager->cpu_probe());
+  }
+}
+
+TEST_P(CpuProbeManagerTest, EnsureStarted) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  SetProbeSample(CpuSample{0.9});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
 
-  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+  EXPECT_THAT(samples_, ::testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
+TEST_P(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<CpuSample> samples = {
@@ -117,42 +167,29 @@ TEST_F(CpuProbeManagerTest, EnsureStartedSkipsFirstSample) {
       // Value after first Update(), should be discarded.
       CpuSample{0.9},
       // Value after second Update(), should be reported.
-      CpuSample{0.4},
+      CpuSample{0.65},
   };
 
-  base::RunLoop run_loop;
   cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<StreamingCpuProbe>(
-      std::move(samples), run_loop.QuitClosure()));
+      std::move(samples), task_environment_.QuitClosure()));
   cpu_probe_manager_->EnsureStarted();
-  run_loop.Run();
+  task_environment_.RunUntilQuit();
 
-  EXPECT_THAT(samples_, testing::ElementsAre(
+  EXPECT_THAT(samples_, ::testing::ElementsAre(
                             mojom::PressureState{mojom::PressureState::kFair}));
 }
 
-TEST_F(CpuProbeManagerTest, CalculateStateValueTooLarge) {
+TEST_P(CpuProbeManagerDeathTest, CalculateStateValueTooLarge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   EXPECT_DCHECK_DEATH_WITH(cpu_probe_manager_->CalculateState(CpuSample{1.1}),
                            "unexpected value: 1.1");
 }
 
-TEST_F(CpuProbeManagerWithMockTimeTest,
-       EnsureStartedCheckBreakCalibrationMitigation) {
+TEST_P(CpuProbeManagerTest, EnsureStartedCheckBreakCalibrationMitigation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // cpu_probe_manager_ is redefined with larger sampling time in seconds.
-  // We noticed that cpu_probe_manager_, with fast sampling (ms), is slowing
-  // down testing when using FastForwardBy(), especially on tsan and asan test
-  // releases.
-  cpu_probe_manager_ = std::make_unique<CpuProbeManager>(
-      base::Seconds(1),
-      base::BindRepeating(&CpuProbeManagerTest::CollectorCallback,
-                          base::Unretained(this)));
-  cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<FakeCpuProbe>());
-
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.86});
+  SetProbeSample(CpuSample{0.86});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_.back(),
@@ -161,23 +198,22 @@ TEST_F(CpuProbeManagerWithMockTimeTest,
   cpu_probe_manager_->Stop();
   samples_.clear();
 
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.86});
+  SetProbeSample(CpuSample{0.86});
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   // First toggling.
-  task_environment_->FastForwardBy(
+  task_environment_.FastForwardBy(
       cpu_probe_manager_->GetRandomizationTimeForTesting());
   EXPECT_THAT(samples_.back(),
               mojom::PressureState(mojom::PressureState::kCritical));
   // Second toggling.
-  task_environment_->FastForwardBy(
+  task_environment_.FastForwardBy(
       cpu_probe_manager_->GetRandomizationTimeForTesting());
   EXPECT_THAT(samples_.back(),
               mojom::PressureState(mojom::PressureState::kSerious));
 }
 
-TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
+TEST_P(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<CpuSample> samples = {
@@ -188,28 +224,27 @@ TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisUp) {
       // kNominal value after should be reported.
       CpuSample{0.3},
       // kFair value should be reported.
-      CpuSample{0.6},
+      CpuSample{0.7},
       // kSerious value should be reported.
-      CpuSample{0.9},
+      CpuSample{0.8},
       // kCritical value should be reported.
       CpuSample{1.0},
   };
 
-  base::RunLoop run_loop;
   cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<StreamingCpuProbe>(
-      std::move(samples), run_loop.QuitClosure()));
+      std::move(samples), task_environment_.QuitClosure()));
   cpu_probe_manager_->EnsureStarted();
-  run_loop.Run();
+  task_environment_.RunUntilQuit();
 
   EXPECT_THAT(samples_,
-              testing::ElementsAre(
+              ::testing::ElementsAre(
                   mojom::PressureState{mojom::PressureState::kNominal},
                   mojom::PressureState{mojom::PressureState::kFair},
                   mojom::PressureState{mojom::PressureState::kSerious},
                   mojom::PressureState{mojom::PressureState::kCritical}));
 }
 
-TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisDown) {
+TEST_P(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisDown) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<CpuSample> samples = {
@@ -222,26 +257,25 @@ TEST_F(CpuProbeManagerTest, EnsureStartedCheckCalculateStateHysteresisDown) {
       // kSerious value should be reported.
       CpuSample{0.85},
       // kFair value should be reported.
-      CpuSample{0.55},
+      CpuSample{0.70},
       // kNominal value should be reported.
-      CpuSample{0.25},
+      CpuSample{0.55},
   };
 
-  base::RunLoop run_loop;
   cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<StreamingCpuProbe>(
-      std::move(samples), run_loop.QuitClosure()));
+      std::move(samples), task_environment_.QuitClosure()));
   cpu_probe_manager_->EnsureStarted();
-  run_loop.Run();
+  task_environment_.RunUntilQuit();
 
   EXPECT_THAT(samples_,
-              testing::ElementsAre(
+              ::testing::ElementsAre(
                   mojom::PressureState{mojom::PressureState::kCritical},
                   mojom::PressureState{mojom::PressureState::kSerious},
                   mojom::PressureState{mojom::PressureState::kFair},
                   mojom::PressureState{mojom::PressureState::kNominal}));
 }
 
-TEST_F(CpuProbeManagerTest,
+TEST_P(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisDownByDelta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -255,26 +289,25 @@ TEST_F(CpuProbeManagerTest,
       // kCritical value should be reported due to hysteresis.
       CpuSample{0.88},
       // kFair value should be reported.
-      CpuSample{0.58},
+      CpuSample{0.73},
       // kNominal value should be reported.
-      CpuSample{0.26},
+      CpuSample{0.56},
   };
 
-  base::RunLoop run_loop;
   cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<StreamingCpuProbe>(
-      std::move(samples), run_loop.QuitClosure()));
+      std::move(samples), task_environment_.QuitClosure()));
   cpu_probe_manager_->EnsureStarted();
-  run_loop.Run();
+  task_environment_.RunUntilQuit();
 
   EXPECT_THAT(samples_,
-              testing::ElementsAre(
+              ::testing::ElementsAre(
                   mojom::PressureState{mojom::PressureState::kCritical},
                   mojom::PressureState{mojom::PressureState::kCritical},
                   mojom::PressureState{mojom::PressureState::kFair},
                   mojom::PressureState{mojom::PressureState::kNominal}));
 }
 
-TEST_F(CpuProbeManagerTest,
+TEST_P(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisDownByDeltaTwoState) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -286,25 +319,24 @@ TEST_F(CpuProbeManagerTest,
       // kCritical value after should be reported.
       CpuSample{0.95},
       // kFair value should be reported.
-      CpuSample{0.58},
+      CpuSample{0.73},
       // kFair value should be reported due to hysteresis.
-      CpuSample{0.28},
+      CpuSample{0.58},
   };
 
-  base::RunLoop run_loop;
   cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<StreamingCpuProbe>(
-      std::move(samples), run_loop.QuitClosure()));
+      std::move(samples), task_environment_.QuitClosure()));
   cpu_probe_manager_->EnsureStarted();
-  run_loop.Run();
+  task_environment_.RunUntilQuit();
 
   EXPECT_THAT(samples_,
-              testing::ElementsAre(
+              ::testing::ElementsAre(
                   mojom::PressureState{mojom::PressureState::kCritical},
                   mojom::PressureState{mojom::PressureState::kFair},
                   mojom::PressureState{mojom::PressureState::kFair}));
 }
 
-TEST_F(CpuProbeManagerTest,
+TEST_P(CpuProbeManagerTest,
        EnsureStartedCheckCalculateStateHysteresisUpByDelta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -314,30 +346,29 @@ TEST_F(CpuProbeManagerTest,
       // Value after first Update(), should be discarded.
       CpuSample{1.0},
       // kNominal value after should be reported.
-      CpuSample{0.3},
+      CpuSample{0.6},
       // kFair value should be reported due to hysteresis.
-      CpuSample{0.32},
-      // kSerious value should be reported.
       CpuSample{0.62},
+      // kSerious value should be reported.
+      CpuSample{0.77},
       // kCritical value should be reported.
       CpuSample{0.91},
   };
 
-  base::RunLoop run_loop;
   cpu_probe_manager_->SetCpuProbeForTesting(std::make_unique<StreamingCpuProbe>(
-      std::move(samples), run_loop.QuitClosure()));
+      std::move(samples), task_environment_.QuitClosure()));
   cpu_probe_manager_->EnsureStarted();
-  run_loop.Run();
+  task_environment_.RunUntilQuit();
 
   EXPECT_THAT(samples_,
-              testing::ElementsAre(
+              ::testing::ElementsAre(
                   mojom::PressureState{mojom::PressureState::kNominal},
                   mojom::PressureState{mojom::PressureState::kFair},
                   mojom::PressureState{mojom::PressureState::kSerious},
                   mojom::PressureState{mojom::PressureState::kCritical}));
 }
 
-TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedImmediate) {
+TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cpu_probe_manager_->EnsureStarted();
@@ -345,65 +376,89 @@ TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedImmediate) {
   cpu_probe_manager_->Stop();
 
   samples_.clear();
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
+  SetProbeSample(CpuSample{0.9});
 
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+  EXPECT_THAT(samples_, ::testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(CpuProbeManagerTest, StopDelayedEnsureStartedDelayed) {
+TEST_P(CpuProbeManagerDelayedResponseTest, StopDelayedEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
   cpu_probe_manager_->Stop();
   samples_.clear();
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
-  // 10ms should be long enough to ensure that all the sampling tasks are done.
-  base::PlatformThread::Sleep(base::Milliseconds(10));
+  SetProbeSample(CpuSample{0.9});
 
+  task_environment_.FastForwardBy(TestTimeouts::action_timeout());
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+  EXPECT_THAT(samples_, ::testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(CpuProbeManagerTest, StopImmediateEnsureStartedImmediate) {
+TEST_P(CpuProbeManagerDelayedResponseTest,
+       StopImmediateEnsureStartedImmediate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cpu_probe_manager_->EnsureStarted();
   cpu_probe_manager_->Stop();
 
   samples_.clear();
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
+  SetProbeSample(CpuSample{0.9});
 
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+  EXPECT_THAT(samples_, ::testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
 }
 
-TEST_F(CpuProbeManagerTest, StopImmediateEnsureStartedDelayed) {
+TEST_P(CpuProbeManagerDelayedResponseTest, StopImmediateEnsureStartedDelayed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   cpu_probe_manager_->EnsureStarted();
   cpu_probe_manager_->Stop();
 
   samples_.clear();
-  static_cast<FakeCpuProbe*>(cpu_probe_manager_->GetCpuProbeForTesting())
-      ->SetLastSample(CpuSample{0.9});
-  // 10ms should be long enough to ensure that all the sampling tasks are done.
-  base::PlatformThread::Sleep(base::Milliseconds(10));
+  SetProbeSample(CpuSample{0.9});
 
+  task_environment_.FastForwardBy(TestTimeouts::action_timeout());
   cpu_probe_manager_->EnsureStarted();
   WaitForUpdate();
-  EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
+  EXPECT_THAT(samples_, ::testing::ElementsAre(mojom::PressureState(
                             mojom::PressureState::kSerious)));
+}
+
+TEST_P(CpuProbeManagerDelayedResponseTest, StopEnsureStartedNoRace) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Can't simulate the race if there's no delay in sending a response.
+  if (GetParam() == ResponseDelay::kNone) {
+    GTEST_SKIP();
+  }
+
+  SetProbeSample(CpuSample{0.9});
+
+  cpu_probe_manager_->EnsureStarted();
+
+  // This should send a sample request. Stop and restart the manager before the
+  // response is received, to be sure it's correctly ignored.
+  task_environment_.FastForwardBy(TestTimeouts::tiny_timeout());
+
+  cpu_probe_manager_->Stop();
+  EXPECT_THAT(samples_, ::testing::IsEmpty());
+  SetProbeSample(CpuSample{0.65});
+  cpu_probe_manager_->EnsureStarted();
+
+  WaitForUpdate();
+
+  // The 0.9 sample was sent before Stop(), so it should NOT be included in the
+  // pressure calculation.
+  EXPECT_THAT(samples_, ::testing::ElementsAre(
+                            mojom::PressureState(mojom::PressureState::kFair)));
 }
 
 }  // namespace device

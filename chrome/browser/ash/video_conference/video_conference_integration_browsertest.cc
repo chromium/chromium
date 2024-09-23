@@ -2,18 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/audio/audio_effects_controller.h"
+#include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/bubble/return_to_app_panel.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "ash/webui/vc_background_ui/url_constants.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -21,6 +27,7 @@
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
@@ -45,11 +52,21 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace ash::video_conference {
 
 namespace {
+
+// Helper to generate a fake image.
+std::string CreateJpgBytes() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  std::vector<unsigned char> data;
+  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
+  return std::string(data.begin(), data.end());
+}
 
 bool IsNudgeShown(const std::string& id) {
   return Shell::Get()->anchored_nudge_manager()->IsNudgeShown(id);
@@ -109,7 +126,7 @@ ash::VideoConferenceTray* GetVcTray() {
 
 // Simulates left click on the `button`.
 void ClickButton(views::Button* button) {
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(button).NotifyClick(event);
 }
@@ -122,9 +139,10 @@ class VideoConferenceIntegrationTest
   VideoConferenceIntegrationTest() {
     // kOnDeviceSpeechRecognition is to support live caption.
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kVideoConference, ash::features::kVcStopAllScreenShare,
+        {ash::features::kVcStopAllScreenShare,
          ash::features::kOnDeviceSpeechRecognition,
-         ash::features::kCameraEffectsSupportedByHardware,
+         ash::features::kFeatureManagementVideoConference,
+         ash::features::kVcBackgroundReplace,
          ash::features::kShowLiveCaptionInVideoConferenceTray},
         {});
   }
@@ -132,12 +150,15 @@ class VideoConferenceIntegrationTest
   ~VideoConferenceIntegrationTest() override = default;
 
   void SetUpOnMainThread() override {
+    is_incognito_mode_ = std::get<0>(GetParam());
+    is_guest_mode_ = std::get<1>(GetParam());
+
     WebRtcTestBase::SetUpOnMainThread();
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Create an incognito browser when parameter is true.
-    if (std::get<0>(GetParam())) {
+    if (is_incognito_mode_) {
       browser_ = Browser::Create(Browser::CreateParams(
           browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
           true));
@@ -151,9 +172,21 @@ class VideoConferenceIntegrationTest
       browser_ = browser();
     }
 
-    camera_bt_ = GetVcTray()->camera_icon();
-    mic_bt_ = GetVcTray()->audio_icon();
-    share_bt_ = GetVcTray()->screen_share_icon();
+    // Enable test mode to mock the SetCameraEffects calls.
+    camera_effects_controller()->bypass_set_camera_effects_for_testing(true);
+
+    camera_background_img_dir_ = browser()->profile()->GetPath().AppendASCII(
+        "camera_background_img_dir");
+    camera_background_run_dir_ = browser()->profile()->GetPath().AppendASCII(
+        "camera_background_run_dir");
+    camera_effects_controller()->set_camera_background_img_dir_for_testing(
+        camera_background_img_dir_);
+    camera_effects_controller()->set_camera_background_run_dir_for_testing(
+        camera_background_run_dir_);
+
+    // Required for the VcBackgroundApp.
+    ash::SystemWebAppManager::Get(browser()->profile())
+        ->InstallSystemAppsForTesting();
   }
 
   // Navigate to the url in a new tab.
@@ -218,10 +251,25 @@ class VideoConferenceIntegrationTest
     web_contents->GetController().GetLastCommittedEntry()->SetTitle(title);
   }
 
+  // Generates a background image with given id as name, and apply that as the
+  // camera background.
+  base::FilePath CreateAndApplyBackgroundImage(uint32_t id) {
+    base::RunLoop run_loop;
+    camera_effects_controller()->SetBackgroundImageFromContent(
+        SeaPenImage(CreateJpgBytes(), id), "",
+        base::BindLambdaForTesting([&](bool call_succeeded) {
+          EXPECT_TRUE(call_succeeded);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+
+    return CameraEffectsController::SeaPenIdToRelativePath(id);
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Flags use to automatically select the right desktop source and get
     // around security restrictions.
-    // TODO(crbug.com/1459164): Use a less error-prone flag.
+    // TODO(crbug.com/40274188): Use a less error-prone flag.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line->AppendSwitchASCII(::switches::kAutoSelectDesktopCaptureSource,
                                     "Display");
@@ -231,7 +279,7 @@ class VideoConferenceIntegrationTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // If in guest mode.
-    if (std::get<1>(GetParam())) {
+    if (is_guest_mode_) {
       command_line->AppendSwitch(ash::switches::kGuestSession);
       command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                       user_manager::kGuestUserName);
@@ -287,28 +335,40 @@ class VideoConferenceIntegrationTest
 
     if (use_camera) {
       StartCamera(web_contents);
-      WAIT_FOR_CONDITION(camera_bt_->is_capturing());
+      WAIT_FOR_CONDITION(camera_bt()->is_capturing());
     }
 
     if (use_microphone) {
       StartMicrophone(web_contents);
-      WAIT_FOR_CONDITION(mic_bt_->is_capturing());
+      WAIT_FOR_CONDITION(mic_bt()->is_capturing());
     }
 
     if (use_screen_sharing) {
       StartScreenSharing(web_contents);
-      WAIT_FOR_CONDITION(share_bt_->is_capturing());
+      WAIT_FOR_CONDITION(share_bt()->is_capturing());
     }
 
     return web_contents;
   }
 
- protected:
-  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged> camera_bt_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged> mic_bt_ = nullptr;
-  raw_ptr<VideoConferenceTrayButton, DanglingUntriaged> share_bt_ = nullptr;
+  VideoConferenceTrayButton* camera_bt() { return GetVcTray()->camera_icon(); }
+  VideoConferenceTrayButton* mic_bt() { return GetVcTray()->audio_icon(); }
+  VideoConferenceTrayButton* share_bt() {
+    return GetVcTray()->screen_share_icon();
+  }
 
+  CameraEffectsController* camera_effects_controller() {
+    return Shell::Get()->camera_effects_controller();
+  }
+
+ protected:
   raw_ptr<Browser, DanglingUntriaged> browser_ = nullptr;
+
+  base::FilePath camera_background_img_dir_;
+  base::FilePath camera_background_run_dir_;
+
+  bool is_guest_mode_ = false;
+  bool is_incognito_mode_ = false;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -329,36 +389,36 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                      /*use_screen_sharing=*/false);
 
   // camera_icon should be visible with green_dot.
-  EXPECT_TRUE(camera_bt_->GetVisible());
-  EXPECT_TRUE(camera_bt_->is_capturing());
-  EXPECT_TRUE(camera_bt_->show_privacy_indicator());
+  EXPECT_TRUE(camera_bt()->GetVisible());
+  EXPECT_TRUE(camera_bt()->is_capturing());
+  EXPECT_TRUE(camera_bt()->show_privacy_indicator());
 
   // audio_icon should be visible without green_dot.
-  EXPECT_TRUE(mic_bt_->GetVisible());
-  EXPECT_FALSE(mic_bt_->is_capturing());
-  EXPECT_FALSE(mic_bt_->show_privacy_indicator());
+  EXPECT_TRUE(mic_bt()->GetVisible());
+  EXPECT_FALSE(mic_bt()->is_capturing());
+  EXPECT_FALSE(mic_bt()->show_privacy_indicator());
 
   // screen_share_icon should be invisible.
-  EXPECT_FALSE(share_bt_->GetVisible());
-  EXPECT_FALSE(share_bt_->is_capturing());
-  EXPECT_FALSE(share_bt_->show_privacy_indicator());
+  EXPECT_FALSE(share_bt()->GetVisible());
+  EXPECT_FALSE(share_bt()->is_capturing());
+  EXPECT_FALSE(share_bt()->show_privacy_indicator());
 
   // Stop camera and wait for is_capturing to populate.
   StopCamera(web_contents);
-  WAIT_FOR_CONDITION(!camera_bt_->is_capturing());
+  WAIT_FOR_CONDITION(!camera_bt()->is_capturing());
 
   // camera_icon should be visible without green_dot.
-  EXPECT_TRUE(camera_bt_->GetVisible());
-  EXPECT_FALSE(camera_bt_->is_capturing());
-  EXPECT_FALSE(camera_bt_->show_privacy_indicator());
+  EXPECT_TRUE(camera_bt()->GetVisible());
+  EXPECT_FALSE(camera_bt()->is_capturing());
+  EXPECT_FALSE(camera_bt()->show_privacy_indicator());
 
   // Close tab and wait for the tray to dispear.
   web_contents->Close();
   WAIT_FOR_CONDITION(!GetVcTray()->GetVisible());
   // camera_icon should be invisible.
-  EXPECT_FALSE(camera_bt_->GetVisible());
-  EXPECT_FALSE(camera_bt_->is_capturing());
-  EXPECT_FALSE(camera_bt_->show_privacy_indicator());
+  EXPECT_FALSE(camera_bt()->GetVisible());
+  EXPECT_FALSE(camera_bt()->is_capturing());
+  EXPECT_FALSE(camera_bt()->show_privacy_indicator());
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
@@ -370,36 +430,36 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                      /*use_screen_sharing=*/false);
 
   // camera_icon should be visible without green_dot.
-  EXPECT_TRUE(camera_bt_->GetVisible());
-  EXPECT_FALSE(camera_bt_->is_capturing());
-  EXPECT_FALSE(camera_bt_->show_privacy_indicator());
+  EXPECT_TRUE(camera_bt()->GetVisible());
+  EXPECT_FALSE(camera_bt()->is_capturing());
+  EXPECT_FALSE(camera_bt()->show_privacy_indicator());
 
   // audio_icon should be visible with green_dot.
-  EXPECT_TRUE(mic_bt_->GetVisible());
-  EXPECT_TRUE(mic_bt_->is_capturing());
-  EXPECT_TRUE(mic_bt_->show_privacy_indicator());
+  EXPECT_TRUE(mic_bt()->GetVisible());
+  EXPECT_TRUE(mic_bt()->is_capturing());
+  EXPECT_TRUE(mic_bt()->show_privacy_indicator());
 
   // screen_share_icon should be invisible.
-  EXPECT_FALSE(share_bt_->GetVisible());
-  EXPECT_FALSE(share_bt_->is_capturing());
-  EXPECT_FALSE(share_bt_->show_privacy_indicator());
+  EXPECT_FALSE(share_bt()->GetVisible());
+  EXPECT_FALSE(share_bt()->is_capturing());
+  EXPECT_FALSE(share_bt()->show_privacy_indicator());
 
   // Stop microphone and wait for is_capturing to populate.
   StopMicrophone(web_contents);
-  WAIT_FOR_CONDITION(!mic_bt_->is_capturing());
+  WAIT_FOR_CONDITION(!mic_bt()->is_capturing());
 
   // audio_icon should be visible without green_dot.
-  EXPECT_TRUE(mic_bt_->GetVisible());
-  EXPECT_FALSE(mic_bt_->is_capturing());
-  EXPECT_FALSE(mic_bt_->show_privacy_indicator());
+  EXPECT_TRUE(mic_bt()->GetVisible());
+  EXPECT_FALSE(mic_bt()->is_capturing());
+  EXPECT_FALSE(mic_bt()->show_privacy_indicator());
 
   // Close tab and wait for the tray to dispear.
   web_contents->Close();
   WAIT_FOR_CONDITION(!GetVcTray()->GetVisible());
   // audio_icon should be invisible.
-  EXPECT_FALSE(mic_bt_->GetVisible());
-  EXPECT_FALSE(mic_bt_->is_capturing());
-  EXPECT_FALSE(mic_bt_->show_privacy_indicator());
+  EXPECT_FALSE(mic_bt()->GetVisible());
+  EXPECT_FALSE(mic_bt()->is_capturing());
+  EXPECT_FALSE(mic_bt()->show_privacy_indicator());
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
@@ -411,27 +471,27 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                      /*use_screen_sharing=*/true);
 
   // camera_icon should be invisible.
-  EXPECT_TRUE(camera_bt_->GetVisible());
-  EXPECT_FALSE(camera_bt_->is_capturing());
-  EXPECT_FALSE(camera_bt_->show_privacy_indicator());
+  EXPECT_TRUE(camera_bt()->GetVisible());
+  EXPECT_FALSE(camera_bt()->is_capturing());
+  EXPECT_FALSE(camera_bt()->show_privacy_indicator());
 
   // audio_icon should be invisible with green_dot.
-  EXPECT_TRUE(mic_bt_->GetVisible());
-  EXPECT_FALSE(mic_bt_->is_capturing());
-  EXPECT_FALSE(mic_bt_->show_privacy_indicator());
+  EXPECT_TRUE(mic_bt()->GetVisible());
+  EXPECT_FALSE(mic_bt()->is_capturing());
+  EXPECT_FALSE(mic_bt()->show_privacy_indicator());
 
   // screen_share_icon should be visible.
-  EXPECT_TRUE(share_bt_->GetVisible());
-  EXPECT_TRUE(share_bt_->is_capturing());
-  EXPECT_TRUE(share_bt_->show_privacy_indicator());
+  EXPECT_TRUE(share_bt()->GetVisible());
+  EXPECT_TRUE(share_bt()->is_capturing());
+  EXPECT_TRUE(share_bt()->show_privacy_indicator());
 
   // Stop microphone and wait for is_capturing to populate.
   StopScreenSharing(web_contents);
-  WAIT_FOR_CONDITION(!share_bt_->is_capturing());
+  WAIT_FOR_CONDITION(!share_bt()->is_capturing());
 
-  EXPECT_FALSE(share_bt_->GetVisible());
-  EXPECT_FALSE(share_bt_->is_capturing());
-  EXPECT_FALSE(share_bt_->show_privacy_indicator());
+  EXPECT_FALSE(share_bt()->GetVisible());
+  EXPECT_FALSE(share_bt()->is_capturing());
+  EXPECT_FALSE(share_bt()->show_privacy_indicator());
 
   // VcTray should be invisible.
   EXPECT_TRUE(GetVcTray()->GetVisible());
@@ -460,9 +520,9 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
 
   // Audio icon should not show because the permission is blocked.
-  EXPECT_TRUE(camera_bt_->GetVisible());
-  EXPECT_FALSE(mic_bt_->GetVisible());
-  EXPECT_FALSE(share_bt_->GetVisible());
+  EXPECT_TRUE(camera_bt()->GetVisible());
+  EXPECT_FALSE(mic_bt()->GetVisible());
+  EXPECT_FALSE(share_bt()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
@@ -485,9 +545,9 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
 
   // Camera icon should not show because the permission is blocked.
-  EXPECT_FALSE(camera_bt_->GetVisible());
-  EXPECT_TRUE(mic_bt_->GetVisible());
-  EXPECT_FALSE(share_bt_->GetVisible());
+  EXPECT_FALSE(camera_bt()->GetVisible());
+  EXPECT_TRUE(mic_bt()->GetVisible());
+  EXPECT_FALSE(share_bt()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
@@ -507,9 +567,9 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
 
   // Both microphone and camera should not show.
-  EXPECT_FALSE(camera_bt_->GetVisible());
-  EXPECT_FALSE(mic_bt_->GetVisible());
-  EXPECT_TRUE(share_bt_->GetVisible());
+  EXPECT_FALSE(camera_bt()->GetVisible());
+  EXPECT_FALSE(mic_bt()->GetVisible());
+  EXPECT_TRUE(share_bt()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
@@ -523,24 +583,24 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                  /*use_screen_sharing=*/false);
 
   // Clicking on the mic icon should mute it.
-  ClickButton(mic_bt_);
-  WAIT_FOR_CONDITION(mic_bt_->toggled());
-  EXPECT_FALSE(mic_bt_->show_privacy_indicator());
+  ClickButton(mic_bt());
+  WAIT_FOR_CONDITION(mic_bt()->toggled());
+  EXPECT_FALSE(mic_bt()->show_privacy_indicator());
 
   // Clicking on the mic icon again should unmute it.
-  ClickButton(mic_bt_);
-  WAIT_FOR_CONDITION(!mic_bt_->toggled());
-  EXPECT_TRUE(mic_bt_->show_privacy_indicator());
+  ClickButton(mic_bt());
+  WAIT_FOR_CONDITION(!mic_bt()->toggled());
+  EXPECT_TRUE(mic_bt()->show_privacy_indicator());
 
   // Clicking on the camera icon should mute it.
-  ClickButton(camera_bt_);
-  WAIT_FOR_CONDITION(camera_bt_->toggled());
-  EXPECT_FALSE(camera_bt_->show_privacy_indicator());
+  ClickButton(camera_bt());
+  WAIT_FOR_CONDITION(camera_bt()->toggled());
+  EXPECT_FALSE(camera_bt()->show_privacy_indicator());
 
   // Clicking on the camera icon again should unmute it.
-  ClickButton(camera_bt_);
-  WAIT_FOR_CONDITION(!camera_bt_->toggled());
-  EXPECT_FALSE(camera_bt_->show_privacy_indicator());
+  ClickButton(camera_bt());
+  WAIT_FOR_CONDITION(!camera_bt()->toggled());
+  EXPECT_FALSE(camera_bt()->show_privacy_indicator());
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
@@ -569,7 +629,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
   // Start accessing camera.
   StartCamera(web_contents);
-  WAIT_FOR_CONDITION(camera_bt_->show_privacy_indicator());
+  WAIT_FOR_CONDITION(camera_bt()->show_privacy_indicator());
 
   // Get the ReturnToApp Panel.
   ClickButton(GetVcTray()->toggle_bubble_button());
@@ -589,7 +649,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
   // Start screen sharing.
   StartScreenSharing(web_contents);
-  WAIT_FOR_CONDITION(share_bt_->show_privacy_indicator());
+  WAIT_FOR_CONDITION(share_bt()->show_privacy_indicator());
 
   // Get the ReturnToApp Panel.
   ClickButton(GetVcTray()->toggle_bubble_button());
@@ -668,11 +728,11 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
 
   // Stop microphone and wait for is_capturing to populate.
   StopMicrophone(web_contents);
-  WAIT_FOR_CONDITION(!mic_bt_->is_capturing());
+  WAIT_FOR_CONDITION(!mic_bt()->is_capturing());
 
   // Clicking on the mic icon should mute it.
-  ClickButton(mic_bt_);
-  WAIT_FOR_CONDITION(mic_bt_->toggled());
+  ClickButton(mic_bt());
+  WAIT_FOR_CONDITION(mic_bt()->toggled());
 
   // Start accessing microphone should trigger UseWhileDisabled.
   StartMicrophone(web_contents);
@@ -693,8 +753,8 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
   auto* camera_nudge_id = kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId;
 
   // Clicking on the camera icon should mute it.
-  ClickButton(camera_bt_);
-  WAIT_FOR_CONDITION(camera_bt_->toggled());
+  ClickButton(camera_bt());
+  WAIT_FOR_CONDITION(camera_bt()->toggled());
 
   // Start accessing camera should trigger UseWhileDisabled.
   StartCamera(web_contents);
@@ -764,8 +824,8 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   StartScreenSharing(web_contents_2);
 
   // Wait for signals to populate.
-  WAIT_FOR_CONDITION(camera_bt_->show_privacy_indicator());
-  WAIT_FOR_CONDITION(share_bt_->show_privacy_indicator());
+  WAIT_FOR_CONDITION(camera_bt()->show_privacy_indicator());
+  WAIT_FOR_CONDITION(share_bt()->show_privacy_indicator());
 
   // Get the ReturnToApp Panel.
   ClickButton(GetVcTray()->toggle_bubble_button());
@@ -891,7 +951,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   EXPECT_TRUE(found_noise_cancellation_buttion);
 }
 
-// TODO(crbug.com/1479984): re-enable once the bug is fixed.
+// TODO(crbug.com/40071631): re-enable once the bug is fixed.
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        DISABLED_StopAllScreenShare) {
   // Open a tab.
@@ -917,14 +977,231 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   ClickButton(GetVcTray()->toggle_bubble_button());
 
   // Click on the screen share button.
-  EXPECT_TRUE(share_bt_->is_capturing());
-  ClickButton(share_bt_);
-  WAIT_FOR_CONDITION(!share_bt_->is_capturing());
+  EXPECT_TRUE(share_bt()->is_capturing());
+  ClickButton(share_bt());
+  WAIT_FOR_CONDITION(!share_bt()->is_capturing());
 
   // Check that web_contents_1 has stopped sharing screen.
   ClickButton(GetVcTray()->toggle_bubble_button());
   WAIT_FOR_CONDITION(GetVcTray()->GetBubbleView()->GetVisible());
   EXPECT_FALSE(GetReturnToAppButtons()[0]->is_capturing_screen());
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       ImageButtonShouldActivateWebui) {
+  if (is_guest_mode_) {
+    GTEST_SKIP() << "Skip for guest mode.";
+  }
+
+  // Trigger the VcTray with camera accessing.
+  TriggeringTray(/*use_camera=*/true,
+                 /*use_microphone=*/false,
+                 /*use_screen_sharing=*/false);
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+
+  // Wait until the VcBubble is visible.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+  auto* buble_view = GetVcTray()->GetBubbleView();
+  WAIT_FOR_CONDITION(buble_view->GetVisible());
+
+  views::View* background_image_button =
+      buble_view->GetViewByID(BubbleViewID::kBackgroundBlurImageButton);
+
+  // Expect the image button to be visible.
+  EXPECT_TRUE(background_image_button->GetVisible());
+
+  // Expect the SetCameraBackgroundView to be invisible.
+  EXPECT_FALSE(buble_view->GetViewByID(BubbleViewID::kSetCameraBackgroundView)
+                   ->GetVisible());
+
+  content::WebContentsAddedObserver web_contents_added_observer;
+
+  // Clicking on the Image button should open the VcBackgroundApp.
+  ClickButton(views::AsViewClass<views::Button>(background_image_button));
+  content::WebContents* new_contents =
+      web_contents_added_observer.GetWebContents();
+
+  EXPECT_EQ(GURL(vc_background_ui::kChromeUIVcBackgroundURL),
+            new_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       CreateWithAiButtonShouldActivateWebui) {
+  if (is_guest_mode_) {
+    GTEST_SKIP() << "Skip for guest mode.";
+  }
+
+  CreateAndApplyBackgroundImage(123u);
+
+  // Trigger the VcTray with camera accessing.
+  TriggeringTray(/*use_camera=*/true,
+                 /*use_microphone=*/false,
+                 /*use_screen_sharing=*/false);
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+
+  // Wait until the VcBubble is visible.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+  auto* buble_view = GetVcTray()->GetBubbleView();
+  WAIT_FOR_CONDITION(buble_view->GetVisible());
+
+  // SetCameraBackgroundView should be visible.
+  EXPECT_TRUE(buble_view->GetViewByID(BubbleViewID::kSetCameraBackgroundView)
+                  ->GetVisible());
+
+  // Create with AI button should be visible.
+  views::View* create_with_ai_button =
+      buble_view->GetViewByID(BubbleViewID::kCreateWithAiButton);
+  EXPECT_TRUE(create_with_ai_button->GetVisible());
+
+  content::WebContentsAddedObserver web_contents_added_observer;
+
+  // Clicking on the Create with AI button should open VcBackgroundApp.
+  ClickButton(views::AsViewClass<views::Button>(create_with_ai_button));
+  content::WebContents* new_contents =
+      web_contents_added_observer.GetWebContents();
+
+  EXPECT_EQ(GURL(vc_background_ui::kChromeUIVcBackgroundURL),
+            new_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       ClickingOnBackgroundBlurHidesSetCameraBackgroundView) {
+  if (is_guest_mode_) {
+    GTEST_SKIP() << "Skip for guest mode.";
+  }
+
+  CreateAndApplyBackgroundImage(123u);
+
+  // Trigger the VcTray with camera accessing.
+  TriggeringTray(/*use_camera=*/true,
+                 /*use_microphone=*/false,
+                 /*use_screen_sharing=*/false);
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+
+  // Wait until the VcBubble is visible.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+  auto* buble_view = GetVcTray()->GetBubbleView();
+  WAIT_FOR_CONDITION(buble_view->GetVisible());
+
+  // SetCameraBackgroundView should be visible.
+  auto* set_camera_background_view =
+      buble_view->GetViewByID(BubbleViewID::kSetCameraBackgroundView);
+  EXPECT_TRUE(set_camera_background_view->GetVisible());
+
+  auto* background_image_button = views::AsViewClass<views::Button>(
+      buble_view->GetViewByID(BubbleViewID::kBackgroundBlurImageButton));
+
+  // Constructing the image button is async, we need wait until that completes.
+  WAIT_FOR_CONDITION(buble_view->GetViewByID(BubbleViewID::kBackgroundImage0) !=
+                     nullptr);
+  auto* first_background_image = views::AsViewClass<views::Button>(
+      buble_view->GetViewByID(BubbleViewID::kBackgroundImage0));
+
+  for (int button_id : {BubbleViewID::kBackgroundBlurOffButton,
+                        BubbleViewID::kBackgroundBlurLightButton,
+                        BubbleViewID::kBackgroundBlurFullButton}) {
+    // Clicking on background blur button should turn off background replace.
+    auto* button =
+        views::AsViewClass<views::Button>(buble_view->GetViewByID(button_id));
+    ClickButton(button);
+
+    WAIT_FOR_CONDITION(!set_camera_background_view->GetVisible());
+    EXPECT_FALSE(
+        camera_effects_controller()->GetCameraEffects()->replace_enabled);
+
+    // Clicking image button should set SetCameraBackgroundView visible.
+    ClickButton(background_image_button);
+    WAIT_FOR_CONDITION(set_camera_background_view->GetVisible());
+    EXPECT_FALSE(
+        camera_effects_controller()->GetCameraEffects()->replace_enabled);
+
+    // Clicking on image button should apply that as background.
+    // Setting background replace is async, so we can't directly check the
+    // replace_enabled; but wait for that becomes true.
+    ClickButton(first_background_image);
+    WAIT_FOR_CONDITION(
+        camera_effects_controller()->GetCameraEffects()->replace_enabled);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       ClickingOnBackgroundImageAppliesBackgroundReplace) {
+  if (is_guest_mode_) {
+    GTEST_SKIP() << "Skip for guest mode.";
+  }
+
+  const base::FilePath image1 = CreateAndApplyBackgroundImage(123u);
+  const base::FilePath image2 = CreateAndApplyBackgroundImage(456u);
+
+  // Trigger the VcTray with camera accessing.
+  TriggeringTray(/*use_camera=*/true,
+                 /*use_microphone=*/false,
+                 /*use_screen_sharing=*/false);
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+
+  // Wait until the VcBubble is visible.
+  ClickButton(GetVcTray()->toggle_bubble_button());
+  auto* buble_view = GetVcTray()->GetBubbleView();
+  WAIT_FOR_CONDITION(buble_view->GetVisible());
+
+  // Currently image2 should be set as background.
+  EXPECT_EQ(
+      camera_effects_controller()->GetCameraEffects()->background_filepath,
+      image2);
+
+  // Constructing the image button is async, we need wait until that completes.
+  WAIT_FOR_CONDITION(buble_view->GetViewByID(BubbleViewID::kBackgroundImage0) !=
+                     nullptr);
+  WAIT_FOR_CONDITION(buble_view->GetViewByID(BubbleViewID::kBackgroundImage1) !=
+                     nullptr);
+
+  auto* first_background_image = views::AsViewClass<views::Button>(
+      buble_view->GetViewByID(BubbleViewID::kBackgroundImage0));
+  auto* second_background_image = views::AsViewClass<views::Button>(
+      buble_view->GetViewByID(BubbleViewID::kBackgroundImage1));
+
+  // Clicking on the second image will set image1 as background.
+  ClickButton(second_background_image);
+  // Setting background replace is async, so we can't directly check the
+  // background_filepath; but wait for that becomes true.
+  WAIT_FOR_CONDITION(
+      camera_effects_controller()->GetCameraEffects()->background_filepath ==
+      image1);
+
+  // Clicking on the first image will set image2 as background.
+  // Setting background replace is async, so we can't directly check the
+  // background_filepath; but wait for that becomes true.
+  ClickButton(first_background_image);
+  WAIT_FOR_CONDITION(
+      camera_effects_controller()->GetCameraEffects()->background_filepath ==
+      image2);
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       TrayTriggeredByCaptureCamera) {
+  ASSERT_EQ(1u, ash::WaitForCameraAvailabilityWithTimeout(base::Seconds(5)));
+  ash::CaptureModeTestApi test_api;
+  test_api.SelectCameraAtIndex(0);
+  test_api.StartForFullscreen(/*for_video=*/true);
+  ASSERT_TRUE(test_api.IsSessionActive());
+
+  // VcTray should be triggered.
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
+                       TrayTriggeredByCaptureMicrophone) {
+  ASSERT_EQ(1u, ash::WaitForCameraAvailabilityWithTimeout(base::Seconds(5)));
+  ash::CaptureModeTestApi test_api;
+  test_api.SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
+  test_api.StartForFullscreen(/*for_video=*/true);
+  ASSERT_TRUE(test_api.IsSessionActive());
+  test_api.PerformCapture();
+  test_api.FlushRecordingServiceForTesting();
+  EXPECT_TRUE(test_api.IsVideoRecordingInProgress());
+
+  // VcTray should be triggered.
+  WAIT_FOR_CONDITION(GetVcTray()->GetVisible());
 }
 
 }  // namespace ash::video_conference

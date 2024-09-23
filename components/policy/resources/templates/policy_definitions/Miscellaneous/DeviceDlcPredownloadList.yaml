@@ -7,7 +7,6 @@ desc: |-
   This policy allows to set a list of DLCs (Downloadable Content) to be downloaded as soon as possible. Downloaded DLCs are then available for all users on the device.
 
   This is useful when the administrator knows that a feature that requires the presence of the DLC will likely be used by the users of the device.
-future_on: ['chrome_os']
 device_only: true
 features:
   dynamic_refresh: true
@@ -20,9 +19,12 @@ schema:
     type: string
   type: array
 items:
-- caption: Scanner drivers
+- caption: Scanners
   name: scanner_drivers
   value: scanner_drivers
 example_value:
 - scanner_drivers
+supported_on:
+- chrome_os:125-
 tags: []
+generate_device_proto: False

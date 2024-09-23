@@ -5,18 +5,18 @@
 #include "content/browser/url_loader_factory_params_helper.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/command_line.h"
-#include "base/strings/string_piece.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -83,7 +83,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     network::mojom::TrustTokenOperationPolicyVerdict
         trust_token_redemption_policy,
     net::CookieSettingOverrides cookie_setting_overrides,
-    base::StringPiece debug_tag) {
+    std::string_view debug_tag,
+    bool require_cross_site_request_for_cookies) {
   DCHECK(process);
 
   network::mojom::URLLoaderFactoryParamsPtr params =
@@ -104,17 +105,17 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->coep_reporter = std::move(coep_reporter);
 
   if (params->disable_web_security) {
-    // --disable-web-security also disables Cross-Origin Read Blocking (CORB).
-    params->is_corb_enabled = false;
+    // --disable-web-security also disables Opaque Response Blocking (ORB).
+    params->is_orb_enabled = false;
   } else if (allow_universal_access_from_file_urls &&
              origin.scheme() == url::kFileScheme) {
-    // allow_universal_access_from_file_urls disables CORB (via
-    // |is_corb_enabled|) and CORS (via |disable_web_security|) for requests
+    // allow_universal_access_from_file_urls disables ORB (via
+    // `is_orb_enabled`) and CORS (via `disable_web_security`) for requests
     // made from a file: |origin|.
-    params->is_corb_enabled = false;
+    params->is_orb_enabled = false;
     params->disable_web_security = true;
   } else {
-    params->is_corb_enabled = true;
+    params->is_orb_enabled = true;
   }
 
   params->trust_token_issuance_policy = trust_token_issuance_policy;
@@ -140,6 +141,9 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
 
   params->debug_tag = std::string(debug_tag);
 
+  params->require_cross_site_request_for_cookies =
+      require_cross_site_request_for_cookies;
+
   return params;
 }
 
@@ -160,7 +164,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
     network::mojom::TrustTokenOperationPolicyVerdict
         trust_token_redemption_policy,
     net::CookieSettingOverrides cookie_setting_overrides,
-    base::StringPiece debug_tag) {
+    std::string_view debug_tag) {
   return CreateParams(
       process,
       frame_origin,  // origin
@@ -176,7 +180,8 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       trust_token_issuance_policy, trust_token_redemption_policy,
-      cookie_setting_overrides, debug_tag);
+      cookie_setting_overrides, debug_tag,
+      /*require_cross_site_request_for_cookies=*/false);
 }
 
 // static
@@ -208,7 +213,8 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       trust_token_issuance_policy, trust_token_redemption_policy,
-      cookie_setting_overrides, "ParamHelper::CreateForIsolatedWorld");
+      cookie_setting_overrides, "ParamHelper::CreateForIsolatedWorld",
+      /*require_cross_site_request_for_cookies=*/false);
 }
 
 network::mojom::URLLoaderFactoryParamsPtr
@@ -238,13 +244,14 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
-      cookie_setting_overrides, "ParamHelper::CreateForPrefetch");
+      cookie_setting_overrides, "ParamHelper::CreateForPrefetch",
+      /*require_cross_site_request_for_cookies=*/false);
 }
 
 // static
-// TODO(crbug.com/1231019): make sure client_security_state is no longer nullptr
-// anywhere.
-// TODO(crbug.com/1386190): Investigate whether to support cookie setting
+// TODO(crbug.com/40190528): make sure client_security_state is no longer
+// nullptr anywhere.
+// TODO(crbug.com/40247160): Investigate whether to support cookie setting
 // overrides (hardcoded empty set used for now).
 network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForWorker(
@@ -257,7 +264,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    base::StringPiece debug_tag) {
+    std::string_view debug_tag,
+    bool require_cross_site_request_for_cookies) {
   return CreateParams(
       process,
       request_initiator,  // origin
@@ -281,11 +289,12 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       // https://github.com/w3c/webappsec-permissions-policy/issues/207.
       network::mojom::TrustTokenOperationPolicyVerdict::kPotentiallyPermit,
       network::mojom::TrustTokenOperationPolicyVerdict::kPotentiallyPermit,
-      net::CookieSettingOverrides(), debug_tag);
+      net::CookieSettingOverrides(), debug_tag,
+      require_cross_site_request_for_cookies);
 }
 
 // static
-// TODO(crbug.com/1386190): Investigate whether to support cookie setting
+// TODO(crbug.com/40247160): Investigate whether to support cookie setting
 // overrides (hardcoded empty set used for now).
 network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
@@ -298,7 +307,7 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
         trust_token_observer,
     mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver>
         shared_dictionary_observer) {
-  // TODO(crbug.com/1225556): Consider not using the speculative
+  // TODO(crbug.com/40188470): Consider not using the speculative
   // RenderFrameHostImpl to create URLLoaderNetworkServiceObserver.
   // In general we should avoid using speculative RenderFrameHostImpl
   // to fill URLLoaderFactoryParams because some parameters can be calculated
@@ -315,12 +324,16 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       /*top_frame_origin=*/tentative_origin, /*frame_origin=*/tentative_origin,
       net::SiteForCookies::FromOrigin(tentative_origin));
 
+  // TODO(https://issues.chromium.org/issues/336754077):
+  // Support Document-Isolation-Policy in early hints headers instead of passing
+  // a default DocumentIsolationPolicy.
   network::mojom::ClientSecurityStatePtr client_security_state =
       network::mojom::ClientSecurityState::New(
           early_hints.headers->cross_origin_embedder_policy,
           network::IsOriginPotentiallyTrustworthy(tentative_origin),
           early_hints.ip_address_space,
-          network::mojom::PrivateNetworkRequestPolicy::kBlock);
+          network::mojom::PrivateNetworkRequestPolicy::kBlock,
+          network::DocumentIsolationPolicy());
 
   return CreateParams(
       process, /*origin=*/tentative_origin,
@@ -335,7 +348,8 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       /*devtools_observer=*/mojo::NullRemote(),
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
-      net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload");
+      net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload",
+      /*require_cross_site_request_for_cookies=*/false);
 }
 
 }  // namespace content

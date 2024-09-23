@@ -52,7 +52,6 @@ struct DisplaySnapshot {
   int32 year_of_manufacture;
   gfx.mojom.Size maximum_cursor_size;
   VariableRefreshRateState variable_refresh_rate_state;
-  uint16 vsync_rate_min;
   // |drm_formats_and_modifiers| contains a list of supported Linux DRM formats
   // and corresponding lists of modifiers for each one.
   [EnableIf=is_chromeos]

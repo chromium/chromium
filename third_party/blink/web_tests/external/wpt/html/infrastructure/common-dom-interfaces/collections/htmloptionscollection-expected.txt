@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Insert <p><option>6</option></p> into <select>
+  assert_equals: Correct length expected 5 but got 6
+[FAIL] Insert <optgroup><optgroup><option>6</option></optgroup></optgroup> into <select>
+  assert_equals: Correct length expected 5 but got 6
+Harness: the test ran to completion.
+

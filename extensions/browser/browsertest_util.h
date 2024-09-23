@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_id.h"
 
 namespace base {

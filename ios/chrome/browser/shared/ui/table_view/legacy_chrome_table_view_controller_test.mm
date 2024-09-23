@@ -126,6 +126,15 @@ void LegacyChromeTableViewControllerTest::CheckSectionFooterWithId(
   CheckSectionFooter(l10n_util::GetNSString(expected_text_id), section);
 }
 
+void LegacyChromeTableViewControllerTest::CheckTextCellEnabled(
+    BOOL expected_enabled,
+    int section,
+    int item) {
+  id cell = GetTableViewItem(section, item);
+  ASSERT_TRUE([cell respondsToSelector:@selector(isEnabled)]);
+  EXPECT_EQ(expected_enabled, [cell isEnabled]);
+}
+
 void LegacyChromeTableViewControllerTest::CheckTextCellText(
     NSString* expected_text,
     int section,

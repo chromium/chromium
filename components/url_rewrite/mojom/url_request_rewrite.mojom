@@ -8,7 +8,7 @@ import "url/mojom/url.mojom";
 
 // Used by the browser to push URL rewrite rules to renderers. There will be
 // one receiver per web frame.
-// TODO(https://crbug.com/976975): Support URL rewriting for service workers.
+// TODO(crbug.com/40632933): Support URL rewriting for service workers.
 interface UrlRequestRulesReceiver {
   // Receives a set of rules to apply to URL requests.
   OnRulesUpdated(UrlRequestRewriteRules rules);

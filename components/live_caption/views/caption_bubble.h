@@ -39,10 +39,6 @@ class ImageView;
 class Label;
 }  // namespace views
 
-namespace ui {
-struct AXNodeData;
-}
-
 namespace {
 class CaptionBubbleEventObserver;
 }
@@ -55,6 +51,7 @@ class LanguageLabelButton;
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. These should be the same as
 // LiveCaptionSessionEvent in enums.xml.
+// LINT.IfChange(SessionEvent)
 enum class SessionEvent {
   // We began showing captions for an audio stream.
   kStreamStarted = 0,
@@ -64,6 +61,13 @@ enum class SessionEvent {
   kCloseButtonClicked = 2,
   kMaxValue = kCloseButtonClicked,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:LiveCaptionSessionEvent)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Used by ash window manager to place the caption bubble in the correct
+// container.
+extern const ui::ClassProperty<bool>* const kIsCaptionBubbleKey;
+#endif
 
 using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 
@@ -77,8 +81,9 @@ using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 //
 class CaptionBubble : public views::BubbleDialogDelegateView,
                       public gfx::AnimationDelegate {
+  METADATA_HEADER(CaptionBubble, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(CaptionBubble);
   CaptionBubble(PrefService* profile_prefs,
                 const std::string& application_locale,
                 base::OnceClosure destroyed_callback);
@@ -127,6 +132,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void UpdateControlsVisibility(bool show_controls);
   void OnMouseEnteredOrExitedWindow(bool entered);
 
+  void SetTitleTextForTesting(const std::u16string title_text) {
+    title_->SetText(title_text);
+  }
+
  protected:
   // views::BubbleDialogDelegateView:
   void Init() override;
@@ -142,7 +151,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void OnLiveTranslateEnabledChanged();
   void OnLiveCaptionLanguageChanged();
   void OnLiveTranslateTargetLanguageChanged();
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleWindowTitle() const override;
   void OnThemeChanged() override;
 
@@ -194,7 +202,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   // For the provided line index, gets the corresponding rendered line in the
   // label and returns the text position of the first character of that line.
   // Returns the same value regardless of whether the label is visible or not.
-  // TODO(crbug.com/1055150): This feature is launching for English first.
+  // TODO(crbug.com/40119836): This feature is launching for English first.
   // Make sure this is correct for all languages.
   size_t GetTextIndexOfLineInLabel(size_t line) const;
 
@@ -241,6 +249,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void LogSessionEvent(SessionEvent event);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> GetButtons();
+
+  void OnTitleTextChanged();
+
+  void UpdateAccessibleName();
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
@@ -316,6 +328,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   bool render_active_ = false;
   bool mouse_inside_window_ = false;
   std::unique_ptr<CaptionBubbleEventObserver> caption_bubble_event_observer_;
+
+  base::CallbackListSubscription title_text_changed_callback_;
 
   base::WeakPtrFactory<CaptionBubble> weak_ptr_factory_{this};
 };

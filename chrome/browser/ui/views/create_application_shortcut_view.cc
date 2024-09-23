@@ -24,6 +24,8 @@
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -84,7 +86,7 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
                                           std::move(close_callback)) {
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
-  provider->os_integration_manager().GetShortcutInfoForApp(
+  provider->os_integration_manager().GetShortcutInfoForAppFromRegistrar(
       web_app_id,
       base::BindRepeating(&CreateChromeApplicationShortcutView::OnAppInfoLoaded,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -98,8 +100,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
       prefs_(profile->GetPrefs()),
       is_extension_(is_extension),
       close_callback_(std::move(close_callback)) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetModalType(ui::mojom::ModalType::kWindow);
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
@@ -161,7 +163,8 @@ void CreateChromeApplicationShortcutView::InitControls() {
     quick_launch_check_box_ = AddChildView(std::move(pin_to_taskbar_checkbox));
 }
 
-gfx::Size CreateChromeApplicationShortcutView::CalculatePreferredSize() const {
+gfx::Size CreateChromeApplicationShortcutView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   static const int kDialogWidth = 360;
   int height = GetLayoutManager()->GetPreferredHeightForWidth(this,
       kDialogWidth);
@@ -169,9 +172,10 @@ gfx::Size CreateChromeApplicationShortcutView::CalculatePreferredSize() const {
 }
 
 bool CreateChromeApplicationShortcutView::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  if (button != ui::DIALOG_BUTTON_OK)
+    ui::mojom::DialogButton button) const {
+  if (button != ui::mojom::DialogButton::kOk) {
     return true;  // It's always possible to cancel out of creating a shortcut.
+  }
 
   if (!shortcut_info_)
     return false;  // Dialog's not ready because app info hasn't been loaded.
@@ -187,7 +191,7 @@ std::u16string CreateChromeApplicationShortcutView::GetWindowTitle() const {
 }
 
 void CreateChromeApplicationShortcutView::OnDialogAccepted() {
-  DCHECK(IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+  DCHECK(IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
 
   if (!close_callback_.is_null())
     std::move(close_callback_).Run(/*success=*/shortcut_info_ != nullptr);
@@ -212,18 +216,18 @@ void CreateChromeApplicationShortcutView::OnDialogAccepted() {
   creation_locations.in_quick_launch_bar = false;
 #endif
 
-  // If the dialog has been triggered from a web_app and the sub manager
-  // architecture for OS integration is enabled, then we need to perform OS
+  // If the dialog has been triggered from a web_app, then we need to perform OS
   // integration using sub managers so that shortcuts can be properly added,
-  // updated or deleted.
-  if (!shortcut_info_->app_id.empty() && !is_extension_ &&
-      web_app::AreSubManagersExecuteEnabled()) {
+  // updated or deleted. Otherwise, shortcuts created need not be tracked as
+  // they will not be tied to an app_id.
+  if (!shortcut_info_->app_id.empty() && !is_extension_) {
     auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
     CHECK(provider);
     provider->scheduler().SynchronizeOsIntegration(
         shortcut_info_->app_id, base::DoNothing(),
         web_app::ConvertShortcutLocationsToSynchronizeOptions(
-            creation_locations, web_app::SHORTCUT_CREATION_BY_USER));
+            creation_locations, web_app::SHORTCUT_CREATION_BY_USER),
+        /*upgrade_to_fully_installed_if_installed=*/true);
   } else {
     web_app::CreateShortcutsWithInfo(web_app::SHORTCUT_CREATION_BY_USER,
                                      creation_locations, base::DoNothing(),

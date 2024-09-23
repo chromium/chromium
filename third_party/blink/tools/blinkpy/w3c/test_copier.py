@@ -30,7 +30,9 @@ This module is responsible for modifying and copying a subset of the tests from
 a local W3C repository source directory into a destination directory.
 """
 
+import collections
 import logging
+from typing import Mapping, Sequence, Set, Tuple, TypedDict
 
 from blinkpy.w3c.common import is_basename_skipped
 from blinkpy.common import path_finder
@@ -43,7 +45,12 @@ _log = logging.getLogger(__name__)
 DEST_DIR_NAME = 'external'
 
 
-class TestCopier(object):
+class Copy(TypedDict):
+    src: str
+    dest: str
+
+
+class TestCopier:
     def __init__(self, host, source_repo_path):
         """Initializes variables to prepare for copying and converting files.
 
@@ -67,8 +74,6 @@ class TestCopier(object):
             self.source_repo_path == self.destination_directory)
         self.dir_above_repo = self.filesystem.dirname(self.source_repo_path)
 
-        self.import_list = []
-
         # This is just a FYI list of CSS properties that still need to be prefixed,
         # which may be output after importing.
         self._prefixed_properties = {}
@@ -76,17 +81,22 @@ class TestCopier(object):
     def do_import(self):
         _log.info('Importing %s into %s', self.source_repo_path,
                   self.destination_directory)
-        self.find_importable_tests()
-        self.import_tests()
+        copies_by_dir = self.find_importable_tests()
+        self.import_tests(copies_by_dir)
 
-    def find_importable_tests(self):
-        """Walks through the source directory to find what tests should be imported.
+    def find_importable_tests(self) -> Mapping[str, Sequence[Copy]]:
+        """Walks through the source directory to find what tests should be imported."""
+        paths_to_skip, paths_to_import = self._read_import_filter()
+        copies_by_dir = collections.defaultdict(list)
 
-        This function sets self.import_list, which contains information about how many
-        tests are being imported, and their source and destination paths.
-        """
-        paths_to_skip = self.find_paths_to_skip()
-
+        # TODO(crbug.com/326646909):
+        # * Path construction here is much more complicated than it needs to
+        #   be, and likely only works on Unix.
+        # * Use the simple test list format for import inclusions/exclusions
+        #   (https://bit.ly/chromium-test-list-format) instead of the tagged
+        #   test list.
+        # * Consider handling exclusions/inclusions in one loop going
+        #   file-by-file.
         for root, dirs, files in self.filesystem.walk(self.source_repo_path):
             cur_dir = root.replace(self.dir_above_repo + '/', '') + '/'
             _log.debug('Scanning %s...', cur_dir)
@@ -107,8 +117,6 @@ class TestCopier(object):
                         dirs.remove(path_base)
                         if self.import_in_place:
                             self.filesystem.rmtree(path_full)
-
-            copy_list = []
 
             for filename in files:
                 path_full = self.filesystem.join(root, filename)
@@ -131,17 +139,31 @@ class TestCopier(object):
                     )
                     continue
 
-                copy_list.append({'src': path_full, 'dest': filename})
-
-            if copy_list:
-                # Only add this directory to the list if there's something to import
-                self.import_list.append({
-                    'dirname': root,
-                    'copy_list': copy_list
+                copies_by_dir[root].append({
+                    'src': path_full,
+                    'dest': filename,
                 })
 
-    def find_paths_to_skip(self):
-        paths_to_skip = set()
+        for path in paths_to_import:
+            path_in_chromium = self.filesystem.join(self.web_tests_dir, path)
+            path_from_wpt = path_in_chromium.replace(
+                self.destination_directory + '/', '')
+            src = self.filesystem.join(self.source_repo_path, path_from_wpt)
+            if not self.filesystem.isfile(src):
+                _log.warning(
+                    'Only regular files can be explicitly allowlisted '
+                    f'currently. {src!r} is not; skipping.')
+                continue
+            copies_by_dir[self.filesystem.dirname(src)].append({
+                'src':
+                src,
+                'dest':
+                self.filesystem.basename(src)
+            })
+        return copies_by_dir
+
+    def _read_import_filter(self) -> Tuple[Set[str], Set[str]]:
+        paths_to_skip, paths_to_import = set(), set()
         port = self.host.port_factory.get()
         w3c_import_expectations_path = self.path_finder.path_from_web_tests(
             'W3CImportExpectations')
@@ -150,40 +172,37 @@ class TestCopier(object):
         expectations = TestExpectations(
             port, {w3c_import_expectations_path: w3c_import_expectations})
 
-        # get test names that should be skipped
         for line in expectations.get_updated_lines(
                 w3c_import_expectations_path):
+            if not line.test:  # Comment lines
+                continue
             if line.is_glob:
                 _log.warning(
                     'W3CImportExpectations:%d Globs are not allowed in this file.',
                     line.lineno)
                 continue
+            if line.tags:
+                _log.warning(
+                    'W3CImportExpectations:%d should not have any specifiers',
+                    line.lineno)
             if ResultType.Skip in line.results:
-                if line.tags:
-                    _log.warning(
-                        'W3CImportExpectations:%d should not have any specifiers',
-                        line.lineno)
                 paths_to_skip.add(line.test)
+            elif ResultType.Pass in line.results:
+                paths_to_import.add(line.test)
 
-        return paths_to_skip
+        return paths_to_skip, paths_to_import
 
-    def import_tests(self):
-        """Reads |self.import_list|, and converts and copies files to their destination."""
-        for dir_to_copy in self.import_list:
-            if not dir_to_copy['copy_list']:
-                continue
-
-            orig_path = dir_to_copy['dirname']
-
-            relative_dir = self.filesystem.relpath(orig_path,
+    def import_tests(self, copy_by_dir: Mapping[str, Sequence[Copy]]):
+        """Converts and copies files to their destination."""
+        for src_dir, copy_list in copy_by_dir.items():
+            assert copy_list, src_dir
+            relative_dir = self.filesystem.relpath(src_dir,
                                                    self.source_repo_path)
             dest_dir = self.filesystem.join(self.destination_directory,
                                             relative_dir)
-
             if not self.filesystem.exists(dest_dir):
                 self.filesystem.maybe_make_directory(dest_dir)
-
-            for file_to_copy in dir_to_copy['copy_list']:
+            for file_to_copy in copy_list:
                 self.copy_file(file_to_copy, dest_dir)
 
         _log.info('')

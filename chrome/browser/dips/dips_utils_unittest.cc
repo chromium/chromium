@@ -4,7 +4,10 @@
 
 #include "chrome/browser/dips/dips_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/public/browser/cookie_access_details.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -115,4 +118,91 @@ TEST(BucketizeBounceDelayTest, BucketizeBounceDelay) {
   EXPECT_EQ(10, BucketizeBounceDelay(base::Milliseconds(10000)));
   EXPECT_EQ(10, BucketizeBounceDelay(base::Milliseconds(10001)));
   EXPECT_EQ(10, BucketizeBounceDelay(base::Days(1)));
+}
+
+TEST(UpdateTimestampTest, AlwaysReplaceNullOpt) {
+  const base::Time new_value = base::Time::FromTimeT(42);
+  std::optional<base::Time> time;
+
+  ASSERT_EQ(time, std::nullopt);
+  EXPECT_TRUE(UpdateTimestamp(time, new_value));
+  EXPECT_THAT(time, testing::Optional(new_value));
+}
+
+TEST(UpdateTimestampTest, DontReplaceBeforeIntervalPasses) {
+  const base::Time old_value = base::Time::FromTimeT(42);
+  const base::Time new_value =
+      old_value + kDIPSTimestampUpdateInterval - base::Milliseconds(1);
+  std::optional<base::Time> time = old_value;
+
+  ASSERT_THAT(time, testing::Optional(old_value));
+  EXPECT_FALSE(UpdateTimestamp(time, new_value));
+  EXPECT_THAT(time, testing::Optional(old_value));
+}
+
+TEST(UpdateTimestampTest, ReplaceAfterIntervalPasses) {
+  const base::Time old_value = base::Time::FromTimeT(42);
+  const base::Time new_value = old_value + kDIPSTimestampUpdateInterval;
+  std::optional<base::Time> time = old_value;
+
+  ASSERT_THAT(time, testing::Optional(old_value));
+  EXPECT_TRUE(UpdateTimestamp(time, new_value));
+  EXPECT_THAT(time, testing::Optional(new_value));
+}
+
+TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyInExperiment) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      network::features::kSkipTpcdMitigationsForAds,
+      {{"SkipTpcdMitigationsForAdsHeuristics", "true"}});
+
+  content::CookieAccessDetails details;
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kFalse);
+
+  details.cookie_setting_overrides.Put(
+      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kTrue);
+}
+
+TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentFeature) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(network::features::kSkipTpcdMitigationsForAds);
+
+  content::CookieAccessDetails details;
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
+
+  details.cookie_setting_overrides.Put(
+      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
+}
+
+TEST(IsAdTaggedCookieForHeuristics, ReturnsCorrectlyWithoutExperimentParam) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      network::features::kSkipTpcdMitigationsForAds,
+      {{"SkipTpcdMitigationsForAdsHeuristics", "false"}});
+
+  content::CookieAccessDetails details;
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
+
+  details.cookie_setting_overrides.Put(
+      net::CookieSettingOverride::kSkipTPCDHeuristicsGrant);
+  EXPECT_EQ(IsAdTaggedCookieForHeuristics(details), OptionalBool::kUnknown);
+}
+
+TEST(HasCHIPS, TrueOnlyWhenHasAtLeastOnePartitionedCookie) {
+  auto unpartitioned_cookie = net::CanonicalCookie::CreateForTesting(
+      GURL("https://example.com"), "name=value;", base::Time::Now());
+  auto partitioned_cookie = net::CanonicalCookie::CreateForTesting(
+      GURL("https://example.com"), "name=value; Partitioned; Path=/; Secure",
+      base::Time::Now(), std::nullopt,
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://example.org")));
+
+  net::CookieAccessResultList cookie_access_result_list_without_partitioned{
+      {*(unpartitioned_cookie.get())}};
+  EXPECT_FALSE(HasCHIPS(cookie_access_result_list_without_partitioned));
+
+  net::CookieAccessResultList cookie_access_result_list_with_partitioned{
+      {*unpartitioned_cookie.get()}, {*partitioned_cookie.get()}};
+  EXPECT_TRUE(HasCHIPS(cookie_access_result_list_with_partitioned));
 }

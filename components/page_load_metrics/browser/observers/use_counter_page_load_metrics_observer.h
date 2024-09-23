@@ -12,18 +12,18 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "components/page_load_metrics/browser/observers/use_counter/at_most_once_enum_uma_deferrer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-forward.h"
 
 class UseCounterMetricsRecorder {
  public:
-  // If `is_in_fenced_frames_page` is true, uses prefix
-  // "Blink.UseCounter.FencedFrames.". Otherwise, uses
-  // "Blink.UseCounter.".
+  // If `is_in_fenced_frames_page` is true, only use counter UKMs are recorded.
   explicit UseCounterMetricsRecorder(bool is_in_fenced_frames_page);
 
   UseCounterMetricsRecorder(const UseCounterMetricsRecorder&) = delete;
@@ -51,7 +51,10 @@ class UseCounterMetricsRecorder {
 
   // Records UKM subset of WebFeatures, if the WebFeature is observed in the
   // page.
-  void RecordUkmFeatures(ukm::SourceId ukm_source_id);
+  void RecordWebFeatures(ukm::SourceId ukm_source_id);
+
+  // Records WebDXFeatures that are based on other WebFeature use counters.
+  void RecordWebDXFeatures(ukm::SourceId ukm_source_id);
 
   using UkmFeatureList = base::flat_set<blink::mojom::WebFeature>;
 
@@ -68,26 +71,41 @@ class UseCounterMetricsRecorder {
   // Returns a list of opt-in UKM features for the Web Dev Metrics use counter.
   static const UkmFeatureList& GetAllowedWebDevMetricsUkmFeatures();
 
+  // Getters for mappings of WebFeature and CSSSampleId's to WebDXFeature use
+  // counters.
+  static const base::flat_map<blink::mojom::WebFeature,
+                              blink::mojom::WebDXFeature>&
+  GetWebFeatureToWebDXFeatureMap();
+  static const base::flat_map<blink::mojom::CSSSampleId,
+                              blink::mojom::WebDXFeature>&
+  GetCSSProperties2WebDXFeatureMap();
+  static const base::flat_map<blink::mojom::CSSSampleId,
+                              blink::mojom::WebDXFeature>&
+  GetAnimatedCSSProperties2WebDXFeatureMap();
+
   // To keep tracks of which features have been measured.
+  // `uma_features_` and `uma_main_frame_features_` are also used for UKMs.
   AtMostOnceEnumUmaDeferrer<blink::mojom::WebFeature> uma_features_;
   AtMostOnceEnumUmaDeferrer<blink::mojom::WebFeature> uma_main_frame_features_;
-  AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId> uma_css_properties_;
-  AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>
+  AtMostOnceEnumUmaDeferrer<blink::mojom::WebDXFeature> uma_webdx_features_;
+  std::unique_ptr<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>
+      uma_css_properties_;
+  std::unique_ptr<AtMostOnceEnumUmaDeferrer<blink::mojom::CSSSampleId>>
       uma_animated_css_properties_;
-
-  AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>
+  std::unique_ptr<
+      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_violation_enforce_;
-
-  AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>
+  std::unique_ptr<
+      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_allow2_;
-
-  AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>
+  std::unique_ptr<
+      AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>>
       uma_permissions_policy_header2_;
 
   // To keep tracks of which features have been measured.
-  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kMaxValue) + 1>
       ukm_features_recorded_;
-  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>
+  std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kMaxValue) + 1>
       webdev_metrics_ukm_features_recorded_;
 };
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
@@ -317,7 +322,7 @@ TEST_F(ES3MapBufferRangeTest, ReadPixels) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1230038): This step causes a crash on mac intel-uhd bot.
+  // TODO(crbug.com/40778773): This step causes a crash on mac intel-uhd bot.
   if (GPUTestBotConfig::CurrentConfigMatches("Mac Intel 0x3e9b"))
     return;
 #endif
@@ -370,7 +375,7 @@ TEST_F(ES3MapBufferRangeTest, TexImageAndSubImage2D) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 }
 
-// TODO(crbug.com/1435122): Fix flakiness and re-enable the test.
+// TODO(crbug.com/40904610): Fix flakiness and re-enable the test.
 #if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_TexImageAndSubImage3D DISABLED_TexImageAndSubImage3D
 #else

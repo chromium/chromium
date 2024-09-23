@@ -40,11 +40,11 @@ crosapi::mojom::NotificationType ToMojo(message_center::NotificationType type) {
       return crosapi::mojom::NotificationType::kProgress;
     case message_center::NOTIFICATION_TYPE_CUSTOM:
       // TYPE_CUSTOM exists only within ash.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::NotificationType::kSimple;
     case message_center::NOTIFICATION_TYPE_CONVERSATION:
       // TYPE_CONVERSATION is not currently supported for Lacros.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return crosapi::mojom::NotificationType::kSimple;
   }
 }
@@ -73,6 +73,18 @@ crosapi::mojom::FullscreenVisibility ToMojo(
       return crosapi::mojom::FullscreenVisibility::kNone;
     case message_center::FullscreenVisibility::OVER_USER:
       return crosapi::mojom::FullscreenVisibility::kOverUser;
+  }
+}
+
+crosapi::mojom::SettingsButtonHandler ToMojo(
+    message_center::SettingsButtonHandler settings_button_handler) {
+  switch (settings_button_handler) {
+    case message_center::SettingsButtonHandler::NONE:
+      return crosapi::mojom::SettingsButtonHandler::kNone;
+    case message_center::SettingsButtonHandler::INLINE:
+      return crosapi::mojom::SettingsButtonHandler::kInline;
+    case message_center::SettingsButtonHandler::DELEGATE:
+      return crosapi::mojom::SettingsButtonHandler::kDelegate;
   }
 }
 
@@ -141,6 +153,9 @@ crosapi::mojom::NotificationPtr ToMojo(
   if (image_path.has_value()) {
     mojo_note->image_path = image_path;
   }
+
+  mojo_note->settings_button_handler =
+      ToMojo(notification.rich_notification_data().settings_button_handler);
 
   return mojo_note;
 }

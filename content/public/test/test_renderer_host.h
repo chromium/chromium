@@ -168,6 +168,11 @@ class RenderFrameHostTester {
   // Creates the WebUsbService and binds `receiver`.
   virtual void CreateWebUsbServiceForTesting(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) = 0;
+
+  // Detaches the LocalFrame mojo connection to the renderer. This is useful
+  // when tests override the creation logic for the LocalFrame and need the
+  // connection to be re-initialized.
+  virtual void ResetLocalFrame() = 0;
 };
 
 // An interface and utility for driving tests of RenderViewHost.
@@ -338,7 +343,7 @@ class RenderViewHostTestHarness : public ::testing::Test {
 
   std::unique_ptr<ContentBrowserConsistencyChecker> consistency_checker_;
 
-  // TODO(crbug.com/1011275): This is a temporary work around to fix flakiness
+  // TODO(crbug.com/40101830): This is a temporary work around to fix flakiness
   // on tests. The default behavior of the network stack is to allocate a
   // leaking SystemDnsConfigChangeNotifier. This holds on to a set of
   // FilePathWatchers on Posix and ObjectWatchers on Windows that outlive

@@ -12,8 +12,9 @@
 #if defined(PPAPI_POSIX)
 #include <pthread.h>
 #elif defined(PPAPI_OS_WIN)
-#include <process.h>
 #include <windows.h>
+
+#include <process.h>
 #else
 #error No thread library detected.
 #endif

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/ownership/owner_key_loader.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -18,7 +19,9 @@
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -93,11 +96,16 @@ class DeviceSettingsServiceTest : public DeviceSettingsTestBase {
               device_settings_service_->device_settings()->SerializeAsString());
   }
 
+  StubInstallAttributes* GetInstallAttributes() {
+    return static_cast<StubInstallAttributes*>(InstallAttributes::Get());
+  }
+
   base::test::ScopedFeatureList feature_list_;
   bool operation_completed_;
   bool is_owner_;
   bool is_owner_set_;
   DeviceSettingsService::OwnershipStatus ownership_status_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DeviceSettingsServiceTest, LoadNoKey) {
@@ -575,6 +583,85 @@ TEST_F(DeviceSettingsServiceTest, LoadIfNotPresentDoesntRefresh) {
   EXPECT_TRUE(device_settings_service_->device_settings()
                   ->guest_mode_enabled()
                   .guest_mode_enabled());
+}
+
+TEST_F(DeviceSettingsServiceTest, CheckHistogramMismatchDeviceIdEnterprise) {
+  StubInstallAttributes* attrs = GetInstallAttributes();
+  // The policy builder assigns by default "device-id" value to the device_id
+  // in the policy. Here we set a different device_id in the install attributes
+  // to check that a mismatch is triggered.
+  attrs->SetCloudManaged("example.com", "fake_device_id");
+  owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
+
+  InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
+            true);
+  ReloadDeviceSettings();
+  device_settings_service_->LoadIfNotPresent();
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.DevicePolicyDeviceIdValidity2.OldEnrollmentEnterprise",
+      policy::PolicyDeviceIdValidity::kInvalid, /*nrSamples=*/1);
+}
+
+TEST_F(DeviceSettingsServiceTest, CheckHistogramGoodDeviceIdEnterprise) {
+  StubInstallAttributes* attrs = GetInstallAttributes();
+  // The policy builder assigns by default "device-id" value to the device_id
+  // in the policy which matches the value we assign here.
+  attrs->SetCloudManaged("example.com", "device-id");
+  owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
+
+  InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
+            true);
+  ReloadDeviceSettings();
+  device_settings_service_->LoadIfNotPresent();
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.DevicePolicyDeviceIdValidity2.OldEnrollmentEnterprise",
+      policy::PolicyDeviceIdValidity::kValid, /*nrSamples=*/1);
+}
+
+TEST_F(DeviceSettingsServiceTest, CheckHistogramMismatchDeviceIdDemoMode) {
+  StubInstallAttributes* attrs = GetInstallAttributes();
+  attrs->SetDemoMode();
+  owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
+
+  InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
+            true);
+  ReloadDeviceSettings();
+  device_settings_service_->LoadIfNotPresent();
+  // The policy builder assigns by default "device-id" value to the device_id
+  // in the policy, while the function SetDemoMode in install attributes set
+  // the value for device_id of "demo-device-id". So, we expect a mismatch
+  // to be triggered here.
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.DevicePolicyDeviceIdValidity2.OldEnrollmentDemo",
+      policy::PolicyDeviceIdValidity::kInvalid, /*nrSamples=*/1);
+}
+
+TEST_F(DeviceSettingsServiceTest, CheckHistogramGoodDeviceIdDemoMode) {
+  // The function SetDemoMode in install attributes set the value
+  // "demo-device-id" for device_id, so we update the device_id in the policy
+  // blob to match the same value.
+  device_policy_->policy_data().set_device_id("demo-device-id");
+  ReloadDevicePolicy();
+
+  StubInstallAttributes* attrs = GetInstallAttributes();
+  attrs->SetDemoMode();
+  owner_key_util_->SetPublicKeyFromPrivateKey(*device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
+
+  InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
+            true);
+  ReloadDeviceSettings();
+  device_settings_service_->LoadIfNotPresent();
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.DevicePolicyDeviceIdValidity2.OldEnrollmentDemo",
+      policy::PolicyDeviceIdValidity::kValid, /*nrSamples=*/1);
 }
 
 }  // namespace ash

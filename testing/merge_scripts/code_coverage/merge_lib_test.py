@@ -3,23 +3,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import subprocess
-import sys
 import unittest
-
-import mock
+from unittest import mock
 
 import merge_lib as merger
 
+# Protected access is allowed for unittests.
+# pylint: disable=protected-access
 
 class MergeLibTest(unittest.TestCase):
 
-  # pylint: disable=super-with-arguments
   def __init__(self, *args, **kwargs):
-    super(MergeLibTest, self).__init__(*args, **kwargs)
+    super().__init__(*args, **kwargs)
     self.maxDiff = None
-  # pylint: enable=super-with-arguments
 
   @mock.patch.object(subprocess, 'check_output')
   def test_validate_and_convert_profraw(self, mock_cmd):
@@ -36,9 +33,12 @@ class MergeLibTest(unittest.TestCase):
       output_profdata_files = []
       invalid_profraw_files = []
       counter_overflows = []
-      merger._validate_and_convert_profraw(
-          'mock.profraw', output_profdata_files, invalid_profraw_files,
-          counter_overflows, '/usr/bin/llvm-cov')
+      merger._validate_and_convert_profraw('mock.profraw',
+                                           output_profdata_files,
+                                           invalid_profraw_files,
+                                           counter_overflows,
+                                           '/usr/bin/llvm-cov',
+                                           show_profdata=False)
       self.assertEqual(
           expected_results,
           [output_profdata_files, invalid_profraw_files, counter_overflows])

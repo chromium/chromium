@@ -110,7 +110,6 @@ class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     scoped_feature_list_.InitAndEnableFeature(media::kHardwareMediaKeyHandling);
   }
 

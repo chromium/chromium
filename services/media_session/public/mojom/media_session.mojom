@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 21
+// Next MinVersion: 24
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -49,6 +49,9 @@ enum MediaSessionImageType {
 
   // The icon associated with the source of the media session.
   kSourceIcon,
+
+  // The artwork associated with its chapters in the media session.
+  [MinVersion=22] kChapter,
 };
 
 [Stable, Extensible]
@@ -97,6 +100,9 @@ struct MediaMetadata {
   // session. This could be the name of the app or the name of the site playing
   // media.
   mojo_base.mojom.String16 source_title;
+
+  // Also defined in the spec: https://wicg.github.io/mediasession/
+  [MinVersion=21] array<ChapterInformation>? chapters;
 };
 
 // The color type of the bitmap.
@@ -230,6 +236,11 @@ struct MediaSessionInfo {
   // session. This occurs for instanced web app system media controls that
   // cause the browser to never want to track web app media sessions.
   [MinVersion=20] bool ignore_for_active_session;
+
+  // Indicates if this MediaSession has any players that meet the visibility
+  // threshold defined by |HTMLVideoElement| (kVisibilityThreshold) and tracked
+  // by the |MediaVideoVisibilityTracker|.
+  [MinVersion=21] bool meets_visibility_threshold;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed
@@ -272,7 +283,7 @@ interface MediaSessionObserver {
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
-// Next Method ID: 24
+// Next Method ID: 28
 [Stable]
 interface MediaSession {
   [Stable, Extensible]
@@ -388,4 +399,12 @@ interface MediaSession {
   // Automatically enter picture-in-picture from a non-user source (e.g. in
   // reaction to content being hidden).
   [MinVersion=19] EnterAutoPictureInPicture@26();
+
+  // Returns whether or not MediaSession has any players that contain a video
+  // that is sufficiently visible.
+  //
+  // A sufficiently visible video is one that meets the visibility threshold
+  // defined by |HTMLVideoElement| (kVisibilityThreshold). |HTMLVideoElement|
+  // visibility is computed by the |MediaVideoVisibilityTracker|.
+  [MinVersion=23] GetVisibility@27() => (bool has_sufficiently_visible_video);
 };

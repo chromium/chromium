@@ -122,7 +122,7 @@ void WebAppNavigationButtonContainer::EnabledStateChangedForCommand(
       reload_button_->SetEnabled(enabled);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -1,0 +1,48 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//testing/test.gni")
+import("//third_party/distributed_point_functions/features.gni")
+
+source_set("shim") {
+  public_deps = [ ":buildflags" ]
+
+  if (use_distributed_point_functions) {
+    sources = [
+      "distributed_point_function_shim.cc",
+      "distributed_point_function_shim.h",
+    ]
+    deps = [
+      "$dpf_abseil_cpp_dir:absl",
+      "//base",
+      "//third_party/distributed_point_functions:internal",
+    ]
+    public_deps += [ "//third_party/distributed_point_functions:proto" ]
+    configs += [ "//third_party/distributed_point_functions:includes" ]
+  }
+}
+
+# External targets may depend on :buildflags directly without pulling in
+# :distributed_point_functions. For instance, tests may set different
+# expectations when the dpf library is omitted from the build.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "USE_DISTRIBUTED_POINT_FUNCTIONS=$use_distributed_point_functions" ]
+}
+
+test("distributed_point_functions_shim_unittests") {
+  deps = [
+    "//testing/gtest",
+    "//testing/gtest:gtest_main",
+  ]
+  if (use_distributed_point_functions) {
+    sources = [ "distributed_point_function_shim_unittest.cc" ]
+    deps += [
+      ":shim",
+      "$dpf_abseil_cpp_dir:absl",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='aria-hidden has to be ignored on the html element.'
+++++++++++inlineTextBox name='aria-hidden has to be ignored on the html element.'

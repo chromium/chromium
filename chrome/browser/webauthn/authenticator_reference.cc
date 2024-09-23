@@ -4,8 +4,10 @@
 
 #include "chrome/browser/webauthn/authenticator_reference.h"
 
+#include <string_view>
+
 AuthenticatorReference::AuthenticatorReference(
-    base::StringPiece authenticator_id,
+    std::string_view authenticator_id,
     device::FidoTransportProtocol transport,
     device::AuthenticatorType type)
     : authenticator_id(authenticator_id), transport(transport), type(type) {}

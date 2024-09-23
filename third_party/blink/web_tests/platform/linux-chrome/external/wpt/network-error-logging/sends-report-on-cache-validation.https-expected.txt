@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] \n    Test that NEL reports are sent for cache validation requests\n  
-  assert_true: expected true got false
-Harness: the test ran to completion.

@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='container'",
+      "name": "LayoutBlockFlow (positioned, children-inline) DIV id='container'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
+      "name": "LayoutBlockFlow (positioned) DIV class='fixed'",
       "bounds": [75, 75],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

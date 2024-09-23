@@ -11,8 +11,9 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.FeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -62,7 +63,11 @@ public class FeedStreamViewResizer extends ViewResizer {
             Activity activity, View view, UiConfig config) {
         Resources resources = activity.getResources();
         int defaultPaddingPixels =
-                resources.getDimensionPixelSize(R.dimen.content_suggestions_card_modern_margin);
+                FeatureList.isNativeInitialized()
+                                && ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)
+                        ? resources.getDimensionPixelSize(R.dimen.feed_containment_margin)
+                        : resources.getDimensionPixelSize(
+                                R.dimen.content_suggestions_card_modern_margin);
         int minWidePaddingPixels =
                 resources.getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins);
 
@@ -93,7 +98,7 @@ public class FeedStreamViewResizer extends ViewResizer {
         int padding = super.computePadding();
         Resources resources = mUiConfig.getContext().getResources();
         if (resources.getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE
-                || ApiCompatibilityUtils.isInMultiWindowMode(mActivity)) {
+                || mActivity.isInMultiWindowMode()) {
             return padding;
         }
         float dpToPx = resources.getDisplayMetrics().density;

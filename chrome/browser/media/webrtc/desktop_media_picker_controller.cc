@@ -87,11 +87,8 @@ bool DesktopMediaPickerController::IsSystemAudioCaptureSupported(
     return false;
   }
 #if BUILDFLAG(IS_MAC)
-  if (request_source == Params::RequestSource::kCast) {
-    return base::FeatureList::IsEnabled(media::kMacLoopbackAudioForCast);
-  } else {
-    return base::FeatureList::IsEnabled(media::kMacLoopbackAudioForScreenShare);
-  }
+ return request_source == Params::RequestSource::kCast ||
+     base::FeatureList::IsEnabled(media::kMacLoopbackAudioForScreenShare);
 #elif BUILDFLAG(IS_LINUX)
   if (request_source == Params::RequestSource::kCast) {
     return base::FeatureList::IsEnabled(media::kPulseaudioLoopbackForCast);

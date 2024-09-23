@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -11,7 +12,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -67,7 +67,7 @@
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/startup/default_browser_infobar_delegate.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_delegate.h"
 #endif
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
@@ -189,35 +189,33 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
   }
 
   constexpr auto kIdentifiers =
-      base::MakeFixedFlatMap<base::StringPiece, IBD::InfoBarIdentifier>({
-        {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
-            {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},
-            {"incognito_connectability",
-             IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
-            {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
-            {"nacl", IBD::NACL_INFOBAR_DELEGATE},
-            {"file_access_disabled",
-             IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
-            {"keystone_promotion",
-             IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
-            {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
-            {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
-            {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
-            {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
-            {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
-            {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
-            {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
-            {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
-            {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
-            {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
+      base::MakeFixedFlatMap<std::string_view, IBD::InfoBarIdentifier>({
+          {"dev_tools", IBD::DEV_TOOLS_INFOBAR_DELEGATE},
+          {"extension_dev_tools", IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE},
+          {"incognito_connectability",
+           IBD::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE},
+          {"theme_installed", IBD::THEME_INSTALLED_INFOBAR_DELEGATE},
+          {"nacl", IBD::NACL_INFOBAR_DELEGATE},
+          {"file_access_disabled", IBD::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE},
+          {"keystone_promotion", IBD::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC},
+          {"collected_cookies", IBD::COLLECTED_COOKIES_INFOBAR_DELEGATE},
+          {"installation_error", IBD::INSTALLATION_ERROR_INFOBAR_DELEGATE},
+          {"bad_flags", IBD::BAD_FLAGS_INFOBAR_DELEGATE},
+          {"default_browser", IBD::DEFAULT_BROWSER_INFOBAR_DELEGATE},
+          {"google_api_keys", IBD::GOOGLE_API_KEYS_INFOBAR_DELEGATE},
+          {"obsolete_system", IBD::OBSOLETE_SYSTEM_INFOBAR_DELEGATE},
+          {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
+          {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
+          {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
+          {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-            {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
-            {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
-            {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
+          {"hung_plugin", IBD::HUNG_PLUGIN_INFOBAR_DELEGATE},
+          {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
+          {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
       });
-  const auto* const id_entry = kIdentifiers.find(name);
+  const auto id_entry = kIdentifiers.find(name);
   if (id_entry == kIdentifiers.end()) {
     ADD_FAILURE() << "Unexpected infobar " << name;
     return;
@@ -366,12 +364,16 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
     case IBD::TAB_SHARING_INFOBAR_DELEGATE:
       TabSharingInfoBarDelegate::Create(
           /*infobar_manager=*/GetInfoBarManager(),
-          /*shared_tab_name=*/u"example.com", /*app_name=*/u"application.com",
-          /*shared_tab=*/false,
+          /*old_infobar=*/nullptr,
+          /*shared_tab_name=*/u"example.com",
+          /*capturer_name=*/u"application.com",
+          /*web_contents=*/nullptr,
+          /*role=*/TabSharingInfoBarDelegate::TabRole::kOtherTab,
           /*share_this_tab_instead_button_state=*/
           TabSharingInfoBarDelegate::ButtonState::ENABLED,
-          /*focus_target=*/std::nullopt, /*ui=*/nullptr,
-          TabSharingInfoBarDelegate::TabShareType::CAPTURE);
+          /*focus_target=*/std::nullopt,
+          /*captured_surface_control_active=*/false,
+          /*ui=*/nullptr, TabSharingInfoBarDelegate::TabShareType::CAPTURE);
       break;
 
     default:
@@ -390,7 +392,14 @@ bool InfoBarUiTest::VerifyUi() {
                         test_info->name()) != ui::test::ActionResult::kFailed);
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_dev_tools) {
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40261456): This test case has been frequently failing on
+// "Win10 Tests x64" since 2024-05-08.
+#define MAYBE_InvokeUi_dev_tools DISABLED_InvokeUi_dev_tools
+#else
+#define MAYBE_InvokeUi_dev_tools InvokeUi_dev_tools
+#endif
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_dev_tools) {
   ShowAndVerifyUi();
 }
 
@@ -472,7 +481,14 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_automation) {
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/40261456): This test case has been frequently failing on
+// "Win10 Tests x64" since 2024-05-08.
+#define MAYBE_InvokeUi_automation DISABLED_InvokeUi_automation
+#else
+#define MAYBE_InvokeUi_automation InvokeUi_automation
+#endif
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_automation) {
   ShowAndVerifyUi();
 }
 

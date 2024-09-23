@@ -44,6 +44,20 @@ enum class PasswordCheckReferrer;
 // Start a safety check if it is not currently running.
 - (void)startCheckIfNotRunning;
 
+// Updates the UI to display the appropriate notifications button
+// (either to "Turn on" or "Turn off" notifications) based on the provided
+// `enabled` parameter.
+//
+// If `enabled` is YES, the button will prompt users to "Turn off" notifications
+// and, when tapped, will terminate the ongoing process of sending Safety Check
+// push notifications and may present a toast confirming the change.
+//
+// If 'enabled' is NO, the button will prompt users to "Turn on" notifications
+// and, when tapped, may present an opt-in prompt if the user has not yet
+// granted notification permission. If permission is granted or already exists,
+// it will initiate the process of sending Safety Check push notifications.
+- (void)updateNotificationsButton:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_SAFETY_CHECK_SAFETY_CHECK_COORDINATOR_H_

@@ -125,6 +125,17 @@ export function geolocationPermissionEnabledReducer(
   }
 }
 
+export function geolocationIsUserModifiableReducer(
+    state: AmbientState['geolocationIsUserModifiable'], action: Actions,
+    _: PersonalizationState): AmbientState['geolocationIsUserModifiable'] {
+  switch (action.name) {
+    case AmbientActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE:
+      return action.isUserModifiable;
+    default:
+      return state;
+  }
+}
+
 
 export const ambientReducers:
     {[K in keyof AmbientState]: ReducerFunction<AmbientState[K]>} = {
@@ -138,4 +149,5 @@ export const ambientReducers:
       ambientUiVisibility: ambientUiVisibilityReducer,
       shouldShowTimeOfDayBanner: shouldShowTimeOfDayBannerReducer,
       geolocationPermissionEnabled: geolocationPermissionEnabledReducer,
+      geolocationIsUserModifiable: geolocationIsUserModifiableReducer,
     };

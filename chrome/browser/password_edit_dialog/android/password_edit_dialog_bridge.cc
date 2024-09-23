@@ -8,9 +8,11 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/password_edit_dialog/android/jni_headers/PasswordEditDialogBridge_jni.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_edit_dialog/android/jni_headers/PasswordEditDialogBridge_jni.h"
 
 PasswordEditDialog::~PasswordEditDialog() = default;
 
@@ -86,9 +88,9 @@ void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,
   delegate_->HandleDialogDismissed(dialogAccepted);
 }
 
-jboolean PasswordEditDialogBridge::IsUsingProfileStore(
+jboolean PasswordEditDialogBridge::IsUsingAccountStorage(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& username) {
-  return delegate_->IsUsingProfileStore(
+  return delegate_->IsUsingAccountStorage(
       base::android::ConvertJavaStringToUTF16(username));
 }

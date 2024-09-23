@@ -34,10 +34,8 @@ namespace blink {
 class PLATFORM_EXPORT Matrix3DTransformOperation final
     : public TransformOperation {
  public:
-  static scoped_refptr<Matrix3DTransformOperation> Create(
-      const gfx::Transform& matrix) {
-    return base::AdoptRef(new Matrix3DTransformOperation(matrix));
-  }
+  explicit Matrix3DTransformOperation(const gfx::Transform& matrix)
+      : matrix_(matrix) {}
 
   gfx::Transform Matrix() const { return matrix_; }
 
@@ -59,14 +57,12 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
     transform.PreConcat(matrix_);
   }
 
-  scoped_refptr<TransformOperation> Accumulate(
-      const TransformOperation& other) override;
+  TransformOperation* Accumulate(const TransformOperation& other) override;
 
-  scoped_refptr<TransformOperation> Blend(
-      const TransformOperation* from,
-      double progress,
-      bool blend_to_identity = false) override;
-  scoped_refptr<TransformOperation> Zoom(double factor) final;
+  TransformOperation* Blend(const TransformOperation* from,
+                            double progress,
+                            bool blend_to_identity = false) override;
+  TransformOperation* Zoom(double factor) final;
 
   bool PreservesAxisAlignment() const final {
     return matrix_.Preserves2dAxisAlignment();
@@ -74,9 +70,6 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
   bool IsIdentityOrTranslation() const final {
     return matrix_.IsIdentityOrTranslation();
   }
-
-  explicit Matrix3DTransformOperation(const gfx::Transform& mat)
-      : matrix_(mat) {}
 
   gfx::Transform matrix_;
 };

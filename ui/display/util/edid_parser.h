@@ -26,12 +26,13 @@ namespace display {
 // a few utility postprocessings.
 class DISPLAY_UTIL_EXPORT EdidParser {
  public:
-  explicit EdidParser(const std::vector<uint8_t>& edid_blob,
+  explicit EdidParser(std::vector<uint8_t>&& edid_blob,
                       bool is_external = false);
 
   EdidParser(const EdidParser&) = delete;
   EdidParser& operator=(const EdidParser&) = delete;
-
+  EdidParser(EdidParser&&);
+  EdidParser& operator=(EdidParser&&);
   ~EdidParser();
 
   uint16_t manufacturer_id() const { return manufacturer_id_; }
@@ -122,6 +123,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   // clone).
   bool TileCanScaleToFit() const;
 
+  const std::vector<uint8_t>& edid_blob() const { return edid_blob_; }
+
  private:
   // Parses |edid_blob|, filling up as many as possible fields below.
   void ParseEdid(const std::vector<uint8_t>& edid);
@@ -137,6 +140,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   // Parses Tiled Display Topology data blocks for DisplayID v1.3 and v2.0.
   void ParseTiledDisplayBlock(const std::vector<uint8_t>& edid,
                               size_t block_offset);
+
+  std::vector<uint8_t> edid_blob_;
 
   // Whether or not this EDID belongs to an external display.
   bool is_external_display_;

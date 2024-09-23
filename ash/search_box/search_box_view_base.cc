@@ -73,6 +73,10 @@ constexpr int kAutocompleteGhostTextContainerWeight = kSearchBoxPreferredWidth;
 constexpr int kAutocompleteGhostTextWeight = 1;
 constexpr int kAutocompleteGhostTextCategoryWeight = kSearchBoxPreferredWidth;
 
+// The space between the sunfish button and the assistant button at the edge of
+// the search field.
+constexpr int kEdgeButtonSpacing = 5;
+
 constexpr SkColor kSearchTextColor = SkColorSetRGB(0x33, 0x33, 0x33);
 
 // The duration for the button fade out animation.
@@ -89,7 +93,7 @@ void SetupLabelView(views::Label* label,
                     gfx::Insets border_insets,
                     ui::ColorId color_id) {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->GetViewAccessibility().OverrideIsIgnored(true);
+  label->GetViewAccessibility().SetIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetEnabledColorId(color_id);
@@ -213,7 +217,8 @@ class SearchBoxTextfield : public views::Textfield {
   ~SearchBoxTextfield() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // Overridden so the BoxLayoutView 'text_container_' can properly layout
     // the search box and ghost text.
     const std::u16string& text = GetText();
@@ -243,16 +248,16 @@ class SearchBoxTextfield : public views::Textfield {
     // alert, so we ignored the search box in those cases. Now reset the flag
     // here.
     auto& accessibility = GetViewAccessibility();
-    if (accessibility.IsIgnored()) {
-      accessibility.OverrideIsIgnored(false);
+    if (accessibility.GetIsIgnored()) {
+      accessibility.SetIsIgnored(false);
       NotifyAccessibilityEvent(ax::mojom::Event::kTreeChanged, true);
     }
   }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
     switch (event->type()) {
-      case ui::ET_GESTURE_LONG_PRESS:
-      case ui::ET_GESTURE_LONG_TAP:
+      case ui::EventType::kGestureLongPress:
+      case ui::EventType::kGestureLongTap:
         // Prevent Long Press from being handled at all, if inactive
         if (!search_box_view_->is_search_box_active()) {
           event->SetHandled();
@@ -264,11 +269,6 @@ class SearchBoxTextfield : public views::Textfield {
         // Handle all other events as normal
         Textfield::OnGestureEvent(event);
     }
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Textfield::GetAccessibleNodeData(node_data);
-    search_box_view_->UpdateSearchTextfieldAccessibleNodeData(node_data);
   }
 
  private:
@@ -452,6 +452,8 @@ SearchBoxViewBase::SearchBoxViewBase()
       std::make_unique<views::FillLayout>());
   content_container_->SetFlexForView(search_box_button_container_, 0,
                                      /*use_min_size=*/true);
+
+  UpdateSearchTextfieldAccessibleActiveDescendantId();
 }
 
 SearchBoxViewBase::~SearchBoxViewBase() = default;
@@ -488,20 +490,37 @@ views::ImageButton* SearchBoxViewBase::CreateCloseButton(
   return close_button_;
 }
 
+void SearchBoxViewBase::CreateEndButtonContainer() {
+  CHECK(!end_button_container_);
+
+  // `end_button_container_` is used to align the assistant button to the
+  // end of the `search_box_button_container_`.
+  end_button_container_ = search_box_button_container_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  end_button_container_->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  end_button_container_->SetBetweenChildSpacing(kEdgeButtonSpacing);
+  end_button_container_->SetPaintToLayer();
+  end_button_container_->layer()->SetFillsBoundsOpaquely(false);
+  end_button_container_->SetVisible(false);
+}
+
+views::ImageButton* SearchBoxViewBase::CreateSunfishButton(
+    const base::RepeatingClosure& button_callback) {
+  CHECK(end_button_container_);
+  CHECK(!sunfish_button_);
+
+  sunfish_button_ = end_button_container_->AddChildView(
+      std::make_unique<SearchBoxImageButton>(button_callback));
+  return sunfish_button_;
+}
+
 views::ImageButton* SearchBoxViewBase::CreateAssistantButton(
     const base::RepeatingClosure& button_callback) {
-  // `assistant_button_container_` is used to align the assistant button to the
-  // end of the `search_box_button_container_`.
-  assistant_button_container_ = search_box_button_container_->AddChildView(
-      std::make_unique<views::BoxLayoutView>());
-  assistant_button_container_->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
-  assistant_button_container_->SetPaintToLayer();
-  assistant_button_container_->layer()->SetFillsBoundsOpaquely(false);
-  assistant_button_container_->SetVisible(false);
+  CHECK(end_button_container_);
+  CHECK(!assistant_button_);
 
-  DCHECK(!assistant_button_);
-  assistant_button_ = assistant_button_container_->AddChildView(
+  assistant_button_ = end_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
   return assistant_button_;
 }
@@ -513,9 +532,8 @@ views::ImageButton* SearchBoxViewBase::CreateFilterButton(
   DCHECK(!filter_button_);
   filter_button_ = filter_and_close_button_container_->AddChildView(
       std::make_unique<SearchBoxImageButton>(button_callback));
-  filter_button_->GetViewAccessibility().OverrideRole(
-      ax::mojom::Role::kPopUpButton);
-  filter_button_->GetViewAccessibility().OverrideHasPopup(
+  filter_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
+  filter_button_->GetViewAccessibility().SetHasPopup(
       ax::mojom::HasPopup::kMenu);
   return filter_button_;
 }
@@ -532,23 +550,27 @@ gfx::Rect SearchBoxViewBase::GetViewBoundsForSearchBoxContentsBounds(
 }
 
 views::ImageButton* SearchBoxViewBase::assistant_button() {
-  return views::AsViewClass<views::ImageButton>(assistant_button_);
+  return assistant_button_;
 }
 
-views::View* SearchBoxViewBase::assistant_button_container() {
-  return views::AsViewClass<views::View>(assistant_button_container_);
+views::ImageButton* SearchBoxViewBase::sunfish_button() {
+  return sunfish_button_;
+}
+
+views::View* SearchBoxViewBase::edge_button_container() {
+  return end_button_container_;
 }
 
 views::ImageButton* SearchBoxViewBase::close_button() {
-  return views::AsViewClass<views::ImageButton>(close_button_);
+  return close_button_;
 }
 
 views::ImageButton* SearchBoxViewBase::filter_button() {
-  return views::AsViewClass<views::ImageButton>(filter_button_);
+  return filter_button_;
 }
 
 views::View* SearchBoxViewBase::filter_and_close_button_container() {
-  return views::AsViewClass<views::View>(filter_and_close_button_container_);
+  return filter_and_close_button_container_;
 }
 
 views::ImageView* SearchBoxViewBase::search_icon() {
@@ -628,8 +650,10 @@ void SearchBoxViewBase::SetSearchBoxActive(bool active,
 
   UpdateSearchBoxBorder();
   // Keep the current keyboard visibility if the user already started typing.
-  if (event_type != ui::ET_KEY_PRESSED && event_type != ui::ET_KEY_RELEASED)
+  if (event_type != ui::EventType::kKeyPressed &&
+      event_type != ui::EventType::kKeyReleased) {
     UpdateKeyboardVisibility();
+  }
   UpdateButtonsVisibility();
   OnSearchBoxActiveChanged(active);
 
@@ -646,13 +670,18 @@ bool SearchBoxViewBase::OnTextfieldEvent(ui::EventType type) {
   return true;
 }
 
-gfx::Size SearchBoxViewBase::CalculatePreferredSize() const {
-  const int iph_height =
-      iph_view_tracker_.view()
-          ? iph_view_tracker_.view()->GetPreferredSize().height()
-          : 0;
+gfx::Size SearchBoxViewBase::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  views::SizeBounds content_available_size(available_size);
+  gfx::Insets insets = GetInsets();
+  content_available_size.Enlarge(-insets.width(), -insets.height());
+  const int iph_height = iph_view_tracker_.view()
+                             ? iph_view_tracker_.view()
+                                   ->GetPreferredSize(content_available_size)
+                                   .height()
+                             : 0;
   return gfx::Size(kSearchBoxPreferredWidth,
-                   kSearchBoxPreferredHeight + iph_height);
+                   kSearchBoxPreferredHeight + insets.height() + iph_height);
 }
 
 void SearchBoxViewBase::OnEnabledChanged() {
@@ -700,8 +729,7 @@ bool SearchBoxViewBase::IsSearchBoxTrimmedQueryEmpty() const {
   return trimmed_query.empty();
 }
 
-void SearchBoxViewBase::UpdateSearchTextfieldAccessibleNodeData(
-    ui::AXNodeData* node_data) {}
+void SearchBoxViewBase::UpdateSearchTextfieldAccessibleActiveDescendantId() {}
 
 void SearchBoxViewBase::ClearSearch() {
   search_box_->SetText(std::u16string());
@@ -746,13 +774,14 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
     MaybeFadeContainerOut(filter_and_close_button_container_);
   }
 
-  if (assistant_button_) {
-    const bool should_show_assistant_button =
-        show_assistant_button_ && !should_show_close_button;
-    if (should_show_assistant_button) {
-      MaybeFadeContainerIn(assistant_button_container_);
+  if (assistant_button_ || sunfish_button_) {
+    const bool should_show_edge_buttons =
+        (show_assistant_button_ || show_sunfish_button_) &&
+        !should_show_close_button;
+    if (should_show_edge_buttons) {
+      MaybeFadeContainerIn(end_button_container_);
     } else {
-      MaybeFadeContainerOut(assistant_button_container_);
+      MaybeFadeContainerOut(end_button_container_);
     }
   }
 
@@ -809,7 +838,7 @@ void SearchBoxViewBase::ContentsChanged(views::Textfield* sender,
   search_box_->RequestFocus();
   HandleQueryChange(new_contents, /*initiated_by_user=*/true);
   if (!new_contents.empty())
-    SetSearchBoxActive(true, ui::ET_KEY_PRESSED);
+    SetSearchBoxActive(true, ui::EventType::kKeyPressed);
   UpdateButtonsVisibility();
 }
 
@@ -837,12 +866,20 @@ void SearchBoxViewBase::SetSearchIconImage(gfx::ImageSkia image) {
 void SearchBoxViewBase::SetShowAssistantButton(bool show) {
   DCHECK(assistant_button_);
   show_assistant_button_ = show;
+  assistant_button_->SetVisible(show);
+  UpdateButtonsVisibility();
+}
+
+void SearchBoxViewBase::SetShowSunfishButton(bool show) {
+  DCHECK(features::IsSunfishFeatureEnabled() && sunfish_button_);
+  show_sunfish_button_ = show;
+  sunfish_button_->SetVisible(show);
   UpdateButtonsVisibility();
 }
 
 void SearchBoxViewBase::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
-  if (located_event->type() == ui::ET_MOUSE_PRESSED ||
-      located_event->type() == ui::ET_GESTURE_TAP) {
+  if (located_event->type() == ui::EventType::kMousePressed ||
+      located_event->type() == ui::EventType::kGestureTap) {
     const bool event_is_in_searchbox_bounds =
         GetBoundsInScreen().Contains(located_event->root_location());
     if (!event_is_in_searchbox_bounds)

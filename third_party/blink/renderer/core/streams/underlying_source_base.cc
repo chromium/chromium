@@ -14,7 +14,7 @@
 
 namespace blink {
 
-ScriptPromise UnderlyingSourceBase::StartWrapper(
+ScriptPromiseUntyped UnderlyingSourceBase::StartWrapper(
     ScriptState* script_state,
     ReadableStreamDefaultController* controller,
     ExceptionState& exception_state) {
@@ -28,17 +28,17 @@ ScriptPromise UnderlyingSourceBase::StartWrapper(
   return Start(script_state, exception_state);
 }
 
-ScriptPromise UnderlyingSourceBase::Start(ScriptState* script_state,
-                                          ExceptionState&) {
-  return ScriptPromise::CastUndefined(script_state);
+ScriptPromiseUntyped UnderlyingSourceBase::Start(ScriptState* script_state,
+                                                 ExceptionState&) {
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise UnderlyingSourceBase::Pull(ScriptState* script_state,
-                                         ExceptionState&) {
-  return ScriptPromise::CastUndefined(script_state);
+ScriptPromiseUntyped UnderlyingSourceBase::Pull(ScriptState* script_state,
+                                                ExceptionState&) {
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise UnderlyingSourceBase::CancelWrapper(
+ScriptPromiseUntyped UnderlyingSourceBase::CancelWrapper(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
@@ -47,10 +47,10 @@ ScriptPromise UnderlyingSourceBase::CancelWrapper(
   return Cancel(script_state, reason, exception_state);
 }
 
-ScriptPromise UnderlyingSourceBase::Cancel(ScriptState* script_state,
-                                           ScriptValue reason,
-                                           ExceptionState&) {
-  return ScriptPromise::CastUndefined(script_state);
+ScriptPromiseUntyped UnderlyingSourceBase::Cancel(ScriptState* script_state,
+                                                  ScriptValue reason,
+                                                  ExceptionState&) {
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void UnderlyingSourceBase::ContextDestroyed() {
@@ -88,7 +88,7 @@ v8::Local<v8::Promise> UnderlyingPullAlgorithm::Run(
     v8::Local<v8::Value> argv[]) {
   DCHECK_EQ(argc, 0);
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
   return source_->Pull(script_state, exception_state).V8Promise();
 }
 
@@ -105,7 +105,7 @@ v8::Local<v8::Promise> UnderlyingCancelAlgorithm::Run(
   v8::Local<v8::Value> reason =
       argc > 0 ? argv[0] : v8::Undefined(isolate).As<v8::Value>();
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
   return source_
       ->CancelWrapper(script_state, ScriptValue(isolate, reason),
                       exception_state)

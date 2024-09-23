@@ -94,7 +94,7 @@ void StubNotificationDisplayService::SimulateClick(
   }
 
   DCHECK(handler);
-  base::RunLoop run_loop;
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   handler->OnClick(profile_, iter->notification.origin_url(), notification_id,
                    action_index, reply, run_loop.QuitClosure());
   run_loop.Run();

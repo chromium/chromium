@@ -1,5 +1,17 @@
 <style include="cr-nav-menu-item-style healthd-internals-shared">
-  :host {
+  #appContainer {
+    --sidebar-width: 220px;
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  #main {
+    height: 100%;
+    width: calc(100vw - var(--sidebar-width) - 20px);
+  }
+
+  #sidebarContainer {
     display: flex;
     height: 100%;
   }
@@ -8,41 +20,77 @@
     border-inline-end: 1px solid var(--cr-separator-color);
     box-sizing: border-box;
     overflow: auto;
-    padding-block-end: 12px;
-    padding-inline-end: 12px;
-    width: 256px;
+    padding-block-end: 8px;
+    padding-inline-end: 8px;
+    width: 220px;
   }
 
-  h1 {
-    font-size: 170%;
-    font-weight: 500;
-    padding-inline-start: 24px;
+  #selector {
+    padding-inline-end: 8px;
   }
 
-  #main {
-    flex: 1;
+  #settingsButtonContainer {
+    display: flex;
+    justify-content: center;
+  }
+
+
+  #sidebarToggleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 16px;
+    width: 20px;
+    cursor: pointer;
+    color: var(--cr-primary-text-color);
   }
 </style>
-<div id="sidebar">
-  <h1>Healthd Internals</h1>
-  <cr-menu-selector id="selector"
-      selectable="a"
-      selected="{{selectedIndex_}}"
-      selected-attribute="selected">
-    <template is="dom-repeat" items="[[pages]]">
-      <a role="menuitem" href="[[item.path]]" class="cr-nav-menu-item">
-        [[item.name]]
-      </a>
-    </template>
-  </cr-menu-selector>
+
+<healthd-internals-settings-dialog id="settingsDialog">
+</healthd-internals-settings-dialog>
+
+<div id="appContainer">
+
+<div id="sidebarContainer">
+  <div id="sidebar">
+    <h1 id="pageTitle">Healthd Internals</h1>
+    <cr-menu-selector id="selector"
+        selectable="a"
+        selected="{{selectedIndex}}"
+        selected-attribute="selected">
+      <template is="dom-repeat" items="[[pageList]]">
+        <a role="menuitem" href="[[item.path]]" class="cr-nav-menu-item">
+          [[item.name]]
+        </a>
+      </template>
+    </cr-menu-selector>
+    <div id="settingsButtonContainer">
+      <cr-button on-click="openSettingsDialog">Settings</cr-button>
+    </div>
+  </div>
+  <div id="sidebarToggleButton" on-click="toggleSidebar">&lt;</div>
 </div>
 
-<iron-location path="{{path_}}"></iron-location>
+<iron-location path="{{currentPath}}"></iron-location>
 
 <div id="main">
-  <iron-pages selected="[[selectedIndex_]]">
-    <div><h1>Telemetry content will be added here</h1></div>
-    <div><h1>Diagnostics content will be added here</h1></div>
-    <div><h1>Event content will be added here</h1></div>
+  <iron-pages class="full-page" selected="[[selectedIndex]]">
+    <healthd-internals-telemetry id="telemetryPage">
+    </healthd-internals-telemetry>
+    <healthd-internals-process id="processPage">
+    </healthd-internals-process>
+    <healthd-internals-generic-chart id="batteryChart">
+    </healthd-internals-generic-chart>
+    <healthd-internals-generic-chart id="cpuFrequencyChart">
+    </healthd-internals-generic-chart>
+    <healthd-internals-generic-chart id="cpuUsageChart">
+    </healthd-internals-generic-chart>
+    <healthd-internals-generic-chart id="memoryChart">
+    </healthd-internals-generic-chart>
+    <healthd-internals-generic-chart id="thermalChart">
+    </healthd-internals-generic-chart>
   </iron-pages>
+</div>
+
 </div>

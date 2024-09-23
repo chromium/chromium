@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/parser/css_proto_converter.h"
-
 #include <unordered_map>
 
 #include "third_party/blink/renderer/core/css/parser/css.pb.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_proto_converter.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
@@ -36,6 +36,7 @@ DEFINE_BINARY_PROTO_FUZZER(const Input& input) {
           {Input::kInsecureContext, blink::SecureContextMode::kInsecureContext},
           {Input::kSecureContext, blink::SecureContextMode::kSecureContext}};
 
+  blink::test::TaskEnvironment task_environment;
   blink::CSSParserMode mode = parser_mode_map[input.css_parser_mode()];
   blink::SecureContextMode secure_context_mode =
       secure_context_mode_map[input.secure_context_mode()];

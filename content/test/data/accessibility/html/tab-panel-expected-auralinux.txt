@@ -1,0 +1,7 @@
+[document web]
+++[page tab] name='First Tab' selectable selected controller-for=[scroll pane] label-for=[scroll pane]
+++[page tab] name='Second Tab' selectable
+++[page tab] name='Third Tab' selectable
+++[scroll pane] name='First Tab' controlled-by=[page tab] labelled-by=[page tab]
+++++[paragraph]
+++++++[static] name='Content for the first panel, this should be read.'

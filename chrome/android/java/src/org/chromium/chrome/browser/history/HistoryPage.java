@@ -9,12 +9,12 @@ import android.net.Uri;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Native page for managing browsing history. */
@@ -24,13 +24,15 @@ public class HistoryPage extends BasicNativePage {
 
     /**
      * Create a new instance of the history page.
-     * @param activity The {@link Activity} used to get context and instantiate the
-     *                 {@link HistoryManager}.
+     *
+     * @param activity The {@link Activity} used to get context and instantiate the {@link
+     *     HistoryManager}.
      * @param host A NativePageHost to load URLs.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      * @param profile The Profile of the current tab.
+     * @param bottomSheetController {@link BottomSheetController} object.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
-     *                    separate activity.
+     *     separate activity.
      * @param url The URL used to address the HistoryPage.
      */
     public HistoryPage(
@@ -38,6 +40,7 @@ public class HistoryPage extends BasicNativePage {
             NativePageHost host,
             SnackbarManager snackbarManager,
             Profile profile,
+            BottomSheetController bottomSheetController,
             Supplier<Tab> tabSupplier,
             String url) {
         super(host);
@@ -45,24 +48,20 @@ public class HistoryPage extends BasicNativePage {
         Uri uri = Uri.parse(url);
         assert uri.getHost().equals(UrlConstants.HISTORY_HOST);
 
-        boolean showHistoryClustersImmediately =
-                uri.getPath().contains(HistoryClustersConstants.JOURNEYS_PATH)
-                        || uri.getPath().contains(HistoryClustersConstants.GROUPS_PATH);
-        String historyClustersQuery =
-                uri.getQueryParameter(HistoryClustersConstants.HISTORY_CLUSTERS_QUERY_KEY);
-
         mHistoryManager =
                 new HistoryManager(
                         activity,
-                        false,
+                        /* isSeparateActivity= */ false,
                         snackbarManager,
                         profile,
+                        () -> bottomSheetController,
                         tabSupplier,
-                        showHistoryClustersImmediately,
-                        historyClustersQuery,
                         new BrowsingHistoryBridge(profile.getOriginalProfile()),
+                        new HistoryUmaRecorder(),
                         null,
-                        true);
+                        /* shouldShowClearData= */ true,
+                        /* launchedForApp= */ false,
+                        /* showAppFilter= */ true);
         mTitle = host.getContext().getResources().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());

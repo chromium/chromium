@@ -119,15 +119,7 @@ CharacterRange CachingWordShaper::GetCharacterRange(const TextRun& run,
                                   total_width, from, to);
 }
 
-Vector<double> CachingWordShaper::IndividualCharacterAdvances(
-    const TextRun& run) {
-  ShapeResultBuffer buffer;
-  float total_width = ShapeResultsForRun(GetShapeCache(), &font_, run, &buffer);
-  return buffer.IndividualCharacterAdvances(run.ToStringView(), run.Direction(),
-                                            total_width);
-}
-
-Vector<ShapeResult::RunFontData> CachingWordShaper::GetRunFontData(
+HeapVector<ShapeResult::RunFontData> CachingWordShaper::GetRunFontData(
     const TextRun& run) const {
   ShapeResultBuffer buffer;
   ShapeResultsForRun(GetShapeCache(), &font_, run, &buffer);

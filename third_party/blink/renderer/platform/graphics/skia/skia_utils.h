@@ -109,7 +109,7 @@ inline WindRule SkFillTypeToWindRule(SkPathFillType fill_type) {
     case SkPathFillType::kEvenOdd:
       return static_cast<WindRule>(fill_type);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return RULE_NONZERO;
@@ -147,11 +147,11 @@ inline float BlurRadiusToStdDev(float radius) {
 
 void PLATFORM_EXPORT DrawPlatformFocusRing(const SkRRect&,
                                            cc::PaintCanvas*,
-                                           SkColor,
+                                           SkColor4f,
                                            float width);
 void PLATFORM_EXPORT DrawPlatformFocusRing(const SkPath&,
                                            cc::PaintCanvas*,
-                                           SkColor,
+                                           SkColor4f,
                                            float width,
                                            float corner_radius);
 

@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 
+#include <string>
+
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -17,10 +22,29 @@
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/url_loader_interceptor.h"
 
 namespace ash {
+namespace {
+
+constexpr char kPeopleApiBaseURL[] =
+    "https://people.googleapis.com/v1/people/me";
+
+// Structure from https://developers.google.com/people/api/rest/v1/people
+std::string GeneratePeopleApiResponse(const std::string& account_locale) {
+  const base::Value::Dict people_api_response = base::Value::Dict().Set(
+      "locales", base::Value::List().Append(
+                     base::Value::Dict()
+                         .Set("metadata", base::Value::Dict().Set(
+                                              "primary", base::Value(true)))
+                         .Set("value", base::Value(account_locale))));
+  return base::WriteJson(people_api_response).value_or("");
+}
+
+}  // namespace
 
 class LocaleSwitchScreenBrowserTest : public OobeBaseTest {
  public:
@@ -32,13 +56,14 @@ class LocaleSwitchScreenBrowserTest : public OobeBaseTest {
       const LocaleSwitchScreenBrowserTest&) = delete;
 
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
   void ProceedToLocaleSwitchScreen();
-  void SetAccountLocale(std::string account_locale);
+  void SetPeopleAPIResponseLocale(const std::string& account_locale);
   LocaleSwitchScreen::Result WaitForScreenExitResult();
 
  private:
-  std::optional<std::string> account_locale_;
-
+  // Helper to substitute calls to PeopleAPI to fetch preferred user locale.
+  std::unique_ptr<content::URLLoaderInterceptor> people_api_interceptor_;
   base::test::TestFuture<LocaleSwitchScreen::Result> screen_result_waiter_;
   LocaleSwitchScreen::ScreenExitCallback original_callback_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
@@ -48,16 +73,40 @@ class LocaleSwitchScreenBrowserTest : public OobeBaseTest {
 LocaleSwitchScreenBrowserTest::LocaleSwitchScreenBrowserTest() {}
 
 void LocaleSwitchScreenBrowserTest::SetUpOnMainThread() {
+  SetPeopleAPIResponseLocale("en");
   LocaleSwitchScreen* screen = static_cast<LocaleSwitchScreen*>(
       WizardController::default_controller()->screen_manager()->GetScreen(
           LocaleSwitchView::kScreenId));
   original_callback_ = screen->get_exit_callback_for_testing();
   screen->set_exit_callback_for_testing(
       screen_result_waiter_.GetRepeatingCallback());
-  fake_gaia_.SetupFakeGaiaForLogin(FakeGaiaMixin::kFakeUserEmail,
-                                   FakeGaiaMixin::kFakeUserGaiaId,
-                                   FakeGaiaMixin::kFakeRefreshToken);
+  fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
   OobeBaseTest::SetUpOnMainThread();
+}
+
+void LocaleSwitchScreenBrowserTest::TearDownOnMainThread() {
+  people_api_interceptor_.reset();
+  OobeBaseTest::TearDownOnMainThread();
+}
+
+void LocaleSwitchScreenBrowserTest::SetPeopleAPIResponseLocale(
+    const std::string& account_locale) {
+  people_api_interceptor_.reset();
+  people_api_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&account_locale](
+              content::URLLoaderInterceptor::RequestParams* params) {
+            bool is_people_api_request =
+                params->url_request.url.spec().find(kPeopleApiBaseURL) !=
+                std::string::npos;
+            if (is_people_api_request) {
+              content::URLLoaderInterceptor::WriteResponse(
+                  "HTTP/1.1 200 OK\nContent-type: application/json\n\n",
+                  GeneratePeopleApiResponse(account_locale),
+                  params->client.get());
+            }
+            return is_people_api_request;
+          }));
 }
 
 void LocaleSwitchScreenBrowserTest::ProceedToLocaleSwitchScreen() {
@@ -67,24 +116,16 @@ void LocaleSwitchScreenBrowserTest::ProceedToLocaleSwitchScreen() {
   user_context.SetRefreshToken(FakeGaiaMixin::kFakeRefreshToken);
   login_manager_mixin_.LoginAsNewRegularUser(user_context);
 
-  if (account_locale_.has_value()) {
-    Profile* profile = ProfileManager::GetPrimaryUserProfile();
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    const CoreAccountId primary_account_id =
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-    AccountInfo account_info =
-        identity_manager->FindExtendedAccountInfoByGaiaId(
-            FakeGaiaMixin::kFakeUserGaiaId);
-    account_info.locale = account_locale_.value();
-    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-  }
+  // Make sure that all of the capabilities are already loaded after login.
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfoByGaiaId(
+      FakeGaiaMixin::kFakeUserGaiaId);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.SetAllSupportedCapabilities(false);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   OobeScreenExitWaiter(LocaleSwitchView::kScreenId).Wait();
-}
-
-void LocaleSwitchScreenBrowserTest::SetAccountLocale(
-    std::string account_locale) {
-  account_locale_ = std::move(account_locale);
 }
 
 LocaleSwitchScreen::Result
@@ -109,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest,
 IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest, SkipWhenSameLocales) {
   const std::string current_locale = g_browser_process->GetApplicationLocale();
   EXPECT_EQ(current_locale, "en-US");
-  SetAccountLocale(current_locale);
+  SetPeopleAPIResponseLocale(current_locale);
 
   ProceedToLocaleSwitchScreen();
 
@@ -125,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest,
   const std::string current_locale = g_browser_process->GetApplicationLocale();
 
   EXPECT_EQ(current_locale, "en-US");
-  SetAccountLocale(new_locale);
+  SetPeopleAPIResponseLocale(new_locale);
 
   ProceedToLocaleSwitchScreen();
 

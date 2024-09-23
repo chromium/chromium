@@ -44,7 +44,8 @@ FakeUsbDeviceInfo::FakeUsbDeviceInfo(uint16_t usb_version,
   device_info_.manufacturer_name = base::UTF8ToUTF16(manufacturer_string);
   device_info_.product_name = base::UTF8ToUTF16(product_string);
   device_info_.serial_number = base::UTF8ToUTF16(serial_number);
-  AddConfig(CreateConfiguration(0xFF, 0x00, 0x00));
+  AddConfig(
+      CreateConfiguration(device_class, device_subclass, device_protocol));
 }
 
 FakeUsbDeviceInfo::FakeUsbDeviceInfo(uint16_t vendor_id,

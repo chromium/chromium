@@ -42,6 +42,11 @@ class DummySegmentationPlatformService : public SegmentationPlatformService {
                            TrainingRequestId request_id,
                            const TrainingLabels& param,
                            SuccessCallback callback) override;
+  void CollectTrainingData(proto::SegmentId segment_id,
+                           TrainingRequestId request_id,
+                           ukm::SourceId ukm_source_id,
+                           const TrainingLabels& param,
+                           SuccessCallback callback) override;
   void EnableMetrics(bool signal_collection_allowed) override;
   bool IsPlatformInitialized() override;
 };

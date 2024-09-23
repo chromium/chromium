@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/public/cpp/bindings/connector.h"
 
 #include <stddef.h>
@@ -13,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -84,7 +90,9 @@ class ReentrantMessageAccumulator : public MessageAccumulator {
   int number_of_calls() { return number_of_calls_; }
 
  private:
-  raw_ptr<Connector> connector_;
+  // RAW_PTR_EXCLUSION: |Connector| was added to raw_ptr unsupported type for
+  // performance reasons. See raw_ptr.h for more info.
+  RAW_PTR_EXCLUSION Connector* connector_ = nullptr;
   int number_of_calls_;
 };
 

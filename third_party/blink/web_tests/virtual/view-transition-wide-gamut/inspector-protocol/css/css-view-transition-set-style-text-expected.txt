@@ -11,7 +11,7 @@ The test verifies CSS.setStyleTexts for view-transition pseudos.
 
 ::view-transition-group(root),
 ::view-transition-group(target) {
-  animation-duration: 300s;
+  animation-play-state: paused;
 }
 
 ::view-transition-group(target) {
@@ -19,5 +19,5 @@ The test verifies CSS.setStyleTexts for view-transition pseudos.
 }
 
 ==== Modified: expect 0.75 ====
-0.75
+1
 

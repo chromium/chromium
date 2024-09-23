@@ -23,6 +23,7 @@ class CORE_EXPORT InterpolableGridTrackSize final : public InterpolableValue {
                             InterpolableValue* max_value,
                             const GridTrackSizeType type);
   static InterpolableGridTrackSize* Create(const GridTrackSize& grid_track_size,
+                                           const CSSProperty& property,
                                            float zoom);
 
   GridTrackSize CreateTrackSize(

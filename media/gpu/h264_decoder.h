@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/limits.h"
 #include "media/base/subsample_entry.h"
@@ -19,7 +21,7 @@
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/video/h264_parser.h"
+#include "media/parsers/h264_parser.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -350,7 +352,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   H264Parser parser_;
 
   // Most recent call to SetStream().
-  const uint8_t* current_stream_ = nullptr;
+  raw_ptr<const uint8_t, DanglingUntriaged> current_stream_ = nullptr;
   size_t current_stream_size_ = 0;
 
   // Decrypting config for the most recent data passed to SetStream().
@@ -413,7 +415,8 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // Encrypted NALUs preceding a fully encrypted (CENCv1) slice NALU. We need to
   // save these that are part of a single sample so they can all be decrypted
   // together.
-  std::vector<base::span<const uint8_t>> prior_cencv1_nalus_;
+  std::vector<base::raw_span<const uint8_t, DanglingUntriaged>>
+      prior_cencv1_nalus_;
   std::vector<SubsampleEntry> prior_cencv1_subsamples_;
 
   // These are std::nullopt unless get recovery point SEI message after Reset.

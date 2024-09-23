@@ -10,6 +10,8 @@
 #include <list>
 #include <memory>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
@@ -77,10 +79,11 @@ class OnDeviceModelParams {
   uint32_t max_num_matches_to_return_;
 };
 
-uint32_t ConvertByteArrayToInt(char byte_array[], uint32_t num_bytes) {
+uint32_t ConvertCharSpanToInt(base::span<const char> chars) {
+  CHECK_LE(chars.size(), sizeof(uint32_t));
   uint32_t result = 0;
-  for (uint32_t i = 0; i < num_bytes; ++i) {
-    result |= (byte_array[i] & 0xff) << (8 * i);
+  for (uint32_t i = 0; i < chars.size(); ++i) {
+    result |= (chars[i] & 0xff) << (8 * i);
   }
   return result;
 }
@@ -119,14 +122,13 @@ void MaybeCloseModelFileStream(OnDeviceModelParams* params) {
 }
 
 // Reads next num_bytes from the file stream.
-bool ReadNextNumBytes(OnDeviceModelParams* params,
-                      uint32_t num_bytes,
-                      char* buf) {
+bool ReadNext(OnDeviceModelParams* params, base::span<char> buf) {
   uint32_t address = params->GetModelFileStream()->tellg();
-  params->GetModelFileStream()->read(buf, num_bytes);
+  params->GetModelFileStream()->read(buf.data(), buf.size());
   if (params->GetModelFileStream()->fail()) {
     DVLOG(1) << "On Device Head model: ifstream read error at address ["
-             << address << "], when trying to read [" << num_bytes << "] bytes";
+             << address << "], when trying to read [" << buf.size()
+             << "] bytes";
     return false;
   }
   return true;
@@ -136,17 +138,13 @@ bool ReadNextNumBytes(OnDeviceModelParams* params,
 uint32_t ReadNextNumBytesAsInt(OnDeviceModelParams* params,
                                uint32_t num_bytes,
                                bool* is_successful) {
-  char* buf = new char[num_bytes];
-  *is_successful = ReadNextNumBytes(params, num_bytes, buf);
+  auto buf = base::HeapArray<char>::WithSize(num_bytes);
+  *is_successful = ReadNext(params, buf);
   if (!*is_successful) {
-    delete[] buf;
     return 0;
   }
 
-  uint32_t result = ConvertByteArrayToInt(buf, num_bytes);
-  delete[] buf;
-
-  return result;
+  return ConvertCharSpanToInt(buf);
 }
 
 // Checks if size of score and size of address read from the model file are
@@ -256,13 +254,11 @@ bool ReadNextChild(OnDeviceModelParams* params, MatchCandidate* candidate) {
   }
 
   // Read block [text].
-  char* text_buf = new char[text_length];
-  if (!ReadNextNumBytes(params, text_length, text_buf)) {
-    delete[] text_buf;
+  auto text_buf = base::HeapArray<char>::WithSize(text_length);
+  if (!ReadNext(params, text_buf)) {
     return false;
   }
-  std::string text(text_buf, text_length);
-  delete[] text_buf;
+  std::string text(base::as_string_view(text_buf));
   // Append the text in this child such that the MatchCandidate object always
   // contains the string representing the path from the root node to here.
   candidate->text = base::StrCat({candidate->text, text});
@@ -270,7 +266,7 @@ bool ReadNextChild(OnDeviceModelParams* params, MatchCandidate* candidate) {
   // Read block [1 bit indicator + address/leaf_score]
   // First read the 1 bit indicator.
   char first_byte;
-  if (!ReadNextNumBytes(params, 1, &first_byte)) {
+  if (!ReadNext(params, base::span_from_ref(first_byte))) {
     return false;
   }
   bool is_leaf_score = (first_byte & 0x1) == 0x0;
@@ -278,16 +274,15 @@ bool ReadNextChild(OnDeviceModelParams* params, MatchCandidate* candidate) {
   uint32_t length_of_leftover =
       (is_leaf_score ? params->score_size() : params->address_size()) - 1;
 
-  char* leftover = new char[length_of_leftover];
-  is_successful = ReadNextNumBytes(params, length_of_leftover, leftover);
+  auto leftover = base::HeapArray<char>::WithSize(length_of_leftover);
+  is_successful = ReadNext(params, leftover);
 
   if (is_successful) {
-    char* last_block = new char[length_of_leftover + 1];
-    std::memcpy(last_block, &first_byte, 1);
-    std::memcpy(last_block + 1, leftover, length_of_leftover);
+    auto last_block = base::HeapArray<char>::WithSize(length_of_leftover + 1);
+    last_block[0] = first_byte;
+    last_block.last(length_of_leftover).copy_from(leftover);
     // Remove the 1 bit indicator when re-constructing the score/address.
-    uint32_t score_or_address =
-        ConvertByteArrayToInt(last_block, length_of_leftover + 1) >> 1;
+    uint32_t score_or_address = ConvertCharSpanToInt(last_block) >> 1;
 
     if (is_leaf_score) {
       // Address is not required for leaf child.
@@ -297,7 +292,7 @@ bool ReadNextChild(OnDeviceModelParams* params, MatchCandidate* candidate) {
       candidate->address = score_or_address;
       candidate->is_complete_suggestion = false;
 
-      // TODO(crbug.com/1506547): remove this guard after evaluating the fix.
+      // TODO(crbug.com/40947213): remove this guard after evaluating the fix.
       if (OmniboxFieldTrial::ShouldApplyOnDeviceHeadModelSelectionFix()) {
         MatchCandidate unused_candidate;
         uint32_t address = params->GetModelFileStream()->tellg();
@@ -309,10 +304,8 @@ bool ReadNextChild(OnDeviceModelParams* params, MatchCandidate* candidate) {
         }
       }
     }
-    delete[] last_block;
   }
 
-  delete[] leftover;
   return is_successful;
 }
 
@@ -461,7 +454,7 @@ std::unique_ptr<OnDeviceModelParams> OnDeviceModelParams::Create(
     const uint32_t max_num_matches_to_return) {
   std::unique_ptr<OnDeviceModelParams> params(new OnDeviceModelParams());
 
-  // TODO(crbug.com/925072): Add DCHECK and code to report failures to UMA
+  // TODO(crbug.com/40610979): Add DCHECK and code to report failures to UMA
   // histogram.
   if (!OpenModelFileStream(params.get(), model_filename, 0)) {
     DVLOG(1) << "On Device Head Params: cannot access on device head params "
@@ -470,7 +463,7 @@ std::unique_ptr<OnDeviceModelParams> OnDeviceModelParams::Create(
   }
 
   char sizes[2];
-  if (!ReadNextNumBytes(params.get(), 2, sizes)) {
+  if (!ReadNext(params.get(), sizes)) {
     DVLOG(1) << "On Device Head Params: failed to read size information in the "
              << "first 2 bytes of the model file: " << model_filename;
     return nullptr;

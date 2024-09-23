@@ -49,6 +49,7 @@ class OmniboxPopupMediatorDelegate {
   virtual void OnMatchSelectedForAppending(const AutocompleteMatch& match) = 0;
   virtual void OnMatchSelectedForDeletion(const AutocompleteMatch& match) = 0;
   virtual void OnScroll() = 0;
+  virtual void OnCallActionTap() = 0;
 };
 
 /// Provider that returns protocols and services that are instantiated after
@@ -120,9 +121,6 @@ class OmniboxPopupMediatorDelegate {
     protocolProvider;
 @property(nonatomic, strong) BrowserActionFactory* mostVisitedActionFactory;
 @property(nonatomic, weak) id<CarouselItemConsumer> carouselItemConsumer;
-/// Pref service from the original browser state, used to retrieve preferred
-/// omnibox position.
-@property(nonatomic, assign) PrefService* originalPrefService;
 
 /// Designated initializer. Takes ownership of `imageFetcher`.
 - (instancetype)
@@ -141,6 +139,9 @@ class OmniboxPopupMediatorDelegate {
 
 /// Updates the popup with the `results`.
 - (void)updateWithResults:(const AutocompleteResult&)results;
+
+// Disconnects all observers set by the mediator.
+- (void)disconnect;
 
 @end
 

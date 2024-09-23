@@ -20,7 +20,7 @@ const LayoutResult* MathSpaceLayoutAlgorithm::Layout() {
 
   LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
+      GetConstraintSpace(), Node(), BorderPadding(), intrinsic_block_size,
       container_builder_.InitialBorderBoxSize().inline_size);
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);

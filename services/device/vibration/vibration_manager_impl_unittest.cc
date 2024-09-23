@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/device/vibration/vibration_manager_impl.h"
+
 #include "base/run_loop.h"
-#include "build/build_config.h"
+#include "base/test/gmock_callback_support.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_android.h"
-#include "services/device/vibration/android/vibration_jni_headers/VibrationManagerImpl_jni.h"
-#else
-#include "services/device/vibration/vibration_manager_impl.h"
-#endif
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace device {
 
+using ::base::test::RunClosure;
+
 namespace {
 
-class VibrationManagerImplTest : public DeviceServiceTestBase {
+class VibrationManagerImplTest : public DeviceServiceTestBase,
+                                 public mojom::VibrationManagerListener {
  public:
   VibrationManagerImplTest() = default;
 
@@ -32,8 +31,10 @@ class VibrationManagerImplTest : public DeviceServiceTestBase {
   void SetUp() override {
     DeviceServiceTestBase::SetUp();
 
+    mojo::PendingRemote<device::mojom::VibrationManagerListener> remote;
+    listener_.Bind(remote.InitWithNewPipeAndPassReceiver());
     device_service()->BindVibrationManager(
-        vibration_manager_.BindNewPipeAndPassReceiver());
+        vibration_manager_.BindNewPipeAndPassReceiver(), std::move(remote));
   }
 
   void Vibrate(int64_t milliseconds) {
@@ -49,25 +50,18 @@ class VibrationManagerImplTest : public DeviceServiceTestBase {
   }
 
   int64_t GetVibrationMilliSeconds() {
-#if BUILDFLAG(IS_ANDROID)
-    return Java_VibrationManagerImpl_getVibrateMilliSecondsForTesting(
-        base::android::AttachCurrentThread());
-#else
     return VibrationManagerImpl::milli_seconds_for_testing_;
-#endif
   }
 
   bool GetVibrationCancelled() {
-#if BUILDFLAG(IS_ANDROID)
-    return Java_VibrationManagerImpl_getVibrateCancelledForTesting(
-        base::android::AttachCurrentThread());
-#else
     return VibrationManagerImpl::cancelled_for_testing_;
-#endif
   }
+
+  MOCK_METHOD(void, OnVibrate, (), (override));
 
  private:
   mojo::Remote<mojom::VibrationManager> vibration_manager_;
+  mojo::Receiver<mojom::VibrationManagerListener> listener_{this};
 };
 
 TEST_F(VibrationManagerImplTest, VibrateThenCancel) {
@@ -78,6 +72,14 @@ TEST_F(VibrationManagerImplTest, VibrateThenCancel) {
   EXPECT_FALSE(GetVibrationCancelled());
   Cancel();
   EXPECT_TRUE(GetVibrationCancelled());
+}
+
+TEST_F(VibrationManagerImplTest, VibrateNotifiesListener) {
+  base::RunLoop loop;
+  EXPECT_CALL(*this, OnVibrate)
+      .WillOnce(base::test::RunClosure(loop.QuitClosure()));
+  Vibrate(10000);
+  loop.Run();
 }
 
 }  // namespace

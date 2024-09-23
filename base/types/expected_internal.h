@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/template_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 
@@ -306,7 +305,7 @@ constexpr auto OrElse(Exp&& exp, F&& f) noexcept {
   }
 
   if constexpr (!std::is_void_v<T>) {
-    return G(absl::in_place, std::forward<Exp>(exp).value());
+    return G(std::in_place, std::forward<Exp>(exp).value());
   } else {
     return G();
   }
@@ -352,7 +351,7 @@ constexpr auto Transform(Exp&& exp, F&& f) noexcept {
   }
 
   if constexpr (!std::is_void_v<U>) {
-    return expected<U, E>(absl::in_place, invoke_f());
+    return expected<U, E>(std::in_place, invoke_f());
   } else {
     invoke_f();
     return expected<U, E>();
@@ -393,7 +392,7 @@ constexpr auto TransformError(Exp&& exp, F&& f) noexcept {
   if constexpr (std::is_void_v<T>) {
     return expected<T, G>();
   } else {
-    return expected<T, G>(absl::in_place, std::forward<Exp>(exp).value());
+    return expected<T, G>(std::in_place, std::forward<Exp>(exp).value());
   }
 }
 

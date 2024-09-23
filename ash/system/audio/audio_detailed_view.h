@@ -8,12 +8,14 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/style/switch.h"
+#include "ash/system/audio/audio_detailed_view_utils.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +35,7 @@ struct VectorIcon;
 
 namespace ash {
 class MicGainSliderController;
+class LabeledSliderView;
 class UnifiedAudioDetailedViewControllerSodaTest;
 class UnifiedAudioDetailedViewControllerTest;
 class UnifiedVolumeSliderController;
@@ -72,6 +75,11 @@ class ASH_EXPORT AudioDetailedView
   static void SetMapNoiseCancellationToggleCallbackForTest(
       NoiseCancellationCallback* map_noise_cancellation_toggle_callback);
 
+  using StyleTransferCallback =
+      base::RepeatingCallback<void(uint64_t, views::View*)>;
+  static void SetMapStyleTransferToggleCallbackForTest(
+      StyleTransferCallback* map_style_transfer_toggle_callback);
+
   views::View* GetAsView();
 
   // Updates the `AudioDetailedView` and re-layout.
@@ -104,12 +112,6 @@ class ASH_EXPORT AudioDetailedView
                          const gfx::VectorIcon& icon,
                          const int text_id);
 
-  // Adds the sliders for output/input devices.
-  views::View* AddDeviceSlider(views::View* container,
-                               const AudioDevice& device,
-                               HoverHighlightView* device_name_container,
-                               bool is_output_device);
-
   // Creates the items other than the devices during initialization.
   void CreateItems();
 
@@ -123,9 +125,18 @@ class ASH_EXPORT AudioDetailedView
   std::unique_ptr<HoverHighlightView> CreateNoiseCancellationToggleRow(
       const AudioDevice& device);
 
+  // Creates the style transfer toggle row in the input subsection.
+  std::unique_ptr<HoverHighlightView> CreateStyleTransferToggleRow(
+      const AudioDevice& device);
+
   // Creates the agc info row in the input subsection.
   std::unique_ptr<HoverHighlightView> CreateAgcInfoRow(
       const AudioDevice& device);
+
+  // Creates and returns the `LabeledSliderView`. Focuses on the slider of
+  // `LabeledSliderView` if `device` is focused and active.
+  LabeledSliderView* CreateLabeledSliderView(views::View* container,
+                                             const AudioDevice& device);
 
   // Sets the subtext for `live_caption_view_` based on whether live caption has
   // updated if this feature is enabled and visible in tray.
@@ -134,6 +145,9 @@ class ASH_EXPORT AudioDetailedView
 
   // Callback passed to the noise cancellation toggle button.
   void OnInputNoiseCancellationTogglePressed();
+
+  // Callback passed to the style transfer toggle button.
+  void OnInputStyleTransferTogglePressed();
 
   // Callback passed to the Settings button.
   void OnSettingsButtonClicked();
@@ -148,17 +162,13 @@ class ASH_EXPORT AudioDetailedView
   // Updates `output_devices_` and `input_devices_`.
   void UpdateAudioDevices();
 
+  // Adds a separator if the `device` is the last one in `input_devices_` if
+  // it's an input device or is the last one in `output_devices_` if it's an
+  // output device.
+  void AddSeparatorIfNotLast(views::View* container, const AudioDevice& device);
+
   // Updates the child views in `scroll_content()`.
   void UpdateScrollableList();
-
-  // Updates the label and checkmark color of `device_name_container` based on
-  // whether this device is muted or not.
-  void UpdateDeviceContainerColor(HoverHighlightView* device_name_container,
-                                  bool is_muted);
-
-  // Callback to change the active node's color based on the mute state. Gets
-  // called when the input/output node's mute state changes.
-  void UpdateActiveDeviceColor(bool is_input, bool is_muted);
 
   // Updates the label of AGC info when accessibility to microphone changed.
   // Hide AGC info row if no apps is requesting AGC stream.
@@ -183,15 +193,13 @@ class ASH_EXPORT AudioDetailedView
       CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
 
-  typedef std::map<views::View*, AudioDevice> AudioDeviceMap;
-
   std::unique_ptr<MicGainSliderController> mic_gain_controller_;
   std::unique_ptr<UnifiedVolumeSliderController>
       unified_volume_slider_controller_;
   AudioDeviceList output_devices_;
   AudioDeviceList input_devices_;
-  AudioDeviceMap device_map_;
-  uint64_t focused_device_id_ = -1;
+  AudioDeviceViewMap device_map_;
+  std::optional<uint64_t> focused_device_id_;
 
   int num_stream_ignore_ui_gains_ = 0;
 
@@ -202,6 +210,9 @@ class ASH_EXPORT AudioDetailedView
   raw_ptr<HoverHighlightView> noise_cancellation_view_ = nullptr;
   raw_ptr<views::ImageView> noise_cancellation_icon_ = nullptr;
   raw_ptr<Switch> noise_cancellation_button_ = nullptr;
+  raw_ptr<HoverHighlightView> style_transfer_view_ = nullptr;
+  raw_ptr<views::ImageView> style_transfer_icon_ = nullptr;
+  raw_ptr<Switch> style_transfer_button_ = nullptr;
   raw_ptr<views::Button> settings_button_ = nullptr;
 
   base::ScopedObservation<SessionController, SessionObserver>

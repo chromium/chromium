@@ -80,7 +80,7 @@ WindowsSystemProxyResolutionRequest::~WindowsSystemProxyResolutionRequest() {
 }
 
 LoadState WindowsSystemProxyResolutionRequest::GetLoadState() const {
-  // TODO(https://crbug.com/1032820): Consider adding a LoadState for "We're
+  // TODO(crbug.com/40111093): Consider adding a LoadState for "We're
   // waiting on system APIs to do their thing".
   return LOAD_STATE_RESOLVING_PROXY_FOR_URL;
 }
@@ -96,7 +96,7 @@ void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
     int windows_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!was_completed());
-  // TODO(https://crbug.com/1032820): Log Windows error |windows_error|.
+  // TODO(crbug.com/40111093): Log Windows error |windows_error|.
 
   proxy_resolution_request_.reset();
   results_->UseProxyList(proxy_list);

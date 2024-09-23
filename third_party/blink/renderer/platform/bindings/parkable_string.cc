@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
 #include <array>
+#include <string_view>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -20,8 +26,11 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
+#include "partition_alloc/oom.h"
+#include "partition_alloc/partition_alloc.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
@@ -40,6 +49,12 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/snappy/src/snappy.h"
 #include "third_party/zlib/google/compression_utils.h"
+
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+// "GN check" doesn't know that this file is only included when
+// BUILDFLAG(HAS_ZSTD_COMPRESSION) is true. Disable it here.
+#include "third_party/zstd/src/lib/zstd.h"  // nogncheck
+#endif
 
 namespace blink {
 
@@ -178,7 +193,7 @@ struct BackgroundTaskParams final {
 
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner;
   const scoped_refptr<ParkableStringImpl> string;
-  raw_ptr<const void, ExperimentalRenderer> data;
+  raw_ptr<const void> data;
   const size_t size;
   std::unique_ptr<ReservedChunk> reserved_chunk;
 };
@@ -238,14 +253,13 @@ ParkableStringImpl::ParkableMetadata::ParkableMetadata(
       is_8bit_(string.Is8Bit()),
       length_(string.length()) {}
 
-// static2
+// static
 std::unique_ptr<ParkableStringImpl::SecureDigest>
 ParkableStringImpl::HashString(StringImpl* string) {
   DigestValue digest_result;
 
   Digestor digestor(kHashAlgorithmSha256);
-  digestor.Update(base::make_span(static_cast<const uint8_t*>(string->Bytes()),
-                                  string->CharactersSizeInBytes()));
+  digestor.Update(string->RawByteSpan());
   // Also include encoding in the digest, otherwise two strings with identical
   // byte content but different encoding will be assumed equal, leading to
   // crashes when one is replaced by the other one.
@@ -280,6 +294,20 @@ scoped_refptr<ParkableStringImpl> ParkableStringImpl::MakeParkable(
   DCHECK(!!digest);
   return base::AdoptRef(
       new ParkableStringImpl(std::move(impl), std::move(digest)));
+}
+
+// static
+ParkableStringImpl::CompressionAlgorithm
+ParkableStringImpl::GetCompressionAlgorithm() {
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+  if (base::FeatureList::IsEnabled(features::kUseZstdForParkableStrings)) {
+    return CompressionAlgorithm::kZstd;
+  }
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
+  if (features::ParkableStringsUseSnappy()) {
+    return CompressionAlgorithm::kSnappy;
+  }
+  return CompressionAlgorithm::kZlib;
 }
 
 ParkableStringImpl::ParkableStringImpl(scoped_refptr<StringImpl>&& impl,
@@ -610,53 +638,74 @@ String ParkableStringImpl::UnparkInternal() {
   }
 
   TRACE_EVENT("blink", "ParkableStringImpl::Decompress");
-  base::StringPiece compressed_string_piece(
+  std::string_view compressed_string_piece(
       reinterpret_cast<const char*>(metadata_->compressed_->data()),
       metadata_->compressed_->size() * sizeof(uint8_t));
   String uncompressed;
-  base::StringPiece uncompressed_string_piece;
-  size_t size = CharactersSizeInBytes();
-  char* char_data;
+  base::span<char> chars;
   if (is_8bit()) {
-    LChar* data;
+    base::span<LChar> data;
     uncompressed = String::CreateUninitialized(length(), data);
-    char_data = reinterpret_cast<char*>(data);
+    chars = base::as_writable_chars(data);
   } else {
-    UChar* data;
+    base::span<UChar> data;
     uncompressed = String::CreateUninitialized(length(), data);
-    char_data = reinterpret_cast<char*>(data);
+    chars = base::as_writable_chars(data);
   }
-  uncompressed_string_piece = base::StringPiece(char_data, size);
 
-  if (!features::ParkableStringsUseSnappy()) {
-    // If the buffer size is incorrect, then we have a corrupted data issue,
-    // and in such case there is nothing else to do than crash.
-    CHECK_EQ(compression::GetUncompressedSize(compressed_string_piece),
-             uncompressed_string_piece.size());
-    // If decompression fails, this is either because:
-    // 1. Compressed data is corrupted
-    // 2. Cannot allocate memory in zlib
-    //
-    // (1) is data corruption, and (2) is OOM. In all cases, we cannot
-    // recover the string we need, nothing else to do than to abort.
-    if (!compression::GzipUncompress(compressed_string_piece,
-                                     uncompressed_string_piece)) {
-      // Since this is almost always OOM, report it as such. We don't have
-      // certainty, but memory corruption should be much rarer, and could make
-      // us crash anywhere else.
-      OOM_CRASH(uncompressed_string_piece.size());
+  switch (GetCompressionAlgorithm()) {
+    case CompressionAlgorithm::kZlib: {
+      const auto uncompressed_string_piece = base::as_string_view(chars);
+      // If the buffer size is incorrect, then we have a corrupted data issue,
+      // and in such case there is nothing else to do than crash.
+      CHECK_EQ(compression::GetUncompressedSize(compressed_string_piece),
+               uncompressed_string_piece.size());
+      // If decompression fails, this is either because:
+      // 1. Compressed data is corrupted
+      // 2. Cannot allocate memory in zlib
+      //
+      // (1) is data corruption, and (2) is OOM. In all cases, we cannot
+      // recover the string we need, nothing else to do than to abort.
+      if (!compression::GzipUncompress(compressed_string_piece,
+                                       uncompressed_string_piece)) {
+        // Since this is almost always OOM, report it as such. We don't have
+        // certainty, but memory corruption should be much rarer, and could make
+        // us crash anywhere else.
+        OOM_CRASH(uncompressed_string_piece.size());
+      }
+      break;
     }
-  } else {
-    size_t uncompressed_size;
+    case CompressionAlgorithm::kSnappy: {
+      size_t uncompressed_size;
 
-    // As above, if size is incorrect, or if data is corrupted, prefer crashing.
-    CHECK(snappy::GetUncompressedLength(compressed_string_piece.data(),
-                                        compressed_string_piece.size(),
-                                        &uncompressed_size));
-    CHECK_EQ(uncompressed_size, size);
-    CHECK(snappy::RawUncompress(compressed_string_piece.data(),
-                                compressed_string_piece.size(), char_data))
-        << "Decompression failed, corrupted data?";
+      // As above, if size is incorrect, or if data is corrupted, prefer
+      // crashing.
+      CHECK(snappy::GetUncompressedLength(compressed_string_piece.data(),
+                                          compressed_string_piece.size(),
+                                          &uncompressed_size));
+      CHECK_EQ(uncompressed_size, chars.size());
+      CHECK(snappy::RawUncompress(compressed_string_piece.data(),
+                                  compressed_string_piece.size(), chars.data()))
+          << "Decompression failed, corrupted data?";
+      break;
+    }
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+    case CompressionAlgorithm::kZstd: {
+      uint64_t content_size = ZSTD_getFrameContentSize(
+          compressed_string_piece.data(), compressed_string_piece.size());
+      // The CHECK()s below indicate memory corruption, terminate.
+      CHECK_NE(content_size, ZSTD_CONTENTSIZE_UNKNOWN);
+      CHECK_NE(content_size, ZSTD_CONTENTSIZE_ERROR);
+      CHECK_EQ(content_size, static_cast<uint64_t>(chars.size()));
+
+      size_t uncompressed_size = ZSTD_decompress(
+          chars.data(), chars.size(), compressed_string_piece.data(),
+          compressed_string_piece.size());
+      CHECK(!ZSTD_isError(uncompressed_size));
+      CHECK_EQ(uncompressed_size, chars.size());
+      break;
+    }
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
   }
 
   base::TimeDelta elapsed = timer.Elapsed();
@@ -713,8 +762,8 @@ void ParkableStringImpl::CompressInBackground(
   // Compression touches the string.
   AsanUnpoisonString(params->string->string_);
   bool ok;
-  base::StringPiece data(reinterpret_cast<const char*>(params->data.get()),
-                         params->size);
+  std::string_view data(reinterpret_cast<const char*>(params->data.get()),
+                        params->size);
   std::unique_ptr<Vector<uint8_t>> compressed;
 
   // This runs in background, making CPU starvation likely, and not an issue.
@@ -738,24 +787,50 @@ void ParkableStringImpl::CompressInBackground(
     // - WTF::Vector<> as allocation failures result in an OOM crash, whereas
     //   we can fail gracefully. See crbug.com/905777 for an example of OOM
     //   triggered from there.
-    size_t buffer_size = features::ParkableStringsUseSnappy()
-                             ? snappy::MaxCompressedLength(params->size)
-                             : params->size;
+
+    size_t buffer_size;
+    switch (GetCompressionAlgorithm()) {
+      case CompressionAlgorithm::kZlib:
+        buffer_size = params->size;
+        break;
+      case CompressionAlgorithm::kSnappy:
+        // Contrary to other compression algorithms, snappy requires the buffer
+        // to be at least this size, rather than aborting if the provided buffer
+        // is too small.
+        buffer_size = snappy::MaxCompressedLength(params->size);
+        break;
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+      case CompressionAlgorithm::kZstd:
+        buffer_size = ZSTD_compressBound(params->size);
+        break;
+#endif
+    }
+
     NullableCharBuffer buffer(buffer_size);
     ok = buffer.data();
     size_t compressed_size;
-
     if (ok) {
-      if (features::ParkableStringsUseSnappy()) {
-        snappy::RawCompress(data.data(), params->size, buffer.data(),
-                            &compressed_size);
-
-        if (compressed_size > params->size) {
-          ok = false;
-        }
-      } else {
-        ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
-                                       &compressed_size, nullptr, nullptr);
+      switch (GetCompressionAlgorithm()) {
+        case CompressionAlgorithm::kZlib:
+          ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
+                                         &compressed_size, nullptr, nullptr);
+          break;
+        case CompressionAlgorithm::kSnappy:
+          snappy::RawCompress(data.data(), params->size, buffer.data(),
+                              &compressed_size);
+          if (compressed_size > params->size) {
+            ok = false;
+          }
+          break;
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+        case CompressionAlgorithm::kZstd:
+          compressed_size = ZSTD_compress(
+              buffer.data(), buffer.size(), data.data(), params->size,
+              features::kZstdCompressionLevel.Get());
+          ok = !ZSTD_isError(compressed_size) &&
+               (compressed_size < params->size);
+          break;
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
       }
     }
 
@@ -767,8 +842,7 @@ void ParkableStringImpl::CompressInBackground(
       compressed = std::make_unique<Vector<uint8_t>>();
       // Not using realloc() as we want the compressed data to be a regular
       // WTF::Vector.
-      compressed->Append(reinterpret_cast<const uint8_t*>(buffer.data()),
-                         base::checked_cast<wtf_size_t>(compressed_size));
+      compressed->AppendSpan(base::as_byte_span(buffer).first(compressed_size));
     }
   }
   base::TimeDelta thread_elapsed = thread_timer.Elapsed();
@@ -815,6 +889,9 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
   // Both of these will make the string young again, and if so we don't
   // discard the compressed representation yet.
   if (CanParkNow() && metadata_->compressed_) {
+    // Prevent `data` from dangling, since it points to the uncompressed data
+    // freed below.
+    params->data = nullptr;
     DiscardUncompressedData();
   } else {
     metadata_->state_ = State::kUnparked;
@@ -890,6 +967,9 @@ void ParkableStringImpl::OnWritingCompleteOnMainThread(
   DCHECK(metadata_->state_ == State::kUnparked ||
          metadata_->state_ == State::kParked);
   if (metadata_->state_ == State::kParked) {
+    // Prevent `data` from dangling, since it points to the compressed data
+    // freed below.
+    params->data = nullptr;
     DiscardCompressedData();
     DCHECK_EQ(metadata_->state_, State::kOnDisk);
   }

@@ -14,9 +14,11 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/base/overlay_info.h"
+#include "media/base/supported_audio_decoder_config.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
+#include "media/mojo/mojom/audio_decoder.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
@@ -60,6 +62,8 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
 
   virtual std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  virtual SupportedAudioDecoderConfigs GetSupportedAudioDecoderConfigs();
 
   virtual std::vector<SupportedVideoDecoderConfig>
   GetSupportedVideoDecoderConfigs();

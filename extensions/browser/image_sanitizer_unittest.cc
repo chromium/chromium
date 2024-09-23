@@ -70,8 +70,9 @@ class TestClient : public ImageSanitizer::Client {
     done_callback_called_ = true;
     last_status_ = status;
     last_reported_path_ = path;
-    if (done_callback_)
+    if (done_callback_) {
       std::move(done_callback_).Run();
+    }
   }
 
   void OnImageDecoded(const base::FilePath& path, SkBitmap image) override {
@@ -133,8 +134,9 @@ class ImageSanitizerTest : public testing::Test {
   bool WriteBase64DataToFile(const std::string& base64_data,
                              const base::FilePath::StringPieceType& file_name) {
     std::string binary;
-    if (!base::Base64Decode(base64_data, &binary))
+    if (!base::Base64Decode(base64_data, &binary)) {
       return false;
+    }
 
     base::FilePath path = temp_dir_.GetPath().Append(file_name);
     return base::WriteFile(path, binary);

@@ -20,9 +20,25 @@ PreviewManager::~PreviewManager() = default;
 void PreviewManager::PrimaryPageChanged(content::Page& page) {
   // When initiator page has gone, cancel preview.
   tab_.reset();
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<PreviewManager> self) {
+                       // Reset `usage_` asynchronously as other observers will
+                       // still refer the usage on the page change.
+                       if (self) {
+                         self->usage_ = Usage::kNotUsed;
+                       }
+                     },
+                     weak_factory_.GetWeakPtr()));
 }
 
 void PreviewManager::InitiatePreview(const GURL& url) {
+  if (usage_ == Usage::kNotUsed) {
+    // Upgrade to kUsedButNotPromoted iff this is the first time to initiate
+    // the feature.
+    usage_ = Usage::kUsedButNotPromoted;
+  }
   // TODO(b:292184832): Pass more load params.
   tab_ = std::make_unique<PreviewTab>(this, GetWebContents(), url);
 }
@@ -43,6 +59,9 @@ void PreviewManager::PromoteToNewTab() {
     return;
   }
 
+  // Upgrade to kUsedAndPromoted. This will be asynchronously reset to kNotUsed
+  // when the primary page is changed to the next page.
+  usage_ = Usage::kUsedAndPromoted;
   tab_->PromoteToNewTab(GetWebContents());
   // Delete `tab_` asynchronously so that we can call this inside PreviewTab.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

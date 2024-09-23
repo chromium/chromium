@@ -1,0 +1,36 @@
+<ntp-module-header-v2
+    id="moduleHeaderElementV2"
+    header-text="$i18n{modulesDriveTitleV2}"
+    .menuItemGroups="${this.getMenuItemGroups_()}"
+    more-actions-text="${this.i18nRecursive('',
+                                  'modulesMoreActions',
+                                  'modulesDriveSentence')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}"
+    @menu-button-click="${this.onMenuButtonClick_}">
+</ntp-module-header-v2>
+<div id="files">
+  ${this.files.map((item, index) => html`
+    <a class="file" href="${item.itemUrl.url}" data-index="${index}"
+        @click="${this.onFileClick_}">
+      <div id="hover-layer"></div>
+      <icon-container class="icon-container">
+        <img is="cr-auto-img"
+          class="file-icon"
+          draggable="false"
+          .autoSrc="${this.getImageSrc_(item)}">
+      </icon-container>
+      <div class="file-info">
+        <div class="file-title">${item.title}</div>
+        <div class="file-description">${item.justificationText}</div>
+      </div>
+    </a>
+  `)}
+</div>
+${this.showInfoDialog_ ? html`
+  <ntp-info-dialog show-on-attach
+      .innerHTML="${this.i18nAdvanced('modulesDriveInfo')}"
+      @close="${this.onInfoDialogClose_}">
+  </ntp-info-dialog>
+` : ''}

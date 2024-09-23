@@ -73,11 +73,11 @@ class BufferAutoMapper {
   size_t size() const { return size_; }
 
  private:
-  raw_ptr<ppapi::thunk::PPB_Buffer_API, ExperimentalRenderer> api_;
+  raw_ptr<ppapi::thunk::PPB_Buffer_API> api_;
 
   bool needs_unmap_;
 
-  const uint8_t* data_;
+  raw_ptr<const uint8_t> data_;
   uint32_t size_;
 };
 

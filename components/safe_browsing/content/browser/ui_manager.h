@@ -125,8 +125,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
     // SafeBrowsingUIManager will send hit reports when it deems the context
     // appropriate to do so (see ShouldSendHitReport()). If this method returns
     // false, SafeBrowsingUIManager will never send hit reports.
-    // TODO(crbug.com/1232315): Eliminate this method if/once hit report sending
-    // is enabled in WebLayer.
+    // TODO(crbug.com/40780174): Eliminate this method if/once hit report
+    // sending is enabled in WebLayer.
     virtual bool IsSendingOfHitReportsEnabled() = 0;
   };
 
@@ -248,15 +248,14 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // user has opted in to extended reporting and is not currently in incognito
   // mode.
   bool ShouldSendClientSafeBrowsingWarningShownReport(
-      ClientSafeBrowsingReportRequest* report,
       content::WebContents* web_contents);
 
  private:
   friend class SafeBrowsingUIManagerTest;
   friend class TestSafeBrowsingUIManager;
-
-  static GURL GetMainFrameAllowlistUrlForResourceForTesting(
-      const safe_browsing::SafeBrowsingUIManager::UnsafeResource& resource);
+  FRIEND_TEST_ALL_PREFIXES(
+      SafeBrowsingUIManagerTest,
+      DontSendClientSafeBrowsingWarningShownReportNullWebContents);
 
   std::unique_ptr<Delegate> delegate_;
 

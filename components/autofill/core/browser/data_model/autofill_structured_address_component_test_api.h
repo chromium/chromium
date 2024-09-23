@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -19,8 +18,8 @@ namespace autofill {
 // Exposes some testing operations for AddressComponent.
 class AddressComponentTestApi {
  public:
-  explicit AddressComponentTestApi(AddressComponent* component)
-      : component_(*component) {}
+  explicit AddressComponentTestApi(AddressComponent& component)
+      : component_(component) {}
 
   // Initiates the formatting of the values from the subcomponents.
   void FormatValueFromSubcomponents() {
@@ -62,7 +61,7 @@ class AddressComponentTestApi {
   raw_ref<AddressComponent> component_;
 };
 
-inline AddressComponentTestApi test_api(AddressComponent* component) {
+inline AddressComponentTestApi test_api(AddressComponent& component) {
   return AddressComponentTestApi(component);
 }
 

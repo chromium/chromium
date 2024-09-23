@@ -12,7 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_depth_sensor.h"
 #include "device/vr/openxr/openxr_hand_tracker.h"
+#include "device/vr/openxr/openxr_light_estimator.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
@@ -73,6 +75,16 @@ struct OpenXrExtensionMethods {
   OPENXR_DECLARE_FN(xrRaycastANDROID);
 
   OPENXR_DECLARE_FN(xrCreateAnchorSpaceANDROID);
+
+  OPENXR_DECLARE_FN(xrCreateLightEstimatorANDROID);
+  OPENXR_DECLARE_FN(xrDestroyLightEstimatorANDROID);
+  OPENXR_DECLARE_FN(xrGetLightEstimateANDROID);
+
+  OPENXR_DECLARE_FN(xrCreateDepthSwapchainANDROID);
+  OPENXR_DECLARE_FN(xrDestroyDepthSwapchainANDROID);
+  OPENXR_DECLARE_FN(xrEnumerateDepthSwapchainImagesANDROID);
+  OPENXR_DECLARE_FN(xrEnumerateDepthResolutionsANDROID);
+  OPENXR_DECLARE_FN(xrAcquireDepthSwapchainImagesANDROID);
 #endif
 };
 // Ensure that we don't export our helper macro.
@@ -122,9 +134,18 @@ class OpenXrExtensionHelper {
       XrSession session,
       XrSpace base_space) const;
 
+  std::unique_ptr<OpenXrDepthSensor> CreateDepthSensor(
+      XrSession session,
+      XrSpace base_space,
+      const mojom::XRDepthOptions& depth_options) const;
+
   std::unique_ptr<OpenXrHandTracker> CreateHandTracker(
       XrSession session,
       OpenXrHandednessType handedness) const;
+
+  std::unique_ptr<OpenXrLightEstimator> CreateLightEstimator(
+      XrSession session,
+      XrSpace base_space) const;
 
   std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(XrSession session, XrSpace base_space) const;

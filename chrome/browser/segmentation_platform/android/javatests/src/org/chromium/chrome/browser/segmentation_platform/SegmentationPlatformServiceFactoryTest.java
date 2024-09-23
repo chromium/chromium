@@ -12,20 +12,21 @@ import static org.chromium.base.test.util.Batch.PER_CLASS;
 
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.Constants;
@@ -42,7 +43,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(value = PER_CLASS)
 public class SegmentationPlatformServiceFactoryTest {
-    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -55,13 +55,13 @@ public class SegmentationPlatformServiceFactoryTest {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {
                         SegmentationPlatformService segmentationPlatformService =
                                 SegmentationPlatformServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
 
                         PredictionOptions options = new PredictionOptions(true);
                         segmentationPlatformService.getClassificationResult(
@@ -73,9 +73,7 @@ public class SegmentationPlatformServiceFactoryTest {
                                     public void onResult(ClassificationResult result) {
                                         Assert.assertEquals(
                                                 PredictionStatus.NOT_READY, result.status);
-                                        assertThat(
-                                                result.orderedLabels,
-                                                org.hamcrest.Matchers.empty());
+                                        assertThat(result.orderedLabels, Matchers.empty());
                                         mCallbackHelper.notifyCalled();
                                     }
                                 });
@@ -91,21 +89,27 @@ public class SegmentationPlatformServiceFactoryTest {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override
                     public void run() {
                         SegmentationPlatformService segmentationPlatformService =
                                 SegmentationPlatformServiceFactory.getForProfile(
-                                        Profile.getLastUsedRegularProfile());
+                                        ProfileManager.getLastUsedRegularProfile());
 
-                        PredictionOptions options = new PredictionOptions(true);
+                        PredictionOptions options = PredictionOptions.forOndemand(false);
                         InputContext inputContext = new InputContext();
                         inputContext.addEntry(
                                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
                                 ProcessedValue.fromFloat(1.0f));
                         inputContext.addEntry(
                                 Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
+                                ProcessedValue.fromFloat(0.0f));
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_INSIGHTS_INPUT,
+                                ProcessedValue.fromFloat(0.0f));
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_DISCOUNTS_INPUT,
                                 ProcessedValue.fromFloat(0.0f));
                         inputContext.addEntry("url", ProcessedValue.fromGURL(GURL.emptyGURL()));
 

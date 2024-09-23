@@ -7,8 +7,8 @@ package org.chromium.components.embedder_support.view;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Handler;
+import android.util.SparseArray;
 import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -19,6 +19,7 @@ import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.ViewGroup.OnHierarchyChangeListener;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityNodeProvider;
+import android.view.autofill.AutofillValue;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.FrameLayout;
@@ -27,7 +28,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.compat.ApiHelperForO;
+import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -38,6 +39,7 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 
 import java.util.function.Supplier;
@@ -80,33 +82,31 @@ public class ContentView extends FrameLayout
 
     private int mDesiredHeightMeasureSpec = DEFAULT_MEASURE_SPEC;
 
-    @Nullable private final EventOffsetHandler mEventOffsetHandler;
     private EventOffsetHandler mDragDropEventOffsetHandler;
     private boolean mDeferKeepScreenOnChanges;
     private Boolean mPendingKeepScreenOnValue;
 
     /**
      * Constructs a new ContentView for the appropriate Android version.
-     * @param context The Context the view is running in, through which it can
-     *                access the current theme, resources, etc.
+     *
+     * @param context The Context the view is running in, through which it can access the current
+     *     theme, resources, etc.
      * @param webContents The WebContents managing this content view.
      * @return an instance of a ContentView.
      */
     public static ContentView createContentView(
-            Context context,
-            @Nullable EventOffsetHandler eventOffsetHandler,
-            @Nullable WebContents webContents) {
-        return new ContentView(context, eventOffsetHandler, webContents);
+            Context context, @Nullable WebContents webContents) {
+        return new ContentView(context, webContents);
     }
 
     /**
      * Creates an instance of a ContentView.
-     * @param context The Context the view is running in, through which it can
-     *                access the current theme, resources, etc.
+     *
+     * @param context The Context the view is running in, through which it can access the current
+     *     theme, resources, etc.
      * @param webContents A pointer to the WebContents managing this content view.
      */
-    protected ContentView(
-            Context context, EventOffsetHandler eventOffsetHandler, WebContents webContents) {
+    protected ContentView(Context context, WebContents webContents) {
         super(context, null, android.R.attr.webViewStyle);
 
         if (getScrollBarStyle() == View.SCROLLBARS_INSIDE_OVERLAY) {
@@ -115,14 +115,10 @@ public class ContentView extends FrameLayout
         }
 
         mWebContents = webContents;
-        mEventOffsetHandler = eventOffsetHandler;
 
         setFocusable(true);
         setFocusableInTouchMode(true);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            ApiHelperForO.setDefaultFocusHighlightEnabled(this, false);
-        }
+        setDefaultFocusHighlightEnabled(false);
 
         setOnHierarchyChangeListener(this);
         setOnSystemUiVisibilityChangeListener(this);
@@ -394,40 +390,10 @@ public class ContentView extends FrameLayout
     }
 
     @Override
-    public boolean onInterceptTouchEvent(MotionEvent e) {
-        boolean ret = super.onInterceptTouchEvent(e);
-        if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onInterceptTouchEvent(e);
-        }
-        return ret;
-    }
-
-    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (TouchEventFilter.hasInvalidToolType(event)) return false;
         EventForwarder forwarder = getEventForwarder();
         boolean ret = forwarder != null ? forwarder.onTouchEvent(event) : false;
-        if (mEventOffsetHandler != null) mEventOffsetHandler.onTouchEvent(event);
-        return ret;
-    }
-
-    @Override
-    public boolean onInterceptHoverEvent(MotionEvent e) {
-        if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onInterceptHoverEvent(e);
-        }
-        return super.onInterceptHoverEvent(e);
-    }
-
-    @Override
-    public boolean dispatchDragEvent(DragEvent e) {
-        if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
-        }
-        boolean ret = super.dispatchDragEvent(e);
-        if (mEventOffsetHandler != null) {
-            mEventOffsetHandler.onPostDispatchDragEvent(e.getAction());
-        }
         return ret;
     }
 
@@ -592,6 +558,34 @@ public class ContentView extends FrameLayout
     public void onProvideVirtualStructure(final ViewStructure structure) {
         WebContentsAccessibility wcax = getWebContentsAccessibility();
         if (wcax != null) wcax.onProvideVirtualStructure(structure, false);
+    }
+
+    @Override
+    public void autofill(final SparseArray<AutofillValue> values) {
+        ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
+        if (viewDelegate == null || !viewDelegate.providesAutofillStructure()) {
+            if (allowAutofillViaAccessibilityAPI()) {
+                super.autofill(values);
+            }
+            return;
+        }
+        viewDelegate.autofill(values);
+    }
+
+    @Override
+    public void onProvideAutofillVirtualStructure(ViewStructure structure, int flags) {
+        ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
+        if (viewDelegate == null || !viewDelegate.providesAutofillStructure()) {
+            if (allowAutofillViaAccessibilityAPI()) {
+                super.onProvideAutofillVirtualStructure(structure, flags);
+            }
+            return;
+        }
+        viewDelegate.onProvideAutofillVirtualStructure(structure, flags);
+    }
+
+    private boolean allowAutofillViaAccessibilityAPI() {
+        return !AndroidAutofillFeatures.ANDROID_AUTOFILL_DEPRECATE_ACCESSIBILITY_API.isEnabled();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

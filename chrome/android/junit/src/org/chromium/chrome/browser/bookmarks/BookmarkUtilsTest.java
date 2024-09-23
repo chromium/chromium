@@ -19,7 +19,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -29,13 +28,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -59,9 +58,9 @@ import org.chromium.url.GURL;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE)
 public class BookmarkUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule
@@ -72,6 +71,7 @@ public class BookmarkUtilsTest {
     @Mock private Tracker mTracker;
     @Mock private LargeIconBridge mLargeIconBridge;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
+    @Mock private ImageServiceBridge.Natives mImageServiceBridgeJni;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private BottomSheetController mBottomSheetController;
@@ -94,6 +94,7 @@ public class BookmarkUtilsTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
 
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNatives);
+        mJniMocker.mock(ImageServiceBridgeJni.TEST_HOOKS, mImageServiceBridgeJni);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
         doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
         doReturn(mProfile).when(mTab).getProfile();
@@ -107,7 +108,6 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @DisableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
     public void testAddToReadingList() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -133,8 +133,8 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @EnableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
     public void testAddToReadingList_withAccountBookmarks() {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords("Bookmarks.AddBookmarkType", BookmarkType.READING_LIST)
@@ -142,10 +142,9 @@ public class BookmarkUtilsTest {
                                 "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
                         .build();
 
-        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
         BookmarkUtils.addToReadingList(
                 mActivity,
-                bookmarkModel,
+                mBookmarkModel,
                 "Test title",
                 new GURL("https://test.com"),
                 mSnackbarManager,
@@ -183,7 +182,6 @@ public class BookmarkUtilsTest {
     }
 
     @Test
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testAddOrEditBookmark_readingList() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()

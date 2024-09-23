@@ -287,7 +287,7 @@ public class MerchantTrustSignalsCoordinator
     public void onMessagePrimaryAction(MerchantInfo merchantInfo, String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageTapped();
 
-        // TODO(crbug.com/1300971): Pass webContents directly to this method instead of using
+        // TODO(crbug.com/40216480): Pass webContents directly to this method instead of using
         // mTabSupplier.
         if (mTabSupplier.hasValue()) {
             mMetrics.recordUkmOnMessageClicked(mTabSupplier.get().getWebContents());

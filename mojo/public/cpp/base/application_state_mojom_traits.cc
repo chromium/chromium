@@ -24,7 +24,6 @@ mojo_base::mojom::ApplicationState EnumTraits<
       return mojo_base::mojom::ApplicationState::HAS_DESTROYED_ACTIVITIES;
   }
   NOTREACHED();
-  return mojo_base::mojom::ApplicationState::UNKNOWN;
 }
 
 // static

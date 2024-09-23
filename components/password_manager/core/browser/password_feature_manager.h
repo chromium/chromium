@@ -111,6 +111,12 @@ class PasswordFeatureManager {
   virtual bool ShouldChangeDefaultPasswordStore() const = 0;
 
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns whether it is required to update the GMSCore based on the
+  // GMSCore version.
+  virtual bool ShouldUpdateGmsCore();
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

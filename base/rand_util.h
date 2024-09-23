@@ -53,7 +53,7 @@ BASE_EXPORT uint64_t RandUint64();
 
 // Returns a random number between min and max (inclusive). Thread-safe.
 //
-// TODO(crbug.com/1488681): Change from fully-closed to half-closed (i.e.
+// TODO(crbug.com/40283703): Change from fully-closed to half-closed (i.e.
 // exclude `max`) to parallel other APIs here.
 BASE_EXPORT int RandInt(int min, int max);
 
@@ -84,14 +84,12 @@ BASE_EXPORT double BitsToOpenEndedUnitInterval(uint64_t bits);
 // [0, 1). Thread-safe.
 BASE_EXPORT float BitsToOpenEndedUnitIntervalF(uint64_t bits);
 
-// Fills `output` with random data. Thread-safe.
+// Fills `output` with cryptographically secure random data. Thread-safe.
 //
 // Although implementations are required to use a cryptographically secure
 // random number source, code outside of base/ that relies on this should use
 // crypto::RandBytes instead to ensure the requirement is easily discoverable.
 BASE_EXPORT void RandBytes(span<uint8_t> output);
-// TODO(https://crbug.com/1490484): Migrate callers to the span version.
-BASE_EXPORT void RandBytes(void* output, size_t output_length);
 
 // Creates a vector of `length` bytes, fills it with random data, and returns
 // it. Thread-safe.
@@ -101,9 +99,9 @@ BASE_EXPORT void RandBytes(void* output, size_t output_length);
 // crypto::RandBytes instead to ensure the requirement is easily discoverable.
 BASE_EXPORT std::vector<uint8_t> RandBytesAsVector(size_t length);
 
-// DEPRECATED. Prefert RandBytesAsVector() above.
+// DEPRECATED. Prefer RandBytesAsVector() above.
 // Fills a string of length |length| with random data and returns it.
-// |length| should be nonzero. Thread-safe.
+// Thread-safe.
 //
 // Note that this is a variation of |RandBytes| with a different return type.
 // The returned string is likely not ASCII/UTF-8. Use with care.

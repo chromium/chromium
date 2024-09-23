@@ -67,6 +67,10 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   // submissions.
   void ReportAllFrameSubmissionsForTesting(bool enabled);
 
+  // Set |last_render_frame_metadata_| to the given |metadata| for testing
+  // purpose.
+  void SetLastRenderFrameMetadataForTest(cc::RenderFrameMetadata metadata);
+
  private:
   friend class FakeRenderWidgetHostViewAura;
   friend class DelegatedInkPointTest;
@@ -81,10 +85,6 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
       base::TimeTicks activation_time);
   void OnFrameTokenFrameSubmissionForTesting(base::TimeTicks activation_time);
 
-  // Set |last_render_frame_metadata_| to the given |metadata| for testing
-  // purpose.
-  void SetLastRenderFrameMetadataForTest(cc::RenderFrameMetadata metadata);
-
   // cc::mojom::RenderFrameMetadataObserverClient:
   void OnRenderFrameMetadataChanged(
       uint32_t frame_token,
@@ -95,7 +95,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
       const gfx::PointF& root_scroll_offset) override;
 #endif
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
 
   cc::RenderFrameMetadata last_render_frame_metadata_;
 

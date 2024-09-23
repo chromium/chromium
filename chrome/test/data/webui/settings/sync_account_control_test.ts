@@ -2,51 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// <if expr="not chromeos_ash">
-import type {CrActionMenuElement} from 'chrome://settings/settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
+import 'chrome://settings/settings.js';
 
-import type {SettingsSyncAccountControlElement} from 'chrome://settings/settings.js';
-import {MAX_SIGNIN_PROMO_IMPRESSION, Router, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrActionMenuElement, SettingsSyncAccountControlElement, StoredAccount} from 'chrome://settings/settings.js';
+import {MAX_SIGNIN_PROMO_IMPRESSION, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import type {SyncRoutes} from './sync_test_util.js';
-import {setupRouterWithSyncRoutes, simulateStoredAccounts} from './sync_test_util.js';
+import {simulateStoredAccounts} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
-
-// clang-format on
 
 
 suite('SyncAccountControl', function() {
   let browserProxy: TestSyncBrowserProxy;
   let testElement: SettingsSyncAccountControlElement;
 
-  function forcePromoResetWithCount(count: number, signedIn: boolean) {
+  function forcePromoResetWithCount(count: number, syncing: boolean) {
     browserProxy.setImpressionCount(count);
-    // Flipping syncStatus.signedIn will force promo state to be reset.
+    // Flipping syncStatus.signedInState will force promo state to be reset.
+    const opposite_syncing =
+        syncing ? SignedInState.SIGNED_OUT : SignedInState.SYNCING;
+    const sync_state =
+        syncing ? SignedInState.SYNCING : SignedInState.SIGNED_OUT;
     testElement.syncStatus = {
-      signedIn: !signedIn,
+      signedInState: opposite_syncing,
       statusAction: StatusAction.NO_ACTION,
     };
     testElement.syncStatus = {
-      signedIn: signedIn,
+      signedInState: sync_state,
       statusAction: StatusAction.NO_ACTION,
     };
   }
 
   setup(async function() {
-    setupRouterWithSyncRoutes();
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-sync-account-control');
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'foo@foo.com',
       statusAction: StatusAction.NO_ACTION,
     };
@@ -85,7 +82,8 @@ suite('SyncAccountControl', function() {
     forcePromoResetWithCount(0, false);
     const banner = testElement.shadowRoot!.querySelector('#banner');
     assertTrue(isVisible(banner));
-    // Flipping signedIn in forcePromoResetWithCount should increment count.
+    // Changing `signedInState` in forcePromoResetWithCount should increment
+    // count.
     await browserProxy.whenCalled('incrementPromoImpressionCount');
     forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, false);
     assertFalse(isVisible(banner));
@@ -107,7 +105,7 @@ suite('SyncAccountControl', function() {
 
   test('promo header is visible', function() {
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
     };
@@ -117,9 +115,9 @@ suite('SyncAccountControl', function() {
     assertTrue(isChildVisible(testElement, '#promo-header'));
   });
 
-  test('not signed in and no stored accounts', async function() {
+  test('not signed in and no stored accounts', function() {
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
     };
@@ -128,31 +126,21 @@ suite('SyncAccountControl', function() {
     assertTrue(isChildVisible(testElement, '#promo-header'));
     assertFalse(isChildVisible(testElement, '#avatar-row'));
 
-    // <if expr="not chromeos_ash">
     // Chrome OS does not use the account switch menu.
     assertFalse(isChildVisible(testElement, '#menu'));
-    // </if>
 
     assertTrue(isChildVisible(testElement, '#signIn'));
 
     testElement.$.signIn.click();
 
-    // <if expr="chromeos_ash">
-    await browserProxy.whenCalled('turnOnSync');
-    // </if>
-
-    // <if expr="not chromeos_ash">
-    await browserProxy.whenCalled('startSignIn');
-    // </if>
+    return browserProxy.whenCalled('startSignIn');
   });
 
-  // <if expr="not chromeos_ash">
-  // Chrome OS users are always signed in.
   test('not signed in but has stored accounts', async function() {
     loadTimeData.overrideValues({isSecondaryUser: true});
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -249,7 +237,7 @@ suite('SyncAccountControl', function() {
     loadTimeData.overrideValues({turnOffSyncAllowedForManagedProfiles: false});
 
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       disabled: false,
       hasError: false,
       domain: 'domain',
@@ -265,7 +253,7 @@ suite('SyncAccountControl', function() {
     loadTimeData.overrideValues({turnOffSyncAllowedForManagedProfiles: true});
 
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       disabled: false,
       hasError: false,
       domain: 'domain',
@@ -277,14 +265,13 @@ suite('SyncAccountControl', function() {
     assertFalse(!!testElement.shadowRoot!.querySelector('#menu'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
   });
-  // </if>
 
   // <if expr="chromeos_lacros">
   test('main profile not signed in but has stored accounts', function() {
     loadTimeData.overrideValues({isSecondaryUser: false});
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -316,7 +303,7 @@ suite('SyncAccountControl', function() {
   test('signed in, no error', function() {
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -331,12 +318,9 @@ suite('SyncAccountControl', function() {
         testElement.shadowRoot!
             .querySelector<HTMLElement>('#sync-icon-container')!.hidden);
 
-    // <if expr="not chromeos_ash">
-    // Chrome OS does not use the account switch menu.
     assertFalse(isChildVisible(testElement, 'cr-icon-button'));
     assertFalse(!!testElement.shadowRoot!.querySelector('#menu'));
     assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
-    // </if>
 
     const userInfo =
         testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
@@ -355,13 +339,13 @@ suite('SyncAccountControl', function() {
 
     assertEquals(
         Router.getInstance().getCurrentRoute(),
-        (Router.getInstance().getRoutes() as SyncRoutes).SIGN_OUT);
+        Router.getInstance().getRoutes().SIGN_OUT);
   });
 
   test('signed in, has error', function() {
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -387,7 +371,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -410,7 +394,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -432,7 +416,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.REAUTHENTICATE,
       hasError: true,
@@ -453,7 +437,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS,
       hasError: true,
@@ -480,7 +464,7 @@ suite('SyncAccountControl', function() {
 
   test('signed in, setup in progress', function() {
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       statusText: 'Setup in progress...',
@@ -507,7 +491,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -521,7 +505,7 @@ suite('SyncAccountControl', function() {
     testElement.embeddedInSubpage = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -534,7 +518,7 @@ suite('SyncAccountControl', function() {
     testElement.embeddedInSubpage = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: true,
@@ -547,7 +531,7 @@ suite('SyncAccountControl', function() {
     testElement.embeddedInSubpage = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -561,7 +545,7 @@ suite('SyncAccountControl', function() {
     testElement.embeddedInSubpage = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: true,
@@ -576,7 +560,7 @@ suite('SyncAccountControl', function() {
     testElement.hideButtons = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -589,7 +573,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -601,7 +585,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -618,5 +602,80 @@ suite('SyncAccountControl', function() {
     testElement.setPrefValue('signin.allowed_on_next_startup', false);
     flush();
     assertTrue(testElement.$.signIn.disabled);
+  });
+
+  test('signinPaused effects', function() {
+    // <if expr="chromeos_lacros">
+    // For Lacros, force the page to be loaded as if it was a secondary user so
+    // that it is similar to other platforms. E.g. the drowdown menu would not
+    // show on lacros main user.
+    loadTimeData.overrideValues({isSecondaryUser: true});
+    // </if>
+
+    const signedInAccount: StoredAccount = {
+      fullName: 'fooName',
+      givenName: 'foo',
+      email: 'foo@foo.com',
+      isPrimaryAccount: true,
+    };
+    // Set primary account.
+    simulateStoredAccounts([signedInAccount]);
+
+    // Signed in but not syncing.
+    testElement.syncStatus = {
+      statusAction: StatusAction.NO_ACTION,
+      signedInState: SignedInState.SIGNED_IN,
+    };
+
+    assertTrue(isChildVisible(testElement, '#avatar-row'));
+    const userInfo =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
+    const secondaryContentSignedIn = userInfo.children[1]!.textContent!;
+    assertNotEquals(secondaryContentSignedIn.trim(), signedInAccount.email);
+    assertFalse(isChildVisible(testElement, '#signin-paused-buttons'));
+    assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
+    assertTrue(isChildVisible(testElement, '#sync-button'));
+
+    // Set Signed in Paused state.
+    testElement.syncStatus = {
+      statusAction: StatusAction.NO_ACTION,
+      signedInState: SignedInState.SIGNED_IN_PAUSED,
+    };
+
+    assertTrue(isChildVisible(testElement, '#avatar-row'));
+    const secondaryContentSigninPaused = userInfo.children[1]!.textContent!;
+    assertNotEquals(secondaryContentSignedIn, secondaryContentSigninPaused);
+    assertEquals(secondaryContentSigninPaused.trim(), signedInAccount.email);
+    assertTrue(isChildVisible(testElement, '#signin-paused-buttons'));
+    assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
+    assertFalse(isChildVisible(testElement, '#sync-button'));
+  });
+
+  test('webOnlySignedIn effects', function() {
+    const signedInAccount: StoredAccount = {
+      fullName: 'fooName',
+      givenName: 'foo',
+      email: 'foo@foo.com',
+      isPrimaryAccount: true,
+    };
+    // Set primary account.
+    simulateStoredAccounts([signedInAccount]);
+
+    // Signed in but not syncing.
+    testElement.syncStatus = {
+      statusAction: StatusAction.NO_ACTION,
+      signedInState: SignedInState.SIGNED_IN,
+    };
+
+    assertTrue(isChildVisible(testElement, '#avatar-row'));
+
+    // Set WebOnlySignedIn.
+    testElement.syncStatus = {
+      statusAction: StatusAction.NO_ACTION,
+      signedInState: SignedInState.WEB_ONLY_SIGNED_IN,
+    };
+    simulateStoredAccounts([signedInAccount]);
+
+    assertFalse(isChildVisible(testElement, '#avatar-row'));
   });
 });

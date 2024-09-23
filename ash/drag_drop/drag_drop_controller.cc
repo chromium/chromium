@@ -29,6 +29,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/animation/animation_delegate_notifier.h"
@@ -82,7 +83,11 @@ void DropIfAllowed(const ui::OSExchangeData* drag_data,
 
   if (ui::DataTransferPolicyController::HasInstance()) {
     ui::DataTransferPolicyController::Get()->DropIfAllowed(
-        drag_data, &drag_info.data_endpoint, std::move(drop_cb));
+        (drag_data->GetSource() ? std::make_optional<ui::DataTransferEndpoint>(
+                                      *drag_data->GetSource())
+                                : std::nullopt),
+        {drag_info.data_endpoint}, drag_data->GetFilenames(),
+        std::move(drop_cb));
   } else {
     std::move(drop_cb).Run();
   }
@@ -112,16 +117,19 @@ std::unique_ptr<ui::LocatedEvent> ConvertEvent(aura::Window* target,
 
 DragDropController::DragDropController() {
   Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 }
 
 DragDropController::~DragDropController() {
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
   Shell::Get()->RemovePreTargetHandler(this);
   Cleanup();
   if (cancel_animation_)
     cancel_animation_->End();
   drag_image_widget_.reset();
+  for (aura::client::DragDropClientObserver& observer : observers_) {
+    observer.OnDragDropClientDestroying();
+  }
 }
 
 bool DragDropController::IsDragDropCompleted() {
@@ -382,20 +390,21 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
   aura::Window* translated_target =
       window_util::GetEventHandlerForEvent(*event);
   if (!translated_target) {
-    // ET_MOUSE_CAPTURE_CHANGED event does not have a location that can
+    // EventType::kMouseCaptureChanged event does not have a location that can
     // be used to locate a translated target.
-    if (event->type() != ui::ET_MOUSE_CAPTURE_CHANGED)
+    if (event->type() != ui::EventType::kMouseCaptureChanged) {
       DragCancel();
+    }
     event->StopPropagation();
     return;
   }
 
   auto translated_event = ConvertEvent(translated_target, *event);
   switch (translated_event->type()) {
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       DragUpdate(translated_target, *translated_event.get());
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       Drop(translated_target, *translated_event.get());
       break;
     default:
@@ -423,8 +432,9 @@ void DragDropController::OnTouchEvent(ui::TouchEvent* event) {
   if (event->handled())
     return;
 
-  if (event->type() == ui::ET_TOUCH_CANCELLED)
+  if (event->type() == ui::EventType::kTouchCancelled) {
     DragCancel();
+  }
 }
 
 void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
@@ -472,28 +482,31 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
   if (capture_delegate_) {
     translated_event =
         capture_delegate_->ConvertEvent(translated_target, touch_offset_event);
+    DCHECK(translated_event);
   } else {
     translated_event = ConvertEvent(translated_target, touch_offset_event);
   }
 
   switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_UPDATE:
+    case ui::EventType::kGestureScrollUpdate:
       DragUpdate(translated_target, *translated_event);
       break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
+    case ui::EventType::kGestureScrollEnd:
+    case ui::EventType::kScrollFlingStart:
       Drop(translated_target, *translated_event);
       break;
-    case ui::ET_GESTURE_LONG_TAP:
+    case ui::EventType::kGestureLongTap:
       // Ideally we would want to just forward this long tap event to the
       // |drag_source_window_|. However, webkit does not accept events while a
       // drag drop is still in progress. The drag drop ends only when the nested
       // message loop ends. Due to this, we have to defer forwarding
       // the long tap.
       if (capture_delegate_) {
+        auto* capture_window =
+            static_cast<aura::Window*>(capture_delegate_->capture_window());
+        CHECK(capture_window);
         pending_long_tap_ = std::make_unique<ui::GestureEvent>(
-            *event,
-            static_cast<aura::Window*>(capture_delegate_->capture_window()),
+            *event, capture_window,
             static_cast<aura::Window*>(drag_source_window_));
       } else {
         pending_long_tap_ = event->Clone();
@@ -726,7 +739,7 @@ void DragDropController::AnimationCanceled(const gfx::Animation* animation) {
   AnimationEnded(animation);
 }
 
-void DragDropController::OnDisplayConfigurationChanging() {
+void DragDropController::OnWillApplyDisplayChanges() {
   // Abort in-progress drags if a monitor is added or removed because the drag
   // image widget's container may be destroyed.
   if (IsDragDropInProgress())

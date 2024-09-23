@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef NET_NTLM_NTLM_BUFFER_READER_H_
 #define NET_NTLM_NTLM_BUFFER_READER_H_
 
@@ -12,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "net/base/net_export.h"
 #include "net/ntlm/ntlm_constants.h"
 
@@ -213,7 +219,7 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
     return *(GetBufferAtCursor());
   }
 
-  base::span<const uint8_t> buffer_;
+  base::raw_span<const uint8_t> buffer_;
   size_t cursor_ = 0;
 };
 

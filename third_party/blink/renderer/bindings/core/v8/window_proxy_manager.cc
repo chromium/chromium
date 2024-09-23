@@ -119,7 +119,7 @@ WindowProxy* WindowProxyManager::CreateWindowProxy(DOMWrapperWorld& world) {
       return MakeGarbageCollected<RemoteWindowProxy>(
           isolate_, *static_cast<RemoteFrame*>(frame_.Get()), &world);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

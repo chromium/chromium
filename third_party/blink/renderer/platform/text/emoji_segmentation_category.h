@@ -29,7 +29,8 @@ enum class EmojiSegmentationCategory : uint8_t {
   TAG_SEQUENCE = 14,
   TAG_TERM = 15,
 
-  kMaxCategory = 16
+  kMaxCategory = 16,
+  kInvalidCacheEntry = 17
 };
 
 // These operators are needed for the generated code at
@@ -39,6 +40,26 @@ inline bool operator<(EmojiSegmentationCategory a, uint8_t b) {
 }
 inline bool operator>(EmojiSegmentationCategory a, uint8_t b) {
   return static_cast<uint8_t>(a) > b;
+}
+inline bool operator<=(EmojiSegmentationCategory a, uint8_t b) {
+  return static_cast<uint8_t>(a) <= b;
+}
+inline bool operator<=(uint8_t a, EmojiSegmentationCategory b) {
+  return a <= static_cast<uint8_t>(b);
+}
+inline uint8_t operator-(EmojiSegmentationCategory a, uint8_t b) {
+  return static_cast<uint8_t>(a) - b;
+}
+
+// If this function returns true for categories of any characters in a string,
+// it may produce Emoji presentation, and thus cannot skip being run through the
+// Ragel emoji presentation scanner in `SymbolsIterator`. See also
+// `Character::ParticipatesInEmojiGrammar`.
+inline bool IsEmojiPresentationCategory(EmojiSegmentationCategory emoji) {
+  return emoji != EmojiSegmentationCategory::kMaxCategory &&
+         emoji != EmojiSegmentationCategory::KEYCAP_BASE &&
+         emoji != EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION &&
+         emoji != EmojiSegmentationCategory::VS15;
 }
 
 }  // namespace blink

@@ -38,7 +38,6 @@ import com.google.protobuf.ByteString;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -54,7 +53,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
@@ -66,6 +64,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedRecommendationFollowAccel
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -92,7 +91,7 @@ import java.util.Map;
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-// TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+// TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class FeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
@@ -141,7 +140,6 @@ public class FeedStreamTest {
     @Rule public JniMocker mocker = new JniMocker();
     // Enable the Features class, so we can call code which checks to see if features are enabled
     // without crashing.
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private FeedSurfaceRendererBridge.Renderer mBridgeRenderer;
 
@@ -160,7 +158,7 @@ public class FeedStreamTest {
     private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
         Map<String, Boolean> overrides = new ArrayMap<>();
         overrides.put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, feedLoadingPlaceholderOn);
-        overrides.put(ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT, true);
+        overrides.put(ChromeFeatureList.FEED_CONTAINMENT, false);
         FeatureList.setTestFeatures(overrides);
     }
 
@@ -186,7 +184,7 @@ public class FeedStreamTest {
                 FeedReliabilityLoggingBridge.getTestHooksForTesting(),
                 mFeedReliabilityLoggingBridgeJniMock);
         mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
-        Profile.setLastUsedProfileForTesting(mProfileMock);
+        ProfileManager.setLastUsedProfileForTesting(mProfileMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead())
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
@@ -195,14 +193,13 @@ public class FeedStreamTest {
         mFeedStream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShown= */ false,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         /* isInterestFeed= */ StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         mFeedContentFirstLoadWatcher,
                         mStreamsMediator,
                         /* SingleWebFeedHelper= */ null,
@@ -530,7 +527,8 @@ public class FeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
                         any(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
     }
 
@@ -560,7 +558,8 @@ public class FeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
                         mLoadUrlParamsCaptor.capture(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
 
         assertEquals(
@@ -597,7 +596,8 @@ public class FeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
                         mLoadUrlParamsCaptor.capture(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
 
         assertEquals(
@@ -614,7 +614,7 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler)
                         mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.SAME_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
-        verify(mReliabilityLogger).onOpenCard();
+        verify(mReliabilityLogger).onOpenCard(anyInt(), anyInt());
     }
 
     @Test
@@ -627,7 +627,7 @@ public class FeedStreamTest {
         handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
 
         // Don't report card opened if the card was opened in a new tab in the background.
-        verify(mReliabilityLogger, never()).onOpenCard();
+        verify(mReliabilityLogger, never()).onOpenCard(anyInt(), anyInt());
     }
 
     @Test
@@ -639,7 +639,7 @@ public class FeedStreamTest {
                         mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
         // Don't report card opened if the card was opened in a new tab in the background.
-        verify(mReliabilityLogger, never()).onOpenCard();
+        verify(mReliabilityLogger, never()).onOpenCard(anyInt(), anyInt());
     }
 
     @Test
@@ -650,7 +650,7 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler)
                         mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.INCOGNITO_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
-        verify(mReliabilityLogger).onOpenCard();
+        verify(mReliabilityLogger).onOpenCard(anyInt(), anyInt());
     }
 
     @Test
@@ -667,7 +667,8 @@ public class FeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
                         any(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
     }
 
@@ -685,7 +686,8 @@ public class FeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
                         any(),
                         eq(true),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
     }
 
@@ -702,7 +704,8 @@ public class FeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
                         any(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
     }
 
@@ -1138,7 +1141,7 @@ public class FeedStreamTest {
                         .build();
         mBridgeRenderer.onStreamUpdated(update.toByteArray());
         assertEquals(2, mContentManager.getItemCount());
-        assertEquals("a", mContentManager.getContent(1).getKey());
+        assertEquals("LoadingSpinner", mContentManager.getContent(1).getKey());
         FeedListContentManager.FeedContent content = mContentManager.getContent(1);
         assertThat(content, instanceOf(FeedListContentManager.NativeViewContent.class));
         FeedListContentManager.NativeViewContent nativeViewContent =
@@ -1163,7 +1166,7 @@ public class FeedStreamTest {
                         .build();
         mBridgeRenderer.onStreamUpdated(update.toByteArray());
         assertEquals(2, mContentManager.getItemCount());
-        assertEquals("a", mContentManager.getContent(1).getKey());
+        assertEquals("LoadingSpinner", mContentManager.getContent(1).getKey());
         FeedListContentManager.FeedContent content = mContentManager.getContent(1);
         assertThat(content, instanceOf(FeedListContentManager.NativeViewContent.class));
         FeedListContentManager.NativeViewContent nativeViewContent =
@@ -1182,14 +1185,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShown= */ false,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         /* isInterestFeed= */ StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1206,14 +1208,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShown= */ false,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         /* isInterestFeed= */ StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1231,14 +1232,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShown= */ false,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1256,14 +1256,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShown= */ false,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1280,14 +1279,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShown= */ false,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOR_YOU,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1304,14 +1302,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShown= */ false,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,
@@ -1328,14 +1325,13 @@ public class FeedStreamTest {
         FeedStream stream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShown= */ false,
                         mWindowAndroid,
                         mShareDelegateSupplier,
                         StreamKind.FOLLOWING,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null, /*Stream.StreamsMediator*/
                         null,
                         /* SingleWebFeedHelper= */ null,

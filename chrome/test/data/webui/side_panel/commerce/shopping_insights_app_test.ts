@@ -32,6 +32,7 @@ suite('ShoppingInsightsAppTest', () => {
     currentPrice: '$12',
     previousPrice: '$34',
     clusterId: BigInt(12345),
+    categoryLabels: [],
   };
   const priceInsights1: PriceInsightsInfo = {
     clusterId: BigInt(123),
@@ -167,7 +168,7 @@ suite('ShoppingInsightsAppTest', () => {
     assertEquals(
         loadTimeData.getString('buyOptions'), buyOption.textContent!.trim());
 
-    const button = attributesRow.shadowRoot!.querySelector('iron-icon');
+    const button = attributesRow.shadowRoot!.querySelector('cr-icon');
     assertTrue(!!button);
     button.click();
     const url = await shoppingServiceApi.whenCalled('openUrlInNewTab');
@@ -194,7 +195,8 @@ suite('ShoppingInsightsAppTest', () => {
     assertEquals(
         loadTimeData.getString('feedback'), feedbackButton.textContent!.trim());
     feedbackButton.click();
-    assertEquals(1, shoppingServiceApi.getCallCount('showFeedback'));
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('showFeedbackForPriceInsights'));
     assertEquals(
         1, metrics.count('Commerce.PriceInsights.InlineFeedbackLinkClicked'));
 

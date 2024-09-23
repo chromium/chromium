@@ -6,8 +6,10 @@
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -22,8 +24,9 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace autofill::payments {
-
 namespace {
+
+using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
 
 const char kTokenFetchId[] = "wallet_client";
 const char kPaymentsOAuth2Scope[] =
@@ -119,11 +122,15 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
       simple_url_loader_->ResponseInfo()->headers) {
     response_code =
         simple_url_loader_->ResponseInfo()->headers->response_code();
+  } else if (simple_url_loader_->NetError() == net::ERR_TIMED_OUT) {
+    response_code = net::ERR_TIMED_OUT;
   }
+
   std::string data;
   if (response_body) {
     data = std::move(*response_body);
   }
+
   OnSimpleLoaderCompleteInternal(response_code, data);
 }
 
@@ -132,11 +139,25 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
     const std::string& data) {
   VLOG(2) << "Got data: " << data;
 
-  AutofillClient::PaymentsRpcResult result =
-      AutofillClient::PaymentsRpcResult::kSuccess;
+  PaymentsRpcResult result = PaymentsRpcResult::kSuccess;
 
   if (!request_) {
     return;
+  }
+
+  // Measure metrics on how often each type of request times out. We only want
+  // to compare timeouts to otherwise successful results, to measure the effects
+  // of client-side timeouts on successful saves.
+  //
+  // Note: This in theory could affect cases where we timed out when we would
+  // have otherwise received HTTP_UNAUTHORIZED, but it's very unlikely that
+  // HTTP_UNAUTHORIZED would take long enough to hit the client side timeout.
+  if (request_->GetTimeout().has_value() &&
+      (response_code == net::HTTP_OK || response_code == net::ERR_TIMED_OUT)) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"Autofill.PaymentsNetworkInterface.",
+                      request_->GetHistogramName(), ".ClientSideTimedOut"}),
+        response_code == net::ERR_TIMED_OUT);
   }
 
   switch (response_code) {
@@ -164,16 +185,14 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
 
       if (base::EqualsCaseInsensitiveASCII(error_api_error_reason,
                                            "virtual_card_temporary_error")) {
-        result =
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
+        result = PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
       } else if (base::EqualsCaseInsensitiveASCII(
                      error_api_error_reason, "virtual_card_permanent_error")) {
-        result =
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure;
+        result = PaymentsRpcResult::kVcnRetrievalPermanentFailure;
       } else if (request_->IsRetryableFailure(error_code)) {
-        result = AutofillClient::PaymentsRpcResult::kTryAgainFailure;
+        result = PaymentsRpcResult::kTryAgainFailure;
       } else if (!error_code.empty() || !request_->IsResponseComplete()) {
-        result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
+        result = PaymentsRpcResult::kPermanentFailure;
       }
 
       break;
@@ -181,7 +200,7 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
 
     case net::HTTP_UNAUTHORIZED: {
       if (has_retried_authorization_) {
-        result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
+        result = PaymentsRpcResult::kPermanentFailure;
         break;
       }
       has_retried_authorization_ = true;
@@ -194,18 +213,26 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
     // TODO(estade): is this actually how network connectivity issues are
     // reported?
     case net::HTTP_REQUEST_TIMEOUT: {
-      result = AutofillClient::PaymentsRpcResult::kNetworkError;
+      result = PaymentsRpcResult::kNetworkError;
+      break;
+    }
+
+    // This case occurs when the request hits the client-side timeout. This is
+    // quite complex as the call could still complete on the server side, but we
+    // were not willing to wait any longer for the server.
+    case net::ERR_TIMED_OUT: {
+      result = PaymentsRpcResult::kClientSideTimeout;
       break;
     }
 
     // Handle anything else as a generic (permanent) failure.
     default: {
-      result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
+      result = PaymentsRpcResult::kPermanentFailure;
       break;
     }
   }
 
-  if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result != PaymentsRpcResult::kSuccess) {
     VLOG(1) << "Payments returned error: " << response_code
             << " with data: " << data;
   }
@@ -237,8 +264,7 @@ void PaymentsNetworkInterfaceBase::AccessTokenError(
     simple_url_loader_.reset();
   }
   if (request_) {
-    request_->RespondToDelegate(
-        AutofillClient::PaymentsRpcResult::kPermanentFailure);
+    request_->RespondToDelegate(PaymentsRpcResult::kPermanentFailure);
   }
 }
 
@@ -313,7 +339,6 @@ void PaymentsNetworkInterfaceBase::SetOAuth2TokenAndStartRequest() {
             type: PROFILE_DATA
             type: WEB_CONTENT
             type: GAIA_ID
-            type: USER_AGENT
           }
           last_reviewed: "2024-01-24"
         }
@@ -335,6 +360,16 @@ void PaymentsNetworkInterfaceBase::SetOAuth2TokenAndStartRequest() {
       std::move(resource_request_), traffic_annotation);
   simple_url_loader_->AttachStringForUpload(request_->GetRequestContent(),
                                             request_->GetRequestContentType());
+
+  // Some request types specify a client-side timeout, in order to provide a
+  // better user experience (e.g., avoid the user being unnecessarily blocked).
+  //
+  // The sandbox server is significantly slower than prod, so we never set a
+  // client-side timeout when using sandbox, even if the request specifies one.
+  if (request_->GetTimeout().has_value() && IsPaymentsProductionEnabled()) {
+    CHECK(request_->GetTimeout()->is_positive());
+    simple_url_loader_->SetTimeoutDuration(*request_->GetTimeout());
+  }
 
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),

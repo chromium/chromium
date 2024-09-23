@@ -113,7 +113,7 @@ class AnimationWorkletMutatorDispatcherImplTest : public ::testing::Test {
 
   test::TaskEnvironment task_environment_;
   std::unique_ptr<::testing::StrictMock<MockCompositorMutatorClient>> client_;
-  raw_ptr<AnimationWorkletMutatorDispatcherImpl, ExperimentalRenderer> mutator_;
+  raw_ptr<AnimationWorkletMutatorDispatcherImpl> mutator_;
 };
 
 std::unique_ptr<AnimationWorkletDispatcherInput> CreateTestMutatorInput() {
@@ -377,7 +377,8 @@ class AnimationWorkletMutatorDispatcherImplAsyncTest
   AnimationWorkletMutatorDispatcher::AsyncMutationCompleteCallback
   CreateNotReachedCallback() {
     return CrossThreadBindOnce([](MutateStatus unused) {
-      NOTREACHED() << "Mutate complete callback should not have been triggered";
+      NOTREACHED_IN_MIGRATION()
+          << "Mutate complete callback should not have been triggered";
     });
   }
 

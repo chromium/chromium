@@ -110,14 +110,7 @@ constexpr int kAnswerCardFocusBarHorizontalOffset = kAnswerCardBorderMargin;
 constexpr int kAnswerCardFocusBarVerticalOffset =
     kAnswerCardCardBackgroundCornerRadius + kAnswerCardBorderMargin;
 
-// For the App Shortcuts.
-// TODO(b/306295113): Refactor to a better location suitable with search
-// provider.
-constexpr int kSearchListShortcutContainerRadiusDimension = 14;
-constexpr int kSearchListShortcutIconDimension = 24;
-constexpr int kSearchListShortcutHostBadgeContainerDimension = 14;
-constexpr int kSearchListShortcutHostBadgeDimension = 10;
-constexpr int kSearchListShortcutTeardropRadiusDimension = 6;
+constexpr int kSearchListHostBadgeContainerDimension = 14;
 
 // The superscript container has a 3px top margin to shift the text up so the
 // it lines up with the text in `big_title_main_text_container_`.
@@ -163,39 +156,30 @@ ui::ColorId GetLabelColorId(SearchResultView::LabelType label_type,
     }
   }
 
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   switch (color_tag) {
     case SearchResult::Tag::NONE:
       ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::DIM:
       ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::MATCH:
-      if (is_jelly_enabled) {
-        switch (label_type) {
-          case SearchResultView::LabelType::kBigTitle:
-          case SearchResultView::LabelType::kBigTitleSuperscript:
-          case SearchResultView::LabelType::kTitle:
-            return cros_tokens::kCrosSysOnSurface;
-          case SearchResultView::LabelType::kDetails:
-            return cros_tokens::kCrosSysOnSurfaceVariant;
-          case SearchResultView::LabelType::kKeyboardShortcut:
-            return cros_tokens::kCrosSysPrimary;
-        }
+      switch (label_type) {
+        case SearchResultView::LabelType::kBigTitle:
+        case SearchResultView::LabelType::kBigTitleSuperscript:
+        case SearchResultView::LabelType::kTitle:
+          return cros_tokens::kCrosSysOnSurface;
+        case SearchResultView::LabelType::kDetails:
+          return cros_tokens::kCrosSysOnSurfaceVariant;
+        case SearchResultView::LabelType::kKeyboardShortcut:
+          return cros_tokens::kCrosSysPrimary;
       }
       return IsTitleLabel(label_type) ? kColorAshTextColorPrimary
                                       : kColorAshTextColorSecondary;
     case SearchResult::Tag::URL:
-      return is_jelly_enabled
-                 ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
-                 : kColorAshTextColorURL;
+      return cros_tokens::kCrosSysPrimary;
     case SearchResult::Tag::GREEN:
-      return is_jelly_enabled
-                 ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPositive)
-                 : kColorAshTextColorPositive;
+      return cros_tokens::kCrosSysPositive;
     case SearchResult::Tag::RED:
-      return is_jelly_enabled
-                 ? static_cast<ui::ColorId>(cros_tokens::kCrosSysError)
-                 : kColorAshTextColorAlert;
+      return cros_tokens::kCrosSysError;
   }
 }
 
@@ -203,10 +187,6 @@ std::optional<TypographyToken> GetTypographyToken(
     SearchResultView::LabelType label_type,
     bool is_match,
     bool is_inline_detail) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return std::nullopt;
-  }
-
   if (is_match) {
     return IsTitleLabel(label_type) ? TypographyToken::kCrosButton1
                                     : TypographyToken::kCrosBody1;
@@ -237,7 +217,7 @@ std::optional<TypographyToken> GetTypographyToken(
 views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
   views::ImageView* image_view =
       parent->AddChildView(std::make_unique<views::ImageView>());
-  image_view->GetViewAccessibility().OverrideIsIgnored(true);
+  image_view->GetViewAccessibility().SetIsIgnored(true);
   image_view->SetCanProcessEventsWithinSubtree(false);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetVisible(false);
@@ -259,7 +239,7 @@ views::Label* SetupChildLabelView(
   // Ignore labels for accessibility - the result accessible name is defined on
   // the whole result view.
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->GetViewAccessibility().OverrideIsIgnored(true);
+  label->GetViewAccessibility().SetIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetEnabledColorId(color_id);
@@ -331,7 +311,7 @@ views::ProgressBar* SetupChildProgressBarView(
     std::optional<double> lower_warning_limit) {
   views::ProgressBar* progress_bar_view =
       parent->AddChildView(std::make_unique<views::ProgressBar>());
-  progress_bar_view->GetViewAccessibility().OverrideIsIgnored(true);
+  progress_bar_view->GetViewAccessibility().SetIsIgnored(true);
   progress_bar_view->SetCanProcessEventsWithinSubtree(false);
   progress_bar_view->SetPreferredSize(
       gfx::Size(kProgressBarWidth, kProgressBarHeight));
@@ -363,7 +343,7 @@ SearchResultInlineIconView* SetupChildInlineIconView(
       parent->AddChildView(std::make_unique<SearchResultInlineIconView>(
           alterante_icon_and_text_styling));
   inline_icon_view->SetCanProcessEventsWithinSubtree(false);
-  inline_icon_view->GetViewAccessibility().OverrideIsIgnored(true);
+  inline_icon_view->GetViewAccessibility().SetIsIgnored(true);
   inline_icon_view->SetVisible(false);
   inline_icon_view->SetProperty(
       views::kFlexBehaviorKey,
@@ -464,11 +444,11 @@ SearchResultView::SearchResultView(
 
   icon_view_ = AddChildView(std::make_unique<MaskedImageView>());
   icon_view_->SetCanProcessEventsWithinSubtree(false);
-  icon_view_->GetViewAccessibility().OverrideIsIgnored(true);
+  icon_view_->GetViewAccessibility().SetIsIgnored(true);
 
   badge_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   badge_icon_view_->SetCanProcessEventsWithinSubtree(false);
-  badge_icon_view_->GetViewAccessibility().OverrideIsIgnored(true);
+  badge_icon_view_->GetViewAccessibility().SetIsIgnored(true);
 
   auto* actions_view =
       AddChildView(std::make_unique<SearchResultActionsView>(this));
@@ -511,6 +491,9 @@ SearchResultView::SearchResultView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kPreferred));
+
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  body_text_container_->SetLayoutManagerUseConstrainedSpace(false);
 
   title_and_details_container_ = body_text_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -596,7 +579,7 @@ SearchResultView::SearchResultView(
       SearchResultTextItem::OverflowBehavior::kNoElide);
   result_text_separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
-  result_text_separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
+  result_text_separator_label_->GetViewAccessibility().SetIsIgnored(true);
 
   details_container_ = title_and_details_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -620,7 +603,7 @@ SearchResultView::SearchResultView(
       SearchResultTextItem::OverflowBehavior::kNoElide);
   rating_separator_label_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
-  rating_separator_label_->GetViewAccessibility().OverrideIsIgnored(true);
+  rating_separator_label_->GetViewAccessibility().SetIsIgnored(true);
 
   rating_ = SetupChildLabelView(
       title_and_details_container_, view_type_, LabelType::kDetails,
@@ -950,11 +933,6 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
     return;
   }
 
-  use_webapp_shortcut_style_ =
-      result()->result_type() == AppListSearchResultType::kAppShortcutV2 &&
-      chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled() &&
-      features::IsSeparateWebAppShortcutBadgeIconEnabled();
-
   const auto* color_provider = GetColorProvider();
 
   if (!GetColorProvider()) {
@@ -966,10 +944,7 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
   const gfx::ImageSkia& icon_image =
       result()->icon().icon.Rasterize(color_provider);
 
-  const gfx::Size icon_size = use_webapp_shortcut_style_
-                                  ? gfx::Size(kSearchListShortcutIconDimension,
-                                              kSearchListShortcutIconDimension)
-                                  : CalculateRegularIconImageSize(icon_image);
+  const gfx::Size icon_size = CalculateRegularIconImageSize(icon_image);
 
   if (result()->badge_icon().IsEmpty()) {
     SetIconImage(std::move(icon_image), icon_view_, std::move(icon_size));
@@ -979,11 +954,8 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
   }
 
   const gfx::Size badge_icon_size =
-      use_webapp_shortcut_style_
-          ? gfx::Size(kSearchListShortcutHostBadgeDimension,
-                      kSearchListShortcutHostBadgeDimension)
-          : gfx::Size(kSearchListShortcutHostBadgeContainerDimension,
-                      kSearchListShortcutHostBadgeContainerDimension);
+      gfx::Size(kSearchListHostBadgeContainerDimension,
+                kSearchListHostBadgeContainerDimension);
 
   const gfx::ImageSkia& badge_icon_image =
       result()->badge_icon().Rasterize(color_provider);
@@ -993,27 +965,13 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
           badge_icon_image, skia::ImageOperations::RESIZE_BEST,
           badge_icon_size);
 
-  if (use_webapp_shortcut_style_) {
-    gfx::ImageSkia resized_icon_image =
-        gfx::ImageSkiaOperations::CreateResizedImage(
-            icon_image, skia::ImageOperations::RESIZE_BEST, icon_size);
-    SetIconImage(
-        apps::AppShortcutImage::CreateImageWithBadgeAndTeardropBackground(
-            kSearchListShortcutContainerRadiusDimension,
-            kSearchListShortcutTeardropRadiusDimension,
-            kSearchListShortcutHostBadgeContainerDimension / 2,
-            background_color, resized_icon_image, resized_badge_icon_image),
-        icon_view_, std::move(icon_size));
-
-    badge_icon_view_->SetVisible(false);
-    icon_view_->set_shape(result()->icon().shape);
-  } else if (result()->use_badge_icon_background()) {
+  if (result()->use_badge_icon_background()) {
     // Badge icon that isn't part of App Shortcuts needs to add an independent
     // halo if using background.
     gfx::ImageSkia badge_icon_with_background =
         gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            kSearchListShortcutHostBadgeContainerDimension / 2,
-            background_color, std::move(resized_badge_icon_image));
+            kSearchListHostBadgeContainerDimension / 2, background_color,
+            std::move(resized_badge_icon_image));
     badge_icon_view_->SetImage(std::move(badge_icon_with_background));
   } else {
     // Badge icon that isn't part of App Shortcuts or using background needs
@@ -1232,15 +1190,11 @@ void SearchResultView::UpdateRating() {
 
 void SearchResultView::StyleLabel(views::Label* label,
                                   const SearchResult::Tags& tags) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    // Reset font weight styling for label.
-    label->ApplyBaselineTextStyle();
-  }
-
   for (const auto& tag : tags) {
     bool has_match_tag = (tag.styles & SearchResult::Tag::MATCH);
-    if (has_match_tag)
+    if (has_match_tag) {
       label->SetTextStyleRange(AshTextStyle::STYLE_HIGHLIGHT, tag.range);
+    }
   }
 }
 
@@ -1301,7 +1255,8 @@ void SearchResultView::OnSelectedResultChanged() {
   }
 }
 
-gfx::Size SearchResultView::CalculatePreferredSize() const {
+gfx::Size SearchResultView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kPreferredWidth, PreferredHeight());
 }
 
@@ -1322,14 +1277,14 @@ gfx::Size SearchResultView::CalculateRegularIconImageSize(
 gfx::Rect SearchResultView::GetIconBadgeViewBounds(
     const gfx::Rect& icon_view_bounds) const {
   const gfx::Size host_badge_container_view_size =
-      gfx::Size(kSearchListShortcutHostBadgeContainerDimension,
-                kSearchListShortcutHostBadgeContainerDimension);
+      gfx::Size(kSearchListHostBadgeContainerDimension,
+                kSearchListHostBadgeContainerDimension);
   return gfx::Rect(icon_view_bounds.CenterPoint(),
                    std::move(host_badge_container_view_size));
 }
 
 void SearchResultView::Layout(PassKey) {
-  // TODO(crbug/1311101) add test coverage for search result view layout.
+  // TODO(crbug.com/40220083) add test coverage for search result view layout.
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty()) {
     return;
@@ -1387,7 +1342,10 @@ void SearchResultView::Layout(PassKey) {
 
         SetFlexBehaviorForTextContents(
             centered_text_bounds.width(),
-            result_text_separator_label_->GetPreferredSize().width(),
+            result_text_separator_label_
+                ->GetPreferredSize(views::SizeBounds(
+                    result_text_separator_label_->width(), {}))
+                .width(),
             non_elided_details_label_width_, title_container_,
             details_container_);
         break;
@@ -1444,6 +1402,11 @@ bool SearchResultView::OnKeyPressed(const ui::KeyEvent& event) {
       return true;
     case ui::VKEY_DELETE:
     case ui::VKEY_BROWSER_BACK:
+      if (!actions_view()->IsValidActionIndex(
+              SearchResultActionType::kRemove)) {
+        return false;
+      }
+
       // Allows alt+(back or delete) to trigger the 'remove result' dialog.
       OnSearchResultActionActivated(SearchResultActionType::kRemove);
       return true;
@@ -1460,16 +1423,10 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
 
   gfx::Rect content_rect(rect);
 
-  bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-
-  const SkColor focus_bar_color = GetColorProvider()->GetColor(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing)
-          : ui::kColorAshFocusRing);
-  const SkColor highlight_color = GetColorProvider()->GetColor(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysHoverOnSubtle)
-          : kColorAshHighlightColorHover);
+  const SkColor focus_bar_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing);
+  const SkColor highlight_color =
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysHoverOnSubtle);
   switch (view_type_) {
     case SearchResultViewType::kDefault:
       if (selected() && !actions_view()->HasSelectedAction()) {
@@ -1507,10 +1464,6 @@ void SearchResultView::OnMouseExited(const ui::MouseEvent& event) {
   actions_view()->UpdateButtonsOnStateChanged();
 }
 
-void SearchResultView::VisibilityChanged(View* starting_from, bool is_visible) {
-  NotifyAccessibilityEvent(ax::mojom::Event::kLayoutComplete, true);
-}
-
 void SearchResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateIconAndBadgeIcon();
@@ -1522,7 +1475,7 @@ void SearchResultView::OnThemeChanged() {
 
 void SearchResultView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       if (actions_view()->IsValidActionIndex(SearchResultActionType::kRemove)) {
         ScrollRectToVisible(GetLocalBounds());
         SetSelected(true, std::nullopt);

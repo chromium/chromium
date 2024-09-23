@@ -55,7 +55,12 @@ std::vector<Sandbox> GetSandboxTypesToTest() {
     if (t == Sandbox::kZygoteIntermediateSandbox)
       continue;
 #endif
-
+#if BUILDFLAG(IS_LINUX)
+    // TODO(crbug.com/361128453): Implement
+    if (t == Sandbox::kVideoEffects) {
+      continue;
+    }
+#endif
     types.push_back(t);
   }
   return types;
@@ -134,6 +139,7 @@ class UtilityProcessSandboxBrowserTest
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case Sandbox::kIme:
       case Sandbox::kTts:
+      case Sandbox::kNearby:
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
       case Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
@@ -155,8 +161,11 @@ class UtilityProcessSandboxBrowserTest
 
       case Sandbox::kGpu:
       case Sandbox::kRenderer:
+#if BUILDFLAG(IS_LINUX)
+      case Sandbox::kVideoEffects:
+#endif
       case Sandbox::kZygoteIntermediateSandbox:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 

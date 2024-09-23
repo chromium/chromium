@@ -19,7 +19,3 @@ IOSChromeScopedTestingLocalState::~IOSChromeScopedTestingLocalState() {
             TestingApplicationContext::GetGlobal()->GetLocalState());
   TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
 }
-
-TestingPrefServiceSimple* IOSChromeScopedTestingLocalState::Get() {
-  return &local_state_;
-}

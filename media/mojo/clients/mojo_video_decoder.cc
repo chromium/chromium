@@ -4,6 +4,7 @@
 
 #include "media/mojo/clients/mojo_video_decoder.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -318,6 +319,7 @@ void MojoVideoDecoder::OnDecodeDone(uint64_t decode_id,
 void MojoVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!reset_cb_);
 
   if (has_connection_error_) {
     task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
@@ -486,6 +488,9 @@ void MojoVideoDecoder::Stop() {
 
   if (reset_cb_)
     std::move(reset_cb_).Run();
+
+  // Drop any outstanding callbacks.
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace media

@@ -41,6 +41,10 @@ class ClientDiscardableSharedMemoryManager;
 
 namespace printing {
 
+#if BUILDFLAG(IS_WIN)
+class ScopedXPSInitializer;
+#endif
+
 class PrintCompositorImpl : public mojom::PrintCompositor {
  public:
   // Creates an instance with an optional Mojo receiver (may be null) and
@@ -88,6 +92,8 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
       override;
   void SetWebContentsURL(const GURL& url) override;
   void SetUserAgent(const std::string& user_agent) override;
+  void SetGenerateDocumentOutline(
+      mojom::GenerateDocumentOutline generate_document_outline) override;
   void SetTitle(const std::string& title) override;
 
  protected:
@@ -185,10 +191,14 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 
     mojom::PrintCompositor::DocumentType document_type;
     CompositePagesCallback callback;
-    bool is_concurrent_doc_composition = false;
   };
 
   // Stores the concurrent document composition information.
+  //
+  // While PrintCompositorImpl is creating a document for every page it is
+  // compositing, it can reuse the same page info to concurrently create the
+  // full document with all pages. Only used when PrepareToCompositeDocument()
+  // gets called.
   struct DocumentInfo {
     explicit DocumentInfo(mojom::PrintCompositor::DocumentType document_type);
     ~DocumentInfo();
@@ -196,7 +206,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
     SkDynamicMemoryWStream compositor_stream;
     sk_sp<SkDocument> doc;
     mojom::PrintCompositor::DocumentType document_type;
-    uint32_t pages_provided = 0;
     uint32_t pages_written = 0;
     uint32_t page_count = 0;
     FinishDocumentCompositionCallback callback;
@@ -239,6 +248,10 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 
   mojo::Receiver<mojom::PrintCompositor> receiver_{this};
 
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<ScopedXPSInitializer> xps_initializer_;
+#endif
+
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
@@ -255,11 +268,15 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   TypefaceDeserializationContext typefaces_;
 
   std::vector<std::unique_ptr<RequestInfo>> requests_;
-  std::unique_ptr<DocumentInfo> docinfo_;
+  std::unique_ptr<DocumentInfo> doc_info_;
 
   // If present, the accessibility tree for the document needed to
   // export a tagged (accessible) PDF.
   ui::AXTreeUpdate accessibility_tree_;
+
+  // How (or if) to generate a document outline.
+  mojom::GenerateDocumentOutline generate_document_outline_ =
+      mojom::GenerateDocumentOutline::kNone;
 
   // The title of the document.
   std::string title_;

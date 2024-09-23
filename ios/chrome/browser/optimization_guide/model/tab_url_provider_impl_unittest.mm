@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -37,7 +37,7 @@ class TabUrlProviderImplTest : public PlatformTest {
 
   void SetUp() override {
     TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     other_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     incognito_browser_ = std::make_unique<TestBrowser>(
@@ -46,7 +46,7 @@ class TabUrlProviderImplTest : public PlatformTest {
         BrowserListFactory::GetForBrowserState(browser_state_.get());
     browser_list_->AddBrowser(browser_.get());
     browser_list_->AddBrowser(other_browser_.get());
-    browser_list_->AddIncognitoBrowser(incognito_browser_.get());
+    browser_list_->AddBrowser(incognito_browser_.get());
 
     tab_url_provider_ =
         std::make_unique<TabUrlProviderImpl>(browser_list_, &clock_);

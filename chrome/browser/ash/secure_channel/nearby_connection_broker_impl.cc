@@ -145,7 +145,7 @@ mojom::NearbyConnectionStepResult ConvertStatusToStepResult(Status status) {
     case Status::kSuccess:
       return mojom::NearbyConnectionStepResult::kSuccess;
     case Status::kNextValue:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return mojom::NearbyConnectionStepResult::kMaxValue;
   }
 }
@@ -329,7 +329,8 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
       ConnectionOptions::New(MediumSelection::New(/*bluetooth=*/true,
                                                   /*ble=*/false,
                                                   /*webrtc=*/true,
-                                                  /*wifi_lan=*/false),
+                                                  /*wifi_lan=*/false,
+                                                  /*wifi_direct=*/false),
                              /*remote_bluetooth_mac_address=*/std::nullopt,
                              features::IsNearbyKeepAliveFixEnabled()
                                  ? std::make_optional(kKeepAliveInterval)
@@ -477,8 +478,8 @@ void NearbyConnectionBrokerImpl::OnConnectionStatusChangeTimeout() {
           kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded;
       break;
     default:
-      NOTREACHED() << "Unexpected timeout with connection status "
-                   << connection_status_;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected timeout with connection status " << connection_status_;
       reason = util::NearbyDisconnectionReason::kConnectionLost;
       connection_step = mojom::NearbyConnectionStep::kDisconnectionFinished;
       break;
@@ -677,8 +678,9 @@ void NearbyConnectionBrokerImpl::OnConnectionRejected(
           kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded;
       break;
     default:
-      NOTREACHED() << "Unexpected connection status when connection rejected"
-                   << connection_status_;
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected connection status when connection rejected"
+          << connection_status_;
       connection_step = mojom::NearbyConnectionStep::kDiscoveringEndpointEnded;
   }
   NotifyConnectionStateChanged(

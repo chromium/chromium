@@ -150,16 +150,18 @@ bool ShutdownCheckAnother(bool Open)
 
 
 
+
 #if defined(_WIN_ALL)
 // Load library from Windows System32 folder. Use this function to prevent
 // loading a malicious code from current folder or same folder as exe.
 HMODULE WINAPI LoadSysLibrary(const wchar *Name)
 {
-  wchar SysDir[NM];
-  if (GetSystemDirectory(SysDir,ASIZE(SysDir))==0)
-    return NULL;
-  MakeName(SysDir,Name,SysDir,ASIZE(SysDir));
-  return LoadLibrary(SysDir);
+  std::vector<wchar> SysDir(MAX_PATH);
+  if (GetSystemDirectory(SysDir.data(),(UINT)SysDir.size())==0)
+    return nullptr;
+  std::wstring FullName;
+  MakeName(SysDir.data(),Name,FullName);
+  return LoadLibrary(FullName.c_str());
 }
 
 
@@ -186,11 +188,12 @@ SSE_VERSION _SSE_Version=GetSSEVersion();
 
 SSE_VERSION GetSSEVersion()
 {
+#ifdef _MSC_VER
   int CPUInfo[4];
-  __cpuid(CPUInfo, 0x80000000);
+  __cpuid(CPUInfo, 0);
 
-  // Maximum supported cpuid function. For example, Pentium M 755 returns 4 here.
-  uint MaxSupported=CPUInfo[0] & 0x7fffffff;
+  // Maximum supported cpuid function.
+  uint MaxSupported=CPUInfo[0];
 
   if (MaxSupported>=7)
   {
@@ -210,6 +213,18 @@ SSE_VERSION GetSSEVersion()
     if ((CPUInfo[3] & 0x2000000)!=0)
       return SSE_SSE;
   }
+#elif defined(__GNUC__)
+  if (__builtin_cpu_supports("avx2"))
+    return SSE_AVX2;
+  if (__builtin_cpu_supports("sse4.1"))
+    return SSE_SSE41;
+  if (__builtin_cpu_supports("ssse3"))
+    return SSE_SSSE3;
+  if (__builtin_cpu_supports("sse2"))
+    return SSE_SSE2;
+  if (__builtin_cpu_supports("sse"))
+    return SSE_SSE;
+#endif
   return SSE_NONE;
 }
 #endif

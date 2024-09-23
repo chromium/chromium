@@ -4,6 +4,8 @@
 
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -20,13 +22,13 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/mime_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -220,23 +222,24 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewGestureEvent(
 
   // When a long press or two finger tap gesture occurs we are going to show the
   // context menu. Ensure that the pressed `view` is part of the selection.
-  if (event.type() == ui::ET_GESTURE_LONG_PRESS ||
-      event.type() == ui::ET_GESTURE_TWO_FINGER_TAP) {
+  if (event.type() == ui::EventType::kGestureLongPress ||
+      event.type() == ui::EventType::kGestureTwoFingerTap) {
     view->SetSelected(true);
     return false;
   }
   // If a scroll begin gesture is received while the context menu is showing,
   // that means the user is trying to initiate a drag. Close the context menu
   // and start the item drag.
-  if (event.type() == ui::ET_GESTURE_SCROLL_BEGIN && context_menu_runner_ &&
-      context_menu_runner_->IsRunning()) {
+  if (event.type() == ui::EventType::kGestureScrollBegin &&
+      context_menu_runner_ && context_menu_runner_->IsRunning()) {
     context_menu_runner_.reset();
     view->StartDrag(event, ui::mojom::DragEventSource::kTouch);
     return false;
   }
 
-  if (event.type() != ui::ET_GESTURE_TAP)
+  if (event.type() != ui::EventType::kGestureTap) {
     return false;
+  }
 
   // When a tap gesture occurs and *no* views are currently selected, select and
   // open the tapped `view`. Note that the tap `event` should *not* propagate
@@ -290,10 +293,9 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceItemViewMousePressed(
   // Note that this is performed in a scoped closure runner in order to give
   // `SetSelectedRange()` a chance to run and clean up any previous range-based
   // selection.
-  base::ScopedClosureRunner set_selected_range_end(base::BindOnce(
-      [](HoldingSpaceItemView** selected_range_end,
-         HoldingSpaceItemView* view) { *selected_range_end = view; },
-      &selected_range_end_, view));
+  absl::Cleanup set_selected_range_end = [this, view] {
+    selected_range_end_ = view;
+  };
 
   // If the SHIFT key is down, the user is attempting a range-based selection.
   // Remove from the selection the previously selected range and instead add
@@ -408,8 +410,9 @@ bool HoldingSpaceViewDelegate::OnHoldingSpaceTrayBubbleKeyPressed(
 
 void HoldingSpaceViewDelegate::OnHoldingSpaceTrayChildBubbleGestureEvent(
     const ui::GestureEvent& event) {
-  if (event.type() == ui::ET_GESTURE_TAP)
+  if (event.type() == ui::EventType::kGestureTap) {
     ClearSelection();
+  }
 }
 
 void HoldingSpaceViewDelegate::OnHoldingSpaceTrayChildBubbleMousePressed(
@@ -433,10 +436,10 @@ void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
     ui::MenuSourceType source_type) {
   // In touch mode, gesture events continue to be sent to holding space views
   // after showing the context menu so that it can be aborted if the user
-  // initiates a drag sequence. This means both `ui::ET_GESTURE_LONG_TAP` and
-  // `ui::ET_GESTURE_LONG_PRESS` may be received while showing the context menu
-  // which would result in trying to show the context menu twice. This would not
-  // be a fatal failure but would result in UI jank.
+  // initiates a drag sequence. This means both `ui::EventType::kGestureLongTap`
+  // and `ui::EventType::kGestureLongPress` may be received while showing the
+  // context menu which would result in trying to show the context menu twice.
+  // This would not be a fatal failure but would result in UI jank.
   if (context_menu_runner_ && context_menu_runner_->IsRunning())
     return;
 
@@ -539,7 +542,7 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
             return remove;
           },
           std::cref(items), std::ref(suggested_file_paths)));
-      HoldingSpaceController::Get()->client()->RemoveFileSuggestions(
+      HoldingSpaceController::Get()->client()->RemoveSuggestions(
           suggested_file_paths);
       break;
     }
@@ -556,17 +559,12 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
           holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
       break;
     default:
-      if (holding_space_util::IsInProgressCommand(command_id)) {
-        for (const HoldingSpaceItem* item : items) {
-          if (!holding_space_util::ExecuteInProgressCommand(
-                  item, command_id,
-                  holding_space_metrics::EventSource::
-                      kHoldingSpaceItemContextMenu)) {
-            NOTREACHED();
-          }
-        }
-      } else {
-        NOTREACHED();
+      CHECK(holding_space_util::IsInProgressCommand(command_id));
+      for (const HoldingSpaceItem* item : items) {
+        const bool success = holding_space_util::ExecuteInProgressCommand(
+            item, command_id,
+            holding_space_metrics::EventSource::kHoldingSpaceItemContextMenu);
+        CHECK(success);
       }
       break;
   }
@@ -613,7 +611,7 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       if (!in_progress_commands.has_value()) {
         in_progress_commands = item->in_progress_commands();
       } else {
-        base::EraseIf(in_progress_commands.value(),
+        std::erase_if(in_progress_commands.value(),
                       [&](const HoldingSpaceItem::InProgressCommand&
                               in_progress_command) {
                         return !holding_space_util::SupportsInProgressCommand(

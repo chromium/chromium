@@ -107,6 +107,8 @@ class CONTENT_EXPORT ImeAdapterAndroid : public RenderWidgetHostConnector {
       int,
       blink::mojom::HandwritingGestureResult);
 
+  void SetImeRenderWidgetHost();
+
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(
       RenderWidgetHostViewAndroid* old_rwhva,

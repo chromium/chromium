@@ -31,13 +31,13 @@
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
+#include "cc/paint/draw_looper.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
-#include "third_party/skia/include/core/SkDrawLooper.h"
-#include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -47,13 +47,12 @@ DrawLooperBuilder::DrawLooperBuilder() = default;
 
 DrawLooperBuilder::~DrawLooperBuilder() = default;
 
-sk_sp<SkDrawLooper> DrawLooperBuilder::DetachDrawLooper() {
-  return sk_draw_looper_builder_.detach();
+sk_sp<cc::DrawLooper> DrawLooperBuilder::DetachDrawLooper() {
+  return draw_looper_builder_.Detach();
 }
 
 void DrawLooperBuilder::AddUnmodifiedContent() {
-  SkLayerDrawLooper::LayerInfo info;
-  sk_draw_looper_builder_.addLayerOnTop(info);
+  draw_looper_builder_.AddUnmodifiedContent(/*add_on_top=*/true);
 }
 
 void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
@@ -68,36 +67,18 @@ void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
     return;
   }
 
-  SkLayerDrawLooper::LayerInfo info;
-
-  switch (shadow_alpha_mode) {
-    case kShadowRespectsAlpha:
-      info.fColorMode = SkBlendMode::kDst;
-      break;
-    case kShadowIgnoresAlpha:
-      info.fColorMode = SkBlendMode::kSrc;
-      break;
-    default:
-      NOTREACHED();
+  uint32_t flags = 0;
+  if (shadow_alpha_mode == kShadowIgnoresAlpha) {
+    flags |= cc::DrawLooper::kOverrideAlphaFlag;
+  }
+  if (shadow_transform_mode == kShadowIgnoresTransforms) {
+    flags |= cc::DrawLooper::kPostTransformFlag;
   }
 
-  if (blur)
-    info.fPaintBits |= SkLayerDrawLooper::kMaskFilter_Bit;  // our blur
-  info.fPaintBits |= SkLayerDrawLooper::kColorFilter_Bit;
-  info.fOffset.set(offset.x(), offset.y());
-  info.fPostTranslate = (shadow_transform_mode == kShadowIgnoresTransforms);
-
-  SkPaint* paint = sk_draw_looper_builder_.addLayerOnTop(info);
-
-  if (blur) {
-    const auto sigma = BlurRadiusToStdDev(blur);
-    const bool respectCTM = shadow_transform_mode != kShadowIgnoresTransforms;
-    paint->setMaskFilter(
-        SkMaskFilter::MakeBlur(kNormal_SkBlurStyle, sigma, respectCTM));
-  }
-
-  paint->setColorFilter(SkColorFilters::Blend(
-      color.toSkColor4f(), SkColorSpace::MakeSRGB(), SkBlendMode::kSrcIn));
+  draw_looper_builder_.AddShadow({offset.x(), offset.y()},
+                                 BlurRadiusToStdDev(blur), color.toSkColor4f(),
+                                 flags,
+                                 /*add_on_top=*/true);
 }
 
 }  // namespace blink

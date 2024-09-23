@@ -27,37 +27,37 @@ function checkTransitionShorthandValue() {
 test(() => {
   style.transition = "";
   // Initial test.
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "none";
   assert_not_equals(Object.keys(style).indexOf('transition'), -1);
   assert_not_equals(Object.keys(style).indexOf('webkitTransition'), -1);
-  assert_equals(style.transition, 'none 0s ease 0s');
-  assert_equals(computedStyle.transition, 'none 0s ease 0s');
-  assert_equals(style.webkitTransition, 'none 0s ease 0s');
-  assert_equals(computedStyle.webkitTransition, 'none 0s ease 0s');
+  assert_equals(style.transition, 'none');
+  assert_equals(computedStyle.transition, 'none');
+  assert_equals(style.webkitTransition, 'none');
+  assert_equals(computedStyle.webkitTransition, 'none');
   assert_true(checkTransitionShorthandValue());
 
   style.transition = "none 20s";
-  assert_equals(style.transition, 'none 20s ease 0s');
-  assert_equals(computedStyle.transition, 'none 20s ease 0s');
-  assert_equals(style.webkitTransition, 'none 20s ease 0s');
-  assert_equals(computedStyle.webkitTransition, 'none 20s ease 0s');
+  assert_equals(style.transition, 'none 20s');
+  assert_equals(computedStyle.transition, 'none 20s');
+  assert_equals(style.webkitTransition, 'none 20s');
+  assert_equals(computedStyle.webkitTransition, 'none 20s');
   assert_true(checkTransitionShorthandValue());
 
   style.transition = "ease-in none 20s";
-  assert_equals(style.transition, 'none 20s ease-in 0s');
-  assert_equals(computedStyle.transition, 'none 20s ease-in 0s');
-  assert_equals(style.webkitTransition, 'none 20s ease-in 0s');
-  assert_equals(computedStyle.webkitTransition, 'none 20s ease-in 0s');
+  assert_equals(style.transition, 'none 20s ease-in');
+  assert_equals(computedStyle.transition, 'none 20s ease-in');
+  assert_equals(style.webkitTransition, 'none 20s ease-in');
+  assert_equals(computedStyle.webkitTransition, 'none 20s ease-in');
   assert_true(checkTransitionShorthandValue());
 
   style.transition = "ease-in opacity 20s";
-  assert_equals(style.transition, 'opacity 20s ease-in 0s');
-  assert_equals(computedStyle.transition, 'opacity 20s ease-in 0s');
-  assert_equals(style.webkitTransition, 'opacity 20s ease-in 0s');
-  assert_equals(computedStyle.webkitTransition, 'opacity 20s ease-in 0s');
+  assert_equals(style.transition, 'opacity 20s ease-in');
+  assert_equals(computedStyle.transition, 'opacity 20s ease-in');
+  assert_equals(style.webkitTransition, 'opacity 20s ease-in');
+  assert_equals(computedStyle.webkitTransition, 'opacity 20s ease-in');
   assert_true(checkTransitionShorthandValue());
 
   style.transition = "ease-in opacity 20s 10s";
@@ -98,29 +98,29 @@ test(() => {
   assert_true(checkTransitionShorthandValue());
 
   style.transition = "all, all";
-  assert_equals(style.transition, 'all 0s ease 0s, all 0s ease 0s');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s, all 0s ease 0s');
-  assert_equals(style.webkitTransition, 'all 0s ease 0s, all 0s ease 0s');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s, all 0s ease 0s');
+  assert_equals(style.transition, 'all, all');
+  assert_equals(computedStyle.transition, 'all, all');
+  assert_equals(style.webkitTransition, 'all, all');
+  assert_equals(computedStyle.webkitTransition, 'all, all');
 
   style.transition = "all 20s 10s ease-in, all ease-out 20s";
-  assert_equals(style.transition, 'all 20s ease-in 10s, all 20s ease-out 0s');
-  assert_equals(computedStyle.transition, 'all 20s ease-in 10s, all 20s ease-out 0s');
-  assert_equals(style.webkitTransition, 'all 20s ease-in 10s, all 20s ease-out 0s');
-  assert_equals(computedStyle.webkitTransition, 'all 20s ease-in 10s, all 20s ease-out 0s');
+  assert_equals(style.transition, '20s ease-in 10s, 20s ease-out');
+  assert_equals(computedStyle.transition, '20s ease-in 10s, 20s ease-out');
+  assert_equals(style.webkitTransition, '20s ease-in 10s, 20s ease-out');
+  assert_equals(computedStyle.webkitTransition, '20s ease-in 10s, 20s ease-out');
 
   style.transition = "ease-in opacity 20s 10s, all ease-out 20s";
-  assert_equals(style.transition, 'opacity 20s ease-in 10s, all 20s ease-out 0s');
-  assert_equals(computedStyle.transition, 'opacity 20s ease-in 10s, all 20s ease-out 0s');
-  assert_equals(style.webkitTransition, 'opacity 20s ease-in 10s, all 20s ease-out 0s');
-  assert_equals(computedStyle.webkitTransition, 'opacity 20s ease-in 10s, all 20s ease-out 0s');
+  assert_equals(style.transition, 'opacity 20s ease-in 10s, 20s ease-out');
+  assert_equals(computedStyle.transition, 'opacity 20s ease-in 10s, 20s ease-out');
+  assert_equals(style.webkitTransition, 'opacity 20s ease-in 10s, 20s ease-out');
+  assert_equals(computedStyle.webkitTransition, 'opacity 20s ease-in 10s, 20s ease-out');
   assert_true(checkTransitionShorthandValue());
 
   style.transition = " all ease-out 20s, ease-in opacity 20s 10s";
-  assert_equals(style.transition, 'all 20s ease-out 0s, opacity 20s ease-in 10s');
-  assert_equals(computedStyle.transition, 'all 20s ease-out 0s, opacity 20s ease-in 10s');
-  assert_equals(style.webkitTransition, 'all 20s ease-out 0s, opacity 20s ease-in 10s');
-  assert_equals(computedStyle.webkitTransition, 'all 20s ease-out 0s, opacity 20s ease-in 10s');
+  assert_equals(style.transition, '20s ease-out, opacity 20s ease-in 10s');
+  assert_equals(computedStyle.transition, '20s ease-out, opacity 20s ease-in 10s');
+  assert_equals(style.webkitTransition, '20s ease-out, opacity 20s ease-in 10s');
+  assert_equals(computedStyle.webkitTransition, '20s ease-out, opacity 20s ease-in 10s');
   assert_true(checkTransitionShorthandValue());
 }, "Valid transition shorthand values.");
 
@@ -129,75 +129,75 @@ test(() => {
 
   style.transition = "20";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "20, 20";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "all 30s width ease-in";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "all 30s ease-in 20px";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "all 30s ease-in 20s, 20px";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "all 30s ease-in 20s, step-start(2)";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "ease-in opacity 20s 10s, none";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "none, ease-in opacity 20s 10s, none";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "none, ease-in opacity 20s 10s";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
-  style.transition = "ease-in opacity 20s 10s, all 20s ease-out 0s, none";
+  style.transition = "ease-in opacity 20s 10s, all 20s ease-out, none";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "ease-in opacity 20s 10s, ease-in width 20s 10s, none";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 
   style.transition = "none, none";
   assert_equals(style.transition, '');
-  assert_equals(computedStyle.transition, 'all 0s ease 0s');
+  assert_equals(computedStyle.transition, 'all');
   assert_equals(style.webkitTransition, '');
-  assert_equals(computedStyle.webkitTransition, 'all 0s ease 0s');
+  assert_equals(computedStyle.webkitTransition, 'all');
 }, "Invalid transition shorthand values.");
 
 test(() => {

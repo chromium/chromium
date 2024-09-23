@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -50,16 +51,23 @@ public class DeviceLockCoordinator {
      *
      * @param delegate The delegate invoked to interact with classes outside the module.
      * @param windowAndroid Used to launch Intents with callbacks.
+     * @param profile The Profile associated with this session.
      * @param activity The activity hosting this page.
-     * @param account The account that will be used for the reauthentication challenge, or null
-     *                if reauthentication is not needed.
+     * @param account The account that will be used for the reauthentication challenge, or null if
+     *     reauthentication is not needed.
      */
     public DeviceLockCoordinator(
             Delegate delegate,
             WindowAndroid windowAndroid,
+            Profile profile,
             Activity activity,
             @Nullable Account account) {
-        this(delegate, windowAndroid, createDeviceLockAuthenticatorBridge(), activity, account);
+        this(
+                delegate,
+                windowAndroid,
+                createDeviceLockAuthenticatorBridge(activity, profile),
+                activity,
+                account);
     }
 
     /**
@@ -67,11 +75,11 @@ public class DeviceLockCoordinator {
      *
      * @param delegate The delegate invoked to interact with classes outside the module.
      * @param windowAndroid Used to launch Intents with callbacks.
-     * @param deviceLockAuthenticatorBridge The {@link ReauthenticatorBridge} used to confirm
-     *         device lock credentials.
+     * @param deviceLockAuthenticatorBridge The {@link ReauthenticatorBridge} used to confirm device
+     *     lock credentials.
      * @param activity The activity hosting this page.
-     * @param account The account that will be used for the reauthentication challenge, or null
-     *        if reauthentication is not needed.
+     * @param account The account that will be used for the reauthentication challenge, or null if
+     *     reauthentication is not needed.
      */
     public DeviceLockCoordinator(
             Delegate delegate,
@@ -96,12 +104,16 @@ public class DeviceLockCoordinator {
     }
 
     /** Get a {@link ReauthenticatorBridge} for the Device Lock page. */
-    public static ReauthenticatorBridge createDeviceLockAuthenticatorBridge() {
-        return ReauthenticatorBridge.create(DeviceAuthSource.DEVICE_LOCK_PAGE);
+    public static ReauthenticatorBridge createDeviceLockAuthenticatorBridge(
+            Activity activity, Profile profile) {
+        return ReauthenticatorBridge.create(activity, profile, DeviceAuthSource.DEVICE_LOCK_PAGE);
     }
 
     /** Releases the resources used by the coordinator. */
     public void destroy() {
+        if (mDeviceLockAuthenticatorBridge != null) {
+            mDeviceLockAuthenticatorBridge.destroy();
+        }
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
         }

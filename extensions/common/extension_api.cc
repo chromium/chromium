@@ -60,8 +60,9 @@ const base::Value::Dict* FindListItem(const base::Value::List& list,
     const base::Value::Dict* item = item_value.GetIfDict();
     CHECK(item) << property_value << "/" << property_name;
     const std::string* value = item->FindStringByDottedPath(property_name);
-    if (value && *value == property_value)
+    if (value && *value == property_value) {
       return item;
+    }
   }
 
   return nullptr;
@@ -71,12 +72,14 @@ const base::Value::Dict* GetSchemaChild(const base::Value::Dict& schema_node,
                                         const std::string& child_name) {
   for (const char* kind : kChildKinds) {
     const base::Value::List* list_node = schema_node.FindList(kind);
-    if (!list_node)
+    if (!list_node) {
       continue;
+    }
     const base::Value::Dict* child_node =
         FindListItem(*list_node, "name", child_name);
-    if (child_node)
+    if (child_node) {
       return child_node;
+    }
   }
 
   return nullptr;
@@ -148,10 +151,11 @@ ExtensionAPI::ExtensionAPI() = default;
 ExtensionAPI::~ExtensionAPI() = default;
 
 void ExtensionAPI::InitDefaultConfiguration() {
-  const constexpr char* const names[] = {"api", "behavior", "manifest",
-                                         "permission"};
-  for (const char* const name : names)
+  static const constexpr char* const names[] = {"api", "behavior", "manifest",
+                                                "permission"};
+  for (const char* const name : names) {
     RegisterDependencyProvider(name, FeatureProvider::GetByName(name));
+  }
 
   default_configuration_initialized_ = true;
 }
@@ -191,12 +195,14 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(
     }
   }
 
-  if (check_alias != CheckAliasStatus::ALLOWED)
+  if (check_alias != CheckAliasStatus::ALLOWED) {
     return false;
+  }
 
   const std::string& alias_name = api.alias();
-  if (alias_name.empty())
+  if (alias_name.empty()) {
     return false;
+  }
 
   const Feature* alias = provider->second->GetFeature(alias_name);
   CHECK(alias) << "Cannot find alias feature " << alias_name
@@ -222,8 +228,9 @@ Feature::Availability ExtensionAPI::IsAvailable(
 
   Feature::Availability availability = feature->IsAvailableToContext(
       extension, context, url, context_id, context_data);
-  if (availability.is_available() || check_alias != CheckAliasStatus::ALLOWED)
+  if (availability.is_available() || check_alias != CheckAliasStatus::ALLOWED) {
     return availability;
+  }
 
   Feature::Availability alias_availability = IsAliasAvailable(
       full_name, *feature, extension, context, url, context_id, context_data);
@@ -247,8 +254,9 @@ const base::Value::Dict* ExtensionAPI::GetSchema(const std::string& full_name) {
     result = &maybe_schema->second;
   } else {
     std::string_view schema_string = GetSchemaStringPieceUnsafe(api_name);
-    if (schema_string.empty())
+    if (schema_string.empty()) {
       return nullptr;
+    }
     LoadSchema(api_name, schema_string);
 
     maybe_schema = schemas_.find(api_name);
@@ -256,8 +264,9 @@ const base::Value::Dict* ExtensionAPI::GetSchema(const std::string& full_name) {
     result = &maybe_schema->second;
   }
 
-  if (!child_name.empty())
+  if (!child_name.empty()) {
     result = GetSchemaChild(*result, child_name);
+  }
 
   return result;
 }
@@ -269,8 +278,9 @@ const Feature* ExtensionAPI::GetFeatureDependency(
   SplitDependencyName(full_name, &feature_type, &feature_name);
 
   auto provider = dependency_providers_.find(feature_type);
-  if (provider == dependency_providers_.end())
+  if (provider == dependency_providers_.end()) {
     return nullptr;
+  }
 
   const Feature* feature = provider->second->GetFeature(feature_name);
   // Try getting the feature for the parent API, if this was a child.
@@ -303,8 +313,9 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
     int context_id,
     const ContextData& context_data) {
   const std::string& alias = feature.alias();
-  if (alias.empty())
+  if (alias.empty()) {
     return Feature::Availability(Feature::NOT_PRESENT, "Alias not defined");
+  }
 
   auto provider = dependency_providers_.find("api");
   CHECK(provider != dependency_providers_.end());
@@ -322,8 +333,9 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
 
   // If there is no child feature, use the alias API feature to check
   // availability.
-  if (!alias_feature)
+  if (!alias_feature) {
     alias_feature = provider->second->GetFeature(alias);
+  }
 
   CHECK(alias_feature) << "Cannot find alias feature " << alias
                        << " for API feature " << feature.name();
@@ -338,11 +350,11 @@ std::string_view ExtensionAPI::GetSchemaStringPieceUnsafe(
   DCHECK_EQ(api_name, GetAPINameFromFullNameUnsafe(api_name, nullptr));
   ExtensionsClient* client = ExtensionsClient::Get();
   DCHECK(client);
-  if (!default_configuration_initialized_)
+  if (!default_configuration_initialized_) {
     return std::string_view();
+  }
 
-  std::string_view schema = client->GetAPISchema(api_name);
-  return schema;
+  return client->GetAPISchema(api_name);
 }
 
 std::string ExtensionAPI::GetAPINameFromFullNameUnsafe(
@@ -355,23 +367,26 @@ std::string ExtensionAPI::GetAPINameFromFullNameUnsafe(
   while (true) {
     if (IsKnownAPI(api_name_candidate, extensions_client)) {
       if (child_name) {
-        if (api_name_candidate.length() < full_name.length())
+        if (api_name_candidate.length() < full_name.length()) {
           *child_name = full_name.substr(api_name_candidate.length() + 1);
-        else
+        } else {
           *child_name = "";
+        }
       }
       return api_name_candidate;
     }
 
     size_t last_dot_index = api_name_candidate.rfind('.');
-    if (last_dot_index == std::string::npos)
+    if (last_dot_index == std::string::npos) {
       break;
+    }
 
     api_name_candidate = api_name_candidate.substr(0, last_dot_index);
   }
 
-  if (child_name)
+  if (child_name) {
     *child_name = "";
+  }
   return std::string();
 }
 

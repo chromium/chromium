@@ -13,6 +13,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/values.h"
+#import "ios/chrome/browser/web/model/annotations/parcel_number_tracker.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ios/web/public/annotations/annotations_text_observer.h"
 #import "ios/web/public/annotations/custom_text_checking_result.h"
@@ -121,6 +122,8 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   raw_ptr<web::WebState> web_state_ = nullptr;
 
   std::unique_ptr<base::Value::Dict> metadata_;
+
+  ParcelNumberTracker parcel_number_tracker_;
 
   std::map<std::string, NSTextCheckingResult*> match_cache_;
 

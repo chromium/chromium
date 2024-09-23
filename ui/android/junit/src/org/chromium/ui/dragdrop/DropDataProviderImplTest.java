@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.FileNotFoundException;
@@ -46,16 +45,15 @@ public class DropDataProviderImplTest {
     @Before
     public void setUp() {
         mDropDataProviderImpl = new DropDataProviderImpl();
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("jpg", "image/jpeg");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("gif", "image/gif");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypMapping("png", "image/png");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("jpg", "image/jpeg");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("gif", "image/gif");
+        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("png", "image/png");
     }
 
     @After
     public void tearDown() {
         mDropDataProviderImpl.clearCache();
         mDropDataProviderImpl.clearLastUriCreatedTimestampForTesting();
-        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

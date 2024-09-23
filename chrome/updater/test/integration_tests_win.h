@@ -7,4 +7,4 @@
 
 #include <windows.h>
 
-#endif
+#endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_WIN_H_

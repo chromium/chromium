@@ -53,7 +53,7 @@ class PLATFORM_EXPORT GeometryMapper {
   // Same as SourceToDestinationProjection() except that it maps the rect
   // rather than returning the matrix.
   // |mapping_rect| is both input and output. Its type can be gfx::RectF,
-  // LayoutRect, gfx::Rect, gfx::Rect or gfx::RectF.
+  // gfx::Rect, gfx::Rect or gfx::RectF.
   template <typename Rect>
   static void SourceToDestinationRect(
       const TransformPaintPropertyNodeOrAlias& source,

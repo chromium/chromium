@@ -1,6 +1,8 @@
 include_rules = [
   "+components/browsing_data/content",
   "+components/browsing_data/core",
+  "+components/fingerprinting_protection_filter/browser",
+  "+components/fingerprinting_protection_filter/common",
   "+components/page_load_metrics/browser",
   "+components/security_state/core",
   "+components/services/storage/public/cpp",
@@ -21,7 +23,7 @@ include_rules = [
   "+ui/base",
   "+ui/gfx",
 
-  # TODO(crbug.com/1404234) Remove when async canned helper logic is removed.
+  # TODO(crbug.com/40251822) Remove when async canned helper logic is removed.
   "+components/page_info/core",
 ]
 
@@ -30,7 +32,7 @@ specific_include_rules = {
     "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
   ],
   "page_specific_content_settings_unittest.cc": [
-    "+net/extras/shared_dictionary/shared_dictionary_isolation_key.h",
+    "+net/shared_dictionary/shared_dictionary_isolation_key.h",
     "+services/network/public/mojom/shared_dictionary_access_observer.mojom.h",
   ],
   "content_settings_manager_impl.cc": [

@@ -1,0 +1,38 @@
+caption: Settings for the Lens Overlay feature
+desc: |-
+  Lens Overlay lets users issue Google searches by interacting with a screenshot of the current page laid over the actual web contents.
+
+  There is no user setting to control this feature, it is generally made available to all users with Google as their default search engine unless disabled by this policy.
+
+  When policy is set to 0 - Enabled or not set, the feature will be available to users.
+  When policy is set to 1 - Disabled, the feature will not be available.
+
+default: 0
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable
+  name: Enabled
+  value: 0
+- caption: Disable
+  name: Disabled
+  value: 1
+owners:
+- jdonnelly@google.com
+- mahmadi@google.com
+- file://components/lens/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- chrome.*:126-
+- chrome_os:126-
+- ios:128-
+tags:
+- google-sharing
+type: int-enum
+

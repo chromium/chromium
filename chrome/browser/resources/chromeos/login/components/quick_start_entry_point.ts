@@ -17,17 +17,13 @@
  */
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.js';
+import {OobeI18nMixin} from './mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './quick_start_entry_point.html.js';
 
-const QuickStartEntryPointBase =
-    mixinBehaviors([OobeI18nBehavior], PolymerElement) as {
-      new (): PolymerElement
-      & OobeI18nBehaviorInterface,
-    };
+const QuickStartEntryPointBase = OobeI18nMixin(PolymerElement);
 
 export class QuickStartEntryPoint extends QuickStartEntryPointBase {
   static get is() {

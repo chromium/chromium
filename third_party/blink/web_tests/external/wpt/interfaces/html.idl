@@ -48,7 +48,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
 [LegacyOverrideBuiltIns]
 partial interface Document {
-  static Document parseHTMLUnsafe(DOMString html);
+  static Document parseHTMLUnsafe((TrustedHTML or DOMString) html);
 
   // resource metadata management
   [PutForwards=href, LegacyUnforgeable] readonly attribute Location? location;
@@ -77,8 +77,8 @@ partial interface Document {
   [CEReactions] Document open(optional DOMString unused1, optional DOMString unused2); // both arguments are ignored
   WindowProxy? open(USVString url, DOMString name, DOMString features);
   [CEReactions] undefined close();
-  [CEReactions] undefined write(DOMString... text);
-  [CEReactions] undefined writeln(DOMString... text);
+  [CEReactions] undefined write((TrustedHTML or DOMString)... text);
+  [CEReactions] undefined writeln((TrustedHTML or DOMString)... text);
 
   // user interaction
   readonly attribute WindowProxy? defaultView;
@@ -123,7 +123,9 @@ interface HTMLElement : Element {
   readonly attribute DOMString accessKeyLabel;
   [CEReactions] attribute boolean draggable;
   [CEReactions] attribute boolean spellcheck;
+  [CEReactions] attribute DOMString writingSuggestions;
   [CEReactions] attribute DOMString autocapitalize;
+  [CEReactions] attribute boolean autocorrect;
 
   [CEReactions] attribute [LegacyNullToEmptyString] DOMString innerText;
   [CEReactions] attribute [LegacyNullToEmptyString] DOMString outerText;
@@ -451,7 +453,7 @@ interface HTMLIFrameElement : HTMLElement {
   [HTMLConstructor] constructor();
 
   [CEReactions] attribute USVString src;
-  [CEReactions] attribute DOMString srcdoc;
+  [CEReactions] attribute (TrustedHTML or DOMString) srcdoc;
   [CEReactions] attribute DOMString name;
   [SameObject, PutForwards=value] readonly attribute DOMTokenList sandbox;
   [CEReactions] attribute DOMString allow;
@@ -1243,6 +1245,8 @@ interface HTMLTemplateElement : HTMLElement {
   readonly attribute DocumentFragment content;
   [CEReactions] attribute DOMString shadowRootMode;
   [CEReactions] attribute boolean shadowRootDelegatesFocus;
+  [CEReactions] attribute boolean shadowRootClonable;
+  [CEReactions] attribute boolean shadowRootSerializable;
 };
 
 [Exposed=Window]
@@ -1408,8 +1412,6 @@ interface mixin CanvasDrawPath {
 interface mixin CanvasUserInterface {
   undefined drawFocusIfNeeded(Element element);
   undefined drawFocusIfNeeded(Path2D path, Element element);
-  undefined scrollPathIntoView();
-  undefined scrollPathIntoView(Path2D path);
 };
 
 interface mixin CanvasText {
@@ -1577,7 +1579,6 @@ interface OffscreenCanvas : EventTarget {
 
 [Exposed=(Window,Worker)]
 interface OffscreenCanvasRenderingContext2D {
-  undefined commit();
   readonly attribute OffscreenCanvas canvas;
 };
 
@@ -2061,6 +2062,18 @@ dictionary HashChangeEventInit : EventInit {
 };
 
 [Exposed=Window]
+interface PageSwapEvent : Event {
+  constructor(DOMString type, optional PageSwapEventInit eventInitDict = {});
+  readonly attribute NavigationActivation? activation;
+  readonly attribute ViewTransition? viewTransition;
+};
+
+dictionary PageSwapEventInit : EventInit {
+  NavigationActivation? activation = null;
+  ViewTransition? viewTransition = null;
+};
+
+[Exposed=Window]
 interface PageRevealEvent : Event {
   constructor(DOMString type, optional PageRevealEventInit eventInitDict = {});
   readonly attribute ViewTransition? viewTransition;
@@ -2084,6 +2097,23 @@ dictionary PageTransitionEventInit : EventInit {
 [Exposed=Window]
 interface BeforeUnloadEvent : Event {
   attribute DOMString returnValue;
+};
+
+[Exposed=Window]
+interface NotRestoredReasonDetails {
+  readonly attribute DOMString reason;
+  [Default] object toJSON();
+};
+
+[Exposed=Window]
+interface NotRestoredReasons {
+  readonly attribute DOMString? src;
+  readonly attribute DOMString? id;
+  readonly attribute DOMString? name;
+  readonly attribute DOMString? url;
+  readonly attribute FrozenArray<NotRestoredReasonDetails>? reasons;
+  readonly attribute FrozenArray<NotRestoredReasons>? children;
+  [Default] object toJSON();
 };
 
 [Exposed=*]
@@ -2221,6 +2251,7 @@ interface mixin WindowEventHandlers {
   attribute EventHandler onpagehide;
   attribute EventHandler onpagereveal;
   attribute EventHandler onpageshow;
+  attribute EventHandler onpageswap;
   attribute EventHandler onpopstate;
   attribute EventHandler onrejectionhandled;
   attribute EventHandler onstorage;
@@ -2228,7 +2259,7 @@ interface mixin WindowEventHandlers {
   attribute EventHandler onunload;
 };
 
-typedef (DOMString or Function) TimerHandler;
+typedef (DOMString or Function or TrustedScript) TimerHandler;
 
 interface mixin WindowOrWorkerGlobalScope {
   [Replaceable] readonly attribute USVString origin;
@@ -2260,11 +2291,32 @@ interface mixin WindowOrWorkerGlobalScope {
 Window includes WindowOrWorkerGlobalScope;
 WorkerGlobalScope includes WindowOrWorkerGlobalScope;
 
+partial interface Element {
+  [CEReactions] undefined setHTMLUnsafe((TrustedHTML or DOMString) html);
+  DOMString getHTML(optional GetHTMLOptions options = {});
+
+  [CEReactions] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) innerHTML;
+  [CEReactions] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) outerHTML;
+  [CEReactions] undefined insertAdjacentHTML(DOMString position, (TrustedHTML or DOMString) string);
+};
+
+partial interface ShadowRoot {
+  [CEReactions] undefined setHTMLUnsafe((TrustedHTML or DOMString) html);
+  DOMString getHTML(optional GetHTMLOptions options = {});
+
+  [CEReactions] attribute (TrustedHTML or [LegacyNullToEmptyString] DOMString) innerHTML;
+};
+
+dictionary GetHTMLOptions {
+  boolean serializableShadowRoots = false;
+  sequence<ShadowRoot> shadowRoots = [];
+};
+
 [Exposed=Window]
 interface DOMParser {
   constructor();
 
-  [NewObject] Document parseFromString(DOMString string, DOMParserSupportedType type);
+  [NewObject] Document parseFromString((TrustedHTML or DOMString) string, DOMParserSupportedType type);
 };
 
 enum DOMParserSupportedType {
@@ -2275,12 +2327,8 @@ enum DOMParserSupportedType {
   "image/svg+xml"
 };
 
-partial interface Element {
-  [CEReactions] undefined setHTMLUnsafe(DOMString html);
-};
-
-partial interface ShadowRoot {
-  [CEReactions] undefined setHTMLUnsafe(DOMString html);
+partial interface Range {
+  [CEReactions, NewObject] DocumentFragment createContextualFragment((TrustedHTML or DOMString) string);
 };
 
 [Exposed=Window]
@@ -2495,7 +2543,7 @@ interface WorkerGlobalScope : EventTarget {
   readonly attribute WorkerGlobalScope self;
   readonly attribute WorkerLocation location;
   readonly attribute WorkerNavigator navigator;
-  undefined importScripts(USVString... urls);
+  undefined importScripts((TrustedScriptURL or USVString)... urls);
 
   attribute OnErrorEventHandler onerror;
   attribute EventHandler onlanguagechange;
@@ -2533,7 +2581,7 @@ interface mixin AbstractWorker {
 
 [Exposed=(Window,DedicatedWorker,SharedWorker)]
 interface Worker : EventTarget {
-  constructor(USVString scriptURL, optional WorkerOptions options = {});
+  constructor((TrustedScriptURL or USVString) scriptURL, optional WorkerOptions options = {});
 
   undefined terminate();
 
@@ -2555,7 +2603,7 @@ Worker includes AbstractWorker;
 
 [Exposed=Window]
 interface SharedWorker : EventTarget {
-  constructor(USVString scriptURL, optional (DOMString or WorkerOptions) options = {});
+  constructor((TrustedScriptURL or USVString) scriptURL, optional (DOMString or WorkerOptions) options = {});
 
   readonly attribute MessagePort port;
 };

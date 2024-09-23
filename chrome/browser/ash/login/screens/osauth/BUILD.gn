@@ -1,0 +1,117 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("osauth") {
+  sources = [
+    "apply_online_password_screen.cc",
+    "apply_online_password_screen.h",
+    "base_osauth_setup_screen.cc",
+    "base_osauth_setup_screen.h",
+    "cryptohome_recovery_screen.cc",
+    "cryptohome_recovery_screen.h",
+    "cryptohome_recovery_setup_screen.cc",
+    "cryptohome_recovery_setup_screen.h",
+    "enter_old_password_screen.cc",
+    "enter_old_password_screen.h",
+    "factor_setup_success_screen.cc",
+    "factor_setup_success_screen.h",
+    "local_data_loss_warning_screen.cc",
+    "local_data_loss_warning_screen.h",
+    "local_password_setup_screen.cc",
+    "local_password_setup_screen.h",
+    "osauth_error_screen.cc",
+    "osauth_error_screen.h",
+    "password_selection_screen.cc",
+    "password_selection_screen.h",
+    "recovery_eligibility_screen.cc",
+    "recovery_eligibility_screen.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ui/webui/ash/login/mojom",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_shared",
+    "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_shared_cpp_sources",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/auth",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/services/auth_factor_config",
+    "//chromeos/ash/services/auth_factor_config/public/mojom",
+    "//components/crash/core/app",
+    "//components/device_event_log",
+    "//components/user_manager",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ui/ash/login",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "cryptohome_recovery_screen_browsertest.cc",
+    "cryptohome_recovery_setup_screen_browsertest.cc",
+    "local_password_setup_screen_browsertest.cc",
+    "password_selection_screen_browsertest.cc",
+    "recovery_eligibility_screen_browsertest.cc",
+  ]
+
+  deps = [
+    ":osauth",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/login/osauth",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/osauth/public",
+    "//components/account_id",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/user_manager:common",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

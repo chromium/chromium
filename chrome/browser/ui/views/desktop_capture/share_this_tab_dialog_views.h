@@ -36,7 +36,8 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   void DetachParent();
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& /*available_size*/) const override;
   bool ShouldShowWindowTitle() const override;
   bool Accept() override;
   bool Cancel() override;

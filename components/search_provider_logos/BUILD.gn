@@ -97,6 +97,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/image_fetcher/core",
     "//components/search_engines",
+    "//components/search_engines:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",

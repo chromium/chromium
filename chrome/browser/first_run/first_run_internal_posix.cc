@@ -62,12 +62,10 @@ bool ShouldShowFirstRunDialog() {
     return false;
 
   // For real first runs, Mac and Desktop Linux initialize the default metrics
-  // reporting state when the first run dialog is shown.
-  bool is_opt_in = first_run::IsMetricsReportingOptIn();
+  // reporting state when the first run dialog is shown. These days, metrics are
+  // always enabled by default (opt-out).
   metrics::RecordMetricsReportingDefaultState(
-      g_browser_process->local_state(),
-      is_opt_in ? metrics::EnableMetricsDefault::OPT_IN
-                : metrics::EnableMetricsDefault::OPT_OUT);
+      g_browser_process->local_state(), metrics::EnableMetricsDefault::OPT_OUT);
   return true;
 #endif
 }

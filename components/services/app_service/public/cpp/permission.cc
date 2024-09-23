@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "base/containers/to_value_list.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
@@ -165,11 +166,7 @@ PermissionPtr ConvertDictToPermission(const base::Value::Dict& dict) {
 }
 
 base::Value::List ConvertPermissionsToList(const Permissions& permissions) {
-  base::Value::List list;
-  for (const auto& permission : permissions) {
-    list.Append(ConvertPermissionToDict(permission));
-  }
-  return list;
+  return base::ToValueList(permissions, &ConvertPermissionToDict);
 }
 
 Permissions ConvertListToPermissions(const base::Value::List* list) {

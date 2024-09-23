@@ -42,15 +42,15 @@ CreateContentBrowserURLLoaderThrottles(
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
     NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       GetContentClient()->browser()->CreateURLLoaderThrottles(
           request, browser_context, wc_getter, navigation_ui_data,
           frame_tree_node_id, navigation_id);
   variations::OmniboxURLLoaderThrottle::AppendThrottleIfNeeded(&throttles);
-  // TODO(crbug.com/1094303): Consider whether we want to use the WebContents to
-  // determine the value for variations::Owner. Alternatively, this is the
+  // TODO(crbug.com/40135370): Consider whether we want to use the WebContents
+  // to determine the value for variations::Owner. Alternatively, this is the
   // browser side, and we might be fine with Owner::kUnknown.
   variations::VariationsURLLoaderThrottle::AppendThrottleIfNeeded(
       browser_context->GetVariationsClient(), &throttles);
@@ -70,21 +70,22 @@ CreateContentBrowserURLLoaderThrottles(
   // Creating a throttle only for outermost main frames to persist the reduced
   // accept language for an origin and to restart requests if needed, due to
   // language negotiation.
-  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
-      base::FeatureList::IsEnabled(
-          network::features::kReduceAcceptLanguageOriginTrial)) {
+  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage)) {
     ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
         browser_context->GetReduceAcceptLanguageControllerDelegate();
+    OriginTrialsControllerDelegate* origin_trials_delegate =
+        browser_context->GetOriginTrialsControllerDelegate();
     if (request.is_outermost_main_frame && reduce_accept_lang_delegate) {
       throttles.push_back(std::make_unique<ReduceAcceptLanguageThrottle>(
-          *reduce_accept_lang_delegate));
+          *reduce_accept_lang_delegate, origin_trials_delegate,
+          frame_tree_node_id));
     }
   }
 
   // frame_tree_node_id may be invalid if we are loading the first frame
   // of the tab.
   FrameTreeNode* frame_tree_node = nullptr;
-  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+  if (frame_tree_node_id) {
     frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   }
 
@@ -109,15 +110,21 @@ CreateContentBrowserURLLoaderThrottles(
                          ->GetOutermostMainFrame()
                          ->GetLastCommittedOrigin();
       }
+      std::optional<ukm::SourceId> source_id =
+          navigation_id.has_value()
+              ? std::make_optional(ukm::ConvertToSourceId(
+                    navigation_id.value(), ukm::SourceIdType::NAVIGATION_ID))
+              : std::nullopt;
       throttles.push_back(std::make_unique<CriticalOriginTrialsThrottle>(
-          *origin_trials_delegate, std::move(top_origin)));
+          *origin_trials_delegate, std::move(top_origin), source_id));
     }
   }
 
   auto throttle = MaybeCreateIdentityUrlLoaderThrottle(base::BindRepeating(
       webid::SetIdpSigninStatus, browser_context, frame_tree_node_id));
-  if (throttle)
+  if (throttle) {
     throttles.push_back(std::move(throttle));
+  }
 
   return throttles;
 }
@@ -127,13 +134,13 @@ CreateContentBrowserURLLoaderThrottlesForKeepAlive(
     const network::ResourceRequest& request,
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
-    int frame_tree_node_id) {
+    FrameTreeNodeId frame_tree_node_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       GetContentClient()->browser()->CreateURLLoaderThrottlesForKeepAlive(
           request, browser_context, wc_getter, frame_tree_node_id);
   variations::OmniboxURLLoaderThrottle::AppendThrottleIfNeeded(&throttles);
-  // TODO(crbug.com/1094303): Consider whether we want to use the WebContents to
-  // determine the value for variations::Owner. Alternatively, this is the
+  // TODO(crbug.com/40135370): Consider whether we want to use the WebContents
+  // to determine the value for variations::Owner. Alternatively, this is the
   // browser side, and we might be fine with Owner::kUnknown.
   variations::VariationsURLLoaderThrottle::AppendThrottleIfNeeded(
       browser_context->GetVariationsClient(), &throttles);

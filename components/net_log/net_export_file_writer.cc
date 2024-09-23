@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -231,7 +232,7 @@ base::Value::Dict NetExportFileWriter::GetState() const {
   base::Value::Dict dict;
   dict.Set("file", base::UTF16ToUTF8(log_path_.LossyDisplayName()));
 
-  base::StringPiece state_string;
+  std::string_view state_string;
   switch (state_) {
     case STATE_UNINITIALIZED:
       state_string = "UNINITIALIZED";
@@ -286,7 +287,7 @@ std::string NetExportFileWriter::CaptureModeToString(
     return "NORMAL";
   if (capture_mode == net::NetLogCaptureMode::kEverything)
     return "LOG_BYTES";
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "STRIP_PRIVATE_DATA";
 }
 
@@ -298,7 +299,7 @@ net::NetLogCaptureMode NetExportFileWriter::CaptureModeFromString(
     return net::NetLogCaptureMode::kIncludeSensitive;
   if (capture_mode_string == "LOG_BYTES")
     return net::NetLogCaptureMode::kEverything;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return net::NetLogCaptureMode::kDefault;
 }
 

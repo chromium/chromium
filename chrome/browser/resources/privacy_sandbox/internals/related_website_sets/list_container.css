@@ -1,0 +1,58 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=./shared_vars.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+.header {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+#expandCollapseButton {
+  height: auto;
+  padding: 3px 16px;
+}
+
+.flex {
+  flex: 1;
+}
+
+.page-title {
+  font-weight: 400;
+}
+
+.card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+  margin: 0 auto;
+  margin-block-end: 36px;
+  max-width: var(--card-max-width);
+}
+
+related-website-sets-list-item:first-of-type {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+related-website-sets-list-item:last-of-type {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+:host {
+  overflow: visible;
+}
+
+a {
+  color: var(--cr-link-color);
+}

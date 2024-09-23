@@ -39,22 +39,27 @@ WebAppFrameToolbarTestHelper::WebAppFrameToolbarTestHelper() {
 
 WebAppFrameToolbarTestHelper::~WebAppFrameToolbarTestHelper() = default;
 
-webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
-    Browser* browser,
+webapps::AppId WebAppFrameToolbarTestHelper::InstallWebApp(
+    Profile* profile,
     const GURL& start_url) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->title = u"A minimal-ui app";
   web_app_info->display_mode = web_app::DisplayMode::kMinimalUi;
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  webapps::AppId app_id =
-      web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
+  return web_app::test::InstallWebApp(profile, std::move(web_app_info));
+}
+
+webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
+    Profile* profile,
+    const GURL& start_url) {
+  webapps::AppId app_id = InstallWebApp(profile, start_url);
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();
-  app_browser_ = web_app::LaunchWebAppBrowser(browser->profile(), app_id);
+  app_browser_ = web_app::LaunchWebAppBrowser(profile, app_id);
   navigation_observer.WaitForNavigationFinished();
 
   browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
@@ -67,6 +72,12 @@ webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
   DCHECK(web_app_frame_toolbar_);
   DCHECK(web_app_frame_toolbar_->GetVisible());
   return app_id;
+}
+
+webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchWebApp(
+    Browser* browser,
+    const GURL& start_url) {
+  return InstallAndLaunchWebApp(browser->profile(), start_url);
 }
 
 webapps::AppId WebAppFrameToolbarTestHelper::InstallAndLaunchCustomWebApp(
@@ -164,7 +175,7 @@ GURL WebAppFrameToolbarTestHelper::
 GURL WebAppFrameToolbarTestHelper::LoadTestPageWithDataAndGetURL(
     net::test_server::EmbeddedTestServer* embedded_test_server,
     base::ScopedTempDir* temp_dir,
-    base::StringPiece test_html) {
+    std::string_view test_html) {
   // Write kTestHTML to a temporary file that can be later reached at
   // http://127.0.0.1/test_file_*.html.
   static int s_test_file_number = 1;
@@ -209,7 +220,7 @@ void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
   )"));
 }
 
-// TODO(https://crbug.com/1277860): Flaky.
+// TODO(crbug.com/40809857): Flaky.
 void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
   views::NonClientFrameView* frame_view =
       browser_view()->GetWidget()->non_client_view()->frame_view();
@@ -307,4 +318,9 @@ void WebAppFrameToolbarTestHelper::GrantWindowManagementPermission() {
 WebAppOriginText* WebAppFrameToolbarTestHelper::origin_text_view() {
   return static_cast<WebAppOriginText*>(
       web_app_frame_toolbar()->GetViewByID(VIEW_ID_WEB_APP_ORIGIN_TEXT));
+}
+
+void WebAppFrameToolbarTestHelper::SetOriginTextLabelForTesting(
+    const std::u16string label_text) {
+  origin_text_view()->label_->SetText(label_text);
 }

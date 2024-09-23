@@ -9,6 +9,7 @@ assert(!is_chromeos_lacros)
 
 build_webui_tests("build") {
   ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",

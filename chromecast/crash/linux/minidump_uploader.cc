@@ -44,8 +44,6 @@ const char kCrashServerProduction[] = "https://clients2.google.com/cr/report";
 
 const char kVirtualChannel[] = "virtual-channel";
 
-const char kLatestUiVersion[] = "latest-ui-version";
-
 typedef std::vector<std::unique_ptr<DumpInfo>> DumpList;
 
 std::unique_ptr<PrefService> CreatePrefService() {
@@ -57,7 +55,6 @@ std::unique_ptr<PrefService> CreatePrefService() {
   registry->RegisterBooleanPref(prefs::kOptInStats, true);
   registry->RegisterStringPref(::metrics::prefs::kMetricsClientID, "");
   registry->RegisterStringPref(kVirtualChannel, "");
-  registry->RegisterForeignPref(kLatestUiVersion);
 
   PrefServiceFactory prefServiceFactory;
   prefServiceFactory.SetUserPrefsFile(
@@ -148,8 +145,6 @@ bool MinidumpUploader::DoWork() {
       ignore_and_erase_dump = true;
     } else if (IsDumpObsolete(dump)) {
       NOTREACHED();
-      LOG(INFO) << "DumpInfo belongs to older version, removing crash dump";
-      ignore_and_erase_dump = true;
     }
 
     // Ratelimiting persists across reboots.
@@ -261,10 +256,6 @@ bool MinidumpUploader::DoWork() {
     g.SetParameter("ro.system.version", system_version_);
     g.SetParameter("release.virtual-channel", virtual_channel);
     g.SetParameter("ro.build.type", GetBuildVariant());
-    if (pref_service->HasPrefPath(kLatestUiVersion)) {
-      g.SetParameter("ui.version",
-                     pref_service->GetString(kLatestUiVersion));
-    }
     // Add app state information
     if (!dump.params().previous_app_name.empty()) {
       g.SetParameter("previous_app", dump.params().previous_app_name);
@@ -303,6 +294,29 @@ bool MinidumpUploader::DoWork() {
       }
     }
 
+    // Set CastLite specific crash report data.
+    if (!dump.params().comments.empty()) {
+      g.SetParameter("comments", dump.params().comments);
+    }
+    if (!dump.params().js_engine.empty()) {
+      g.SetParameter("js_engine", dump.params().js_engine);
+    }
+    if (!dump.params().js_build_label.empty()) {
+      g.SetParameter("js_build_label", dump.params().js_build_label);
+    }
+    if (!dump.params().js_exception_category.empty()) {
+      g.SetParameter("js_exception_category",
+                     dump.params().js_exception_category);
+    }
+    if (!dump.params().js_exception_details.empty()) {
+      g.SetParameter("js_exception_details",
+                     dump.params().js_exception_details);
+    }
+    if (!dump.params().js_exception_signature.empty()) {
+      // Upload as "signature" to populate the "Stable Signature" field
+      g.SetParameter("signature", dump.params().js_exception_signature);
+    }
+
     std::string response;
     if (!g.Upload(&response)) {
       // We have failed to upload this file.
@@ -322,13 +336,11 @@ bool MinidumpUploader::DoWork() {
     // (We may use a fake dump file which should not be deleted.)
     if (!dump_path.empty() && dump_path.DirName() == dump_path_ &&
         !base::DeleteFile(dump_path)) {
-      LOG(WARNING) << "remove dump " << dump_path.value() << " failed"
-                   << strerror(errno);
+      PLOG(WARNING) << "remove dump " << dump_path.value() << " failed";
     }
     // delete the log if exists
     if (!log_path.empty() && !base::DeleteFile(log_path)) {
-      LOG(WARNING) << "remove log " << log_path.value() << " failed"
-                   << strerror(errno);
+      PLOG(WARNING) << "remove log " << log_path.value() << " failed";
     }
     // delete the attachments
     if (!dump_path.empty()) {
@@ -336,8 +348,7 @@ bool MinidumpUploader::DoWork() {
         base::FilePath attachment_path(attachment);
         if (attachment_path.DirName() == dump_path.DirName() &&
             !base::DeleteFile(attachment_path)) {
-          LOG(WARNING) << "remove attachment " << attachment << " failed"
-                       << strerror(errno);
+          PLOG(WARNING) << "remove attachment " << attachment << " failed";
         }
       }
     }

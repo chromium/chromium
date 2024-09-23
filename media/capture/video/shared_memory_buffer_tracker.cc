@@ -101,7 +101,7 @@ SharedMemoryBufferTracker::DuplicateAsUnsafeRegion() {
 
 gfx::GpuMemoryBufferHandle
 SharedMemoryBufferTracker::GetGpuMemoryBufferHandle() {
-  NOTREACHED() << "Unsupported operation";
+  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
   return gfx::GpuMemoryBufferHandle();
 }
 

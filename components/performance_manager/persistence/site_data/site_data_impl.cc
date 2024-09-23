@@ -199,15 +199,22 @@ SiteDataImpl::~SiteDataImpl() {
   // Make sure not to dispatch a notification to a deleted delegate, and gate
   // the DB write on it too, as the delegate and the data store have the
   // same lifetime.
-  // TODO(https://crbug.com/1231933): Fix this properly and restore the end of
+  // TODO(crbug.com/40056631): Fix this properly and restore the end of
   //     life write here.
   if (delegate_) {
     delegate_->OnSiteDataImplDestroyed(this);
 
     // TODO(sebmarchand): Some data might be lost here if the read operation has
     // not completed, add some metrics to measure if this is really an issue.
-    if (is_dirty_ && fully_initialized_)
+    if (is_dirty_ && fully_initialized_) {
+      // SiteDataImpl is only created from SiteDataCacheImpl, not from the
+      // NonRecordingSiteDataCache that's used for OTR profiles, so this should
+      // always be logged.
+      base::UmaHistogramBoolean(
+          "PerformanceManager.SiteDB.WriteScheduled.WriteSiteDataIntoStore",
+          true);
       data_store_->WriteSiteDataIntoStore(origin_, FlushStateToProto());
+    }
   }
 }
 

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 source_set("breadcrumbs") {
   deps = [
     "//base",
@@ -36,14 +38,10 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  sources = [ "breadcrumb_manager_tab_helper_unittest.cc" ]
-
-  # Chrome on Fuchsia uses the system crash handler.
-  # TODO(crbug.com/1186718): Enable when the implementation is capable of
-  # including CrashKeys in reports.
-  if (!is_fuchsia) {
-    sources += [ "crash_reporter_breadcrumb_observer_unittest.cc" ]
-  }
+  sources = [
+    "breadcrumb_manager_tab_helper_unittest.cc",
+    "crash_reporter_breadcrumb_observer_unittest.cc",
+  ]
 }
 
 if (!is_android) {

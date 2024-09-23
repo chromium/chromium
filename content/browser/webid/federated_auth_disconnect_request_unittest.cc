@@ -200,7 +200,6 @@ class FederatedAuthDisconnectRequestTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(features::kFedCmDisconnect);
 
     api_permission_delegate_ = std::make_unique<MockApiPermissionDelegate>();
     permission_delegate_ = std::make_unique<TestPermissionDelegate>();
@@ -229,9 +228,7 @@ class FederatedAuthDisconnectRequestTest
           .Times(0);
     }
 
-    metrics_ = std::make_unique<FedCmMetrics>(
-        GURL(config.config_url), rfh->GetPageUkmSourceId(),
-        /*session_id=*/1, /*is_disabled=*/false);
+    metrics_ = std::make_unique<FedCmMetrics>(rfh->GetPageUkmSourceId());
 
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options =
         blink::mojom::IdentityCredentialDisconnectOptions::New();
@@ -343,7 +340,6 @@ class FederatedAuthDisconnectRequestTest
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<MockApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
@@ -358,7 +354,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, Success) {
   EXPECT_CALL(
       *permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrl), _))
+                           OriginFromString(kProviderUrl)))
       .WillOnce(Return(true));
   EXPECT_CALL(*permission_delegate_,
               RevokeSharingPermission(OriginFromString(kRpUrl),
@@ -404,11 +400,6 @@ TEST_F(FederatedAuthDisconnectRequestTest,
   EXPECT_CALL(*api_permission_delegate_,
               GetApiPermissionStatus(OriginFromString(kRpUrl)))
       .WillOnce(Return(PermissionStatus::GRANTED));
-  EXPECT_CALL(
-      *permission_delegate_,
-      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrl), _))
-      .WillOnce(Return(false));
 
   EXPECT_CALL(*permission_delegate_,
               RevokeSharingPermission(OriginFromString(kRpUrl),
@@ -436,7 +427,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
   EXPECT_CALL(*permission_delegate_,
               HasSharingPermission(OriginFromString(kSameSiteIframeUrl),
                                    OriginFromString(kRpUrl),
-                                   OriginFromString(kProviderUrl), _))
+                                   OriginFromString(kProviderUrl)))
       .WillOnce(Return(true));
 
   EXPECT_CALL(*permission_delegate_,
@@ -453,11 +444,8 @@ TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
-  // Use FedCmExemptIdpWithThirdPartyCookies since sharing permission is not set
+  // FedCM works due to third party cookies since sharing permission is not set
   // for the cross-site RP.
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
-
   const char kCrossSiteIframeUrl[] = "https://otherrp.com";
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(
@@ -470,7 +458,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
   EXPECT_CALL(*permission_delegate_,
               HasSharingPermission(OriginFromString(kCrossSiteIframeUrl),
                                    OriginFromString(kRpUrl),
-                                   OriginFromString(kProviderUrl), _))
+                                   OriginFromString(kProviderUrl)))
       .WillOnce(Return(true));
   Config config = kValidConfig;
 
@@ -495,7 +483,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, NoAccountToDisconnect) {
   EXPECT_CALL(
       *permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrl), _))
+                           OriginFromString(kProviderUrl)))
       .WillOnce(Return(false));
 
   RunDisconnectTest(config, DisconnectStatus::kError);
@@ -547,7 +535,7 @@ TEST_F(FederatedAuthDisconnectRequestTest, SuccessDespiteEmbargo) {
   EXPECT_CALL(
       *permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrl), _))
+                           OriginFromString(kProviderUrl)))
       .WillOnce(Return(true));
   EXPECT_CALL(*permission_delegate_,
               RevokeSharingPermission(OriginFromString(kRpUrl),

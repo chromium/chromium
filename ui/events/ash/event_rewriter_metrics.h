@@ -26,7 +26,24 @@ enum class ModifierKeyUsageMetric {
   kBackspace = 9,
   kEscape = 10,
   kAssistant = 11,
-  kMaxValue = kAssistant
+  kFunction = 12,
+  kRightAlt = 13,
+  kMaxValue = kRightAlt
+};
+
+// Enum used to record the source of function key rewrites.
+enum class InputKeyEventToFunctionKey : uint32_t {
+  kDirectlyFromKeyboard = 0,    // The keyboard sends Function key and we do
+                                // not touch it.
+  kTopRowAutoTranslated = 1,    // The keyboard sends top row key and we
+                                // automatically remap it to Function key.
+  kSearchTopRowTranslated = 2,  // The keyboard sends top row key + search and
+                                // we remap it to Function key with no search.
+  kDirectlyWithSearch = 3,      // the keyboard sends Function key + Search and
+                                // we remap it to Function key with no search.
+  kSearchDigitTranslated = 4,   // The keyboard sends digit + Search and we
+                                // remap it to Function key.
+  kMaxValue = 4,
 };
 
 // Records when modifier keys are pressed to metrics for tracking usage of
@@ -38,7 +55,9 @@ void RecordModifierKeyPressedBeforeRemapping(
 void RecordModifierKeyPressedAfterRemapping(
     const KeyboardCapability& keyboard_capability,
     int device_id,
-    DomCode dom_code);
+    DomCode dom_code,
+    DomCode original_dom_code,
+    bool is_right_alt_key);
 
 }  // namespace ui
 

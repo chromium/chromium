@@ -6,7 +6,6 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/system/sys_info.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/web/common/features.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -15,13 +14,13 @@
 
 namespace {
 const char kDesktopUserAgentWithProduct[] =
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/605.1.15 (KHTML, like Gecko) desktop_product_name "
     "Version/11.1.1 "
     "Safari/605.1.15";
 
 const char kDesktopUserAgent[] =
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/605.1.15 (KHTML, like Gecko) "
     "Version/11.1.1 "
     "Safari/605.1.15";
@@ -78,7 +77,13 @@ TEST_F(UserAgentTest, MobileUserAgentForProduct) {
   int32_t os_bugfix_version = 0;
   base::SysInfo::OperatingSystemVersionNumbers(
       &os_major_version, &os_minor_version, &os_bugfix_version);
-  base::StringAppendF(&os_version, "%d_%d", os_major_version, os_minor_version);
+  if (base::FeatureList::IsEnabled(web::features::kUserAgentBugFixVersion)) {
+    base::StringAppendF(&os_version, "%d_%d_%d", os_major_version,
+                        os_minor_version, os_bugfix_version);
+  } else {
+    base::StringAppendF(&os_version, "%d_%d", os_major_version,
+                        os_minor_version);
+  }
 
   std::string expected_user_agent;
   base::StringAppendF(

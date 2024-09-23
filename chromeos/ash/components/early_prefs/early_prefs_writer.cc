@@ -106,8 +106,7 @@ void EarlyPrefsWriter::ScheduleWrite() {
 std::optional<std::string> EarlyPrefsWriter::SerializeData() {
   std::string output;
   if (!base::JSONWriter::Write(root_, &output)) {
-    NOTREACHED_NORETURN() << "Failed to serialize early preferences : "
-                          << data_file_;
+    NOTREACHED() << "Failed to serialize early preferences : " << data_file_;
   }
   return output;
 }

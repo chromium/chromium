@@ -5,9 +5,11 @@
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 
 #include <wayland-cursor.h>
+
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
@@ -128,8 +130,11 @@ void WaylandCursor::SetPlatformShapeInternal() {
   if (current_image_index_ >= cursor_data_->image_count)
     current_image_index_ = 0;
 
-  wl_cursor_image* const cursor_image =
-      cursor_data_->images[current_image_index_];
+  // SAFETY: Wayland ensures that `images` and `image_count` describes a
+  // valid span.
+  auto image_span = UNSAFE_BUFFERS(
+      base::span(cursor_data_->images, cursor_data_->image_count));
+  wl_cursor_image* const cursor_image = image_span[current_image_index_];
 
   AttachAndCommit(wl_cursor_image_get_buffer(cursor_image), cursor_image->width,
                   cursor_image->height, cursor_image->hotspot_x / buffer_scale_,
@@ -161,10 +166,20 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
   wl_surface_damage(pointer_surface_.get(), 0, 0, buffer_width, buffer_height);
   // Note: should the offset be non-zero, use wl_surface_offset() to set it.
   wl_surface_attach(pointer_surface_.get(), buffer, 0, 0);
-  wl_surface_commit(pointer_surface_.get());
-
+  // Set cursor before commit to ensure a role is set on the surface, so that
+  // the compositor can exclude this surface from being checked that its buffer
+  // size is divisible by the buffer scale.
+  // For more details see the following:
+  // - https://gitlab.freedesktop.org/wayland/wayland/-/issues/194
+  // - https://gitlab.freedesktop.org/wayland/wayland/-/merge_requests/65
+  // - https://wayland.app/protocols/wayland#wl_pointer:request:set_cursor
+  //
+  // Gnome in particular made a change which expects a role to be set, or it
+  // will throw a protocol error when the size is not divisible by the scale:
+  // https://gitlab.gnome.org/GNOME/mutter/-/commit/98c8c03729fd3fe72980d55fc3dccd8a0e9702e9
   wl_pointer_set_cursor(pointer_->wl_object(), pointer_enter_serial->value,
                         pointer_surface_.get(), hotspot_x_dip, hotspot_y_dip);
+  wl_surface_commit(pointer_surface_.get());
 
   connection_->Flush();
 }

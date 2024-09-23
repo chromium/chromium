@@ -44,23 +44,23 @@ class SaveAddressProfileInfobarBannerInteractionHandlerTest
 TEST_F(SaveAddressProfileInfobarBannerInteractionHandlerTest,
        BannerVisibilityFalse) {
   handler_.BannerVisibilityChanged(infobar_.get(), false);
-  EXPECT_EQ(mock_delegate().user_decision(),
-            autofill::AutofillClient::SaveAddressProfileOfferUserDecision::
-                kMessageTimeout);
+  EXPECT_EQ(
+      mock_delegate().user_decision(),
+      autofill::AutofillClient::AddressPromptUserDecision::kMessageTimeout);
 }
 
 // Tests that user_decision is set to message declined on BannerDismissedByUser.
 TEST_F(SaveAddressProfileInfobarBannerInteractionHandlerTest,
        BannerDismissedByUser) {
   handler_.BannerDismissedByUser(infobar_.get());
-  EXPECT_EQ(mock_delegate().user_decision(),
-            autofill::AutofillClient::SaveAddressProfileOfferUserDecision::
-                kMessageDeclined);
+  EXPECT_EQ(
+      mock_delegate().user_decision(),
+      autofill::AutofillClient::AddressPromptUserDecision::kMessageDeclined);
 
   handler_.BannerVisibilityChanged(infobar_.get(), false);
   // Expect the user decision to be message declined even when
   // BannerVisibilityChanged is called.
-  EXPECT_EQ(mock_delegate().user_decision(),
-            autofill::AutofillClient::SaveAddressProfileOfferUserDecision::
-                kMessageDeclined);
+  EXPECT_EQ(
+      mock_delegate().user_decision(),
+      autofill::AutofillClient::AddressPromptUserDecision::kMessageDeclined);
 }

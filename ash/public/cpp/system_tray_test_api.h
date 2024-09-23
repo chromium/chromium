@@ -16,6 +16,7 @@ class MessagePopupView;
 
 namespace views {
 class ScrollView;
+class View;
 }  // namespace views
 
 namespace ash {
@@ -57,7 +58,7 @@ class ASH_EXPORT SystemTrayTestApi {
   // accessibility detailed view is currently showing.
   AccessibilityDetailedView* GetAccessibilityDetailedView();
 
-  // Returns true if the view exists in the bubble and is visible.
+  // Returns true if the sub-view `view_id` exists in the bubble and is visible.
   // If |open_tray| is true, it also opens system tray bubble.
   bool IsBubbleViewVisible(int view_id, bool open_tray);
 
@@ -65,25 +66,29 @@ class ASH_EXPORT SystemTrayTestApi {
   // false otherwise.
   bool IsToggleOn(int view_id);
 
-  // Searches for a `views::View` having ID `view_id`, and then scrolls it onto
-  // the screen to make it visible (if it is already visible then no scrolling
-  // is performed). The view should be a descendant of `scroll_view` (this is
-  // `DCHECK`ed).
+  // Searches for a `views::View` having ID `view_id` in `GetMainBubbleView()`
+  // and then scrolls it onto the screen to make it visible (if it is already
+  // visible then no scrolling is performed). The view should be a descendant
+  // of `scroll_view` (this is `DCHECK`ed).
   void ScrollToShowView(views::ScrollView* scroll_view, int view_id);
 
-  // Clicks the view |view_id|.
+  // Clicks the sub-view |view_id| of `GetMainBubbleView()`.
   void ClickBubbleView(int view_id);
 
-  // Returns the tooltip for a bubble view, or the empty string if the view
-  // does not exist.
+  // Returns the main bubble view.
+  views::View* GetMainBubbleView();
+
+  // Returns the tooltip for the sub-view `view_id` of `GetMainBubbleView()`, or
+  // the empty string if the view does not exist.
   std::u16string GetBubbleViewTooltip(int view_id);
 
   // Returns the tooltip for the "Shut down" button, or the empty string if the
   // view does not exist.
   std::u16string GetShutdownButtonTooltip();
 
-  // Returns the text for a bubble view, or the empty string if the view
-  // does not exist. This method only works if the bubble view is a label.
+  // Returns the text for a sub-view `view_id` of `GetMainBubbleView()`, or the
+  // empty string if the view does not exist. This method only works if the
+  // bubble view is a label.
   std::u16string GetBubbleViewText(int view_id);
 
   // Get the notification pop up view based on the notification id.

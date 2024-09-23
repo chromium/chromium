@@ -1,6 +1,5 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}"
-    $i18n{chromeRefresh2023Attribute}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <meta charset="utf-8">
   <title>$i18n{title}</title>
@@ -9,23 +8,14 @@
   <style>
     html,
     body {
-      /* Using a var here for the background color is not currently an issue for
-         Read Later UI as it is shown asynchronously after the onload handler of
-         the main frame has completed. */
-      background-color: var(--mwb-background-color);
-      margin: 0;
-    }
-
-    html[chrome-refresh-2023],
-    html[chrome-refresh-2023] body {
       background: var(--color-side-panel-content-background);
+      margin: 0;
     }
   </style>
 </head>
 <body>
   <reading-list-app></reading-list-app>
-  <script type="module" src="app.js"></script>
-  <script type="module" src="chrome://resources/cr_elements/mwb_shared_vars.css.js">
+  <script type="module" src="reading_list_app.js"></script>
   </script>
 </body>
 </html>

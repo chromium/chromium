@@ -34,4 +34,12 @@ bool SyntheticGesture::IsFromDevToolsDebugger() const {
   return params_->from_devtools_debugger;
 }
 
+float SyntheticGesture::GetVsyncOffsetMs() const {
+  return params_->vsync_offset_ms;
+}
+
+content::mojom::InputEventPattern SyntheticGesture::InputEventPattern() const {
+  return params_->input_event_pattern;
+}
+
 }  // namespace content

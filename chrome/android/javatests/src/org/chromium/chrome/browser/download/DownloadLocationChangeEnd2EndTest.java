@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.PathUtils;
-import org.chromium.base.StrictModeContext;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -38,7 +38,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 
@@ -185,7 +184,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
      * @param hasSDCard Whether the SD card download option is valid.
      */
     private void startDownload(boolean hasSDCard) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             DownloadPromptStatus.SHOW_INITIAL,
@@ -213,17 +212,15 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     private void simulateDownloadDirectories(boolean hasSDCard) {
         ArrayList<DirectoryOption> dirs = new ArrayList<>();
 
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+        dirs.add(
+                buildDirectoryOption(
+                        DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
+                        PathUtils.getExternalStorageDirectory()));
+        if (hasSDCard) {
             dirs.add(
                     buildDirectoryOption(
-                            DirectoryOption.DownloadLocationDirectoryType.DEFAULT,
-                            PathUtils.getExternalStorageDirectory()));
-            if (hasSDCard) {
-                dirs.add(
-                        buildDirectoryOption(
-                                DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
-                                PathUtils.getDataDirectory()));
-            }
+                            DirectoryOption.DownloadLocationDirectoryType.ADDITIONAL,
+                            PathUtils.getDataDirectory()));
         }
 
         DownloadDirectoryProvider.getInstance()
@@ -236,7 +233,7 @@ public class DownloadLocationChangeEnd2EndTest implements CustomMainActivityStar
     }
 
     private void promptDownloadLocationDialog(@DownloadPromptStatus int promptStatus) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DownloadDialogBridge.setPromptForDownloadAndroid(
                             mDownloadTestRule

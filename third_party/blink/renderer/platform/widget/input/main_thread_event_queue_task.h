@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_MAIN_THREAD_EVENT_QUEUE_TASK_H_
 
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 
 namespace blink {
 

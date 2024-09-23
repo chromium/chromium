@@ -5,6 +5,7 @@
 #include "chrome/browser/cart/cart_service.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -361,14 +362,14 @@ class CartServiceTest : public testing::Test {
     std::move(closure).Run();
   }
 
-  std::string getDomainName(base::StringPiece domain) {
+  std::string getDomainName(std::string_view domain) {
     std::string* res = service_->domain_name_mapping_.FindString(domain);
     if (!res)
       return "";
     return *res;
   }
 
-  std::string getDomainCartURL(base::StringPiece domain) {
+  std::string getDomainCartURL(std::string_view domain) {
     std::string* res = service_->domain_cart_url_mapping_.FindString(domain);
     if (!res)
       return "";
@@ -990,7 +991,7 @@ TEST_F(CartServiceTest, TestOnHistoryDeletion) {
   task_environment_.RunUntilIdle();
   run_loop[1].Run();
 
-  service_->OnURLsDeleted(
+  service_->OnHistoryDeletions(
       HistoryServiceFactory::GetForProfile(profile_.get(),
                                            ServiceAccessType::EXPLICIT_ACCESS),
       history::DeletionInfo(history::DeletionTimeRange::Invalid(), false,
@@ -2615,7 +2616,7 @@ TEST_F(CartServiceCouponTest,
 TEST_F(CartServiceCouponTest, TestClearCoupons) {
   EXPECT_CALL(coupon_service_, DeleteAllFreeListingCoupons()).Times(1);
 
-  service_->OnURLsDeleted(
+  service_->OnHistoryDeletions(
       HistoryServiceFactory::GetForProfile(profile_.get(),
                                            ServiceAccessType::EXPLICIT_ACCESS),
       history::DeletionInfo(history::DeletionTimeRange::Invalid(), false,
@@ -2720,20 +2721,6 @@ TEST_F(CartServiceCouponTest, TestModuleFeatureStatusUpdate) {
 
   EXPECT_CALL(coupon_service_, MaybeFeatureStatusChanged(true)).Times(1);
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
-}
-
-class CartServiceModulesRedesignedTest : public CartServiceTest {
- public:
-  CartServiceModulesRedesignedTest() {
-    features_.InitAndEnableFeature(ntp_features::kNtpModulesRedesigned);
-  }
-};
-
-// Verifies the hide status is ignored.
-TEST_F(CartServiceModulesRedesignedTest, TestIgnoresHidden) {
-  ASSERT_FALSE(service_->IsHidden());
-  service_->Hide();
-  ASSERT_FALSE(service_->IsHidden());
 }
 
 class CartServiceDiscountConsentV2Test : public CartServiceTest {

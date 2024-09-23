@@ -10,8 +10,6 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
-namespace chrome {
-
 bool PressCloseTabAccelerator(Browser* browser) {
   // Ctrl + W.
   return BrowserView::GetBrowserViewForBrowser(browser)->AcceleratorPressed(
@@ -24,4 +22,3 @@ bool PressCloseWindowAccelerator(Browser* browser) {
       ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
 }
 
-}  // namespace chrome

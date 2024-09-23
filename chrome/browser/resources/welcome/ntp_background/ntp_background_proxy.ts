@@ -24,7 +24,7 @@ export interface NtpBackgroundProxy {
 
 export class NtpBackgroundProxyImpl implements NtpBackgroundProxy {
   clearBackground() {
-    return chrome.send('clearBackground');
+    chrome.send('clearBackground');
   }
 
   getBackgrounds() {

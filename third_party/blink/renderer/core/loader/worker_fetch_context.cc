@@ -78,14 +78,10 @@ SubresourceFilter* WorkerFetchContext::GetSubresourceFilter() const {
   return subresource_filter_.Get();
 }
 
-bool WorkerFetchContext::AllowScriptFromSource(const KURL& url) const {
-  if (!global_scope_->ContentSettingsClient()) {
-    return true;
-  }
-  // If we're on a worker, script should be enabled, so no need to plumb
-  // Settings::GetScriptEnabled() here.
-  return global_scope_->ContentSettingsClient()->AllowScriptFromSource(true,
-                                                                       url);
+bool WorkerFetchContext::AllowScript() const {
+  // Script is always allowed in worker fetch contexts, since the fact that
+  // they're running is already evidence that script is allowed.
+  return true;
 }
 
 bool WorkerFetchContext::ShouldBlockRequestByInspector(const KURL& url) const {
@@ -110,7 +106,7 @@ ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicyForWorld(
   return GetContentSecurityPolicy();
 }
 
-bool WorkerFetchContext::IsSVGImageChromeClient() const {
+bool WorkerFetchContext::IsIsolatedSVGChromeClient() const {
   return false;
 }
 
@@ -199,10 +195,19 @@ void WorkerFetchContext::PrepareRequest(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
           GetExecutionContext()));
 
-  request.SetHasStorageAccess(GetExecutionContext()->HasStorageAccess());
+  request.SetStorageAccessApiStatus(
+      GetExecutionContext()->GetStorageAccessApiStatus());
 
+  if (!RuntimeEnabledFeatures::
+          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
+    std::optional<WebURL> overriden_url =
+        web_context_->WillSendRequest(request.Url());
+    if (overriden_url.has_value()) {
+      request.SetUrl(*overriden_url);
+    }
+  }
   WrappedResourceRequest webreq(request);
-  web_context_->WillSendRequest(webreq);
+  web_context_->FinalizeRequest(webreq);
   if (auto* worker_scope = DynamicTo<WorkerGlobalScope>(*global_scope_)) {
     virtual_time_pauser =
         worker_scope->GetScheduler()
@@ -236,18 +241,41 @@ void WorkerFetchContext::AddResourceTiming(
   resource_timing_notifier_->AddResourceTiming(std::move(info), initiator_type);
 }
 
-void WorkerFetchContext::PopulateResourceRequest(
+void WorkerFetchContext::PopulateResourceRequestBeforeCacheAccess(
+    const ResourceLoaderOptions& options,
+    ResourceRequest& request) {
+  DCHECK(RuntimeEnabledFeatures::
+             MinimimalResourceRequestPrepBeforeCacheLookupEnabled());
+
+  MixedContentChecker::UpgradeInsecureRequest(
+      request, &GetResourceFetcherProperties().GetFetchClientSettingsObject(),
+      global_scope_, mojom::RequestContextFrameType::kNone,
+      global_scope_->ContentSettingsClient());
+}
+
+void WorkerFetchContext::WillSendRequest(ResourceRequest& request) {
+  std::optional<WebURL> overriden_url =
+      web_context_->WillSendRequest(request.Url());
+  if (overriden_url.has_value()) {
+    request.SetUrl(*overriden_url);
+  }
+}
+
+void WorkerFetchContext::UpgradeResourceRequestForLoader(
     ResourceType type,
     const std::optional<float> resource_width,
     ResourceRequest& out_request,
     const ResourceLoaderOptions& options) {
   if (!GetResourceFetcherProperties().IsDetached())
     probe::SetDevToolsIds(Probe(), out_request, options.initiator_info);
-  MixedContentChecker::UpgradeInsecureRequest(
-      out_request,
-      &GetResourceFetcherProperties().GetFetchClientSettingsObject(),
-      global_scope_, mojom::RequestContextFrameType::kNone,
-      global_scope_->ContentSettingsClient());
+  if (!RuntimeEnabledFeatures::
+          MinimimalResourceRequestPrepBeforeCacheLookupEnabled()) {
+    MixedContentChecker::UpgradeInsecureRequest(
+        out_request,
+        &GetResourceFetcherProperties().GetFetchClientSettingsObject(),
+        global_scope_, mojom::RequestContextFrameType::kNone,
+        global_scope_->ContentSettingsClient());
+  }
   SetFirstPartyCookie(out_request);
   if (!out_request.TopFrameOrigin())
     out_request.SetTopFrameOrigin(GetTopFrameOrigin());

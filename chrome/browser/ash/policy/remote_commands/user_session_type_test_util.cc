@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "base/check_deref.h"
 #include "base/notreached.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -27,10 +26,6 @@ const user_manager::User* CreateUserOfType(
   AccountId account_id(AccountId::FromUserEmail(kTestAccountEmail));
 
   switch (session_type) {
-    case TestSessionType::kManuallyLaunchedArcKioskSession:
-      CHECK_DEREF(ash::ArcKioskAppManager::Get())
-          .set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
-      return user_manager.AddArcKioskAppUser(account_id);
     case TestSessionType::kManuallyLaunchedWebKioskSession:
       CHECK_DEREF(ash::WebKioskAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
@@ -39,10 +34,6 @@ const user_manager::User* CreateUserOfType(
       CHECK_DEREF(ash::KioskChromeAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(false);
       return user_manager.AddKioskAppUser(account_id);
-    case TestSessionType::kAutoLaunchedArcKioskSession:
-      CHECK_DEREF(ash::ArcKioskAppManager::Get())
-          .set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
-      return user_manager.AddArcKioskAppUser(account_id);
     case TestSessionType::kAutoLaunchedWebKioskSession:
       CHECK_DEREF(ash::WebKioskAppManager::Get())
           .set_current_app_was_auto_launched_with_zero_delay_for_testing(true);
@@ -66,7 +57,7 @@ const user_manager::User* CreateUserOfType(
       return nullptr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace
@@ -77,10 +68,8 @@ const char* SessionTypeToString(TestSessionType session_type) {
     return #type
 
   switch (session_type) {
-    CASE(kManuallyLaunchedArcKioskSession);
     CASE(kManuallyLaunchedWebKioskSession);
     CASE(kManuallyLaunchedKioskSession);
-    CASE(kAutoLaunchedArcKioskSession);
     CASE(kAutoLaunchedWebKioskSession);
     CASE(kAutoLaunchedKioskSession);
     CASE(kManagedGuestSession);

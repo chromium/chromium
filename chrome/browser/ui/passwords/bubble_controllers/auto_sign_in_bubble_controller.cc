@@ -33,6 +33,7 @@ std::u16string AutoSignInBubbleController::GetTitle() const {
 void AutoSignInBubbleController::ReportInteractions() {
   metrics_util::LogGeneralUIDismissalReason(dismissal_reason_);
   // Record UKM statistics on dismissal reason.
-  if (metrics_recorder_)
+  if (metrics_recorder_) {
     metrics_recorder_->RecordUIDismissalReason(dismissal_reason_);
+  }
 }

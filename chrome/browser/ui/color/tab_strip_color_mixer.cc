@@ -164,12 +164,14 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabDividerFrameActive] = {kColorToolbar};
   mixer[kColorTabDividerFrameInactive] = {kColorToolbar};
 
-  mixer[kColorTabDiscardRingFrameActive] = ui::PickGoogleColor(
-      gfx::kGoogleGrey500, kColorTabBackgroundInactiveFrameActive,
+#if !BUILDFLAG(IS_ANDROID)
+  mixer[kColorTabDiscardRingFrameActive] = ui::BlendForMinContrastWithSelf(
+      kColorTabBackgroundInactiveFrameActive,
       color_utils::kMinimumVisibleContrastRatio);
-  mixer[kColorTabDiscardRingFrameInactive] = ui::PickGoogleColor(
-      gfx::kGoogleGrey500, kColorTabBackgroundInactiveFrameInactive,
+  mixer[kColorTabDiscardRingFrameInactive] = ui::BlendForMinContrastWithSelf(
+      kColorTabBackgroundInactiveFrameInactive,
       color_utils::kMinimumVisibleContrastRatio);
+#endif
 
   mixer[kColorNewTabButtonForegroundFrameActive] = {
       kColorTabForegroundActiveFrameActive};
@@ -205,7 +207,7 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabStripControlButtonInkDropRipple] = ui::SetAlpha(
       kColorNewTabButtonInkDropFrameActive, std::ceil(0.14f * 255.0f));
   /* WebUI Tab Strip colors. */
-  // TODO(https://crbug.com/1060398): Update the tab strip color to respond
+  // TODO(crbug.com/40678998): Update the tab strip color to respond
   // appopriately to activation changes.
   mixer[kColorWebUiTabStripBackground] = {ui::kColorFrameActive};
   mixer[kColorWebUiTabStripFocusOutline] = {ui::kColorFocusableBorderFocused};

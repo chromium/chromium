@@ -19,6 +19,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/svg/svg_rect.h"
 
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
@@ -68,8 +73,9 @@ SVGParsingError SVGRect::SetValueAsString(const String& string) {
   if (string.empty())
     return SVGParsingError(SVGParseStatus::kExpectedNumber, 0);
 
-  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
-    return Parse(chars, chars + length);
+  return WTF::VisitCharacters(string, [&](auto chars) {
+    const auto* start = chars.data();
+    return Parse(start, start + chars.size());
   });
 }
 

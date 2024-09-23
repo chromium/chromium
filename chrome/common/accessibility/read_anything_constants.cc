@@ -11,6 +11,10 @@ namespace string_constants {
 // their saved preference or from the default selected_index_ in the font model.
 const char kReadAnythingPlaceholderFontName[] = "Poppins";
 
+// Used as a fallback font for css if the current font is unavailable or
+// invalid.
+const char kReadAnythingDefaultFont[] = "sans-serif";
+
 // Used as an initial value in prefs. This is not shown to the user.
 const char kReadAnythingPlaceholderVoiceName[] = "";
 
@@ -21,20 +25,26 @@ const char kLineSpacingHistogramName[] =
 const char kColorHistogramName[] = "Accessibility.ReadAnything.Color";
 const char kFontNameHistogramName[] = "Accessibility.ReadAnything.FontName";
 const char kFontScaleHistogramName[] = "Accessibility.ReadAnything.FontScale";
-const char kSettingsChangeHistogramName[] =
-    "Accessibility.ReadAnything.SettingsChange";
 const char kScrollEventHistogramName[] =
     "Accessibility.ReadAnything.ScrollEvent";
 const char kEmptyStateHistogramName[] = "Accessibility.ReadAnything.EmptyState";
 const char kLanguageHistogramName[] = "Accessibility.ReadAnything.Language";
-const char kPDFPageEnd[] = "End of extracted text";
-const char kPDFPageStart[] = "Start of extracted text";
-
-const std::set<std::string> GetNonSelectableUrls() {
-  return {
-      "https://docs.google.com/document*",
-      "https://docs.sandbox.google.com/*",
-  };
-}
 
 }  // namespace string_constants
+
+namespace fonts {
+
+const base::fixed_flat_map<std::string_view, FontInfo, 9> kFontInfos =
+    base::MakeFixedFlatMap<std::string_view, FontInfo>({
+        {"Poppins", kPoppinsFontInfo},
+        {"Sans-serif", kSansSerifFontInfo},
+        {"Serif", kSerifFontInfo},
+        {"Comic Neue", kComicNeueFontInfo},
+        {"Lexend Deca", kLexendDecaFontInfo},
+        {"EB Garamond", kEbGaramondFontInfo},
+        {"STIX Two Text", kStixTwoTextFontInfo},
+        {"Andika", kAndikaFontInfo},
+        {"Atkinson Hyperlegible", kAtkinsonHyperlegibleFontInfo},
+    });
+
+}  // namespace fonts

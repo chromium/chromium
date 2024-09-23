@@ -36,8 +36,8 @@ class AutocompleteEntry {
  public:
   AutocompleteEntry();
   AutocompleteEntry(const AutocompleteKey& key,
-                    const base::Time& date_created,
-                    const base::Time& date_last_used);
+                    base::Time date_created,
+                    base::Time date_last_used);
   ~AutocompleteEntry();
 
   const AutocompleteKey& key() const { return key_; }

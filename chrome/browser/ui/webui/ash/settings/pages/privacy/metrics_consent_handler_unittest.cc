@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_consent_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
@@ -12,7 +11,7 @@
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
@@ -112,10 +111,7 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
 
 class MetricsConsentHandlerTest : public testing::Test {
  public:
-  MetricsConsentHandlerTest() {
-    feature_list_.InitAndEnableFeature(::ash::features::kPerUserMetrics);
-  }
-
+  MetricsConsentHandlerTest() = default;
   MetricsConsentHandlerTest(const MetricsConsentHandlerTest&) = delete;
   MetricsConsentHandlerTest& operator=(const MetricsConsentHandlerTest&) =
       delete;
@@ -249,11 +245,16 @@ class MetricsConsentHandlerTest : public testing::Test {
     return false;
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
   // Profiles must be created in browser threads.
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
+
+  // Set up stubs for StatsReportingController.
+  ScopedStubInstallAttributes scoped_install_attributes_;
+  FakeSessionManagerClient fake_session_manager_client_;
+  ScopedTestDeviceSettingsService scoped_device_settings_;
+  CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
+                                           RegisterPrefs(&pref_service_)};
 
   std::unique_ptr<TestMetricsConsentHandler> handler_;
   std::unique_ptr<FakeChromeUserManager> test_user_manager_;
@@ -268,11 +269,6 @@ class MetricsConsentHandlerTest : public testing::Test {
   std::unique_ptr<TestUserMetricsServiceClient> test_metrics_service_client_;
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 
-  // Set up stubs for StatsReportingController.
-  ScopedStubInstallAttributes scoped_install_attributes_;
-  FakeSessionManagerClient fake_session_manager_client_;
-  ScopedTestDeviceSettingsService scoped_device_settings_;
-  ScopedTestCrosSettings scoped_cros_settings_{RegisterPrefs(&pref_service_)};
   policy::DevicePolicyBuilder device_policy_;
 
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_keys{
@@ -393,6 +389,41 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
 
   // Consent should not change.
   EXPECT_FALSE(current_consent);
+
+  // Explicitly shutdown controller here because OwnerSettingsService is
+  // destructed before TearDown() is called.
+  StatsReportingController::Shutdown();
+}
+
+TEST_F(MetricsConsentHandlerTest, ChildUserCannotToggleAsNonOwner) {
+  auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, "2");
+  std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
+
+  auto child_id = AccountId::FromUserEmailGaiaId("child@user.com", "3");
+  std::unique_ptr<TestingProfile> child =
+      CreateUser("child@user.com", non_owner_keys);
+  test_user_manager_->set_current_user_child(true);
+  test_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+      child_id, false, user_manager::UserType::kChild, child.get());
+
+  // User cannot use user consent. This happens if the device is managed.
+  test_metrics_service_client_->SetShouldUseUserConsent(true);
+
+  LoginUser(child_id);
+  EXPECT_FALSE(test_user_manager_->IsCurrentUserOwner());
+
+  // Set the javascript message object for metrics consent state.
+  InitializeTestHandler(child.get());
+  handler_->GetMetricsConsentState();
+
+  // Check values of javascript callback response message.
+  std::string pref_name;
+  bool is_configurable;
+  EXPECT_TRUE(GetMetricsConsentStateMessage(&pref_name, &is_configurable));
+
+  // Unmanaged child user should use user consent and should not be toggle-able.
+  EXPECT_THAT(pref_name, Eq(::metrics::prefs::kMetricsUserConsent));
+  EXPECT_FALSE(is_configurable);
 
   // Explicitly shutdown controller here because OwnerSettingsService is
   // destructed before TearDown() is called.

@@ -161,9 +161,19 @@ class WebAppUiManager {
 
   virtual bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                          bool shortcut_created) const = 0;
-  virtual void ReparentAppTabToWindow(content::WebContents* contents,
-                                      const webapps::AppId& app_id,
-                                      bool shortcut_created) = 0;
+  // Reparents the |contents| to a new browser window, returns a nullptr if the
+  // operation failed.
+  virtual Browser* ReparentAppTabToWindow(content::WebContents* contents,
+                                          const webapps::AppId& app_id,
+                                          bool shortcut_created) = 0;
+
+  // Reparents the `contents` to a new browser window, returns a nullptr if the
+  // operation failed. Runs `completion_callback` with the web contents of the
+  // newly reparented app window.
+  virtual Browser* ReparentAppTabToWindow(
+      content::WebContents* contents,
+      const webapps::AppId& app_id,
+      base::OnceCallback<void(content::WebContents*)> completion_callback) = 0;
 
   // Shows the pre-launch dialog for a file handling web app launch. The user
   // can allow or block the launch.
@@ -286,7 +296,7 @@ class WebAppUiManager {
   // Creates the IPH bubble for apps that are launched via link capturing being
   // enabled.
   virtual void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
-      content::WebContents* web_contents,
+      Browser* browser,
       Profile* profile,
       const std::string& app_id) = 0;
 

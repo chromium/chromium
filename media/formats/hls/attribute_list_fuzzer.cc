@@ -4,9 +4,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "media/formats/hls/types.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -15,7 +15,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   using media::hls::types::AttributeListIterator;
   using media::hls::types::AttributeMap;
 
-  base::StringPiece str(reinterpret_cast<const char*>(data), size);
+  std::string_view str(reinterpret_cast<const char*>(data), size);
 
   // Try parsing attribute list for a tag with lots of attributes
   auto attributes = AttributeMap::MakeStorage(

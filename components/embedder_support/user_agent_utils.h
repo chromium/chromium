@@ -22,7 +22,7 @@ class WebContents;
 
 namespace embedder_support {
 
-// TODO(crbug.com/1330890): Remove this enum along with policy.
+// TODO(crbug.com/40843535): Remove this enum along with policy.
 enum class UserAgentReductionEnterprisePolicyState {
   kDefault = 0,
   kForceDisabled = 1,
@@ -32,7 +32,7 @@ enum class UserAgentReductionEnterprisePolicyState {
 // Returns the product & version string.  Examples:
 //   "Chrome/101.0.0.0"       - if UA reduction is enabled
 //   "Chrome/101.0.4698.0"    - if UA reduction isn't enabled
-// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
+// TODO(crbug.com/40212812): modify to accept an optional PrefService*.
 std::string GetProductAndVersion(
     UserAgentReductionEnterprisePolicyState user_agent_reduction =
         UserAgentReductionEnterprisePolicyState::kDefault);
@@ -40,7 +40,7 @@ std::string GetProductAndVersion(
 // Returns the full or "reduced" user agent string, depending on the following:
 // 1) UserAgentReduction enterprise policy.
 // 2) Reduce User-Agent reduction phase features.
-// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
+// TODO(crbug.com/40212812): modify to accept an optional PrefService*.
 std::string GetUserAgent(
     UserAgentReductionEnterprisePolicyState user_agent_reduction =
         UserAgentReductionEnterprisePolicyState::kDefault);
@@ -97,7 +97,7 @@ int GetHighestKnownUniversalApiContractVersionForTesting();
 
 // Returns the UserAgentReductionEnterprisePolicyState enum value corresponding
 // to the provided integer policy value for UserAgentReduction.
-// TODO(crbug.com/1330890): Remove this function with policy.
+// TODO(crbug.com/40843535): Remove this function with policy.
 embedder_support::UserAgentReductionEnterprisePolicyState
 GetUserAgentReductionFromPrefs(const PrefService* pref_service);
 

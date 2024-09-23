@@ -6,8 +6,7 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
-#import "components/autofill/core/browser/autofill_address_policy_handler.h"
-#import "components/autofill/core/browser/autofill_credit_card_policy_handler.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmarks_policy_handler.h"
 #import "components/commerce/core/pref_names.h"
@@ -18,18 +17,21 @@
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/idle/idle_timeout_policy_handler.h"
 #import "components/history/core/common/pref_names.h"
+#import "components/lens/lens_overlay_permission_utils.h"
 #import "components/metrics/metrics_pref_names.h"
+#import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/policy/core/browser/boolean_disabling_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler.h"
 #import "components/policy/core/browser/configuration_policy_handler_list.h"
 #import "components/policy/core/browser/configuration_policy_handler_parameters.h"
+#import "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
 #import "components/policy/core/browser/url_blocklist_policy_handler.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "components/search_engines/default_search_policy_handler.h"
+#import "components/search_engines/enterprise/default_search_policy_handler.h"
 #import "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/service/sync_policy_handler.h"
@@ -81,6 +83,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kDefaultPopupsSetting,
     prefs::kManagedDefaultPopupsSetting,
     base::Value::Type::INTEGER },
+  { policy::key::kDeletingUndecryptablePasswordsEnabled,
+    password_manager::prefs::kDeletingUndecryptablePasswordsEnabled,
+    base::Value::Type::BOOLEAN },
   { policy::key::kIncognitoModeAvailability,
     policy::policy_prefs::kIncognitoModeAvailability,
     base::Value::Type::INTEGER },
@@ -126,12 +131,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kShoppingListEnabled,
     commerce::kShoppingListEnabledPrefName,
     base::Value::Type::BOOLEAN},
-  { policy::key::kMixedContentAutoupgradeEnabled,
-    prefs::kMixedContentAutoupgradeEnabled,
-    base::Value::Type::BOOLEAN},
   { policy::key::kLensCameraAssistedSearchEnabled,
     prefs::kLensCameraAssistedSearchPolicyAllowed,
     base::Value::Type::BOOLEAN },
+  { policy::key::kLensOverlaySettings,
+    lens::prefs::kLensOverlaySettings,
+    base::Value::Type::INTEGER },
   { policy::key::kContextMenuPhotoSharingSettings,
     prefs::kIosSaveToPhotosContextMenuPolicySettings,
     base::Value::Type::INTEGER },
@@ -141,6 +146,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kInsecureFormsWarningsEnabled,
     prefs::kInsecureFormWarningsEnabled,
     base::Value::Type::BOOLEAN },
+  { policy::key::kDownloadManagerSaveToDriveSettings,
+    prefs::kIosSaveToDriveDownloadManagerPolicySettings,
+    base::Value::Type::INTEGER },
+  { policy::key::kTabCompareSettings,
+    optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,
+    base::Value::Type::INTEGER},
 };
 // clang-format on
 
@@ -164,10 +175,12 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
         kSimplePolicyMap[i].value_type));
   }
 
-  handlers->AddHandler(
-      std::make_unique<autofill::AutofillAddressPolicyHandler>());
-  handlers->AddHandler(
-      std::make_unique<autofill::AutofillCreditCardPolicyHandler>());
+  handlers->AddHandler(std::make_unique<policy::BooleanDisablingPolicyHandler>(
+      policy::key::kAutofillAddressEnabled,
+      autofill::prefs::kAutofillProfileEnabled));
+  handlers->AddHandler(std::make_unique<policy::BooleanDisablingPolicyHandler>(
+      policy::key::kAutofillCreditCardEnabled,
+      autofill::prefs::kAutofillCreditCardEnabled));
   handlers->AddHandler(
       std::make_unique<policy::BrowserSigninPolicyHandler>(chrome_schema));
   handlers->AddHandler(
@@ -204,10 +217,21 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
       std::make_unique<policy::BooleanDisablingPolicyHandler>(
           policy::key::kUrlKeyedMetricsAllowed,
           unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled)));
-  handlers->AddHandler(
-      std::make_unique<enterprise_idle::IdleTimeoutPolicyHandler>());
+  // Do not change order of `IdleTimeoutActionsPolicyHandler` and
+  // `IdleTimeoutActionsPolicyHandler`.
   handlers->AddHandler(
       std::make_unique<enterprise_idle::IdleTimeoutActionsPolicyHandler>(
           chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<enterprise_idle::IdleTimeoutPolicyHandler>());
+
+  std::vector<policy::GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
+      gen_ai_default_policies;
+  // No GenAI policies are currently covered by GenAiDefaultSettings on iOS.
+  // When eligible policies are added, they will be handled here.
+  handlers->AddHandler(
+      std::make_unique<policy::GenAiDefaultSettingsPolicyHandler>(
+          std::move(gen_ai_default_policies)));
+
   return handlers;
 }

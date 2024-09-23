@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/components/cdm_factory_daemon/output_protection_impl.h"
 
 #include <utility>
@@ -15,7 +20,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
-#include "ui/display/manager/util/display_manager_test_util.h"
 
 using chromeos::cdm::mojom::OutputProtection;
 using testing::_;
@@ -24,8 +28,7 @@ using testing::ReturnRef;
 
 constexpr uint64_t kFakeClientId = 1;
 constexpr int64_t kDisplayIds[] = {123, 234, 345, 456};
-const display::DisplayMode kDisplayMode =
-    display::CreateDisplayModeForTest({1366, 768}, false, 60.0f);
+const display::DisplayMode kDisplayMode({1366, 768}, false, 60.0f);
 
 namespace chromeos {
 
@@ -54,11 +57,11 @@ class MockDisplaySystemDelegate
   MOCK_METHOD(void,
               UnregisterClient,
               (display::ContentProtectionManager::ClientId));
-  MOCK_METHOD(
-      const std::vector<vector_experimental_raw_ptr<display::DisplaySnapshot>>&,
-      cached_displays,
-      (),
-      (const));
+  MOCK_METHOD((const std::vector<
+                  raw_ptr<display::DisplaySnapshot, VectorExperimental>>&),
+              cached_displays,
+              (),
+              (const));
 };
 
 }  // namespace

@@ -111,10 +111,10 @@ void VerifyKeyEvent(KeyEvent* key_event,
                     bool key_down,
                     bool is_repeat) {
   if (key_down) {
-    ASSERT_EQ(key_event->type(), ET_KEY_PRESSED);
+    ASSERT_EQ(key_event->type(), EventType::kKeyPressed);
     ASSERT_EQ(key_event->is_repeat(), is_repeat);
   } else {
-    ASSERT_EQ(key_event->type(), ET_KEY_RELEASED);
+    ASSERT_EQ(key_event->type(), EventType::kKeyReleased);
     ASSERT_FALSE(key_event->is_repeat());
   }
   ASSERT_EQ(key_event->key_code(), non_located_key_code);

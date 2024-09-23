@@ -19,7 +19,7 @@
 
 - (instancetype)initWithText:(NSString*)text {
   DCHECK(text);
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _text = [text copy];
   }
   return self;

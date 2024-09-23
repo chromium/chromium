@@ -39,7 +39,7 @@
 <translation id="2006524834898217237">Kontrollera att enheten är ansluten till internet.</translation>
 <translation id="208586643495776849">Försök igen</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 d}other{# d}}</translation>
-<translation id="2148716181193084225">Idag</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="2168039046890040389">Page Up</translation>
 <translation id="2190355936436201913">(tom)</translation>
 <translation id="2192232475740621500">Använd låg densitet</translation>
@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Enkät</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/sek</translation>
 <translation id="2353636109065292463">Kontrollera internetanslutningen</translation>
+<translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2388990488038464401">Vill du ringa det här numret från telefonen?</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="24452542372838207">Utöka avisering</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">NYTT</translation>
 <translation id="2666092431469916601">Överst</translation>
 <translation id="2701330563083355633">Delades från <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Ny</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 år sedan}other{# år sedan}}</translation>
 <translation id="2878511608894704031">Radera allt</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{om 1 dag}other{om # dgr}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Operativsystemet <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backsteg</translation>
 <translation id="5613020302032141669">Vänsterpil</translation>
+<translation id="5633029987065897167">Tom</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min}other{# min}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktiv i dag}=1{Aktiv för 1 dag sedan}other{Aktiv för # dagar sedan}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag och }other{# dagar och }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF-innehåll</translation>
 <translation id="6539092367496845964">Något gick fel. Försök igen senare.</translation>
 <translation id="654149438358937226">Blockera alla aviseringar</translation>
-<translation id="6612467943526193239">Tryck på Esc för att avsluta kalibreringen.</translation>
 <translation id="6620110761915583480">Spara fil</translation>
 <translation id="6699343763173986273">Nästa spår</translation>
 <translation id="6808150112686056157">Stoppa</translation>

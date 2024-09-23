@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -41,11 +43,11 @@ StringView TypeToString(Component::Type type) {
     case Component::Type::kHash:
       return "hash";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Utility method to get the correct encoding callback for a given type.
-liburlpattern::EncodeCallback GetEncodeCallback(base::StringPiece pattern_utf8,
+liburlpattern::EncodeCallback GetEncodeCallback(std::string_view pattern_utf8,
                                                 Component::Type type,
                                                 Component* protocol_component) {
   switch (type) {
@@ -96,7 +98,7 @@ liburlpattern::EncodeCallback GetEncodeCallback(base::StringPiece pattern_utf8,
     case Component::Type::kHash:
       return ::url_pattern::HashEncodeCallback;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Utility method to get the correct liburlpattern parse options for a given
@@ -195,14 +197,13 @@ Component* Component::Compile(v8::Isolate* isolate,
   // USVString webidl argument.
   StringUTF8Adaptor utf8(final_pattern);
   auto parse_result = liburlpattern::Parse(
-      absl::string_view(utf8.data(), utf8.size()),
-      GetEncodeCallback(utf8.AsStringPiece(), type, protocol_component),
+      utf8.AsStringView(),
+      GetEncodeCallback(utf8.AsStringView(), type, protocol_component),
       options);
   if (!parse_result.ok()) {
     exception_state.ThrowTypeError(
         "Invalid " + TypeToString(type) + " pattern '" + final_pattern + "'. " +
-        String::FromUTF8(parse_result.status().message().data(),
-                         parse_result.status().message().size()));
+        String::FromUTF8(parse_result.status().message()));
     return nullptr;
   }
 
@@ -222,21 +223,7 @@ Component* Component::Compile(v8::Isolate* isolate,
     regexp = MakeGarbageCollected<ScriptRegexp>(
         isolate, String(regexp_string.data(), regexp_string.size()),
         case_sensitive, MultilineMode::kMultilineDisabled,
-        UnicodeMode::kUnicode);
-
-    // There are some incompatible regexp patterns between "u" and "v". Counting
-    // those cases to measure the potential impact of upgrading to the "v" flag.
-    ScriptRegexp* regexp_v = MakeGarbageCollected<ScriptRegexp>(
-        isolate, String(regexp_string.data(), regexp_string.size()),
-        case_sensitive, MultilineMode::kMultilineDisabled,
         UnicodeMode::kUnicodeSets);
-    base::UmaHistogramBoolean(
-        "Blink.URLPattern.IncompatiblePatternWithUnicodeSetsMode",
-        regexp->IsValid() && !regexp_v->IsValid());
-
-    if (RuntimeEnabledFeatures::URLPatternRegexpUnicodeSetsModeEnabled()) {
-      regexp = regexp_v;
-    }
 
     if (!regexp->IsValid()) {
       // The regular expression failed to compile.  This means that some
@@ -250,10 +237,7 @@ Component* Component::Compile(v8::Isolate* isolate,
         String group_value(part.value.data(), part.value.size());
         regexp = MakeGarbageCollected<ScriptRegexp>(
             isolate, group_value, case_sensitive,
-            MultilineMode::kMultilineDisabled,
-            RuntimeEnabledFeatures::URLPatternRegexpUnicodeSetsModeEnabled()
-                ? UnicodeMode::kUnicodeSets
-                : UnicodeMode::kUnicode);
+            MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);
         if (regexp->IsValid())
           continue;
         exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
@@ -273,7 +257,7 @@ Component* Component::Compile(v8::Isolate* isolate,
     wtf_name_list.ReserveInitialCapacity(
         static_cast<wtf_size_t>(name_list.size()));
     for (const auto& name : name_list) {
-      wtf_name_list.push_back(String::FromUTF8(name.data(), name.size()));
+      wtf_name_list.push_back(String::FromUTF8(name));
     }
   }
 
@@ -348,14 +332,13 @@ bool Component::Match(StringView input,
   }
 
   // There is no regexp, so directly match against the pattern.
-  std::vector<std::pair<absl::string_view, std::optional<absl::string_view>>>
+  std::vector<std::pair<std::string_view, std::optional<std::string_view>>>
       pattern_group_list;
   // Lossy UTF8 conversion is fine given the input has come through a
   // USVString webidl argument.
   StringUTF8Adaptor utf8(input);
-  bool result =
-      pattern_.DirectMatch(absl::string_view(utf8.data(), utf8.size()),
-                           group_list ? &pattern_group_list : nullptr);
+  bool result = pattern_.DirectMatch(
+      utf8.AsStringView(), group_list ? &pattern_group_list : nullptr);
   if (group_list) {
     group_list->ReserveInitialCapacity(
         base::checked_cast<wtf_size_t>(pattern_group_list.size()));
@@ -370,12 +353,10 @@ bool Component::Match(StringView input,
         if (pair.second->empty()) {
           value = g_empty_string;
         } else {
-          value = String::FromUTF8(pair.second->data(), pair.second->length());
+          value = String::FromUTF8(*pair.second);
         }
       }
-      group_list->emplace_back(
-          String::FromUTF8(pair.first.data(), pair.first.length()),
-          std::move(value));
+      group_list->emplace_back(String::FromUTF8(pair.first), std::move(value));
     }
   }
   return result;

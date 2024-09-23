@@ -76,7 +76,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 #define MAYBE_testBackForwardErrorPage testBackForwardErrorPage
 #endif
 - (void)MAYBE_testBackForwardErrorPage {
-  // TODO(crbug.com/1153261): Going back/forward on the same host is failing.
+  // TODO(crbug.com/40159013): Going back/forward on the same host is failing.
   // Use chrome:// to have a different hosts.
   std::string errorText = net::ErrorToShortString(net::ERR_INVALID_URL);
   self.serverRespondsWithContent = YES;
@@ -187,8 +187,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testRedirectToData {
   // Disable the test on iOS 16.4 as WKWebView handles this internally now as of
   // https://bugs.webkit.org/show_bug.cgi?id=230158
-  // TODO(crbug.com/1442647): Remove redirect logic completely when dropping iOS
-  // 16.
+  // TODO(crbug.com/40267045): Remove redirect logic completely when dropping
+  // iOS 16.
   if (@available(iOS 16.4, *)) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 16.4.");
   }

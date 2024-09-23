@@ -23,9 +23,32 @@ const char kSafetyHubMenuNotificationResultKey[] = "result";
 
 const char kSafetyHubTriggeringExtensionIdsKey[] = "triggeringExtensions";
 
+const char kExpirationKey[] = "expiration";
+const char kLifetimeKey[] = "lifetime";
 const char kSafetyHubChooserPermissionsData[] = "chooserPermissionsData";
+const char kAbusiveRevocationExpirationKey[] = "abusiveRevocationExpiration";
+const char kAbusiveRevocationLifetimeKey[] = "abusiveRevocationLifetime";
+
+const char kRevokedStatusDictKeyStr[] = "revoked_status";
+const char kIgnoreStr[] = "ignore";
+const char kRevokeStr[] = "revoke";
+
+const char kOrigin[] = "origin";
+const char kUsername[] = "username";
+const char kSafetyHubPasswordCheckOriginsKey[] = "passwordCheckOrigins";
+
+#if BUILDFLAG(IS_ANDROID)
+const char kSafetyHubCompromiedPasswordOriginsCount[] =
+    "passwordCheckCompromisedOriginsNum";
+#endif  // BUILDFLAG(IS_ANDROID)
+
+const char kBlocklistCheckCountHistogramName[] =
+    "Settings.SafetyHub.AbusiveNotificationPermissionRevocation."
+    "BlocklistCheckCount";
 
 const base::TimeDelta kMinTimeBetweenPasswordChecks = base::Hours(1);
-const base::TimeDelta kPasswordCheckOverdueTimeWindow = base::Hours(1);
+
+const base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting =
+    base::Minutes(30);
 
 }  // namespace safety_hub

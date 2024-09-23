@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("bluetooth") {
+  sources = [
+    "arc_bluetooth_bridge.cc",
+    "arc_bluetooth_bridge.h",
+    "arc_bluetooth_task_queue.cc",
+    "arc_bluetooth_task_queue.h",
+    "arc_bluez_bridge.cc",
+    "arc_bluez_bridge.h",
+    "arc_floss_bridge.cc",
+    "arc_floss_bridge.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/bluetooth",
+    "//components/arc",
+    "//components/arc/common:arc_intent_helper_constants",
+    "//components/device_event_log",
+    "//components/prefs",
+    "//components/user_manager",
+    "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_bluetooth_bridge_unittest.cc",
+    "arc_bluetooth_task_queue_unittest.cc",
+    "arc_floss_bridge_unittest.cc",
+  ]
+
+  deps = [
+    ":bluetooth",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:fake_bluetooth",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

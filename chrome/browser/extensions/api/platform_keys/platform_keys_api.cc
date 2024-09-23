@@ -8,10 +8,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
@@ -57,13 +57,11 @@ const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
     "Interactive calls must happen in the context of a browser tab or a "
     "window.";
-
-const char kTokenIdUser[] = "user";
-const char kTokenIdSystem[] = "system";
+const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
 
 // Skip checking for interactive calls coming from a non-interactive
 // context.
-// TODO(crbug.com/1303197): We should move the interactive tests to a
+// TODO(crbug.com/40217298): We should move the interactive tests to a
 // separate test suite. This is a temporary workaround to allow these
 // tests to run from the test extension's background page.
 bool g_skip_interactive_check_for_test = false;
@@ -131,26 +129,6 @@ std::optional<SigningAlgorithmName> SigningAlgorithmNameFromString(
 
 }  // namespace
 
-namespace platform_keys {
-
-const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
-const char kErrorInvalidToken[] = "The token is not valid.";
-const char kErrorInvalidX509Cert[] =
-    "Certificate is not a valid X.509 certificate.";
-
-std::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
-    const std::string& token_id) {
-  if (token_id == kTokenIdUser)
-    return chromeos::platform_keys::TokenId::kUser;
-
-  if (token_id == kTokenIdSystem)
-    return chromeos::platform_keys::TokenId::kSystem;
-
-  return std::nullopt;
-}
-
-}  // namespace platform_keys
-
 //------------------------------------------------------------------------------
 PlatformKeysInternalSelectClientCertificatesFunction::
     ~PlatformKeysInternalSelectClientCertificatesFunction() {}
@@ -189,7 +167,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
             net::X509Certificate::kPublicKeyTypeRSA);
         break;
       case api_pk::ClientCertificateType::kNone:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -266,13 +244,13 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
     }
 
     api_pk::Match result_match;
-    base::StringPiece der_encoded_cert =
+    std::string_view der_encoded_cert =
         net::x509_util::CryptoBufferAsStringPiece(match->cert_buffer());
     result_match.certificate.assign(der_encoded_cert.begin(),
                                     der_encoded_cert.end());
 
     std::optional<base::Value::Dict> algorithm =
-        BuildWebCrypAlgorithmDictionary(key_info);
+        BuildWebCryptoAlgorithmDictionary(key_info);
     if (!algorithm) {
       LOG(ERROR) << "Skipping unsupported certificate with key type "
                  << key_info.key_type;
@@ -358,7 +336,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
 
   const auto& public_key_spki_der = params->public_key_spki_der;
   if (public_key_spki_der.empty())
-    return RespondNow(Error(platform_keys::kErrorInvalidSpki));
+    return RespondNow(Error(kErrorInvalidSpki));
 
   PublicKeyInfo key_info;
   key_info.public_key_spki_der.assign(std::begin(public_key_spki_der),
@@ -379,7 +357,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
 
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
   std::optional<base::Value::Dict> algorithm_dictionary =
-      chromeos::platform_keys::BuildWebCrypAlgorithmDictionary(key_info);
+      chromeos::platform_keys::BuildWebCryptoAlgorithmDictionary(key_info);
   DCHECK(algorithm_dictionary);
   algorithm.additional_properties = std::move(*algorithm_dictionary);
 

@@ -99,7 +99,7 @@ class CompositorWatcher : public ui::CompositorObserver {
     }
     pending_compositing_[compositor].state = CompositingState::kWaitingForEnded;
   }
-  void OnCompositingEnded(ui::Compositor* compositor) override {
+  void OnCompositingAckDeprecated(ui::Compositor* compositor) override {
     if (!pending_compositing_.count(compositor))
       return;
     CompositorInfo& compositor_info = pending_compositing_[compositor];
@@ -363,14 +363,6 @@ void PowerEventObserver::SuspendDoneEx(
   block_suspend_token_ = {};
 
   StartRootWindowCompositors();
-  // If this is a resume from hibernation, the user just authenticated in order
-  // to launch the resume image. Dismiss the lock screen here to avoid making
-  // them log in twice.
-  if (proto.deepest_state() ==
-          power_manager::SuspendDone_SuspendState_TO_DISK &&
-      Shell::Get()->session_controller()->IsScreenLocked()) {
-    Shell::Get()->session_controller()->HideLockScreen();
-  }
 }
 
 void PowerEventObserver::LidEventReceived(

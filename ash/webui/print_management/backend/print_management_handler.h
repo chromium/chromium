@@ -28,6 +28,7 @@ class PrintManagementHandler : public chromeos::printing::printing_manager::
   void LaunchPrinterSettings(
       chromeos::printing::printing_manager::mojom::LaunchSource source)
       override;
+  void RecordGetPrintJobsRequestDuration(uint32_t duration) override;
 
   void BindInterface(
       mojo::PendingReceiver<

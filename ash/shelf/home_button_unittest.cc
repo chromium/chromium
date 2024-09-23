@@ -650,7 +650,8 @@ TEST_P(HomeButtonTest, ClipRectDoesNotClipHomeButtonBounds) {
       EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
 
     // Create a test widget to transition to in-app shelf.
-    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+    std::unique_ptr<views::Widget> widget =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     shelf_test_api.RunMessageLoopUntilAnimationsDone(
         test_api.GetBoundsAnimator());
 
@@ -667,7 +668,8 @@ TEST_P(HomeButtonTest, ClipRectDoesNotClipHomeButtonBounds) {
 
     // Open another window and go back to clamshell.
     ash::TabletModeControllerTestApi().LeaveTabletMode();
-    widget = CreateTestWidget();
+    widget =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     shelf_test_api.RunMessageLoopUntilAnimationsDone(
         test_api.GetBoundsAnimator());
 
@@ -775,7 +777,8 @@ TEST_P(HomeButtonTest, ButtonPositionInTabletMode) {
   }
 
   // Switch to in-app shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Wait for the navigation widget's animation.
   shelf_test_api.RunMessageLoopUntilAnimationsDone(
@@ -960,8 +963,8 @@ TEST_P(HomeButtonTest, LongPressGesture) {
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
   ASSERT_TRUE(home_button());
 
-  ui::GestureEvent long_press =
-      CreateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  ui::GestureEvent long_press = CreateGestureEvent(
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   SendGestureEvent(&long_press);
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(AssistantVisibility::kVisible,
@@ -1002,8 +1005,8 @@ TEST_P(HomeButtonTest, LongPressGestureInTabletMode) {
   if (!should_show_home_button)
     return;
 
-  ui::GestureEvent long_press =
-      CreateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  ui::GestureEvent long_press = CreateGestureEvent(
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   SendGestureEvent(&long_press);
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(AssistantVisibility::kVisible,
@@ -1039,8 +1042,8 @@ TEST_P(HomeButtonTest, LongPressGestureWithSecondaryUser) {
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
   ASSERT_TRUE(home_button());
 
-  ui::GestureEvent long_press =
-      CreateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  ui::GestureEvent long_press = CreateGestureEvent(
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   SendGestureEvent(&long_press);
   // The Assistant is disabled for secondary user.
   EXPECT_NE(AssistantVisibility::kVisible,
@@ -1067,8 +1070,8 @@ TEST_P(HomeButtonTest, LongPressGestureWithSettingsDisabled) {
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
   ASSERT_TRUE(home_button());
 
-  ui::GestureEvent long_press =
-      CreateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  ui::GestureEvent long_press = CreateGestureEvent(
+      ui::GestureEventDetails(ui::EventType::kGestureLongPress));
   SendGestureEvent(&long_press);
   EXPECT_NE(AssistantVisibility::kVisible,
             AssistantUiController::Get()->GetModel()->visibility());
@@ -1180,7 +1183,8 @@ TEST_P(HomeButtonTest, GestureHomeButtonHitTest) {
   gfx::Point nav_widget_center(nav_widget_bounds.CenterPoint());
   EXPECT_EQ(home_button_center, nav_widget_center);
 
-  ui::GestureEventDetails details = ui::GestureEventDetails(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details =
+      ui::GestureEventDetails(ui::EventType::kGestureTap);
 
   // Create and test a gesture-event targeting >60% of the navigation widget,
   // as well as ~60% of the home button.

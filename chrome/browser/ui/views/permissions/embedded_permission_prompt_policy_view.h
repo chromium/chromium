@@ -41,6 +41,8 @@ class EmbeddedPermissionPromptPolicyView
   std::vector<ButtonConfiguration> GetButtonsConfiguration() const override;
 
  private:
+  std::u16string GetWindowTitleAdminAllowed() const;
+  std::u16string GetWindowTitleAdminBlocked() const;
   // Whether the administrator has "allowed" or "blocked" the particular
   // permission that this prompt is for.
   bool is_permission_allowed_;

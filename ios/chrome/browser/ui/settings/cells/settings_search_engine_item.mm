@@ -16,6 +16,8 @@
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -50,6 +52,9 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
   [super configureCell:tableCell withStyler:styler];
   SettingsSearchEngineCell* cell =
       base::apple::ObjCCastStrict<SettingsSearchEngineCell>(tableCell);
+  cell.accessibilityIdentifier = [NSString
+      stringWithFormat:@"%@%@", kSettingsSearchEngineCellIdentifierPrefix,
+                       self.text];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;
@@ -194,8 +199,10 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
   if (self.detailTextLabel.text.length == 0) {
     return self.textLabel.text;
   }
-  return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
-                                    self.detailTextLabel.text];
+  return l10n_util::GetNSStringF(
+      IDS_IOS_SEARCH_ENGINE_SETTINS_CELL_VOICE_OVER,
+      base::SysNSStringToUTF16(self.textLabel.text),
+      base::SysNSStringToUTF16(self.detailTextLabel.text));
 }
 
 #pragma mark - Private

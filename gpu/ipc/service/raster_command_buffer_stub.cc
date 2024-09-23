@@ -8,14 +8,13 @@
 #include <utility>
 
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 #include "gpu/command_buffer/service/logger.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/raster_decoder.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -158,6 +157,10 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
 
 MemoryTracker* RasterCommandBufferStub::GetContextGroupMemoryTracker() const {
   return nullptr;
+}
+
+base::WeakPtr<CommandBufferStub> RasterCommandBufferStub::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void RasterCommandBufferStub::OnSwapBuffers(uint64_t swap_id, uint32_t flags) {}

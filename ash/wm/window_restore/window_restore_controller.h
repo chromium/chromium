@@ -76,7 +76,7 @@ class ASH_EXPORT WindowRestoreController
       const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows);
 
   const aura::Window* to_be_snapped_window() const {
-    return to_be_snapped_window_;
+    return to_be_snapped_window_.get();
   }
 
   // Calls SaveWindowImpl for |window_state|. The activation index will be
@@ -155,13 +155,11 @@ class ASH_EXPORT WindowRestoreController
   // True whenever we are attempting to restore snap state.
   // The window that is about to be snapped by window restore. Reset to nullptr
   // if we aren't directly working with the window anymore.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION aura::Window* to_be_snapped_window_ = nullptr;
+  raw_ptr<aura::Window> to_be_snapped_window_ = nullptr;
 
   // The set of windows that have had their widgets initialized and will be
   // shown later.
-  base::flat_set<aura::Window*> to_be_shown_windows_;
+  base::flat_set<raw_ptr<aura::Window, CtnExperimental>> to_be_shown_windows_;
 
   // When a window is restored, we post a task to clear its
   // `app_restore::kLaunchedFromAppRestoreKey` property. However, a window can

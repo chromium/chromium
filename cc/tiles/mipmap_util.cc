@@ -24,7 +24,7 @@ int ScaleAxisToMipLevel(int axis_base_size, int mip_level) {
   // Increment the size by (2^mip_level - 1) so we round on when dividing it
   // below.
   base::CheckedNumeric<int> base_size = axis_base_size;
-  base_size += (1 << mip_level) - 1;
+  base_size += (1u << mip_level) - 1u;
   axis_base_size = base_size.ValueOrDefault(std::numeric_limits<int>::max());
   return std::max(1, axis_base_size >> mip_level);
 }

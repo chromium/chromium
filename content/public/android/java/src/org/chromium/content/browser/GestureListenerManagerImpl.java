@@ -26,6 +26,8 @@ import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
@@ -62,6 +64,8 @@ public class GestureListenerManagerImpl
     private SelectionPopupControllerImpl mSelectionPopupController;
     private ViewAndroidDelegate mViewDelegate;
     private InternalAccessDelegate mScrollDelegate;
+    private final boolean mHidePastePopupOnGSB;
+    private final boolean mResetGestureDetectionOnLosingFocus;
 
     private long mNativeGestureListenerManager;
 
@@ -91,7 +95,7 @@ public class GestureListenerManagerImpl
                         GestureListenerManagerImpl.class, UserDataFactoryLazyHolder.INSTANCE);
     }
 
-    // TODO(https://crbug.com/1340593): Mocking |#fromWebContents()| may be a better option, when
+    // TODO(crbug.com/40850475): Mocking |#fromWebContents()| may be a better option, when
     // available.
     public static void setInstanceForTesting(GestureListenerManagerImpl instance) {
         sInstanceForTesting = instance;
@@ -109,6 +113,10 @@ public class GestureListenerManagerImpl
         mNativeGestureListenerManager =
                 GestureListenerManagerImplJni.get()
                         .init(GestureListenerManagerImpl.this, mWebContents);
+        mHidePastePopupOnGSB =
+                ContentFeatureMap.isEnabled(ContentFeatureList.HIDE_PASTE_POPUP_ON_GSB);
+        mResetGestureDetectionOnLosingFocus =
+                !ContentFeatureMap.isEnabled(ContentFeatureList.CONTINUE_GESTURE_ON_LOSING_FOCUS);
     }
 
     public void resetGestureDetection() {
@@ -225,7 +233,9 @@ public class GestureListenerManagerImpl
 
     @Override
     public void onWindowFocusChanged(boolean gainFocus) {
-        if (!gainFocus) resetGestureDetection();
+        if (mResetGestureDetectionOnLosingFocus) {
+            if (!gainFocus) resetGestureDetection();
+        }
         for (mIterator.rewind(); mIterator.hasNext(); ) {
             mIterator.next().onWindowFocusChanged(gainFocus);
         }
@@ -302,7 +312,9 @@ public class GestureListenerManagerImpl
                 break;
             case EventType.GESTURE_SCROLL_UPDATE:
                 if (!consumed) break;
-                destroyPastePopup();
+                if (!mHidePastePopupOnGSB) {
+                    destroyPastePopup();
+                }
                 for (mIterator.rewind(); mIterator.hasNext(); ) {
                     mIterator.next().onScrollUpdateGestureConsumed();
                 }
@@ -327,7 +339,16 @@ public class GestureListenerManagerImpl
                 mViewDelegate
                         .getContainerView()
                         .performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                for (mIterator.rewind(); mIterator.hasNext(); ) mIterator.next().onLongPress();
+                break;
+            case EventType.GESTURE_BEGIN:
+                for (mIterator.rewind(); mIterator.hasNext(); ) {
+                    mIterator.next().onGestureBegin();
+                }
+                break;
+            case EventType.GESTURE_END:
+                for (mIterator.rewind(); mIterator.hasNext(); ) {
+                    mIterator.next().onGestureEnd();
+                }
                 break;
             default:
                 break;
@@ -339,6 +360,9 @@ public class GestureListenerManagerImpl
     @VisibleForTesting
     void onScrollBegin(boolean isDirectionUp) {
         setGestureScrollInProgress(true);
+        if (mHidePastePopupOnGSB) {
+            destroyPastePopup();
+        }
         for (mIterator.rewind(); mIterator.hasNext(); ) {
             mIterator
                     .next()
@@ -365,8 +389,9 @@ public class GestureListenerManagerImpl
             mSelectionPopupController =
                     SelectionPopupControllerImpl.fromWebContentsNoCreate(mWebContents);
         }
-        if (mSelectionPopupController != null) {
-            mSelectionPopupController.destroyPastePopup();
+        if (mSelectionPopupController != null
+                && mSelectionPopupController.isPasteActionModeValid()) {
+            mSelectionPopupController.destroyActionModeAndKeepSelection();
         }
     }
 
@@ -399,14 +424,6 @@ public class GestureListenerManagerImpl
         }
 
         return false;
-    }
-
-    @CalledByNative
-    private void didOverscroll(float accumulatedOverscrollX, float accumulatedOverscrollY) {
-        for (mIterator.rewind(); mIterator.hasNext(); ) {
-            GestureStateListener listener = mIterator.next();
-            listener.didOverscroll(accumulatedOverscrollX, accumulatedOverscrollY);
-        }
     }
 
     @SuppressWarnings("unused")

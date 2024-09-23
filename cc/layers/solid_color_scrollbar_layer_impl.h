@@ -24,6 +24,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
   ~SolidColorScrollbarLayerImpl() override;
 
   // LayerImpl overrides.
+  mojom::LayerType GetLayerType() const override;
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
@@ -50,8 +51,6 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
   bool IsThumbResizable() const override;
 
  private:
-  const char* LayerTypeAsString() const override;
-
   int thumb_thickness_;
   int track_start_;
   SkColor4f color_ = SkColors::kTransparent;

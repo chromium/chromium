@@ -5,28 +5,34 @@
 #include "content/browser/android/ime_adapter_android.h"
 
 #include <android/input.h>
+
 #include <algorithm>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/browser/android/text_suggestion_host_android.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/ImeAdapterImpl_jni.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/ime_host.mojom.h"
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/base/ime/ime_text_span.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ImeAdapterImpl_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
@@ -44,7 +50,7 @@ namespace {
 // type, |modifiers|, |time_ms|, |key_code|, |unicode_char| is used to create
 // WebKeyboardEvent. |key_code| is also needed ad need to treat the enter key
 // as a key press of character \r.
-NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
+input::NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& java_key_event,
     int type,
@@ -54,7 +60,7 @@ NativeWebKeyboardEvent NativeWebKeyboardEventFromKeyEvent(
     int scan_code,
     bool is_system_key,
     int unicode_char) {
-  return NativeWebKeyboardEvent(
+  return input::NativeWebKeyboardEvent(
       env, java_key_event, static_cast<blink::WebInputEvent::Type>(type),
       modifiers, base::TimeTicks() + base::Milliseconds(time_ms), key_code,
       scan_code, unicode_char, is_system_key);
@@ -210,6 +216,8 @@ void ImeAdapterAndroid::UpdateRenderProcessConnection(
     }
   }
   rwhva_ = new_rwhva;
+  // Must be called after the new rwhva has been set.
+  SetImeRenderWidgetHost();
 }
 
 void ImeAdapterAndroid::UpdateState(const ui::mojom::TextInputState& state) {
@@ -296,7 +304,7 @@ bool ImeAdapterAndroid::SendKeyEvent(
     int unicode_char) {
   if (!rwhva_)
     return false;
-  NativeWebKeyboardEvent event = NativeWebKeyboardEventFromKeyEvent(
+  input::NativeWebKeyboardEvent event = NativeWebKeyboardEventFromKeyEvent(
       env, original_key_event, type, modifiers, time_ms, key_code, scan_code,
       is_system_key, unicode_char);
   rwhva_->SendKeyEvent(event);
@@ -424,11 +432,9 @@ void ImeAdapterAndroid::HandleStylusWritingGestureAction(
     return;
   blink::mojom::StylusWritingGestureDataPtr gesture_data;
   if (!blink::mojom::StylusWritingGestureData::Deserialize(
-          static_cast<jbyte*>(
-              env->GetDirectBufferAddress(jgesture_data_byte_buffer.obj())),
-          env->GetDirectBufferCapacity(jgesture_data_byte_buffer.obj()),
+          base::android::JavaByteBufferToSpan(env, jgesture_data_byte_buffer),
           &gesture_data)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -447,6 +453,27 @@ void ImeAdapterAndroid::OnStylusWritingGestureActionCompleted(
     Java_ImeAdapterImpl_onStylusWritingGestureActionCompleted(env, obj, id,
                                                               (int)result);
   }
+}
+
+void ImeAdapterAndroid::SetImeRenderWidgetHost() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kCursorAnchorInfoMojoPipe)) {
+    return;
+  }
+  if (!rwhva_) {
+    return;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  // Use a pending remote so we can pass it to Blink.
+  mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost> ime_render_widget_host;
+  auto receiver = ime_render_widget_host.InitWithNewPipeAndPassReceiver();
+  Java_ImeAdapterImpl_bindImeRenderHost(env, obj,
+                                        receiver.PassPipe().release().value());
+  rwhva_->PassImeRenderWidgetHost(std::move(ime_render_widget_host));
 }
 
 void ImeAdapterAndroid::AdvanceFocusForIME(JNIEnv* env,

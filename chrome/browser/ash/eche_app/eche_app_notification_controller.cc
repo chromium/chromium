@@ -50,7 +50,7 @@ EcheAppNotificationController::EcheAppNotificationController(
 EcheAppNotificationController::~EcheAppNotificationController() = default;
 
 void EcheAppNotificationController::LaunchSettings() {
-  // TODO(crbug.com/1241352): Wait for UX confirm.
+  // TODO(crbug.com/40785967): Wait for UX confirm.
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       profile_, chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
 }

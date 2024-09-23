@@ -9,6 +9,7 @@ assert(!is_android)
 mojom("mojo_bindings") {
   sources = [
     "customize_chrome.mojom",
+    "customize_toolbar/customize_toolbar.mojom",
     "wallpaper_search/wallpaper_search.mojom",
   ]
   webui_module_path = "/"
@@ -17,4 +18,8 @@ mojom("mojo_bindings") {
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+}
+
+source_set("customize_chrome") {
+  sources = [ "customize_chrome_section.h" ]
 }

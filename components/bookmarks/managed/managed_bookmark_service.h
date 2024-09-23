@@ -63,9 +63,8 @@ class ManagedBookmarkService : public KeyedService,
   void BookmarkModelChanged() override;
 
   // BookmarkModelObserver implementation.
-  void BookmarkModelLoaded(BookmarkModel* bookmark_model,
-                           bool ids_reassigned) override;
-  void BookmarkModelBeingDeleted(BookmarkModel* bookmark_model) override;
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkModelBeingDeleted() override;
 
   // Cleanup, called when service is shutdown or when BookmarkModel is being
   // destroyed.

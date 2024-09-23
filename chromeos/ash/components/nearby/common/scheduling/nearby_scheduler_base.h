@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/nearby/common/scheduling/nearby_scheduler.h"
+#include "components/cross_device/logging/logging.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace base {
@@ -53,12 +54,14 @@ class NearbySchedulerBase
   //     sure to register this pref name before creating the scheduler.
   // |pref_service|: The pref service used to persist scheduling data.
   // |callback|: The function invoked to alert the owner that a request is due.
+  // |logging_feature|: The feature for CD_LOG to tag logs with.
   // |clock|: The clock used to determine timer delays.
   NearbySchedulerBase(bool retry_failures,
                       bool require_connectivity,
                       const std::string& pref_name,
                       PrefService* pref_service,
                       OnRequestCallback callback,
+                      Feature logging_feature,
                       const base::Clock* clock);
 
   // The time to wait until the next regularly recurring request.
@@ -110,6 +113,7 @@ class NearbySchedulerBase
   bool require_connectivity_;
   std::string pref_name_;
   raw_ptr<PrefService> pref_service_ = nullptr;
+  Feature logging_feature_;
   raw_ptr<const base::Clock> clock_ = nullptr;
   base::OneShotTimer timer_;
 };

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/test/av1_decoder.h"
 
 #include <va/va.h>
@@ -206,8 +211,9 @@ void FillGlobalMotionInfo(
         va_warped_motion[i].wmtype = VAAV1TransformationAffine;
         break;
       default:
-        NOTREACHED() << "Invalid global motion transformation type, "
-                     << va_warped_motion[i].wmtype;
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid global motion transformation type, "
+            << va_warped_motion[i].wmtype;
     }
     static_assert(ARRAY_SIZE(va_warped_motion[i].wmmat) == 8 &&
                       ARRAY_SIZE(gm.params) == 6,
@@ -415,8 +421,8 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
       case libgav1::LoopRestorationType::kLoopRestorationTypeSgrProj:
         return 2;
       default:
-        NOTREACHED() << "Invalid restoration type"
-                     << base::strict_cast<int>(lr_type);
+        NOTREACHED_IN_MIGRATION()
+            << "Invalid restoration type" << base::strict_cast<int>(lr_type);
         return 0;
     }
   };
@@ -513,15 +519,16 @@ unsigned int GetFormatForColorConfig(libgav1::ColorConfig color_config) {
       // AV1 stream whose profile is 'main' - this profile only supports bit
       // depths of 8 and 10 and libgav1 should guarantee that
       // |color_config.bitdepth| meets that requirement at parsing time.
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Unsupported color config with chroma subsampling of bitdepth %d"
           << color_config.bitdepth;
     }
   }
   // If this AV1 stream has profile 'main', then libgav1 ensures that both
   // |color_config.subsampling_x| and |color_config.subsampling_y| are 1.
-  NOTREACHED() << "Unsupported color config; only profile 0 with 4:2:0 Chroma "
-                  "subsampling is supported.";
+  NOTREACHED_IN_MIGRATION()
+      << "Unsupported color config; only profile 0 with 4:2:0 Chroma "
+         "subsampling is supported.";
   // There is no VA_RT_FORMAT_UNSUPPORTED; use a "default" value.
   return 0u;
 }
@@ -732,14 +739,15 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     case 12:
       // This is a valid bitdepth in streams, but we do not support it;
       // GetFormatForColorConfig() only expects bit depths of 8 or 10.
-      NOTREACHED() << "12bpp color is not yet supported.";
+      NOTREACHED_IN_MIGRATION() << "12bpp color is not yet supported.";
       break;
     default:
       // The OBU Parser can only produce bit depths of 8, 10, and 12; we should
       // not hit any other cases. See
       // https://source.chromium.org/chromium/chromium/src/+/main:third_party/libgav1/src/src/obu_parser.cc;l=144-150;drc=7880d0cc1d1976012dbec8a1bb982191ac49b7f4
-      NOTREACHED() << "Invalid color bit depth: "
-                   << current_sequence_header_->color_config.bitdepth;
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid color bit depth: "
+          << current_sequence_header_->color_config.bitdepth;
   }
   pic_parameters.matrix_coefficients = base::checked_cast<uint8_t>(
       current_sequence_header_->color_config.matrix_coefficients);

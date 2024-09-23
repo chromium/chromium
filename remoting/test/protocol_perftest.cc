@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -23,6 +24,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/test/test_data_directory.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/client/audio/audio_player.h"
 #include "remoting/client/chromoting_client.h"
@@ -36,6 +38,7 @@
 #include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/frame_consumer.h"
 #include "remoting/protocol/frame_stats.h"
+#include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/session_config.h"
@@ -96,6 +99,11 @@ class FakeCursorShapeStub : public protocol::CursorShapeStub {
   // protocol::CursorShapeStub interface.
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape) override {}
 };
+
+// Stub used for Me2MeHostAuthenticatorFactory::CheckAccessPermissionCallback.
+bool CheckAccessPermission(std::string_view user_email) {
+  return true;
+}
 
 }  // namespace
 
@@ -297,11 +305,10 @@ class ProtocolPerfTest
         GetParam().latency_average, GetParam().latency_stddev);
     port_allocator_factory->socket_factory()->set_out_of_order_rate(
         GetParam().out_of_order_rate);
-    scoped_refptr<protocol::TransportContext> transport_context(
-        new protocol::TransportContext(
-            std::move(port_allocator_factory),
-            webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
-            network_settings, protocol::TransportRole::SERVER));
+    auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
+        std::move(port_allocator_factory),
+        webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
+        protocol::TransportRole::SERVER);
     std::unique_ptr<protocol::SessionManager> session_manager(
         new protocol::JingleSessionManager(host_signaling_.get()));
     session_manager->set_protocol_config(protocol_config_->Clone());
@@ -312,7 +319,8 @@ class ProtocolPerfTest
         desktop_environment_factory_.get(), std::move(session_manager),
         transport_context, host_thread_.task_runner(),
         encode_thread_.task_runner(),
-        DesktopEnvironmentOptions::CreateDefault());
+        DesktopEnvironmentOptions::CreateDefault(),
+        &local_session_policies_provider_);
 
     base::FilePath certs_dir(net::GetTestCertsDirectory());
 
@@ -329,10 +337,13 @@ class ProtocolPerfTest
 
     std::string host_pin_hash =
         protocol::GetSharedSecretHash(kHostId, kHostPin);
-    std::unique_ptr<protocol::AuthenticatorFactory> auth_factory =
-        protocol::Me2MeHostAuthenticatorFactory::CreateWithPin(
-            kHostOwner, host_cert, key_pair, std::vector<std::string>(),
-            host_pin_hash, nullptr);
+    auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
+        host_cert, key_pair);
+    auth_config->AddSharedSecretAuth(host_pin_hash);
+    auto auth_factory =
+        std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(
+            base::BindRepeating(&CheckAccessPermission),
+            std::move(auth_config));
     host_->SetAuthenticatorFactory(std::move(auth_factory));
 
     host_->status_monitor()->AddStatusObserver(this);
@@ -364,11 +375,10 @@ class ProtocolPerfTest
         GetParam().latency_average, GetParam().latency_stddev);
     port_allocator_factory->socket_factory()->set_out_of_order_rate(
         GetParam().out_of_order_rate);
-    scoped_refptr<protocol::TransportContext> transport_context(
-        new protocol::TransportContext(
-            std::move(port_allocator_factory),
-            webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
-            network_settings, protocol::TransportRole::CLIENT));
+    auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
+        std::move(port_allocator_factory),
+        webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
+        protocol::TransportRole::CLIENT);
 
     protocol::ClientAuthenticationConfig client_auth_config;
     client_auth_config.host_id = kHostId;
@@ -407,6 +417,7 @@ class ProtocolPerfTest
   scoped_refptr<protocol::InputEventTimestampsSource> event_timestamp_source_;
 
   FakeCursorShapeStub cursor_shape_stub_;
+  LocalSessionPoliciesProvider local_session_policies_provider_;
 
   std::unique_ptr<protocol::CandidateSessionConfig> protocol_config_;
 
@@ -537,7 +548,6 @@ void ProtocolPerfTest::MeasureTotalLatency(bool use_webrtc) {
       switch (change_info.type) {
         case test::CyclicFrameGenerator::ChangeType::NO_CHANGES:
           NOTREACHED();
-          break;
         case test::CyclicFrameGenerator::ChangeType::FULL:
           total_latency_big_updates += latency;
           ++big_update_count;

@@ -8,30 +8,33 @@
 #include <string>
 
 #include "base/android/jni_string.h"
-#include "chrome/browser/password_check/android/internal/internal_jni/PasswordCheckBridge_jni.h"
-#include "chrome/browser/password_check/android/jni_headers/CompromisedCredential_jni.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper_impl.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "url/android/gurl_android.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_check/android/internal/internal_jni/PasswordCheckBridge_jni.h"
+#include "chrome/browser/password_check/android/jni_headers/CompromisedCredential_jni.h"
+
 namespace {
+
+using affiliations::FacetURI;
 
 password_manager::CredentialUIEntry ConvertJavaObjectToCredential(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential) {
   std::string signon_realm = base::android::ConvertJavaStringToUTF8(
       env, Java_CompromisedCredential_getSignonRealm(env, credential));
-  password_manager::FacetURI facet =
-      password_manager::FacetURI::FromPotentiallyInvalidSpec(signon_realm);
+  FacetURI facet = FacetURI::FromPotentiallyInvalidSpec(signon_realm);
   // For the UI, Android credentials store the affiliated realm in the
   // url field, however the saved credential should contains the signon realm
   // instead.
   GURL url = facet.IsValidAndroidFacetURI()
                  ? GURL(signon_realm)
-                 : *url::GURLAndroid::ToNativeGURL(
+                 : url::GURLAndroid::ToNativeGURL(
                        env, Java_CompromisedCredential_getAssociatedUrl(
                                 env, credential));
   password_manager::CredentialUIEntry entry;
@@ -149,11 +152,9 @@ void PasswordCheckBridge::UpdateCredential(
 void PasswordCheckBridge::OnEditCredential(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential,
-    const base::android::JavaParamRef<jobject>& context,
-    const base::android::JavaParamRef<jobject>& settings_launcher) {
+    const base::android::JavaParamRef<jobject>& context) {
   check_manager_.OnEditCredential(
-      ConvertJavaObjectToCredential(env, credential), context,
-      settings_launcher);
+      ConvertJavaObjectToCredential(env, credential), context);
 }
 
 void PasswordCheckBridge::RemoveCredential(

@@ -543,10 +543,10 @@
     // Only used by web tests.
     {
       name: "windowShowState",
-      initial: "ui::WindowShowState::SHOW_STATE_DEFAULT",
+      initial: "ui::mojom::blink::WindowShowState::kDefault",
       invalidate: ["MediaQuery"],
-      type: "ui::WindowShowState",
-      include_paths: ["ui/base/ui_base_types.h"],
+      type: "ui::mojom::blink::WindowShowState",
+      include_paths: ["ui/base/mojom/window_show_state.mojom-blink.h"],
     },
 
     // Only used by web tests.
@@ -976,14 +976,6 @@
       initial: true,
     },
 
-    // HTML Fullscreen (e.g. `Element.requestFullscreen()`)'s transient
-    // activation requirement can be bypassed via the "Automatic Fullscreen"
-    // content setting.
-    {
-      name: "requireTransientActivationForHtmlFullscreen",
-      initial: true,
-    },
-
     //
     // Dark mode
     //
@@ -1082,6 +1074,37 @@
       type: "int",
     },
 
+    // The forced colors state for the web content. The forced colors state
+    // is used to evaluate the forced-colors media query, as well as determining
+    // when to apply system color overrides to author specified styles.
+    {
+      name: "inForcedColors",
+      initial: false,
+      type: "bool",
+    },
+
+    {
+      name: "isForcedColorsDisabled",
+      initial: false,
+      invalidate: ["ForcedColors"],
+      type: "bool",
+    },
+
+    // The preferred color scheme set by the user's browser settings. The
+    // variable follows the browser's color mode setting unless a browser theme
+    // (custom or not) is defined, in which case the color scheme is set to the
+    // default value. This value is used to evaluate the used color scheme in
+    // non overlay root scrollbars.
+    {
+      name: "preferredRootScrollbarColorScheme",
+      initial: "mojom::blink::PreferredColorScheme::kLight",
+      invalidate: ["Paint"],
+      type: "mojom::blink::PreferredColorScheme",
+      include_paths: [
+        "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
+      ],
+    },
+
     // Preferred color scheme from the OS/application passed to the renderer for
     // evaluating the prefers-color-scheme media query.
     {
@@ -1178,6 +1201,8 @@
       name: "bypassCSP",
       initial: false,
     },
+    // Enables automatic adjustments of text size on mobile. This enables the
+    // text autosizer, and controls whether text-size-adjust can apply.
     {
       name: "textAutosizingEnabled",
       initial: false,
@@ -1214,6 +1239,12 @@
       initial: false,
       invalidate: ["Style"],
       type: "bool",
+    },
+    // SubApps APIs transient activation requirement can be bypassed via
+    // `SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins` policy.
+    {
+      name: "requireTransientActivationAndAuthorizationForSubAppsAPI",
+      initial: true,
     },
   ],
 }

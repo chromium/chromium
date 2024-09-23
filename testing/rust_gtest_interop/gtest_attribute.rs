@@ -120,7 +120,7 @@ pub fn gtest(
         let mut input_fn = parse_macro_input!(input as ItemFn);
 
         if let Some(asyncness) = input_fn.sig.asyncness {
-            // TODO(crbug.com/1288947): We can support async functions once we have
+            // TODO(crbug.com/40211749): We can support async functions once we have
             // block_on() support which will run a RunLoop until the async test
             // completes. The run_test_fn just needs to be generated to `block_on(||
             // #test_fn)` instead of calling `#test_fn` synchronously.
@@ -221,7 +221,7 @@ pub fn gtest(
     // the platform, and it can be passed directly to C++. This differs from
     // byte strings and CStr which work with `u8`.
     //
-    // TODO(crbug.com/1298175): Would it make sense to write a c_str_literal!()
+    // TODO(crbug.com/40215436): Would it make sense to write a c_str_literal!()
     // macro that takes a Rust string literal and produces a null-terminated
     // array of `c_char`? Then you could write `c_str_literal!(file!())` for
     // example, or implement a `file_c_str!()` in this way. Explore using https://crates.io/crates/cstr.
@@ -277,7 +277,7 @@ pub fn gtest(
             // The function is extern "C" so `register_test()` can pass this fn as a pointer to C++
             // where it's registered with gtest.
             //
-            // TODO(crbug.com/1296284): Removing #[no_mangle] makes rustc drop the symbol for the
+            // TODO(crbug.com/40214720): Removing #[no_mangle] makes rustc drop the symbol for the
             // test function in the generated rlib which produces linker errors. If we resolve the
             // linked bug and emit real object files from rustc for linking, then all the required
             // symbols are present and `#[no_mangle]` should go away along with the custom-mangling

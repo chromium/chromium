@@ -8,15 +8,14 @@
  * enter to effectively click the button and fire a 'click' event. It can also
  * style an icon inside of the button with the [has-icon] attribute.
  */
-import '../cr_hidden_style.css.js';
-import '../cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
-
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_button.html.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
+
+import {getCss} from './cr_button.css.js';
+import {getHtml} from './cr_button.html.js';
 
 export interface CrButtonElement {
   $: {
@@ -25,62 +24,43 @@ export interface CrButtonElement {
   };
 }
 
-const CrButtonElementBase = PaperRippleMixin(PolymerElement);
+const CrButtonElementBase = CrRippleMixin(CrLitElement);
 
 export class CrButtonElement extends CrButtonElementBase {
   static get is() {
     return 'cr-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       disabled: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'disabledChanged_',
-      },
-
-      /**
-       * Use this property in order to configure the "tabindex" attribute.
-       */
-      customTabIndex: {
-        type: Number,
-        observer: 'applyTabIndex_',
-      },
-
-      /**
-       * Flag used for formatting ripples on circle shaped cr-buttons.
-       * @private
-       */
-      circleRipple: {
-        type: Boolean,
-        value: false,
+        reflect: true,
       },
 
       hasPrefixIcon_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
 
       hasSuffixIcon_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
     };
   }
 
-  disabled: boolean;
-  customTabIndex: number;
-  circleRipple: boolean;
-  private hasPrefixIcon_: boolean;
-  private hasSuffixIcon_: boolean;
+  disabled: boolean = false;
+  protected hasPrefixIcon_: boolean = false;
+  protected hasSuffixIcon_: boolean = false;
 
   /**
    * It is possible to activate a tab when the space key is pressed down. When
@@ -102,22 +82,27 @@ export class CrButtonElement extends CrButtonElementBase {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('keyup', this.onKeyUp_.bind(this));
-    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+    this.ensureRippleOnPointerdown();
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'button');
     }
     if (!this.hasAttribute('tabindex')) {
       this.setAttribute('tabindex', '0');
     }
-    if (!this.hasAttribute('aria-disabled')) {
-      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-    }
 
     FocusOutlineManager.forDocument(document);
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('disabled')) {
+      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+      this.disabledChanged_(this.disabled, changedProperties.get('disabled'));
+    }
   }
 
   override disconnectedCallback() {
@@ -144,19 +129,7 @@ export class CrButtonElement extends CrButtonElementBase {
     if (this.disabled) {
       this.blur();
     }
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-    this.applyTabIndex_();
-  }
-
-  /**
-   * Updates the tabindex HTML attribute to the actual value.
-   */
-  private applyTabIndex_() {
-    let value = this.customTabIndex;
-    if (value === undefined) {
-      value = this.disabled ? -1 : 0;
-    }
-    this.setAttribute('tabindex', value.toString());
+    this.setAttribute('tabindex', String(this.disabled ? -1 : 0));
   }
 
   private onBlur_() {
@@ -173,11 +146,11 @@ export class CrButtonElement extends CrButtonElementBase {
     }
   }
 
-  private onPrefixIconSlotChanged_() {
+  protected onPrefixIconSlotChanged_() {
     this.hasPrefixIcon_ = this.$.prefixIcon.assignedElements().length > 0;
   }
 
-  private onSuffixIconSlotChanged_() {
+  protected onSuffixIconSlotChanged_() {
     this.hasSuffixIcon_ = this.$.suffixIcon.assignedElements().length > 0;
   }
 
@@ -217,26 +190,6 @@ export class CrButtonElement extends CrButtonElementBase {
       this.click();
       this.getRipple().uiUpAction();
     }
-  }
-
-  private onPointerDown_() {
-    this.ensureRipple();
-  }
-
-  /**
-   * Customize the element's ripple. Overriding the '_createRipple' function
-   * from PaperRippleMixin.
-   */
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    const ripple = super._createRipple();
-
-    if (this.circleRipple) {
-      ripple.setAttribute('center', '');
-      ripple.classList.add('circle');
-    }
-
-    return ripple;
   }
 }
 

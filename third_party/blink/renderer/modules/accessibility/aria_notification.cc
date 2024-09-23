@@ -4,22 +4,48 @@
 
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 
-namespace blink {
-AriaNotification::AriaNotification(Node* node,
-                                   const String announcement,
-                                   const AriaNotificationOptions* options)
-    : node_(node), announcement_(announcement) {
-  label_ = options->label();
-  interrupt_current_ = options->interruptCurrent();
-  prevent_interrupt_ = options->preventInterrupt();
+#include "ui/accessibility/ax_enums.mojom-blink.h"
 
-  if (options->insertionMode() == "queue") {
-    insertion_mode_ = AriaNotificationInsertionMode::kQueue;
-  } else if (options->insertionMode() == "stack") {
-    insertion_mode_ = AriaNotificationInsertionMode::kStack;
-  } else if (options->insertionMode() == "clear") {
-    insertion_mode_ = AriaNotificationInsertionMode::kClear;
+namespace blink {
+
+namespace {
+
+ax::mojom::blink::AriaNotificationInterrupt AsEnum(
+    const V8AriaNotifyInterrupt& interrupt) {
+  switch (interrupt.AsEnum()) {
+    case V8AriaNotifyInterrupt::Enum::kNone:
+      return ax::mojom::blink::AriaNotificationInterrupt::kNone;
+    case V8AriaNotifyInterrupt::Enum::kAll:
+      return ax::mojom::blink::AriaNotificationInterrupt::kAll;
+    case V8AriaNotifyInterrupt::Enum::kPending:
+      return ax::mojom::blink::AriaNotificationInterrupt::kPending;
   }
+  NOTREACHED();
+}
+
+ax::mojom::blink::AriaNotificationPriority AsEnum(
+    const V8AriaNotifyPriority& priority) {
+  switch (priority.AsEnum()) {
+    case V8AriaNotifyPriority::Enum::kNone:
+      return ax::mojom::blink::AriaNotificationPriority::kNone;
+    case V8AriaNotifyPriority::Enum::kImportant:
+      return ax::mojom::blink::AriaNotificationPriority::kImportant;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
+AriaNotification::AriaNotification(const String& announcement,
+                                   const AriaNotificationOptions* options)
+    : announcement_(announcement),
+      notification_id_(options->notificationId()),
+      interrupt_(AsEnum(options->interrupt())),
+      priority_(AsEnum(options->priority())) {}
+
+void AriaNotifications::Add(const String& announcement,
+                            const AriaNotificationOptions* options) {
+  notifications_.emplace_back(announcement, options);
 }
 
 }  // namespace blink

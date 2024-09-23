@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
 
 #include <algorithm>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "media/base/limits.h"
 #include "media/base/sample_format.h"
@@ -180,6 +186,12 @@ AudioEncoderConfig* MakeAudioEncoderConfig(
     if (proto.opus().has_usedtx()) {
       opus->setUsedtx(proto.opus().usedtx());
     }
+    if (proto.opus().has_signal()) {
+      opus->setSignal(ToOpusSignal(proto.opus().signal()));
+    }
+    if (proto.opus().has_application()) {
+      opus->setApplication(ToOpusApplication(proto.opus().application()));
+    }
   }
 
   return config;
@@ -267,6 +279,28 @@ String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode) {
       return "variable";
     case wc_fuzzer::CONSTANT:
       return "constant";
+  }
+}
+
+String ToOpusSignal(wc_fuzzer::OpusSignal opus_signal) {
+  switch (opus_signal) {
+    case wc_fuzzer::AUTO:
+      return "auto";
+    case wc_fuzzer::MUSIC:
+      return "music";
+    case wc_fuzzer::VOICE:
+      return "voice";
+  }
+}
+
+String ToOpusApplication(wc_fuzzer::OpusApplication opus_application) {
+  switch (opus_application) {
+    case wc_fuzzer::VOIP:
+      return "voip";
+    case wc_fuzzer::AUDIO:
+      return "audio";
+    case wc_fuzzer::LOWDELAY:
+      return "lowdelay";
   }
 }
 
@@ -604,8 +638,7 @@ VideoFrame* MakeVideoFrame(ScriptState* script_state,
   if (proto.bitmap_width() > 0 && proto.bitmap_width() < bitmap_size)
     bitmap_size -= bitmap_size % (proto.bitmap_width() * kBytesPerPixel);
   NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(
-      reinterpret_cast<const unsigned char*>(proto.rgb_bitmap().data()),
-      bitmap_size));
+      base::as_byte_span(proto.rgb_bitmap()).first(bitmap_size)));
 
   ImageData* image_data = ImageData::Create(data_u8, proto.bitmap_width(),
                                             IGNORE_EXCEPTION_FOR_TESTING);

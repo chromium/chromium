@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/svg_point_list.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -21,7 +22,7 @@ InterpolationValue SVGPointListInterpolationType::MaybeConvertNeutral(
   wtf_size_t underlying_length =
       UnderlyingLengthChecker::GetUnderlyingLength(underlying);
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingLengthChecker>(underlying_length));
+      MakeGarbageCollected<UnderlyingLengthChecker>(underlying_length));
 
   if (underlying_length == 0)
     return nullptr;
@@ -86,9 +87,14 @@ SVGPropertyBase* SVGPointListInterpolationType::AppliedSVGValue(
 
   const auto& list = To<InterpolableList>(interpolable_value);
   DCHECK_EQ(list.length() % 2, 0U);
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
+  CSSToLengthConversionData length_resolver;
   for (wtf_size_t i = 0; i < list.length(); i += 2) {
-    gfx::PointF point(To<InterpolableNumber>(list.Get(i))->Value(),
-                      To<InterpolableNumber>(list.Get(i + 1))->Value());
+    gfx::PointF point(
+        To<InterpolableNumber>(list.Get(i))->Value(length_resolver),
+        To<InterpolableNumber>(list.Get(i + 1))->Value(length_resolver));
     result->Append(MakeGarbageCollected<SVGPoint>(point));
   }
 

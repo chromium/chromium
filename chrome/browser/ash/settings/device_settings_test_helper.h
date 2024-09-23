@@ -11,12 +11,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/ownership/mock_owner_key_util.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +49,7 @@ class DeviceSettingsTestBase : public testing::Test {
   DeviceSettingsTestBase& operator=(const DeviceSettingsTestBase&) = delete;
 
  protected:
-  DeviceSettingsTestBase();
+  explicit DeviceSettingsTestBase(bool profile_creation_enabled = true);
   explicit DeviceSettingsTestBase(base::test::TaskEnvironment::TimeSource time);
   ~DeviceSettingsTestBase() override;
 
@@ -73,15 +71,13 @@ class DeviceSettingsTestBase : public testing::Test {
 
   void SetSessionStopping();
 
+  const bool profile_creation_enabled_ = true;
+
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<policy::DevicePolicyBuilder> device_policy_;
 
   FakeSessionManagerClient session_manager_client_;
-  // Note that FakeUserManager is used by ProfileHelper, which some of the
-  // tested classes depend on implicitly.
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   // Local DeviceSettingsService instance for tests. Avoid using in combination
   // with the global instance (DeviceSettingsService::Get()).

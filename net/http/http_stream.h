@@ -16,8 +16,8 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"
 #include "net/base/net_error_details.h"
@@ -38,7 +38,6 @@ class IOBuffer;
 class IPEndPoint;
 struct LoadTimingInfo;
 class NetLogWithSource;
-class SSLCertRequestInfo;
 class SSLInfo;
 
 class NET_EXPORT_PRIVATE HttpStream {
@@ -167,11 +166,6 @@ class NET_EXPORT_PRIVATE HttpStream {
   virtual bool GetAlternativeService(
       AlternativeService* alternative_service) const = 0;
 
-  // Get the SSLCertRequestInfo associated with this stream's connection.
-  // This should only be called for streams over SSL sockets, otherwise the
-  // behavior is undefined.
-  virtual void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) = 0;
-
   // Gets the remote endpoint of the socket that the HTTP stream is using, if
   // any. Returns OK and fills in |endpoint| if it is available; returns an
   // error and does not modify |endpoint| otherwise.
@@ -212,16 +206,25 @@ class NET_EXPORT_PRIVATE HttpStream {
   // ALPS extension, or the empty string if the server did not send one.  Unlike
   // Accept-CH header fields received in HTTP responses, this value is available
   // before any requests are made.
-  virtual base::StringPiece GetAcceptChViaAlps() const = 0;
+  virtual std::string_view GetAcceptChViaAlps() const = 0;
 
-  // If `this` is using a Quic stream, set the `connection_error` of the Quic
-  // stream. Otherwise returns nullopt.
-  virtual std::optional<quic::QuicErrorCode> GetQuicErrorCode() const;
+  // Represents detailed QUIC errors returned by GetQuicErrorDetails().
+  struct QuicErrorDetails {
+    // Internal connection error of the stream.
+    quic::QuicErrorCode connection_error = quic::QUIC_NO_ERROR;
+    // Internal stream error of the stream.
+    quic::QuicRstStreamErrorCode stream_error = quic::QUIC_STREAM_NO_ERROR;
+    // Connection error sent or received on the wire protocol.
+    uint64_t connection_wire_error = 0;
+    // Application error sent or received on the wire protocol.
+    uint64_t ietf_application_error = 0;
+  };
 
-  // If `this` is using a Quic stream, set the `stream_error' status of the Quic
-  // stream. Otherwise returns nullopt.
-  virtual std::optional<quic::QuicRstStreamErrorCode>
-  GetQuicRstStreamErrorCode() const;
+  // If `this` is using a QUIC stream, returns error details of the QUIC stream.
+  // Otherwise returns nullopt. Detailed QUIC errors are only available after
+  // the stream has been initialized. Use PopulateNetErrorDetails() for errors
+  // that happened during the initialization.
+  virtual std::optional<QuicErrorDetails> GetQuicErrorDetails() const;
 };
 
 }  // namespace net

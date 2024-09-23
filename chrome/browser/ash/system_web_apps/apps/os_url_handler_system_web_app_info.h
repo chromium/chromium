@@ -25,8 +25,8 @@ class OsUrlHandlerSystemWebAppDelegate : public ash::SystemWebAppDelegate {
   // ash::SystemWebAppDelegate:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
 
-  // TODO(crbug/1260386) - Add override for GetAdditionalSearchTerms() to allow
-  // capturing the os:// search tearms to be used.
+  // TODO(crbug.com/40201849) - Add override for GetAdditionalSearchTerms() to
+  // allow capturing the os:// search tearms to be used.
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;
   bool ShouldShowInLauncher() const override;

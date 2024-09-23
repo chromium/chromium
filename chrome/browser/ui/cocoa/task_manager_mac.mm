@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/cocoa/task_manager_mac.h"
 
 #include <stddef.h>
@@ -22,7 +27,6 @@
 #include "chrome/browser/ui/cocoa/task_manager_mac_table_view.h"
 #import "chrome/browser/ui/cocoa/window_size_autosaver.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -751,6 +755,8 @@ void TaskManagerMac::SetSortDescriptor(const TableSortDescriptor& descriptor) {
   window_controller_.sortDescriptor = descriptor;
 }
 
+void TaskManagerMac::MaybeHighlightActiveTask() {}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Called by the TaskManagerWindowController:
 
@@ -800,15 +806,11 @@ namespace chrome {
 
 // Declared in browser_dialogs.h.
 task_manager::TaskManagerTableModel* ShowTaskManager(Browser* browser) {
-  return base::FeatureList::IsEnabled(features::kViewsTaskManager)
-             ? ShowTaskManagerViews(browser)
-             : task_manager::TaskManagerMac::Show();
+  return task_manager::TaskManagerMac::Show();
 }
 
 void HideTaskManager() {
-  base::FeatureList::IsEnabled(features::kViewsTaskManager)
-      ? HideTaskManagerViews()
-      : task_manager::TaskManagerMac::Hide();
+  task_manager::TaskManagerMac::Hide();
 }
 
 }  // namespace chrome

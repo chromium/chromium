@@ -16,10 +16,17 @@ static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/userdataauth:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/osauth/impl",
+    "//components/prefs:test_support",
+    "//components/user_manager:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
   sources = [
+    "engine_test_util.cc",
+    "engine_test_util.h",
     "mock_auth_attempt_consumer.cc",
     "mock_auth_attempt_consumer.h",
     "mock_auth_factor_engine.cc",
@@ -28,5 +35,9 @@ static_library("test_support") {
     "mock_auth_factor_engine_factory.h",
     "mock_auth_factor_status_consumer.cc",
     "mock_auth_factor_status_consumer.h",
+    "mock_auth_hub.cc",
+    "mock_auth_hub.h",
+    "mock_auth_hub_connector.cc",
+    "mock_auth_hub_connector.h",
   ]
 }

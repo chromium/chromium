@@ -51,16 +51,13 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     return static_cast<OffscreenCanvas*>(Host());
   }
 
-  void commit();
-
   // CanvasRenderingContext implementation
   ~OffscreenCanvasRenderingContext2D() override;
   bool IsComposited() const override { return false; }
-  NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
   void PageVisibilityChanged() override {}
-  void Stop() final { NOTREACHED(); }
+  void Stop() final { NOTREACHED_IN_MIGRATION(); }
   void ClearRect(double x, double y, double width, double height) override {
     BaseRenderingContext2D::clearRect(x, y, width, height);
   }
@@ -169,7 +166,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
  private:
   void FinalizeFrame(FlushReason) final;
-  void FlushRecording(FlushReason);
 
   bool IsPaintable() const final;
   bool IsCanvas2DBufferValid() const override;

@@ -12,7 +12,7 @@
   </outputs>
   <release seq="1">
     <includes>
-      <part file="human_presence_resources.grdp" />
+      <part file="audio_resources.grdp" />
       <part file="multidevice_resources.grdp" />
       <if expr="enable_cros_libassistant">
         <part file="assistant_resources.grdp" />
@@ -20,6 +20,14 @@
       <if expr="enable_cros_scalable_iph">
         <part file="scalable_iph_unscaled_resources.grdp" />
       </if>
+      <if expr="is_chrome_branded">
+        <part file="growth_framework_resources.grdp" />
+      </if>
     </includes>
+    <structures>
+      <if expr="is_chrome_branded">
+        <part file="picker_resources.grdp" />
+      </if>
+    </structures>
   </release>
 </grit>

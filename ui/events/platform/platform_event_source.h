@@ -70,6 +70,8 @@ class EVENTS_EXPORT PlatformEventSource {
   // Creates PlatformEventSource and sets it as a thread-local singleton.
   static std::unique_ptr<PlatformEventSource> CreateDefault();
 
+  virtual void ResetStateForTesting() {}
+
  protected:
   typedef base::ObserverList<PlatformEventObserver>::Unchecked
       PlatformEventObserverList;

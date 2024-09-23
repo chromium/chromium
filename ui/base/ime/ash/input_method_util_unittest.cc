@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/ime/ash/input_method_util.h"
 
 #include <stddef.h>
@@ -378,8 +383,9 @@ TEST_F(InputMethodUtilTest, TestInputMethodIDMigration) {
       {"unknown", "unknown"},
   };
   std::vector<std::string> input_method_ids;
-  for (const auto& migration_case : migration_cases)
+  for (const auto& migration_case : migration_cases) {
     input_method_ids.emplace_back(migration_case[0]);
+  }
   // Duplicated hangul_2set.
   input_method_ids.emplace_back("ime:ko:hangul_2set");
 

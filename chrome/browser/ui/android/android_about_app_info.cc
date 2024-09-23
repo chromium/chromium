@@ -10,8 +10,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/system/sys_info.h"
-#include "chrome/android/chrome_jni_headers/PlayServicesVersionInfo_jni.h"
 #include "content/public/common/user_agent.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PlayServicesVersionInfo_jni.h"
 
 std::string AndroidAboutAppInfo::GetGmsInfo() {
   JNIEnv* env = base::android::AttachCurrentThread();

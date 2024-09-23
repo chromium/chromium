@@ -94,8 +94,8 @@ gfx::ImageSkia WebAppIconTestHelper::GenerateWebAppIcon(
     }
 
     extensions::ChromeAppIcon::ApplyEffects(
-        kSizeInDip, resize_function, true /* app_launchable */,
-        true /* from_bookmark */, extensions::ChromeAppIcon::Badge::kNone,
+        kSizeInDip, resize_function, /*app_launchable=*/true,
+        /*rounded_corners=*/true, extensions::ChromeAppIcon::Badge::kNone,
         &output_image_skia);
   }
 

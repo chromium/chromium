@@ -21,9 +21,8 @@ import org.chromium.ui.base.WindowAndroid;
 
 /**
  * This class is intended to listen to the ActivityLifecycle callbacks of a specific Activity and
- * notify the native observers upon its resume.
- * TODO(https://crbug.com/1478344): Consider reconciling this and the ResumeListener in
- * ArCoreInstallUtils.
+ * notify the native observers upon its resume. TODO(crbug.com/40929409): Consider reconciling this
+ * and the ResumeListener in ArCoreInstallUtils.
  */
 @JNINamespace("webxr")
 public class XrActivityListener implements ActivityLifecycleCallbacks {

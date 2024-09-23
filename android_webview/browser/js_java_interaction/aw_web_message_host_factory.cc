@@ -7,8 +7,6 @@
 #include <string>
 
 #include "android_webview/browser/js_java_interaction/js_reply_proxy.h"
-#include "android_webview/browser_jni_headers/WebMessageListenerHolder_jni.h"
-#include "android_webview/browser_jni_headers/WebMessageListenerInfo_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -18,6 +16,10 @@
 #include "components/js_injection/common/origin_matcher.h"
 #include "content/public/browser/android/message_payload.h"
 #include "content/public/browser/android/message_port_helper.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/WebMessageListenerHolder_jni.h"
+#include "android_webview/browser_jni_headers/WebMessageListenerInfo_jni.h"
 
 namespace android_webview {
 namespace {
@@ -69,28 +71,23 @@ AwWebMessageHostFactory::AwWebMessageHostFactory(
 AwWebMessageHostFactory::~AwWebMessageHostFactory() = default;
 
 // static
-base::android::ScopedJavaLocalRef<jobjectArray>
+std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
 AwWebMessageHostFactory::GetWebMessageListenerInfo(
     js_injection::JsCommunicationHost* host,
-    JNIEnv* env,
-    const base::android::JavaParamRef<jclass>& clazz) {
+    JNIEnv* env) {
   auto factories = host->GetWebMessageHostFactories();
-  jobjectArray joa =
-      env->NewObjectArray(factories.size(), clazz.obj(), nullptr);
-  base::android::CheckException(env);
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ret;
 
   for (size_t i = 0; i < factories.size(); ++i) {
     const auto& factory = factories[i];
     const std::vector<std::string> rules =
         factory.allowed_origin_rules.Serialize();
-    base::android::ScopedJavaLocalRef<jobject> object =
-        Java_WebMessageListenerInfo_create(
-            env, base::android::ConvertUTF16ToJavaString(env, factory.js_name),
-            base::android::ToJavaArrayOfStrings(env, rules),
-            static_cast<AwWebMessageHostFactory*>(factory.factory)->listener_);
-    env->SetObjectArrayElement(joa, i, object.obj());
+    ret.push_back(Java_WebMessageListenerInfo_create(
+        env, base::android::ConvertUTF16ToJavaString(env, factory.js_name),
+        base::android::ToJavaArrayOfStrings(env, rules),
+        static_cast<AwWebMessageHostFactory*>(factory.factory)->listener_));
   }
-  return base::android::ScopedJavaLocalRef<jobjectArray>(env, joa);
+  return ret;
 }
 
 std::unique_ptr<js_injection::WebMessageHost>

@@ -262,7 +262,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
   EXPECT_EQ(44, (*sizes)[node3].GetInt());
   EXPECT_EQ(id3, (*backtraces)[node3].GetInt());
 
-  // Validate that the partition alloc one got through.
+  // Validate that the PartitionAlloc one got through.
   counts = heaps_v2->FindListByDottedPath("allocators.partition_alloc.counts");
   types = heaps_v2->FindListByDottedPath("allocators.partition_alloc.types");
   sizes = heaps_v2->FindListByDottedPath("allocators.partition_alloc.sizes");
@@ -281,7 +281,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1314087): Re-enable when MemoryMaps works on Fuchsia.
+// TODO(crbug.com/42050458): Re-enable when MemoryMaps works on Fuchsia.
 #define MAYBE_MemoryMaps DISABLED_MemoryMaps
 #else
 #define MAYBE_MemoryMaps MemoryMaps

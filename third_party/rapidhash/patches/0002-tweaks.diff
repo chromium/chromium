@@ -1,0 +1,454 @@
+diff --git a/third_party/rapidhash/rapidhash.h b/third_party/rapidhash/rapidhash.h
+index 306e9305fb543..690bca8902616 100644
+--- a/third_party/rapidhash/rapidhash.h
++++ b/third_party/rapidhash/rapidhash.h
+@@ -33,102 +33,60 @@
+  *   - rapidhash source repository: https://github.com/Nicoshev/rapidhash
+  */
+ 
+-/*
+- *  Includes.
+- */
++#ifndef _THIRD_PARTY_RAPIDHASH_H
++#define _THIRD_PARTY_RAPIDHASH_H 1
++
++#include <stddef.h>
+ #include <stdint.h>
+ #include <string.h>
+-#if defined(_MSC_VER)
+-#include <intrin.h>
+-#if defined(_M_X64) && !defined(_M_ARM64EC)
+-#pragma intrinsic(_umul128)
+-#endif
+-#endif
+ 
+-/*
+- *  C++ macros.
+- *
+- *  RAPIDHASH_INLINE can be overriden to be stronger than a hint, i.e. by adding
+- * __attribute__((always_inline)).
+- */
+-#ifdef __cplusplus
+-#define RAPIDHASH_NOEXCEPT noexcept
+-#define RAPIDHASH_CONSTEXPR constexpr
+-#ifndef RAPIDHASH_INLINE
+-#define RAPIDHASH_INLINE inline
+-#endif
+-#else
+-#define RAPIDHASH_NOEXCEPT
+-#define RAPIDHASH_CONSTEXPR const
+-#ifndef RAPIDHASH_INLINE
+-#define RAPIDHASH_INLINE static inline
+-#endif
+-#endif
++#include <tuple>
++#include <utility>
+ 
+-/*
+- *  Protection macro, alters behaviour of rapid_mum multiplication function.
+- *
+- *  RAPIDHASH_FAST: Normal behavior, max speed.
+- *  RAPIDHASH_PROTECTED: Extra protection against entropy loss.
+- */
+-#ifndef RAPIDHASH_PROTECTED
+-#define RAPIDHASH_FAST
+-#elif defined(RAPIDHASH_FAST)
+-#error "cannot define RAPIDHASH_PROTECTED and RAPIDHASH_FAST simultaneously."
+-#endif
+-
+-/*
+- *  Unrolling macros, changes code definition for main hash function.
+- *
+- *  RAPIDHASH_COMPACT: Legacy variant, each loop process 48 bytes.
+- *  RAPIDHASH_UNROLLED: Unrolled variant, each loop process 96 bytes.
+- *
+- *  Most modern CPUs should benefit from having RAPIDHASH_UNROLLED.
+- *
+- *  These macros do not alter the output hash.
+- */
+-#ifndef RAPIDHASH_COMPACT
+-#define RAPIDHASH_UNROLLED
+-#elif defined(RAPIDHASH_UNROLLED)
+-#error "cannot define RAPIDHASH_COMPACT and RAPIDHASH_UNROLLED simultaneously."
+-#endif
++#include "base/compiler_specific.h"
+ 
+ /*
+  *  Likely and unlikely macros.
+  */
+-#if defined(__GNUC__) || defined(__INTEL_COMPILER) || defined(__clang__)
+ #define _likely_(x) __builtin_expect(x, 1)
+ #define _unlikely_(x) __builtin_expect(x, 0)
+-#else
+-#define _likely_(x) (x)
+-#define _unlikely_(x) (x)
+-#endif
+-
+-/*
+- *  Endianness macros.
+- */
+-#ifndef RAPIDHASH_LITTLE_ENDIAN
+-#if defined(_WIN32) || defined(__LITTLE_ENDIAN__) || \
+-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+-#define RAPIDHASH_LITTLE_ENDIAN
+-#elif defined(__BIG_ENDIAN__) || \
+-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+-#define RAPIDHASH_BIG_ENDIAN
+-#else
+-#warning "could not determine endianness! Falling back to little endian."
+-#define RAPIDHASH_LITTLE_ENDIAN
+-#endif
+-#endif
+ 
+ /*
+  *  Default seed.
+  */
+-#define RAPID_SEED (0xbdd89aa982704029ull)
++static constexpr uint64_t RAPID_SEED = 0xbdd89aa982704029ull;
+ 
+-/*
+- *  Default secret parameters.
+- */
+-RAPIDHASH_CONSTEXPR uint64_t rapid_secret[3] = {
++// Default secret parameters. If we wanted to, we could generate our own
++// versions of these at renderer startup in order to perturb the hash
++// and make it more DoS-resistant (similar to what base/hash.h does),
++// but generating new ones takes a little bit of time (~200 µs on a desktop
++// machine as of 2024), and good-quality random numbers may not be copious
++// from within the sandbox. The secret concept is inherited from wyhash,
++// described by the wyhash author here:
++//
++//   https://github.com/wangyi-fudan/wyhash/issues/139
++//
++// The rules are:
++//
++//   1. Each byte must be “balanced”, i.e., have exactly 4 bits set.
++//      (This is trivially done by just precompting a LUT with the
++//      possible bytes and picking from those.)
++//
++//   2. Each 64-bit group should have a Hamming distance of 32 to
++//      all the others (i.e., popcount(secret[i] ^ secret[j]) == 32).
++//      This is just done by rejection sampling.
++//
++//   3. Each 64-bit group should be prime. It's not obvious that this
++//      is really needed for the hash, as opposed to wyrand which also
++//      uses the same secret, but according to the author, it is
++//      “a feeling to be perfect”. This naturally means the last byte
++//      cannot be divisible by 2, but apart from that, is easiest
++//      checked by testing a few small factors and then the Miller-Rabin
++//      test, which rejects nearly all bad candidates in the first iteration
++//      and is fast as long as we have 64x64 -> 128 bit muls and modulos.
++//
++// For now, we just use the rapidhash-supplied standard.
++static constexpr uint64_t rapid_secret[3] = {
+     0x2d358dccaa6c78a5ull, 0x8bb84b93962eacc9ull, 0x4b33a62ed433d4a3ull};
+ 
+ /*
+@@ -138,64 +96,33 @@ RAPIDHASH_CONSTEXPR uint64_t rapid_secret[3] = {
+  *  @param B  Address of 64-bit number.
+  *
+  *  Calculates 128-bit C = *A * *B.
+- *
+- *  When RAPIDHASH_FAST is defined:
+- *  Overwrites A contents with C's low 64 bits.
+- *  Overwrites B contents with C's high 64 bits.
+- *
+- *  When RAPIDHASH_PROTECTED is defined:
+- *  Xors and overwrites A contents with C's low 64 bits.
+- *  Xors and overwrites B contents with C's high 64 bits.
+  */
+-RAPIDHASH_INLINE void rapid_mum(uint64_t* A, uint64_t* B) RAPIDHASH_NOEXCEPT {
++static inline std::pair<uint64_t, uint64_t> rapid_mul128(uint64_t A,
++                                                         uint64_t B) {
+ #if defined(__SIZEOF_INT128__)
+-  __uint128_t r = *A;
+-  r *= *B;
+-#ifdef RAPIDHASH_PROTECTED
+-  *A ^= (uint64_t)r;
+-  *B ^= (uint64_t)(r >> 64);
++  __uint128_t r = A;
++  r *= B;
++  return {static_cast<uint64_t>(r), static_cast<uint64_t>(r >> 64)};
+ #else
+-  *A = (uint64_t)r;
+-  *B = (uint64_t)(r >> 64);
+-#endif
+-#elif defined(_MSC_VER) && (defined(_WIN64) || defined(_M_HYBRID_CHPE_ARM64))
+-#if defined(_M_X64)
+-#ifdef RAPIDHASH_PROTECTED
+-  uint64_t a, b;
+-  a = _umul128(*A, *B, &b);
+-  *A ^= a;
+-  *B ^= b;
+-#else
+-  *A = _umul128(*A, *B, B);
+-#endif
+-#else
+-#ifdef RAPIDHASH_PROTECTED
+-  uint64_t a, b;
+-  b = __umulh(*A, *B);
+-  a = *A * *B;
+-  *A ^= a;
+-  *B ^= b;
+-#else
+-  uint64_t c = __umulh(*A, *B);
+-  *A = *A * *B;
+-  *B = c;
+-#endif
+-#endif
+-#else
+-  uint64_t ha = *A >> 32, hb = *B >> 32, la = (uint32_t)*A, lb = (uint32_t)*B,
+-           hi, lo;
+-  uint64_t rh = ha * hb, rm0 = ha * lb, rm1 = hb * la, rl = la * lb,
+-           t = rl + (rm0 << 32), c = t < rl;
+-  lo = t + (rm1 << 32);
+-  c += lo < t;
+-  hi = rh + (rm0 >> 32) + (rm1 >> 32) + c;
+-#ifdef RAPIDHASH_PROTECTED
+-  *A ^= lo;
+-  *B ^= hi;
+-#else
+-  *A = lo;
+-  *B = hi;
+-#endif
++  // High and low 32 bits of A and B.
++  uint64_t a_high = A >> 32, b_high = B >> 32, a_low = (uint32_t)A,
++           b_low = (uint32_t)B;
++
++  // Intermediate products.
++  uint64_t result_high = a_high * b_high;
++  uint64_t result_m0 = a_high * b_low;
++  uint64_t result_m1 = b_high * a_low;
++  uint64_t result_low = a_low * b_low;
++
++  // Final sum. The lower 64-bit addition can overflow twice,
++  // so accumulate carry as we go.
++  uint64_t high = result_high + (result_m0 >> 32) + (result_m1 >> 32);
++  uint64_t t = result_low + (result_m0 << 32);
++  high += (t < result_low);  // Carry.
++  uint64_t low = t + (result_m1 << 32);
++  high += (low < t);  // Carry.
++
++  return {low, high};
+ #endif
+ }
+ 
+@@ -208,63 +135,24 @@ RAPIDHASH_INLINE void rapid_mum(uint64_t* A, uint64_t* B) RAPIDHASH_NOEXCEPT {
+  *  Calculates 128-bit C = A * B.
+  *  Returns 64-bit xor between high and low 64 bits of C.
+  */
+-RAPIDHASH_INLINE uint64_t rapid_mix(uint64_t A, uint64_t B) RAPIDHASH_NOEXCEPT {
+-  rapid_mum(&A, &B);
++static inline uint64_t rapid_mix(uint64_t A, uint64_t B) {
++  std::tie(A, B) = rapid_mul128(A, B);
+   return A ^ B;
+ }
+ 
+ /*
+  *  Read functions.
+  */
+-#ifdef RAPIDHASH_LITTLE_ENDIAN
+-RAPIDHASH_INLINE uint64_t rapid_read64(const uint8_t* p) RAPIDHASH_NOEXCEPT {
++static inline uint64_t rapid_read64(const uint8_t* p) {
+   uint64_t v;
+   memcpy(&v, p, sizeof(uint64_t));
+   return v;
+ }
+-RAPIDHASH_INLINE uint64_t rapid_read32(const uint8_t* p) RAPIDHASH_NOEXCEPT {
++static inline uint64_t rapid_read32(const uint8_t* p) {
+   uint32_t v;
+   memcpy(&v, p, sizeof(uint32_t));
+   return v;
+ }
+-#elif defined(__GNUC__) || defined(__INTEL_COMPILER) || defined(__clang__)
+-RAPIDHASH_INLINE uint64_t rapid_read64(const uint8_t* p) RAPIDHASH_NOEXCEPT {
+-  uint64_t v;
+-  memcpy(&v, p, sizeof(uint64_t));
+-  return __builtin_bswap64(v);
+-}
+-RAPIDHASH_INLINE uint64_t rapid_read32(const uint8_t* p) RAPIDHASH_NOEXCEPT {
+-  uint32_t v;
+-  memcpy(&v, p, sizeof(uint32_t));
+-  return __builtin_bswap32(v);
+-}
+-#elif defined(_MSC_VER)
+-RAPIDHASH_INLINE uint64_t rapid_read64(const uint8_t* p) RAPIDHASH_NOEXCEPT {
+-  uint64_t v;
+-  memcpy(&v, p, sizeof(uint64_t));
+-  return _byteswap_uint64(v);
+-}
+-RAPIDHASH_INLINE uint64_t rapid_read32(const uint8_t* p) RAPIDHASH_NOEXCEPT {
+-  uint32_t v;
+-  memcpy(&v, p, sizeof(uint32_t));
+-  return _byteswap_ulong(v);
+-}
+-#else
+-RAPIDHASH_INLINE uint64_t rapid_read64(const uint8_t* p) RAPIDHASH_NOEXCEPT {
+-  uint64_t v;
+-  memcpy(&v, p, 8);
+-  return (((v >> 56) & 0xff) | ((v >> 40) & 0xff00) | ((v >> 24) & 0xff0000) |
+-          ((v >> 8) & 0xff000000) | ((v << 8) & 0xff00000000) |
+-          ((v << 24) & 0xff0000000000) | ((v << 40) & 0xff000000000000) |
+-          ((v << 56) & 0xff00000000000000));
+-}
+-RAPIDHASH_INLINE uint64_t rapid_read32(const uint8_t* p) RAPIDHASH_NOEXCEPT {
+-  uint32_t v;
+-  memcpy(&v, p, 4);
+-  return (((v >> 24) & 0xff) | ((v >> 8) & 0xff00) | ((v << 8) & 0xff0000) |
+-          ((v << 24) & 0xff000000));
+-}
+-#endif
+ 
+ /*
+  *  Reads and combines 3 bytes of input.
+@@ -277,73 +165,57 @@ RAPIDHASH_INLINE uint64_t rapid_read32(const uint8_t* p) RAPIDHASH_NOEXCEPT {
+  *
+  *  Returns a 64-bit value containing all three bytes read.
+  */
+-RAPIDHASH_INLINE uint64_t rapid_readSmall(const uint8_t* p,
+-                                          size_t k) RAPIDHASH_NOEXCEPT {
++static inline uint64_t rapid_readSmall(const uint8_t* p, size_t k) {
+   return (((uint64_t)p[0]) << 56) | (((uint64_t)p[k >> 1]) << 32) | p[k - 1];
+ }
+ 
+ /*
+  *  rapidhash main function.
+  *
+- *  @param key     Buffer to be hashed.
++ *  @param p       Buffer to be hashed.
+  *  @param len     @key length, in bytes.
+  *  @param seed    64-bit seed used to alter the hash result predictably.
+  *  @param secret  Triplet of 64-bit secrets used to alter hash result
+- * predictably.
++ *                 predictably.
+  *
+  *  Returns a 64-bit hash.
++ *
++ *  The data flow is separated so that we never mix input data with pointers;
++ *
++ *  a, b, seed, secret[0], secret[1], secret[2], see1 and see2 are affected
++ *  by the input data.
++ *
++ *  p is only ever indexed by len, delta (comes from len only), i (comes from
++ *  len only) or integral constants. len is const, so no data can flow into it.
++ *
++ *  No other reads from memory take place. No writes to memory take place.
+  */
+-RAPIDHASH_INLINE uint64_t rapidhash_internal(const void* key,
+-                                             size_t len,
+-                                             uint64_t seed,
+-                                             const uint64_t* secret)
+-    RAPIDHASH_NOEXCEPT {
+-  const uint8_t* p = (const uint8_t*)key;
++static inline uint64_t rapidhash_internal(const uint8_t* p,
++                                          const size_t len,
++                                          uint64_t seed,
++                                          const uint64_t secret[3]) {
+   seed ^= rapid_mix(seed ^ secret[0], secret[1]) ^ len;
+   uint64_t a, b;
+   if (_likely_(len <= 16)) {
+     if (_likely_(len >= 4)) {
++      // Read the first and last 32 bits (they may overlap).
+       const uint8_t* plast = p + len - 4;
+       a = (rapid_read32(p) << 32) | rapid_read32(plast);
++
++      // This is equivalent to: delta = (len >= 8) ? 4 : 0;
+       const uint64_t delta = ((len & 24) >> (len >> 3));
+       b = ((rapid_read32(p + delta) << 32) | rapid_read32(plast - delta));
+     } else if (_likely_(len > 0)) {
++      // 1, 2 or 3 bytes.
+       a = rapid_readSmall(p, len);
+       b = 0;
+-    } else
++    } else {
+       a = b = 0;
++    }
+   } else {
+     size_t i = len;
+     if (_unlikely_(i > 48)) {
+       uint64_t see1 = seed, see2 = seed;
+-#ifdef RAPIDHASH_UNROLLED
+-      while (_likely_(i >= 96)) {
+-        seed =
+-            rapid_mix(rapid_read64(p) ^ secret[0], rapid_read64(p + 8) ^ seed);
+-        see1 = rapid_mix(rapid_read64(p + 16) ^ secret[1],
+-                         rapid_read64(p + 24) ^ see1);
+-        see2 = rapid_mix(rapid_read64(p + 32) ^ secret[2],
+-                         rapid_read64(p + 40) ^ see2);
+-        seed = rapid_mix(rapid_read64(p + 48) ^ secret[0],
+-                         rapid_read64(p + 56) ^ seed);
+-        see1 = rapid_mix(rapid_read64(p + 64) ^ secret[1],
+-                         rapid_read64(p + 72) ^ see1);
+-        see2 = rapid_mix(rapid_read64(p + 80) ^ secret[2],
+-                         rapid_read64(p + 88) ^ see2);
+-        p += 96;
+-        i -= 96;
+-      }
+-      if (_unlikely_(i >= 48)) {
+-        seed =
+-            rapid_mix(rapid_read64(p) ^ secret[0], rapid_read64(p + 8) ^ seed);
+-        see1 = rapid_mix(rapid_read64(p + 16) ^ secret[1],
+-                         rapid_read64(p + 24) ^ see1);
+-        see2 = rapid_mix(rapid_read64(p + 32) ^ secret[2],
+-                         rapid_read64(p + 40) ^ see2);
+-        p += 48;
+-        i -= 48;
+-      }
+-#else
+       do {
+         seed =
+             rapid_mix(rapid_read64(p) ^ secret[0], rapid_read64(p + 8) ^ seed);
+@@ -354,22 +226,22 @@ RAPIDHASH_INLINE uint64_t rapidhash_internal(const void* key,
+         p += 48;
+         i -= 48;
+       } while (_likely_(i >= 48));
+-#endif
+       seed ^= see1 ^ see2;
+     }
+     if (i > 16) {
+       seed = rapid_mix(rapid_read64(p) ^ secret[2],
+                        rapid_read64(p + 8) ^ seed ^ secret[1]);
+-      if (i > 32)
++      if (i > 32) {
+         seed = rapid_mix(rapid_read64(p + 16) ^ secret[2],
+                          rapid_read64(p + 24) ^ seed);
++      }
+     }
+     a = rapid_read64(p + i - 16);
+     b = rapid_read64(p + i - 8);
+   }
+   a ^= secret[1];
+   b ^= seed;
+-  rapid_mum(&a, &b);
++  std::tie(a, b) = rapid_mul128(a, b);
+   return rapid_mix(a ^ secret[0] ^ len, b ^ secret[1]);
+ }
+ 
+@@ -384,23 +256,10 @@ RAPIDHASH_INLINE uint64_t rapidhash_internal(const void* key,
+  *
+  *  Returns a 64-bit hash.
+  */
+-RAPIDHASH_INLINE uint64_t rapidhash_withSeed(const void* key,
+-                                             size_t len,
+-                                             uint64_t seed) RAPIDHASH_NOEXCEPT {
++static inline uint64_t rapidhash(const uint8_t* key,
++                                 size_t len,
++                                 uint64_t seed = RAPID_SEED) {
+   return rapidhash_internal(key, len, seed, rapid_secret);
+ }
+ 
+-/*
+- *  rapidhash default hash function.
+- *
+- *  @param key     Buffer to be hashed.
+- *  @param len     @key length, in bytes.
+- *
+- *  Calls rapidhash_withSeed using provided parameters and the default seed.
+- *
+- *  Returns a 64-bit hash.
+- */
+-RAPIDHASH_INLINE uint64_t rapidhash(const void* key,
+-                                    size_t len) RAPIDHASH_NOEXCEPT {
+-  return rapidhash_withSeed(key, len, RAPID_SEED);
+-}
++#endif  // _THIRD_PARTY_RAPIDHASH_H

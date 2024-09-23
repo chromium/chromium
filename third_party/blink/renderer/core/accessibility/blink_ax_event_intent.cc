@@ -73,6 +73,10 @@ BlinkAXEventIntent BlinkAXEventIntent::FromEditCommand(
       input_event_type =
           ax::mojom::blink::InputEventType::kInsertCompositionText;
       break;
+    case InputEvent::InputType::kInsertLink:
+      command = ax::mojom::blink::Command::kInsert;
+      input_event_type = ax::mojom::blink::InputEventType::kInsertLink;
+      break;
 
     // Deletion.
     case InputEvent::InputType::kDeleteWordBackward:
@@ -192,7 +196,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromEditCommand(
       break;
 
     case InputEvent::InputType::kNumberOfInputTypes:
-      NOTREACHED()
+      NOTREACHED_IN_MIGRATION()
           << "Should never be assigned as an input type to |edit_command|.";
       return BlinkAXEventIntent();
   }
@@ -256,7 +260,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
     case TextGranularity::kWord:
       switch (move_direction) {
         case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return BlinkAXEventIntent();
         case ax::mojom::blink::MoveDirection::kBackward:
           // All platforms behave the same when moving backward by word.
@@ -298,7 +302,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // sentence, depending on the direction.
       switch (move_direction) {
         case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return BlinkAXEventIntent();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kSentenceStart;
@@ -313,7 +317,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // line, depending on the direction.
       switch (move_direction) {
         case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return BlinkAXEventIntent();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kLineStart;
@@ -328,7 +332,7 @@ BlinkAXEventIntent BlinkAXEventIntent::FromModifiedSelection(
       // paragraph, depending on the direction.
       switch (move_direction) {
         case ax::mojom::blink::MoveDirection::kNone:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           return BlinkAXEventIntent();
         case ax::mojom::blink::MoveDirection::kBackward:
           text_boundary = ax::mojom::blink::TextBoundary::kParagraphStart;

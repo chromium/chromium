@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -46,8 +47,9 @@ class ChromeClientTest : public testing::Test {
 };
 
 TEST_F(ChromeClientTest, UpdateTooltipUnderCursorFlood) {
-  ChromeClientToolTipLogger logger;
-  ChromeClient* client = &logger;
+  ChromeClientToolTipLogger* logger =
+      MakeGarbageCollected<ChromeClientToolTipLogger>();
+  ChromeClient* client = logger;
   HitTestLocation location(PhysicalOffset(10, 20));
   HitTestResult result(HitTestRequest(HitTestRequest::kMove), location);
   auto holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
@@ -57,27 +59,27 @@ TEST_F(ChromeClientTest, UpdateTooltipUnderCursorFlood) {
   result.SetInnerNode(element);
 
   client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
-  EXPECT_EQ("tooltip", logger.ToolTipForLastUpdateTooltipUnderCursor());
+  EXPECT_EQ("tooltip", logger->ToolTipForLastUpdateTooltipUnderCursor());
 
   // seToolTip(HitTestResult) again in the same condition.
-  logger.ClearToolTipForLastUpdateTooltipUnderCursor();
+  logger->ClearToolTipForLastUpdateTooltipUnderCursor();
   client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   // UpdateTooltipUnderCursor(String,TextDirection) should not be called.
-  EXPECT_EQ(String(), logger.ToolTipForLastUpdateTooltipUnderCursor());
+  EXPECT_EQ(String(), logger->ToolTipForLastUpdateTooltipUnderCursor());
 
   // Cancel the tooltip, and UpdateTooltipUnderCursor(HitTestResult) again.
   client->ClearToolTip(holder->GetFrame());
-  logger.ClearToolTipForLastUpdateTooltipUnderCursor();
+  logger->ClearToolTipForLastUpdateTooltipUnderCursor();
   client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   // UpdateTooltipUnderCursor(String,TextDirection) should not be called.
-  EXPECT_EQ(String(), logger.ToolTipForLastUpdateTooltipUnderCursor());
+  EXPECT_EQ(String(), logger->ToolTipForLastUpdateTooltipUnderCursor());
 
-  logger.ClearToolTipForLastUpdateTooltipUnderCursor();
+  logger->ClearToolTipForLastUpdateTooltipUnderCursor();
   element->setAttribute(html_names::kTitleAttr, AtomicString("updated"));
   client->UpdateTooltipUnderCursor(holder->GetFrame(), location, result);
   // UpdateTooltipUnderCursor(String,TextDirection) should be called because
   // tooltip string is different from the last one.
-  EXPECT_EQ("updated", logger.ToolTipForLastUpdateTooltipUnderCursor());
+  EXPECT_EQ("updated", logger->ToolTipForLastUpdateTooltipUnderCursor());
 }
 
 TEST_F(ChromeClientTest, UpdateTooltipUnderCursorEmptyString) {

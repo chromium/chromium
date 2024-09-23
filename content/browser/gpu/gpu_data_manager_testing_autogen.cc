@@ -17,7 +17,7 @@
 
 namespace gpu {
 
-const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
+const std::array<GpuControlList::Entry, 6> kGpuDataManagerTestingEntries = {{
     {
         1,  // id
         "GpuDataManagerImplPrivateTest.GpuSideBlocklisting.0",
@@ -222,6 +222,5 @@ const GpuControlList::Entry kGpuDataManagerTestingEntries[] = {
         0,        // exceptions count
         nullptr,  // exceptions
     },
-};
-const size_t kGpuDataManagerTestingEntryCount = 6;
+}};
 }  // namespace gpu

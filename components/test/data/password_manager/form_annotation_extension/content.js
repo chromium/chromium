@@ -68,7 +68,7 @@ function getIndexInChildrenList(elem) {
  * MOST IMPORTANT part in the extension. By a number of heuristics, it creates
  * a CSS selector that would be persistent to web page changes (e.g. full path
  * to the element |elem| is a bad idea), but allows to find element |elem|.
- * TODO(crbug.com/614649): sometimes it fails to build unique selector. Fix it.
+ * TODO(crbug.com/41255533): sometimes it fails to build unique selector. Fix it.
  *
  * @param {Element} elem The element which CSS selector should be created.
  * @return {string} CSS selector of the element.
@@ -112,7 +112,7 @@ function getSmartSelector(elem) {
 
 /**
  * Returns CSS selectors of parent frames.
- * Doesn't work for cross-domain iframes. TODO(crbug.com/614651): Chrome
+ * Doesn't work for cross-domain iframes. TODO(crbug.com/41255536): Chrome
  * extensions should be able to process cross-domain stuff. Fix it.
  *
  * @param {Element} elem The element which parent frames should be returned.

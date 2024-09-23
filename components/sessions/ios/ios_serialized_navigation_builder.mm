@@ -9,7 +9,6 @@
 #include "ios/web/public/favicon/favicon_status.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/referrer.h"
-#include "ios/web/public/session/crw_navigation_item_storage.h"
 #include "ios/web/public/session/proto/navigation.pb.h"
 #include "ios/web/public/session/proto/proto_util.h"
 
@@ -64,25 +63,6 @@ IOSSerializedNavigationBuilder::FromNavigationStorageItem(
   // Use reload transition type to avoid incorrect increase for typed count.
   navigation.set_transition_type(ui::PAGE_TRANSITION_RELOAD);
   navigation.set_timestamp(web::TimeFromProto(item.timestamp()));
-
-  return navigation;
-}
-
-SerializedNavigationEntry
-IOSSerializedNavigationBuilder::FromNavigationStorageItem(
-    int index,
-    CRWNavigationItemStorage* item) {
-  SerializedNavigationEntry navigation;
-  navigation.set_index(index);
-  navigation.set_unique_id(GetNewNavigationItemUniqueID());
-  navigation.set_referrer_url(item.referrer.url);
-  navigation.set_referrer_policy(item.referrer.policy);
-  navigation.set_virtual_url(item.virtualURL);
-  navigation.set_title(item.title);
-
-  // Use reload transition type to avoid incorrect increase for typed count.
-  navigation.set_transition_type(ui::PAGE_TRANSITION_RELOAD);
-  navigation.set_timestamp(item.timestamp);
 
   return navigation;
 }

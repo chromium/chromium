@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -71,12 +72,16 @@ HostResolver::HostResolver(
     mojo::PendingReceiver<mojom::HostResolver> resolver_receiver,
     ConnectionShutdownCallback connection_shutdown_callback,
     net::HostResolver* internal_resolver,
+    std::unique_ptr<net::HostResolver> owned_internal_resolver,
     net::NetLog* net_log)
     : receiver_(this),
       pending_receiver_(std::move(resolver_receiver)),
       connection_shutdown_callback_(std::move(connection_shutdown_callback)),
+      owned_internal_resolver_(std::move(owned_internal_resolver)),
       internal_resolver_(internal_resolver),
       net_log_(net_log) {
+  DCHECK(!owned_internal_resolver_ ||
+         internal_resolver_ == owned_internal_resolver_.get());
   // Bind the pending receiver asynchronously to give the resolver a chance
   // to set up (some resolvers need to obtain the system config asynchronously).
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -100,7 +105,7 @@ void HostResolver::ResolveHost(
     mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<mojom::ResolveHostClient> response_client) {
 #if !BUILDFLAG(ENABLE_MDNS)
-  // TODO(crbug.com/821021): Handle without crashing if we create restricted
+  // TODO(crbug.com/41375980): Handle without crashing if we create restricted
   // HostResolvers for passing to untrusted processes.
   DCHECK(!optional_parameters ||
          optional_parameters->source != net::HostResolverSource::MULTICAST_DNS);
@@ -139,7 +144,7 @@ void HostResolver::MdnsListen(
     mojo::PendingRemote<mojom::MdnsListenClient> response_client,
     MdnsListenCallback callback) {
 #if !BUILDFLAG(ENABLE_MDNS)
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif  // !BUILDFLAG(ENABLE_MDNS)
 
   auto listener = std::make_unique<HostResolverMdnsListener>(internal_resolver_,
@@ -176,13 +181,13 @@ void HostResolver::OnResolveHostComplete(ResolveHostRequest* request,
   DCHECK_NE(net::ERR_IO_PENDING, error);
 
   auto found_request = requests_.find(request);
-  DCHECK(found_request != requests_.end());
+  CHECK(found_request != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(found_request);
 }
 
 void HostResolver::OnMdnsListenerCancelled(HostResolverMdnsListener* listener) {
   auto found_listener = listeners_.find(listener);
-  DCHECK(found_listener != listeners_.end());
+  CHECK(found_listener != listeners_.end(), base::NotFatalUntil::M130);
   listeners_.erase(found_listener);
 }
 

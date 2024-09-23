@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] prelu float32 0D scalar
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 1D constant tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 1D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 2D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 3D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 broadcast 4D x 1D slope
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 broadcast 4D x 1D slope of shape [1]
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 broadcast 4D x 2D slope
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 broadcast 4D x 3D slope
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] prelu float32 broadcast 4D x 4D slope
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

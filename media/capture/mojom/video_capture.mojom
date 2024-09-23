@@ -8,7 +8,7 @@ import "media/capture/mojom/video_capture_buffer.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
-// This file decribes the communication between a given Renderer Host interface
+// This file describes the communication between a given Renderer Host interface
 // implementation (VideoCaptureHost) and a remote VideoCaptureObserver.
 // VideoCaptureHost offers a stateless part (GetDeviceSupportedFormats() and
 // GetDeviceFormatsInUse()) that can be invoked at any time, and a stateful part

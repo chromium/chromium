@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h",
+  "+ios/chrome/browser/ui/omnibox/text_field_view_containing.h",
+]

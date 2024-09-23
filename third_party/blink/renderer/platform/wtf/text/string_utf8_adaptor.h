@@ -31,7 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_UTF8_ADAPTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_UTF8_ADAPTOR_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -52,8 +53,8 @@ class WTF_EXPORT StringUTF8Adaptor final {
   const char* data() const { return data_; }
   wtf_size_t size() const { return size_; }
 
-  base::StringPiece AsStringPiece() const {
-    return base::StringPiece(data_, size_);
+  std::string_view AsStringView() const {
+    return std::string_view(data_, size_);
   }
 
  private:

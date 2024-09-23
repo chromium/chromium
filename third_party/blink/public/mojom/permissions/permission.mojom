@@ -34,6 +34,11 @@ enum PermissionName {
   DISPLAY_CAPTURE,
   TOP_LEVEL_STORAGE_ACCESS,
   CAPTURED_SURFACE_CONTROL,
+  SPEAKER_SELECTION,
+  KEYBOARD_LOCK,
+  POINTER_LOCK,
+  FULLSCREEN,
+  WEB_APP_INSTALLATION,
 };
 
 struct MidiPermissionDescriptor {
@@ -59,12 +64,18 @@ struct TopLevelStorageAccessPermissionDescriptor {
   url.mojom.Origin requestedOrigin;
 };
 
+struct FullscreenPermissionDescriptor {
+  // True if the descriptor pertains to fullscreen without transient activation.
+  bool allow_without_user_gesture;
+};
+
 // Union of possible extensions to the base PermissionDescriptor type.
 union PermissionDescriptorExtension {
   MidiPermissionDescriptor midi;
   ClipboardPermissionDescriptor clipboard;
   CameraDevicePermissionDescriptor camera_device;
   TopLevelStorageAccessPermissionDescriptor top_level_storage_access;
+  FullscreenPermissionDescriptor fullscreen;
 };
 
 // This struct roughly corresponds to the PermissionDescriptor dictionary as
@@ -151,6 +162,13 @@ interface PermissionService {
   AddPermissionObserver(PermissionDescriptor permission,
                         PermissionStatus last_known_status,
                         pending_remote<PermissionObserver> observer);
+  // Calling this method indicates that a `HTMLPermissionElement` subscribes
+  // |observer| to updates about changes to the current origin's access to
+  // |permission|. This method is similar to `AddPermissionObserver` except it
+  // also takes into account the device's permission statuses.
+  AddPageEmbeddedPermissionObserver(PermissionDescriptor permission,
+                                    PermissionStatus last_known_status,
+                                    pending_remote<PermissionObserver> observer);
   // Notifies when an event listener with `event_type` was added to
   // PermissionStatus.
   NotifyEventListener(PermissionDescriptor permission, string event_type,

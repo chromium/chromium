@@ -8,6 +8,7 @@ import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STA
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,9 +35,7 @@ import androidx.browser.customtabs.EngagementSignalsCallback;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -51,7 +50,7 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
@@ -65,7 +64,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 @Batch(Batch.UNIT_TESTS)
 @Config(shadows = {CustomTabsConnectionUnitTest.ShadowUmaSessionStats.class, ShadowPostTask.class})
 public class CustomTabsConnectionUnitTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private SessionHandler mSessionHandler;
     @Mock private CustomTabsSessionToken mSession;
@@ -133,7 +131,6 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET)
     public void onActivityLayout_CallbackIsCalledForNamedMethod() {
         int left = 0;
         int top = 0;
@@ -217,6 +214,43 @@ public class CustomTabsConnectionUnitTest {
                 .setPackagesForUid(uid, "test.package.name");
         var handler = new EngagementSignalsHandler(mConnection, mSession);
         mConnection.mClientManager.newSession(mSession, uid, null, null, null, handler);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SEARCH_IN_CCT)
+    public void shouldEnableOmniboxForIntent_featureDisabled() {
+        // The logic is currently expected to not even peek in the intent.
+        assertFalse(mConnection.shouldEnableOmniboxForIntent(null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SEARCH_IN_CCT)
+    public void shouldEnableOmniboxForIntent_featureEnabled() {
+        // The logic is currently expected to not even peek in the intent.
+        // Omnibox must remain disabled even if the feature flag is on.
+        assertFalse(mConnection.shouldEnableOmniboxForIntent(null));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
+    public void isEphemeralBrowsingSupported_featureEnabled() {
+        Bundle bundle =
+                mConnection.extraCommand(
+                        CustomTabsConnection.IS_EPHEMERAL_BROWSING_SUPPORTED, null);
+        assertNotNull(bundle);
+        assertTrue(bundle.containsKey(CustomTabsConnection.EPHEMERAL_BROWSING_SUPPORTED_KEY));
+        assertTrue(bundle.getBoolean(CustomTabsConnection.EPHEMERAL_BROWSING_SUPPORTED_KEY));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
+    public void isEphemeralBrowsingSupported_featureDisabled() {
+        Bundle bundle =
+                mConnection.extraCommand(
+                        CustomTabsConnection.IS_EPHEMERAL_BROWSING_SUPPORTED, null);
+        assertNotNull(bundle);
+        assertTrue(bundle.containsKey(CustomTabsConnection.EPHEMERAL_BROWSING_SUPPORTED_KEY));
+        assertFalse(bundle.getBoolean(CustomTabsConnection.EPHEMERAL_BROWSING_SUPPORTED_KEY));
     }
 
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.

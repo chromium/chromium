@@ -17,9 +17,11 @@
 namespace ash {
 
 struct ASH_PUBLIC_EXPORT ToastData {
-  // A `ToastData` with a `kInfiniteDuration` duration will be displayed until
-  // the dismiss button on the toast is clicked.
-  static constexpr base::TimeDelta kInfiniteDuration = base::TimeDelta::Max();
+  // A `ToastData` with a `kInfiniteDuration` duration will be displayed for 30
+  // minutes or until the dismiss button on the toast is clicked. An actual
+  // infinite duration is not used to prevent cases where the toast won't be
+  // dismissable e.g. on kiosk mode that limits user input.
+  static constexpr base::TimeDelta kInfiniteDuration = base::Minutes(30);
 
   // The default duration that a toast will be shown before it is automatically
   // dismissed.
@@ -58,6 +60,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   std::u16string dismiss_text;
   bool persist_on_hover = false;
   bool show_on_all_root_windows = false;
+  bool activatable = false;
   // TODO(b/259100049): We should turn this into a `OnceClosure`.
   base::RepeatingClosure dismiss_callback;
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a

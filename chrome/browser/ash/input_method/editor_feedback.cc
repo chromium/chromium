@@ -5,11 +5,11 @@
 #include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "content/public/browser/browser_context.h"
@@ -65,13 +65,9 @@ void RedactThenSendFeedback(
 }  // namespace
 
 bool SendEditorFeedback(Profile* profile, std::string_view description) {
-  if (!base::FeatureList::IsEnabled(features::kOrcaFeedback)) {
-    return false;
-  }
-
   auto feedback_data = base::MakeRefCounted<feedback::FeedbackData>(
       GetFeedbackUploaderFromContext(profile), nullptr);
-  feedback_data->set_product_id(kOrcaFeedbackProductId);
+  feedback_data->set_product_id(feedback::kOrcaFeedbackProductId);
   feedback_data->set_include_chrome_platform(false);
   feedback_data->set_description(std::string(description));
   feedback_data->AddLog("CHROME VERSION", GetChromeVersion());

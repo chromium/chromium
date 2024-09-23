@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
-#include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chromeos/crosapi/mojom/select_file.mojom-shared.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -101,8 +101,7 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
     // |default_extension| is unused on Chrome OS.
     select_file_dialog_->SelectFileWithFileManagerParams(
         GetUiType(options->type), options->title, options->default_path,
-        file_types_.get(), file_type_index,
-        /*params=*/nullptr, owner,
+        file_types_.get(), file_type_index, owner,
         /*search_query=*/"",
         /*show_android_picker_apps=*/false);
   }
@@ -116,17 +115,16 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
  private:
   // ui::SelectFileDialog::Listener:
   void FileSelected(const ui::SelectedFileInfo& file,
-                    int file_type_index,
-                    void* params) override {
+                    int file_type_index) override {
     OnSelected({file}, file_type_index);
   }
 
-  void MultiFilesSelected(const std::vector<ui::SelectedFileInfo>& files,
-                          void* params) override {
+  void MultiFilesSelected(
+      const std::vector<ui::SelectedFileInfo>& files) override {
     OnSelected(files, /*file_type_index=*/0);
   }
 
-  void FileSelectionCanceled(void* params) override {
+  void FileSelectionCanceled() override {
     // Cancel is the same as selecting nothing.
     OnSelected({}, /*file_type_index=*/0);
   }

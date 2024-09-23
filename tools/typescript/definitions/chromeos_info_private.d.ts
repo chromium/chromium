@@ -75,6 +75,7 @@ declare namespace chrome {
       customizationId?: string,
       homeProvider?: string,
       hwid?: string,
+      deviceRequisition?: string,
       isMeetDevice?: boolean,
       initialLocale?: string,
       isOwner?: boolean,
@@ -107,6 +108,8 @@ declare namespace chrome {
     export function set(propertyName: PropertyName, propertyValue: any): void;
 
     export function isTabletModeEnabled(): Promise<boolean>;
+
+    export function isRunningOnLacros(): Promise<boolean>;
 
   }
 }

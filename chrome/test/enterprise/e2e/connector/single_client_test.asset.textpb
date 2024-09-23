@@ -1,0 +1,11 @@
+# This test configure can be used for single Windows machine scenario
+
+network {
+  name: "primary"
+}
+
+windows_machine {
+  name: "client2022"
+  machine_type: "win2022"
+  network_interface { network: "primary" }
+}

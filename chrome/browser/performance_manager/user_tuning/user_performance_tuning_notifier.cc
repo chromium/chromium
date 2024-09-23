@@ -4,10 +4,10 @@
 
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 
+#include <memory>
 #include <utility>
-#include <vector>
 
-#include "components/performance_manager/public/features.h"
+#include "base/check_op.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 
@@ -27,8 +27,7 @@ UserPerformanceTuningNotifier::UserPerformanceTuningNotifier(
 UserPerformanceTuningNotifier::~UserPerformanceTuningNotifier() = default;
 
 void UserPerformanceTuningNotifier::OnPassedToGraph(Graph* graph) {
-  CHECK(graph->GetAllPageNodes().empty());
-  graph_ = graph;
+  CHECK_EQ(graph->GetAllPageNodes().size(), 0u);
   graph->AddPageNodeObserver(this);
 
   metrics_interest_token_ = performance_manager::ProcessMetricsDecorator::
@@ -41,7 +40,6 @@ void UserPerformanceTuningNotifier::OnTakenFromGraph(Graph* graph) {
   metrics_interest_token_.reset();
 
   graph->RemovePageNodeObserver(this);
-  graph_ = nullptr;
 }
 
 void UserPerformanceTuningNotifier::OnPageNodeAdded(const PageNode* page_node) {
@@ -70,7 +68,8 @@ void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
 void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
     const SystemNode* system_node) {
   uint64_t total_rss = 0;
-  for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
+  for (const ProcessNode* process_node :
+       GetOwningGraph()->GetAllProcessNodes()) {
     total_rss += process_node->GetResidentSetKb();
   }
 
@@ -82,15 +81,6 @@ void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
   }
 
   previous_total_rss_ = total_rss;
-
-  ProxyAndPmfKbVector proxies_and_pmf;
-  std::vector<const PageNode*> all_page_nodes = graph_->GetAllPageNodes();
-  proxies_and_pmf.reserve(all_page_nodes.size());
-
-  for (auto* page_node : all_page_nodes) {
-    proxies_and_pmf.emplace_back(page_node->GetContentsProxy(),
-                                 page_node->EstimatePrivateFootprintSize());
-  }
 }
 
 void UserPerformanceTuningNotifier::MaybeAddTabAndNotify(

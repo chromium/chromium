@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] <div>s, <button>s, and <datalist>s should be allowed in <select>.
+  assert_equals: expected "\\n  <div>div 1</div>\\n  <button>button</button>\\n  <div>div 2</div>\\n  <datalist>\\n    <option>option</option>\\n  </datalist>\\n  <div>div 3</div>\\n" but got "\\n  div 1\\n  button\\n  div 2\\n  \\n    <option>option</option>\\n  \\n  div 3\\n"
+[FAIL] </select> should close <button>.
+  assert_equals: expected "\\n  <button>button\\n</button>" but got "\\n  button\\n"
+[FAIL] </select> should close <datalist>.
+  assert_equals: expected "\\n  <datalist>datalist\\n</datalist>" but got "\\n  datalist\\n"
+[FAIL] <select> in <button> in <select> should remove inner <select>.
+  assert_equals: expected "\\n  <button>\\n    </button>" but got "\\n  \\n    "
+[FAIL] <select> in <select><button><div> should remove inner <select>.
+  assert_equals: expected "\\n  <button>\\n    <div>\\n      </div></button>" but got "\\n  \\n    \\n      "
+[FAIL] Divs and imgs should be allowed as direct children of select and within options without a datalist.
+  assert_equals: expected "\\n  <div>\\n    <option><img>option</option>\\n  </div>\\n" but got "\\n  \\n    <option>option</option>\\n  \\n"
+Harness: the test ran to completion.
+

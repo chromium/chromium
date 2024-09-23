@@ -11,6 +11,7 @@ namespace blink {
 
 void LayoutBlockFlow::Trace(Visitor* visitor) const {
   visitor->Trace(multi_column_flow_thread_);
+  visitor->Trace(inline_node_data_);
   LayoutBlock::Trace(visitor);
 }
 
@@ -18,27 +19,35 @@ DISABLE_CFI_PERF
 bool LayoutBlockFlow::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   if (IsInline() || IsFloatingOrOutOfFlowPositioned() || IsScrollContainer() ||
-      IsFlexItemIncludingNG() || IsCustomItem() || IsDocumentElement() ||
-      IsGridItemIncludingNG() || IsWritingModeRoot() || IsMathItem() ||
+      IsFlexItem() || IsCustomItem() || IsDocumentElement() || IsGridItem() ||
+      IsWritingModeRoot() || IsMathItem() ||
       StyleRef().Display() == EDisplay::kFlowRoot ||
       StyleRef().Display() == EDisplay::kFlowRootListItem ||
       ShouldApplyPaintContainment() || ShouldApplyLayoutContainment() ||
-      StyleRef().IsDeprecatedWebkitBoxWithVerticalLineClamp() ||
-      StyleRef().SpecifiesColumns() ||
+      StyleRef().HasLineClamp() || StyleRef().SpecifiesColumns() ||
       StyleRef().GetColumnSpan() == EColumnSpan::kAll) {
     // The specs require this object to establish a new formatting context.
     return true;
   }
 
+  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() &&
+      Parent()->IsCanvas()) {
+    return true;
+  }
+
+  if (RuntimeEnabledFeatures::ContainerTypeNoLayoutContainmentEnabled()) {
+    if (StyleRef().IsContainerForSizeContainerQueries()) {
+      return true;
+    }
+  }
+
   // https://drafts.csswg.org/css-align/#distribution-block
   // All values other than normal force the block container to establish an
   // independent formatting context.
-  if (RuntimeEnabledFeatures::AlignContentForBlocksEnabled()) {
-    if (StyleRef().AlignContent().GetPosition() != ContentPosition::kNormal ||
-        StyleRef().AlignContent().Distribution() !=
-            ContentDistributionType::kDefault) {
-      return true;
-    }
+  if (StyleRef().AlignContent().GetPosition() != ContentPosition::kNormal ||
+      StyleRef().AlignContent().Distribution() !=
+          ContentDistributionType::kDefault) {
+    return true;
   }
 
   if (IsRenderedLegend())
@@ -64,6 +73,20 @@ void LayoutBlockFlow::StyleDidChange(StyleDifference diff,
         // Column rules are painted by anonymous column set children of the
         // multicol container. We need to notify them.
         flow_thread->ColumnRuleStyleDidChange();
+      }
+    }
+  }
+
+  if (diff.NeedsReshape()) {
+    SetNeedsCollectInlines();
+
+    // The `initial-letter` creates a special `InlineItem`. When it's turned
+    // on/off, its parent IFC should run `CollectInlines()`.
+    const ComputedStyle& new_style = StyleRef();
+    if (old_style->InitialLetter().IsNormal() !=
+        new_style.InitialLetter().IsNormal()) [[unlikely]] {
+      if (LayoutObject* parent = Parent()) {
+        parent->SetNeedsCollectInlines();
       }
     }
   }

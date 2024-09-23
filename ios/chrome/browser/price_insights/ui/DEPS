@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/ui/price_notifications",
+  "+ios/chrome/browser/contextual_panel/ui",
+]
+

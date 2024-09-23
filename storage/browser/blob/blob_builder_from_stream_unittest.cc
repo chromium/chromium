@@ -84,7 +84,6 @@ class BlobBuilderFromStreamTestWithDelayedLimits
         return actual_size / 2;
     }
     NOTREACHED();
-    return 0;
   }
 
   std::unique_ptr<BlobDataHandle> BuildFromString(

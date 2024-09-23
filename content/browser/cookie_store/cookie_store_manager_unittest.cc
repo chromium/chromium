@@ -365,6 +365,7 @@ class CookieStoreManagerTest
 
   bool IsFullCookieAccessAllowed(
       content::BrowserContext* browser_context,
+      content::WebContents* web_contents,
       const GURL& url,
       const blink::StorageKey& storage_key) override {
     if (net::SchemefulSite(url) == storage_key.top_level_site()) {
@@ -444,8 +445,8 @@ class CookieStoreManagerTest
     legacy_settings.emplace_back(
         ContentSettingsPattern::FromString("[*.]legacy.com"),
         ContentSettingsPattern::FromString("*"),
-        base::Value(ContentSetting::CONTENT_SETTING_ALLOW), std::string(),
-        false /* incognito */);
+        base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+        content_settings::ProviderType::kNone, false /* incognito */);
     cookie_manager_->SetContentSettings(
         ContentSettingsType::LEGACY_COOKIE_ACCESS, std::move(legacy_settings),
         base::NullCallback());
@@ -1839,13 +1840,16 @@ TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
             bad_mesage_observer.WaitForBadMessage());
 }
 
-// TODO(crbug.com/1427879): Test that the worker still can access unpartitioned
+// TODO(crbug.com/40063772): Test that the worker still can access unpartitioned
 // cookies with third-party cookie blocking on.
 TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
-                                 net::features::kThirdPartyStoragePartitioning},
-                                {});
+  // TODO(crbug.com/328043119): Remove code associated with
+  // kAncestorChainBitEnabledInPartitionedCookies after it's enabled by default.
+  feature_list.InitWithFeatures(
+      {net::features::kThirdPartyStoragePartitioning,
+       net::features::kAncestorChainBitEnabledInPartitionedCookies},
+      {});
 
   // Register 1P worker.
   int64_t first_party_registration_id =
@@ -1880,7 +1884,9 @@ TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
           net::COOKIE_PRIORITY_DEFAULT,
-          net::CookiePartitionKey::FromURLForTesting(GURL(kExampleScope)))));
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL(kExampleScope),
+              net::CookiePartitionKey::AncestorChainBit::kSameSite))));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1u, worker_test_helper_->changes().size());
@@ -1902,12 +1908,11 @@ TEST_F(CookieStoreManagerTest, PartitionedWorker_FirstPartyPartition) {
   EXPECT_EQ(0u, worker_test_helper_->changes().size());
 }
 
-// TODO(crbug.com/1427879): Test that the worker cannot access unpartitioned
+// TODO(crbug.com/40063772): Test that the worker cannot access unpartitioned
 // cookies with third-party cookie blocking on.
 TEST_P(CookieStoreManagerTest, PartitionedWorker_ThirdPartyPartition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
-                                 net::features::kThirdPartyStoragePartitioning},
+  feature_list.InitWithFeatures({net::features::kThirdPartyStoragePartitioning},
                                 {});
 
   // Register 3P partitioned worker.
@@ -1985,8 +1990,7 @@ TEST_P(CookieStoreManagerTest, PartitionedWorker_ThirdPartyPartition) {
 
 TEST_F(CookieStoreManagerTest, PartitionedWorker_NoncedPartition) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({net::features::kPartitionedCookies,
-                                 net::features::kThirdPartyStoragePartitioning},
+  feature_list.InitWithFeatures({net::features::kThirdPartyStoragePartitioning},
                                 {});
 
   // Register nonced partitioned worker.
@@ -2022,8 +2026,10 @@ TEST_F(CookieStoreManagerTest, PartitionedWorker_NoncedPartition) {
           /*secure=*/true,
           /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
           net::COOKIE_PRIORITY_DEFAULT,
-          net::CookiePartitionKey::FromURLForTesting(GURL(kExampleScope),
-                                                     kStorageKeyNonce))));
+          net::CookiePartitionKey::FromURLForTesting(
+              GURL(kExampleScope),
+              net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+              kStorageKeyNonce))));
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1u, worker_test_helper_->changes().size());

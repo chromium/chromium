@@ -51,6 +51,9 @@ class TemplateURLTableModel : public ui::TableModel,
   std::u16string GetText(size_t row, int column) override;
   void SetObserver(ui::TableModelObserver* observer) override;
 
+  // Returns the keyword to display corresponding to the search engine in `row`.
+  std::u16string GetKeywordToDisplay(size_t row);
+
   // Removes the entry at the specified index.
   void Remove(size_t index);
 

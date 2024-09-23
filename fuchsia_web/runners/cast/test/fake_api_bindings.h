@@ -8,12 +8,12 @@
 #include <chromium/cast/cpp/fidl.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 
 // Simple implementation of the ApiBindings service, for use by tests.
 class FakeApiBindingsImpl : public chromium::cast::ApiBindings {
@@ -28,7 +28,7 @@ class FakeApiBindingsImpl : public chromium::cast::ApiBindings {
   // if a port of the specified name has not yet been received, and returns an
   // invalid handle if that times out before a |Connect()| call is received.
   fidl::InterfaceHandle<fuchsia::web::MessagePort> RunAndReturnConnectedPort(
-      base::StringPiece name);
+      std::string_view name);
 
   // Sets the list of bindings which will be returned by GetAll().
   void set_bindings(std::vector<chromium::cast::ApiBinding> bindings) {
@@ -52,7 +52,7 @@ class FakeApiBindingsImpl : public chromium::cast::ApiBindings {
       ports_;
 
   // Used to wait for a specific port to be Connect()ed.
-  base::StringPiece expected_port_name_;
+  std::string_view expected_port_name_;
   base::OnceClosure on_expected_port_received_;
 };
 

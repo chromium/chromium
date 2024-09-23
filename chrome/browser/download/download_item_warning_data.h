@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/supports_user_data.h"
@@ -28,19 +29,14 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     // Applicable actions: DISCARD, OPEN_SUBPAGE
     BUBBLE_MAINPAGE = 1,
     // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
-    // PROCEED_DEEP_SCAN, OPEN_LEARN_MORE_LINK
+    // PROCEED_DEEP_SCAN, ACCEPT_DEEP_SCAN, OPEN_LEARN_MORE_LINK
     BUBBLE_SUBPAGE = 2,
-    // Applicable actions: DISCARD, KEEP, PROCEED
-    // Under ImprovedDownloadPageWarnings:
+    // Applicable actions: DISCARD, KEEP, PROCEED, ACCEPT_DEEP_SCAN
     // PROCEED on the downloads page indicates saving a "suspicious" download
     // directly, without going through the prompt. In contrast, KEEP indicates
     // opening the prompt, for a "dangerous" download.
     DOWNLOADS_PAGE = 3,
-    // Applicable actions: PROCEED, CANCEL, CLOSE
-    // Under ImprovedDownloadPageWarnings: CLOSE is no longer a separate option
-    // because the new dialog only has PROCEED and CANCEL buttons, and we treat
-    // dismissing it with Escape the same as pressing cancel.
-    // TODO(chlily): Clean this comment up once the feature launches.
+    // Applicable actions: PROCEED, CANCEL
     DOWNLOAD_PROMPT = 4,
     // Applicable actions: OPEN_SUBPAGE
     // Note: This is only used on Lacros. DownloadItemWarningData is only
@@ -90,7 +86,9 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
     PROCEED_DEEP_SCAN = 9,
     // The user clicks the learn more link on the bubble subpage.
     OPEN_LEARN_MORE_LINK = 10,
-    kMaxValue = OPEN_LEARN_MORE_LINK
+    // The user accepts starting a deep scan.
+    ACCEPT_DEEP_SCAN = 11,
+    kMaxValue = ACCEPT_DEEP_SCAN
   };
 
   struct WarningActionEvent {
@@ -107,7 +105,38 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
                        WarningAction action,
                        int64_t action_latency_msec,
                        bool is_terminal_action);
+
+    // Serializes the surface, action, and action_latency_msec into a string
+    // in a colon-separated format such as "DOWNLOADS_PAGE:DISCARD:10000".
+    std::string ToString() const;
   };
+
+  // Enum representing the trigger of the scan request.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange
+  enum class DeepScanTrigger {
+    // The trigger is unknown.
+    TRIGGER_UNKNOWN = 0,
+
+    // The trigger is the standard prompt in the download bubble,
+    // shown for Advanced Protection or Enhanced Protection users.
+    TRIGGER_CONSUMER_PROMPT = 1,
+
+    // The trigger is the enterprise policy.
+    TRIGGER_POLICY = 2,
+
+    // The trigger is the encrypted archive prompt in the download
+    // bubble, which requires the password as well as the file.
+    TRIGGER_ENCRYPTED_CONSUMER_PROMPT = 3,
+
+    // The trigger is automatic deep scanning, with no prompt, which
+    // applies only to Enhanced Protection users.
+    TRIGGER_IMMEDIATE_DEEP_SCAN = 4,
+
+    kMaxValue = TRIGGER_IMMEDIATE_DEEP_SCAN,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sb_client/enums.xml)
 
   ~DownloadItemWarningData() override;
 
@@ -124,10 +153,13 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
                                     WarningSurface surface,
                                     WarningAction action);
 
-  // Returns whether the download was an encrypted archive.
-  static bool IsEncryptedArchive(const download::DownloadItem* download);
-  static void SetIsEncryptedArchive(download::DownloadItem* download,
-                                    bool is_encrypted_archive);
+  // Returns whether the download was an encrypted archive at the
+  // top-level (i.e. the encryption was not within a nested archive).
+  static bool IsTopLevelEncryptedArchive(
+      const download::DownloadItem* download);
+  static void SetIsTopLevelEncryptedArchive(
+      download::DownloadItem* download,
+      bool is_top_level_encrypted_archive);
 
   // Returns whether the user has entered an incorrect password for the
   // archive.
@@ -146,10 +178,24 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   static void SetHasShownLocalDecryptionPrompt(download::DownloadItem* download,
                                                bool has_shown);
 
+  // Returns the reason we initiated deep scanning for the download.
+  static DeepScanTrigger DownloadDeepScanTrigger(
+      const download::DownloadItem* download);
+  static void SetDeepScanTrigger(download::DownloadItem* download,
+                                 DeepScanTrigger trigger);
+
   // Returns whether an encrypted archive was fully extracted.
   static bool IsFullyExtractedArchive(const download::DownloadItem* download);
   static void SetIsFullyExtractedArchive(download::DownloadItem* download,
                                          bool extracted);
+
+  // Time and surface of the first SHOWN event. Time will be null if SHOWN has
+  // not yet been logged. Surface will return nullopt if SHOWN has not yet been
+  // logged.
+  static base::Time WarningFirstShownTime(
+      const download::DownloadItem* download);
+  static std::optional<WarningSurface> WarningFirstShownSurface(
+      const download::DownloadItem* download);
 
  private:
   DownloadItemWarningData();
@@ -165,14 +211,16 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   static const char kKey[];
 
   base::Time warning_first_shown_time_;
+  std::optional<WarningSurface> warning_first_shown_surface_ = std::nullopt;
   std::vector<WarningActionEvent> action_events_;
-  bool is_encrypted_archive_ = false;
+  bool is_top_level_encrypted_archive_ = false;
   bool has_incorrect_password_ = false;
   bool has_shown_local_decryption_prompt_ = false;
   bool fully_extracted_archive_ = false;
   // Whether a "shown" event has been logged for the Downloads Page for this
   // download. Not persisted across restarts.
   bool logged_downloads_page_shown_ = false;
+  DeepScanTrigger deep_scan_trigger_ = DeepScanTrigger::TRIGGER_UNKNOWN;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_

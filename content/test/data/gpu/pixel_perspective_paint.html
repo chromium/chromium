@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Perspective test for divs.</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script>
+var g_swapsBeforeAck = 50;
+
+function main()
+{
+  waitForFinish();
+}
+
+function waitForFinish()
+{
+  if (g_swapsBeforeAck == 0) {
+    domAutomationController.send("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+</script>
+</head>
+<body onload="main()">
+<div style="
+  perspective: 1px;
+  border: 1px solid seagreen;
+">
+    <div style="
+      border-radius: .5rem;
+      overflow: hidden;
+      border: 1px solid gold;
+    ">
+    <div style="
+      max-height: 12rem;
+      overflow-y: auto;
+      border-radius: .25rem;
+      border: 1px solid rebeccapurple;
+    ">
+      <p>item</p>
+      <p>item</p>
+      <p>item</p>
+      <p>item</p>
+      <p>item</p>
+      <p>item</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

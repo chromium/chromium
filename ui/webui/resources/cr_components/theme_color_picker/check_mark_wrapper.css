@@ -1,0 +1,50 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-theme-color-check-mark-wrapper-background: var(
+      --color-theme-color-picker-checkmark-background,
+      var(--cr-fallback-color-primary));
+  --cr-theme-color-check-mark-wrapper-color: var(
+      --color-theme-color-picker-checkmark-foreground,
+      var(--cr-fallback-color-on-primary));
+  --cr-theme-color-check-mark-wrapper-end: -3px;
+  --cr-theme-color-check-mark-wrapper-size: 20px;
+  --cr-theme-color-check-mark-wrapper-top: -3px;
+  display: block;
+  position: relative;
+}
+
+svg {
+  display: block;
+  height: var(--cr-theme-color-check-mark-wrapper-size);
+  left: initial;
+  position: absolute;
+  right: var(--cr-theme-color-check-mark-wrapper-end);
+  top: var(--cr-theme-color-check-mark-wrapper-top);
+  width: var(--cr-theme-color-check-mark-wrapper-size);
+  z-index: 1;
+}
+
+:host(:not([checked])) svg {
+  display: none;
+}
+
+:host-context([dir=rtl]) svg {
+  left: var(--cr-theme-color-check-mark-wrapper-end);
+  right: initial;
+}
+
+#background {
+  fill: var(--cr-theme-color-check-mark-wrapper-background);
+}
+
+#checkMark {
+  fill: var(--cr-theme-color-check-mark-wrapper-color);
+}

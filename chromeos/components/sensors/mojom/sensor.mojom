@@ -193,7 +193,7 @@ interface SensorDevice {
 
   // Gets the |attr_name| attribute of channels as a group into |values| in
   // string.
-  // Returns absl::nullopt if the attribute in the channel cannot be read.
+  // Returns std::nullopt if the attribute in the channel cannot be read.
   GetChannelsAttributes@8(array<int32> iio_chn_indices, string attr_name)
     => (array<string?> values);
 };

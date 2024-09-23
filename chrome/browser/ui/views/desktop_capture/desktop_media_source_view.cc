@@ -13,15 +13,20 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
+
+namespace {
+constexpr int kCornerRadius = 8;
+}
 
 using content::DesktopMediaID;
 
@@ -34,15 +39,13 @@ DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
     const gfx::Rect& icon_rect,
     const gfx::Rect& label_rect,
     gfx::HorizontalAlignment text_alignment,
-    const gfx::Rect& image_rect,
-    int focus_rectangle_inset)
+    const gfx::Rect& image_rect)
     : columns(columns),
       item_size(item_size),
       icon_rect(icon_rect),
       label_rect(label_rect),
       text_alignment(text_alignment),
-      image_rect(image_rect),
-      focus_rectangle_inset(focus_rectangle_inset) {}
+      image_rect(image_rect) {}
 
 DesktopMediaSourceView::DesktopMediaSourceView(
     DesktopMediaListView* parent,
@@ -52,17 +55,21 @@ DesktopMediaSourceView::DesktopMediaSourceView(
       source_id_(source_id),
       selected_(false) {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-  image_view_ =
-      AddChildView(base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-                           features::IsChromeRefresh2023()
-                       ? std::make_unique<RoundedCornerImageView>()
-                       : std::make_unique<views::ImageView>());
+  image_view_ = AddChildView(std::make_unique<RoundedCornerImageView>());
   label_ = AddChildView(std::make_unique<views::Label>());
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetStyle(style);
   views::FocusRing::Install(this);
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kCornerRadius);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  UpdateAccessibleName();
+  label_text_changed_callback_ =
+      label_->AddTextChangedCallback(base::BindRepeating(
+          &DesktopMediaSourceView::OnLabelTextChanged, base::Unretained(this)));
 }
 
 DesktopMediaSourceView::~DesktopMediaSourceView() {}
@@ -97,24 +104,14 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
       }
     }
 
-    if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-        features::IsChromeRefresh2023()) {
-      SetBackground(views::CreateRoundedRectBackground(
-          GetColorProvider()->GetColor(ui::kColorSysTonalContainer), 8));
-    } else {
-      image_view_->SetBackground(views::CreateSolidBackground(
-          GetColorProvider()->GetColor(ui::kColorMenuItemBackgroundSelected)));
-    }
+    SetBackground(views::CreateRoundedRectBackground(
+        GetColorProvider()->GetColor(ui::kColorSysTonalContainer),
+        kCornerRadius));
     label_->SetFontList(label_->font_list().Derive(0, gfx::Font::NORMAL,
                                                    gfx::Font::Weight::BOLD));
     parent_->OnSelectionChanged();
   } else {
-    if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-        features::IsChromeRefresh2023()) {
-      SetBackground(nullptr);
-    } else {
-      image_view_->SetBackground(nullptr);
-    }
+    SetBackground(nullptr);
     label_->SetFontList(label_->font_list().Derive(0, gfx::Font::NORMAL,
                                                    gfx::Font::Weight::NORMAL));
   }
@@ -173,21 +170,25 @@ bool DesktopMediaSourceView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void DesktopMediaSourceView::OnGestureEvent(ui::GestureEvent* event) {
-  // Detect tap gesture using ET_GESTURE_TAP_DOWN so the view also gets focused
-  // on the long tap (when the tap gesture starts).
-  if (event->type() == ui::ET_GESTURE_TAP_DOWN) {
+  // Detect tap gesture using EventType::kGestureTapDown so the view also gets
+  // focused on the long tap (when the tap gesture starts).
+  if (event->type() == ui::EventType::kGestureTapDown) {
     RequestFocus();
     event->SetHandled();
   }
 }
 
-void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
-  node_data->SetNameChecked(
-      label_->GetText().empty()
-          ? l10n_util::GetStringUTF16(
-                IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME)
-          : label_->GetText());
+void DesktopMediaSourceView::OnLabelTextChanged() {
+  UpdateAccessibleName();
+}
+
+void DesktopMediaSourceView::UpdateAccessibleName() {
+  if (label_->GetText().empty()) {
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+        IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME));
+  } else {
+    GetViewAccessibility().SetName(label_->GetText());
+  }
 }
 
 BEGIN_METADATA(DesktopMediaSourceView)

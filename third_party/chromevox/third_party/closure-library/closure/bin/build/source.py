@@ -21,12 +21,16 @@ Simple class to scan a JavaScript file and express its dependencies.
 __author__ = 'nnaze@google.com'
 
 
+import codecs
 import re
 
-_BASE_REGEX_STRING = '^\s*goog\.%s\(\s*[\'"](.+)[\'"]\s*\)'
+_BASE_REGEX_STRING = r'^\s*goog\.%s\(\s*[\'"](.+)[\'"]\s*\)'
+_MODULE_REGEX = re.compile(_BASE_REGEX_STRING % 'module')
 _PROVIDE_REGEX = re.compile(_BASE_REGEX_STRING % 'provide')
-_REQUIRES_REGEX = re.compile(_BASE_REGEX_STRING % 'require')
 
+_REQUIRE_REGEX_STRING = (r'^\s*(?:(?:var|let|const)\s+[a-zA-Z0-9$_,:{}\s]*'
+                         r'\s*=\s*)?goog\.require\(\s*[\'"](.+)[\'"]\s*\)')
+_REQUIRES_REGEX = re.compile(_REQUIRE_REGEX_STRING)
 
 class Source(object):
   """Scans a JavaScript source for its provided and required namespaces."""
@@ -52,6 +56,7 @@ class Source(object):
 
     self.provides = set()
     self.requires = set()
+    self.is_goog_module = False
 
     self._source = source
     self._ScanSource()
@@ -83,6 +88,10 @@ class Source(object):
       match = _PROVIDE_REGEX.match(line)
       if match:
         self.provides.add(match.group(1))
+      match = _MODULE_REGEX.match(line)
+      if match:
+        self.provides.add(match.group(1))
+        self.is_goog_module = True
       match = _REQUIRES_REGEX.match(line)
       if match:
         self.requires.add(match.group(1))
@@ -111,8 +120,13 @@ def GetFileContents(path):
     IOError: An error occurred opening or reading the file.
 
   """
-  fileobj = open(path)
+  fileobj = None
   try:
+    fileobj = codecs.open(path, encoding='utf-8-sig')
     return fileobj.read()
+  except IOError as error:
+    raise IOError('An error occurred opening or reading the file: %s. %s'
+                  % (path, error))
   finally:
-    fileobj.close()
+    if fileobj is not None:
+      fileobj.close()

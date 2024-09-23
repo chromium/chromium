@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationRationaleResult;
 import org.chromium.chrome.browser.notifications.R;
@@ -44,7 +43,6 @@ public class NotificationPermissionRationaleDialogControllerTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         mModalDialogManager =
                 new ModalDialogManager(Mockito.mock(ModalDialogManager.Presenter.class), 0);
         mContext = ApplicationProvider.getApplicationContext();

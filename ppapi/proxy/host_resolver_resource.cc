@@ -29,7 +29,6 @@ PP_HostResolver_Private_Hint ConvertToHostResolverPrivateHint(
       break;
     default:
       NOTREACHED();
-      private_hint.family = PP_NETADDRESSFAMILY_PRIVATE_UNSPECIFIED;
   }
 
   private_hint.flags = 0;

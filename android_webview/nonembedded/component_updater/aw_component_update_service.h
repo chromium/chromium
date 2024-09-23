@@ -6,10 +6,10 @@
 #define ANDROID_WEBVIEW_NONEMBEDDED_COMPONENT_UPDATER_AW_COMPONENT_UPDATE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"

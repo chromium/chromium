@@ -115,8 +115,9 @@ TEST_F(FederatedClientManagerFakeAshInteractionTest, ReportExample) {
   EXPECT_TRUE(manager_->IsFederatedServiceAvailable());
   EXPECT_EQ(0, manager_->get_num_successful_reports_for_test());
 
-  manager_->ReportSingleString("test_client_name", "example_feature_name",
-                               "example_string");
+  manager_->ReportSingleString(
+      chromeos::federated::mojom::FederatedExampleTableId::UNKNOWN,
+      "example_feature_name", "example_string");
   EXPECT_EQ(1, manager_->get_num_successful_reports_for_test());
 }
 

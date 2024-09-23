@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="UKM.AppVersionDifferentWhenPurging" enum="BooleanChanged"
+    expires_after="2025-03-09">
+  <owner>rkaplow@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Logged when doing a partial purges of unsent UKM logs. If the unsent log has
+    a different app version that the client's current version then a true is
+    logged and the report's log_written_by_app_version should be set with the
+    current version. Otherwise a false is logged.
+  </summary>
+</histogram>
+
 <histogram name="UKM.BuildAndStoreLogIsEmpty" enum="Boolean"
     expires_after="2025-05-01">
   <owner>rkaplow@chromium.org</owner>
@@ -68,7 +80,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UKM.Entries.Dropped.ByEntryHash" enum="UkmEventNameHash"
     expires_after="2025-05-01">
-  <owner>jwd@chromium.org</owner>
+  <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
     The hashed name of the UKM entry being dropped. The hash is the same hash
@@ -322,6 +334,29 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
     Counter for number of UKM unsent logs removed from persistent storage.
+  </summary>
+</histogram>
+
+<histogram name="UKM.WebDXFeatureSets.Dropped" enum="UkmDataDroppedReason"
+    expires_after="2025-05-01">
+  <owner>yrsun@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The reason why a web feature set was dropped. Emitted every time a call to
+    RecordWebFeatures() results in a drop. A web feature set is a set of
+    features that were used in a particular Source.
+  </summary>
+</histogram>
+
+<histogram name="UKM.WebDXFeatureSets.SerializedCount" units="web feature sets"
+    expires_after="2025-05-01">
+  <owner>yrsun@chromium.org</owner>
+  <owner>lucnguyen@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Number of serialized UKM web feature sets when storing a UKM log. A web
+    feature set is a set of features that were used in a particular Source.
   </summary>
 </histogram>
 

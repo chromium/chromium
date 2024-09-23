@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 
 #include <stddef.h>
+
 #include <map>
 #include <type_traits>
 #include <utility>
@@ -15,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -109,10 +110,6 @@ AppServiceProxyBase::AppInnerIconLoader::LoadIconFromIconKey(
   return nullptr;
 }
 
-AppServiceProxyBase::LaunchParams::LaunchParams() = default;
-
-AppServiceProxyBase::LaunchParams::~LaunchParams() = default;
-
 AppServiceProxyBase::AppServiceProxyBase(Profile* profile)
     : app_inner_icon_loader_(this),
       app_icon_coalescer_(&app_inner_icon_loader_),
@@ -175,15 +172,6 @@ void AppServiceProxyBase::Initialize() {
 AppPublisher* AppServiceProxyBase::GetPublisher(AppType app_type) {
   auto it = publishers_.find(app_type);
   return it == publishers_.end() ? nullptr : it->second;
-}
-
-void AppServiceProxyBase::OnPublisherNotReadyForLaunch(
-    const std::string& app_id,
-    std::unique_ptr<LaunchParams> launch_request) {
-  if (launch_request && !launch_request->call_back_.is_null()) {
-    std::move(launch_request->call_back_).Run(LaunchResult(State::kFailed));
-  }
-  return;
 }
 
 apps::AppRegistryCache& AppServiceProxyBase::AppRegistryCache() {
@@ -271,12 +259,6 @@ void AppServiceProxyBase::Launch(const std::string& app_id,
                &window_info](const apps::AppUpdate& update) {
         auto* publisher = GetPublisher(update.AppType());
         if (!publisher) {
-          std::unique_ptr<LaunchParams> params =
-              std::make_unique<LaunchParams>();
-          params->event_flags_ = event_flags;
-          params->launch_source_ = launch_source;
-          params->window_info_ = std::move(window_info);
-          OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
           return;
         }
 
@@ -305,12 +287,6 @@ void AppServiceProxyBase::LaunchAppWithFiles(
                &file_paths](const apps::AppUpdate& update) {
         auto* publisher = GetPublisher(update.AppType());
         if (!publisher) {
-          std::unique_ptr<LaunchParams> params =
-              std::make_unique<LaunchParams>();
-          params->event_flags_ = event_flags;
-          params->launch_source_ = launch_source;
-          params->file_paths_ = std::move(file_paths);
-          OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
           return;
         }
 
@@ -349,13 +325,7 @@ void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
                                             const AppUpdate& update) mutable {
     auto* publisher = GetPublisher(update.AppType());
     if (!publisher) {
-      std::unique_ptr<LaunchParams> params = std::make_unique<LaunchParams>();
-      params->event_flags_ = event_flags;
-      params->intent_ = std::move(intent);
-      params->launch_source_ = launch_source;
-      params->window_info_ = std::move(window_info);
-      params->call_back_ = std::move(callback);
-      OnPublisherNotReadyForLaunch(update.AppId(), std::move(params));
+      std::move(callback).Run(LaunchResult(State::kFailed));
       return;
     }
 
@@ -399,12 +369,7 @@ void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
   auto app_type = app_registry_cache_.GetAppType(params.app_id);
   auto* publisher = GetPublisher(app_type);
   if (!publisher) {
-    std::string app_id = params.app_id;
-    std::unique_ptr<LaunchParams> launch_params =
-        std::make_unique<LaunchParams>();
-    launch_params->params_ = std::move(params);
-    launch_params->call_back_ = std::move(callback);
-    OnPublisherNotReadyForLaunch(app_id, std::move(launch_params));
+    std::move(callback).Run(LaunchResult());
     return;
   }
 

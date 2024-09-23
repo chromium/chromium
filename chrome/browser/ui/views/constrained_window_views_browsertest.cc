@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/constrained_window/constrained_window_views.h"
+
 #include <memory>
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -20,8 +22,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -31,11 +35,12 @@ class TestDialog : public views::DialogDelegateView {
  public:
   TestDialog() {
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    SetModalType(ui::MODAL_TYPE_CHILD);
+    SetModalType(ui::mojom::ModalType::kChild);
     // Dialogs that take focus must have a name and role to pass accessibility
     // checks.
-    GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
-    GetViewAccessibility().OverrideName("Test dialog");
+    GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+    GetViewAccessibility().SetName("Test dialog",
+                                   ax::mojom::NameFrom::kAttribute);
   }
 
   TestDialog(const TestDialog&) = delete;
@@ -63,13 +68,27 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
       delete;
 
   ~ConstrainedWindowViewTest() override = default;
+
+  void CreateNewTabAndLayout(Browser* browser) {
+    chrome::NewTab(browser);
+    // Layout can trigger changes in web content visibility which in turn
+    // affects the visibility of tab modal dialogs.
+    RunScheduledLayouts();
+  }
+
+  void CloseTabAndLayout(Browser* browser) {
+    chrome::CloseTab(browser);
+    // Layout can trigger changes in web content visibility which in turn
+    // affects the visibility of tab modal dialogs.
+    RunScheduledLayouts();
+  }
 };
 
 }  // namespace
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Unexpected multiple focus managers on MacViews: http://crbug.com/824551
-// TODO(crbug.com/1509159):  Enable for Linux after resolving failure.
+// TODO(crbug.com/41481774):  Enable for Linux after resolving failure.
 #define MAYBE_FocusTest DISABLED_FocusTest
 #else
 #define MAYBE_FocusTest FocusTest
@@ -114,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
 
   // Creating a new tab should take focus away from the other tab's dialog.
   const int tab_with_dialog = browser()->tab_strip_model()->active_index();
-  chrome::NewTab(browser());
+  CreateNewTabAndLayout(browser());
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_NE(dialog2->GetContentsView(), focus_manager->GetFocusedView());
 
@@ -138,8 +157,10 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
-  chrome::CloseTab(browser());
-  content::RunAllPendingInMessageLoop();
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      dialog->GetWidget());
+  CloseTabAndLayout(browser());
+  widget_destroyed_waiter.Wait();
   EXPECT_EQ(nullptr, tracker.view());
 }
 
@@ -161,21 +182,23 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabSwitchTest) {
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
   // Open a new tab. The tab-modal window should hide itself.
-  chrome::NewTab(browser());
+  CreateNewTabAndLayout(browser());
   EXPECT_FALSE(dialog->GetWidget()->IsVisible());
 
   // Close the new tab. The tab-modal window should show itself again.
-  chrome::CloseTab(browser());
+  CloseTabAndLayout(browser());
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
   // Close the original tab.
-  chrome::CloseTab(browser());
-  content::RunAllPendingInMessageLoop();
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(
+      dialog->GetWidget());
+  CloseTabAndLayout(browser());
+  widget_destroyed_waiter.Wait();
   EXPECT_EQ(nullptr, tracker.view());
 }
 
 // Tests that tab-modal dialogs follow tabs dragged between browser windows.
-// TODO(crbug.com/1336418): On Mac, animations cause this test to be flaky.
+// TODO(crbug.com/40847696): On Mac, animations cause this test to be flaky.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_TabMoveTest DISABLED_TabMoveTest
 #else
@@ -192,23 +215,21 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
 
   // Move the tab to a second browser window; but first create another tab.
   // That prevents the first browser window from closing when its tab is moved.
-  chrome::NewTab(browser());
-  std::unique_ptr<content::WebContents> owned_web_contents =
-      browser()->tab_strip_model()->DetachWebContentsAtForInsertion(
+  CreateNewTabAndLayout(browser());
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser()->tab_strip_model()->DetachTabAtForInsertion(
           browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
   Browser* browser2 = CreateBrowser(browser()->profile());
-  browser2->tab_strip_model()->AppendWebContents(std::move(owned_web_contents),
-                                                 true);
+  browser2->tab_strip_model()->AppendTab(std::move(detached_tab), true);
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
-  // Close the first browser.
+  // Close the original hosting browser window, this should close the dialog.
+  // TODO(crbug.com/353174863): Update this test to instead close the browser
+  // currently hosting the dialog (browser2) once web modal dialogs are updated
+  // to allow reparenting to follow their associated WebContents.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(dialog->GetWidget());
   chrome::CloseWindow(browser());
-  content::RunAllPendingInMessageLoop();
-  EXPECT_TRUE(dialog->GetWidget()->IsVisible());
-
-  // Close the dialog's browser window.
-  chrome::CloseTab(browser2);
-  content::RunAllPendingInMessageLoop();
+  destroyed_waiter.Wait();
   EXPECT_EQ(nullptr, tracker.view());
 }
 

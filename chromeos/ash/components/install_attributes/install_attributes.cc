@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 
 #include <stddef.h>
@@ -15,6 +20,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -203,9 +209,8 @@ void InstallAttributes::ReadAttributesIfReady(
     device_locked_ = true;
 
     static const char* const kEnterpriseAttributes[] = {
-        kAttrEnterpriseDeviceId, kAttrEnterpriseDomain,
-        kAttrEnterpriseRealm,    kAttrEnterpriseMode,
-        kAttrEnterpriseOwned,    kAttrConsumerKioskEnabled,
+        kAttrEnterpriseDeviceId, kAttrEnterpriseDomain, kAttrEnterpriseRealm,
+        kAttrEnterpriseMode,     kAttrEnterpriseOwned,
     };
     std::map<std::string, std::string> attr_map;
     for (size_t i = 0; i < std::size(kEnterpriseAttributes); ++i) {
@@ -247,9 +252,7 @@ void InstallAttributes::LockDevice(policy::DeviceMode device_mode,
   CHECK((device_mode == policy::DEVICE_MODE_ENTERPRISE && !domain.empty() &&
          realm.empty() && !device_id.empty()) ||
         (device_mode == policy::DEVICE_MODE_DEMO && !domain.empty() &&
-         realm.empty() && !device_id.empty()) ||
-        (device_mode == policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH &&
-         domain.empty() && realm.empty() && device_id.empty()));
+         realm.empty() && !device_id.empty()));
   DCHECK(callback);
   CHECK_EQ(device_lock_running_, false);
 
@@ -334,17 +337,9 @@ void InstallAttributes::LockDeviceIfAttributesIsReady(
   }
 
   // Set values in the InstallAttrs.
-  std::string kiosk_enabled, enterprise_owned;
-  if (device_mode == policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH) {
-    kiosk_enabled = "true";
-  } else {
-    enterprise_owned = "true";
-  }
   std::string mode = GetDeviceModeString(device_mode);
-  if (!install_attributes_util::InstallAttributesSet(kAttrConsumerKioskEnabled,
-                                                     kiosk_enabled) ||
-      !install_attributes_util::InstallAttributesSet(kAttrEnterpriseOwned,
-                                                     enterprise_owned) ||
+  if (!install_attributes_util::InstallAttributesSet(kAttrEnterpriseOwned,
+                                                     "true") ||
       !install_attributes_util::InstallAttributesSet(kAttrEnterpriseMode,
                                                      mode) ||
       !install_attributes_util::InstallAttributesSet(kAttrEnterpriseDomain,
@@ -406,9 +401,15 @@ bool InstallAttributes::IsCloudManaged() const {
          registration_mode_ == policy::DEVICE_MODE_DEMO;
 }
 
-bool InstallAttributes::IsConsumerKioskDeviceWithAutoLaunch() {
-  return device_locked_ &&
-         registration_mode_ == policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;
+bool InstallAttributes::IsDeviceInDemoMode() const {
+  bool is_demo_device_mode =
+      registration_mode_ == policy::DeviceMode::DEVICE_MODE_DEMO;
+  bool is_demo_device_domain = registration_domain_ == policy::kDemoModeDomain;
+
+  // We check device mode and domain to allow for dev/test
+  // setup that is done by manual enrollment into demo domain. Device mode is
+  // not set to DeviceMode::DEVICE_MODE_DEMO then.
+  return is_demo_device_mode || is_demo_device_domain;
 }
 
 void InstallAttributes::TriggerConsistencyCheck(int dbus_retries) {
@@ -474,7 +475,8 @@ void InstallAttributes::OnClearStoredOwnerPassword(
 const char InstallAttributes::kConsumerDeviceMode[] = "consumer";
 const char InstallAttributes::kEnterpriseDeviceMode[] = "enterprise";
 const char InstallAttributes::kLegacyRetailDeviceMode[] = "kiosk";
-const char InstallAttributes::kConsumerKioskDeviceMode[] = "consumer_kiosk";
+const char InstallAttributes::kLegacyConsumerKioskDeviceMode[] =
+    "consumer_kiosk";
 const char InstallAttributes::kDemoDeviceMode[] = "demo_mode";
 
 const char InstallAttributes::kAttrEnterpriseDeviceId[] =
@@ -483,8 +485,6 @@ const char InstallAttributes::kAttrEnterpriseDomain[] = "enterprise.domain";
 const char InstallAttributes::kAttrEnterpriseRealm[] = "enterprise.realm";
 const char InstallAttributes::kAttrEnterpriseMode[] = "enterprise.mode";
 const char InstallAttributes::kAttrEnterpriseOwned[] = "enterprise.owned";
-const char InstallAttributes::kAttrConsumerKioskEnabled[] =
-    "consumer.app_kiosk_enabled";
 
 void InstallAttributes::OnCryptohomeServiceInitiallyAvailable(
     bool service_is_ready) {
@@ -504,15 +504,15 @@ std::string InstallAttributes::GetDeviceModeString(policy::DeviceMode mode) {
       return InstallAttributes::kEnterpriseDeviceMode;
     case policy::DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE:
       return InstallAttributes::kLegacyRetailDeviceMode;
-    case policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:
-      return InstallAttributes::kConsumerKioskDeviceMode;
+    case policy::DEPRECATED_DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:
+      return InstallAttributes::kLegacyConsumerKioskDeviceMode;
     case policy::DEVICE_MODE_DEMO:
       return InstallAttributes::kDemoDeviceMode;
     case policy::DEVICE_MODE_PENDING:
     case policy::DEVICE_MODE_NOT_SET:
       break;
   }
-  NOTREACHED() << "Invalid device mode: " << mode;
+  NOTREACHED_IN_MIGRATION() << "Invalid device mode: " << mode;
   return std::string();
 }
 
@@ -524,8 +524,9 @@ policy::DeviceMode InstallAttributes::GetDeviceModeFromString(
     return policy::DEVICE_MODE_ENTERPRISE;
   if (mode == InstallAttributes::kLegacyRetailDeviceMode)
     return policy::DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE;
-  if (mode == InstallAttributes::kConsumerKioskDeviceMode)
-    return policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;
+  if (mode == InstallAttributes::kLegacyConsumerKioskDeviceMode) {
+    return policy::DEPRECATED_DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;
+  }
   if (mode == InstallAttributes::kDemoDeviceMode)
     return policy::DEVICE_MODE_DEMO;
   return policy::DEVICE_MODE_NOT_SET;
@@ -541,15 +542,12 @@ void InstallAttributes::DecodeInstallAttributes(
 
   const std::string enterprise_owned =
       ReadMapKey(attr_map, kAttrEnterpriseOwned);
-  const std::string consumer_kiosk_enabled =
-      ReadMapKey(attr_map, kAttrConsumerKioskEnabled);
   const std::string mode = ReadMapKey(attr_map, kAttrEnterpriseMode);
   const std::string domain = ReadMapKey(attr_map, kAttrEnterpriseDomain);
   const std::string realm = ReadMapKey(attr_map, kAttrEnterpriseRealm);
   const std::string device_id = ReadMapKey(attr_map, kAttrEnterpriseDeviceId);
 
   if (enterprise_owned == "true") {
-    WarnIfNonempty(attr_map, kAttrConsumerKioskEnabled);
     registration_device_id_ = device_id;
 
     // Set registration_mode_.
@@ -589,12 +587,7 @@ void InstallAttributes::DecodeInstallAttributes(
   WarnIfNonempty(attr_map, kAttrEnterpriseDomain);
   WarnIfNonempty(attr_map, kAttrEnterpriseRealm);
   WarnIfNonempty(attr_map, kAttrEnterpriseDeviceId);
-  if (consumer_kiosk_enabled == "true") {
-    registration_mode_ = policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;
-    return;
-  }
 
-  WarnIfNonempty(attr_map, kAttrConsumerKioskEnabled);
   registration_mode_ = policy::DEVICE_MODE_CONSUMER;
 }
 

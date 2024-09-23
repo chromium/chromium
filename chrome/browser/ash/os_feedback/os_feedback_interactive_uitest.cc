@@ -8,8 +8,8 @@
 #include "base/test/gtest_tags.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "components/feedback/features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -24,7 +24,6 @@ constexpr char kBlankUrl[] = "about:blank";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackWebContentsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabWebContentsId);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kAboutChromeOsUrl[] = "chrome://os-settings/help";
@@ -96,18 +95,6 @@ class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
                                    "Send feedback"));
   }
 
-  auto WaitForElementToRender(const ui::ElementIdentifier& contents_id,
-                              const DeepQuery& element) {
-    StateChange element_renders;
-    element_renders.event = kElementRenders;
-    element_renders.where = element;
-    element_renders.test_function =
-        "(el) => { if (el !== null) { let rect = el.getBoundingClientRect(); "
-        "return rect.width > 0 && rect.height > 0; } return false; }";
-
-    return WaitForStateChange(contents_id, element_renders);
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -127,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
       InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
       Log("Pressing Alt+Shift+I"),
       SendAccelerator(kNewTabWebContentsId, open_feedback_accelerator),
-      FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
+      WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
 }
 
 // crbug.com/1517839
@@ -168,21 +155,18 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
       Log("Entering fake description"),
       ExecuteJsAt(kOsFeedbackWebContentsId, kDescriptionTextQuery,
                   " el => el.value = 'Testing only - please ignore'"),
-      FlushEvents(),
 
       Log("Clicking the continue button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kContinueButtonQuery),
       ClickElement(kOsFeedbackWebContentsId, kContinueButtonQuery),
-      FlushEvents(),
 
       Log("Clicking the send button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kSendReportButtonQuery),
       ClickElement(kOsFeedbackWebContentsId, kSendReportButtonQuery),
-      FlushEvents(),
 
       Log("Clicking the done button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kDoneButtonQuery),
-      ClickElement(kOsFeedbackWebContentsId, kDoneButtonQuery), FlushEvents(),
+      ClickElement(kOsFeedbackWebContentsId, kDoneButtonQuery),
 
       Log("Waiting for the feedback app to exit"),
       WaitForHide(kOsFeedbackWebContentsId));
@@ -205,19 +189,19 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromAboutChromeOsPage) {
       InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
       Log("Clicking the send feedback link"),
       ClickElement(kAboutChromeOsWebContentsId, kReportIssueMenuItemQuery),
-      FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
+      WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
 }
 
 IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromSetingsSearch) {
   // Query to pierce through Shadow DOM to find the search input element.
   const DeepQuery kSearchInputElementQuery = {
-      "os-settings-ui",          "os-toolbar",   "os-settings-search-box",
+      "os-settings-ui",          "settings-toolbar", "os-settings-search-box",
       "cr-toolbar-search-field", "#searchInput",
   };
   // Query to pierce through Shadow DOM to find the selected search result row.
   const DeepQuery kSelectedSearchResultRowQuery = {
       "os-settings-ui",
-      "os-toolbar",
+      "settings-toolbar",
       "os-settings-search-box",
       "os-search-result-row[selected]",
   };
@@ -235,20 +219,18 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromSetingsSearch) {
       Log("Searching for \"send feedback\""),
       ExecuteJsAt(kOsSettingsWebContentsId, kSearchInputElementQuery,
                   " el => el.focus()"),
-      EnterLowerCaseText("send feedback"), FlushEvents(),
+      EnterLowerCaseText("send feedback"),
 
       Log("Clicking the selected search result"),
       WaitForElementExists(kOsSettingsWebContentsId,
                            kSelectedSearchResultRowQuery),
       ClickElement(kOsSettingsWebContentsId, kSelectedSearchResultRowQuery),
-      FlushEvents(),
 
       Log("Waiting for the send feedback link ready"),
       WaitForElementExists(kOsSettingsWebContentsId, kReportIssueMenuItemQuery),
 
       Log("Clicking the send feedback link"),
       ClickElement(kOsSettingsWebContentsId, kReportIssueMenuItemQuery),
-      FlushEvents(),
 
       InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
       WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));

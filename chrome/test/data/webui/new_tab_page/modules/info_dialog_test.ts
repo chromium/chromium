@@ -30,4 +30,17 @@ suite('NewTabPageModulesInfoDialogTest', () => {
     // Assert.
     assertFalse(infoDialog.$.dialog.open);
   });
+
+  test('show-on-attach', () => {
+    // Arrange.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    infoDialog = new InfoDialogElement();
+    infoDialog.showOnAttach = true;
+
+    // Act.
+    document.body.appendChild(infoDialog);
+
+    // Assert.
+    assertTrue(infoDialog.$.dialog.open);
+  });
 });

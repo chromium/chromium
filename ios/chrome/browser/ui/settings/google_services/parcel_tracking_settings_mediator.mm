@@ -8,7 +8,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/settings/google_services/parcel_tracking_settings_model_consumer.h"
 

@@ -158,13 +158,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       });
 
   apiFunctions.setHandleRequest(
-      'computeChecksum', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
-        fileManagerPrivateInternal.computeChecksum(
-            url, callbackAdaptor(successCallback, failureCallback));
-      });
-
-  apiFunctions.setHandleRequest(
       'searchFiles', function(params, successCallback, failureCallback) {
         const newParams = {
           query: params.query,
@@ -404,25 +397,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     const url = getEntryURL(entry);
     fileManagerPrivateInternal.importCrostiniImage(url);
   });
-
-  apiFunctions.setHandleRequest(
-      'sharesheetHasTargets',
-      function(entries, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
-        fileManagerPrivateInternal.sharesheetHasTargets(
-            urls, callbackAdaptor(successCallback, failureCallback));
-      });
-
-  apiFunctions.setHandleRequest(
-      'invokeSharesheet',
-      function(
-          entries, launchSource, dlpSourceUrls, successCallback,
-          failureCallback) {
-        var urls = entries.map(getEntryURL);
-        fileManagerPrivateInternal.invokeSharesheet(
-            urls, launchSource, dlpSourceUrls,
-            callbackAdaptor(successCallback, failureCallback));
-      });
 
   apiFunctions.setHandleRequest(
       'toggleAddedToHoldingSpace',

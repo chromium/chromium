@@ -1,0 +1,53 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("voice") {
+  sources = [
+    "text_to_speech_notification_handler.h",
+    "text_to_speech_notification_handler.mm",
+    "text_to_speech_playback_controller.h",
+    "text_to_speech_playback_controller.mm",
+    "text_to_speech_playback_controller_factory.h",
+    "text_to_speech_playback_controller_factory.mm",
+    "text_to_speech_player.mm",
+    "voice_search_notification_names.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+
+  frameworks = [ "AVFoundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "text_to_speech_player_unittest.mm" ]
+
+  deps = [
+    ":voice",
+    ":voice_unit_tests_bundle_data",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+bundle_data("voice_unit_tests_bundle_data") {
+  visibility = [ ":unit_tests" ]
+  testonly = true
+  sources = [ "//ios/chrome/test/data/voice/test_sound.m4a" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_root_relative_dir}}/" +
+              "{{source_file_part}}" ]
+}

@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -60,7 +61,6 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
   bool IsRunning(gfx::NativeWindow parent_window) const override;
 
   // SelectFileDialog implementation.
-  // |params| is user data we pass back via the Listener interface.
   void SelectFileImpl(Type type,
                       const std::u16string& title,
                       const base::FilePath& default_path,
@@ -68,7 +68,6 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
 
  private:
@@ -119,55 +118,44 @@ class SelectFileDialogLinuxKde : public SelectFileDialogLinux {
       const KDialogParams& params);
 
   // Notifies the listener that a single file was chosen.
-  void FileSelected(const base::FilePath& path, void* params);
+  void FileSelected(const base::FilePath& path);
 
   // Notifies the listener that multiple files were chosen.
-  void MultiFilesSelected(const std::vector<base::FilePath>& files,
-                          void* params);
+  void MultiFilesSelected(const std::vector<base::FilePath>& files);
 
   // Notifies the listener that no file was chosen (the action was canceled).
-  // Dialog is passed so we can find that |params| pointer that was passed to
-  // us when we were told to show the dialog.
-  void FileNotSelected(void* params);
+  void FileNotSelected();
 
   void CreateSelectFolderDialog(Type type,
                                 const std::string& title,
                                 const base::FilePath& default_path,
-                                gfx::AcceleratedWidget parent,
-                                void* params);
+                                gfx::AcceleratedWidget parent);
 
   void CreateFileOpenDialog(const std::string& title,
                             const base::FilePath& default_path,
-                            gfx::AcceleratedWidget parent,
-                            void* params);
+                            gfx::AcceleratedWidget parent);
 
   void CreateMultiFileOpenDialog(const std::string& title,
                                  const base::FilePath& default_path,
-                                 gfx::AcceleratedWidget parent,
-                                 void* params);
+                                 gfx::AcceleratedWidget parent);
 
   void CreateSaveAsDialog(const std::string& title,
                           const base::FilePath& default_path,
-                          gfx::AcceleratedWidget parent,
-                          void* params);
+                          gfx::AcceleratedWidget parent);
 
   // Common function for OnSelectSingleFileDialogResponse and
   // OnSelectSingleFolderDialogResponse.
-  void SelectSingleFileHelper(void* params,
-                              bool allow_folder,
+  void SelectSingleFileHelper(bool allow_folder,
                               std::unique_ptr<KDialogOutputParams> results);
 
   void OnSelectSingleFileDialogResponse(
       gfx::AcceleratedWidget parent,
-      void* params,
       std::unique_ptr<KDialogOutputParams> results);
   void OnSelectMultiFileDialogResponse(
       gfx::AcceleratedWidget parent,
-      void* params,
       std::unique_ptr<KDialogOutputParams> results);
   void OnSelectSingleFolderDialogResponse(
       gfx::AcceleratedWidget parent,
-      void* params,
       std::unique_ptr<KDialogOutputParams> results);
 
   // Should be either DESKTOP_ENVIRONMENT_KDE3, KDE4, KDE5, or KDE6.
@@ -229,7 +217,7 @@ SelectFileDialogLinuxKde::SelectFileDialogLinuxKde(
   // whitespace and then try to parse a version from the second piece. If
   // parsing fails for whatever reason, we fall back to the behavior that works
   // with all currently known versions of kdialog.
-  std::vector<base::StringPiece> version_pieces = base::SplitStringPiece(
+  std::vector<std::string_view> version_pieces = base::SplitStringPiece(
       kdialog_version, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (version_pieces.size() >= 2) {
     base::Version parsed_version(version_pieces[1]);
@@ -262,7 +250,6 @@ void SelectFileDialogLinuxKde::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params,
     const GURL* caller) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   set_type(type);
@@ -291,20 +278,19 @@ void SelectFileDialogLinuxKde::SelectFileImpl(
     case SELECT_FOLDER:
     case SELECT_UPLOAD_FOLDER:
     case SELECT_EXISTING_FOLDER:
-      CreateSelectFolderDialog(type, title_string, default_path, window,
-                               params);
+      CreateSelectFolderDialog(type, title_string, default_path, window);
       return;
     case SELECT_OPEN_FILE:
-      CreateFileOpenDialog(title_string, default_path, window, params);
+      CreateFileOpenDialog(title_string, default_path, window);
       return;
     case SELECT_OPEN_MULTI_FILE:
-      CreateMultiFileOpenDialog(title_string, default_path, window, params);
+      CreateMultiFileOpenDialog(title_string, default_path, window);
       return;
     case SELECT_SAVEAS_FILE:
-      CreateSaveAsDialog(title_string, default_path, window, params);
+      CreateSaveAsDialog(title_string, default_path, window);
       return;
     case SELECT_NONE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 }
@@ -439,8 +425,7 @@ void SelectFileDialogLinuxKde::GetKDialogCommandLine(
   VLOG(1) << "KDialog command line: " << command_line->GetCommandLineString();
 }
 
-void SelectFileDialogLinuxKde::FileSelected(const base::FilePath& path,
-                                            void* params) {
+void SelectFileDialogLinuxKde::FileSelected(const base::FilePath& path) {
   if (type() == SELECT_SAVEAS_FILE)
     set_last_saved_path(path.DirName());
   else if (type() == SELECT_OPEN_FILE)
@@ -449,33 +434,30 @@ void SelectFileDialogLinuxKde::FileSelected(const base::FilePath& path,
            type() == SELECT_EXISTING_FOLDER)
     set_last_opened_path(path);
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   if (listener_) {  // What does the filter index actually do?
     // TODO(dfilimon): Get a reasonable index value from somewhere.
-    listener_->FileSelected(SelectedFileInfo(path), 1, params);
+    listener_->FileSelected(SelectedFileInfo(path), 1);
   }
 }
 
 void SelectFileDialogLinuxKde::MultiFilesSelected(
-    const std::vector<base::FilePath>& files,
-    void* params) {
+    const std::vector<base::FilePath>& files) {
   set_last_opened_path(files[0].DirName());
   if (listener_)
-    listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
-                                  params);
+    listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files));
 }
 
-void SelectFileDialogLinuxKde::FileNotSelected(void* params) {
+void SelectFileDialogLinuxKde::FileNotSelected() {
   if (listener_)
-    listener_->FileSelectionCanceled(params);
+    listener_->FileSelectionCanceled();
 }
 
 void SelectFileDialogLinuxKde::CreateSelectFolderDialog(
     Type type,
     const std::string& title,
     const base::FilePath& default_path,
-    gfx::AcceleratedWidget parent,
-    void* params) {
+    gfx::AcceleratedWidget parent) {
   int title_message_id = (type == SELECT_UPLOAD_FOLDER)
                              ? IDS_SELECT_UPLOAD_FOLDER_DIALOG_TITLE
                              : IDS_SELECT_FOLDER_DIALOG_TITLE;
@@ -489,14 +471,13 @@ void SelectFileDialogLinuxKde::CreateSelectFolderDialog(
               false, false)),
       base::BindOnce(
           &SelectFileDialogLinuxKde::OnSelectSingleFolderDialogResponse, this,
-          parent, params));
+          parent));
 }
 
 void SelectFileDialogLinuxKde::CreateFileOpenDialog(
     const std::string& title,
     const base::FilePath& default_path,
-    gfx::AcceleratedWidget parent,
-    void* params) {
+    gfx::AcceleratedWidget parent) {
   pipe_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -507,14 +488,13 @@ void SelectFileDialogLinuxKde::CreateFileOpenDialog(
               true, false)),
       base::BindOnce(
           &SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse, this,
-          parent, params));
+          parent));
 }
 
 void SelectFileDialogLinuxKde::CreateMultiFileOpenDialog(
     const std::string& title,
     const base::FilePath& default_path,
-    gfx::AcceleratedWidget parent,
-    void* params) {
+    gfx::AcceleratedWidget parent) {
   pipe_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -524,14 +504,13 @@ void SelectFileDialogLinuxKde::CreateMultiFileOpenDialog(
               default_path.empty() ? *last_opened_path() : default_path, parent,
               true, true)),
       base::BindOnce(&SelectFileDialogLinuxKde::OnSelectMultiFileDialogResponse,
-                     this, parent, params));
+                     this, parent));
 }
 
 void SelectFileDialogLinuxKde::CreateSaveAsDialog(
     const std::string& title,
     const base::FilePath& default_path,
-    gfx::AcceleratedWidget parent,
-    void* params) {
+    gfx::AcceleratedWidget parent) {
   pipe_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -542,52 +521,48 @@ void SelectFileDialogLinuxKde::CreateSaveAsDialog(
               true, false)),
       base::BindOnce(
           &SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse, this,
-          parent, params));
+          parent));
 }
 
 void SelectFileDialogLinuxKde::SelectSingleFileHelper(
-    void* params,
     bool allow_folder,
     std::unique_ptr<KDialogOutputParams> results) {
   VLOG(1) << "[kdialog] SingleFileResponse: " << results->output;
   if (results->exit_code || results->output.empty()) {
-    FileNotSelected(params);
+    FileNotSelected();
     return;
   }
 
   base::FilePath path(results->output);
   if (allow_folder) {
-    FileSelected(path, params);
+    FileSelected(path);
     return;
   }
 
   if (CallDirectoryExistsOnUIThread(path))
-    FileNotSelected(params);
+    FileNotSelected();
   else
-    FileSelected(path, params);
+    FileSelected(path);
 }
 
 void SelectFileDialogLinuxKde::OnSelectSingleFileDialogResponse(
     gfx::AcceleratedWidget parent,
-    void* params,
     std::unique_ptr<KDialogOutputParams> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   parents_.erase(parent);
-  SelectSingleFileHelper(params, false, std::move(results));
+  SelectSingleFileHelper(false, std::move(results));
 }
 
 void SelectFileDialogLinuxKde::OnSelectSingleFolderDialogResponse(
     gfx::AcceleratedWidget parent,
-    void* params,
     std::unique_ptr<KDialogOutputParams> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   parents_.erase(parent);
-  SelectSingleFileHelper(params, true, std::move(results));
+  SelectSingleFileHelper(true, std::move(results));
 }
 
 void SelectFileDialogLinuxKde::OnSelectMultiFileDialogResponse(
     gfx::AcceleratedWidget parent,
-    void* params,
     std::unique_ptr<KDialogOutputParams> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "[kdialog] MultiFileResponse: " << results->output;
@@ -595,12 +570,12 @@ void SelectFileDialogLinuxKde::OnSelectMultiFileDialogResponse(
   parents_.erase(parent);
 
   if (results->exit_code || results->output.empty()) {
-    FileNotSelected(params);
+    FileNotSelected();
     return;
   }
 
   std::vector<base::FilePath> filenames_fp;
-  for (const base::StringPiece& line :
+  for (std::string_view line :
        base::SplitStringPiece(results->output, "\n", base::KEEP_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     base::FilePath path(line);
@@ -610,10 +585,10 @@ void SelectFileDialogLinuxKde::OnSelectMultiFileDialogResponse(
   }
 
   if (filenames_fp.empty()) {
-    FileNotSelected(params);
+    FileNotSelected();
     return;
   }
-  MultiFilesSelected(filenames_fp, params);
+  MultiFilesSelected(filenames_fp);
 }
 
 }  // namespace ui

@@ -10,14 +10,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 AudioStreamView::AudioStreamView()
     : rounded_radius_(ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kOmniboxExpandedRadius)) {
-  SetAccessibleName(l10n_util::GetStringUTF16(
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_MEDIA_PREVIEW_AUDIO_STREAM_ACCESSIBLE_NAME));
-  SetAccessibleRole(ax::mojom::Role::kSlider);
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetFlipCanvasOnPaintForRTLUI(true);
 }
 

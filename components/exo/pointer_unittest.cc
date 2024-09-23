@@ -6,11 +6,14 @@
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desk_animation_impl.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -27,7 +30,6 @@
 #include "components/exo/pointer_stylus_delegate.h"
 #include "components/exo/relative_pointer_delegate.h"
 #include "components/exo/seat.h"
-#include "components/exo/security_delegate.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
@@ -54,6 +56,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -266,18 +269,14 @@ class PointerConstraintTest : public PointerTest {
 };
 
 // Instantiate the values of frame submission types in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PointerTest,
-    testing::Values(test::FrameSubmissionType::kNoReactive,
-                    test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
-                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PointerConstraintTest,
-    testing::Values(test::FrameSubmissionType::kNoReactive,
-                    test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
-                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PointerTest,
+                         testing::Values(test::FrameSubmissionType::kNoReactive,
+                                         test::FrameSubmissionType::kReactive));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PointerConstraintTest,
+                         testing::Values(test::FrameSubmissionType::kNoReactive,
+                                         test::FrameSubmissionType::kReactive));
 
 TEST_P(PointerTest, SetCursor) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
@@ -610,8 +609,7 @@ TEST_P(PointerTest, OnPointerMotion) {
   std::unique_ptr<SubSurface> sub(new SubSurface(sub_surface.get(), surface));
   surface->SetSubSurfacePosition(sub_surface.get(), gfx::PointF(5, 5));
   constexpr gfx::Size sub_buffer_size(5, 5);
-  std::unique_ptr<Buffer> sub_buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(sub_buffer_size)));
+  auto sub_buffer = test::ExoTestHelper::CreateBuffer(sub_buffer_size);
   sub_surface->Attach(sub_buffer.get());
   sub_surface->Commit();
   surface->Commit();
@@ -634,8 +632,7 @@ TEST_P(PointerTest, OnPointerMotion) {
   child_shell_surface->DisableMovement();
   child_shell_surface->SetParent(shell_surface.get());
   constexpr gfx::Size child_buffer_size(15, 15);
-  std::unique_ptr<Buffer> child_buffer(
-      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(child_buffer_size)));
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(child_buffer_size);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
 
@@ -1132,7 +1129,7 @@ TEST_P(PointerTest, DragDropAndPointerEnterLeaveEvents_NoOpOnTouchDrag) {
   EXPECT_TRUE(seat_->get_drag_drop_operation_for_testing());
 
   // Initiate the gesture sequence.
-  DispatchGesture(ui::ET_GESTURE_BEGIN, gfx::Point(10, 10));
+  DispatchGesture(ui::EventType::kGestureBegin, gfx::Point(10, 10));
 
   // As soon as the runloop gets triggered, emit a mouse release event.
   drag_drop_controller->SetLoopClosureForTesting(
@@ -1434,8 +1431,7 @@ TEST_P(PointerTest, OnPointerRelativeMotion) {
   auto sub = std::make_unique<SubSurface>(sub_surface.get(), surface);
   surface->SetSubSurfacePosition(sub_surface.get(), gfx::PointF(5, 5));
   constexpr gfx::Size sub_buffer_size(5, 5);
-  auto sub_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(sub_buffer_size));
+  auto sub_buffer = test::ExoTestHelper::CreateBuffer(sub_buffer_size);
   sub_surface->Attach(sub_buffer.get());
   sub_surface->Commit();
   surface->Commit();
@@ -1470,8 +1466,7 @@ TEST_P(PointerTest, OnPointerRelativeMotion) {
   child_shell_surface->DisableMovement();
   child_shell_surface->SetParent(shell_surface.get());
   constexpr gfx::Size child_buffer_size(15, 15);
-  auto child_buffer = std::make_unique<Buffer>(
-      exo_test_helper()->CreateGpuMemoryBuffer(child_buffer_size));
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(child_buffer_size);
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
 
@@ -1533,7 +1528,7 @@ TEST_P(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
 
   // By default, ordinal and relative are the same.
   gfx::Point new_location = origin + gfx::Vector2d(1, 1);
-  ui::MouseEvent ev1(ui::ET_MOUSE_MOVED, new_location, new_location,
+  ui::MouseEvent ev1(ui::EventType::kMouseMoved, new_location, new_location,
                      ui::EventTimeForNow(), generator.flags(), 0);
   EXPECT_CALL(relative_delegate,
               OnPointerRelativeMotion(testing::_, gfx::Vector2dF(1, 1),
@@ -1542,7 +1537,7 @@ TEST_P(PointerOrdinalMotionTest, OrdinalMotionOverridesRelativeMotion) {
 
   // When set, ordinal overrides the relative motion.
   new_location = new_location + gfx::Vector2d(1, 1);
-  ui::MouseEvent ev2(ui::ET_MOUSE_MOVED, new_location, new_location,
+  ui::MouseEvent ev2(ui::EventType::kMouseMoved, new_location, new_location,
                      ui::EventTimeForNow(), generator.flags(), 0);
   ui::MouseEvent::DispatcherApi(&ev2).set_movement(gfx::Vector2dF(99, 99));
   EXPECT_CALL(relative_delegate,
@@ -1824,51 +1819,6 @@ TEST_P(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
   pointer_.reset();
 }
 
-TEST_P(PointerConstraintTest, DefaultSecurityDeletegate) {
-  auto default_security_delegate =
-      SecurityDelegate::GetDefaultSecurityDelegate();
-  auto shell_surface = test::ShellSurfaceBuilder({10, 10})
-                           .SetSecurityDelegate(default_security_delegate.get())
-                           .BuildShellSurface();
-
-  auto* surface = shell_surface->surface_for_testing();
-
-  focus_client_->FocusWindow(surface->window());
-
-  MockPointerConstraintDelegate constraint_delegate;
-
-  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface));
-
-  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(1);
-  EXPECT_FALSE(pointer_->ConstrainPointer(&constraint_delegate));
-  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
-
-  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::LACROS));
-
-  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface));
-  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(0);
-  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate));
-
-  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
-
-  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
-      .WillRepeatedly(testing::Return(surface));
-  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
-      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
-  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(0);
-  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate));
-
-  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
-
-  pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate);
-  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
-
-  pointer_.reset();
-}
-
 TEST_P(PointerConstraintTest, NoPointerMotionEventWhenUnconstrainingPointer) {
   testing::MockFunction<void(std::string check_point_name)> check;
   {
@@ -1921,6 +1871,118 @@ TEST_P(PointerConstraintTest, ConstrainPointerWithUncommittedShellSurface) {
   // process, while pointer capture is not allowed on an inactive window.
   EXPECT_FALSE(pointer_->ConstrainPointer(&second_constraint));
 
+  pointer_.reset();
+}
+
+// This test verifies that if pointer lock is activated during a desk switch
+// swipe animation, that the animation is able to complete and pointer lock is
+// correctly set. Regression test for b/324146178.
+TEST_P(PointerConstraintTest, DeskSwitchSwipeGesture) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start with a surface that has a constrained pointer.
+  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
+  EXPECT_CALL(delegate_, OnPointerFrame()).Times(3);
+  generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
+
+  EXPECT_CALL(delegate_, OnPointerMotion(testing::_, testing::_)).Times(0);
+  generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin() +
+                          gfx::Vector2d(-1, -1));
+
+  EXPECT_TRUE(pointer_->GetIsPointerConstrainedForTesting());
+
+  // Swapping desks will unconstrain the pointer.
+  EXPECT_CALL(delegate_, OnPointerLeave(surface_.get()));
+  auto* desks_controller = ash::DesksController::Get();
+  desks_controller->NewDesk(ash::DesksCreationRemovalSource::kButton);
+  desks_controller->ActivateAdjacentDesk(
+      /*going_left=*/false, ash::DesksSwitchSource::kDeskSwitchShortcut);
+  {
+    ash::DeskActivationAnimation* animation =
+        static_cast<ash::DeskActivationAnimation*>(
+            desks_controller->animation());
+    ASSERT_TRUE(animation);
+
+    // End the swipe animation and wait for the desk activation animation to
+    // finish. This is required to prevent flakiness.
+    base::RunLoop run_loop;
+    animation->AddOnAnimationFinishedCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_FALSE(desks_controller->animation());
+  EXPECT_FALSE(pointer_->GetIsPointerConstrainedForTesting());
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+
+  // Trigger a desk switch gesture.
+  // Start off with a fling cancel (touchpad start) to start the touchpad swipe
+  // sequence.
+  int kNumFingersForDesksSwitch = 4;
+  base::TimeTicks timestamp = ui::EventTimeForNow();
+  ui::ScrollEvent fling_cancel(ui::EventType::kScrollFlingCancel, gfx::Point(),
+                               timestamp, 0, 0, 0, 0, 0,
+                               kNumFingersForDesksSwitch);
+  generator_->Dispatch(&fling_cancel);
+
+  // Continue with a large enough scroll to the left to start the desk switch
+  // animation. The animation does not start on fling cancel since there is no
+  // finger data in production code.
+  const base::TimeDelta step_delay = base::Milliseconds(5);
+  timestamp += step_delay;
+  // Use a negative scroll direction to scroll to the left.
+  const int direction = -1;
+  const int initial_move_x =
+      (ash::WmGestureHandler::kContinuousGestureMoveThresholdDp + 5) *
+      direction;
+  ui::ScrollEvent initial_move(ui::EventType::kScroll, gfx::Point(), timestamp,
+                               0, initial_move_x, 0, initial_move_x, 0,
+                               kNumFingersForDesksSwitch);
+  generator_->Dispatch(&initial_move);
+
+  // Wait for the animation, and verify things work properly during the
+  // animation.
+  ash::DeskActivationAnimation* animation =
+      static_cast<ash::DeskActivationAnimation*>(desks_controller->animation());
+  EXPECT_TRUE(animation);
+  {
+    // Wait until the animations ending screenshot has been taken. Otherwise,
+    // we will just stay at the initial desk if no screenshot has been taken.
+    ash::WaitUntilEndingScreenshotTaken(animation);
+
+    // Verify that during the animation that the pointer is constrained
+    // properly.
+    EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
+    EXPECT_TRUE(pointer_->GetIsPointerConstrainedForTesting());
+
+    // Send some more move events, enough to shift to the next desk.
+    const int steps = 100;
+    const float x_offset =
+        direction * ash::WmGestureHandler::kHorizontalThresholdDp;
+    float dx = x_offset / steps;
+    for (int i = 0; i < steps; ++i) {
+      timestamp += step_delay;
+      ui::ScrollEvent move(ui::EventType::kScroll, gfx::Point(), timestamp, 0,
+                           dx, 0, dx, 0, kNumFingersForDesksSwitch);
+      generator_->Dispatch(&move);
+    }
+
+    // End the swipe and wait for the animation to finish.
+    ui::ScrollEvent fling_start(ui::EventType::kScrollFlingStart, gfx::Point(),
+                                timestamp, 0, x_offset, 0, x_offset, 0,
+                                kNumFingersForDesksSwitch);
+    ash::DeskSwitchAnimationWaiter animation_finished_waiter;
+    generator_->Dispatch(&fling_start);
+    animation_finished_waiter.Wait();
+  }
+
+  // Verify that the desk switch animation was completed, and that the pointer
+  // is still correctly constrained.
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 0);
+  EXPECT_TRUE(pointer_->GetIsPointerConstrainedForTesting());
+  EXPECT_FALSE(desks_controller->animation());
+
+  pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate_);
+  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
 
@@ -1981,7 +2043,7 @@ TEST_P(PointerTest, PointerStylus2) {
   EXPECT_CALL(delegate, OnPointerFrame()).Times(1);
   EXPECT_CALL(stylus_delegate, OnPointerToolChange(ui::EventPointerType::kPen));
 
-  ui::MouseEvent ev1(ui::ET_MOUSE_PRESSED, location, location,
+  ui::MouseEvent ev1(ui::EventType::kMousePressed, location, location,
                      ui::EventTimeForNow(), generator.flags(), 0,
                      ui::PointerDetails(ui::EventPointerType::kPen));
   generator.Dispatch(&ev1);
@@ -2106,9 +2168,9 @@ TEST_P(PointerTest, SetCursorBitmapFromBuffer) {
   generator.MoveMouseTo(surface->window()->GetBoundsInScreen().origin());
 
   constexpr gfx::Size buffer_size(10, 10);
+  const gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
-      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size,
-                                               gfx::BufferFormat::RGBA_8888);
+      test::ExoTestHelper::CreateGpuMemoryBuffer(buffer_size, buffer_format);
   ASSERT_TRUE(gpu_memory_buffer->Map());
   ASSERT_NE(nullptr, gpu_memory_buffer->memory(0));
   ASSERT_NE(0, gpu_memory_buffer->stride(0));
@@ -2121,8 +2183,9 @@ TEST_P(PointerTest, SetCursorBitmapFromBuffer) {
   gpu_memory_buffer->Unmap();
 
   std::unique_ptr<Surface> pointer_surface(new Surface);
-  std::unique_ptr<Buffer> pointer_buffer(
-      new Buffer(std::move(gpu_memory_buffer)));
+  std::unique_ptr<Buffer> pointer_buffer =
+      test::ExoTestHelper::CreateBufferFromGMBHandle(
+          gpu_memory_buffer->CloneHandle(), buffer_size, buffer_format);
   pointer_surface->Attach(pointer_buffer.get());
   pointer_surface->Commit();
 

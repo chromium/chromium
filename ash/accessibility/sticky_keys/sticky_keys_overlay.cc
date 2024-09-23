@@ -19,6 +19,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
@@ -159,6 +160,7 @@ StickyKeysOverlayView::StickyKeysOverlayView() {
   AddKeyLabel(ui::EF_SHIFT_DOWN, l10n_util::GetStringUTF8(IDS_ASH_SHIFT_KEY));
   AddKeyLabel(ui::EF_COMMAND_DOWN,
               l10n_util::GetStringUTF8(IDS_ASH_SEARCH_KEY));
+  AddKeyLabel(ui::EF_FUNCTION_DOWN, l10n_util::GetStringUTF8(IDS_ASH_FN_KEY));
   AddKeyLabel(ui::EF_ALTGR_DOWN, l10n_util::GetStringUTF8(IDS_ASH_ALTGR_KEY));
   AddKeyLabel(ui::EF_MOD3_DOWN, l10n_util::GetStringUTF8(IDS_ASH_MOD3_KEY));
 }
@@ -218,10 +220,10 @@ StickyKeysOverlay::StickyKeysOverlay() {
   auto overlay_view = std::make_unique<StickyKeysOverlayView>();
   widget_size_ = overlay_view->GetPreferredSize();
 
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.accept_events = false;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.bounds = CalculateOverlayBounds();

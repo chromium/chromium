@@ -265,11 +265,12 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   bool IsNativeWindowOcclusionEnabled() const;
 
   // Remembers the current occlusion state, and if it has changed, notifies
-  // observers of the change. `occluded_region` is only applicable when visible
-  // and gives the occluded region. If `occluded_region` is empty, the entire
-  // AcceleratedWidget is visible.
-  virtual void SetNativeWindowOcclusionState(Window::OcclusionState state,
-                                             const SkRegion& occluded_region);
+  // observers of the change. `raw_occluded_region` is only applicable when
+  // visible and gives the occluded region. If `raw_occluded_region` is empty,
+  // the entire AcceleratedWidget is visible.
+  virtual void SetNativeWindowOcclusionState(
+      Window::OcclusionState raw_occlusion_state,
+      const SkRegion& raw_occluded_region);
 
   Window::OcclusionState GetNativeWindowOcclusionState() {
     return occlusion_state_;
@@ -421,7 +422,8 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // it.
   bool ShouldThrottle() const;
 
-  static const base::flat_set<WindowTreeHost*>& GetThrottledHostsForTesting();
+  static const base::flat_set<raw_ptr<WindowTreeHost, CtnExperimental>>&
+  GetThrottledHostsForTesting();
 
   // Moves the cursor to the specified location. This method is internally used
   // by MoveCursorToLocationInDIP() and MoveCursorToLocationInPixels().
@@ -429,10 +431,12 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
                             const gfx::Point& host_location);
 
   // Overridden from CompositorObserver:
-  void OnCompositingEnded(ui::Compositor* compositor) final;
+  void OnCompositingAckDeprecated(ui::Compositor* compositor) final;
   void OnCompositingChildResizing(ui::Compositor* compositor) final;
   void OnFrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& ids) final;
+  void OnSetPreferredRefreshRate(ui::Compositor*,
+                                 float preferred_refresh_rate) override;
 
   // We don't use a std::unique_ptr for |window_| since we need this ptr to be
   // valid during its deletion. (Window's dtor notifies observers that may
@@ -443,13 +447,21 @@ class AURA_EXPORT WindowTreeHost : public ui::ImeKeyEventDispatcher,
   // Keeps track of the occlusion state of the host, and used to send
   // notifications to observers when it changes.
   Window::OcclusionState occlusion_state_ = Window::OcclusionState::UNKNOWN;
+  SkRegion occluded_region_;
+
+  // If there are video capture locks, we need to force the occlusion state
+  // to visible. But, when the video capture locks are done, we need to restore
+  // the occlusion state to what the last occlusion state from the platform was.
+  // We keep the latest occlusion state from the platform in
+  // `raw_occlusion_state_` and `raw_occluded_region_`.
+  Window::OcclusionState raw_occlusion_state_ = Window::OcclusionState::UNKNOWN;
+  SkRegion raw_occluded_region_;
 
   // This is set if we know whether the window is on the current workspace.
   // This is useful on Windows, where a COM call is required to determine this,
   // which can block the UI. The native window occlusion tracking code already
   // figures this out, so it's cheaper to store the fact here.
   std::optional<bool> on_current_workspace_;
-  SkRegion occluded_region_;
 
   base::ObserverList<WindowTreeHostObserver>::Unchecked observers_;
 

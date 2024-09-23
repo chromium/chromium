@@ -8,15 +8,14 @@
 namespace search_engines {
 
 // The location from which the default search engine was set.
+//
 // Maintained by chrome-waffle-eng@google.com, please reach out if looking into
 // adding some new entry here, as there are some requirements that non-`kOther`
 // entries must meet.
 //
-// Must be kept in sync with the ChoiceMadeLocation enum in
-// search_engines_browser_proxy.ts
-//
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.search_engines
+// LINT.IfChange
 enum class ChoiceMadeLocation {
   // `chrome://settings/search`
   kSearchSettings = 0,
@@ -33,6 +32,7 @@ enum class ChoiceMadeLocation {
   kOther = 3,
   kMaxValue = kOther,
 };
+// LINT.ThenChange(chrome/browser/resources/settings/search_engines_page/search_engines_browser_proxy.ts)
 
 }  // namespace search_engines
 

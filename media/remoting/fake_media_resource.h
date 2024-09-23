@@ -59,8 +59,7 @@ class FakeMediaResource final : public MediaResource {
   ~FakeMediaResource() override;
 
   // MediaResource implementation.
-  std::vector<raw_ptr<DemuxerStream, VectorExperimental>> GetAllStreams()
-      override;
+  std::vector<DemuxerStream*> GetAllStreams() override;
 
  private:
   std::unique_ptr<FakeDemuxerStream> audio_stream_;

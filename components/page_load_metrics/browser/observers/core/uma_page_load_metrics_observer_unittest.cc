@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -44,6 +45,11 @@ const char kDefaultTestUrl[] = "https://google.com";
 const char kDefaultTestUrlAnchor[] = "https://google.com#samepage";
 const char kDefaultTestUrl2[] = "https://whatever.com";
 
+const char kHistogramFirstContentfulPaintDataScheme[] =
+    "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.DataScheme";
+const char kHistogramFirstContentfulPaintFileScheme[] =
+    "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.FileScheme";
+
 }  // namespace
 
 class UmaPageLoadMetricsObserverTest
@@ -57,9 +63,7 @@ class UmaPageLoadMetricsObserverTest
     tracker->AddObserver(std::make_unique<UmaPageLoadMetricsObserver>());
   }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   ::base::test::TracingEnvironment tracing_environment_;
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
  protected:
   bool WithFencedFrames() { return GetParam(); }
@@ -151,6 +155,14 @@ class UmaPageLoadMetricsObserverTest
             .GetAllSamples(
                 internal::kHistogramLargestContentfulPaintMainFrameContentType)
             .empty());
+  }
+
+  void TestHistogram(const char* name,
+                     std::vector<base::Bucket> buckets,
+                     const base::Location& location = FROM_HERE) {
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(name),
+                base::BucketsAreArray(buckets))
+        << location.ToString();
   }
 
   const base::HistogramTester& histogram_tester() {
@@ -269,6 +281,10 @@ TEST_P(UmaPageLoadMetricsObserverTest, MultipleMetricsAfterCommits) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramFirstContentfulPaint,
       first_contentful_paint.InMilliseconds(), 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      kHistogramFirstContentfulPaintDataScheme, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      kHistogramFirstContentfulPaintFileScheme, 0);
 
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
@@ -302,6 +318,54 @@ TEST_P(UmaPageLoadMetricsObserverTest, MultipleMetricsAfterCommits) {
                                                  load.InMilliseconds(), 1);
 }
 
+TEST_P(UmaPageLoadMetricsObserverTest,
+       PaintMetricsAreNotRecordedForDataScheme) {
+  base::TimeDelta first_contentful_paint = base::Milliseconds(30);
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.response_start = base::Milliseconds(1);
+  timing.paint_timing->first_paint = first_contentful_paint;
+  timing.paint_timing->first_contentful_paint = first_contentful_paint;
+
+  NavigateAndCommit(GURL("data:text/html,Hello world"));
+  tester()->SimulateTimingUpdate(timing);
+
+  // This class does not observe the data:// scheme,
+  // so FCP and LCP should not be recorded.
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaint, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramLargestContentfulPaint, 0);
+}
+
+TEST_P(UmaPageLoadMetricsObserverTest,
+       PaintMetricsAreNotRecordedForFileScheme) {
+  base::TimeDelta first_contentful_paint = base::Milliseconds(30);
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.response_start = base::Milliseconds(1);
+  timing.paint_timing->first_paint = first_contentful_paint;
+  timing.paint_timing->first_contentful_paint = first_contentful_paint;
+
+  NavigateAndCommit(GURL("file:///file.txt"));
+  tester()->SimulateTimingUpdate(timing);
+
+  // This class does not observe the file:// scheme,
+  // so FCP and LCP should not be recorded.
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFirstContentfulPaint, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramLargestContentfulPaint, 0);
+}
+
 TEST_P(UmaPageLoadMetricsObserverTest, BackgroundDifferentHistogram) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
@@ -331,6 +395,48 @@ TEST_P(UmaPageLoadMetricsObserverTest, BackgroundDifferentHistogram) {
   tester()->histogram_tester().ExpectTotalCount(internal::kHistogramLoad, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramFirstImagePaint, 0);
+}
+
+TEST_F(UmaPageLoadMetricsObserverTest,
+       RelevantBackgroundMetricsAreRecordedForHttpsScheme) {
+  base::TimeDelta first_contentful_paint = base::Milliseconds(30);
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.response_start = base::Milliseconds(1);
+  timing.paint_timing->first_paint = first_contentful_paint;
+  timing.paint_timing->first_contentful_paint = first_contentful_paint;
+  timing.paint_timing->largest_contentful_paint->largest_text_paint =
+      base::Milliseconds(15);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 10;
+
+  // Send the page to background.
+  web_contents()->WasHidden();
+
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+  tester()->SimulateTimingUpdate(timing);
+
+  tester()->histogram_tester().ExpectBucketCount(
+      "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background."
+      "HttpsOrDataOrFileScheme",
+      first_contentful_paint.InMilliseconds(), 1);
+
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL(kDefaultTestUrl));
+
+  tester()->histogram_tester().ExpectTotalCount(
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Background."
+      "HttpsOrDataOrFileScheme",
+      1);
+  tester()->histogram_tester().ExpectBucketCount(
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Background."
+      "HttpsOrDataOrFileScheme",
+      timing.paint_timing->largest_contentful_paint->largest_text_paint
+          ->InMilliseconds(),
+      1);
 }
 
 TEST_P(UmaPageLoadMetricsObserverTest, OnlyBackgroundLaterEvents) {
@@ -1450,7 +1556,6 @@ TEST_P(UmaPageLoadMetricsObserverTest,
 // The following tests are ensure that Page Load metrics are recorded in a
 // trace. Currently enabled only for platforms where USE_PERFETTO_CLIENT_LIBRARY
 // is true (Android, Linux) as test infra (TestTraceProcessor) requires it.
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 TEST_F(UmaPageLoadMetricsObserverTest, TestTracingFirstContentfulPaint) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("interactions");
@@ -1613,4 +1718,31 @@ TEST_F(UmaPageLoadMetricsObserverTest, TestTracingDomContentLoadedEventStart) {
                                      std::vector<std::string>{
                                          base::NumberToString(navigation_id)}));
 }
-#endif
+
+TEST_P(UmaPageLoadMetricsObserverTest, LCPSpeculationRulesPrerender) {
+  const int kExpected = 4780;
+  const char* kHistogram =
+      internal::kHistogramLargestContentfulPaintSetSpeculationRulesPrerender;
+
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint =
+      base::Milliseconds(kExpected);
+  timing.paint_timing->largest_contentful_paint->largest_text_paint_size = 120u;
+  PopulateRequiredTimingFields(&timing);
+
+  NavigateAndCommit(GURL("https://a.test"));
+  content::test::SetHasSpeculationRulesPrerender(
+      content::PreloadingData::GetOrCreateForWebContents(web_contents()));
+  tester()->SimulateTimingUpdate(timing);
+  // Navigate again to force histogram recording.
+  NavigateAndCommit(GURL("https://b.test"));
+  TestHistogram(kHistogram, {{kExpected, 1}});
+
+  content::PreloadingData::GetOrCreateForWebContents(web_contents());
+  tester()->SimulateTimingUpdate(timing);
+  // Navigate again to force histogram recording without setting the flag.
+  NavigateAndCommit(GURL("https://c.test"));
+  TestHistogram(kHistogram, {{kExpected, 1}});
+}

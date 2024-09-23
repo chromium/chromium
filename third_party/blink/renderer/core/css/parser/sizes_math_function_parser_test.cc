@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/parser/sizes_math_function_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,10 +66,11 @@ static void VerifyCSSCalc(String text,
   CSSToLengthConversionData::ViewportSize viewport_size(viewport_width,
                                                         viewport_height);
   CSSToLengthConversionData::ContainerSizes container_sizes;
+  CSSToLengthConversionData::AnchorData anchor_data;
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
       WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-      container_sizes, 1.0, ignored_flags);
+      container_sizes, anchor_data, 1.0, ignored_flags);
   EXPECT_APPROX_EQ(value, math_value->ComputeLength<float>(conversion_data));
 }
 
@@ -174,6 +180,8 @@ TEST(SizesMathFunctionParserTest, Basic) {
       {"clamp(1px, 1px, )", 0, false, false},
       {"clamp(1px, 1px, 1px, )", 0, false, false},
       {"clamp(1px 1px 1px)", 0, false, false},
+      // Unbalanced )-token.
+      {"calc(1px + 2px) )", 0, false, false},
       {nullptr, 0, true, false}  // Do not remove the terminator line.
   };
 
@@ -193,12 +201,12 @@ TEST(SizesMathFunctionParserTest, Basic) {
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   for (unsigned i = 0; test_cases[i].input; ++i) {
-    SizesMathFunctionParser calc_parser(
-        CSSParserTokenRange(
-            CSSTokenizer(StringView(test_cases[i].input)).TokenizeToEOF()),
-        media_values);
-    ASSERT_EQ(test_cases[i].valid, calc_parser.IsValid());
-    if (calc_parser.IsValid()) {
+    CSSParserTokenStream stream(test_cases[i].input);
+    SizesMathFunctionParser calc_parser(stream, media_values);
+    bool is_valid = calc_parser.IsValid() && stream.AtEnd();
+    SCOPED_TRACE(test_cases[i].input);
+    ASSERT_EQ(test_cases[i].valid, is_valid);
+    if (is_valid) {
       EXPECT_APPROX_EQ(test_cases[i].output, calc_parser.Result());
     }
   }
@@ -211,6 +219,38 @@ TEST(SizesMathFunctionParserTest, Basic) {
                   test_cases[i].valid, data.em_size, data.viewport_width,
                   data.viewport_height);
   }
+}
+
+TEST(SizesMathFunctionParserTest, CleansUpWhitespace) {
+  CSSParserTokenStream stream("calc(1px)    ");
+  SizesMathFunctionParser calc_parser(
+      stream, MakeGarbageCollected<MediaValuesCached>());
+  EXPECT_TRUE(calc_parser.IsValid());
+  EXPECT_EQ(stream.RemainingText(), "");
+}
+
+TEST(SizesMathFunctionParserTest, RestoresOnFailure) {
+  CSSParserTokenStream stream("calc(1px @)");
+  SizesMathFunctionParser calc_parser(
+      stream, MakeGarbageCollected<MediaValuesCached>());
+  EXPECT_FALSE(calc_parser.IsValid());
+  EXPECT_EQ(stream.RemainingText(), "calc(1px @)");
+}
+
+TEST(SizesMathFunctionParserTest, LeavesTrailingComma) {
+  CSSParserTokenStream stream("calc(1px) , more stuff");
+  SizesMathFunctionParser calc_parser(
+      stream, MakeGarbageCollected<MediaValuesCached>());
+  EXPECT_TRUE(calc_parser.IsValid());
+  EXPECT_EQ(stream.RemainingText(), ", more stuff");
+}
+
+TEST(SizesMathFunctionParserTest, LeavesTrailingTokens) {
+  CSSParserTokenStream stream("calc(1px) ! trailing tokens");
+  SizesMathFunctionParser calc_parser(
+      stream, MakeGarbageCollected<MediaValuesCached>());
+  EXPECT_TRUE(calc_parser.IsValid());
+  EXPECT_EQ(stream.RemainingText(), "! trailing tokens");
 }
 
 }  // namespace blink

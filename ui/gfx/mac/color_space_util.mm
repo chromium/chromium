@@ -62,9 +62,17 @@ const std::vector<CVImagePrimary>& GetSupportedImagePrimaries() {
              kCMFormatDescriptionColorPrimaries_EBU_3213,
              gfx::ColorSpace::PrimaryID::BT470BG});
         supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_EBU_3213,
+             kCMFormatDescriptionColorPrimaries_EBU_3213,
+             gfx::ColorSpace::PrimaryID::EBU_3213_E});
+        supported_primaries.push_back(
             {kCVImageBufferColorPrimaries_SMPTE_C,
              kCMFormatDescriptionColorPrimaries_SMPTE_C,
              gfx::ColorSpace::PrimaryID::SMPTE170M});
+        supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_SMPTE_C,
+             kCMFormatDescriptionColorPrimaries_SMPTE_C,
+             gfx::ColorSpace::PrimaryID::SMPTE240M});
         supported_primaries.push_back(
             {kCVImageBufferColorPrimaries_ITU_R_2020,
              kCMFormatDescriptionColorPrimaries_ITU_R_2020,
@@ -125,6 +133,10 @@ const std::vector<CVImageTransferFn>& GetSupportedImageTransferFn() {
             {kCVImageBufferTransferFunction_ITU_R_2020,
              kCMFormatDescriptionTransferFunction_ITU_R_2020,
              gfx::ColorSpace::TransferID::BT2020_10});
+        supported_transfer_funcs.push_back(
+            {kCVImageBufferTransferFunction_ITU_R_2020,
+             kCMFormatDescriptionTransferFunction_ITU_R_2020,
+             gfx::ColorSpace::TransferID::BT2020_12});
         supported_transfer_funcs.push_back(
             {kCVImageBufferTransferFunction_SMPTE_ST_428_1,
              kCMFormatDescriptionTransferFunction_SMPTE_ST_428_1,
@@ -211,6 +223,10 @@ const std::vector<CVImageMatrix>& GetSupportedImageMatrix() {
              kCMFormatDescriptionYCbCrMatrix_ITU_R_601_4,
              gfx::ColorSpace::MatrixID::SMPTE170M});
         supported_matrices.push_back(
+            {kCVImageBufferYCbCrMatrix_ITU_R_601_4,
+             kCMFormatDescriptionYCbCrMatrix_ITU_R_601_4,
+             gfx::ColorSpace::MatrixID::BT470BG});
+        supported_matrices.push_back(
             {kCVImageBufferYCbCrMatrix_SMPTE_240M_1995,
              kCMFormatDescriptionYCbCrMatrix_SMPTE_240M_1995,
              gfx::ColorSpace::MatrixID::SMPTE240M});
@@ -254,7 +270,7 @@ gfx::ColorSpace ColorSpaceFromCVImageBufferKeys(CFTypeRef primaries_untyped,
   // It is specified to the decoder to use luma=[16,235] chroma=[16,240] via
   // the kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange.
   //
-  // TODO(crbug.com/1103432): We'll probably need support for more than limited
+  // TODO(crbug.com/40139254): We'll probably need support for more than limited
   // range content if we want this to be used for more than video sites.
   auto range_id = gfx::ColorSpace::RangeID::LIMITED;
 

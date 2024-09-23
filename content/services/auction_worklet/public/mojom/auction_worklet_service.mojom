@@ -29,6 +29,13 @@ struct AuctionWorkletPermissionsPolicyState {
   bool shared_storage_allowed;
 };
 
+// The public key is used for encryption and decryption of trusted signals in
+// both bidder and seller worklets.
+struct TrustedSignalsPublicKey {
+  string key;
+  uint8 id;
+};
+
 // Used by the browser to load and run FLEDGE worklets. This can run in a
 // sandboxed utility process (non-Android) or inside a regular renderer
 // (Android).
@@ -55,9 +62,10 @@ interface AuctionWorkletService {
   // `bidder_worklet` The pipe to communicate with the BidderWorklet. Closing
   //  the pipe will abort any in-progress loads and destroy the worklet.
   //
-  // `shared_storage_host` The pipe for the BidderWorklet to send shared storage
-  // requests to the browser process. Will be null if the `kSharedStorageAPI`
-  // feature or the "shared-storage" permissions policy is disabled.
+  // `shared_storage_hosts` The pipes for the BidderWorklet threads to send
+  // shared storage requests to the browser process. Will all be null if the
+  // `kSharedStorageAPI` feature or the "shared-storage" permissions policy is
+  // disabled.
   //
   // `pause_for_debugger_on_start` If this is true, the worklet should not
   //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
@@ -90,9 +98,13 @@ interface AuctionWorkletService {
   //
   // `experiment_group_id`: An optional parameter to pass to trusted bidding
   // server.
+  //
+  // `public_key`: An optional parameter for trusted bidding signals encryption
+  // and decryption. Bidder worklet will execute trusted signals KVv2 call flow
+  // when this field is valid.
   LoadBidderWorklet(
       pending_receiver<BidderWorklet> bidder_worklet,
-      pending_remote<AuctionSharedStorageHost>? shared_storage_host,
+      array<pending_remote<AuctionSharedStorageHost>?> shared_storage_hosts,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       pending_remote<AuctionNetworkEventsHandler> auction_network_events_handler,
@@ -102,7 +114,8 @@ interface AuctionWorkletService {
       string trusted_bidding_signals_slot_size_param,
       url.mojom.Origin top_window_origin,
       AuctionWorkletPermissionsPolicyState permissions_policy_state,
-      uint16? experiment_group_id);
+      uint16? experiment_group_id,
+      TrustedSignalsPublicKey? public_key);
 
   // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
   // While a single SellerWorklet object can be used in auctions with different
@@ -125,9 +138,10 @@ interface AuctionWorkletService {
   //  already, since it's on the AuctionWorkletService pipe instead of the
   //  SellerWorklet pipe.
   //
-  // `shared_storage_host` The pipe for the BidderWorklet to send shared storage
-  // requests to the browser process. Will be null if the `kSharedStorageAPI`
-  // feature or the "shared-storage" permissions policy is disabled.
+  // `shared_storage_hosts` The pipes for the SellerWorklet threads to send
+  // shared storage requests to the browser process. Will all be null if the
+  // `kSharedStorageAPI` feature or the "shared-storage" permissions policy is
+  // disabled.
   //
   // `pause_for_debugger_on_start` If this is true, the worklet should not
   //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
@@ -150,7 +164,7 @@ interface AuctionWorkletService {
   // server and as part of AuctionConfig.
   LoadSellerWorklet(
       pending_receiver<SellerWorklet> seller_worklet,
-      pending_remote<AuctionSharedStorageHost>? shared_storage_host,
+      array<pending_remote<AuctionSharedStorageHost>?> shared_storage_hosts,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       pending_remote<AuctionNetworkEventsHandler> auction_network_events_handler,

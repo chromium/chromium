@@ -14,9 +14,7 @@
 // intercepted by a FilterOnLoadInterceptor. Implementations of
 // InterceptablePrefFilter are expected to override FinalizeFilterOnLoad rather
 // than re-overriding FilterOnLoad.
-class InterceptablePrefFilter
-    : public PrefFilter,
-      public base::SupportsWeakPtr<InterceptablePrefFilter> {
+class InterceptablePrefFilter : public PrefFilter {
  public:
   // A callback to be invoked by a FilterOnLoadInterceptor when its ready to
   // hand back the |prefs| it was handed for early filtering. |prefs_altered|
@@ -55,6 +53,8 @@ class InterceptablePrefFilter
       PostFilterOnLoadCallback post_filter_on_load_callback,
       base::Value::Dict pref_store_contents,
       bool prefs_altered) = 0;
+
+  virtual base::WeakPtr<InterceptablePrefFilter> AsWeakPtr() = 0;
 
   // Callback to be invoked only once (and subsequently reset) on the next
   // FilterOnLoad event. It will be allowed to modify the |prefs| handed to

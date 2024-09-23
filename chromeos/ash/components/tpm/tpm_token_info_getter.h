@@ -117,7 +117,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TPM) TPMTokenInfoGetter {
   // TPM. Will be adapted after each attempt.
   base::TimeDelta tpm_request_delay_;
 
-  raw_ptr<CryptohomePkcs11Client> cryptohome_pkcs11_client_;
+  raw_ptr<CryptohomePkcs11Client, LeakedDanglingUntriaged>
+      cryptohome_pkcs11_client_;
 
   base::WeakPtrFactory<TPMTokenInfoGetter> weak_factory_{this};
 };

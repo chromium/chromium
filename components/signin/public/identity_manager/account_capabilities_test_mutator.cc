@@ -16,6 +16,12 @@ AccountCapabilitiesTestMutator::GetSupportedAccountCapabilityNames() {
   return AccountCapabilities::GetSupportedAccountCapabilityNames();
 }
 
+void AccountCapabilitiesTestMutator::set_can_fetch_family_member_info(
+    bool value) {
+  capabilities_->capabilities_map_[kCanFetchFamilyMemberInfoCapabilityName] =
+      value;
+}
+
 void AccountCapabilitiesTestMutator::set_can_have_email_address_displayed(
     bool value) {
   capabilities_
@@ -53,6 +59,21 @@ void AccountCapabilitiesTestMutator::set_can_use_chrome_ip_protection(
   capabilities_->capabilities_map_[kCanUseChromeIpProtectionName] = value;
 }
 
+void AccountCapabilitiesTestMutator::
+    set_can_use_devtools_generative_ai_features(bool value) {
+  capabilities_
+      ->capabilities_map_[kCanUseDevToolsGenerativeAiFeaturesCapabilityName] =
+      value;
+}
+
+void AccountCapabilitiesTestMutator::set_can_use_edu_features(bool value) {
+  capabilities_->capabilities_map_[kCanUseEduFeaturesCapabilityName] = value;
+}
+
+void AccountCapabilitiesTestMutator::set_can_use_manta_service(bool value) {
+  capabilities_->capabilities_map_[kCanUseMantaServiceName] = value;
+}
+
 void AccountCapabilitiesTestMutator::set_can_use_model_execution_features(
     bool value) {
   capabilities_->capabilities_map_[kCanUseModelExecutionFeaturesName] = value;
@@ -88,4 +109,14 @@ void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {
     capabilities_->capabilities_map_[name] = value;
   }
+}
+
+void AccountCapabilitiesTestMutator::SetCapability(const std::string& name,
+                                                   bool value) {
+  const std::vector<std::string>& capability_names =
+      AccountCapabilities::GetSupportedAccountCapabilityNames();
+  CHECK(std::find(capability_names.begin(), capability_names.end(), name) !=
+        capability_names.end())
+      << "Invalid capability name: " << name;
+  capabilities_->capabilities_map_[name] = value;
 }

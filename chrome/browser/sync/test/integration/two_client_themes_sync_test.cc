@@ -96,7 +96,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
 //
 // Most other tests have significant coverage of model association.  This test
 // is intended to test steady-state scenarios.
-IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest, E2E_ENABLED(CycleOptions)) {
+//
+// TODO(crbug.com/368036837): Re-enable once de-flaked.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CycleOptions DISABLED_CycleOptions
+#else
+#define MAYBE_CycleOptions CycleOptions
+#endif
+IN_PROC_BROWSER_TEST_F(TwoClientThemesSyncTest,
+                       E2E_ENABLED(MAYBE_CycleOptions)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 

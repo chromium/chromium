@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -21,7 +22,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 
@@ -186,13 +187,13 @@ std::string GetCacheExpressionPath(const std::string& cache_expression) {
 // For example, return 0 for "/", since there is no path after the leading
 // slash; return 3 for "/abc/def/gh.html".
 size_t GetPathDepth(const std::string& cache_expression_path) {
-  return base::SplitString(base::StringPiece(cache_expression_path), "/",
+  return base::SplitString(std::string_view(cache_expression_path), "/",
                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)
       .size();
 }
 
 size_t GetHostDepth(const std::string& hostname) {
-  return base::SplitString(base::StringPiece(hostname), ".",
+  return base::SplitString(std::string_view(hostname), ".",
                            base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)
       .size();
 }
@@ -253,7 +254,7 @@ std::string GetKeyOfTypeFromTriggerType(
 // interpret it as exact match only.
 template <typename T>
 bool IsOnlyExactMatchAllowed(T verdict) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 template <>
@@ -271,7 +272,7 @@ bool IsOnlyExactMatchAllowed<LoginReputationClientResponse>(
 
 template <typename T>
 std::string GetCacheExpression(T verdict) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -580,7 +581,7 @@ size_t VerdictCacheManager::GetStoredPhishGuardVerdictCount(
        content_settings_->GetSettingsForOneType(
            ContentSettingsType::PASSWORD_PROTECTION)) {
     for (auto item : source.setting_value.GetDict()) {
-      if (item.first == base::StringPiece(kPasswordOnFocusCacheKey)) {
+      if (item.first == std::string_view(kPasswordOnFocusCacheKey)) {
         stored_verdict_count_password_on_focus_.value() +=
             item.second.GetDict().size();
       } else {
@@ -606,7 +607,7 @@ size_t VerdictCacheManager::GetStoredRealTimeUrlCheckVerdictCount() {
        content_settings_->GetSettingsForOneType(
            ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA)) {
     for (auto item : source.setting_value.GetDict()) {
-      if (item.first == base::StringPiece(kRealTimeUrlCacheKey)) {
+      if (item.first == std::string_view(kRealTimeUrlCacheKey)) {
         stored_verdict_count_real_time_url_check_.value() +=
             item.second.GetDict().size();
       }
@@ -889,7 +890,7 @@ void VerdictCacheManager::CleanUpExpiredHashPrefixRealTimeLookupResults() {
 }
 
 // Overridden from history::HistoryServiceObserver.
-void VerdictCacheManager::OnURLsDeleted(
+void VerdictCacheManager::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

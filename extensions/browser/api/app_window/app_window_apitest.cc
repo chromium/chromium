@@ -50,8 +50,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
   EXPECT_TRUE(base::Contains(app_window->app_icon_url().spec(), "icon.png"));
 }
 
-// TODO(crbug.com/794771): These fail on Linux with HEADLESS env var set.
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40554643): These fail on Linux with HEADLESS env var set.
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OnMinimizedEvent DISABLED_OnMinimizedEvent
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
       "platform_apps/windows_api_alpha_enabled/has_permissions_has_alpha";
   const char* test_dir = kNoAlphaDir;
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if defined(USE_AURA) && !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   test_dir = kHasAlphaDir;

@@ -33,10 +33,11 @@ class LayoutSVGText final : public LayoutSVGBlock {
 
  private:
   // LayoutObject override:
-  void UpdateLayout() override;
+  SVGLayoutResult UpdateSVGLayout(const SVGLayoutInfo&) override;
   // Update LayoutObject state after layout has completed. Returns true if
   // boundaries needs to be propagated (because of a change to the transform).
-  bool UpdateAfterSvgLayout(bool bounds_changed);
+  bool UpdateAfterSVGLayout(const SVGLayoutInfo&, bool bounds_changed);
+
   const char* GetName() const override;
   bool IsSVGText() const final {
     NOT_DESTROYED();
@@ -51,8 +52,9 @@ class LayoutSVGText final : public LayoutSVGBlock {
   gfx::RectF StrokeBoundingBox() const override;
   gfx::RectF DecoratedBoundingBox() const override;
   gfx::RectF VisualRectInLocalSVGCoordinates() const override;
-  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                     MapCoordinatesFlags mode) const override;
+  void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
+                               const LayoutBoxModelObject* ancestor,
+                               MapCoordinatesFlags) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void WillBeDestroyed() override;

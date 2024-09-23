@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -20,7 +21,6 @@ namespace blink {
 
 class CookieStoreGetOptions;
 class ExceptionState;
-class ScriptPromiseResolver;
 class ScriptState;
 
 class CookieStoreManager final : public ScriptWrappable,
@@ -36,16 +36,17 @@ class CookieStoreManager final : public ScriptWrappable,
 
   ~CookieStoreManager() override = default;
 
-  ScriptPromise subscribe(
+  ScriptPromise<IDLUndefined> subscribe(
       ScriptState* script_state,
       const HeapVector<Member<CookieStoreGetOptions>>& subscriptions,
       ExceptionState& exception_state);
-  ScriptPromise unsubscribe(
+  ScriptPromise<IDLUndefined> unsubscribe(
       ScriptState* script_state,
       const HeapVector<Member<CookieStoreGetOptions>>& subscription,
       ExceptionState& exception_state);
-  ScriptPromise getSubscriptions(ScriptState* script_state,
-                                 ExceptionState& exception_state);
+  ScriptPromise<IDLSequence<CookieStoreGetOptions>> getSubscriptions(
+      ScriptState* script_state,
+      ExceptionState& exception_state);
 
   // GarbageCollected
   void Trace(Visitor* visitor) const override;
@@ -57,9 +58,10 @@ class CookieStoreManager final : public ScriptWrappable,
   // registration is live. When CookieStoreManager is used from a Window global,
   // the CookieStoreManager needs to live through the mojo call, so it can keep
   // its ServiceWorkerRegistration alive.
-  void OnSubscribeResult(ScriptPromiseResolver* resolver, bool backend_result);
+  void OnSubscribeResult(ScriptPromiseResolver<IDLUndefined>* resolver,
+                         bool backend_result);
   void OnGetSubscriptionsResult(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolver<IDLSequence<CookieStoreGetOptions>>* resolver,
       Vector<mojom::blink::CookieChangeSubscriptionPtr> backend_result,
       bool backend_success);
 

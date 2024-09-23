@@ -1,0 +1,49 @@
+# crbug.com/354279630
+-org.chromium.components.paintpreview.player.PaintPreviewPlayerTest.overscrollRefreshTest
+
+# crbug.com/350394860
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomTopMenuItemHasNoEffect
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddRemoteViewsHasNoEffect
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTP
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems__HTTPS
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTP
+-org.chromium.chrome.browser.customtabs.CustomTabActivityRenderTest.testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems__HTTPS
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testActionButtonBadRatio
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testBottomBar
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRecordRetainableSession_WithoutWarmupAndSession
+-org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testRemoteViews
+-org.chromium.chrome.browser.customtabs.CustomTabPrivacySandboxDialogTest.adsNoticeCCT_AppIDNullShowDialog
+
+
+# crbug.com/350395970
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabForUnknownApp
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNewTabWithNewTabExtra
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameApp
+-org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testNoNewTabForSameAppOnStart
+
+# crbug.com/355057773
+-org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
+
+# crbug.com/355058571
+-org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_FromGroupClosure_InCurrentTab
+-org.chromium.chrome.browser.ntp.RecentlyClosedBridgeTest.testOpenRecentlyClosedTab_InCurrentTab
+
+# crbug.com/351025215
+-org.chromium.chrome.browser.share.share_sheet.ShareSheetTest.nothingFromDefaultRankingAvailable
+
+# crbug.com/351026514
+-org.chromium.chrome.browser.gsa.GSAAccountChangeListenerTest.testReceivesBroadcastIntents
+
+# crbug.com/326040498
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionOther
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPassword
+-org.chromium.chrome.browser.sync.ManageSyncSettingsTest.testSigninSettingsBatchUploadEntryDescriptionPasswordAndOther
+
+# crbug.com/356175432
+-org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testReaderModeInTab
+
+# crbug.com/352811552
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitSubframe
+
+# crbug.com/357108459
+-org.chromium.chrome.browser.fullscreen.FullscreenManagerTest.testPersistentFullscreenWithOptionsLegacy

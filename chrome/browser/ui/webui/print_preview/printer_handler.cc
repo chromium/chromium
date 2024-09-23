@@ -46,24 +46,24 @@ std::unique_ptr<PrinterHandler> PrinterHandler::CreateForPdfPrinter(
 }
 
 void PrinterHandler::GetDefaultPrinter(DefaultPrinterCallback cb) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrinterHandler::StartGrantPrinterAccess(const std::string& printer_id,
                                              GetPrinterInfoCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 void PrinterHandler::StartGetEulaUrl(const std::string& destination_id,
                                      GetEulaUrlCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrinterHandler::StartPrinterStatusRequest(
     const std::string& printer_id,
     PrinterStatusRequestCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif
 

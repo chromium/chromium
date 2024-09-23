@@ -20,25 +20,34 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.xsurface.feed.FeedCardOpeningReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.feed.FeedCardOpeningReliabilityLogger.PageLoadError;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.StreamType;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
+import org.chromium.net.NetError;
 
 /** Unit tests for {@link FeedReliabilityLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FeedReliabilityLoggerTest {
+    static final int CARD_CATEGORY = 101;
+    static final int PAGE_ID = 5;
+
     @Mock FeedLaunchReliabilityLogger mLaunchLogger;
     @Mock FeedUserInteractionReliabilityLogger mUserInteractionLogger;
+    @Mock FeedCardOpeningReliabilityLogger mCardOpeningReliabilityLogger;
 
     FeedReliabilityLogger mFeedReliabilityLogger;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mFeedReliabilityLogger = new FeedReliabilityLogger(mLaunchLogger, mUserInteractionLogger);
+        mFeedReliabilityLogger =
+                new FeedReliabilityLogger(
+                        mLaunchLogger, mUserInteractionLogger, mCardOpeningReliabilityLogger);
     }
 
     @Test
@@ -154,6 +163,14 @@ public class FeedReliabilityLoggerTest {
     }
 
     @Test
+    public void testOnBindStream_supervisedUserFeed() {
+        when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
+        mFeedReliabilityLogger.onBindStream(StreamType.SUPERVISED_USER_FEED, 0);
+        verify(mLaunchLogger).logFeedReloading(anyLong());
+        verify(mUserInteractionLogger).onStreamOpened(eq(StreamType.SUPERVISED_USER_FEED));
+    }
+
+    @Test
     public void testOnUnbindStream() {
         when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
         mFeedReliabilityLogger.onUnbindStream(ClosedReason.LEAVE_FEED);
@@ -166,8 +183,39 @@ public class FeedReliabilityLoggerTest {
     @Test
     public void testOnOpenCard() {
         when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
-        mFeedReliabilityLogger.onOpenCard();
+        mFeedReliabilityLogger.onOpenCard(PAGE_ID, CARD_CATEGORY);
         verify(mLaunchLogger)
                 .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
+    }
+
+    @Test
+    public void testCardOpeningReliabilityLogger() {
+        mFeedReliabilityLogger.onOpenCard(PAGE_ID, CARD_CATEGORY);
+        verify(mCardOpeningReliabilityLogger).onCardClicked(eq(PAGE_ID), eq(CARD_CATEGORY));
+
+        mFeedReliabilityLogger.onPageLoadStarted(PAGE_ID);
+        verify(mCardOpeningReliabilityLogger).onPageLoadStarted(PAGE_ID);
+
+        mFeedReliabilityLogger.onPageFirstContentfulPaint(PAGE_ID);
+        verify(mCardOpeningReliabilityLogger).onPageFirstContentfulPaint(PAGE_ID);
+
+        mFeedReliabilityLogger.onPageLoadFinished(PAGE_ID);
+        verify(mCardOpeningReliabilityLogger).onPageLoadFinished(PAGE_ID);
+
+        mFeedReliabilityLogger.onPageLoadFailed(PAGE_ID, NetError.ERR_INTERNET_DISCONNECTED);
+        verify(mCardOpeningReliabilityLogger)
+                .onPageLoadFailed(PAGE_ID, PageLoadError.INTERNET_DISCONNECTED);
+
+        mFeedReliabilityLogger.onPageLoadFailed(PAGE_ID, NetError.ERR_CONNECTION_TIMED_OUT);
+        verify(mCardOpeningReliabilityLogger)
+                .onPageLoadFailed(PAGE_ID, PageLoadError.CONNECTION_TIMED_OUT);
+
+        mFeedReliabilityLogger.onPageLoadFailed(PAGE_ID, NetError.ERR_NAME_RESOLUTION_FAILED);
+        verify(mCardOpeningReliabilityLogger)
+                .onPageLoadFailed(PAGE_ID, PageLoadError.NAME_RESOLUTION_FAILED);
+
+        mFeedReliabilityLogger.onPageLoadFailed(PAGE_ID, NetError.ERR_ABORTED);
+        verify(mCardOpeningReliabilityLogger)
+                .onPageLoadFailed(PAGE_ID, PageLoadError.PAGE_LOAD_ERROR);
     }
 }

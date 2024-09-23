@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_model.h"
 
 #include <stdlib.h>
+
 #include <cstddef>
 #include <memory>
 
@@ -12,7 +13,10 @@
 #include "ash/calendar/calendar_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_fetch.h"
+#include "ash/system/time/calendar_list_model.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -20,6 +24,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "google_apis/calendar/calendar_api_requests.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
 
@@ -207,6 +212,12 @@ void CalendarModel::ClearAllCachedEvents() {
   // Destroy all outstanding fetch requests.
   pending_fetches_.clear();
 
+  // Destroy the fetch error codes.
+  fetch_error_codes_.clear();
+
+  // Destroy the fetch completion indicators.
+  events_have_fetched_.clear();
+
   // Destroy the set of months that have been fetched.
   months_fetched_.clear();
 
@@ -235,14 +246,34 @@ void CalendarModel::ClearAllPrunableEvents() {
   mru_months_.clear();
 }
 
+bool CalendarModel::MonthHasEvents(const base::Time start_of_month) {
+  if (base::Contains(event_months_, start_of_month)) {
+    for (auto it = event_months_[start_of_month].begin();
+         it != event_months_[start_of_month].end(); it++) {
+      if (!it->second.empty()) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void CalendarModel::UploadLifetimeMetrics() {
-  base::UmaHistogramCounts100000(
-      "Ash.Calendar.FetchEvents.TotalCacheSizeMonths", event_months_.size());
+  calendar_metrics::RecordTotalEventsCacheSizeInMonths(event_months_.size());
+}
+
+void CalendarModel::MaybeFetchEvents(base::Time start_of_month) {
+  if (Shell::Get()
+          ->system_tray_model()
+          ->calendar_list_model()
+          ->list_cached_and_no_fetch_in_progress()) {
+    FetchEvents(start_of_month);
+  }
 }
 
 void CalendarModel::FetchEvents(base::Time start_of_month) {
   // Early return if it's not a valid user/user-session.
-  if (!calendar_utils::ShouldFetchEvents()) {
+  if (!calendar_utils::ShouldFetchCalendarData()) {
     return;
   }
 
@@ -260,13 +291,54 @@ void CalendarModel::FetchEvents(base::Time start_of_month) {
     return;
   }
 
-  // Erase any outstanding fetch for this month.
-  pending_fetches_.erase(start_of_month);
+  // Reset fetch helpers before the new fetch(es).
+  fetch_error_codes_.erase(start_of_month);
+  if (base::Contains(non_prunable_months_, start_of_month)) {
+    events_have_fetched_.insert_or_assign(start_of_month, false);
+  }
 
-  // Construct a unique_ptr for the fetch request, and transfer ownership to
-  // `pending_fetches_`.
-  pending_fetches_.emplace(
-      start_of_month,
+  if (calendar_utils::IsMultiCalendarEnabled()) {
+    ash::CalendarList calendar_list = Shell::Get()
+                                          ->system_tray_model()
+                                          ->calendar_list_model()
+                                          ->GetCachedCalendarList();
+
+    if (!calendar_list.empty()) {
+      fetches_start_time_ = base::TimeTicks::Now();
+
+      // Create event fetch requests for up to `kMultipleCalendarsLimit`
+      // calendars. Expects a calendar list trimmed to be within the calendar
+      // limit.
+      for (const auto& calendar : calendar_list) {
+        // Create event fetch request for the calendar and transfer ownership to
+        // `pending_fetches_`.
+        pending_fetches_[start_of_month][calendar.id()] =
+            std::make_unique<CalendarEventFetch>(
+                start_of_month,
+                /*complete_callback =*/
+                base::BindRepeating(&CalendarModel::OnEventsFetched,
+                                    base::Unretained(this)),
+                /*internal_error_callback_ =*/
+                base::BindRepeating(
+                    &CalendarModel::OnEventFetchFailedInternalError,
+                    base::Unretained(this)),
+                /*tick_clock =*/nullptr, calendar.id(), calendar.color_id());
+      }
+    } else {
+      // The user has no selected calendars, so notify observers to remove the
+      // loading bar.
+      for (auto& observer : observers_) {
+        observer.OnEventsFetched(kNever, start_of_month);
+      }
+    }
+  } else {
+    FetchPrimaryCalendarEvents(start_of_month);
+  }
+}
+
+void CalendarModel::FetchPrimaryCalendarEvents(
+    const base::Time start_of_month) {
+  pending_fetches_[start_of_month][google_apis::calendar::kPrimaryCalendarId] =
       std::make_unique<CalendarEventFetch>(
           start_of_month,
           /*complete_callback=*/
@@ -275,16 +347,25 @@ void CalendarModel::FetchEvents(base::Time start_of_month) {
           /*internal_error_callback_=*/
           base::BindRepeating(&CalendarModel::OnEventFetchFailedInternalError,
                               base::Unretained(this)),
-          /*tick_clock=*/nullptr));
+          /*tick_clock=*/nullptr);
 }
 
 void CalendarModel::CancelFetch(const base::Time& start_of_month) {
   if (base::Contains(pending_fetches_, start_of_month)) {
-    // Note that the `CalendarEventFetch` here will be removed from
-    // `pending_fetches_` in `OnEventsFetched`, which will receive an error code
-    // of `google_apis::CANCELLED` and an empty event list, so there's no need
-    // to remove it here.
-    pending_fetches_[start_of_month]->Cancel();
+    for (auto it = pending_fetches_[start_of_month].begin();
+         it != pending_fetches_[start_of_month].end(); it++) {
+      it->second->Cancel();
+    }
+    // We want to wait until after fetches have been cancelled to erase
+    // `pending_fetches` for this month.
+    pending_fetches_.erase(start_of_month);
+    // This method might be called after some events have been fetched. For
+    // prunable months, to prevent event storage from being partially populated
+    // and displayed, we delete all stored events for the month.
+    if (!base::Contains(non_prunable_months_, start_of_month)) {
+      event_months_.erase(start_of_month);
+      months_fetched_.erase(start_of_month);
+    }
   }
 }
 
@@ -305,37 +386,68 @@ int CalendarModel::EventsNumberOfDay(base::Time day,
   return list.size();
 }
 
+void CalendarModel::NotifyObservers(base::Time start_of_month) {
+  // If at least one of the month's fetches succeeded, we emit kSuccess.
+  // Otherwise, emit kNever to stop the loading animation.
+  if (fetch_error_codes_[start_of_month].count(google_apis::HTTP_SUCCESS)) {
+    for (auto& observer : observers_) {
+      observer.OnEventsFetched(kSuccess, start_of_month);
+    }
+  } else {
+    for (auto& observer : observers_) {
+      observer.OnEventsFetched(kNever, start_of_month);
+    }
+  }
+}
+
 void CalendarModel::OnEventsFetched(
     base::Time start_of_month,
+    std::string calendar_id,
     google_apis::ApiErrorCode error,
     const google_apis::calendar::EventList* events) {
-  base::UmaHistogramSparse("Ash.Calendar.FetchEvents.Result", error);
-  if (error != google_apis::HTTP_SUCCESS) {
-    // Request is no longer outstanding, so it can be destroyed.
-    pending_fetches_.erase(start_of_month);
-    // Notify observers that we had an error with the events fetched.
-    // Right now the `kError` status isn't handled in any way so we just emit
-    // `kNever` to stop the loading animation displaying.
-    // TODO(https://crbug.com/1298187): Possibly respond further based on the
-    // specific error code, retry in some cases, etc.
-    for (auto& observer : observers_) {
-      observer.OnEventsFetched(kNever, start_of_month, events);
-    }
+  calendar_metrics::RecordEventListFetchErrorCode(error);
 
+  fetch_error_codes_[start_of_month].emplace(error);
+
+  if (calendar_utils::IsMultiCalendarEnabled() &&
+      pending_fetches_[start_of_month].empty()) {
+    // On the completion of the final calendar event fetch, record the time
+    // elapsed from the start of the first fetch.
+    calendar_metrics::RecordEventListFetchesTotalDuration(
+        base::TimeTicks::Now() - fetches_start_time_);
+  }
+
+  if (error == google_apis::CANCELLED) {
     return;
   }
 
-  // Keep us within storage limits.
+  if (error != google_apis::HTTP_SUCCESS) {
+    pending_fetches_[start_of_month].erase(calendar_id);
+    if (pending_fetches_[start_of_month].empty()) {
+      NotifyObservers(start_of_month);
+    }
+    return;
+  }
+
   PruneEventCache();
 
-  // Clear out this month's events, we're about replace them.
-  event_months_.erase(start_of_month);
+  // If this is the first fetch that has returned for a non-prunable month,
+  // clear pre-existing event storage and indicate that some new events have
+  // fetched.
+  if (base::Contains(non_prunable_months_, start_of_month) &&
+      !events_have_fetched_[start_of_month]) {
+    event_months_.erase(start_of_month);
+    events_have_fetched_[start_of_month] = true;
+  }
 
-  if (!events || events->items().empty()) {
-    // Even though `start_of_month` has no events, insert an empty map to
-    // indicate a successful fetch.
-    SingleMonthEventMap empty_event_map;
-    event_months_.emplace(start_of_month, empty_event_map);
+  // If there are no events for the current calendar and the event map for
+  // the month does not yet exist, insert an empty map. Otherwise, we do
+  // not want to overwrite events from previously fetched calendars.
+  if ((!events || events->items().empty())) {
+    if (!base::Contains(event_months_, start_of_month)) {
+      SingleMonthEventMap empty_event_map;
+      event_months_.emplace(start_of_month, empty_event_map);
+    }
     PromoteMonth(start_of_month);
   } else {
     // Store the incoming events.
@@ -353,34 +465,30 @@ void CalendarModel::OnEventsFetched(
     }
   }
 
-  // Notify observers.
-  for (auto& observer : observers_) {
-    observer.OnEventsFetched(kSuccess, start_of_month, events);
-  }
-
-  // Month has officially been fetched.
-  months_fetched_.emplace(start_of_month);
-
   // Request is no longer outstanding, so it can be destroyed.
-  pending_fetches_.erase(start_of_month);
+  pending_fetches_[start_of_month].erase(calendar_id);
 
-  // Record the size of the month, and the total number of months.
-  base::UmaHistogramCounts1M("Ash.Calendar.FetchEvents.SingleMonthSize",
-                             GetEventMapSize(event_months_[start_of_month]));
+  if (pending_fetches_[start_of_month].empty()) {
+    NotifyObservers(start_of_month);
+
+    months_fetched_.emplace(start_of_month);
+
+    // Record the size of the month, and the total number of months.
+    calendar_metrics::RecordSingleMonthSizeInBytes(
+        GetEventMapSize(event_months_[start_of_month]));
+  }
 }
 
 void CalendarModel::OnEventFetchFailedInternalError(
     base::Time start_of_month,
+    std::string calendar_id,
     CalendarEventFetchInternalErrorCode error) {
   // Request is no longer outstanding, so it can be destroyed.
-  pending_fetches_.erase(start_of_month);
-  // Notify observers of timeout fetching events for given `start_of_month`.
-  // Right now timeouts aren't handled in any way so we just emit `onTimeout` to
-  // stop the loading animation displaying.
-  // TODO(https://crbug.com/1298187): May need to respond further based on the
+  pending_fetches_[start_of_month].erase(calendar_id);
+  // TODO(b/40822782): May need to respond further based on the
   // specific error code, retry in some cases, etc.
-  for (auto& observer : observers_) {
-    observer.OnTimeout(start_of_month);
+  if (pending_fetches_[start_of_month].empty()) {
+    NotifyObservers(start_of_month);
   }
 }
 
@@ -541,20 +649,20 @@ std::list<CalendarEvent> CalendarModel::FindUpcomingEvents(
 }
 
 CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(
-    base::Time start_time) const {
-  if (!calendar_utils::ShouldFetchEvents()) {
+    base::Time start_time) {
+  if (!calendar_utils::ShouldFetchCalendarData()) {
     return kNa;
   }
 
-  if (pending_fetches_.count(start_time)) {
-    if (event_months_.count(start_time)) {
+  if (!pending_fetches_[start_time].empty()) {
+    if (months_fetched_.count(start_time)) {
       return kRefetching;
     }
 
     return kFetching;
   }
 
-  if (event_months_.count(start_time)) {
+  if (months_fetched_.count(start_time)) {
     return kSuccess;
   }
 

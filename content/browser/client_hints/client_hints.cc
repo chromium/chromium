@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/client_hints/client_hints.h"
 
 #include <algorithm>
@@ -166,7 +171,7 @@ double GetZoomFactor(BrowserContext* context, const GURL& url) {
                      ->GetDefaultZoomLevel();
   }
 
-  return blink::PageZoomLevelToZoomFactor(zoom_level);
+  return blink::ZoomLevelToZoomFactor(zoom_level);
 }
 
 // Returns a string corresponding to |value|. The returned string satisfies
@@ -328,8 +333,8 @@ gfx::Size GetScaledViewportSize(BrowserContext* context,
 #if BUILDFLAG(IS_ANDROID)
   // On Android, the viewport is scaled so the width is 980. See
   // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/css/viewportAndroid.css.
-  // TODO(1246208): Improve the usefulness of the viewport client hints for
-  // navigation requests.
+  // TODO(crbug.com/40196453): Improve the usefulness of the viewport client
+  // hints for navigation requests.
   if (viewport_size.width() > 0) {
     viewport_size =
         ScaleToRoundedSize(viewport_size, 980.0 / viewport_size.width());
@@ -554,9 +559,8 @@ struct ClientHintsExtendedData {
     if (is_outermost_main_frame) {
       main_frame_origin = resource_origin;
     } else if (frame_tree_node->IsInFencedFrameTree()) {
-      // TODO(https://crbug.com/1430508) Add WPT tests and specify the behavior
-      // of client hints delegation for subframes inside
-      // FencedFrames/Portals/etc...
+      // TODO(crbug.com/40263100) Add WPT tests and specify the behavior
+      // of client hints delegation for subframes inside FencedFrames.
       // Test cases should cover this 3 layers nested frames case, from top to
       // bottom:
       // 1. Fenced frame.
@@ -573,7 +577,7 @@ struct ClientHintsExtendedData {
         permissions = fenced_frame_properties->effective_enabled_permissions();
       }
       permissions_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
-          resource_origin, permissions);
+          resource_origin, /*header_policy=*/{}, permissions);
     } else {
       RenderFrameHostImpl* main_frame =
           frame_tree_node->frame_tree().GetMainFrame();
@@ -643,7 +647,7 @@ bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
 // The permissions policy the browser side has for the frame was set in stone
 // before HTML parsing began, so any updates must be sent via
 // `container_policy`.
-// TODO(crbug.com/1278127): Replace w/ generic HTML policy modification.
+// TODO(crbug.com/40208054): Replace w/ generic HTML policy modification.
 void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
     ClientHintsExtendedData& data,
     const blink::ParsedPermissionsPolicy& container_policy) {
@@ -675,8 +679,8 @@ void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
       }
     }
   }
-  data.permissions_policy->OverwriteHeaderPolicyForClientHints(
-      client_hints_container_policy);
+  data.permissions_policy =
+      data.permissions_policy->WithClientHints(client_hints_container_policy);
 }
 
 // Captures when UpdateNavigationRequestClientUaHeadersImpl() is being called.
@@ -777,9 +781,9 @@ void UpdateNavigationRequestClientUaHeadersImpl(
       AddUAHeader(headers, WebClientHintsType::kUAFullVersionList,
                   ua_metadata->SerializeBrandFullVersionList());
     }
-    if (ShouldAddClientHint(data, WebClientHintsType::kUAFormFactor)) {
-      AddUAHeader(headers, WebClientHintsType::kUAFormFactor,
-                  ua_metadata->SerializeFormFactor());
+    if (ShouldAddClientHint(data, WebClientHintsType::kUAFormFactors)) {
+      AddUAHeader(headers, WebClientHintsType::kUAFormFactors,
+                  ua_metadata->SerializeFormFactors());
     }
   } else if (call_type == ClientUaHeaderCallType::kAfterCreated) {
     RemoveClientHintHeader(WebClientHintsType::kUA, headers);
@@ -792,7 +796,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     RemoveClientHintHeader(WebClientHintsType::kUABitness, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAFullVersionList, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAWoW64, headers);
-    RemoveClientHintHeader(WebClientHintsType::kUAFormFactor, headers);
+    RemoveClientHintHeader(WebClientHintsType::kUAFormFactors, headers);
   }
 }
 
@@ -930,7 +934,7 @@ void AddRequestClientHintsHeaders(
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 
-  // TODO(crbug.com/735518): If the request is redirected, the client hint
+  // TODO(crbug.com/40526905): If the request is redirected, the client hint
   // headers stay attached to the redirected request. Consider removing/adding
   // the client hints headers if the request is redirected with a change in
   // scheme or a change in the origin.

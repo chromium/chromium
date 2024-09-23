@@ -21,10 +21,12 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
+#include "content/browser/renderer_host/media/fake_video_capture_provider.h"
 #include "content/browser/renderer_host/media/in_process_video_capture_provider.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -60,8 +62,6 @@ const char kNoFormatsVideoDeviceID[] = "/dev/video1";
 const char kZeroResolutionVideoDeviceID[] = "/dev/video2";
 const char* const kDefaultVideoDeviceID = kZeroResolutionVideoDeviceID;
 const char kDefaultAudioDeviceID[] = "fake_audio_input_2";
-
-const auto kIgnoreLogMessageCB = base::DoNothing();
 
 void PhysicalDevicesEnumerated(base::OnceClosure quit_closure,
                                MediaDeviceEnumeration* out,
@@ -101,8 +101,7 @@ std::u16string MaxLengthCaptureHandle() {
 
 class FakeContentBrowserClient : public ContentBrowserClient {
  public:
-  explicit FakeContentBrowserClient(BrowserContext* expected_browser_context)
-      : expected_browser_context_(expected_browser_context) {}
+  FakeContentBrowserClient() = default;
 
   void PreferenceRankAudioDeviceInfos(
       BrowserContext* browser_context,
@@ -114,6 +113,10 @@ class FakeContentBrowserClient : public ContentBrowserClient {
       BrowserContext* browser_context,
       blink::WebMediaDeviceInfoArray& infos) override {
     PreferenceRankDeviceInfos(browser_context, kDefaultVideoDeviceID, infos);
+  }
+
+  void set_expected_browser_context(BrowserContext* browser_context) {
+    expected_browser_context_ = browser_context;
   }
 
  private:
@@ -153,16 +156,19 @@ class MediaDevicesDispatcherHostTest
     auto video_capture_device_factory =
         std::make_unique<media::FakeVideoCaptureDeviceFactory>();
     video_capture_device_factory_ = video_capture_device_factory.get();
-    auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
-        std::move(video_capture_device_factory));
-    auto video_capture_provider =
-        std::make_unique<InProcessVideoCaptureProvider>(
-            std::move(video_capture_system),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            kIgnoreLogMessageCB);
+    auto fake_video_capture_provider =
+        std::make_unique<FakeVideoCaptureProvider>(
+            std::move(video_capture_device_factory));
+    auto screencapture_video_capture_provider =
+        InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
+            base::SingleThreadTaskRunner::GetCurrentDefault());
+    auto video_capture_provider_switcher =
+        std::make_unique<VideoCaptureProviderSwitcher>(
+            std::move(fake_video_capture_provider),
+            std::move(screencapture_video_capture_provider));
 
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
-        audio_system_.get(), std::move(video_capture_provider));
+        audio_system_.get(), std::move(video_capture_provider_switcher));
 
     InitializeRenderFrameHost();
     host_ = std::make_unique<MediaDevicesDispatcherHost>(
@@ -181,10 +187,12 @@ class MediaDevicesDispatcherHostTest
   ~MediaDevicesDispatcherHostTest() override {
     audio_manager_->Shutdown();
     EXPECT_FALSE(expected_set_capture_handle_config_);
+    browser_client_.set_expected_browser_context(nullptr);
   }
 
   void SetUp() override {
     SetBrowserClientForTesting(&browser_client_);
+    browser_client_.set_expected_browser_context(&browser_context_);
     std::vector<media::FakeVideoCaptureDeviceSettings> fake_video_devices(
         kNumFakeVideoDevices);
     // A regular video device
@@ -221,7 +229,7 @@ class MediaDevicesDispatcherHostTest
     devices_to_enumerate[static_cast<size_t>(
         MediaDeviceType::kMediaVideoInput)] = true;
     devices_to_enumerate[static_cast<size_t>(
-        MediaDeviceType::kMediaAudioOuput)] = true;
+        MediaDeviceType::kMediaAudioOutput)] = true;
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
         base::BindOnce(&PhysicalDevicesEnumerated, run_loop.QuitClosure(),
@@ -237,7 +245,7 @@ class MediaDevicesDispatcherHostTest
                   .size(),
               0u);
     ASSERT_GT(physical_devices_[static_cast<size_t>(
-                                    MediaDeviceType::kMediaAudioOuput)]
+                                    MediaDeviceType::kMediaAudioOutput)]
                   .size(),
               0u);
   }
@@ -384,7 +392,7 @@ class MediaDevicesDispatcherHostTest
                        .empty());
     if (enumerate_audio_output)
       EXPECT_FALSE(enumerated_devices_[static_cast<size_t>(
-                                           MediaDeviceType::kMediaAudioOuput)]
+                                           MediaDeviceType::kMediaAudioOutput)]
                        .empty());
 
     EXPECT_FALSE(DoesContainRawIds(enumerated_devices_));
@@ -488,7 +496,7 @@ class MediaDevicesDispatcherHostTest
       host_->AddMediaDevicesListener(
           type == MediaDeviceType::kMediaAudioInput,
           type == MediaDeviceType::kMediaVideoInput,
-          type == MediaDeviceType::kMediaAudioOuput,
+          type == MediaDeviceType::kMediaAudioOutput,
           device_change_listener.CreatePendingRemoteAndBind());
       blink::WebMediaDeviceInfoArray changed_devices;
       EXPECT_CALL(device_change_listener, OnDevicesChanged(type, _))
@@ -546,10 +554,10 @@ class MediaDevicesDispatcherHostTest
       expected_set_capture_handle_config_;
   std::vector<media::VideoCaptureFormat> expected_video_capture_formats_;
   RenderViewHostTestEnabler rvh_test_enabler_;
+  FakeContentBrowserClient browser_client_;
   TestBrowserContext browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   raw_ptr<TestRenderFrameHost> render_frame_host_;
-  FakeContentBrowserClient browser_client_{&browser_context_};
 };
 
 TEST_P(MediaDevicesDispatcherHostTest, EnumerateAudioInputDevices) {

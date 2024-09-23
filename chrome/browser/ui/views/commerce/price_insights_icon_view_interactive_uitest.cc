@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/simple_test_clock.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -14,16 +14,17 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/search/ntp_features.h"
-#include "components/user_education/test/feature_promo_test_util.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/interaction/interactive_test.h"
 
 namespace {
@@ -42,9 +43,13 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 }
 }  // namespace
 
-class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
+class PriceInsightsIconViewInteractiveTest
+    : public InteractiveFeaturePromoTest {
  public:
-  PriceInsightsIconViewInteractiveTest() {
+  explicit PriceInsightsIconViewInteractiveTest(
+      std::vector<base::test::FeatureRef> iph_features = {})
+      : InteractiveFeaturePromoTest(
+            UseDefaultTrackerAllowingPromos(std::move(iph_features))) {
     test_features_.InitWithFeatures(
         /*enabled_features=*/{commerce::kCommerceAllowChipExpansion,
                               commerce::kPriceInsights},
@@ -54,7 +59,7 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    InteractiveBrowserTest::SetUp();
+    InteractiveFeaturePromoTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -63,7 +68,7 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
         base::BindRepeating(&BasicResponse));
     embedded_test_server()->StartAcceptingConnections();
 
-    InteractiveBrowserTest::SetUpOnMainThread();
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
 
     SetUpTabHelperAndShoppingService();
   }
@@ -148,22 +153,34 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        SidePanelShownOnPress) {
-  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
-  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
+  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl)
+      .Times(testing::AnyNumber());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   RunTestSequence(
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(),
+
       // Ensure the side panel isn't open
       EnsureNotPresent(kSidePanelElementId),
       // Click on the action chip to open the side panel
       PressButton(kPriceInsightsChipElementId),
-      WaitForShow(kSidePanelElementId), FlushEvents(),
+      WaitForShow(kSidePanelElementId),
       // Click on the action chip again to close the side panel
       PressButton(kPriceInsightsChipElementId),
-      WaitForHide(kSidePanelElementId), FlushEvents());
+      WaitForHide(kSidePanelElementId));
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_ShoppingAction::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Shopping_ShoppingAction::kPriceInsightsOpenedName, 1);
+  ukm_recorder.ExpectEntrySourceHasUrl(
+      entries[0], embedded_test_server()->GetURL(kShoppingURL));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
@@ -177,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
-      PressButton(kPriceInsightsChipElementId), FlushEvents(),
+      WaitForShow(kPriceInsightsChipElementId),
+      PressButton(kPriceInsightsChipElementId),
       CheckView(
           kPriceInsightsChipElementId,
           [](PriceInsightsIconView* icon) {
@@ -190,25 +207,13 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
 class PriceInsightsIconViewEngagementTest
     : public PriceInsightsIconViewInteractiveTest {
  public:
-  PriceInsightsIconViewEngagementTest() {
-    test_features_.InitAndEnableFeatures(
-        {commerce::kPriceInsights,
-         feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature},
-        {});
-    test_clock_.SetNow(base::Time::Now());
+  PriceInsightsIconViewEngagementTest()
+      : PriceInsightsIconViewInteractiveTest(
+            {feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature}) {
   }
-
-  void SetUp() override { PriceInsightsIconViewInteractiveTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     PriceInsightsIconViewInteractiveTest::SetUpOnMainThread();
-
-    BrowserFeaturePromoController* const promo_controller =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetFeaturePromoController();
-    EXPECT_TRUE(
-        user_education::test::WaitForFeatureEngagementReady(promo_controller));
-    EXPECT_TRUE(user_education::test::SetClock(promo_controller, test_clock_));
     RunTestSequence(InstrumentTab(kShoppingTab));
   }
 
@@ -219,7 +224,7 @@ class PriceInsightsIconViewEngagementTest
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kNonShoppingURL)),
-        FlushEvents(), EnsureNotPresent(kPriceInsightsChipElementId));
+        WaitForHide(kPriceInsightsChipElementId));
   }
 
   void NavigateToAShoppingPage(bool expected_to_show_label) {
@@ -229,7 +234,7 @@ class PriceInsightsIconViewEngagementTest
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kShoppingURL)),
-        FlushEvents(), EnsurePresent(kPriceInsightsChipElementId),
+        WaitForShow(kPriceInsightsChipElementId),
         CheckViewProperty(kPriceInsightsChipElementId,
                           &PriceInsightsIconView::ShouldShowLabel,
                           expected_to_show_label));
@@ -266,12 +271,6 @@ class PriceInsightsIconViewEngagementTest
             "Commerce.PriceInsights.OmniboxIconShown"),
         BucketsAre(base::Bucket(0, 0), base::Bucket(1, 2), base::Bucket(2, 0)));
   }
-
- protected:
-  base::SimpleTestClock test_clock_;
-
- private:
-  feature_engagement::test::ScopedIphFeatureList test_features_;
 };
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewEngagementTest, ExpandedIconShown) {

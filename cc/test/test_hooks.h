@@ -71,10 +71,6 @@ class TestHooks : public AnimationDelegate {
   virtual void NotifyAllTileTasksCompleted(LayerTreeHostImpl* host_impl) {}
   virtual void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
                                               const Tile* tile) {}
-  virtual void WillReceiveCompositorFrameAckOnThread(
-      LayerTreeHostImpl* host_impl) {}
-  virtual void DidReceiveCompositorFrameAckOnThread(
-      LayerTreeHostImpl* host_impl) {}
   virtual void DidRunBeginMainFrame() {}
   virtual void DidReceivePresentationTimeOnThread(
       LayerTreeHostImpl* host_impl,
@@ -122,10 +118,12 @@ class TestHooks : public AnimationDelegate {
   virtual void WillCommit(const CommitState&) {}
   virtual void DidCommit() {}
   virtual void DidCommitAndDrawFrame() {}
-  virtual void DidReceiveCompositorFrameAck() {}
   virtual void DidActivateSyncTree() {}
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) {}
   virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics();
+  virtual void DidPresentCompositorFrame(
+      uint32_t frame_token,
+      const viz::FrameTimingDetails& frame_timing_details) {}
 
   // AnimationDelegate implementation.
   void NotifyAnimationStarted(base::TimeTicks monotonic_time,

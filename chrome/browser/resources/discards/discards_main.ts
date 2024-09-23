@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
-import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './database_tab.js';
 import './discards_tab.js';
 import './graph_tab.js';
 
+import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './discards_main.html.js';
@@ -31,12 +31,6 @@ class DiscardsMainElement extends PolymerElement {
         observer: 'selectedChanged_',
       },
 
-      path: {
-        type: String,
-        value: '',
-        observer: 'pathChanged_',
-      },
-
       tabs: {
         type: Array,
         value: () => ['Discards', 'Database', 'Graph'],
@@ -45,8 +39,16 @@ class DiscardsMainElement extends PolymerElement {
   }
 
   selected: number;
-  path: string;
   tabs: string[];
+
+  override ready() {
+    super.ready();
+    const router = CrRouter.getInstance();
+    this.pathChanged_(router.getPath());
+    router.addEventListener(
+        'cr-router-path-changed',
+        (e: Event) => this.pathChanged_((e as CustomEvent<string>).detail));
+  }
 
   /** Updates the location hash on selection change. */
   private selectedChanged_(newValue: number, oldValue?: number) {
@@ -54,7 +56,8 @@ class DiscardsMainElement extends PolymerElement {
       // The first tab is special-cased to the empty path.
       const defaultTab = this.tabs[0].toLowerCase();
       const tabName = this.tabs[newValue].toLowerCase();
-      this.path = '/' + (tabName === defaultTab ? '' : tabName);
+      CrRouter.getInstance().setPath(
+          '/' + (tabName === defaultTab ? '' : tabName));
     }
   }
 
@@ -68,7 +71,7 @@ class DiscardsMainElement extends PolymerElement {
   }
 
   /** Updates the selection property on path change. */
-  private pathChanged_(newValue: string, _oldValue?: string) {
+  private pathChanged_(newValue: string) {
     this.selected = this.selectedFromPath_(newValue.substr(1));
   }
 }

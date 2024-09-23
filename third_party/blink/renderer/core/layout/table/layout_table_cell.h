@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/table_constants.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
 namespace blink {
 
@@ -15,7 +15,7 @@ class LayoutTable;
 class LayoutTableRow;
 class LayoutTableSection;
 
-class CORE_EXPORT LayoutTableCell : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow {
  public:
   explicit LayoutTableCell(Element*);
 

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
@@ -39,7 +40,7 @@
 
 namespace blink {
 
-class SVGPath final : public SVGPropertyBase {
+class CORE_EXPORT SVGPath final : public SVGPropertyBase {
  public:
   typedef void TearOffType;
 

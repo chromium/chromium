@@ -6,10 +6,11 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoDeps.java",
+    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoImpressionCounter.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoManager.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMetrics.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserStateProvider.java",
   ]
   deps = [
     "//base:base_java",
@@ -17,6 +18,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//components/feature_engagement/public:public_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
   ]
@@ -25,16 +27,21 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoDepsTest.java",
+    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoImpressionCounterTest.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoManagerTest.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoUtilsTest.java",
+    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserStateProviderTest.java",
   ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
+    "//base:base_shared_preferences_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//components/feature_engagement/public:public_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",

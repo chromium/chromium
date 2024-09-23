@@ -9,6 +9,7 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 
@@ -18,7 +19,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/common/task_annotator.h"
@@ -260,7 +260,7 @@ class BASE_EXPORT TaskTracker {
 
   // Signaled when |num_incomplete_task_sources_| is or reaches zero or when
   // shutdown completes.
-  const std::unique_ptr<ConditionVariable> flush_cv_;
+  ConditionVariable flush_cv_;
 
   // All invoked, if any, when |num_incomplete_task_sources_| is zero or when
   // shutdown completes.
@@ -272,7 +272,7 @@ class BASE_EXPORT TaskTracker {
 
   // Event instantiated when shutdown starts and signaled when shutdown
   // completes.
-  std::unique_ptr<WaitableEvent> shutdown_event_ GUARDED_BY(shutdown_lock_);
+  std::optional<WaitableEvent> shutdown_event_ GUARDED_BY(shutdown_lock_);
 
   // Used to generate unique |PendingTask::sequence_num| when posting tasks.
   AtomicSequenceNumber sequence_nums_;

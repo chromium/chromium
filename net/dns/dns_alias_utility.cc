@@ -7,7 +7,6 @@
 #include <set>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "net/base/url_util.h"
 #include "net/dns/dns_names_util.h"
 #include "net/dns/public/dns_protocol.h"

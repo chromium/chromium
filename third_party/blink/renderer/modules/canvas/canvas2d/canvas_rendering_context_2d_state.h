@@ -5,33 +5,63 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 
-#include "base/types/pass_key.h"
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
+#include "third_party/blink/renderer/platform/graphics/pattern.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkBlendMode.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
+
+namespace cc {
+class DrawLooper;
+class PaintCanvas;
+}  // namespace cc
+namespace gfx {
+class Size;
+}  // namespace gfx
+
+namespace v8 {
+class Isolate;
+template <class T>
+class Local;
+class String;
+}  // namespace v8
 
 namespace blink {
 
 class BaseRenderingContext2D;
-class CanvasRenderingContext2D;
+class CSSValue;
 class CanvasFilter;
 class CanvasGradient;
-class CanvasPattern;
-class CSSValue;
+class CanvasRenderingContext2D;
 class Element;
+class FontSelector;
+enum class FontInvalidationReason;
 
 enum ShadowMode {
   kDrawShadowAndForeground,
@@ -53,6 +83,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
     kSaveRestore,
     kBeginEndLayerOneSave,
     kBeginEndLayerTwoSaves,
+    kBeginEndLayerThreeSaves,
     kInitial
   };
 
@@ -91,7 +122,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 
   void SetTransform(const AffineTransform&);
   void ResetTransform();
-  AffineTransform GetTransform() const { return transform_; }
+  const AffineTransform& GetTransform() const { return transform_; }
   bool IsTransformInvertible() const { return is_transform_invertible_; }
 
   void ClipPath(const SkPath&, AntiAliasingMode);
@@ -104,7 +135,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
     return clip_list_.IntersectPathWithClip(path);
   }
 
-  void SetFont(const FontDescription&, FontSelector*);
+  void SetFont(const FontDescription& passed_font_description,
+               FontSelector* selector);
   bool IsFontDirtyForFilter() const;
   const Font& GetFont() const;
   const FontDescription& GetFontDescription() const;
@@ -266,15 +298,22 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetImageSmoothingQuality(const String&);
   String ImageSmoothingQuality() const;
 
-  void SetUnparsedStrokeColor(const String& color) {
-    unparsed_stroke_color_ = color;
+  bool IsUnparsedStrokeColor(v8::Local<v8::String> string) const {
+    return unparsed_stroke_color_ == string;
   }
-  const String& UnparsedStrokeColor() const { return unparsed_stroke_color_; }
+  void SetUnparsedStrokeColor(v8::Isolate* isolate,
+                              v8::Local<v8::String> color) {
+    unparsed_stroke_color_.Reset(isolate, color);
+  }
+  void ClearUnparsedStrokeColor() { unparsed_stroke_color_.Reset(); }
 
-  void SetUnparsedFillColor(const String& color) {
-    unparsed_fill_color_ = color;
+  bool IsUnparsedFillColor(v8::Local<v8::String> string) const {
+    return unparsed_fill_color_ == string;
   }
-  const String& UnparsedFillColor() const { return unparsed_fill_color_; }
+  void SetUnparsedFillColor(v8::Isolate* isolate, v8::Local<v8::String> color) {
+    unparsed_fill_color_.Reset(isolate, color);
+  }
+  void ClearUnparsedFillColor() { unparsed_fill_color_.Reset(); }
 
   bool ShouldDrawShadows() const;
 
@@ -284,12 +323,29 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
                                  ShadowMode,
                                  ImageType = kNoImage) const;
 
+  static_assert(static_cast<int>(SaveType::kBeginEndLayerOneSave) + 1 ==
+                static_cast<int>(SaveType::kBeginEndLayerTwoSaves));
+  static_assert(static_cast<int>(SaveType::kBeginEndLayerTwoSaves) + 1 ==
+                static_cast<int>(SaveType::kBeginEndLayerThreeSaves));
   SaveType GetSaveType() const { return save_type_; }
   bool IsLayerSaveType() const {
-    return save_type_ == SaveType::kBeginEndLayerOneSave ||
-           save_type_ == SaveType::kBeginEndLayerTwoSaves;
+    return save_type_ >= SaveType::kBeginEndLayerOneSave &&
+           save_type_ <= SaveType::kBeginEndLayerThreeSaves;
+  }
+  int LayerSaveCount() {
+    if (!IsLayerSaveType()) {
+      return 0;
+    }
+    return static_cast<int>(save_type_) -
+           static_cast<int>(SaveType::kBeginEndLayerOneSave) + 1;
+  }
+  static SaveType LayerSaveCountToSaveType(int save_count) {
+    CHECK(1 <= save_count && save_count <= 3);
+    return static_cast<SaveType>(
+        static_cast<int>(SaveType::kBeginEndLayerOneSave) + save_count - 1);
   }
 
+  sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
  private:
@@ -297,13 +353,13 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void UpdateFilterQuality() const;
   void UpdateFilterQuality(cc::PaintFlags::FilterQuality) const;
   void ShadowParameterChanged();
-  sk_sp<SkDrawLooper>& EmptyDrawLooper() const;
-  sk_sp<SkDrawLooper>& ShadowOnlyDrawLooper() const;
-  sk_sp<SkDrawLooper>& ShadowAndForegroundDrawLooper() const;
-  sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
+  void SetFontInternal(const FontDescription&, FontSelector*);
+  sk_sp<cc::DrawLooper>& EmptyDrawLooper() const;
+  sk_sp<cc::DrawLooper>& ShadowOnlyDrawLooper() const;
+  sk_sp<cc::DrawLooper>& ShadowAndForegroundDrawLooper() const;
 
-  String unparsed_stroke_color_;
-  String unparsed_fill_color_;
+  TraceWrapperV8Reference<v8::String> unparsed_stroke_color_;
+  TraceWrapperV8Reference<v8::String> unparsed_fill_color_;
   CanvasStyle stroke_style_;
   CanvasStyle fill_style_;
 
@@ -314,9 +370,9 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   gfx::Vector2dF shadow_offset_;
   double shadow_blur_;
   Color shadow_color_;
-  mutable sk_sp<SkDrawLooper> empty_draw_looper_;
-  mutable sk_sp<SkDrawLooper> shadow_only_draw_looper_;
-  mutable sk_sp<SkDrawLooper> shadow_and_foreground_draw_looper_;
+  mutable sk_sp<cc::DrawLooper> empty_draw_looper_;
+  mutable sk_sp<cc::DrawLooper> shadow_only_draw_looper_;
+  mutable sk_sp<cc::DrawLooper> shadow_and_foreground_draw_looper_;
   mutable sk_sp<PaintFilter> shadow_only_image_filter_;
   mutable sk_sp<PaintFilter> shadow_and_foreground_image_filter_;
 

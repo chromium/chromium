@@ -53,7 +53,7 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (static_cast<int>(BrowserSigninMode::kDisabled) > int_value ||
       static_cast<int>(BrowserSigninMode::kForced) < int_value) {
     SYSLOG(ERROR) << "Unexpected value for BrowserSigninMode: " << int_value;
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

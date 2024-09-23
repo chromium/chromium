@@ -5,10 +5,10 @@
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -129,7 +129,7 @@ void PerformanceManagerBrowserTestHarness::StartNavigation(
 PerformanceManagerBrowserTestHarness::NavigateAndWaitForConsoleMessage(
     content::WebContents* contents,
     const GURL& url,
-    base::StringPiece console_pattern) {
+    std::string_view console_pattern) {
   content::WebContentsConsoleObserver console_observer(contents);
   console_observer.SetPattern(std::string(console_pattern));
   if (NavigateToURL(contents, url) && console_observer.Wait()) {

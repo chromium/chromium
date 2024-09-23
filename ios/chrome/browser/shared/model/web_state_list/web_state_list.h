@@ -5,10 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_
 
+#include <map>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -16,9 +19,22 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #include "url/gurl.h"
 
+// TODO(crbug.com/328831758): Remove this once all use cases for
+// MoveWebStateWrapperAt have landed and covered by tests.
+#include "base/gtest_prod_util.h"
+
 class RemovingIndexes;
+class TabGroup;
 class WebStateListDelegate;
 class WebStateListObserver;
+// TODO(crbug.com/328831758): Remove this once all use cases for
+// MoveWebStateWrapperAt have landed and covered by tests.
+class WebStateListTest;
+
+namespace tab_groups {
+class TabGroupId;
+class TabGroupVisualData;
+}  // namespace tab_groups
 
 namespace web {
 class WebState;
@@ -32,24 +48,40 @@ class WebState;
 // observer, or indirectly via code invoked from the observer).
 //
 // The WebStateList takes ownership of the WebStates that it manages.
+//
+// WebStates can be pinned, grouped, or ungrouped, which are mutually exclusive
+// states. Pinned tabs are always at the beginning of the list.
 class WebStateList {
  public:
   // Parameters used when inserting WebStates.
   struct InsertionParams {
-    WebStateOpener opener;
-    bool inherit_opener = false;
-    bool activate = false;
-    bool pinned = false;
-    int desired_index = kInvalidIndex;
-
     // Lets the WebStateList decide where to insert the WebState.
     static InsertionParams Automatic() { return {}; }
 
     // Provides the WebStateList with a desired index where to insert the
     // WebState.
     static InsertionParams AtIndex(int desired_index) {
-      return {.desired_index = desired_index};
+      InsertionParams params;
+      params.desired_index = desired_index;
+      return params;
     }
+
+    InsertionParams(const InsertionParams&);
+    InsertionParams& operator=(const InsertionParams&);
+    InsertionParams(InsertionParams&&);
+    InsertionParams& operator=(InsertionParams&&);
+
+    WebStateOpener opener;
+    raw_ptr<const TabGroup> in_group = nullptr;
+    int desired_index = kInvalidIndex;
+    bool inherit_opener = false;
+    bool activate = false;
+    bool pinned = false;
+
+    // Used to check that Pinned() or InGroup() have not been
+    // called on the same object.
+    bool pinned_called = false;
+    bool in_group_called = false;
 
     // Sets the potential opener.
     InsertionParams& WithOpener(WebStateOpener an_opener) {
@@ -71,13 +103,33 @@ class WebStateList {
       return *this;
     }
 
-    // Whether the WebState is added to the pinned WebStates.
+    // Whether the WebState is added to the pinned WebStates. This is ignored if
+    // an opener is set or inherited which belongs to a group. The WebState will
+    // then be inserted in that group.
+    // Cannot be called after `InGroup(...)`.
     InsertionParams& Pinned(bool pin = true) {
-      this->pinned = pin;
+      CHECK(!in_group_called);
+      pinned_called = true;
+      pinned = pin;
       return *this;
     }
+
+    // Sets the group the new WebState belongs to.
+    // Cannot be called after `Pinned(...)`.
+    InsertionParams& InGroup(const TabGroup* group) {
+      CHECK(!pinned_called);
+      in_group_called = true;
+      in_group = group;
+      return *this;
+    }
+
+   private:
+    // Client code should use `Automatic()` to make intention explicit.
+    InsertionParams();
   };
 
+  // TODO(crbug.com/365701685): Refactor WebStateList::ClosingFlags to use an
+  // enum for the reason why a WebState is being closed.
   // Constants used when closing WebStates.
   enum ClosingFlags {
     // Used to indicate that nothing special should happen to the closed
@@ -86,6 +138,9 @@ class WebStateList {
 
     // Used to indicate that the WebState was closed due to user action.
     CLOSE_USER_ACTION = 1 << 0,
+
+    // Used tp indicate that the WebState was closed in a tabs clean-up.
+    CLOSE_TABS_CLEANUP = 1 << 1,
   };
 
   // Scoped type representing a batch operation in progress.
@@ -105,6 +160,10 @@ class WebStateList {
   //
   // In all case, the ScopedBatchOperation must have a smaller lifetime than
   // the WebStateList that returned it.
+  //
+  // Important note: the public API of WebStateList never performs an operation
+  // as part of a batch operation. It is the responsibility of the calling code
+  // the call StartBatchOperation() and to properly scope the returned object.
   class [[maybe_unused, nodiscard]] ScopedBatchOperation {
    public:
     ScopedBatchOperation(ScopedBatchOperation&& other)
@@ -124,41 +183,6 @@ class WebStateList {
 
     // The WebStateList on which the batch operation is in progress.
     raw_ptr<WebStateList> web_state_list_ = nullptr;
-  };
-
-  // Represents a range in the WebStateList. Typically used for locating tab
-  // groups.
-  class Range {
-   public:
-    // Initializes the range with a start and count.
-    constexpr Range(int start, int count) : start_(start), count_(count) {
-      DCHECK_GE(count_, 0);
-    }
-
-    // Returns a range that is invalid, which is {kInvalidIndex, 0}.
-    static constexpr Range InvalidRange() { return Range(kInvalidIndex, 0); }
-
-    // Checks if the range is valid through comparison to InvalidRange(). If
-    // this is not valid, you must not call functions on this object.
-    constexpr bool IsValid() const { return *this != InvalidRange(); }
-
-    // Getters.
-    constexpr int start() const { return start_; }
-    constexpr int count() const { return count_; }
-
-    // End is the first index not in the range.
-    constexpr int end() const { return start_ + count_; }
-    // Whether the index is inside the range.
-    constexpr bool contains(int index) const {
-      return start_ <= index && index < start_ + count_;
-    }
-
-    constexpr bool operator==(const Range& other) const = default;
-    constexpr bool operator!=(const Range& other) const = default;
-
-   private:
-    const int start_;
-    const int count_;
   };
 
   explicit WebStateList(WebStateListDelegate* delegate);
@@ -260,14 +284,6 @@ class WebStateList {
   // is a bitwise combination of ClosingFlags values.
   void CloseWebStateAt(int index, int close_flags);
 
-  // Closes and destroys all non-pinned WebStates. The `close_flags` is a
-  // bitwise combination of ClosingFlags values.
-  void CloseAllNonPinnedWebStates(int close_flags);
-
-  // Closes and destroys all WebStates. The `close_flags` is a bitwise
-  // combination of ClosingFlags values.
-  void CloseAllWebStates(int close_flags);
-
   // Makes the WebState at the specified index the active WebState.
   void ActivateWebStateAt(int index);
 
@@ -275,6 +291,56 @@ class WebStateList {
   // is a bitwise combination of ClosingFlags values.
   void CloseWebStatesAtIndices(int close_flags,
                                RemovingIndexes removing_indexes);
+
+  // Returns the tab group the WebState belongs to, if any. Otherwise, returns
+  // `nullptr`.
+  //
+  // The returned TabGroup is valid as long as the WebStateList is not mutated.
+  // To get its exact lifecycle, Listen to the group deletion notification,
+  // after-which the pointer should not be used.
+  const TabGroup* GetGroupOfWebStateAt(int index) const;
+
+  // Returns the list of all groups. The order is not particularly the order in
+  // which they appear in this WebStateList.
+  std::set<const TabGroup*> GetGroups() const;
+
+  // Creates a new tab group and moves the set of WebStates at `indices` to
+  // it.
+  // -   This unpins pinned WebState.
+  // -   This ungroups grouped WebState.
+  // -   This reorders the WebStates so they are contiguous and do not split an
+  //     existing group in half.
+  // Returns the new group.
+  //
+  // The returned TabGroup is valid as long as the WebStateList is not mutated.
+  // To get its exact lifecycle, Listen to the group deletion notification,
+  // after-which the pointer should not be used.
+  const TabGroup* CreateGroup(const std::set<int>& indices,
+                              const tab_groups::TabGroupVisualData& visual_data,
+                              tab_groups::TabGroupId tab_group_id);
+
+  // Returns true if the specified group is contained by the model.
+  bool ContainsGroup(const TabGroup* group) const;
+
+  // Updates the visual data for the given group.
+  void UpdateGroupVisualData(const TabGroup* group,
+                             const tab_groups::TabGroupVisualData& visual_data);
+
+  // Moves the set of WebStates at `indices` at the end of the given tab group.
+  void MoveToGroup(const std::set<int>& indices, const TabGroup* group);
+
+  // Removes the set of WebStates at `indices` from the groups they are in,
+  // if any. The WebStates are reordered out of the groups if necessary.
+  void RemoveFromGroups(const std::set<int>& indices);
+
+  // Moves the WebStates of `group` to be before the WebState at `before_index`.
+  // To move the group at the end, pass `before_index` greater or equal to
+  // `count`.
+  void MoveGroup(const TabGroup* group, int before_index);
+
+  // Removes all WebStates from the group. The WebStates stay where they are.
+  // The group is destroyed.
+  void DeleteGroup(const TabGroup* group);
 
   // Adds an observer to the model.
   void AddObserver(WebStateListObserver* observer);
@@ -287,7 +353,7 @@ class WebStateList {
   ScopedBatchOperation StartBatchOperation();
 
   // Invalid index.
-  static const int kInvalidIndex = -1;
+  static constexpr int kInvalidIndex = -1;
 
  private:
   friend class ScopedBatchOperation;
@@ -311,9 +377,7 @@ class WebStateList {
   // Moves the WebState at the specified index to another index.
   //
   // Assumes that the WebStateList is locked.
-  void MoveWebStateAtImpl(int from_index,
-                          int to_index,
-                          bool pinned_state_change);
+  void MoveWebStateAtImpl(int from_index, int to_index);
 
   // Replaces the WebState at the specified index with new WebState. Returns
   // the old WebState at that index to the caller (abandon ownership of the
@@ -352,6 +416,54 @@ class WebStateList {
   // Assumes that the WebStateList is locked.
   int SetWebStatePinnedAtImpl(int index, bool pinned);
 
+  // Creates a new tab group and moves the set of WebStates at `indices` to
+  // it.
+  // -   This unpins pinned WebState.
+  // -   This ungroups grouped WebState.
+  // -   This reorders the WebStates so they are contiguous and do not split an
+  //     existing group in half.
+  // Returns the new group.
+  //
+  // The returned TabGroup is valid as long as the WebStateList is not mutated.
+  // To get its exact lifecycle, Listen to the group deletion notification,
+  // after-which the pointer should not be used.
+  //
+  // Assumes that the WebStateList is locked.
+  const TabGroup* CreateGroupImpl(
+      const std::set<int>& indices,
+      const tab_groups::TabGroupVisualData& visual_data,
+      tab_groups::TabGroupId tab_group_id);
+
+  // Moves the set of WebStates at `indices` at the end of the given tab group.
+  //
+  // Assumes that the WebStateList is locked.
+  void MoveToGroupImpl(const std::set<int>& indices, const TabGroup* group);
+
+  // Updates the visual data for the given group.
+  //
+  // Assumes that the WebStateList is locked.
+  void UpdateGroupVisualDataImpl(
+      const TabGroup* group,
+      const tab_groups::TabGroupVisualData& visual_data);
+
+  // Removes the set of WebStates at `indices` from the groups they are in,
+  // if any. The WebStates are reordered out of the groups if necessary.
+  //
+  // Assumes that the WebStateList is locked.
+  void RemoveFromGroupsImpl(const std::set<int>& indices);
+
+  // Moves the WebStates of `group` to be before the WebState at `to_index`. To
+  // move the group at the end, pass `to_index` greater or equal to `count`.
+  //
+  // Assumes that the WebStateList is locked.
+  void MoveGroupImpl(const TabGroup* group, int to_index);
+
+  // Removes all WebStates from the group. The WebStates stay where they are.
+  // The group is destroyed.
+  //
+  // Assumes that the WebStateList is locked.
+  void DeleteGroupImpl(const TabGroup* group);
+
   // Sets the opener of any WebState that reference the WebState at the
   // specified index to null.
   void ClearOpenersReferencing(int index);
@@ -376,6 +488,23 @@ class WebStateList {
   // to call this with an index such that `ContainsIndex(index)` returns false.
   WebStateWrapper* GetWebStateWrapperAt(int index) const;
 
+  // Moves the wrapper of the WebState at `from_index` to `to_index`. This
+  // performs the move, updates the relevant WebStateList state (number of
+  // pinned tabs, index of the active WebState, groups ranges), and notifies
+  // observers. The indices and state changes must be valid, i.e. there is no
+  // fallback.
+  //
+  // Assumes that the WebStateList is locked.
+  void MoveWebStateWrapperAt(int from_index,
+                             int to_index,
+                             bool pinned,
+                             const TabGroup* group);
+
+  // Removes `group` from `groups_` if `group` is empty.
+  //
+  // Assumes that the WebStateList is locked.
+  void DeleteGroupIfEmpty(const TabGroup* group);
+
   // Updates the active index, updates the WebState opener for the old active
   // WebState if exists and brings the new active WebState to the "realized"
   // state.
@@ -392,6 +521,9 @@ class WebStateList {
 
   // Wrappers to the WebStates hosted by the WebStateList.
   std::vector<std::unique_ptr<WebStateWrapper>> web_state_wrappers_;
+
+  // The current set of groups.
+  std::set<std::unique_ptr<TabGroup>, base::UniquePtrComparator> groups_;
 
   // List of observers notified of changes to the model.
   base::ObserverList<WebStateListObserver, true> observers_;
@@ -412,6 +544,43 @@ class WebStateList {
 
   // Weak pointer factory.
   base::WeakPtrFactory<WebStateList> weak_factory_{this};
+
+  // TODO(crbug.com/328831758): Remove this once all use cases for
+  // MoveWebStateWrapperAt have landed and covered by tests.
+  FRIEND_TEST_ALL_PREFIXES(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup);
+  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
+                           MoveToGroup_NoMove_GoToRightGroup_OldGroupEmpty);
+  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
+                           MoveToGroup_NoMove_GoToRightGroup_OldGroupNonEmpty);
+  FRIEND_TEST_ALL_PREFIXES(WebStateListTest, MoveToGroup_NoMove_PinnedToGroup);
 };
+
+// Helper function that closes all WebStates in `web_state_list`. The operation
+// is performed as a batch operation and thus cannot be called from another
+// batch operation. The `close_flags` is a bitwise combination of ClosingFlags
+// values.
+void CloseAllWebStates(WebStateList& web_state_list, int close_flags);
+
+// Helper function that closes all regular WebStates in `web_state_list`. The
+// operation is performed as a batch operation and thus cannot be called from
+// another batch operation. The `close_flags` is a bitwise combination of
+// ClosingFlags values.
+void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags);
+
+// Helper function that closes all WebStates from `group` in `web_state_list`.
+// The operation is performed as a batch operation and thus cannot be called
+// from another batch operation. The `close_flags` is a bitwise combination of
+// ClosingFlags values.
+void CloseAllWebStatesInGroup(WebStateList& web_state_list,
+                              const TabGroup* group,
+                              int close_flags);
+
+// Helper function that closes all WebStates in `web_state_list` that are not at
+// `index_to_keep`. The operation is performed as a batch operation and thus
+// cannot be called from another batch operation. The `close_flags` is a bitwise
+// combination of ClosingFlags values.
+void CloseOtherWebStates(WebStateList& web_state_list,
+                         int index_to_keep,
+                         int close_flags);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_

@@ -1,0 +1,40 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+ /* Use this class to hide an element visually, it'll still be focusable by
+  * the screen reader. Note that the size of the a11y focus highlighter will be
+  * defined by the content of the hidden element. If you need to change the a11y
+  * message of an existing/visible element consider using this class in
+  * combination with "screen-reader-only-host-node", find its definition
+  * below.
+  */
+.screen-reader-only {
+  clip-path: inset(100%);
+  position: fixed;
+ }
+
+/* These classes allow to substitute a specific node's screen reader message
+ * with another one. Which could be useful in cases where some important part
+ * of the interface cannot be conveyed by reading the text content only or it
+ * may be presented in a better way, e.g. reading "Credit card ending in 1234",
+ * is much friendlier than reading "**** 1234" verbatim.
+ * Set the "screen-reader-only-host-node" class on the node which message
+ * should be substituted (it is required to have the a11y focus on it) and set
+ * the "screen-reader-only" class on the element inside with the substituting
+ * content. Also consider hiding (aria-hidden="true") other elements inside
+ * the host node if focusing them is nonsensical. */
+.screen-reader-only-host-node {
+  position: relative;
+}
+.screen-reader-only-host-node .screen-reader-only {
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+}

@@ -6,9 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_DATA_UTIL_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
@@ -84,19 +84,19 @@ struct PaymentRequestData {
 
 // Returns true if |name| looks like a CJK name (or some kind of mish-mash of
 // the three, at least).
-bool IsCJKName(base::StringPiece16 name);
+bool IsCJKName(std::u16string_view name);
 
-// TODO(crbug.com/586510): Investigate the use of app_locale to do better name
+// TODO(crbug.com/41239336): Investigate the use of app_locale to do better name
 // splitting.
 // Returns the different name parts (given, middle and family names) of the full
 // |name| passed as a parameter.
-NameParts SplitName(base::StringPiece16 name);
+NameParts SplitName(std::u16string_view name);
 
 // Concatenates the name parts together in the correct order (based on script),
 // and returns the result.
-std::u16string JoinNameParts(base::StringPiece16 given,
-                             base::StringPiece16 middle,
-                             base::StringPiece16 family);
+std::u16string JoinNameParts(std::u16string_view given,
+                             std::u16string_view middle,
+                             std::u16string_view family);
 
 // Returns the Payment Request API basic card payment spec data for the provided
 // autofill credit card |network|.  Will set the network and the icon to

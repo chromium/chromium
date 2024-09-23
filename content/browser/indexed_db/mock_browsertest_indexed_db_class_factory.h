@@ -12,8 +12,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
-namespace content {
+namespace content::indexed_db {
 
 class LevelDBDirectTransaction;
 class LevelDBScope;
@@ -26,10 +27,9 @@ class MockBrowserTestIndexedDBClassFactory
     : public DefaultTransactionalLevelDBFactory,
       public storage::mojom::MockFailureInjector {
  public:
-  MockBrowserTestIndexedDBClassFactory();
+  explicit MockBrowserTestIndexedDBClassFactory(
+      mojo::PendingReceiver<storage::mojom::MockFailureInjector> pending);
   ~MockBrowserTestIndexedDBClassFactory() override;
-
-  void Reset();
 
   // DefaultTransactionalLevelDBFactory:
   std::unique_ptr<TransactionalLevelDBDatabase> CreateLevelDBDatabase(
@@ -52,8 +52,7 @@ class MockBrowserTestIndexedDBClassFactory
   void FailOperation(storage::mojom::FailClass failure_class,
                      storage::mojom::FailMethod failure_method,
                      int fail_on_instance_num,
-                     int fail_on_call_num,
-                     base::OnceClosure callback) override;
+                     int fail_on_call_num) override;
 
  private:
   storage::mojom::FailClass failure_class_;
@@ -61,9 +60,11 @@ class MockBrowserTestIndexedDBClassFactory
   std::map<storage::mojom::FailClass, int> instance_count_;
   std::map<storage::mojom::FailClass, int> fail_on_instance_num_;
   std::map<storage::mojom::FailClass, int> fail_on_call_num_;
-  bool only_trace_calls_;
+  bool only_trace_calls_ = false;
+
+  mojo::Receiver<storage::mojom::MockFailureInjector> receiver_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_MOCK_BROWSERTEST_INDEXED_DB_CLASS_FACTORY_H_

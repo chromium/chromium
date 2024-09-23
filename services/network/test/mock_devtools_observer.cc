@@ -42,6 +42,13 @@ void MockDevToolsObserver::OnRawRequest(
   }
 }
 
+void MockDevToolsObserver::OnEarlyHintsResponse(
+    const std::string& devtools_request_id,
+    std::vector<network::mojom::HttpRawHeaderPairPtr> headers) {
+  early_hints_headers_ = std::move(headers);
+  wait_for_early_hints_.Quit();
+}
+
 void MockDevToolsObserver::OnRawResponse(
     const std::string& devtools_request_id,
     const net::CookieAndLineAccessResultList& cookies_with_access_result,
@@ -161,6 +168,10 @@ void MockDevToolsObserver::WaitUntilPrivateNetworkRequest() {
 
 void MockDevToolsObserver::WaitUntilCorsError() {
   wait_for_cors_error_.Run();
+}
+
+void MockDevToolsObserver::WaitUntilEarlyHints() {
+  wait_for_early_hints_.Run();
 }
 
 MockDevToolsObserver::OnPrivateNetworkRequestParams::

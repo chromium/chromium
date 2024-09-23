@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -129,8 +130,7 @@ and then write commands into it:
   $ echo failure >%1$s  # unpauses execution until failure
   $ echo help    >%1$s  # prints this text
 )";
-  LOG(INFO) << base::StringPrintf(msg,
-                                  command_file_path.AsUTF8Unsafe().c_str());
+  VLOG(1) << base::StringPrintf(msg, command_file_path.AsUTF8Unsafe().c_str());
 }
 
 std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
@@ -187,8 +187,9 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
                                 base::SPLIT_WANT_NONEMPTY)) {
       auto GetParamOr = [command](int default_value) {
         size_t space = command.find(' ');
-        if (space == base::StringPiece::npos)
+        if (space == std::string_view::npos) {
           return default_value;
+        }
         int value;
         if (!base::StringToInt(command.substr(space + 1), &value))
           return default_value;
@@ -209,7 +210,7 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
         commands.push_back({ExecutionCommandType::kWhereAmI});
       } else if (command.starts_with("failure")) {
         commands.push_back({ExecutionCommandType::kRunUntilFailure});
-        // also add an absolute max limit (like a" run" command).
+        // Same commands as for "run":
         commands.push_back({ExecutionCommandType::kAbsoluteLimit,
                             std::numeric_limits<int>::max()});
       } else if (command.starts_with("help")) {
@@ -264,19 +265,19 @@ ExecutionState ProcessCommands(ExecutionState execution_state,
           min_index = std::max(min_index, 0);
           max_index = std::min(max_index, execution_state.length);
           for (int i = min_index; i < max_index; ++i) {
-            LOG(INFO) << "Action " << (i - execution_state.index) << ": "
-                      << (*action_list)[i].DebugString();
+            VLOG(1) << "Action " << (i - execution_state.index) << ": "
+                    << (*action_list)[i].DebugString();
           }
           break;
         }
         case ExecutionCommandType::kWhereAmI: {
-          LOG(INFO) << "Next action is at position " << execution_state.index
-                    << ", limit (excl) is at " << execution_state.limit
-                    << ", last (excl) is at " << execution_state.length;
+          VLOG(1) << "Next action is at position " << execution_state.index
+                  << ", limit (excl) is at " << execution_state.limit
+                  << ", last (excl) is at " << execution_state.length;
           break;
         }
         case ExecutionCommandType::kRunUntilFailure: {
-          LOG(INFO) << "Will stop when a failure is found.";
+          VLOG(1) << "Will stop when a failure is found.";
           execution_state.pause_on_failure = true;
           break;
         }
@@ -292,13 +293,13 @@ struct AllowNull {
 
 std::optional<std::string> FindPopulateString(
     const base::Value::Dict& container,
-    base::StringPiece key_name,
-    absl::variant<base::StringPiece, AllowNull> key_descriptor) {
+    std::string_view key_name,
+    absl::variant<std::string_view, AllowNull> key_descriptor) {
   const std::string* value = container.FindString(key_name);
   if (!value) {
-    if (absl::holds_alternative<base::StringPiece>(key_descriptor)) {
+    if (absl::holds_alternative<std::string_view>(key_descriptor)) {
       ADD_FAILURE() << "Failed to extract '"
-                    << absl::get<base::StringPiece>(key_descriptor)
+                    << absl::get<std::string_view>(key_descriptor)
                     << "' string from container!";
     }
     return std::nullopt;
@@ -309,13 +310,13 @@ std::optional<std::string> FindPopulateString(
 
 std::optional<std::vector<std::string>> FindPopulateStringVector(
     const base::Value::Dict& container,
-    base::StringPiece key_name,
-    absl::variant<base::StringPiece, AllowNull> key_descriptor) {
+    std::string_view key_name,
+    absl::variant<std::string_view, AllowNull> key_descriptor) {
   const base::Value::List* list = container.FindList(key_name);
   if (!list) {
-    if (absl::holds_alternative<base::StringPiece>(key_descriptor)) {
+    if (absl::holds_alternative<std::string_view>(key_descriptor)) {
       ADD_FAILURE() << "Failed to extract '"
-                    << absl::get<base::StringPiece>(key_descriptor)
+                    << absl::get<std::string_view>(key_descriptor)
                     << "' strings from container!";
     }
     return std::nullopt;
@@ -324,9 +325,9 @@ std::optional<std::vector<std::string>> FindPopulateStringVector(
   std::vector<std::string> strings;
   for (const base::Value& item : *list) {
     if (!item.is_string()) {
-      if (absl::holds_alternative<base::StringPiece>(key_descriptor)) {
+      if (absl::holds_alternative<std::string_view>(key_descriptor)) {
         ADD_FAILURE() << "Failed to extract element of '"
-                      << absl::get<base::StringPiece>(key_descriptor)
+                      << absl::get<std::string_view>(key_descriptor)
                       << "' vector from container!";
       }
       return std::nullopt;
@@ -479,7 +480,7 @@ For interactive debugging, specify a command file:
 Commands to step through the test can be written into that file.
 Further instructions will be printed then.
 )";
-  LOG(INFO) << base::StringPrintf(msg, test_file_name, kCommandFileFlag);
+  VLOG(1) << base::StringPrintf(msg, test_file_name, kCommandFileFlag);
 }
 
 // FrameObserver --------------------------------------------------------------
@@ -658,8 +659,8 @@ bool WebPageReplayServerWrapper::Start(
     return false;
 
   // Sleep 5 seconds to wait for the web page replay server to start.
-  // TODO(crbug.com/847910): create a process std stream reader class to use the
-  // process output to determine when the server is ready
+  // TODO(crbug.com/40578543): create a process std stream reader class to use
+  // the process output to determine when the server is ready
   base::RunLoop wpr_launch_waiter;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, wpr_launch_waiter.QuitClosure(), base::Seconds(5));
@@ -801,7 +802,7 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
   for (const auto& arg : args)
     full_command.AppendArg(arg);
 
-  LOG(INFO) << full_command.GetArgumentsString();
+  VLOG(1) << full_command.GetArgumentsString();
 
   web_page_replay_server_ = base::LaunchProcess(full_command, options);
   return true;
@@ -1215,12 +1216,6 @@ bool TestRecipeReplayer::ReplayRecordedActions(
     }
 
     ++execution_state.index;
-  }
-
-  // Dismiss the beforeUnloadDialog if the last page of the test has a
-  // beforeUnload function.
-  if (recipe.contains("dismissBeforeUnload")) {
-    NavigateAwayAndDismissBeforeUnloadDialog();
   }
 
   return true;
@@ -2074,13 +2069,13 @@ bool TestRecipeReplayer::ExpectElementPropertyEqualsAnyOf(
   }
 
   auto is_expected = [ignore_case,
-                      &actual_value](base::StringPiece expected_value) {
+                      &actual_value](std::string_view expected_value) {
     return ignore_case
                ? base::EqualsCaseInsensitiveASCII(expected_value, actual_value)
                : expected_value == actual_value;
   };
 
-  if (base::ranges::none_of(expected_values, is_expected)) {
+  if (std::ranges::none_of(expected_values, is_expected)) {
     std::string error_message = base::StrCat(
         {"Field xpath: `", element_xpath, "` ", validation_field, ", ",
          "Expected: '", base::JoinString(expected_values, " or "),
@@ -2174,7 +2169,7 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
   }
 
   // Parse the bounding rect string to extract the element coordinates.
-  std::vector<base::StringPiece> rect_components = base::SplitStringPiece(
+  std::vector<std::string_view> rect_components = base::SplitStringPiece(
       rect_str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (rect_components.size() != 4) {
     ADD_FAILURE() << "Wrong number of components in `" << rect_str << "`!";
@@ -2280,16 +2275,6 @@ void TestRecipeReplayer::SimulateKeyPressWrapper(
   ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
   SimulateKeyPress(web_contents, key, code, key_code, false, false, false,
                    false);
-}
-
-void TestRecipeReplayer::NavigateAwayAndDismissBeforeUnloadDialog() {
-  content::PrepContentsForBeforeUnloadTest(GetWebContents());
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
-  javascript_dialogs::AppModalDialogController* alert =
-      ui_test_utils::WaitForAppModalDialog();
-  alert->view()->AcceptAppModalDialog();
 }
 
 bool TestRecipeReplayer::HasChromeStoredCredential(

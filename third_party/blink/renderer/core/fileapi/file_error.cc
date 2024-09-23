@@ -101,7 +101,7 @@ DOMExceptionCode ErrorCodeToExceptionCode(FileErrorCode code) {
     case FileErrorCode::kPathExistsErr:
       return DOMExceptionCode::kPathExistsError;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DOMExceptionCode::kUnknownError;
   }
 }
@@ -137,7 +137,7 @@ const char* ErrorCodeToMessage(FileErrorCode code) {
     case FileErrorCode::kPathExistsErr:
       return kPathExistsErrorMessage;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -177,10 +177,10 @@ DOMExceptionCode FileErrorToExceptionCode(base::File::Error code) {
     case base::File::FILE_ERROR_IO:
       return DOMExceptionCode::kNotReadableError;
     case base::File::FILE_ERROR_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return DOMExceptionCode::kUnknownError;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return DOMExceptionCode::kUnknownError;
 }
 
@@ -219,10 +219,10 @@ const char* FileErrorToMessage(base::File::Error code) {
       // errors.
       return nullptr;
     case base::File::FILE_ERROR_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

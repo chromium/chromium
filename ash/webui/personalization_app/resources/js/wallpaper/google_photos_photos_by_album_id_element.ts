@@ -42,6 +42,8 @@ function getPlaceholders(): GooglePhotosPhoto[] {
       name: '',
       date: {data: []},
       url: {url: ''},
+      dedupKey: null,
+      location: null,
     };
   });
 }

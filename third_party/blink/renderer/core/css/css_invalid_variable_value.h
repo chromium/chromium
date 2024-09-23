@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 // A value which represents custom properties that are invalid at computed-
@@ -23,7 +27,7 @@ class CORE_EXPORT CSSInvalidVariableValue : public CSSValue {
   // Create() to get the pooled value.
   CSSInvalidVariableValue() : CSSValue(kInvalidVariableValueClass) {}
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   bool Equals(const CSSInvalidVariableValue&) const { return true; }
 

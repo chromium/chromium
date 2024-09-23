@@ -35,16 +35,15 @@ class MODULES_EXPORT StorageBucketManager final
   explicit StorageBucketManager(NavigatorBase& navigator);
   ~StorageBucketManager() override = default;
 
-  ScriptPromise open(ScriptState* script_state,
-                     const String& name,
-                     const StorageBucketOptions* options,
-                     ExceptionState& exception_state);
-  ScriptPromiseTyped<IDLSequence<IDLString>> keys(
-      ScriptState* script_state,
-      ExceptionState& exception_state);
-  ScriptPromise Delete(ScriptState* script_state,
-                       const String& name,
-                       ExceptionState& exception_state);
+  ScriptPromise<StorageBucket> open(ScriptState* script_state,
+                                    const String& name,
+                                    const StorageBucketOptions* options,
+                                    ExceptionState& exception_state);
+  ScriptPromise<IDLSequence<IDLString>> keys(ScriptState* script_state,
+                                             ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> Delete(ScriptState* script_state,
+                                     const String& name,
+                                     ExceptionState& exception_state);
 
   // GarbageCollected
   void Trace(Visitor*) const override;
@@ -56,14 +55,14 @@ class MODULES_EXPORT StorageBucketManager final
  private:
   mojom::blink::BucketManagerHost* GetBucketManager(ScriptState* script_state);
 
-  void DidOpen(ScriptPromiseResolver* resolver,
+  void DidOpen(ScriptPromiseResolver<StorageBucket>* resolver,
                const String& name,
                mojo::PendingRemote<mojom::blink::BucketHost> bucket_remote,
                mojom::blink::BucketError error);
-  void DidGetKeys(ScriptPromiseResolverTyped<IDLSequence<IDLString>>* resolver,
+  void DidGetKeys(ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
                   const Vector<String>& keys,
                   bool success);
-  void DidDelete(ScriptPromiseResolver* resolver, bool success);
+  void DidDelete(ScriptPromiseResolver<IDLUndefined>*, bool success);
 
   HeapMojoRemote<mojom::blink::BucketManagerHost> manager_remote_;
 

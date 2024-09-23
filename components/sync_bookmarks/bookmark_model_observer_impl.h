@@ -32,7 +32,7 @@ class BookmarkModelView;
 // those local changes to the sync engine.
 class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
  public:
-  // |bookmark_model| and |bookmark_tracker| must not be null and must outlive
+  // `bookmark_model` and `bookmark_tracker` must not be null and must outlive
   // this object. Note that this class doesn't self register as observer.
   BookmarkModelObserverImpl(
       BookmarkModelView* bookmark_model,
@@ -47,72 +47,71 @@ class BookmarkModelObserverImpl : public bookmarks::BookmarkModelObserver {
   ~BookmarkModelObserverImpl() override;
 
   // BookmarkModelObserver:
-  void BookmarkModelLoaded(bookmarks::BookmarkModel* /*unused*/,
-                           bool ids_reassigned) override;
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* /*unused*/) override;
-  void BookmarkNodeMoved(bookmarks::BookmarkModel* /*unused*/,
-                         const bookmarks::BookmarkNode* old_parent,
+  void BookmarkModelLoaded(bool ids_reassigned) override;
+  void BookmarkModelBeingDeleted() override;
+  void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
-  void BookmarkNodeAdded(bookmarks::BookmarkModel* /*unused*/,
-                         const bookmarks::BookmarkNode* parent,
+  void BookmarkNodeAdded(const bookmarks::BookmarkNode* parent,
                          size_t index,
                          bool added_by_user) override;
-  void OnWillRemoveBookmarks(bookmarks::BookmarkModel* /*unused*/,
-                             const bookmarks::BookmarkNode* parent,
+  void OnWillRemoveBookmarks(const bookmarks::BookmarkNode* parent,
                              size_t old_index,
-                             const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeRemoved(bookmarks::BookmarkModel* /*unused*/,
-                           const bookmarks::BookmarkNode* parent,
+                             const bookmarks::BookmarkNode* node,
+                             const base::Location& location) override;
+  void BookmarkNodeRemoved(const bookmarks::BookmarkNode* parent,
                            size_t old_index,
                            const bookmarks::BookmarkNode* node,
-                           const std::set<GURL>& removed_urls) override;
-  void OnWillRemoveAllUserBookmarks(
-      bookmarks::BookmarkModel* /*unused*/) override;
-  void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* /*unused*/,
-                                   const std::set<GURL>& removed_urls) override;
-  void BookmarkNodeChanged(bookmarks::BookmarkModel* /*unused*/,
-                           const bookmarks::BookmarkNode* node) override;
-  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* /*unused*/,
-                               const bookmarks::BookmarkNode* node) override;
-  void BookmarkNodeFaviconChanged(bookmarks::BookmarkModel* /*unused*/,
-                                  const bookmarks::BookmarkNode* node) override;
+                           const std::set<GURL>& removed_urls,
+                           const base::Location& location) override;
+  void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
+  void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
+                                   const base::Location& location) override;
+  void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkMetaInfoChanged(const bookmarks::BookmarkNode* node) override;
+  void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(
-      bookmarks::BookmarkModel* /*unused*/,
       const bookmarks::BookmarkNode* node) override;
 
  private:
   syncer::UniquePosition ComputePosition(const bookmarks::BookmarkNode& parent,
-                                         size_t index,
-                                         const std::string& sync_id);
+                                         size_t index) const;
 
-  // Process a modification of a local node and updates |bookmark_tracker_|
-  // accordingly. No-op if the commit can be optimized away, i.e. if |specifics|
+  // Process a modification of a local node and updates `bookmark_tracker_`
+  // accordingly. No-op if the commit can be optimized away, i.e. if `specifics`
   // are identical to the previously-known specifics (in hashed form).
   void ProcessUpdate(const SyncedBookmarkTrackerEntity* entity,
                      const sync_pb::EntitySpecifics& specifics);
 
   // Processes the deletion of a bookmake node and updates the
-  // |bookmark_tracker_| accordingly. If |node| is a bookmark, it gets marked
+  // `bookmark_tracker_` accordingly. If `node` is a bookmark, it gets marked
   // as deleted and that it requires a commit. If it's a folder, it recurses
-  // over all children before processing the folder itself.
-  void ProcessDelete(const bookmarks::BookmarkNode* node);
+  // over all children before processing the folder itself. `location`
+  // represents the origin of the deletion, i.e. which specific codepath was
+  // responsible for deleting `node`.
+  void ProcessDelete(const bookmarks::BookmarkNode* node,
+                     const base::Location& location);
 
-  // Returns current unique_position from sync metadata for the tracked |node|.
+  // Recursive function to deal for the case where a moved folder becomes
+  // syncable, which requires that all descendants are also newly tracked.
+  void ProcessMovedDescendentsAsBookmarkNodeAddedRecursive(
+      const bookmarks::BookmarkNode* node);
+
+  // Returns current unique_position from sync metadata for the tracked `node`.
   syncer::UniquePosition GetUniquePositionForNode(
       const bookmarks::BookmarkNode* node) const;
 
-  // Updates the unique position in sync metadata for the tracked |node| and
+  // Updates the unique position in sync metadata for the tracked `node` and
   // returns the new position. A new position is generated based on the left and
-  // right node's positions. At least one of |prev| and |next| must be valid.
+  // right node's positions. At least one of `prev` and `next` must be valid.
   syncer::UniquePosition UpdateUniquePositionForNode(
       const bookmarks::BookmarkNode* node,
       const syncer::UniquePosition& prev,
       const syncer::UniquePosition& next);
 
-  // Updates unique positions for all children from |parent| starting from
-  // |start_index| (must not be 0).
+  // Updates unique positions for all children from `parent` starting from
+  // `start_index` (must not be 0).
   void UpdateAllUniquePositionsStartingAt(const bookmarks::BookmarkNode* parent,
                                           size_t start_index);
 

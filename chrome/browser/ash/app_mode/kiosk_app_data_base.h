@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_DATA_BASE_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"

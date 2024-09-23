@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/metrics/serialization/serialization_utils.h"
 
 #include <errno.h>
@@ -268,9 +273,8 @@ bool SerializationUtils::WriteMetricToFile(const MetricSample& sample,
   // The file containing the metrics samples will only be read by programs on
   // the same device so we do not check endianness.
   uint32_t encoded_size = base::checked_cast<uint32_t>(size);
-  if (!base::WriteFileDescriptor(
-          file_descriptor.get(),
-          base::as_bytes(base::make_span(&encoded_size, 1u)))) {
+  if (!base::WriteFileDescriptor(file_descriptor.get(),
+                                 base::byte_span_from_ref(encoded_size))) {
     DPLOG(ERROR) << "error writing message length: " << filename;
     std::ignore = flock(file_descriptor.get(), LOCK_UN);
     return false;

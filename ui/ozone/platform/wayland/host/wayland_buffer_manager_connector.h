@@ -42,7 +42,8 @@ class WaylandBufferManagerConnector : public GpuPlatformSupportHost {
 
   // Non-owned pointer, which is used to bind a mojo pointer to the
   // WaylandBufferManagerHost.
-  const raw_ptr<WaylandBufferManagerHost> buffer_manager_host_;
+  const raw_ptr<WaylandBufferManagerHost, LeakedDanglingUntriaged>
+      buffer_manager_host_;
 
   GpuHostBindInterfaceCallback binder_;
   GpuHostTerminateCallback terminate_callback_;

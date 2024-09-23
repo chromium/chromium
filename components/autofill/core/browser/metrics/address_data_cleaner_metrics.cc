@@ -18,6 +18,13 @@ void LogNumberOfProfilesRemovedDuringDedupe(size_t num_removed) {
                               num_removed);
 }
 
+void LogNumberOfQuasiDuplicateProfilesRemovedDuringDedupe(size_t num_removed) {
+  base::UmaHistogramCounts100(
+      "Autofill.Deduplication.ExistingProfiles."
+      "LowQualityQuasiDuplicatesRemoved",
+      num_removed);
+}
+
 void LogNumberOfAddressesDeletedForDisuse(size_t num_profiles) {
   base::UmaHistogramCounts100("Autofill.AddressesDeletedForDisuse",
                               num_profiles);

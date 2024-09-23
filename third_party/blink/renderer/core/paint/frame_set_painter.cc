@@ -34,8 +34,9 @@ void FrameSetPainter::PaintObject(const PaintInfo& paint_info,
   if (box_fragment_.Children().size() == 0)
     return;
 
-  if (box_fragment_.Style().Visibility() != EVisibility::kVisible)
+  if (box_fragment_.Style().UsedVisibility() != EVisibility::kVisible) {
     return;
+  }
 
   PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
   PaintChildren(paint_info_for_descendants);

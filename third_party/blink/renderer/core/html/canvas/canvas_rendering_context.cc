@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -72,14 +71,10 @@ void CanvasRenderingContext::Dispose() {
   // the other in order to break the circular reference.  This is to avoid
   // an error when CanvasRenderingContext::DidProcessTask() is invoked
   // after the HTMLCanvasElement is destroyed.
-  if (CanvasRenderingContextHost* host = Host(); LIKELY(host != nullptr)) {
+  if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     host->DetachContext();
     host_ = nullptr;
   }
-}
-
-NoAllocDirectCallHost* CanvasRenderingContext::AsNoAllocDirectCallHost() {
-  return nullptr;
 }
 
 void CanvasRenderingContext::DidDraw(
@@ -108,7 +103,7 @@ void CanvasRenderingContext::DidProcessTask(
 
   // The end of a script task that drew content to the canvas is the point
   // at which the current frame may be considered complete.
-  if (CanvasRenderingContextHost* host = Host(); LIKELY(host != nullptr)) {
+  if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     host->PreFinalizeFrame();
   }
   FlushReason reason = did_print_in_current_task_
@@ -116,7 +111,7 @@ void CanvasRenderingContext::DidProcessTask(
                            : FlushReason::kCanvasPushFrame;
   FinalizeFrame(reason);
   did_print_in_current_task_ = false;
-  if (CanvasRenderingContextHost* host = Host(); LIKELY(host != nullptr)) {
+  if (CanvasRenderingContextHost* host = Host()) [[likely]] {
     host->PostFinalizeFrame(reason);
   }
 }
@@ -129,7 +124,7 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
     if (host->IsOffscreenCanvas()) {
       switch (canvas_rendering_type_) {
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           [[fallthrough]];
         case CanvasRenderingContext::CanvasRenderingAPI::k2D:
           feature = WebFeature::kOffscreenCanvas_2D;
@@ -150,7 +145,7 @@ void CanvasRenderingContext::RecordUMACanvasRenderingAPI() {
     } else {
       switch (canvas_rendering_type_) {
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           [[fallthrough]];
         case CanvasRenderingContext::CanvasRenderingAPI::k2D:
           feature = WebFeature::kHTMLCanvasElement_2D;

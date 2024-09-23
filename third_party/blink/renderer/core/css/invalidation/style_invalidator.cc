@@ -25,13 +25,13 @@ namespace blink {
 static const unsigned char* g_style_invalidator_tracing_enabled = nullptr;
 
 #define TRACE_STYLE_INVALIDATOR_INVALIDATION_IF_ENABLED(element, reason) \
-  if (UNLIKELY(*g_style_invalidator_tracing_enabled))                    \
+  if (*g_style_invalidator_tracing_enabled) [[unlikely]]                 \
     TRACE_STYLE_INVALIDATOR_INVALIDATION(element, reason);
 
 void StyleInvalidator::Invalidate(Document& document, Element* root_element) {
   SiblingData sibling_data;
 
-  if (UNLIKELY(document.NeedsStyleInvalidation())) {
+  if (document.NeedsStyleInvalidation()) [[unlikely]] {
     DCHECK(root_element == document.documentElement());
     PushInvalidationSetsForContainerNode(document, sibling_data);
     document.ClearNeedsStyleInvalidation();
@@ -179,9 +179,11 @@ bool StyleInvalidator::SiblingData::MatchCurrentInvalidationSets(
     if (const DescendantInvalidationSet* descendants =
             invalidation_set.SiblingDescendants()) {
       if (descendants->WholeSubtreeInvalid()) {
+        TRACE_STYLE_INVALIDATOR_INVALIDATION_SET(
+            element, kInvalidationSetInvalidatesSubtree, *descendants);
         element.SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                                     style_change_reason::kStyleInvalidator));
+                                     style_change_reason::kRelatedStyleRule));
         return true;
       }
 
@@ -198,8 +200,9 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
     SiblingData& sibling_data) {
   auto pending_invalidations_iterator = pending_invalidation_map_.find(&node);
   if (pending_invalidations_iterator == pending_invalidation_map_.end()) {
-    NOTREACHED() << "We should strictly not have marked an element for "
-                    "invalidation without any pending invalidations.";
+    NOTREACHED_IN_MIGRATION()
+        << "We should strictly not have marked an element for "
+           "invalidation without any pending invalidations.";
     return;
   }
   NodeInvalidationSets& pending_invalidations =
@@ -227,7 +230,7 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
       CHECK(invalidation_set->IsAlive());
       PushInvalidationSet(*invalidation_set);
     }
-    if (UNLIKELY(*g_style_invalidator_tracing_enabled)) {
+    if (*g_style_invalidator_tracing_enabled) [[unlikely]] {
       DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
           TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
           "StyleInvalidatorInvalidationTracking",
@@ -243,9 +246,13 @@ ALWAYS_INLINE bool StyleInvalidator::CheckInvalidationSetsAgainstElement(
   // We need to call both because the sibling data may invalidate the whole
   // subtree at which point we can stop recursing.
   bool matches_current = MatchesCurrentInvalidationSets(element);
-  bool matches_sibling =
-      UNLIKELY(!sibling_data.IsEmpty()) &&
-      sibling_data.MatchCurrentInvalidationSets(element, *this);
+  bool matches_sibling;
+  if (!sibling_data.IsEmpty() &&
+      sibling_data.MatchCurrentInvalidationSets(element, *this)) [[unlikely]] {
+    matches_sibling = true;
+  } else {
+    matches_sibling = false;
+  }
   return matches_current || matches_sibling;
 }
 
@@ -258,7 +265,7 @@ void StyleInvalidator::InvalidateShadowRootChildren(Element& element) {
     RecursionCheckpoint checkpoint(this);
     SiblingData sibling_data;
     if (!WholeSubtreeInvalid()) {
-      if (UNLIKELY(root->NeedsStyleInvalidation())) {
+      if (root->NeedsStyleInvalidation()) [[unlikely]] {
         // The shadow root does not have any siblings. There should never be any
         // other sets than the nth set to schedule.
         DCHECK(sibling_data.IsEmpty());
@@ -276,7 +283,7 @@ void StyleInvalidator::InvalidateShadowRootChildren(Element& element) {
 }
 
 void StyleInvalidator::InvalidateChildren(Element& element) {
-  if (UNLIKELY(!!element.GetShadowRoot())) {
+  if (!!element.GetShadowRoot()) [[unlikely]] {
     InvalidateShadowRootChildren(element);
   }
 
@@ -307,9 +314,9 @@ void StyleInvalidator::Invalidate(Element& element, SiblingData& sibling_data) {
     } else if (CheckInvalidationSetsAgainstElement(element, sibling_data)) {
       element.SetNeedsStyleRecalc(kLocalStyleChange,
                                   StyleChangeReasonForTracing::Create(
-                                      style_change_reason::kStyleInvalidator));
+                                      style_change_reason::kRelatedStyleRule));
     }
-    if (UNLIKELY(element.NeedsStyleInvalidation())) {
+    if (element.NeedsStyleInvalidation()) [[unlikely]] {
       PushInvalidationSetsForContainerNode(element, sibling_data);
     }
 
@@ -349,7 +356,7 @@ void StyleInvalidator::InvalidateSlotDistributedElements(
     if (MatchesCurrentInvalidationSetsAsSlotted(*element)) {
       distributed_node->SetNeedsStyleRecalc(
           kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                 style_change_reason::kStyleInvalidator));
+                                 style_change_reason::kRelatedStyleRule));
     }
   }
 }

@@ -30,9 +30,21 @@ void OmniboxTabHelper::OnInputStateChanged() {
   }
 }
 
+void OmniboxTabHelper::OnInputInProgress(bool in_progress) {
+  for (auto& observer : observers_) {
+    observer.OnOmniboxInputInProgress(in_progress);
+  }
+}
+
 void OmniboxTabHelper::OnFocusChanged(OmniboxFocusState state,
                                       OmniboxFocusChangeReason reason) {
   for (auto& observer : observers_) {
     observer.OnOmniboxFocusChanged(state, reason);
+  }
+}
+
+void OmniboxTabHelper::OnPopupVisibilityChanged(bool popup_is_open) {
+  for (auto& observer : observers_) {
+    observer.OnOmniboxPopupVisibilityChanged(popup_is_open);
   }
 }

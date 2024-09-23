@@ -6,8 +6,8 @@
 #define CHROMECAST_MEDIA_CMA_BACKEND_PROXY_PROXY_CALL_TRANSLATOR_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"

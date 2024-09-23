@@ -17,7 +17,8 @@
         $i18n{details}
       </div>
       <!-- General -->
-      <div slot="panel" id="general" aria-labelledby="general-tab">
+      <div slot="panel" id="general" role="tabpanel"
+           aria-labelledby="general-tab">
         <div id="general-error" class="groups" hidden>
           <div>
             <h3 role="heading">$i18n{certError}</h3>
@@ -90,7 +91,8 @@
       </div>
 
       <!-- Details -->
-      <div slot="panel" id="details" aria-labelledby="details-tab">
+      <div slot="panel" id="details" role="tabpanel"
+           aria-labelledby="details-tab">
         <div class="vertical-box">
           <h3 id="hierarchy-label" role="heading">$i18n{hierarchy}</h3>
           <cr-tree id="hierarchy" class="section-contents"

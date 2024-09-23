@@ -7,7 +7,7 @@
 
 namespace bookmarks {
 
-// TODO(crbug.com/1026195): Make these constants of type base::Uuid once there
+// TODO(crbug.com/40108138): Make these constants of type base::Uuid once there
 // exists a constexpr constructor.
 extern const char kRootNodeUuid[];
 extern const char kBookmarkBarNodeUuid[];

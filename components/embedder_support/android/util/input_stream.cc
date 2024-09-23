@@ -2,17 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/embedder_support/android/util/input_stream.h"
 
 #include "base/android/jni_android.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 // Disable "Warnings treated as errors" for input_stream_jni as it's a Java
 // system class and we have to generate C++ hooks for all methods in the class
 // even if they're unused.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-function"
-#include "components/embedder_support/android/util_jni_headers/InputStreamUtil_jni.h"
 #pragma GCC diagnostic pop
 #include "net/base/io_buffer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/util_jni_headers/InputStreamUtil_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ClearException;
@@ -26,8 +35,21 @@ namespace {
 const int kExceptionThrownStatusCode = -2;
 }  // namespace
 
-// Maximum number of bytes to be read in a single read.
-const int InputStream::kBufferSize = 4096;
+// Experiment to control the size of the intermediate buffer used to copy from
+// Java's InputStream into C++'s net::IOBuffer.
+BASE_FEATURE(kEnableCustomInputStreamBufferSize,
+             "EnableCustomInputStreamBufferSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Effectively the maximum number of bytes that will be copied during a JNI call
+// to Java_InputStreamUtil_read.
+const base::FeatureParam<int> kBufferSize{&kEnableCustomInputStreamBufferSize,
+                                          "BufferSize", 4096};
+
+// static
+int InputStream::GetIntermediateBufferSize() {
+  return kBufferSize.Get();
+}
 
 // TODO: Use unsafe version for all Java_InputStream methods in this file
 // once BUG 157880 is fixed and implement graceful exception handling.
@@ -69,7 +91,7 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
   if (!buffer_.obj()) {
     // Allocate transfer buffer.
     base::android::ScopedJavaLocalRef<jbyteArray> temp(
-        env, env->NewByteArray(kBufferSize));
+        env, env->NewByteArray(GetIntermediateBufferSize()));
     buffer_.Reset(temp);
     if (ClearException(env))
       return false;
@@ -80,7 +102,8 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
   *bytes_read = 0;
 
   while (remaining_length > 0) {
-    const int max_transfer_length = std::min(remaining_length, kBufferSize);
+    const int max_transfer_length =
+        std::min(remaining_length, GetIntermediateBufferSize());
     const int transfer_length = Java_InputStreamUtil_read(
         env, jobject_, buffer_, 0, max_transfer_length);
     if (transfer_length == kExceptionThrownStatusCode)

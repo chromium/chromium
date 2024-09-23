@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -28,7 +29,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests the Related Searches Feature of Contextual Search using instrumentation tests. */
@@ -351,7 +351,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         Assert.assertEquals("Search", getSelectedText());
 
         // Simulate a selection change event and assert that the panel has not reappeared.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SelectionClient selectionClient = mManager.getContextualSearchSelectionClient();
                     selectionClient.onSelectionEvent(
@@ -387,5 +387,23 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
                         .build();
         fakeResponse(resolvedSearchTerm);
         waitForSelectionToBe("United States Intelligence");
+    }
+
+    // ============================================================================================
+    // Read Aloud Tap to Seek Suppression
+    // ============================================================================================
+
+    /**
+     * Tests that Contextual Search does not show when ReadAloud has an active playback on the tab.
+     */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch", "ReadAloud"})
+    @EnableFeatures(ChromeFeatureList.READALOUD_TAP_TO_SEEK)
+    public void testTapToSeekSuppression() throws Exception {
+        changeReadAloudActivePlaybackTab();
+
+        clickNode("intelligence");
+        Assert.assertEquals(null, getSelectedText());
     }
 }

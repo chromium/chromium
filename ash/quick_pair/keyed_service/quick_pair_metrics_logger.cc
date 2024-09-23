@@ -534,7 +534,6 @@ void QuickPairMetricsLogger::OnAccountKeyWrite(
       // TODO(b/259443372): Record this case once we implement account key
       // writing in all scenarios,
       NOTREACHED();
-      break;
     case Protocol::kFastPairInitial:
       break;
     case Protocol::kFastPairRetroactive:

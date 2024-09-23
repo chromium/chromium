@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 
 #include <memory>
@@ -17,11 +22,20 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/privacy_sandbox_resources.h"
 #include "chrome/grit/privacy_sandbox_resources_map.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+
+// The name of the on-click function when the privacy policy link is pressed.
+inline constexpr char16_t kPrivacyPolicyFunc[] = u"onPrivacyPolicyLinkClicked_";
+
+// The id of the html element that opens the privacy policy link.
+inline constexpr char16_t kPrivacyPolicyId[] = u"privacyPolicyLink";
 
 PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -32,6 +46,25 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       source,
       base::make_span(kPrivacySandboxResources, kPrivacySandboxResourcesSize),
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_HTML);
+
+  // Allow the chrome-untrusted://privacy-sandbox-dialog/privacy-policy page to
+  // load as an iframe in the page.
+  std::string frame_src = base::StringPrintf(
+      "frame-src %s 'self';",
+      base::StrCat(
+          {chrome::kChromeUIUntrustedPrivacySandboxDialogURL,
+           chrome::kChromeUIUntrustedPrivacySandboxDialogPrivacyPolicyPath})
+          .c_str());
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, frame_src);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://webui-test 'self' "
+      "'unsafe-inline';");
+
+  // Set up Content Security Policy (CSP) for
+  // chrome-untrusted://privacy-sandbox-dialog/ iframe.
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
   source->AddResourcePath(
       chrome::kChromeUIPrivacySandboxDialogCombinedPath,
@@ -108,8 +141,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
        IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2},
       {"m1ConsentLearnMoreBullet3",
        IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3},
-      {"m1ConsentLearnMoreLink",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK},
 
       // Strings for the notice step of the combined dialog (kM1NoticeEEA).
       {"m1NoticeEeaTitle", IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_TITLE},
@@ -186,7 +217,26 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       // Shared for all dialogs.
       {"m1DialogMoreButton", IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON}};
 
+  // TODO(crbug.com/358087159): Make sure the privacy policy page is activated
+  // as the expand section containing the link is open.
+  source->AddBoolean("isPrivacySandboxPrivacyPolicyEnabled",
+                     base::FeatureList::IsEnabled(
+                         privacy_sandbox::kPrivacySandboxPrivacyPolicy));
   source->AddLocalizedStrings(kStrings);
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxPrivacyPolicy)) {
+    source->AddString(
+        "m1ConsentLearnMoreLink",
+        l10n_util::GetStringFUTF16(
+            IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP,
+            kPrivacyPolicyId,
+            l10n_util::GetStringUTF16(
+                IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION),
+            kPrivacyPolicyFunc));
+  } else {
+    source->AddLocalizedString("m1ConsentLearnMoreLink",
+                               IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK);
+  }
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   if (url.query().find("debug") != std::string::npos) {

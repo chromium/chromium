@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_MANAGER_IMPL_H_
 
+#include <cstdint>
 #include <list>
 #include <optional>
 #include <vector>
@@ -59,7 +60,17 @@ class TestInterestGroupManagerImpl
   void EnqueueReports(
       ReportType report_type,
       std::vector<GURL> report_urls,
-      int frame_tree_node_id,
+      FrameTreeNodeId frame_tree_node_id,
+      const url::Origin& frame_origin,
+      const network::mojom::ClientSecurityState& client_security_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      override;
+
+  // InterestGroupManagerImpl implementation:
+  void EnqueueRealTimeReports(
+      std::map<url::Origin, RealTimeReportingContributions> contributions,
+      AdAuctionPageDataCallback ad_auction_page_data_callback,
+      FrameTreeNodeId frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -102,6 +113,11 @@ class TestInterestGroupManagerImpl
   // type, removing them from the internal list in the process.
   std::vector<GURL> TakeReportUrlsOfType(ReportType report_type);
 
+  // Returns all real time reporting contributions. All contributions are
+  // cleared afterwards.
+  std::map<url::Origin, RealTimeReportingContributions>
+  TakeRealTimeContributions();
+
   // Returns all interest groups that bid, removing them from the internal list
   // in the process. This is based on observer events, not database ones.
   std::vector<blink::InterestGroupKey> TakeInterestGroupsThatBid();
@@ -127,6 +143,8 @@ class TestInterestGroupManagerImpl
   bool use_real_enqueue_reports_ = false;
 
   std::list<Report> reports_;
+  std::map<url::Origin, RealTimeReportingContributions>
+      real_time_contributions_;
   std::vector<blink::InterestGroupKey> interest_groups_that_bid_;
   std::vector<std::string> joined_k_anon_sets_;
 };

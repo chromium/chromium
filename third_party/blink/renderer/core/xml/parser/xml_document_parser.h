@@ -129,7 +129,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
  private:
   // From DocumentParser
-  void insert(const String&) override { NOTREACHED(); }
+  void insert(const String&) override { NOTREACHED_IN_MIGRATION(); }
   void Append(const String&) override;
   void Finish() override;
   void ExecuteScriptsWaitingForResources() final;
@@ -143,9 +143,6 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
 
   // XMLParserScriptRunnerHost
   void NotifyScriptExecuted() override;
-  // |kDOMContentLoadedWaitForAsyncScript| experiment is not effective for XML
-  // documents and thus we don't have to do anything here.
-  void NotifyNoRemainingAsyncScripts() final {}
 
   void end();
 

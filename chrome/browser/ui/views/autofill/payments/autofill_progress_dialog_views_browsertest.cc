@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -38,8 +39,10 @@ class AutofillProgressDialogViewsBrowserTest
       return AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog;
     } else if (GetParam() == "ServerCardUnmask") {
       return AutofillProgressDialogType::kServerCardUnmaskProgressDialog;
+    } else if (GetParam() == "3dsFetchVirtualCard") {
+      return AutofillProgressDialogType::k3dsFetchVcnProgressDialog;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::string GetDialogTypeStringForLogging() const {
@@ -48,11 +51,7 @@ class AutofillProgressDialogViewsBrowserTest
   }
 
   void ShowUi(const std::string& name) override {
-    controller()->ShowDialog(
-        GetDialogType(),
-        base::BindOnce(&CreateAndShowProgressDialog, controller()->GetWeakPtr(),
-                       base::Unretained(web_contents())),
-        base::DoNothing());
+    client()->ShowAutofillProgressDialog(GetDialogType(), base::DoNothing());
   }
 
   AutofillProgressDialogViews* GetDialogViews() {
@@ -67,9 +66,16 @@ class AutofillProgressDialogViewsBrowserTest
   }
 
   AutofillProgressDialogControllerImpl* controller() const {
+    return client()->AutofillProgressDialogControllerForTesting();
+  }
+
+  payments::ChromePaymentsAutofillClient* client() const {
     auto* client =
         ChromeAutofillClient::FromWebContentsForTesting(web_contents());
-    return client->AutofillProgressDialogControllerForTesting();
+    // On Desktop and Clank, the PaymentsAutofillClient can only be a
+    // ChromePaymentsAutofillClient.
+    return static_cast<payments::ChromePaymentsAutofillClient*>(
+        client->GetPaymentsAutofillClient());
   }
 
   content::WebContents* web_contents() const {
@@ -181,6 +187,7 @@ IN_PROC_BROWSER_TEST_P(AutofillProgressDialogViewsBrowserTest,
 INSTANTIATE_TEST_SUITE_P(,
                          AutofillProgressDialogViewsBrowserTest,
                          testing::Values("VirtualCardUnmask",
-                                         "ServerCardUnmask"));
+                                         "ServerCardUnmask",
+                                         "3dsFetchVirtualCard"));
 
 }  // namespace autofill

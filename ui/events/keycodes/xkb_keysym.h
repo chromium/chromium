@@ -12,12 +12,12 @@
 
 #if BUILDFLAG(USE_XKBCOMMON)
 
+#include <xkbcommon/xkbcommon-keysyms.h>  // IWYU pragma: export
 #include <xkbcommon/xkbcommon.h>
-#include <xkbcommon/xkbcommon-keysyms.h>
 
 #else  // !BUILDFLAG(USE_XKBCOMMON)
 
-#include "ui/gfx/x/keysyms/keysyms.h"
+#include "ui/gfx/x/keysyms/keysyms.h"  // IWYU pragma: export
 
 using xkb_keysym_t = uint32_t;
 

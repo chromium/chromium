@@ -106,4 +106,8 @@ interface MojoEcho {
   EchoBoolAsOptionalNestedUnion(bool value) => (NestedUnion? test_union);
   // Runs callback with |test_union.union_value.string_value|.
   EchoStringAsOptionalNestedUnion(string value) => (NestedUnion? test_union);
+
+  // The following methods help test that JS can correctly encode array of
+  // bools.
+  EchoBoolArray(array<bool> values) => (array<bool> values);
 };

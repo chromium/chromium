@@ -65,7 +65,7 @@ Criteria GetSchedulingCriteria(const Model::EntryList& entries,
       case SchedulingParams::BatteryRequirements::BATTERY_CHARGING:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
 
     if (scheduling_params.network_requirements ==

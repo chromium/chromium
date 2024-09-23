@@ -64,8 +64,13 @@ struct Base {
 struct Derived : public Base {};
 
 struct TargetBase {};
-struct Target : public TargetBase, public SupportsWeakPtr<Target> {
+
+struct Target : public TargetBase {
   virtual ~Target() = default;
+  WeakPtr<Target> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
+
+ private:
+  WeakPtrFactory<Target> weak_ptr_factory_{this};
 };
 
 struct DerivedTarget : public Target {};
@@ -326,43 +331,6 @@ TEST(WeakPtrFactoryTest, UpCast) {
 TEST(WeakPtrTest, ConstructFromNullptr) {
   WeakPtr<int> ptr = PassThru(nullptr);
   EXPECT_EQ(nullptr, ptr.get());
-}
-
-TEST(WeakPtrTest, SupportsWeakPtr) {
-  Target target;
-  WeakPtr<Target> ptr = target.AsWeakPtr();
-  EXPECT_EQ(&target, ptr.get());
-}
-
-TEST(WeakPtrTest, DerivedTarget) {
-  DerivedTarget target;
-  WeakPtr<DerivedTarget> ptr = AsWeakPtr(&target);
-  EXPECT_EQ(&target, ptr.get());
-}
-
-TEST(WeakPtrTest, DerivedTargetWithNestedBase) {
-  DerivedTargetWithNestedBase target;
-  WeakPtr<DerivedTargetWithNestedBase> ptr = AsWeakPtr(&target);
-  EXPECT_EQ(&target, ptr.get());
-}
-
-TEST(WeakPtrTest, DerivedTargetMultipleInheritance) {
-  DerivedTargetMultipleInheritance derived_target;
-  Target& target = derived_target;
-  EXPECT_NE(static_cast<void*>(&derived_target), static_cast<void*>(&target));
-
-  WeakPtr<Target> target_weak_ptr = AsWeakPtr(&target);
-  EXPECT_EQ(target_weak_ptr.get(), &target);
-
-  WeakPtr<DerivedTargetMultipleInheritance> derived_target_weak_ptr =
-      AsWeakPtr(&derived_target);
-  EXPECT_EQ(derived_target_weak_ptr.get(), &derived_target);
-
-  target_weak_ptr = derived_target_weak_ptr;
-  EXPECT_EQ(target_weak_ptr.get(), &target);
-
-  target_weak_ptr = std::move(derived_target_weak_ptr);
-  EXPECT_EQ(target_weak_ptr.get(), &target);
 }
 
 TEST(WeakPtrFactoryTest, BooleanTesting) {

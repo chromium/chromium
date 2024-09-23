@@ -5,10 +5,14 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 
 #include <cmath>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
@@ -20,6 +24,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -50,6 +55,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -59,57 +65,111 @@ namespace {
 
 using ::ui::mojom::DragOperation;
 
-using FileSupportedCallback =
-    base::OnceCallback<void(const GURL& url, bool supported)>;
+// An increasing sequence number used to initialize the `sequence` member
+// variable of `DropInfo`. Because a background task is posted to process URLs,
+// a consistent sequence number is used to ensure that the `DropInfo` that
+// initiated the task is the same one that is filled in with the results.
+int gDropInfoSequence = 0;
 
-// Get the MIME type of the file pointed to by the url, based on the file's
-// extension. Must be called in a context that allows blocking.
-std::string FindURLMimeType(const GURL& url) {
-  base::FilePath full_path;
-  net::FileURLToFilePath(url, &full_path);
+// Get the MIME types of the files pointed to by `urls`, based on the files'
+// extensions. Must be called in a context that allows blocking.
+std::vector<std::string> GetURLMimeTypes(const std::vector<GURL>& urls) {
+  std::vector<std::string> mime_types;
 
-  // Get the MIME type based on the filename.
-  std::string mime_type;
-  // This call may block on some platforms.
-  net::GetMimeTypeFromFile(full_path, &mime_type);
+  for (const auto& url : urls) {
+    if (!url.SchemeIsFile()) {
+      mime_types.emplace_back();
+      continue;
+    }
 
-  return mime_type;
+    base::FilePath full_path;
+    if (!net::FileURLToFilePath(url, &full_path)) {
+      mime_types.emplace_back();
+      continue;
+    }
+
+    std::string mime_type;
+    // This call may block on some platforms.
+    if (!net::GetMimeTypeFromFile(full_path, &mime_type)) {
+      mime_types.emplace_back();
+      continue;
+    }
+
+    mime_types.push_back(std::move(mime_type));
+  }
+
+  return mime_types;
 }
 
-void OnFindURLMimeType(const GURL& url,
-                       content::BrowserContext* browser_context,
-                       FileSupportedCallback callback,
-                       const std::string& mime_type) {
-  // Check whether the mime type, if given, is known to be supported or whether
-  // there is a plugin that supports the mime type (e.g. PDF).
-  // TODO(bauerb): This possibly uses stale information, but it's guaranteed not
-  // to do disk access.
-  bool result = mime_type.empty() || blink::IsSupportedMimeType(mime_type);
+// Filters `urls` for whether they should be allowed for drops. `mime_types` is
+// the output from a call to `GetURLMimeTypes()` as a background task, and must
+// contain a 1:1 list of the MIME types of the corresponding URLs, with an empty
+// string for URLs that aren't file URLs or for those whose MIME type could not
+// be obtained. `browser_context` is the BrowserContext to use to look up
+// support for MIME types in plugins. When the filtering is complete, `callback`
+// will be called with the final list of URLs to use for the drop.
+void FilterURLsForDropability(
+    const std::vector<GURL>& urls,
+    content::BrowserContext* browser_context,
+    base::OnceCallback<void(std::vector<GURL> urls)> callback,
+    const std::vector<std::string>& mime_types) {
+  CHECK_EQ(urls.size(), mime_types.size());
+  std::vector<GURL> filtered_urls;
 
+  for (size_t i = 0; i < urls.size(); ++i) {
+    const GURL& url = urls[i];
+    const std::string& mime_type = mime_types[i];
+
+    // Disallow javascript: URLs to prevent self-XSS.
+    if (url.SchemeIs(url::kJavaScriptScheme)) {
+      continue;
+    }
+
+    // Check whether the mime types, if given, are known to be supported or
+    // whether there is a plugin that supports the mime type (e.g. PDF).
+    // TODO(bauerb): This possibly uses stale information, but it's guaranteed
+    // not to do disk access.
+    bool supported = mime_type.empty() || blink::IsSupportedMimeType(mime_type);
 #if BUILDFLAG(ENABLE_PLUGINS)
-  content::WebPluginInfo plugin;
-  result = result || content::PluginService::GetInstance()->GetPluginInfo(
-                         browser_context, url, mime_type, false, nullptr,
-                         &plugin, nullptr);
+    content::WebPluginInfo plugin;
+    supported =
+        supported ||
+        content::PluginService::GetInstance()->GetPluginInfo(
+            browser_context, url, mime_type, /*allow_wildcard=*/false,
+            /*is_stale=*/nullptr, &plugin, /*actual_mime_type=*/nullptr);
 #endif
 
-  std::move(callback).Run(url, result);
+    if (supported) {
+      filtered_urls.push_back(url);
+    }
+  }
+
+  std::move(callback).Run(filtered_urls);
 }
 
-bool GetURLForDrop(const ui::DropTargetEvent& event, GURL* url) {
-  DCHECK(url);
-  std::u16string title;
-  return event.data().GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES,
-                                     url, &title) &&
-         url->is_valid();
+// Returns the URLs that are currently being dragged by the user and which
+// should be considered for the drop.
+std::vector<GURL> GetURLsForDrop(const ui::DropTargetEvent& event) {
+  std::optional<std::vector<GURL>> urls =
+      event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  if (!urls.has_value()) {
+    return {};
+  }
+
+  std::erase_if(urls.value(), [](const GURL& url) { return !url.is_valid(); });
+
+  return urls.value();
 }
 
-DragOperation GetDropEffect(const ui::DropTargetEvent& event, const GURL& url) {
+// Converts from `ui::DragDropTypes` to `::ui::mojom::DragOperation`.
+DragOperation GetDropEffect(const ui::DropTargetEvent& event) {
   const int source_ops = event.source_operations();
-  if (source_ops & ui::DragDropTypes::DRAG_COPY)
+  if (source_ops & ui::DragDropTypes::DRAG_COPY) {
     return DragOperation::kCopy;
-  if (source_ops & ui::DragDropTypes::DRAG_LINK)
+  }
+  if (source_ops & ui::DragDropTypes::DRAG_LINK) {
     return DragOperation::kLink;
+  }
   return DragOperation::kMove;
 }
 
@@ -118,8 +178,9 @@ DragOperation GetDropEffect(const ui::DropTargetEvent& event, const GURL& url) {
 BrowserRootView::DropInfo::DropInfo() = default;
 
 BrowserRootView::DropInfo::~DropInfo() {
-  if (target)
+  if (target) {
     target->HandleDragExited();
+  }
 }
 
 BrowserRootView::BrowserRootView(BrowserView* browser_view,
@@ -131,8 +192,9 @@ BrowserRootView::~BrowserRootView() {
   // |drop_info_| will be non-null, but its |target| likely points to an
   // already-deleted child.  Clear the target so ~DropInfo() will not try and
   // notify it of the drag ending. http://crbug.com/1001942
-  if (drop_info_)
+  if (drop_info_) {
     drop_info_->target = nullptr;
+  }
 }
 
 bool BrowserRootView::GetDropFormats(
@@ -151,79 +213,90 @@ bool BrowserRootView::AreDropTypesRequired() {
 
 bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
   // If it's not tabbed browser, we don't have to support drag and drops.
-  if (!browser_view_->GetIsNormalType())
+  if (!browser_view_->GetIsNormalType()) {
     return false;
+  }
 
-  if (!tabstrip()->GetVisible() && !toolbar()->GetVisible())
+  if (!tabstrip()->GetVisible() && !toolbar()->GetVisible()) {
     return false;
+  }
 
   // If this is for a fallback window dragging session, return false and let
   // TabStripRegionView forward drag events to TabDragController. This is
   // necessary because we don't want to return true if the custom MIME type is
   // there but the mouse is not over the tab strip region, and we don't know the
   // current mouse location.
-  // TODO(crbug.com/1307594): This is a smoking gun code smell;
+  // TODO(crbug.com/40828528): This is a smoking gun code smell;
   // TabStripRegionView and Toolbar have different affordances, so they should
   // separately override the drag&drop methods.
   if (data.HasCustomFormat(
-          ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag)))
+          ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag))) {
     return false;
+  }
 
   // If there is a URL, we'll allow the drop.
-  if (data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES))
+  if (data.HasURL(ui::FilenameToURLPolicy::CONVERT_FILENAMES)) {
     return true;
+  }
 
-  // If there isn't a URL, see if we can 'paste and go'.
-  return GetPasteAndGoURL(data, nullptr);
+  // If there isn't a URL, allow a drop if 'paste and go' can convert to a URL.
+  return GetPasteAndGoURL(data).has_value();
 }
 
 void BrowserRootView::OnDragEntered(const ui::DropTargetEvent& event) {
   drop_info_ = std::make_unique<DropInfo>();
-  GURL url;
-  if (GetURLForDrop(event, &url)) {
-    drop_info_->url = url;
+  drop_info_->sequence = ++gDropInfoSequence;
 
-    // Check if the file is supported.
-    if (url.SchemeIsFile()) {
-      // Avoid crashing while the tab strip is being initialized or is empty.
-      content::WebContents* web_contents =
-          browser_view_->browser()->tab_strip_model()->GetActiveWebContents();
-      if (!web_contents) {
-        return;
-      }
+  std::vector<GURL> urls = GetURLsForDrop(event);
 
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-          base::BindOnce(&FindURLMimeType, url),
-          base::BindOnce(&OnFindURLMimeType, url,
-                         browser_view_->browser()->profile(),
-                         base::BindOnce(&BrowserRootView::OnFileSupported,
-                                        weak_ptr_factory_.GetWeakPtr())));
+  // If there aren't any proper URLs, allow a 'paste and go' conversion of text
+  // content to a URL.
+  if (urls.empty()) {
+    const std::optional<GURL> paste_and_go_url = GetPasteAndGoURL(event.data());
+    if (paste_and_go_url.has_value()) {
+      urls.push_back(paste_and_go_url.value());
     }
   }
+
+  // Avoid crashing while the tab strip is being initialized or is empty.
+  content::WebContents* web_contents =
+      browser_view_->browser()->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  // Filter all the URLs.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GetURLMimeTypes, urls),
+      base::BindOnce(&FilterURLsForDropability, urls,
+                     browser_view_->browser()->profile(),
+                     base::BindOnce(&BrowserRootView::OnFilteringComplete,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    drop_info_->sequence)));
 }
 
 int BrowserRootView::OnDragUpdated(const ui::DropTargetEvent& event) {
-  if (!drop_info_)
+  if (!drop_info_) {
     OnDragEntered(event);
+  }
 
   if (auto* drop_target = GetDropTarget(event)) {
-    if (drop_info_->target && drop_info_->target != drop_target)
+    if (drop_info_->target && drop_info_->target != drop_target) {
       drop_info_->target->HandleDragExited();
+    }
     drop_info_->target = drop_target;
 
-    if (!drop_info_->file_supported ||
-        drop_info_->url.SchemeIs(url::kJavaScriptScheme)) {
-      drop_info_->index.reset();
-    } else {
+    if (drop_info_->filtering_complete && !drop_info_->urls.empty()) {
       drop_info_->index =
           GetDropIndexForEvent(event, event.data(), drop_target);
+    } else {
+      drop_info_->index.reset();
     }
 
     drop_target->HandleDragUpdate(drop_info_->index);
-    return drop_info_->index
-               ? static_cast<int>(GetDropEffect(event, drop_info_->url))
-               : ui::DragDropTypes::DRAG_NONE;
+    return drop_info_->index ? static_cast<int>(GetDropEffect(event))
+                             : ui::DragDropTypes::DRAG_NONE;
   }
 
   OnDragExited();
@@ -236,12 +309,13 @@ void BrowserRootView::OnDragExited() {
 
 views::View::DropCallback BrowserRootView::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  if (!drop_info_)
+  if (!drop_info_) {
     return base::DoNothing();
+  }
 
   // Moving `drop_info_` ensures we call HandleDragExited() on |drop_info_|'s
   // |target| when this function returns.
-  return base::BindOnce(&BrowserRootView::NavigateToDropUrl,
+  return base::BindOnce(&BrowserRootView::NavigateToDroppedUrls,
                         weak_ptr_factory_.GetWeakPtr(), std::move(drop_info_));
 }
 
@@ -252,14 +326,13 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   // Scroll-event-changes-tab is incompatible with scrolling tabstrip, so
   // disable it if the latter feature is enabled.
   if (browser_defaults::kScrollEventChangesTab &&
-      !base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+      !base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
     // Switch to the left/right tab if the wheel-scroll happens over the
     // tabstrip, or the empty space beside the tabstrip.
     views::View* hit_view = GetEventHandlerForPoint(event.location());
     int hittest =
         GetWidget()->non_client_view()->NonClientHitTest(event.location());
-    if (tabstrip()->Contains(hit_view) ||
-        hittest == HTCAPTION ||
+    if (tabstrip()->Contains(hit_view) || hittest == HTCAPTION ||
         hittest == HTTOP) {
       scroll_remainder_x_ += event.x_offset();
       scroll_remainder_y_ += event.y_offset();
@@ -284,9 +357,19 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 
       Browser* browser = browser_view_->browser();
       TabStripModel* model = browser->tab_strip_model();
+
+      auto has_tab_in_direction = [model](int delta) {
+        for (int index = model->active_index() + delta;
+             model->ContainsIndex(index); index += delta) {
+          if (!model->IsTabCollapsed(index)) {
+            return true;
+          }
+        }
+        return false;
+      };
+
       // Switch to the next tab only if not at the end of the tab-strip.
-      if (whole_scroll_offset < 0 &&
-          model->active_index() + 1 < model->count()) {
+      if (whole_scroll_offset < 0 && has_tab_in_direction(1)) {
         chrome::SelectNextTab(
             browser, TabStripUserGestureDetails(
                          TabStripUserGestureDetails::GestureType::kWheel,
@@ -296,7 +379,7 @@ bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 
       // Switch to the previous tab only if not at the beginning of the
       // tab-strip.
-      if (whole_scroll_offset > 0 && model->active_index() > 0) {
+      if (whole_scroll_offset > 0 && has_tab_in_direction(-1)) {
         chrome::SelectPreviousTab(
             browser, TabStripUserGestureDetails(
                          TabStripUserGestureDetails::GestureType::kWheel,
@@ -315,7 +398,8 @@ void BrowserRootView::OnMouseExited(const ui::MouseEvent& event) {
   RootView::OnMouseExited(event);
 }
 
-gfx::Size BrowserRootView::CalculatePreferredSize() const {
+gfx::Size BrowserRootView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return browser_view_->GetRestoredBounds().size();
 }
 
@@ -327,7 +411,7 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
   // with the toolbar.  This painting can't be done in the NonClientFrameView
   // because parts of the BrowserView (such as tabs) would get rendered on top
   // of the stroke.  It can't be done in BrowserView either because that view is
-  // offset from the widget by a few DIPs, which is toublesome for computing a
+  // offset from the widget by a few DIPs, which is troublesome for computing a
   // subpixel offset when using fractional scale factors.  So we're forced to
   // put this drawing in the BrowserRootView.
   if (tabstrip()->ShouldDrawStrokes() && browser_view_->IsToolbarVisible()) {
@@ -373,28 +457,23 @@ void BrowserRootView::PaintChildren(const views::PaintInfo& paint_info) {
     cc::PaintFlags flags;
     flags.setColor(toolbar_top_separator_color);
     flags.setAntiAlias(true);
-    if (features::IsChromeRefresh2023()) {
-      const float stroke_width = scale;
-      // Outset the rectangle and corner radius by half the stroke width
-      // to draw an outer stroke.
-      const float stroke_outset = stroke_width / 2;
-      const float corner_radius =
-          GetLayoutConstant(TOOLBAR_CORNER_RADIUS) * scale + stroke_outset;
+    const float stroke_width = scale;
+    // Outset the rectangle and corner radius by half the stroke width
+    // to draw an outer stroke.
+    const float stroke_outset = stroke_width / 2;
+    const float corner_radius =
+        GetLayoutConstant(TOOLBAR_CORNER_RADIUS) * scale + stroke_outset;
 
-      flags.setStyle(cc::PaintFlags::kStroke_Style);
-      flags.setStrokeWidth(stroke_width);
+    flags.setStyle(cc::PaintFlags::kStroke_Style);
+    flags.setStrokeWidth(stroke_width);
 
-      // Only draw the top half of the rounded rect.
-      canvas->ClipRect(gfx::RectF(x, 0, width, bottom + corner_radius),
-                       SkClipOp::kIntersect);
+    // Only draw the top half of the rounded rect.
+    canvas->ClipRect(gfx::RectF(x, 0, width, bottom + corner_radius),
+                     SkClipOp::kIntersect);
 
-      gfx::RectF rect(x, bottom, width, 2 * corner_radius);
-      rect.Outset(stroke_outset);
-      canvas->DrawRoundRect(rect, corner_radius, flags);
-    } else {
-      flags.setStyle(cc::PaintFlags::kFill_Style);
-      canvas->DrawRect(gfx::RectF(x, bottom - scale, width, scale), flags);
-    }
+    gfx::RectF rect(x, bottom, width, 2 * corner_radius);
+    rect.Outset(stroke_outset);
+    canvas->DrawRoundRect(rect, corner_radius, flags);
   }
 }
 
@@ -419,7 +498,7 @@ BrowserRootView::DropTarget* BrowserRootView::GetDropTarget(
   return target;
 }
 
-BrowserRootView::DropIndex BrowserRootView::GetDropIndexForEvent(
+std::optional<BrowserRootView::DropIndex> BrowserRootView::GetDropIndexForEvent(
     const ui::DropTargetEvent& event,
     const ui::OSExchangeData& data,
     DropTarget* target) {
@@ -431,35 +510,44 @@ BrowserRootView::DropIndex BrowserRootView::GetDropIndexForEvent(
   return target->GetDropIndex(event_in_view);
 }
 
-void BrowserRootView::OnFileSupported(const GURL& url, bool supported) {
-  if (drop_info_ && drop_info_->url == url)
-    drop_info_->file_supported = supported;
+void BrowserRootView::OnFilteringComplete(int sequence,
+                                          std::vector<GURL> urls) {
+  if (drop_info_ && drop_info_->sequence == sequence) {
+    drop_info_->urls = std::move(urls);
+    drop_info_->filtering_complete = true;
+  }
+
+  if (on_filtering_complete_closure_) {
+    std::move(on_filtering_complete_closure_).Run();
+  }
 }
 
-bool BrowserRootView::GetPasteAndGoURL(const ui::OSExchangeData& data,
-                                       GURL* url) {
-  if (!data.HasString())
-    return false;
+void BrowserRootView::SetOnFilteringCompleteClosureForTesting(
+    base::OnceClosure closure) {
+  on_filtering_complete_closure_ = std::move(closure);
+}
 
-  std::u16string text;
-  if (!data.GetString(&text) || text.empty())
-    return false;
-  text = AutocompleteMatch::SanitizeString(text);
+std::optional<GURL> BrowserRootView::GetPasteAndGoURL(
+    const ui::OSExchangeData& data) {
+  std::optional<std::u16string> text_result = data.GetString();
+  if (!text_result.has_value() || text_result->empty()) {
+    return std::nullopt;
+  }
+  std::u16string text = AutocompleteMatch::SanitizeString(*text_result);
 
   AutocompleteMatch match;
   AutocompleteClassifierFactory::GetForProfile(
-      browser_view_->browser()->profile())->Classify(
-          text, false, false, metrics::OmniboxEventProto::INVALID_SPEC, &match,
-          nullptr);
-  if (!match.destination_url.is_valid())
-    return false;
+      browser_view_->browser()->profile())
+      ->Classify(text, false, false, metrics::OmniboxEventProto::INVALID_SPEC,
+                 &match, nullptr);
+  if (!match.destination_url.is_valid()) {
+    return std::nullopt;
+  }
 
-  if (url)
-    *url = match.destination_url;
-  return true;
+  return match.destination_url;
 }
 
-void BrowserRootView::NavigateToDropUrl(
+void BrowserRootView::NavigateToDroppedUrls(
     std::unique_ptr<DropInfo> drop_info,
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
@@ -470,49 +558,76 @@ void BrowserRootView::NavigateToDropUrl(
   TabStripModel* const model = browser->tab_strip_model();
 
   // If the browser window is not visible, it's about to be destroyed.
-  if (!browser->window()->IsVisible() || model->empty())
-    return;
-
-  if (drop_info->index->value > model->GetTabCount())
-    return;
-
-  // Extract the URL and create a new ui::OSExchangeData containing the URL. We
-  // do this as the TabStrip doesn't know about the autocomplete edit and needs
-  // to know about it to handle 'paste and go'.
-  GURL url;
-  if (!GetURLForDrop(event, &url)) {
-    // The url isn't valid. Use the paste and go url.
-    GetPasteAndGoURL(event.data(), &url);
-  }
-
-  // Do nothing if the file was unsupported, the URL is invalid, or this is a
-  // javascript: URL (prevent self-xss). The URL may have been changed after
-  // |drop_info| was created.
-  if (!drop_info->file_supported || !url.is_valid() ||
-      url.SchemeIs(url::kJavaScriptScheme)) {
-    output_drag_op = DragOperation::kNone;
+  if (!browser->window()->IsVisible() || model->empty()) {
     return;
   }
 
-  NavigateParams params(browser_view_->browser(), url,
-                        ui::PAGE_TRANSITION_LINK);
-  params.tabstrip_index = drop_info->index->value;
-  if (drop_info->index->drop_before) {
-    base::RecordAction(base::UserMetricsAction("Tab_DropURLBetweenTabs"));
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    if (drop_info->index->drop_in_group &&
-        drop_info->index->value < model->count())
-      params.group = model->GetTabGroupForTab(drop_info->index->value);
-  } else {
+  // If there is no index then the target declined the drop.
+  if (!drop_info->index.has_value()) {
+    return;
+  }
+
+  // If the insertion point is off the end of the actual tab count, something
+  // went wrong between when the drop was calculated and now. Bail.
+  if (drop_info->index->index > model->GetTabCount()) {
+    return;
+  }
+
+  // To handle the four permutations of (one URL, multiple URLs) × (insert
+  // between tabs, replace tab), process the dropped URLs in two phases.
+  //
+  // Phase one: If the drop is indicated to replace the specified tab, then
+  // replace the tab with the first URL of the drop. Remove the first URL from
+  // the list of dropped URLs. Otherwise, skip this phase.
+  //
+  // Phase two: Create one tab for each remaining dropped URL, in reverse order.
+  // This preserves the ordering of the dropped URLs.
+
+  base::span<GURL> urls(drop_info->urls);
+  CHECK(!urls.empty());
+  int insertion_index = drop_info->index->index;
+
+  if (drop_info->index->relative_to_index ==
+      DropIndex::RelativeToIndex::kReplaceIndex) {
+    NavigateParams params(browser_view_->browser(), urls[0],
+                          ui::PAGE_TRANSITION_LINK);
+    params.tabstrip_index = insertion_index;
     base::RecordAction(base::UserMetricsAction("Tab_DropURLOnTab"));
     params.disposition = WindowOpenDisposition::CURRENT_TAB;
-    params.source_contents = model->GetWebContentsAt(drop_info->index->value);
+    params.source_contents = model->GetWebContentsAt(insertion_index);
+    params.window_action = NavigateParams::SHOW_WINDOW;
+    Navigate(&params);
+
+    urls = urls.subspan(1);
+    ++insertion_index;  // Additional URLs inserted to the right.
   }
 
-  params.window_action = NavigateParams::SHOW_WINDOW;
-  Navigate(&params);
+  for (const GURL& url : base::Reversed(urls)) {
+    NavigateParams params(browser_view_->browser(), url,
+                          ui::PAGE_TRANSITION_LINK);
+    params.tabstrip_index = insertion_index;
+    base::RecordAction(base::UserMetricsAction("Tab_DropURLBetweenTabs"));
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    if (drop_info->index->group_inclusion ==
+            DropIndex::GroupInclusion::kIncludeInGroup &&
+        insertion_index < model->count()) {
+      params.group = model->GetTabGroupForTab(insertion_index);
+    }
+    params.window_action = NavigateParams::SHOW_WINDOW;
+    Navigate(&params);
+  }
 
-  output_drag_op = GetDropEffect(event, url);
+  // Ensure that the leftmost affected tab is the active one. If this drop was
+  // insertion-only, then the URLs were inserted right-to-left, leaving the
+  // leftmost tab active. If this was a replacement, then after the insertion of
+  // the remainder of the tabs, the second-to-the-left-most tab is active, which
+  // is odd, so manually select the leftmost tab.
+  if (drop_info->index->relative_to_index ==
+      DropIndex::RelativeToIndex::kReplaceIndex) {
+    model->ActivateTabAt(drop_info->index->index);
+  }
+
+  output_drag_op = GetDropEffect(event);
 }
 
 BEGIN_METADATA(BrowserRootView)

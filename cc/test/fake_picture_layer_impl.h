@@ -121,6 +121,10 @@ class FakePictureLayerImpl : public PictureLayerImpl {
     return only_used_low_res_last_append_quads_;
   }
 
+  scoped_refptr<const DiscardableImageMap> discardable_image_map() const {
+    return discardable_image_map_;
+  }
+
  protected:
   FakePictureLayerImpl(LayerTreeImpl* tree_impl,
                        int id,

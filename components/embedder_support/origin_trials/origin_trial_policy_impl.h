@@ -7,9 +7,9 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
 namespace embedder_support {
@@ -29,9 +29,9 @@ class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
   bool IsOriginTrialsSupported() const override;
   const std::vector<blink::OriginTrialPublicKey>& GetPublicKeys()
       const override;
-  bool IsFeatureDisabled(base::StringPiece feature) const override;
-  bool IsFeatureDisabledForUser(base::StringPiece feature) const override;
-  bool IsTokenDisabled(base::StringPiece token_signature) const override;
+  bool IsFeatureDisabled(std::string_view feature) const override;
+  bool IsFeatureDisabledForUser(std::string_view feature) const override;
+  bool IsTokenDisabled(std::string_view token_signature) const override;
   bool IsOriginSecure(const GURL& url) const override;
 
   bool SetPublicKeysFromASCIIString(const std::string& ascii_public_key);

@@ -22,6 +22,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -142,16 +143,18 @@ void ImageWithBadge::UpdateBadge(const gfx::ImageSkia& badge_image) {
 }
 
 gfx::ImageSkia ImageWithBadge::GetMainImage() const {
-  if (main_image_skia_)
+  if (main_image_skia_) {
     return main_image_skia_.value();
+  }
   DCHECK(main_vector_icon_);
   const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
   return gfx::CreateVectorIcon(*main_vector_icon_, kImageSize, color);
 }
 
 gfx::ImageSkia ImageWithBadge::GetBadge() const {
-  if (badge_image_skia_)
+  if (badge_image_skia_) {
     return badge_image_skia_.value();
+  }
   // If there is no badge set, fallback to the default globe icon.
   const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
   return gfx::CreateVectorIcon(kGlobeIcon, gfx::kFaviconSize, color);
@@ -190,12 +193,9 @@ END_METADATA
 std::unique_ptr<views::Label> CreateDescription(
     const std::u16string& profile_email) {
   auto description = std::make_unique<views::Label>(
-      base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)
-          ? l10n_util::GetStringFUTF16(
-                IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_DESCRIPTION,
-                profile_email)
-          : l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_HINT),
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_DESCRIPTION,
+          profile_email),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_HINT);
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -251,7 +251,7 @@ void MoveToAccountStoreBubbleView::MovingBannerView::UpdateFavicon(
   to_view->UpdateBadge(favicon);
 }
 
-BEGIN_METADATA(MoveToAccountStoreBubbleView, MovingBannerView, views::View)
+BEGIN_METADATA(MoveToAccountStoreBubbleView, MovingBannerView)
 END_METADATA
 
 MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
@@ -288,15 +288,10 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
       /*from_view=*/std::move(computer_view),
       /*to_view=*/std::move(avatar_view)));
 
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
-      base::FeatureList::IsEnabled(
-          password_manager::features::kButterOnDesktopFollowup)
-          ? l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_SAVE_BUTTON)
-          : l10n_util::GetStringUTF16(
-                IDS_PASSWORD_MANAGER_MOVE_BUBBLE_OK_BUTTON));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(
+                     IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_SAVE_BUTTON));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_PASSWORD_MANAGER_MOVE_BUBBLE_CANCEL_BUTTON));
   SetAcceptCallback(
@@ -320,7 +315,6 @@ MoveToAccountStoreBubbleView::~MoveToAccountStoreBubbleView() = default;
 void MoveToAccountStoreBubbleView::AddedToWidget() {
   static_cast<views::Label*>(GetBubbleFrameView()->title())
       ->SetAllowCharacterBreak(true);
-  SetBubbleHeader(IDR_SAVE_PASSWORD, IDR_SAVE_PASSWORD_DARK);
 }
 
 MoveToAccountStoreBubbleController*

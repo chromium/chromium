@@ -61,6 +61,35 @@ var startMediaTest = function() {
       });
 };
 
+function waitForUserActivation(callback) {
+  if (navigator.userActivation.isActive) {
+    window.console.log("User activation happened.")
+    callback();
+  } else {
+    setTimeout(() => waitForUserActivation(callback), 10);
+  }
+}
+
+function testHid() {
+  const device_filters = [{vendorId: 0}];
+  navigator.hid.requestDevice({ filters: device_filters})
+  .then(function(device) {
+    if (device.length > 0) {
+      notifyEmbedder('access-granted');
+    } else {
+      notifyEmbedder('access-denied');
+    }
+  })
+  .catch(function(err) {
+    window.console.error(err, err.stack);
+    notifyEmbedder('fail');
+  });
+}
+
+function startHidTest() {
+  window.console.log("Waiting for user activation.");
+  waitForUserActivation(testHid);
+}
 
 var onPostMessageReceived = function(e) {
   window.console.log('guest.onPostMessageReceived');
@@ -77,6 +106,8 @@ var onPostMessageReceived = function(e) {
       startMicrophoneTest();
     } else if (g_testName === 'testMedia') {
       startMediaTest();
+    } else if (g_testName === 'testHid') {
+      startHidTest();
     } else {
       notifyEmbedder('fail');
     }

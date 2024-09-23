@@ -57,10 +57,10 @@ export class WebViewHelper {
     xhr.open('GET', url);
     xhr.setRequestHeader('Accept', contentType);
     xhr.onreadystatechange = function() {
-      if (xhr.readyState != XMLHttpRequest.DONE) {
+      if (xhr.readyState !== XMLHttpRequest.DONE) {
         return;
       }
-      if (xhr.status != 200) {
+      if (xhr.status !== 200) {
         onError();
         return;
       }

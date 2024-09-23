@@ -12,6 +12,6 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++View actions:[AX_FOCUS] bundle:[chromeRole="contentInsertion", roleDescription="insertion"]
 ++++++++View text:"null" contentDescription:"2" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/sub.html#"]
-++++++++++TextView text:"better" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer", clickableScore="100"]
+++++++++++TextView text:"2" hint:"better" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer", clickableScore="100", hint="better"]
 ++++++TextView text:" " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++TextView text:"O" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

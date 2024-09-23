@@ -6,18 +6,19 @@
 #define  SIZEOF_MAINHEAD3       13 // Size of RAR 4.x main archive header.
 #define  SIZEOF_FILEHEAD14      21 // Size of RAR 1.4 file header.
 #define  SIZEOF_FILEHEAD3       32 // Size of RAR 3.0 file header.
-#define  SIZEOF_SHORTBLOCKHEAD   7
+#define  SIZEOF_SHORTBLOCKHEAD   7 // Smallest RAR 4.x block size.
 #define  SIZEOF_LONGBLOCKHEAD   11
 #define  SIZEOF_SUBBLOCKHEAD    14
 #define  SIZEOF_COMMHEAD        13
 #define  SIZEOF_PROTECTHEAD     26
-#define  SIZEOF_UOHEAD          18
 #define  SIZEOF_STREAMHEAD      26
 
 #define  VER_PACK               29U
 #define  VER_PACK5              50U // It is stored as 0, but we subtract 50 when saving an archive.
+#define  VER_PACK7              70U // It is stored as 1, but we subtract 70 when saving an archive.
 #define  VER_UNPACK             29U
 #define  VER_UNPACK5            50U // It is stored as 0, but we add 50 when reading an archive.
+#define  VER_UNPACK7            70U // It is stored as 1, but we add 50 when reading an archive.
 #define  VER_UNKNOWN          9999U // Just some large value.
 
 #define  MHD_VOLUME         0x0001U
@@ -83,7 +84,7 @@ enum HEADER_TYPE {
 };
 
 
-// RAR 2.9 and earlier.
+// RAR 2.9 and earlier service haeders, mostly outdated and not supported.
 enum { EA_HEAD=0x100,UO_HEAD=0x101,MAC_HEAD=0x102,BEEA_HEAD=0x103,
        NTACL_HEAD=0x104,STREAM_HEAD=0x105 };
 
@@ -148,6 +149,14 @@ struct BaseBlock
   {
     SkipIfUnknown=false;
   }
+
+  // We use it to assign this block data to inherited blocks.
+  // Such function seems to be cleaner than '(BaseBlock&)' cast or adding
+  // 'using BaseBlock::operator=;' to every inherited header.
+  void SetBaseBlock(BaseBlock &Src)
+  {
+    *this=Src;
+  }
 };
 
 
@@ -162,12 +171,16 @@ struct MainHeader:BaseBlock
   ushort HighPosAV;
   uint PosAV;
   bool CommentInHeader;
-  bool PackComment; // For RAR 1.4 archive format only.
+  bool PackComment;     // For RAR 1.4 archive format only.
   bool Locator;
-  uint64 QOpenOffset;  // Offset of quick list record.
-  uint64 QOpenMaxSize; // Maximum size of QOpen offset in locator extra field.
-  uint64 RROffset;     // Offset of recovery record.
-  uint64 RRMaxSize;    // Maximum size of RR offset in locator extra field.
+  uint64 QOpenOffset;   // Offset of quick list record.
+  uint64 QOpenMaxSize;  // Maximum size of QOpen offset in locator extra field.
+  uint64 RROffset;      // Offset of recovery record.
+  uint64 RRMaxSize;     // Maximum size of RR offset in locator extra field.
+  size_t MetaNameMaxSize; // Maximum size of archive name in metadata extra field.
+  std::wstring OrigName;  // Original archive name.
+  RarTime OrigTime;       // Original archive time.
+
   void Reset();
 };
 
@@ -181,9 +194,9 @@ struct FileHeader:BlockHeader
     uint FileAttr;
     uint SubFlags;
   };
-  wchar FileName[NM];
+  std::wstring FileName;
 
-  Array<byte> SubData;
+  std::vector<byte> SubData;
 
   RarTime mtime;
   RarTime ctime;
@@ -223,20 +236,20 @@ struct FileHeader:BlockHeader
   bool Dir;
   bool CommentInHeader; // RAR 2.0 file comment.
   bool Version;   // name.ext;ver file name containing the version number.
-  size_t WinSize;
+  uint64 WinSize;
   bool Inherited; // New file inherits a subblock when updating a host file (for subblocks only).
 
   // 'true' if file sizes use 8 bytes instead of 4. Not used in RAR 5.0.
   bool LargeFile;
   
   // 'true' for HEAD_SERVICE block, which is a child of preceding file block.
-  // RAR 4.x uses 'solid' flag to indicate child subheader blocks in archives.
+  // RAR 4.x uses 'solid' flag to indicate children subheader blocks in archives.
   bool SubBlock;
 
   HOST_SYSTEM_TYPE HSType;
 
   FILE_SYSTEM_REDIRECT RedirType;
-  wchar RedirName[NM];
+  std::wstring RedirName;
   bool DirTarget;
 
   bool UnixOwnerSet,UnixOwnerNumeric,UnixGroupNumeric;
@@ -253,10 +266,10 @@ struct FileHeader:BlockHeader
 
   bool CmpName(const wchar *Name)
   {
-    return(wcscmp(FileName,Name)==0);
+    return FileName==Name;
   }
 
-  FileHeader& operator = (FileHeader &hd);
+//  FileHeader& operator = (FileHeader &hd);
 };
 
 
@@ -321,16 +334,6 @@ struct ProtectHeader:BlockHeader
 };
 
 
-struct UnixOwnersHeader:SubBlockHeader
-{
-  ushort OwnerNameSize;
-  ushort GroupNameSize;
-/* dummy */
-  char OwnerName[256];
-  char GroupName[256];
-};
-
-
 struct EAHeader:SubBlockHeader
 {
   uint UnpSize;
@@ -347,7 +350,7 @@ struct StreamHeader:SubBlockHeader
   byte Method;
   uint StreamCRC;
   ushort StreamNameSize;
-  char StreamName[260];
+  std::string StreamName;
 };
 
 

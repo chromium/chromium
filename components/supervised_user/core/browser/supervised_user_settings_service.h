@@ -7,13 +7,13 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
@@ -147,11 +147,11 @@ class SupervisedUserSettingsService : public KeyedService,
   void SaveItem(const std::string& key, base::Value value);
 
   // Sets the setting with the given `key` to `value`.
-  void SetLocalSetting(base::StringPiece key, base::Value value);
-  void SetLocalSetting(base::StringPiece key, base::Value::Dict dict);
+  void SetLocalSetting(std::string_view key, base::Value value);
+  void SetLocalSetting(std::string_view key, base::Value::Dict dict);
 
   // Removes the setting for `key`.
-  void RemoveLocalSetting(base::StringPiece key);
+  void RemoveLocalSetting(std::string_view key);
 
   // Public for testing.
   static syncer::SyncData CreateSyncDataForSetting(const std::string& name,
@@ -163,18 +163,17 @@ class SupervisedUserSettingsService : public KeyedService,
   // SyncableService implementation:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
+  void StopSyncing(syncer::DataType type) override;
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // PrefStore::Observer implementation:
-  void OnPrefValueChanged(const std::string& key) override;
   void OnInitializationCompleted(bool success) override;
 
   bool IsCustomPassphraseAllowed() const;

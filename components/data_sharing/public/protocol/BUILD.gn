@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("protocol") {
+  proto_in_dir = "//"
+
+  sources = [
+    "data_sharing_sdk.proto",
+    "group_data.proto",
+  ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  proto_java_library("proto_java") {
+    proto_path = "//"
+    sources = [
+      "data_sharing_sdk.proto",
+      "group_data.proto",
+    ]
+  }
+}
+
+mojom("mojo_bindings") {
+  sources = [ "group_data.mojom" ]
+  deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = ""
+}

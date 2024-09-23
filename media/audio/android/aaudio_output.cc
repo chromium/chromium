@@ -43,6 +43,7 @@ bool AAudioOutputStream::Open() {
     return false;
   }
 
+  CHECK(!audio_bus_);
   audio_bus_ = AudioBus::Create(params_);
 
   return true;

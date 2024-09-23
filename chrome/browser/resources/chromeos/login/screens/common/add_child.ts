@@ -19,23 +19,18 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './add_child.html.js';
 
-const AddChildScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-    PolymerElement) as { new (): PolymerElement
-        & OobeI18nBehaviorInterface
-        & LoginScreenBehaviorInterface
-        & MultiStepBehaviorInterface,
-    };
+const AddChildScreenElementBase =
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 /**
  * Sign in method for setting up the device for child.
@@ -43,7 +38,6 @@ const AddChildScreenElementBase = mixinBehaviors(
 enum AddChildSignInMethod {
   CREATE = 'create',
   SIGNIN = 'signin',
-
 }
 
 /**
@@ -89,12 +83,8 @@ export class AddChildScreen extends AddChildScreenElementBase {
     this.selectedSignInMethod = '';
   }
 
-
-  override get EXTERNAL_API(): string[] {
-    return [];
-  }
-
-  onBeforeShow(): void {
+  override onBeforeShow(): void {
+    super.onBeforeShow();
     this.selectedSignInMethod = '';
   }
 
@@ -114,7 +104,7 @@ export class AddChildScreen extends AddChildScreenElementBase {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override getOobeUIInitialState() {
-    return OOBE_UI_STATE.GAIA_SIGNIN;
+    return OobeUiState.GAIA_SIGNIN;
   }
 
   private cancel(): void {

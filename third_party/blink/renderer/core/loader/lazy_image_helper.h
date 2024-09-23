@@ -27,8 +27,6 @@ class LazyImageHelper final {
   static bool ShouldDeferImageLoad(LocalFrame& frame,
                                    HTMLImageElement* html_image);
 
-  static void StartMonitoringVisibilityMetrics(HTMLImageElement* html_image);
-
   static void RecordMetricsOnLoadFinished(HTMLImageElement* image_element);
 };
 

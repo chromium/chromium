@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <windows.h>
+
 #include <mmsystem.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -10,6 +16,7 @@
 #include <memory>
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -397,8 +404,10 @@ TEST_F(WinAudioTest, PCMWaveStreamPlay200HzToneLowLatency) {
 
   // Use 10 ms buffer size for WASAPI and 50 ms buffer size for Wave.
   // Take the existing native sample rate into account.
+  std::string default_device_id =
+      audio_manager_device_info_->GetDefaultOutputDeviceID();
   const AudioParameters params =
-      audio_manager_device_info_->GetDefaultOutputStreamParameters();
+      audio_manager_device_info_->GetOutputStreamParameters(default_device_id);
   int sample_rate = params.sample_rate();
   uint32_t samples_10_ms = sample_rate / 100;
   AudioOutputStream* oas = audio_manager_->MakeAudioOutputStream(
@@ -506,11 +515,14 @@ class SyncSocketSource : public AudioOutputStream::AudioSourceCallback {
     // on |socket_->Receive()|.
     if (current_packet_count_ < expected_packet_count_) {
       uint32_t control_signal = 0;
-      socket_->Send(&control_signal, sizeof(control_signal));
+      socket_->Send(base::byte_span_from_ref(control_signal));
       output_buffer()->params.delay_us = delay.InMicroseconds();
       output_buffer()->params.delay_timestamp_us =
           (delay_timestamp - base::TimeTicks()).InMicroseconds();
-      uint32_t size = socket_->Receive(data_.get(), packet_size_);
+      const size_t span_size =
+          static_cast<size_t>(packet_size_) / sizeof(decltype(*data_.get()));
+      uint32_t size = socket_->Receive(
+          base::as_writable_bytes(base::make_span(data_.get(), span_size)));
       ++current_packet_count_;
 
       DCHECK_EQ(static_cast<size_t>(size) % sizeof(*audio_bus_->channel(0)),
@@ -580,8 +592,9 @@ DWORD __stdcall SyncSocketThread(void* context) {
   for (int ix = 0; ix < ctx.total_packets; ++ix) {
     // Listen for a signal from the Audio Stream that it wants data. This is a
     // blocking call and will not proceed until we receive the signal.
-    if (ctx.socket->Receive(&control_signal, sizeof(control_signal)) == 0)
+    if (ctx.socket->Receive(base::byte_span_from_ref(control_signal)) == 0) {
       break;
+    }
     base::TimeDelta delay = base::Microseconds(ctx.buffer->params.delay_us);
     base::TimeTicks delay_timestamp =
         base::TimeTicks() +
@@ -589,7 +602,9 @@ DWORD __stdcall SyncSocketThread(void* context) {
     sine.OnMoreData(delay, delay_timestamp, {}, audio_bus.get());
 
     // Send the audio data to the Audio Stream.
-    ctx.socket->Send(data.get(), ctx.packet_size_bytes);
+    // SAFETY: `data`'s allocation has size `ctx.packet_size_bytes`.
+    ctx.socket->Send(UNSAFE_BUFFERS(base::make_span(
+        reinterpret_cast<uint8_t*>(data.get()), ctx.packet_size_bytes)));
   }
 
   return 0;

@@ -27,7 +27,6 @@ import android.view.View;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -39,10 +38,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -50,6 +47,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -67,7 +65,6 @@ import java.util.Collections;
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING)
 public class StaticLayoutUnitTest {
-    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private static final int TAB1_ID = 0;
     private static final int TAB2_ID = 789;
@@ -241,7 +238,7 @@ public class StaticLayoutUnitTest {
         doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
         mBrowserControlsStateProviderObserverCaptor
                 .getValue()
-                .onControlsOffsetChanged(offset, offset, 0, 0, true);
+                .onControlsOffsetChanged(offset, offset, 0, 0, true, false);
         assertEquals(offset, (int) mModel.get(LayoutTab.CONTENT_OFFSET));
     }
 

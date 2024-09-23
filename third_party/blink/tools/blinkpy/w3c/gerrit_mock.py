@@ -5,28 +5,44 @@
 import urllib.parse
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.w3c.gerrit import GerritCL, GerritError, QUERY_OPTIONS
+from blinkpy.w3c.gerrit import (
+    GerritAPI,
+    GerritCL,
+    GerritError,
+    OutputOption,
+)
 # Some unused arguments may be included to match the real class's API.
 # pylint: disable=unused-argument
 
 
-class MockGerritAPI(object):
-    def __init__(self, raise_error=False):
-        self.exportable_open_cls = []
+class MockGerritAPI:
+
+    def __init__(self, host=None, raise_error=False):
+        self.host = host or MockHost()
+        self.exportable_cls = []
         self.request_posted = []
-        self.cl = ''
+        self.cl = MockGerritCL(
+            {
+                'change_id': 'I01234abc',
+                'revisions': {
+                    'abc01234': {
+                        '_number': 1,
+                        'kind': 'REWORK',
+                    },
+                },
+            }, self)
         self.cls_queried = []
         self.raise_error = raise_error
-        self.host = MockHost()
         self.project_config = self.host.project_config
 
-    def query_exportable_open_cls(self):
-        return self.exportable_open_cls
+    def query_exportable_cls(self):
+        return self.exportable_cls
 
     def query_cl_comments_and_revisions(self, change_id):
-        return self.query_cl(change_id, 'o=MESSAGES&o=ALL_REVISIONS')
+        return self.query_cl(
+            change_id, OutputOption.MESSAGES | OutputOption.ALL_REVISIONS)
 
-    def query_cl(self, change_id, query_options=QUERY_OPTIONS):
+    def query_cl(self, change_id, query_options=GerritAPI.DEFAULT_OUTPUT):
         self.cls_queried.append(change_id)
         if self.raise_error:
             raise GerritError("Error from query_cl")
@@ -42,7 +58,6 @@ class MockGerritAPI(object):
     @property
     def escaped_repo(self):
         return urllib.parse.quote(self.project_config.gerrit_project, safe='')
-
 
 
 class MockGerritCL(GerritCL):

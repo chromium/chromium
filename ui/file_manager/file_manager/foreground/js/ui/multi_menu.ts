@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {Menu} from './menu.js';
-import {MenuItem, type MenuItemActivationEvent} from './menu_item.js';
+import type {MenuItem} from './menu_item.js';
+import {type MenuItemActivationEvent} from './menu_item.js';
 
 /**
  * Creates a menu that supports sub-menus.

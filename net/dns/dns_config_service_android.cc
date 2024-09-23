@@ -7,10 +7,10 @@
 #include <sys/system_properties.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
-#include <optional>
 #include "base/android/build_info.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"

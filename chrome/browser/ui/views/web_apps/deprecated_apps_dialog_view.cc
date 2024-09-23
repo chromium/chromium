@@ -22,16 +22,19 @@
 #include "extensions/browser/extension_icon_image.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_icon_set.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/table_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
@@ -169,7 +172,7 @@ DeprecatedAppsDialogView::DeprecatedAppsDialogView(
 
 void DeprecatedAppsDialogView::InitDialog() {
   SetCanResize(false);
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl));
@@ -181,19 +184,19 @@ void DeprecatedAppsDialogView::InitDialog() {
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   // Set up buttons.
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetPluralStringFUTF16(
                      IDS_DEPRECATED_APPS_OK_LABEL,
                      deprecated_apps_table_model_->RowCount()));
   SetAcceptCallback(base::BindOnce(&DeprecatedAppsDialogView::OnAccept,
                                    base::Unretained(this)));
 
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                   l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_CANCEL_LABEL));
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                 l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_CANCEL_LABEL));
   SetCancelCallback(base::BindOnce(&DeprecatedAppsDialogView::OnCancel,
                                    base::Unretained(this)));
 
-  SetDefaultButton(ui::DIALOG_BUTTON_OK);
+  SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
 
   info_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_MONITOR_RENDERER)));
@@ -204,15 +207,17 @@ void DeprecatedAppsDialogView::InitDialog() {
       l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LEARN_MORE)));
   learn_more->SetCallback(base::BindRepeating(
       [](content::WebContents* web_contents, const ui::Event& event) {
-        web_contents->OpenURL(content::OpenURLParams(
-            GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
-            content::Referrer(),
-            ui::DispositionFromEventFlags(
-                event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
-            ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false));
+        web_contents->OpenURL(
+            content::OpenURLParams(
+                GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
+                content::Referrer(),
+                ui::DispositionFromEventFlags(
+                    event.flags(), WindowOpenDisposition::NEW_FOREGROUND_TAB),
+                ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false),
+            /*navigation_handle_callback=*/{});
       },
       web_contents_));
-  learn_more->SetAccessibleName(
+  learn_more->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LEARN_MORE_AX_LABEL));
   learn_more->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 

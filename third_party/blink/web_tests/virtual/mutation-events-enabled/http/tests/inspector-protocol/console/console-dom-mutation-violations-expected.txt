@@ -1,0 +1,50 @@
+Tests that dom modification event listener produces a violation.
+{
+    method : Log.entryAdded
+    params : {
+        entry : {
+            level : verbose
+            lineNumber : 0
+            source : violation
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 14
+                        functionName : 
+                        lineNumber : 0
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+            }
+            text : Listener added for a 'DOMSubtreeModified' mutation event. This event type is deprecated, and will be removed from this browser VERY soon. Usage of this event listener will cause performance issues today, and represents a large risk of imminent site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+            timestamp : <number>
+        }
+    }
+    sessionId : <string>
+}
+{
+    method : Log.entryAdded
+    params : {
+        entry : {
+            level : warning
+            lineNumber : 0
+            source : deprecation
+            stackTrace : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 14
+                        functionName : 
+                        lineNumber : 0
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+            }
+            text : Listener added for a 'DOMSubtreeModified' mutation event. This event type is deprecated, and will be removed from this browser VERY soon. Usage of this event listener will cause performance issues today, and represents a large risk of imminent site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+            timestamp : <number>
+        }
+    }
+    sessionId : <string>
+}
+

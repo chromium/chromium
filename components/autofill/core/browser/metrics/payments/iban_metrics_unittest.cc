@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -107,6 +109,27 @@ TEST_F(IbanMetricsTest, LogStoredIbanMetrics) {
       "Autofill.DaysSinceLastUse.StoredIban.Server", 60, 2);
   histogram_tester.ExpectBucketCount(
       "Autofill.DaysSinceLastUse.StoredIban.Server", 250, 3);
+}
+
+TEST_F(IbanMetricsTest, LogIbanSaveOfferedCountry) {
+  base::HistogramTester histogram_tester;
+  autofill_metrics::LogIbanSaveOfferedCountry("FR");
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSaveOfferedIban",
+                                      Iban::IbanSupportedCountry::kFR, 1);
+}
+
+TEST_F(IbanMetricsTest, LogIbanSaveAcceptedCountry) {
+  base::HistogramTester histogram_tester;
+  autofill_metrics::LogIbanSaveAcceptedCountry("FR");
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSaveAcceptedIban",
+                                      Iban::IbanSupportedCountry::kFR, 1);
+}
+
+TEST_F(IbanMetricsTest, LogIbanSelectedCountry) {
+  base::HistogramTester histogram_tester;
+  autofill_metrics::LogIbanSelectedCountry("FR");
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSelectedIban",
+                                      Iban::IbanSupportedCountry::kFR, 1);
 }
 
 }  // namespace autofill::autofill_metrics

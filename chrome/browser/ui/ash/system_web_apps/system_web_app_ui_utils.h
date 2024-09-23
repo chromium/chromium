@@ -11,6 +11,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
@@ -60,6 +61,9 @@ struct SystemAppLaunchParams {
 // Launch the given System Web App |type|, |params| can be used to tweak the
 // launch behavior (e.g. launch to app's subpage, specifying launch source for
 // metrics). Terminal App should use crostini::LaunchTerminal*.
+// If the |params.url| has a value, |callback| will be passed to
+// LaunchAppWithUrl() and will be called with the result of the launch once it
+// is complete.
 //
 // This function will try to find an appropriate launch profile in these
 // circumstances:
@@ -81,7 +85,8 @@ void LaunchSystemWebAppAsync(
     Profile* profile,
     SystemWebAppType type,
     const SystemAppLaunchParams& params = SystemAppLaunchParams(),
-    apps::WindowInfoPtr window_info = nullptr);
+    apps::WindowInfoPtr window_info = nullptr,
+    std::optional<apps::LaunchCallback> callback = std::nullopt);
 
 // Implementation of LaunchSystemWebApp. Do not use this before discussing your
 // use case with the System Web Apps team.

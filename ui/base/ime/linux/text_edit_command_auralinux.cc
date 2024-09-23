@@ -136,10 +136,8 @@ std::string TextEditCommandAuraLinux::GetCommandString() const {
       // Scroll commands are used by Mac only
     case TextEditCommand::INVALID_COMMAND:
       NOTREACHED();
-      return std::string();
   }
   NOTREACHED();
-  return std::string();
 }
 
 }  // namespace ui

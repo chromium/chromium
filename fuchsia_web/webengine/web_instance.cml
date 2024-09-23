@@ -29,6 +29,7 @@
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
+        "fuchsia.sysmem2.Allocator",
       ],
     },
     {
@@ -39,11 +40,12 @@
       protocol: [
         // Allows CPU scheduling profiles to be applied to threads to
         // tune their performance, especially for media rendering.
-        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
+        // TODO(crbug.com/42050308): Migrate to `fuchsia.scheduler`.
         "fuchsia.media.ProfileProvider",
+        "fuchsia.scheduler.RoleManager",
 
         // Optionally used by the tracing service.
-        // TODO(crbug.com/1364196): Provide conditionally when enabled.
+        // TODO(crbug.com/42050521): Provide conditionally when enabled.
         "fuchsia.tracing.perfetto.ProducerConnector",
 
         // Required for `Frame.SetPreferredTheme(DEFAULT)`.
@@ -73,12 +75,12 @@
 
         // Required by `ContextFeatureFlags.WIDEVINE_CDM`.
         // Only needed in builds with enable_widevine=true.
-        // TODO(crbug.com/1379411): Move to a shard.
+        // TODO(crbug.com/40875562): Move to a shard.
         "fuchsia.media.drm.Widevine",
 
         // Required by CreateContextParams.playready_key_system.
         // Only needed in builds with enable_widevine && enable_cast_receiver.
-        // TODO(crbug.com/1379411): Move to a shard.
+        // TODO(crbug.com/40875562): Move to a shard.
         "fuchsia.media.drm.PlayReady",
 
         // When `ContextFeatureFlags.HEADLESS` is not set, required to use
@@ -89,7 +91,7 @@
 
         // Required by `ContextFeatureFlags.LEGACY_METRICS`.
         // Only needed in enable_cast_receiver=true builds.
-        // TODO(crbug.com/1379411): Move to a shard.
+        // TODO(crbug.com/40875562): Move to a shard.
         "fuchsia.legacymetrics.MetricsRecorder",
 
         // Required by `ContextFeatureFlags.KEYBOARD`.
@@ -103,7 +105,7 @@
         "fuchsia.kernel.VmexResource",
 
         // Required for camera access.
-        // TODO(crbug.com/1209031): Add ContextFeatureFlag and reference here.
+        // TODO(crbug.com/42050280): Add ContextFeatureFlag and reference here.
         "fuchsia.camera3.DeviceWatcher",
       ],
       availability: "optional",

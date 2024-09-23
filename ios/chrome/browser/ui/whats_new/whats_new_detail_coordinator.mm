@@ -10,10 +10,8 @@
 #import "base/strings/strcat.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_instructions_coordinator.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_screenshot_view_controller.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
@@ -36,7 +34,8 @@
 @property(nonatomic, weak) id<WhatsNewDetailViewActionHandler> actionHandler;
 // The starting time of the detail view.
 @property(nonatomic, assign) base::TimeTicks startTime;
-
+// What's New command handler.
+@property(nonatomic, weak) id<WhatsNewCommands> whatsNewHandler;
 @end
 
 @implementation WhatsNewDetailCoordinator
@@ -44,13 +43,14 @@
 @synthesize baseNavigationController = _baseNavigationController;
 @synthesize browser = _browser;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                            item:(WhatsNewItem*)item
-                                   actionHandler:
-                                       (id<WhatsNewDetailViewActionHandler>)
-                                           actionHandler {
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                                item:(WhatsNewItem*)item
+                       actionHandler:
+                           (id<WhatsNewDetailViewActionHandler>)actionHandler
+                     whatsNewHandler:(id<WhatsNewCommands>)whatsNewHandler {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -58,10 +58,12 @@
     _baseNavigationController = navigationController;
     self.item = item;
     self.actionHandler = actionHandler;
+    self.whatsNewHandler = whatsNewHandler;
     self.whatsNewScreenshotViewController =
-        [[WhatsNewScreenshotViewController alloc] initWithWhatsNewItem:item];
+        [[WhatsNewScreenshotViewController alloc]
+            initWithWhatsNewItem:item
+                 whatsNewHandler:whatsNewHandler];
     self.whatsNewScreenshotViewController.actionHandler = self;
-    self.whatsNewScreenshotViewController.delegate = self;
   }
   return self;
 }
@@ -78,6 +80,9 @@
 }
 
 - (void)stop {
+  [self.whatsNewInstructionsCoordinator stop];
+  self.whatsNewInstructionsCoordinator = nil;
+
   if ([self.baseNavigationController.viewControllers
           containsObject:self.whatsNewScreenshotViewController]) {
     [self.baseNavigationController
@@ -92,32 +97,21 @@
   [super stop];
 }
 
-#pragma mark - WhatsNewDetailViewDelegate
+#pragma mark - WhatsNewInstructionsViewDelegate
 
 - (void)dismissWhatsNewInstructionsCoordinator:
     (WhatsNewInstructionsCoordinator*)coordinator {
-  [self dismissOnlyWhatsNewInstructionsCoordinator:coordinator];
-  [self dismiss];
-}
-
-- (void)dismissOnlyWhatsNewInstructionsCoordinator:
-    (WhatsNewInstructionsCoordinator*)coordinator {
   DCHECK_EQ(self.whatsNewInstructionsCoordinator, coordinator);
   [self.whatsNewInstructionsCoordinator stop];
-}
-
-- (void)dismissWhatsNewScreenshotViewController:
-    (WhatsNewScreenshotViewController*)whatsNewScreenshotViewController {
-  DCHECK_EQ(self.whatsNewScreenshotViewController,
-            whatsNewScreenshotViewController);
-  [self dismiss];
+  self.whatsNewInstructionsCoordinator = nil;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
   [self.actionHandler didTapActionButton:self.item.type
-                           primaryAction:self.item.primaryAction];
+                           primaryAction:self.item.primaryAction
+                      baseViewController:self.whatsNewScreenshotViewController];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -127,7 +121,8 @@
           initWithBaseViewController:self.whatsNewScreenshotViewController
                              browser:self.browser
                                 item:self.item
-                       actionHandler:self.actionHandler];
+                       actionHandler:self.actionHandler
+                     whatsNewHandler:self.whatsNewHandler];
   self.whatsNewInstructionsCoordinator.delegate = self;
   [self.whatsNewInstructionsCoordinator start];
 }
@@ -136,15 +131,7 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self dismiss];
-}
-
-- (void)dismiss {
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  DCHECK(handler);
-
-  [handler dismissWhatsNew];
+  [self.whatsNewHandler dismissWhatsNew];
 }
 
 #pragma mark Private

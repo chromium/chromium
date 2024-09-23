@@ -14,6 +14,7 @@ source_set("autofill_address_profile") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays",
@@ -25,7 +26,6 @@ source_set("autofill_address_profile") {
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/ui/autofill:autofill_ui_type",
   ]
 }
 

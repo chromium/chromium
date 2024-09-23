@@ -175,7 +175,6 @@ uint64_t CPUContext::InstructionPointer() const {
       return riscv64->pc;
     default:
       NOTREACHED();
-      return ~0ull;
   }
 }
 
@@ -193,7 +192,6 @@ uint64_t CPUContext::StackPointer() const {
       return riscv64->regs[1];
     default:
       NOTREACHED();
-      return ~0ull;
   }
 }
 
@@ -203,12 +201,10 @@ uint64_t CPUContext::ShadowStackPointer() const {
     case kCPUArchitectureARM:
     case kCPUArchitectureARM64:
       NOTREACHED();
-      return 0;
     case kCPUArchitectureX86_64:
       return x86_64->xstate.cet_u.ssp;
     default:
       NOTREACHED();
-      return ~0ull;
   }
 }
 
@@ -222,7 +218,6 @@ bool CPUContext::HasShadowStack() const {
       return x86_64->xstate.cet_u.cetmsr != 0;
     default:
       NOTREACHED();
-      return false;
   }
 }
 
@@ -239,7 +234,6 @@ bool CPUContext::Is64Bit() const {
       return false;
     default:
       NOTREACHED();
-      return false;
   }
 }
 

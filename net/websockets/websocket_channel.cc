@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/websockets/websocket_channel.h"
 
 #include <limits.h>  // for INT_MAX
@@ -11,6 +16,7 @@
 #include <algorithm>
 #include <iterator>
 #include <ostream>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,9 +27,9 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -32,6 +38,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/websockets/websocket_errors.h"
 #include "net/websockets/websocket_event_interface.h"
@@ -76,7 +83,7 @@ constexpr size_t kMaximumCloseReasonLength = 125 - kWebSocketCloseCodeLength;
 // explicitly by Javascript but the renderer uses it to indicate we should send
 // a Close frame with no payload.
 bool IsStrictlyValidCloseStatusCode(int code) {
-  static const int kInvalidRanges[] = {
+  static constexpr int kInvalidRanges[] = {
       // [BAD, OK)
       0,    1000,   // 1000 is the first valid code
       1006, 1007,   // 1006 MUST NOT be set.
@@ -129,8 +136,8 @@ void GetFrameTypeForOpcode(WebSocketFrameHeader::OpCode opcode,
 }
 
 base::Value::Dict NetLogFailParam(uint16_t code,
-                                  base::StringPiece reason,
-                                  base::StringPiece message) {
+                                  std::string_view reason,
+                                  std::string_view message) {
   base::Value::Dict dict;
   dict.Set("code", code);
   dict.Set("reason", reason);
@@ -203,6 +210,11 @@ class WebSocketChannel::ConnectDelegate
     creator_->OnCreateURLRequest(request);
   }
 
+  void OnURLRequestConnected(URLRequest* request,
+                             const TransportInfo& info) override {
+    creator_->OnURLRequestConnected(request, info);
+  }
+
   void OnSuccess(
       std::unique_ptr<WebSocketStream> stream,
       std::unique_ptr<WebSocketHandshakeResponseInfo> response) override {
@@ -247,7 +259,7 @@ class WebSocketChannel::ConnectDelegate
   // danger of this pointer being stale, because deleting the WebSocketChannel
   // cancels the connect process, deleting this object and preventing its
   // callbacks from being called.
-  const raw_ptr<WebSocketChannel, DanglingUntriaged> creator_;
+  const raw_ptr<WebSocketChannel> creator_;
 };
 
 WebSocketChannel::WebSocketChannel(
@@ -274,13 +286,13 @@ void WebSocketChannel::SendAddChannelRequest(
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
     const SiteForCookies& site_for_cookies,
-    bool has_storage_access,
+    StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     NetworkTrafficAnnotationTag traffic_annotation) {
   SendAddChannelRequestWithSuppliedCallback(
       socket_url, requested_subprotocols, origin, site_for_cookies,
-      has_storage_access, isolation_info, additional_headers,
+      storage_access_api_status, isolation_info, additional_headers,
       traffic_annotation,
       base::BindOnce(&WebSocketStream::CreateAndConnectStream));
 }
@@ -405,14 +417,14 @@ void WebSocketChannel::SendAddChannelRequestForTesting(
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
     const SiteForCookies& site_for_cookies,
-    bool has_storage_access,
+    StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     NetworkTrafficAnnotationTag traffic_annotation,
     WebSocketStreamRequestCreationCallback callback) {
   SendAddChannelRequestWithSuppliedCallback(
       socket_url, requested_subprotocols, origin, site_for_cookies,
-      has_storage_access, isolation_info, additional_headers,
+      storage_access_api_status, isolation_info, additional_headers,
       traffic_annotation, std::move(callback));
 }
 
@@ -431,7 +443,7 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
     const SiteForCookies& site_for_cookies,
-    bool has_storage_access,
+    StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     NetworkTrafficAnnotationTag traffic_annotation,
@@ -448,7 +460,7 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
   auto connect_delegate = std::make_unique<ConnectDelegate>(this);
   stream_request_ = std::move(callback).Run(
       socket_url_, requested_subprotocols, origin, site_for_cookies,
-      has_storage_access, isolation_info, additional_headers,
+      storage_access_api_status, isolation_info, additional_headers,
       url_request_context_.get(), NetLogWithSource(), traffic_annotation,
       std::move(connect_delegate));
   SetState(CONNECTING);
@@ -456,6 +468,11 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
 
 void WebSocketChannel::OnCreateURLRequest(URLRequest* request) {
   event_interface_->OnCreateURLRequest(request);
+}
+
+void WebSocketChannel::OnURLRequestConnected(URLRequest* request,
+                                             const TransportInfo& info) {
+  event_interface_->OnURLRequestConnected(request, info);
 }
 
 void WebSocketChannel::OnConnectSuccess(
@@ -583,7 +600,7 @@ ChannelState WebSocketChannel::ReadFrames() {
     }
   }
 
-  // TODO(crbug.com/999235): Remove this CHECK.
+  // TODO(crbug.com/41479064): Remove this CHECK.
   CHECK(event_interface_);
   while (!event_interface_->HasPendingDataFrames()) {
     DCHECK(stream_);
@@ -602,7 +619,7 @@ ChannelState WebSocketChannel::ReadFrames() {
       return CHANNEL_DELETED;
     }
     DCHECK_NE(CLOSED, state_);
-    // TODO(crbug.com/999235): Remove this CHECK.
+    // TODO(crbug.com/41479064): Remove this CHECK.
     CHECK(event_interface_);
   }
   return CHANNEL_ALIVE;
@@ -948,10 +965,12 @@ ChannelState WebSocketChannel::SendClose(uint16_t code,
     const size_t payload_length = kWebSocketCloseCodeLength + reason.length();
     body = base::MakeRefCounted<IOBufferWithSize>(payload_length);
     size = payload_length;
-    base::WriteBigEndian(body->data(), code);
+    auto [code_span, body_span] =
+        body->span().split_at<kWebSocketCloseCodeLength>();
+    code_span.copy_from(base::U16ToBigEndian(code));
     static_assert(sizeof(code) == kWebSocketCloseCodeLength,
                   "they should both be two");
-    base::ranges::copy(reason, body->data() + kWebSocketCloseCodeLength);
+    body_span.copy_from(base::as_byte_span(reason));
   }
 
   return SendFrameInternal(true, WebSocketFrameHeader::kOpCodeClose,
@@ -980,8 +999,8 @@ bool WebSocketChannel::ParseClose(base::span<const char> payload,
   }
 
   const char* data = payload.data();
-  uint16_t unchecked_code = 0;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(data), &unchecked_code);
+  uint16_t unchecked_code =
+      base::U16FromBigEndian(base::as_byte_span(payload).first<2>());
   static_assert(sizeof(unchecked_code) == kWebSocketCloseCodeLength,
                 "they should both be two bytes");
 

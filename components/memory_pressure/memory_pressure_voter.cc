@@ -18,8 +18,9 @@ class MemoryPressureVoterImpl : public MemoryPressureVoter {
       : aggregator_(aggregator) {}
   ~MemoryPressureVoterImpl() override {
     // Remove this voter's vote.
-    if (vote_)
+    if (vote_) {
       aggregator_->OnVote(vote_, std::nullopt);
+    }
   }
 
   MemoryPressureVoterImpl(MemoryPressureVoterImpl&&) = delete;
@@ -31,8 +32,9 @@ class MemoryPressureVoterImpl : public MemoryPressureVoter {
     auto old_vote = vote_;
     vote_ = level;
     aggregator_->OnVote(old_vote, vote_);
-    if (notify_listeners)
+    if (notify_listeners) {
       aggregator_->NotifyListeners();
+    }
   }
 
  private:
@@ -82,8 +84,9 @@ void MemoryPressureVoteAggregator::OnVote(
     DCHECK_LT(0u, votes_[old_vote.value()]);
     votes_[old_vote.value()]--;
   }
-  if (new_vote)
+  if (new_vote) {
     votes_[new_vote.value()]++;
+  }
   auto old_pressure_level = current_pressure_level_;
 
   // If the pressure level is not None then an asynchronous event will have been
@@ -113,8 +116,9 @@ void MemoryPressureVoteAggregator::OnVote(
                                       "MemoryPressure::ModeratePressure", this);
   }
 
-  if (old_pressure_level != current_pressure_level_)
+  if (old_pressure_level != current_pressure_level_) {
     delegate_->OnMemoryPressureLevelChanged(current_pressure_level_);
+  }
 }
 
 void MemoryPressureVoteAggregator::NotifyListeners() {
@@ -127,10 +131,12 @@ MemoryPressureVoteAggregator::EvaluateVotes() const {
   static_assert(
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL == 2,
       "Ensure that each memory pressure level is handled by this method.");
-  if (votes_[2])
+  if (votes_[2]) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
-  if (votes_[1])
+  }
+  if (votes_[1]) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+  }
   return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
 }
 

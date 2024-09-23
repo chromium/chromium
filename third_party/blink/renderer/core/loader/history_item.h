@@ -154,6 +154,8 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   std::vector<std::optional<std::u16string>>
   GetReferencedFilePathsForSerialization() const;
 
+  ViewState& GetOrCreateViewState();
+
   String url_string_;
 
   // The referrer provided when this item was originally requested.

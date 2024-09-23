@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement() with position: absolute</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <link rel="match" href="placeElement-ref.html">
+  <style>
+    .fallback {
+      will-change: transform;
+      background-color: green;
+      /* absolute position should not move the placed element */
+      position: absolute;
+      left: 50px;
+      top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas style="position: relative; left: -20px; top: -10px">
+    <div class="fallback" id="fallback">Placed Element</div>
+  </canvas>
+</body>
+
+<script>
+  const canvas = document.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const fallbackElement = document.getElementById("fallback");
+  ctx.placeElement(fallbackElement, 20, 10);
+</script>

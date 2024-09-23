@@ -7,12 +7,12 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -111,9 +111,9 @@ const GURL& BookmarkNode::GetTitledUrlNodeUrl() const {
   return url_;
 }
 
-std::vector<base::StringPiece16> BookmarkNode::GetTitledUrlNodeAncestorTitles()
+std::vector<std::u16string_view> BookmarkNode::GetTitledUrlNodeAncestorTitles()
     const {
-  std::vector<base::StringPiece16> paths;
+  std::vector<std::u16string_view> paths;
   for (const BookmarkNode* n = this; n->parent(); n = n->parent())
     paths.push_back(n->parent()->GetTitle());
   return paths;
@@ -162,7 +162,7 @@ bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(Type type) {
 
   switch (type) {
     case BookmarkNode::URL:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case BookmarkNode::FOLDER:
       // Managed node.
       return false;
@@ -175,7 +175,7 @@ bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(Type type) {
       // Either MOBILE or OTHER_NODE is visible when empty, but never both.
       return !IsTypeVisibleWhenEmpty(BookmarkNode::OTHER_NODE);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 BookmarkPermanentNode::~BookmarkPermanentNode() = default;

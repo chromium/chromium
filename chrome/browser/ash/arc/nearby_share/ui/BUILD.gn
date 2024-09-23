@@ -1,0 +1,62 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("ui") {
+  sources = [
+    "base_dialog_delegate_view.cc",
+    "base_dialog_delegate_view.h",
+    "error_dialog_view.cc",
+    "error_dialog_view.h",
+    "low_disk_space_dialog_view.cc",
+    "low_disk_space_dialog_view.h",
+    "nearby_share_overlay_view.cc",
+    "nearby_share_overlay_view.h",
+    "progress_bar_dialog_view.cc",
+    "progress_bar_dialog_view.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/style",
+    "//base",
+    "//chrome/browser/nearby_sharing/common",
+    "//components/exo",
+    "//components/strings:components_strings_grit",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "error_dialog_view_unittest.cc",
+    "low_disk_space_dialog_view_unittest.cc",
+    "nearby_share_overlay_view_unittest.cc",
+    "progress_bar_dialog_view_unittest.cc",
+  ]
+
+  deps = [
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/arc/nearby_share/ui",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/ui",
+    "//components/strings:components_strings_grit",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

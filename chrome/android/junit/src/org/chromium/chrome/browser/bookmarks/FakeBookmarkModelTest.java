@@ -10,19 +10,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -34,8 +29,6 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class FakeBookmarkModelTest {
 
-    @Rule public Features.JUnitProcessor mFeaturesProcessorRule = new Features.JUnitProcessor();
-
     private FakeBookmarkModel mBookmarkModel;
 
     @Before
@@ -44,7 +37,6 @@ public class FakeBookmarkModelTest {
     }
 
     @Test
-    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testDefaultFolders() {
         List<BookmarkId> expected =
                 Arrays.asList(
@@ -59,8 +51,8 @@ public class FakeBookmarkModelTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testDefaultFolders_accountStorageEnabled() {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         List<BookmarkId> expected =
                 Arrays.asList(
                         mBookmarkModel.getOtherFolderId(),
@@ -109,8 +101,8 @@ public class FakeBookmarkModelTest {
     }
 
     @Test
-    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testAddAccountReadingListBokmark() {
+        mBookmarkModel.setAreAccountBookmarkFoldersActive(true);
         BookmarkId id =
                 mBookmarkModel.addToReadingList(
                         mBookmarkModel.getAccountReadingListFolder(),

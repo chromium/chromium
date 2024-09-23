@@ -10,7 +10,6 @@
 #include <unistd.h>
 
 #include "base/memory/ptr_util.h"
-#include "base/process/process_metrics_iocounters.h"
 
 namespace base {
 
@@ -24,24 +23,21 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
-double ProcessMetrics::GetPlatformIndependentCPUUsage() {
+base::expected<double, ProcessCPUUsageError>
+ProcessMetrics::GetPlatformIndependentCPUUsage() {
   struct kinfo_proc info;
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, process_};
   size_t length = sizeof(info);
 
   if (sysctl(mib, std::size(mib), &info, &length, NULL, 0) < 0)
-    return 0;
+    return base::unexpected(ProcessCPUUsageError::kSystemError);
 
-  return (info.ki_pctcpu / FSCALE) * 100.0;
+  return base::ok(double{info.ki_pctcpu} / FSCALE * 100.0);
 }
 
-TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
+base::expected<TimeDelta, ProcessCPUUsageError>
+ProcessMetrics::GetCumulativeCPUUsage() {
   NOTREACHED();
-  return TimeDelta();
-}
-
-bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
-  return false;
 }
 
 size_t GetSystemCommitCharge() {

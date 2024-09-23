@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -28,7 +29,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /** Tests loading the NTP and navigating between it and other pages. */
@@ -111,7 +111,7 @@ public class NewTabPageNavigationTest {
     public void testNavigateToTabSwitcherFromNtp() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Tab tab = cta.getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             tab != null
@@ -133,7 +133,7 @@ public class NewTabPageNavigationTest {
         mActivityTestRule.newIncognitoTabFromMenu();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Tab tab = cta.getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertTrue(
                             tab != null

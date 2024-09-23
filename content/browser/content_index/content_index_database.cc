@@ -7,9 +7,9 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "content/browser/background_fetch/storage/image_helpers.h"
@@ -21,7 +21,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// TODO(crbug.com/973844): Move image utility functions to common library.
+// TODO(crbug.com/40631965): Move image utility functions to common library.
 using content::background_fetch::DeserializeIcon;
 using content::background_fetch::SerializeIcon;
 
@@ -148,7 +148,7 @@ void ContentIndexDatabase::AddEntry(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (blocked_origins_.count(origin)) {
-    // TODO(crbug.com/973844): Does this need a more specific error?
+    // TODO(crbug.com/40631965): Does this need a more specific error?
     std::move(callback).Run(blink::mojom::ContentIndexError::STORAGE_ERROR);
     return;
   }
@@ -474,7 +474,7 @@ void ContentIndexDatabase::DidGetEntries(
 
   if (!corrupted_sw_ids.empty()) {
     // Remove soon-to-be-deleted entries.
-    base::EraseIf(entries, [&corrupted_sw_ids](const auto& entry) {
+    std::erase_if(entries, [&corrupted_sw_ids](const auto& entry) {
       return corrupted_sw_ids.count(entry.service_worker_registration_id);
     });
 
@@ -613,12 +613,13 @@ void ContentIndexDatabase::BlockOrigin(const url::Origin& origin) {
 
 void ContentIndexDatabase::UnblockOrigin(const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(blocked_origins_.count(origin));
   auto it = blocked_origins_.find(origin);
-  if (it->second == 1)
+  CHECK(it != blocked_origins_.end());
+  if (it->second == 1) {
     blocked_origins_.erase(it);
-  else
+  } else {
     it->second--;
+  }
 }
 
 void ContentIndexDatabase::Shutdown() {

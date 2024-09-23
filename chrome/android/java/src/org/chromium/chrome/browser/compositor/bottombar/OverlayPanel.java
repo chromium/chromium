@@ -534,7 +534,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     /** Progress observer progress indicator animation for a panel. */
-    public class PanelProgressObserver extends OverlayContentProgressObserver {
+    public class PanelProgressObserver extends OverlayPanelContentProgressObserver {
         @Override
         public void onProgressBarStarted() {
             setProgressBarCompletion(0);
@@ -567,13 +567,14 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     /**
      * Create a new OverlayPanelContent object. This can be overridden for tests.
+     *
      * @return A new OverlayPanelContent object.
      */
     @Override
     public OverlayPanelContent createNewOverlayPanelContent() {
         return new OverlayPanelContent(
-                new OverlayContentDelegate(),
-                new OverlayContentProgressObserver(),
+                new OverlayPanelContentDelegate(),
+                new OverlayPanelContentProgressObserver(),
                 mActivity,
                 mProfile,
                 getBarHeight(),
@@ -635,17 +636,6 @@ public class OverlayPanel extends OverlayPanelAnimation
         //
         // This is necessary to fix the bugs: crbug.com/510205 and crbug.com/510206
         mContent.updateBrowserControlsState(isFullWidthSizePanel());
-    }
-
-    /**
-     * Remove the last entry from history provided it is in a given time frame.
-     * @param historyUrl The URL to remove.
-     * @param urlTimeMs The time that the URL was visited.
-     */
-    public void removeLastHistoryEntry(String historyUrl, long urlTimeMs) {
-        if (mContent == null) return;
-        // Expose OverlayPanelContent method.
-        mContent.removeLastHistoryEntry(historyUrl, urlTimeMs);
     }
 
     /**

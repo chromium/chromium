@@ -19,7 +19,6 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -53,7 +52,7 @@ using FormAndFieldSignatures =
     std::vector<std::pair<FormSignature, std::vector<FieldSignature>>>;
 using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
-struct FormData;
+class FormData;
 struct FormDataPredictions;
 
 class RandomizedEncoder;
@@ -220,24 +219,12 @@ class FormStructure {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 
-  // Classifies each field in `fields_` into a logical section.
-  // The function consists of 2 passes:
-  //   - 1st pass: Performed only when `ignore_autocomplete` is true or none of
-  //               the fields in `fields_` has a valid autocomplete section.
-  //               Sections are identified by the heuristic that a logical
-  //               section should not include multiple fields of the same
-  //               autofill type with some exceptions, as described in the
-  //               implementation.
-  //   - 2nd pass: Separate credit card fields from all other fields.
-  // Note: `ignore_autocomplete` is set to true only when identifying sections
-  // after server response.
-  void IdentifySections(bool ignore_autocomplete);
-
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
   static std::vector<FieldGlobalId> FindFieldsEligibleForManualFilling(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
+  // See FormFieldData::fields.
   const std::vector<std::unique_ptr<AutofillField>>& fields() const {
     return fields_;
   }
@@ -289,10 +276,6 @@ class FormStructure {
     return has_author_specified_types_;
   }
 
-  bool has_author_specified_upi_vpa_hint() const {
-    return has_author_specified_upi_vpa_hint_;
-  }
-
   bool has_password_field() const { return has_password_field_; }
 
   // Returns whether the form comes from an HTML form with a <form> tag.
@@ -308,6 +291,13 @@ class FormStructure {
 
   base::TimeTicks form_parsed_timestamp() const {
     return form_parsed_timestamp_;
+  }
+
+  std::optional<base::TimeTicks> last_filling_timestamp() const {
+    return last_filling_timestamp_;
+  }
+  void set_last_filling_timestamp(base::TimeTicks last_filling_timestamp) {
+    last_filling_timestamp_ = last_filling_timestamp;
   }
 
   bool all_fields_are_passwords() const { return all_fields_are_passwords_; }
@@ -404,12 +394,13 @@ class FormStructure {
   // Classifies each field using the regular expressions. The classifications
   // are returned, but not assigned to the `fields_` yet. Use
   // `AssignBestFieldTypes()` to do so.
-  FieldCandidatesMap ParseFieldTypesWithPatterns(ParsingContext& context) const;
+  [[nodiscard]] FieldCandidatesMap ParseFieldTypesWithPatterns(
+      ParsingContext& context) const;
 
   // Assigns the best heuristic types from the `field_type_map` to the heuristic
   // types of the corresponding fields for the `pattern_source`.
   void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
-                            PatternSource pattern_source);
+                            HeuristicSource heuristic_source);
 
   // Production code only uses the default parameters.
   // Unit tests also test other parameters.
@@ -426,8 +417,6 @@ class FormStructure {
 
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params,
                                     LogManager* log_manager = nullptr) const;
-
-  void IdentifySectionsWithNewMethod();
 
   // Further processes the extracted |fields_|.
   void ProcessExtractedFields();
@@ -484,6 +473,7 @@ class FormStructure {
   size_t autofill_count_ = 0;
 
   // A vector of all the input fields in the form.
+  // See FormFieldData::fields.
   std::vector<std::unique_ptr<AutofillField>> fields_;
 
   // The number of fields that are part of the form signature and that are
@@ -493,10 +483,6 @@ class FormStructure {
   // Whether the form includes any field types explicitly specified by the site
   // author, via the |autocompletetype| attribute.
   bool has_author_specified_types_ = false;
-
-  // Whether the form includes a field that explicitly sets it autocomplete
-  // type to "upi-vpa".
-  bool has_author_specified_upi_vpa_hint_ = false;
 
   // True if the form contains at least one password field.
   bool has_password_field_ = false;
@@ -517,6 +503,9 @@ class FormStructure {
 
   // The timestamp (not wallclock time) when this form was initially parsed.
   base::TimeTicks form_parsed_timestamp_;
+
+  // The timestamp when this form or one of its fields was last filled.
+  std::optional<base::TimeTicks> last_filling_timestamp_;
 
   // If phone number rationalization has been performed for a given section.
   std::set<Section> phone_rationalized_;

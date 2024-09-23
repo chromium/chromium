@@ -19,7 +19,6 @@
 #include "ash/style/ash_color_id.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -74,12 +73,10 @@ AssistantZeroStateView::~AssistantZeroStateView() {
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
 }
 
-const char* AssistantZeroStateView::GetClassName() const {
-  return "AssistantZeroStateView";
-}
-
-gfx::Size AssistantZeroStateView::CalculatePreferredSize() const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
+gfx::Size AssistantZeroStateView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(
+      INT_MAX, GetLayoutManager()->GetPreferredHeightForWidth(this, INT_MAX));
 }
 
 void AssistantZeroStateView::ChildPreferredSizeChanged(views::View* child) {
@@ -172,7 +169,7 @@ void AssistantZeroStateView::RunLauncherSearchQuery(
 }
 
 void AssistantZeroStateView::OpenAssistantPage() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 BEGIN_METADATA(AssistantZeroStateView)

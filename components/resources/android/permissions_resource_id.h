@@ -30,6 +30,8 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_CLIPBOARD,
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_FOLDER, R.drawable.ic_folder_blue_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_GEOLOCATION,
                     R.drawable.gm_filled_location_on_24)
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_HAND_TRACKING,
+                    R.drawable.gm_filled_hand_gesture_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_IDLE_DETECTION,
                     R.drawable.gm_filled_devices_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA,
@@ -50,3 +52,6 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_WARNING, R.drawable.infobar_warning)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_VR_HEADSET,
                     R.drawable.gm_filled_cardboard_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_STORAGE_ACCESS, R.drawable.ic_storage_access_24)
+// TODO(crbug.com/40252825): use a dedicated icon.
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_IDENTITY_PROVIDER,
+                    R.drawable.gm_filled_devices_24)

@@ -264,7 +264,7 @@ loadScript.then(async function() {
     document.body.appendChild(frame);
   },
 
-  // TODO(crbug.com/1374025): This test fails with an error in the call to
+  // TODO(crbug.com/40872076): This test fails with an error in the call to
   // the FontFace constructor:
   //    SyntaxError: Failed to set 'normal' as a property value.
   /*
@@ -755,7 +755,7 @@ loadScript.then(async function() {
     });
   },
 
-  // TODO(crbug.com/1374025): This test is flaky.
+  // TODO(crbug.com/40872076): This test is flaky.
   /*
   function sendBeaconInFrameOnUnload() {
     expect([

@@ -17,6 +17,7 @@ class Browser;
 class EmbeddedPermissionPromptPreviouslyGrantedView
     : public EmbeddedPermissionPromptBaseView {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kContinueAllowingId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kStopAllowingId);
   EmbeddedPermissionPromptPreviouslyGrantedView(
       Browser* browser,

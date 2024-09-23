@@ -11,10 +11,13 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
@@ -26,10 +29,10 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
-#include "net/socket/client_socket_handle.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_constants.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_static_table.h"
+#include "net/third_party/quiche/src/quiche/http2/hpack/hpack_constants.h"
+#include "net/third_party/quiche/src/quiche/http2/hpack/hpack_static_table.h"
 
 namespace net {
 
@@ -147,7 +150,7 @@ SpdySessionPool::~SpdySessionPool() {
 
 int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
     const SpdySessionKey& key,
-    std::unique_ptr<ClientSocketHandle> client_socket_handle,
+    std::unique_ptr<StreamSocketHandle> stream_socket_handle,
     const NetLogWithSource& net_log,
     base::WeakPtr<SpdySession>* session) {
   TRACE_EVENT0(NetTracingCategory(),
@@ -156,30 +159,23 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
   std::unique_ptr<SpdySession> new_session =
       CreateSession(key, net_log.net_log());
   std::set<std::string> dns_aliases =
-      client_socket_handle->socket()->GetDnsAliases();
+      stream_socket_handle->socket()->GetDnsAliases();
 
-  new_session->InitializeWithSocketHandle(std::move(client_socket_handle),
+  new_session->InitializeWithSocketHandle(std::move(stream_socket_handle),
                                           this);
-  *session = InsertSession(key, std::move(new_session), net_log,
-                           std::move(dns_aliases));
 
-  if (!(*session)->HasAcceptableTransportSecurity()) {
-    (*session)->CloseSessionOnError(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY,
-                                    "");
-    return ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY;
+  base::expected<base::WeakPtr<SpdySession>, int> insert_result = InsertSession(
+      key, std::move(new_session), net_log, std::move(dns_aliases),
+      /*perform_post_insertion_checks=*/true);
+  if (insert_result.has_value()) {
+    *session = std::move(insert_result.value());
+    return OK;
   }
-
-  int rv = (*session)->ParseAlps();
-  if (rv != OK) {
-    DCHECK_NE(ERR_IO_PENDING, rv);
-    // ParseAlps() already closed the connection on error.
-    return rv;
-  }
-
-  return OK;
+  return insert_result.error();
 }
 
-base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(
+base::expected<base::WeakPtr<SpdySession>, int>
+SpdySessionPool::CreateAvailableSessionFromSocket(
     const SpdySessionKey& key,
     std::unique_ptr<StreamSocket> socket_stream,
     const LoadTimingInfo::ConnectTiming& connect_timing,
@@ -194,8 +190,10 @@ base::WeakPtr<SpdySession> SpdySessionPool::CreateAvailableSessionFromSocket(
   new_session->InitializeWithSocket(std::move(socket_stream), connect_timing,
                                     this);
 
+  const bool perform_post_insertion_checks = base::FeatureList::IsEnabled(
+      features::kSpdySessionForProxyAdditionalChecks);
   return InsertSession(key, std::move(new_session), net_log,
-                       std::move(dns_aliases));
+                       std::move(dns_aliases), perform_post_insertion_checks);
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
@@ -228,6 +226,23 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
   }
 
   return base::WeakPtr<SpdySession>();
+}
+
+base::WeakPtr<SpdySession>
+SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
+    const SpdySessionKey& key,
+    const ServiceEndpoint& service_endpoint,
+    const std::set<std::string>& dns_aliases) {
+  CHECK(!HasAvailableSession(key, /*is_websocket=*/false));
+  CHECK(key.socket_tag() == SocketTag());
+
+  base::WeakPtr<SpdySession> session =
+      FindMatchingIpSession(key, service_endpoint.ipv6_endpoints, dns_aliases);
+  if (session) {
+    return session;
+  }
+  return FindMatchingIpSession(key, service_endpoint.ipv4_endpoints,
+                               dns_aliases);
 }
 
 bool SpdySessionPool::HasAvailableSession(const SpdySessionKey& key,
@@ -311,7 +326,8 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
 
         auto available_session_it = LookupAvailableSessionByKey(alias_key);
         // It shouldn't be in the aliases table if it doesn't exist!
-        DCHECK(available_session_it != available_sessions_.end());
+        CHECK(available_session_it != available_sessions_.end(),
+              base::NotFatalUntil::M130);
 
         SpdySessionKey::CompareForAliasingResult compare_result =
             alias_key.CompareForAliasing(key);
@@ -566,7 +582,7 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
       session->MakeUnavailable();
       // Note this call preserves active streams but fails any streams that are
       // waiting on a stream ID.
-      // TODO(https://crbug.com/1213609): This is not ideal, but SpdySession
+      // TODO(crbug.com/40768859): This is not ideal, but SpdySession
       // does not have a state that supports this.
       session->StartGoingAway(kLastStreamId, ERR_NETWORK_CHANGED);
       session->MaybeFinishGoingAway();
@@ -588,7 +604,7 @@ void SpdySessionPool::RemoveRequestForSpdySession(SpdySessionRequest* request) {
   DCHECK_EQ(this, request->spdy_session_pool());
 
   auto iter = spdy_session_request_map_.find(request->key());
-  DCHECK(iter != spdy_session_request_map_.end());
+  CHECK(iter != spdy_session_request_map_.end(), base::NotFatalUntil::M130);
 
   // Resume all pending requests if it is the blocking request, which is either
   // being canceled, or has completed.
@@ -716,11 +732,12 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
       network_quality_estimator_, net_log);
 }
 
-base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(
+base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
     const SpdySessionKey& key,
     std::unique_ptr<SpdySession> new_session,
     const NetLogWithSource& source_net_log,
-    std::set<std::string> dns_aliases) {
+    std::set<std::string> dns_aliases,
+    bool perform_post_insertion_checks) {
   base::WeakPtr<SpdySession> available_session = new_session->GetWeakPtr();
   sessions_.insert(new_session.release());
   MapKeyToAvailableSession(key, available_session, std::move(dns_aliases));
@@ -742,6 +759,23 @@ base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(
     IPEndPoint address;
     if (available_session->GetPeerAddress(&address) == OK)
       aliases_.insert(AliasMap::value_type(address, key));
+  }
+
+  if (!perform_post_insertion_checks) {
+    return available_session;
+  }
+
+  if (!available_session->HasAcceptableTransportSecurity()) {
+    available_session->CloseSessionOnError(
+        ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY, "");
+    return base::unexpected(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY);
+  }
+
+  int rv = available_session->ParseAlps();
+  if (rv != OK) {
+    DCHECK_NE(ERR_IO_PENDING, rv);
+    // ParseAlps() already closed the connection on error.
+    return base::unexpected(rv);
   }
 
   return available_session;
@@ -826,6 +860,47 @@ void SpdySessionPool::RemoveRequestInternal(
     spdy_session_request_map_.erase(request_map_iterator);
   }
   request->OnRemovedFromPool();
+}
+
+base::WeakPtr<SpdySession> SpdySessionPool::FindMatchingIpSession(
+    const SpdySessionKey& key,
+    const std::vector<IPEndPoint> ip_endpoints,
+    const std::set<std::string>& dns_aliases) {
+  for (const auto& endpoint : ip_endpoints) {
+    auto range = aliases_.equal_range(endpoint);
+    for (auto alias_it = range.first; alias_it != range.second; ++alias_it) {
+      // Found a potential alias.
+      const SpdySessionKey& alias_key = alias_it->second;
+      CHECK(alias_key.socket_tag() == SocketTag());
+
+      auto available_session_it = LookupAvailableSessionByKey(alias_key);
+      CHECK(available_session_it != available_sessions_.end());
+
+      SpdySessionKey::CompareForAliasingResult compare_result =
+          alias_key.CompareForAliasing(key);
+      // Keys must be aliasable.
+      if (!compare_result.is_potentially_aliasable) {
+        continue;
+      }
+
+      base::WeakPtr<SpdySession> session = available_session_it->second;
+      if (!session->VerifyDomainAuthentication(key.host_port_pair().host())) {
+        continue;
+      }
+
+      // The found available session can be used for the IPEndpoint that was
+      // resolved as an IP address to `key`.
+
+      // Add the session to the available session map so that we can find it as
+      // available for `key` next time.
+      MapKeyToAvailableSession(key, session, dns_aliases);
+      session->AddPooledAlias(key);
+
+      return session;
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace net

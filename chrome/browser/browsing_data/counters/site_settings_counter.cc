@@ -12,6 +12,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -59,11 +60,11 @@ void SiteSettingsCounter::Count() {
       [&](ContentSettingsType content_type,
           const ContentSettingsForOneType& content_settings_list) {
         for (const auto& content_setting : content_settings_list) {
-          // TODO(crbug.com/762560): Check the conceptual SettingSource instead
-          // of ContentSettingPatternSource.source
-          if (content_setting.source == "preference" ||
-              content_setting.source == "notification_android" ||
-              content_setting.source == "ephemeral") {
+          if (content_settings::GetSettingSourceFromProviderType(
+                  content_setting.source) ==
+                  content_settings::SettingSource::kUser &&
+              content_setting.source !=
+                  content_settings::ProviderType::kDefaultProvider) {
             base::Time last_modified = content_setting.metadata.last_modified();
             if (last_modified >= period_start && last_modified < period_end) {
               if (content_setting.primary_pattern.GetHost().empty())

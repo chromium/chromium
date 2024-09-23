@@ -10,6 +10,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -53,19 +53,19 @@ class HistogramTester {
   // that no other bucket of the histogram gained any extra samples.
   // If a bucket had samples before the HistogramTester was created, these
   // samples are completely ignored.
-  void ExpectUniqueSample(StringPiece name,
+  void ExpectUniqueSample(std::string_view name,
                           HistogramBase::Sample sample,
                           HistogramBase::Count expected_bucket_count,
                           const Location& location = FROM_HERE) const;
   template <typename T>
-  void ExpectUniqueSample(StringPiece name,
+  void ExpectUniqueSample(std::string_view name,
                           T sample,
                           HistogramBase::Count expected_bucket_count,
                           const Location& location = FROM_HERE) const {
     ExpectUniqueSample(name, static_cast<HistogramBase::Sample>(sample),
                        expected_bucket_count, location);
   }
-  void ExpectUniqueTimeSample(StringPiece name,
+  void ExpectUniqueTimeSample(std::string_view name,
                               TimeDelta sample,
                               HistogramBase::Count expected_bucket_count,
                               const Location& location = FROM_HERE) const;
@@ -73,32 +73,32 @@ class HistogramTester {
   // EXPECTs that the number of samples in bucket |sample| of histogram |name|
   // grew by |expected_count| since the HistogramTester was created. Samples in
   // other buckets are ignored.
-  void ExpectBucketCount(StringPiece name,
+  void ExpectBucketCount(std::string_view name,
                          HistogramBase::Sample sample,
                          HistogramBase::Count expected_count,
                          const Location& location = FROM_HERE) const;
   template <typename T>
-  void ExpectBucketCount(StringPiece name,
+  void ExpectBucketCount(std::string_view name,
                          T sample,
                          HistogramBase::Count expected_count,
                          const Location& location = FROM_HERE) const {
     ExpectBucketCount(name, static_cast<HistogramBase::Sample>(sample),
                       expected_count, location);
   }
-  void ExpectTimeBucketCount(StringPiece name,
+  void ExpectTimeBucketCount(std::string_view name,
                              TimeDelta sample,
                              HistogramBase::Count expected_count,
                              const Location& location = FROM_HERE) const;
 
   // EXPECTs that the total number of samples in histogram |name|
   // grew by |expected_count| since the HistogramTester was created.
-  void ExpectTotalCount(StringPiece name,
+  void ExpectTotalCount(std::string_view name,
                         HistogramBase::Count expected_count,
                         const Location& location = FROM_HERE) const;
 
   // Returns the sum of all samples recorded since the HistogramTester was
   // created.
-  int64_t GetTotalSum(StringPiece name) const;
+  int64_t GetTotalSum(std::string_view name) const;
 
   // Returns a list of all of the buckets recorded since creation of this
   // object, as vector<Bucket>, where the Bucket represents the min boundary of
@@ -131,13 +131,13 @@ class HistogramTester {
   // helpful failure message, use EXPECT_EQ:
   //   EXPECT_EQ(expected_buckets,
   //             histogram_tester.GetAllSamples("HistogramName"));
-  std::vector<Bucket> GetAllSamples(StringPiece name) const;
+  std::vector<Bucket> GetAllSamples(std::string_view name) const;
 
   // Returns the value of the |sample| bucket for ths histogram |name|.
-  HistogramBase::Count GetBucketCount(StringPiece name,
+  HistogramBase::Count GetBucketCount(std::string_view name,
                                       HistogramBase::Sample sample) const;
   template <typename T>
-  HistogramBase::Count GetBucketCount(StringPiece name, T sample) const {
+  HistogramBase::Count GetBucketCount(std::string_view name, T sample) const {
     return GetBucketCount(name, static_cast<HistogramBase::Sample>(sample));
   }
 
@@ -159,12 +159,12 @@ class HistogramTester {
   //   expected_counts["MyMetric.B"] = 1;
   //   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("MyMetric."),
   //               testing::ContainerEq(expected_counts));
-  CountsMap GetTotalCountsForPrefix(StringPiece prefix) const;
+  CountsMap GetTotalCountsForPrefix(std::string_view prefix) const;
 
   // Returns the HistogramSamples recorded since the creation of the
   // HistogramTester.
   std::unique_ptr<HistogramSamples> GetHistogramSamplesSinceCreation(
-      StringPiece histogram_name) const;
+      std::string_view histogram_name) const;
 
   // Dumps all histograms that have had new samples added to them into a string,
   // for debugging purposes. Note: this will dump the entire contents of any
@@ -206,8 +206,8 @@ struct Bucket {
   //
   // The constructor forwards to the above non-templated constructor. Therefore,
   // `EnumType` must be implicitly convertible to `HistogramBase::Sample`.
-  template <typename MetricEnum,
-            typename = std::enable_if_t<std::is_enum_v<MetricEnum>>>
+  template <typename MetricEnum>
+    requires(std::is_enum_v<MetricEnum>)
   Bucket(MetricEnum min, HistogramBase::Count count)
       : Bucket(static_cast<std::underlying_type_t<MetricEnum>>(min), count) {}
 
@@ -240,7 +240,7 @@ void PrintTo(const Bucket& value, std::ostream* os);
 template <typename BucketArray>
 auto BucketsAreArray(BucketArray buckets) {
   auto non_empty_buckets = buckets;
-  EraseIf(non_empty_buckets, [](Bucket b) { return b.count == 0; });
+  std::erase_if(non_empty_buckets, [](Bucket b) { return b.count == 0; });
   return ::testing::UnorderedElementsAreArray(non_empty_buckets);
 }
 

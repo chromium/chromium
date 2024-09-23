@@ -10,14 +10,14 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import type {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import type {FindShortcutMixinInterface} from '//resources/cr_elements/find_shortcut_mixin.js';
+import type {FindShortcutListener} from '//resources/cr_elements/find_shortcut_manager.js';
 import {FindShortcutMixin} from '//resources/cr_elements/find_shortcut_mixin.js';
 import type {I18nMixinInterface} from '//resources/cr_elements/i18n_mixin.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -56,7 +56,7 @@ const SettingsSubpageElementBase =
     mixinBehaviors(
         [IronResizableBehavior],
         RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & FindShortcutMixinInterface & I18nMixinInterface &
+      new (): PolymerElement & FindShortcutListener & I18nMixinInterface &
           RouteObserverMixinInterface,
     };
 

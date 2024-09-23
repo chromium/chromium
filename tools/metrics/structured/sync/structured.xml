@@ -409,8 +409,8 @@
     </summary>
     <metric name="App" type="hmac-string">
       <summary>
-        App ID of the most-recently-opened app when this launch occurred. This can be
-        an app ID of a Chrome app, Arc++ app, or PWA.
+        App ID of the most-recently-opened app when this launch occurred. This can
+        be an app ID of a Chrome app, Arc++ app, or PWA.
       </summary>
     </metric>
     <metric name="Domain" type="hmac-string">
@@ -716,6 +716,253 @@
   </event>
 </project>
 
+<project name="PhoneHub">
+  <owner>pushi@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Metrics for ChromeOS Phone Hub connection workflow.
+  </summary>
+
+  <event name="SessionDetails">
+    <summary>
+      Records phone and chromebook info for the current session.
+    </summary>
+    <metric name="SessionId" type="raw-string">
+      <summary>
+        The unique id for each Phone Hub session. Will be reset after disconnection.
+      </summary>
+    </metric>
+    <metric name="Timestamp" type="int">
+      <summary>
+        The timestamp when the event is logged.
+      </summary>
+    </metric>
+    <metric name="ConnectionMedium" type="int">
+      <summary>
+        The medium the Phone Hub connection is using.
+      </summary>
+    </metric>
+    <metric name="ChromebookBluetoothStack" type="int">
+      <summary>
+        Which bluetooth stach the chromebook is using, BlueZ or Floss.
+      </summary>
+    </metric>
+    <metric name="DevicesNetworkState" type="int">
+      <summary>
+        The states of both devices network (same network, different network or phone
+        is on cellular).
+      </summary>
+    </metric>
+    <metric name="ChromebookLocale" type="raw-string">
+      <summary>
+        The locale of the chromebook.
+      </summary>
+    </metric>
+    <metric name="ChromebookPseudonymousId" type="raw-string">
+      <summary>
+        The unique identifier of the user of this profile. Will rotate every 90 days
+        at maximum.
+      </summary>
+    </metric>
+    <metric name="PhoneManufacturer" type="raw-string">
+      <summary>
+        The manufacturer name of the connected phone.
+      </summary>
+    </metric>
+    <metric name="PhoneModel" type="raw-string">
+      <summary>
+        The model name of the connected phone.
+      </summary>
+    </metric>
+    <metric name="PhoneAndroidVersion" type="int">
+      <summary>
+        The Android version number of the connected phone.
+      </summary>
+    </metric>
+    <metric name="PhoneAmbientApkVersion" type="int">
+      <summary>
+        The version of Ambient apk installed on the connected phone.
+      </summary>
+    </metric>
+    <metric name="PhoneGmsCoreVersion" type="int">
+      <summary>
+        The version of GMS core apk installed on the connected phone.
+      </summary>
+    </metric>
+    <metric name="PhoneProfile" type="int">
+      <summary>
+        Which profile the phone is using, personal or managed.
+      </summary>
+    </metric>
+    <metric name="PhoneNetworkStatus" type="int">
+      <summary>
+        What network the connected phone is using.
+      </summary>
+    </metric>
+    <metric name="PhoneLocale" type="raw-string">
+      <summary>
+        The locale of the connected phone.
+      </summary>
+    </metric>
+    <metric name="PhonePseudonymousId" type="raw-string">
+      <summary>
+        The unique identifier ofthe connected phone. Will rotate at the same time
+        with chromebook_pseudonymous_id.
+      </summary>
+    </metric>
+    <metric name="PhoneInfoLastUpdatedTimestamp" type="int">
+      <summary>
+        The timestamp that the last time the cached phone information is updated.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="DiscoveryStarted">
+    <summary>
+      Records when there is an attempt to dicover connected phone.
+    </summary>
+    <metric name="SessionId" type="raw-string">
+      <summary>
+        The unique id for each Phone Hub session. Will be reset after disconnection.
+      </summary>
+    </metric>
+    <metric name="Timestamp" type="int">
+      <summary>
+        The timestamp when the event is logged.
+      </summary>
+    </metric>
+    <metric name="DiscoveryEntrypoint" type="int">
+      <summary>
+        The entrypoint of this attempt to discovery phone.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="DiscoveryFinished">
+    <summary>
+      Records when a discoery attempt finished.
+    </summary>
+    <metric name="SessionId" type="raw-string">
+      <summary>
+        The unique id for each Phone Hub session. Will be reset after disconnection.
+      </summary>
+    </metric>
+    <metric name="Timestamp" type="int">
+      <summary>
+        The timestamp when the event is logged.
+      </summary>
+    </metric>
+    <metric name="DiscoeryResult" type="int">
+      <summary>
+        The result of this discovery attempt.
+      </summary>
+    </metric>
+    <metric name="DiscoveryResultErrorCode" type="int">
+      <summary>
+        The error code if the dicovery attempt failed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="NearbyConnection">
+    <summary>
+      Records the Nearby Connection events.
+    </summary>
+    <metric name="SessionId" type="raw-string">
+      <summary>
+        The unique id for each Phone Hub session. Will be reset after disconnection.
+      </summary>
+    </metric>
+    <metric name="Timestamp" type="int">
+      <summary>
+        The timestamp when the event is logged.
+      </summary>
+    </metric>
+    <metric name="NearbyConnectionStep" type="int">
+      <summary>
+        Each step happens during Nearby Connection.
+      </summary>
+    </metric>
+    <metric name="NearbyConnectionStepResult" type="int">
+      <summary>
+        The result of each Nearby Connection step.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="SecureChannelAuthentication">
+    <summary>
+      Records the Secure Channel authentication events.
+    </summary>
+    <metric name="SessionId" type="raw-string">
+      <summary>
+        The unique id for each Phone Hub session. Will be reset after disconnection.
+      </summary>
+    </metric>
+    <metric name="Timestamp" type="int">
+      <summary>
+        The timestamp when the event is logged.
+      </summary>
+    </metric>
+    <metric name="SecureChannelAuthenticationState" type="int">
+      <summary>
+        Each state during Secure Channel authentication process.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="PhoneHubMessage">
+    <summary>
+      Records the Phone Hub sending/receiving message activities.
+    </summary>
+    <metric name="SessionId" type="raw-string">
+      <summary>
+        The unique id for each Phone Hub session. Will be reset after disconnection.
+      </summary>
+    </metric>
+    <metric name="Timestamp" type="int">
+      <summary>
+        The timestamp when the event is logged.
+      </summary>
+    </metric>
+    <metric name="PhoneHubMessageType" type="int">
+      <summary>
+        The type of this message.
+      </summary>
+    </metric>
+    <metric name="PhoneHubMessageDirection" type="int">
+      <summary>
+        Which direction the message is going (phone to chromebook, or chromebook to
+        phone).
+      </summary>
+    </metric>
+  </event>
+
+  <event name="PhoneHubUiUpdate">
+    <summary>
+      Records the Phone Hub sending/receiving message activities.
+    </summary>
+    <metric name="SessionId" type="raw-string">
+      <summary>
+        The unique id for each Phone Hub session. Will be reset after disconnection.
+      </summary>
+    </metric>
+    <metric name="Timestamp" type="int">
+      <summary>
+        The timestamp when the event is logged.
+      </summary>
+    </metric>
+    <metric name="PhoneHubUiState" type="int">
+      <summary>
+        The current Phone Hub UI state.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="StructuredMetrics">
   <owner>jongahn@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -742,7 +989,7 @@
   </event>
 </project>
 
-<project name="CrOSEvents" cros_events="true">
+<project name="CrOSEvents" cros_events="true" targets="webui,chromium">
   <owner>jongahn@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
@@ -750,7 +997,341 @@
   <summary>
     Project used to record a sequence of events that are related to each other.
   </summary>
+  <enum name="AppInstallSurface">
+    <variant value="0">APP_PRELOAD_SERVICE_OEM</variant>
+    <variant value="1">APP_PRELOAD_SERVICE_DEFAULT</variant>
+    <variant value="2">OOBE_APP_RECOMMENDATIONS</variant>
+    <variant value="3">APP_INSTALL_URI_UNKNOWN</variant>
+    <variant value="4">APP_INSTALL_URI_SHOWOFF</variant>
+    <variant value="5">APP_INSTALL_URI_MALL</variant>
+    <variant value="6">APP_INSTALL_URI_GETIT</variant>
+    <variant value="7">APP_INSTALL_URI_LAUNCHER</variant>
+    <variant value="8">APP_INSTALL_URI_PERIPHERALS</variant>
+    <variant value="9">APP_INSTALL_URI_MALL_V2</variant>
+  </enum>
 
+  <enum name="CameraAppLaunchType">
+    <variant value="0">DEFAULT</variant>
+    <variant value="1">ASSISTANT</variant>
+  </enum>
+
+  <enum name="CameraAppMode">
+    <variant value="0">PHOTO</variant>
+    <variant value="1">VIDEO</variant>
+    <variant value="2">SCAN</variant>
+    <variant value="3">PORTRAIT</variant>
+  </enum>
+
+  <enum name="CameraAppFacing">
+    <variant value="0">ENVIRONMENT</variant>
+    <variant value="1">USER</variant>
+    <variant value="2">EXTERNAL</variant>
+    <variant value="3">UNKNOWN</variant>
+  </enum>
+
+  <enum name="CameraAppGridType">
+    <variant value="0">NONE</variant>
+    <variant value="1">THREE_BY_THREE</variant>
+    <variant value="2">FOUR_BY_FOUR</variant>
+    <variant value="3">GOLDEN</variant>
+  </enum>
+
+  <enum name="CameraAppTimerType">
+    <variant value="0">NONE</variant>
+    <variant value="1">THREE_SECONDS</variant>
+    <variant value="2">TEN_SECONDS</variant>
+  </enum>
+
+  <enum name="CameraAppShutterType">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">ASSISTANT</variant>
+    <variant value="2">KEYBOARD</variant>
+    <variant value="3">MOUSE</variant>
+    <variant value="4">TOUCH</variant>
+    <variant value="5">VOLUME_KEY</variant>
+  </enum>
+
+  <enum name="CameraAppPressure">
+    <variant value="0">NOMINAL</variant>
+    <variant value="1">FAIR</variant>
+    <variant value="2">SERIOUS</variant>
+    <variant value="3">CRITICAL</variant>
+  </enum>
+
+  <enum name="CameraAppAndroidIntentResultType">
+    <variant value="0">NON_INTENT</variant>
+    <variant value="1">CONFIRMED</variant>
+    <variant value="2">CANCELED</variant>
+  </enum>
+
+  <enum name="CameraAppResolutionLevel">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">FOUR_K</variant>
+    <variant value="2">QUAD_HD</variant>
+    <variant value="3">FULL_HD</variant>
+    <variant value="4">HD</variant>
+    <variant value="5">THREE_HUNDRED_THIRTY_P</variant>
+    <variant value="6">FULL</variant>
+    <variant value="7">MEDIUM</variant>
+  </enum>
+
+  <enum name="CameraAppAspectRatioSet">
+    <variant value="0">OTHERS</variant>
+    <variant value="1">FOUR_TO_THREE</variant>
+    <variant value="2">SIXTEEN_TO_NINE</variant>
+    <variant value="3">SQUARE</variant>
+  </enum>
+
+  <enum name="CameraAppRecordType">
+    <variant value="0">NOT_RECORDING</variant>
+    <variant value="1">NORMAL</variant>
+    <variant value="2">GIF</variant>
+    <variant value="3">TIMELAPSE</variant>
+  </enum>
+
+  <enum name="CameraAppGifResultType">
+    <variant value="0">NOT_GIF</variant>
+    <variant value="1">RETAKE</variant>
+    <variant value="2">SHARE</variant>
+    <variant value="3">SAVE</variant>
+  </enum>
+
+  <enum name="CameraAppDocScanActionType">
+    <variant value="0">ADD_PAGE</variant>
+    <variant value="1">DELETE_PAGE</variant>
+    <variant value="2">FIX</variant>
+  </enum>
+
+  <enum name="CameraAppDocScanResultType">
+    <variant value="0">CANCEL</variant>
+    <variant value="1">SAVE_AS_PDF</variant>
+    <variant value="2">SAVE_AS_PHOTO</variant>
+    <variant value="3">SHARE</variant>
+  </enum>
+
+  <enum name="CameraAppLowStorageActionType">
+    <variant value="0">MANAGE_STORAGE_AUTO_STOP</variant>
+    <variant value="1">MANAGE_STORAGE_CANNOT_START</variant>
+    <variant value="2">SHOW_AUTO_STOP_DIALOG</variant>
+    <variant value="3">SHOW_CANNOT_START_DIALOG</variant>
+    <variant value="4">SHOW_WARNING_MESSAGE</variant>
+  </enum>
+
+  <enum name="CameraAppBarcodeContentType">
+    <variant value="0">TEXT</variant>
+    <variant value="1">URL</variant>
+    <variant value="2">WIFI</variant>
+  </enum>
+
+  <enum name="CameraAppWifiSecurityType">
+    <variant value="0">NONE</variant>
+    <variant value="1">EAP</variant>
+    <variant value="2">WEP</variant>
+    <variant value="3">WPA</variant>
+  </enum>
+
+  <enum name="CameraAppPerfEventType">
+    <variant value="0">CAMERA_SWITCHING</variant>
+    <variant value="1">GIF_CAPTURE_POST_PROCESSING</variant>
+    <variant value="2">LAUNCHING_FROM_LAUNCH_APP_COLD</variant>
+    <variant value="3">LAUNCHING_FROM_LAUNCH_APP_WARM</variant>
+    <variant value="4">LAUNCHING_FROM_WINDOW_CREATION</variant>
+    <variant value="5">MODE_SWITCHING</variant>
+    <variant value="6">PHOTO_CAPTURE_POST_PROCESSING_SAVING</variant>
+    <variant value="7">PHOTO_CAPTURE_SHUTTER</variant>
+    <variant value="8">PHOTO_TAKING</variant>
+    <variant value="9">PORTRAIT_MODE_CAPTURE_POST_PROCESSING_SAVING</variant>
+    <variant value="10">TIMELAPSE_CAPTURE_POST_PROCESSING_SAVING</variant>
+    <variant value="11">VIDEO_CAPTURE_POST_PROCESSING_SAVING</variant>
+    <variant value="12">SNAPSHOT_TAKING</variant>
+    <variant value="13">DOCUMENT_CAPTURE_POST_PROCESSING</variant>
+    <variant value="14">DOCUMENT_PDF_SAVING</variant>
+    <variant value="15">OCR_SCANNING</variant>
+    <variant value="16">GIF_CAPTURE_SAVING</variant>
+  </enum>
+
+  <enum name="CameraAppOcrEventType">
+    <variant value="0">COPY_TEXT</variant>
+    <variant value="1">TEXT_DETECTED</variant>
+  </enum>
+
+  <enum name="CampaignButtonId">
+    <variant value="0">PRIMARY</variant>
+    <variant value="1">SECONDARY</variant>
+    <variant value="2">OTHERS</variant>
+    <variant value="3">CLOSE</variant>
+  </enum>
+
+  <enum name="QuickStartAbortFlowReason">
+    <variant value="0">USER_CLICKED_BACK</variant>
+    <variant value="1">USER_CLICKED_CANCEL</variant>
+    <variant value="2">SIGNIN_SCHOOL</variant>
+    <variant value="3">ENTERPRISE_ENROLLMENT</variant>
+    <variant value="4">QS_ERROR</variant>
+    <variant value="5">ADD_CHILD</variant>
+  </enum>
+
+  <enum name="QuickStartEntryPoint">
+    <variant value="0">WELCOME_SCREEN</variant>
+    <variant value="1">NETWORK_SCREEN</variant>
+    <variant value="2">GAIA_INFO_SCREEN</variant>
+    <variant value="3">GAIA_SCREEN</variant>
+  </enum>
+
+  <enum name="QuickStartScreenName">
+    <variant value="0">OTHER</variant>
+    <variant value="1">NONE</variant>
+    <variant value="2">WELCOME_SCREEN</variant>
+    <variant value="3">NETWORK_SCREEN</variant>
+    <variant value="4">GAIA_SCREEN</variant>
+    <variant value="5">QS_SETUP_WITH_ANDROID_PHONE</variant>
+    <variant value="6">QS_CONNECTING_TO_WIFI</variant>
+    <variant value="7">CHECKING_FOR_UPDATE_AND_DETERMINING_DEVICE_CONFIG</variant>
+    <variant value="8">CHOOSE_CHROMEBOOK_SETUP</variant>
+    <variant value="9">CONSUMER_UPDATE</variant>
+    <variant value="10">QS_RESUMING_CONNECTION_AFTER_UPDATE</variant>
+    <variant value="11">QS_GETTING_GOOGLE_ACCOUNT_INFO</variant>
+    <variant value="12">QS_COMPLETE</variant>
+    <variant value="13">SETUP_DEVICE_PIN</variant>
+    <variant value="14">ADD_CHILD</variant>
+    <variant value="15">REVIEW_PRIVACY_AND_TERMS</variant>
+    <variant value="16">UNIFIED_SETUP</variant>
+    <variant value="17">GAIA_INFO_SCREEN</variant>
+    <variant value="18">QS_WIFI_CREDENTIALS_RECEIVED</variant>
+    <variant value="19">QS_SELECT_GOOGLE_ACCOUNT</variant>
+    <variant value="20">QS_CREATING_ACCOUNT</variant>
+    <variant value="21">QS_FALLBACK_URL</variant>
+  </enum>
+
+  <enum name="PickerInputFieldType">
+    <variant value="0">NONE</variant>
+    <variant value="1">PLAIN_TEXT</variant>
+    <variant value="2">RICH_TEXT</variant>
+    <variant value="3">PASSWORD</variant>
+    <variant value="4">SEARCH</variant>
+    <variant value="5">EMAIL</variant>
+    <variant value="6">NUMBER</variant>
+    <variant value="7">TELEPHONE</variant>
+    <variant value="8">URL</variant>
+    <variant value="9">DATE_TIME</variant>
+    <variant value="10">OTHER</variant>
+  </enum>
+
+  <enum name="PickerSessionOutcome">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">INSERTED_OR_COPIED</variant>
+    <variant value="2">ABANDONED</variant>
+    <variant value="3">REDIRECTED</variant>
+    <variant value="4">FORMAT</variant>
+    <variant value="5">OPEN_FILE</variant>
+    <variant value="6">OPEN_LINK</variant>
+    <variant value="7">CREATE</variant>
+  </enum>
+
+  <enum name="PickerAction">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">OPEN_EDITOR_WRITE</variant>
+    <variant value="2">OPEN_EDITOR_REWRITE</variant>
+    <variant value="3">OPEN_LINKS</variant>
+    <variant value="4">OPEN_EXPRESSIONS</variant>
+    <variant value="5">OPEN_CLIPBOARD</variant>
+    <variant value="6">OPEN_DRIVE_FILES</variant>
+    <variant value="7">OPEN_LOCAL_FILES</variant>
+    <variant value="8">OPEN_DATES_TIMES</variant>
+    <variant value="9">OPEN_UNITS_MATHS</variant>
+    <variant value="10">TRANSFORM_UPPER_CASE</variant>
+    <variant value="11">TRANSFORM_LOWER_CASE</variant>
+    <variant value="12">TRANSFORM_SENTENCE_CASE</variant>
+    <variant value="13">TRANSFORM_TITLE_CASE</variant>
+    <variant value="14">CAPS_ON</variant>
+    <variant value="15">CAPS_OFF</variant>
+  </enum>
+
+  <enum name="PickerResultSource">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">OMNIBOX</variant>
+    <variant value="2">EMOJI</variant>
+    <variant value="3">CLIPBOARD</variant>
+    <variant value="4">DRIVE_FILES</variant>
+    <variant value="5">LOCAL_FILES</variant>
+    <variant value="6">DATES_TIMES</variant>
+    <variant value="7">UNITS_MATHS</variant>
+    <variant value="8">CASE_TRANSFORM</variant>
+    <variant value="9">DEPRECATED_TENOR</variant>
+  </enum>
+
+  <enum name="PickerResultType">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">TEXT</variant>
+    <variant value="2">EMOJI</variant>
+    <variant value="3">SYMBOL</variant>
+    <variant value="4">EMOTICON</variant>
+    <variant value="5">CLIPBOARD_FILE</variant>
+    <variant value="6">CLIPBOARD_TEXT</variant>
+    <variant value="7">CLIPBOARD_IMAGE</variant>
+    <variant value="8">CLIPBOARD_HTML</variant>
+    <variant value="9">DEPRECATED_GIF</variant>
+    <variant value="10">LINK</variant>
+    <variant value="11">LOCAL_FILE</variant>
+    <variant value="12">DRIVE_FILE</variant>
+  </enum>
+
+  <enum name="RecorderAppSpeakerLabelEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED_FIRST</variant>
+    <variant value="2">DISABLED</variant>
+    <variant value="3">UNKNOWN</variant>
+    <variant value="4">NOT_AVAILABLE</variant>
+  </enum>
+
+  <enum name="RecorderAppSummaryEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED</variant>
+    <variant value="2">UNKNOWN</variant>
+    <variant value="3">NOT_AVAILABLE</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptionEnableState">
+    <variant value="0">ENABLED</variant>
+    <variant value="1">DISABLED_FIRST</variant>
+    <variant value="2">DISABLED</variant>
+    <variant value="3">UNKNOWN</variant>
+    <variant value="4">NOT_AVAILABLE</variant>
+  </enum>
+
+  <enum name="RecorderAppMicrophoneType">
+    <variant value="0">INTERNAL</variant>
+    <variant value="1">EXTERNAL</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptionLocale">
+    <variant value="0">NONE</variant>
+    <variant value="1">EN_US</variant>
+  </enum>
+
+  <enum name="RecorderAppModelResultStatus">
+    <variant value="0">SUCCESS</variant>
+    <variant value="1">GENERAL_ERROR</variant>
+    <variant value="2">UNSAFE</variant>
+    <variant value="3">UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT</variant>
+    <variant value="4">UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG</variant>
+  </enum>
+
+  <enum name="RecorderAppModelFeedback">
+    <variant value="0">NEGATIVE</variant>
+    <variant value="1">POSITIVE</variant>
+  </enum>
+
+  <enum name="RecorderAppAudioFormat">
+    <variant value="0">NOT_EXPORTED</variant>
+    <variant value="1">WEBM_ORIGINAL</variant>
+  </enum>
+
+  <enum name="RecorderAppTranscriptFormat">
+    <variant value="0">NOT_AVAILABLE</variant>
+    <variant value="1">NOT_EXPORTED</variant>
+    <variant value="2">TXT</variant>
+  </enum>
   <event name="AppDiscovery.AppInstalled">
     <summary>
       Recorded whenever a new app is installed on Chrome OS.
@@ -773,6 +1354,24 @@
     <metric name="InstallReason" type="int">
       <summary>
         Reason for which the app was installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.AppInstallService.InstallRequested">
+    <summary>
+      Recorded when an app discovery surface requests an app be installed through
+      App Install Service. This is called very early in the App Install Service
+      process, before any user confirmation/validity checks/network requests.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        App ID of the app requested to be installed.
+      </summary>
+    </metric>
+    <metric name="Surface" type="AppInstallSurface">
+      <summary>
+        UI surface from which this install was requested.
       </summary>
     </metric>
   </event>
@@ -831,6 +1430,17 @@
     <metric name="AppState" type="int">
       <summary>
         Denotes a change in an app state. 0 - INACTIVE, 1 - ACTIVE, 2 - CLOSED.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="AppDiscovery.ArcAppCameraAccessed">
+    <summary>
+      Recorded when a camera is accessed from an ARC app.
+    </summary>
+    <metric name="AppId" type="raw-string">
+      <summary>
+        Key that identifies an app.
       </summary>
     </metric>
   </event>
@@ -932,6 +1542,422 @@
     <metric name="AppId" type="raw-string">
       <summary>
         Identifier of the app that is being installed.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.StartSession">
+    <summary>
+      Event recorded when the camera app is started.
+    </summary>
+    <metric name="LaunchType" type="CameraAppLaunchType">
+      <summary>
+        The type indicates how the camera app is launched.
+      </summary>
+    </metric>
+    <metric name="Language" type="int">
+      <summary>
+        The integer maps to the LocaleCodeISO639 enum indicating the language that
+        CCA UI uses.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.Capture">
+    <summary>
+      Event recorded when the camera app executes a capture.
+    </summary>
+    <metric name="Mode" type="CameraAppMode">
+      <summary>
+        The mode where the capture happens.
+      </summary>
+    </metric>
+    <metric name="Facing" type="CameraAppFacing">
+      <summary>
+        The facing of the capturing camera.
+      </summary>
+    </metric>
+    <metric name="IsMirrored" type="int">
+      <summary>
+        Boolean indicating whether the camera preview is mirrored when the capture
+        happens.
+      </summary>
+    </metric>
+    <metric name="GridType" type="CameraAppGridType">
+      <summary>
+        The applied grid setting when the capture happens.
+      </summary>
+    </metric>
+    <metric name="TimerType" type="CameraAppTimerType">
+      <summary>
+        The applied timer setting when the capture happens.
+      </summary>
+    </metric>
+    <metric name="ShutterType" type="CameraAppShutterType">
+      <summary>
+        The shutter type which triggers the camera capture.
+      </summary>
+    </metric>
+    <metric name="AndroidIntentResultType" type="CameraAppAndroidIntentResultType">
+      <summary>
+        The type of Android intent result which the capture leads to.
+      </summary>
+    </metric>
+    <metric name="IsWindowMaximized" type="int">
+      <summary>
+        Boolean indicating whether the window is maximized when the capture happens.
+      </summary>
+    </metric>
+    <metric name="IsWindowPortrait" type="int">
+      <summary>
+        Boolean indicating whether the window is in portrait orientation when the
+        capture happens.
+      </summary>
+    </metric>
+    <metric name="ResolutionWidth" type="int">
+      <summary>
+        The width of the capture resolution.
+      </summary>
+    </metric>
+    <metric name="ResolutionHeight" type="int">
+      <summary>
+        The height of the capture resolution.
+      </summary>
+    </metric>
+    <metric name="ResolutionLevel" type="CameraAppResolutionLevel">
+      <summary>
+        The level that the capture resolution falls within.
+      </summary>
+    </metric>
+    <metric name="AspectRatioSet" type="CameraAppAspectRatioSet">
+      <summary>
+        The aspect ratio set that the capture aspect ratio falls within.
+      </summary>
+    </metric>
+    <metric name="IsVideoSnapshot" type="int">
+      <summary>
+        Boolean indicating whether the photo is a snapshot taken during video
+        recording.
+      </summary>
+    </metric>
+    <metric name="IsMuted" type="int">
+      <summary>
+        Boolean indicating whether the video is recorded with mic muted.
+      </summary>
+    </metric>
+    <metric name="Fps" type="int">
+      <summary>
+        The targeting frame rate of the video recording. 0 if the capture is not
+        recording.
+      </summary>
+    </metric>
+    <metric name="EverPaused" type="int">
+      <summary>
+        Boolean indicating whether the user has ever paused the recording.
+      </summary>
+    </metric>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the captured video in milliseconds.
+      </summary>
+    </metric>
+    <metric name="RecordType" type="CameraAppRecordType">
+      <summary>
+        The type of the video recording.
+      </summary>
+    </metric>
+    <metric name="GifResultType" type="CameraAppGifResultType">
+      <summary>
+        The type of the GIF recording result.
+      </summary>
+    </metric>
+    <metric name="TimelapseSpeed" type="int">
+      <summary>
+        The acceleration speed that time-lapse feature applied. 0 if the capture is
+        not time-lapse.
+      </summary>
+    </metric>
+    <metric name="ZoomRatio" type="double">
+      <summary>
+        The zoom ratio set when users use digital zoom to take a photo or record
+        a video.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.AndroidIntent">
+    <summary>
+      Event recorded when the camera app is successfully handled an Android camera
+      intent.
+    </summary>
+    <metric name="Mode" type="CameraAppMode">
+      <summary>
+        The mode where the Android camera intent is corresponding to.
+      </summary>
+    </metric>
+    <metric name="ShouldHandleResult" type="int">
+      <summary>
+        Boolean indicating whether the camera app should handle the captured result
+        for the Android camera intent.
+      </summary>
+    </metric>
+    <metric name="ShouldDownscale" type="int">
+      <summary>
+        Boolean indicating whether the camera app should downscale the captured
+        result for the Android camera intent.
+      </summary>
+    </metric>
+    <metric name="IsSecure" type="int">
+      <summary>
+        Boolean indicating whether the camera intent is launched under the secure
+        mode.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.OpenPTZPanel">
+    <summary>
+      Event recorded when the PTZ panel is opened in the camera app.
+    </summary>
+    <metric name="SupportPan" type="int">
+      <summary>
+        Boolean indicating whether pan control is supported on the current camera.
+      </summary>
+    </metric>
+    <metric name="SupportTilt" type="int">
+      <summary>
+        Boolean indicating whether tilt control is supported on the current camera.
+      </summary>
+    </metric>
+    <metric name="SupportZoom" type="int">
+      <summary>
+        Boolean indicating whether zoom control is supported on the current camera.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.DocScanAction">
+    <summary>
+      Event recorded when action related to document scanning is performed.
+    </summary>
+    <metric name="ActionType" type="CameraAppDocScanActionType">
+      <summary>
+        The type of the document scanning related action.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.DocScanResult">
+    <summary>
+      Event recorded when the user finishes a document scanning session.
+    </summary>
+    <metric name="ResultType" type="CameraAppDocScanResultType">
+      <summary>
+        The type of the result of this document scanning session.
+      </summary>
+    </metric>
+    <metric name="FixTypes" type="int">
+      <summary>
+        Integer used as a bit mask indicating the type(s) of fix that the user
+        applied on the document scanning result.
+      </summary>
+    </metric>
+    <metric name="FixCount" type="int">
+      <summary>
+        Integer indicating how many times the user performed a fix on the document
+        scanning result.
+      </summary>
+    </metric>
+    <metric name="PageCount" type="int">
+      <summary>
+        Integer indicating how many pages are saved from document scanning.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.OpenCamera">
+    <summary>
+      Event recorded when the camera is opened in the camera app.
+    </summary>
+    <metric name="CameraModuleId" type="raw-string">
+      <summary>
+        String showing the camera module ID in "[VID]:[PID]" format if the camera
+        module is in the top 20 list. Otherwise, it will be "others".
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.LowStorageAction">
+    <summary>
+      Event recorded when a action is performed in the camera app due to low
+      storage detection.
+    </summary>
+    <metric name="ActionType" type="CameraAppLowStorageActionType">
+      <summary>
+        The type of the action for low storage handling.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.BarcodeDetected">
+    <summary>
+      Event recorded when a barcode is detected on the preview of the camera app.
+    </summary>
+    <metric name="ContentType" type="CameraAppBarcodeContentType">
+      <summary>
+        The type of the content detected via the barcode.
+      </summary>
+    </metric>
+    <metric name="WifiSecurityType" type="CameraAppWifiSecurityType">
+      <summary>
+        The Wi-Fi security type brought in the Wi-Fi QR code. If the barcode content
+        is not Wi-Fi, the type will be set to none.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.Perf">
+    <summary>
+      Event recorded when a performance measurement is done in the camera app.
+    </summary>
+    <metric name="EventType" type="CameraAppPerfEventType">
+      <summary>
+        The type of the performance measurement.
+      </summary>
+    </metric>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the performance event in milliseconds.
+      </summary>
+    </metric>
+    <metric name="Facing" type="CameraAppFacing">
+      <summary>
+        The facing of the current camera. Will be unknown if the camera facing is
+        irrelevant.
+      </summary>
+    </metric>
+    <metric name="ResolutionWidth" type="int">
+      <summary>
+        The resolution width of the camera. Will be 0 if the resolution information
+        is not provided.
+      </summary>
+    </metric>
+    <metric name="ResolutionHeight" type="int">
+      <summary>
+        The resolution height of the camera. Will be 0 if the resolution information
+        is not provided.
+      </summary>
+    </metric>
+    <metric name="PageCount" type="int">
+      <summary>
+        Integer indicating how many pages are there in the document scanning result.
+      </summary>
+    </metric>
+    <metric name="Pressure" type="CameraAppPressure">
+      <summary>
+        The CPU pressure level.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.UnsupportedProtocol">
+    <summary>
+      Event recorded when a barcode is detected and it is unsupported protocol.
+    </summary>
+
+  </event>
+
+  <event name="CameraApp.EndSession">
+    <summary>
+      Event recorded when the camera app is closed.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the camera app session in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.MemoryUsage">
+    <summary>
+      Event recorded the memory usage summary of the camera session sent at the
+      end of a camera session.
+    </summary>
+    <metric name="Behaviors" type="int">
+      <summary>
+        Bit mask indicating the combination of user behavior(s) that the user
+        performed within the session.
+      </summary>
+    </metric>
+    <metric name="MemoryUsage" type="int">
+      <summary>
+        Integer indicating the maximum memory usage within the session in bytes.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.Ocr">
+    <summary>
+      Event recorded when OCR detects text on the preview or users interact with
+      the detected text.
+    </summary>
+    <metric name="EventType" type="CameraAppOcrEventType">
+      <summary>
+        The type of the event about the OCR feature.
+      </summary>
+    </metric>
+    <metric name="IsPrimaryLanguage" type="int">
+      <summary>
+        Boolean indicating whether the language of detected text is the same as the
+        user's primary language.
+      </summary>
+    </metric>
+    <metric name="LineCount" type="int">
+      <summary>
+        The number of lines of the detected text.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        The number of words of the detected text.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Growth.Ui.ButtonPressed">
+    <summary>
+      Event recorded when the button in the UI is pressed.
+    </summary>
+    <metric name="CampaignId" type="int">
+      <summary>
+        ID of the campaign.
+      </summary>
+    </metric>
+    <metric name="ButtonId" type="CampaignButtonId">
+      <summary>
+        ID of the button pressed in the UI.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Growth.Ui.Dismissed">
+    <summary>
+      Event recorded when the UI is dismissed.
+    </summary>
+    <metric name="CampaignId" type="int">
+      <summary>
+        ID of the campaign.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Growth.Ui.Impression">
+    <summary>
+      Event recorded when it is ready to log a UI impression.
+    </summary>
+    <metric name="CampaignId" type="int">
+      <summary>
+        ID of the campaign.
       </summary>
     </metric>
   </event>
@@ -1513,6 +2539,515 @@
     </metric>
   </event>
 
+  <event name="Picker.StartSession">
+    <summary>
+      Recorded when user opens the picker window and starts a session.
+    </summary>
+    <metric name="InputFieldType" type="PickerInputFieldType">
+      <summary>
+        Type of input field that was focused when the session starts.
+      </summary>
+    </metric>
+    <metric name="SelectionLength" type="int">
+      <summary>
+        Number of UTF-16 code units selected when the session starts.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="Picker.FinishSession">
+    <summary>
+      Recorded when user closes the picker window and finishes a session.
+    </summary>
+    <metric name="Outcome" type="PickerSessionOutcome">
+      <summary>
+        Outcome of the session.
+      </summary>
+    </metric>
+    <metric name="Action" type="PickerAction">
+      <summary>
+        Action the user takes during a session. The user can only take at most
+        1 action during a session. UNKNOWN if the user didn't take any action.
+      </summary>
+    </metric>
+    <metric name="ResultSource" type="PickerResultSource">
+      <summary>
+        Source of the inserted result. UNKNOWN if no result is inserted.
+      </summary>
+    </metric>
+    <metric name="ResultType" type="PickerResultType">
+      <summary>
+        Type of the inserted result. UNKNOWN if no result is inserted.
+      </summary>
+    </metric>
+    <metric name="TotalEdits" type="int">
+      <summary>
+        Total number of edits of the query text during the session.
+      </summary>
+    </metric>
+    <metric name="FinalQuerySize" type="int">
+      <summary>
+        Number of UTF-16 code units of the query text when the session
+        finishes.
+      </summary>
+    </metric>
+    <metric name="ResultIndex" type="int">
+      <summary>
+        Index of the inserted result. -1 no result is inserted.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.ScreenOpened">
+    <summary>
+      Recorded when a new UI view is shown to a Quick Start user. It can either be
+      a new OOBE screen that occurs in the middle of Quick Start or one of the
+      Quick Start UI views.
+    </summary>
+    <metric name="ScreenName" type="QuickStartScreenName">
+      <summary>
+        Screen shown to Quick Start user.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.ScreenClosed">
+    <summary>
+      Recorded when a UI view shown to a Quick Start user leaves. It can either be
+      a new OOBE screen that occurs in the middle of Quick Start or one of the
+      Quick Start UI views.
+    </summary>
+    <metric name="ScreenName" type="QuickStartScreenName">
+      <summary>
+        Screen closed for Quick Start user.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.Initiated">
+    <summary>
+      Recorded when a user initiates Quick Start.
+    </summary>
+    <metric name="EntryPoint" type="QuickStartEntryPoint">
+      <summary>
+        Entry Point from where the user entered Quick Start.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.FlowAborted">
+    <summary>
+      Recorded when the Quick Start flow is prematurely aborted, either due to an
+      error or user action.
+    </summary>
+    <metric name="Reason" type="QuickStartAbortFlowReason">
+      <summary>
+        Reason the Quick Start flow is aborted.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.EstablishConnection">
+    <summary>
+      Recorded once a connection is established with the source device or an error
+      occurs attempting to bootstrap the connection.
+    </summary>
+    <metric name="Success" type="int">
+      <summary>
+        Boolean indicating whether the connection is successfully established.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.AutomaticResumeAfterUpdate">
+    <summary>
+      Recorded once a connection is automatically established with the source
+      device after an update or when an error occurs attempting to automatically
+      bootstrap the connection.
+    </summary>
+    <metric name="Success" type="int">
+      <summary>
+        Boolean indicating whether the connection is successfully established during
+        the automatic resume attempt.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.GetWifiCredentials">
+    <summary>
+      Recorded when the Wi-Fi credentials are received during Quick Start, or when
+      an error occurs attempting to receive them.
+    </summary>
+    <metric name="Success" type="int">
+      <summary>
+        Boolean indicating whether the Wi-Fi credentials were successfully received.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="QuickStart.InstallForcedUpdate">
+    <summary>
+      Recorded when the Quick Start user begins to install a forced update.
+    </summary>
+
+  </event>
+
+  <event name="QuickStart.InstallConsumerUpdate">
+    <summary>
+      Recorded when the Quick Start user begins to install a consumer update.
+    </summary>
+
+  </event>
+
+  <event name="QuickStart.ConsumerUpdateCancelled">
+    <summary>
+      Recorded when the Quick Start user cancels after beginning to install a
+      consumer update.
+    </summary>
+
+  </event>
+
+  <event name="QuickStart.AccountTransferStarted">
+    <summary>
+      Recorded when the Quick Start account transfer process begins.
+    </summary>
+
+  </event>
+
+  <event name="QuickStart.AccountTransferComplete">
+    <summary>
+      Recorded when the Quick Start account transfer process finishes or an error
+      occurs during.
+    </summary>
+    <metric name="Success" type="int">
+      <summary>
+        Boolean indicating whether the account transfer was successful.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.StartSession">
+    <summary>
+      Event recorded when the app is successfully initialized and ready for user
+      to start the session.
+    </summary>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature.
+      </summary>
+    </metric>
+    <metric name="SummaryEnableState" type="RecorderAppSummaryEnableState">
+      <summary>
+        Enable state of the summary feature.
+      </summary>
+    </metric>
+    <metric name="TranscriptionEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Record">
+    <summary>
+      Event recorded when users stop or cancel an audio recording session.
+    </summary>
+    <metric name="MicrophoneType" type="RecorderAppMicrophoneType">
+      <summary>
+        Type of the microphone used in the recording.
+      </summary>
+    </metric>
+    <metric name="IncludeSystemAudio" type="int">
+      <summary>
+        Boolean indicating whether the system audio is included in the recording.
+      </summary>
+    </metric>
+    <metric name="AudioDuration" type="int">
+      <summary>
+        The duration of the recorded audio in milliseconds.
+      </summary>
+    </metric>
+    <metric name="RecordDuration" type="int">
+      <summary>
+        The total duration in recording session, including paused duration,
+        in milliseconds.
+      </summary>
+    </metric>
+    <metric name="EverPaused" type="int">
+      <summary>
+        Boolean indicating whether the recording has ever been paused.
+      </summary>
+    </metric>
+    <metric name="EverMuted" type="int">
+      <summary>
+        Boolean indicating whether the microphone input has ever been muted
+        during the recording.
+      </summary>
+    </metric>
+    <metric name="TranscriptionLocale" type="RecorderAppTranscriptionLocale">
+      <summary>
+        The locale used for the recording transcription.
+      </summary>
+    </metric>
+    <metric name="TranscriptionLabelEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature when the recording ends.
+      </summary>
+    </metric>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature when the recording ends.
+      </summary>
+    </metric>
+    <metric name="RecordingSaved" type="int">
+      <summary>
+        Boolean indicating whether the recording is saved.
+      </summary>
+    </metric>
+    <metric name="SpeakerCount" type="int">
+      <summary>
+        Number of speakers detected in the recording.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SuggestTitle">
+    <summary>
+      Event recorded when user chooses or dismisses the recording title
+      suggestion.
+    </summary>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription, which is used as an
+        input to generate the title.
+      </summary>
+    </metric>
+    <metric name="ResultStatus" type="RecorderAppModelResultStatus">
+      <summary>
+        Status of the recording title suggestion result.
+      </summary>
+    </metric>
+    <metric name="SuggestionAccepted" type="int">
+      <summary>
+        Boolean indicating whether the title suggestion is accepted or not.
+      </summary>
+    </metric>
+    <metric name="AcceptedSuggestionIndex" type="int">
+      <summary>
+        Zero-based index of the title suggestion that is chosen by user, set to
+        -1 if the suggestion is not accepted.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Summarize">
+    <summary>
+      Event recorded when the recording summary is generated.
+    </summary>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription, which is used as an
+        input to generate the summary.
+      </summary>
+    </metric>
+    <metric name="ResultStatus" type="RecorderAppModelResultStatus">
+      <summary>
+        Status of the summary generation result.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.FeedbackTitleSuggestion">
+    <summary>
+      Event recorded when user give feedback to title suggestion result.
+    </summary>
+    <metric name="Feedback" type="RecorderAppModelFeedback">
+      <summary>
+        Feedback given by user
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.FeedbackSummary">
+    <summary>
+      Event recorded when user give feedback to recording summary result.
+    </summary>
+    <metric name="Feedback" type="RecorderAppModelFeedback">
+      <summary>
+        Feedback given by user
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Onboard">
+    <summary>
+      Event recorded when user finishes onboarding steps when using app for the
+      first time.
+    </summary>
+    <metric name="TranscriptionEnableState" type="RecorderAppTranscriptionEnableState">
+      <summary>
+        Enable state of the transcription feature when onboarding is complete.
+      </summary>
+    </metric>
+    <metric name="SpeakerLabelEnableState" type="RecorderAppSpeakerLabelEnableState">
+      <summary>
+        Enable state of the speaker label feature after onboarding is complete.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.Export">
+    <summary>
+      Event recorded when user exports the recording audio, transcript, or both.
+    </summary>
+    <metric name="AudioFormat" type="RecorderAppAudioFormat">
+      <summary>
+        Format of the exported audio or NOT_EXPORTED if user does not export audio.
+      </summary>
+    </metric>
+    <metric name="TranscriptFormat" type="RecorderAppTranscriptFormat">
+      <summary>
+        Format of the exported transcription, NOT_EXPORTED, or NOT_AVAILABLE.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ChangePlaybackSpeed">
+    <summary>
+      Event recorded when user changes the playback speed in the playback page.
+    </summary>
+    <metric name="PlaybackSpeed" type="double">
+      <summary>
+        Playback speed chosen by user.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ChangePlaybackVolume">
+    <summary>
+      Event recorded when user changes the playback volume in the playback page.
+    </summary>
+    <metric name="Volume" type="int">
+      <summary>
+        Percent of the volume chosen by user, can be higher than zero when mute
+        is toggled on.
+      </summary>
+    </metric>
+    <metric name="Muted" type="int">
+      <summary>
+        Boolean indicating whether mute is toggled on.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.AppStartPerf">
+    <summary>
+      Performance measured during app initialization.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of app initialization in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.TranscriptionModelDownloadPerf">
+    <summary>
+      Performance measured during transcription model download.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of transcription model download in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SummaryModelDownloadPerf">
+    <summary>
+      Performance measured during summary model download.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of summary model download in milliseconds.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.RecordingSavingPerf">
+    <summary>
+      Performance measured during recording saving.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of recording saving in milliseconds.
+      </summary>
+    </metric>
+    <metric name="AudioDuration" type="int">
+      <summary>
+        The duration of the audio which is being saved in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the recording transcription which is being saved.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.TitleSuggestionPerf">
+    <summary>
+      Performance measured during recording title suggestion.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of title suggestion in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the transcription which is used for title suggestion.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.SummaryPerf">
+    <summary>
+      Performance measured during recording summary generation.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the summary generation in milliseconds.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        Number of words in the transcription which is used for summary
+        generation.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="RecorderApp.ExportPerf">
+    <summary>
+      Performance measured during recording file export.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the recording file export in milliseconds.
+      </summary>
+    </metric>
+    <metric name="RecordingSize" type="int">
+      <summary>
+        Size of the exported recording in bytes.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.
@@ -1703,6 +3238,11 @@
     <metric name="MouseButton" type="int">
       <summary>
         An index of a mouse button as defined in JavaScript MouseEvent.
+      </summary>
+    </metric>
+    <metric name="DoubleClick" type="int">
+      <summary>
+        A boolean describing if the event is a double click.
       </summary>
     </metric>
     <metric name="Context" type="int">
@@ -2015,6 +3555,28 @@
     <metric name="TestMetricEight" type="double">
       <summary>
         A floating point value.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="SequencedTestProject" cros_events="true">
+  <owner>andrewbregger@google.com</owner>
+  <id>per-project</id>
+  <scope>profile</scope>
+  <key-rotation>90</key-rotation>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="Test1">
+    <summary>
+      Test event used for unit tests to ensure that the code-gen for the event
+      sequence project is working properly.
+    </summary>
+    <metric name="Metric1" type="double">
+      <summary>
+        Test metric1
       </summary>
     </metric>
   </event>

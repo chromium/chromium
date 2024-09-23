@@ -70,22 +70,23 @@ TEST_F(DocumentPolicyTest, MergeFeatureState) {
 // IsPolicyCompatible should use default value for incoming policy when required
 // policy specifies a value for a feature and incoming policy is missing value
 // for that feature.
-TEST_F(DocumentPolicyTest, IsPolicyCompatible) {
-  mojom::DocumentPolicyFeature feature =
-      mojom::DocumentPolicyFeature::kLosslessImagesMaxBpp;
-  double default_policy_value =
-      GetDocumentPolicyFeatureInfoMap().at(feature).default_value.DoubleValue();
-  // Cap the default_policy_value, as it can be INF.
-  double strict_policy_value =
-      default_policy_value > 1.0 ? 1.0 : default_policy_value / 2;
-
-  EXPECT_FALSE(DocumentPolicy::IsPolicyCompatible(
-      DocumentPolicyFeatureState{
-          {feature, PolicyValue::CreateDecDouble(
-                        strict_policy_value)}}, /* required policy */
-      DocumentPolicyFeatureState{}              /* incoming policy */
-      ));
-}
+// TODO: This is not testable as only boolean features exist currently.
+// TEST_F(DocumentPolicyTest, IsPolicyCompatible) {
+//   mojom::DocumentPolicyFeature feature =
+//       mojom::DocumentPolicyFeature::kLosslessImagesMaxBpp;
+//   double default_policy_value =
+//       GetDocumentPolicyFeatureInfoMap().at(feature).default_value.DoubleValue();
+//   // Cap the default_policy_value, as it can be INF.
+//   double strict_policy_value =
+//       default_policy_value > 1.0 ? 1.0 : default_policy_value / 2;
+//
+//   EXPECT_FALSE(DocumentPolicy::IsPolicyCompatible(
+//       DocumentPolicyFeatureState{
+//           {feature, PolicyValue::CreateDecDouble(
+//                         strict_policy_value)}}, /* required policy */
+//       DocumentPolicyFeatureState{}              /* incoming policy */
+//       ));
+// }
 
 }  // namespace
 }  // namespace blink

@@ -10,7 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "crypto/fake_apple_keychain_v2.h"
+#include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/fake_touch_id_context.h"
 

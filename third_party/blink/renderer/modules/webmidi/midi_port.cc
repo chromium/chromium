@@ -81,7 +81,7 @@ V8MIDIPortDeviceState MIDIPort::state() const {
     case PortState::OPENED:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return V8MIDIPortDeviceState(V8MIDIPortDeviceState::Enum::kConnected);
 }
 
@@ -89,11 +89,12 @@ V8MIDIPortType MIDIPort::type() const {
   return V8MIDIPortType(type_);
 }
 
-ScriptPromise MIDIPort::open(ScriptState* script_state) {
+ScriptPromise<MIDIPort> MIDIPort::open(ScriptState* script_state) {
   if (connection_ == MIDIPortConnectionState::kOpen)
     return Accept(script_state);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<MIDIPort>>(script_state);
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
@@ -113,11 +114,12 @@ void MIDIPort::open() {
   running_open_count_++;
 }
 
-ScriptPromise MIDIPort::close(ScriptState* script_state) {
+ScriptPromise<MIDIPort> MIDIPort::close(ScriptState* script_state) {
   if (connection_ == MIDIPortConnectionState::kClosed)
     return Accept(script_state);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<MIDIPort>>(script_state);
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
@@ -143,7 +145,7 @@ void MIDIPort::SetState(PortState state) {
     case PortState::CONNECTED:
       switch (connection_) {
         case MIDIPortConnectionState::kOpen:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
         case MIDIPortConnectionState::kPending:
           // We do not use |setStates| in order not to dispatch events twice.
@@ -157,7 +159,7 @@ void MIDIPort::SetState(PortState state) {
       }
       break;
     case PortState::OPENED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -183,7 +185,7 @@ void MIDIPort::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void MIDIPort::OpenAsynchronously(ScriptPromiseResolver* resolver) {
+void MIDIPort::OpenAsynchronously(ScriptPromiseResolver<MIDIPort>* resolver) {
   // The frame should exist, but it may be already detached and the execution
   // context may be lost here.
   if (!GetExecutionContext())
@@ -204,14 +206,14 @@ void MIDIPort::OpenAsynchronously(ScriptPromiseResolver* resolver) {
       SetStates(state_, MIDIPortConnectionState::kOpen);
       break;
     case PortState::OPENED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   if (resolver)
     resolver->Resolve(this);
 }
 
-void MIDIPort::CloseAsynchronously(ScriptPromiseResolver* resolver) {
+void MIDIPort::CloseAsynchronously(ScriptPromiseResolver<MIDIPort>* resolver) {
   // The frame should exist, but it may be already detached and the execution
   // context may be lost here.
   if (!GetExecutionContext())
@@ -224,9 +226,8 @@ void MIDIPort::CloseAsynchronously(ScriptPromiseResolver* resolver) {
   resolver->Resolve(this);
 }
 
-ScriptPromise MIDIPort::Accept(ScriptState* script_state) {
-  return ScriptPromise::Cast(script_state,
-                             ToV8Traits<MIDIPort>::ToV8(script_state, this));
+ScriptPromise<MIDIPort> MIDIPort::Accept(ScriptState* script_state) {
+  return ToResolvedPromise<MIDIPort>(script_state, this);
 }
 
 void MIDIPort::SetStates(PortState state, MIDIPortConnectionState connection) {

@@ -28,21 +28,32 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_PATH_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_PATH_2D_H_
 
+#include <cmath>
+
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_dom_matrix_2d_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_path2d_string.h"
-#include "third_party/blink/renderer/core/geometry/dom_matrix.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+// IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
+class DOMMatrix2DInit;
 class ExceptionState;
+class ScriptState;
 
 class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
   DEFINE_WRAPPERTYPEINFO();
@@ -57,7 +68,7 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
       case V8UnionPath2DOrString::ContentType::kString:
         return MakeGarbageCollected<Path2D>(script_state, path->GetAsString());
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   static Path2D* Create(ScriptState* script_state) {
@@ -78,7 +89,7 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
         !std::isfinite(matrix->m42()))
       return;
     GetModifiablePath().AddPath(path->GetPath(), matrix->GetAffineTransform());
-    if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+    if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
       identifiability_study_helper_.UpdateBuilder(CanvasOps::kAddPath,
                                                   path->GetIdentifiableToken());
     }

@@ -54,16 +54,23 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/events/mutation_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
@@ -639,7 +646,23 @@ void ContainerNode::WillRemoveChild(Node& child) {
   ChildListMutationScope(*this).WillRemoveChild(child);
   child.NotifyMutationObserversNodeWillDetach();
   DispatchChildRemovalEvents(child);
-  ChildFrameDisconnector(child).Disconnect();
+
+  // Only disconnect subframes in the non-state-preserving-atomic-move case,
+  // i.e., the traditional case where we intend to *fully* remove a node from
+  // the tree, instead of atomically re-inserting it.
+  if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+    // TODO(crbug.com/40150299): Mutation events should be suppressed during a
+    // state-preserving atomic move. Once this is implemented, enable the
+    // following CHECK which asserts that during this kind of move, the child
+    // node could not have moved documents during `DispatchChildRemovalEvents()`
+    // above.
+    //
+    // CHECK_EQ(GetDocument(), child.GetDocument());
+    ChildFrameDisconnector(
+        child, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+        .Disconnect();
+  }
+
   if (GetDocument() != child.GetDocument()) {
     // |child| was moved to another document by the DOM mutation event handler.
     return;
@@ -672,12 +695,18 @@ void ContainerNode::WillRemoveChildren() {
     DispatchChildRemovalEvents(child);
   }
 
-  ChildFrameDisconnector(*this).Disconnect(
-      ChildFrameDisconnector::kDescendantsOnly);
+  CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+  ChildFrameDisconnector(
+      *this, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+      .Disconnect(ChildFrameDisconnector::kDescendantsOnly);
 }
 
 LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
   return GetLayoutBox();
+}
+
+bool ContainerNode::IsReadingFlowContainer() const {
+  return GetLayoutBox() ? GetLayoutBox()->IsReadingFlowContainer() : false;
 }
 
 void ContainerNode::Trace(Visitor* visitor) const {
@@ -701,8 +730,8 @@ static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
   auto* const next_sibling = layout_object->NextSibling();
   if (!next_sibling)
     return false;
-  if (UNLIKELY(IsA<LayoutTextCombine>(previous_sibling)) &&
-      UNLIKELY(IsA<LayoutTextCombine>(next_sibling))) {
+  if (IsA<LayoutTextCombine>(previous_sibling) &&
+      IsA<LayoutTextCombine>(next_sibling)) [[unlikely]] {
     return true;
   }
 
@@ -712,8 +741,11 @@ static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
       !next_sibling->IsAnonymousBlock())
     return false;
 
-  return UNLIKELY(IsA<LayoutTextCombine>(previous_sibling->SlowLastChild())) &&
-         UNLIKELY(IsA<LayoutTextCombine>(next_sibling->SlowFirstChild()));
+  if (IsA<LayoutTextCombine>(previous_sibling->SlowLastChild()) &&
+      IsA<LayoutTextCombine>(next_sibling->SlowFirstChild())) [[unlikely]] {
+    return true;
+  }
+  return false;
 }
 
 Node* ContainerNode::RemoveChild(Node* old_child,
@@ -732,7 +764,9 @@ Node* ContainerNode::RemoveChild(Node* old_child,
 
   Node* child = old_child;
 
-  GetDocument().RemoveFocusedElementOfSubtree(*child);
+  if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+    GetDocument().RemoveFocusedElementOfSubtree(*child);
+  }
 
   // Events fired when blurring currently focused node might have moved this
   // child into a different parent.
@@ -762,8 +796,9 @@ Node* ContainerNode::RemoveChild(Node* old_child,
   }
 
   if (!GetForceReattachLayoutTree() &&
-      UNLIKELY(ShouldMergeCombinedTextAfterRemoval(*child)))
+      ShouldMergeCombinedTextAfterRemoval(*child)) [[unlikely]] {
     SetForceReattachLayoutTree();
+  }
 
   {
     HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
@@ -796,8 +831,10 @@ void ContainerNode::RemoveBetween(Node* previous_child,
 
   DCHECK_EQ(old_child.parentNode(), this);
 
-  if (InActiveDocument())
+  if (InActiveDocument() &&
+      !GetDocument().StatePreservingAtomicMoveInProgress()) {
     old_child.DetachLayoutTree();
+  }
 
   if (next_child)
     next_child->SetPreviousSibling(previous_child);
@@ -820,9 +857,12 @@ void ContainerNode::ParserRemoveChild(Node& old_child) {
   DCHECK(!old_child.IsDocumentFragment());
 
   // This may cause arbitrary Javascript execution via onunload handlers.
-  if (old_child.ConnectedSubframeCount())
-    ChildFrameDisconnector(old_child).Disconnect();
-
+  CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+  if (old_child.ConnectedSubframeCount()) {
+    ChildFrameDisconnector(
+        old_child, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+        .Disconnect();
+  }
   if (old_child.parentNode() != this)
     return;
 
@@ -1045,7 +1085,7 @@ void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
 
   // No node-lists should have been created at this (otherwise
   // InvalidateNodeListCaches() would need to be called).
-  DCHECK(!HasRareData() || !RareData()->NodeLists());
+  DCHECK(!RareData() || !RareData()->NodeLists());
 
   if (node.IsContainerNode()) {
     DynamicTo<ContainerNode>(node)->ChildrenChanged(change);
@@ -1081,6 +1121,8 @@ DISABLE_CFI_PERF
 void ContainerNode::NotifyNodeInsertedInternal(
     Node& root,
     NodeVector& post_insertion_notification_targets) {
+  const bool is_state_preserving_atomic_insert =
+      GetDocument().StatePreservingAtomicMoveInProgress();
   EventDispatchForbiddenScope assert_no_event_dispatch;
   ScriptForbiddenScope forbid_script;
 
@@ -1092,12 +1134,21 @@ void ContainerNode::NotifyNodeInsertedInternal(
         !node.GetDOMParts()) {
       continue;
     }
+
+    // Only tag the target as one that we need to call post-insertion steps on
+    // if it is being *fully* inserted, and not re-inserted as part of a
+    // state-preserving atomic move. That's because the post-insertion steps can
+    // run script and modify the frame tree, neither of which are allowed in a
+    // state-preserving atomic move.
     if (Node::kInsertionShouldCallDidNotifySubtreeInsertions ==
-        node.InsertedInto(*this))
+            node.InsertedInto(*this) &&
+        !is_state_preserving_atomic_insert) {
       post_insertion_notification_targets.push_back(&node);
-    if (ShadowRoot* shadow_root = node.GetShadowRoot())
+    }
+    if (ShadowRoot* shadow_root = node.GetShadowRoot()) {
       NotifyNodeInsertedInternal(*shadow_root,
                                  post_insertion_notification_targets);
+    }
   }
 }
 
@@ -1171,6 +1222,10 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   if (!InActiveDocument())
     return;
   if (Element* element = DynamicTo<Element>(this)) {
+    if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+      CHECK(inserted_node->IsElementNode());
+      inserted_node->FlatTreeParentChanged();
+    }
     if (!element->GetComputedStyle()) {
       // There is no need to mark for style recalc if the parent element does
       // not already have a ComputedStyle. For instance if we insert nodes into
@@ -1350,14 +1405,6 @@ static void DispatchChildRemovalEvents(Node& child) {
   }
 }
 
-bool ContainerNode::HasRestyleFlagInternal(DynamicRestyleFlags mask) const {
-  return RareData()->HasRestyleFlag(mask);
-}
-
-bool ContainerNode::HasRestyleFlagsInternal() const {
-  return RareData()->HasRestyleFlags();
-}
-
 void ContainerNode::SetRestyleFlag(DynamicRestyleFlags mask) {
   DCHECK(IsElementNode() || IsShadowRoot());
   EnsureRareData().SetRestyleFlag(mask);
@@ -1500,13 +1547,15 @@ void ContainerNode::InvalidateNodeListCachesInAncestors(
   if (change && change->type == ChildrenChangeType::kTextChanged)
     return;
 
-  if (HasRareData() && (!attr_name || IsAttributeNode())) {
-    if (NodeListsNodeData* lists = RareData()->NodeLists()) {
-      if (ChildNodeList* child_node_list = lists->GetChildNodeList(*this)) {
-        if (change) {
-          child_node_list->ChildrenChanged(*change);
-        } else {
-          child_node_list->InvalidateCache();
+  if (!attr_name || IsAttributeNode()) {
+    if (const NodeRareData* data = RareData()) {
+      if (NodeListsNodeData* lists = data->NodeLists()) {
+        if (ChildNodeList* child_node_list = lists->GetChildNodeList(*this)) {
+          if (change) {
+            child_node_list->ChildrenChanged(*change);
+          } else {
+            child_node_list->InvalidateCache();
+          }
         }
       }
     }
@@ -1578,15 +1627,30 @@ RadioNodeList* ContainerNode::GetRadioNodeList(const AtomicString& name,
 }
 
 String ContainerNode::FindTextInElementWith(
-    const AtomicString& substring) const {
+    const AtomicString& substring,
+    base::FunctionRef<bool(const String&)> validity_checker) const {
   for (Element& element : ElementTraversal::DescendantsOf(*this)) {
-    if (element.HasOnlyText()) {
-      const String& text = element.TextFromChildren();
-      if (text.Find(substring) != WTF::kNotFound) {
-        return text;
-      }
+    String text;
+    if (element.HasTagName(html_names::kInputTag) &&
+        element.FastHasAttribute(html_names::kReadonlyAttr) &&
+        EqualIgnoringASCIICase(element.FastGetAttribute(html_names::kTypeAttr),
+                               "text") &&
+        RuntimeEnabledFeatures::FindTextInReadonlyTextInputEnabled()) {
+      text = To<HTMLInputElement>(element).Value();
+    } else if (element.HasOnlyText()) {
+      text = element.TextFromChildren();
+    }
+
+    if (text.empty()) {
+      continue;
+    }
+
+    if (text.FindIgnoringASCIICase(substring) != WTF::kNotFound &&
+        validity_checker(text)) {
+      return text;
     }
   }
+
   return String();
 }
 
@@ -1600,7 +1664,7 @@ Element* ContainerNode::getElementById(const AtomicString& id) const {
   if (IsInTreeScope()) {
     // Fast path if we are in a tree scope: call getElementById() on tree scope
     // and check if the matching element is in our subtree.
-    Element* element = ContainingTreeScope().getElementById(id);
+    Element* element = GetTreeScope().getElementById(id);
     if (!element)
       return nullptr;
     if (element->IsDescendantOf(this))
@@ -1640,7 +1704,7 @@ Element* ContainerNode::GetAutofocusDelegate() const {
     // focusable_area is not click-focusable and the call was initiated by the
     // user clicking. I don't believe this is currently possible, so DCHECK
     // instead.
-    DCHECK(focusable_area->IsFocusable());
+    DCHECK(focusable_area->IsMouseFocusable());
 
     return focusable_area;
   }
@@ -1708,6 +1772,18 @@ void ContainerNode::CheckSoftNavigationHeuristicsTracking(
 String ContainerNode::getInnerHTML(const GetInnerHTMLOptions* options) const {
   CHECK(RuntimeEnabledFeatures::ElementGetInnerHTMLEnabled());
   DCHECK(IsShadowRoot() || IsElementNode());
+
+  auto* context = GetExecutionContext();
+  context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kDeprecation,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "The getInnerHTML() function is non-standard, deprecated, and will "
+      "be removed from this browser very soon. At that point, this console "
+      "warning will become a JavaScript exception. Please use getHTML() "
+      "instead. See https://chromestatus.com/feature/5081733588582400 for "
+      "more information."));
+  Deprecation::CountDeprecation(context, WebFeature::kElementGetInnerHTML);
+
   // This is the deprecated behavior: if includeShadowRoots is true, then
   // include *all* open shadow roots (even if they aren't marked serializable).
   // If includeShadowRoots is true and closedRoots is provided, also serialize
@@ -1728,23 +1804,16 @@ String ContainerNode::getInnerHTML(const GetInnerHTMLOptions* options) const {
 
 String ContainerNode::getHTML(const GetHTMLOptions* options,
                               ExceptionState& exception_state) const {
-  CHECK(RuntimeEnabledFeatures::ElementGetHTMLEnabled());
+  DCHECK(options && options->hasSerializableShadowRoots())
+      << "Should have IDL default";
+  DCHECK(options->hasShadowRoots()) << "Should have IDL default";
   DCHECK(IsShadowRoot() || IsElementNode());
-  if (options->hasIncludeShadowRoots() && !options->includeShadowRoots() &&
-      options->hasShadowRoots() && !options->shadowRoots().empty()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "If includeShadowRoots is false, then shadowRoots must be empty.");
-    return "";
-  }
   ShadowRootInclusion shadow_root_inclusion{
-      options->hasIncludeShadowRoots() && options->includeShadowRoots()
-          ? ShadowRootInclusion::Behavior::kIncludeAllSerializableShadowRoots
+      options->serializableShadowRoots()
+          ? ShadowRootInclusion::Behavior::kIncludeAnySerializableShadowRoots
           : ShadowRootInclusion::Behavior::kOnlyProvidedShadowRoots};
-  if (options->hasShadowRoots()) {
-    for (auto& shadow_root : options->shadowRoots()) {
-      shadow_root_inclusion.include_shadow_roots.insert(shadow_root);
-    }
+  for (auto& shadow_root : options->shadowRoots()) {
+    shadow_root_inclusion.include_shadow_roots.insert(shadow_root);
   }
   return CreateMarkup(this, kChildrenOnly, kDoNotResolveURLs,
                       shadow_root_inclusion);

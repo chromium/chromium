@@ -22,6 +22,11 @@ const char kEnableWaylandIme[] = "enable-wayland-ime";
 // Disable wayland input method editor.
 const char kDisableWaylandIme[] = "disable-wayland-ime";
 
+// Specify wayland text-input protocol version.
+// Defaults to "1" for text-input-v1. Can specify value "3" for experimental
+// text-input-v3 support.
+const char kWaylandTextInputVersion[] = "wayland-text-input-version";
+
 // Use explicit grab when opening popup windows.
 // See https://crbug.com/1220274
 const char kUseWaylandExplicitGrab[] = "use-wayland-explicit-grab";

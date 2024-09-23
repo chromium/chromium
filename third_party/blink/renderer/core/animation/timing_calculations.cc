@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 
+#include "base/metrics/histogram_macros.h"
+
 namespace blink {
 
 namespace {
@@ -179,7 +181,7 @@ std::optional<AnimationTimeDelta> TimingCalculations::CalculateActiveTime(
       DCHECK(!local_time.has_value());
       return std::nullopt;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::nullopt;
   }
 }

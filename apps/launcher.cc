@@ -45,6 +45,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -215,7 +216,7 @@ class PlatformAppPathLauncher
 
     app_runtime::LaunchData launch_data;
 
-    // TODO(crbug.com/1354063): This conditional block is being added here
+    // TODO(crbug.com/40235429): This conditional block is being added here
     // temporarily, and should be removed once the underlying type of
     // |launch_data.action_data| is wrapped with std::optional<T>.
     if (action_data_) {
@@ -351,7 +352,7 @@ class PlatformAppPathLauncher
   // The id of the extension providing the app. A pointer to the extension is
   // not kept as the extension may be unloaded and deleted during the course of
   // the launch.
-  const std::string extension_id;
+  const extensions::ExtensionId extension_id;
   extensions::AppLaunchSource launch_source_ =
       extensions::AppLaunchSource::kSourceFileHandler;
   std::optional<app_runtime::ActionData> action_data_;
@@ -395,10 +396,8 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
     in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskApp();
 #endif
     if (!in_kiosk_mode) {
-      LOG(ERROR) << "App with 'kiosk_only' attribute must be run in "
-                 << " ChromeOS kiosk mode.";
-      NOTREACHED();
-      return;
+      NOTREACHED() << "App with 'kiosk_only' attribute must be run in "
+                   << " ChromeOS kiosk mode.";
     }
   }
 

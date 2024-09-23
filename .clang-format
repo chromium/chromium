@@ -12,6 +12,43 @@ Standard: Cpp11
 InsertBraces: true
 InsertNewlineAtEOF: true
 
+# Sort #includes by following
+# https://google.github.io/styleguide/cppguide.html#Names_and_Order_of_Includes
+#
+# ref: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeblocks
+IncludeBlocks: Regroup
+# ref: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includecategories
+IncludeCategories:
+  # The win32 api has all sorts of implicit include order dependencies :-/
+  # Give a few headers special priorities that make sure they appear before
+  # all other headers.
+  # Sync this with SerializeIncludes in tools/add_header.py.
+  # TODO(crbug.com/329138753): remove include sorting from tools/add_header.py
+  # after confirming clang-format sort works well.
+  # LINT.IfChange(winheader)
+  - Regex:           '^<objbase\.h>' # This has to be before initguid.h.
+    Priority:        1
+  - Regex:           '^<(initguid|mmdeviceapi|windows|winsock2|ws2tcpip|shobjidl|atlbase|ole2|unknwn|tchar|ocidl)\.h>'
+    Priority:        2
+  # LINT.ThenChange(/tools/add_header.py:winheader)
+  # UIAutomation*.h need to be after base/win/atl.h.
+  # Note the low priority number.
+  - Regex:           '^<UIAutomation.*\.h>'
+    Priority:        6
+  # Other C system headers.
+  - Regex:           '^<.*\.h>'
+    Priority:        3
+  # C++ standard library headers.
+  - Regex:           '^<.*'
+    Priority:        4
+  # Other libraries.
+  - Regex:           '.*'
+    Priority:        5
+# ref: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeismainregex
+IncludeIsMainRegex: "\
+(_(32|64|android|apple|chromeos|freebsd|fuchsia|fuzzer|ios|linux|mac|nacl|openbsd|posix|stubs?|win))?\
+(_(unit|browser|perf)?tests?)?$"
+
 # Make sure code like:
 # IPC_BEGIN_MESSAGE_MAP()
 #   IPC_MESSAGE_HANDLER(WidgetHostViewHost_Update, OnUpdate)

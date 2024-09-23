@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//chromecast/starboard/starboard.gni")
+
+cast_source_set("starboard_decryptor_cast") {
+  sources = [
+    "starboard_decryptor_cast.cc",
+    "starboard_decryptor_cast.h",
+  ]
+
+  deps = [
+    ":starboard_drm_key_tracker",
+    "//base",
+    "//chromecast/media/base",
+    "//chromecast/media/cdm",
+    "//chromecast/starboard/chromecast/starboard_adapter",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//google_apis",
+    "//media",
+  ]
+}
+
+cast_source_set("starboard_drm_key_tracker") {
+  sources = [
+    "starboard_drm_key_tracker.cc",
+    "starboard_drm_key_tracker.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+test("starboard_decryptor_cast_test") {
+  sources = [ "starboard_decryptor_cast_test.cc" ]
+  deps = [
+    ":starboard_decryptor_cast",
+    ":starboard_drm_key_tracker",
+    "//base",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/starboard/media/media:mock_starboard_api_wrapper",
+    "//chromecast/starboard/media/media:starboard_api_wrapper",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}
+
+test("starboard_drm_key_tracker_test") {
+  sources = [ "starboard_drm_key_tracker_test.cc" ]
+  deps = [
+    ":starboard_drm_key_tracker",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

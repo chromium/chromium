@@ -11,10 +11,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager.Observer;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 
 /**
@@ -28,7 +27,7 @@ public class EngagementSignalsHandler {
     @Nullable private RealtimeEngagementSignalObserver mObserver;
     private TabObserverRegistrar mTabObserverRegistrar;
     private EngagementSignalsCallback mCallback;
-    private PrivacyPreferencesManager.Observer mPrivacyPreferencesObserver;
+    private Callback<Boolean> mPrivacyPreferencesObserver;
 
     public EngagementSignalsHandler(
             CustomTabsConnection connection, CustomTabsSessionToken session) {
@@ -95,24 +94,24 @@ public class EngagementSignalsHandler {
         }
 
         mPrivacyPreferencesObserver =
-                new Observer() {
-                    @Override
-                    public void onIsUsageAndCrashReportingPermittedChanged(boolean permitted) {
-                        if (!permitted) {
-                            if (mObserver != null) {
-                                if (mCallback != null) {
-                                    mCallback.onSessionEnded(false, Bundle.EMPTY);
-                                }
-                                mObserver.destroy();
-                                mObserver = null;
+                (permitted) -> {
+                    if (!permitted) {
+                        if (mObserver != null) {
+                            if (mCallback != null) {
+                                mCallback.onSessionEnded(false, Bundle.EMPTY);
                             }
-                            PrivacyPreferencesManagerImpl.getInstance()
-                                    .removeObserver(mPrivacyPreferencesObserver);
-                            mPrivacyPreferencesObserver = null;
+                            mObserver.destroy();
+                            mObserver = null;
                         }
+                        PrivacyPreferencesManagerImpl.getInstance()
+                                .getUsageAndCrashReportingPermittedObservableSupplier()
+                                .removeObserver(mPrivacyPreferencesObserver);
+                        mPrivacyPreferencesObserver = null;
                     }
                 };
-        PrivacyPreferencesManagerImpl.getInstance().addObserver(mPrivacyPreferencesObserver);
+        PrivacyPreferencesManagerImpl.getInstance()
+                .getUsageAndCrashReportingPermittedObservableSupplier()
+                .addObserver(mPrivacyPreferencesObserver);
         mTabObserverRegistrar.registerActivityTabObserver(
                 new CustomTabTabObserver() {
                     @Override
@@ -127,6 +126,7 @@ public class EngagementSignalsHandler {
                         }
                         if (mPrivacyPreferencesObserver != null) {
                             PrivacyPreferencesManagerImpl.getInstance()
+                                    .getUsageAndCrashReportingPermittedObservableSupplier()
                                     .removeObserver(mPrivacyPreferencesObserver);
                             mPrivacyPreferencesObserver = null;
                         }

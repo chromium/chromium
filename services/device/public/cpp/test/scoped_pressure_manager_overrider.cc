@@ -24,14 +24,19 @@ bool FakePressureManager::is_bound() const {
 }
 
 void FakePressureManager::AddClient(
-    mojo::PendingRemote<mojom::PressureClient> client,
     mojom::PressureSource source,
+    const std::optional<base::UnguessableToken>& token,
     AddClientCallback callback) {
   if (is_supported_) {
-    clients_[source].Add(std::move(client));
-    std::move(callback).Run(mojom::PressureStatus::kOk);
+    mojo::Remote<mojom::PressureClient> client_remote;
+    auto pending_receiver = client_remote.BindNewPipeAndPassReceiver();
+    clients_[source].Add(std::move(client_remote));
+    std::move(callback).Run(
+        mojom::PressureManagerAddClientResult::NewPressureClient(
+            std::move(pending_receiver)));
   } else {
-    std::move(callback).Run(mojom::PressureStatus::kNotSupported);
+    std::move(callback).Run(mojom::PressureManagerAddClientResult::NewError(
+        mojom::PressureManagerAddClientError::kNotSupported));
   }
 }
 

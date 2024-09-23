@@ -1,7 +1,12 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // Tests for WebSocketBasicStream. Note that we do not attempt to verify that
 // frame parsing itself functions correctly, as that is covered by the
 // WebSocketFrameParser tests.
@@ -16,9 +21,9 @@
 #include <optional>
 #include <utility>
 
-#include "base/big_endian.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -55,7 +60,7 @@ WEBSOCKET_BASIC_STREAM_TEST_DEFINE_CONSTANT(
     PartialLargeFrame,
     "\x81\x7F\x00\x00\x00\x00\x7F\xFF\xFF\xFF"
     "chromiunum ad pasco per loca insanis pullum manducat frumenti");
-const size_t kLargeFrameHeaderSize = 10;
+constexpr size_t kLargeFrameHeaderSize = 10;
 WEBSOCKET_BASIC_STREAM_TEST_DEFINE_CONSTANT(MultipleFrames,
                                             "\x81\x01X\x81\x01Y\x81\x01Z");
 WEBSOCKET_BASIC_STREAM_TEST_DEFINE_CONSTANT(EmptyFirstFrame, "\x01\x00");
@@ -82,8 +87,8 @@ WEBSOCKET_BASIC_STREAM_TEST_DEFINE_CONSTANT(WriteFrame,
                                             "\x81\x85\x00\x00\x00\x00Write");
 WEBSOCKET_BASIC_STREAM_TEST_DEFINE_CONSTANT(MaskedEmptyPong,
                                             "\x8A\x80\x00\x00\x00\x00");
-const WebSocketMaskingKey kNulMaskingKey = {{'\0', '\0', '\0', '\0'}};
-const WebSocketMaskingKey kNonNulMaskingKey = {
+constexpr WebSocketMaskingKey kNulMaskingKey = {{'\0', '\0', '\0', '\0'}};
+constexpr WebSocketMaskingKey kNonNulMaskingKey = {
     {'\x0d', '\x1b', '\x06', '\x17'}};
 
 // A masking key generator function which generates the identity mask,
@@ -416,7 +421,7 @@ TEST_F(WebSocketBasicStreamSocketTest, HeaderBodySeparated) {
 
 // Every frame has a header with a correct payload_length field.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, LargeFrameTwoChunks) {
-  const size_t kChunkSize = 16;
+  constexpr size_t kChunkSize = 16;
   CreateChunkedRead(ASYNC, kPartialLargeFrame, kPartialLargeFrameSize,
                     kChunkSize, 2, LAST_FRAME_NOT_BIG);
   TestCompletionCallback cb[2];
@@ -438,7 +443,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, LargeFrameTwoChunks) {
 
 // Only the final frame of a fragmented message has |final| bit set.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, OnlyFinalChunkIsFinal) {
-  static const size_t kFirstChunkSize = 4;
+  static constexpr size_t kFirstChunkSize = 4;
   CreateChunkedRead(ASYNC, kSampleFrame, kSampleFrameSize, kFirstChunkSize, 2,
                     LAST_FRAME_BIG);
   TestCompletionCallback cb[2];
@@ -459,8 +464,8 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, OnlyFinalChunkIsFinal) {
 
 // All frames after the first have their opcode changed to Continuation.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, ContinuationOpCodeUsed) {
-  const size_t kFirstChunkSize = 3;
-  const int kChunkCount = 3;
+  constexpr size_t kFirstChunkSize = 3;
+  constexpr int kChunkCount = 3;
   // The input data is one frame with opcode Text, which arrives in three
   // separate chunks.
   CreateChunkedRead(ASYNC, kSampleFrame, kSampleFrameSize, kFirstChunkSize,
@@ -694,7 +699,7 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest,
 // headers works correctly.
 TEST_F(WebSocketBasicStreamSocketSingleReadTest,
        PartialControlFrameInHttpResponse) {
-  const size_t kPartialFrameBytes = 3;
+  constexpr size_t kPartialFrameBytes = 3;
   SetHttpReadBuffer(kCloseFrame, kPartialFrameBytes);
   CreateRead(MockRead(ASYNC, kCloseFrame + kPartialFrameBytes,
                       kCloseFrameSize - kPartialFrameBytes));
@@ -713,7 +718,7 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest,
 // headers works correctly. Synchronous version (unlikely in practice).
 TEST_F(WebSocketBasicStreamSocketSingleReadTest,
        PartialControlFrameInHttpResponseSync) {
-  const size_t kPartialFrameBytes = 3;
+  constexpr size_t kPartialFrameBytes = 3;
   SetHttpReadBuffer(kCloseFrame, kPartialFrameBytes);
   CreateRead(MockRead(SYNCHRONOUS, kCloseFrame + kPartialFrameBytes,
                       kCloseFrameSize - kPartialFrameBytes));
@@ -766,7 +771,7 @@ TEST_F(WebSocketBasicStreamSocketSingleReadTest, OverlongControlFrame) {
 // A control frame over 125 characters should still be rejected if it is split
 // into multiple chunks.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, SplitOverlongControlFrame) {
-  const size_t kFirstChunkSize = 16;
+  constexpr size_t kFirstChunkSize = 16;
   expect_all_io_to_complete_ = false;
   CreateChunkedRead(SYNCHRONOUS, k126BytePong, k126BytePongSize,
                     kFirstChunkSize, 2, LAST_FRAME_BIG);
@@ -778,7 +783,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, SplitOverlongControlFrame) {
 
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest,
        AsyncSplitOverlongControlFrame) {
-  const size_t kFirstChunkSize = 16;
+  constexpr size_t kFirstChunkSize = 16;
   expect_all_io_to_complete_ = false;
   CreateChunkedRead(ASYNC, k126BytePong, k126BytePongSize, kFirstChunkSize, 2,
                     LAST_FRAME_BIG);
@@ -794,7 +799,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest,
 // In the synchronous case, ReadFrames assembles the whole control frame before
 // returning.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, SyncControlFrameAssembly) {
-  const size_t kChunkSize = 3;
+  constexpr size_t kChunkSize = 3;
   CreateChunkedRead(SYNCHRONOUS, kCloseFrame, kCloseFrameSize, kChunkSize, 3,
                     LAST_FRAME_BIG);
 
@@ -806,7 +811,7 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, SyncControlFrameAssembly) {
 // In the asynchronous case, the callback is not called until the control frame
 // has been completely assembled.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, AsyncControlFrameAssembly) {
-  const size_t kChunkSize = 3;
+  constexpr size_t kChunkSize = 3;
   CreateChunkedRead(ASYNC, kCloseFrame, kCloseFrameSize, kChunkSize, 3,
                     LAST_FRAME_BIG);
 
@@ -821,18 +826,27 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, AsyncControlFrameAssembly) {
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, OneMegFrame) {
   // This should be equal to the definition of kSmallReadBufferFrame in
   // websocket_basic_stream.cc.
-  const int kReadBufferSize = 1000;
-  const uint64_t kPayloadSize = 1 << 20;
-  const size_t kWireSize = kPayloadSize + kLargeFrameHeaderSize;
-  const size_t kExpectedFrameCount =
+  constexpr int kReadBufferSize = 1000;
+  constexpr uint64_t kPayloadSize = 1 << 20;
+  constexpr size_t kWireSize = kPayloadSize + kLargeFrameHeaderSize;
+  constexpr size_t kExpectedFrameCount =
       (kWireSize + kReadBufferSize - 1) / kReadBufferSize;
-  auto big_frame = std::make_unique<char[]>(kWireSize);
-  memcpy(big_frame.get(), "\x81\x7F", 2);
-  base::WriteBigEndian(big_frame.get() + 2, kPayloadSize);
-  memset(big_frame.get() + kLargeFrameHeaderSize, 'A', kPayloadSize);
 
-  CreateChunkedRead(ASYNC, big_frame.get(), kWireSize, kReadBufferSize,
-                    kExpectedFrameCount, LAST_FRAME_BIG);
+  auto big_frame = base::HeapArray<uint8_t>::WithSize(kWireSize);
+  auto [extended_header, payload] =
+      big_frame.as_span().split_at(kLargeFrameHeaderSize);
+
+  {
+    auto [header, extended_payload_length] = extended_header.split_at<2u>();
+    header.copy_from(base::as_byte_span({'\x81', '\x7F'}));
+    extended_payload_length.copy_from(base::U64ToBigEndian(kPayloadSize));
+  }
+
+  std::ranges::fill(payload, 'A');
+
+  CreateChunkedRead(ASYNC, reinterpret_cast<char*>(big_frame.data()),
+                    big_frame.size(), kReadBufferSize, kExpectedFrameCount,
+                    LAST_FRAME_BIG);
 
   for (size_t frame = 0; frame < kExpectedFrameCount; ++frame) {
     frames_.clear();
@@ -854,9 +868,9 @@ TEST_F(WebSocketBasicStreamSocketChunkedReadTest, OneMegFrame) {
 // A frame with reserved flag(s) set that arrives in chunks should only have the
 // reserved flag(s) set on the first chunk when split.
 TEST_F(WebSocketBasicStreamSocketChunkedReadTest, ReservedFlagCleared) {
-  static const char kReservedFlagFrame[] = "\x41\x05Hello";
-  const size_t kReservedFlagFrameSize = std::size(kReservedFlagFrame) - 1;
-  const size_t kChunkSize = 5;
+  static constexpr char kReservedFlagFrame[] = "\x41\x05Hello";
+  constexpr size_t kReservedFlagFrameSize = std::size(kReservedFlagFrame) - 1;
+  constexpr size_t kChunkSize = 5;
 
   CreateChunkedRead(ASYNC, kReservedFlagFrame, kReservedFlagFrameSize,
                     kChunkSize, 2, LAST_FRAME_BIG);
@@ -928,7 +942,8 @@ TEST_F(WebSocketBasicStreamSocketWriteTest, WriteNullptrPong) {
 // Check that writing with a non-nullptr mask works correctly.
 TEST_F(WebSocketBasicStreamSocketTest, WriteNonNulMask) {
   std::string masked_frame = std::string("\x81\x88");
-  masked_frame += std::string(kNonNulMaskingKey.key, 4);
+  masked_frame += std::string(std::begin(kNonNulMaskingKey.key),
+                              std::end(kNonNulMaskingKey.key));
   masked_frame += "jiggered";
   MockWrite writes[] = {
       MockWrite(SYNCHRONOUS, masked_frame.data(), masked_frame.size())};

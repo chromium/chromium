@@ -7,9 +7,9 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <string_view>
 
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +35,7 @@ class TestCrashKeyImplementation : public CrashKeyImplementation {
     return new CrashKeyString(name, size);
   }
 
-  void Set(CrashKeyString* crash_key, base::StringPiece value) override {
+  void Set(CrashKeyString* crash_key, std::string_view value) override {
     ASSERT_TRUE(data_->emplace(crash_key->name, value).second);
   }
 

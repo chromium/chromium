@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
+#include "chrome/browser/extensions/api/bookmarks_core/bookmarks_function.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
@@ -45,7 +45,7 @@ class BookmarkManagerPrivateEventRouter
 
   // bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override;
-  void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
+  void BookmarkModelBeingDeleted() override;
 
  private:
   // Helper to actually dispatch an event to extension listeners.
@@ -313,10 +313,8 @@ class BookmarkManagerPrivateIOFunction : public BookmarksFunction,
   BookmarkManagerPrivateIOFunction();
 
   // ui::SelectFileDialog::Listener:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override = 0;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override = 0;
+  void FileSelectionCanceled() override;
 
   void ShowSelectFileDialog(
       ui::SelectFileDialog::Type type,
@@ -335,9 +333,7 @@ class BookmarkManagerPrivateImportFunction
                              BOOKMARKMANAGERPRIVATE_IMPORT)
 
   // BookmarkManagerIOFunction:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
 
  protected:
   ~BookmarkManagerPrivateImportFunction() override = default;
@@ -354,9 +350,7 @@ class BookmarkManagerPrivateExportFunction
                              BOOKMARKMANAGERPRIVATE_EXPORT)
 
   // BookmarkManagerIOFunction:
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
 
  protected:
   ~BookmarkManagerPrivateExportFunction() override = default;

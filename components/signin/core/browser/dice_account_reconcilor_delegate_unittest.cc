@@ -4,17 +4,18 @@
 
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 
-#include <optional>
-
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -36,10 +37,15 @@ gaia::ListedAccount GetListedAccountFromAccountInfo(
   return gaia_account;
 }
 
-class DiceAccountReconcilorDelegateTest : public testing::Test {
+class DiceAccountReconcilorDelegateTest
+    : public base::test::WithFeatureOverride,
+      public testing::Test {
  public:
   DiceAccountReconcilorDelegateTest()
-      : delegate_(identity_manager(),
+      : base::test::WithFeatureOverride(
+            switches::kExplicitBrowserSigninUIOnDesktop),
+        identity_test_environment_(nullptr, &pref_service_, nullptr),
+        delegate_(identity_manager(),
                   identity_test_environment_.signin_client()) {}
 
   DiceAccountReconcilorDelegate& delegate() { return delegate_; }
@@ -48,38 +54,63 @@ class DiceAccountReconcilorDelegateTest : public testing::Test {
     return identity_test_environment_;
   }
 
+  bool IsExplicitBrowserSigninEnabled() const {
+    return IsParamFeatureEnabled();
+  }
+
   IdentityManager* identity_manager() {
     return identity_test_environment().identity_manager();
   }
 
+  PrefService* pref_service() { return &pref_service_; }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{switches::kUnoDesktop};
+  base::test::ScopedFeatureList scoped_feature_list_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   IdentityTestEnvironment identity_test_environment_;
   DiceAccountReconcilorDelegate delegate_;
 };
 
-TEST_F(DiceAccountReconcilorDelegateTest, GetConsentLevelForPrimaryAccount) {
-  // Uno enabled.
-  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(),
-            ConsentLevel::kSignin);
+TEST_P(DiceAccountReconcilorDelegateTest, GetConsentLevelForPrimaryAccount) {
+  ConsentLevel consent_level = IsExplicitBrowserSigninEnabled()
+                                   ? ConsentLevel::kSignin
+                                   : ConsentLevel::kSync;
+  EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(), consent_level);
+
+  if (IsExplicitBrowserSigninEnabled()) {
+    // Sign in.
+    identity_test_environment().MakePrimaryAccountAvailable(
+        "test@gmail.com", ConsentLevel::kSignin);
+    // Simulate Dice User migrating.
+    pref_service()->SetBoolean(prefs::kExplicitBrowserSignin, false);
+
+    // The behavior for Dice users migrating should be the same as if the
+    // feature is disabled.
+    EXPECT_EQ(delegate().GetConsentLevelForPrimaryAccount(),
+              ConsentLevel::kSync);
+  }
 }
 
-TEST_F(DiceAccountReconcilorDelegateTest,
-       IsUpdateCookieAllowedPreChromeSignIn) {
-  EXPECT_FALSE(delegate().IsUpdateCookieAllowed());
+TEST_P(DiceAccountReconcilorDelegateTest,
+       IsCookieBasedConsistencyModePreChromeSignIn) {
+  EXPECT_EQ(delegate().IsCookieBasedConsistencyMode(),
+            IsExplicitBrowserSigninEnabled());
 }
 
-TEST_F(DiceAccountReconcilorDelegateTest,
-       IsUpdateCookieAllowedPostChromeSignIn) {
+TEST_P(DiceAccountReconcilorDelegateTest,
+       IsCookieBasedConsistencyModePostChromeSignIn) {
   identity_test_environment().MakePrimaryAccountAvailable(
       kPrimaryAccountEmail, ConsentLevel::kSignin);
   ASSERT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
-  EXPECT_TRUE(delegate().IsUpdateCookieAllowed());
+  EXPECT_FALSE(delegate().IsCookieBasedConsistencyMode());
 }
 
-TEST_F(DiceAccountReconcilorDelegateTest,
+TEST_P(DiceAccountReconcilorDelegateTest,
        RevokeSecondaryTokensForReconcileIfNeededPreChromeSignIn) {
+  if (!IsExplicitBrowserSigninEnabled()) {
+    GTEST_SKIP();
+  }
   AccountInfo valid_account =
       identity_test_environment().MakeAccountAvailable("account@gmail.com");
 
@@ -109,7 +140,7 @@ TEST_F(DiceAccountReconcilorDelegateTest,
               ::testing::UnorderedElementsAre(
                   valid_account, account_with_invalid_refresh_token,
                   no_cookie_account, invalid_cookie_account));
-  ASSERT_FALSE(delegate().IsUpdateCookieAllowed());
+  ASSERT_TRUE(delegate().IsCookieBasedConsistencyMode());
 
   const std::vector<gaia::ListedAccount> gaia_signed_in_accounts{
       GetListedAccountFromAccountInfo(valid_account),
@@ -123,43 +154,37 @@ TEST_F(DiceAccountReconcilorDelegateTest,
   EXPECT_THAT(chrome_accounts[0], ::testing::Eq(valid_account));
 }
 
-TEST(DiceAccountReconcilorDelegateTestUnoDisabled,
-     RevokeSecondaryTokensForReconcile) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list;
-  IdentityTestEnvironment identity_test_environment;
-  IdentityManager* identity_manager =
-      identity_test_environment.identity_manager();
-  DiceAccountReconcilorDelegate delegate(
-      identity_manager, identity_test_environment.signin_client());
-
-  EXPECT_TRUE(delegate.IsUpdateCookieAllowed());
-
-  scoped_feature_list.InitAndDisableFeature(switches::kUnoDesktop);
-
+TEST_P(DiceAccountReconcilorDelegateTest, RevokeSecondaryTokensForReconcile) {
   AccountInfo valid_account =
-      identity_test_environment.MakeAccountAvailable("account@gmail.com");
+      identity_test_environment().MakeAccountAvailable("account@gmail.com");
 
+  if (IsExplicitBrowserSigninEnabled()) {
+    identity_test_environment().SetPrimaryAccount(valid_account.email,
+                                                  ConsentLevel::kSignin);
+  }
+  EXPECT_FALSE(delegate().IsCookieBasedConsistencyMode());
   // Accounts with invalid refresh token should be revoked.
   AccountInfo account_with_invalid_refresh_token =
-      identity_test_environment.MakeAccountAvailable(
+      identity_test_environment().MakeAccountAvailable(
           AccountAvailabilityOptionsBuilder()
               .WithRefreshToken(GaiaConstants::kInvalidRefreshToken)
               .Build("invalid_refresh_token@gmail.com"));
 
-  // Uno disabled, only accounts with invalid refresh tokens should be revoked.
+  // Only accounts with invalid refresh tokens should be revoked.
   AccountInfo no_cookie_account =
-      identity_test_environment.MakeAccountAvailable("no_cookie@gmail.com");
-  EXPECT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 3u);
+      identity_test_environment().MakeAccountAvailable("no_cookie@gmail.com");
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3u);
 
   const std::vector<gaia::ListedAccount> gaia_signed_in_accounts{
       GetListedAccountFromAccountInfo(valid_account),
       GetListedAccountFromAccountInfo(account_with_invalid_refresh_token)};
-  delegate.RevokeSecondaryTokensForReconcileIfNeeded(gaia_signed_in_accounts);
+  delegate().RevokeSecondaryTokensForReconcileIfNeeded(gaia_signed_in_accounts);
   EXPECT_THAT(
-      identity_manager->GetAccountsWithRefreshTokens(),
+      identity_manager()->GetAccountsWithRefreshTokens(),
       ::testing::UnorderedElementsAre(valid_account, no_cookie_account));
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DiceAccountReconcilorDelegateTest);
 
 }  // namespace
 }  // namespace signin

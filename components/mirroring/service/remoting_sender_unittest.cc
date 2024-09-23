@@ -45,12 +45,8 @@ void AreEqualExceptKeyframeImpl(const media::cast::SenderEncodedFrame& frame,
   }
 
   scoped_refptr<media::DecoderBuffer> received_buffer =
-      media::cast::ByteArrayToDecoderBuffer(
-          base::as_bytes(base::make_span(frame.data)));
-  EXPECT_EQ(std::string(reinterpret_cast<const char*>(buffer.data()),
-                        buffer.data_size()),
-            std::string(reinterpret_cast<const char*>(received_buffer->data()),
-                        received_buffer->data_size()));
+      media::cast::ByteArrayToDecoderBuffer(base::as_byte_span(frame.data));
+  EXPECT_EQ(base::span(buffer), base::span(*received_buffer));
 
   // The reference time and encode completion time should be the same, and
   // is based on the clock time.
@@ -83,8 +79,13 @@ class FakeSender : public media::cast::FrameSender {
   MOCK_METHOD1(SetTargetPlayoutDelay, void(base::TimeDelta));
   MOCK_CONST_METHOD0(GetTargetPlayoutDelay, base::TimeDelta());
   MOCK_CONST_METHOD0(NeedsKeyFrame, bool());
+  MOCK_METHOD1(EnqueueFrame,
+               media::cast::CastStreamingFrameDropReason(
+                   std::unique_ptr<media::cast::SenderEncodedFrame>));
   MOCK_METHOD1(ShouldDropNextFrame,
                media::cast::CastStreamingFrameDropReason(base::TimeDelta));
+  MOCK_CONST_METHOD1(GetRecordedRtpTimestamp,
+                     media::cast::RtpTimeTicks(media::cast::FrameId));
   MOCK_CONST_METHOD0(GetUnacknowledgedFrameCount, int());
   MOCK_METHOD2(GetSuggestedBitrate, int(base::TimeTicks, base::TimeDelta));
   MOCK_CONST_METHOD0(MaxFrameRate, double());
@@ -93,15 +94,6 @@ class FakeSender : public media::cast::FrameSender {
   MOCK_CONST_METHOD0(CurrentRoundTripTime, base::TimeDelta());
   MOCK_CONST_METHOD0(LastSendTime, base::TimeTicks());
   MOCK_CONST_METHOD0(LastAckedFrameId, media::cast::FrameId());
-  MOCK_METHOD1(OnReceivedCastFeedback,
-               void(const media::cast::RtcpCastMessage&));
-  MOCK_METHOD0(OnReceivedPli, void());
-  MOCK_METHOD1(OnMeasuredRoundTripTime, void(base::TimeDelta));
-  MOCK_CONST_METHOD1(GetRecordedRtpTimestamp,
-                     media::cast::RtpTimeTicks(media::cast::FrameId));
-  MOCK_METHOD1(EnqueueFrame,
-               media::cast::CastStreamingFrameDropReason(
-                   std::unique_ptr<media::cast::SenderEncodedFrame>));
 };
 
 class MojoSenderWrapper {
@@ -122,7 +114,7 @@ class MojoSenderWrapper {
     is_frame_in_flight_ = true;
 
     data_pipe_writer_.Write(
-        buffer->data(), buffer->data_size(),
+        buffer->data(), buffer->size(),
         base::BindOnce(&MojoSenderWrapper::OnPipeWriteComplete,
                        weak_factory_.GetWeakPtr()));
     stream_sender_->SendFrame(
@@ -193,19 +185,19 @@ class RemotingSenderTest : public ::testing::Test {
         std::move(producer_end), std::move(sender));
 
     std::vector<uint8_t> data = {1, 2, 3};
-    first_buffer_ = media::DecoderBuffer::CopyFrom(data.data(), 3);
+    first_buffer_ = media::DecoderBuffer::CopyFrom(data);
     first_buffer_->set_duration(base::Seconds(1));
     first_buffer_->set_timestamp(base::Seconds(2));
     first_buffer_->set_is_key_frame(false);
 
     data = {42, 43, 44};
-    second_buffer_ = media::DecoderBuffer::CopyFrom(data.data(), 3);
+    second_buffer_ = media::DecoderBuffer::CopyFrom(data);
     second_buffer_->set_duration(base::Seconds(32));
     second_buffer_->set_timestamp(base::Seconds(42));
     second_buffer_->set_is_key_frame(false);
 
     data = {7, 8, 9};
-    third_buffer_ = media::DecoderBuffer::CopyFrom(data.data(), 3);
+    third_buffer_ = media::DecoderBuffer::CopyFrom(data);
     third_buffer_->set_duration(base::Seconds(10));
     third_buffer_->set_timestamp(base::Seconds(11));
     third_buffer_->set_is_key_frame(true);

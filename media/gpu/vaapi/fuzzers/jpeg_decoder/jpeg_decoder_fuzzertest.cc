@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -204,11 +209,15 @@ class VaapiJpegDecoderWrapper {
   VaapiJpegDecoderWrapper() = default;
   ~VaapiJpegDecoderWrapper() = default;
 
-  bool Initialize() { return decoder_.Initialize(base::DoNothing()); }
+  bool Initialize() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_.decoder_sequence_checker_);
+    return decoder_.Initialize(base::DoNothing());
+  }
 
   bool MaybeCreateSurface(unsigned int picture_va_rt_format,
                           const gfx::Size& new_coded_size,
                           const gfx::Size& new_visible_size) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_.decoder_sequence_checker_);
     if (!decoder_.MaybeCreateSurface(picture_va_rt_format, new_coded_size,
                                      new_visible_size)) {
       decoder_.scoped_va_context_and_surface_.reset();
@@ -218,6 +227,7 @@ class VaapiJpegDecoderWrapper {
   }
 
   bool SubmitBuffers(const media::JpegParseResult& parse_result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_.decoder_sequence_checker_);
     if (!decoder_.SubmitBuffers(parse_result)) {
       decoder_.scoped_va_context_and_surface_.reset();
       return false;
@@ -226,6 +236,7 @@ class VaapiJpegDecoderWrapper {
   }
 
   bool ExecuteAndDestroyPendingBuffers() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_.decoder_sequence_checker_);
     if (!decoder_.vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
             decoder_.scoped_va_context_and_surface_->id())) {
       decoder_.scoped_va_context_and_surface_.reset();

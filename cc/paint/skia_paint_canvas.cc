@@ -8,10 +8,13 @@
 #include <cstring>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_filter.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_recorder.h"
@@ -21,11 +24,14 @@
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPoint.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrRecordingContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrRecordingContext.h"
+#include "third_party/skia/src/core/SkCanvasPriv.h"
 
 namespace cc {
 SkiaPaintCanvas::ContextFlushes::ContextFlushes()
@@ -97,6 +103,14 @@ int SkiaPaintCanvas::saveLayerAlphaf(float alpha) {
 
 int SkiaPaintCanvas::saveLayerAlphaf(const SkRect& bounds, float alpha) {
   return canvas_->saveLayerAlphaf(&bounds, alpha);
+}
+
+int SkiaPaintCanvas::saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+                                      const PaintFlags& flags) {
+  SkPaint paint = flags.ToSkPaint();
+  return canvas_->saveLayer(SkCanvasPriv::ScaledBackdropLayer(
+      /*bounds=*/nullptr, &paint, /*backdrop=*/nullptr, /*backdropScale=*/1.0f,
+      /*saveLayerFlags=*/0, PaintFilter::ToSkImageFilters(filters)));
 }
 
 void SkiaPaintCanvas::restore() {
@@ -181,6 +195,22 @@ void SkiaPaintCanvas::drawLine(SkScalar x0,
       canvas_, [x0, y0, x1, y1](SkCanvas* c, const SkPaint& p) {
         c->drawLine(x0, y0, x1, y1, p);
       });
+  FlushAfterDrawIfNeeded();
+}
+
+void SkiaPaintCanvas::drawArc(const SkRect& oval,
+                              SkScalar start_angle_degrees,
+                              SkScalar sweep_angle_degrees,
+                              const PaintFlags& flags) {
+  ScopedRasterFlags raster_flags(&flags, image_provider_,
+                                 canvas_->getTotalMatrix(), GetMaxTextureSize(),
+                                 1.0f);
+  if (!raster_flags.flags()) {
+    return;
+  }
+
+  DrawArcOp op(oval, start_angle_degrees, sweep_angle_degrees, flags);
+  op.RasterWithFlagsImpl(raster_flags.flags(), canvas_);
   FlushAfterDrawIfNeeded();
 }
 
@@ -388,7 +418,13 @@ void SkiaPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
 }
 
 void SkiaPaintCanvas::drawPicture(PaintRecord record) {
-  drawPicture(std::move(record), PlaybackParams::CustomDataRasterCallback());
+  drawPicture(std::move(record), PlaybackCallbacks::CustomDataRasterCallback(),
+              /*local_ctm=*/true);
+}
+
+void SkiaPaintCanvas::drawPicture(PaintRecord record, bool local_ctm) {
+  drawPicture(std::move(record), PlaybackCallbacks::CustomDataRasterCallback(),
+              local_ctm);
 }
 
 SkM44 SkiaPaintCanvas::getLocalToDevice() const {
@@ -419,15 +455,17 @@ void SkiaPaintCanvas::setNodeId(int node_id) {
 
 void SkiaPaintCanvas::drawPicture(
     PaintRecord record,
-    PlaybackParams::CustomDataRasterCallback custom_raster_callback) {
-  auto did_draw_op_cb =
-      context_flushes_.enable
-          ? base::BindRepeating(&SkiaPaintCanvas::FlushAfterDrawIfNeeded,
-                                base::Unretained(this))
-          : PlaybackParams::DidDrawOpCallback();
+    PlaybackCallbacks::CustomDataRasterCallback custom_raster_callback,
+    bool local_ctm) {
+  PlaybackCallbacks callbacks;
+  callbacks.custom_callback = custom_raster_callback;
+  if (context_flushes_.enable) {
+    callbacks.did_draw_op_callback = base::BindRepeating(
+        &SkiaPaintCanvas::FlushAfterDrawIfNeeded, base::Unretained(this));
+  }
   PlaybackParams params(image_provider_, canvas_->getLocalToDevice(),
-                        custom_raster_callback, did_draw_op_cb);
-  record.Playback(canvas_, params);
+                        callbacks);
+  record.Playback(canvas_, params, local_ctm);
 }
 
 void SkiaPaintCanvas::FlushAfterDrawIfNeeded() {

@@ -49,6 +49,7 @@ const METRIC_NAME_MODULE_DISABLED = 'NewTabPage.Modules.Disabled';
 
 export type UndoActionEvent =
     CustomEvent<{message: string, restoreCallback?: () => void}>;
+export type DismissModuleElementEvent = UndoActionEvent;
 export type DismissModuleInstanceEvent = UndoActionEvent;
 export type DisableModuleEvent = UndoActionEvent;
 
@@ -56,6 +57,7 @@ declare global {
   interface HTMLElementEventMap {
     'disable-module': DisableModuleEvent;
     'dismiss-module-instance': DismissModuleInstanceEvent;
+    'dismiss-module-element': DismissModuleElementEvent;
   }
 }
 
@@ -233,8 +235,11 @@ export class ModulesV2Element extends AppElementBase {
 
 
       if (modules.length > 1) {
-        const maxModuleInstanceCount = loadTimeData.getInteger(
-            'multipleLoadedModulesMaxModuleInstanceCount');
+        const maxModuleInstanceCount =
+            (modules.length >= this.maxColumnCount_) ?
+            1 :
+            loadTimeData.getInteger(
+                'multipleLoadedModulesMaxModuleInstanceCount');
         if (maxModuleInstanceCount > 0) {
           modules.forEach(module => {
             module.elements.splice(
@@ -287,7 +292,7 @@ export class ModulesV2Element extends AppElementBase {
               '#moduleElement',
             ],
             {fixed: true});
-        // TODO(crbug.com/1494416): Currently, a period of time must elapse
+        // TODO(crbug.com/40075330): Currently, a period of time must elapse
         // between the registration of the anchor element and the promo
         // invocation, else the anchor element will not be ready for use.
         setTimeout(() => {
@@ -428,6 +433,21 @@ export class ModulesV2Element extends AppElementBase {
 
     NewTabPageProxy.getInstance().handler.onDismissModule(
         wrapper.module.descriptor.id);
+  }
+
+  private onDismissModuleElement_(e: DismissModuleElementEvent) {
+    const restoreCallback = e.detail.restoreCallback;
+    this.undoData_ = {
+      message: e.detail.message,
+      undo: restoreCallback ?
+          () => {
+            restoreCallback();
+          } :
+          undefined,
+    };
+
+    // Notify the user.
+    this.$.undoToast.show();
   }
 
   private onUndoButtonClick_() {

@@ -14,11 +14,3 @@ copy("component") {
 
   outputs = [ "$root_out_dir/$mei_preload_out_dir/{{source_file_part}}" ]
 }
-
-if (is_mac) {
-  bundle_data("component_bundle") {
-    sources = mei_preload_sources
-
-    outputs = [ "{{bundle_contents_dir}}/Libraries/$mei_preload_out_dir/{{source_file_part}}" ]
-  }
-}

@@ -25,8 +25,8 @@ class WebState;
 
 class GURL;
 @class WebPageURLs;
-@protocol FollowIPHPresenter;
 @protocol FollowMenuUpdater;
+@protocol HelpCommands;
 
 // FollowTabHelper encapsulates tab behavior related to following channels.
 class FollowTabHelper : public web::WebStateObserver,
@@ -37,9 +37,9 @@ class FollowTabHelper : public web::WebStateObserver,
 
   ~FollowTabHelper() override;
 
-  // Sets the presenter for follow in-product help (IPH). `presenter` is not
-  // retained by this tab helper.
-  void set_follow_iph_presenter(id<FollowIPHPresenter> presenter);
+  // Sets the handler for showing follow in-product help (IPH). `help_handler`
+  // is not retained by this tab helper.
+  void set_help_handler(id<HelpCommands> help_handler);
 
   // Sets the value of `shoud_update_follow_item_`.
   void set_should_update_follow_item(bool shoud_update_follow_item) {
@@ -98,7 +98,7 @@ class FollowTabHelper : public web::WebStateObserver,
   raw_ptr<web::WebState> web_state_ = nullptr;
 
   // Presenter for follow in-product help (IPH).
-  __weak id<FollowIPHPresenter> follow_iph_presenter_ = nil;
+  __weak id<HelpCommands> help_handler_ = nil;
 
   // Manages this object as an observer of `web_state_`.
   base::ScopedObservation<web::WebState, web::WebStateObserver>

@@ -41,7 +41,7 @@ KeystoreKeysCryptographer::FromKeystoreKeys(
         KeyDerivationParams::CreateForPbkdf2(), key));
 
     if (last_key_name.empty()) {
-      // TODO(crbug.com/1368018): this shouldn't be possible, clean up once
+      // TODO(crbug.com/40868132): this shouldn't be possible, clean up once
       // lower-level Nigori code explicitly guarantees that.
       return nullptr;
     }
@@ -91,14 +91,14 @@ KeystoreKeysCryptographer::ToCryptographerImpl() const {
 bool KeystoreKeysCryptographer::EncryptKeystoreDecryptorToken(
     const sync_pb::NigoriKey& keystore_decryptor_key,
     sync_pb::EncryptedData* keystore_decryptor_token) const {
-  DCHECK(keystore_decryptor_token);
+  CHECK(keystore_decryptor_token);
   if (IsEmpty()) {
     return false;
   }
 
-  return key_bag_.EncryptWithKey(last_keystore_key_name_,
-                                 keystore_decryptor_key.SerializeAsString(),
-                                 keystore_decryptor_token);
+  *keystore_decryptor_token = key_bag_.EncryptWithKey(
+      last_keystore_key_name_, keystore_decryptor_key.SerializeAsString());
+  return true;
 }
 
 bool KeystoreKeysCryptographer::DecryptKeystoreDecryptorToken(

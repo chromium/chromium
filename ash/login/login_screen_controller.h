@@ -14,6 +14,7 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/management_disclosure_client.h"
 #include "ash/system/tray/system_tray_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -116,6 +117,8 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
   void SetIsFirstSigninStep(bool is_first) override;
   void ShowParentAccessButton(bool show) override;
   void SetAllowLoginAsGuest(bool allow_guest) override;
+  void SetManagementDisclosureClient(
+      ManagementDisclosureClient* client) override;
   std::unique_ptr<ScopedGuestButtonBlocker> GetScopedGuestButtonBlocker()
       override;
 
@@ -143,6 +146,10 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   void NotifyLoginScreenShown();
 
+  // Management disclosure client is used to communicate with chrome for
+  // LockScreen disclosure.
+  ManagementDisclosureClient* GetManagementDisclosureClient();
+
  private:
   void OnAuthenticateComplete(OnAuthenticateCallback callback, bool success);
 
@@ -165,6 +172,9 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   // If set to false, all auth requests will forcibly fail.
   ForceFailAuth force_fail_auth_for_debug_overlay_ = ForceFailAuth::kOff;
+
+  // Client to communicate with chrome for displaying the management disclosure.
+  raw_ptr<ManagementDisclosureClient> management_disclosure_client_ = nullptr;
 
   base::WeakPtrFactory<LoginScreenController> weak_factory_{this};
 };

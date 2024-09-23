@@ -319,7 +319,7 @@ bool WinWebAuthnApi::SupportsHybrid() {
   return IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
 }
 
-std::pair<CtapDeviceResponseCode,
+std::pair<MakeCredentialStatus,
           std::optional<AuthenticatorMakeCredentialResponse>>
 AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
                                     HWND h_wnd,
@@ -338,7 +338,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   WEBAUTHN_RP_ENTITY_INFORMATION rp_info{
       WEBAUTHN_RP_ENTITY_INFORMATION_CURRENT_VERSION, base::as_wcstr(rp_id),
       base::as_wcstr(rp_name),
-      /*pwszIcon=*/base::as_wcstr(std::u16string())};
+      /*pwszIcon=*/nullptr};
 
   std::u16string user_name = base::UTF8ToUTF16(request.user.name.value_or(""));
   std::u16string user_display_name =
@@ -349,7 +349,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       base::checked_cast<DWORD>(user_id.size()),
       const_cast<unsigned char*>(user_id.data()),
       base::as_wcstr(user_name),
-      /*pwszIcon=*/base::as_wcstr(std::u16string()),
+      /*pwszIcon=*/nullptr,
       base::as_wcstr(user_display_name),
   };
 
@@ -391,8 +391,8 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     // MakeCredentialRequestHandler rejects a request with credProtect
     // enforced=true if webauthn.dll does not support credProtect.
     if (request.cred_protect_enforce && api_version < WEBAUTHN_API_VERSION_2) {
-      NOTREACHED();
-      return {CtapDeviceResponseCode::kCtap2ErrNotAllowed, std::nullopt};
+      NOTREACHED_IN_MIGRATION();
+      return {MakeCredentialStatus::kWinNotAllowedError, std::nullopt};
     }
     // Windows doesn't support the concept of
     // CredProtectRequest::kUVOrCredIDRequiredOrBetter. So an authenticators
@@ -528,18 +528,17 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
     FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential()="
                     << HresultToHex(hresult) << " ("
                     << webauthn_api->GetErrorName(hresult) << ")";
-    return {WinErrorNameToCtapDeviceResponseCode(
+    return {WinErrorNameToMakeCredentialStatus(
                 base::as_u16cstr(webauthn_api->GetErrorName(hresult))),
             std::nullopt};
   }
   FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorMakeCredential()="
                   << *credential_attestation;
-  return {CtapDeviceResponseCode::kSuccess,
+  return {MakeCredentialStatus::kSuccess,
           ToAuthenticatorMakeCredentialResponse(*credential_attestation)};
 }
 
-std::pair<CtapDeviceResponseCode,
-          std::optional<AuthenticatorGetAssertionResponse>>
+std::pair<GetAssertionStatus, std::optional<AuthenticatorGetAssertionResponse>>
 AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                                   HWND h_wnd,
                                   GUID cancellation_id,
@@ -667,7 +666,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
     FIDO_LOG(DEBUG) << "WebAuthNAuthenticatorGetAssertion()="
                     << HresultToHex(hresult) << " ("
                     << webauthn_api->GetErrorName(hresult) << ")";
-    return {WinErrorNameToCtapDeviceResponseCode(
+    return {WinErrorNameToGetAssertionStatus(
                 base::as_u16cstr(webauthn_api->GetErrorName(hresult))),
             std::nullopt};
   }
@@ -681,8 +680,8 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
     // hmac_secret.
     response->hmac_secret_not_evaluated = true;
   }
-  return {response ? CtapDeviceResponseCode::kSuccess
-                   : CtapDeviceResponseCode::kCtap2ErrOther,
+  return {response ? GetAssertionStatus::kSuccess
+                   : GetAssertionStatus::kAuthenticatorResponseInvalid,
           std::move(response)};
 }
 
@@ -726,6 +725,8 @@ AuthenticatorEnumerateCredentialsBlocking(WinWebAuthnApi* webauthn_api,
     }
     return {true, {}};
   }
+  FIDO_LOG(DEBUG) << "WebAuthNGetCredentialList returned "
+                  << credentials->cCredentialDetails << " credential(s)";
   return {true, WinCredentialDetailsListToCredentialMetadata(*credentials)};
 }
 

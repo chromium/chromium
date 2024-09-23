@@ -43,7 +43,7 @@ import time
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
-from typing import Literal, Optional, Set, Tuple
+from typing import List, Literal, NamedTuple, Optional, Set, Tuple
 
 import six
 from six.moves import zip_longest
@@ -57,7 +57,12 @@ from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.path import abspath_to_uri
-from blinkpy.w3c.wpt_manifest import WPTManifest, MANIFEST_NAME
+from blinkpy.w3c.wpt_manifest import (
+    FuzzyRange,
+    FuzzyParameters,
+    WPTManifest,
+    MANIFEST_NAME,
+)
 from blinkpy.web_tests.layout_package.bot_test_expectations import BotTestExpectationsFactory
 from blinkpy.web_tests.models.test_configuration import TestConfiguration
 from blinkpy.web_tests.models.test_run_results import TestRunException
@@ -74,9 +79,6 @@ from blinkpy.web_tests.servers import pywebsocket
 from blinkpy.web_tests.servers import wptserve
 
 _log = logging.getLogger(__name__)
-
-FuzzyRange = Tuple[int, int]
-FuzzyParameters = Tuple[Optional[FuzzyRange], Optional[FuzzyRange]]
 
 # Path relative to the build directory.
 CONTENT_SHELL_FONTS_DIR = "test_fonts"
@@ -138,6 +140,31 @@ DISABLE_THREADED_COMPOSITING_FLAG = '--disable-threaded-compositing'
 DISABLE_THREADED_ANIMATION_FLAG = '--disable-threaded-animation'
 
 
+class BaselineLocation(NamedTuple):
+    """A representation of a baseline that may exist on disk."""
+    virtual_suite: str = ''
+    platform: str = ''
+    flag_specific: str = ''
+
+    @property
+    def root(self) -> bool:
+        # Also check that this baseline is not flag-specific. A flag-specific
+        # suite implies a platform, even without `platform/*/` in its path.
+        return not self.platform and not self.flag_specific
+
+    def __str__(self) -> str:
+        parts = []
+        if self.virtual_suite:
+            parts.append('virtual/%s' % self.virtual_suite)
+        if self.platform:
+            parts.append(self.platform)
+        elif self.flag_specific:
+            parts.append(self.flag_specific)
+        if not parts:
+            parts.append('(generic)')
+        return ':'.join(parts)
+
+
 class Port(object):
     """Abstract class for Port-specific hooks for the web_test package."""
 
@@ -154,32 +181,36 @@ class Port(object):
 
     CONTENT_SHELL_NAME = 'content_shell'
     CHROME_NAME = 'chrome'
+    HEADLESS_SHELL_NAME = 'headless_shell'
 
     # Update the first line in third_party/blink/web_tests/TestExpectations and
     # the documentation in docs/testing/web_test_expectations.md when this list
     # changes.
     ALL_SYSTEMS = (
-        ('mac10.15', 'x86'),
         ('mac11', 'x86'),
         ('mac11-arm64', 'arm64'),
         ('mac12', 'x86_64'),
         ('mac12-arm64', 'arm64'),
         ('mac13', 'x86_64'),
         ('mac13-arm64', 'arm64'),
+        ('mac14', 'x86_64'),
+        ('mac14-arm64', 'arm64'),
+        ('mac15', 'x86_64'),
+        ('mac15-arm64', 'arm64'),
         ('win10.20h2', 'x86'),
         ('win11-arm64', 'arm64'),
         ('win11', 'x86_64'),
         ('linux', 'x86_64'),
         ('fuchsia', 'x86_64'),
-        ('ios16-simulator', 'x86_64'),
+        ('ios17-simulator', 'x86_64'),
     )
 
     CONFIGURATION_SPECIFIER_MACROS = {
         'mac': [
-            'mac10.15', 'mac11', 'mac11-arm64', 'mac12', 'mac12-arm64',
-            'mac13', 'mac13-arm64'
+            'mac11', 'mac11-arm64', 'mac12', 'mac12-arm64', 'mac13',
+            'mac13-arm64', 'mac14', 'mac14-arm64', 'mac15', 'mac15-arm64'
         ],
-        'ios': ['ios16-simulator'],
+        'ios': ['ios17-simulator'],
         'win': ['win10.20h2', 'win11-arm64', 'win11'],
         'linux': ['linux'],
         'fuchsia': ['fuchsia'],
@@ -234,6 +265,12 @@ class Port(object):
         r'<(?:html:)?meta\s+name=(?:fuzzy|"fuzzy")\s+content='
         r'"(?:(.+):)?(?:\s*maxDifference\s*=\s*)?(?:(\d+)-)?(\d+);(?:\s*totalPixels\s*=\s*)?(?:(\d+)-)?(\d+)"\s*/?>'
     )
+
+    # Pattern for detecting testharness tests from their contents. Like
+    # `WPT_FUZZY_REGEX`, this pattern is only used for non-WPT tests. The
+    # manifest supplies this information for WPTs.
+    _TESTHARNESS_PATTERN = re.compile(
+        r'<script\s.*src=.*resources/testharness\.js.*>', re.IGNORECASE)
 
     # Add fully-qualified test names here to generate per-test traces.
     #
@@ -392,55 +429,26 @@ class Port(object):
         flags += self.get_option('additional_driver_flag', [])
         return flags
 
-    def additional_driver_flags(self):
+    def additional_driver_flags(self) -> List[str]:
+        """Get extra switches to apply to all tests in this run.
+
+        Note on layering: Only hardcode switches here if they're useful for all
+        embedders and test scenarios (e.g., `//content/public/` switches).
+        Embedder-specific switches should be added to the corresponding
+        `Driver.cmd_line()` implementation.
+        """
         flags = self._specified_additional_driver_flags()
-        driver_name = self.driver_name()
-
-        # Enable "test" and "experimental" features by passing either
-        # `--run-web-tests` or `--enable-blink-test-features`.
-        if driver_name == self.CONTENT_SHELL_NAME:
-            flags.extend([
-                '--run-web-tests',
-                # `--ignore-certificate-errors-spki-list` requires
-                # `--user-data-dir` to take effect. `--user-data-dir` is an
-                # embedder-defined switch; it seems that we don't need to pass
-                # this for `chrome`, as `chromedriver` will supply its own
-                # value.
-                '--user-data-dir',
-            ])
-        elif driver_name == self.CHROME_NAME:
-            flags.extend([
-                '--enable-blink-test-features',
-                # Expose the non-standard `window.gc()` for `wpt_internal/`
-                # tests. See: crbug.com/1509657
-                '--js-flags=--expose-gc',
-            ])
-
-        if driver_name in {self.CONTENT_SHELL_NAME, self.CHROME_NAME}:
-            known_fingerprints = [
-                WPT_FINGERPRINT,
-                SXG_FINGERPRINT,
-                SXG_WPT_FINGERPRINT,
-            ]
-            flags.extend([
-                '--ignore-certificate-errors-spki-list=' +
-                ','.join(known_fingerprints),
-                # Required for WebTransport tests.
-                '--webtransport-developer-mode',
-            ])
-            if self.get_option('nocheck_sys_deps', False):
-                flags.append('--disable-system-font-check')
-
-        # If we're already repeating the tests more than once, then we're not
-        # particularly concerned with speed. Resetting the shell between tests
-        # increases test run time by 2-5X, but provides more consistent results
-        # [less state leaks between tests].
-        if (self.get_option('reset_shell_between_tests')
-                or (self.get_option('repeat_each')
-                    and self.get_option('repeat_each') > 1)
-                or (self.get_option('iterations')
-                    and self.get_option('iterations') > 1)):
-            flags += ['--reset-shell-between-tests']
+        known_fingerprints = [
+            WPT_FINGERPRINT,
+            SXG_FINGERPRINT,
+            SXG_WPT_FINGERPRINT,
+        ]
+        flags.extend([
+            '--ignore-certificate-errors-spki-list=' +
+            ','.join(known_fingerprints),
+            # Required for WebTransport tests.
+            '--webtransport-developer-mode',
+        ])
         return flags
 
     def supports_per_test_timeout(self):
@@ -714,6 +722,11 @@ class Port(object):
     def driver_name(self):
         if self.get_option('driver_name'):
             return self.get_option('driver_name')
+        product = self.get_option('product')
+        if product == 'chrome':
+            return self.CHROME_NAME
+        elif product == 'headless_shell':
+            return self.HEADLESS_SHELL_NAME
         return self.CONTENT_SHELL_NAME
 
     def expected_baselines_by_extension(self, test_name):
@@ -770,6 +783,79 @@ class Port(object):
         else:
             test_name_root, _ = self._filesystem.splitext(test_name)
         return test_name_root + suffix + extension
+
+    def parse_output_filename(
+            self, baseline_path: str) -> Tuple[BaselineLocation, str]:
+        """Parse a baseline path into its virtual/platform/flag-specific pieces.
+
+        Note that this method doesn't validate that the underlying baseline
+        exists and corresponds to a real test.
+
+        Arguments:
+            baseline_path: Absolute or relative path to an `*-expected.*` file.
+
+        Returns:
+            A `BaselineLocation` with the parsed parameters, and the rest of
+            the baseline's relative path.
+
+        Raises:
+            ValueError: If the provided path is a non-web test absolute path.
+        """
+        if self._filesystem.isabs(baseline_path):
+            if baseline_path.startswith(self.web_tests_dir()):
+                baseline_path = self._filesystem.relpath(
+                    baseline_path, self.web_tests_dir())
+            else:
+                raise ValueError(
+                    f'{baseline_path!r} is not under `web_tests/`')
+
+        parts = baseline_path.split(self._filesystem.sep)
+        platform = flag_specific = virtual_suite = ''
+        if len(parts) >= 2:
+            if parts[0] == 'platform':
+                platform, parts = parts[1], parts[2:]
+            elif parts[0] == 'flag-specific':
+                flag_specific, parts = parts[1], parts[2:]
+        if len(parts) >= 2 and parts[0] == 'virtual':
+            virtual_suite, parts = parts[1], parts[2:]
+        base_path = self._filesystem.join(*parts) if parts else ''
+        location = BaselineLocation(virtual_suite, platform, flag_specific)
+        return location, base_path
+
+    @memoized
+    def test_from_output_filename(self, baseline_path: str) -> Optional[str]:
+        """Derive the test corresponding to a baseline.
+
+        Arguments:
+            baseline_path: Path to a generic baseline relative to `web_tests/`
+                (i.e., not platform- or flag-specific). The baseline does not
+                need to exist on the filesystem. A virtual baseline resolves
+                to the corresponding virtual test.
+
+        Returns:
+            The test name, if found, and `None` otherwise.
+        """
+        stem, extension = self._filesystem.splitext(baseline_path)
+        if stem.endswith(self.BASELINE_SUFFIX):
+            suffix = self.BASELINE_SUFFIX
+        elif stem.endswith(self.BASELINE_MISMATCH_SUFFIX):
+            suffix = self.BASELINE_MISMATCH_SUFFIX
+        else:
+            return None
+
+        # This is a fast path for the common case of `.html` test files.
+        maybe_test = stem[:-len(suffix)] + '.html'
+        if self.tests([maybe_test]) == [maybe_test]:
+            return maybe_test
+
+        test_dir = self._filesystem.dirname(stem)
+        # `tests()` can be arbitrarily slow, but there's no better way to do the
+        # inversion because `output_filename()` sanitizes the original test name
+        # lossily.
+        for test in self.tests([test_dir]):
+            if baseline_path == self.output_filename(test, suffix, extension):
+                return test
+        return None
 
     def expected_baselines(self,
                            test_name,
@@ -1022,13 +1108,17 @@ class Port(object):
                 return tests matching at least one path in paths.
 
         Returns:
-            An array of test paths and test names. The latter are web platform
-            tests that don't correspond to file paths but are valid tests,
-            for instance a file path test.any.js could correspond to two test
-            names: test.any.html and test.any.worker.html.
+            A list of concrete test URLs. Each URL usually corresponds to a
+            file under `web_tests/`, but not always [0, 1, 2].
+
+        [0]: https://web-platform-tests.org/writing-tests/testharness.html#variants
+        [1]: https://web-platform-tests.org/writing-tests/testharness.html#tests-for-other-or-multiple-globals-any-js
+        [2]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md#Virtual-test-suites
         """
         tests = self.real_tests(paths)
 
+        # TODO(crbug.com/338295229): Consolidate the code paths for all/explicit
+        # tests so that they're less likely to diverge.
         if paths:
             if self._options.virtual_tests:
                 tests.extend(self._virtual_tests_matching_paths(paths))
@@ -1060,8 +1150,8 @@ class Port(object):
         for path in paths:
             # Some WPT files can expand to multiple tests, and the file itself
             # is not a test so it is not in tests_by_dir. Do special handling
-            # when we found a WPT file in virtual bases.
-            if self.is_wpt_file(path):
+            # when we find a WPT URL, file, or directory in virtual bases.
+            if any(path.startswith(wpt_dir) for wpt_dir in self.WPT_DIRS):
                 files.extend(self._wpt_test_urls_matching_paths([path]))
                 continue
             if self._has_supported_extension_for_all(path):
@@ -1270,6 +1360,14 @@ class Port(object):
             hasher.update(f'{changed_file}:{file_digest}\n'.encode())
         return hasher.hexdigest()
 
+    @classmethod
+    def split_wpt_dir(cls, test: str) -> Tuple[Optional[str], str]:
+        """Split a test path into its WPT directory (if any) and the rest."""
+        for wpt_dir in cls.WPT_DIRS:
+            if test.startswith(wpt_dir):
+                return wpt_dir, test[len(f'{wpt_dir}/'):]
+        return None, test
+
     def is_wpt_file(self, path):
         """Returns whether a path is a WPT test file."""
 
@@ -1323,6 +1421,17 @@ class Port(object):
         wpt_path = match.group(1)
         path_in_wpt = match.group(2)
         return self.wpt_manifest(wpt_path).is_slow_test(path_in_wpt)
+
+    def is_testharness_test(self, test_name: str) -> bool:
+        """Detect whether a test uses the testharness.js framework."""
+        base_test = self.lookup_virtual_test_base(test_name) or test_name
+        wpt_dir, path_from_root = self.split_wpt_dir(base_test)
+        if wpt_dir:
+            manifest = self.wpt_manifest(wpt_dir)
+            return manifest.get_test_type(path_from_root) == 'testharness'
+        maybe_test_contents = self.read_test(base_test, 'latin-1')
+        return maybe_test_contents and bool(
+            self._TESTHARNESS_PATTERN.search(maybe_test_contents))
 
     def extract_wpt_pac(self, test_name):
         match = self.WPT_REGEX.match(test_name)
@@ -1568,6 +1677,17 @@ class Port(object):
             tests.add(line)
         return tests
 
+    def skipped_due_to_manual_test(self, test_name):
+        """Checks whether a manual test should be skipped."""
+        base_test = self.lookup_virtual_test_base(test_name)
+        if not base_test:
+            base_test = test_name
+        # TODO(crbug.com/346563686): remove this once we have testdriver api for
+        # file-system-access
+        if base_test.startswith("external/wpt/file-system-access/"):
+            return False
+        return self.is_manual_test(base_test)
+
     def skipped_due_to_smoke_tests(self, test):
         """Checks if the test is skipped based on the set of Smoke tests.
 
@@ -1691,7 +1811,14 @@ class Port(object):
     def _normalized_exclusive_tests(self, virtual_suite):
         tests = set()
         for exclusive_test in virtual_suite.exclusive_tests:
-            tests.add(self.normalize_test_name(exclusive_test))
+            normalized_test = self.normalize_test_name(exclusive_test)
+            # WPT JS tests can expand to multiple tests. Remove the "js" suffix
+            # so that generated variants (e.g. "test.any.worker.html") match
+            # against the base with startswith and are correctly excluded.
+            if self.is_wpt_test(normalized_test) and normalized_test.endswith(
+                    '.js'):
+                normalized_test = normalized_test[:-2]
+            tests.add(normalized_test)
         return tests
 
     @memoized
@@ -1815,10 +1942,19 @@ class Port(object):
         if pac_url is not None:
             args.append("--proxy-pac-url=" + pac_url)
 
-        if ENABLE_THREADED_COMPOSITING_FLAG not in args:
-            # We run single-threaded by default.
-            # Note that this logic is mirrored in wptrunner:
-            # third_party/wpt_tools/wpt/tools/wptrunner/wptrunner/browsers/content_shell.py
+        # We run single-threaded by default (overriding content_shell's default,
+        # which is to enable threading).
+        #
+        # But we use threading if we find --enable-threaded-compositing in
+        # virtual test suite args, or if the user explicitly passed it as:
+        #
+        #   --additional-driver-flag=--enable-threaded-compositing
+        #
+        # (Note content_shell only understands --disable-threaded-compositing,
+        # not --enable-threaded-compositing.)
+        #
+        if ENABLE_THREADED_COMPOSITING_FLAG not in (
+                args + self._specified_additional_driver_flags()):
             args.append(DISABLE_THREADED_COMPOSITING_FLAG)
             args.append(DISABLE_THREADED_ANIMATION_FLAG)
         else:
@@ -1828,6 +1964,9 @@ class Port(object):
                 args.remove(DISABLE_THREADED_COMPOSITING_FLAG)
             if DISABLE_THREADED_ANIMATION_FLAG in args:
                 args.remove(DISABLE_THREADED_ANIMATION_FLAG)
+
+        # Always support running web tests using SwiftShader for compositing or WebGL
+        args.append('--enable-unsafe-swiftshader')
 
         startup_trace_file = self.startup_trace_file_for_test(test_name)
         if startup_trace_file is not None:
@@ -2888,12 +3027,15 @@ class VirtualTestSuite(object):
         elif skip_base_tests is None:
             skip_base_tests = []
         assert isinstance(skip_base_tests, list)
+        self.prefix = prefix
         self.full_prefix = 'virtual/' + prefix + '/'
         self.platforms = [x.lower() for x in platforms]
         self.bases = bases
         self.exclusive_tests = exclusive_tests
         self.skip_base_tests = skip_base_tests
+        self.expires = expires
         self.args = sorted(args)
+        self.owners = owners
         # always put --enable-threaded-compositing at the end of list, so that after appending
         # this parameter due to crrev.com/c/4599846, we do not need to restart content shell
         # if the parameter set is same.

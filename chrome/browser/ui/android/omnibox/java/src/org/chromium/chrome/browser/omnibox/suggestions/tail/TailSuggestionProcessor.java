@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
@@ -17,6 +18,8 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Optional;
+
 /** A class that handles model and view creation for the tail suggestions. */
 public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final boolean mAlignTailSuggestions;
@@ -26,13 +29,14 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
      */
-    public TailSuggestionProcessor(Context context, SuggestionHost suggestionHost) {
-        super(context, suggestionHost, null);
+    public TailSuggestionProcessor(
+            @NonNull Context context, @NonNull SuggestionHost suggestionHost) {
+        super(context, suggestionHost, Optional.empty());
         mAlignTailSuggestions = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     @Override
-    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
         return suggestion.getType() == OmniboxSuggestionType.SEARCH_SUGGEST_TAIL;
     }
 
@@ -42,12 +46,13 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public PropertyModel createModel() {
+    public @NonNull PropertyModel createModel() {
         return new PropertyModel(TailSuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
-    public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
+    public void populateModel(
+            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
 
         model.set(TailSuggestionViewProperties.ALIGNMENT_MANAGER, mAlignmentManager);

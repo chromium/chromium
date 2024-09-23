@@ -29,7 +29,6 @@ int EvaluateTest() {
 // This function is for test purpose only. It triggers an assertion failure.
 int EvaluateCrash() {
   NOTREACHED();
-  return 0;
 }
 
 // This function is for test purpose only. It writes "Success" to stdout, and

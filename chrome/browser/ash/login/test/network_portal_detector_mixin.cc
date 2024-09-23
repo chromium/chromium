@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
@@ -15,27 +16,22 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "dbus/object_path.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 
 namespace {
 
-std::string StatusToState(NetworkPortalDetector::CaptivePortalStatus status) {
+std::string StatusToState(NetworkPortalDetectorMixin::NetworkStatus status) {
+  using NetworkStatus = NetworkPortalDetectorMixin::NetworkStatus;
   switch (status) {
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN:
+    case NetworkStatus::kUnknown:
       [[fallthrough]];
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE:
+    case NetworkStatus::kOffline:
       return shill::kStateNoConnectivity;
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE:
+    case NetworkStatus::kOnline:
       return shill::kStateOnline;
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL:
+    case NetworkStatus::kPortal:
       return shill::kStateRedirectFound;
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED:
-      return shill::kStatePortalSuspected;
-    case NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_COUNT:
-      NOTREACHED();
-      return shill::kStateNoConnectivity;
   }
 }
 
@@ -50,7 +46,7 @@ NetworkPortalDetectorMixin::~NetworkPortalDetectorMixin() = default;
 void NetworkPortalDetectorMixin::SetDefaultNetwork(
     const std::string& network_guid,
     const std::string& network_type,
-    NetworkPortalDetector::CaptivePortalStatus status) {
+    NetworkStatus status) {
   SetShillDefaultNetwork(network_guid, network_type, status);
   network_portal_detector_->SetDefaultNetworkForTesting(network_guid);
 
@@ -58,28 +54,18 @@ void NetworkPortalDetectorMixin::SetDefaultNetwork(
 }
 
 void NetworkPortalDetectorMixin::SimulateNoNetwork() {
-  SetShillDefaultNetwork("", "",
-                         NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
+  SetShillDefaultNetwork("", "", NetworkStatus::kOffline);
   network_portal_detector_->SetDefaultNetworkForTesting("");
 }
 
 void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
-    NetworkPortalDetector::CaptivePortalStatus status) {
+    NetworkStatus status) {
   std::string default_network_guid =
       network_portal_detector_->GetDefaultNetworkGuid();
   DCHECK(!default_network_guid.empty());
   std::string default_network_type =
       default_network_guid.compare(0, 4, "wifi") == 0 ? shill::kTypeWifi
                                                       : shill::kTypeEthernet;
-
-  int response_code;
-  if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
-    response_code = 204;
-  } else if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL) {
-    response_code = 200;
-  } else {
-    response_code = -1;
-  }
 
   if (NetworkHandler::IsInitialized()) {
     const NetworkState* default_network =
@@ -95,9 +81,6 @@ void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
       base::RunLoop().RunUntilIdle();
     }
   }
-
-  network_portal_detector_->SetDetectionResultsForTesting(
-      default_network_guid, status, response_code);
 }
 
 void NetworkPortalDetectorMixin::SetUpOnMainThread() {
@@ -106,8 +89,7 @@ void NetworkPortalDetectorMixin::SetUpOnMainThread() {
   network_portal_detector::InitializeForTesting(network_portal_detector_);
   network_portal_detector_->Enable();
   SetDefaultNetwork(FakeShillManagerClient::kFakeEthernetNetworkGuid,
-                    shill::kTypeEthernet,
-                    NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+                    shill::kTypeEthernet, NetworkStatus::kOnline);
 }
 
 void NetworkPortalDetectorMixin::TearDownOnMainThread() {
@@ -117,7 +99,7 @@ void NetworkPortalDetectorMixin::TearDownOnMainThread() {
 void NetworkPortalDetectorMixin::SetShillDefaultNetwork(
     const std::string& network_guid,
     const std::string& network_type,
-    NetworkPortalDetector::CaptivePortalStatus status) {
+    NetworkStatus status) {
   default_network_guid_ = network_guid;
   if (!NetworkHandler::IsInitialized()) {
     return;

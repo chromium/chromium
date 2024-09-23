@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRINTING_PRINT_PREVIEW_DIALOG_CONTROLLER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
@@ -16,6 +17,10 @@ class GURL;
 
 namespace content {
 class WebContents;
+}
+
+namespace ui {
+class WebDialogDelegate;
 }
 
 namespace printing {
@@ -74,6 +79,9 @@ class PrintPreviewDialogController : public WebContentsCollection::Observer {
 
   // Erases the initiator info associated with `preview_dialog`.
   void EraseInitiatorInfo(content::WebContents* preview_dialog);
+
+  static std::unique_ptr<ui::WebDialogDelegate>
+  CreatePrintPreviewDialogDelegateForTesting(content::WebContents* initiator);
 
   // Exposes GetOrCreatePreviewDialog() for testing.
   content::WebContents* GetOrCreatePreviewDialogForTesting(

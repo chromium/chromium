@@ -40,7 +40,7 @@ AccountStatus::Type ParseAccountStatusType(
   }
   if (response.user_account_type() == em::CheckUserAccountResponse::CONSUMER) {
     const std::string domain = gaia::ExtractDomainName(email);
-    if (chrome::enterprise_util::IsKnownConsumerDomain(domain)) {
+    if (enterprise_util::IsKnownConsumerDomain(domain)) {
       return AccountStatus::Type::kConsumerWithConsumerDomain;
     }
     return AccountStatus::Type::kConsumerWithBusinessDomain;
@@ -147,7 +147,7 @@ void AccountStatusCheckFetcher::Fetch(FetchCallback callback,
 
 void AccountStatusCheckFetcher::OnAccountStatusCheckReceived(
     DMServerJobResult result) {
-  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Account check response received. DM Status: "
                << result.dm_status;

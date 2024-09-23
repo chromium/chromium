@@ -13,6 +13,8 @@ import org.chromium.base.Callback;
 public class FakeCredentialManagerLauncher implements CredentialManagerLauncher {
     private PendingIntent mPendingIntent;
     private Exception mException;
+    private Callback<PendingIntent> mSuccessCallback;
+    private Callback<Exception> mFailureCallback;
 
     public void setIntent(PendingIntent pendingIntent) {
         mPendingIntent = pendingIntent;
@@ -22,6 +24,14 @@ public class FakeCredentialManagerLauncher implements CredentialManagerLauncher 
         mException = exception;
     }
 
+    public void setSuccessCallback(Callback<PendingIntent> successCallback) {
+        mSuccessCallback = successCallback;
+    }
+
+    public void setFailureCallback(Callback<Exception> failureCallback) {
+        mFailureCallback = failureCallback;
+    }
+
     @Override
     public void getAccountCredentialManagerIntent(
             @ManagePasswordsReferrer int referrer,
@@ -29,9 +39,17 @@ public class FakeCredentialManagerLauncher implements CredentialManagerLauncher 
             Callback<PendingIntent> successCallback,
             Callback<Exception> failureCallback) {
         if (accountName == null) {
-            failureCallback.onResult(
-                    new CredentialManagerBackendException(
-                            "Called without an account", CredentialManagerError.NO_ACCOUNT_NAME));
+            if (mFailureCallback != null) {
+                mFailureCallback.onResult(
+                        new CredentialManagerBackendException(
+                                "Called without an account",
+                                CredentialManagerError.NO_ACCOUNT_NAME));
+            } else {
+                failureCallback.onResult(
+                        new CredentialManagerBackendException(
+                                "Called without an account",
+                                CredentialManagerError.NO_ACCOUNT_NAME));
+            }
             return;
         }
         getCredentialManagerLaunchIntent(successCallback, failureCallback);
@@ -48,10 +66,18 @@ public class FakeCredentialManagerLauncher implements CredentialManagerLauncher 
     private void getCredentialManagerLaunchIntent(
             Callback<PendingIntent> successCallback, Callback<Exception> failureCallback) {
         if (mException != null) {
-            failureCallback.onResult(mException);
+            if (mFailureCallback != null) {
+                mFailureCallback.onResult(mException);
+            } else {
+                failureCallback.onResult(mException);
+            }
             return;
         }
-        successCallback.onResult(mPendingIntent);
+        if (mSuccessCallback != null) {
+            mSuccessCallback.onResult(mPendingIntent);
+        } else {
+            successCallback.onResult(mPendingIntent);
+        }
     }
 
     @Override

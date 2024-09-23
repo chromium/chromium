@@ -19,12 +19,13 @@ using MultiStoreCredentialStoreTest = PlatformTest;
 
 ArchivableCredential* TestCredential(NSString* user) {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                                  gaia:nil
                                               password:@"qwerty123"
                                                   rank:5
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
-                                                  user:user
+                                              username:user
                                                   note:@"note"];
 }
 
@@ -54,7 +55,7 @@ TEST_F(MultiStoreCredentialStoreTest, CombineData) {
       TestStoreArray().firstObject.credentials.firstObject;
 
   EXPECT_NSEQ(credentialStore.credentials[0], firstCredential);
-  EXPECT_NSEQ(credentialStore.credentials[0].user, @"store1user");
+  EXPECT_NSEQ(credentialStore.credentials[0].username, @"store1user");
 }
 
 // Tests that MultiStoreCredentialStore don't duplicate data from stores.
@@ -66,7 +67,7 @@ TEST_F(MultiStoreCredentialStoreTest, RetrieveCredential) {
   id<Credential> retrievedCredential = [credentialStore
       credentialWithRecordIdentifier:firstCredential.recordIdentifier];
   EXPECT_NSEQ(retrievedCredential, firstCredential);
-  EXPECT_NSEQ(retrievedCredential.user, @"store1user");
+  EXPECT_NSEQ(retrievedCredential.username, @"store1user");
 }
 
 }

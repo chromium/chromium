@@ -12,7 +12,7 @@
       if (cookie.partitionKeyOpaque)
         suffix += `, partitionKey: <opaque>`;
       else if (cookie.partitionKey)
-        suffix += `, partitionKey: ${cookie.partitionKey}`;
+      suffix += `, partitionKey: ${JSON.stringify(cookie.partitionKey)}`;
       if (cookie.secure)
         suffix += `, secure`;
       if (cookie.httpOnly)
@@ -87,7 +87,8 @@
   function listenForResponsePartitionKey(event) {
     const partitionKey = event.params.cookiePartitionKeyOpaque ?
       '<opaque>' : event.params.cookiePartitionKey;
-    testRunner.log('Current cookie partition key: ' + partitionKey);
+    testRunner.log(
+        'Current cookie partition key: ' + JSON.stringify(partitionKey));
   }
 
   async function getPartitionedCookies() {
@@ -96,11 +97,12 @@
     dp.Network.onResponseReceivedExtraInfo(listenForResponsePartitionKey);
     // This will set a partitioned cookie
     await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php');
-    logCookies((await dp.Network.getCookies()).result);
 
     dp.Network.offRequestWillBeSentExtraInfo(
-        listenForSiteHasCookieInOtherPartition);
+      listenForSiteHasCookieInOtherPartition);
     dp.Network.offResponseReceivedExtraInfo(listenForResponsePartitionKey);
+
+    await logCookies();
   }
 
   testRunner.log('Test started');
@@ -108,141 +110,6 @@
   await dp.Network.enable();
 
   testRunner.runTestSuite([
-    deleteAllCookies,
-
-    async function simpleCookieAdd() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar1'});
-    },
-
-    async function simpleCookieChange() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'second bar2'});
-    },
-
-    async function anotherSimpleCookieAdd() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo2', value: 'bar1'});
-    },
-
-    async function simpleCookieDelete() {
-      await deleteCookie({url: 'http://127.0.0.1', name: 'foo'});
-    },
-
-    deleteAllCookies,
-
-    async function sessionCookieAdd() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar4', expires: undefined});
-    },
-
-    deleteAllCookies,
-
-    async function nonSessionCookieZeroAdd() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar5', expires: 0});
-    },
-
-    deleteAllCookies,
-
-    async function nonSessionCookieAdd() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar6', expires: Date.now() + 1000000});
-    },
-
-    deleteAllCookies,
-
-    async function differentOriginCookieAdd() {
-      // Will result in success but not show up
-      await setCookie({url: 'http://example.com', name: 'foo', value: 'bar7'});
-    },
-
-    deleteAllCookies,
-
-    async function invalidCookieAddDomain() {
-      await setCookie({url: 'ht2tp://127.0.0.1', name: 'foo', value: 'bar8'});
-    },
-
-    deleteAllCookies,
-
-    async function invalidCookieAddName() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo\0\r\na', value: 'bar9'});
-    },
-
-    deleteAllCookies,
-
-    async function invalidCookieSourceScheme() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar10', sourceScheme: "SomeInvalidValue"});
-    },
-
-    deleteAllCookies,
-
-    async function invalidCookieSourcePort() {
-      await setCookie({url: 'http://127.0.0.1', name: 'foo', value: 'bar10', sourcePort: -1234});
-    },
-
-    deleteAllCookies,
-
-    async function secureCookieAdd() {
-      await setCookie({url: 'http://127.0.0.1', secure: true, name: 'foo', value: 'bar'});
-    },
-
-    deleteAllCookies,
-
-    async function cookieAddHttpOnly() {
-      await setCookie({url: 'http://127.0.0.1', httpOnly: true, name: 'foo', value: 'bar'});
-    },
-
-    deleteAllCookies,
-
-    async function cookieAddSameSiteLax() {
-      await setCookie({url: 'http://127.0.0.1', sameSite: 'Lax', name: 'foo', value: 'bar'});
-    },
-
-    deleteAllCookies,
-
-    async function cookieAddSameSiteLax() {
-      await setCookie({url: 'http://127.0.0.1', sameSite: 'Strict', name: 'foo', value: 'bar'});
-    },
-
-    deleteAllCookies,
-
-    async function setCookiesBasic() {
-      await setCookies([{name: 'cookie1', value: 'session', domain: 'localhost', path: '/', },
-                        {name: 'cookie2', value: 'httpOnly', domain: 'localhost', path: '/', httpOnly: true },
-                        {name: 'cookie3', value: 'secure', domain: 'localhost', path: '/', secure: true },
-                        {name: 'cookie4', value: 'lax', domain: 'localhost', path: '/', sameSite: 'Lax' },
-                        {name: 'cookie5', value: 'expires', domain: 'localhost', path: '/', expires: Date.now() + 1000 },
-                        {name: 'cookie6', value: '.domain', domain: '.chromium.org', path: '/path' },
-                        {name: 'cookie7', value: 'domain', domain: 'www.chromium.org', path: '/path' },
-                        {name: 'cookie8', value: 'url-based', url: 'https://www.chromium.org/foo' }]);
-    },
-
-    deleteAllCookies,
-
-    async function setCookiesWithInvalidCookie() {
-      await setCookies([{url: '', name: 'foo', value: 'bar1'}]);
-    },
-
-    deleteAllCookies,
-
-    async function deleteCookieByURL() {
-      await setCookies([{name: 'cookie1', value: '.domain', url: 'http://www.chromium.org/path' },
-                        {name: 'cookie2', value: '.domain', url: 'http://www.chromium.org/path', expires: Date.now() + 1000 }]);
-      await deleteCookie({url: 'http://www.chromium.org/path', name: 'cookie1'});
-    },
-
-    deleteAllCookies,
-
-    async function deleteCookieByDomain() {
-      await setCookies([{name: 'cookie1', value: '.domain', domain: '.chromium.org', path: '/path' },
-                        {name: 'cookie2', value: '.domain', domain: '.chromium.org', path: '/path', expires: Date.now() + 1000 }]);
-      await deleteCookie({name: 'cookie1', domain: '.chromium.org'});
-      await deleteCookie({name: 'cookie2', domain: '.chromium.org'});
-    },
-
-    deleteAllCookies,
-
-    async function deleteCookieByDomainAndPath() {
-      await setCookies([{name: 'cookie1', value: '.domain', domain: '.chromium.org', path: '/path' }]);
-      await deleteCookie({name: 'cookie1', domain: '.chromium.org', path: '/foo'});
-      await deleteCookie({name: 'cookie1', domain: '.chromium.org', path: '/path'});
-    },
-
     deleteAllCookies,
 
     async function nonUnicodeCookie() {
@@ -262,9 +129,39 @@
     getPartitionedCookies,
 
     async function setPartitionedCookie() {
-      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test:8443', sameSite: 'None'});
-      await setCookie({url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://devtools.test:8443', sameSite: 'None'});
-      await setCookie({url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://notinset.test:8443', sameSite: 'None'});
+      await setCookie({
+        url: 'https://devtools.test:8443',
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey: {
+          topLevelSite: 'https://devtools.test:8443',
+          hasCrossSiteAncestor: false
+        },
+        sameSite: 'None'
+      });
+      await setCookie({
+        url: 'https://example.test:8443',
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey: {
+          topLevelSite: 'https://devtools.test:8443',
+          hasCrossSiteAncestor: false
+        },
+        sameSite: 'None'
+      });
+      await setCookie({
+        url: 'https://example.test:8443',
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey: {
+          topLevelSite: 'https://notinset.test:8443',
+          hasCrossSiteAncestor: false
+        },
+        sameSite: 'None'
+      });
     },
 
     deleteAllCookies,
@@ -272,11 +169,38 @@
 
     async function partitionedAndUnpartitionedCookiesWithSameName() {
       await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', sameSite: 'None'});
-      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test', sameSite: 'None'});
-      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://notinset.test', sameSite: 'None'});
+      await setCookie({
+        url: 'https://devtools.test:8443',
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey:
+            {topLevelSite: 'https://example.test', hasCrossSiteAncestor: false},
+        sameSite: 'None'
+      });
+      await setCookie({
+        url: 'https://devtools.test:8443',
+
+
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey: {
+          topLevelSite: 'https://notinset.test',
+          hasCrossSiteAncestor: false
+        },
+
+        sameSite: 'None'
+      });
 
       await deleteCookie({url: 'https://devtools.test:8443', name: '__Host-foo'});
-      await deleteCookie({url: 'https://devtools.test:8443', name: '__Host-foo', partitionKey: 'https://example.test'});
+      await deleteCookie({
+        url: 'https://devtools.test:8443',
+        name: '__Host-foo',
+        partitionKey:
+            {topLevelSite: 'https://example.test', hasCrossSiteAncestor: false},
+
+      });
     },
 
     deleteAllCookies,
@@ -284,12 +208,86 @@
 
     async function setPartitionedCookies() {
       await setCookies([
-        {url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test:8443', sameSite: 'None'},
-        {url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://devtools.test:8443', sameSite: 'None'},
-        {url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://notinset.test:8443', sameSite: 'None'}
+        {
+          url: 'https://devtools.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://example.test:8443',
+            hasCrossSiteAncestor: false
+          },
+
+          sameSite: 'None'
+        },
+        {
+          url: 'https://example.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://devtools.test:8443',
+            hasCrossSiteAncestor: false
+          },
+
+          sameSite: 'None'
+        },
+        {
+          url: 'https://example.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://notinset.test:8443',
+            hasCrossSiteAncestor: false
+          },
+
+          sameSite: 'None'
+        }
       ]);
     },
 
+    getPartitionedCookies,
+    deleteAllCookies,
+
+    async function setPartitionedCookiesWithAncestorChainBitVals() {
+      await setCookies([
+        {
+          url: 'https://acbDefaultFalse.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://example.test:8443',
+            hasCrossSiteAncestor: false
+          },
+          sameSite: 'None'
+        },
+        {
+          url: 'https://acbFalse.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://example.test:8443',
+            hasCrossSiteAncestor: false
+          },
+          sameSite: 'None'
+        },
+        {
+          url: 'https://acbTrue.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://devtools.test:8443',
+            hasCrossSiteAncestor: true
+          },
+          sameSite: 'None'
+        }
+      ]);
+      logCookies((await dp.Network.getCookies()).result);
+    },
     getPartitionedCookies,
     deleteAllCookies,
 

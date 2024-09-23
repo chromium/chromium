@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_BLUETOOTH_INTERNALS_BLUETOOTH_INTERNALS_HANDLER_H_
 
+#include <optional>
+
+#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "build/chromeos_buildflags.h"
@@ -66,6 +69,9 @@ class BluetoothInternalsHandler
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void RestartSystemBluetooth(RestartSystemBluetoothCallback callback) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  void StartBtsnoop(StartBtsnoopCallback callback) override;
+  void IsBtsnoopFeatureEnabled(
+      IsBtsnoopFeatureEnabledCallback callback) override;
 
  private:
   void OnGetAdapter(GetAdapterCallback callback,
@@ -76,6 +82,12 @@ class BluetoothInternalsHandler
   void OnPropertiesUpdated(
       ash::bluetooth_config::mojom::BluetoothSystemPropertiesPtr properties)
       override;
+
+  void StopBtsnoop(mojom::BluetoothBtsnoop::StopCallback callback);
+  void OnStartBtsnoopResp(StartBtsnoopCallback callback, bool success);
+  void OnStopBtsnoopResp(mojom::BluetoothBtsnoop::StopCallback callback,
+                         bool success);
+  std::optional<base::FilePath> GetDownloadsPath();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   raw_ref<content::RenderFrameHost> render_frame_host_;
@@ -98,6 +110,8 @@ class BluetoothInternalsHandler
 
   mojo::Remote<ash::bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
+
+  std::unique_ptr<mojom::BluetoothBtsnoop> btsnoop_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::WeakPtrFactory<BluetoothInternalsHandler> weak_ptr_factory_{this};

@@ -33,7 +33,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #endif
 
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DisplayNone) {
                                    "mocha.run()", true));
 }
 
-// TODO(crbug.com/861600) Flaky on CrOS trybots.
+// TODO(crbug.com/41400417) Flaky on CrOS trybots.
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
 #define MAYBE_ExecuteScriptCode DISABLED_ExecuteScriptCode
 #else
@@ -151,8 +151,8 @@ IN_PROC_BROWSER_TEST_F(
 
 #if (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)) || \
     BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
-// TODO(crbug.com/859320) Fails on CrOS dbg with --enable-features=Mash.
-// TODO(crbug.com/1523686): Webviews don't work properly with JS coverage.
+// TODO(crbug.com/40583245) Fails on CrOS dbg with --enable-features=Mash.
+// TODO(crbug.com/41496635): Webviews don't work properly with JS coverage.
 #define MAYBE_AddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView \
   DISABLED_AddContentScriptToOneWebViewShouldNotInjectToTheOtherWebView
 #else
@@ -186,8 +186,8 @@ class WebUIWebViewCoverageDisabledBrowserTest : public WebUIWebViewBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && \
     (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
-// TODO(crbug.com/859320) Fails on CrOS dbg with --enable-features=Mash.
-// TODO(crbug.com/893472) Flaky on CrOS ASan LSan
+// TODO(crbug.com/40583245) Fails on CrOS dbg with --enable-features=Mash.
+// TODO(crbug.com/41419648) Flaky on CrOS ASan LSan
 #define MAYBE_AddContentScriptsWithNewWindowAPI \
   DISABLED_AddContentScriptsWithNewWindowAPI
 #else
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewCoverageDisabledBrowserTest,
   if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     // The case below currently is flaky on the linux-bfcache-rel bot with
     // back/forward cache disabled, so return early.
-    // TODO(https://crbug.com/1506989): re-enable this test.
+    // TODO(crbug.com/40947671): re-enable this test.
     return;
   }
   ASSERT_TRUE(RunTestCase("AddContentScriptsWithNewWindowAPI",
@@ -215,8 +215,8 @@ IN_PROC_BROWSER_TEST_F(
                   GetTestUrl("empty.html").spec()));
 }
 
-// TODO(crbug.com/662673) Flaky on CrOS trybots.
-// TODO(crbug.com/1494671): Fails due to reattaching webview, need to fix on JS
+// TODO(crbug.com/41284814) Flaky on CrOS trybots.
+// TODO(crbug.com/40937256): Fails due to reattaching webview, need to fix on JS
 // coverage builders.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
 #define MAYBE_ContentScriptExistsAsLongAsWebViewTagExists \

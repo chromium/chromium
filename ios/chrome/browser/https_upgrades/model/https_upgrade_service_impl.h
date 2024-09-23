@@ -5,17 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_IMPL_H_
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_IMPL_H_
 
-#include <memory>
-#include <set>
-#include <string>
+#import <memory>
+#import <set>
+#import <string>
 
 #import "base/memory/raw_ptr.h"
-#include "base/time/time.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/security_interstitials/core/https_only_mode_allowlist.h"
-#include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
-
-class ChromeBrowserState;
+#import "base/time/time.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/security_interstitials/core/https_only_mode_allowlist.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 
 // HttpsUpgradeServiceImpl tracks the allowlist decisions for HTTPS-Only mode.
 // Decisions are scoped to the host.

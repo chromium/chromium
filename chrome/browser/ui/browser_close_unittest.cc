@@ -73,7 +73,7 @@ class TestingDownloadCoreService : public DownloadCoreService {
 
   int BlockingShutdownCount() const override { return download_count_; }
 
-  void CancelDownloads() override {}
+  void CancelDownloads(DownloadCoreService::CancelDownloadsTrigger) override {}
 
   void SetDownloadManagerDelegateForTesting(
       std::unique_ptr<ChromeDownloadManagerDelegate> delegate) override {

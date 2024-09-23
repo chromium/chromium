@@ -7,13 +7,15 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <string_view>
 #include <unordered_map>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -158,7 +160,8 @@ void MaybeReparentTargetDisplay(
 
     auto target_display_placement_itr = base::ranges::find(
         *placement_list, target_display->id(), &DisplayPlacement::display_id);
-    DCHECK(target_display_placement_itr != placement_list->end());
+    CHECK(target_display_placement_itr != placement_list->end(),
+          base::NotFatalUntil::M130);
     target_display_placement = &(*target_display_placement_itr);
     if (AreDisplaysTouching(*target_display, *parent_display,
                             target_display_placement->position)) {
@@ -453,7 +456,7 @@ std::string DisplayPlacement::PositionToString(Position position) {
 }
 
 // static
-bool DisplayPlacement::StringToPosition(const base::StringPiece& string,
+bool DisplayPlacement::StringToPosition(std::string_view string,
                                         Position* position) {
   if (string == kTop) {
     *position = TOP;
@@ -621,7 +624,7 @@ bool DisplayLayout::HasSamePlacementList(const DisplayLayout& layout) const {
 }
 
 void DisplayLayout::RemoveDisplayPlacements(const DisplayIdList& list) {
-  base::EraseIf(placement_list, [&list](const DisplayPlacement& placement) {
+  std::erase_if(placement_list, [&list](const DisplayPlacement& placement) {
     return base::Contains(list, placement.display_id);
   });
   for (DisplayPlacement& placement : placement_list) {

@@ -4,61 +4,40 @@
 
 #include "components/update_client/action_runner.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
-#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "components/update_client/component.h"
-#include "components/update_client/task_traits.h"
 
 namespace update_client {
 
-ActionRunner::ActionRunner(const Component& component)
-    : component_(component),
-      main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
-
-ActionRunner::~ActionRunner() = default;
-
-void ActionRunner::Run(Callback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto action_handler = component_->crx_component()->action_handler;
-  if (!action_handler) {
-    DVLOG(1) << component_->action_run() << " is missing an action handler";
-    main_task_runner_->PostTask(
+void RunAction(scoped_refptr<ActionHandler> handler,
+               scoped_refptr<CrxInstaller> installer,
+               const std::string& file,
+               const std::string& session_id,
+               ActionHandler::Callback callback) {
+  if (!handler) {
+    DVLOG(1) << file << " is missing an action handler";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), false, -1, 0));
     return;
   }
 
-  callback_ = std::move(callback);
-
-  // Resolve an absolute path for the file referred by the run action.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, kTaskTraits,
-      base::BindOnce(
-          [](const Component* component) {
-            base::FilePath crx_path;
-            component->crx_component()->installer->GetInstalledFile(
-                component->action_run(), &crx_path);
-            return crx_path;
-          },
-          base::Unretained(&*component_)),
-      base::BindOnce(&ActionRunner::Handle, base::Unretained(this)));
-}
-
-void ActionRunner::Handle(const base::FilePath& crx_path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto action_handler = component_->crx_component()->action_handler;
-  CHECK(action_handler);
-
-  action_handler->Handle(crx_path, component_->session_id(),
-                         std::move(callback_));
+  std::optional<base::FilePath> crx_path = installer->GetInstalledFile(file);
+  if (!crx_path) {
+    DVLOG(1) << file << " file is missing.";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false, -1, 0));
+    return;
+  }
+  handler->Handle(*crx_path, session_id, std::move(callback));
 }
 
 }  // namespace update_client

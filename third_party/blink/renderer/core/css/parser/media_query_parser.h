@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -24,16 +23,16 @@ class CORE_EXPORT MediaQueryParser {
   STACK_ALLOCATED();
 
  public:
+  MediaQueryParser(const MediaQueryParser&) = delete;
+  MediaQueryParser& operator=(const MediaQueryParser&) = delete;
+
   static MediaQuerySet* ParseMediaQuerySet(const String&,
                                            const ExecutionContext*);
-  static MediaQuerySet* ParseMediaQuerySet(CSSParserTokenRange,
-                                           const CSSParserTokenOffsets&,
+  static MediaQuerySet* ParseMediaQuerySet(CSSParserTokenStream&,
                                            const ExecutionContext*);
-  static MediaQuerySet* ParseMediaCondition(CSSParserTokenRange,
-                                            const CSSParserTokenOffsets&,
+  static MediaQuerySet* ParseMediaCondition(CSSParserTokenStream&,
                                             const ExecutionContext*);
-  static MediaQuerySet* ParseMediaQuerySetInMode(CSSParserTokenRange,
-                                                 const CSSParserTokenOffsets&,
+  static MediaQuerySet* ParseMediaQuerySetInMode(CSSParserTokenStream&,
                                                  CSSParserMode,
                                                  const ExecutionContext*);
 
@@ -76,28 +75,25 @@ class CORE_EXPORT MediaQueryParser {
                    CSSParserMode,
                    const ExecutionContext*,
                    SyntaxLevel = SyntaxLevel::kAuto);
-  MediaQueryParser(const MediaQueryParser&) = delete;
-  MediaQueryParser& operator=(const MediaQueryParser&) = delete;
-  virtual ~MediaQueryParser();
 
   // [ not | only ]
-  static MediaQuery::RestrictorType ConsumeRestrictor(CSSParserTokenRange&);
+  static MediaQuery::RestrictorType ConsumeRestrictor(CSSParserTokenStream&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-type
-  static String ConsumeType(CSSParserTokenRange&);
+  static String ConsumeType(CSSParserTokenStream&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-mf-comparison
-  static MediaQueryOperator ConsumeComparison(CSSParserTokenRange&);
+  static MediaQueryOperator ConsumeComparison(CSSParserTokenStream&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-mf-name
   //
   // The <mf-name> is only consumed if the name is allowed by the specified
   // FeatureSet.
-  String ConsumeAllowedName(CSSParserTokenRange&, const FeatureSet&);
+  String ConsumeAllowedName(CSSParserTokenStream&, const FeatureSet&);
 
   // Like ConsumeAllowedName, except returns null if the name has a min-
   // or max- prefix.
-  String ConsumeUnprefixedName(CSSParserTokenRange&, const FeatureSet&);
+  String ConsumeUnprefixedName(CSSParserTokenStream&, const FeatureSet&);
 
   enum class NameAffinity {
     // <mf-name> appears on the left, e.g. width < 10px.
@@ -106,28 +102,10 @@ class CORE_EXPORT MediaQueryParser {
     kRight
   };
 
-  // Helper function for parsing features with a single MediaQueryOperator,
-  // for example 'width <= 10px', or '10px = width'.
-  //
-  // NameAffinity::kLeft means |lhs| will be interpreted as the <mf-name>,
-  // otherwise |rhs| will be interpreted as the <mf-name>.
-  //
-  // Note that this function accepts CSSParserTokenRanges by *value*, unlike
-  // Consume* functions, and that nullptr is returned if either |lhs|
-  // or |rhs| aren't fully consumed.
-  const MediaQueryExpNode* ParseNameValueComparison(
-      CSSParserTokenRange lhs,
-      MediaQueryOperator op,
-      CSSParserTokenRange rhs,
-      const CSSParserTokenOffsets& offsets,
-      NameAffinity,
-      const FeatureSet&);
-
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-feature
   //
   // Currently, only <mf-boolean> and <mf-plain> productions are supported.
-  const MediaQueryExpNode* ConsumeFeature(CSSParserTokenRange&,
-                                          const CSSParserTokenOffsets& offsets,
+  const MediaQueryExpNode* ConsumeFeature(CSSParserTokenStream&,
                                           const FeatureSet&);
 
   enum class ConditionMode {
@@ -139,29 +117,26 @@ class CORE_EXPORT MediaQueryParser {
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-condition
   const MediaQueryExpNode* ConsumeCondition(
-      CSSParserTokenRange&,
-      const CSSParserTokenOffsets&,
+      CSSParserTokenStream&,
       ConditionMode = ConditionMode::kNormal);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-in-parens
-  const MediaQueryExpNode* ConsumeInParens(CSSParserTokenRange&,
-                                           const CSSParserTokenOffsets&);
+  const MediaQueryExpNode* ConsumeInParens(CSSParserTokenStream&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-general-enclosed
-  const MediaQueryExpNode* ConsumeGeneralEnclosed(CSSParserTokenRange&);
+  const MediaQueryExpNode* ConsumeGeneralEnclosed(CSSParserTokenStream&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
-  MediaQuery* ConsumeQuery(CSSParserTokenRange&, const CSSParserTokenOffsets&);
+  MediaQuery* ConsumeQuery(CSSParserTokenStream&);
 
   // Used for ParserType::kMediaConditionParser.
   //
   // Parsing a single condition is useful for the 'sizes' attribute.
   //
   // https://html.spec.whatwg.org/multipage/images.html#sizes-attribute
-  MediaQuerySet* ConsumeSingleCondition(CSSParserTokenRange,
-                                        const CSSParserTokenOffsets&);
+  MediaQuerySet* ConsumeSingleCondition(CSSParserTokenStream&);
 
-  MediaQuerySet* ParseImpl(CSSParserTokenRange, const CSSParserTokenOffsets&);
+  MediaQuerySet* ParseImpl(CSSParserTokenStream&);
 
   ParserType parser_type_;
   CSSParserMode mode_;

@@ -26,6 +26,7 @@
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "components/crash/core/app/crash_switches.h"
+#include "components/crash/core/app/crashpad.h"
 #include "content/public/common/content_switches.h"
 
 namespace credential_provider {
@@ -159,6 +160,17 @@ BOOL CGaiaCredentialProviderModule::DllMain(HINSTANCE /*hinstance*/,
       // Initialize logging.
       logging::LoggingSettings settings;
       settings.logging_dest = logging::LOG_NONE;
+
+      std::wstring log_file_path =
+          GetGlobalFlagOrDefault(kRegLogFilePath, std::wstring{});
+      if (not log_file_path.empty()) {
+        settings.logging_dest = logging::LOG_TO_FILE;
+        bool append_log = GetGlobalFlagOrDefault(kRegLogFileAppend, 0);
+        settings.delete_old = append_log ? logging::APPEND_TO_OLD_LOG_FILE
+                                         : logging::DELETE_OLD_LOG_FILE;
+        settings.log_file_path = log_file_path;
+      }
+
       logging::InitLogging(settings);
       logging::SetLogItems(true,    // Enable process id.
                            true,    // Enable thread id.
@@ -179,6 +191,8 @@ BOOL CGaiaCredentialProviderModule::DllMain(HINSTANCE /*hinstance*/,
 
       _set_invalid_parameter_handler(nullptr);
       exit_manager_.reset();
+
+      crash_reporter::DestroyCrashpadClient();
       break;
 
     default:

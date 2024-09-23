@@ -33,10 +33,10 @@ void DebuggableAuctionWorklet::ConnectDevToolsAgent(
     mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent) {
   if (auction_worklet::mojom::BidderWorklet** bidder_worklet =
           absl::get_if<auction_worklet::mojom::BidderWorklet*>(&worklet_)) {
-    (*bidder_worklet)->ConnectDevToolsAgent(std::move(agent));
+    (*bidder_worklet)->ConnectDevToolsAgent(std::move(agent), thread_index_);
   } else {
     absl::get<auction_worklet::mojom::SellerWorklet*>(worklet_)
-        ->ConnectDevToolsAgent(std::move(agent));
+        ->ConnectDevToolsAgent(std::move(agent), thread_index_);
   }
 }
 
@@ -44,12 +44,14 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     RenderFrameHostImpl* owning_frame,
     AuctionProcessManager::ProcessHandle& process_handle,
     const GURL& url,
-    auction_worklet::mojom::BidderWorklet* bidder_worklet)
+    auction_worklet::mojom::BidderWorklet* bidder_worklet,
+    size_t thread_index)
     : owning_frame_(owning_frame),
       process_handle_(process_handle),
       url_(url),
       unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
-      worklet_(bidder_worklet) {
+      worklet_(bidder_worklet),
+      thread_index_(thread_index) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
       this, should_pause_on_start_);
   RequestPid();
@@ -59,12 +61,14 @@ DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     RenderFrameHostImpl* owning_frame,
     AuctionProcessManager::ProcessHandle& process_handle,
     const GURL& url,
-    auction_worklet::mojom::SellerWorklet* seller_worklet)
+    auction_worklet::mojom::SellerWorklet* seller_worklet,
+    size_t thread_index)
     : owning_frame_(owning_frame),
       process_handle_(process_handle),
       url_(url),
       unique_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
-      worklet_(seller_worklet) {
+      worklet_(seller_worklet),
+      thread_index_(thread_index) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
       this, should_pause_on_start_);
   RequestPid();

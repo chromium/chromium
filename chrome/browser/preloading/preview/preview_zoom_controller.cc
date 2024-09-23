@@ -114,8 +114,7 @@ double GetNextZoomLevel(double default_zoom_level,
           std::upper_bound(begin, end, current_zoom_level, std::greater<>());
       // If the next level is within epsilon of the current, keep going until
       // we're taking a meaningful step.
-      while (next != end &&
-             blink::PageZoomValuesEqual(*next, current_zoom_level)) {
+      while (next != end && blink::ZoomValuesEqual(*next, current_zoom_level)) {
         ++next;
       }
       if (next == end) {
@@ -130,8 +129,7 @@ double GetNextZoomLevel(double default_zoom_level,
       auto next = std::upper_bound(begin, end, current_zoom_level);
       // If the next level is within epsilon of the current, keep going until
       // we're taking a meaningful step.
-      while (next != end &&
-             blink::PageZoomValuesEqual(*next, current_zoom_level)) {
+      while (next != end && blink::ZoomValuesEqual(*next, current_zoom_level)) {
         ++next;
       }
       if (next == end) {

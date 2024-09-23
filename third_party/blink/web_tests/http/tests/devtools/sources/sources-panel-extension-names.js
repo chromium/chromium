@@ -16,7 +16,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   contentScriptsNavigatorView.show(UI.InspectorView.InspectorView.instance().element);
 
   var mockExecutionContext =
-      {id: 1234567, isDefault: false, origin: 'chrome-extension://113581321345589144', name: 'FibExtension'};
+      {id: 1234567, origin: 'chrome-extension://113581321345589144', name: 'FibExtension', auxData: {isDefault: false}};
   var mockContentScriptURL = mockExecutionContext.origin + '/script.js';
 
   TestRunner.runTestSuite([

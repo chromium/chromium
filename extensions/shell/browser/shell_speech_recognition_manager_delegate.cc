@@ -28,14 +28,15 @@ ShellSpeechRecognitionManagerDelegate::
 ~ShellSpeechRecognitionManagerDelegate() {
 }
 
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+void ShellSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {}
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+
 void ShellSpeechRecognitionManagerDelegate::OnRecognitionStart(int session_id) {
 }
 
 void ShellSpeechRecognitionManagerDelegate::OnAudioStart(int session_id) {
-}
-
-void ShellSpeechRecognitionManagerDelegate::OnEnvironmentEstimationComplete(
-    int session_id) {
 }
 
 void ShellSpeechRecognitionManagerDelegate::OnSoundStart(int session_id) {
@@ -52,11 +53,11 @@ void ShellSpeechRecognitionManagerDelegate::OnRecognitionEnd(int session_id) {
 
 void ShellSpeechRecognitionManagerDelegate::OnRecognitionResults(
     int session_id,
-    const std::vector<blink::mojom::SpeechRecognitionResultPtr>& result) {}
+    const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& result) {}
 
 void ShellSpeechRecognitionManagerDelegate::OnRecognitionError(
     int session_id,
-    const blink::mojom::SpeechRecognitionError& error) {}
+    const media::mojom::SpeechRecognitionError& error) {}
 
 void ShellSpeechRecognitionManagerDelegate::OnAudioLevelsChange(
     int session_id,
@@ -85,12 +86,6 @@ void ShellSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
 content::SpeechRecognitionEventListener*
 ShellSpeechRecognitionManagerDelegate::GetEventListener() {
   return this;
-}
-
-bool ShellSpeechRecognitionManagerDelegate::FilterProfanities(
-    int render_process_id) {
-  // TODO(zork): Determine where this preference should come from.
-  return true;
 }
 
 // static

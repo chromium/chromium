@@ -18,7 +18,6 @@
 using chrome_test_util::ClearBrowsingDataCell;
 using chrome_test_util::ClearBrowsingDataView;
 using chrome_test_util::ClearBrowsingDataButton;
-using chrome_test_util::ConfirmClearBrowsingDataButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using web::test::HttpServer;
@@ -52,6 +51,7 @@ using web::test::HttpServer;
 
   // Clear history and verify that the tile does not exist.
   [ChromeEarlGrey clearBrowsingHistory];
+  [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
   [[EarlGrey selectElementWithMatcher:
@@ -60,12 +60,8 @@ using web::test::HttpServer;
 
   [ChromeEarlGrey loadURL:URL];
 
-  // After loading URL, need to do another action before opening a new tab
-  // with the icon present.
   [ChromeEarlGrey goBack];
   [ChromeEarlGreyUI waitForAppToIdle];
-
-  [ChromeEarlGrey openNewTab];
 
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabel(@"title1")]
@@ -103,6 +99,7 @@ using web::test::HttpServer;
 
   // Clear history and verify that the tile does not exist.
   [ChromeEarlGrey clearBrowsingHistory];
+  [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabel(@"title2")]
@@ -112,12 +109,8 @@ using web::test::HttpServer;
   [ChromeEarlGrey loadURL:firstRedirectURL];
   [ChromeEarlGrey waitForWebStateContainingText:"redirect complete"];
 
-  // After loading URL, need to do another action before opening a new tab
-  // with the icon present.
   [ChromeEarlGrey goBack];
   [ChromeEarlGreyUI waitForAppToIdle];
-
-  [ChromeEarlGrey openNewTab];
 
   // Which of the two tiles that is displayed is an implementation detail, and
   // this test helps document it. The purpose of the test is to verify that only

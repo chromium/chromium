@@ -167,6 +167,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // of the WebWidget need to check if close has already been initiated (they
   // can do so by checking |page_|) and not crash! https://crbug.com/906340
   void SetCompositorVisible(bool visible) override;
+  void WarmUpCompositor() override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
   void Resize(const gfx::Size&) override;
@@ -181,6 +182,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetHandlingInputEvent(bool handling) override;
   void ProcessInputEventSynchronouslyForTesting(
       const WebCoalescedInputEvent&) override;
+  void DispatchNonBlockingEventForTesting(
+      std::unique_ptr<WebCoalescedInputEvent> event) override;
   void UpdateTextInputState() override;
   void UpdateSelectionBounds() override;
   void ShowVirtualKeyboard() override;

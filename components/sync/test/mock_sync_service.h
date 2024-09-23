@@ -65,27 +65,22 @@ class MockSyncService : public SyncService {
               (),
               (override));
   MOCK_METHOD(bool, IsSetupInProgress, (), (const override));
-  MOCK_METHOD(ModelTypeSet, GetPreferredDataTypes, (), (const override));
-  MOCK_METHOD(ModelTypeSet, GetActiveDataTypes, (), (const override));
-  MOCK_METHOD(ModelTypeSet,
+  MOCK_METHOD(DataTypeSet, GetPreferredDataTypes, (), (const override));
+  MOCK_METHOD(DataTypeSet, GetActiveDataTypes, (), (const override));
+  MOCK_METHOD(DataTypeSet,
               GetTypesWithPendingDownloadForInitialSync,
               (),
               (const override));
-  MOCK_METHOD(void, StopAndClear, (), (override));
-  MOCK_METHOD(void,
-              OnDataTypeRequestsSyncStartup,
-              (ModelType type),
-              (override));
-  MOCK_METHOD(void, TriggerRefresh, (const ModelTypeSet& types), (override));
+  MOCK_METHOD(void, OnDataTypeRequestsSyncStartup, (DataType type), (override));
+  MOCK_METHOD(void, TriggerRefresh, (const DataTypeSet& types), (override));
   MOCK_METHOD(void,
               DataTypePreconditionChanged,
-              (syncer::ModelType type),
+              (syncer::DataType type),
               (override));
   MOCK_METHOD(void,
               SetInvalidationsForSessionsEnabled,
               (bool enabled),
               (override));
-  MOCK_METHOD(bool, SupportsExplicitPassphrasePlatformClient, (), (override));
   MOCK_METHOD(void, SendExplicitPassphraseToPlatformClient, (), (override));
   MOCK_METHOD(void, AddObserver, (SyncServiceObserver * observer), (override));
   MOCK_METHOD(void,
@@ -115,7 +110,7 @@ class MockSyncService : public SyncService {
               (const override));
   MOCK_METHOD(void,
               GetEntityCountsForDebugging,
-              (base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)>),
+              (base::RepeatingCallback<void(const TypeEntitiesCount&)>),
               (const override));
   MOCK_METHOD(const GURL&, GetSyncServiceUrlForDebugging, (), (const override));
   MOCK_METHOD(std::string,
@@ -138,29 +133,22 @@ class MockSyncService : public SyncService {
               GetAllNodesForDebugging,
               (base::OnceCallback<void(base::Value::List)> callback),
               (override));
-  MOCK_METHOD(ModelTypeDownloadStatus,
+  MOCK_METHOD(DataTypeDownloadStatus,
               GetDownloadStatusFor,
-              (ModelType type),
-              (const override));
-  MOCK_METHOD(void,
-              RecordReasonIfWaitingForUpdates,
-              (ModelType, const std::string&),
+              (DataType type),
               (const override));
   MOCK_METHOD(void,
               GetTypesWithUnsyncedData,
-              (ModelTypeSet, base::OnceCallback<void(ModelTypeSet)>),
+              (DataTypeSet, base::OnceCallback<void(DataTypeSet)>),
               (const override));
   MOCK_METHOD(
       void,
       GetLocalDataDescriptions,
-      (ModelTypeSet types,
-       base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+      (DataTypeSet types,
+       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
            callback),
       (override));
-  MOCK_METHOD(void,
-              TriggerLocalDataMigration,
-              (ModelTypeSet types),
-              (override));
+  MOCK_METHOD(void, TriggerLocalDataMigration, (DataTypeSet types), (override));
 
   // KeyedService implementation.
   MOCK_METHOD(void, Shutdown, (), (override));

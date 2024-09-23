@@ -4,16 +4,20 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/ios/common/features.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_constants.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -26,24 +30,22 @@ const CGFloat kSymbolSize = 22;
 
 @interface AutofillSettingsProfileEditTableViewController ()
 
-@property(nonatomic, weak)
-    id<AutofillSettingsProfileEditTableViewControllerDelegate>
-        delegate;
-
-// If YES, a section is shown in the view to migrate the profile to account.
-@property(nonatomic, assign) BOOL showMigrateToAccountSection;
-
-// If YES, denotes that the view shown is to edit the incomplete profiles so
-// that it can migrated to account.
-@property(nonatomic, assign) BOOL editIncompleteProfileForAccountView;
-
 // Stores the signed in user email, or the empty string if the user is not
 // signed-in.
 @property(nonatomic, readonly) NSString* userEmail;
 
 @end
 
-@implementation AutofillSettingsProfileEditTableViewController
+@implementation AutofillSettingsProfileEditTableViewController {
+  __weak id<AutofillSettingsProfileEditTableViewControllerDelegate> _delegate;
+
+  // If YES, a section is shown in the view to migrate the profile to account.
+  BOOL _showMigrateToAccountSection;
+
+  // If YES, denotes that the view shown is to edit the incomplete profiles so
+  // that it can migrated to account.
+  BOOL _editIncompleteProfileForAccountView;
+}
 
 #pragma mark - Initialization
 
@@ -74,6 +76,36 @@ const CGFloat kSymbolSize = 22;
   [self loadModel];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  SettingsNavigationController* navigationController =
+      base::apple::ObjCCast<SettingsNavigationController>(
+          self.navigationController);
+  if (!navigationController) {
+    return;
+  }
+
+  // Add a "Done" button to the navigation bar if this view controller is the
+  // first in the navigation stack. This "Done" button's purpose being to
+  // dismiss the presented view.
+  if (navigationController.viewControllers.count > 0 &&
+      navigationController.viewControllers.firstObject == self) {
+    UIBarButtonItem* doneButton = [navigationController doneButton];
+
+    // If not in edit mode, set the newly created "Done" button as the left bar
+    // button item. Otherwise, don't override the "Cancel" button that's shown
+    // when in edit mode.
+    if (!self.tableView.editing) {
+      self.navigationItem.leftBarButtonItem = doneButton;
+    }
+
+    // Set `customLeftBarButtonItem` with the "Done" button, so that it'll be
+    // used as the left bar button item when exiting edit mode.
+    self.customLeftBarButtonItem = doneButton;
+  }
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
   [self.handler viewDidDisappear];
   [super viewDidDisappear:animated];
@@ -84,11 +116,19 @@ const CGFloat kSymbolSize = 22;
   [self.handler loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  if (self.showMigrateToAccountSection) {
+  if (_showMigrateToAccountSection) {
+    AutofillProfileDetailsSectionIdentifier section =
+        AutofillProfileDetailsSectionIdentifierFields;
+    if (base::FeatureList::IsEnabled(
+            kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+      section = AutofillProfileDetailsSectionIdentifierMigrationButton;
+      [model addSectionWithIdentifier:
+                 AutofillProfileDetailsSectionIdentifierMigrationButton];
+    }
     [model addItem:[self migrateToAccountRecommendationItem]
-        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+        toSectionWithIdentifier:section];
     [model addItem:[self migrateToAccountButtonItem]
-        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+        toSectionWithIdentifier:section];
   }
 
   [self.handler loadFooterForSettings];
@@ -113,18 +153,30 @@ const CGFloat kSymbolSize = 22;
 
   if (!self.tableView.editing) {
     [self.handler updateProfileData];
-    if (self.editIncompleteProfileForAccountView) {
-      [self.delegate didTapMigrateToAccountButton];
+    if (_editIncompleteProfileForAccountView) {
+      [_delegate didTapMigrateToAccountButton];
       [self showPostMigrationToast];
       [self.handler setMoveToAccountFromSettings:NO];
-      self.editIncompleteProfileForAccountView = NO;
+      _editIncompleteProfileForAccountView = NO;
     } else {
-      [self.delegate didEditAutofillProfileFromSettings];
+      [_delegate didEditAutofillProfileFromSettings];
     }
   }
 
   [self loadModel];
   [self.handler reconfigureCells];
+  if (_showMigrateToAccountSection &&
+      base::FeatureList::IsEnabled(
+          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+    [self reconfigureCellsForItems:
+              [self.tableViewModel
+                  itemsInSectionWithIdentifier:
+                      AutofillProfileDetailsSectionIdentifierMigrationButton]];
+  }
+}
+
+- (BOOL)showCancelDuringEditing {
+  return YES;
 }
 
 #pragma mark - UITableViewDataSource
@@ -155,8 +207,8 @@ const CGFloat kSymbolSize = 22;
   }
   if (itemType == AutofillProfileDetailsItemTypeMigrateToAccountButton) {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if ([self.delegate isMinimumAddress]) {
-      [self.delegate didTapMigrateToAccountButton];
+    if ([_delegate isMinimumAddress]) {
+      [_delegate didTapMigrateToAccountButton];
       __weak __typeof(self) weakSelf = self;
       void (^completion)(BOOL) = ^(BOOL) {
         [weakSelf showPostMigrationToast];
@@ -164,7 +216,7 @@ const CGFloat kSymbolSize = 22;
       [self removeMigrateButton:completion];
     } else {
       // Show the profile in the edit mode.
-      self.editIncompleteProfileForAccountView = YES;
+      _editIncompleteProfileForAccountView = YES;
       [self removeMigrateButton:nil];
       [self editButtonPressed];
       [self.handler setMoveToAccountFromSettings:YES];
@@ -248,32 +300,53 @@ const CGFloat kSymbolSize = 22;
   [self
       performBatchTableViewUpdates:^{
         TableViewModel* model = weakSelf.tableViewModel;
-        NSIndexPath* indexPathForMigrateRecommendationItem = [model
-            indexPathForItemType:
-                AutofillProfileDetailsItemTypeMigrateToAccountRecommendation
-               sectionIdentifier:AutofillProfileDetailsSectionIdentifierFields];
-        NSIndexPath* indexPathForMigrateButton = [model
-            indexPathForItemType:
-                AutofillProfileDetailsItemTypeMigrateToAccountButton
-               sectionIdentifier:AutofillProfileDetailsSectionIdentifierFields];
+        if (base::FeatureList::IsEnabled(
+                kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+          [self removeSectionWithIdentifier:
+                    AutofillProfileDetailsSectionIdentifierMigrationButton
+                           withRowAnimation:UITableViewRowAnimationFade];
+        } else {
+          NSIndexPath* indexPathForMigrateRecommendationItem = [model
+              indexPathForItemType:
+                  AutofillProfileDetailsItemTypeMigrateToAccountRecommendation
+                 sectionIdentifier:
+                     AutofillProfileDetailsSectionIdentifierFields];
+          NSIndexPath* indexPathForMigrateButton =
+              [model indexPathForItemType:
+                         AutofillProfileDetailsItemTypeMigrateToAccountButton
+                        sectionIdentifier:
+                            AutofillProfileDetailsSectionIdentifierFields];
 
-        [model removeItemWithType:
-                   AutofillProfileDetailsItemTypeMigrateToAccountRecommendation
-            fromSectionWithIdentifier:
-                AutofillProfileDetailsSectionIdentifierFields];
-        [model removeItemWithType:
-                   AutofillProfileDetailsItemTypeMigrateToAccountButton
-            fromSectionWithIdentifier:
-                AutofillProfileDetailsSectionIdentifierFields];
+          [model removeItemWithType:
+                     AutofillProfileDetailsItemTypeMigrateToAccountRecommendation
+              fromSectionWithIdentifier:
+                  AutofillProfileDetailsSectionIdentifierFields];
+          [model removeItemWithType:
+                     AutofillProfileDetailsItemTypeMigrateToAccountButton
+              fromSectionWithIdentifier:
+                  AutofillProfileDetailsSectionIdentifierFields];
 
-        [weakSelf.tableView
-            deleteRowsAtIndexPaths:@[
-              indexPathForMigrateRecommendationItem, indexPathForMigrateButton
-            ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
+          [weakSelf.tableView
+              deleteRowsAtIndexPaths:@[
+                indexPathForMigrateRecommendationItem, indexPathForMigrateButton
+              ]
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
       }
                         completion:onCompletion];
-  self.showMigrateToAccountSection = NO;
+  _showMigrateToAccountSection = NO;
+}
+
+// Removes the given section if it exists.
+- (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
+                   withRowAnimation:(UITableViewRowAnimation)animation {
+  TableViewModel* model = self.tableViewModel;
+  if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
+    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
+    [model removeSectionWithIdentifier:sectionIdentifier];
+    [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
+                  withRowAnimation:animation];
+  }
 }
 
 - (void)showPostMigrationToast {

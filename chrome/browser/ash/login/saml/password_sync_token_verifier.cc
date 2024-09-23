@@ -4,16 +4,26 @@
 
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 
+#include <memory>
+#include <string>
+
+#include "ash/public/cpp/reauth_reason.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
+#include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
+#include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "net/base/backoff_entry.h"
 
 namespace ash {
 namespace {
@@ -55,8 +65,9 @@ void PasswordSyncTokenVerifier::CreateTokenAsync() {
   DCHECK(!password_sync_token_fetcher_);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       primary_profile_->GetURLLoaderFactory();
-  if (!url_loader_factory.get())
+  if (!url_loader_factory.get()) {
     return;
+  }
 
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
       url_loader_factory, primary_profile_, this);
@@ -75,8 +86,9 @@ void PasswordSyncTokenVerifier::CheckForPasswordNotInSync() {
       primary_profile_->GetURLLoaderFactory();
   // url_loader_factory is nullptr in unit tests so constructing
   // PasswordSyncTokenFetcher does not make sense there.
-  if (!url_loader_factory.get())
+  if (!url_loader_factory.get()) {
     return;
+  }
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
       url_loader_factory, primary_profile_, this);
 
@@ -105,8 +117,9 @@ void PasswordSyncTokenVerifier::FetchSyncTokenOnReauth() {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       primary_profile_->GetURLLoaderFactory();
   // No url_loader_factory in unit tests.
-  if (!url_loader_factory.get())
+  if (!url_loader_factory.get()) {
     return;
+  }
 
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
       url_loader_factory, primary_profile_, this);
@@ -156,17 +169,18 @@ void PasswordSyncTokenVerifier::OnTokenVerified(bool is_valid) {
   password_sync_token_fetcher_.reset();
   // Schedule next token check after base interval.
   RecheckAfter(retry_backoff_.GetTimeUntilRelease());
-  if (is_valid)
+  if (is_valid) {
     return;
+  }
 
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       primary_user_->GetAccountId(), true);
   // Re-auth on lock.
-  InSessionPasswordSyncManager* password_sync_manager =
-      InSessionPasswordSyncManagerFactory::GetForProfile(primary_profile_);
-  if (password_sync_manager) {
-    password_sync_manager->MaybeForceReauthOnLockScreen(
-        InSessionPasswordSyncManager::LockScreenReauthReason::kInvalidToken);
+  LockScreenReauthManager* lock_screen_reauth_manager =
+      LockScreenReauthManagerFactory::GetForProfile(primary_profile_);
+  if (lock_screen_reauth_manager) {
+    lock_screen_reauth_manager->MaybeForceReauthOnLockScreen(
+        ReauthReason::kSamlPasswordSyncTokenValidationFailed);
   }
 }
 

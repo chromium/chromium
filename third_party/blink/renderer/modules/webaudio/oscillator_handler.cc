@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 
 #include <algorithm>
@@ -181,7 +186,7 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
     } else if (oscillator_type == "triangle") {
       SetType(TRIANGLE);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -218,7 +223,7 @@ String OscillatorHandler::GetType() const {
     case CUSTOM:
       return "custom";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "custom";
   }
 }
@@ -261,7 +266,7 @@ bool OscillatorHandler::SetType(uint8_t type) {
     default:
       // Return false for invalid types, including CUSTOM since
       // setPeriodicWave() method must be called explicitly.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 
@@ -760,6 +765,10 @@ void OscillatorHandler::SetPeriodicWave(PeriodicWaveImpl* periodic_wave) {
 
 bool OscillatorHandler::PropagatesSilence() const {
   return !IsPlayingOrScheduled() || HasFinished() || !periodic_wave_;
+}
+
+base::WeakPtr<AudioScheduledSourceHandler> OscillatorHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void OscillatorHandler::HandleStoppableSourceNode() {

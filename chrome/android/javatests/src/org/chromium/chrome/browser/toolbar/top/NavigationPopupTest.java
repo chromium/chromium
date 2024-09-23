@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -28,6 +29,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -35,7 +37,6 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.test.mock.MockNavigationController;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
@@ -139,7 +140,7 @@ public class NavigationPopupTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> popup.dismiss());
+        ThreadUtils.runOnUiThreadBlocking(() -> popup.dismiss());
     }
 
     @Test
@@ -149,7 +150,7 @@ public class NavigationPopupTest {
         final TestNavigationController controller = new TestNavigationController();
         final ListPopupWindow popup = showPopup(controller, false);
 
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> popup.performItemClick(1));
+        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> popup.performItemClick(1));
 
         Assert.assertFalse("Popup did not hide as expected.", popup.isShowing());
         Assert.assertEquals(
@@ -163,12 +164,12 @@ public class NavigationPopupTest {
         final TestNavigationController controller = new TestNavigationController();
         final ListPopupWindow popup = showPopup(controller, false);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ListView list = popup.getListView();
                     View view =
                             list.getAdapter().getView(list.getAdapter().getCount() - 1, null, list);
-                    TextView text = (TextView) view.findViewById(R.id.entry_title);
+                    TextView text = view.findViewById(R.id.entry_title);
                     Assert.assertNotNull(text);
                     Assert.assertEquals(
                             text.getResources().getString(R.string.show_full_history),
@@ -183,12 +184,12 @@ public class NavigationPopupTest {
         final TestNavigationController controller = new TestNavigationController();
         final ListPopupWindow popup = showPopup(controller, true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ListView list = popup.getListView();
                     View view =
                             list.getAdapter().getView(list.getAdapter().getCount() - 1, null, list);
-                    TextView text = (TextView) view.findViewById(R.id.entry_title);
+                    TextView text = view.findViewById(R.id.entry_title);
                     Assert.assertNotNull(text);
                     Assert.assertNotEquals(
                             text.getResources().getString(R.string.show_full_history),
@@ -199,9 +200,9 @@ public class NavigationPopupTest {
 
     private ListPopupWindow showPopup(NavigationController controller, boolean isOffTheRecord)
             throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     if (isOffTheRecord) {
                         profile = profile.getPrimaryOTRProfile(true);
                     }

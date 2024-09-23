@@ -8,6 +8,10 @@
 
 using WebUiJsTest = WebUIMochaBrowserTest;
 
+IN_PROC_BROWSER_TEST_F(WebUiJsTest, CrRouter) {
+  RunTest("js/cr_router_test.js", "runMochaSuite('CrRouterTest');");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUiJsTest, SendWithPromise) {
   RunTest("js/cr_test.js", "runMochaSuite('CrSendWithPromiseTest');");
 }
@@ -57,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(WebUiJsTest, Store) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUiJsTest, MetricsReporter) {
-  // MetricsReporter needs a host that enables BINDINGS_POLICY_MOJO_WEB_UI.
+  // MetricsReporter needs a host that enables BindingsPolicyValue::kMojoWebUi.
   // Any WebUI host should work, except chrome://webui-test since it is just a
   // WebUIDataSource.
   set_test_loader_host(chrome::kChromeUINewTabPageHost);

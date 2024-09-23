@@ -10,6 +10,7 @@
 namespace exo {
 
 class DataOffer;
+class SecurityDelegate;
 enum class DndAction;
 
 // Handles events on data devices in context-specific ways.
@@ -28,6 +29,9 @@ class DataOfferDelegate {
 
   // Called when current |action| is offered by the client.
   virtual void OnAction(DndAction action) = 0;
+
+  // Returns the server's SecurityDelegate.
+  virtual SecurityDelegate* GetSecurityDelegate() const = 0;
 
  protected:
   virtual ~DataOfferDelegate() {}

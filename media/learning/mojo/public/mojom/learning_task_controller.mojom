@@ -43,7 +43,7 @@ interface LearningTaskController {
           TargetValue? default_target);
 
   // Asynchronously predicts distribution for given |features|. |callback| will
-  // receive a absl::nullopt prediction when model is not available.
+  // receive a std::nullopt prediction when model is not available.
   PredictDistribution(array<FeatureValue> features)
       => (TargetHistogram? predicted);
 };

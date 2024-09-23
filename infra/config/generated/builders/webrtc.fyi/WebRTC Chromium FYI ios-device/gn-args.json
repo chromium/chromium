@@ -10,6 +10,7 @@
     "target_cpu": "arm64",
     "target_environment": "device",
     "target_os": "ios",
-    "use_remoteexec": true
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

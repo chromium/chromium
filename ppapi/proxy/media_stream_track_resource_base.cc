@@ -75,7 +75,8 @@ void MediaStreamTrackResourceBase::OnPluginMsgInitBuffers(
   // not). In the current shared memory API the mapping of a region always
   // matches the permissions on the handle, so the |readonly| parameter is
   // ignored.
-  // TODO(crbug.com/793446): could the region be shared readonly from the host?
+  // TODO(crbug.com/40553989): could the region be shared readonly from the
+  // host?
   base::UnsafeSharedMemoryRegion region;
   params.TakeUnsafeSharedMemoryRegionAtIndex(0, &region);
   buffer_manager_.SetBuffers(number_of_buffers, buffer_size, std::move(region),

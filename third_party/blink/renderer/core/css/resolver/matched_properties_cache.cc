@@ -54,7 +54,7 @@ CachedMatchedProperties::CachedMatchedProperties(
   matched_properties_types.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
-    matched_properties_types.push_back(new_matched_properties.types_);
+    matched_properties_types.push_back(new_matched_properties.data_);
   }
 }
 
@@ -68,7 +68,7 @@ void CachedMatchedProperties::Set(const ComputedStyle* style,
   matched_properties_types.clear();
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
-    matched_properties_types.push_back(new_matched_properties.types_);
+    matched_properties_types.push_back(new_matched_properties.data_);
   }
 }
 
@@ -108,16 +108,9 @@ bool CachedMatchedProperties::DependenciesEqual(
     return false;
   }
   if (computed_style->HasVariableReferenceFromNonInheritedProperty()) {
-    if (RuntimeEnabledFeatures::CSSMPCImprovementsEnabled()) {
-      if (!base::ValuesEquivalent(parent_computed_style->InheritedVariables(),
-                                  state.ParentStyle()->InheritedVariables())) {
-        return false;
-      }
-    } else {
-      if (parent_computed_style->InheritedVariables() !=
-          state.ParentStyle()->InheritedVariables()) {
-        return false;
-      }
+    if (!base::ValuesEquivalent(parent_computed_style->InheritedVariables(),
+                                state.ParentStyle()->InheritedVariables())) {
+      return false;
     }
   }
 
@@ -180,35 +173,28 @@ bool CachedMatchedProperties::operator==(
     if (properties[i].properties != matched_properties[i]) {
       return false;
     }
-    if (properties[i].types_.link_match_type !=
+    if (properties[i].data_.link_match_type !=
         matched_properties_types[i].link_match_type) {
       return false;
     }
-    if (properties[i].types_.tree_order !=
+    if (properties[i].data_.tree_order !=
         matched_properties_types[i].tree_order) {
       return false;
     }
-    if (properties[i].types_.layer_order !=
+    if (properties[i].data_.layer_order !=
         matched_properties_types[i].layer_order) {
       return false;
     }
-    if (properties[i].types_.valid_property_filter !=
+    if (properties[i].data_.valid_property_filter !=
         matched_properties_types[i].valid_property_filter) {
       return false;
     }
-    if (properties[i].types_.is_inline_style !=
+    if (properties[i].data_.is_inline_style !=
         matched_properties_types[i].is_inline_style) {
       return false;
     }
-    if (properties[i].types_.is_fallback_style !=
-        matched_properties_types[i].is_fallback_style) {
-      return false;
-    }
-    if (properties[i].types_.signal != matched_properties_types[i].signal) {
-      return false;
-    }
-    if (properties[i].types_.is_invisible !=
-        matched_properties_types[i].is_invisible) {
+    if (properties[i].data_.is_try_style !=
+        matched_properties_types[i].is_try_style) {
       return false;
     }
   }
@@ -264,7 +250,7 @@ bool MatchedPropertiesCache::IsStyleCacheable(
   // Content property with attr() values depend on the attribute value of the
   // originating element, thus we cannot cache based on the matched properties
   // because the value of content is retrieved from the attribute at apply time.
-  if (builder.HasAttrContent()) {
+  if (builder.HasAttrFunction()) {
     return false;
   }
   if (builder.Zoom() != ComputedStyleInitialValues::InitialZoom()) {
@@ -274,6 +260,11 @@ bool MatchedPropertiesCache::IsStyleCacheable(
     return false;
   }
   if (builder.HasContainerRelativeUnits()) {
+    return false;
+  }
+  if (builder.HasAnchorFunctions()) {
+    // The result of anchor() and anchor-size() functions can depend on
+    // the 'anchor' attribute on the element.
     return false;
   }
   // Avoiding cache for ::highlight styles, and the originating styles they are
@@ -323,6 +314,17 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // would end up with an incorrect match.
   if (IsAtShadowBoundary(&state.GetElement()) &&
       state.StyleBuilder().UserModify() != parent_style.UserModify()) {
+    return false;
+  }
+
+  if (!state.GetElement().GetCascadeFilter().IsEmpty()) {
+    // The result of applying properties with the same matching declarations can
+    // be different if the cascade filter is different.
+    return false;
+  }
+
+  if (state.HasAttrFunction()) {
+    DCHECK(RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled());
     return false;
   }
 

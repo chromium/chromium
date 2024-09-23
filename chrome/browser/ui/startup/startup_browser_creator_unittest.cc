@@ -12,6 +12,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "components/account_id/account_id.h"
@@ -41,6 +43,9 @@ TEST(StartupBrowserCreatorTest, ShouldLoadProfileWithoutWindow) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
     auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
     auto* primary_user =
         fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));

@@ -6,10 +6,10 @@
 #define COMPONENTS_BASE32_BASE32_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 
 namespace base32 {
 
@@ -33,7 +33,7 @@ std::string Base32Encode(
 
 // Decodes the |input| string piece from base32. Returns an empty vector on
 // error, including if |input| is empty.
-std::vector<uint8_t> Base32Decode(base::StringPiece input);
+std::vector<uint8_t> Base32Decode(std::string_view input);
 
 }  // namespace base32
 

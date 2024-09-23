@@ -68,16 +68,17 @@ struct TestParams {
   RecentSource::Params MakeParams(storage::FileSystemContext* context,
                                   const int32_t call_id,
                                   const GURL& origin) {
-    return RecentSource::Params(context, call_id, origin, query_, cutoff_time_,
-                                base::TimeTicks::Max(), file_type_);
+    return RecentSource::Params(context, call_id, origin, query_, max_files_,
+                                cutoff_time_, base::TimeTicks::Max(),
+                                file_type_);
   }
 
   std::unique_ptr<RecentDiskSource> MakeSource(
       const std::string& mount_point_name,
       const std::string& uma_histogram_name) {
-    return std::make_unique<RecentDiskSource>(mount_point_name,
-                                              ignore_dot_files_, max_depth_,
-                                              max_files_, uma_histogram_name);
+    return std::make_unique<RecentDiskSource>(
+        extensions::api::file_manager_private::VolumeType::kTesting,
+        mount_point_name, ignore_dot_files_, max_depth_, uma_histogram_name);
   }
 
   std::string query_ = "";

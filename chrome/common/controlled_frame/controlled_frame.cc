@@ -7,11 +7,15 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/initialize_extensions_client.h"
+#include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
@@ -27,6 +31,14 @@ bool IsRunningInKioskMode() {
 }
 }  // namespace
 #endif
+
+base::span<const char* const> GetControlledFrameFeatureList() {
+  static constexpr const char* feature_list[] = {
+      "controlledFrameInternal", "chromeWebViewInternal", "guestViewInternal",
+      "webRequestInternal",      "webViewInternal",
+  };
+  return base::make_span(feature_list);
+}
 
 namespace controlled_frame {
 
@@ -59,7 +71,10 @@ bool AvailabilityCheck(const std::string& api_full_name,
                        int context_id,
                        bool check_developer_mode,
                        const extensions::ContextData& context_data) {
-  if (!base::FeatureList::IsEnabled(features::kControlledFrame)) {
+  // Verify that the kControlledFrame blink::features flag is enabled. It's a
+  // kill switch, so it should be enabled by default and only present so if
+  // needed we can use Finch to disable Controlled Frame.
+  if (!base::FeatureList::IsEnabled(blink::features::kControlledFrame)) {
     return false;
   }
 
@@ -69,7 +84,9 @@ bool AvailabilityCheck(const std::string& api_full_name,
   // Also allow API exposure in ChromeOS Kiosk mode for web apps.
   if (base::FeatureList::IsEnabled(features::kWebKioskEnableIwaApis) &&
       IsRunningInKioskMode() && url.SchemeIs(url::kHttpsScheme)) {
-    is_allowed_for_scheme = true;
+    is_allowed_for_scheme =
+        extensions::GetCurrentChannel() != version_info::Channel::BETA &&
+        extensions::GetCurrentChannel() != version_info::Channel::STABLE;
   }
 #endif
 
@@ -77,7 +94,7 @@ bool AvailabilityCheck(const std::string& api_full_name,
   // in our expected list.
   return !extension && is_allowed_for_scheme &&
          context == extensions::mojom::ContextType::kWebPage &&
-         context_data.IsIsolatedApplication() &&
+         context_data.HasControlledFrameCapability() &&
          base::Contains(GetControlledFrameFeatureList(), api_full_name);
 }
 

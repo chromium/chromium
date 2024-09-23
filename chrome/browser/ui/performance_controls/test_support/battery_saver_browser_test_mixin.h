@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_BATTERY_SAVER_BROWSER_TEST_MIXIN_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TEST_SUPPORT_BATTERY_SAVER_BROWSER_TEST_MIXIN_H_
 
+#include <concepts>
+
 #include "base/power_monitor/battery_level_provider.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/test/power_monitor_test_utils.h"
@@ -15,9 +17,8 @@
 
 // Template to be used as a mixin class for battery saver tests extending
 // InteractiveBrowserTest.
-template <typename T,
-          typename =
-              std::enable_if_t<std::is_base_of_v<InProcessBrowserTest, T>>>
+template <typename T>
+  requires(std::derived_from<T, InProcessBrowserTest>)
 class BatterySaverBrowserTestMixin : public T {
  public:
   template <class... Args>

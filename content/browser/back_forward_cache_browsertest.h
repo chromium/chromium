@@ -38,8 +38,8 @@ using SameOriginMatcher = testing::Matcher<
     const blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr&>;
 using BlockingDetailsReasonsMatcher =
     testing::Matcher<const blink::mojom::BFCacheBlockingDetailedReasonPtr&>;
-using BlockingReasonLocationMatcher =
-    testing::Matcher<const blink::mojom::BlockingReasonSourceLocationPtr&>;
+using SourceLocationMatcher =
+    testing::Matcher<const blink::mojom::ScriptSourceLocationPtr&>;
 using BlockingDetailsMatcher =
     testing::Matcher<const blink::mojom::BlockingDetailsPtr&>;
 
@@ -151,27 +151,25 @@ class BackForwardCacheBrowserTest
       const std::optional<SameOriginMatcher>& same_origin_details);
 
   SameOriginMatcher MatchesSameOriginDetails(
-      const testing::Matcher<std::string>& url,
+      const testing::Matcher<GURL>& url,
       const std::vector<ReasonsMatcher>& children);
 
   // Used in tests that ensure source location is sent to the renderer side from
   // the browser one
   BlockingDetailsReasonsMatcher MatchesDetailedReason(
       const testing::Matcher<std::string>& name,
-      const std::optional<BlockingReasonLocationMatcher>& source);
-
-  BlockingReasonLocationMatcher MatchesSourceLocation(
-      const testing::Matcher<std::string>& url,
-      const testing::Matcher<uint64_t>& line_number,
-      const testing::Matcher<uint64_t>& column_number);
+      const std::optional<SourceLocationMatcher>& source);
 
   // Used in tests that ensure source location is sent to the browser side from
   // the renderer one.
   BlockingDetailsMatcher MatchesBlockingDetails(
-      const std::optional<testing::Matcher<std::string>>& url,
-      const std::optional<testing::Matcher<std::string>>& function_name,
-      const testing::Matcher<uint64_t>& line,
-      const testing::Matcher<uint64_t>& column);
+      const std::optional<SourceLocationMatcher>& source);
+
+  SourceLocationMatcher MatchesSourceLocation(
+      const testing::Matcher<GURL>& url,
+      const testing::Matcher<std::string>& function_name,
+      const testing::Matcher<uint64_t>& line_number,
+      const testing::Matcher<uint64_t>& column_number);
 
   // Access the tree result of NotRestoredReason for the last main frame
   // navigation.

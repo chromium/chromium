@@ -8,8 +8,8 @@
 
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -144,6 +144,7 @@ void MIDIDispatcher::DataReceived(uint32_t port,
 }
 
 void MIDIDispatcher::Trace(Visitor* visitor) const {
+  visitor->Trace(client_);
   visitor->Trace(midi_session_);
   visitor->Trace(receiver_);
   visitor->Trace(midi_session_provider_);

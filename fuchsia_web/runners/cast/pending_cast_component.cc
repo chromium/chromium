@@ -8,12 +8,13 @@
 #include <lib/async/default.h>
 #include <lib/trace/event.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 
@@ -22,7 +23,7 @@ PendingCastComponent::PendingCastComponent(
     std::unique_ptr<base::StartupContext> startup_context,
     fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
         controller_request,
-    base::StringPiece app_id)
+    std::string_view app_id)
     : delegate_(delegate),
       app_id_(app_id),
       application_context_error_handler_(base::BindRepeating(

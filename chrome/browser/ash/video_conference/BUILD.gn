@@ -1,0 +1,116 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("video_conference") {
+  sources = [
+    "video_conference_app_service_client.cc",
+    "video_conference_app_service_client.h",
+    "video_conference_ash_feature_client.cc",
+    "video_conference_ash_feature_client.h",
+    "video_conference_client_wrapper.cc",
+    "video_conference_client_wrapper.h",
+    "video_conference_manager_ash.cc",
+    "video_conference_manager_ash.h",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/camera_mic",
+    "//chromeos/crosapi/mojom",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//ash/webui/vc_background_ui",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/camera_mic",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/chromeos/video_conference",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chromeos/crosapi/mojom:mojom_shared",
+    "//chromeos/crosapi/mojom:mojom_shared_cpp_sources",
+    "//components/prefs",
+    "//components/user_manager",
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/camera_mic",
+    "//chrome/browser/chromeos/video_conference",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "video_conference_manager_ash_unittest.cc" ]
+
+  deps = [
+    ":video_conference",
+    "//ash",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "video_conference_app_service_client_browsertest.cc",
+    "video_conference_ash_feature_client_browsertest.cc",
+    "video_conference_integration_browsertest.cc",
+  ]
+
+  deps = [
+    ":video_conference",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/common/mojom",
+    "//ash/webui/vc_background_ui",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/chromeos/video_conference",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chrome/test:webrtc_browser_tests_base",
+    "//chromeos/ash/components/audio",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//ui/base",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/views:test_support",
+  ]
+}

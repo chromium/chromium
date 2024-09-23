@@ -41,7 +41,10 @@ public class ReparentingTask implements UserData {
         /**
          * Gets a {@link CompositorViewHolder} which is passed on to {@link ReparentingTask}, used
          * in the reparenting process.
+         *
+         * <p>Can be null if the CompositorViewHolder does not yet exist.
          */
+        @Nullable
         CompositorViewHolder getCompositorViewHolder();
 
         /**
@@ -152,7 +155,7 @@ public class ReparentingTask implements UserData {
         // with an activity, and will crash. crbug.com/657007
         WebContents webContents = mTab.getWebContents();
 
-        // TODO(crbug/1463737): We shouldn't be detaching tabs with null WebContents as it can
+        // TODO(crbug.com/40067160): We shouldn't be detaching tabs with null WebContents as it can
         // put the tab into an unexpected detached = false state if a navigation happens on the
         // detached tab.
         if (webContents != null) {
@@ -167,15 +170,17 @@ public class ReparentingTask implements UserData {
     }
 
     /**
-     * Finishes the tab reparenting process. Attaches this tab to a new activity, and updates
-     * the tab and related objects to reference it. This updates many delegates inside the tab
-     * and {@link WebContents} both on java and native sides.
+     * Finishes the tab reparenting process. Attaches this tab to a new activity, and updates the
+     * tab and related objects to reference it. This updates many delegates inside the tab and
+     * {@link WebContents} both on java and native sides.
      *
      * @param delegate A delegate that provides dependencies.
      * @param finalizeCallback A Callback to be called after the Tab has been reparented.
      */
     public void finish(@NonNull Delegate delegate, @Nullable Runnable finalizeCallback) {
-        delegate.getCompositorViewHolder().prepareForTabReparenting();
+        if (delegate.getCompositorViewHolder() != null) {
+            delegate.getCompositorViewHolder().prepareForTabReparenting();
+        }
         attach(delegate.getWindowAndroid(), delegate.getTabDelegateFactory());
         if (finalizeCallback != null) finalizeCallback.run();
     }
@@ -193,6 +198,7 @@ public class ReparentingTask implements UserData {
         assert mTab.getWebContents() == null
                 || mTab.getWebContents().getTopLevelNativeWindow() == null;
         mTab.updateAttachment(window, tabDelegateFactory);
+        if (mTab.getWebContents() == null) return;
         ReparentingTaskJni.get().attachTab(mTab.getWebContents());
     }
 

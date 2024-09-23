@@ -10,37 +10,37 @@ import type {ProgressCenter} from '../../background/js/progress_center.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDirectory, getDisallowedTransfers, getFile, getParentEntry, grantAccess, startIOTask} from '../../common/js/api.js';
-import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
-import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
+import {getFocusedTreeItem, htmlEscape, queryRequiredElement} from '../../common/js/dom_utils.js';
+import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, getTreeItemEntry, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getIcon, isEncrypted} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str, strf} from '../../common/js/translations.js';
-import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
+import type {TrashEntry} from '../../common/js/trash.js';
+import {getEnabledTrashVolumeURLs, isAllTrashEntries} from '../../common/js/trash.js';
 import {FileErrorToDomError, visitURL} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {FileKey} from '../../state/state.js';
 import {getFileData, getStore} from '../../state/store.js';
-import {XfTree} from '../../widgets/xf_tree.js';
-import {XfTreeItem} from '../../widgets/xf_tree_item.js';
-import {isTreeItem} from '../../widgets/xf_tree_util.js';
-import {FilesToast} from '../elements/files_toast.js';
+import type {XfTree} from '../../widgets/xf_tree.js';
+import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {isTreeItem, isXfTree} from '../../widgets/xf_tree_util.js';
+import type {FilesToast} from '../elements/files_toast.js';
 
-import {DirectoryModel} from './directory_model.js';
-import {EventType, FileSelectionHandler} from './file_selection.js';
-import {MetadataModel} from './metadata/metadata_model.js';
-import {Command} from './ui/command.js';
-import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
+import type {DirectoryModel} from './directory_model.js';
+import type {FileSelectionHandler} from './file_selection.js';
+import {EventType} from './file_selection.js';
+import type {MetadataModel} from './metadata/metadata_model.js';
+import type {Command} from './ui/command.js';
 import {DragSelector} from './ui/drag_selector.js';
 import type {FileGrid} from './ui/file_grid.js';
 import type {FileTableList} from './ui/file_table_list.js';
 import type {Grid} from './ui/grid.js';
 import type {List} from './ui/list.js';
-import {ListContainer} from './ui/list_container.js';
-import {ListItem} from './ui/list_item.js';
-import {TreeItem} from './ui/tree.js';
+import type {ListContainer} from './ui/list_container.js';
+import type {ListItem} from './ui/list_item.js';
 
 /**
  * Global (placed in the window object) variable name to hold internal
@@ -48,20 +48,26 @@ import {TreeItem} from './ui/tree.js';
  * since DataTransfer object is in protected state. Reachable from other
  * file manager instances.
  */
-const DRAG_AND_DROP_GLOBAL_DATA = '__drag_and_drop_global_data';
+export const DRAG_AND_DROP_GLOBAL_DATA = '__drag_and_drop_global_data';
 
 /**
  * The key under which we store if the file content is missing. This property
- * tells us if we are attemptint to use a drive file while Drive is
+ * tells us if we are attempting to use a drive file while Drive is
  * disconnected.
  */
-const MISSING_FILE_CONTENTS = 'missingFileContents';
+export const MISSING_FILE_CONTENTS = 'missingFileContents';
+
+/**
+ * The key under which we store the list of dragged files. This allows us to
+ * set the correct drag effect.
+ */
+export const SOURCE_URLS = 'sources';
 
 /**
  * The key under which we store the root of the file system of files on which
  * we operate. This allows us to set the correct drag effect.
  */
-const SOURCE_ROOT_URL = 'sourceRootURL';
+export const SOURCE_ROOT_URL = 'sourceRootURL';
 
 /**
  * The key under which we store the flag denoting that the dragged file is
@@ -69,7 +75,7 @@ const SOURCE_ROOT_URL = 'sourceRootURL';
  * implemented at the moment (May 2023), this allows us to unset the drag effect
  * when moving such a file outside Drive.
  */
-const ENCRYPTED = 'encrypted';
+export const ENCRYPTED = 'encrypted';
 
 /**
  * Confirmation message types.
@@ -106,6 +112,7 @@ type FileAsyncData =
     Record<FileKey, {file?: File, externalFileUrl?: string}|null>;
 
 interface DragAndDropGlobalData {
+  sourceURLs: string;
   sourceRootURL: string;
   missingFileContents: string;
   encrypted: boolean;
@@ -327,7 +334,7 @@ export class FileTransferController {
 
   constructor(
       private document_: Document, private listContainer_: ListContainer,
-      directoryTree: DirectoryTree,
+      directoryTree: XfTree,
       private confirmationCallback_: ConfirmationCallback,
       private progressCenter_: ProgressCenter,
       /**
@@ -380,7 +387,7 @@ export class FileTransferController {
     list.addEventListener('drop', this.onDrop_.bind(this, false));
   }
 
-  private attachTreeDropTarget_(tree: DirectoryTree|XfTree) {
+  private attachTreeDropTarget_(tree: XfTree) {
     tree.addEventListener('dragover', this.onDragOver_.bind(this, true, tree));
     tree.addEventListener('dragenter', this.onDragEnterTree_.bind(this, tree));
     tree.addEventListener('dragleave', this.onDragLeave_.bind(this));
@@ -500,14 +507,17 @@ export class FileTransferController {
 
   private getDragAndDropGlobalData_(): DragAndDropGlobalData|null {
     const storage = window.localStorage;
+    const sourceURLs =
+        storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`);
     const sourceRootURL =
         storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
     const missingFileContents = storage.getItem(
         `${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
     const encrypted =
         storage.getItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${ENCRYPTED}`) === 'true';
-    if (sourceRootURL !== null && missingFileContents !== null) {
-      return {sourceRootURL, missingFileContents, encrypted};
+    if (sourceURLs !== null && sourceRootURL !== null &&
+        missingFileContents !== null) {
+      return {sourceURLs, sourceRootURL, missingFileContents, encrypted};
     }
     return null;
   }
@@ -843,6 +853,9 @@ export class FileTransferController {
 
     const storage = window.localStorage;
     storage.setItem(
+        `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`,
+        dataTransfer.getData(`fs/${SOURCE_URLS}`));
+    storage.setItem(
         `${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`,
         dataTransfer.getData(`fs/${SOURCE_ROOT_URL}`));
     storage.setItem(
@@ -862,14 +875,14 @@ export class FileTransferController {
     container.textContent = '';
     this.clearDropTarget_();
     const storage = window.localStorage;
+    storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_URLS}`);
     storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${SOURCE_ROOT_URL}`);
     storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${MISSING_FILE_CONTENTS}`);
     storage.removeItem(`${DRAG_AND_DROP_GLOBAL_DATA}.${ENCRYPTED}`);
   }
 
   private onDragOver_(
-      onlyIntoDirectories: boolean, _: List|DirectoryTree|XfTree,
-      event: DragEvent) {
+      onlyIntoDirectories: boolean, _: List|XfTree, event: DragEvent) {
     event.preventDefault();
     let entry: DirectoryEntry|FilesAppDirEntry|null|undefined =
         this.destinationEntry_;
@@ -901,7 +914,7 @@ export class FileTransferController {
     }
   }
 
-  private onDragEnterTree_(_: DirectoryTree|XfTree, event: DragEvent) {
+  private onDragEnterTree_(_: XfTree, event: DragEvent) {
     event.preventDefault();  // Required to prevent the cursor flicker.
 
     if (!event.relatedTarget) {
@@ -913,7 +926,7 @@ export class FileTransferController {
 
     this.lastEnteredTarget_ = event.target as HTMLElement;
     let item = event.target as Element;
-    while (item && !(item instanceof TreeItem || item instanceof XfTreeItem)) {
+    while (item && !(isTreeItem(item))) {
       item = item.parentNode as Element;
     }
 
@@ -921,9 +934,10 @@ export class FileTransferController {
       return;
     }
 
-    if (item && 'entry' in item && item.entry && event.dataTransfer) {
-      this.setDropTarget_(
-          item, event.dataTransfer, item.entry as DirectoryEntry);
+    const entry = getTreeItemEntry(item);
+
+    if (item && entry && event.dataTransfer) {
+      this.setDropTarget_(item, event.dataTransfer, entry as DirectoryEntry);
     } else {
       this.clearDropTarget_();
     }
@@ -996,13 +1010,36 @@ export class FileTransferController {
    */
   private changeToDropTargetDirectory_() {
     // Do custom action.
-    if (isDirectoryTreeItem(this.dropTarget_)) {
+    if (isTreeItem(this.dropTarget_)) {
       this.dropTarget_.doDropTargetAction();
     }
     if (!this.destinationEntry_) {
       return;
     }
     this.directoryModel_.changeDirectoryEntry(this.destinationEntry_);
+  }
+
+  protected isDropTargetAllowed_(destinationEntryURL: string) {
+    // Disallow dropping a directory either on itself or on one of its children.
+    const {sourceURLs} = this.getDragAndDropGlobalData_() || {sourceURLs: ''};
+    const destinationURLWithTrailingSlash =
+        destinationEntryURL + (destinationEntryURL.endsWith('/') ? '' : '/');
+    for (const url of sourceURLs.split('\n')) {
+      if (url === destinationEntryURL ||
+          destinationURLWithTrailingSlash.startsWith(url)) {
+        // Note: When this method is called, destinationEntry is always a
+        // directory and its URL doesn't have a trailing slash.
+        return false;
+      }
+    }
+
+    // Disallow drop target for disabled destination entries.
+    const fileData = getFileData(getStore().getState(), destinationEntryURL);
+    if (fileData?.disabled) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -1030,18 +1067,7 @@ export class FileTransferController {
     domElement.classList.remove('accepts');
     domElement.classList.add('denies');
 
-    // Disallow dropping a directory on itself.
-    const entries = this.selectionHandler_.selection.entries;
-    for (const entry of entries) {
-      if (isSameEntry(entry, destinationEntry)) {
-        return;
-      }
-    }
-
-    // Disallow drop target for disabled destination entries.
-    const fileData =
-        getFileData(getStore().getState(), destinationEntry.toURL());
-    if (fileData?.disabled) {
+    if (!this.isDropTargetAllowed_(destinationEntry.toURL())) {
       return;
     }
 
@@ -1128,7 +1154,7 @@ export class FileTransferController {
 
     // If current focus is on DirectoryTree, write selected item of
     // DirectoryTree to system clipboard.
-    if (document.activeElement && isDirectoryTree(document.activeElement)) {
+    if (document.activeElement && isXfTree(document.activeElement)) {
       const focusedItem = getFocusedTreeItem(document.activeElement);
       this.cutOrCopyFromDirectoryTree(
           focusedItem, clipboardData, effectAllowed);
@@ -1150,18 +1176,16 @@ export class FileTransferController {
    * Performs cut or copy operation dispatched from directory tree.
    */
   cutOrCopyFromDirectoryTree(
-      focusedItem: DirectoryItem|XfTreeItem|null,
-      clipboardData: DataTransfer|null,
+      focusedItem: XfTreeItem|null, clipboardData: DataTransfer|null,
       effectAllowed: DataTransfer['effectAllowed']) {
     if (focusedItem === null) {
       return;
     }
 
-    if (!('entry' in focusedItem)) {
+    const entry = focusedItem && getTreeItemEntry(focusedItem);
+    if (!entry) {
       return;
     }
-
-    const entry = focusedItem.entry as DirectoryEntry;
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     if (!volumeInfo) {

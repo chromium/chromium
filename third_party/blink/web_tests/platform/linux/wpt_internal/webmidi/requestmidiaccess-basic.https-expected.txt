@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] requestMIDIAccess is defined and callable
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Platform dependent initialization failed."
+Harness: the test ran to completion.
+

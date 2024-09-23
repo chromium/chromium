@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 
 #include <memory>
@@ -27,7 +32,7 @@ void TestRepetitionCount(const char* dir,
                          const char* file,
                          int expected_repetition_count) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
-  scoped_refptr<SharedBuffer> data = ReadFile(dir, file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(dir, file);
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
   EXPECT_EQ(expected_repetition_count, decoder->RepetitionCount());
@@ -39,7 +44,7 @@ TEST(GIFImageDecoderTest, decodeTwoFrames) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile(kWebTestsResourcesDir, "animated.gif");
+      ReadFileToSharedBuffer(kWebTestsResourcesDir, "animated.gif");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -63,7 +68,7 @@ TEST(GIFImageDecoderTest, decodeTwoFrames) {
 TEST(GIFImageDecoderTest, crbug779261) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFile(kWebTestsResourcesDir, "crbug779261.gif");
+      ReadFileToSharedBuffer(kWebTestsResourcesDir, "crbug779261.gif");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -85,7 +90,7 @@ TEST(GIFImageDecoderTest, parseAndDecode) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile(kWebTestsResourcesDir, "animated.gif");
+      ReadFileToSharedBuffer(kWebTestsResourcesDir, "animated.gif");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -107,8 +112,7 @@ TEST(GIFImageDecoderTest, parseAndDecode) {
 TEST(GIFImageDecoderTest, parseByteByByte) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
 
-  const Vector<char> data =
-      ReadFile(kWebTestsResourcesDir, "animated.gif")->CopyAs<Vector<char>>();
+  const Vector<char> data = ReadFile(kWebTestsResourcesDir, "animated.gif");
 
   size_t frame_count = 0;
 
@@ -139,7 +143,7 @@ TEST(GIFImageDecoderTest, brokenSecondFrame) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile(kDecodersTestingDir, "broken.gif");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "broken.gif");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -156,8 +160,7 @@ TEST(GIFImageDecoderTest, progressiveDecode) {
 TEST(GIFImageDecoderTest, allDataReceivedTruncation) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
 
-  const Vector<char> data =
-      ReadFile(kWebTestsResourcesDir, "animated.gif")->CopyAs<Vector<char>>();
+  const Vector<char> data = ReadFile(kWebTestsResourcesDir, "animated.gif");
 
   ASSERT_GE(data.size(), 10u);
   scoped_refptr<SharedBuffer> temp_data =
@@ -177,7 +180,7 @@ TEST(GIFImageDecoderTest, frameIsComplete) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile(kWebTestsResourcesDir, "animated.gif");
+      ReadFileToSharedBuffer(kWebTestsResourcesDir, "animated.gif");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -191,10 +194,8 @@ TEST(GIFImageDecoderTest, frameIsComplete) {
 TEST(GIFImageDecoderTest, frameIsCompleteLoading) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
 
-  scoped_refptr<SharedBuffer> data_buffer =
-      ReadFile(kWebTestsResourcesDir, "animated.gif");
-  ASSERT_TRUE(data_buffer.get());
-  const Vector<char> data = data_buffer->CopyAs<Vector<char>>();
+  const Vector<char> data = ReadFile(kWebTestsResourcesDir, "animated.gif");
+  scoped_refptr<SharedBuffer> data_buffer = SharedBuffer::Create(data);
 
   ASSERT_GE(data.size(), 10u);
   scoped_refptr<SharedBuffer> temp_data =
@@ -214,9 +215,9 @@ TEST(GIFImageDecoderTest, frameIsCompleteLoading) {
 
 TEST(GIFImageDecoderTest, badTerminator) {
   scoped_refptr<SharedBuffer> reference_data =
-      ReadFile(kDecodersTestingDir, "radient.gif");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "radient.gif");
   scoped_refptr<SharedBuffer> test_data =
-      ReadFile(kDecodersTestingDir, "radient-bad-terminator.gif");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "radient-bad-terminator.gif");
   ASSERT_TRUE(reference_data.get());
   ASSERT_TRUE(test_data.get());
 
@@ -267,7 +268,7 @@ TEST(GIFImageDecoderTest, randomDecodeAfterClearFrameBufferCache) {
 // memory.
 TEST(GIFImageDecoderTest, badInitialCode) {
   scoped_refptr<SharedBuffer> test_data =
-      ReadFile(kDecodersTestingDir, "bad-initial-code.gif");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "bad-initial-code.gif");
   ASSERT_TRUE(test_data.get());
 
   std::unique_ptr<ImageDecoder> test_decoder = CreateDecoder();
@@ -281,7 +282,7 @@ TEST(GIFImageDecoderTest, badInitialCode) {
 // should fail.
 TEST(GIFImageDecoderTest, badCode) {
   scoped_refptr<SharedBuffer> test_data =
-      ReadFile(kDecodersTestingDir, "bad-code.gif");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "bad-code.gif");
   ASSERT_TRUE(test_data.get());
 
   std::unique_ptr<ImageDecoder> test_decoder = CreateDecoder();
@@ -295,8 +296,8 @@ TEST(GIFImageDecoderTest, invalidDisposalMethod) {
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();
 
   // The image has 2 frames, with disposal method 4 and 5, respectively.
-  scoped_refptr<SharedBuffer> data =
-      ReadFile(kDecodersTestingDir, "invalid-disposal-method.gif");
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
+      kDecodersTestingDir, "invalid-disposal-method.gif");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -313,10 +314,8 @@ TEST(GIFImageDecoderTest, invalidDisposalMethod) {
 }
 
 TEST(GIFImageDecoderTest, firstFrameHasGreaterSizeThanScreenSize) {
-  const Vector<char> full_data =
-      ReadFile(kDecodersTestingDir,
-               "first-frame-has-greater-size-than-screen-size.gif")
-          ->CopyAs<Vector<char>>();
+  const Vector<char> full_data = ReadFile(
+      kDecodersTestingDir, "first-frame-has-greater-size-than-screen-size.gif");
 
   std::unique_ptr<ImageDecoder> decoder;
   gfx::Size frame_size;
@@ -352,10 +351,10 @@ TEST(GIFImageDecoderTest, verifyRepetitionCount) {
 }
 
 TEST(GIFImageDecoderTest, repetitionCountChangesWhenSeen) {
-  scoped_refptr<SharedBuffer> full_data_buffer =
+  const Vector<char> full_data =
       ReadFile(kWebTestsResourcesDir, "animated-10color.gif");
-  ASSERT_TRUE(full_data_buffer.get());
-  const Vector<char> full_data = full_data_buffer->CopyAs<Vector<char>>();
+  scoped_refptr<SharedBuffer> full_data_buffer =
+      SharedBuffer::Create(full_data);
 
   // This size must be before the repetition count is encountered in the file.
   const size_t kTruncatedSize = 60;
@@ -374,10 +373,9 @@ TEST(GIFImageDecoderTest, repetitionCountChangesWhenSeen) {
 }
 
 TEST(GIFImageDecoderTest, bitmapAlphaType) {
+  const Vector<char> full_data = ReadFile(kDecodersTestingDir, "radient.gif");
   scoped_refptr<SharedBuffer> full_data_buffer =
-      ReadFile(kDecodersTestingDir, "radient.gif");
-  ASSERT_TRUE(full_data_buffer.get());
-  const Vector<char> full_data = full_data_buffer->CopyAs<Vector<char>>();
+      SharedBuffer::Create(full_data);
 
   // Empirically chosen truncation size:
   //   a) large enough to produce a partial frame &&
@@ -437,7 +435,7 @@ class Allocator final : public SkBitmap::Allocator {
 // Ensure that calling SetMemoryAllocator does not short-circuit
 // InitializeNewFrame.
 TEST(GIFImageDecoderTest, externalAllocator) {
-  auto data = ReadFile(kWebTestsResourcesDir, "boston.gif");
+  auto data = ReadFileToSharedBuffer(kWebTestsResourcesDir, "boston.gif");
   ASSERT_TRUE(data.get());
 
   auto decoder = CreateDecoder();
@@ -455,12 +453,13 @@ TEST(GIFImageDecoderTest, externalAllocator) {
 }
 
 TEST(GIFImageDecoderTest, recursiveDecodeFailure) {
-  auto data = ReadFile(kWebTestsResourcesDir, "count-down-color-test.gif");
-  ASSERT_TRUE(data.get());
+  const Vector<char> data =
+      ReadFile(kWebTestsResourcesDir, "count-down-color-test.gif");
+  scoped_refptr<SharedBuffer> data_buffer = SharedBuffer::Create(data);
 
   {
     auto decoder = CreateDecoder();
-    decoder->SetData(data.get(), true);
+    decoder->SetData(data_buffer.get(), true);
     for (size_t i = 0; i <= 3; ++i) {
       ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(i);
       ASSERT_NE(frame, nullptr);
@@ -471,10 +470,10 @@ TEST(GIFImageDecoderTest, recursiveDecodeFailure) {
   // Modify data to have an error in frame 2.
   const size_t kErrorOffset = 15302u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data->Data(), kErrorOffset);
+      SharedBuffer::Create(data.data(), kErrorOffset);
   modified_data->Append("A", 1u);
-  modified_data->Append(data->Data() + kErrorOffset + 1,
-                        data->size() - kErrorOffset - 1);
+  modified_data->Append(data.data() + kErrorOffset + 1,
+                        data.size() - kErrorOffset - 1);
   {
     auto decoder = CreateDecoder();
     decoder->SetData(modified_data.get(), true);
@@ -495,7 +494,7 @@ TEST(GIFImageDecoderTest, recursiveDecodeFailure) {
 
 TEST(GIFImageDecoderTest, errorFrame) {
   scoped_refptr<SharedBuffer> test_data =
-      ReadFile(kDecodersTestingDir, "error_frame.gif");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "error_frame.gif");
   ASSERT_TRUE(test_data.get());
 
   std::unique_ptr<ImageDecoder> decoder = CreateDecoder();

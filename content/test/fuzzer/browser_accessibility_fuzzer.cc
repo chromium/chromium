@@ -2,20 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/accessibility/platform/browser_accessibility.h"
+
 #include <fuzzer/FuzzedDataProvider.h>
+
+#include <memory>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-#include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
-#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/test/test_content_browser_client.h"
+#include "content/test/test_content_client.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
+#include "ui/accessibility/platform/test_ax_node_id_delegate.h"
+#include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
 struct Env {
-  Env() { base::CommandLine::Init(0, nullptr); }
+  Env() {
+    base::CommandLine::Init(0, nullptr);
+
+    // BrowserAccessibilityStateImpl requires a ContentBrowserClient.
+    content_client_ = std::make_unique<content::TestContentClient>();
+    content_browser_client_ =
+        std::make_unique<content::TestContentBrowserClient>();
+    content::SetContentClient(content_client_.get());
+    content::SetBrowserClientForTesting(content_browser_client_.get());
+  }
+
+  ~Env() {
+    content::SetBrowserClientForTesting(nullptr);
+    content::SetContentClient(nullptr);
+  }
+
   content::BrowserTaskEnvironment task_environment;
+  std::unique_ptr<content::ContentBrowserClient> content_browser_client_;
+  std::unique_ptr<content::ContentClient> content_client_;
   base::AtExitManager at_exit;
 };
 
@@ -100,7 +124,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   tree.nodes[0].id = 1;
   tree.nodes[0].role = ax::mojom::Role::kRootWebArea;
   tree.nodes[0].child_ids = {2, 3, 4};
-  AddStates(fdp, &tree.nodes[0]);
+  // The root node cannot be ignored, so we'll only try invisible.
+  if (fdp.ConsumeBool()) {
+    tree.nodes[0].AddState(ax::mojom::State::kInvisible);
+  }
 
   tree.nodes[1].id = 2;
   tree.nodes[1].role = GetInterestingRole(fdp);
@@ -148,11 +175,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   VLOG(1) << child_tree.ToString();
 
-  TestBrowserAccessibilityDelegate delegate;
-  std::unique_ptr<BrowserAccessibilityManager> manager(
-      BrowserAccessibilityManager::Create(tree, &delegate));
-  std::unique_ptr<BrowserAccessibilityManager> child_manager(
-      BrowserAccessibilityManager::Create(child_tree, &delegate));
+  ui::TestAXPlatformTreeManagerDelegate delegate;
+  ui::TestAXNodeIdDelegate node_id_delegate;
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      ui::BrowserAccessibilityManager::Create(tree, node_id_delegate,
+                                              &delegate));
+  std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
+      ui::BrowserAccessibilityManager::Create(child_tree, node_id_delegate,
+                                              &delegate));
 
   // We want to call a bunch of functions but we don't care what the
   // return values are. To ensure the compiler doesn't optimize the calls
@@ -161,22 +191,23 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<void*> results;
 
   // Test some tree-walking functions.
-  BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
+  ui::BrowserAccessibility* root = manager->GetBrowserAccessibilityRoot();
   results.push_back(root->PlatformDeepestFirstChild());
   results.push_back(root->PlatformDeepestLastChild());
   results.push_back(root->InternalDeepestFirstChild());
   results.push_back(root->InternalDeepestLastChild());
 
   // Test OneShotAccessibilityTreeSearch.
-  OneShotAccessibilityTreeSearch search(manager->GetBrowserAccessibilityRoot());
+  ui::OneShotAccessibilityTreeSearch search(
+      manager->GetBrowserAccessibilityRoot());
   search.SetDirection(fdp.ConsumeBool()
-                          ? OneShotAccessibilityTreeSearch::FORWARDS
-                          : OneShotAccessibilityTreeSearch::BACKWARDS);
+                          ? ui::OneShotAccessibilityTreeSearch::FORWARDS
+                          : ui::OneShotAccessibilityTreeSearch::BACKWARDS);
   search.SetImmediateDescendantsOnly(fdp.ConsumeBool());
   search.SetCanWrapToLastElement(fdp.ConsumeBool());
   search.SetOnscreenOnly(fdp.ConsumeBool());
   if (fdp.ConsumeBool())
-    search.AddPredicate(AccessibilityButtonPredicate);
+    search.AddPredicate(ui::AccessibilityButtonPredicate);
   if (fdp.ConsumeBool())
     search.SetSearchText(fdp.ConsumeRandomLengthString(5));
   size_t matches = search.CountMatches();
@@ -189,7 +220,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Add a node, possibly clearing old children.
   int node_id = num_nodes + 1;
-  int parent = fdp.ConsumeIntegralInRange(0, num_nodes);
+  int parent = fdp.ConsumeIntegralInRange(1, num_nodes);
 
   ui::AXTreeUpdate update;
   update.nodes.resize(2);
@@ -199,7 +230,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   update.nodes[1].role = GetInterestingRole(fdp);
   AddStates(fdp, &update.nodes[1]);
 
-  AXEventNotificationDetails notification;
+  ui::AXUpdatesAndEvents notification;
   notification.updates.resize(1);
   notification.updates[0] = update;
 

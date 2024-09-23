@@ -5,6 +5,8 @@
 #include "content/browser/android/launcher_thread.h"
 
 #include "base/task/single_thread_task_runner.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/LauncherThread_jni.h"
 
 namespace content {

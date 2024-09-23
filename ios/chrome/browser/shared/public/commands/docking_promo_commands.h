@@ -8,8 +8,8 @@
 // Commands to show app-wide Docking Promo(s).
 @protocol DockingPromoCommands <NSObject>
 
-// Show Docking Promo.
-- (void)showDockingPromo;
+// Show Docking Promo if conditions are met, or if `forced` is YES.
+- (void)showDockingPromo:(BOOL)forced;
 
 @end
 

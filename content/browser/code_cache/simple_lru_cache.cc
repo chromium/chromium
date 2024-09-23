@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "base/feature_list.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/clamped_math.h"
 #include "content/common/features.h"
 #include "net/base/url_util.h"
@@ -129,7 +130,7 @@ bool SimpleLruCache::GetInternal(const std::string& key,
 void SimpleLruCache::Evict() {
   while (capacity_ < size_) {
     auto it = access_list_.begin();
-    DCHECK(it != access_list_.end());
+    CHECK(it != access_list_.end(), base::NotFatalUntil::M130);
     DCHECK(entries_.find(it->second) != entries_.end());
 
     Delete(it->second);

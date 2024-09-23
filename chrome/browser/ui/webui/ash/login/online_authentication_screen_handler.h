@@ -10,19 +10,20 @@
 
 namespace ash {
 
-class OnlineAuthenticationScreenView
-    : public base::SupportsWeakPtr<OnlineAuthenticationScreenView> {
+class OnlineAuthenticationScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "online-authentication-screen", "OnlineAuthenticationScreen"};
 
   virtual void Show() = 0;
   virtual void Hide() = 0;
+  virtual base::WeakPtr<OnlineAuthenticationScreenView> AsWeakPtr() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
-class OnlineAuthenticationScreenHandler : public OnlineAuthenticationScreenView,
-                                          public BaseScreenHandler {
+class OnlineAuthenticationScreenHandler final
+    : public OnlineAuthenticationScreenView,
+      public BaseScreenHandler {
  public:
   using TView = OnlineAuthenticationScreenView;
 
@@ -37,6 +38,7 @@ class OnlineAuthenticationScreenHandler : public OnlineAuthenticationScreenView,
 
   void Show() override;
   void Hide() override;
+  base::WeakPtr<OnlineAuthenticationScreenView> AsWeakPtr() override;
 
  private:
   // BaseScreenHandler implementation:

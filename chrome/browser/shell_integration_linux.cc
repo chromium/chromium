@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/shell_integration_linux.h"
 
 #include <fcntl.h>
@@ -12,6 +17,7 @@
 #include <unistd.h>
 
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -23,6 +29,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -31,6 +38,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -48,10 +56,12 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/version_info/version_info.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -392,7 +402,8 @@ std::string GetXdgAppIdForWebApp(std::string app_name,
   if (base::StartsWith(app_name, web_app::kCrxAppPrefix))
     app_name = app_name.substr(strlen(web_app::kCrxAppPrefix));
   return GetDesktopBaseName(
-      web_app::GetAppShortcutFilename(profile_path, app_name).AsUTF8Unsafe());
+      web_app::GetAppDesktopShortcutFilename(profile_path, app_name)
+          .AsUTF8Unsafe());
 }
 
 namespace internal {
@@ -503,28 +514,33 @@ bool GetExistingShortcutContents(base::Environment* env,
   return false;
 }
 
-base::FilePath GetWebShortcutFilename(const GURL& url) {
+std::optional<base::SafeBaseName> GetUniqueWebShortcutFilename(
+    const std::string& name) {
   // Use a prefix, because xdg-desktop-menu requires it.
   std::string filename =
-      std::string(chrome::kBrowserProcessExecutableName) + "-" + url.spec();
+      base::StrCat({chrome::kBrowserProcessExecutableName, "-", name});
   base::i18n::ReplaceIllegalCharactersInPath(&filename, '_');
+  base::ReplaceChars(filename, " \n\r", "_", &filename);
+  std::optional<base::SafeBaseName> opt_base_name_no_extension =
+      base::SafeBaseName::Create(filename);
+  // There should never be any path separators, as
+  // `ReplaceIllegalCharactersInPath` removes them.
+  CHECK(opt_base_name_no_extension);
+  base::FilePath base_name_no_extension = opt_base_name_no_extension->path();
 
   base::FilePath desktop_path;
-  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path))
-    return base::FilePath();
-
-  base::FilePath filepath = desktop_path.Append(filename);
-  base::FilePath alternative_filepath(filepath.value() + ".desktop");
-  for (size_t i = 1; i < 100; ++i) {
-    if (base::PathExists(base::FilePath(alternative_filepath))) {
-      alternative_filepath = base::FilePath(
-          filepath.value() + "_" + base::NumberToString(i) + ".desktop");
-    } else {
-      return base::FilePath(alternative_filepath).BaseName();
-    }
+  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_path)) {
+    return std::nullopt;
   }
 
-  return base::FilePath();
+  // Using DCHECK because this is a slightly expensive check. This should be
+  // guaranteed by `ReplaceIllegalCharactersInPath`.
+  DCHECK(base::i18n::IsFilenameLegal(base_name_no_extension.AsUTF16Unsafe()));
+
+  base::FilePath filepath =
+      desktop_path.Append(base_name_no_extension.AddExtension(".desktop"));
+  return base::SafeBaseName::Create(
+      base::GetUniquePathWithSuffixFormat(filepath, "_%d"));
 }
 
 std::vector<base::FilePath> GetExistingProfileShortcutFilenames(
@@ -675,6 +691,76 @@ std::string GetDesktopFileContentsForCommand(
   return output_buffer;
 #else
   NOTIMPLEMENTED();
+  return std::string();
+#endif
+}
+
+std::string GetDesktopFileContentsForUrlShortcut(
+    const std::string& title,
+    const GURL& url,
+    const base::FilePath& icon_path,
+    const base::FilePath& profile_path) {
+  CHECK(url.is_valid());
+  CHECK(!profile_path.empty());
+  CHECK(!icon_path.empty());
+#if defined(USE_GLIB)
+  base::FilePath chrome_exe_path =
+      shell_integration_linux::internal::GetChromeExePath();
+  base::CommandLine command_line =
+      shell_integration::CommandLineArgsForUrlShortcut(chrome_exe_path,
+                                                       profile_path, url);
+
+  // Although not required by the spec, Nautilus on Ubuntu Karmic creates its
+  // launchers with an xdg-open shebang. Follow that convention.
+  std::string output_buffer = std::string(kXdgOpenShebang) + "\n";
+
+  // See http://standards.freedesktop.org/desktop-entry-spec/latest/
+  GKeyFile* key_file = g_key_file_new();
+
+  // Set keys with fixed values.
+  g_key_file_set_string(key_file, kDesktopEntry, "Version", "1.0");
+  g_key_file_set_string(key_file, kDesktopEntry, "Type", "Application");
+
+  std::string final_title;
+  // Make sure no endline characters can slip in and possibly introduce
+  // additional lines (like Exec, which makes it a security risk).
+  base::ReplaceChars(title, "\n\r", "", &final_title);
+  if (final_title.empty()) {
+    final_title = url.spec();
+  }
+  g_key_file_set_string(key_file, kDesktopEntry, "Name", final_title.c_str());
+
+  std::string final_path = QuoteCommandLineForDesktopFileExec(command_line);
+  g_key_file_set_string(key_file, kDesktopEntry, "Exec", final_path.c_str());
+
+  // Set the "Icon" key.
+  g_key_file_set_string(key_file, kDesktopEntry, "Icon",
+                        icon_path.value().c_str());
+
+  g_key_file_set_string(key_file, kDesktopEntry, "URL", url.spec().c_str());
+
+  std::string comment = l10n_util::GetStringFUTF8(
+      IDS_DESKTOP_SHORTCUT_COMMENT, base::UTF8ToUTF16(url.spec()));
+  g_key_file_set_string(key_file, kDesktopEntry, "Comment", comment.c_str());
+
+  gsize length = 0;
+  gchar* data_dump = g_key_file_to_data(key_file, &length, nullptr);
+  if (data_dump) {
+    std::string_view contents(data_dump, length);
+    if (contents.starts_with('\n')) {
+      // Older versions of glib produce a leading newline. If this is the case,
+      // remove it to avoid double-newline after the shebang.
+      output_buffer += contents.substr(1);
+    } else {
+      output_buffer += contents;
+    }
+    g_free(data_dump);
+  }
+
+  g_key_file_free(key_file);
+  return output_buffer;
+#else
+  NOTREACHED();
   return std::string();
 #endif
 }

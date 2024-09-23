@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "components/peripherals/logging/log_buffer.h"
 
-// Use the PR_LOG() macro for all logging related to Cross Device Features so
+// Use the PR_LOG() macro for all logging related to Peripherals Features so
 // the debug page can reflect all logs related to this feature in the internal
 // debug WebUI (chrome://nearby-internals).
 #define PR_LOG(severity, feature)                                              \

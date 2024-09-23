@@ -12,7 +12,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.DoNotInline;
-import org.chromium.content.browser.remoteobjects.RemoteObjectInjector;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.JavascriptInjector;
@@ -37,21 +36,17 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     @DoNotInline private final Set<Object> mRetainedObjects = new HashSet<>();
     private final Map<String, Pair<Object, Class>> mInjectedObjects = new HashMap<>();
     private long mNativePtr;
-    private RemoteObjectInjector mInjector;
-    private Boolean mUseMojo;
 
     /**
      * @param webContents {@link WebContents} object.
-     * @param useMojo Whether to use {@link RemoteObjectInjector} methods
-     * @return {@link JavascriptInjector} object used for the give WebContents.
-     *         Creates one if not present.
+     * @return {@link JavascriptInjector} object used for the give WebContents. Creates one if not
+     *     present.
      */
-    public static JavascriptInjector fromWebContents(WebContents webContents, boolean useMojo) {
+    public static JavascriptInjector fromWebContents(WebContents webContents) {
         JavascriptInjectorImpl javascriptInjector =
                 ((WebContentsImpl) webContents)
                         .getOrSetUserData(
                                 JavascriptInjectorImpl.class, UserDataFactoryLazyHolder.INSTANCE);
-        javascriptInjector.setUseMojo(useMojo);
         return javascriptInjector;
     }
 
@@ -59,16 +54,6 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
         mNativePtr =
                 JavascriptInjectorImplJni.get()
                         .init(JavascriptInjectorImpl.this, webContents, mRetainedObjects);
-        mInjector = new RemoteObjectInjector(webContents);
-        webContents.addObserver(mInjector);
-    }
-
-    public void setUseMojo(boolean useMojo) {
-        if (mUseMojo == null) {
-            mUseMojo = useMojo;
-        } else {
-            assert mUseMojo == useMojo;
-        }
     }
 
     @CalledByNative
@@ -83,10 +68,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     @Override
     public void setAllowInspection(boolean allow) {
-        assert mUseMojo != null;
-        if (mUseMojo) {
-            mInjector.setAllowInspection(allow);
-        } else if (mNativePtr != 0) {
+        if (mNativePtr != 0) {
             JavascriptInjectorImplJni.get()
                     .setAllowInspection(mNativePtr, JavascriptInjectorImpl.this, allow);
         }
@@ -97,10 +79,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
             Object object, String name, Class<? extends Annotation> requiredAnnotation) {
         if (object == null) return;
 
-        assert mUseMojo != null;
-        if (mUseMojo) {
-            mInjector.addInterface(object, name, requiredAnnotation);
-        } else if (mNativePtr != 0) {
+        if (mNativePtr != 0) {
             mInjectedObjects.put(name, new Pair<Object, Class>(object, requiredAnnotation));
             JavascriptInjectorImplJni.get()
                     .addInterface(
@@ -114,15 +93,10 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     @Override
     public void removeInterface(String name) {
-        assert mUseMojo != null;
-        if (mUseMojo) {
-            mInjector.removeInterface(name);
-        } else {
-            mInjectedObjects.remove(name);
-            if (mNativePtr != 0) {
-                JavascriptInjectorImplJni.get()
-                        .removeInterface(mNativePtr, JavascriptInjectorImpl.this, name);
-            }
+        mInjectedObjects.remove(name);
+        if (mNativePtr != 0) {
+            JavascriptInjectorImplJni.get()
+                    .removeInterface(mNativePtr, JavascriptInjectorImpl.this, name);
         }
     }
 

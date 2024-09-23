@@ -9,6 +9,8 @@
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "ui/base/idle/idle_internal.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/base/ui_base_jni_headers/IdleDetector_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -79,7 +81,7 @@ bool CheckIdleStateIsLocked() {
 }
 
 IdleState CalculateIdleState(int idle_threshold) {
-  // TODO(crbug.com/878979): implementation pending.
+  // TODO(crbug.com/40591477): implementation pending.
   NOTIMPLEMENTED();
   return IdleState::IDLE_STATE_UNKNOWN;
 }

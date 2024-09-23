@@ -23,14 +23,4 @@ int TestExtensionsRendererClient::GetLowestIsolatedWorldId() const {
   return 1;
 }
 
-Dispatcher* TestExtensionsRendererClient::GetDispatcher() {
-  return nullptr;
-}
-
-bool TestExtensionsRendererClient::ExtensionAPIEnabledForServiceWorkerScript(
-    const GURL& scope,
-    const GURL& script_url) const {
-  return false;
-}
-
 }  // namespace extensions

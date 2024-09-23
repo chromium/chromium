@@ -8,13 +8,14 @@
 #include "content/browser/android/gesture_listener_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
-#include "content/public/android/content_jni_headers/GestureListenerManagerImpl_jni.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/gesture_event_type.h"
-#include "ui/events/blink/did_overscroll_params.h"
 #include "ui/gfx/geometry/size_f.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/GestureListenerManagerImpl_jni.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -63,8 +64,8 @@ int ToGestureEventType(WebInputEvent::Type type) {
       return ui::GESTURE_EVENT_TYPE_PINCH_BY;
     case WebInputEvent::Type::kGestureTwoFingerTap:
     default:
-      NOTREACHED() << "Invalid source gesture type: "
-                   << WebInputEvent::GetName(type);
+      NOTREACHED_IN_MIGRATION()
+          << "Invalid source gesture type: " << WebInputEvent::GetName(type);
       return -1;
   }
 }
@@ -210,17 +211,6 @@ bool GestureListenerManager::FilterInputEvent(const WebInputEvent& event) {
   return Java_GestureListenerManagerImpl_filterTapOrPressEvent(
       env, j_obj, gesture_type, gesture.PositionInWidget().x() * dip_scale,
       gesture.PositionInWidget().y() * dip_scale);
-}
-
-void GestureListenerManager::DidOverscroll(
-    const ui::DidOverscrollParams& params) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_obj = java_ref_.get(env);
-  if (j_obj.is_null())
-    return;
-  float x = params.accumulated_overscroll.x();
-  float y = params.accumulated_overscroll.y();
-  return Java_GestureListenerManagerImpl_didOverscroll(env, j_obj, x, y);
 }
 
 // All positions and sizes (except |top_shown_pix|) are in CSS pixels.

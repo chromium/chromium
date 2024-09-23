@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] navigator.credentials.get() API rejects if there are no providers in cross-origin iframe.
+  assert_equals: expected "TypeError" but got "DOMException"
+[FAIL] navigator.credentials.get() promise is rejected if abort controller is aborted after call to get() in cross-origin iframe.
+  assert_equals: expected "AbortError" but got "NotAllowedError"
+[FAIL] Mediation is required to get a DigitalCredential.
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

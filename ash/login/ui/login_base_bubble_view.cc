@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/system_shadow.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -67,20 +66,20 @@ class LoginBubbleHandler : public ui::EventHandler {
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED) {
+    if (event->type() == ui::EventType::kMousePressed) {
       ProcessPressedEvent(event->AsLocatedEvent());
     }
   }
 
   void OnGestureEvent(ui::GestureEvent* event) override {
-    if (event->type() == ui::ET_GESTURE_TAP ||
-        event->type() == ui::ET_GESTURE_TAP_DOWN) {
+    if (event->type() == ui::EventType::kGestureTap ||
+        event->type() == ui::EventType::kGestureTapDown) {
       ProcessPressedEvent(event->AsLocatedEvent());
     }
   }
 
   void OnKeyEvent(ui::KeyEvent* event) override {
-    if (event->type() != ui::ET_KEY_PRESSED ||
+    if (event->type() != ui::EventType::kKeyPressed ||
         event->key_code() == ui::VKEY_PROCESSKEY) {
       return;
     }
@@ -294,10 +293,12 @@ void LoginBaseBubbleView::OnLayerAnimationAborted(
   NOTREACHED();
 }
 
-gfx::Size LoginBaseBubbleView::CalculatePreferredSize() const {
+gfx::Size LoginBaseBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size size;
   size.set_width(kBubbleTotalWidthDp);
-  size.set_height(GetHeightForWidth(kBubbleTotalWidthDp));
+  size.set_height(GetLayoutManager()->GetPreferredHeightForWidth(
+      this, kBubbleTotalWidthDp));
   return size;
 }
 
@@ -334,10 +335,8 @@ gfx::Rect LoginBaseBubbleView::GetBoundsAvailableToShowBubble() const {
 views::View* LoginBaseBubbleView::GetAnchorView() const {
   if (anchor_view_.WasInvalidated()) {
     // TODO(crbug.com/1171827): This is to detect dangling anchor_view_
-    // pointers. This should not cause a crash, but is still indicative of UI
-    // bugs.
-    base::debug::DumpWithoutCrashing();
-    NOTREACHED();
+    // pointers.
+    DUMP_WILL_BE_NOTREACHED();
   }
   return anchor_view_.get();
 }

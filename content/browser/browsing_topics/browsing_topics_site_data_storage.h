@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_BROWSING_TOPICS_BROWSING_TOPICS_SITE_DATA_STORAGE_H_
 
 #include <map>
-#include <optional>
 #include <set>
 #include <string>
 
@@ -26,9 +25,6 @@ class Statement;
 }  // namespace sql
 
 namespace content {
-
-BASE_DECLARE_FEATURE(
-    kBrowsingTopicsSiteDataStorageUseBuiltInRecoveryIfSupported);
 
 class CONTENT_EXPORT BrowsingTopicsSiteDataStorage {
  public:

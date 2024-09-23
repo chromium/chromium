@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -42,6 +41,38 @@
 
 namespace blink {
 
+// To support context-fill and context-stroke:
+//   https://svgwg.org/svg2-draft/painting.html#context-paint
+struct CORE_EXPORT SvgContextPaints {
+  STACK_ALLOCATED();
+
+ public:
+  struct CORE_EXPORT ContextPaint {
+    STACK_ALLOCATED();
+
+   public:
+    ContextPaint(const LayoutObject& o, const SVGPaint& p)
+        : object(o), paint(p) {}
+    ContextPaint(const ContextPaint&) = default;
+    ContextPaint(ContextPaint&&) = default;
+
+    const LayoutObject& object;
+    SVGPaint paint;
+  };
+
+  SvgContextPaints(const ContextPaint& f, const ContextPaint& s)
+      : fill(f), stroke(s) {}
+  SvgContextPaints(const ContextPaint& f,
+                   const ContextPaint& s,
+                   const AffineTransform& t)
+      : fill(f), stroke(s), transform(t) {}
+  SvgContextPaints(const SvgContextPaints&) = default;
+
+  ContextPaint fill;
+  ContextPaint stroke;
+  AffineTransform transform;
+};
+
 struct CORE_EXPORT PaintInfo {
   STACK_ALLOCATED();
 
@@ -49,11 +80,15 @@ struct CORE_EXPORT PaintInfo {
   PaintInfo(GraphicsContext& context,
             const CullRect& cull_rect,
             PaintPhase phase,
-            PaintFlags paint_flags = PaintFlag::kNoFlag)
+            bool descendant_painting_blocked,
+            PaintFlags paint_flags = PaintFlag::kNoFlag,
+            const SvgContextPaints* context_paints = nullptr)
       : context(context),
         phase(phase),
         cull_rect_(cull_rect),
-        paint_flags_(paint_flags) {}
+        svg_context_paints_(context_paints),
+        paint_flags_(paint_flags),
+        descendant_painting_blocked_(descendant_painting_blocked) {}
 
   // Creates a PaintInfo for painting descendants. See comments about the paint
   // phases in PaintPhase.h for details.
@@ -120,6 +155,13 @@ struct CORE_EXPORT PaintInfo {
     return fragment_data_override_;
   }
 
+  const SvgContextPaints* GetSvgContextPaints() const {
+    return svg_context_paints_;
+  }
+  void SetSvgContextPaints(const SvgContextPaints* context_paints) {
+    svg_context_paints_ = context_paints;
+  }
+
   bool IsPaintingBackgroundInContentsSpace() const {
     return is_painting_background_in_contents_space;
   }
@@ -130,9 +172,7 @@ struct CORE_EXPORT PaintInfo {
   bool DescendantPaintingBlocked() const {
     return descendant_painting_blocked_;
   }
-  void SetDescendantPaintingBlocked(bool blocked) {
-    descendant_painting_blocked_ = blocked;
-  }
+  void SetDescendantPaintingBlocked() { descendant_painting_blocked_ = true; }
 
   GraphicsContext& context;
   PaintPhase phase;
@@ -148,12 +188,15 @@ struct CORE_EXPORT PaintInfo {
   // physical fragments passed to legacy painters.
   const FragmentData* fragment_data_override_ = nullptr;
 
+  // This holds references to the SVGPaint values from an ancestor <use> or
+  // LayoutSVGResourceMarker that are used when a descendant specifies
+  // context-fill and/or context-paint paint values.
+  const SvgContextPaints* svg_context_paints_ = nullptr;
+
   const PaintFlags paint_flags_;
 
   bool is_painting_background_in_contents_space = false;
   bool skips_background_ = false;
-
-  // Used by display-locking.
   bool descendant_painting_blocked_ = false;
 };
 

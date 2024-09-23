@@ -73,7 +73,7 @@ class CodeCacheHostMockImpl : public mojom::blink::CodeCacheHost {
     sim_->CacheMetadataInCacheStorage(url);
   }
 
-  raw_ptr<MockGeneratedCodeCache, ExperimentalRenderer> sim_;
+  raw_ptr<MockGeneratedCodeCache> sim_;
 };
 
 ResourceResponse CreateTestResourceResponse() {
@@ -97,7 +97,7 @@ void SendDataFor(const ResourceResponse& response,
   mojo::Receiver<mojom::blink::CodeCacheHost> receiver(
       mojo_code_cache_host.get(), remote.BindNewPipeAndPassReceiver());
   CodeCacheHost code_cache_host(std::move(remote));
-  sender->Send(&code_cache_host, kTestData, sizeof(kTestData));
+  sender->Send(&code_cache_host, kTestData);
 
   // Drain the task queue.
   task_environment.RunUntilIdle();

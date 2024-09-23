@@ -83,7 +83,7 @@ class SchemePageLoadMetricsObserverTest
         return bucket.min;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 

@@ -14,10 +14,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -38,7 +41,8 @@ class ScannerDiscoveryRunner;
 class StartScanRunner;
 
 // Handles chrome.documentScan API function calls.
-class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
+class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
+                               public ExtensionRegistryObserver {
  public:
   using SimpleScanCallback = base::OnceCallback<void(
       std::optional<api::document_scan::ScanResults> scan_results,
@@ -79,6 +83,14 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   // Registers the documentScan API preference with the |registry|.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // ExtensionRegistryObserver implementation:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+
+  // KeyedService implementation:
+  void Shutdown() override;
+
   // Replaces the DocumentScan service with a mock.
   void SetDocumentScanForTesting(crosapi::mojom::DocumentScan* document_scan);
 
@@ -91,11 +103,14 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   // If the user approves, gets a list of available scanners that match
   // `filter`.  Explicit approval is obtained through a Chrome dialog or by
   // adding the extension ID to the list of trusted document scan extensions.
+  // `user_gesture` indicates whether the scan was initiated by a user action
+  // and should be passed as the result of `ExtensionFunction::user_gesture()`.
   // The result of the denial or the backend call will be passed to `callback`.
-  // Note that scanner and job handles previously issued by the backend may
+  // Note that scanner and job handles previously issued by the backend will
   // become invalid after calling this function.
   void GetScannerList(gfx::NativeWindow native_window,
                       scoped_refptr<const Extension> extension,
+                      bool user_gesture,
                       api::document_scan::DeviceFilter filter,
                       GetScannerListCallback callback);
 
@@ -201,6 +216,10 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
     // A set of scanner handles the user has approved for scanning.  These can
     // be used to start new scan jobs until the handles are closed.
     std::set<std::string> approved_scanner_handles;
+
+    // Whether the user has confirmed that this extension is allowed to discover
+    // scanners.
+    bool discovery_approved;
   };
 
   // BrowserContextKeyedAPI:
@@ -212,6 +231,9 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   // Used by CreateForTesting:
   DocumentScanAPIHandler(content::BrowserContext* browser_context,
                          crosapi::mojom::DocumentScan* document_scan);
+
+  // Cleanup all handles and state for the given extension.
+  void ExtensionCleanup(const ExtensionId& id);
 
   void OnSimpleScanNamesReceived(bool force_virtual_usb_printer,
                                  SimpleScanCallback callback,
@@ -254,6 +276,9 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
   std::map<ExtensionId, ExtensionState> extension_state_;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<DocumentScanAPIHandler> weak_ptr_factory_{this};
 };

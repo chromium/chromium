@@ -272,16 +272,6 @@ void InlineLoginUIBrowserTest::EnableSigninAllowed(bool enable) {
   pref_service->SetBoolean(prefs::kSigninAllowed, enable);
 }
 
-void InlineLoginUIBrowserTest::AddEmailToOneClickRejectedList(
-    const std::string& email) {
-  PrefService* pref_service = browser()->profile()->GetPrefs();
-  ScopedListPrefUpdate updater(pref_service,
-                               prefs::kReverseAutologinRejectedEmailList);
-  if (!base::Contains(*updater, base::Value(email))) {
-    updater->Append(email);
-  }
-}
-
 void InlineLoginUIBrowserTest::AllowSigninCookies(bool enable) {
   content_settings::CookieSettings* cookie_settings =
       CookieSettingsFactory::GetForProfile(browser()->profile()).get();
@@ -384,18 +374,6 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferUsernameNotAllowed) {
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::UsernameNotAllowedByPatternFromPrefs(
                        "foo@gmail.com"));
-}
-
-IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferWithRejectedEmail) {
-  EnableSigninAllowed(true);
-
-  AddEmailToOneClickRejectedList("foo@gmail.com");
-  AddEmailToOneClickRejectedList("user@gmail.com");
-
-  EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), "12345", "foo@gmail.com").IsOk());
-  EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com").IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {

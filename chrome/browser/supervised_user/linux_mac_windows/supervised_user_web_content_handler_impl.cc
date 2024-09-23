@@ -9,7 +9,7 @@
 
 SupervisedUserWebContentHandlerImpl::SupervisedUserWebContentHandlerImpl(
     content::WebContents* web_contents,
-    int frame_id,
+    content::FrameTreeNodeId frame_id,
     int64_t interstitial_navigation_id)
     : ChromeSupervisedUserWebContentHandlerBase(web_contents,
                                                 frame_id,
@@ -21,7 +21,8 @@ SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
 void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
+    const supervised_user::UrlFormatter& url_formatter,
     ApprovalRequestInitiatedCallback callback) {
   // Method unsupposted on Desktop.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

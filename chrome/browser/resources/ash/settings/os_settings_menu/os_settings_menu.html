@@ -104,8 +104,9 @@
   <template id="topMenuRepeat" is="dom-repeat" items="[[basicMenuItems_]]">
     <os-settings-menu-item path="[[item.path]]"
         icon="[[item.icon]]"
-        sublabel="[[item.sublabel]]">
-      [[item.label]]
+        label="[[item.label]]"
+        sublabel="[[item.sublabel]]"
+        tooltip-position="[[getMenuItemTooltipPosition_(isRtl_)]]">
     </os-settings-menu-item>
   </template>
 
@@ -126,15 +127,16 @@
         <template is="dom-repeat" items="[[advancedMenuItems_]]">
           <os-settings-menu-item path="[[item.path]]"
               icon="[[item.icon]]"
-              sublabel="[[item.sublabel]]">
-            [[item.label]]
+              label="[[item.label]]"
+              sublabel="[[item.sublabel]]"
+              tooltip-position="[[getMenuItemTooltipPosition_(isRtl_)]]">
           </os-settings-menu-item>
         </template>
       </iron-selector>
     </iron-collapse>
     <div id="menuSeparator"></div>
-    <os-settings-menu-item path="[[aboutMenuItemPath_]]">
-      $i18n{aboutOsPageTitle}
+    <os-settings-menu-item path="[[aboutMenuItemPath_]]"
+        label="$i18n{aboutOsPageTitle}">
     </os-settings-menu-item>
   </template>
 </iron-selector>

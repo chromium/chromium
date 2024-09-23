@@ -12,15 +12,11 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if BUILDFLAG(IS_FUCHSIA)
-#include "ui/gfx/geometry/insets.h"
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
 namespace gfx {
-class Rect;
 class Size;
 class PointF;
 }  // namespace gfx
@@ -43,6 +39,7 @@ enum class PlatformWindowState {
   kSnappedPrimary,
   kSnappedSecondary,
   kFloated,
+  kPip,
   kPinnedFullscreen,
   kTrustedPinnedFullscreen,
 };
@@ -116,37 +113,59 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // This is used by OnStateChanged and currently only by ozone/wayland.
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) State {
     bool operator==(const State& rhs) const {
-      return std::tie(bounds_dip, size_px, window_scale, raster_scale,
-                      insets) == std::tie(rhs.bounds_dip, rhs.size_px,
-                                          rhs.window_scale, rhs.raster_scale,
-                                          rhs.insets);
+      return std::tie(window_state,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                      fullscreen_type,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+                      bounds_dip, size_px, window_scale, raster_scale,
+                      occlusion_state) ==
+             std::tie(rhs.window_state,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                      rhs.fullscreen_type,
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+                      rhs.bounds_dip, rhs.size_px, rhs.window_scale,
+                      rhs.raster_scale, rhs.occlusion_state);
     }
 
-    // Bounds in DIP.
+    // Current platform window state.
+    PlatformWindowState window_state = PlatformWindowState::kUnknown;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Current platform fullscreen type.
+    PlatformFullscreenType fullscreen_type = PlatformFullscreenType::kNone;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    // Bounds in DIP. The origin of `bounds_dip` does not affect whether it
+    // produces a new frame or not. Only the size of `bounds_dip` does.
     gfx::Rect bounds_dip;
+
     // Size in pixels. Note that it's required to keep information in both DIP
     // and pixels since it is not always possible to convert between them.
     gfx::Size size_px;
+
     // Current scale factor of the output where the window is located at.
     float window_scale = 1.0;
-    // TODO(crbug.com/1395267): Add window states here.
 
     // Scale to raster the window at.
     float raster_scale = 1.0;
 
-    // Insets in DIP. Used in platforms where window decorations are drawn by
-    // the client.
-    gfx::Insets insets;
+    // Occlusion state
+    PlatformWindowOcclusionState occlusion_state =
+        PlatformWindowOcclusionState::kUnknown;
 
-    // Returns true if updating from the given State |old| to this state
+    // Returns true if updating from the given State `old` to this state
     // should produce a frame.
-    bool ProducesFrameOnUpdateFrom(const State& old) const;
+    bool WillProduceFrameOnUpdateFrom(const State& old) const;
 
     std::string ToString() const;
   };
 
   PlatformWindowDelegate();
   virtual ~PlatformWindowDelegate();
+
+  // Calculates the insets in dip based on the window state.
+  virtual gfx::Insets CalculateInsetsInDIP(
+      PlatformWindowState window_state) const;
 
   virtual void OnBoundsChanged(const BoundsChange& change) = 0;
 
@@ -204,11 +223,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnActivationChanged(bool active) = 0;
 
   // Requests size constraints for the PlatformWindow in DIP.
-  virtual std::optional<gfx::Size> GetMinimumSizeForWindow();
-  virtual std::optional<gfx::Size> GetMaximumSizeForWindow();
+  virtual std::optional<gfx::Size> GetMinimumSizeForWindow() const;
+  virtual std::optional<gfx::Size> GetMaximumSizeForWindow() const;
 
-  virtual bool CanMaximize();
-  virtual bool CanFullscreen();
+  virtual bool CanMaximize() const;
+  virtual bool CanFullscreen() const;
 
   // Returns a mask to be used to clip the window for the size of
   // |WindowTreeHost::GetBoundsInPixels|.
@@ -223,8 +242,8 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnSurfaceFrameLockingChanged(bool lock);
 
   // Called when the location of mouse pointer entered the window.  This is
-  // different from ui::ET_MOUSE_ENTERED which may not be generated when mouse
-  // is captured either by implicitly or explicitly.
+  // different from ui::EventType::kMouseEntered which may not be generated when
+  // mouse is captured either by implicitly or explicitly.
   virtual void OnMouseEnter() = 0;
 
   // Called when the occlusion state changes, if the underlying platform
@@ -260,14 +279,21 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // Called when tooltip is hidden on server.
   virtual void OnTooltipHiddenOnServer();
 
-  // Convert gfx::Rect in pixels to DIP in screen, and vice versa.
+  // Converts gfx::Rect in pixels to DIP in screen, and vice versa.
   virtual gfx::Rect ConvertRectToPixels(const gfx::Rect& rect_in_dp) const;
-  virtual gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixells) const;
+  virtual gfx::Rect ConvertRectToDIP(const gfx::Rect& rect_in_pixels) const;
 
-  // Convert gfx::Point in screen pixels to dip in the window's local
+  // Converts gfx::Point in screen pixels to dip in the window's local
   // coordinate.
   virtual gfx::PointF ConvertScreenPointToLocalDIP(
       const gfx::Point& screen_in_pixels) const;
+
+  // Converts gfx::Insets in DIP to pixels.
+  virtual gfx::Insets ConvertInsetsToPixels(
+      const gfx::Insets& insets_dip) const;
+
+  // Disables native window occlusion.
+  virtual void DisableNativeWindowOcclusion();
 };
 
 }  // namespace ui

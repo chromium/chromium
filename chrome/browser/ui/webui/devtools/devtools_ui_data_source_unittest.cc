@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/webui/devtools/devtools_ui_data_source.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
@@ -93,7 +93,7 @@ class DevToolsUIDataSourceTest : public testing::Test {
 
   std::string data() const { return data_; }
 
-  // TODO(crbug/1009127): pass in GURL instead.
+  // TODO(crbug.com/40050262): pass in GURL instead.
   void StartRequest(const std::string& path) {
     data_received_ = false;
     data_.clear();
@@ -109,7 +109,7 @@ class DevToolsUIDataSourceTest : public testing::Test {
   void OnDataReceived(scoped_refptr<base::RefCountedMemory> bytes) {
     data_received_ = true;
     if (bytes.get()) {
-      data_ = std::string(base::StringPiece(
+      data_ = std::string(std::string_view(
           reinterpret_cast<const char*>(bytes->front()), bytes->size()));
     }
   }

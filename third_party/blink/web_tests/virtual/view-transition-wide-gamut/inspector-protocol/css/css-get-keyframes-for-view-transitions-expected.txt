@@ -9,6 +9,18 @@ Dumping CSS keyframed animations:
         width: 800px; @[undefined-undefined]
         height: 600px; @[undefined-undefined]
         backdrop-filter: none; @[undefined-undefined]
+        clip-path: none; @[undefined-undefined]
+        filter: none; @[undefined-undefined]
+        opacity: 1; @[undefined-undefined]
+        mask-image: none; @[undefined-undefined]
+        -webkit-mask-position-x: 0%; @[undefined-undefined]
+        -webkit-mask-position-y: 0%; @[undefined-undefined]
+        mask-size: auto; @[undefined-undefined]
+        mask-repeat: repeat; @[undefined-undefined]
+        mask-origin: border-box; @[undefined-undefined]
+        mask-clip: border-box; @[undefined-undefined]
+        mask-composite: add; @[undefined-undefined]
+        mask-mode: match-source; @[undefined-undefined]
     }
 }
 Dumping animations for : ::view-transition-image-pair with id root
@@ -44,6 +56,18 @@ Dumping CSS keyframed animations:
         width: 100px; @[undefined-undefined]
         height: 100px; @[undefined-undefined]
         backdrop-filter: none; @[undefined-undefined]
+        clip-path: none; @[undefined-undefined]
+        filter: none; @[undefined-undefined]
+        opacity: 1; @[undefined-undefined]
+        mask-image: none; @[undefined-undefined]
+        -webkit-mask-position-x: 0%; @[undefined-undefined]
+        -webkit-mask-position-y: 0%; @[undefined-undefined]
+        mask-size: auto; @[undefined-undefined]
+        mask-repeat: repeat; @[undefined-undefined]
+        mask-origin: border-box; @[undefined-undefined]
+        mask-clip: border-box; @[undefined-undefined]
+        mask-composite: add; @[undefined-undefined]
+        mask-mode: match-source; @[undefined-undefined]
     }
 }
 Dumping animations for : ::view-transition-image-pair with id shared

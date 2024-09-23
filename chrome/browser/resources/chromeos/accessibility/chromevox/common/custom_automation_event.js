@@ -8,6 +8,7 @@
  * An object similar to a chrome.automation.AutomationEvent that we can
  * construct, unlike the object from the extension system.
  */
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 /**
  * @typedef{chrome.automation.AutomationEvent|CustomAutomationEvent}
@@ -41,3 +42,5 @@ export class CustomAutomationEvent {
     throw Error('Can\'t call stopPropagation on a CustomAutomationEvent');
   }
 }
+
+TestImportManager.exportForTesting(CustomAutomationEvent);

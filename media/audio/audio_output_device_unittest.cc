@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -19,6 +20,8 @@
 #include "base/sync_socket.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,6 +105,9 @@ class AudioOutputDeviceTest : public testing::Test {
   MOCK_METHOD1(OnDeviceInfoReceived, void(OutputDeviceInfo));
 
  protected:
+  void Render();
+  void CloseBrowserSocket();
+
   MockAudioOutputIPC* audio_output_ipc() {
     return static_cast<MockAudioOutputIPC*>(audio_device_->GetIpcForTesting());
   }
@@ -113,13 +119,12 @@ class AudioOutputDeviceTest : public testing::Test {
   OutputDeviceStatus device_status_;
 
  private:
-  int CalculateMemorySize();
-
   // These may need to outlive `audio_device_`.
   UnsafeSharedMemoryRegion shared_memory_region_;
   WritableSharedMemoryMapping shared_memory_mapping_;
   CancelableSyncSocket browser_socket_;
   CancelableSyncSocket renderer_socket_;
+  uint32_t counter_ = 0;
 
  protected:
   scoped_refptr<AudioOutputDevice> audio_device_;
@@ -227,6 +232,15 @@ void AudioOutputDeviceTest::FlushAudioDevice() {
   task_env_.FastForwardBy(base::TimeDelta());
 }
 
+void AudioOutputDeviceTest::Render() {
+  browser_socket_.Send(base::byte_span_from_ref(counter_));
+  ++counter_;
+}
+
+void AudioOutputDeviceTest::CloseBrowserSocket() {
+  browser_socket_.Close();
+}
+
 TEST_F(AudioOutputDeviceTest, Initialize) {
   // Tests that the object can be constructed, initialized and destructed
   // without having ever been started.
@@ -260,6 +274,52 @@ TEST_F(AudioOutputDeviceTest, StopBeforeRender) {
   // getting created.
   EXPECT_CALL(*audio_output_ipc(), CloseStream());
   CallOnStreamCreated();
+}
+
+TEST_F(AudioOutputDeviceTest, NoErrorForNormalShutdown) {
+  StartAudioDevice();
+  CallOnStreamCreated();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback_, Render(_, _, _, _))
+      .WillOnce(DoAll(base::test::RunClosure(run_loop.QuitWhenIdleClosure()),
+                      Return(0)))
+      .WillRepeatedly(Return(0));
+
+  EXPECT_CALL(callback_, OnRenderError()).Times(0);
+
+  Render();
+  run_loop.Run();
+
+  StopAudioDevice();
+}
+
+TEST_F(AudioOutputDeviceTest, ErrorFiredForSocketClose) {
+  StartAudioDevice();
+  CallOnStreamCreated();
+
+  // Lock used to ensure Render() completes before CloseBrowserSocket() starts.
+  base::Lock send_lock_;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback_, Render(_, _, _, _))
+      .WillOnce(DoAll(base::test::RunClosure(base::BindLambdaForTesting([&]() {
+                        base::AutoLock lock(send_lock_);
+                        CloseBrowserSocket();
+                      })),
+                      Return(0)))
+      .WillRepeatedly(Return(0));
+
+  EXPECT_CALL(callback_, OnRenderError())
+      .WillOnce(base::test::RunClosure(run_loop.QuitWhenIdleClosure()));
+
+  {
+    base::AutoLock lock(send_lock_);
+    Render();
+  }
+  run_loop.Run();
+
+  StopAudioDevice();
 }
 
 // Multiple start/stop with nondefault device

@@ -2,19 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "device/fido/bio/enrollment_handler.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <tuple>
+#include <utility>
 #include <vector>
 
-#include "device/fido/fido_constants.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/task_environment.h"
-#include "device/fido/bio/enrollment_handler.h"
+#include "base/test/test_future.h"
+#include "device/fido/bio/enrollment.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "device/fido/test_callback_receiver.h"
+#include "device/fido/fido_types.h"
+#include "device/fido/virtual_ctap2_device.h"
+#include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
 namespace {
@@ -48,7 +60,7 @@ class BioEnrollmentHandlerTest : public ::testing::Test {
     return std::make_unique<BioEnrollmentHandler>(
         base::flat_set<FidoTransportProtocol>{
             FidoTransportProtocol::kUsbHumanInterfaceDevice},
-        ready_callback_.callback(), error_callback_.callback(),
+        ready_future_.GetCallback(), error_future_.GetCallback(),
         base::BindRepeating(&BioEnrollmentHandlerTest::GetPIN,
                             base::Unretained(this)),
         &virtual_device_factory_);
@@ -56,13 +68,13 @@ class BioEnrollmentHandlerTest : public ::testing::Test {
 
   std::pair<CtapDeviceResponseCode, BioEnrollmentHandler::TemplateId>
   EnrollTemplate(BioEnrollmentHandler* handler) {
-    test::StatusAndValueCallbackReceiver<CtapDeviceResponseCode,
-                                         BioEnrollmentHandler::TemplateId>
-        cb;
-    handler->EnrollTemplate(MakeSampleCallback(), cb.callback());
+    base::test::TestFuture<CtapDeviceResponseCode,
+                           BioEnrollmentHandler::TemplateId>
+        future;
+    handler->EnrollTemplate(MakeSampleCallback(), future.GetCallback());
 
-    cb.WaitForCallback();
-    return {cb.status(), cb.value()};
+    EXPECT_TRUE(future.Wait());
+    return future.Get();
   }
 
   void GetPIN(uint32_t min_pin_length,
@@ -83,8 +95,8 @@ class BioEnrollmentHandlerTest : public ::testing::Test {
   size_t sample_failures_;
   bool sampling_;
   base::test::TaskEnvironment task_environment_;
-  test::ValueCallbackReceiver<BioEnrollmentHandler::SensorInfo> ready_callback_;
-  test::ValueCallbackReceiver<BioEnrollmentHandler::Error> error_callback_;
+  base::test::TestFuture<BioEnrollmentHandler::SensorInfo> ready_future_;
+  base::test::TestFuture<BioEnrollmentHandler::Error> error_future_;
   test::VirtualFidoDeviceFactory virtual_device_factory_;
 };
 
@@ -97,9 +109,9 @@ TEST_F(BioEnrollmentHandlerTest, NoPINSupport) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  error_callback_.WaitForCallback();
+  EXPECT_TRUE(error_future_.Wait());
 
-  EXPECT_EQ(error_callback_.value(), BioEnrollmentHandler::Error::kNoPINSet);
+  EXPECT_EQ(error_future_.Get(), BioEnrollmentHandler::Error::kNoPINSet);
 }
 
 // Tests bio enrollment handler against device with the forcePINChange flag on.
@@ -115,10 +127,9 @@ TEST_F(BioEnrollmentHandlerTest, ForcePINChange) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  error_callback_.WaitForCallback();
+  EXPECT_TRUE(error_future_.Wait());
 
-  EXPECT_EQ(error_callback_.value(),
-            BioEnrollmentHandler::Error::kForcePINChange);
+  EXPECT_EQ(error_future_.Get(), BioEnrollmentHandler::Error::kForcePINChange);
 }
 
 // Tests enrollment handler PIN soft block.
@@ -131,10 +142,9 @@ TEST_F(BioEnrollmentHandlerTest, SoftPINBlock) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  error_callback_.WaitForCallback();
+  EXPECT_TRUE(error_future_.Wait());
 
-  EXPECT_EQ(error_callback_.value(),
-            BioEnrollmentHandler::Error::kSoftPINBlock);
+  EXPECT_EQ(error_future_.Get(), BioEnrollmentHandler::Error::kSoftPINBlock);
 }
 
 // Tests bio enrollment commands against an authenticator lacking support.
@@ -145,8 +155,8 @@ TEST_F(BioEnrollmentHandlerTest, NoBioEnrollmentSupport) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  error_callback_.WaitForCallback();
-  EXPECT_EQ(error_callback_.value(),
+  EXPECT_TRUE(error_future_.Wait());
+  EXPECT_EQ(error_future_.Get(),
             BioEnrollmentHandler::Error::kAuthenticatorMissingBioEnrollment);
 }
 
@@ -159,7 +169,7 @@ TEST_F(BioEnrollmentHandlerTest, Enroll) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
@@ -175,7 +185,7 @@ TEST_F(BioEnrollmentHandlerTest, EnrollMultiple) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   // Multiple enrollments
   for (auto i = 0; i < 4; i++) {
@@ -185,14 +195,14 @@ TEST_F(BioEnrollmentHandlerTest, EnrollMultiple) {
   }
 
   // Enumerate to check enrollments.
-  test::StatusAndValueCallbackReceiver<
+  base::test::TestFuture<
       CtapDeviceResponseCode,
       std::optional<std::map<std::vector<uint8_t>, std::string>>>
-      cb;
-  handler->EnumerateTemplates(cb.callback());
-  cb.WaitForCallback();
-  EXPECT_EQ(cb.status(), CtapDeviceResponseCode::kSuccess);
-  EXPECT_EQ(cb.value(),
+      future;
+  handler->EnumerateTemplates(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+  EXPECT_EQ(std::get<1>(future.Get()),
             (std::map<std::vector<uint8_t>, std::string>{{{1}, "Template1"},
                                                          {{2}, "Template2"},
                                                          {{3}, "Template3"},
@@ -208,7 +218,7 @@ TEST_F(BioEnrollmentHandlerTest, EnrollMax) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   // Enroll until full.
   CtapDeviceResponseCode status;
@@ -232,16 +242,17 @@ TEST_F(BioEnrollmentHandlerTest, EnumerateNone) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
-  test::StatusAndValueCallbackReceiver<
+  base::test::TestFuture<
       CtapDeviceResponseCode,
       std::optional<std::map<std::vector<uint8_t>, std::string>>>
-      cb;
-  handler->EnumerateTemplates(cb.callback());
-  cb.WaitForCallback();
-  EXPECT_EQ(cb.status(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
-  EXPECT_EQ(cb.value(), std::nullopt);
+      future;
+  handler->EnumerateTemplates(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::get<0>(future.Get()),
+            CtapDeviceResponseCode::kCtap2ErrInvalidOption);
+  EXPECT_EQ(std::get<1>(future.Get()), std::nullopt);
 }
 
 // Tests enumerating with one enrollment.
@@ -253,7 +264,7 @@ TEST_F(BioEnrollmentHandlerTest, EnumerateOne) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   // Enroll - skip response validation
   auto [status, template_id] = EnrollTemplate(handler.get());
@@ -261,14 +272,14 @@ TEST_F(BioEnrollmentHandlerTest, EnumerateOne) {
   EXPECT_FALSE(template_id.empty());
 
   // Enumerate
-  test::StatusAndValueCallbackReceiver<
+  base::test::TestFuture<
       CtapDeviceResponseCode,
       std::optional<std::map<std::vector<uint8_t>, std::string>>>
-      cb1;
-  handler->EnumerateTemplates(cb1.callback());
-  cb1.WaitForCallback();
-  EXPECT_EQ(cb1.status(), CtapDeviceResponseCode::kSuccess);
-  EXPECT_EQ(cb1.value(),
+      future;
+  handler->EnumerateTemplates(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(std::get<0>(future.Get()), CtapDeviceResponseCode::kSuccess);
+  EXPECT_EQ(std::get<1>(future.Get()),
             (std::map<std::vector<uint8_t>, std::string>{{{1}, "Template1"}}));
 }
 
@@ -281,13 +292,13 @@ TEST_F(BioEnrollmentHandlerTest, Rename) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   // Rename non-existent enrollment.
-  test::ValueCallbackReceiver<CtapDeviceResponseCode> cb0;
-  handler->RenameTemplate({1}, "OtherFingerprint1", cb0.callback());
-  cb0.WaitForCallback();
-  EXPECT_EQ(cb0.value(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
+  base::test::TestFuture<CtapDeviceResponseCode> future;
+  handler->RenameTemplate({1}, "OtherFingerprint1", future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
 
   // Enroll - skip response validation.
   auto [status, template_id] = EnrollTemplate(handler.get());
@@ -295,21 +306,23 @@ TEST_F(BioEnrollmentHandlerTest, Rename) {
   EXPECT_FALSE(template_id.empty());
 
   // Rename non-existent enrollment.
-  test::ValueCallbackReceiver<CtapDeviceResponseCode> cb2;
-  handler->RenameTemplate(template_id, "OtherFingerprint1", cb2.callback());
-  cb2.WaitForCallback();
-  EXPECT_EQ(cb2.value(), CtapDeviceResponseCode::kSuccess);
+  base::test::TestFuture<CtapDeviceResponseCode> future2;
+  handler->RenameTemplate(template_id, "OtherFingerprint1",
+                          future2.GetCallback());
+  EXPECT_TRUE(future2.Wait());
+  EXPECT_EQ(future2.Get(), CtapDeviceResponseCode::kSuccess);
 
   // Enumerate to validate renaming.
-  test::StatusAndValueCallbackReceiver<
+  base::test::TestFuture<
       CtapDeviceResponseCode,
       std::optional<std::map<std::vector<uint8_t>, std::string>>>
-      cb3;
-  handler->EnumerateTemplates(cb3.callback());
-  cb3.WaitForCallback();
-  EXPECT_EQ(cb3.status(), CtapDeviceResponseCode::kSuccess);
-  EXPECT_EQ(cb3.value(), (std::map<std::vector<uint8_t>, std::string>{
-                             {template_id, "OtherFingerprint1"}}));
+      future3;
+  handler->EnumerateTemplates(future3.GetCallback());
+  EXPECT_TRUE(future3.Wait());
+  EXPECT_EQ(std::get<0>(future3.Get()), CtapDeviceResponseCode::kSuccess);
+  EXPECT_EQ(std::get<1>(future3.Get()),
+            (std::map<std::vector<uint8_t>, std::string>{
+                {template_id, "OtherFingerprint1"}}));
 }
 
 // Tests deleting an enrollment (success and failure).
@@ -321,13 +334,13 @@ TEST_F(BioEnrollmentHandlerTest, Delete) {
   virtual_device_factory_.SetCtap2Config(config);
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   // Delete non-existent enrollment.
-  test::ValueCallbackReceiver<CtapDeviceResponseCode> cb0;
-  handler->DeleteTemplate({1}, cb0.callback());
-  cb0.WaitForCallback();
-  EXPECT_EQ(cb0.value(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
+  base::test::TestFuture<CtapDeviceResponseCode> future0;
+  handler->DeleteTemplate({1}, future0.GetCallback());
+  EXPECT_TRUE(future0.Wait());
+  EXPECT_EQ(future0.Get(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
 
   // Enroll - skip response validation.
   auto [status, template_id] = EnrollTemplate(handler.get());
@@ -335,16 +348,16 @@ TEST_F(BioEnrollmentHandlerTest, Delete) {
   EXPECT_FALSE(template_id.empty());
 
   // Delete existing enrollment.
-  test::ValueCallbackReceiver<CtapDeviceResponseCode> cb2;
-  handler->DeleteTemplate({1}, cb2.callback());
-  cb2.WaitForCallback();
-  EXPECT_EQ(cb2.value(), CtapDeviceResponseCode::kSuccess);
+  base::test::TestFuture<CtapDeviceResponseCode> future2;
+  handler->DeleteTemplate({1}, future2.GetCallback());
+  EXPECT_TRUE(future2.Wait());
+  EXPECT_EQ(future2.Get(), CtapDeviceResponseCode::kSuccess);
 
   // Attempt to delete again to prove enrollment is gone.
-  test::ValueCallbackReceiver<CtapDeviceResponseCode> cb3;
-  handler->DeleteTemplate({1}, cb3.callback());
-  cb3.WaitForCallback();
-  EXPECT_EQ(cb3.value(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
+  base::test::TestFuture<CtapDeviceResponseCode> future3;
+  handler->DeleteTemplate({1}, future3.GetCallback());
+  EXPECT_TRUE(future3.Wait());
+  EXPECT_EQ(future3.Get(), CtapDeviceResponseCode::kCtap2ErrInvalidOption);
 }
 
 // Test that enrollment succeeds even if one of the samples yields an error
@@ -359,7 +372,7 @@ TEST_F(BioEnrollmentHandlerTest, SampleError) {
       true;
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);
@@ -378,7 +391,7 @@ TEST_F(BioEnrollmentHandlerTest, SampleNoUserActivity) {
       true;
 
   auto handler = MakeHandler();
-  ready_callback_.WaitForCallback();
+  EXPECT_TRUE(ready_future_.Wait());
 
   auto [status, template_id] = EnrollTemplate(handler.get());
   EXPECT_EQ(status, CtapDeviceResponseCode::kSuccess);

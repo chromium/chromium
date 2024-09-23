@@ -13,74 +13,65 @@
 namespace content {
 
 InProcessVideoCaptureProvider::InProcessVideoCaptureProvider(
-    std::unique_ptr<media::VideoCaptureSystem> video_capture_system,
-    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
-    base::RepeatingCallback<void(const std::string&)> emit_log_message_cb)
-    : video_capture_system_(std::move(video_capture_system)),
-      device_task_runner_(std::move(device_task_runner)),
-      emit_log_message_cb_(std::move(emit_log_message_cb)) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner)
+    : native_screen_capture_picker_(MaybeCreateNativeScreenCapturePicker()),
+      device_task_runner_(std::move(device_task_runner)) {}
 
 InProcessVideoCaptureProvider::~InProcessVideoCaptureProvider() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (video_capture_system_ && !device_task_runner_->BelongsToCurrentThread()) {
-    device_task_runner_->DeleteSoon(FROM_HERE,
-                                    std::move(video_capture_system_));
-  }
+  // Destruct the `native_screen_capture_picker_` on the `device_task_runner_`
+  // as all its functions are run on `device_task_runner_` as well.
+  device_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce([](std::unique_ptr<NativeScreenCapturePicker>) {},
+                     std::move(native_screen_capture_picker_)));
 }
 
 // static
 std::unique_ptr<VideoCaptureProvider>
-InProcessVideoCaptureProvider::CreateInstanceForNonDeviceCapture(
-    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
-    base::RepeatingCallback<void(const std::string&)> emit_log_message_cb) {
-  return std::make_unique<InProcessVideoCaptureProvider>(
-      nullptr, std::move(device_task_runner), std::move(emit_log_message_cb));
-}
-
-// static
-std::unique_ptr<VideoCaptureProvider>
-InProcessVideoCaptureProvider::CreateInstance(
-    std::unique_ptr<media::VideoCaptureSystem> video_capture_system,
-    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner,
-    base::RepeatingCallback<void(const std::string&)> emit_log_message_cb) {
-  return std::make_unique<InProcessVideoCaptureProvider>(
-      std::move(video_capture_system), std::move(device_task_runner),
-      std::move(emit_log_message_cb));
+InProcessVideoCaptureProvider::CreateInstanceForScreenCapture(
+    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner) {
+  // Using base::WrapUnique<>(new ...) to access private constructor.
+  return base::WrapUnique<InProcessVideoCaptureProvider>(
+      new InProcessVideoCaptureProvider(std::move(device_task_runner)));
 }
 
 void InProcessVideoCaptureProvider::GetDeviceInfosAsync(
     GetDeviceInfosCallback result_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!video_capture_system_) {
-    emit_log_message_cb_.Run(
-        "InProcessVideoCaptureProvider::GetDeviceInfosAsync: No video capture "
-        "system, returning empty results.");
-    std::move(result_callback)
-        .Run(media::mojom::DeviceEnumerationResult::kUnknownError, {});
-    return;
-  }
-  emit_log_message_cb_.Run(
-      "InProcessVideoCaptureProvider::GetDeviceInfosAsync");
-  // Using Unretained() is safe because |this| owns
-  // |video_capture_system_| and |result_callback| has ownership of
-  // |this|.
-  device_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &media::VideoCaptureSystem::GetDeviceInfosAsync,
-          base::Unretained(video_capture_system_.get()),
-          base::BindOnce(std::move(result_callback),
-                         media::mojom::DeviceEnumerationResult::kSuccess)));
+  NOTREACHED_IN_MIGRATION();
 }
 
 std::unique_ptr<VideoCaptureDeviceLauncher>
 InProcessVideoCaptureProvider::CreateDeviceLauncher() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<InProcessVideoCaptureDeviceLauncher>(
-      device_task_runner_, video_capture_system_.get());
+      device_task_runner_, native_screen_capture_picker_.get());
+}
+
+void InProcessVideoCaptureProvider::OpenNativeScreenCapturePicker(
+    DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  CHECK(native_screen_capture_picker_);
+
+  device_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NativeScreenCapturePicker::Open,
+                     native_screen_capture_picker_->GetWeakPtr(), type,
+                     std::move(created_callback), std::move(picker_callback),
+                     std::move(cancel_callback), std::move(error_callback)));
+}
+
+void InProcessVideoCaptureProvider::CloseNativeScreenCapturePicker(
+    DesktopMediaID device_id) {
+  if (!native_screen_capture_picker_) {
+    return;
+  }
+
+  device_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NativeScreenCapturePicker::Close,
+                     native_screen_capture_picker_->GetWeakPtr(), device_id));
 }
 
 }  // namespace content

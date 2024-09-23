@@ -8,18 +8,22 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "services/device/compute_pressure/cpu_probe_manager.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace device {
+
+class ProbesManager;
+class VirtualProbesManager;
 
 // Handles the communication between content/browser and services.
 //
@@ -38,7 +42,8 @@ class PressureManagerImpl : public mojom::PressureManager {
   static constexpr base::TimeDelta kDefaultSamplingInterval = base::Seconds(1);
 
   // Factory method for production instances.
-  static std::unique_ptr<PressureManagerImpl> Create();
+  static std::unique_ptr<PressureManagerImpl> Create(
+      base::TimeDelta sampling_interval = kDefaultSamplingInterval);
 
   ~PressureManagerImpl() override;
 
@@ -48,34 +53,44 @@ class PressureManagerImpl : public mojom::PressureManager {
   void Bind(mojo::PendingReceiver<mojom::PressureManager> receiver);
 
   // device::mojom::PressureManager implementation.
-  void AddClient(mojo::PendingRemote<mojom::PressureClient> client,
-                 mojom::PressureSource source,
+  void AddClient(mojom::PressureSource source,
+                 const std::optional<base::UnguessableToken>& token,
                  AddClientCallback callback) override;
 
-  void SetCpuProbeManagerForTesting(std::unique_ptr<CpuProbeManager>);
+  ProbesManager* GetProbesManagerForTesting() const;
 
  private:
   friend class PressureManagerImplTest;
 
   explicit PressureManagerImpl(base::TimeDelta sampling_interval);
 
-  // Called periodically by probe for each PressureSource.
-  void UpdateClients(mojom::PressureSource source, mojom::PressureState state);
-
-  // Stop corresponding probe once there is no client.
-  void OnClientRemoteDisconnected(mojom::PressureSource source,
-                                  mojo::RemoteSetElementId /*id*/);
+  void AddVirtualPressureSource(
+      const base::UnguessableToken& token,
+      mojom::PressureSource source,
+      mojom::VirtualPressureSourceMetadataPtr metadata,
+      AddVirtualPressureSourceCallback callback) override;
+  void RemoveVirtualPressureSource(
+      const base::UnguessableToken& token,
+      mojom::PressureSource source,
+      RemoveVirtualPressureSourceCallback callback) override;
+  void UpdateVirtualPressureSourceState(
+      const ::base::UnguessableToken& token,
+      mojom::PressureSource source,
+      mojom::PressureState state,
+      UpdateVirtualPressureSourceStateCallback callback) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Probe for retrieving the compute pressure state for CPU.
-  std::unique_ptr<CpuProbeManager> cpu_probe_manager_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::TimeDelta sampling_interval_;
 
   mojo::ReceiverSet<mojom::PressureManager> receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::map<mojom::PressureSource, mojo::RemoteSet<mojom::PressureClient>>
-      clients_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unique_ptr<ProbesManager> probes_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::flat_map<base::UnguessableToken, std::unique_ptr<VirtualProbesManager>>
+      virtual_probes_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace device

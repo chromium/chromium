@@ -49,6 +49,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     private String mDescription;
     private boolean mShouldTint;
     private boolean mIsOnToolbar;
+    private @ButtonType int mType;
 
     @VisibleForTesting
     static final String SHOW_ON_TOOLBAR = "android.support.customtabs.customaction.SHOW_ON_TOOLBAR";
@@ -59,13 +60,15 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
             String description,
             @Nullable PendingIntent pendingIntent,
             boolean tinted,
-            boolean onToolbar) {
+            boolean onToolbar,
+            @ButtonType int type) {
         mId = id;
         mIcon = icon;
         mDescription = description;
         mPendingIntent = pendingIntent;
         mShouldTint = tinted;
         mIsOnToolbar = onToolbar;
+        mType = type;
     }
 
     /** Replaces the current icon and description with new ones. */
@@ -120,9 +123,15 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         return mPendingIntent;
     }
 
+    @Override
+    public @ButtonType int getType() {
+        return mType;
+    }
+
     /**
      * Builds an {@link ImageButton} from the data in this params. Generated buttons should be
      * placed on the bottom bar. The button's tag will be its id.
+     *
      * @param parent The parent that the inflated {@link ImageButton}.
      * @param listener {@link OnClickListener} that should be used with the button.
      * @return Parsed list of {@link CustomButtonParams}, which is empty if the input is invalid.
@@ -137,7 +146,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.custom_tabs_bottombar_item, parent, false);
         button.setId(mId);
-        button.setImageBitmap(mIcon);
+        button.setImageDrawable(getIcon(context));
         button.setContentDescription(mDescription);
         if (mPendingIntent == null) {
             button.setEnabled(false);
@@ -173,8 +182,11 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
 
     /**
      * Parses a list of {@link CustomButtonParams} from the intent sent by clients.
+     *
+     * @param context The context.
      * @param intent The intent sent by the client.
-     * @return A list of parsed {@link CustomButtonParams}. Return an empty list if input is invalid
+     * @return A list of parsed {@link CustomButtonParams}. Return an empty list if input is
+     *     invalid.
      */
     public static List<CustomButtonParams> fromIntent(Context context, Intent intent) {
         List<CustomButtonParams> paramsList = new ArrayList<>(1);
@@ -192,6 +204,43 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
             CustomButtonParams singleParams = fromBundle(context, singleBundle, tinted, false);
             if (singleParams != null) paramsList.add(singleParams);
         }
+        return addToParamListfromBundleList(paramsList, context, bundleList, tinted);
+    }
+
+    /**
+     * Parses a list of {@link CustomButtonParams} from a bundle list.
+     *
+     * @param context The context
+     * @param bundleList The list of bundles, each expected to contain the data for a single {@link
+     *     CustomButtonParams}.
+     * @param tinted A flag indicating whether the buttons should be tinted.
+     * @return A list of parsed {@link CustomButtonParams}. Return an empty list if input is
+     *     invalid.
+     */
+    public static List<CustomButtonParams> fromBundleList(
+            Context context, List<Bundle> bundleList, boolean tinted) {
+        return addToParamListfromBundleList(new ArrayList<>(1), context, bundleList, tinted);
+    }
+
+    /**
+     * Adds {@link CustomButtonParams} objects to an existing list from a bundle list.
+     *
+     * <p>This method iterates through a list of bundles, parsing each one into a {@link
+     * CustomButtonParams} object and adding it to the provided `paramsList`.
+     *
+     * @param paramsList The list to which parsed {@link CustomButtonParams} objects will be added.
+     * @param context The context.
+     * @param bundleList The list of bundles, each expected to contain the data for a single {@link
+     *     CustomButtonParams}.
+     * @param tinted A flag indicating whether the buttons should be tinted.
+     * @return The original `paramsList` with additional parsed {@link CustomButtonParams} objects
+     *     added. If the `bundleList` is null or empty, the `paramsList` is returned unchanged.
+     */
+    private static List<CustomButtonParams> addToParamListfromBundleList(
+            List<CustomButtonParams> paramsList,
+            Context context,
+            List<Bundle> bundleList,
+            boolean tinted) {
         if (bundleList != null) {
             Set<Integer> ids = new HashSet<>();
             for (Bundle bundle : bundleList) {
@@ -261,11 +310,12 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         }
 
         return new CustomButtonParamsImpl(
-                id, bitmap, description, pendingIntent, tinted, onToolbar);
+                id, bitmap, description, pendingIntent, tinted, onToolbar, ButtonType.OTHER);
     }
 
     /** Creates and returns a {@link CustomButtonParams} for a share button in the toolbar. */
-    static CustomButtonParams createShareButton(Context context, int backgroundColor) {
+    @VisibleForTesting
+    public static CustomButtonParams createShareButton(Context context, int backgroundColor) {
         int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
         String description = context.getResources().getString(R.string.share);
         Intent shareIntent = new Intent(context, CustomTabsShareBroadcastReceiver.class);
@@ -284,12 +334,42 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
         return new CustomButtonParamsImpl(
-                id, bitmap, description, pendingIntent, /* tinted= */ true, /* onToolbar= */ true);
+                id,
+                bitmap,
+                description,
+                pendingIntent,
+                /* tinted= */ true,
+                /* onToolbar= */ true,
+                ButtonType.CCT_SHARE_BUTTON);
+    }
+
+    @VisibleForTesting
+    public static CustomButtonParams createOpenInBrowserButton(
+            Context context, int backgroundColor) {
+        int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
+        String description =
+                context.getResources().getString(R.string.menu_open_in_product_default);
+
+        TintedDrawable drawable =
+                TintedDrawable.constructTintedDrawable(
+                        context, R.drawable.ic_open_in_new_white_24dp);
+        boolean useLightTint = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
+        drawable.setTint(ThemeUtils.getThemedToolbarIconTint(context, useLightTint));
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+
+        return new CustomButtonParamsImpl(
+                id,
+                bitmap,
+                description,
+                /* pendingIntent= */ null,
+                /* tinted= */ true,
+                /* onToolbar= */ true,
+                ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
     }
 
     /**
      * @return The bitmap contained in the given {@link Bundle}. Will return null if input is
-     *         invalid.
+     *     invalid.
      */
     static Bitmap parseBitmapFromBundle(Bundle bundle) {
         if (bundle == null) return null;
@@ -326,6 +406,17 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     @Override
     public boolean doesIconFitToolbar(Context context) {
         return doesIconFitToolbar(context, mIcon);
+    }
+
+    /**
+     * Updates the visibility of this component on the toolbar.
+     *
+     * @param showOnToolbar {@code true} to display the component on the toolbar, {@code false} to
+     *     display the component on the bottomBar.
+     */
+    @Override
+    public void updateShowOnToolbar(boolean showOnToolbar) {
+        mIsOnToolbar = showOnToolbar;
     }
 
     private static boolean doesIconFitToolbar(Context context, Bitmap bitmap) {

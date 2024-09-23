@@ -6,8 +6,12 @@
 
 #include <cstdint>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/variations/entropy_provider.h"
+#include "components/variations/proto/layer.pb.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/variations_layers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {

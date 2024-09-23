@@ -1,0 +1,15 @@
+source_set("sync_utils") {
+  sources = [
+    "plus_address_data_type_controller.cc",
+    "plus_address_data_type_controller.h",
+  ]
+  deps = [
+    "//components/plus_addresses:features",
+    "//components/signin/public/identity_manager",
+    "//components/variations/service",
+  ]
+  public_deps = [
+    "//base",
+    "//components/sync",
+  ]
+}

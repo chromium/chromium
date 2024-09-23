@@ -16,6 +16,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom-forward.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #include "components/policy/proto/device_management_backend.pb.h"

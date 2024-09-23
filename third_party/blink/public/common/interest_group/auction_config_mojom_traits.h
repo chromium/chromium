@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
+#include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 
 class GURL;
@@ -94,7 +95,7 @@ struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper {
       case Wrapper::Tag::kValue:
         return ViewTag::kValue;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return View::Tag::kPromise;
   }
 
@@ -198,6 +199,33 @@ struct BLINK_COMMON_EXPORT UnionTraits<
           blink::AuctionConfig::MaybePromiseDirectFromSellerSignals> {};
 
 template <>
+struct BLINK_COMMON_EXPORT UnionTraits<
+    blink::mojom::
+        AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacementsDataView,
+    blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements>
+    : public AdConfigMaybePromiseTraitsHelper<
+          blink::mojom::
+              AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacementsDataView,
+          blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements> {};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::AdKeywordReplacementDataView,
+                 blink::AuctionConfig::AdKeywordReplacement> {
+  static std::string match(
+      const blink::AuctionConfig::AdKeywordReplacement& params) {
+    return params.match;
+  }
+
+  static std::string replacement(
+      const blink::AuctionConfig::AdKeywordReplacement& params) {
+    return params.replacement;
+  }
+
+  static bool Read(blink::mojom::AdKeywordReplacementDataView data,
+                   blink::AuctionConfig::AdKeywordReplacement* out);
+};
+template <>
 struct BLINK_COMMON_EXPORT StructTraits<
     blink::mojom::AuctionReportBuyersConfigDataView,
     blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig> {
@@ -286,6 +314,11 @@ struct BLINK_COMMON_EXPORT
     return params.buyer_timeouts;
   }
 
+  static std::optional<base::TimeDelta> reporting_timeout(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.reporting_timeout;
+  }
+
   static const std::optional<blink::AdCurrency>& seller_currency(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.seller_currency;
@@ -361,14 +394,57 @@ struct BLINK_COMMON_EXPORT
     return params.all_slots_requested_sizes;
   }
 
+  static const blink::AuctionConfig::
+      MaybePromiseDeprecatedRenderURLReplacements&
+      deprecated_render_url_replacements(
+          const blink::AuctionConfig::NonSharedParams& params) {
+    return params.deprecated_render_url_replacements;
+  }
+
+  static const base::flat_map<url::Origin, uint16_t>&
+  per_buyer_multi_bid_limits(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.per_buyer_multi_bid_limits;
+  }
+
+  static uint16_t all_buyers_multi_bid_limit(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.all_buyers_multi_bid_limit;
+  }
+
   static const std::optional<base::Uuid>& auction_nonce(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.auction_nonce;
   }
 
+  static const std::optional<
+      blink::AuctionConfig::NonSharedParams::RealTimeReportingType>&
+  seller_real_time_reporting_type(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.seller_real_time_reporting_type;
+  }
+
+  static const std::optional<base::flat_map<
+      url::Origin,
+      blink::AuctionConfig::NonSharedParams::RealTimeReportingType>>&
+  per_buyer_real_time_reporting_types(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.per_buyer_real_time_reporting_types;
+  }
+
   static const std::vector<blink::AuctionConfig>& component_auctions(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.component_auctions;
+  }
+
+  static int32_t max_trusted_scoring_signals_url_length(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.max_trusted_scoring_signals_url_length;
+  }
+
+  static const std::optional<url::Origin>& trusted_scoring_signals_coordinator(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.trusted_scoring_signals_coordinator;
   }
 
   static bool Read(blink::mojom::AuctionAdConfigNonSharedParamsDataView data,
@@ -395,11 +471,6 @@ struct BLINK_COMMON_EXPORT
   static const std::optional<GURL>& trusted_scoring_signals_url(
       const blink::AuctionConfig& config) {
     return config.trusted_scoring_signals_url;
-  }
-
-  static int32_t max_trusted_scoring_signals_url_length(
-      const blink::AuctionConfig& config) {
-    return config.max_trusted_scoring_signals_url_length;
   }
 
   static const blink::AuctionConfig::NonSharedParams&
@@ -431,6 +502,7 @@ struct BLINK_COMMON_EXPORT
   per_buyer_experiment_group_ids(const blink::AuctionConfig& config) {
     return config.per_buyer_experiment_group_ids;
   }
+
 
   static bool expects_additional_bids(const blink::AuctionConfig& config) {
     return config.expects_additional_bids;

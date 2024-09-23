@@ -7,6 +7,6 @@
 
 #include <cstdint>
 
-#include "third_party/x11proto/keysymdef.h"
+#include "third_party/x11proto/keysymdef.h"  // IWYU pragma: export
 
 #endif  // UI_GFX_X_KEYSYMS_KEYSYMS_H_

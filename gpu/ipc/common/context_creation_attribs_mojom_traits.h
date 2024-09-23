@@ -32,7 +32,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::ContextType, gpu::ContextType> {
       case gpu::CONTEXT_TYPE_WEBGPU:
         return gpu::mojom::ContextType::kWebGPU;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 
@@ -69,12 +69,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
       const gpu::ContextCreationAttribs& attribs) {
     return attribs.gpu_preference;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  static bool need_alpha(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.need_alpha;
-  }
-#endif
 
   static bool bind_generates_resource(
       const gpu::ContextCreationAttribs& attribs) {

@@ -189,7 +189,7 @@ def GetApkAnalyzerPath():
 
 def GetAapt2Path():
   default_path = FromToolsSrcRoot('third_party', 'android_build_tools', 'aapt2',
-                                  'aapt2')
+                                  'cipd', 'aapt2')
   return os.environ.get('SUPERSIZE_AAPT2', default_path)
 
 

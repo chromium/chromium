@@ -7,11 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/origin_trials/trial_token.h"
@@ -64,7 +65,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
                      std::vector<std::string /* token */>>;
 
   // Convenience function for non-third-party tokens.
-  virtual TrialTokenResult ValidateTokenAndTrial(base::StringPiece token,
+  virtual TrialTokenResult ValidateTokenAndTrial(std::string_view token,
                                                  const url::Origin& origin,
                                                  base::Time current_time) const;
 
@@ -78,7 +79,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   //   `third_party_origins` are checked to ensure the token is validated
   //   against a secure origin.
   virtual TrialTokenResult ValidateTokenAndTrial(
-      base::StringPiece token,
+      std::string_view token,
       const url::Origin& origin,
       base::span<const url::Origin> third_party_origins,
       base::Time current_time) const;
@@ -89,7 +90,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   // The browser process should call `ValidateTokenAndTrial` instead, which
   // takes care of the origin security evaluation internally.
   virtual TrialTokenResult ValidateTokenAndTrialWithOriginInfo(
-      base::StringPiece token,
+      std::string_view token,
       const OriginInfo& origin,
       base::span<const OriginInfo> third_party_origins,
       base::Time current_time) const;
@@ -99,7 +100,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   // the feature this token enables, the expiry time of the token and whether it
   // is a third-party token. Otherwise, only the status will be set.
   // This method is thread-safe.
-  virtual TrialTokenResult ValidateToken(base::StringPiece token,
+  virtual TrialTokenResult ValidateToken(std::string_view token,
                                          const url::Origin& origin,
                                          base::Time current_time) const;
   // Validates a token for the given `origin`. If identified as a third-party
@@ -108,7 +109,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   // empty. Returns the same result as ValidateToken() above.
   // This method is thread-safe.
   virtual TrialTokenResult ValidateToken(
-      base::StringPiece token,
+      std::string_view token,
       const url::Origin& origin,
       base::span<const url::Origin> third_party_origins,
       base::Time current_time) const;
@@ -119,28 +120,28 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   // ensure that it was a valid token for the origin to which we are applying
   // it.
   virtual bool RevalidateTokenAndTrial(
-      const base::StringPiece trial_name,
+      const std::string_view trial_name,
       const base::Time token_expiry_time,
       const TrialToken::UsageRestriction token_usage_restriction,
-      const base::StringPiece token_signature,
+      const std::string_view token_signature,
       const base::Time current_time) const;
 
   // Return the set of features enabled by the given `trial_name`.
   // TODO(crbug.com/1227440): Refactor this to be a part of more general
   //                          validation flows instead of a stand-alone.
   std::vector<mojom::OriginTrialFeature> FeaturesEnabledByTrial(
-      base::StringPiece trial_name);
+      std::string_view trial_name);
 
   // Return true if the trial in question enables at least one feature on the
   // current OS platform.
   // TODO(crbug.com/1227440): Refactor this to be a part of more general
   //                          validation flows instead of a stand-alone.
-  bool TrialEnablesFeaturesForOS(base::StringPiece trial_name);
+  bool TrialEnablesFeaturesForOS(std::string_view trial_name);
 
   // `request` must not be nullptr.
   // NOTE: This is not currently used, but remains here for future trials.
   bool RequestEnablesFeature(const net::URLRequest* request,
-                             base::StringPiece feature_name,
+                             std::string_view feature_name,
                              base::Time current_time) const;
 
   // Returns whether the given response for the given URL enables the named
@@ -149,7 +150,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   // `response_headers` must not be nullptr.
   bool RequestEnablesFeature(const GURL& request_url,
                              const net::HttpResponseHeaders* response_headers,
-                             base::StringPiece feature_name,
+                             std::string_view feature_name,
                              base::Time current_time) const;
 
   // Similar to `RequestEnablesFeature()`, but for Deprecation Trials that may
@@ -166,7 +167,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   bool RequestEnablesDeprecatedFeature(
       const GURL& request_url,
       const net::HttpResponseHeaders* response_headers,
-      base::StringPiece feature_name,
+      std::string_view feature_name,
       base::Time current_time) const;
 
   // Returns all valid tokens in `headers`.
@@ -194,7 +195,7 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
   bool ResponseBearsValidTokenForFeature(
       const GURL& request_url,
       const net::HttpResponseHeaders& response_headers,
-      base::StringPiece feature_name,
+      std::string_view feature_name,
       base::Time current_time) const;
 };  // class TrialTokenValidator
 

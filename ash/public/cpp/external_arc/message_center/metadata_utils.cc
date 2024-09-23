@@ -76,6 +76,17 @@ CreateNotificationFromArcNotificationData(
     }
   }
 
+  if (render_on_chrome && data->messages) {
+    for (const auto& message : *data->messages) {
+      rich_data.items.emplace_back(message_center::NotificationItem(
+          base::UTF8ToUTF16(message->sender_name.value_or("")),
+          base::UTF8ToUTF16(message->message.value_or("")),
+          ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(
+              message->sender_icon.value_or(*data->small_icon)))));
+    }
+    data->message = "";
+  }
+
   auto notification = std::make_unique<message_center::Notification>(
       notification_type, notification_id, base::UTF8ToUTF16(data->title),
       base::UTF8ToUTF16(data->message), ui::ImageModel(),

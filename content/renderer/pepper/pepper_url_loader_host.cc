@@ -178,13 +178,13 @@ void PepperURLLoaderHost::DidDownloadData(uint64_t data_length) {
   UpdateProgress();
 }
 
-void PepperURLLoaderHost::DidReceiveData(const char* data, int data_length) {
+void PepperURLLoaderHost::DidReceiveData(base::span<const char> data) {
   // Note that |loader| will be NULL for document loads.
-  bytes_received_ += data_length;
+  bytes_received_ += data.size();
   UpdateProgress();
 
   auto message = std::make_unique<PpapiPluginMsg_URLLoader_SendData>();
-  message->WriteData(data, base::checked_cast<size_t>(data_length));
+  message->WriteData(data.data(), data.size());
   SendUpdateToPlugin(std::move(message));
 }
 

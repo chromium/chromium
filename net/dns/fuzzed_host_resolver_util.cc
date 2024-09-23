@@ -367,7 +367,7 @@ class FuzzedMdnsSocketFactory : public MDnsSocketFactory {
 class FuzzedHostResolverManager : public HostResolverManager {
  public:
   // |data_provider| and |net_log| must outlive the FuzzedHostResolver.
-  // TODO(crbug.com/971411): Fuzz system DNS config changes through a non-null
+  // TODO(crbug.com/40630884): Fuzz system DNS config changes through a non-null
   // SystemDnsConfigChangeNotifier.
   FuzzedHostResolverManager(const HostResolver::ManagerOptions& options,
                             NetLog* net_log,
@@ -408,7 +408,7 @@ class FuzzedHostResolverManager : public HostResolverManager {
     // The only DnsClient that is supported is the one created by the
     // FuzzedHostResolverManager since that DnsClient contains the necessary
     // fuzzing logic.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
  private:

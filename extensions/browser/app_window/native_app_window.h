@@ -10,13 +10,15 @@
 
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 class SkRegion;
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
 }
 
@@ -44,8 +46,8 @@ class NativeAppWindow : public ui::BaseWindow,
   virtual void UpdateWindowTitle() = 0;
 
   // Called when the draggable regions are changed.
-  virtual void UpdateDraggableRegions(
-      const std::vector<mojom::DraggableRegionPtr>& regions) = 0;
+  virtual void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions) = 0;
 
   // Returns the region used by frameless windows for dragging. May return
   // nullptr.
@@ -58,7 +60,7 @@ class NativeAppWindow : public ui::BaseWindow,
   // Allows the window to handle unhandled keyboard messages coming back from
   // the renderer.
   virtual bool HandleKeyboardEvent(
-      const content::NativeWebKeyboardEvent& event) = 0;
+      const input::NativeWebKeyboardEvent& event) = 0;
 
   // Returns true if the window has no frame, as for a window opened by
   // chrome.app.window.create with the option 'frame' set to 'none'.
@@ -72,6 +74,9 @@ class NativeAppWindow : public ui::BaseWindow,
   // Returns the difference between the window bounds (including titlebar and
   // borders) and the content bounds, if any.
   virtual gfx::Insets GetFrameInsets() const = 0;
+
+  // Returns the radii of the window's corners.
+  virtual gfx::RoundedCornersF GetWindowRadii() const = 0;
 
   // Returns the minimum size constraints of the content.
   virtual gfx::Size GetContentMinimumSize() const = 0;

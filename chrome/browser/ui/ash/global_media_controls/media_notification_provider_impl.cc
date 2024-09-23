@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 
 #include "ash/shell.h"
+#include "ash/system/cast/media_cast_audio_selector_view.h"
 #include "ash/system/media/media_color_theme.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/media_notification_provider_observer.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -63,9 +65,7 @@ MediaNotificationProviderImpl::MediaNotificationProviderImpl(
           item_manager_.get(), /*source_id=*/std::nullopt);
   item_manager_->AddItemProducer(media_session_item_producer_.get());
 
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
-    media_color_theme_ = GetCrosMediaColorTheme();
-  }
+  media_color_theme_ = GetCrosMediaColorTheme();
 }
 
 MediaNotificationProviderImpl::~MediaNotificationProviderImpl() {
@@ -190,6 +190,23 @@ MediaNotificationProviderImpl::BuildDeviceSelectorView(
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point,
     bool show_devices) {
+  // Returns the Ash `MediaCastAudioSelectorView` if BackgroundListening feature
+  // is enabled.
+  if (base::FeatureList::IsEnabled(media::kBackgroundListening)) {
+    auto* const profile = GetProfile();
+    auto* const device_service = GetDeviceService(item);
+    if (!ShouldShowDeviceSelectorView(profile, device_service, id, item,
+                                      &device_selector_delegate_)) {
+      return nullptr;
+    }
+
+    auto device_set = CreateHostAndClient(profile, id, item, device_service);
+
+    return std::make_unique<MediaCastAudioSelectorView>(
+        std::move(device_set.host), std::move(device_set.client),
+        GetStopCastingCallback(profile, id, item), show_devices);
+  }
+
   return BuildDeviceSelector(id, item, GetDeviceService(item),
                              &device_selector_delegate_, GetProfile(),
                              entry_point, show_devices, media_color_theme_);
@@ -276,11 +293,6 @@ void MediaNotificationProviderImpl::OnMediaItemUISizeChanged() {
   for (auto& observer : observers_) {
     observer.OnNotificationListViewSizeChanged();
   }
-}
-
-void MediaNotificationProviderImpl::OnMediaItemUIDestroyed(
-    const std::string& id) {
-  item_ui_observer_set_.StopObserving(id);
 }
 
 void MediaNotificationProviderImpl::OnDeviceServiceRegistered(

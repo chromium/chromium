@@ -1,13 +1,13 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
-++++genericContainer ignored htmlTag='body'
-++++++genericContainer ignored htmlTag='div'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
 ++++++++staticText name='Empty before and after'
 ++++++++++inlineTextBox name='Empty before and after'
 ++++++genericContainer htmlTag='div'
 ++++++++staticText name='Empty positioned before and after'
 ++++++++++inlineTextBox name='Empty positioned before and after'
-++++++genericContainer ignored htmlTag='div'
+++++++genericContainer ignored
 ++++++++genericContainer htmlTag='::before'
 ++++++++++staticText name='pseudo'
 ++++++++++++inlineTextBox name='pseudo'

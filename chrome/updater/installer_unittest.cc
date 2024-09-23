@@ -17,7 +17,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/activity.h"
-#include "chrome/updater/test_scope.h"
+#include "chrome/updater/test/test_scope.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -31,8 +31,8 @@ TEST(InstallerTest, Simple) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetAP("id", "ap");
   metadata->SetBrandCode("id", "BRND");
@@ -41,8 +41,8 @@ TEST(InstallerTest, Simple) {
 
   base::RunLoop loop;
   base::MakeRefCounted<Installer>(
-      "id", "client_install_data", "install_data_index", "target_channel",
-      "target_version_prefix", /*rollback_allowed=*/true,
+      "id", "client_install_data", "install_data_index", "install_source",
+      "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -84,8 +84,8 @@ TEST(InstallerTest, LoadFromPath) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionKey("id", "pv_key");
   metadata->SetProductVersionPath("id", plist_path);
@@ -98,8 +98,8 @@ TEST(InstallerTest, LoadFromPath) {
   update_client::CrxComponent crx;
   base::RunLoop loop;
   base::MakeRefCounted<Installer>(
-      "id", "client_install_data", "install_data_index", "target_channel",
-      "target_version_prefix", /*rollback_allowed=*/true,
+      "id", "client_install_data", "install_data_index", "install_source",
+      "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -114,6 +114,7 @@ TEST(InstallerTest, LoadFromPath) {
   EXPECT_EQ(crx.version, base::Version("5.5.5.5"));
   EXPECT_EQ(crx.ap, "ap2");
   EXPECT_EQ(crx.brand, "BTWO");
+  EXPECT_EQ(crx.install_source, "install_source");
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -123,8 +124,8 @@ TEST(InstallerTest, LoadFromPath_PathDoesNotExist) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionPath(
       "id", base::FilePath(FILE_PATH_LITERAL("nonexistent")));
@@ -140,8 +141,8 @@ TEST(InstallerTest, LoadFromPath_PathDoesNotExist) {
 
   base::RunLoop loop;
   base::MakeRefCounted<Installer>(
-      "id", "client_install_data", "install_data_index", "target_channel",
-      "target_version_prefix", /*rollback_allowed=*/true,
+      "id", "client_install_data", "install_data_index", "install_source",
+      "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -171,8 +172,8 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      base::MakeRefCounted<PersistedData>(GetTestScope(), pref.get(), nullptr);
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
   metadata->SetProductVersion("id", base::Version("1.2.3.4"));
   metadata->SetProductVersionKey("id", "pv_key");
   metadata->SetAP("id", "ap");
@@ -185,8 +186,8 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
   update_client::CrxComponent crx;
   base::RunLoop loop;
   base::MakeRefCounted<Installer>(
-      "id", "client_install_data", "install_data_index", "target_channel",
-      "target_version_prefix", /*rollback_allowed=*/true,
+      "id", "client_install_data", "install_data_index", "install_source",
+      "target_channel", "target_version_prefix", /*rollback_allowed=*/true,
       /*update_disabled=*/false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF)
@@ -201,6 +202,27 @@ TEST(InstallerTest, LoadFromPath_KeysMissing) {
   EXPECT_EQ(crx.version, base::Version("1.2.3.4"));
   EXPECT_EQ(crx.ap, "ap");
   EXPECT_EQ(crx.brand, "BRND");
+}
+
+TEST(InstallerTest, GetInstalledFileReturnsNothing) {
+  base::test::TaskEnvironment environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+  ASSERT_EQ(
+      static_cast<scoped_refptr<update_client::CrxInstaller>>(
+          base::MakeRefCounted<Installer>(
+              "id", "client_install_data", "install_data_index",
+              "install_source", "target_channel", "target_version_prefix",
+              /*rollback_allowed=*/true,
+              /*update_disabled=*/false,
+              UpdateService::PolicySameVersionUpdate::kNotAllowed, metadata,
+              crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF))
+          ->GetInstalledFile("f"),
+      std::nullopt);
 }
 
 }  // namespace updater

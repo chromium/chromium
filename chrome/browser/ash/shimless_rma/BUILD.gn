@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("shimless_rma") {
+  sources = [
+    "chrome_shimless_rma_delegate.cc",
+    "chrome_shimless_rma_delegate.h",
+    "diagnostics_app_profile_helper.cc",
+    "diagnostics_app_profile_helper.h",
+    "diagnostics_app_profile_helper_constants.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/shimless_rma/backend",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//components/webapps/common",
+    "//url",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/strings",
+    "//ash/strings:strings_grit",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/diagnostics_dialog",
+    "//chrome/browser/web_applications",
+    "//chrome/common:constants",
+    "//chrome/common/chromeos/extensions",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/qr_code_generator:bitmap_generator",
+    "//components/strings:components_strings",
+    "//components/strings:components_strings_grit",
+    "//components/web_package",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//skia",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_shimless_rma_delegate_unittest.cc" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/shimless_rma",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/web_applications",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/variations:test_support",
+    "//components/webapps/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_platform",
+  ]
+}

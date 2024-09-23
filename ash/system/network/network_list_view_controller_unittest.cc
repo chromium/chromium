@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/network/network_list_view_controller_impl.h"
-
 #include <algorithm>
 #include <cstddef>
 #include <memory>
@@ -19,6 +17,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_network_view.h"
 #include "ash/system/network/network_detailed_network_view_impl.h"
+#include "ash/system/network/network_list_view_controller_impl.h"
 #include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -28,6 +27,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -257,6 +257,11 @@ class NetworkListViewControllerTest : public AshTestBase,
     EXPECT_EQ(GetMobileToggleButton()->GetVisible(), visible);
     EXPECT_EQ(GetMobileToggleButton()->GetEnabled(), enabled);
     EXPECT_EQ(GetMobileToggleButton()->GetIsOn(), toggled_on);
+  }
+
+  HoverHighlightView* GetSetUpYourDeviceEntry() {
+    return FindViewById<HoverHighlightView*>(
+        VIEW_ID_OPEN_CROSS_DEVICE_SETTINGS);
   }
 
   HoverHighlightView* GetAddWifiEntry() {
@@ -539,6 +544,14 @@ TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
   EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
   EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
 
+  // Tap the Tether Header - hide the Network List
+  LeftClickOn(GetTetherHostsSubHeader());
+  EXPECT_FALSE(network_list(NetworkType::kTether)->GetVisible());
+
+  // Tap it again - show the list
+  LeftClickOn(GetTetherHostsSubHeader());
+  EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
+
   // Simulate login as secondary user.
   LoginAsSecondaryUser();
   cros_network()->ClearNetworksAndDevices();
@@ -658,7 +671,8 @@ TEST_P(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
   // status message shouldn't been shown.
   EXPECT_TRUE(GetAddESimEntry()->GetVisible());
   EXPECT_EQ(GetAddESimEntry()->GetTooltipText(),
-            l10n_util::GetStringUTF16(GetAddESimTooltipMessageId()));
+            l10n_util::GetStringUTF16(GetCellularInhibitReasonMessageId(
+                InhibitReason::kNotInhibited)));
   ASSERT_THAT(GetMobileStatusMessage(), NotNull());
 
   // Add eSIM button is not enabled when inhibited.
@@ -674,7 +688,8 @@ TEST_P(NetworkListViewControllerTest, MobileSectionHeaderAddEsimButtonStates) {
   ASSERT_THAT(GetAddESimEntry(), NotNull());
   EXPECT_TRUE(GetAddESimEntry()->GetVisible());
   EXPECT_EQ(GetAddESimEntry()->GetTooltipText(),
-            l10n_util::GetStringUTF16(GetAddESimTooltipMessageId()));
+            l10n_util::GetStringUTF16(GetCellularInhibitReasonMessageId(
+                InhibitReason::kNotInhibited)));
 
   // When no Mobile networks are available and eSIM policy is set to allow only
   // cellular devices which means adding a new eSIM is disallowed by enterprise
@@ -882,7 +897,39 @@ TEST_P(NetworkListViewControllerTest,
   // shouldn't be
   if (IsInstantHotspotRebrandEnabled()) {
     EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
+    EXPECT_THAT(GetSetUpYourDeviceEntry(), NotNull());
+    LeftClickOn(GetSetUpYourDeviceEntry());
+    EXPECT_EQ(1, GetSystemTrayClient()->show_multi_device_setup_count());
   } else {
+    EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
+    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
+  }
+
+  // Add tether host.
+  fake_multidevice_setup_->NotifyHostStatusChanged(
+      multidevice_setup::mojom::HostStatus::kHostVerified, std::nullopt);
+  fake_multidevice_setup_->FlushForTesting();
+  auto properties =
+      chromeos::network_config::mojom::DeviceStateProperties::New();
+  properties->type = NetworkType::kTether;
+  properties->device_state = DeviceStateType::kEnabled;
+  cros_network()->SetDeviceProperties(properties.Clone());
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/0,
+                           /*tether_network_count=*/0);
+
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
+  base::RunLoop().RunUntilIdle();
+
+  if (IsInstantHotspotRebrandEnabled()) {
+    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
+    EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
+  } else {
+    EXPECT_THAT(GetSetUpYourDeviceEntry(), IsNull());
     EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
   }
 }
@@ -1142,11 +1189,41 @@ TEST_P(NetworkListViewControllerTest,
   EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
   EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
 
-  // No message is shown when inhibited.
-  properties->inhibit_reason = InhibitReason::kResettingEuiccMemory;
-  cros_network()->SetDeviceProperties(properties.Clone());
-  EXPECT_THAT(GetMobileStatusMessage(), IsNull());
-  CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/true);
+  const base::flat_map<InhibitReason, int> inhibit_reason_to_message_id = {
+      {{InhibitReason::kInstallingProfile,
+        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_INSTALLING_PROFILE},
+       {InhibitReason::kRenamingProfile,
+        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RENAMING_PROFILE},
+       {InhibitReason::kRemovingProfile,
+        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REMOVING_PROFILE},
+       {InhibitReason::kConnectingToProfile,
+        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_CONNECTING_TO_PROFILE},
+       {InhibitReason::kRefreshingProfileList,
+        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REFRESHING_PROFILE_LIST},
+       {InhibitReason::kResettingEuiccMemory,
+        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RESETTING_ESIM},
+       {InhibitReason::kDisablingProfile,
+        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_DISABLING_PROFILE},
+       {InhibitReason::kRequestingAvailableProfiles,
+        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REQUESTING_AVAILABLE_PROFILES}}};
+
+  for (const auto& [inhibit_reason, message_id] :
+       inhibit_reason_to_message_id) {
+    // Message shown when inhibited that communicates the inhibit state.
+    properties->inhibit_reason = inhibit_reason;
+    cros_network()->SetDeviceProperties(properties.Clone());
+    CheckMobileToggleButtonStatus(/*enabled=*/false, /*toggled_on=*/true);
+
+    if (inhibit_reason == InhibitReason::kInstallingProfile ||
+        inhibit_reason == InhibitReason::kRefreshingProfileList ||
+        inhibit_reason == InhibitReason::kRequestingAvailableProfiles) {
+      ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+      EXPECT_EQ(l10n_util::GetStringUTF16(message_id),
+                GetMobileStatusMessage()->label()->GetText());
+      continue;
+    }
+    ASSERT_THAT(GetMobileStatusMessage(), IsNull());
+  }
 
   // Uninhibit the device.
   properties->inhibit_reason = InhibitReason::kNotInhibited;
@@ -1633,6 +1710,39 @@ TEST_P(NetworkListViewControllerTest, NetworkItemIsEnabled) {
   properties->inhibit_reason = InhibitReason::kNotInhibited;
   cros_network()->SetDeviceProperties(properties.Clone());
   EXPECT_TRUE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 0u));
+}
+
+TEST_P(NetworkListViewControllerTest, NetworkItemDuringFlashing) {
+  auto properties =
+      chromeos::network_config::mojom::DeviceStateProperties::New();
+  properties->type = NetworkType::kCellular;
+  properties->device_state = DeviceStateType::kEnabled;
+  properties->sim_infos = CellularSIMInfos(kCellularTestIccid, kTestBaseEid);
+
+  cros_network()->SetDeviceProperties(properties.Clone());
+  ASSERT_THAT(GetMobileSubHeader(), NotNull());
+  EXPECT_TRUE(GetAddESimEntry()->GetVisible());
+
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kCellularName, NetworkType::kCellular,
+          ConnectionStateType::kConnected));
+
+  CheckNetworkListItem(NetworkType::kCellular, /*index=*/0u, kCellularName);
+  EXPECT_TRUE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 0u));
+
+  properties->is_flashing = true;
+  cros_network()->SetDeviceProperties(properties.Clone());
+
+  EXPECT_FALSE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 0u));
+  ASSERT_THAT(GetMobileStatusMessage(), NotNull());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_UPDATING),
+            GetMobileStatusMessage()->label()->GetText());
+
+  properties->is_flashing = false;
+  cros_network()->SetDeviceProperties(properties.Clone());
+  EXPECT_TRUE(GetNetworkListItemIsEnabled(NetworkType::kCellular, 0u));
+  EXPECT_THAT(GetMobileStatusMessage(), IsNull());
 }
 
 }  // namespace ash

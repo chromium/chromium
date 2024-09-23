@@ -31,8 +31,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
@@ -71,6 +69,8 @@ class FloatRoundedRect;
 class KURL;
 class PaintController;
 class Path;
+class StrokeData;
+class StyledStrokeData;
 struct TextRunPaintInfo;
 
 // Tiling parameters for the DrawImageTiled() method.
@@ -91,6 +91,9 @@ struct ImageTilingInfo {
 };
 
 struct ImageDrawOptions {
+  STACK_ALLOCATED();
+
+ public:
   ImageDrawOptions() = default;
   explicit ImageDrawOptions(DarkModeFilter* dark_mode_filter,
                             SkSamplingOptions& sampling_options,
@@ -116,6 +119,9 @@ struct ImageDrawOptions {
 };
 
 struct AutoDarkMode {
+  STACK_ALLOCATED();
+
+ public:
   AutoDarkMode(DarkModeFilter::ElementRole role, bool enabled)
       : role(role), enabled(enabled) {}
 
@@ -154,6 +160,9 @@ struct ImageAutoDarkMode : AutoDarkMode {
 };
 
 struct ImagePaintTimingInfo {
+  STACK_ALLOCATED();
+
+ public:
   explicit ImagePaintTimingInfo(bool image_may_be_lcp_candidate)
       : image_may_be_lcp_candidate(image_may_be_lcp_candidate) {}
   ImagePaintTimingInfo(bool image_may_be_lcp_candidate,
@@ -168,7 +177,7 @@ struct ImagePaintTimingInfo {
 };
 
 class PLATFORM_EXPORT GraphicsContext {
-  USING_FAST_MALLOC(GraphicsContext);
+  STACK_ALLOCATED();
 
  public:
   explicit GraphicsContext(PaintController&);
@@ -191,9 +200,9 @@ class PLATFORM_EXPORT GraphicsContext {
   cc::PaintCanvas* Canvas() { return canvas_; }
   const cc::PaintCanvas* Canvas() const { return canvas_; }
 
-  PaintController& GetPaintController() { return *paint_controller_; }
+  PaintController& GetPaintController() { return paint_controller_; }
   const PaintController& GetPaintController() const {
-    return *paint_controller_;
+    return paint_controller_;
   }
 
   DarkModeFilter* GetDarkModeFilter();
@@ -211,30 +220,20 @@ class PLATFORM_EXPORT GraphicsContext {
 #endif
 
   float StrokeThickness() const {
-    return ImmutableState()->GetStrokeData().Thickness();
+    return ImmutableState()->GetStrokeThickness();
   }
   void SetStrokeThickness(float thickness) {
     MutableState()->SetStrokeThickness(thickness);
   }
 
-  StrokeStyle GetStrokeStyle() const {
-    return ImmutableState()->GetStrokeData().Style();
-  }
-  void SetStrokeStyle(StrokeStyle style) {
-    MutableState()->SetStrokeStyle(style);
+  void SetStroke(const StrokeData& stroke_data) {
+    MutableState()->SetStroke(stroke_data);
   }
 
   Color StrokeColor() const { return ImmutableState()->StrokeColor(); }
   void SetStrokeColor(const Color& color) {
     MutableState()->SetStrokeColor(color);
   }
-
-  void SetLineCap(LineCap cap) { MutableState()->SetLineCap(cap); }
-  void SetLineDash(const DashArray& dashes, float dash_offset) {
-    MutableState()->SetLineDash(dashes, dash_offset);
-  }
-  void SetLineJoin(LineJoin join) { MutableState()->SetLineJoin(join); }
-  void SetMiterLimit(float limit) { MutableState()->SetMiterLimit(limit); }
 
   Color FillColor() const { return ImmutableState()->FillColor(); }
   void SetFillColor(const Color& color) { MutableState()->SetFillColor(color); }
@@ -253,9 +252,6 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void SetTextPaintOrder(const TextPaintOrder& order) {
     MutableState()->SetTextPaintOrder(order);
-  }
-  TextPaintOrder GetTextPaintOrder() const {
-    return ImmutableState()->GetTextPaintOrder();
   }
 
   void SetImageInterpolationQuality(InterpolationQuality quality) {
@@ -290,23 +286,13 @@ class PLATFORM_EXPORT GraphicsContext {
   // top-to-down or left-to-right to get correct interval of dots/dashes.
   void DrawLine(const gfx::Point&,
                 const gfx::Point&,
+                const StyledStrokeData&,
                 const AutoDarkMode& auto_dark_mode,
                 bool is_text_line = false,
                 const cc::PaintFlags* flags = nullptr);
 
   void FillPath(const Path&, const AutoDarkMode& auto_dark_mode);
-
-  // The length parameter is only used when the path has a dashed or dotted
-  // stroke style, with the default dash/dot path effect. If a non-zero length
-  // is provided the number of dashes/dots on a dashed/dotted
-  // line will be adjusted to start and end that length with a dash/dot.
-  // The dash_thickness parameter is only used when drawing dashed borders,
-  // where the stroke thickness has been set for corner miters but we want the
-  // dash length set from the border width.
-  void StrokePath(const Path&,
-                  const AutoDarkMode& auto_dark_mode,
-                  const int length = 0,
-                  const int dash_thickness = 0);
+  void StrokePath(const Path&, const AutoDarkMode& auto_dark_mode);
 
   void FillEllipse(const gfx::RectF&, const AutoDarkMode& auto_dark_mode);
   void StrokeEllipse(const gfx::RectF&, const AutoDarkMode& auto_dark_mode);
@@ -334,14 +320,9 @@ class PLATFORM_EXPORT GraphicsContext {
                                const AutoDarkMode& auto_dark_mode);
 
   void StrokeRect(const gfx::RectF&,
-                  float line_width,
                   const AutoDarkMode& auto_dark_mode);
 
   void DrawRecord(PaintRecord);
-  void CompositeRecord(PaintRecord,
-                       const gfx::RectF& dest,
-                       const gfx::RectF& src,
-                       SkBlendMode);
   void DrawImage(Image&,
                  Image::ImageDecodingMode,
                  const ImageAutoDarkMode& auto_dark_mode,
@@ -373,6 +354,10 @@ class PLATFORM_EXPORT GraphicsContext {
   // These methods write to the canvas.
   // Also drawLine(const gfx::Point& point1, const gfx::Point& point2) and
   // fillRoundedRect().
+  void DrawLine(const gfx::PointF& from,
+                const gfx::PointF& to,
+                const cc::PaintFlags& flags,
+                const AutoDarkMode& auto_dark_mode);
   void DrawOval(const SkRect&,
                 const cc::PaintFlags&,
                 const AutoDarkMode& auto_dark_mode);
@@ -397,7 +382,6 @@ class PLATFORM_EXPORT GraphicsContext {
   void ClipOut(const gfx::RectF& rect) {
     ClipRect(gfx::RectFToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
-  void ClipOut(const Path&);
   void ClipOutRoundedRect(const FloatRoundedRect&);
   void ClipPath(const SkPath&,
                 AntiAliasingMode = kNotAntiAliased,
@@ -436,11 +420,6 @@ class PLATFORM_EXPORT GraphicsContext {
       const AutoDarkMode& auto_dark_mode,
       Font::CustomFontNotReadyAction = Font::kDoNotPaintIfFontNotReady);
 
-  void DrawLineForText(const gfx::PointF&,
-                       float width,
-                       const AutoDarkMode& auto_dark_mode,
-                       const cc::PaintFlags* flags = nullptr);
-
   // BeginLayer()/EndLayer() behave like Save()/Restore() for CTM and clip
   // states. Apply opacity, blend mode, filter when the layer is composited on
   // the backdrop (i.e. EndLayer()).
@@ -460,7 +439,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // not necessarily non-empty), even when the context is disabled.
   PaintRecord EndRecording();
 
-  void SetDrawLooper(sk_sp<SkDrawLooper>);
+  void SetDrawLooper(sk_sp<cc::DrawLooper>);
 
   void DrawFocusRingPath(const SkPath&,
                          const Color&,
@@ -475,20 +454,14 @@ class PLATFORM_EXPORT GraphicsContext {
   const cc::PaintFlags& FillFlags() const {
     return ImmutableState()->FillFlags();
   }
-  // If the length of the path to be stroked is known, pass it in for correct
-  // dash or dot placement. Border painting uses a stroke thickness determined
-  // by the corner miters. Set the dash_thickness to a non-zero number for
-  // cases where dashes should be based on a different thickness.
-  const cc::PaintFlags& StrokeFlags(const int length = 0,
-                                    const int dash_thickness = 0) const {
-    return ImmutableState()->StrokeFlags(length, dash_thickness);
+  const cc::PaintFlags& StrokeFlags() const {
+    return ImmutableState()->StrokeFlags();
   }
 
   // ---------- Transformation methods -----------------
   void ConcatCTM(const AffineTransform&);
 
   void Scale(float x, float y);
-  void Rotate(float angle_in_radians);
   void Translate(float x, float y);
   // ---------- End transformation methods -----------------
 
@@ -519,12 +492,6 @@ class PLATFORM_EXPORT GraphicsContext {
   static void AdjustLineToPixelBoundaries(gfx::PointF& p1,
                                           gfx::PointF& p2,
                                           float stroke_width);
-
-  static Path GetPathForTextLine(const gfx::PointF&,
-                                 float width,
-                                 float stroke_thickness,
-                                 StrokeStyle);
-  static bool ShouldUseStrokeForTextLine(StrokeStyle);
 
   void SetInDrawingRecorder(bool);
   bool InDrawingRecorder() const { return in_drawing_recorder_; }
@@ -584,9 +551,9 @@ class PLATFORM_EXPORT GraphicsContext {
   // This is owned by paint_recorder_. Never delete this object.
   // Drawing operations are allowed only after the first BeginRecording() which
   // initializes this to not null.
-  raw_ptr<cc::PaintCanvas, ExperimentalRenderer> canvas_ = nullptr;
+  cc::PaintCanvas* canvas_ = nullptr;
 
-  const raw_ref<PaintController, DanglingUntriaged> paint_controller_;
+  PaintController& paint_controller_;
 
   // Paint states stack. The state controls the appearance of drawn content, so
   // this stack enables local drawing state changes with Save()/Restore() calls.
@@ -597,14 +564,12 @@ class PLATFORM_EXPORT GraphicsContext {
   wtf_size_t paint_state_index_ = 0;
 
   // Raw pointer to the current state.
-  raw_ptr<GraphicsContextState, ExperimentalRenderer> paint_state_ = nullptr;
+  GraphicsContextState* paint_state_ = nullptr;
 
   PaintRecorder paint_recorder_;
 
-  raw_ptr<printing::MetafileSkia, DanglingUntriaged> printing_metafile_ =
-      nullptr;
-  raw_ptr<paint_preview::PaintPreviewTracker, DanglingUntriaged>
-      paint_preview_tracker_ = nullptr;
+  printing::MetafileSkia* printing_metafile_ = nullptr;
+  paint_preview::PaintPreviewTracker* paint_preview_tracker_ = nullptr;
 
 #if DCHECK_IS_ON()
   int layer_count_ = 0;

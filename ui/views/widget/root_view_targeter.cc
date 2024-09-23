@@ -45,17 +45,18 @@ View* RootViewTargeter::FindTargetForGestureEvent(
 ui::EventTarget* RootViewTargeter::FindNextBestTargetForGestureEvent(
     ui::EventTarget* previous_target,
     const ui::GestureEvent& gesture) {
-  // ET_GESTURE_END events should only ever be targeted to the default
+  // EventType::kGestureEnd events should only ever be targeted to the default
   // gesture handler set by a previous gesture, if one exists. Thus we do not
-  // permit any re-targeting of ET_GESTURE_END events.
-  if (gesture.type() == ui::ET_GESTURE_END)
+  // permit any re-targeting of EventType::kGestureEnd events.
+  if (gesture.type() == ui::EventType::kGestureEnd) {
     return nullptr;
+  }
 
   // Prohibit re-targeting of gesture events (except for GESTURE_SCROLL_BEGIN
   // events) if the default gesture handler was set by the dispatch of a
   // previous gesture event.
   if (root_view_->gesture_handler_set_before_processing_ &&
-      gesture.type() != ui::ET_GESTURE_SCROLL_BEGIN) {
+      gesture.type() != ui::EventType::kGestureScrollBegin) {
     return nullptr;
   }
 

@@ -10,19 +10,14 @@
 <script>
 attribution_reporting_promise_test(async t => {
   const source = {
-      source_event_id: generateSourceEventId(),
-      debug_reporting: true,
-      destination: 'https://{{host}}',
-      max_event_level_reports: 2,
-    };
-  await registerAttributionSrc({
-    cookie: attributionDebugCookie,
-    source,
-    method: 'a',
-  });
-  await waitForSourceToBeRegistered(source.source_event_id);
+    destination: 'https://{{host}}',
+    max_event_level_reports: 2,
+    trigger_data: [3, 4, 5],
+    trigger_data_matching: 'exact',
+  };
 
   registerAttributionSrcByImg(createRedirectChain([
+    {source, cookie: attributionDebugCookie},
     {trigger: {event_trigger_data: [{trigger_data: '3'}]}},
     {trigger: {event_trigger_data: [{trigger_data: '4'}]}},
   ]));
@@ -47,7 +42,7 @@ attribution_reporting_promise_test(async t => {
   assert_equals(reports[0].trigger_data, '3');
   assert_equals(reports[1].trigger_data, '4');
 
-  await registerAttributionSrc({
+  registerAttributionSrc({
     trigger: {
       event_trigger_data: [{
         trigger_data: '5'

@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/dom/part.h"
+
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_part_root.h"
 #include "third_party/blink/renderer/core/dom/part_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -20,9 +22,11 @@ void Part::Trace(Visitor* visitor) const {
 }
 
 void Part::disconnect() {
-  CHECK(connected_) << "disconnect should be overridden";
+  DCHECK(connected_) << "disconnect should be overridden";
   if (root_) {
-    root_->MarkPartsDirty();
+    if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+      root_->MarkPartsDirty();
+    }
     root_ = nullptr;
   }
   connected_ = false;

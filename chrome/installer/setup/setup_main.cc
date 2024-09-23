@@ -32,7 +32,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_storage.h"
 #include "base/numerics/safe_conversions.h"
@@ -40,7 +39,6 @@
 #include "base/process/launch.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
-#include "base/process/process_metrics.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -71,7 +69,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/archive_patch_helper.h"
 #include "chrome/installer/setup/brand_behaviors.h"
-#include "chrome/installer/setup/buildflags.h"
+#include "chrome/installer/setup/configure_app_container_sandbox.h"
 #include "chrome/installer/setup/downgrade_cleanup.h"
 #include "chrome/installer/setup/install.h"
 #include "chrome/installer/setup/install_params.h"
@@ -128,7 +126,6 @@ namespace {
 
 const wchar_t kSystemPrincipalSid[] = L"S-1-5-18";
 const wchar_t kDisplayVersion[] = L"DisplayVersion";
-const wchar_t kMsiProductIdPrefix[] = L"EnterpriseProduct";
 
 // Overwrite an existing DisplayVersion as written by the MSI installer
 // with the real version number of Chrome.
@@ -336,30 +333,6 @@ LONG OverwriteDisplayVersionsAfterMsiexec(base::win::ScopedHandle startup_event,
   }
 
   return result;
-}
-
-// Returns the MSI product ID from the ClientState key that is populated for MSI
-// installs.  This property is encoded in a value name whose format is
-// "EnterpriseProduct<GUID>" where <GUID> is the MSI product id.  <GUID> is in
-// the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.  The id will be returned if
-// found otherwise this method will return an empty string.
-//
-// This format is strange and its provenance is shrouded in mystery but it has
-// the data we need, so use it.
-std::wstring FindMsiProductId(const InstallerState& installer_state) {
-  HKEY reg_root = installer_state.root_key();
-
-  base::win::RegistryValueIterator value_iter(
-      reg_root, install_static::GetClientStateKeyPath().c_str(),
-      KEY_WOW64_32KEY);
-  for (; value_iter.Valid(); ++value_iter) {
-    std::wstring value_name(value_iter.Name());
-    if (base::StartsWith(value_name, kMsiProductIdPrefix,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      return value_name.substr(std::size(kMsiProductIdPrefix) - 1);
-    }
-  }
-  return std::wstring();
 }
 
 // Repetitively attempts to delete all files that belong to old versions of
@@ -848,8 +821,8 @@ installer::InstallStatus CreateShortcutsInChildProc(
   // installing missing per-user shortcuts on system-level install (i.e.,
   // quick launch, taskbar pin, and possibly deleted all-users shortcuts).
   CreateOrUpdateShortcuts(chrome_exe, prefs, install_level, install_operation);
-  // TODO(): Plumb shortcut creation failure through and return a failure exit
-  // code.
+  // TODO(): Plumb shortcut creation failure through and return a
+  // failure exit code.
   return installer::CREATE_SHORTCUTS_SUCCESS;
 }
 
@@ -1050,30 +1023,6 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
                   << setup_exe.value();
     }
     *exit_code = InstallUtil::GetInstallReturnCode(status);
-  } else if (cmd_line.HasSwitch(installer::switches::kPatch)) {
-    const std::string patch_type_str(
-        cmd_line.GetSwitchValueASCII(installer::switches::kPatch));
-    const base::FilePath input_file(
-        cmd_line.GetSwitchValuePath(installer::switches::kInputFile));
-    const base::FilePath patch_file(
-        cmd_line.GetSwitchValuePath(installer::switches::kPatchFile));
-    const base::FilePath output_file(
-        cmd_line.GetSwitchValuePath(installer::switches::kOutputFile));
-
-    if (patch_type_str == installer::kCourgette) {
-      *exit_code =
-          installer::CourgettePatchFiles(input_file, patch_file, output_file);
-    } else if (patch_type_str == installer::kBsdiff) {
-      *exit_code =
-          installer::BsdiffPatchFiles(input_file, patch_file, output_file);
-#if BUILDFLAG(ZUCCHINI)
-    } else if (patch_type_str == installer::kZucchini) {
-      *exit_code =
-          installer::ZucchiniPatchFiles(input_file, patch_file, output_file);
-#endif  // BUILDFLAG(ZUCCHINI)
-    } else {
-      *exit_code = installer::PATCH_INVALID_ARGUMENTS;
-    }
   } else if (cmd_line.HasSwitch(installer::switches::kReenableAutoupdates)) {
     // setup.exe has been asked to attempt to reenable updates for Chrome.
     bool updates_enabled = GoogleUpdateSettings::ReenableAutoupdates();
@@ -1157,6 +1106,25 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
           *installer_state, prefs,
           static_cast<installer::InstallShortcutLevel>(install_level_op),
           static_cast<installer::InstallShortcutOperation>(install_op));
+    }
+  } else if (cmd_line.HasSwitch(
+                 installer::switches::kConfigureBrowserInDirectory)) {
+    base::FilePath path = cmd_line.GetSwitchValuePath(
+        installer::switches::kConfigureBrowserInDirectory);
+
+    if (path.empty()) {
+      LOG(ERROR) << "Empty directory specified in --"
+                 << installer::switches::kConfigureBrowserInDirectory;
+      *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
+    } else if (!path.IsAbsolute()) {
+      LOG(ERROR) << "--" << installer::switches::kConfigureBrowserInDirectory
+                 << " must contain an absolute path";
+      *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
+    } else if (installer::ConfigureAppContainerSandbox(
+                   std::array<const base::FilePath*, 1>{&path})) {
+      *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_SUCCESS;
+    } else {
+      *exit_code = installer::CONFIGURE_APP_CONTAINER_SANDBOX_FAILED;
     }
   } else {
     handled = false;
@@ -1303,13 +1271,15 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
               .Append(kSetupExe);
       DelayedOverwriteDisplayVersions(new_setup, install_id, *installer_version,
                                       installer_state.verbose_logging());
-    } else {
+    } else if (const auto* product_state =
+                   original_state.GetProductState(system_install);
+               product_state) {
       // Only when called by the MSI installer do we need to delay setting
       // the DisplayVersion.  In other runs, such as those done by the auto-
       // update action, we set the value immediately.
       // Get the app's MSI Product-ID from an entry in ClientState.
-      std::wstring app_guid = FindMsiProductId(installer_state);
-      if (!app_guid.empty()) {
+      if (const std::wstring& app_guid = product_state->product_guid();
+          !app_guid.empty()) {
         OverwriteDisplayVersions(
             app_guid, base::UTF8ToWide(installer_version->GetString()));
       }
@@ -1404,6 +1374,7 @@ int SetupMain() {
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
+  logging::RegisterAbslAbortHook();
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(cmd_line);
 
@@ -1495,6 +1466,16 @@ int SetupMain() {
       current_version,
   };
 
+  // Histogram storage is enabled at the very top of this function. We disable
+  // it for kConfigureBrowserInDirectory because this switch intended for use
+  // by Chrome for Testing, which does not perform any metrics processing. If it
+  // someday does, this should be changed to set the storage directory to the
+  // value of the kConfigureBrowserInDirectory switch (the path to the directory
+  // containing chrome.exe).
+  if (cmd_line.HasSwitch(installer::switches::kConfigureBrowserInDirectory)) {
+    persistent_histogram_storage.Disable();
+  }
+
   int exit_code = 0;
   if (HandleNonInstallCmdLineOptions(modify_params, cmd_line, prefs,
                                      &exit_code)) {
@@ -1562,12 +1543,6 @@ int SetupMain() {
                             base::saturated_cast<base::HistogramBase::Sample>(
                                 pmc.PeakWorkingSetSize / 1024));
   }
-  auto process_metrics = base::ProcessMetrics::CreateCurrentProcessMetrics();
-  auto disk_usage = process_metrics->GetCumulativeDiskUsageInBytes();
-  base::UmaHistogramMemoryMB(
-      "Setup.Install.CumulativeDiskUsage2",
-      base::saturated_cast<int>(base::ClampAdd(disk_usage, 1024 * 1024 / 2) /
-                                (1024 * 1024)));
 
   int return_code = 0;
   // MSI demands that custom actions always return 0 (ERROR_SUCCESS) or it will

@@ -72,11 +72,14 @@ class ReportControllerTestBase : public testing::Test {
   }
 
   void SetUp() override {
-    // Set the mock time to |kFakeTimeNow|.
-    base::Time ts;
-    ASSERT_TRUE(
-        base::Time::FromUTCString(utils::kFakeTimeNowUnadjustedString, &ts));
-    task_environment_.AdvanceClock(ts - base::Time::Now());
+    // Set the mock clock to |kFakeTimeNow| or the configurable start ts.
+    base::Time ts = configurable_start_ts_;
+    if (ts.is_null()) {
+      // Default the mock time to |kFakeTimeNow|.
+      ASSERT_TRUE(
+          base::Time::FromUTCString(utils::kFakeTimeNowUnadjustedString, &ts));
+    }
+    ForwardClock(ts - base::Time::Now());
 
     // Set up any necessary dependencies or objects before each test
     PrivateComputingClient::InitializeFake();
@@ -87,6 +90,11 @@ class ReportControllerTestBase : public testing::Test {
     GetFakeSessionManagerClient()->set_psm_device_active_secret(
         utils::kFakeHighEntropySeed);
 
+    // Set hardware class and activate date field, which are dependencies.
+    statistics_provider_.SetMachineStatistic(system::kHardwareClassKey,
+                                             "FAKE_HW_CLASS");
+    statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
+                                             "2000-01");
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     ReportController::RegisterPrefs(local_state_.registry());
 
@@ -142,6 +150,10 @@ class ReportControllerTestBase : public testing::Test {
         prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, false);
     GetLocalState()->SetBoolean(
         prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, false);
+  }
+
+  void SetConfigurableStartTimestamp(base::Time start_ts) {
+    configurable_start_ts_ = start_ts;
   }
 
   void ForwardClock(base::TimeDelta delta) {
@@ -233,6 +245,10 @@ class ReportControllerTestBase : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
+  // Derived test classes may pass a configurable start ts which is used to
+  // set the timestamp of the mock clock.
+  base::Time configurable_start_ts_;
+
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple local_state_;
@@ -795,5 +811,221 @@ TEST_F(ReportControllerDeviceRecoveryTest,
 
   EXPECT_FALSE(GetReportController()->IsDeviceReportingForTesting());
 }
+
+struct PingTestCase {
+  std::string test_name;
+
+  // String representation of the initial timestamp of the mock clock for this
+  // test.
+  std::string init_ts_as_str;
+  base::TimeDelta forward_clock_delta;
+
+  // Check if the expected use cases have sent another ping after forwarding the
+  // clock.
+  //
+  // Number of pending requests expected.
+  const int expected_pending_requests;
+
+  // Whether a daily ping is expected.
+  const bool expected_has_daily_pinged;
+  // Whether a 28-day ping is expected.
+  const bool expected_has_28da_pinged;
+  // Whether a cohort monthly ping is expected.
+  const bool expected_has_cohort_monthly_pinged;
+  // Whether an observation ping is expected.
+  const bool expected_has_observation_pinged;
+};
+
+class ReportControllerIsPingRequiredTest
+    : public ReportControllerTestBase,
+      public testing::WithParamInterface<PingTestCase> {
+ public:
+  static constexpr ChromeDeviceMetadataParameters kFakeChromeParameters = {
+      version_info::Channel::STABLE /* chromeos_channel */,
+      MarketSegment::MARKET_SEGMENT_CONSUMER /* market_segment */,
+  };
+
+  void SetUp() override {
+    ASSERT_TRUE(base::Time::FromUTCString(GetParam().init_ts_as_str.c_str(),
+                                          &init_ts_));
+    // Set the mock clock's initial start timestamp to match the
+    // value provided by the test case.
+    SetConfigurableStartTimestamp(init_ts_);
+    ReportControllerTestBase::SetUp();
+
+    // Verify that the mock clock was updated to |init_ts_| correctly.
+    ASSERT_EQ(base::Time::Now(), init_ts_);
+
+    // Default network to being synchronized and available.
+    GetSystemClockTestInterface()->SetServiceIsAvailable(true);
+    GetSystemClockTestInterface()->SetNetworkSynchronized(true);
+
+    // Default preserved file DBus operations to be empty.
+    GetPrivateComputingTestInterface()->SetGetLastPingDatesStatusResponse(
+        private_computing::GetStatusResponse());
+    GetPrivateComputingTestInterface()->SetSaveLastPingDatesStatusResponse(
+        private_computing::SaveStatusResponse());
+
+    // |psm_client_delegate| is owned by |psm_client_manager_|.
+    // Stub successful request payloads when created by the PSM client.
+    std::unique_ptr<StubPsmClientManagerDelegate> psm_client_delegate =
+        std::make_unique<StubPsmClientManagerDelegate>();
+    SimulateOprfRequest(psm_client_delegate.get(),
+                        psm_rlwe::PrivateMembershipRlweOprfRequest());
+    SimulateQueryRequest(psm_client_delegate.get(),
+                         psm_rlwe::PrivateMembershipRlweQueryRequest());
+    SimulateMembershipResponses(psm_client_delegate.get(),
+                                GetMembershipResponses());
+
+    report_controller_ = std::make_unique<ReportController>(
+        kFakeChromeParameters, GetLocalState(), GetUrlLoaderFactory(),
+        std::make_unique<PsmClientManager>(std::move(psm_client_delegate)));
+
+    task_environment_.RunUntilIdle();
+  }
+
+  void TearDown() override {
+    report_controller_.reset();
+
+    // Shutdown dependency clients after |report_controller_| is destroyed.
+    ReportControllerTestBase::TearDown();
+  }
+
+ protected:
+  ReportController* GetReportController() { return report_controller_.get(); }
+
+  base::Time GetInitialTs() const { return init_ts_; }
+
+  // Returns a single negative membership response.
+  psm_rlwe::RlweMembershipResponses GetMembershipResponses() {
+    psm_rlwe::RlweMembershipResponses membership_responses;
+
+    psm_rlwe::RlweMembershipResponses::MembershipResponseEntry* entry =
+        membership_responses.add_membership_responses();
+    private_membership::MembershipResponse* membership_response =
+        entry->mutable_membership_response();
+    membership_response->set_is_member(false);
+
+    return membership_responses;
+  }
+
+ private:
+  // Initial timestamp that the mock clock is set to for current test instance.
+  base::Time init_ts_;
+
+  std::unique_ptr<ReportController> report_controller_;
+};
+
+TEST_P(ReportControllerIsPingRequiredTest, PingSuccessAcrossTimeBoundaries) {
+  EXPECT_TRUE(GetReportController()->IsDeviceReportingForTesting());
+
+  // First mock network requests for 1DA use case.
+  SimulateOprfResponse(GetFresnelOprfResponse(), net::HTTP_OK);
+  SimulateQueryResponse(GetFresnelQueryResponse(), net::HTTP_OK);
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for 28DA use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for Cohort use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  // Next mock network requests for Observation use case.
+  SimulateImportResponse(std::string(), net::HTTP_OK);
+
+  task_environment_.RunUntilIdle();
+
+  // The stored ts in the local state prefs are adjusted to PST.
+  // Based on DST, the timestamps used in these tests are adjusted 8 hours.
+  base::Time initial_reporting_ts_adjusted = GetInitialTs() - base::Hours(8);
+
+  EXPECT_EQ(GetLocalState()->GetTime(
+                prefs::kDeviceActiveLastKnown1DayActivePingTimestamp),
+            initial_reporting_ts_adjusted);
+  EXPECT_EQ(GetLocalState()->GetTime(
+                prefs::kDeviceActiveLastKnown28DayActivePingTimestamp),
+            initial_reporting_ts_adjusted);
+  EXPECT_EQ(GetLocalState()->GetTime(
+                prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp),
+            initial_reporting_ts_adjusted);
+  EXPECT_EQ(GetLocalState()->GetTime(
+                prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp),
+            initial_reporting_ts_adjusted);
+
+  EXPECT_FALSE(GetReportController()->IsDeviceReportingForTesting());
+
+  // Adjust clock time.
+  ForwardClock(GetParam().forward_clock_delta);
+
+  EXPECT_TRUE(GetReportController()->IsDeviceReportingForTesting());
+
+  // Simulate the pending import requests that are required.
+  for (int i = 0; i < GetParam().expected_pending_requests; i++) {
+    SimulateImportResponse(std::string(), net::HTTP_OK);
+  }
+
+  base::Time expected_new_ping_ts =
+      initial_reporting_ts_adjusted + GetParam().forward_clock_delta;
+
+  // Verify that the expected use cases have sent another ping after
+  // forwarding the clock.
+  EXPECT_EQ(GetLocalState()->GetTime(
+                prefs::kDeviceActiveLastKnown1DayActivePingTimestamp),
+            GetParam().expected_has_daily_pinged
+                ? expected_new_ping_ts
+                : initial_reporting_ts_adjusted);
+  EXPECT_EQ(GetLocalState()->GetTime(
+                prefs::kDeviceActiveLastKnown28DayActivePingTimestamp),
+            GetParam().expected_has_28da_pinged
+                ? expected_new_ping_ts
+                : initial_reporting_ts_adjusted);
+  EXPECT_EQ(GetLocalState()->GetTime(
+                prefs::kDeviceActiveChurnCohortMonthlyPingTimestamp),
+            GetParam().expected_has_cohort_monthly_pinged
+                ? expected_new_ping_ts
+                : initial_reporting_ts_adjusted);
+  EXPECT_EQ(GetLocalState()->GetTime(
+                prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp),
+            GetParam().expected_has_observation_pinged
+                ? expected_new_ping_ts
+                : initial_reporting_ts_adjusted);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ReportControllerIsPingRequired,
+    ReportControllerIsPingRequiredTest,
+    testing::Values(
+        PingTestCase{.test_name = "EveningToMorningOverDayBoundaryTest",
+                     .init_ts_as_str = "2023-01-02 20:00:00 GMT",
+                     .forward_clock_delta = base::Hours(12),
+                     .expected_pending_requests = 2,
+                     .expected_has_daily_pinged = true,
+                     .expected_has_28da_pinged = true,
+                     .expected_has_cohort_monthly_pinged = false,
+                     .expected_has_observation_pinged = false},
+        PingTestCase{.test_name = "MorningToEveningAcrossDayBoundaryTest",
+                     .init_ts_as_str = "2023-01-02 08:00:00 GMT",
+                     .forward_clock_delta = base::Hours(36),
+                     .expected_pending_requests = 2,
+                     .expected_has_daily_pinged = true,
+                     .expected_has_28da_pinged = true,
+                     .expected_has_cohort_monthly_pinged = false,
+                     .expected_has_observation_pinged = false},
+        PingTestCase{.test_name = "EveningToMorningOverMonthBoundaryTest",
+                     .init_ts_as_str = "2023-01-02 20:00:00 GMT",
+                     .forward_clock_delta = base::Days(32) + base::Hours(12),
+                     .expected_pending_requests = 4,
+                     .expected_has_daily_pinged = true,
+                     .expected_has_28da_pinged = true,
+                     .expected_has_cohort_monthly_pinged = true,
+                     .expected_has_observation_pinged = true},
+        PingTestCase{.test_name = "MorningToEveningAcrossMonthBoundaryTest",
+                     .init_ts_as_str = "2022-01-02 08:00:00 GMT",
+                     .forward_clock_delta = base::Days(32) + base::Hours(36),
+                     .expected_pending_requests = 4,
+                     .expected_has_daily_pinged = true,
+                     .expected_has_28da_pinged = true,
+                     .expected_has_cohort_monthly_pinged = true,
+                     .expected_has_observation_pinged = true}));
 
 }  // namespace ash::report::device_metrics

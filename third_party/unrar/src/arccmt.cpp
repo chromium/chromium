@@ -1,6 +1,6 @@
 static bool IsAnsiEscComment(const wchar *Data,size_t Size);
 
-bool Archive::GetComment(Array<wchar> *CmtData)
+bool Archive::GetComment(std::wstring &CmtData)
 {
   if (!MainComment)
     return false;
@@ -11,7 +11,7 @@ bool Archive::GetComment(Array<wchar> *CmtData)
 }
 
 
-bool Archive::DoGetComment(Array<wchar> *CmtData)
+bool Archive::DoGetComment(std::wstring &CmtData)
 {
 #ifndef SFX_MODULE
   uint CmtLength;
@@ -101,10 +101,8 @@ bool Archive::DoGetComment(Array<wchar> *CmtData)
         // 4x memory for OEM to UTF-8 output here.
         OemToCharBuffA((char *)UnpData,(char *)UnpData,(DWORD)UnpDataSize);
 #endif
-        CmtData->Alloc(UnpDataSize+1);
-        memset(CmtData->Addr(0),0,CmtData->Size()*sizeof(wchar));
-        CharToWide((char *)UnpData,CmtData->Addr(0),CmtData->Size());
-        CmtData->Alloc(wcslen(CmtData->Addr(0)));
+        std::string UnpStr((char*)UnpData,UnpDataSize);
+        CharToWide(UnpStr,CmtData);
       }
     }
   }
@@ -112,12 +110,12 @@ bool Archive::DoGetComment(Array<wchar> *CmtData)
   {
     if (CmtLength==0)
       return false;
-    Array<byte> CmtRaw(CmtLength);
-    int ReadSize=Read(&CmtRaw[0],CmtLength);
+    std::vector<byte> CmtRaw(CmtLength);
+    int ReadSize=Read(CmtRaw.data(),CmtLength);
     if (ReadSize>=0 && (uint)ReadSize<CmtLength) // Comment is shorter than declared.
     {
       CmtLength=ReadSize;
-      CmtRaw.Alloc(CmtLength);
+      CmtRaw.resize(CmtLength);
     }
 
     if (Format!=RARFMT14 && CommHead.CommCRC!=(~CRC32(0xffffffff,&CmtRaw[0],CmtLength)&0xffff))
@@ -125,43 +123,41 @@ bool Archive::DoGetComment(Array<wchar> *CmtData)
       uiMsg(UIERROR_CMTBROKEN,FileName);
       return false;
     }
-    CmtData->Alloc(CmtLength+1);
-    CmtRaw.Push(0);
+//    CmtData.resize(CmtLength+1);
+    CmtRaw.push_back(0);
 #ifdef _WIN_ALL
     // If we ever decide to extend it to Android, we'll need to alloc
     // 4x memory for OEM to UTF-8 output here.
-    OemToCharA((char *)&CmtRaw[0],(char *)&CmtRaw[0]);
+    OemToCharA((char *)CmtRaw.data(),(char *)CmtRaw.data());
 #endif
-    CharToWide((char *)&CmtRaw[0],CmtData->Addr(0),CmtData->Size());
-    CmtData->Alloc(wcslen(CmtData->Addr(0)));
+    CharToWide((const char *)CmtRaw.data(),CmtData);
+//    CmtData->resize(wcslen(CmtData->data()));
   }
 #endif
-  return CmtData->Size() > 0;
+  return CmtData.size() > 0;
 }
 
 
-bool Archive::ReadCommentData(Array<wchar> *CmtData)
+bool Archive::ReadCommentData(std::wstring &CmtData)
 {
-  Array<byte> CmtRaw;
+  std::vector<byte> CmtRaw;
   if (!ReadSubData(&CmtRaw,NULL,false))
     return false;
-  size_t CmtSize=CmtRaw.Size();
-  CmtRaw.Push(0);
-  CmtData->Alloc(CmtSize+1);
+  size_t CmtSize=CmtRaw.size();
+  CmtRaw.push_back(0);
+//  CmtData->resize(CmtSize+1);
   if (Format==RARFMT50)
-    UtfToWide((char *)&CmtRaw[0],CmtData->Addr(0),CmtData->Size());
+    UtfToWide((char *)CmtRaw.data(),CmtData);
   else
     if ((SubHead.SubFlags & SUBHEAD_FLAGS_CMT_UNICODE)!=0)
     {
-      RawToWide(&CmtRaw[0],CmtData->Addr(0),CmtSize/2);
-      (*CmtData)[CmtSize/2]=0;
-
+      CmtData=RawToWide(CmtRaw);
     }
     else
     {
-      CharToWide((char *)&CmtRaw[0],CmtData->Addr(0),CmtData->Size());
+      CharToWide((const char *)CmtRaw.data(),CmtData);
     }
-  CmtData->Alloc(wcslen(CmtData->Addr(0))); // Set buffer size to actual comment length.
+//  CmtData->resize(wcslen(CmtData->data())); // Set buffer size to actual comment length.
   return true;
 }
 
@@ -170,15 +166,16 @@ void Archive::ViewComment()
 {
   if (Cmd->DisableComment)
     return;
-  Array<wchar> CmtBuf;
-  if (GetComment(&CmtBuf)) // In GUI too, so "Test" command detects broken comments.
+  std::wstring CmtBuf;
+  if (GetComment(CmtBuf)) // In GUI too, so "Test" command detects broken comments.
   {
-    size_t CmtSize=CmtBuf.Size();
-    wchar *ChPtr=wcschr(&CmtBuf[0],0x1A);
-    if (ChPtr!=NULL)
-      CmtSize=ChPtr-&CmtBuf[0];
-    mprintf(L"\n");
-    OutComment(&CmtBuf[0],CmtSize);
+    size_t CmtSize=CmtBuf.size();
+    auto EndPos=CmtBuf.find(0x1A);
+    if (EndPos!=std::wstring::npos)
+      CmtSize=EndPos;
+    mprintf(St(MArcComment));
+    mprintf(L":\n");
+    OutComment(CmtBuf);
   }
 }
 

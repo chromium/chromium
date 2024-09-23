@@ -11,12 +11,15 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
-#include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenMediator_jni.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenMediator_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -28,17 +31,6 @@ namespace {
 // The length of time to allow the add to homescreen data fetcher to run before
 // timing out and generating an icon.
 const int kDataTimeoutInMilliseconds = 8000;
-
-// These need to be kept the same order as in enums.xml.
-enum class AppTypeToMenuEntry {
-  kUnknownMenuEntryForWebApp,
-  kAddToHomeScreenShownForWebApp,
-  kInstallShownForWebApp,
-  kUnknownMenuEntryForShortcut,
-  kAddToHomeScreenShownForShortcut,
-  kInstallShownForShortcut,
-  kAppTypeFinalEntry,  // Must be last.
-};
 
 }  // namespace
 
@@ -72,9 +64,8 @@ void AddToHomescreenMediator::StartForAppBanner(
     Java_AddToHomescreenMediator_setNativeAppInfo(env, java_ref_,
                                                   params_->native_app_data);
   } else {
-    bool is_webapk = (params_->app_type == AppType::WEBAPK);
     SetWebAppInfo(params_->shortcut_info->name, params_->shortcut_info->url,
-                  is_webapk);
+                  params_->app_type);
   }
   // In this code path (show A2HS dialog from app banner), a maskable primary
   // icon isn't padded yet. We'll need to pad it here.
@@ -108,19 +99,25 @@ void AddToHomescreenMediator::AddToHomescreen(
   }
   AppType selected_app_type = static_cast<AppType>(j_app_type);
   if (params_->app_type != selected_app_type) {
-    CHECK(selected_app_type == AppType::SHORTCUT &&
-          params_->app_type == AppType::WEBAPK);
+    CHECK(selected_app_type == AppType::SHORTCUT && params_->IsWebApk());
     params_->app_type = selected_app_type;
   }
 
-  if (params_->app_type == AppType::SHORTCUT) {
+  if (params_->app_type == AppType::SHORTCUT ||
+      params_->app_type == AppType::WEBAPK_DIY) {
     params_->shortcut_info->user_title =
         base::android::ConvertJavaStringToUTF16(env, j_user_title);
-  } else if (params_->app_type == AppType::WEBAPK) {
-    AppBannerManagerAndroid* app_banner_manager =
-        AppBannerManagerAndroid::FromWebContents(GetWebContents());
-    app_banner_manager->TrackInstallPath(/* bottom_sheet= */ false,
-                                         params_->install_source);
+    params_->shortcut_info->has_custom_title = true;
+  }
+
+  // Shortcuts always open in a browser tab.
+  if (params_->app_type == AppType::SHORTCUT) {
+    params_->shortcut_info->display = blink::mojom::DisplayMode::kBrowser;
+  }
+
+  if (params_->IsWebApk()) {
+    PwaInstallPathTracker::TrackInstallPath(/* bottom_sheet= */ false,
+                                            params_->install_source);
   }
 
   AddToHomescreenInstaller::Install(GetWebContents(), *params_,
@@ -156,7 +153,7 @@ void AddToHomescreenMediator::SetIcon(const SkBitmap& display_icon) {
 
 void AddToHomescreenMediator::SetWebAppInfo(const std::u16string& user_title,
                                             const GURL& url,
-                                            bool is_webapk) {
+                                            AppType app_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_user_title =
       base::android::ConvertUTF16ToJavaString(env, user_title);
@@ -165,15 +162,23 @@ void AddToHomescreenMediator::SetWebAppInfo(const std::u16string& user_title,
   ScopedJavaLocalRef<jstring> j_url = base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
                url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+
+  if (app_menu_type_ ==
+      AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN) {
+    // The user triggered this flow via the Universal Install dialog and
+    // explicitly requested Add a shortcut (not Install). Therefore we must ask
+    // the Java install dialog to treat this as a shortcut and not a webapp.
+    app_type = AppType::SHORTCUT;
+  }
   Java_AddToHomescreenMediator_setWebAppInfo(env, java_ref_, j_user_title,
-                                             j_url, is_webapk /* isWebApk */);
+                                             j_url, static_cast<int>(app_type));
 }
 
 void AddToHomescreenMediator::OnUserTitleAvailable(
     const std::u16string& user_title,
     const GURL& url,
-    bool is_webapk_compatible) {
-  SetWebAppInfo(user_title, url, is_webapk_compatible);
+    AppType app_type) {
+  SetWebAppInfo(user_title, url, app_type);
 }
 
 void AddToHomescreenMediator::OnDataAvailable(
@@ -181,38 +186,14 @@ void AddToHomescreenMediator::OnDataAvailable(
     const SkBitmap& display_icon,
     AppType app_type,
     const InstallableStatusCode status_code) {
-  params_ = std::make_unique<AddToHomescreenParams>();
-  params_->app_type = app_type;
-  params_->shortcut_info = std::make_unique<ShortcutInfo>(info);
-  params_->primary_icon = data_fetcher_->primary_icon();
-  params_->install_source = InstallableMetrics::GetInstallSource(
-      data_fetcher_->web_contents(), InstallTrigger::MENU);
-  params_->installable_status = status_code;
+  params_ = std::make_unique<AddToHomescreenParams>(
+      app_type, std::make_unique<ShortcutInfo>(info), display_icon, status_code,
+      InstallableMetrics::GetInstallSource(data_fetcher_->web_contents(),
+                                           InstallTrigger::MENU));
 
   SetIcon(display_icon);
 
-  // Log what was shown in the App menu and what action was taken here.
-  bool is_webapk = params_->app_type == AppType::WEBAPK;
-  auto entry = AppTypeToMenuEntry::kAppTypeFinalEntry;
-
-  switch (app_menu_type_) {
-    case AppBannerSettingsHelper::APP_MENU_OPTION_ADD_TO_HOMESCREEN: {
-      entry = is_webapk ? AppTypeToMenuEntry::kAddToHomeScreenShownForWebApp
-                        : AppTypeToMenuEntry::kAddToHomeScreenShownForShortcut;
-      break;
-    }
-    case AppBannerSettingsHelper::APP_MENU_OPTION_INSTALL: {
-      entry = is_webapk ? AppTypeToMenuEntry::kInstallShownForWebApp
-                        : AppTypeToMenuEntry::kInstallShownForShortcut;
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-  UMA_HISTOGRAM_ENUMERATION("Webapp.AddToHomescreenMediator.AppTypeToMenuEntry",
-                            entry, AppTypeToMenuEntry::kAppTypeFinalEntry);
-
-  if (is_webapk) {
+  if (params_->IsWebApk()) {
     webapps::WebappsClient::Get()->OnWebApkInstallInitiatedFromAppMenu(
         data_fetcher_->web_contents());
   }
@@ -231,7 +212,9 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
         AppBannerManager::FromWebContents(web_contents);
     // Fire the appinstalled event and do install time logging.
     if (app_banner_manager) {
-      app_banner_manager->OnInstall(a2hs_params.shortcut_info->display);
+      app_banner_manager->OnInstall(
+          a2hs_params.shortcut_info->display,
+          /*set_current_web_app_not_installable=*/false);
     }
   }
 }

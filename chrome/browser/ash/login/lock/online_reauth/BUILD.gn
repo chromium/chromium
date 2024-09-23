@@ -1,0 +1,69 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("online_reauth") {
+  sources = [
+    "lock_screen_reauth_manager.cc",
+    "lock_screen_reauth_manager.h",
+    "lock_screen_reauth_manager_factory.cc",
+    "lock_screen_reauth_manager_factory.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/login/saml",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/proximity_auth",
+    "//components/keyed_service/core",
+    "//components/session_manager/core",
+  ]
+
+  deps = [
+    "//ash",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/auth",
+    "//chrome/browser/ash/profiles",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/settings",
+    "//components/prefs",
+    "//components/user_manager",
+    "//content/public/browser",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/saml" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "lock_screen_reauth_manager_unittest.cc" ]
+
+  deps = [
+    ":online_reauth",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/saml:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/test:test_support",
+  ]
+}

@@ -24,6 +24,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
+                  "chromium_with_telemetry_dependencies",
                   "use_clang_coverage"
                 ],
                 "config": "chromium"
@@ -73,10 +74,11 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "win11-x64-fyi-rel",
+          "builder": "win11-rel",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "retry_failed_shards": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -87,5 +89,11 @@
     ]
   },
   "builder_group": "chromium.win",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chromium"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

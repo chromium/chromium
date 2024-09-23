@@ -16,7 +16,6 @@ from blinkpy.common.checkout.baseline_optimizer import (
     random_digest,
 )
 from blinkpy.web_tests.port.base import Port
-from blinkpy.web_tests.models.testharness_results import ABBREVIATED_ALL_PASS
 
 SourceMap = Dict[BaselineLocation, BaselineLocation]
 CopyOperation = Tuple[Optional[str], str]
@@ -193,10 +192,12 @@ class BaselineCopier:
                     hashlib.sha1(path.encode()).hexdigest(), path)
         return digests
 
-    def write_copies(self, copies: Iterable[CopyOperation]) -> None:
+    def write_copies(self,
+                     copies: Iterable[CopyOperation],
+                     placeholder: str = '') -> None:
         for source, dest in copies:
             self._fs.maybe_make_directory(self._fs.dirname(dest))
             if source:
                 self._fs.copyfile(source, dest)
             else:
-                self._fs.write_text_file(dest, ABBREVIATED_ALL_PASS)
+                self._fs.write_text_file(dest, placeholder)

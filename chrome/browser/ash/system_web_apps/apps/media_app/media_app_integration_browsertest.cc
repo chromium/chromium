@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/media_app_ui/buildflags.h"
@@ -11,7 +12,6 @@
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check_deref.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -301,7 +302,7 @@ class NotificationWatcher : public NotificationDisplayService::Observer {
       : profile_(profile) {
     // Notifications only fire if the device is "online". Simulate that.
     network_portal_detector.SimulateDefaultNetworkState(
-        ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+        ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
 
     NotificationDisplayService::GetForProfile(profile_)->AddObserver(this);
   }
@@ -660,7 +661,7 @@ bool isAppBarButtonOn(content::WebContents* app, const std::string& selector) {
     (async function isAppBarButtonOn() {
       const button =
           await getNode('$1', ['backlight-app-bar', 'backlight-app']);
-      return button.hasAttribute('toggled');
+      return button.hasAttribute('selected');
     })();
   )";
   return MediaAppUiBrowserTest::EvalJsInAppFrame(
@@ -777,7 +778,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
 
   constexpr char kHasSaveDiscardButtons[] = R"(
     (async function hasSaveDiscardButtons() {
-      const discardButton = await getNode('ea-button[label="Discard edits"]',
+      const discardButton = await getNode('#DiscardEdits',
           ['backlight-app-bar', 'backlight-app']);
       const saveButton = await getNode('backlight-split-button[label="Save"]',
           ['backlight-app-bar', 'backlight-app']);
@@ -798,7 +799,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest,
           ['backlight-crop-panel', 'backlight-image-handler']);
       rotateAntiClockwiseButton.click();
       const doneButton = await waitForNode(
-          'ea-button[label="Done"]', ['backlight-app-bar', 'backlight-app']);
+          '#Done', ['backlight-app-bar', 'backlight-app']);
       doneButton.click();
       await waitForNode('backlight-split-button[label="Save"]',
           ['backlight-app-bar', 'backlight-app']);
@@ -980,11 +981,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppEligibleOpenTask) {
   for (const auto& file_path : file_paths) {
     std::vector<file_manager::file_tasks::FullTaskDescriptor> result =
         file_manager::test::GetTasksForFile(profile(), file_path);
-
-    // Files SWA internal task "select" matches any file, we ignore it here.
-    base::EraseIf(result, [](auto task) {
-      return task.task_descriptor.app_id == file_manager::kFileManagerSwaAppId;
-    });
 
     ASSERT_LT(0u, result.size());
     EXPECT_EQ(1u, result.size());

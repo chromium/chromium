@@ -181,7 +181,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
     }
   )pb";
 
-  constexpr size_t kNumSavedTraces = 20;
+  constexpr size_t kNumSavedTraces = 200;
   for (size_t i = 0; i < kNumSavedTraces; ++i) {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
@@ -192,11 +192,11 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
             BackgroundTracingManagerImpl::GetInstance().GetScenarioSavedCount(
                 "test_scenario"));
 
-  background_tracing_manager_->InitializeScenarios(
+  background_tracing_manager_->InitializeFieldScenarios(
       ParseFieldTracingConfigFromText(kScenarioConfig),
       BackgroundTracingManager::NO_DATA_FILTERING);
 
-  EXPECT_FALSE(BackgroundTracingManager::EmitNamedTrigger("start_trigger"));
+  EXPECT_FALSE(base::trace_event::EmitNamedTrigger("start_trigger"));
 }
 
 TEST_F(BackgroundTracingManagerTest, SavedCountAfterClean) {

@@ -7,50 +7,55 @@
  * ripple. It can be interacted with like a normal button using click as well as
  * space and enter to effectively click the button and fire a 'click' event.
  *
- * There are two sources to icons, cr-icons and iron-iconset-svg. The cr-icon's
- * are defined as background images with a reference to a resource file
- * associated with a CSS class name. The iron-icon's are defined as inline SVG's
- * under a key that is stored in a global map that is accessible to the
- * iron-icon element.
+ * There are two sources to icons:
+ * Option 1: CSS classes defined in cr_icons.css.
+ * Option 2: SVG icons defined in a cr-iconset or iron-iconset-svg,
+ *     with the name passed to cr-icon-button via the |ironIcon| property.
  *
- * Example of using a cr-icon:
- * <link rel="import" href="chrome://resources/cr_elements/cr_icons.css.html">
- * <dom-module id="module">
- *   <template>
- *     <style includes="cr-icons"></style>
- *     <cr-icon-button class="icon-class-name"></cr-icon-button>
- *   </template>
- * </dom-module>
+ * Example of using CSS classes:
+ * In the .html.ts template file (if using a .html template file instead, the
+ * import should be in the corresponding .ts file):
+ * import 'chrome://resources/cr_elements/cr_icons.css.js';
  *
- * In general when an icon is specified using a class, the expectation is the
+ * export function getHtml() {
+ *   return html`
+ *     <cr-icon-button class="icon-class-name"></cr-icon-button>`;
+ * }
+ *
+ * When an icon is specified using a class, the expectation is the
  * class will set an image to the --cr-icon-image variable.
  *
- * Example of using an iron-icon:
- * In the TS file:
- * import 'chrome://resources/cr_elements/icons.html.js';
+ * Example of using a cr-iconset to supply an icon via the iron-icon parameter:
+ * In the .html.ts template file (if using a .html template file instead, the
+ * import should be in the corresponding .ts file):
+ * import 'chrome://resources/cr_elements/icons_lit.html.js';
  *
- * In the HTML template file:
- * <cr-icon-button iron-icon="cr:icon-key"></cr-icon-button>
+ * export function getHtml() {
+ *   return html`
+ *     <cr-icon-button iron-icon="cr:icon-key"></cr-icon-button>`;
+ * }
  *
  * The color of the icon can be overridden using CSS variables. When using
- * iron-icon both the fill and stroke can be overridden the variables:
- * --cr-icon-button-fill-color
- * --cr-icon-button-stroke-color
+ * the ironIcon property to populate cr-icon-button's internal <cr-icon>, the
+ * following CSS variables for fill and stroke can be overridden for cr-icon:
+ * --iron-icon-button-fill-color
+ * --iron-icon-button-stroke-color
  *
- * When not using iron-icon (ie. specifying --cr-icon-image), the icons support
- * one color and the 'stroke' variables are ignored.
+ * When not using the ironIcon property, cr-icon-button will not create a
+ * <cr-icon>, so the cr-icon related CSS variables above are ignored.
  *
- * When using iron-icon's, more than one icon can be specified by setting
- * the |ironIcon| property to a comma-delimited list of keys.
+ * When using the ironIcon property, more than one icon can be specified by
+ * setting the |ironIcon| property to a comma-delimited list of keys.
  */
 
-import '../cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../cr_icon/cr_icon.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
 
-import {getTemplate} from './cr_icon_button.html.js';
+import {getCss} from './cr_icon_button.css.js';
+import {getHtml} from './cr_icon_button.html.js';
 
 export interface CrIconButtonElement {
   $: {
@@ -58,51 +63,49 @@ export interface CrIconButtonElement {
   };
 }
 
-const CrIconbuttonElementBase = PaperRippleMixin(PolymerElement);
+const CrIconbuttonElementBase = CrRippleMixin(CrLitElement);
 
 export class CrIconButtonElement extends CrIconbuttonElementBase {
   static get is() {
     return 'cr-icon-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       disabled: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'disabledChanged_',
-      },
-
-      /**
-       * Use this property in order to configure the "tabindex" attribute.
-       */
-      customTabIndex: {
-        type: Number,
-        observer: 'applyTabIndex_',
+        reflect: true,
       },
 
       ironIcon: {
         type: String,
-        observer: 'onIronIconChanged_',
-        reflectToAttribute: true,
+        reflect: true,
+      },
+
+      suppressRtlFlip: {
+        type: Boolean,
+        value: false,
+        reflect: true,
       },
 
       multipleIcons_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  disabled: boolean;
-  customTabIndex: number;
-  ironIcon: string;
-  private multipleIcons_: boolean;
+  disabled: boolean = false;
+  ironIcon?: string;
+  protected multipleIcons_: boolean = false;
 
   /**
    * It is possible to activate a tab when the space key is pressed down. When
@@ -121,15 +124,19 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('keyup', this.onKeyUp_.bind(this));
+    this.ensureRippleOnPointerdown();
+  }
 
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('ironIcon')) {
+      const icons = (this.ironIcon || '').split(',');
+      this.multipleIcons_ = icons.length > 1;
     }
   }
 
-  override ready() {
-    super.ready();
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+  override firstUpdated() {
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'button');
     }
@@ -138,30 +145,27 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     }
   }
 
-  toggleClass(className: string) {
-    this.classList.toggle(className);
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('disabled')) {
+      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+      this.disabledChanged_(this.disabled, changedProperties.get('disabled'));
+    }
+
+    if (changedProperties.has('ironIcon')) {
+      this.onIronIconChanged_();
+    }
   }
 
-  private disabledChanged_(newValue: boolean, oldValue?: boolean) {
+  private disabledChanged_(newValue: boolean, oldValue: boolean|undefined) {
     if (!newValue && oldValue === undefined) {
       return;
     }
     if (this.disabled) {
       this.blur();
     }
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-    this.applyTabIndex_();
-  }
-
-  /**
-   * Updates the tabindex HTML attribute to the actual value.
-   */
-  private applyTabIndex_() {
-    let value = this.customTabIndex;
-    if (value === undefined) {
-      value = this.disabled ? -1 : 0;
-    }
-    this.setAttribute('tabindex', value.toString());
+    this.setAttribute('tabindex', String(this.disabled ? -1 : 0));
   }
 
   private onBlur_() {
@@ -174,21 +178,19 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     }
   }
 
-  private onIronIconChanged_() {
-    this.shadowRoot!.querySelectorAll('iron-icon').forEach(el => el.remove());
+  private async onIronIconChanged_() {
+    this.shadowRoot!.querySelectorAll('cr-icon').forEach(el => el.remove());
     if (!this.ironIcon) {
       return;
     }
     const icons = (this.ironIcon || '').split(',');
-    this.multipleIcons_ = icons.length > 1;
-    icons.forEach(icon => {
-      const ironIcon = document.createElement('iron-icon');
-      ironIcon.icon = icon;
-      this.$.icon.appendChild(ironIcon);
-      if (ironIcon.shadowRoot) {
-        ironIcon.shadowRoot.querySelectorAll('svg, img')
-            .forEach(child => child.setAttribute('role', 'none'));
-      }
+    icons.forEach(async icon => {
+      const crIcon = document.createElement('cr-icon');
+      crIcon.icon = icon;
+      this.$.icon.appendChild(crIcon);
+      await crIcon.updateComplete;
+      crIcon.shadowRoot!.querySelectorAll('svg, img')
+          .forEach(child => child.setAttribute('role', 'none'));
     });
   }
 
@@ -220,10 +222,6 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
       this.spaceKeyDown_ = false;
       this.click();
     }
-  }
-
-  private onPointerDown_() {
-    this.ensureRipple();
   }
 }
 

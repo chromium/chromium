@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
@@ -36,12 +38,12 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
   NOT_DESTROYED();
   // Check if we need to do anything at all.
   // The root scroller always fills the whole view.
-  if (UNLIKELY(IsEffectiveRootScroller())) {
+  if (IsEffectiveRootScroller()) [[unlikely]] {
     return true;
   }
 
   PhysicalRect overflow_box;
-  if (UNLIKELY(result.GetHitTestRequest().IsHitTestVisualOverflow())) {
+  if (result.GetHitTestRequest().IsHitTestVisualOverflow()) [[unlikely]] {
     overflow_box = VisualOverflowRectIncludingFilters();
   } else if (HasHitTestableOverflow()) {
     // PhysicalVisualOverflowRect is an approximation of
@@ -149,6 +151,11 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     // needing re-layout, either in cached result or in new constraint space.
     if (!cached_layout_result->GetExclusionSpace().IsEmpty() ||
         new_space.HasFloats()) {
+      return nullptr;
+    }
+
+    // If we've shifted our children we can't rely on their position.
+    if (physical_fragment.HasMovedChildrenInBlockDirection()) {
       return nullptr;
     }
 
@@ -271,7 +278,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
         return nullptr;
     }
 
-    if (UNLIKELY(new_space.HasBlockFragmentation())) {
+    if (new_space.HasBlockFragmentation()) [[unlikely]] {
       DCHECK(old_space.HasBlockFragmentation());
 
       // Sometimes we perform simplified layout on a block-flow which is just
@@ -288,8 +295,9 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
       // containers and lay out the OOFs inside. If we do that after having hit
       // the cache (and thus kept the fragment with the OOF), we'd end up with
       // extraneous OOF fragments.
-      if (UNLIKELY(physical_fragment.HasNestedMulticolsWithOOFs()))
+      if (physical_fragment.HasNestedMulticolsWithOOFs()) [[unlikely]] {
         return nullptr;
+      }
 
       // Any fragmented out-of-flow positioned items will be placed once we
       // reach the fragmentation context root rather than the containing block,

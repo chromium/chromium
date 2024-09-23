@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/usb/usb_chooser_context.h"
+
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -15,12 +17,12 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
 #include "chrome/browser/usb/usb_chooser_context_mock_device_observer.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/prefs/pref_service.h"
@@ -45,6 +47,7 @@
 #endif
 
 using ::base::test::TestFuture;
+using ::content_settings::SettingSource;
 using ::device::mojom::UsbDeviceInfoPtr;
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -812,7 +815,7 @@ void ExpectDeviceObjectInfo(const base::Value::Dict& actual,
 
 void ExpectChooserObjectInfo(const UsbChooserContext::Object* actual,
                              const GURL& origin,
-                             content_settings::SettingSource source,
+                             SettingSource source,
                              bool incognito,
                              int vendor_id,
                              int product_id,
@@ -837,7 +840,7 @@ TEST_F(UsbChooserContextTest, GetGrantedObjectsWithOnlyPolicyAllowedDevices) {
 
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/kDeviceIdWildcard,
@@ -871,21 +874,21 @@ TEST_F(UsbChooserContextTest,
   // represented by a value of -1, so they appear first.
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_USER,
+                          /*source=*/SettingSource::kUser,
                           /*incognito=*/false,
                           /*vendor_id=*/1000,
                           /*product_id=*/1,
                           /*name=*/"Gizmo");
   ExpectChooserObjectInfo(objects[1].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_USER,
+                          /*source=*/SettingSource::kUser,
                           /*incognito=*/false,
                           /*vendor_id=*/1000,
                           /*product_id=*/2,
                           /*name=*/"Gadget");
   ExpectChooserObjectInfo(objects[2].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/kDeviceIdWildcard,
@@ -913,7 +916,7 @@ TEST_F(UsbChooserContextTest,
   // still retain the name of the device.
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kProductVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/5678,
@@ -939,7 +942,7 @@ TEST_F(UsbChooserContextTest,
   // device policy will be replaced by the policy permission.
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/kDeviceIdWildcard,
@@ -965,7 +968,7 @@ TEST_F(UsbChooserContextTest,
   // vendor policy will be replaced by the policy permission.
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kAnyDeviceUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/kDeviceIdWildcard,
                           /*product_id=*/kDeviceIdWildcard,
@@ -986,28 +989,28 @@ TEST_F(UsbChooserContextTest,
   // Wildcard IDs are represented by a value of -1, so they appear first.
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kAnyDeviceUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/kDeviceIdWildcard,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from any vendor");
   ExpectChooserObjectInfo(objects[1].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from Google Inc.");
   ExpectChooserObjectInfo(objects[2].get(),
                           /*origin=*/GURL(kProductVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/5678,
                           /*name=*/"Unknown product 0x162E from Google Inc.");
   ExpectChooserObjectInfo(objects[3].get(),
                           /*origin=*/GURL(kCoolUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6354,
                           /*product_id=*/1357,
@@ -1048,42 +1051,42 @@ TEST_F(UsbChooserContextTest,
   // are added to the vector before ephemeral device permissions.
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/kGoogleUrl,
-                          /*source=*/content_settings::SETTING_SOURCE_USER,
+                          /*source=*/SettingSource::kUser,
                           /*incognito=*/false,
                           /*vendor_id=*/1000,
                           /*product_id=*/1,
                           /*name=*/"Gizmo");
   ExpectChooserObjectInfo(objects[1].get(),
                           /*origin=*/kGoogleUrl,
-                          /*source=*/content_settings::SETTING_SOURCE_USER,
+                          /*source=*/SettingSource::kUser,
                           /*incognito=*/false,
                           /*vendor_id=*/1000,
                           /*product_id=*/2,
                           /*name=*/"Gadget");
   ExpectChooserObjectInfo(objects[2].get(),
                           /*origin=*/GURL(kAnyDeviceUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/kDeviceIdWildcard,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from any vendor");
   ExpectChooserObjectInfo(objects[3].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from Google Inc.");
   ExpectChooserObjectInfo(objects[4].get(),
                           /*origin=*/GURL(kProductVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/5678,
                           /*name=*/"Unknown product 0x162E from Google Inc.");
   ExpectChooserObjectInfo(objects[5].get(),
                           /*origin=*/GURL(kCoolUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6354,
                           /*product_id=*/1357,
@@ -1116,28 +1119,28 @@ TEST_F(UsbChooserContextTest,
 
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kAnyDeviceUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/kDeviceIdWildcard,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from any vendor");
   ExpectChooserObjectInfo(objects[1].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from Google Inc.");
   ExpectChooserObjectInfo(objects[2].get(),
                           /*origin=*/GURL(kProductVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/5678,
                           /*name=*/"Product");
   ExpectChooserObjectInfo(objects[3].get(),
                           /*origin=*/GURL(kCoolUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6354,
                           /*product_id=*/1357,
@@ -1172,28 +1175,28 @@ TEST_F(UsbChooserContextTest,
 
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kAnyDeviceUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/kDeviceIdWildcard,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from any vendor");
   ExpectChooserObjectInfo(objects[1].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from Google Inc.");
   ExpectChooserObjectInfo(objects[2].get(),
                           /*origin=*/GURL(kProductVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/5678,
                           /*name=*/"Unknown product 0x162E from Google Inc.");
   ExpectChooserObjectInfo(objects[3].get(),
                           /*origin=*/GURL(kCoolUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6354,
                           /*product_id=*/1357,
@@ -1225,28 +1228,28 @@ TEST_F(UsbChooserContextTest,
 
   ExpectChooserObjectInfo(objects[0].get(),
                           /*origin=*/GURL(kAnyDeviceUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/kDeviceIdWildcard,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from any vendor");
   ExpectChooserObjectInfo(objects[1].get(),
                           /*origin=*/GURL(kVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/kDeviceIdWildcard,
                           /*name=*/"Devices from Google Inc.");
   ExpectChooserObjectInfo(objects[2].get(),
                           /*origin=*/GURL(kProductVendorUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6353,
                           /*product_id=*/5678,
                           /*name=*/"Unknown product 0x162E from Google Inc.");
   ExpectChooserObjectInfo(objects[3].get(),
                           /*origin=*/GURL(kCoolUrl),
-                          /*source=*/content_settings::SETTING_SOURCE_POLICY,
+                          /*source=*/SettingSource::kPolicy,
                           /*incognito=*/false,
                           /*vendor_id=*/6354,
                           /*product_id=*/1357,

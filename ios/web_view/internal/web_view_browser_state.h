@@ -12,10 +12,6 @@
 #include "components/prefs/pref_service.h"
 #include "ios/web/public/browser_state.h"
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 namespace web {
 class WebUIIOS;
 }  // namespace web
@@ -57,9 +53,6 @@ class WebViewBrowserState final : public web::BrowserState {
   static WebViewBrowserState* FromWebUIIOS(web::WebUIIOS* web_ui);
 
  private:
-  // Registers the preferences for this BrowserState.
-  void RegisterPrefs(user_prefs::PrefRegistrySyncable* pref_registry);
-
   // The path associated with this BrowserState object.
   base::FilePath path_;
 

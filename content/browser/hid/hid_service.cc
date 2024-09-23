@@ -308,7 +308,8 @@ void HidService::Connect(
 
   auto* device_info = delegate->GetDeviceInfo(browser_context, device_guid);
   if (!device_info ||
-      !delegate->HasDevicePermission(browser_context, origin_, *device_info)) {
+      !delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                     origin_, *device_info)) {
     std::move(callback).Run(mojo::NullRemote());
     return;
   }
@@ -339,7 +340,7 @@ void HidService::Forget(device::mojom::HidDeviceInfoPtr device_info,
 
   if (browser_context) {
     GetContentClient()->browser()->GetHidDelegate()->RevokeDevicePermission(
-        browser_context, origin_, *device_info);
+        browser_context, render_frame_host_, origin_, *device_info);
   }
   std::move(callback).Run();
 }
@@ -396,8 +397,10 @@ void HidService::OnDeviceAdded(
     const device::mojom::HidDeviceInfo& device_info) {
   auto* browser_context = GetBrowserContext();
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
-  if (!delegate->HasDevicePermission(browser_context, origin_, device_info))
+  if (!delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                     origin_, device_info)) {
     return;
+  }
 
   auto filtered_device_info = device_info.Clone();
   RemoveProtectedReports(
@@ -427,7 +430,8 @@ void HidService::OnDeviceRemoved(
 
   auto* browser_context = GetBrowserContext();
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
-  if (!delegate->HasDevicePermission(browser_context, origin_, device_info)) {
+  if (!delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                     origin_, device_info)) {
     return;
   }
 
@@ -446,8 +450,8 @@ void HidService::OnDeviceChanged(
     const device::mojom::HidDeviceInfo& device_info) {
   auto* browser_context = GetBrowserContext();
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
-  const bool has_device_permission =
-      delegate->HasDevicePermission(browser_context, origin_, device_info);
+  const bool has_device_permission = delegate->HasDevicePermission(
+      browser_context, render_frame_host_, origin_, device_info);
 
   device::mojom::HidDeviceInfoPtr filtered_device_info;
   if (has_device_permission) {
@@ -499,8 +503,8 @@ void HidService::OnPermissionRevoked(const url::Origin& origin) {
         if (!device_info)
           return true;
 
-        if (delegate->HasDevicePermission(browser_context, origin_,
-                                          *device_info)) {
+        if (delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                          origin_, *device_info)) {
           return false;
         }
 
@@ -527,8 +531,10 @@ void HidService::FinishGetDevices(
     if (device->collections.empty())
       continue;
 
-    if (delegate->HasDevicePermission(browser_context, origin_, *device))
+    if (delegate->HasDevicePermission(browser_context, render_frame_host_,
+                                      origin_, *device)) {
       result.push_back(std::move(device));
+    }
   }
 
   std::move(callback).Run(std::move(result));

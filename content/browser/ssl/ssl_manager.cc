@@ -133,6 +133,11 @@ void SSLManager::OnSSLCertificateError(
                           url, net_error, ssl_info, fatal));
 
   if (!web_contents || !frame_tree_node) {
+    // Check if the DevTools Browser target is set to ignore certificate errors.
+    if (devtools_instrumentation::ShouldBypassCertificateErrors()) {
+      handler->ContinueRequest();
+      return;
+    }
     // Requests can fail to dispatch because they don't have a WebContents. See
     // https://crbug.com/86537. In this case we have to make a decision in this
     // function. Also, if the navigation or document which have been responsible
@@ -262,7 +267,7 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
         security_origin.host(), site_instance->GetProcess()->GetID(),
         SSLHostStateDelegate::MIXED_CONTENT);
   }
-  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
   UpdateEntry(entry, 0, 0, /*notify_changes=*/true);
   NotifySSLInternalStateChanged(controller_->GetBrowserContext());
@@ -282,7 +287,7 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
         security_origin.host(), site_instance->GetProcess()->GetID(),
         SSLHostStateDelegate::CERT_ERRORS_CONTENT);
   }
-  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
   UpdateEntry(entry, 0, 0, /*notify_changes=*/true);
   NotifySSLInternalStateChanged(controller_->GetBrowserContext());
@@ -441,13 +446,13 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
     // content, so the primary frame tree's NavigationController needs to
     // represent an aggregate view of the security state of its inner frame
     // trees.
-    RenderFrameHost* rfh =
+    RenderFrameHostImpl* rfh =
         controller_->frame_tree().root()->current_frame_host();
     DCHECK(rfh);
-    WebContentsImpl* contents = static_cast<WebContentsImpl*>(
-        WebContents::FromRenderFrameHost(rfh->GetOutermostMainFrame()));
-    // TODO(crbug.com/1232528): Ensure only fenced frames owned by active pages
-    // can modify this.
+    CHECK_NE(RenderFrameHostImpl::LifecycleStateImpl::kPrerendering,
+             rfh->GetOutermostMainFrame()->lifecycle_state());
+    WebContentsImpl* contents =
+        WebContentsImpl::FromRenderFrameHostImpl(rfh->GetOutermostMainFrame());
     entry = contents->GetController().GetLastCommittedEntry();
   } else {
     entry = controller_->GetLastCommittedEntry();
@@ -455,7 +460,7 @@ void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
 
   if (!entry)
     return;
-  // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+  // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
   UpdateEntry(entry, add_content_status_flags, remove_content_status_flags,
               /*notify_changes=*/true);
@@ -474,7 +479,7 @@ void SSLManager::NotifySSLInternalStateChanged(BrowserContext* context) {
       static_cast<SSLManagerSet*>(context->GetUserData(kSSLManagerKeyName));
 
   for (SSLManager* manager : managers->get()) {
-    // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
+    // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
     // UpdateEntry.
     manager->UpdateEntry(manager->controller()->GetLastCommittedEntry(), 0, 0,
                          /*notify_changes=*/true);

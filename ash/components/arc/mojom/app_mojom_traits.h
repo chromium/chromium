@@ -57,7 +57,6 @@ struct EnumTraits<arc::mojom::AppDiscoveryRequestState,
         break;
     }
     NOTREACHED();
-    return MojoState::SUCCESS;
   }
 
   static bool FromMojom(MojoState input, ArcState* out) {
@@ -116,7 +115,6 @@ struct EnumTraits<arc::mojom::AppDiscoveryRequestState,
         return true;
     }
     NOTREACHED();
-    return false;
   }
 };
 

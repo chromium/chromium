@@ -24,14 +24,12 @@ a {
 
 .card-title {
   align-items: center;
-  border-bottom: 1px solid var(--card-border-color);
   display: flex;
-  font-size: 108%;
+  font-size: 16px;
   font-weight: 500;
-  height: 48px;
-  line-height: 48px;
+  line-height: 24px;
   overflow: hidden;
-  padding: 0 20px;
+  padding: 23px 24px 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -50,9 +48,11 @@ a {
 .website-icon {
   background-repeat: no-repeat;
   background-size: 16px;
+  background-position: center center;
+  border-radius: 4px;
   flex: none;
-  height: 16px;
-  width: 16px;
+  height: 24px;
+  width: 24px;
 }
 
 .website-link {
@@ -64,7 +64,9 @@ a {
 }
 
 .website-title {
-  margin-inline-start: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-inline-start: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

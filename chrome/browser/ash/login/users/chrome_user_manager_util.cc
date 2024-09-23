@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 
+#include "base/notreached.h"
 #include "base/values.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -47,28 +48,31 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
         allow_family_link && user->IsChild();
     const bool is_gaia_user_allowed =
         allow_new_user || is_user_allowlisted || is_allowed_because_family_link;
-    if (!IsUserAllowed(*user, is_guest_allowed,
-                       user->HasGaiaAccount() && is_gaia_user_allowed)) {
+    if (!user_manager::UserManager::IsUserAllowed(
+            *user, is_guest_allowed,
+            user->HasGaiaAccount() && is_gaia_user_allowed)) {
       return false;
     }
   }
   return true;
 }
 
-bool IsUserAllowed(const user_manager::User& user,
-                   bool is_guest_allowed,
-                   bool is_user_allowlisted) {
-  DCHECK(user.GetType() == user_manager::UserType::kRegular ||
-         user.GetType() == user_manager::UserType::kGuest ||
-         user.GetType() == user_manager::UserType::kChild);
-
-  if (user.GetType() == user_manager::UserType::kGuest && !is_guest_allowed) {
-    return false;
+std::optional<user_manager::UserType> DeviceLocalAccountTypeToUserType(
+    policy::DeviceLocalAccountType device_local_account_type) {
+  switch (device_local_account_type) {
+    case policy::DeviceLocalAccountType::kPublicSession:
+      return user_manager::UserType::kPublicAccount;
+    case policy::DeviceLocalAccountType::kSamlPublicSession:
+      // TODO(b/345700258): Unused in the production. Remove the case.
+      NOTREACHED_IN_MIGRATION();
+      return std::nullopt;
+    case policy::DeviceLocalAccountType::kKioskApp:
+      return user_manager::UserType::kKioskApp;
+    case policy::DeviceLocalAccountType::kWebKioskApp:
+    // TODO(crbug.com/358536558): Create a new user type for IWA kiosk.
+    case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
+      return user_manager::UserType::kWebKioskApp;
   }
-  if (user.HasGaiaAccount() && !is_user_allowlisted) {
-    return false;
-  }
-  return true;
 }
 
 bool IsManagedGuestSessionOrEphemeralLogin() {
@@ -76,33 +80,6 @@ bool IsManagedGuestSessionOrEphemeralLogin() {
       user_manager::UserManager::Get();
   return user_manager->IsLoggedInAsManagedGuestSession() ||
          user_manager->IsCurrentUserCryptohomeDataEphemeral();
-}
-
-user_manager::UserList FindLoginAllowedUsers(
-    const user_manager::UserList& users) {
-  bool show_users_on_signin;
-  CrosSettings::Get()->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
-                                  &show_users_on_signin);
-  user_manager::UserList found_users;
-  for (user_manager::User* user : users) {
-    // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
-    // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
-    if (user->IsKioskType()) {
-      continue;
-    }
-    const bool meets_allowlist_requirements =
-        !user->HasGaiaAccount() ||
-        user_manager::UserManager::Get()->IsGaiaUserAllowed(*user);
-    // Public session accounts are always shown on login screen.
-    const bool meets_show_users_requirements =
-        show_users_on_signin ||
-        user->GetType() == user_manager::UserType::kPublicAccount;
-    if (meets_allowlist_requirements && meets_show_users_requirements) {
-      found_users.push_back(user);
-    }
-  }
-  return found_users;
 }
 
 }  // namespace ash::chrome_user_manager_util

@@ -42,6 +42,7 @@ public class NotificationConstants {
     static final String EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE = "notification_info_webapk_package";
     static final String EXTRA_NOTIFICATION_REPLY = "notification_reply";
     static final String EXTRA_NOTIFICATION_ACTION = "notification_action";
+    static final String EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL = "notification_backup_of_original";
 
     static final String EXTRA_JOB_SCHEDULED_TIME_MS = "notification_job_scheduled_time_ms";
     static final String EXTRA_JOB_STARTED_TIME_MS = "notification_job_started_time_ms";
@@ -128,6 +129,12 @@ public class NotificationConstants {
      * encountered an error.
      */
     public static final int NOTIFICATION_ID_UPM = 17;
+
+    /**
+     * Unique identifier for notifications announcing that the unified password manager will stop
+     * the supporting storing local passwords within Chrome.
+     */
+    public static final int NOTIFICATION_ID_UPM_ACCESS_LOSS = 18;
 
     // Separator used to separate the notification origin from additional data such as the developer
     // specified tag. This and the prefix following it need to be the same as the one specified in

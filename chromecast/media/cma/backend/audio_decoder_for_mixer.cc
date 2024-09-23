@@ -76,7 +76,6 @@ int ToPlayoutChannel(AudioChannel audio_channel) {
       return 1;
   }
   NOTREACHED();
-  return kChannelAll;
 }
 
 int MaxQueuedFrames(int sample_rate) {

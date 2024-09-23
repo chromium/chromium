@@ -4,29 +4,33 @@
 
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
+import android.app.Activity;
 import android.widget.TextView;
+
+import org.chromium.base.ThreadUtils;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TouchToFillPasswordGenerationTestHelper {
-    public static String acceptPasswordInGenerationBottomSheet() {
-        String password = getTextFromTextView(R.id.password);
-        onView(withId(R.id.use_password_button)).perform(click());
+    public static String acceptPasswordInGenerationBottomSheet(Activity activity) {
+        String password = getTextFromTextView(activity, R.id.password);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> activity.findViewById(R.id.use_password_button).performClick());
         return password;
     }
 
-    public static void rejectPasswordInGenerationBottomSheet() {
-        onView(withId(R.id.reject_password_button)).perform(click());
+    public static void rejectPasswordInGenerationBottomSheet(Activity activity) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> activity.findViewById(R.id.reject_password_button).performClick());
     }
 
-    private static String getTextFromTextView(int id) {
+    private static String getTextFromTextView(Activity activity, int id) {
         AtomicReference<String> textRef = new AtomicReference<>();
-        onView(withId(id))
-                .check((view, error) -> textRef.set(((TextView) view).getText().toString()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    textRef.set(((TextView) activity.findViewById(id)).getText().toString());
+                    return true;
+                });
         return textRef.get();
     }
 }

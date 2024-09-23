@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
-#include "base/strings/utf_string_conversions.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -42,17 +43,8 @@ class MandatoryReauthManagerTest : public testing::Test {
         std::move(mock_device_authenticator));
     mandatory_reauth_manager_ =
         std::make_unique<MandatoryReauthManager>(autofill_client_.get());
-    autofill_client_->GetPersonalDataManager()->Init(
-        /*profile_database=*/nullptr,
-        /*account_database=*/nullptr,
-        /*pref_service=*/autofill_client_->GetPrefs(),
-        /*local_state=*/autofill_client_->GetPrefs(),
-        /*identity_manager=*/nullptr,
-        /*history_service=*/nullptr,
-        /*sync_service=*/nullptr,
-        /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr,
-        /*shared_storage_manager=*/nullptr);
+    autofill_client_->GetPersonalDataManager()->SetPrefService(
+        autofill_client_->GetPrefs());
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");
@@ -127,35 +119,6 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
             MandatoryReauthAuthenticationMethod::kUnsupportedMethod);
 }
 
-TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_Biometric) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(true));
-
-  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
-  mandatory_reauth_manager_->StartDeviceAuthentication(base::DoNothing());
-}
-
-TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_ScreenLock) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(true));
-
-  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
-  mandatory_reauth_manager_->StartDeviceAuthentication(base::DoNothing());
-}
-
-TEST_F(MandatoryReauthManagerTest, StartDeviceAuthentication_Unsupported) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(false));
-
-  base::MockCallback<base::OnceCallback<void(bool)>> callback;
-  EXPECT_CALL(callback, Run(true));
-  mandatory_reauth_manager_->StartDeviceAuthentication(callback.Get());
-}
-
 // Test that the MandatoryReauthManager returns that we should offer re-auth
 // opt-in if the conditions for offering it are all met for local cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
@@ -167,11 +130,9 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
-  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+  autofill_client_->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(local_card_);
 
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
       NonInteractivePaymentMethodType::kLocalCard));
@@ -179,27 +140,12 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 }
 
 // Test that the MandatoryReauthManager returns that we should not offer re-auth
-// opt-in if the conditions for offering it are all met, but the feature flag is
-// off.
-TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard_FlagOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
-  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
-
-  EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
-      NonInteractivePaymentMethodType::kLocalCard));
-}
-
-// Test that the MandatoryReauthManager returns that we should not offer re-auth
 // opt-in if the conditions for offering it are all met but we are in off the
 // record mode.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
-  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+  autofill_client_->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(local_card_);
 
   autofill_client_->set_is_off_the_record(true);
 
@@ -220,9 +166,6 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
       NonInteractivePaymentMethodType::kVirtualCard));
   ExpectUniqueOfferOptInDecision(MandatoryReauthOfferOptInDecision::kOffered);
@@ -238,9 +181,6 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_MaskedServerCard) {
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
 
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
       NonInteractivePaymentMethodType::kMaskedServerCard));
@@ -259,12 +199,11 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
   mandatory_reauth_manager_->OnUserCancelledOptInPrompt();
 
-  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+  autofill_client_->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
       NonInteractivePaymentMethodType::kLocalCard));
@@ -284,13 +223,12 @@ TEST_F(MandatoryReauthManagerTest,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
   ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(testing::Return(false));
 
-  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+  autofill_client_->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
       NonInteractivePaymentMethodType::kLocalCard));
@@ -313,10 +251,9 @@ TEST_F(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
-  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+  autofill_client_->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(local_card_);
 
   // 'card_identifier_if_non_interactive_authentication_flow_completed' is not
   // present, implying interactive authentication happened.
@@ -340,10 +277,9 @@ TEST_F(
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
-
-  autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
+  autofill_client_->GetPersonalDataManager()
+      ->payments_data_manager()
+      .AddCreditCard(local_card_);
 
   // Test that if the last filled card is the matching local card, we offer
   // re-auth opt-in.
@@ -356,7 +292,8 @@ TEST_F(
 // prompt to be shown.
 TEST_F(MandatoryReauthManagerTest, StartOptInFlow) {
   mandatory_reauth_manager_->StartOptInFlow();
-  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasShown());
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->GetMandatoryReauthOptInPromptWasShown());
 }
 
 // Test that the MandatoryReauthManager correctly handles the case where the
@@ -384,7 +321,8 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 
   EXPECT_FALSE(autofill_client_->GetPrefs()->GetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
-  EXPECT_FALSE(autofill_client_->GetMandatoryReauthOptInPromptWasReshown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->GetMandatoryReauthOptInPromptWasReshown());
   // Counter is increased by 1 since device authentication fails during opt in.
   EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
                 prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
@@ -410,7 +348,8 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
-  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasReshown());
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->GetMandatoryReauthOptInPromptWasReshown());
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetUserPrefValue(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
 }
@@ -464,9 +403,14 @@ TEST_F(MandatoryReauthManagerTest, OnUserClosedOptInPrompt) {
 class MandatoryReauthManagerOptInFlowTest
     : public MandatoryReauthManagerTest,
       public testing::WithParamInterface<NonInteractivePaymentMethodType> {
- public:
-  MandatoryReauthManagerOptInFlowTest() = default;
-  ~MandatoryReauthManagerOptInFlowTest() override = default;
+ protected:
+  void SetUp() override {
+    MandatoryReauthManagerTest::SetUp();
+    mandatory_reauth_manager_->SetDeviceAuthenticatorPtrForTesting(
+        std::make_unique<device_reauth::MockDeviceAuthenticator>());
+    ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+        .WillByDefault(testing::Return(true));
+  }
 
   std::string GetOptInSource() {
     switch (GetParam()) {
@@ -485,6 +429,22 @@ class MandatoryReauthManagerOptInFlowTest
     }
   }
 
+  std::string GetHistogramStringForNonInteractivePaymentMethodType() {
+    switch (GetParam()) {
+      case NonInteractivePaymentMethodType::kLocalCard:
+        return "LocalCard";
+      case NonInteractivePaymentMethodType::kFullServerCard:
+      case NonInteractivePaymentMethodType::kMaskedServerCard:
+        return "ServerCard";
+      case NonInteractivePaymentMethodType::kVirtualCard:
+        return "VirtualCard";
+      case NonInteractivePaymentMethodType::kLocalIban:
+        return "LocalIban";
+      case NonInteractivePaymentMethodType::kServerIban:
+        return "ServerIban";
+    }
+  }
+
   void SetUpDeviceAuthenticator(bool success) {
     ON_CALL(device_authenticator(), AuthenticateWithMessage)
         .WillByDefault(testing::WithArg<1>(
@@ -493,6 +453,61 @@ class MandatoryReauthManagerOptInFlowTest
             }));
   }
 };
+
+TEST_P(MandatoryReauthManagerOptInFlowTest,
+       StartDeviceAuthentication_Biometric) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
+  mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
+                                                       base::DoNothing());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage." +
+          GetHistogramStringForNonInteractivePaymentMethodType() + ".Biometric",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
+      1);
+}
+
+TEST_P(MandatoryReauthManagerOptInFlowTest,
+       StartDeviceAuthentication_ScreenLock) {
+  base::HistogramTester histogram_tester;
+
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(true));
+
+  mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
+                                                       base::DoNothing());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage." +
+          GetHistogramStringForNonInteractivePaymentMethodType() +
+          ".ScreenLock",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowStarted,
+      1);
+}
+
+TEST_P(MandatoryReauthManagerOptInFlowTest,
+       StartDeviceAuthentication_Unsupported) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+      .WillByDefault(testing::Return(false));
+  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(testing::Return(false));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(true));
+  mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
+                                                       callback.Get());
+  histogram_tester.ExpectBucketCount(
+      "Autofill.PaymentMethods.CheckoutFlow.ReauthUsage." +
+          GetHistogramStringForNonInteractivePaymentMethodType() +
+          ".UnsupportedMethod",
+      autofill_metrics::MandatoryReauthAuthenticationFlowEvent::kFlowSkipped,
+      1);
+}
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 #if BUILDFLAG(IS_ANDROID)
@@ -503,8 +518,6 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
   base::HistogramTester histogram_tester;
 
   // Verify that we shall offer opt in.
@@ -526,7 +539,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
-  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasShown());
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->GetMandatoryReauthOptInPromptWasShown());
   // Counter is not changed since it's a successful opt in.
   EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
                 prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
@@ -556,8 +570,6 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillEnablePaymentsMandatoryReauth);
   base::HistogramTester histogram_tester;
 
   // Verify that we shall offer opt in.
@@ -579,7 +591,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
   // fails.
   mandatory_reauth_manager_->OnUserAcceptedOptInPrompt();
 
-  EXPECT_TRUE(autofill_client_->GetMandatoryReauthOptInPromptWasShown());
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->GetMandatoryReauthOptInPromptWasShown());
   // Counter is increased by 1 since device authentication fails during opt in.
   EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
                 prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),

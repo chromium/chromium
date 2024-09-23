@@ -3,7 +3,7 @@
 // (https://github.com/w3c/webref)
 // Source: Gamepad (https://w3c.github.io/gamepad/)
 
-[Exposed=Window, SecureContext]
+[Exposed=Window]
 interface Gamepad {
   readonly attribute DOMString id;
   readonly attribute long index;
@@ -15,7 +15,7 @@ interface Gamepad {
   [SameObject] readonly attribute GamepadHapticActuator vibrationActuator;
 };
 
-[Exposed=Window, SecureContext]
+[Exposed=Window]
 interface GamepadButton {
   readonly attribute boolean pressed;
   readonly attribute boolean touched;
@@ -44,7 +44,8 @@ enum GamepadHapticsResult {
 };
 
 enum GamepadHapticEffectType {
-  "dual-rumble"
+  "dual-rumble",
+  "trigger-rumble"
 };
 
 dictionary GamepadEffectParameters {
@@ -52,6 +53,8 @@ dictionary GamepadEffectParameters {
     unsigned long long startDelay = 0;
     double strongMagnitude = 0.0;
     double weakMagnitude = 0.0;
+    double leftTrigger = 0.0;
+    double rightTrigger = 0.0;
 };
 
 [Exposed=Window]
@@ -59,7 +62,7 @@ partial interface Navigator {
   sequence<Gamepad?> getGamepads();
 };
 
-[Exposed=Window, SecureContext]
+[Exposed=Window]
 
 interface GamepadEvent: Event {
   constructor(DOMString type, GamepadEventInit eventInitDict);

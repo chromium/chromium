@@ -62,7 +62,7 @@ HeartbeatManager::HeartbeatManager(
 
 HeartbeatManager::~HeartbeatManager() {
   // Stop listening for system suspend and resume events.
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 void HeartbeatManager::Start(
@@ -74,7 +74,7 @@ void HeartbeatManager::Start(
   trigger_reconnect_callback_ = trigger_reconnect_callback;
 
   // Listen for system suspend and resume events.
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 
   // Calculated the heartbeat interval just before we start the timer.
   UpdateHeartbeatInterval();
@@ -90,7 +90,7 @@ void HeartbeatManager::Stop() {
   heartbeat_timer_->Stop();
   waiting_for_ack_ = false;
 
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 void HeartbeatManager::OnHeartbeatAcked() {

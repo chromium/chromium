@@ -16,5 +16,5 @@ test("ozone_gl_unittests") {
     "//ui/ozone",
   ]
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [ "//third_party/angle:includes" ]
 }

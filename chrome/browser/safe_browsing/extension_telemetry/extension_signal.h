@@ -23,7 +23,8 @@ enum class ExtensionSignalType {
   kCookiesGet = 5,
   kDeclarativeNetRequest = 6,
   kTabsApi = 7,
-  kMaxValue = kTabsApi,
+  kDeclarativeNetRequestAction = 8,
+  kMaxValue = kDeclarativeNetRequestAction,
 };
 
 // An abstract signal. Subclasses provide type-specific functionality to
@@ -41,7 +42,7 @@ class ExtensionSignal {
   explicit ExtensionSignal(const extensions::ExtensionId& extension_id)
       : extension_id_(extension_id) {}
 
-  const extensions::ExtensionId extension_id_;
+  extensions::ExtensionId extension_id_;
 };
 
 }  // namespace safe_browsing

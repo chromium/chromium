@@ -19,7 +19,6 @@
 
 namespace ash {
 
-class NetworkHandler;
 class NetworkStateHandler;
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
@@ -44,8 +43,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
 
   AutoConnectHandler(const AutoConnectHandler&) = delete;
   AutoConnectHandler& operator=(const AutoConnectHandler&) = delete;
-
+  AutoConnectHandler();
   ~AutoConnectHandler() override;
+
+  void Init(ClientCertResolver* client_cert_resolver,
+            NetworkConnectionHandler* network_connection_handler,
+            NetworkStateHandler* network_state_handler,
+            ManagedNetworkConfigurationHandler*
+                managed_network_configuration_handler);
 
   // LoginState::Observer
   void LoggedInStateChanged() override;
@@ -68,17 +73,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AutoConnectHandler
   void NotifyAutoConnectInitiatedForTest(int auto_connect_reasons);
 
  private:
-  friend class NetworkHandler;
-  friend class AutoConnectHandlerTest;
-
-  AutoConnectHandler();
-
-  void Init(ClientCertResolver* client_cert_resolver,
-            NetworkConnectionHandler* network_connection_handler,
-            NetworkStateHandler* network_state_handler,
-            ManagedNetworkConfigurationHandler*
-                managed_network_configuration_handler);
-
   void NotifyAutoConnectInitiated(int auto_connect_reasons);
 
   // This function is called whenever the logged in state changes or when a new

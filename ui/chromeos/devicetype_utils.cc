@@ -37,7 +37,7 @@ int GetChromeOSDeviceTypeResourceId() {
       return IDS_GENERIC_CHROMEOS_DEVICE_NAME;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return IDS_GENERIC_CHROMEOS_DEVICE_NAME;
 #endif
 }
@@ -63,7 +63,7 @@ int GetChromeOSDeviceTypeInPluralResourceId() {
       return IDS_GENERIC_CHROMEOS_DEVICE_NAME_IN_PLURAL;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return IDS_GENERIC_CHROMEOS_DEVICE_NAME_IN_PLURAL;
 #endif
 }

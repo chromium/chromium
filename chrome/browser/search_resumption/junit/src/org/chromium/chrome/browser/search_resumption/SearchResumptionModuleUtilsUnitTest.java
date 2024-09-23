@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.search_resumption;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import android.text.TextUtils;
 
@@ -22,6 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -36,7 +36,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.url.GURL;
+
+import java.util.HashSet;
 
 /** Unit tests for {@link SearchResumptionModuleUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -62,8 +65,6 @@ public class SearchResumptionModuleUtilsUnitTest {
         FeatureList.setTestValues(mFeatureListValues);
         mFeatureListValues.addFeatureFlagOverride(
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
-        mFeatureListValues.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, true);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -74,8 +75,6 @@ public class SearchResumptionModuleUtilsUnitTest {
     @Test
     @SmallTest
     public void testShouldShowSearchResumptionModule() {
-        Assert.assertTrue(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID));
         Assert.assertTrue(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID));
 
@@ -88,17 +87,7 @@ public class SearchResumptionModuleUtilsUnitTest {
                         ModuleNotShownReason.DEFAULT_ENGINE_NOT_GOOGLE));
 
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(false);
-        doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
-        Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
-                        ModuleNotShownReason.NOT_SYNC));
-
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(true);
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
         Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
         Assert.assertEquals(
@@ -106,6 +95,20 @@ public class SearchResumptionModuleUtilsUnitTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.NOT_SIGN_IN));
+
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
+        doReturn(new HashSet<>()).when(mSyncServiceMock).getSelectedTypes();
+        Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
+                        ModuleNotShownReason.NOT_SYNC));
+
+        doReturn(CollectionUtil.newHashSet(UserSelectableType.HISTORY))
+                .when(mSyncServiceMock)
+                .getSelectedTypes();
+        Assert.assertTrue(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
     }
 
     @Test

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -9,8 +11,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -26,6 +28,7 @@ std::unique_ptr<ImageDecoder> CreateWEBPDecoder() {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support;
+  test::TaskEnvironment task_environment;
   auto buffer = SharedBuffer::Create(data, size);
   auto decoder = CreateWEBPDecoder();
   static constexpr bool kAllDataReceived = true;

@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_WAYLAND_PLATFORM_WINDOW_DELEGATE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_WAYLAND_PLATFORM_WINDOW_DELEGATE_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 
@@ -15,12 +16,12 @@ struct PlatformWindowInitProperties;
 
 class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
  public:
-  MockWaylandPlatformWindowDelegate() = default;
+  MockWaylandPlatformWindowDelegate();
   MockWaylandPlatformWindowDelegate(const MockWaylandPlatformWindowDelegate&) =
       delete;
   MockWaylandPlatformWindowDelegate operator=(
       const MockWaylandPlatformWindowDelegate&) = delete;
-  ~MockWaylandPlatformWindowDelegate() override = default;
+  ~MockWaylandPlatformWindowDelegate() override;
 
   std::unique_ptr<WaylandWindow> CreateWaylandWindow(
       WaylandConnection* connection,
@@ -34,6 +35,12 @@ class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
 
   int64_t viz_seq() const { return viz_seq_; }
 
+  // Callback called during OnStateUpdate. This can be used to simulate
+  // re-entrant client initiated requests.
+  void set_on_state_update_callback(base::RepeatingClosure cb) {
+    on_state_update_callback_ = cb;
+  }
+
  private:
   raw_ptr<WaylandWindow, AcrossTasksDanglingUntriaged> wayland_window_ =
       nullptr;
@@ -42,6 +49,8 @@ class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
   // call to InsertSequencePoint. Test code can check this value to know
   // what sequence point is required to advance to the latest state.
   int64_t viz_seq_ = 0;
+
+  base::RepeatingClosure on_state_update_callback_;
 };
 
 }  // namespace ui

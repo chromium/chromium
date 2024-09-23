@@ -23,7 +23,7 @@ class SharedImageInterfaceInProcess;
 namespace viz {
 class SkiaOutputSurfaceDependency;
 
-// This class holds onwership of task posting sequence to the gpu thread and
+// This class holds ownership of task posting sequence to the gpu thread and
 // memory tracking for the display compositor. This class has a 1:1 relationship
 // to the display compositor class. This class is only used for gpu compositing.
 // TODO(weiliangc): This should merge with SkiaOutputSurfaceDependency.

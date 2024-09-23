@@ -254,7 +254,7 @@ TEST_F(ShellWithClientTest, CreateWithDisplayId) {
                   .id());
     // If display is not specified, new window will be placed fully inside the
     // display.
-    // TODO(crbug.com/1291592): This logic is not consistent with
+    // TODO(crbug.com/40212799): This logic is not consistent with
     // ash. This has to be updated once the bug is fixed.
     EXPECT_EQ(gfx::Rect{kPrimarilyOnPrimary.size()},
               shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
@@ -289,14 +289,20 @@ TEST_F(ShellWithClientTest, CreateWithDisplayId) {
                   ->GetDisplayNearestWindow(
                       shell_surface_base->GetWidget()->GetNativeWindow())
                   .id());
-    // TODO(crbug.com/1291592): This logic is not consistent with
+    // TODO(crbug.com/40212799): This logic is not consistent with
     // ash. This has to be updated once the bug is fixed.
     EXPECT_EQ(gfx::Rect({100, 0}, kAlmostOnPrimary.size()),
               shell_surface_base->GetWidget()->GetWindowBoundsInScreen());
   }
 }
 
-TEST_F(ShellWithClientTest, BufferCommitNoNeedsCommit) {
+// TODO(crbug.com/338519156): Fix and enable on MSan.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_BufferCommitNoNeedsCommit DISABLED_BufferCommitNoNeedsCommit
+#else
+#define MAYBE_BufferCommitNoNeedsCommit BufferCommitNoNeedsCommit
+#endif
+TEST_F(ShellWithClientTest, MAYBE_BufferCommitNoNeedsCommit) {
   auto* ash_window_tree_host = static_cast<ash::AshWindowTreeHostPlatform*>(
       ash::Shell::GetPrimaryRootWindow()->GetHost());
   // The compositor may receive draw request upon X11's damage event, which

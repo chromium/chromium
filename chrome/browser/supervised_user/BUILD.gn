@@ -15,6 +15,7 @@ static_library("test_support") {
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
+    "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",

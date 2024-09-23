@@ -206,9 +206,8 @@ bool UserPolicySigninServiceBase::ShouldLoadPolicyForUser(
   if (username.empty())
     return false;  // Not signed in.
 
-  return signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-             username) ==
-         signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown;
+  return signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+      username);
 }
 
 void UserPolicySigninServiceBase::InitializeForSignedInUser(
@@ -430,6 +429,10 @@ void UserPolicySigninServiceBase::UpdateLastPolicyCheckTime() {}
 signin::ConsentLevel
 UserPolicySigninServiceBase::GetConsentLevelForRegistration() {
   return signin::ConsentLevel::kSignin;
+}
+
+std::string_view UserPolicySigninServiceBase::name() const {
+  return "UserPolicySigninServiceBase";
 }
 
 }  // namespace policy

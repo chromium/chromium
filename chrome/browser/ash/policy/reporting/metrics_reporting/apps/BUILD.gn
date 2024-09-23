@@ -1,0 +1,136 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("apps") {
+  sources = [
+    "app_events_observer.cc",
+    "app_events_observer.h",
+    "app_metric_reporting_utils.cc",
+    "app_metric_reporting_utils.h",
+    "app_platform_metrics_retriever.cc",
+    "app_platform_metrics_retriever.h",
+    "app_usage_observer.cc",
+    "app_usage_observer.h",
+    "app_usage_telemetry_periodic_collector.cc",
+    "app_usage_telemetry_periodic_collector.h",
+    "app_usage_telemetry_sampler.cc",
+    "app_usage_telemetry_sampler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/login/session",
+    "//components/prefs",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/protos",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_events_observer_unittest.cc",
+    "app_metric_reporting_utils_unittest.cc",
+    "app_platform_metrics_retriever_unittest.cc",
+    "app_usage_observer_unittest.cc",
+    "app_usage_telemetry_periodic_collector_unittest.cc",
+    "app_usage_telemetry_sampler_unittest.cc",
+  ]
+
+  deps = [
+    ":apps",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/login/session",
+    "//components/prefs",
+    "//components/reporting/metrics/fakes:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/services/app_service/public/protos",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/compositor",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "app_events_observer_browsertest.cc",
+    "app_usage_telemetry_sampler_browsertest.cc",
+  ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/reporting/metrics_reporting",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/dbus/missive:test_support",
+    "//components/app_constants",
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/protos",
+    "//components/sync:test_support",
+    "//components/ukm:test_support",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//url",
+  ]
+}

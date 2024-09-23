@@ -12,6 +12,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -46,8 +47,6 @@
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_launcher.h"
 #include "content/renderer/render_process_impl.h"
-#include "gpu/GLES2/gl2extchromium.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,8 +55,6 @@
 #include "third_party/blink/public/platform/scheduler/test/web_mock_thread_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/switches.h"
 
 // IPC messages for testing ----------------------------------------------------
 
@@ -230,7 +227,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
     // because it will call _exit(0) and kill the process before the browser
     // side is ready to exit.
     ANNOTATE_LEAKING_OBJECT_PTR(process_.get());
-    // TODO(crbug.com/1219038): `StopIOThreadForTesting()` is a stop-gap
+    // TODO(crbug.com/40771960): `StopIOThreadForTesting()` is a stop-gap
     // solution to fix flaky tests (see crbug.com/1126157). The underlying
     // reason for this issue is that the `RenderThreadImpl` created in `SetUp()`
     // above actually shares its main thread with the browser's, which is
@@ -257,22 +254,20 @@ class RenderThreadImplBrowserTest : public testing::Test,
  protected:
   IPC::Sender* sender() { return process_host_.get(); }
 
-  void SetBackgroundState(
-      mojom::RenderProcessBackgroundState background_state) {
+  void SetBackgroundState(base::Process::Priority process_priority) {
     mojom::Renderer* renderer_interface = thread_;
     const mojom::RenderProcessVisibleState visible_state =
         RendererIsHidden() ? mojom::RenderProcessVisibleState::kHidden
                            : mojom::RenderProcessVisibleState::kVisible;
-    renderer_interface->SetProcessState(background_state, visible_state);
+    renderer_interface->SetProcessState(process_priority, visible_state);
   }
 
   void SetVisibleState(mojom::RenderProcessVisibleState visible_state) {
     mojom::Renderer* renderer_interface = thread_;
-    const mojom::RenderProcessBackgroundState background_state =
-        RendererIsBackgrounded()
-            ? mojom::RenderProcessBackgroundState::kBackgrounded
-            : mojom::RenderProcessBackgroundState::kForegrounded;
-    renderer_interface->SetProcessState(background_state, visible_state);
+    const base::Process::Priority process_priority =
+        RendererIsBackgrounded() ? base::Process::Priority::kBestEffort
+                                 : base::Process::Priority::kUserBlocking;
+    renderer_interface->SetProcessState(process_priority, visible_state);
   }
 
   bool RendererIsBackgrounded() { return thread_->RendererIsBackgrounded(); }
@@ -291,13 +286,12 @@ class RenderThreadImplBrowserTest : public testing::Test,
   scoped_refptr<QuitOnTestMsgFilter> test_msg_filter_;
 #endif
 
-  raw_ptr<blink::scheduler::WebMockThreadScheduler, ExperimentalRenderer>
-      main_thread_scheduler_;
+  raw_ptr<blink::scheduler::WebMockThreadScheduler> main_thread_scheduler_;
 
   // RenderThreadImpl doesn't currently support a proper shutdown sequence
   // and it's okay when we're running in multi-process mode because renderers
   // get killed by the OS. Memory leaks aren't nice but it's test-only.
-  raw_ptr<RenderThreadImpl, ExperimentalRenderer> thread_;
+  raw_ptr<RenderThreadImpl> thread_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };
@@ -326,10 +320,10 @@ TEST_F(RenderThreadImplBrowserTest,
 #endif
 
 TEST_F(RenderThreadImplBrowserTest, RendererIsBackgrounded) {
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kBackgrounded);
+  SetBackgroundState(base::Process::Priority::kBestEffort);
   EXPECT_TRUE(RendererIsBackgrounded());
 
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kForegrounded);
+  SetBackgroundState(base::Process::Priority::kUserBlocking);
   EXPECT_FALSE(RendererIsBackgrounded());
 }
 
@@ -391,7 +385,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kBackgrounded);
+  SetBackgroundState(base::Process::Priority::kBestEffort);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   // Going from a backgrounded to a foregrounded state should mark the renderer
@@ -400,7 +394,16 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false));
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kForegrounded);
+  SetBackgroundState(base::Process::Priority::kUserBlocking);
+  testing::Mock::VerifyAndClear(main_thread_scheduler_);
+
+  // Going from a foregrounded state to another foregrounded state should not
+  // remark the renderer as foregrounded.
+  EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
+  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
+  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
+  EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
+  SetBackgroundState(base::Process::Priority::kUserVisible);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   // Going from a foregrounded to a backgrounded state should mark the renderer
@@ -409,7 +412,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kBackgrounded);
+  SetBackgroundState(base::Process::Priority::kBestEffort);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   testing::Mock::AllowLeak(main_thread_scheduler_);
@@ -422,112 +425,10 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionForegrounded) {
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false));
-  SetBackgroundState(mojom::RenderProcessBackgroundState::kForegrounded);
+  SetBackgroundState(base::Process::Priority::kUserBlocking);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   testing::Mock::AllowLeak(main_thread_scheduler_);
 }
-
-enum NativeBufferFlag { kDisableNativeBuffers, kEnableNativeBuffers };
-
-class RenderThreadImplGpuMemoryBufferBrowserTest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface<
-          ::testing::tuple<NativeBufferFlag, gfx::BufferFormat>> {
- public:
-  RenderThreadImplGpuMemoryBufferBrowserTest() {}
-
-  RenderThreadImplGpuMemoryBufferBrowserTest(
-      const RenderThreadImplGpuMemoryBufferBrowserTest&) = delete;
-  RenderThreadImplGpuMemoryBufferBrowserTest& operator=(
-      const RenderThreadImplGpuMemoryBufferBrowserTest&) = delete;
-
-  ~RenderThreadImplGpuMemoryBufferBrowserTest() override {}
-
-  gpu::GpuMemoryBufferManager* memory_buffer_manager() {
-    return memory_buffer_manager_;
-  }
-
- private:
-  void SetUpOnRenderThread() {
-    memory_buffer_manager_ =
-        RenderThreadImpl::current()->GetGpuMemoryBufferManager();
-  }
-
-  // Overridden from BrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kSingleProcess);
-    NativeBufferFlag native_buffer_flag = ::testing::get<0>(GetParam());
-    if (native_buffer_flag == kEnableNativeBuffers) {
-      command_line->AppendSwitch(switches::kEnableNativeGpuMemoryBuffers);
-    }
-  }
-
-  void SetUpOnMainThread() override {
-    EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-    PostTaskToInProcessRendererAndWait(base::BindOnce(
-        &RenderThreadImplGpuMemoryBufferBrowserTest::SetUpOnRenderThread,
-        base::Unretained(this)));
-  }
-
-  raw_ptr<gpu::GpuMemoryBufferManager, ExperimentalRenderer>
-      memory_buffer_manager_ = nullptr;
-};
-
-// https://crbug.com/652531
-IN_PROC_BROWSER_TEST_P(RenderThreadImplGpuMemoryBufferBrowserTest,
-                       DISABLED_Map) {
-  gfx::BufferFormat format = ::testing::get<1>(GetParam());
-  gfx::Size buffer_size(4, 4);
-
-  std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
-      memory_buffer_manager()->CreateGpuMemoryBuffer(
-          buffer_size, format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-          gpu::kNullSurfaceHandle, nullptr);
-  ASSERT_TRUE(buffer);
-  EXPECT_EQ(format, buffer->GetFormat());
-
-  // Map buffer planes.
-  ASSERT_TRUE(buffer->Map());
-
-  // Write to buffer and check result.
-  size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
-  for (size_t plane = 0; plane < num_planes; ++plane) {
-    ASSERT_TRUE(buffer->memory(plane));
-    ASSERT_TRUE(buffer->stride(plane));
-    size_t row_size_in_bytes =
-        gfx::RowSizeForBufferFormat(buffer_size.width(), format, plane);
-    EXPECT_GT(row_size_in_bytes, 0u);
-
-    std::unique_ptr<char[]> data(new char[row_size_in_bytes]);
-    memset(data.get(), 0x2a + plane, row_size_in_bytes);
-    size_t height = buffer_size.height() /
-                    gfx::SubsamplingFactorForBufferFormat(format, plane);
-    for (size_t y = 0; y < height; ++y) {
-      // Copy |data| to row |y| of |plane| and verify result.
-      memcpy(
-          static_cast<char*>(buffer->memory(plane)) + y * buffer->stride(plane),
-          data.get(), row_size_in_bytes);
-      EXPECT_EQ(0, memcmp(static_cast<char*>(buffer->memory(plane)) +
-                              y * buffer->stride(plane),
-                          data.get(), row_size_in_bytes));
-    }
-  }
-
-  buffer->Unmap();
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    RenderThreadImplGpuMemoryBufferBrowserTests,
-    RenderThreadImplGpuMemoryBufferBrowserTest,
-    ::testing::Combine(::testing::Values(kDisableNativeBuffers,
-                                         kEnableNativeBuffers),
-                       // These formats are guaranteed to work on all platforms.
-                       ::testing::Values(gfx::BufferFormat::R_8,
-                                         gfx::BufferFormat::BGR_565,
-                                         gfx::BufferFormat::RGBA_4444,
-                                         gfx::BufferFormat::RGBA_8888,
-                                         gfx::BufferFormat::BGRA_8888,
-                                         gfx::BufferFormat::YVU_420)));
 
 }  // namespace content

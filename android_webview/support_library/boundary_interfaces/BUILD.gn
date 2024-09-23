@@ -11,6 +11,9 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/FeatureFlagHolderBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/IsomorphicObjectBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/JsReplyProxyBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/PrefetchOperationResultBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/PrefetchParamsBoundaryInterface.java",
+    "src/org/chromium/support_lib_boundary/PrefetchStatusCodeBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProcessGlobalConfigConstants.java",
     "src/org/chromium/support_lib_boundary/ProfileBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/ProfileStoreBoundaryInterface.java",
@@ -23,7 +26,6 @@ android_library("boundary_interface_java") {
     "src/org/chromium/support_lib_boundary/StaticsBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/TracingControllerBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/VisualStateCallbackBoundaryInterface.java",
-    "src/org/chromium/support_lib_boundary/WebAuthnCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageCallbackBoundaryInterface.java",
     "src/org/chromium/support_lib_boundary/WebMessageListenerBoundaryInterface.java",
@@ -55,14 +57,14 @@ android_library("boundary_interface_java") {
 android_apk("boundary_interface_example_apk") {
   apk_name = "BoundaryInterfaceExample"
 
-  # Use a dummy android manifest since this code is copied to androidx.
+  # Use a placeholder android manifest since this code is copied to androidx.
   android_manifest = "//build/android/AndroidManifest.xml"
 
   # This is to verify that the boundary interfaces compile and lint correctly
   # against the minSdkVersion of the webkit support library module. As the
   # minSdkVersion of the support library increases, so should this value. See
   # http://crbug.com/828184 for more details.
-  lint_min_sdk_version = 14
+  lint_min_sdk_version = 21
 
   # Explicitly enable lint for this apk.
   enable_lint = true

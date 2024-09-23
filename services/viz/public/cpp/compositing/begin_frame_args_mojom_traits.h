@@ -93,6 +93,13 @@ struct StructTraits<viz::mojom::BeginFrameAckDataView, viz::BeginFrameAck> {
     return ack.has_damage;
   }
 
+  static std::optional<base::TimeDelta> preferred_frame_interval(
+      const viz::BeginFrameAck& ack) {
+    DCHECK(!ack.preferred_frame_interval ||
+           ack.preferred_frame_interval.value() >= base::TimeDelta());
+    return ack.preferred_frame_interval;
+  }
+
   static bool Read(viz::mojom::BeginFrameAckDataView data,
                    viz::BeginFrameAck* out);
 };

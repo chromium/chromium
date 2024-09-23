@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/nqe/network_quality_estimator_params.h"
 
 #include <stdint.h>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 
 namespace net {
 
@@ -474,6 +480,9 @@ NetworkQualityEstimatorParams::NetworkQualityEstimatorParams(
               params_,
               "add_default_platform_observations",
               "true") == "true"),
+      count_new_observations_received_compute_ect_(
+          features::kCountNewObservationsReceivedComputeEct.Get()),
+      observation_buffer_size_(features::kObservationBufferSize.Get()),
       socket_watchers_min_notification_interval_(
           base::Milliseconds(GetValueForVariationParam(
               params_,

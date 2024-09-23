@@ -1,0 +1,119 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Default: '
+++++++ROLE_SYSTEM_TEXT name='Default:' FOCUSABLE text-input-type:text
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Button: '
+++++++ROLE_SYSTEM_PUSHBUTTON name='Button:' FOCUSABLE
+++++ROLE_SYSTEM_CHECKBUTTON name='Checkbox:' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Color: '
+++++++IA2_ROLE_COLOR_CHOOSER name='Color:' value='0% red 0% green 0% blue' FOCUSABLE
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Date: '
+++++++IA2_ROLE_DATE_EDITOR name='Date:' FOCUSABLE text-input-type:date
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Month Date:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Day Date:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Date:' value='0' FOCUSABLE
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Datetime: '
+++++++ROLE_SYSTEM_TEXT name='Datetime:' FOCUSABLE text-input-type:datetime
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Datetime-local: '
+++++++IA2_ROLE_DATE_EDITOR name='Datetime-local:' FOCUSABLE text-input-type:datetime-local
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Month Datetime-local:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Day Datetime-local:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Datetime-local:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Hours Datetime-local:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name=':'
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Minutes Datetime-local:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM Datetime-local:' value='0' FOCUSABLE
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show local date and time picker' FOCUSABLE HASPOPUP
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Email: '
+++++++ROLE_SYSTEM_TEXT name='Email:' FOCUSABLE text-input-type:email
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Empty: '
+++++++ROLE_SYSTEM_TEXT name='Empty:' FOCUSABLE text-input-type:text
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='File: '
+++++++ROLE_SYSTEM_PUSHBUTTON name='File:: No file chosen' value='No file chosen' FOCUSABLE
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Image: '
+++++++ROLE_SYSTEM_PUSHBUTTON name='Image:' FOCUSABLE
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='Submit'
+++++ROLE_SYSTEM_STATICTEXT name=' '
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Invalid: '
+++++++ROLE_SYSTEM_TEXT name='Invalid:' FOCUSABLE text-input-type:foo-bar
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Month: '
+++++++IA2_ROLE_DATE_EDITOR name='Month:' FOCUSABLE text-input-type:month
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Month Month:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Month:' value='0' FOCUSABLE
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show month picker' FOCUSABLE HASPOPUP
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Number: '
+++++++ROLE_SYSTEM_SPINBUTTON name='Number:' FOCUSABLE text-input-type:number
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Password: '
+++++++ROLE_SYSTEM_TEXT name='Password:' FOCUSABLE PROTECTED text-input-type:password
+++++ROLE_SYSTEM_RADIOBUTTON name='Radio:' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Range: '
+++++++ROLE_SYSTEM_SLIDER name='Range:' value='50' FOCUSABLE IA2_STATE_HORIZONTAL
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Reset: '
+++++++ROLE_SYSTEM_PUSHBUTTON name='Reset:' FOCUSABLE
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Search: '
+++++++ROLE_SYSTEM_TEXT name='Search:' FOCUSABLE text-input-type:search
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Submit: '
+++++++ROLE_SYSTEM_PUSHBUTTON name='Submit:' FOCUSABLE
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Tel: '
+++++++ROLE_SYSTEM_TEXT name='Tel:' FOCUSABLE text-input-type:tel
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Text: '
+++++++ROLE_SYSTEM_TEXT name='Text:' FOCUSABLE text-input-type:text
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Time: '
+++++++ROLE_SYSTEM_GROUPING name='Time:' FOCUSABLE text-input-type:time
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Hours Time:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name=':'
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Minutes Time:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='AM/PM Time:' value='0' FOCUSABLE
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show time picker' FOCUSABLE HASPOPUP
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Url: '
+++++++ROLE_SYSTEM_TEXT name='Url:' FOCUSABLE text-input-type:url
+++++IA2_ROLE_LABEL
+++++++ROLE_SYSTEM_STATICTEXT name='Week: '
+++++++IA2_ROLE_DATE_EDITOR name='Week:' FOCUSABLE text-input-type:week
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Week '
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Week Week:' value='0' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name=', '
+++++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Week:' value='0' FOCUSABLE
+++++++++ROLE_SYSTEM_BUTTONMENU name='Show week picker' FOCUSABLE HASPOPUP

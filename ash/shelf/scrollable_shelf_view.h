@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/ash_export.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -234,7 +233,8 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   const Shelf* GetShelf() const;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;

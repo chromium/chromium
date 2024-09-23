@@ -32,11 +32,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/mojo/browser_interface_broker_proxy_impl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
@@ -146,7 +148,8 @@ class CORE_EXPORT WorkerGlobalScope
   ScriptWrappable* ToScriptWrappable() final { return this; }
 
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
-  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
+  const BrowserInterfaceBrokerProxyImpl& GetBrowserInterfaceBroker()
+      const final;
 
   scoped_refptr<base::SingleThreadTaskRunner>
   GetAgentGroupSchedulerCompositorTaskRunner() final {
@@ -188,8 +191,9 @@ class CORE_EXPORT WorkerGlobalScope
   // At this time, WorkerGlobalScope::Initialize() should be already called.
   // Spec: https://html.spec.whatwg.org/C/#run-a-worker Step 12 is completed,
   // and it's ready to proceed to Step 23.
-  void WorkerScriptFetchFinished(Script&,
-                                 std::optional<v8_inspector::V8StackTraceId>);
+  virtual void WorkerScriptFetchFinished(
+      Script&,
+      std::optional<v8_inspector::V8StackTraceId>);
 
   // Fetches and evaluates the top-level classic script.
   virtual void FetchAndRunClassicScript(
@@ -213,6 +217,15 @@ class CORE_EXPORT WorkerGlobalScope
       RejectCoepUnsafeNone reject_coep_unsafe_none) = 0;
 
   void ReceiveMessage(BlinkTransferableMessage);
+  Event* ReceiveCustomEventInternal(
+      CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>,
+      CrossThreadFunction<Event*(ScriptState*)>,
+      CustomEventMessage);
+  void ReceiveCustomEvent(
+      CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+          event_factory_callback,
+      CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback,
+      CustomEventMessage);
   base::TimeTicks TimeOrigin() const { return time_origin_; }
   WorkerSettings* GetWorkerSettings() const { return worker_settings_.get(); }
 
@@ -343,8 +356,7 @@ class CORE_EXPORT WorkerGlobalScope
   // attempts (both successful and not successful) by the worker.
   std::unique_ptr<FontMatchingMetrics> font_matching_metrics_;
 
-  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
-  blink::BrowserInterfaceBrokerProxy browser_interface_broker_proxy_;
+  blink::BrowserInterfaceBrokerProxyImpl browser_interface_broker_proxy_;
 
   // State transition about worker top-level script evaluation.
   enum class ScriptEvalState {

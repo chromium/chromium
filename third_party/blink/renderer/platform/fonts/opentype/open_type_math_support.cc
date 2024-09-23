@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 
 // clang-format off
@@ -24,7 +29,7 @@ float HarfBuzzUnitsToFloat(hb_position_t value) {
 // Latin Modern, STIX Two, XITS, Asana, Deja Vu, Libertinus and TeX Gyre fonts
 // provide at most 13 size variant and 5 assembly parts.
 // See https://chromium-review.googlesource.com/c/chromium/src/+/2074678
-unsigned kMaxHarfBuzzRecords = 20;
+constexpr unsigned kMaxHarfBuzzRecords = 20;
 
 hb_direction_t HarfBuzzDirection(
     blink::OpenTypeMathStretchData::StretchAxis stretch_axis) {
@@ -121,7 +126,7 @@ std::optional<float> OpenTypeMathSupport::MathConstant(
     case kRadicalKernAfterDegree:
       return std::optional<float>(HarfBuzzUnitsToFloat(harfbuzz_value));
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::nullopt;
 }

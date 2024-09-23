@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
-#include "content/browser/service_worker/service_worker_container_host.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -464,7 +464,7 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope;
 
-  auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
+  auto registration = ServiceWorkerRegistration::Create(
       options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
       blink::mojom::AncestorFrameType::kNormalFrame);
 
@@ -477,24 +477,29 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
-  ServiceWorkerRemoteContainerEndpoint endpoint;
-  base::WeakPtr<ServiceWorkerContainerHost> container_host =
-      CreateContainerHostForWindow(
-          GlobalRenderFrameHostId(helper_->mock_render_process_id(),
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(), &endpoint);
+  // Flush tasks related to `SetStatus(ACTIVATED)` above before creating
+  // `observer`.
+  base::RunLoop().RunUntilIdle();
+
+  ScopedServiceWorkerClient service_worker_client =
+      CreateServiceWorkerClient(context());
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
-  version->AddControllee(container_host.get());
+  version->AddControllee(service_worker_client.get());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(1u, observer.events().size());
   EXPECT_EQ(TestServiceWorkerContextObserver::EventType::ControlleeAdded,
             observer.events()[0].type);
 
+  CommittedServiceWorkerClient committed_service_worker_client(
+      std::move(service_worker_client),
+      GlobalRenderFrameHostId(helper_->mock_render_process_id(),
+                              /*mock frame_routing_id=*/1));
   version->OnControlleeNavigationCommitted(
-      container_host->client_uuid(), container_host->GetRenderFrameHostId());
+      committed_service_worker_client->client_uuid(),
+      committed_service_worker_client->GetRenderFrameHostId());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(2u, observer.events().size());
@@ -502,7 +507,7 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
                 ControlleeNavigationCommitted,
             observer.events()[1].type);
 
-  version->RemoveControllee(container_host->client_uuid());
+  version->RemoveControllee(committed_service_worker_client->client_uuid());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(4u, observer.events().size());
@@ -521,7 +526,7 @@ TEST_F(ServiceWorkerContextTest, VersionActivatedObserver) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope;
 
-  auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
+  auto registration = ServiceWorkerRegistration::Create(
       options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
       blink::mojom::AncestorFrameType::kNormalFrame);
 
@@ -553,7 +558,7 @@ TEST_F(ServiceWorkerContextTest, VersionRedundantObserver) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope;
 
-  auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
+  auto registration = ServiceWorkerRegistration::Create(
       options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
       blink::mojom::AncestorFrameType::kNormalFrame);
 
@@ -1109,7 +1114,6 @@ TEST_F(ServiceWorkerContextTest, RegisterDuplicateScript) {
 }
 
 TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
-  const int kRenderProcessId1 = 1;
   const int kRenderProcessId2 = 2;
   const GURL kOrigin1 = GURL("https://www.example.com/");
   const GURL kOrigin2 = GURL("https://another-origin.example.net/");
@@ -1117,37 +1121,14 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kOrigin1));
   const blink::StorageKey kKey2 =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kOrigin2));
-  std::vector<ServiceWorkerRemoteContainerEndpoint> remote_endpoints;
 
-  // Host1 : process_id=1, origin1.
-  remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerContainerHost> container_host1 =
-      CreateContainerHostForWindow(
-          GlobalRenderFrameHostId(kRenderProcessId1,
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
-          &remote_endpoints.back());
-  container_host1->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1), kKey1);
-
-  // Host2 : process_id=2, origin2.
-  remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerContainerHost> container_host2 =
-      CreateContainerHostForWindow(
-          GlobalRenderFrameHostId(kRenderProcessId2,
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
-          &remote_endpoints.back());
-  container_host2->UpdateUrls(kOrigin2, url::Origin::Create(kOrigin2), kKey2);
-
-  // Host3 : process_id=2, origin1.
-  remote_endpoints.emplace_back();
-  base::WeakPtr<ServiceWorkerContainerHost> container_host3 =
-      CreateContainerHostForWindow(
-          GlobalRenderFrameHostId(kRenderProcessId2,
-                                  /*mock frame_routing_id=*/1),
-          /*is_parent_frame_secure=*/true, context()->AsWeakPtr(),
-          &remote_endpoints.back());
-  container_host3->UpdateUrls(kOrigin1, url::Origin::Create(kOrigin1), kKey1);
+  // Clients with kOrigin1, kOrigin2, and kOrigin1.
+  ScopedServiceWorkerClient service_worker_client1 =
+      CreateServiceWorkerClient(context(), kOrigin1);
+  ScopedServiceWorkerClient service_worker_client2 =
+      CreateServiceWorkerClient(context(), kOrigin2);
+  ScopedServiceWorkerClient service_worker_client3 =
+      CreateServiceWorkerClient(context(), kOrigin1);
 
   // Host4 : process_id=2, origin2, for ServiceWorker.
   blink::mojom::ServiceWorkerRegistrationOptions registration_opt;
@@ -1155,7 +1136,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   const blink::StorageKey key_other = blink::StorageKey::CreateFirstParty(
       url::Origin::Create(registration_opt.scope));
   scoped_refptr<ServiceWorkerRegistration> registration =
-      base::MakeRefCounted<ServiceWorkerRegistration>(
+      ServiceWorkerRegistration::Create(
           registration_opt, key_other, 1L /* registration_id */,
           helper_->context()->AsWeakPtr(),
           blink::mojom::AncestorFrameType::kNormalFrame);
@@ -1166,41 +1147,42 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
           blink::mojom::ScriptType::kClassic, 1L /* version_id */,
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
           helper_->context()->AsWeakPtr());
-  remote_endpoints.emplace_back();
-  // ServiceWorkerHost creates ServiceWorkerContainerHost for a service worker
+  // ServiceWorkerHost creates ServiceWorkerClient for a service worker
   // execution context.
   std::unique_ptr<ServiceWorkerHost> worker_host4 = CreateServiceWorkerHost(
-      kRenderProcessId2, true /* is_parent_frame_secure */, version.get(),
-      context()->AsWeakPtr(), &remote_endpoints.back());
+      kRenderProcessId2, true /* is_parent_frame_secure */, *version,
+      context()->AsWeakPtr());
 
-  ASSERT_TRUE(container_host1);
-  ASSERT_TRUE(container_host2);
-  ASSERT_TRUE(container_host3);
+  ASSERT_TRUE(service_worker_client1.get());
+  ASSERT_TRUE(service_worker_client2.get());
+  ASSERT_TRUE(service_worker_client3.get());
   ASSERT_TRUE(worker_host4->container_host());
 
   // Iterate over the client container hosts that belong to kOrigin1.
-  std::set<ServiceWorkerContainerHost*> results;
-  for (auto it = context()->GetClientContainerHostIterator(
-           kKey1, true /* include_reserved_clients */,
-           false /* include_back_forward_cached_clients */);
-       !it->IsAtEnd(); it->Advance()) {
-    results.insert(it->GetContainerHost());
+  std::set<ServiceWorkerClient*> results;
+  for (auto it =
+           context()->service_worker_client_owner().GetServiceWorkerClients(
+               kKey1, true /* include_reserved_clients */,
+               false /* include_back_forward_cached_clients */);
+       !it.IsAtEnd(); ++it) {
+    results.insert(&*it);
   }
   EXPECT_EQ(2u, results.size());
-  EXPECT_TRUE(base::Contains(results, container_host1.get()));
-  EXPECT_TRUE(base::Contains(results, container_host3.get()));
+  EXPECT_TRUE(base::Contains(results, service_worker_client1.get()));
+  EXPECT_TRUE(base::Contains(results, service_worker_client3.get()));
 
   // Iterate over the container hosts that belong to kOrigin2. This should not
-  // include worker_host4->container_host() as it's not for controllee.
+  // include worker_host4->service_worker_client() as it's not for controllee.
   results.clear();
-  for (auto it = context()->GetClientContainerHostIterator(
-           kKey2, true /* include_reserved_clients */,
-           false /* include_back_forward_cached_clients */);
-       !it->IsAtEnd(); it->Advance()) {
-    results.insert(it->GetContainerHost());
+  for (auto it =
+           context()->service_worker_client_owner().GetServiceWorkerClients(
+               kKey2, true /* include_reserved_clients */,
+               false /* include_back_forward_cached_clients */);
+       !it.IsAtEnd(); ++it) {
+    results.insert(&*it);
   }
   EXPECT_EQ(1u, results.size());
-  EXPECT_TRUE(base::Contains(results, container_host2.get()));
+  EXPECT_TRUE(base::Contains(results, service_worker_client2.get()));
 }
 
 class ServiceWorkerContextRecoveryTest
@@ -1249,6 +1231,13 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
                      false /* expect_waiting */, true /* expect_active */));
   content::RunAllTasksUntilIdle();
 
+  // Emulate a service worker client is created before
+  // `ScheduleDeleteAndStartOver()` and redirected, committed and destroyed
+  // after `ScheduleDeleteAndStartOver()`.
+  ScopedServiceWorkerClient service_worker_client =
+      CreateServiceWorkerClient(context(), scope);
+  EXPECT_EQ(service_worker_client->context().get(), context());
+
   context()->ScheduleDeleteAndStartOver();
 
   // The storage is disabled while the recovery process is running, so the
@@ -1267,6 +1256,29 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
       base::BindOnce(&ExpectRegisteredWorkers,
                      blink::ServiceWorkerStatusCode::kErrorNotFound,
                      false /* expect_waiting */, true /* expect_active */));
+  content::RunAllTasksUntilIdle();
+
+  {
+    // Perform a cross-origin redirect for `service_worker_client`. This updates
+    // the client UUID of `service_worker_client`, and should update the UUID
+    // maintained by `ServiceWorkerClientOwner`, not to cause the client UUID
+    // inconsistency.
+    GURL cross_site_url("https://www.example.org/");
+    EXPECT_FALSE(service_worker_client->context());
+    service_worker_client->UpdateUrls(cross_site_url,
+                                      url::Origin::Create(cross_site_url),
+                                      blink::StorageKey::CreateFirstParty(
+                                          url::Origin::Create(cross_site_url)));
+
+    auto committed_service_worker_client = CommittedServiceWorkerClient(
+        std::move(service_worker_client),
+        GlobalRenderFrameHostId(/*child_id=*/1,
+                                /*frame_routing_id=*/1));
+  }
+  // Destruct the service worker client via
+  // `OnContainerHostReceiverDisconnected()` by destructing
+  // `committed_service_worker_client`.
+  // This doesn't crash if the client UUID was updated consistently above.
   content::RunAllTasksUntilIdle();
 
   called = false;

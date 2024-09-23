@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/layout/shapes/polygon_shape.h"
 
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {

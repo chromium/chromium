@@ -37,9 +37,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case NaClHostMsgStart:
       message_class = ChromeLegacyIpc::CLASS_NACL_HOST;
       break;
-    case GinJavaBridgeMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_GIN_JAVA_BRIDGE;
-      break;
   }
   legacy_ipc->set_message_class(message_class);
   legacy_ipc->set_message_line(IPC_MESSAGE_ID_LINE(message_id));

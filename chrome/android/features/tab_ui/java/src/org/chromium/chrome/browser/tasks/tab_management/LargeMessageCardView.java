@@ -99,9 +99,10 @@ class LargeMessageCardView extends FrameLayout {
 
     /**
      * Set description text.
+     *
      * @param descriptionText Text to be displayed.
      */
-    void setDescriptionText(String descriptionText) {
+    void setDescriptionText(CharSequence descriptionText) {
         mDescription.setText(descriptionText);
     }
 
@@ -207,7 +208,8 @@ class LargeMessageCardView extends FrameLayout {
         }
     }
 
-    // TODO(crbug.com/1166704): This method has little to do with this view. Move this function to a
+    // TODO(crbug.com/40164330): This method has little to do with this view. Move this function to
+    // a
     // price tracking UI utility class.
     /**
      * When user taps on "Show me" on PriceWelcomeMessage, we scroll them to the binding tab, then a
@@ -251,7 +253,7 @@ class LargeMessageCardView extends FrameLayout {
     /**
      * Update the icon's width.
      *
-     * TODO(crbug.com/1227656): Confirm with UX, whether large message card can follow a general
+     * <p>TODO(crbug.com/40056462): Confirm with UX, whether large message card can follow a general
      * icon size for all clients. If so, then remove this method.
      *
      * @param widthInPixels The desired width in pixels to set.
@@ -263,7 +265,7 @@ class LargeMessageCardView extends FrameLayout {
     /**
      * Update the icon's height.
      *
-     * TODO(crbug.com/1227656): Confirm with UX, whether large message card can follow a general
+     * <p>TODO(crbug.com/40056462): Confirm with UX, whether large message card can follow a general
      * icon size for all clients. If so, then remove this method.
      *
      * @param heightInPixels The desired height in pixels to set.

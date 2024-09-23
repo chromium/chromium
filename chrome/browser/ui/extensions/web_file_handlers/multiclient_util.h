@@ -8,6 +8,8 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 
+class Profile;
+
 namespace extensions {
 
 // Launch an application if `launch_type` is `multiple_clients`. First find a

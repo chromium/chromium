@@ -23,7 +23,7 @@ class PushNotificationClientManager {
 
   struct PushNotificationMessage {
     PushNotificationMessage();
-    PushNotificationMessage(const PushNotificationMessage& other) = delete;
+    PushNotificationMessage(const PushNotificationMessage& other);
     PushNotificationMessage(PushNotificationMessage&& other);
     ~PushNotificationMessage();
 

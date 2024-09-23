@@ -14,11 +14,13 @@
 
 namespace device {
 
+class OpenXrAnchorManager;
+class OpenXrDepthSensor;
 class OpenXrExtensionEnumeration;
 class OpenXrExtensionHelper;
-class OpenXrAnchorManager;
 class OpenXrHandTracker;
 enum class OpenXrHandednessType;
+class OpenXrLightEstimator;
 class OpenXRSceneUnderstandingManager;
 class OpenXrStageBoundsProvider;
 class OpenXrUnboundedSpaceProvider;
@@ -68,15 +70,35 @@ class OpenXrExtensionHandlerFactory {
   virtual bool IsEnabled(
       const OpenXrExtensionEnumeration* extension_enum) const;
 
+  // All currently supported extensions that want to query system properties
+  // have their own struct defined as a forced leaf-node, so all extensions that
+  // want to query xrGetSystemProperties must make the call themselves. This
+  // will be called during initialization.
+  virtual void ProcessSystemProperties(
+      const OpenXrExtensionEnumeration* extension_enum,
+      XrInstance instance,
+      XrSystemId system);
+
   virtual std::unique_ptr<OpenXrAnchorManager> CreateAnchorManager(
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       XrSpace mojo_space) const;
 
+  virtual std::unique_ptr<OpenXrDepthSensor> CreateDepthSensor(
+      const OpenXrExtensionHelper& extension_helper,
+      XrSession session,
+      XrSpace mojo_space,
+      const mojom::XRDepthOptions& depth_options) const;
+
   virtual std::unique_ptr<OpenXrHandTracker> CreateHandTracker(
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
       OpenXrHandednessType type) const;
+
+  virtual std::unique_ptr<OpenXrLightEstimator> CreateLightEstimator(
+      const OpenXrExtensionHelper& extenion_helper,
+      XrSession session,
+      XrSpace local_space) const;
 
   virtual std::unique_ptr<OpenXRSceneUnderstandingManager>
   CreateSceneUnderstandingManager(const OpenXrExtensionHelper& extension_helper,
@@ -94,6 +116,11 @@ class OpenXrExtensionHandlerFactory {
  protected:
   bool AreAllRequestedExtensionsSupported(
       const OpenXrExtensionEnumeration* extension_enum) const;
+
+  void SetSystemPropertiesSupport(bool supported);
+
+ private:
+  bool supported_by_system_properties_ = false;
 };
 }  // namespace device
 

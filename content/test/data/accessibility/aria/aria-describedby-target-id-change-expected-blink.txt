@@ -1,0 +1,43 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++main description='Paragraph' descriptionFrom=relatedElement describedbyIds=paragraph
+++++++paragraph
+++++++++staticText name='Paragraph'
+++++++++++inlineTextBox name='Paragraph'
+++++++article
+++++++++staticText name='Article'
+++++++++++inlineTextBox name='Article'
+=== Start Continuation ===
+rootWebArea name='switch-reference'
+++genericContainer ignored
+++++genericContainer ignored
+++++++main description='Article' descriptionFrom=relatedElement describedbyIds=article
+++++++paragraph
+++++++++staticText name='Paragraph'
+++++++++++inlineTextBox name='Paragraph'
+++++++article
+++++++++staticText name='Article'
+++++++++++inlineTextBox name='Article'
+=== Start Continuation ===
+rootWebArea name='remove-reference'
+++genericContainer ignored
+++++genericContainer ignored
+++++++main
+++++++paragraph
+++++++++staticText name='Paragraph'
+++++++++++inlineTextBox name='Paragraph'
+++++++article
+++++++++staticText name='Article'
+++++++++++inlineTextBox name='Article'
+=== Start Continuation ===
+rootWebArea name='restore-reference'
+++genericContainer ignored
+++++genericContainer ignored
+++++++main description='Paragraph' descriptionFrom=relatedElement describedbyIds=paragraph
+++++++paragraph
+++++++++staticText name='Paragraph'
+++++++++++inlineTextBox name='Paragraph'
+++++++article
+++++++++staticText name='Article'
+++++++++++inlineTextBox name='Article'

@@ -20,7 +20,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -45,6 +44,7 @@ class SharedURLLoaderFactory;
 
 namespace mojom {
 class CookieManager;
+class NetworkContext;
 }
 }  // namespace network
 
@@ -155,13 +155,11 @@ class SigninClient : public KeyedService {
   // Returns the channel for the client installation.
   virtual version_info::Channel GetClientChannel() = 0;
 
-  // Called when the primary account is changed, with additional information.
-  // `event_details` contains information on how the account changed.
-  // `event_source` contains information on how the signin/signout happened.
-  virtual void OnPrimaryAccountChangedWithEventSource(
-      signin::PrimaryAccountChangeEvent event_details,
-      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-          event_source) = 0;
+  // Called when the primary account is changed. `event_details` contains
+  // information on how the account changed, and on how the signin/signout
+  // happened.
+  virtual void OnPrimaryAccountChanged(
+      signin::PrimaryAccountChangeEvent event_details) = 0;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   virtual std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>

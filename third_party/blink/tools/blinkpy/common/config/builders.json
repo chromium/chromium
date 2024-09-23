@@ -9,15 +9,8 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Debug"],
         "steps": {
-            "webdriver_wpt_tests": {
-                "product": "chrome"
-            }
+            "webdriver_wpt_tests": {}
         }
-    },
-    "Mac10.15 Tests": {
-        "main": "chromium.mac",
-        "port_name": "mac-mac10.15",
-        "specifiers": ["Mac10.15", "Release"]
     },
     "Mac12 Tests (dbg)": {
         "main": "chromium.mac",
@@ -29,10 +22,10 @@
         "port_name": "mac-mac11",
         "specifiers": ["Mac11", "Release"]
     },
-    "mac-arm64-rel-tests": {
-        "main": "chromium.fyi",
-        "port_name": "mac-mac11-arm64",
-        "specifiers": ["Mac11-arm64", "Release"]
+    "mac14-arm64-rel-tests": {
+        "main": "chromium.mac",
+        "port_name": "mac-mac14-arm64",
+        "specifiers": ["Mac14-arm64", "Release"]
     },
     "Win10 Tests x64": {
         "main": "chromium.win",
@@ -49,8 +42,8 @@
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {}
         },
         "is_try_builder": true,
         "is_cq_builder": true
@@ -60,36 +53,31 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {},
-            "high_dpi_blink_web_tests (with patch)": {
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "high_dpi_blink_web_tests": {
                 "flag_specific": "highdpi"
             },
-            "high_dpi_blink_wpt_tests (with patch)": {
+            "high_dpi_blink_wpt_tests": {
                 "flag_specific": "highdpi"
             },
-            "vulkan_swiftshader_blink_web_tests (with patch)": {
+            "high_dpi_headless_shell_wpt_tests": {
+                "flag_specific": "highdpi"
+            },
+            "vulkan_swiftshader_blink_web_tests": {
                 "flag_specific": "skia-vulkan-swiftshader"
             },
-            "not_site_per_process_blink_web_tests (with patch)": {
+            "not_site_per_process_blink_web_tests": {
                 "flag_specific": "disable-site-isolation-trials"
             },
-            "not_site_per_process_blink_wpt_tests (with patch)": {
+            "not_site_per_process_blink_wpt_tests": {
                 "flag_specific": "disable-site-isolation-trials"
             },
-            "webdriver_wpt_tests (with patch)": {
-                "product": "chrome"
-            }
-        },
-        "is_try_builder": true
-    },
-    "mac10.15-blink-rel": {
-        "main": "tryserver.blink",
-        "port_name": "mac-mac10.15",
-        "specifiers": ["Mac10.15", "Release"],
-        "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "not_site_per_process_headless_shell_wpt_tests": {
+                "flag_specific": "disable-site-isolation-trials"
+            },
+            "webdriver_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -98,8 +86,10 @@
         "port_name": "mac-mac11",
         "specifiers": ["Mac11", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -108,8 +98,10 @@
         "port_name": "mac-mac11-arm64",
         "specifiers": ["Mac11-arm64", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -118,8 +110,10 @@
         "port_name": "mac-mac12",
         "specifiers": ["Mac12", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -128,8 +122,10 @@
         "port_name": "mac-mac12-arm64",
         "specifiers": ["Mac12-arm64", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -138,8 +134,10 @@
         "port_name": "mac-mac13",
         "specifiers": ["Mac13", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -148,22 +146,75 @@
         "port_name": "mac-mac13-arm64",
         "specifiers": ["Mac13-arm64", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
-    "mac13.arm64-skia-alt-blink-rel": {
+    "mac-skia-alt-arm64-blink-rel": {
         "main": "tryserver.blink",
-        "port_name": "mac-mac13-arm64",
-        "specifiers": ["Mac13-arm64", "Release"],
+        "port_name": "mac-mac14-arm64",
+        "specifiers": ["Mac14-arm64", "Release"],
         "steps": {
-            "graphite_enabled_blink_web_tests (with patch)": {
+            "graphite_enabled_blink_web_tests": {
                 "flag_specific": "enable-skia-graphite"
             },
-            "graphite_enabled_blink_wpt_tests (with patch)": {
+            "graphite_enabled_blink_wpt_tests": {
+                "flag_specific": "enable-skia-graphite"
+            },
+            "graphite_enabled_headless_shell_wpt_tests": {
                 "flag_specific": "enable-skia-graphite"
             }
+        },
+        "is_try_builder": true
+    },
+    "mac14-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "mac-mac14",
+        "specifiers": ["Mac14", "Release"],
+        "steps": {
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
+        },
+        "is_try_builder": true
+    },
+    "mac14.arm64-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "mac-mac14-arm64",
+        "specifiers": ["Mac14-arm64", "Release"],
+        "steps": {
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
+        },
+        "is_try_builder": true
+    },
+    "mac15-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "mac-mac15",
+        "specifiers": ["Mac15", "Release"],
+        "steps": {
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
+        },
+        "is_try_builder": true
+    },
+    "mac15.arm64-blink-rel": {
+        "main": "tryserver.blink",
+        "port_name": "mac-mac15-arm64",
+        "specifiers": ["Mac15-arm64", "Release"],
+        "steps": {
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -172,8 +223,10 @@
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -185,8 +238,10 @@
             "Release"
         ],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -195,8 +250,10 @@
         "port_name": "win-win11",
         "specifiers": ["Win11", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true
     },
@@ -205,55 +262,76 @@
         "port_name": "linux",
         "specifiers": ["Linux", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {},
-            "high_dpi_blink_web_tests (with patch)": {
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {},
+            "high_dpi_blink_web_tests": {
                 "flag_specific": "highdpi"
             },
-            "high_dpi_blink_wpt_tests (with patch)": {
+            "high_dpi_blink_wpt_tests": {
                 "flag_specific": "highdpi"
             },
-            "vulkan_swiftshader_blink_web_tests (with patch)": {
+            "high_dpi_headless_shell_wpt_tests": {
+                "flag_specific": "highdpi"
+            },
+            "vulkan_swiftshader_blink_web_tests": {
                 "flag_specific": "skia-vulkan-swiftshader"
             },
-            "not_site_per_process_blink_web_tests (with patch)": {
+            "not_site_per_process_blink_web_tests": {
                 "flag_specific": "disable-site-isolation-trials"
             },
-            "not_site_per_process_blink_wpt_tests (with patch)": {
+            "not_site_per_process_blink_wpt_tests": {
+                "flag_specific": "disable-site-isolation-trials"
+            },
+            "not_site_per_process_headless_shell_wpt_tests": {
                 "flag_specific": "disable-site-isolation-trials"
             }
         },
         "is_try_builder": true,
-        "is_cq_builder":true
+        "is_cq_builder": true
     },
     "mac-rel": {
         "main": "tryserver.chromium.mac",
-        "port_name": "mac-mac13",
-        "specifiers": ["Mac13", "Release"],
+        "port_name": "mac-mac14",
+        "specifiers": ["Mac14", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true,
-        "is_cq_builder":true
+        "is_cq_builder": true
     },
     "win-rel": {
         "main": "tryserver.chromium.win",
         "port_name": "win-win10.20h2",
         "specifiers": ["Win10.20h2", "Release"],
         "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
+            "blink_web_tests": {},
+            "blink_wpt_tests": {},
+            "chrome_wpt_tests": {},
+            "headless_shell_wpt_tests": {}
         },
         "is_try_builder": true,
-        "is_cq_builder":true
+        "is_cq_builder": true
     },
-    "android-chrome-pie-x86-wpt-android-specific": {
-        "main": "tryserver.blink",
+    "android-chrome-13-x64-wpt-android-specific": {
+        "main": "tryserver.chromium.android",
+        "port_name": "android",
+        "specifiers": ["Android", "Release"],
+        "steps": {
+            "android_blink_wpt_tests": {}
+        },
+        "is_try_builder": true
+    },
+    "android-webview-13-x64-wpt-android-specific": {
+        "main": "tryserver.chromium.android",
         "port_name": "webview",
         "specifiers": ["Webview", "Release"],
         "steps": {
-            "system_webview_wpt": {}
+            "webview_blink_wpt_tests": {}
         },
         "is_try_builder": true
     }

@@ -31,7 +31,7 @@ namespace content {
 class MediaInterfaceFactory final : public media::mojom::InterfaceFactory {
  public:
   explicit MediaInterfaceFactory(
-      blink::BrowserInterfaceBrokerProxy* interface_broker);
+      const blink::BrowserInterfaceBrokerProxy* interface_broker);
   // This ctor is intended for use by the RenderThread, which doesn't have an
   // interface broker.  This is only necessary for WebRTC, and should be avoided
   // if we can restructure WebRTC to create factories per-frame rather than
@@ -52,6 +52,11 @@ class MediaInterfaceFactory final : public media::mojom::InterfaceFactory {
       mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
       mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
           dst_video_decoder) final;
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  void CreateStableVideoDecoder(
+      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
+          video_decoder) final;
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void CreateAudioEncoder(
       mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) final;
   void CreateDefaultRenderer(
@@ -91,8 +96,7 @@ class MediaInterfaceFactory final : public media::mojom::InterfaceFactory {
   media::mojom::InterfaceFactory* GetMediaInterfaceFactory();
   void OnConnectionError();
 
-  raw_ptr<blink::BrowserInterfaceBrokerProxy, ExperimentalRenderer>
-      interface_broker_;
+  raw_ptr<const blink::BrowserInterfaceBrokerProxy> interface_broker_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

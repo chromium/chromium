@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_animated_property.h"
 #include "third_party/blink/renderer/core/svg/svg_number.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -39,8 +40,11 @@ InterpolationValue SVGNumberInterpolationType::MaybeConvertSVGValue(
 SVGPropertyBase* SVGNumberInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
-  float value =
-      ClampTo<float>(To<InterpolableNumber>(interpolable_value).Value());
+  // Note: using default CSSToLengthConversionData here as it's
+  // guaranteed to be a double.
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
+  float value = ClampTo<float>(To<InterpolableNumber>(interpolable_value)
+                                   .Value(CSSToLengthConversionData()));
   return MakeGarbageCollected<SVGNumber>(is_non_negative_ && value < 0 ? 0
                                                                        : value);
 }

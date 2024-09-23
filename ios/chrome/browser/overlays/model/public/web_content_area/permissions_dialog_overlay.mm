@@ -59,7 +59,7 @@ PermissionsDialogRequest::PermissionsDialogRequest(
     string_id_for_permission =
         IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_MICROPHONE;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   message_ = l10n_util::GetNSStringF(
       IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE, base::UTF8ToUTF16(url.host()),

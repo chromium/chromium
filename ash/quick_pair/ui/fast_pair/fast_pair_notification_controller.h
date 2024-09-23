@@ -86,6 +86,7 @@ class FastPairNotificationController {
       base::RepeatingClosure on_save_clicked,
       base::RepeatingClosure on_learn_more_clicked,
       base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
+  void ShowPasskey(const std::u16string& device_name, uint32_t passkey);
   void RemoveNotifications();
   void ExtendNotification();
 

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -31,6 +32,10 @@ const char kSecureConnectApiGetSecondaryGoogleAccountUsageUrl[] =
     "https://secureconnect-pa.clients6.google.com/"
     "v1:getManagedAccountsSigninRestriction?policy_name="
     "SecondaryGoogleAccountUsage";
+const char kSecureConnectApiGetSecondaryAccountAllowedInArcPolicyUrl[] =
+    "https://secureconnect-pa.clients6.google.com/"
+    "v1:getManagedAccountsSigninRestriction?policy_name="
+    "SecondaryAccountAllowedInArcPolicy";
 const char kFakeAccessToken[] = "fake-access-token";
 const char kFakeRefreshToken[] = "fake-refresh-token";
 const char kFakeEnterpriseAccount[] = "alice@acme.com";
@@ -105,6 +110,19 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
     this->hosted_domain_ = future.Get<2>();
   }
 
+  // Get policy value for SecondaryAccountAllowedInArcPolicy.
+  void GetSecondaryAccountAllowedInArcPolicyBlocking(
+      UserCloudSigninRestrictionPolicyFetcher* restriction_fetcher,
+      std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher) {
+    base::test::TestFuture<UserCloudSigninRestrictionPolicyFetcher::Status,
+                           std::optional<bool>>
+        future;
+    restriction_fetcher->GetSecondaryAccountAllowedInArcPolicy(
+        std::move(access_token_fetcher), future.GetCallback());
+    this->status_ = future.Get<0>();
+    this->policy_value_ = future.Get<1>();
+  }
+
   const std::string& oauth_user_info_url() const {
     return GaiaUrls::GetInstance()->oauth_user_info_url().spec();
   }
@@ -117,12 +135,13 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
   UserCloudSigninRestrictionPolicyFetcher::Status status_ =
       UserCloudSigninRestrictionPolicyFetcher::Status::kUnknownError;
   std::optional<std::string> policy_result_;
+  std::optional<bool> policy_value_;
   std::string hosted_domain_;
   network::TestURLLoaderFactory url_loader_factory_;
 };
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
-       FetchingPolicyValueSucceeds) {
+       FetchingPolicyValueSucceedsForSecondaryGoogleAccountUsage) {
   // Set API response.
   base::Value::Dict expected_response;
   expected_response.Set("policyValue", "primary_account_signin");
@@ -132,6 +151,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   url_loader_factory_.AddResponse(
       kSecureConnectApiGetSecondaryGoogleAccountUsageUrl, std::move(response));
   url_loader_factory_.AddResponse(oauth_user_info_url(), kUserInfoResponse);
+  base::HistogramTester tester;
 
   // Create policy fetcher.
   UserCloudSigninRestrictionPolicyFetcher restriction_fetcher(
@@ -150,6 +170,85 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
   EXPECT_EQ(policy_result_.value(), "primary_account_signin");
   EXPECT_EQ(status_, UserCloudSigninRestrictionPolicyFetcher::Status::kSuccess);
   EXPECT_EQ(hosted_domain_, kFakeEnterpriseDomain);
+  tester.ExpectTotalCount(
+      "Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency", 1);
+}
+
+TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
+       FetchingPolicyValueSucceedsForSecondaryAccountAllowedInArcPolicy) {
+  // Set API response.
+  base::Value::Dict expected_response;
+  expected_response.Set("policyValue", "true");
+  std::string response;
+  JSONStringValueSerializer serializer(&response);
+  ASSERT_TRUE(serializer.Serialize(expected_response));
+  url_loader_factory_.AddResponse(
+      kSecureConnectApiGetSecondaryAccountAllowedInArcPolicyUrl,
+      std::move(response));
+  url_loader_factory_.AddResponse(oauth_user_info_url(), kUserInfoResponse);
+  base::HistogramTester tester;
+
+  // Create policy fetcher.
+  UserCloudSigninRestrictionPolicyFetcher restriction_fetcher(
+      kFakeEnterpriseAccount, GetSharedURLLoaderFactory());
+
+  // Create access token fetcher.
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      std::make_unique<MockAccessTokenFetcher>(
+          /*consumer=*/&restriction_fetcher,
+          /*error=*/GoogleServiceAuthError::AuthErrorNone());
+
+  GetSecondaryAccountAllowedInArcPolicyBlocking(
+      &restriction_fetcher, std::move(access_token_fetcher));
+
+  EXPECT_TRUE(policy_value_);
+  EXPECT_TRUE(policy_value_.value());
+  EXPECT_EQ(status_, UserCloudSigninRestrictionPolicyFetcher::Status::kSuccess);
+  tester.ExpectTotalCount("Arc.Policy.SecondaryAccountAllowedInArc.TimeDelta",
+                          1);
+  tester.ExpectUniqueSample(
+      "Arc.Policy.SecondaryAccountAllowedInArc.Status",
+      UserCloudSigninRestrictionPolicyFetcher::Status::kSuccess, 1);
+  tester.ExpectBucketCount("Arc.Policy.SecondaryAccountAllowedInArc.Value", 1,
+                           1);
+}
+
+TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
+       FetchingArcPolicyValueFailsForNetworkErrors) {
+  // Fake network error.
+  url_loader_factory_.AddResponse(
+      GURL(kSecureConnectApiGetSecondaryAccountAllowedInArcPolicyUrl),
+      /*head=*/network::mojom::URLResponseHead::New(),
+      /*content=*/std::string(),
+      network::URLLoaderCompletionStatus(net::ERR_INTERNET_DISCONNECTED),
+      network::TestURLLoaderFactory::Redirects(),
+      network::TestURLLoaderFactory::ResponseProduceFlags::
+          kSendHeadersOnNetworkError);
+  url_loader_factory_.AddResponse(oauth_user_info_url(), kUserInfoResponse);
+  base::HistogramTester tester;
+
+  // Create policy fetcher.
+  UserCloudSigninRestrictionPolicyFetcher restriction_fetcher(
+      kFakeEnterpriseAccount, GetSharedURLLoaderFactory());
+
+  // Create access token fetcher.
+  std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
+      std::make_unique<MockAccessTokenFetcher>(
+          /*consumer=*/&restriction_fetcher,
+          /*error=*/GoogleServiceAuthError::AuthErrorNone());
+
+  // Try to fetch policy value.
+  GetSecondaryAccountAllowedInArcPolicyBlocking(
+      &restriction_fetcher, std::move(access_token_fetcher));
+
+  EXPECT_FALSE(policy_value_);
+  EXPECT_EQ(status_,
+            UserCloudSigninRestrictionPolicyFetcher::Status::kNetworkError);
+  tester.ExpectUniqueSample(
+      "Arc.Policy.SecondaryAccountAllowedInArc.Status",
+      UserCloudSigninRestrictionPolicyFetcher::Status::kNetworkError, 1);
+  tester.ExpectBucketCount("Arc.Policy.SecondaryAccountAllowedInArc.Value", 0,
+                           0);
 }
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,

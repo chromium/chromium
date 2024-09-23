@@ -9,14 +9,17 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/time/time.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 
 namespace sync_pb {
 class EntitySpecifics;
+class UniquePosition;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -27,7 +30,7 @@ struct CommitRequestData;
 struct CommitResponseData;
 struct UpdateResponseData;
 
-// This class is used by the ClientTagBasedModelTypeProcessor to track the state
+// This class is used by the ClientTagBasedDataTypeProcessor to track the state
 // of each entity with its type. It can be considered a helper class internal to
 // the processor. It manages the metadata for its entity and caches entity data
 // upon a local change until commit confirmation is received.
@@ -82,20 +85,26 @@ class ProcessorEntity {
 
   // Records an update from the server assuming its data is the new data for
   // this entity.
-  void RecordAcceptedRemoteUpdate(const UpdateResponseData& response_data,
-                                  sync_pb::EntitySpecifics trimmed_specifics);
+  void RecordAcceptedRemoteUpdate(
+      const UpdateResponseData& response_data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Squashes a pending commit with an update from the server.
-  void RecordForcedRemoteUpdate(const UpdateResponseData& response_data,
-                                sync_pb::EntitySpecifics trimmed_specifics);
+  void RecordForcedRemoteUpdate(
+      const UpdateResponseData& response_data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Applies a local change to this item.
-  void RecordLocalUpdate(std::unique_ptr<EntityData> data,
-                         sync_pb::EntitySpecifics trimmed_specifics);
+  void RecordLocalUpdate(
+      std::unique_ptr<EntityData> data,
+      sync_pb::EntitySpecifics trimmed_specifics,
+      std::optional<sync_pb::UniquePosition> unique_position);
 
   // Applies a local deletion to this item. Returns true if entity was
   // previously committed to server and tombstone should be sent.
-  bool RecordLocalDeletion();
+  bool RecordLocalDeletion(const DeletionOrigin& origin);
 
   // Initializes a message representing this item's uncommitted state
   // and assumes that it is forwarded to the sync engine for commiting.

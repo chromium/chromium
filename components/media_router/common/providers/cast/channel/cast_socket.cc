@@ -19,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/media_router/common/providers/cast/channel/cast_auth_util.h"
@@ -218,8 +217,8 @@ void CastSocketImpl::Connect(OnOpenCallback callback) {
       std::move(callback).Run(this);
       break;
     default:
-      NOTREACHED() << "Unknown ReadyState: "
-                   << ReadyStateToString(ready_state_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown ReadyState: " << ReadyStateToString(ready_state_);
   }
 }
 
@@ -367,7 +366,8 @@ void CastSocketImpl::DoConnectLoop(int result) {
         DCHECK(IsTerminalState(connect_state_));
         break;
       default:
-        NOTREACHED() << "Unknown state in connect flow: " << AsInteger(state);
+        NOTREACHED_IN_MIGRATION()
+            << "Unknown state in connect flow: " << AsInteger(state);
         SetConnectState(ConnectionState::FINISHED);
         SetErrorState(ChannelError::UNKNOWN);
         DoConnectCallback();

@@ -72,7 +72,6 @@ cast_source_set("renderer") {
     "//crypto",
     "//gin",
     "//ipc",
-    "//media/remoting:remoting_constants",
     "//media/remoting:remoting_renderer",
     "//net",
     "//services/network/public/cpp:cpp",

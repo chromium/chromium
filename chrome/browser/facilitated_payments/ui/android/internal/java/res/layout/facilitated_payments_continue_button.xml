@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.ui.widget.ButtonCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="blocksDescendants"
+    android:id="@+id/facilitated_payments_continue_button_title"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/facilitated_payments_continue_button_height"
+    android:layout_marginBottom="@dimen/facilitated_payments_continue_button_margin_bottom"
+    android:layout_marginHorizontal="@dimen/facilitated_payments_horizontal_margin"
+    android:gravity="center"
+    android:background="@drawable/touch_to_fill_credential_background"
+    android:ellipsize="end"
+    android:singleLine="true"
+    style="@style/FilledButton"/>

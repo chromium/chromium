@@ -6,14 +6,6 @@
 
 namespace web_app {
 
-BASE_FEATURE(kSeparateUserDisplayModeForCrOS,
-             "SeparateUserDisplayModeForCrOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSyncOnlySeparateUserDisplayModeForCrOS,
-             "SyncOnlySeparateUserDisplayModeForCrOS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUserDisplayModeSyncBrowserMitigation,
              "UserDisplayModeSyncBrowserMitigation",

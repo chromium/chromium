@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+ *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+-->
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="description" content="Simple Webcam">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta itemprop="description" content="Request on device camera">
+    <meta itemprop="name" content="Simple camera">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta id="theme-color" name="theme-color" content="#ffffff">
+
+    <base target="_blank">
+
+    <title>getUserMedia</title>
+
+    <link rel="stylesheet" href="css/main.css">
+
+</head>
+
+<body>
+
+<div id="container">
+    <h1>Simple getUserMedia() Webcam</h1>
+
+    <video id="gum-local" autoplay playsinline></video>
+    <button id="open-camera">Open camera</button>
+
+    <div id="errorMsg"></div>
+
+    <p class="warning"><strong>Warning:</strong> if you're not using headphones, pressing play will cause feedback.</p>
+
+    <p>Display the video stream from <code>getUserMedia()</code> in a video element.</p>
+
+    <p>The <code>MediaStream</code> object <code>stream</code> passed to the <code>getUserMedia()</code> callback is in
+        global scope, so you can inspect it from the console.</p>
+</div>
+
+<script src="js/main.js"></script>
+
+<!-- <script src="../../../js/lib/ga.js"></script> -->
+
+</body>
+</html>

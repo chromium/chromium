@@ -21,6 +21,7 @@ class JunitTestInstance(test_instance.TestInstance):
     self._robolectric_runtime_deps_dir = args.robolectric_runtime_deps_dir
     self._runner_filter = args.runner_filter
     self._json_config = args.json_config
+    self._shadows_allowlist = args.shadows_allowlist
     self._shards = args.shards
     self._shard_filter = None
     if args.shard_filter:
@@ -71,6 +72,10 @@ class JunitTestInstance(test_instance.TestInstance):
   @property
   def runner_filter(self):
     return self._runner_filter
+
+  @property
+  def shadows_allowlist(self):
+    return self._shadows_allowlist
 
   @property
   def test_filters(self):

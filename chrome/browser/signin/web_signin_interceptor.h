@@ -93,6 +93,11 @@ enum class SigninInterceptionHeuristicOutcome {
   kMaxValue = kAbortNotFirstAccountButNoPrimaryAccount,
 };
 
+// Returns whether the heuristic outcome is a success (the signin should be
+// intercepted).
+bool SigninInterceptionHeuristicOutcomeIsSuccess(
+    SigninInterceptionHeuristicOutcome outcome);
+
 // User selection in the interception bubble.
 enum class SigninInterceptionUserChoice { kAccept, kDecline };
 
@@ -120,6 +125,15 @@ enum class SigninInterceptionResult {
   kMaxValue = kDismissed,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SigninInterceptionDismissReason {
+  kEscKey = 0,
+  kIdentityPillPressed = 1,
+
+  kMaxValue = kIdentityPillPressed,
+};
+
 // The ScopedWebSigninInterceptionBubbleHandle closes the signin intercept
 // bubble when it is destroyed, if the bubble is still opened. Note that this
 // handle does not prevent the bubble from being closed for other reasons.
@@ -127,11 +141,6 @@ class ScopedWebSigninInterceptionBubbleHandle {
  public:
   virtual ~ScopedWebSigninInterceptionBubbleHandle() = 0;
 };
-
-// Returns whether the heuristic outcome is a success (the signin should be
-// intercepted).
-bool SigninInterceptionHeuristicOutcomeIsSuccess(
-    SigninInterceptionHeuristicOutcome outcome);
 
 class WebSigninInterceptor {
  public:
@@ -143,6 +152,7 @@ class WebSigninInterceptor {
     kEnterpriseAcceptManagement,
     kProfileSwitchForced,
     kChromeSignin,
+    kEnterpriseOIDC
   };
 
   // Delegate class responsible for showing the various interception UIs.
@@ -191,6 +201,13 @@ class WebSigninInterceptor {
         content::WebContents* web_contents,
         const BubbleParameters& bubble_parameters,
         base::OnceCallback<void(SigninInterceptionResult)> callback) = 0;
+
+    virtual std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+    ShowOidcInterceptionDialog(
+        content::WebContents* web_contents,
+        const BubbleParameters& bubble_parameters,
+        signin::SigninChoiceWithConfirmationCallback callback,
+        base::OnceClosure dialog_closed_closure) = 0;
 
     // Shows the first run experience for `account_id` in `browser` opened for
     // a newly created profile.

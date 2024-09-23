@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../controls/settings_toggle_button.js';
 import './privacy_sandbox_interest_item.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -280,7 +280,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     assert(dialog);
     assert(this.currentInterest_);
     if (dialog.wasConfirmed()) {
-      this.onBlockButtonDialogHandler_(this.currentInterest_!);
+      this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
     }
     this.blockTopicDialogBody_ = '';
     this.blockTopicDialogTitle_ = '';
@@ -289,43 +289,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.currentInterest_ = undefined;
   }
 
-  private onBlockButtonDialogHandler_(currentSelectedInterest:
-                                          PrivacySandboxInterest) {
-    // Remove the selected topic's active child topics from the topics list.
-    this.topicsList_ = this.topicsList_.filter(
-        activeTopic => !this.currentChildTopics_.some(
-            childTopic => activeTopic.topic?.topicId === childTopic.topicId));
-    assert(currentSelectedInterest);
-    this.blockCurrentSelectedTopic_(currentSelectedInterest);
-    this.updateTopicsStateForSelectedTopic_(currentSelectedInterest);
-    this.blockedTopicsExpanded_ = true;
-  }
-
-  private blockCurrentSelectedTopic_(currentSelectedInterest:
-                                         PrivacySandboxInterest) {
-    // Remove current selected topic from active topics list.
-    this.topicsList_.splice(
-        this.topicsList_.indexOf(currentSelectedInterest), 1);
-    // Move the blocked topic to the blocked section.
-    this.blockedTopicsList_.push(
-        {topic: currentSelectedInterest.topic, removed: true});
-    this.blockedTopicsList_.sort(
-        (first, second) =>
-            first.topic!.displayString < second.topic!.displayString ? -1 : 1);
-  }
-
   private updateTopicsStateForSelectedTopic_(currentSelectedInterest:
                                                  PrivacySandboxInterest) {
-    // This causes the lists to be fully re-rendered, in order to reflect the
-    /// interest changes.
-    this.topicsList_ = this.topicsList_.slice();
-    this.blockedTopicsList_ = this.blockedTopicsList_.slice();
-
-    // If the interest was previously removed, set it to allowed, and vice
-    // versa.
     this.privacySandboxBrowserProxy_.setTopicAllowed(
         currentSelectedInterest.topic!,
         /*allowed=*/ currentSelectedInterest.removed);
+    this.privacySandboxBrowserProxy_.getTopicsState().then(
+        state => this.onTopicsStateChanged_(state));
 
     this.metricsBrowserProxy_.recordAction(
         currentSelectedInterest.removed ?
@@ -348,14 +318,11 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     assert(this.currentInterest_!.topic);
     assert(this.currentInterest_!.topic!.displayString);
 
-    // If topic is being unblocked, show toast and remove from blocked topics
-    // list.
+    // If topic is being unblocked, show toast and update topic state.
     if (this.currentInterest_!.removed) {
       const toast = this.shadowRoot!.querySelector('cr-toast');
       assert(toast);
       toast.show();
-      this.blockedTopicsList_.splice(
-          this.blockedTopicsList_.indexOf(this.currentInterest_!), 1);
       this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
       return;
     }
@@ -376,15 +343,10 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       return;
     }
     // Currently selected topic doesn't have active child topics.
-    // Block topic and update state.
-    this.blockCurrentSelectedTopic_(this.currentInterest_!);
+    // Update topics state.
     this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
     this.blockedTopicsExpanded_ = true;
   }
-
-  // TODO(b/322545308) - Clean up Ad Topics Subpage UI so that it does not need
-  // to rely on updating the state of blocked/active topics. Just rely on the
-  // backend API functions to be the source of truth.
 
   // This function is run anytime the interest item changes. Which means that it
   // runs when a user blocks/allows a topic.
@@ -395,14 +357,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       this.onInterestChangedV2_();
       return;
     }
-    if (this.currentInterest_.removed) {
-      // Topic is being allowed
-      this.blockedTopicsList_.splice(
-          this.blockedTopicsList_.indexOf(this.currentInterest_), 1);
-    } else {
-      this.blockCurrentSelectedTopic_(this.currentInterest_);
-    }
-    this.updateTopicsStateForSelectedTopic_(this.currentInterest_);
+    this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
   }
 
   private onBlockedTopicsExpanded_() {
@@ -442,13 +397,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
   private computeTopicsPageCurrentTopicsHeading_(): string {
     return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageCurrentTopicsHeadingV2' :
+        this.shouldShowV2_ ? 'topicsPageActiveTopicsHeading' :
                              'topicsPageCurrentTopicsHeading');
   }
 
   private computeTopicsPageCurrentTopicsDescription_(): string {
     return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageCurrentTopicsDescriptionV2' :
+        this.shouldShowV2_ ? 'topicsPageActiveTopicsDescription' :
                              'topicsPageCurrentTopicsDescription');
   }
 
@@ -460,7 +415,7 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
 
   private computeTopicsPageBlockedTopicsHeading_(): string {
     return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageBlockedTopicsHeadingV2' :
+        this.shouldShowV2_ ? 'topicsPageBlockedTopicsHeadingNew' :
                              'topicsPageBlockedTopicsHeading');
   }
 }

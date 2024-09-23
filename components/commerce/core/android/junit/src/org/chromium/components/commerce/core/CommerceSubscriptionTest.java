@@ -148,7 +148,7 @@ public class CommerceSubscriptionTest {
     @Test
     public void testEquality_SeenOfferIgnored() {
         CommerceSubscription.UserSeenOffer seen =
-                new CommerceSubscription.UserSeenOffer("5678", 100, "us");
+                new CommerceSubscription.UserSeenOffer("5678", 100, "us", "en-US");
 
         String clusterId = "1234";
         CommerceSubscription sub1 =

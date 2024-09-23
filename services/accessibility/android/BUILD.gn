@@ -25,6 +25,8 @@ source_set("android_lib") {
     "ax_tree_source_android.h",
     "drawer_layout_handler.cc",
     "drawer_layout_handler.h",
+    "pane_title_handler.cc",
+    "pane_title_handler.h",
   ]
 }
 
@@ -59,5 +61,6 @@ source_set("tests") {
     "auto_complete_handler_unittest.cc",
     "ax_tree_source_android_unittest.cc",
     "drawer_layout_handler_unittest.cc",
+    "pane_title_handler_unittest.cc",
   ]
 }

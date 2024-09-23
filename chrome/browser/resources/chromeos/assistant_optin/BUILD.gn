@@ -133,7 +133,6 @@ js_library("assistant_icons.html") {
 js_library("voice_match_entry") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/assistant_optin/voice_match_entry.js" ]
   deps = [
-    "../login/components/behaviors:oobe_i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Removing steps (innerHTML): script does not run synchronously during iframe destruction
+  assert_false: iframe1 pagehide did not fire expected false got true
+[FAIL] Removing steps (replaceChildren): script does not run synchronously during iframe destruction
+  assert_false: iframe1 pagehide did not fire expected false got true
+[FAIL] Removing steps (remove): script does not run synchronously during iframe destruction
+  assert_false: iframe1 pagehide did not fire expected false got true
+Harness: the test ran to completion.
+

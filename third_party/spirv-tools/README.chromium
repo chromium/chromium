@@ -1,0 +1,17 @@
+Name: SPIR-V Tools
+Short Name: SPIRV-Tools
+URL: https://github.com/KhronosGroup/SPIRV-Tools.git
+Version: N/A
+Revision: 199038f10cbe56bf7cbfeb5472eb0a25af2f09f5
+Security Critical: yes
+Shipped: yes
+License: Apache 2.0
+License File: LICENSE
+
+Description:
+The SPIR-V Tools project provides an API and commands for processing
+SPIR-V modules.
+
+Local Modifications:
+Added OWNERS, README.chromium.
+Ported build rules from CMake to GN.

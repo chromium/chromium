@@ -10,19 +10,21 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
-#import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
-#import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
 @interface FirstRunAppAgent () <AppStateObserver,
@@ -162,6 +164,15 @@
   _firstRunUIBlocker =
       std::make_unique<ScopedUIBlocker>(self.presentingSceneState);
 
+  // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these are
+  // loaded in iSL.
+  if (IsPrefetchingSystemCapabilitiesOnFirstRun()) {
+    RunSystemCapabilitiesPrefetch(
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            self.mainBrowser->GetBrowserState())
+            ->GetAllIdentities());
+  }
+
   FirstRunScreenProvider* provider = [[FirstRunScreenProvider alloc]
       initForBrowserState:self.mainBrowser->GetBrowserState()];
 
@@ -184,15 +195,11 @@
 
 #pragma mark - FirstRunCoordinatorDelegate
 
-- (void)willFinishPresentingScreens {
+- (void)didFinishFirstRun {
   DCHECK(self.appState.initStage == InitStageFirstRun);
   _firstRunUIBlocker.reset();
-
   [self.firstRunCoordinator stop];
   self.firstRunCoordinator = nil;
-}
-
-- (void)didFinishPresentingScreens {
   [self.appState queueTransitionToNextInitStage];
 }
 

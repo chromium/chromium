@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
@@ -79,10 +78,8 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
 
         if (GetConstraintSpace().HasBlockFragmentation()) {
           SetupSpaceBuilderForFragmentation(
-              GetConstraintSpace(), cell,
-              /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
-              /* is_new_fc */ true,
-              container_builder_.RequiresContentBeforeBreaking());
+              container_builder_, cell,
+              /*fragmentainer_offset_delta=*/LayoutUnit(), &builder);
 
           if (min_block_size_should_encompass_intrinsic_size)
             builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
@@ -260,11 +257,8 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
     container_builder_.SetPreviousBreakAfter(row_break_after);
   }
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    BreakStatus status = FinishFragmentation(
-        Node(), GetConstraintSpace(),
-        /* trailing_border_padding */ LayoutUnit(),
-        FragmentainerSpaceLeft(GetConstraintSpace()), &container_builder_);
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
+    BreakStatus status = FinishFragmentation(&container_builder_);
 
     // TODO(mstensho): Deal with early-breaks.
     DCHECK_EQ(status, BreakStatus::kContinue);
@@ -281,7 +275,7 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
   container_builder_.SetBaselines(row_baseline_tabulator.ComputeBaseline(
       container_builder_.FragmentBlockSize()));
 
-  OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
+  container_builder_.HandleOofsAndSpecialDescendants();
   return container_builder_.ToBoxFragment();
 }
 

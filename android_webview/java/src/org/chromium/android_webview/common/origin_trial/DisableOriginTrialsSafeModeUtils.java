@@ -10,8 +10,6 @@ import org.jni_zero.JNINamespace;
 /** A util class for disable origin trials Safe Mode operations. */
 @JNINamespace("android_webview")
 public class DisableOriginTrialsSafeModeUtils {
-    private static final String TAG = "AwDisableOriginTrialsSafeMode";
-
     // Don't instantiate this class.
     private DisableOriginTrialsSafeModeUtils() {}
 

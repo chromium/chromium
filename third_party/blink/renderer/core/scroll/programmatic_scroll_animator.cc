@@ -46,8 +46,9 @@ void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
   ScrollOffsetChanged(offset, GetScrollType());
   is_sequenced_scroll_ = false;
   if (SmoothScrollSequencer* sequencer =
-          GetScrollableArea()->GetSmoothScrollSequencer())
+          GetScrollableArea()->GetSmoothScrollSequencer()) {
     sequencer->RunQueuedAnimations();
+  }
 }
 
 void ProgrammaticScrollAnimator::AnimateToOffset(
@@ -57,14 +58,24 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
   if (run_state_ == RunState::kPostAnimationCleanup)
     ResetAnimationState();
 
-  start_time_ = base::TimeTicks();
-  target_offset_ = offset;
   is_sequenced_scroll_ = is_sequenced_scroll;
   if (on_finish_) {
     std::move(on_finish_)
         .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
   }
   on_finish_ = std::move(on_finish);
+  // Ideally, if an ongoing animation exists when we receive a request to
+  // animate to a different offset, instead of cancelling the current
+  // animation, we could retarget the current animation to the new
+  // scroll offset, keeping the velocity of the current animation.
+  // When doing this, we'd need to be careful to handle the possibility
+  // of repeatedly retargeting to a drastically different location such that
+  // the scroll never settles.
+  if (animation_curve_ && target_offset_ == offset) {
+    return;
+  }
+  start_time_ = base::TimeTicks();
+  target_offset_ = offset;
   animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_),
       cc::ScrollOffsetAnimationCurveFactory::ScrollType::kProgrammatic);
@@ -100,7 +111,6 @@ void ProgrammaticScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
     run_state_ = RunState::kPostAnimationCleanup;
     AnimationFinished();
   } else if (!scrollable_area_->ScheduleAnimation()) {
-    ScrollOffsetChanged(offset, GetScrollType());
     ResetAnimationState();
   }
 }
@@ -136,23 +146,22 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
           GetScrollableArea()->GetCompositorAnimationTimeline());
 
     bool sent_to_compositor = false;
+    if (!scrollable_area_->ShouldScrollOnMainThread()) {
+      // If MultiSmoothScrollIntoView is not enabled, we use sequenced scrolls
+      // which we cannot send to the compositor thread. crbug.com/730705.
+      if (!is_sequenced_scroll_ ||
+          RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
+        auto animation = cc::KeyframeModel::Create(
+            animation_curve_->Clone(),
+            cc::AnimationIdProvider::NextKeyframeModelId(),
+            cc::AnimationIdProvider::NextGroupId(),
+            cc::KeyframeModel::TargetPropertyId(
+                cc::TargetProperty::SCROLL_OFFSET));
 
-    // TODO(sunyunjia): Sequenced Smooth Scroll should also be able to
-    // scroll on the compositor thread. We should send the ScrollType
-    // information to the compositor thread.
-    // crbug.com/730705
-    if (!scrollable_area_->ShouldScrollOnMainThread() &&
-        !is_sequenced_scroll_) {
-      auto animation = cc::KeyframeModel::Create(
-          animation_curve_->Clone(),
-          cc::AnimationIdProvider::NextKeyframeModelId(),
-          cc::AnimationIdProvider::NextGroupId(),
-          cc::KeyframeModel::TargetPropertyId(
-              cc::TargetProperty::SCROLL_OFFSET));
-
-      if (AddAnimation(std::move(animation))) {
-        sent_to_compositor = true;
-        run_state_ = RunState::kRunningOnCompositor;
+        if (AddAnimation(std::move(animation))) {
+          sent_to_compositor = true;
+          run_state_ = RunState::kRunningOnCompositor;
+        }
       }
     }
 
@@ -166,11 +175,6 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
       }
     }
   }
-}
-
-void ProgrammaticScrollAnimator::MainThreadScrollingDidChange() {
-  ReattachCompositorAnimationIfNeeded(
-      scrollable_area_->GetCompositorAnimationTimeline());
 
   // If the scrollable area switched to require main thread scrolling during a
   // composited animation, continue the animation on the main thread.

@@ -172,7 +172,7 @@ LauncherSearchIphView::LauncherSearchIphView(
       l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE)));
   title_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   title_label_->SetEnabledColorId(kColorAshTextColorPrimary);
-  title_label_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kHeading);
+  title_label_->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
 
   views::Label* description_label = text_container->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
@@ -279,7 +279,8 @@ void LauncherSearchIphView::CreateChips(
     ChipView* chip = actions_container->AddChildView(
         std::make_unique<ChipView>(ChipView::Type::kLarge));
     chip->SetText(GetQueryText(query_type));
-    chip->SetAccessibleName(GetQueryTextAccessibleName(query_type));
+    chip->GetViewAccessibility().SetName(
+        GetQueryTextAccessibleName(query_type));
     chip->SetCallback(
         base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
                             weak_ptr_factory_.GetWeakPtr(), query_type));
@@ -312,7 +313,8 @@ void LauncherSearchIphView::ShuffleChipsQuery() {
     CHECK_LT(chip_index, chips_.size());
     auto chip = chips_[chip_index++];
     chip->SetText(GetQueryText(query_type));
-    chip->SetAccessibleName(GetQueryTextAccessibleName(query_type));
+    chip->GetViewAccessibility().SetName(
+        GetQueryTextAccessibleName(query_type));
     chip->SetCallback(
         base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
                             weak_ptr_factory_.GetWeakPtr(), query_type));

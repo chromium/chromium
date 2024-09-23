@@ -2,12 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import json
+import textwrap
 import unittest
+from unittest import mock
 
+from blinkpy.common.checkout.git import (
+    CommitRange,
+    FileStatus,
+    FileStatusType,
+)
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.git_cl import TryJobStatus
+from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.net.results_fetcher import Build
@@ -15,14 +23,17 @@ from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import MockCall
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.log_testing import LoggingTestCase
+from blinkpy.w3c.buganizer import BuganizerIssue
 from blinkpy.w3c.chromium_commit_mock import MockChromiumCommit
+from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
+from blinkpy.w3c.import_notifier import DirectoryFailures, ImportNotifier
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.test_importer import TestImporter, ROTATIONS_URL, SHERIFF_EMAIL_FALLBACK, RUBBER_STAMPER_BOT
 from blinkpy.w3c.wpt_github_mock import MockWPTGitHub
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.web_tests.builder_list import BuilderList
-from blinkpy.web_tests.port.android import ANDROID_DISABLED_TESTS
+from blinkpy.web_tests.models import typ_types
 from unittest.mock import patch
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
@@ -38,6 +49,11 @@ MANIFEST_INSTALL_CMD = [
 
 
 class TestImporterTest(LoggingTestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.buganizer_client = mock.Mock()
+
     def mock_host(self):
         host = MockHost()
         host.builders = BuilderList({
@@ -45,7 +61,7 @@ class TestImporterTest(LoggingTestCase):
                 'port_name': 'linux-trusty',
                 'specifiers': ['Trusty', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
                 'is_try_builder': True,
             },
@@ -53,7 +69,7 @@ class TestImporterTest(LoggingTestCase):
                 'port_name': 'mac-mac12',
                 'specifiers': ['Mac12', 'Release'],
                 'steps': {
-                    'blink_web_tests (with patch)': {},
+                    'blink_web_tests': {},
                 },
                 'is_try_builder': True,
             },
@@ -62,8 +78,7 @@ class TestImporterTest(LoggingTestCase):
                 'specifiers': ['Trusty', 'Release'],
                 'is_try_builder': True,
                 'steps': {
-                    'wpt_tests_suite (with patch)': {
-                    },
+                    'wpt_tests_suite': {},
                 }
             },
             'CI Builder D': {
@@ -73,7 +88,6 @@ class TestImporterTest(LoggingTestCase):
         })
         port = host.port_factory.get()
         MANIFEST_INSTALL_CMD[0] = port.python3_command()
-        host.filesystem.write_text_file(ANDROID_DISABLED_TESTS, '')
         return host
 
     def _get_test_importer(self, host, github=None):
@@ -83,7 +97,8 @@ class TestImporterTest(LoggingTestCase):
         self.logMessages().clear()
         return TestImporter(host,
                             github=github,
-                            wpt_manifests=[manifest])
+                            wpt_manifests=[manifest],
+                            buganizer_client=self.buganizer_client)
 
     def test_update_expectations_for_cl_no_results(self):
         host = self.mock_host()
@@ -106,12 +121,12 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='closed',
-            try_job_results={
-                Build('builder-a', 123): TryJobStatus('COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='closed',
+                                    try_job_results={
+                                        Build('builder-a', 123):
+                                        BuildStatus.SUCCESS,
+                                    })
         success = importer.update_expectations_for_cl()
         self.assertFalse(success)
         self.assertLog([
@@ -127,12 +142,12 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('builder-a', 123): TryJobStatus('COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('builder-a', 123):
+                                        BuildStatus.SUCCESS,
+                                    })
         success = importer.update_expectations_for_cl()
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations:\n',
@@ -148,12 +163,12 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('builder-a', 123): TryJobStatus('COMPLETED', 'FAILURE'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('builder-a', 123):
+                                        BuildStatus.FAILURE,
+                                    })
         importer.fetch_new_expectations_and_baselines = lambda: None
         success = importer.update_expectations_for_cl()
         self.assertTrue(success)
@@ -173,15 +188,15 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
         # Only the latest job for each builder is counted.
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'FAILURE'),
-                Build('cq-builder-a', 123): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('cq-builder-a', 120):
+                                        BuildStatus.FAILURE,
+                                        Build('cq-builder-a', 123):
+                                        BuildStatus.SUCCESS,
+                                    })
+
         success = importer.run_commit_queue_for_cl()
         self.assertTrue(success)
         self.assertLog([
@@ -209,18 +224,18 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-                Build('cq-builder-a', 123): TryJobStatus(
-                    'COMPLETED', 'FAILURE'),
-                Build('cq-builder-b', 200): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('cq-builder-a', 120):
+                                        BuildStatus.SUCCESS,
+                                        Build('cq-builder-a', 123):
+                                        BuildStatus.FAILURE,
+                                        Build('cq-builder-b', 200):
+                                        BuildStatus.SUCCESS,
+                                    })
         importer.fetch_new_expectations_and_baselines = lambda: None
+
         success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
@@ -238,17 +253,17 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
         # Only the latest job for each builder is counted.
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'FAILURE'),
-                Build('cq-builder-a', 123): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('cq-builder-a', 120):
+                                        BuildStatus.FAILURE,
+                                        Build('cq-builder-a', 123):
+                                        BuildStatus.SUCCESS,
+                                    })
         importer._need_sheriff_attention = lambda: False
         importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False
+
         success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
@@ -276,15 +291,15 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='closed',
-            try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-                Build('cq-builder-b', 200): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='closed',
+                                    try_job_results={
+                                        Build('cq-builder-a', 120):
+                                        BuildStatus.SUCCESS,
+                                        Build('cq-builder-b', 200):
+                                        BuildStatus.SUCCESS,
+                                    })
+
         success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
         self.assertLog([
@@ -321,10 +336,8 @@ class TestImporterTest(LoggingTestCase):
             status='lgtm',
             # Only the latest job for each builder is counted.
             try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'FAILURE'),
-                Build('cq-builder-a', 123): TryJobStatus(
-                    'COMPLETED', 'SUCCESS')
+                Build('cq-builder-a', 120): BuildStatus.FAILURE,
+                Build('cq-builder-a', 123): BuildStatus.SUCCESS,
             })
         importer._need_sheriff_attention = lambda: False
         importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False
@@ -421,7 +434,10 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'external/wpt/foo/OWNERS',
             'someone@chromium.org\n')
         importer = self._get_test_importer(host)
-        importer.project_git.changed_files = lambda: [RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertEqual(importer.get_directory_owners(),
                          {('someone@chromium.org', ): ['external/wpt/foo']})
 
@@ -435,6 +451,55 @@ class TestImporterTest(LoggingTestCase):
         importer = self._get_test_importer(host)
         self.assertEqual(importer.get_directory_owners(), {})
 
+    def test_delete_orphaned_baselines(self):
+        orphaned_baselines = {
+            'external/wpt/dir/variants_orphaned-expected.txt',
+            'platform/mac/virtual/fake-vts/'
+            'external/wpt/dir/variants_orphaned-expected.txt',
+            'external/wpt/orphaned-expected.txt',
+            'flag-specific/fake-flag/external/wpt/orphaned-expected.txt',
+        }
+        valid_baselines = {
+            'not-a-wpt-expected.txt',
+            'external/wpt/dir/variants_not-orphaned-expected.txt',
+            'external/wpt/not-orphaned-expected.txt',
+        }
+
+        host = self.mock_host()
+        fs = host.filesystem
+        manifest = {
+            'items': {
+                'testharness': {
+                    'dir': {
+                        'variants.html': [
+                            '89ab',
+                            ['dir/variants.html?not-orphaned', {}],
+                        ],
+                    },
+                },
+                'wdspec': {
+                    'not-orphaned.py': ['cdef', [None, {}]],
+                },
+            },
+        }
+        fs.write_text_file(MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json',
+                           json.dumps(manifest))
+        for baseline in [*orphaned_baselines, *valid_baselines]:
+            fs.write_text_file(MOCK_WEB_TESTS + baseline, '')
+
+        port = host.port_factory.get('test-linux-trusty')
+        importer = TestImporter(host, buganizer_client=mock.Mock())
+        with mock.patch.object(host.port_factory, 'get', return_value=port):
+            importer.delete_orphaned_baselines()
+
+        self.assertLog(['INFO: Deleted 4 orphaned baseline(s).\n'])
+        for baseline in orphaned_baselines:
+            self.assertFalse(fs.exists(MOCK_WEB_TESTS + baseline),
+                             f'{baseline!r} should not exist')
+        for baseline in valid_baselines:
+            self.assertTrue(fs.exists(MOCK_WEB_TESTS + baseline),
+                            f'{baseline!r} should exist')
+
     # Tests for protected methods - pylint: disable=protected-access
 
     def test_commit_changes(self):
@@ -447,44 +512,69 @@ class TestImporterTest(LoggingTestCase):
     def test_commit_message(self):
         importer = self._get_test_importer(self.mock_host())
         self.assertEqual(
-            importer._commit_message('aaaa', '1111'), 'Import 1111\n\n'
-            'Using wpt-import in Chromium aaaa.\n\n'
-            'No-Export: true\n'
-            'Validate-Test-Flakiness: skip')
+            importer.commit_message('aaaa',
+                                    CommitRange('0123456789', 'a123456789')),
+            textwrap.dedent("""\
+                Import wpt@a123456789
+
+                https://github.com/web-platform-tests/wpt/compare/012345678...a12345678
+
+                Using wpt-import in Chromium aaaa.
+                """))
+
+    def test_commit_message_with_pending_exportable_changes(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        locally_applied_commits = [
+            MockChromiumCommit(host, subject='Pending export 1'),
+            MockChromiumCommit(
+                host,
+                'refs/heads/main@{#222)',
+                subject=f'Pending export 2 with very long subject {"a" * 80}'),
+        ]
+        self.assertEqual(
+            importer.commit_message('aaaa', CommitRange('0000', '1111'),
+                                    locally_applied_commits),
+            textwrap.dedent("""\
+                Import wpt@1111
+
+                https://github.com/web-platform-tests/wpt/compare/0000...1111
+
+                Using wpt-import in Chromium aaaa.
+                With Chromium commits locally applied on WPT:
+                  14fd77e88e "Pending export 1"
+                  3e977a7ce6 "Pending export 2 with very long subject [...]
+                """)),
 
     def test_cl_description_with_empty_environ(self):
         host = self.mock_host()
         host.executive = MockExecutive(output='Last commit message\n\n')
         importer = self._get_test_importer(host)
-        description = importer._cl_description(directory_owners={})
+        description = importer.cl_description(directory_owners={})
         self.assertEqual(
-            description, 'Last commit message\n\n'
-            'Note to sheriffs: This CL imports external tests and adds\n'
-            'expectations for those tests; if this CL is large and causes\n'
-            'a few new failures, please fix the failures by adding new\n'
-            'lines to TestExpectations rather than reverting. See:\n'
-            'https://chromium.googlesource.com'
-            '/chromium/src/+/main/docs/testing/web_platform_tests.md\n\n'
-            'NOAUTOREVERT=true\n'
-            'No-Export: true\n'
-            'Validate-Test-Flakiness: skip\n'
-            'Cq-Include-Trybots: luci.chromium.try:linux-blink-rel\n')
-        self.assertEqual(host.executive.calls,
-                         [MANIFEST_INSTALL_CMD] +
-                         [['git', 'log', '-1', '--format=%B']])
+            description,
+            textwrap.dedent("""\
+                Last commit message
 
-    def test_cl_description_moves_noexport_tag(self):
-        host = self.mock_host()
-        host.executive = MockExecutive(output='Summary\n\nNo-Export: true\n\n')
-        importer = self._get_test_importer(host)
-        description = importer._cl_description(directory_owners={})
-        self.assertIn('No-Export: true', description)
+                Note to gardeners: This CL imports external tests and adds expectations
+                for those tests; if this CL is large and causes a few new failures,
+                please fix the failures by adding new lines to TestExpectations rather
+                than reverting. See:
+                https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_platform_tests.md
+
+                NOAUTOREVERT=true
+                No-Export: true
+                Validate-Test-Flakiness: skip
+                Cq-Include-Trybots: luci.chromium.try:linux-blink-rel
+                """))
+        self.assertEqual(host.executive.calls, [MANIFEST_INSTALL_CMD] +
+                         [['git', 'log', '-1', '--format=%B']])
 
     def test_cl_description_with_directory_owners(self):
         host = self.mock_host()
         host.executive = MockExecutive(output='Last commit message\n\n')
         importer = self._get_test_importer(host)
-        description = importer._cl_description(
+        description = importer.cl_description(
             directory_owners={
                 ('someone@chromium.org', ):
                 ['external/wpt/foo', 'external/wpt/bar'],
@@ -571,19 +661,194 @@ class TestImporterTest(LoggingTestCase):
     def test_has_wpt_changes(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertTrue(importer._has_wpt_changes())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'TestExpectations']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'TestExpectations':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertFalse(importer._has_wpt_changes())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME]
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertFalse(importer._has_wpt_changes())
+
+    def test_file_and_record_bugs_update_bugs(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        importer.git_cl = MockGitCL(host)
+
+        git, fs = importer.project_git, host.filesystem
+        fs.write_text_file(MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA',
+                           '')
+        git.new_branch('update_wpt')
+        exp_path = MOCK_WEB_TESTS + 'TestExpectations'
+        fs.write_text_file(
+            exp_path,
+            textwrap.dedent("""\
+                # results: [ Failure Pass Timeout ]
+                # tags: [ Linux Mac ]
+                crbug.com/555 [ Mac ] external/wpt/foo/new-for-platform.html [ Failure ]
+                """))
+        git.add_list([exp_path])
+        git.commit_locally_with_message(f'Import wpt@{"e" * 40}')
+        fs.write_text_file(
+            exp_path,
+            textwrap.dedent("""\
+                # results: [ Failure Pass Timeout ]
+                # tags: [ Linux Mac ]
+                external/wpt/foo/new.html [ Failure ]
+                [ Linux ] external/wpt/foo/new-for-platform.html [ Failure ]
+                crbug.com/555 [ Mac ] external/wpt/foo/new-for-platform.html [ Failure ]
+                # Manually added expectation with existing bug
+                crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
+                """))
+        git.add_list([exp_path])
+        git.commit_locally_with_message(f'Import wpt@{"f" * 40}')
+
+        local_wpt = MockLocalWPT()
+        gerrit_cl = mock.Mock(messages=[], number=999)
+        gerrit_api = mock.Mock()
+        gerrit_api.query_cls.return_value = [gerrit_cl]
+        self.buganizer_client.NewIssue.side_effect = lambda issue: BuganizerIssue(
+            **{
+                **dataclasses.asdict(issue),
+                'issue_id': 111,
+            })
+        notifier = ImportNotifier(host, git, local_wpt, gerrit_api,
+                                  self.buganizer_client)
+        with mock.patch(
+                'blinkpy.w3c.import_notifier.'
+                'DirectoryOwnersExtractor.read_dir_metadata',
+                return_value=WPTDirMetadata(should_notify=True)):
+            importer.file_and_record_bugs(notifier)
+
+        gerrit_cl.post_comment.assert_called_once_with(
+            'Filed bugs for failures introduced by this CL: '
+            'https://crbug.com/111')
+        self.buganizer_client.NewIssue.assert_called_once()
+        self.assertEqual(
+            git.show_blob(RELATIVE_WEB_TESTS + 'TestExpectations',
+                          'HEAD').decode(),
+            textwrap.dedent("""\
+                # results: [ Failure Pass Timeout ]
+                # tags: [ Linux Mac ]
+                crbug.com/111 external/wpt/foo/new.html [ Failure ]
+                crbug.com/111 [ Linux ] external/wpt/foo/new-for-platform.html [ Failure ]
+                crbug.com/555 [ Mac ] external/wpt/foo/new-for-platform.html [ Failure ]
+                # Manually added expectation with existing bug
+                crbug.com/444 external/wpt/foo/do-not-modify.html [ Failure ]
+                """))
+        expected_message = textwrap.dedent("""\
+            Update `TestExpectations` with bugs filed for crrev.com/c/999
+
+            Bug: 111
+            """)
+        self.assertEqual([[
+            'git',
+            'cl',
+            'upload',
+            '--bypass-hooks',
+            '-f',
+            f'--message={expected_message}',
+            '--send-mail',
+            '--enable-auto-submit',
+            '--reviewers=rubber-stamper@appspot.gserviceaccount.com',
+        ]], importer.git_cl.calls)
+        self.assertEqual(git.tracking_branch, 'update_wpt')
+        self.assertNotEqual(git.current_branch(), 'update_wpt')
+
+    def test_file_and_record_bugs_no_upload_reformat(self):
+        """Do not create CLs for cosmetic-only changes."""
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        importer.git_cl = MockGitCL(host)
+
+        git, fs = importer.project_git, host.filesystem
+        fs.write_text_file(MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA',
+                           '')
+        git.new_branch('update_wpt')
+        exp_path = MOCK_WEB_TESTS + 'TestExpectations'
+        contents = textwrap.dedent("""\
+            # results: [ Failure Pass Timeout ]
+            # Serializing this file will sort the statuses.
+            crbug.com/123 external/wpt/no-change.html [ Timeout Failure ]
+            """)
+        fs.write_text_file(exp_path, contents)
+        git.add_list([MOCK_WEB_TESTS])
+        git.commit_locally_with_message(f'Import wpt@{"e" * 40}')
+        git.commit_locally_with_message(f'Import wpt@{"f" * 40}')
+
+        local_wpt = MockLocalWPT()
+        gerrit_api = mock.Mock()
+        gerrit_api.query_cls.return_value = [mock.Mock(messages=[])]
+        notifier = ImportNotifier(host, git, local_wpt, gerrit_api,
+                                  self.buganizer_client)
+        with mock.patch(
+                'blinkpy.w3c.import_notifier.'
+                'DirectoryOwnersExtractor.read_dir_metadata',
+                return_value=WPTDirMetadata(should_notify=True)):
+            importer.file_and_record_bugs(notifier)
+
+        self.assertEqual(
+            git.show_blob(RELATIVE_WEB_TESTS + 'TestExpectations',
+                          'HEAD').decode(), contents)
+        self.assertEqual(importer.git_cl.calls, [])
+        self.assertEqual(git.current_branch(), 'update_wpt')
+
+    def test_file_and_record_bugs_notify_on_timeout(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        importer.git_cl = MockGitCL(host, status='commit', time_out=True)
+
+        git, fs = importer.project_git, host.filesystem
+        exp_path = MOCK_WEB_TESTS + 'TestExpectations'
+        fs.write_text_file(
+            exp_path,
+            textwrap.dedent("""\
+                # results: [ Pass Failure ]
+                external/wpt/foo/new.html [ Failure ]
+                """))
+        git.add_list([MOCK_WEB_TESTS])
+        git.commit_locally_with_message(f'Import wpt@{"e" * 40}')
+
+        # For this test, don't actually simulate bug filing.
+        exp = typ_types.Expectation(test='external/wpt/foo/new.html',
+                                    results=frozenset(
+                                        [typ_types.ResultType.Failure]))
+        notifier = mock.Mock(default_port=host.port_factory.get('test'))
+        notifier.new_failures_by_directory = {
+            'external/wpt/foo': DirectoryFailures({exp_path: [exp]}),
+        }
+        notifier.main.return_value = {
+            'external/wpt/foo': BuganizerIssue('New failures', '', '', 111),
+        }, mock.Mock()
+
+        with importer:
+            importer.file_and_record_bugs(notifier)
+        self.assertLog([
+            'INFO: Filing bugs for the last WPT import.\n',
+            'INFO: Committing changes.\n',
+            'INFO: Uploading change list.\n',
+            'INFO: Issue: https://crrev.com/c/1234\n',
+            'WARNING: Failed to automatically submit https://crrev.com/c/1234. '
+            'Pinging https://crbug.com/111 for help.\n',
+        ])
+        self.buganizer_client.NewComment.assert_called_once_with(111, mock.ANY)
+        _, message = self.buganizer_client.NewComment.call_args.args
+        self.assertIn('https://crrev.com/c/1234 backfills TestExpectations',
+                      message)
+        self.assertIn(['git', 'cl', 'set-close'], importer.git_cl.calls)
 
     def test_find_insert_index_ignore_pattern_empty_list(self):
         host = self.mock_host()
@@ -793,27 +1058,42 @@ class TestImporterTest(LoggingTestCase):
     def test_need_sheriff_attention(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertFalse(importer._need_sheriff_attention())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.sh']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.sh':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertTrue(importer._need_sheriff_attention())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.py']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.py':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertTrue(importer._need_sheriff_attention())
 
-        importer.project_git.changed_files = lambda: [
-            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME,
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html',
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.bat']
+        importer.project_git.changed_files = lambda: {
+            RELATIVE_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME:
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/x.html':
+            FileStatus(FileStatusType.MODIFY),
+            RELATIVE_WEB_TESTS + 'external/wpt/foo/y.bat':
+            FileStatus(FileStatusType.MODIFY),
+        }
         self.assertTrue(importer._need_sheriff_attention())
 
     # TODO(crbug.com/800570): Fix orphan baseline finding in the presence of

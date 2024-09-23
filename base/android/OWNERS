@@ -6,5 +6,8 @@ pasko@chromium.org
 torne@chromium.org
 yfriedman@chromium.org
 
+# For build-related changes.
+wnwen@chromium.org
+
 per-file *.aidl=set noparent
 per-file *.aidl=file://ipc/SECURITY_OWNERS

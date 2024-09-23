@@ -35,7 +35,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
-namespace ash {
+namespace ash::deprecated {
 
 namespace {
 
@@ -54,6 +54,9 @@ constexpr int kTwoLineButtonRightPadding = 12;
 constexpr int kLeadingIconSize = 20;
 constexpr int kLeadingIconLeftPadding = 18;
 constexpr int kLeadingIconRightPadding = 14;
+
+// Inset for the focus ring around the dismiss button.
+constexpr int kDismissButtonFocusRingHaloInset = 1;
 
 // The label inside SystemToastStyle, which allows two lines at maximum.
 class SystemToastInnerLabel : public views::Label {
@@ -160,7 +163,7 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 
   // Requesting size forces layout. Otherwise, we don't know how many lines
   // are needed.
-  label_->GetPreferredSize();
+  label_->GetPreferredSize(views::SizeBounds(label_->width(), {}));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_cross_axis_alignment(
@@ -188,12 +191,12 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 SystemToastStyle::~SystemToastStyle() = default;
 
 bool SystemToastStyle::ToggleA11yFocus() {
-  if (!dismiss_button_ ||
-      !Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+  if (!dismiss_button_) {
     return false;
   }
 
   auto* focus_ring = views::FocusRing::Get(dismiss_button_);
+  focus_ring->SetHaloInset(kDismissButtonFocusRingHaloInset);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const SystemToastStyle* style, const views::View* view) {
@@ -202,14 +205,12 @@ bool SystemToastStyle::ToggleA11yFocus() {
       base::Unretained(this)));
 
   is_dismiss_button_highlighted_ = !is_dismiss_button_highlighted_;
-  scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
-      is_dismiss_button_highlighted_
-          ? dismiss_button_->GetWidget()->GetNativeWindow()
-          : nullptr);
-
-  if (is_dismiss_button_highlighted_)
+  if (is_dismiss_button_highlighted_) {
+    scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+        dismiss_button_->GetWidget()->GetNativeWindow());
     dismiss_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
                                               true);
+  }
 
   focus_ring->SetVisible(is_dismiss_button_highlighted_);
   focus_ring->SchedulePaint();
@@ -246,4 +247,4 @@ void SystemToastStyle::UpdateInsideBorderInsets() {
 BEGIN_METADATA(SystemToastStyle)
 END_METADATA
 
-}  // namespace ash
+}  // namespace ash::deprecated

@@ -33,7 +33,7 @@ class MockPromosManager : public PromosManager {
               ((PromoConfigsSet promo_impression_limits)),
               (override));
   MOCK_METHOD(void,
-              RecordImpression,
+              DeregisterAfterDisplay,
               (promos_manager::Promo promo),
               (override));
   MOCK_METHOD(std::optional<promos_manager::Promo>,

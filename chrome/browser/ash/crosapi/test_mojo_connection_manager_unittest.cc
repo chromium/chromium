@@ -15,7 +15,6 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -49,6 +47,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace crosapi {
 namespace {
@@ -63,10 +62,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  void REMOVED_0(REMOVED_0Callback callback) override { NOTIMPLEMENTED(); }
-  void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override {
-    NOTIMPLEMENTED();
-  }
+  void REMOVED_0() override { NOTIMPLEMENTED(); }
+  void REMOVED_2() override { NOTIMPLEMENTED(); }
   void REMOVED_7(bool should_trigger_session_restore,
                  base::OnceClosure callback) override {
     NOTIMPLEMENTED();
@@ -111,6 +108,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void OpenProfileManager() override {}
   void UpdateComponentPolicy(
       base::flat_map<policy::PolicyNamespace, base::Value> policy) override {}
+  void OpenCaptivePortalSignin(const GURL& url,
+                               OpenUrlCallback callback) override {}
 
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;
@@ -202,8 +201,7 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
       base::test::TaskEnvironment::MainThreadType::IO};
 
   ash::LoginState::Initialize();
-  base::ScopedClosureRunner login_state_teardown(
-      base::BindOnce(&ash::LoginState::Shutdown));
+  absl::Cleanup login_state_teardown = &ash::LoginState::Shutdown;
 
   // Constructing CrosapiManager requires ProfileManager.
   // Also, constructing BrowserInitParams requires local state prefs.
@@ -212,10 +210,12 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   ASSERT_TRUE(testing_profile_manager.SetUp());
 
   // Set up UserManager to fake the login state.
-  user_manager::FakeUserManager user_manager;
+  user_manager::FakeUserManager user_manager(
+      TestingBrowserProcess::GetGlobal()->local_state());
   user_manager.Initialize();
-  base::ScopedClosureRunner user_manager_teardown(base::BindLambdaForTesting(
-      [&user_manager]() { user_manager.Destroy(); }));
+  absl::Cleanup user_manager_teardown = [&user_manager] {
+    user_manager.Destroy();
+  };
   const AccountId account = AccountId::FromUserEmail("test@test");
   const user_manager::User* user = user_manager.AddUser(account);
   user_manager.UserLoggedIn(account, user->username_hash(), false, false);
@@ -243,11 +243,8 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
                       EXPECT_FALSE(error);
                       run_loop1.Quit();
                     })));
-  std::unique_ptr<EnvironmentProvider> environment_provider =
-      std::make_unique<EnvironmentProvider>();
-  environment_provider->SetLastPolicyFetchAttemptTimestamp(base::Time::Now());
   TestMojoConnectionManager test_mojo_connection_manager{
-      base::FilePath(socket_path), environment_provider.get()};
+      base::FilePath(socket_path)};
   run_loop1.Run();
 
   // Test connects with ash-chrome via the socket.
@@ -263,12 +260,12 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   TestBrowserServiceHostObserver observer(2, run_loop2.QuitClosure());
   crosapi_manager->crosapi_ash()->browser_service_host_ash()->AddObserver(
       &observer);
-  base::ScopedClosureRunner observer_reset(base::BindOnce(
-      base::BindLambdaForTesting([&observer, &crosapi_manager]() {
+  absl::Cleanup observer_reset =
+      [&observer, &crosapi_manager] {
         crosapi_manager->crosapi_ash()
             ->browser_service_host_ash()
             ->RemoveObserver(&observer);
-      })));
+      };
 
   // Then launch two subprocesses running in parallel.
   // These will connect BrowserService mojo.

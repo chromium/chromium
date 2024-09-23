@@ -64,8 +64,8 @@ class PLATFORM_EXPORT IIRFilter final {
 
   // Coefficients of the IIR filter.  To minimize storage, these point to the
   // arrays given in the constructor.
-  raw_ptr<const AudioDoubleArray, ExperimentalRenderer> feedback_;
-  raw_ptr<const AudioDoubleArray, ExperimentalRenderer> feedforward_;
+  raw_ptr<const AudioDoubleArray> feedback_;
+  raw_ptr<const AudioDoubleArray> feedforward_;
 };
 
 }  // namespace blink

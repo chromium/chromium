@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -56,7 +57,8 @@ std::unique_ptr<views::View> CreateSubtitle(
     auto subtitle_button = std::make_unique<views::LabelButton>(
         std::move(issue_pressed_callback), sink.GetStatusTextForDisplay());
     subtitle_button->SetLabelStyle(views::style::STYLE_SECONDARY);
-    subtitle_button->SetAccessibleName(sink.GetStatusTextForDisplay());
+    subtitle_button->GetViewAccessibility().SetName(
+        sink.GetStatusTextForDisplay());
     return subtitle_button;
   }
 
@@ -185,7 +187,8 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
                                       ? IDS_MEDIA_ROUTER_SINK_VIEW_RESUME
                                       : IDS_MEDIA_ROUTER_SINK_VIEW_PAUSE));
     freeze_button->SetStyle(ui::ButtonStyle::kText);
-    freeze_button->SetAccessibleName(GetFreezeButtonAccessibleName());
+    freeze_button->GetViewAccessibility().SetName(
+        GetFreezeButtonAccessibleName());
     freeze_button_ = button_container->AddChildView(std::move(freeze_button));
   }
 
@@ -195,7 +198,7 @@ std::unique_ptr<views::View> CastDialogSinkView::CreateButtonsView(
       std::move(stop_pressed_callback),
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_VIEW_STOP));
   stop_button->SetStyle(ui::ButtonStyle::kText);
-  stop_button->SetAccessibleName(GetStopButtonAccessibleName());
+  stop_button->GetViewAccessibility().SetName(GetStopButtonAccessibleName());
   stop_button_ = button_container->AddChildView(std::move(stop_button));
 
   return button_container;
@@ -227,7 +230,7 @@ std::u16string CastDialogSinkView::GetFreezeButtonAccessibleName() const {
   // If there is no route for the sink or the route may not be frozen, no freeze
   // button should be displayed.
   if (!sink_.route || !sink_.freeze_info.can_freeze) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::u16string();
   }
 
@@ -259,7 +262,7 @@ std::u16string CastDialogSinkView::GetFreezeButtonAccessibleName() const {
 
 std::u16string CastDialogSinkView::GetStopButtonAccessibleName() const {
   if (!sink_.route) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return std::u16string();
   }
 

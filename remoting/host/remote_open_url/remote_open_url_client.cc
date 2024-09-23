@@ -37,7 +37,6 @@ std::unique_ptr<RemoteOpenUrlClient::Delegate> CreateDelegate() {
   return std::make_unique<RemoteOpenUrlClientDelegateWin>();
 #else
   NOTREACHED();
-  return nullptr;
 #endif
 }
 

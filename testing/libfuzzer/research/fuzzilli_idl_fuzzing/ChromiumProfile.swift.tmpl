@@ -1,0 +1,214 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import Fuzzilli
+
+fileprivate let ForceJITCompilationThroughLoopGenerator = CodeGenerator("ForceJITCompilationThroughLoopGenerator", inputs: .required(.function())) { b, f in
+    assert(b.type(of: f).Is(.function()))
+    let arguments = b.randomArguments(forCalling: f)
+
+    b.buildRepeatLoop(n: 100) { _ in
+        b.callFunction(f, withArgs: arguments)
+    }
+}
+
+fileprivate let ForceTurboFanCompilationGenerator = CodeGenerator("ForceTurboFanCompilationGenerator", inputs: .required(.function())) { b, f in
+    assert(b.type(of: f).Is(.function()))
+    let arguments = b.randomArguments(forCalling: f)
+
+    b.callFunction(f, withArgs: arguments)
+
+    b.eval("%PrepareFunctionForOptimization(%@)", with: [f]);
+
+    b.callFunction(f, withArgs: arguments)
+    b.callFunction(f, withArgs: arguments)
+
+    b.eval("%OptimizeFunctionOnNextCall(%@)", with: [f]);
+
+    b.callFunction(f, withArgs: arguments)
+}
+
+fileprivate let ForceMaglevCompilationGenerator = CodeGenerator("ForceMaglevCompilationGenerator", inputs: .required(.function())) { b, f in
+    assert(b.type(of: f).Is(.function()))
+    let arguments = b.randomArguments(forCalling: f)
+
+    b.callFunction(f, withArgs: arguments)
+
+    b.eval("%PrepareFunctionForOptimization(%@)", with: [f]);
+
+    b.callFunction(f, withArgs: arguments)
+    b.callFunction(f, withArgs: arguments)
+
+    b.eval("%OptimizeMaglevOnNextCall(%@)", with: [f]);
+
+    b.callFunction(f, withArgs: arguments)
+}
+
+fileprivate let TurbofanVerifyTypeGenerator = CodeGenerator("TurbofanVerifyTypeGenerator", inputs: .one) { b, v in
+    b.eval("%VerifyType(%@)", with: [v])
+}
+
+// Insert random GC calls throughout our code.
+fileprivate let GcGenerator = CodeGenerator("GcGenerator") { b in
+    let gc = b.loadBuiltin("gc")
+
+    // Do minor GCs more frequently.
+    let type = b.loadString(probability(0.25) ? "major" : "minor")
+    // If the execution type is 'async', gc() returns a Promise, we currently
+    // do not really handle other than typing the return of gc to .undefined |
+    // .jsPromise. One could either chain a .then or create two wrapper
+    // functions that are differently typed such that fuzzilli always knows
+    // what the type of the return value is.
+    let execution = b.loadString(probability(0.5) ? "sync" : "async")
+    b.callFunction(gc, withArgs: [b.createObject(with: ["type": type, "execution": execution])])
+}
+
+public extension ILType {
+{% for enum in database.enumerations %}
+  static let js{{enum.identifier}} = ILType.string
+{% endfor %}
+{% for interface in database.interfaces %}
+  {% set inter = interface|parse_interface -%}
+  static let js{{interface.identifier}} = {{inter[0].fuzzilli_repr()}}
+{% endfor %}
+{% for d in database.dictionaries %}
+  {% set dictionary = d|parse_dictionary -%}
+  static let js{{d.identifier}} = {{dictionary[0].fuzzilli_repr()}}
+{% endfor %}
+{% for interface in database.interfaces -%}
+  {% set constructor = interface|parse_constructors -%}
+{%   if constructor[0] %}
+  static let js{{interface.identifier}}Constructor = {{constructor[0].fuzzilli_repr()}}
+{%   endif %}
+{%- endfor %}
+{% for t in database.typedefs %}
+  {% set il_type = t.idl_type|idl_type_to_iltype -%}
+  static let js{{t.identifier}} = {{il_type.fuzzilli_repr()}}
+{% endfor %}
+{% for interface in database.callback_interfaces %}
+  {% set inter = interface|parse_interface -%}
+  static let js{{interface.identifier}} = {{inter[0].fuzzilli_repr()}}
+{% endfor %}
+{% for c in database.callback_functions %}
+  {% set op = c|parse_operation -%}
+  static let js{{c.identifier}} = ILType.function({{op.fuzzilli_repr()}})
+{% endfor %}
+}
+
+{%- macro define_group(identifier, group) %}
+let js{{identifier}} = ObjectGroup(
+  name: "{{group.name}}",
+  instanceType: {{group.instanceType.fuzzilli_repr()}},
+  properties: [
+  {%- for k, v in group.properties.items() %}
+    "{{k}}" : {{v.fuzzilli_repr()}},
+  {% else %}
+    :
+  {% endfor -%}
+  ],
+  methods: [
+  {%- for k, v in group.methods.items() %}
+    "{{k}}" : {{v.fuzzilli_repr()}},
+  {% else %}
+    :
+  {% endfor -%}
+  ]
+)
+{%- endmacro -%}
+
+
+{% for interface in database.interfaces %}
+  {%- set inter = interface|parse_interface -%}
+{{define_group(interface.identifier, inter[1])}}
+{% endfor %}
+{% for interface in database.interfaces %}
+  {%- set constructor = interface|parse_constructors -%}
+{%   if constructor[1] %}
+{{define_group(interface.identifier+"Constructor", constructor[1])}}
+{%   endif %}
+{%- endfor %}
+{% for d in database.dictionaries %}
+  {%- set dictionary = d|parse_dictionary -%}
+{{define_group(d.identifier, dictionary[1])}}
+{% endfor -%}
+{% for interface in database.callback_interfaces %}
+  {%- set inter = interface|parse_interface -%}
+{{define_group(interface.identifier, inter[1])}}
+{% endfor -%}
+
+let chromiumProfile = Profile(
+    processArgs: { _ in
+        var args: [String] = []
+        return args
+    },
+
+    processEnv: ["ASAN_OPTIONS":"detect_odr_violation=0", "DISPLAY":":20"],
+
+    maxExecsBeforeRespawn: 100,
+
+    timeout: 8000,
+
+    codePrefix: """
+                """,
+
+    codeSuffix: """
+                """,
+
+    ecmaVersion: ECMAScriptVersion.es6,
+
+    startupTests: [
+        ("fuzzilli('FUZZILLI_CRASH', 0)", .shouldCrash),
+        ("fuzzilli('FUZZILLI_CRASH', 1)", .shouldCrash),
+        ("fuzzilli('FUZZILLI_CRASH', 2)", .shouldCrash),
+        ("fuzzilli('FUZZILLI_CRASH', 3)", .shouldCrash),
+    ],
+
+    additionalCodeGenerators: [
+        (ForceJITCompilationThroughLoopGenerator,  5),
+        (ForceTurboFanCompilationGenerator,        5),
+        (ForceMaglevCompilationGenerator,          5),
+        (TurbofanVerifyTypeGenerator,             10),
+        (GcGenerator,                             10),
+    ],
+
+    additionalProgramTemplates: WeightedList<ProgramTemplate>([
+    ]),
+
+    disabledCodeGenerators: [],
+
+    disabledMutators: [],
+
+    additionalBuiltins: [
+{%- for interface in database.interfaces -%}
+  {% set constructor = interface|parse_constructors -%}
+{%   if constructor[0] %}
+      "{{interface.identifier}}": ILType.js{{interface.identifier}}Constructor,
+{%   endif %}
+{%- endfor %}
+      "window": .jsWindow,
+      "document": .jsDocument,
+      "gc" : .function([] => (.undefined | .jsPromise)),
+      "d8": .object(),
+    ],
+
+    additionalObjectGroups: [
+{%- for interface in database.interfaces %}
+      js{{interface.identifier}},
+{% endfor -%}
+{% for interface in database.interfaces -%}
+  {% set constructor = interface|parse_constructors -%}
+{%   if constructor[1] %}
+      js{{interface.identifier}}Constructor,
+{%   endif %}
+{%- endfor -%}
+{% for d in database.dictionaries %}
+      js{{d.identifier}},
+{% endfor -%}
+{% for interface in database.callback_interfaces %}
+      js{{interface.identifier}},
+{% endfor -%}
+    ],
+
+    optionalPostProcessor: nil
+)

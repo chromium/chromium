@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+static_library("web_file_handlers") {
+  sources = [
+    "intent_util.cc",
+    "intent_util.h",
+  ]
+
+  public_deps = [ "//components/services/app_service" ]
+
+  deps = [
+    "//base",
+    "//extensions/common",
+  ]
+}

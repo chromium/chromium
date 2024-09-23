@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+[FAIL] Navigator interface: operation share(optional ShareData)
+  assert_own_property: interface prototype object missing non-static operation expected property "share" missing
+[FAIL] Navigator interface: operation canShare(optional ShareData)
+  assert_own_property: interface prototype object missing non-static operation expected property "canShare" missing
+[FAIL] Navigator interface: navigator must inherit property "share(optional ShareData)" with the proper type
+  assert_inherits: property "share" not found in prototype chain
+[FAIL] Navigator interface: calling share(optional ShareData) on navigator with too few arguments must throw TypeError
+  assert_inherits: property "share" not found in prototype chain
+[FAIL] Navigator interface: navigator must inherit property "canShare(optional ShareData)" with the proper type
+  assert_inherits: property "canShare" not found in prototype chain
+[FAIL] Navigator interface: calling canShare(optional ShareData) on navigator with too few arguments must throw TypeError
+  assert_inherits: property "canShare" not found in prototype chain
+Harness: the test ran to completion.

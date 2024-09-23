@@ -1,0 +1,64 @@
+{
+  "description": "source header error debug report",
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": null,
+              "Attribution-Reporting-Info": "report-header-errors"
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": "!!!",
+              "Attribution-Reporting-Info": "report-header-errors"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [ {
+      "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "null"
+         },
+         "type": "header-parsing-error"
+      } ],
+      "report_time": "0",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+   }, {
+      "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "!!!"
+         },
+         "type": "header-parsing-error"
+      } ],
+      "report_time": "1",
+      "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+   } ]
+  }
+}

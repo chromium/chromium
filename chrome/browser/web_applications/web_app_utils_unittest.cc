@@ -14,28 +14,18 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif
 
 namespace web_app {
 
@@ -67,23 +57,19 @@ TEST(WebAppTest, ResolveEffectiveDisplayMode) {
   EXPECT_EQ(DisplayMode::kBrowser,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kBrowser, std::vector<DisplayMode>(),
-                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kBrowser,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kMinimalUi, std::vector<DisplayMode>(),
-                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kBrowser,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kStandalone, std::vector<DisplayMode>(),
-                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kBrowser,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kFullscreen, std::vector<DisplayMode>(),
-                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false));
 
   // When user_display_mode indicates a user preference for opening in
   // a standalone window, we open in a minimal-ui window (for app_display_mode
@@ -92,23 +78,19 @@ TEST(WebAppTest, ResolveEffectiveDisplayMode) {
   EXPECT_EQ(DisplayMode::kMinimalUi,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kBrowser, std::vector<DisplayMode>(),
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kMinimalUi,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kMinimalUi, std::vector<DisplayMode>(),
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kStandalone, std::vector<DisplayMode>(),
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kFullscreen, std::vector<DisplayMode>(),
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
 }
 
 TEST(WebAppTest,
@@ -122,23 +104,19 @@ TEST(WebAppTest,
   EXPECT_EQ(DisplayMode::kBrowser,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kBrowser, app_display_mode_overrides,
-                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kBrowser,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kMinimalUi, app_display_mode_overrides,
-                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kBrowser,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kStandalone, app_display_mode_overrides,
-                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kBrowser,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kFullscreen, app_display_mode_overrides,
-                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kBrowser, /*is_isolated=*/false));
 }
 
 TEST(WebAppTest,
@@ -154,23 +132,19 @@ TEST(WebAppTest,
   EXPECT_EQ(DisplayMode::kMinimalUi,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kBrowser, app_display_mode_overrides,
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kMinimalUi,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kMinimalUi, app_display_mode_overrides,
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kStandalone, app_display_mode_overrides,
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kFullscreen, app_display_mode_overrides,
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
 }
 
 TEST(WebAppTest, ResolveEffectiveDisplayModeWithDisplayOverrides) {
@@ -185,23 +159,19 @@ TEST(WebAppTest, ResolveEffectiveDisplayModeWithDisplayOverrides) {
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kBrowser, app_display_mode_overrides,
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kMinimalUi, app_display_mode_overrides,
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kStandalone, app_display_mode_overrides,
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 DisplayMode::kFullscreen, app_display_mode_overrides,
-                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                mojom::UserDisplayMode::kStandalone, /*is_isolated=*/false));
 }
 
 TEST(WebAppTest, ResolveEffectiveDisplayModeWithIsolatedWebApp) {
@@ -210,62 +180,15 @@ TEST(WebAppTest, ResolveEffectiveDisplayModeWithIsolatedWebApp) {
                 /*app_display_mode=*/DisplayMode::kBrowser,
                 /*app_display_mode_overrides=*/{DisplayMode::kBrowser},
                 /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
-                /*is_isolated=*/true,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                /*is_isolated=*/true));
 
   EXPECT_EQ(DisplayMode::kStandalone,
             ResolveEffectiveDisplayMode(
                 /*app_display_mode=*/DisplayMode::kMinimalUi,
                 /*app_display_mode_overrides=*/{},
                 /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
-                /*is_isolated=*/true,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/true));
+                /*is_isolated=*/true));
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-TEST(WebAppTest, ResolveEffectiveDisplayModeShortstand) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kCrosShortstand);
-#else
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      chromeos::BrowserInitParams::GetForTests()->Clone();
-  init_params->is_cros_shortstand_enabled = true;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif
-  EXPECT_EQ(DisplayMode::kMinimalUi,
-            ResolveEffectiveDisplayMode(
-                /*app_display_mode=*/DisplayMode::kBrowser,
-                /*app_display_mode_overrides=*/{},
-                /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
-                /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/false));
-
-  EXPECT_EQ(DisplayMode::kStandalone,
-            ResolveEffectiveDisplayMode(
-                /*app_display_mode=*/DisplayMode::kStandalone,
-                /*app_display_mode_overrides=*/{},
-                /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
-                /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/false));
-
-  EXPECT_EQ(DisplayMode::kBrowser,
-            ResolveEffectiveDisplayMode(
-                /*app_display_mode=*/DisplayMode::kBrowser,
-                /*app_display_mode_overrides=*/{},
-                /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
-                /*is_isolated=*/false,
-                /*is_shortcut_app=*/true, /*ignore_shortstand=*/false));
-
-  EXPECT_EQ(DisplayMode::kTabbed,
-            ResolveEffectiveDisplayMode(
-                /*app_display_mode=*/DisplayMode::kBrowser,
-                /*app_display_mode_overrides=*/{DisplayMode::kTabbed},
-                /*user_display_mode=*/mojom::UserDisplayMode::kBrowser,
-                /*is_isolated=*/false,
-                /*is_shortcut_app=*/false, /*ignore_shortstand=*/false));
-}
-#endif
 
 TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -338,14 +261,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
                                /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
-  }
-  {
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* user = user_manager->AddArcKioskAppUser(account_id);
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
-    user_manager::ScopedUserManager enabler(std::move(user_manager));
-    EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
 #endif
 }
@@ -462,5 +377,24 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
           system_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 #endif
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+// TODO(http://b/331208955): Remove after migration.
+TEST_F(WebAppUtilsTest, CanUserUninstallContainerApp) {
+  EXPECT_FALSE(CanUserUninstallWebApp(
+      kContainerAppId, WebAppManagementTypes({WebAppManagement::kDefault})));
+  EXPECT_TRUE(CanUserUninstallWebApp(
+      kContainerAppId, WebAppManagementTypes({WebAppManagement::kSync})));
+}
+
+// TODO(http://b/331208955): Remove after migration.
+TEST_F(WebAppUtilsTest, ContainerAppWillBeSystemWebApp) {
+  for (auto src : WebAppManagementTypes::All()) {
+    EXPECT_THAT(
+        WillBeSystemWebApp(kContainerAppId, WebAppManagementTypes({src})),
+        src == WebAppManagement::kDefault);
+  }
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

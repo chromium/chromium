@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -65,7 +67,7 @@ class PdfFindRequestManagerTest : public InProcessBrowserTest {
             blink::mojom::FindOptionsPtr options) {
     delegate()->UpdateLastRequest(++last_request_id_);
     contents()->Find(last_request_id_, base::UTF8ToUTF16(search_text),
-                     std::move(options));
+                     std::move(options), /*skip_delay=*/false);
   }
 
   WebContents* contents() const {
@@ -138,8 +140,8 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
   {
     auto it = response->http_request()->headers.find("Range");
     ASSERT_NE(response->http_request()->headers.end(), it);
-    base::StringPiece range_header = it->second;
-    base::StringPiece kBytesPrefix = "bytes=";
+    std::string_view range_header = it->second;
+    std::string_view kBytesPrefix = "bytes=";
     ASSERT_TRUE(base::StartsWith(range_header, kBytesPrefix));
     range_header.remove_prefix(kBytesPrefix.size());
     auto dash_pos = range_header.find('-');
@@ -167,7 +169,7 @@ void SendRangeResponse(net::test_server::ControllableHttpResponse* response,
 
 // Tests searching in a PDF received in chunks via range-requests.  See also
 // https://crbug.com/1027173.
-// TODO(crbug.com/1470995): flaky on Linux debug.
+// TODO(crbug.com/40926030): flaky on Linux debug.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_FindInChunkedPDF DISABLED_FindInChunkedPDF
 #else

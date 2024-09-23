@@ -8,6 +8,7 @@
 
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -93,10 +94,6 @@ void TrayContainer::SetSpacingBetweenChildren(int space_dip) {
 void TrayContainer::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
-
   // We only add highlight border to the system tray when the shlef background
   // is transparent: 1)the shelf is in tablet mode but not in app mode OR 2)the
   // shelf is in the non-logged in page.
@@ -174,9 +171,6 @@ gfx::Rect TrayContainer::GetAnchorBoundsInScreen() const {
   return GetBoundsInScreen();
 }
 
-const char* TrayContainer::GetClassName() const {
-  return "TrayContainer";
-}
 
 TrayContainer::LayoutInputs TrayContainer::GetLayoutInputs() const {
   return {shelf_->IsHorizontalAlignment(),

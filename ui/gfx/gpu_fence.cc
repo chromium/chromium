@@ -49,7 +49,7 @@ void GpuFence::Wait() {
     LOG(FATAL) << "Failed while waiting for gpu fence fd";
   }
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 }
 
@@ -83,7 +83,7 @@ GpuFence::FenceStatus GpuFence::GetStatusChangeTime(int fd,
   *time = base::TimeTicks() + base::Nanoseconds(timestamp_ns);
   return FenceStatus::kSignaled;
 #endif
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return FenceStatus::kInvalid;
 }
 
@@ -94,7 +94,7 @@ base::TimeTicks GpuFence::GetMaxTimestamp() const {
   DCHECK_EQ(status, FenceStatus::kSignaled);
   return timestamp;
 #endif
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return timestamp;
 }
 

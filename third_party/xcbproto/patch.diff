@@ -1,6 +1,7 @@
+Only in xcbproto: .gitlab-ci.yml
 diff -ru xcbproto/src/glx.xml src/src/glx.xml
---- xcbproto/src/glx.xml	2022-11-01 01:47:35.625960781 +0000
-+++ src/src/glx.xml	2022-03-29 00:22:36.930613681 +0000
+--- xcbproto/src/glx.xml	2024-07-23 23:43:47.190817187 +0000
++++ src/src/glx.xml	2022-11-01 01:47:35.917960167 +0000
 @@ -62,8 +62,6 @@
              <type>glx:WINDOW</type>
          </xidunion>
@@ -292,8 +293,8 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  			</list>
  		</reply>
 diff -ru xcbproto/src/present.xml src/src/present.xml
---- xcbproto/src/present.xml	2022-11-01 01:47:35.625960781 +0000
-+++ src/src/present.xml	2022-03-25 23:30:06.382428128 +0000
+--- xcbproto/src/present.xml	2024-07-23 23:43:47.222817143 +0000
++++ src/src/present.xml	2022-11-01 01:47:35.917960167 +0000
 @@ -89,7 +89,7 @@
      </reply>
    </request>
@@ -304,8 +305,8 @@ diff -ru xcbproto/src/present.xml src/src/present.xml
      <field type="WINDOW" name="window" />
      <field type="PIXMAP" name="pixmap" />
 diff -ru xcbproto/src/randr.xml src/src/randr.xml
---- xcbproto/src/randr.xml	2022-11-01 01:47:35.625960781 +0000
-+++ src/src/randr.xml	2022-03-25 23:30:06.382428128 +0000
+--- xcbproto/src/randr.xml	2024-07-23 23:43:47.190817187 +0000
++++ src/src/randr.xml	2022-11-01 01:47:35.917960167 +0000
 @@ -803,64 +803,6 @@
  		<item name="Lease">           <value>6</value></item>
  	</enum>
@@ -479,9 +480,9 @@ diff -ru xcbproto/src/randr.xml src/src/randr.xml
  	</event>
  </xcb>
 diff -ru xcbproto/src/shm.xml src/src/shm.xml
---- xcbproto/src/shm.xml	2022-11-01 01:47:35.641960747 +0000
-+++ src/src/shm.xml	2022-03-25 23:30:06.382428128 +0000
-@@ -78,7 +78,7 @@
+--- xcbproto/src/shm.xml	2024-07-23 23:43:47.222817143 +0000
++++ src/src/shm.xml	2024-01-16 22:31:03.039298153 +0000
+@@ -159,7 +159,7 @@
      <field type="INT16" name="dst_x" />
      <field type="INT16" name="dst_y" />
      <field type="CARD8" name="depth" />
@@ -491,8 +492,8 @@ diff -ru xcbproto/src/shm.xml src/src/shm.xml
      <pad bytes="1" />
      <field type="SEG" name="shmseg" />
 diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
---- xcbproto/src/xinput.xml	2022-11-01 01:47:35.625960781 +0000
-+++ src/src/xinput.xml	2022-03-29 00:22:36.930613681 +0000
+--- xcbproto/src/xinput.xml	2024-07-23 23:43:47.202817171 +0000
++++ src/src/xinput.xml	2022-11-01 01:47:35.917960167 +0000
 @@ -200,7 +200,12 @@
              <list type="STR" name="names">
                  <fieldref>devices_len</fieldref>
@@ -693,8 +694,8 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
      <!-- ⋅⋅⋅ Events (v2.3) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
  
 diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
---- xcbproto/src/xproto.xml	2022-11-01 01:47:35.629960773 +0000
-+++ src/src/xproto.xml	2022-03-29 00:22:36.930613681 +0000
+--- xcbproto/src/xproto.xml	2024-07-23 23:43:47.202817171 +0000
++++ src/src/xproto.xml	2022-11-01 01:47:35.917960167 +0000
 @@ -963,6 +963,7 @@
      <item name="CAP_HEIGHT">           <value>66</value> </item>
      <item name="WM_CLASS">             <value>67</value> </item>
@@ -739,8 +740,8 @@ diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
    <!-- Reply from SetPointerMapping or SetModifierMapping -->
 Only in src/xcbgen: __pycache__
 diff -ru xcbproto/xcbgen/xtypes.py src/xcbgen/xtypes.py
---- xcbproto/xcbgen/xtypes.py	2022-11-01 01:47:35.629960773 +0000
-+++ src/xcbgen/xtypes.py	2022-03-29 00:22:36.930613681 +0000
+--- xcbproto/xcbgen/xtypes.py	2024-07-23 23:43:47.206817165 +0000
++++ src/xcbgen/xtypes.py	2022-11-01 01:47:35.917960167 +0000
 @@ -233,7 +233,7 @@
      Derived class which represents a file descriptor.
      '''

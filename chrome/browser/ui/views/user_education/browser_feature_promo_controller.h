@@ -59,13 +59,6 @@ class BrowserFeaturePromoController
       user_education::ProductMessagingController* messaging_controller);
   ~BrowserFeaturePromoController() override;
 
-  // Creates (or doesn't create) a FeaturePromoController for the specified
-  // `browser_view`. Not all browser windows can do promos; specifically,
-  // headless, kiosk, guest, incognito, and other off-the-record browsers do
-  // _not_ show IPH.
-  static std::unique_ptr<BrowserFeaturePromoController>
-  MaybeCreateForBrowserView(BrowserView* browser_view);
-
   // Get the appropriate instance for |view|. This finds the BrowserView
   // that contains |view| and returns its instance. May return nullptr,
   // but if |view| is in a BrowserView's hierarchy it shouldn't.
@@ -84,7 +77,7 @@ class BrowserFeaturePromoController
                            GetAcceleratorProvider);
   FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerTest,
                            GetFocusHelpBubbleScreenReaderHint);
-  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerUiTest,
+  FRIEND_TEST_ALL_PREFIXES(BrowserFeaturePromoControllerActivationUiTest,
                            CanShowPromoForElement);
 
   // FeaturePromoController:
@@ -100,11 +93,17 @@ class BrowserFeaturePromoController
   std::u16string GetBodyIconAltText() const override;
   const base::Feature* GetScreenReaderPromptPromoFeature() const override;
   const char* GetScreenReaderPromptPromoEventName() const override;
-  std::string GetAppId() const override;
 
  private:
   // The browser window this instance is responsible for.
   const raw_ptr<BrowserView> browser_view_;
 };
+
+// Shared logic with `ProfilePickerFeaturePromoController`.
+std::u16string GetFocusHelpBubbleScreenReaderHintCommon(
+    user_education::FeaturePromoSpecification::PromoType promo_type,
+    const ui::AcceleratorProvider* accelerator_provider,
+    ui::TrackedElement* anchor_element,
+    bool is_critical_promo);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_FEATURE_PROMO_CONTROLLER_H_

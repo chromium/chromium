@@ -10,7 +10,7 @@ import("features.gni")
 import("//build/config/cronet/config.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-if (is_android || is_robolectric) {
+if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
@@ -49,7 +49,6 @@ component("url") {
     "url_canon_stdstring.cc",
     "url_canon_stdstring.h",
     "url_canon_stdurl.cc",
-    "url_constants.cc",
     "url_constants.h",
     "url_features.cc",
     "url_features.h",
@@ -63,7 +62,7 @@ component("url") {
 
   defines = [ "IS_URL_IMPL" ]
 
-  deps = [ "//base/third_party/dynamic_annotations" ]
+  deps = []
 
   public_deps = [
     "//base",
@@ -334,6 +333,7 @@ if (is_android && !is_cronet_build) {
         ":url_java",
         "//base:base_java",
         "//base:base_java_test_support",
+        "//build/android:build_java",
         "//content/public/test/android:content_java_test_support",
         "//mojo/public/mojom/base:base_java",
         "//third_party/androidx:androidx_core_core_java",

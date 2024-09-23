@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("gn_configs.gni")
+
+# Defines a package target for a prebuilt from the Fuchsia SDK.
+#
+# Parameters
+#
+#   manifest_file
+#     Required: Path to the packages's package_manifest.json.
+#
+template("fuchsia_sdk_package") {
+  assert(defined(invoker.manifest_file), "manifest_file is required.")
+  _manifest_file = "${fuchsia_sdk}/${invoker.manifest_file}"
+
+  group(target_name) {
+    metadata = {
+      subpackages_manifest_data = [
+        {
+          package_manifest_file = rebase_path(_manifest_file, root_build_dir)
+        },
+      ]
+    }
+  }
+}

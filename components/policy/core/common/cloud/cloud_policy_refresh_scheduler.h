@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
-#include "base/cancelable_callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -184,9 +184,6 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // For listening for network connection changes.
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
-  // The delayed refresh callback.
-  base::CancelableOnceClosure refresh_callback_;
-
   // Whether the refresh is scheduled for soon (using |RefreshSoon|).
   bool is_scheduled_for_soon_ = false;
 
@@ -212,7 +209,16 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // of policy updates.
   bool invalidations_available_;
 
+  // Whether we have retried with key reset or not.
+  bool has_retried_with_key_reset_ = false;
+
   base::ObserverList<CloudPolicyRefreshSchedulerObserver, true> observers_;
+
+  // WeakPtrFactory used to schedule refresh tasks.
+  base::WeakPtrFactory<CloudPolicyRefreshScheduler> refresh_weak_factory_{this};
+
+  // General purpose WeakPtrFactory.
+  base::WeakPtrFactory<CloudPolicyRefreshScheduler> weak_factory_{this};
 };
 
 }  // namespace policy

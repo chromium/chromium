@@ -5,29 +5,36 @@
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/containers/fixed_flat_set.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
+#include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/x509_certificate.h"
@@ -39,13 +46,14 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
-#include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+
+// Must come after other includes, because FromJniType() uses Profile.
+#include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-namespace chrome {
 namespace enterprise_util {
 
 namespace {
@@ -104,6 +112,18 @@ bool CertMatchesSelectionFilters(
     }
   }
   return false;
+}
+
+void OnManagementIconReceived(
+    base::OnceCallback<void(const gfx::Image&)> callback,
+    const gfx::Image& icon,
+    const image_fetcher::RequestMetadata& metadata) {
+  if (icon.IsEmpty()) {
+    LOG(WARNING) << "EnterpriseLogoUrl fetch failed with error code "
+                 << metadata.http_response_code << " and MIME type "
+                 << metadata.mime_type;
+  }
+  std::move(callback).Run(icon);
 }
 
 }  // namespace
@@ -182,8 +202,9 @@ bool UserAcceptedAccountManagement(Profile* profile) {
 
 bool ProfileCanBeManaged(Profile* profile) {
   // Some tests do not have a profile manager.
-  if (!g_browser_process->profile_manager())
+  if (!g_browser_process->profile_manager() || !profile) {
     return false;
+  }
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -197,474 +218,131 @@ ManagementEnvironment GetManagementEnvironment(
   if (!UserAcceptedAccountManagement(profile)) {
     return ManagementEnvironment::kNone;
   }
-  // TODO (b/322796016): Add check for school using account_info
-  return ManagementEnvironment::kWork;
+  return account_info.IsEduAccount() ? ManagementEnvironment::kSchool
+                                     : ManagementEnvironment::kWork;
+}
+
+bool CanShowEnterpriseBadging(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
+    return false;
+  }
+  if (!UserAcceptedAccountManagement(profile)) {
+    return false;
+  }
+
+  bool is_device_managed =
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
+
+  switch (profile->GetPrefs()->GetInteger(
+      prefs::kEnterpriseBadgingTemporarySetting)) {
+    case EnterpriseProfileBadgingTemporarySetting::kHide:
+      return false;
+    case EnterpriseProfileBadgingTemporarySetting::kShowOnUnmanagedDevices:
+      return !is_device_managed;
+    case EnterpriseProfileBadgingTemporarySetting::kShowOnAllDevices:
+      return true;
+    case EnterpriseProfileBadgingTemporarySetting::kShowOnManagedDevices:
+      return is_device_managed;
+    default:
+      return false;
+  }
 }
 
 bool IsKnownConsumerDomain(const std::string& email_domain) {
-  // List of consumer-only domains from the server side logic. See
-  // `KNOWN_INVALID_DOMAINS` from GetAgencySignupStateProducerModule.java.
-  // Sharing this in open source Chromium code was green-lighted according to
-  // https://chromium-review.googlesource.com/c/chromium/src/+/2945029/comment/d8731200_4064534e/
-  static constexpr auto kKnownConsumerDomains =
-      base::MakeFixedFlatSet<base::StringPiece>({"123mail.org",
-                                                 "150mail.com",
-                                                 "150ml.com",
-                                                 "16mail.com",
-                                                 "2-mail.com",
-                                                 "2trom.com",
-                                                 "4email.net",
-                                                 "50mail.com",
-                                                 "aapt.net.au",
-                                                 "accountant.com",
-                                                 "acdcfan.com",
-                                                 "activist.com",
-                                                 "adam.com.au",
-                                                 "adexec.com",
-                                                 "africamail.com",
-                                                 "aircraftmail.com",
-                                                 "airpost.net",
-                                                 "allergist.com",
-                                                 "allmail.net",
-                                                 "alumni.com",
-                                                 "alumnidirector.com",
-                                                 "angelic.com",
-                                                 "anonymous.to",
-                                                 "aol.com",
-                                                 "appraiser.net",
-                                                 "archaeologist.com",
-                                                 "arcticmail.com",
-                                                 "artlover.com",
-                                                 "asia-mail.com",
-                                                 "asia.com",
-                                                 "atheist.com",
-                                                 "auctioneer.net",
-                                                 "australiamail.com",
-                                                 "bartender.net",
-                                                 "bellair.net",
-                                                 "berlin.com",
-                                                 "bestmail.us",
-                                                 "bigpond.com",
-                                                 "bigpond.com.au",
-                                                 "bigpond.net.au",
-                                                 "bikerider.com",
-                                                 "birdlover.com",
-                                                 "blader.com",
-                                                 "boardermail.com",
-                                                 "brazilmail.com",
-                                                 "brew-master.com",  // nocheck
-                                                 "brew-meister.com",
-                                                 "bsdmail.com",
-                                                 "californiamail.com",
-                                                 "cash4u.com",
-                                                 "catlover.com",
-                                                 "cheerful.com",
-                                                 "chef.net",
-                                                 "chemist.com",
-                                                 "chinamail.com",
-                                                 "clerk.com",
-                                                 "clubmember.org",
-                                                 "cluemail.com",
-                                                 "collector.org",
-                                                 "columnist.com",
-                                                 "comcast.net",
-                                                 "comic.com",
-                                                 "computer4u.com",
-                                                 "consultant.com",
-                                                 "contractor.net",
-                                                 "coolsite.net",
-                                                 "counsellor.com",
-                                                 "cutey.com",
-                                                 "cyber-wizard.com",
-                                                 "cyberdude.com",
-                                                 "cybergal.com",
-                                                 "cyberservices.com",
-                                                 "dallasmail.com",
-                                                 "dbzmail.com",
-                                                 "deliveryman.com",
-                                                 "diplomats.com",
-                                                 "disciples.com",
-                                                 "discofan.com",
-                                                 "disposable.com",
-                                                 "dispostable.com",
-                                                 "dodo.com.au",
-                                                 "doglover.com",
-                                                 "doramail.com",
-                                                 "dr.com",
-                                                 "dublin.com",
-                                                 "dutchmail.com",
-                                                 "earthlink.net",
-                                                 "elitemail.org",
-                                                 "elvisfan.com",
-                                                 "email.com",
-                                                 "emailcorner.net",
-                                                 "emailengine.net",
-                                                 "emailengine.org",
-                                                 "emailgroups.net",
-                                                 "emailplus.org",
-                                                 "emailuser.net",
-                                                 "eml.cc",
-                                                 "engineer.com",
-                                                 "englandmail.com",
-                                                 "europe.com",
-                                                 "europemail.com",
-                                                 "everymail.net",
-                                                 "everyone.net",
-                                                 "execs.com",
-                                                 "exemail.com.au",
-                                                 "f-m.fm",
-                                                 "facebook.com",
-                                                 "fast-email.com",
-                                                 "fast-mail.org",
-                                                 "fastem.com",
-                                                 "fastemail.us",
-                                                 "fastemailer.com",
-                                                 "fastest.cc",
-                                                 "fastimap.com",
-                                                 "fastmail.cn",
-                                                 "fastmail.co.uk",
-                                                 "fastmail.com.au",
-                                                 "fastmail.es",
-                                                 "fastmail.fm",
-                                                 "fastmail.im",
-                                                 "fastmail.in",
-                                                 "fastmail.jp",
-                                                 "fastmail.mx",
-                                                 "fastmail.net",
-                                                 "fastmail.nl",
-                                                 "fastmail.se",
-                                                 "fastmail.to",
-                                                 "fastmail.tw",
-                                                 "fastmail.us",
-                                                 "fastmailbox.net",
-                                                 "fastmessaging.com",
-                                                 "fastservice.com",
-                                                 "fea.st",
-                                                 "financier.com",
-                                                 "fireman.net",
-                                                 "flashmail.com",
-                                                 "fmail.co.uk",
-                                                 "fmailbox.com",
-                                                 "fmgirl.com",
-                                                 "fmguy.com",
-                                                 "ftml.net",
-                                                 "galaxyhit.com",
-                                                 "gardener.com",
-                                                 "geologist.com",
-                                                 "germanymail.com",
-                                                 "gmail.com",
-                                                 "gmx.com",
-                                                 "googlemail.com",
-                                                 "graduate.org",
-                                                 "graphic-designer.com",
-                                                 "greenmail.net",
-                                                 "groupmail.com",
-                                                 "guerillamail.com",
-                                                 "h-mail.us",
-                                                 "hackermail.com",
-                                                 "hailmail.net",
-                                                 "hairdresser.net",
-                                                 "hilarious.com",
-                                                 "hiphopfan.com",
-                                                 "homemail.com",
-                                                 "hot-shot.com",
-                                                 "hotmail.co.uk",
-                                                 "hotmail.com",
-                                                 "hotmail.fr",
-                                                 "hotmail.it",
-                                                 "housemail.com",
-                                                 "humanoid.net",
-                                                 "hushmail.com",
-                                                 "icloud.com",
-                                                 "iinet.net.au",
-                                                 "imap-mail.com",
-                                                 "imap.cc",
-                                                 "imapmail.org",
-                                                 "iname.com",
-                                                 "inbox.com",
-                                                 "innocent.com",
-                                                 "inorbit.com",
-                                                 "inoutbox.com",
-                                                 "instruction.com",
-                                                 "instructor.net",
-                                                 "insurer.com",
-                                                 "internet-e-mail.com",
-                                                 "internet-mail.org",
-                                                 "internetemails.net",
-                                                 "internetmailing.net",
-                                                 "internode.on.net",
-                                                 "iprimus.com.au",
-                                                 "irelandmail.com",
-                                                 "israelmail.com",
-                                                 "italymail.com",
-                                                 "jetemail.net",
-                                                 "job4u.com",
-                                                 "journalist.com",
-                                                 "justemail.net",
-                                                 "keromail.com",
-                                                 "kissfans.com",
-                                                 "kittymail.com",
-                                                 "koreamail.com",
-                                                 "lawyer.com",
-                                                 "legislator.com",
-                                                 "letterboxes.org",
-                                                 "linuxmail.org",
-                                                 "live.co.uk",
-                                                 "live.com",
-                                                 "live.com.au",
-                                                 "lobbyist.com",
-                                                 "lovecat.com",
-                                                 "lycos.com",
-                                                 "mac.com",
-                                                 "madonnafan.com",
-                                                 "mail-central.com",
-                                                 "mail-me.com",
-                                                 "mail-page.com",
-                                                 "mail.com",
-                                                 "mail.ru",
-                                                 "mailandftp.com",
-                                                 "mailas.com",
-                                                 "mailbolt.com",
-                                                 "mailc.net",
-                                                 "mailcan.com",
-                                                 "mailforce.net",
-                                                 "mailftp.com",
-                                                 "mailhaven.com",
-                                                 "mailinator.com",
-                                                 "mailingaddress.org",
-                                                 "mailite.com",
-                                                 "mailmight.com",
-                                                 "mailnew.com",
-                                                 "mailsent.net",
-                                                 "mailservice.ms",
-                                                 "mailup.net",
-                                                 "mailworks.org",
-                                                 "marchmail.com",
-                                                 "me.com",
-                                                 "metalfan.com",
-                                                 "mexicomail.com",
-                                                 "minister.com",
-                                                 "ml1.net",
-                                                 "mm.st",
-                                                 "moscowmail.com",
-                                                 "msn.com",
-                                                 "munich.com",
-                                                 "musician.org",
-                                                 "muslim.com",
-                                                 "myfastmail.com",
-                                                 "mymacmail.com",
-                                                 "myself.com",
-                                                 "net-shopping.com",
-                                                 "netspace.net.au",
-                                                 "ninfan.com",
-                                                 "nonpartisan.com",
-                                                 "nospammail.net",
-                                                 "null.net",
-                                                 "nycmail.com",
-                                                 "oath.com",
-                                                 "onebox.com",
-                                                 "operamail.com",
-                                                 "optician.com",
-                                                 "optusnet.com.au",
-                                                 "orthodontist.net",
-                                                 "outlook.com",
-                                                 "ownmail.net",
-                                                 "pacific-ocean.com",
-                                                 "pacificwest.com",
-                                                 "pediatrician.com",
-                                                 "petlover.com",
-                                                 "petml.com",
-                                                 "photographer.net",
-                                                 "physicist.net",
-                                                 "planetmail.com",
-                                                 "planetmail.net",
-                                                 "polandmail.com",
-                                                 "politician.com",
-                                                 "post.com",
-                                                 "postinbox.com",
-                                                 "postpro.net",
-                                                 "presidency.com",
-                                                 "priest.com",
-                                                 "programmer.net",
-                                                 "proinbox.com",
-                                                 "promessage.com",
-                                                 "protestant.com",
-                                                 "publicist.com",
-                                                 "qmail.com",
-                                                 "qq.com",
-                                                 "qualityservice.com",
-                                                 "radiologist.net",
-                                                 "ravemail.com",
-                                                 "realemail.net",
-                                                 "reallyfast.biz",
-                                                 "reallyfast.info",
-                                                 "realtyagent.com",
-                                                 "reborn.com",
-                                                 "rediff.com",
-                                                 "reggaefan.com",
-                                                 "registerednurses.com",
-                                                 "reincarnate.com",
-                                                 "religious.com",
-                                                 "repairman.com",
-                                                 "representative.com",
-                                                 "rescueteam.com",
-                                                 "rocketmail.com",
-                                                 "rocketship.com",
-                                                 "runbox.com",
-                                                 "rushpost.com",
-                                                 "safrica.com",
-                                                 "saintly.com",
-                                                 "salesperson.net",
-                                                 "samerica.com",
-                                                 "sanfranmail.com",
-                                                 "scientist.com",
-                                                 "scotlandmail.com",
-                                                 "secretary.net",
-                                                 "sent.as",
-                                                 "sent.at",
-                                                 "sent.com",
-                                                 "seznam.cz",
-                                                 "snakebite.com",
-                                                 "socialworker.net",
-                                                 "sociologist.com",
-                                                 "solution4u.com",
-                                                 "songwriter.net",
-                                                 "spainmail.com",
-                                                 "spamgourmet.com",
-                                                 "speedpost.net",
-                                                 "speedymail.org",
-                                                 "ssl-mail.com",
-                                                 "surgical.net",
-                                                 "swedenmail.com",
-                                                 "swift-mail.com",
-                                                 "swissmail.com",
-                                                 "teachers.org",
-                                                 "tech-center.com",
-                                                 "techie.com",
-                                                 "technologist.com",
-                                                 "telstra.com",
-                                                 "telstra.com.au",
-                                                 "the-fastest.net",
-                                                 "the-quickest.com",
-                                                 "theinternetemail.com",
-                                                 "theplate.com",
-                                                 "therapist.net",
-                                                 "toke.com",
-                                                 "toothfairy.com",
-                                                 "torontomail.com",
-                                                 "tpg.com.au",
-                                                 "trashmail.net",
-                                                 "tvstar.com",
-                                                 "umpire.com",
-                                                 "usa.com",
-                                                 "uymail.com",
-                                                 "veryfast.biz",
-                                                 "veryspeedy.net",
-                                                 "virginbroadband.com.au",
-                                                 "warpmail.net",
-                                                 "webname.com",
-                                                 "westnet.com.au",
-                                                 "windowslive.com",
-                                                 "worker.com",
-                                                 "workmail.com",
-                                                 "writeme.com",
-                                                 "xsmail.com",
-                                                 "xtra.co.nz",
-                                                 "y7mail.com",
-                                                 "yahoo.ae",
-                                                 "yahoo.at",
-                                                 "yahoo.be",
-                                                 "yahoo.ca",
-                                                 "yahoo.ch",
-                                                 "yahoo.cn",
-                                                 "yahoo.co.id",
-                                                 "yahoo.co.il",
-                                                 "yahoo.co.in",
-                                                 "yahoo.co.jp",
-                                                 "yahoo.co.kr",
-                                                 "yahoo.co.nz",
-                                                 "yahoo.co.th",
-                                                 "yahoo.co.uk",
-                                                 "yahoo.co.za",
-                                                 "yahoo.com",
-                                                 "yahoo.com.ar",
-                                                 "yahoo.com.au",
-                                                 "yahoo.com.br",
-                                                 "yahoo.com.cn",
-                                                 "yahoo.com.co",
-                                                 "yahoo.com.hk",
-                                                 "yahoo.com.mx",
-                                                 "yahoo.com.my",
-                                                 "yahoo.com.ph",
-                                                 "yahoo.com.sg",
-                                                 "yahoo.com.tr",
-                                                 "yahoo.com.tw",
-                                                 "yahoo.com.vn",
-                                                 "yahoo.cz",
-                                                 "yahoo.de",
-                                                 "yahoo.dk",
-                                                 "yahoo.es",
-                                                 "yahoo.fi",
-                                                 "yahoo.fr",
-                                                 "yahoo.gr",
-                                                 "yahoo.hu",
-                                                 "yahoo.ie",
-                                                 "yahoo.in",
-                                                 "yahoo.it",
-                                                 "yahoo.nl",
-                                                 "yahoo.no",
-                                                 "yahoo.pl",
-                                                 "yahoo.pt",
-                                                 "yahoo.ro",
-                                                 "yahoo.ru",
-                                                 "yahoo.se",
-                                                 "yandex.ru",
-                                                 "yepmail.net",
-                                                 "ymail.com",
-                                                 "your-mail.com",
-                                                 "zoho.com"});
-
-  return kKnownConsumerDomains.contains(email_domain);
+  return !signin::AccountManagedStatusFinder::MayBeEnterpriseDomain(
+      email_domain);
 }
 
 #if BUILDFLAG(IS_ANDROID)
 
-std::string GetBrowserManagerName(Profile* profile) {
-  DCHECK(profile);
-
-  // @TODO(https://crbug.com/1227786): There are some use-cases where the
-  // expected behavior of chrome://management is to show more than one domain.
-  std::optional<std::string> manager = GetAccountManagerIdentity(profile);
-  if (!manager &&
-      base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
-    manager = GetDeviceManagerIdentity();
-  }
-  return manager.value_or(std::string());
+// static
+jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(JNIEnv* env,
+                                                  Profile* profile) {
+  return policy::ManagementServiceFactory::GetForProfile(profile)
+      ->IsBrowserManaged();
 }
 
 // static
-jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(
+jboolean JNI_ManagedBrowserUtils_IsProfileManaged(JNIEnv* env,
+                                                  Profile* profile) {
+  return policy::ManagementServiceFactory::GetForProfile(profile)
+      ->IsAccountManaged();
+}
+
+// static
+base::android::ScopedJavaLocalRef<jstring> JNI_ManagedBrowserUtils_GetTitle(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profile) {
-  return IsBrowserManaged(ProfileAndroid::FromProfileAndroid(profile));
+    Profile* profile) {
+  return base::android::ConvertUTF16ToJavaString(
+      env, chrome::GetManagementPageSubtitle(profile));
 }
 
 // static
-base::android::ScopedJavaLocalRef<jstring>
-JNI_ManagedBrowserUtils_GetBrowserManagerName(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& profile) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, GetBrowserManagerName(ProfileAndroid::FromProfileAndroid(profile)));
-}
-
-// static
-jboolean JNI_ManagedBrowserUtils_IsReportingEnabled(JNIEnv* env) {
+jboolean JNI_ManagedBrowserUtils_IsBrowserReportingEnabled(JNIEnv* env) {
   return g_browser_process->local_state()->GetBoolean(
       enterprise_reporting::kCloudReportingEnabled);
 }
 
+// static
+jboolean JNI_ManagedBrowserUtils_IsProfileReportingEnabled(JNIEnv* env,
+                                                           Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      enterprise_reporting::kCloudProfileReportingEnabled);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
+void GetManagementIcon(const GURL& url,
+                       Profile* profile,
+                       base::OnceCallback<void(const gfx::Image&)> callback) {
+  constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+      net::DefineNetworkTrafficAnnotation("enterprise_logo_fetcher",
+                                          R"(
+        semantics {
+          sender: "Chrome Profiles"
+          description:
+            "Retrieves an image set by the admin as the enterprise logo. This "
+            "is used to show the user which organization manages their browser "
+            "in the profile menu."
+          trigger:
+            "When the user launches the browser and the EnterpriseLogoUrl "
+            "policy is set."
+          data:
+            "An admin-controlled URL for an image on the profile menu."
+          destination: OTHER
+          internal {
+            contacts {
+              email: "cbe-magic@google.com"
+            }
+          }
+          user_data {
+            type: SENSITIVE_URL
+          }
+          last_reviewed: "2024-07-22"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "There is no setting. This fetch is enabled for any managed user "
+            "with the EnterpriseLogoUrl policy set."
+          chrome_policy {
+            EnterpriseLogoUrl {
+              EnterpriseLogoUrl: ""
+            }
+          }
+        })");
+
+  if (!url.is_valid()) {
+    std::move(callback).Run(gfx::Image());
+    return;
+  }
+  image_fetcher::ImageFetcher* fetcher =
+      ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+  fetcher->FetchImage(
+      url, base::BindOnce(&OnManagementIconReceived, std::move(callback)),
+      image_fetcher::ImageFetcherParams(
+          kTrafficAnnotation,
+          /*uma_client_name=*/"BrowserManagementMetadata"));
+}
 
 }  // namespace enterprise_util
-}  // namespace chrome

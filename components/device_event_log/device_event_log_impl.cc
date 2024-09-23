@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/device_event_log/device_event_log_impl.h"
 
 #include <cmath>
 #include <list>
 #include <set>
+#include <string_view>
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
@@ -45,6 +51,7 @@ const char kLogTypeCameraDesc[] = "Camera";
 const char kLogTypeGeolocationDesc[] = "Geolocation";
 const char kLogTypeExtensionsDesc[] = "Extensions";
 const char kLogTypeDisplayDesc[] = "Display";
+const char kLogTypeFirmwareDesc[] = "Firmware";
 
 enum class ShowTime {
   kNone,
@@ -82,14 +89,16 @@ std::string GetLogTypeString(LogType type) {
       return kLogTypeExtensionsDesc;
     case LOG_TYPE_DISPLAY:
       return kLogTypeDisplayDesc;
+    case LOG_TYPE_FIRMWARE:
+      return kLogTypeFirmwareDesc;
     case LOG_TYPE_UNKNOWN:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "Unknown";
 }
 
-LogType GetLogTypeFromString(base::StringPiece desc) {
+LogType GetLogTypeFromString(std::string_view desc) {
   std::string desc_lc = base::ToLowerASCII(desc);
   for (int i = 0; i < LOG_TYPE_UNKNOWN; ++i) {
     auto type = static_cast<LogType>(i);
@@ -97,7 +106,7 @@ LogType GetLogTypeFromString(base::StringPiece desc) {
     if (desc_lc == log_desc_lc)
       return type;
   }
-  NOTREACHED() << "Unrecogized LogType: " << desc;
+  NOTREACHED_IN_MIGRATION() << "Unrecogized LogType: " << desc;
   return LOG_TYPE_UNKNOWN;
 }
 
@@ -226,7 +235,7 @@ void GetFormat(const std::string& format_string,
   *show_level = false;
   *format_json = false;
   while (tokens.GetNext()) {
-    base::StringPiece tok = tokens.token_piece();
+    std::string_view tok = tokens.token_piece();
     if (tok == "time") {
       *show_time = ShowTime::kTimeWithMs;
     } else if (tok == "unixtime") {
@@ -252,7 +261,7 @@ void GetLogTypes(const std::string& types,
                  std::set<LogType>* exclude_types) {
   base::StringTokenizer tokens(types, ",");
   while (tokens.GetNext()) {
-    base::StringPiece tok = tokens.token_piece();
+    std::string_view tok = tokens.token_piece();
     if (base::StartsWith(tok, "non-")) {
       LogType type = GetLogTypeFromString(tok.substr(4));
       if (type != LOG_TYPE_UNKNOWN)

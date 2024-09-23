@@ -26,18 +26,26 @@ class IsolatedWebAppTrustChecker;
 
 class IsolatedWebAppValidator {
  public:
-  explicit IsolatedWebAppValidator(
-      std::unique_ptr<const IsolatedWebAppTrustChecker>
-          isolated_web_app_trust_checker);
+  IsolatedWebAppValidator();
   virtual ~IsolatedWebAppValidator();
 
+  using IntegrityBlockCallback =
+      base::OnceCallback<void(base::expected<void, std::string>)>;
+
   // Validates that the integrity block of the Isolated Web App contains trusted
-  // public keys given the `web_bundle_id`. Returns `std::nullopt` on success,
-  // or an error message if the public keys are not trusted.
-  virtual void ValidateIntegrityBlock(
+  // public keys given the `expected_web_bundle_id`.
+  //
+  // This function also makes sure that the `expected_web_bundle_id` is actually
+  // derived from the `integrity_block`.
+  //
+  // Important: This method does not verify the signatures themselves - it only
+  // checks whether the public keys associated with these signatures correspond
+  // to trusted parties.
+  virtual base::expected<void, std::string> ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& expected_web_bundle_id,
       const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-      base::OnceCallback<void(std::optional<std::string>)> callback);
+      bool dev_mode,
+      const IsolatedWebAppTrustChecker& trust_checker);
 
   // Validates that the metadata of the Isolated Web App is valid given the
   // `web_bundle_id`.
@@ -45,10 +53,6 @@ class IsolatedWebAppValidator {
   ValidateMetadata(const web_package::SignedWebBundleId& web_bundle_id,
                    const std::optional<GURL>& primary_url,
                    const std::vector<GURL>& entries);
-
- private:
-  std::unique_ptr<const IsolatedWebAppTrustChecker>
-      isolated_web_app_trust_checker_;
 };
 
 }  // namespace web_app

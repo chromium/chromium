@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
@@ -20,8 +20,7 @@ namespace {
 
 class LensTabHelperTest : public PlatformTest {
  public:
-  LensTabHelperTest()
-      : task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {
+  LensTabHelperTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
 
     web::WebState::CreateParams params(browser_state_.get());
@@ -45,7 +44,8 @@ class LensTabHelperTest : public PlatformTest {
  protected:
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::WebState> web_state_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::MainThreadType::IO};
   raw_ptr<LensTabHelper> helper_ = nullptr;
   id handler_;
   id dispatcher_;

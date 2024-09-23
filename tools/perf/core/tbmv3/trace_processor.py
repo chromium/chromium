@@ -117,7 +117,7 @@ def _ScopedHistogramName(metric_name, histogram_name):
   """
   metric_suffix = '_metric'
   suffix_length = len(metric_suffix)
-  # TODO(crbug.com/1012687): Decide on whether metrics should always have
+  # TODO(crbug.com/40102479): Decide on whether metrics should always have
   # '_metric' suffix.
   if metric_name[-suffix_length:] == metric_suffix:
     scope = metric_name[:-suffix_length]

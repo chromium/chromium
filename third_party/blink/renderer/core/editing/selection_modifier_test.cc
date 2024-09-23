@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -173,7 +172,7 @@ TEST_F(SelectionModifierTest, PreviousLineWithDisplayNone) {
 TEST_F(SelectionModifierTest, PreviousSentenceWithNull) {
   InsertStyleElement("b {display:inline-block}");
   const SelectionInDOMTree selection =
-      SetSelectionTextToBody("<b><ruby><a>|</a></ruby></b>");
+      SetSelectionTextToBody("<b><b><a>|</a></b></b>");
   SelectionModifier modifier(GetFrame(), selection);
   // We call |PreviousSentence()| with null-position.
   EXPECT_FALSE(modifier.Modify(SelectionModifyAlteration::kMove,
@@ -185,7 +184,7 @@ TEST_F(SelectionModifierTest, PreviousSentenceWithNull) {
 TEST_F(SelectionModifierTest, StartOfSentenceWithNull) {
   InsertStyleElement("b {display:inline-block}");
   const SelectionInDOMTree selection =
-      SetSelectionTextToBody("|<b><ruby><a></a></ruby></b>");
+      SetSelectionTextToBody("|<b><b><a></a></b></b>");
   SelectionModifier modifier(GetFrame(), selection);
   // We call |StartOfSentence()| with null-position.
   EXPECT_FALSE(modifier.Modify(SelectionModifyAlteration::kMove,
@@ -211,7 +210,7 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
   SetBodyContent(body_content);
   Element* host = GetDocument().getElementById(AtomicString("host"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(shadow_content);
   UpdateAllLifecyclePhasesForTest();
 
@@ -235,19 +234,19 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     direction = SelectionModifyDirection::kForward;
     granularity = TextGranularity::kCharacter;
     SelectionModifier modifier(GetFrame(), makeSelection(Position(body, 0)));
-    EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+    EXPECT_EQ(Position(a, 0), modifier.Selection().Anchor());
     for (Node* node : {a, b, c, d, e, f}) {
       if (node == b || node == f) {
         modifier.Modify(move, direction, granularity);
         EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
-                  modifier.Selection().Base());
+                  modifier.Selection().Anchor());
       }
       modifier.Modify(move, direction, granularity);
-      EXPECT_EQ(Position(node, 1), modifier.Selection().Base());
+      EXPECT_EQ(Position(node, 1), modifier.Selection().Anchor());
       modifier.Modify(move, direction, granularity);
-      EXPECT_EQ(Position(node, 2), modifier.Selection().Base());
+      EXPECT_EQ(Position(node, 2), modifier.Selection().Anchor());
       modifier.Modify(move, direction, granularity);
-      EXPECT_EQ(Position(node, 3), modifier.Selection().Base());
+      EXPECT_EQ(Position(node, 3), modifier.Selection().Anchor());
     }
   }
   {
@@ -256,19 +255,19 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     granularity = TextGranularity::kCharacter;
     SelectionModifier modifier(GetFrame(), makeSelection(Position(body, 3)));
     for (Node* node : {f, e, d, c, b, a}) {
-      EXPECT_EQ(Position(node, 3), modifier.Selection().Base());
+      EXPECT_EQ(Position(node, 3), modifier.Selection().Anchor());
       modifier.Modify(move, direction, granularity);
-      EXPECT_EQ(Position(node, 2), modifier.Selection().Base());
+      EXPECT_EQ(Position(node, 2), modifier.Selection().Anchor());
       modifier.Modify(move, direction, granularity);
-      EXPECT_EQ(Position(node, 1), modifier.Selection().Base());
+      EXPECT_EQ(Position(node, 1), modifier.Selection().Anchor());
       modifier.Modify(move, direction, granularity);
       if (node == f || node == b) {
         EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
-                  modifier.Selection().Base());
+                  modifier.Selection().Anchor());
         modifier.Modify(move, direction, granularity);
       }
     }
-    EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+    EXPECT_EQ(Position(a, 0), modifier.Selection().Anchor());
   }
   {
     // Test moving forward, word by word.
@@ -277,19 +276,19 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     bool skip_space =
         GetFrame().GetEditor().Behavior().ShouldSkipSpaceWhenMovingRight();
     SelectionModifier modifier(GetFrame(), makeSelection(Position(body, 0)));
-    EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+    EXPECT_EQ(Position(a, 0), modifier.Selection().Anchor());
     for (Node* node : {a, b, c, d, e, f}) {
       if (node == b || node == f) {
         modifier.Modify(move, direction, granularity);
         EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
-                  modifier.Selection().Base());
+                  modifier.Selection().Anchor());
       }
       modifier.Modify(move, direction, granularity);
       EXPECT_EQ(Position(node, skip_space ? 2 : 1),
-                modifier.Selection().Base());
+                modifier.Selection().Anchor());
       if (node == a || node == e || node == f) {
         modifier.Modify(move, direction, granularity);
-        EXPECT_EQ(Position(node, 3), modifier.Selection().Base());
+        EXPECT_EQ(Position(node, 3), modifier.Selection().Anchor());
       }
     }
   }
@@ -300,18 +299,18 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
     SelectionModifier modifier(GetFrame(), makeSelection(Position(body, 3)));
     for (Node* node : {f, e, d, c, b, a}) {
       if (node == f || node == e || node == a) {
-        EXPECT_EQ(Position(node, 3), modifier.Selection().Base());
+        EXPECT_EQ(Position(node, 3), modifier.Selection().Anchor());
         modifier.Modify(move, direction, granularity);
       }
-      EXPECT_EQ(Position(node, 2), modifier.Selection().Base());
+      EXPECT_EQ(Position(node, 2), modifier.Selection().Anchor());
       modifier.Modify(move, direction, granularity);
       if (node == f || node == b) {
         EXPECT_EQ(node == b ? Position::BeforeNode(*node) : Position(node, 0),
-                  modifier.Selection().Base());
+                  modifier.Selection().Anchor());
         modifier.Modify(move, direction, granularity);
       }
     }
-    EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+    EXPECT_EQ(Position(a, 0), modifier.Selection().Anchor());
   }
 
   // Place the contents into different lines
@@ -327,10 +326,10 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
       for (Node* node : {a, b, c, d, e, f}) {
         EXPECT_EQ(i == 0 && node == b ? Position::BeforeNode(*node)
                                       : Position(node, i),
-                  modifier.Selection().Base());
+                  modifier.Selection().Anchor());
         modifier.Modify(move, direction, granularity);
       }
-      EXPECT_EQ(Position(f, 3), modifier.Selection().Base());
+      EXPECT_EQ(Position(f, 3), modifier.Selection().Anchor());
     }
   }
   {
@@ -342,10 +341,10 @@ TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
       for (Node* node : {f, e, d, c, b, a}) {
         EXPECT_EQ(i == 0 && node == b ? Position::BeforeNode(*node)
                                       : Position(node, i),
-                  modifier.Selection().Base());
+                  modifier.Selection().Anchor());
         modifier.Modify(move, direction, granularity);
       }
-      EXPECT_EQ(Position(a, 0), modifier.Selection().Base());
+      EXPECT_EQ(Position(a, 0), modifier.Selection().Anchor());
     }
   }
 }
@@ -388,22 +387,22 @@ TEST_F(SelectionModifierTest, PositionDisconnectedInFlatTree2) {
       Position::LastPositionInNode(*host), Position::AfterNode(*host),
       Position::BeforeNode(*text),         Position::FirstPositionInNode(*text),
       Position::LastPositionInNode(*text), Position::AfterNode(*text)};
-  for (const Position& base : positions) {
-    EXPECT_TRUE(base.IsConnected());
-    bool flat_base_is_connected = ToPositionInFlatTree(base).IsConnected();
-    EXPECT_EQ(base.AnchorNode() == host, flat_base_is_connected);
-    for (const Position& extent : positions) {
+  for (const Position& anchor : positions) {
+    EXPECT_TRUE(anchor.IsConnected());
+    bool flat_anchor_is_connected = ToPositionInFlatTree(anchor).IsConnected();
+    EXPECT_EQ(anchor.AnchorNode() == host, flat_anchor_is_connected);
+    for (const Position& focus : positions) {
       const SelectionInDOMTree& selection =
-          SelectionInDOMTree::Builder().SetBaseAndExtent(base, extent).Build();
+          SelectionInDOMTree::Builder().SetBaseAndExtent(anchor, focus).Build();
       Selection().SetSelection(selection, SetSelectionOptions());
       SelectionModifier modifier(GetFrame(), selection);
       modifier.Modify(SelectionModifyAlteration::kExtend,
                       SelectionModifyDirection::kForward,
                       TextGranularity::kParagraph);
-      EXPECT_TRUE(extent.IsConnected());
-      bool flat_extent_is_connected =
-          ToPositionInFlatTree(selection.Extent()).IsConnected();
-      EXPECT_EQ(flat_base_is_connected || flat_extent_is_connected
+      EXPECT_TRUE(focus.IsConnected());
+      bool flat_focus_is_connected =
+          ToPositionInFlatTree(selection.Focus()).IsConnected();
+      EXPECT_EQ(flat_anchor_is_connected || flat_focus_is_connected
                     ? "<div id=\"host\">x</div>^y|"
                     : "<div id=\"host\">x</div>y",
                 GetSelectionTextFromBody(modifier.Selection().AsSelection()));
@@ -432,8 +431,8 @@ TEST_F(SelectionModifierTest, OptgroupAndTable) {
   ShadowRoot* shadow_root = optgroup->GetShadowRoot();
   Element* label =
       shadow_root->getElementById(shadow_element_names::kIdOptGroupLabel);
-  EXPECT_EQ(Position(label, 0), selection.Base());
-  EXPECT_EQ(Position(shadow_root, 1), selection.Extent());
+  EXPECT_EQ(Position(label, 0), selection.Anchor());
+  EXPECT_EQ(Position(shadow_root, 1), selection.Focus());
 }
 
 TEST_F(SelectionModifierTest, EditableVideo) {

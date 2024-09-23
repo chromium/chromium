@@ -48,12 +48,16 @@ OptimizationGuideOnDeviceModelInstallerPolicy::
     : state_manager_(state_manager) {}
 
 OptimizationGuideOnDeviceModelInstallerPolicy::
-    ~OptimizationGuideOnDeviceModelInstallerPolicy() = default;
+    ~OptimizationGuideOnDeviceModelInstallerPolicy() {
+  content::GetUIThreadTaskRunner()->ReleaseSoon(FROM_HERE,
+                                                std::move(state_manager_));
+}
 
 bool OptimizationGuideOnDeviceModelInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
-  return state_manager_->VerifyInstallation(install_dir, manifest);
+  return OnDeviceModelComponentStateManager::VerifyInstallation(install_dir,
+                                                                manifest);
 }
 
 bool OptimizationGuideOnDeviceModelInstallerPolicy::
@@ -76,7 +80,10 @@ OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomInstall(
 }
 
 void OptimizationGuideOnDeviceModelInstallerPolicy::OnCustomUninstall() {
-  state_manager_->UninstallComplete();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OnDeviceModelComponentStateManager::UninstallComplete,
+                     state_manager_->GetWeakPtr()));
 }
 
 void OptimizationGuideOnDeviceModelInstallerPolicy::ComponentReady(

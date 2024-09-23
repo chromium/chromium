@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/features.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/origin.h"
@@ -90,7 +91,13 @@ int RetryForHistogramUntilCountReached(
 // https://httpwg.org/specs/rfc7231.html#header.content-language
 class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  RecordLanguagesMetricsBrowserTest() = default;
+  RecordLanguagesMetricsBrowserTest() {
+    // TODO(crbug.com/334954143) This tests is used to verify the metrics before
+    // we launch ReduceAcceptLanguage. Fix the tests when turning on the reduce
+    // accept-language feature.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {network::features::kReduceAcceptLanguage});
+  }
 
   static constexpr const char kOriginUrl[] = "https://127.0.0.1:44444";
   static constexpr const char kLanguageHistorgramName[] =
@@ -273,6 +280,7 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
   std::set<GURL> expected_request_urls_;
   RecordLanguageMetricTestOptions test_options_;
   std::unique_ptr<language::LanguagePrefs> language_prefs_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 constexpr const char RecordLanguagesMetricsBrowserTest::kOriginUrl[];
@@ -329,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
                        ContentLanguageMatchesAnyAcceptLanguage) {
   SetTestOptions({/*has_content_language_in_parent=*/true,
                   /*has_content_language_in_child=*/false,
-                  /*parent_content_language_value=*/"en",
+                  /*parent_content_language_value=*/"en-US",
                   /*child_content_language_value=*/""},
                  {content_language_url()});
 

@@ -24,6 +24,8 @@ Given the cost of large scale changes (review cost often being a significant fac
 
 For example, while cosmetic changes have some positive value, we want reviewers to spend their time on higher value changes. This means that changes which are primarily cosmetic are rarely worth doing unless they interact with other automation, such as fixing a spelling mistake that then makes other refactorings work more consistently. If in doubt, send us your proposal before spending too much time on it.
 
+Additionally, if a cross-cutting change reasonably fits into a small number of CLs, this LSC process is unnecessary. Just [use Owners-Override](/docs/code_reviews.md#global-approvals) to keep the reviewers to a minimum.
+
 ## Who uses it? {#who-uses-it}
 
 Anyone making "large" changes. (Currently this is roughly defined as changes covering more than 10 distinct directories with OWNERS files.) We are aiming to enable a process where the processes and practices (using [`git cl split`](https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/git-cl.html)) for making sweeping changes are more broadly accessible enabling teams to more readily change the APIs they export while keeping a bound on how much time is spent coping with codebase churn.

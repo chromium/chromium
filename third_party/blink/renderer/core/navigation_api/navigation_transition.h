@@ -26,7 +26,7 @@ class CORE_EXPORT NavigationTransition final : public ScriptWrappable {
 
   const String& navigationType() const { return navigation_type_; }
   NavigationHistoryEntry* from() { return from_.Get(); }
-  ScriptPromiseTyped<IDLUndefined> finished(ScriptState* script_state);
+  ScriptPromise<IDLUndefined> finished(ScriptState* script_state);
 
   void ResolveFinishedPromise();
   void RejectFinishedPromise(ScriptValue ex);

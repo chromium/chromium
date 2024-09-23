@@ -56,6 +56,8 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
       const mojom::blink::NavigationApiHistoryEntryArraysPtr&,
       mojom::blink::NavigationApiEntryRestoreReason);
 
+  void UpdateCurrentEntryForTesting(HistoryItem& item);
+
   // The entries indicated by |keys| have been removed from the session history
   // in the browser process and should be disposed. In many cases, this won't
   // do anything because those entries have already been synchronously removed
@@ -125,6 +127,8 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
                          mojom::blink::TraverseCancelledReason reason);
 
   int GetIndexFor(NavigationHistoryEntry*);
+  NavigationHistoryEntry* GetExistingEntryFor(const String& key,
+                                              const String& id);
 
   // EventTarget overrides:
   const AtomicString& InterfaceName() const final;
@@ -144,8 +148,6 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
   void AbortOngoingNavigation(ScriptState*);
   void DidFinishOngoingNavigation();
   void DidFailOngoingNavigation(ScriptValue);
-  NavigationHistoryEntry* GetExistingEntryFor(const String& key,
-                                              const String& id);
 
   NavigationResult* PerformNonTraverseNavigation(
       ScriptState*,

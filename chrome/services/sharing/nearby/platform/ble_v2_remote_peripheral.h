@@ -30,6 +30,7 @@ class BleV2RemotePeripheral : public api::ble_v2::BlePeripheral {
 
  private:
   bluetooth::mojom::DeviceInfoPtr device_info_;
+  uint64_t unique_id_;
 };
 
 }  // namespace nearby::chrome

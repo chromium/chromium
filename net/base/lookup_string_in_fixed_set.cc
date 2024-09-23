@@ -2,66 +2,77 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/base/lookup_string_in_fixed_set.h"
 
+#include <cstdint>
+
 #include "base/check.h"
+#include "base/containers/span.h"
 
 namespace net {
 
 namespace {
 
-// Read next offset from |pos|, increment |offset| by that amount, and increment
-// |pos| either to point to the start of the next encoded offset in its node, or
-// nullptr, if there are no remaining offsets.
+// Read next offset from `bytes`, increment `offset_bytes` by that amount, and
+// increment `bytes` either to point to the start of the next encoded offset in
+// its node, or set it to an empty span, if there are no remaining offsets.
 //
 // Returns true if an offset could be read; false otherwise.
-inline bool GetNextOffset(const unsigned char** pos,
-                          const unsigned char** offset) {
-  if (*pos == nullptr)
+inline bool GetNextOffset(base::span<const uint8_t>* bytes,
+                          base::span<const uint8_t>* offset_bytes) {
+  if (!bytes->size()) {
     return false;
+  }
 
   size_t bytes_consumed;
-  switch (**pos & 0x60) {
+  switch (bytes->front() & 0x60) {
     case 0x60:  // Read three byte offset
-      *offset += (((*pos)[0] & 0x1F) << 16) | ((*pos)[1] << 8) | (*pos)[2];
+      *offset_bytes = offset_bytes->subspan(((bytes->front() & 0x1F) << 16) |
+                                            ((*bytes)[1] << 8) | (*bytes)[2]);
       bytes_consumed = 3;
       break;
     case 0x40:  // Read two byte offset
-      *offset += (((*pos)[0] & 0x1F) << 8) | (*pos)[1];
+      *offset_bytes =
+          offset_bytes->subspan(((bytes->front() & 0x1F) << 8) | (*bytes)[1]);
       bytes_consumed = 2;
       break;
     default:
-      *offset += (*pos)[0] & 0x3F;
+      *offset_bytes = offset_bytes->subspan(bytes->front() & 0x3F);
       bytes_consumed = 1;
   }
-  if ((**pos & 0x80) != 0) {
-    *pos = nullptr;
+  if ((bytes->front() & 0x80) != 0) {
+    *bytes = base::span<const uint8_t>();
   } else {
-    *pos += bytes_consumed;
+    *bytes = bytes->subspan(bytes_consumed);
   }
   return true;
 }
 
-// Check if byte at |offset| is last in label.
-bool IsEOL(const unsigned char* offset) {
-  return (*offset & 0x80) != 0;
+// Check if byte at `byte` is last in label.
+bool IsEOL(uint8_t byte) {
+  return (byte & 0x80) != 0;
 }
 
-// Check if byte at |offset| matches key. This version matches both end-of-label
+// Check if byte at `byte` matches key. This version matches both end-of-label
 // chars and not-end-of-label chars.
-bool IsMatch(const unsigned char* offset, char key) {
-  return (*offset & 0x7F) == key;
+bool IsMatch(uint8_t byte, char key) {
+  return (byte & 0x7F) == key;
 }
 
-// Read return value at |offset|, if it is a return value. Returns true if a
+// Read return value at `byte`, if it is a return value. Returns true if a
 // return value could be read, false otherwise.
-bool GetReturnValue(const unsigned char* offset, int* return_value) {
+bool GetReturnValue(uint8_t byte, int* return_value) {
   // Return values are always encoded as end-of-label chars (so the high bit is
   // set). So byte values in the inclusive range [0x80, 0x9F] encode the return
   // values 0 through 31 (though make_dafsa.py doesn't currently encode values
   // higher than 7). The following code does that translation.
-  if ((*offset & 0xE0) == 0x80) {
-    *return_value = *offset & 0x1F;
+  if ((byte & 0xE0) == 0x80) {
+    *return_value = byte & 0x1F;
     return true;
   }
   return false;
@@ -69,9 +80,9 @@ bool GetReturnValue(const unsigned char* offset, int* return_value) {
 
 }  // namespace
 
-FixedSetIncrementalLookup::FixedSetIncrementalLookup(const unsigned char* graph,
-                                                     size_t length)
-    : pos_(graph), end_(graph + length) {}
+FixedSetIncrementalLookup::FixedSetIncrementalLookup(
+    base::span<const uint8_t> graph)
+    : bytes_(graph), original_bytes_(graph) {}
 
 FixedSetIncrementalLookup::FixedSetIncrementalLookup(
     const FixedSetIncrementalLookup& other) = default;
@@ -82,7 +93,7 @@ FixedSetIncrementalLookup& FixedSetIncrementalLookup::operator=(
 FixedSetIncrementalLookup::~FixedSetIncrementalLookup() = default;
 
 bool FixedSetIncrementalLookup::Advance(char input) {
-  if (!pos_) {
+  if (bytes_.empty()) {
     // A previous input exhausted the graph, so there are no possible matches.
     return false;
   }
@@ -92,49 +103,49 @@ bool FixedSetIncrementalLookup::Advance(char input) {
   // low values (values 0x00-0x1F) are reserved to encode the return values. So
   // values outside this range will never be in the dictionary.
   if (input >= 0x20) {
-    if (pos_is_label_character_) {
+    if (bytes_starts_with_label_character_) {
       // Currently processing a label, so it is only necessary to check the byte
-      // at |pos_| to see if it encodes a character matching |input|.
-      bool is_last_char_in_label = IsEOL(pos_);
-      bool is_match = IsMatch(pos_, input);
+      // pointed by `bytes_` to see if it encodes a character matching `input`.
+      bool is_last_char_in_label = IsEOL(bytes_.front());
+      bool is_match = IsMatch(bytes_.front(), input);
       if (is_match) {
         // If this is not the last character in the label, the next byte should
         // be interpreted as a character or return value. Otherwise, the next
         // byte should be interpreted as a list of child node offsets.
-        ++pos_;
-        DCHECK(pos_ < end_);
-        pos_is_label_character_ = !is_last_char_in_label;
+        bytes_ = bytes_.subspan(1);
+        DCHECK(!bytes_.empty());
+        bytes_starts_with_label_character_ = !is_last_char_in_label;
         return true;
       }
     } else {
-      const unsigned char* offset = pos_;
-      // Read offsets from |pos_| until the label of the child node at |offset|
-      // matches |input|, or until there are no more offsets.
-      while (GetNextOffset(&pos_, &offset)) {
-        DCHECK(offset < end_);
-        DCHECK((pos_ == nullptr) || (pos_ < end_));
+      base::span<const uint8_t> offset_bytes = bytes_;
+      // Read offsets from `bytes_` until the label of the child node at
+      // `offset_bytes` matches `input`, or until there are no more offsets.
+      while (GetNextOffset(&bytes_, &offset_bytes)) {
+        DCHECK(!offset_bytes.empty());
 
-        // |offset| points to a DAFSA node that is a child of the original node.
+        // `offset_bytes` points to a DAFSA node that is a child of the original
+        // node.
         //
         // The low 7 bits of a node encodes a character value; the high bit
         // indicates whether it's the last character in the label.
         //
-        // Note that |*offset| could also be a result code value, but these are
-        // really just out-of-range ASCII values, encoded the same way as
-        // characters. Since |input| was already validated as a printable ASCII
-        // value ASCII value, IsMatch will never return true if |offset| is a
+        // Note that `*offset_bytes` could also be a result code value, but
+        // these are really just out-of-range ASCII values, encoded the same way
+        // as characters. Since `input` was already validated as a printable
+        // ASCII value, IsMatch will never return true if `offset_bytes` is a
         // result code.
-        bool is_last_char_in_label = IsEOL(offset);
-        bool is_match = IsMatch(offset, input);
+        bool is_last_char_in_label = IsEOL(offset_bytes.front());
+        bool is_match = IsMatch(offset_bytes.front(), input);
 
         if (is_match) {
           // If this is not the last character in the label, the next byte
           // should be interpreted as a character or return value. Otherwise,
           // the next byte should be interpreted as a list of child node
           // offsets.
-          pos_ = offset + 1;
-          DCHECK(pos_ < end_);
-          pos_is_label_character_ = !is_last_char_in_label;
+          bytes_ = offset_bytes.subspan(1);
+          DCHECK(!bytes_.empty());
+          bytes_starts_with_label_character_ = !is_last_char_in_label;
           return true;
         }
       }
@@ -142,48 +153,47 @@ bool FixedSetIncrementalLookup::Advance(char input) {
   }
 
   // If no match was found, then end of the DAFSA has been reached.
-  pos_ = nullptr;
-  pos_is_label_character_ = false;
+  bytes_ = base::span<const uint8_t>();
+  bytes_starts_with_label_character_ = false;
   return false;
 }
 
 int FixedSetIncrementalLookup::GetResultForCurrentSequence() const {
   int value = kDafsaNotFound;
   // Look to see if there is a next character that's a return value.
-  if (pos_is_label_character_) {
+  if (bytes_starts_with_label_character_) {
     // Currently processing a label, so it is only necessary to check the byte
-    // at |pos_| to see if encodes a return value.
-    GetReturnValue(pos_, &value);
+    // at `bytes_` to see if encodes a return value.
+    GetReturnValue(bytes_.front(), &value);
   } else {
-    // Otherwise, |pos_| is an offset list (or nullptr). Explore the list of
-    // child nodes (given by their offsets) to find one whose label is a result
-    // code.
+    // Otherwise, `bytes_` is an offset list. Explore the list of child nodes
+    // (given by their offsets) to find one whose label is a result code.
     //
-    // This search uses a temporary copy of |pos_|, since mutating |pos_| could
-    // skip over a node that would be important to a subsequent Advance() call.
-    const unsigned char* temp_pos = pos_;
+    // This search uses a temporary copy of `bytes_`, since mutating `bytes_`
+    // could skip over a node that would be important to a subsequent Advance()
+    // call.
+    base::span<const uint8_t> temp_bytes = bytes_;
 
-    // Read offsets from |temp_pos| until either |temp_pos| is nullptr or until
-    // the byte at |offset| contains a result code (encoded as an ASCII
-    // character below 0x20).
-    const unsigned char* offset = pos_;
-    while (GetNextOffset(&temp_pos, &offset)) {
-      DCHECK(offset < end_);
-      DCHECK((temp_pos == nullptr) || temp_pos < end_);
-      if (GetReturnValue(offset, &value))
+    // Read offsets from `temp_bytes` until either `temp_bytes` is exhausted or
+    // until the byte at `offset_bytes` contains a result code (encoded as an
+    // ASCII character below 0x20).
+    base::span<const uint8_t> offset_bytes = bytes_;
+    while (GetNextOffset(&temp_bytes, &offset_bytes)) {
+      DCHECK(!offset_bytes.empty());
+      if (GetReturnValue(offset_bytes.front(), &value)) {
         break;
+      }
     }
   }
   return value;
 }
 
-int LookupStringInFixedSet(const unsigned char* graph,
-                           size_t length,
+int LookupStringInFixedSet(base::span<const uint8_t> graph,
                            const char* key,
                            size_t key_length) {
   // Do an incremental lookup until either the end of the graph is reached, or
   // until every character in |key| is consumed.
-  FixedSetIncrementalLookup lookup(graph, length);
+  FixedSetIncrementalLookup lookup(graph);
   const char* key_end = key + key_length;
   while (key != key_end) {
     if (!lookup.Advance(*key))
@@ -201,12 +211,11 @@ int LookupStringInFixedSet(const unsigned char* graph,
 // LookupStringInFixedSet::Advance() at compile time. Tests on x86_64 linux
 // indicated about 10% increased runtime cost for GetRegistryLength() in average
 // if the implementation of this function was separated from the lookup methods.
-int LookupSuffixInReversedSet(const unsigned char* graph,
-                              size_t length,
+int LookupSuffixInReversedSet(base::span<const uint8_t> graph,
                               bool include_private,
                               std::string_view host,
                               size_t* suffix_length) {
-  FixedSetIncrementalLookup lookup(graph, length);
+  FixedSetIncrementalLookup lookup(graph);
   *suffix_length = 0;
   int result = kDafsaNotFound;
   std::string_view::const_iterator pos = host.end();

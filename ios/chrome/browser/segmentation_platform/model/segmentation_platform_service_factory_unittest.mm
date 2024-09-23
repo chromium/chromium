@@ -9,9 +9,15 @@
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/uuid.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/mock_shopping_service.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #import "components/segmentation_platform/internal/constants.h"
 #import "components/segmentation_platform/internal/database/client_result_prefs.h"
 #import "components/segmentation_platform/public/constants.h"
@@ -22,8 +28,9 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/segmentation_platform/public/service_proxy.h"
 #import "components/ukm/test_ukm_recorder.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_data_manager_test_utils.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -57,8 +64,8 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
          {features::kSegmentationPlatformFeature, {}},
          {features::kSegmentationPlatformUkmEngine, {}},
          {features::kContextualPageActionShareModel, {}},
-         {features::kSegmentationPlatformIosModuleRanker,
-          {{kDefaultModelEnabledParam, "true"}}}},
+         {features::kSegmentationPlatformEphemeralCardRanker, {}},
+         {commerce::kPriceTrackingPromo, {}}},
         {});
     scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
         kSegmentationPlatformRefreshResultsSwitch);
@@ -77,11 +84,11 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
     ChromeBrowserState* otr_browser_state =
         profile_->browser_state
             ->CreateOffTheRecordBrowserStateWithTestingFactories(
-                {std::make_pair(
+                {TestChromeBrowserState::TestingFactory{
                     SegmentationPlatformServiceFactory::GetInstance(),
-                    SegmentationPlatformServiceFactory::GetDefaultFactory())});
-    ASSERT_FALSE(SegmentationPlatformServiceFactory::GetForBrowserState(
-        otr_browser_state));
+                    SegmentationPlatformServiceFactory::GetDefaultFactory()}});
+    ASSERT_FALSE(
+        SegmentationPlatformServiceFactory::GetForProfile(otr_browser_state));
   }
 
   void TearDown() override {
@@ -147,17 +154,26 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
   struct ProfileData {
     explicit ProfileData(UkmDataManagerTestUtils* test_utils,
                          const std::string& result_pref)
-        : test_utils(test_utils) {
+        : result_pref(result_pref), test_utils(test_utils) {
       TestChromeBrowserState::Builder builder;
       builder.AddTestingFactory(
           SegmentationPlatformServiceFactory::GetInstance(),
-          SegmentationPlatformServiceFactory::GetDefaultFactory());
-      browser_state = builder.Build();
-
-      browser_state->GetPrefs()->SetString(kSegmentationClientResultPrefs,
-                                           result_pref);
-      test_utils->SetupForProfile(browser_state.get());
-      service = SegmentationPlatformServiceFactory::GetForBrowserState(
+          base::BindOnce(&ProfileData::SetUpEnvironment, base::Unretained(this))
+              .Then(SegmentationPlatformServiceFactory::GetDefaultFactory()));
+      builder.AddTestingFactory(
+          commerce::ShoppingServiceFactory::GetInstance(),
+          base::BindRepeating([](web::BrowserState*)
+                                  -> std::unique_ptr<KeyedService> {
+            std::unique_ptr<bookmarks::BookmarkNode> bookmark =
+                std::make_unique<bookmarks::BookmarkNode>(
+                    /*id=*/100, base::Uuid::GenerateRandomV4(), GURL());
+            std::unique_ptr<commerce::MockShoppingService> shopping_service =
+                std::make_unique<commerce::MockShoppingService>();
+            shopping_service->SetGetAllShoppingBookmarksValue({bookmark.get()});
+            return std::move(shopping_service);
+          }));
+      browser_state = std::move(builder).Build();
+      service = SegmentationPlatformServiceFactory::GetForProfile(
           browser_state.get());
     }
 
@@ -165,9 +181,20 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
 
     ProfileData(ProfileData&) = delete;
 
+    // Setup environment required to create the SegmentationPlatformService.
+    web::BrowserState* SetUpEnvironment(web::BrowserState* context) {
+      ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+      profile->GetPrefs()->SetString(kSegmentationClientResultPrefs,
+                                     result_pref);
+      test_utils->SetupForProfile(profile);
+      return context;
+    }
+
+    const std::string result_pref;
     const raw_ptr<UkmDataManagerTestUtils> test_utils;
     std::unique_ptr<TestChromeBrowserState> browser_state;
     raw_ptr<SegmentationPlatformService> service;
+    std::unique_ptr<bookmarks::BookmarkNode> bookmark_;
   };
 
   void WaitForServiceInit() {
@@ -191,7 +218,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
       const PredictionOptions& prediction_options,
       scoped_refptr<InputContext> input_context,
       PredictionStatus expected_status,
-      absl::optional<std::vector<std::string>> expected_labels) {
+      std::optional<std::vector<std::string>> expected_labels) {
     base::RunLoop loop;
     profile_->service->GetClassificationResult(
         segmentation_key, prediction_options, input_context,
@@ -205,7 +232,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
   void OnGetClassificationResult(
       base::RepeatingClosure closure,
       PredictionStatus expected_status,
-      absl::optional<std::vector<std::string>> expected_labels,
+      std::optional<std::vector<std::string>> expected_labels,
       const ClassificationResult& actual_result) {
     EXPECT_EQ(actual_result.status, expected_status);
     if (expected_labels.has_value()) {
@@ -226,7 +253,7 @@ class SegmentationPlatformServiceFactoryTest : public PlatformTest {
 };
 
 TEST_F(SegmentationPlatformServiceFactoryTest, Test) {
-  // TODO(crbug.com/1333641): Add test for the API once the initialization is
+  // TODO(crbug.com/40227968): Add test for the API once the initialization is
   // fixed.
 }
 
@@ -253,6 +280,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
   int safety_check_freshness_impression_count = -1;
   int tab_resumption_freshness_impression_count = -1;
   int parcel_tracking_freshness_impression_count = -1;
+
   input_context->metadata_args.emplace(
       segmentation_platform::kMostVisitedTilesFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
@@ -279,6 +307,34 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
       input_context, PredictionStatus::kSucceeded,
       std::vector<std::string>{"MostVisitedTiles", "Shortcuts", "SafetyCheck",
                                "TabResumption", "ParcelTracking"});
+}
+
+// Tests that the HomeModulesCardRegistry registers the correct cards and the
+// response from the EphemeralHomeModuleBackend returns the correct card.
+TEST_F(SegmentationPlatformServiceFactoryTest, TestEphemeralHomeModuleBackend) {
+  home_modules::HomeModulesCardRegistry* registry =
+      SegmentationPlatformServiceFactory::GetHomeCardRegistryForBrowserState(
+          profile_->browser_state.get());
+  ASSERT_TRUE(registry);
+  EXPECT_EQ(1u, registry->get_all_cards_by_priority().size());
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto inputContext = base::MakeRefCounted<InputContext>();
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsNewUser,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0));
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsSynced,
+      segmentation_platform::processing::ProcessedValue::FromFloat(1));
+
+  std::vector<std::string> result = {
+      segmentation_platform::kPriceTrackingNotificationPromo};
+  ExpectGetClassificationResult(
+      kEphemeralHomeModuleBackendKey, prediction_options, inputContext,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/result);
 }
 
 }  // namespace segmentation_platform

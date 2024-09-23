@@ -159,9 +159,12 @@ void CrosHealthdMetricsProvider::OnProbeDone(
         dev.set_purpose(
             SystemProfileProto::Hardware::InternalStorageDevice::PURPOSE_BOOT);
         break;
-      case ash::cros_healthd::mojom::StorageDevicePurpose::kSwapDevice:
+      case ash::cros_healthd::mojom::StorageDevicePurpose::
+          DEPRECATED_kSwapDevice:
         dev.set_purpose(
             SystemProfileProto::Hardware::InternalStorageDevice::PURPOSE_SWAP);
+        break;
+      case ash::cros_healthd::mojom::StorageDevicePurpose::kNonBootDevice:
         break;
     }
 
@@ -190,8 +193,9 @@ void CrosHealthdMetricsProvider::OnDisconnect() {
 
 void CrosHealthdMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
   auto* mutable_hardware_proto = system_profile_proto->mutable_hardware();
   mutable_hardware_proto->clear_internal_storage_devices();
 

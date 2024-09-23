@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/external_data/user_cloud_external_data_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -34,6 +33,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -108,10 +108,8 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
   // All other user types do not have user policy.
   const AccountId& account_id = user->GetAccountId();
   if (user->GetType() != user_manager::UserType::kChild &&
-      signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-          account_id.GetUserEmail()) ==
-          signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
-              kKnownNonEnterprise) {
+      !signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          account_id.GetUserEmail())) {
     DLOG(WARNING) << "No policy loaded for known non-enterprise user";
     // Mark this profile as not requiring policy.
     known_user.SetProfileRequiresPolicy(
@@ -133,7 +131,7 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
       }
       break;
     case AccountType::ACTIVE_DIRECTORY:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   const ProfileRequiresPolicy requires_policy_user_property =
@@ -265,9 +263,8 @@ std::unique_ptr<UserCloudPolicyManagerAsh> CreateUserCloudPolicyManagerAsh(
       ash::CrosSettings::Get()->IsUserAllowlisted(
           account_id.GetUserEmail(), &wildcard_match, user->GetType()) &&
       wildcard_match &&
-      signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
-          account_id.GetUserEmail()) ==
-          signin::AccountManagedStatusFinder::EmailEnterpriseStatus::kUnknown) {
+      signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          account_id.GetUserEmail())) {
     manager->EnableWildcardLoginCheck(account_id.GetUserEmail());
   }
 

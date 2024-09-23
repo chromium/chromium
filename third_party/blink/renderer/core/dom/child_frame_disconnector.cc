@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 
 namespace blink {
 
@@ -54,8 +55,15 @@ void ChildFrameDisconnector::DisconnectCollectedFrameOwners() {
     HTMLFrameOwnerElement* owner = frame_owners_[i].Get();
     // Don't need to traverse up the tree for the first owner since no
     // script could have moved it.
-    if (!i || Root().IsShadowIncludingInclusiveAncestorOf(*owner))
+    if (!i || Root().IsShadowIncludingInclusiveAncestorOf(*owner)) {
+      if (disconnect_reason_ == kDisconnectSelf) {
+        // Emit `FrameSubtreeWillBeDetached` only for the top of subtree before
+        // disconnecting the subtree.
+        probe::FrameSubtreeWillBeDetached(owner->GetDocument().GetFrame(),
+                                          owner->ContentFrame());
+      }
       owner->DisconnectContentFrame();
+    }
   }
 }
 

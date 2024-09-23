@@ -60,9 +60,10 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   }
 
   // Update secondary text color.
-  if (secondary_text_color_id_) {
-    updated_fields.previous_secondary_text_color_id =
-        item_->SetSecondaryTextColorId(secondary_text_color_id_.value());
+  if (secondary_text_color_variant_) {
+    updated_fields.previous_secondary_text_color_variant =
+        item_->SetSecondaryTextColorVariant(
+            secondary_text_color_variant_.value());
   }
 
   // Update text.
@@ -143,9 +144,10 @@ HoldingSpaceModel::ScopedItemUpdate::SetSecondaryText(
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
-HoldingSpaceModel::ScopedItemUpdate::SetSecondaryTextColorId(
-    const std::optional<ui::ColorId>& secondary_text_color_id) {
-  secondary_text_color_id_ = secondary_text_color_id;
+HoldingSpaceModel::ScopedItemUpdate::SetSecondaryTextColorVariant(
+    const std::optional<HoldingSpaceColorVariant>&
+        secondary_text_color_variant) {
+  secondary_text_color_variant_ = secondary_text_color_variant;
   return *this;
 }
 
@@ -191,22 +193,6 @@ void HoldingSpaceModel::AddItems(
 
   for (auto& observer : observers_)
     observer.OnHoldingSpaceItemsAdded(item_ptrs);
-
-  if (!features::IsHoldingSpacePredictabilityEnabled())
-    return;
-
-  // When the predictability feature flag is enabled, holding space items do
-  // not automatically expire. Instead, a maximum item count for each section
-  // is enforced such that adding new items may result in removing the oldest
-  // items from the same section.
-  RemoveIf(base::BindRepeating(
-      [](std::map<HoldingSpaceSectionId, size_t>& item_counts_per_section_id,
-         const HoldingSpaceItem* item) {
-        const auto* section = GetHoldingSpaceSection(item->type());
-        const auto item_count = ++item_counts_per_section_id[section->id];
-        return section->max_item_count && item_count > *section->max_item_count;
-      },
-      base::OwnedRef(std::map<HoldingSpaceSectionId, size_t>())));
 }
 
 void HoldingSpaceModel::RemoveItem(const std::string& id) {

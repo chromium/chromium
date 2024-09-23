@@ -8,8 +8,6 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "components/crash/core/browser/crash_upload_list_crashpad.h"
-#elif BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/crash_upload_list/crash_upload_list_fuchsia.h"
 #else
 #include "base/files/file_path.h"
 #include "base/path_service.h"
@@ -44,8 +42,6 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
       cache_dir.Append("Crash Reports")
           .AppendASCII(CrashUploadList::kReporterLogFilename);
   return new CrashUploadListAndroid(upload_log_path);
-#elif BUILDFLAG(IS_FUCHSIA)
-  return new CrashUploadListFuchsia();
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
   base::FilePath crash_dir_path;

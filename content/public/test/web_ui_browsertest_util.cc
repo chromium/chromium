@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -48,14 +49,15 @@ void GetResource(const std::string& id,
   CHECK(base::ReadFileToString(path, &contents)) << path.value();
 
   base::RefCountedString* ref_contents = new base::RefCountedString;
-  ref_contents->data() = contents;
+  ref_contents->as_string() = contents;
   std::move(callback).Run(ref_contents);
 }
 
 struct WebUIControllerConfig {
   WebUIControllerConfig();
   ~WebUIControllerConfig();
-  int bindings = BINDINGS_POLICY_WEB_UI;
+
+  BindingsPolicySet bindings = BindingsPolicySet({BindingsPolicyValue::kWebUi});
   std::string child_src = "child-src 'self' chrome://web-ui-subframe/;";
   bool disable_xfo = false;
   bool disable_trusted_types = false;
@@ -84,20 +86,26 @@ std::unique_ptr<WebUIController> CreateTestWebUIControllerForURL(
   if (url.has_query()) {
     std::string value;
     bool has_value = net::GetValueForKeyInQuery(url, "bindings", &value);
-    if (has_value)
-      CHECK(base::StringToInt(value, &(config.bindings)));
+    if (has_value) {
+      int64_t int_value;
+      CHECK(base::StringToInt64(value, &int_value));
+      config.bindings = BindingsPolicySet::FromEnumBitmask(int_value);
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "noxfo", &value);
-    if (has_value && value == "true")
+    if (has_value && value == "true") {
       config.disable_xfo = true;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "notrustedtypes", &value);
-    if (has_value && value == "true")
+    if (has_value && value == "true") {
       config.disable_trusted_types = true;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "childsrc", &value);
-    if (has_value)
+    if (has_value) {
       config.child_src = value;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "requestableschemes", &value);
     if (has_value) {
@@ -218,10 +226,14 @@ void AddUntrustedDataSource(
         case network::mojom::CrossOriginOpenerPolicyValue::
             kSameOriginAllowPopups:
         case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
+          NOTREACHED() << "COOP:restrict-properties is not supported in WebUI";
         case network::mojom::CrossOriginOpenerPolicyValue::
             kRestrictPropertiesPlusCoep:
-          NOTIMPLEMENTED();
-          break;
+          NOTREACHED()
+              << "COOP:restrict-properties-plus-coep is not supported in WebUI";
+        case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
+          NOTREACHED()
+              << "COOP:noopener-allow-popups is not supported in WebUI";
       }
     }
   }
@@ -233,7 +245,7 @@ GURL GetChromeUntrustedUIURL(const std::string& host_and_path) {
               url::kStandardSchemeSeparator + host_and_path);
 }
 
-TestWebUIConfig::TestWebUIConfig(base::StringPiece host)
+TestWebUIConfig::TestWebUIConfig(std::string_view host)
     : WebUIConfig(content::kChromeUIScheme, host) {}
 
 std::unique_ptr<WebUIController> TestWebUIConfig::CreateWebUIController(

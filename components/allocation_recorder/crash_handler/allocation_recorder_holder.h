@@ -11,7 +11,6 @@
 #include "base/debug/allocation_trace.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 
 namespace crashpad {

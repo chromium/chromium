@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/json/json_reader.h"
 #include "base/ranges/algorithm.h"
@@ -24,7 +25,11 @@ BrowserInfo::~BrowserInfo() = default;
 
 BrowserInfo::BrowserInfo(const BrowserInfo&) = default;
 
+BrowserInfo::BrowserInfo(BrowserInfo&&) = default;
+
 BrowserInfo& BrowserInfo::operator=(const BrowserInfo&) = default;
+
+BrowserInfo& BrowserInfo::operator=(BrowserInfo&&) = default;
 
 Status BrowserInfo::FillFromBrowserVersionResponse(
     const base::Value::Dict& response) {
@@ -153,7 +158,7 @@ Status BrowserInfo::ParseBrowserVersionString(
     const std::string& browser_version,
     int* major_version,
     int* build_no) {
-  std::vector<base::StringPiece> version_parts = base::SplitStringPiece(
+  std::vector<std::string_view> version_parts = base::SplitStringPiece(
       browser_version, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (version_parts.size() != 4 ||
       !base::StringToInt(version_parts[0], major_version) ||

@@ -10,6 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-toggle-button. */
@@ -75,16 +76,25 @@ suite('SettingsToggleButton', () => {
     testElement.$.control.click();
   });
 
-  test('fires a single change event per tap', () => {
+  test('fires a single change event per tap', async () => {
     let counter = 0;
     testElement.addEventListener('change', () => {
       ++counter;
     });
+    let whenFired = eventToPromise('change', testElement);
+
     testElement.click();
+    await whenFired;
     assertEquals(1, counter);
+
+    whenFired = eventToPromise('change', testElement);
     testElement.$.labelWrapper.click();
+    await whenFired;
     assertEquals(2, counter);
+
+    whenFired = eventToPromise('change', testElement);
     testElement.$.control.click();
+    await whenFired;
     assertEquals(3, counter);
   });
 

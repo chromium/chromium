@@ -1,0 +1,115 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_geometry.proto";
+
+// The text reading order.
+enum WritingDirection {
+  DEFAULT_WRITING_DIRECTION_LEFT_TO_RIGHT = 0;
+  WRITING_DIRECTION_RIGHT_TO_LEFT = 1;
+  WRITING_DIRECTION_TOP_TO_BOTTOM = 2;
+}
+
+// The text alignment.
+enum Alignment {
+  DEFAULT_LEFT_ALIGNED = 0;
+  RIGHT_ALIGNED = 1;
+  CENTER_ALIGNED = 2;
+}
+
+message Text {
+  // Optional. Information describing the text.
+  TextLayout text_layout = 1;
+
+  // Optional. Dominant content language of the text. Language
+  // code is CLDR/BCP-47.
+  string content_language = 2;
+
+  reserved 3;
+}
+
+// Nested text structure.
+message TextLayout {
+  message Word {
+    // Required. Unique id within TextLayout.
+    TextEntityIdentifier id = 1;
+
+    // Optional. The text in a plain text.
+    string plain_text = 2;
+
+    // Optional. The text separator that should be appended after this word when
+    // it is concatenated with the subsequent word in the same or next
+    // line/paragraph into a single-line string. This is specified as optional
+    // because there is a distinction between the absence of a separator and
+    // the empty string as a separator.
+    optional string text_separator = 3;
+
+    // Optional. The geometry of the word.
+    Geometry geometry = 4;
+
+    enum Type {
+      // Printed text.
+      TEXT = 0;
+
+      // Formula type, including mathematical or chemical formulas.
+      FORMULA = 1;
+    }
+
+    // Optional. The type of this word.
+    Type type = 5;
+
+    message FormulaMetadata {
+      // Optional. LaTeX representation of a formula. Can be the same as
+      // `plain_text`. Example: "\frac{2}{x}=y". The plain text
+      // representation of this is available in Word.plain_text.
+      string latex = 1;
+    }
+
+    // Optional. Metadata for formulas. This is populated for entities of
+    // `type=FORMULA`.
+    FormulaMetadata formula_metadata = 6;
+  }
+
+  message Line {
+    // Optional. List of words in natural reading order.
+    repeated Word words = 1;
+
+    // Optional. The geometry of the line.
+    Geometry geometry = 2;
+  }
+
+  message Paragraph {
+    // Required. Unique id within TextLayout.
+    TextEntityIdentifier id = 1;
+
+    // Optional. List of lines in natural reading order (see also
+    // `writing_direction`).
+    repeated Line lines = 2;
+
+    // Optional. Geometry of the paragraph.
+    Geometry geometry = 3;
+
+    // Optional. The text writing direction (aka reading order).
+    WritingDirection writing_direction = 4;
+
+    // Optional. BCP-47 language code of the dominant language in this
+    // paragraph.
+    string content_language = 5;
+  }
+
+  // Optional. List of paragraphs in natural reading order.
+  repeated Paragraph paragraphs = 1;
+}
+
+message TextEntityIdentifier {
+  // Required. Unique entity id used to reference (and match) text entities and
+  // ranges.
+  int64 id = 1;
+}

@@ -60,7 +60,7 @@ GURL GetPublisherURL(content::RenderFrameHost* rfh) {
   const network::mojom::URLResponseHead* response_head =
       rfh->GetLastResponseHead();
   if (!response_head || !response_head->headers) {
-    // TODO(https://crbug.com/829323): In some cases other than offline pages
+    // TODO(crbug.com/41381000): In some cases other than offline pages
     // we don't have headers.
     LOG(WARNING) << "No headers for navigation to "
                  << rfh->GetLastCommittedURL();

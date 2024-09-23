@@ -21,7 +21,7 @@ namespace autofill {
 class FormStructure;
 class LogManager;
 
-struct FormData;
+class FormData;
 }  // namespace autofill
 
 namespace password_manager {
@@ -86,7 +86,7 @@ class BrowserSavePasswordProgressLogger
   // outlive this logger.
   const raw_ptr<autofill::LogManager> log_manager_;
 
-  // TODO(crbug.com/1466435): Move the below functions to stand-alone helper
+  // TODO(crbug.com/40276395): Move the below functions to stand-alone helper
   // functions in an anonymous namespace.
 
   // Returns the string representation of `form`.

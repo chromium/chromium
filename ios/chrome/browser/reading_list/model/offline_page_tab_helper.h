@@ -9,8 +9,8 @@
 #include <string>
 
 #import "base/memory/raw_ptr.h"
-#include "components/reading_list/core/reading_list_model_observer.h"
-#include "ios/web/public/web_state_observer.h"
+#import "components/reading_list/core/reading_list_model_observer.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace base {
@@ -87,7 +87,7 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   // pending navigation was not yet committed, it returns immediately and is
   // noop. In these conditions, the offline page will be presented on navigation
   // commit.
-  // TODO(crbug.com/936773): handle uncommitted navigations.
+  // TODO(crbug.com/40615979): handle uncommitted navigations.
   void PresentOfflinePageForOnlineUrl(const GURL& url);
 
   // Starts repeating `timer_` which will fire `CheckLoadingProgress` method.

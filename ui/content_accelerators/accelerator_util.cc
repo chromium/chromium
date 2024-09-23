@@ -15,7 +15,7 @@
 namespace ui {
 
 ui::Accelerator GetAcceleratorFromNativeWebKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     // TODO: This must be the same as below and it's simpler.

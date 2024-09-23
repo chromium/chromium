@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Error: flac unsupported
+[NOTRUN] Test isConfigSupported()
+[NOTRUN] Test that AudioDecoder.isConfigSupported() returns a parsed configuration
+[NOTRUN] Test configure()
+[NOTRUN] Verify closed AudioDecoder operations
+[NOTRUN] Test decoding
+[NOTRUN] Test decoding a with negative timestamp
+[NOTRUN] Test decoding after flush
+[NOTRUN] Test reset during flush
+[NOTRUN] AudioDecoder decodeQueueSize test
+Harness: the test ran to completion.
+

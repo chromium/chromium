@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/flags_ui/feature_entry.h"
 
 #include "base/check_op.h"
@@ -293,7 +298,7 @@ bool FeatureEntry::IsValid() const {
       return true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -307,7 +312,7 @@ FeatureEntry::GetVariations() const {
     return platform_feature_name.feature_variations;
   }
 #endif
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::span<const FeatureEntry::FeatureVariation>();
 }
 

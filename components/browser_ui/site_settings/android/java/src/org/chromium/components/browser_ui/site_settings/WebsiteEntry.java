@@ -25,15 +25,31 @@ public interface WebsiteEntry extends Serializable {
 
     /**
      * @return whether either the eTLD+1 or one of the origins associated with it matches the given
-     * search query.
+     *     search query.
      */
     boolean matches(String search);
 
     /**
-     * Some Google-affiliated domains are not allowed to delete cookies for supervised accounts.
-     * If the entry represents a single {@link Website}, just that origin is checked.
-     * If the entry is a {@link WebsiteGroup}, checked if this holds for EVERY {@link Website} in
-     * the group.
+     * @return whether the {@link WebsiteEntry} is a part of RWS (related website sets).
+     */
+    boolean isPartOfRws();
+
+    /**
+     * @return the owner of the RWS and null if the {@link WebsiteEntry} is not part of the RWS
+     *     (related website sets).
+     */
+    String getRwsOwner();
+
+    /**
+     * @return the size of the RWS and 0 if the {@link WebsiteEntry} is not part of the RWS (related
+     *     website sets).
+     */
+    int getRwsSize();
+
+    /**
+     * Some Google-affiliated domains are not allowed to delete cookies for supervised accounts. If
+     * the entry represents a single {@link Website}, just that origin is checked. If the entry is a
+     * {@link WebsiteGroup}, checked if this holds for EVERY {@link Website} in the group.
      */
     boolean isCookieDeletionDisabled(BrowserContextHandle browserContextHandle);
 }

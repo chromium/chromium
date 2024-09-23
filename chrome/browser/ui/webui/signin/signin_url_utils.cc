@@ -7,8 +7,6 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "net/base/url_util.h"
 
@@ -16,13 +14,15 @@ namespace {
 
 // Query parameter names of the sync confirmation and the profile customization
 // URL.
-const char kStyleParamKey[] = "style";
+constexpr char kStyleParamKey[] = "style";
+
+constexpr char kIsSyncPromoParamKey[] = "is_sync_promo";
 
 // Query parameter names of the reauth confirmation URL.
-const char kAccessPointParamKey[] = "access_point";
+constexpr char kAccessPointParamKey[] = "access_point";
 
 // URL tag to specify that the source is the ProfilePicker.
-const char kFromProfilePickerParamKey[] = "from_profile_picker";
+constexpr char kFromProfilePickerParamKey[] = "from_profile_picker";
 
 }  // namespace
 
@@ -38,10 +38,21 @@ SyncConfirmationStyle GetSyncConfirmationStyle(const GURL& url) {
   return style;
 }
 
+bool IsSyncConfirmationPromo(const GURL& url) {
+  std::string is_promo_str;
+  return net::GetValueForKeyInQuery(url, kIsSyncPromoParamKey, &is_promo_str) &&
+         is_promo_str == "true";
+}
+
 GURL AppendSyncConfirmationQueryParams(const GURL& url,
-                                       SyncConfirmationStyle style) {
+                                       SyncConfirmationStyle style,
+                                       bool is_sync_promo) {
   GURL url_with_params = net::AppendQueryParameter(
       url, kStyleParamKey, base::NumberToString(static_cast<int>(style)));
+  if (is_sync_promo) {
+    url_with_params = net::AppendQueryParameter(url_with_params,
+                                                kIsSyncPromoParamKey, "true");
+  }
   return url_with_params;
 }
 

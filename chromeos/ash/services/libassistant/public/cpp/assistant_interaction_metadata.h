@@ -29,6 +29,7 @@ enum class AssistantQuerySource {
   kWhatsOnMyScreen = 10,
   kQuickAnswers = 11,
   kLauncherChip = 12,
+  // `kBetterOnboarding` is deprecated: https://crrev.com/c/5536248.
   kBetterOnboarding = 13,
   // kBloomDeprecated = 14,
   kMaxValue = kBetterOnboarding,

@@ -105,13 +105,13 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
     }
 
     *headers = web::ResponseProvider::GetDefaultResponseHeaders();
-    std::string userAgent;
+    std::optional<std::string> userAgent =
+        request.headers.GetHeader("User-Agent");
     std::string desktop_product =
         "CriOS/" + version_info::GetMajorVersionNumber();
     std::string desktop_user_agent =
         web::BuildDesktopUserAgent(desktop_product);
-    if (request.headers.GetHeader("User-Agent", &userAgent) &&
-        userAgent == desktop_user_agent) {
+    if (userAgent == desktop_user_agent) {
       response_body->assign(std::string(kDesktopSiteLabel) + "\n" +
                             purge_additions);
     } else {
@@ -262,6 +262,13 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Tests that navigating forward to a page not using the default mode from a
 // restored session is using the mode used in the past session.
 - (void)testNavigateForwardToDesktopMode {
+  // TODO(crbug.com/329210328): Re-enable the test on iPad device.
+#if !TARGET_IPHONE_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad device.");
+  }
+#endif
+
   std::unique_ptr<web::DataResponseProvider> provider(
       new UserAgentResponseProvider());
   web::test::SetUpHttpServer(std::move(provider));

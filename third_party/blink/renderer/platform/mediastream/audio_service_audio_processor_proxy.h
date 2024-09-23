@@ -65,8 +65,8 @@ class PLATFORM_EXPORT AudioServiceAudioProcessorProxy
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
-  raw_ptr<media::AudioProcessorControls, ExperimentalRenderer>
-      processor_controls_ GUARDED_BY_CONTEXT(main_thread_checker_) = nullptr;
+  raw_ptr<media::AudioProcessorControls> processor_controls_
+      GUARDED_BY_CONTEXT(main_thread_checker_) = nullptr;
 
   base::Lock stats_lock_;
   AudioProcessorStatistics latest_stats_ GUARDED_BY(stats_lock_);

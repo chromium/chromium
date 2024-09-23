@@ -46,7 +46,8 @@ class ActionHighlight : public views::View, public views::ViewObserver {
   int GetOverallRadius() const;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 

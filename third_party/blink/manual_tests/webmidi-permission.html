@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Web MIDI permissions are enforced in the backend</title>
+  </head>
+  <body>
+    <p>
+      This manual test suite verifies that Web MIDI MidiAccess objects
+      are only allowed to send and receive messages permitted by the
+      access level they are constructed with, independent of the site
+      permssion allowed.
+    </p>
+    <hr />
+    <p>
+      Step 1: Create a MIDI access object with or without SysEx
+      access. This may require accepting a permission prompt.
+    </p>
+    <button onclick="createMidi()">CreateMidiAccess without SysEx</button>
+    <button onclick="createSysEx()">CreateMidiAccess with SysEx</button>
+    <div id="sysexEnabled">Waiting for selection...</div>
+    <hr />
+    <p>
+      Step 2: Send each type of MIDI message and check the results.
+      This will send messages to all connected MIDI devices and ports.
+      There should be at least one loopback input and output, such
+      that the output will send to the input. This may need to be set
+      up in a system-dependent way before running the tests.
+    </p>
+    <button onclick="sendMidi()">Send basic MIDI messages</button>
+    <button onclick="sendSysEx()">Send SysEx MIDI message</button>
+    <hr />
+    <p>
+      Step 3: Repeat Step 1 and Step 2 with the other type of MIDI
+      access object.
+    </p>
+    <hr />
+    <p>
+      Results for each test are listed below. If the status is
+      "Waiting..." the test condiditions haven't been checked yet. If
+      the status is "Pass" the test has passed. If the status is
+      "FAIL" the test has failed.
+    </p>
+    <table>
+      <tr>
+        <td>MIDI sysexEnabled set to false</td>
+        <td id="result_midi_sysexEnabled">Waiting...</td>
+      </tr>
+      <tr>
+        <td>MIDI send MIDI allowed</td>
+        <td id="result_midi_send_midi">Waiting...</td>
+      </tr>
+      <tr>
+        <td>MIDI receive MIDI allowed</td>
+        <td id="result_midi_receive_midi">Waiting...</td>
+      </tr>
+      <tr>
+        <td>MIDI send SysEx blocked with error</td>
+        <td id="result_midi_send_sysex">Waiting...</td>
+      </tr>
+      <tr>
+        <td>MIDI receive SysEx blocked silently</td>
+        <td id="result_midi_receive_sysex">Waiting...</td>
+        <td>(NOTE: this test cannot detect the Pass state)</td>
+    </tr>
+      <tr>
+        <td>SysEx sysexEnabled set to true</td>
+        <td id="result_sysex_sysexEnabled">Waiting...</td>
+      </tr>
+      <tr>
+        <td>SysEx send MIDI allowed</td>
+        <td id="result_sysex_send_midi">Waiting...</td>
+      </tr>
+      <tr>
+        <td>SysEx receive MIDI allowed</td>
+        <td id="result_sysex_receive_midi">Waiting...</td>
+      </tr>
+      <tr>
+        <td>SysEx send SysEx allowed</td>
+        <td id="result_sysex_send_sysex">Waiting...</td>
+      </tr>
+      <tr>
+        <td>SysEx receive SysEx allowed</td>
+        <td id="result_sysex_receive_sysex">Waiting...</td>
+      </tr>
+    </table>
+    <script>
+      let midi = null;
+      let midi_request_type = null;
+      function passTest(id) {
+        // Don't allow tests which have failed once to pass
+        if (document.getElementById(id).innerHTML != "FAIL") {
+          document.getElementById(id).innerHTML = "Pass";
+        }
+      }
+      function failTest(id) {
+        document.getElementById(id).innerHTML = "FAIL";
+      }
+      function onMIDISuccess(midiAccess) {
+        midi = midiAccess;
+        if (midi_request_type) {
+          if (midi.sysexEnabled) {
+            passTest('result_sysex_sysexEnabled');
+          } else {
+            failTest('result_sysex_sysexEnabled');
+          }
+        } else {
+          if (midi.sysexEnabled) {
+            failTest('result_midi_sysexEnabled');
+          } else {
+            passTest('result_midi_sysexEnabled');
+          }
+        }
+        document.getElementById('sysexEnabled').innerHTML =
+            "sysexEnabled: " + midi.sysexEnabled;
+        midi.inputs.forEach(function(entry) {
+            entry.onmidimessage = onMIDIMessage;});
+      }
+      function onMIDIFailure(msg) {
+          document.getElementById('sysexEnabled').innerHTML =
+              "Failed to get MIDI access: " + msg;
+        midi = null;
+      }
+      function onMIDIMessage(event) {
+        if (event.data.length > 0) {
+          if (event.data[0] == 0xF0) {
+            // SysEx message
+            if (midi.sysexEnabled) {
+              passTest('result_sysex_receive_sysex')
+            } else {
+              failTest('result_midi_receive_sysex')
+            }
+          } else {
+            // Non-SysEx message
+            if (midi.sysexEnabled) {
+              passTest('result_sysex_receive_midi')
+            } else {
+              passTest('result_midi_receive_midi')
+            }
+          }
+        }
+      }
+      function createMidi() {
+        midi_request_type = false;
+        navigator.requestMIDIAccess(
+          {sysex: midi_request_type }).then(
+           onMIDISuccess, onMIDIFailure);
+        document.getElementById('sysexEnabled').innerHTML =
+          "Requesting MIDI Access without SysEx enabled...";
+      }
+      function createSysEx() {
+        midi_request_type = true;
+        navigator.requestMIDIAccess(
+          {sysex: midi_request_type}).then(
+           onMIDISuccess, onMIDIFailure);
+        document.getElementById('sysexEnabled').innerHTML =
+          "Requesting MIDI Access with SysEx enabled...";
+      }
+      function sendMidi() {
+        // Note On, middle C, full velocity
+        const noteOnMessage = [0x90, 60, 0x7f];
+        // Note Off, middle C, half velocity
+        const noteOffMessage = [0x80, 60, 0x40];
+        for (let entry of midi.outputs) {
+          const output = entry[1];
+          try {
+            output.send(noteOnMessage);
+            output.send(noteOffMessage,
+                        window.performance.now() + 1000.0);
+          } catch (error) {
+            if (midi.sysexEnabled) {
+              failTest('result_sysex_send_midi');
+            } else {
+              failTest('result_midi_send_midi');
+            }
+            continue;
+          }
+          if (midi.sysexEnabled) {
+            passTest('result_sysex_send_midi');
+          } else {
+            passTest('result_midi_send_midi');
+          }
+        }
+      }
+      function sendSysEx() {
+        // GM1 System On, all devices
+        const sysexMessage = [0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7];
+        for (let entry of midi.outputs) {
+          const output = entry[1];
+          try {
+            output.send(sysexMessage);
+          } catch (error) {
+            if (midi.sysexEnabled) {
+              failTest('result_sysex_send_sysex');
+            } else {
+              passTest('result_midi_send_sysex');
+            }
+            continue;
+          }
+          if (midi.sysexEnabled) {
+            passTest('result_sysex_send_sysex');
+          } else {
+            failTest('result_midi_send_sysex');
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

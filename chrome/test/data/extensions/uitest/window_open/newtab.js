@@ -5,8 +5,10 @@
 function testExtensionApi() {
   try {
     return new Promise(resolve => {
-      chrome.tabs.getAllInWindow(null, function() {
-        resolve(!chrome.runtime.lastError);
+      chrome.windows.getCurrent(null, window => {
+        chrome.tabs.query({windowId: window.id}, function() {
+          resolve(!chrome.runtime.lastError);
+        })
       });
     });
   } catch (e) {

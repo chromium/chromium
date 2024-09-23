@@ -4,9 +4,10 @@
 
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -80,7 +81,7 @@ void AccountProfileMapper::GetAccounts(const base::FilePath& profile_path,
       const account_manager::Account* account =
           account_cache_.FindAccountByGaiaId(gaia_id);
       if (!account) {
-        NOTREACHED() << "Account " << gaia_id << " missing.";
+        NOTREACHED_IN_MIGRATION() << "Account " << gaia_id << " missing.";
         continue;
       }
       accounts.push_back(*account);
@@ -114,7 +115,7 @@ AccountProfileMapper::CreateAccessTokenFetcher(
     const base::FilePath& profile_path,
     const account_manager::AccountKey& account,
     OAuth2AccessTokenConsumer* consumer) {
-  // TODO(https://crbug.com/1226045): Create a fetcher that can wait on
+  // TODO(crbug.com/40188699): Create a fetcher that can wait on
   // initialization of the class.
   if (!ProfileContainsAccount(profile_path, account)) {
     return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
@@ -160,7 +161,7 @@ void AccountProfileMapper::GetAccountsMap(MapAccountsCallback callback) {
       const account_manager::Account* account =
           account_cache_.FindAccountByGaiaId(gaia_id);
       if (!account) {
-        NOTREACHED() << "Account " << gaia_id << " missing.";
+        NOTREACHED_IN_MIGRATION() << "Account " << gaia_id << " missing.";
         continue;
       }
       accounts_map[path].push_back(*account);
@@ -474,7 +475,7 @@ void AccountProfileMapper::OnAddAccountCompleted(
     std::move(callback).Run(result);
 
   size_t erased_count =
-      base::EraseIf(add_account_helpers_, base::MatchesUniquePtr(helper));
+      std::erase_if(add_account_helpers_, base::MatchesUniquePtr(helper));
   DCHECK_EQ(erased_count, 1u);
   if (add_account_helpers_.empty()) {
     account_manager_facade_->GetAccounts(
@@ -509,7 +510,7 @@ AccountProfileMapper::RemoveStaleAccounts() {
     if (ShouldDeleteProfile(entry)) {
       // Pass an empty callback because this should never delete the last
       // profile.
-      // TODO(https://crbug.com/1257610): ensure that the user cannot cancel the
+      // TODO(crbug.com/40200752): ensure that the user cannot cancel the
       // profile deletion.
       g_browser_process->profile_manager()
           ->GetDeleteProfileHelper()
@@ -614,7 +615,7 @@ void AccountProfileMapper::OnGetAccountsCompleted(
     for (const auto& [profile_path, gaia_id] : removed_ids) {
       auto it = old_cache.find(gaia_id);
       if (it == old_cache.cend()) {
-        NOTREACHED() << "Account " << gaia_id << " missing.";
+        NOTREACHED_IN_MIGRATION() << "Account " << gaia_id << " missing.";
         continue;
       }
       removed_accounts_notified.insert(gaia_id);
@@ -656,7 +657,7 @@ ProfileAttributesEntry* AccountProfileMapper::MaybeGetProfileForNewAccounts()
   std::vector<ProfileAttributesEntry*> entries =
       profile_attributes_storage_->GetAllProfilesAttributes();
   // Ignore omitted profiles.
-  base::EraseIf(entries,
+  std::erase_if(entries,
                 [](const auto* entry) -> bool { return entry->IsOmitted(); });
   if (entries.empty())
     return nullptr;  // Happens in tests.

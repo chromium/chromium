@@ -28,6 +28,8 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT,
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::FlexSpecification*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::LayoutAlignment*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, ui::ElementIdentifier)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::View*)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(VIEWS_EXPORT, views::Widget*)
 
 namespace views {
 
@@ -37,6 +39,7 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kInternalPaddingKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(views::DialogDelegate*,
                              kAnchoredDialogKey,
                              nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(views::Widget*, kWidgetForAnchoringKey, nullptr)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(BoxLayoutFlexSpecification,
                                    kBoxLayoutFlexKey,
                                    nullptr)

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/printing/zeroconf_printer_detector.h"
 
 #include <string>
@@ -10,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/hash/md5.h"
 #include "base/ranges/algorithm.h"
@@ -96,14 +100,11 @@ class ParsedMetadata {
   // Parse out metadata from sd to fill this structure.
   explicit ParsedMetadata(const ServiceDescription& sd) {
     for (const std::string& m : sd.metadata) {
-      size_t equal_pos = m.find('=');
-      if (equal_pos == std::string::npos) {
-        // Malformed, skip it.
+      auto parts = base::SplitStringOnce(m, '=');
+      if (!parts) {
         continue;
       }
-      std::string_view key(m.data(), equal_pos);
-      std::string_view value(m.data() + equal_pos + 1,
-                             m.length() - (equal_pos + 1));
+      auto [key, value] = *parts;
       if (key == "note") {
         note = std::string(value);
       } else if (key == "pdl") {
@@ -212,8 +213,8 @@ bool ConvertToPrinter(const std::string& service_type,
   } else {
     // Since we only register for these services, we should never get back
     // a service other than the ones above.
-    NOTREACHED() << "Zeroconf printer with unknown service type "
-                 << service_description.service_type();
+    NOTREACHED_IN_MIGRATION() << "Zeroconf printer with unknown service type "
+                              << service_description.service_type();
     return false;
   }
 
@@ -255,7 +256,7 @@ bool ConvertToPrinter(const std::string& service_type,
         metadata.pdl, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (!media_types.empty() && !media_types.back().empty()) {
       // Prune any empty splits.
-      base::EraseIf(media_types, [](std::string_view s) { return s.empty(); });
+      std::erase_if(media_types, [](std::string_view s) { return s.empty(); });
 
       base::ranges::transform(
           media_types,
@@ -378,6 +379,8 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
     DCHECK(lister_entry != device_listers_.end());
     lister_entry->second->DiscoverNewDevices();
   }
+
+  void OnPermissionRejected() override {}
 
   // Create a new device lister for the given |service_type| and add it
   // to the ones managed by this object.

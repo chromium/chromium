@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/mojo/clients/mojo_cdm.h"
 
 #include <stdint.h>
@@ -15,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/cdm_config.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/mock_filters.h"
 #include "media/cdm/clear_key_cdm_common.h"
@@ -42,8 +48,8 @@ MATCHER(NotEmpty, "") {
   return !arg.empty();
 }
 
-ACTION_P2(CdmCreated, cdm, error_message) {
-  arg0.Run(cdm, error_message);
+ACTION_P2(CdmCreated, cdm, status) {
+  arg0.Run(cdm, status);
 }
 
 namespace media {
@@ -102,7 +108,7 @@ class MojoCdmTest : public ::testing::Test {
 
   void OnCdmServiceInitialized(ExpectedResult expected_result,
                                mojom::CdmContextPtr cdm_context,
-                               const std::string& error_message) {
+                               CreateCdmStatus status) {
     cdm_receiver_ =
         std::make_unique<mojo::Receiver<mojom::ContentDecryptionModule>>(
             mojo_cdm_service_.get());
@@ -309,7 +315,7 @@ class MojoCdmTest : public ::testing::Test {
 
       case CONNECTION_ERROR_BEFORE:
         // Connection should be broken before this is called.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
 
       case CONNECTION_ERROR_DURING:
@@ -345,7 +351,7 @@ class MojoCdmTest : public ::testing::Test {
 
       case CONNECTION_ERROR_BEFORE:
         // Connection should be broken before this is called.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
 
       case CONNECTION_ERROR_DURING:

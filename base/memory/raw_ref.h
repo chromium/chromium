@@ -8,6 +8,6 @@
 // Although `raw_ref` is part of the standalone PA distribution, it is
 // easier to use the shorter path in `//base/memory`. We retain this
 // facade header for ease of typing.
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ref.h"  // IWYU pragma: export
+#include "partition_alloc/pointers/raw_ref.h"  // IWYU pragma: export
 
 #endif  // BASE_MEMORY_RAW_REF_H_

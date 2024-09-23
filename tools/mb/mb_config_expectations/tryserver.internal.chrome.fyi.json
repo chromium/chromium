@@ -1,0 +1,43 @@
+{
+  "android-emulator-finch-smoke-chrome": {
+    "gn_args": {
+      "android_static_analysis": "off",
+      "dcheck_always_on": false,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.webview.debug",
+      "system_webview_shell_package_name": "org.chromium.my_webview_shell",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_remoteexec": true
+    }
+  },
+  "linux-finch-smoke-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "use_remoteexec": true
+    }
+  },
+  "mac-arm64-finch-smoke-chrome": {
+    "gn_args": {
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "use_remoteexec": true
+    }
+  },
+  "win-finch-smoke-chrome": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "use_remoteexec": true
+    }
+  }
+}

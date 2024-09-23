@@ -17,6 +17,7 @@ android_library("safe_browsing_java") {
   ]
 
   srcjar_deps = [
+    ":java_enums",
     ":jni_headers",
     ":sb_java_features_srcjar",
   ]
@@ -118,7 +119,6 @@ static_library("safe_browsing_api_handler_util") {
 
   deps = [
     "//base",
-    "//components/safe_browsing/core/browser/db:metadata_proto",
     "//components/safe_browsing/core/browser/db:util",
   ]
 }
@@ -179,7 +179,6 @@ source_set("unit_tests_mobile") {
     "//components/resources:components_resources_grit",
     "//components/safe_browsing/android:realtimeallowlist_proto",
     "//components/safe_browsing/core/browser/db:database_manager",
-    "//components/safe_browsing/core/browser/db:metadata_proto",
     "//components/safe_browsing/core/browser/db:unit_tests_shared",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_test_util",
@@ -199,4 +198,16 @@ source_set("unit_tests_mobile") {
     ]
     deps += [ ":real_time_url_checks_allowlist" ]
   }
+}
+
+source_set("referring_app_info") {
+  sources = [ "referring_app_info.h" ]
+  deps = [
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//url",
+  ]
+}
+
+java_cpp_enum("java_enums") {
+  sources = [ "safe_browsing_api_handler_util.h" ]
 }

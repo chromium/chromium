@@ -1,0 +1,35 @@
+The test verifies functionality of protocol methods working correctly with CSSNestedDeclarations rules
+*div* {    user-agent    readonly
+    display: block; @[undefined-undefined]
+}
+address, blockquote, center, *div*, figure, figcaption, footer, form, header, hr, legend, listing, main, p, plaintext, pre, summary, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, search, table, caption, colgroup, col, thead, tbody, tfoot, tr, td, th, dir, dd, dl, dt, menu, ol, ul, li, bdi, output, [dir="ltr" i], [dir="rtl" i], [dir="auto" i] {    user-agent    readonly
+    unicode-bidi: isolate; @[undefined-undefined]
+}
+*#target* {    regular
+    left: 1px; @[1:2-1:12]
+    right: 2px; @[2:2-2:13]
+    left: 1px; @[undefined-undefined]
+    right: 2px; @[undefined-undefined]
+}
+ {    regular
+    width: 100px; @[4:2-4:15]
+    height: 50px; @[5:2-5:15]
+    width: 100px; @[undefined-undefined]
+    height: 50px; @[undefined-undefined]
+}
+ {    regular
+    top: 3px; @[7:2-7:11]
+    top: 3px; @[undefined-undefined]
+}
+@media (width > 100px)
+     {    regular
+        color: green; @[9:4-9:17]
+        opacity: 1; @[10:4-10:15]
+        color: green; @[undefined-undefined]
+        opacity: 1; @[undefined-undefined]
+    }
+ {    regular
+    bottom: 4px; @[12:2-12:14]
+    bottom: 4px; @[undefined-undefined]
+}
+

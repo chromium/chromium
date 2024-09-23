@@ -7,32 +7,24 @@
 
 #import <AppKit/AppKit.h>
 #include <CoreFoundation/CoreFoundation.h>
+#import <Foundation/Foundation.h>
 
-// Private SPIs exposed by LaunchServices. Largely derived from usage of these
-// in open source WebKit code and some inspection of the LaunchServices binary.
+// Private SPIs for using LaunchServices. Largely derived from usage of these
+// in open source WebKit code [1] and some inspection of the LaunchServices
+// binary, as well as AppKit's __NSWorkspaceOpenConfigurationGetLSOpenOptions.
+//
+// [1]
+// https://github.com/WebKit/webkit/blob/main/Source/WebCore/PAL/pal/spi/cocoa/LaunchServicesSPI.h
 
 extern "C" {
 
-using LSASNRef = const struct CF_BRIDGED_TYPE(id) __LSASN*;
-
-extern const CFStringRef _kLSOpenOptionActivateKey;
-extern const CFStringRef _kLSOpenOptionAddToRecentsKey;
-extern const CFStringRef _kLSOpenOptionArgumentsKey;
 extern const CFStringRef _kLSOpenOptionBackgroundLaunchKey;
-extern const CFStringRef _kLSOpenOptionHideKey;
-extern const CFStringRef _kLSOpenOptionPreferRunningInstanceKey;
-
-using _LSOpenCompletionHandler = void (^)(LSASNRef, Boolean, CFErrorRef);
-void _LSOpenURLsWithCompletionHandler(
-    CFArrayRef urls,
-    CFURLRef application_url,
-    CFDictionaryRef options,
-    _LSOpenCompletionHandler completion_handler);
-
-@interface NSRunningApplication ()
-- (id)initWithApplicationSerialNumber:(LSASNRef)asn;
-@end
 
 }  // extern "C"
+
+@interface NSWorkspaceOpenConfiguration (SPI)
+@property(atomic, readwrite, setter=_setAdditionalLSOpenOptions:)
+    NSDictionary* _additionalLSOpenOptions;
+@end
 
 #endif  // BASE_MAC_LAUNCH_SERVICES_SPI_H_

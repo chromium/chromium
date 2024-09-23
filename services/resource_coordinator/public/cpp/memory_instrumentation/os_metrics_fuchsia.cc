@@ -44,7 +44,7 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
 // static
 std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
     base::ProcessId) {
-  // TODO(https://crbug.com/1129269): Implement this.
+  // TODO(crbug.com/40720107): Implement this.
   NOTIMPLEMENTED();
   return std::vector<mojom::VmRegionPtr>();
 }

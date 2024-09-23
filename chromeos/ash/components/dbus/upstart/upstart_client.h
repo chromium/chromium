@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 
 namespace dbus {
 class Bus;
@@ -96,14 +96,6 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) UpstartClient {
 
   // Provides an interface for stopping the media analytics process.
   virtual void StopMediaAnalytics(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  // Start wilco DTC services.
-  virtual void StartWilcoDtcService(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  // Stops wilco DTC services.
-  virtual void StopWilcoDtcService(
       chromeos::VoidDBusMethodCallback callback) = 0;
 
  protected:

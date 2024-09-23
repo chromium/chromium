@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/account_id/account_id.h"

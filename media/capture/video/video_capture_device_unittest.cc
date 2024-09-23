@@ -51,9 +51,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
-#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
@@ -68,22 +66,23 @@
 // We will always get YUYV from the Mac AVFoundation implementations.
 #define MAYBE_UsingRealWebcam_CaptureMjpeg DISABLED_UsingRealWebcam_CaptureMjpeg
 
-// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
 #define MAYBE_UsingRealWebcam_TakePhoto DISABLED_UsingRealWebcam_TakePhoto
-// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
 #define MAYBE_UsingRealWebcam_GetPhotoState \
   DISABLED_UsingRealWebcam_GetPhotoState
-// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// TODO(crbug.com/40148984): Re-enable as soon as issues with resource access
 // are fixed.
 #define MAYBE_UsingRealWebcam_CaptureWithSize \
   DISABLED_UsingRealWebcam_CaptureWithSize
 
 #define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 // Windows test bots don't have camera.
+// Linux test bots don't have camera.
 // On Fuchsia the tests run under emulator that doesn't support camera.
 #define MAYBE_UsingRealWebcam_AllocateBadSize \
   DISABLED_UsingRealWebcam_AllocateBadSize
@@ -109,12 +108,14 @@
 #define MAYBE_UsingRealWebcam_AllocateBadSize \
   DISABLED_UsingRealWebcam_AllocateBadSize
 #define MAYBE_UsingRealWebcam_CaptureMjpeg UsingRealWebcam_CaptureMjpeg
-#define MAYBE_UsingRealWebcam_TakePhoto UsingRealWebcam_TakePhoto
-#define MAYBE_UsingRealWebcam_GetPhotoState UsingRealWebcam_GetPhotoState
-#define MAYBE_UsingRealWebcam_CaptureWithSize UsingRealWebcam_CaptureWithSize
+#define MAYBE_UsingRealWebcam_TakePhoto DISABLED_UsingRealWebcam_TakePhoto
+#define MAYBE_UsingRealWebcam_GetPhotoState \
+  DISABLED_UsingRealWebcam_GetPhotoState
+#define MAYBE_UsingRealWebcam_CaptureWithSize \
+  DISABLED_UsingRealWebcam_CaptureWithSize
 #define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
 // UsingRealWebcam_AllocateBadSize will hang when a real camera is attached and
 // if more than one test is trying to use the camera (even across processes). Do
 // NOT renable this test without fixing the many bugs associated with it:
@@ -149,6 +150,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::WithArgs;
 
 namespace media {
 namespace {
@@ -279,28 +281,18 @@ class VideoCaptureDeviceTest
         video_capture_client_(CreateDeviceClient()),
         image_capture_client_(new MockImageCaptureClient()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    CHECK(test_thread_.Start()) << "Cannot start the test thread";
     local_gpu_memory_buffer_manager_ =
         std::make_unique<LocalGpuMemoryBufferManager>();
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         local_gpu_memory_buffer_manager_.get());
-    if (media::ShouldUseCrosCameraService() &&
-        !CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
-      if (!ash::mojo_service_manager::IsServiceManagerBound()) {
-        CHECK(ash::mojo_service_manager::BootstrapServiceManagerConnection())
-            << "Cannot bootstrap service manager connection.";
-      }
-      CameraHalDispatcherImpl::GetInstance()->Start();
-    }
+    // TODO(b/315966244): Initialize mojo service manager when re-enabling the
+    // test cases on a real device.
 #endif
     video_capture_device_factory_ = CreateVideoCaptureDeviceFactory(
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::PowerManagerClient::InitializeFake();
-#endif
 #if BUILDFLAG(IS_ANDROID)
     static_cast<VideoCaptureDeviceFactoryAndroid*>(
         video_capture_device_factory_.get())
@@ -314,9 +306,6 @@ class VideoCaptureDeviceTest
 
   void TearDown() override {
     task_environment_.RunUntilIdle();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::PowerManagerClient::Shutdown();
-#endif
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -327,45 +316,43 @@ class VideoCaptureDeviceTest
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   void WaitForCameraServiceReady() {
     if (media::ShouldUseCrosCameraService()) {
-      ASSERT_TRUE(CameraHalDispatcherImpl::GetInstance()->IsStarted());
-      ASSERT_TRUE(CameraHalDispatcherImpl::GetInstance()
-                      ->WaitForServiceReadyForTesting());
+      VideoCaptureDeviceFactoryChromeOS* vcd_factory_chromeos =
+          static_cast<VideoCaptureDeviceFactoryChromeOS*>(
+              video_capture_device_factory_.get());
+      ASSERT_TRUE(vcd_factory_chromeos->WaitForCameraServiceReadyForTesting());
     }
   }
 #endif
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateDeviceClient() {
     auto result = std::make_unique<NiceMockVideoCaptureDeviceClient>();
-    ON_CALL(*result, OnError(_, _, _)).WillByDefault(Invoke(DumpError));
-    EXPECT_CALL(*result, ReserveOutputBuffer(_, _, _, _)).Times(0);
-    EXPECT_CALL(*result, DoOnIncomingCapturedBuffer(_, _, _, _)).Times(0);
-    EXPECT_CALL(*result, DoOnIncomingCapturedBufferExt(_, _, _, _, _, _, _))
-        .Times(0);
-    ON_CALL(*result, OnIncomingCapturedData(_, _, _, _, _, _, _, _, _))
-        .WillByDefault(
+    ON_CALL(*result, OnError).WillByDefault(Invoke(DumpError));
+    EXPECT_CALL(*result, ReserveOutputBuffer).Times(0);
+    EXPECT_CALL(*result, DoOnIncomingCapturedBuffer).Times(0);
+    EXPECT_CALL(*result, DoOnIncomingCapturedBufferExt).Times(0);
+    ON_CALL(*result, OnIncomingCapturedData)
+        .WillByDefault(WithArgs<0, 1, 2>(
             Invoke([this](const uint8_t* data, int length,
-                          const media::VideoCaptureFormat& frame_format,
-                          const gfx::ColorSpace&, int, bool, base::TimeTicks,
-                          base::TimeDelta, int) {
+                          const media::VideoCaptureFormat& frame_format) {
               ASSERT_GT(length, 0);
               ASSERT_TRUE(data);
               main_thread_task_runner_->PostTask(
                   FROM_HERE,
                   base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
                                  base::Unretained(this), frame_format));
-            }));
-    ON_CALL(*result, OnIncomingCapturedGfxBuffer(_, _, _, _, _, _))
-        .WillByDefault(Invoke([this](
-                                  gfx::GpuMemoryBuffer* buffer,
-                                  const media::VideoCaptureFormat& frame_format,
-                                  int, base::TimeTicks, base::TimeDelta, int) {
-          ASSERT_TRUE(buffer);
-          ASSERT_GT(buffer->GetSize().width() * buffer->GetSize().height(), 0);
-          main_thread_task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
-                             base::Unretained(this), frame_format));
-        }));
+            })));
+    ON_CALL(*result, OnIncomingCapturedGfxBuffer)
+        .WillByDefault(WithArgs<0, 1>(
+            Invoke([this](gfx::GpuMemoryBuffer* buffer,
+                          const media::VideoCaptureFormat& frame_format) {
+              ASSERT_TRUE(buffer);
+              ASSERT_GT(buffer->GetSize().width() * buffer->GetSize().height(),
+                        0);
+              main_thread_task_runner_->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
+                                 base::Unretained(this), frame_format));
+            })));
     return result;
   }
 
@@ -461,17 +448,6 @@ class VideoCaptureDeviceTest
             },
             &run_loop, &test_case));
     run_loop.Run();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    base::RunLoop run_loop;
-    test_thread_.task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::RunLoop* run_loop, base::OnceClosure* test_case) {
-              std::move(*test_case).Run();
-              run_loop->Quit();
-            },
-            &run_loop, &test_case));
-    run_loop.Run();
 #else
     std::move(test_case).Run();
 #endif
@@ -488,7 +464,6 @@ class VideoCaptureDeviceTest
   const scoped_refptr<MockImageCaptureClient> image_capture_client_;
   VideoCaptureFormat last_format_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::Thread test_thread_{"VCD test thread"};
   std::unique_ptr<LocalGpuMemoryBufferManager> local_gpu_memory_buffer_manager_;
 #endif
   std::unique_ptr<VideoCaptureDeviceFactory> video_capture_device_factory_;

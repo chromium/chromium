@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -97,8 +98,8 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
 
   bool HasLogicalProperty() { return has_logical_property_; }
 
-  bool SetLogicalPropertyResolutionContext(TextDirection text_direction,
-                                           WritingMode writing_mode);
+  bool SetLogicalPropertyResolutionContext(
+      WritingDirectionMode writing_direction);
 
   void Trace(Visitor*) const override;
 
@@ -195,14 +196,12 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     const CSSValue* CssValue();
 
     void AppendTo(MutableCSSPropertyValueSet* property_value_set,
-                  TextDirection text_direction,
-                  WritingMode writing_mode);
+                  WritingDirectionMode writing_direction);
 
     void SetProperty(MutableCSSPropertyValueSet* property_value_set,
                      CSSPropertyID property_id,
                      const CSSValue& value,
-                     TextDirection text_direction,
-                     WritingMode writing_mode);
+                     WritingDirectionMode writing_direction);
 
     static bool HasLowerPriority(PropertyResolver* first,
                                  PropertyResolver* second);
@@ -268,12 +267,12 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
   // changes.
   bool has_logical_property_ = false;
 
-  // The following properties are required for mapping logical to physical
+  // The following member is required for mapping logical to physical
   // property names. Though the same for all keyframes within the same model,
   // we store the value here to facilitate lazy evaluation of the CSS
   // properties.
-  TextDirection text_direction_ = TextDirection::kLtr;
-  WritingMode writing_mode_ = WritingMode::kHorizontalTb;
+  WritingDirectionMode writing_direction_{WritingMode::kHorizontalTb,
+                                          TextDirection::kLtr};
 };
 
 using CSSPropertySpecificKeyframe = StringKeyframe::CSSPropertySpecificKeyframe;

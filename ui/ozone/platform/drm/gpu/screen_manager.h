@@ -6,17 +6,18 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_SCREEN_MANAGER_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
+#include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
-
-typedef struct _drmModeModeInfo drmModeModeInfo;
 
 namespace gfx {
 class Point;
@@ -34,30 +35,6 @@ class ScreenManager {
   using CrtcsWithDrmList =
       std::vector<std::pair<uint32_t, const scoped_refptr<DrmDevice>>>;
 
-  struct ControllerConfigParams {
-    ControllerConfigParams(int64_t display_id,
-                           scoped_refptr<DrmDevice> drm,
-                           uint32_t crtc,
-                           uint32_t connector,
-                           gfx::Point origin,
-                           std::unique_ptr<drmModeModeInfo> pmode,
-                           bool enable_vrr = false,
-                           uint64_t base_connector_id = 0);
-    ControllerConfigParams(const ControllerConfigParams& other);
-    ControllerConfigParams(ControllerConfigParams&& other);
-    ~ControllerConfigParams();
-
-    const int64_t display_id;
-    const scoped_refptr<DrmDevice> drm;
-    const uint32_t crtc;
-    const uint32_t connector;
-    const uint64_t base_connector_id;
-    const gfx::Point origin;
-    std::unique_ptr<drmModeModeInfo> mode;
-    const bool enable_vrr;
-  };
-  using ControllerConfigsList = std::vector<ControllerConfigParams>;
-
   ScreenManager();
 
   ScreenManager(const ScreenManager&) = delete;
@@ -67,9 +44,14 @@ class ScreenManager {
 
   // Register a display controller. This must be called before trying to
   // configure it.
-  void AddDisplayController(const scoped_refptr<DrmDevice>& drm,
-                            uint32_t crtc,
-                            uint32_t connector);
+  void AddDisplayController(
+      const scoped_refptr<DrmDevice>& drm,
+      uint32_t crtc,
+      uint32_t connector,
+      std::optional<TileProperty> tile_property = std::nullopt);
+
+  // Register all the display controllers corresponding to |display|.
+  void AddDisplayControllersForDisplay(const DrmDisplay& display);
 
   // Remove display controllers from the list of active controllers. The
   // controllers are removed since they were disconnected.
@@ -79,13 +61,20 @@ class ScreenManager {
   // the behavior of the commit according to |modeset_flag| (see
   // display::ModesetFlag).
   bool ConfigureDisplayControllers(
-      const ControllerConfigsList& controllers_params,
-      uint32_t modeset_flag);
+      const std::vector<ControllerConfigParams>& controllers_params,
+      display::ModesetFlags modeset_flags);
 
   // Returns a reference to the display controller configured to display within
   // |bounds|. If the caller caches the controller it must also register as an
   // observer to be notified when the controller goes out of scope.
   HardwareDisplayController* GetDisplayController(const gfx::Rect& bounds);
+
+  // Returns a reference to the display controller associated with |crtc_id| on
+  // |drm|. If the caller caches the controller it must also register as an
+  // observer to be notified when the controller goes out of scope.
+  HardwareDisplayController* GetDisplayController(
+      const scoped_refptr<DrmDevice>& drm,
+      int32_t crtc_id);
 
   // Adds a window for |widget|. Note: |widget| should not be associated with a
   // window when calling this function.
@@ -112,6 +101,12 @@ class ScreenManager {
   // any modeset happens.
   void SetDrmModifiersFilter(std::unique_ptr<DrmModifiersFilter> filter);
 
+  // Replace CRTCs of HardwareDisplayControllers in |current_pairings| with
+  // |new_pairings|, identified by their connectors.
+  bool ReplaceDisplayControllersCrtcs(const scoped_refptr<DrmDevice>& drm,
+                                      const ConnectorCrtcMap& current_pairings,
+                                      const ConnectorCrtcMap& new_pairings);
+
  private:
   using HardwareDisplayControllers =
       std::vector<std::unique_ptr<HardwareDisplayController>>;
@@ -128,21 +123,23 @@ class ScreenManager {
       uint32_t crtc);
 
   bool TestAndSetPreferredModifiers(
-      const ControllerConfigsList& controllers_params,
+      const std::vector<ControllerConfigParams>& controllers_params,
       bool is_seamless_modeset);
-  bool TestAndSetLinearModifier(const ControllerConfigsList& controllers_params,
-                                bool is_seamless_modeset);
+  bool TestAndSetLinearModifier(
+      const std::vector<ControllerConfigParams>& controllers_params,
+      bool is_seamless_modeset);
   // Setting the Preferred modifiers that passed from one of the Modeset Test
   // functions. The preferred modifiers are used in Modeset.
   void SetPreferredModifiers(
-      const ControllerConfigsList& controllers_params,
+      const std::vector<ControllerConfigParams>& controllers_params,
       const CrtcPreferredModifierMap& crtcs_preferred_modifier);
   // The planes used for modesetting can have overlays beside the primary, test
   // if we can modeset with them. If not, return false to indicate that we must
   // only use the primary plane.
-  bool TestModesetWithOverlays(const ControllerConfigsList& controllers_params,
-                               bool is_seamless_modeset);
-  bool Modeset(const ControllerConfigsList& controllers_params,
+  bool TestModesetWithOverlays(
+      const std::vector<ControllerConfigParams>& controllers_params,
+      bool is_seamless_modeset);
+  bool Modeset(const std::vector<ControllerConfigParams>& controllers_params,
                bool can_modeset_with_overlays,
                bool is_seamless_modeset);
 

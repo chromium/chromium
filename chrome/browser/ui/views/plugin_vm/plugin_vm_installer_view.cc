@@ -28,6 +28,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -72,7 +73,7 @@ int HttpErrorFailureReasonToInt(
   using Reason = plugin_vm::PluginVmInstaller::FailureReason;
   switch (reason) {
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case Reason::DOWNLOAD_FAILED_401:
       return 401;
     case Reason::DOWNLOAD_FAILED_403:
@@ -242,7 +243,8 @@ bool PluginVmInstallerView::Cancel() {
   return true;
 }
 
-gfx::Size PluginVmInstallerView::CalculatePreferredSize() const {
+gfx::Size PluginVmInstallerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kWindowWidth, kWindowHeight);
 }
 
@@ -361,7 +363,7 @@ std::u16string PluginVmInstallerView::GetMessage() const {
     case State::kInstalling:
       switch (installing_state_) {
         case InstallingState::kInactive:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         case InstallingState::kCheckingLicense:
         case InstallingState::kCheckingForExistingVm:
         case InstallingState::kCheckingDiskSpace:
@@ -479,42 +481,47 @@ PluginVmInstallerView::~PluginVmInstallerView() {
 int PluginVmInstallerView::GetCurrentDialogButtons() const {
   switch (state_) {
     case State::kInstalling:
-      return ui::DIALOG_BUTTON_CANCEL;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel);
     case State::kConfirmInstall:
     case State::kImported:
     case State::kCreated:
-      return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
+      return static_cast<int>(ui::mojom::DialogButton::kCancel) |
+             static_cast<int>(ui::mojom::DialogButton::kOk);
     case State::kError:
       DCHECK(reason_);
       if (ShowRetryButton(*reason_))
-        return ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
-      return ui::DIALOG_BUTTON_CANCEL;
+        return static_cast<int>(ui::mojom::DialogButton::kCancel) |
+               static_cast<int>(ui::mojom::DialogButton::kOk);
+      return static_cast<int>(ui::mojom::DialogButton::kCancel);
   }
 }
 
 std::u16string PluginVmInstallerView::GetCurrentDialogButtonLabel(
-    ui::DialogButton button) const {
+    ui::mojom::DialogButton button) const {
   switch (state_) {
     case State::kConfirmInstall:
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK
+          button == ui::mojom::DialogButton::kOk
               ? IDS_PLUGIN_VM_INSTALLER_INSTALL_BUTTON
               : IDS_APP_CANCEL);
     case State::kInstalling:
-      DCHECK_EQ(button, ui::DIALOG_BUTTON_CANCEL);
+      DCHECK_EQ(button, ui::mojom::DialogButton::kCancel);
       return l10n_util::GetStringUTF16(IDS_APP_CANCEL);
     case State::kCreated:
     case State::kImported: {
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK ? IDS_PLUGIN_VM_INSTALLER_LAUNCH_BUTTON
-                                         : IDS_APP_CLOSE);
+          button == ui::mojom::DialogButton::kOk
+              ? IDS_PLUGIN_VM_INSTALLER_LAUNCH_BUTTON
+              : IDS_APP_CLOSE);
     }
     case State::kError: {
       DCHECK(reason_);
-      DCHECK(ShowRetryButton(*reason_) || button == ui::DIALOG_BUTTON_CANCEL);
+      DCHECK(ShowRetryButton(*reason_) ||
+             button == ui::mojom::DialogButton::kCancel);
       return l10n_util::GetStringUTF16(
-          button == ui::DIALOG_BUTTON_OK ? IDS_PLUGIN_VM_INSTALLER_RETRY_BUTTON
-                                         : IDS_APP_CANCEL);
+          button == ui::mojom::DialogButton::kOk
+              ? IDS_PLUGIN_VM_INSTALLER_RETRY_BUTTON
+              : IDS_APP_CANCEL);
     }
   }
 }
@@ -540,13 +547,14 @@ void PluginVmInstallerView::OnStateUpdated() {
 
   int buttons = GetCurrentDialogButtons();
   SetButtons(buttons);
-  if (buttons & ui::DIALOG_BUTTON_OK) {
-    SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                   GetCurrentDialogButtonLabel(ui::DIALOG_BUTTON_OK));
+  if (buttons & static_cast<int>(ui::mojom::DialogButton::kOk)) {
+    SetButtonLabel(ui::mojom::DialogButton::kOk,
+                   GetCurrentDialogButtonLabel(ui::mojom::DialogButton::kOk));
   }
-  if (buttons & ui::DIALOG_BUTTON_CANCEL) {
-    SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                   GetCurrentDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+  if (buttons & static_cast<int>(ui::mojom::DialogButton::kCancel)) {
+    SetButtonLabel(
+        ui::mojom::DialogButton::kCancel,
+        GetCurrentDialogButtonLabel(ui::mojom::DialogButton::kCancel));
   }
 
   const bool progress_bar_visible = state_ == State::kInstalling;

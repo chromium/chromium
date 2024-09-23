@@ -67,7 +67,7 @@ class DCOMPTextureHost : public gpu::mojom::DCOMPTextureClient {
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   const int32_t route_id_;
-  const raw_ptr<Listener, ExperimentalRenderer>
+  const raw_ptr<Listener>
       listener_;  // Raw pointer is safe because the `listener_`
                   // (DCOMPTextureWrapperImpl) owns `this`.
 

@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
+#include "components/attribution_reporting/os_registration_error.mojom-forward.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
 
@@ -25,20 +27,21 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) OsRegistrationItem {
 // Parses an Attribution-Reporting-OS-Source or
 // Attribution-Reporting-Register-OS-Trigger header.
 //
-// Returns an empty vector if the string is not parsable as a structured-header
-// list. List members that are not strings or do not contain a valid URL are
-// ignored.
+// Returns `OsRegistrationError` if the string is not parsable as a
+// structured-header list. List members that are not strings or do not contain a
+// valid URL are ignored.
 //
 // Example:
 //
 // "https://x.test/abc", "https://y.test/123"
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<OsRegistrationItem> ParseOsSourceOrTriggerHeader(std::string_view);
+base::expected<std::vector<OsRegistrationItem>, mojom::OsRegistrationError>
+    ParseOsSourceOrTriggerHeader(std::string_view);
 
 // Same as the above, but using an already-parsed structured-header list.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-std::vector<OsRegistrationItem> ParseOsSourceOrTriggerHeader(
-    const net::structured_headers::List&);
+base::expected<std::vector<OsRegistrationItem>, mojom::OsRegistrationError>
+ParseOsSourceOrTriggerHeader(const net::structured_headers::List&);
 
 }  // namespace attribution_reporting
 

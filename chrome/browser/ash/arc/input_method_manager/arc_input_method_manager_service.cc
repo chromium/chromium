@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/ime_mojom_traits.h"
@@ -15,13 +16,11 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_bridge_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,7 +81,7 @@ void SwitchImeToCallback(const std::string& ime_id,
       }
     }
   }
-  NOTREACHED() << "There is no enabled non-ARC IME.";
+  NOTREACHED_IN_MIGRATION() << "There is no enabled non-ARC IME.";
 }
 
 void SetKeyboardDisabled(bool disabled) {
@@ -248,7 +247,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
       const ui::KeyEvent& event,
       ash::TextInputMethod::KeyEventDoneCallback key_data) override {
     if (event.key_code() == ui::VKEY_BROWSER_BACK &&
-        event.type() == ui::ET_KEY_PRESSED &&
+        event.type() == ui::EventType::kKeyPressed &&
         owner_->IsVirtualKeyboardShown()) {
       // Back button on the shelf is pressed. We should consume only "keydown"
       // events here to make sure that Android side receives "keyup" events
@@ -466,7 +465,7 @@ void ArcInputMethodManagerService::OnActiveImeChanged(
     auto* imm = ash::input_method::InputMethodManager::Get();
     // Create a list of enabled Chrome OS IMEs.
     auto enabled_imes = imm->GetActiveIMEState()->GetEnabledInputMethodIds();
-    base::EraseIf(enabled_imes, ash::extension_ime_util::IsArcIME);
+    std::erase_if(enabled_imes, ash::extension_ime_util::IsArcIME);
     DCHECK(!enabled_imes.empty());
     imm->GetActiveIMEState()->ChangeInputMethod(enabled_imes[0],
                                                 false /* show_message */);
@@ -530,8 +529,8 @@ void ArcInputMethodManagerService::UpdateInputMethodEntryWithImeInfo() {
                                  proxy_ime_engine_.get());
 
   // Enable IMEs that are already enabled in the container.
-  // TODO(crbug.com/845079): We should keep the order of the IMEs as same as in
-  // chrome://settings
+  // TODO(crbug.com/40577268): We should keep the order of the IMEs as same as
+  // in chrome://settings
   prefs_.UpdateEnabledImes(arc_ime_state_.GetEnabledInputMethods());
 
   for (const auto& descriptor : arc_ime_state_.GetEnabledInputMethods())

@@ -8,18 +8,12 @@
 
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/screen_ai/public/cpp/utilities.h"
-#include "content/public/browser/browser_thread.h"
+#include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -29,33 +23,22 @@
 
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "123.1";
+const char kMinExpectedVersion[] = "124.2";
 
 bool IsDeviceCompatible() {
+#if BUILDFLAG(IS_LINUX)
+#if defined(ARCH_CPU_X86_FAMILY)
   // Check if the CPU has the required instruction set to run the Screen AI
   // library.
-#if BUILDFLAG(IS_LINUX)
-  if (!base::CPU().has_sse41()) {
+  static const bool has_sse41 = base::CPU().has_sse41();
+#else
+  static constexpr bool has_sse41 = false;
+#endif  // defined(ARCH_CPU_X86_FAMILY)
+  if (!has_sse41) {
     return false;
   }
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
   return true;
-}
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class LibraryVerificationResult {
-  kOk = 0,
-  kVersionInvalid = 1,
-  kVersionLow = 2,
-  kPathUnexpected = 3,
-  kDeprecatedLoadFailed = 4,
-  kMaxValue = kDeprecatedLoadFailed,
-};
-
-void RecordLibraryVerificationResult(LibraryVerificationResult result) {
-  base::UmaHistogramEnumeration(
-      "Accessibility.ScreenAI.LibraryVerificationResult", result);
 }
 
 }  // namespace
@@ -84,35 +67,15 @@ bool ScreenAIInstallState::VerifyLibraryVersion(const base::Version& version) {
 
   if (!version.IsValid()) {
     VLOG(0) << "Cannot verify library version.";
-    RecordLibraryVerificationResult(LibraryVerificationResult::kVersionInvalid);
     return false;
   }
 
   if (version < min_version) {
     VLOG(0) << "Version is expected to be at least " << kMinExpectedVersion
             << ", but it is: " << version;
-    RecordLibraryVerificationResult(LibraryVerificationResult::kVersionLow);
     return false;
   }
 
-  return true;
-}
-
-// static
-bool ScreenAIInstallState::VerifyLibraryAvailablity(
-    const base::FilePath& install_dir) {
-  // Check the file iterator heuristic to find the library in the sandbox
-  // returns the same directory as `install_dir`.
-  // TODO(b/41489907): Convert path unexpected case to DumpWithoutCrash to
-  // investigate paths and update the UMA description.
-  base::FilePath binary_path = screen_ai::GetLatestComponentBinaryPath();
-  if (binary_path.DirName() != install_dir) {
-    RecordLibraryVerificationResult(LibraryVerificationResult::kPathUnexpected);
-    VLOG(0) << "Library is installed in an unexpected folder.";
-    return false;
-  }
-
-  RecordLibraryVerificationResult(LibraryVerificationResult::kOk);
   return true;
 }
 
@@ -146,18 +109,6 @@ bool ScreenAIInstallState::ShouldInstall(PrefService* local_state) {
   }
 
   return true;
-}
-
-// static
-void ScreenAIInstallState::RecordComponentInstallationResult(bool install,
-                                                             bool successful) {
-  if (install) {
-    base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Install",
-                              successful);
-  } else {
-    base::UmaHistogramBoolean("Accessibility.ScreenAI.Component.Uninstall",
-                              successful);
-  }
 }
 
 void ScreenAIInstallState::AddObserver(
@@ -219,7 +170,6 @@ void ScreenAIInstallState::SetState(State state) {
 }
 
 void ScreenAIInstallState::SetDownloadProgress(double progress) {
-  DCHECK_EQ(state_, State::kDownloading);
   for (ScreenAIInstallState::Observer& observer : observers_) {
     observer.DownloadProgressChanged(progress);
   }

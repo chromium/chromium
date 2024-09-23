@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -33,6 +34,10 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "media/device_monitors/device_monitor_mac.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "media/device_monitors/system_message_window_win.h"
 #endif
 
 namespace video_capture {
@@ -88,8 +93,16 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
   // this function should be called on service startup.
   void InitializeDeviceMonitor();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnDisconnectedFromVCDFactoryAsh();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<media::DeviceMonitorMac> video_capture_device_monitor_mac_;
+#endif
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<media::SystemMessageWindowWin>
+      video_capture_system_message_window_win_;
 #endif
 
   mojo::Receiver<mojom::VideoCaptureService> receiver_;
@@ -115,6 +128,8 @@ class VideoCaptureServiceImpl : public mojom::VideoCaptureService {
         // BUILDFLAG(IS_CHROMEOS_ASH)
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace video_capture

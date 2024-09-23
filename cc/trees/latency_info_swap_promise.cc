@@ -42,19 +42,20 @@ int64_t LatencyInfoSwapPromise::GetTraceId() const {
 
 // Trace the original LatencyInfo of a LatencyInfoSwapPromise
 void LatencyInfoSwapPromise::OnCommit() {
-  using perfetto::protos::pbzero::ChromeLatencyInfo;
   using perfetto::protos::pbzero::TrackEvent;
 
-  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
-              [this](perfetto::EventContext ctx) {
-                ChromeLatencyInfo* latency_info =
-                    ctx.event()->set_chrome_latency_info();
-                latency_info->set_trace_id(GetTraceId());
-                latency_info->set_step(
-                    ChromeLatencyInfo::STEP_HANDLE_INPUT_EVENT_MAIN_COMMIT);
-                tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                       GetTraceId());
-              });
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [this](perfetto::EventContext ctx) {
+        auto* latency_info =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_chrome_latency_info();
+        latency_info->set_trace_id(GetTraceId());
+        latency_info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::
+                                   Step::STEP_HANDLE_INPUT_EVENT_MAIN_COMMIT);
+        tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
+                               GetTraceId());
+      });
 }
 
 }  // namespace cc

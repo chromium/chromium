@@ -25,7 +25,7 @@ void FakePrintRenderFrame::PrintRequestedPages() {}
 
 void FakePrintRenderFrame::PrintWithParams(mojom::PrintPagesParamsPtr params,
                                            PrintWithParamsCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void FakePrintRenderFrame::PrintForSystemDialog() {}

@@ -144,9 +144,15 @@ static_library("test_support") {
     "test/fake_trusted_vault_access_token_fetcher.h",
     "test/fake_trusted_vault_client.cc",
     "test/fake_trusted_vault_client.h",
+    "test/mock_recovery_key_store_connection.cc",
+    "test/mock_recovery_key_store_connection.h",
   ]
 
-  deps = [ "//components/signin/public/identity_manager" ]
+  deps = [
+    "//components/signin/public/identity_manager",
+    "//components/trusted_vault/proto",
+    "//testing/gmock",
+  ]
 
   public_deps = [
     ":trusted_vault",
@@ -157,6 +163,8 @@ static_library("test_support") {
     sources += [
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
+      "test/mock_trusted_vault_connection.cc",
+      "test/mock_trusted_vault_connection.h",
     ]
 
     public_deps += [
@@ -170,6 +178,8 @@ static_library("test_support") {
     sources += [
       "test/fake_crosapi_trusted_vault_backend.cc",
       "test/fake_crosapi_trusted_vault_backend.h",
+      "test/fake_crosapi_trusted_vault_backend_service.cc",
+      "test/fake_crosapi_trusted_vault_backend_service.h",
     ]
 
     public_deps += [

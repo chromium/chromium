@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css_angle_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_aspect_ratio_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_basic_shape_interpolation_type.h"
@@ -67,7 +66,6 @@
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -75,10 +73,7 @@ namespace blink {
 CSSInterpolationTypesMap::CSSInterpolationTypesMap(
     const PropertyRegistry* registry,
     const Document& document)
-    : document_(document), registry_(registry) {
-  allow_all_animations_ = document.GetExecutionContext()->IsFeatureEnabled(
-      blink::mojom::blink::DocumentPolicyFeature::kLayoutAnimations);
-}
+    : document_(document), registry_(registry) {}
 
 static const PropertyRegistration* GetRegistration(
     const PropertyRegistry* registry,
@@ -95,11 +90,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   using ApplicableTypesMap =
       HashMap<PropertyHandle, std::unique_ptr<const InterpolationTypes>>;
   DEFINE_STATIC_LOCAL(ApplicableTypesMap, all_applicable_types_map, ());
-  DEFINE_STATIC_LOCAL(ApplicableTypesMap, composited_applicable_types_map, ());
 
-  // Reduce motion currently allows no interpolation. When some properties are
-  // allowed to interpolate we may need to support the combination of
-  // reduce_motion && !allow_all_animations_ separately.
   DEFINE_STATIC_LOCAL(ApplicableTypesMap, reduce_motion_applicable_types_map,
                       ());
 
@@ -115,8 +106,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
 
   ApplicableTypesMap& applicable_types_map =
       reduce_motion ? reduce_motion_applicable_types_map
-                    : (allow_all_animations_ ? all_applicable_types_map
-                                             : composited_applicable_types_map);
+                    : all_applicable_types_map;
 
   auto entry = applicable_types_map.find(property);
   if (entry != applicable_types_map.end())
@@ -133,12 +123,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   PropertyHandle used_property =
       property.IsCSSProperty() ? property : PropertyHandle(css_property);
 
-  // TODO(crbug.com/838263): Support site-defined list of acceptable properties
-  // through permissions policy declarations.
-  bool property_maybe_blocked_by_permissions_policy =
-      LayoutAnimationsPolicy::AffectedCSSProperties().Contains(&css_property);
-  if (!reduce_motion && (allow_all_animations_ ||
-                         !property_maybe_blocked_by_permissions_policy)) {
+  if (!reduce_motion) {
     switch (css_property.PropertyID()) {
       case CSSPropertyID::kBaselineShift:
       case CSSPropertyID::kBorderBottomWidth:
@@ -295,11 +280,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         applicable_types->push_back(
             std::make_unique<CSSImageInterpolationType>(used_property));
         break;
-      case CSSPropertyID::kWebkitMaskImage:
-        if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-          break;
-        }
-        [[fallthrough]];
       case CSSPropertyID::kBackgroundImage:
         applicable_types->push_back(
             std::make_unique<CSSImageListInterpolationType>(used_property));
@@ -326,10 +306,8 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
                 used_property));
         break;
       case blink::CSSPropertyID::kFontPalette:
-        if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled()) {
-          applicable_types->push_back(
-              std::make_unique<CSSFontPaletteInterpolationType>(used_property));
-        }
+        applicable_types->push_back(
+            std::make_unique<CSSFontPaletteInterpolationType>(used_property));
         break;
       case CSSPropertyID::kVisibility:
         applicable_types->push_back(
@@ -375,7 +353,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
                 used_property));
         break;
       case CSSPropertyID::kBackgroundSize:
-      case CSSPropertyID::kWebkitMaskSize:
       case CSSPropertyID::kMaskSize:
         applicable_types->push_back(
             std::make_unique<CSSSizeListInterpolationType>(used_property));
@@ -441,12 +418,10 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
             std::make_unique<CSSBasicShapeInterpolationType>(used_property));
         break;
       case CSSPropertyID::kDisplay:
-        DCHECK(RuntimeEnabledFeatures::CSSDisplayAnimationEnabled());
         applicable_types->push_back(
             std::make_unique<CSSDisplayInterpolationType>(used_property));
         break;
       case CSSPropertyID::kContentVisibility:
-        DCHECK(RuntimeEnabledFeatures::CSSDisplayAnimationEnabled());
         applicable_types->push_back(
             std::make_unique<CSSContentVisibilityInterpolationType>(
                 used_property));
@@ -532,8 +507,12 @@ CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
     case CSSSyntaxType::kUrl:
       // Smooth interpolation not supported for these types.
       return nullptr;
+    case CSSSyntaxType::kString:
+      // Smooth interpolation not supported for <string> type.
+      DCHECK(RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled());
+      return nullptr;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }

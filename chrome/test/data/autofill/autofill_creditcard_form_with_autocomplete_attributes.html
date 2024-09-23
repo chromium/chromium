@@ -1,0 +1,18 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!-- HTML credit card form used for testing Autofill preferences. -->
+<html>
+  <head>
+ <title>Autofill Credit Card Test Form (with autocomplete attributes)</title>
+ </head>
+ <body>
+  <p>Autofill Credit Card Test Form (without a name)</p>
+  <form id="testform" method="post">
+       <label for="CREDIT_CARD_NUMBER">Card Number</label>
+       <input size="40" id="CREDIT_CARD_NUMBER" name="card_number" autocomplete="cc-number"/>
+       <label>Expiration Date</label>
+       <input size="2" id="CREDIT_CARD_EXP_MONTH" name="ccmonth" autocomplete="cc-exp-month"/> <input size="4" id="CREDIT_CARD_EXP_4_DIGIT_YEAR" name="ccyear" autocomplete="cc-exp-year"/>
+    <input type="submit" value="Submit">
+  </form>
+ </body>
+</html>
+

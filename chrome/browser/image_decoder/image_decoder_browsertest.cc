@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/image_decoder/image_decoder.h"
 
 #include "base/run_loop.h"
@@ -13,6 +18,7 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::BrowserThread;

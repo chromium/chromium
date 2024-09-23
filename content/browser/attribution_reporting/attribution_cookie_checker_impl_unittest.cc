@@ -16,7 +16,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_util.h"
@@ -91,8 +90,6 @@ class AttributionCookieCheckerImplTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      net::features::kPartitionedCookies};
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
 
@@ -179,7 +176,9 @@ TEST_F(AttributionCookieCheckerImplTest, Partitioned_NotSet) {
       .same_site = net::CookieSameSite::NO_RESTRICTION,
       // Mojo deserialization crashes without the unguessable token here.
       .partition_key = net::CookiePartitionKey::FromURLForTesting(
-          GURL("https://r2.test"), base::UnguessableToken::Create()),
+          GURL("https://r2.test"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create()),
   });
 
   EXPECT_FALSE(IsDebugCookieSet());

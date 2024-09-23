@@ -4,24 +4,7 @@
 
 #include "components/pdf/browser/pdf_stream_delegate.h"
 
-#include <optional>
-
-#include "url/gurl.h"
-
 namespace pdf {
-
-PdfStreamDelegate::PdfStreamDelegate() = default;
-PdfStreamDelegate::~PdfStreamDelegate() = default;
-
-std::optional<GURL> PdfStreamDelegate::MapToOriginalUrl(
-    content::NavigationHandle& navigation_handle) {
-  return std::nullopt;
-}
-
-std::optional<PdfStreamDelegate::StreamInfo> PdfStreamDelegate::GetStreamInfo(
-    content::RenderFrameHost* embedder_frame) {
-  return std::nullopt;
-}
 
 PdfStreamDelegate::StreamInfo::StreamInfo() = default;
 PdfStreamDelegate::StreamInfo::StreamInfo(const StreamInfo&) = default;

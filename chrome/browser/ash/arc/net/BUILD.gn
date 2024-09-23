@@ -1,0 +1,46 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("net") {
+  sources = [
+    "browser_url_opener_impl.cc",
+    "browser_url_opener_impl.h",
+    "cert_manager_impl.cc",
+    "cert_manager_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/device_event_log",
+    "//content/public/browser",
+    "//crypto",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "cert_manager_impl_unittest.cc" ]
+
+  deps = [
+    ":net",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//crypto",
+    "//crypto:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}

@@ -15,15 +15,20 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
 ReadingListDownloadService*
-ReadingListDownloadServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+ReadingListDownloadServiceFactory::GetForBrowserState(ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+ReadingListDownloadService* ReadingListDownloadServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<ReadingListDownloadService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static

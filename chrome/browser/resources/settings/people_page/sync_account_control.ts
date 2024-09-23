@@ -9,13 +9,13 @@
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '/shared/settings/people_page/profile_info_browser_proxy.js';
 import '../icons.html.js';
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import '../settings_shared.css.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
@@ -24,8 +24,8 @@ import {assert} from '//resources/js/assert.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {Router} from '../router.js';
@@ -81,13 +81,13 @@ export class SettingsSyncAccountControlElement extends
       promoSecondaryLabelWithNoAccount: String,
 
       /**
-       * Proxy variable for syncStatus.signedIn to shield observer from being
-       * triggered multiple times whenever syncStatus changes.
+       * Proxy variable for syncStatus.signedInState to shield observer from
+       * being triggered multiple times whenever syncStatus changes.
        */
-      signedIn_: {
+      syncing_: {
         type: Boolean,
-        computed: 'computeSignedIn_(syncStatus.signedIn)',
-        observer: 'onSignedInChanged_',
+        computed: 'isSyncing_(syncStatus.signedInState)',
+        observer: 'onSyncChanged_',
       },
 
       storedAccounts_: Object,
@@ -127,7 +127,7 @@ export class SettingsSyncAccountControlElement extends
         type: Boolean,
         value: false,
         computed: 'computeShouldShowAvatarRow_(storedAccounts_, syncStatus,' +
-            'storedAccounts_.length, syncStatus.signedIn)',
+            'storedAccounts_.length, syncStatus.signedInState)',
         observer: 'onShouldShowAvatarRowChange_',
       },
 
@@ -156,7 +156,7 @@ export class SettingsSyncAccountControlElement extends
   promoLabelWithNoAccount: string;
   promoSecondaryLabelWithAccount: string;
   promoSecondaryLabelWithNoAccount: string;
-  private signedIn_: boolean;
+  private syncing_: boolean;
   private storedAccounts_: StoredAccount[];
   private shownAccount_: StoredAccount|null;
   showingPromo: boolean;
@@ -182,22 +182,18 @@ export class SettingsSyncAccountControlElement extends
    * Records Signin_Impression_FromSettings user action.
    */
   private recordImpressionUserActions_() {
-    assert(!this.syncStatus.signedIn);
+    assert(!this.isSyncing_());
 
     chrome.metricsPrivate.recordUserAction('Signin_Impression_FromSettings');
   }
 
-  private computeSignedIn_(): boolean {
-    return !!this.syncStatus && !!this.syncStatus.signedIn;
-  }
-
-  private onSignedInChanged_() {
+  private onSyncChanged_() {
     if (this.embeddedInSubpage) {
       this.showingPromo = true;
       return;
     }
 
-    if (!this.showingPromo && !this.syncStatus.signedIn &&
+    if (!this.showingPromo && !this.isSyncing_() &&
         this.syncBrowserProxy_.getPromoImpressionCount() <
             MAX_SIGNIN_PROMO_IMPRESSION) {
       this.showingPromo = true;
@@ -206,7 +202,7 @@ export class SettingsSyncAccountControlElement extends
       // Turn off the promo if the user is signed in.
       this.showingPromo = false;
     }
-    if (!this.syncStatus.signedIn && this.shownAccount_ !== undefined) {
+    if (!this.isSyncing_() && this.shownAccount_ !== undefined) {
       this.recordImpressionUserActions_();
     }
   }
@@ -227,19 +223,24 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private getAccountLabel_(
-      signedInLabel: string, syncingLabel: string, account: string): string {
+      signedInLabel: string, syncingLabel: string, email: string): string {
+    // When in sign in paused, only show the email address.
+    if (this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED) {
+      return email;
+    }
+
     if (this.syncStatus.firstSetupInProgress) {
-      return this.syncStatus.statusText || account;
+      return this.syncStatus.statusText || email;
     }
 
-    if (this.syncStatus.signedIn && !this.syncStatus.hasError &&
+    if (this.isSyncing_() && !this.syncStatus.hasError &&
         !this.syncStatus.disabled) {
-      return loadTimeData.substituteString(syncingLabel, account);
+      return loadTimeData.substituteString(syncingLabel, email);
     }
 
-    return (this.shownAccount_ && this.shownAccount_!.isPrimaryAccount) ?
-        loadTimeData.substituteString(signedInLabel, account) :
-        account;
+    return (this.shownAccount_! && this.shownAccount_!!.isPrimaryAccount) ?
+        loadTimeData.substituteString(signedInLabel, email) :
+        email;
   }
 
   private getAccountImageSrc_(image: string|null): string {
@@ -321,31 +322,23 @@ export class SettingsSyncAccountControlElement extends
    * has sync enabled or if the property to hide the banner was explicitly set.
    */
   private shouldHideBanner_(): boolean {
-    return this.hideBanner || (!!this.syncStatus && !!this.syncStatus.signedIn);
+    return this.hideBanner || (!!this.syncStatus && this.isSyncing_());
   }
 
   /**
    * Determines whether the sync button should be hidden, in the case where the
-   * user has sync enabled or if the property to hide the banner was explicitly
-   * set.
+   * user has sync enabled, is in sign in paused, or if the property to hide
+   * the banner was explicitly set.
    */
   private shouldHideSyncButton_(): boolean {
     return this.hideButtons ||
-        (!!this.syncStatus && !!this.syncStatus.signedIn);
+        (!!this.syncStatus &&
+         (this.isSyncing_() ||
+          this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED));
   }
 
   private shouldShowTurnOffButton_(): boolean {
-    // <if expr="chromeos_ash">
-    if (this.syncStatus.domain) {
-      // Chrome OS cannot delete the user's profile like other platforms, so
-      // hide the turn off sync button for enterprise users who are not
-      // allowed to sign out.
-      return false;
-    }
-    // </if>
-
-    return !this.hideButtons && !this.showSetupButtons_ &&
-        !!this.syncStatus.signedIn;
+    return !this.hideButtons && !this.showSetupButtons_ && this.isSyncing_();
   }
 
   private shouldShowErrorActionButton_(): boolean {
@@ -354,8 +347,8 @@ export class SettingsSyncAccountControlElement extends
       // In a subpage the passphrase button is not required.
       return false;
     }
-    return !this.hideButtons && !this.showSetupButtons_ &&
-        !!this.syncStatus.signedIn && !!this.syncStatus.hasError &&
+    return !this.hideButtons && !this.showSetupButtons_ && this.isSyncing_() &&
+        !!this.syncStatus.hasError &&
         this.syncStatus.statusAction !== StatusAction.NO_ACTION;
   }
 
@@ -367,7 +360,8 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
     // </if>
-    return !this.syncStatus.signedIn && !this.hideButtons &&
+    return !this.hideButtons && !this.isSyncing_() &&
+        this.syncStatus.signedInState !== SignedInState.SIGNED_IN_PAUSED &&
         (!loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles') ||
          !this.syncStatus.domain);
   }
@@ -381,18 +375,17 @@ export class SettingsSyncAccountControlElement extends
       return false;
     }
 
-    return this.syncStatus.signedIn || this.storedAccounts_.length > 0;
+    return (this.isSyncing_() || this.storedAccounts_.length > 0) &&
+        this.syncStatus.signedInState !== SignedInState.WEB_ONLY_SIGNED_IN;
   }
 
   private onErrorButtonClick_() {
     const router = Router.getInstance();
     const routes = router.getRoutes();
     switch (this.syncStatus.statusAction) {
-      // <if expr="not chromeos_ash">
       case StatusAction.REAUTHENTICATE:
         this.syncBrowserProxy_.startSignIn();
         break;
-      // </if>
       case StatusAction.UPGRADE_CLIENT:
         router.navigateTo(routes.ABOUT);
         break;
@@ -407,13 +400,7 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private onSigninClick_() {
-    // <if expr="not chromeos_ash">
     this.syncBrowserProxy_.startSignIn();
-    // </if>
-    // <if expr="chromeos_ash">
-    // Chrome OS is always signed-in, so just turn on sync.
-    this.syncBrowserProxy_.turnOnSync();
-    // </if>
     // Need to close here since one menu item also triggers this function.
     const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
     if (actionMenu) {
@@ -421,12 +408,10 @@ export class SettingsSyncAccountControlElement extends
     }
   }
 
-  // <if expr="not chromeos_ash">
   private onSignoutClick_() {
     this.syncBrowserProxy_.signOut(false /* deleteProfile */);
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
-  // </if>
 
   private onSyncButtonClick_() {
     assert(this.shownAccount_);
@@ -472,7 +457,7 @@ export class SettingsSyncAccountControlElement extends
       return;
     }
 
-    if (this.syncStatus.signedIn) {
+    if (this.isSyncing_()) {
       for (let i = 0; i < this.storedAccounts_.length; i++) {
         if (this.storedAccounts_[i].email ===
             this.syncStatus.signedInUsername) {
@@ -514,6 +499,15 @@ export class SettingsSyncAccountControlElement extends
   private onSetupConfirm_() {
     this.dispatchEvent(new CustomEvent(
         'sync-setup-done', {bubbles: true, composed: true, detail: true}));
+  }
+
+  private shouldShowSigninPausedButtons_() {
+    return !!this.syncStatus &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN_PAUSED;
+  }
+
+  private isSyncing_(): boolean {
+    return this.syncStatus.signedInState === SignedInState.SYNCING;
   }
 }
 

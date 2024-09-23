@@ -1,0 +1,24 @@
+Tests the data of iframe post trace events
+Recording started
+Tracing complete
+Found 2 SchedulePostMessage events in total
+Got SchedulePostMessage event:
+Object: {
+	traceId: string
+}
+Got SchedulePostMessage event:
+Object: {
+	traceId: string
+}
+Found 2 HandlePostMessage events in total
+Got HandlePostMessage event:
+Object: {
+	traceId: string
+}
+Got HandlePostMessage event:
+Object: {
+	traceId: string
+}
+SchedulePostMessage and HandlePostMessage trace events are correctly linked
+SchedulePostMessage and HandlePostMessage trace events are correctly linked
+

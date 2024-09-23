@@ -14,24 +14,33 @@ import androidx.fragment.app.Fragment;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.components.browser_ui.settings.SettingsPage;
 import org.chromium.ui.widget.Toast;
 
 /**
  * Shows a fragment for revoking linked caBLEv2 devices.
  *
- * This is reached by selecting Settings -> Privacy and security -> Phone as a
- * Security Key. It shows some explanatory text and has a single button to revoke all
- * linked devices.
+ * <p>This is reached by selecting Settings -> Privacy and security -> Phone as a Security Key. It
+ * shows some explanatory text and has a single button to revoke all linked devices.
  */
-public class PrivacySettingsFragment extends Fragment implements OnClickListener {
+public class PrivacySettingsFragment extends Fragment implements SettingsPage, OnClickListener {
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle(R.string.cablev2_paask_title);
+        mPageTitle.set(getString(R.string.cablev2_paask_title));
 
         View v = inflater.inflate(R.layout.cablev2_settings, container, false);
         v.findViewById(R.id.unlink_button).setOnClickListener(this);
         return v;
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

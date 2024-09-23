@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
 
  private:
   friend class HotspotMetricsHelperTest;
+  friend class HotspotControllerTest;
+  friend class HotspotControllerConcurrencyApiTest;
+
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
                            HotspotAllowStatusHistogram);
   FRIEND_TEST_ALL_PREFIXES(HotspotMetricsHelperTest,
@@ -90,6 +93,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest,
                            EnableTetheringNetworkSetupFailure);
   FRIEND_TEST_ALL_PREFIXES(HotspotControllerTest, DisableTetheringSuccess);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           EnableTetheringSuccess);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           AbortEnableTethering);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           ShillOperationFailureWhileAborting);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           EnableTetheringReadinessCheckFailure);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           EnableTetheringNetworkSetupFailure);
+  FRIEND_TEST_ALL_PREFIXES(HotspotControllerConcurrencyApiTest,
+                           DisableTetheringSuccess);
   FRIEND_TEST_ALL_PREFIXES(HotspotConfigurationHandlerTest,
                            SetAndGetHotspotConfig);
   FRIEND_TEST_ALL_PREFIXES(HotspotCapabilitiesProviderTest,
@@ -227,7 +242,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
     kUpstreamNoInternet = 8,
     kDownstreamLinkDisconnect = 9,
     kDownstreamNetworkDisconnect = 10,
-    kMaxValue = kDownstreamNetworkDisconnect,
+    kStartTimeout = 11,
+    kUpstreamNotAvailable = 12,
+    kUnknownError = 13,
+    kMaxValue = kUnknownError,
   };
 
   // HotspotCapabilitiesProvider::Observer:

@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -101,7 +107,7 @@ TEST(IdentifiableTokenTest, SampleStdString) {
 }
 
 TEST(IdentifiableTokenTest, SampleStringPiece) {
-  auto source_value = base::StringPiece("abcd");
+  auto source_value = std::string_view("abcd");
   auto expected_value = INT64_C(0xf75a3b8a1499428d);
   EXPECT_EQ(IdentifiableToken(expected_value), IdentifiableToken(source_value));
   // No implicit converter for StringPiece.

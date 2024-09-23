@@ -19,8 +19,9 @@
 namespace ash {
 namespace {
 
-BrowserContextKeyedServiceFactory::TestingFactory* GetTestingFactory() {
-  static base::NoDestructor<BrowserContextKeyedServiceFactory::TestingFactory>
+HoldingSpaceKeyedServiceFactory::GlobalTestingFactory* GetTestingFactory() {
+  static base::NoDestructor<
+      HoldingSpaceKeyedServiceFactory::GlobalTestingFactory>
       testing_factory_;
   return testing_factory_.get();
 }
@@ -44,7 +45,7 @@ HoldingSpaceKeyedServiceFactory::GetDefaultTestingFactory() {
 
 // static
 void HoldingSpaceKeyedServiceFactory::SetTestingFactory(
-    BrowserContextKeyedServiceFactory::TestingFactory testing_factory) {
+    GlobalTestingFactory testing_factory) {
   *GetTestingFactory() = std::move(testing_factory);
 }
 
@@ -80,7 +81,7 @@ HoldingSpaceKeyedServiceFactory::GetBrowserContextToUse(
 std::unique_ptr<KeyedService>
 HoldingSpaceKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  TestingFactory* testing_factory = GetTestingFactory();
+  GlobalTestingFactory* testing_factory = GetTestingFactory();
   return testing_factory->is_null() ? BuildServiceInstanceForInternal(context)
                                     : testing_factory->Run(context);
 }

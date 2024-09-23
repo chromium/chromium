@@ -32,6 +32,9 @@ class ASH_EXPORT Combobox : public views::Button,
   METADATA_HEADER(Combobox, views::Button)
 
  public:
+  static constexpr gfx::Insets kComboboxBorderInsets =
+      gfx::Insets::TLBR(4, 10, 4, 4);
+
   // `model` is owned by the combobox when using this constructor.
   explicit Combobox(std::unique_ptr<ui::ComboboxModel> model);
   // `model` is not owned by the combobox when using this constructor.
@@ -63,7 +66,6 @@ class ASH_EXPORT Combobox : public views::Button,
   void SetCallback(PressedCallback callback) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnBlur() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void Layout(PassKey) override;
@@ -78,6 +80,7 @@ class ASH_EXPORT Combobox : public views::Button,
   void SelectMenuItemForTest(size_t index);
 
  private:
+  friend class ComboboxTest;
   class ComboboxMenuView;
   class ComboboxEventHandler;
 
@@ -104,6 +107,11 @@ class ASH_EXPORT Combobox : public views::Button,
   // views::Button:
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) override;
   bool OnKeyPressed(const ui::KeyEvent& e) override;
+  void OnEnabledChanged() override;
+
+  void UpdateExpandedCollapsedAccessibleState() const;
+  void UpdateAccessibleAccessibleActiveDescendantId();
+  void UpdateAccessibleDefaultAction();
 
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.

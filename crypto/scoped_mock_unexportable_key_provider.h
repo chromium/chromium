@@ -15,6 +15,10 @@ namespace crypto {
 class ScopedMockUnexportableKeyProvider {
  public:
   ScopedMockUnexportableKeyProvider();
+  ScopedMockUnexportableKeyProvider(const ScopedMockUnexportableKeyProvider&) =
+      delete;
+  ScopedMockUnexportableKeyProvider(ScopedMockUnexportableKeyProvider&&) =
+      delete;
   ~ScopedMockUnexportableKeyProvider();
 };
 
@@ -23,6 +27,10 @@ class ScopedMockUnexportableKeyProvider {
 class ScopedNullUnexportableKeyProvider {
  public:
   ScopedNullUnexportableKeyProvider();
+  ScopedNullUnexportableKeyProvider(const ScopedNullUnexportableKeyProvider&) =
+      delete;
+  ScopedNullUnexportableKeyProvider(ScopedNullUnexportableKeyProvider&&) =
+      delete;
   ~ScopedNullUnexportableKeyProvider();
 };
 

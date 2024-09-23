@@ -91,19 +91,26 @@ ConvertPaletteOverridesToSkiaOverrides(
 
 namespace blink {
 
-FontCustomPlatformData::FontCustomPlatformData(sk_sp<SkTypeface> typeface,
+FontCustomPlatformData::FontCustomPlatformData(PassKey,
+                                               sk_sp<SkTypeface> typeface,
                                                size_t data_size)
-    : base_typeface_(std::move(typeface)), data_size_(data_size) {}
+    : base_typeface_(std::move(typeface)), data_size_(data_size) {
+  // The new instance of SkData was created while decoding. It stores data
+  // from decoded font resource. GC is not aware of this allocation, so we
+  // need to inform it.
+  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    external_memory_accounter_.Increase(isolate, data_size_);
+  }
+}
 
 FontCustomPlatformData::~FontCustomPlatformData() {
   if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
     // Safe cast since WebFontDecoder has max decompressed size of 128MB.
-    isolate->AdjustAmountOfExternalAllocatedMemory(
-        -static_cast<int64_t>(data_size_));
+    external_memory_accounter_.Decrease(isolate, data_size_);
   }
 }
 
-FontPlatformData FontCustomPlatformData::GetFontPlatformData(
+const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     float size,
     float adjusted_specified_size,
     bool bold,
@@ -115,7 +122,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     const ResolvedFontFeatures& resolved_font_features,
     FontOrientation orientation,
     const FontVariationSettings* variation_settings,
-    const FontPalette* palette) {
+    const FontPalette* palette) const {
   DCHECK(base_typeface_);
 
   sk_sp<SkTypeface> return_typeface = base_typeface_;
@@ -248,8 +255,7 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
     Vector<FontPalette::FontPaletteOverride> color_overrides;
     std::optional<uint16_t> palette_index = std::nullopt;
     PaletteInterpolation palette_interpolation(base_typeface_);
-    if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
-        palette->IsInterpolablePalette()) {
+    if (palette->IsInterpolablePalette()) {
       color_overrides =
           palette_interpolation.ComputeInterpolableFontPalette(palette);
       palette_index = 0;
@@ -276,10 +282,11 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
       return_typeface = palette_typeface;
     }
   }
-  return FontPlatformData(std::move(return_typeface), std::string(), size,
-                          synthetic_bold && !base_typeface_->isBold(),
-                          synthetic_italic && !base_typeface_->isItalic(),
-                          text_rendering, resolved_font_features, orientation);
+  return MakeGarbageCollected<FontPlatformData>(
+      std::move(return_typeface), std::string(), size,
+      synthetic_bold && !base_typeface_->isBold(),
+      synthetic_italic && !base_typeface_->isItalic(), text_rendering,
+      resolved_font_features, orientation);
 }
 
 Vector<VariationAxis> FontCustomPlatformData::GetVariationAxes() const {
@@ -303,7 +310,7 @@ String FontCustomPlatformData::FamilyNameForInspector() const {
                           localized_string.fString.size());
 }
 
-scoped_refptr<FontCustomPlatformData> FontCustomPlatformData::Create(
+FontCustomPlatformData* FontCustomPlatformData::Create(
     SharedBuffer* buffer,
     String& ots_parse_message) {
   DCHECK(buffer);
@@ -313,15 +320,14 @@ scoped_refptr<FontCustomPlatformData> FontCustomPlatformData::Create(
     ots_parse_message = decoder.GetErrorString();
     return nullptr;
   }
-  size_t data_size = decoder.DecodedSize();
-  // The new instance of SkData is created while decoding. It stores data
-  // from decoded font resource. GC is not aware of this allocation, so we
-  // need to inform it.
-  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
-    isolate->AdjustAmountOfExternalAllocatedMemory(data_size);
-  }
-  return base::AdoptRef(
-      new FontCustomPlatformData(std::move(typeface), data_size));
+  return Create(std::move(typeface), decoder.DecodedSize());
+}
+
+FontCustomPlatformData* FontCustomPlatformData::Create(
+    sk_sp<SkTypeface> typeface,
+    size_t data_size) {
+  return MakeGarbageCollected<FontCustomPlatformData>(
+      PassKey(), std::move(typeface), data_size);
 }
 
 bool FontCustomPlatformData::MayBeIconFont() const {

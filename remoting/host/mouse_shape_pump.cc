@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/host/mouse_shape_pump.h"
 
 #include <stdint.h>
@@ -68,23 +73,25 @@ void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {
 
   std::unique_ptr<webrtc::MouseCursor> owned_cursor(cursor);
 
-  std::unique_ptr<protocol::CursorShapeInfo> cursor_proto(
-      new protocol::CursorShapeInfo());
-  cursor_proto->set_width(cursor->image()->size().width());
-  cursor_proto->set_height(cursor->image()->size().height());
-  cursor_proto->set_hotspot_x(cursor->hotspot().x());
-  cursor_proto->set_hotspot_y(cursor->hotspot().y());
+  if (cursor_shape_stub_) {
+    std::unique_ptr<protocol::CursorShapeInfo> cursor_proto(
+        new protocol::CursorShapeInfo());
+    cursor_proto->set_width(cursor->image()->size().width());
+    cursor_proto->set_height(cursor->image()->size().height());
+    cursor_proto->set_hotspot_x(cursor->hotspot().x());
+    cursor_proto->set_hotspot_y(cursor->hotspot().y());
 
-  cursor_proto->set_data(std::string());
-  uint8_t* current_row = cursor->image()->data();
-  for (int y = 0; y < cursor->image()->size().height(); ++y) {
-    cursor_proto->mutable_data()->append(
-        current_row, current_row + cursor->image()->size().width() *
-                                       webrtc::DesktopFrame::kBytesPerPixel);
-    current_row += cursor->image()->stride();
+    cursor_proto->set_data(std::string());
+    uint8_t* current_row = cursor->image()->data();
+    for (int y = 0; y < cursor->image()->size().height(); ++y) {
+      cursor_proto->mutable_data()->append(
+          current_row, current_row + cursor->image()->size().width() *
+                                         webrtc::DesktopFrame::kBytesPerPixel);
+      current_row += cursor->image()->stride();
+    }
+
+    cursor_shape_stub_->SetCursorShape(*cursor_proto);
   }
-
-  cursor_shape_stub_->SetCursorShape(*cursor_proto);
 
   if (callback_) {
     callback_->OnMouseCursor(owned_cursor.release());

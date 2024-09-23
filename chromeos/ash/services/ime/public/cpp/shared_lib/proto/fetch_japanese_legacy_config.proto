@@ -1,0 +1,76 @@
+syntax = "proto2";
+
+package chromeos_input;
+
+message FetchJapaneseLegacyConfigRequest {}
+
+// Based on https://github.com/google/mozc/blob/master/src/protocol/config.proto
+enum PreeditMethod {
+  PREEDIT_UNSPECIFIED = 0;
+  PREEDIT_ROMANJI = 1;
+  PREEDIT_KANA = 2;
+}
+
+enum PunctuationMethod {
+  PUNCTUATION_UNSPECIFIED = 0;
+  PUNCTUATION_KUTEN_TOUTEN = 1;
+  PUNCTUATION_COMMA_PERIOD = 2;
+  PUNCTUATION_KUTEN_PERIOD = 3;
+  PUNCTUATION_COMMA_TOUTEN = 4;
+}
+
+enum SymbolMethod {
+  SYMBOL_UNSPECIFIED = 0;
+  SYMBOL_CORNER_BRACKET_MIDDLE_DOT = 1;
+  SYMBOL_SQUARE_BRACKET_SLASH = 2;
+  SYMBOL_CORNER_BRACKET_SLASH = 3;
+  SYMBOL_SQUARE_BRACKET_MIDDLE_DOT = 4;
+}
+
+enum FundamentalCharacterForm {
+  FUNDAMENTAL_UNSPECIFIED = 0;
+  FUNDAMENTAL_INPUT_MODE = 1;
+  FUNDAMENTAL_FULL_WIDTH = 2;
+  FUNDAMENTAL_HALF_WIDTH = 3;
+}
+
+enum SelectionShortcut {
+  SELECTION_UNSPECIFIED = 0;
+  SELECTION_123456789 = 1;
+  SELECTION_ASDFGHJKL = 2;
+  SELECTION_NO_SHORTCUT = 3;
+}
+
+enum SessionKeymap {
+  KEYMAP_UNSPECIFIED = 0;
+  KEYMAP_CUSTOM = 1;
+  KEYMAP_ATOK = 2;
+  KEYMAP_MSIME = 3;
+  KEYMAP_KOTOERI = 4;
+  KEYMAP_MOBILE = 5;
+  KEYMAP_CHROMEOS = 6;
+  KEYMAP_NONE = 7;
+}
+
+enum ShiftKeyModeSwitch {
+  SHIFTKEY_UNSPECIFIED = 0;
+  SHIFTKEY_OFF = 1;
+  SHIFTKEY_ASCII_INPUT_MODE = 2;
+  SHIFTKEY_KATAKANA = 3;
+}
+
+message FetchJapaneseLegacyConfigResponse {
+  optional PreeditMethod preedit_method = 1;
+  optional PunctuationMethod punctuation_method = 2;
+  optional SymbolMethod symbol_method = 3;
+  optional FundamentalCharacterForm space_character_form = 4;
+  optional SelectionShortcut selection_shortcut = 5;
+  optional SessionKeymap session_keymap = 6;
+  optional bool use_auto_conversion = 7;
+  optional ShiftKeyModeSwitch shift_key_mode_switch = 8;
+  optional bool use_history_suggest = 9;
+  optional bool use_dictionary_suggest = 10;
+  optional int32 suggestion_size = 11;
+  optional bool incognito_mode = 12;
+  optional bool upload_usage_stats = 13;
+}

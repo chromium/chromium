@@ -174,7 +174,6 @@ gfx::Rect GetIdealBoundsForMaximizedOrFullscreenOrPinnedState(
   }
   NOTREACHED() << "The window is not maximzied or fullscreen or pinned. state="
                << window_state->GetStateType();
-  return window->GetBoundsInScreen();
 }
 
 }  // namespace screen_util

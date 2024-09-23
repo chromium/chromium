@@ -72,20 +72,6 @@ class NET_EXPORT ProxyResolutionService {
   // before the ProxyResolutionService itself.
   virtual void OnShutdown() = 0;
 
-  // Explicitly trigger proxy fallback for the given |results| by updating our
-  // list of bad proxies to include the first entry of |results|, and,
-  // additional bad proxies (can be none). Will retry after |retry_delay| if
-  // positive, and will use the default proxy retry duration otherwise. Proxies
-  // marked as bad will not be retried until |retry_delay| has passed. Returns
-  // true if there will be at least one proxy remaining in the list after
-  // fallback and false otherwise. This method should be used to add proxies to
-  // the bad proxy list only for reasons other than a network error.
-  virtual bool MarkProxiesAsBadUntil(
-      const ProxyInfo& results,
-      base::TimeDelta retry_delay,
-      const std::vector<ProxyChain>& additional_bad_proxies,
-      const NetLogWithSource& net_log) = 0;
-
   // Clears the list of bad proxy servers that has been cached.
   virtual void ClearBadProxiesCache() = 0;
 

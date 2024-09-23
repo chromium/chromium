@@ -4,9 +4,9 @@
 
 #include "ui/events/velocity_tracker/motion_event_generic.h"
 
+#include <numbers>
 #include <utility>
 
-#include "base/numerics/math_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/motion_event_test_utils.h"
@@ -186,7 +186,7 @@ TEST(MotionEventGenericTest, AxisAndOrientation) {
     properties.SetAxesAndOrientation(radius_x, radius_y, rotation_angle_deg);
     EXPECT_EQ(20, properties.touch_major);
     EXPECT_EQ(10, properties.touch_minor);
-    EXPECT_NEAR(-base::kPiDouble / 2, properties.orientation, 0.001);
+    EXPECT_NEAR(-std::numbers::pi / 2, properties.orientation, 0.001);
   }
   {
     PointerProperties properties;
@@ -206,7 +206,7 @@ TEST(MotionEventGenericTest, AxisAndOrientation) {
     properties.SetAxesAndOrientation(radius_x, radius_y, rotation_angle_deg);
     EXPECT_EQ(20, properties.touch_major);
     EXPECT_EQ(10, properties.touch_minor);
-    EXPECT_NEAR(base::kPiDouble / 2, properties.orientation, 0.001);
+    EXPECT_NEAR(std::numbers::pi / 2, properties.orientation, 0.001);
   }
   {
     PointerProperties properties;

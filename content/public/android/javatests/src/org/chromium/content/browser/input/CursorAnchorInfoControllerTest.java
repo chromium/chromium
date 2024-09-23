@@ -14,13 +14,18 @@ import android.view.inputmethod.CursorAnchorInfo;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapper;
+
+import java.util.Map;
 
 /** Test for {@link CursorAnchorInfoController}. */
 @RunWith(ContentJUnit4ClassRunner.class)
@@ -137,6 +142,13 @@ public class CursorAnchorInfoControllerTest {
             Assert.assertEquals(expecteSelectionStart, actual.getSelectionStart());
             Assert.assertEquals(expecteSelectionEnd, actual.getSelectionEnd());
         }
+    }
+
+    @Before
+    public void setUp() {
+        // Cannot access native features exposed to Java in tests without native initialization.
+        // Instead, assign a test value to the feature.
+        FeatureList.setTestFeatures(Map.of(BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE, false));
     }
 
     @Test
@@ -529,6 +541,7 @@ public class CursorAnchorInfoControllerTest {
         controller.onUpdateFrameInfo(
                 1.0f, 0.0f, false, false, Float.NaN, Float.NaN, Float.NaN, view);
         Assert.assertEquals(1, immw.getUpdateCursorAnchorInfoCounter());
+        // Expect null at position 0 as composition starts from position 1.
         Assert.assertEquals(null, immw.getLastCursorAnchorInfo().getCharacterBounds(0));
         Assert.assertEquals(0, immw.getLastCursorAnchorInfo().getCharacterBoundsFlags(0));
         Assert.assertEquals(
@@ -537,8 +550,10 @@ public class CursorAnchorInfoControllerTest {
         Assert.assertEquals(
                 CursorAnchorInfo.FLAG_HAS_VISIBLE_REGION,
                 immw.getLastCursorAnchorInfo().getCharacterBoundsFlags(1));
+        // TODO(crbug.com/40940885): Replace these values and the ones below with the original
+        //  floats once we support RectF objects from Blink.
         Assert.assertEquals(
-                new RectF(4.0f, 1.1f, 6.0f, 2.9f),
+                new RectF(4.0f, 1.0f, 6.0f, 3.0f),
                 immw.getLastCursorAnchorInfo().getCharacterBounds(2));
         Assert.assertEquals(
                 CursorAnchorInfo.FLAG_HAS_VISIBLE_REGION,
@@ -548,7 +563,7 @@ public class CursorAnchorInfoControllerTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             Assert.assertEquals(1, immw.getLastCursorAnchorInfo().getVisibleLineBounds().size());
             Assert.assertEquals(
-                    new RectF(0.0f, 1.0f, 6.0f, 2.9f),
+                    new RectF(0.0f, 1.0f, 6.0f, 3.0f),
                     immw.getLastCursorAnchorInfo().getVisibleLineBounds().get(0));
         }
         AssertionHelper.assertComposingText("12", 1, immw.getLastCursorAnchorInfo());

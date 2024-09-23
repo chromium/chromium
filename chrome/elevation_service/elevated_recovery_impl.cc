@@ -5,6 +5,7 @@
 #include "chrome/elevation_service/elevated_recovery_impl.h"
 
 #include <objbase.h>
+
 #include <string>
 #include <utility>
 
@@ -14,8 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -24,6 +23,7 @@
 #include "base/version.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/install_static/install_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace elevation_service {
@@ -75,8 +75,7 @@ HRESULT OpenCallingProcess(uint32_t proc_id, base::Process* process) {
   if (FAILED(hr))
     return hr;
 
-  base::ScopedClosureRunner revert_to_self(
-      base::BindOnce([]() { ::CoRevertToSelf(); }));
+  absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
 
   *process = base::Process::OpenWithAccess(proc_id, PROCESS_DUP_HANDLE);
   return process->IsValid() ? S_OK : HRESULTFromLastError();
@@ -94,8 +93,7 @@ HRESULT OpenFileImpersonated(const base::FilePath& file_path,
   if (FAILED(hr))
     return hr;
 
-  base::ScopedClosureRunner revert_to_self(
-      base::BindOnce([]() { ::CoRevertToSelf(); }));
+  absl::Cleanup revert_to_self = [] { ::CoRevertToSelf(); };
 
   file->Initialize(file_path, flags);
   if (!file->IsValid())
@@ -151,7 +149,7 @@ HRESULT CopyFileImpersonated(const base::FilePath from,
       return E_UNEXPECTED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return S_OK;
 }
 

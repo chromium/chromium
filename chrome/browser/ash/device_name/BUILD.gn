@@ -1,0 +1,86 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("device_name") {
+  sources = [
+    "device_name_applier.h",
+    "device_name_applier_impl.cc",
+    "device_name_applier_impl.h",
+    "device_name_store.cc",
+    "device_name_store.h",
+    "device_name_store_impl.cc",
+    "device_name_store_impl.h",
+    "device_name_validator.cc",
+    "device_name_validator.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//chromeos/ash/components/network",
+    "//components/prefs",
+    "//content/public/browser",
+    "//device/bluetooth",
+    "//net",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_device_name_applier.cc",
+    "fake_device_name_applier.h",
+    "fake_device_name_store.cc",
+    "fake_device_name_store.h",
+  ]
+
+  deps = [
+    ":device_name",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_name_applier_impl_unittest.cc",
+    "device_name_store_impl_unittest.cc",
+    "device_name_validator_unittest.cc",
+  ]
+
+  deps = [
+    ":device_name",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//testing/gtest",
+  ]
+}

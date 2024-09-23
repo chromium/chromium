@@ -5,6 +5,8 @@
 // A benchmark to isolate the HTML parsing done in the Speedometer test,
 // for more stable benchmarking and profiling.
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -33,10 +35,11 @@ TEST(HTMLParsePerfTest, Speedometer) {
 
   auto reporter = perf_test::PerfResultReporter("BlinkHTML", label);
 
-  scoped_refptr<SharedBuffer> serialized =
+  std::optional<Vector<char>> serialized =
       test::ReadFromFile(test::CoreTestDataPath(filename));
-  std::optional<base::Value> json = base::JSONReader::Read(
-      base::StringPiece(serialized->Data(), serialized->size()));
+  CHECK(serialized);
+  std::optional<base::Value> json =
+      base::JSONReader::Read(base::as_string_view(*serialized));
   if (!json.has_value()) {
     char msg[256];
     snprintf(msg, sizeof(msg), "Skipping %s test because %s could not be read",

@@ -1,0 +1,3 @@
+include_rules = [
+  "+ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h",
+]

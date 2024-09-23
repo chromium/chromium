@@ -14,11 +14,11 @@
 #include "android_webview/browser/find_helper.h"
 #include "android_webview/browser/permission/media_access_permission_request.h"
 #include "android_webview/browser/permission/permission_request_handler.h"
-#include "android_webview/browser_jni_headers/AwWebContentsDelegate_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -39,6 +39,9 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwWebContentsDelegate_jni.h"
+
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -51,7 +54,9 @@ using content::WebContents;
 
 namespace android_webview {
 
-AwWebContentsDelegate::AwWebContentsDelegate(JNIEnv* env, jobject obj)
+AwWebContentsDelegate::AwWebContentsDelegate(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : WebContentsDelegateAndroid(env, obj), is_fullscreen_(false) {}
 
 AwWebContentsDelegate::~AwWebContentsDelegate() = default;
@@ -146,7 +151,7 @@ void AwWebContentsDelegate::RunFileChooser(
       params.use_media_capture);
 }
 
-void AwWebContentsDelegate::AddNewContents(
+WebContents* AwWebContentsDelegate::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -192,6 +197,7 @@ void AwWebContentsDelegate::AddNewContents(
   if (was_blocked) {
     *was_blocked = !create_popup;
   }
+  return nullptr;
 }
 
 void AwWebContentsDelegate::NavigationStateChanged(
@@ -338,15 +344,20 @@ void AwWebContentsDelegate::UpdateUserGestureCarryoverInfo(
     intercept_navigation_delegate->OnResourceRequestWithGesture();
 }
 
-bool AwWebContentsDelegate::IsBackForwardCacheSupported() {
-  return base::FeatureList::IsEnabled(features::kWebViewBackForwardCache);
+bool AwWebContentsDelegate::IsBackForwardCacheSupported(
+    content::WebContents& web_contents) {
+  AwSettings* aw_settings = AwSettings::FromWebContents(&web_contents);
+  return base::FeatureList::IsEnabled(features::kWebViewBackForwardCache) ||
+         aw_settings->IsBackForwardCacheEnabled();
 }
 
 content::PreloadingEligibility AwWebContentsDelegate::IsPrerender2Supported(
     content::WebContents& web_contents) {
-  if (base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
+  AwSettings* aw_settings = AwSettings::FromWebContents(&web_contents);
+  if (aw_settings->IsPrerender2Allowed()) {
     return content::PreloadingEligibility::kEligible;
   }
+
   return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
 }
 
@@ -355,6 +366,23 @@ AwWebContentsDelegate::ShouldOverrideUserAgentForPrerender2() {
   // For WebView, always use the user agent override, which is set every time
   // the user agent in AwSettings is modified.
   return content::NavigationController::UA_OVERRIDE_TRUE;
+}
+
+bool AwWebContentsDelegate::ShouldAllowPartialParamMismatchOfPrerender2(
+    content::NavigationHandle& navigation_handle) {
+  // We relax initiator checks on WebView first, but continue to discuss.
+  //
+  // TODO(https://crbug.com/340416082): Relax initiator check for all platforms.
+
+  // `ui::PAGE_TRANSITION_FROM_API` bit distinguishes that the activation
+  // navigation is triggered by `WebView.loadUrl()`.
+  bool ret =
+      navigation_handle.GetPageTransition() & ui::PAGE_TRANSITION_FROM_API;
+  if (ret) {
+    CHECK(!navigation_handle.GetInitiatorFrameToken().has_value());
+    CHECK(!navigation_handle.GetInitiatorOrigin().has_value());
+  }
+  return ret;
 }
 
 scoped_refptr<content::FileSelectListener>

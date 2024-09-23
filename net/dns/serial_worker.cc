@@ -109,7 +109,8 @@ void SerialWorker::OnDoWorkFinished(std::unique_ptr<WorkItem> work_item) {
       return;
     }
     default:
-      NOTREACHED() << "Unexpected state " << static_cast<int>(state_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected state " << static_cast<int>(state_);
   }
 }
 
@@ -135,7 +136,8 @@ void SerialWorker::OnFollowupWorkFinished(std::unique_ptr<WorkItem> work_item) {
       RerunWork(std::move(work_item));
       return;
     default:
-      NOTREACHED() << "Unexpected state " << static_cast<int>(state_);
+      NOTREACHED_IN_MIGRATION()
+          << "Unexpected state " << static_cast<int>(state_);
   }
 }
 
@@ -161,6 +163,11 @@ const BackoffEntry& SerialWorker::GetBackoffEntryForTesting() const {
 const base::OneShotTimer& SerialWorker::GetRetryTimerForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return retry_timer_;
+}
+
+int SerialWorker::GetFailureCount() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return backoff_entry_.failure_count();
 }
 
 base::WeakPtr<SerialWorker> SerialWorker::AsWeakPtr() {

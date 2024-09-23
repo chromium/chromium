@@ -59,7 +59,7 @@ int ContentLiveTab::GetEntryCount() {
   return navigation_controller().GetEntryCount();
 }
 
-std::unique_ptr<sessions::PlatformSpecificTabData>
+std::unique_ptr<tab_restore::PlatformSpecificTabData>
 ContentLiveTab::GetPlatformSpecificTabData() {
   return std::make_unique<sessions::ContentPlatformSpecificTabData>(
       web_contents());

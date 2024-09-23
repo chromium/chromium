@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/pepper/pepper_media_stream_video_track_host.h"
 
 #include <stddef.h>
@@ -103,22 +108,22 @@ void ConvertFromMediaVideoFrame(const media::VideoFrame& src,
         src.format() == media::PIXEL_FORMAT_I420);
   if (dst_format == PP_VIDEOFRAME_FORMAT_BGRA) {
     if (src.visible_rect().size() == dst_size) {
-      libyuv::I420ToARGB(src.visible_data(VideoFrame::kYPlane),
-                         src.stride(VideoFrame::kYPlane),
-                         src.visible_data(VideoFrame::kUPlane),
-                         src.stride(VideoFrame::kUPlane),
-                         src.visible_data(VideoFrame::kVPlane),
-                         src.stride(VideoFrame::kVPlane), dst,
+      libyuv::I420ToARGB(src.visible_data(VideoFrame::Plane::kY),
+                         src.stride(VideoFrame::Plane::kY),
+                         src.visible_data(VideoFrame::Plane::kU),
+                         src.stride(VideoFrame::Plane::kU),
+                         src.visible_data(VideoFrame::Plane::kV),
+                         src.stride(VideoFrame::Plane::kV), dst,
                          dst_size.width() * 4, dst_size.width(),
                          dst_size.height());
     } else {
       libyuv::YUVToARGBScaleClip(
-          src.visible_data(VideoFrame::kYPlane),
-          src.stride(VideoFrame::kYPlane),
-          src.visible_data(VideoFrame::kUPlane),
-          src.stride(VideoFrame::kUPlane),
-          src.visible_data(VideoFrame::kVPlane),
-          src.stride(VideoFrame::kVPlane), libyuv::FOURCC_YV12,
+          src.visible_data(VideoFrame::Plane::kY),
+          src.stride(VideoFrame::Plane::kY),
+          src.visible_data(VideoFrame::Plane::kU),
+          src.stride(VideoFrame::Plane::kU),
+          src.visible_data(VideoFrame::Plane::kV),
+          src.stride(VideoFrame::Plane::kV), libyuv::FOURCC_YV12,
           src.visible_rect().width(), src.visible_rect().height(), dst,
           dst_size.width() * 4, libyuv::FOURCC_ARGB, dst_size.width(),
           dst_size.height(), 0, 0, dst_size.width(), dst_size.height(),
@@ -127,10 +132,10 @@ void ConvertFromMediaVideoFrame(const media::VideoFrame& src,
   } else if (dst_format == PP_VIDEOFRAME_FORMAT_YV12 ||
              dst_format == PP_VIDEOFRAME_FORMAT_I420) {
     static const size_t kPlanesOrder[][3] = {
-        {VideoFrame::kYPlane, VideoFrame::kVPlane,
-         VideoFrame::kUPlane},  // YV12
-        {VideoFrame::kYPlane, VideoFrame::kUPlane,
-         VideoFrame::kVPlane},  // I420
+        {VideoFrame::Plane::kY, VideoFrame::Plane::kV,
+         VideoFrame::Plane::kU},  // YV12
+        {VideoFrame::Plane::kY, VideoFrame::Plane::kU,
+         VideoFrame::Plane::kV},  // I420
     };
     const int plane_order = (dst_format == PP_VIDEOFRAME_FORMAT_YV12) ? 0 : 1;
     int dst_width = dst_size.width();
@@ -154,7 +159,7 @@ void ConvertFromMediaVideoFrame(const media::VideoFrame& src,
                        src_halfheight, dst, dst_halfwidth, dst_halfwidth,
                        dst_halfheight, kFilterMode);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -356,26 +361,26 @@ void PepperMediaStreamVideoTrackHost::OnVideoFrame(
     // no corresponding PP_VideoFrame_Format. Convert the video frame to I420.
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
     ppformat = PP_VIDEOFRAME_FORMAT_I420;
-    auto* gmb = video_frame->GetGpuMemoryBuffer();
-    if (!gmb->Map()) {
-      DLOG(WARNING) << "Failed to map GpuMemoryBuffer";
+    auto scoped_mapping = video_frame->MapGMBOrSharedImage();
+    if (!scoped_mapping) {
+      DLOG(WARNING) << "Failed to get a scoped_mapping object.";
       return;
     }
     frame = media::VideoFrame::CreateFrame(
         media::PIXEL_FORMAT_I420, video_frame->coded_size(),
         video_frame->visible_rect(), video_frame->natural_size(),
         video_frame->timestamp());
-    int ret = libyuv::NV12ToI420(
-        static_cast<const uint8_t*>(gmb->memory(0)), gmb->stride(0),
-        static_cast<const uint8_t*>(gmb->memory(1)), gmb->stride(1),
-        frame->writable_data(media::VideoFrame::kYPlane),
-        frame->stride(media::VideoFrame::kYPlane),
-        frame->writable_data(media::VideoFrame::kUPlane),
-        frame->stride(media::VideoFrame::kUPlane),
-        frame->writable_data(media::VideoFrame::kVPlane),
-        frame->stride(media::VideoFrame::kVPlane),
+    int ret = libyuv::NV12ToI420(scoped_mapping->Memory(0),
+        scoped_mapping->Stride(0),
+        scoped_mapping->Memory(1),
+        scoped_mapping->Stride(1),
+        frame->writable_data(media::VideoFrame::Plane::kY),
+        frame->stride(media::VideoFrame::Plane::kY),
+        frame->writable_data(media::VideoFrame::Plane::kU),
+        frame->stride(media::VideoFrame::Plane::kU),
+        frame->writable_data(media::VideoFrame::Plane::kV),
+        frame->stride(media::VideoFrame::Plane::kV),
         video_frame->coded_size().width(), video_frame->coded_size().height());
-    gmb->Unmap();
     if (ret != 0) {
       DLOG(WARNING) << "Failed to convert NV12 to I420";
       return;

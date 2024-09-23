@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContentUriUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
@@ -29,11 +30,11 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.SavePageResult;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -91,7 +92,7 @@ public class OfflinePageArchivePublisherBridgeTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Ensure we start in an offline state.
                     NetworkChangeNotifier.forceConnectivityState(false);
@@ -100,9 +101,9 @@ public class OfflinePageArchivePublisherBridgeTest {
                     }
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProfile = Profile.getLastUsedRegularProfile();
+                    mProfile = ProfileManager.getLastUsedRegularProfile();
                 });
         initializeBridgeForProfile();
         Assert.assertNotNull(mOfflinePageBridge);
@@ -174,8 +175,8 @@ public class OfflinePageArchivePublisherBridgeTest {
     }
 
     /**
-     * TODO(https://crbug.com/1068408): This test fails on Android Q/10 (SDK 29). Leaving it enabled
-     * for now as there's currently no bot running tests with that OS version.
+     * TODO(crbug.com/40683443): This test fails on Android Q/10 (SDK 29). Leaving it enabled for
+     * now as there's currently no bot running tests with that OS version.
      */
     @Test
     @SmallTest
@@ -199,8 +200,8 @@ public class OfflinePageArchivePublisherBridgeTest {
      * Tests that Chrome will gracefully handle Android not being able to generate unique filenames
      * with a large enough unique number. See https://crbug.com/1010916#c2 for context.
      *
-     * <p>TODO(https://crbug.com/1068408): This test fails on Android Q/10 (SDK 29). Leaving it
-     * enabled for now as there's currently no bot running tests with that OS version.
+     * <p>TODO(crbug.com/40683443): This test fails on Android Q/10 (SDK 29). Leaving it enabled for
+     * now as there's currently no bot running tests with that OS version.
      */
     @Test
     @SmallTest
@@ -231,7 +232,7 @@ public class OfflinePageArchivePublisherBridgeTest {
     private void savePage(final ClientId clientId) throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         final AtomicInteger result = new AtomicInteger(SavePageResult.MAX_VALUE);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mOfflinePageBridge.savePage(
                             sActivityTestRule.getWebContents(),

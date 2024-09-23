@@ -5,7 +5,7 @@
 #include "cc/scheduler/begin_frame_tracker.h"
 
 #include "base/trace_event/trace_event.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 
 namespace cc {
 
@@ -87,17 +87,17 @@ base::TimeDelta BeginFrameTracker::Interval() const {
 void BeginFrameTracker::AsProtozeroInto(
     perfetto::EventContext& ctx,
     base::TimeTicks now,
-    perfetto::protos::pbzero::BeginImplFrameArgs* state) const {
+    perfetto::protos::pbzero::BeginImplFrameArgsV2* state) const {
   state->set_updated_at_us(current_updated_at_.since_origin().InMicroseconds());
   state->set_finished_at_us(
       current_finished_at_.since_origin().InMicroseconds());
   if (HasFinished()) {
     state->set_state(
-        perfetto::protos::pbzero::BeginImplFrameArgs::BEGIN_FRAME_FINISHED);
+        perfetto::protos::pbzero::BeginImplFrameArgsV2::BEGIN_FRAME_FINISHED);
     current_args_.AsProtozeroInto(ctx, state->set_current_args());
   } else {
     state->set_state(
-        perfetto::protos::pbzero::BeginImplFrameArgs::BEGIN_FRAME_USING);
+        perfetto::protos::pbzero::BeginImplFrameArgsV2::BEGIN_FRAME_USING);
     current_args_.AsProtozeroInto(ctx, state->set_last_args());
   }
 

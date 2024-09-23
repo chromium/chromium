@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 
 #include <stddef.h>
@@ -24,6 +29,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profile_resetter/brandcode_config_fetcher.h"
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
@@ -36,7 +42,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_data_service_factory.h"
+#include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -116,6 +122,19 @@ const char kXmlConfig[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 using extensions::Extension;
 using extensions::Manifest;
 
+class FakeNtpCustomBackgroundService : public NtpCustomBackgroundService {
+ public:
+  using NtpCustomBackgroundService::NtpCustomBackgroundService;
+  void FetchCustomBackgroundAndExtractBackgroundColor(
+      const GURL& image_url,
+      const GURL& fetch_url) override {}
+};
+
+std::unique_ptr<KeyedService> CreateFakeNtpCustomBackgroundService(
+    content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<FakeNtpCustomBackgroundService>(profile);
+}
 
 // ProfileResetterTest --------------------------------------------------------
 
@@ -155,10 +174,16 @@ ProfileResetterTest::~ProfileResetterTest() {
 
 void ProfileResetterTest::SetUp() {
   extensions::ExtensionServiceTestBase::SetUp();
-  InitializeEmptyExtensionService();
+  ExtensionServiceInitParams params;
+  params.testing_factories = {TestingProfile::TestingFactory(
+      NtpCustomBackgroundServiceFactory::GetInstance(),
+      base::BindRepeating(&CreateFakeNtpCustomBackgroundService))};
+
+  InitializeExtensionService(std::move(params));
 
   TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));
+  google_brand::BrandForTesting brand_for_testing("");
   resetter_ = std::make_unique<ProfileResetter>(profile());
 }
 
@@ -367,7 +392,7 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
       // do nothing
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   manifest.SetByDottedPath(extensions::manifest_keys::kOmniboxKeyword, name);
   std::string error;

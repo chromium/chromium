@@ -24,6 +24,8 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
@@ -32,6 +34,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
@@ -173,7 +176,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
-// TODO(https://crbug.com/1182305): We should merge this class with the base
+// TODO(crbug.com/40170747): We should merge this class with the base
 // class once the issues mentioned in the bug are resolved.
 class NotificationsApiTestWithBackgroundType
     : public NotificationsApiTest,

@@ -58,7 +58,7 @@ class HttpsOnlyModeTabHelper
   explicit HttpsOnlyModeTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HttpsOnlyModeTabHelper>;
 
-  // TODO(crbug.com/1218526): Track upgrade status per-navigation rather than
+  // TODO(crbug.com/40771668): Track upgrade status per-navigation rather than
   // per-WebContents, in case multiple navigations occur in the WebContents and
   // the metadata is not cleared. This may be tricky however as the Interceptor
   // and the Throttle have slightly different views of the navigation -- the

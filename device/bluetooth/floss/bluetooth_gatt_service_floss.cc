@@ -51,6 +51,18 @@ BluetoothGattServiceFloss::GattStatusToServiceError(const GattStatus status) {
   return GattErrorCode::kUnknown;
 }
 
+// static
+GattStatus BluetoothGattServiceFloss::GattServiceErrorToStatus(
+    device::BluetoothGattService::GattErrorCode error_code) {
+  for (auto& [target, source] : kGattStatusMap) {
+    if (error_code == source) {
+      return target;
+    }
+  }
+
+  return GattStatus::kError;
+}
+
 void BluetoothGattServiceFloss::AddObserverForHandle(
     int32_t handle,
     FlossGattClientObserver* observer) {
@@ -185,6 +197,14 @@ void BluetoothGattServiceFloss::GattServerDescriptorWriteRequest(
     server_observer_by_handle_[handle]->GattServerDescriptorWriteRequest(
         address, request_id, offset, length, is_prepared_write, needs_response,
         handle, value);
+  }
+}
+
+void BluetoothGattServiceFloss::GattServerExecuteWrite(std::string address,
+                                                       int32_t request_id,
+                                                       bool execute_write) {
+  for (auto const& [_, observer] : server_observer_by_handle_) {
+    observer->GattServerExecuteWrite(address, request_id, execute_write);
   }
 }
 

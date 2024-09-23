@@ -6,11 +6,11 @@
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_WEB_STATE_OBSERVER_H_
 
 #import "base/memory/raw_ptr.h"
-#include "base/timer/timer.h"
-#include "components/reading_list/core/reading_list_model_observer.h"
-#include "ios/web/public/web_state_observer.h"
+#import "base/timer/timer.h"
+#import "components/reading_list/core/reading_list_model_observer.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 class ReadingListModel;
 
@@ -88,6 +88,8 @@ class ReadingListWebStateObserver
   int try_number_;
   bool last_load_was_offline_;
   web::PageLoadCompletionStatus last_load_result_;
+
+  base::WeakPtrFactory<ReadingListWebStateObserver> weak_factory_{this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

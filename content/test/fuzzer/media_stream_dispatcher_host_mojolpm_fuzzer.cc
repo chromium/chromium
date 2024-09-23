@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"

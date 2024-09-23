@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/x/x11_display_util.h"
 
 #include <dlfcn.h>
@@ -46,6 +51,9 @@ constexpr const char kRandrEdidProperty[] = "EDID";
 std::map<x11::RandR::Output, size_t> GetMonitors(
     const x11::Response<x11::RandR::GetMonitorsReply>& reply) {
   std::map<x11::RandR::Output, size_t> output_to_monitor;
+  if (!reply) {
+    return output_to_monitor;
+  }
   for (size_t monitor = 0; monitor < reply->monitors.size(); monitor++) {
     for (x11::RandR::Output output : reply->monitors[monitor].outputs) {
       output_to_monitor[output] = monitor;
@@ -68,7 +76,7 @@ gfx::Rect GetWorkAreaSync(x11::Future<x11::GetPropertyReply> future) {
   if (!response || response->format != 32 || response->value_len != 4) {
     return gfx::Rect();
   }
-  const uint32_t* value = response->value->front_as<uint32_t>();
+  const uint32_t* value = response->value->cast_to<uint32_t>();
   return gfx::Rect(value[0], value[1], value[2], value[3]);
 }
 
@@ -89,11 +97,11 @@ x11::Future<x11::GetPropertyReply> GetIccProfileFuture(
 
 gfx::ICCProfile GetIccProfileSync(x11::Future<x11::GetPropertyReply> future) {
   auto response = future.Sync();
-  if (!response || !response->value->size()) {
+  if (!response || !response->value_len) {
     return gfx::ICCProfile();
   }
-  return gfx::ICCProfile::FromData(response->value->data(),
-                                   response->value->size());
+  return gfx::ICCProfile::FromData(response->value->bytes(),
+                                   response->value_len * response->format / 8u);
 }
 
 x11::Future<x11::RandR::GetOutputPropertyReply> GetEdidFuture(
@@ -296,6 +304,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     const display::DisplayConfig& display_config,
     size_t* primary_display_index_out) {
   DCHECK(primary_display_index_out);
+  auto* command_line = base::CommandLine::ForCurrentProcess();
   const float primary_scale = display_config.primary_scale;
 
   auto* connection = x11::Connection::Get();
@@ -345,7 +354,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
   connection->Flush();
 
   std::vector<x11::Future<x11::GetPropertyReply>> icc_futures{n_iccs};
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless)) {
+  if (!command_line->HasSwitch(switches::kHeadless)) {
     for (size_t monitor = 0; monitor < n_iccs; ++monitor) {
       icc_futures[monitor] = GetIccProfileFuture(connection, monitor);
     }
@@ -443,11 +452,18 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     }
 
     const std::string name(output_info->name.begin(), output_info->name.end());
+    auto process_type =
+        command_line->GetSwitchValueASCII("type");
     if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS")) {
       display::SetInternalDisplayIds({display_id});
-      // Use localized variant of "Built-in display" for internal displays.
+      // For browser process which has access to resource bundle,
+      // use localized variant of "Built-in display" for internal displays.
       // This follows the ozone DRM behavior (i.e. ChromeOS).
-      display.set_label(l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_INTERNAL));
+      if (process_type.empty()) {
+        display.set_label(l10n_util::GetStringUTF8(IDS_DISPLAY_NAME_INTERNAL));
+      } else {
+        display.set_label("Built-in display");
+      }
     } else {
       display.set_label(edid_parser.display_name());
     }
@@ -519,7 +535,7 @@ base::TimeDelta GetPrimaryDisplayRefreshIntervalFromXrandr() {
                                               &primary_display_index);
   CHECK_LT(primary_display_index, displays.size());
 
-  // TODO(crbug.com/726842): It might make sense here to pick the output that
+  // TODO(crbug.com/41321728): It might make sense here to pick the output that
   // the window is on. On the other hand, if compositing is enabled, all drawing
   // might be synced to the primary output anyway. Needs investigation.
   auto frequency = displays[primary_display_index].display_frequency();

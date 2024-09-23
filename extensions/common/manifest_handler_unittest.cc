@@ -17,6 +17,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/install_warning.h"
+#include "extensions/common/manifest_handler_registry.h"
 #include "extensions/common/scoped_testing_manifest_handler_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,14 +50,14 @@ class ManifestHandlerTest : public testing::Test {
       size_t i_before = parsed_names_.size();
       size_t i_after = 0;
       for (size_t i = 0; i < parsed_names_.size(); ++i) {
-        if (parsed_names_[i] == name_before)
+        if (parsed_names_[i] == name_before) {
           i_before = i;
-        if (parsed_names_[i] == name_after)
+        }
+        if (parsed_names_[i] == name_after) {
           i_after = i;
+        }
       }
-      if (i_before < i_after)
-        return true;
-      return false;
+      return i_before < i_after;
     }
 
    private:

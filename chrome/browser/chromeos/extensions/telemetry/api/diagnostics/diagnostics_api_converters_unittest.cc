@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics/diagnostics_api_converters.h"
+
+#include "base/time/time.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -109,12 +111,6 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   {
     cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
     EXPECT_TRUE(ConvertMojoRoutine(
-        crosapi::DiagnosticsRoutineEnum::kNvmeWearLevel, &out));
-    EXPECT_EQ(out, cx_diag::RoutineType::kNvmeWearLevel);
-  }
-  {
-    cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
-    EXPECT_TRUE(ConvertMojoRoutine(
         crosapi::DiagnosticsRoutineEnum::kSignalStrength, &out));
     EXPECT_EQ(out, cx_diag::RoutineType::kSignalStrength);
   }
@@ -166,6 +162,11 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
     EXPECT_TRUE(
         ConvertMojoRoutine(crosapi::DiagnosticsRoutineEnum::kFan, &out));
     EXPECT_EQ(out, cx_diag::RoutineType::kFan);
+  }
+  {
+    cx_diag::RoutineType out = cx_diag::RoutineType::kNone;
+    EXPECT_FALSE(ConvertMojoRoutine(
+        crosapi::DiagnosticsRoutineEnum::DEPRECATED_kNvmeWearLevel, &out));
   }
 }
 
@@ -282,6 +283,212 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
                 cx_diag::VolumeButtonType::kVolumeDown),
             crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
                 ButtonType::kVolumeDown);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertLedName) {
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kNone),
+            crosapi::TelemetryDiagnosticLedName::kUnmappedEnumField);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kBattery),
+            crosapi::TelemetryDiagnosticLedName::kBattery);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kPower),
+            crosapi::TelemetryDiagnosticLedName::kPower);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kAdapter),
+            crosapi::TelemetryDiagnosticLedName::kAdapter);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kLeft),
+            crosapi::TelemetryDiagnosticLedName::kLeft);
+  EXPECT_EQ(ConvertLedName(cx_diag::LedName::kRight),
+            crosapi::TelemetryDiagnosticLedName::kRight);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertLedColor) {
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kNone),
+            crosapi::TelemetryDiagnosticLedColor::kUnmappedEnumField);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kRed),
+            crosapi::TelemetryDiagnosticLedColor::kRed);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kGreen),
+            crosapi::TelemetryDiagnosticLedColor::kGreen);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kBlue),
+            crosapi::TelemetryDiagnosticLedColor::kBlue);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kYellow),
+            crosapi::TelemetryDiagnosticLedColor::kYellow);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kWhite),
+            crosapi::TelemetryDiagnosticLedColor::kWhite);
+  EXPECT_EQ(ConvertLedColor(cx_diag::LedColor::kAmber),
+            crosapi::TelemetryDiagnosticLedColor::kAmber);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest, ConvertLedLitUpState) {
+  EXPECT_EQ(ConvertLedLitUpState(cx_diag::LedLitUpState::kNone),
+            crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+                kUnmappedEnumField);
+  EXPECT_EQ(ConvertLedLitUpState(cx_diag::LedLitUpState::kCorrectColor),
+            crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::
+                kCorrectColor);
+  EXPECT_EQ(
+      ConvertLedLitUpState(cx_diag::LedLitUpState::kNotLitUp),
+      crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::kNotLitUp);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertKeyboardBacklightState) {
+  EXPECT_EQ(
+      ConvertKeyboardBacklightState(cx_diag::KeyboardBacklightState::kNone),
+      crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State::
+          kUnmappedEnumField);
+  EXPECT_EQ(
+      ConvertKeyboardBacklightState(cx_diag::KeyboardBacklightState::kOk),
+      crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::State::kOk);
+  EXPECT_EQ(ConvertKeyboardBacklightState(
+                cx_diag::KeyboardBacklightState::kAnyNotLitUp),
+            crosapi::TelemetryDiagnosticCheckKeyboardBacklightStateReply::
+                State::kAnyNotLitUp);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionErrorWithMultipleNonnullFields) {
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.memory = cx_diag::CreateMemoryRoutineArguments();
+  args_union.fan = cx_diag::CreateFanRoutineArguments();
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithAllFieldsAreNull) {
+  auto result =
+      ConvertRoutineArgumentsUnion(cx_diag::CreateRoutineArgumentsUnion());
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_unrecognizedArgument());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithMemoryArgs) {
+  auto args = cx_diag::CreateMemoryRoutineArguments();
+  args.max_testing_mem_kib = 42;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.memory = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  ASSERT_TRUE(result.value()->is_memory());
+  EXPECT_EQ(result.value()->get_memory()->max_testing_mem_kib, 42);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionErrorWithInvalidMemoryArgs) {
+  auto args = cx_diag::CreateMemoryRoutineArguments();
+  args.max_testing_mem_kib = -1;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.memory = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithVolumeButtonArgs) {
+  auto args = cx_diag::CreateVolumeButtonRoutineArguments();
+  args.timeout_seconds = 42;
+  args.button_type = cx_diag::VolumeButtonType::kVolumeUp;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.volume_button = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  ASSERT_TRUE(result.value()->is_volume_button());
+  EXPECT_EQ(result.value()->get_volume_button()->type,
+            crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::
+                ButtonType::kVolumeUp);
+  EXPECT_EQ(result.value()->get_volume_button()->timeout, base::Seconds(42));
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionErrorWithInvalidVolumeButtonArgs) {
+  auto args = cx_diag::CreateVolumeButtonRoutineArguments();
+  args.timeout_seconds = -1;
+  args.button_type = cx_diag::VolumeButtonType::kNone;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.volume_button = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithFanArgs) {
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.fan = cx_diag::CreateFanRoutineArguments();
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_fan());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithLedLitUpArgs) {
+  auto args = cx_diag::CreateLedLitUpRoutineArguments();
+  args.name = cx_diag::LedName::kBattery;
+  args.color = cx_diag::LedColor::kRed;
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.led_lit_up = std::move(args);
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  ASSERT_TRUE(result.value()->is_led_lit_up());
+  EXPECT_EQ(result.value()->get_led_lit_up()->name,
+            crosapi::TelemetryDiagnosticLedName::kBattery);
+  EXPECT_EQ(result.value()->get_led_lit_up()->color,
+            crosapi::TelemetryDiagnosticLedColor::kRed);
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineArgumentsUnionSuccessWithKeyboardBacklightArgs) {
+  auto args_union = cx_diag::CreateRoutineArgumentsUnion();
+  args_union.keyboard_backlight =
+      cx_diag::CreateKeyboardBacklightRoutineArguments();
+  auto result = ConvertRoutineArgumentsUnion(std::move(args_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_keyboard_backlight());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineInquiryReplyUnionErrorWithMultipleNonnullFields) {
+  auto reply_union = cx_diag::RoutineInquiryReplyUnion();
+  reply_union.check_led_lit_up_state = cx_diag::CheckLedLitUpStateReply();
+  reply_union.check_keyboard_backlight_state =
+      cx_diag::CheckKeyboardBacklightStateReply();
+  auto result = ConvertRoutineInquiryReplyUnion(std::move(reply_union));
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineInquiryReplyUnionAllFieldsAreNull) {
+  auto result =
+      ConvertRoutineInquiryReplyUnion(cx_diag::RoutineInquiryReplyUnion());
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_unrecognizedReply());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineInquiryReplyUnionSuccessWithCheckLedLitUpState) {
+  auto reply_union = cx_diag::RoutineInquiryReplyUnion();
+  reply_union.check_led_lit_up_state = cx_diag::CheckLedLitUpStateReply();
+  auto result = ConvertRoutineInquiryReplyUnion(std::move(reply_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_check_led_lit_up_state());
+}
+
+TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
+     ConvertRoutineInquiryReplyUnionSuccessWithCheckKeyboardBacklightState) {
+  auto reply_union = cx_diag::RoutineInquiryReplyUnion();
+  reply_union.check_keyboard_backlight_state =
+      cx_diag::CheckKeyboardBacklightStateReply();
+  auto result = ConvertRoutineInquiryReplyUnion(std::move(reply_union));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result.value().is_null());
+  EXPECT_TRUE(result.value()->is_check_keyboard_backlight_state());
 }
 
 }  // namespace chromeos::converters::diagnostics

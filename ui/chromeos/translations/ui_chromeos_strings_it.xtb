@@ -72,7 +72,7 @@
 <translation id="1577977504532381335">Controlla il criterio dell'amministratore</translation>
 <translation id="158849752021629804">Occorre una rete domestica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
-<translation id="1620510694547887537">Fotocamera</translation>
+<translation id="1620510694547887537">Videocamera</translation>
 <translation id="162175252992296058">Portoghese con tastiera internazionale USA</translation>
 <translation id="1629521517399325891">Il certificato utente non è disponibile per l'autenticazione della rete.</translation>
 <translation id="1641780993263690097">Cinese pinyin</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">I Chromebit</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3104793765551262433">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
-<translation id="3113153474486991170">Impossibile aprire "<ph name="PATH" />" da questa posizione. Copia l'elemento in "I miei file" per aprirlo.</translation>
 <translation id="3113592018909187986">Hai ancora 1 tentativo a disposizione. Non potrai utilizzare questa rete finché non configuri un nuovo PIN.</translation>
 <translation id="3124404833828281817">Persona che sogna a occhi aperti</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Annulla <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, <ph name="CONNECTION_STATUS" />, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
 <translation id="3691184985318546178">Singalese</translation>
+<translation id="3702842351052426940">La tua scheda SIM o il tuo profilo eSIM potrebbero essere disattivati. Prova a sostituire la scheda SIM o a cambiare i profili eSIM.</translation>
 <translation id="3722341589402358578">Si è verificato un errore. Alcuni elementi potrebbero non essere stati messi nel cestino.</translation>
 <translation id="3726463242007121105">Impossibile aprire il dispositivo perché il suo filesystem non è supportato.</translation>
 <translation id="3727148787322499904">La modifica di questa impostazione avrà effetto su tutte le reti condivise</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Questo proxy è stato applicato dall'amministratore</translation>
 <translation id="3830674330436234648">Riproduzione non disponibile</translation>
 <translation id="383652340667548381">Serbo</translation>
+<translation id="3839045880592694915">Il tuo operatore non ha autorizzato il modem a connettersi. Contatta il tuo operatore per ulteriori dettagli.</translation>
 <translation id="385051799172605136">Indietro</translation>
-<translation id="3851491607336266896">Connesso, connettività limitata</translation>
 <translation id="3855472144336161447">Tastiera Neo 2 tedesca</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3866249974567520381">Descrizione</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">I file Microsoft aperti di recente sono stati spostati in OneDrive</translation>
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4017788180641807848">Inglese (USA) con tastiera Workman</translation>
-<translation id="4019998208269143058">Blocca sui file rapidi</translation>
 <translation id="4040753847560036377">PUK errato</translation>
 <translation id="4057991113334098539">In fase di attivazione...</translation>
 <translation id="4092890906744441904">Irlandese</translation>
+<translation id="4101601646343868113">Accedi alla tua rete mobile e verifica che il tuo piano dati mobili sia attivo</translation>
 <translation id="4124731372776320263">Sincronizzazione di 1 file di Drive in corso…</translation>
 <translation id="4124935795427217608">Unicorno</translation>
 <translation id="4131235941541910880">Sposta nel cestino gli elementi che non ti servono</translation>
@@ -604,6 +604,7 @@
 <translation id="5625294776298156701">Tamil con tastiera Tamil99</translation>
 <translation id="5633226425545095130">Se lo sposti, questo elemento verrà condiviso con chiunque abbia accesso alla cartella condivisa "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Ascolta</translation>
+<translation id="5650895901941743674">Controlla configurazione APN</translation>
 <translation id="5669691691057771421">Inserisci il nuovo PIN</translation>
 <translation id="5678784840044122290">L'applicazione Linux sarà disponibile nel terminale e potrebbe anche essere visualizzata un'icona nell'Avvio app.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Impossibile disconnettere un archivio o un disco virtuale<ph name="END_BOLD" />
@@ -683,6 +684,7 @@
 <translation id="6267547857941397424">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, connetti</translation>
 <translation id="6269630227984243955">Malese</translation>
 <translation id="6271903698064569429">Impossibile caricare i file perché lo spazio di archiviazione a disposizione su <ph name="SHARED_DRIVE_NAME" /> non è sufficiente.</translation>
+<translation id="6279140785485544797">Il tuo piano dati mobili potrebbe essere scaduto. Contatta il tuo operatore per ricevere assistenza.</translation>
 <translation id="6287852322318138013">Seleziona un'app per aprire questo file</translation>
 <translation id="6295542640242147836">Blocca SIM</translation>
 <translation id="6296410173147755564">PUK non valido</translation>
@@ -692,7 +694,6 @@
 <translation id="6320212353742551423">Archivio <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Mano che saluta</translation>
 <translation id="6327785803543103246">Rilevamento automatico proxy web</translation>
-<translation id="6337014272874260727">Sblocca dai file rapidi</translation>
 <translation id="6339145975392024142">Inglese internazionale (PC)</translation>
 <translation id="6356685157277930264">Finestra di feedback dei file</translation>
 <translation id="6358884629796491903">Drago</translation>
@@ -738,6 +739,7 @@
 <translation id="6750737795876287924">Directory corrente</translation>
 <translation id="6751256176799620176">1 cartella selezionata</translation>
 <translation id="6755827872271341378">Dispositivo ChromeOS Flex</translation>
+<translation id="6777029074498310250">Per maggiori informazioni, visita <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6794539005637808366">Ripristina l'elemento o trascinalo in una nuova cartella all'esterno del cestino</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -791,6 +793,7 @@
 <translation id="7086590977277044826">Tamil con tastiera InScript</translation>
 <translation id="7088615885725309056">Meno recente</translation>
 <translation id="7103992300314999525">Macedone</translation>
+<translation id="7104338189998813914">Si è verificato un problema durante l'accesso al tuo account OneDrive</translation>
 <translation id="7106346894903675391">Acquista più spazio di archiviazione...</translation>
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;cerca in Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada fonetica</translation>
@@ -851,6 +854,7 @@
 <translation id="7589661784326793847">Aspetta solo un secondo</translation>
 <translation id="7600126690270271294">Serbo</translation>
 <translation id="7603724359189955920">Griglie</translation>
+<translation id="7624010287655004652">Bloccato da un altro operatore mobile</translation>
 <translation id="7627790789328695202">Spiacenti. <ph name="FILE_NAME" /> esiste già. Rinominarlo e riprovare.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% completato.</translation>
 <translation id="7649070708921625228">Guida</translation>
@@ -1008,6 +1012,7 @@
 <translation id="8600173386174225982">L'elenco dei file è stato modificato in visualizzazione miniatura.</translation>
 <translation id="8601932370724196034">File immagine Crostini</translation>
 <translation id="8609695766746872526">Islandese</translation>
+<translation id="8630384863424041081">Inserisci il PIN della scheda SIM o il PIN predefinito fornito dall'operatore. Contatta il tuo operatore per ricevere assistenza.</translation>
 <translation id="863903787380594467">PIN errato. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - Porta</translation>
 <translation id="8656407365183407932">È stato necessario rimuovere i file offline</translation>
@@ -1017,7 +1022,6 @@
 <translation id="8698877009525468705">Questo file è riservato e soggetto a limitazioni stabilite dal criterio dell'amministratore.</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8713112442029511308">Maltese</translation>
-<translation id="8714138378966541668">Rete bloccata dall'operatore</translation>
 <translation id="8714406895390098252">Bicicletta</translation>
 <translation id="8719721339511222681">È stato selezionato l'elemento <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croato</translation>

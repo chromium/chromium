@@ -22,6 +22,8 @@ class RejectingAuthenticator : public Authenticator {
   ~RejectingAuthenticator() override;
 
   // Authenticator interface
+  CredentialsType credentials_type() const override;
+  const Authenticator& implementing_authenticator() const override;
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
@@ -29,6 +31,7 @@ class RejectingAuthenticator : public Authenticator {
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
 

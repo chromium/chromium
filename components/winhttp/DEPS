@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "network_fetcher_unittest.cc": [
+    "+net/test/embedded_test_server",
+    "+third_party/zlib/google",
+  ]
+}

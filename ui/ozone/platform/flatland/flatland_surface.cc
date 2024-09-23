@@ -12,6 +12,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -88,10 +89,12 @@ OverlayTransformFlatlandProperties OverlayTransformToFlatlandProperties(
           .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
           .image_flip = fuchsia::ui::composition::ImageFlip::UP_DOWN,
       };
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     case gfx::OVERLAY_TRANSFORM_INVALID:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return {
       .translation = {rounded_bounds.x(), rounded_bounds.y()},
       .orientation = fuchsia::ui::composition::Orientation::CCW_0_DEGREES,
@@ -220,6 +223,7 @@ void FlatlandSurface::Present(
     // `crop_rect` is in normalized coordinates, but Flatland expects it to be
     // given in image coordinates.
     gfx::RectF sample_region = overlay.overlay_plane_data.crop_rect;
+    sample_region.Intersect(gfx::RectF(1.0, 1.0));
     const gfx::Size& buffer_size = overlay.pixmap->GetBufferSize();
     sample_region.Scale(buffer_size.width(), buffer_size.height());
     flatland_.flatland()->SetImageSampleRegion(
@@ -246,7 +250,7 @@ void FlatlandSurface::Present(
   child_transforms_[0] = primary_plane_transform_id_;
   flatland_.flatland()->SetContent(primary_plane_transform_id_,
                                    primary_plane_image_id);
-  // TODO(crbug.com/1330950): We should set SRC blend mode when Chrome has a
+  // TODO(crbug.com/42050483): We should set SRC blend mode when Chrome has a
   // reliable signal for opaque background.
   flatland_.flatland()->SetImageBlendingFunction(
       primary_plane_image_id, fuchsia::ui::composition::BlendMode::SRC_OVER);
@@ -332,7 +336,7 @@ void FlatlandSurface::RemovePixmapResources(FlatlandPixmapId ids) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto iter = pixmap_ids_to_flatland_ids_.find(ids);
-  DCHECK(iter != pixmap_ids_to_flatland_ids_.end());
+  CHECK(iter != pixmap_ids_to_flatland_ids_.end(), base::NotFatalUntil::M130);
   flatland_.flatland()->ReleaseImage(iter->second.image_id);
   if (iter->second.transform_id.value) {
     flatland_.flatland()->ReleaseTransform(iter->second.transform_id);

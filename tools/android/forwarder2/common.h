@@ -65,7 +65,7 @@ class FixedSizeStringBuilder {
 
   // Returns the number of bytes appended to the underlying buffer or -1 if it
   // failed.
-  int Append(const char* format, ...) PRINTF_FORMAT(/* + 1 for 'this' */ 2, 3) {
+  PRINTF_FORMAT(/* + 1 for 'this' */ 2, 3) int Append(const char* format, ...) {
     if (write_ptr_ >= buffer_ + BufferSize)
       return -1;
     va_list ap;

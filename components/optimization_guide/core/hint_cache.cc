@@ -243,9 +243,6 @@ const proto::Hint* HintCache::GetHostKeyedHintIfLoaded(
 proto::Hint* HintCache::GetURLKeyedHint(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsValidURLForURLKeyedHint(url))
-    return nullptr;
-
   auto hint_it = url_keyed_hint_cache_.Get(GetURLKeyedHintCacheKey(url));
   if (hint_it == url_keyed_hint_cache_.end())
     return nullptr;
@@ -385,10 +382,10 @@ bool HintCache::ProcessAndCacheHints(
         break;
       case proto::HASHED_HOST:
         // The server should not send hints with hashed host key.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case proto::REPRESENTATION_UNSPECIFIED:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -401,12 +398,10 @@ void HintCache::SetClockForTesting(const base::Clock* clock) {
 
 void HintCache::AddHintForTesting(const GURL& url,
                                   std::unique_ptr<proto::Hint> hint) {
-  if (IsValidURLForURLKeyedHint(url)) {
     url_keyed_hint_cache_.Put(
         GetURLKeyedHintCacheKey(url),
         std::make_unique<MemoryHint>(base::Time::Now() + base::Days(7),
                                      std::move(hint)));
-  }
 }
 
 bool HintCache::IsHintStoreAvailable() const {

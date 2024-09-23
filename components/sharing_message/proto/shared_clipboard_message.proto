@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sharing_message.proto";
+
+package components_sharing_message;
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Message to pass clipboard text to shared clipboard feature.
+message SharedClipboardMessage {
+  // required
+  string text = 1;
+}

@@ -60,19 +60,6 @@ void UMABrowsingActivityObserver::OnNavigationEntryCommitted(
   // the non-SRP navigations as well so there is a control.
   base::RecordAction(base::UserMetricsAction("NavEntryCommitted"));
 
-  // If the user is allowed to do searches in this profile (e.g., it's a
-  // regular profile, not something like a "system" profile), then record if
-  // this navigation appeared to go the default search engine.
-  auto* turl_service = TemplateURLServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  if (turl_service) {
-    CHECK(load_details.entry);
-    if (turl_service->IsSearchResultsPageFromDefaultSearchProvider(
-            load_details.entry->GetURL())) {
-      base::RecordAction(base::UserMetricsAction("NavEntryCommitted.SRP"));
-    }
-  }
-
   if (!load_details.is_navigation_to_different_page()) {
     // Don't log for subframes or other trivial types.
     return;

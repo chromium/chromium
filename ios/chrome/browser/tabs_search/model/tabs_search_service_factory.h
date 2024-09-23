@@ -5,21 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class TabsSearchService;
 
 // Singleton that owns all TabsSearchServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class TabsSearchServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   TabsSearchServiceFactory(const TabsSearchServiceFactory&) = delete;
   TabsSearchServiceFactory& operator=(const TabsSearchServiceFactory&) = delete;
 
-  static TabsSearchService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static TabsSearchService* GetForBrowserState(ProfileIOS* profile);
+
+  static TabsSearchService* GetForProfile(ProfileIOS* profile);
   static TabsSearchServiceFactory* GetInstance();
 
  private:

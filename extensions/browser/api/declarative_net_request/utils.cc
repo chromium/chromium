@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/url_pattern_index/url_pattern_index.h"
+#include "components/version_info/channel.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
@@ -33,6 +34,7 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -48,7 +50,7 @@ namespace flat_rule = url_pattern_index::flat;
 // url_pattern_index.fbs. Whenever an extension with an indexed ruleset format
 // version different from the one currently used by Chrome is loaded, the
 // extension ruleset will be reindexed.
-constexpr int kIndexedRulesetFormatVersion = 31;
+constexpr int kIndexedRulesetFormatVersion = 34;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
@@ -92,8 +94,9 @@ std::string GetVersionHeader() {
 // base::JoinString.
 std::string JoinString(base::span<const char* const> parts) {
   std::vector<std::string_view> parts_piece;
-  for (const char* part : parts)
+  for (const char* part : parts) {
     parts_piece.push_back(part);
+  }
   return base::JoinString(parts_piece, ", ");
 }
 
@@ -127,8 +130,9 @@ bool StripVersionHeaderAndParseVersion(std::string* ruleset_data) {
 }
 
 int GetChecksum(base::span<const uint8_t> data) {
-  if (g_override_checksum_for_test != kInvalidOverrideChecksumForTest)
+  if (g_override_checksum_for_test != kInvalidOverrideChecksumForTest) {
     return g_override_checksum_for_test;
+  }
 
   uint32_t hash = base::PersistentHash(data);
 
@@ -151,8 +155,9 @@ std::string GetIndexedRulesetData(base::span<const uint8_t> data) {
 bool PersistIndexedRuleset(const base::FilePath& path,
                            base::span<const uint8_t> data) {
   // Create the directory corresponding to |path| if it does not exist.
-  if (!base::CreateDirectory(path.DirName()))
+  if (!base::CreateDirectory(path.DirName())) {
     return false;
+  }
 
   // Unlike for dynamic rules, we don't use `ImportantFileWriter` here since it
   // can be quite slow (and this will be called for the extension's indexed
@@ -161,23 +166,18 @@ bool PersistIndexedRuleset(const base::FilePath& path,
   // and keep them in sync.
   base::File ruleset_file(
       path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  if (!ruleset_file.IsValid())
+  if (!ruleset_file.IsValid()) {
     return false;
+  }
 
   // Write the version header.
-  std::string version_header = GetVersionHeader();
-  int version_header_size = static_cast<int>(version_header.size());
-  if (ruleset_file.WriteAtCurrentPos(
-          version_header.data(), version_header_size) != version_header_size) {
+  if (!ruleset_file.WriteAtCurrentPosAndCheck(
+          base::as_byte_span(GetVersionHeader()))) {
     return false;
   }
 
   // Write the flatbuffer ruleset.
-  if (!base::IsValueInRangeForNumericType<int>(data.size()))
-    return false;
-  int data_size = static_cast<int>(data.size());
-  if (ruleset_file.WriteAtCurrentPos(reinterpret_cast<const char*>(data.data()),
-                                     data_size) != data_size) {
+  if (!ruleset_file.WriteAtCurrentPosAndCheck(data)) {
     return false;
   }
 
@@ -228,7 +228,7 @@ dnr_api::ResourceType GetDNRResourceType(WebRequestResourceType resource_type) {
     case WebRequestResourceType::WEBBUNDLE:
       return dnr_api::ResourceType::kWebbundle;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return dnr_api::ResourceType::kOther;
 }
 
@@ -267,10 +267,10 @@ WebRequestResourceType GetWebRequestResourceType(
     case dnr_api::ResourceType::kWebbundle:
       return WebRequestResourceType::WEBBUNDLE;
     case dnr_api::ResourceType::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return WebRequestResourceType::OTHER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebRequestResourceType::OTHER;
 }
 
@@ -339,16 +339,18 @@ flat::ActionType ConvertToFlatActionType(dnr_api::RuleActionType action_type) {
     case dnr_api::RuleActionType::kNone:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return flat::ActionType_block;
 }
 
 std::string GetPublicRulesetID(const Extension& extension,
                                RulesetID ruleset_id) {
-  if (ruleset_id == kDynamicRulesetID)
+  if (ruleset_id == kDynamicRulesetID) {
     return dnr_api::DYNAMIC_RULESET_ID;
-  if (ruleset_id == kSessionRulesetID)
+  }
+  if (ruleset_id == kSessionRulesetID) {
     return dnr_api::SESSION_RULESET_ID;
+  }
 
   DCHECK_GE(ruleset_id, kMinValidStaticRulesetID);
   return DNRManifestData::GetRuleset(extension, ruleset_id).manifest_id;
@@ -473,19 +475,29 @@ ScopedRuleLimitOverride CreateScopedDisabledStaticRuleLimitOverrideForTesting(
 }
 
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {
-  if (!composite_matcher)
+  if (!composite_matcher) {
     return 0;
+  }
 
   size_t enabled_static_rule_count = 0;
   for (const std::unique_ptr<RulesetMatcher>& matcher :
        composite_matcher->matchers()) {
-    if (matcher->id() == kDynamicRulesetID)
+    if (matcher->id() == kDynamicRulesetID) {
       continue;
+    }
 
     enabled_static_rule_count += matcher->GetRulesCount();
   }
 
   return enabled_static_rule_count;
+}
+
+bool HasAnyDNRPermission(const Extension& extension) {
+  const PermissionsData* permissions = extension.permissions_data();
+  return permissions->HasAPIPermission(
+             mojom::APIPermissionID::kDeclarativeNetRequest) ||
+         permissions->HasAPIPermission(
+             mojom::APIPermissionID::kDeclarativeNetRequestWithHostAccess);
 }
 
 bool HasDNRFeedbackPermission(const Extension* extension,
@@ -499,7 +511,7 @@ bool HasDNRFeedbackPermission(const Extension* extension,
                    mojom::APIPermissionID::kDeclarativeNetRequestFeedback);
 }
 
-// TODO(crbug.com/1370166): Add a parameter that allows more specific strings
+// TODO(crbug.com/40869593): Add a parameter that allows more specific strings
 // for error messages that can pinpoint the error within a single rule.
 std::string GetParseError(ParseResult error_reason, int rule_id) {
   switch (error_reason) {
@@ -708,7 +720,7 @@ std::string GetParseError(ParseResult error_reason, int rule_id) {
           kErrorResponseHeaderRuleCannotModifyRequestHeaders,
           base::NumberToString(rule_id));
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -745,7 +757,7 @@ flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
     case WebRequestResourceType::WEB_TRANSPORT:
       return flat_rule::ElementType_WEBTRANSPORT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return flat_rule::ElementType_OTHER;
 }
 
@@ -784,7 +796,7 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
     case dnr_api::ResourceType::kOther:
       return flat_rule::ElementType_OTHER;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return flat_rule::ElementType_NONE;
 }
 
@@ -794,8 +806,9 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
 // request method.
 flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
                                           const std::string& method) {
-  if (!http_or_https)
+  if (!http_or_https) {
     return flat_rule::RequestMethod_NON_HTTP;
+  }
 
   using net::HttpRequestHeaders;
   static const base::NoDestructor<
@@ -828,7 +841,7 @@ flat_rule::RequestMethod GetRequestMethod(
     dnr_api::RequestMethod request_method) {
   switch (request_method) {
     case dnr_api::RequestMethod::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return flat_rule::RequestMethod_NONE;
     case dnr_api::RequestMethod::kConnect:
       return flat_rule::RequestMethod_CONNECT;
@@ -849,15 +862,16 @@ flat_rule::RequestMethod GetRequestMethod(
     case dnr_api::RequestMethod::kPut:
       return flat_rule::RequestMethod_PUT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return flat_rule::RequestMethod_NONE;
 }
 
 flat_rule::RequestMethod GetRequestMethod(
     bool http_or_https,
     dnr_api::RequestMethod request_method) {
-  if (!http_or_https)
+  if (!http_or_https) {
     return flat_rule::RequestMethod_NON_HTTP;
+  }
 
   return GetRequestMethod(request_method);
 }
@@ -880,6 +894,19 @@ bool IsRuleSafe(const flat::UrlRuleMetadata& url_rule_metadata) {
          action_type == flat::ActionType_allow ||
          action_type == flat::ActionType_allow_all_requests ||
          action_type == flat::ActionType_upgrade_scheme;
+}
+
+bool IsResponseHeaderMatchingEnabled() {
+  // Response header matching is enabled if the feature flag is enabled.
+  // Note: This function still remains in case additional checks may need to be
+  // added back such as channel restrictions.
+  return base::FeatureList::IsEnabled(
+      extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
+}
+
+bool IsHeaderSubstitutionEnabled() {
+  return base::FeatureList::IsEnabled(
+      extensions_features::kDeclarativeNetRequestHeaderSubstitution);
 }
 
 }  // namespace extensions::declarative_net_request

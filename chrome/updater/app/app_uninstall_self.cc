@@ -41,7 +41,7 @@ class AppUninstallSelf : public App {
 
 int AppUninstallSelf::Initialize() {
   setup_lock_ =
-      ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
+      CreateScopedLock(kSetupMutex, updater_scope(), kWaitForSetupLock);
   return kErrorOk;
 }
 

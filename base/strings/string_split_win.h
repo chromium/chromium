@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 
 namespace base {

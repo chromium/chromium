@@ -39,6 +39,10 @@ class AudioDeviceSelectionTestBase : public testing::Test {
     return NewNode(false, type);
   }
 
+  AudioNode NewNodeWithName(bool is_input,
+                            const std::string& type,
+                            const std::string& name);
+
   void Plug(AudioNode node);
   void Unplug(const AudioNode& node);
   void Select(const AudioNode& node);
@@ -79,4 +83,4 @@ class AudioDeviceSelectionTestBase : public testing::Test {
 };
 }  // namespace ash
 
-#endif
+#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_SELECTION_TEST_BASE_H_

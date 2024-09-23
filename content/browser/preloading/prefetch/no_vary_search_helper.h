@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "net/http/http_no_vary_search_data.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "url/gurl.h"
 
@@ -53,7 +52,7 @@ template <>
 class PrefetchKeyTraits<PrefetchContainer::Key> {
  public:
   static const GURL& GetURL(const PrefetchContainer::Key& key) {
-    return key.prefetch_url();
+    return key.url();
   }
   static PrefetchContainer::Key KeyWithNewURL(
       const PrefetchContainer::Key& old_key,
@@ -98,11 +97,6 @@ void IterateCandidates(
         IterateCandidateResult::kFinish) {
       return;
     }
-  }
-
-  // Fall back to No-Vary-Search equivalence if enabled.
-  if (!base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch)) {
-    return;
   }
 
   GURL::Replacements replacements;
@@ -162,9 +156,7 @@ void IterateCandidates(
       continue;
     }
 
-    const auto match_type = (it->second->GetNoVarySearchData() &&
-                             it->second->GetNoVarySearchData()->AreEquivalent(
-                                 key_url, prefetch_container_url))
+    const auto match_type = it->second->IsNoVarySearchHeaderMatch(key_url)
                                 ? MatchType::kNoVarySearch
                                 : MatchType::kOther;
     if (callback.Run(it->second, match_type) ==
@@ -191,7 +183,7 @@ base::WeakPtr<PrefetchContainer> MatchUrl(
             switch (match_type) {
               case MatchType::kExact:
               case MatchType::kNoVarySearch:
-                // TODO(crbug.com/1449360): Revisit which PrefetchContainer to
+                // TODO(crbug.com/40064891): Revisit which PrefetchContainer to
                 // return when there are multiple candidates. Currently we
                 // return the first PrefetchContainer in URL lexicographic
                 // order.
@@ -239,6 +231,8 @@ std::optional<net::HttpNoVarySearchData> ProcessHead(
     const GURL& url,
     RenderFrameHost* rfh);
 
+// TODO(crbug.com/331591646): This is used in both prerender and prefetch,
+// consider moving in a common location.
 // Parse No-Vary-Search from mojom structure received from network service.
 net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
     const network::mojom::NoVarySearchPtr& no_vary_search_ptr);

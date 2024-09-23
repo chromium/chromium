@@ -335,7 +335,8 @@ ui::Cursor DesignerExample::GrabHandle::GetCursor(const ui::MouseEvent& event) {
   }
 }
 
-gfx::Size DesignerExample::GrabHandle::CalculatePreferredSize() const {
+gfx::Size DesignerExample::GrabHandle::CalculatePreferredSize(
+    const SizeBounds& /*available_size*/) const {
   return gfx::Size(kGrabHandleSize, kGrabHandleSize);
 }
 
@@ -437,7 +438,7 @@ bool DesignerExample::GrabHandle::IsRight(GrabHandlePosition position) {
   return (position & GrabHandlePosition::kRight);
 }
 
-BEGIN_METADATA(DesignerExample, GrabHandle, View)
+BEGIN_METADATA(DesignerExample, GrabHandle)
 END_METADATA
 
 DesignerExample::GrabHandles::GrabHandles() = default;
@@ -524,7 +525,7 @@ void DesignerExample::CreateExampleView(View* container) {
   designer_container_->SetFlexForView(designer_panel_, 75);
   class_registrations_ = GetClassRegistrations();
 
-  // TODO(crbug.com/1392538): Refactor such that the TableModel is not
+  // TODO(crbug.com/40247792): Refactor such that the TableModel is not
   // responsible for managing the lifetimes of views
   tracker_.SetView(inspector_);
 }
@@ -544,7 +545,7 @@ void DesignerExample::OnEvent(ui::Event* event) {
 void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
   ui::MouseEvent* mouse_event = event->AsMouseEvent();
   switch (mouse_event->type()) {
-    case ui::ET_MOUSE_PRESSED:
+    case ui::EventType::kMousePressed:
       if (mouse_event->IsOnlyLeftMouseButton()) {
         DCHECK(!dragging_);
         View* event_view = GetDesignerChild(static_cast<View*>(event->target()),
@@ -565,7 +566,7 @@ void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
         return;
       }
       break;
-    case ui::ET_MOUSE_DRAGGED:
+    case ui::EventType::kMouseDragged:
       if (dragging_) {
         if (grab_handles_.IsGrabHandle(dragging_))
           return;
@@ -581,7 +582,7 @@ void DesignerExample::HandleDesignerMouseEvent(ui::Event* event) {
         return;
       }
       break;
-    case ui::ET_MOUSE_RELEASED:
+    case ui::EventType::kMouseReleased:
       grab_handles_.SetAttachedView(selected_);
       if (dragging_) {
         bool dragging_handle = grab_handles_.IsGrabHandle(dragging_);

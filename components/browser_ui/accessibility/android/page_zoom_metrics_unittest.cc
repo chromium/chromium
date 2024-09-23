@@ -4,6 +4,8 @@
 
 #include "components/browser_ui/accessibility/android/page_zoom_metrics.h"
 
+#include <string_view>
+
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,7 +18,7 @@ TEST(PageZoomMetricsTest, PageZoomUkmExactValue) {
 
   PageZoomMetrics::LogZoomLevelUKMHelper(mock_source_id, 0.75, &test_recorder);
 
-  base::StringPiece expectedMetricName = "SliderZoomValue";
+  std::string_view expectedMetricName = "SliderZoomValue";
 
   auto entries = test_recorder.GetEntriesByName(
       ukm::builders::Accessibility_PageZoom::kEntryName);
@@ -30,7 +32,7 @@ TEST(PageZoomMetricsTest, PageZoomUkmBucket) {
 
   PageZoomMetrics::LogZoomLevelUKMHelper(mock_source_id, 0.78, &test_recorder);
 
-  base::StringPiece expectedMetricName = "SliderZoomValue";
+  std::string_view expectedMetricName = "SliderZoomValue";
 
   auto entries = test_recorder.GetEntriesByName(
       ukm::builders::Accessibility_PageZoom::kEntryName);

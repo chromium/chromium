@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -50,7 +51,7 @@ void CrostiniUninstallerView::Show(Profile* profile) {
 
 bool CrostiniUninstallerView::Accept() {
   state_ = State::UNINSTALLING;
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   message_label_->SetText(
       l10n_util::GetStringUTF16(IDS_CROSTINI_UNINSTALLER_UNINSTALLING_MESSAGE));
 
@@ -86,7 +87,7 @@ CrostiniUninstallerView::CrostiniUninstallerView(Profile* profile)
   SetShowCloseButton(false);
   SetTitle(IDS_CROSTINI_UNINSTALLER_TITLE);
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_CROSTINI_UNINSTALLER_UNINSTALL_BUTTON));
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH));
@@ -111,7 +112,7 @@ CrostiniUninstallerView::~CrostiniUninstallerView() {
 
 void CrostiniUninstallerView::HandleError(const std::u16string& error_message) {
   state_ = State::ERROR;
-  SetButtons(ui::DIALOG_BUTTON_CANCEL);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kCancel));
   message_label_->SetVisible(true);
   message_label_->SetText(error_message);
   progress_bar_->SetVisible(false);

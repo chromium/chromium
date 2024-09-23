@@ -9,6 +9,9 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "net/android/network_change_notifier_android.h"
+#include "net/base/features.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "net/net_jni_headers/NetworkActiveNotifier_jni.h"
 #include "net/net_jni_headers/NetworkChangeNotifier_jni.h"
 
@@ -36,7 +39,8 @@ NetworkChangeNotifier::ConnectionType ConvertConnectionType(
     case NetworkChangeNotifier::CONNECTION_BLUETOOTH:
       break;
     default:
-      NOTREACHED() << "Unknown connection type received: " << connection_type;
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown connection type received: " << connection_type;
       return NetworkChangeNotifier::CONNECTION_UNKNOWN;
   }
   return static_cast<NetworkChangeNotifier::ConnectionType>(connection_type);
@@ -52,7 +56,8 @@ NetworkChangeNotifier::ConnectionCost ConvertConnectionCost(
     case NetworkChangeNotifier::CONNECTION_COST_METERED:
       break;
     default:
-      NOTREACHED() << "Unknown connection cost received: " << connection_cost;
+      NOTREACHED_IN_MIGRATION()
+          << "Unknown connection cost received: " << connection_cost;
       return NetworkChangeNotifier::CONNECTION_COST_UNKNOWN;
   }
   return static_cast<NetworkChangeNotifier::ConnectionCost>(connection_cost);
@@ -100,9 +105,13 @@ NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
   SetCurrentConnectionCost(
       ConvertConnectionCost(Java_NetworkChangeNotifier_getCurrentConnectionCost(
           env, java_network_change_notifier_)));
+  auto connection_subtype = ConvertConnectionSubtype(
+      Java_NetworkChangeNotifier_getCurrentConnectionSubtype(
+          env, java_network_change_notifier_));
+  SetCurrentConnectionSubtype(connection_subtype);
   SetCurrentMaxBandwidth(
       NetworkChangeNotifierAndroid::GetMaxBandwidthMbpsForConnectionSubtype(
-          GetCurrentConnectionSubtype()));
+          connection_subtype));
   SetCurrentDefaultNetwork(Java_NetworkChangeNotifier_getCurrentDefaultNetId(
       env, java_network_change_notifier_));
   NetworkMap network_map;
@@ -141,6 +150,10 @@ NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionCost() {
 
 NetworkChangeNotifier::ConnectionSubtype
 NetworkChangeNotifierDelegateAndroid::GetCurrentConnectionSubtype() const {
+  if (base::FeatureList::IsEnabled(net::features::kStoreConnectionSubtype)) {
+    base::AutoLock auto_lock(connection_lock_);
+    return connection_subtype_;
+  }
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return ConvertConnectionSubtype(
       Java_NetworkChangeNotifier_getCurrentConnectionSubtype(
@@ -247,7 +260,7 @@ jint NetworkChangeNotifierDelegateAndroid::GetConnectionCost(JNIEnv*, jobject) {
   return GetCurrentConnectionCost();
 }
 
-void NetworkChangeNotifierDelegateAndroid::NotifyMaxBandwidthChanged(
+void NetworkChangeNotifierDelegateAndroid::NotifyConnectionSubtypeChanged(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint subtype) {
@@ -255,6 +268,7 @@ void NetworkChangeNotifierDelegateAndroid::NotifyMaxBandwidthChanged(
   double new_max_bandwidth =
       NetworkChangeNotifierAndroid::GetMaxBandwidthMbpsForConnectionSubtype(
           ConvertConnectionSubtype(subtype));
+  SetCurrentConnectionSubtype(ConvertConnectionSubtype(subtype));
   SetCurrentMaxBandwidth(new_max_bandwidth);
   const ConnectionType connection_type = GetCurrentConnectionType();
   base::AutoLock auto_lock(observer_lock_);
@@ -403,6 +417,12 @@ void NetworkChangeNotifierDelegateAndroid::SetCurrentConnectionType(
     ConnectionType new_connection_type) {
   base::AutoLock auto_lock(connection_lock_);
   connection_type_ = new_connection_type;
+}
+
+void NetworkChangeNotifierDelegateAndroid::SetCurrentConnectionSubtype(
+    ConnectionSubtype new_connection_subtype) {
+  base::AutoLock auto_lock(connection_lock_);
+  connection_subtype_ = new_connection_subtype;
 }
 
 void NetworkChangeNotifierDelegateAndroid::SetCurrentConnectionCost(

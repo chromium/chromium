@@ -7,11 +7,9 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "build/build_config.h"
-#include "device/base/features.h"
 #include "services/device/test/usb_test_gadget.h"
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_device_handle.h"
@@ -53,20 +51,6 @@ TEST_F(UsbServiceTest, GetDevices) {
     loop.Run();
   }
 }
-
-#if BUILDFLAG(IS_MAC)
-TEST_F(UsbServiceTest, GetDevicesNewBackend) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(device::kNewUsbBackend);
-
-  // The USB service is not available on all platforms.
-  if (usb_service_) {
-    base::RunLoop loop;
-    usb_service_->GetDevices(base::BindOnce(&OnGetDevices, loop.QuitClosure()));
-    loop.Run();
-  }
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(UsbServiceTest, ClaimGadget) {
   if (!UsbTestGadget::IsTestEnabled() || !usb_service_)

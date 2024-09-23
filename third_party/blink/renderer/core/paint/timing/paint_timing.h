@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -32,7 +33,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
                                       public Supplement<Document> {
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(const viz::FrameTimingDetails&)>;
   using RequestAnimationFrameTimesAfterBackForwardCacheRestore = std::array<
       base::TimeTicks,
       WebPerformanceMetricsForReporting::
@@ -77,11 +78,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       base::TimeTicks presentation_time,
       FirstMeaningfulPaintDetector::HadUserInput had_input);
   void NotifyPaint(bool is_first_paint, bool text_painted, bool image_painted);
-
-  // Notifies the PaintTiming that this Document received the onPortalActivate
-  // event.
-  void OnPortalActivate();
-  void SetPortalActivatedPaint(base::TimeTicks stamp);
 
   // The getters below return monotonically-increasing seconds, or zero if the
   // given paint event has not yet occurred. See the comments for
@@ -144,11 +140,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return first_meaningful_paint_presentation_;
   }
 
-  // The time that the first paint happened after a portal activation.
-  base::TimeTicks LastPortalActivatedPaint() const {
-    return last_portal_activated_presentation_;
-  }
-
   // FirstMeaningfulPaintCandidate indicates the first time we considered a
   // paint to qualify as the potentially first meaningful paint. Unlike
   // firstMeaningfulPaint, this signal is available in real time, but it may be
@@ -166,20 +157,16 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   }
 
   void RegisterNotifyPresentationTime(ReportTimeCallback);
-  void ReportPresentationTime(PaintEvent, base::TimeTicks timestamp);
+  void ReportPresentationTime(PaintEvent, const viz::FrameTimingDetails&);
+  void RecordFirstContentfulPaintTimingMetrics(const viz::FrameTimingDetails&);
   void ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
       wtf_size_t index,
-      base::TimeTicks timestamp);
+      const viz::FrameTimingDetails&);
 
   // The caller owns the |clock| which must outlive the PaintTiming.
   void SetTickClockForTesting(const base::TickClock* clock);
 
   void OnRestoredFromBackForwardCache();
-
-  // Indicates whether a mouseover event was recently dispatched over an
-  // HTMLImageElement LCP element.
-  bool IsLCPMouseoverDispatchedRecently() const;
-  void SetLCPMouseoverDispatched();
 
   void SoftNavigationDetected();
 
@@ -267,8 +254,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   bool soft_navigation_detected_ = false;
   bool soft_navigation_fp_reported_ = false;
   bool soft_navigation_fcp_reported_ = false;
-
-  base::TimeTicks last_portal_activated_presentation_;
 
   base::TimeTicks lcp_mouse_over_dispatch_time_;
 

@@ -2,28 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_input_event_router.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/viz/host/hit_test/hit_test_query.h"
+#include "components/input/render_widget_targeter.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/host_frame_sink_manager_test_api.h"
 #include "content/browser/compositor/surface_utils.h"
-#include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
+#include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
-#include "content/browser/renderer_host/render_widget_targeter.h"
 #include "content/browser/site_instance_group.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_image_transport_factory.h"
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -83,7 +85,8 @@ class StubHitTestQuery : public viz::HitTestQuery {
  public:
   StubHitTestQuery(RenderWidgetHostViewBase* hittest_result,
                    bool query_renderer)
-      : hittest_result_(hittest_result->GetWeakPtr()),
+      : HitTestQuery(std::nullopt),
+        hittest_result_(hittest_result->GetWeakPtr()),
         query_renderer_(query_renderer) {}
   ~StubHitTestQuery() override = default;
 
@@ -119,7 +122,7 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
 
   bool TransformPointToCoordSpaceForView(
       const gfx::PointF& point,
-      RenderWidgetHostViewBase* target_view,
+      input::RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point) override {
     return true;
   }
@@ -130,7 +133,7 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
   }
 
   void ProcessAckedTouchEvent(
-      const TouchEventWithLatencyInfo& touch,
+      const input::TouchEventWithLatencyInfo& touch,
       blink::mojom::InputEventResultState ack_result) override {
     unique_id_for_last_touch_ack_ = touch.event.unique_touch_event_id;
   }
@@ -144,7 +147,7 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
                         bool query_renderer) {
     DCHECK(GetHostFrameSinkManager());
 
-    viz::HostFrameSinkManager::DisplayHitTestQueryMap hit_test_map;
+    viz::DisplayHitTestQueryMap hit_test_map;
     hit_test_map[GetFrameSinkId()] =
         std::make_unique<StubHitTestQuery>(result_view, query_renderer);
 
@@ -194,13 +197,14 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
  protected:
   RenderWidgetHostInputEventRouterTest() = default;
 
-  RenderWidgetHostInputEventRouter* rwhier() {
-    return delegate_.GetInputEventRouter();
+  input::RenderWidgetHostInputEventRouter* rwhier() {
+    return delegate_->GetInputEventRouter();
   }
 
   // testing::Test:
   void SetUp() override {
     browser_context_ = std::make_unique<TestBrowserContext>();
+    delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
 
 // ImageTransportFactory doesn't exist on Android. This is needed to create
 // a RenderWidgetHostViewChildFrame in the test.
@@ -209,7 +213,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
         std::make_unique<TestImageTransportFactory>());
 #endif
 
-    delegate_.CreateInputEventRouter();
+    delegate_->CreateInputEventRouter();
 
     process_host_root_ =
         std::make_unique<MockRenderProcessHost>(browser_context_.get());
@@ -217,13 +221,12 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             browser_context_.get(), process_host_root_.get()));
     auto routing_id = process_host_root_->GetNextRoutingID();
-    widget_host_root_ = RenderWidgetHostImpl::Create(
-        /*frame_tree=*/nullptr, &delegate_,
+    widget_host_root_ = RenderWidgetHostFactory::Create(
+        /*frame_tree=*/nullptr, delegate_.get(),
         RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_root_,
                                                  routing_id),
         site_instance_group_root_->GetSafeRef(), routing_id,
-        /*hidden=*/false, /*renderer_initiated_creation=*/false,
-        std::make_unique<FrameTokenMessageQueue>());
+        /*hidden=*/false, /*renderer_initiated_creation=*/false);
     widget_host_root_->SetViewIsFrameSinkIdOwner(true);
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
@@ -252,7 +255,7 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     mojo::Remote<viz::mojom::InputTargetClient> input_target_client;
     input_target_client_root_ = std::make_unique<MockInputTargetClient>(
         input_target_client.BindNewPipeAndPassReceiver());
-    widget_host_root_->SetInputTargetClientForTesting(
+    widget_host_root_->GetRenderInputRouter()->SetInputTargetClientForTesting(
         std::move(input_target_client));
 
     EXPECT_EQ(view_root_.get(),
@@ -280,13 +283,12 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             site_instance_group_root_.get(), child.process_host.get()));
     auto routing_id = child.process_host->GetNextRoutingID();
-    child.widget_host = RenderWidgetHostImpl::Create(
-        /*frame_tree=*/nullptr, &delegate_,
+    child.widget_host = RenderWidgetHostFactory::Create(
+        /*frame_tree=*/nullptr, delegate_.get(),
         RenderWidgetHostImpl::DefaultFrameSinkId(*child.site_instance_group,
                                                  routing_id),
         child.site_instance_group->GetSafeRef(), routing_id,
-        /*hidden=*/false, /*renderer_initiated_creation=*/false,
-        std::make_unique<FrameTokenMessageQueue>());
+        /*hidden=*/false, /*renderer_initiated_creation=*/false);
     child.widget_host->SetViewIsFrameSinkIdOwner(true);
     child.view = std::make_unique<TestRenderWidgetHostViewChildFrame>(
         child.widget_host.get());
@@ -305,6 +307,8 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     process_host_root_->Cleanup();
     site_instance_group_root_.reset();
     process_host_root_.reset();
+    delegate_.reset();
+
     base::RunLoop().RunUntilIdle();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -312,14 +316,16 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
 #endif
   }
 
-  RenderWidgetHostViewBase* touch_target() { return rwhier()->touch_target_; }
-  RenderWidgetHostViewBase* touchscreen_gesture_target() {
+  input::RenderWidgetHostViewInput* touch_target() {
+    return rwhier()->touch_target_;
+  }
+  input::RenderWidgetHostViewInput* touchscreen_gesture_target() {
     return rwhier()->touchscreen_gesture_target_.get();
   }
-  RenderWidgetHostViewChildFrame* bubbling_gesture_scroll_origin() {
+  input::RenderWidgetHostViewInput* bubbling_gesture_scroll_origin() {
     return rwhier()->bubbling_gesture_scroll_origin_;
   }
-  RenderWidgetHostViewBase* bubbling_gesture_scroll_target() {
+  input::RenderWidgetHostViewInput* bubbling_gesture_scroll_target() {
     return rwhier()->bubbling_gesture_scroll_target_;
   }
 
@@ -328,11 +334,11 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
       RenderWidgetHostViewBase* gesture_target,
       bool should_cancel);
 
-  void FlushInkRenderer() { rwhier()->FlushForTest(); }
+  void FlushInkRenderer() { delegate_->FlushInkRenderer(); }
 
   BrowserTaskEnvironment task_environment_;
 
-  MockRenderWidgetHostDelegate delegate_;
+  std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
   std::unique_ptr<BrowserContext> browser_context_;
 
   std::unique_ptr<MockRenderProcessHost> process_host_root_;
@@ -363,8 +369,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
   touch_event.unique_touch_event_id = 1;
 
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(child.view.get(), touch_target());
 
   blink::WebGestureEvent gesture_event(
@@ -375,7 +380,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
 
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(child.view.get(), touchscreen_gesture_target());
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureTapDown,
             child.view->last_gesture_seen());
@@ -385,28 +390,26 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   touch_event.SetType(blink::WebInputEvent::Type::kTouchMove);
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStateMoved;
   touch_event.unique_touch_event_id += 1;
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
 
   gesture_event.SetType(blink::WebInputEvent::Type::kGestureTapCancel);
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
 
   gesture_event.SetType(blink::WebInputEvent::Type::kGestureScrollBegin);
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
 
   gesture_event.SetType(blink::WebInputEvent::Type::kGestureScrollUpdate);
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
 
   touch_event.unique_touch_event_id += 1;
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
 
   // The continuation of the touch moves should maintain their current target of
   // |child.view|, even if they move outside of that view, and into
@@ -418,11 +421,10 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   child.view->Reset();
 
   touch_event.unique_touch_event_id += 1;
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
 
   EXPECT_EQ(child.view.get(), touch_target());
   EXPECT_EQ(child.view.get(), touchscreen_gesture_target());
@@ -434,13 +436,12 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   touch_event.SetType(blink::WebInputEvent::Type::kTouchEnd);
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
   touch_event.unique_touch_event_id += 1;
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
 
   gesture_event.SetType(blink::WebInputEvent::Type::kGestureScrollEnd);
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
 
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollEnd,
             child.view->last_gesture_seen());
@@ -475,7 +476,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   touch_start_event.unique_touch_event_id = 1;
 
   rwhier()->RouteTouchEvent(view_root_.get(), &touch_start_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                            ui::LatencyInfo());
 
   blink::WebTouchEvent touch_end_event(
       blink::WebInputEvent::Type::kTouchEnd, blink::WebInputEvent::kNoModifiers,
@@ -486,14 +487,14 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   touch_end_event.unique_touch_event_id = 2;
 
   rwhier()->RouteTouchEvent(view_root_.get(), &touch_end_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                            ui::LatencyInfo());
 
   // Make sure both touch events were added to the TEAQ.
   EXPECT_EQ(2u, rwhier()->TouchEventAckQueueLengthForTesting());
 
   // Now, tell the router that the child view was destroyed, and verify the
   // acks.
-  rwhier()->OnRenderWidgetHostViewBaseDestroyed(child.view.get());
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
   EXPECT_EQ(view_root_->last_id_for_touch_ack(), 2lu);
   EXPECT_EQ(0u, rwhier()->TouchEventAckQueueLengthForTesting());
 }
@@ -513,7 +514,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest, EnsureDroppedTouchEventsAreAcked) {
   touch_move_event.unique_touch_event_id = 1;
 
   rwhier()->RouteTouchEvent(view_root_.get(), &touch_move_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                            ui::LatencyInfo());
   EXPECT_EQ(view_root_->last_id_for_touch_ack(), 1lu);
 
   // Send a touch cancel without a touch start.
@@ -527,7 +528,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest, EnsureDroppedTouchEventsAreAcked) {
   touch_cancel_event.unique_touch_event_id = 2;
 
   rwhier()->RouteTouchEvent(view_root_.get(), &touch_cancel_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                            ui::LatencyInfo());
   EXPECT_EQ(view_root_->last_id_for_touch_ack(), 2lu);
 }
 
@@ -536,7 +537,8 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotCoalesceTouchEvents) {
   // circuited.
   ChildViewState child = MakeChildView(view_root_.get());
 
-  RenderWidgetTargeter* targeter = rwhier()->GetRenderWidgetTargeterForTests();
+  input::RenderWidgetTargeter* targeter =
+      rwhier()->GetRenderWidgetTargeterForTests();
   view_root_->SetHittestResult(view_root_.get(), true);
 
   // Send TouchStart, TouchMove, TouchMove, TouchMove, TouchEnd and make sure
@@ -551,30 +553,26 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotCoalesceTouchEvents) {
 
   EXPECT_EQ(0u, targeter->num_requests_in_queue_for_testing());
   EXPECT_FALSE(targeter->is_request_in_flight_for_testing());
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(0u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
   touch_event.SetType(blink::WebInputEvent::Type::kTouchMove);
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStateMoved;
   touch_event.unique_touch_event_id += 1;
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(1u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
   touch_event.unique_touch_event_id += 1;
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(2u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
   touch_event.SetType(blink::WebInputEvent::Type::kTouchEnd);
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
   touch_event.unique_touch_event_id += 1;
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
 
   EXPECT_EQ(3u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
@@ -585,7 +583,8 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotCoalesceGestureEvents) {
   // circuited.
   ChildViewState child = MakeChildView(view_root_.get());
 
-  RenderWidgetTargeter* targeter = rwhier()->GetRenderWidgetTargeterForTests();
+  input::RenderWidgetTargeter* targeter =
+      rwhier()->GetRenderWidgetTargeterForTests();
   view_root_->SetHittestResult(view_root_.get(), true);
 
   // Send TouchStart, GestureTapDown, TouchEnd, GestureScrollBegin,
@@ -601,8 +600,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotCoalesceGestureEvents) {
 
   EXPECT_EQ(0u, targeter->num_requests_in_queue_for_testing());
   EXPECT_FALSE(targeter->is_request_in_flight_for_testing());
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(0u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
@@ -613,39 +611,38 @@ TEST_F(RenderWidgetHostInputEventRouterTest, DoNotCoalesceGestureEvents) {
       blink::WebGestureDevice::kTouchscreen);
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(1u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
   touch_event.SetType(blink::WebInputEvent::Type::kTouchEnd);
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
   touch_event.unique_touch_event_id += 1;
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(2u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
   gesture_event.SetType(blink::WebInputEvent::Type::kGestureScrollBegin);
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(3u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
   gesture_event.SetType(blink::WebInputEvent::Type::kGestureScrollUpdate);
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(4u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
   gesture_event.SetType(blink::WebInputEvent::Type::kGestureScrollUpdate);
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(5u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 
   gesture_event.SetType(blink::WebInputEvent::Type::kGestureScrollEnd);
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(6u, targeter->num_requests_in_queue_for_testing());
   EXPECT_TRUE(targeter->is_request_in_flight_for_testing());
 }
@@ -729,6 +726,74 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
             view_root_->last_gesture_seen());
 }
 
+// Ensure filtered scroll events while a scroll bubble is in progress don't
+// affect the scroll bubbling state.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       FilteredGestureDoesntInterruptBubbling) {
+  gfx::Vector2dF delta(0.f, 10.f);
+  blink::WebGestureEvent scroll_begin =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
+          delta.x(), delta.y(), blink::WebGestureDevice::kTouchscreen);
+  blink::WebGestureEvent scroll_end =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollEnd(
+          blink::WebGestureDevice::kTouchscreen);
+
+  ChildViewState child = MakeChildView(view_root_.get());
+
+  // Start a scroll that gets bubbled up from the child view.
+  {
+    ASSERT_FALSE(child.view.get()->is_scroll_sequence_bubbling_);
+
+    child.view->GestureEventAck(
+        scroll_begin, blink::mojom::InputEventResultSource::kCompositorThread,
+        blink::mojom::InputEventResultState::kNotConsumed);
+
+    EXPECT_EQ(child.view.get(), bubbling_gesture_scroll_origin());
+    EXPECT_EQ(view_root_.get(), bubbling_gesture_scroll_target());
+    ASSERT_TRUE(child.view->is_scroll_sequence_bubbling_);
+  }
+
+  // Simulate a debounce filtered GSE/GSB pair which looks like an ACK consumed
+  // by the browser.
+  {
+    child.view->GestureEventAck(scroll_end,
+                                blink::mojom::InputEventResultSource::kBrowser,
+                                blink::mojom::InputEventResultState::kConsumed);
+    child.view->GestureEventAck(scroll_begin,
+                                blink::mojom::InputEventResultSource::kBrowser,
+                                blink::mojom::InputEventResultState::kConsumed);
+
+    EXPECT_EQ(child.view.get(), bubbling_gesture_scroll_origin());
+    EXPECT_EQ(view_root_.get(), bubbling_gesture_scroll_target());
+    EXPECT_TRUE(child.view->is_scroll_sequence_bubbling_);
+  }
+
+  // An unfiltered GSE should now clear state.
+  {
+    // Note: scroll end is always sent non-blocking which means the ACK comes
+    // from the browser.
+    child.view->GestureEventAck(scroll_end,
+                                blink::mojom::InputEventResultSource::kBrowser,
+                                blink::mojom::InputEventResultState::kIgnored);
+    EXPECT_FALSE(child.view->is_scroll_sequence_bubbling_);
+    EXPECT_EQ(bubbling_gesture_scroll_origin(), nullptr);
+    EXPECT_EQ(bubbling_gesture_scroll_target(), nullptr);
+  }
+
+  // A new scroll should once again establish bubbling.
+  {
+    ASSERT_FALSE(child.view.get()->is_scroll_sequence_bubbling_);
+
+    child.view->GestureEventAck(
+        scroll_begin, blink::mojom::InputEventResultSource::kCompositorThread,
+        blink::mojom::InputEventResultState::kNotConsumed);
+
+    EXPECT_EQ(child.view.get(), bubbling_gesture_scroll_origin());
+    EXPECT_EQ(view_root_.get(), bubbling_gesture_scroll_target());
+    ASSERT_TRUE(child.view->is_scroll_sequence_bubbling_);
+  }
+}
+
 void RenderWidgetHostInputEventRouterTest::TestSendNewGestureWhileBubbling(
     TestRenderWidgetHostViewChildFrame* bubbling_origin,
     RenderWidgetHostViewBase* gesture_target,
@@ -739,7 +804,7 @@ void RenderWidgetHostInputEventRouterTest::TestSendNewGestureWhileBubbling(
           delta.x(), delta.y(), blink::WebGestureDevice::kTouchscreen);
 
   TestRenderWidgetHostViewChildFrame* cur_target = bubbling_origin;
-  RenderWidgetHostViewBase* parent = bubbling_origin->GetParentView();
+  RenderWidgetHostViewBase* parent = bubbling_origin->GetParentViewInput();
   while (parent) {
     ASSERT_TRUE(rwhier()->BubbleScrollEvent(parent, cur_target, scroll_begin));
     EXPECT_EQ(bubbling_origin, bubbling_gesture_scroll_origin());
@@ -755,7 +820,7 @@ void RenderWidgetHostInputEventRouterTest::TestSendNewGestureWhileBubbling(
       EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
                 next_child->last_gesture_seen());
       cur_target = next_child;
-      parent = next_child->GetParentView();
+      parent = next_child->GetParentViewInput();
     } else {
       MockRootRenderWidgetHostView* root =
           static_cast<MockRootRenderWidgetHostView*>(parent);
@@ -777,8 +842,7 @@ void RenderWidgetHostInputEventRouterTest::TestSendNewGestureWhileBubbling(
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
   touch_event.unique_touch_event_id = 123;
 
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(gesture_target, touch_target());
 
   blink::WebGestureEvent gesture_event(
@@ -789,7 +853,7 @@ void RenderWidgetHostInputEventRouterTest::TestSendNewGestureWhileBubbling(
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
 
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(gesture_target, touchscreen_gesture_target());
 
   if (should_cancel) {
@@ -889,8 +953,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
   touch_event.unique_touch_event_id = 123;
 
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(view_root_.get(), touch_target());
 
   blink::WebGestureEvent gesture_event(
@@ -901,7 +964,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
 
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(view_root_.get(), touchscreen_gesture_target());
 
   // Now that we have a gesture in |view_root_|, suppose that there was a
@@ -936,8 +999,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
   touch_event.unique_touch_event_id = 123;
 
-  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                            ui::LatencyInfo(ui::SourceEventType::TOUCH));
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
   EXPECT_EQ(view_root_.get(), touch_target());
 
   blink::WebGestureEvent gesture_event(
@@ -948,7 +1010,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   gesture_event.unique_touch_event_id = touch_event.unique_touch_event_id;
 
   rwhier()->RouteGestureEvent(view_root_.get(), &gesture_event,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                              ui::LatencyInfo());
   EXPECT_EQ(view_root_.get(), touchscreen_gesture_target());
 
   // Now that we have a gesture in |view_root_|, suppose that there was a
@@ -969,6 +1031,63 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   EXPECT_FALSE(rwhier()->BubbleScrollEvent(view_root_.get(), outer.view.get(),
                                            scroll_begin));
   EXPECT_NE(view_root_.get(), bubbling_gesture_scroll_target());
+}
+
+// Ensure that when the RenderWidgetHostChildFrameView handling mouse events is
+// rooted by GuestView which is not connected to WebContents, we return early
+// and when it's connected, we do update mouse move related states in RWHIER.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       DoNotSendMouseLeaveEventsForDisconnectedGuestView) {
+  ChildViewState child = MakeChildView(view_root_.get());
+
+  // We start the touch in the area for |child.view|.
+  view_root_->SetHittestResult(child.view.get(), false);
+
+  blink::WebTouchEvent touch_event(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 1;
+
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
+  EXPECT_EQ(child.view.get(), touch_target());
+
+  // Need to send a new mouse event after ending the previous touch.
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseLeave,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.SetPositionInWidget(gfx::PointF(20, 21));
+
+  {  // Simulates GuestView not yet attached to WebContents.
+    ChildViewState guest_view = MakeChildView(nullptr);
+    ChildViewState child1 = MakeChildView(guest_view.view.get());
+    ChildViewState child2 = MakeChildView(child1.view.get());
+
+    // We start the input event in the area for |child1.view|.
+    view_root_->SetHittestResult(child1.view.get(), false);
+
+    rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event,
+                              ui::LatencyInfo());
+
+    DCHECK_EQ(rwhier()->GetLastMouseMoveTargetForTest(), nullptr);
+    DCHECK_EQ(rwhier()->GetLastMouseMoveRootViewForTest(), nullptr);
+  }
+  {  // Simulates GuestView attached to WebContents.
+    ChildViewState guest_view = MakeChildView(view_root_.get());
+    ChildViewState child1 = MakeChildView(guest_view.view.get());
+    ChildViewState child2 = MakeChildView(child1.view.get());
+
+    // We start the input event in the area for |child2.view|.
+    view_root_->SetHittestResult(child1.view.get(), false);
+    rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event,
+                              ui::LatencyInfo());
+
+    DCHECK_EQ(rwhier()->GetLastMouseMoveTargetForTest(), child1.view.get());
+    DCHECK_EQ(rwhier()->GetLastMouseMoveRootViewForTest(), view_root_.get());
+  }
 }
 
 // Calling ShowContextMenuAtPoint without other events will happen when desktop
@@ -994,13 +1113,13 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   mouse_event.button = blink::WebPointerProperties::Button::kMiddle;
 
   view_root_->SetHittestResult(child.view.get(), false);
-  RenderWidgetTargeter* targeter = rwhier()->GetRenderWidgetTargeterForTests();
-  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event,
-                            ui::LatencyInfo(ui::SourceEventType::MOUSE));
+  input::RenderWidgetTargeter* targeter =
+      rwhier()->GetRenderWidgetTargeterForTests();
+  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event, ui::LatencyInfo());
   // Set middle click autoscroll in progress to true.
   rwhier()->SetAutoScrollInProgress(true);
   // Destroy the view/target, middle click autoscroll is latched to.
-  rwhier()->OnRenderWidgetHostViewBaseDestroyed(child.view.get());
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
 
   EXPECT_FALSE(targeter->is_auto_scroll_in_progress());
 }
@@ -1030,8 +1149,7 @@ TEST_F(RenderWidgetHostInputEventRouterTest, QueryResultAfterChildViewDead) {
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   mouse_event.button = blink::WebPointerProperties::Button::kLeft;
-  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event,
-                            ui::LatencyInfo(ui::SourceEventType::MOUSE));
+  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event, ui::LatencyInfo());
 
   // Wait for the callback.
   base::RunLoop().RunUntilIdle();
@@ -1166,8 +1284,8 @@ class DelegatedInkPointTest
     DCHECK(!(use_enter_event && use_exit_event));
 
     // Hovering creates and sends ui::MouseEvents with
-    // ET_MOUSE_{MOVED,ENTERED,EXITED} types, so do the same here in hovering
-    // scenarios.
+    // EventType::kMouse{Moved,Entered,Exited} types, so do the same here in
+    // hovering scenarios.
     if (GetEventParam() == TestEvent::kTouchEvent &&
         !Hovering(match_test_hovering_state)) {
       blink::WebInputEvent::Type event_type =
@@ -1199,7 +1317,7 @@ class DelegatedInkPointTest
       touch_event.unique_touch_event_id = GetTouchId();
 
       rwhier()->RouteTouchEvent(view_root_.get(), &touch_event,
-                                ui::LatencyInfo(ui::SourceEventType::TOUCH));
+                                ui::LatencyInfo());
 
       // Need to send a new press event after ending the previous touch.
       if (use_exit_event) {
@@ -1225,7 +1343,7 @@ class DelegatedInkPointTest
       mouse_event.SetPositionInWidget(point);
 
       rwhier()->RouteMouseEvent(view_root_.get(), &mouse_event,
-                                ui::LatencyInfo(ui::SourceEventType::MOUSE));
+                                ui::LatencyInfo());
     }
   }
 
@@ -1267,8 +1385,7 @@ class DelegatedInkPointTest
     press.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
     press.unique_touch_event_id = GetTouchId();
 
-    rwhier()->RouteTouchEvent(view_root_.get(), &press,
-                              ui::LatencyInfo(ui::SourceEventType::TOUCH));
+    rwhier()->RouteTouchEvent(view_root_.get(), &press, ui::LatencyInfo());
     sent_touch_press_ = true;
   }
 
@@ -1516,12 +1633,7 @@ TEST_P(DelegatedInkPointTest, IgnoreEnterAndExitEvents) {
 
 // This test confirms that points can be forwarded when using delegated ink in
 // a child frame, such as an OOPIF.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ForwardPointsToChildFrame DISABLED_ForwardPointsToChildFrame
-#else
-#define MAYBE_ForwardPointsToChildFrame ForwardPointsToChildFrame
-#endif
-TEST_P(DelegatedInkPointTest, MAYBE_ForwardPointsToChildFrame) {
+TEST_P(DelegatedInkPointTest, ForwardPointsToChildFrame) {
   // Make the child frame, set the delegated ink flag on it, give it a
   // compositor, and set it as the hit test result so that the input router
   // sends points to it.
@@ -1551,7 +1663,7 @@ TEST_P(DelegatedInkPointTest, MAYBE_ForwardPointsToChildFrame) {
 
   // Reset's the hit test result on the root so that we don't crash on
   // destruction.
-  rwhier()->OnRenderWidgetHostViewBaseDestroyed(child.view.get());
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
   view_root_->GetCursorManager()->ViewBeingDestroyed(child.view.get());
 }
 

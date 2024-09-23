@@ -13,11 +13,11 @@ namespace autofill {
 
 class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
  public:
-  AutofillPopupControllerImplMac(base::WeakPtr<AutofillPopupDelegate> delegate,
-                                 content::WebContents* web_contents,
-                                 gfx::NativeView container_view,
-                                 const gfx::RectF& element_bounds,
-                                 base::i18n::TextDirection text_direction);
+  AutofillPopupControllerImplMac(
+      base::WeakPtr<AutofillSuggestionDelegate> delegate,
+      content::WebContents* web_contents,
+      PopupControllerCommon controller_common,
+      int32_t form_control_ax_id);
 
   AutofillPopupControllerImplMac(const AutofillPopupControllerImplMac&) =
       delete;
@@ -28,8 +28,9 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
 
   // Shows the popup, or updates the existing popup with the given values.
   // If the popup contains credit card items, find and set
-  // |touchBarController_| and show the credit card autofill touch bar.
-  void Show(std::vector<autofill::Suggestion> suggestions,
+  // `touchBarController_` and show the credit card autofill touch bar.
+  void Show(UiSessionId ui_session_id,
+            std::vector<autofill::Suggestion> suggestions,
             AutofillSuggestionTriggerSource trigger_source,
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
 

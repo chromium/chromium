@@ -11,10 +11,14 @@ import os
 
 
 def GetBinaryPath():
-  darwin_name = ('node-darwin-arm64' if platform.machine() == 'arm64' else
-                 'node-darwin-x64')
+  if platform.machine() == 'arm64':
+    darwin_path = 'mac_arm64'
+    darwin_name = 'node-darwin-arm64'
+  else:
+    darwin_path = 'mac'
+    darwin_name = 'node-darwin-x64'
   return os_path.join(os_path.dirname(__file__), *{
-    'Darwin': ('mac', darwin_name, 'bin', 'node'),
+    'Darwin': (darwin_path, darwin_name, 'bin', 'node'),
     'Linux': ('linux', 'node-linux-x64', 'bin', 'node'),
     'Windows': ('win', 'node.exe'),
   }[platform.system()])

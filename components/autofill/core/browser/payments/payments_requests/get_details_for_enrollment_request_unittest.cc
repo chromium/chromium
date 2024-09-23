@@ -73,7 +73,7 @@ TEST_P(GetDetailsForEnrollmentRequestTest, GetRequestContent) {
       channel_type = "CHROME_DOWNSTREAM";
       break;
     case VirtualCardEnrollmentSource::kNone:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       ASSERT_TRUE(false);
       break;
   }

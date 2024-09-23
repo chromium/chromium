@@ -12,6 +12,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Binder;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
@@ -21,6 +22,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
@@ -39,13 +41,12 @@ public class ExternalAuthUtils {
     private static final String TAG = "ExternalAuthUtils";
     private static ExternalAuthUtils sInstance = new ExternalAuthUtils();
 
-    private final ExternalAuthGoogleDelegate mGoogleDelegate;
+    private final @Nullable ExternalAuthGoogleDelegate mGoogleDelegate =
+            ServiceLoaderUtil.maybeCreate(ExternalAuthGoogleDelegate.class);
 
-    public ExternalAuthUtils() {
-        mGoogleDelegate = new ExternalAuthGoogleDelegateImpl();
-    }
-
-    /** @return The singleton instance of ExternalAuthUtils. */
+    /**
+     * @return The singleton instance of ExternalAuthUtils.
+     */
     public static ExternalAuthUtils getInstance() {
         return sInstance;
     }
@@ -62,11 +63,12 @@ public class ExternalAuthUtils {
 
     /**
      * Returns whether the caller application is a part of the system build.
+     *
      * @param pm Package manager to use for getting package related info.
      * @param packageName The package name to inquire about.
      */
     @VisibleForTesting
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("WrongConstant")
     public boolean isSystemBuild(PackageManager pm, String packageName) {
         try {
@@ -94,14 +96,16 @@ public class ExternalAuthUtils {
 
     /**
      * Returns whether the call is originating from a Google-signed package.
+     *
      * @param packageName The package name to inquire about.
      */
     public boolean isGoogleSigned(String packageName) {
-        return mGoogleDelegate.isGoogleSigned(packageName);
+        return mGoogleDelegate == null ? false : mGoogleDelegate.isGoogleSigned(packageName);
     }
 
     /**
      * Returns whether the package can bypass TWA verification.
+     *
      * @param packageName The package name to inquire about.
      * @param origin The origin of the TWA.
      */
@@ -243,20 +247,17 @@ public class ExternalAuthUtils {
         return canUseFirstPartyGooglePlayServices(new UserRecoverableErrorHandler.Silent());
     }
 
-    /** @return this object's {@link ExternalAuthGoogleDelegate} instance. */
-    public ExternalAuthGoogleDelegate getGoogleDelegateForTesting() {
-        return mGoogleDelegate;
-    }
-
     /**
-     * Invokes whatever external code is necessary to check if Google Play Services is available
-     * and returns the code produced by the attempt. Subclasses can override to force the behavior
-     * one way or another, or to change the way that the check is performed.
+     * Invokes whatever external code is necessary to check if Google Play Services is available and
+     * returns the code produced by the attempt. Subclasses can override to force the behavior one
+     * way or another, or to change the way that the check is performed.
+     *
      * @param context The current context.
      * @return The code produced by calling the external code
      */
     protected int checkGooglePlayServicesAvailable(final Context context) {
-        // TODO(crbug.com/577190): Temporarily allowing disk access until more permanent fix is in.
+        // TODO(crbug.com/41233964): Temporarily allowing disk access until more permanent fix is
+        // in.
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites();
                 TraceEvent e = TraceEvent.scoped("checkGooglePlayServicesAvailable")) {
             return ChromiumPlayServicesAvailability.getGooglePlayServicesConnectionResult(context);

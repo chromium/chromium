@@ -28,7 +28,7 @@
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace display {
 enum class TabletState;

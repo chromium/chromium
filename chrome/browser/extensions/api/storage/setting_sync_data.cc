@@ -14,6 +14,7 @@
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -28,7 +29,7 @@ SettingSyncData::SettingSyncData(const syncer::SyncData& sync_data)
 }
 
 SettingSyncData::SettingSyncData(syncer::SyncChange::SyncChangeType change_type,
-                                 const std::string& extension_id,
+                                 const ExtensionId& extension_id,
                                  const std::string& key,
                                  base::Value value)
     : change_type_(change_type),

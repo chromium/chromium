@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import type {ProfileData, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {InfiniteList, TabSearchApiProxyImpl, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {SelectableLazyListElement, TabSearchApiProxyImpl, TabSearchItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createProfileData, generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleTabsFromSiteNames, sampleSiteNames, sampleToken} from './tab_search_test_data.js';
 import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, disableAnimationBehavior, getStylePropertyPixelValue, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
@@ -17,12 +17,13 @@ suite('TabSearchAppFocusTest', () => {
   let tabSearchPage: TabSearchPageElement;
   let testProxy: TestTabSearchApiProxy;
 
-  disableAnimationBehavior(InfiniteList, 'scrollTo');
-  disableAnimationBehavior(TabSearchItem, 'scrollIntoView');
+  disableAnimationBehavior(SelectableLazyListElement, 'scrollTo');
+  disableAnimationBehavior(TabSearchItemElement, 'scrollIntoView');
 
   async function setupTest(
       sampleData: ProfileData,
       loadTimeOverriddenData?: {[key: string]: string}) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy = new TestTabSearchApiProxy();
     testProxy.setProfileData(sampleData);
     TabSearchApiProxyImpl.setInstance(testProxy);
@@ -30,10 +31,9 @@ suite('TabSearchAppFocusTest', () => {
     initLoadTimeDataWithDefaults(loadTimeOverriddenData);
 
     tabSearchPage = document.createElement('tab-search-page');
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabSearchPage);
-    await flushTasks();
+    await eventToPromise('viewport-filled', tabSearchPage.$.tabsList);
+    await microtasksFinished();
   }
 
   function queryRows() {
@@ -55,22 +55,30 @@ suite('TabSearchAppFocusTest', () => {
     tabSearchItems[0]!.focus();
     // Once an item is focused, arrow keys should change focus too.
     keyDownOn(tabSearchItems[0]!, 0, [], 'ArrowDown');
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
+    await microtasksFinished();
     assertEquals(tabSearchItems[1], getDeepActiveElement());
 
     keyDownOn(tabSearchItems[1]!, 0, [], 'ArrowUp');
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
+    await microtasksFinished();
     assertEquals(tabSearchItems[0], getDeepActiveElement());
 
     keyDownOn(tabSearchItems[1]!, 0, [], 'End');
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
+    await microtasksFinished();
     assertEquals(
         tabSearchItems[tabSearchItems.length - 1], getDeepActiveElement());
 
     keyDownOn(tabSearchItems[tabSearchItems.length - 1]!, 0, [], 'Home');
+    await eventToPromise('selected-change', tabSearchPage.$.tabsList);
+    await microtasksFinished();
     assertEquals(tabSearchItems[0], getDeepActiveElement());
 
     // On restoring focus to the search field, a list item should be selected if
     // available.
     searchInput.focus();
-    assertEquals(0, tabSearchPage.getSelectedIndex());
+    assertEquals(0, tabSearchPage.getSelectedTabIndex());
   });
 
   test('KeyPress', async () => {
@@ -81,12 +89,15 @@ suite('TabSearchAppFocusTest', () => {
     tabSearchItem.focus();
 
     keyDownOn(tabSearchItem, 0, [], 'Enter');
+    await testProxy.whenCalled('switchToTab');
     keyDownOn(tabSearchItem, 0, [], ' ');
+    await testProxy.whenCalled('switchToTab');
     assertEquals(2, testProxy.getCallCount('switchToTab'));
 
     const closeButton =
         tabSearchItem.shadowRoot!.querySelector('#closeButton')!;
     keyDownOn(closeButton, 0, [], 'Enter');
+    await testProxy.whenCalled('closeTab');
     assertEquals(1, testProxy.getCallCount('closeTab'));
   });
 
@@ -95,7 +106,6 @@ suite('TabSearchAppFocusTest', () => {
     await setupTest(
         generateSampleDataFromSiteNames(sampleSiteNames(numTabItems)));
 
-    await waitAfterNextRender(tabSearchPage);
     assertEquals(numTabItems, queryRows().length);
 
     const tabSearchItem =
@@ -111,7 +121,7 @@ suite('TabSearchAppFocusTest', () => {
         tabIds: [(i + 1)],
         recentlyClosedTabs: [],
       });
-      await waitAfterNextRender(tabSearchPage);
+      await eventToPromise('focus-restored-for-test', tabSearchPage.$.tabsList);
       assertEquals(numTabItems - 1 - i, queryRows().length);
       assertEquals('tab-search-item', getDeepActiveElement()!.localName);
     }
@@ -128,8 +138,9 @@ suite('TabSearchAppFocusTest', () => {
         tabSearchPage.$.tabsList.querySelectorAll('tab-search-item');
     for (let i = 0; i < tabItems.length; i++) {
       tabItems[i]!.focus();
+      await microtasksFinished();
 
-      assertEquals(i, tabSearchPage.getSelectedIndex());
+      assertEquals(i, tabSearchPage.getSelectedTabIndex());
       assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, i);
     }
   });
@@ -153,14 +164,14 @@ suite('TabSearchAppFocusTest', () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(searchInput, getDeepActiveElement());
 
     // When visible the focused element should still be the search input.
     Object.defineProperty(
         document, 'visibilityState', {value: 'visible', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(searchInput, getDeepActiveElement());
   });
 
@@ -193,16 +204,17 @@ suite('TabSearchAppFocusTest', () => {
     assertTrue(!!recentlyClosedTitleExpandButton);
 
     // Expand the `Recently Closed` section.
-    recentlyClosedTitleExpandButton!.click();
+    recentlyClosedTitleExpandButton.click();
 
-    await waitAfterNextRender(tabSearchPage);
-    const tabsDiv = tabSearchPage.$.tabsList;
+    await eventToPromise('viewport-filled', tabSearchPage.$.tabsList);
     // Assert that the tabs are in a overflowing state.
-    assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
+    assertGT(
+        tabSearchPage.$.tabsList.scrollHeight,
+        tabSearchPage.$.tabsList.clientHeight);
 
     // Assert the first recently closed item is in view bounds.
     const tabItems =
         tabSearchPage.$.tabsList.querySelectorAll('tab-search-item');
-    assertTabItemInViewBounds(tabsDiv, tabItems[4]!);
+    assertTabItemInViewBounds(tabSearchPage.$.tabsList, tabItems[4]!);
   });
 });

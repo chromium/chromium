@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
@@ -57,21 +56,6 @@ const char kInstallViaQrCodeDBusResultHistogram[] =
 const char kESimInstallNonUserErrorSuccessRate[] =
     "Network.Cellular.ESim.Installation.NonUserErrorSuccessRate";
 
-const char kUserInstallOperationHistogram[] =
-    "Network.Cellular.ESim.UserInstall.OperationResult.All";
-const char kUserInstallViaQrCodeOperationHistogram[] =
-    "Network.Cellular.ESim.UserInstall.OperationResult.ViaQrCode";
-const char kUserInstallViaCodeInputOperationHistogram[] =
-    "Network.Cellular.ESim.UserInstall.OperationResult.ViaCodeInput";
-
-const char kInstallViaPolicyOperationHistogram[] =
-    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult";
-const char kInstallViaPolicyInitialOperationHistogram[] =
-    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.InitialAttempt";
-const char kInstallViaPolicyRetryOperationHistogram[] =
-    "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.Retry";
-const char kInstallESimResultHistogram[] =
-    "Network.Cellular.ESim.InstallationResult";
 const char kESimProfileDownloadLatencyHistogram[] =
     "Network.Cellular.ESim.ProfileDownload.ActivationCode.Latency";
 
@@ -87,11 +71,6 @@ base::Value::Dict GetPolicyShillProperties() {
 
 class CellularESimInstallerTest : public testing::Test {
  protected:
-  CellularESimInstallerTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSmdsSupport},
-        /*disabled_features=*/{});
-  }
   ~CellularESimInstallerTest() override = default;
 
   // testing::Test:
@@ -249,8 +228,6 @@ class CellularESimInstallerTest : public testing::Test {
       CellularESimInstaller::InstallESimProfileResult expected_install_result) {
     histogram_tester()->ExpectBucketCount(
         kInstallViaQrCodeHistogram, expected_hermes_status, expected_count);
-    histogram_tester()->ExpectBucketCount(
-        kInstallESimResultHistogram, expected_install_result, expected_count);
 
     if (expected_hermes_status == HermesResponseStatus::kSuccess ||
         !base::Contains(kHermesUserErrorCodes, expected_hermes_status)) {
@@ -267,41 +244,6 @@ class CellularESimInstallerTest : public testing::Test {
     }
   }
 
-  void CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult expected_result,
-      bool is_managed = false,
-      bool is_retry = false,
-      bool is_install_via_qr_code = false) {
-    histogram_tester()->ExpectBucketCount(kUserInstallOperationHistogram,
-                                          expected_result,
-                                          /*expected_count=*/1);
-    histogram_tester()->ExpectBucketCount(
-        is_install_via_qr_code ? kUserInstallViaQrCodeOperationHistogram
-                               : kUserInstallViaCodeInputOperationHistogram,
-        expected_result,
-        /*expected_count=*/1);
-
-    int expected_policy_histogram_counts = 0;
-    int expected_policy_initial_counts = 0;
-    int expected_policy_retry_counts = 0;
-    if (is_managed) {
-      expected_policy_histogram_counts = 1;
-      if (is_retry) {
-        expected_policy_retry_counts = 1;
-      } else {
-        expected_policy_initial_counts = 1;
-      }
-    }
-    histogram_tester()->ExpectBucketCount(kInstallViaPolicyOperationHistogram,
-                                          expected_result,
-                                          expected_policy_histogram_counts);
-    histogram_tester()->ExpectBucketCount(
-        kInstallViaPolicyInitialOperationHistogram, expected_result,
-        expected_policy_initial_counts);
-    histogram_tester()->ExpectBucketCount(
-        kInstallViaPolicyRetryOperationHistogram, expected_result,
-        expected_policy_retry_counts);
-  }
 
   void FastForwardProfileRefreshDelay() {
     const base::TimeDelta kProfileRefreshCallbackDelay =
@@ -321,7 +263,6 @@ class CellularESimInstallerTest : public testing::Test {
 
  private:
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -354,8 +295,6 @@ TEST_F(CellularESimInstallerTest, InstallProfileInvalidActivationCode) {
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kErrorInvalidActivationCode,
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed);
-  CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed);
 
   state.user_install_user_errors_included_all.hermes_failed_count++;
   state.user_install_user_errors_included_via_activation_code_after_smds
@@ -375,11 +314,6 @@ TEST_F(CellularESimInstallerTest, InstallProfileInvalidActivationCode) {
   CheckESimInstallHistograms(
       /*expected_count=*/2, HermesResponseStatus::kErrorInvalidActivationCode,
       CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed);
-  CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult::kHermesInstallFailed,
-      /*is_managed=*/true);
-  histogram_tester()->ExpectTotalCount(kInstallViaPolicyRetryOperationHistogram,
-                                       0);
 
   state.policy_install_user_errors_included_all.hermes_failed_count++;
   state.policy_install_user_errors_included_smdp_initial.hermes_failed_count++;
@@ -432,8 +366,6 @@ TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
-  CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult::kSuccess);
 
   state.user_install_user_errors_filtered_all.success_count++;
   state.user_install_user_errors_filtered_via_activation_code_after_smds
@@ -456,9 +388,6 @@ TEST_F(CellularESimInstallerTest, InstallProfileConnectFailure) {
   CheckESimInstallHistograms(
       /*expected_count=*/2, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
-  CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*is_managed=*/true);
 
   state.policy_install_user_errors_filtered_all.success_count++;
   state.policy_install_user_errors_filtered_smdp_initial.success_count++;
@@ -486,8 +415,6 @@ TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
-  CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult::kSuccess);
 
   state.user_install_user_errors_filtered_all.success_count++;
   state.user_install_user_errors_filtered_via_activation_code_after_smds
@@ -513,9 +440,6 @@ TEST_F(CellularESimInstallerTest, InstallProfileSuccess) {
   CheckESimInstallHistograms(
       /*expected_count=*/2, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
-  CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*is_managed=*/true, /*is_retry=*/true);
 
   state.policy_install_user_errors_filtered_all.success_count++;
   state.policy_install_user_errors_filtered_smds_retry.success_count++;
@@ -545,10 +469,6 @@ TEST_F(CellularESimInstallerTest, InstallProfileViaQrCodeSuccess) {
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
-  CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*is_managed=*/false, /*is_retry=*/false,
-      /*is_install_via_qr_code=*/true);
 
   state.user_install_user_errors_filtered_all.success_count++;
   state.user_install_user_errors_filtered_via_qr_code_after_smds
@@ -581,10 +501,6 @@ TEST_F(CellularESimInstallerTest, InstallProfileAutoConnect) {
   CheckESimInstallHistograms(
       /*expected_count=*/1, HermesResponseStatus::kSuccess,
       CellularESimInstaller::InstallESimProfileResult::kSuccess);
-  CheckDetailedESimInstallHistograms(
-      CellularESimInstaller::InstallESimProfileResult::kSuccess,
-      /*is_managed=*/false, /*is_retry=*/false,
-      /*is_install_via_qr_code=*/true);
 
   state.user_install_user_errors_filtered_all.success_count++;
   state.user_install_user_errors_filtered_via_qr_code_skipped_smds

@@ -41,6 +41,7 @@ import org.chromium.android_webview.test.util.VideoTestUtil;
 import org.chromium.android_webview.test.util.VideoTestWebServer;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -53,7 +54,6 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -120,6 +120,7 @@ public class AwSettingsTest {
             mContext = containerView.getContext();
             mContentViewClient = contentViewClient;
             mAwSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+            mAwSettings.setAllowFileAccess(true);
             if (requiresJsEnabled) {
                 mAwSettings.setJavaScriptEnabled(true);
             }
@@ -1627,7 +1628,7 @@ public class AwSettingsTest {
             final WebContents webContents = mAwContents.getWebContents();
             final CallbackHelper onTitleUpdatedHelper = new CallbackHelper();
             final WebContentsObserver observer =
-                    TestThreadUtils.runOnUiThreadBlocking(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () ->
                                     new WebContentsObserver(webContents) {
                                         @Override
@@ -1668,7 +1669,7 @@ public class AwSettingsTest {
                         getTitleOnUiThread());
             }
 
-            TestThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
+            ThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
         }
 
         private String getData() {
@@ -1679,7 +1680,7 @@ public class AwSettingsTest {
     }
 
     public static int calcDisplayWidthDp(Context context) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
                     return DisplayUtil.pxToDp(displayAndroid, displayAndroid.getDisplayWidth());
@@ -2244,6 +2245,7 @@ public class AwSettingsTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         settings.setJavaScriptEnabled(true);
+        settings.setAllowFileAccess(true);
         settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setAllowFileAccessFromFileURLs(false);
         mActivityTestRule.loadUrlSync(
@@ -2772,6 +2774,7 @@ public class AwSettingsTest {
         final AwContents awContents = testContainer.getAwContents();
         final AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         awSettings.setJavaScriptEnabled(true);
+        awSettings.setAllowFileAccess(true);
         ImagePageGenerator generator = new ImagePageGenerator(0, false);
 
         String fileName = null;
@@ -3957,7 +3960,6 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=WebViewXRequestedWithHeaderManifestAllowList"})
     public void testXRequestedWithAllowListSetByManifest() throws Throwable {
         final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
         try (var a = ManifestMetadataUtil.setXRequestedWithAllowListScopedForTesting(allowList)) {

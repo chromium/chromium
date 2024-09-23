@@ -12,9 +12,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/common/content_export.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 #include "ui/aura/scoped_keyboard_hook.h"
@@ -75,7 +75,7 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
     // whether ui::KeyEvent::SetHandled() should be called on the underlying
     // ui::KeyEvent.
     virtual void ForwardKeyboardEventWithLatencyInfo(
-        const NativeWebKeyboardEvent& event,
+        const input::NativeWebKeyboardEvent& event,
         const ui::LatencyInfo& latency,
         bool* update_event) = 0;
     // Returns whether the widget needs to grab mouse capture to work properly.
@@ -301,8 +301,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   // This value is used to differentiate between these synthetic mouse move
   // events vs. normal mouse move events.
   std::optional<gfx::Point> synthetic_move_position_;
-
-  bool enable_consolidated_movement_;
 
   // Whether a swipe-to-move-cursor gesture is activated.
   bool swipe_to_move_cursor_activated_ = false;

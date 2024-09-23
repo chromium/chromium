@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {EntryLocation} from '../background/js/entry_location_impl.js';
 import type {VolumeManager} from '../background/js/volume_manager.js';
+import {installMockChrome} from '../common/js/mock_chrome.js';
 import {RootType} from '../common/js/volume_manager_types.js';
 import type {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../state/ducks/search.js';
@@ -78,6 +79,7 @@ export function setUp() {
 
   setupStore();
   setupSearchContainer();
+  installMockChrome({});
 }
 
 export function tearDown() {

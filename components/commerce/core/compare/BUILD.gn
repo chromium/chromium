@@ -1,0 +1,77 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("compare") {
+  sources = [
+    "candidate_product.cc",
+    "candidate_product.h",
+    "cluster_manager.cc",
+    "cluster_manager.h",
+    "cluster_server_proxy.cc",
+    "cluster_server_proxy.h",
+    "compare_utils.cc",
+    "compare_utils.h",
+    "product_group.cc",
+    "product_group.h",
+    "product_specifications_server_proxy.cc",
+    "product_specifications_server_proxy.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/commerce/core:account_checker",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:feature_utils",
+    "//components/commerce/core:proto",
+    "//components/commerce/core:utils",
+    "//components/commerce/core/product_specifications",
+    "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/leveldb_proto",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//components/sync/base:features",
+    "//net:net",
+    "//net/traffic_annotation:traffic_annotation",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp:cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cluster_manager_unittest.cc",
+    "cluster_server_proxy_unittest.cc",
+    "product_specifications_server_proxy_unittest.cc",
+  ]
+
+  deps = [
+    ":compare",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:account_checker",
+    "//components/commerce/core:account_checker_test_support",
+    "//components/commerce/core:commerce_types",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:proto",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/commerce/core:utils",
+    "//components/commerce/core/product_specifications",
+    "//components/commerce/core/product_specifications:test_support",
+    "//components/endpoint_fetcher:endpoint_fetcher",
+    "//components/endpoint_fetcher:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

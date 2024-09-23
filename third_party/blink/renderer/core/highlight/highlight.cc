@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/highlight/highlight.h"
 
+#include "base/not_fatal_until.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -105,7 +106,8 @@ void Highlight::RegisterIn(HighlightRegistry* highlight_registry) {
 
 void Highlight::DeregisterFrom(HighlightRegistry* highlight_registry) {
   auto map_iterator = containing_highlight_registries_.find(highlight_registry);
-  DCHECK_NE(map_iterator, containing_highlight_registries_.end());
+  CHECK_NE(map_iterator, containing_highlight_registries_.end(),
+           base::NotFatalUntil::M130);
   DCHECK_GT(map_iterator->value, 0u);
   if (--map_iterator->value == 0)
     containing_highlight_registries_.erase(map_iterator);

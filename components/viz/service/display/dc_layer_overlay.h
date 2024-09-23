@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -26,7 +27,8 @@ namespace viz {
 class DisplayResourceProvider;
 
 class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
-    : public gl::DirectCompositionOverlayCapsObserver {
+    : public gl::DirectCompositionOverlayCapsObserver,
+      public base::PowerStateObserver {
  public:
   using FilterOperationsMap =
       base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>;
@@ -34,6 +36,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // for unit tests.
   explicit DCLayerOverlayProcessor(
       int allowed_yuv_overlay_count,
+      bool disable_video_overlay_if_moving,
       bool skip_initialization_for_testing = false);
 
   DCLayerOverlayProcessor(const DCLayerOverlayProcessor&) = delete;
@@ -72,7 +75,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // underlays. The caller must aggregate overlays from all render passes into
   // a global overlay list, taking into account the render pass's z-order.
   virtual void Process(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
@@ -81,18 +84,39 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
 
   // DirectCompositionOverlayCapsObserver implementation.
   void OnOverlayCapsChanged() override;
+  // base::PowerStateObserver implementation.
+  void OnBatteryPowerStatusChange(
+      PowerStateObserver::BatteryPowerStatus battery_power_status) override;
+
   void UpdateHasHwOverlaySupport();
   void UpdateSystemHDRStatus();
   void UpdateP010VideoProcessorSupport();
+  void UpdateAutoHDRVideoProcessorSupport();
 
   void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
     frames_since_last_qualified_multi_overlays_ = value;
   }
-  void set_system_hdr_enabled_for_testing(int value) {
-    system_hdr_enabled_ = value;
+  void set_system_hdr_enabled_on_any_display_for_testing(bool value) {
+    system_hdr_enabled_on_any_display_ = value;
   }
-  void set_has_p010_video_processor_support_for_testing(int value) {
+  void set_system_hdr_disabled_on_any_display_for_testing(bool value) {
+    system_hdr_disabled_on_any_display_ = value;
+  }
+  void set_has_p010_video_processor_support_for_testing(bool value) {
     has_p010_video_processor_support_ = value;
+  }
+  void set_has_auto_hdr_video_processor_support_for_testing(bool value) {
+    has_auto_hdr_video_processor_support_ = value;
+  }
+  void set_is_on_battery_power_for_testing(bool value) {
+    is_on_battery_power_ = value;
+  }
+  void set_disable_video_overlay_if_moving_for_testing(bool value) {
+    disable_video_overlay_if_moving_ = value;
+  }
+  bool force_overlay_for_auto_hdr() {
+    return system_hdr_enabled_on_any_display_ &&
+           has_auto_hdr_video_processor_support_ && !is_on_battery_power_;
   }
   size_t get_previous_frame_render_pass_count() const {
     CHECK_IS_TEST();
@@ -114,6 +138,15 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
     bool is_overlay = true;  // If false, it's an underlay.
     friend bool operator==(const OverlayRect&, const OverlayRect&) = default;
   };
+
+  // Promote a single quad in isolation, like how |Process| would internally.
+  // This ignores per-frame limitations such as max number of YUV quads, etc.
+  // This also adds other properties needed for delegated compositing.
+  std::optional<OverlayCandidate> FromTextureOrYuvQuad(
+      const DisplayResourceProvider* resource_provider,
+      const AggregatedRenderPass* render_pass,
+      const QuadList::ConstIterator& it,
+      bool is_page_fullscreen_mode) const;
 
  private:
   // Information about a render pass's overlays from the previous frame. The
@@ -228,13 +261,12 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // render pass, the damage rect in |overlay_data| is unioned with the previous
   // frame's overlay damages, and the previous frame state is cleared.
   void CollectCandidates(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
       const FilterOperationsMap& render_pass_backdrop_filters,
       RenderPassOverlayData& overlay_data,
       RenderPassCurrentFrameState& render_pass_state,
-      GlobalOverlayState& global_overlay_state,
-      bool is_page_fullscreen_mode);
+      GlobalOverlayState& global_overlay_state);
 
   // Promotes overlay candidates for a render pass. Coordinate systems for all
   // parameters should be in in render pass space.
@@ -248,7 +280,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // |current_frame_state|'s fields and |processed_yuv_overlay_count| to reflect
   // the actual number of overlays promoted.
   void PromoteCandidates(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
       const FilterOperationsMap& render_pass_filters,
       const RenderPassPreviousFrameState& previous_frame_state,
@@ -263,7 +295,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // Creates an OverlayCandidate for a quad candidate and updates the states
   // for the render pass.
   void UpdateDCLayerOverlays(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
       const QuadList::Iterator& it,
       const gfx::Rect& quad_rectangle_in_target_space,
@@ -312,17 +344,22 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // to be in overlay, but we also exclude them from de-promotion to keep the
   // protection benefits of being in an overlay.
   void RemoveClearVideoQuadCandidatesIfMoving(
-      DisplayResourceProvider* resource_provider,
+      const DisplayResourceProvider* resource_provider,
       RenderPassOverlayDataMap& render_pass_overlay_data_map,
       RenderPassCurrentFrameStateMap& render_pass_current_state_map);
 
   bool has_overlay_support_;
   bool has_p010_video_processor_support_ = false;
-  bool system_hdr_enabled_ = false;
+  bool has_auto_hdr_video_processor_support_ = false;
+  // At least one monitor that has system HDR enabled.
+  bool system_hdr_enabled_on_any_display_ = false;
+  // At least one monitor that has system HDR disabled or doesn't support HDR.
+  bool system_hdr_disabled_on_any_display_ = true;
   const int allowed_yuv_overlay_count_;
   uint64_t frames_since_last_qualified_multi_overlays_ = 0;
 
   bool allow_promotion_hinting_ = false;
+  bool is_on_battery_power_ = false;
 
   // Information about overlays from the previous frame.
   base::flat_map<AggregatedRenderPassId, RenderPassPreviousFrameState>
@@ -331,11 +368,12 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // Used in `RemoveClearVideoQuadCandidatesIfMoving`
   // List of clear video content candidate bounds. These rects are in root space
   // and contains the candidate rects for all render passes.
-  // TODO(crbug.com/1454329): Compute these values using
+  // TODO(crbug.com/40272272): Compute these values using
   // |previous_frame_render_pass_states_| and remove this field.
   std::vector<gfx::Rect> previous_frame_overlay_candidate_rects_;
   int frames_since_last_overlay_candidate_rects_change_ = 0;
   bool no_undamaged_overlay_promotion_;
+  bool disable_video_overlay_if_moving_;
 
   THREAD_CHECKER(thread_checker_);
 };

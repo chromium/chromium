@@ -1,0 +1,77 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-toast-background: var(--color-toast-background,
+      var(--cr-fallback-color-inverse-surface));
+  --cr-toast-button-color: var(--color-toast-button,
+      var(--cr-fallback-color-inverse-primary));
+  --cr-toast-text-color: var(--color-toast-foreground,
+      var(--cr-fallback-color-inverse-on-surface));
+}
+
+:host {
+  align-items: center;
+  background: var(--cr-toast-background);
+  border-radius: 8px;
+  bottom: 0;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.28);
+  box-sizing: border-box;
+  display: flex;
+  line-height: 20px;
+  margin: 24px;
+  max-width: var(--cr-toast-max-width, 568px);
+  min-height: 52px;
+  min-width: 288px;
+  opacity: 0;
+  padding: 0 16px;
+  position: fixed;
+  transform: translateY(100px);
+  transition: opacity 300ms, transform 300ms;
+  visibility: hidden;
+  z-index: 1;
+}
+
+:host-context([dir=ltr]) {
+  left: 0;
+}
+
+:host-context([dir=rtl]) {
+  right: 0;
+}
+
+:host([open]) {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+/* Note: this doesn't work on slotted text nodes. Something like
+ * <cr-toast>hey!</cr-toast> wont get the right text color. */
+:host ::slotted(*) {
+  color: var(--cr-toast-text-color);
+}
+
+:host ::slotted(cr-button) {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--cr-toast-button-color) !important;
+  margin-inline-start: 32px !important;
+  min-width: 52px !important;
+  padding: 8px !important;
+}
+
+:host ::slotted(cr-button:hover) {
+  background-color: transparent !important;
+}
+
+::slotted(cr-button:last-of-type) {
+  margin-inline-end: -8px;
+}

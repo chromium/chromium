@@ -16,6 +16,7 @@
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -23,6 +24,9 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/display/manager/display_manager.h"
+#include "ui/display/manager/managed_display_info.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -40,7 +44,7 @@ class TestTrayBackgroundView : public TrayBackgroundView,
   ~TestTrayBackgroundView() override = default;
 
   // TrayBackgroundView:
-  void ClickedOutsideBubble() override {}
+  void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}
   void UpdateTrayItemColor(bool is_active) override {}
   std::u16string GetAccessibleNameForTray() override {
     return u"TestTrayBackgroundView";
@@ -79,7 +83,7 @@ class TestTrayBackgroundView : public TrayBackgroundView,
     SetIsActive(true);
   }
 
-  void CloseBubble() override {
+  void CloseBubbleInternal() override {
     bubble_.reset();
     SetIsActive(false);
   }
@@ -100,6 +104,10 @@ class TestTrayBackgroundView : public TrayBackgroundView,
   TrayBubbleView* bubble_view() { return bubble_->bubble_view(); }
 
   bool show_bubble_called() const { return show_bubble_called_; }
+
+  std::u16string GetAccessibleNameForBubble() override {
+    return u"Sample accessible name";
+  }
 
  private:
   std::unique_ptr<TrayBubbleWrapper> bubble_;
@@ -485,7 +493,8 @@ TEST_F(TrayBackgroundViewTest, ContextMenu) {
 // Tests the auto-hide shelf status when opening and closing a context menu.
 TEST_F(TrayBackgroundViewTest, AutoHideShelfWithContextMenu) {
   // Create one window, or the shelf won't auto-hide.
-  std::unique_ptr<views::Widget> unused = CreateTestWidget();
+  std::unique_ptr<views::Widget> unused =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Set the shelf to auto-hide.
   Shelf* shelf = test_tray_background_view()->shelf();
@@ -717,6 +726,38 @@ TEST_F(TrayBackgroundViewTest, TabletModeTransitionForAlignments) {
     EXPECT_EQ(clamshell_mode_bounds,
               test_tray_background_view()->bubble_view()->GetBoundsInScreen());
   }
+}
+
+TEST_F(TrayBackgroundViewTest, TrayBubbleViewAccessibleProperties) {
+  test_tray_background_view()->ShowBubble();
+  TrayBubbleView* bubble_view = test_tray_background_view()->bubble_view();
+  ASSERT_TRUE(bubble_view->CanActivate());
+  bubble_view->InitializeAndShowBubble();
+  ui::AXNodeData data;
+
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+  EXPECT_EQ(ax::mojom::Role::kWindow, data.role);
+
+  // Test that bubble view is hidden to a11y when `can_activate_` is false.
+  bubble_view->SetCanActivate(false);
+  // `can_activate_` value is set before showing the bubble.
+  bubble_view->InitializeAndShowBubble();
+  data = ui::AXNodeData();
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
+
+  bubble_view->SetCanActivate(true);
+  bubble_view->InitializeAndShowBubble();
+  data = ui::AXNodeData();
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kIgnored));
+
+  // Test that bubble view is hidden to a11y when `delegate_` is null.
+  bubble_view->ResetDelegate();
+  data = ui::AXNodeData();
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kIgnored));
 }
 
 }  // namespace ash

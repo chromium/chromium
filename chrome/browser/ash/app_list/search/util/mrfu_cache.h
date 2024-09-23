@@ -8,9 +8,8 @@
 #include <map>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
+#include "ash/utility/persistent_proto.h"
 #include "chrome/browser/ash/app_list/search/util/mrfu_cache.pb.h"
-#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 
 namespace app_list {
 
@@ -85,7 +84,7 @@ class MrfuCache {
 
   // A vector of items and their scores. No guarantees of ordering.
   using Items = std::vector<std::pair<std::string, float>>;
-  using Proto = PersistentProto<MrfuCacheProto>;
+  using Proto = ash::PersistentProto<MrfuCacheProto>;
 
   MrfuCache(MrfuCache::Proto proto, const Params& params);
   ~MrfuCache();
@@ -143,16 +142,14 @@ class MrfuCache {
 
   void Decay(Score* score);
   void MaybeCleanup();
-  void OnProtoRead(ReadStatus status);
+  void OnProtoInit();
 
-  PersistentProto<MrfuCacheProto> proto_;
+  ash::PersistentProto<MrfuCacheProto> proto_;
 
   float decay_coeff_;
   float boost_coeff_;
   size_t max_items_;
   float min_score_;
-
-  base::WeakPtrFactory<MrfuCache> weak_factory_{this};
 };
 
 }  // namespace app_list

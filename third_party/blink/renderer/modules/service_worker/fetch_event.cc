@@ -56,20 +56,18 @@ bool FetchEvent::isReload() const {
 }
 
 void FetchEvent::respondWith(ScriptState* script_state,
-                             ScriptPromise script_promise,
+                             ScriptPromiseUntyped script_promise,
                              ExceptionState& exception_state) {
   stopImmediatePropagation();
   if (observer_)
     observer_->RespondWith(script_state, script_promise, exception_state);
 }
 
-ScriptPromiseTyped<IDLAny> FetchEvent::preloadResponse(
-    ScriptState* script_state) {
+ScriptPromise<IDLAny> FetchEvent::preloadResponse(ScriptState* script_state) {
   return preload_response_property_->Promise(script_state->World());
 }
 
-ScriptPromiseTyped<IDLUndefined> FetchEvent::handled(
-    ScriptState* script_state) {
+ScriptPromise<IDLUndefined> FetchEvent::handled(ScriptState* script_state) {
   return handled_property_->Promise(script_state->World());
 }
 

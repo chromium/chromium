@@ -5,9 +5,9 @@
 #include "chrome/browser/net/secure_dns_policy_handler.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -82,7 +82,7 @@ bool CheckDnsOverHttpsSaltPolicy(const policy::PolicyMap& policies,
 bool CheckDnsOverHttpsTemplatePolicy(const policy::PolicyMap& policies,
                                      policy::PolicyErrorMap* errors,
                                      const std::string& policy_name,
-                                     const base::StringPiece& mode) {
+                                     std::string_view mode) {
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
   const base::Value* templates = policies.GetValueUnsafe(policy_name);
@@ -128,7 +128,7 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
   const base::Value* mode = policies.GetValueUnsafe(key::kDnsOverHttpsMode);
-  base::StringPiece mode_str;
+  std::string_view mode_str;
   if (!mode) {
     mode_is_applicable = false;
   } else if (!mode->is_string()) {
@@ -154,12 +154,11 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   templates_is_applicable = is_templates_policy_valid_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsDnsOverHttpsWithIdentifiersEnabled()) {
     bool templates_valid = CheckDnsOverHttpsTemplatePolicy(
         policies, errors, key::kDnsOverHttpsTemplatesWithIdentifiers, mode_str);
     bool salt_valid = CheckDnsOverHttpsSaltPolicy(policies, errors);
     is_templates_with_identifiers_policy_valid_ = templates_valid && salt_valid;
-  }
+
   templates_is_applicable =
       is_templates_policy_valid_ || is_templates_with_identifiers_policy_valid_;
 
@@ -192,7 +191,7 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                  PrefValueMap* prefs) {
   const base::Value* mode =
       policies.GetValue(key::kDnsOverHttpsMode, base::Value::Type::STRING);
-  base::StringPiece mode_str;
+  std::string_view mode_str;
   if (mode) {
     mode_str = mode->GetString();
     prefs->SetString(prefs::kDnsOverHttpsMode,
@@ -211,7 +210,6 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     prefs->SetString(prefs::kDnsOverHttpsTemplates, templates->GetString());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsDnsOverHttpsWithIdentifiersEnabled()) {
     const base::Value* templates_with_identifiers = policies.GetValue(
         key::kDnsOverHttpsTemplatesWithIdentifiers, base::Value::Type::STRING);
     const base::Value* salt =
@@ -230,13 +228,12 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       prefs->SetString(prefs::kDnsOverHttpsSalt,
                        salt ? salt->GetString() : std::string());
     }
-  }
 #endif
 }
 
 bool SecureDnsPolicyHandler::IsTemplatesPolicyNotSpecified(
     bool is_templates_policy_valid,
-    base::StringPiece mode_str) {
+    std::string_view mode_str) {
   if (mode_str == SecureDnsConfig::kModeSecure)
     return !is_templates_policy_valid;
 

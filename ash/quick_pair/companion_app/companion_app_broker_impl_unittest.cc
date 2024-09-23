@@ -22,6 +22,8 @@ namespace {
 const std::string kUserEmail = "test@test.test";
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kValidModelId[] = "6EDAF7";
+constexpr char kInvalidModelId[] = "000000";
+constexpr char kFeatureParamModelId[] = "AAAAAA";
 constexpr char kValidCompanionBrowserUri[] = "https://photos.google.com/";
 constexpr char kEmptyCompanionBrowserUri[] = "";
 constexpr char kCompanionAppId[] = "ncmjhecbjeaamljdfahankockkkdmedg";
@@ -29,6 +31,7 @@ constexpr char kValidCompanionPlayStoreUri[] =
     "https://play.google.com/store/apps/"
     "details?id=com.google.android.apps.photos";
 constexpr char kEmptyCompanionPlayStoreUri[] = "";
+constexpr char kFeatureParamDeviceIds[] = "111111,AAAAAA,BBBBBB,CCCCCC,DDDDDD";
 
 }  // namespace
 
@@ -294,6 +297,61 @@ TEST_F(CompanionAppBrokerImplUnitTest, LaunchCompanionApp_Enabled) {
        {ash::features::kFastPairPwaCompanionAppId.name, kCompanionAppId}});
 
   companion_app_broker_->LaunchCompanionApp(test_device_);
+}
+
+// If the app is not yet installed, the install playstore app prompt will be
+// shown
+TEST_F(CompanionAppBrokerImplUnitTest,
+       ShowsInstallCompanionApp_UsingFeatureParamDeviceId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ash::features::kFastPairPwaCompanion,
+      {{ash::features::kFastPairPwaCompanionInstallUri.name,
+        kValidCompanionBrowserUri},
+       {ash::features::kFastPairPwaCompanionPlayStoreUri.name,
+        kValidCompanionPlayStoreUri},
+       {ash::features::kFastPairPwaCompanionAppId.name, kCompanionAppId},
+       {ash::features::kFastPairPwaCompanionDeviceIds.name,
+        kFeatureParamDeviceIds}});
+  test_device_ = base::MakeRefCounted<Device>(
+      kFeatureParamModelId, kTestDeviceAddress, Protocol::kFastPairInitial);
+
+  SetIdentityManager(identity_manager_);
+  SetCompanionAppInstalled(kCompanionAppId, false);
+  Login(user_manager::UserType::kRegular);
+
+  EXPECT_FALSE(install_companion_app_notification_shown_);
+  EXPECT_FALSE(launch_companion_app_notification_shown_);
+  companion_app_broker_->MaybeShowCompanionAppActions(test_device_);
+  EXPECT_TRUE(install_companion_app_notification_shown_);
+  EXPECT_FALSE(launch_companion_app_notification_shown_);
+}
+
+// If the device ID isn't supported the install app prompt will not be shown
+TEST_F(CompanionAppBrokerImplUnitTest,
+       SkipsInstallCompanionApp_UsingInvalidDeviceId) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ash::features::kFastPairPwaCompanion,
+      {{ash::features::kFastPairPwaCompanionInstallUri.name,
+        kValidCompanionBrowserUri},
+       {ash::features::kFastPairPwaCompanionPlayStoreUri.name,
+        kValidCompanionPlayStoreUri},
+       {ash::features::kFastPairPwaCompanionAppId.name, kCompanionAppId},
+       {ash::features::kFastPairPwaCompanionDeviceIds.name,
+        kFeatureParamDeviceIds}});
+  test_device_ = base::MakeRefCounted<Device>(
+      kInvalidModelId, kTestDeviceAddress, Protocol::kFastPairInitial);
+
+  SetIdentityManager(identity_manager_);
+  SetCompanionAppInstalled(kCompanionAppId, false);
+  Login(user_manager::UserType::kRegular);
+
+  EXPECT_FALSE(install_companion_app_notification_shown_);
+  EXPECT_FALSE(launch_companion_app_notification_shown_);
+  companion_app_broker_->MaybeShowCompanionAppActions(test_device_);
+  EXPECT_FALSE(install_companion_app_notification_shown_);
+  EXPECT_FALSE(launch_companion_app_notification_shown_);
 }
 
 }  // namespace quick_pair

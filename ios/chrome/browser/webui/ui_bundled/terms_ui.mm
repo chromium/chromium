@@ -9,7 +9,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
@@ -87,7 +87,7 @@ bool TermsUIHTMLSource::ShouldDenyXFrameOptions() const {
 
 TermsUI::TermsUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  web::URLDataSourceIOS::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::URLDataSourceIOS::Add(ProfileIOS::FromWebUIIOS(web_ui),
                              new TermsUIHTMLSource(host));
 }
 

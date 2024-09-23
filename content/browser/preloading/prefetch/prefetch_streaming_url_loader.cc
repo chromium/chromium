@@ -6,7 +6,9 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -17,13 +19,13 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
     OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
     OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-    base::OnceClosure on_received_head_callback)
+    base::OnceClosure on_determined_head_callback)
     : on_prefetch_response_started_callback_(
           std::move(on_prefetch_response_started_callback)),
       on_prefetch_response_completed_callback_(
           std::move(on_prefetch_response_completed_callback)),
       on_prefetch_redirect_callback_(std::move(on_prefetch_redirect_callback)),
-      on_received_head_callback_(std::move(on_received_head_callback)) {}
+      on_determined_head_callback_(std::move(on_determined_head_callback)) {}
 
 void PrefetchStreamingURLLoader::Start(
     network::mojom::URLLoaderFactory* url_loader_factory,
@@ -36,13 +38,25 @@ void PrefetchStreamingURLLoader::Start(
   // TrustedParams, on the other hand, clones it correctly.
   //
   // This is a violation of const correctness which lead to a confusing bug
-  // here. If that goes away, then this copy might not be necessary.
+  // here.
+  network::ResourceRequest new_request(request);
+  if (!new_request.trusted_params) {
+    new_request.trusted_params.emplace();
+  }
+
+  // Request cookies will be included with the response.
+  // They must be removed before forwarding to any untrusted client.
+  // This happens in `PrefetchResponseReader::HandleRedirect` and
+  // `PrefetchResponseReader::OnReceiveResponse`.
+  new_request.trusted_params->include_request_cookies_with_response = true;
+
+  // `is_outermost_main_frame` is true here because the prefetched result is
+  // served only for outermost main frames.
   url_loader_factory->CreateLoaderAndStart(
       prefetch_url_loader_.BindNewPipeAndPassReceiver(), /*request_id=*/0,
-      network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
-          network::mojom::kURLLoadOptionSniffMimeType |
-          network::mojom::kURLLoadOptionSendSSLInfoForCertificateError,
-      network::ResourceRequest(request),
+      NavigationURLLoader::GetURLLoaderOptions(
+          /*is_outermost_main_frame=*/true),
+      new_request,
       prefetch_url_loader_client_receiver_.BindNewPipeAndPassRemote(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       net::MutableNetworkTrafficAnnotationTag(network_traffic_annotation));
@@ -71,14 +85,14 @@ PrefetchStreamingURLLoader::CreateAndStart(
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
     OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
     OnPrefetchRedirectCallback on_prefetch_redirect_callback,
-    base::OnceClosure on_received_head_callback,
+    base::OnceClosure on_determined_head_callback,
     base::WeakPtr<PrefetchResponseReader> response_reader) {
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           std::move(on_prefetch_response_started_callback),
           std::move(on_prefetch_response_completed_callback),
           std::move(on_prefetch_redirect_callback),
-          std::move(on_received_head_callback));
+          std::move(on_determined_head_callback));
 
   streaming_loader->SetResponseReader(std::move(response_reader));
 
@@ -165,8 +179,8 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
                                         std::move(body));
   }
 
-  if (on_received_head_callback_) {
-    std::move(on_received_head_callback_).Run();
+  if (on_determined_head_callback_) {
+    std::move(on_determined_head_callback_).Run();
   }
 }
 
@@ -205,8 +219,8 @@ void PrefetchStreamingURLLoader::HandleRedirect(
       break;
     case PrefetchRedirectStatus::kFail:
       DisconnectPrefetchURLLoaderMojo();
-      if (on_received_head_callback_) {
-        std::move(on_received_head_callback_).Run();
+      if (on_determined_head_callback_) {
+        std::move(on_determined_head_callback_).Run();
       }
       break;
   }
@@ -222,7 +236,7 @@ void PrefetchStreamingURLLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // Only handle GETs.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void PrefetchStreamingURLLoader::OnTransferSizeUpdated(
@@ -241,10 +255,9 @@ void PrefetchStreamingURLLoader::OnComplete(
   }
 
   if (completion_status.error_code != net::OK) {
-    // Note that we may have already started serving the prefetch if it was
-    // marked as servable in |OnReceiveResponse|.
-    if (on_received_head_callback_) {
-      std::move(on_received_head_callback_).Run();
+    // Notify a failure if the callback is not consumed yet.
+    if (on_determined_head_callback_) {
+      std::move(on_determined_head_callback_).Run();
     }
   }
 

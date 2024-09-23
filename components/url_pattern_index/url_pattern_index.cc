@@ -5,8 +5,8 @@
 #include "components/url_pattern_index/url_pattern_index.h"
 
 #include <limits>
-#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -15,10 +15,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/url_pattern_index/ngram_extractor.h"
@@ -84,22 +84,22 @@ const ElementTypeMap& GetElementTypeMap() {
 
 flat::ActivationType ProtoToFlatActivationType(proto::ActivationType type) {
   const auto it = GetActivationTypeMap().find(type);
-  DCHECK(it != GetActivationTypeMap().end());
+  CHECK(it != GetActivationTypeMap().end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
 flat::ElementType ProtoToFlatElementType(proto::ElementType type) {
   const auto it = GetElementTypeMap().find(type);
-  DCHECK(it != GetElementTypeMap().end());
+  CHECK(it != GetElementTypeMap().end(), base::NotFatalUntil::M130);
   return it->second;
 }
 
-base::StringPiece ToStringPiece(const flatbuffers::String* string) {
+std::string_view ToStringView(const flatbuffers::String* string) {
   DCHECK(string);
-  return base::StringPiece(string->c_str(), string->size());
+  return std::string_view(string->c_str(), string->size());
 }
 
-bool HasNoUpperAscii(base::StringPiece string) {
+bool HasNoUpperAscii(std::string_view string) {
   return base::ranges::none_of(string, base::IsAsciiUpper<char>);
 }
 
@@ -172,7 +172,7 @@ class UrlRuleFlatBufferConverter {
     if (!base::IsStringASCII(rule_->url_pattern()))
       return UrlRuleOffset();
 
-    // TODO(crbug.com/884063): Lower case case-insensitive patterns here if we
+    // TODO(crbug.com/41413799): Lower case case-insensitive patterns here if we
     // want to support case-insensitive rules for subresource filter.
     auto url_pattern_offset = builder->CreateSharedString(rule_->url_pattern());
 
@@ -191,8 +191,8 @@ class UrlRuleFlatBufferConverter {
     // The comparator ensuring the domains order necessary for fast matching.
     auto precedes = [&builder](FlatStringOffset lhs, FlatStringOffset rhs) {
       return CompareDomains(
-                 ToStringPiece(flatbuffers::GetTemporaryPointer(*builder, lhs)),
-                 ToStringPiece(
+                 ToStringView(flatbuffers::GetTemporaryPointer(*builder, lhs)),
+                 ToStringView(
                      flatbuffers::GetTemporaryPointer(*builder, rhs))) < 0;
     };
     if (domains.empty())
@@ -302,7 +302,7 @@ class UrlRuleFlatBufferConverter {
         return false;  // Unsupported source type.
     }
 
-    // TODO(crbug.com/884063): Consider setting IS_CASE_INSENSITIVE here if we
+    // TODO(crbug.com/41413799): Consider setting IS_CASE_INSENSITIVE here if we
     // want to support case insensitive rules for subresource_filter.
     return true;
   }
@@ -434,7 +434,7 @@ UrlRuleOffset SerializeUrlRule(const proto::UrlRule& rule,
   return converter.SerializeConvertedRule(builder, domain_map);
 }
 
-int CompareDomains(base::StringPiece lhs_domain, base::StringPiece rhs_domain) {
+int CompareDomains(std::string_view lhs_domain, std::string_view rhs_domain) {
   if (lhs_domain.size() != rhs_domain.size())
     return lhs_domain.size() > rhs_domain.size() ? -1 : 1;
   return lhs_domain.compare(rhs_domain);
@@ -458,30 +458,30 @@ void UrlPatternIndexBuilder::IndexUrlRule(UrlRuleOffset offset) {
 
 #if DCHECK_IS_ON()
   // Sanity check that the rule does not have fields with non-ascii characters.
-  DCHECK(base::IsStringASCII(ToStringPiece(rule->url_pattern())));
+  DCHECK(base::IsStringASCII(ToStringView(rule->url_pattern())));
   if (rule->initiator_domains_included()) {
     for (auto* domain : *rule->initiator_domains_included())
-      DCHECK(base::IsStringASCII(ToStringPiece(domain)));
+      DCHECK(base::IsStringASCII(ToStringView(domain)));
   }
   if (rule->initiator_domains_excluded()) {
     for (auto* domain : *rule->initiator_domains_excluded())
-      DCHECK(base::IsStringASCII(ToStringPiece(domain)));
+      DCHECK(base::IsStringASCII(ToStringView(domain)));
   }
   if (rule->request_domains_included()) {
     for (auto* domain : *rule->request_domains_included())
-      DCHECK(base::IsStringASCII(ToStringPiece(domain)));
+      DCHECK(base::IsStringASCII(ToStringView(domain)));
   }
   if (rule->request_domains_excluded()) {
     for (auto* domain : *rule->request_domains_excluded())
-      DCHECK(base::IsStringASCII(ToStringPiece(domain)));
+      DCHECK(base::IsStringASCII(ToStringView(domain)));
   }
 
   // Case-insensitive patterns should be lower-cased.
   if (rule->options() & flat::OptionFlag_IS_CASE_INSENSITIVE)
-    DCHECK(HasNoUpperAscii(ToStringPiece(rule->url_pattern())));
+    DCHECK(HasNoUpperAscii(ToStringView(rule->url_pattern())));
 #endif
 
-  NGram ngram = GetMostDistinctiveNGram(ToStringPiece(rule->url_pattern()));
+  NGram ngram = GetMostDistinctiveNGram(ToStringView(rule->url_pattern()));
 
   if (ngram) {
     ngram_index_[ngram].push_back(offset);
@@ -533,7 +533,7 @@ UrlPatternIndexOffset UrlPatternIndexBuilder::Finish() {
 }
 
 NGram UrlPatternIndexBuilder::GetMostDistinctiveNGram(
-    base::StringPiece pattern) {
+    std::string_view pattern) {
   size_t min_list_size = std::numeric_limits<size_t>::max();
   NGram best_ngram = 0;
 
@@ -571,7 +571,7 @@ using FlatNGramIndex =
 //
 // The `domains` should be sorted in descending order of their length, and
 // ascending alphabetical order within the groups of same-length domains.
-size_t GetLongestMatchingSubdomain(base::StringPiece host,
+size_t GetLongestMatchingSubdomain(std::string_view host,
                                    const FlatDomains& domains) {
   if (host.empty())
     return 0;
@@ -579,7 +579,7 @@ size_t GetLongestMatchingSubdomain(base::StringPiece host,
   // If the |domains| list is short, then the simple strategy is usually faster.
   if (domains.size() <= 5) {
     for (auto* domain : domains) {
-      const base::StringPiece domain_piece = ToStringPiece(domain);
+      const std::string_view domain_piece = ToStringView(domain);
       if (url::DomainIs(host, domain_piece))
         return domain_piece.size();
     }
@@ -597,25 +597,27 @@ size_t GetLongestMatchingSubdomain(base::StringPiece host,
   // each consecutive lower_bound will be at least as far as the previous.
   flatbuffers::uoffset_t left = 0;
   for (size_t position = 0;; ++position) {
-    const base::StringPiece subdomain = host.substr(position);
+    const std::string_view subdomain = host.substr(position);
 
     flatbuffers::uoffset_t right = domains.size();
     while (left + 1 < right) {
       auto middle = left + (right - left) / 2;
       DCHECK_LT(middle, domains.size());
-      if (CompareDomains(ToStringPiece(domains[middle]), subdomain) <= 0)
+      if (CompareDomains(ToStringView(domains[middle]), subdomain) <= 0) {
         left = middle;
-      else
+      } else
         right = middle;
     }
 
     DCHECK_LT(left, domains.size());
-    if (ToStringPiece(domains[left]) == subdomain)
+    if (ToStringView(domains[left]) == subdomain) {
       return subdomain.size();
+    }
 
     position = host.find('.', position);
-    if (position == base::StringPiece::npos)
+    if (position == std::string_view::npos) {
       break;
+    }
   }
 
   return 0;
@@ -772,7 +774,7 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
       return nullptr;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -790,7 +792,7 @@ bool IsRuleGeneric(const flat::UrlRule& rule) {
 //     domain is shorter than the longest matching included domain (since
 //     longer, more specific domain matches take precedence).
 bool DoesHostMatchDomainLists(
-    base::StringPiece host,
+    std::string_view host,
     const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>*
         domains_included,
     const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>*

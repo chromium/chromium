@@ -6,8 +6,8 @@
 #define CHROMECAST_MEDIA_SERVICE_CAST_RENDERER_H_
 
 #include <memory>
-
 #include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"

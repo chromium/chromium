@@ -9,11 +9,18 @@
 #include <optional>
 #include <string>
 
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/service_provider_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/url_matcher/url_matcher.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/public/browser/browser_context.h"
+#endif
 
 namespace storage {
 class FileSystemURL;
@@ -36,13 +43,16 @@ class AnalysisServiceSettings {
 
   // Get the settings to apply to a specific analysis. std::nullopt implies no
   // analysis should take place.
-  std::optional<AnalysisSettings> GetAnalysisSettings(const GURL& url) const;
+  std::optional<AnalysisSettings> GetAnalysisSettings(
+      const GURL& url,
+      DataRegion data_region) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::optional<AnalysisSettings> GetAnalysisSettings(
       content::BrowserContext* context,
       const storage::FileSystemURL& source_url,
-      const storage::FileSystemURL& destination_url) const;
+      const storage::FileSystemURL& destination_url,
+      DataRegion data_region) const;
 #endif
 
   // Get the block_until_verdict setting if the settings are valid.
@@ -90,7 +100,8 @@ class AnalysisServiceSettings {
 
   // Returns the analysis settings with the specified tags.
   AnalysisSettings GetAnalysisSettingsWithTags(
-      std::map<std::string, TagSettings> tags) const;
+      std::map<std::string, TagSettings> tags,
+      DataRegion data_region) const;
 
   // Returns true if the settings were initialized correctly. If this returns
   // false, then GetAnalysisSettings will always return std::nullopt.

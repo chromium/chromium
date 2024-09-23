@@ -19,12 +19,12 @@ const net::IPAddress ToNetAddress(const openscreen::IPAddress& address) {
     case openscreen::IPAddress::Version::kV4: {
       std::array<uint8_t, openscreen::IPAddress::kV4Size> bytes_v4;
       address.CopyToV4(bytes_v4.data());
-      return net::IPAddress(bytes_v4.data(), bytes_v4.size());
+      return net::IPAddress(bytes_v4);
     }
     case openscreen::IPAddress::Version::kV6: {
       std::array<uint8_t, openscreen::IPAddress::kV6Size> bytes_v6;
       address.CopyToV6(bytes_v6.data());
-      return net::IPAddress(bytes_v6.data(), bytes_v6.size());
+      return net::IPAddress(bytes_v6);
     }
   }
 }
@@ -42,7 +42,7 @@ openscreen::IPAddress::Version ToOpenScreenVersion(
       return openscreen::IPAddress::Version::kV4;
 
     case net::AddressFamily::ADDRESS_FAMILY_UNSPECIFIED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return openscreen::IPAddress::Version::kV4;
   }
 }

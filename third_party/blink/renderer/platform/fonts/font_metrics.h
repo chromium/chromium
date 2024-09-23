@@ -36,7 +36,7 @@ namespace blink {
 
 class FontPlatformData;
 
-class FontMetrics {
+class PLATFORM_EXPORT FontMetrics {
   DISALLOW_NEW();
 
  public:
@@ -72,7 +72,19 @@ class FontMetrics {
 
   float FloatHeight() const { return float_ascent_ + float_descent_; }
 
+  float ConvertBaseline(float value,
+                        FontBaseline to,
+                        FontBaseline from = kAlphabeticBaseline) const {
+    return from == to ? value : FloatAscent(to) - FloatAscent(from) + value;
+  }
+  float Alphabetic(FontBaseline baseline_type) const {
+    return ConvertBaseline(0, baseline_type);
+  }
+
   float CapHeight() const { return cap_height_; }
+  float CapHeight(FontBaseline baseline_type) const {
+    return ConvertBaseline(CapHeight(), baseline_type);
+  }
   void SetCapHeight(float cap_height) { cap_height_ = cap_height; }
 
   int LineGap() const { return static_cast<int>(lroundf(line_gap_)); }
@@ -82,6 +94,9 @@ class FontMetrics {
   void SetLineSpacing(float line_spacing) { line_spacing_ = line_spacing; }
 
   float XHeight() const { return x_height_; }
+  float XHeight(FontBaseline baseline_type) const {
+    return ConvertBaseline(XHeight(), baseline_type);
+  }
   void SetXHeight(float x_height) {
     x_height_ = x_height;
     has_x_height_ = true;
@@ -120,6 +135,18 @@ class FontMetrics {
   LayoutUnit FixedDescent(
       FontBaseline baseline_type = kAlphabeticBaseline) const {
     return LayoutUnit::FromFloatRound(FloatDescent(baseline_type));
+  }
+
+  LayoutUnit FixedAlphabetic(FontBaseline baseline_type) const {
+    return LayoutUnit::FromFloatRound(Alphabetic(baseline_type));
+  }
+
+  LayoutUnit FixedCapHeight(FontBaseline baseline_type) const {
+    return LayoutUnit::FromFloatRound(CapHeight(baseline_type));
+  }
+
+  LayoutUnit FixedXHeight(FontBaseline baseline_type) const {
+    return LayoutUnit::FromFloatRound(XHeight(baseline_type));
   }
 
   LayoutUnit FixedLineSpacing() const {
@@ -218,12 +245,10 @@ class FontMetrics {
     hanging_baseline_position_.reset();
   }
 
-  PLATFORM_EXPORT float FloatAscentInternal(
-      FontBaseline baseline_type,
-      ApplyBaselineTable apply_baseline_table) const;
-  PLATFORM_EXPORT int IntAscentInternal(
-      FontBaseline baseline_type,
-      ApplyBaselineTable apply_baseline_table) const;
+  float FloatAscentInternal(FontBaseline baseline_type,
+                            ApplyBaselineTable apply_baseline_table) const;
+  int IntAscentInternal(FontBaseline baseline_type,
+                        ApplyBaselineTable apply_baseline_table) const;
 
   float cap_height_ = 0;
   float float_ascent_ = 0;

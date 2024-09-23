@@ -4,28 +4,98 @@
 
 module viz.mojom;
 
-import "ui/gfx/geometry/mojom/geometry.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
+import "services/viz/public/mojom/compositing/layer.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+import "services/viz/public/mojom/compositing/tiling.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Metadata about a layer tree to be updated with each LayerContext commit.
+// Metadata and contents of a service-side display tree to be updated each time
+// the corresponding client layer tree activates.
+//
+// Note for this structure and its constituent fields: dimensions of viewports,
+// layer bounds, clipping rectangles, etc, are used as inputs to a drawing
+// subsystem which produces CompositorFrames on behalf of the client. Those
+// frames are themselves subjected to authoritative frame hierarchy constraints
+// set by the Viz host (i.e. the browser.) Such fields therefore do not require
+// additional validation on the service side. Clients are free to describe any
+// visual geometry they like, but this does not allow them to escape their
+// assigned clipping rectangle on the display, nor their place within the frame
+// hierarchy as it pertains to visual layering or input targeting.
+//
+// TODO(https://crbug.com/40902503): Split less frequently updated fields out
+// into an optional substructure to reduce serialization load.
 struct LayerTreeUpdate {
+  // The main frame commit whose tree is driving this update. Incremented over
+  // time with each client-side commit.
+  int32 source_frame_number;
+
+  // Links trace events on the display side to other events in the client.
+  uint64 trace_id;
+
+  // The device viewport and scale factor set by the tree's client.
   gfx.mojom.Rect device_viewport;
   float device_scale_factor;
-  LocalSurfaceId local_surface_id_from_parent;
+
+  // If a new LocalSurfaceId is assigned by the parent, it's included here.
+  LocalSurfaceId? local_surface_id_from_parent;
+
+  // The background color with which to fill any space not covered by layers
+  // within the tree's content rect.
+  skia.mojom.SkColor4f background_color;
+
+  // Property tree node indices corresponding to ViewportPropertyIds.
+  int32 overscroll_elasticity_transform;
+  int32 page_scale_transform;
+  int32 inner_scroll;
+  int32 outer_clip;
+  int32 outer_scroll;
+
+  // Properties of layers added or modified since the last update. Note that the
+  // ordering of this array is arbitrary and not relevant to the tree's layer
+  // list order. If any layers were added, removed, or otherwise reordered in
+  // the client's layer list, `layer_order` will convey the full new layer list
+  // ordering.
+  array<Layer> layers;
+
+  // The full list of layer IDs in the tree, in layer-list order. If null, the
+  // layer list has not changed since the last update. For any ID present in
+  // this list, the display tree must already contain a layer with that ID, or
+  // there must be such a layer described in `layers` above.
+  array<int32>? layer_order;
+
+  // Miscellaneous transform tree properties, if changed since last update. Does
+  // not include changes to individual nodes in the tree.
+  TransformTreeUpdate? transform_tree_update;
+
+  // Nodes added or modified on any property tree since the last update.
+  array<TransformNode> transform_nodes;
+  array<ClipNode> clip_nodes;
+  array<EffectNode> effect_nodes;
+  array<ScrollNode> scroll_nodes;
+
+  // The total number of nodes in each property tree.
+  uint32 num_transform_nodes;
+  uint32 num_clip_nodes;
+  uint32 num_effect_nodes;
+  uint32 num_scroll_nodes;
+
+  // Tiling updates for any PictureLayers in the tree.
+  array<Tiling> tilings;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
 // client-side (e.g. renderer- or browser-side) LayerTreeHost.
 interface LayerContext {
-  // Updates the LocalSurfaceId associated with the tree.
-  SetTargetLocalSurfaceId(LocalSurfaceId id);
-
   // Globally controls whether the tree contents are visible.
   SetVisible(bool visible);
 
-  // Flushes pending updates from the client to the LayerTreeHostImpl.
-  Commit(LayerTreeUpdate update);
+  // Flushes pending updates from the client to the service-side display tree.
+  UpdateDisplayTree(LayerTreeUpdate update);
+
+  // Updates one or more tiles in a specific tiling.
+  UpdateDisplayTiling(Tiling tiling);
 };
 
 // Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding
@@ -39,7 +109,7 @@ interface LayerContextClient {
 
 // Parameters needed to bind a LayerContext endpoint via a CompositorFrameSink.
 struct PendingLayerContext {
-  // TODO(https://crbug.com/1431762): De-associate these interfaces from
+  // TODO(crbug.com/40902503): De-associate these interfaces from
   // CompositorFrameSink.
   pending_associated_receiver<LayerContext> receiver;
   pending_associated_remote<LayerContextClient> client;

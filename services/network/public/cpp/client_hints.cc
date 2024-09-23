@@ -76,8 +76,8 @@ ClientHintToNameMap MakeClientHintToNameMap() {
       {network::mojom::WebClientHintsType::kSaveData, "save-data"},
       {network::mojom::WebClientHintsType::kPrefersReducedMotion,
        "sec-ch-prefers-reduced-motion"},
-      {network::mojom::WebClientHintsType::kUAFormFactor,
-       "sec-ch-ua-form-factor"},
+      {network::mojom::WebClientHintsType::kUAFormFactors,
+       "sec-ch-ua-form-factors"},
       {network::mojom::WebClientHintsType::kPrefersReducedTransparency,
        "sec-ch-prefers-reduced-transparency"},
   };
@@ -168,7 +168,7 @@ ParseClientHintToDelegatedThirdPartiesHeader(const std::string& header,
   switch (type) {
     case MetaCHType::HttpEquivAcceptCH: {
       // ParseClientHintsHeader should have been called instead.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ClientHintToDelegatedThirdPartiesHeader();
     }
     case MetaCHType::HttpEquivDelegateCH: {

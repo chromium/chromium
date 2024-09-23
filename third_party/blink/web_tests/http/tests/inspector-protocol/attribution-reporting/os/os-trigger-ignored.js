@@ -11,7 +11,8 @@
   const issue = dp.Audits.onceIssueAdded();
 
   await dp.Runtime.evaluate({expression: `
-    fetch('/inspector-protocol/attribution-reporting/resources/register-os-trigger.php');
+    fetch('/inspector-protocol/attribution-reporting/resources/register-os-trigger.php',
+        {keepalive: true});
   `});
 
   testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);

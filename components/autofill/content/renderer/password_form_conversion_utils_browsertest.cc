@@ -20,7 +20,6 @@ using blink::WebLocalFrame;
 using blink::WebVector;
 
 namespace autofill {
-
 namespace {
 
 // A builder to produce HTML code for a password form composed of the desired
@@ -115,89 +114,91 @@ class PasswordFormConversionUtilsTest : public content::RenderViewTest {
     WebLocalFrame* frame = GetMainFrame();
     ASSERT_TRUE(frame);
 
-    WebVector<WebFormElement> forms = frame->GetDocument().Forms();
+    WebVector<WebFormElement> forms = frame->GetDocument().GetTopLevelForms();
     ASSERT_LE(1U, forms.size());
 
     *form = forms[0];
   }
 };
 
-}  // namespace
-
 TEST_F(PasswordFormConversionUtilsTest, IsGaiaReauthFormIgnored) {
   struct TestCase {
     const char* origin;
     struct KeyValue {
-      KeyValue() : name(nullptr), value(nullptr) {}
-      KeyValue(const char* new_name, const char* new_value)
+      constexpr KeyValue() : name(nullptr), value(nullptr) {}
+      constexpr KeyValue(const char* new_name, const char* new_value)
           : name(new_name), value(new_value) {}
       const char* name;
       const char* value;
-    } hidden_fields[2];
+    };
+    std::array<KeyValue, 2> hidden_fields;
     bool expected_form_is_reauth;
-  } cases[] = {
+  };
+  constexpr auto cases = std::to_array<TestCase>({
       // A common password form is parsed successfully.
-      {"https://example.com",
-       {TestCase::KeyValue(), TestCase::KeyValue()},
-       false},
+      TestCase{"https://example.com",
+               {TestCase::KeyValue(), TestCase::KeyValue()},
+               false},
       // A common password form, even if it appears on a GAIA reauth url,
       // is parsed successfully.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue(), TestCase::KeyValue()},
-       false},
+      TestCase{"https://accounts.google.com",
+               {TestCase::KeyValue(), TestCase::KeyValue()},
+               false},
       // Not a transactional reauth.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue("continue", "https://passwords.google.com/settings"),
-        TestCase::KeyValue()},
-       false},
-      // A reauth form that is not for a password site is parsed successfuly.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue("continue", "https://mail.google.com"),
-        TestCase::KeyValue("rart", "")},
-       false},
+      TestCase{"https://accounts.google.com",
+               {TestCase::KeyValue("continue",
+                                   "https://passwords.google.com/settings"),
+                TestCase::KeyValue()},
+               false},
+      // A reauth form that is not for a password site is parsed successfully.
+      TestCase{"https://accounts.google.com",
+               {TestCase::KeyValue("continue", "https://mail.google.com"),
+                TestCase::KeyValue("rart", "")},
+               false},
       // A reauth form for a password site is recognised as such.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue("continue", "https://passwords.google.com"),
-        TestCase::KeyValue("rart", "")},
-       true},
+      TestCase{"https://accounts.google.com",
+               {TestCase::KeyValue("continue", "https://passwords.google.com"),
+                TestCase::KeyValue("rart", "")},
+               true},
       // Path, params or fragment in "continue" should not have influence.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue("continue",
-                           "https://passwords.google.com/path?param=val#frag"),
-        TestCase::KeyValue("rart", "")},
-       true},
-      // Password site is inaccesible via HTTP, but because of HSTS the
+      TestCase{
+          "https://accounts.google.com",
+          {TestCase::KeyValue(
+               "continue", "https://passwords.google.com/path?param=val#frag"),
+           TestCase::KeyValue("rart", "")},
+          true},
+      // Password site is inaccessible via HTTP, but because of HSTS the
       // following link should still continue to https://passwords.google.com.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue("continue", "http://passwords.google.com"),
-        TestCase::KeyValue("rart", "")},
-       true},
+      TestCase{"https://accounts.google.com",
+               {TestCase::KeyValue("continue", "http://passwords.google.com"),
+                TestCase::KeyValue("rart", "")},
+               true},
       // Make sure testing sites are disabled as well.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue(
-            "continue",
-            "https://passwords-ac-testing.corp.google.com/settings"),
-        TestCase::KeyValue("rart", "")},
-       true},
+      TestCase{"https://accounts.google.com",
+               {TestCase::KeyValue(
+                    "continue",
+                    "https://passwords-ac-testing.corp.google.com/settings"),
+                TestCase::KeyValue("rart", "")},
+               true},
       // Specifying default port doesn't change anything.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue("continue", "passwords.google.com:443"),
-        TestCase::KeyValue("rart", "")},
-       true},
+      TestCase{"https://accounts.google.com",
+               {TestCase::KeyValue("continue", "passwords.google.com:443"),
+                TestCase::KeyValue("rart", "")},
+               true},
       // Fully qualified domain should work as well.
-      {"https://accounts.google.com",
-       {TestCase::KeyValue("continue",
-                           "https://passwords.google.com./settings"),
-        TestCase::KeyValue("rart", "")},
-       true},
+      TestCase{"https://accounts.google.com",
+               {TestCase::KeyValue("continue",
+                                   "https://passwords.google.com./settings"),
+                TestCase::KeyValue("rart", "")},
+               true},
       // A correctly looking form, but on a different page.
-      {"https://google.com",
-       {TestCase::KeyValue("continue", "https://passwords.google.com"),
-        TestCase::KeyValue("rart", "")},
-       false},
-  };
+      TestCase{"https://google.com",
+               {TestCase::KeyValue("continue", "https://passwords.google.com"),
+                TestCase::KeyValue("rart", "")},
+               false},
+  });
 
-  for (TestCase& test_case : cases) {
+  for (const TestCase& test_case : cases) {
     SCOPED_TRACE(testing::Message("origin=")
                  << test_case.origin
                  << ", hidden_fields[0]=" << test_case.hidden_fields[0].name
@@ -209,7 +210,7 @@ TEST_F(PasswordFormConversionUtilsTest, IsGaiaReauthFormIgnored) {
     std::unique_ptr<PasswordFormBuilder> builder(new PasswordFormBuilder(""));
     builder->AddTextField("username", "", nullptr);
     builder->AddPasswordField("password", "", nullptr);
-    for (TestCase::KeyValue& hidden_field : test_case.hidden_fields) {
+    for (const TestCase::KeyValue& hidden_field : test_case.hidden_fields) {
       if (hidden_field.name)
         builder->AddHiddenField(hidden_field.name, hidden_field.value);
     }
@@ -225,21 +226,24 @@ TEST_F(PasswordFormConversionUtilsTest, IsGaiaWithSkipSavePasswordForm) {
   struct TestCase {
     const char* origin;
     bool expected_form_has_skip_save_password;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<TestCase>({
       // A common password form is parsed successfully.
-      {"https://example.com", false},
+      TestCase{"https://example.com", false},
       // A common GAIA sign-in page, with no skip save password argument.
-      {"https://accounts.google.com", false},
+      TestCase{"https://accounts.google.com", false},
       // A common GAIA sign-in page, with "0" skip save password argument.
-      {"https://accounts.google.com/?ssp=0", false},
+      TestCase{"https://accounts.google.com/?ssp=0", false},
       // A common GAIA sign-in page, with skip save password argument.
-      {"https://accounts.google.com/?ssp=1", true},
+      TestCase{"https://accounts.google.com/?ssp=1", true},
       // The Gaia page that is used to start a Chrome sign-in flow when Desktop
       // Identity Consistency is enable.
-      {GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec().c_str(), true},
-  };
+      TestCase{
+          GaiaUrls::GetInstance()->signin_chrome_sync_dice().spec().c_str(),
+          true},
+  });
 
-  for (TestCase& test_case : cases) {
+  for (const TestCase& test_case : cases) {
     SCOPED_TRACE(testing::Message("origin=")
                  << test_case.origin
                  << ", expected_form_has_skip_save_password="
@@ -255,4 +259,5 @@ TEST_F(PasswordFormConversionUtilsTest, IsGaiaWithSkipSavePasswordForm) {
   }
 }
 
+}  // namespace
 }  // namespace autofill

@@ -73,7 +73,7 @@ void InputMethodSurface::OnSurfaceCommit() {
 
   gfx::RectF new_bounds_in_dips = gfx::ConvertRectToDips(
       root_surface()->hit_test_region().bounds(), GetScale());
-  // TODO(crbug.com/1131682): We should avoid dropping precision to integers
+  // TODO(crbug.com/40150312): We should avoid dropping precision to integers
   // here if we want to know the true rectangle bounds in DIPs. If not, we
   // should use ToEnclosingRect() if we want to include DIPs that partly overlap
   // the physical pixel bounds, or ToEnclosedRect() if we do not.
@@ -83,7 +83,7 @@ void InputMethodSurface::OnSurfaceCommit() {
     input_method_bounds_ = int_bounds_in_dips;
     manager_->OnTouchableBoundsChanged(this);
 
-    GetViewAccessibility().OverrideBounds(gfx::RectF(input_method_bounds_));
+    GetViewAccessibility().SetBounds(gfx::RectF(input_method_bounds_));
   }
 }
 

@@ -10,11 +10,11 @@
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/sys/component/cpp/testing/realm_builder.h>
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "fuchsia_web/runners/cast/test/fake_application_config_manager.h"
 
 namespace test {
@@ -36,7 +36,7 @@ class FakeCastAgent final : public ::component_testing::LocalComponentImpl,
   //   services are connected-to.
   // - DoNothing() to prevent default services (e.g. CorsExemptHeaderProvider)
   //   being handled by the fake.
-  void RegisterOnConnectClosure(base::StringPiece service,
+  void RegisterOnConnectClosure(std::string_view service,
                                 base::RepeatingClosure callback);
 
   // ::component_testing::LocalComponentImpl implementation.

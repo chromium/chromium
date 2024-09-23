@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <queue>
+#include <string_view>
 
 #include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
@@ -15,6 +16,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/class_property.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
@@ -30,15 +32,18 @@ bool HasAncestor(const aura::Window* window, const aura::Window* ancestor) {
 }
 
 bool TransientChildIsWindowModal(const aura::Window* window) {
-  return window->GetProperty(aura::client::kModalKey) == ui::MODAL_TYPE_WINDOW;
+  return window->GetProperty(aura::client::kModalKey) ==
+         ui::mojom::ModalType::kWindow;
 }
 
 bool TransientChildIsSystemModal(const aura::Window* window) {
-  return window->GetProperty(aura::client::kModalKey) == ui::MODAL_TYPE_SYSTEM;
+  return window->GetProperty(aura::client::kModalKey) ==
+         ui::mojom::ModalType::kSystem;
 }
 
 bool TransientChildIsChildModal(const aura::Window* window) {
-  return window->GetProperty(aura::client::kModalKey) == ui::MODAL_TYPE_CHILD;
+  return window->GetProperty(aura::client::kModalKey) ==
+         ui::mojom::ModalType::kChild;
 }
 
 aura::Window* GetModalParent(const aura::Window* window) {
@@ -132,7 +137,7 @@ void WindowModalityController::OnTouchEvent(ui::TouchEvent* event) {
     event->SetHandled();
 }
 
-base::StringPiece WindowModalityController::GetLogContext() const {
+std::string_view WindowModalityController::GetLogContext() const {
   return "WindowModalityController";
 }
 
@@ -153,7 +158,8 @@ void WindowModalityController::OnWindowPropertyChanged(aura::Window* window,
   // In tests, we sometimes create the modality relationship after a window is
   // visible.
   if (key == aura::client::kModalKey &&
-      window->GetProperty(aura::client::kModalKey) != ui::MODAL_TYPE_NONE &&
+      window->GetProperty(aura::client::kModalKey) !=
+          ui::mojom::ModalType::kNone &&
       window->IsVisible()) {
     ActivateWindow(window);
     CancelTouchesOnTransientWindowTree(window);
@@ -162,8 +168,8 @@ void WindowModalityController::OnWindowPropertyChanged(aura::Window* window,
 
 void WindowModalityController::OnWindowVisibilityChanged(aura::Window* window,
                                                          bool visible) {
-  if (visible &&
-      window->GetProperty(aura::client::kModalKey) != ui::MODAL_TYPE_NONE) {
+  if (visible && window->GetProperty(aura::client::kModalKey) !=
+                     ui::mojom::ModalType::kNone) {
     CancelTouchesOnTransientWindowTree(window);
 
     // Make sure no other window has capture, otherwise |window| won't get mouse
@@ -172,7 +178,7 @@ void WindowModalityController::OnWindowVisibilityChanged(aura::Window* window,
     if (capture_window) {
       bool should_release_capture = true;
       if (window->GetProperty(aura::client::kModalKey) ==
-              ui::MODAL_TYPE_CHILD &&
+              ui::mojom::ModalType::kChild &&
           !HasAncestor(capture_window, GetModalParent(window))) {
         // For child modal windows we only need ensure capture is not on a
         // descendant of the modal parent. This way we block events to the
@@ -196,8 +202,9 @@ bool WindowModalityController::ProcessLocatedEvent(aura::Window* target,
   if (event->handled())
     return false;
   aura::Window* modal_transient_child = GetModalTransient(target);
-  if (modal_transient_child && (event->type() == ui::ET_MOUSE_PRESSED ||
-                                event->type() == ui::ET_TOUCH_PRESSED)) {
+  if (modal_transient_child &&
+      (event->type() == ui::EventType::kMousePressed ||
+       event->type() == ui::EventType::kTouchPressed)) {
     // Activate top window if transient child window is window modal.
     if (TransientChildIsWindowModal(modal_transient_child)) {
       aura::Window* toplevel = GetToplevelWindow(target);
@@ -207,8 +214,9 @@ bool WindowModalityController::ProcessLocatedEvent(aura::Window* target,
 
     AnimateWindow(modal_transient_child, WINDOW_ANIMATION_TYPE_BOUNCE);
   }
-  if (event->type() == ui::ET_TOUCH_CANCELLED)
+  if (event->type() == ui::EventType::kTouchCancelled) {
     return false;
+  }
   return !!modal_transient_child;
 }
 

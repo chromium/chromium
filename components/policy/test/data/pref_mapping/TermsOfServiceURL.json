@@ -9,7 +9,9 @@
           "TermsOfServiceURL": "http://www.example.com/terms_of_service.txt"
         },
         "prefs": {
-          "terms_of_service.url": {}
+          "terms_of_service.url": {
+            "value": "http://www.example.com/terms_of_service.txt"
+          }
         }
       }
     ]

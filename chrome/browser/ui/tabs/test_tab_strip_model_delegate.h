@@ -44,6 +44,8 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   std::optional<SessionID> CreateHistoricalTab(
       content::WebContents* contents) override;
   void CreateHistoricalGroup(const tab_groups::TabGroupId& group) override;
+  void GroupAdded(const tab_groups::TabGroupId& group) override;
+  void WillCloseGroup(const tab_groups::TabGroupId& group) override;
   void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;
@@ -52,14 +54,17 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool CanReload() const override;
   void AddToReadLater(content::WebContents* web_contents) override;
   bool SupportsReadLater() override;
-  void CacheWebContents(const std::vector<std::unique_ptr<DetachedWebContents>>&
-                            web_contents) override;
-  void FollowSite(content::WebContents* web_contents) override;
-  void UnfollowSite(content::WebContents* web_contents) override;
   bool IsForWebApp() override;
   void CopyURL(content::WebContents* web_contents) override;
   void GoBack(content::WebContents* web_contents) override;
   bool CanGoBack(content::WebContents* web_contents) override;
+  bool IsNormalWindow() override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
+  void OnGroupsDestruction(const std::vector<tab_groups::TabGroupId>& group_ids,
+                           base::OnceCallback<void()> callback) override;
+  void OnRemovingAllTabsFromGroups(
+      const std::vector<tab_groups::TabGroupId>& group_ids,
+      base::OnceCallback<void()> callback) override;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TEST_TAB_STRIP_MODEL_DELEGATE_H_

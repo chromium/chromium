@@ -60,6 +60,8 @@ class TesterBrowsingTopicsCalculator : public BrowsingTopicsCalculator {
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       Annotator* annotator,
+      int previous_timeout_count,
+      base::Time session_start_time,
       const base::circular_deque<EpochTopics>& epochs,
       CalculateCompletedCallback callback,
       base::queue<uint64_t> rand_uint64_queue);
@@ -70,6 +72,8 @@ class TesterBrowsingTopicsCalculator : public BrowsingTopicsCalculator {
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       Annotator* annotator,
+      int previous_timeout_count,
+      base::Time session_start_time,
       CalculateCompletedCallback callback,
       EpochTopics mock_result,
       base::TimeDelta mock_result_delay);
@@ -129,6 +133,7 @@ class MockBrowsingTopicsService : public BrowsingTopicsService {
               GetTopTopicsForDisplay,
               (),
               (const override));
+  MOCK_METHOD(void, ValidateCalculationSchedule, (), (override));
   MOCK_METHOD(Annotator*, GetAnnotator, (), (override));
   MOCK_METHOD(void,
               ClearTopic,
@@ -163,10 +168,20 @@ class TestAnnotator : public Annotator {
   std::optional<optimization_guide::ModelInfo> GetBrowsingTopicsModelInfo()
       const override;
 
+  void SetModelRequestDelay(base::TimeDelta model_request_delay) {
+    model_request_delay_ = model_request_delay;
+  }
+
+  void SetAnnotationRequestDelay(base::TimeDelta annotation_request_delay) {
+    annotation_request_delay_ = annotation_request_delay;
+  }
+
  private:
   std::map<std::string, std::set<int32_t>> annotations_;
   std::optional<optimization_guide::ModelInfo> model_info_;
   bool model_available_ = true;
+  base::TimeDelta model_request_delay_;
+  base::TimeDelta annotation_request_delay_;
   base::OnceClosureList model_available_callbacks_;
 };
 

@@ -67,22 +67,6 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   // CreateIncompleteObjectInfo() instead.
   blink::mojom::ServiceWorkerObjectInfoPtr CreateCompleteObjectInfoToSend();
 
-  // Similar to CreateCompleteObjectInfoToSend(), except the returned info has
-  // an empty Mojo request for ServiceWorkerObject. To make the info usable, the
-  // caller should add a request to the info, send the info over Mojo, and
-  // then call AddRemoteObjectPtrAndUpdateState().
-  //
-  // This function is useful when an info is needed before it can be sent over
-  // Mojo.
-  blink::mojom::ServiceWorkerObjectInfoPtr CreateIncompleteObjectInfo();
-
-  // Starts to use the |pending_object| as a valid remote, and triggers
-  // statechanged event if |sent_state| is old and needs to be updated.
-  void AddRemoteObjectPtrAndUpdateState(
-      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerObject>
-          pending_object,
-      blink::mojom::ServiceWorkerState sent_state);
-
   base::WeakPtr<ServiceWorkerObjectHost> AsWeakPtr();
 
  private:
@@ -107,14 +91,14 @@ class CONTENT_EXPORT ServiceWorkerObjectHost
   // |this|.
   //
   // However, there exists an exception, because of an ownership cycle
-  // between 1,2,3,4:
-  // 1. ServiceWorkerContainerHost owns via unique_ptr (2)
-  // 2. ServiceWorkerObjectHost owns via scoped_ptr(3)
-  // 3. ServiceWorkerVersion owns via unique_ptr (4)
-  // 4. ServiceWorkerHost owns via unique_ptr (1)
+  // between 1,2,3,4,5:
+  // 1. ServiceWorkerContainerHost owns as member (2)
+  // 2. ServiceWorkerObjectManager owns via unique_ptr (3)
+  // 3. ServiceWorkerObjectHost owns via scoped_ptr(4)
+  // 4. ServiceWorkerVersion owns via unique_ptr (5)
+  // 5. ServiceWorkerHost owns via unique_ptr (1)
   //
-  // The cycle is broken in
-  // `ServiceWorkerContainerHost::RemoveServiceWorkerObjectHost`, by
+  // The cycle is broken in `ServiceWorkerObjectManager::RemoveHost`, by
   // transferring ownership of |this| to the stack, while deleting
   // |container_host_|.
   //

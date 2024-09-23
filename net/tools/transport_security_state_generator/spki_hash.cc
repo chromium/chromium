@@ -5,6 +5,7 @@
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/strings/string_util.h"
@@ -16,8 +17,8 @@ SPKIHash::SPKIHash() = default;
 
 SPKIHash::~SPKIHash() = default;
 
-bool SPKIHash::FromString(base::StringPiece hash_string) {
-  base::StringPiece base64_string;
+bool SPKIHash::FromString(std::string_view hash_string) {
+  std::string_view base64_string;
 
   if (!base::StartsWith(hash_string, "sha256/",
                         base::CompareCase::INSENSITIVE_ASCII)) {

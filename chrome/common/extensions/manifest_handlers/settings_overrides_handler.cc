@@ -147,7 +147,7 @@ bool SettingsOverridesHandler::Parse(Extension* extension,
     return false;
   }
 
-  // TODO(crbug.com/1101130): Any of {homepage, search_engine, startup_pages}'s
+  // TODO(crbug.com/40703390): Any of {homepage, search_engine, startup_pages}'s
   // parse failure should result in hard error. Currently, Parse fails only when
   // all of these fail to parse.
   auto info = std::make_unique<SettingsOverrides>();

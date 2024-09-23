@@ -29,7 +29,7 @@ const StyleImage* GetStyleImage(const CSSProperty& property,
     case CSSPropertyID::kWebkitMaskBoxImageSource:
       return style.MaskBoxImageSource();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
 }
@@ -141,15 +141,19 @@ CSSImageInterpolationType::StaticMergeSingleConversions(
 const CSSValue* CSSImageInterpolationType::CreateCSSValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
-    const StyleResolverState&) const {
-  return StaticCreateCSSValue(interpolable_value, non_interpolable_value);
+    const StyleResolverState& state) const {
+  return StaticCreateCSSValue(interpolable_value, non_interpolable_value,
+                              state.CssToLengthConversionData());
 }
 
 const CSSValue* CSSImageInterpolationType::StaticCreateCSSValue(
     const InterpolableValue& interpolable_value,
-    const NonInterpolableValue* non_interpolable_value) {
+    const NonInterpolableValue* non_interpolable_value,
+    const CSSLengthResolver& length_resolver) {
+  // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   return To<CSSImageNonInterpolableValue>(non_interpolable_value)
-      ->Crossfade(To<InterpolableNumber>(interpolable_value).Value());
+      ->Crossfade(
+          To<InterpolableNumber>(interpolable_value).Value(length_resolver));
 }
 
 StyleImage* CSSImageInterpolationType::ResolveStyleImage(
@@ -158,7 +162,8 @@ StyleImage* CSSImageInterpolationType::ResolveStyleImage(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) {
   const CSSValue* image =
-      StaticCreateCSSValue(interpolable_value, non_interpolable_value);
+      StaticCreateCSSValue(interpolable_value, non_interpolable_value,
+                           state.CssToLengthConversionData());
   return state.GetStyleImage(property.PropertyID(), *image);
 }
 
@@ -176,6 +181,11 @@ class UnderlyingImageChecker final
       : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
   ~UnderlyingImageChecker() final = default;
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(underlying_);
+  }
+
  private:
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
@@ -192,14 +202,14 @@ class UnderlyingImageChecker final
                underlying.non_interpolable_value.get());
   }
 
-  const Persistent<InterpolationValueGCed> underlying_;
+  const Member<InterpolationValueGCed> underlying_;
 };
 
 InterpolationValue CSSImageInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   conversion_checkers.push_back(
-      std::make_unique<UnderlyingImageChecker>(underlying));
+      MakeGarbageCollected<UnderlyingImageChecker>(underlying));
   return InterpolationValue(underlying.Clone());
 }
 
@@ -217,6 +227,11 @@ class InheritedImageChecker final
       : property_(property), inherited_image_(inherited_image) {}
   ~InheritedImageChecker() final = default;
 
+  void Trace(Visitor* visitor) const final {
+    CSSConversionChecker::Trace(visitor);
+    visitor->Trace(inherited_image_);
+  }
+
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
@@ -230,7 +245,7 @@ class InheritedImageChecker final
   }
 
   const CSSProperty& property_;
-  Persistent<StyleImage> inherited_image_;
+  Member<StyleImage> inherited_image_;
 };
 
 InterpolationValue CSSImageInterpolationType::MaybeConvertInherit(
@@ -242,8 +257,8 @@ InterpolationValue CSSImageInterpolationType::MaybeConvertInherit(
   const StyleImage* inherited_image =
       GetStyleImage(CssProperty(), *state.ParentStyle());
   StyleImage* refable_image = const_cast<StyleImage*>(inherited_image);
-  conversion_checkers.push_back(
-      std::make_unique<InheritedImageChecker>(CssProperty(), refable_image));
+  conversion_checkers.push_back(MakeGarbageCollected<InheritedImageChecker>(
+      CssProperty(), refable_image));
   return MaybeConvertStyleImage(inherited_image, true);
 }
 
@@ -285,7 +300,7 @@ void CSSImageInterpolationType::ApplyStandardPropertyValue(
       state.StyleBuilder().SetMaskBoxImageSource(image);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Basic B&A auction - too large bidding group index
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - wrong IG name
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - left IG in the middle
+  assert_true: valid key Id expected true got false
+[FAIL] Basic B&A auction - ad URL not in ad
+  assert_true: valid key Id expected true got false
+Harness: the test ran to completion.
+

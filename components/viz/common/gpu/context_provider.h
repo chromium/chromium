@@ -11,8 +11,8 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -43,6 +43,8 @@ namespace viz {
 class VIZ_COMMON_EXPORT ContextProvider {
  public:
   class VIZ_COMMON_EXPORT ScopedContextLock {
+    STACK_ALLOCATED();
+
    public:
     explicit ScopedContextLock(ContextProvider* context_provider);
     ~ScopedContextLock();
@@ -52,7 +54,7 @@ class VIZ_COMMON_EXPORT ContextProvider {
     }
 
    private:
-    const raw_ptr<ContextProvider> context_provider_;
+    ContextProvider* const context_provider_;
     base::AutoLock context_lock_;
     std::unique_ptr<ContextCacheController::ScopedBusy> busy_;
   };

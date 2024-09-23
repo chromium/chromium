@@ -21,5 +21,6 @@ schema:
   type: boolean
 supported_on:
 - chrome.*:123-
+- android:128-
 tags: []
 type: main

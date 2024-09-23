@@ -17,7 +17,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:importantForAccessibility="no"
-        app:srcCompat="@drawable/ic_warning_red_24dp" />
+        android:layout_marginTop="8dp"
+        app:srcCompat="@drawable/ic_warning_red_outline_32dp" />
 
     <TextView
         android:id="@+id/account_picker_general_error_title"
@@ -26,7 +27,7 @@ found in the LICENSE file.
         android:layout_marginTop="12dp"
         android:layout_marginBottom="8dp"
         android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:textAppearance="@style/TextAppearance.Headline.Primary"
         android:text="@string/signin_account_picker_bottom_sheet_error_title" />
 
     <org.chromium.ui.widget.TextViewWithLeading

@@ -44,6 +44,8 @@ source_set("auction_worklet") {
     "auction_v8_logger.h",
     "auction_worklet_service_impl.cc",
     "auction_worklet_service_impl.h",
+    "auction_worklet_util.cc",
+    "auction_worklet_util.h",
     "bidder_lazy_filler.cc",
     "bidder_lazy_filler.h",
     "bidder_worklet.cc",
@@ -62,12 +64,16 @@ source_set("auction_worklet") {
     "lazy_filler.h",
     "private_aggregation_bindings.cc",
     "private_aggregation_bindings.h",
+    "real_time_reporting_bindings.cc",
+    "real_time_reporting_bindings.h",
     "register_ad_beacon_bindings.cc",
     "register_ad_beacon_bindings.h",
     "register_ad_macro_bindings.cc",
     "register_ad_macro_bindings.h",
     "report_bindings.cc",
     "report_bindings.h",
+    "seller_lazy_filler.cc",
+    "seller_lazy_filler.h",
     "seller_worklet.cc",
     "seller_worklet.h",
     "set_bid_bindings.cc",
@@ -78,14 +84,20 @@ source_set("auction_worklet") {
     "set_priority_signals_override_bindings.h",
     "shared_storage_bindings.cc",
     "shared_storage_bindings.h",
+    "trusted_kvv2_signals.cc",
+    "trusted_kvv2_signals.h",
     "trusted_signals.cc",
     "trusted_signals.h",
+    "trusted_signals_kvv2_helper.cc",
+    "trusted_signals_kvv2_helper.h",
     "trusted_signals_request_manager.cc",
     "trusted_signals_request_manager.h",
     "webidl_compat.cc",
     "webidl_compat.h",
     "worklet_loader.cc",
     "worklet_loader.h",
+    "worklet_util.cc",
+    "worklet_util.h",
   ]
 
   sources += get_target_outputs(":protocol_sources")
@@ -99,14 +111,17 @@ source_set("auction_worklet") {
   deps = [
     ":protocol_sources",
     "//base",
+    "//components/cbor:cbor",
     "//content:export",
     "//content/common",
+    "//content/public/common:common_sources",
     "//gin",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",
     "//third_party/blink/public/common",
     "//third_party/inspector_protocol:crdtp",
+    "//third_party/zlib/google:compression_utils",
     "//url",
     "//v8",
   ]
@@ -141,11 +156,15 @@ source_set("tests") {
   sources = [
     "auction_v8_inspector_util_unittest.cc",
     "auction_v8_logger_unittest.cc",
+    "auction_worklet_util_unittest.cc",
     "context_recycler_unittest.cc",
     "debug_command_queue_unittest.cc",
     "direct_from_seller_signals_requester_unittest.cc",
     "public/cpp/auction_downloader_unittest.cc",
+    "public/cpp/private_aggregation_reporting_unittest.cc",
     "seller_worklet_unittest.cc",
+    "trusted_kvv2_signals_unittest.cc",
+    "trusted_signals_kvv2_helper_unittest.cc",
     "trusted_signals_request_manager_unittest.cc",
     "trusted_signals_unittest.cc",
     "webidl_compat_unittest.cc",
@@ -157,7 +176,7 @@ source_set("tests") {
     "worklet_v8_debug_test_util.h",
   ]
 
-  # TODO(crbug.com/1413818): These tests depend on WASM.
+  # TODO(crbug.com/40255826): These tests depend on WASM.
   if (!is_ios) {
     sources += [
       "auction_v8_helper_unittest.cc",
@@ -169,15 +188,20 @@ source_set("tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/cbor:cbor",
     "//content/common:for_content_tests",
+    "//content/public/common:common",
+    "//content/services/auction_worklet/public/cpp:test_support",
     "//gin",
     "//net",
+    "//net:test_support",
     "//services/network:test_support",
     "//services/service_manager/public/cpp/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//third_party/inspector_protocol:crdtp",
+    "//third_party/zlib/google:compression_utils",
     "//v8",
   ]
 

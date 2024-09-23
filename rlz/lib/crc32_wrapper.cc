@@ -5,6 +5,11 @@
 // A wrapper around ZLib's CRC functions to put them in the rlz_lib namespace
 // and use our types.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "rlz/lib/assert.h"
 #include "rlz/lib/crc32.h"
 #include "rlz/lib/string_utils.h"

@@ -14,11 +14,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,7 +27,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 
@@ -75,19 +74,17 @@ public final class SafeBrowsingTest {
      */
     private void loadUrlNonBlocking(String url) {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> tab.loadUrl(new LoadUrlParams(url, PageTransition.TYPED)));
     }
 
     @Before
     public void setUp() {
-        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
     }
 
     @After
     public void tearDown() {
-        MockSafetyNetApiHandler.clearMockResponses();
         MockSafeBrowsingApiHandler.clearMockResponses();
         SafeBrowsingApiBridge.clearHandlerForTesting();
     }
@@ -107,7 +104,6 @@ public final class SafeBrowsingTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
     public void interstitialPage() throws Exception {
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
@@ -115,21 +111,6 @@ public final class SafeBrowsingTest {
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
         MockSafeBrowsingApiHandler.addMockResponse(
                 url, MockSafeBrowsingApiHandler.SOCIAL_ENGINEERING_CODE);
-        mActivityTestRule.startMainActivityOnBlankPage();
-
-        loadUrlNonBlocking(url);
-        waitForInterstitial(true);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_BROWSE_URL_DATABASE_CHECK})
-    public void interstitialPage_newGmsApiDisabled() throws Exception {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-        String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-        MockSafetyNetApiHandler.addMockResponse(url, "{\"matches\":[{\"threat_type\":\"5\"}]}");
         mActivityTestRule.startMainActivityOnBlankPage();
 
         loadUrlNonBlocking(url);

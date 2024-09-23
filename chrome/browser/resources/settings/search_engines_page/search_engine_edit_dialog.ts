@@ -91,9 +91,15 @@ export class SettingsSearchEngineEditDialogElement extends
     super.ready();
 
     if (this.model) {
-      this.dialogTitle_ = loadTimeData.getString(
-          this.model.isManaged ? 'searchEnginesViewSearchEngine' :
-                                 'searchEnginesEditSearchEngine');
+      if (this.model.isPrepopulated || this.model.default) {
+        this.dialogTitle_ =
+            loadTimeData.getString('searchEnginesEditSearchEngine');
+      } else {
+        this.dialogTitle_ = loadTimeData.getString(
+            this.model.isManaged ? 'searchEnginesViewSiteSearch' :
+                                   'searchEnginesEditSiteSearch');
+      }
+
       this.actionButtonText_ =
           loadTimeData.getString(this.model.isManaged ? 'done' : 'save');
       this.cancelButtonHidden_ = this.model.isManaged;
@@ -104,8 +110,7 @@ export class SettingsSearchEngineEditDialogElement extends
       this.queryUrl_ = this.model.url;
       this.readonly_ = this.model.isManaged;
     } else {
-      this.dialogTitle_ =
-          loadTimeData.getString('searchEnginesAddSearchEngine');
+      this.dialogTitle_ = loadTimeData.getString('searchEnginesAddSiteSearch');
       this.actionButtonText_ = loadTimeData.getString('add');
       this.readonly_ = false;
     }
@@ -154,6 +159,13 @@ export class SettingsSearchEngineEditDialogElement extends
   }
 
   private validateElement_(inputElement: CrInputElement) {
+    // No need to validate fields if the search engine is read-only, i.e.
+    // created by policy. Those have been validated when the policy was
+    // processed (b/348165485).
+    if (this.readonly_) {
+      return;
+    }
+
     // If element is empty, disable the action button, but don't show the red
     // invalid message.
     if (inputElement.value === '') {

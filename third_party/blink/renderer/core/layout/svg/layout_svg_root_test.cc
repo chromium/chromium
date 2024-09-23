@@ -62,9 +62,8 @@ TEST_P(LayoutSVGRootTest, VisualOverflowExpandsLayer) {
       CcLayersByDOMElementId(GetDocument().View()->RootCcLayer(), "root")[0];
   EXPECT_EQ(gfx::Size(100, 100), layer->bounds());
 
-  GetDocument()
-      .getElementById(AtomicString("rect"))
-      ->setAttribute(svg_names::kHeightAttr, AtomicString("200"));
+  GetElementById("rect")->setAttribute(svg_names::kHeightAttr,
+                                       AtomicString("200"));
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(gfx::Size(100, 200), layer->bounds());
@@ -104,7 +103,7 @@ TEST_P(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
     </svg>
   )HTML");
 
-  const auto& svg = *GetDocument().getElementById(AtomicString("svg"));
+  const auto& svg = *GetElementById("svg");
   const auto& body = *GetDocument().body();
 
   // This is the center of the rect-based hit test below.
@@ -138,17 +137,13 @@ TEST_P(LayoutSVGRootTest, PaintLayerType) {
   ASSERT_TRUE(root.Layer());
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 
-  GetDocument()
-      .getElementById(AtomicString("rect"))
-      ->setAttribute(svg_names::kStyleAttr,
-                     AtomicString("will-change: transform"));
+  GetElementById("rect")->setAttribute(svg_names::kStyleAttr,
+                                       AtomicString("will-change: transform"));
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(root.Layer());
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 
-  GetDocument()
-      .getElementById(AtomicString("rect"))
-      ->removeAttribute(svg_names::kStyleAttr);
+  GetElementById("rect")->removeAttribute(svg_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
   ASSERT_TRUE(root.Layer());
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());

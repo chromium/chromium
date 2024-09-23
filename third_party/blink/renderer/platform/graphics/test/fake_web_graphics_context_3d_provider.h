@@ -16,8 +16,8 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/mock/GrMockTypes.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 
 namespace blink {
 
@@ -46,7 +46,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
           std::make_unique<gpu::raster::RasterImplementationGLES>(
               gl_, nullptr, capabilities_);
       test_shared_image_interface_ =
-          base::MakeRefCounted<viz::TestSharedImageInterface>();
+          base::MakeRefCounted<gpu::TestSharedImageInterface>();
     }
 
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
@@ -68,7 +68,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
 
     if (!raster_context_provider_) {
       test_shared_image_interface_ =
-          base::MakeRefCounted<viz::TestSharedImageInterface>();
+          base::MakeRefCounted<gpu::TestSharedImageInterface>();
     }
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
 
@@ -129,7 +129,7 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) override {
     return image_decode_cache_;
   }
-  viz::TestSharedImageInterface* SharedImageInterface() override {
+  gpu::TestSharedImageInterface* SharedImageInterface() override {
     return raster_context_provider_
                ? raster_context_provider_->SharedImageInterface()
                : test_shared_image_interface_.get();
@@ -147,19 +147,20 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
 
  private:
   cc::StubDecodeCache stub_image_decode_cache_;
-  scoped_refptr<viz::TestSharedImageInterface> test_shared_image_interface_;
-  raw_ptr<gpu::gles2::GLES2Interface, ExperimentalRenderer> gl_ = nullptr;
+  scoped_refptr<gpu::TestSharedImageInterface> test_shared_image_interface_;
+  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_ = nullptr;
   std::unique_ptr<gpu::raster::RasterInterface> raster_interface_;
-  raw_ptr<gpu::raster::RasterInterface, ExperimentalRenderer>
+  raw_ptr<gpu::raster::RasterInterface, DanglingUntriaged>
       external_raster_interface_ = nullptr;
   std::unique_ptr<gpu::webgpu::WebGPUInterfaceStub> webgpu_interface_;
   sk_sp<GrDirectContext> gr_context_;
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   WebglPreferences webgl_preferences_;
-  raw_ptr<cc::ImageDecodeCache, ExperimentalRenderer> image_decode_cache_ =
-      nullptr;
-  raw_ptr<viz::TestContextProvider, ExperimentalRenderer>
+  // RAW_PTR_EXCLUSION: ImageDecodeCache is marked as not supported by
+  // raw_ptr. See raw_ptr.h for more information.
+  RAW_PTR_EXCLUSION cc::ImageDecodeCache* image_decode_cache_ = nullptr;
+  raw_ptr<viz::TestContextProvider, DanglingUntriaged>
       raster_context_provider_ = nullptr;
 };
 

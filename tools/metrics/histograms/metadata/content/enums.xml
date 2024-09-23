@@ -41,9 +41,38 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Profile"/>
 </enum>
 
+<enum name="ContentNotificationActionType">
+  <int value="0" label="Notification Received and Displayed by the OS."/>
+  <int value="1" label="Notification opened."/>
+  <int value="2" label="Notification Dismissed."/>
+  <int value="3" label="Send Feedback clicked."/>
+</enum>
+
+<enum name="ContentNotificationEligibilityType">
+  <int value="0" label="Content Notification Top of Feed Promo is enabled."/>
+  <int value="1" label="Content Notification Provisional is enabled."/>
+  <int value="2" label="Content Notification Set Up List Promo is enabled."/>
+  <int value="3" label="Content Notification Top of Feed Promo is registered."/>
+  <int value="4" label="Content Notification Provisional is registered."/>
+  <int value="5" label="Content Notification Set Up List Promo is registered."/>
+</enum>
+
+<enum name="ContentNotificationPromoProvisionalEntrypoint">
+  <int value="0" label="Promo dismissed from close button."/>
+  <int value="1" label="Promo shown threshold exceeded."/>
+</enum>
+
 <enum name="ContentNotificationPromptAction">
   <int value="0" label="Go to Settings tapped"/>
   <int value="1" label="No Thanks tapped"/>
+  <int value="2" label="Accepted tapped"/>
+</enum>
+
+<enum name="ContentNotificationSettingsAction">
+  <int value="0" label="Enabled Content Notifications Toggle."/>
+  <int value="1" label="Disabled Content Notifications Toggle."/>
+  <int value="2" label="Enabled Sports Notifications Toggle."/>
+  <int value="3" label="Disabled Sports Notifications Toggle."/>
 </enum>
 
 <enum name="ContentNotificationSetUpListPromoAction">
@@ -70,12 +99,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Main button tapped, to show OS prompt"/>
   <int value="3" label="Dismissed Promo from close button"/>
   <int value="4" label="Dismissed Promo from secondary button"/>
-</enum>
-
-<enum name="ContentNotificationTopOfFeedPromoEvent">
-  <int value="0" label="OS prompt was shown to user"/>
-  <int value="1" label="Promo shown when OS notifications are active"/>
-  <int value="2" label="Error displaying the OS prompt"/>
+  <int value="5" label="Promo was shown to the user"/>
 </enum>
 
 <enum name="ContentSettingBubbleAction">
@@ -83,26 +107,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kPermissionAllowed"/>
   <int value="3" label="kPermissionBlocked"/>
   <int value="4" label="KManageButtonClicked"/>
-</enum>
-
-<enum name="ContentSettingImageType">
-  <int value="0" label="COOKIES"/>
-  <int value="1" label="IMAGES"/>
-  <int value="2" label="JAVASCRIPT"/>
-  <int value="3" label="PPAPI_BROKER"/>
-  <int value="4" label="PLUGINS"/>
-  <int value="5" label="POPUPS"/>
-  <int value="6" label="GEOLOCATION"/>
-  <int value="7" label="MIXEDSCRIPT"/>
-  <int value="8" label="PROTOCOL_HANDLERS"/>
-  <int value="9" label="MEDIASTREAM"/>
-  <int value="10" label="ADS"/>
-  <int value="11" label="AUTOMATIC_DOWNLOADS"/>
-  <int value="12" label="MIDI_SYSEX"/>
-  <int value="13" label="SOUND"/>
-  <int value="14" label="FRAMEBUST"/>
-  <int value="16" label="SENSORS"/>
-  <int value="18" label="CLIPBOARD_READ_WRITE"/>
 </enum>
 
 <enum name="ContentSettingPopupAction">
@@ -219,21 +223,6 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Failed - network fetch timed out"/>
 </enum>
 
-<enum name="FeedNoticeAcknowledgementPath">
-  <obsolete>
-    Deprecated in 05/2022 since we removed feed notice card related codes.
-  </obsolete>
-  <int value="0"
-      label="The acknowledgment is reached after the user views the notice
-             for a required number of times."/>
-  <int value="1"
-      label="The acknowledgment is reached after the user taps the notice to
-             perform an open action for a required number of times."/>
-  <int value="2"
-      label="The acknowledgment is reached after the user fter the user taps
-             X button to close the notice."/>
-</enum>
-
 <enum name="FeedRefreshTrigger">
   <int value="0" label="Other"/>
   <int value="1" label="Background cold start"/>
@@ -274,7 +263,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="FeedSignInUI">
-  <int value="0" label="Showing a sign-in half sheet triggered from feed."/>
+  <int value="0"
+      label="(obsolete) Showing a sign-in half sheet triggered from feed."/>
   <int value="1" label="Showing a sign-in only flow triggered from feed."/>
   <int value="2"
       label="Showing a sign-in disabled snackbar triggered from feed."/>
@@ -433,8 +423,10 @@ chromium-metrics-reviews@google.com.
       label="User requested to refresh the Following feed using the
              post-follow snackbar 'refresh' action."/>
   <int value="64"
-      label="User tapped on the 'Continue' of the sign-in promo UI."/>
-  <int value="65" label="User tapped on the 'Cancel' of the sign-in promo UI."/>
+      label="(obsolete) User tapped on the 'Continue' of the sign-in promo
+             UI."/>
+  <int value="65"
+      label="(obsolete) User tapped on the 'Cancel' of the sign-in promo UI."/>
   <int value="66" label="User initiated a non-swipe manual refresh."/>
 </enum>
 

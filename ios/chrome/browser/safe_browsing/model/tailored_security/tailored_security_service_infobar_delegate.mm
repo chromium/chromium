@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
@@ -98,10 +98,10 @@ bool TailoredSecurityServiceInfobarDelegate::Accept() {
         base::UmaHistogramEnumeration(
             "SafeBrowsing.TailoredSecurityUnconsentedInFlowMessageOutcome",
             TailoredSecurityOutcome::kAccepted);
-        ChromeBrowserState* browser_state =
-            ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+        ProfileIOS* profile =
+            ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
         SetSafeBrowsingState(
-            browser_state->GetPrefs(),
+            profile->GetPrefs(),
             safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
             /*is_esb_enabled_in_sync=*/false);
         break;

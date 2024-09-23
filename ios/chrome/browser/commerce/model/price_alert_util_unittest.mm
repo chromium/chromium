@@ -5,14 +5,13 @@
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 
 #import "base/memory/raw_ptr.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/unified_consent/pref_names.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -26,33 +25,31 @@
 class PriceAlertUtilTest : public PlatformTest {
  public:
   void SetUp() override {
-    browser_state_ = BuildChromeBrowserState();
+    profile_ = BuildProfileIOS();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
     auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get()));
+        AuthenticationServiceFactory::GetInstance()->GetForProfile(
+            profile_.get()));
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
   }
 
-  std::unique_ptr<TestChromeBrowserState> BuildChromeBrowserState() {
-    TestChromeBrowserState::Builder builder;
+  std::unique_ptr<TestProfileIOS> BuildProfileIOS() {
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    return builder.Build();
+    return std::move(builder).Build();
   }
 
   void SetMSBB(bool enabled) {
-    browser_state_->GetPrefs()->SetBoolean(
+    profile_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         enabled);
   }
 
   void SetUserSetting(bool enabled) {
-    browser_state_->GetPrefs()->SetBoolean(prefs::kTrackPricesOnTabsEnabled,
-                                           enabled);
+    profile_->GetPrefs()->SetBoolean(prefs::kTrackPricesOnTabsEnabled, enabled);
   }
 
   void SignIn() {
@@ -72,7 +69,7 @@ class PriceAlertUtilTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
   FakeSystemIdentity* fake_identity_ = nullptr;
 };
@@ -80,45 +77,44 @@ class PriceAlertUtilTest : public PlatformTest {
 TEST_F(PriceAlertUtilTest, TestMSBBOff) {
   SetMSBB(false);
   SignIn();
-  EXPECT_FALSE(IsPriceAlertsEligible(browser_state_.get()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_.get()));
 }
 
 TEST_F(PriceAlertUtilTest, TestNotSignedIn) {
   SetMSBB(true);
-  EXPECT_FALSE(IsPriceAlertsEligible(browser_state_.get()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_.get()));
 }
 
 TEST_F(PriceAlertUtilTest, TestPriceAlertsAllowed) {
   SignIn();
   SetMSBB(true);
-  EXPECT_TRUE(IsPriceAlertsEligible(browser_state_.get()));
+  EXPECT_TRUE(IsPriceAlertsEligible(profile_.get()));
 }
 
 TEST_F(PriceAlertUtilTest, TestPriceAlertsEligibleThenSignOut) {
   SignIn();
   SetMSBB(true);
-  EXPECT_TRUE(IsPriceAlertsEligible(browser_state_.get()));
+  EXPECT_TRUE(IsPriceAlertsEligible(profile_.get()));
   SignOut();
-  EXPECT_FALSE(IsPriceAlertsEligible(browser_state_.get()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_.get()));
 }
 
 TEST_F(PriceAlertUtilTest, TestIncognito) {
   SignIn();
   SetMSBB(true);
-  EXPECT_FALSE(IsPriceAlertsEligible(
-      browser_state_->GetOffTheRecordChromeBrowserState()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_->GetOffTheRecordProfile()));
 }
 
 TEST_F(PriceAlertUtilTest, TestUserSettingOn) {
   SignIn();
   SetMSBB(true);
   SetUserSetting(true);
-  EXPECT_TRUE(IsPriceAlertsEligible(browser_state_.get()));
+  EXPECT_TRUE(IsPriceAlertsEligible(profile_.get()));
 }
 
 TEST_F(PriceAlertUtilTest, TestUserSettingOff) {
   SignIn();
   SetMSBB(true);
   SetUserSetting(false);
-  EXPECT_FALSE(IsPriceAlertsEligible(browser_state_.get()));
+  EXPECT_FALSE(IsPriceAlertsEligible(profile_.get()));
 }

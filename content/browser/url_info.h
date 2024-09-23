@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "content/browser/agent_cluster_key.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -139,6 +140,11 @@ struct CONTENT_EXPORT UrlInfo {
   // on site isolation for `url`'s site.
   bool is_coop_isolation_requested = false;
 
+  // True if this resource is served from the prefetch cache, and its success
+  // may have been influenced by cross-site state. Such responses may require
+  // special handling to make it harder to detect that this has happened.
+  bool is_prefetch_with_cross_site_contamination = false;
+
   // This allows overriding the origin of |url| for process assignment purposes
   // in certain very special cases.
   // - The navigation to |url| is through loadDataWithBaseURL (e.g., in a
@@ -188,7 +194,8 @@ struct CONTENT_EXPORT UrlInfo {
   std::optional<WebExposedIsolationInfo> web_exposed_isolation_info;
 
   // Indicates that the URL directs to PDF content, which should be isolated
-  // from other types of content.
+  // from other types of content.  On Android, this can only be true when a PDF
+  // NativePage is created for a main frame navigation.
   bool is_pdf = false;
 
   // If set, indicates that this UrlInfo is for a document that sets either
@@ -206,6 +213,14 @@ struct CONTENT_EXPORT UrlInfo {
   // COEP, because it then has an isolated WebExposedIsolationInfo.
   std::optional<url::Origin> common_coop_origin;
 
+  // The CrossOriginIsolationKey to use for the navigation. This represents the
+  // isolation requested by the page itself through the use of COOP, COEP and
+  // DIP. Right now, this is only set when DocumentIsolationPolicy is enabled,
+  // but it should eventually for COOP and COEP. It will eventually replace
+  // WebExposedIsolationInfo.
+  std::optional<AgentClusterKey::CrossOriginIsolationKey>
+      cross_origin_isolation_key;
+
   // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
   // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
 };
@@ -222,6 +237,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithOriginIsolationRequest(
       UrlInfo::OriginIsolationRequest origin_isolation_request);
   UrlInfoInit& WithCOOPSiteIsolation(bool requests_coop_isolation);
+  UrlInfoInit& WithCrossSitePrefetchContamination(bool contaminated);
   UrlInfoInit& WithOrigin(const url::Origin& origin);
   UrlInfoInit& WithSandbox(bool is_sandboxed);
   UrlInfoInit& WithUniqueSandboxId(int unique_sandbox_id);
@@ -231,6 +247,9 @@ class CONTENT_EXPORT UrlInfoInit {
       std::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
   UrlInfoInit& WithIsPdf(bool is_pdf);
   UrlInfoInit& WithCommonCoopOrigin(const url::Origin& origin);
+  UrlInfoInit& WithCrossOriginIsolationKey(
+      const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+          cross_origin_isolation_key);
 
   const std::optional<url::Origin>& origin() { return origin_; }
 
@@ -243,6 +262,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfo::OriginIsolationRequest origin_isolation_request_ =
       UrlInfo::OriginIsolationRequest::kDefault;
   bool requests_coop_isolation_ = false;
+  bool is_prefetch_with_cross_site_contamination_ = false;
   std::optional<url::Origin> origin_;
   bool is_sandboxed_ = false;
   int64_t unique_sandbox_id_ = UrlInfo::kInvalidUniqueSandboxId;
@@ -250,6 +270,8 @@ class CONTENT_EXPORT UrlInfoInit {
   std::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   bool is_pdf_ = false;
   std::optional<url::Origin> common_coop_origin_;
+  std::optional<AgentClusterKey::CrossOriginIsolationKey>
+      cross_origin_isolation_key_;
 
   // Any new fields should be added to the UrlInfoInit(UrlInfo) constructor.
 };  // class UrlInfoInit

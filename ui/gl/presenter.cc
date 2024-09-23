@@ -44,9 +44,8 @@ bool Presenter::ScheduleCALayer(const ui::CARendererLayerParams& params) {
   return false;
 }
 
-bool Presenter::ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) {
+void Presenter::ScheduleDCLayer(std::unique_ptr<DCLayerOverlayParams> params) {
   NOTIMPLEMENTED();
-  return false;
 }
 
 bool Presenter::Resize(const gfx::Size& size,

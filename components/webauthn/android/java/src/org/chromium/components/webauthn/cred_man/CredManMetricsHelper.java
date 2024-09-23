@@ -92,9 +92,13 @@ public class CredManMetricsHelper {
                 CredManPrepareRequestEnum.NUM_ENTRIES);
     }
 
-    public void recordCredmanPrepareRequestDuration(long durationMs) {
+    public void recordCredmanPrepareRequestDuration(long durationMs, boolean credentialsFound) {
         RecordHistogram.recordTimesHistogram(
                 "WebAuthentication.Android.CredManPrepareRequestDuration", durationMs);
+        if (credentialsFound) {
+            RecordHistogram.recordTimesHistogram(
+                    "WebAuthentication.CredentialFetchDuration.CredMan", durationMs);
+        }
     }
 
     public void reportGetCredentialMetrics(

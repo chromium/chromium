@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './code_section.js';
 import './shared_style.css.js';
 
@@ -22,6 +21,8 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './error_page.html.js';
+import type {ItemDelegate} from './item.js';
+import {ItemMixin} from './item_mixin.js';
 import {navigation, Page} from './navigation_helper.js';
 
 type ManifestError = chrome.developerPrivate.ManifestError;
@@ -75,7 +76,9 @@ export interface ExtensionsErrorPageElement {
   };
 }
 
-export class ExtensionsErrorPageElement extends PolymerElement {
+const ExtensionsErrorPageElementBase = ItemMixin(PolymerElement);
+
+export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   static get is() {
     return 'extensions-error-page';
   }
@@ -122,7 +125,7 @@ export class ExtensionsErrorPageElement extends PolymerElement {
   }
 
   data: chrome.developerPrivate.ExtensionInfo;
-  delegate: ErrorPageDelegate;
+  delegate: ErrorPageDelegate&ItemDelegate;
   inDevMode: boolean;
   private entries_: Array<ManifestError|RuntimeError>;
   private code_: chrome.developerPrivate.RequestFileSourceResponse|null;
@@ -137,6 +140,16 @@ export class ExtensionsErrorPageElement extends PolymerElement {
 
   getSelectedError(): ManifestError|RuntimeError {
     return this.entries_[this.selectedEntry_];
+  }
+
+  /**
+   * Dispatches an event with `eventName` and additional information in
+   * `details`. Used to propogate a load error to manager.ts if reloading an
+   * extension fails.
+   */
+  private fire_(eventName: string, detail?: any) {
+    this.dispatchEvent(
+        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   /**
@@ -354,7 +367,7 @@ export class ExtensionsErrorPageElement extends PolymerElement {
   }
 
   /**
-   * Determine if the iron-collapse should be opened (expanded).
+   * Determine if the cr-collapse should be opened (expanded).
    */
   private isOpened_(index: number): boolean {
     return index === this.selectedEntry_;
@@ -381,6 +394,14 @@ export class ExtensionsErrorPageElement extends PolymerElement {
     this.selectedEntry_ = this.selectedEntry_ === repeaterEvent.model.index ?
         -1 :
         repeaterEvent.model.index;
+  }
+
+  private showReloadButton_(): boolean {
+    return this.canReloadItem();
+  }
+
+  private onReloadClick_() {
+    this.reloadItem().catch((loadError) => this.fire_('load-error', loadError));
   }
 }
 

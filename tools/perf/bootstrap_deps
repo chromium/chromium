@@ -31,4 +31,5 @@ deps = {
     "src/tools/telemetry": "",
     "src/third_party/blink/perf_tests": "",
     "src/third_party/catapult": "",
+    "src/third_party/speedometer": "",
 }

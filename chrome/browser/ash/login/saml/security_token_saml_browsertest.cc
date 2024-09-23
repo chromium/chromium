@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdint.h>
-#include <iterator>
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ash/login/saml/security_token_saml_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
@@ -31,7 +30,13 @@ std::string GetActiveUserEmail() {
 }  // namespace
 
 // Tests the successful login scenario with the correct PIN.
-IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, Basic) {
+#if !defined(NDEBUG)
+// Flaky timeout in debug build crbug.com/321826024.
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
+IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, MAYBE_Basic) {
   StartSignIn();
   WaitForPinDialog();
   test::OobeJS().ExpectVisiblePath({"gaia-signin", "pinDialog"});
@@ -46,7 +51,13 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, Basic) {
 
 // Tests that the login doesn't hit the timeout for Chrome waiting on Gaia to
 // signal the login completion.
-IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, NoGaiaTimeout) {
+#if !defined(NDEBUG)
+// Flaky timeout in debug build crbug.com/321826024.
+#define MAYBE_NoGaiaTimeout DISABLED_NoGaiaTimeout
+#else
+#define MAYBE_NoGaiaTimeout NoGaiaTimeout
+#endif
+IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, MAYBE_NoGaiaTimeout) {
   // Arrange:
   base::HistogramTester histogram_tester;
 

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "media/base/video_frame.h"
@@ -50,13 +51,14 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
     mock_source_->StartMockedSource();
     base::RunLoop().RunUntilIdle();
 
-    media_stream_video_renderer_sink_ = new MediaStreamVideoRendererSink(
-        media_stream_component_,
-        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-            &MediaStreamVideoRendererSinkTest::RepaintCallback,
-            CrossThreadUnretained(this))),
-        Platform::Current()->GetIOTaskRunner(),
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+    media_stream_video_renderer_sink_ =
+        base::MakeRefCounted<MediaStreamVideoRendererSink>(
+            media_stream_component_,
+            ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                &MediaStreamVideoRendererSinkTest::RepaintCallback,
+                CrossThreadUnretained(this))),
+            Platform::Current()->GetIOTaskRunner(),
+            scheduler::GetSingleThreadTaskRunnerForTesting());
     base::RunLoop().RunUntilIdle();
 
     EXPECT_TRUE(IsInStoppedState());
@@ -160,14 +162,15 @@ class MediaStreamVideoRendererSinkTransparencyTest
     : public MediaStreamVideoRendererSinkTest {
  public:
   MediaStreamVideoRendererSinkTransparencyTest() {
-    media_stream_video_renderer_sink_ = new MediaStreamVideoRendererSink(
-        media_stream_component_,
-        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-            &MediaStreamVideoRendererSinkTransparencyTest::
-                VerifyTransparentFrame,
-            CrossThreadUnretained(this))),
-        Platform::Current()->GetIOTaskRunner(),
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+    media_stream_video_renderer_sink_ =
+        base::MakeRefCounted<MediaStreamVideoRendererSink>(
+            media_stream_component_,
+            ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                &MediaStreamVideoRendererSinkTransparencyTest::
+                    VerifyTransparentFrame,
+                CrossThreadUnretained(this))),
+            Platform::Current()->GetIOTaskRunner(),
+            scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   void VerifyTransparentFrame(scoped_refptr<media::VideoFrame> frame) {

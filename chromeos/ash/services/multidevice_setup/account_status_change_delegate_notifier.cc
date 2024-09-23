@@ -23,7 +23,7 @@ void AccountStatusChangeDelegateNotifier::SetAccountStatusChangeDelegateRemote(
     PA_LOG(ERROR) << "AccountStatusChangeDelegateNotifier::"
                   << "SetAccountStatusChangeDelegateRemote(): Tried to set "
                   << "delegate, but one already existed.";
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   delegate_remote_.Bind(std::move(delegate_remote));

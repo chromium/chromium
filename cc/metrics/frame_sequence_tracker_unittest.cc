@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/metrics/frame_sequence_tracker.h"
 
 #include <string>
@@ -160,7 +165,7 @@ class FrameSequenceTrackerTest : public testing::Test {
           break;
 
         default:
-          NOTREACHED() << command << str;
+          NOTREACHED_IN_MIGRATION() << command << str;
       }
 
       switch (command) {
@@ -232,7 +237,7 @@ class FrameSequenceTrackerTest : public testing::Test {
         }
 
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
       }
     }
   }
@@ -782,7 +787,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackerOutOfOrderFramesMissingV3Data) {
   frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
   frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothMain;
   frame_info.scroll_thread = FrameInfo::SmoothEffectDrivingThread::kMain;
-  frame_info.has_missing_content = false;
   frame_info.sequence_number = frame1_args.frame_id.sequence_number;
   sorter_.AddFrameResult(frame1_args, frame_info);
 

@@ -17,44 +17,63 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-// class Profile;
-namespace network {
-class SharedURLLoaderFactory;
-}
+// The possible values for the DevTools AI enterprise policy.
+enum class DevToolsGenAiEnterprisePolicyValue {
+  kAllow = 0,
+  kAllowWithoutLogging = 1,
+  kDisable = 2,
+};
 
 class AidaClient {
  public:
-  AidaClient(Profile* profile,
-             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  using ScopedOverride = std::unique_ptr<base::ScopedClosureRunner>;
+
+  explicit AidaClient(Profile* profile);
   ~AidaClient();
 
-  void DoConversation(std::string request,
-                      base::OnceCallback<void(const std::string&)> callback);
+  void PrepareRequestOrFail(
+      base::OnceCallback<
+          void(absl::variant<network::ResourceRequest, std::string>)> callback);
+
+  // Needed because VariationsService is not available for unit tests.
+  static ScopedOverride OverrideCountryForTesting(std::string country_code);
 
   void OverrideAidaEndpointAndScopeForTesting(const std::string& aida_endpoint,
                                               const std::string& aida_scope);
 
+  static constexpr std::string_view kDoConversationUrlPath =
+      "/v1/aida:doConversation";
+  static constexpr std::string_view kRegisterClientEventUrlPath =
+      "/v1:registerClientEvent";
+
+  struct Availability {
+    bool available = false;
+    bool blocked = true;
+    bool blocked_by_age = true;
+    bool blocked_by_enterprise_policy = true;
+    bool blocked_by_geo = true;
+    bool blocked_by_rollout = false;
+    bool disallow_logging = true;
+  };
+
+  static Availability CanUseAida(Profile* profile);
+
  private:
-  void SendAidaRequest(std::string request,
-                       base::OnceCallback<void(const std::string&)> callback);
+  void PrepareAidaRequest(
+      base::OnceCallback<
+          void(absl::variant<network::ResourceRequest, std::string>)> callback);
   void AccessTokenFetchFinished(
-      std::string request,
-      base::OnceCallback<void(const std::string&)> callback,
+      base::OnceCallback<
+          void(absl::variant<network::ResourceRequest, std::string>)> callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
-  void OnSimpleLoaderComplete(
-      std::string request,
-      base::OnceCallback<void(const std::string&)> callback,
-      std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-      base::TimeTicks start_time,
-      std::unique_ptr<std::string> response_body);
 
   const raw_ref<Profile> profile_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   std::string aida_endpoint_;
   std::string aida_scope_;
   std::string access_token_;
+  base::Time access_token_expiration_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_AIDA_CLIENT_H_

@@ -62,13 +62,6 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                       action='store_true',
                       default=False,
                       help='Disable logging for non-errors.')
-  parser.add_argument('--large-query-mode',
-                      action='store_true',
-                      default=False,
-                      help='Run the script in large query mode. This incurs '
-                      'a significant performance hit, but allows the use of '
-                      'larger sample sizes on large test suites by partially '
-                      'working around a hard memory limit in BigQuery.')
   parser.add_argument('--expectation-grace-period',
                       type=int,
                       default=7,
@@ -89,16 +82,17 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
   parser.add_argument('--jobs',
                       '-j',
                       type=int,
-                      help=('How many parallel jobs to run. By default, runs '
-                            'all work in parallel.'))
-  parser.add_argument('--disable-batching',
-                      dest='use_batching',
-                      action='store_false',
-                      default=True,
-                      help=('Disables the use of batching when running '
-                            'queries. Batching allows for more queries to be '
-                            'run in parallel, but increases query overhead by '
-                            'a variable amount.'))
+                      help=('DEPRECATED/NO-OP. Will be removed once all uses '
+                            'are removed.'))
+  parser.add_argument('--keep-unmatched-results',
+                      action='store_true',
+                      default=False,
+                      help=('Store unmatched results and include them in the '
+                            'script output. Doing so can result in a '
+                            'significant increase in memory usage depending on '
+                            'the data being queried. This is meant for '
+                            'debugging purposes and should not be needed '
+                            'during normal use.'))
   internal_group = parser.add_mutually_exclusive_group()
   internal_group.add_argument('--include-internal-builders',
                               action='store_true',

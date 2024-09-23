@@ -138,6 +138,11 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // Set true in the constructor to enable multi user in this test case.
   bool enable_multi_user_ = false;
 
+  // Manta service eligibility is set automatically depending on
+  // `SessionUserType`. `force_disable_manta_service=true` force-disables the
+  // service regardless of `UserSessionType`.
+  bool force_disable_manta_service_ = false;
+
  private:
   static void SetTestingFactories(bool enable_mock_tracker,
                                   content::BrowserContext* browser_context);
@@ -146,6 +151,7 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   static std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateMockDelegate(
       Profile* profile,
       scalable_iph::Logger* logger);
+  static void SetCanUseMantaService(Profile* profile);
 
   chromeos::network_config::FakeCrosNetworkConfig fake_cros_network_config_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;

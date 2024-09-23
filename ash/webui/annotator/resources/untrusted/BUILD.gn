@@ -1,0 +1,43 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Annotator is ChromeOS only")
+
+js_library("untrusted_annotator_library") {
+  sources = [
+    "annotator_browser_proxy.js",
+    "untrusted_annotator_comm_factory.js",
+  ]
+  deps = [
+    "//ash/webui/annotator/mojom:annotator_mojo_bindings_webui_js",
+    "//ash/webui/annotator/public/mojom:annotator_mojo_bindings_webui_js",
+    "//ash/webui/projector_app/resources/common:message_types",
+  ]
+  externs_list = [ "//ash/webui/projector_app/resources/common/projector_app.externs.js" ]
+}
+
+generate_grd("build_untrusted_grd") {
+  input_files = [
+    "annotator_browser_proxy.js",
+    "annotator.html",
+    "untrusted_annotator_comm_factory.js",
+  ]
+
+  input_files_base_dir = rebase_path(".", "//")
+  grd_prefix = "ash_annotator_untrusted"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+
+  deps = [
+    "//ash/webui/annotator/mojom:annotator_mojo_bindings_webui_grdp",
+    "//ash/webui/annotator/public/mojom:annotator_mojo_bindings_webui_grdp",
+  ]
+  grdp_files = [
+    "$target_gen_dir/../../mojom/annotator_mojo_bindings_webui_resources.grdp",
+    "$target_gen_dir/../../public/mojom/annotator_mojo_bindings_webui_resources.grdp",
+  ]
+}

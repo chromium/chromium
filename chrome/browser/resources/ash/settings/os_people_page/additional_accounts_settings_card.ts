@@ -106,7 +106,24 @@ export class AdditionalAccountsSettingsCardElement extends
       isArcAccountRestrictionsEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('arcAccountRestrictionsEnabled');
+          // TODO(b/349386750): Cleanup UI to toggle ARC access after lacros is
+          // turned off.
+          return loadTimeData.getBoolean('arcAccountRestrictionsEnabled') &&
+              // Do not show the UI to toggle ARC access to accounts when policy
+              // based restrictions are enabled.
+              !loadTimeData.getBoolean('arcManagedAccountRestrictionEnabled');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * @return true if `kSecondaryAccountAllowedInArcPolicy` feature is
+       * enabled, false otherwise.
+       */
+      isArcManagedAccountRestrictionEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('arcManagedAccountRestrictionEnabled');
         },
         readOnly: true,
       },
@@ -319,8 +336,8 @@ export class AdditionalAccountsSettingsCardElement extends
         this.actionMenuAccount_, newArcAvailability);
 
     const actionMenuAccountIndex =
-        this.shadowRoot!.querySelector<DomRepeat>('#account-list')!.items!
-            .indexOf(this.actionMenuAccount_);
+        this.shadowRoot!.querySelector<DomRepeat>('#secondaryAccountsList')!
+            .items!.indexOf(this.actionMenuAccount_);
     if (actionMenuAccountIndex >= 0) {
       // Focus 'More actions' button for the current account.
       this.shadowRoot!
@@ -332,7 +349,7 @@ export class AdditionalAccountsSettingsCardElement extends
           'Couldn\'t find active account in the list: ',
           this.actionMenuAccount_);
       this.shadowRoot!.querySelector<CrButtonElement>(
-                          '#add-account-button')!.focus();
+                          '#addAccountButton')!.focus();
     }
     this.actionMenuAccount_ = null;
   }

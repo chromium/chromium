@@ -17,7 +17,7 @@ class RasterizeAndRecordMicroUnitTest(legacy_page_test_case.LegacyPageTestCase):
   """
 
   # Fails or flaky on some bots.  See http://crbug.com/956798
-  # TODO(crbug.com/1197307): Re-enable on mojave.
+  # TODO(crbug.com/40760080): Re-enable on mojave.
   @decorators.Disabled('win', 'chromeos', 'linux', 'win7', 'mojave',
                        'android-nougat')  # Flaky: https://crbug.com/1342706
   def testRasterizeAndRecordMicro(self):

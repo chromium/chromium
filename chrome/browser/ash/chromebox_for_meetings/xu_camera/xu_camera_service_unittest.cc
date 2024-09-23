@@ -7,6 +7,7 @@
 #include <asm-generic/errno.h>
 #include <linux/uvcvideo.h>
 #include <linux/videodev2.h>
+
 #include <cstdint>
 #include <optional>
 
@@ -16,10 +17,10 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -51,8 +52,8 @@ const std::vector<uint8_t> kData() {
 }
 const std::vector<uint8_t> kLen() {
   return std::vector<uint8_t>({0x02, 0x00});
-}                                                // little-endian uint16
-const int32_t kValue = 123;                      // Fake v4l2 value
+}                            // little-endian uint16
+const int32_t kValue = 123;  // Fake v4l2 value
 const std::vector<uint8_t> kValueAsUint8() {
   return std::vector<uint8_t>((std::uint8_t*)&(kValue),
                               (std::uint8_t*)&(kValue) + sizeof(std::int32_t));
@@ -127,7 +128,7 @@ class CfMXuCameraServiceTest
     IpPeripheralServiceClient::InitializeFake();
 
     CfmHotlineClient::InitializeFake();
-    ServiceConnection::UseFakeServiceConnectionForTesting(
+    chromeos::cfm::ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
     XuCameraService::InitializeForTesting(new TestDelegate());
   }
@@ -190,12 +191,12 @@ class CfMXuCameraServiceTest
   }
 
  protected:
-  FakeCfmServiceContext context_;
+  chromeos::cfm::FakeCfmServiceContext context_;
   mojo::Remote<mojom::XuCamera> xu_camera_remote_;
   mojo::ReceiverSet<chromeos::cfm::mojom::CfmServiceContext>
       context_receiver_set_;
   mojo::Remote<chromeos::cfm::mojom::CfmServiceAdaptor> adaptor_remote_;
-  FakeServiceConnectionImpl fake_service_connection_;
+  chromeos::cfm::FakeServiceConnectionImpl fake_service_connection_;
   content::BrowserTaskEnvironment task_environment_;
   TestDelegate delegate_;
 };
@@ -270,9 +271,25 @@ TEST_F(CfMXuCameraServiceTest, XuCameraGetCtrlLenWithDevPathCtrlQuery) {
 }
 
 struct XuTestCase {
+  XuTestCase(std::string test_name,
+             mojom::WebcamIdPtr webcam_id,
+             mojom::CtrlTypePtr ctrl_type,
+             uint8_t expected_error_code,
+             std::vector<uint8_t> expected_data)
+      : test_name(test_name),
+        webcam_id(std::move(webcam_id)),
+        ctrl_type(std::move(ctrl_type)),
+        expected_error_code(expected_error_code),
+        expected_data(expected_data) {}
+  XuTestCase(const XuTestCase& other)
+      : test_name(other.test_name),
+        webcam_id(other.webcam_id.Clone()),
+        ctrl_type(other.ctrl_type.Clone()),
+        expected_error_code(other.expected_error_code),
+        expected_data(other.expected_data) {}
   std::string test_name;
-  const mojom::WebcamIdPtr& webcam_id;
-  const mojom::CtrlTypePtr& ctrl_type;
+  const mojom::WebcamIdPtr webcam_id;
+  const mojom::CtrlTypePtr ctrl_type;
   uint8_t expected_error_code;
   std::vector<uint8_t> expected_data;  // used only for GetCtrl tests
 };

@@ -62,13 +62,12 @@ void HistoryQuickProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  std::tie(autocomplete_input_, starter_pack_engine_) =
+  const auto [adjusted_input, starter_pack_engine] =
       KeywordProvider::AdjustInputForStarterPackEngines(
           input, client()->GetTemplateURLService());
+  autocomplete_input_ = std::move(adjusted_input);
+  starter_pack_engine_ = starter_pack_engine;
 
-  // TODO(pkasting): We should just block here until this loads.  Any time
-  // someone unloads the history backend, we'll get inconsistent inline
-  // autocomplete behavior here.
   if (in_memory_url_index_) {
     DoAutocomplete();
   }
@@ -367,7 +366,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
   }
 
   if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
-      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
+      match.IsMlSignalLoggingEligible()) {
     // Propagate scoring signals to AC Match for ML Model training data.
     // `allowed_to_be_default_match` is set in this function, after the ACMatch
     // is constructed, rather than in ScoredHistoryMatch. We have to propagate

@@ -5,11 +5,15 @@
 #include "net/dns/dns_query.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/big_endian.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
@@ -70,7 +74,7 @@ std::unique_ptr<OptRecordRdata> AddPaddingIfNecessary(
   std::unique_ptr<OptRecordRdata> merged_opt_rdata;
   if (opt_rdata) {
     merged_opt_rdata = OptRecordRdata::Create(
-        base::StringPiece(opt_rdata->buf().data(), opt_rdata->buf().size()));
+        std::string_view(opt_rdata->buf().data(), opt_rdata->buf().size()));
   } else {
     merged_opt_rdata = std::make_unique<OptRecordRdata>();
   }
@@ -120,38 +124,36 @@ DnsQuery::DnsQuery(uint16_t id,
 
   io_buffer_ = base::MakeRefCounted<IOBufferWithSize>(buffer_size);
 
-  header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
-  *header_ = {};
-  header_->id = base::HostToNet16(id);
-  header_->flags = base::HostToNet16(dns_protocol::kFlagRD);
-  header_->qdcount = base::HostToNet16(1);
+  dns_protocol::Header* header = header_in_io_buffer();
+  *header = {};
+  header->id = base::HostToNet16(id);
+  header->flags = base::HostToNet16(dns_protocol::kFlagRD);
+  header->qdcount = base::HostToNet16(1);
 
   // Write question section after the header.
-  base::BigEndianWriter writer(io_buffer_->data() + kHeaderSize,
-                               io_buffer_->size() - kHeaderSize);
-  writer.WriteBytes(qname.data(), qname.size());
-  writer.WriteU16(qtype);
-  writer.WriteU16(dns_protocol::kClassIN);
+  auto writer = base::SpanWriter(io_buffer_->span().subspan(kHeaderSize));
+  writer.Write(qname);
+  writer.WriteU16BigEndian(qtype);
+  writer.WriteU16BigEndian(dns_protocol::kClassIN);
 
   if (merged_opt_rdata) {
     DCHECK_NE(merged_opt_rdata->OptCount(), 0u);
 
-    header_->arcount = base::HostToNet16(1);
+    header->arcount = base::HostToNet16(1);
     // Write OPT pseudo-resource record.
-    writer.WriteU8(0);                       // empty domain name (root domain)
-    writer.WriteU16(OptRecordRdata::kType);  // type
-    writer.WriteU16(kMaxUdpPayloadSize);     // class
+    writer.WriteU8BigEndian(0);  // empty domain name (root domain)
+    writer.WriteU16BigEndian(OptRecordRdata::kType);  // type
+    writer.WriteU16BigEndian(kMaxUdpPayloadSize);     // class
     // ttl (next 3 fields)
-    writer.WriteU8(0);  // rcode does not apply to requests
-    writer.WriteU8(0);  // version
+    writer.WriteU8BigEndian(0);  // rcode does not apply to requests
+    writer.WriteU8BigEndian(0);  // version
     // TODO(robpercival): Set "DNSSEC OK" flag if/when DNSSEC is supported:
     // https://tools.ietf.org/html/rfc3225#section-3
-    writer.WriteU16(0);  // flags
+    writer.WriteU16BigEndian(0);  // flags
 
     // rdata
-    writer.WriteU16(merged_opt_rdata->buf().size());  // rdata length
-    writer.WriteBytes(merged_opt_rdata->buf().data(),
-                      merged_opt_rdata->buf().size());
+    writer.WriteU16BigEndian(merged_opt_rdata->buf().size());  // rdata length
+    writer.Write(base::as_byte_span(merged_opt_rdata->buf()));
   }
 }
 
@@ -174,16 +176,11 @@ std::unique_ptr<DnsQuery> DnsQuery::CloneWithNewId(uint16_t id) const {
 }
 
 bool DnsQuery::Parse(size_t valid_bytes) {
-  if (io_buffer_ == nullptr || io_buffer_->data() == nullptr) {
+  if (io_buffer_ == nullptr || io_buffer_->span().empty()) {
     return false;
   }
-  CHECK(valid_bytes <= base::checked_cast<size_t>(io_buffer_->size()));
-  // We should only parse the query once if the query is constructed from a raw
-  // buffer. If we have constructed the query from data or the query is already
-  // parsed after constructed from a raw buffer, |header_| is not null.
-  DCHECK(header_ == nullptr);
-  base::BigEndianReader reader(
-      reinterpret_cast<const uint8_t*>(io_buffer_->data()), valid_bytes);
+  auto reader =
+      base::SpanReader<const uint8_t>(io_buffer_->span().first(valid_bytes));
   dns_protocol::Header header;
   if (!ReadHeader(&reader, &header)) {
     return false;
@@ -202,38 +199,33 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   }
   uint16_t qtype;
   uint16_t qclass;
-  if (!reader.ReadU16(&qtype) || !reader.ReadU16(&qclass) ||
+  if (!reader.ReadU16BigEndian(qtype) || !reader.ReadU16BigEndian(qclass) ||
       qclass != dns_protocol::kClassIN) {
     return false;
   }
   // |io_buffer_| now contains the raw packet of a valid DNS query, we just
-  // need to properly initialize |qname_size_| and |header_|.
+  // need to properly initialize |qname_size_|.
   qname_size_ = qname.size();
-  header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
   return true;
 }
 
 uint16_t DnsQuery::id() const {
-  return base::NetToHost16(header_->id);
+  return base::NetToHost16(header_in_io_buffer()->id);
 }
 
 base::span<const uint8_t> DnsQuery::qname() const {
-  return base::span<const uint8_t>(
-      reinterpret_cast<const uint8_t*>(io_buffer_->data() + kHeaderSize),
-      qname_size_);
+  return io_buffer_->span().subspan(kHeaderSize, qname_size_);
 }
 
 uint16_t DnsQuery::qtype() const {
-  uint16_t type;
-  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(
-                          io_buffer_->data() + kHeaderSize + qname_size_),
-                      &type);
-  return type;
+  return base::U16FromBigEndian(
+      io_buffer_->span().subspan(kHeaderSize + qname_size_).first<2u>());
 }
 
-base::StringPiece DnsQuery::question() const {
-  return base::StringPiece(io_buffer_->data() + kHeaderSize,
-                           QuestionSize(qname_size_));
+std::string_view DnsQuery::question() const {
+  auto s = base::as_chars(io_buffer_->span());
+  s = s.subspan(kHeaderSize, QuestionSize(qname_size_));
+  return std::string_view(s.begin(), s.end());
 }
 
 size_t DnsQuery::question_size() const {
@@ -241,36 +233,37 @@ size_t DnsQuery::question_size() const {
 }
 
 void DnsQuery::set_flags(uint16_t flags) {
-  header_->flags = flags;
+  header_in_io_buffer()->flags = flags;
 }
 
 DnsQuery::DnsQuery(const DnsQuery& orig, uint16_t id) {
   CopyFrom(orig);
-  header_->id = base::HostToNet16(id);
+  header_in_io_buffer()->id = base::HostToNet16(id);
 }
 
 void DnsQuery::CopyFrom(const DnsQuery& orig) {
   qname_size_ = orig.qname_size_;
   io_buffer_ = base::MakeRefCounted<IOBufferWithSize>(orig.io_buffer()->size());
-  memcpy(io_buffer_.get()->data(), orig.io_buffer()->data(),
-         io_buffer_.get()->size());
-  header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
+  io_buffer_->span().copy_from(orig.io_buffer()->span());
 }
 
-bool DnsQuery::ReadHeader(base::BigEndianReader* reader,
+bool DnsQuery::ReadHeader(base::SpanReader<const uint8_t>* reader,
                           dns_protocol::Header* header) {
-  return (
-      reader->ReadU16(&header->id) && reader->ReadU16(&header->flags) &&
-      reader->ReadU16(&header->qdcount) && reader->ReadU16(&header->ancount) &&
-      reader->ReadU16(&header->nscount) && reader->ReadU16(&header->arcount));
+  return (reader->ReadU16BigEndian(header->id) &&
+          reader->ReadU16BigEndian(header->flags) &&
+          reader->ReadU16BigEndian(header->qdcount) &&
+          reader->ReadU16BigEndian(header->ancount) &&
+          reader->ReadU16BigEndian(header->nscount) &&
+          reader->ReadU16BigEndian(header->arcount));
 }
 
-bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
+bool DnsQuery::ReadName(base::SpanReader<const uint8_t>* reader,
+                        std::string* out) {
   DCHECK(out != nullptr);
   out->clear();
   out->reserve(dns_protocol::kMaxNameLength + 1);
   uint8_t label_length;
-  if (!reader->ReadU8(&label_length)) {
+  if (!reader->ReadU8BigEndian(label_length)) {
     return false;
   }
   while (label_length) {
@@ -278,14 +271,15 @@ bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
       return false;
     }
 
-    out->append(reinterpret_cast<char*>(&label_length), 1);
+    out->push_back(static_cast<char>(label_length));
 
-    base::StringPiece label;
-    if (!reader->ReadPiece(&label, label_length)) {
+    std::optional<base::span<const uint8_t>> label = reader->Read(label_length);
+    if (!label) {
       return false;
     }
-    out->append(label);
-    if (!reader->ReadU8(&label_length)) {
+    out->append(base::as_string_view(*label));
+
+    if (!reader->ReadU8BigEndian(label_length)) {
       return false;
     }
   }

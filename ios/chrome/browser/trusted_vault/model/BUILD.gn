@@ -13,13 +13,14 @@ source_set("model") {
     "//base",
     "//components/keyed_service/ios",
     "//components/trusted_vault",
+    "//ios/web/public",
   ]
   deps = [
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
 
-    # TODO(crbug.com/1434661): move trusted_vault code from i/c/b/signin to
+    # TODO(crbug.com/40264840): move trusted_vault code from i/c/b/signin to
     # i/c/b/trusted_vault.
     "//ios/chrome/browser/signin/model:trusted_vault",
     "//ios/chrome/browser/signin/model:trusted_vault_factory",

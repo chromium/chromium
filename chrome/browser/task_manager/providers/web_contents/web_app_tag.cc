@@ -9,9 +9,6 @@
 #include "chrome/browser/task_manager/providers/web_contents/isolated_web_app_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/tab_contents_task.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_app_task.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 

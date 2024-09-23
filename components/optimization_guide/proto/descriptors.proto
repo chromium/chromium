@@ -1,0 +1,38 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelExecutionProto";
+
+package optimization_guide.proto;
+
+message ProtoDescriptor {
+  // The tag number of the proto field.
+  int32 tag_number = 1;
+}
+
+message ProtoField {
+  // The descriptors to get to the desired field.
+  //
+  // If more than one entry, it is expected that all entries prior to the last
+  // one are message types.
+  repeated ProtoDescriptor proto_descriptors = 1;
+}
+
+message Value {
+  oneof type {
+    // int64 type.
+    int64 int64_value = 1;
+    // int32 type. Enums are int32s.
+    int32 int32_value = 2;
+    // float type.
+    double float_value = 3;
+    // string type.
+    string string_value = 4;
+    // boolean type.
+    bool boolean_value = 5;
+  }
+}

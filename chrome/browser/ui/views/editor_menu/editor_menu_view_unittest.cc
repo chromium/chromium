@@ -6,22 +6,25 @@
 
 #include <string_view>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
-#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos::editor_menu {
@@ -65,13 +68,28 @@ std::u16string_view GetChipLabel(const views::View* chip) {
 
 using EditorMenuViewTest = ChromeViewsTestBase;
 
+class EditorMenuViewI18nEnabledTest : public EditorMenuViewTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kOrca,
+                              chromeos::features::kFeatureManagementOrca,
+                              chromeos::features::kOrcaUseL10nStrings},
+        /*disabled_features=*/{});
+    EditorMenuViewTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 TEST_F(EditorMenuViewTest, CreatesChips) {
   NiceMock<MockEditorMenuViewDelegate> delegate;
   const PresetTextQueries queries = {
       PresetTextQuery("ID1", u"Shorten", PresetQueryCategory::kShorten),
       PresetTextQuery("ID2", u"Elaborate", PresetQueryCategory::kElaborate)};
 
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   auto* editor_menu_view =
@@ -96,7 +114,7 @@ TEST_F(EditorMenuViewTest, CreatesChipsInMultipleRows) {
       PresetTextQuery("ID4", u"Elaborate", PresetQueryCategory::kElaborate),
       PresetTextQuery("ID5", u"Formalize", PresetQueryCategory::kFormalize)};
 
-  const views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   auto* editor_menu_view =
@@ -119,7 +137,7 @@ TEST_F(EditorMenuViewTest, TabKeyMovesFocus) {
       PresetTextQuery("ID5", u"Formalize", PresetQueryCategory::kFormalize)};
 
   // Create and focus the editor menu.
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
@@ -166,7 +184,7 @@ TEST_F(EditorMenuViewTest, EnterKeySubmitsPresetQuery) {
       PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
 
   // Create and show the editor menu.
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
@@ -192,7 +210,7 @@ TEST_F(EditorMenuViewTest, EnterKeySubmitsFreeformQuery) {
   NiceMock<MockEditorMenuViewDelegate> delegate;
 
   // Create and show the editor menu.
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kWrite, PresetTextQueries(),
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
@@ -221,7 +239,7 @@ TEST_F(EditorMenuViewTest, DisablesMenu) {
       PresetTextQuery("ID1", u"Rephrase", PresetQueryCategory::kRephrase),
       PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
 
-  views::UniqueWidgetPtr editor_menu_widget =
+  std::unique_ptr<views::Widget> editor_menu_widget =
       EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
                                    gfx::Rect(200, 300, 400, 200), &delegate);
   editor_menu_widget->Show();
@@ -239,6 +257,76 @@ TEST_F(EditorMenuViewTest, DisablesMenu) {
       editor_menu_view->textfield_for_testing()->textfield()->GetEnabled());
   EXPECT_FALSE(
       editor_menu_view->textfield_for_testing()->arrow_button()->GetEnabled());
+}
+
+TEST_F(EditorMenuViewTest, AccessibleProperties) {
+  NiceMock<MockEditorMenuViewDelegate> delegate;
+  const PresetTextQueries queries = {
+      PresetTextQuery("ID1", u"Rephrase", PresetQueryCategory::kRephrase),
+      PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
+
+  // Rewrite Editor Mode
+  std::unique_ptr<views::Widget> editor_menu_widget =
+      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
+                                   gfx::Rect(200, 300, 400, 200), &delegate);
+  editor_menu_widget->Show();
+  auto* editor_menu_view =
+      views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
+  ui::AXNodeData data;
+
+  editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Rewrite");
+
+  // Write Editor Mode
+  editor_menu_widget =
+      EditorMenuView::CreateWidget(EditorMenuMode::kWrite, queries,
+                                   gfx::Rect(200, 300, 400, 200), &delegate);
+  editor_menu_widget->Show();
+  editor_menu_view =
+      views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
+  data = ui::AXNodeData();
+
+  editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Help me write");
+}
+
+TEST_F(EditorMenuViewI18nEnabledTest, AccessibleProperties) {
+  NiceMock<MockEditorMenuViewDelegate> delegate;
+  const PresetTextQueries queries = {
+      PresetTextQuery("ID1", u"Rephrase", PresetQueryCategory::kRephrase),
+      PresetTextQuery("ID2", u"Emojify", PresetQueryCategory::kEmojify)};
+
+  // Rewrite Editor Mode
+  std::unique_ptr<views::Widget> editor_menu_widget =
+      EditorMenuView::CreateWidget(EditorMenuMode::kRewrite, queries,
+                                   gfx::Rect(200, 300, 400, 200), &delegate);
+  editor_menu_widget->Show();
+  auto* editor_menu_view =
+      views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
+  ui::AXNodeData data;
+
+  editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_EDITOR_MENU_REWRITE_CARD_TITLE));
+
+  // Write Editor Mode
+  editor_menu_widget =
+      EditorMenuView::CreateWidget(EditorMenuMode::kWrite, queries,
+                                   gfx::Rect(200, 300, 400, 200), &delegate);
+  editor_menu_widget->Show();
+  editor_menu_view =
+      views::AsViewClass<EditorMenuView>(editor_menu_widget->GetContentsView());
+  data = ui::AXNodeData();
+
+  editor_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_EDITOR_MENU_WRITE_CARD_TITLE));
 }
 
 }  // namespace

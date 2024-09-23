@@ -27,8 +27,8 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
     case WebClientHintsType::kUABitness:
     case WebClientHintsType::kUAWoW64:
       break;
-    case WebClientHintsType::kUAFormFactor:
-      if (!base::FeatureList::IsEnabled(features::kClientHintsFormFactor)) {
+    case WebClientHintsType::kUAFormFactors:
+      if (!base::FeatureList::IsEnabled(features::kClientHintsFormFactors)) {
         return true;
       }
       break;

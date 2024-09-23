@@ -6,6 +6,7 @@
 #define CC_TREES_RENDER_FRAME_METADATA_H_
 
 #include <optional>
+
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/selection.h"
@@ -113,6 +114,12 @@ class CC_EXPORT RenderFrameMetadata {
   // consider the second scroll event to have caused a change in direction.
   viz::VerticalScrollDirection new_vertical_scroll_direction =
       viz::VerticalScrollDirection::kNull;
+
+  // Indicates that this frame is submitted after the primary main frame
+  // navigating to a session history item, identified by this item sequence
+  // number.
+  static constexpr int64_t kInvalidItemSequenceNumber = -1;
+  int64_t primary_main_frame_item_sequence_number = kInvalidItemSequenceNumber;
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Used to position Android bottom bar, whose position is computed by the

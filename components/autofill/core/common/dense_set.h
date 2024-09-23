@@ -10,6 +10,7 @@
 #include <climits>
 #include <cstddef>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 
 #include "base/check.h"
@@ -87,10 +88,8 @@ class Bitset {
     return x;
   }
 
-  friend constexpr auto operator<=>(const Bitset& lhs,
-                                    const Bitset& rhs) = default;
-  friend constexpr bool operator==(const Bitset& lhs,
-                                   const Bitset& rhs) = default;
+  friend auto operator<=>(const Bitset& lhs, const Bitset& rhs) = default;
+  friend bool operator==(const Bitset& lhs, const Bitset& rhs) = default;
 
   constexpr base::span<const Word, kNumWords> data() const { return words_; }
 
@@ -143,7 +142,7 @@ class Bitset<Word, 1u> {
   friend constexpr bool operator==(Bitset lhs, Bitset rhs) = default;
 
   constexpr base::span<const Word, 1> data() const {
-    return base::span<const Word, 1>(&word_, 1u);
+    return base::span_from_ref(word_);
   }
 
  private:
@@ -331,12 +330,18 @@ class DenseSet {
     }
   }
 
-  template <typename InputIt>
-  DenseSet(InputIt first, InputIt last) {
+  template <typename InputIt, typename Proj = std::identity>
+    requires(std::input_iterator<InputIt>)
+  constexpr DenseSet(InputIt first, InputIt last, Proj proj = {}) {
     for (auto it = first; it != last; ++it) {
-      insert(*it);
+      insert(std::invoke(proj, *it));
     }
   }
+
+  template <typename Range, typename Proj = std::identity>
+    requires(std::ranges::input_range<Range>)
+  constexpr explicit DenseSet(const Range& range, Proj proj = {})
+      : DenseSet(std::ranges::begin(range), std::ranges::end(range), proj) {}
 
   // Returns a set containing all values from `kMinValue` to `kMaxValue`,
   // regardless of whether the values represent an existing enum.
@@ -503,6 +508,18 @@ class DenseSet {
 
   Bitset bitset_{};
 };
+
+template <typename T, typename... Ts>
+  requires(std::same_as<T, Ts> && ...)
+DenseSet(T, Ts...) -> DenseSet<T>;
+
+template <typename InputIt, typename Proj>
+DenseSet(InputIt, InputIt, Proj) -> DenseSet<std::remove_cvref_t<
+    std::invoke_result_t<Proj, std::iter_value_t<InputIt>>>>;
+
+template <typename Range, typename Proj>
+DenseSet(Range, Proj) -> DenseSet<std::remove_cvref_t<
+    std::invoke_result_t<Proj, std::ranges::range_value_t<Range>>>>;
 
 }  // namespace autofill
 

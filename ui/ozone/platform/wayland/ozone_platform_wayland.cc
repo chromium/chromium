@@ -4,12 +4,12 @@
 
 #include "ui/ozone/platform/wayland/ozone_platform_wayland.h"
 
+#include <aura-shell-client-protocol.h>
+
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <components/exo/wayland/protocol/aura-shell-client-protocol.h>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -77,6 +77,8 @@
 #endif
 
 #if defined(WAYLAND_GBM)
+#include "ui/gfx/linux/drm_util_linux.h"
+#include "ui/gfx/linux/gbm_device.h"
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 #endif
 
@@ -202,6 +204,15 @@ class OzonePlatformWayland : public OzonePlatform,
     // to |buffer_manager_| via IPC after gpu service init in that case.
     if (buffer_manager_) {
       if (!buffer_manager_->SupportsFormat(format)) {
+        return false;
+      }
+      // Return false here if creating buffers for certain formats is not
+      // possible (e.g. YUV formats are not supported by linux system libgbm
+      // gbm_bo_create) even though |buffer_manager_| may indicate it can be
+      // imported as wl_buffer.
+      auto* gbm_device = buffer_manager_->GetGbmDevice();
+      if (!gbm_device || !gbm_device->CanCreateBufferForFormat(
+                             GetFourCCFormatFromBufferFormat(format))) {
         return false;
       }
     } else {
@@ -342,6 +353,15 @@ class OzonePlatformWayland : public OzonePlatform,
       // arbitrary position.
       properties->supports_global_screen_coordinates =
           kDefaultScreenCoordinateEnabled;
+
+#if BUILDFLAG(IS_LINUX)
+      // TODO(crbug.com/40800718): Revisit (and maybe remove) once proper
+      // support, probably backed by org.freedesktop.portal.Screenshot.PickColor
+      // API is implemented. Note: this is restricted to Linux Desktop as Lacros
+      // implements it at a higher level layer using ChromeOS' mojo croapi.
+      properties->supports_color_picker_dialog = false;
+#endif
+
       initialised = true;
     }
 
@@ -349,10 +369,13 @@ class OzonePlatformWayland : public OzonePlatform,
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
-    using SupportsSsdForTest =
-        OzonePlatform::PlatformRuntimeProperties::SupportsSsdForTest;
+    using SupportsForTest =
+        OzonePlatform::PlatformRuntimeProperties::SupportsForTest;
     const auto& override_supports_ssd_for_test = OzonePlatform::
         PlatformRuntimeProperties::override_supports_ssd_for_test;
+    const auto& override_supports_per_window_scaling_for_test =
+        OzonePlatform::PlatformRuntimeProperties::
+            override_supports_per_window_scaling_for_test;
 
     static OzonePlatform::PlatformRuntimeProperties properties;
     if (connection_) {
@@ -361,8 +384,8 @@ class OzonePlatformWayland : public OzonePlatform,
       // the browser process side.
       properties.supports_server_side_window_decorations =
           (connection_->xdg_decoration_manager_v1() != nullptr &&
-          override_supports_ssd_for_test == SupportsSsdForTest::kNotSet) ||
-          override_supports_ssd_for_test == SupportsSsdForTest::kYes;
+           override_supports_ssd_for_test == SupportsForTest::kNotSet) ||
+          override_supports_ssd_for_test == SupportsForTest::kYes;
       properties.supports_overlays =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();
@@ -380,11 +403,22 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.needs_background_image =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();
-      if (connection_->zaura_shell()) {
-        properties.supports_activation =
-            zaura_shell_get_version(connection_->zaura_shell()->wl_object()) >=
-            ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION;
-      }
+      properties.supports_activation =
+          connection_->zaura_shell() &&
+          zaura_shell_get_version(connection_->zaura_shell()->wl_object()) >=
+              ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION;
+      properties.supports_subwindows_as_accelerated_widgets =
+          connection_->ShouldUseOverlayDelegation()
+              ? connection_->surface_augmenter() &&
+                    connection_->surface_augmenter()
+                        ->SupportsCompositingOnlySurface()
+              : true;
+      properties.supports_per_window_scaling =
+          (connection_->UsePerSurfaceScaling() &&
+           override_supports_per_window_scaling_for_test ==
+               SupportsForTest::kNotSet) ||
+          (override_supports_per_window_scaling_for_test ==
+           SupportsForTest::kYes);
 
       if (surface_factory_) {
         DCHECK(has_initialized_gpu());
@@ -458,7 +492,7 @@ class OzonePlatformWayland : public OzonePlatform,
   void PostMainMessageLoopRun() override {
     // TODO(b/324294360): This will cause a lot of dangling pointers, which
     // breaks linux wayland bot. Fix them and enable on linux as well.
-#if BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+#if BUILDFLAG(IS_CHROMEOS) || !PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     connection_.reset();
 #endif
   }

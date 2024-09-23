@@ -9,6 +9,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "ios/web/javascript_flags.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/page_script_util.h"
@@ -17,6 +18,12 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+#import "base/command_line.h"
+#import "base/strings/string_split.h"
+#import "ios/web/switches.h"
+#endif
 
 namespace {
 
@@ -34,6 +41,60 @@ NSString* InjectionTokenForScript(NSString* script_filename) {
           componentsJoinedByString:@""];
   DCHECK_GT(token.length, 0ul);
   return token;
+}
+
+bool IsScriptEnabled(NSString* script_token) {
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  bool disable_all_scripts = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      web::switches::kDisableAllInjectedScripts);
+  if (disable_all_scripts) {
+    return false;
+  }
+
+  bool disable_feature_scripts =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          web::switches::kDisableInjectedFeatureScripts);
+  if (disable_feature_scripts) {
+    return [[NSSet setWithArray:@[ @"gcrweb", @"common", @"message" ]]
+        containsObject:script_token];
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          web::switches::kDisableListedScripts)) {
+    std::string token = base::SysNSStringToUTF8(script_token);
+    auto disable_scripts_flag =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            web::switches::kDisableListedScripts);
+    auto disable_scripts =
+        base::SplitStringPiece(disable_scripts_flag, ",", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY);
+    if (std::find(disable_scripts.begin(), disable_scripts.end(),
+                  token.c_str()) != disable_scripts.end()) {
+      // `token` found in passed switch value.
+      return false;
+    }
+    return true;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          web::switches::kEnableListedScripts)) {
+    std::string token = base::SysNSStringToUTF8(script_token);
+    auto enable_scripts_flag =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            web::switches::kEnableListedScripts);
+    auto enable_scripts =
+        base::SplitStringPiece(enable_scripts_flag, ",", base::TRIM_WHITESPACE,
+                               base::SPLIT_WANT_NONEMPTY);
+    if (std::find(enable_scripts.begin(), enable_scripts.end(),
+                  token.c_str()) != enable_scripts.end()) {
+      // `token` found in passed switch value.
+      return true;
+    }
+    return false;
+  }
+#endif
+
+  return true;
 }
 
 }  // namespace
@@ -99,6 +160,10 @@ JavaScriptFeature::FeatureScript& JavaScriptFeature::FeatureScript::operator=(
 JavaScriptFeature::FeatureScript::~FeatureScript() = default;
 
 NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
+  if (!IsScriptEnabled(injection_token_)) {
+    return @"";
+  }
+
   NSString* script = nil;
   if (script_) {
     script = base::SysUTF8ToNSString(script_.value());
@@ -141,16 +206,15 @@ NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
 JavaScriptFeature::JavaScriptFeature(ContentWorld supported_world)
     : supported_world_(supported_world), weak_factory_(this) {}
 
-JavaScriptFeature::JavaScriptFeature(
-    ContentWorld supported_world,
-    std::vector<const FeatureScript> feature_scripts)
+JavaScriptFeature::JavaScriptFeature(ContentWorld supported_world,
+                                     std::vector<FeatureScript> feature_scripts)
     : supported_world_(supported_world),
       scripts_(feature_scripts),
       weak_factory_(this) {}
 
 JavaScriptFeature::JavaScriptFeature(
     ContentWorld supported_world,
-    std::vector<const FeatureScript> feature_scripts,
+    std::vector<FeatureScript> feature_scripts,
     std::vector<const JavaScriptFeature*> dependent_features)
     : supported_world_(supported_world),
       scripts_(feature_scripts),
@@ -167,13 +231,13 @@ WebFramesManager* JavaScriptFeature::GetWebFramesManager(WebState* web_state) {
   return web_state->GetWebFramesManager(GetSupportedContentWorld());
 }
 
-const std::vector<const JavaScriptFeature::FeatureScript>
-JavaScriptFeature::GetScripts() const {
+std::vector<JavaScriptFeature::FeatureScript> JavaScriptFeature::GetScripts()
+    const {
   return scripts_;
 }
 
-const std::vector<const JavaScriptFeature*>
-JavaScriptFeature::GetDependentFeatures() const {
+std::vector<const JavaScriptFeature*> JavaScriptFeature::GetDependentFeatures()
+    const {
   return dependent_features_;
 }
 
@@ -207,6 +271,13 @@ bool JavaScriptFeature::CallJavaScriptFunction(
 
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  // If this JavaScript feature was not registered due to a JavaScript debug
+  // flag, do not attempt to call `function_name`.
+  if (!content_world) {
+    return false;
+  }
+#endif
   DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
@@ -227,10 +298,42 @@ bool JavaScriptFeature::CallJavaScriptFunction(
 
   JavaScriptContentWorld* content_world =
       feature_manager->GetContentWorldForFeature(this);
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  // If this JavaScript feature was not registered due to a JavaScript debug
+  // flag, do not attempt to call `function_name`.
+  if (!content_world) {
+    return false;
+  }
+#endif
   DCHECK(content_world);
 
   return web_frame->GetWebFrameInternal()->CallJavaScriptFunctionInContentWorld(
       function_name, parameters, content_world, std::move(callback), timeout);
+}
+
+bool JavaScriptFeature::ExecuteJavaScript(
+    WebFrame* web_frame,
+    const std::u16string& script,
+    ExecuteJavaScriptCallbackWithError callback) {
+  DCHECK(web_frame);
+
+  JavaScriptFeatureManager* feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(web_frame->GetBrowserState());
+  DCHECK(feature_manager);
+
+  JavaScriptContentWorld* content_world =
+      feature_manager->GetContentWorldForFeature(this);
+#if BUILDFLAG(ENABLE_IOS_JAVASCRIPT_FLAGS)
+  // If this JavaScript feature was not registered due to a JavaScript debug
+  // flag, do not attempt to call `function_name`.
+  if (!content_world) {
+    return false;
+  }
+#endif
+  DCHECK(content_world);
+
+  return web_frame->GetWebFrameInternal()->ExecuteJavaScriptInContentWorld(
+      script, content_world, std::move(callback));
 }
 
 }  // namespace web

@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
+import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.download.DownloadCollectionBridge;
@@ -305,7 +307,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
             mMessageUiController = DownloadMessageUiControllerFactory.create(delegate);
 
             DownloadManagerService.getDownloadManagerService()
-                    .checkForExternallyRemovedDownloads(ProfileKey.getLastUsedRegularProfileKey());
+                    .checkForExternallyRemovedDownloads(
+                            ProfileKeyUtil.getLastUsedRegularProfileKey());
 
             mActivityLaunched = true;
         }
@@ -1049,7 +1052,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     public void onProfileDestroyed(Profile profile) {}
 
     @CalledByNative
-    void onResumptionFailed(String downloadGuid) {
+    void onResumptionFailed(@JniType("std::string") String downloadGuid) {
         mDownloadNotifier.notifyDownloadFailed(
                 new DownloadInfo.Builder()
                         .setDownloadGuid(downloadGuid)
@@ -1073,7 +1076,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         }
 
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-            Profile profile = Profile.getLastUsedRegularProfile();
+            Profile profile = ProfileManager.getLastUsedRegularProfile();
             if (OTRProfileID.isOffTheRecord(info.getOTRProfileId())) {
                 profile =
                         profile.getOffTheRecordProfile(
@@ -1308,7 +1311,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      */
     // TODO(shaktisahu): Drive this from a similar observer.
     private void maybeShowMissingSdCardError(List<DownloadItem> list) {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        PrefService prefService = UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
         // Only show the missing directory snackbar once.
         if (!prefService.getBoolean(Pref.SHOW_MISSING_SD_CARD_ERROR_ANDROID)) return;
 
@@ -1397,7 +1400,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     // Deprecated after new download backend.
     @CalledByNative
-    private void onDownloadItemRemoved(String guid, OTRProfileID otrProfileID) {
+    private void onDownloadItemRemoved(
+            @JniType("std::string") String guid, OTRProfileID otrProfileID) {
         for (DownloadObserver adapter : mDownloadObservers) {
             adapter.onDownloadItemRemoved(guid);
         }
@@ -1657,7 +1661,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     @NativeMethods
     interface Natives {
-        boolean isSupportedMimeType(String mimeType);
+        boolean isSupportedMimeType(@JniType("std::string") String mimeType);
 
         int getAutoResumptionLimit();
 
@@ -1666,39 +1670,39 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         void openDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey,
                 int source);
 
         void resumeDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void cancelDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void pauseDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void removeDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void renameDownload(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
-                String targetName,
+                @JniType("std::string") String downloadGuid,
+                @JniType("std::string") String targetName,
                 Callback</*RenameResult*/ Integer> callback,
                 ProfileKey profileKey);
 
@@ -1715,17 +1719,19 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         void updateLastAccessTime(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String downloadGuid,
+                @JniType("std::string") String downloadGuid,
                 ProfileKey profileKey);
 
         void onProfileAdded(
-                long nativeDownloadManagerService, DownloadManagerService caller, Profile profile);
+                long nativeDownloadManagerService,
+                DownloadManagerService caller,
+                @JniType("Profile*") Profile profile);
 
         void createInterruptedDownloadForTest(
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
-                String url,
-                String guid,
-                String targetPath);
+                @JniType("std::string") String url,
+                @JniType("std::string") String guid,
+                @JniType("std::string") String targetPath);
     }
 }

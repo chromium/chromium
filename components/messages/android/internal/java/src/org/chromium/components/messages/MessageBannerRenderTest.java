@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -34,7 +35,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -93,7 +93,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -134,7 +134,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -174,7 +174,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -206,7 +206,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -240,7 +240,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -253,7 +253,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void testBasic_resetPrimaryButtonText() throws Exception {
         MessageBannerView result =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             Activity activity = getActivity();
                             final String veryLongButtonText =
@@ -324,7 +324,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
         model.set(MessageBannerProperties.DESCRIPTION, null);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -362,7 +362,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -404,7 +404,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -444,7 +444,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -485,7 +485,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -527,7 +527,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });
@@ -564,7 +564,7 @@ public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
                         activity.getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     getActivity().setContentView(view, params);
                 });

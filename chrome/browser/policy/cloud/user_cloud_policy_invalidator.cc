@@ -12,7 +12,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/invalidation/impl/profile_invalidation_provider.h"
+#include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/profile_invalidation_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
@@ -45,7 +46,7 @@ UserCloudPolicyInvalidator::UserCloudPolicyInvalidator(
   // TODO(stepco): Delayed initialization can be removed once the request
   // context can be accessed during profile-keyed service creation. Tracked by
   // bug 286209.
-  // TODO(crbug.com/1038437): Investigate if this is still required.
+  // TODO(crbug.com/40113187): Investigate if this is still required.
   profile_observation_.Observe(profile);
 }
 
@@ -65,10 +66,13 @@ void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
   // service can safely be initialized.
   invalidation::ProfileInvalidationProvider* invalidation_provider =
       GetInvalidationProvider(profile);
-  if (!invalidation_provider)
+  if (!invalidation_provider) {
     return;
-  Initialize(invalidation_provider->GetInvalidationServiceForCustomSender(
-      policy::kPolicyFCMInvalidationSenderID));
+  }
+
+  Initialize(invalidation_provider->GetInvalidationServiceOrListener(
+      kPolicyFCMInvalidationSenderID,
+      invalidation::InvalidationListener::kProjectNumberEnterprise));
 }
 
 }  // namespace policy

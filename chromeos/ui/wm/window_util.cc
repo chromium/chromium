@@ -4,7 +4,7 @@
 
 #include "chromeos/ui/wm/window_util.h"
 
-#include "ash/constants/app_types.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -103,8 +103,7 @@ gfx::Size GetFloatedWindowTabletSize(aura::Window* window) {
   const int minimum_width_padding = kBrowserExtraPaddingDp;
 #else
   const int minimum_width_padding =
-      window->GetProperty(aura::client::kAppType) ==
-              static_cast<int>(ash::AppType::BROWSER)
+      window->GetProperty(chromeos::kAppTypeKey) == chromeos::AppType::BROWSER
           ? kBrowserExtraPaddingDp
           : 0;
 #endif
@@ -122,8 +121,8 @@ bool CanFloatWindow(aura::Window* window) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only app window can be floated. All windows on lacros side are expected to
   // be lacros, so this check is not needed.
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::NON_APP)) {
+  if (window->GetProperty(chromeos::kAppTypeKey) ==
+      chromeos::AppType::NON_APP) {
     return false;
   }
 

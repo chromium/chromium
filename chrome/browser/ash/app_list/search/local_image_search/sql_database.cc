@@ -160,7 +160,7 @@ void SqlDatabase::OnErrorCallback(int error, sql::Statement* stmt) {
 
 std::unique_ptr<sql::Statement> SqlDatabase::GetStatementForQuery(
     const sql::StatementID& sql_from_here,
-    const char* query) {
+    base::cstring_view query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_.is_open()) {
     return nullptr;

@@ -44,10 +44,9 @@ ScopedVirtualSensorForDevTools::ScopedVirtualSensorForDevTools(
         switch (result) {
           case device::mojom::CreateVirtualSensorResult::
               kSensorTypeAlreadyOverridden:
-            NOTREACHED_NORETURN()
-                << "WebContentsSensorProviderProxy::"
-                   "CreateVirtualSensorForDevTools() should have "
-                   "prevented this result";
+            NOTREACHED() << "WebContentsSensorProviderProxy::"
+                            "CreateVirtualSensorForDevTools() should have "
+                            "prevented this result";
           case device::mojom::CreateVirtualSensorResult::kSuccess:
             break;
         }

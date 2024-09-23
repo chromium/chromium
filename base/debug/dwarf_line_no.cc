@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/debug/dwarf_line_no.h"
 
-#include "base/memory/raw_ref.h"
+#include "partition_alloc/pointers/raw_ref.h"
 
 #ifdef USE_SYMBOLIZE
 #include <algorithm>
+#include <charconv>
 #include <cstdint>
 #include <limits>
 
@@ -16,9 +22,8 @@
 #include <unistd.h>
 
 #include "base/debug/buffered_dwarf_reader.h"
-#include "base/debug/stack_trace.h"
-#include "base/memory/raw_ptr.h"
 #include "base/third_party/symbolize/symbolize.h"
+#include "partition_alloc/pointers/raw_ptr.h"
 
 namespace base {
 namespace debug {
@@ -1114,13 +1119,24 @@ void SerializeLineNumberInfoToString(int fd,
   }
 
   out[out_pos - 1] = ':';
-  char* tmp = internal::itoa_r(static_cast<intptr_t>(info.line), out + out_pos,
-                               out_size - out_pos, 10, 0);
-  out_pos += strlen(tmp) + 1;
-  out[out_pos - 1] = ':';
-  tmp = internal::itoa_r(static_cast<intptr_t>(info.column), out + out_pos,
-                         out_size - out_pos, 10, 0);
-  out_pos += strlen(tmp) + 1;
+  auto result = std::to_chars(out + out_pos, out + out_size,
+                              static_cast<intptr_t>(info.line));
+  if (result.ec != std::errc()) {
+    out[out_pos - 1] = '\0';
+    return;
+  }
+  out_pos = static_cast<size_t>(result.ptr - out);
+
+  out[out_pos++] = ':';
+  result = std::to_chars(out + out_pos, out + out_size,
+                         static_cast<intptr_t>(info.column));
+  if (result.ec != std::errc()) {
+    out[out_pos - 1] = '\0';
+    return;
+  }
+  out_pos = static_cast<size_t>(result.ptr - out);
+
+  out[out_pos++] = '\0';
 }
 
 // Reads the Line Number info for a compile unit.
@@ -1268,7 +1284,7 @@ void PopulateCompileUnitOffsets(int fd,
 }  // namespace
 
 bool GetDwarfSourceLineNumber(const void* pc,
-                              uintptr_t cu_offset,
+                              uint64_t cu_offset,
                               char* out,
                               size_t out_size) {
   uint64_t pc0 = reinterpret_cast<uint64_t>(pc);
@@ -1294,11 +1310,9 @@ bool GetDwarfSourceLineNumber(const void* pc,
 void GetDwarfCompileUnitOffsets(const void* const* trace,
                                 uint64_t* cu_offsets,
                                 size_t num_frames) {
-  // Ensure `cu_offsets` always has a known state.
-  memset(cu_offsets, 0, sizeof(uint64_t) * num_frames);
-
-  FrameInfo* frame_info =
-      static_cast<FrameInfo*>(alloca(sizeof(FrameInfo) * num_frames));
+  // LINT.IfChange(max_stack_frames)
+  FrameInfo frame_info[250] = {};
+  // LINT.ThenChange(stack_trace.h:max_stack_frames)
   for (size_t i = 0; i < num_frames; i++) {
     // The `cu_offset` also encodes the original sort order.
     frame_info[i].cu_offset = &cu_offsets[i];
@@ -1321,7 +1335,14 @@ void GetDwarfCompileUnitOffsets(const void* const* trace,
             frame_info[cur_frame].pc, object_start_address, object_base_address,
             nullptr, 0)));
 
-    // TODO(https://crbug.com/1335630): Consider exposing the end address so a
+    // Some stack frames may not have a corresponding object file, e.g. a call
+    // frame inside the Linux kernel's vdso. Just skip over these stack frames,
+    // as this is done on a best-effort basis.
+    if (object_fd.get() < 0) {
+      continue;
+    }
+
+    // TODO(crbug.com/40228616): Consider exposing the end address so a
     // range of frames can be bulk-populated. This was originally implemented,
     // but line number symbolization is currently broken by default (and also
     // broken in sandboxed processes). The various issues will be addressed
@@ -1343,14 +1364,14 @@ void GetDwarfCompileUnitOffsets(const void* const* trace,
 namespace base {
 namespace debug {
 
-bool GetDwarfSourceLineNumber(void* pc,
-                              uintptr_t cu_offset,
+bool GetDwarfSourceLineNumber(const void* pc,
+                              uint64_t cu_offset,
                               char* out,
                               size_t out_size) {
   return false;
 }
 
-void GetDwarfCompileUnitOffsets(void* const* trace,
+void GetDwarfCompileUnitOffsets(const void* const* trace,
                                 uint64_t* cu_offsets,
                                 size_t num_frames) {
   // Provide defined values even in the stub.

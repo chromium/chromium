@@ -19,9 +19,11 @@ public class SignalAccumulator {
     private static final long ACTION_PROVIDER_TIMEOUT_MS = 100;
 
     // List of signals to query. Modify hasAllSignals() when adding signals to this list.
-    // TODO(crbug/1373895): Introduce a key set and directly populate InputContext.
+    // TODO(crbug.com/40242243): Introduce a key set and directly populate InputContext.
     private Boolean mHasPriceTracking;
     private Boolean mHasReaderMode;
+    private Boolean mHasPriceInsights;
+    private Boolean mHasDiscounts;
 
     // Whether the backends didn't respond within the time limit. Any further response from the
     // backends will be ignored.
@@ -98,6 +100,30 @@ public class SignalAccumulator {
         mHasReaderMode = hasReaderMode;
     }
 
+    /**
+     * @return Whether the page is price insights eligible. Default is false.
+     */
+    public Boolean hasPriceInsights() {
+        return mHasPriceInsights == null ? false : mHasPriceInsights;
+    }
+
+    /** Called to set whether the page is price insights eligible. */
+    public void setHasPriceInsights(Boolean hasPriceInsights) {
+        mHasPriceInsights = hasPriceInsights;
+    }
+
+    /**
+     * @return Whether the page is discounts eligible. Default is false.
+     */
+    public Boolean hasDiscounts() {
+        return mHasDiscounts == null ? false : mHasDiscounts;
+    }
+
+    /** Called to set whether the page is discounts eligible. */
+    public void setHasDiscounts(Boolean hasDiscounts) {
+        mHasDiscounts = hasDiscounts;
+    }
+
     /** Central method invoked whenever a backend responds or time out happens. */
     private void proceedToNextStepIfReady() {
         boolean isReady = mHasTimedOut || hasAllSignals();
@@ -107,6 +133,9 @@ public class SignalAccumulator {
     }
 
     private boolean hasAllSignals() {
-        return mHasPriceTracking != null && mHasReaderMode != null;
+        return mHasPriceTracking != null
+                && mHasReaderMode != null
+                && mHasPriceInsights != null
+                && mHasDiscounts != null;
     }
 }

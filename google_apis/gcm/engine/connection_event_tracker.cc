@@ -20,10 +20,7 @@ namespace gcm {
 
 ConnectionEventTracker::ConnectionEventTracker() = default;
 
-ConnectionEventTracker::~ConnectionEventTracker() {
-  UMA_HISTOGRAM_ENUMERATION("GCM.PendingConnectionEventsAtShutdown",
-                            completed_events_.size(), kMaxClientEvents + 1);
-}
+ConnectionEventTracker::~ConnectionEventTracker() = default;
 
 bool ConnectionEventTracker::IsEventInProgress() const {
   return current_event_.has_time_connection_started_ms();

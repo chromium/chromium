@@ -12,16 +12,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test for the Site Engagement Service Java binding. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -37,9 +38,9 @@ public class SiteEngagementServiceTest {
     @SmallTest
     @Feature({"Engagement"})
     public void testSettingAndRetrievingScore() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowserContextHandle handle = Profile.getLastUsedRegularProfile();
+                    BrowserContextHandle handle = ProfileManager.getLastUsedRegularProfile();
                     SiteEngagementService service =
                             SiteEngagementService.getForBrowserContext(handle);
 
@@ -57,9 +58,9 @@ public class SiteEngagementServiceTest {
     @SmallTest
     @Feature({"Engagement"})
     public void testRepeatedlyGettingService() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Profile profile = Profile.getLastUsedRegularProfile();
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
 
                     Assert.assertEquals(
                             0.0,
@@ -83,9 +84,9 @@ public class SiteEngagementServiceTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BrowserContextHandle handle = Profile.getLastUsedRegularProfile();
+                    BrowserContextHandle handle = ProfileManager.getLastUsedRegularProfile();
                     SiteEngagementService service =
                             SiteEngagementService.getForBrowserContext(handle);
                     service.resetBaseScoreForUrl(URL, 0.0);

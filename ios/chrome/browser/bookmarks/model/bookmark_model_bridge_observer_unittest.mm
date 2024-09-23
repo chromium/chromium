@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 
@@ -72,28 +71,24 @@
 
 #pragma mark - BookmarkModelBridgeObserver
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-    didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeChildrenForNode:(const bookmarks::BookmarkNode*)bookmarkNode {
 }
 
-- (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
+- (void)bookmarkModelRemovedAllNodes {
 }
 
-- (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
+- (void)bookmarkModelLoaded {
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-        didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
+- (void)didChangeNode:(const bookmarks::BookmarkNode*)bookmarkNode {
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-          didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
-           fromParent:(const bookmarks::BookmarkNode*)oldParent
-             toParent:(const bookmarks::BookmarkNode*)newParent {
+- (void)didMoveNode:(const bookmarks::BookmarkNode*)bookmarkNode
+         fromParent:(const bookmarks::BookmarkNode*)oldParent
+           toParent:(const bookmarks::BookmarkNode*)newParent {
 }
 
-- (void)bookmarkModel:(bookmarks::BookmarkModel*)model
-        didDeleteNode:(const bookmarks::BookmarkNode*)node
+- (void)didDeleteNode:(const bookmarks::BookmarkNode*)node
            fromFolder:(const bookmarks::BookmarkNode*)folder {
   [_owner bookmarkNodeDeleted];
 }
@@ -109,17 +104,16 @@ using BookmarkModelBridgeObserverTest = BookmarkIOSUnitTestSupport;
 TEST_F(BookmarkModelBridgeObserverTest,
        NotifyBookmarkNodeChildrenChangedDespiteSelfDestruction) {
   @autoreleasepool {
-    const BookmarkNode* mobile_node =
-        local_or_syncable_bookmark_model_->mobile_node();
+    const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
     const BookmarkNode* folder = AddFolder(mobile_node, u"title");
 
     TestBookmarkModelBridgeOwner* owner = [[TestBookmarkModelBridgeOwner alloc]
-        initWithModel:local_or_syncable_bookmark_model_
+        initWithModel:bookmark_model_
              observer:[[TestBookmarkModelBridgeObserver alloc] init]];
 
     // Deleting the folder should not cause a crash.
-    local_or_syncable_bookmark_model_->Remove(
-        folder, bookmarks::metrics::BookmarkEditSource::kOther);
+    bookmark_model_->Remove(
+        folder, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
 
     EXPECT_TRUE([owner bookmarkNodeDeletedCalled]);
   }

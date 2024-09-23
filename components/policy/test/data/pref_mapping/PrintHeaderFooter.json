@@ -14,7 +14,9 @@
           "PrintHeaderFooter": true
         },
         "prefs": {
-          "printing.print_header_footer": {}
+          "printing.print_header_footer": {
+            "value": true
+          }
         }
       }
     ]

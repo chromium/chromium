@@ -15,17 +15,17 @@ NullHandle::NullHandle() = default;
 NullHandle::~NullHandle() = default;
 
 size_t NullHandle::mapped_size() const {
-  NOTREACHED() << "Unsupported operation";
+  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
   return 0;
 }
 
 uint8_t* NullHandle::data() const {
-  NOTREACHED() << "Unsupported operation";
+  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
   return nullptr;
 }
 
 const uint8_t* NullHandle::const_data() const {
-  NOTREACHED() << "Unsupported operation";
+  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
   return nullptr;
 }
 

@@ -8,21 +8,36 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER;
+import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.EMAIL2;
+import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GAIA_ID2;
+import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER1;
+import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER2;
 
 import android.app.Activity;
 import android.text.Editable;
@@ -30,42 +45,68 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
-import org.junit.Assert;
+import androidx.annotation.Nullable;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
+import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -76,51 +117,86 @@ import java.util.List;
 /** Tests for {@link TabGridDialogMediator}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGridDialogMediatorUnitTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
     private static final String TAB3_TITLE = "Tab3";
     private static final String DIALOG_TITLE1 = "1 tab";
     private static final String DIALOG_TITLE2 = "2 tabs";
     private static final String CUSTOMIZED_DIALOG_TITLE = "Cool Tabs";
+    private static final String COLLABORATION_ID1 = "A";
+    private static final String GROUP_TITLE = "My Group";
+    private static final int COLOR_2 = 1;
+    private static final int COLOR_3 = 2;
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int TAB3_ID = 123;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
+    private static final Token TAB_GROUP_ID = new Token(1L, 2L);
 
-    @Mock View mView;
-    @Mock TabGridDialogMediator.DialogController mDialogController;
-    @Mock TabCreatorManager mTabCreatorManager;
-    @Mock TabCreator mTabCreator;
-    @Mock TabSwitcherResetHandler mTabSwitcherResetHandler;
-    @Mock TabGridDialogMediator.AnimationSourceViewProvider mAnimationSourceViewProvider;
-    @Mock TabGroupModelFilter mTabGroupModelFilter;
-    @Mock TabModel mTabModel;
-    @Mock TabListEditorCoordinator.TabListEditorController mTabListEditorController;
-    @Mock TabGroupTitleEditor mTabGroupTitleEditor;
-    @Mock EditText mTitleTextView;
-    @Mock Editable mEditable;
-    @Mock SnackbarManager mSnackbarManager;
-    @Mock Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
-    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Profile mProfile;
+    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
+    @Mock private View mView;
+    @Mock private TabGridDialogMediator.DialogController mDialogController;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private TabCreator mTabCreator;
+    @Mock private TabSwitcherResetHandler mTabSwitcherResetHandler;
+    @Mock private TabGridDialogMediator.AnimationSourceViewProvider mAnimationSourceViewProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
+    @Mock private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
+    @Mock private TabGroupTitleEditor mTabGroupTitleEditor;
+    @Mock private EditText mTitleTextView;
+    @Mock private Editable mEditable;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock private Runnable mShowColorPickerPopupRunnable;
+    @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mCollaborationActivityMessageCardCaptor;
+    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
+    @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
             new ObservableSupplierImpl<>();
 
+    private UserActionTester mActionTester;
     private Tab mTab1;
     private Tab mTab2;
     private Activity mActivity;
     private PropertyModel mModel;
     private TabGridDialogMediator mMediator;
+    private SharedGroupObserverTestHelper mSharedGroupObserverTestHelper;
 
     @Before
     public void setUp() {
+        mActionTester = new UserActionTester();
 
-        MockitoAnnotations.initMocks(this);
+        mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mProfile.isNativeInitialized()).thenReturn(true);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        DataSharingServiceFactory.setForTesting(mDataSharingService);
+        mSharedGroupObserverTestHelper =
+                new SharedGroupObserverTestHelper(
+                        mDataSharingService, mTabGroupSyncService, mReadGroupCallbackCaptor);
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
@@ -128,9 +204,11 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
 
         mCurrentTabModelFilterSupplier.set(mTabGroupModelFilter);
+        doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
         doReturn(POSITION2).when(mTabGroupModelFilter).indexOf(mTab2);
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
         doReturn(tabs1).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
@@ -140,9 +218,14 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION2);
+        doReturn(mTab1).when(mTabModel).getTabById(TAB1_ID);
+        doReturn(mTab2).when(mTabModel).getTabById(TAB2_ID);
         doReturn(POSITION1).when(mTabModel).indexOf(mTab1);
         doReturn(POSITION2).when(mTabModel).indexOf(mTab2);
         doNothing().when(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
+        doNothing()
+                .when(mTabGroupModelFilter)
+                .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
         doReturn(mView).when(mAnimationSourceViewProvider).getAnimationSourceViewForTab(anyInt());
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         doReturn(mEditable).when(mTitleTextView).getText();
@@ -150,36 +233,22 @@ public class TabGridDialogMediatorUnitTest {
         doReturn(null).when(mRecyclerViewPositionSupplier).get();
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
-        mModel = new PropertyModel(TabGridPanelProperties.ALL_KEYS);
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        mTabSwitcherResetHandler,
-                        mRecyclerViewPositionSupplier,
-                        mAnimationSourceViewProvider,
-                        mSnackbarManager,
-                        "");
+        mModel = spy(new PropertyModel(TabGridDialogProperties.ALL_KEYS));
+        remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ true);
 
-        mMediator.initWithNative(
-                () -> {
-                    return mTabListEditorController;
-                },
-                mTabGroupTitleEditor);
+        mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
+        assertThat(mTabGroupModelFilterObserverCaptor.getAllValues().isEmpty(), equalTo(false));
     }
 
     @Test
     public void setupListenersAndObservers() {
         // These listeners and observers should be setup when the mediator is created.
         assertThat(
-                mModel.get(TabGridPanelProperties.COLLAPSE_CLICK_LISTENER),
+                mModel.get(TabGridDialogProperties.COLLAPSE_CLICK_LISTENER),
                 instanceOf(View.OnClickListener.class));
         assertThat(
-                mModel.get(TabGridPanelProperties.ADD_CLICK_LISTENER),
+                mModel.get(TabGridDialogProperties.ADD_CLICK_LISTENER),
                 instanceOf(View.OnClickListener.class));
     }
 
@@ -190,10 +259,10 @@ public class TabGridDialogMediatorUnitTest {
                 mMediator.getKeyboardVisibilityListenerForTesting(),
                 instanceOf(KeyboardVisibilityDelegate.KeyboardVisibilityListener.class));
         assertThat(
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER),
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER),
                 instanceOf(TextWatcher.class));
         assertThat(
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER),
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER),
                 instanceOf(View.OnFocusChangeListener.class));
     }
 
@@ -201,15 +270,16 @@ public class TabGridDialogMediatorUnitTest {
     public void setupTabListEditor() {
         // Setup selection editor for multiple items.
         assertThat(
-                mModel.get(TabGridPanelProperties.MENU_CLICK_LISTENER),
+                mModel.get(TabGridDialogProperties.MENU_CLICK_LISTENER),
                 instanceOf(View.OnClickListener.class));
 
         ArgumentCaptor<List<TabListEditorAction>> captor =
                 ArgumentCaptor.forClass((Class) List.class);
-        mMediator.getToolbarMenuCallbackForTesting().onResult(R.id.select_tabs);
-        verify(mTabListEditorController).configureToolbarWithMenuItems(captor.capture(), eq(null));
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        mMediator.onToolbarMenuItemClick(R.id.select_tabs, TAB1_ID, /* collaborationId= */ null);
+        verify(mTabListEditorController).configureToolbarWithMenuItems(captor.capture());
         verify(mRecyclerViewPositionSupplier, times(1)).get();
-        verify(mTabListEditorController).show(any(), eq(0), eq(null));
+        verify(mTabListEditorController).show(any(), eq(null));
         List<TabListEditorAction> actions = captor.getValue();
         assertThat(actions.get(0), instanceOf(TabListEditorSelectionAction.class));
         assertThat(actions.get(1), instanceOf(TabListEditorCloseAction.class));
@@ -219,21 +289,21 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void onClickAdd_HasCurrentTab() {
         // Mock that the animation source view is not null, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
-        View.OnClickListener listener = mModel.get(TabGridPanelProperties.ADD_CLICK_LISTENER);
+        View.OnClickListener listener = mModel.get(TabGridDialogProperties.ADD_CLICK_LISTENER);
         listener.onClick(mView);
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             verify(mDialogController).resetWithListOfTabs(null);
         }
 
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             verify(mDialogController, times(2)).resetWithListOfTabs(null);
         } else {
@@ -248,7 +318,7 @@ public class TabGridDialogMediatorUnitTest {
     public void onClickAdd_NoCurrentTab() {
         mMediator.setCurrentTabIdForTesting(Tab.INVALID_TAB_ID);
 
-        View.OnClickListener listener = mModel.get(TabGridPanelProperties.ADD_CLICK_LISTENER);
+        View.OnClickListener listener = mModel.get(TabGridDialogProperties.ADD_CLICK_LISTENER);
         listener.onClick(mView);
 
         verify(mTabCreator).launchNtp();
@@ -257,43 +327,43 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void onClickCollapse() {
         // Show the group of {tab1, tab2} in dialog to trigger the set of scrim observer.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
-        mMediator.onReset(tabgroup);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        mMediator.onReset(tabGroup);
 
-        View.OnClickListener listener = mModel.get(TabGridPanelProperties.COLLAPSE_CLICK_LISTENER);
+        View.OnClickListener listener = mModel.get(TabGridDialogProperties.COLLAPSE_CLICK_LISTENER);
         listener.onClick(mView);
 
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
     @Test
     public void onClickScrim() {
         // Show the group of {tab1, tab2} in dialog to trigger the set of scrim observer.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
-        mMediator.onReset(tabgroup);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        mMediator.onReset(tabGroup);
 
-        Runnable scrimClickRunnable = mModel.get(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE);
+        Runnable scrimClickRunnable = mModel.get(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE);
         scrimClickRunnable.run();
 
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
     @Test
     public void onTitleTextChange_WithoutFocus() {
-        TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
         // Mock tab1 is the current tab for the dialog.
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
         assertThat(mEditable.toString(), equalTo(CUSTOMIZED_DIALOG_TITLE));
 
         textWatcher.afterTextChanged(mEditable);
@@ -301,21 +371,21 @@ public class TabGridDialogMediatorUnitTest {
         // TabGroupTitleEditor should not react to text change when there is no focus.
         verify(mTabGroupTitleEditor, never()).storeTabGroupTitle(anyInt(), any(String.class));
         verify(mTabGroupTitleEditor, never()).updateTabGroupTitle(any(Tab.class), anyString());
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
         assertThat(mMediator.getCurrentGroupModifiedTitleForTesting(), equalTo(null));
     }
 
     @Test
     public void onTitleTextChange_WithFocus() {
-        TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
         // Mock tab1 is the current tab for the dialog.
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
         assertThat(mEditable.toString(), equalTo(CUSTOMIZED_DIALOG_TITLE));
 
         // Focus on title TextView.
         View.OnFocusChangeListener listener =
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
         listener.onFocusChange(mTitleTextView, true);
 
         textWatcher.afterTextChanged(mEditable);
@@ -328,7 +398,7 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void onTitleTextFocusChange() {
         View.OnFocusChangeListener listener =
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
         assertThat(mMediator.getIsUpdatingTitleForTesting(), equalTo(false));
 
         listener.onFocusChange(mTitleTextView, true);
@@ -340,35 +410,35 @@ public class TabGridDialogMediatorUnitTest {
     public void onKeyBoardVisibilityChanged_updateTextAndKeyboard() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener listener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
-        mModel.set(TabGridPanelProperties.TITLE_CURSOR_VISIBILITY, false);
-        mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
+        mModel.set(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY, false);
+        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
 
         listener.keyboardVisibilityChanged(true);
-        assertThat(mModel.get(TabGridPanelProperties.TITLE_CURSOR_VISIBILITY), equalTo(true));
-        assertThat(mModel.get(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
-        assertThat(mModel.get(TabGridPanelProperties.IS_KEYBOARD_VISIBLE), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY), equalTo(true));
+        assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.IS_KEYBOARD_VISIBLE), equalTo(false));
 
         listener.keyboardVisibilityChanged(false);
-        assertThat(mModel.get(TabGridPanelProperties.TITLE_CURSOR_VISIBILITY), equalTo(false));
-        assertThat(mModel.get(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
-        assertThat(mModel.get(TabGridPanelProperties.IS_KEYBOARD_VISIBLE), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.TITLE_CURSOR_VISIBILITY), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.IS_KEYBOARD_VISIBLE), equalTo(false));
     }
 
     @Test
     public void onKeyBoardVisibilityChanged_StoreGroupTitle() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
-        TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
 
         // Mock that tab1 is in a group.
-        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID);
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID, TAB_GROUP_ID);
 
         // Mock that keyboard shows and group title is updated.
         keyboardVisibilityListener.keyboardVisibilityChanged(true);
         View.OnFocusChangeListener onFocusChangeListener =
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
         onFocusChangeListener.onFocusChange(mTitleTextView, true);
         textWatcher.afterTextChanged(mEditable);
         assertThat(
@@ -380,19 +450,48 @@ public class TabGridDialogMediatorUnitTest {
         verify(mTabGroupTitleEditor).storeTabGroupTitle(eq(TAB1_ID), eq(CUSTOMIZED_DIALOG_TITLE));
         verify(mTabGroupTitleEditor).updateTabGroupTitle(eq(mTab1), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
-                mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
+    }
+
+    @Test
+    public void onKeyBoardVisibilityChanged_StoreGroupTitle_SingleTab() {
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
+                mMediator.getKeyboardVisibilityListenerForTesting();
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
+
+        // Mock that tab1 is in a group.
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1)), TAB1_ID, TAB_GROUP_ID);
+
+        // Mock that keyboard shows and group title is updated.
+        keyboardVisibilityListener.keyboardVisibilityChanged(true);
+        View.OnFocusChangeListener onFocusChangeListener =
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+        onFocusChangeListener.onFocusChange(mTitleTextView, true);
+        textWatcher.afterTextChanged(mEditable);
+        assertThat(
+                mMediator.getCurrentGroupModifiedTitleForTesting(),
+                equalTo(CUSTOMIZED_DIALOG_TITLE));
+
+        keyboardVisibilityListener.keyboardVisibilityChanged(false);
+
+        verify(mTabGroupTitleEditor).storeTabGroupTitle(eq(TAB1_ID), eq(CUSTOMIZED_DIALOG_TITLE));
+        verify(mTabGroupTitleEditor).updateTabGroupTitle(eq(mTab1), eq(CUSTOMIZED_DIALOG_TITLE));
+        assertThat(
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
     public void onKeyBoardVisibilityChanged_NoFocus_NotStoreGroupTitle() {
         KeyboardVisibilityDelegate.KeyboardVisibilityListener keyboardVisibilityListener =
                 mMediator.getKeyboardVisibilityListenerForTesting();
-        TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
 
         // Mock that tab1 is in a group.
-        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID);
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID, TAB_GROUP_ID);
 
         // Mock that keyboard shows but title edit text is not focused.
         keyboardVisibilityListener.keyboardVisibilityChanged(true);
@@ -403,15 +502,15 @@ public class TabGridDialogMediatorUnitTest {
 
         verify(mTabGroupTitleEditor, never()).storeTabGroupTitle(anyInt(), anyString());
         verify(mTabGroupTitleEditor, never()).updateTabGroupTitle(any(Tab.class), anyString());
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
     }
 
     @Test
     public void tabAddition() {
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
         // Mock that the animation source view is not null, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
         mTabModelObserverCaptor
@@ -422,32 +521,36 @@ public class TabGridDialogMediatorUnitTest {
                         TabCreationState.LIVE_IN_FOREGROUND,
                         false);
 
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
 
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
     @Test
     public void tabClosure_NotLast_NotCurrent() {
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID, TAB_GROUP_ID);
         // Mock that tab1 and tab2 are in the same group, but tab2 just gets closed.
         doReturn(new ArrayList<>(Arrays.asList(mTab1)))
                 .when(mTabGroupModelFilter)
                 .getRelatedTabList(TAB2_ID);
+        doReturn(new ArrayList<>(Arrays.asList(mTab1)))
+                .when(mTabGroupModelFilter)
+                .getRelatedTabList(TAB1_ID);
         // Mock tab1 is the current tab for the dialog.
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         // Mock dialog title is null and the dialog is showing.
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
 
         // Current tab ID should not update.
         assertThat(mMediator.getCurrentTabIdForTesting(), equalTo(TAB1_ID));
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
         verify(mTabSwitcherResetHandler).resetWithTabList(mTabGroupModelFilter, false);
     }
 
@@ -460,14 +563,14 @@ public class TabGridDialogMediatorUnitTest {
         // Mock tab2 is the current tab for the dialog.
         mMediator.setCurrentTabIdForTesting(TAB2_ID);
         // Mock dialog title is null and the dialog is showing.
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
 
         // Current tab ID should be updated to TAB1_ID now.
         assertThat(mMediator.getCurrentTabIdForTesting(), equalTo(TAB1_ID));
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
         verify(mTabSwitcherResetHandler).resetWithTabList(mTabGroupModelFilter, false);
     }
 
@@ -478,16 +581,16 @@ public class TabGridDialogMediatorUnitTest {
         // As last tab in the group, tab1 is definitely the current tab for the dialog.
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         // Mock the dialog is showing and the animation source view is not null.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, false, true);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab1, true);
 
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mTabSwitcherResetHandler, never()).resetWithTabList(mTabGroupModelFilter, false);
 
@@ -496,38 +599,17 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void tabClosure_NotLast_Current_WithDialogHidden() {
-        // Mock that tab1 and tab2 are in the same group, but tab2 just gets closed.
-        doReturn(new ArrayList<>(Arrays.asList(mTab1)))
-                .when(mTabGroupModelFilter)
-                .getRelatedTabList(TAB2_ID);
-        // Mock tab2 is the current tab for the dialog.
-        mMediator.setCurrentTabIdForTesting(TAB2_ID);
-        // Mock dialog title is null and the dialog is hidden.
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
-
-        // Current tab ID should be updated to TAB1_ID now.
-        assertThat(mMediator.getCurrentTabIdForTesting(), equalTo(TAB1_ID));
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
-        // Dialog should still be hidden.
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
-        verify(mTabSwitcherResetHandler, never()).resetWithTabList(mTabGroupModelFilter, false);
-    }
-
-    @Test
     public void tabClosure_NonRootTab_StillGroupAfterClosure_WithStoredTitle() {
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
         // Mock that tab1, tab2 and newTab are in the same group and tab1 is the root tab.
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that newTab just get closed.
-        List<Tab> tabgroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        doReturn(tabgroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
-        doReturn(tabgroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
+        List<Tab> tabGroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        doReturn(tabGroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(tabGroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
 
         // Mock that newTab is the current tab for the dialog.
         mMediator.setCurrentTabIdForTesting(TAB3_ID);
@@ -538,24 +620,25 @@ public class TabGridDialogMediatorUnitTest {
         assertThat(
                 mTabGroupTitleEditor.getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE));
-        mTabModelObserverCaptor.getValue().willCloseTab(newTab, false, true);
+        mTabModelObserverCaptor.getValue().willCloseTab(newTab, true);
 
         // Dialog title should still be the stored title.
         assertThat(
-                mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
     public void tabClosure_RootTab_StillGroupAfterClosure_WithStoredTitle() {
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
         // Mock that tab1, tab2 and newTab are in the same group and newTab is the root tab.
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
-        createTabGroup(tabgroup, TAB3_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
+        createTabGroup(tabGroup, TAB3_ID, TAB_GROUP_ID);
 
         // Mock that newTab just get closed.
-        List<Tab> tabgroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        doReturn(tabgroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
-        doReturn(tabgroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
+        List<Tab> tabGroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        doReturn(tabGroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(tabGroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
 
         // Mock that newTab is the current tab for the dialog.
         mMediator.setCurrentTabIdForTesting(TAB3_ID);
@@ -563,22 +646,23 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of newTab.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB3_ID);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(newTab, false, true);
+        mTabModelObserverCaptor.getValue().willCloseTab(newTab, true);
 
         // Dialog title should still be the stored title even if the root tab is closed.
         assertThat(
-                mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
-    public void tabClosure_SingleTabAfterClosure_WithStoredTitle() {
+    public void tabClosure_SingleTabAfterClosure_WithStoredTitle_SingleTabGroupSupported() {
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
         // Mock that tab1, tab2 are in the same group and tab1 is the root tab.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that tab2 just get closed.
-        List<Tab> tabgroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1));
-        doReturn(tabgroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        List<Tab> tabGroupAfterClosure = new ArrayList<>(Arrays.asList(mTab1));
+        doReturn(tabGroupAfterClosure).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
 
         // Mock that tab2 is the current tab for the dialog.
         mMediator.setCurrentTabIdForTesting(TAB2_ID);
@@ -586,23 +670,22 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that we have a stored title stored with reference to root ID of tab1.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB1_ID);
 
-        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, false, true);
+        mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
 
-        // Even if there is a stored title for tab1, it is now a single tab, so we won't show the
-        // stored title.
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
+        assertThat(
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
     public void tabClosureUndone() {
         // Mock that the dialog is showing.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
 
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
 
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
         verify(mTabSwitcherResetHandler).resetWithTabList(mTabGroupModelFilter, false);
         ShadowLooper.runUiThreadTasks();
         verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB1_ID));
@@ -611,22 +694,22 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void tabClosureUndone_WithStoredTitle() {
         // Mock that the dialog is showing.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB1_ID);
 
         // Mock that tab1 and tab2 are in the same group, and we are undoing tab2.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab2);
 
         // If current group has a stored title, dialog title should be set to stored title when
         // undoing a closure.
         assertThat(
-                mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
         verify(mTabSwitcherResetHandler).resetWithTabList(mTabGroupModelFilter, false);
         ShadowLooper.runUiThreadTasks();
         verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB2_ID));
@@ -635,15 +718,15 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void tabClosureUndone_WithDialogHidden() {
         // Mock that the dialog is hidden.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
 
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);
 
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE1));
         // Dialog should still be hidden.
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(false));
         verify(mTabSwitcherResetHandler, never()).resetWithTabList(mTabGroupModelFilter, false);
         ShadowLooper.runUiThreadTasks();
         verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB1_ID));
@@ -660,7 +743,9 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void onFinishingMultipleTabClosure() {
         List<Tab> tabs = Arrays.asList(mTab1, mTab2);
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
 
         ShadowLooper.runUiThreadTasks();
         verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(tabs));
@@ -669,7 +754,9 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void onFinishingMultipleTabClosure_singleTab() {
         List<Tab> tabs = Arrays.asList(mTab1);
-        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+        mTabModelObserverCaptor
+                .getValue()
+                .onFinishingMultipleTabClosure(tabs, /* canRestore= */ true);
 
         ShadowLooper.runUiThreadTasks();
         verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB1_ID));
@@ -685,7 +772,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void tabPendingClosure_DialogVisible() {
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1);
 
@@ -694,7 +781,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void tabPendingClosure_DialogInvisible() {
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
 
         mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1);
 
@@ -703,7 +790,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void multipleTabsPendingClosure_DialogVisible() {
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mTabModelObserverCaptor
                 .getValue()
@@ -714,7 +801,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void multipleTabsPendingClosure_singleTab_DialogVisible() {
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mTabModelObserverCaptor.getValue().multipleTabsPendingClosure(Arrays.asList(mTab1), false);
 
@@ -723,7 +810,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void multipleTabsPendingClosure_DialogInvisible() {
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
 
         mTabModelObserverCaptor
                 .getValue()
@@ -733,38 +820,55 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void tabSelection() {
+    public void tabSelection_stripContext() {
+        remakeMediator(/* withResetHandler= */ false, /* withAnimSource= */ true);
+
+        mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the animation source view is not null, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
 
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
 
         verify(mDialogController).resetWithListOfTabs(null);
     }
 
     @Test
+    public void tabSelection_tabSwitcherContext() {
+        // Mock that the animation source view is not null, and the dialog is showing.
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
+
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
+        assertTrue(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
+    }
+
+    @Test
     public void hideDialog_FadeOutAnimation() {
         // Mock that the animation source view is null, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mMediator.hideDialog(false);
 
         // Animation source view should not be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
 
         verify(mDialogController).resetWithListOfTabs(eq(null));
     }
@@ -772,17 +876,17 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void hideDialog_FadeOutAnimation_ClearsViewAnimation() {
         // Mock that the animation source view is set, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mMediator.hideDialog(false);
 
         // Animation source view should not be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
 
         verify(mDialogController).resetWithListOfTabs(eq(null));
     }
@@ -790,34 +894,56 @@ public class TabGridDialogMediatorUnitTest {
     @Test
     public void hideDialog_ZoomOutAnimation() {
         // Mock that the animation source view is null, and the dialog is showing.
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
         mMediator.hideDialog(true);
 
         // Animation source view should be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        verify(mDialogController).resetWithListOfTabs(eq(null));
+    }
+
+    @Test
+    public void hideDialog_ForcesAnimationToFinish() {
+        // Mock that the animation source view is null, and the dialog is showing.
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        mMediator.hideDialog(true);
+
+        // Animation source view should be specified.
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
+
+        mMediator.hideDialog(false);
+        verify(mModel).set(TabGridDialogProperties.FORCE_ANIMATION_TO_FINISH, true);
+        assertFalse(mModel.get(TabGridDialogProperties.FORCE_ANIMATION_TO_FINISH));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).resetWithListOfTabs(eq(null));
     }
 
     @Test
     public void hideDialog_StoreModifiedGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         // Mock that tab1 is in a group.
-        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID);
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a modified group title before dialog is hidden.
-        TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
         View.OnFocusChangeListener onFocusChangeListener =
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
         onFocusChangeListener.onFocusChange(mTitleTextView, true);
         textWatcher.afterTextChanged(mEditable);
         assertThat(
@@ -829,22 +955,22 @@ public class TabGridDialogMediatorUnitTest {
         verify(mTabGroupTitleEditor).storeTabGroupTitle(eq(TAB1_ID), eq(CUSTOMIZED_DIALOG_TITLE));
         verify(mTabGroupTitleEditor).updateTabGroupTitle(eq(mTab1), eq(CUSTOMIZED_DIALOG_TITLE));
         assertThat(
-                mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
     public void hideDialog_ModifiedGroupTitleEmpty() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         // Mock that tab1 is in a group.
-        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID);
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a modified group title which is an empty string.
-        TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
         View.OnFocusChangeListener onFocusChangeListener =
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
         onFocusChangeListener.onFocusChange(mTitleTextView, true);
         doReturn("").when(mEditable).toString();
         textWatcher.afterTextChanged(mEditable);
@@ -855,38 +981,38 @@ public class TabGridDialogMediatorUnitTest {
         // When updated title is a empty string, delete stored title and restore default title in
         // PropertyModel.
         verify(mTabGroupTitleEditor).deleteTabGroupTitle(eq(TAB1_ID));
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
         verify(mTabGroupTitleEditor).updateTabGroupTitle(eq(mTab1), eq(DIALOG_TITLE2));
     }
 
     @Test
     public void hideDialog_NoModifiedGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
 
         // Mock that tab1 is in a group.
-        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID);
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1, mTab2)), TAB1_ID, TAB_GROUP_ID);
 
         mMediator.hideDialog(false);
 
         // When title is not updated, don't store title when hide dialog.
         verify(mTabGroupTitleEditor, never()).storeTabGroupTitle(anyInt(), anyString());
         verify(mTabGroupTitleEditor, never()).updateTabGroupTitle(any(Tab.class), anyString());
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
     }
 
     @Test
     public void hideDialog_ClosingLastTab_SkipStoreGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
 
         // Mock that the last tab in the group is closed.
         doReturn(new ArrayList<>()).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
 
         // Mock that we have a modified group title before dialog is hidden.
-        TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
         View.OnFocusChangeListener onFocusChangeListener =
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
         onFocusChangeListener.onFocusChange(mTitleTextView, true);
         textWatcher.afterTextChanged(mEditable);
         assertThat(
@@ -898,21 +1024,21 @@ public class TabGridDialogMediatorUnitTest {
         // Skip storing dialog title when the last tab is closing.
         verify(mTabGroupTitleEditor, never()).storeTabGroupTitle(anyInt(), anyString());
         verify(mTabGroupTitleEditor, never()).updateTabGroupTitle(any(Tab.class), anyString());
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
     }
 
     @Test
     public void hideDialog_SingleTab_SkipStoreGroupTitle() {
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, TAB1_TITLE);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, TAB1_TITLE);
 
         // Mock that tab1 is now a single tab.
-        createTabGroup(new ArrayList<>(Arrays.asList(mTab1)), TAB1_ID);
+        createTabGroup(new ArrayList<>(Arrays.asList(mTab1)), TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a modified group title before dialog is hidden.
-        TextWatcher textWatcher = mModel.get(TabGridPanelProperties.TITLE_TEXT_WATCHER);
+        TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);
         View.OnFocusChangeListener onFocusChangeListener =
-                mModel.get(TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
+                mModel.get(TabGridDialogProperties.TITLE_TEXT_ON_FOCUS_LISTENER);
         onFocusChangeListener.onFocusChange(mTitleTextView, true);
         textWatcher.afterTextChanged(mEditable);
         assertThat(
@@ -924,12 +1050,12 @@ public class TabGridDialogMediatorUnitTest {
         // Skip storing dialog title when this group becomes a single tab.
         verify(mTabGroupTitleEditor, never()).storeTabGroupTitle(anyInt(), anyString());
         verify(mTabGroupTitleEditor, never()).updateTabGroupTitle(any(Tab.class), anyString());
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(TAB1_TITLE));
     }
 
     @Test
     public void hideDialog_withTabGroupContinuation() {
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mMediator.hideDialog(false);
 
@@ -938,20 +1064,20 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void onReset_hideDialog() {
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
         mMediator.onReset(null);
 
-        assertFalse(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
 
         // Simulate the animation finishing.
-        mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
         verify(mDialogController).postHiding();
     }
 
     @Test
     public void onReset_DialogNotVisible_NoOp() {
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
 
         mMediator.onReset(null);
 
@@ -967,104 +1093,168 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void showDialog_FromGTS() {
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void showDialog_FromGts_setSelectedColor() {
+        // Mock that tab1 and tab2 are in a group.
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        // Mock that we have a stored color stored with reference to root ID of tab1.
+        // when(mTabGroupModelFilter.getTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
+        mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, COLOR_2);
+
+        mMediator.onReset(tabGroup);
+        mMediator.setSelectedTabGroupColor(COLOR_3);
+
+        // Assert that the color has changed both in the property model and the model filter.
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
+        verify(mTabGroupModelFilter).setTabGroupColor(mTab1.getRootId(), COLOR_3);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void showDialog_FromGts() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
-        mModel.set(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
         // Mock that tab1 and tab2 are in a group.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        mMediator.onReset(tabgroup);
+        when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
+                .thenReturn(COLOR_2);
+        mMediator.onReset(tabGroup);
 
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(true));
+        // Assert that a color and the incognito status were set.
+        assertThat(mModel.get(TabGridDialogProperties.IS_INCOGNITO), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_2));
+
+        assertNull(mModel.get(TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR));
+
+        assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Scrim click runnable should be set as the current scrim runnable.
         assertThat(
-                mModel.get(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE),
+                mModel.get(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE),
                 equalTo(mMediator.getScrimClickRunnableForTesting()));
         // Animation source view should be updated with specific view.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
         // Dialog title should be updated.
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
         // Prepare dialog invoked.
         verify(mDialogController).prepareDialog();
     }
 
     @Test
-    public void showDialog_FromGTS_WithStoredTitle() {
+    @EnableFeatures({
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.FORCE_LIST_TAB_SWITCHER
+    })
+    public void showDialog_FromListGts() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
-        mModel.set(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
         // Mock that tab1 and tab2 are in a group.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
+                .thenReturn(COLOR_2);
+        mMediator.onReset(tabGroup);
+
+        // Assert that a color and the incognito status were set.
+        assertThat(mModel.get(TabGridDialogProperties.IS_INCOGNITO), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_2));
+
+        int backgroundColor =
+                TabUiThemeUtils.getCardViewBackgroundColor(
+                        mActivity, /* isIncognito= */ false, /* isSelected= */ false);
+        assertEquals(
+                mModel.get(TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR).intValue(),
+                backgroundColor);
+
+        assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
+        // Scrim click runnable should be set as the current scrim runnable.
+        assertThat(
+                mModel.get(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE),
+                equalTo(mMediator.getScrimClickRunnableForTesting()));
+        // Animation source view should be updated with specific view.
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
+        // Dialog title should be updated.
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
+        // Prepare dialog invoked.
+        verify(mDialogController).prepareDialog();
+    }
+
+    @Test
+    public void showDialog_FromGts_WithStoredTitle() {
+        // Mock that the dialog is hidden and animation source view, header title and scrim click
+        // runnable are all null.
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
+        // Mock that tab1 and tab2 are in a group.
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB1_ID);
 
-        mMediator.onReset(tabgroup);
+        mMediator.onReset(tabGroup);
 
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(true));
+        assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Scrim click runnable should be set as the current scrim runnable.
         assertThat(
-                mModel.get(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE),
+                mModel.get(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE),
                 equalTo(mMediator.getScrimClickRunnableForTesting()));
         // Animation source view should be updated with specific view.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(mView));
         // Dialog title should be updated with stored title.
         assertThat(
-                mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void showDialog_FromStrip() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        mTabSwitcherResetHandler,
-                        mRecyclerViewPositionSupplier,
-                        null,
-                        mSnackbarManager,
-                        "");
-        mMediator.initWithNative(
-                () -> {
-                    return mTabListEditorController;
-                },
-                mTabGroupTitleEditor);
+        remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
+        mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
 
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
-        mModel.set(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
         // Mock that tab1 and tab2 are in a group.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        mMediator.onReset(tabgroup);
+        when(mTabGroupModelFilter.getTabGroupColorWithFallback(mTab1.getRootId()))
+                .thenReturn(COLOR_2);
+        mMediator.onReset(tabGroup);
 
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(true));
+        // Assert that a color and the incognito status were set.
+        assertThat(mModel.get(TabGridDialogProperties.IS_INCOGNITO), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_2));
+
+        assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Scrim observer should be set as the current scrim runnable.
         assertThat(
-                mModel.get(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE),
+                mModel.get(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE),
                 equalTo(mMediator.getScrimClickRunnableForTesting()));
         // Animation source view should not be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
         // Dialog title should be updated.
-        assertThat(mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(DIALOG_TITLE2));
         // Prepare dialog invoked.
         verify(mDialogController).prepareDialog();
     }
@@ -1073,101 +1263,169 @@ public class TabGridDialogMediatorUnitTest {
     public void showDialog_FromStrip_WithStoredTitle() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        mTabSwitcherResetHandler,
-                        mRecyclerViewPositionSupplier,
-                        null,
-                        mSnackbarManager,
-                        "");
-        mMediator.initWithNative(
-                () -> {
-                    return mTabListEditorController;
-                },
-                mTabGroupTitleEditor);
+        remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
+        mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
-        mModel.set(TabGridPanelProperties.HEADER_TITLE, null);
-        mModel.set(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridDialogProperties.HEADER_TITLE, null);
+        mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, null);
         // Mock that tab1 and tab2 are in a group.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
         doReturn(CUSTOMIZED_DIALOG_TITLE).when(mTabGroupTitleEditor).getTabGroupTitle(TAB1_ID);
 
-        mMediator.onReset(tabgroup);
+        mMediator.onReset(tabGroup);
 
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(true));
+        assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Scrim observer should be set as the current scrim click runnable.
         assertThat(
-                mModel.get(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE),
+                mModel.get(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE),
                 equalTo(mMediator.getScrimClickRunnableForTesting()));
         // Animation source view should not be specified.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
         // Dialog title should be updated with stored title.
         assertThat(
-                mModel.get(TabGridPanelProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
+                mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(CUSTOMIZED_DIALOG_TITLE));
     }
 
     @Test
     public void showDialog_FromStrip_SetupAnimation() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        mTabSwitcherResetHandler,
-                        mRecyclerViewPositionSupplier,
-                        null,
-                        mSnackbarManager,
-                        "");
-        mMediator.initWithNative(
-                () -> {
-                    return mTabListEditorController;
-                },
-                mTabGroupTitleEditor);
+        remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
+        mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view is set to some mock view for
         // testing purpose.
-        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
-        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mock(View.class));
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mock(View.class));
         // Mock that tab1 and tab2 are in a group.
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        mMediator.onReset(tabgroup);
+        mMediator.onReset(tabGroup);
 
-        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(true));
+        assertThat(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE), equalTo(true));
         // Animation source view should be set to null so that dialog will setup basic animation.
-        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
     }
 
     @Test
     public void testDialogToolbarMenu_SelectionModeV2() {
-        Callback<Integer> callback = mMediator.getToolbarMenuCallbackForTesting();
         // Mock that currently the title text is focused and the keyboard is showing. The current
         // tab is tab1 which is in a group of {tab1, tab2}.
-        mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, true);
+        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
         mMediator.setCurrentTabIdForTesting(TAB1_ID);
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
-        createTabGroup(tabgroup, TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
 
-        callback.onResult(R.id.select_tabs);
+        mMediator.onToolbarMenuItemClick(R.id.select_tabs, TAB1_ID, /* collaborationId= */ null);
 
-        assertThat(mModel.get(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
+        assertThat(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED), equalTo(false));
         verify(mRecyclerViewPositionSupplier, times(1)).get();
-        verify(mTabListEditorController).show(eq(tabgroup), eq(0), eq(null));
+        verify(mTabListEditorController).show(eq(tabGroup), eq(null));
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.SelectTabs"));
+    }
+
+    @Test
+    public void testDialogToolbarMenu_EditGroupName() {
+        mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, false);
+
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.onToolbarMenuItemClick(
+                R.id.edit_group_name, TAB1_ID, /* collaborationId= */ null);
+        assertTrue(mModel.get(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED));
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Rename"));
+    }
+
+    @Test
+    public void testDialogToolbarMenu_EditGroupColor() {
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.onToolbarMenuItemClick(
+                R.id.edit_group_color, TAB1_ID, /* collaborationId= */ null);
+        verify(mShowColorPickerPopupRunnable).run();
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.EditColor"));
+    }
+
+    @Test
+    public void testDialogToolbarMenu_CloseGroup() {
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
+
+        mMediator.onToolbarMenuItemClick(R.id.close_tab, TAB1_ID, /* collaborationId= */ null);
+        verify(mTabGroupModelFilter)
+                .closeTabs(TabClosureParams.closeTabs(tabGroup).hideTabGroups(true).build());
+
+        verifyNoInteractions(mActionConfirmationManager);
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Close"));
+    }
+
+    @Test
+    public void testDialogToolbarMenu_DeleteGroup() {
+        mMediator.setCurrentTabIdForTesting(TAB1_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
+
+        mMediator.onToolbarMenuItemClick(R.id.delete_tab, TAB1_ID, /* collaborationId= */ null);
+        verify(mTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabGroup).build());
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Delete"));
+
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
+        mMediator.onToolbarMenuItemClick(R.id.delete_tab, TAB1_ID, /* collaborationId= */ null);
+        verify(mActionConfirmationManager).processDeleteGroupAttempt(any());
+        assertEquals(2, mActionTester.getActionCount("TabGridDialogMenu.Delete"));
+    }
+
+    @Test
+    public void testDialogToolbarMenu_ManageSharing() {
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+
+        mMediator.onToolbarMenuItemClick(R.id.manage_sharing, TAB1_ID, COLLABORATION_ID1);
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.ManageSharing"));
+        verify(mDataSharingTabManager).showManageSharing(any(), eq(COLLABORATION_ID1));
+    }
+
+    @Test
+    public void testDialogToolbarMenu_RecentActivity() {
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+
+        mMediator.onToolbarMenuItemClick(R.id.recent_activity, TAB1_ID, COLLABORATION_ID1);
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.RecentActivity"));
+        verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
+    }
+
+    @Test
+    public void testDialogToolbarMenu_DeleteSharedGroup() {
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+
+        mMediator.onToolbarMenuItemClick(R.id.delete_shared_group, TAB1_ID, COLLABORATION_ID1);
+        verify(mActionConfirmationManager).processDeleteSharedGroupAttempt(eq(GROUP_TITLE), any());
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.DeleteShared"));
+    }
+
+    @Test
+    public void testDialogToolbarMenu_LeaveSharedGroup() {
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1, GROUP_MEMBER2);
+
+        CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
+        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
+
+        mMediator.onToolbarMenuItemClick(R.id.leave_group, TAB1_ID, COLLABORATION_ID1);
+        verify(mActionConfirmationManager).processLeaveGroupAttempt(eq(GROUP_TITLE), any());
+        assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.LeaveShared"));
     }
 
     @Test
@@ -1204,18 +1462,75 @@ public class TabGridDialogMediatorUnitTest {
     public void testScrollToTab() {
         // Mock that tab1, tab2 and newTab are in the same group and newTab is the root tab.
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE);
-        List<Tab> tabgroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
-        createTabGroup(tabgroup, TAB2_ID);
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2, newTab));
+        createTabGroup(tabGroup, TAB2_ID, TAB_GROUP_ID);
 
         // Mock that mTab2 is the current tab for the dialog.
         doReturn(0).when(mTabGroupModelFilter).indexOf(mTab1);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(0);
-        doReturn(tabgroup).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
+        doReturn(tabGroup).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
 
         // Reset and confirm scroll index.
-        mMediator.onReset(tabgroup);
+        mMediator.onReset(tabGroup);
 
-        Assert.assertEquals(1, mModel.get(TabGridPanelProperties.INITIAL_SCROLL_INDEX).intValue());
+        assertEquals(1, mModel.get(TabGridDialogProperties.INITIAL_SCROLL_INDEX).intValue());
+    }
+
+    @Test
+    public void testTabUngroupBarText() {
+        // Mock that tab1 and tab2 are in the same group.
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
+
+        mMediator.onReset(tabGroup);
+        // Check that the text indicates that this is not the last tab in the group.
+        assertEquals(
+                mActivity.getString(R.string.tab_grid_dialog_remove_from_group),
+                mModel.get(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT));
+
+        // Mock that tab1 is the only tab that remains in the group.
+        List<Tab> tabGroupAfterUngroup = new ArrayList<>(Arrays.asList(mTab1));
+        doReturn(tabGroupAfterUngroup).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+
+        mMediator.onReset(tabGroupAfterUngroup);
+        // Check that the text indicates that this is the last tab in the group.
+        assertEquals(
+                mActivity.getString(R.string.remove_last_tab_action),
+                mModel.get(TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void testTabGroupColorUpdated() {
+        int rootId = TAB1_ID;
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
+
+        mMediator.onReset(tabGroup);
+
+        assertNotEquals(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), COLOR_3);
+
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupColor(rootId, COLOR_3);
+
+        assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
+    }
+
+    @Test
+    public void testTabGroupTitleUpdated() {
+        int rootId = TAB1_ID;
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
+
+        when(mTabGroupTitleEditor.getTabGroupTitle(rootId)).thenReturn(CUSTOMIZED_DIALOG_TITLE);
+        mMediator.onReset(tabGroup);
+
+        assertEquals(mModel.get(TabGridDialogProperties.HEADER_TITLE), CUSTOMIZED_DIALOG_TITLE);
+
+        String newTitle = "BAR";
+        when(mTabGroupTitleEditor.getTabGroupTitle(rootId)).thenReturn(newTitle);
+        mTabGroupModelFilterObserverCaptor.getValue().didChangeTabGroupTitle(rootId, newTitle);
+
+        assertThat(mModel.get(TabGridDialogProperties.HEADER_TITLE), equalTo(newTitle));
     }
 
     @Test
@@ -1226,16 +1541,176 @@ public class TabGridDialogMediatorUnitTest {
         assertFalse(mCurrentTabModelFilterSupplier.hasObservers());
     }
 
+    @Test
+    public void testUpdateShareData_Incognito() {
+        reset(mSharedImageTilesCoordinator);
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
+
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+
+        when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
+        resetForDataSharing(/* isShared= */ false);
+
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
+        verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
+    }
+
+    @Test
+    public void testShowOrUpdateCollaborationActivityMessageCard() {
+        reset(mSharedImageTilesCoordinator);
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
+
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(true);
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1, GROUP_MEMBER2);
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertTrue(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
+        verify(mSharedImageTilesCoordinator).updateCollaborationId(COLLABORATION_ID1);
+        verify(mDialogController, never()).addMessageCardItem(/* position= */ eq(0), any());
+
+        // Reset with null first as re-using the same TabGroupId does not reset the observer.
+        mMediator.onReset(null);
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+        resetForDataSharing(/* isShared= */ false);
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+        verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
+        assertTrue(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
+
+        // Reset with null first as re-using the same TabGroupId does not reset the observer.
+        mMediator.onReset(null);
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+        verify(mDialogController).addMessageCardItem(/* position= */ eq(0), any());
+        assertTrue(mModel.get(TabGridDialogProperties.SHOW_SHARE_BUTTON));
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_IMAGE_TILES));
+    }
+
+    @Test
+    public void testCollaborationActivityMessageCard_Dismiss() {
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+        verify(mDialogController)
+                .addMessageCardItem(
+                        /* position= */ eq(0), mCollaborationActivityMessageCardCaptor.capture());
+
+        mCollaborationActivityMessageCardCaptor
+                .getValue()
+                .get(MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER)
+                .dismiss(MessageType.COLLABORATION_ACTIVITY);
+
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+    }
+
+    @Test
+    public void testCollaborationActivityMessageCard_ClickNoCollaboration() {
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+        verify(mDialogController)
+                .addMessageCardItem(
+                        /* position= */ eq(0), mCollaborationActivityMessageCardCaptor.capture());
+
+        verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
+        mSharingObserverCaptor.getValue().onGroupRemoved(COLLABORATION_ID1);
+
+        mCollaborationActivityMessageCardCaptor
+                .getValue()
+                .get(MESSAGE_SERVICE_ACTION_PROVIDER)
+                .review();
+
+        verify(mDataSharingTabManager, never()).showRecentActivity(any());
+        verify(mDialogController, atLeastOnce())
+                .removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+    }
+
+    @Test
+    public void testCollaborationActivityMessageCard_Click() {
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+        verify(mDialogController)
+                .addMessageCardItem(
+                        /* position= */ eq(0), mCollaborationActivityMessageCardCaptor.capture());
+
+        mCollaborationActivityMessageCardCaptor
+                .getValue()
+                .get(MESSAGE_SERVICE_ACTION_PROVIDER)
+                .review();
+
+        verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
+    }
+
+    private void remakeMediator(boolean withResetHandler, boolean withAnimSource) {
+        if (mMediator != null) {
+            mMediator.destroy();
+        }
+        mMediator =
+                new TabGridDialogMediator(
+                        mActivity,
+                        mDialogController,
+                        mModel,
+                        mCurrentTabModelFilterSupplier,
+                        mTabCreatorManager,
+                        withResetHandler ? mTabSwitcherResetHandler : null,
+                        mRecyclerViewPositionSupplier,
+                        withAnimSource ? mAnimationSourceViewProvider : null,
+                        mSnackbarManager,
+                        mSharedImageTilesCoordinator,
+                        mDataSharingTabManager,
+                        /* componentName= */ "",
+                        mShowColorPickerPopupRunnable,
+                        mActionConfirmationManager,
+                        mModalDialogManager);
+    }
+
+    @Test
+    public void onReset_NullAfterSharedGroup() {
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1);
+
+        mMediator.onReset(null);
+
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
+    }
+
+    private void resetForDataSharing(boolean isShared, GroupMember... members) {
+        int rootId = TAB1_ID;
+        List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabGroup, rootId, TAB_GROUP_ID);
+
+        setupSyncedGroup(isShared);
+
+        mMediator.onReset(tabGroup);
+
+        if (isShared) {
+            mSharedGroupObserverTestHelper.respondToReadGroup(COLLABORATION_ID1, members);
+        }
+    }
+
+    private void setupSyncedGroup(boolean isShared) {
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.title = GROUP_TITLE;
+        savedTabGroup.collaborationId = isShared ? COLLABORATION_ID1 : null;
+        when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
+    }
+
     private Tab prepareTab(int id, String title) {
         Tab tab = TabUiUnitTestUtils.prepareTab(id, title, GURL.emptyGURL());
         doReturn(true).when(tab).isIncognito();
         return tab;
     }
 
-    private void createTabGroup(List<Tab> tabs, int rootId) {
+    private void createTabGroup(List<Tab> tabs, int rootId, @Nullable Token tabGroupId) {
         for (Tab tab : tabs) {
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabs);
+            when(mTabGroupModelFilter.getRelatedTabListForRootId(rootId)).thenReturn(tabs);
+            when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
             when(tab.getRootId()).thenReturn(rootId);
+            when(tab.getTabGroupId()).thenReturn(tabGroupId);
         }
     }
 }

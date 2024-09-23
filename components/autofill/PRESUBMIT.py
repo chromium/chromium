@@ -8,7 +8,12 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
+PRESUBMIT_VERSION = '2.0.0'
+
+import filecmp
+import os
 import re
+import subprocess
 
 def IsComponentsAutofillFile(f, name_suffix):
   # The exact path can change. Only check the containing folder.
@@ -22,30 +27,24 @@ def IsComponentsAutofillFileAffected(input_api, name_suffix):
   return AnyAffectedFileMatches(
       input_api, lambda f: IsComponentsAutofillFile(f, name_suffix))
 
-def _CheckNoBaseTimeCalls(input_api, output_api):
-  """Checks that no files call base::Time::Now()."""
-  pattern = input_api.re.compile(
-      r'(base::Time::Now)\(\)',
-      input_api.re.MULTILINE)
+def CheckNoAutofillClockTimeCalls(input_api, output_api):
+  """Checks that no files call AutofillClock::Now()."""
+  pattern = input_api.re.compile(r'(AutofillClock::Now)\(\)')
   files = []
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
     if (f.LocalPath().startswith('components/autofill/') and
         not f.LocalPath().endswith("PRESUBMIT.py")):
-      contents = input_api.ReadFile(f)
-      if pattern.search(contents):
-        files.append(f)
+      if any(pattern.search(line) for _, line in f.ChangedContents()):
+          files.append(f)
 
   if len(files):
     return [ output_api.PresubmitPromptWarning(
-        'Consider to not call base::Time::Now() directly but use ' +
-        'AutofillClock::Now(). This clock can be manipulated through ' +
-        'TestAutofillClock for testing purposes, and using AutofillClock and ' +
-        'throughout Autofill code makes sure Autofill tests refers to the '+
-        'same (potentially manipulated) clock.',
+        'Consider to not call AutofillClock::Now() but use ' +
+        'base::Time::Now(). AutofillClock will be deprecated and deleted soon.',
         files) ]
   return []
 
-def _CheckNoFieldTypeCasts(input_api, output_api):
+def CheckNoFieldTypeCasts(input_api, output_api):
   """Checks that no files cast (e.g., raw integers to) FieldTypes."""
   pattern = input_api.re.compile(
       r'_cast<\s*FieldType\b',
@@ -66,7 +65,7 @@ def _CheckNoFieldTypeCasts(input_api, output_api):
         files) ]
   return []
 
-def _CheckFeatureNames(input_api, output_api):
+def CheckFeatureNames(input_api, output_api):
   """Checks that no features are enabled."""
 
   pattern = input_api.re.compile(
@@ -74,18 +73,12 @@ def _CheckFeatureNames(input_api, output_api):
           input_api.re.MULTILINE)
   warnings = []
 
-  def exception(constant, feature):
-    if constant == "AutofillAddressEnhancementVotes" and \
-       feature == "kAutofillAddressEnhancementVotes":
-      return True
-    return False
-
   for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
     if IsComponentsAutofillFile(f, 'features.cc'):
       contents = input_api.ReadFile(f)
       mismatches = [(constant, feature)
               for (constant, feature) in pattern.findall(contents)
-              if constant != feature and not exception(constant, feature)]
+              if constant != feature]
       if mismatches:
         mismatch_strings = ['\t{} -- {}'.format(*m) for m in mismatches]
         mismatch_string = format('\n').join(mismatch_strings)
@@ -96,7 +89,7 @@ def _CheckFeatureNames(input_api, output_api):
 
   return warnings
 
-def _CheckWebViewExposedExperiments(input_api, output_api):
+def CheckWebViewExposedExperiments(input_api, output_api):
   """Checks that changes to autofill features are exposed to webview."""
 
   _PRODUCTION_SUPPORT_FILE = ('android_webview/java/src/org/chromium/' +
@@ -117,7 +110,7 @@ def _CheckWebViewExposedExperiments(input_api, output_api):
 
   return warnings
 
-def _CheckModificationOfLegacyRegexPatterns(input_api, output_api):
+def CheckModificationOfLegacyRegexPatterns(input_api, output_api):
   """Reminds to update internal regex patterns when legacy ones are modified."""
 
   if IsComponentsAutofillFileAffected(input_api, "legacy_regex_patterns.json"):
@@ -130,23 +123,23 @@ def _CheckModificationOfLegacyRegexPatterns(input_api, output_api):
 
   return []
 
-def _CheckModificationOfFormAutofillUtil(input_api, output_api):
+def CheckModificationOfFormAutofillUtil(input_api, output_api):
   """Reminds to keep form_autofill_util.cc and the iOS counterpart in sync."""
 
-  if (IsComponentsAutofillFileAffected(input_api, "fill.js") !=
+  if (IsComponentsAutofillFileAffected(input_api, "fill.ts") !=
       IsComponentsAutofillFileAffected(input_api, "form_autofill_util.cc")):
     return [
-        output_api.PresubmitPromptWarning(
+        output_api.PresubmitNotifyResult(
             'Form extraction/label inference has a separate iOS ' +
             'implementation in components/autofill/ios/form_util/resources/' +
-            'fill.js. Try to keep it in sync with form_autofill_util.cc.')
+            'fill.ts. Try to keep it in sync with form_autofill_util.cc.')
     ]
 
   return []
 
 # Checks that UniqueRendererForm(Control)Id() is not used and suggests to use
 # form_util::Get(Form|Field)RendererId() instead.
-def _CheckNoUsageOfUniqueRendererId(
+def CheckNoUsageOfUniqueRendererId(
         input_api, output_api):
   autofill_files_pattern = re.compile(
       r'(autofill|password_manager).*\.(mm|cc|h)')
@@ -169,24 +162,37 @@ def _CheckNoUsageOfUniqueRendererId(
       'Consider using form_util::Get(Form|Field)RendererId(*) instead.',
       warning_files)] if len(warning_files) else []
 
-def _CommonChecks(input_api, output_api):
-  """Checks common to both upload and commit."""
-  results = []
-  results.extend(_CheckNoBaseTimeCalls(input_api, output_api))
-  results.extend(_CheckNoFieldTypeCasts(input_api, output_api))
-  results.extend(_CheckFeatureNames(input_api, output_api))
-  results.extend(_CheckWebViewExposedExperiments(input_api, output_api))
-  results.extend(_CheckModificationOfLegacyRegexPatterns(input_api, output_api))
-  results.extend(_CheckModificationOfFormAutofillUtil(input_api, output_api))
-  results.extend(_CheckNoUsageOfUniqueRendererId(input_api, output_api))
-  return results
+# Checks that whenever the regex transpiler is modified, the golden test files
+# are updated to match the new output. This serves as a testing mechanism for
+# the transpiler.
+def CheckRegexTranspilerGoldenFiles(input_api, output_api):
+  if not IsComponentsAutofillFileAffected(input_api,
+                                          "transpile_regex_patterns.py"):
+    return []
 
-def CheckChangeOnUpload(input_api, output_api):
-  results = []
-  results.extend(_CommonChecks(input_api, output_api))
-  return results
+  relative_test_dir = input_api.os_path.join(
+    "components", "test", "data", "autofill", "regex-transpiler")
+  test_dir = input_api.os_path.join(
+    input_api.PresubmitLocalPath(), os.pardir, os.pardir, relative_test_dir)
 
-def CheckChangeOnCommit(input_api, output_api):
-  results = []
-  results.extend(_CommonChecks(input_api, output_api))
-  return results
+  # Transpiles `test_dir/file_name` into `output_file`.
+  def transpile(file_name, output_file):
+    transpiler = input_api.os_path.join(input_api.PresubmitLocalPath(),
+      "core", "browser", "form_parsing", "transpile_regex_patterns.py")
+    input_file = input_api.os_path.join(test_dir, file_name)
+    subprocess.run([input_api.python3_executable, transpiler,
+      "--input", input_file, "--output", output_file])
+
+  # Transpiles `test_name`.in and returns whether it matches `test_name`.out.
+  def run_test(test_name):
+    expected_output = input_api.os_path.join(test_dir, test_name + ".out")
+    with input_api.CreateTemporaryFile() as transpiled_output:
+      transpile(test_name + ".in", transpiled_output.name)
+      return filecmp.cmp(transpiled_output.name, expected_output, shallow=False)
+
+  tests = [name[:-3] for name in os.listdir(test_dir) if name.endswith(".in")]
+  if not all(run_test(test) for test in tests):
+    return [output_api.PresubmitError(
+      "Regex transpiler golden files don't match. "
+      "Regenerate the outputs at {}.".format(relative_test_dir))]
+  return []

@@ -17,9 +17,11 @@ include_rules = [
   "+services/media_session/public",
   "+services/metrics/public/cpp",
   "+services/network/public/cpp",
+  "+services/on_device_model/public",
   "+services/resource_coordinator/public",
   "+services/tracing/public/mojom",
   "+services/video_capture/public/mojom",
+  "+services/video_effects/public/mojom",
   "+services/viz/public/mojom",
   "+third_party/jni_zero",
   "+third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h",
@@ -37,6 +39,10 @@ specific_include_rules = {
   ],
 
   "authenticator_request_client_delegate\.*": [
+    "+device/fido",
+  ],
+
+  "digital_credentials_cross_device\.h": [
     "+device/fido",
   ],
 

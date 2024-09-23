@@ -24,6 +24,7 @@ WebsocketReceiveMessageTimeoutError = TimeoutError
 
 
 class WebsocketServer():
+
   def __init__(self):
     """Server that abstracts the websocket library under the hood.
 
@@ -64,7 +65,7 @@ class WebsocketServer():
     self.websocket = None
     self.connection_received_event.clear()
 
-  def WaitForConnection(self, timeout: Optional[int] = None) -> None:
+  def WaitForConnection(self, timeout: Optional[float] = None) -> None:
     if self.websocket:
       return
     timeout = timeout or WEBSOCKET_SETUP_TIMEOUT_SECONDS

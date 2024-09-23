@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/midi/midi_manager_winrt.h"
 #include "base/memory/raw_ptr.h"
 
@@ -9,13 +14,14 @@
 
 #define INITGUID
 
+#include <objbase.h>
+
+#include <initguid.h>
 #include <windows.h>
 
 #include <cfgmgr32.h>
 #include <comdef.h>
 #include <devpkey.h>
-#include <initguid.h>
-#include <objbase.h>
 #include <robuffer.h>
 #include <windows.devices.enumeration.h>
 #include <windows.devices.midi.h>
@@ -27,6 +33,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/scoped_generic.h"
 #include "base/strings/string_util.h"
@@ -137,15 +144,15 @@ void GetDevPropString(DEVINST handle,
     return;
   }
 
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[buffer_size]);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(buffer_size);
 
   // Receive property data.
-  cr = CM_Get_DevNode_Property(handle, devprop_key, &devprop_type, buffer.get(),
-                               &buffer_size, 0);
+  cr = CM_Get_DevNode_Property(handle, devprop_key, &devprop_type,
+                               buffer.data(), &buffer_size, 0);
   if (cr != CR_SUCCESS)
     VLOG(1) << "CM_Get_DevNode_Property failed: CONFIGRET 0x" << std::hex << cr;
   else
-    *out = base::WideToUTF8(reinterpret_cast<wchar_t*>(buffer.get()));
+    *out = base::WideToUTF8(reinterpret_cast<wchar_t*>(buffer.data()));
 }
 
 // Retrieves manufacturer (provider) and version information of underlying
@@ -580,13 +587,13 @@ class MidiManagerWinrt::MidiPortManager {
     }
   }
 
-  // Overrided by MidiInPortManager to listen to input ports.
+  // Overridden by MidiInPortManager to listen to input ports.
   virtual bool RegisterOnMessageReceived(InterfaceType* handle,
                                          EventRegistrationToken* p_token) {
     return true;
   }
 
-  // Overrided by MidiInPortManager to remove MessageReceived event handler.
+  // Overridden by MidiInPortManager to remove MessageReceived event handler.
   virtual void RemovePortEventHandlers(MidiPort<InterfaceType>* port) {}
 
   // Calls midi_manager_->Add{Input,Output}Port.

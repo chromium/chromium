@@ -14,6 +14,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/auto_reset.h"
 #include "base/strings/string_number_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "components/vector_icons/vector_icons.h"
@@ -28,16 +29,18 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -56,7 +59,6 @@ constexpr int kDefaultCornerRadius = 16;
 constexpr float kFocusRingPadding = 3.0f;
 
 // Primary tile constants
-constexpr gfx::Size kDefaultSize(180, kFeatureTileHeight);
 constexpr gfx::Size kIconButtonSize(36, 52);
 constexpr int kIconButtonCornerRadius = 12;
 constexpr gfx::Insets kIconButtonMargins = gfx::Insets::VH(6, 6);
@@ -66,16 +68,10 @@ constexpr gfx::Insets kTitleContainerWithoutDiveInButtonMargins =
 constexpr gfx::Insets kTitleContainerWithDiveInButtonMargins = gfx::Insets();
 
 // Compact tile constants
-constexpr int kCompactWidth = 86;
 constexpr int kCompactTitleLineHeight = 14;
-constexpr gfx::Size kCompactSize(kCompactWidth, kFeatureTileHeight);
 constexpr gfx::Size kCompactIconButtonSize(kIconSize, kIconSize);
 constexpr gfx::Insets kCompactIconButtonMargins =
     gfx::Insets::TLBR(6, 22, 4, 22);
-constexpr gfx::Size kCompactOneRowTitleLabelSize(kCompactWidth - 24,
-                                                 kCompactTitleLineHeight);
-constexpr gfx::Size kCompactTwoRowTitleLabelSize(kCompactWidth - 24,
-                                                 kCompactTitleLineHeight * 2);
 constexpr gfx::Insets kCompactTitlesContainerMargins =
     gfx::Insets::TLBR(0, 12, 6, 12);
 
@@ -185,6 +181,7 @@ FeatureTile::FeatureTile(PressedCallback callback,
 
   CreateChildViews();
   UpdateColors();
+  UpdateAccessibilityProperties();
 
   enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
       [](FeatureTile* feature_tile) {
@@ -200,23 +197,40 @@ FeatureTile::~FeatureTile() {
   // Remove the InkDrop explicitly so FeatureTile::RemoveLayerFromRegions() is
   // called before views::View teardown.
   views::InkDrop::Remove(this);
+  title_container_->RemoveObserver(this);
+}
+
+void FeatureTile::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FeatureTile::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void FeatureTile::CreateChildViews() {
   const bool is_compact = type_ == TileType::kCompact;
 
-  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout_manager->SetOrientation(
-      is_compact ? views::BoxLayout::Orientation::kVertical
-                 : views::BoxLayout::Orientation::kHorizontal);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(is_compact ? views::LayoutOrientation::kVertical
+                                  : views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  SetLayoutManagerUseConstrainedSpace(false);
+
+  // Set `MaximumFlexSizeRule` to `kUnbounded` so the view takes up all of the
+  // available space in its parent container.
+  SetProperty(views::kFlexBehaviorKey,
+              views::FlexSpecification(views::FlexSpecification(
+                  views::MinimumFlexSizeRule::kScaleToZero,
+                  views::MaximumFlexSizeRule::kUnbounded,
+                  /*adjust_height_for_width=*/true)));
 
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
-
-  SetPreferredSize(is_compact ? kCompactSize : kDefaultSize);
 
   icon_button_ = AddChildView(std::make_unique<views::ImageButton>());
   icon_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
@@ -230,11 +244,24 @@ void FeatureTile::CreateChildViews() {
   icon_button_->SetEnabled(false);
   icon_button_->SetCanProcessEventsWithinSubtree(false);
 
-  title_container_ = AddChildView(std::make_unique<FlexLayoutView>());
-  title_container_->SetCanProcessEventsWithinSubtree(false);
-  title_container_->SetOrientation(views::LayoutOrientation::kVertical);
-  title_container_->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  title_container_ =
+      AddChildView(views::Builder<FlexLayoutView>()
+                       .SetCanProcessEventsWithinSubtree(false)
+                       .SetOrientation(views::LayoutOrientation::kVertical)
+                       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+                       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+                       .Build());
+  title_container_->AddObserver(this);
+  // Set `MaximumFlexSizeRule` to `kUnbounded` so that `title_container_` takes
+  // up all of the available space in the middle of the primary tile.
+  title_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::FlexSpecification(
+          is_compact ? views::LayoutOrientation::kVertical
+                     : views::LayoutOrientation::kHorizontal,
+          views::MinimumFlexSizeRule::kScaleToZero,
+          views::MaximumFlexSizeRule::kUnbounded,
+          /*adjust_height_for_width=*/true)));
 
   label_ = title_container_->AddChildView(std::make_unique<views::Label>());
   label_->SetAutoColorReadabilityEnabled(false);
@@ -263,7 +290,6 @@ void FeatureTile::CreateChildViews() {
     sub_label_->SetVisible(false);
   } else {
     // `title_container_` will take all the remaining space of the tile.
-    layout_manager->SetFlexForView(title_container_, 1);
     title_container_->SetProperty(views::kMarginsKey,
                                   kTitleContainerWithoutDiveInButtonMargins);
     label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -279,6 +305,7 @@ void FeatureTile::SetIconClickable(bool clickable) {
   is_icon_clickable_ = clickable;
   icon_button_->SetCanProcessEventsWithinSubtree(clickable);
   icon_button_->SetEnabled(clickable);
+  UpdateAccessibilityProperties();
 
   if (clickable) {
     views::InstallRoundRectHighlightPathGenerator(icon_button_, gfx::Insets(),
@@ -299,8 +326,18 @@ void FeatureTile::SetIconClickCallback(
   icon_button_->SetCallback(std::move(callback));
 }
 
+void FeatureTile::SetOnTitleBoundsChangedCallback(
+    base::RepeatingCallback<void()> callback) {
+  on_title_container_bounds_changed_ = std::move(callback);
+}
+
+void FeatureTile::SetTitleContainerMargins(const gfx::Insets& insets) {
+  title_container_->SetProperty(views::kMarginsKey, insets);
+}
+
 void FeatureTile::CreateDecorativeDrillInArrow() {
-  CHECK_EQ(type_, TileType::kPrimary);
+  CHECK_EQ(type_, TileType::kPrimary)
+      << "Drill-in arrows are just used in Primary tiles";
 
   title_container_->SetProperty(views::kMarginsKey,
                                 kTitleContainerWithDiveInButtonMargins);
@@ -316,26 +353,37 @@ void FeatureTile::CreateDecorativeDrillInArrow() {
 
 void FeatureTile::UpdateColors() {
   ui::ColorId background_color;
-  ui::ColorId foreground_color;
-  ui::ColorId foreground_optional_color;
-
   if (GetEnabled()) {
     background_color =
         toggled_
             ? background_toggled_color_.value_or(
                   cros_tokens::kCrosSysSystemPrimaryContainer)
             : background_color_.value_or(cros_tokens::kCrosSysSystemOnBase);
+  } else {
+    background_color = background_disabled_color_.value_or(
+        cros_tokens::kCrosSysDisabledContainer);
+  }
+
+  ui::ColorId foreground_color;
+  ui::ColorId foreground_optional_color;
+  // The `DownloadState::kPending` state should have the same colors on the
+  // labels and images as an enabled button, per the spec. The labels and images
+  // will only look disabled if the button was disabled for other reasons.
+  if (GetEnabled() || download_state_ == DownloadState::kPending) {
     foreground_color =
         toggled_ ? foreground_toggled_color_.value_or(
                        cros_tokens::kCrosSysSystemOnPrimaryContainer)
                  : foreground_color_.value_or(cros_tokens::kCrosSysOnSurface);
     foreground_optional_color =
-        toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                 : cros_tokens::kCrosSysOnSurfaceVariant;
+        toggled_ ? foreground_optional_toggled_color_.value_or(
+                       cros_tokens::kCrosSysSystemOnPrimaryContainer)
+                 : foreground_optional_color_.value_or(
+                       cros_tokens::kCrosSysOnSurfaceVariant);
   } else {
-    background_color = cros_tokens::kCrosSysDisabledContainer;
-    foreground_color = cros_tokens::kCrosSysDisabled;
-    foreground_optional_color = cros_tokens::kCrosSysDisabled;
+    foreground_color =
+        foreground_disabled_color_.value_or(cros_tokens::kCrosSysDisabled);
+    foreground_optional_color =
+        foreground_disabled_color_.value_or(cros_tokens::kCrosSysDisabled);
   }
 
   SetBackground(
@@ -349,7 +397,8 @@ void FeatureTile::UpdateColors() {
 
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetBaseColorId(toggled_
-                               ? cros_tokens::kCrosSysRipplePrimary
+                               ? ink_drop_toggled_base_color_.value_or(
+                                     cros_tokens::kCrosSysRipplePrimary)
                                : cros_tokens::kCrosSysRippleNeutralOnSubtle);
 
   auto icon_image_model = ui::ImageModel::FromVectorIcon(
@@ -376,6 +425,8 @@ void FeatureTile::SetToggled(bool toggled) {
   }
 
   toggled_ = toggled;
+  UpdateAccessibilityProperties();
+
   UpdateColors();
   views::InkDrop::Get(this)->GetInkDrop()->SnapToHidden();
 }
@@ -411,6 +462,16 @@ void FeatureTile::SetBackgroundToggledColorId(
     UpdateColors();
   }
 }
+void FeatureTile::SetBackgroundDisabledColorId(
+    ui::ColorId background_disabled_color_id) {
+  if (background_disabled_color_ == background_disabled_color_id) {
+    return;
+  }
+  background_disabled_color_ = background_disabled_color_id;
+  if (!GetEnabled()) {
+    UpdateColors();
+  }
+}
 
 void FeatureTile::SetButtonCornerRadius(const int radius) {
   corner_radius_ = radius;
@@ -436,6 +497,51 @@ void FeatureTile::SetForegroundToggledColorId(
   }
   foreground_toggled_color_ = foreground_toggled_color_id;
   if (toggled_) {
+    UpdateColors();
+  }
+}
+
+void FeatureTile::SetForegroundDisabledColorId(
+    ui::ColorId foreground_disabled_color_id) {
+  if (foreground_disabled_color_ == foreground_disabled_color_id) {
+    return;
+  }
+  foreground_disabled_color_ = foreground_disabled_color_id;
+  if (!GetEnabled()) {
+    UpdateColors();
+  }
+}
+
+void FeatureTile::SetForegroundOptionalColorId(
+    ui::ColorId foreground_optional_color_id) {
+  if (foreground_optional_color_ == foreground_optional_color_id) {
+    return;
+  }
+  foreground_optional_color_ = foreground_optional_color_id;
+  if (!GetEnabled()) {
+    UpdateColors();
+  }
+}
+
+void FeatureTile::SetForegroundOptionalToggledColorId(
+    ui::ColorId foreground_optional_toggled_color_id) {
+  if (foreground_optional_toggled_color_ ==
+      foreground_optional_toggled_color_id) {
+    return;
+  }
+  foreground_optional_toggled_color_ = foreground_optional_toggled_color_id;
+  if (!GetEnabled()) {
+    UpdateColors();
+  }
+}
+
+void FeatureTile::SetInkDropToggledBaseColorId(
+    ui::ColorId ink_drop_toggled_base_color_id) {
+  if (ink_drop_toggled_base_color_ == ink_drop_toggled_base_color_id) {
+    return;
+  }
+  ink_drop_toggled_base_color_ = ink_drop_toggled_base_color_id;
+  if (!GetEnabled()) {
     UpdateColors();
   }
 }
@@ -514,34 +620,40 @@ void FeatureTile::SetDownloadState(DownloadState state, int progress) {
       return;
     }
   }
-
-  // Set the new download state and update the tile to reflect it.
-  if (state == DownloadState::kDownloading) {
-    CHECK_GE(progress, 0)
-        << "Expected download progress to be in the range [0, 100], actual: "
-        << progress;
-    CHECK_LE(progress, 100)
-        << "Expected download progress to be in the range [0, 100], actual: "
-        << progress;
-    download_progress_percent_ = progress;
-  }
   download_state_ = state;
+
+  switch (download_state_) {
+    case DownloadState::kDownloading:
+      CHECK_GE(progress, 0)
+          << "Expected download progress to be in the range [0, 100], actual: "
+          << progress;
+      CHECK_LE(progress, 100)
+          << "Expected download progress to be in the range [0, 100], actual: "
+          << progress;
+      SetEnabled(true);
+      download_progress_percent_ = progress;
+      break;
+    case DownloadState::kError:
+    case DownloadState::kPending:
+      SetEnabled(false);
+      download_progress_percent_ = 0;
+      break;
+    case DownloadState::kDownloaded:
+      SetEnabled(true);
+      download_progress_percent_ = 0;
+      break;
+    case DownloadState::kNone:
+      SetEnabled(true);
+      download_progress_percent_ = 0;
+      break;
+  }
+
   UpdateColors();
   UpdateLabelForDownloadState();
-}
 
-void FeatureTile::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-  // If the icon is clickable then the main feature tile usually takes the user
-  // to a detailed page (like Network or Bluetooth). Those tiles act more like a
-  // regular button than a toggle button.
-  if (is_togglable_ && !is_icon_clickable_) {
-    node_data->role = ax::mojom::Role::kToggleButton;
-    node_data->SetCheckedState(toggled_ ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
-  } else {
-    node_data->role = ax::mojom::Role::kButton;
-  }
+  // Once the tile's UI has been updated, notify any observers of the download
+  // state change.
+  NotifyDownloadStateChanged();
 }
 
 void FeatureTile::AddLayerToRegion(ui::Layer* layer,
@@ -555,6 +667,31 @@ void FeatureTile::RemoveLayerFromRegions(ui::Layer* layer) {
   // This routes background layers to `ink_drop_container_` instead of `this` to
   // avoid painting effects underneath our background.
   ink_drop_container_->RemoveLayerFromRegions(layer);
+}
+
+void FeatureTile::OnViewBoundsChanged(views::View* observed_view) {
+  if (observed_view == title_container_ && on_title_container_bounds_changed_) {
+    on_title_container_bounds_changed_.Run();
+  }
+}
+
+void FeatureTile::OnSetTooltipText(const std::u16string& tooltip_text) {
+  if (!features::IsVcDlcUiEnabled() || updating_download_state_labels_) {
+    return;
+  }
+
+  // Keep track of the client set tooltip, so it can be restored if a
+  // `DownloadState` tooltip has been temporarily set.
+  client_specified_tooltip_text_ = tooltip_text;
+
+  // If the tooltip was set while a temporary downloading tooltip text was set,
+  // restore it. This will be reset to the `client_specified_tooltip_text_` once
+  // the download state changes back to the final state (if it's not
+  // `DownloadState::kError`).
+  if (download_state_ != DownloadState::kDownloaded &&
+      download_state_ != DownloadState::kNone) {
+    UpdateLabelForDownloadState();
+  }
 }
 
 ui::ColorId FeatureTile::GetIconColorId() const {
@@ -599,30 +736,58 @@ void FeatureTile::UpdateDrillInArrowColor() {
       kQuickSettingsRightArrowIcon, GetIconColorId()));
 }
 
+void FeatureTile::UpdateAccessibilityProperties() {
+  // If the icon is clickable then the main feature tile usually takes the user
+  // to a detailed page (like Network or Bluetooth). Those tiles act more like a
+  // regular button than a toggle button.
+  if (is_togglable_ && !is_icon_clickable_) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kToggleButton);
+    GetViewAccessibility().SetCheckedState(
+        toggled_ ? ax::mojom::CheckedState::kTrue
+                 : ax::mojom::CheckedState::kFalse);
+  } else {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    GetViewAccessibility().RemoveCheckedState();
+  }
+}
+
 void FeatureTile::SetCompactTileLabelPreferences(bool has_sub_label) {
-  label_->SetPreferredSize(has_sub_label ? kCompactOneRowTitleLabelSize
-                                         : kCompactTwoRowTitleLabelSize);
   label_->SetMultiLine(!has_sub_label);
   // Elide after 2 lines if there's no sub-label. Otherwise, 1 line.
   label_->SetMaxLines(has_sub_label ? 1 : 2);
 }
 
-void FeatureTile::SetDownloadLabel(const std::u16string& download_label) {
+void FeatureTile::SetDownloadLabel(const std::u16string& download_label,
+                                   std::optional<std::u16string> tooltip) {
   // Download state is only supported when `VcDlcUi` is enabled.
   CHECK(features::IsVcDlcUiEnabled())
       << "Download states are not supported when `VcDlcUi` is disabled";
   label_->SetText(download_label);
+  SetTooltipText(tooltip.value_or(download_label));
 }
 
 void FeatureTile::UpdateLabelForDownloadState() {
   // Download state is only supported when `VcDlcUi` is enabled.
   CHECK(features::IsVcDlcUiEnabled())
       << "Download states are not supported when `VcDlcUi` is disabled";
+
+  base::AutoReset<bool> reset(&updating_download_state_labels_, true);
+
   switch (download_state_) {
+    case DownloadState::kError:
+      SetDownloadLabel(client_specified_label_text_,
+                       /*tooltip=*/l10n_util::GetStringFUTF16(
+                           IDS_ASH_FEATURE_TILE_DOWNLOAD_ERROR,
+                           client_specified_label_text_));
+      break;
     case DownloadState::kNone:
     case DownloadState::kDownloaded:
-    case DownloadState::kError:
+      // If a download happened, `SetLabel()` saved the previous label
+      // in `client_specified_label_text_`, so re-set those here.
       label_->SetText(client_specified_label_text_);
+      SetTooltipText(client_specified_tooltip_text_.empty()
+                         ? client_specified_label_text_
+                         : client_specified_tooltip_text_);
       break;
     case DownloadState::kPending:
       SetDownloadLabel(l10n_util::GetStringUTF16(
@@ -633,6 +798,13 @@ void FeatureTile::UpdateLabelForDownloadState() {
           IDS_ASH_FEATURE_TILE_DOWNLOAD_IN_PROGRESS_TITLE,
           base::NumberToString16(download_progress_percent_)));
       break;
+  }
+}
+
+void FeatureTile::NotifyDownloadStateChanged() {
+  for (Observer& observer : observers_) {
+    observer.OnDownloadStateChanged(download_state_,
+                                    download_progress_percent_);
   }
 }
 

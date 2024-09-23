@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/paper-styles/color.js';
-import '../cr_hidden_style.css.js';
-import '../cr_shared_vars.css.js';
-import './cr_radio_button_style.css.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
 
-import {getTemplate} from './cr_radio_button.html.js';
-import {CrRadioButtonMixin} from './cr_radio_button_mixin.js';
+import {getCss} from './cr_radio_button.css.js';
+import {getHtml} from './cr_radio_button.html.js';
+import {CrRadioButtonMixinLit} from './cr_radio_button_mixin_lit.js';
 
 const CrRadioButtonElementBase =
-    PaperRippleMixin(CrRadioButtonMixin(PolymerElement));
+    CrRippleMixin(CrRadioButtonMixinLit(CrLitElement));
 
 export interface CrRadioButtonElement {
   $: {
@@ -27,23 +24,20 @@ export class CrRadioButtonElement extends CrRadioButtonElementBase {
     return 'cr-radio-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  // Overridden from CrRadioButtonMixin
-  override getPaperRipple() {
-    return this.getRipple();
+  override render() {
+    return getHtml.bind(this)();
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
-    const ripple = super._createRipple();
-    ripple.id = 'ink';
+  // Overridden from CrRippleMixin
+  override createRipple() {
+    this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
+    const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle', 'toggle-ink');
+    ripple.classList.add('circle');
     return ripple;
   }
 }

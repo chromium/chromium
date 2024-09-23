@@ -377,7 +377,7 @@ suite('cr-slider', function() {
 
   test('smooth position transition only on pointerdown', async () => {
     function assertNoTransition() {
-      const expected = 'all 0s ease 0s';
+      const expected = 'all';
       assertEquals(
           expected,
           getComputedStyle(crSlider.shadowRoot!.querySelector('#knobAndLabel')!)
@@ -390,7 +390,7 @@ suite('cr-slider', function() {
 
     function assertTransition() {
       function getValue(propName: string) {
-        return `${propName} 0.08s ease 0s`;
+        return `${propName} 0.08s`;
       }
 
       assertEquals(

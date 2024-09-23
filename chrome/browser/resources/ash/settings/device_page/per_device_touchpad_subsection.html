@@ -1,9 +1,17 @@
 <style include="settings-shared input-device-settings-shared">
 </style>
 <div id="touchpad">
-  <h2 class="subsection-header"
-      id="touchpadName">[[getTouchpadName(touchpad.name)]]</h2>
+  <per-device-subsection-header
+      device-key="[[touchpad.deviceKey]]"
+      name="[[getTouchpadName(touchpad.name)]]"
+      battery-info="[[touchpad.batteryInfo]]"
+      icon="os-settings:device-touchpad">
+  </per-device-subsection-header>
   <div class="subsection">
+    <template is="dom-if" if="[[showInstallAppRow(touchpad.appInfo)]]">
+      <per-device-install-row app-info="[[touchpad.appInfo]]">
+      </per-device-install-row>
+    </template>
     <settings-toggle-button id="enableTapToClick"
         pref="{{enableTapToClickPref}}"
         label="$i18n{touchpadTapToClickEnabledLabel}"
@@ -73,7 +81,7 @@
         </settings-slider>
       </div>
       <div class="settings-box two-line" id="touchpadHapticFeedbackRow"
-          on-click="onTouchpadHapticFeedbackRowClicked_">
+          on-click="onTouchpadHapticFeedbackRowClicked_" actionable-row>
         <div class="start settings-box-text">
           <div>$i18n{touchpadHapticFeedbackTitle}</div>
           <div class="secondary">
@@ -96,7 +104,7 @@
       </div>
     </template>
     <div class="settings-box bottom-divider" id="reverseScrollRow"
-          on-click="onTouchpadReverseScrollRowClicked_">
+          on-click="onTouchpadReverseScrollRowClicked_" actionable-row>
       <div class="start settings-box-text">
         <localized-link
             aria-describedby="touchpadName"
@@ -116,6 +124,10 @@
               "[[getLabelWithoutLearnMore('touchpadScrollLabel')]]"
           deep-link-focus-id$="[[Setting.kTouchpadReverseScrolling]]">
       </cr-toggle>
+      <template is="dom-if" if="[[isCompanionAppInstalled(touchpad.appInfo)]]">
+        <per-device-app-installed-row app-info="[[touchpad.appInfo]]">
+        </per-device-app-installed-row>
+      </template>
     </div>
   </div>
 </div>

@@ -11,12 +11,12 @@
 #include <lib/vfs/cpp/remote_dir.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 
 namespace fuchsia_component_support {
 
@@ -33,9 +33,9 @@ vfs::PseudoDir* DynamicComponentCapabilitiesDir() {
 }  // namespace
 
 DynamicComponentHost::DynamicComponentHost(
-    base::StringPiece collection,
-    base::StringPiece child_id,
-    base::StringPiece component_url,
+    std::string_view collection,
+    std::string_view child_id,
+    std::string_view component_url,
     base::OnceClosure on_teardown,
     fidl::InterfaceHandle<fuchsia::io::Directory> services)
     : DynamicComponentHost(base::ComponentContextForProcess()
@@ -49,9 +49,9 @@ DynamicComponentHost::DynamicComponentHost(
 
 DynamicComponentHost::DynamicComponentHost(
     fuchsia::component::RealmHandle realm,
-    base::StringPiece collection,
-    base::StringPiece child_id,
-    base::StringPiece component_url,
+    std::string_view collection,
+    std::string_view child_id,
+    std::string_view component_url,
     base::OnceClosure on_teardown,
     fidl::InterfaceHandle<fuchsia::io::Directory> services)
     : collection_(collection),

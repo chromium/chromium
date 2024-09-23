@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] window.location.hash is an empty string
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

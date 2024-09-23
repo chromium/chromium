@@ -221,11 +221,10 @@ export class Options implements CameraUI {
 
   private initOpenPTZPanel() {
     this.openPTZPanel.addEventListener('click', () => {
-      nav.open(ViewName.PTZ_PANEL, new PTZPanelOptions({
-                 stream: this.cameraManager.getPreviewVideo().getStream(),
-                 vidPid: this.cameraManager.getVidPid(),
-                 resetPTZ: () => this.cameraManager.resetPTZ(),
-               }));
+      toggleIndicatorOnOpenPTZButton(false);
+      nav.open(
+          ViewName.PTZ_PANEL,
+          new PTZPanelOptions(this.cameraManager.getPTZController()));
     });
   }
 
@@ -335,4 +334,13 @@ export class Options implements CameraUI {
     triggerButton.setAttribute('aria-describedby', element.id);
     return element;
   }
+}
+
+/**
+ * Toggles to show or hide the indicator icon that is used to notify users about
+ * the new super-resolution feature.
+ */
+export function toggleIndicatorOnOpenPTZButton(display: boolean): void {
+  const openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
+  openPTZPanel.classList.toggle('notify-new-feature', display);
 }

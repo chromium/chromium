@@ -12,6 +12,8 @@ import sys
 from typing import Dict, List
 import urllib.request
 
+import scripthash
+
 
 def _fetch_json(url):
     return json.load(urllib.request.urlopen(url))
@@ -26,15 +28,7 @@ def _find_valid_urls(release, artifact_regex):
 
 def _latest(api_url, install_scripts=None, artifact_regex=None):
     # Make the version change every time this file changes.
-    md5 = hashlib.md5()
-    md5.update(pathlib.Path(__file__).read_bytes())
-    import __main__
-    md5.update(pathlib.Path(__main__.__file__).read_bytes())
-
-    if install_scripts:
-        for path in install_scripts:
-            md5.update(pathlib.Path(path).read_bytes())
-    file_hash = md5.hexdigest()[:10]
+    file_hash = scripthash.compute(extra_paths=install_scripts)
 
     releases: List[Dict] = _fetch_json(f'{api_url}/releases')
     for release in releases:

@@ -63,7 +63,6 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
   }
 
   // PrefStore::Observer implementation.
-  void OnPrefValueChanged(const std::string& key) override {}
   void OnInitializationCompleted(bool succeeded) override {
     if (on_pref_load_callback_) {
       pref_store_->RemoveObserver(this);

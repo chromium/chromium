@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/dav1d_video_decoder.h"
 
 #include <memory>
@@ -203,8 +208,12 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // We only want 1 frame thread in low delay mode, since otherwise we'll
   // require at least two buffers before the first frame can be output.
-  if (low_delay || config.is_rtc())
+  if (low_delay) {
     s.max_frame_delay = 1;
+  }
+
+  // Only output the highest spatial layer.
+  s.all_layers = 0;
 
   // Route dav1d internal logs through Chrome's DLOG system.
   s.logger = {nullptr, &LogDav1dMessage};
@@ -297,7 +306,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
   if (!buffer->end_of_stream()) {
     input_buffer.reset(new Dav1dData{0});
-    if (dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->data_size(),
+    if (dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->size(),
                         &ReleaseDecoderBuffer, buffer.get()) < 0) {
       return false;
     }
@@ -416,12 +425,14 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
         fake_uv_data_ =
             base::MakeRefCounted<base::RefCountedBytes>(size_needed);
 
-        uint16_t* data = fake_uv_data_->front_as<uint16_t>();
+        uint16_t* data =
+            reinterpret_cast<uint16_t*>(fake_uv_data_->as_vector().data());
         std::fill(data, data + size_needed / 2, kBlankUV);
       }
     }
 
-    u_plane = v_plane = fake_uv_data_->front_as<uint8_t>();
+    u_plane = v_plane =
+        reinterpret_cast<uint8_t*>(fake_uv_data_->as_vector().data());
   }
 
   auto frame = VideoFrame::WrapExternalYuvData(

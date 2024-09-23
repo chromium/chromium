@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/mp2t/es_parser.h"
 
 #include "base/logging.h"
@@ -47,7 +52,8 @@ bool EsParser::Parse(const uint8_t* buf,
   }
 
   // Add the incoming bytes to the ES queue.
-  if (!es_queue_->Push(buf, size)) {
+  if (!es_queue_->Push(
+          base::make_span(buf, base::checked_cast<size_t>(size)))) {
     DVLOG(2) << "Failed to push buf of size " << size;
     return false;
   }

@@ -9,4 +9,7 @@ found in the LICENSE file.
     <!-- Autofill tooltip dimensions -->
     <dimen name="autofill_tooltip_horizontal_padding">16dp</dimen>
     <dimen name="autofill_tooltip_vertical_padding">16dp</dimen>
+
+    <!-- Keyboard Accessory -->
+    <dimen name="keyboard_accessory_suggestion_icon_size">20dp</dimen>
 </resources>

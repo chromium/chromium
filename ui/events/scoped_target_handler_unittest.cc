@@ -177,7 +177,7 @@ TEST(ScopedTargetHandlerTest, HandlerInvoked) {
   std::unique_ptr<EventCountingEventHandler> delegate(
       new EventCountingEventHandler(target.get(), &count));
   target->SetHandler(std::move(target_handler), std::move(delegate));
-  MouseEvent event(ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  MouseEvent event(EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    EventTimeForNow(), EF_LEFT_MOUSE_BUTTON,
                    EF_LEFT_MOUSE_BUTTON);
   target->DispatchEvent(&event);
@@ -194,7 +194,7 @@ TEST(ScopedTargetHandlerTest, HandlerInvokedOnceThenEventStopsPropagating) {
   std::unique_ptr<EventStopPropagationHandler> delegate(
       new EventStopPropagationHandler(target.get(), &count));
   target->SetHandler(std::move(target_handler), std::move(delegate));
-  MouseEvent event(ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  MouseEvent event(EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    EventTimeForNow(), EF_LEFT_MOUSE_BUTTON,
                    EF_LEFT_MOUSE_BUTTON);
   target->DispatchEvent(&event);
@@ -211,7 +211,7 @@ TEST(ScopedTargetHandlerTest, HandlerInvokedNested) {
   std::unique_ptr<EventCountingEventHandler> delegate(
       new EventCountingEventHandler(target.get(), &count));
   target->SetHandler(std::move(target_handler), std::move(delegate));
-  MouseEvent event(ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  MouseEvent event(EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    EventTimeForNow(), EF_LEFT_MOUSE_BUTTON,
                    EF_LEFT_MOUSE_BUTTON);
   target->DispatchEvent(&event);
@@ -228,7 +228,7 @@ TEST(ScopedTargetHandlerTest, SafeToDestroy) {
   std::unique_ptr<EventCountingEventHandler> delegate(
       new EventCountingEventHandler(target, &count));
   target->SetHandler(std::move(target_handler), std::move(delegate));
-  MouseEvent event(ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  MouseEvent event(EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    EventTimeForNow(), EF_LEFT_MOUSE_BUTTON,
                    EF_LEFT_MOUSE_BUTTON);
   target->DispatchEvent(&event);
@@ -245,7 +245,7 @@ TEST(ScopedTargetHandlerTest, SafeToDestroyNested) {
   std::unique_ptr<EventCountingEventHandler> delegate(
       new EventCountingEventHandler(target, &count));
   target->SetHandler(std::move(target_handler), std::move(delegate));
-  MouseEvent event(ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  MouseEvent event(EventType::kMousePressed, gfx::Point(), gfx::Point(),
                    EventTimeForNow(), EF_LEFT_MOUSE_BUTTON,
                    EF_LEFT_MOUSE_BUTTON);
   target->DispatchEvent(&event);

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <style name="QuickActionSearchWidgetXSmallButton">
+        <item name="android:layout_width">@dimen/quick_action_search_widget_xsmall_button_width</item>
+        <item name="android:layout_height">@dimen/quick_action_search_widget_xsmall_button_height</item>
+        <item name="android:background">@drawable/quick_action_search_widget_xsmall_button_background</item>
+        <item name="android:padding">@dimen/quick_action_search_widget_xsmall_button_icon_padding</item>
+        <item name="android:tint">@color/default_icon_color_baseline</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="QuickActionSearchWidgetSmallButton">
+        <item name="android:layout_width">@dimen/quick_action_search_widget_small_button_width</item>
+        <item name="android:layout_height">@dimen/quick_action_search_widget_small_button_height</item>
+        <item name="android:background">@drawable/quick_action_search_widget_small_button_background</item>
+        <item name="android:padding">@dimen/quick_action_search_widget_small_button_icon_padding</item>
+        <item name="android:tint">@color/default_icon_color_baseline</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="QuickActionSearchWidgetMediumButton">
+        <item name="android:layout_width">@dimen/quick_action_search_widget_medium_button_width</item>
+        <item name="android:layout_height">@dimen/quick_action_search_widget_medium_button_height</item>
+        <item name="android:background">@drawable/quick_action_search_widget_medium_button_background</item>
+        <item name="android:padding">@dimen/quick_action_search_widget_medium_button_icon_padding</item>
+        <item name="android:tint">@color/default_icon_color_baseline</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="TextAppearance.QuickActionSearchWidgetXSmallHintText" parent="TextAppearance.SearchBoxText.Widget">
+        <item name="android:textSize">@dimen/quick_action_search_widget_xsmall_search_bar_text_size</item>
+    </style>
+
+    <style name="QuickActionSearchWidget.SmallLensButton" parent="QuickActionSearchWidgetSmallButton">
+      <item name="android:visibility">visible</item>
+    </style>
+
+    <style name="QuickActionSearchWidget.SmallDinoButton" parent="QuickActionSearchWidgetSmallButton">
+      <item name="android:visibility">visible</item>
+    </style>
+</resources>

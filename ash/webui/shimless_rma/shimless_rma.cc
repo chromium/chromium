@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/shimless_rma/shimless_rma.h"
 
 #include <memory>
@@ -32,8 +37,8 @@ namespace ash {
 
 namespace {
 
-// TODO(crbug/1051793): Replace with webui::SetUpWebUIDataSource() once it no
-// longer requires a dependency on //chrome/browser.
+// TODO(crbug.com/40673941): Replace with webui::SetUpWebUIDataSource() once it
+// no longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const webui::ResourcePath> resources,
                           int default_resource) {
@@ -423,10 +428,6 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "osUpdateEnabled",
       base::FeatureList::IsEnabled(features::kShimlessRMAOsUpdate));
-  html_source->AddBoolean("complianceCheckEnabled",
-                          features::IsShimlessRMAComplianceCheckEnabled());
-  html_source->AddBoolean("skuDescriptionEnabled",
-                          features::IsShimlessRMASkuDescriptionEnabled());
   html_source->AddBoolean("3pDiagnosticsEnabled",
                           features::IsShimlessRMA3pDiagnosticsEnabled());
 }

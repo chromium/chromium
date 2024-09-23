@@ -1,0 +1,191 @@
+{
+  "description": "Source registration time in aggregatable report",
+  "input": {
+    "registrations": [
+      // whole day
+      {
+        "timestamp": "86400000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "a": "0xa"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "86400001",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                },
+                "aggregatable_source_registration_time": "include"
+              }
+            }
+          }
+        ]
+      },
+      // whole day + 1s
+      {
+        "timestamp": "86401000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "b": "0xb"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "86401001",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "b": 2
+                },
+                "aggregatable_source_registration_time": "include"
+              }
+            }
+          }
+        ]
+      },
+      // next whole day - 1s
+      {
+        "timestamp": "172799000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "aggregation_keys": {
+                  "c": "0xc"
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "172799001",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "c": 3
+                },
+                "aggregatable_source_registration_time": "include"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0xa",
+            "value": 1
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "90000",
+            "source_registration_time": "86400",
+            "version": "1.0"
+          }
+        },
+        "report_time": "90000001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0xb",
+            "value": 2
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "90001",
+            "source_registration_time": "86400",
+            "version": "1.0"
+          }
+        },
+        "report_time": "90001001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0xc",
+            "value": 3
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "176399",
+            "source_registration_time": "86400",
+            "version": "1.0"
+          }
+        },
+        "report_time": "176399001",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
+      }
+    ]
+  }
+}

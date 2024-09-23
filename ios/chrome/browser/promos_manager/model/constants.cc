@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/promos_manager/model/constants.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -18,7 +19,7 @@ const char kImpressionFeatureEngagementMigrationCompletedKey[] =
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
-std::optional<Promo> PromoForName(base::StringPiece promo) {
+std::optional<Promo> PromoForName(std::string_view promo) {
   if (promo == "promos_manager::Promo::Test")
     return promos_manager::Promo::Test;
 
@@ -46,10 +47,6 @@ std::optional<Promo> PromoForName(base::StringPiece promo) {
 
   if (promo == "promos_manager::Promo::DefaultBrowserRemindMeLater") {
     return promos_manager::Promo::DefaultBrowserRemindMeLater;
-  }
-
-  if (promo == "promos_manager::Promo::OmniboxPosition") {
-    return promos_manager::Promo::OmniboxPosition;
   }
 
   if (promo == "promos_manager::Promo::DockingPromo") {
@@ -83,7 +80,7 @@ std::string NameForPromo(Promo promo) {
   return base::StrCat({"promos_manager::Promo::", ShortNameForPromo(promo)});
 }
 
-base::StringPiece ShortNameForPromo(Promo promo) {
+std::string_view ShortNameForPromo(Promo promo) {
   switch (promo) {
     case promos_manager::Promo::Test:
       return "Test";
@@ -103,8 +100,6 @@ base::StringPiece ShortNameForPromo(Promo promo) {
       return "PostRestoreDefaultBrowserAlert";
     case promos_manager::Promo::DefaultBrowserRemindMeLater:
       return "DefaultBrowserRemindMeLater";
-    case promos_manager::Promo::OmniboxPosition:
-      return "OmniboxPosition";
     case promos_manager::Promo::DockingPromo:
       return "DockingPromo";
     case promos_manager::Promo::DockingPromoRemindMeLater:

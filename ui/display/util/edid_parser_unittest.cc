@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/util/edid_parser.h"
 
 #include <stdint.h>
@@ -888,6 +893,10 @@ class EDIDParserTest : public TestWithParam<TestParams> {
 };
 
 TEST_P(EDIDParserTest, ParseEdids) {
+  std::vector<uint8_t> expected_edid(
+      GetParam().edid_blob, GetParam().edid_blob + GetParam().edid_blob_length);
+  EXPECT_EQ(parser_.edid_blob(), expected_edid);
+
   EXPECT_EQ(parser_.manufacturer_id(), GetParam().manufacturer_id);
   EXPECT_EQ(parser_.product_id(), GetParam().product_id);
   EXPECT_EQ(parser_.block_zero_serial_number_hash(),

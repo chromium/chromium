@@ -5,8 +5,8 @@
 #include "components/password_manager/core/browser/password_hash_data.h"
 
 #include <iterator>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
@@ -59,7 +59,7 @@ bool PasswordHashData::MatchesPassword(const std::string& user,
   return CalculatePasswordHash(pass, salt) == hash;
 }
 
-uint64_t CalculatePasswordHash(const base::StringPiece16& text,
+uint64_t CalculatePasswordHash(std::u16string_view text,
                                const std::string& salt) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
   constexpr size_t kBytesFromHash = 8;
@@ -69,8 +69,8 @@ uint64_t CalculatePasswordHash(const base::StringPiece16& text,
   constexpr size_t kScryptMaxMemory = 1024 * 1024;
 
   uint8_t hash[kBytesFromHash];
-  base::StringPiece text_8bits(reinterpret_cast<const char*>(text.data()),
-                               text.size() * 2);
+  std::string_view text_8bits(reinterpret_cast<const char*>(text.data()),
+                              text.size() * 2);
   const uint8_t* salt_ptr = reinterpret_cast<const uint8_t*>(salt.c_str());
 
   int scrypt_ok = EVP_PBE_scrypt(text_8bits.data(), text_8bits.size(), salt_ptr,
@@ -98,8 +98,9 @@ std::string CanonicalizeUsername(const std::string& username,
   std::vector<std::string> parts = base::SplitString(
       username, "@", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2U) {
-    if (is_gaia_account && parts.size() == 1U)
+    if (is_gaia_account && parts.size() == 1U) {
       return gaia::CanonicalizeEmail(username + "@gmail.com");
+    }
     return username;
   }
   return gaia::CanonicalizeEmail(username);
@@ -109,8 +110,9 @@ bool AreUsernamesSame(const std::string& username1,
                       bool is_username1_gaia_account,
                       const std::string& username2,
                       bool is_username2_gaia_account) {
-  if (is_username1_gaia_account != is_username2_gaia_account)
+  if (is_username1_gaia_account != is_username2_gaia_account) {
     return false;
+  }
   return CanonicalizeUsername(username1, is_username1_gaia_account) ==
          CanonicalizeUsername(username2, is_username2_gaia_account);
 }

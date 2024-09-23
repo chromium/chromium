@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
@@ -35,10 +36,15 @@ NotificationDisplayServiceFactory::NotificationDisplayServiceFactory()
           "NotificationDisplayService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
+              .Build()) {
+  DependsOn(NotificationMetricsLoggerFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService>
 NotificationDisplayServiceFactory::BuildServiceInstanceForBrowserContext(

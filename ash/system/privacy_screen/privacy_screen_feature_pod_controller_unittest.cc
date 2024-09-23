@@ -74,7 +74,7 @@ class PrivacyScreenFeaturePodControllerTest : public AshTestBase {
     display_manager()->configurator()->OnConfigurationChanged();
     display_manager()->configurator()->ForceInitialConfigure();
     EXPECT_TRUE(test_api_->TriggerConfigureTimeout());
-    display_change_observer_->OnDisplayModeChanged(
+    display_change_observer_->OnDisplayConfigurationChanged(
         native_display_delegate_->GetOutputs());
   }
 

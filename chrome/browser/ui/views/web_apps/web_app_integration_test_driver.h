@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -273,6 +274,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void DisableWindowControlsOverlay(Site site);
   void EnableWindowControlsOverlay(Site site);
   void CreateShortcut(Site site, WindowOptions window_options);
+  // TODO(crbug.com/346323629): Remove InstallableSite and convert callsites to
+  // Site since universal install is available now.
   void InstallMenuOption(InstallableSite site);
   void InstallLocally(Site site);
   void InstallOmniboxIcon(InstallableSite site);
@@ -481,7 +484,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::vector<base::FilePath> GetTestFilePaths(FilesOptions file_options);
 
   void SyncAndInstallPreinstalledAppConfig(const GURL& install_url,
-                                           base::StringPiece app_config_string);
+                                           std::string_view app_config_string);
 
   Browser* browser();
   Profile* profile();

@@ -62,17 +62,20 @@ class EventCaptureMac::MouseCaptureDelegateImpl
     NSView* view = [event.window.contentView hitTest:event.locationInWindow];
 
     ui::EventType type = ui_event->type();
-    if (type == ui::ET_MOUSE_DRAGGED || type == ui::ET_MOUSE_RELEASED) {
+    if (type == ui::EventType::kMouseDragged ||
+        type == ui::EventType::kMouseReleased) {
       event_handler_->OnMouseEvent(ui_event->AsMouseEvent());
-    } else if ((type == ui::ET_MOUSE_PRESSED || type == ui::ET_MOUSE_MOVED) &&
+    } else if ((type == ui::EventType::kMousePressed ||
+                type == ui::EventType::kMouseMoved) &&
                web_contents_view_ == view) {
       // We do not need to record mouse clicks outside of the web contents.
       event_handler_->OnMouseEvent(ui_event->AsMouseEvent());
-    } else if (type == ui::ET_MOUSE_MOVED && web_contents_view_ != view) {
+    } else if (type == ui::EventType::kMouseMoved &&
+               web_contents_view_ != view) {
       // Manually set arrow cursor when region search UI is open and cursor is
       // moved from web contents.
       [NSCursor.arrowCursor set];
-    } else if (type == ui::ET_SCROLL) {
+    } else if (type == ui::EventType::kScroll) {
       event_handler_->OnScrollEvent(ui_event->AsScrollEvent());
     }
 
@@ -130,7 +133,7 @@ void EventCaptureMac::CreateKeyDownLocalMonitor(
         return event;
       }
       ui::EventType type = ui_event->type();
-      if (type == ui::ET_KEY_PRESSED) {
+      if (type == ui::EventType::kKeyPressed) {
         event_handler->OnKeyEvent(ui_event->AsKeyEvent());
       }
       // Consume the event if allowed and the corresponding EventHandler method

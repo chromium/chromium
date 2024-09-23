@@ -29,7 +29,7 @@ TEST(URLLoaderCompletionStatusMojomTraitsTest, MojoRoundTrip) {
       mojom::TrustTokenOperationStatus::kInvalidArgument;
   original.blocked_by_response_reason =
       mojom::BlockedByResponseReason::kCorpNotSameOrigin;
-  original.should_report_corb_blocking = true;
+  original.should_report_orb_blocking = true;
   original.resolve_error_info = net::ResolveErrorInfo(7, true);
   original.should_collapse_initiator = true;
 

@@ -19,6 +19,14 @@ namespace cc {
 
 class LayerTreeHost;
 class LayerTreeImpl;
+class LayerTreeSettings;
+
+// LayerTreeSettings with different combinations of
+// commit_to_active_tree and use_layer_lists.
+LayerTreeSettings CommitToActiveTreeLayerListSettings();
+LayerTreeSettings CommitToActiveTreeLayerTreeSettings();
+LayerTreeSettings CommitToPendingTreeLayerListSettings();
+LayerTreeSettings CommitToPendingTreeLayerTreeSettings();
 
 // In tests that build layer tree and property trees directly at impl-side,
 // before calling LayerTreeImpl::UpdateDrawProperties() or any function calling
@@ -51,6 +59,15 @@ void VerifyQuadsExactlyCoverRect(const viz::QuadList& quads,
 void VerifyQuadsAreOccluded(const viz::QuadList& quads,
                             const gfx::Rect& occluded,
                             size_t* partially_occluded_count);
+
+// For parameterized test suites testing with both CommitToActiveTree (with
+// the bool parameter being true) and !CommitToActiveTree settings.
+#define INSTANTIATE_COMMIT_TO_TREE_TEST_P(name)                           \
+  INSTANTIATE_TEST_SUITE_P(                                               \
+      , name, ::testing::Bool(),                                          \
+      [](const ::testing::TestParamInfo<name::ParamType>& info) {         \
+        return info.param ? "CommitToActiveTree" : "CommitToPendingTree"; \
+      })
 
 }  // namespace cc
 

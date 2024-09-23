@@ -58,7 +58,6 @@ class ExecutionContextRegistryImplTest : public GraphTestHarness {
 
   void SetUp() override {
     Super::SetUp();
-    graph()->PassToGraph(std::make_unique<ExecutionContextRegistryImpl>());
     registry_ = GraphRegisteredImpl<ExecutionContextRegistryImpl>::GetFromGraph(
         graph());
     ASSERT_TRUE(registry_);
@@ -93,9 +92,9 @@ TEST_F(ExecutionContextRegistryImplTest, RegistryWorks) {
   auto* worker = worker_node.get();
 
   // Get the execution contexts for each node directly.
-  auto* frame1_ec = GetOrCreateExecutionContextForFrameNode(frame1);
-  auto* frame2_ec = GetOrCreateExecutionContextForFrameNode(frame2);
-  auto* worker_ec = GetOrCreateExecutionContextForWorkerNode(worker);
+  auto* frame1_ec = &FrameExecutionContext::Get(frame1);
+  auto* frame2_ec = &FrameExecutionContext::Get(frame2);
+  auto* worker_ec = &WorkerExecutionContext::Get(worker);
 
   // Expect the FrameExecutionContext implementation to work.
   EXPECT_EQ(ExecutionContextType::kFrameNode, frame1_ec->GetType());
@@ -160,8 +159,8 @@ TEST_F(ExecutionContextRegistryImplTest, Observers) {
   auto* worker = mock_graph.worker.get();
 
   // Get the execution contexts for each node directly.
-  auto* frame_ec = GetOrCreateExecutionContextForFrameNode(frame);
-  auto* worker_ec = GetOrCreateExecutionContextForWorkerNode(worker);
+  auto* frame_ec = &FrameExecutionContext::Get(frame);
+  auto* worker_ec = &WorkerExecutionContext::Get(worker);
 
   // Set the priority and reason of the frame and expect a notification.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame_ec, testing::_));
@@ -180,19 +179,6 @@ TEST_F(ExecutionContextRegistryImplTest, Observers) {
   EXPECT_CALL(obs, OnBeforeExecutionContextRemoved(frame_ec));
   mock_graph.frame.reset();
   EXPECT_EQ(0u, registry_->GetExecutionContextCountForTesting());
-
-  // Unregister the observer so that the registry doesn't explode when it is
-  // torn down.
-  registry_->RemoveObserver(&obs);
-}
-
-TEST_F(ExecutionContextRegistryImplDeathTest, EnforceObserversRemoved) {
-  // Create an observer.
-  MockExecutionContextObserver obs;
-  registry_->AddObserver(&obs);
-
-  // The registry should explode if we kill it without unregistering observers.
-  EXPECT_DCHECK_DEATH(graph()->TakeFromGraph(registry_));
 
   // Unregister the observer so that the registry doesn't explode when it is
   // torn down.

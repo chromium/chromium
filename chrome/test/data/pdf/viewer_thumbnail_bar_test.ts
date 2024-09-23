@@ -4,10 +4,8 @@
 
 import type {ViewerThumbnailBarElement, ViewerThumbnailElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {ChangePageOrigin, PAINTED_ATTRIBUTE, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 function createThumbnailBar(): ViewerThumbnailBarElement {
   document.body.innerHTML = '';
@@ -49,7 +47,7 @@ const tests = [
     const thumbnailBar = createThumbnailBar();
     thumbnailBar.docLength = testDocLength;
 
-    flush();
+    await microtasksFinished();
 
     // Test that the correct number of viewer-thumbnail elements was created.
     const thumbnails =
@@ -93,7 +91,7 @@ const tests = [
     const scroller = thumbnailBar.$.thumbnails!;
     scroller.style.padding = '';
 
-    flush();
+    await microtasksFinished();
 
     const thumbnails =
         thumbnailBar.shadowRoot!.querySelectorAll('viewer-thumbnail');
@@ -149,7 +147,7 @@ const tests = [
     const thumbnailBar = createThumbnailBar();
     thumbnailBar.docLength = testDocLength;
 
-    flush();
+    await microtasksFinished();
 
     function waitForwardFocus(pageNumber: number): Promise<void> {
       // Reset focus.
@@ -184,7 +182,7 @@ const tests = [
     const thumbnailBar = createThumbnailBar();
     thumbnailBar.docLength = testDocLength;
 
-    flush();
+    await microtasksFinished();
 
     thumbnailBar.activePage = 1;
     let whenChanged = eventToPromise('change-page', thumbnailBar);
@@ -209,7 +207,7 @@ const tests = [
     const thumbnailBar = createThumbnailBar();
     thumbnailBar.docLength = testDocLength;
 
-    flush();
+    await microtasksFinished();
 
     thumbnailBar.activePage = 1;
     let whenChanged = eventToPromise('change-page', thumbnailBar);
@@ -237,7 +235,7 @@ const tests = [
     const pluginController = PluginController.getInstance();
     pluginController.isActive = false;
 
-    flush();
+    await microtasksFinished();
 
     const scroller = thumbnailBar.$.thumbnails;
     chrome.test.assertTrue(scroller.hidden);
@@ -253,15 +251,17 @@ const tests = [
     });
 
     // Give the test a chance to fail.
-    await waitAfterNextRender(thumbnailBar);
+    await microtasksFinished();
 
     // The thumbnail should paint when reactivating the plugin.
     pluginController.isActive = true;
+    await microtasksFinished();
     chrome.test.assertFalse(scroller.hidden);
     await whenPaintTriggered;
 
     // The thumbnail should clear when deactivating the plugin.
     pluginController.isActive = false;
+    await microtasksFinished();
     chrome.test.assertTrue(scroller.hidden);
     await whenThumbnailCleared(thumbnail);
     chrome.test.succeed();

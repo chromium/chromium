@@ -1,13 +1,13 @@
 [document web]
 ++[article]
-++++[section]
+++++[header]
 ++++++[paragraph]
 ++++++++[static] name='Header inside article.'
 ++[section]
-++++[section]
+++++[header]
 ++++++[paragraph]
 ++++++++[static] name='Header inside section.'
 ++[landmark] xml-roles:main
-++++[section]
+++++[header]
 ++++++[paragraph]
 ++++++++[static] name='Header inside main.'

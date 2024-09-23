@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "components/captive_portal/core/captive_portal_types.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
@@ -35,7 +35,6 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_id.h"
 #endif
 
@@ -123,9 +122,9 @@ struct NavigateParams {
   // The frame name to be used for the main frame.
   std::string frame_name;
 
-  // The browser-global ID of the frame to navigate, or
-  // content::RenderFrameHost::kNoFrameTreeNodeId for the main frame.
-  int frame_tree_node_id = content::RenderFrameHost::kNoFrameTreeNodeId;
+  // The browser-global ID of the frame to navigate, or the default invalid
+  // value for the main frame.
+  content::FrameTreeNodeId frame_tree_node_id;
 
   // Any redirect URLs that occurred for this navigation before |url|.
   // Usually empty.
@@ -159,11 +158,8 @@ struct NavigateParams {
   // new WebContents, this field will remain NULL and the WebContents deleted if
   // the WebContents it created is not added to a TabStripModel before
   // Navigate() returns.
-  //
-  // This field is not a raw_ptr<> because of missing |.get()| in not-rewritten
-  // platform specific code.
-  RAW_PTR_EXCLUSION content::WebContents* navigated_or_inserted_contents =
-      nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged>
+      navigated_or_inserted_contents = nullptr;
 
   // [in]  The WebContents that initiated the Navigate() request if such
   //       context is necessary. Default is NULL, i.e. no context.
@@ -234,9 +230,9 @@ struct NavigateParams {
   // NO_ACTION, |window_action| will be set to SHOW_WINDOW.
   WindowAction window_action = NO_ACTION;
 
-  // Whether the browser is being created for captive portal resolution. If
-  // true, |disposition| should be NEW_POPUP.
-  bool is_captive_portal_popup = false;
+  // Captive portal type for this browser window.
+  captive_portal::CaptivePortalWindowType captive_portal_window_type =
+      captive_portal::CaptivePortalWindowType::kNone;
 
   // Whether the browser popup is being created as a tab modal. If true,
   // `disposition` should be NEW_POPUP.

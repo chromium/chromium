@@ -15,11 +15,25 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 
-import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './geolocation_dialog.html.js';
+import {logSystemLocationPermissionChange} from './personalization_metrics_logger.js';
+
+/**
+ * Geolocation access levels for the ChromeOS system.
+ * This must be kept in sync with `GeolocationAccessLevel` in
+ * ash/constants/geolocation_access_level.h
+ */
+export enum GeolocationAccessLevel {
+  DISALLOWED = 0,
+  ALLOWED = 1,
+  ONLY_ALLOWED_FOR_SYSTEM = 2,
+
+  MAX_VALUE = ONLY_ALLOWED_FOR_SYSTEM,
+}
 
 class GeolocationDialog extends PolymerElement {
   static get is() {
@@ -29,6 +43,27 @@ class GeolocationDialog extends PolymerElement {
   static get template() {
     return getTemplate();
   }
+
+  static get properties() {
+    return {
+      bodyTextParagraph1: {
+        type: String,
+      },
+      bodyTextParagraph2: {
+        type: String,
+      },
+      cancelButtonText: {
+        type: String,
+      },
+      confirmButtonText: {
+        type: String,
+      },
+    };
+  }
+
+  bodyText: string;
+  cancelButtonText: string;
+  confirmButtonText: string;
 
   /**
    * Callback on user accepting the geolocation dialog, with the intent to
@@ -40,6 +75,8 @@ class GeolocationDialog extends PolymerElement {
     this.dispatchEvent(
         new CustomEvent('geolocation-enabled', {bubbles: false}));
 
+    logSystemLocationPermissionChange(
+        GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
     this.getDialog_().close();
   }
 

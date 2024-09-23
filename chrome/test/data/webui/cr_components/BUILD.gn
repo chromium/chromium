@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//crypto/features.gni")
 import("../build_webui_tests.gni")
 
 assert(!is_android && !is_ios)
@@ -11,61 +10,37 @@ build_webui_tests("build") {
   files = [
     "color_change_listener_test.ts",
     "customize_color_scheme_mode_test.ts",
-    "customize_themes_test.ts",
-    "help_bubble_mixin_test.ts",
-    "help_bubble_test.ts",
-    "history_clusters/history_clusters_test.ts",
-    "history_clusters/horizontal_carousel_test.ts",
     "localized_link_test.ts",
     "managed_dialog_test.ts",
     "most_visited_focus_test.ts",
     "most_visited_test.ts",
     "most_visited_test_support.ts",
     "managed_footnote_test.ts",
-    "omnibox/realbox_match_test.ts",
-    "omnibox/realbox_test_utils.ts",
-    "settings_prefs_test_cases.ts",
-    "settings_prefs_test.ts",
-    "settings_pref_util_test.ts",
-    "theme_color_picker/check_mark_wrapper_test.ts",
-    "theme_color_picker/theme_color_picker_focus_test.ts",
-    "theme_color_picker/theme_color_test.ts",
-    "theme_color_picker/theme_color_picker_test.ts",
-    "theme_color_picker/theme_hue_slider_dialog_test.ts",
   ]
 
-  if (use_nss_certs) {
-    files += [ "certificate_manager_test.ts" ]
-    if (is_chromeos) {
-      files += [ "certificate_manager_provisioning_test.ts" ]
-    }
-  }
-
-  ts_definitions = [ "//tools/typescript/definitions/settings_private.d.ts" ]
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
 
   ts_deps = [
+    "//chrome/browser/resources/new_tab_page:build_ts",
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
-    "//ui/webui/resources/cr_components/customize_themes:build_ts",
-    "//ui/webui/resources/cr_components/help_bubble:build_ts",
-    "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
-    "//ui/webui/resources/cr_components/omnibox:build_ts",
-    "//ui/webui/resources/cr_components/page_image_service:build_ts",
-    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
-    "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  if (use_nss_certs) {
-    ts_deps +=
-        [ "//ui/webui/resources/cr_components/certificate_manager:build_ts" ]
-  }
+  ts_path_mappings =
+      [ "chrome://new-tab-page/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
+                    target_gen_dir) ]
 }

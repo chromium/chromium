@@ -15,14 +15,15 @@ template("ts_library") {
                              "extra_deps",
                              "in_files",
                              "tsconfig_base",
+                             "path_mappings_file",
                              "manifest_excludes",
                              "testonly",
                              "visibility",
                            ])
 
     inputs = [
+      "//tools/typescript/path_utils.py",
       "//tools/typescript/tsconfig_base.json",
-      "//tools/typescript/path_mappings.py",
       "//tools/typescript/validate_tsconfig.py",
     ]
     outputs = [ "$target_gen_dir/tsconfig_$target_name.json" ]
@@ -79,6 +80,14 @@ template("ts_library") {
       args += [ "--in_files" ] + in_files
     }
 
+    if (defined(path_mappings_file)) {
+      args += [
+        "--path_mappings_file",
+        rebase_path(path_mappings_file, target_gen_dir),
+      ]
+      inputs += [ path_mappings_file ]
+    }
+
     if (defined(manifest_excludes)) {
       assert(defined(in_files))
       args += [ "--manifest_excludes" ] + manifest_excludes
@@ -94,15 +103,6 @@ template("ts_library") {
     }
 
     if (defined(deps)) {
-      args += [ "--raw_deps" ]
-      foreach(_dep, deps) {
-        # Pass all dependency names to the script, because they are needed to
-        # automatically infer path mappings. Normalize their form, because
-        # |deps| can hold relative paths.
-        args +=
-            [ get_label_info(_dep, "dir") + ":" + get_label_info(_dep, "name") ]
-      }
-
       args += [ "--deps" ]
       foreach(dep, deps) {
         name = get_label_info(dep, "name")

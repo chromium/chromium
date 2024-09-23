@@ -65,7 +65,8 @@ test_util.getVolumeInfo = function(fileSystemId, callback) {
       // For extension backed providers, the provider id is equal to extension
       // id.
       if (volumeList[i].providerId === chrome.runtime.id &&
-          volumeList[i].fileSystemId === fileSystemId) {
+          volumeList[i].fileSystemId === fileSystemId &&
+          volumeList[i].diskFileSystemType !== 'fusebox') {
         callback(volumeList[i]);
         return;
       }

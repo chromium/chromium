@@ -1,0 +1,33 @@
+caption: Specify weekly intervals when ChromeOS devices cannot be used
+desc: |-
+  This policy specifies a list of weekly intervals during which the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device cannot be used. Any ongoing sessions will be closed and login will be blocked.
+
+  Overlapping intervals are not supported.
+
+  <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices will use the system timezone to apply these intervals.
+device_only: true
+example_value:
+- start:
+    day_of_week: WEDNESDAY
+    milliseconds_since_midnight: 43200000
+  end:
+    day_of_week: WEDNESDAY
+    milliseconds_since_midnight: 75600000
+- start:
+    day_of_week: FRIDAY
+    milliseconds_since_midnight: 64800000
+  end:
+    day_of_week: MONDAY
+    milliseconds_since_midnight: 21600000
+features:
+  dynamic_refresh: true
+owners:
+- isandrk@chromium.org
+schema:
+  items:
+    $ref: WeeklyTimeIntervalChecked
+  type: array
+future_on:
+- chrome_os
+tags: []
+type: dict

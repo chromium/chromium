@@ -22,41 +22,26 @@
 #include "components/webdata/common/web_database_backend.h"
 #include "components/webdata/common/web_database_service.h"
 
-using base::Time;
-
 namespace autofill {
 
 AutofillWebDataService::AutofillWebDataService(
     scoped_refptr<WebDatabaseService> wdbs,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(std::move(wdbs), ui_task_runner),
       ui_task_runner_(std::move(ui_task_runner)),
-      db_task_runner_(std::move(db_task_runner)),
       autofill_backend_(nullptr) {
-  base::RepeatingCallback<void(syncer::ModelType)>
+  base::RepeatingCallback<void(syncer::DataType)>
       on_autofill_changed_by_sync_callback = base::BindRepeating(
           &AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence,
           weak_ptr_factory_.GetWeakPtr());
   autofill_backend_ = new AutofillWebDataBackendImpl(
-      wdbs_->GetBackend(), ui_task_runner_, db_task_runner_,
+      wdbs_->GetBackend(), ui_task_runner_, wdbs_->GetDbSequence(),
       on_autofill_changed_by_sync_callback);
 }
 
-AutofillWebDataService::AutofillWebDataService(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> db_task_runner)
-    : WebDataServiceBase(nullptr, ui_task_runner),
-      ui_task_runner_(std::move(ui_task_runner)),
-      db_task_runner_(std::move(db_task_runner)),
-      autofill_backend_(new AutofillWebDataBackendImpl(nullptr,
-                                                       ui_task_runner_,
-                                                       db_task_runner_,
-                                                       base::NullCallback())) {}
-
 void AutofillWebDataService::ShutdownOnUISequence() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  db_task_runner_->PostTask(
+  wdbs_->GetDbSequence()->PostTask(
       FROM_HERE,
       BindOnce(&AutofillWebDataBackendImpl::ResetUserData, autofill_backend_));
   WebDataServiceBase::ShutdownOnUISequence();
@@ -82,7 +67,8 @@ WebDataServiceBase::Handle AutofillWebDataService::GetFormValuesForElementName(
 }
 
 void AutofillWebDataService::RemoveFormElementsAddedBetween(
-    const Time& delete_begin, const Time& delete_end) {
+    base::Time delete_begin,
+    base::Time delete_end) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(
@@ -119,28 +105,27 @@ void AutofillWebDataService::UpdateAutofillProfile(
                      autofill_backend_, profile));
 }
 
-void AutofillWebDataService::RemoveAutofillProfile(
-    const std::string& guid,
-    AutofillProfile::Source profile_source) {
+void AutofillWebDataService::RemoveAutofillProfile(const std::string& guid) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::RemoveAutofillProfile,
-                     autofill_backend_, guid, profile_source));
+                     autofill_backend_, guid));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
-    AutofillProfile::Source profile_source,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::GetAutofillProfiles,
-                     autofill_backend_, profile_source),
+                     autofill_backend_),
       consumer);
 }
 
 WebDataServiceBase::Handle
-    AutofillWebDataService::GetCountOfValuesContainedBetween(
-        const Time& begin, const Time& end, WebDataServiceConsumer* consumer) {
+AutofillWebDataService::GetCountOfValuesContainedBetween(
+    base::Time begin,
+    base::Time end,
+    WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -181,14 +166,6 @@ void AutofillWebDataService::RemoveCreditCard(const std::string& guid) {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::RemoveCreditCard,
                                 autofill_backend_, guid));
-}
-
-void AutofillWebDataService::AddFullServerCreditCard(
-    const CreditCard& credit_card) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::AddFullServerCreditCard,
-                     autofill_backend_, credit_card));
 }
 
 void AutofillWebDataService::AddLocalIban(const Iban& iban) {
@@ -284,22 +261,6 @@ WebDataServiceBase::Handle AutofillWebDataService::GetServerCreditCards(
       consumer);
 }
 
-void AutofillWebDataService::UnmaskServerCreditCard(
-    const CreditCard& credit_card,
-    const std::u16string& full_number) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::UnmaskServerCreditCard,
-                     autofill_backend_, credit_card, full_number));
-}
-
-void AutofillWebDataService::MaskServerCreditCard(const std::string& id) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::MaskServerCreditCard,
-                     autofill_backend_, id));
-}
-
 WebDataServiceBase::Handle AutofillWebDataService::GetPaymentsCustomerData(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
@@ -346,15 +307,25 @@ WebDataServiceBase::Handle AutofillWebDataService::GetCreditCardBenefits(
       consumer);
 }
 
+WebDataServiceBase::Handle AutofillWebDataService::GetMaskedBankAccounts(
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::GetMaskedBankAccounts,
+                     autofill_backend_),
+      consumer);
+}
+
+void AutofillWebDataService::ClearAllCreditCardBenefits() {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::ClearAllCreditCardBenefits,
+                     autofill_backend_));
+}
+
 void AutofillWebDataService::ClearAllServerData() {
   wdbs_->ScheduleDBTask(
       FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::ClearAllServerData,
-                                autofill_backend_));
-}
-
-void AutofillWebDataService::ClearAllLocalData() {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE, base::BindOnce(&AutofillWebDataBackendImpl::ClearAllLocalData,
                                 autofill_backend_));
 }
 
@@ -366,35 +337,14 @@ void AutofillWebDataService::UpdateServerCardMetadata(
                      autofill_backend_, credit_card));
 }
 
-void AutofillWebDataService::RemoveAutofillDataModifiedBetween(
-    const Time& delete_begin,
-    const Time& delete_end) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(
-          &AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween,
-          autofill_backend_, delete_begin, delete_end));
-}
-
-void AutofillWebDataService::RemoveOriginURLsModifiedBetween(
-    const Time& delete_begin, const Time& delete_end) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(
-          &AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween,
-          autofill_backend_, delete_begin, delete_end));
-}
-
 void AutofillWebDataService::AddObserver(
     AutofillWebDataServiceObserverOnDBSequence* observer) {
-  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   if (autofill_backend_)
     autofill_backend_->AddObserver(observer);
 }
 
 void AutofillWebDataService::RemoveObserver(
     AutofillWebDataServiceObserverOnDBSequence* observer) {
-  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   if (autofill_backend_)
     autofill_backend_->RemoveObserver(observer);
 }
@@ -412,19 +362,19 @@ void AutofillWebDataService::RemoveObserver(
 }
 
 base::SupportsUserData* AutofillWebDataService::GetDBUserData() {
-  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   return autofill_backend_->GetDBUserData();
 }
 
 void AutofillWebDataService::GetAutofillBackend(
     base::OnceCallback<void(AutofillWebDataBackend*)> callback) {
-  db_task_runner_->PostTask(
+  wdbs_->GetDbSequence()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback),
                                 base::RetainedRef(autofill_backend_)));
 }
 
-base::SequencedTaskRunner* AutofillWebDataService::GetDBTaskRunner() {
-  return db_task_runner_.get();
+scoped_refptr<base::SequencedTaskRunner>
+AutofillWebDataService::GetDBTaskRunner() {
+  return wdbs_->GetDbSequence();
 }
 
 WebDataServiceBase::Handle
@@ -438,13 +388,21 @@ AutofillWebDataService::RemoveExpiredAutocompleteEntries(
       consumer);
 }
 
+void AutofillWebDataService::AddServerCreditCardForTesting(
+    const CreditCard& credit_card) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::AddServerCreditCardForTesting,
+                     autofill_backend_, credit_card));
+}
+
 AutofillWebDataService::~AutofillWebDataService() = default;
 
 void AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence(
-    syncer::ModelType model_type) {
+    syncer::DataType data_type) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   for (auto& ui_observer : ui_observer_list_)
-    ui_observer.OnAutofillChangedBySync(model_type);
+    ui_observer.OnAutofillChangedBySync(data_type);
 }
 
 }  // namespace autofill

@@ -17,7 +17,6 @@
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/child_process_host_impl.h"
-#include "content/browser/notification_service_impl.h"
 #include "content/browser/utility_process_host.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/common/process_type.h"
@@ -49,13 +48,6 @@ void BrowserProcessIOThread::RegisterAsBrowserThread() {
   DCHECK(!browser_thread_);
   browser_thread_.reset(
       new BrowserThreadImpl(BrowserThread::IO, task_runner()));
-
-  // Unretained(this) is safe as |this| outlives its underlying thread.
-  task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &BrowserProcessIOThread::CompleteInitializationOnBrowserThread,
-          Unretained(this)));
 }
 
 void BrowserProcessIOThread::AllowBlockingForTesting() {
@@ -93,17 +85,9 @@ void BrowserProcessIOThread::Run(base::RunLoop* run_loop) {
 void BrowserProcessIOThread::CleanUp() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
-  notification_service_.reset();
-
 #if BUILDFLAG(IS_WIN)
   com_initializer_.reset();
 #endif
-}
-
-void BrowserProcessIOThread::CompleteInitializationOnBrowserThread() {
-  DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
-
-  notification_service_ = std::make_unique<NotificationServiceImpl>();
 }
 
 void BrowserProcessIOThread::IOThreadRun(base::RunLoop* run_loop) {
@@ -116,10 +100,7 @@ void BrowserProcessIOThread::IOThreadRun(base::RunLoop* run_loop) {
   }
 
   Thread::Run(run_loop);
-
-  // Inhibit tail calls of Run and inhibit code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
 }
 
 void BrowserProcessIOThread::ProcessHostCleanUp() {

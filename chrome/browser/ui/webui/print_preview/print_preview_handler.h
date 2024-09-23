@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -47,6 +48,9 @@ class WebContents;
 
 namespace printing {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ExtensionPrinterHandlerAdapterAsh;
+#endif
 class PdfPrinterHandler;
 class PrinterHandler;
 class PrintPreviewUI;
@@ -106,9 +110,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
                             int preview_request_id);
 
   // Notifies PDF Printer Handler that |path| was selected. Used for tests.
-  void FileSelectedForTesting(const base::FilePath& path,
-                              int index,
-                              void* params);
+  void FileSelectedForTesting(const base::FilePath& path, int index);
 
   // Sets |pdf_file_saved_closure_| to |closure|.
   void SetPdfSavedClosureForTesting(base::OnceClosure closure);
@@ -267,7 +269,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   void OnPrintResult(const std::string& callback_id,
                      const base::Value& error);
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Called when enterprise policy returns a verdict.
   // Calls FinishHandleDoPrint() if it's allowed or calls OnPrintResult() to
   // report print not allowed.
@@ -279,7 +281,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   // Wrapper for OnHidePreviewDialog() from PrintPreviewUI.
   void OnHidePreviewDialog();
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   // Whether we have already logged a failed print preview.
   bool reported_failed_preview_ = false;
@@ -322,6 +324,12 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // lacros will automatically be restarted.
   raw_ptr<crosapi::mojom::LocalPrinter, DanglingUntriaged> local_printer_ =
       nullptr;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Used when Lacros is enabled.
+  std::unique_ptr<ExtensionPrinterHandlerAdapterAsh>
+      extension_printer_handler_adapter_;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

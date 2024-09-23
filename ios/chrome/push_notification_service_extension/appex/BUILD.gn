@@ -1,0 +1,42 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/compile_entitlements.gni")
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/ios/ios_sdk_overrides.gni")
+import("//build/config/ios/rules.gni")
+import("//ios/build/chrome_build.gni")
+import("//ios/build/config.gni")
+
+assert(
+    ios_enable_push_notification_service_extension,
+    "ios_enable_push_notification_service_extension must be true to depend on //ios/chrome/push_notification_service_extension")
+
+tweak_info_plist("tweak_info_plist") {
+  info_plist = "Info.plist"
+}
+
+compile_entitlements("entitlements") {
+  substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+  output_name =
+      "$target_gen_dir/push_notification_service_extension.appex.entitlements"
+  entitlements_templates = [ "entitlements/external/push_notification_service_extension.appex.entitlements" ]
+}
+
+ios_appex_bundle("appex") {
+  output_name = "push_notification_service_extension"
+  deps = [ "//ios/chrome/push_notification_service_extension" ]
+
+  extra_substitutions = [
+    "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
+    "CHROMIUM_SHORT_NAME=$chromium_short_name",
+    "CHROMIUM_BUNDLE_ID=$ios_chromium_bundle_id",
+  ]
+
+  assert_no_deps = ios_extension_assert_no_deps
+
+  entitlements_target = ":entitlements"
+  info_plist_target = ":tweak_info_plist"
+  bundle_identifier = "$ios_chromium_bundle_id.PushNotificationServiceExtension"
+}

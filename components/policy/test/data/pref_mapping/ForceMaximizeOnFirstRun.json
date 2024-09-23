@@ -10,7 +10,9 @@
           "ForceMaximizeOnFirstRun": true
         },
         "prefs": {
-          "ui.force_maximize_on_first_run": {}
+          "ui.force_maximize_on_first_run": {
+            "value": true
+          }
         }
       }
     ]

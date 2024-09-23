@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/check.h"
@@ -176,8 +177,8 @@ help_bubble::mojom::HelpBubbleClient* HelpBubbleHandlerBase::GetClient() {
   return client_provider_->GetClient();
 }
 
-void HelpBubbleHandlerBase::ReportBadMessage(base::StringPiece error) {
-  NOTREACHED() << error;
+void HelpBubbleHandlerBase::ReportBadMessage(std::string_view error) {
+  NOTREACHED_IN_MIGRATION() << error;
 }
 
 std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
@@ -185,7 +186,8 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
     HelpBubbleParams params) {
   const auto it = element_data_.find(identifier);
   if (it == element_data_.end()) {
-    NOTREACHED() << "Identifier " << identifier << " was never registered.";
+    NOTREACHED_IN_MIGRATION()
+        << "Identifier " << identifier << " was never registered.";
     return nullptr;
   }
 
@@ -242,7 +244,8 @@ void HelpBubbleHandlerBase::OnHelpBubbleClosing(
     ui::ElementIdentifier anchor_id) {
   const auto it = element_data_.find(anchor_id);
   if (it == element_data_.end()) {
-    NOTREACHED() << "Identifier " << anchor_id << " was never registered.";
+    NOTREACHED_IN_MIGRATION()
+        << "Identifier " << anchor_id << " was never registered.";
     return;
   }
   if (!it->second.closing)
@@ -499,7 +502,8 @@ void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
 
 void HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed(
     ui::ElementIdentifier anchor_id,
-    HelpBubble* help_bubble) {
+    HelpBubble* help_bubble,
+    HelpBubble::CloseReason) {
   const auto it = element_data_.find(anchor_id);
   if (it == element_data_.end()) {
     return;
@@ -591,7 +595,7 @@ content::WebUIController* HelpBubbleHandler::GetController() {
   return controller_;
 }
 
-void HelpBubbleHandler::ReportBadMessage(base::StringPiece error) {
+void HelpBubbleHandler::ReportBadMessage(std::string_view error) {
   receiver_.ReportBadMessage(std::move(error));
 }
 

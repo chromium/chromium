@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -61,8 +63,43 @@ void ContentAnalysisDownloadsDelegate::BypassWarnings(
     }
   }
 
-  if (open_file_callback_)
+  // For obfuscated download files, deobfuscate the file before opening.
+  enterprise_obfuscation::DownloadObfuscationData* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          download_item_->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+
+  if (obfuscation_data && obfuscation_data->is_obfuscated) {
+    LOG(ERROR) << "is obfuscated!";
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
+                       download_item_->GetFullPath()),
+        base::BindOnce(
+            &ContentAnalysisDownloadsDelegate::OnDeobfuscationComplete,
+            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  Open();
+}
+
+void ContentAnalysisDownloadsDelegate::OnDeobfuscationComplete(
+    base::expected<void, enterprise_obfuscation::Error> deobfuscation_result) {
+  if (!deobfuscation_result.has_value()) {
+    // TODO(b/367259664): Add better error handling for deobfuscation.
+    DVLOG(1) << "Failed to deobfuscate file.";
+    LOG(ERROR) << "failed deobfuscation";
+  }
+  LOG(ERROR) << "deobfuscation was successful";
+
+  Open();
+}
+
+void ContentAnalysisDownloadsDelegate::Open() {
+  if (open_file_callback_) {
     std::move(open_file_callback_).Run();
+  }
   ResetCallbacks();
 }
 
@@ -99,8 +136,12 @@ ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
 
 std::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
     const {
-  if (custom_learn_more_url_.is_empty())
+  // Rule-based custom messages which don't have learn more urls take
+  // precedence over policy-based.
+  if (custom_learn_more_url_.is_empty() ||
+      !custom_rule_message_.message_segments().empty()) {
     return std::nullopt;
+  }
   return custom_learn_more_url_;
 }
 

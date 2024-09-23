@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file contains various utility functions used by ModelTypeWorker to
+// This file contains various utility functions used by DataTypeWorker to
 // preprocess remote bookmark updates, to deal with backward-compatibility of
 // data and migrate updates such that they resemble updates from a modern
 // client.

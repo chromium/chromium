@@ -1,0 +1,31 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/all_your_tabs.imageset/Contents.json",
+    "Assets.xcassets/all_your_tabs.imageset/all_your_tabs.png",
+    "Assets.xcassets/all_your_tabs.imageset/all_your_tabs@2x.png",
+    "Assets.xcassets/all_your_tabs.imageset/all_your_tabs@3x.png",
+    "Assets.xcassets/default_browser_illustration.imageset/Contents.json",
+    "Assets.xcassets/default_browser_illustration.imageset/default_browser_dark@2x.png",
+    "Assets.xcassets/default_browser_illustration.imageset/default_browser_dark@3x.png",
+    "Assets.xcassets/default_browser_illustration.imageset/default_browser_light@2x.png",
+    "Assets.xcassets/default_browser_illustration.imageset/default_browser_light@3x.png",
+  ]
+}
+
+bundle_data("animation_files") {
+  sources = [
+    "default_browser_animation.json",
+    "default_browser_animation_darkmode.json",
+    "default_browser_animation_rtl.json",
+    "default_browser_animation_rtl_darkmode.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.commerce;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -38,6 +39,6 @@ public final class ShoppingServiceFactory {
 
     @NativeMethods
     interface Natives {
-        ShoppingService getForProfile(Profile profile);
+        ShoppingService getForProfile(@JniType("Profile*") Profile profile);
     }
 }

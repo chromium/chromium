@@ -11,7 +11,7 @@
 namespace {
 
 // A default AnimationRunner based on base::Timer.
-// TODO(https://crbug.com/953585): Remove this altogether.
+// TODO(crbug.com/41453351): Remove this altogether.
 class DefaultAnimationRunner : public gfx::AnimationRunner {
  public:
   DefaultAnimationRunner() = default;

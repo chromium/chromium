@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -40,6 +41,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -49,7 +51,6 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -90,7 +91,7 @@ public class CustomTabPrivacySandboxDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         mAutomotiveRule.setIsAutomotive(false);
         Context appContext = getInstrumentation().getTargetContext().getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
@@ -100,7 +101,7 @@ public class CustomTabPrivacySandboxDialogTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
+        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
         SharedPreferencesManager pref = ChromeSharedPreferences.getInstance();
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID);
         pref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_URL);
@@ -113,7 +114,7 @@ public class CustomTabPrivacySandboxDialogTest {
 
         // finish() is called on a non-UI thread by the testing harness. Must hide the menu
         // first, otherwise the UI is manipulated on a non-UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (getActivity() == null) return;
                     AppMenuCoordinator coordinator =
@@ -136,6 +137,7 @@ public class CustomTabPrivacySandboxDialogTest {
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
+    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
     public void adsNoticeCCT() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -151,7 +153,10 @@ public class CustomTabPrivacySandboxDialogTest {
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT})
+    @DisableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
+        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
+    })
     public void adsNoticeCCT_WithoutAdsNoticeFeature() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -163,7 +168,10 @@ public class CustomTabPrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT})
+    @DisableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
+        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
+    })
     public void adsNoticeCCT_WithoutAdsNoticeAndForceShowNoticeFeatures() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -188,20 +196,14 @@ public class CustomTabPrivacySandboxDialogTest {
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({
         ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET,
-        ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET_FOR_THIRD_PARTIES,
         ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
+    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
     public void adsNoticeCCT_PartialShouldNotShowNotice() throws Exception {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", false);
         doTestLaunchPartialCustomTabWithInitialHeight();
-
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
-        watcher.assertExpected();
     }
 
     private void startActivityForResultCCT() {
@@ -227,6 +229,7 @@ public class CustomTabPrivacySandboxDialogTest {
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
+    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
     public void adsNoticeCCT_appIdCheckDoesShowDialog() {
         HistogramWatcher shouldShowWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -235,9 +238,86 @@ public class CustomTabPrivacySandboxDialogTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Startup.Android.PrivacySandbox.AdsNoticeCCTAppIDCheck", true);
         startActivityForResultCCT();
-        onViewWaiting(withId(R.id.privacy_sandbox_dialog)).check(matches(isDisplayed()));
+        // Set checkRootDialog=true to prevent flakiness after api 30 with espresso 30+.
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog), true).check(matches(isDisplayed()));
         shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
         appIDCheckWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT
+                + ":app-id/org.chromium.chrome.tests/include-mode-b/false",
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    public void adsNoticeCCT_includeModeBParamFalseDoesShowDialogWhenNotInModeB() {
+        HistogramWatcher shouldShowWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
+        startActivityForResultCCT();
+        // Set checkRootDialog=true to prevent flakiness after api 30 with espresso 30+.
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog), true).check(matches(isDisplayed()));
+        shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT
+                + ":app-id/org.chromium.chrome.tests/include-mode-b/true",
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true",
+        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
+    })
+    public void adsNoticeCCT_includeModeBParamTrueDoesShowDialogWhenInModeB() {
+        HistogramWatcher shouldShowWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
+        startActivityForResultCCT();
+        // Set checkRootDialog=true to prevent flakiness after api 30 with espresso 30+.
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog), true).check(matches(isDisplayed()));
+        shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT
+                + ":app-id/org.chromium.chrome.tests/include-mode-b/true",
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true",
+        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
+    })
+    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
+    public void adsNoticeCCT_includeModeBParamTrueDoesShowDialogWhenNotInModeB() {
+        HistogramWatcher shouldShowWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
+        startActivityForResultCCT();
+        // Set checkRootDialog=true to prevent flakiness after api 30 with espresso 30+.
+        onViewWaiting(withId(R.id.privacy_sandbox_dialog), true).check(matches(isDisplayed()));
+        shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT
+                + ":app-id/org.chromium.chrome.tests/include-mode-b/false",
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true",
+        ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING
+    })
+    public void adsNoticeCCT_includeModeBParamFalseDoesNotShowDialogWhenInModeB() {
+        HistogramWatcher shouldShowWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT", true);
+        startActivityForResultCCT();
+        onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
+        shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
     @Test
@@ -247,6 +327,7 @@ public class CustomTabPrivacySandboxDialogTest {
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
+    @DisableFeatures({ChromeFeatureList.COOKIE_DEPRECATION_FACILITATED_TESTING})
     public void adsNoticeCCT_appIdCheckDoesNotShowDialog() {
         HistogramWatcher shouldShowWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -263,7 +344,8 @@ public class CustomTabPrivacySandboxDialogTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT + ":app-id/org.chromium.chrome.tests",
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT
+                + ":app-id/org.chromium.chrome.tests/include-mode-b/true",
         ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
                 + ":force-show-notice-row-for-testing/true/notice-required/true"
     })
@@ -280,5 +362,36 @@ public class CustomTabPrivacySandboxDialogTest {
         onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
         shouldShowWatcher.pollInstrumentationThreadUntilSatisfied();
         appIDCheckWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    public void adsNoticeCCT_PWAShouldNotShowDialog() throws Exception {
+        CustomTabActivityTypeTestUtils.launchActivity(
+                ActivityType.WEBAPP,
+                CustomTabActivityTypeTestUtils.createActivityTestRule(ActivityType.WEBAPP),
+                "about:blank");
+        onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_ADS_NOTICE_CCT,
+        ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4
+                + ":force-show-notice-row-for-testing/true/notice-required/true"
+    })
+    public void adsNoticeCCT_TWAShouldNotShowDialog() throws Exception {
+        CustomTabActivityTypeTestUtils.launchActivity(
+                ActivityType.TRUSTED_WEB_ACTIVITY,
+                CustomTabActivityTypeTestUtils.createActivityTestRule(
+                        ActivityType.TRUSTED_WEB_ACTIVITY),
+                "about:blank");
+        onView(withId(R.id.privacy_sandbox_dialog)).check(doesNotExist());
     }
 }

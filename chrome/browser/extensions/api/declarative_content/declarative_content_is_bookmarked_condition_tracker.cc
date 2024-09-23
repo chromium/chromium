@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -210,14 +211,13 @@ bool DeclarativeContentIsBookmarkedConditionTracker::EvaluatePredicate(
   const DeclarativeContentIsBookmarkedPredicate* typed_predicate =
       static_cast<const DeclarativeContentIsBookmarkedPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
-  DCHECK(loc != per_web_contents_tracker_.end());
+  CHECK(loc != per_web_contents_tracker_.end(), base::NotFatalUntil::M130);
   return loc->second->is_url_bookmarked() == typed_predicate->is_bookmarked();
 }
 
 void DeclarativeContentIsBookmarkedConditionTracker::BookmarkModelChanged() {}
 
 void DeclarativeContentIsBookmarkedConditionTracker::BookmarkNodeAdded(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
@@ -230,11 +230,11 @@ void DeclarativeContentIsBookmarkedConditionTracker::BookmarkNodeAdded(
 }
 
 void DeclarativeContentIsBookmarkedConditionTracker::BookmarkNodeRemoved(
-    bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& no_longer_bookmarked) {
+    const std::set<GURL>& no_longer_bookmarked,
+    const base::Location& location) {
   if (!extensive_bookmark_changes_in_progress_) {
     for (const auto& web_contents_tracker_pair : per_web_contents_tracker_) {
       web_contents_tracker_pair.second->BookmarkRemovedForUrls(
@@ -244,27 +244,23 @@ void DeclarativeContentIsBookmarkedConditionTracker::BookmarkNodeRemoved(
 }
 
 void DeclarativeContentIsBookmarkedConditionTracker::
-ExtensiveBookmarkChangesBeginning(
-    bookmarks::BookmarkModel* model) {
+    ExtensiveBookmarkChangesBeginning() {
   ++extensive_bookmark_changes_in_progress_;
 }
 
-void
-DeclarativeContentIsBookmarkedConditionTracker::ExtensiveBookmarkChangesEnded(
-    bookmarks::BookmarkModel* model) {
+void DeclarativeContentIsBookmarkedConditionTracker::
+    ExtensiveBookmarkChangesEnded() {
   if (--extensive_bookmark_changes_in_progress_ == 0)
     UpdateAllPerWebContentsTrackers();
 }
 
-void
-DeclarativeContentIsBookmarkedConditionTracker::GroupedBookmarkChangesBeginning(
-    bookmarks::BookmarkModel* model) {
+void DeclarativeContentIsBookmarkedConditionTracker::
+    GroupedBookmarkChangesBeginning() {
   ++extensive_bookmark_changes_in_progress_;
 }
 
-void
-DeclarativeContentIsBookmarkedConditionTracker::GroupedBookmarkChangesEnded(
-    bookmarks::BookmarkModel* model) {
+void DeclarativeContentIsBookmarkedConditionTracker::
+    GroupedBookmarkChangesEnded() {
   if (--extensive_bookmark_changes_in_progress_ == 0)
     UpdateAllPerWebContentsTrackers();
 }

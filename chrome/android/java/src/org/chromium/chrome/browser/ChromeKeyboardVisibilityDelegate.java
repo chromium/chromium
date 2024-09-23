@@ -13,16 +13,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
+import org.chromium.ui.KeyboardUtils;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
 import java.lang.ref.WeakReference;
 
 /**
- * A {@link SingleWindowKeyboardVisibilityDelegate} that considers UI elements of an
- * {@link Activity} which amend or replace the keyboard.
+ * A {@link ActivityKeyboardVisibilityDelegate} that considers UI elements of an {@link Activity}
+ * which amend or replace the keyboard.
  */
-public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibilityDelegate
+public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibilityDelegate
         implements ManualFillingComponent.SoftKeyboardDelegate {
     private final Supplier<ManualFillingComponent> mManualFillingComponentSupplier;
 
@@ -45,36 +46,50 @@ public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibi
                     mManualFillingComponentSupplier.get().isFillingViewShown(view);
             mManualFillingComponentSupplier.get().hide();
         }
-        return super.hideKeyboard(view) || wasManualFillingViewShowing;
+        return hideSoftKeyboardOnly(view) || wasManualFillingViewShowing;
     }
 
     @Override
     public boolean isKeyboardShowing(Context context, View view) {
-        return super.isKeyboardShowing(context, view)
+        return isSoftKeyboardShowing(context, view)
                 || (mManualFillingComponentSupplier.hasValue()
                         && mManualFillingComponentSupplier.get().isFillingViewShown(view));
     }
 
+    @Override
+    public int calculateTotalKeyboardHeight(View rootView) {
+        int accessoryHeight = 0;
+        if (mManualFillingComponentSupplier.hasValue()) {
+            accessoryHeight = mManualFillingComponentSupplier.get().getKeyboardExtensionHeight();
+        }
+        return calculateSoftKeyboardHeight(rootView) + accessoryHeight;
+    }
+
+    // Implements ManualFillingComponent.SoftKeyboardDelegate
+
     /**
      * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
+     *
      * @see ManualFillingComponent.SoftKeyboardDelegate#hideSoftKeyboardOnly(View)
      */
     @Override
     public boolean hideSoftKeyboardOnly(View view) {
-        return hideAndroidSoftKeyboard(view);
+        return KeyboardUtils.hideAndroidSoftKeyboard(view);
     }
 
     /**
      * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
+     *
      * @see ManualFillingComponent.SoftKeyboardDelegate#isSoftKeyboardShowing(Context, View)
      */
     @Override
     public boolean isSoftKeyboardShowing(Context context, View view) {
-        return isAndroidSoftKeyboardShowing(context, view);
+        return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
     }
 
     /**
      * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
+     *
      * @see ManualFillingComponent.SoftKeyboardDelegate#showSoftKeyboard(ViewGroup)
      */
     @Override
@@ -84,19 +99,11 @@ public class ChromeKeyboardVisibilityDelegate extends SingleWindowKeyboardVisibi
 
     /**
      * Implementation ignoring the Chrome-specific keyboard logic on top of the system keyboard.
+     *
      * @see ManualFillingComponent.SoftKeyboardDelegate#calculateSoftKeyboardHeight(View)
      */
     @Override
     public @Px int calculateSoftKeyboardHeight(View rootView) {
-        return calculateKeyboardHeight(rootView);
-    }
-
-    @Override
-    public int calculateTotalKeyboardHeight(View rootView) {
-        int accessoryHeight = 0;
-        if (mManualFillingComponentSupplier.hasValue()) {
-            accessoryHeight = mManualFillingComponentSupplier.get().getKeyboardExtensionHeight();
-        }
-        return calculateKeyboardHeight(rootView) + accessoryHeight;
+        return KeyboardUtils.calculateKeyboardHeightFromWindowInsets(rootView);
     }
 }

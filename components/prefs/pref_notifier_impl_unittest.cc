@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/prefs/pref_notifier_impl.h"
+
 #include <stddef.h>
 
+#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/prefs/mock_pref_change_callback.h"
-#include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -51,7 +53,7 @@ class MockPrefNotifier : public PrefNotifierImpl {
       : PrefNotifierImpl(pref_service) {}
   ~MockPrefNotifier() override {}
 
-  MOCK_METHOD1(FireObservers, void(const std::string& path));
+  MOCK_METHOD(void, FireObservers, (std::string_view path), (override));
 
   size_t CountObserver(const std::string& path, PrefObserver* obs) {
     auto observer_iterator = pref_observers()->find(path);
@@ -59,7 +61,7 @@ class MockPrefNotifier : public PrefNotifierImpl {
       return false;
 
     size_t count = 0;
-    for (auto& existing_obs : *observer_iterator->second) {
+    for (PrefObserver& existing_obs : observer_iterator->second) {
       if (&existing_obs == obs)
         count++;
     }
@@ -74,10 +76,10 @@ class MockPrefNotifier : public PrefNotifierImpl {
 
 class PrefObserverMock : public PrefObserver {
  public:
-  PrefObserverMock() {}
-  virtual ~PrefObserverMock() {}
-
-  MOCK_METHOD2(OnPreferenceChanged, void(PrefService*, const std::string&));
+  MOCK_METHOD(void,
+              OnPreferenceChanged,
+              (PrefService*, std::string_view),
+              (override));
 };
 
 // Test fixture class.
@@ -122,9 +124,9 @@ TEST_F(PrefNotifierTest, AddAndRemovePrefObservers) {
   ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs2_));
 
   // Re-adding the same observer for the same pref doesn't change anything.
-  // Skip this in debug mode, since it hits a DCHECK and death tests aren't
-  // thread-safe.
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+  // This hits a DUMP_WILL_BE_NOTREACHED() which is fatal in non-official
+  // builds.
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
   notifier.AddPrefObserver(pref_name, &obs1_);
   ASSERT_EQ(1u, notifier.CountObserver(pref_name, &obs1_));
   ASSERT_EQ(0u, notifier.CountObserver(pref_name2, &obs1_));

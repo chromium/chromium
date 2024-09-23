@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/media/cdm_registry_impl.h"
 
 #include <algorithm>
@@ -27,9 +32,9 @@
 #include "content/public/common/cdm_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "media/base/cdm_capability.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
-#include "media/cdm/cdm_capability.h"
 #include "media/cdm/cdm_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,6 +99,8 @@ std::vector<media::VideoCodec> VideoCodecMapToList(
 
 }  // namespace
 
+// TODO(crbug.com/347991515): Add browser tests to test protected content id
+// settings.
 // For simplicity and to make failures easier to diagnose, this test uses
 // std::string instead of base::FilePath and std::vector<std::string>.
 class CdmRegistryImplTest : public testing::Test {
@@ -192,8 +199,9 @@ class CdmRegistryImplTest : public testing::Test {
 
   bool IsRegistered(const std::string& name, const std::string& version) {
     for (const auto& cdm : cdm_registry_.GetRegisteredCdms()) {
-      if (cdm.name == name && cdm.version.GetString() == version)
+      if (cdm.name == name && cdm.version.GetString() == version) {
         return true;
+      }
     }
     return false;
   }
@@ -201,26 +209,30 @@ class CdmRegistryImplTest : public testing::Test {
   std::vector<std::string> GetVersions(const media::CdmType& cdm_type) {
     std::vector<std::string> versions;
     for (const auto& cdm : cdm_registry_.GetRegisteredCdms()) {
-      if (cdm.type == cdm_type)
+      if (cdm.type == cdm_type) {
         versions.push_back(cdm.version.GetString());
+      }
     }
     return versions;
   }
 
-  void GetKeySystemCapabilities() {
+  void GetKeySystemCapabilities(bool allow_hw_secure_capability_check = true) {
     DVLOG(1) << __func__;
     base::RunLoop run_loop;
-    cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-        &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-        base::Unretained(this), kObserver1, run_loop.QuitClosure()));
+    capabilities_cb_sub_ = cdm_registry_.ObserveKeySystemCapabilities(
+        allow_hw_secure_capability_check,
+        base::BindRepeating(
+            &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+            base::Unretained(this), kObserver1, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
   [[maybe_unused]] gpu::GpuFeatureInfo GetGpuFeatureInfoWithOneDisabled(
       gpu::GpuFeatureType disabled_feature) {
     gpu::GpuFeatureInfo gpu_feature_info;
-    for (auto& status : gpu_feature_info.status_values)
+    for (auto& status : gpu_feature_info.status_values) {
       status = gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled;
+    }
     gpu_feature_info.status_values[disabled_feature] =
         gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
     return gpu_feature_info;
@@ -247,6 +259,15 @@ class CdmRegistryImplTest : public testing::Test {
 #endif
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // On Android checking for key system support can be run on a separate
+  // thread. Disable this for testing.
+  void DisableMediaCodecCallsInSeparateThread() {
+    scoped_feature_list_.InitAndDisableFeature(
+        media::kAllowMediaCodecCallsInSeparateProcess);
+  }
+#endif
+
   void ClearCapabilityTestOverride() {
     cdm_registry_.SetCapabilityCBForTesting(base::NullCallback());
   }
@@ -256,6 +277,7 @@ class CdmRegistryImplTest : public testing::Test {
 
   CdmRegistryImpl cdm_registry_;
   base::MockCallback<CdmRegistryImpl::CapabilityCB> capability_cb_;
+  base::CallbackListSubscription capabilities_cb_sub_;
 
   // Map of "observer ID" to the list of updated KeySystemCapabilities.
   std::map<int, std::vector<KeySystemCapabilities>> results_;
@@ -548,12 +570,16 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_MultipleObservers) {
   Register(GetTestCdmInfo());
 
   base::RunLoop run_loop;
-  cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-      &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-      base::Unretained(this), kObserver1, base::DoNothing()));
-  cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-      &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-      base::Unretained(this), kObserver2, run_loop.QuitClosure()));
+  auto subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver1,
+                          base::DoNothing()));
+  auto subscription2 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver2,
+                          run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_TRUE(results_.count(kObserver1));
@@ -580,12 +606,16 @@ TEST_F(
       .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
 
   base::RunLoop run_loop;
-  cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-      &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-      base::Unretained(this), kObserver1, base::DoNothing()));
-  cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-      &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-      base::Unretained(this), kObserver2, run_loop.QuitClosure()));
+  auto subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver1,
+                          base::DoNothing()));
+  auto subscription2 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver2,
+                          run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_TRUE(results_.count(kObserver1));
@@ -614,12 +644,16 @@ TEST_F(
       .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
 
   base::RunLoop run_loop;
-  cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-      &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-      base::Unretained(this), kObserver1, base::DoNothing()));
-  cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-      &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-      base::Unretained(this), kObserver2, run_loop.QuitClosure()));
+  auto subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver1,
+                          base::DoNothing()));
+  auto subscription2 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver2,
+                          run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_TRUE(results_.count(kObserver1));
@@ -647,18 +681,24 @@ TEST_F(
               Run(kTestKeySystem, Robustness::kHardwareSecure, _))
       .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
 
+  base::CallbackListSubscription subscription1;
   {
     base::RunLoop run_loop;
-    cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-        &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-        base::Unretained(this), kObserver1, run_loop.QuitClosure()));
+    subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
+        /*allow_hw_secure_capability_check=*/true,
+        base::BindRepeating(
+            &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+            base::Unretained(this), kObserver1, run_loop.QuitClosure()));
     run_loop.Run();
   }
+  base::CallbackListSubscription subscription2;
   {
     base::RunLoop run_loop;
-    cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-        &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-        base::Unretained(this), kObserver2, run_loop.QuitClosure()));
+    subscription2 = cdm_registry_.ObserveKeySystemCapabilities(
+        /*allow_hw_secure_capability_check=*/true,
+        base::BindRepeating(
+            &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+            base::Unretained(this), kObserver2, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -680,11 +720,14 @@ TEST_F(CdmRegistryImplTest, KeySystemCapabilities_RegisterCdmAfterObserving) {
   Register(GetTestCdmInfo());
   SelectHardwareSecureDecryption(true);
 
+  base::CallbackListSubscription subscription;
   {
     base::RunLoop run_loop;
-    cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-        &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-        base::Unretained(this), kObserver1, run_loop.QuitClosure()));
+    subscription = cdm_registry_.ObserveKeySystemCapabilities(
+        /*allow_hw_secure_capability_check=*/true,
+        base::BindRepeating(
+            &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+            base::Unretained(this), kObserver1, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -734,13 +777,16 @@ TEST_F(CdmRegistryImplTest,
       .WillOnce(MoveArg<2>(&callback_3));
 
   // Register CdmInfo for lazy initialization.
+  base::CallbackListSubscription subscription;
   {
     base::RunLoop run_loop;
     Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kHardwareSecure,
                      std::nullopt, kTestCdmType));
-    cdm_registry_.ObserveKeySystemCapabilities(base::BindRepeating(
-        &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
-        base::Unretained(this), kObserver1, base::DoNothing()));
+    subscription = cdm_registry_.ObserveKeySystemCapabilities(
+        /*allow_hw_secure_capability_check=*/true,
+        base::BindRepeating(
+            &CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+            base::Unretained(this), kObserver1, base::DoNothing()));
     run_loop.RunUntilIdle();
   }
 
@@ -858,7 +904,166 @@ TEST_F(CdmRegistryImplTest,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+TEST_F(CdmRegistryImplTest,
+       KeySystemCapabilities_HwCapabilityNotAllowedToAllowed) {
+  RegisterForLazyHardwareSecureInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  // Start with hw capability check not allowed and observe that we don't get
+  // capability.
+  GetKeySystemCapabilities(/*allow_hw_secure_capability_check=*/false);
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_TRUE(key_system_capabilities.empty());
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+  EXPECT_EQ(cdm_info->status, CdmInfo::Status::kUninitialized);
+  EXPECT_FALSE(cdm_info->capability);
+
+  // Now we allow hw capability check and expect that we get capability.
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
+  GetKeySystemCapabilities(/*allow_hw_secure_capability_check=*/true);
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities2 = results_[kObserver1][1];
+  ASSERT_FALSE(key_system_capabilities2.empty());
+  auto cdm_info2 = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+
+  EXPECT_EQ(cdm_info2->status, CdmInfo::Status::kEnabled);
+  EXPECT_TRUE(cdm_info2->capability);
+}
+
+TEST_F(CdmRegistryImplTest,
+       KeySystemCapabilities_HwCapabilityAllowedToNotAllowed) {
+  RegisterForLazyHardwareSecureInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  // Start with hw capability check allowed and observe that we get capability.
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
+  GetKeySystemCapabilities(/*allow_hw_secure_capability_check=*/true);
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_FALSE(key_system_capabilities.empty());
+  auto cdm_info = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+
+  EXPECT_EQ(cdm_info->status, CdmInfo::Status::kEnabled);
+  EXPECT_EQ(cdm_info->capability, GetTestCdmCapability());
+
+  // Now we don't allow hw capability check, but still expect that we get
+  // capability. Note that we don't EXPECT_CALL to capability since the
+  // CdmRegistry just returns the cached capability.
+  GetKeySystemCapabilities(/*allow_hw_secure_capability_check=*/false);
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 2u);
+  auto& key_system_capabilities2 = results_[kObserver1][1];
+  ASSERT_FALSE(key_system_capabilities2.empty());
+  auto cdm_info2 = cdm_registry_.GetCdmInfo(
+      kTestKeySystem, CdmInfo::Robustness::kHardwareSecure);
+
+  EXPECT_EQ(cdm_info2->status, CdmInfo::Status::kEnabled);
+  EXPECT_TRUE(cdm_info2->capability);
+}
+
+TEST_F(CdmRegistryImplTest,
+       KeySystemCapabilities_HwCapabilityTwoObserverNotAllowedAndAllowed) {
+  RegisterForLazyHardwareSecureInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
+
+  base::RunLoop run_loop;
+  auto subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/false,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver1,
+                          run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_TRUE(key_system_capabilities.empty());
+
+  base::RunLoop run_loop2;
+  auto subscription2 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver2,
+                          run_loop2.QuitClosure()));
+  run_loop2.Run();
+
+  ASSERT_TRUE(results_.count(kObserver2));
+  ASSERT_EQ(results_[kObserver2].size(), 1u);
+  auto& key_system_capabilities2 = results_[kObserver2][0];
+  const auto& support = key_system_capabilities2[kTestKeySystem];
+  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+}
+
+TEST_F(
+    CdmRegistryImplTest,
+    KeySystemCapabilities_MultipleObservers_NotAllowedAndAllowedHwCapabilityCheck) {
+  RegisterForLazySoftwareSecureInitialization();
+  RegisterForLazyHardwareSecureInitialization();
+  SelectHardwareSecureDecryption(true);
+
+  // Expect the lazy software capability to be triggered twice because the
+  // second observer will invalidate pending initializations and retrigger them.
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kSoftwareSecure, _))
+      .Times(2)
+      .WillRepeatedly(
+          base::test::RunOnceCallbackRepeatedly<2>(GetTestCdmCapability()));
+
+  EXPECT_CALL(capability_cb_,
+              Run(kTestKeySystem, Robustness::kHardwareSecure, _))
+      .WillOnce(RunOnceCallback<2>(GetTestCdmCapability()));
+
+  base::RunLoop run_loop;
+  auto subscription1 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/false,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver1,
+                          base::DoNothing()));
+  auto subscription2 = cdm_registry_.ObserveKeySystemCapabilities(
+      /*allow_hw_secure_capability_check=*/true,
+      base::BindRepeating(&CdmRegistryImplTest::OnKeySystemCapabilitiesUpdated,
+                          base::Unretained(this), kObserver2,
+                          run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(results_.count(kObserver1));
+  ASSERT_EQ(results_[kObserver1].size(), 1u);
+  auto& key_system_capabilities = results_[kObserver1][0];
+  ASSERT_EQ(key_system_capabilities.size(), 1u);
+  ASSERT_TRUE(key_system_capabilities.count(kTestKeySystem));
+  const auto& support = key_system_capabilities[kTestKeySystem];
+  ASSERT_EQ(support.sw_secure_capability.value(), GetTestCdmCapability());
+  ASSERT_EQ(support.hw_secure_capability.value(), GetTestCdmCapability());
+
+  ASSERT_TRUE(results_.count(kObserver2));
+  ASSERT_EQ(results_[kObserver2].size(), 1u);
+  ASSERT_EQ(key_system_capabilities, results_[kObserver2][0]);
+}
+
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_NoOverride) {
+#if BUILDFLAG(IS_ANDROID)
+  DisableMediaCodecCallsInSeparateThread();
+#endif
+
   // kTestKeySystem doesn't exist on any platform, but this should at least
   // exercise a bit more of the code (and leave the capabilities as nullptr).
   RegisterForLazySoftwareSecureInitialization();

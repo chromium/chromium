@@ -45,7 +45,7 @@ class SVGAnimatedPath final : public GarbageCollected<SVGAnimatedPath>,
                   const QualifiedName&,
                   CSSPropertyID = CSSPropertyID::kInvalid);
 
-  const CSSValue& CssValue() const;
+  const CSSValue* CssValue() const override;
 };
 
 }  // namespace blink

@@ -104,7 +104,7 @@ std::optional<Decision> GetDecisionBasedOnSiteReputation(
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 

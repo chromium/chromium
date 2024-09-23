@@ -124,11 +124,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   AXPlatformNodeBase* GetPlatformTextFieldAncestor() const;
 
   using AXPlatformNodeChildIterator =
-      ui::AXNode::ChildIteratorBase<AXPlatformNodeBase,
-                                    &AXPlatformNodeBase::GetNextSibling,
-                                    &AXPlatformNodeBase::GetPreviousSibling,
-                                    &AXPlatformNodeBase::GetFirstChild,
-                                    &AXPlatformNodeBase::GetLastChild>;
+      AXNode::ChildIteratorBase<AXPlatformNodeBase,
+                                &AXPlatformNodeBase::GetNextSibling,
+                                &AXPlatformNodeBase::GetPreviousSibling,
+                                &AXPlatformNodeBase::GetFirstChild,
+                                &AXPlatformNodeBase::GetLastChild>;
   AXPlatformNodeChildIterator AXPlatformNodeChildrenBegin() const;
   AXPlatformNodeChildIterator AXPlatformNodeChildrenEnd() const;
 
@@ -225,6 +225,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // columns. Returns nullptr if the cell is not found or if not inside a
   // table.
   AXPlatformNodeBase* GetTableCell(int row, int column) const;
+
+  // If inside a table or ARIA grid and given 1-based row and column,
+  // returns the cell in ARIA grid or table that matches the corresponding
+  // 1-based aria-rowindex and aria-colindex values, if one exists.
+  AXPlatformNodeBase* GetAriaTableCell(int aria_row, int aria_column) const;
 
   // If inside a table or ARIA grid, returns the zero-based index of the cell.
   // Indices are in row major order and each cell is counted once regardless of
@@ -396,7 +401,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // input node. Due to perf concerns, this should only be called on leaf nodes.
   int NearestTextIndexToPoint(gfx::Point point);
 
-  ui::TextAttributeList ComputeTextAttributes() const;
+  TextAttributeList ComputeTextAttributes() const;
 
   // Get the number of items selected. It checks kMultiselectable and uses
   // GetSelectedItems to get the selected number.
@@ -439,7 +444,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   void Init(AXPlatformNodeDelegate* delegate) override;
 
   bool IsStructuredAnnotation() const;
-  bool IsSelectionItemSupported() const;
 
   // Get the role description from the node data or from the image annotation
   // status.

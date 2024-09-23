@@ -88,6 +88,10 @@ BluetoothLowEnergyScanSessionFloss::GetFlossScanFilter() {
   if (filter_->rssi_sampling_period().has_value()) {
     filter.rssi_sampling_period =
         filter_->rssi_sampling_period().value().InMilliseconds() / 100;
+  } else {
+    // If no given value, use default value of reporting only one advertisement
+    // per device during monitoring period
+    filter.rssi_sampling_period = 0xFF;
   }
 
   for (auto& pattern : filter_->patterns()) {

@@ -1,0 +1,83 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "serde_json_lenient"
+  epoch = "0.2"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/de.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/features_check/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/features_check/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/io/core.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/io/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/algorithm.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/bhcomp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/bignum.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/cached.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/cached_float80.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/digit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/errors.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/exponent.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/float.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/large_powers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/large_powers32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/large_powers64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/math.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/num.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/rounding.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/shift.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lexical/small_powers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/number.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/raw.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/read.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/ser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/value/de.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/value/from.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/value/index.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/value/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/value/partial_eq.rs",
+    "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/src/value/ser.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.2.1"
+  cargo_pkg_authors = "Adrian Taylor <adetaylor@chromium.org>, Michael Bolin <bolinfest@gmail.com>, Erick Tryzelaar <erick.tryzelaar@gmail.com>, David Tolnay <dtolnay@gmail.com>"
+  cargo_pkg_name = "serde_json_lenient"
+  cargo_pkg_description = "A lenient JSON serialization file format"
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/itoa/v1:lib",
+    "//third_party/rust/ryu/v1:lib",
+    "//third_party/rust/serde/v1:lib",
+  ]
+  features = [
+    "float_roundtrip",
+    "std",
+    "unbounded_depth",
+  ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/build.rs"
+  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1/build.rs" ]
+}

@@ -178,7 +178,8 @@ bool FeatureAsParameterInterface<N>::IsFeatureEnabledInThisTestCase(
     return feature_state.is_enabled;
   }
 
-  NOTREACHED() << "The requested feature isn't being parameterized.";
+  NOTREACHED_IN_MIGRATION()
+      << "The requested feature isn't being parameterized.";
   return false;
 }
 

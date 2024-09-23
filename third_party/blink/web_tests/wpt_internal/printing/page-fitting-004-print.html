@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<link rel="match" href="page-fitting-004-print-ref.html">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrintingSize(300, 400);
+    testRunner.setPrintingMargin(13);
+    testRunner.setShouldCenterAndShrinkToFitPaper(true);
+  }
+</script>
+<style>
+  @page {
+    size: 600px 800px;
+    margin: 100px;
+  }
+  html {
+    writing-mode: vertical-rl;
+  }
+  body {
+    margin: 0;
+    font-size: 3em;
+    background: yellow;
+  }
+</style>
+First page. The margins should be the same on every side.
+<div style="break-before:page;">
+  Second page. The margins should be the same on every side.
+</div>

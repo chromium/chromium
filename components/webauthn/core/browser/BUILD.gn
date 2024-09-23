@@ -6,10 +6,17 @@ import("//build/config/features.gni")
 
 source_set("browser") {
   sources = [
-    "passkey_model_type_controller.cc",
-    "passkey_model_type_controller.h",
+    "passkey_data_type_controller.cc",
+    "passkey_data_type_controller.h",
   ]
   deps = [ "//components/sync" ]
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "passkey_change_quota_tracker.cc",
+      "passkey_change_quota_tracker.h",
+    ]
+  }
 
   if (!is_ios) {
     sources += [ "internal_authenticator.h" ]
@@ -20,19 +27,36 @@ source_set("browser") {
     ]
   }
 
-  if (!is_ios && !is_android) {
+  if (!is_android) {
     sources += [
-      "passkey_model.cc",
-      "passkey_model.h",
-      "passkey_model_change.cc",
-      "passkey_model_change.h",
-      "passkey_model_utils.cc",
-      "passkey_model_utils.h",
       "passkey_sync_bridge.cc",
       "passkey_sync_bridge.h",
     ]
-    deps += [ "//base" ]
+    deps += [
+      ":passkey_model",
+      "//base",
+    ]
   }
+}
+
+source_set("passkey_model") {
+  sources = [
+    "passkey_model.cc",
+    "passkey_model.h",
+    "passkey_model_change.cc",
+    "passkey_model_change.h",
+    "passkey_model_utils.cc",
+    "passkey_model_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//components/cbor",
+    "//components/keyed_service/core",
+    "//components/sync/protocol",
+    "//crypto",
+    "//device/fido",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
@@ -41,36 +65,46 @@ source_set("unit_tests") {
   deps = []
 
   if (!is_ios && !is_android) {
-    sources += [ "passkey_model_utils_unittest.cc" ]
+    sources += [
+      "passkey_change_quota_tracker_unittest.cc",
+      "passkey_model_utils_unittest.cc",
+    ]
     deps += [
       ":browser",
+      ":passkey_model",
       "//base/test:test_support",
       "//components/sync/protocol",
       "//crypto",
+      "//url",
     ]
   }
 }
 
 static_library("test_support") {
   testonly = true
+  sources = []
+  deps = []
+
   if (use_blink) {
-    sources = [
+    sources += [
       "mock_internal_authenticator.cc",
       "mock_internal_authenticator.h",
     ]
-    deps = [
+    deps += [
       ":browser",
-      "//base/test:test_support",
-      "//components/sync",
       "//content/public/browser",
       "//testing/gmock",
-      "//testing/gtest",
     ]
   }
-  if (!is_ios && !is_android) {
+  if (!is_android) {
     sources += [
       "test_passkey_model.cc",
       "test_passkey_model.h",
+    ]
+    deps += [
+      ":passkey_model",
+      "//base",
+      "//components/sync",
     ]
   }
 }

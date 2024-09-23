@@ -92,8 +92,13 @@ class NavigationController {
     // Loads a 'data:' scheme URL with specified base URL and a history entry
     // URL. This is only safe to be used for browser-initiated data: URL
     // navigations, since it shows arbitrary content as if it comes from
-    // |virtual_url_for_data_url|.
-    LOAD_TYPE_DATA
+    // |virtual_url_for_special_cases|.
+    LOAD_TYPE_DATA,
+
+#if BUILDFLAG(IS_ANDROID)
+    // Load a pdf page. Used on Android only.
+    LOAD_TYPE_PDF_ANDROID
+#endif
 
     // Adding new LoadURLType? Also update LoadUrlParams.java static constants.
   };
@@ -192,9 +197,9 @@ class NavigationController {
     // Note the default value in constructor below.
     ui::PageTransition transition_type = ui::PAGE_TRANSITION_LINK;
 
-    // The browser-global FrameTreeNode ID for the frame to navigate, or
-    // RenderFrameHost::kNoFrameTreeNodeId for the main frame.
-    int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
+    // The browser-global FrameTreeNode ID for the frame to navigate, or the
+    // default-constructed invalid value to indicate the main frame.
+    FrameTreeNodeId frame_tree_node_id;
 
     // Referrer for this load. Empty if none.
     Referrer referrer;
@@ -223,9 +228,9 @@ class NavigationController {
     // for pages loaded via data URLs.
     GURL base_url_for_data_url;
 
-    // Used in LOAD_TYPE_DATA loads only. URL displayed to the user for
-    // data loads.
-    GURL virtual_url_for_data_url;
+    // Used in LOAD_TYPE_DATA and LOAD_TYPE_PDF_ANDROID loads only. URL
+    // displayed to the user for data or pdf loads.
+    GURL virtual_url_for_special_cases;
 
 #if BUILDFLAG(IS_ANDROID)
     // Used in LOAD_TYPE_DATA loads only. The real data URI is represented
@@ -326,13 +331,23 @@ class NavigationController {
     // this is used in web platform tests to guarantee that each test starts in
     // a fresh BrowsingInstance.
     bool force_new_browsing_instance = false;
+
+    // True if the initiator explicitly asked for opener relationships to be
+    // preserved, via rel="opener".
+    bool has_rel_opener = false;
+
+    // True if the navigation should not be upgraded to HTTPS. This should only
+    // be set in very specific circumstances like navigations to captive portal
+    // login URLs which may be broken by HTTPS Upgrades due to the portal's
+    // unconventional handling of HTTPS URLs.
+    bool force_no_https_upgrade = false;
   };
 
   // Disables checking for a repost and prompting the user. This is used during
   // testing.
   CONTENT_EXPORT static void DisablePromptOnRepost();
 
-  virtual ~NavigationController() {}
+  virtual ~NavigationController() = default;
 
   // Get the browser context for this controller. It can never be nullptr.
   virtual BrowserContext* GetBrowserContext() = 0;
@@ -550,29 +565,10 @@ class NavigationController {
   virtual void CopyStateFrom(NavigationController* source,
                              bool needs_reload) = 0;
 
-  // A variant of CopyStateFrom. Removes all entries from this except the last
-  // committed entry, and inserts all entries from |source| before and including
-  // its last committed entry. For example:
-  // source: A B *C* D
-  // this:   E F *G*
-  // result: A B C *G*
-  // If there is a pending entry after *G* in |this|, it is also preserved.
-  // If |replace_entry| is true, the current entry in |source| is replaced. So
-  // the result above would be A B *G*.
-  // This ignores any pending entry in |source|.  Callers must ensure that
-  // |CanPruneAllButLastCommitted| returns true before calling this, or it will
-  // crash.
-  virtual void CopyStateFromAndPrune(NavigationController* source,
-                                     bool replace_entry) = 0;
-
-  // Returns whether it is safe to call PruneAllButLastCommitted or
-  // CopyStateFromAndPrune.  There must be a last committed entry, and if there
-  // is a pending entry, it must be new and not an existing entry.
+  // Returns whether it is safe to call PruneAllButLastCommitted. There must be
+  // a last committed entry, and if there is a pending entry, it must be new and
+  // not an existing entry.
   //
-  // If there were no last committed entry, the pending entry might not commit,
-  // leaving us with a blank page.  This is unsafe when used with
-  // |CopyStateFromAndPrune|, which would show an existing entry above the blank
-  // page.
   // If there were an existing pending entry, we could not prune the last
   // committed entry, in case it did not commit.  That would leave us with no
   // sensible place to put the pending entry when it did commit, after all other

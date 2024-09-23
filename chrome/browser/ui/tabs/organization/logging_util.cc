@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 
@@ -26,7 +28,9 @@ void AddOrganizationDetailsToQualityOrganization(
     return;
   }
 
-  quality_organization->set_user_feedback(organization->feedback());
+  if (!base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
+    quality_organization->set_user_feedback(organization->feedback());
+  }
 
   switch (organization->choice()) {
     case TabOrganization::UserChoice::kRejected: {
@@ -46,18 +50,9 @@ void AddOrganizationDetailsToQualityOrganization(
                         organization->names()[0] !=
                             organization->GetDisplayName());
 
-      for (const TabData::TabID response_tab_id :
-           response_organization->tab_ids) {
-        const auto& matching_tab = std::find_if(
-            organization->tab_datas().begin(), organization->tab_datas().end(),
-            [response_tab_id](const std::unique_ptr<TabData>& check_tab_data) {
-              return check_tab_data &&
-                     (check_tab_data->tab_id() == response_tab_id);
-            });
-
-        if (matching_tab == organization->tab_datas().end()) {
-          quality_organization->add_removed_tab_ids(response_tab_id);
-        }
+      for (const TabData::TabID removed_tab_id :
+           organization->user_removed_tab_ids()) {
+        quality_organization->add_removed_tab_ids(removed_tab_id);
       }
 
       break;
@@ -71,6 +66,10 @@ void AddSessionDetailsToQuality(
     optimization_guide::proto::TabOrganizationQuality* quality,
     const TabOrganizationSession* session) {
   CHECK(session && session->request() && session->request()->response());
+
+  if (base::FeatureList::IsEnabled(features::kMultiTabOrganization)) {
+    quality->set_user_feedback(session->feedback());
+  }
 
   for (const auto& response_organization :
        session->request()->response()->organizations) {

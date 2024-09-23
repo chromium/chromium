@@ -76,7 +76,7 @@ void LogGetDetailsForEnrollmentRequestResult(VirtualCardEnrollmentSource source,
 
 void LogGetDetailsForEnrollmentRequestLatency(
     VirtualCardEnrollmentSource source,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     base::TimeDelta latency) {
   base::UmaHistogramMediumTimes(
       "Autofill.VirtualCard.GetDetailsForEnrollment.Latency." +
@@ -143,8 +143,7 @@ void LogVirtualCardEnrollBubbleCardArtAvailable(
       card_art_available);
 }
 
-void LogVirtualCardEnrollBubbleLatencySinceUpstream(
-    const base::TimeDelta& latency) {
+void LogVirtualCardEnrollBubbleLatencySinceUpstream(base::TimeDelta latency) {
   base::UmaHistogramTimes(
       "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", latency);
 }
@@ -162,6 +161,40 @@ void LogVirtualCardEnrollmentNotOfferedDueToRequiredDelay(
       "Autofill.StrikeDatabase."
       "VirtualCardEnrollmentNotOfferedDueToRequiredDelay",
       source);
+}
+
+void LogVirtualCardEnrollmentLoadingViewShown(bool is_shown) {
+  base::UmaHistogramBoolean("Autofill.VirtualCardEnrollBubble.LoadingShown",
+                            is_shown);
+}
+
+void LogVirtualCardEnrollmentConfirmationViewShown(bool is_shown,
+                                                   bool is_card_enrolled) {
+  std::string_view base_histogram_name =
+      "Autofill.VirtualCardEnrollBubble.ConfirmationShown";
+  std::string_view is_card_enrolled_name =
+      is_card_enrolled ? ".CardEnrolled" : ".CardNotEnrolled";
+
+  base::UmaHistogramBoolean(
+      base::StrCat({base_histogram_name, is_card_enrolled_name}), is_shown);
+}
+
+void LogVirtualCardEnrollmentLoadingViewResult(
+    VirtualCardEnrollmentBubbleResult result) {
+  base::UmaHistogramEnumeration(
+      "Autofill.VirtualCardEnrollBubble.LoadingResult", result);
+}
+
+void LogVirtualCardEnrollmentConfirmationViewResult(
+    VirtualCardEnrollmentBubbleResult result,
+    bool is_card_enrolled) {
+  std::string_view base_histogram_name =
+      "Autofill.VirtualCardEnrollBubble.ConfirmationResult";
+  std::string_view is_card_enrolled_name =
+      is_card_enrolled ? ".CardEnrolled" : ".CardNotEnrolled";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({base_histogram_name, is_card_enrolled_name}), result);
 }
 
 std::string VirtualCardEnrollmentBubbleSourceToMetricSuffix(

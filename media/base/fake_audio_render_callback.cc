@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/fake_audio_render_callback.h"
 
 #include <algorithm>
+#include <numbers>
 
-#include "base/numerics/math_constants.h"
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
 
@@ -59,7 +64,7 @@ int FakeAudioRenderCallback::RenderInternal(AudioBus* audio_bus,
 
   // Fill first channel with a sine wave.
   for (int i = 0; i < number_of_frames; ++i) {
-    channel_data[i] = sin(2 * base::kPiDouble * (x_ + step_ * i)) * volume;
+    channel_data[i] = sin(2 * std::numbers::pi * (x_ + step_ * i)) * volume;
   }
   x_ += number_of_frames * step_;
 

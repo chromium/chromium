@@ -16,6 +16,20 @@
 
 namespace winhttp {
 
+void SetProxyForRequest(
+    HINTERNET request_handle,
+    const std::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info) {
+  if (winhttp_proxy_info.has_value() && winhttp_proxy_info.value().IsValid()) {
+    const ScopedWinHttpProxyInfo& proxy_info = winhttp_proxy_info.value();
+    VLOG(1) << "Setting proxy: " << *(proxy_info.get());
+    HRESULT hr = SetOption(request_handle, WINHTTP_OPTION_PROXY,
+                           const_cast<WINHTTP_PROXY_INFO*>(proxy_info.get()));
+    if (FAILED(hr)) {
+      PLOG(ERROR) << "Failed to set WINHTTP_OPTION_PROXY: 0x" << std::hex << hr;
+    }
+  }
+}
+
 ProxyConfiguration::ProxyConfiguration(const ProxyInfo& proxy_info)
     : proxy_info_(proxy_info) {}
 
@@ -23,13 +37,26 @@ int ProxyConfiguration::access_type() const {
   return DoGetAccessType();
 }
 
-int ProxyConfiguration::DoGetAccessType() const {
-  const bool is_using_named_proxy = !proxy_info_.auto_detect &&
-                                    proxy_info_.auto_config_url.empty() &&
-                                    !proxy_info_.proxy.empty();
+std::wstring ProxyConfiguration::proxy() const {
+  return proxy_info_.proxy;
+}
 
-  return is_using_named_proxy ? WINHTTP_ACCESS_TYPE_NAMED_PROXY
-                              : WINHTTP_ACCESS_TYPE_DEFAULT_PROXY;
+std::wstring ProxyConfiguration::proxy_bypass() const {
+  return proxy_info_.proxy_bypass;
+}
+
+// The access type is used when initializing a WinHTTP session and its handle.
+// If the configuration specifies a PAC script, then the actual proxy is
+// resolved by calling `WinHttpGetProxyForUrl`, and set on the request handle
+// later on.
+int ProxyConfiguration::DoGetAccessType() const {
+  if (proxy_info_.auto_detect) {
+    return WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY;
+  } else if (!proxy_info_.proxy.empty()) {
+    return WINHTTP_ACCESS_TYPE_NAMED_PROXY;
+  } else {
+    return WINHTTP_ACCESS_TYPE_NO_PROXY;
+  }
 }
 
 std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::GetProxyForUrl(
@@ -41,32 +68,24 @@ std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::GetProxyForUrl(
 std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::DoGetProxyForUrl(
     HINTERNET session_handle,
     const GURL& url) const {
-  // Detect proxy settings using Web Proxy Auto Detection (WPAD).
   WINHTTP_AUTOPROXY_OPTIONS auto_proxy_options = {0};
-
-  // Per MSDN, setting fAutoLogonIfChallenged to false first may work
-  // if Windows cached the proxy config.
-  auto_proxy_options.fAutoLogonIfChallenged = false;
-
-  bool try_auto_proxy = false;
-
   if (proxy_info_.auto_detect) {
+    VLOG(1) << __func__ << ": proxy auto-detect.";
     auto_proxy_options.dwFlags = WINHTTP_AUTOPROXY_AUTO_DETECT;
     auto_proxy_options.dwAutoDetectFlags =
         WINHTTP_AUTO_DETECT_TYPE_DHCP | WINHTTP_AUTO_DETECT_TYPE_DNS_A;
-    try_auto_proxy = true;
   }
-
-  // PAC Url was specified, let system auto detect given the PAC url.
   if (!proxy_info_.auto_config_url.empty()) {
+    VLOG(1) << __func__ << ": proxy PAC=" << proxy_info_.auto_config_url;
     auto_proxy_options.dwFlags |= WINHTTP_AUTOPROXY_CONFIG_URL;
     auto_proxy_options.lpszAutoConfigUrl = proxy_info_.auto_config_url.c_str();
-    try_auto_proxy = true;
   }
 
-  // Find the proxy server for the url.
-  ScopedWinHttpProxyInfo winhttp_proxy_info = {};
-  if (try_auto_proxy) {
+  ScopedWinHttpProxyInfo winhttp_proxy_info;
+  if (auto_proxy_options.dwFlags) {
+    // Per MSDN, setting `fAutoLogonIfChallenged` to false first may work
+    // if Windows cached the proxy config.
+    auto_proxy_options.fAutoLogonIfChallenged = false;
     const std::wstring url_str = base::SysUTF8ToWide(url.spec());
     bool success = ::WinHttpGetProxyForUrl(session_handle, url_str.c_str(),
                                            &auto_proxy_options,
@@ -77,36 +96,17 @@ std::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::DoGetProxyForUrl(
                                         &auto_proxy_options,
                                         winhttp_proxy_info.receive());
     }
-
-    if (!success) {
-      PLOG(ERROR) << "Failed to get proxy for url";
-      return {};
-    }
+    VLOG_IF(1, !success) << "Failed to auto-detect proxy info.";
   } else {
+    winhttp_proxy_info.set_access_type(WINHTTP_ACCESS_TYPE_NAMED_PROXY);
     winhttp_proxy_info.set_proxy(proxy_info_.proxy);
     winhttp_proxy_info.set_proxy_bypass(proxy_info_.proxy_bypass);
   }
 
   if (!winhttp_proxy_info.IsValid()) {
-    return {};
+    return std::nullopt;
   }
-
   return winhttp_proxy_info;
-}
-
-void SetProxyForRequest(
-    const HINTERNET request_handle,
-    const std::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info) {
-  // Set the proxy option on the request handle.
-  if (winhttp_proxy_info.has_value() && winhttp_proxy_info.value().IsValid()) {
-    const ScopedWinHttpProxyInfo& proxy_info = winhttp_proxy_info.value();
-    VLOG(1) << "Setting proxy " << proxy_info.proxy();
-    auto hr = SetOption(request_handle, WINHTTP_OPTION_PROXY,
-                        const_cast<WINHTTP_PROXY_INFO*>(proxy_info.get()));
-    if (FAILED(hr)) {
-      PLOG(ERROR) << "Failed to set WINHTTP_OPTION_PROXY: 0x" << std::hex << hr;
-    }
-  }
 }
 
 int AutoProxyConfiguration::DoGetAccessType() const {
@@ -115,10 +115,9 @@ int AutoProxyConfiguration::DoGetAccessType() const {
 
 std::optional<ScopedWinHttpProxyInfo> AutoProxyConfiguration::DoGetProxyForUrl(
     HINTERNET,
-    const GURL&) const {
-  // When using automatic proxy settings, Windows will resolve the proxy
-  // for us.
-  DVLOG(3) << "Auto-proxy: skip getting proxy for a url";
+    const GURL& url) const {
+  // Windows resolves the proxy when auto-proxy option is used.
+  VLOG(1) << "Auto-proxy: winhttp uses the user settings for proxy.";
   return {};
 }
 

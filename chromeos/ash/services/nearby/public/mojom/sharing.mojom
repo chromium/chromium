@@ -5,6 +5,7 @@
 module sharing.mojom;
 
 import "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom";
+import "chromeos/ash/services/nearby/public/mojom/mdns.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom";
@@ -14,6 +15,7 @@ import "chromeos/ash/services/nearby/public/mojom/webrtc.mojom";
 import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
 import "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom";
 import "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom";
+import "chromeos/ash/services/wifi_direct/public/mojom/wifi_direct_manager.mojom";
 import "device/bluetooth/public/mojom/adapter.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
@@ -26,6 +28,15 @@ struct WifiLanDependencies {
   pending_remote<FirewallHoleFactory> firewall_hole_factory;
   // A proxy for NetworkContext, used to create TCP sockets.
   pending_remote<TcpSocketFactory> tcp_socket_factory;
+  // Used to manage mDNS discovery and advertising.
+  pending_remote<MdnsManager>? mdns_manager;
+};
+
+// Collection of dependencies required by WifiDirect medium.
+struct WifiDirectDependencies {
+  pending_remote<ash.wifi_direct.mojom.WifiDirectManager> wifi_direct_manager;
+  // Used to open a firewall hole for a TCP server socket.
+  pending_remote<FirewallHoleFactory> firewall_hole_factory;
 };
 
 // A collection of dependencies required by the Nearby Presence and
@@ -41,6 +52,9 @@ struct NearbyDependencies {
   // Null if the WifiLan feature flag is disabled.
   WifiLanDependencies? wifilan_dependencies;
 
+  // Null if the WifiDirect feature flag is disabled.
+  WifiDirectDependencies? wifidirect_dependencies;
+
   pending_remote<ash.nearby.presence.mojom.NearbyPresenceCredentialStorage>?
       nearby_presence_credential_storage;
 
@@ -50,7 +64,7 @@ struct NearbyDependencies {
 
 // Interface for sharing related services. Lives in a sandboxed utility process
 // and is used by the browser process to offload unsafe protocol parsing.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+[ServiceSandbox=sandbox.mojom.Sandbox.kNearby]
 interface Sharing {
   // Connects to Nearby functionality. All dependencies should be provided via
   // the |dependencies| struct. Shutdown of Nearby functionality is

@@ -16,6 +16,10 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace WTF {
+class StringBuilder;
+}  // namespace WTF
+
 namespace blink {
 
 class CSSMathExpressionNode;
@@ -84,7 +88,7 @@ class CORE_EXPORT CSSNumericValue : public CSSStyleValue {
 
   enum class Nested : bool { kYes, kNo };
   enum class ParenLess : bool { kYes, kNo };
-  virtual void BuildCSSText(Nested, ParenLess, StringBuilder&) const = 0;
+  virtual void BuildCSSText(Nested, ParenLess, WTF::StringBuilder&) const = 0;
 
  protected:
   static bool IsValidUnit(CSSPrimitiveValue::UnitType);

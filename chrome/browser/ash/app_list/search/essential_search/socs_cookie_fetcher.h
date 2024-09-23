@@ -23,7 +23,11 @@ namespace app_list {
 // SocsCookieFetcher is still WIP.
 class SocsCookieFetcher final {
  public:
-  // TODO(b/312542928): use this enum to collect UMA.
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/metadata/ash/enums.xml, and should
+  // always reflect it (do not change one without changing the other).
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
   enum class Status {
     kOk = 0,
     kRequestBodyNotSerialized = 1,

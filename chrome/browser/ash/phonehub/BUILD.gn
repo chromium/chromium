@@ -1,0 +1,122 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("phonehub") {
+  sources = [
+    "attestation_certificate_generator_impl.cc",
+    "attestation_certificate_generator_impl.h",
+    "browser_tabs_metadata_fetcher_impl.cc",
+    "browser_tabs_metadata_fetcher_impl.h",
+    "browser_tabs_model_provider_impl.cc",
+    "browser_tabs_model_provider_impl.h",
+    "camera_roll_download_manager_impl.cc",
+    "camera_roll_download_manager_impl.h",
+    "phone_hub_manager_factory.cc",
+    "phone_hub_manager_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/components/phonehub/proto",
+    "//chromeos/ash/services/device_sync",
+    "//chromeos/ash/services/multidevice_setup/public/cpp",
+    "//chromeos/ash/services/secure_channel/public/mojom",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/device_sync",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/secure_channel",
+    "//chrome/browser/ash/sync",
+    "//chrome/browser/favicon",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chromeos/ash/components/multidevice",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//components/favicon/core",
+    "//components/favicon_base",
+    "//components/pref_registry",
+    "//components/sync/base",
+    "//components/sync/base:features",
+    "//components/sync/service",
+    "//components/sync_sessions",
+    "//components/ukm:ukm_recorder",
+    "//components/user_manager",
+    "//ui/gfx",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "attestation_certificate_generator_impl_unittest.cc",
+    "browser_tabs_metadata_fetcher_impl_unittest.cc",
+    "browser_tabs_model_provider_impl_unittest.cc",
+    "camera_roll_download_manager_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":phonehub",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/sync",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/holding_space",
+    "//chrome/browser/ui/ash/holding_space:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/multidevice:test_support",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/components/phonehub:test_support",
+    "//chromeos/ash/components/phonehub/proto",
+    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/ash/services/device_sync",
+    "//chromeos/ash/services/device_sync:test_support",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
+    "//chromeos/ash/services/secure_channel/public/mojom",
+    "//chromeos/crosapi/mojom",
+    "//components/account_id",
+    "//components/favicon/core",
+    "//components/favicon_base",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common",
+    "//components/sessions:test_support",
+    "//components/sync:test_support",
+    "//components/sync/base:features",
+    "//components/sync_sessions",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+  ]
+}

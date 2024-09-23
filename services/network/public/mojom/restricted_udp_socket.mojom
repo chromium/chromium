@@ -60,7 +60,7 @@ interface RestrictedUDPSocket {
   // On failure, |result| is a network error code.
   // Note that this call is only valid in BOUND mode, otherwise it will
   // immediately fail with an error.
-  // TODO(crbug.com/657632): Make |dns_query_type| optional once Java support
+  // TODO(crbug.com/40489779): Make |dns_query_type| optional once Java support
   // lands.
   SendTo(
       mojo_base.mojom.ReadOnlyBuffer data,

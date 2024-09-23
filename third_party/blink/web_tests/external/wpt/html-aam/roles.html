@@ -45,17 +45,20 @@
 <!-- el-dd -->
 <dl>
   <dt>x</dt>
+  <!-- dt/dd pending listitemkey and listitemvalue roles: https://github.com/w3c/aria/issues/1662 -->
   <dd data-testname="el-dd" data-expectedrole="definition" class="ex">x</dd>
 </dl>
 
 <del data-testname="el-del" data-expectedrole="deletion" class="ex">x</del>
 <details data-testname="el-details" data-expectedrole="group" class="ex"><summary>x</summary>x</details>
 <dfn data-testname="el-dfn" data-expectedrole="term" class="ex">x</dfn>
+<!-- dir -> ./dir-role.tentative.html -->
 <!-- div -> ./roles-generic.html -->
 <!-- todo: dl -->
 
 <!-- el-dt -->
 <dl>
+  <!-- dt/dd pending listitemkey and listitemvalue roles: https://github.com/w3c/aria/issues/1662 -->
   <dt data-testname="el-dt" data-expectedrole="term" class="ex">x</dt>
   <dd>x</dd>
 </dl>
@@ -66,7 +69,7 @@
 <!-- todo: figcaption -->
 <figure data-testname="el-figure" data-expectedrole="figure" class="ex"><img alt="x" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="><figcaption>x</figcaption></figure>
 <!-- footer -> ./roles-contextual.html -->
-<form data-testname="el-form" data-expectedrole="form" class="ex"><input></form>
+<form aria-label="form" data-testname="el-form" data-expectedrole="form" class="ex"><input></form>
 <!-- todo: form-associated custom element -->
 
 <!-- el-h1-h6 -->

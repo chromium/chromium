@@ -4,8 +4,8 @@ import os
 from collections import deque
 from fnmatch import fnmatch
 from io import BytesIO
-from typing import (Any, BinaryIO, Callable, Deque, Dict, Iterable, List, Optional, Pattern,
-                    Set, Text, Tuple, Union, cast)
+from typing import (Any, BinaryIO, Callable, Deque, Dict, Iterable, List,
+                    Optional, Pattern, Set, Text, Tuple, TypedDict, Union, cast)
 from urllib.parse import urljoin
 
 try:
@@ -68,8 +68,15 @@ def read_script_metadata(f: BinaryIO, regexp: Pattern[bytes]) -> Iterable[Tuple[
         yield (m.groups()[0].decode("utf8"), m.groups()[1].decode("utf8"))
 
 
-_any_variants: Dict[Text, Dict[Text, Any]] = {
+class VariantData(TypedDict, total=False):
+    suffix: str
+    force_https: bool
+    longhand: Set[str]
+
+
+_any_variants: Dict[Text, VariantData] = {
     "window": {"suffix": ".any.html"},
+    "window-module": {},
     "serviceworker": {"force_https": True},
     "serviceworker-module": {"force_https": True},
     "sharedworker": {},
@@ -204,9 +211,11 @@ class SourceFile:
 
         type_flag = None
         if "-" in name:
-            type_flag = name.rsplit("-", 1)[1].split(".")[0]
-
-        meta_flags = name.split(".")[1:]
+            type_meta = name.rsplit("-", 1)[1].split(".")
+            type_flag = type_meta[0]
+            meta_flags = type_meta[1:]
+        else:
+            meta_flags = name.split(".")[1:]
 
         self.tests_root: Text = tests_root
         self.rel_path: Text = rel_path

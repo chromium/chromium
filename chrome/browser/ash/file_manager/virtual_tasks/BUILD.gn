@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("virtual_tasks") {
+  sources = [
+    "drive_upload_virtual_task.cc",
+    "drive_upload_virtual_task.h",
+    "id_constants.h",
+    "install_isolated_web_app_virtual_task.cc",
+    "install_isolated_web_app_virtual_task.h",
+    "ms365_virtual_task.cc",
+    "ms365_virtual_task.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/webui/file_manager:constants",
+    "//base",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//content/public/browser",
+    "//storage/browser",
+    "//ui/base",
+    "//ui/chromeos/strings",
+    "//url",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_virtual_task.cc",
+    "fake_virtual_task.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/file_manager",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "install_isolated_web_app_virtual_task_unittest.cc" ]
+
+  deps = [
+    ":virtual_tasks",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+}

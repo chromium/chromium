@@ -7,6 +7,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ScreenOrientationProviderImpl_jni.h"
 
 namespace content {

@@ -27,10 +27,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_ARRAY_BUFFER_CONTENTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_ARRAY_BUFFER_CONTENTS_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
+#include "base/containers/span.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -124,6 +125,18 @@ class CORE_EXPORT ArrayBufferContents {
                           : false;
   }
   bool IsValid() const { return backing_store_ && backing_store_->Data(); }
+  base::span<uint8_t> ByteSpan() const {
+    // SAFETY: `BackingStore` guarantees that `Data()` points to at least
+    // `DataLength()` many bytes.
+    return UNSAFE_BUFFERS(
+        base::span(static_cast<uint8_t*>(Data()), DataLength()));
+  }
+  base::span<uint8_t> ByteSpanMaybeShared() const {
+    // SAFETY: `BackingStore` guarantees that `Data()` points to at least
+    // `DataLength()` many bytes.
+    return UNSAFE_BUFFERS(
+        base::span(static_cast<uint8_t*>(DataMaybeShared()), DataLength()));
+  }
 
   std::shared_ptr<v8::BackingStore> BackingStore() const {
     return backing_store_;

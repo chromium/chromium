@@ -25,10 +25,10 @@ SkBitmap WrapVideoFrameInBitmap(const media::VideoFrame& video_frame) {
 
   SkBitmap bitmap;
   const uint8_t* pixels =
-      video_frame.visible_data(media::VideoFrame::kARGBPlane);
+      video_frame.visible_data(media::VideoFrame::Plane::kARGB);
   bitmap.installPixels(
       SkPixmap(image_info, pixels,
-               video_frame.row_bytes(media::VideoFrame::kARGBPlane)));
+               video_frame.row_bytes(media::VideoFrame::Plane::kARGB)));
   return bitmap;
 }
 

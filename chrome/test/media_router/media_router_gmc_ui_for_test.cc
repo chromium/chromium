@@ -4,17 +4,16 @@
 
 #include "chrome/test/media_router/media_router_gmc_ui_for_test.h"
 
-#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "components/global_media_controls/public/views/media_item_ui_view.h"
+#include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
 namespace media_router {
 
@@ -58,7 +57,7 @@ CastDialogView::SourceType MediaRouterGmcUiForTest::GetChosenSourceType()
 }
 
 void MediaRouterGmcUiForTest::StartCasting(const std::string& sink_name) {
-  ClickOnView(GetSinkButton(sink_name));
+  ClickOnButton(GetSinkButton(sink_name));
 }
 
 void MediaRouterGmcUiForTest::StopCasting(const std::string& sink_name) {
@@ -73,16 +72,14 @@ std::string MediaRouterGmcUiForTest::GetRouteIdForSink(
 
 std::string MediaRouterGmcUiForTest::GetStatusTextForSink(
     const std::string& sink_name) const {
-  auto* device_view = GetDeviceView(sink_name);
-  if (!device_view) {
-    return "";
-  }
-  return device_view->GetStatusTextForTest();
+  NOTIMPLEMENTED();
+  return "";
 }
 
 std::string MediaRouterGmcUiForTest::GetIssueTextForSink(
     const std::string& sink_name) const {
-  return GetStatusTextForSink(sink_name);
+  NOTIMPLEMENTED();
+  return "";
 }
 
 void MediaRouterGmcUiForTest::WaitForSink(const std::string& sink_name) {
@@ -110,22 +107,23 @@ void MediaRouterGmcUiForTest::WaitForDialogHidden() {
   NOTIMPLEMENTED();
 }
 
-views::View* MediaRouterGmcUiForTest::GetSinkButton(
+views::Button* MediaRouterGmcUiForTest::GetSinkButton(
     const std::string& sink_name) const {
-  return GetDeviceView(sink_name);
-}
-
-CastDeviceEntryView* MediaRouterGmcUiForTest::GetDeviceView(
-    const std::string& device_name) const {
-  DCHECK(IsDialogShown());
-  auto items = MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting();
-  global_media_controls::MediaItemUIView* view = items.begin()->second;
-  auto* device_selector = static_cast<MediaItemUIDeviceSelectorView*>(
-      view->device_selector_view_for_testing());
-  auto device_views = device_selector->GetCastDeviceEntryViewsForTesting();
-  for (auto* device_view : device_views) {
-    if (device_view->device_name() == device_name) {
-      return device_view;
+  CHECK(IsDialogShown());
+  global_media_controls::MediaItemUIUpdatedView* view =
+      MediaDialogView::GetDialogViewForTesting()
+          ->GetUpdatedItemsForTesting()
+          .begin()
+          ->second;
+  auto* device_selector =
+      static_cast<CastDeviceSelectorView*>(view->GetDeviceSelectorForTesting());
+  for (views::View* child :
+       device_selector->GetDeviceContainerViewForTesting()->children()) {
+    auto* device_button = static_cast<HoverButton*>(child);
+    if (device_button->GetText() == base::UTF8ToUTF16(sink_name) ||
+        (device_button->title() &&
+         device_button->title()->GetText() == base::UTF8ToUTF16(sink_name))) {
+      return device_button;
     }
   }
   return nullptr;

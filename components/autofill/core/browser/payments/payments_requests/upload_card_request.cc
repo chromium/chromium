@@ -31,7 +31,7 @@ UploadCardRequest::UploadCardRequest(
     const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
     const bool full_sync_enabled,
     base::OnceCallback<void(
-        AutofillClient::PaymentsRpcResult,
+        PaymentsAutofillClient::PaymentsRpcResult,
         const PaymentsNetworkInterface::UploadCardResponseDetails&)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
@@ -82,10 +82,10 @@ std::string UploadCardRequest::GetRequestContent() {
   request_dict.Set("context_token", request_details_.context_token);
 
   int value = 0;
-  const std::u16string exp_month = request_details_.card.GetInfo(
-      AutofillType(CREDIT_CARD_EXP_MONTH), app_locale);
-  const std::u16string exp_year = request_details_.card.GetInfo(
-      AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale);
+  const std::u16string exp_month =
+      request_details_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
+  const std::u16string exp_year =
+      request_details_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
   if (base::StringToInt(exp_month, &value))
     request_dict.Set("expiration_month", value);
   if (base::StringToInt(exp_year, &value))
@@ -95,8 +95,8 @@ std::string UploadCardRequest::GetRequestContent() {
     request_dict.Set("nickname", request_details_.card.nickname());
   }
 
-  const std::u16string pan = request_details_.card.GetInfo(
-      AutofillType(CREDIT_CARD_NUMBER), app_locale);
+  const std::u16string pan =
+      request_details_.card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
   std::string json_request;
   base::JSONWriter::Write(request_dict, &json_request);
   std::string request_content;
@@ -194,8 +194,21 @@ bool UploadCardRequest::IsResponseComplete() {
 }
 
 void UploadCardRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, upload_card_response_details_);
+}
+
+std::string UploadCardRequest::GetHistogramName() const {
+  return "UploadCardRequest";
+}
+
+std::optional<base::TimeDelta> UploadCardRequest::GetTimeout() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUploadCardRequestTimeout)) {
+    return std::nullopt;
+  }
+  return base::Milliseconds(
+      features::kAutofillUploadCardRequestTimeoutMilliseconds.Get());
 }
 
 }  // namespace autofill::payments

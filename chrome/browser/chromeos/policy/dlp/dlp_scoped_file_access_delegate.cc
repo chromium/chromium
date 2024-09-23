@@ -14,7 +14,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
-#include "components/enterprise/data_controls/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -56,7 +56,7 @@ void RequestFileAccessForSystem(
   }
 }
 
-// Returns true if `file_path` is in My Files directory.
+// Returns true if `file_path` is in MyFiles directory.
 bool IsInLocalFileSystem(const base::FilePath& file_path) {
   base::FilePath my_files_folder;
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &my_files_folder);

@@ -175,18 +175,17 @@ void GPUTimingFake::ExpectNoOffsetCalculationQuery(
 }
 
 void GPUTimingFake::FakeGLGenQueries(GLsizei n, GLuint* ids) {
-  for (GLsizei i = 0; i < n; i++) {
-    ids[i] = next_query_id_++;
-    allocated_queries_.insert(ids[i]);
-  }
+  ASSERT_EQ(1, n);
+  *ids = next_query_id_++;
+  allocated_queries_.insert(*ids);
 }
 
 void GPUTimingFake::FakeGLDeleteQueries(GLsizei n, const GLuint* ids) {
-  for (GLsizei i = 0; i < n; i++) {
-    allocated_queries_.erase(ids[i]);
-    query_results_.erase(ids[i]);
-    if (current_elapsed_query_.query_id_ == ids[i])
-      current_elapsed_query_.Reset();
+  ASSERT_EQ(1, n);
+  allocated_queries_.erase(*ids);
+  query_results_.erase(*ids);
+  if (current_elapsed_query_.query_id_ == *ids) {
+    current_elapsed_query_.Reset();
   }
 }
 
@@ -248,7 +247,7 @@ void GPUTimingFake::FakeGLQueryCounter(GLuint id, GLenum target) {
   }
 }
 
-void GPUTimingFake::FakeGLGetInteger64v(GLenum pname, GLint64 * data) {
+void GPUTimingFake::FakeGLGetInteger64v(GLenum pname, GLint64* data) {
   switch (pname) {
     case GL_TIMESTAMP:
       *data = current_gl_time_;

@@ -13,11 +13,11 @@ corresponding attribute on `defaults` that is a `lucicfg.var` that can be used
 to set the default value. Can also be accessed through `ci.defaults`.
 """
 
+load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builder_config.star", "builder_config")
-load("./builders.star", "builders", "os", "os_category")
-load("//project.star", "settings")
+load("./builders.star", "builders", "os")
 
 defaults = args.defaults(
     extends = builders.defaults,
@@ -35,10 +35,9 @@ def ci_builder(
         console_view_entry = None,
         main_console_view = args.DEFAULT,
         cq_mirrors_console_view = args.DEFAULT,
-        sheriff_rotations = None,
+        gardener_rotations = None,
         tree_closing = args.DEFAULT,
         tree_closing_notifiers = None,
-        notifies = None,
         resultdb_bigquery_exports = None,
         experiments = None,
         **kwargs):
@@ -63,11 +62,11 @@ def ci_builder(
         default that defaults to None. An entry will be added only if
         `console_view_entry` is provided and the first entry's branch
         selector causes the entry to be defined.
-      sheriff_rotations: The name(s) of any sheriff rotations that the builder
+      gardener_rotations: The name(s) of any gardener rotations that the builder
         should be added to. On branches, all CI builders will be added to the
-        `chrome_browser_release` sheriff rotation.
+        `chrome_browser_release` gardener rotation.
       tree_closing: If true, failed builds from this builder that meet certain
-        criteria will close the tree and email the sheriff. See the
+        criteria will close the tree and email the gardener. See the
         'chromium-tree-closer' config in notifiers.star for the full criteria.
       tree_closing_notifiers: A list of notifiers that will be notified when
         tree closing criteria are met by a build of this builder. Supports a
@@ -89,35 +88,45 @@ def ci_builder(
 
     experiments = experiments or {}
 
-    # TODO(crbug.com/1346781): Remove when the experiment is the default.
-    experiments.setdefault("chromium_swarming.expose_merge_script_failures", 100)
+    # TODO(crbug.com/40232671): Remove when the experiment is the default.
+    experiments.setdefault(
+        "chromium_swarming.expose_merge_script_failures",
+        5 if settings.project.startswith("chrome") else 100,
+    )
 
     try_only_kwargs = [k for k in ("mirrors", "try_settings") if k in kwargs]
     if try_only_kwargs:
         fail("CI builders cannot specify the following try-only arguments: {}".format(try_only_kwargs))
 
+    notifies = kwargs.get("notifies", [])
     tree_closing = defaults.get_value("tree_closing", tree_closing)
     if tree_closing:
         tree_closing_notifiers = defaults.get_value("tree_closing_notifiers", tree_closing_notifiers, merge = args.MERGE_LIST)
         tree_closing_notifiers = args.listify("chromium-tree-closer", "chromium-tree-closer-email", tree_closing_notifiers)
+        if notifies != None:
+            notifies = args.listify(notifies, tree_closing_notifiers)
 
-        notifies = args.listify(notifies, tree_closing_notifiers)
+    kwargs["notifies"] = notifies
 
+    bq_dataset_name = "chrome"
+    if settings.project.startswith("chromium"):
+        bq_dataset_name = "chromium"
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
-            bq_table = "chrome-luci-data.chromium.ci_test_results",
+            bq_table = "chrome-luci-data.{}.ci_test_results".format(bq_dataset_name),
         ),
         resultdb.export_test_results(
-            bq_table = "chrome-luci-data.chromium.gpu_ci_test_results",
+            bq_table = "chrome-luci-data.{}.gpu_ci_test_results".format(bq_dataset_name),
             predicate = resultdb.test_result_predicate(
                 # Only match the telemetry_gpu_integration_test target and its
                 # Fuchsia and Android variants that have a suffix added to the
-                # end. Those are caught with [^/]*.
-                test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test[^/]*/.+",
+                # end. Those are caught with [^/]*. The Fuchsia version is in
+                # //content/test since Fuchsia cannot depend on //chrome.
+                test_id_regexp = "ninja://(chrome|content)/test:telemetry_gpu_integration_test[^/]*/.+",
             ),
         ),
         resultdb.export_test_results(
-            bq_table = "chrome-luci-data.chromium.blink_web_tests_ci_test_results",
+            bq_table = "chrome-luci-data.{}.blink_web_tests_ci_test_results".format(bq_dataset_name),
             predicate = resultdb.test_result_predicate(
                 # Match the "blink_web_tests" target and all of its
                 # flag-specific versions, e.g. "vulkan_swiftshader_blink_web_tests".
@@ -127,20 +136,12 @@ def ci_builder(
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
-    branch_sheriff_rotations = list({
-        platform_settings.sheriff_rotation: None
+    branch_gardener_rotations = list({
+        platform_settings.gardener_rotation: None
         for platform, platform_settings in settings.platforms.items()
         if branches.matches(branch_selector, platform = platform)
     })
-    sheriff_rotations = args.listify(sheriff_rotations, branch_sheriff_rotations)
-
-    goma_enable_ats = defaults.get_value_from_kwargs("goma_enable_ats", kwargs)
-    if goma_enable_ats == args.COMPUTE:
-        os = defaults.get_value_from_kwargs("os", kwargs)
-
-        # in CI, enable ATS on windows.
-        if os and os.category == os_category.WINDOWS:
-            kwargs["goma_enable_ats"] = True
+    gardener_rotations = args.listify(gardener_rotations, branch_gardener_rotations)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -149,14 +150,13 @@ def ci_builder(
         branch_selector = branch_selector,
         console_view_entry = console_view_entry,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
-        sheriff_rotations = sheriff_rotations,
-        notifies = notifies,
+        gardener_rotations = gardener_rotations,
         experiments = experiments,
-        resultdb_index_by_timestamp = True,
+        resultdb_index_by_timestamp = settings.project.startswith("chromium"),
         **kwargs
     )
 
-    if console_view_entry:
+    if console_view_entry and settings.project.startswith("chromium"):
         # builder didn't fail, we're guaranteed that console_view_entry is
         # either a single console_view_entry or a list of them and that they are valid
         if type(console_view_entry) == type(struct()):
@@ -264,7 +264,7 @@ def thin_tester(
     if builder_spec and builder_spec.execution_mode != builder_config.execution_mode.TEST:
         fail("thin testers with builder specs must have TEST execution mode")
     cores = defaults.get_value("thin_tester_cores", cores)
-    kwargs.setdefault("reclient_instance", None)
+    kwargs.setdefault("siso_project", None)
     kwargs.setdefault("os", builders.os.LINUX_DEFAULT)
     return ci.builder(
         name = name,

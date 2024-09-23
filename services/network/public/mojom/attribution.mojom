@@ -4,26 +4,22 @@
 
 module network.mojom;
 
-// Structure containing a redemption token that can be sent to the reporting
-// origin alongside an aggregatable report for them to verify the validity of a
-// trigger. The token was signed over the included aggregatable_report_id which
-// must therefore be used when creating the report.
-struct TriggerVerification {
-  string token;
-  // TODO(https://crbug.com/1240405): replace with `guid` once a type-mapping exists.
-  string aggregatable_report_id;
-};
-
 // Indicates whether web or OS-level Attribution Reporting is supported.
 // See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(AttributionSupport)
 enum AttributionSupport {
-  kWeb,
-  kWebAndOs,
-  kOs,
-  kNone,
+  kWeb = 0,
+  kWebAndOs = 1,
+  kOs = 2,
+  // Neither web nor OS is supported.
+  kNone = 3,
+  // The support value is unknown, e.g. within service worker.
+  kUnset = 4,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConversionRequestSupportHeader)
 
 // Controls the value of the Attribution-Reporting-Eligible request header, if
 // any. This header controls which registrations a response is allowed to
@@ -42,10 +38,4 @@ enum AttributionReportingEligibility {
   kTrigger,
   // The header contains `event-source, trigger`.
   kEventSourceOrTrigger,
-};
-
-// Wraps whether Attribution Reporting API related runtime features are
-// enabled.
-struct AttributionReportingRuntimeFeatures {
-  bool cross_app_web_enabled;
 };

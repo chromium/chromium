@@ -56,7 +56,7 @@ KernelVersion KernelVersionNumbers() {
   KernelVersion ver;
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     ver.major = 0;
     ver.minor = 0;
     ver.bugfix = 0;
@@ -563,6 +563,7 @@ base::ScopedFD WaylandBufferManagerHost::ExtractReleaseFence(
 
   struct dma_buf_export_sync_file req;
   req.flags = DMA_BUF_SYNC_RW;
+  req.fd = -1;
 
   if (HANDLE_EINTR(
           ioctl(it->second.get(), DMA_BUF_IOCTL_EXPORT_SYNC_FILE, &req)) < 0) {

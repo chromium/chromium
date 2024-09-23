@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//services/video_effects/args.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  header_dir = "services/video_effects/public/cpp"
+
+  flags = [ "ENABLE_VIDEO_EFFECTS=$enable_video_effects" ]
+}

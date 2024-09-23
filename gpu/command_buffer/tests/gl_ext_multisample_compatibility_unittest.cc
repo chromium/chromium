@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
@@ -151,7 +156,7 @@ TEST_F(EXTMultisampleCompatibilityTest, DrawAndResolve) {
     return;
   }
 
-  // TODO(crbug.com/1144270) Fails on Mac Mini 8.1
+  // TODO(crbug.com/40728740) Fails on Mac Mini 8.1
   if (GPUTestBotConfig::CurrentConfigMatches("Mac Intel 0x3e9b"))
     return;
 

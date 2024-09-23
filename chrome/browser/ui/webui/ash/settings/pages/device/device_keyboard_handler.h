@@ -55,8 +55,8 @@ class KeyboardHandler : public ::settings::SettingsPageUIHandler,
   // Initializes the page with the current keyboard information.
   void HandleInitialize(const base::Value::List& args);
 
-  // Shows the Ash keyboard shortcut viewer.
-  void HandleShowKeyboardShortcutViewer(const base::Value::List& args) const;
+  // Shows the Ash shortcut customization app.
+  void HandleShowShortcutCustomizationApp(const base::Value::List& args) const;
 
   // Determines what types of keyboards are attached.
   void HandleKeyboardChange(const base::Value::List& args);

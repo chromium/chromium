@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -141,7 +141,7 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PageOutputQuality {
   PageOutputQualityAttributes qualities;
 
   // Default option of page output quality.
-  // TODO(crbug.com/1291257): Need populate this option in the next CLs.
+  // TODO(crbug.com/40212677): Need populate this option in the next CLs.
   std::optional<std::string> default_quality;
 };
 
@@ -268,7 +268,7 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
   Paper default_paper;
 
   // Describes a media type (plain paper, photo paper, etc.)
-  // TODO(crbug.com/1459344): Support media types on platforms other than
+  // TODO(crbug.com/40274266): Support media types on platforms other than
   // ChromeOS
   struct COMPONENT_EXPORT(PRINT_BACKEND) MediaType {
     std::string display_name;
@@ -356,14 +356,15 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 
 #if BUILDFLAG(IS_WIN)
   // Gets the capabilities and defaults for a specific printer.
-  // TODO(crbug.com/1008222): Evaluate if this code is useful and delete if not.
+  // TODO(crbug.com/40100562): Evaluate if this code is useful and delete if
+  // not.
   virtual mojom::ResultCode GetPrinterCapsAndDefaults(
       const std::string& printer_name,
       PrinterCapsAndDefaults* printer_info) = 0;
 
   // Gets the printable area for just a single paper size.  Returns nullopt if
   // there is any error in retrieving this data.
-  // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
+  // TODO(crbug.com/40260379):  Remove this if the printable areas can be made
   // fully available from `GetPrinterSemanticCapsAndDefaults()`.
   virtual std::optional<gfx::Rect> GetPaperPrintableArea(
       const std::string& printer_name,

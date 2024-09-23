@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<title>Node.moveBefore should trigger CSS transition state (left) if needed</title>
+<meta name="variant" content="?action=append">
+<meta name="variant" content="?action=prepend">
+<meta name="variant" content="?action=before">
+<meta name="variant" content="?action=after">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helper.js"></script>
+
+<body>
+  <section id="old-parent">
+    <div id="item"></div>
+  </section>
+  <section id="new-parent">
+  </section>
+  <style>
+    #item {
+      width: 100px;
+      height: 100px;
+      background: green;
+      transition: left 10s steps(1, jump-both);
+      position: absolute;
+      left: 0;
+    }
+
+    #new-parent #item {
+      left: 400px;
+    }
+
+    section {
+      position: relative;
+    }
+
+    body {
+      margin-left: 0;
+    }
+  </style>
+  <script>
+    promise_test(async t => {
+      const item = document.querySelector("#item");
+      assert_equals(item.getBoundingClientRect().x, 0);
+      reparent(document.querySelector("#new-parent"), item);
+      await new Promise(resolve => item.addEventListener("transitionstart", resolve));
+      assert_equals(item.getBoundingClientRect().x, 200);
+    });
+  </script>
+</body>

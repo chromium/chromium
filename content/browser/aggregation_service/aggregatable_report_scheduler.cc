@@ -38,7 +38,7 @@ AggregatableReportScheduler::AggregatableReportScheduler(
           new TimerDelegate(storage_context,
                             std::move(on_scheduled_report_time_reached))),
       timer_(base::WrapUnique(timer_delegate_.get())) {
-  DCHECK(storage_context);
+  CHECK(storage_context);
 }
 AggregatableReportScheduler::~AggregatableReportScheduler() {
   timer_delegate_ = nullptr;
@@ -67,7 +67,7 @@ void AggregatableReportScheduler::NotifyInProgressRequestSucceeded(
 bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
     AggregationServiceStorage::RequestId request_id,
     int previous_failed_attempts) {
-  DCHECK_GE(previous_failed_attempts, 0);
+  CHECK_GE(previous_failed_attempts, 0);
   std::optional<base::TimeDelta> delay =
       GetFailedReportDelay(previous_failed_attempts + 1);
 
@@ -94,7 +94,7 @@ bool AggregatableReportScheduler::NotifyInProgressRequestFailed(
 
 std::optional<base::TimeDelta>
 AggregatableReportScheduler::GetFailedReportDelay(int failed_send_attempts) {
-  DCHECK_GT(failed_send_attempts, 0);
+  CHECK_GT(failed_send_attempts, 0);
 
   if (failed_send_attempts > kMaxRetries)
     return std::nullopt;
@@ -114,7 +114,7 @@ AggregatableReportScheduler::TimerDelegate::TimerDelegate(
       should_not_delay_reports_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kPrivateAggregationDeveloperMode)) {
-  DCHECK(storage_context);
+  CHECK(storage_context);
 }
 AggregatableReportScheduler::TimerDelegate::~TimerDelegate() = default;
 

@@ -42,11 +42,11 @@ if [[ "${OSTYPE}" =~ ^"darwin" ]]; then
         install_path="${HOME}/Library/Application Support/${company}/${appid}"
   fi
 else
-  declare install_path="/opt/${company}/${appid}"
+  declare -r lower_company=$(echo ${company} | tr '[:upper:]' '[:lower:]')
   if (( "${system}" == 1 )); then
-    declare -r install_path="/opt/${company}/${appid}"
+    declare -r install_path="/opt/${lower_company}/${appid}"
   else
-    declare -r install_path="${HOME}/.local/${company}/${appid}"
+    declare -r install_path="${HOME}/.local/${lower_company}/${appid}"
   fi
 fi
 

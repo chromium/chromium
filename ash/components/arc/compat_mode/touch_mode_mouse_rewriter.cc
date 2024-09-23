@@ -122,10 +122,10 @@ void TouchModeMouseRewriter::SendReleaseEvent(
     const ui::MouseEvent& original_event,
     const Continuation continuation) {
   release_event_scheduled_ = false;
-  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, original_event.location(),
-                               original_event.root_location(),
-                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                               ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent release_event(
+      ui::EventType::kMouseReleased, original_event.location(),
+      original_event.root_location(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   std::ignore = SendEvent(continuation, &release_event);
 }
 
@@ -138,16 +138,16 @@ void TouchModeMouseRewriter::SendScrollEvent(
       scroll_y_offset_ * (kSmoothScrollEventInterval / scroll_timeout_);
   const int x_step =
       scroll_x_offset_ * (kSmoothScrollEventInterval / scroll_timeout_);
-  ui::ScrollEvent scroll_event(ui::ET_SCROLL, original_event.location_f(),
-                               original_event.root_location_f(),
-                               ui::EventTimeForNow(), 0, x_step, y_step, x_step,
-                               y_step, 1);
+  ui::ScrollEvent scroll_event(
+      ui::EventType::kScroll, original_event.location_f(),
+      original_event.root_location_f(), ui::EventTimeForNow(), 0, x_step,
+      y_step, x_step, y_step, 1);
   std::ignore = SendEvent(continuation, &scroll_event);
   scroll_y_offset_ -= y_step;
   scroll_x_offset_ -= x_step;
   scroll_timeout_ -= kSmoothScrollEventInterval;
   if (scroll_timeout_.is_zero()) {
-    ui::ScrollEvent fling_start_event(ui::ET_SCROLL_FLING_START,
+    ui::ScrollEvent fling_start_event(ui::EventType::kScrollFlingStart,
                                       original_event.location_f(),
                                       original_event.root_location_f(),
                                       ui::EventTimeForNow(), 0, 0, 0, 0, 0, 0);
@@ -171,8 +171,8 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteMouseWheelEvent(
   scroll_timeout_ = kSmoothScrollTimeout;
   if (!started) {
     ui::ScrollEvent fling_cancel_event(
-        ui::ET_SCROLL_FLING_CANCEL, event.location_f(), event.root_location_f(),
-        event.time_stamp(), 0, 0, 0, 0, 0, 0);
+        ui::EventType::kScrollFlingCancel, event.location_f(),
+        event.root_location_f(), event.time_stamp(), 0, 0, 0, 0, 0, 0);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&TouchModeMouseRewriter::SendScrollEvent,
@@ -191,7 +191,7 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteMouseClickEvent(
     // 2. If the left button is currently pressed, discard the right click.
     // 3. Discard events that is not a right press.
     if (release_event_scheduled_ || left_pressed_ ||
-        event.type() != ui::ET_MOUSE_PRESSED) {
+        event.type() != ui::EventType::kMousePressed) {
       return DiscardEvent(continuation);
     }
     // Schedule the release event after |kLongPressInterval|.
@@ -204,24 +204,27 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteMouseClickEvent(
 
     // Send the press event now.
     ui::MouseEvent press_event(
-        ui::ET_MOUSE_PRESSED, event.location(), event.root_location(),
+        ui::EventType::kMousePressed, event.location(), event.root_location(),
         event.time_stamp(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     return SendEvent(continuation, &press_event);
   } else if (event.IsLeftMouseButton()) {
-    if (event.type() == ui::ET_MOUSE_PRESSED)
+    if (event.type() == ui::EventType::kMousePressed) {
       left_pressed_ = true;
-    else if (event.type() == ui::ET_MOUSE_RELEASED)
+    } else if (event.type() == ui::EventType::kMouseReleased) {
       left_pressed_ = false;
+    }
     // Discard a release event that corresponds to a previously discarded press
     // event.
-    if (discard_next_left_release_ && event.type() == ui::ET_MOUSE_RELEASED) {
+    if (discard_next_left_release_ &&
+        event.type() == ui::EventType::kMouseReleased) {
       discard_next_left_release_ = false;
       return DiscardEvent(continuation);
     }
     // Discard the left click if there is an ongoing simulated long press.
     if (release_event_scheduled_) {
-      if (event.type() == ui::ET_MOUSE_PRESSED)
+      if (event.type() == ui::EventType::kMousePressed) {
         discard_next_left_release_ = true;
+      }
       return DiscardEvent(continuation);
     }
     return SendEvent(continuation, &event);

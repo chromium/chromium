@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
-#include "third_party/skia/include/gpu/GrDriverBugWorkarounds.h"
+#include "third_party/skia/include/gpu/ganesh/GrDriverBugWorkarounds.h"
 
 namespace blink {
 
@@ -37,7 +37,7 @@ class AcceleratedCompositingTestPlatform
 class ScopedFakeGpuContext {
  public:
   explicit ScopedFakeGpuContext(bool disable_imagebitmap) {
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     test_context_provider_ = viz::TestContextProvider::Create();
 
     if (disable_imagebitmap) {
@@ -60,7 +60,7 @@ class ScopedFakeGpuContext {
 
   ~ScopedFakeGpuContext() {
     task_environment_.RunUntilIdle();
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
   }
 
  private:
@@ -137,7 +137,6 @@ TEST(VideoFrameImageUtilTest, WillCreateAcceleratedImagesFromVideoFrame) {
                         media::VideoFrame::STORAGE_OPAQUE,
                         media::PIXEL_FORMAT_XRGB, base::TimeDelta());
     EXPECT_EQ(shared_image_frame->NumTextures(), 1u);
-    EXPECT_TRUE(shared_image_frame->mailbox_holder(0).mailbox.IsSharedImage());
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
     EXPECT_FALSE(
         WillCreateAcceleratedImagesFromVideoFrame(shared_image_frame.get()));
@@ -157,7 +156,6 @@ TEST(VideoFrameImageUtilTest, CreateImageFromVideoFrameZeroCopy) {
                       media::VideoFrame::STORAGE_OPAQUE,
                       media::PIXEL_FORMAT_XRGB, base::TimeDelta());
   EXPECT_EQ(shared_image_frame->NumTextures(), 1u);
-  EXPECT_TRUE(shared_image_frame->mailbox_holder(0).mailbox.IsSharedImage());
 
   auto image = CreateImageFromVideoFrame(shared_image_frame);
   ASSERT_TRUE(image->IsTextureBacked());
@@ -227,7 +225,7 @@ TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
 
   auto texture_frame = media::CreateSharedImageRGBAFrame(
-      fake_context.context_provider(), kTestSize, gfx::Rect(kTestSize),
+      fake_context.raster_context_provider(), kTestSize, gfx::Rect(kTestSize),
       base::DoNothing());
   auto image = CreateImageFromVideoFrame(texture_frame,
                                          /*allow_zero_copy_images=*/false);
@@ -237,13 +235,12 @@ TEST(VideoFrameImageUtilTest, CreateAcceleratedImageFromTextureFrame) {
 
 TEST(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
   ScopedFakeGpuContext fake_context(/*disable_imagebitmap=*/false);
-
-  auto texture_frame = media::CreateSharedImageRGBAFrame(
-      fake_context.context_provider(), kTestSize, gfx::Rect(kTestSize),
-      base::DoNothing());
-
   auto* raster_context_provider = fake_context.raster_context_provider();
   ASSERT_TRUE(raster_context_provider);
+
+  auto texture_frame = media::CreateSharedImageRGBAFrame(
+      raster_context_provider, kTestSize, gfx::Rect(kTestSize),
+      base::DoNothing());
 
   auto provider =
       CreateResourceProviderForVideoFrame(kTestInfo, raster_context_provider);

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_WIN_JUMPLIST_UPDATER_H_
 #define CHROME_BROWSER_WIN_JUMPLIST_UPDATER_H_
 
-#include <windows.h>
 #include <shobjidl.h>
+#include <windows.h>
+
 #include <stddef.h>
 #include <wrl/client.h>
 

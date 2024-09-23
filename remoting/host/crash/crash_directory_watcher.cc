@@ -17,12 +17,16 @@ namespace remoting {
 
 namespace {
 
+const base::FilePath::CharType kDumpExtension[] = FILE_PATH_LITERAL("dmp");
+const base::FilePath::CharType kJsonExtension[] = FILE_PATH_LITERAL("json");
+
 // Dmp files are of the form: crash_directory/<crash_guid>.dmp
 // Metadata files are of the form: crash_directory/<crash_guid>.json
 // Upload directory is of the form: crash_directory/<crash_guid>/
 bool PrepareFilesForUpload(const base::FilePath& crash_directory,
-                           const std::string& crash_guid) {
-  base::FilePath minidump_file = crash_directory.Append(crash_guid + ".dmp");
+                           const base::FilePath& crash_guid) {
+  base::FilePath minidump_file =
+      crash_directory.Append(crash_guid).AddExtension(kDumpExtension);
   if (!base::PathExists(minidump_file)) {
     LOG(WARNING) << "Minidump not found for crash: " << crash_guid;
     return false;
@@ -43,7 +47,8 @@ bool PrepareFilesForUpload(const base::FilePath& crash_directory,
     return false;
   }
 
-  base::FilePath metadata_file = crash_directory.Append(crash_guid + ".json");
+  base::FilePath metadata_file =
+      crash_directory.Append(crash_guid).AddExtension(kJsonExtension);
   if (!base::Move(metadata_file,
                   upload_directory.Append(metadata_file.BaseName()))) {
     LOG(ERROR) << "Failed to move crash json file into upload directory for "
@@ -62,14 +67,16 @@ bool PrepareFilesForUpload(const base::FilePath& crash_directory,
 }
 
 void DeleteCrashFiles(const base::FilePath& crash_directory,
-                      const std::string& crash_guid) {
-  base::FilePath minidump_file = crash_directory.Append(crash_guid + ".dmp");
+                      const base::FilePath& crash_guid) {
+  base::FilePath minidump_file =
+      crash_directory.Append(crash_guid).AddExtension(kDumpExtension);
   if (!base::DeleteFile(minidump_file)) {
-    PLOG(ERROR) << "Failed to delete " << minidump_file.value();
+    PLOG(ERROR) << "Failed to delete " << minidump_file;
   }
-  base::FilePath metadata_file = crash_directory.Append(crash_guid + ".json");
+  base::FilePath metadata_file =
+      crash_directory.Append(crash_guid).AddExtension(kJsonExtension);
   if (!base::DeleteFile(metadata_file)) {
-    PLOG(ERROR) << "Failed to delete " << metadata_file.value();
+    PLOG(ERROR) << "Failed to delete " << metadata_file;
   }
 }
 
@@ -80,6 +87,7 @@ CrashDirectoryWatcher::~CrashDirectoryWatcher() = default;
 
 void CrashDirectoryWatcher::Watch(base::FilePath crash_directory,
                                   UploadCallback callback) {
+  LOG(INFO) << "Watching for crash minidumps in: " << crash_directory;
   DCHECK(!upload_callback_);
   upload_callback_ = std::move(callback);
 
@@ -96,8 +104,9 @@ void CrashDirectoryWatcher::Watch(base::FilePath crash_directory,
   // FilePathWatcher is an old class and isn't well documented (i.e. some of the
   // comments are contradictory and don't match reality). In our case, we are
   // using kNonRecursive which will trigger the callback for any changes in the
-  // watched path on Linux. If this class is reused on other platforms, we will
-  // need to confirm what the behavior is on the new platform(s).
+  // watched path on Linux and Windows. If this class is reused on other
+  // platforms, we will need to confirm what the behavior is on the new
+  // platform(s).
   file_path_watcher_.Watch(
       std::move(crash_directory), base::FilePathWatcher::Type::kNonRecursive,
       base::BindRepeating(&CrashDirectoryWatcher::OnFileChangeDetected,
@@ -107,7 +116,7 @@ void CrashDirectoryWatcher::Watch(base::FilePath crash_directory,
 void CrashDirectoryWatcher::OnFileChangeDetected(const base::FilePath& path,
                                                  bool error) {
   if (error) {
-    LOG(ERROR) << "Error watching crash directory: " << path.value();
+    LOG(ERROR) << "Error watching crash directory: " << path;
     // TODO(joedow): Consider terminating the process so the folder to watch can
     // be recreated with the appropriate permissions.
     return;
@@ -124,10 +133,10 @@ void CrashDirectoryWatcher::OnFileChangeDetected(const base::FilePath& path,
       path, /*recursive=*/false, base::FileEnumerator::FileType::FILES,
       FILE_PATH_LITERAL("*.json"));
 
-  std::vector<std::string> crash_guids;
+  std::vector<base::FilePath> crash_guids;
   base::FilePath metadata_file = metadata_file_enumerator.Next();
   while (!metadata_file.empty()) {
-    std::string crash_guid = metadata_file.BaseName().RemoveExtension().value();
+    base::FilePath crash_guid = metadata_file.BaseName().RemoveExtension();
     LOG(INFO) << "Found new crash report: " << crash_guid;
     crash_guids.push_back(std::move(crash_guid));
     metadata_file = metadata_file_enumerator.Next();

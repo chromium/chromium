@@ -75,12 +75,9 @@ enum class AdjustMidCluster {
 struct ShapeResultCharacterData {
   DISALLOW_NEW();
 
-  ShapeResultCharacterData()
-      : is_cluster_base(false),
-        safe_to_break_before(false),
-        has_auto_spacing_after(false) {}
+  ShapeResultCharacterData() = default;
 
-  void SetCachedData(float new_x_position,
+  void SetCachedData(LayoutUnit new_x_position,
                      bool new_is_cluster_base,
                      bool new_safe_to_break_before) {
     x_position = new_x_position;
@@ -88,11 +85,11 @@ struct ShapeResultCharacterData {
     safe_to_break_before = new_safe_to_break_before;
   }
 
-  float x_position = 0;
+  LayoutUnit x_position;
   // Set for the logical first character of a cluster.
-  unsigned is_cluster_base : 1;
-  unsigned safe_to_break_before : 1;
-  unsigned has_auto_spacing_after : 1;
+  unsigned is_cluster_base : 1 = false;
+  unsigned safe_to_break_before : 1 = false;
+  unsigned has_auto_spacing_after : 1 = false;
 };
 
 // A space should be appended after `offset` with the width of `spacing`.
@@ -139,7 +136,7 @@ typedef void (*GraphemeClusterCallback)(void* context,
 
 class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
  public:
-  ShapeResult(scoped_refptr<const SimpleFontData>,
+  ShapeResult(const SimpleFontData*,
               unsigned start_index,
               unsigned num_characters,
               TextDirection);
@@ -152,7 +149,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void Trace(Visitor*) const;
 
   static ShapeResult* CreateEmpty(const ShapeResult& other) {
-    return MakeGarbageCollected<ShapeResult>(other.primary_font_, 0, 0,
+    return MakeGarbageCollected<ShapeResult>(other.primary_font_.Get(), 0, 0,
                                              other.Direction());
   }
   static const ShapeResult* CreateForTabulationCharacters(
@@ -184,8 +181,8 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }
   unsigned NumCharacters() const { return num_characters_; }
   unsigned NumGlyphs() const { return num_glyphs_; }
-  const SimpleFontData* PrimaryFont() const { return primary_font_.get(); }
-  bool HasFallbackFonts() const;
+  const SimpleFontData* PrimaryFont() const { return primary_font_.Get(); }
+  bool HasFallbackFonts(const SimpleFontData* primary_font) const;
 
   // TODO(eae): Remove start_x and return value once ShapeResultBuffer has been
   // removed.
@@ -277,8 +274,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // Fast versions of OffsetForPosition and PositionForOffset that operates on
   // a cache (that needs to be pre-computed using EnsurePositionData) and that
   // does not take partial glyphs into account.
-  unsigned CachedOffsetForPosition(float x) const;
-  float CachedPositionForOffset(unsigned offset) const;
+  unsigned CachedOffsetForPosition(LayoutUnit x) const;
+  LayoutUnit CachedPositionForOffset(unsigned offset) const;
+  LayoutUnit CachedWidth(unsigned start_offset, unsigned end_offset) const;
 
   // Returns the next or previous offsets respectively at which it is safe to
   // break without reshaping. Operates on a cache (that needs to be pre-computed
@@ -293,9 +291,15 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // |text_start_offset| adjusts the character index in the ShapeResult before
   // giving it to |ShapeResultSpacing|. It can be negative if
   // |StartIndex()| is larger than the text in |ShapeResultSpacing|.
-  void ApplySpacing(ShapeResultSpacing<String>&, int text_start_offset = 0);
+  //
+  // The function returns spacing amount on the right of the last glyph.
+  float ApplySpacing(ShapeResultSpacing<String>&, int text_start_offset = 0);
   ShapeResult* ApplySpacingToCopy(ShapeResultSpacing<TextRun>&,
                                   const TextRun&) const;
+  // Add `expansion` space before the first glyph.
+  void ApplyLeadingExpansion(LayoutUnit expansion);
+  // Add `expansion` space after the last glyph.
+  void ApplyTrailingExpansion(LayoutUnit expansion);
 
   // Adds spacing between ideograph character and non-ideograph character for
   // the property of text-autospace.
@@ -308,12 +312,15 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
   // Returns a line-end `ShapeResult` when breaking at `break_offset`, and the
   // glyph before `break_offset` has auto-spacing.
-  const ShapeResult* UnapplyAutoSpacing(unsigned start_offset,
+  const ShapeResult* UnapplyAutoSpacing(float spacing_width,
+                                        unsigned start_offset,
                                         unsigned break_offset) const;
 
   // Adjust the offset from `OffsetForPosition` when the offset has
   // `HasAutoSpacingAfter`.
-  unsigned AdjustOffsetForAutoSpacing(unsigned offset, float position) const;
+  unsigned AdjustOffsetForAutoSpacing(float spacing_width,
+                                      unsigned offset,
+                                      float position) const;
 
   // Append a copy of a range within an existing result to another result.
   //
@@ -347,10 +354,12 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
   // Computes the list of fonts along with the number of glyphs for each font.
   struct RunFontData {
-    SimpleFontData* font_data_;
+    DISALLOW_NEW();
+    void Trace(Visitor* visitor) const { visitor->Trace(font_data_); }
+    Member<SimpleFontData> font_data_;
     wtf_size_t glyph_count_;
   };
-  void GetRunFontData(Vector<RunFontData>* font_data) const;
+  void GetRunFontData(HeapVector<RunFontData>* font_data) const;
 
   // Iterates over, and calls the specified callback function, for all the
   // glyphs. Also tracks (and returns) a seeded total advance.
@@ -464,8 +473,8 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void RecalcCharacterPositions() const;
 
   template <typename TextContainerType>
-  void ApplySpacingImpl(ShapeResultSpacing<TextContainerType>&,
-                        int text_start_offset = 0);
+  float ApplySpacingImpl(ShapeResultSpacing<TextContainerType>&,
+                         int text_start_offset = 0);
   template <bool is_horizontal_run>
   void ComputeGlyphPositions(ShapeResult::RunInfo*,
                              unsigned start_glyph,
@@ -494,7 +503,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // The total width. This is the sum of `RunInfo::width_`.
   // It's mutable because `RecalcCharacterPositions()` recalculates this.
   // This should be in sync with `CharacterPositionData::width_`.
-  mutable float width_;
+  mutable float width_ = 0;
 
   // Only used by CachingWordShapeIterator and stored here for memory reduction
   // reasons. See https://crbug.com/955776
@@ -510,22 +519,22 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // index to x-position and O(log n) time, using binary search, from
   // x-position to character index.
   mutable HeapVector<ShapeResultCharacterData> character_position_;
-  scoped_refptr<const SimpleFontData> primary_font_;
+  Member<const SimpleFontData> primary_font_;
 
-  unsigned start_index_;
-  unsigned num_characters_;
-  unsigned num_glyphs_ : 29;
+  unsigned start_index_ = 0;
+  unsigned num_characters_ = 0;
+  unsigned num_glyphs_ : 29 = 0;
 
   // Overall direction for the TextRun, dictates which order each individual
   // sub run (represented by RunInfo structs in the m_runs vector) can have a
   // different text direction.
-  unsigned direction_ : 1;
+  unsigned direction_ : 1 = static_cast<unsigned>(TextDirection::kLtr);
 
   // Tracks whether any runs contain glyphs with a y-offset != 0.
-  unsigned has_vertical_offsets_ : 1;
+  unsigned has_vertical_offsets_ : 1 = false;
 
   // True once called |ApplySpacing()|.
-  unsigned is_applied_spacing_ : 1;
+  unsigned is_applied_spacing_ : 1 = false;
 
   // Note: When you add more bit flags, please consider to reduce size of
   // |num_glyphs_| or |num_characters_|.
@@ -565,5 +574,6 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const ShapeResult&);
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ShapeResult::ShapeRange)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::ShapeResult::RunFontData)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_H_

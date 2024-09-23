@@ -6,6 +6,7 @@
 #define URL_MOJOM_ORIGIN_MOJOM_TRAITS_H_
 
 #include <optional>
+
 #include "base/component_export.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"

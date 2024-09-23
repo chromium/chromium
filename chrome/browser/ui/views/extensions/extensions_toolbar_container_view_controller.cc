@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -77,6 +78,17 @@ void ExtensionsToolbarContainerViewController::MaybeShowIPH() {
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHExtensionsMenuFeature);
   }
+}
+
+void ExtensionsToolbarContainerViewController::UpdateRequestAccessButton() {
+  CHECK(extensions_container_);
+
+  auto* web_contents = extensions_container_->GetCurrentWebContents();
+  extensions::PermissionsManager::UserSiteSetting site_setting =
+      extensions::PermissionsManager::Get(browser_->profile())
+          ->GetUserSiteSetting(
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  extensions_container_->UpdateRequestAccessButton(site_setting, web_contents);
 }
 
 void ExtensionsToolbarContainerViewController::OnTabStripModelChanged(
@@ -165,7 +177,7 @@ void ExtensionsToolbarContainerViewController::OnUserPermissionsSettingsChanged(
     const extensions::PermissionsManager::UserPermissionsSettings& settings) {
   CHECK(extensions_container_);
   extensions_container_->UpdateControlsVisibility();
-  // TODO(crbug.com/1351778): Update request access button hover card. This
+  // TODO(crbug.com/40857356): Update request access button hover card. This
   // will be slightly different than 'OnToolbarActionUpdated' since site
   // settings update are not tied to a specific action.
 }
@@ -176,20 +188,56 @@ void ExtensionsToolbarContainerViewController::
         bool can_show_requests) {
   CHECK(extensions_container_);
   extensions_container_->UpdateControlsVisibility();
-  // TODO(crbug.com/1351778): Update requests access button hover card. This is
+  // TODO(crbug.com/40857356): Update requests access button hover card. This is
   // tricky because it would need to change the items in the dialog. Another
   // option is to close the hover card if its shown whenever request access
   // button is updated.
 }
 
-void ExtensionsToolbarContainerViewController::OnExtensionDismissedRequests(
+void ExtensionsToolbarContainerViewController::
+    OnSiteAccessRequestDismissedByUser(
+        const extensions::ExtensionId& extension_id,
+        const url::Origin& origin) {
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarContainerViewController::OnSiteAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
-    const url::Origin& origin) {
-  CHECK(extensions_container_);
-  auto* web_contents = extensions_container_->GetCurrentWebContents();
-  extensions::PermissionsManager::UserSiteSetting site_setting =
-      extensions::PermissionsManager::Get(browser_->profile())
-          ->GetUserSiteSetting(
-              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  extensions_container_->UpdateRequestAccessButton(site_setting, web_contents);
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarContainerViewController::OnSiteAccessRequestUpdated(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarContainerViewController::OnSiteAccessRequestRemoved(
+    const extensions::ExtensionId& extension_id,
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  UpdateRequestAccessButton();
+}
+
+void ExtensionsToolbarContainerViewController::OnSiteAccessRequestsCleared(
+    int tab_id) {
+  int current_tab_id = extensions::ExtensionTabUtil::GetTabId(
+      extensions_container_->GetCurrentWebContents());
+  if (tab_id != current_tab_id) {
+    return;
+  }
+
+  UpdateRequestAccessButton();
 }

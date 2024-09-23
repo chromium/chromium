@@ -45,7 +45,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,11 +68,7 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-// START_SURFACE_REFACTOR is required to have stable parent id logic.
-@EnableFeatures({
-    ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION,
-    ChromeFeatureList.START_SURFACE_REFACTOR
-})
+@DisableFeatures(ChromeFeatureList.ANDROID_HUB_SEARCH)
 @Batch(Batch.PER_CLASS)
 public class TabGridAccessibilityHelperTest {
     @IntDef({
@@ -103,8 +99,7 @@ public class TabGridAccessibilityHelperTest {
         CriteriaHelper.pollUiThread(
                 sActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
 
-        TabUiTestHelper.getTabSwitcherLayoutAndVerify(
-                sActivityTestRule.getActivity(), /* isStartSurfaceRefactorEnabled= */ true);
+        TabUiTestHelper.getTabSwitcherLayoutAndVerify(sActivityTestRule.getActivity());
     }
 
     @After
@@ -121,7 +116,7 @@ public class TabGridAccessibilityHelperTest {
     // Low-end uses list mode.
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // Fails to rotate on some ARM devices.
-    // TODO(crbug.com/1454747): fix and re-enable on ARM devices.
+    // TODO(crbug.com/40917078): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
     @DisableIf.Build(supported_abis_includes = "arm64-v8a")
     public void testGetPotentialActionsForView() throws Exception {
@@ -271,7 +266,7 @@ public class TabGridAccessibilityHelperTest {
     // Low-end uses list mode.
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // Fails to rotate on some ARM devices.
-    // TODO(crbug.com/1454747): fix and re-enable on ARM devices.
+    // TODO(crbug.com/40917078): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
     @DisableIf.Build(supported_abis_includes = "arm64-v8a")
     public void testGetPositionsOfReorderAction() throws Exception {

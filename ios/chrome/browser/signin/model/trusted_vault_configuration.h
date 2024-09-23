@@ -13,7 +13,7 @@
 @interface TrustedVaultConfiguration : NSObject
 
 // SingleSignOnService used by TrustedVaultClientBackend.
-@property(nonatomic, strong) id<SingleSignOnService> ssoService;
+@property(nonatomic, strong) id<SingleSignOnService> singleSignOnService;
 
 @end
 

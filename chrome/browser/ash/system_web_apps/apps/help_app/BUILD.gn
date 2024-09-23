@@ -1,0 +1,172 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("help_app") {
+  sources = [
+    "help_app_notification_controller.cc",
+    "help_app_notification_controller.h",
+    "help_app_ui_delegate.cc",
+    "help_app_ui_delegate.h",
+    "help_app_untrusted_ui_config.cc",
+    "help_app_untrusted_ui_config.h",
+    "help_app_web_app_info.cc",
+    "help_app_web_app_info.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/help_app_ui",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/gfx/geometry",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/help_app_ui:mojo_bindings",
+    "//ash/webui/resources:help_app_resources",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/borealis",
+    "//chrome/browser/ash/child_accounts/on_device_controls",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/release_notes",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/feedback",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/scalable_iph:constants",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//chromeos/constants",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/strings",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//components/user_manager",
+    "//components/version_info",
+    "//components/version_info:channel",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/chromeos/styles:cros_styles_views",
+    "//ui/display",
+    "//ui/events/devices",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "help_app_integration_browsertest.cc" ]
+
+  deps = [
+    ":help_app",
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/help_app_ui",
+    "//ash/webui/help_app_ui:buildflags",
+    "//ash/webui/help_app_ui/search:mojo_bindings",
+    "//ash/webui/web_applications/test:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/apps/app_service/app_install:implementation",
+    "//chrome/browser/ash/first_run",
+    "//chrome/browser/ash/release_notes",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ui/ash",
+    "//chrome/browser/ui/ash/system",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/constants",
+    "//components/language/core/browser",
+    "//components/services/app_service",
+    "//components/supervised_user/core/common",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base/idle",
+    "//ui/base/idle:test_support",
+    "//ui/display",
+    "//ui/display/types",
+    "//ui/events:events_base",
+    "//ui/gfx:color_utils",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "help_app_notification_controller_unittest.cc",
+    "help_app_ui_delegate_unittest.cc",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/help_app_ui:mojo_bindings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/borealis/testing:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/language/core/browser",
+    "//components/pref_registry",
+    "//components/prefs:test_support",
+    "//components/version_info",
+    "//content/test:test_support",
+  ]
+}

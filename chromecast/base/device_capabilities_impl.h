@@ -46,7 +46,7 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
   void RemoveCapabilitiesObserver(Observer* observer) override;
 
  private:
-  class ValidatorInfo : public base::SupportsWeakPtr<ValidatorInfo> {
+  class ValidatorInfo final {
    public:
     explicit ValidatorInfo(Validator* validator);
 
@@ -63,10 +63,16 @@ class DeviceCapabilitiesImpl : public DeviceCapabilities {
 
     void Validate(const std::string& path, base::Value proposed_value) const;
 
+    base::WeakPtr<ValidatorInfo> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
    private:
     Validator* const validator_;
     // TaskRunner of thread that validator_ was registered on
     const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+    base::WeakPtrFactory<ValidatorInfo> weak_ptr_factory_{this};
   };
 
   // For DeviceCapabilitiesImpl()

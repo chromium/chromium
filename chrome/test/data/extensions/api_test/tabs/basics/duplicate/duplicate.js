@@ -30,7 +30,7 @@ chrome.test.runTests([
   },
 
   function totalTab() {
-    chrome.tabs.getAllInWindow(firstWindowId,
+    chrome.tabs.query({windowId:firstWindowId},
       pass(function(tabs) {
         assertEq(tabs.length, 2);
         assertEq(tabs[0].url, tabs[1].url);
@@ -38,7 +38,7 @@ chrome.test.runTests([
       }));
   },
 
-  // TODO(crbug.com/149924): This test was broken by crrev.com/c/3029302.
+  // TODO(crbug.com/40940015): This test was broken by crrev.com/c/3029302.
 /*
   function duplicateTabFromNewPopupWindow() {
     chrome.windows.create({

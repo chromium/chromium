@@ -9,16 +9,16 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permission_metrics_util.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_constants.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_presentation_handler.h"
-#import "ios/chrome/browser/ui/permissions/permission_info.h"
-#import "ios/chrome/browser/ui/permissions/permission_metrics_util.h"
-#import "ios/chrome/browser/ui/permissions/permissions_constants.h"
-#import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -37,30 +37,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypePermissionsMicrophone,
 };
 
-@interface InfobarPermissionsTableViewController ()
+@implementation InfobarPermissionsTableViewController {
+  // Whether the table view model has been loaded.
+  BOOL _modelLoaded;
 
-// Delegate for this ViewController.
-@property(nonatomic, weak) id<InfobarModalDelegate, PermissionsDelegate>
-    infobarModalDelegate;
-// Used to build and record metrics.
-@property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
+  // Delegate for this ViewController.
+  __weak id<InfobarModalDelegate, PermissionsDelegate> _infobarModalDelegate;
 
-// The permissions description.
-@property(nonatomic, copy) NSString* permissionsDescription;
+  // Used to build and record metrics.
+  InfobarMetricsRecorder* _metricsRecorder;
 
-// The list of permissions used to create switches. The first NSNumber
-// represents the `web::Permission` int value and the second its associated
-// `web::PermissionState`.
-@property(nonatomic, copy) NSDictionary<NSNumber*, NSNumber*>* permissionsInfo;
+  // The permissions description.
+  NSString* _permissionsDescription;
 
-@end
-
-@implementation InfobarPermissionsTableViewController
+  // The list of permissions used to create switches. The first NSNumber
+  // represents the `web::Permission` int value and the second its associated
+  // `web::PermissionState`.
+  NSDictionary<NSNumber*, NSNumber*>* _permissionsInfo;
+}
 
 - (instancetype)initWithDelegate:
     (id<InfobarModalDelegate, PermissionsDelegate>)modalDelegate {
   self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
+    _modelLoaded = NO;
     _metricsRecorder = [[InfobarMetricsRecorder alloc]
         initWithType:InfobarType::kInfobarTypePermissions];
     _infobarModalDelegate = modalDelegate;
@@ -91,12 +91,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Presented];
+  [_metricsRecorder recordModalEvent:MobileMessagesModalEvent::Presented];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-  [self.infobarModalDelegate modalInfobarWasDismissed:self];
-  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Dismissed];
+  [_infobarModalDelegate modalInfobarWasDismissed:self];
+  [_metricsRecorder recordModalEvent:MobileMessagesModalEvent::Dismissed];
   [super viewDidDisappear:animated];
 }
 
@@ -109,14 +109,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.tableViewModel addItem:[self permissionsDescriptionItem]
        toSectionWithIdentifier:SectionIdentifierContent];
 
-  for (NSNumber* key in self.permissionsInfo.allKeys) {
+  for (NSNumber* key in _permissionsInfo.allKeys) {
     PermissionInfo* permissionInfo = [[PermissionInfo alloc] init];
     permissionInfo.permission = (web::Permission)key.unsignedIntValue;
     permissionInfo.state =
-        (web::PermissionState)self.permissionsInfo[key].unsignedIntValue;
+        (web::PermissionState)_permissionsInfo[key].unsignedIntValue;
 
     [self updateSwitchForPermission:permissionInfo tableViewLoaded:NO];
   }
+  _modelLoaded = YES;
 }
 
 #pragma mark - UITableViewDataSource
@@ -157,7 +158,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)permissionStateChanged:(PermissionInfo*)permissionInfo {
-  [self updateSwitchForPermission:permissionInfo tableViewLoaded:YES];
+  [self updateSwitchForPermission:permissionInfo
+                  tableViewLoaded:self.viewLoaded && _modelLoaded];
 }
 
 #pragma mark - Private Methods
@@ -171,7 +173,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSMutableAttributedString* descriptionAttributedString =
       [[NSMutableAttributedString alloc]
           initWithAttributedString:PutBoldPartInString(
-                                       self.permissionsDescription,
+                                       _permissionsDescription,
                                        UIFontTextStyleFootnote)];
 
   NSDictionary* attrs = @{
@@ -207,8 +209,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Dismisses the infobar modal.
 - (void)dismissInfobarModal {
-  [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
-  [self.infobarModalDelegate dismissInfobarModal:self];
+  [_metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
+  [_infobarModalDelegate dismissInfobarModal:self];
 }
 
 // Invoked when a permission switch is toggled.
@@ -222,14 +224,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       permission = web::PermissionMicrophone;
       break;
     case ItemTypePermissionsDescription:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   PermissionInfo* permissionsDescription = [[PermissionInfo alloc] init];
   permissionsDescription.permission = permission;
   permissionsDescription.state =
       sender.isOn ? web::PermissionStateAllowed : web::PermissionStateBlocked;
-  [self.infobarModalDelegate updateStateForPermission:permissionsDescription];
+  [_infobarModalDelegate updateStateForPermission:permissionsDescription];
 }
 
 // Adds or removes a switch depending on the value of the PermissionState.
@@ -296,6 +298,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (tableViewLoaded) {
     NSIndexPath* index = [self.tableViewModel indexPathForItemType:itemType];
+    CHECK_NE(index, nil, base::NotFatalUntil::M128);
     [self.tableView insertRowsAtIndexPaths:@[ index ]
                           withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.presentationHandler resizeInfobarModal];

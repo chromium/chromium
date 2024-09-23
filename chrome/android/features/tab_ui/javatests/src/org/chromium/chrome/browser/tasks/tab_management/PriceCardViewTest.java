@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
@@ -26,10 +27,10 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -69,7 +70,7 @@ public class PriceCardViewTest extends BlankUiTestActivityTestCase {
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ViewGroup view = new FrameLayout(getActivity());
                     getActivity().setContentView(view, params);
@@ -78,12 +79,9 @@ public class PriceCardViewTest extends BlankUiTestActivityTestCase {
                             (ViewGroup)
                                     getActivity()
                                             .getLayoutInflater()
-                                            .inflate(
-                                                    R.layout.closable_tab_grid_card_item,
-                                                    view,
-                                                    false);
+                                            .inflate(R.layout.tab_grid_card_item, view, false);
+                    ((TabGridView) tabView).setTabActionState(TabActionState.CLOSABLE);
                     tabView.setVisibility(View.VISIBLE);
-
                     view.addView(tabView);
 
                     mPriceCardView = tabView.findViewById(R.id.price_info_box_outer);

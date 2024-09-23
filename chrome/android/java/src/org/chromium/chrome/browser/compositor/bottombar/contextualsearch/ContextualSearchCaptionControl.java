@@ -65,12 +65,12 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
     private boolean mDidCapture;
 
     /**
-     * @param panel                     The panel.
-     * @param context                   The Android Context used to inflate the View.
-     * @param container                 The container View used to inflate the View.
-     * @param resourceLoader            The resource loader that will handle the snapshot capturing.
-     * @param shouldShowExpandedCaption Whether the "Open in new tab" caption should be shown
-     *                                  when the panel is expanded.
+     * @param panel The panel.
+     * @param context The Android Context used to inflate the View.
+     * @param container The container View used to inflate the View.
+     * @param resourceLoader The resource loader that will handle the snapshot capturing.
+     * @param shouldShowExpandedCaption Whether the "Open in new tab" caption should be shown when
+     *     the panel is expanded.
      */
     public ContextualSearchCaptionControl(
             ContextualSearchPanel panel,
@@ -93,8 +93,9 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
 
     /**
      * Sets the caption to display in the bottom of the control.
-     * @param caption The string displayed as a caption to help explain results,
-     *        e.g. a Quick Answer.
+     *
+     * @param caption The string displayed as a caption to help explain results, e.g. a Quick
+     *     Answer.
      */
     public void setCaption(String caption) {
         mPeekingCaptionText = sanitizeText(caption);
@@ -172,7 +173,9 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
         return getIsVisible() && !TextUtils.isEmpty(getCaptionText());
     }
 
-    /** @return the caption's TextView height if it is visible. */
+    /**
+     * @return the caption's TextView height if it is visible.
+     */
     @Px
     int getTextViewHeight() {
         return getIsVisible() ? mCaption.getHeight() : 0;
@@ -196,7 +199,7 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
         super.onFinishInflate();
 
         View view = getView();
-        mCaption = (TextView) view.findViewById(R.id.contextual_search_caption);
+        mCaption = view.findViewById(R.id.contextual_search_caption);
     }
 
     @Override

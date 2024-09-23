@@ -14,6 +14,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace ash {
 
@@ -130,7 +131,7 @@ void ResizeShadowController::OnWindowPropertyChanged(aura::Window* window,
   // If the resize shadow is being shown, ensure that shadow is configured
   // correctly for either a rounded window or squared window.
   if (ShouldShowShadowForWindow(window) &&
-      chromeos::CanPropertyEffectFrameRadius(key)) {
+      key == aura::client::kWindowCornerRadiusKey) {
     RecreateShadowIfNeeded(window);
     UpdateShadowVisibility(window, window->IsVisible());
     return;
@@ -163,9 +164,10 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
   ResizeShadow* shadow = GetShadowForWindow(window);
   const ash::ResizeShadowType type =
       window->GetProperty(ash::kResizeShadowTypeKey);
+  const int window_corner_radius =
+      window->GetProperty(aura::client::kWindowCornerRadiusKey);
   const bool has_rounded_window =
-      chromeos::features::IsRoundedWindowsEnabled() &&
-      chromeos::ShouldWindowHaveRoundedCorners(window);
+      chromeos::features::IsRoundedWindowsEnabled() && window_corner_radius > 0;
 
   // If the `window` has a resize shadow with the requested type and the shadow
   // is configured for a rounded window, no need to recreate it.
@@ -183,7 +185,7 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
   // corners.
   if (has_rounded_window) {
     params.thickness = 6;
-    params.window_corner_radius = chromeos::features::RoundedWindowsRadius();
+    params.window_corner_radius = window_corner_radius;
     params.shadow_corner_radius = 16;
     params.is_for_rounded_window = true;
   }
@@ -223,11 +225,11 @@ bool ResizeShadowController::ShouldShowShadowForWindow(
     aura::Window* window) const {
   // Hide the shadow if it's a maximized/fullscreen/minimized window or the
   // overview mode is active.
-  ui::WindowShowState show_state =
+  ui::mojom::WindowShowState show_state =
       window->GetProperty(aura::client::kShowStateKey);
-  return show_state != ui::SHOW_STATE_FULLSCREEN &&
-         show_state != ui::SHOW_STATE_MAXIMIZED &&
-         show_state != ui::SHOW_STATE_MINIMIZED &&
+  return show_state != ui::mojom::WindowShowState::kFullscreen &&
+         show_state != ui::mojom::WindowShowState::kMaximized &&
+         show_state != ui::mojom::WindowShowState::kMinimized &&
          !Shell::Get()->overview_controller()->InOverviewSession();
 }
 

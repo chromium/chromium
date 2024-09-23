@@ -23,8 +23,7 @@ TEST_F(LayoutProgressTest, AnimationScheduling) {
   RenderingTest::SetBodyInnerHTML(
       "<progress id=\"progressElement\" value=0.3 max=1.0></progress>");
   UpdateAllLifecyclePhasesForTest();
-  Element* progress_element =
-      GetDocument().getElementById(AtomicString("progressElement"));
+  Element* progress_element = GetElementById("progressElement");
   auto* layout_progress =
       To<LayoutProgress>(progress_element->GetLayoutObject());
 

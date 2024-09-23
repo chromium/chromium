@@ -11,14 +11,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "content/browser/compositor/test/test_image_transport_factory.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,6 +27,8 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_image_transport_factory.h"
+#include "content/public/test/test_utils.h"
 #include "content/test/content_browser_consistency_checker.h"
 #include "content/test/test_navigation_url_loader_factory.h"
 #include "content/test/test_page_factory.h"
@@ -224,13 +225,7 @@ void RenderViewHostTestHarness::FocusWebContentsOnMainFrame() {
 
 void RenderViewHostTestHarness::FocusWebContentsOnFrame(
     content::RenderFrameHost* rfh) {
-  TestWebContents* contents = static_cast<TestWebContents*>(web_contents());
-  FrameTreeNode* node =
-      contents->GetPrimaryFrameTree().FindByID(rfh->GetFrameTreeNodeId());
-  CHECK(node);
-  CHECK_EQ(node->current_frame_host(), rfh);
-  contents->GetPrimaryFrameTree().SetFocusedFrame(
-      node, node->current_frame_host()->GetSiteInstance()->group());
+  content::FocusWebContentsOnFrame(web_contents(), rfh);
 }
 
 void RenderViewHostTestHarness::NavigateAndCommit(
@@ -298,8 +293,7 @@ void RenderViewHostTestHarness::TearDown() {
   // queue. This is preferable to immediate deletion because it will behave
   // properly if the |rph_factory_| reset above enqueued any tasks which
   // depend on |browser_context_|.
-  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                                 browser_context_.release());
+  GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, browser_context_.release());
 
   // Although this isn't required by many, some subclasses members require that
   // the task environment is gone by the time that they are destroyed (akin to

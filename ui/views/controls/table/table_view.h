@@ -50,11 +50,16 @@ class TableHeader;
 class TableViewObserver;
 class TableViewTestHelper;
 
+struct TableHeaderStyle {
+  std::optional<int> vertical_padding;
+  std::optional<int> horizontal_padding;
+};
+
 // The cell's in the first column of a table can contain:
 // - only text
 // - a small icon (16x16) and some text
 // - a check box and some text
-enum class TableType { kTextOnly, kIconAndText };
+enum class TableType : bool { kTextOnly, kIconAndText };
 
 class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   METADATA_HEADER(TableView, View)
@@ -63,7 +68,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Used by AdvanceActiveVisibleColumn(), AdvanceSelection() and
   // ResizeColumnViaKeyboard() to determine the direction to change the
   // selection.
-  enum class AdvanceDirection {
+  enum class AdvanceDirection : bool {
     kDecrement,
     kIncrement,
   };
@@ -114,7 +119,8 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // Returns a new ScrollView that contains the given |table|.
   static std::unique_ptr<ScrollView> CreateScrollViewWithTable(
-      std::unique_ptr<TableView> table);
+      std::unique_ptr<TableView> table,
+      bool has_border = true);
 
   // Returns a new Builder<ScrollView> that contains the |table| constructed
   // from the given Builder<TableView>.
@@ -244,13 +250,17 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // |row| should be a view index, not a model index.
   // |visible_column_index| indexes into |visible_columns_|.
   AXVirtualView* GetVirtualAccessibilityCell(size_t row,
-                                             size_t visible_column_index);
+                                             size_t visible_column_index) const;
 
   bool header_row_is_active() const { return header_row_is_active_; }
 
+  void SetHeaderStyle(const TableHeaderStyle& style);
+  const TableHeaderStyle& header_style() const { return header_style_; }
+
   // View overrides:
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -259,6 +269,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // ui::TableModelObserver overrides:
   void OnModelChanged() override;
@@ -390,6 +401,10 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // 1.
   GroupRange GetGroupRange(size_t model_index) const;
 
+  // Updates the accessible name for the table's views from `start_view_index`
+  // up to `start_view_index` + `length`.
+  void UpdateAccessibleNameForIndex(size_t start_view_index, size_t length);
+
   // Updates a set of accessibility views that expose the visible table contents
   // to assistive software.
   void RebuildVirtualAccessibilityChildren();
@@ -399,6 +414,16 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // process of changing but the virtual accessibility children haven't been
   // updated yet, e.g. showing or hiding a column via SetColumnVisibility().
   void ClearVirtualAccessibilityChildren();
+
+  void UpdateVirtualAccessibilityChildrenVisibilityState();
+
+  void SetAccessibleSelectionForIndex(size_t view_index, bool selected) const;
+  void SetAccessibleSelectionForRange(size_t start_view_index,
+                                      size_t end_view_index,
+                                      bool selected) const;
+  void ClearAccessibleSelection() const;
+  void UpdateAccessibleSelectionForColumnIndex(
+      size_t visible_column_index) const;
 
   // Helper functions used in UpdateVirtualAccessibilityChildrenBounds() for
   // calculating the accessibility bounds for the header and table rows and
@@ -437,7 +462,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Returns the virtual accessibility view corresponding to the specified row.
   // |row| should be a view index into the TableView's body elements, not a
   // model index.
-  AXVirtualView* GetVirtualAccessibilityBodyRow(size_t row);
+  AXVirtualView* GetVirtualAccessibilityBodyRow(size_t row) const;
 
   // Returns the virtual accessibility view corresponding to the header row, if
   // it exists.
@@ -447,8 +472,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // given row at the specified column index.
   // `ax_row` should be the virtual view of either a header or body row.
   // `visible_column_index` indexes into `visible_columns_`.
-  AXVirtualView* GetVirtualAccessibilityCellImpl(AXVirtualView* ax_row,
-                                                 size_t visible_column_index);
+  AXVirtualView* GetVirtualAccessibilityCellImpl(
+      AXVirtualView* ax_row,
+      size_t visible_column_index) const;
 
   // Creates a virtual accessibility view that is used to expose information
   // about the row at |view_index| to assistive software.
@@ -471,20 +497,12 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
                                          int view_index,
                                          int model_index);
 
-  // The accessibility view |ax_row| callback function that populates the
-  // accessibility data for a table row.
-  void PopulateAccessibilityRowData(AXVirtualView* ax_row,
-                                    ui::AXNodeData* data);
-
-  // The accessibility view |ax_cell| callback function that populates the
-  // accessibility data for a table cell.
-  void PopulateAccessibilityCellData(AXVirtualView* ax_cell,
-                                     ui::AXNodeData* data);
-
   // Updates the focus rings of the TableView and the TableHeader if necessary.
   void UpdateFocusRings();
 
-  raw_ptr<ui::TableModel> model_ = nullptr;
+  // TODO(327473315): Only one of raw_ptr in this class is dangling. Find which
+  // one.
+  raw_ptr<ui::TableModel, LeakedDanglingUntriaged> model_ = nullptr;
 
   std::vector<ui::TableColumn> columns_;
 
@@ -498,7 +516,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
 
   // The header. This is only created if more than one column is specified or
   // the first column has a non-empty title.
-  raw_ptr<TableHeader> header_ = nullptr;
+  // TODO(327473315): Only one of raw_ptr in this class is dangling. Find which
+  // one.
+  raw_ptr<TableHeader, LeakedDanglingUntriaged> header_ = nullptr;
 
   // TableView allows using the keyboard to activate a cell or row, including
   // optionally the header row. This bool keeps track of whether the active row
@@ -516,7 +536,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // is selected then.
   bool select_on_remove_ = true;
 
-  raw_ptr<TableViewObserver> observer_ = nullptr;
+  // TODO(327473315): Only one of raw_ptr in this class is dangling. Find which
+  // one.
+  raw_ptr<TableViewObserver, LeakedDanglingUntriaged> observer_ = nullptr;
   // If |sort_on_paint_| is true, table will sort before painting.
   bool sort_on_paint_ = false;
 
@@ -541,7 +563,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   std::vector<size_t> view_to_model_;
   std::vector<size_t> model_to_view_;
 
-  raw_ptr<TableGrouper> grouper_ = nullptr;
+  // TODO(327473315): Only one of raw_ptr in this class is dangling. Find which
+  // one.
+  raw_ptr<TableGrouper, LeakedDanglingUntriaged> grouper_ = nullptr;
 
   // True if in SetVisibleColumnWidth().
   bool in_set_visible_column_width_ = false;
@@ -549,6 +573,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Keeps track whether a call to UpdateAccessibilityFocus is already
   // pending or not.
   bool update_accessibility_focus_pending_ = false;
+
+  // Customization for the header. Includes options such as padding.
+  TableHeaderStyle header_style_;
 
   // Weak pointer factory, enables using PostTask safely.
   base::WeakPtrFactory<TableView> weak_factory_;
@@ -573,5 +600,27 @@ END_VIEW_BUILDER
 }  // namespace views
 
 DEFINE_VIEW_BUILDER(VIEWS_EXPORT, views::TableView)
+
+namespace base {
+
+// Allow use of ScopedObservation with TableView, which requires use of
+// SetObserver and only supports a single TableViewObserver at a time.
+template <>
+struct ScopedObservationTraits<views::TableView, views::TableViewObserver> {
+  static void AddObserver(views::TableView* source,
+                          views::TableViewObserver* observer) {
+    CHECK(!source->GetObserver())
+        << "TableView does not support multiple observers";
+    source->SetObserver(observer);
+  }
+  static void RemoveObserver(views::TableView* source,
+                             views::TableViewObserver* observer) {
+    CHECK_EQ(source->GetObserver(), observer)
+        << "TableView does not support multiple observers";
+    source->SetObserver(nullptr);
+  }
+};
+
+}  // namespace base
 
 #endif  // UI_VIEWS_CONTROLS_TABLE_TABLE_VIEW_H_

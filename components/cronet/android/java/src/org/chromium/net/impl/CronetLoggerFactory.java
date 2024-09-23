@@ -6,7 +6,7 @@ package org.chromium.net.impl;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log; // TODO(crbug/1394709): use org.chromium.base.Log instead
+import android.util.Log; // TODO(crbug.com/40881732): use org.chromium.base.Log instead
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -30,9 +30,9 @@ public final class CronetLoggerFactory {
     public static CronetLogger createLogger(Context ctx, CronetSource source) {
         synchronized (CronetLoggerFactory.class) {
             if (sLogger == null
-                    && CronetManifest.isAppOptedInForTelemetry(ctx, source)
                     // The CronetLoggerImpl only works from apiLevel 30
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                    && CronetManifest.isAppOptedInForTelemetry(ctx, source)) {
                 try {
                     sLogger = new CronetLoggerImpl(SAMPLE_RATE_PER_SECOND);
                 } catch (Exception e) {

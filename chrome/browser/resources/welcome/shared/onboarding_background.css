@@ -1,0 +1,510 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./icons.html.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  --welcome-grey: rgb(218, 220, 224);
+  --welcome-blue: rgb(57, 130, 248);
+  --welcome-blue-tinted: rgb(138, 180, 248);
+  --welcome-green: rgb(52, 168, 83);
+  --welcome-green-tinted: rgb(129, 201, 149);
+  --welcome-red: rgb(219, 68, 55);
+  --welcome-yellow: rgb(251, 188, 4);
+  --welcome-yellow-tinted: rgb(253, 214, 99);
+  --welcome-animation-play-state: running;
+
+  display: flex;
+  justify-content: center;
+  max-width: 1100px;
+  position: relative;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --welcome-grey: rgb(95, 99, 104);
+    --welcome-blue: rgb(57, 130, 248);
+    --welcome-blue-tinted: rgb(26, 115, 232);
+    --welcome-green: rgb(52, 168, 83);
+    --welcome-green-tinted: rgb(30, 142, 62);
+    --welcome-red: rgb(234, 66, 52);
+    --welcome-yellow: rgb(251, 188, 4);
+    --welcome-yellow-tinted: rgb(249, 171, 0);
+  }
+}
+
+:host([force-paused_]) {
+  --welcome-animation-play-state: paused;
+}
+
+#container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#canvas {
+  min-height: 878px;
+  min-width: 2728px;
+  position: relative;
+  transform: scale(0.5);
+}
+
+#logo {
+  background: url(../images/background_svgs/logo.svg);
+  background-size: contain;
+  border-radius: 50%;
+  height: 250px;
+  left: 50%;
+  top: 50%;
+  width: 250px;
+}
+
+.line-container {
+  border-radius: 8px;
+  height: 6px;
+  overflow: hidden;
+  position: absolute;
+  transform-origin: center left;
+}
+
+.line {
+  border-radius: 8px;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  transform-origin: center left;
+  width: 100%;
+}
+
+.line-fill {
+  background-color: var(--line-color);
+  border-radius: 8px;
+  height: 100%;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+#blue-line {
+  --line-color: var(--welcome-blue);
+  left: 1225px;
+  top: 278px;
+  transform: rotate(225deg);
+  width: 60px;
+}
+
+#green-line {
+  --line-color: var(--welcome-green);
+  left: 1170px;
+  top: 517px;
+  transform: rotate(-203deg);
+  width: 68px;
+}
+
+#red-line {
+  --line-color: var(--welcome-red);
+  left: 1574px;
+  top: 339px;
+  transform: rotate(-24deg);
+  width: 45px;
+}
+
+#grey-line {
+  --line-color: var(--welcome-grey);
+  left: 1403px;
+  top: 235px;
+  transform: rotate(280deg);
+  width: 68px;
+}
+
+#yellow-line {
+  --line-color: var(--welcome-yellow);
+  left: 1308px;
+  top: 655px;
+  transform: rotate(104deg);
+  width: 49px;
+}
+
+.shape {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 400px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 400px;
+}
+
+.dotted-line {
+  -webkit-mask: url(../images/background_svgs/streamer_line.svg);
+  -webkit-mask-position: 3px 0;
+  -webkit-mask-size: 206px 12px;
+  animation: dotted-line 1s infinite linear;
+  animation-play-state: var(--welcome-animation-play-state);
+  background-color: var(--welcome-grey);
+  height: 12px;
+  left: 50%;
+  top: 50%;
+  transform-origin: center left;
+}
+
+@keyframes dotted-line {
+  to { -webkit-mask-position: 29px 0; }
+}
+
+#dotted-line-1 {
+  left: 1136px;
+  top: 378px;
+  transform: rotate(194deg);
+  width: 126px;
+}
+
+#dotted-line-2 {
+  left: 1493px;
+  top: 271px;
+  transform: rotate(-50deg);
+  width: 146px;
+}
+
+#dotted-line-3 {
+  left: 1545px;
+  top: 525px;
+  transform: rotate(25deg);
+  width: 120px;
+}
+
+#dotted-line-4 {
+  left: 1219px;
+  top: 626px;
+  transform: rotate(128deg);
+  width: 133px;
+}
+
+.circle {
+  background-color: var(--welcome-grey);
+  border-radius: 50%;
+  height: 64px;
+  width: 64px;
+}
+
+.connectagon-container {
+  --connectagon-shape-size: 64.77px;
+  display: block;
+  height: var(--connectagon-shape-size);
+  left: 50%;
+  position: absolute;
+  top: 50%;
+}
+
+.connectagon {
+  height: 100%;
+  transform-origin: 50% 50%;
+  width: 100%;
+}
+
+.connectagon .circle {
+  background-color: var(--connectagon-shape-color);
+  border-radius: 50%;
+  float: left;
+  height: var(--connectagon-shape-size);
+  position: relative;
+  width: var(--connectagon-shape-size);
+  z-index: 1;
+}
+
+.connectagon .square {
+  background-color: var(--connectagon-connector-color);
+  float: left;
+  height: var(--connectagon-shape-size);
+  margin-inline-start: calc(var(--connectagon-shape-size)/-2);
+  position: relative;
+  width: 59px;
+}
+
+.connectagon .hexagon {
+  -webkit-mask: url(../images/background_svgs/hexagon.svg) no-repeat top left;
+  background-color: var(--connectagon-shape-color);
+  float: left;
+  height: var(--connectagon-shape-size);
+  position: relative;
+  width: 72.78px;
+  z-index: 1;
+}
+
+:host-context([dir='rtl']) .connectagon :is(.circle, .square, .hexagon) {
+  float: right;
+}
+
+.connectagon .circle+.square+.hexagon,
+.connectagon .circle+.square+.circle {
+  margin-inline-start: -27.39px;
+}
+
+.connectagon .hexagon+.square+.hexagon {
+  margin-inline-start: -26.39px;
+}
+
+#yellow-connectagon {
+  --connectagon-shape-color: var(--welcome-yellow);
+  --connectagon-connector-color: var(--welcome-yellow-tinted);
+  animation: yellow-connectagon-translate 4s alternate infinite linear;
+  animation-play-state: var(--welcome-animation-play-state);
+  left: 549px;
+  top: 156px;
+  transform: translate(-50%, -50%) rotate(51deg);
+}
+
+@keyframes yellow-connectagon-translate {
+  to {
+    transform: translate(calc(-50% - 36px), calc(-50% - 62px)) rotate(51deg);
+  }
+}
+
+#yellow-connectagon .connectagon {
+  animation: yellow-connectagon-rotate 4s infinite linear;
+  animation-play-state: var(--welcome-animation-play-state);
+  transform: rotate(0deg);
+}
+
+@keyframes yellow-connectagon-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#green-triangle {
+  -webkit-mask: url(../images/background_svgs/triangle.svg);
+  animation: green-triangle 3s infinite cubic-bezier(.63,.03,.41,.98);
+  animation-play-state: var(--welcome-animation-play-state);
+  background-color: var(--welcome-green);
+  left: 1813px;
+  top: 0;
+  transform: translate(-50%, -50%) rotate(-10deg);
+  transform-origin: 200px 300px;
+}
+
+@keyframes green-triangle {
+  to {
+    transform: translate(-50%, -50%) rotate(350deg);
+  }
+}
+
+#blue-connectagon {
+  --connectagon-shape-color: var(--welcome-blue);
+  --connectagon-connector-color: var(--welcome-blue-tinted);
+  animation: blue-connectagon 4s alternate infinite linear;
+  animation-play-state: var(--welcome-animation-play-state);
+  left: 2157px;
+  top: 249px;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes blue-connectagon {
+  50% {
+    transform: translate(calc(-50% + 10px), calc(-50% + 30px));
+  }
+  100% {
+    transform: translate(calc(-50%), calc(-50% + 60px));
+  }
+}
+
+#green-connectagon {
+  --connectagon-shape-color: var(--welcome-green);
+  --connectagon-connector-color: var(--welcome-green-tinted);
+  animation: green-connectagon-translate 6s alternate infinite linear;
+  animation-play-state: var(--welcome-animation-play-state);
+  left: 851px;
+  top: 766px;
+  transform: translate(-50%, -50%) rotate(139deg);
+}
+
+@keyframes green-connectagon-translate {
+  100% {
+    transform: translate(calc(-50% + 80px), calc(-50% + 20px)) rotate(139deg);
+  }
+}
+
+#green-connectagon .connectagon {
+  animation: green-connectagon-rotate 12s infinite linear;
+  animation-play-state: var(--welcome-animation-play-state);
+  transform: rotate(0deg);
+}
+
+@keyframes green-connectagon-rotate {
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+#square {
+  -webkit-mask: url(../images/background_svgs/square.svg);
+  animation: square 4s infinite linear;
+  animation-play-state: var(--welcome-animation-play-state);
+  background-color: var(--welcome-yellow);
+  left: 1822px;
+  top: 716px;
+  transform: translate(-50%, -50%) rotate(29deg);
+}
+
+@keyframes square {
+  to {
+    transform: translate(-50%, -50%) rotate(389deg);
+  }
+}
+
+#grey-triangle {
+  -webkit-mask: url(../images/background_svgs/triangle.svg);
+  background-color: var(--welcome-grey);
+  left: 726px;
+  top: 414px;
+  transform: translate(-50%, -50%) rotate(-16deg);
+}
+
+#grey-circle-1 {
+  left: 380px;
+  top: 600px;
+  transform: translate(-50%, -50%);
+}
+
+#grey-circle-2 {
+  left: 1526px;
+  top: 739px;
+  transform: translate(-50%, -50%);
+}
+
+#grey-lozenge {
+  -webkit-mask: url(../images/background_svgs/lozenge.svg) no-repeat top left;
+  background-color: var(--welcome-grey);
+  left: 2351px;
+  top: 491px;
+  transform: translate(-50%, -50%) rotate(-32deg);
+}
+
+#password-field {
+  -webkit-mask: url(../images/background_svgs/password_field.svg);
+  background-color: var(--welcome-grey);
+  left: 860px;
+  top: 210px;
+  transform: translate(-50%, -50%) rotate(-11deg);
+}
+
+#password-field-input {
+  -webkit-mask: url(../images/background_svgs/password.svg);
+  -webkit-mask-position: top left;
+  -webkit-mask-size: 400px 400px;
+  animation: password-field-input 2s steps(1) infinite;
+  animation-play-state: var(--welcome-animation-play-state);
+  background-color: var(--welcome-green);
+  left: 604px;
+  top: 78px;
+  transform: rotate(-11deg);
+  transform-origin: top left;
+}
+
+@keyframes password-field-input {
+  0% { width: 150px; }
+  15% { width: 182px; }
+  30% { width: 218px; }
+  45% { width: 249px; }
+  60% { width: 400px; }
+  100% { width: 400px; }
+}
+
+#bookmarks-background {
+  -webkit-mask: url(../images/background_svgs/bookmarks_background.svg)
+      no-repeat top left;
+  background-color: var(--welcome-grey);
+  left: 937px;
+  top: 570px;
+  transform: translate(-50%, -50%) rotate(10deg);
+}
+
+#bookmarks-foreground {
+  -webkit-mask: url(../images/background_svgs/bookmarks_foreground.svg)
+      no-repeat top left;
+  background-color: var(--welcome-blue);
+  left: 937px;
+  top: 568px;
+  transform: translate(-50%, -50%) rotate(10deg);
+}
+
+#devices {
+  -webkit-mask: url(../images/background_svgs/devices.svg);
+  background-color: var(--welcome-grey);
+  left: 1885px;
+  top: 446px;
+  transform: translate(-50%, -50%) rotate(-9deg);
+}
+
+#devices-check {
+  -webkit-mask: url(../images/background_svgs/devices_check.svg);
+  background-color: var(--welcome-blue);
+  left: 1885px;
+  top: 446px;
+  transform: translate(-50%, -50%) rotate(-9deg);
+}
+
+#devices-circle {
+  /* Clip the top-left and bottom-right quadrants. */
+  clip-path: polygon(
+      48% 0, 100% 0, 100% 50%, 50% 50%, 52% 100%, 0 100%, 0 50%, 50% 47%);
+  left: 1832px;
+  top: 456px;
+  transform: translate(-50%, -50%) rotate(-9deg);
+}
+
+#devices-circle-image {
+  -webkit-mask: url(../images/background_svgs/streamer_circle.svg);
+  animation: devices-circle 11s infinite linear;
+  animation-play-state: var(--welcome-animation-play-state);
+  background-color: var(--welcome-green);
+  height: 100%;
+  width: 100%;
+}
+
+@keyframes devices-circle {
+  to { transform: rotate(-360deg); }
+}
+
+#playPause {
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  --cr-icon-button-icon-size: 24px;
+  bottom: 100px;
+  left: 90%;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 300ms linear 500ms;
+}
+
+:host-context([dir=rtl]) #playPause {
+  left: auto;
+  right: 90%;
+}
+
+:host(:hover) #playPause,
+#playPause:focus-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    --welcome-animation-play-state: paused;
+  }
+
+  #playPause {
+    display: none;
+  }
+}

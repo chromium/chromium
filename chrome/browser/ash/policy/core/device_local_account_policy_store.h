@@ -99,7 +99,6 @@ class DeviceLocalAccountPolicyStore : public UserCloudPolicyStoreBase {
       bool valid_timestamp_required,
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       ValidateCompletionCallback callback,
-      bool validate_in_background,
       ash::DeviceSettingsService::OwnershipStatus ownership_status);
 
   const std::string account_id_;

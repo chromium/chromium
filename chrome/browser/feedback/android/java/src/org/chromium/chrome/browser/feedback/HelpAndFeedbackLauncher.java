@@ -27,9 +27,11 @@ public interface HelpAndFeedbackLauncher {
      * Starts an activity prompting the user to enter feedback.
      *
      * @param activity The activity to use for starting the feedback activity and to take a
-     *                 screenshot of.
+     *     screenshot of.
      * @param url the current URL. May be null.
-     * @param categoryTag The category that this feedback report falls under.
+     * @param categoryTag The category that this feedback report falls under. Before making any
+     *     changes to categories or adding a new category tag to feedback collection, please ensure
+     *     the teams that operationalize feedback are aware and supportive. Contact: chrome-gtech@.
      * @param screenshotMode The kind of screenshot to include with the feedback.
      * @param feedbackContext The context that describes the current feature being used.
      */
@@ -44,9 +46,11 @@ public interface HelpAndFeedbackLauncher {
      * Starts an activity prompting the user to enter feedback.
      *
      * @param activity The activity to use for starting the feedback activity and to take a
-     *                 screenshot of.
+     *     screenshot of.
      * @param url the current URL. May be null.
-     * @param categoryTag The category that this feedback report falls under.
+     * @param categoryTag The category that this feedback report falls under. Before making any
+     *     changes to categories or adding a new category tag to feedback collection, please ensure
+     *     the teams that operationalize feedback are aware and supportive. Contact: chrome-gtech@.
      */
     void showFeedback(
             final Activity activity, @Nullable String url, @Nullable final String categoryTag);
@@ -55,8 +59,10 @@ public interface HelpAndFeedbackLauncher {
      * Starts an activity prompting the user to enter feedback for the interest feed.
      *
      * @param activity The activity to use for starting the feedback activity and to take a
-     *                 screenshot of.
-     * @param categoryTag The category that this feedback report falls under.
+     *     screenshot of.
+     * @param categoryTag The category that this feedback report falls under. Before making any
+     *     changes to categories or adding a new category tag to feedback collection, please ensure
+     *     the teams that operationalize feedback are aware and supportive. Contact: chrome-gtech@.
      * @param feedContext Feed specific parameters (url, title, etc) to include with feedback.
      */
     void showFeedback(

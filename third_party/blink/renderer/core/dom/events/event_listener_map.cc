@@ -30,6 +30,11 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/dom/events/event_listener_map.h"
 
 #include "base/bits.h"
@@ -110,9 +115,8 @@ static bool AddListenerToVector(EventListenerVector* listener_vector,
                                 EventListener* listener,
                                 const AddEventListenerOptionsResolved* options,
                                 RegisteredEventListener** registered_listener) {
-  auto* end = listener_vector->end();
-  for (auto* iter = listener_vector->begin(); iter != end; ++iter) {
-    if ((*iter)->Matches(listener, options)) {
+  for (auto& item : *listener_vector) {
+    if (item->Matches(listener, options)) {
       // Duplicate listener.
       return false;
     }

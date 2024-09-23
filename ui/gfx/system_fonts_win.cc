@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -29,7 +30,7 @@ class SystemFonts {
       Initialize();
 
     auto it = system_fonts_.find(system_font);
-    DCHECK(it != system_fonts_.end())
+    CHECK(it != system_fonts_.end(), base::NotFatalUntil::M130)
         << "System font #" << static_cast<int>(system_font) << " not found!";
     return it->second;
   }

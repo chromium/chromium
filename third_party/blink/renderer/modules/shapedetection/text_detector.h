@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
-
+class DetectedText;
 class ExecutionContext;
 
 class MODULES_EXPORT TextDetector final : public ShapeDetector {
@@ -28,18 +28,21 @@ class MODULES_EXPORT TextDetector final : public ShapeDetector {
   explicit TextDetector(ExecutionContext*);
   ~TextDetector() override = default;
 
+  ScriptPromise<IDLSequence<DetectedText>> detect(ScriptState*,
+                                                  const V8ImageBitmapSource*,
+                                                  ExceptionState&);
+
   void Trace(Visitor*) const override;
 
  private:
-  ScriptPromise DoDetect(ScriptState*, SkBitmap, ExceptionState&) override;
   void OnDetectText(
-      ScriptPromiseResolver*,
+      ScriptPromiseResolver<IDLSequence<DetectedText>>*,
       Vector<shape_detection::mojom::blink::TextDetectionResultPtr>);
   void OnTextServiceConnectionError();
 
   HeapMojoRemote<shape_detection::mojom::blink::TextDetection> text_service_;
 
-  HeapHashSet<Member<ScriptPromiseResolver>> text_service_requests_;
+  HeapHashSet<Member<ScriptPromiseResolverBase>> text_service_requests_;
 };
 
 }  // namespace blink

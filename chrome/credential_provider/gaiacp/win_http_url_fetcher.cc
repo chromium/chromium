@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/credential_provider/gaiacp/win_http_url_fetcher.h"
 
 #include <Windows.h>
-#include <winhttp.h>
 
 #include <atlconv.h>
 #include <process.h>
+#include <winhttp.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -108,7 +114,7 @@ class HttpServiceRequest {
     }
 
     result = base::JSONReader::Read(
-        base::StringPiece(response_.data(), response_.size()),
+        std::string_view(response_.data(), response_.size()),
         base::JSON_PARSE_CHROMIUM_EXTENSIONS |
             base::JSON_ALLOW_TRAILING_COMMAS);
     if (!result) {
@@ -306,8 +312,9 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   // Open a connection to the server.
   ScopedWinHttpHandle connect;
   {
+    std::string host = url_.host();
     ScopedWinHttpHandle::Handle connect_tmp = ::WinHttpConnect(
-        session_.Get(), A2CW(url_.host().c_str()), INTERNET_DEFAULT_PORT, 0);
+        session_.Get(), A2CW(host.c_str()), INTERNET_DEFAULT_PORT, 0);
     if (!connect_tmp) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "WinHttpConnect hr=" << putHR(hr);
@@ -331,11 +338,12 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
   {
     bool use_post = !body_.empty();
+    std::string path = url_.path();
+    std::string path_for_request = url_.PathForRequest();
     ScopedWinHttpHandle::Handle request = ::WinHttpOpenRequest(
         connect.Get(), use_post ? L"POST" : L"GET",
-        use_post ? A2CW(url_.path().c_str())
-                 : A2CW(url_.PathForRequest().c_str()),
-        nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES,
+        use_post ? A2CW(path.c_str()) : A2CW(path_for_request.c_str()), nullptr,
+        WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES,
         WINHTTP_FLAG_REFRESH | WINHTTP_FLAG_SECURE);
     if (!request) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());

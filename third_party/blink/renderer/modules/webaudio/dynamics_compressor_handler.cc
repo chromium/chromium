@@ -98,9 +98,15 @@ void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
 void DynamicsCompressorHandler::ProcessOnlyAudioParams(
     uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
-  DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
+  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
+  // longer be hardcoded as 128. At that point, we'll need to switch from
+  // stack allocation to heap allocation.
+  constexpr unsigned render_quantum_frames_expected = 128;
+  CHECK_EQ(GetDeferredTaskHandler().RenderQuantumFrames(),
+           render_quantum_frames_expected);
+  DCHECK_LE(frames_to_process, render_quantum_frames_expected);
 
-  float values[GetDeferredTaskHandler().RenderQuantumFrames()];
+  float values[render_quantum_frames_expected];
 
   threshold_->CalculateSampleAccurateValues(values, frames_to_process);
   knee_->CalculateSampleAccurateValues(values, frames_to_process);
@@ -136,7 +142,7 @@ void DynamicsCompressorHandler::SetChannelCount(
     unsigned channel_count,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // A DynamicsCompressorNode only supports 1 or 2 channels
   if (channel_count > 0 && channel_count <= 2) {
@@ -160,7 +166,7 @@ void DynamicsCompressorHandler::SetChannelCountMode(
     const String& mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
-  BaseAudioContext::GraphAutoLocker locker(Context());
+  DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   ChannelCountMode old_mode = InternalChannelCountMode();
 

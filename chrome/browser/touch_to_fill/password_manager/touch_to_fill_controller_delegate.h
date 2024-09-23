@@ -61,6 +61,10 @@ class TouchToFillControllerDelegate {
   // created.
   virtual GURL GetFrameUrl() = 0;
 
+  // Returns whether TTF is eligible for showing for the currently focused field
+  // (e. g. it should not be triggered for the new password field).
+  virtual bool ShouldShowTouchToFill() = 0;
+
   // Indicates whether the controller should trigger submission on selection of
   // a password credential.
   virtual bool ShouldTriggerSubmission() = 0;

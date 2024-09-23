@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cdm/win/media_foundation_cdm.h"
 
 #include <mferror.h>
-
 #include <stdlib.h>
+
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -517,7 +523,7 @@ void MediaFoundationCdm::CloseSession(
     std::unique_ptr<SimpleCdmPromise> promise) {
   DVLOG_FUNC(1);
 
-  // TODO(crbug.com/1298192): Handle DRM_E_TEE_INVALID_HWDRM_STATE. Right now
+  // TODO(crbug.com/40215444): Handle DRM_E_TEE_INVALID_HWDRM_STATE. Right now
   // DRM_E_TEE_INVALID_HWDRM_STATE is very rare in CloseSession() and there's
   // an open discussion on how this should behave in EME spec discussion.
   CloseSessionInternal(session_id, CdmSessionClosedReason::kClose,
@@ -593,7 +599,7 @@ bool MediaFoundationCdm::OnSessionId(
                 << ", session_id=" << session_id;
 
   auto itr = pending_sessions_.find(session_token);
-  DCHECK(itr != pending_sessions_.end());
+  CHECK(itr != pending_sessions_.end(), base::NotFatalUntil::M130);
   auto session = std::move(itr->second);
   DCHECK(session);
   pending_sessions_.erase(itr);

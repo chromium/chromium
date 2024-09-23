@@ -9,7 +9,9 @@
           "LidCloseAction": 0
         },
         "prefs": {
-          "power.lid_closed_action": {}
+          "power.lid_closed_action": {
+            "value": 0
+          }
         }
       }
     ]

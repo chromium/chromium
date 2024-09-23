@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/fido_authenticator.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/operation.h"
 #include "device/fido/mac/touch_id_context.h"
@@ -26,7 +27,7 @@ namespace device::fido::mac {
 class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation : public Operation {
  public:
   using Callback = base::OnceCallback<void(
-      CtapDeviceResponseCode,
+      MakeCredentialStatus,
       std::optional<AuthenticatorMakeCredentialResponse>)>;
 
   MakeCredentialOperation(CtapMakeCredentialRequest request,

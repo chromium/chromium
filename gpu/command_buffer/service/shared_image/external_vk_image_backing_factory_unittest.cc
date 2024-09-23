@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 
 #include <memory>
@@ -28,7 +33,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gl/buildflags.h"
@@ -45,13 +50,9 @@ namespace {
 class ExternalVkImageBackingFactoryTest : public SharedImageTestBase {
  protected:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    GTEST_SKIP() << "Chrome OS Vulkan initialization fails";
-#else
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kVulkan));
     backing_factory_ =
         std::make_unique<ExternalVkImageBackingFactory>(context_state_);
-#endif
   }
 };
 
@@ -97,18 +98,25 @@ class ExternalVkImageBackingFactoryDawnTest
   }
 
  protected:
-  dawn::native::Instance dawn_instance_;
+  static constexpr WGPUInstanceDescriptor dawn_instance_desc_ = {
+      .features =
+          {
+              .timedWaitAnyEnable = true,
+          },
+  };
+  dawn::native::Instance dawn_instance_ =
+      dawn::native::Instance(&dawn_instance_desc_);
   wgpu::Device dawn_device_;
 };
 
 TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
-  const uint32_t usage =
-      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_WEBGPU;
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
@@ -216,12 +224,12 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
 
 TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
   // Create a backing using mailbox.
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   const auto format = viz::SinglePlaneFormat::kRGBA_8888;
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
-  const uint32_t usage =
-      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_WEBGPU;
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_WEBGPU_READ;
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
@@ -316,19 +324,17 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
     queue.Submit(1, &commands);
 
     // Map the buffer to read back data
-    bool done = false;
-    dst_buffer.MapAsync(
-        wgpu::MapMode::Read, 0, 256 * size.height(),
-        [](WGPUBufferMapAsyncStatus status, void* userdata) {
-          EXPECT_EQ(status, WGPUBufferMapAsyncStatus_Success);
-          *static_cast<bool*>(userdata) = true;
-        },
-        &done);
+    wgpu::FutureWaitInfo wait_info{
+        dst_buffer.MapAsync(wgpu::MapMode::Read, 0, 256 * size.height(),
+                            wgpu::CallbackMode::WaitAnyOnly,
+                            [](wgpu::MapAsyncStatus status, const char*) {
+                              ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
+                            })};
 
-    while (!done) {
-      base::PlatformThread::Sleep(base::Microseconds(100));
-      dawn_device_.Tick();
-    }
+    wgpu::WaitStatus status =
+        wgpu::Instance(dawn_instance_.Get())
+            .WaitAny(1, &wait_info, std::numeric_limits<uint64_t>::max());
+    DCHECK(status == wgpu::WaitStatus::Success);
 
     // Check the pixel data
     const uint8_t* pixel_data =
@@ -363,14 +369,14 @@ class ExternalVkImageBackingFactoryWithFormatTest
 
 TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
   viz::SharedImageFormat format = get_format();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY_READ |
-                   SHARED_IMAGE_USAGE_GLES2_READ |
-                   SHARED_IMAGE_USAGE_GLES2_WRITE;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                   SHARED_IMAGE_USAGE_GLES2_READ |
+                                   SHARED_IMAGE_USAGE_GLES2_WRITE;
 
   bool supported = backing_factory_->CanCreateSharedImage(
       usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
@@ -497,12 +503,12 @@ TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Basic) {
 // Verify that pixel upload works as expected.
 TEST_P(ExternalVkImageBackingFactoryWithFormatTest, Upload) {
   viz::SharedImageFormat format = get_format();
-  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto mailbox = Mailbox::Generate();
   gfx::Size size(30, 30);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage =
+  gpu::SharedImageUsageSet usage =
       SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
   // Verify backing can be created.

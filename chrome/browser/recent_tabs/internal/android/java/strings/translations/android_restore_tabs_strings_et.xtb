@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Vahelehtede taastamiseks mõeldud sünkroonitud seadmeid saab puudutamisel muuta. Navigeerige, et vaadata või taastada praeguse seadme valitud vahekaardid puudutamisel. Klaviatuur on peidetud.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Ava <ph name="TABS_COUNT_ONE" /> vaheleht}other{Ava <ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="4509609396389120020">Vahelehtede hankimine muudest seadmetest</translation>
+<translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
 <translation id="4811934403802581334">Kõik praegu valitud seadmest valitud vahelehed taastatakse.</translation>
 <translation id="5336031759968328813">Vaadake kõik vahelehed üle</translation>
 <translation id="5494920125229734069">Valige kõik</translation>

@@ -21,6 +21,7 @@
 #include "chrome/browser/win/automation_controller.h"
 #include "chrome/browser/win/ui_automation_util.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/installer/util/install_util.h"
 
 namespace {
 
@@ -34,6 +35,8 @@ enum class ElementType {
   CHECK_IT_OUT,
   // The button labeled "Switch Anyway" that dismisses the Edge promo.
   SWITCH_ANYWAY,
+  // The button labeled "Set Default" in the browser Default Apps sub-page.
+  SET_AS_DEFAULT_BROWSER,
   // Any other element.
   UNKNOWN,
 };
@@ -88,6 +91,10 @@ ElementType DetectElementType(IUIAutomation* automation,
   DCHECK(automation);
   DCHECK(sender);
   std::wstring aid(GetCachedBstrValue(sender, UIA_AutomationIdPropertyId));
+  // Win 11 "Set Default" button on Apps > Default Apps > <Browser> page.
+  if (aid == L"SystemSettings_DefaultApps_DefaultBrowserAction_Button") {
+    return ElementType::SET_AS_DEFAULT_BROWSER;
+  }
   if (aid == L"SystemSettings_DefaultApps_Browser_Button")
     return ElementType::DEFAULT_BROWSER;
   if (aid == L"SystemSettings_DefaultApps_Browser_App0_HyperlinkButton")
@@ -152,6 +159,12 @@ class SettingsAppMonitor::AutomationControllerDelegate
 
   // The browser chooser must only be invoked once.
   mutable bool browser_chooser_invoked_;
+
+  // Protect against concurrent access to `set_as_default_clicked_`.
+  mutable base::Lock set_as_default_clicked_lock_;
+
+  // Only react to the first time set as default is clicked.
+  mutable bool set_as_default_clicked_;
 };
 
 SettingsAppMonitor::AutomationControllerDelegate::AutomationControllerDelegate(
@@ -160,7 +173,8 @@ SettingsAppMonitor::AutomationControllerDelegate::AutomationControllerDelegate(
     : monitor_runner_(monitor_runner),
       monitor_(std::move(monitor)),
       last_focused_element_(ElementType::UNKNOWN),
-      browser_chooser_invoked_(false) {}
+      browser_chooser_invoked_(false),
+      set_as_default_clicked_(false) {}
 
 SettingsAppMonitor::AutomationControllerDelegate::
     ~AutomationControllerDelegate() = default;
@@ -194,6 +208,30 @@ void SettingsAppMonitor::AutomationControllerDelegate::OnAutomationEvent(
             FROM_HERE, base::BindOnce(&SettingsAppMonitor::OnBrowserChosen,
                                       monitor_, browser_name));
       }
+      break;
+    }
+    case ElementType::SET_AS_DEFAULT_BROWSER: {
+      // Multiple events are generated for clicking on Set as default. Only
+      // pay attention to the first one.
+      base::AutoLock auto_lock(set_as_default_clicked_lock_);
+      if (set_as_default_clicked_) {
+        break;
+      }
+      set_as_default_clicked_ = true;
+
+      std::wstring browser_name(GetCachedBstrValue(sender, UIA_NamePropertyId));
+      // `browser_name` will be "Make <browser name> your default browser" so if
+      // we find ourselves in `browser_name`, pass that to OnBrowserChosen. This
+      // won't be perfect if user brings up the dialog with Google Chrome but
+      // navigates around and sets Google Chrome Beta as the default browser,
+      // but that should be rare, and is OK.
+      if (browser_name.find(InstallUtil::GetDisplayName()) !=
+          std::wstring::npos) {
+        browser_name = InstallUtil::GetDisplayName();
+      }
+      monitor_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&SettingsAppMonitor::OnBrowserChosen,
+                                    monitor_, browser_name));
       break;
     }
     case ElementType::SWITCH_ANYWAY:
@@ -251,11 +289,11 @@ void SettingsAppMonitor::AutomationControllerDelegate::MaybeInvokeChooser(
 
   // Invoke the dialog and record whether it was successful.
   Microsoft::WRL::ComPtr<IUIAutomationInvokePattern> invoke_pattern;
+  browser_button->GetCachedPatternAs(UIA_InvokePatternId,
+                                     IID_PPV_ARGS(&invoke_pattern));
   if (!invoke_pattern) {
     return;
   }
-  browser_button->GetCachedPatternAs(UIA_InvokePatternId,
-                                     IID_PPV_ARGS(&invoke_pattern));
   invoke_pattern->Invoke();
 }
 

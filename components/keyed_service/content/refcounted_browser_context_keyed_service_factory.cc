@@ -10,35 +10,39 @@
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
+namespace {
+
+// Wraps `factory` as a KeyedServiceFactory::TestingFactory.
+base::OnceCallback<scoped_refptr<RefcountedKeyedService>(void*)> WrapFactory(
+    RefcountedBrowserContextKeyedServiceFactory::TestingFactory factory) {
+  if (!factory) {
+    return {};
+  }
+
+  return base::BindOnce(
+      [](RefcountedBrowserContextKeyedServiceFactory::TestingFactory factory,
+         void* context) -> scoped_refptr<RefcountedKeyedService> {
+        return std::move(factory).Run(
+            static_cast<content::BrowserContext*>(context));
+      },
+      std::move(factory));
+}
+
+}  // namespace
+
 void RefcountedBrowserContextKeyedServiceFactory::SetTestingFactory(
     content::BrowserContext* context,
     TestingFactory testing_factory) {
-  RefcountedKeyedServiceFactory::TestingFactory wrapped_factory;
-  if (testing_factory) {
-    wrapped_factory = base::BindRepeating(
-        [](const TestingFactory& testing_factory, void* context) {
-          return testing_factory.Run(
-              static_cast<content::BrowserContext*>(context));
-        },
-        std::move(testing_factory));
-  }
-  RefcountedKeyedServiceFactory::SetTestingFactory(context,
-                                                   std::move(wrapped_factory));
+  RefcountedKeyedServiceFactory::SetTestingFactory(
+      context, WrapFactory(std::move(testing_factory)));
 }
 
 scoped_refptr<RefcountedKeyedService>
 RefcountedBrowserContextKeyedServiceFactory::SetTestingFactoryAndUse(
     content::BrowserContext* context,
     TestingFactory testing_factory) {
-  DCHECK(testing_factory);
   return RefcountedKeyedServiceFactory::SetTestingFactoryAndUse(
-      context,
-      base::BindRepeating(
-          [](const TestingFactory& testing_factory, void* context) {
-            return testing_factory.Run(
-                static_cast<content::BrowserContext*>(context));
-          },
-          std::move(testing_factory)));
+      context, WrapFactory(std::move(testing_factory)));
 }
 
 RefcountedBrowserContextKeyedServiceFactory::
@@ -93,11 +97,6 @@ RefcountedBrowserContextKeyedServiceFactory::BuildServiceInstanceFor(
     void* context) const {
   return BuildServiceInstanceFor(
       static_cast<content::BrowserContext*>(context));
-}
-
-bool RefcountedBrowserContextKeyedServiceFactory::IsOffTheRecord(
-    void* context) const {
-  return static_cast<content::BrowserContext*>(context)->IsOffTheRecord();
 }
 
 void* RefcountedBrowserContextKeyedServiceFactory::GetContextToUse(

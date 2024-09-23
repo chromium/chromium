@@ -7,7 +7,6 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_tree.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/consent_level.h"

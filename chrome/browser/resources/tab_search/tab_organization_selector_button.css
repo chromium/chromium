@@ -1,0 +1,78 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  --selector-button-inner-radius: 4px;
+  --selector-button-outer-radius: 12px;
+}
+
+:host([disabled]) {
+  pointer-events: none;
+}
+
+cr-button {
+  background-color: var(--color-tab-search-button-background);
+  border: none;
+  border-radius: var(--selector-button-inner-radius);
+  height: 73px;
+}
+
+:host([top]) cr-button {
+  border-start-end-radius: var(--selector-button-outer-radius);
+  border-start-start-radius: var(--selector-button-outer-radius);
+}
+
+:host([bottom]) cr-button {
+  border-end-end-radius: var(--selector-button-outer-radius);
+  border-end-start-radius: var(--selector-button-outer-radius);
+}
+
+cr-button:focus-visible {
+  outline-offset: 0;
+}
+
+#buttonContent {
+  align-items: center;
+  color: var(--color-tab-search-secondary-foreground);
+  display: flex;
+  justify-content: space-between;
+  width: 248px;
+}
+
+#heading {
+  color: var(--color-tab-search-primary-foreground);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+#iconTextRow {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  font-size: 13px;
+  font-weight: 400;
+  gap: 8px;
+  line-height: 20px;
+}
+
+#prefixIcon {
+  align-items: center;
+  background: linear-gradient(
+      135deg,
+      var(--color-loading-gradient-middle) 0%,
+      var(--color-loading-gradient-end) 100%);
+  color: var(--color-tab-search-selected);
+  border-radius: 8px;
+  display: flex;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}

@@ -96,6 +96,8 @@ class PrintJobSubmitter {
   void OnPdfReadAndFlattened(
       std::unique_ptr<printing::FlattenPdfResult> result);
 
+  void OnImageDataRead(std::string data, int64_t);
+
   void ShowPrintJobConfirmationDialog(const gfx::Image& extension_icon);
 
   void OnPrintJobConfirmationDialogClosed(bool accepted);
@@ -116,8 +118,8 @@ class PrintJobSubmitter {
   const raw_ptr<printing::PrintJobController> print_job_controller_;
   const raw_ref<printing::PdfBlobDataFlattener> pdf_blob_data_flattener_;
 
-  // TODO(crbug.com/996785): Consider tracking extension being unloaded instead
-  // of storing scoped_refptr.
+  // TODO(crbug.com/40641692): Consider tracking extension being unloaded
+  // instead of storing scoped_refptr.
   scoped_refptr<const extensions::Extension> extension_;
 
   api::printing::SubmitJobRequest request_;

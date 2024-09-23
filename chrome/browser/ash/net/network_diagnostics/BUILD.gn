@@ -1,0 +1,140 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("network_diagnostics") {
+  sources = [
+    "arc_dns_resolution_routine.cc",
+    "arc_dns_resolution_routine.h",
+    "arc_http_routine.cc",
+    "arc_http_routine.h",
+    "arc_ping_routine.cc",
+    "arc_ping_routine.h",
+    "captive_portal_routine.cc",
+    "captive_portal_routine.h",
+    "dns_latency_routine.cc",
+    "dns_latency_routine.h",
+    "dns_resolution_routine.cc",
+    "dns_resolution_routine.h",
+    "dns_resolver_present_routine.cc",
+    "dns_resolver_present_routine.h",
+    "gateway_can_be_pinged_routine.cc",
+    "gateway_can_be_pinged_routine.h",
+    "has_secure_wifi_connection_routine.cc",
+    "has_secure_wifi_connection_routine.h",
+    "http_firewall_routine.cc",
+    "http_firewall_routine.h",
+    "http_request_manager.cc",
+    "http_request_manager.h",
+    "https_firewall_routine.cc",
+    "https_firewall_routine.h",
+    "https_latency_routine.cc",
+    "https_latency_routine.h",
+    "lan_connectivity_routine.cc",
+    "lan_connectivity_routine.h",
+    "network_diagnostics.cc",
+    "network_diagnostics.h",
+    "network_diagnostics_routine.cc",
+    "network_diagnostics_routine.h",
+    "network_diagnostics_util.cc",
+    "network_diagnostics_util.h",
+    "signal_strength_routine.cc",
+    "signal_strength_routine.h",
+    "tls_prober.cc",
+    "tls_prober.h",
+    "udp_prober.cc",
+    "udp_prober.h",
+    "video_conferencing_routine.cc",
+    "video_conferencing_routine.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//base",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_health/public/mojom",
+    "//components/device_event_log",
+    "//components/onc",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_dns_resolution_routine_unittest.cc",
+    "arc_http_routine_unittest.cc",
+    "arc_ping_routine_unittest.cc",
+    "captive_portal_routine_unittest.cc",
+    "dns_latency_routine_unittest.cc",
+    "dns_resolution_routine_unittest.cc",
+    "dns_resolver_present_routine_unittest.cc",
+    "fake_network_context.cc",
+    "fake_network_context.h",
+    "fake_tcp_connected_socket.cc",
+    "fake_tcp_connected_socket.h",
+    "fake_udp_socket.cc",
+    "fake_udp_socket.h",
+    "gateway_can_be_pinged_routine_unittest.cc",
+    "has_secure_wifi_connection_routine_unittest.cc",
+    "http_firewall_routine_unittest.cc",
+    "http_request_manager_unittest.cc",
+    "https_firewall_routine_unittest.cc",
+    "https_latency_routine_unittest.cc",
+    "lan_connectivity_routine_unittest.cc",
+    "network_diagnostics_routine_unittest.cc",
+    "network_diagnostics_test_helper.cc",
+    "network_diagnostics_test_helper.h",
+    "network_diagnostics_unittest.cc",
+    "network_diagnostics_util_unittest.cc",
+    "signal_strength_routine_unittest.cc",
+    "tls_prober_unittest.cc",
+    "udp_prober_unittest.cc",
+    "video_conferencing_routine_unittest.cc",
+  ]
+
+  deps = [
+    ":network_diagnostics",
+    "//ash/components/arc:arc_test_support",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/services/network_config",
+    "//chromeos/ash/services/network_config:in_process_instance",
+    "//chromeos/services/network_health/public/mojom",
+    "//components/session_manager/core",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

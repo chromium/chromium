@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/structured/key_data_provider_ash.h"
 
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/metrics/structured/key_data_provider_file.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 
@@ -48,19 +49,6 @@ bool KeyDataProviderAsh::IsReady() {
   return device_key_->IsReady();
 }
 
-void KeyDataProviderAsh::OnKeyReady() {
-  NotifyKeyReady();
-}
-
-KeyData* KeyDataProviderAsh::GetKeyData(const std::string& project_name) {
-  auto* key_data_provider = GetKeyDataProvider(project_name);
-  if (!key_data_provider || !key_data_provider->IsReady()) {
-    return nullptr;
-  }
-
-  return key_data_provider->GetKeyData(project_name);
-}
-
 std::optional<uint64_t> KeyDataProviderAsh::GetId(
     const std::string& project_name) {
   KeyDataProvider* key_data_provider = GetKeyDataProvider(project_name);
@@ -72,17 +60,15 @@ std::optional<uint64_t> KeyDataProviderAsh::GetId(
 
 std::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
     const std::string& project_name) {
-  auto maybe_project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
-  if (!maybe_project_validator.has_value()) {
+  if (!project_validator) {
     return std::nullopt;
   }
 
   // If |project_name| is not of type sequence, return std::nullopt as it
   // should not have a corresponding secondary ID.
-  const auto* project_validator = maybe_project_validator.value();
-  if (project_validator->event_type() !=
-      StructuredEventProto_EventType_SEQUENCE) {
+  if (project_validator->event_type() != StructuredEventProto::SEQUENCE) {
     return std::nullopt;
   }
 
@@ -94,16 +80,13 @@ std::optional<uint64_t> KeyDataProviderAsh::GetSecondaryId(
   return std::nullopt;
 }
 
-void KeyDataProviderAsh::OnProfileAdded(const base::FilePath& profile_path) {
-  // Only the primary user's keys should be loaded. If there is already is a
-  // profile key, no-op.
-  if (profile_key_) {
-    return;
+KeyData* KeyDataProviderAsh::GetKeyData(const std::string& project_name) {
+  auto* key_data_provider = GetKeyDataProvider(project_name);
+  if (!key_data_provider || !key_data_provider->IsReady()) {
+    return nullptr;
   }
 
-  profile_key_ = std::make_unique<KeyDataProviderFile>(
-      profile_path.Append(kProfileKeyPath), write_delay_);
-  profile_key_->AddObserver(this);
+  return key_data_provider->GetKeyData(project_name);
 }
 
 void KeyDataProviderAsh::Purge() {
@@ -116,14 +99,31 @@ void KeyDataProviderAsh::Purge() {
   }
 }
 
+void KeyDataProviderAsh::OnKeyReady() {
+  NotifyKeyReady();
+}
+
+void KeyDataProviderAsh::ProfileAdded(const Profile& profile) {
+  // Only the primary user's keys should be loaded. If there is already is a
+  // profile key, no-op.
+  if (profile_key_) {
+    return;
+  }
+
+  const base::FilePath& profile_path = profile.GetPath();
+
+  profile_key_ = std::make_unique<KeyDataProviderFile>(
+      profile_path.Append(kProfileKeyPath), write_delay_);
+  profile_key_->AddObserver(this);
+}
+
 KeyDataProvider* KeyDataProviderAsh::GetKeyDataProvider(
     const std::string& project_name) {
-  auto maybe_project_validator =
+  const auto* project_validator =
       validator::Validators::Get()->GetProjectValidator(project_name);
-  if (!maybe_project_validator.has_value()) {
+  if (!project_validator) {
     return nullptr;
   }
-  const auto* project_validator = maybe_project_validator.value();
 
   switch (project_validator->id_scope()) {
     case IdScope::kPerProfile: {
@@ -134,8 +134,7 @@ KeyDataProvider* KeyDataProviderAsh::GetKeyDataProvider(
     }
     case IdScope::kPerDevice: {
       // Retrieve the profile key if the type is a sequence.
-      if (project_validator->event_type() ==
-          StructuredEventProto_EventType_SEQUENCE) {
+      if (project_validator->event_type() == StructuredEventProto::SEQUENCE) {
         return profile_key_ ? profile_key_.get() : nullptr;
       }
       if (device_key_) {
@@ -144,7 +143,7 @@ KeyDataProvider* KeyDataProviderAsh::GetKeyDataProvider(
       break;
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 

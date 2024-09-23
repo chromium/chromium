@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 
+#include <sys/socket.h>
 #include <xdg-shell-client-protocol.h>
 
+#include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -92,10 +100,11 @@ bool DrawBitmap(const SkBitmap& bitmap, ui::WaylandShmBuffer* out_buffer) {
 
 void ReadDataFromFD(base::ScopedFD fd, std::vector<uint8_t>* contents) {
   DCHECK(contents);
-  uint8_t buffer[1 << 10];  // 1 kB in bytes.
+  std::array<uint8_t, 1 << 10> buffer;  // 1 kB in bytes.
   ssize_t length;
-  while ((length = read(fd.get(), buffer, sizeof(buffer))) > 0)
-    contents->insert(contents->end(), buffer, buffer + length);
+  while ((length = read(fd.get(), buffer.data(), buffer.size())) > 0) {
+    contents->insert(contents->end(), buffer.begin(), buffer.begin() + length);
+  }
 }
 
 gfx::Rect TranslateBoundsToParentCoordinates(const gfx::Rect& child_bounds,
@@ -138,10 +147,12 @@ wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform) {
       return WL_OUTPUT_TRANSFORM_180;
     case gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270:
       return WL_OUTPUT_TRANSFORM_90;
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
+    case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WL_OUTPUT_TRANSFORM_NORMAL;
 }
 
@@ -187,7 +198,7 @@ gfx::RectF ApplyWaylandTransform(const gfx::RectF& rect,
       result.set_height(rect.width());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return result;
@@ -235,7 +246,7 @@ gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
       result.set_height(rect.width());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return result;
@@ -258,7 +269,7 @@ gfx::SizeF ApplyWaylandTransform(const gfx::SizeF& size,
       result.set_height(size.width());
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return result;
@@ -280,7 +291,6 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
   DCHECK(parent_window);
   DCHECK_EQ(window->applied_state().window_scale,
             parent_window->applied_state().window_scale);
-  DCHECK_EQ(window->ui_scale(), parent_window->ui_scale());
   return wl::TranslateBoundsToParentCoordinates(
       window->GetBoundsInDIP(), parent_window->GetBoundsInDIP());
 }
@@ -326,8 +336,10 @@ void TransformToWlArray(
   }
 
   gfx::Transform t = absl::get<gfx::Transform>(transform);
-  constexpr int rcs[][2] = {{0, 0}, {1, 0}, {0, 1}, {1, 1}, {0, 3}, {1, 3}};
-  for (auto* rc : rcs) {
+  constexpr std::array<std::array<int, 2>, 6> rcs = {
+      {{0, 0}, {1, 0}, {0, 1}, {1, 1}, {0, 3}, {1, 3}}};
+
+  for (const auto& rc : rcs) {
     float* ptr = static_cast<float*>(wl_array_add(&array, sizeof(float)));
     DCHECK(ptr);
     *ptr = static_cast<float>(t.rc(rc[0], rc[1]));
@@ -336,12 +348,132 @@ void TransformToWlArray(
 
 base::TimeTicks EventMillisecondsToTimeTicks(uint32_t milliseconds) {
 #if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/1499638): `milliseconds` comes from Weston that
+  // TODO(crbug.com/40287874): `milliseconds` comes from Weston that
   // uses timestamp from libinput, which is different from TimeTicks.
   // Use EventTimeForNow(), for now.
   return ui::EventTimeForNow();
 #else
   return base::TimeTicks() + base::Milliseconds(milliseconds);
+#endif
+}
+
+float ClampScale(float scale) {
+  return std::max(1.f, scale);
+}
+
+bool MaybeHandlePlatformEventForDrag(const ui::PlatformEvent& event,
+                                     bool start_drag_ack_received,
+                                     base::OnceClosure cancel_drag_cb) {
+  // Two distinct problematic edge cases are handled here, where mouse button or
+  // touch release events come in after start_drag has already been requested:
+  //
+  // 1. If it's received before the drag session effectively starts at
+  //    compositor side, which is possible given the asynchronous nature of the
+  //    Wayland protocol. In this case, to preventing UI from getting stuck on
+  //    the drag nested loop, we just abort the drag session.
+  //
+  // 2. Otherwise, button release events may be received from buggy compositors
+  //    in addition to the actual dnd drop events, in which case the event is
+  //    suppressed, otherwise it leads to broken UI state, as observed for
+  //    example in https://crbug.com/329703410.
+  if (!event->IsSynthesized() &&
+      (event->type() == ui::EventType::kMouseReleased ||
+       event->type() == ui::EventType::kTouchReleased)) {
+    if (!start_drag_ack_received) {
+      std::move(cancel_drag_cb).Run();
+    } else {
+      return true;
+    }
+  }
+  return false;
+}
+
+void RecordConnectionMetrics(wl_display* display) {
+#if BUILDFLAG(IS_LINUX)
+  CHECK(display);
+
+  // These values are logged to metrics so must not be changed.
+  enum class WaylandCompositor {
+    // Couldn't obtain compositor name.
+    kUnknown = 0,
+    // Obtained compositor name, but don't have an enum value for it.
+    kOther = 1,
+
+    kAnvil = 2,
+    kCage = 3,
+    kCosmic = 4,
+    kDwl = 5,
+    kGamescope = 6,
+    kHyprland = 7,
+    kKWin = 8,
+    kLabwc = 9,
+    kMiracle = 10,
+    kMutter = 11,
+    kNiri = 12,
+    kQtile = 13,
+    kRiver = 14,
+    kSway = 15,
+    kTheseus = 16,
+    kWayfire = 17,
+    kWeston = 18,
+
+    kMaxValue = kWeston,
+  };
+
+  auto get_compositor = [&]() {
+    struct {
+      const char* name;
+      WaylandCompositor compositor;
+    } constexpr kCompositors[] = {
+        {"anvil", WaylandCompositor::kAnvil},
+        {"cage", WaylandCompositor::kCage},
+        {"cosmic", WaylandCompositor::kCosmic},
+        {"dwl", WaylandCompositor::kDwl},
+        {"gamescope", WaylandCompositor::kGamescope},
+        {"hyprland", WaylandCompositor::kHyprland},
+        {"kwin", WaylandCompositor::kKWin},
+        {"labwc", WaylandCompositor::kLabwc},
+        {"miracle", WaylandCompositor::kMiracle},
+        {"mutter", WaylandCompositor::kMutter},
+        {"niri", WaylandCompositor::kNiri},
+        {"qtile", WaylandCompositor::kQtile},
+        {"river", WaylandCompositor::kRiver},
+        {"sway", WaylandCompositor::kSway},
+        {"theseus", WaylandCompositor::kTheseus},
+        {"wayfire", WaylandCompositor::kWayfire},
+        {"weston", WaylandCompositor::kWeston},
+    };
+
+    const int fd = wl_display_get_fd(display);
+    if (fd == -1) {
+      return WaylandCompositor::kUnknown;
+    }
+
+    ucred credentials{.pid = 0};
+    socklen_t size = sizeof(ucred);
+    if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &credentials, &size) == -1) {
+      return WaylandCompositor::kUnknown;
+    }
+
+    std::string name;
+    if (!base::ReadFileToStringNonBlocking(
+            base::FilePath(
+                base::StringPrintf("/proc/%d/comm", credentials.pid)),
+            &name)) {
+      return WaylandCompositor::kUnknown;
+    }
+
+    for (const auto& [name_key, compositor] : kCompositors) {
+      if (base::StartsWith(name, name_key,
+                           base::CompareCase::INSENSITIVE_ASCII)) {
+        return compositor;
+      }
+    }
+
+    return WaylandCompositor::kOther;
+  };
+
+  base::UmaHistogramEnumeration("Linux.Wayland.Compositor", get_compositor());
 #endif
 }
 

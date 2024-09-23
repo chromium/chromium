@@ -35,6 +35,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -98,8 +99,9 @@ class LockActionHandlerLayoutManagerTest : public AshTestBase {
     AshTestBase::SetUp();
 
     views::Widget::InitParams widget_params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW);
-    widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+    widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
     lock_window_ = CreateTestingWindow(std::move(widget_params),
                                        kShellWindowId_LockScreenContainer,
                                        std::make_unique<TestWindowDelegate>());
@@ -135,7 +137,7 @@ class LockActionHandlerLayoutManagerTest : public AshTestBase {
 
     if (show) {
       keyboard->ShowKeyboard(true);
-      ASSERT_TRUE(keyboard::WaitUntilShown());
+      ASSERT_TRUE(keyboard::test::WaitUntilShown());
     } else {
       keyboard->HideKeyboardByUser();
     }
@@ -209,6 +211,7 @@ TEST_F(LockActionHandlerLayoutManagerTest, PreserveNormalWindowBounds) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
   const gfx::Rect bounds = gfx::Rect(10, 10, 300, 300);
   widget_params.bounds = bounds;
@@ -239,8 +242,9 @@ TEST_F(LockActionHandlerLayoutManagerTest, MaximizedWindowBounds) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
@@ -263,8 +267,9 @@ TEST_F(LockActionHandlerLayoutManagerTest, FullscreenWindowBounds) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
@@ -285,6 +290,7 @@ TEST_F(LockActionHandlerLayoutManagerTest, MaximizeResizableWindow) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
@@ -306,8 +312,9 @@ TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
@@ -334,7 +341,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
 
   const int kAccessibilityPanelHeight = 45;
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
 
   target_bounds.Inset(gfx::Insets().set_top(kAccessibilityPanelHeight));
@@ -347,8 +355,9 @@ TEST_F(LockActionHandlerLayoutManagerTest, AddingWindowInActiveState) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       nullptr /* window_delegate */);
@@ -361,8 +370,9 @@ TEST_F(LockActionHandlerLayoutManagerTest, AddingWindowInLaunchingState) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kLaunching);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       nullptr /* window_delegate */);
@@ -375,8 +385,9 @@ TEST_F(LockActionHandlerLayoutManagerTest, AddingWindowInNonActiveState) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kAvailable);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       nullptr /* window_delegate */);
@@ -407,8 +418,9 @@ TEST_F(LockActionHandlerLayoutManagerTest, FocusWindowWhileInNonActiveState) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kAvailable);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       nullptr /* window_delegate */);
@@ -429,8 +441,9 @@ TEST_F(LockActionHandlerLayoutManagerTest,
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kAvailable);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       nullptr /* window_delegate */);
@@ -452,8 +465,9 @@ TEST_F(LockActionHandlerLayoutManagerTest, MultipleMonitors) {
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kActive);
 
   views::Widget::InitParams widget_params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
       std::move(widget_params), kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
@@ -503,7 +517,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kLaunching);
 
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 
@@ -553,7 +569,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   ASSERT_TRUE(background_controller()->FinishShow());
 
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 
@@ -581,7 +599,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
             background_controller()->state());
 
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 
@@ -589,7 +609,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   EXPECT_TRUE(background_controller()->GetWindow()->IsVisible());
 
   std::unique_ptr<aura::Window> second_window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 
@@ -622,7 +644,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kLaunching);
 
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 
@@ -635,7 +659,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
 
   // Create new app window to show.
   window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 
@@ -659,7 +685,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kLaunching);
 
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 
@@ -686,7 +714,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   SetUpTrayActionClientAndLockSession(mojom::TrayActionState::kLaunching);
 
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 
@@ -711,7 +741,9 @@ TEST_F(LockActionHandlerLayoutManagerTestWithTestBackgroundController,
   ASSERT_TRUE(background_controller()->FinishShow());
 
   std::unique_ptr<aura::Window> window = CreateTestingWindow(
-      views::Widget::InitParams(views::Widget::InitParams::TYPE_WINDOW),
+      views::Widget::InitParams(
+          views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_WINDOW),
       kShellWindowId_LockActionHandlerContainer,
       std::make_unique<TestWindowDelegate>());
 

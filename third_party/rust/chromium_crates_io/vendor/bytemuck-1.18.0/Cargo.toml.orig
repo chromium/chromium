@@ -1,0 +1,89 @@
+[package]
+name = "bytemuck"
+description = "A crate for mucking around with piles of bytes."
+version = "1.18.0"
+authors = ["Lokathor <zefria@gmail.com>"]
+repository = "https://github.com/Lokathor/bytemuck"
+readme = "README.md"
+keywords = ["transmute", "bytes", "casting"]
+categories = ["encoding", "no-std"]
+edition = "2018"
+license = "Zlib OR Apache-2.0 OR MIT"
+exclude = ["/pedantic.bat"]
+
+[features]
+# In v2 we'll fix these names to be more "normal".
+derive = ["bytemuck_derive"]
+extern_crate_alloc = []
+extern_crate_std = ["extern_crate_alloc"]
+zeroable_maybe_uninit = []
+zeroable_atomics = []
+
+# All MSRV notes below are GUIDELINES and future versions may require even more
+# MSRV on any feature.
+
+# MSRV 1.36: Use `align_offset` method instead of casting to `usize` to check
+# alignment of pointers, this *may* improve codegen in some cases (but it has
+# never been formally benchmarked!)
+align_offset = []
+
+min_const_generics = [] # MSRV 1.51: support arrays via min_const_generics
+
+wasm_simd = []    # MSRV 1.54.0: support wasm simd types
+aarch64_simd = [] # MSRV 1.59.0: support aarch64 simd types
+
+must_cast = [] # MSRV 1.64.0: support the `must` module.
+
+const_zeroed = [] # MSRV 1.75.0: support const `zeroed()`
+
+# Do not use if you can avoid it, because this is **unsound**!!!!
+unsound_ptr_pod_impl = []
+
+# Enables all features that are both sound and supported on the latest stable
+# version of Rust, with the exception of `extern_crate_alloc` and
+# `extern_crate_std`.
+# Note: Enabling this feature opts out of any MSRV guarantees!
+latest_stable_rust = [
+  # Keep this list sorted.
+  "aarch64_simd",
+  "align_offset",
+  "const_zeroed",
+  "derive",
+  "min_const_generics",
+  "must_cast",
+  "wasm_simd",
+  "zeroable_atomics",
+  "zeroable_maybe_uninit",
+]
+
+# NOT SEMVER SUPPORTED! TEMPORARY ONLY!
+nightly_portable_simd = []
+nightly_stdsimd = []
+# Enable `f16` and `f128`
+nightly_float = []
+
+# Improved documentation using the nightly toolchain
+nightly_docs = []
+
+[dependencies]
+bytemuck_derive = { version = "1.4", path = "derive", optional = true }
+
+[lints.rust]
+unexpected_cfgs = { level = "deny", check-cfg = ['cfg(target_arch, values("spirv"))'] }
+
+[package.metadata.docs.rs]
+# Note(Lokathor): Don't use all-features or it would use `unsound_ptr_pod_impl` too.
+features = [
+  "nightly_docs",
+  "latest_stable_rust",
+  "extern_crate_alloc",
+  "extern_crate_std",
+]
+
+[package.metadata.playground]
+# Note(Lokathor): Don't use all-features or it would use `unsound_ptr_pod_impl` too.
+features = [
+  "latest_stable_rust",
+  "extern_crate_alloc",
+  "extern_crate_std",
+]

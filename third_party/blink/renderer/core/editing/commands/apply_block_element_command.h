@@ -52,11 +52,13 @@ class CORE_EXPORT ApplyBlockElementCommand : public CompositeEditCommand {
 
  private:
   void DoApply(EditingState*) final;
-  virtual void FormatRange(const Position& start,
-                           const Position& end,
-                           const Position& end_of_selection,
-                           HTMLElement*&,
-                           EditingState*) = 0;
+  virtual void FormatRange(
+      const Position& start,
+      const Position& end,
+      const Position& end_of_selection,
+      HTMLElement*& blockquote_for_next_indent,
+      VisiblePosition& out_end_of_next_of_paragraph_to_move,
+      EditingState*) = 0;
   void RangeForParagraphSplittingTextNodesIfNeeded(
       const VisiblePosition& end_of_current_paragraph,
       Position& end_of_last_paragraph,

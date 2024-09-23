@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -180,8 +181,7 @@ class WavOutputHandler : public OutputHandler {
 
     // Write wav file header to fill space. We'll need to go back and fill in
     // the size later.
-    wav_file_.WriteAtCurrentPos(reinterpret_cast<char*>(&header_),
-                                sizeof(header_));
+    wav_file_.WriteAtCurrentPos(base::byte_span_from_ref(header_));
   }
 
   WavOutputHandler(const WavOutputHandler&) = delete;
@@ -206,8 +206,7 @@ class WavOutputHandler : public OutputHandler {
         clipped_data[i] = std::clamp(clipped_data[i], -1.0f, 1.0f);
       }
     }
-    wav_file_.WriteAtCurrentPos(reinterpret_cast<char*>(clipped_data.data()),
-                                sizeof(clipped_data[0]) * clipped_data.size());
+    wav_file_.WriteAtCurrentPos(base::as_byte_span(clipped_data));
   }
 
  private:

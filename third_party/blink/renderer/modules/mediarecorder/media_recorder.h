@@ -78,8 +78,7 @@ class MODULES_EXPORT MediaRecorder
   // ScriptWrappable
   bool HasPendingActivity() const final { return state_ != State::kInactive; }
 
-  virtual void WriteData(const void* data,
-                         size_t length,
+  virtual void WriteData(base::span<const uint8_t> data,
                          bool last_in_slice,
                          double timecode,
                          ErrorEvent* error_event);
@@ -94,6 +93,8 @@ class MODULES_EXPORT MediaRecorder
   void OnAllTracksEnded();
 
   void Trace(Visitor* visitor) const override;
+
+  void UpdateAudioBitrate(uint32_t bits_per_second);
 
  private:
   void CreateBlobEvent(Blob* blob, double timecode);

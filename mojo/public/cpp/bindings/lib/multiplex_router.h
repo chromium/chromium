@@ -132,6 +132,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   void CloseEndpointHandle(
       InterfaceId id,
       const std::optional<DisconnectReason>& reason) override;
+  void NotifyLocalEndpointOfPeerClosure(InterfaceId id) override;
   InterfaceEndpointController* AttachEndpointClient(
       const ScopedInterfaceEndpointHandle& handle,
       InterfaceEndpointClient* endpoint_client,
@@ -339,6 +340,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
 
   bool posted_to_process_tasks_ = false;
   scoped_refptr<base::SequencedTaskRunner> posted_to_task_runner_;
+
+  // Indicates whether we're currently within ProcessTasks(). Used to avoid
+  // re-entrancy into that method.
+  bool processing_tasks_ = false;
 
   bool encountered_error_ = false;
 

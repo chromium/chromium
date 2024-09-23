@@ -85,6 +85,11 @@ namespace password_manager_test_utils {
 
 #pragma mark - Matchers
 
+id<GREYMatcher> PasswordManagerEmptyView() {
+  return grey_text(
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_EMPTY_TITLE));
+}
+
 id<GREYMatcher> PasswordCheckupCellForState(PasswordCheckUIState state,
                                             int number) {
   NSString* text = GetTextForPasswordCheckUIState(state);
@@ -229,6 +234,18 @@ void SaveMutedCompromisedPasswordFormToProfileStore(NSString* origin,
                                                    username:username
                                                      origin:origin],
              kPasswordStoreErrorMessage);
+}
+
+#pragma mark - Saving passkeys
+
+void SaveExamplePasskeyToStore(NSString* rpId,
+                               NSString* userId,
+                               NSString* username,
+                               NSString* userDisplayName) {
+  [PasswordSettingsAppInterface saveExamplePasskeyToStore:rpId
+                                                   userId:userId
+                                                 username:username
+                                          userDisplayName:userDisplayName];
 }
 
 #pragma mark - Helpers

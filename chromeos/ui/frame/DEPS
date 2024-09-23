@@ -1,6 +1,10 @@
 include_rules = [
+  "+chrome/browser/ui/chromeos",
+  "+chrome/test/base",
   "+chromeos/strings/grit/chromeos_strings.h",
+  "+chromeos/crosapi/mojom/test_controller.mojom.h",
   "+components/user_manager",
+  "+content/public/test",
   "+third_party/skia",
   "+ui/aura",
   "+ui/base",

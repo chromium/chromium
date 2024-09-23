@@ -7,9 +7,9 @@
 import("//build/toolchain/gcc_toolchain.gni")
 
 toolchain("s390x") {
-  cc = "xlclang"
-  cxx = "xlclang++"
-  asm = "xlclang"
+  cc = "ibm-clang"
+  cxx = "ibm-clang++"
+  asm = "ibm-clang"
   ar = "ar"
   ld = cxx
 
@@ -36,7 +36,7 @@ toolchain("s390x") {
 
   tool("cc") {
     depfile = "{{output}}.d"
-    command = "$cc -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${extra_cflags} -c {{source}} -o {{output}}"
+    command = "$cc -MMD -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${extra_cflags} -c {{source}} -o {{output}}"
     depsformat = "gcc"
     description = "CC {{output}}"
     outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -44,7 +44,7 @@ toolchain("s390x") {
 
   tool("cxx") {
     depfile = "{{output}}.d"
-    command = "$cxx -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} -c {{source}} -o {{output}}"
+    command = "$cxx -MMD -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} -c {{source}} -o {{output}}"
     depsformat = "gcc"
     description = "CXX {{output}}"
     outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -53,7 +53,7 @@ toolchain("s390x") {
   tool("asm") {
     # Just use the C compiler to compile assembly.
     depfile = "{{output}}.d"
-    command = "$asm -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{asmflags}}${extra_asmflags} -c {{source}} -o {{output}}"
+    command = "$asm ${rebuild_string} {{asmflags}}${extra_asmflags} -c {{source}} -o {{output}}"
     depsformat = "gcc"
     description = "ASM {{output}}"
     outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -88,11 +88,12 @@ toolchain("s390x") {
     # implement (1) linking to produce a .so, (2) extracting the symbols
     # from that file (3) if the extracted list differs from the existing
     # .TOC file, overwrite it, otherwise, don't change it.
-    link_command = "$ld -Wl,DLL {{ldflags}}${extra_ldflags} -o \"$sofile\" `cat $rspfile`"
+    link_command = "$ld -Wl,-x${xfile} {{ldflags}}${extra_ldflags} -o \"$sofile\" `cat $rspfile`"
 
     solink_wrapper =
-      rebase_path("//build/toolchain/gcc_link_wrapper.py", root_build_dir)
-    command = "$python_path \"$solink_wrapper\" --output=\"$sofile\" -- $link_command"
+        rebase_path("//build/toolchain/gcc_link_wrapper.py", root_build_dir)
+    command =
+        "$python_path \"$solink_wrapper\" --output=\"$sofile\" -- $link_command"
 
     rspfile_content = "{{inputs}} {{solibs}} {{libs}}"
 
@@ -153,7 +154,8 @@ toolchain("s390x") {
     link_wrapper =
         rebase_path("//build/toolchain/gcc_link_wrapper.py", root_build_dir)
 
-    command = "$python_path \"$link_wrapper\" --output=\"$outfile\" -- $link_command"
+    command =
+        "$python_path \"$link_wrapper\" --output=\"$outfile\" -- $link_command"
 
     description = "LINK $outfile"
     rspfile_content = "{{inputs}}"

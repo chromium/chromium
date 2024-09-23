@@ -13,9 +13,9 @@ Running: testEditSelector
 element.style { ()
 
 [expanded] 
-@media (min-device-width: 1px)
+@media (min-device-width: 1px) {
 .should-change { (styles-upda…inks.css:11 -> styles-update-links.css:11:21)
-    font-family: monospace;
+        font-family: monospace;
 
 [expanded] 
 .should-change { (styles-upda…links.css:7 -> styles-update-links.css:7:105)

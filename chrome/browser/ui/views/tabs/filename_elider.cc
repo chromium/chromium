@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/filename_elider.h"
 
+#include <string_view>
+
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
@@ -43,7 +45,7 @@ std::u16string::size_type FilenameElider::FindImageDimensions(
 
   // Fast forward to the unicode character following the paren.
   base::i18n::UTF16CharIterator it(
-      base::StringPiece16(text).substr(paren_pos + 1));
+      std::u16string_view(text).substr(paren_pos + 1));
 
   // Look for the image width.
   if (!base::IsAsciiDigit(it.get())) {

@@ -253,13 +253,17 @@ bool SessionControllerImpl::IsUserFirstLogin() const {
   return GetUserSession(0)->user_info.is_new_profile;
 }
 
-bool SessionControllerImpl::IsEnterpriseManaged() const {
-  return client_ && client_->IsEnterpriseManaged();
-}
-
 std::optional<int> SessionControllerImpl::GetExistingUsersCount() const {
   return client_ ? std::optional<int>(client_->GetExistingUsersCount())
                  : std::nullopt;
+}
+
+void SessionControllerImpl::NotifyFirstSessionReady() {
+  CHECK(IsActiveUserSessionStarted());
+
+  for (auto& observer : observers_) {
+    observer.OnFirstSessionReady();
+  }
 }
 
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {
@@ -323,6 +327,12 @@ PrefService* SessionControllerImpl::GetUserPrefServiceForUser(
 base::FilePath SessionControllerImpl::GetProfilePath(
     const AccountId& account_id) const {
   return client_ ? client_->GetProfilePath(account_id) : base::FilePath();
+}
+
+std::tuple<bool, bool> SessionControllerImpl::IsEligibleForSeaPen(
+    const AccountId& account_id) const {
+  return client_ ? client_->IsEligibleForSeaPen(account_id)
+                 : std::make_tuple(false, false);
 }
 
 PrefService* SessionControllerImpl::GetPrimaryUserPrefService() const {
@@ -630,7 +640,6 @@ LoginStatus SessionControllerImpl::CalculateLoginStatus() const {
       return LoginStatus::USER;
   }
   NOTREACHED();
-  return LoginStatus::NOT_LOGGED_IN;
 }
 
 LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
@@ -651,13 +660,10 @@ LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
       return LoginStatus::KIOSK_APP;
     case user_manager::UserType::kChild:
       return LoginStatus::CHILD;
-    case user_manager::UserType::kArcKioskApp:
-      return LoginStatus::KIOSK_APP;
     case user_manager::UserType::kWebKioskApp:
       return LoginStatus::KIOSK_APP;
   }
   NOTREACHED();
-  return LoginStatus::USER;
 }
 
 void SessionControllerImpl::UpdateLoginStatus() {

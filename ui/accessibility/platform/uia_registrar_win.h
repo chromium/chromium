@@ -6,9 +6,10 @@
 #define UI_ACCESSIBILITY_PLATFORM_UIA_REGISTRAR_WIN_H_
 
 #include <objbase.h>
-#include <uiautomation.h>
 
 #include "base/component_export.h"
+
+#include <uiautomation.h>
 
 namespace ui {
 

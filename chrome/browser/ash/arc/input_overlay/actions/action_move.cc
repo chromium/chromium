@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -22,6 +28,7 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/view_utils.h"
 
 namespace arc::input_overlay {
 namespace {
@@ -32,7 +39,7 @@ constexpr char kTopLeft[] = "top_left";
 constexpr char kBottomRight[] = "bottom_right";
 
 std::unique_ptr<Position> ParseApplyAreaPosition(const base::Value::Dict& dict,
-                                                 base::StringPiece key) {
+                                                 std::string_view key) {
   const auto* point = dict.FindDict(key);
   if (!point) {
     LOG(ERROR) << "Apply area in mouse move action requires: " << key;
@@ -82,7 +89,7 @@ class ActionMove::ActionMoveMouseView : public ActionView {
 
   void ChildPreferredSizeChanged(View* child) override {
     DCHECK_EQ(labels_.size(), 1u);
-    if (static_cast<ActionLabel*>(child) != labels_[0]) {
+    if (views::AsViewClass<ActionLabel>(child) != labels_[0]) {
       return;
     }
 
@@ -174,9 +181,9 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     }
 
     int label_index = -1;
-    const auto* child_label = static_cast<ActionLabel*>(child);
     for (size_t i = 0; i < kActionMoveKeysSize; i++) {
-      if (child_label == labels_[i]) {
+      if (const auto* child_label = views::AsViewClass<ActionLabel>(child);
+          child_label && child_label == labels_[i]) {
         label_index = i;
         break;
       }
@@ -431,7 +438,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
   size_t index = it - keys.begin();
   DCHECK(index < kActionMoveKeysSize);
 
-  if (key_event->type() == ui::ET_KEY_PRESSED) {
+  if (key_event->type() == ui::EventType::kKeyPressed) {
     // TODO(b/308486017): "Modifier key + regular key" support is TBD. Currently
     // it is not supported.
     if (ContainShortcutEventFlags(key_event)) {
@@ -502,12 +509,13 @@ bool ActionMove::RewriteMouseEvent(
   last_touch_root_location_ =
       TransformLocationInPixels(content_bounds, mouse_location_f);
 
-  if (type == ui::ET_MOUSE_ENTERED || type == ui::ET_MOUSE_PRESSED) {
+  if (type == ui::EventType::kMouseEntered ||
+      type == ui::EventType::kMousePressed) {
     DCHECK(!touch_id_);
   }
-  // Mouse might be unlocked before ui::ET_MOUSE_EXITED, so no need to check
-  // ui::ET_MOUSE_EXITED.
-  if (type == ui::ET_MOUSE_RELEASED) {
+  // Mouse might be unlocked before ui::EventType::kMouseExited, so no need to
+  // check ui::EventType::kMouseExited.
+  if (type == ui::EventType::kMouseReleased) {
     DCHECK(touch_id_);
   }
   if (!touch_id_) {
@@ -517,10 +525,12 @@ bool ActionMove::RewriteMouseEvent(
     if (!CreateTouchPressedEvent(mouse_event->time_stamp(), rewritten_events)) {
       return false;
     }
-  } else if (type == ui::ET_MOUSE_EXITED || type == ui::ET_MOUSE_RELEASED) {
+  } else if (type == ui::EventType::kMouseExited ||
+             type == ui::EventType::kMouseReleased) {
     CreateTouchReleasedEvent(mouse_event->time_stamp(), rewritten_events);
   } else {
-    DCHECK(type == ui::ET_MOUSE_MOVED || type == ui::ET_MOUSE_DRAGGED);
+    DCHECK(type == ui::EventType::kMouseMoved ||
+           type == ui::EventType::kMouseDragged);
     CreateTouchMovedEvent(mouse_event->time_stamp(), rewritten_events);
   }
   return true;

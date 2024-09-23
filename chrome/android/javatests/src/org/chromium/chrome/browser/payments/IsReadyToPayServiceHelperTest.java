@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.IsReadyToPayService;
 import org.chromium.IsReadyToPayServiceCallback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -216,7 +217,7 @@ public class IsReadyToPayServiceHelperTest {
     @Feature({"Payments"})
     public void onResponseTest() throws Throwable {
         mResponseReceived = false;
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent intent = new Intent();
                     intent.setClassName("mock.package.name", "mock.service.name");
@@ -247,7 +248,7 @@ public class IsReadyToPayServiceHelperTest {
     @Feature({"Payments"})
     public void unresponsiveServiceTest() throws Throwable {
         mErrorReceived = false;
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent intent = new Intent();
                     intent.setClassName("mock.package.name", "mock.service.name");
@@ -278,7 +279,7 @@ public class IsReadyToPayServiceHelperTest {
     @Feature({"Payments"})
     public void noServiceTest() throws Throwable {
         mErrorReceived = false;
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent intent = new Intent();
                     intent.setClassName("mock.package.name", "mock.service.name");
@@ -309,7 +310,7 @@ public class IsReadyToPayServiceHelperTest {
     @Feature({"Payments"})
     public void serviceConnectionTimeoutTest() throws Throwable {
         mErrorReceived = false;
-        mActivityTestRule.runOnUiThread(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent intent = new Intent();
                     intent.setClassName("mock.package.name", "mock.service.name");

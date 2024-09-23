@@ -37,7 +37,7 @@ Destination DestinationForStringName(std::string destination) {
   } else if (destination == "overflow_menu::Destination::SpotlightDebugger") {
     return overflow_menu::Destination::SpotlightDebugger;
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // Randomly chosen destination which should never be returned due to
     // NOTREACHED() above.
     return overflow_menu::Destination::Settings;
@@ -112,8 +112,10 @@ ActionType ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::ShareChrome;
   } else if (action == "EditActions") {
     return overflow_menu::ActionType::EditActions;
+  } else if (action == "LensOverlay") {
+    return overflow_menu::ActionType::LensOverlay;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 // LINT.ThenChange(:actionTypeToString)
@@ -153,6 +155,8 @@ std::string StringNameForActionType(ActionType action) {
       return "ShareChrome";
     case overflow_menu::ActionType::EditActions:
       return "EditActions";
+    case overflow_menu::ActionType::LensOverlay:
+      return "LensOverlay";
   }
 }
 // LINT.ThenChange(:stringToActionType)

@@ -89,7 +89,7 @@ DnsConfig CreateDnsConfig(int num_servers, int num_doh_servers) {
 DnsConfig CreateDnsConfigWithKnownDohProviderConfig() {
   DnsConfig config;
 
-  // TODO(https://crbug.com/1306495): Refactor this to not rely on an entry
+  // TODO(crbug.com/40218379): Refactor this to not rely on an entry
   // for 8.8.8.8 existing in the DoH provider list.
   IPEndPoint dns_endpoint(IPAddress(8, 8, 8, 8), dns_protocol::kDefaultPort);
   config.nameservers.push_back(dns_endpoint);

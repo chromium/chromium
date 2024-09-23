@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 
 #import "base/containers/contains.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/ui/badges/badge_item.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_badge_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -33,7 +33,7 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(&web_state_);
 
     // Create the InfobarBadgeTabHelper for web_state_ and set its delegate.
-    InfobarBadgeTabHelper::CreateForWebState(&web_state_);
+    InfobarBadgeTabHelper::GetOrCreateForWebState(&web_state_);
     delegate_.badgeTabHelper = tab_helper();
     tab_helper()->SetDelegate(delegate_);
   }
@@ -54,7 +54,7 @@ class InfobarBadgeTabHelperTest : public PlatformTest {
 
   // Returns InfobarBadgeTabHelper attached to web_state_.
   InfobarBadgeTabHelper* tab_helper() {
-    return InfobarBadgeTabHelper::FromWebState(&web_state_);
+    return InfobarBadgeTabHelper::GetOrCreateForWebState(&web_state_);
   }
 
   web::FakeWebState web_state_;
@@ -96,7 +96,7 @@ TEST_F(InfobarBadgeTabHelperTest, TestInfobarBadgeState) {
 }
 
 // Test the badge state after changes to the state of an Infobar. Infobar badges
-// should always be tappable.  Uses depreated API.
+// should always be tappable.  Uses deprecated API.
 TEST_F(InfobarBadgeTabHelperTest, TestInfobarBadgeStateDeprecated) {
   // Add a badge-supporting infobar to the InfobarManager to create the badge
   // item.

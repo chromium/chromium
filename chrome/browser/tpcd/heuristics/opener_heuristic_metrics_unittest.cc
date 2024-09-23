@@ -48,7 +48,7 @@ TEST(OpenerHeuristicsMetricsTest, BucketizeHoursSinceLastInteraction) {
   ASSERT_EQ(seen_values.size(), 50u);
 }
 
-// TODO(crbug.com/1480057): The test is flaky across platforms.
+// TODO(crbug.com/40281179): The test is flaky across platforms.
 TEST(OpenerHeuristicsMetricsTest, DISABLED_BucketizeSecondsSinceCommitted) {
   base::TimeDelta maximum = base::Minutes(3);
   auto cast_time_delta = base::BindRepeating(&base::TimeDelta::InSeconds);

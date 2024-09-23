@@ -5,11 +5,19 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_TEST_AUTOFILL_MANAGER_INJECTOR_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_TEST_AUTOFILL_MANAGER_INJECTOR_H_
 
+#include <ranges>
+
+#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/core/browser/autofill_driver_test_api.h"
+#import "components/autofill/core/browser/autofill_manager_test_api.h"
+#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_test_api.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -26,9 +34,8 @@ namespace autofill {
 //
 //   class MockAutofillManager : BrowserAutofillManager {
 //    public:
-//     MockAutofillManager(AutofillDriverIOS* driver,
-//                         AutofillClient* client)
-//         : BrowserAutofillManager(driver, client, "en-US") {}
+//     explicit MockAutofillManager(AutofillDriverIOS* driver)
+//         : BrowserAutofillManager(driver, "en-US") {}
 //     MOCK_METHOD(...);
 //     ...
 //   };
@@ -36,23 +43,27 @@ namespace autofill {
 //   TestAutofillManagerInjector<MockAutofillManager> injector(web_state());
 //   NavigateToURL(...);
 template <typename T>
-class TestAutofillManagerInjector : public web::WebFramesManager::Observer,
-                                    public web::WebStateObserver {
+  requires(std::derived_from<T, AutofillManager>)
+class TestAutofillManagerInjector : public AutofillDriverIOSFactory::Observer {
  public:
-  // Builds the managers using `T(AutofillDriverIOS*, AutofillClient*)`.
   explicit TestAutofillManagerInjector(web::WebState* web_state)
-      : web_state_(web_state) {
-    web_state_observation_.Observe(web_state);
-    web::WebFramesManager* frames_manager =
+      : web_state_(web_state),
+        factory_(AutofillDriverIOSFactory::FromWebState(web_state)) {
+    test_api(*factory_).AddObserverAtIndex(this, 0);
+
+    web::WebFramesManager& frames_manager = CHECK_DEREF(
         AutofillJavaScriptFeature::GetInstance()->GetWebFramesManager(
-            web_state);
-    frames_manager_observation_.Observe(frames_manager);
-    if (web::WebFrame* main_frame = frames_manager->GetMainWebFrame()) {
-      Inject(main_frame);
+            web_state_));
+    if (web::WebFrame* main_frame = frames_manager.GetMainWebFrame()) {
+      Inject(CHECK_DEREF(factory_->DriverForFrame(main_frame)));
     }
   }
 
-  ~TestAutofillManagerInjector() override = default;
+  ~TestAutofillManagerInjector() override {
+    if (factory_) {
+      factory_->RemoveObserver(this);
+    }
+  }
 
   T* GetForMainFrame() {
     web::WebFramesManager* frames_manager =
@@ -62,43 +73,35 @@ class TestAutofillManagerInjector : public web::WebFramesManager::Observer,
   }
 
   T* GetForFrame(web::WebFrame* web_frame) {
-    BrowserAutofillManager& autofill_manager =
-        AutofillDriverIOS::FromWebStateAndWebFrame(web_state_, web_frame)
-            ->GetAutofillManager();
-    return &static_cast<T&>(autofill_manager);
+    return &static_cast<T&>(
+        factory_->DriverForFrame(web_frame)->GetAutofillManager());
   }
 
  private:
-  // web::WebFramesManager::Observer:
-  void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
-                               web::WebFrame* web_frame) override {
-    Inject(web_frame);
+  // AutofillDriverIOSFactory::Observer:
+  void OnAutofillDriverIOSFactoryDestroyed(
+      AutofillDriverIOSFactory& factory) override {
+    CHECK_EQ(&factory, factory_);
+    factory_->RemoveObserver(this);
+    factory_ = nullptr;
   }
 
-  // web::WebStateObserver:
-  void WebStateDestroyed(web::WebState* web_state) override {
-    web_state_observation_.Reset();
-    frames_manager_observation_.Reset();
+  void OnAutofillDriverIOSCreated(AutofillDriverIOSFactory& factory,
+                                  AutofillDriverIOS& driver) override {
+    Inject(driver);
   }
 
-  void Inject(web::WebFrame* web_frame) {
-    AutofillDriverIOS* driver =
-        AutofillDriverIOS::FromWebStateAndWebFrame(web_state_, web_frame);
-    AutofillClient* client = driver->client();
-    driver->set_autofill_manager_for_testing(CreateManager(driver, client));
-  }
-
-  std::unique_ptr<T> CreateManager(AutofillDriverIOS* driver,
-                                   AutofillClient* client) {
-    return std::make_unique<T>(driver, client);
+  void Inject(AutofillDriverIOS& driver) {
+    // The one observer that exists is the one from AutofillDriverIOS.
+    CHECK_EQ(std::ranges::distance(
+                 test_api(driver.GetAutofillManager()).observers()),
+             1u);
+    test_api(driver).SetAutofillManager(std::make_unique<T>(&driver));
   }
 
   raw_ptr<web::WebState> web_state_;
-  base::ScopedObservation<web::WebFramesManager,
-                          web::WebFramesManager::Observer>
-      frames_manager_observation_{this};
-  base::ScopedObservation<web::WebState, web::WebStateObserver>
-      web_state_observation_{this};
+  // Non-null until OnAutofillDriverIOSFactoryDestroyed().
+  raw_ptr<AutofillDriverIOSFactory> factory_;
 };
 
 }  // namespace autofill

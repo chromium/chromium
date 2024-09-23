@@ -30,6 +30,7 @@
 ../../web_tests/external/wpt/fonts/ahem-extra/AHEM_sans-serif.TTF
 ../../web_tests/external/wpt/fonts/ahem-extra/AHEM_serif.TTF
 ../../web_tests/external/wpt/fonts/fail.woff
+../../web_tests/external/wpt/fonts/hasubi-mono/HasubiMono-Regular.woff2
 ../../web_tests/external/wpt/fonts/math/axisheight5000-verticalarrow14000.woff
 ../../web_tests/external/wpt/fonts/math/fraction-axisheight7000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/fraction-denominatordisplaystylegapmin5000-rulethickness1000.woff
@@ -107,11 +108,15 @@
 ../../web_tests/external/wpt/fonts/math/underover-accentbaseheight4000-underbarverticalgap7000.woff
 ../../web_tests/external/wpt/fonts/math/xheight500.woff
 ../../web_tests/external/wpt/fonts/mplus-1p-regular.woff
+../../web_tests/external/wpt/fonts/noto/NotoNaskhArabic-regular.woff2
 ../../web_tests/external/wpt/fonts/noto/NotoSansAdlam-hinted/NotoSansAdlam-Regular.ttf
 ../../web_tests/external/wpt/fonts/noto/NotoSansCypriot-hinted/NotoSansCypriot-Regular.ttf
 ../../web_tests/external/wpt/fonts/noto/NotoSansDeseret-Regular.ttf
 ../../web_tests/external/wpt/fonts/noto/NotoSansDevanagari-Regular.ttf
+../../web_tests/external/wpt/fonts/noto/NotoSansMongolian-regular.woff2
+../../web_tests/external/wpt/fonts/noto/NotoSansNko-regular-webfont.woff2
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-chws.otf
+../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt-min.otf
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt.otf
 ../../web_tests/external/wpt/fonts/noto/noto-sans-v8-latin-regular.woff
 ../../web_tests/external/wpt/fonts/pass.woff
@@ -298,7 +303,7 @@
 ../../web_tests/images/resources/avif/silver-full-range-srgb-420-8bpc.avif
 ../../web_tests/images/resources/avif/silver.png
 ../../web_tests/images/resources/avif/small-with-gainmap-adobe.avif
-../../web_tests/images/resources/avif/small-with-gainmap-iso-hdrbase-forward.avif
+../../web_tests/images/resources/avif/small-with-gainmap-iso-hdrbase.avif
 ../../web_tests/images/resources/avif/small-with-gainmap-iso-usealtcolorspace-differenticc.avif
 ../../web_tests/images/resources/avif/small-with-gainmap-iso-usealtcolorspace.avif
 ../../web_tests/images/resources/avif/small-with-gainmap-iso.avif
@@ -600,6 +605,7 @@
 ../../web_tests/third_party/LiberationSansWidthVariants/liberation_sans_width_variants.ttf
 ../../web_tests/third_party/MongolianWhite/mnglwhiteotf-subset.ttf
 ../../web_tests/third_party/NotoColorEmoji/NotoColorEmoji.ttf
+../../web_tests/third_party/NotoEmoji/NotoEmoji-Regular.subset.ttf
 ../../web_tests/third_party/NotoMono-hintedLocalizedFamilyName/NotoMono-Regular.subset.ttf
 ../../web_tests/third_party/NotoSans/NotoSansDevanagari-Regular-uni091D.ttf
 ../../web_tests/third_party/NotoSansCJK/NotoSansCJKjp-Regular-subset.otf

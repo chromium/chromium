@@ -71,7 +71,7 @@ class FakeIt2MeHost : public It2MeHost {
   }
   void Disconnect() override {}
 
-  absl::optional<ReconnectParams> CreateReconnectParams() const override {
+  std::optional<ReconnectParams> CreateReconnectParams() const override {
     if (is_enterprise_session() && enterprise_params().allow_reconnections) {
       ReconnectParams reconnect_params;
       reconnect_params.support_id = "1234567";
@@ -83,7 +83,7 @@ class FakeIt2MeHost : public It2MeHost {
           "/chromoting_ftl_11111111-2222-3333-4444-555555555555";
       return reconnect_params;
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool WaitForConnectCall() {

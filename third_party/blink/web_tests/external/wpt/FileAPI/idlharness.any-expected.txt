@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Found 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Blob interface: operation bytes()
+  assert_own_property: interface prototype object missing non-static operation expected property "bytes" missing
+[FAIL] Blob interface: new Blob(["TEST"]) must inherit property "bytes()" with the proper type
+  assert_inherits: property "bytes" not found in prototype chain
+[FAIL] Blob interface: new File(["myFileBits"], "myFileName") must inherit property "bytes()" with the proper type
+  assert_inherits: property "bytes" not found in prototype chain
+Harness: the test ran to completion.
+

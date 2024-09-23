@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 
+#include "base/functional/bind.h"
+
 namespace on_device_model {
 
 TestResponseHolder::TestResponseHolder() = default;
@@ -12,7 +14,12 @@ TestResponseHolder::~TestResponseHolder() = default;
 
 mojo::PendingRemote<mojom::StreamingResponder>
 TestResponseHolder::BindRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
+  auto remote = receiver_.BindNewPipeAndPassRemote();
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &TestResponseHolder::OnDisconnect, base::Unretained(this)));
+  complete_ = false;
+  disconnected_ = false;
+  return remote;
 }
 
 void TestResponseHolder::WaitForCompletion() {
@@ -24,6 +31,12 @@ void TestResponseHolder::OnResponse(mojom::ResponseChunkPtr chunk) {
 }
 
 void TestResponseHolder::OnComplete(mojom::ResponseSummaryPtr summary) {
+  complete_ = true;
+  run_loop_.Quit();
+}
+
+void TestResponseHolder::OnDisconnect() {
+  disconnected_ = true;
   run_loop_.Quit();
 }
 

@@ -11,18 +11,22 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /** Factory for creating {@link ContextMenuPopulator}s. */
 public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
-    private final ContextMenuItemDelegate mItemDelegate;
+    private final TabContextMenuItemDelegate mItemDelegate;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final @ContextMenuMode int mContextMenuMode;
     private final ExternalAuthUtils mExternalAuthUtils;
 
     public ChromeContextMenuPopulatorFactory(
-            @NonNull ContextMenuItemDelegate itemDelegate,
+            @NonNull TabContextMenuItemDelegate itemDelegate,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @ContextMenuMode int contextMenuMode,
             ExternalAuthUtils externalAuthUtils) {

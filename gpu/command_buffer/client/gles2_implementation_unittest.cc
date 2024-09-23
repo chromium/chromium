@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Tests for GLES2Implementation.
 
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -16,6 +21,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
@@ -219,6 +225,7 @@ class GLES2ImplementationTest : public testing::Test {
       gl_capabilities_.max_renderbuffer_size = kMaxRenderbufferSize;
       gl_capabilities_.max_texture_image_units = kMaxTextureImageUnits;
       capabilities_.max_texture_size = kMaxTextureSize;
+      gl_capabilities_.max_texture_size = kMaxTextureSize;
       gl_capabilities_.max_varying_vectors = kMaxVaryingVectors;
       gl_capabilities_.max_vertex_attribs = kMaxVertexAttribs;
       gl_capabilities_.max_vertex_texture_image_units =
@@ -235,10 +242,11 @@ class GLES2ImplementationTest : public testing::Test {
       gl_capabilities_.bind_generates_resource_chromium =
           bind_generates_resource_service ? 1 : 0;
       capabilities_.sync_query = sync_query;
+      gl_capabilities_.sync_query = sync_query;
       gl_capabilities_.occlusion_query_boolean = occlusion_query_boolean;
       gl_capabilities_.timer_queries = timer_queries;
-      capabilities_.major_version = major_version;
-      capabilities_.minor_version = minor_version;
+      gl_capabilities_.major_version = major_version;
+      gl_capabilities_.minor_version = minor_version;
       EXPECT_CALL(*gpu_control_, GetCapabilities())
           .WillOnce(ReturnRef(capabilities_));
       EXPECT_CALL(*gpu_control_, GetGLCapabilities())
@@ -660,8 +668,8 @@ TEST_F(GLES2ImplementationTest, GetBucketContents) {
   const uint32_t kBucketId = GLES2Implementation::kResultBucketId;
   const uint32_t kTestSize = MaxTransferBufferSize() + 32;
 
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[kTestSize]);
-  uint8_t* expected_data = buf.get();
+  auto buf = base::HeapArray<uint8_t>::Uninit(kTestSize);
+  uint8_t* expected_data = buf.data();
   for (uint32_t ii = 0; ii < kTestSize; ++ii) {
     expected_data[ii] = ii * 3;
   }
@@ -1527,15 +1535,15 @@ TEST_F(GLES2ImplementationTest, ReadPixels2Reads) {
       0, kHeight / 2, kWidth, kHeight / 2, kFormat, kType,
       mem2.id, mem2.offset, result2.id, result2.offset, false);
   expected.set_token2.Init(GetNextToken());
-  std::unique_ptr<int8_t[]> buffer(
-      new int8_t[kWidth * kHeight * kBytesPerPixel]);
+  auto buffer =
+      base::HeapArray<int8_t>::Uninit(kWidth * kHeight * kBytesPerPixel);
 
   EXPECT_CALL(*command_buffer(), OnFlush())
       .WillOnce(SetMemory(result1.ptr, static_cast<uint32_t>(1)))
       .WillOnce(SetMemory(result2.ptr, static_cast<uint32_t>(1)))
       .RetiresOnSaturation();
 
-  gl_->ReadPixels(0, 0, kWidth, kHeight, kFormat, kType, buffer.get());
+  gl_->ReadPixels(0, 0, kWidth, kHeight, kFormat, kType, buffer.data());
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -1560,14 +1568,14 @@ TEST_F(GLES2ImplementationTest, ReadPixelsBadFormatType) {
       0, 0, kWidth, kHeight, kFormat, kType,
       mem1.id, mem1.offset, result1.id, result1.offset, false);
   expected.set_token.Init(GetNextToken());
-  std::unique_ptr<int8_t[]> buffer(
-      new int8_t[kWidth * kHeight * kBytesPerPixel]);
+  auto buffer =
+      base::HeapArray<int8_t>::Uninit(kWidth * kHeight * kBytesPerPixel);
 
   EXPECT_CALL(*command_buffer(), OnFlush())
       .Times(1)
       .RetiresOnSaturation();
 
-  gl_->ReadPixels(0, 0, kWidth, kHeight, kFormat, kType, buffer.get());
+  gl_->ReadPixels(0, 0, kWidth, kHeight, kFormat, kType, buffer.data());
 }
 
 TEST_F(GLES2ImplementationTest, FreeUnusedSharedMemory) {
@@ -2231,7 +2239,7 @@ TEST_F(GLES2ImplementationTest, TexImage2DViaMappedMem) {
       kWidth, kHeight, 1, kFormat, kType, kPixelStoreUnpackAlignment,
       &size, &unpadded_row_size, &padded_row_size));
 
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size]);
+  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
   for (uint32_t ii = 0; ii < size; ++ii) {
     pixels[ii] = static_cast<uint8_t>(ii);
   }
@@ -2243,13 +2251,11 @@ TEST_F(GLES2ImplementationTest, TexImage2DViaMappedMem) {
       kTarget, kLevel, kFormat, kWidth, kHeight, kFormat, kType,
       mem1.id, mem1.offset);
   expected.set_token.Init(GetNextToken());
-  gl_->TexImage2D(
-      kTarget, kLevel, kFormat, kWidth, kHeight, kBorder, kFormat, kType,
-      pixels.get());
+  gl_->TexImage2D(kTarget, kLevel, kFormat, kWidth, kHeight, kBorder, kFormat,
+                  kType, pixels.data());
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-  EXPECT_TRUE(CheckRect(
-      kWidth, kHeight, kFormat, kType, kPixelStoreUnpackAlignment,
-      pixels.get(), mem1.ptr));
+  EXPECT_TRUE(CheckRect(kWidth, kHeight, kFormat, kType,
+                        kPixelStoreUnpackAlignment, pixels.data(), mem1.ptr));
 }
 
 // Test TexImage2D with 2 writes
@@ -2287,7 +2293,7 @@ TEST_F(GLES2ImplementationTest, TexImage2DViaTexSubImage2D) {
       kWidth, kHeight / 2, 1, kFormat, kType, kPixelStoreUnpackAlignment,
       &half_size, nullptr, nullptr));
 
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size]);
+  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
   for (uint32_t ii = 0; ii < size; ++ii) {
     pixels[ii] = static_cast<uint8_t>(ii);
   }
@@ -2312,18 +2318,17 @@ TEST_F(GLES2ImplementationTest, TexImage2DViaTexSubImage2D) {
   // EXPECT_CALL(*command_buffer(), OnFlush())
   //     .WillOnce(CheckRectAction(
   //         kWidth, kHeight / 2, kFormat, kType, kPixelStoreUnpackAlignment,
-  //         false, pixels.get(),
+  //         false, pixels.data(),
   //         GetExpectedTransferAddressFromOffsetAs<uint8_t>(offset1,
   //         half_size)))
   //     .RetiresOnSaturation();
 
-  gl_->TexImage2D(
-      kTarget, kLevel, kFormat, kWidth, kHeight, kBorder, kFormat, kType,
-      pixels.get());
+  gl_->TexImage2D(kTarget, kLevel, kFormat, kWidth, kHeight, kBorder, kFormat,
+                  kType, pixels.data());
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-  EXPECT_TRUE(CheckRect(
-      kWidth, kHeight / 2, kFormat, kType, kPixelStoreUnpackAlignment,
-      pixels.get() + kHeight / 2 * padded_row_size, mem2.ptr));
+  EXPECT_TRUE(
+      CheckRect(kWidth, kHeight / 2, kFormat, kType, kPixelStoreUnpackAlignment,
+                pixels.data() + kHeight / 2 * padded_row_size, mem2.ptr));
 }
 
 TEST_F(GLES2ImplementationTest, SubImage2DUnpack) {
@@ -2368,8 +2373,7 @@ TEST_F(GLES2ImplementationTest, SubImage2DUnpack) {
   ASSERT_TRUE(GLES2Util::ComputeImageDataSizesES3(
       kSrcWidth, kSrcSubImageY1, 1, kFormat, kType,
       pixel_params, &pixel_size, nullptr, nullptr, nullptr, nullptr));
-  std::unique_ptr<uint8_t[]> src_pixels;
-  src_pixels.reset(new uint8_t[pixel_size]);
+  auto src_pixels = base::HeapArray<uint8_t>::WithSize(pixel_size);
   for (size_t i = 0; i < pixel_size; ++i) {
     src_pixels[i] = static_cast<uint8_t>(i % 255);
   }
@@ -2424,10 +2428,10 @@ TEST_F(GLES2ImplementationTest, SubImage2DUnpack) {
         gl_->TexImage2D(
             GL_TEXTURE_2D, kLevel, kFormat, kTexWidth, kTexHeight, kBorder,
             kFormat, kType, nullptr);
-        gl_->TexSubImage2D(
-            GL_TEXTURE_2D, kLevel, kTexSubXOffset, kTexSubYOffset,
-            kSrcSubImageWidth, kSrcSubImageHeight, kFormat, kType,
-            src_pixels.get());
+        gl_->TexSubImage2D(GL_TEXTURE_2D, kLevel, kTexSubXOffset,
+                           kTexSubYOffset, kSrcSubImageWidth,
+                           kSrcSubImageHeight, kFormat, kType,
+                           src_pixels.data());
         texSubImageExpected.pixel_store_i.Init(GL_UNPACK_ALIGNMENT, alignment);
         texSubImageExpected.tex_image_2d.Init(
             GL_TEXTURE_2D, kLevel, kFormat, kTexWidth, kTexHeight,
@@ -2439,10 +2443,9 @@ TEST_F(GLES2ImplementationTest, SubImage2DUnpack) {
         EXPECT_EQ(0, memcmp(&texSubImageExpected, commands,
                             sizeof(texSubImageExpected)));
       } else {
-        gl_->TexImage2D(
-            GL_TEXTURE_2D, kLevel, kFormat,
-            kSrcSubImageWidth, kSrcSubImageHeight, kBorder, kFormat, kType,
-            src_pixels.get());
+        gl_->TexImage2D(GL_TEXTURE_2D, kLevel, kFormat, kSrcSubImageWidth,
+                        kSrcSubImageHeight, kBorder, kFormat, kType,
+                        src_pixels.data());
         texImageExpected.pixel_store_i.Init(GL_UNPACK_ALIGNMENT, alignment);
         texImageExpected.tex_image_2d.Init(
             GL_TEXTURE_2D, kLevel, kFormat, kSrcSubImageWidth,
@@ -2452,7 +2455,7 @@ TEST_F(GLES2ImplementationTest, SubImage2DUnpack) {
       }
       for (int y = 0; y < kSrcSubImageHeight; ++y) {
         const uint8_t* src_row =
-            src_pixels.get() + client_skip_size + y * client_padded_row_size;
+            src_pixels.data() + client_skip_size + y * client_padded_row_size;
         const uint8_t* dst_row = mem.ptr + y * service_padded_row_size;
         EXPECT_EQ(0, memcmp(src_row, dst_row, service_unpadded_row_size));
       }
@@ -2509,8 +2512,7 @@ TEST_F(GLES3ImplementationTest, SubImage3DUnpack) {
   ASSERT_TRUE(GLES2Util::ComputeImageDataSizesES3(
       kSrcWidth, kSrcHeight, kSrcSubImageZ1, kFormat, kType,
       pixel_params, &pixel_size, nullptr, nullptr, nullptr, nullptr));
-  std::unique_ptr<uint8_t[]> src_pixels;
-  src_pixels.reset(new uint8_t[pixel_size]);
+  auto src_pixels = base::HeapArray<uint8_t>::WithSize(pixel_size);
   for (size_t i = 0; i < pixel_size; ++i) {
     src_pixels[i] = static_cast<uint8_t>(i % 255);
   }
@@ -2571,11 +2573,10 @@ TEST_F(GLES3ImplementationTest, SubImage3DUnpack) {
         gl_->TexImage3D(
             GL_TEXTURE_3D, kLevel, kFormat, kTexWidth, kTexHeight, kTexDepth,
             kBorder, kFormat, kType, nullptr);
-        gl_->TexSubImage3D(
-            GL_TEXTURE_3D, kLevel,
-            kTexSubXOffset, kTexSubYOffset, kTexSubZOffset,
-            kSrcSubImageWidth, kSrcSubImageHeight, kSrcSubImageDepth,
-            kFormat, kType, src_pixels.get());
+        gl_->TexSubImage3D(GL_TEXTURE_3D, kLevel, kTexSubXOffset,
+                           kTexSubYOffset, kTexSubZOffset, kSrcSubImageWidth,
+                           kSrcSubImageHeight, kSrcSubImageDepth, kFormat,
+                           kType, src_pixels.data());
         texSubImageExpected.pixel_store_i[0].Init(
             GL_UNPACK_ALIGNMENT, alignment);
         texSubImageExpected.pixel_store_i[1].Init(
@@ -2593,10 +2594,9 @@ TEST_F(GLES3ImplementationTest, SubImage3DUnpack) {
         EXPECT_EQ(0, memcmp(&texSubImageExpected, commands,
                             sizeof(texSubImageExpected)));
       } else {
-        gl_->TexImage3D(
-            GL_TEXTURE_3D, kLevel, kFormat,
-            kSrcSubImageWidth, kSrcSubImageHeight, kSrcSubImageDepth,
-            kBorder, kFormat, kType, src_pixels.get());
+        gl_->TexImage3D(GL_TEXTURE_3D, kLevel, kFormat, kSrcSubImageWidth,
+                        kSrcSubImageHeight, kSrcSubImageDepth, kBorder, kFormat,
+                        kType, src_pixels.data());
         texImageExpected.pixel_store_i[0].Init(GL_UNPACK_ALIGNMENT, alignment);
         texImageExpected.pixel_store_i[1].Init(
             GL_UNPACK_ROW_LENGTH, kSrcWidth);
@@ -2611,7 +2611,8 @@ TEST_F(GLES3ImplementationTest, SubImage3DUnpack) {
       }
       for (int z = 0; z < kSrcSubImageDepth; ++z) {
         for (int y = 0; y < kSrcSubImageHeight; ++y) {
-          const uint8_t* src_row =  src_pixels.get() + client_skip_size +
+          const uint8_t* src_row =
+              src_pixels.data() + client_skip_size +
               (kSrcHeight * z + y) * client_padded_row_size;
           const uint8_t* dst_row = mem.ptr +
               (kSrcSubImageHeight * z + y) * service_padded_row_size;
@@ -2722,7 +2723,7 @@ TEST_F(GLES2ImplementationTest, TexImage3DSingleCommand) {
       kWidth, kHeight, kDepth, kFormat, kType, kPixelStoreUnpackAlignment,
       &size, nullptr, nullptr));
 
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size]);
+  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
   for (uint32_t ii = 0; ii < size; ++ii) {
     pixels[ii] = static_cast<uint8_t>(ii);
   }
@@ -2734,14 +2735,13 @@ TEST_F(GLES2ImplementationTest, TexImage3DSingleCommand) {
       kTarget, kLevel, kFormat, kWidth, kHeight, kDepth,
       kFormat, kType, mem.id, mem.offset);
 
-  gl_->TexImage3D(
-      kTarget, kLevel, kFormat, kWidth, kHeight, kDepth, kBorder,
-      kFormat, kType, pixels.get());
+  gl_->TexImage3D(kTarget, kLevel, kFormat, kWidth, kHeight, kDepth, kBorder,
+                  kFormat, kType, pixels.data());
 
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_TRUE(CheckRect(kWidth, kHeight * kDepth, kFormat, kType,
                         kPixelStoreUnpackAlignment,
-                        reinterpret_cast<uint8_t*>(pixels.get()), mem.ptr));
+                        reinterpret_cast<uint8_t*>(pixels.data()), mem.ptr));
 }
 
 TEST_F(GLES2ImplementationTest, TexImage3DViaMappedMem) {
@@ -2775,7 +2775,7 @@ TEST_F(GLES2ImplementationTest, TexImage3DViaMappedMem) {
       kWidth, kHeight, kDepth, kFormat, kType, kPixelStoreUnpackAlignment,
       &size, nullptr, nullptr));
 
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size]);
+  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
   for (uint32_t ii = 0; ii < size; ++ii) {
     pixels[ii] = static_cast<uint8_t>(ii);
   }
@@ -2787,14 +2787,13 @@ TEST_F(GLES2ImplementationTest, TexImage3DViaMappedMem) {
       kTarget, kLevel, kFormat, kWidth, kHeight, kDepth,
       kFormat, kType, mem.id, mem.offset);
 
-  gl_->TexImage3D(
-      kTarget, kLevel, kFormat, kWidth, kHeight, kDepth, kBorder,
-      kFormat, kType, pixels.get());
+  gl_->TexImage3D(kTarget, kLevel, kFormat, kWidth, kHeight, kDepth, kBorder,
+                  kFormat, kType, pixels.data());
 
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_TRUE(CheckRect(kWidth, kHeight * kDepth, kFormat, kType,
                         kPixelStoreUnpackAlignment,
-                        reinterpret_cast<uint8_t*>(pixels.get()), mem.ptr));
+                        reinterpret_cast<uint8_t*>(pixels.data()), mem.ptr));
 }
 
 TEST_F(GLES2ImplementationTest, TexImage3DViaTexSubImage3D) {
@@ -2832,7 +2831,7 @@ TEST_F(GLES2ImplementationTest, TexImage3DViaTexSubImage3D) {
   EXPECT_EQ(size, first_size + second_size);
   ExpectedMemoryInfo mem1 = GetExpectedMemory(first_size);
   ExpectedMemoryInfo mem2 = GetExpectedMemory(second_size);
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size]);
+  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
   for (uint32_t ii = 0; ii < size; ++ii) {
     pixels[ii] = static_cast<uint8_t>(ii);
   }
@@ -2848,9 +2847,8 @@ TEST_F(GLES2ImplementationTest, TexImage3DViaTexSubImage3D) {
       mem2.id, mem2.offset, GL_TRUE);
   expected.set_token.Init(GetNextToken());
 
-  gl_->TexImage3D(
-      kTarget, kLevel, kFormat, kWidth, kHeight, 1, kBorder,
-      kFormat, kType, pixels.get());
+  gl_->TexImage3D(kTarget, kLevel, kFormat, kWidth, kHeight, 1, kBorder,
+                  kFormat, kType, pixels.data());
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -2892,7 +2890,7 @@ TEST_F(GLES2ImplementationTest, TexSubImage3D4Writes) {
   uint32_t fourth_size = second_size - (padded_row_size - unpadded_row_size);
   EXPECT_EQ(size, first_size + second_size + third_size + fourth_size);
 
-  std::unique_ptr<uint8_t[]> pixels(new uint8_t[size]);
+  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
   for (uint32_t ii = 0; ii < size; ++ii) {
     pixels[ii] = static_cast<uint8_t>(ii);
   }
@@ -2921,15 +2919,14 @@ TEST_F(GLES2ImplementationTest, TexSubImage3D4Writes) {
   expected.set_token2.Init(GetNextToken());
   expected.set_token3.Init(GetNextToken());
 
-  gl_->TexSubImage3D(
-      kTarget, kLevel, kXOffset, kYOffset, kZOffset, kWidth, kHeight, kDepth,
-      kFormat, kType, pixels.get());
+  gl_->TexSubImage3D(kTarget, kLevel, kXOffset, kYOffset, kZOffset, kWidth,
+                     kHeight, kDepth, kFormat, kType, pixels.data());
 
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   uint32_t offset_to_last = first_size + second_size + third_size;
   EXPECT_TRUE(CheckRect(
       kWidth, 2, kFormat, kType, kPixelStoreUnpackAlignment,
-      reinterpret_cast<uint8_t*>(pixels.get()) + offset_to_last, mem2_2.ptr));
+      reinterpret_cast<uint8_t*>(pixels.data()) + offset_to_last, mem2_2.ptr));
 }
 
 // glGen* Ids must not be reused until glDelete* commands have been
@@ -3596,45 +3593,18 @@ TEST_F(GLES2ImplementationTest, Enable) {
   EXPECT_TRUE(NoCommandsWritten());
 }
 
-TEST_F(GLES2ImplementationTest, CreateAndConsumeTextureCHROMIUM) {
-  struct Cmds {
-    cmds::CreateAndConsumeTextureINTERNALImmediate cmd;
-    GLbyte data[GL_MAILBOX_SIZE_CHROMIUM];
-  };
-
-  Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
-  Cmds expected;
-  expected.cmd.Init(kTexturesStartId, mailbox.name);
-  GLuint id = gl_->CreateAndConsumeTextureCHROMIUM(mailbox.name);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-  EXPECT_EQ(kTexturesStartId, id);
-}
-
 TEST_F(GLES2ImplementationTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
   struct Cmds {
     cmds::CreateAndTexStorage2DSharedImageINTERNALImmediate cmd;
     GLbyte data[GL_MAILBOX_SIZE_CHROMIUM];
   };
 
-  Mailbox mailbox = Mailbox::GenerateForSharedImage();
+  Mailbox mailbox = Mailbox::Generate();
   Cmds expected;
   expected.cmd.Init(kTexturesStartId, mailbox.name);
   GLuint id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
   EXPECT_EQ(kTexturesStartId, id);
-}
-
-TEST_F(GLES2ImplementationTest, ProduceTextureDirectCHROMIUM) {
-  struct Cmds {
-    cmds::ProduceTextureDirectCHROMIUMImmediate cmd;
-    GLbyte data[GL_MAILBOX_SIZE_CHROMIUM];
-  };
-
-  Mailbox mailbox;
-  gl_->ProduceTextureDirectCHROMIUM(kTexturesStartId, mailbox.name);
-  Cmds expected;
-  expected.cmd.Init(kTexturesStartId, mailbox.name);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
 TEST_F(GLES2ImplementationTest, LimitSizeAndOffsetTo32Bit) {

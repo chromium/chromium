@@ -13,7 +13,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -29,6 +28,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -47,8 +47,8 @@ public class SearchResumptionModuleMediator
     private final SearchResumptionTileBuilder mTileBuilder;
     private final SigninManager mSignInManager;
     private final SyncService mSyncService;
-    private final AutocompleteControllerProvider mAutocompleteProvider;
     private final TemplateUrlService mTemplateUrlService;
+    private final TemplateUrlServiceObserver mTemplateUrlServiceObserver;
     private AutocompleteController mAutoComplete;
     private PropertyModel mModel;
     // Set the default values of these variable true since all of them have been checked before
@@ -63,7 +63,6 @@ public class SearchResumptionModuleMediator
 
     SearchResumptionModuleMediator(
             ViewStub moduleStub,
-            AutocompleteControllerProvider autocompleteProvider,
             Tab tabToTrack,
             Tab currentTab,
             Profile profile,
@@ -78,9 +77,9 @@ public class SearchResumptionModuleMediator
                         ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                         SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM,
                         false);
-        mAutocompleteProvider = autocompleteProvider;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
-        mTemplateUrlService.addObserver(this::onTemplateURLServiceChanged);
+        mTemplateUrlServiceObserver = this::onTemplateURLServiceChanged;
+        mTemplateUrlService.addObserver(mTemplateUrlServiceObserver);
 
         if (cachedSuggestions != null) {
             showCachedSuggestions(cachedSuggestions);
@@ -94,8 +93,7 @@ public class SearchResumptionModuleMediator
     }
 
     @Override
-    public void onSuggestionsReceived(
-            AutocompleteResult autocompleteResult, String inlineAutocompleteText, boolean isFinal) {
+    public void onSuggestionsReceived(AutocompleteResult autocompleteResult, boolean isFinal) {
         if (!isFinal || mModel != null) return;
 
         if (!shouldShowSuggestionModule(autocompleteResult.getSuggestionsList())) {
@@ -188,7 +186,7 @@ public class SearchResumptionModuleMediator
         if (mSearchResumptionModuleBridge != null) {
             mSearchResumptionModuleBridge.destroy();
         }
-        mTemplateUrlService.removeObserver(this::onTemplateURLServiceChanged);
+        mTemplateUrlService.removeObserver(mTemplateUrlServiceObserver);
         mSignInManager.removeSignInStateObserver(this);
         mSyncService.removeSyncStateChangedListener(this);
     }
@@ -196,14 +194,19 @@ public class SearchResumptionModuleMediator
     /** Starts the querying the search suggestions based on the Tab to track. */
     private void start(Profile profile) {
         if (!mUseNewServiceEnabled) {
-            mAutoComplete = mAutocompleteProvider.get(profile);
-            mAutoComplete.addOnSuggestionsReceivedListener(this);
-            int pageClassification = getPageClassification();
-            mAutoComplete.startZeroSuggest(
-                    "",
-                    mTabToTrackSuggestion.getUrl(),
-                    pageClassification,
-                    mTabToTrackSuggestion.getTitle());
+            AutocompleteController.getForProfile(profile)
+                    .ifPresent(
+                            controller -> {
+                                mAutoComplete = controller;
+                                mAutoComplete.addOnSuggestionsReceivedListener(this);
+                                int pageClassification = getPageClassification();
+                                mAutoComplete.startZeroSuggest(
+                                        "",
+                                        mTabToTrackSuggestion.getUrl(),
+                                        pageClassification,
+                                        mTabToTrackSuggestion.getTitle(),
+                                        /* isOnFocusContext= */ false);
+                            });
         } else {
             mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);
             mSearchResumptionModuleBridge.fetchSuggestions(

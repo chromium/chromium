@@ -10,13 +10,15 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 
 OmniboxController::OmniboxController(OmniboxView* view,
@@ -71,9 +73,7 @@ void OmniboxController::StopAutocomplete(bool clear_result) const {
 void OmniboxController::StartZeroSuggestPrefetch() {
   TRACE_EVENT0("omnibox", "OmniboxController::StartZeroSuggestPrefetch");
   auto page_classification =
-      client_->GetLocationBarModel()->GetPageClassification(
-          OmniboxFocusSource::OMNIBOX,
-          /*is_prefetch=*/true);
+      client_->GetPageClassification(/*is_prefetch=*/true);
   if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
           page_classification)) {
     return;
@@ -108,14 +108,15 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
   if (default_match_changed) {
     // The default match has changed, we need to let the OmniboxEditModel know
     // about new inline autocomplete text (blue highlight).
-    if (auto* match = autocomplete_controller_->result().default_match()) {
+    if (autocomplete_controller_->result().default_match()) {
       edit_model_->OnCurrentMatchChanged();
     } else {
       edit_model_->OnPopupResultChanged();
-      edit_model_->OnPopupDataChanged(
-          std::u16string(),
-          /*is_temporary_text=*/false, std::u16string(), std::u16string(),
-          std::u16string(), false, std::u16string(), AutocompleteMatch());
+      edit_model_->OnPopupDataChanged(std::u16string(),
+                                      /*is_temporary_text=*/false,
+                                      std::u16string(), std::u16string(),
+                                      std::u16string(), std::u16string(), false,
+                                      std::u16string(), AutocompleteMatch());
     }
   } else {
     edit_model_->OnPopupResultChanged();
@@ -123,7 +124,7 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
 
   const bool popup_is_open = edit_model_->PopupIsOpen();
   if (popup_was_open != popup_is_open) {
-    client_->OnPopupVisibilityChanged();
+    client_->OnPopupVisibilityChanged(popup_is_open);
   }
 
   if (popup_was_open && !popup_is_open) {
@@ -167,9 +168,23 @@ std::u16string OmniboxController::GetHeaderForSuggestionGroup(
       suggestion_group_id);
 }
 
+bool OmniboxController::IsSuggestionHidden(
+    const AutocompleteMatch& match) const {
+  if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
+      match.from_keyword) {
+    TemplateURL* turl =
+        match.GetTemplateURL(client_->GetTemplateURLService(), false);
+    if (turl &&
+        turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool OmniboxController::IsSuggestionGroupHidden(
     omnibox::GroupId suggestion_group_id) const {
-  PrefService* prefs = client_->GetPrefs();
+  const PrefService* prefs = client_->GetPrefs();
   return prefs && autocomplete_controller_->result().IsSuggestionGroupHidden(
                       prefs, suggestion_group_id);
 }

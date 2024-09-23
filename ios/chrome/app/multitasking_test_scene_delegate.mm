@@ -85,9 +85,9 @@ const CGFloat kWidthLandscapeSplitViewOnLargeIPad = 678.0;
       size.height = kRegularIPadPortraitSize.width;
     }
   } else {
-    NOTREACHED() << "Unsupported multitasking test mode. Only "
-                    "--enable-slide-over-test-mode and "
-                    "--enable-split-view-test-mode are supported.";
+    NOTREACHED_IN_MIGRATION() << "Unsupported multitasking test mode. Only "
+                                 "--enable-slide-over-test-mode and "
+                                 "--enable-split-view-test-mode are supported.";
   }
   return size;
 }

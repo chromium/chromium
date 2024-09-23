@@ -13,7 +13,7 @@
 // Sends updates from the regular model layer to the inactive tabs model layer.
 // This is needed, for example, when a user close all tabs from the regular grid
 // as it also close all inactives tabs.
-// TODO(crbug.com/1457146): Refactor these to be a mutator.
+// TODO(crbug.com/40273478): Refactor these to be a mutator.
 @property(nonatomic, weak) id<GridCommands> inactiveTabsGridCommands;
 
 @end

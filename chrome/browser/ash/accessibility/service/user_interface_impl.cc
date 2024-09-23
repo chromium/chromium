@@ -50,6 +50,7 @@ void UserInterfaceImpl::ShowConfirmationDialog(
   show_confirmation_dialog_callback_ = std::move(callback);
   ash::AccessibilityController::Get()->ShowConfirmationDialog(
       base::UTF8ToUTF16(title), base::UTF8ToUTF16(description),
+      l10n_util::GetStringUTF16(IDS_APP_CONTINUE),
       cancel_name ? base::UTF8ToUTF16(cancel_name.value())
                   : l10n_util::GetStringUTF16(IDS_APP_CANCEL),
       base::BindOnce(&UserInterfaceImpl::OnDialogResult,

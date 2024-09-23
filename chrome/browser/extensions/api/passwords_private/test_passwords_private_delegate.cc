@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -60,6 +59,7 @@ TestPasswordsPrivateDelegate::TestPasswordsPrivateDelegate()
   api::passwords_private::PasswordUiEntry passkey = CreateEntry(kNumMocks);
   passkey.is_passkey = true;
   passkey.display_name = "displayName";
+  passkey.creation_time = 1000;
   current_entries_.push_back(std::move(passkey));
 }
 TestPasswordsPrivateDelegate::~TestPasswordsPrivateDelegate() = default;
@@ -260,14 +260,14 @@ TestPasswordsPrivateDelegate::GetExportProgressStatus() {
   return api::passwords_private::ExportProgressStatus::kInProgress;
 }
 
-bool TestPasswordsPrivateDelegate::IsOptedInForAccountStorage() {
-  return is_opted_in_for_account_storage_;
+bool TestPasswordsPrivateDelegate::IsAccountStorageEnabled() {
+  return is_account_storage_enabled_;
 }
 
-void TestPasswordsPrivateDelegate::SetAccountStorageOptIn(
-    bool opt_in,
+void TestPasswordsPrivateDelegate::SetAccountStorageEnabled(
+    bool enabled,
     content::WebContents* web_contents) {
-  is_opted_in_for_account_storage_ = opt_in;
+  is_account_storage_enabled_ = enabled;
 }
 
 std::vector<api::passwords_private::PasswordUiEntry>
@@ -384,8 +384,8 @@ void TestPasswordsPrivateDelegate::SetProfile(Profile* profile) {
   profile_ = profile;
 }
 
-void TestPasswordsPrivateDelegate::SetOptedInForAccountStorage(bool opted_in) {
-  is_opted_in_for_account_storage_ = opted_in;
+void TestPasswordsPrivateDelegate::SetAccountStorageEnabled(bool enabled) {
+  is_account_storage_enabled_ = enabled;
 }
 
 void TestPasswordsPrivateDelegate::SetIsAccountStoreDefault(bool is_default) {
@@ -419,8 +419,10 @@ bool TestPasswordsPrivateDelegate::IsCredentialPresentInInsecureCredentialsList(
 }
 
 void TestPasswordsPrivateDelegate::SwitchBiometricAuthBeforeFillingState(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    AuthenticationCallback callback) {
   authenticator_interacted_ = true;
+  std::move(callback).Run(true);
 }
 
 void TestPasswordsPrivateDelegate::ShowAddShortcutDialog(
@@ -432,6 +434,38 @@ void TestPasswordsPrivateDelegate::ShowExportedFileInShell(
     content::WebContents* web_contents,
     std::string file_path) {
   exported_file_shown_in_shell_ = true;
+}
+
+void TestPasswordsPrivateDelegate::ChangePasswordManagerPin(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> success_callback) {
+  change_password_manager_pin_called_ = true;
+  std::move(success_callback).Run(false);
+}
+
+void TestPasswordsPrivateDelegate::DeleteAllPasswordManagerData(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> success_callback) {
+  delete_all_password_manager_data_called_ = true;
+  std::move(success_callback).Run(true);
+}
+
+void TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> pin_available_callback) {
+  std::move(pin_available_callback).Run(false);
+}
+
+void TestPasswordsPrivateDelegate::DisconnectCloudAuthenticator(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> success_callback) {
+  disconnect_cloud_authenticator_called_ = true;
+  std::move(success_callback).Run(false);
+}
+
+bool TestPasswordsPrivateDelegate::IsConnectedToCloudAuthenticator(
+    content::WebContents* web_contents) {
+  return false;
 }
 
 base::WeakPtr<PasswordsPrivateDelegate>

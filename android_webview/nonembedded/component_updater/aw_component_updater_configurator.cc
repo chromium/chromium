@@ -52,7 +52,7 @@ base::TimeDelta AwComponentUpdaterConfigurator::InitialDelay() const {
   // WebView has a short list of components and components registration happens
   // in an android background service so we want to start the update as soon as
   // possible.
-  // TODO(crbug.com/1181094): get rid of dependency in initial delay for
+  // TODO(crbug.com/40750670): get rid of dependency in initial delay for
   // WebView.
   return base::Seconds(10);
 }

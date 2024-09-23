@@ -1,0 +1,33 @@
+caption: Choose whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature should be enabled.
+default: null
+desc: |-
+  A policy to control whether the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature should be enabled.
+
+  If the policy is set to Disabled, then the IP Protection feature will be disabled and users won't be able to enable the feature via UI settings.
+  If the policy is set to Enabled, then the IP Protection feature will be enabled and users won't be able to disable the feature via UI settings.
+  If the policy is not set, users will be able to turn on or turn off the IP Protection feature on their device via UI settings.
+
+  Note: The behavior of the IP Protection feature for enterprise users may vary over time when the policy is set to Enabled or when the policy is not set and the feature is enabled via UI settings.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+ - fuchsia
+ - chrome.*
+ - chrome_os
+ - android
+items:
+- caption: Disable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature.
+  value: false
+- caption: Enable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature.
+  value: true
+- caption: Allow users to turn on or turn off the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection setting on their device.
+  value: null
+owners:
+- awillia@chromium.org
+- file://components/ip_protection/OWNERS
+schema:
+  type: boolean
+tags: []
+type: main

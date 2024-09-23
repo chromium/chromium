@@ -26,14 +26,9 @@ class PasswordSettingsUpdaterAndroidBridgeHelper {
 
   // Factory function for creating the helper. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
-  // Ensure `CanCreateAccessor` returns true before calling this method.
+  // Ensure `password_manager_android_util::AreMinUpmRequirementsMet`
+  // returns true before calling this method.
   static std::unique_ptr<PasswordSettingsUpdaterAndroidBridgeHelper> Create();
-
-  // Method that checks whether a settings accessor can be created or whether
-  // `Create` would fail. It returns true if all nontransient prerequisistes are
-  // fulfilled. E.g. if the accessor requires a minimum GMS version this method
-  // would return false.
-  static bool CanCreateAccessor();
 
   // Sets the `consumer` that is notified on operation completion as defined in
   // `PasswordSettingsUpdaterAndroidReceiverBridge::Consumer`.

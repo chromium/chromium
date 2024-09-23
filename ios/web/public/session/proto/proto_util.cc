@@ -37,7 +37,7 @@ UserAgentType UserAgentTypeFromProto(proto::UserAgentType value) {
       return UserAgentType::DESKTOP;
 
     default:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "Invalid web::proto::UserAgentType: "
           << static_cast<std::underlying_type<proto::UserAgentType>::type>(
                  value);
@@ -59,9 +59,8 @@ proto::UserAgentType UserAgentTypeToProto(UserAgentType value) {
       return proto::UserAgentType::Desktop;
   }
 
-  NOTREACHED_NORETURN()
-      << "Invalid web::UserAgentType: "
-      << static_cast<std::underlying_type<UserAgentType>::type>(value);
+  NOTREACHED() << "Invalid web::UserAgentType: "
+               << static_cast<std::underlying_type<UserAgentType>::type>(value);
 }
 
 ReferrerPolicy ReferrerPolicyFromProto(proto::ReferrerPolicy value) {
@@ -94,7 +93,7 @@ ReferrerPolicy ReferrerPolicyFromProto(proto::ReferrerPolicy value) {
       return ReferrerPolicyStrictOriginWhenCrossOrigin;
 
     default:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "Invalid web::proto::ReferrerPolicy: "
           << static_cast<std::underlying_type<proto::ReferrerPolicy>::type>(
                  value);
@@ -131,9 +130,9 @@ proto::ReferrerPolicy ReferrerPolicyToProto(ReferrerPolicy value) {
       return proto::ReferrerPolicy::StrictOriginWhenCrossOrigin;
   }
 
-  NOTREACHED_NORETURN()
-      << "Invalid web::ReferrerPolicy: "
-      << static_cast<std::underlying_type<ReferrerPolicy>::type>(value);
+  NOTREACHED() << "Invalid web::ReferrerPolicy: "
+               << static_cast<std::underlying_type<ReferrerPolicy>::type>(
+                      value);
 }
 
 Referrer ReferrerFromProto(const proto::ReferrerStorage& storage) {

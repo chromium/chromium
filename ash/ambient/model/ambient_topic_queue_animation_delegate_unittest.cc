@@ -11,7 +11,6 @@
 #include "ash/ambient/test/ambient_test_util.h"
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
-
 #include "cc/paint/skottie_resource_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -29,14 +29,12 @@ class PasswordStoreInterface;
 
 namespace passwords_helper {
 
-// Returns all logins from |store| matching a fake signon realm (see
-// CreateTestPasswordForm()). Note that it uses RunLoop to wait for async
-// results and should be avoided from using in StatusChangeChecker.
-// TODO(treib): Rename this to make clear how specific it is.
+// Returns all logins from |store|. Note that it uses RunLoop to wait for async
+// results and should be avoided in StatusChangeChecker.
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetLogins(
     password_manager::PasswordStoreInterface* store);
 
-// Returns all logins from |store| (including blocklisted ones)
+// Returns all logins from |store| (including blocklisted ones).
 std::vector<std::unique_ptr<password_manager::PasswordForm>> GetAllLogins(
     password_manager::PasswordStoreInterface* store);
 
@@ -145,7 +143,7 @@ class PasswordSyncInactiveChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
-// TODO(crbug.com/1010490): avoid re-entrance protection in checkers below or
+// TODO(crbug.com/40651154): avoid re-entrance protection in checkers below or
 // factor it out to not duplicate in every checker.
 // Checker to block until all profiles contain the same password forms.
 class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {

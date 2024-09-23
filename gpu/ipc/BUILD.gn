@@ -23,7 +23,6 @@ component("gl_in_process_context") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
     "//gpu/command_buffer/client:gles2_implementation",

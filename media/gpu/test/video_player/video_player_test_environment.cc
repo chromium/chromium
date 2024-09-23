@@ -33,7 +33,8 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
     const base::FilePath& output_folder,
     const FrameOutputConfig& frame_output_config,
     const std::vector<base::test::FeatureRef>& enabled_features,
-    const std::vector<base::test::FeatureRef>& disabled_features) {
+    const std::vector<base::test::FeatureRef>& disabled_features,
+    const bool need_task_environment) {
   auto video = VideoBitstream::Create(
       video_path.empty() ? base::FilePath(kDefaultTestVideoPath) : video_path,
       video_metadata_path);
@@ -55,15 +56,11 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
   combined_disabled_features.push_back(
       media::kVaapiEnforceVideoMinMaxResolution);
 #endif
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  // TODO(b/255626192): remove once enabled by default.
-  combined_enabled_features.push_back(media::kChromeOSHWAV1Decoder);
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   return new VideoPlayerTestEnvironment(
       std::move(video), validator_type, implementation, linear_output,
       output_folder, frame_output_config, combined_enabled_features,
-      combined_disabled_features);
+      combined_disabled_features, need_task_environment);
 }
 
 VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
@@ -74,8 +71,11 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
     const base::FilePath& output_folder,
     const FrameOutputConfig& frame_output_config,
     const std::vector<base::test::FeatureRef>& enabled_features,
-    const std::vector<base::test::FeatureRef>& disabled_features)
-    : VideoTestEnvironment(enabled_features, disabled_features),
+    const std::vector<base::test::FeatureRef>& disabled_features,
+    const bool need_task_environment)
+    : VideoTestEnvironment(enabled_features,
+                           disabled_features,
+                           need_task_environment),
       video_(std::move(video)),
       validator_type_(validator_type),
       implementation_(implementation),

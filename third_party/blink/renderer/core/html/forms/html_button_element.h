@@ -64,15 +64,14 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
     kReset = base::to_underlying(mojom::blink::FormControlType::kButtonReset),
     kButton = base::to_underlying(mojom::blink::FormControlType::kButtonButton),
     kSelectlist =
-        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList),
-    kPopover =
-        base::to_underlying(mojom::blink::FormControlType::kButtonPopover)
+        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList)
   };
 
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  void AdjustStyle(ComputedStyleBuilder&) override;
 
   // HTMLFormControlElement always creates one, but buttons don't need it.
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }

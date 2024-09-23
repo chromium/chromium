@@ -13,7 +13,11 @@
 namespace ash::settings {
 
 const std::vector<chromeos::settings::mojom::Section>& AllSections();
+
+// Returns a vector of all Subpage enum entries (routes.mojom), excluding any
+// internal subpages.
 const std::vector<chromeos::settings::mojom::Subpage>& AllSubpages();
+
 const std::vector<chromeos::settings::mojom::Setting>& AllSettings();
 
 }  // namespace ash::settings

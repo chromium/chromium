@@ -1,0 +1,24 @@
+caption: Allow origins to access browser permissions available to the web kiosk install origin.
+desc: |-
+  Setting the policy allows listed additional origins to access browser permissions (e.g. geo location, camera, microphone) which are already available to the web kiosk applications install origin.
+
+  For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+example_value:
+- https://www.google.com
+- '[*.]example.com'
+- example.edu
+- '*://example.edu:*/'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://chrome/browser/ash/app_mode/OWNERS
+- macinashutosh@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:129-
+tags: []
+type: list

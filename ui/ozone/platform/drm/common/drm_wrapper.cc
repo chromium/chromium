@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 
 #include <fcntl.h>
@@ -63,6 +68,18 @@ bool CanQueryForResources(int fd) {
   // If there is no error getting DRM resources then assume this is a
   // modesetting device.
   return !drmIoctl(fd, DRM_IOCTL_MODE_GETRESOURCES, &resources);
+}
+
+bool IsModeset(uint32_t flags) {
+  return flags & DRM_MODE_ATOMIC_ALLOW_MODESET;
+}
+
+bool IsBlocking(uint32_t flags) {
+  return !(flags & DRM_MODE_ATOMIC_NONBLOCK);
+}
+
+bool IsTestOnly(uint32_t flags) {
+  return flags & DRM_MODE_ATOMIC_TEST_ONLY;
 }
 
 }  // namespace
@@ -500,6 +517,9 @@ bool DrmWrapper::CommitProperties(drmModeAtomicReq* properties,
                                   uint32_t flags,
                                   uint64_t page_flip_id) {
   DCHECK(drm_fd_.is_valid());
+  TRACE_EVENT("drm", "DrmWrapper::CommitProperties", "test", IsTestOnly(flags),
+              "modeset", IsModeset(flags), "blocking", IsBlocking(flags),
+              "flags", flags, "page_flip_id", page_flip_id);
   int result = drmModeAtomicCommit(drm_fd_.get(), properties, flags,
                                    reinterpret_cast<void*>(page_flip_id));
 
@@ -517,6 +537,10 @@ bool DrmWrapper::CommitProperties(drmModeAtomicReq* properties,
     // crashing. We still do want the underlying driver bugs fixed, but this
     // provide a better user experience.
     flags &= ~DRM_MODE_ATOMIC_NONBLOCK;
+    TRACE_EVENT("drm", "DrmWrapper::CommitProperties(retry)", "test",
+                IsTestOnly(flags), "modeset", IsModeset(flags), "blocking",
+                IsBlocking(flags), "flags", flags, "page_flip_id",
+                page_flip_id);
     result = drmModeAtomicCommit(drm_fd_.get(), properties, flags,
                                  reinterpret_cast<void*>(page_flip_id));
   }

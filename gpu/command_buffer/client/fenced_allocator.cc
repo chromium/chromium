@@ -10,6 +10,7 @@
 
 #include <algorithm>
 
+#include "base/not_fatal_until.h"
 #include "base/numerics/clamped_math.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 
@@ -260,7 +261,7 @@ FencedAllocator::BlockIndex FencedAllocator::GetBlockByOffset(Offset offset) {
   Block templ = { IN_USE, offset, 0, kUnusedToken };
   Container::iterator it = std::lower_bound(blocks_.begin(), blocks_.end(),
                                             templ, OffsetCmp());
-  DCHECK(it != blocks_.end());
+  CHECK(it != blocks_.end(), base::NotFatalUntil::M130);
   return it-blocks_.begin();
 }
 

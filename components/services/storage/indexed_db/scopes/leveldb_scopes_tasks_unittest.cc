@@ -13,7 +13,7 @@
 #include "components/services/storage/indexed_db/scopes/scopes_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 class LevelDBScopesTasksTest : public LevelDBScopesTestBase {
@@ -329,4 +329,4 @@ TEST_F(LevelDBScopesTasksTest, ErrorsDuringRevertArePropagated) {
 }
 
 }  // namespace
-}  // namespace content
+}  // namespace content::indexed_db

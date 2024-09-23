@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<!-- This tests that a minimum role from https://github.com/w3c/html-aam/pull/454
+     will not affect the naming of rows in a grid. -->
+<div role="grid">
+  <div>
+    <div draggable="true" onclick="doSomething()">  <!-- onlick -> unignored -->
+      <div role="row">
+        <div role="gridcell">
+          55
+        </div>
+        <div role="gridcell">
+          Cats
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

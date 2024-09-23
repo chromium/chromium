@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/usb/cros_usb_detector.h"
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #include <string>
 #include <utility>
@@ -15,10 +16,13 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -26,6 +30,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -222,36 +227,22 @@ class CrosUsbNotificationDelegate
   base::WeakPtrFactory<CrosUsbNotificationDelegate> weak_ptr_factory_{this};
 };
 
-// List of class codes to handle / not handle.
-// See https://www.usb.org/defined-class-codes for more information.
-enum UsbClassCode : uint8_t {
-  USB_CLASS_PER_INTERFACE = 0x00,
-  USB_CLASS_AUDIO = 0x01,
-  USB_CLASS_COMM = 0x02,
-  USB_CLASS_HID = 0x03,
-  USB_CLASS_PHYSICAL = 0x05,
-  USB_CLASS_STILL_IMAGE = 0x06,
-  USB_CLASS_PRINTER = 0x07,
-  USB_CLASS_MASS_STORAGE = 0x08,
-  USB_CLASS_HUB = 0x09,
-  USB_CLASS_CDC_DATA = 0x0a,
-  USB_CLASS_CSCID = 0x0b,
-  USB_CLASS_CONTENT_SEC = 0x0d,
-  USB_CLASS_VIDEO = 0x0e,
-  USB_CLASS_PERSONAL_HEALTHCARE = 0x0f,
-  USB_CLASS_BILLBOARD = 0x11,
-  USB_CLASS_DIAGNOSTIC_DEVICE = 0xdc,
-  USB_CLASS_WIRELESS_CONTROLLER = 0xe0,
-  USB_CLASS_MISC = 0xef,
-  USB_CLASS_APP_SPEC = 0xfe,
-  USB_CLASS_VENDOR_SPEC = 0xff,
-};
-
 device::mojom::UsbDeviceFilterPtr UsbFilterByClassCode(
     UsbClassCode device_class) {
   auto filter = device::mojom::UsbDeviceFilter::New();
   filter->has_class_code = true;
   filter->class_code = device_class;
+  return filter;
+}
+
+device::mojom::UsbDeviceFilterPtr UsbFilterByClassAndSubclassCode(
+    UsbClassCode device_class,
+    UsbSubclassCode device_subclass) {
+  auto filter = device::mojom::UsbDeviceFilter::New();
+  filter->has_class_code = true;
+  filter->class_code = device_class;
+  filter->has_subclass_code = true;
+  filter->subclass_code = device_subclass;
   return filter;
 }
 
@@ -286,11 +277,7 @@ void ShowNotificationForDevice(const std::string& guid,
   rich_notification_data.small_image = gfx::Image(
       gfx::CreateVectorIcon(vector_icons::kUsbIcon, 64, gfx::kGoogleBlue800));
 
-  if (chromeos::features::IsJellyEnabled()) {
-    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
-  } else {
-    rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
-  }
+  rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
 
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile())) {
     vm_name = l10n_util::GetStringUTF16(IDS_CROSTINI_LINUX);
@@ -411,12 +398,14 @@ CrosUsbDeviceInfo::CrosUsbDeviceInfo(
     std::optional<guest_os::GuestId> shared_guest_id,
     uint16_t vendor_id,
     uint16_t product_id,
+    std::string serial_number,
     bool prompt_before_sharing)
     : guid(guid),
       label(label),
       shared_guest_id(shared_guest_id),
       vendor_id(vendor_id),
       product_id(product_id),
+      serial_number(serial_number),
       prompt_before_sharing(prompt_before_sharing) {}
 CrosUsbDeviceInfo::CrosUsbDeviceInfo(const CrosUsbDeviceInfo&) = default;
 CrosUsbDeviceInfo::~CrosUsbDeviceInfo() = default;
@@ -438,22 +427,31 @@ CrosUsbDetector::CrosUsbDetector() {
   DCHECK(!g_cros_usb_detector);
   g_cros_usb_detector = this;
 
-  guest_os_classes_without_notif_.emplace_back(
+  // If *ALL* interfaces of a device match the below list, no notification will
+  // be shown.
+  guest_os_usb_int_all_filter_.emplace_back(
+      UsbFilterByClassCode(USB_CLASS_CDC_DATA));
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_HID));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_PHYSICAL));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_AUDIO));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_STILL_IMAGE));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_MASS_STORAGE));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_VIDEO));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_BILLBOARD));
-  guest_os_classes_without_notif_.emplace_back(
+  guest_os_usb_int_all_filter_.emplace_back(
       UsbFilterByClassCode(USB_CLASS_PERSONAL_HEALTHCARE));
+
+  // If *ANY* interfaces of a device match the below list, no notification will
+  // be shown.
+  guest_os_usb_int_any_filter_.emplace_back(UsbFilterByClassAndSubclassCode(
+      USB_CLASS_COMM, USB_COMM_SUBCLASS_ETHERNET));
 
   CiceroneClient::Get()->AddObserver(this);
   ConciergeClient::Get()->AddVmObserver(this);
@@ -494,9 +492,13 @@ std::vector<CrosUsbDeviceInfo> CrosUsbDetector::GetShareableDevices() const {
   std::vector<CrosUsbDeviceInfo> result;
   for (const auto& it : usb_devices_) {
     const UsbDevice& device = it.second;
+    std::string serial_number =
+        device.info->serial_number.has_value()
+            ? base::UTF16ToASCII(device.info->serial_number.value()).c_str()
+            : "";
     result.emplace_back(
         device.info->guid, device.label, device.shared_guest_id,
-        device.info->vendor_id, device.info->product_id,
+        device.info->vendor_id, device.info->product_id, serial_number,
         /*prompt_before_sharing=*/
         device.shared_guest_id.has_value() || !device.mount_points.empty());
   }
@@ -528,7 +530,8 @@ void CrosUsbDetector::ConnectToDeviceManager() {
 
 bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
   PrefService* prefs = profile()->GetPrefs();
-  if (!prefs->GetBoolean(ash::prefs::kUsbDetectorNotificationEnabled)) {
+  if (!prefs->GetBoolean(ash::prefs::kUsbDetectorNotificationEnabled) ||
+      !prefs->GetBoolean(guest_os::prefs::kGuestOsUSBNotificationEnabled)) {
     return false;
   }
 
@@ -539,8 +542,13 @@ bool CrosUsbDetector::ShouldShowNotification(const UsbDevice& device) {
     return false;
   }
 
-  return GetFilteredInterfacesMask(guest_os_classes_without_notif_,
-                                   *device.info) != 0;
+  bool all_filter_cleared =
+      GetFilteredInterfacesMask(guest_os_usb_int_all_filter_, *device.info) !=
+      0;
+  bool any_filter_cleared =
+      GetFilteredInterfacesMask(guest_os_usb_int_any_filter_, *device.info) ==
+      GetUsbInterfaceBaseMask(*device.info);
+  return all_filter_cleared && any_filter_cleared;
 }
 
 void CrosUsbDetector::OnContainerStarted(
@@ -639,6 +647,15 @@ void CrosUsbDetector::OnMountEvent(
   }
 }
 
+std::string UsbDeviceIdentifier(device::mojom::UsbDeviceInfoPtr& device_info) {
+  std::string serial_number =
+      device_info->serial_number.has_value()
+          ? base::UTF16ToASCII(device_info->serial_number.value()).c_str()
+          : "";
+  return base::StringPrintf("%d:%d:%s", device_info->vendor_id,
+                            device_info->product_id, serial_number.c_str());
+}
+
 void CrosUsbDetector::OnDeviceChecked(
     device::mojom::UsbDeviceInfoPtr device_info,
     bool hide_notification,
@@ -669,6 +686,15 @@ void CrosUsbDetector::OnDeviceChecked(
   std::string guid = device_info->guid;
   std::u16string label = new_device.label;
 
+  // If device exists in persistent passthrough dict, skip notifications and
+  // connect it to the appropriate guest.
+  PrefService* prefs = profile()->GetPrefs();
+  const base::Value::Dict& persistent_passthrough_devices =
+      prefs->GetDict(guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
+
+  const std::string* device = persistent_passthrough_devices.FindString(
+      UsbDeviceIdentifier(device_info));
+
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));
 
@@ -678,6 +704,16 @@ void CrosUsbDetector::OnDeviceChecked(
   }
 
   SignalUsbDeviceObservers();
+
+  if (device) {
+    const std::string& device_ref = CHECK_DEREF(device);
+    std::optional<guest_os::GuestId> guest_id =
+        guest_os::Deserialize(device_ref);
+    if (guest_id.has_value()) {
+      AttachUsbDeviceToGuest(guest_id.value(), guid, base::DoNothing());
+      return;
+    }
+  }
 
   // Some devices should not trigger the notification.
   if (hide_notification || !ShouldShowNotification(result.first->second)) {
@@ -1014,12 +1050,12 @@ void CrosUsbDetector::DoVmAttach(
       std::move(fd), std::move(request),
       base::BindOnce(&CrosUsbDetector::OnUsbDeviceAttachFinished,
                      weak_ptr_factory_.GetWeakPtr(), guest_id,
-                     device_info->guid, std::move(callback)));
+                     std::move(device_info), std::move(callback)));
 }
 
 void CrosUsbDetector::OnUsbDeviceAttachFinished(
     const guest_os::GuestId& guest_id,
-    const std::string& guid,
+    device::mojom::UsbDeviceInfoPtr device_info,
     base::OnceCallback<void(bool success)> callback,
     std::optional<vm_tools::concierge::AttachUsbDeviceResponse> response) {
   bool success = true;
@@ -1032,10 +1068,10 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
   }
 
   if (success) {
-    auto it = usb_devices_.find(guid);
+    auto it = usb_devices_.find(device_info->guid);
     if (it == usb_devices_.end()) {
       LOG(WARNING) << "Dbus response indicates successful attach but device "
-                   << "info was missing for " << guid;
+                   << "info was missing for " << device_info->guid;
       success = false;
     } else {
       it->second.shared_guest_id = guest_id;
@@ -1043,9 +1079,27 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
     }
   }
 
+  PrefService* prefs = profile()->GetPrefs();
+  if (success &&
+      prefs->GetBoolean(
+          guest_os::prefs::kGuestOsUSBPersistentPassthroughEnabled)) {
+    ScopedDictPrefUpdate update(
+        prefs, guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
+    base::Value::Dict& devices = update.Get();
+    std::string device_identifier = UsbDeviceIdentifier(device_info);
+    // there are 3 possible scenarios here:
+    // 1 - device was not in list. in this case we definitely want to add it.
+    // 2 - device was in list for a different guest. in this case we want to
+    //     override the previous state.
+    // 3 - device was in list, with the current guest. we already have to
+    //     serialize the guest_id to check, so not much more different in
+    //     comparing vs writing the same thing back again.
+    devices.Set(device_identifier, guest_id.Serialize());
+  }
+
   if (success && !guest_id.container_name.empty()) {
-    AttachUsbDeviceToContainer(guest_id, response->guest_port(), guid,
-                               std::move(callback));
+    AttachUsbDeviceToContainer(guest_id, response->guest_port(),
+                               device_info->guid, std::move(callback));
   } else {
     SignalUsbDeviceObservers();
     std::move(callback).Run(success);

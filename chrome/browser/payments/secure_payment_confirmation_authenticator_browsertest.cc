@@ -23,8 +23,8 @@
 #error "These tests are unsupported on Android"
 #endif
 
-// TODO(crbug.com/1372198): Temporarily disable the tests on macOS since they do
-// not yet work with current WebAuthn UI.
+// TODO(crbug.com/40870879): Temporarily disable the tests on macOS since they
+// do not yet work with current WebAuthn UI.
 #if !BUILDFLAG(IS_MAC)
 
 namespace payments {
@@ -165,10 +165,10 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
                        RelyingPartyIsEnforced) {
   auto scoped_auth_env = ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
   NavigateTo("b.com", "/secure_payment_confirmation.html");
-  EXPECT_EQ(
-      "SecurityError: The relying party ID is not a registrable domain suffix "
-      "of, nor equal to the current domain.",
-      content::EvalJs(GetActiveWebContents(), "createPaymentCredential()"));
+  EXPECT_THAT(
+      content::EvalJs(GetActiveWebContents(), "createPaymentCredential()")
+          .ExtractString(),
+      testing::HasSubstr("SecurityError: The relying party ID is not"));
 }
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,

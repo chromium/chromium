@@ -47,26 +47,9 @@ void SVGTransformableElement::Trace(Visitor* visitor) const {
   SVGElement::Trace(visitor);
 }
 
-void SVGTransformableElement::CollectStyleForPresentationAttribute(
-    const QualifiedName& name,
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  if (name == svg_names::kTransformAttr) {
-    AddPropertyToPresentationAttributeStyle(
-        style, CSSPropertyID::kTransform,
-        *transform_->CurrentValue()->CssValue());
-    return;
-  }
-  SVGElement::CollectStyleForPresentationAttribute(name, value, style);
-}
-
 void SVGTransformableElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  DCHECK(transform_->HasPresentationAttributeMapping());
-  if (transform_->IsAnimating()) {
-    CollectStyleForPresentationAttribute(svg_names::kTransformAttr,
-                                         g_empty_atom, style);
-  }
+  AddAnimatedPropertyToPresentationAttributeStyle(*transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
 
@@ -84,13 +67,7 @@ void SVGTransformableElement::SvgAttributeChanged(
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kTransformAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
-    InvalidateSVGPresentationAttributeStyle();
-    // TODO(fs): The InvalidationGuard will make sure all instances are
-    // invalidated, but the style recalc will propagate to instances too. So
-    // there is some redundant operations being performed here. Could we get
-    // away with removing the InvalidationGuard?
-    SetNeedsStyleRecalc(kLocalStyleChange,
-                        StyleChangeReasonForTracing::FromAttribute(attr_name));
+    UpdatePresentationAttributeStyle(*transform_);
     return;
   }
 

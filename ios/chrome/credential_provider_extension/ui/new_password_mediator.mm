@@ -76,6 +76,7 @@ using base::SysUTF16ToNSString;
 - (void)saveCredentialWithUsername:(NSString*)username
                           password:(NSString*)password
                               note:(NSString*)note
+                              gaia:(NSString*)gaia
                      shouldReplace:(BOOL)shouldReplace {
   if (!shouldReplace && [self credentialExistsForUsername:username]) {
     [self.uiHandler alertUserCredentialExists];
@@ -85,7 +86,8 @@ using base::SysUTF16ToNSString;
   ArchivableCredential* credential =
       [self createNewCredentialWithUsername:username
                                    password:password
-                                       note:note];
+                                       note:note
+                                       gaia:gaia];
 
   if (!credential) {
     [self.uiHandler alertSavePasswordFailed];
@@ -120,18 +122,20 @@ using base::SysUTF16ToNSString;
 // Creates a new credential but doesn't add it to any stores.
 - (ArchivableCredential*)createNewCredentialWithUsername:(NSString*)username
                                                 password:(NSString*)password
-                                                    note:(NSString*)note {
+                                                    note:(NSString*)note
+                                                    gaia:(NSString*)gaia {
   NSString* identifier = [self currentIdentifier];
   NSURL* url = [NSURL URLWithString:identifier];
   NSString* recordIdentifier = RecordIdentifierForData(url, username);
 
   return [[ArchivableCredential alloc] initWithFavicon:nil
+                                                  gaia:gaia
                                               password:password
                                                   rank:1
                                       recordIdentifier:recordIdentifier
                                      serviceIdentifier:identifier
                                            serviceName:url.host ?: identifier
-                                                  user:username
+                                              username:username
                                                   note:note];
 }
 
@@ -156,10 +160,10 @@ using base::SysUTF16ToNSString;
 // Alerts the host app that the user selected a credential.
 - (void)userSelectedCredential:(id<Credential>)credential {
   NSString* password = credential.password;
-  ASPasswordCredential* ASCredential =
-      [ASPasswordCredential credentialWithUser:credential.user
+  ASPasswordCredential* passwordCredential =
+      [ASPasswordCredential credentialWithUser:credential.username
                                       password:password];
-  [self.credentialResponseHandler userSelectedCredential:ASCredential];
+  [self.credentialResponseHandler userSelectedPassword:passwordCredential];
 }
 
 - (NSString*)currentIdentifier {

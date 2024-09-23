@@ -58,16 +58,16 @@ API_AVAILABLE(macos(13.3))
 }
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (id)copyWithZone:(NSZone*)zone {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return self;
 }
 @end
@@ -94,16 +94,16 @@ API_AVAILABLE(macos(13.3))
 }
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (id)copyWithZone:(NSZone*)zone {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return self;
 }
 @end

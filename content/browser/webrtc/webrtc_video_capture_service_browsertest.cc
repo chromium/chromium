@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -9,7 +14,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -111,10 +115,10 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
 
     const SkColor4f kDarkFrameColor = SkColors::kBlack;
     const SkColor4f kLightFrameColor = SkColors::kGray;
-    CreateDummyRgbFrame(ri, sii, kDarkFrameColor,
-                        &dummy_frame_0_mailbox_holder_);
-    CreateDummyRgbFrame(ri, sii, kLightFrameColor,
-                        &dummy_frame_1_mailbox_holder_);
+    dummy_frame_0_shared_image_ = CreateDummyRgbFrame(
+        ri, sii, kDarkFrameColor, dummy_frame_0_sync_token_);
+    dummy_frame_1_shared_image_ = CreateDummyRgbFrame(
+        ri, sii, kLightFrameColor, dummy_frame_1_sync_token_);
   }
 
   void RegisterVirtualDeviceAtVideoSourceProvider(
@@ -125,12 +129,19 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
         ->AddTextureVirtualDevice(info,
                                   virtual_device_.BindNewPipeAndPassReceiver());
 
-    virtual_device_->OnNewMailboxHolderBufferHandle(
-        0, media::mojom::MailboxBufferHandleSet::New(
-               std::move(dummy_frame_0_mailbox_holder_)));
-    virtual_device_->OnNewMailboxHolderBufferHandle(
-        1, media::mojom::MailboxBufferHandleSet::New(
-               std::move(dummy_frame_1_mailbox_holder_)));
+    gpu::ExportedSharedImage dummy_frame_0_exported_shared_image =
+        dummy_frame_0_shared_image_->Export();
+    gpu::ExportedSharedImage dummy_frame_1_exported_shared_image =
+        dummy_frame_1_shared_image_->Export();
+
+    virtual_device_->OnNewSharedImageBufferHandle(
+        0, media::mojom::SharedImageBufferHandleSet::New(
+               std::move(dummy_frame_0_exported_shared_image),
+               dummy_frame_0_sync_token_));
+    virtual_device_->OnNewSharedImageBufferHandle(
+        1, media::mojom::SharedImageBufferHandleSet::New(
+               std::move(dummy_frame_1_exported_shared_image),
+               dummy_frame_1_sync_token_));
     frame_being_consumed_[0] = false;
     frame_being_consumed_[1] = false;
   }
@@ -183,50 +194,40 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
   }
 
  private:
-  void CreateDummyRgbFrame(gpu::raster::RasterInterface* ri,
-                           gpu::SharedImageInterface* sii,
-                           SkColor4f frame_color,
-                           std::vector<gpu::MailboxHolder>* target) {
+  scoped_refptr<gpu::ClientSharedImage> CreateDummyRgbFrame(
+      gpu::raster::RasterInterface* ri,
+      gpu::SharedImageInterface* sii,
+      SkColor4f frame_color,
+      gpu::SyncToken& ri_token) {
     SkBitmap frame_bitmap;
     frame_bitmap.allocPixels(SkImageInfo::Make(
         kDummyFrameCodedSize.width(), kDummyFrameCodedSize.height(),
         kRGBA_8888_SkColorType, kOpaque_SkAlphaType));
     frame_bitmap.eraseColor(frame_color);
 
-    for (int i = 0; i < media::VideoFrame::kMaxPlanes; i++) {
-      // For RGB formats, only the first plane needs to be filled with an
-      // actual texture.
-      if (i != 0) {
-        target->push_back(gpu::MailboxHolder());
-        continue;
-      }
+    // This SharedImage is populated via the raster interface below and may
+    // be read via the raster interface in normal VideoFrame usage exercised
+    // by the tests.
+    auto shared_image = sii->CreateSharedImage(
+        {viz::SinglePlaneFormat::kRGBA_8888, kDummyFrameCodedSize,
+         gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+         kOpaque_SkAlphaType,
+         gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+             gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
+         "TestLabel"},
+        gpu::kNullSurfaceHandle);
 
-      // This SharedImage is populated via the raster interface below and may
-      // be read via the raster interface in normal VideoFrame usage exercised
-      // by the tests.
-      gpu::Mailbox mailbox =
-          sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888,
-                                 kDummyFrameCodedSize,
-                                 gfx::ColorSpace::CreateSRGB(),
-                                 kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-                                 gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
-                                 "TestLabel", gpu::kNullSurfaceHandle)
-              ->mailbox();
+    gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
+    ri->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
+    ri->WritePixels(shared_image->mailbox(), 0, 0, GL_TEXTURE_2D,
+                    frame_bitmap.pixmap());
 
-      gpu::SyncToken sii_token = sii->GenVerifiedSyncToken();
-      ri->WaitSyncTokenCHROMIUM(sii_token.GetConstData());
-      ri->WritePixels(mailbox, 0, 0, /*dst_plane_index=*/0, GL_TEXTURE_2D,
-                      frame_bitmap.pixmap());
-
-      gpu::SyncToken ri_token;
-      ri->GenSyncTokenCHROMIUM(ri_token.GetData());
-
-      target->emplace_back(mailbox, ri_token, GL_TEXTURE_2D);
-    }
+    ri->GenSyncTokenCHROMIUM(ri_token.GetData());
     ri->ShallowFlushCHROMIUM();
     CHECK_EQ(ri->GetError(), static_cast<GLenum>(GL_NO_ERROR));
+
+    return shared_image;
   }
 
   void OnFrameConsumptionFinished(int32_t frame_index) {
@@ -239,8 +240,10 @@ class TextureDeviceExerciser : public VirtualDeviceExerciser {
   mojo::Remote<video_capture::mojom::TextureVirtualDevice> virtual_device_;
   bool virtual_device_has_frame_access_handler_ = false;
   int dummy_frame_index_ = 0;
-  std::vector<gpu::MailboxHolder> dummy_frame_0_mailbox_holder_;
-  std::vector<gpu::MailboxHolder> dummy_frame_1_mailbox_holder_;
+  scoped_refptr<gpu::ClientSharedImage> dummy_frame_0_shared_image_;
+  scoped_refptr<gpu::ClientSharedImage> dummy_frame_1_shared_image_;
+  gpu::SyncToken dummy_frame_0_sync_token_;
+  gpu::SyncToken dummy_frame_1_sync_token_;
   std::array<bool, 2> frame_being_consumed_;
   base::WeakPtrFactory<TextureDeviceExerciser> weak_factory_{this};
 };
@@ -416,7 +419,6 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
  public:
   WebRtcVideoCaptureServiceBrowserTest()
       : virtual_device_thread_("Virtual Device Thread") {
-    scoped_feature_list_.InitAndEnableFeature(features::kMojoVideoCapture);
     virtual_device_thread_.Start();
   }
 
@@ -530,7 +532,6 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
     return base::TimeTicks::Now() - first_frame_time_;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   mojo::Remote<video_capture::mojom::VideoSourceProvider>
       video_source_provider_;
   gfx::Size video_size_;
@@ -539,9 +540,9 @@ class WebRtcVideoCaptureServiceBrowserTest : public ContentBrowserTest {
       this};
 };
 
-// TODO(https://crbug.com/1318247): Fix and enable on Fuchsia.
-// TODO(https://crbug.com/1235254): This test is flakey on macOS.
-// TODO(https://crbug.com/1511497): This test is flakey on ChromeOS.
+// TODO(crbug.com/40835247): Fix and enable on Fuchsia.
+// TODO(crbug.com/40781953): This test is flakey on macOS.
+// TODO(crbug.com/41484083): This test is flakey on ChromeOS.
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage \
   DISABLED_FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
@@ -567,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+// TODO(crbug.com/40781953): This test is flakey on macOS.
 #define MAYBE_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
   DISABLED_FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
 #else
@@ -592,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+// TODO(crbug.com/40781953): This test is flakey on macOS.
 #define MAYBE_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage \
   DISABLED_PaddedI420FramesSentThroughSharedMemoryVirtualDeviceGetDisplayedOnPage
 #else

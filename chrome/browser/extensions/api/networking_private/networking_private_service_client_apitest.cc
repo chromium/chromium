@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/wifi/fake_wifi_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -16,6 +17,7 @@
 #include "extensions/browser/api/networking_private/networking_private_event_router_factory.h"
 #include "extensions/browser/api/networking_private/networking_private_service_client.h"
 #include "extensions/common/switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 // This tests the Windows / Mac implementation of the networkingPrivate API
 // (NetworkingPrivateServiceClient). Note, only a subset of the
@@ -157,8 +159,9 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateServiceClientApiTest,
   EXPECT_TRUE(RunNetworkingSubtest("getManagedProperties")) << message_;
 }
 
+// TODO(b/349276078): This test is flaky.
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateServiceClientApiTest,
-                       OnNetworksChangedEventConnect) {
+                       DISABLED_OnNetworksChangedEventConnect) {
   EXPECT_TRUE(RunNetworkingSubtest("onNetworksChangedEventConnect"))
       << message_;
 }

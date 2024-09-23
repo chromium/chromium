@@ -1,0 +1,25 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='first second third'
+++++++++staticText name='first '
+++++++++++inlineTextBox name='first '
+++++++++genericContainer ignored
+++++++++++staticText name='second'
+++++++++++++inlineTextBox name='second'
+++++++++genericContainer
+++++++++++staticText name='third'
+++++++++++++inlineTextBox name='third'
+=== Start Continuation ===
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='first second third'
+++++++++staticText name='first '
+++++++++++inlineTextBox name='first '
+++++++++genericContainer ignored
+++++++++++staticText name='second'
+++++++++++++inlineTextBox name='second'
+++++++++genericContainer
+++++++++++staticText name='third'
+++++++++++++inlineTextBox name='third'

@@ -6,7 +6,7 @@ PASS rule.cssText is '#target { transition-duration: 1s; }'
 PASS rule.cssText is '#target { transition-duration: 1s; transition-delay: 0s; }'
 PASS rule.cssText is '#target { transition-duration: 1s; transition-delay: 0s; transition-property: all; }'
 PASS rule.cssText is '#target { transition-duration: 1s; transition-delay: 0s; transition-property: all; transition-timing-function: ease; }'
-PASS rule.cssText is '#target { transition: all 1s ease 0s allow-discrete; }'
+PASS rule.cssText is '#target { transition: 1s allow-discrete; }'
 PASS successfullyParsed is true
 
 TEST COMPLETE

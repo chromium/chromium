@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
@@ -19,11 +20,12 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -87,16 +89,112 @@ PathLengthDepthAndHash GetUrlPathLengthDepthAndHash(const GURL& target_url) {
           hash_bucket};
 }
 
+// Returns the minimum of the bucket that |value| belongs in, used for
+// |ratio_distance_root_top|.
+int GetLinearBucketForLinkLocation(int value) {
+  return ukm::GetLinearBucketMin(static_cast<int64_t>(value), 10);
+}
+
+// Returns the minimum of the bucket that |value| belongs in, used for
+// |ratio_area|.
+int GetLinearBucketForRatioArea(int value) {
+  return ukm::GetLinearBucketMin(static_cast<int64_t>(value), 5);
+}
+
 base::TimeDelta MLModelExecutionTimerStartDelay() {
-  static int timer_start_delay = base::GetFieldTrialParamByFeatureAsInt(
-      blink::features::kPreloadingHeuristicsMLModel, "timer_start_delay", 0);
+  static int timer_start_delay =
+      blink::features::kPreloadingModelTimerStartDelay.Get();
   return base::Milliseconds(timer_start_delay);
 }
 
 base::TimeDelta MLModelExecutionTimerInterval() {
-  static int timer_interval = base::GetFieldTrialParamByFeatureAsInt(
-      blink::features::kPreloadingHeuristicsMLModel, "timer_interval", 100);
+  static int timer_interval =
+      blink::features::kPreloadingModelTimerInterval.Get();
   return base::Milliseconds(timer_interval);
+}
+
+bool MLModelOneExecutionPerHover() {
+  static bool one_execution_per_hover =
+      blink::features::kPreloadingModelOneExecutionPerHover.Get();
+  return one_execution_per_hover;
+}
+
+base::TimeDelta MLModelMaxHoverTime() {
+  static const base::TimeDelta max_hover_time =
+      blink::features::kPreloadingModelMaxHoverTime.Get();
+  return max_hover_time;
+}
+
+void RecordMetricsForModelTraining(
+    const PreloadingModelKeyedService::Inputs& inputs,
+    ukm::SourceId ukm_source,
+    std::optional<double> sampling_likelihood,
+    bool is_accurate) {
+  constexpr double kBucketSpacing = 1.3;
+
+  const int sampling_likelihood_per_million =
+      static_cast<int>(1'000'000 * sampling_likelihood.value_or(1.0));
+  const int sampling_amount_bucket = ukm::GetExponentialBucketMin(
+      1'000'000 - sampling_likelihood_per_million, kBucketSpacing);
+
+  ukm::builders::Preloading_NavigationPredictorModelTrainingData builder(
+      ukm_source);
+
+  builder.SetSamplingAmount(sampling_amount_bucket);
+  builder.SetIsAccurate(is_accurate);
+  builder.SetContainsImage(inputs.contains_image);
+  // Font size is already bucketed. See `FontSizeBucket`.
+  builder.SetFontSize(inputs.font_size);
+  builder.SetHasTextSibling(inputs.has_text_sibling);
+  builder.SetIsBold(inputs.is_bold);
+  builder.SetIsInIframe(inputs.is_in_iframe);
+  builder.SetIsURLIncrementedByOne(inputs.is_url_incremented_by_one);
+  builder.SetNavigationStartToLinkLoggedMs(ukm::GetExponentialBucketMin(
+      inputs.navigation_start_to_link_logged.InMilliseconds(), kBucketSpacing));
+  builder.SetPathDepth(inputs.path_depth);
+  // Path length is already bucketed.
+  DCHECK_EQ(
+      inputs.path_length,
+      ukm::GetLinearBucketMin(static_cast<int64_t>(inputs.path_length), 10));
+  builder.SetPathLength(inputs.path_length);
+  builder.SetPercentClickableArea(
+      GetLinearBucketForRatioArea(inputs.percent_clickable_area));
+  builder.SetPercentVerticalDistance(
+      GetLinearBucketForLinkLocation(inputs.percent_vertical_distance));
+  builder.SetSameHost(inputs.is_same_host);
+  builder.SetHoverDwellTimeMs(ukm::GetExponentialBucketMin(
+      inputs.hover_dwell_time.InMilliseconds(), kBucketSpacing));
+  builder.SetPointerHoveringOverCount(ukm::GetExponentialBucketMin(
+      inputs.pointer_hovering_over_count, kBucketSpacing));
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+bool MaySendTraffic() {
+  // TODO(b/290223353): Due to concerns about the amount of traffic this feature
+  // would create on desktop, we'll just enable for a random sample of clients.
+  // We should scale up the percentage of enabled clients.
+  // Note that NavigationPredictor has functionality, unrelated to sending
+  // requests, which continues to run regardless of this parameter.
+  static const bool may_send_traffic = [] {
+    // Use a fixed state for benchmarking.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            variations::switches::kEnableBenchmarking)) {
+#if BUILDFLAG(IS_ANDROID)
+      return true;
+#else
+      return false;
+#endif
+    }
+
+    int enabled_percent =
+        blink::features::kPredictorTrafficClientEnabledPercent.Get();
+
+    // This isn't user facing, so we'll just re-roll for each session.
+    return base::RandInt(0, 99) < enabled_percent;
+  }();
+
+  return may_send_traffic;
 }
 
 }  // namespace
@@ -145,8 +243,11 @@ void NavigationPredictor::Create(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::AnchorElementMetricsHost> receiver) {
   CHECK(render_frame_host);
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
-  DCHECK(!IsPrerendering(*render_frame_host));
+  CHECK(!IsPrerendering(*render_frame_host));
+
+  if (!base::FeatureList::IsEnabled(blink::features::kNavigationPredictor)) {
+    return;
+  }
 
   // Only valid for the main frame.
   if (render_frame_host->GetParentOrOuterDocument())
@@ -167,18 +268,6 @@ void NavigationPredictor::Create(
   new NavigationPredictor(*render_frame_host, std::move(receiver));
 }
 
-int NavigationPredictor::GetBucketMinForPageMetrics(int value) const {
-  return ukm::GetExponentialBucketMin(value, 1.3);
-}
-
-int NavigationPredictor::GetLinearBucketForLinkLocation(int value) const {
-  return ukm::GetLinearBucketMin(static_cast<int64_t>(value), 10);
-}
-
-int NavigationPredictor::GetLinearBucketForRatioArea(int value) const {
-  return ukm::GetLinearBucketMin(static_cast<int64_t>(value), 5);
-}
-
 NavigationPredictorMetricsDocumentData&
 NavigationPredictor::GetNavigationPredictorMetricsDocumentData() const {
   // Create the `NavigationPredictorMetricsDocumentData` object for this
@@ -191,7 +280,8 @@ NavigationPredictor::GetNavigationPredictorMetricsDocumentData() const {
 }
 
 void NavigationPredictor::ReportNewAnchorElements(
-    std::vector<blink::mojom::AnchorElementMetricsPtr> elements) {
+    std::vector<blink::mojom::AnchorElementMetricsPtr> elements,
+    const std::vector<uint32_t>& removed_elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::FeatureList::IsEnabled(blink::features::kNavigationPredictor));
   DCHECK(!IsPrerendering(render_frame_host()));
@@ -203,47 +293,67 @@ void NavigationPredictor::ReportNewAnchorElements(
       GetNavigationPredictorMetricsDocumentData().GetAnchorsData();
   const GURL document_url =
       render_frame_host().GetLastCommittedURL().GetWithoutRef();
+  if (!document_url.is_valid()) {
+    return;
+  }
   std::vector<GURL> new_predictions;
+  const base::TimeTicks now = NowTicks();
   for (auto& element : elements) {
     AnchorId anchor_id(element->anchor_id);
     if (anchors_.find(anchor_id) != anchors_.end()) {
       continue;
     }
 
-    data.number_of_anchors_++;
-    if (element->contains_image) {
-      data.number_of_anchors_contains_image_++;
-    }
-    if (element->is_url_incremented_by_one) {
-      data.number_of_anchors_url_incremented_++;
-    }
-    if (element->is_in_iframe) {
-      data.number_of_anchors_in_iframe_++;
-    }
-    if (element->is_same_host) {
-      data.number_of_anchors_same_host_++;
-    }
-    data.viewport_height_ = element->viewport_size.height();
-    data.viewport_width_ = element->viewport_size.width();
-    data.total_clickable_space_ += element->ratio_area * 100;
-    data.link_locations_.push_back(element->ratio_distance_top_to_visible_top);
+    auto [id_it, id_inserted] = tracked_anchor_id_to_index_.insert(
+        {anchor_id, tracked_anchor_id_to_index_.size()});
 
-    // Collect the target URL if it is new, without ref (# fragment).
-    GURL target_url = element->target_url.GetWithoutRef();
-    if (target_url != document_url) {
-      auto [it, inserted] =
-          predicted_urls_.insert(base::FastHash(target_url.spec()));
-      if (inserted) {
-        new_predictions.push_back(std::move(target_url));
+    // We may have seen this anchor before, but it was removed from the page, so
+    // we stopped tracking it. We'll start tracking it again, but not treat it
+    // as a new anchor.
+    if (id_inserted) {
+      data.number_of_anchors_++;
+      if (element->contains_image) {
+        data.number_of_anchors_contains_image_++;
+      }
+      if (element->is_url_incremented_by_one) {
+        data.number_of_anchors_url_incremented_++;
+      }
+      if (element->is_in_iframe) {
+        data.number_of_anchors_in_iframe_++;
+      }
+      if (element->is_same_host) {
+        data.number_of_anchors_same_host_++;
+      }
+      data.viewport_height_ = element->viewport_size.height();
+      data.viewport_width_ = element->viewport_size.width();
+      data.total_clickable_space_ += element->ratio_area * 100;
+      data.link_locations_.push_back(
+          element->ratio_distance_top_to_visible_top);
+
+      // Collect the target URL if it is new, without ref (# fragment).
+      GURL target_url = element->target_url.GetWithoutRef();
+      if (target_url != document_url) {
+        auto [url_it, url_inserted] =
+            predicted_urls_.insert(base::FastHash(target_url.spec()));
+        if (url_inserted) {
+          new_predictions.push_back(std::move(target_url));
+        }
       }
     }
 
     anchors_.emplace(std::piecewise_construct, std::forward_as_tuple(anchor_id),
-                     std::forward_as_tuple(std::move(element), NowTicks()));
-    tracked_anchor_id_to_index_[anchor_id] = tracked_anchor_id_to_index_.size();
+                     std::forward_as_tuple(std::move(element), now));
   }
 
-  if (!new_predictions.empty()) {
+  for (uint32_t removed_element : removed_elements) {
+    AnchorId anchor_id(removed_element);
+    // Stop tracking removed elements to conserve memory. We leave an entry in
+    // `tracked_anchor_id_to_index_` to detect if a removed element is re-added
+    // to the page.
+    anchors_.erase(anchor_id);
+  }
+
+  if (!new_predictions.empty() && MaySendTraffic()) {
     NavigationPredictorKeyedService* service =
         NavigationPredictorKeyedServiceFactory::GetForProfile(
             Profile::FromBrowserContext(
@@ -355,23 +465,41 @@ void NavigationPredictor::OnMLModelExecutionTimerFired() {
   inputs.percent_vertical_distance =
       static_cast<int>(anchor.ratio_distance_root_top * 100);
 
-  inputs.is_same_origin = anchor.is_same_host;
+  inputs.is_same_host = anchor.is_same_host;
   auto to_timedelta = [this](std::optional<base::TimeTicks> ts) {
     return ts.has_value() ? NowTicks() - ts.value() : base::TimeDelta();
   };
-  inputs.entered_viewport_to_left_viewport =
-      to_timedelta(anchor.entered_viewport_timestamp);
+  // TODO(329691634): Using the real viewport entry time for
+  // `entered_viewport_to_left_viewport` produces low quality results.
+  // We could remove it from the model, if we can't get this to be useful.
+  inputs.entered_viewport_to_left_viewport = base::TimeDelta();
   inputs.hover_dwell_time = to_timedelta(anchor.pointer_over_timestamp);
   inputs.pointer_hovering_over_count = anchor.pointer_hovering_over_count;
   if (model_score_callback_) {
     std::move(model_score_callback_).Run(inputs);
   }
+
+  content::PreloadingData* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(
+          content::WebContents::FromRenderFrameHost(&render_frame_host()));
+  preloading_data->OnPreloadingHeuristicsModelInput(
+      anchor.target_url,
+      base::BindOnce(&RecordMetricsForModelTraining, inputs,
+                     render_frame_host().GetPageUkmSourceId()));
   model_service->Score(
       &scoring_model_task_tracker_, inputs,
       base::BindOnce(&NavigationPredictor::OnPreloadingHeuristicsModelDone,
                      weak_ptr_factory_.GetWeakPtr(), anchor.target_url));
 
-  if (!ml_model_execution_timer_.IsRunning()) {
+  // TODO(crbug.com/40278151): In its current form, the model does not seem to
+  // ever increase in confidence when dwelling on an anchor, which makes
+  // repeated executions wasteful. So we only do one execution per mouse over.
+  // As we iterate on the model, multiple executions may become useful, but we
+  // need to take care to not produce a large amount of redundant predictions
+  // (as seen in crbug.com/338200075 ).
+  if (!MLModelOneExecutionPerHover() &&
+      inputs.hover_dwell_time < MLModelMaxHoverTime() &&
+      !ml_model_execution_timer_.IsRunning()) {
     ml_model_execution_timer_.Start(
         FROM_HERE, MLModelExecutionTimerInterval(),
         base::BindOnce(&NavigationPredictor::OnMLModelExecutionTimerFired,
@@ -514,6 +642,37 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
     user_interaction.max_time_in_viewport = std::max(
         user_interaction.max_time_in_viewport.value_or(base::TimeDelta()),
         element->time_in_viewport);
+    user_interaction.percent_vertical_position.reset();
+    user_interaction.percent_distance_from_pointer_down.reset();
+  }
+}
+
+void NavigationPredictor::ReportAnchorElementsPositionUpdate(
+    std::vector<blink::mojom::AnchorElementPositionUpdatePtr> elements) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kNavigationPredictorNewViewportFeatures)) {
+    ReportBadMessageAndDeleteThis(
+        "ReportAnchorElementsPositionUpdate should only be called with "
+        "kNavigationPredictorNewViewportFeatures enabled.");
+    return;
+  }
+
+  auto& user_interactions =
+      GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
+  for (const auto& element : elements) {
+    auto index_it =
+        tracked_anchor_id_to_index_.find(AnchorId(element->anchor_id));
+    if (index_it == tracked_anchor_id_to_index_.end()) {
+      continue;
+    }
+    auto& user_interaction = user_interactions[index_it->second];
+    user_interaction.percent_vertical_position =
+        base::saturated_cast<int>(element->vertical_position_ratio * 100);
+    if (element->distance_from_pointer_down_ratio.has_value()) {
+      user_interaction.percent_distance_from_pointer_down =
+          base::saturated_cast<int>(
+              element->distance_from_pointer_down_ratio.value() * 100);
+    }
   }
 }
 
@@ -659,7 +818,7 @@ void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     metrics.is_in_iframe_ = anchor.is_in_iframe;
     metrics.is_url_incremented_by_one_ = anchor.is_url_incremented_by_one;
     metrics.contains_image_ = anchor.contains_image;
-    metrics.is_same_origin_ = anchor.is_same_host;
+    metrics.is_same_host_ = anchor.is_same_host;
     metrics.has_text_sibling_ = anchor.has_text_sibling;
     metrics.is_bold_ = anchor.is_bold_font;
     metrics.navigation_start_to_link_logged =

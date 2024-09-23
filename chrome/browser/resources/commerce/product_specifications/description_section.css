@@ -1,0 +1,45 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--table-gap);
+  margin-bottom: var(--detail-container-margin-bottom);
+  --summary-font-size: 12px;
+}
+
+#attributes {
+  margin-inline-end: 24px;
+}
+
+.attribute-chip {
+  background-color: var(--color-product-specifications-detail-chip-background);
+  border-radius: 6px;
+  display: block;
+  margin: 4px 0;
+  padding: 4px 6px;
+  width: fit-content;
+}
+
+.attribute-title {
+  font-weight: 500;
+}
+
+#summary {
+  font-size: 0; /* Hide spaces between summary texts. */
+  line-height: var(--summary-font-size);
+  margin-inline-end: 24px;
+  white-space: nowrap;
+}
+
+.summary-text {
+  font-size: var(--summary-font-size);
+  white-space: pre-line;
+}

@@ -104,8 +104,9 @@ class ServiceDiscoveryClientMdns::Proxy {
   void DeleteOnMdnsThread(T* t) {
     if (!t)
       return;
-    if (!client_->mdns_runner_->DeleteSoon(FROM_HERE, t))
-      delete t;
+    // If DeleteSoon fails to run `t` will be leaked as it is unsafe to
+    // delete t on the current thread.
+    client_->mdns_runner_->DeleteSoon(FROM_HERE, t);
   }
 
  private:

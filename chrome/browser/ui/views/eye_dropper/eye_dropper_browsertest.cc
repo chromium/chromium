@@ -18,7 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/display/display_switches.h"
 
-// TODO(crbug.com/1448244): enable this test on all supported platforms.
+// TODO(crbug.com/40269208): enable this test on all supported platforms.
 #if BUILDFLAG(IS_WIN)
 #include "components/eye_dropper/eye_dropper_view.h"
 #endif

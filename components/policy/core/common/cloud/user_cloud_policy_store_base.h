@@ -31,6 +31,10 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
   UserCloudPolicyStoreBase& operator=(const UserCloudPolicyStoreBase&) = delete;
   ~UserCloudPolicyStoreBase() override;
 
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner() const {
+    return background_task_runner_;
+  }
+
  protected:
   // Creates a validator configured to validate a user policy. The caller owns
   // the resulting object until StartValidation() is invoked.
@@ -46,10 +50,6 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
       std::unique_ptr<enterprise_management::PolicyData> policy_data,
       std::unique_ptr<enterprise_management::CloudPolicySettings> payload,
       const std::string& policy_signature_public_key);
-
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner() const {
-    return background_task_runner_;
-  }
 
  private:
   // Task runner for background file operations.

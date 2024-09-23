@@ -1,6 +1,0 @@
-This is a wdspec test.
-[FAIL] test_locate_nodes_serialization_options[open]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
-[FAIL] test_locate_nodes_serialization_options[closed]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Command 'browsingContext.locateNodes' not yet implemented.)
-Harness: the test ran to completion.

@@ -4,16 +4,16 @@
 
 module storage.mojom;
 
-import "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom";
+import "components/services/storage/privileged/mojom/bucket_client_info.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom";
 import "components/services/storage/privileged/mojom/indexed_db_control_test.mojom";
-import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
+import "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom";
 import "components/services/storage/public/mojom/buckets/bucket_id.mojom";
+import "components/services/storage/public/mojom/buckets/bucket_locator.mojom";
 import "components/services/storage/public/mojom/storage_policy_update.mojom";
 import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "third_party/blink/public/mojom/indexeddb/indexeddb.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
@@ -24,6 +24,7 @@ enum ForceCloseReason {
   FORCE_CLOSE_BACKING_STORE_FAILURE = 1,
   FORCE_CLOSE_INTERNALS_PAGE = 2,
   FORCE_CLOSE_COPY_ORIGIN = 3,
+
   // Deprecated: FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE = 4,
   // Append new values here and update IDBContextForcedCloseReason in
   // enums.xml.
@@ -54,11 +55,11 @@ interface IndexedDBControl {
   // Binds an IDBFactory for the given bucket. If the bucket locator refers to
   // the default bucket, its ID may be invalid.
   BindIndexedDB(
-    storage.mojom.BucketLocator bucket_locator,
-    pending_remote<storage.mojom.IndexedDBClientStateChecker>
-        client_state_checker_remote,
-    mojo_base.mojom.UnguessableToken client_token,
-    pending_receiver<blink.mojom.IDBFactory> receiver);
+      storage.mojom.BucketLocator bucket_locator,
+      storage.mojom.BucketClientInfo client_info,
+      pending_remote<storage.mojom.IndexedDBClientStateChecker>
+          client_state_checker_remote,
+      pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Forcibly closes all connections to all databases within the bucket.
   ForceClose(storage.mojom.BucketId bucket_id, ForceCloseReason reason) => ();
@@ -67,14 +68,25 @@ interface IndexedDBControl {
   // data for a particular bucket.  This creates a zip file at
   // `zip_path` using the temporary directory `temp_path` which needs to be
   // cleaned up after the user downloads the file.
-  DownloadBucketData(storage.mojom.BucketId bucket_id) => (
-      bool success,
-      mojo_base.mojom.FilePath temp_path,
-      mojo_base.mojom.FilePath zip_path);
+  DownloadBucketData(storage.mojom.BucketId bucket_id)
+      => (bool success,
+          mojo_base.mojom.FilePath temp_path,
+          mojo_base.mojom.FilePath zip_path);
 
   // Called by chrome://indexeddb-internals to populate its page details. Gets
   // all buckets across all origins.
-  GetAllBucketsDetails() => (bool incognito, array<IdbOriginMetadata> details);
+  GetAllBucketsDetails()
+      => (bool incognito, array<IdbOriginMetadata> details);
+
+  // Starts a metadata recording session for a given bucket ID.
+  // Records metadata over time for all databases on the specified bucket until
+  // StopMetadataRecording is called.
+  StartMetadataRecording(storage.mojom.BucketId bucket_id) => ();
+
+  // Stops metadata recording session. Returns a list of metadata structs for
+  // each snapshot taken during the recording session.
+  StopMetadataRecording(storage.mojom.BucketId bucket_id)
+      => (array<IdbBucketMetadata> metadata);
 
   // Disables the exit-time deletion of session-only data, so that internal
   // restarts can preserve that data.

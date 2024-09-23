@@ -9,6 +9,8 @@
 #include "base/test/icu_test_util.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "url/j_test_jni_headers/GURLJavaTestHelper_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -58,10 +60,10 @@ static void JNI_GURLJavaTestHelper_TestGURLEquivalence(JNIEnv* env) {
     base::android::ScopedJavaLocalRef<jobject> j_gurl =
         Java_GURLJavaTestHelper_createGURL(
             env, base::android::ConvertUTF8ToJavaString(env, uri));
-    std::unique_ptr<GURL> gurl2 = GURLAndroid::ToNativeGURL(env, j_gurl);
-    if (gurl != *gurl2) {
+    GURL gurl2 = GURLAndroid::ToNativeGURL(env, j_gurl);
+    if (gurl != gurl2) {
       std::stringstream ss;
-      ss << "GURL not equivalent: " << gurl << ", " << *gurl2;
+      ss << "GURL not equivalent: " << gurl << ", " << gurl2;
       env->ThrowNew(env->FindClass("java/lang/AssertionError"),
                     ss.str().data());
       return;

@@ -223,7 +223,8 @@ void TopIconAnimationView::TransformView(base::TimeDelta duration) {
   }
 }
 
-gfx::Size TopIconAnimationView::CalculatePreferredSize() const {
+gfx::Size TopIconAnimationView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(grid_->app_list_config()->grid_tile_width(),
                    grid_->app_list_config()->grid_tile_height());
 }
@@ -231,7 +232,7 @@ gfx::Size TopIconAnimationView::CalculatePreferredSize() const {
 void TopIconAnimationView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  if (icon_background_) {
+  if (icon_background_ && icon_background_->layer()) {
     icon_background_->layer()->SetColor(
         GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBaseOpaque));
   }
@@ -264,7 +265,8 @@ void TopIconAnimationView::Layout(PassKey) {
         gfx::Size(badge_container_diameter, badge_container_diameter)));
   }
   title_->SetBoundsRect(AppListItemView::GetTitleBoundsForTargetViewBounds(
-      grid_->app_list_config(), rect, title_->GetPreferredSize(),
+      grid_->app_list_config(), rect,
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})),
       /*icon_scale=*/1.0f));
 }
 

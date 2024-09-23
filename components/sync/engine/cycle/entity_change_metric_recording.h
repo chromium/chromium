@@ -7,13 +7,14 @@
 
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class ModelTypeEntityChange {
+// LINT.IfChange(SyncEntityChange)
+enum class DataTypeEntityChange {
   kLocalDeletion = 0,
   kLocalCreation = 1,
   kLocalUpdate = 2,
@@ -22,10 +23,11 @@ enum class ModelTypeEntityChange {
   kRemoteInitialUpdate = 5,
   kMaxValue = kRemoteInitialUpdate,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncEntityChange)
 
-void RecordEntityChangeMetrics(ModelType type, ModelTypeEntityChange change);
+void RecordEntityChangeMetrics(DataType type, DataTypeEntityChange change);
 
-std::string GetEntityChangeHistogramNameForTest(ModelType type);
+std::string GetEntityChangeHistogramNameForTest(DataType type);
 
 }  // namespace syncer
 

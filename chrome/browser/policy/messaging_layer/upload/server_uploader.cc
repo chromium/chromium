@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/types/expected.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -33,8 +34,10 @@ ServerUploader::ServerUploader(
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     std::unique_ptr<RecordHandler> handler,
+    UploadEnqueuedCallback enqueued_cb,
     ReportSuccessfulUploadCallback report_success_upload_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    ConfigFileAttachedCallback config_file_attached_cb,
     CompletionCallback completion_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
@@ -43,8 +46,10 @@ ServerUploader::ServerUploader(
       config_file_version_(config_file_version),
       encrypted_records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
+      enqueued_cb_(std::move(enqueued_cb)),
       report_success_upload_cb_(std::move(report_success_upload_cb)),
       encryption_key_attached_cb_(std::move(encryption_key_attached_cb)),
+      config_file_attached_cb_(std::move(config_file_attached_cb)),
       handler_(std::move(handler)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -112,14 +117,22 @@ void ServerUploader::HandleRecords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   handler_->HandleRecords(
       need_encryption_key_, config_file_version_, std::move(encrypted_records_),
-      std::move(scoped_reservation_),
+      std::move(scoped_reservation_), std::move(enqueued_cb_),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ServerUploader::Finalize, base::Unretained(this))),
-      std::move(encryption_key_attached_cb_));
+      std::move(encryption_key_attached_cb_),
+      std::move(config_file_attached_cb_));
 }
 
 void ServerUploader::Finalize(CompletionResponse upload_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (enqueued_cb_) {
+    // Finalized before upload has been enqueued - make a call now.
+    std::move(enqueued_cb_)
+        .Run(base::unexpected(
+            Status(error::NOT_FOUND, "Upload failed to enqueue")));
+  }
+
   if (upload_result.has_value()) {
     std::move(report_success_upload_cb_)
         .Run(upload_result.value().sequence_information,

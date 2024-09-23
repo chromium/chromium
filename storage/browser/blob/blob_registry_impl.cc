@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
-#include "net/base/features.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -28,8 +28,6 @@ namespace storage {
 namespace {
 
 using MemoryStrategy = BlobMemoryController::Strategy;
-
-BlobRegistryImpl::URLStoreCreationHook* g_url_store_creation_hook = nullptr;
 
 }  // namespace
 
@@ -388,7 +386,8 @@ void BlobRegistryImpl::BlobUnderConstruction::ResolvedAllBlobDependencies() {
                            f->expected_modification_time.value_or(base::Time()),
                            base::NullCallback());
     } else if (element->is_blob()) {
-      DCHECK(blob_uuid_it != referenced_blob_uuids_.end());
+      CHECK(blob_uuid_it != referenced_blob_uuids_.end(),
+            base::NotFatalUntil::M130);
       const std::string& blob_uuid = *blob_uuid_it++;
       builder_->AppendBlob(blob_uuid, element->get_blob()->offset,
                            element->get_blob()->length, context()->registry());
@@ -493,22 +492,8 @@ bool BlobRegistryImpl::BlobUnderConstruction::ContainsCycles(
 }
 #endif
 
-BlobRegistryImpl::BlobRegistryImpl(
-    base::WeakPtr<BlobStorageContext> context,
-    base::WeakPtr<BlobUrlRegistry> url_registry,
-    scoped_refptr<base::TaskRunner> url_registry_runner)
-    : context_(std::move(context)),
-      url_registry_(std::move(url_registry)),
-      url_registry_runner_(std::move(url_registry_runner)) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
-}
-
 BlobRegistryImpl::BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context)
-    : context_(std::move(context)) {
-  DCHECK(
-      base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
-}
+    : context_(std::move(context)) {}
 
 BlobRegistryImpl::~BlobRegistryImpl() {
   // BlobBuilderFromStream needs to be aborted before it can be destroyed, but
@@ -623,50 +608,6 @@ void BlobRegistryImpl::GetBlobFromUUID(
   }
   BlobImpl::Create(context_->GetBlobDataFromUUID(uuid), std::move(blob));
   std::move(callback).Run();
-}
-
-void BlobRegistryImpl::URLStoreForOrigin(
-    const url::Origin& origin,
-    mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
-  Delegate* delegate = receivers_.current_context().get();
-  DCHECK(delegate);
-  if (base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl)) {
-    mojo::ReportBadMessage(
-        "BlobRegistryImpl::URLStoreForOrigin isn't available when the "
-        "kSupportPartitionedBlobUrl flag is enabled");
-    return;
-  }
-  if (!origin.opaque() && !delegate->CanAccessDataForOrigin(origin)) {
-    mojo::ReportBadMessage(
-        "Cannot access data for origin passed to "
-        "BlobRegistryImpl::URLStoreForOrigin");
-    return;
-  }
-  url_registry_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](const url::Origin& origin,
-             mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore>
-                 receiver,
-             base::WeakPtr<BlobUrlRegistry> url_registry) {
-            auto self_owned_associated_receiver =
-                mojo::MakeSelfOwnedAssociatedReceiver(
-                    std::make_unique<BlobURLStoreImpl>(
-                        blink::StorageKey::CreateFirstParty(origin),
-                        std::move(url_registry)),
-                    std::move(receiver));
-            if (g_url_store_creation_hook)
-              g_url_store_creation_hook->Run(self_owned_associated_receiver);
-          },
-          origin, std::move(receiver), url_registry_));
-}
-
-// static
-void BlobRegistryImpl::SetURLStoreCreationHookForTesting(
-    URLStoreCreationHook* hook) {
-  DCHECK(
-      !base::FeatureList::IsEnabled(net::features::kSupportPartitionedBlobUrl));
-  g_url_store_creation_hook = hook;
 }
 
 void BlobRegistryImpl::BlobBuildAborted(const std::string& uuid) {

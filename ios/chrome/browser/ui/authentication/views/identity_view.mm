@@ -248,7 +248,7 @@ constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
     case IdentityViewStyleConsistency:
       return &kConsistencyStyle;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

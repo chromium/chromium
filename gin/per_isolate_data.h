@@ -46,7 +46,8 @@ class GIN_EXPORT PerIsolateData {
       v8::ArrayBuffer::Allocator* allocator,
       IsolateHolder::AccessMode access_mode,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> user_visible_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> best_effort_task_runner);
   PerIsolateData(const PerIsolateData&) = delete;
   PerIsolateData& operator=(const PerIsolateData&) = delete;
   ~PerIsolateData();
@@ -94,8 +95,11 @@ class GIN_EXPORT PerIsolateData {
   v8::Isolate* isolate() { return isolate_; }
   v8::ArrayBuffer::Allocator* allocator() { return allocator_; }
   std::shared_ptr<v8::TaskRunner> task_runner() { return task_runner_; }
-  std::shared_ptr<v8::TaskRunner> low_priority_task_runner() {
-    return low_priority_task_runner_;
+  std::shared_ptr<v8::TaskRunner> user_visible_task_runner() {
+    return user_visible_task_runner_;
+  }
+  std::shared_ptr<v8::TaskRunner> best_effort_task_runner() {
+    return best_effort_task_runner_;
   }
 
  private:
@@ -118,7 +122,8 @@ class GIN_EXPORT PerIsolateData {
   NamedPropertyInterceptorMap named_interceptors_;
   base::ObserverList<DisposeObserver> dispose_observers_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> task_runner_;
-  std::shared_ptr<V8ForegroundTaskRunnerBase> low_priority_task_runner_;
+  std::shared_ptr<V8ForegroundTaskRunnerBase> user_visible_task_runner_;
+  std::shared_ptr<V8ForegroundTaskRunnerBase> best_effort_task_runner_;
 };
 
 }  // namespace gin

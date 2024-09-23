@@ -161,4 +161,29 @@ TEST_F(FilesScanDataTest, Directories) {
   ASSERT_TRUE(blocked_indexes.count(1));
 }
 
+TEST_F(FilesScanDataTest, BasePaths) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::vector<base::FilePath> paths = {
+      AddFile(base::FilePath(FILE_PATH_LITERAL("a.txt"))),
+      AddFile(base::FilePath(FILE_PATH_LITERAL("b.txt"))),
+      AddFile(base::FilePath(FILE_PATH_LITERAL("c.txt"))),
+  };
+
+  FilesScanData files_scan_data(paths);
+  ASSERT_EQ(files_scan_data.base_paths(), paths);
+
+  base::RunLoop run_loop;
+  files_scan_data.ExpandPaths(run_loop.QuitClosure());
+  ASSERT_EQ(files_scan_data.base_paths().size(), 0u);
+  run_loop.Run();
+
+  ASSERT_EQ(files_scan_data.base_paths(), paths);
+  ASSERT_EQ(files_scan_data.take_base_paths(), paths);
+
+  // Base paths is empty after a take.
+  ASSERT_EQ(files_scan_data.base_paths().size(), 0u);
+  ASSERT_EQ(files_scan_data.take_base_paths().size(), 0u);
+}
+
 }  // namespace enterprise_connectors

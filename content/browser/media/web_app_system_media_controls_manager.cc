@@ -4,6 +4,7 @@
 
 #include "content/browser/media/web_app_system_media_controls_manager.h"
 
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/browser/browser_main_loop.h"
@@ -18,12 +19,31 @@
 #include "media/audio/audio_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "components/remote_cocoa/browser/application_host.h"
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/gfx/native_widget_types.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
+#if BUILDFLAG(IS_MAC)
+remote_cocoa::ApplicationHost* GetApplicationHostFromWebContents(
+    content::WebContents* web_contents) {
+  // Get the ApplicationHost (ie. the browser-side component corresponding to
+  // the NSApplication running in an app shim process) for the web contents.
+  return remote_cocoa::ApplicationHost::GetForNativeView(
+      web_contents ? web_contents->GetNativeView() : gfx::NativeView());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
 intptr_t GetHWNDFromWebContents(content::WebContents* web_contents) {
   // Get the HWND for the window containing the web contents (Recreation
   // of HWNDForNativeView).
@@ -34,6 +54,7 @@ intptr_t GetHWNDFromWebContents(content::WebContents* web_contents) {
   }
   return -1;
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -91,9 +112,6 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   }
 
   base::UnguessableToken request_id = maybe_id.value();
-  DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusGained, "
-              "request id = "
-           << request_id;
 
   // Get the web contents associated with the request_id
   content::WebContents* web_contents =
@@ -104,14 +122,19 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   // It's possible no web contents is returned if the web contents
   // has been destroyed.
   if (!web_contents) {
-    DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusGained received "
-                "destroyed web contents";
     return;
   }
 
-  // Check if the web contents found is in a dPWA.
+  // Check if the web contents found is in a dPWA. Occasionally, we've found it
+  // is possible that the web contents does not have a delegate - we should just
+  // abort in that scenario.
+  WebContentsDelegate* web_contents_delegate = web_contents->GetDelegate();
+  if (!web_contents_delegate) {
+    return;
+  }
+
   bool is_web_contents_for_web_app =
-      web_contents->GetDelegate()->ShouldUseInstancedSystemMediaControls() ||
+      web_contents_delegate->ShouldUseInstancedSystemMediaControls() ||
       always_assume_web_app_for_testing_;
   if (!is_web_contents_for_web_app) {
     // Non-webapp updates are handled by media_keys_listener_manager_impl and do
@@ -131,18 +154,30 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
 
   // if the controls don't exist, we need to make an SMC and the
   // controls object.
-  intptr_t window = -1;
   if (!existing_controls) {
-    window = GetHWNDFromWebContents(web_contents);
-
+#if BUILDFLAG(IS_WIN)
+    // `window` is -1 if no HWND found.
+    intptr_t window = GetHWNDFromWebContents(web_contents);
     std::unique_ptr<system_media_controls::SystemMediaControls>
         system_media_controls =
             system_media_controls::SystemMediaControls::Create(
                 media::AudioManager::GetGlobalAppName(), window);
+#else
+    remote_cocoa::ApplicationHost* application_host =
+        GetApplicationHostFromWebContents(web_contents);
+
+    std::unique_ptr<system_media_controls::SystemMediaControls>
+        system_media_controls =
+            system_media_controls::SystemMediaControls::Create(
+                application_host);
+
+    if (on_system_media_controls_bridge_created_callback_for_testing_) {
+      system_media_controls->SetOnBridgeCreatedCallbackForTesting(
+          on_system_media_controls_bridge_created_callback_for_testing_);
+    }
+#endif  // BUILDFLAG(IS_WIN)
 
     if (!system_media_controls) {
-      DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusGained, "
-               << "failed to create smc.";
       return;
     }
 
@@ -151,13 +186,15 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
     system_media_controls->AddObserver(
         BrowserMainLoop::GetInstance()->media_keys_listener_manager());
 
-    controls_map_.emplace(
-        request_id,
-        std::make_unique<WebAppSystemMediaControls>(
-            request_id, std::move(system_media_controls),
-            std::make_unique<SystemMediaControlsNotifier>(
-                system_media_controls.get(), request_id),
-            std::make_unique<ActiveMediaSessionController>(request_id)));
+    auto notifier = std::make_unique<SystemMediaControlsNotifier>(
+        system_media_controls.get(), request_id);
+    auto controller =
+        std::make_unique<ActiveMediaSessionController>(request_id);
+
+    controls_map_.emplace(request_id,
+                          std::make_unique<WebAppSystemMediaControls>(
+                              request_id, std::move(system_media_controls),
+                              std::move(notifier), std::move(controller)));
 
     if (test_observer_) {
       test_observer_->OnWebAppAdded(request_id);
@@ -179,20 +216,47 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
 void WebAppSystemMediaControlsManager::OnFocusLost(
     media_session::mojom::AudioFocusRequestStatePtr state) {
   CHECK(initialized_);
+
+  if (!state->request_id) {
+    return;
+  }
+
+  auto it = controls_map_.find(state->request_id.value());
+
+  // There will be no entry if it was a browser session that lost focus.
+  if (it == controls_map_.end()) {
+    return;
+  }
+
+  // Tell the OS that audio stopped and to hide the UI.
+
+  // For the browser, the SystemMediaControlsNotifier automatically follows the
+  // "active" media session. However, because all PWA media controls are
+  // associated with a specific media session, they don't receive the same
+  // metadata updates. (crbug/326411160 for more information why).
+  // Instead, `this` receives a FocusLost updates via AudioFocusObserver, and we
+  // must then do the OS UI cleanup ourselves.
+
+  // Because SystemMediaControlsNotifier keeps internal timers/logic to debounce
+  // metadata updates, we leverage the existing logic there by directly calling
+  // MediaSessionInfoChanged (a MediaControllerObserver function)
+  // with empty information to force the SMCNotifier to take the normal cleanup
+  // path to hide the OS UI and stop all running debounce timers. (Although
+  // `state` has a session_info field, we can't use that because it will have
+  // information. we need to pass an empty information so
+  // MediaSessionInfoChanged will think a track ended and take the cleanup
+  // route)
+  content::SystemMediaControlsNotifier* notifier = it->second->GetNotifier();
+  media_session::mojom::MediaSessionInfoPtr empty_info;
+  notifier->MediaSessionInfoChanged(std::move(empty_info));
 }
 
 void WebAppSystemMediaControlsManager::OnRequestIdReleased(
     const base::UnguessableToken& request_id) {
   CHECK(initialized_);
-  DVLOG(1) << "WebAppSystemMediaControlsManager::OnRequestIdReleased, "
-              "request id = "
-           << request_id;
 
   auto it = controls_map_.find(request_id);
   if (it == controls_map_.end()) {
-    DVLOG(1) << "WebAppSystemMediaControlsManager::OnFocusLost, no match for "
-                "request id = "
-             << request_id;
     return;
   }
 
@@ -238,32 +302,11 @@ WebAppSystemMediaControlsManager::GetAllControls() {
   return vec;
 }
 
-void WebAppSystemMediaControlsManager::LogDataForDebugging() {
-  DVLOG(1) << "WebAppSystemMediaControlsManager::LogDataForDebugging";
-  int i = 0;
-  for (auto& it : controls_map_) {
-    DVLOG(1) << "Entry " << ++i << " "
-             << "Request ID: " << it.first;
-
-    if (it.second->GetSystemMediaControls()) {
-      DVLOG(1) << "SystemMediaControls: "
-               << it.second->GetSystemMediaControls();
-    } else {
-      DVLOG(1) << "SystemMediaControls: nullptr";
-    }
-
-    if (it.second->GetNotifier()) {
-      DVLOG(1) << "Notifier: " << it.second->GetNotifier();
-    } else {
-      DVLOG(1) << "Notifier: nullptr";
-    }
-
-    if (it.second->GetController()) {
-      DVLOG(1) << "Controller: " << it.second->GetController();
-    } else {
-      DVLOG(1) << "Controller: nullptr";
-    }
-  }
+void WebAppSystemMediaControlsManager::
+    SetOnSystemMediaControlsBridgeCreatedCallbackForTesting(
+        base::RepeatingCallback<void()> callback) {
+  on_system_media_controls_bridge_created_callback_for_testing_ =
+      std::move(callback);
 }
 
 }  // namespace content

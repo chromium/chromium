@@ -158,7 +158,7 @@ TEST_F(TouchSelectionMenuRunnerViewsTest, RunningActionClosesProperly) {
   LabelButton* button = test_api.GetFirstButton();
   DCHECK(button);
   gfx::Point button_center = button->bounds().CenterPoint();
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_tap_count(1);
   ui::GestureEvent tap(button_center.x(), button_center.y(), 0,
                        ui::EventTimeForNow(), details);

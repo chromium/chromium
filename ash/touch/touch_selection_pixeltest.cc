@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/view.h"
@@ -37,7 +38,7 @@ class TouchSelectionPixelTest : public AshTestBase {
   ~TouchSelectionPixelTest() override = default;
 
   // AshTestBase:
-  absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     return pixel_test::InitParams();
   }
@@ -61,7 +62,7 @@ TEST_F(TouchSelectionPixelTest, MagnifierOnTextfield) {
   auto widget = CreateContainerWidget();
   auto* textfield = widget->GetContentsView()->AddChildView(
       std::make_unique<views::Textfield>());
-  textfield->SetAccessibleName(u"Textfield");
+  textfield->GetViewAccessibility().SetName(u"Textfield");
   textfield->SetBoundsRect(gfx::Rect(100, 100, 200, 30));
   textfield->SetText(u"Text in a textfield");
   textfield->SetSelectedRange({0, 9});
@@ -76,7 +77,7 @@ TEST_F(TouchSelectionPixelTest, MagnifierOnTextfield) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "touch_selection",
-      /*revision_number=*/1, widget.get()));
+      /*revision_number=*/2, widget.get()));
 }
 
 }  // namespace

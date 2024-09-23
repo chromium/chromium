@@ -8,7 +8,6 @@
 
 #include "base/notreached.h"
 #include "net/http/http_raw_request_headers.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
 namespace net {
 
@@ -30,15 +29,8 @@ void MultiplexedHttpStream::SaveSSLInfo() {
   session_->SaveSSLInfo();
 }
 
-void MultiplexedHttpStream::GetSSLCertRequestInfo(
-    SSLCertRequestInfo* cert_request_info) {
-  // A multiplexed stream cannot request client certificates. Client
-  // authentication may only occur during the initial SSL handshake.
-  NOTREACHED();
-}
-
 void MultiplexedHttpStream::Drain(HttpNetworkSession* session) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   Close(false);
   delete this;
 }
@@ -60,7 +52,7 @@ void MultiplexedHttpStream::SetRequestHeadersCallback(
 }
 
 void MultiplexedHttpStream::DispatchRequestHeadersCallback(
-    const spdy::Http2HeaderBlock& spdy_headers) {
+    const quiche::HttpHeaderBlock& spdy_headers) {
   if (!request_headers_callback_)
     return;
   HttpRawRequestHeaders raw_headers;

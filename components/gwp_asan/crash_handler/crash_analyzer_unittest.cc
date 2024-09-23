@@ -18,6 +18,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "components/gwp_asan/client/gwp_asan.h"
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
@@ -99,7 +100,14 @@ class BaseCrashAnalyzerTest : public testing::Test {
       : is_partition_alloc_(is_partition_alloc),
         lightweight_detector_enabled_(lightweight_detector_mode !=
                                       LightweightDetectorMode::kOff) {
-    gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc);
+    gpa_.Init(
+        AllocatorSettings{
+            .max_allocated_pages = 1u,
+            .num_metadata = 1u,
+            .total_pages = 1u,
+            .sampling_frequency = 0u,
+        },
+        base::DoNothing(), is_partition_alloc);
     if (lightweight_detector_enabled_) {
       lud::PoisonMetadataRecorder::ResetForTesting();
       lud::PoisonMetadataRecorder::Init(lightweight_detector_mode, 1);
@@ -176,7 +184,8 @@ class CrashAnalyzerTest : public BaseCrashAnalyzerTest {
 // not use base::debug::StackTrace, so the stack traces may vary slightly and
 // break this test.
 #if !BUILDFLAG(IS_ANDROID) || !BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-TEST_F(CrashAnalyzerTest, StackTraceCollection) {
+// TODO(https://crbug.com/340586138): Disabled due to excessive flakiness.
+TEST_F(CrashAnalyzerTest, DISABLED_StackTraceCollection) {
   void* ptr = gpa_.Allocate(10);
   ASSERT_NE(ptr, nullptr);
   gpa_.Deallocate(ptr);
@@ -226,6 +235,7 @@ TEST_F(CrashAnalyzerTest, StackTraceCollection) {
                   proto.deallocation().stack_trace_size() - i),
               reinterpret_cast<uintptr_t>(trace[trace.size() - i]));
   }
+  EXPECT_EQ(proto.mode(), Crash_Mode_CLASSIC);
 }
 #endif
 
@@ -252,19 +262,25 @@ TEST_F(CrashAnalyzerTest, InternalError) {
   EXPECT_TRUE(proto.has_internal_error());
   ASSERT_TRUE(proto.has_missing_metadata());
   EXPECT_TRUE(proto.missing_metadata());
+  EXPECT_EQ(proto.mode(), Crash_Mode_CLASSIC);
 }
 
 // The detector is not used on 32-bit systems because pointers there aren't big
 // enough to safely store metadata IDs.
 #if defined(ARCH_CPU_64_BITS)
-class LightweightDetectorAnalyzerTest : public BaseCrashAnalyzerTest {
+
+class LightweightDetectorAnalyzerTest
+    : public BaseCrashAnalyzerTest,
+      public testing::WithParamInterface<LightweightDetectorMode> {
  protected:
   LightweightDetectorAnalyzerTest()
-      : BaseCrashAnalyzerTest(/* is_partition_alloc = */ true,
-                              LightweightDetectorMode::kBrpQuarantine) {}
+      : BaseCrashAnalyzerTest(/* is_partition_alloc = */ true, GetParam()) {}
 };
 
-TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
+extern Crash_Mode LightweightDetectorModeToGwpAsanMode(
+    LightweightDetectorMode mode);
+
+TEST_P(LightweightDetectorAnalyzerTest, UseAfterFree) {
   uint64_t alloc;
   ASSERT_TRUE(lud::PoisonMetadataRecorder::Get());
   lud::PoisonMetadataRecorder::Get()->RecordAndZap(&alloc, sizeof(alloc));
@@ -287,9 +303,11 @@ TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
   EXPECT_FALSE(proto.has_internal_error());
   ASSERT_TRUE(proto.has_missing_metadata());
   EXPECT_FALSE(proto.missing_metadata());
+  EXPECT_EQ(proto.mode(),
+            CrashAnalyzer::LightweightDetectorModeToGwpAsanMode(GetParam()));
 }
 
-TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
+TEST_P(LightweightDetectorAnalyzerTest, InternalError) {
   uint64_t alloc;
   lud::PoisonMetadataRecorder::Get()->RecordAndZap(&alloc, sizeof(alloc));
   InitializeSnapshot(alloc);
@@ -315,7 +333,15 @@ TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
   EXPECT_TRUE(proto.has_internal_error());
   ASSERT_TRUE(proto.has_missing_metadata());
   EXPECT_TRUE(proto.missing_metadata());
+  EXPECT_EQ(proto.mode(),
+            CrashAnalyzer::LightweightDetectorModeToGwpAsanMode(GetParam()));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    VaryLightweightDetectorMode,
+    LightweightDetectorAnalyzerTest,
+    testing::Values(LightweightDetectorMode::kBrpQuarantine,
+                    LightweightDetectorMode::kRandom));
 #endif  // defined(ARCH_CPU_64_BITS)
 
 }  // namespace internal

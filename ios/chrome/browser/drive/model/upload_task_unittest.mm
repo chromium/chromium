@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/drive/model/test_upload_task_observer.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 // Testing implementation of `UploadTask`.
 class TestUploadTask final : public UploadTask {
@@ -21,7 +22,9 @@ class TestUploadTask final : public UploadTask {
   void Cancel() final {}
   id<SystemIdentity> GetIdentity() const final { return nil; }
   float GetProgress() const final { return 0; }
-  NSURL* GetResponseLink() const final { return nil; }
+  std::optional<GURL> GetResponseLink(bool add_user_identifier) const final {
+    return std::nullopt;
+  }
   NSError* GetError() const final { return nil; }
 };
 

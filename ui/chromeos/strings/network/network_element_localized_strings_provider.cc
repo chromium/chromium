@@ -43,12 +43,12 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
     {"OncTypeWiFi", IDS_NETWORK_TYPE_WIFI},
     {"ipAddressNotAvailable", IDS_NETWORK_IP_ADDRESS_NA},
     {"networkListItemConnected", IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED},
-    {"networkListItemConnectedLimited",
-     IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED_LIMITED},
     {"networkListItemConnectedNoConnectivity",
      IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED_NO_CONNECTIVITY},
     {"networkListItemConnecting", IDS_STATUSBAR_NETWORK_DEVICE_CONNECTING},
     {"networkListItemSignIn", IDS_STATUSBAR_NETWORK_DEVICE_SIGNIN},
+    {"networkListItemCellularSignIn",
+     IDS_STATUSBAR_NETWORK_DEVICE_CELLULAR_SIGNIN},
     {"networkListItemConnectingTo", IDS_NETWORK_LIST_CONNECTING_TO},
     {"networkListItemInitializing", IDS_NETWORK_LIST_INITIALIZING},
     {"networkListItemTitle", IDS_NETWORK_LIST_ITEM_TITLE},
@@ -154,11 +154,20 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kElementLocalizedStrings);
+
+  html_source->AddLocalizedString(
+      "OncTypeTether", ash::features::IsInstantHotspotRebrandEnabled()
+                           ? IDS_NETWORK_TYPE_HOTSPOT
+                           : IDS_NETWORK_TYPE_TETHER);
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
   for (const auto& entry : kElementLocalizedStrings)
     builder->Add(entry.name, entry.id);
+
+  builder->Add("OncTypeTether", ash::features::IsInstantHotspotRebrandEnabled()
+                                    ? IDS_NETWORK_TYPE_HOTSPOT
+                                    : IDS_NETWORK_TYPE_TETHER);
 }
 
 void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -327,11 +336,14 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"internetApnPageTitle", IDS_SETTINGS_ACCESS_POINT_NAME_APN},
       {"apn", IDS_SETTINGS_APN_INPUT_LABEL},
-      {"apnPageAddNewApn", IDS_SETTINGS_ADD_NEW_APN},
+      {"apnPageCreateNewApn", IDS_SETTINGS_CREATE_NEW_APN},
+      {"apnPageDiscoverMoreApns", IDS_SETTINGS_DISCOVER_MORE_APNS},
       {"apnSettingsDescriptionNoLink", IDS_SETTINGS_APN_DESCRIPTION_NO_LINK},
       {"customApnLimitReached", IDS_SETTINGS_CUSTOM_APN_LIMIT_REACHED},
       {"apnSettingsZeroStateDescription",
        IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION},
+      {"apnSettingsZeroStateDescriptionWithAddLink",
+       IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION_WITH_ADD_LINK},
       {"apnSettingsDatabaseApnsErrorMessage",
        IDS_SETTINGS_APN_DATABASE_APNS_ERROR_MESSAGE},
       {"apnSettingsCustomApnsErrorMessage",
@@ -352,6 +364,17 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnDetailAddApnDialogTitle", IDS_SETTINGS_ADD_APN_DIALOG_TITLE},
       {"apnDetailViewApnDialogTitle", IDS_SETTINGS_VIEW_APN_DIALOG_TITLE},
       {"apnDetailEditApnDialogTitle", IDS_SETTINGS_EDIT_APN_DIALOG_TITLE},
+      {"apnSelectionDialogTitle", IDS_SETTINGS_APN_SELECTION_DIALOG_TITLE},
+      {"apnSelectionDialogDescription",
+       IDS_SETTINGS_APN_SELECTION_DIALOG_DESCRIPTION},
+      {"apnSelectionDialogUseApn",
+       IDS_SETTINGS_APN_SELECTION_DIALOG_BUTTON_USE_APN},
+      {"apnSelectionDialogA11yUseApnEnabled",
+       IDS_SETTINGS_APN_SELECTION_DIALOG_A11Y_USE_APN_ENABLED},
+      {"apnSelectionDialogA11yUseApnDisabled",
+       IDS_SETTINGS_APN_SELECTION_DIALOG_A11Y_USE_APN_DISABLED},
+      {"apnSelectionDialogListItemSelected",
+       IDS_SETTINGS_APN_SELECTION_DIALOG_LIST_ITEM_SELECTED},
       {"apnDetailApnErrorMaxChars",
        IDS_SETTINGS_APN_INPUT_LABEL_ERROR_MAX_CHARS},
       {"apnDetailApnErrorInvalidChar",
@@ -461,6 +484,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkSimLockedTitle", IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_TITLE},
       {"networkSimLockPolicyAdminSubtitle",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCK_POLICY_ADMIN_SUBTITLE},
+      {"networkSimLockedPinSubtitle",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PIN_SUBTITLE},
       {"networkSimPukDialogSubtitle",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_SUBTITLE},
       {"networkSimPukDialogManagedSubtitle",
@@ -528,13 +553,20 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isApnRevampEnabled",
                           ash::features::IsApnRevampEnabled());
-  html_source->AddBoolean("isCellularCarrierLockEnabled",
-                          ash::features::IsCellularCarrierLockEnabled());
+  html_source->AddBoolean(
+      "isApnRevampAndAllowApnModificationPolicyEnabled",
+      ash::features::IsApnRevampAndAllowApnModificationPolicyEnabled());
 
   html_source->AddString("apnSettingsDescriptionWithLink",
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK,
                              chrome::kApnSettingsLearnMoreUrl));
+
+  html_source->AddString(
+      "apnSelectionDialogDescriptionWithLink",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_APN_SELECTION_DIALOG_DESCRIPTION_WITH_LINK,
+          chrome::kApnSettingsLearnMoreUrl));
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
@@ -565,19 +597,17 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
       "showHiddenNetworkWarning",
       base::FeatureList::IsEnabled(ash::features::kHiddenNetworkWarning));
 
-  // Login screen and public account users can only create shared network
+  // Login screen and Managed Guest Session (MGS) users can only create shared
+  // network configurations. Kiosk users default to shared network
   // configurations. Other users default to unshared network configurations.
-  // NOTE: Guest and kiosk users can only create unshared network configs.
-  // NOTE: Insecure wifi networks are always shared.
+  // NOTE: Guest users can only create unshared network configs.
   html_source->AddBoolean("shareNetworkDefault",
-                          !ash::LoginState::Get()->UserHasNetworkProfile());
-  // Only authenticated users can toggle the share state.
+                          !ash::LoginState::Get()->UserHasNetworkProfile() ||
+                              ash::LoginState::Get()->IsKioskSession());
+  // Authenticated and Kiosk users can toggle the share state.
   html_source->AddBoolean("shareNetworkAllowEnable",
-                          ash::LoginState::Get()->IsUserAuthenticated());
-
-  html_source->AddBoolean(
-      "eapDefaultCasWithoutSubjectVerificationAllowed",
-      ash::features::IsEapDefaultCasWithoutSubjectVerificationAllowed());
+                          ash::LoginState::Get()->IsUserAuthenticated() ||
+                              ash::LoginState::Get()->IsKioskSession());
 
   html_source->AddBoolean(
       "ephemeralNetworkPoliciesEnabled",

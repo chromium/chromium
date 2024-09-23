@@ -22,7 +22,7 @@ struct mojo::EnumTraits<media::mojom::MediaFoundationRenderingMode,
         *output = media::MediaFoundationRenderingMode::FrameServer;
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static media::mojom::MediaFoundationRenderingMode ToMojom(
@@ -34,7 +34,7 @@ struct mojo::EnumTraits<media::mojom::MediaFoundationRenderingMode,
         return media::mojom::MediaFoundationRenderingMode::FrameServer;
         break;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

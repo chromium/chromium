@@ -10,6 +10,10 @@ assert_valid_value("content", "none");
 assert_valid_value("content", 'url("test.html")');
 assert_valid_value("content", 'url("test.html") / "alt"');
 assert_valid_value("content", '"test" / "alt"');
+assert_valid_value("content", '"thing" / "alt1" "alt2"');
+assert_valid_value("content", '"thing" / attr(data-alt)');
+assert_valid_value("content", '"thing" / attr(data-alt-1) attr(data-alt-2)');
+assert_valid_value("content", '"thing" / attr(data-alt-1) "alt2"');
 
 assert_invalid_value("content", 'normal normal');
 assert_invalid_value("content", 'normal "a"');
@@ -34,6 +38,5 @@ assert_invalid_value("content", '"a" still not valid');
 assert_invalid_value("content", 'bla &@#$&^');
 assert_invalid_value("content", "'foo' *(&^");
 assert_invalid_value("content", "open-quote 1+2+3=6");
-assert_invalid_value("content", '"thing" / "alt1" "alt2"');
 assert_invalid_value("content", '"thing" / ');
 </script>

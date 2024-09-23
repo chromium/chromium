@@ -4,7 +4,10 @@
 
 #include "ash/system/toast/system_nudge_view.h"
 
+#include <algorithm>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -34,11 +37,14 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kFocusableViewsGroupId = 1;
 
 // Nudge constants
 constexpr gfx::Insets kNudgeInteriorMargin = gfx::Insets::VH(20, 20);
@@ -122,10 +128,64 @@ gfx::RoundedCornersF CalculatePointyAnchoredNudgeCorners(
 
 }  // namespace
 
-SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemNudgeView, kBubbleIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemNudgeView,
+                                      kPrimaryButtonIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemNudgeView,
+                                      kSecondaryButtonIdForTesting);
+
+// FocusableChildrenObserver --------------------------------------------------
+
+// Observes child view's focus state changes.
+class SystemNudgeView::FocusableChildrenObserver : public views::ViewObserver {
+ public:
+  FocusableChildrenObserver(
+      std::vector<views::View*> observed_children,
+      base::RepeatingCallback<void(/*has_focus=*/bool)> focus_callback)
+      : observed_children_(std::move(observed_children)),
+        focus_callback_(std::move(focus_callback)) {
+    for (views::View* observed_child : observed_children_) {
+      observed_child->AddObserver(this);
+    }
+  }
+
+  FocusableChildrenObserver(const FocusableChildrenObserver&) = delete;
+  FocusableChildrenObserver& operator=(const FocusableChildrenObserver&) =
+      delete;
+
+  ~FocusableChildrenObserver() override {
+    for (views::View* observed_child : observed_children_) {
+      observed_child->RemoveObserver(this);
+    }
+  }
+
+ private:
+  // ViewObserver:
+  void OnViewFocused(views::View* observed_view) override {
+    focus_callback_.Run(/*has_focus=*/true);
+  }
+
+  void OnViewBlurred(views::View* observed_view) override {
+    focus_callback_.Run(/*has_focus=*/false);
+  }
+
+  const std::vector<views::View*> observed_children_;
+
+  base::RepeatingCallback<void(/*has_focus=*/bool)> focus_callback_;
+};
+
+// SystemNudgeView ------------------------------------------------------------
+
+SystemNudgeView::SystemNudgeView(
+    const AnchoredNudgeData& nudge_data,
+    base::RepeatingCallback<void(/*is_hovered_or_has_focus=*/bool)>
+        hover_or_focus_changed_callback)
     : shadow_(SystemShadow::CreateShadowOnTextureLayer(
           SystemShadow::Type::kElevation4)),
-      is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)) {
+      is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)),
+      hover_changed_callback_(std::move(nudge_data.hover_changed_callback)),
+      hover_or_focus_changed_callback_(
+          std::move(hover_or_focus_changed_callback)) {
   // Painted to layer so the view can be semi-transparent and set rounded
   // corners.
   SetPaintToLayer();
@@ -135,6 +195,7 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
   SetBackground(views::CreateThemedSolidBackground(
       nudge_data.background_color_id.value_or(kColorAshShieldAndBase80)));
   SetNotifyEnterExitOnChild(true);
+  SetProperty(views::kElementIdentifierKey, kBubbleIdForTesting);
 
   // Cache the anchor view when the nudge anchors by its corner to set a pointy
   // corner based on the nudge's position in relation to this anchor view.
@@ -150,6 +211,9 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
   SetOrientation(views::LayoutOrientation::kVertical);
   SetInteriorMargin(kNudgeInteriorMargin);
   SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace
+  SetLayoutManagerUseConstrainedSpace(false);
 
   const bool nudge_is_text_only = nudge_data.image_model.IsEmpty() &&
                                   nudge_data.title_text.empty() &&
@@ -207,7 +271,8 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
         AddChildView(std::move(image_and_text_container_unique));
   }
 
-  if (!nudge_data.image_model.IsEmpty()) {
+  const bool has_image = !nudge_data.image_model.IsEmpty();
+  if (has_image) {
     auto* image_view = image_and_text_container->AddChildView(
         views::Builder<views::ImageView>()
             .SetID(VIEW_ID_SYSTEM_NUDGE_IMAGE_VIEW)
@@ -234,16 +299,26 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
                    kImageViewSize);
   }
 
+  const bool has_title = !nudge_data.title_text.empty();
   auto* text_container = image_and_text_container->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::LayoutOrientation::kVertical,
+                                       views::MinimumFlexSizeRule::kPreferred,
+                                       views::MaximumFlexSizeRule::kUnbounded))
+          // If the nudge has an image and no title, vertically center the text.
+          .SetMainAxisAlignment(has_image && !has_title
+                                    ? views::LayoutAlignment::kCenter
+                                    : views::LayoutAlignment::kStart)
           .Build());
 
   auto label_width = nudge_data.image_model.IsEmpty()
                          ? kNudgeLabelWidth_NudgeWithoutLeadingImage
                          : kNudgeLabelWidth_NudgeWithLeadingImage;
 
-  if (!nudge_data.title_text.empty()) {
+  if (has_title) {
     auto* title_label = text_container->AddChildView(
         views::Builder<views::Label>()
             .SetID(VIEW_ID_SYSTEM_NUDGE_TITLE_LABEL)
@@ -319,30 +394,41 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
           .Build());
   buttons_container->SetDefault(views::kMarginsKey, kButtonsMargins);
 
-  const bool has_secondary_button = !nudge_data.secondary_button_text.empty();
-
-  buttons_container->AddChildView(
+  std::vector<views::View*> focusable_children;
+  focusable_children.push_back(buttons_container->AddChildView(
       views::Builder<PillButton>()
           .SetID(VIEW_ID_SYSTEM_NUDGE_PRIMARY_BUTTON)
+          .SetGroup(kFocusableViewsGroupId)
           .SetCallback(std::move(nudge_data.primary_button_callback))
           .SetText(nudge_data.primary_button_text)
           .SetTooltipText(nudge_data.primary_button_text)
           .SetPillButtonType(PillButton::Type::kPrimaryWithoutIcon)
           .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
-          .Build());
+          .SetProperty(views::kElementIdentifierKey, kPrimaryButtonIdForTesting)
+          .Build()));
 
-  if (has_secondary_button) {
-    buttons_container->AddChildViewAt(
+  if (!nudge_data.secondary_button_text.empty()) {
+    focusable_children.push_back(buttons_container->AddChildViewAt(
         views::Builder<PillButton>()
             .SetID(VIEW_ID_SYSTEM_NUDGE_SECONDARY_BUTTON)
+            .SetGroup(kFocusableViewsGroupId)
             .SetCallback(std::move(nudge_data.secondary_button_callback))
             .SetText(nudge_data.secondary_button_text)
             .SetTooltipText(nudge_data.secondary_button_text)
             .SetPillButtonType(PillButton::Type::kSecondaryWithoutIcon)
             .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
+            .SetProperty(views::kElementIdentifierKey,
+                         kSecondaryButtonIdForTesting)
             .Build(),
-        0);
+        0));
   }
+
+  focusable_children_observer_ = std::make_unique<FocusableChildrenObserver>(
+      std::move(focusable_children),
+      base::BindRepeating(&SystemNudgeView::HandleOnChildFocusStateChanged,
+                          // Unretained is safe because `this` outlives the
+                          // `FocusableChildrenObserver`.
+                          base::Unretained(this)));
 }
 
 SystemNudgeView::~SystemNudgeView() {
@@ -395,20 +481,38 @@ void SystemNudgeView::OnWidgetDestroying(views::Widget* widget) {
   }
 }
 
+void SystemNudgeView::HandleOnChildFocusStateChanged(bool focus_entered) {
+  hover_or_focus_changed_callback_.Run(IsHoveredOrChildHasFocus());
+}
+
+void SystemNudgeView::HandleOnMouseHovered(bool mouse_entered) {
+  if (close_button_) {
+    close_button_->SetVisible(mouse_entered);
+  }
+
+  if (hover_changed_callback_) {
+    hover_changed_callback_.Run(mouse_entered);
+  }
+  hover_or_focus_changed_callback_.Run(IsHoveredOrChildHasFocus());
+}
+
+bool SystemNudgeView::IsHoveredOrChildHasFocus() {
+  views::View::Views focusable_views;
+  GetViewsInGroup(kFocusableViewsGroupId, &focusable_views);
+  bool child_has_focus =
+      std::find(focusable_views.begin(), focusable_views.end(),
+                GetWidget()->GetFocusManager()->GetFocusedView()) !=
+      focusable_views.end();
+
+  return IsMouseHovered() || child_has_focus;
+}
+
 void SystemNudgeView::SetNudgeRoundedCornerRadius(
-    gfx::RoundedCornersF rounded_corners) {
+    const gfx::RoundedCornersF& rounded_corners) {
   layer()->SetRoundedCornerRadius(rounded_corners);
   SetBorder(std::make_unique<views::HighlightBorder>(
       rounded_corners, views::HighlightBorder::Type::kHighlightBorderOnShadow));
   shadow_->SetRoundedCorners(rounded_corners);
-}
-
-void SystemNudgeView::HandleOnMouseHovered(const bool mouse_entered) {
-  if (!close_button_) {
-    return;
-  }
-
-  close_button_->SetVisible(mouse_entered);
 }
 
 BEGIN_METADATA(SystemNudgeView)

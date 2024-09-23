@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "media/base/media_log.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
+#include "media/gpu/media_gpu_export.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,13 +31,17 @@ class MojoDecoderBufferWriter;
 // video decoder via Mojo. This class should be operated and
 // destroyed on |decoder_task_runner_|.
 //
+// Note: MEDIA_GPU_EXPORT is necessary to expose the OOPVideoDecoder to the
+// MojoStableVideoDecoder.
+//
 // TODO(b/195769334): this class (or most of it) would be unnecessary if the
 // MailboxVideoFrameConverter lived together with the remote decoder in the same
 // process. Then, clients can communicate with that process without the GPU
 // process acting as a proxy.
-class OOPVideoDecoder : public VideoDecoderMixin,
-                        public stable::mojom::VideoDecoderClient,
-                        public stable::mojom::MediaLog {
+class MEDIA_GPU_EXPORT OOPVideoDecoder
+    : public VideoDecoderMixin,
+      public stable::mojom::VideoDecoderClient,
+      public stable::mojom::MediaLog {
  public:
   OOPVideoDecoder(const OOPVideoDecoder&) = delete;
   OOPVideoDecoder& operator=(const OOPVideoDecoder&) = delete;
@@ -72,12 +77,16 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   // sequence-safe.
   static std::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
 
+  // Resets the internal singleton state so that we can always run individual
+  // tests as if they ran in dedicated processes.
+  static void ResetGlobalStateForTesting();
+
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb,
+                  const PipelineOutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
@@ -99,7 +108,7 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   // stable::mojom::MediaLog implementation.
   void AddLogRecord(const MediaLogRecord& event) final;
 
-  VideoFrame* UnwrapFrame(const VideoFrame& wrapped_frame);
+  FrameResource* GetOriginalFrame(gfx::GenericSharedMemoryId frame_id);
 
  private:
   OOPVideoDecoder(std::unique_ptr<media::MediaLog> media_log,
@@ -131,7 +140,7 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   void ReleaseVideoFrame(const base::UnguessableToken& release_token);
 
   InitCB init_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
-  OutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PipelineOutputCB output_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   WaitingCB waiting_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
   uint64_t decode_counter_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
@@ -191,6 +200,11 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   bool initialized_for_protected_content_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  bool needs_bitstream_conversion_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+
+  int32_t max_decode_requests_ GUARDED_BY_CONTEXT(sequence_checker_) = 8u;
+
   VideoDecoderType remote_decoder_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VideoDecoderType::kUnknown;
 
@@ -223,9 +237,9 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   // |received_id_to_decoded_frame_map_| and we change the GpuMemoryBufferId of
   // the incoming buffer to guarantee its uniqueness within the GPU process (at
   // least among all clients of media::GetNextGpuMemoryBufferId()).
-  base::flat_map<gfx::GpuMemoryBufferId, scoped_refptr<VideoFrame>>
+  base::flat_map<gfx::GpuMemoryBufferId, scoped_refptr<FrameResource>>
       received_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::flat_map<gfx::GpuMemoryBufferId, VideoFrame*>
+  base::flat_map<gfx::GenericSharedMemoryId, FrameResource*>
       generated_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

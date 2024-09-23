@@ -218,7 +218,6 @@ void AddTypePropertiesToLog(const mojom::NetworkTypeProperties& type_props,
       break;
     case mojom::NetworkType::kUnsupported:
       NOTREACHED();
-      break;
   }
 }
 
@@ -267,7 +266,6 @@ std::string GetNetworkType(mojom::NetworkType type) {
       return "Ethernet";
     case mojom::NetworkType::kUnsupported:
       NOTREACHED();
-      return "";
   }
 }
 

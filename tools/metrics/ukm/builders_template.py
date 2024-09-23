@@ -33,6 +33,8 @@ class {event.name} final : public ::ukm::internal::UkmEntryBuilderBase {{
  public:
   explicit {event.name}(ukm::SourceId source_id);
   explicit {event.name}(ukm::SourceIdObj source_id);
+  {event.name}({event.name}&&);
+  {event.name}& operator=({event.name}&&);
   ~{event.name}() override;
 
   static const char kEntryName[];
@@ -73,6 +75,10 @@ const uint64_t {event.name}::kEntryNameHash;
 {event.name}::{event.name}(ukm::SourceIdObj source_id) :
   ::ukm::internal::UkmEntryBuilderBase(source_id, kEntryNameHash) {{
 }}
+
+{event.name}::{event.name}({event.name}&&) = default;
+
+{event.name}& {event.name}::operator=({event.name}&&) = default;
 
 {event.name}::~{event.name}() = default;
 

@@ -18,23 +18,59 @@ public interface FeedActionDelegate {
         public long visitTimeMs;
     }
 
+    /** Observing page load events. */
+    public interface PageLoadObserver {
+        /**
+         * Called when the page starts loading.
+         *
+         * @param pageId The unique ID for the page being opened.
+         */
+        void onPageLoadStarted(int pageId);
+
+        /**
+         * Called when the page finishes loading successfully.
+         *
+         * @param pageId The unique ID for the page being opened.
+         */
+        void onPageLoadFinished(int pageId, boolean inNewTab);
+
+        /**
+         * Called when the page fails to load.
+         *
+         * @param pageId The unique ID for the page being opened.
+         * @param errorCode The error code that causes the page to fail loading.
+         */
+        void onPageLoadFailed(int pageId, int errorCode);
+
+        /**
+         * Called when the page finishes first paint after non-empty layout.
+         *
+         * @param pageId The unique ID for the page being opened.
+         */
+        void onPageFirstContentfulPaint(int pageId);
+    }
+
     /**
      * Opens a url that was presented to the user as suggested content.
+     *
      * @param disposition A `org.chromium.ui.mojom.WindowOpenDisposition` value.
      * @param params What to load.
      * @param inGroup Whether to open the url in a tab in group.
-     * @param onPageLoaded Called when the page completes loading.
+     * @param pageId An unique ID identifying the page to load.
+     * @param pageLoadObserver Observer to get called with page load events.
      * @param onVisitComplete Called when the user closes or navigates away from the page.
      */
     void openSuggestionUrl(
             int disposition,
             LoadUrlParams params,
             boolean inGroup,
-            Runnable onPageLoaded,
+            int pageId,
+            PageLoadObserver pageLoadObserver,
             Callback<VisitResult> onVisitComplete);
 
     /**
      * Opens a page.
+     *
      * @param disposition A `org.chromium.ui.mojom.WindowOpenDisposition` value.
      * @param params What to load.
      */
@@ -70,12 +106,21 @@ public interface FeedActionDelegate {
 
     /**
      * Shows a sign in activity as a result of a feed user action.
+     *
      * @param signinAccessPoint the entry point for the signin.
      */
     default void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {}
 
     /**
+     * Starts sign in flow as a result of a feed user action.
+     *
+     * @param signinAccessPoint the entry point for the signin.
+     */
+    default void startSigninFlow(@SigninAccessPoint int signinAccessPoint) {}
+
+    /**
      * Shows a sign in interstitial as a result of a feed user action.
+     *
      * @param signinAccessPoint the entry point for the signin.
      * @param mBottomSheetController bottomsheet controller attached to the activity.
      * @param mWindowAndroid window used by the feed.

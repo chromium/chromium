@@ -1,16 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} =
       await testRunner.startURL(
           "https://devtools.test:8443/inspector-protocol/webauthn/resources/webauthn-test.https.html",
-          "Check that the WebAuthn backup flags are reflected when asserting credentials");
+          "Check that the WebAuthn default backup flags are reflected");
 
   await dp.WebAuthn.enable();
 
   const tests = [
-    { option: "defaultBackupEligibility", flag: "be", value: true },
-    { option: "defaultBackupEligibility", flag: "be", value: false },
-    { option: "defaultBackupState", flag: "bs", value: true },
-    { option: "defaultBackupState", flag: "bs", value: false },
+    { option: "defaultBackupEligibility", flag: "be", prop: "backupEligibility", value: true },
+    { option: "defaultBackupEligibility", flag: "be", prop: "backupEligibility", value: false },
+    { option: "defaultBackupState", flag: "bs", prop: "backupState", value: true },
+    { option: "defaultBackupState", flag: "bs", prop: "backupState", value: false },
   ];
 
   for (const test of tests) {
@@ -45,9 +49,16 @@
       type: "public-key",
       id: base64ToArrayBuffer("${credentialId}"),
     })`);
-    testRunner.log(`Get credential status: ${assertion.status}`);
+    testRunner.log(`Get assertion status: ${assertion.status}`);
     testRunner.log(
       `${test.flag}: ${assertion.flags[test.flag]} (expected ${test.value})`);
+
+    // Verify that getting the credential through devtools reflects the value.
+    let credential =
+        (await dp.WebAuthn.getCredential({authenticatorId, credentialId})).result.credential;
+    testRunner.log("Get credential through devtools");
+    testRunner.log(
+      `${test.prop}: ${credential[test.prop]} (expected ${test.value})`);
 
     // Verify that the default also applies to credentials created through the
     // devtools protocol.

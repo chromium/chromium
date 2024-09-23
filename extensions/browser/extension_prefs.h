@@ -19,7 +19,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/string_ordinal.h"
-#include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/install_flag.h"
@@ -87,20 +86,20 @@ class ExtensionPrefs : public KeyedService {
   // This enum is used to store the reason an extension's install has been
   // delayed.  Do not remove items or re-order this enum as it is used in
   // preferences.
-  enum DelayReason {
-    DELAY_REASON_NONE = 0,
-    DELAY_REASON_GC = 1,
-    DELAY_REASON_WAIT_FOR_IDLE = 2,
-    DELAY_REASON_WAIT_FOR_IMPORTS = 3,
-    DELAY_REASON_WAIT_FOR_OS_UPDATE = 4,
+  enum class DelayReason {
+    kNone = 0,
+    kGc = 1,
+    kWaitForIdle = 2,
+    kWaitForImports = 3,
+    kWaitForOsUpdate = 4,
   };
 
   // This enum is used to specify the operation for bit map prefs.
-  enum BitMapPrefOperation {
-    BIT_MAP_PREF_ADD,
-    BIT_MAP_PREF_REMOVE,
-    BIT_MAP_PREF_REPLACE,
-    BIT_MAP_PREF_CLEAR
+  enum class BitMapPrefOperation {
+    kAdd,
+    kRemove,
+    kReplace,
+    kClear,
   };
 
   // Wrappers around a prefs::ScopedDictionaryPrefUpdate, which allow us to
@@ -220,8 +219,8 @@ class ExtensionPrefs : public KeyedService {
 
   // Get/Set the set of extensions that are pinned to the toolbar. Only used
   // when the experiment ExtensionsMenu is active."
-  // TODO(crbug.com/943702): Remove reference to experiment when it launches or
-  // remove code if it does not.
+  // TODO(crbug.com/40619134): Remove reference to experiment when it launches
+  // or remove code if it does not.
   ExtensionIdList GetPinnedExtensions() const;
   void SetPinnedExtensions(const ExtensionIdList& extension_ids);
 
@@ -235,8 +234,7 @@ class ExtensionPrefs : public KeyedService {
                             const syncer::StringOrdinal& page_ordinal,
                             int install_flags,
                             const std::string& install_parameter,
-                            const declarative_net_request::RulesetInstallPrefs&
-                                ruleset_install_prefs);
+                            base::Value::Dict ruleset_install_prefs);
   // OnExtensionInstalled with no install flags and |ruleset_install_prefs|.
   void OnExtensionInstalled(const Extension* extension,
                             Extension::State initial_state,
@@ -268,8 +266,9 @@ class ExtensionPrefs : public KeyedService {
                         int default_bit) const;
   // Modifies the extensions bit map pref |pref_key| to add a new bit value,
   // remove an existing bit value, or clear all bits. If |operation| is
-  // BIT_MAP_PREF_CLEAR, then |pending_bits| are ignored. If the updated pref
-  // value is the same as the |default_bit|, the pref value will be set to null.
+  // BitMapPrefOperation::kClear, then `pending_bits` are ignored. If the
+  // updated pref value is the same as the |default_bit|, the pref value will be
+  // set to null.
   void ModifyBitMapPrefBits(const ExtensionId& extension_id,
                             int pending_bits,
                             BitMapPrefOperation operation,
@@ -596,8 +595,7 @@ class ExtensionPrefs : public KeyedService {
                              DelayReason delay_reason,
                              const syncer::StringOrdinal& page_ordinal,
                              const std::string& install_parameter,
-                             const declarative_net_request::RulesetInstallPrefs&
-                                 ruleset_install_prefs = {});
+                             base::Value::Dict ruleset_install_prefs = {});
 
   // Removes any delayed install information we have for the given
   // |extension_id|. Returns true if there was info to remove; false otherwise.
@@ -685,71 +683,11 @@ class ExtensionPrefs : public KeyedService {
   const base::Value::Dict& GetInstallSignature() const;
   void SetInstallSignature(base::Value::Dict* signature);
 
-  // The installation parameter associated with the extension.
-  std::string GetInstallParam(const ExtensionId& extension_id) const;
-  void SetInstallParam(const ExtensionId& extension_id,
-                       const std::string& install_parameter);
-
   // Whether the extension with the given |extension_id| needs to be synced.
   // This is set when the state (such as enabled/disabled or allowed in
   // incognito) is changed before Sync is ready.
   bool NeedsSync(const ExtensionId& extension_id) const;
   void SetNeedsSync(const ExtensionId& extension_id, bool needs_sync);
-
-  // Returns false if there is no ruleset checksum corresponding to the given
-  // |extension_id| and |ruleset_id|. On success, returns true and populates the
-  // checksum.
-  bool GetDNRStaticRulesetChecksum(
-      const ExtensionId& extension_id,
-      declarative_net_request::RulesetID ruleset_id,
-      int* checksum) const;
-  void SetDNRStaticRulesetChecksum(
-      const ExtensionId& extension_id,
-      declarative_net_request::RulesetID ruleset_id,
-      int checksum);
-
-  // Returns false if there is no dynamic ruleset corresponding to
-  // |extension_id|. On success, returns true and populates the checksum.
-  bool GetDNRDynamicRulesetChecksum(const ExtensionId& extension_id,
-                                    int* checksum) const;
-  void SetDNRDynamicRulesetChecksum(const ExtensionId& extension_id,
-                                    int checksum);
-
-  // Returns the set of enabled static ruleset IDs or std::nullopt if the
-  // extension hasn't updated the set of enabled static rulesets.
-  std::optional<std::set<declarative_net_request::RulesetID>>
-  GetDNREnabledStaticRulesets(const ExtensionId& extension_id) const;
-  // Updates the set of enabled static rulesets for the |extension_id|. This
-  // preference gets cleared on extension update.
-  void SetDNREnabledStaticRulesets(
-      const ExtensionId& extension_id,
-      const std::set<declarative_net_request::RulesetID>& ids);
-
-  // Whether the extension with the given |extension_id| is using its ruleset's
-  // matched action count for the badge text. This is set via the
-  // setExtensionActionOptions API call.
-  bool GetDNRUseActionCountAsBadgeText(const ExtensionId& extension_id) const;
-  void SetDNRUseActionCountAsBadgeText(const ExtensionId& extension_id,
-                                       bool use_action_count_as_badge_text);
-
-  // Whether the ruleset for the given |extension_id| and |ruleset_id| should be
-  // ignored while loading the extension.
-  bool ShouldIgnoreDNRRuleset(
-      const ExtensionId& extension_id,
-      declarative_net_request::RulesetID ruleset_id) const;
-
-  // Returns the global rule allocation for the given |extension_id|. If no
-  // rules are allocated to the extension, false is returned.
-  bool GetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
-                                      size_t* rule_count) const;
-  void SetDNRAllocatedGlobalRuleCount(const ExtensionId& extension_id,
-                                      size_t rule_count);
-
-  // Whether the extension with the given |extension_id| should have its excess
-  // global rules allocation kept during its next load.
-  bool GetDNRKeepExcessAllocation(const ExtensionId& extension_id) const;
-  void SetDNRKeepExcessAllocation(const ExtensionId& extension_id,
-                                  bool keep_excess_allocation);
 
   // Backfills the first_install_time pref for currently installed extensions
   // that did not have the pref recorded when they were installed.
@@ -868,7 +806,7 @@ class ExtensionPrefs : public KeyedService {
   // Modifies the extensions disable reasons to add a new reason, remove an
   // existing reason, or clear all reasons. Notifies observers if the set of
   // DisableReasons has changed.
-  // If |operation| is BIT_MAP_PREF_CLEAR, then |reasons| are ignored.
+  // If `operation` is BitMapPrefOperation::kClear, then `reasons` are ignored.
   void ModifyDisableReasons(const ExtensionId& extension_id,
                             int reasons,
                             BitMapPrefOperation operation);
@@ -900,15 +838,20 @@ class ExtensionPrefs : public KeyedService {
   // function and FinishExtensionInfoPrefs() to accommodate delayed
   // installations.
   //
-  // |install_flags| are a bitmask of extension::InstallFlags.
-  void PopulateExtensionInfoPrefs(
-      const Extension* extension,
-      const base::Time install_time,
-      Extension::State initial_state,
-      int install_flags,
-      const std::string& install_parameter,
-      const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs,
-      prefs::DictionaryValueUpdate* extension_dict);
+  // `install_flags` are a bitmask of extension::InstallFlags.
+  // `removed_prefs` stores pref keys that will be marked for deletion. This is
+  // done since simply removing prefs from `extension_dict` would be a no-op if
+  // `extension_dict` does not directly point to the extension's own prefs.
+  // This is the case when this method is used to populate
+  // `kDelayedInstallInfo`.
+  void PopulateExtensionInfoPrefs(const Extension* extension,
+                                  const base::Time install_time,
+                                  Extension::State initial_state,
+                                  int install_flags,
+                                  const std::string& install_parameter,
+                                  base::Value::Dict ruleset_install_prefs,
+                                  prefs::DictionaryValueUpdate* extension_dict,
+                                  base::Value::List& removed_prefs);
 
   void InitExtensionControlledPrefs(const ExtensionsInfo& extensions_info);
 
@@ -929,11 +872,6 @@ class ExtensionPrefs : public KeyedService {
   // Returns true if the prefs have any permission withholding setting stored
   // for a given extension.
   bool HasWithholdingPermissionsSetting(const ExtensionId& extension_id) const;
-
-  // Helper function to retrieve various time prefs like first install time,
-  // last updated time, last launch time for a given extension.
-  base::Time GetTimePrefHelper(const ExtensionId& extension_id,
-                               const char* pref_key) const;
 
   raw_ptr<content::BrowserContext> browser_context_;
 

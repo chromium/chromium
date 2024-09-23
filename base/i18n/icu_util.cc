@@ -27,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "build/chromecast_buildflags.h"
 #include "third_party/icu/source/common/unicode/putil.h"
+#include "third_party/icu/source/common/unicode/uclean.h"
 #include "third_party/icu/source/common/unicode/udata.h"
 #include "third_party/icu/source/common/unicode/utrace.h"
 
@@ -119,7 +120,7 @@ const char kAndroidAssetsIcuDataFileName[] = "assets/icudtl.dat";
 // Windows implementation guards against two instances owning the same
 // PlatformFile (which we allow since we know it is never freed).
 PlatformFile g_icudtl_pf = kInvalidPlatformFile;
-IcuDataFile* g_icudtl_mapped_file = nullptr;
+MemoryMappedFile* g_icudtl_mapped_file = nullptr;
 MemoryMappedFile::Region g_icudtl_region;
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -214,7 +215,7 @@ void InitializeExternalTimeZoneData() {
 
 int LoadIcuData(PlatformFile data_fd,
                 const MemoryMappedFile::Region& data_region,
-                std::unique_ptr<IcuDataFile>* out_mapped_data_file,
+                std::unique_ptr<MemoryMappedFile>* out_mapped_data_file,
                 UErrorCode* out_error_code) {
   InitializeExternalTimeZoneData();
 
@@ -223,7 +224,7 @@ int LoadIcuData(PlatformFile data_fd,
     return 1;  // To debug http://crbug.com/445616.
   }
 
-  *out_mapped_data_file = std::make_unique<IcuDataFile>();
+  *out_mapped_data_file = std::make_unique<MemoryMappedFile>();
   if (!(*out_mapped_data_file)->Initialize(File(data_fd), data_region)) {
     LOG(ERROR) << "Couldn't mmap icu data file";
     return 2;  // To debug http://crbug.com/445616.
@@ -250,7 +251,7 @@ bool InitializeICUWithFileDescriptorInternal(
     return true;
   }
 
-  std::unique_ptr<IcuDataFile> mapped_file;
+  std::unique_ptr<MemoryMappedFile> mapped_file;
   UErrorCode err;
   g_debug_icu_load = LoadIcuData(data_fd, data_region, &mapped_file, &err);
   if (g_debug_icu_load == 1 || g_debug_icu_load == 2) {
@@ -389,8 +390,15 @@ PlatformFile GetIcuDataFileHandle(MemoryMappedFile::Region* out_region) {
 }
 
 void ResetGlobalsForTesting() {
+  // Reset ICU library internal state before tearing-down the mapped data
+  // file, or handle.
+  u_cleanup();
+
+  // `g_icudtl_pf` does not actually own the FD once ICU is initialized, so
+  // don't try to close it here.
   g_icudtl_pf = kInvalidPlatformFile;
-  g_icudtl_mapped_file = nullptr;
+  delete std::exchange(g_icudtl_mapped_file, nullptr);
+
 #if BUILDFLAG(IS_FUCHSIA)
   g_icu_time_zone_data_dir = kIcuTimeZoneDataDir;
 #endif  // BUILDFLAG(IS_FUCHSIA)

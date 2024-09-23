@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -27,7 +28,7 @@ CSSFontPaletteValuesRule::~CSSFontPaletteValuesRule() = default;
 String CSSFontPaletteValuesRule::cssText() const {
   StringBuilder result;
   result.Append("@font-palette-values ");
-  result.Append(name());
+  SerializeIdentifier(name(), result);
   result.Append(" {");
 
   String font_family = fontFamily();

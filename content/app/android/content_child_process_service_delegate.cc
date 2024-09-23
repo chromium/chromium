@@ -15,7 +15,6 @@
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/surface_wrapper.h"
 #include "content/common/shared_file_util.h"
-#include "content/public/android/content_main_dex_jni/ContentChildProcessServiceDelegate_jni.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/texture_owner.h"
@@ -24,6 +23,9 @@
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
 #include "ui/gl/android/surface_texture.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_app_jni/ContentChildProcessServiceDelegate_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -59,23 +61,21 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
 
     content::
         Java_ContentChildProcessServiceDelegate_forwardSurfaceForSurfaceRequest(
-            env, service_impl_,
-            base::android::UnguessableTokenAndroid::Create(env, request_token),
+            env, service_impl_, request_token,
             texture_owner->CreateJavaSurface().j_surface());
   }
 
   // Overridden from GpuSurfaceLookup:
-  JavaSurfaceVariant AcquireJavaSurface(
-      int surface_id,
-      bool* can_be_used_with_surface_control) override {
+  gpu::SurfaceRecord AcquireJavaSurface(int surface_id) override {
     JNIEnv* env = base::android::AttachCurrentThread();
     base::android::ScopedJavaLocalRef<jobject> surface_wrapper =
         content::Java_ContentChildProcessServiceDelegate_getViewSurface(
             env, service_impl_, surface_id);
     if (!surface_wrapper)
-      return gl::ScopedJavaSurface();
+      return gpu::SurfaceRecord(gl::ScopedJavaSurface(),
+                                /*can_be_used_with_surface_control=*/false);
 
-    *can_be_used_with_surface_control =
+    bool can_be_used_with_surface_control =
         JNI_SurfaceWrapper_canBeUsedWithSurfaceControl(env, surface_wrapper);
     bool wraps_surface =
         JNI_SurfaceWrapper_getWrapsSurface(env, surface_wrapper);
@@ -85,11 +85,13 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
           content::JNI_SurfaceWrapper_takeSurface(env, surface_wrapper),
           /*auto_release=*/true);
       DCHECK(!surface.j_surface().is_null());
-      return surface;
+      return gpu::SurfaceRecord(std::move(surface),
+                                can_be_used_with_surface_control);
     } else {
-      return gl::ScopedJavaSurfaceControl(
+      gl::ScopedJavaSurfaceControl surface_control(
           JNI_SurfaceWrapper_takeSurfaceControl(env, surface_wrapper),
           /*release_on_destroy=*/true);
+      return gpu::SurfaceRecord(std::move(surface_control));
     }
   }
 

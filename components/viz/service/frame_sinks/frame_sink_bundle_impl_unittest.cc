@@ -136,7 +136,8 @@ struct TestFrameSink {
     }
     manager_->CreateCompositorFrameSink(
         id, bundle_id, frame_sink.BindNewPipeAndPassReceiver(),
-        client_receiver_.BindNewPipeAndPassRemote());
+        client_receiver_.BindNewPipeAndPassRemote(),
+        /* render_input_router_config= */ nullptr);
     manager_->GetFrameSinkForId(id)->SetNeedsBeginFrame(true);
   }
 
@@ -249,8 +250,8 @@ class FrameSinkBundleImplTest : public testing::Test {
     for (const auto& id : resource_ids) {
       TransferableResource resource;
       resource.id = id;
-      resource.mailbox_holder.texture_target = GL_TEXTURE_2D;
-      resource.mailbox_holder.sync_token = frame_sync_token_;
+      resource.set_texture_target(GL_TEXTURE_2D);
+      resource.set_sync_token(frame_sync_token_);
       frame.resource_list.push_back(resource);
     }
 

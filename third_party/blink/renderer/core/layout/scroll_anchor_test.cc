@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -112,7 +111,8 @@ class ScrollAnchorTest : public SimTest {
     int thumb_center = scrollbar->GetTheme().ThumbPosition(*scrollbar) +
                        scrollbar->GetTheme().ThumbLength(*scrollbar) / 2;
     scrollbar_drag_point_ =
-        gfx::PointF(scrollbar->GetScrollableArea()
+        gfx::PointF(scrollbar->GetLayoutBox()
+                        ->GetScrollableArea()
                         ->ConvertFromScrollbarToContainingEmbeddedContentView(
                             *scrollbar, gfx::Point(0, thumb_center)));
     scrollbar->MouseDown(blink::WebMouseEvent(
@@ -123,7 +123,7 @@ class ScrollAnchorTest : public SimTest {
 
   void MouseDragVerticalScrollbar(Scrollbar* scrollbar, float scroll_delta_y) {
     DCHECK(scrollbar_drag_point_);
-    ScrollableArea* scroller = scrollbar->GetScrollableArea();
+    ScrollableArea* scroller = scrollbar->GetLayoutBox()->GetScrollableArea();
     scrollbar_drag_point_->Offset(
         0, scroll_delta_y *
                (scrollbar->GetTheme().TrackLength(*scrollbar) -
@@ -807,7 +807,7 @@ TEST_F(ScrollAnchorTest, SerializeAnchorFailsForShadowDOMElement) {
       <div></div>
       <div></div>)HTML");
   auto* host = GetDocument().getElementById(AtomicString("host"));
-  auto& shadow_root = host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+  auto& shadow_root = host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(R"HTML(
       <style>
         div { height: 100px; }

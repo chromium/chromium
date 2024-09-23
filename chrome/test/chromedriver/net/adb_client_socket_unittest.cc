@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_span.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
@@ -75,7 +76,7 @@ class MockSocket : public net::MockClientSocket {
   bool GetSSLInfo(net::SSLInfo* ssl_info) override { return false; }
   bool WasEverUsed() const override { return false; }
 
-  base::span<std::string> return_values_array;
+  base::raw_span<std::string> return_values_array;
 };
 
 class AdbClientSocketTest : public testing::Test {

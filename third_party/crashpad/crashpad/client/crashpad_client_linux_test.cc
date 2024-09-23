@@ -760,7 +760,7 @@ class StartHandlerForChildTest : public Multiprocess {
     test_state_.ExpectReport();
   }
 
-  void MultiprocessChild() {
+  [[noreturn]] void MultiprocessChild() {
     CHECK(test_state_.InstallHandler());
 
     __builtin_trap();

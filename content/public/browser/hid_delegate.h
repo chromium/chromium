@@ -61,14 +61,20 @@ class CONTENT_EXPORT HidDelegate {
                                           const url::Origin& origin) = 0;
 
   // Returns whether `origin` has permission to access `device`.
+  // Note that the method takes both render frame host and browser context, as
+  // 'render_frame_host' is null for service workers.
   virtual bool HasDevicePermission(
       BrowserContext* browser_context,
+      RenderFrameHost* render_frame_host,
       const url::Origin& origin,
       const device::mojom::HidDeviceInfo& device) = 0;
 
   // Revoke `device` access permission to `origin`.
+  // Note that the method takes both render frame host and browser context, as
+  // 'render_frame_host' is null for service workers.
   virtual void RevokeDevicePermission(
       BrowserContext* browser_context,
+      RenderFrameHost* render_frame_host,
       const url::Origin& origin,
       const device::mojom::HidDeviceInfo& device) = 0;
 

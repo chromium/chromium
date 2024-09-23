@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
+
 #include "base/strings/string_util.h"
 
 namespace ash {

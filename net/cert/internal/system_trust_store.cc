@@ -4,27 +4,20 @@
 
 #include "net/cert/internal/system_trust_store.h"
 
-#include "base/memory/ptr_util.h"
-#include "build/build_config.h"
-#include "crypto/crypto_buildflags.h"
-
-#if BUILDFLAG(USE_NSS_CERTS)
-#include "net/cert/internal/system_trust_store_nss.h"
-#endif  // BUILDFLAG(USE_NSS_CERTS)
-
-#if BUILDFLAG(IS_MAC)
-#include <Security/Security.h>
-#endif
-
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
@@ -33,8 +26,11 @@
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
+#include "net/cert/internal/system_trust_store_nss.h"
 #include "net/cert/internal/trust_store_nss.h"
 #elif BUILDFLAG(IS_MAC)
+#include <Security/Security.h>
+
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_mac.h"
 #include "net/cert/x509_util_apple.h"
@@ -46,55 +42,102 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include "net/cert/internal/trust_store_android.h"
 #endif
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include "net/cert/internal/trust_store_chrome.h"
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/system/sys_info.h"
+#endif
+
 namespace net {
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-class SystemTrustStoreChromeOnly : public SystemTrustStore {
+#if BUILDFLAG(IS_CHROMEOS)
+namespace internal {
+class PemFileCertStore {
  public:
-  // Creates a SystemTrustStore that gets publicly trusted roots from
-  // |trust_store_chrome|.
-  explicit SystemTrustStoreChromeOnly(
-      std::unique_ptr<TrustStoreChrome> trust_store_chrome)
-      : trust_store_chrome_(std::move(trust_store_chrome)) {}
+  explicit PemFileCertStore(std::string_view file_name) {
+    // This will block on the cert verifier service thread, so the effect will
+    // just be to block any cert verifications (interactions with the cert
+    // verifier service are async mojo calls, so it shouldn't block the browser
+    // UI). There would be no benefit to moving this to a worker thread, since
+    // all cert verifications would still need to block on loading of the roots
+    // to complete.
+    base::ScopedAllowBlocking allow_blocking;
+    std::optional<std::vector<uint8_t>> certs_file =
+        base::ReadFileToBytes(base::FilePath(file_name));
+    if (!certs_file) {
+      return;
+    }
 
-  bssl::TrustStore* GetTrustStore() override {
-    return trust_store_chrome_.get();
+    trust_store_ = std::make_unique<bssl::TrustStoreInMemory>();
+
+    CertificateList certs = X509Certificate::CreateCertificateListFromBytes(
+        *certs_file, X509Certificate::FORMAT_AUTO);
+
+    for (const auto& cert : certs) {
+      bssl::CertErrors errors;
+      auto parsed = bssl::ParsedCertificate::Create(
+          bssl::UpRef(cert->cert_buffer()),
+          x509_util::DefaultParseCertificateOptions(), &errors);
+      if (!parsed) {
+        LOG(ERROR) << file_name << ": " << errors.ToDebugString();
+        continue;
+      }
+      trust_store_->AddTrustAnchor(std::move(parsed));
+    }
   }
 
-  // IsKnownRoot returns true if the given trust anchor is a standard one (as
-  // opposed to a user-installed root)
-  bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
-    return trust_store_chrome_->Contains(trust_anchor);
-  }
-
-  int64_t chrome_root_store_version() const override {
-    return trust_store_chrome_->version();
-  }
+  bssl::TrustStoreInMemory* trust_store() { return trust_store_.get(); }
 
  private:
-  std::unique_ptr<TrustStoreChrome> trust_store_chrome_;
+  std::unique_ptr<bssl::TrustStoreInMemory> trust_store_;
 };
+}  // namespace internal
 
-std::unique_ptr<SystemTrustStore> CreateChromeOnlySystemTrustStore(
-    std::unique_ptr<TrustStoreChrome> chrome_root) {
-  return std::make_unique<SystemTrustStoreChromeOnly>(std::move(chrome_root));
+namespace {
+
+// On ChromeOS look for a PEM file of root CA certs to trust which may be
+// present on test images.
+bssl::TrustStoreInMemory* GetChromeOSTestTrustStore() {
+  constexpr char kCrosTestRootCertsFile[] = "/etc/fake_root_ca_certs.pem";
+  static base::NoDestructor<internal::PemFileCertStore> cros_test_roots{
+      kCrosTestRootCertsFile};
+  return cros_test_roots->trust_store();
 }
 
+}  // namespace
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
  public:
   // Creates a SystemTrustStore that gets publicly trusted roots from
-  // |trust_store_chrome| and local trust settings from |trust_store_system|.
-  // Does not take ownership of |trust_store_system|, which must outlive this
-  // object.
+  // |trust_store_chrome| and local trust settings from |trust_store_system|,
+  // if non-null. Does not take ownership of |trust_store_system|, which must
+  // outlive this object.
   explicit SystemTrustStoreChromeWithUnOwnedSystemStore(
       std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-      bssl::TrustStore* trust_store_system)
-      : trust_store_chrome_(std::move(trust_store_chrome)) {
-    trust_store_collection_.AddTrustStore(trust_store_system);
+      net::PlatformTrustStore* trust_store_system)
+      : trust_store_chrome_(std::move(trust_store_chrome)),
+        platform_trust_store_(trust_store_system) {
+#if BUILDFLAG(IS_CHROMEOS)
+    if (GetChromeOSTestTrustStore()) {
+      // The fake_root_ca_certs.pem file is only intended for testing purposes,
+      // crash if it is present on a ChromeOS device in a non-test image.
+      base::SysInfo::CrashIfChromeOSNonTestImage();
+
+      trust_store_collection_.AddTrustStore(GetChromeOSTestTrustStore());
+      non_crs_trust_store_collection_.AddTrustStore(
+          GetChromeOSTestTrustStore());
+    }
+#endif
+    if (trust_store_system) {
+      trust_store_collection_.AddTrustStore(trust_store_system);
+      non_crs_trust_store_collection_.AddTrustStore(trust_store_system);
+    }
+
     trust_store_collection_.AddTrustStore(trust_store_chrome_.get());
   }
 
@@ -108,14 +151,37 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
     return trust_store_chrome_->Contains(trust_anchor);
   }
 
+  bool IsLocallyTrustedRoot(
+      const bssl::ParsedCertificate* trust_anchor) override {
+    return non_crs_trust_store_collection_.GetTrust(trust_anchor)
+        .IsTrustAnchor();
+  }
+
   int64_t chrome_root_store_version() const override {
     return trust_store_chrome_->version();
+  }
+
+  base::span<const ChromeRootCertConstraints> GetChromeRootConstraints(
+      const bssl::ParsedCertificate* cert) const override {
+    return trust_store_chrome_->GetConstraintsForCert(cert);
+  }
+
+  net::PlatformTrustStore* GetPlatformTrustStore() override {
+    return platform_trust_store_;
   }
 
  private:
   std::unique_ptr<TrustStoreChrome> trust_store_chrome_;
   bssl::TrustStoreCollection trust_store_collection_;
+  bssl::TrustStoreCollection non_crs_trust_store_collection_;
+  net::PlatformTrustStore* platform_trust_store_;
 };
+
+std::unique_ptr<SystemTrustStore> CreateChromeOnlySystemTrustStore(
+    std::unique_ptr<TrustStoreChrome> chrome_root) {
+  return std::make_unique<SystemTrustStoreChromeWithUnOwnedSystemStore>(
+      std::move(chrome_root), /*trust_store_system=*/nullptr);
+}
 
 class SystemTrustStoreChrome
     : public SystemTrustStoreChromeWithUnOwnedSystemStore {
@@ -124,19 +190,19 @@ class SystemTrustStoreChrome
   // |trust_store_chrome| and local trust settings from |trust_store_system|.
   explicit SystemTrustStoreChrome(
       std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-      std::unique_ptr<bssl::TrustStore> trust_store_system)
+      std::unique_ptr<net::PlatformTrustStore> trust_store_system)
       : SystemTrustStoreChromeWithUnOwnedSystemStore(
             std::move(trust_store_chrome),
             trust_store_system.get()),
         trust_store_system_(std::move(trust_store_system)) {}
 
  private:
-  std::unique_ptr<bssl::TrustStore> trust_store_system_;
+  std::unique_ptr<net::PlatformTrustStore> trust_store_system_;
 };
 
 std::unique_ptr<SystemTrustStore> CreateSystemTrustStoreChromeForTesting(
     std::unique_ptr<TrustStoreChrome> trust_store_chrome,
-    std::unique_ptr<bssl::TrustStore> trust_store_system) {
+    std::unique_ptr<net::PlatformTrustStore> trust_store_system) {
   return std::make_unique<SystemTrustStoreChrome>(
       std::move(trust_store_chrome), std::move(trust_store_system));
 }

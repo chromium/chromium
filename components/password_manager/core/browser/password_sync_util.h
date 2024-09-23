@@ -13,7 +13,7 @@
 namespace signin {
 enum class ConsentLevel;
 class IdentityManager;
-}
+}  // namespace signin
 
 namespace password_manager {
 
@@ -48,6 +48,10 @@ bool IsGaiaCredentialPage(const std::string& signon_realm);
 // URL.
 bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
                                       const PrefService& prefs);
+
+// Checks whether the user has chosen to store passwords in their Google Account
+// (no matter whether sync-the-feature is on or not).
+bool HasChosenToSyncPasswords(const syncer::SyncService* sync_service);
 
 // If the user turned sync-the-feature on and syncing of passwords is enabled in
 // settings.

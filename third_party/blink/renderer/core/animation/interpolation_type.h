@@ -41,13 +41,13 @@ class CORE_EXPORT InterpolationType {
   // maybeConvertSingle() to enable the caller to check whether the result is
   // still valid given changes in the InterpolationEnvironment and underlying
   // InterpolationValue.
-  class ConversionChecker {
-    USING_FAST_MALLOC(ConversionChecker);
-
+  class ConversionChecker : public GarbageCollected<ConversionChecker> {
    public:
     ConversionChecker(const ConversionChecker&) = delete;
     ConversionChecker& operator=(const ConversionChecker&) = delete;
     virtual ~ConversionChecker() = default;
+    virtual void Trace(Visitor*) const {}
+
     void SetType(const InterpolationType& type) { type_ = &type; }
     const InterpolationType& GetType() const { return *type_; }
     virtual bool IsValid(const InterpolationEnvironment&,
@@ -57,7 +57,7 @@ class CORE_EXPORT InterpolationType {
     ConversionChecker() : type_(nullptr) {}
     const InterpolationType* type_;
   };
-  using ConversionCheckers = Vector<std::unique_ptr<ConversionChecker>>;
+  using ConversionCheckers = HeapVector<Member<ConversionChecker>>;
 
   virtual PairwiseInterpolationValue MaybeConvertPairwise(
       const PropertySpecificKeyframe& start_keyframe,

@@ -66,6 +66,9 @@ struct NET_EXPORT NetworkInterface {
   NetworkInterface(const NetworkInterface& other);
   ~NetworkInterface();
 
+  bool operator==(const NetworkInterface& that) const = default;
+  bool operator!=(const NetworkInterface& that) const = default;
+
   std::string name;
   std::string friendly_name;  // Same as |name| on non-Windows.
   uint32_t interface_index;  // Always 0 on Android.
@@ -98,34 +101,6 @@ NET_EXPORT bool GetNetworkList(NetworkInterfaceList* networks,
 // point or its SSID is unavailable, an empty string is returned.
 // Currently only implemented on Linux, ChromeOS, Android and Windows.
 NET_EXPORT std::string GetWifiSSID();
-
-// General category of the IEEE 802.11 (wifi) physical layer operating mode.
-enum WifiPHYLayerProtocol {
-  // No wifi support or no associated AP.
-  WIFI_PHY_LAYER_PROTOCOL_NONE,
-  // An obsolete modes introduced by the original 802.11, e.g. IR, FHSS.
-  WIFI_PHY_LAYER_PROTOCOL_ANCIENT,
-  // 802.11a, OFDM-based rates.
-  WIFI_PHY_LAYER_PROTOCOL_A,
-  // 802.11b, DSSS or HR DSSS.
-  WIFI_PHY_LAYER_PROTOCOL_B,
-  // 802.11g, same rates as 802.11a but compatible with 802.11b.
-  WIFI_PHY_LAYER_PROTOCOL_G,
-  // 802.11n, HT rates.
-  WIFI_PHY_LAYER_PROTOCOL_N,
-  // Unclassified mode or failure to identify.
-  WIFI_PHY_LAYER_PROTOCOL_UNKNOWN,
-  // 802.11ac
-  WIFI_PHY_LAYER_PROTOCOL_AC,
-  // 802.11ad
-  WIFI_PHY_LAYER_PROTOCOL_AD,
-  // 802.11ax
-  WIFI_PHY_LAYER_PROTOCOL_AX
-};
-
-// Characterize the PHY mode of the currently associated access point.
-// Currently only available on Windows.
-NET_EXPORT WifiPHYLayerProtocol GetWifiPHYLayerProtocol();
 
 enum WifiOptions {
   // Disables background SSID scans.

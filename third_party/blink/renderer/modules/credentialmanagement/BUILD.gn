@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("credentialmanagement") {
   sources = [
+    "authentication_credentials_container.cc",
+    "authentication_credentials_container.h",
     "authenticator_assertion_response.cc",
     "authenticator_assertion_response.h",
     "authenticator_attestation_response.cc",
@@ -18,14 +20,22 @@ blink_modules_sources("credentialmanagement") {
     "credential_manager_proxy.h",
     "credential_manager_type_converters.cc",
     "credential_manager_type_converters.h",
+    "credential_utils.cc",
+    "credential_utils.h",
     "credentials_container.cc",
     "credentials_container.h",
+    "digital_credential.cc",
+    "digital_credential.h",
+    "digital_identity_credential.cc",
+    "digital_identity_credential.h",
     "federated_credential.cc",
     "federated_credential.h",
     "identity_credential.cc",
     "identity_credential.h",
     "identity_credential_error.cc",
     "identity_credential_error.h",
+    "identity_credentials_container.cc",
+    "identity_credentials_container.h",
     "identity_provider.cc",
     "identity_provider.h",
     "json.cc",
@@ -40,10 +50,6 @@ blink_modules_sources("credentialmanagement") {
     "public_key_credential.h",
     "scoped_promise_resolver.cc",
     "scoped_promise_resolver.h",
-    "web_identity_requester.cc",
-    "web_identity_requester.h",
-    "web_identity_window_onload_event_listener.cc",
-    "web_identity_window_onload_event_listener.h",
   ]
   deps = [ "//services/metrics/public/cpp:ukm_builders" ]
 }

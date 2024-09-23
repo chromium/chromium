@@ -1,0 +1,15 @@
+ci/chromeos-amd64-generic-cfi-thin-lto-rel
+ci/chromeos-amd64-generic-dbg
+ci/chromeos-amd64-generic-rel
+ci/chromeos-amd64-generic-rel-gtest
+ci/chromeos-amd64-generic-rel-tast
+ci/chromeos-arm-generic-dbg
+ci/chromeos-arm-generic-rel
+ci/chromeos-arm64-generic-rel
+ci/linux-chromeos-dbg
+ci/linux-chromeos-rel
+try/chromeos-amd64-generic-rel
+try/chromeos-amd64-generic-rel-gtest
+try/chromeos-amd64-generic-rel-gtest-and-tast
+try/chromeos-amd64-generic-rel-gtest-and-tast-compilator
+try/chromeos-amd64-generic-rel-gtest-compilator

@@ -41,17 +41,17 @@
     color: var(--cros-text-color-positive);
   }
 
-  #createCustomApnButton {
+  .add-apn-operation {
     margin-bottom: 10px;
     margin-inline-start: 20px;
   }
 
-  #createCustomApnButton iron-icon {
+  .add-apn-operation iron-icon {
     --iron-icon-fill-color: var(--text-color);
     margin-inline-end: 8px;
   }
 
-  #createCustomApnButton[disabled] iron-icon {
+  .add-apn-operation[disabled] iron-icon {
     --iron-icon-fill-color: var(--disabled);
   }
 
@@ -140,11 +140,20 @@
           isApnRevampEnabled_)]]">
     <cr-expand-button id="apnRow" class="settings-box cr-row"
         expanded="{{apnExpanded_}}">
-      <div id="apnRowTitle">$i18n{internetApnPageTitle}</div>
-      <div id="apnRowSublabel"
-          class="cr-secondary-text"
-          warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
-        [[getApnRowSublabel_(managedProperties_, apnExpanded_)]]
+      <div class="property-box two-line">
+        <div class="flex layout vertical">
+          <div id="apnRowTitle">$i18n{internetApnPageTitle}</div>
+          <div id="apnRowSublabel"
+              class="cr-secondary-text"
+              warning$="[[showRestrictedConnectivity_(managedProperties_)]]">
+            [[getApnRowSublabel_(managedProperties_, apnExpanded_)]]
+          </div>
+        </div>
+        <template is="dom-if" if="[[isApnManaged_(globalPolicy_)]]">
+          <cr-policy-indicator id="apnManagedIcon"
+              indicator-type="devicePolicy">
+          </cr-policy-indicator>
+        </template>
       </div>
     </cr-expand-button>
     <iron-collapse opened="[[apnExpanded_]]">
@@ -154,15 +163,23 @@
           guid="[[guid]]"
           error-state="[[managedProperties_.errorState]]"
           portal-state="[[managedProperties_.portalState]]"
+          should-disallow-apn-modification="[[isApnManaged_(globalPolicy_)]]"
           should-omit-links>
       </apn-list>
       <div id="apnButtonTitle">
+        <cr-button id="discoverMoreApnsButton"
+            on-click="onDiscoverMoreApnsClicked_"
+            class="add-apn-operation cancel-button"
+            disabled="[[shouldDisableApnButtons_(isNumCustomApnsLimitReached_,
+                globalPolicy_)]]">
+          $i18n{apnPageDiscoverMoreApns}
+        </cr-button>
         <cr-button id="createCustomApnButton"
             on-click="onCreateCustomApnClicked_"
-            class="cancel-button"
-            disabled="[[isNumCustomApnsLimitReached_]]">
-          <iron-icon icon="cr:add"></iron-icon>
-          $i18n{apnPageAddNewApn}
+            class="add-apn-operation cancel-button"
+            disabled="[[shouldDisableApnButtons_(isNumCustomApnsLimitReached_,
+                globalPolicy_)]]">
+          $i18n{apnPageCreateNewApn}
         </cr-button>
       </div>
       <!-- TODO(b/162365553) Add a11y support-->

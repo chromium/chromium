@@ -5,11 +5,13 @@
 #ifndef SQL_VFS_WRAPPER_H_
 #define SQL_VFS_WRAPPER_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "third_party/sqlite/sqlite3.h"
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include <string>
+#endif
 
 namespace sql {
 

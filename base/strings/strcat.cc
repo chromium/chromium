@@ -5,16 +5,17 @@
 #include "base/strings/strcat.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/strcat_internal.h"
 
 namespace base {
 
-std::string StrCat(span<const StringPiece> pieces) {
+std::string StrCat(span<const std::string_view> pieces) {
   return internal::StrCatT(pieces);
 }
 
-std::u16string StrCat(span<const StringPiece16> pieces) {
+std::u16string StrCat(span<const std::u16string_view> pieces) {
   return internal::StrCatT(pieces);
 }
 
@@ -26,11 +27,11 @@ std::u16string StrCat(span<const std::u16string> pieces) {
   return internal::StrCatT(pieces);
 }
 
-void StrAppend(std::string* dest, span<const StringPiece> pieces) {
+void StrAppend(std::string* dest, span<const std::string_view> pieces) {
   internal::StrAppendT(*dest, pieces);
 }
 
-void StrAppend(std::u16string* dest, span<const StringPiece16> pieces) {
+void StrAppend(std::u16string* dest, span<const std::u16string_view> pieces) {
   internal::StrAppendT(*dest, pieces);
 }
 

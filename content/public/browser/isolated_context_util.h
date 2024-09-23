@@ -12,23 +12,32 @@ namespace content {
 class RenderFrameHost;
 class RenderProcessHost;
 
-// Whether the given frame is sufficiently isolated to have access
-// to interfaces intended only for isolated contexts.
-// See [IsolatedContext] IDL extended attribute for more details.
+// These functions check whether a frame or process is sufficiently isolated
+// to have access to interfaces intended only for isolated contexts.
+// See the isolated contexts spec:
+// https://wicg.github.io/isolated-web-apps/isolated-contexts.html
 // Isolated Web Apps Explainer:
 // https://github.com/WICG/isolated-web-apps/blob/main/README.md
 
-// Checks whether the given `process` fulfills the necessary requirements for
-// qualifying as an isolated context.
-CONTENT_EXPORT bool IsIsolatedContext(RenderProcessHost* process);
-
-// Checks whether the given `frame` fulfills the necessary requirements for
-// qualifying as an isolated context.
-// RenderFrameHost* could have a lower WebExposedIsolationLevel than its
-// RenderProcessHost* because of the cross-origin-isolated permissions policy;
-// that's why it's undesirable to delegate to `IsIsolatedContext()` via
-// `frame->GetProcess()`.
+// Checks whether `frame` meets the requirements for qualifying as an isolated
+// context, and is therefore allowed access to isolated context gated APIs.
+//
+// RenderFrameHost* could have a lower isolation level than its
+// RenderProcessHost* because of the cross-origin-isolated permissions policy.
+//
+// This should be used to check for API access instead of IsIsolatedContext
+// whenever possible.
 CONTENT_EXPORT bool HasIsolatedContextCapability(RenderFrameHost* frame);
+
+// Checks whether `process` meets the requirements for qualifying as an
+// isolated context.
+//
+// HasIsolatedContextCapability should be used to check for API access instead
+// of this function whenever possible. Shared/service workers should use this
+// function because they don't have a RenderFrameHost, so the additional
+// permissions policy check done by HasIsolatedContextCapability doesn't apply
+// to them (permissions policy applies to documents).
+CONTENT_EXPORT bool IsIsolatedContext(RenderProcessHost* process);
 
 }  // namespace content
 

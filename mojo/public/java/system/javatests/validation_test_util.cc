@@ -10,6 +10,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/test/test_support_android.h"
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "mojo/public/java/system/mojo_javatests_jni/ValidationTestUtil_jni.h"
 
 using base::android::JavaParamRef;

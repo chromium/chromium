@@ -14,11 +14,11 @@
 
 #include "test/multiprocess_exec.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
+#include "partition_alloc/buildflags.h"
 #include "test/test_paths.h"
 #include "util/file/file_io.h"
 
@@ -58,7 +58,7 @@ class TestMultiprocessExec final : public MultiprocessExec {
 // //base/allocator/partition_allocator/src/partition_alloc/random.cc) So when
 // making PartitionAllocator default, multiprocess_exec_test_child will crash
 // because of LOG(FATAL) << "close". https://crbug.com/1153544
-#if defined(OS_POSIX) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+#if defined(OS_POSIX) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     defined(OS_MAC)
 #define MAYBE_MultiprocessExec DISABLED_MultiprocessExec
 #else

@@ -20,6 +20,13 @@ def file_exists(path):
     return os.path.exists(path)
 
 
+def delete_file_if_exists(path):
+    try:
+        os.unlink(path)
+    except FileNotFoundError:
+        pass
+
+
 def copy_files(source, dest):
     assert source[-1] != '/'
     subprocess.check_call(
@@ -137,8 +144,7 @@ def write_plist(data, path, format):
     # so if more than one hardlink points to destination all of them will be
     # modified. This is not what is expected, so delete destination file if
     # it does exist.
-    if os.path.exists(path):
-        os.unlink(path)
+    delete_file_if_exists(path)
     with open(path, 'wb') as f:
         plist_format = {
             'binary1': plistlib.FMT_BINARY,

@@ -5,6 +5,7 @@
 #include "chrome/browser/process_singleton.h"
 
 #include <windows.h>
+
 #include <shellapi.h>
 #include <stddef.h>
 

@@ -2,22 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/policy/policy_test_utils.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
+#include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
-#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/browser_test.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <tuple>
+
+#include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/platform/ax_platform.h"
+#endif
 
 namespace policy {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ::ash::AccessibilityManager;
 using ::ash::MagnificationManager;
@@ -536,5 +549,64 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, ColorCorrectionEnabled) {
   accessibility_manager->SetColorCorrectionEnabled(false);
   EXPECT_TRUE(accessibility_manager->IsColorCorrectionEnabled());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN)
+// Tests that the UiAutomationProviderEnabled policy is respected when set, and
+// that the UiaProvider feature takes effect only when the policy is not set.
+class UiAutomationProviderPolicyTest
+    : public PolicyTest,
+      public ::testing::WithParamInterface<
+          std::tuple<PolicyTest::BooleanPolicy, bool>> {
+ protected:
+  static PolicyTest::BooleanPolicy GetBooleanPolicyParam() {
+    return std::get<0>(GetParam());
+  }
+
+  static bool GetFeatureEnabledParam() { return std::get<1>(GetParam()); }
+
+  UiAutomationProviderPolicyTest() {
+    feature_list_.InitWithFeatureState(::features::kUiaProvider,
+                                       GetFeatureEnabledParam());
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    PolicyTest::SetUpInProcessBrowserTestFixture();
+    if (const auto boolean_policy = GetBooleanPolicyParam();
+        boolean_policy != BooleanPolicy::kNotConfigured) {
+      PolicyMap policy_map;
+      SetPolicy(&policy_map, key::kUiAutomationProviderEnabled,
+                base::Value(boolean_policy == BooleanPolicy::kTrue));
+      UpdateProviderPolicy(policy_map);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(UiAutomationProviderPolicyTest, IsUiaProviderEnabled) {
+  if (const auto boolean_policy = GetBooleanPolicyParam();
+      boolean_policy == BooleanPolicy::kNotConfigured) {
+    // Enabled or disabled according to the variations framework.
+    ASSERT_EQ(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled(),
+              GetFeatureEnabledParam());
+  } else {
+    // Enabled or disabled according to the value of the policy.
+    ASSERT_EQ(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled(),
+              boolean_policy == BooleanPolicy::kTrue);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    UiAutomationProviderPolicyTest,
+    ::testing::Combine(
+        ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
+                          PolicyTest::BooleanPolicy::kFalse,
+                          PolicyTest::BooleanPolicy::kTrue),
+        ::testing::Bool()));
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace policy

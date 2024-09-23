@@ -54,6 +54,7 @@ source_set("phishing_classifier") {
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//content/public/renderer",
       "//crypto",
+      "//mojo/public/mojom/base:protobuf_support",
       "//skia",
       "//third_party/blink/public:blink_headers",
       "//third_party/smhasher:murmurhash3",

@@ -5,7 +5,7 @@
 import("//build/config/android/rules.gni")
 
 java_prebuilt("aosp_dalvik_dx_java") {
-  jar_path = "lib/dx.jar"
+  jar_path = "cipd/lib/dx.jar"
   output_name = "aosp_dalvik_dx_java"
   supports_android = true
   testonly = true

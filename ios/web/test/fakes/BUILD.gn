@@ -43,7 +43,5 @@ source_set("fakes") {
     "fake_navigation_manager_delegate.mm",
     "fake_web_frame_impl.h",
     "fake_web_frame_impl.mm",
-    "fake_wk_configuration_provider_observer.h",
-    "fake_wk_configuration_provider_observer.mm",
   ]
 }

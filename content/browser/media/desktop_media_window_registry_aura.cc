@@ -52,7 +52,7 @@ class DesktopMediaWindowRegistryAura final : public DesktopMediaWindowRegistry,
         return;
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   base::IDMap<aura::Window*> registered_windows_;

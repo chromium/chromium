@@ -4,10 +4,14 @@
 
 #include "services/device/geolocation/win/fake_geocoordinate_winrt.h"
 
+#include <windows.devices.geolocation.h>
+
 #include "base/win/reference.h"
 
 namespace device {
 namespace {
+using ABI::Windows::Devices::Geolocation::AltitudeReferenceSystem::
+    AltitudeReferenceSystem_Unspecified;
 using ABI::Windows::Foundation::DateTime;
 using ABI::Windows::Foundation::IReference;
 using base::win::Reference;
@@ -29,6 +33,22 @@ IFACEMETHODIMP FakeGeopoint::get_Position(
   value->Latitude = position_data_.latitude;
   value->Longitude = position_data_.longitude;
   value->Altitude = position_data_.altitude.value_or(0.0);
+  return S_OK;
+}
+
+IFACEMETHODIMP FakeGeopoint::get_GeoshapeType(
+    ABI::Windows::Devices::Geolocation::GeoshapeType* value) {
+  return S_OK;
+}
+
+IFACEMETHODIMP FakeGeopoint::get_SpatialReferenceId(UINT32* value) {
+  return S_OK;
+}
+
+IFACEMETHODIMP FakeGeopoint::get_AltitudeReferenceSystem(
+    ABI::Windows::Devices::Geolocation::AltitudeReferenceSystem* value) {
+  *value = position_data_.altitude_reference_system.value_or(
+      AltitudeReferenceSystem_Unspecified);
   return S_OK;
 }
 

@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -203,14 +202,15 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 }
 
 template <typename Traits>
-ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> DecoderTemplate<Traits>::flush(
+    ExceptionState& exception_state) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
-    return ScriptPromise();
+    return EmptyPromise();
 
   if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
-    return ScriptPromise();
+    return EmptyPromise();
 
   MarkCodecActive();
 
@@ -218,8 +218,8 @@ ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kFlush;
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state_);
   request->resolver = resolver;
   request->reset_generation = reset_generation_;
   requests_.push_back(request);
@@ -407,7 +407,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   }
 
   // The request may be invalid, if so report that now.
-  if (!request->decoder_buffer || request->decoder_buffer->data_size() == 0) {
+  if (!request->decoder_buffer || request->decoder_buffer->empty()) {
     if (request->status.is_ok()) {
       Shutdown(MakeEncodingError("Null or empty decoder buffer.",
                                  media::DecoderStatus::Codes::kFailed));

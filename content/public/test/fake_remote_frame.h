@@ -87,7 +87,8 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   void DisableAutoResize() override;
   void DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
-  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
+  void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
+                      bool allow_paint_holding) override;
   void ChildProcessGone() override;
   void CreateRemoteChild(
       const blink::RemoteFrameToken& token,
@@ -101,6 +102,8 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
       override;
   void CreateRemoteChildren(
       std::vector<blink::mojom::CreateRemoteChildParamsPtr> params) override;
+  void ForwardFencedFrameEventToEmbedder(
+      const std::string& event_type) override;
 
  private:
   mojo::AssociatedReceiver<blink::mojom::RemoteFrame> receiver_{this};

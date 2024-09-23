@@ -19,7 +19,7 @@ class MojoFuchsiaCdmProvider : public FuchsiaCdmProvider {
  public:
   // |interface_broker| must outlive this class.
   explicit MojoFuchsiaCdmProvider(
-      blink::BrowserInterfaceBrokerProxy* interface_broker);
+      const blink::BrowserInterfaceBrokerProxy* interface_broker);
 
   MojoFuchsiaCdmProvider(const MojoFuchsiaCdmProvider&) = delete;
   MojoFuchsiaCdmProvider& operator=(const MojoFuchsiaCdmProvider&) = delete;
@@ -33,7 +33,7 @@ class MojoFuchsiaCdmProvider : public FuchsiaCdmProvider {
           cdm_request) override;
 
  private:
-  blink::BrowserInterfaceBrokerProxy* const interface_broker_;
+  const blink::BrowserInterfaceBrokerProxy* const interface_broker_;
   mojo::Remote<media::mojom::FuchsiaMediaCdmProvider> cdm_provider_;
 };
 

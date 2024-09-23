@@ -12,13 +12,13 @@ namespace network {
 void ResolveHostClientBase::OnTextResults(
     const std::vector<std::string>& text_results) {
   // Should be overridden if text results are expected.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ResolveHostClientBase::OnHostnameResults(
     const std::vector<net::HostPortPair>& hosts) {
   // Should be overridden if hostname results are expected.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace network

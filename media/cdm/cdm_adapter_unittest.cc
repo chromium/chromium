@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cdm/cdm_adapter.h"
 
 #include <stdint.h>
@@ -16,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "media/base/cdm_callback_promise.h"
+#include "media/base/cdm_factory.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_switches.h"
@@ -167,7 +173,7 @@ class CdmAdapterTestBase : public testing::Test,
 
   void OnCdmCreated(ExpectedResult expected_result,
                     const scoped_refptr<ContentDecryptionModule>& cdm,
-                    const std::string& error_message) {
+                    CreateCdmStatus status) {
     if (cdm) {
       ASSERT_EQ(expected_result, SUCCESS)
           << "CDM creation succeeded unexpectedly.";
@@ -175,7 +181,8 @@ class CdmAdapterTestBase : public testing::Test,
       ASSERT_EQ(GetCdmInterfaceVersion(), cdm_adapter->GetInterfaceVersion());
       cdm_ = cdm;
     } else {
-      ASSERT_EQ(expected_result, FAILURE) << error_message;
+      ASSERT_EQ(expected_result, FAILURE)
+          << "status = " << static_cast<int>(status);
     }
   }
 

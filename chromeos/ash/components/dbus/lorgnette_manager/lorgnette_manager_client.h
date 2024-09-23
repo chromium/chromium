@@ -13,8 +13,8 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace ash {
 
@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
   virtual void ListScanners(
       const std::string& client_id,
       bool local_only,
+      bool preferred_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse>
           callback) = 0;
 

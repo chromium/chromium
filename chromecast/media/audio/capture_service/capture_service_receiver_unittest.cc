@@ -8,7 +8,8 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/big_endian.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
@@ -127,12 +128,12 @@ TEST_F(CaptureServiceReceiverTest, SendRequest) {
                           net::CompletionOnceCallback,
                           const net::NetworkTrafficAnnotationTag&) {
         EXPECT_EQ(buf_len, static_cast<int>(sizeof(HandshakePacket)));
-        auto* data = reinterpret_cast<const uint8_t*>(buf->data());
-        uint16_t size;
-        base::ReadBigEndian(data, &size);
+        auto data = base::as_bytes(buf->span());
+        uint16_t size = base::numerics::U16FromBigEndian(data.first<2u>());
         EXPECT_EQ(size, sizeof(HandshakePacket) - sizeof(size));
         HandshakePacket packet;
-        std::memcpy(&packet, data, sizeof(HandshakePacket));
+        base::byte_span_from_ref(packet).copy_from(
+            data.first<sizeof(HandshakePacket)>());
         EXPECT_EQ(packet.message_type, kHandshakePacket.message_type);
         EXPECT_EQ(packet.stream_type, kHandshakePacket.stream_type);
         EXPECT_EQ(packet.audio_codec, kHandshakePacket.audio_codec);
@@ -159,20 +160,27 @@ TEST_F(CaptureServiceReceiverTest, ReceivePcmAudioMessage) {
       // Ack message.
       .WillOnce(Invoke(
           [](net::IOBuffer* buf, int buf_len, net::CompletionOnceCallback) {
-            int total_size = sizeof(HandshakePacket);
-            EXPECT_GE(buf_len, total_size);
-            FillBuffer(buf->data(), total_size, &kHandshakePacket.message_type,
-                       sizeof(HandshakePacket) - sizeof(uint16_t));
-            return total_size;
+            auto write = base::as_writable_bytes(buf->span())
+                             .first(sizeof(kHandshakePacket));
+            auto packet_as_bytes = base::byte_span_from_ref(kHandshakePacket)
+                                       .subspan(sizeof(uint16_t));
+            auto rem = FillBuffer(write, packet_as_bytes);
+            EXPECT_TRUE(rem.empty());
+            return write.size();
           }))
       // Audio message.
       .WillOnce(Invoke([](net::IOBuffer* buf, int buf_len,
                           net::CompletionOnceCallback) {
-        int total_size = sizeof(PcmPacketHeader) + DataSizeInBytes(kStreamInfo);
-        EXPECT_GE(buf_len, total_size);
-        FillBuffer(buf->data(), total_size, &kPcmAudioPacketHeader.message_type,
-                   sizeof(PcmPacketHeader) - sizeof(uint16_t));
-        return total_size;  // No need to fill audio frames.
+        auto write = base::as_writable_bytes(buf->span())
+                         .first(sizeof(kPcmAudioPacketHeader) +
+                                DataSizeInBytes(kStreamInfo));
+        auto header_as_bytes = base::byte_span_from_ref(kPcmAudioPacketHeader)
+                                   .subspan(sizeof(uint16_t));
+        auto audio = FillBuffer(write, header_as_bytes);
+        // No need to write valid audio frames, but we can't leave
+        // uninitialized memory (as it causes UB if it's read).
+        std::ranges::fill(audio, uint8_t{0});
+        return write.size();
       }))
       .WillOnce(Return(net::ERR_IO_PENDING));
   EXPECT_CALL(delegate_, OnInitialStreamInfo).WillOnce(Return(true));
@@ -191,17 +199,20 @@ TEST_F(CaptureServiceReceiverTest, ReceiveMetadataMessage) {
   EXPECT_CALL(*socket, Connect).WillOnce(Return(net::OK));
   EXPECT_CALL(*socket, Write).WillOnce(Return(sizeof(HandshakePacket)));
   EXPECT_CALL(*socket, Read)
-      .WillOnce(Invoke(
-          [](net::IOBuffer* buf, int buf_len, net::CompletionOnceCallback) {
-            uint16_t size = sizeof(uint8_t) + 1;  // MessageType and 1 byte.
-            int total_size = size + sizeof(size);
-            EXPECT_GE(buf_len, total_size);
-            base::WriteBigEndian(buf->data(), size);
-            uint8_t message_type = static_cast<uint8_t>(MessageType::kMetadata);
-            std::memcpy(buf->data() + sizeof(size), &message_type,
-                        sizeof(message_type));
-            return total_size;  // No need to fill metadata.
-          }))
+      .WillOnce(Invoke([](net::IOBuffer* buf, int buf_len,
+                          net::CompletionOnceCallback) {
+        // The message contains `MessageType` (as uint8_t) and 1 byte.
+        constexpr uint16_t message_size = sizeof(uint8_t) + 1u;
+        constexpr size_t total_size = sizeof(uint16_t) + message_size;
+        auto [write_size, write_message] = base::as_writable_bytes(buf->span())
+                                               .first<total_size>()
+                                               .split_at<sizeof(uint16_t)>();
+        write_size.copy_from(base::numerics::U16ToBigEndian(message_size));
+        write_message[0u] = static_cast<uint8_t>(MessageType::kMetadata);
+        // No need to fill valid metadata.
+        std::ranges::fill(write_message.subspan(1u), uint8_t{0});
+        return total_size;
+      }))
       .WillOnce(Return(net::ERR_IO_PENDING));
   // Neither OnCaptureError nor OnCaptureData will be called.
   EXPECT_CALL(delegate_, OnCaptureError).Times(0);

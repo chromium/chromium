@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_TCP_WRITABLE_STREAM_WRAPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DIRECT_SOCKETS_TCP_WRITABLE_STREAM_WRAPPER_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "partition_alloc/partition_root.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -43,7 +43,8 @@ class MODULES_EXPORT TCPWritableStreamWrapper
   bool HasPendingWrite() const override;
   void Trace(Visitor*) const override;
   void OnAbortSignal() override;
-  ScriptPromise Write(ScriptValue chunk, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Write(ScriptValue chunk,
+                                    ExceptionState&) override;
 
  private:
   // Called when |data_pipe_| becomes writable or errored.
@@ -93,7 +94,7 @@ class MODULES_EXPORT TCPWritableStreamWrapper
 
   // If an asynchronous write() on the underlying sink object is pending, this
   // will be non-null.
-  Member<ScriptPromiseResolver> write_promise_resolver_;
+  Member<ScriptPromiseResolver<IDLUndefined>> write_promise_resolver_;
 };
 
 }  // namespace blink

@@ -1,0 +1,3 @@
+Verifies that calling getInnerHTML() triggers a deprecation issue.
+No issue
+

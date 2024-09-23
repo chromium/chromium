@@ -10,10 +10,9 @@ import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BrowserCommandProxy, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote, Promo} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -120,7 +119,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
     assertHasContent(canShowPromo, middleSlotPromo);
     const promoContainer = $$(middleSlotPromo, '#promoContainer');
-    assert(promoContainer);
+    assertTrue(!!promoContainer);
     const parts = promoContainer.children;
     assertEquals(6, parts.length);
 
@@ -165,7 +164,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     promoBrowserCommandHandler.setResultFor(
         'executeCommand', Promise.resolve());
     const promoContainer = $$(middleSlotPromo, '#promoContainer');
-    assert(promoContainer);
+    assertTrue(!!promoContainer);
     const imageWithCommand = promoContainer.children[2] as HTMLElement;
     const command = promoContainer.children[5] as HTMLElement;
 
@@ -207,7 +206,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
           await createMiddleSlotPromo(canShowPromo, hasPromoId);
       assertHasContent(canShowPromo, middleSlotPromo);
       const parts = middleSlotPromo.$.promoAndDismissContainer.children;
-      assertEquals(2, parts.length);
+      assertEquals(1, parts.length);
 
       const promoContainer = parts[0] as HTMLElement;
       assertEquals(6, promoContainer.children.length);
@@ -218,11 +217,11 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertHasContent(canShowPromo, middleSlotPromo);
       const parts = middleSlotPromo.$.promoAndDismissContainer.children;
-      assertEquals(3, parts.length);
+      assertEquals(2, parts.length);
 
       const dismissPromoButton = parts[1] as HTMLElement;
       dismissPromoButton.click();
-      assertEquals(true, middleSlotPromo.$.promoAndDismissContainer.hidden);
+      assertTrue(middleSlotPromo.$.promoAndDismissContainer.hidden);
       assertEquals(
           1,
           metrics.count(
@@ -234,7 +233,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertHasContent(canShowPromo, middleSlotPromo);
       const parts = middleSlotPromo.$.promoAndDismissContainer.children;
-      assertEquals(3, parts.length);
+      assertEquals(2, parts.length);
 
       const dismissPromoButton = parts[1] as HTMLElement;
       dismissPromoButton.click();
@@ -257,7 +256,7 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertHasContent(canShowPromo, middleSlotPromo);
       const parts = middleSlotPromo.$.promoAndDismissContainer.children;
-      assertEquals(3, parts.length);
+      assertEquals(2, parts.length);
 
       callbackRouterRemote.setPromo(null);
       await callbackRouterRemote.$.flushForTesting();

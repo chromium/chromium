@@ -18,7 +18,7 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/grit/dev_ui_components_resources.h"
 #include "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -81,7 +81,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
 void GcmInternalsUIMessageHandler::RequestAllInfo(
     const base::Value::List& args) {
   if (args.size() != 1 || !args[0].is_bool()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   bool clear_logs = args[0].GetBool();
@@ -89,13 +89,12 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
   gcm::GCMDriver::ClearActivityLogs clear_activity_logs =
       clear_logs ? gcm::GCMDriver::CLEAR_LOGS : gcm::GCMDriver::KEEP_LOGS;
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   gcm::GCMProfileService* profile_service =
-      IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
+      IOSChromeGCMProfileServiceFactory::GetForProfile(profile);
 
   if (!profile_service || !profile_service->driver()) {
-    ReturnResults(browser_state->GetPrefs(), nullptr, nullptr);
+    ReturnResults(profile->GetPrefs(), nullptr, nullptr);
   } else {
     profile_service->driver()->GetGCMStatistics(
         base::BindOnce(
@@ -107,18 +106,17 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& args) {
   if (args.size() != 1 || !args[0].is_bool()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   bool recording = args[0].GetBool();
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
   gcm::GCMProfileService* profile_service =
-      IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
+      IOSChromeGCMProfileServiceFactory::GetForProfile(profile);
 
   if (!profile_service) {
-    ReturnResults(browser_state->GetPrefs(), nullptr, nullptr);
+    ReturnResults(profile->GetPrefs(), nullptr, nullptr);
     return;
   }
   // Get fresh stats after changing recording setting.
@@ -131,14 +129,13 @@ void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& args) {
 
 void GcmInternalsUIMessageHandler::RequestGCMStatisticsFinished(
     const gcm::GCMClient::GCMStatistics& stats) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromWebUIIOS(web_ui());
-  DCHECK(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  DCHECK(profile);
   gcm::GCMProfileService* profile_service =
-      IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state);
+      IOSChromeGCMProfileServiceFactory::GetForProfile(profile);
 
   DCHECK(profile_service);
-  ReturnResults(browser_state->GetPrefs(), profile_service, &stats);
+  ReturnResults(profile->GetPrefs(), profile_service, &stats);
 }
 
 void GcmInternalsUIMessageHandler::RegisterMessages() {
@@ -169,8 +166,7 @@ GCMInternalsUI::GCMInternalsUI(web::WebUIIOS* web_ui, const std::string& host)
                                IDR_GCM_DRIVER_GCM_INTERNALS_JS);
   html_source->SetDefaultResource(IDR_GCM_DRIVER_GCM_INTERNALS_HTML);
 
-  web::WebUIIOSDataSource::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
-                               html_source);
+  web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui), html_source);
 
   web_ui->AddMessageHandler(std::make_unique<GcmInternalsUIMessageHandler>());
 }

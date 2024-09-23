@@ -302,8 +302,9 @@ OfflinePageRequestHandler::OfflinePageRequestHandler(
       network_state_(NetworkState::CONNECTED_NETWORK),
       candidate_index_(0) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string offline_header_value;
-  extra_request_headers.GetHeader(kOfflinePageHeader, &offline_header_value);
+  std::string offline_header_value =
+      extra_request_headers.GetHeader(kOfflinePageHeader)
+          .value_or(std::string());
   // Note that |offline_header| will be empty if parsing from the header value
   // fails.
   offline_header_ = OfflinePageHeader(offline_header_value);
@@ -505,8 +506,11 @@ void OfflinePageRequestHandler::OpenFile(
   if (!stream_)
     stream_ = std::make_unique<net::FileStream>(file_task_runner_);
 
-  int flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-              base::File::FLAG_ASYNC | base::File::FLAG_WIN_EXCLUSIVE_READ;
+  int flags =
+      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC;
+#if BUILDFLAG(IS_WIN)
+  flags |= base::File::FLAG_WIN_EXCLUSIVE_READ;
+#endif  // BUILDFLAG(IS_WIN)
   int result = stream_->Open(file_path, flags, callback);
   if (result != net::ERR_IO_PENDING)
     callback.Run(result);

@@ -60,7 +60,7 @@ base::FilePath GetUpdaterExecutablePath() {
 std::optional<uid_t> GetBundleOwner() {
   const base::FilePath path = base::apple::OuterBundlePath();
   base::stat_wrapper_t stat_info = {};
-  if (base::File::Lstat(path.value().c_str(), &stat_info) != 0) {
+  if (base::File::Lstat(path, &stat_info) != 0) {
     VPLOG(2) << "Failed to get information on path " << path.value();
     return std::nullopt;
   }

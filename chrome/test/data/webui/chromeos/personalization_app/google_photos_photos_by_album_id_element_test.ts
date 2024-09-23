@@ -62,8 +62,7 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
 
             // Set values returned by |wallpaperProvider|.
             wallpaperProvider.setGooglePhotosAlbums([album]);
-            wallpaperProvider.setGooglePhotosPhotosByAlbumId(
-                album.id, undefined);
+            wallpaperProvider.setGooglePhotosPhotosByAlbumId(album.id, null);
 
             // Initialize Google Photos data in the |personalizationStore|.
             await fetchGooglePhotosEnabled(
@@ -614,9 +613,8 @@ suite('GooglePhotosPhotosByAlbumIdElementTest', function() {
         }));
 
     // Set the next photos resume token returned by |wallpaperProvider|. When
-    // resume token is undefined, it indicates no additional photos exist.
-    wallpaperProvider.setGooglePhotosPhotosByAlbumIdResumeToken(
-        album.id, undefined);
+    // resume token is null, it indicates no additional photos exist.
+    wallpaperProvider.setGooglePhotosPhotosByAlbumIdResumeToken(album.id, null);
 
     // Restrict the viewport so that |googlePhotosPhotosByAlbumIdElement| will
     // lazily create photos instead of creating them all at once.

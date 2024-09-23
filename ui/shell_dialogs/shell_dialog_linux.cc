@@ -109,7 +109,7 @@ SelectFileDialog* CreateSelectFileDialog(
                                          KDialogVersion());
     }
     case kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return nullptr;
 }

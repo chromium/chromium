@@ -91,7 +91,6 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   bool CheckOptionSupported(const char* name,
                             const char* value) const override {
     NOTREACHED();
-    return false;
   }
 
   const char* GetLocalizedOptionValueName(const char* option_name,

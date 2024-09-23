@@ -8,12 +8,12 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
-#include "base/test/to_vector.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/connection_details.h"
@@ -95,7 +95,7 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
 std::vector<base::UnguessableToken> ClientListToIdList(
     const std::vector<std::unique_ptr<ClientConnectionParameters>>&
         client_list) {
-  return base::test::ToVector(client_list, &ClientConnectionParameters::id);
+  return base::ToVector(client_list, &ClientConnectionParameters::id);
 }
 
 }  // namespace

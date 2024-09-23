@@ -1,0 +1,190 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/ash/common/navigation_shared_vars.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style cros-color-overrides
+ * #css_wrapper_metadata_end */
+
+:host-context(body.jelly-enabled) {
+  --chart-system-line-color: var(--cros-sys-tertiary);
+  --chart-system-gradient-color: var(--cros-sys-tertiary_container);
+  --chart-user-line-color: var(--cros-sys-primary);
+  --chart-user-gradient-color: var(--cros-sys-primary_container);
+}
+
+a[href] {
+  color: var(--cr-link-color);
+}
+
+a[href]:focus {
+  outline-color: var(--cros-sys-focus_ring);
+}
+
+.link-wrapper {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+}
+
+h2.first {
+  padding-top: 0;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  border-radius: 3px;
+  border: 1px solid var(--cros-sys-scrollbar_border);
+  background-color: var(--cros-sys-scrollbar);
+}
+
+::-webkit-scrollbar-thumb {
+  width: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--cros-sys-scrollbar_border);
+  background-color: var(--cros-sys-scrollbar_hover);
+}
+
+@media (min-width:600px) {
+  :host {
+    --container-padding: 24px;
+    --content-container-width: 552px;
+    --chart-width: 452px;
+    --chart-width-nav: 452px;
+    --data-point-container-padding: 44px;
+    --card-container-max-width: 650px;
+  }
+}
+
+@media (min-width: 650px) {
+  :host {
+    --chart-width-nav: 502px;
+  }
+}
+
+@media (min-width:769px) {
+  :host {
+    --chart-width-nav: 420px;
+  }
+}
+
+@media (min-width: 789px) {
+  :host {
+    --chart-width-nav: 440px;
+  }
+}
+
+@media (min-width: 809px) {
+  :host {
+    --chart-width-nav: 460px;
+  }
+}
+
+@media (min-width: 829px) {
+  :host {
+    --chart-width-nav: 480px;
+  }
+}
+
+@media (min-width: 849px) {
+  :host {
+    --chart-width-nav: 500px;
+  }
+}
+
+@media (min-width: 869px) {
+  :host {
+    --chart-width-nav: 520px;
+  }
+}
+
+@media (min-width: 900px) {
+  :host {
+    --chart-width-nav: 540px;
+  }
+}
+
+@media (min-width: 925px) {
+  :host {
+    --chart-width-nav: 560px;
+  }
+}
+
+@media (min-width:768px) {
+  :host {
+    --container-padding: 64px;
+    --content-container-width: 640px;
+    --chart-width: 540px;
+    --data-point-container-padding: 64px;
+  }
+}
+
+@media (min-width:960px) {
+  :host {
+    --container-padding: 160px;
+    --content-container-width: 640px;
+    --chart-width: 540px;
+    --chart-width-nav: 540px;
+    --data-point-container-padding: 64px;
+  }
+}
+
+@media (min-width:1280px) {
+  :host {
+    --container-padding: 160px;
+    --content-container-width: 680px;
+    --chart-width: 580px;
+    --chart-width-nav: 620px;
+    --data-point-container-padding: 64px;
+    --card-container-max-width: 720px;
+  }
+}
+
+@media (min-width:1440px) {
+  :host {
+    --container-padding: 360px;
+    --content-container-width: 720px;
+    --chart-width: 620px;
+    --data-point-container-padding: 64px;
+  }
+}
+
+:host {
+  position: absolute;
+  background-color: var(--cros-sys-base_elevated);
+  height: 640px;
+  width: 680px;
+}
+div[slot="body"] {
+  border-radius: 20px;
+  padding: 32px;
+}
+.title {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  font-family: var(--cros-display-5-font-family);
+  font-size: var(--cros-display-5-font-size);
+  font: var(--cros-display-5-font);
+  font-weight: var(--cros-display-5-font-weight);
+  line-height: var(--cros-display-5-line-height);
+  color: var(--cros-sys-on_surface);
+}
+
+.sanitize-description {
+  margin-bottom: 24px;
+  font-family: var(--cros-body-2-font-family);
+  font-size: var(--cros-body-2-font-size);
+  font: var(--cros-body-2-font);
+  font-weight: var(--cros-body-2-font-weight);
+  line-height: var(--cros-body-2-line-height);
+  color: var(--cros-sys-on_surface_variant);
+}
+.done-button-container {
+  text-align: right;
+  margin-top: 24px;
+}

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
+
 #include <memory>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
-#include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/mock_arc_notification_surface.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
@@ -25,7 +26,6 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -100,12 +100,11 @@ class ArcNotificationViewTest : public AshTestBase {
     UpdateNotificationViews(*notification);
 
     views::Widget::InitParams init_params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     init_params.context = GetContext();
     init_params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
         desks_util::GetActiveDeskContainerId());
-    init_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     views::Widget* widget = new views::Widget();
     widget->Init(std::move(init_params));
     widget->SetContentsView(std::move(notification_view));
@@ -136,19 +135,21 @@ class ArcNotificationViewTest : public AshTestBase {
 
   void PerformClick(const gfx::Point& point) {
     ui::MouseEvent pressed_event = ui::MouseEvent(
-        ui::ET_MOUSE_PRESSED, point, point, ui::EventTimeForNow(),
+        ui::EventType::kMousePressed, point, point, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     widget()->OnMouseEvent(&pressed_event);
     ui::MouseEvent released_event = ui::MouseEvent(
-        ui::ET_MOUSE_RELEASED, point, point, ui::EventTimeForNow(),
+        ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
     widget()->OnMouseEvent(&released_event);
   }
 
   void PerformKeyEvents(ui::KeyboardCode code) {
-    ui::KeyEvent event1 = ui::KeyEvent(ui::ET_KEY_PRESSED, code, ui::EF_NONE);
+    ui::KeyEvent event1 =
+        ui::KeyEvent(ui::EventType::kKeyPressed, code, ui::EF_NONE);
     widget()->OnKeyEvent(&event1);
-    ui::KeyEvent event2 = ui::KeyEvent(ui::ET_KEY_RELEASED, code, ui::EF_NONE);
+    ui::KeyEvent event2 =
+        ui::KeyEvent(ui::EventType::kKeyReleased, code, ui::EF_NONE);
     widget()->OnKeyEvent(&event2);
   }
 
@@ -181,16 +182,17 @@ class ArcNotificationViewTest : public AshTestBase {
   }
 
   void BeginScroll() {
-    DispatchGesture(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
+    DispatchGesture(
+        ui::GestureEventDetails(ui::EventType::kGestureScrollBegin));
   }
 
   void EndScroll() {
-    DispatchGesture(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+    DispatchGesture(ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
   }
 
   void ScrollBy(int dx) {
     DispatchGesture(
-        ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, dx, 0));
+        ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, dx, 0));
   }
 
   ArcNotificationContentView* content_view() {
@@ -228,7 +230,6 @@ class ArcNotificationViewTest : public AshTestBase {
       nullptr;  // owned by its widget.
 
   std::unique_ptr<MockArcNotificationItem> item_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ArcNotificationViewTest, Events) {
@@ -240,7 +241,7 @@ TEST_F(ArcNotificationViewTest, Events) {
             widget()->GetRootView()->GetEventHandlerForPoint(cursor_location));
 
   content_view()->RequestFocus();
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE);
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   EXPECT_EQ(content_view(),
             static_cast<ui::EventTargeter*>(
                 widget()->GetRootView()->GetEffectiveViewTargeter())
@@ -271,7 +272,7 @@ TEST_F(ArcNotificationViewTest, SlideOut) {
   EXPECT_TRUE(IsPopupRemovedAfterIdle(notification_id));
 }
 
-// TODO(crbug.com/1410724): Flaky on MSAN bots.
+// TODO(crbug.com/40889858): Flaky on MSAN bots.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_SlideOutNested DISABLED_SlideOutNested
 #else
@@ -398,32 +399,13 @@ TEST_F(ArcNotificationViewTest, ChangeContentHeight) {
   EXPECT_EQ("1000x1000", size.ToString());
 }
 
-class NotificationGestureUpdateTest : public ArcNotificationViewTest {
- public:
-  NotificationGestureUpdateTest() = default;
-  NotificationGestureUpdateTest(const NotificationGestureUpdateTest&) = delete;
-  NotificationGestureUpdateTest& operator=(
-      const NotificationGestureUpdateTest&) = delete;
-
-  // Overridden from ViewsTestBase:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kNotificationGesturesUpdate}, {});
-
-    ArcNotificationViewTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(NotificationGestureUpdateTest, TrackPadGestureSlideOut) {
+TEST_F(ArcNotificationViewTest, TrackPadGestureSlideOut) {
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   ui::test::EventGenerator generator(
       (notification_view()->GetWidget()->GetNativeWindow()->GetRootWindow()));
-  generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/20,
+  generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/200,
                            /*y_offset=*/0, /*steps=*/1, /*num_fingers=*/2);
   EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
 }

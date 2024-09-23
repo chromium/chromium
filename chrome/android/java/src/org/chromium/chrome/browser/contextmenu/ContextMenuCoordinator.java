@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.ENABLED;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
@@ -23,9 +24,14 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
+import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
+import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUi;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
@@ -253,9 +259,12 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
                     @Override
                     public boolean isEnabled(int position) {
-                        return getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
+                        if (getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
                                 || getItemViewType(position)
-                                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON;
+                                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
+                            return ((ListItem) getItem(position)).model.get(ENABLED);
+                        }
+                        return false;
                     }
 
                     @Override
@@ -374,6 +383,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         menuView,
                         isPopup,
                         shouldRemoveScrim,
+                        ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.CONTEXT_MENU_SYS_UI_MATCHES_ACTIVITY),
                         popupMargin,
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,

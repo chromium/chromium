@@ -4,18 +4,21 @@
 
 #include "chrome/browser/ash/login/screens/osauth/osauth_error_screen.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/logging.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/osauth_error_screen_handler.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -30,6 +33,7 @@ constexpr const char kUserActionCanel[] = "cancelLoginFlow";
 
 // static
 std::string OSAuthErrorScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::kAbortSignin:
       return "AbortSignin";
@@ -40,6 +44,7 @@ std::string OSAuthErrorScreen::GetResultString(Result result) {
     case Result::kProceedAuthenticated:
       return "ProceedAuthenticated";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 OSAuthErrorScreen::OSAuthErrorScreen(base::WeakPtr<OSAuthErrorScreenView> view,

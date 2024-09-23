@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preloading Decider Browser Test Moderate</title>
+  <style>
+    #container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a {
+      flex: auto;
+    }
+  </style>
+</head>
+<body>
+  <script type="speculationrules">
+  {
+    "prefetch": [
+      {"source": "document", "where": {"selector_matches": "#b"}, "eagerness": "moderate"}
+    ],
+    "prerender": [
+      {"source": "document", "where": {"selector_matches": ["#c", "#d"]}, "eagerness": "moderate"}
+    ]
+  }
+  </script>
+  <div id="container">
+    <!--Use a page without speculation rules of its own to avoid extra
+        speculations beyond what the test code is expecting.-->
+    <a href="/title1.html?a" id="a">No preloading</a>
+    <a href="/title1.html?b" id="b">Non-eager prefetch</a>
+    <a href="/title1.html?c" id="c">Non-eager prerender</a>
+    <a href="/title1.html?d" id="d" target="_blank">Non-eager prerender in new tab</a>
+  </div>
+</body>
+</html>

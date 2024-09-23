@@ -9,11 +9,12 @@
 #include <fuchsia/web/cpp/fidl.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/fuchsia/startup_context.h"
 #include "base/gtest_prod_util.h"
 #include "base/message_loop/message_pump_for_io.h"
@@ -70,7 +71,7 @@ class CastComponent final
   // `is_headless` must match the headless setting of the specified `runner`, to
   //   have CreateView() operations trigger enabling & disabling of off-screen
   //   rendering.
-  CastComponent(base::StringPiece debug_name,
+  CastComponent(std::string_view debug_name,
                 WebContentRunner* runner,
                 Params params,
                 bool is_headless);

@@ -11,7 +11,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createExtensionInfo, MockItemDelegate} from './test_util.js';
+import {TestService} from './test_service.js';
+import {createExtensionInfo, MockItemDelegate, testVisible} from './test_util.js';
 
 suite('ExtensionDetailViewTest', function() {
   /** Extension item created before each test. */
@@ -24,6 +25,10 @@ suite('ExtensionDetailViewTest', function() {
 
   // Initialize an extension item before each test.
   setup(function() {
+    setupElement();
+  });
+
+  function setupElement() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     extensionData = createExtensionInfo({
       incognitoAccess: {isEnabled: true, isActive: false},
@@ -39,7 +44,9 @@ suite('ExtensionDetailViewTest', function() {
     item.set('showActivityLog', false);
     item.set('enableEnhancedSiteControls', false);
     document.body.appendChild(item);
-  });
+    const toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
+  }
 
   test('Layout', function() {
     flush();
@@ -139,6 +146,7 @@ suite('ExtensionDetailViewTest', function() {
 
     assertFalse(testIsVisible('#id-section'));
     assertFalse(testIsVisible('#inspectable-views'));
+    assertFalse(testIsVisible('#dev-reload-button'));
 
     item.set('inDevMode', true);
     flush();
@@ -259,6 +267,75 @@ suite('ExtensionDetailViewTest', function() {
     assertFalse(isChildVisible(item, '#load-path'));
   });
 
+  test('ElementVisibilityReloadButton', function() {
+    item.set('inDevMode', true);
+
+    // Developer reload button should be visible only for enabled unpacked
+    // extensions.
+    testVisible(item, '#dev-reload-button', false);
+
+    item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+    flush();
+    testVisible(item, '#dev-reload-button', true);
+
+    item.set('data.state', chrome.developerPrivate.ExtensionState.DISABLED);
+    flush();
+    testVisible(item, '#dev-reload-button', false);
+
+    item.set('data.disableReasons.reloading', true);
+    flush();
+    testVisible(item, '#dev-reload-button', true);
+
+    item.set('data.disableReasons.reloading', false);
+    flush();
+    item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
+    flush();
+    testVisible(item, '#dev-reload-button', false);
+    testVisible(item, '#enableToggle', false);
+  });
+
+  /** Tests that the reload button properly fires the load-error event. */
+  test('FailedReloadFiresLoadError', async function() {
+    item.set('inDevMode', true);
+    item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+    flush();
+    testVisible(item, '#dev-reload-button', true);
+
+    // Check clicking the reload button. The reload button should fire a
+    // load-error event if and only if the reload fails (indicated by a
+    // rejected promise).
+    // This is a bit of a pain to verify because the promises finish
+    // asynchronously, so we have to use setTimeout()s.
+    let firedLoadError = false;
+    item.addEventListener('load-error', () => {
+      firedLoadError = true;
+    });
+
+    // This is easier to test with a TestBrowserProxy-style delegate.
+    const proxyDelegate = new TestService();
+    item.delegate = proxyDelegate;
+
+    function verifyEventPromise(expectCalled: boolean): Promise<void> {
+      return new Promise((resolve, _reject) => {
+        setTimeout(() => {
+          assertEquals(expectCalled, firedLoadError);
+          resolve();
+        });
+      });
+    }
+
+    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    let id = await proxyDelegate.whenCalled('reloadItem');
+    assertEquals(item.data.id, id);
+    await verifyEventPromise(false);
+    proxyDelegate.resetResolver('reloadItem');
+    proxyDelegate.setForceReloadItemError(true);
+    item.shadowRoot!.querySelector<HTMLElement>('#dev-reload-button')!.click();
+    id = await proxyDelegate.whenCalled('reloadItem');
+    assertEquals(item.data.id, id);
+    return verifyEventPromise(true);
+  });
+
   test('SupervisedUserDisableReasons', function() {
     flush();
     const toggle = item.$.enableToggle;
@@ -292,7 +369,7 @@ suite('ExtensionDetailViewTest', function() {
     flush();
   });
 
-  test('ClickableElements', function() {
+  test('ClickableElements', async function() {
     const optionsUrl =
         'chrome-extension://' + extensionData.id + '/options.html';
     item.set('data.optionsPage', {openInTab: true, url: optionsUrl});
@@ -318,37 +395,41 @@ suite('ExtensionDetailViewTest', function() {
     navigation.navigateTo({page: Page.DETAILS, extensionId: extensionData.id});
     currentPage = null;
 
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#allow-incognito')!.getLabel(),
         'setItemAllowedIncognito', [extensionData.id, true]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#allow-on-file-urls')!.getLabel(),
         'setItemAllowedOnFileUrls', [extensionData.id, true]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#collect-errors')!.getLabel(),
         'setItemCollectsErrors', [extensionData.id, true]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.$.extensionsOptions, 'showItemOptionsPage', [extensionData]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#remove-extension')!, 'deleteItem',
         [extensionData.id]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#load-path > a[is=\'action-link\']')!,
         'showInFolder', [extensionData.id]);
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#warnings-reload-button')!,
         'reloadItem', [extensionData.id], Promise.resolve());
+
+    // We need to wait for isReloading_ to be set to false, which happens
+    // slightly asynchronously.
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     // Terminate the extension so the reload button appears.
     item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
     flush();
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!.querySelector('#terminated-reload-button')!,
         'reloadItem', [extensionData.id], Promise.resolve());
   });
@@ -371,7 +452,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -380,7 +461,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -389,7 +470,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     const testIsVisible = isChildVisible.bind(null, item);
@@ -400,25 +481,25 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
-    item.set('data.blacklistText', 'This item is blocklisted');
+    item.set('data.blocklistText', 'This item is blocklisted');
     flush();
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', true);
+    testWarningVisible('#blocklisted-warning', true);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
-    item.set('data.blacklistText', null);
+    item.set('data.blocklistText', null);
     flush();
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -427,7 +508,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', true);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -436,7 +517,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', true);
     testWarningVisible('#published-in-store-required-warning', true);
 
@@ -449,7 +530,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
 
@@ -458,7 +539,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', false);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', true);
@@ -468,7 +549,7 @@ suite('ExtensionDetailViewTest', function() {
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#blocklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', true);
@@ -476,12 +557,12 @@ suite('ExtensionDetailViewTest', function() {
     // Test that the allowlist warning is not shown when there is already a
     // blocklist message. It would be redundant since all blocklisted extension
     // are necessarily not included in the Safe Browsing allowlist.
-    item.set('data.blacklistText', 'This item is blocklisted');
+    item.set('data.blocklistText', 'This item is blocklisted');
     flush();
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
     testWarningVisible('#suspicious-warning', true);
-    testWarningVisible('#blacklisted-warning', true);
+    testWarningVisible('#blocklisted-warning', true);
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#published-in-store-required-warning', false);
     testWarningVisible('#allowlist-warning', false);
@@ -555,7 +636,7 @@ suite('ExtensionDetailViewTest', function() {
         ['service worker', 'background page', 'popup.html'], orderedListItems);
   });
 
-  test('ShowAccessRequestsInToolbar', function() {
+  test('ShowAccessRequestsInToolbar', async function() {
     const testIsVisible = isChildVisible.bind(null, item);
 
     const allSitesPermissions = {
@@ -581,7 +662,7 @@ suite('ExtensionDetailViewTest', function() {
                    .querySelector<ExtensionsToggleRowElement>(
                        '#show-access-requests-toggle')!.checked);
 
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         item.shadowRoot!
             .querySelector<ExtensionsToggleRowElement>(
                 '#show-access-requests-toggle')!.getLabel(),
@@ -595,12 +676,12 @@ suite('ExtensionDetailViewTest', function() {
         item.shadowRoot!.querySelector('#safetyCheckWarningContainer')));
     loadTimeData.overrideValues({'safetyCheckShowReviewPanel': true});
     item.set('data.safetyCheckText', {'detailString': 'Test Message'});
-    item.set('data.blacklistText', 'This item is blocklisted');  // nocheck
+    item.set('data.blocklistText', 'This item is blocklisted');  // nocheck
     flush();
     // Check to make sure the warning text is hidden due to the
     // SafetyCheckWarningContainer being shown.
     assertFalse(isVisible(
-        item.shadowRoot!.querySelector('#blacklisted-warning')));  // nocheck
+        item.shadowRoot!.querySelector('#blocklisted-warning')));  // nocheck
     const safetyWarningText =
         item.shadowRoot!.querySelector('#safetyCheckWarningContainer');
     assertTrue(!!safetyWarningText);
@@ -608,7 +689,178 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(safetyWarningText!.textContent!.includes('Test Message'));
   });
 
-  test('PinnedToToolbar', function() {
+  test('Mv2DeprecationMessage_None', function() {
+    // Message is hidden for experiment on stage 0 (none).
+    loadTimeData.overrideValues({MV2ExperimentStage: 0});
+    setupElement();
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
+  });
+
+  test('Mv2DeprecationMessage_Warning', async function() {
+    // Message is hidden for experiment on stage 1 (warning) when extension is
+    // not affected by the MV2 deprecation.
+    loadTimeData.overrideValues({MV2ExperimentStage: 1});
+    setupElement();
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
+
+    // Message is visible for experiment on stage 1 (warning) when extension is
+    // affected by the MV2 deprecation.
+    item.set('data.isAffectedByMV2Deprecation', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', true);
+
+    // Find alternative button is hidden when the extension doesn't have a
+    // recommendations url.
+    const findAlternativeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.find-alternative-button');
+    assertTrue(!!findAlternativeButton);
+    assertFalse(isVisible(findAlternativeButton));
+
+    // Remove button is always hidden.
+    const removeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.remove-button');
+    assertTrue(!!removeButton);
+    assertFalse(isVisible(removeButton));
+
+    // Action menu is always hidden.
+    const actionMenu =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('#actionMenu');
+    assertTrue(!!actionMenu);
+    assertFalse(isVisible(actionMenu));
+
+    // Add a recommendations url to the extension.
+    const id = 'a'.repeat(32);
+    const recommendationsUrl =
+        `https://chromewebstore.google.com/detail/${id}` +
+        `/related-recommendations`;
+    item.set('data.recommendationsUrl', recommendationsUrl);
+    flush();
+
+    // Find alternative button is visible when the extension has a
+    // recommendations url.
+    assertTrue(isVisible(findAlternativeButton));
+
+    // Click on the find alternative button, and verify it triggered the
+    // correct delegate call.
+    await mockDelegate.testClickingCalls(
+        findAlternativeButton, 'openUrl', [recommendationsUrl]);
+  });
+
+  test('Mv2DeprecationMessage_DisableWithReEnable_Visbility', async function() {
+    // Message is hidden for experiment on stage 2 (disable with re-enable)
+    // when extension is not affected by the MV2 deprecation.
+    loadTimeData.overrideValues({MV2ExperimentStage: 2});
+    setupElement();
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
+
+    // Message is hidden for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation but it's not disabled
+    // due to unsupported manifest version.
+    // Note: This can happen when the user chose to re-enable a MV2 disabled
+    // extension.
+    item.set('data.isAffectedByMV2Deprecation', true);
+    item.set('data.disableReasons.unsupportedManifestVersion', false);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
+
+    // Message is visible for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation and extension is
+    // disabled due to unsupported manifest version.
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', true);
+
+    // Message is hidden for experiment on stage 2 (disable with re-enable)
+    // when extension is affected by the MV2 deprecation and has been
+    // acknowledged.
+    item.set('data.didAcknowledgeMV2DeprecationNotice', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', false);
+  });
+
+  test('Mv2DeprecationMessage_DisableWithReEnable_Content', async function() {
+    // Show the message for experiment on stage 2 (disable with re-enable) by
+    // setting the corresponding properties.
+    loadTimeData.overrideValues({MV2ExperimentStage: 2});
+    setupElement();
+    item.set('data.isAffectedByMV2Deprecation', true);
+    item.set('data.disableReasons.unsupportedManifestVersion', true);
+    flush();
+    testVisible(item, '#mv2DeprecationMessage', true);
+
+    // Find alternative button is always hidden.
+    const findAlternativeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.find-alternative-button');
+    assertTrue(!!findAlternativeButton);
+    assertFalse(isVisible(findAlternativeButton));
+
+    // Remove button is always visible.
+    const removeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('.remove-button');
+    assertTrue(!!removeButton);
+    assertTrue(isVisible(removeButton));
+
+    // Click on the remove button, and verify it triggered the correct delegate
+    // call.
+    await mockDelegate.testClickingCalls(
+        removeButton, 'deleteItem', [extensionData.id]);
+
+    // Action menu is always visible.
+    const actionMenu =
+        item.shadowRoot!.querySelector<HTMLElement>('#mv2DeprecationMessage')!
+            .querySelector<HTMLButtonElement>('#actionMenuButton');
+    assertTrue(!!actionMenu);
+    assertTrue(isVisible(actionMenu));
+
+    // Open the action menu to verify its items.
+    actionMenu.click();
+
+    // Find alternative action is not visible when the extension doesn't have a
+    // recommendations url.
+    const findAlternativeAction =
+        item.shadowRoot!.querySelector<HTMLElement>('#findAlternativeAction');
+    assertTrue(!!findAlternativeAction);
+    assertFalse(isVisible(findAlternativeAction));
+
+    // Add a recommendations url to the extension.
+    const id = 'a'.repeat(32);
+    const recommendationsUrl =
+        `https://chromewebstore.google.com/detail/${id}` +
+        `/related-recommendations`;
+    item.set('data.recommendationsUrl', recommendationsUrl);
+    flush();
+
+    // Find alternative action is visible when the extension has a
+    // recommendations url.
+    assertTrue(isVisible(findAlternativeAction));
+
+    // Click on the find alternative action, and verify it triggered the
+    // correct delegate call.
+    await mockDelegate.testClickingCalls(
+        findAlternativeAction, 'openUrl', [recommendationsUrl]);
+
+    // Keep action is always visible.
+    actionMenu.click();
+    const keepAction =
+        item.shadowRoot!.querySelector<HTMLElement>('#keepAction');
+    assertTrue(!!keepAction);
+    assertTrue(isVisible(keepAction));
+
+    // Click on the keep action, and verify it triggered the correct delegate
+    // call.
+    await mockDelegate.testClickingCalls(
+        keepAction, 'dismissMv2DeprecationNoticeForExtension', [id]);
+  });
+
+  test('PinnedToToolbar', async function() {
     assertFalse(
         isVisible(item.shadowRoot!.querySelector<ExtensionsToggleRowElement>(
             '#pin-to-toolbar')));
@@ -621,7 +873,7 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(isVisible(itemPinnedToggle));
     assertTrue(itemPinnedToggle!.checked);
 
-    mockDelegate.testClickingCalls(
+    await mockDelegate.testClickingCalls(
         itemPinnedToggle!.getLabel(), 'setItemPinnedToToolbar',
         [extensionData.id, false]);
     flush();

@@ -75,7 +75,7 @@ URLRequestContextBuilderMojo::CreateProxyResolutionService(
   DCHECK(host_resolver);
 
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1032820): Support both ProxyResolutionService
+  // TODO(crbug.com/40111093): Support both ProxyResolutionService
   // implementations so that they can be swapped around at runtime based on
   // proxy config.
   if (mojo_windows_system_proxy_resolver_) {

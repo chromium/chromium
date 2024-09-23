@@ -23,9 +23,9 @@ proto::OutputConfig CreateOutputConfigForAdaptiveToolbar(Config* config) {
   DCHECK(config->segments.size() >= 1);
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
-  writer.AddOutputConfigForMultiClassClassifier(
-      kAdaptiveToolbarModelLabels.begin(), kAdaptiveToolbarModelLabels.size(),
-      /*top_k_outputs=*/1, /*threshold=*/1);
+  writer.AddOutputConfigForMultiClassClassifier(kAdaptiveToolbarModelLabels,
+                                                /*top_k_outputs=*/1,
+                                                /*threshold=*/1);
 
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},

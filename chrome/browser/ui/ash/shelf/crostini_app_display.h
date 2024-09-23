@@ -27,7 +27,7 @@ class CrostiniAppDisplay {
  private:
   // Since there is no message when an app quits, maintain a maximum number so
   // that older ones are deleted.
-  const uint kMaxAppIdSize = 32;
+  const unsigned kMaxAppIdSize = 32;
 
   std::map<std::string, int64_t> app_id_to_display_id_;
   std::deque<std::string> app_ids_;

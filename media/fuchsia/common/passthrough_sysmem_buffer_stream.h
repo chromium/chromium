@@ -32,7 +32,7 @@ class MEDIA_EXPORT PassthroughSysmemBufferStream : public SysmemBufferStream {
  private:
   void OnBuffersAcquired(
       std::vector<VmoBuffer> buffers,
-      const fuchsia::sysmem::SingleBufferSettings& buffer_settings);
+      const fuchsia::sysmem2::SingleBufferSettings& buffer_settings);
 
   // Callbacks for VmoBufferWriterQueue.
   void ProcessOutputPacket(const DecoderBuffer* buffer,

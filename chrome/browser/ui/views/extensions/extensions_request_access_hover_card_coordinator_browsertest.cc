@@ -47,8 +47,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessHoverCardCoordinatorBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/1390952): Disabled because we are showing a tooltip instead of
-// hover card. Remove once kExtensionsMenuAccessControlWithPermittedSites is
+// TODO(crbug.com/40879945): Disabled because we are showing a tooltip instead
+// of hover card. Remove once kExtensionsMenuAccessControlWithPermittedSites is
 // rolled out. We are keeping it for now since we may bring the hover card back.
 IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessHoverCardCoordinatorBrowserTest,
                        DISABLED_InvokeUi_HoverCardVisibleOnHover) {
@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessHoverCardCoordinatorBrowserTest,
   ShowUi("");
   EXPECT_TRUE(hover_card_coordinator()->IsShowing());
 
-  ui::MouseEvent stop_hover_event(ui::ET_MOUSE_EXITED, gfx::Point(),
+  ui::MouseEvent stop_hover_event(ui::EventType::kMouseExited, gfx::Point(),
                                   gfx::Point(), base::TimeTicks(), ui::EF_NONE,
                                   0);
   request_access_button()->OnMouseExited(stop_hover_event);

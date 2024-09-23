@@ -8,14 +8,15 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -44,7 +45,7 @@ class UserDataAuthClient;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     : public AuthSessionStorage {
  public:
-  AuthSessionStorageImpl(
+  explicit AuthSessionStorageImpl(
       UserDataAuthClient* user_data_auth,
       const base::Clock* clock = base::DefaultClock::GetInstance());
   ~AuthSessionStorageImpl() override;
@@ -57,15 +58,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
       const AuthProofToken& token) override;
   void BorrowAsync(const base::Location& location,
                    const AuthProofToken& token,
-                   BorrowCallback callback) override;
+                   BorrowContextCallback callback) override;
   const UserContext* Peek(const AuthProofToken& token) override;
   void Return(const AuthProofToken& token,
               std::unique_ptr<UserContext> context) override;
-  void Withdraw(const AuthProofToken& token, BorrowCallback callback) override;
+  void Withdraw(const AuthProofToken& token,
+                BorrowContextCallback callback) override;
   void Invalidate(const AuthProofToken& token,
                   std::optional<InvalidationCallback> on_invalidated) override;
   std::unique_ptr<ScopedSessionRefresher> KeepAlive(
       const AuthProofToken& token) override;
+
+  bool CheckHasKeepAliveForTesting(const AuthProofToken& token) const override;
 
  private:
   friend class ScopedSessionRefresherImpl;
@@ -91,8 +95,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     bool invalidate_on_return = false;
 
     std::queue<InvalidationCallback> invalidation_queue;
-    std::optional<BorrowCallback> withdraw_callback;
-    std::queue<std::pair<base::Location, BorrowCallback>> borrow_queue;
+    std::optional<BorrowContextCallback> withdraw_callback;
+    std::queue<std::pair<base::Location, BorrowContextCallback>> borrow_queue;
 
     // Timer to perform next action (extending or invalidating session).
     std::unique_ptr<base::OneShotTimer> next_action_timer_;

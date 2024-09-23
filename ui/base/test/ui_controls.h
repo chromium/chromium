@@ -87,7 +87,7 @@ enum AcceleratorState {
 };
 
 // Not supported on win.
-// TODO(crbug.com/1414800): Support this on win.
+// TODO(crbug.com/40256300): Support this on win.
 #if !BUILDFLAG(IS_WIN)
 // Sends a key press and/or release message with/without modifier keys.
 // `key_event_types` is a bitmask of KeyEventType constants that indicates what

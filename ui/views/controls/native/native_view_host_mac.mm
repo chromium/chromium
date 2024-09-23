@@ -122,7 +122,7 @@ void NativeViewHostMac::AttachNativeView() {
   NSWindow* ns_window = [native_view_ window];
   Widget* widget = Widget::GetWidgetForNativeView(host_->native_view());
 
-  // TODO(https://crbug.com/933679): This is lifted out the ViewsHostableAttach
+  // TODO(crbug.com/41442285): This is lifted out the ViewsHostableAttach
   // call below because of crashes being observed in the field.
   NSView* superview =
       window_host->native_widget_mac()->GetNativeView().GetNativeNSView();
@@ -222,11 +222,6 @@ bool NativeViewHostMac::SetCornerRadii(
   return true;
 }
 
-bool NativeViewHostMac::SetCustomMask(std::unique_ptr<ui::LayerOwner> mask) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void NativeViewHostMac::SetHitTestTopInset(int top_inset) {
   NOTIMPLEMENTED();
 }
@@ -254,7 +249,7 @@ void NativeViewHostMac::ShowWidget(int x,
                                    int h,
                                    int native_w,
                                    int native_h) {
-  // TODO(https://crbug.com/415024): Implement host_->fast_resize().
+  // TODO(crbug.com/41132564): Implement host_->fast_resize().
 
   if (native_view_hostable_) {
     native_view_hostable_->ViewsHostableSetBounds(gfx::Rect(x, y, w, h));
@@ -341,6 +336,10 @@ gfx::NativeViewAccessible NativeViewHostMac::GetParentAccessible() {
   return native_view_hostable_
              ? native_view_hostable_->ViewsHostableGetParentAccessible()
              : nullptr;
+}
+
+ui::Layer* NativeViewHostMac::GetUILayer() {
+  return host_->layer();
 }
 
 // static

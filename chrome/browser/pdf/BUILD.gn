@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -13,8 +14,6 @@ source_set("pdf") {
     "chrome_pdf_stream_delegate.h",
     "pdf_extension_util.cc",
     "pdf_extension_util.h",
-    "pdf_frame_util.cc",
-    "pdf_frame_util.h",
     "pdf_viewer_stream_manager.cc",
     "pdf_viewer_stream_manager.h",
   ]
@@ -27,9 +26,10 @@ source_set("pdf") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/pdf:resources",
     "//chrome/common",
+    "//components/pdf/browser",
     "//components/pdf/browser:interceptors",
+    "//components/pdf/common:util",
     "//components/prefs",
-    "//components/services/screen_ai/buildflags",
     "//components/zoom",
     "//content/public/browser",
     "//extensions/browser",
@@ -57,6 +57,24 @@ source_set("pdf_pref_names") {
   ]
 }
 
+if (is_chromeos_ash) {
+  source_set("pdf_service") {
+    sources = [
+      "pdf_service.cc",
+      "pdf_service.h",
+    ]
+    public_deps = [
+      "//chrome/services/pdf/public/mojom",
+      "//mojo/public/cpp/bindings",
+    ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//content/public/browser",
+    ]
+  }
+}
+
 source_set("pdf_extension_test_utils") {
   testonly = true
   sources = [
@@ -67,7 +85,7 @@ source_set("pdf_extension_test_utils") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
-    "//chrome/common",
+    "//components/pdf/common:util",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions/browser",

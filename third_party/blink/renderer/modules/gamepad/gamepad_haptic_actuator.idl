@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/gamepad/extensions.html#gamepadhapticactuatortype-enum
+// https://www.w3.org/TR/gamepad/#gamepadhapticeffecttype-enum
 enum GamepadHapticActuatorType {
     "vibration",
     "dual-rumble"
@@ -20,13 +20,12 @@ enum GamepadHapticsResult {
     "not-supported"
 };
 
-// Gamepad vibration is proposed as an extension to the Gamepad API.
-// https://github.com/w3c/gamepad/pull/68
+// https://www.w3.org/TR/gamepad/#gamepadhapticactuator-interface
 [
     Exposed=Window
 ] interface GamepadHapticActuator {
-    readonly attribute GamepadHapticActuatorType type;
-    [RuntimeEnabled=WGIGamepadTriggerRumble] boolean canPlay(GamepadHapticEffectType type);
+    [SameObject] readonly attribute FrozenArray<GamepadHapticEffectType> effects;
+    [MeasureAs=GamepadHapticActuatorType] readonly attribute GamepadHapticActuatorType type;
     [CallWith=ScriptState] Promise<GamepadHapticsResult> playEffect(
         GamepadHapticEffectType type,
         GamepadEffectParameters params);

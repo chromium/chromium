@@ -359,10 +359,15 @@ struct AccessibilityFocusInfo {
 };
 
 struct AccessibilityViewportInfo {
+  AccessibilityViewportInfo();
+  AccessibilityViewportInfo(const AccessibilityViewportInfo& other);
+  ~AccessibilityViewportInfo();
+
   double zoom = 0.0;
   double scale = 0.0;
   gfx::Point scroll;
   gfx::Point offset;
+  uint32_t orientation = 0;
   uint32_t selection_start_page_index = 0;
   uint32_t selection_start_char_index = 0;
   uint32_t selection_end_page_index = 0;

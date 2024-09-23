@@ -5,9 +5,6 @@
 // This file ensures that these header files don't include Windows.h and can
 // compile without including Windows.h. This helps to improve compile times.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_tls.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/spinning_mutex.h"
 #include "base/atomicops.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
@@ -19,18 +16,22 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
+#include "partition_alloc/partition_alloc-inl.h"
+#include "partition_alloc/partition_tls.h"
+#include "partition_alloc/spinning_mutex.h"
 
 #ifdef _WINDOWS_
 #error Windows.h was included inappropriately.
 #endif
 
+// clang-format off
 // Make sure windows.h can be included after windows_types.h
 #include "base/win/windows_types.h"
+// clang-format on
 
-// windows.h must be included before objidl.h
-#include <windows.h>  // NOLINT(build/include_order)
+#include <windows.h>
 
-#include <objidl.h>  // NOLINT(build/include_order)
+#include <objidl.h>
 
 // Check that type sizes match.
 static_assert(sizeof(CHROME_CONDITION_VARIABLE) == sizeof(CONDITION_VARIABLE),

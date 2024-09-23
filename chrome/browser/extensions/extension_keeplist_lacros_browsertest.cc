@@ -91,6 +91,7 @@ class ExtensionAppsAppServiceBlocklistTest : public ExtensionBrowserTest {
  private:
   // ExtensionBrowserTest:
   void TearDownOnMainThread() override {
+    test_extension_ = nullptr;
     CloseAllAppWindows();
     ExtensionBrowserTest::TearDownOnMainThread();
   }
@@ -129,10 +130,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsAppServiceBlocklistTest,
   // Install the testing chrome app in Lacros.
   InstallTestChromeApp();
 
-  // TODO(crbug/1459375): Install the testing chrome app in Ash and make sure
-  // it is not published to App Service in Ash. Since we don't have a convenient
-  // way to install an extension app in Ash from Lacros browser test, we will
-  // defer that until crbug/1459375 is fixed.
+  // TODO(crbug.com/40274283): Install the testing chrome app in Ash and make
+  // sure it is not published to App Service in Ash. Since we don't have a
+  // convenient way to install an extension app in Ash from Lacros browser test,
+  // we will defer that until crbug/1459375 is fixed.
 
   EXPECT_TRUE(ExtensionAppRunsInBothOSAndStandaloneBrowser(test_app_id()));
   EXPECT_FALSE(

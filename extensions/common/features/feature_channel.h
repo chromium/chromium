@@ -32,6 +32,8 @@ class ScopedCurrentChannel {
 
   ~ScopedCurrentChannel();
 
+  const version_info::Channel& channel() { return channel_; }
+
  private:
   const version_info::Channel channel_;
   const version_info::Channel original_overridden_channel_;

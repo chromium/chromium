@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">Survei</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/dtk</translation>
 <translation id="2353636109065292463">Memeriksa koneksi internet Anda</translation>
+<translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2388990488038464401">Panggil nomor ini dari ponsel Anda?</translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
 <translation id="24452542372838207">Luaskan notifikasi</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">BARU</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2701330563083355633">Dibagikan dari <ph name="DEVICE_NAME" /></translation>
-<translation id="271033894570825754">Baru</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{1 tahun yang lalu}other{# tahun yang lalu}}</translation>
 <translation id="2878511608894704031">Hapus Semua</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{dalam 1 h}other{dalam # h}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840">Sistem <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Panah Kiri</translation>
+<translation id="5633029987065897167">Kosong</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 mnt}other{# mnt}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktif hari ini}=1{Aktif 1 hari yang lalu}other{Aktif # hari yang lalu}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 hari dan }other{# hari dan }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">Konten RTF</translation>
 <translation id="6539092367496845964">Terjadi error. Coba lagi nanti.</translation>
 <translation id="654149438358937226">Blokir semua notifikasi</translation>
-<translation id="6612467943526193239">Untuk keluar dari kalibrasi, tekan Esc.</translation>
 <translation id="6620110761915583480">Simpan File</translation>
 <translation id="6699343763173986273">Lacak Media Berikutnya</translation>
 <translation id="6808150112686056157">Hentikan Media</translation>

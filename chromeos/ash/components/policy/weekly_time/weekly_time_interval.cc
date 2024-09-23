@@ -15,32 +15,12 @@ namespace policy {
 const char WeeklyTimeInterval::kStart[] = "start";
 const char WeeklyTimeInterval::kEnd[] = "end";
 
-WeeklyTimeInterval::WeeklyTimeInterval(const WeeklyTime& start,
-                                       const WeeklyTime& end)
-    : start_(start), end_(end) {
-  DCHECK_GT(start.GetDurationTo(end), base::TimeDelta());
-  DCHECK(start.timezone_offset() == end.timezone_offset());
-}
-
-WeeklyTimeInterval::WeeklyTimeInterval(const WeeklyTimeInterval& rhs) = default;
-
-WeeklyTimeInterval& WeeklyTimeInterval::operator=(
-    const WeeklyTimeInterval& rhs) = default;
-
-base::Value WeeklyTimeInterval::ToValue() const {
-  base::Value interval(base::Value::Type::DICT);
-  interval.GetDict().Set(kStart, start_.ToValue());
-  interval.GetDict().Set(kEnd, end_.ToValue());
-  return interval;
-}
-
-bool WeeklyTimeInterval::Contains(const WeeklyTime& w) const {
-  DCHECK_EQ(start_.timezone_offset().has_value(),
-            w.timezone_offset().has_value());
-  if (w.GetDurationTo(end_).is_zero())
-    return false;
-  base::TimeDelta interval_duration = start_.GetDurationTo(end_);
-  return start_.GetDurationTo(w) + w.GetDurationTo(end_) == interval_duration;
+// static
+bool WeeklyTimeInterval::IntervalsOverlap(
+    const WeeklyTimeInterval& interval_a,
+    const WeeklyTimeInterval& interval_b) {
+  return interval_a.Contains(interval_b.start()) ||
+         interval_b.Contains(interval_a.start());
 }
 
 // static
@@ -93,6 +73,35 @@ std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromDict(
 
   return std::make_unique<WeeklyTimeInterval>(std::move(*start),
                                               std::move(*end));
+}
+
+WeeklyTimeInterval::WeeklyTimeInterval(const WeeklyTime& start,
+                                       const WeeklyTime& end)
+    : start_(start), end_(end) {
+  DCHECK_GT(start.GetDurationTo(end), base::TimeDelta());
+  DCHECK(start.timezone_offset() == end.timezone_offset());
+}
+
+WeeklyTimeInterval::WeeklyTimeInterval(const WeeklyTimeInterval& rhs) = default;
+
+WeeklyTimeInterval& WeeklyTimeInterval::operator=(
+    const WeeklyTimeInterval& rhs) = default;
+
+base::Value WeeklyTimeInterval::ToValue() const {
+  base::Value interval(base::Value::Type::DICT);
+  interval.GetDict().Set(kStart, start_.ToValue());
+  interval.GetDict().Set(kEnd, end_.ToValue());
+  return interval;
+}
+
+bool WeeklyTimeInterval::Contains(const WeeklyTime& w) const {
+  DCHECK_EQ(start_.timezone_offset().has_value(),
+            w.timezone_offset().has_value());
+  if (w.GetDurationTo(end_).is_zero()) {
+    return false;
+  }
+  base::TimeDelta interval_duration = start_.GetDurationTo(end_);
+  return start_.GetDurationTo(w) + w.GetDurationTo(end_) == interval_duration;
 }
 
 }  // namespace policy

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Preview and base dimensions. -->
+    <dimen name="quick_action_search_widget_width">300dp</dimen>
+    <dimen name="quick_action_search_widget_background_radius">20dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_background_radius">16dp</dimen>
+
+    <!-- Specify the reference widths of all widgets, guaranteeing that all of the
+    buttons will be visible and not truncated -->
+    <dimen name="quick_action_search_widget_medium_width">264dp</dimen>
+    <dimen name="quick_action_search_widget_small_width">312dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_width">312dp</dimen>
+
+    <!-- Extra Small Widget Dimensions -->
+    <dimen name="quick_action_search_widget_xsmall_height">48dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_margin">8dp</dimen>
+
+    <!-- Small Widget Dimensions -->
+    <!-- True margin is a combination of quick_action_search_widget_small_margin
+         and quick_action_search_widget_small_button_horizontal_margin -->
+    <dimen name="quick_action_search_widget_small_height">72dp</dimen>
+    <dimen name="quick_action_search_widget_small_margin">8dp</dimen>
+
+    <!-- Medium Widget Dimensions -->
+    <dimen name="quick_action_search_widget_medium_horizontal_margin">15dp</dimen>
+    <dimen name="quick_action_search_widget_medium_row_vertical_margin">15dp</dimen>
+    <dimen name="quick_action_search_widget_medium_height">155dp</dimen>
+
+    <!-- Extra Small Button Dimensions -->
+    <dimen name="quick_action_search_widget_xsmall_button_icon_padding">6dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_button_height">28dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_button_width">28dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_button_horizontal_margin">5dp</dimen>
+
+    <!-- Small Button Dimensions -->
+    <dimen name="quick_action_search_widget_small_button_radius">21dp</dimen>
+    <dimen name="quick_action_search_widget_small_button_icon_padding">12dp</dimen>
+    <dimen name="quick_action_search_widget_small_button_height">41dp</dimen>
+    <dimen name="quick_action_search_widget_small_button_width">41dp</dimen>
+    <dimen name="quick_action_search_widget_small_button_horizontal_margin">3dp</dimen>
+
+    <!-- Medium Button Dimensions -->
+    <dimen name="quick_action_search_widget_medium_button_icon_padding">17dp</dimen>
+    <dimen name="quick_action_search_widget_medium_button_radius">27dp</dimen>
+    <dimen name="quick_action_search_widget_medium_button_height">54dp</dimen>
+    <dimen name="quick_action_search_widget_medium_button_width">54dp</dimen>
+    <dimen name="quick_action_search_widget_medium_button_horizontal_margin">3dp</dimen>
+
+    <!-- Medium Search Bar Dimensions -->
+    <dimen name="quick_action_search_widget_medium_search_bar_corner_radius">25dp</dimen>
+    <dimen name="quick_action_search_widget_medium_search_bar_height">50dp</dimen>
+    <dimen name="quick_action_search_widget_medium_search_bar_icon_size">28dp</dimen>
+    <dimen name="quick_action_search_widget_medium_search_bar_icon_margin">11dp</dimen>
+    <dimen name="quick_action_search_widget_medium_search_bar_icon_margin_text">7dp</dimen>
+
+    <!-- Small Search Bar Dimensions -->
+    <dimen name="quick_action_search_widget_small_search_bar_height">39dp</dimen>
+    <dimen name="quick_action_search_widget_small_search_bar_corner_radius">20dp</dimen>
+    <dimen name="quick_action_search_widget_small_search_bar_icon_size">20dp</dimen>
+    <dimen name="quick_action_search_widget_small_search_bar_icon_margin">8dp</dimen>
+    <dimen name="quick_action_search_widget_small_search_bar_icon_margin_text">5dp</dimen>
+
+    <!-- Extra Small Search Bar Dimensions -->
+    <dimen name="quick_action_search_widget_xsmall_search_bar_horizontal_margin">3dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_height">32dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_corner_radius">16dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_icon_size">16dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_icon_margin">8dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_icon_margin_text">5dp</dimen>
+    <dimen name="quick_action_search_widget_xsmall_search_bar_text_size">11sp</dimen>
+
+    <!-- Dino Widget Dimensions -->
+    <dimen name="quick_action_search_widget_dino_min_size">110dp</dimen>
+    <dimen name="quick_action_search_widget_dino_size">136dp</dimen>
+    <dimen name="quick_action_search_widget_dino_text_size">13.5dp</dimen>
+    <dimen name="quick_action_search_widget_dino_corner_radius">20dp</dimen>
+    <dimen name="quick_action_search_widget_dino_padding_start">12dp</dimen>
+    <dimen name="quick_action_search_widget_dino_padding_vertical">18dp</dimen>
+</resources>

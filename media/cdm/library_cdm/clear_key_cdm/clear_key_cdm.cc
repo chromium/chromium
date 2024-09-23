@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cdm/library_cdm/clear_key_cdm/clear_key_cdm.h"
 
 #include <algorithm>
@@ -10,6 +15,8 @@
 #include <sstream>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -70,7 +77,11 @@ static scoped_refptr<media::DecoderBuffer> CopyDecoderBufferFrom(
 
   // TODO(xhwang): Get rid of this copy.
   scoped_refptr<media::DecoderBuffer> output_buffer =
-      media::DecoderBuffer::CopyFrom(input_buffer.data, input_buffer.data_size);
+      media::DecoderBuffer::CopyFrom(
+          // SAFETY: `data` and `data_size` from `input_buffer` must be
+          // consistent.
+          UNSAFE_BUFFERS(
+              base::span(input_buffer.data, input_buffer.data_size)));
   output_buffer->set_timestamp(base::Microseconds(input_buffer.timestamp));
 
   if (input_buffer.encryption_scheme == cdm::EncryptionScheme::kUnencrypted)
@@ -554,10 +565,10 @@ cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
 
   DCHECK(buffer->data());
   decrypted_block->SetDecryptedBuffer(
-      cdm_host_proxy_->Allocate(buffer->data_size()));
+      cdm_host_proxy_->Allocate(buffer->size()));
   memcpy(reinterpret_cast<void*>(decrypted_block->DecryptedBuffer()->Data()),
-         buffer->data(), buffer->data_size());
-  decrypted_block->DecryptedBuffer()->SetSize(buffer->data_size());
+         buffer->data(), buffer->size());
+  decrypted_block->DecryptedBuffer()->SetSize(buffer->size());
   decrypted_block->SetTimestamp(buffer->timestamp().InMicroseconds());
 
   return cdm::kSuccess;
@@ -619,7 +630,7 @@ void ClearKeyCdm::ResetDecoder(cdm::StreamType decoder_type) {
       audio_decoder_->Reset();
       break;
     default:
-      NOTREACHED() << "ResetDecoder(): invalid cdm::StreamType";
+      NOTREACHED_IN_MIGRATION() << "ResetDecoder(): invalid cdm::StreamType";
   }
 #endif  // CLEAR_KEY_CDM_USE_FFMPEG_DECODER
 }
@@ -636,7 +647,8 @@ void ClearKeyCdm::DeinitializeDecoder(cdm::StreamType decoder_type) {
 #endif
       break;
     default:
-      NOTREACHED() << "DeinitializeDecoder(): invalid cdm::StreamType";
+      NOTREACHED_IN_MIGRATION()
+          << "DeinitializeDecoder(): invalid cdm::StreamType";
   }
 }
 
@@ -687,7 +699,7 @@ cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
   int64_t timestamp = 0;
   if (!buffer->end_of_stream()) {
     data = buffer->data();
-    size = buffer->data_size();
+    size = buffer->size();
     timestamp = encrypted_buffer.timestamp;
   }
 
@@ -759,7 +771,8 @@ void ClearKeyCdm::OnPlatformChallengeResponse(
   DVLOG(1) << __func__;
 
   if (!is_running_platform_verification_test_) {
-    NOTREACHED() << "OnPlatformChallengeResponse() called unexpectedly.";
+    NOTREACHED_IN_MIGRATION()
+        << "OnPlatformChallengeResponse() called unexpectedly.";
     return;
   }
 
@@ -779,7 +792,8 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
            << ", output_protection_mask:" << output_protection_mask;
 
   if (!is_running_output_protection_test_) {
-    NOTREACHED() << "OnQueryOutputProtectionStatus() called unexpectedly.";
+    NOTREACHED_IN_MIGRATION()
+        << "OnQueryOutputProtectionStatus() called unexpectedly.";
     return;
   }
 
@@ -820,7 +834,7 @@ void ClearKeyCdm::OnStorageId(uint32_t version,
                               const uint8_t* storage_id,
                               uint32_t storage_id_size) {
   if (!is_running_storage_id_test_) {
-    NOTREACHED() << "OnStorageId() called unexpectedly.";
+    NOTREACHED_IN_MIGRATION() << "OnStorageId() called unexpectedly.";
     return;
   }
 

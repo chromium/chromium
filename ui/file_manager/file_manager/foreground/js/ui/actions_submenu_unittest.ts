@@ -6,12 +6,12 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
-import {ActionsModel} from '../actions_model.js';
+import type {ActionsModel} from '../actions_model.js';
 import {MockActionModel, MockActionsModel} from '../mock_actions_model.js';
 
 import {ActionsSubmenu} from './actions_submenu.js';
 import {Menu} from './menu.js';
-import {MenuItem} from './menu_item.js';
+import type {MenuItem} from './menu_item.js';
 
 let menu: Menu;
 let submenu: ActionsSubmenu;

@@ -11,6 +11,7 @@ import contextlib
 import json
 import logging
 import os
+import os.path
 import shutil
 import subprocess
 import sys
@@ -47,7 +48,7 @@ _DEFAULT_CTS_GCS_PATH_FILE = os.path.join(os.path.dirname(__file__),
                                           'cts_config',
                                           'webview_cts_gcs_path.json')
 _DEFAULT_CTS_ARCHIVE_DIR = os.path.join(os.path.dirname(__file__),
-                                        'cts_archive')
+                                        'cts_archive', 'cipd')
 _DEFAULT_TRADEFED_AAPT_PATH = ANDROID_SDK_TOOLS
 _DEFAULT_TRADEFED_ADB_PATH = os.path.join(ANDROID_SDK_ROOT, 'platform-tools')
 
@@ -56,9 +57,6 @@ _CTS_WEBKIT_PACKAGES = ["com.android.cts.webkit", "android.webkit.cts"]
 _TEST_APK_AS_INSTANT_ARG = '--test-apk-as-instant'
 
 SDK_PLATFORM_DICT = {
-    version_codes.MARSHMALLOW: 'M',
-    version_codes.NOUGAT: 'N',
-    version_codes.NOUGAT_MR1: 'N',
     version_codes.OREO: 'O',
     version_codes.OREO_MR1: 'O',
     version_codes.PIE: 'P',
@@ -68,6 +66,7 @@ SDK_PLATFORM_DICT = {
     version_codes.S_V2: 'S',
     version_codes.TIRAMISU: 'T',
     version_codes.UPSIDE_DOWN_CAKE: 'U',
+    # TODO: b/353915320 - Update cts-release arg's choices once 'V' is added.
 }
 
 # The test apks are apparently compatible across all architectures, the
@@ -502,9 +501,8 @@ def main():
       '--cts-release',
       # TODO(aluo): --platform is deprecated (the meaning is unclear).
       '--platform',
-      # TODO: crbug.com/1454486 - Remove 'U' once added to SDK_PLATFORM_DICT,
-      # added Android U CTS to CIPD and configured webview_cts_gcs_path.json.
-      choices=sorted(set(SDK_PLATFORM_DICT.values()) | {'U'}),
+      # TODO: b/353915320 - Remove 'V' once added to SDK_PLATFORM_DICT.
+      choices=sorted(set(SDK_PLATFORM_DICT.values()) | {'V'}),
       required=False,
       default=None,
       help='Which CTS release to use for the run. This should generally be <= '

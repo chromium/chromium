@@ -4,14 +4,13 @@
 
 #import "ios/web/webui/mojo_facade.h"
 
+#import <Foundation/Foundation.h>
 #import <stdint.h>
 
 #import <limits>
 #import <tuple>
 #import <utility>
 #import <vector>
-
-#import <Foundation/Foundation.h>
 
 #import "base/base64.h"
 #import "base/functional/bind.h"
@@ -189,6 +188,43 @@ base::Value MojoFacade::HandleMojoHandleReadMessage(base::Value::Dict args) {
   return base::Value(std::move(result));
 }
 
+void MojoFacade::ArmOnNotifyWatcher(int watch_id) {
+  auto watcher_it = watchers_.find(watch_id);
+  if (watcher_it == watchers_.end()) {
+    return;
+  }
+  watcher_it->second->ArmOrNotify();
+}
+
+void MojoFacade::OnWatcherCallback(int callback_id,
+                                   int watch_id,
+                                   MojoResult result) {
+  web::WebFrame* main_frame =
+      web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
+  if (!main_frame) {
+    return;
+  }
+
+  NSString* script =
+      [NSString stringWithFormat:
+                    @"Mojo.internal.watchCallbacksHolder.callCallback(%d, %d)",
+                    callback_id, result];
+  auto callback = base::BindOnce(
+      [](base::WeakPtr<MojoFacade> facade, int watch_id, const base::Value*,
+         NSError*) {
+        if (facade) {
+          facade->ArmOnNotifyWatcher(watch_id);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), watch_id);
+  // The watcher will be rearmed in `callback` after `script` is executed.
+  // `script` calls JS watcher callback which is expected to synchronously read
+  // data from the handle (via readMessage). That way, the behavior matches C++
+  // mojo SimpleWatcher with ArmingPolicy::AUTOMATIC.
+  main_frame->ExecuteJavaScript(base::SysNSStringToUTF16(script),
+                                std::move(callback));
+}
+
 base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
   std::optional<int> pipe_id = args.FindInt("handle");
   CHECK(pipe_id.has_value());
@@ -196,27 +232,21 @@ base::Value MojoFacade::HandleMojoHandleWatch(base::Value::Dict args) {
   CHECK(signals.has_value());
   std::optional<int> callback_id = args.FindInt("callbackId");
   CHECK(callback_id.has_value());
+  const int watch_id = ++last_watch_id_;
 
-  mojo::SimpleWatcher::ReadyCallback callback = base::BindRepeating(
-      ^(int inner_callback_id, MojoResult result) {
-        NSString* script = [NSString
-            stringWithFormat:
-                @"Mojo.internal.watchCallbacksHolder.callCallback(%d, %d)",
-                inner_callback_id, result];
-        web::WebFrame* main_frame =
-            web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
-        if (main_frame) {
-          main_frame->ExecuteJavaScript(base::SysNSStringToUTF16(script));
-        }
-      },
-      *callback_id);
+  // Note: base::Unretained() is safe because `this` owns all the watchers.
+  auto callback =
+      base::BindRepeating(&MojoFacade::OnWatcherCallback,
+                          base::Unretained(this), *callback_id, watch_id);
+
   auto watcher = std::make_unique<mojo::SimpleWatcher>(
-      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC);
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
 
   mojo::MessagePipeHandle pipe = GetPipeFromId(*pipe_id);
   watcher->Watch(pipe, *signals, callback);
-  watchers_.insert(std::make_pair(++last_watch_id_, std::move(watcher)));
-  return base::Value(last_watch_id_);
+  watcher->ArmOrNotify();
+  watchers_.insert(std::make_pair(watch_id, std::move(watcher)));
+  return base::Value(watch_id);
 }
 
 void MojoFacade::HandleMojoWatcherCancel(base::Value::Dict args) {

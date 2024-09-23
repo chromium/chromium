@@ -23,7 +23,7 @@ class CONTENT_EXPORT CommitDeferringCondition {
 
     // Other navigations including same-document navigations and restores from
     // BackForwardCache.
-    // TODO(https://crbug.com/1226442): Split this into kBackForwardCache and
+    // TODO(crbug.com/40188852): Split this into kBackForwardCache and
     // kNewDocumentLoad.
     kOther,
   };
@@ -35,6 +35,8 @@ class CONTENT_EXPORT CommitDeferringCondition {
     // Returned when the condition needs to asynchronously wait before allowing
     // a commit. If this is returned, the condition will invoke the passed in
     // |resume| closure when it is ready.
+    // Note: see comment in NavigationThrottle::ThrottleAction::DEFER about
+    // avoiding deferring if possible due to performance degradations.
     kDefer,
     // Returned when it is known that the navigation has been cancelled and we
     // should not proceed to commit it to avoid user-after-free.

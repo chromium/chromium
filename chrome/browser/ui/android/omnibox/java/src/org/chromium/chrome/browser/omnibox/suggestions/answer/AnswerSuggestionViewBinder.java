@@ -41,6 +41,8 @@ public class AnswerSuggestionViewBinder {
         } else if (AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES == propertyKey) {
             TextView tv = view.findViewById(R.id.omnibox_answer_line_2);
             tv.setMaxLines(model.get(AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES));
+        } else if (AnswerSuggestionViewProperties.RIGHT_PADDING == propertyKey) {
+            view.setPadding(0, 0, model.get(AnswerSuggestionViewProperties.RIGHT_PADDING), 0);
         }
     }
 }

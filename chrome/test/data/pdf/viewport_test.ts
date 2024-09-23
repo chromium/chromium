@@ -62,7 +62,7 @@ const tests = [
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 43, 1);
 
-    chrome.test.assertEq(isMac ? 16 : 0, viewport.overlayScrollbarWidth);
+    chrome.test.assertEq(16, viewport.overlayScrollbarWidth);
     chrome.test.succeed();
   },
 
@@ -2112,7 +2112,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  // TODO(crbug.com/1430193): Currently, fit types 'FIT_TO_PAGE',
+  // TODO(crbug.com/40262954): Currently, fit types 'FIT_TO_PAGE',
   // 'FIT_TO_WIDTH', 'FIT_TO_HEIGHT', and 'FIT_TO_BOUNDING_BOX` do not correctly
   // navigate to a destination with the correct position and zoom level. Add
   // checks for position and zoom level for these fit types once fully

@@ -23,7 +23,7 @@ namespace {
 
 using testing::ElementsAre;
 
-// TODO(crbug.com/1379780): When we will add VirtualTestSuites of web tests for
+// TODO(crbug.com/40244488): When we will add VirtualTestSuites of web tests for
 // BackgroundResourceFetch feature, duplicated basic tests should be deleted
 // from BackgroundResourceFetchBrowserTest.
 class BackgroundResourceFetchBrowserTest : public ContentBrowserTest {

@@ -7,12 +7,15 @@
 #include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/preloading/prefetch/prefetch_service/prefetch_origin_decider.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
@@ -107,6 +110,17 @@ bool ChromePrefetchServiceDelegate::IsDomainInPrefetchAllowList(
                            google_util::ALLOW_NON_STANDARD_PORTS) ||
          IsYoutubeDomainUrl(referring_url, google_util::ALLOW_SUBDOMAIN,
                             google_util::ALLOW_NON_STANDARD_PORTS);
+}
+
+bool ChromePrefetchServiceDelegate::IsContaminationExempt(
+    const GURL& referring_url) {
+  // The default search engine has been chosen by the user and its cross-site
+  // navigations have a significant performance impact.
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  return template_url_service &&
+         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+             referring_url);
 }
 
 void ChromePrefetchServiceDelegate::OnPrefetchLikely(

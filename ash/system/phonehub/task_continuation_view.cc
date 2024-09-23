@@ -108,7 +108,8 @@ void TaskContinuationView::TaskChipsView::AddTaskChip(views::View* task_chip) {
 }
 
 // views::View:
-gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
+gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto chip_size = GetTaskContinuationChipSize();
   int width = chip_size.width() * kTaskContinuationChipsInRow +
               kTaskContinuationChipSpacing +
@@ -129,10 +130,6 @@ void TaskContinuationView::TaskChipsView::Layout(PassKey) {
     auto* button = task_chips_.view_at(i);
     button->SetBoundsRect(task_chips_.ideal_bounds(i));
   }
-}
-
-const char* TaskContinuationView::TaskChipsView::GetClassName() const {
-  return "TaskChipsView";
 }
 
 void TaskContinuationView::TaskChipsView::Reset() {
@@ -159,7 +156,7 @@ void TaskContinuationView::TaskChipsView::CalculateIdealBounds() {
   }
 }
 
-BEGIN_METADATA(TaskContinuationView, TaskChipsView, views::View)
+BEGIN_METADATA(TaskContinuationView, TaskChipsView)
 END_METADATA
 
 void TaskContinuationView::Update() {

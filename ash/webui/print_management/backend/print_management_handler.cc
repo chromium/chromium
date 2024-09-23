@@ -17,6 +17,9 @@ namespace ash::printing::printing_manager {
 
 namespace {
 
+constexpr char kRecordRequestDurationMetric[] =
+    "Printing.PrintManagement.GetPrintJobsRequestDuration";
+
 constexpr char kRecordUserActionMetric[] =
     "ChromeOS.PrintManagement.PrinterSettingsLaunchSource";
 
@@ -37,6 +40,11 @@ void PrintManagementHandler::LaunchPrinterSettings(
 
   // Record launch triggered by pressing button in header or empty state.
   base::UmaHistogramEnumeration(kRecordUserActionMetric, source);
+}
+
+void PrintManagementHandler::RecordGetPrintJobsRequestDuration(
+    uint32_t duration) {
+  base::UmaHistogramCounts10000(kRecordRequestDurationMetric, duration);
 }
 
 void PrintManagementHandler::BindInterface(

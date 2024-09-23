@@ -40,18 +40,6 @@ static float PointsToPixels(float points) {
 }
 
 // static
-const FontSelectionValue& LayoutThemeFontProvider::SystemFontStyle(
-    CSSValueID system_font_id) {
-  return kNormalSlopeValue;
-}
-
-// static
-const FontSelectionValue& LayoutThemeFontProvider::SystemFontWeight(
-    CSSValueID system_font_id) {
-  return kNormalWeightValue;
-}
-
-// static
 const AtomicString& LayoutThemeFontProvider::SystemFontFamily(
     CSSValueID system_font_id) {
   switch (system_font_id) {

@@ -64,8 +64,9 @@ before and after the event is dispatched to the target.
 In the case of WindowEventDispatcher, it has a pre-dispatch phase for different
 types of events.
 
-- For mouse move events, it may synthesize and dispatch a ET_MOUSE_EXITED event
-  to notify that mouse exits from previous UI control.
+- For mouse move events, it may synthesize and dispatch a
+  EventType::kMouseExited event to notify that mouse exits from previous UI
+  control.
 - For key events, it
   [forwards](https://source.chromium.org/chromium/chromium/src/+/main:ui/aura/window_event_dispatcher.cc;drc=d9fa208c0b5d3d454df1ff1cbc724b5fd708cf7a;l=1053)
   the key to ui::InputMethod::DispatchKeyEvent() and the event will be handled

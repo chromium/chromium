@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/socket/client_socket_pool_manager.h"
 
 #include <memory>
@@ -10,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
@@ -70,7 +74,7 @@ static_assert(std::size(g_max_sockets_per_proxy_chain) ==
                   HttpNetworkSession::NUM_SOCKET_POOL_TYPES,
               "max sockets per proxy chain length mismatch");
 
-// TODO(https://crbug.com/921369) In order to resolve longstanding issues
+// TODO(crbug.com/40609237) In order to resolve longstanding issues
 // related to pooling distinguishable sockets together, get rid of SocketParams
 // entirely.
 scoped_refptr<ClientSocketPool::SocketParams> CreateSocketParams(
@@ -255,7 +259,7 @@ int InitSocketHandleForWebSocketRequest(
   DCHECK(socket_handle);
 
   // QUIC proxies are currently not supported through this method.
-  DCHECK(!proxy_info.is_quic());
+  DCHECK(proxy_info.is_direct() || !proxy_info.proxy_chain().Last().is_quic());
 
   // Expect websocket schemes (ws and wss) to be converted to the http(s)
   // equivalent.
@@ -284,9 +288,6 @@ int PreconnectSocketsForHttpRequest(
     const NetLogWithSource& net_log,
     int num_preconnect_streams,
     CompletionOnceCallback callback) {
-  // QUIC proxies are currently not supported through this method.
-  DCHECK(!proxy_info.is_quic());
-
   // Expect websocket schemes (ws and wss) to be converted to the http(s)
   // equivalent.
   DCHECK(endpoint.scheme() == url::kHttpScheme ||

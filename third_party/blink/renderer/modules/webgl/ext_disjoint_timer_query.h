@@ -27,7 +27,7 @@ class EXTDisjointTimerQuery final : public WebGLExtension {
 
   WebGLTimerQueryEXT* createQueryEXT();
   void deleteQueryEXT(WebGLTimerQueryEXT*);
-  GLboolean isQueryEXT(WebGLTimerQueryEXT*);
+  bool isQueryEXT(WebGLTimerQueryEXT*);
   void beginQueryEXT(GLenum, WebGLTimerQueryEXT*);
   void endQueryEXT(GLenum);
   void queryCounterEXT(WebGLTimerQueryEXT*, GLenum);

@@ -12,8 +12,10 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
-#include "services/device/usb/jni_headers/ChromeUsbService_jni.h"
 #include "services/device/usb/usb_device_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "services/device/usb/jni_headers/ChromeUsbService_jni.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;

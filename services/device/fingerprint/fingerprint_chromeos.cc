@@ -36,7 +36,7 @@ device::mojom::BiometricType ToMojom(biod::BiometricType type) {
     case biod::BIOMETRIC_TYPE_FINGERPRINT:
       return device::mojom::BiometricType::FINGERPRINT;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return device::mojom::BiometricType::UNKNOWN;
   }
 }
@@ -59,7 +59,7 @@ device::mojom::ScanResult ToMojom(biod::ScanResult type) {
     case biod::SCAN_RESULT_NO_MATCH:
       return device::mojom::ScanResult::NO_MATCH;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return device::mojom::ScanResult::NO_MATCH;
   }
 }
@@ -83,7 +83,7 @@ device::mojom::FingerprintError ToMojom(biod::FingerprintError type) {
     case biod::ERROR_NO_TEMPLATES:
       return device::mojom::FingerprintError::NO_TEMPLATES;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return device::mojom::FingerprintError::UNKNOWN;
   }
 }
@@ -94,7 +94,7 @@ device::mojom::BiometricsManagerStatus ToMojom(
     case biod::BiometricsManagerStatus::INITIALIZED:
       return device::mojom::BiometricsManagerStatus::INITIALIZED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return device::mojom::BiometricsManagerStatus::UNKNOWN;
   }
 }
@@ -302,7 +302,7 @@ void FingerprintChromeOS::BiodAuthScanDoneReceived(
       break;
     default:
       LOG(ERROR) << "Unsupported fingerprint message received";
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 

@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.TestActivity;
 
@@ -69,15 +70,18 @@ public class DisplayUtilTest {
         assertEquals(
                 "Density 140 should be scaled to 187.6 and adjusted up to Density 200.",
                 DisplayMetrics.DENSITY_200,
-                DisplayUtil.getUiDensityForAutomotive(DisplayMetrics.DENSITY_140));
+                DisplayUtil.getUiDensityForAutomotive(
+                        ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_140));
         assertEquals(
                 "Density 160 should be scaled to 214.4 and adjusted up to Density 220.",
                 DisplayMetrics.DENSITY_220,
-                DisplayUtil.getUiDensityForAutomotive(DisplayMetrics.DENSITY_DEFAULT));
+                DisplayUtil.getUiDensityForAutomotive(
+                        ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_DEFAULT));
         assertEquals(
                 "Density 180 should be scaled to 241.2 and adjusted up to Density 260.",
                 DisplayMetrics.DENSITY_260,
-                DisplayUtil.getUiDensityForAutomotive(DisplayMetrics.DENSITY_180));
+                DisplayUtil.getUiDensityForAutomotive(
+                        ContextUtils.getApplicationContext(), DisplayMetrics.DENSITY_180));
     }
 
     @Test
@@ -91,13 +95,8 @@ public class DisplayUtilTest {
         displayMetrics.widthPixels = 100;
         displayMetrics.heightPixels = 100;
 
-        DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
-        assertEquals(
-                "The DisplayMetrics density should be scaled up by the "
-                        + "automotive scale-up factor.",
-                DisplayUtil.getUiScalingFactorForAutomotive(),
-                displayMetrics.density,
-                0.1f);
+        DisplayUtil.scaleUpDisplayMetricsForAutomotive(
+                ContextUtils.getApplicationContext(), displayMetrics);
         assertEquals(
                 "The DisplayMetrics densityDpi should be scaled up by the "
                         + "automotive scale-up factor.",

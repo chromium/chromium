@@ -155,7 +155,7 @@ String BiquadFilterNode::type() const {
     case BiquadProcessor::FilterType::kAllpass:
       return "allpass";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "lowpass";
 }
 

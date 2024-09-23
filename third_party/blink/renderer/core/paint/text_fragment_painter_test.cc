@@ -8,9 +8,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/layout_ng_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 using testing::ElementsAre;
 
@@ -34,7 +33,7 @@ TEST_P(TextFragmentPainterTest, TestTextStyle) {
   )HTML");
 
   LayoutObject& container = *GetLayoutObjectByElementId("container");
-  const auto& block_flow = To<LayoutNGBlockFlow>(container);
+  const auto& block_flow = To<LayoutBlockFlow>(container);
   InlineCursor cursor;
   cursor.MoveTo(*block_flow.FirstChild());
   const DisplayItemClient& text_fragment =
@@ -124,8 +123,8 @@ TEST_P(TextFragmentPainterTest, WheelEventListenerOnInlineElement) {
   )HTML");
 
   SetWheelEventListener("child");
-  HitTestData hit_test_data;
-  hit_test_data.wheel_event_rects = {gfx::Rect(0, 0, 150, 50)};
+  auto* hit_test_data = MakeGarbageCollected<HitTestData>();
+  hit_test_data->wheel_event_rects = {gfx::Rect(0, 0, 150, 50)};
   auto* parent = GetLayoutBoxByElementId("parent");
   EXPECT_THAT(
       ContentPaintChunks(),
@@ -134,7 +133,7 @@ TEST_P(TextFragmentPainterTest, WheelEventListenerOnInlineElement) {
                                PaintChunk::Id(parent->Layer()->Id(),
                                               DisplayItem::kLayerChunk),
                                parent->FirstFragment().ContentsProperties(),
-                               &hit_test_data, gfx::Rect(0, 0, 150, 100))));
+                               hit_test_data, gfx::Rect(0, 0, 150, 100))));
 }
 
 }  // namespace blink

@@ -10,6 +10,7 @@ component("cros_disks") {
   output_name = "ash_cros_disks"
   defines = [ "IS_ASH_DBUS_CROS_DISKS_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
@@ -29,6 +30,7 @@ source_set("unit_tests") {
   deps = [
     ":cros_disks",
     "//dbus",
+    "//testing/gmock",
     "//testing/gtest",
   ]
   sources = [ "cros_disks_client_unittest.cc" ]

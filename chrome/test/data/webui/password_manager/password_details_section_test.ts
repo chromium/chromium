@@ -4,16 +4,22 @@
 
 import 'chrome://password-manager/password_manager.js';
 
+// clang-format off
 import type {PasskeyDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement} from 'chrome://password-manager/password_manager.js';
-import {Page, PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
+
+// <if expr="_google_chrome">
+import {PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID} from 'chrome://password-manager/password_manager.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+// </if>
+// clang-format on
 
 suite('PasswordDetailsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
@@ -404,9 +410,12 @@ suite('PasswordDetailsSectionTest', function() {
         assertEquals(query, Router.getInstance().currentRoute.queryParameters);
       });
 
+  // <if expr="_google_chrome">
   test('Register password sharing IPH for password card', async function() {
-    loadTimeData.overrideValues({enableSendPasswords: true});
-    passwordManager.data.isOptedInAccountStorage = true;
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: false,
+      isSyncingPasswords: true,
+    };
 
     const group = createCredentialGroup({
       name: 'test.com',
@@ -435,8 +444,10 @@ suite('PasswordDetailsSectionTest', function() {
   test(
       'Password sharing IPH is not registered with passkey card present',
       async function() {
-        loadTimeData.overrideValues({enableSendPasswords: true});
-        passwordManager.data.isOptedInAccountStorage = true;
+        syncProxy.syncInfo = {
+          isEligibleForAccountStorage: false,
+          isSyncingPasswords: true,
+        };
 
         const group = createCredentialGroup({
           name: 'test.com',
@@ -461,10 +472,10 @@ suite('PasswordDetailsSectionTest', function() {
               );
             });
       });
+  // </if>
 
   test('should show button to move password', async function() {
-    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -496,8 +507,7 @@ suite('PasswordDetailsSectionTest', function() {
   });
 
   test('should not show button to move password', async function() {
-    loadTimeData.overrideValues({enableButterOnDesktopFollowup: true});
-    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.isAccountStorageEnabled = true;
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
       isSyncingPasswords: false,
@@ -522,41 +532,4 @@ suite('PasswordDetailsSectionTest', function() {
     assertFalse(isVisible(passwordEntry!.shadowRoot!.querySelector<HTMLElement>(
         '.move-password-container')));
   });
-
-  test(
-      'should not show button to move password because fature disabled',
-      async function() {
-        // Disabling the feature.
-        loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});
-        passwordManager.data.isOptedInAccountStorage = true;
-        syncProxy.syncInfo = {
-          isEligibleForAccountStorage: true,
-          isSyncingPasswords: false,
-        };
-
-        const group = createCredentialGroup({
-          name: 'test.com',
-          credentials: [
-            createPasswordEntry({
-              id: 0,
-              username: 'test1',
-              inProfileStore: true,
-              inAccountStore: false,
-            }),
-          ],
-        });
-        Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
-
-        const section = document.createElement('password-details-section');
-        document.body.appendChild(section);
-        await flushTasks();
-
-        const passwordEntry =
-            section.shadowRoot!.querySelector<PasswordDetailsCardElement>(
-                'password-details-card');
-        assertTrue(!!passwordEntry);
-        assertFalse(
-            isVisible(passwordEntry!.shadowRoot!.querySelector<HTMLElement>(
-                '.move-password-container')));
-      });
 });

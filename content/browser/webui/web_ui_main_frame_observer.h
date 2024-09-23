@@ -42,7 +42,7 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
   // Override from WebContentsObserver
   void PrimaryPageChanged(Page& page) override;
 
-// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+// TODO(crbug.com/40149439) This is currently disabled due to Windows DLL
 // thunking issues. Fix & re-enable.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On official Google builds, capture and report JavaScript error messages on

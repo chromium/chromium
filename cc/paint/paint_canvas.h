@@ -6,6 +6,7 @@
 #define CC_PAINT_PAINT_CANVAS_H_
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
@@ -17,6 +18,7 @@
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_text_property_value.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkTextBlob;
 
@@ -30,6 +32,7 @@ class PaintPreviewTracker;
 
 namespace cc {
 class SkottieWrapper;
+class PaintFilter;
 class PaintFlags;
 class PaintRecord;
 
@@ -77,6 +80,11 @@ class CC_PAINT_EXPORT PaintCanvas {
   virtual int saveLayer(const SkRect& bounds, const PaintFlags& flags) = 0;
   virtual int saveLayerAlphaf(float alpha) = 0;
   virtual int saveLayerAlphaf(const SkRect& bounds, float alpha) = 0;
+  // Opens a layer whose output texture is composited multiple times to the
+  // canvas, once for every filter in `filters`. Useful to draw a foreground and
+  // its shadow. Implementations may consume `filters` by moving the `sk_sp`.
+  virtual int saveLayerFilters(base::span<sk_sp<PaintFilter>> filters,
+                               const PaintFlags& flags) = 0;
 
   virtual void restore() = 0;
   virtual int getSaveCount() const = 0;
@@ -140,6 +148,10 @@ class CC_PAINT_EXPORT PaintCanvas {
                         SkScalar x1,
                         SkScalar y1,
                         const PaintFlags& flags) = 0;
+  virtual void drawArc(const SkRect& oval,
+                       SkScalar start_angle_degrees,
+                       SkScalar sweep_angle_degrees,
+                       const PaintFlags& flags) = 0;
   virtual void drawRect(const SkRect& rect, const PaintFlags& flags) = 0;
   virtual void drawIRect(const SkIRect& rect, const PaintFlags& flags) = 0;
   virtual void drawOval(const SkRect& oval, const PaintFlags& flags) = 0;
@@ -207,9 +219,18 @@ class CC_PAINT_EXPORT PaintCanvas {
                             NodeId node_id,
                             const PaintFlags& flags) = 0;
 
-  // Unlike SkCanvas::drawPicture, this only plays back the PaintRecord and does
-  // not add an additional clip.  This is closer to SkPicture::playback.
+  // Draws `record` into the canvas. Unlike SkCanvas::drawPicture, this only
+  // plays back the PaintRecord and does not add an additional clip.  This is
+  // closer to SkPicture::playback.
+  //
+  // If `local_ctm` is `true`, transform ops in `record` are treated as local to
+  // that recording: `SetMatrixOp` acts relatively to the current canvas
+  // transform and any transform changes are restored before `drawPicture`
+  // returns. Otherwise, transforms in `record` are treated as global to the
+  // canvas: `SetMatrixOp` ignores and overrides any previously set transforms
+  // and all CTM changes are preserved after `drawPicture` returns.
   virtual void drawPicture(PaintRecord record) = 0;
+  virtual void drawPicture(PaintRecord record, bool local_ctm) = 0;
 
   virtual SkM44 getLocalToDevice() const = 0;
 

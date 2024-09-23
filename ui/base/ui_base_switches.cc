@@ -40,6 +40,8 @@ const char kSystemFontFamily[] = "system-font-family";
 #if BUILDFLAG(IS_LINUX)
 // Specify the toolkit used to construct the Linux GUI.
 const char kUiToolkitFlag[] = "ui-toolkit";
+// Disables GTK IME integration.
+const char kDisableGtkIme[] = "disable-gtk-ime";
 #endif
 
 // Disables layer-edge anti-aliasing in the compositor.
@@ -73,6 +75,8 @@ const char kForceHighContrast[] = "force-high-contrast";
 
 // The language file that we want to try to open. Of the form
 // language[-country] where language is the 2 letter code from ISO-639.
+// On Linux, this flag does not work; use the LC_*/LANG environment variables
+// instead.
 const char kLang[] = "lang";
 
 // Transform localized strings to be longer, with beginning and end markers to

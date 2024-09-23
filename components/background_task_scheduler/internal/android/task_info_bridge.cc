@@ -5,6 +5,8 @@
 #include "components/background_task_scheduler/internal/android/task_info_bridge.h"
 
 #include "base/android/jni_string.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/background_task_scheduler/internal/jni_headers/TaskInfoBridge_jni.h"
 
 namespace background_task {

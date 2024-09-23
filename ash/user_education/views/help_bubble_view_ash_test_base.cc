@@ -42,6 +42,14 @@ std::u16string Repeat(std::u16string_view str, size_t times) {
 
 // HelpBubbleViewAshTestBase ---------------------------------------------------
 
+HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView() {
+  HelpBubbleParams params;
+  params.arrow = HelpBubbleArrow::kNone;
+
+  // NOTE: The returned help bubble view is owned by its widget.
+  return CreateHelpBubbleView(std::move(params));
+}
+
 HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
     HelpBubbleArrow arrow,
     bool with_title_text,
@@ -92,20 +100,6 @@ HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
                                std::move(params));
 }
 
-HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
-    const std::optional<HelpBubbleStyle>& style) {
-  HelpBubbleParams params;
-  params.arrow = HelpBubbleArrow::kNone;
-
-  if (style.has_value()) {
-    params.extended_properties =
-        user_education_util::CreateExtendedProperties(style.value());
-  }
-
-  // NOTE: The returned help bubble view is owned by its widget.
-  return CreateHelpBubbleView(std::move(params));
-}
-
 void HelpBubbleViewAshTestBase::SetUp() {
   AshTestBase::SetUp();
 
@@ -116,7 +110,8 @@ void HelpBubbleViewAshTestBase::SetUp() {
   // Initialize a test `widget_` to be used as an anchor for help bubble
   // views. Note that shadow is removed since pixel tests of help bubble views
   // should not fail solely due to changes in shadow appearance of the anchor.
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.layer_type = ui::LAYER_SOLID_COLOR;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   widget_ = std::make_unique<views::Widget>();

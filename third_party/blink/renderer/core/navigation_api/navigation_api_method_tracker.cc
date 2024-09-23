@@ -25,9 +25,11 @@ NavigationApiMethodTracker::NavigationApiMethodTracker(
                       v8::Undefined(script_state->GetIsolate())))),
       key_(key),
       committed_resolver_(
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+          MakeGarbageCollected<ScriptPromiseResolver<NavigationHistoryEntry>>(
+              script_state)),
       finished_resolver_(
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
+          MakeGarbageCollected<ScriptPromiseResolver<NavigationHistoryEntry>>(
+              script_state)),
       result_(NavigationResult::Create()) {
   result_->setCommitted(committed_resolver_->Promise());
   result_->setFinished(finished_resolver_->Promise());

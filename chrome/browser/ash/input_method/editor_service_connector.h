@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SERVICE_CONNECTOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SERVICE_CONNECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -13,9 +14,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::input_method {
+
+class EditorContext;
+
 class EditorServiceConnector {
  public:
-  EditorServiceConnector();
+  explicit EditorServiceConnector(EditorContext* context);
   ~EditorServiceConnector();
 
   void BindEditor(
@@ -28,13 +32,12 @@ class EditorServiceConnector {
       mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
           text_query_provider);
 
-  // returns true if the editor service requires a new editor service, and false
-  // otherwise.
-  bool SetUpNewEditorService();
-
   bool IsBound();
 
  private:
+  // Not owned by this class
+  raw_ptr<EditorContext> context_;
+
   mojo::Remote<orca::mojom::OrcaService> remote_orca_service_connector_;
 
   base::WeakPtrFactory<EditorServiceConnector> weak_ptr_factory_{this};

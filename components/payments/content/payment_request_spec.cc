@@ -252,7 +252,7 @@ PaymentShippingType PaymentRequestSpec::shipping_type() const {
     case payments::mojom::PaymentShippingType::SHIPPING:
       return PaymentShippingType::SHIPPING;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   // Needed for compilation on some platforms.
   return PaymentShippingType::SHIPPING;
@@ -335,17 +335,6 @@ bool PaymentRequestSpec::IsAppStoreBillingAlsoRequested() const {
               app_store_billing_methods_, payment_method_identifiers_set_)
               .empty();
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-bool PaymentRequestSpec::IsPaymentHandlerMinimalHeaderUXEnabled() const {
-  // PaymentHandlerMinimalHeaderUX is enabled when both the browser feature
-  // (enabled by default) and the blink feature (as indicated in the details)
-  // are enabled.
-  return base::FeatureList::IsEnabled(
-             features::kPaymentHandlerMinimalHeaderUX) &&
-         details_->payment_handler_minimal_header_ux_enabled;
-}
-#endif
 
 base::WeakPtr<PaymentRequestSpec> PaymentRequestSpec::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

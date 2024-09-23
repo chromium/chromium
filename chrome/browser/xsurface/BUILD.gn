@@ -25,6 +25,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScopeDependencyProvider.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedActionsHandler.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedCardOpeningReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedLaunchReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedNetworkRequestReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedSurfaceScope.java",
@@ -33,12 +34,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/ReliabilityLoggingTestUtil.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/ResourceFetcher.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/StreamType.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsActionsHandler.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsEvent.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsLoggingParameters.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceRenderer.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceScope.java",
-    "android/java/src/org/chromium/chrome/browser/xsurface/pageinsights/PageInsightsSurfaceScopeDependencyProvider.java",
   ]
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }

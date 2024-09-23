@@ -151,6 +151,11 @@ MultipleFieldsTemporalInputTypeView::GetDateTimeEditElement() const {
   return To<DateTimeEditElement>(element);
 }
 
+DateTimeEditElement*
+MultipleFieldsTemporalInputTypeView::GetDateTimeEditElementIfCreated() const {
+  return HasCreatedShadowSubtree() ? GetDateTimeEditElement() : nullptr;
+}
+
 SpinButtonElement* MultipleFieldsTemporalInputTypeView::GetSpinButtonElement()
     const {
   auto* element = GetElement().EnsureShadowSubtree()->getElementById(
@@ -287,6 +292,11 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
     const String& value) {
   if (will_be_destroyed_)
     return;
+
+  // SetUserHasEditedTheFieldAndBlurred is required in order to match
+  // :user-valid/:user-invalid
+  GetElement().SetUserHasEditedTheFieldAndBlurred();
+
   if (value.empty() || GetElement().IsValidValue(value)) {
     GetElement().SetValue(value, TextFieldEventBehavior::kDispatchInputEvent);
     return;
@@ -315,6 +325,11 @@ void MultipleFieldsTemporalInputTypeView::PickerIndicatorChooseValue(
     double value) {
   if (will_be_destroyed_)
     return;
+
+  // SetUserHasEditedTheFieldAndBlurred is required in order to match
+  // :user-valid/:user-invalid
+  GetElement().SetUserHasEditedTheFieldAndBlurred();
+
   DCHECK(std::isfinite(value) || std::isnan(value));
   if (std::isnan(value)) {
     GetElement().SetValue(g_empty_string,
@@ -381,19 +396,7 @@ void MultipleFieldsTemporalInputTypeView::Blur() {
 
 void MultipleFieldsTemporalInputTypeView::AdjustStyle(
     ComputedStyleBuilder& builder) {
-  if (!RuntimeEnabledFeatures::DateInputInlineBlockEnabled()) {
-    EDisplay original_display = builder.Display();
-    EDisplay new_display = original_display;
-    if (original_display == EDisplay::kInline ||
-        original_display == EDisplay::kInlineBlock) {
-      new_display = EDisplay::kInlineFlex;
-    } else if (original_display == EDisplay::kBlock) {
-      new_display = EDisplay::kFlex;
-    }
-    builder.SetDisplay(new_display);
-  } else {
-    builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
-  }
+  builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();
   builder.SetDirection(ComputedTextDirection());
 }
 
@@ -403,15 +406,13 @@ void MultipleFieldsTemporalInputTypeView::CreateShadowSubtree() {
   Document& document = GetElement().GetDocument();
   ContainerNode* container = GetElement().UserAgentShadowRoot();
 
-  if (RuntimeEnabledFeatures::DateInputInlineBlockEnabled()) {
-    auto* container_div = MakeGarbageCollected<HTMLDivElement>(document);
-    container_div->SetShadowPseudoId(
-        shadow_element_names::kPseudoInternalDatetimeContainer);
-    container_div->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
-                                          CSSValueID::kNormal);
-    GetElement().UserAgentShadowRoot()->AppendChild(container_div);
-    container = container_div;
-  }
+  auto* container_div = MakeGarbageCollected<HTMLDivElement>(document);
+  container_div->SetShadowPseudoId(
+      shadow_element_names::kPseudoInternalDatetimeContainer);
+  container_div->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                                        CSSValueID::kNormal);
+  GetElement().UserAgentShadowRoot()->AppendChild(container_div);
+  container = container_div;
 
   container->AppendChild(
       MakeGarbageCollected<DateTimeEditElement, Document&,
@@ -501,7 +502,7 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
   if (!GetElement().IsFocused())
     return;
   if (picker_indicator_is_visible_ &&
-      ((event.key() == "ArrowDown" && event.getModifierState("Alt")) ||
+      ((event.key() == keywords::kArrowDown && event.getModifierState("Alt")) ||
        event.key() == "F4" || event.key() == " ")) {
     OpenPopupView();
     event.SetDefaultHandled();
@@ -511,8 +512,8 @@ void MultipleFieldsTemporalInputTypeView::HandleKeydownEvent(
 }
 
 bool MultipleFieldsTemporalInputTypeView::HasBadInput() const {
-  DateTimeEditElement* edit = GetDateTimeEditElement();
-  return GetElement().Value().empty() && edit &&
+  DateTimeEditElement* edit = GetDateTimeEditElementIfCreated();
+  return edit && GetElement().Value().empty() &&
          edit->AnyEditableFieldsHaveValues();
 }
 
@@ -522,6 +523,7 @@ AtomicString MultipleFieldsTemporalInputTypeView::LocaleIdentifier() const {
 
 void MultipleFieldsTemporalInputTypeView::
     EditControlDidChangeValueByKeyboard() {
+  GetElement().SetUserHasEditedTheField();
   GetElement().DispatchFormControlChangeEvent();
 }
 
@@ -623,6 +625,9 @@ void MultipleFieldsTemporalInputTypeView::OpenPopupView() {
 }
 
 void MultipleFieldsTemporalInputTypeView::ClosePopupView() {
+  if (!HasCreatedShadowSubtree()) {
+    return;
+  }
   if (PickerIndicatorElement* picker = GetPickerIndicatorElement())
     picker->ClosePopup();
 }

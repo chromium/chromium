@@ -9,15 +9,19 @@
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/notification_center/ash_notification_control_button_factory.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/notification_style_utils.h"
 #include "ash/system/notification_center/views/ash_notification_expand_button.h"
 #include "ash/system/notification_center/views/conversation_item_view.h"
+#include "ash/system/notification_center/views/notification_actions_view.h"
 #include "ash/system/notification_center/views/timestamp_view.h"
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/text_elider.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/views/border.h"
@@ -32,6 +36,13 @@
 
 namespace {
 
+constexpr int kTitleRowMinimumWidthWithIcon = 186;
+constexpr int kTitleCharacterLimit =
+    (kTitleRowMinimumWidthWithIcon /
+         message_center::kMinPixelsPerTitleCharacter -
+     12) /
+    2;
+constexpr int kAppNameCharacterLimit = kTitleCharacterLimit;
 constexpr auto kAppIconContainerInteriorMargin =
     gfx::Insets::TLBR(16, 12, 0, 0);
 constexpr auto kCollapsedPreviewContainerDefaultMargin =
@@ -44,7 +55,7 @@ constexpr auto kExpandButtonContainerInteriorMargin =
     gfx::Insets::TLBR(0, 12, 0, 12);
 constexpr auto kTextContainerInteriorMargin = gfx::Insets::TLBR(12, 12, 0, 0);
 constexpr auto kTitleRowDefaultMargin = gfx::Insets::TLBR(0, 0, 0, 6);
-
+constexpr auto kActionsViewMargin = gfx::Insets::TLBR(0, 10, 12, 0);
 }  // namespace
 
 namespace ash {
@@ -63,7 +74,8 @@ ConversationNotificationView::ConversationNotificationView(
 
   AddChildView(CreateMainContainer(notification));
   conversations_container_ = AddChildView(std::move(conversations_container));
-
+  actions_view_ = AddChildView(std::make_unique<NotificationActionsView>());
+  actions_view_->SetProperty(views::kMarginsKey, kActionsViewMargin);
   UpdateWithNotification(notification);
 
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
@@ -75,6 +87,15 @@ void ConversationNotificationView::ToggleExpand() {
   expanded_ = !expanded_;
   conversations_container_->SetVisible(expanded_);
   collapsed_preview_container_->SetVisible(!expanded_);
+  expand_button_->SetExpanded(expanded_);
+  actions_view_->SetExpanded(expanded_);
+  // Updates expand state to message center, and let notification delegate
+  // handle the state update.
+  SetExpanded(expanded_);
+
+  app_name_view_->SetVisible(expanded_);
+  app_name_divider_->SetVisible(expanded_);
+
   PreferredSizeChanged();
 }
 
@@ -94,6 +115,16 @@ void ConversationNotificationView::OnThemeChanged() {
 void ConversationNotificationView::UpdateWithNotification(
     const Notification& notification) {
   UpdateControlButtonsVisibilityWithNotification(notification);
+
+  actions_view_->UpdateWithNotification(notification);
+  actions_view_->SetExpanded(expanded_);
+
+  // TODO(b/333740702): Clean up string truncation.
+  title_->SetText(gfx::TruncateString(notification.title(),
+                                      kTitleCharacterLimit, gfx::WORD_BREAK));
+
+  app_name_view_->SetText(gfx::TruncateString(
+      notification.display_source(), kAppNameCharacterLimit, gfx::WORD_BREAK));
 
   if (notification.items().empty()) {
     return;
@@ -154,7 +185,7 @@ ConversationNotificationView::CreateMainContainer(
   center_content_container->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded)));
 
   center_content_container->AddChildView(CreateTextContainer(notification));
@@ -191,7 +222,8 @@ ConversationNotificationView::CreateRightControlsContainer() {
   expand_button->SetCallback(base::BindRepeating(
       &ConversationNotificationView::ToggleExpand, base::Unretained(this)));
 
-  expand_button_container->AddChildView(std::move(expand_button));
+  expand_button_ =
+      expand_button_container->AddChildView(std::move(expand_button));
 
   auto view =
       std::make_unique<message_center::NotificationControlButtonsView>(this);
@@ -231,13 +263,18 @@ ConversationNotificationView::CreateTextContainer(
   collapsed_preview_container->SetVisible(!expanded_);
 
   auto collapsed_preview_title = std::make_unique<views::Label>();
-  collapsed_preview_title->SetText(notification.items().rbegin()->title());
+  if (!notification.items().empty()) {
+    collapsed_preview_title->SetText(notification.items().rbegin()->title());
+  }
   notification_style_utils::ConfigureLabelStyle(
       collapsed_preview_title.get(), kNotificationTitleLabelSize, true,
       gfx::Font::Weight::MEDIUM);
 
   auto collapsed_preview_message = std::make_unique<views::Label>();
-  collapsed_preview_message->SetText(notification.items().rbegin()->message());
+  if (!notification.items().empty()) {
+    collapsed_preview_message->SetText(
+        notification.items().rbegin()->message());
+  }
 
   collapsed_preview_container->AddChildView(std::move(collapsed_preview_title));
   collapsed_preview_container->AddChildView(
@@ -255,27 +292,46 @@ ConversationNotificationView::CreateTitleRow(const Notification& notification) {
   title_row->SetOrientation(views::LayoutOrientation::kHorizontal);
   title_row->SetDefault(views::kMarginsKey, kTitleRowDefaultMargin);
 
+  // Create Title view and add it to title row.
   auto title = std::make_unique<views::Label>();
   title->SetID(ViewId::kTitleLabel);
-  title->SetText(notification.title());
+  title_ = title_row->AddChildView(std::move(title));
+  // TODO(b/333740702): Clean up string truncation.
+  title_->SetText(gfx::TruncateString(notification.title(),
+                                      kTitleCharacterLimit, gfx::WORD_BREAK));
+  ash::TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                             *title_);
 
-  notification_style_utils::ConfigureLabelStyle(
-      title.get(), kNotificationTitleLabelSize, true,
-      gfx::Font::Weight::MEDIUM);
-
+  // Title divider view
   auto divider = std::make_unique<views::Label>();
   divider->SetText(kNotificationTitleRowDivider);
   notification_style_utils::ConfigureLabelStyle(divider.get(),
                                                 kNotificationSecondaryLabelSize,
                                                 /*is_color_primary=*/false);
+  title_row->AddChildView(std::move(divider));
 
+  // App name view
+  auto app_name_view = std::make_unique<views::Label>();
+  app_name_view->SetID(ViewId::kTitleLabel);
+  app_name_view_ = title_row->AddChildView(std::move(app_name_view));
+  app_name_view_->SetText(gfx::TruncateString(
+      notification.display_source(), kAppNameCharacterLimit, gfx::WORD_BREAK));
+  ash::TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                             *app_name_view_);
+
+  // App name divider view
+  auto app_name_divider = std::make_unique<views::Label>();
+  app_name_divider->SetText(kNotificationTitleRowDivider);
+  notification_style_utils::ConfigureLabelStyle(app_name_divider.get(),
+                                                kNotificationSecondaryLabelSize,
+                                                /*is_color_primary=*/false);
+  app_name_divider_ = title_row->AddChildView(std::move(app_name_divider));
+
+  // Timestamp view
   auto timestamp = std::make_unique<TimestampView>();
   notification_style_utils::ConfigureLabelStyle(timestamp.get(),
                                                 kNotificationSecondaryLabelSize,
                                                 /*is_color_primary=*/false);
-
-  title_row->AddChildView(std::move(title));
-  title_row->AddChildView(std::move(divider));
   timestamp_ = title_row->AddChildView(std::move(timestamp));
 
   return title_row;

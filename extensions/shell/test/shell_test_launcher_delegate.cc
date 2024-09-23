@@ -29,7 +29,7 @@ int AppShellTestLauncherDelegate::RunTestSuite(int argc, char** argv) {
 
 std::string
 AppShellTestLauncherDelegate::GetUserDataDirectoryCommandLineSwitch() {
-  return switches::kContentShellDataPath;
+  return switches::kContentShellUserDataDir;
 }
 
 content::ContentMainDelegate*

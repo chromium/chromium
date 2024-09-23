@@ -4,9 +4,10 @@
 
 #include "ui/gfx/x/window_cache.h"
 
+#include <vector>
+
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -228,7 +229,7 @@ void WindowCache::OnEvent(const Event& event) {
   } else if (auto* destroy = event.As<DestroyNotifyEvent>()) {
     if (auto* info = GetInfo(destroy->window)) {
       if (auto* siblings = GetChildren(info->parent)) {
-        base::Erase(*siblings, destroy->window);
+        std::erase(*siblings, destroy->window);
       }
       windows_.erase(destroy->window);
     }
@@ -243,7 +244,7 @@ void WindowCache::OnEvent(const Event& event) {
   } else if (auto* reparent = event.As<ReparentNotifyEvent>()) {
     if (auto* info = GetInfo(reparent->window)) {
       if (auto* old_siblings = GetChildren(info->parent)) {
-        base::Erase(*old_siblings, reparent->window);
+        std::erase(*old_siblings, reparent->window);
       }
       if (auto* new_siblings = GetChildren(reparent->parent)) {
         new_siblings->push_back(reparent->window);
@@ -258,7 +259,7 @@ void WindowCache::OnEvent(const Event& event) {
   } else if (auto* circulate = event.As<CirculateEvent>()) {
     if (auto* info = GetInfo(circulate->window)) {
       if (auto* siblings = GetChildren(info->parent)) {
-        base::Erase(*siblings, circulate->window);
+        std::erase(*siblings, circulate->window);
         if (circulate->place == Place::OnTop) {
           siblings->push_back(circulate->window);
         } else {
@@ -383,10 +384,14 @@ void WindowCache::OnGetPropertyResponse(Window window,
     } else if (atom == gtk_frame_extents_) {
       if (response->format == CHAR_BIT * sizeof(int32_t) &&
           response->value_len == 4) {
-        const int32_t* frame_extents = response->value->front_as<int32_t>();
-        info->gtk_frame_extents_px =
-            gfx::Insets::TLBR(frame_extents[2], frame_extents[0],
-                              frame_extents[3], frame_extents[1]);
+        const int32_t* frame_extents = response->value->cast_to<int32_t>();
+        // This is safe: we've checked (in the condition above) that the
+        // response contains four int32_ts. It would be nice if instead
+        // GetPropertyResponse had a way to convert its value safely into a
+        // span<T> for some T.
+        UNSAFE_BUFFERS(info->gtk_frame_extents_px = gfx::Insets::TLBR(
+                           frame_extents[2], frame_extents[0], frame_extents[3],
+                           frame_extents[1]));
       } else {
         info->gtk_frame_extents_px = gfx::Insets();
       }
@@ -404,7 +409,7 @@ void WindowCache::OnGetRectanglesResponse(
         info->bounding_rects_px = std::move(response->rectangles);
         break;
       case Shape::Sk::Clip:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case Shape::Sk::Input:
         info->input_rects_px = std::move(response->rectangles);

@@ -24,6 +24,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::apple::CFToNSPtrCast;
+using base::apple::NSToCFPtrCast;
 using testing::_;
 
 namespace enterprise_connectors {
@@ -65,26 +67,17 @@ class SecureEnclaveClientTest : public testing::Test {
 
   // Creates a test key.
   void CreateAndSetTestKey() {
-    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> test_attributes(
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                  &kCFTypeDictionaryKeyCallBacks,
-                                  &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(test_attributes.get(), kSecAttrLabel,
-                         CFSTR("fake-label"));
-    CFDictionarySetValue(test_attributes.get(), kSecAttrKeyType,
-                         kSecAttrKeyTypeECSECPrimeRandom);
-    CFDictionarySetValue(test_attributes.get(), kSecAttrKeySizeInBits,
-                         base::apple::NSToCFPtrCast(@256));
-    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
-        CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                  &kCFTypeDictionaryKeyCallBacks,
-                                  &kCFTypeDictionaryValueCallBacks));
-    CFDictionarySetValue(private_key_params.get(), kSecAttrIsPermanent,
-                         kCFBooleanFalse);
-    CFDictionarySetValue(test_attributes.get(), kSecPrivateKeyAttrs,
-                         private_key_params.get());
-    test_key_ = base::apple::ScopedCFTypeRef<SecKeyRef>(
-        SecKeyCreateRandomKey(test_attributes.get(), nullptr));
+    NSDictionary* test_attributes = @{
+      CFToNSPtrCast(kSecAttrLabel) : @"fake-label",
+      CFToNSPtrCast(kSecAttrKeyType) :
+          CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
+      CFToNSPtrCast(kSecAttrKeySizeInBits) : @256,
+      CFToNSPtrCast(kSecPrivateKeyAttrs) :
+          @{CFToNSPtrCast(kSecAttrIsPermanent) : @NO}
+    };
+
+    test_key_.reset(
+        SecKeyCreateRandomKey(NSToCFPtrCast(test_attributes), nullptr));
   }
 
   void VerifyQuery(CFDictionaryRef query, CFStringRef label) {

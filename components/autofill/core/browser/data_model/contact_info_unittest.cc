@@ -37,17 +37,16 @@ TEST_P(SetFullNameTest, SetFullName) {
   SCOPED_TRACE(test_case.full_name_input);
 
   NameInfo name;
-  name.SetInfo(AutofillType(NAME_FULL), ASCIIToUTF16(test_case.full_name_input),
-               "en-US");
+  name.SetInfo(NAME_FULL, ASCIIToUTF16(test_case.full_name_input), "en-US");
   EXPECT_TRUE(name.FinalizeAfterImport());
   EXPECT_EQ(ASCIIToUTF16(test_case.given_name_output),
-            name.GetInfo(AutofillType(NAME_FIRST), "en-US"));
+            name.GetInfo(NAME_FIRST, "en-US"));
   EXPECT_EQ(ASCIIToUTF16(test_case.middle_name_output),
-            name.GetInfo(AutofillType(NAME_MIDDLE), "en-US"));
+            name.GetInfo(NAME_MIDDLE, "en-US"));
   EXPECT_EQ(ASCIIToUTF16(test_case.family_name_output),
-            name.GetInfo(AutofillType(NAME_LAST), "en-US"));
+            name.GetInfo(NAME_LAST, "en-US"));
   EXPECT_EQ(ASCIIToUTF16(test_case.full_name_input),
-            name.GetInfo(AutofillType(NAME_FULL), "en-US"));
+            name.GetInfo(NAME_FULL, "en-US"));
 }
 
 TEST(NameInfoTest, GetMatchingTypes) {
@@ -83,11 +82,13 @@ TEST(NameInfoTest, GetMatchingTypes) {
   test::VerifyFormGroupValues(name, expectation);
 
   FieldTypeSet matching_types;
-  name.GetMatchingTypes(u"Ruiz", "US", &matching_types);
+  name.GetMatchingTypesWithProfileSources(u"Ruiz", "US", &matching_types,
+                                          nullptr);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 
   // The honorific prefix is ignored.
-  name.GetMatchingTypes(u"Mr.", "US", &matching_types);
+  name.GetMatchingTypesWithProfileSources(u"Mr.", "US", &matching_types,
+                                          nullptr);
   EXPECT_EQ(matching_types, FieldTypeSet({NAME_LAST_FIRST}));
 }
 

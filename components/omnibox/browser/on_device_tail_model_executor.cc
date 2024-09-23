@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
 
 #include <cmath>
 #include <cstdint>
 #include <sstream>
+#include <string_view>
 
+#include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
@@ -16,6 +24,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/tflite/src/tensorflow/lite/c/c_api_types.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/register.h"
@@ -35,20 +44,29 @@ static constexpr char kRnnStepInputIdsNodeName[] = "input_ids";
 static constexpr char kRnnStepPrevQueryEncodingInputNodeName[] =
     "prev_query_encoding";
 
-static constexpr base::StringPiece kRnnStepCStateInputNamePrefix = "c_in_";
-static constexpr base::StringPiece kRnnStepMStateInputNamePrefix = "m_in_";
+static constexpr std::string_view kRnnStepCStateInputNamePrefix = "c_in_";
+static constexpr std::string_view kRnnStepMStateInputNamePrefix = "m_in_";
 
-static constexpr base::StringPiece kRnnStepCStateOutputNamePrefix = "c_out_";
-static constexpr base::StringPiece kRnnStepMStateOutputNamePrefix = "m_out_";
+static constexpr std::string_view kRnnStepCStateOutputNamePrefix = "c_out_";
+static constexpr std::string_view kRnnStepMStateOutputNamePrefix = "m_out_";
 
 static constexpr char kRnnStepOutputProbsNodeName[] = "probs";
+
+// Some default values of params needed to run the model.
+static constexpr size_t kDefaultMaxNumSteps = 20;
+static constexpr float kDefaultProbabilityThreshold = 0.01;
 
 // The sizes of the caches.
 static constexpr size_t kPreQueryEncodingCacheSize = 10;
 static constexpr size_t kRnnStepOutputCacheSize = 20;
 
-// Maximum badword hash file size that will be loaded in bytes.
-static constexpr size_t kBadwordHashFileSizeLimit = 64 * 1024;
+// Maximum file size that will be loaded in bytes.
+static constexpr size_t kFileSizeLimit = 128 * 1024;
+
+// Keywords to identify additional files needed by the executor.
+static constexpr char kVocabFileNameKeyword[] = "vocab";
+static constexpr char kBadwordHashesFileNameKeyword[] = "hashes";
+static constexpr char kBadSubstringDenyListFileNameKeyword[] = "denylist";
 
 std::ostream& operator<<(std::ostream& os,
                          const OnDeviceTailTokenizer::TokenIds& ids) {
@@ -66,20 +84,28 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
+std::string LoadFileContent(const base::FilePath file_path) {
+  std::string content;
+  if (file_path.empty()) {
+    return content;
+  }
+  if (!base::ReadFileToStringWithMaxSize(file_path, &content, kFileSizeLimit)) {
+    DVLOG(1) << "Failed to read file: " << file_path.LossyDisplayName();
+    content.clear();
+  }
+  return content;
+}
+
 }  // namespace
 
 OnDeviceTailModelExecutor::ModelInput::ModelInput() = default;
 
 OnDeviceTailModelExecutor::ModelInput::ModelInput(std::string prefix,
                                                   std::string previous_query,
-                                                  size_t max_num_suggestions,
-                                                  size_t max_rnn_steps,
-                                                  float probability_threshold)
+                                                  size_t max_num_suggestions)
     : prefix(std::move(prefix)),
       previous_query(std::move(previous_query)),
-      max_num_suggestions(max_num_suggestions),
-      max_rnn_steps(max_rnn_steps),
-      probability_threshold(probability_threshold) {}
+      max_num_suggestions(max_num_suggestions) {}
 
 OnDeviceTailModelExecutor::ModelInput::~ModelInput() = default;
 
@@ -164,7 +190,23 @@ bool OnDeviceTailModelExecutor::Init() {
   state_size_ = metadata_.lstm_model_params().state_size();
   num_layer_ = metadata_.lstm_model_params().num_layer();
   embedding_dimension_ = metadata_.lstm_model_params().embedding_dimension();
+
+  if (metadata_.lstm_model_params().max_num_steps() > 0) {
+    max_num_steps_ = metadata_.lstm_model_params().max_num_steps();
+  } else {
+    max_num_steps_ = kDefaultMaxNumSteps;
+  }
+
+  if (metadata_.lstm_model_params().probability_threshold() > 0) {
+    log_probability_threshold_ = GetLogProbability(
+        metadata_.lstm_model_params().probability_threshold());
+  } else {
+    log_probability_threshold_ =
+        GetLogProbability(kDefaultProbabilityThreshold);
+  }
+
   vocab_size_ = tokenizer_->vocab_size();
+  LoadBadSubstringSet();
   LoadBadwordHashSet();
 
   return true;
@@ -172,9 +214,25 @@ bool OnDeviceTailModelExecutor::Init() {
 
 bool OnDeviceTailModelExecutor::Init(
     const base::FilePath& model_filepath,
-    const base::FilePath& vocab_filepath,
-    const base::FilePath& badword_hashes_filepath,
+    const base::flat_set<base::FilePath>& additional_files,
     const ModelMetadata& metadata) {
+  base::FilePath vocab_filepath, badword_hashes_filepath,
+      bad_substrings_filepath;
+  for (const base::FilePath& file_path : additional_files) {
+    if (!file_path.empty()) {
+      std::string file_path_str =
+          optimization_guide::FilePathToString(file_path);
+      if (base::Contains(file_path_str, kVocabFileNameKeyword)) {
+        vocab_filepath = file_path;
+      } else if (base::Contains(file_path_str, kBadwordHashesFileNameKeyword)) {
+        badword_hashes_filepath = file_path;
+      } else if (base::Contains(file_path_str,
+                                kBadSubstringDenyListFileNameKeyword)) {
+        bad_substrings_filepath = file_path;
+      }
+    }
+  }
+
   if (model_filepath.empty() || vocab_filepath.empty()) {
     return false;
   }
@@ -182,6 +240,7 @@ bool OnDeviceTailModelExecutor::Init(
   model_filepath_ = model_filepath;
   vocab_filepath_ = vocab_filepath;
   badword_hashes_filepath_ = badword_hashes_filepath;
+  bad_substrings_filepath_ = bad_substrings_filepath;
   metadata_ = metadata;
 
   if (Init()) {
@@ -191,6 +250,7 @@ bool OnDeviceTailModelExecutor::Init(
   model_filepath_.clear();
   vocab_filepath_.clear();
   badword_hashes_filepath_.clear();
+  bad_substrings_filepath_.clear();
   return false;
 }
 
@@ -204,11 +264,10 @@ bool OnDeviceTailModelExecutor::InitModelInterpreter(
   }
   model_fb_ = std::move(model_fb);
 
-  tflite::StderrReporter error_reporter;
   std::unique_ptr<tflite::FlatBufferModel> model =
-      tflite::FlatBufferModel::BuildFromBuffer(
-          reinterpret_cast<const char*>(model_fb_->data()), model_fb_->length(),
-          &error_reporter);
+      tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
+          reinterpret_cast<const char*>(model_fb_->data()),
+          model_fb_->length());
 
   if (model == nullptr) {
     DVLOG(1) << "Could not create flat buffer model for file "
@@ -312,21 +371,37 @@ void OnDeviceTailModelExecutor::ResetCaches() {
   rnn_step_cache_.Clear();
 }
 
+void OnDeviceTailModelExecutor::LoadBadSubstringSet() {
+  bad_substrings_.clear();
+
+  std::string content = LoadFileContent(bad_substrings_filepath_);
+  if (content.empty()) {
+    return;
+  }
+
+  std::string bad_substring, line;
+  std::stringstream file_content(content);
+  while (std::getline(file_content, line)) {
+    if (line.empty()) {
+      break;
+    }
+    if (base::Base64Decode(line, &bad_substring)) {
+      bad_substrings_.insert(bad_substring);
+    } else {
+      DVLOG(1) << "Could not decode line: " << line;
+    }
+  }
+}
+
 void OnDeviceTailModelExecutor::LoadBadwordHashSet() {
-  if (badword_hashes_filepath_.empty()) {
-    return;
-  }
-  std::string content;
-  if (!base::ReadFileToStringWithMaxSize(badword_hashes_filepath_, &content,
-                                         kBadwordHashFileSizeLimit)) {
-    DVLOG(1) << "Failed to read the badword hash file "
-             << badword_hashes_filepath_.LossyDisplayName();
-    return;
-  }
-
   badword_hashes_.clear();
-  std::string hash_string;
 
+  std::string content = LoadFileContent(badword_hashes_filepath_);
+  if (content.empty()) {
+    return;
+  }
+
+  std::string hash_string;
   std::stringstream badword_hash_strings(content);
   while (std::getline(badword_hash_strings, hash_string)) {
     if (hash_string.empty()) {
@@ -340,19 +415,29 @@ void OnDeviceTailModelExecutor::LoadBadwordHashSet() {
 }
 
 bool OnDeviceTailModelExecutor::IsSuggestionBad(const std::string suggestion) {
-  if (badword_hashes_.empty() || suggestion.empty()) {
+  if (suggestion.empty()) {
     return false;
   }
-  std::vector<std::string> words =
-      base::SplitString(suggestion, base::kWhitespaceASCII,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  for (const std::string& word : words) {
-    auto hash_value = base::PersistentHash(word);
-    if (badword_hashes_.find(hash_value) != badword_hashes_.end()) {
+  for (const std::string& substring : bad_substrings_) {
+    if (base::Contains(suggestion, substring)) {
       return true;
     }
   }
+
+  if (!badword_hashes_.empty()) {
+    std::vector<std::string> words =
+        base::SplitString(suggestion, base::kWhitespaceASCII,
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    for (const std::string& word : words) {
+      auto hash_value = base::PersistentHash(word);
+      if (base::Contains(badword_hashes_, hash_value)) {
+        return true;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -604,7 +689,14 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
   DCHECK(IsReady());
   std::vector<Prediction> predictions;
 
+  // Only trigger for prefixed suggest requests.
   if (input.prefix.empty()) {
+    return predictions;
+  }
+
+  // Return early if the prefix contains bad words.
+  // TODO(crbug.com/40241602): maybe add a unit test for this.
+  if (IsSuggestionBad(input.prefix)) {
     return predictions;
   }
 
@@ -626,9 +718,8 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
   OnDeviceTailModelExecutor::CandidateQueue partial_candidates,
       completed_candidates;
   partial_candidates.emplace(std::move(root_beam));
-  float log_prob_threshold = GetLogProbability(input.probability_threshold);
 
-  for (size_t i = 0; i < input.max_rnn_steps; ++i) {
+  for (size_t i = 0; i < max_num_steps_; ++i) {
     if (partial_candidates.empty()) {
       break;
     }
@@ -644,7 +735,7 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
       if (RunRnnStep(beam.rnn_step_cache_key, beam.token_ids.back(),
                      prev_query_encoding, beam.states, &rnn_step_output)) {
         CreateNewBeams(rnn_step_output, beam, input.max_num_suggestions,
-                       log_prob_threshold, &partial_candidates,
+                       log_probability_threshold_, &partial_candidates,
                        &completed_candidates);
 
       } else {

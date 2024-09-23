@@ -6,7 +6,7 @@ component("ios") {
   deps = [
     "//base",
     "//components/proxy_config",
-    "//ios/web",
+    "//ios/web/public/thread",
     "//net",
   ]
 

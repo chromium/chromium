@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_PUBLIC_TEST_STUB_FEED_API_H_
 #define COMPONENTS_FEED_CORE_V2_PUBLIC_TEST_STUB_FEED_API_H_
 
+#include <string_view>
+
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/persistent_key_value_store.h"
@@ -70,15 +72,15 @@ class StubFeedApi : public FeedApi {
       std::vector<feedstore::DataOperation> operations) override;
   EphemeralChangeId CreateEphemeralChangeFromPackedData(
       SurfaceId surface_id,
-      base::StringPiece data) override;
+      std::string_view data) override;
   bool CommitEphemeralChange(SurfaceId surface_id,
                              EphemeralChangeId id) override;
   bool RejectEphemeralChange(SurfaceId surface_id,
                              EphemeralChangeId id) override;
   void ProcessThereAndBackAgain(
-      base::StringPiece data,
+      std::string_view data,
       const LoggingParameters& logging_parameters) override {}
-  void ProcessViewAction(base::StringPiece data,
+  void ProcessViewAction(std::string_view data,
                          const LoggingParameters& logging_parameters) override {
   }
   bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) override;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_BACK_MIGRATOR_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -20,6 +21,10 @@
 class PrefService;
 
 namespace ash {
+
+namespace standalone_browser::migrator_util {
+enum class PolicyInitState;
+}  // namespace standalone_browser::migrator_util
 
 namespace browser_data_back_migrator {
 // Temporary directory for back migration.
@@ -126,17 +131,8 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
   // The policy value is cached at the beginning of the session and not
   // updated.
   static bool IsBackMigrationEnabled(
-      crosapi::browser_util::PolicyInitState policy_init_state);
-
-  // MaybeRestartToMigrateBack checks if backward migration should be
-  // triggered. Migration is started by adding extra flags to Chrome using
-  // session_manager and then restarting.
-  // Returns true if Chrome needs to restart to trigger backward migration.
-  // May block to check if the lacros folder is present.
-  static bool MaybeRestartToMigrateBack(
-      const AccountId& account_id,
-      const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // CancelMigration is called when the user chooses to cancel the migration
   // from OOBE and it cleans up the in-progress migration.
@@ -301,7 +297,7 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
 
   // Decides whether preferences for the given `extension_id` should be migrated
   // back from Lacros to Ash.
-  static bool IsLacrosOnlyExtension(const base::StringPiece extension_id);
+  static bool IsLacrosOnlyExtension(const std::string_view extension_id);
 
   // Copy the LevelDB database from Lacros to the temporary directory to be used
   // as basis for the merge.
@@ -340,7 +336,8 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
   static bool ShouldMigrateBack(
       const AccountId& account_id,
       const std::string& user_id_hash,
-      crosapi::browser_util::PolicyInitState policy_init_state);
+      ash::standalone_browser::migrator_util::PolicyInitState
+          policy_init_state);
 
   // RestartToMigrateBack triggers a Chrome restart to start backward migration.
   // Called by MaybeRestartToMigrateBack.

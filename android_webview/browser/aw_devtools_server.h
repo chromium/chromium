@@ -8,26 +8,14 @@
 namespace android_webview {
 
 // This class controls WebView-specific Developer Tools remote debugging server.
-class AwDevToolsServer {
- public:
-  AwDevToolsServer();
 
-  AwDevToolsServer(const AwDevToolsServer&) = delete;
-  AwDevToolsServer& operator=(const AwDevToolsServer&) = delete;
+// Opens linux abstract socket to be ready for remote debugging.
+void StartAwDevToolsServer();
 
-  ~AwDevToolsServer();
+// Closes debugging socket, stops debugging.
+void StopAwDevToolsServer();
 
-  // Opens linux abstract socket to be ready for remote debugging.
-  void Start();
-
-  // Closes debugging socket, stops debugging.
-  void Stop();
-
-  bool IsStarted() const;
-
- private:
-  bool is_started_;
-};
+bool IsAwDevToolsServerStarted();
 
 }  // namespace android_webview
 

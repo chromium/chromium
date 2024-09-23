@@ -66,9 +66,12 @@ class CrostiniInstallerFactory : public ProfileKeyedServiceFactory {
             "CrostiniInstallerService",
             ProfileSelections::Builder()
                 .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/1418376): Check if this service is needed in
+                // TODO(crbug.com/40257657): Check if this service is needed in
                 // Guest mode.
                 .WithGuest(ProfileSelection::kOriginalOnly)
+                // TODO(crbug.com/41488885): Check if this service is needed for
+                // Ash Internals.
+                .WithAshInternals(ProfileSelection::kOriginalOnly)
                 .Build()) {
     DependsOn(crostini::CrostiniManagerFactory::GetInstance());
   }
@@ -142,7 +145,7 @@ SetupResult ErrorToSetupResult(InstallerError error) {
       return SetupResult::kErrorUnknown;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 SetupResult InstallStateToCancelledSetupResult(
@@ -168,7 +171,7 @@ SetupResult InstallStateToCancelledSetupResult(
       return SetupResult::kUserCancelledConfiguringContainer;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 crostini::mojom::InstallerError CrostiniResultToInstallerError(
@@ -185,7 +188,7 @@ crostini::mojom::InstallerError CrostiniResultToInstallerError(
   switch (installer_state) {
     default:
     case InstallerState::kStart:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return InstallerError::kErrorUnknown;
     case InstallerState::kInstallImageLoader:
       if (offline) {
@@ -452,7 +455,7 @@ void CrostiniInstaller::RunProgressCallback() {
       state_max_time = base::Seconds(140 + 300);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   double state_fraction = time_in_state / state_max_time;
@@ -463,7 +466,7 @@ void CrostiniInstaller::RunProgressCallback() {
     state_fraction =
         0.5 * (state_fraction + 0.01 * container_download_percent_);
   }
-  // TODO(https://crbug.com/1000173): Calculate configure container step
+  // TODO(crbug.com/40645509): Calculate configure container step
   // progress based on real progress.
 
   double progress = state_start_mark + std::clamp(state_fraction, 0.0, 1.0) *

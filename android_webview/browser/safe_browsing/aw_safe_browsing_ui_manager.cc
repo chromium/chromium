@@ -83,30 +83,6 @@ void AwSafeBrowsingUIManager::DisplayBlockingPage(
   safe_browsing::BaseUIManager::DisplayBlockingPage(resource);
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>
-AwSafeBrowsingUIManager::GetURLLoaderFactoryOnSBThread() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
-  if (!shared_url_loader_factory_on_sb_) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-      CreateURLLoaderFactoryForSB(
-          url_loader_factory_on_sb_.BindNewPipeAndPassReceiver());
-    } else {
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &AwSafeBrowsingUIManager::CreateURLLoaderFactoryForSB, this,
-              url_loader_factory_on_sb_.BindNewPipeAndPassReceiver()));
-    }
-    shared_url_loader_factory_on_sb_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            url_loader_factory_on_sb_.get());
-  }
-  return shared_url_loader_factory_on_sb_;
-}
-
 int AwSafeBrowsingUIManager::GetErrorUiType(
     content::WebContents* web_contents) const {
   UIManagerClient* client = UIManagerClient::FromWebContents(web_contents);
@@ -130,7 +106,7 @@ AwSafeBrowsingUIManager::CreateBlockingPage(
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource,
     bool forward_extension_event,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   // The AwWebResourceRequest can't be provided yet, since the navigation hasn't
   // started. Once it has, it will be provided via
   // AwSafeBrowsingBlockingPage::CreatedErrorPageNavigation.
@@ -139,17 +115,6 @@ AwSafeBrowsingUIManager::CreateBlockingPage(
           this, contents, blocked_url, unsafe_resource, nullptr,
           blocked_page_shown_timestamp);
   return blocking_page;
-}
-
-void AwSafeBrowsingUIManager::CreateURLLoaderFactoryForSB(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto url_loader_factory_params =
-      network::mojom::URLLoaderFactoryParams::New();
-  url_loader_factory_params->process_id = network::mojom::kBrowserProcessId;
-  url_loader_factory_params->is_corb_enabled = false;
-  network_context_->GetNetworkContext()->CreateURLLoaderFactory(
-      std::move(receiver), std::move(url_loader_factory_params));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

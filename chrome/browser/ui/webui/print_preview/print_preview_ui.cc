@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
@@ -22,6 +26,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -30,6 +35,7 @@
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
+#include "chrome/browser/printing/print_compositor_util.h"
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_preview_data_service.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
@@ -37,7 +43,6 @@
 #include "chrome/browser/printing/printer_query.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
@@ -46,26 +51,22 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/branded_strings.h"
-#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/pdf_resources.h"
 #include "chrome/grit/pdf_resources_map.h"
 #include "chrome/grit/print_preview_resources.h"
 #include "chrome/grit/print_preview_resources_map.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
@@ -73,7 +74,6 @@
 #include "printing/print_job_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -91,9 +91,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-#include "chrome/browser/printing/prefs_util.h"
+#include "chrome/browser/printing/oop_features.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
-#include "printing/printing_features.h"
 #endif
 
 using content::WebContents;
@@ -103,7 +102,7 @@ namespace printing {
 namespace {
 
 #if BUILDFLAG(IS_MAC)
-const char16_t kBasicPrintShortcut[] = u"(\u2325\u2318P)";
+const char16_t kBasicPrintShortcut[] = u"(⌥⌘P)";
 #elif !BUILDFLAG(IS_CHROMEOS)
 const char16_t kBasicPrintShortcut[] = u"(Ctrl+Shift+P)";
 #endif
@@ -315,8 +314,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
                         IDS_PRINT_PREVIEW_SYSTEM_DIALOG_OPTION, shortcut_text));
 #endif
 
-  webui::SetupChromeRefresh2023(source);
-
   // Register strings for the PDF viewer, so that $i18n{} replacements work.
   base::Value::Dict pdf_strings;
   pdf_extension_util::AddStrings(
@@ -327,12 +324,6 @@ void AddPrintPreviewStrings(content::WebUIDataSource* source) {
 void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("useSystemDefaultPrinter", false);
-  source->AddBoolean(
-      "isPrintPreviewSetupAssistanceEnabled",
-      base::FeatureList::IsEnabled(::features::kPrintPreviewSetupAssistance));
-  source->AddBoolean(
-      "isLocalPrinterObservingEnabled",
-      base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
 #else
   bool system_default_printer = profile->GetPrefs()->GetBoolean(
       prefs::kPrintPreviewUseSystemDefaultPrinter);
@@ -343,13 +334,7 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
       "isEnterpriseManaged",
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  source->AddBoolean(
-      "isBorderlessPrintingEnabled",
-      base::FeatureList::IsEnabled(features::kEnableBorderlessPrinting));
-#else
-  source->AddBoolean("isBorderlessPrintingEnabled", false);
-#endif
+  source->AddBoolean("isBorderlessPrintingEnabled", BUILDFLAG(IS_CHROMEOS));
 }
 
 void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {
@@ -402,7 +387,8 @@ PrintPreviewHandler* CreatePrintPreviewHandlers(content::WebUI* web_ui) {
 }  // namespace
 
 PrintPreviewUIConfig::PrintPreviewUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIPrintHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme, chrome::kChromeUIPrintHost) {
+}
 
 bool PrintPreviewUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
@@ -416,12 +402,6 @@ bool PrintPreviewUIConfig::ShouldHandleURL(const GURL& url) {
 }
 
 PrintPreviewUIConfig::~PrintPreviewUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-PrintPreviewUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                            const GURL& url) {
-  return std::make_unique<PrintPreviewUI>(web_ui);
-}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PrintPreviewUI)
 
@@ -555,18 +535,28 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
     base::TimeDelta display_time =
         base::TimeTicks::Now() - initial_preview_start_time_;
     base::UmaHistogramTimes("PrintPreview.InitialDisplayTime", display_time);
+    base::UmaHistogramCustomTimes("PrintPreview.InitialDisplayTime.LongTimes",
+                                  display_time,
+                                  /*min=*/base::Seconds(10),
+                                  /*max=*/base::Seconds(60), /*buckets=*/50);
     if (first_print_usage_since_startup_) {
       base::UmaHistogramTimes("PrintPreview.InitialDisplayTimeFirstPrint",
                               display_time);
+      base::UmaHistogramCustomTimes(
+          "PrintPreview.InitialDisplayTimeFirstPrint.LongTimes", display_time,
+          /*min=*/base::Seconds(10), /*max=*/base::Seconds(60),
+          /*buckets=*/50);
     }
     initial_preview_start_time_ = base::TimeTicks();
   }
 
+  if (g_test_delegate) {
+    g_test_delegate->PreviewDocumentReady(web_ui()->GetWebContents(),
+                                          *data_bytes);
+  }
+
   SetPrintPreviewDataForIndex(COMPLETE_PREVIEW_DOCUMENT_INDEX,
                               std::move(data_bytes));
-  if (g_test_delegate) {
-    g_test_delegate->PreviewDocumentReady(web_ui()->GetWebContents());
-  }
   handler_->OnPrintPreviewReady(*id_, request_id);
 }
 
@@ -860,7 +850,7 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
     int32_t request_id) {
   if (printable_area_in_points.width() <= 0 ||
       printable_area_in_points.height() <= 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   // Save printable_area_in_points information for N-up conversion.
@@ -978,9 +968,10 @@ void PrintPreviewUI::DidPrepareDocumentForPreview(int32_t document_cookie,
   if (!render_frame_host)
     return;
 
+  PRINTER_LOG(EVENT) << "Compositing for document type "
+                     << GetCompositorDocumentType();
   client->PrepareToCompositeDocument(
-      document_cookie, render_frame_host,
-      PrintCompositeClient::GetDocumentType(),
+      document_cookie, render_frame_host, GetCompositorDocumentType(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PrintPreviewUI::OnPrepareForDocumentToPdfDone,
                          weak_ptr_factory_.GetWeakPtr(), request_id),
@@ -1120,7 +1111,7 @@ void PrintPreviewUI::SetDelegateForTesting(TestDelegate* delegate) {
 }
 
 void PrintPreviewUI::SetSelectedFileForTesting(const base::FilePath& path) {
-  handler_->FileSelectedForTesting(path, 0, nullptr);
+  handler_->FileSelectedForTesting(path, 0);  // IN-TEST
 }
 
 void PrintPreviewUI::SetPdfSavedClosureForTesting(base::OnceClosure closure) {

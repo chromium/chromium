@@ -21,8 +21,8 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -32,7 +32,7 @@ import org.chromium.components.feature_engagement.Tracker;
 
 /**
  * Controller to manage when and how we show re-engagement notifications to users.
- * TODO(crbug.com/1107536): Modularize this file.
+ * TODO(crbug.com/40140907): Modularize this file.
  */
 public class ReengagementNotificationController {
     /** An {@link Intent} action to open Chrome to the NTP. */
@@ -135,7 +135,8 @@ public class ReengagementNotificationController {
                 .setContentIntent(intentProvider)
                 .setAutoCancel(true);
 
-        NotificationManagerProxy notificationManager = new NotificationManagerProxyImpl(mContext);
+        BaseNotificationManagerProxy notificationManager =
+                BaseNotificationManagerProxyFactory.create(mContext);
         NotificationWrapper notification = builder.buildNotificationWrapper();
         notificationManager.notify(notification);
 

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/wm/multi_display/persistent_window_controller.h"
-#include "base/memory/raw_ptr.h"
 #include "ash/display/display_move_window_util.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -15,7 +14,9 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -24,7 +25,22 @@ using session_manager::SessionState;
 
 namespace ash {
 
-using PersistentWindowControllerTest = AshTestBase;
+class PersistentWindowControllerTest : public AshTestBase {
+ public:
+  PersistentWindowControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
+        /*disabled_features=*/{});
+  }
+  PersistentWindowControllerTest(const PersistentWindowControllerTest&) =
+      delete;
+  PersistentWindowControllerTest& operator=(
+      const PersistentWindowControllerTest&) = delete;
+  ~PersistentWindowControllerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
                                               const gfx::Rect& bounds) {
@@ -216,6 +232,34 @@ TEST_F(PersistentWindowControllerTest, NormalMirrorMode) {
   // Disables mirror mode.
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
+}
+
+// Tests that mirror and un-mirror a display with non-identical scale factor
+// (not 1.0f).
+TEST_F(PersistentWindowControllerTest,
+       MirrorDisplayWithNonIdenticalScaleFactor) {
+  UpdateDisplay("500x600,500x600*1.2");
+  ASSERT_EQ(1.2f, display_manager()->GetDisplayAt(1).device_scale_factor());
+
+  aura::Window* w1 =
+      CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
+  aura::Window* w2 =
+      CreateTestWindowInShellWithBounds(gfx::Rect(501, 0, 200, 100));
+
+  // Enables mirror mode.
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
+  EXPECT_TRUE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
+
+  // Disables mirror mode.
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
+  // The window should still be restored to the display with non-identical scale
+  // factor.
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(1.2f, display_manager()->GetDisplayAt(1).device_scale_factor());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(501, 0, 200, 100), w2->GetBoundsInScreen());
 }

@@ -66,7 +66,9 @@ constexpr base::TimeDelta kFullscreenLauncherTransitionDuration =
 // record UMA of input latency.
 void DidPresentCompositorFrame(base::TimeTicks event_time_stamp,
                                bool is_showing,
-                               base::TimeTicks presentation_timestamp) {
+                               const viz::FrameTimingDetails& details) {
+  base::TimeTicks presentation_timestamp =
+      details.presentation_feedback.timestamp;
   if (presentation_timestamp.is_null() || event_time_stamp.is_null() ||
       presentation_timestamp < event_time_stamp) {
     return;
@@ -229,12 +231,6 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   shelf_observer_.Reset();
   shelf_observer_.Observe(shelf);
 
-  // By setting us as a drag-and-drop recipient, the app list knows that we can
-  // handle items. Do this on every show because |view_| can be reused after a
-  // monitor is disconnected but that monitor's ShelfView and
-  // ScrollableShelfView are deleted. https://crbug.com/1163332
-  view_->SetDragAndDropHostOfCurrentAppList(
-      shelf->shelf_widget()->GetDragAndDropHostForAppList());
   std::unique_ptr<AppListView::ScopedAccessibilityAnnouncementLock>
       scoped_accessibility_lock;
 
@@ -368,8 +364,6 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
                             animation_observer));
     view_->SetState(AppListViewState::kClosed);
   }
-
-  view_->SetDragAndDropHostOfCurrentAppList(nullptr);
 
   base::RecordAction(base::UserMetricsAction("Launcher_Dismiss"));
 }
@@ -661,8 +655,6 @@ void AppListPresenterImpl::OnDisplayMetricsChanged(
 
 void AppListPresenterImpl::OnShelfShuttingDown() {
   shelf_observer_.Reset();
-  if (view_)
-    view_->SetDragAndDropHostOfCurrentAppList(nullptr);
 }
 
 void AppListPresenterImpl::SnapAppListBoundsToDisplayEdge() {

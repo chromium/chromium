@@ -20,8 +20,8 @@
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/safe_mode_delegate.h"
-#include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_type.h"
 
 class AuthFailure;
@@ -73,6 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
       AuthStatusConsumer* consumer,
       std::unique_ptr<SafeModeDelegate> safe_mode_delegate,
       base::RepeatingCallback<void(const AccountId&)> user_recorder,
+      bool new_user_can_become_owner,
       PrefService* local_state);
 
   // Authenticator overrides.
@@ -87,17 +88,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void LoginAsPublicSession(const UserContext& user_context) override;
   void LoginAsKioskAccount(const AccountId& app_account_id,
                            bool ephemeral) override;
-  void LoginAsArcKioskAccount(const AccountId& app_account_id,
-                              bool ephemeral) override;
   void LoginAsWebKioskAccount(const AccountId& app_account_id,
                               bool ephemeral) override;
   void LoginAuthenticated(std::unique_ptr<UserContext> user_context) override;
   void OnAuthSuccess() override;
   void OnAuthFailure(const AuthFailure& error) override;
-  void RecoverEncryptedData(std::unique_ptr<UserContext> user_context,
-                            const std::string& old_password) override;
-  void ResyncEncryptedData(bool ephemeral,
-                           std::unique_ptr<UserContext> user_context) override;
 
  protected:
   ~AuthSessionAuthenticator() override;
@@ -177,8 +172,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 
   // Notifies `UserDirectoryIntegrityManager` that a user creation
   // process has started.
-  void RecordCreatingNewUser(std::unique_ptr<UserContext> context,
-                             AuthOperationCallback callback);
+  void RecordCreatingNewUser(
+      user_manager::UserDirectoryIntegrityManager::CleanupStrategy,
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback);
 
   // Notifies `UserDirectoryIntegrityManager` that the newly created user
   // has added a first auth factor.
@@ -242,6 +239,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   std::unique_ptr<MountPerformer> mount_performer_;
 
   const raw_ptr<PrefService, DanglingUntriaged> local_state_;
+  bool new_user_can_become_owner_;
 
   base::WeakPtrFactory<AuthSessionAuthenticator> weak_factory_{this};
 };

@@ -93,14 +93,14 @@ CWV_EXPORT
 //
 // See the comment of |visibleURL| above for the difference between |visibleURL|
 // and |lastCommittedURL|.
-@property(nonatomic, readonly) NSURL* lastCommittedURL;
+@property(nonatomic, readonly, nullable) NSURL* lastCommittedURL;
 
 // The SSL status displayed in the URL bar. KVO compliant.
 // It is nil when no page is loaded on the web view.
 @property(nonatomic, readonly, nullable) CWVSSLStatus* visibleSSLStatus;
 
 // The current page title. KVO compliant.
-@property(nonatomic, readonly, copy) NSString* title;
+@property(nonatomic, readonly, copy, nullable) NSString* title;
 
 // Page loading progress from 0.0 to 1.0. KVO compliant.
 //
@@ -143,6 +143,11 @@ CWV_EXPORT
 // Whether or not to enable debugging by Safari Web Inspector.
 // Defaults to NO.
 @property(nonatomic, class) BOOL webInspectorEnabled;
+
+// Normally ios/web_view/ CHECKs IsOptedInForAccountStorage() early on. Setting
+// this to true will cause the CHECK to be skipped, which potentially fixes
+// crbug.com/347862165.
+@property(nonatomic, class) BOOL skipAccountStorageCheckEnabled;
 
 // Set this to customize the underlying WKWebView's inputAccessoryView. Setting
 // to nil means to use the WKWebView's default inputAccessoryView instead.
@@ -235,10 +240,17 @@ CWV_EXPORT
 // `completion` is invoked with the result of evaluating the script and a
 // boolean representing success (`YES`) or failure (`NO`) of the evaluation.
 //
-// Evaluation of `javaScriptString` will fail (and return NO to `completion`) if
-// there is no current internal representation of the main frame. This can occur
-// when the web view is navigating or if the current page content does not allow
-// JavaScript execution (ex: JS disabled or PDF content).
+// Evaluation of `javaScriptString` will fail (and return NO to `completion`)
+// if there is no current internal representation of the main frame. This can
+// occur when the web view is navigating or if the current page content does
+// not allow JavaScript execution (ex: JS disabled or PDF content).
+- (void)evaluateJavaScript:(NSString*)javaScriptString
+         completionHandler:(nullable void (^)(id result,
+                            NSError* __nullable error))completion;
+
+// DEPRECATED: Use `evaluateJavaScript:completionHandler` instead. These
+// methods are the same, but `evaluateJavaScript:completionHandler` provides
+// better Swift type compatibility.
 - (void)evaluateJavaScript:(NSString*)javaScriptString
                 completion:(void (^)(id result, NSError* error))completion;
 

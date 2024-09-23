@@ -158,7 +158,8 @@ class LiveCaptionUiRemoteDriverTest : public InProcessBrowserTest {
     // many tests.
     if (stub_bounds) {
       EXPECT_CALL(*surface, GetBounds(_))
-          .WillOnce([&](auto cb) { std::move(cb).Run(gfx::Rect(1, 2, 3, 4)); })
+          .WillOnce(
+              [&](auto cb) { std::move(cb).Run(gfx::Rect(1, 1, 600, 800)); })
           .RetiresOnSaturation();
     }
 
@@ -185,11 +186,11 @@ class LiveCaptionUiRemoteDriverTest : public InProcessBrowserTest {
 
   // Emulate clicking the given button with the mouse.
   void ClickButton(views::Button* button) {
-    button->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(0, 0), gfx::Point(0, 0),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+    button->OnMousePressed(ui::MouseEvent(
+        ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
+        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
     button->OnMouseReleased(ui::MouseEvent(
-        ui::ET_MOUSE_RELEASED, gfx::Point(0, 0), gfx::Point(0, 0),
+        ui::EventType::kMouseReleased, gfx::Point(0, 0), gfx::Point(0, 0),
         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 

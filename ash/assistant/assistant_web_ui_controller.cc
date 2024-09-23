@@ -25,10 +25,10 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
                                      views::Widget* widget)
       : owner_(owner),
         widget_(widget),
-        event_monitor_(
-            views::EventMonitor::CreateWindowMonitor(this,
-                                                     widget->GetNativeWindow(),
-                                                     {ui::ET_KEY_PRESSED})) {}
+        event_monitor_(views::EventMonitor::CreateWindowMonitor(
+            this,
+            widget->GetNativeWindow(),
+            {ui::EventType::kKeyPressed})) {}
 
   AssistantWebContainerEventObserver(
       const AssistantWebContainerEventObserver&) = delete;
@@ -39,7 +39,7 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
 
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override {
-    DCHECK(event.type() == ui::ET_KEY_PRESSED);
+    DCHECK(event.type() == ui::EventType::kKeyPressed);
 
     const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(event);
     switch (key_event.key_code()) {

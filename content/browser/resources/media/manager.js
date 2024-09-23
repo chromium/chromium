@@ -28,13 +28,13 @@ export class Manager {
     // In tests we may not have these buttons.
     if (copyAllPlayerButton) {
       copyAllPlayerButton.onclick = function() {
-        this.clientRenderer_.showClipboard(
+        this.clientRenderer_.renderClipboard(
             JSON.stringify(this.players_, null, 2));
       }.bind(this);
     }
     if (copyAllAudioButton) {
       copyAllAudioButton.onclick = function() {
-        this.clientRenderer_.showClipboard(
+        this.clientRenderer_.renderClipboard(
             JSON.stringify(this.audioInfo_, null, 2) + '\n\n' +
             JSON.stringify(this.audioComponents_, null, 2));
       }.bind(this);

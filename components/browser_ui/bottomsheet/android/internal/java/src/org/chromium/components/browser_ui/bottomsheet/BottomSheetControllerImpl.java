@@ -61,7 +61,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     /**
      * A list of observers maintained by this controller until the bottom sheet is created, at which
-     * point they will be added to the bottom  sheet.
+     * point they will be added to the bottom sheet.
      */
     private List<BottomSheetObserver> mPendingSheetObservers;
 
@@ -102,6 +102,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier;
 
+    private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+
     /**
      * Build a new controller of the bottom sheet.
      *
@@ -127,6 +129,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mSuppressionTokens = new TokenHolder(() -> onSuppressionTokensChanged());
         mAlwaysFullWidth = alwaysFullWidth;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
+        mKeyboardVisibilityDelegate = keyboardDelegate;
         mSheetInitializer =
                 () -> {
                     initializeSheet(initializedCallback, window, keyboardDelegate, root);
@@ -597,6 +600,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                     .removeObserver(mContentBackPressStateChangedObserver);
         }
         if (nextContent != null) {
+            mKeyboardVisibilityDelegate.hideKeyboard(mBottomSheetContainer);
             mContentBackPressStateChangedObserver =
                     (contentWillHandleBackPress) -> updateBackPressStateChangedSupplier();
             nextContent
@@ -619,6 +623,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         }
         mContentWhenSuppressed = null;
         mSheetStateBeforeSuppress = SheetState.NONE;
+    }
+
+    @Override
+    public boolean isFullWidth() {
+        return mBottomSheet.isFullWidth();
     }
 
     @Override

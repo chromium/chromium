@@ -108,6 +108,10 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Holds input frames coming from the client ready to be encoded.
   struct InputFrameRef;
 
+  // Thin wrapper around a ScopedVASurface to furnish it with a ReleaseCB to do
+  // something with it upon destruction, e.g. return it to a vector or pool.
+  class ScopedVASurfaceWrapper;
+
   //
   // Tasks for each of the VEA interface calls to be executed on
   // |encoder_task_runner_|.
@@ -141,30 +145,29 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   bool CreateSurfacesForGpuMemoryBufferEncoding(
       const VideoFrame& frame,
       const std::vector<gfx::Size>& spatial_layer_resolutions,
-      std::vector<scoped_refptr<VASurface>>* input_surfaces,
-      std::vector<scoped_refptr<VASurface>>* reconstructed_surfaces);
+      std::vector<std::unique_ptr<ScopedVASurfaceWrapper>>* input_surfaces,
+      std::vector<std::unique_ptr<ScopedVASurfaceWrapper>>*
+          reconstructed_surfaces);
 
   // Create input and reconstructed surfaces used in encoding from SharedMemory
   // VideoFrame |frame|. This must be called only in non native input mode.
   bool CreateSurfacesForShmemEncoding(
       const VideoFrame& frame,
-      scoped_refptr<VASurface>* input_surface,
-      scoped_refptr<VASurface>* reconstructed_surface);
+      std::unique_ptr<ScopedVASurfaceWrapper>* input_surface,
+      std::unique_ptr<ScopedVASurfaceWrapper>* reconstructed_surface);
 
-  // Creates one |encode_size| VASurface using |vaapi_wrapper_|.
-  // It returns a reference of an exiting available surface. If there is no
-  // available surface and the number of previously allocated surfaces is less
-  // than threshold, then it returns a reference to the newly created
-  // surface, that is also added to |available_encode_surfaces_[encode_size]|.
-  // Returns nullptr if too many surfaces have already been allocated, or if
-  // creation fails.
-  scoped_refptr<VASurface> CreateEncodeSurface(const gfx::Size& encode_size);
+  // Creates or retrieves a ScopedVASurface compatible with |encode_size|. If
+  // there is no available surface and the number of previously allocated
+  // surfaces is less than threshold, then it returns a reference to a newly
+  // created surface. Returns nullptr if too many surfaces have already been
+  // allocated, or if creation fails.
+  std::unique_ptr<ScopedVASurfaceWrapper> GetOrCreateReconstructedSurface(
+      const gfx::Size& encode_size);
 
-  // Creates VASurface using |vaapi_wrapper| whose sizes are |encode_size|
-  // with |surface_usage_hints|. Returns nullptr if the surfaces fail to be
-  // created successfully. The created surfaces are filled into
-  // |input_surfaces_[encode_size]|.
-  scoped_refptr<VASurface> CreateInputSurface(
+  // Creates or retrieves a ScopedVASurface compatible with |encode_size| and
+  // |surface_usage_hints|. Returns nullptr if the surfaces fail to be created
+  // successfully.
+  std::unique_ptr<ScopedVASurfaceWrapper> GetOrCreateInputSurface(
       VaapiWrapper& vaapi_wrapper,
       const gfx::Size& encode_size,
       const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints);
@@ -175,8 +178,8 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Executes BlitSurface() using |vpp_vaapi_wrapper_| with |source_surface|,
   // |source_visible_rect|. Returns the destination VASurface in BlitSurface()
   // whose size is |encode_size| on success, otherwise nullptr.
-  scoped_refptr<VASurface> ExecuteBlitSurface(
-      const VASurface& source_surface,
+  std::unique_ptr<ScopedVASurfaceWrapper> ExecuteBlitSurface(
+      const ScopedVASurface* source_surface,
       const gfx::Rect source_visible_rect,
       const gfx::Size& encode_size);
 
@@ -186,20 +189,23 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   std::unique_ptr<EncodeJob> CreateEncodeJob(
       bool force_keyframe,
       base::TimeDelta frame_timestamp,
+      uint8_t spatial_index,
       bool end_of_picture,
-      const VASurface& input_surface,
-      scoped_refptr<VASurface> reconstructed_surface);
+      VASurfaceID input_surface_id,
+      std::unique_ptr<ScopedVASurfaceWrapper> reconstructed_surface);
 
   // Continues encoding frames as long as input_queue_ is not empty, and we are
   // able to create new EncodeJobs.
   void EncodePendingInputs();
 
-  // Callback that returns a no longer used ScopedVASurface to
-  // |va_surfaces| for reuse and kicks EncodePendingInputs() again.
-  void RecycleVASurface(
-      std::vector<std::unique_ptr<ScopedVASurface>>* va_surfaces,
-      std::unique_ptr<ScopedVASurface> va_surface,
-      VASurfaceID va_surface_id);
+  // Callback that returns a no longer used ScopedVASurface |va_surface| to
+  // |input_surfaces_[encode_size]| or |available_encode_surfaces_[encode_size]|
+  // respectively, for reuse.
+  void RecycleInputScopedVASurface(const gfx::Size& encode_size,
+                                   std::unique_ptr<ScopedVASurface> va_surface);
+  void RecycleEncodeScopedVASurface(
+      const gfx::Size& encode_size,
+      std::unique_ptr<ScopedVASurface> va_surface);
 
   // Returns pending bitstream buffers to the client if we have both pending
   // encoded data to be completed and bitstream buffers available to download
@@ -228,11 +234,14 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // |num_instances_| tracks that number.
   static constexpr int kMaxNumOfInstances = 10;
   static base::AtomicRefCount num_instances_;
-  const bool can_use_encoder_;
+  const bool can_use_encoder_ GUARDED_BY_CONTEXT(child_sequence_checker_);
+
+  // All of the members below must be accessed on the encoder_task_runner_,
+  // while it is running.
 
   // The unchanged values are filled upon the construction. The varied values
   // are filled properly during encoding.
-  VideoEncoderInfo encoder_info_;
+  VideoEncoderInfo encoder_info_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // VaapiWrapper is the owner of all HW resources (surfaces and buffers)
   // and will free them on destruction.
@@ -241,61 +250,70 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // The expected coded size of incoming video frames when |native_input_mode_|
   // is false.
-  gfx::Size expected_input_coded_size_;
+  gfx::Size expected_input_coded_size_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // The codec of the stream to be produced. Set during initialization.
-  VideoCodec output_codec_ = VideoCodec::kUnknown;
+  VideoCodec output_codec_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) =
+      VideoCodec::kUnknown;
 
   // The visible rect to be encoded.
-  gfx::Rect visible_rect_;
+  gfx::Rect visible_rect_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Size in bytes required for output bitstream buffers.
-  size_t output_buffer_byte_size_ = 0;
+  size_t output_buffer_byte_size_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_) = 0;
   // Size of the max size of |pending_encode_results_|.
-  size_t max_pending_results_size_ = 0;
+  size_t max_pending_results_size_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_) = 0;
 
   // This flag signals when the client is sending NV12 + DmaBuf-backed
   // VideoFrames to encode, which allows for skipping a copy-adaptation on
   // input.
-  bool native_input_mode_ = false;
+  bool native_input_mode_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) = false;
 
   // The number of frames that needs to be held on encoding.
-  size_t num_frames_in_flight_ = 0;
-
-  // All of the members below must be accessed on the encoder_task_runner_,
-  // while it is running.
+  size_t num_frames_in_flight_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) =
+      0;
 
   // Encoder state. Encode tasks will only run in kEncoding state.
-  State state_ = State::kUninitialized;
+  State state_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) =
+      State::kUninitialized;
 
   // Encoder instance managing video codec state and preparing encode jobs.
   // Should only be used on |encoder_task_runner_|.
-  std::unique_ptr<VaapiVideoEncoderDelegate> encoder_;
+  std::unique_ptr<VaapiVideoEncoderDelegate> encoder_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Map of input surfaces. In non |native_input_mode_|, this is always created
   // and memory-based encode input VideoFrame is written into this.
   // In |native_input_mode_|, this is created only if scaling or cropping is
   // required and used as a VPP destination.
-  InputSurfaceMap input_surfaces_;
+  InputSurfaceMap input_surfaces_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Map of available reconstructed surfaces for encoding index by a layer
   // resolution. These are stored as reference frames in
   // VaapiVideoEncoderDelegate if necessary.
-  EncodeSurfacesMap available_encode_surfaces_;
+  EncodeSurfacesMap available_encode_surfaces_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Map of the number of allocated reconstructed surfaces for encoding
   // indexed by a layer resolution.
-  EncodeSurfacesCountMap encode_surfaces_count_;
+  EncodeSurfacesCountMap encode_surfaces_count_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Queue of input frames to be encoded.
-  base::queue<InputFrameRef> input_queue_;
+  base::queue<InputFrameRef> input_queue_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // BitstreamBuffers mapped, ready to be filled with encoded stream data.
-  base::queue<BitstreamBuffer> available_bitstream_buffers_;
+  base::queue<BitstreamBuffer> available_bitstream_buffers_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // VASurfaces already encoded and waiting for the bitstream buffer to
   // be downloaded.
-  base::queue<std::optional<EncodeResult>> pending_encode_results_;
+  base::queue<std::optional<EncodeResult>> pending_encode_results_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Task runner for interacting with the client, and its checker.
   const scoped_refptr<base::SequencedTaskRunner> child_task_runner_;
@@ -317,7 +335,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // The completion callback of the Flush() function.
-  FlushCallback flush_callback_;
+  FlushCallback flush_callback_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Supported profiles that are filled if and only if in a unit test.
   SupportedProfiles supported_profiles_for_testing_;

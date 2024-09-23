@@ -28,8 +28,9 @@ RulesetManager* GetRulesetManager(content::BrowserContext* context) {
 
 WebContentsHelper::WebContentsHelper(content::WebContents* web_contents)
     : ruleset_manager_(GetRulesetManager(web_contents->GetBrowserContext())) {
-  if (ruleset_manager_)
+  if (ruleset_manager_) {
     Observe(web_contents);
+  }
 }
 
 WebContentsHelper::~WebContentsHelper() = default;
@@ -49,8 +50,9 @@ void WebContentsHelper::RenderFrameDeleted(
 void WebContentsHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK(ruleset_manager_);
-  if (!navigation_handle->HasCommitted())
+  if (!navigation_handle->HasCommitted()) {
     return;
+  }
 
   ruleset_manager_->OnDidFinishNavigation(navigation_handle);
 }

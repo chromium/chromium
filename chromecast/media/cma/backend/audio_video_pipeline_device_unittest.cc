@@ -391,7 +391,7 @@ void BufferFeeder::FeedPcm() {
   scoped_refptr<::media::DecoderBuffer> silence_buffer(
       new ::media::DecoderBuffer(num_frames * audio_config_.channel_number *
                                  audio_config_.bytes_per_channel));
-  memset(silence_buffer->writable_data(), 0, silence_buffer->data_size());
+  memset(silence_buffer->writable_data(), 0, silence_buffer->size());
   pending_buffer_ = new media::DecoderBufferAdapter(silence_buffer);
   pending_buffer_->set_timestamp(timestamp_helper_->GetTimestamp());
   timestamp_helper_->AddFrames(num_frames);

@@ -16,10 +16,8 @@ android_device = None
 here = os.path.abspath(os.path.dirname(__file__))
 wpt_root = os.path.abspath(os.path.join(here, os.pardir, os.pardir))
 
-
-NDK_VERSION = "r25c"
-CMDLINE_TOOLS_VERSION_STRING = "11.0"
-CMDLINE_TOOLS_VERSION = "9644228"
+CMDLINE_TOOLS_VERSION_STRING = "12.0"
+CMDLINE_TOOLS_VERSION = "11076708"
 
 AVD_MANIFEST_X86_64 = {
     "emulator_package": "system-images;android-24;default;x86_64",
@@ -100,6 +98,8 @@ def install_fixed_emulator_version(logger, paths):
 
     emulator_path = os.path.join(paths["sdk"], "emulator")
     latest_emulator_path = os.path.join(paths["sdk"], "emulator_latest")
+    if os.path.exists(latest_emulator_path):
+        shutil.rmtree(latest_emulator_path)
     os.rename(emulator_path, latest_emulator_path)
 
     download_and_extract(url, paths["sdk"])
@@ -288,8 +288,8 @@ def install(logger, dest=None, reinstall=False, prompt=True):
 
         if new_install:
             packages = ["platform-tools",
-                        "build-tools;34.0.0",
-                        "platforms;android-34",
+                        "build-tools;35.0.0",
+                        "platforms;android-35",
                         "emulator"]
 
             install_android_packages(logger, paths, packages, prompt=prompt)
@@ -323,7 +323,16 @@ def start(logger, dest=None, reinstall=False, prompt=True, device_serial=None):
         emulator.start()
         timer = threading.Timer(300, cancel_start(threading.get_ident()))
         timer.start()
-        emulator.wait_for_start()
+        for i in range(10):
+            logger.info(f"Wait for emulator to start attempt {i + 1}/10")
+            try:
+                emulator.wait_for_start()
+            except Exception:
+                import traceback
+                logger.warning(f"""emulator.wait_for_start() failed:
+{traceback.format_exc()}""")
+            else:
+                break
         timer.cancel()
     return emulator
 

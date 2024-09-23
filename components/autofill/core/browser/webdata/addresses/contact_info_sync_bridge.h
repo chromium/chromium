@@ -19,12 +19,12 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 
@@ -34,10 +34,10 @@ class AutofillWebDataService;
 
 class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
                               public base::SupportsUserData::Data,
-                              public syncer::ModelTypeSyncBridge {
+                              public syncer::DataTypeSyncBridge {
  public:
   ContactInfoSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* backend);
   ~ContactInfoSyncBridge() override;
 
@@ -48,10 +48,10 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
       AutofillWebDataBackend* web_data_backend,
       AutofillWebDataService* web_data_service);
 
-  static syncer::ModelTypeSyncBridge* FromWebDataService(
+  static syncer::DataTypeSyncBridge* FromWebDataService(
       AutofillWebDataService* web_data_service);
 
-  // syncer::ModelTypeSyncBridge implementation.
+  // syncer::DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -60,8 +60,9 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;

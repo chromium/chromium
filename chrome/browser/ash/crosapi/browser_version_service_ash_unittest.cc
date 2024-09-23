@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chromeos/ash/components/standalone_browser/channel_util.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/update_client/update_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,12 +72,12 @@ TEST_F(BrowserVersionServiceAshTest,
   EXPECT_CALL(mock_component_update_service, AddObserver(_)).Times(1);
 
   std::string sample_browser_component_id =
-      browser_util::kLacrosDogfoodDevInfo.crx_id;
+      ash::standalone_browser::kLacrosDogfoodDevInfo.crx_id;
   std::string sample_browser_version_str = "95.0.0.0";
   std::vector<ComponentInfo> sample_components;
   sample_components.emplace_back(
       sample_browser_component_id, "",
-      base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
+      base::UTF8ToUTF16(ash::standalone_browser::kLacrosDogfoodDevInfo.name),
       base::Version(sample_browser_version_str), "");
   ON_CALL(mock_component_update_service, GetComponents())
       .WillByDefault(Return(sample_components));
@@ -104,12 +105,12 @@ TEST_F(BrowserVersionServiceAshTest,
 TEST_F(BrowserVersionServiceAshTest, GetInstalledBrowserVersion) {
   ::testing::NiceMock<MockComponentUpdateService> mock_component_update_service;
   std::string sample_browser_component_id =
-      browser_util::kLacrosDogfoodDevInfo.crx_id;
+      ash::standalone_browser::kLacrosDogfoodDevInfo.crx_id;
   std::string sample_browser_version_str = "95.0.0.0";
   std::vector<ComponentInfo> sample_components;
   sample_components.emplace_back(
       sample_browser_component_id, "",
-      base::UTF8ToUTF16(browser_util::kLacrosDogfoodDevInfo.name),
+      base::UTF8ToUTF16(ash::standalone_browser::kLacrosDogfoodDevInfo.name),
       base::Version(sample_browser_version_str), "");
   ON_CALL(mock_component_update_service, GetComponents())
       .WillByDefault(Return(sample_components));

@@ -357,7 +357,6 @@ gfx::Rect CollisionDetectionUtils::GetAdjustedBoundsByGravity(
     default:
       NOTREACHED();
   }
-  return bounds;
 }
 
 CollisionDetectionUtils::Gravity

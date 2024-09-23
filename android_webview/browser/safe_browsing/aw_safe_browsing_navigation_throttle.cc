@@ -72,7 +72,7 @@ AwSafeBrowsingNavigationThrottle::WillFailRequest() {
           AwSafeBrowsingBlockingPage::CreateBlockingPage(
               manager, handle->GetWebContents(), handle->GetURL(), resource,
               std::move(request),
-              /*blocked_page_shown_timestamp=*/absl::nullopt);
+              /*blocked_page_shown_timestamp=*/std::nullopt);
       std::string error_page_content = blocking_page->GetHTMLContents();
       security_interstitials::SecurityInterstitialTabHelper::
           AssociateBlockingPage(handle, base::WrapUnique(blocking_page));

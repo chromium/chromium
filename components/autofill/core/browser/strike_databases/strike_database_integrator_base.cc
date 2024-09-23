@@ -197,6 +197,49 @@ void StrikeDatabaseIntegratorBase::RemoveExpiredStrikes() {
   }
 }
 
+void StrikeDatabaseIntegratorBase::ClearStrikesByIdMatching(
+    const std::set<std::string>& ids_to_delete,
+    base::FunctionRef<std::string(const std::string&)> id_map) {
+  ClearStrikesByIdMatchingAndTime(ids_to_delete, base::Time::Min(),
+                                  base::Time::Max(), id_map);
+}
+
+void StrikeDatabaseIntegratorBase::ClearStrikesByIdMatchingAndTime(
+    const std::set<std::string>& ids_to_delete,
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::FunctionRef<std::string(const std::string&)> id_map) {
+  if (delete_begin.is_null()) {
+    delete_begin = base::Time::Min();
+  }
+
+  if (delete_end.is_null()) {
+    delete_end = base::Time::Max();
+  }
+
+  std::vector<std::string> keys_to_delete;
+  keys_to_delete.reserve(GetStrikeCache().size());
+
+  for (auto const& [key, strike_data] : GetStrikeCache()) {
+    std::string strike_id = GetIdFromKey(key);
+    if (strike_id.empty()) {
+      continue;
+    }
+
+    base::Time last_update = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(strike_data.last_update_timestamp()));
+
+    // Check if the time stamp of the record is within deletion range and if the
+    // domain is deleted.
+    if (last_update >= delete_begin && last_update <= delete_end &&
+        ids_to_delete.count(id_map(strike_id)) != 0) {
+      keys_to_delete.push_back(key);
+    }
+  }
+
+  ClearStrikesForKeys(keys_to_delete);
+}
+
 void StrikeDatabaseIntegratorBase::ClearStrikesForKeys(
     const std::vector<std::string>& keys) {
   strike_database_->ClearStrikesForKeys(keys);

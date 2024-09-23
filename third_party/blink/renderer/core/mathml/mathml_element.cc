@@ -61,14 +61,13 @@ bool ParseScriptLevel(const AtomicString& attributeValue,
     value = value.Right(1);
   }
 
-  return WTF::VisitCharacters(
-      value, [&](const auto* position, unsigned length) {
-        WTF::NumberParsingResult result;
-        constexpr auto kOptions =
-            WTF::NumberParsingOptions().SetAcceptMinusZeroForUnsigned();
-        scriptLevel = CharactersToUInt(position, length, kOptions, &result);
-        return result == WTF::NumberParsingResult::kSuccess;
-      });
+  return WTF::VisitCharacters(value, [&](auto chars) {
+    WTF::NumberParsingResult result;
+    constexpr auto kOptions =
+        WTF::NumberParsingOptions().SetAcceptMinusZeroForUnsigned();
+    scriptLevel = CharactersToUInt(chars, kOptions, &result);
+    return result == WTF::NumberParsingResult::kSuccess;
+  });
 }
 
 }  // namespace

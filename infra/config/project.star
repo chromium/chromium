@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+"""Project-wide settings and common structs (e.g. platform names)."""
+
 platform = struct(
     ANDROID = "android",
     CROS = "cros",
@@ -18,7 +20,7 @@ PLATFORMS = tuple([getattr(platform, a) for a in dir(platform)])
 def _platform_settings(
         *,
         description,  # buildifier: disable=unused-variable
-        sheriff_rotation = None):
+        gardener_rotation = None):
     """Declare settings for a platform on the project.
 
     This provides the project-wide settings for a platform, which should be
@@ -29,11 +31,11 @@ def _platform_settings(
       * description - A string describing why the platform is enabled in the
         project. This is not used by the starlark, but enables providing some
         form of documentaion in the json file.
-      * sheriff_rotation - The name of a sheriff rotation in which to include
+      * gardener_rotation - The name of a gardener rotation in which to include
         builders that are selected for the corresponding platform.
     """
     return struct(
-        sheriff_rotation = sheriff_rotation,
+        gardener_rotation = gardener_rotation,
     )
 
 def _project_settings(
@@ -52,11 +54,17 @@ def _project_settings(
     channel).
 
     Args:
-      * project - The name of the LUCI project.
+      * project - The name of the LUCI project. No logic should depend on this
+        value, it should only be used where the name of a project is required.
       * project_title - A string identifying the project in title contexts (e.g.
-        titles of consoles).
+        titles of consoles). No conditional logic should depend on this value,
+        it should only be used where the title of a project is required.
       * ref - The git ref containing the code for this branch.
-      * chrome_project - The name of the corresponding chrome project.
+      * chrome_project - The name of the corresponding chrome project. No logic
+        should depend on this value, it should only be used where the name of a
+        project is required.
+      * ref - The git ref containing the code for this branch. No logic should
+        depend on this value, it should only be used where a ref is required.
       * is_main - Whether or not this is the project for the main ref.
       * platforms - A mapping from a platform ID value to the settings for the
         platform. The valid platform ID values are the members of the platform

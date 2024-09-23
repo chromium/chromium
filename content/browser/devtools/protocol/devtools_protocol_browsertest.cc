@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -16,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -224,15 +226,15 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
   }
 
   bool HasHostForUrl(const GURL& url) {
-    int host_id = prerender_helper_->GetHostForUrl(url);
-    return host_id != RenderFrameHost::kNoFrameTreeNodeId;
+    FrameTreeNodeId host_id = prerender_helper_->GetHostForUrl(url);
+    return !!host_id;
   }
 
-  int AddPrerender(const GURL& prerendering_url) {
+  FrameTreeNodeId AddPrerender(const GURL& prerendering_url) {
     return prerender_helper_->AddPrerender(prerendering_url);
   }
 
-  RenderFrameHostImpl* GetPrerenderedMainFrameHost(int host_id) {
+  RenderFrameHostImpl* GetPrerenderedMainFrameHost(FrameTreeNodeId host_id) {
     return static_cast<RenderFrameHostImpl*>(
         prerender_helper_->GetPrerenderedMainFrameHost(host_id));
   }
@@ -286,15 +288,6 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
 
  private:
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
-};
-
-class MultiplePrerendersDevToolsProtocolTest
-    : public PrerenderDevToolsProtocolTest {
- public:
-  MultiplePrerendersDevToolsProtocolTest() = default;
-
- private:
-  test::ScopedPrerenderFeatureList prerender_feature_list_;
 };
 
 class SyntheticMouseEventTest : public DevToolsProtocolTest {
@@ -462,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinatesWithZoom) {
   HostZoomMap* host_zoom_map =
       HostZoomMap::GetForWebContents(shell()->web_contents());
   host_zoom_map->SetZoomLevelForHost(test_url.host(),
-                                     blink::PageZoomFactorToZoomLevel(2.5));
+                                     blink::ZoomFactorToZoomLevel(2.5));
   WaitForNotification("Page.frameResized", true);
 
   // In about 1 out of 1000 runs, the event gets lost on the way to the
@@ -783,7 +776,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                        CaptureScreenshotBeyondViewport_OutOfView) {
-  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // TODO(crbug.com/40488022) This test fails consistently on low-end Android
   // devices.
   if (base::SysInfo::IsLowEndDevice())
     return;
@@ -826,7 +819,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                        CaptureScreenshotBeyondViewport_IFrame) {
-  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // TODO(crbug.com/40488022) This test fails consistently on low-end Android
   // devices.
   if (base::SysInfo::IsLowEndDevice())
     return;
@@ -875,11 +868,11 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 }
 
 // ChromeOS and Android has fading out scrollbars, which makes the test flacky.
-// TODO(crbug.com/1150059) Android has a problem with changing scale.
-// TODO(crbug.com/1147911) Android Lollipop has a problem with capturing
+// TODO(crbug.com/40157725) Android has a problem with changing scale.
+// TODO(crbug.com/40156819) Android Lollipop has a problem with capturing
 // screenshot.
-// TODO(crbug.com/1156767) Flaky on linux-lacros-tester-rel
-// TODO(crbug.com/1286261): Failing on MacOS.
+// TODO(crbug.com/40736077) Flaky on linux-lacros-tester-rel
+// TODO(crbug.com/40815512): Failing on MacOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown \
@@ -891,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 IN_PROC_BROWSER_TEST_F(
     CaptureScreenshotTest,
     MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown) {
-  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // TODO(crbug.com/40488022) This test fails consistently on low-end Android
   // devices.
   if (base::SysInfo::IsLowEndDevice())
     return;
@@ -1096,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsViewport) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
-// TODO(crbug.com/1381597): Fix this failing test
+// TODO(crbug.com/40876878): Fix this failing test
 #if BUILDFLAG(IS_ANDROID)
                        DISABLED_TransparentScreenshotsBeyondViewport) {
 #else
@@ -1211,7 +1204,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-// TODO(crbug.com/1366271): Semi-transparent screenshots of viewport fail on
+// TODO(crbug.com/40239673): Semi-transparent screenshots of viewport fail on
 // android devices - a scrollbar is showing.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsFull) {
@@ -1342,7 +1335,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsFull) {
 // use of setDeviceMetricsOverride and setDefaultBackgroundColorOverride
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                        CaptureScreenshotBeyondViewport_Emulation) {
-  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // TODO(crbug.com/40488022) This test fails consistently on low-end Android
   // devices.
   if (base::SysInfo::IsLowEndDevice())
     return;
@@ -1407,6 +1400,37 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                     true);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       NoCrashDeviceMetricsOverrideAutoResize) {
+  NavigateToURLBlockUntilNavigationsComplete(
+      shell(), GURL("data:text/html,<body></body>"), 1);
+
+  // Enable auto resize.
+  gfx::Size min_size(10, 10);
+  gfx::Size max_size(100, 100);
+
+  RenderWidgetHostImpl* rwh = static_cast<RenderWidgetHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  rwh->GetView()->EnableAutoResize(min_size, max_size);
+
+  Attach();
+
+  // Send command.
+  auto params = base::Value::Dict();
+  params.Set("width", 50);
+  params.Set("height", 50);
+  params.Set("deviceScaleFactor", 1);
+  params.Set("mobile", false);
+  ASSERT_FALSE(
+      SendCommandSync("Emulation.setDeviceMetricsOverride", std::move(params)));
+
+  // Should not crash and should return an error.
+  EXPECT_EQ(*error()->FindInt("code"),
+            static_cast<int>(crdtp::DispatchCode::SERVER_ERROR));
+  EXPECT_EQ(*error()->FindString("message"),
+            "Target does not support metrics override");
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Disabled, see http://crbug.com/469947.
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizePinchGesture) {
@@ -1469,7 +1493,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1303155): Flaky on multiple bots.
+// TODO(crbug.com/40825729): Flaky on multiple bots.
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_PageCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
@@ -1579,7 +1603,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrashClearsPendingCommands) {
   EXPECT_THAT(console_messages_, ElementsAre("first page", "second page"));
 }
 
-// TODO(crbug.com/1280531): Disabled due to flakiness. Flaky on mac and linux
+// TODO(crbug.com/40811521): Disabled due to flakiness. Flaky on mac and linux
 // la-cros
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        DISABLED_NavigationPreservesMessages) {
@@ -1636,7 +1660,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteNoDetach) {
   EXPECT_FALSE(HasExistingNotification());
 }
 
-// TODO(crbug.com/1280746): Flaky on MacOS.
+// TODO(crbug.com/40811670): Flaky on MacOS.
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_CrossSiteNavigation) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2282,6 +2306,217 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateErrorBrowserTarget) {
                           ->GetURL());
 }
 
+class CertificateErrorIgnoredBrowserTargetTest : public DevToolsProtocolTest {
+ public:
+  CertificateErrorIgnoredBrowserTargetTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    DevToolsProtocolTest::SetUpOnMainThread();
+    net::SSLServerConfig ssl_config;
+    // ssl_config.client_cert_type =
+    //     net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+    // https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
+
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.Start());
+    GURL test_url = https_server_.GetURL("/devtools/navigation.html");
+
+    shell()->LoadURL(GURL("about:blank"));
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+    // Create a second client to concurrently connect to browser target,
+    // as the DevToolsProtocolTest class only has one client available to
+    // connect.
+    browser_client.AttachToBrowserTarget();
+    base::Value::Dict command_params;
+    command_params = base::Value::Dict();
+    command_params.Set("ignore", true);
+    browser_client.SendCommandSync("Security.setIgnoreCertificateErrors",
+                                   std::move(command_params));
+
+    // Connect the default client to the page.
+    Attach();
+    SendCommandSync("Debugger.enable");
+    // Clear cookies and cache to avoid interference with cert error events.
+    SendCommandSync("Network.enable");
+    SendCommandSync("Network.clearBrowserCache");
+    SendCommandSync("Network.clearBrowserCookies");
+
+    TestNavigationObserver continue_observer(shell()->web_contents(), 1);
+    shell()->LoadURL(test_url);
+    continue_observer.Wait();
+
+    EXPECT_EQ(test_url, shell()
+                            ->web_contents()
+                            ->GetController()
+                            .GetLastCommittedEntry()
+                            ->GetURL());
+  }
+
+  void TearDownOnMainThread() override {
+    // Detach the additional client
+    browser_client.DetachProtocolClient();
+    DevToolsProtocolTest::TearDownOnMainThread();
+  }
+
+  ~CertificateErrorIgnoredBrowserTargetTest() override = default;
+
+ protected:
+  TestDevToolsProtocolClient browser_client;
+  net::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
+                       CertificateErrorBrowserTargetServiceWorkerFetch) {
+  // Install a service worker over bad HTTPS cert and wait for the controller to
+  // change.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "navigator.serviceWorker.register('/devtools/service_worker.js');"
+      "navigator.serviceWorker.oncontrollerchange = () => {debugger;};"));
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+  // Reload the page so that request is intercepted by SW.
+  SendCommandSync("Page.reload");
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ("intercepted",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CertificateErrorIgnoredBrowserTargetTest,
+    CertificateErrorBrowserTargetServiceWorkerImportScripts) {
+  // Install a service worker over bad HTTPS cert and wait for the controller to
+  // change.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "navigator.serviceWorker.register('/devtools/"
+      "service_worker_import_classic.js');"
+      "navigator.serviceWorker.oncontrollerchange = () => {debugger;};"));
+  WaitForNotification("Debugger.paused");
+
+  SendCommandSync("Debugger.resume");
+
+  // Reload the page so that request is intercepted by SW.
+  SendCommandSync("Page.reload");
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ("imported",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
+                       CertificateErrorBrowserTargetServiceWorkerModuleImport) {
+  // Install a service worker over bad HTTPS cert and wait for the controller to
+  // change.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "navigator.serviceWorker.register('/devtools/"
+      "service_worker_import_module.js', {type: 'module'});"
+      "navigator.serviceWorker.oncontrollerchange = () => {debugger;};"));
+  WaitForNotification("Debugger.paused");
+
+  SendCommandSync("Debugger.resume");
+
+  // Reload the page so that request is intercepted by SW.
+  SendCommandSync("Page.reload");
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ("imported",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
+                       CertificateErrorBrowserTargetDedicatedWorker) {
+  // Install a dedicated worker over bad HTTPS cert.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "const myWorker = new Worker('/devtools/dedicated_worker.js');"
+      "myWorker.onmessage = (msg) => {document.body.textContent = msg.data; "
+      "debugger;};"
+      "myWorker.postMessage('test');"));
+
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+
+  EXPECT_EQ("reply test",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CertificateErrorIgnoredBrowserTargetTest,
+    CertificateErrorBrowserTargetDedicatedWorkerImportClassic) {
+  // Install a dedicated worker over bad HTTPS cert.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "const myWorker = new "
+      "Worker('/devtools/dedicated_worker_import_classic.js');"
+      "myWorker.onmessage = (msg) => {document.body.textContent = msg.data; "
+      "debugger;};"
+      "myWorker.postMessage('test');"));
+
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+
+  EXPECT_EQ("reply imported test",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    CertificateErrorIgnoredBrowserTargetTest,
+    CertificateErrorBrowserTargetDedicatedWorkerImportModule) {
+  // Install a dedicated worker over bad HTTPS cert.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "const myWorker = new "
+      "Worker('/devtools/dedicated_worker_import_module.js', {type: 'module'});"
+      "myWorker.onmessage = (msg) => {document.body.textContent = msg.data; "
+      "debugger;};"
+      "myWorker.postMessage('test');"));
+
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+
+  EXPECT_EQ("reply imported test",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
+// SharedWorkers are not enabled on Android. https://crbug.com/154571
+#if BUILDFLAG(IS_ANDROID)
+constexpr bool kIsSharedWorkerEnabled = false;
+#else
+constexpr bool kIsSharedWorkerEnabled = true;
+#endif
+
+IN_PROC_BROWSER_TEST_F(CertificateErrorIgnoredBrowserTargetTest,
+                       CertificateErrorBrowserTargetSharedWorker) {
+  if (!kIsSharedWorkerEnabled) {
+    return;
+  }
+  // Install a shared worker over bad HTTPS cert.
+  base::Value::Dict params;
+  ASSERT_TRUE(content::ExecJs(
+      shell()->web_contents(),
+      "const myWorker = new SharedWorker('/devtools/shared_worker.js');"
+      "myWorker.port.start();"
+      "myWorker.port.onmessage = (msg) => {document.body.textContent = "
+      "msg.data; debugger;};"
+      "myWorker.port.postMessage('test');"));
+  WaitForNotification("Debugger.paused");
+  SendCommandSync("Debugger.resume");
+
+  EXPECT_EQ("reply test",
+            EvalJs(shell()->web_contents(), "document.body.textContent"));
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SubresourceWithCertificateError) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
@@ -2501,6 +2736,62 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
     }
   }
   EXPECT_EQ(2u, found);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       ReturnsCookiesOnlyForAttachableUrls) {
+  SetNotAttachableHosts({"b.test"});
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  std::string cookies_to_set = "/set-cookie?foo=bar";
+
+  GURL url = embedded_test_server()->GetURL("b.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  url = embedded_test_server()->GetURL("c.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  url = embedded_test_server()->GetURL(
+      "a.test", "/cross_site_iframe_factory.html?a.test(b.test(),c.test())");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  Attach();
+  const base::Value::List* storage_cookies =
+      SendCommandSync("Storage.getCookies")->FindList("cookies");
+  ASSERT_EQ(1ul, storage_cookies->size());
+  EXPECT_EQ("foo", *storage_cookies->front().GetDict().FindString("name"));
+  EXPECT_EQ("c.test", *storage_cookies->front().GetDict().FindString("domain"));
+
+  const base::Value::List* network_all_cookies =
+      SendCommandSync("Network.getAllCookies")->FindList("cookies");
+  ASSERT_EQ(1ul, network_all_cookies->size());
+  EXPECT_EQ("foo", *network_all_cookies->front().GetDict().FindString("name"));
+  EXPECT_EQ("c.test",
+            *network_all_cookies->front().GetDict().FindString("domain"));
+
+  const base::Value::List* network_cookies_no_param =
+      SendCommandSync("Network.getCookies")->FindList("cookies");
+  ASSERT_EQ(1ul, network_cookies_no_param->size());
+  EXPECT_EQ("foo",
+            *network_cookies_no_param->front().GetDict().FindString("name"));
+  EXPECT_EQ("c.test",
+            *network_cookies_no_param->front().GetDict().FindString("domain"));
+
+  base::Value::List urls;
+  urls.Append(embedded_test_server()
+                  ->GetURL("b.com", "/cross_site_iframe_factory.html?b.test()")
+                  .spec());
+  urls.Append(embedded_test_server()
+                  ->GetURL("c.com", "/cross_site_iframe_factory.html?c.test()")
+                  .spec());
+  base::Value::Dict params;
+  params.Set("urls", std::move(urls));
+  const base::Value::List* network_cookies_with_param =
+      SendCommandSync("Network.getAllCookies", std::move(params))
+          ->FindList("cookies");
+  ASSERT_EQ(1ul, network_cookies_with_param->size());
+  EXPECT_EQ("foo",
+            *network_cookies_with_param->front().GetDict().FindString("name"));
+  EXPECT_EQ("c.test", *network_cookies_with_param->front().GetDict().FindString(
+                          "domain"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
@@ -2806,7 +3097,10 @@ class DevToolsProtocolBackForwardCacheTest : public DevToolsProtocolTest {
   ~DevToolsProtocolBackForwardCacheTest() override = default;
 
   // content::WebContentsDelegate:
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(
+      content::WebContents& web_contents) override {
+    return true;
+  }
 
   std::string Evaluate(const std::string& script,
                        const base::Location& location) {
@@ -2950,6 +3244,7 @@ class CountingDownloadFileFactory : public download::DownloadFileFactory {
       const base::FilePath& default_downloads_directory,
       std::unique_ptr<download::InputStream> stream,
       uint32_t download_id,
+      const base::FilePath& duplicate_download_file_path,
       base::WeakPtr<download::DownloadDestinationObserver> observer) override {
     return new CountingDownloadFile(std::move(save_info),
                                     default_downloads_directory,
@@ -3007,8 +3302,8 @@ class DownloadCreateObserver : DownloadManager::Observer {
   }
 
  private:
-  DownloadManager* manager_;
-  download::DownloadItem* item_;
+  raw_ptr<DownloadManager> manager_;
+  raw_ptr<download::DownloadItem> item_;
   bool received_item_response_;
   base::OnceClosure completion_closure_;
 };
@@ -3470,8 +3765,16 @@ class InvalidSystemTracingDevToolsProtocolTest
   }
 };
 
+// TODO(https://crbug.com/328350104): Fails ASAN builds
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_StartTracingFailsWithInvalidSockets \
+  DISABLED_StartTracingFailsWithInvalidSockets
+#else
+#define MAYBE_StartTracingFailsWithInvalidSockets \
+  StartTracingFailsWithInvalidSockets
+#endif
 IN_PROC_BROWSER_TEST_F(InvalidSystemTracingDevToolsProtocolTest,
-                       StartTracingFailsWithInvalidSockets) {
+                       MAYBE_StartTracingFailsWithInvalidSockets) {
   EXPECT_FALSE(StartSystemTrace());
 }
 
@@ -3849,7 +4152,7 @@ class NetworkResponseProtocolECHTest : public NetworkResponseProtocolTest {
     SetReplaceSystemDnsConfig();
   }
 
-  GURL GetURL(base::StringPiece path) {
+  GURL GetURL(std::string_view path) {
     return ech_server_.GetURL(kHostname, path);
   }
 
@@ -3887,7 +4190,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Make a prerendered page.
-  int host_id = AddPrerender(kPrerenderingUrl);
+  FrameTreeNodeId host_id = AddPrerender(kPrerenderingUrl);
   auto* prerender_render_frame_host = GetPrerenderedMainFrameHost(host_id);
   Attach();
   SendCommandSync("Preload.enable");
@@ -3925,7 +4228,7 @@ IN_PROC_BROWSER_TEST_F(
   const GURL prerendering_url = GetUrl("/empty.html?prerender");
 
   // Start prerendering.
-  const int host_id = AddPrerender(prerendering_url);
+  const FrameTreeNodeId host_id = AddPrerender(prerendering_url);
 
   Attach();
   SendCommandSync("Preload.enable");

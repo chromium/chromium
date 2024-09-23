@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/exo/display.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/test_security_delegate.h"
 #include "components/exo/wayland/fuzzer/actions.pb.h"
 #include "components/exo/wayland/server.h"
 
@@ -32,7 +33,8 @@ class WaylandFuzzerTest : public TestBase {
            1 /* overwrite */);
     TestBase::SetUp();
     display_ = std::make_unique<exo::Display>();
-    server_ = wayland::Server::Create(display_.get());
+    server_ = wayland::Server::Create(
+        display_.get(), std::make_unique<test::TestSecurityDelegate>());
     server_->StartWithDefaultPath(base::DoNothing());
   }
 

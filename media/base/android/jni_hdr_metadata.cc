@@ -4,9 +4,11 @@
 
 #include "media/base/android/jni_hdr_metadata.h"
 
-#include "media/base/android/media_jni_headers/HdrMetadata_jni.h"
 #include "media/base/video_color_space.h"
 #include "ui/gfx/hdr_metadata.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "media/base/android/media_jni_headers/HdrMetadata_jni.h"
 
 namespace media {
 

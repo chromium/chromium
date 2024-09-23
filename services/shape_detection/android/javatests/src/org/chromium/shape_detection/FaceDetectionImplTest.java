@@ -12,8 +12,6 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +19,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Manual;
 import org.chromium.shape_detection.mojom.FaceDetection;
 import org.chromium.shape_detection.mojom.FaceDetectionResult;
 import org.chromium.shape_detection.mojom.FaceDetectorOptions;
@@ -35,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 /** Test suite for FaceDetectionImpl. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@DisabledTest(message = "https://crbug.com/1153716")
 public class FaceDetectionImplTest {
     private static final org.chromium.skia.mojom.BitmapN32 MONA_LISA_BITMAP =
             TestUtils.mojoBitmapFromFile("mona_lisa.jpg");
@@ -113,21 +110,21 @@ public class FaceDetectionImplTest {
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @Feature({"ShapeDetection"})
     public void testDetectValidImageWithAndroidAPI() {
         detectSucceedsOnValidImage(DetectionProviderType.ANDROID);
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @Feature({"ShapeDetection"})
     public void testDetectValidImageWithGmsCore() {
         detectSucceedsOnValidImage(DetectionProviderType.GMS_CORE);
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @Feature({"ShapeDetection"})
     public void testDetectHandlesOddWidthWithAndroidAPI() {
         // Pad the image so that the width is odd.
@@ -150,7 +147,7 @@ public class FaceDetectionImplTest {
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @Feature({"ShapeDetection"})
     public void testDetectFacesInProfileWithGmsCore() {
         final int numFaces = 4;
@@ -225,7 +222,7 @@ public class FaceDetectionImplTest {
     }
 
     @Test
-    @SmallTest
+    @Manual(message = "https://crbug.com/40159200. Require multiple GMSCore libraries.")
     @Feature({"ShapeDetection"})
     public void testDetectRotatedFaceWithGmsCore() {
         Matrix matrix = new Matrix();

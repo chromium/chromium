@@ -12,6 +12,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/views/view.h"
 
@@ -27,7 +28,8 @@ LowDiskSpaceDialogView::LowDiskSpaceDialogView(views::View* anchor_view,
       IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_TITLE));
 
   // Set up OK button
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_OK));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 l10n_util::GetStringUTF16(IDS_OK));
   SetAcceptCallback(base::BindOnce(
       [](LowDiskSpaceDialogView* dialog) {
         std::move(dialog->close_callback_).Run(/*should_open_storage=*/false);
@@ -36,7 +38,7 @@ LowDiskSpaceDialogView::LowDiskSpaceDialogView(views::View* anchor_view,
 
   // Set up Cancel button as "Storage" button
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(
           IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_STORAGE_BUTTON));
   SetCancelCallback(base::BindOnce(

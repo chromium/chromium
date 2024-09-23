@@ -7,9 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// Accessibility identifier for the Inactive Tabs button (entry point).
-extern NSString* const kInactiveTabsButtonAccessibilityIdentifier;
-
 // Accessibility identifier for the User Education screen.
 extern NSString* const kInactiveTabsUserEducationAccessibilityIdentifier;
 

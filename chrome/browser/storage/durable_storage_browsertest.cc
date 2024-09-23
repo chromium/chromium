@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, BookmarkThenUnbookmark) {
 
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
-  bookmarks::RemoveAllBookmarks(bookmark_model, url_);
+  bookmarks::RemoveAllBookmarks(bookmark_model, url_, FROM_HERE);
 
   // Unbookmarking doesn't change the permission.
   EXPECT_TRUE(CheckPermission());

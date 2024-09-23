@@ -37,6 +37,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
+    "java/src/org/chromium/chrome/browser/tab/state/ArchivePersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/EmptyByteBufferPersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedTabDataStorage.java",
@@ -72,6 +73,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//cc:cc_java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/commerce/android:java",
     "//chrome/browser/commerce/price_tracking/android:java",
@@ -81,11 +83,14 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/pdf:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/autofill/android:autofill_features_java",
     "//components/browser_ui/util/android:java",
     "//components/commerce/core:proto_java",
     "//components/commerce/core/android:core_java",
     "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/external_intents/android:java",
@@ -134,7 +139,10 @@ generate_jni("jni_headers") {
 
 proto_java_library("critical_persisted_tab_data_proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/tab/state/proto"
-  sources = [ "$proto_path/shopping_persisted_tab_data.proto" ]
+  sources = [
+    "$proto_path/archive_persisted_tab_data.proto",
+    "$proto_path/shopping_persisted_tab_data.proto",
+  ]
 }
 
 robolectric_library("junit") {

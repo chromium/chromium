@@ -91,8 +91,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
 
  private:
   friend class CellularESimInstallerTest;
-  friend class CellularESimInstallerLegacyTest;
-  friend class CellularPolicyHandlerLegacyTest;
   friend class CellularPolicyHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileInvalidActivationCode);
@@ -105,18 +103,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
                            InstallProfileViaQrCodeSuccess);
   FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerTest,
                            InstallProfileAlreadyConnected);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileInvalidActivationCode);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileConnectFailure);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileSuccess);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileAutoConnect);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileViaQrCodeSuccess);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimInstallerLegacyTest,
-                           InstallProfileAlreadyConnected);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -126,19 +112,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
     kHermesInstallFailed = 2,
     kMaxValue = kHermesInstallFailed
   };
-
-  // TODO(b/281904820): Remove once SM-DS Support has fully launched and we have
-  // enough data to confirm that the new metrics are correct.
-  // Record the result of an attempt to install an eSIM profile either via a
-  // QR code or policy configuration. It also records to
-  // ESim.Policy.ESimInstall.Initial.OperationResult
-  // or ESim.Policy.ESimInstall.Retry.OperationResult histogram to indicate
-  // whether the policy eSIM profile installation is an initial attempt or not.
-  static void RecordInstallESimProfileResultLegacy(
-      InstallESimProfileResult result,
-      bool is_managed,
-      bool is_initial_install,
-      bool is_install_via_qr_code);
 
   // Record the result of an attempt to install an eSIM profile. This function
   // will emit to histograms that capture the method used and whether this is

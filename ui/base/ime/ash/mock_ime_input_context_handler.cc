@@ -27,9 +27,7 @@ void MockIMEInputContextHandler::CommitText(
     ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   ++commit_text_call_count_;
   last_commit_text_ = text;
-  for (Observer& observer : observers_) {
-    observer.OnCommitText(text);
-  }
+  observers_.Notify(&Observer::OnCommitText, text);
 }
 
 void MockIMEInputContextHandler::UpdateCompositionText(
@@ -153,8 +151,9 @@ void MockIMEInputContextHandler::ConfirmComposition(bool reset_engine) {
   // TODO(b/134473433) Modify this function so that the selection is unchanged.
   NOTIMPLEMENTED_LOG_ONCE();
 
-  if (!HasCompositionText())
+  if (!HasCompositionText()) {
     return;
+  }
 
   CommitText(
       last_update_composition_arg_.composition_text.text,

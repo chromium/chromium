@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/debug/asan_service.h"
 
 #if defined(ADDRESS_SANITIZER)
@@ -15,9 +20,8 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/win/windows_types.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN)
@@ -72,15 +76,11 @@ void AsanService::Initialize() {
   if (!is_initialized_) {
 #if BUILDFLAG(IS_WIN)
     if (logging::IsLoggingToFileEnabled()) {
-      // This path is allowed by the sandbox when `--enable-logging
-      //  --log-file={path}` are both specified when launching Chromium.
-      auto log_file = base::File(
-          base::FilePath(logging::GetLogFileFullPath()),
-          base::File::Flags::FLAG_OPEN_ALWAYS | base::File::Flags::FLAG_APPEND);
-      if (log_file.IsValid()) {
+      // Sandboxed processes cannot open files but are provided a HANDLE.
+      HANDLE log_handle = logging::DuplicateLogFileHandle();
+      if (log_handle) {
         // Sanitizer APIs need a HANDLE cast to void*.
-        __sanitizer_set_report_fd(
-            reinterpret_cast<void*>(log_file.TakePlatformFile()));
+        __sanitizer_set_report_fd(reinterpret_cast<void*>(log_handle));
       }
     }
 #endif  // BUILDFLAG(IS_WIN)

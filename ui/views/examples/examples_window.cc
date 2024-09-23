@@ -10,10 +10,10 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -84,7 +84,7 @@ ExampleVector GetExamplesToShow(ExampleVector examples) {
     // If there are still example names in the list, only include the examples
     // from the list.
     if (!valid_examples.empty()) {
-      base::EraseIf(examples, [valid_examples](auto& example) {
+      std::erase_if(examples, [valid_examples](auto& example) {
         return !base::Contains(valid_examples, example->example_title());
       });
     }
@@ -152,7 +152,8 @@ class ExamplesWindowContents : public WidgetDelegateView,
     if (on_close_)
       std::move(on_close_).Run();
   }
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override {
     gfx::Size size(800, 300);
     for (size_t i = 0; i < tabbed_pane_->GetTabCount(); i++) {
       size.set_height(std::max(
@@ -198,7 +199,8 @@ void ShowExamplesWindow(base::OnceClosure on_close,
   } else {
     examples = GetExamplesToShow(std::move(examples));
     Widget* widget = new Widget;
-    Widget::InitParams params;
+    Widget::InitParams params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_WINDOW);
     params.delegate =
         new ExamplesWindowContents(std::move(on_close), std::move(examples));
     params.context = window_context;

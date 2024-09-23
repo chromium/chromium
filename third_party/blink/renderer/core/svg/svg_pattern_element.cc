@@ -22,7 +22,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_pattern_element.h"
 
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_pattern.h"
@@ -107,19 +106,6 @@ void SVGPatternElement::ClearResourceReferences() {
   RemoveAllOutgoingReferences();
 }
 
-void SVGPatternElement::CollectStyleForPresentationAttribute(
-    const QualifiedName& name,
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  if (name == svg_names::kPatternTransformAttr) {
-    AddPropertyToPresentationAttributeStyle(
-        style, CSSPropertyID::kTransform,
-        *pattern_transform_->CurrentValue()->CssValue());
-    return;
-  }
-  SVGElement::CollectStyleForPresentationAttribute(name, value, style);
-}
-
 void SVGPatternElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
@@ -128,9 +114,7 @@ void SVGPatternElement::SvgAttributeChanged(
       attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
 
   if (attr_name == svg_names::kPatternTransformAttr) {
-    InvalidateSVGPresentationAttributeStyle();
-    SetNeedsStyleRecalc(kLocalStyleChange,
-                        StyleChangeReasonForTracing::FromAttribute(attr_name));
+    UpdatePresentationAttributeStyle(*pattern_transform_);
   }
 
   if (is_length_attr || attr_name == svg_names::kPatternUnitsAttr ||
@@ -348,11 +332,7 @@ void SVGPatternElement::SynchronizeAllSVGAttributes() const {
 
 void SVGPatternElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  DCHECK(pattern_transform_->HasPresentationAttributeMapping());
-  if (pattern_transform_->IsAnimating()) {
-    CollectStyleForPresentationAttribute(pattern_transform_->AttributeName(),
-                                         g_empty_atom, style);
-  }
+  AddAnimatedPropertyToPresentationAttributeStyle(*pattern_transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

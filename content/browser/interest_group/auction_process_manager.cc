@@ -11,6 +11,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -28,6 +30,21 @@
 #include "url/origin.h"
 
 namespace content {
+
+namespace {
+
+void RecordRequestWorkletServiceOutcomeUMA(
+    AuctionProcessManager::WorkletType worklet_type,
+    AuctionProcessManager::RequestWorkletServiceOutcome result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Ads.InterestGroup.Auction.",
+                    worklet_type == AuctionProcessManager::WorkletType::kSeller
+                        ? "Seller."
+                        : "Buyer.",
+                    "RequestWorkletServiceOutcome"}),
+      result);
+}
+}  // namespace
 
 constexpr size_t AuctionProcessManager::kMaxBidderProcesses = 10;
 constexpr size_t AuctionProcessManager::kMaxSellerProcesses = 3;
@@ -195,9 +212,10 @@ void AuctionProcessManager::ProcessHandle::AssignProcess(
 }
 
 void AuctionProcessManager::ProcessHandle::OnBaseProcessLaunched(
-    const base::Process& process) {
-  if (worklet_process_)
+    const base::Process& process) const {
+  if (worklet_process_) {
     worklet_process_->OnLaunchedWithPid(process.Pid());
+  }
 }
 
 void AuctionProcessManager::ProcessHandle::InvokeCallback() {
@@ -236,12 +254,21 @@ bool AuctionProcessManager::RequestWorkletService(
   //
   // This needs to be done before TryCreateOrGetProcessForHandle, since
   // shared processes really can't be keyed by origin.
-  if (TryUseSharedProcess(process_handle))
+  if (TryUseSharedProcess(process_handle)) {
+    RecordRequestWorkletServiceOutcomeUMA(
+        worklet_type, RequestWorkletServiceOutcome::kUsedSharedProcess);
     return true;
+  }
 
   // If can assign a process to the handle instantly, nothing else to do.
-  if (TryCreateOrGetProcessForHandle(process_handle))
+  RequestWorkletServiceOutcome create_or_get_process_outcome =
+      TryCreateOrGetProcessForHandle(process_handle);
+  RecordRequestWorkletServiceOutcomeUMA(worklet_type,
+                                        create_or_get_process_outcome);
+  if (create_or_get_process_outcome !=
+      RequestWorkletServiceOutcome::kHitProcessLimit) {
     return true;
+  }
 
   PendingRequestQueue* pending_requests = GetPendingRequestQueue(worklet_type);
   pending_requests->push_back(process_handle);
@@ -255,7 +282,8 @@ bool AuctionProcessManager::RequestWorkletService(
   return false;
 }
 
-bool AuctionProcessManager::TryCreateOrGetProcessForHandle(
+AuctionProcessManager::RequestWorkletServiceOutcome
+AuctionProcessManager::TryCreateOrGetProcessForHandle(
     ProcessHandle* process_handle) {
   // Look for a pre-existing matching process.
   ProcessMap* processes = Processes(process_handle->worklet_type_);
@@ -263,13 +291,13 @@ bool AuctionProcessManager::TryCreateOrGetProcessForHandle(
   if (process_it != processes->end()) {
     // If there's a matching process, assign it.
     process_handle->AssignProcess(WrapRefCounted(process_it->second));
-    return true;
+    return RequestWorkletServiceOutcome::kUsedExistingDedicatedProcess;
   }
 
   // If the corresponding process limit has been hit, can't create a new
   // process.
   if (!HasAvailableProcessSlot(process_handle->worklet_type_))
-    return false;
+    return RequestWorkletServiceOutcome::kHitProcessLimit;
 
   // Launch the process and create WorkletProcess object bound to it.
   mojo::Remote<auction_worklet::mojom::AuctionWorkletService> service;
@@ -286,7 +314,8 @@ bool AuctionProcessManager::TryCreateOrGetProcessForHandle(
 
   (*processes)[process_handle->origin_] = worklet_process.get();
   process_handle->AssignProcess(std::move(worklet_process));
-  return true;
+  OnNewProcessAssigned(process_handle);
+  return RequestWorkletServiceOutcome::kCreatedNewDedicatedProcess;
 }
 
 AuctionProcessManager::AuctionProcessManager() = default;
@@ -324,7 +353,7 @@ void AuctionProcessManager::RemovePendingProcessHandle(
   PendingRequestMap* pending_request_map =
       GetPendingRequestMap(process_handle->worklet_type_);
   auto it = pending_request_map->find(process_handle->origin_);
-  DCHECK(it != pending_request_map->end());
+  CHECK(it != pending_request_map->end(), base::NotFatalUntil::M130);
   DCHECK_EQ(1u, it->second.count(process_handle));
   it->second.erase(process_handle);
   // If there are no more pending requests for the same origin, remove the
@@ -337,7 +366,7 @@ void AuctionProcessManager::OnWorkletProcessUnusable(
     WorkletProcess* worklet_process) {
   ProcessMap* processes = Processes(worklet_process->worklet_type());
   auto it = processes->find(worklet_process->origin());
-  DCHECK(it != processes->end());
+  CHECK(it != processes->end(), base::NotFatalUntil::M130);
   processes->erase(it);
 
   // May need to launch another process at this point.
@@ -380,7 +409,8 @@ void AuctionProcessManager::OnWorkletProcessUnusable(
     // available process slot. Subsequent requests will just receive the process
     // created for the first request. Could cache the process returned by the
     // first request and reuse it, but doesn't seem worth the effort.
-    bool process_created = TryCreateOrGetProcessForHandle(process_handle);
+    bool process_created = TryCreateOrGetProcessForHandle(process_handle) !=
+                           RequestWorkletServiceOutcome::kHitProcessLimit;
     CHECK(process_created);
     --num_matching_requests;
 
@@ -430,7 +460,7 @@ RenderProcessHost* DedicatedAuctionProcessManager::LaunchProcess(
       ServiceProcessHost::Options()
           .WithDisplayName(display_name)
 #if BUILDFLAG(IS_MAC)
-          // TODO(https://crbug.com/1281311) add a utility helper for Jit.
+          // TODO(crbug.com/40812055) add a utility helper for Jit.
           .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
 #endif
           .WithProcessCallback(base::BindOnce(

@@ -150,7 +150,7 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemStayed) {
   PasswordForm insecure_credential =
       CreateInsecureCredential(kUsername, kPassword);
 
-  PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
+  PostSaveCompromisedHelper helper(std::vector{insecure_credential}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   ExpectGetLoginsCall({form1, form2});
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 2));
@@ -168,7 +168,7 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
   PasswordForm form2 = CreateInsecureCredential(kUsername2, kPassword2);
   PasswordForm form3 = CreateInsecureCredential(kUsername, kPassword);
 
-  PostSaveCompromisedHelper helper({&form2, &form3}, kUsername);
+  PostSaveCompromisedHelper helper(std::vector{form2, form3}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedWithMoreToFix, 1));
   ExpectGetLoginsCall({form1, form2});
@@ -182,7 +182,7 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
 TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckNeverDone) {
   PasswordForm insecure_credential =
       CreateInsecureCredential(kUsername, kPassword);
-  PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
+  PostSaveCompromisedHelper helper(std::vector{insecure_credential}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
   EXPECT_CALL(*profile_store(), GetAutofillableLogins).Times(0);
@@ -199,7 +199,7 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneLongAgo) {
       (base::Time::Now() - base::Days(5)).InSecondsFSinceUnixEpoch());
   PasswordForm insecure_credential =
       CreateInsecureCredential(kUsername, kPassword);
-  PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
+  PostSaveCompromisedHelper helper(std::vector{insecure_credential}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
   EXPECT_CALL(*profile_store(), GetAutofillableLogins).Times(0);
@@ -216,7 +216,7 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneRecently) {
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm insecure_credential =
       CreateInsecureCredential(kUsername, kPassword);
-  PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
+  PostSaveCompromisedHelper helper(std::vector{insecure_credential}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedSafeState, 0));
   ExpectGetLoginsCall({CreateForm(kSignonRealm, kUsername, kPassword)});
@@ -233,7 +233,7 @@ TEST_F(PostSaveCompromisedHelperTest, BubbleShownEvenIfIssueIsMuted) {
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm insecure_credential = CreateInsecureCredential(
       kUsername, kPassword, PasswordForm::Store::kProfileStore, IsMuted(true));
-  PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
+  PostSaveCompromisedHelper helper(std::vector{insecure_credential}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedSafeState, 0));
   ExpectGetLoginsCall({CreateForm(kSignonRealm, kUsername, kPassword)});
@@ -250,7 +250,7 @@ TEST_F(PostSaveCompromisedHelperTest, MutedIssuesNotIncludedToCount) {
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm insecure_credential =
       CreateInsecureCredential(kUsername, kPassword);
-  PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
+  PostSaveCompromisedHelper helper(std::vector{insecure_credential}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kPasswordUpdatedWithMoreToFix, 1));
   PasswordForm form1 = CreateForm(kSignonRealm, kUsername, kPassword);
@@ -300,9 +300,9 @@ TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
   PasswordForm compromised_account_credential = CreateInsecureCredential(
       kUsername, kPassword, PasswordForm::Store::kAccountStore);
 
-  PostSaveCompromisedHelper helper(
-      {&compromised_profile_credential, &compromised_account_credential},
-      kUsername);
+  PostSaveCompromisedHelper helper(std::vector{compromised_profile_credential,
+                                               compromised_account_credential},
+                                   kUsername);
   EXPECT_CALL(*profile_store(), GetAutofillableLogins)
       .WillOnce(testing::WithArg<0>(
           [store =

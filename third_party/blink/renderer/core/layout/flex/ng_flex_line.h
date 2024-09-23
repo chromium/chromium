@@ -29,6 +29,8 @@ struct NGFlexItem {
   // fragmentation. This is only used for column flex containers.
   LayoutUnit total_remaining_block_size;
   FlexOffset offset;
+  bool is_initial_block_size_indefinite = false;
+  bool is_used_flex_basis_indefinite = false;
   bool has_descendant_that_depends_on_percentage_block_size = false;
   BlockNode ng_input_node;
 };
@@ -45,6 +47,7 @@ struct NGFlexLine {
 
   void Trace(Visitor* visitor) const { visitor->Trace(line_items); }
 
+  LayoutUnit main_axis_free_space;
   LayoutUnit line_cross_size;
   LayoutUnit cross_axis_offset;
   LayoutUnit major_baseline;

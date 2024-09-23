@@ -27,6 +27,8 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
@@ -97,11 +99,12 @@ RawResource::RawResource(const ResourceRequest& resource_request,
                          const ResourceLoaderOptions& options)
     : Resource(resource_request, type, options) {}
 
-void RawResource::AppendData(const char* data, size_t length) {
+void RawResource::AppendData(
+    absl::variant<SegmentedBuffer, base::span<const char>> data) {
   if (GetResourceRequest().UseStreamOnResponse())
     return;
 
-  Resource::AppendData(data, length);
+  Resource::AppendData(std::move(data));
 }
 
 class RawResource::PreloadBytesConsumerClient final
@@ -126,7 +129,12 @@ class RawResource::PreloadBytesConsumerClient final
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
-        client->DataReceived(resource_, buffer, available);
+        client->DataReceived(resource_,
+                             // SAFETY: `BeginRead` must ensure that `buffer`
+                             // has `available` bytes available.
+                             // TODO(crbug.com/40284755): Capture this invariant
+                             // by making it return an actual span.
+                             UNSAFE_BUFFERS(base::span(buffer, available)));
         result = bytes_consumer_->EndRead(available);
       }
       if (result != BytesConsumer::Result::kOk) {

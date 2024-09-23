@@ -122,14 +122,15 @@ TEST(DOMWebSocketTest, connectToNonWsURL) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
-  websocket_scope.Socket().Connect("http://example.com/", Vector<String>(),
-                                   scope.GetExceptionState());
+  websocket_scope.Socket().Connect("bad-scheme://example.com/",
+                                   Vector<String>(), scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(DOMExceptionCode::kSyntaxError,
             scope.GetExceptionState().CodeAs<DOMExceptionCode>());
   EXPECT_EQ(
-      "The URL's scheme must be either 'ws' or 'wss'. 'http' is not allowed.",
+      "The URL's scheme must be either 'http', 'https', 'ws', or 'wss'. "
+      "'bad-scheme' is not allowed.",
       scope.GetExceptionState().Message());
   EXPECT_EQ(DOMWebSocket::kClosed, websocket_scope.Socket().readyState());
 }

@@ -7,8 +7,8 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
     PrivacySandboxBrowserProxy {
-  private fledgeState_: FledgeState;
-  private topicsState_: TopicsState;
+  private fledgeState_: FledgeState = {joiningSites: [], blockedSites: []};
+  private topicsState_: TopicsState = {blockedTopics: [], topTopics: []};
   private firstLevelTopicsState_:
       FirstLevelTopicsState = {firstLevelTopics: [], blockedTopics: []};
   private childTopicsCurrentlyAssigned_: CanonicalTopic[] = [];
@@ -23,26 +23,6 @@ export class TestPrivacySandboxBrowserProxy extends TestBrowserProxy implements
       'setTopicAllowed',
       'topicsToggleChanged',
     ]);
-
-    this.fledgeState_ = {
-      joiningSites: ['test-site-one.com'],
-      blockedSites: ['test-site-two.com'],
-    };
-
-    this.topicsState_ = {
-      topTopics: [{
-        topicId: 1,
-        taxonomyVersion: 1,
-        displayString: 'test-topic-1',
-        description: '',
-      }],
-      blockedTopics: [{
-        topicId: 2,
-        taxonomyVersion: 1,
-        displayString: 'test-topic-2',
-        description: '',
-      }],
-    };
   }
 
   // Setters for test

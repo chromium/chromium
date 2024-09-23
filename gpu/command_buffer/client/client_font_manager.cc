@@ -10,6 +10,7 @@
 #include "base/bits.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 
 namespace gpu {
 namespace raster {
@@ -161,7 +162,7 @@ void ClientFontManager::Serialize() {
   for (SkDiscardableHandleId handle_id = last_serialized_handle_id_ + 1;
        handle_id <= last_allocated_handle_id_; handle_id++) {
     auto it = discardable_handle_map_.find(handle_id);
-    DCHECK(it != discardable_handle_map_.end());
+    CHECK(it != discardable_handle_map_.end(), base::NotFatalUntil::M130);
 
     // We must have a valid |client_handle| here since all new handles are
     // currently in locked state.

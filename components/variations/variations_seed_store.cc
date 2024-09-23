@@ -10,10 +10,8 @@
 #include "base/base64.h"
 #include "base/build_time.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,12 +48,6 @@
 
 namespace variations {
 namespace {
-
-BASE_FEATURE(kVariationsAsyncNewCodePath,
-             "VariationsAsyncNewCodePath",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kVariationsAsyncProcessing{
-    &kVariationsAsyncNewCodePath, "Async", true};
 
 // The ECDSA public key of the variations server for verifying variations seed
 // signatures.
@@ -220,67 +212,38 @@ void VariationsSeedStore::StoreSeedData(
   };
   RecordSeedInstanceManipulations(im);
 
-  // TODO(crbug.com/1324295): Enable by default and delete other code path.
-  if (base::FeatureList::IsEnabled(kVariationsAsyncNewCodePath)) {
-    // Note: SeedData is move-only, so it will be moved into a param below.
-    SeedData seed_data;
-    seed_data.data = std::move(data);
-    seed_data.base64_seed_signature = std::move(base64_seed_signature);
-    seed_data.country_code = std::move(country_code);
-    seed_data.date_fetched = date_fetched;
-    seed_data.is_gzip_compressed = is_gzip_compressed;
-    seed_data.is_delta_compressed = is_delta_compressed;
+  // Note: SeedData is move-only, so it will be moved into a param below.
+  SeedData seed_data;
+  seed_data.data = std::move(data);
+  seed_data.base64_seed_signature = std::move(base64_seed_signature);
+  seed_data.country_code = std::move(country_code);
+  seed_data.date_fetched = date_fetched;
+  seed_data.is_gzip_compressed = is_gzip_compressed;
+  seed_data.is_delta_compressed = is_delta_compressed;
 
-    if (is_delta_compressed) {
-      LoadSeedResult read_result =
-          ReadSeedData(SeedType::LATEST, &seed_data.existing_seed_bytes);
-      if (read_result != LoadSeedResult::kSuccess) {
-        RecordStoreSeedResult(StoreSeedResult::kFailedDeltaReadSeed);
-        std::move(done_callback).Run(false, VariationsSeed());
-        return;
-      }
+  if (is_delta_compressed) {
+    LoadSeedResult read_result =
+        ReadSeedData(SeedType::LATEST, &seed_data.existing_seed_bytes);
+    if (read_result != LoadSeedResult::kSuccess) {
+      RecordStoreSeedResult(StoreSeedResult::kFailedDeltaReadSeed);
+      std::move(done_callback).Run(false, VariationsSeed());
+      return;
     }
-
-    if (!require_synchronous && kVariationsAsyncProcessing.Get()) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(&VariationsSeedStore::ProcessSeedData,
-                         signature_verification_enabled_, std::move(seed_data)),
-          base::BindOnce(&VariationsSeedStore::OnSeedDataProcessed,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         std::move(done_callback)));
-    } else {
-      SeedProcessingResult result = ProcessSeedData(
-          signature_verification_enabled_, std::move(seed_data));
-      OnSeedDataProcessed(std::move(done_callback), std::move(result));
-    }
-    return;
   }
 
-  std::string seed_bytes;
-  StoreSeedResult im_result =
-      ResolveInstanceManipulations(data, im, &seed_bytes);
-  if (im_result != StoreSeedResult::kSuccess) {
-    RecordStoreSeedResult(im_result);
-    std::move(done_callback).Run(false, VariationsSeed());
-    return;
+  if (require_synchronous) {
+    SeedProcessingResult result =
+        ProcessSeedData(signature_verification_enabled_, std::move(seed_data));
+    OnSeedDataProcessed(std::move(done_callback), std::move(result));
+  } else {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&VariationsSeedStore::ProcessSeedData,
+                       signature_verification_enabled_, std::move(seed_data)),
+        base::BindOnce(&VariationsSeedStore::OnSeedDataProcessed,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(done_callback)));
   }
-
-  ValidatedSeed validated;
-  StoreSeedResult validate_result =
-      ValidateSeedBytes(seed_bytes, base64_seed_signature, SeedType::LATEST,
-                        signature_verification_enabled_, &validated);
-  if (validate_result != StoreSeedResult::kSuccess) {
-    RecordStoreSeedResult(validate_result);
-    if (im.delta_compressed)
-      RecordStoreSeedResult(StoreSeedResult::kFailedDeltaStore);
-    std::move(done_callback).Run(false, VariationsSeed());
-    return;
-  }
-
-  StoreValidatedSeed(validated, country_code, date_fetched);
-  RecordStoreSeedResult(StoreSeedResult::kSuccess);
-  std::move(done_callback).Run(true, std::move(validated.parsed));
 }
 
 bool VariationsSeedStore::LoadSafeSeed(VariationsSeed* seed,
@@ -293,9 +256,9 @@ bool VariationsSeedStore::LoadSafeSeed(VariationsSeed* seed,
   if (result != LoadSeedResult::kSuccess)
     return false;
 
-  // TODO(crbug/1261685): While it's not immediately obvious, |client_state| is
-  // not used for successfully loaded safe seeds that are rejected after
-  // additional validation (expiry and future milestone).
+  // TODO(crbug.com/40202311): While it's not immediately obvious,
+  // |client_state| is not used for successfully loaded safe seeds that are
+  // rejected after additional validation (expiry and future milestone).
   client_state->reference_date =
       GetTimeForStudyDateChecks(/*is_safe_seed=*/true);
   client_state->locale = safe_seed_store_->GetLocale();
@@ -313,7 +276,8 @@ bool VariationsSeedStore::StoreSafeSeed(
     const ClientFilterableState& client_state,
     base::Time seed_fetch_time) {
   ValidatedSeed seed;
-  // TODO(crbug.com/1324295): See if we can avoid calling this on the UI thread.
+  // TODO(crbug.com/40839193): See if we can avoid calling this on the UI
+  // thread.
   StoreSeedResult validation_result =
       ValidateSeedBytes(seed_data, base64_seed_signature, SeedType::SAFE,
                         signature_verification_enabled_, &seed);
@@ -535,8 +499,8 @@ LoadSeedResult VariationsSeedStore::VerifyAndParseSeed(
     const std::string& seed_data,
     const std::string& base64_seed_signature,
     std::optional<VerifySignatureResult>* verify_signature_result) {
-  // TODO(crbug/1335082): get rid of |signature_verification_enabled_| and only
-  // support switches::kAcceptEmptySeedSignatureForTesting.
+  // TODO(crbug.com/40228403): get rid of |signature_verification_enabled_| and
+  // only support switches::kAcceptEmptySeedSignatureForTesting.
   if (signature_verification_enabled_ &&
       !AcceptEmptySeedSignatureForTesting(base64_seed_signature)) {
     *verify_signature_result =
@@ -846,8 +810,8 @@ StoreSeedResult VariationsSeedStore::ValidateSeedBytes(
   if (!seed.ParseFromString(seed_bytes))
     return StoreSeedResult::kFailedParse;
 
-  // TODO(crbug/1335082): get rid of |signature_verification_enabled| and only
-  // support switches::kAcceptEmptySeedSignatureForTesting.
+  // TODO(crbug.com/40228403): get rid of |signature_verification_enabled| and
+  // only support switches::kAcceptEmptySeedSignatureForTesting.
   if (signature_verification_enabled &&
       !AcceptEmptySeedSignatureForTesting(base64_seed_signature)) {
     const VerifySignatureResult verify_result =

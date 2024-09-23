@@ -21,7 +21,6 @@ namespace resource_coordinator {
 
 class ResourceCoordinatorParts;
 class ResourceCoordinatorTabHelper;
-class TabManagerResourceCoordinatorSignalObserverHelper;
 
 // DEPRECATED. New users must observe PageNode::IsLoading() with a
 // PageNodeObserver. For guidance: //components/performance_manager/OWNERS
@@ -105,9 +104,8 @@ class TabLoadTracker {
 
   // These declarations allows the various bits of TabManager plumbing to
   // forward notifications to the TabLoadTracker.
-  friend class resource_coordinator::ResourceCoordinatorTabHelper;
-  friend class ::resource_coordinator::
-      TabManagerResourceCoordinatorSignalObserverHelper;
+  friend class ResourceCoordinatorTabHelper;
+  friend class TabManagerResourceCoordinatorSignalObserver;
 
   FRIEND_TEST_ALL_PREFIXES(TabLifecycleUnitTest, CannotFreezeAFrozenTab);
 
@@ -135,7 +133,7 @@ class TabLoadTracker {
                          base::TerminationStatus status);
 
   // Notifications to this are driven by the
-  // TabManager::ResourceCoordinatorSignalObserver.
+  // TabManagerResourceCoordinatorSignalObserver.
   void OnPageStoppedLoading(content::WebContents* web_contents);
 
  private:
@@ -164,7 +162,7 @@ class TabLoadTracker {
   // The counts of tabs in each state.
   size_t state_counts_[static_cast<size_t>(LoadingState::kMaxValue) + 1] = {0};
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

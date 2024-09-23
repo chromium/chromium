@@ -103,7 +103,8 @@ NavigationState::NavigationState(
     mojom::Frame::CommitSameDocumentNavigationCallback
         commit_same_document_callback,
     bool was_initiated_in_this_frame)
-    : was_within_same_document_(false),
+    : commit_start_time_(base::TimeTicks::Now()),
+      was_within_same_document_(false),
       was_initiated_in_this_frame_(was_initiated_in_this_frame),
       is_for_synchronous_commit_(is_for_synchronous_commit),
       common_params_(std::move(common_params)),

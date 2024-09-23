@@ -32,11 +32,9 @@ class CrostiniFileSelector : public ui::SelectFileDialog::Listener {
   // Returns handle to browser window or NULL if it can't be found
   gfx::NativeWindow GetBrowserWindow();
 
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
 
-  void FileSelectionCanceled(void* params) override;
+  void FileSelectionCanceled() override;
 
   raw_ptr<content::WebUI> web_ui_;
   base::OnceCallback<void(const base::FilePath&)> selected_callback_;

@@ -71,7 +71,7 @@ class IDLAttribute(object):
 # IDLNode
 #
 # This class implements the AST tree, providing the associations between
-# parents and children.  It also contains a namepsace and propertynode to
+# parents and children.  It also contains a namespace and propertynode to
 # allow for look-ups.  IDLNode is derived from IDLRelease, so it is
 # version aware.
 #

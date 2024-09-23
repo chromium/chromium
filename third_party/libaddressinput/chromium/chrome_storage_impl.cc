@@ -32,8 +32,6 @@ void ChromeStorageImpl::Get(const std::string& key,
   const_cast<ChromeStorageImpl*>(this)->DoGet(key, data_ready);
 }
 
-void ChromeStorageImpl::OnPrefValueChanged(const std::string& key) {}
-
 void ChromeStorageImpl::OnInitializationCompleted(bool succeeded) {
   for (const auto& request : outstanding_requests_)
     DoGet(request->key, request->callback);

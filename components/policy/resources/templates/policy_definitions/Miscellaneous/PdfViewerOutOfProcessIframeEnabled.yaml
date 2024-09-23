@@ -1,0 +1,30 @@
+caption: Use out-of-process iframe PDF Viewer
+default: true
+desc: |-
+  Controls whether the PDF viewer in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses an out-of-process iframe (OOPIF). This will be the new PDF viewer architecture in the future, as it is simpler and makes adding new features easier. The existing GuestView PDF viewer is an outdated, complex architecture that is being deprecated.
+
+  When this policy is set to Enabled or not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will be able to use the OOPIF PDF viewer architecture. Once Enabled or not set, the default behavior will be decided by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+  When this policy is set to Disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will strictly use the existing GuestView PDF viewer. It embeds a web page with a separate frame tree into another web page.
+
+  This policy will be removed in the future, after the OOPIF PDF viewer feature has fully rolled out.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+future_on:
+- chrome_os
+items:
+- caption: PDF viewer uses the OOPIF architecture.
+  value: true
+- caption: PDF viewer uses the GuestView architecture.
+  value: false
+owners:
+- andyphan@chromium.org
+- file://pdf/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:126-
+tags: []
+type: main

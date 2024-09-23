@@ -11,7 +11,7 @@ import("./os_settings.gni")
 assert(is_chromeos_ash, "ChromeOS Settings is ChromeOS only")
 
 nearby_share_tsc_dir =
-    "$root_gen_dir/chrome/browser/resources/nearby_share/shared/tsc"
+    "$root_gen_dir/chrome/browser/resources/chromeos/nearby_share/shared/tsc"
 
 build_webui("build") {
   grd_prefix = "os_settings"
@@ -51,10 +51,15 @@ build_webui("build") {
     "controls/settings_radio_group.ts",
     "controls/settings_slider.ts",
     "controls/settings_toggle_button.ts",
+    "controls/v2/settings_toggle_v2.ts",
+    "controls/v2/settings_dropdown_row.ts",
+    "controls/v2/settings_dropdown_v2.ts",
+    "controls/v2/settings_row.ts",
+    "controls/v2/settings_slider_row.ts",
+    "controls/v2/settings_slider_v2.ts",
     "crostini_page/bruschetta_subpage.ts",
     "crostini_page/crostini_arc_adb.ts",
     "crostini_page/crostini_arc_adb_confirmation_dialog.ts",
-    "crostini_page/crostini_confirmation_dialog.ts",
     "crostini_page/crostini_disk_resize_confirmation_dialog.ts",
     "crostini_page/crostini_disk_resize_dialog.ts",
     "crostini_page/crostini_export_import.ts",
@@ -87,6 +92,8 @@ build_webui("build") {
     "device_page/graphics_tablet_subpage.ts",
     "device_page/key_combination_input_dialog.ts",
     "device_page/keyboard.ts",
+    "device_page/per_device_app_installed_row.ts",
+    "device_page/per_device_install_row.ts",
     "device_page/per_device_keyboard.ts",
     "device_page/per_device_keyboard_remap_keys.ts",
     "device_page/per_device_keyboard_subsection.ts",
@@ -94,6 +101,7 @@ build_webui("build") {
     "device_page/per_device_mouse_subsection.ts",
     "device_page/per_device_pointing_stick.ts",
     "device_page/per_device_pointing_stick_subsection.ts",
+    "device_page/per_device_subsection_header.ts",
     "device_page/per_device_touchpad.ts",
     "device_page/per_device_touchpad_subsection.ts",
     "device_page/pointers.ts",
@@ -104,10 +112,18 @@ build_webui("build") {
     "device_page/storage_external.ts",
     "device_page/storage_external_entry.ts",
     "device_page/stylus.ts",
+    "guest_os/guest_os_confirmation_dialog.ts",
     "guest_os/guest_os_container_select.ts",
     "guest_os/guest_os_shared_paths.ts",
     "guest_os/guest_os_shared_usb_devices.ts",
     "guest_os/guest_os_shared_usb_devices_add_dialog.ts",
+    "internal/storybook/settings_dropdown_row_storybook.ts",
+    "internal/storybook/settings_dropdown_v2_storybook.ts",
+    "internal/storybook/settings_row_storybook.ts",
+    "internal/storybook/settings_slider_row_storybook.ts",
+    "internal/storybook/settings_slider_v2_storybook.ts",
+    "internal/storybook/settings_toggle_v2_storybook.ts",
+    "internal/storybook/storybook_subpage.ts",
     "internet_page/apn_subpage.ts",
     "internet_page/cellular_networks_list.ts",
     "internet_page/cellular_roaming_toggle_button.ts",
@@ -165,6 +181,7 @@ build_webui("build") {
     "nearby_share_page/nearby_share_receive_dialog.ts",
     "nearby_share_page/nearby_share_subpage.ts",
     "os_a11y_page/audio_and_captions_page.ts",
+    "os_a11y_page/ax_annotations_section.ts",
     "os_a11y_page/bluetooth_braille_display_ui.ts",
     "os_a11y_page/captions_subpage.ts",
     "os_a11y_page/change_dictation_locale_dialog.ts",
@@ -173,6 +190,7 @@ build_webui("build") {
     "os_a11y_page/display_and_magnification_subpage.ts",
     "os_a11y_page/keyboard_and_text_input_page.ts",
     "os_a11y_page/live_caption_section.ts",
+    "os_a11y_page/live_translate_section.ts",
     "os_a11y_page/os_a11y_page.ts",
     "os_a11y_page/select_to_speak_subpage.ts",
     "os_a11y_page/switch_access_action_assignment_dialog.ts",
@@ -182,8 +200,10 @@ build_webui("build") {
     "os_a11y_page/switch_access_subpage.ts",
     "os_a11y_page/text_to_speech_subpage.ts",
     "os_a11y_page/tts_voice_subpage.ts",
-    "os_a11y_page/facegaze_cursor_subpage.ts",
-    "os_a11y_page/facegaze_facial_expression_subpage.ts",
+    "os_a11y_page/facegaze_subpage.ts",
+    "os_a11y_page/facegaze_actions_add_dialog.ts",
+    "os_a11y_page/facegaze_actions_card.ts",
+    "os_a11y_page/facegaze_cursor_card.ts",
     "os_about_page/channel_switcher_dialog.ts",
     "os_about_page/consumer_auto_update_toggle_dialog.ts",
     "os_about_page/detailed_build_info_subpage.ts",
@@ -222,6 +242,11 @@ build_webui("build") {
     "os_apps_page/app_notifications_page/app_notification_row.ts",
     "os_apps_page/app_notifications_page/app_notifications_manager_subpage.ts",
     "os_apps_page/app_notifications_page/app_notifications_subpage.ts",
+    "os_apps_page/app_parental_controls/app_setup_pin_dialog.ts",
+    "os_apps_page/app_parental_controls/app_setup_pin_keyboard.ts",
+    "os_apps_page/app_parental_controls/app_parental_controls_subpage.ts",
+    "os_apps_page/app_parental_controls/app_verify_pin_dialog.ts",
+    "os_apps_page/app_parental_controls/block_app_item.ts",
     "os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage.ts",
     "os_apps_page/os_apps_page.ts",
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog.ts",
@@ -259,6 +284,8 @@ build_webui("build") {
     "os_languages_page/os_edit_dictionary_page.ts",
     "os_languages_page/os_japanese_clear_ime_data_dialog.ts",
     "os_languages_page/os_japanese_manage_user_dictionary_page.ts",
+    "os_languages_page/os_japanese_dictionary_expand.ts",
+    "os_languages_page/os_japanese_dictionary_entry_row.ts",
     "os_languages_page/os_languages_page_v2.ts",
     "os_languages_page/os_languages_section.ts",
     "os_people_page/account_manager_settings_card.ts",
@@ -299,6 +326,7 @@ build_webui("build") {
     "os_privacy_page/metrics_consent_toggle_button.ts",
     "os_privacy_page/os_privacy_page.ts",
     "os_privacy_page/peripheral_data_access_protection_dialog.ts",
+    "os_privacy_page/privacy_hub_allow_sensor_access_dialog.ts",
     "os_privacy_page/privacy_hub_app_permission_row.ts",
     "os_privacy_page/privacy_hub_camera_subpage.ts",
     "os_privacy_page/privacy_hub_geolocation_advanced_subpage.ts",
@@ -318,6 +346,7 @@ build_webui("build") {
     "os_reset_page/os_sanitize_dialog.ts",
     "os_reset_page/reset_settings_card.ts",
     "os_search_page/google_assistant_subpage.ts",
+    "os_search_page/magic_boost_review_terms_banner.ts",
     "os_search_page/os_search_page.ts",
     "os_search_page/search_and_assistant_settings_card.ts",
     "os_search_page/search_engine.ts",
@@ -333,7 +362,7 @@ build_webui("build") {
     "os_settings_search_box/os_search_result_row.ts",
     "os_settings_search_box/os_settings_search_box.ts",
     "os_settings_ui/os_settings_ui.ts",
-    "os_toolbar/os_toolbar.ts",
+    "toolbar/toolbar.ts",
     "parental_controls_page/parental_controls_page.ts",
     "parental_controls_page/parental_controls_settings_card.ts",
     "personalization_page/personalization_page.ts",
@@ -356,16 +385,21 @@ build_webui("build") {
     "common/global_scroll_target_mixin.ts",
     "common/lacros_extension_control_browser_proxy.ts",
     "common/load_time_booleans.ts",
+    "common/media_devices_proxy.ts",
     "common/route_observer_mixin.ts",
     "common/route_origin_mixin.ts",
     "common/setting_id_param_util.ts",
     "common/types.ts",
+    "controls/v2/base_row_mixin.ts",
+    "controls/v2/pref_control_mixin_internal.ts",
+    "os_apps_page/app_management_page/privacy_hub_mixin.ts",
     "os_files_page/google_drive_browser_proxy.ts",
+    "os_search_page/magic_boost_browser_proxy.ts",
     "os_files_page/one_drive_browser_proxy.ts",
     "crostini_page/crostini_browser_proxy.ts",
     "crostini_page/crostini_shared_usb_devices.ts",
+    "date_time_page/date_time_browser_proxy.ts",
     "date_time_page/date_time_types.ts",
-    "date_time_page/timezone_browser_proxy.ts",
     "device_page/cros_audio_config.ts",
     "device_page/device_page_browser_proxy.ts",
     "device_page/display_settings_mojo_interface_provider.ts",
@@ -399,6 +433,8 @@ build_webui("build") {
     "nearby_share_page/types.ts",
     "os_a11y_page/audio_and_captions_page_browser_proxy.ts",
     "os_a11y_page/cursor_and_touchpad_page_browser_proxy.ts",
+    "os_a11y_page/facegaze_constants.ts",
+    "os_a11y_page/facegaze_subpage_browser_proxy.ts",
     "os_a11y_page/keyboard_and_text_input_page_browser_proxy.ts",
     "os_a11y_page/os_a11y_page_browser_proxy.ts",
     "os_a11y_page/switch_access_constants.ts",
@@ -416,6 +452,8 @@ build_webui("build") {
     "os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.ts",
     "os_apps_page/app_management_page/util.ts",
     "os_apps_page/app_notifications_page/mojo_interface_provider.ts",
+    "os_apps_page/app_parental_controls/metrics_utils.ts",
+    "os_apps_page/app_parental_controls/mojo_interface_provider.ts",
     "os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.ts",
     "os_bluetooth_page/settings_fast_pair_constants.ts",
     "os_languages_page/input_method_settings.ts",
@@ -425,6 +463,7 @@ build_webui("build") {
     "os_languages_page/languages_browser_proxy.ts",
     "os_languages_page/languages_metrics_proxy.ts",
     "os_languages_page/languages_types.ts",
+    "os_languages_page/user_data_service_provider.ts",
     "os_page_availability.ts",
     "os_people_page/account_manager_browser_proxy.ts",
     "os_people_page/fingerprint_browser_proxy.ts",
@@ -435,7 +474,6 @@ build_webui("build") {
     "os_printing_page/cups_printers_entry_list_mixin.ts",
     "os_printing_page/cups_printers_entry_manager.ts",
     "os_printing_page/printer_status.ts",
-    "os_privacy_page/media_devices_proxy.ts",
     "os_privacy_page/metrics_consent_browser_proxy.ts",
     "os_privacy_page/mojo_interface_provider.ts",
     "os_privacy_page/peripheral_data_access_browser_proxy.ts",
@@ -459,11 +497,13 @@ build_webui("build") {
   icons_html_files = [
     "app_management_icons.html",
     "icons.html",
+    "os_a11y_page/facegaze_icons.html",
     "os_settings_icons.html",
   ]
 
   css_files = [
     "device_page/input_device_settings_shared.css",
+    "internal/storybook/storybook_styles.css",
     "internet_page/internet_shared.css",
     "os_apps_page/app_management_page/app_management_cros_shared_style.css",
     "os_apps_page/app_management_page/app_management_cros_shared_vars.css",
@@ -478,30 +518,40 @@ build_webui("build") {
   mojo_files_deps = [
     ":rename_personalization_search_mojom",
     "//ash/public/mojom:accelerator_actions_ts__generator",
+    "//ash/public/mojom:accelerator_info_ts__generator",
     "//ash/public/mojom:accelerator_keys_ts__generator",
     "//ash/public/mojom:input_device_settings_ts__generator",
+    "//ash/webui/common/mojom:accelerator_fetcher_ts__generator",
     "//ash/webui/common/mojom:shortcut_input_provider_ts__generator",
     "//ash/webui/settings/public/constants:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom:mojom_ts__generator",
+    "//chrome/browser/ui/webui/ash/settings/pages/date_time/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/files/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom:mojom_ts__generator",
+    "//chrome/browser/ui/webui/ash/settings/pages/search/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/search/mojom:mojom_ts__generator",
     "//chromeos/ash/components/audio/public/mojom:mojom_ts__generator",
     "//chromeos/ash/components/drivefs/mojom:pinning_manager_types_ts__generator",
+    "//chromeos/ash/services/ime/public/mojom:mojom_ts__generator",
     "//ui/events/ash/mojom:mojom_ts__generator",
   ]
   mojo_files = [
     "$root_gen_dir/ash/public/mojom/accelerator_actions.mojom-webui.ts",
+    "$root_gen_dir/ash/public/mojom/accelerator_info.mojom-webui.ts",
     "$root_gen_dir/ash/public/mojom/accelerator_keys.mojom-webui.ts",
     "$root_gen_dir/ash/public/mojom/input_device_settings.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/common/mojom/accelerator_fetcher.mojom-webui.ts",
     "$root_gen_dir/ash/webui/common/mojom/shortcut_input_provider.mojom-webui.ts",
     "$root_gen_dir/ash/webui/settings/public/constants/routes.mojom-webui.ts",
     "$root_gen_dir/ash/webui/settings/public/constants/setting.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_notification_handler.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_parental_controls_handler.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/date_time/mojom/date_time_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/files/mojom/google_drive_handler.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/search/mojom/magic_boost_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom-webui.ts",
@@ -510,7 +560,11 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/components/drivefs/mojom/pinning_manager_types.mojom-webui.ts",
+    "$root_gen_dir/chromeos/ash/services/ime/public/mojom/user_data_japanese_legacy_config.mojom-webui.ts",
+    "$root_gen_dir/chromeos/ash/services/ime/public/mojom/user_data_japanese_dictionary.mojom-webui.ts",
+    "$root_gen_dir/chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/extended_fkeys_modifier.mojom-webui.ts",
+    "$root_gen_dir/ui/events/ash/mojom/meta_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/modifier_key.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/simulate_right_click_modifier.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-webui.ts",
@@ -518,19 +572,19 @@ build_webui("build") {
   ]
   mojo_base_path = "mojom-webui"
 
+  ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_definitions = ts_definition_files  # Defined in os_settings.gni
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cellular_setup:build_ts",
-    "//chrome/browser/resources/nearby_share/shared:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/browser/resources/chromeos/nearby_share/shared:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -544,11 +598,11 @@ build_webui("build") {
   ]
 
   extra_grdp_deps = [
-    "//chrome/browser/resources/nearby_share/shared:build_json_grdp",
+    "//chrome/browser/resources/chromeos/nearby_share/shared:build_json_grdp",
     "//third_party/liblouis:build_grdp",
   ]
   extra_grdp_files = [
-    "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_json_resources.grdp",
+    "$root_gen_dir/chrome/browser/resources/chromeos/nearby_share/shared/nearby_share_json_resources.grdp",
     "$root_gen_dir/third_party/liblouis/liblouis_resources.grdp",
   ]
 
@@ -557,10 +611,11 @@ build_webui("build") {
     # when !optimize_webui, because otherwise those are included as part of the
     # bundle and don't need to be included separately.
     extra_grdp_deps +=
-        [ "//chrome/browser/resources/nearby_share/shared:build_grdp" ]
-    extra_grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/resources.grdp" ]
+        [ "//chrome/browser/resources/chromeos/nearby_share/shared:build_grdp" ]
+    extra_grdp_files += [ "$root_gen_dir/chrome/browser/resources/chromeos/nearby_share/shared/resources.grdp" ]
   }
 
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "os-settings"
@@ -571,12 +626,14 @@ build_webui("build") {
     optimize_webui_excludes = [
       "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
       "chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js",
+      "chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js",
       "chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js",
       "chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js",
       "chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js",
       "chrome://resources/ash/common/hotspot/cros_hotspot_config.js",
       "chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js",
       "chrome://resources/ash/common/network/mojo_interface_provider.js",
+      "chrome://resources/mojo/ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom-webui.js",
       "chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js",
       "chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js",
       "chrome://resources/mojo/chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",

@@ -570,7 +570,7 @@ class Masonry(KeySilkPage):
       action_runner.WaitForJavaScriptCondition('window.done')
 
 
-# TODO(crbug.com/760553):remove this class after smoothness.key_silk_cases
+# TODO(crbug.com/40537750):remove this class after smoothness.key_silk_cases
 # benchmark is completely replaced by rendering benchmarks
 class KeySilkCasesPageSet(story.StorySet):
 

@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="34"
-    platformBuildVersionName="14"
+    platformBuildVersionCode="35"
+    platformBuildVersionName="15"
     android:isolatedSplits="true"
     android:versionCode="OFFSET=21"
     android:versionName="#.#.#.#">
@@ -67,15 +67,17 @@
   <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADVERTISE"/>
   <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
   <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
+  <uses-permission-sdk-23 android:name="android.permission.HAND_TRACKING"/>
   <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
   <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_AUDIO"/>
   <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_IMAGES"/>
   <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_VIDEO"/>
   <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
   <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+  <uses-permission-sdk-23 android:name="android.permission.SCENE_UNDERSTANDING"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
   <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
-  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34"/>
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35"/>
   <application
       android:name="org.chromium.chrome.browser.base.SplitMonochromeApplication"
       android:allowAudioPlaybackCapture="false"
@@ -164,19 +166,21 @@
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
     <meta-data android:name="com.google.ar.core" android:value="optional"/>
     <meta-data android:name="com.google.ar.core.load_32bit_so_from_split_module" android:value="optional"/>
-    <meta-data android:name="com.google.ar.core.min_apk_version" android:value="231450000"/>
+    <meta-data android:name="com.google.ar.core.min_apk_version" android:value="240920000"/>
     <meta-data android:name="com.google.ar.core.session_settings" android:value="allow_front_facing_motion_tracking_6dof,"/>
     <meta-data android:name="com.samsung.android.sdk.multiwindow.enable" android:value="true"/>
     <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable" android:value="true"/>
     <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="5"/>
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
-    <provider  # DIFF-ANCHOR: bc0a9a7a
-        android:name="com.google.firebase.provider.FirebaseInitProvider"
-        android:authorities="$PACKAGE.firebaseinitprovider"
-        android:directBootAware="true"
+    <provider  # DIFF-ANCHOR: d3ae412b
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="$PACKAGE.net_logs_provider"
         android:exported="false"
-        android:initOrder="100">
-    </provider>  # DIFF-ANCHOR: bc0a9a7a
+        android:grantUriPermissions="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths"/>
+    </provider>  # DIFF-ANCHOR: d3ae412b
     <provider  # DIFF-ANCHOR: a5e78e63
         android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
         android:authorities="$PACKAGE.LicenseContentProvider"
@@ -212,6 +216,12 @@
         android:grantUriPermissions="true">
       <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
     </provider>  # DIFF-ANCHOR: b73a881a
+    <provider  # DIFF-ANCHOR: 43f90318
+        android:name="org.chromium.chrome.browser.pdf.PdfContentProvider"
+        android:authorities="$PACKAGE.PdfContentProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+    </provider>  # DIFF-ANCHOR: 43f90318
     <provider  # DIFF-ANCHOR: f1c2d7e1
         android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"
         android:authorities="$PACKAGE.ChromeBrowserProvider;$PACKAGE.browser;$PACKAGE"
@@ -243,6 +253,10 @@
         <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
       </intent-filter>  # DIFF-ANCHOR: aae22013
     </receiver>  # DIFF-ANCHOR: f1c9c29d
+    <receiver  # DIFF-ANCHOR: c787586e
+        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: c787586e
     <service  # DIFF-ANCHOR: 749391ed
         android:name="com.google.android.gms.cast.framework.ReconnectionService"
         android:exported="false">
@@ -288,6 +302,11 @@
         android:permission="android.permission.BIND_JOB_SERVICE"
         android:process=":webview_service">
     </service>  # DIFF-ANCHOR: 3cd6d713
+    <service  # DIFF-ANCHOR: e6b43f85
+        android:name="org.chromium.android_webview.services.AwNetLogService"
+        android:exported="true"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: e6b43f85
     <service  # DIFF-ANCHOR: 65cddb26
         android:name="org.chromium.android_webview.services.AwVariationsSeedFetcher"
         android:exported="false"
@@ -333,6 +352,7 @@
         android:name="org.chromium.android_webview.services.StartupFeatureMetadataHolder"
         android:enabled="false"
         android:exported="true">
+      <meta-data android:name="STARTUP_FEATURE_CONFIGURE_PARTITIONED_COOKIES" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DATA_DIRECTORY_SUFFIX" android:value="true"/>
       <meta-data android:name="STARTUP_FEATURE_SET_DIRECTORY_BASE_PATH" android:value="true"/>
     </service>  # DIFF-ANCHOR: c52936d7
@@ -341,6 +361,11 @@
         android:exported="true"
         android:process=":webview_service">
     </service>  # DIFF-ANCHOR: dc926e35
+    <service  # DIFF-ANCHOR: a550decc
+        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE">
+    </service>  # DIFF-ANCHOR: a550decc
     <service  # DIFF-ANCHOR: 0c6c4fd9
         android:name="org.chromium.content.app.PrivilegedProcessService0"
         android:exported="false"

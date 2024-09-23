@@ -25,7 +25,7 @@ enum VideoPixelFormat {
   PIXEL_FORMAT_UNKNOWN = 0,  // Unknown or unspecified format value.
   PIXEL_FORMAT_I420 =
       1,  // 12bpp YUV planar 1x1 Y, 2x2 UV samples, a.k.a. YU12.
-  PIXEL_FORMAT_YV12 = 2,  // 12bpp YVU planar 1x1 Y, 2x2 VU samples.
+  PIXEL_FORMAT_YV12 = 2,   // 12bpp YVU planar 1x1 Y, 2x2 VU samples.
   PIXEL_FORMAT_I422 = 3,   // 16bpp YUV planar 1x1 Y, 2x1 UV samples.
   PIXEL_FORMAT_I420A = 4,  // 20bpp YUVA planar 1x1 Y, 2x2 UV, 1x1 A samples.
   PIXEL_FORMAT_I444 = 5,   // 24bpp YUV planar, no subsampling.
@@ -64,7 +64,9 @@ enum VideoPixelFormat {
   PIXEL_FORMAT_ABGR = 27,  // 32bpp RGBA (byte-order), 1 plane.
   PIXEL_FORMAT_XBGR = 28,  // 24bpp RGBX (byte-order), 1 plane.
 
-  PIXEL_FORMAT_P016LE = 29,  // 24bpp NV12, 16 bits per channel
+  // 15bpp YUV planar 1x1 Y, 2x2 interleaved UV, 10 bits per channel.
+  // data in the high bits, zeros in the low bits, little-endian.
+  PIXEL_FORMAT_P010LE = 29,
 
   PIXEL_FORMAT_XR30 =
       30,  // 32bpp BGRX, 10 bits per channel, 2 bits ignored, 1 plane
@@ -87,9 +89,23 @@ enum VideoPixelFormat {
   // 20bpp YUVA planar 1x1 Y, 2x2 interleaved UV, 1x1 A samples.
   PIXEL_FORMAT_NV12A = 39,
 
+  // 16bpp YUV planar 1x1 Y, 2x1 interleaved UV, 8 bits per channel.
+  PIXEL_FORMAT_NV16 = 40,
+
+  // 24bpp YUV planar 1x1 Y, 1x1 interleaved UV, 8 bits per channel.
+  PIXEL_FORMAT_NV24 = 41,
+
+  // 20bpp YUV planar 1x1 Y, 2x1 interleaved UV, 10 bits per channel.
+  // data in the high bits, zeros in the low bits, little-endian.
+  PIXEL_FORMAT_P210LE = 42,
+
+  // 30bpp YUV planar 1x1 Y, 1x1 interleaved UV, 10 bits per channel.
+  // data in the high bits, zeros in the low bits, little-endian.
+  PIXEL_FORMAT_P410LE = 43,
+
   // Please update UMA histogram enumeration when adding new formats here.
   PIXEL_FORMAT_MAX =
-      PIXEL_FORMAT_NV12A,  // Must always be equal to largest entry logged.
+      PIXEL_FORMAT_P410LE,  // Must always be equal to largest entry logged.
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -122,6 +138,11 @@ MEDIA_SHMEM_EXPORT std::ostream& operator<<(std::ostream& os,
 // "0x<32-bit integer in hex>", e.g. FourccToString(0x66616b00) returns
 // "0x66616b00".
 MEDIA_SHMEM_EXPORT std::string FourccToString(uint32_t fourcc);
+
+// Returns the VideoChromaSampling corresponding to the VideoPixelFormat passed
+// in.
+MEDIA_SHMEM_EXPORT VideoChromaSampling
+VideoPixelFormatToChromaSampling(VideoPixelFormat format);
 
 // Returns true if |format| is a YUV format with multiple planes.
 MEDIA_SHMEM_EXPORT bool IsYuvPlanar(VideoPixelFormat format);

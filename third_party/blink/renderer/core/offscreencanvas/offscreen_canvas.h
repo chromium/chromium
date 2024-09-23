@@ -68,9 +68,9 @@ class CORE_EXPORT OffscreenCanvas final
 
   // For deferred canvases this will have the side effect of drawing recorded
   // commands in order to finalize the frame.
-  ScriptPromiseTyped<Blob> convertToBlob(ScriptState* script_state,
-                                         const ImageEncodeOptions* options,
-                                         ExceptionState& exception_state);
+  ScriptPromise<Blob> convertToBlob(ScriptState* script_state,
+                                    const ImageEncodeOptions* options,
+                                    ExceptionState& exception_state);
 
   void SetSize(gfx::Size) override;
   void RecordTransfer();
@@ -160,10 +160,10 @@ class CORE_EXPORT OffscreenCanvas final
 
   // ImageBitmapSource implementation
   gfx::Size BitmapSourceSize() const final;
-  ScriptPromise CreateImageBitmap(ScriptState*,
-                                  std::optional<gfx::Rect>,
-                                  const ImageBitmapOptions*,
-                                  ExceptionState&) final;
+  ScriptPromise<ImageBitmap> CreateImageBitmap(ScriptState*,
+                                               std::optional<gfx::Rect>,
+                                               const ImageBitmapOptions*,
+                                               ExceptionState&) final;
 
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
@@ -180,6 +180,9 @@ class CORE_EXPORT OffscreenCanvas final
 
   // overrides CanvasImageSource::IsAccelerated()
   bool IsAccelerated() const final;
+
+  // overrides CanvasRenderingContextHost::EnableAcceleration()
+  bool EnableAcceleration() final;
 
   DispatchEventResult HostDispatchEvent(Event* event) override {
     return DispatchEvent(*event);
@@ -286,6 +289,8 @@ class CORE_EXPORT OffscreenCanvas final
   uint32_t sink_id_ = 0;
 
   bool restoring_gpu_context_ = false;
+
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
 
 }  // namespace blink

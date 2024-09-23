@@ -6,12 +6,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
@@ -33,24 +33,26 @@ CoreAccountId GetAccountForRequest(
   if (result.IsEmpty()) {
     std::vector<CoreAccountInfo> all_accounts =
         identity_manager->GetAccountsWithRefreshTokens();
-    if (!all_accounts.empty())
+    if (!all_accounts.empty()) {
       result = all_accounts.front();
+    }
   }
   return result.account_id;
 }
 
 // Produce |username_hash_prefix| and scrypt hash of the arguments.
 // Scrypt computation is actually long.
-LookupSingleLeakPayload ProduceHashes(base::StringPiece username,
-                                      base::StringPiece password) {
+LookupSingleLeakPayload ProduceHashes(std::string_view username,
+                                      std::string_view password) {
   std::string canonicalized_username = CanonicalizeUsername(username);
   LookupSingleLeakPayload payload;
   payload.username_hash_prefix = BucketizeUsername(canonicalized_username);
   payload.encrypted_payload =
       ScryptHashUsernameAndPassword(canonicalized_username, password)
           .value_or("");
-  if (payload.encrypted_payload.empty())
+  if (payload.encrypted_payload.empty()) {
     return LookupSingleLeakPayload();
+  }
   return payload;
 }
 
@@ -58,12 +60,13 @@ LookupSingleLeakPayload ProduceHashes(base::StringPiece username,
 // asynchronously.
 LookupSingleLeakData PrepareLookupSingleLeakData(
     LeakDetectionInitiator initiator,
-    base::StringPiece username,
-    base::StringPiece password) {
+    std::string_view username,
+    std::string_view password) {
   LookupSingleLeakData data;
   data.payload = ProduceHashes(username, password);
-  if (data.payload.encrypted_payload.empty())
+  if (data.payload.encrypted_payload.empty()) {
     return LookupSingleLeakData();
+  }
   data.payload.initiator = initiator;
   data.payload.encrypted_payload =
       CipherEncrypt(data.payload.encrypted_payload, &data.encryption_key)
@@ -77,11 +80,12 @@ LookupSingleLeakData PrepareLookupSingleLeakData(
 LookupSingleLeakPayload PrepareLookupSingleLeakDataWithKey(
     LeakDetectionInitiator initiator,
     const std::string& encryption_key,
-    base::StringPiece username,
-    base::StringPiece password) {
+    std::string_view username,
+    std::string_view password) {
   LookupSingleLeakPayload payload = ProduceHashes(username, password);
-  if (payload.encrypted_payload.empty())
+  if (payload.encrypted_payload.empty()) {
     return LookupSingleLeakPayload();
+  }
   payload.encrypted_payload =
       CipherEncryptWithKey(payload.encrypted_payload, encryption_key)
           .value_or("");

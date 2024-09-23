@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/test/test_util.h"
+
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -14,7 +16,7 @@
 
 namespace feed {
 
-std::string TrimLines(base::StringPiece text) {
+std::string TrimLines(std::string_view text) {
   auto lines = base::SplitString(text, "\n", base::TRIM_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY);
   return base::JoinString(lines, "\n");

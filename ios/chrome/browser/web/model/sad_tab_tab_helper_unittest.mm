@@ -10,7 +10,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/web/model/features.h"
@@ -64,7 +64,7 @@ class SadTabTabHelperTest : public PlatformTest {
   SadTabTabHelperTest()
       : application_(OCMClassMock([UIApplication class])),
         sad_tab_delegate_([[SadTabTabHelperTestDelegate alloc] init]) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
     // Create view that is added to the window.
     CGRect frame = {CGPointZero, CGSizeMake(400, 300)};
@@ -84,10 +84,10 @@ class SadTabTabHelperTest : public PlatformTest {
 
     // Setup navigation manager.
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
-    navigation_manager->SetBrowserState(browser_state_.get());
+    navigation_manager->SetBrowserState(profile_.get());
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
   }
 
   SadTabTabHelper* tab_helper() {
@@ -99,7 +99,7 @@ class SadTabTabHelperTest : public PlatformTest {
   base::test::TaskEnvironment environment_;
   ScopedKeyWindow scoped_key_window_;
   UIView* web_state_view_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_;
   id application_;
@@ -344,14 +344,13 @@ TEST_F(SadTabTabHelperTest, FailureInterval) {
 
   // N.B. The test fixture web_state_ is not used for this test as a custom
   // `repeat_failure_interval` is required.
-  std::unique_ptr<ChromeBrowserState> browser_state =
-      TestChromeBrowserState::Builder().Build();
+  std::unique_ptr<ProfileIOS> profile = TestProfileIOS::Builder().Build();
 
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
-  navigation_manager->SetBrowserState(browser_state_.get());
+  navigation_manager->SetBrowserState(profile_.get());
 
   web::FakeWebState web_state;
-  web_state.SetBrowserState(browser_state.get());
+  web_state.SetBrowserState(profile.get());
   web_state.SetNavigationManager(std::move(navigation_manager));
   SadTabTabHelper::CreateForWebState(&web_state, base::TimeDelta());
   SadTabTabHelper::FromWebState(&web_state)->SetDelegate(sad_tab_delegate_);

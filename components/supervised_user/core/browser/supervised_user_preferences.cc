@@ -10,16 +10,11 @@
 #include "base/notreached.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/prefs/android/pref_service_android.h"
-#include "components/supervised_user/android/supervised_user_preferences_jni_headers/SupervisedUserPreferences_jni.h"
-#endif
 
 namespace supervised_user {
 
@@ -27,7 +22,7 @@ namespace {
 
 // Helper class to break down response into family members.
 struct Family {
-  using Member = kids_chrome_management::FamilyMember;
+  using Member = kidsmanagement::FamilyMember;
 
   const std::optional<const Member>& GetHeadOfHousehold() const {
     return head_of_household_;
@@ -39,25 +34,23 @@ struct Family {
   const std::vector<Member>& GetChildren() const { return children_; }
 
   Family() = delete;
-  explicit Family(
-      const kids_chrome_management::ListFamilyMembersResponse& response) {
-    for (const kids_chrome_management::FamilyMember& member :
-         response.members()) {
+  explicit Family(const kidsmanagement::ListMembersResponse& response) {
+    for (const kidsmanagement::FamilyMember& member : response.members()) {
       switch (member.role()) {
-        case kids_chrome_management::HEAD_OF_HOUSEHOLD:
+        case kidsmanagement::HEAD_OF_HOUSEHOLD:
           head_of_household_.emplace(member);
           break;
-        case kids_chrome_management::PARENT:
+        case kidsmanagement::PARENT:
           parent_.emplace(member);
           break;
-        case kids_chrome_management::CHILD:
+        case kidsmanagement::CHILD:
           children_.push_back(member);
           break;
-        case kids_chrome_management::MEMBER:
+        case kidsmanagement::MEMBER:
           regular_members_.push_back(member);
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
   }
@@ -94,7 +87,7 @@ const Custodian second_custodian{
 
 void SetCustodianPrefs(PrefService& pref_service,
                        const Custodian& custodian,
-                       const kids_chrome_management::FamilyMember& member) {
+                       const kidsmanagement::FamilyMember& member) {
   pref_service.SetString(custodian.display_name,
                          member.profile().display_name());
   pref_service.SetString(custodian.email, member.profile().email());
@@ -119,9 +112,8 @@ void SetIsChildAccountStatusKnown(PrefService& pref_service) {
 
 }  // namespace
 
-void RegisterFamilyPrefs(
-    PrefService& pref_service,
-    const kids_chrome_management::ListFamilyMembersResponse& response) {
+void RegisterFamilyPrefs(PrefService& pref_service,
+                         const kidsmanagement::ListMembersResponse& response) {
   Family family(response);
 
   if (family.GetHeadOfHousehold().has_value()) {
@@ -153,6 +145,16 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kFirstTimeInterstitialBannerState,
       static_cast<int>(FirstTimeInterstitialBannerState::kUnknown));
   registry->RegisterBooleanPref(prefs::kChildAccountStatusKnown, false);
+  registry->RegisterStringPref(prefs::kFamilyLinkUserMemberRole, std::string());
+#if BUILDFLAG(ENABLE_EXTENSIONS) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+  registry->RegisterIntegerPref(
+      prefs::kLocallyParentApprovedExtensionsMigrationState,
+      static_cast<int>(
+          supervised_user::LocallyParentApprovedExtensionsMigrationState::
+              kNeedToRun));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && (BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
 }
 
 void EnableParentalControls(PrefService& pref_service) {
@@ -172,50 +174,13 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kChildAccountStatusKnown);
 }
 
-bool IsChildAccount(const PrefService& pref_service) {
-  return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
-}
-
 bool IsSafeSitesEnabled(const PrefService& pref_service) {
-  return supervised_user::IsChildAccount(pref_service) &&
+  return supervised_user::IsSubjectToParentalControls(pref_service) &&
          pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
 }
 
 bool IsSubjectToParentalControls(const PrefService& pref_service) {
-  return IsChildAccount(pref_service) && IsChildAccountSupervisionEnabled();
-}
-
-bool IsUrlFilteringEnabled(const PrefService& pref_service) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return IsChildAccount(pref_service);
-#else
-  return IsChildAccount(pref_service) &&
-         base::FeatureList::IsEnabled(
-             kFilterWebsitesForSupervisedUsersOnDesktopAndIOS);
-#endif
-}
-
-bool AreExtensionsPermissionsEnabled(const PrefService& pref_service) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  return supervised_user::IsChildAccount(pref_service);
-#else
-  return supervised_user::IsChildAccount(pref_service) &&
-         base::FeatureList::IsEnabled(
-             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
 }
 
 }  // namespace supervised_user
-
-#if BUILDFLAG(IS_ANDROID)
-static jboolean JNI_SupervisedUserPreferences_IsSubjectToParentalControls(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprefs) {
-  PrefService* prefs = PrefServiceAndroid::FromPrefServiceAndroid(jprefs);
-  return prefs && supervised_user::IsSubjectToParentalControls(*prefs);
-}
-#endif

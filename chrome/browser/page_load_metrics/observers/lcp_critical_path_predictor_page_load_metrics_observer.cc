@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 
 #include "base/trace_event/base_tracing.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -12,6 +13,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -47,6 +49,13 @@ void RemoveFetchedSubresourceUrlsAfterLCP(
   std::erase_if(fetched_subresource_urls, [&](const auto& url_and_time) {
     return url_and_time.second > lcp;
   });
+}
+
+bool IsSameSite(const GURL& url1, const GURL& url2) {
+  return url1.SchemeIs(url2.scheme()) &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             url1, url2,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 }  // namespace
@@ -86,8 +95,9 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
     is_lcpp_hinted_navigation_ = true;
   }
 
+  initiator_origin_ = navigation_handle->GetInitiatorOrigin();
   commit_url_ = navigation_handle->GetURL();
-  if (net::IsLocalhost(*commit_url_) || !commit_url_->SchemeIsHTTPOrHTTPS()) {
+  if (!predictors::IsURLValidForLcpp(*commit_url_)) {
     return STOP_OBSERVING;
   }
   LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetOrCreateForPage(
@@ -157,11 +167,12 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   }
   // Take the learned LCPP here so that we can report it after overwriting it
   // with the new data below.
-  std::optional<predictors::LcppData> lcpp_data_prelearn =
-      predictor ? predictor->GetLcppData(*commit_url_) : std::nullopt;
+  std::optional<predictors::LcppStat> lcpp_stat_prelearn =
+      predictor ? predictor->GetLcppStat(initiator_origin_, *commit_url_)
+                : std::nullopt;
 
-  // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
-  // this. Unflag the feature.
+  // TODO(crbug.com/40517495): kSpeculativePreconnectFeature flag can also
+  // affect this. Unflag the feature.
   if (lcpp_data_inputs_.has_value()
       // Don't learn LCPP when prerender to avoid data skew. Activation LCP
       // should be much shorter than regular LCP.
@@ -169,7 +180,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
     RemoveFetchedSubresourceUrlsAfterLCP(
         lcpp_data_inputs_->subresource_urls,
         largest_contentful_paint.Time().value());
-    predictor->LearnLcpp(commit_url_->host(), *lcpp_data_inputs_);
+    predictor->LearnLcpp(initiator_origin_, *commit_url_, *lcpp_data_inputs_);
   }
 
   // * Emit LCPP breakdown PageLoad UMAs.
@@ -183,7 +194,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
             GetDelegate(), largest_contentful_paint.Time().value());
     PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPLargestContentfulPaint,
                         corrected);
-    ReportUMAForTimingPredictor(std::move(lcpp_data_prelearn));
+    ReportUMAForTimingPredictor(std::move(lcpp_stat_prelearn));
   }
 }
 
@@ -211,14 +222,30 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::SetLcpElementLocator(
 }
 
 void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
-    const GURL& font_url) {
+    const GURL& font_url,
+    bool hit) {
   if (!lcpp_data_inputs_) {
     lcpp_data_inputs_.emplace();
   }
   ++lcpp_data_inputs_->font_url_count;
+  if (hit) {
+    ++lcpp_data_inputs_->font_url_hit_count;
+  }
+
+  if (commit_url_ && IsSameSite(font_url, *commit_url_)) {
+    ++lcpp_data_inputs_->same_site_font_url_count;
+  } else {
+    ++lcpp_data_inputs_->cross_site_font_url_count;
+    if (!blink::features::kLCPPCrossSiteFontPredictionAllowed.Get()) {
+      return;
+    }
+  }
   if (lcpp_data_inputs_->font_urls.size() >=
       GetLCPPFontURLPredictorMaxUrlCountPerOrigin()) {
     return;
+  }
+  if (hit) {
+    ++lcpp_data_inputs_->font_url_reenter_count;
   }
   lcpp_data_inputs_->font_urls.push_back(font_url);
 }
@@ -267,16 +294,24 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::SetPreconnectOrigins(
   lcpp_data_inputs_->preconnect_origins = origins;
 }
 
+void LcpCriticalPathPredictorPageLoadMetricsObserver::SetUnusedPreloads(
+    const std::vector<GURL>& unused_preloads) {
+  if (!lcpp_data_inputs_) {
+    lcpp_data_inputs_.emplace();
+  }
+  lcpp_data_inputs_->unused_preload_resources = unused_preloads;
+}
+
 void LcpCriticalPathPredictorPageLoadMetricsObserver::
     ReportUMAForTimingPredictor(
-        std::optional<predictors::LcppData> lcpp_data_prelearn) {
-  if (!lcpp_data_inputs_.has_value() || !commit_url_ || !lcpp_data_prelearn ||
-      !IsValidLcppStat(lcpp_data_prelearn->lcpp_stat())) {
+        std::optional<predictors::LcppStat> lcpp_stat_prelearn) {
+  if (!lcpp_data_inputs_.has_value() || !commit_url_ || !lcpp_stat_prelearn ||
+      !IsValidLcppStat(*lcpp_stat_prelearn)) {
     return;
   }
   std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint> hint =
-      ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
-          *lcpp_data_prelearn);
+      ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
+          *lcpp_stat_prelearn);
   if (!hint || !hint->lcp_element_locators.size()) {
     return;
   }
@@ -301,9 +336,7 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
 
   internal::LCPPPredictResult result;
   const int max_lcpp_histogram_buckets =
-      base::GetFieldTrialParamByFeatureAsInt(
-          features::kLoadingPredictorTableConfig, "max_lcpp_histogram_buckets",
-          10) +
+      blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get() +
       internal::kLCPIndexHistogramOffset;
   if (first_valid_index_except_last) {
     if (last_lcp_index) {

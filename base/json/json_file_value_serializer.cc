@@ -88,7 +88,6 @@ const char* JSONFileValueDeserializer::GetErrorMessageForCode(int error_code) {
       return kNoSuchFile;
     default:
       NOTREACHED();
-      return "";
   }
 }
 

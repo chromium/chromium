@@ -61,6 +61,17 @@ struct EnumTraits<display::mojom::VariableRefreshRateState,
                         display::VariableRefreshRateState* out);
 };
 
+template <>
+struct StructTraits<display::mojom::ModesetFlagsDataView,
+                    display::ModesetFlags> {
+  static uint64_t bitmask(const display::ModesetFlags& flags) {
+    return flags.ToEnumBitmask();
+  }
+
+  static bool Read(display::mojom::ModesetFlagsDataView data,
+                   display::ModesetFlags* out_range);
+};
+
 }  // namespace mojo
 
 #endif  // UI_DISPLAY_MOJOM_DISPLAY_CONSTANTS_MOJOM_TRAITS_H_

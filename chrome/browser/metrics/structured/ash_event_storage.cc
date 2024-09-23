@@ -6,7 +6,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/metrics/structured/lib/histogram_util.h"
+#include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
 
@@ -35,23 +37,22 @@ void AshEventStorage::OnReady() {
 }
 
 void AshEventStorage::AddEvent(StructuredEventProto event) {
-  PersistentProto<EventsProto>* event_store_to_write =
-      GetStoreToWriteEvent(event);
+  PersistentProto<EventsProto>* event_store_to_write = GetStoreToWriteEvent();
 
   if (!event_store_to_write) {
     pre_storage_events_.emplace_back(std::move(event));
     return;
   }
 
-  event_store_to_write->get()->mutable_non_uma_events()->Add(std::move(event));
+  event_store_to_write->get()->mutable_events()->Add(std::move(event));
   event_store_to_write->QueueWrite();
 }
 
 RepeatedPtrField<StructuredEventProto> AshEventStorage::TakeEvents() {
   if (IsPreUserStorageReadable()) {
     RepeatedPtrField<StructuredEventProto> events =
-        std::move(*pre_user_events()->mutable_non_uma_events());
-    pre_user_events_->QueueWrite();
+        std::move(*pre_user_events()->mutable_events());
+    pre_user_events_->Purge();
     return events;
   }
 
@@ -59,18 +60,18 @@ RepeatedPtrField<StructuredEventProto> AshEventStorage::TakeEvents() {
   CHECK(IsProfileReady());
 
   RepeatedPtrField<StructuredEventProto> events =
-      std::move(*user_events()->mutable_non_uma_events());
-  user_events_->QueueWrite();
+      std::move(*user_events()->mutable_events());
+  user_events_->Purge();
   return events;
 }
 
 int AshEventStorage::RecordedEventsCount() const {
   int total_event_count = 0;
   if (IsPreUserStorageReadable()) {
-    total_event_count += pre_user_events_->get()->non_uma_events_size();
+    total_event_count += pre_user_events_->get()->events_size();
   }
   if (is_user_initialized_) {
-    total_event_count += user_events_->get()->non_uma_events_size();
+    total_event_count += user_events_->get()->events_size();
   }
   return total_event_count;
 }
@@ -87,12 +88,26 @@ void AshEventStorage::Purge() {
   }
 }
 
-void AshEventStorage::OnProfileAdded(const base::FilePath& path) {
+void AshEventStorage::AddBatchEvents(
+    const google::protobuf::RepeatedPtrField<StructuredEventProto>& events) {
+  PersistentProto<EventsProto>* event_store = GetStoreToWriteEvent();
+  if (event_store) {
+    event_store->get()->mutable_events()->MergeFrom(events);
+    event_store->QueueWrite();
+  } else if (!is_initialized_) {
+    pre_storage_events_.insert(pre_storage_events_.end(), events.begin(),
+                               events.end());
+  }
+}
+
+void AshEventStorage::ProfileAdded(const Profile& profile) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   if (is_user_initialized_) {
     return;
   }
+
+  const base::FilePath& path = profile.GetPath();
 
   // The directory used to store unsent logs. Relative to the user's cryptohome.
   // This file is created by chromium.
@@ -106,32 +121,12 @@ void AshEventStorage::OnProfileAdded(const base::FilePath& path) {
                           weak_factory_.GetWeakPtr()));
 }
 
-void AshEventStorage::AddBatchEvents(
-    const google::protobuf::RepeatedPtrField<StructuredEventProto>& events) {
-  for (const auto& event : events) {
-    PersistentProto<EventsProto>* event_store = GetStoreToWriteEvent(event);
-
-    if (event_store) {
-      *event_store->get()->add_non_uma_events() = event;
-      event_store->QueueWrite();
-      continue;
-    }
-
-    if (!is_initialized_) {
-      pre_storage_events_.emplace_back(event);
-    }
-  }
-}
-
 void AshEventStorage::CopyEvents(EventsProto* events_proto) const {
-  if (IsPreUserStorageReadable() &&
-      pre_user_events()->non_uma_events_size() > 0) {
-    events_proto->mutable_non_uma_events()->MergeFrom(
-        pre_user_events()->non_uma_events());
+  if (IsPreUserStorageReadable() && pre_user_events()->events_size() > 0) {
+    events_proto->mutable_events()->MergeFrom(pre_user_events()->events());
   }
-  if (IsProfileReady() && user_events()->non_uma_events_size() > 0) {
-    events_proto->mutable_non_uma_events()->MergeFrom(
-        user_events()->non_uma_events());
+  if (IsProfileReady() && user_events()->events_size() > 0) {
+    events_proto->mutable_events()->MergeFrom(user_events()->events());
   }
 }
 
@@ -186,11 +181,11 @@ void AshEventStorage::OnProfileReady() {
 
   // Move any events that are current in |pre_user_events_| into the
   // |user_events_|.
-  if (pre_user_events() && pre_user_events()->non_uma_events_size() > 0) {
+  if (pre_user_events() && pre_user_events()->events_size() > 0) {
     RepeatedPtrField<StructuredEventProto>* users_events =
-        user_events()->mutable_non_uma_events();
+        user_events()->mutable_events();
     RepeatedPtrField<StructuredEventProto>* pre_users_events =
-        pre_user_events()->mutable_non_uma_events();
+        pre_user_events()->mutable_events();
 
     // Moving events from |pre_users_events| to |users_events|.
     users_events->Reserve(users_events->size() + pre_users_events->size());
@@ -231,8 +226,7 @@ bool AshEventStorage::IsPreUserStorageReadable() const {
   return pre_user_events_ && is_initialized_;
 }
 
-PersistentProto<EventsProto>* AshEventStorage::GetStoreToWriteEvent(
-    const StructuredEventProto& event) {
+PersistentProto<EventsProto>* AshEventStorage::GetStoreToWriteEvent() {
   // If user storage is ready, all events should be stored in user event store
   // regardless of the type.
   if (IsProfileReady()) {

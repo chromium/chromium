@@ -4,6 +4,7 @@
 
 #include "base/task/thread_pool/sequence.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -13,7 +14,6 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace internal {
@@ -75,7 +75,7 @@ TEST(ThreadPoolSequenceTest, PushTakeRemove) {
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
   registered_task_source.WillRunTask();
-  absl::optional<Task> task =
+  std::optional<Task> task =
       registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_a, &task.value());
   EXPECT_FALSE(task->queue_time.is_null());
@@ -285,7 +285,7 @@ TEST(ThreadPoolSequenceTest, SequenceHasWorker) {
   EXPECT_TRUE(sequence->has_worker_for_testing());
 
   // The next task we get when we call Sequence::TakeTask should be Task A.
-  absl::optional<Task> task_a =
+  std::optional<Task> task_a =
       registered_task_source.TakeTask(&sequence_transaction);
 
   // Push task B into the sequence. WillPushImmediateTask() should return false.
@@ -308,7 +308,7 @@ TEST(ThreadPoolSequenceTest, SequenceHasWorker) {
   registered_task_source.WillRunTask();
 
   // The next task we get when we call Sequence::TakeTask should be Task B.
-  absl::optional<Task> task_b =
+  std::optional<Task> task_b =
       registered_task_source.TakeTask(&sequence_transaction);
 
   // Remove the empty slot. Sequence is be empty. This should return false.
@@ -364,7 +364,7 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveDelayedTasks) {
   registered_task_source.WillRunTask();
 
   // Take the task in front of the sequence. It should be task B.
-  absl::optional<Task> task =
+  std::optional<Task> task =
       registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_b, &task.value());
   EXPECT_FALSE(task->queue_time.is_null());
@@ -485,7 +485,7 @@ TEST(ThreadPoolSequenceTest, PushTakeRemoveMixedTasks) {
   EXPECT_TRUE(sequence->has_worker_for_testing());
 
   // Take the task in front of the sequence. It should be task B.
-  absl::optional<Task> task =
+  std::optional<Task> task =
       registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_b, &task.value());
   EXPECT_FALSE(task->queue_time.is_null());
@@ -624,7 +624,7 @@ TEST(ThreadPoolSequenceTest, GetDelayedSortKeyMixedtasks) {
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
   registered_task_source.WillRunTask();
-  absl::optional<Task> take_delayed_task =
+  std::optional<Task> take_delayed_task =
       registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_a, &take_delayed_task.value());
   EXPECT_FALSE(take_delayed_task->queue_time.is_null());
@@ -645,7 +645,7 @@ TEST(ThreadPoolSequenceTest, GetDelayedSortKeyMixedtasks) {
   // Take the immediate task from the sequence, so that its queue time
   // is available for the check below.
   registered_task_source.WillRunTask();
-  absl::optional<Task> take_immediate_task =
+  std::optional<Task> take_immediate_task =
       registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_b, &take_immediate_task.value());
   EXPECT_FALSE(take_immediate_task->queue_time.is_null());
@@ -690,7 +690,7 @@ TEST(ThreadPoolSequenceTest, GetDelayedSortKeyDelayedtasks) {
   auto registered_task_source =
       RegisteredTaskSource::CreateForTesting(sequence);
   registered_task_source.WillRunTask();
-  absl::optional<Task> task =
+  std::optional<Task> task =
       registered_task_source.TakeTask(&sequence_transaction);
   ExpectMockTask(&mock_task_b, &task.value());
   EXPECT_FALSE(task->queue_time.is_null());

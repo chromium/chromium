@@ -7,14 +7,14 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker_impl.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_bridge.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store_service.h"
 
 // static
 ash::sync_wifi::WifiConfigurationSyncService*
@@ -50,7 +50,7 @@ WifiConfigurationSyncServiceFactory::WifiConfigurationSyncServiceFactory()
                                      .WithGuest(ProfileSelection::kOriginalOnly)
                                      .WithAshInternals(ProfileSelection::kNone)
                                      .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 WifiConfigurationSyncServiceFactory::~WifiConfigurationSyncServiceFactory() =
@@ -62,7 +62,7 @@ WifiConfigurationSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ash::sync_wifi::WifiConfigurationSyncService>(
       chrome::GetChannel(), profile->GetPrefs(),
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }
 
 void WifiConfigurationSyncServiceFactory::RegisterProfilePrefs(

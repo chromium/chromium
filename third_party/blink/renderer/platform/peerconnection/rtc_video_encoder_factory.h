@@ -35,7 +35,8 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
   ~RTCVideoEncoderFactory() override;
 
   // webrtc::VideoEncoderFactory implementation.
-  std::unique_ptr<webrtc::VideoEncoder> CreateVideoEncoder(
+  std::unique_ptr<webrtc::VideoEncoder> Create(
+      const webrtc::Environment& env,
       const webrtc::SdpVideoFormat& format) override;
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
   webrtc::VideoEncoderFactory::CodecSupport QueryCodecSupport(
@@ -49,8 +50,7 @@ class PLATFORM_EXPORT RTCVideoEncoderFactory
  private:
   void CheckAndWaitEncoderSupportStatusIfNeeded() const;
 
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
   scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
       encoder_metrics_provider_factory_;

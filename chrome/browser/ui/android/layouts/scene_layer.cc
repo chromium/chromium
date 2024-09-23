@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 
 #include "cc/slim/layer.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/layouts/layouts_jni_headers/SceneLayer_jni.h"
 
 using base::android::JavaParamRef;
@@ -47,7 +49,7 @@ void SceneLayer::RemoveFromParent(JNIEnv* env,
 }
 
 void SceneLayer::OnDetach() {
-  // TODO(1129451): Determine if this needed with the exposure of
+  // TODO(crbug.com/40149397): Determine if this needed with the exposure of
   //                RemoveFromParent to java.
   layer()->RemoveFromParent();
 }

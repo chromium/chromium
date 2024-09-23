@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "chromeos/ui/base/app_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
 
@@ -23,6 +24,12 @@ enum class WindowPinType;
 // Shell-specific window property keys for use by ash and lacros clients.
 
 // Alphabetical sort.
+
+// A property key to store the type of window that will be used to record
+// pointer metrics. See AppType in chromeos/ui/base/app_types.h for more
+// details.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<AppType>* const kAppTypeKey;
 
 // Whether resizable windows equal to or larger than the screen should be
 // automatically maximized. Affects Exo's xdg-shell clients only.

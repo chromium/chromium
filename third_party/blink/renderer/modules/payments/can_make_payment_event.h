@@ -50,7 +50,7 @@ class MODULES_EXPORT CanMakePaymentEvent final : public ExtendableEvent {
   const HeapVector<Member<PaymentMethodData>>& methodData() const;
   const HeapVector<Member<PaymentDetailsModifier>>& modifiers() const;
 
-  void respondWith(ScriptState*, ScriptPromise, ExceptionState&);
+  void respondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
 
   void Trace(Visitor*) const override;
 

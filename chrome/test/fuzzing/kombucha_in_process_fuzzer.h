@@ -99,7 +99,7 @@ class KombuchaInProcessFuzzer
   }
 
   auto SaveGroupAndCloseEditorBubble(tab_groups::TabGroupId group_id) {
-    return Steps(SaveGroupLeaveEditorBubbleOpen(group_id), FlushEvents(),
+    return Steps(SaveGroupLeaveEditorBubbleOpen(group_id),
                  ClickTabGroupHeader(group_id, false));
   }
 

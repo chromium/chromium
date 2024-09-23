@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/fuzzing/internals_fuzzing.h"
 
 #include "third_party/blink/public/platform/platform.h"
@@ -12,15 +17,16 @@
 
 namespace blink {
 
-static void ResolvePromise(ScriptPromiseResolver* resolver) {
+static void ResolvePromise(ScriptPromiseResolver<IDLUndefined>* resolver) {
   resolver->Resolve();
 }
 
 // static
-ScriptPromise InternalsFuzzing::runFuzzer(ScriptState* script_state,
-                                          Internals&,
-                                          const String& fuzzer_id,
-                                          V8BufferSource* fuzzer_data) {
+ScriptPromise<IDLUndefined> InternalsFuzzing::runFuzzer(
+    ScriptState* script_state,
+    Internals&,
+    const String& fuzzer_id,
+    V8BufferSource* fuzzer_data) {
   auto* context = ExecutionContext::From(script_state);
   const uint8_t* bytes = nullptr;
   size_t num_bytes = 0;
@@ -42,8 +48,9 @@ ScriptPromise InternalsFuzzing::runFuzzer(ScriptState* script_state,
 
   std::vector<uint8_t> data(bytes, bytes + num_bytes);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
 
   RendererFuzzingSupport::Run(
       &context->GetBrowserInterfaceBroker(),

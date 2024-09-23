@@ -17,9 +17,6 @@ namespace {
 using blink::mojom::PreferredColorScheme;
 using fuchsia::settings::ThemeType;
 
-constexpr PreferredColorScheme kFallbackColorScheme =
-    PreferredColorScheme::kLight;
-
 PreferredColorScheme ThemeTypeToBlinkScheme(ThemeType type) {
   switch (type) {
     case ThemeType::LIGHT:
@@ -28,7 +25,6 @@ PreferredColorScheme ThemeTypeToBlinkScheme(ThemeType type) {
       return PreferredColorScheme::kDark;
     default:
       NOTREACHED();
-      return kFallbackColorScheme;
   }
 }
 

@@ -203,7 +203,7 @@ const char* CredentialTypeToString(CredentialType type) {
     case CredentialType::kPublicKey:
       return kPublicKey;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return kPublicKey;
 }
 

@@ -34,7 +34,7 @@ SyncWorkAuthorization::~SyncWorkAuthorization() {
     DCHECK(prev & WorkTracker::kActiveSyncWork);
   }
 
-  tracker_->active_sync_work_cv_->Signal();
+  tracker_->active_sync_work_cv_.Signal();
 }
 
 SyncWorkAuthorization::SyncWorkAuthorization(WorkTracker* state)
@@ -76,7 +76,7 @@ void WorkTracker::WaitNoSyncWork() {
   base::internal::CheckedAutoLock auto_lock(active_sync_work_lock_);
   uint32_t prev = state_.load(std::memory_order_relaxed);
   while (prev & kActiveSyncWork) {
-    active_sync_work_cv_->Wait();
+    active_sync_work_cv_.Wait();
     prev = state_.load(std::memory_order_relaxed);
   }
 }

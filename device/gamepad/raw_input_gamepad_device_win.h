@@ -6,16 +6,18 @@
 #define DEVICE_GAMEPAD_RAW_INPUT_GAMEPAD_DEVICE_WIN_H_
 
 #include <Unknwn.h>
+#include <windows.h>
+
 #include <WinDef.h>
 #include <hidsdi.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include <memory>
 #include <optional>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/public/cpp/gamepad.h"
@@ -151,7 +153,7 @@ class RawInputGamepadDeviceWin final : public AbstractHapticGamepad {
 
   // Buffer used for querying device capabilities. |ppd_buffer_| owns the
   // memory pointed to by |preparsed_data_|.
-  std::unique_ptr<uint8_t[]> ppd_buffer_;
+  base::HeapArray<uint8_t> ppd_buffer_;
   PHIDP_PREPARSED_DATA preparsed_data_ = nullptr;
 
   // Dualshock4-specific functionality (e.g., haptics), if available.

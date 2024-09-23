@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {KeyCodeData} from '/common/key_code.js';
+import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 export namespace SelectToSpeakConstants {
-  export const SEARCH_KEY_CODE: number = KeyCodeData.SEARCH.code;
-  export const CONTROL_KEY_CODE: number = KeyCodeData.CONTROL.code;
-  export const READ_SELECTION_KEY_CODE: number = KeyCodeData.S.code;
+  export const SEARCH_KEY_CODE: number = KeyCode.SEARCH;
+  export const CONTROL_KEY_CODE: number = KeyCode.CONTROL;
+  export const READ_SELECTION_KEY_CODE: number = KeyCode.S;
 
   /**
    * How often (in ms) to check that the currently spoken node is

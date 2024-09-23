@@ -8,19 +8,19 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+// <if expr="_google_chrome or not is_macosx">
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+// </if>
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
-// <if expr="_google_chrome or not is_macosx">
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-// </if>
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
@@ -34,7 +34,7 @@ import './edit_dictionary_page.js';
 
 // </if>
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -226,7 +226,7 @@ export class SettingsSpellCheckPageElement extends
       // Hide list of spell check languages if there is only 1 language
       // and we don't need to display any errors for that language
 
-      // TODO(crbug/1124888): Make hideSpellCheckLanugages_ a computed property
+      // TODO(crbug.com/40147587): Make hideSpellCheckLanugages_ a computed property
       this.hideSpellCheckLanguages_ = !singleLanguage.isManaged &&
           singleLanguage.downloadDictionaryFailureCount === 0;
     } else {

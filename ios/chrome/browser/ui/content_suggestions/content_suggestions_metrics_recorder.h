@@ -28,11 +28,6 @@ enum class SetUpListItemType;
 // Cleans up this class's saved properties before deallocation.
 - (void)disconnect;
 
-// Logs a metric for when a module of `type` is shown as the first module in the
-// Magic Stack.
-- (void)recordMagicStackTopModuleImpressionForType:
-    (ContentSuggestionsModuleType)type;
-
 // Logs a metric for when the user taps on a module of `type` in the Magic
 // Stack.
 - (void)recordMagicStackModuleEngagementForType:
@@ -44,9 +39,6 @@ enum class SetUpListItemType;
 
 // Logs a metric for a shortcut tile being tapped.
 - (void)recordShortcutTileTapped:(NTPCollectionShortcutType)shortcutType;
-
-// Logs a trending query opened at `index` in the module.
-- (void)recordTrendingQueryTappedAtIndex:(int)index;
 
 // Logs a tab resumption tab opened.
 - (void)recordTabResumptionTabOpened;

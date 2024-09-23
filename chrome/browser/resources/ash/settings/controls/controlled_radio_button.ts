@@ -11,7 +11,7 @@ import {CrRadioButtonMixin} from '//resources/ash/common/cr_elements/cr_radio_bu
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
-import {prefToString} from 'chrome://resources/cr_components/settings_prefs/pref_util.js';
+import {prefToString} from '/shared/settings/prefs/pref_util.js';
 import {PaperRippleMixin} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
 import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
@@ -48,7 +48,7 @@ export class ControlledRadioButtonElement extends
     const ripple = super._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle', 'toggle-ink');
+    ripple.classList.add('circle');
     return ripple;
   }
 

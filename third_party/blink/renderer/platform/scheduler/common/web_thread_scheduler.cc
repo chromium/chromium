@@ -45,50 +45,44 @@ WebThreadScheduler::CreateMainThreadScheduler(
 
 // Stubs for main thread only virtual functions.
 scoped_refptr<base::SingleThreadTaskRunner>
-WebThreadScheduler::CompositorTaskRunner() {
-  NOTREACHED();
-  return nullptr;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner>
 WebThreadScheduler::DeprecatedDefaultTaskRunner() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 std::unique_ptr<MainThread> WebThreadScheduler::CreateMainThread() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 void WebThreadScheduler::SetRendererHidden(bool hidden) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebThreadScheduler::SetRendererBackgrounded(bool backgrounded) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #if BUILDFLAG(IS_ANDROID)
 void WebThreadScheduler::PauseTimersForAndroidWebView() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebThreadScheduler::ResumeTimersForAndroidWebView() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void WebThreadScheduler::SetRendererProcessType(WebRendererProcessType type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebThreadScheduler::OnUrgentMessageReceived() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void WebThreadScheduler::OnUrgentMessageProcessed() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace scheduler

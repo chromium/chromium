@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Property border-block-end-radius value '10px'
+  assert_true: border-block-end-radius doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-block-end-radius value '10px 10px'
+  assert_true: border-block-end-radius doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-block-end-radius value '5px 10px'
+  assert_true: border-block-end-radius doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-block-end-radius value '10px / 5px 10px'
+  assert_true: border-block-end-radius doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-block-end-radius value '5px 10px / 10px'
+  assert_true: border-block-end-radius doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property border-block-end-radius value '10px 10px / 5px 5px'
+  assert_true: border-block-end-radius doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

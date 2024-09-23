@@ -12,8 +12,8 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/browser/safe_browsing_sync_observer.h"
+#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
@@ -373,7 +373,7 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
 }
 
-// TODO(crbug.com/1264925): This test is flaky on device.
+// TODO(crbug.com/40203584): This test is flaky on device.
 #if TARGET_OS_IOS && !TARGET_IPHONE_SIMULATOR
 #define MAYBE_TestCleanUpExpiredVerdict DISABLED_TestCleanUpExpiredVerdict
 #else

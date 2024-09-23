@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Definitions for chrome.passwordsPrivate API */
-// TODO(crbug.com/1203307): Auto-generate this file.
+// TODO(crbug.com/40179454): Auto-generate this file.
 
 import {ChromeEvent} from './chrome_event.js';
 
@@ -147,6 +147,7 @@ declare global {
         note?: string;
         changePasswordUrl?: string;
         compromisedInfo?: CompromisedInfo;
+        creationTime?: number;
       }
 
       export interface CredentialGroup {
@@ -212,8 +213,8 @@ declare global {
       export function exportPasswords(): Promise<void>;
       export function requestExportProgressStatus():
           Promise<ExportProgressStatus>;
-      export function isOptedInForAccountStorage(): Promise<boolean>;
-      export function optInForAccountStorage(optIn: boolean): void;
+      export function isAccountStorageEnabled(): Promise<boolean>;
+      export function setAccountStorageEnabled(enabled: boolean): void;
       export function getInsecureCredentials(): Promise<PasswordUiEntry[]>;
       export function getCredentialsWithReusedPassword():
           Promise<PasswordUiEntryList[]>;
@@ -228,9 +229,14 @@ declare global {
           Promise<UrlCollection|null>;
       export function addPassword(options: AddPasswordOptions): Promise<void>;
       export function extendAuthValidity(): Promise<void>;
-      export function switchBiometricAuthBeforeFillingState(): void;
+      export function switchBiometricAuthBeforeFillingState(): Promise<boolean>;
       export function showAddShortcutDialog(): void;
       export function showExportedFileInShell(filePath: string): void;
+      export function changePasswordManagerPin(): Promise<boolean>;
+      export function isPasswordManagerPinAvailable(): Promise<boolean>;
+      export function disconnectCloudAuthenticator(): Promise<boolean>;
+      export function isConnectedToCloudAuthenticator(): Promise<boolean>;
+      export function deleteAllPasswordManagerData(): Promise<boolean>;
 
       export const onSavedPasswordsListChanged:
           ChromeEvent<(entries: PasswordUiEntry[]) => void>;
@@ -238,8 +244,8 @@ declare global {
           ChromeEvent<(entries: ExceptionEntry[]) => void>;
       export const onPasswordsFileExportProgress:
           ChromeEvent<(progress: PasswordExportProgress) => void>;
-      export const onAccountStorageOptInStateChanged:
-          ChromeEvent<(optInState: boolean) => void>;
+      export const onAccountStorageEnabledStateChanged:
+          ChromeEvent<(enabledState: boolean) => void>;
       export const onInsecureCredentialsChanged:
           ChromeEvent<(credentials: PasswordUiEntry[]) => void>;
       export const onPasswordCheckStatusChanged:

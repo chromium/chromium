@@ -2,9 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/icon_util.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/memory/ref_counted_memory.h"
@@ -282,7 +290,8 @@ std::unique_ptr<gfx::ImageFamily> IconUtil::CreateImageFamilyFromIconResource(
       DCHECK_EQ(png_size, entry->dwBytesInRes);
 
       result->Add(gfx::Image::CreateFrom1xPNGBytes(
-          new base::RefCountedStaticMemory(png_data, png_size)));
+          new base::RefCountedStaticMemory(UNSAFE_TODO(
+              base::span(static_cast<uint8_t*>(png_data), png_size)))));
     }
   }
   return result;
@@ -416,7 +425,7 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
 
   // Capture boolean opacity. We may not use it if we find out the bitmap has
   // an alpha channel.
-  std::unique_ptr<bool[]> opaque(new bool[num_pixels]);
+  auto opaque = base::HeapArray<bool>::Uninit(num_pixels);
   for (size_t i = 0; i < num_pixels; ++i)
     opaque[i] = !static_cast<uint32_t*>(bits)[i];
 

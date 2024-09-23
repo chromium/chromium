@@ -10,6 +10,8 @@
 #include "base/profiler/native_unwinder_android.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
 #include "chrome/android/features/stack_unwinder/public/function_types.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/modules/stack_unwinder/internal/jni_headers/StackUnwinderModuleContentsImpl_jni.h"
 
 std::unique_ptr<base::NativeUnwinderAndroidMemoryRegionsMap>
@@ -24,11 +26,9 @@ static_assert(std::is_same<stack_unwinder::CreateMemoryRegionsMapFunction,
 
 std::unique_ptr<base::Unwinder> CreateNativeUnwinder(
     base::NativeUnwinderAndroidMapDelegate* map_delegate,
-    uintptr_t exclude_module_with_base_address,
-    bool is_java_name_hashing_enabled) {
+    uintptr_t exclude_module_with_base_address) {
   return std::make_unique<base::NativeUnwinderAndroid>(
-      exclude_module_with_base_address, map_delegate,
-      is_java_name_hashing_enabled);
+      exclude_module_with_base_address, map_delegate);
 }
 
 static_assert(std::is_same<stack_unwinder::CreateNativeUnwinderFunction,

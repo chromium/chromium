@@ -31,11 +31,11 @@ class TlsClientConnection final : public openscreen::TlsConnection {
 
   // TlsConnection overrides.
   void SetClient(Client* client) final;
-  bool Send(const void* data, size_t len) final;
+  bool Send(openscreen::ByteView data) final;
   openscreen::IPEndpoint GetRemoteEndpoint() const final;
 
   // The maximum size of the vector in any single Client::OnRead() callback.
-  static constexpr uint32_t kMaxBytesPerRead = 64 << 10;  // 64 KB.
+  static constexpr size_t kMaxBytesPerRead = 64 << 10;  // 64 KB.
 
  private:
   // Invoked by |receive_stream_watcher_| when the |receive_stream_|'s status

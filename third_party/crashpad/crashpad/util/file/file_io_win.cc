@@ -231,7 +231,6 @@ FileOffset LoggingSeekFile(FileHandle file, FileOffset offset, int whence) {
       break;
     default:
       NOTREACHED();
-      break;
   }
 
   LARGE_INTEGER distance_to_move;
@@ -284,7 +283,6 @@ FileHandle StdioFileHandle(StdioStream stdio_stream) {
       break;
     default:
       NOTREACHED();
-      return INVALID_HANDLE_VALUE;
   }
 
   HANDLE handle = GetStdHandle(standard_handle);

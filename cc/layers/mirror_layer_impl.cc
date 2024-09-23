@@ -20,6 +20,10 @@ MirrorLayerImpl::MirrorLayerImpl(LayerTreeImpl* tree_impl, int id)
 
 MirrorLayerImpl::~MirrorLayerImpl() = default;
 
+mojom::LayerType MirrorLayerImpl::GetLayerType() const {
+  return mojom::LayerType::kMirror;
+}
+
 std::unique_ptr<LayerImpl> MirrorLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return MirrorLayerImpl::Create(tree_impl, id());
@@ -62,7 +66,7 @@ void MirrorLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   const bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  // TODO(crbug.com/1196414): Support 2D scales in mirror layers.
+  // TODO(crbug.com/40176440): Support 2D scales in mirror layers.
   PopulateScaledSharedQuadStateWithContentRects(
       shared_quad_state, mirrored_layer->GetIdealContentsScaleKey(),
       content_rect, content_rect, contents_opaque);
@@ -102,10 +106,6 @@ gfx::Rect MirrorLayerImpl::GetEnclosingVisibleRectInTargetSpace() const {
   float scale =
       mirrored_layer ? mirrored_layer->GetIdealContentsScaleKey() : 1.0f;
   return GetScaledEnclosingVisibleRectInTargetSpace(scale);
-}
-
-const char* MirrorLayerImpl::LayerTypeAsString() const {
-  return "cc::MirrorLayerImpl";
 }
 
 }  // namespace cc

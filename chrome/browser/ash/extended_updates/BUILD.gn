@@ -1,0 +1,74 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("extended_updates") {
+  sources = [
+    "extended_updates_controller.cc",
+    "extended_updates_controller.h",
+    "extended_updates_notification.cc",
+    "extended_updates_notification.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//chromeos/ash/components/settings",
+    "//components/ownership",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "extended_updates_controller_unittest.cc",
+    "extended_updates_notification_unittest.cc",
+  ]
+
+  deps = [
+    ":extended_updates",
+    "//ash",
+    "//ash:test_support",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/constants",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/prefs",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/message_center/public/cpp",
+
+    # Gather unit tests from subdirectories.
+    "//chrome/browser/ash/extended_updates/test:unit_tests",
+  ]
+}

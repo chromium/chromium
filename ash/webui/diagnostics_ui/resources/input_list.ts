@@ -119,7 +119,9 @@ export class InputListElement extends InputListElementBase {
   constructor() {
     super();
     this.browserProxy.initialize();
-    this.loadInitialDevices();
+    this.loadInitialDevices().then(() => {
+      this.handleKeyboardTesterDirectOpen();
+    });
     this.observeConnectedDevices();
     this.observeInternalDisplayPowerState();
     this.observeLidState();
@@ -133,8 +135,8 @@ export class InputListElement extends InputListElementBase {
     this.keyboardTester = keyboardTester;
   }
 
-  private loadInitialDevices(): void {
-    this.inputDataProvider.getConnectedDevices().then((devices) => {
+  private loadInitialDevices(): Promise<void> {
+    return this.inputDataProvider.getConnectedDevices().then((devices) => {
       this.keyboards = devices.keyboards;
       this.touchpads = devices.touchDevices.filter(
           (device: TouchDeviceInfo) =>
@@ -281,6 +283,19 @@ export class InputListElement extends InputListElementBase {
     assert(keyboard);
     this.keyboardTester.keyboard = keyboard;
     this.keyboardTester.show();
+  }
+
+  /**
+   * Show the keyboard tester directly if `showDefaultKeyboardTester` is present
+   * in the query string.
+   */
+  private handleKeyboardTesterDirectOpen(): void {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('showDefaultKeyboardTester') && this.keyboards.length > 0 &&
+        !this.keyboardTester?.isOpen()) {
+      this.keyboardTester.keyboard = this.keyboards[0];
+      this.keyboardTester.show();
+    }
   }
 
   /**

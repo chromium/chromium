@@ -303,7 +303,8 @@ class Import(NodeBase):
     assert isinstance(import_filename, str)
     super().__init__(**kwargs)
     self.attribute_list = attribute_list
-    # TODO(crbug.com/953884): Use pathlib once we're migrated fully to Python 3.
+    # TODO(crbug.com/40623602): Use pathlib once we're migrated fully to
+    # Python 3.
     self.import_filename = os.path.normpath(import_filename).replace('\\', '/')
 
   def __eq__(self, other):
@@ -389,8 +390,7 @@ class Map(Identifier):
   def __init__(self, key_type, value_type, **kwargs):
     assert isinstance(key_type, Identifier), f'Got {type(key_type)}'
     assert isinstance(value_type, Typename), f'Got {type(value_type)}'
-    super().__init__(value_type.identifier.id + '{' + key_type.id + '}',
-                     **kwargs)
+    super().__init__(f'{value_type}{{{key_type.id}}}', **kwargs)
     self.key_type = key_type
     self.value_type = value_type
 

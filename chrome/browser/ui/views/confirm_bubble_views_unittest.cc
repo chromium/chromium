@@ -19,7 +19,7 @@ using views::Widget;
 
 typedef ChromeViewsTestBase ConfirmBubbleViewsTest;
 
-// TODO(crbug.com/1004633) Disabled on windows due to flake
+// TODO(crbug.com/40099109) Disabled on windows due to flake
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_CreateAndClose DISABLED_CreateAndClose
 #else
@@ -29,8 +29,9 @@ TEST_F(ConfirmBubbleViewsTest, MAYBE_CreateAndClose) {
   SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
 
   // Create parent widget, as confirm bubble must have an owner.
-  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW);
   std::unique_ptr<views::Widget> parent_widget(new Widget);
   parent_widget->Init(std::move(params));
   parent_widget->Show();

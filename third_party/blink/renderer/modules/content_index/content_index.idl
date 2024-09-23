@@ -8,7 +8,7 @@
     Exposed=(Window,Worker),
     RuntimeEnabled=ContentIndex
 ] interface ContentIndex {
-    [CallWith=ScriptState, RaisesException, MeasureAs=ContentIndexAdd] Promise<void> add(ContentDescription description);
-    [CallWith=ScriptState, RaisesException, MeasureAs=ContentIndexDelete, ImplementedAs=deleteDescription] Promise<void> delete(DOMString id);
+    [CallWith=ScriptState, RaisesException, MeasureAs=ContentIndexAdd] Promise<undefined> add(ContentDescription description);
+    [CallWith=ScriptState, RaisesException, MeasureAs=ContentIndexDelete, ImplementedAs=deleteDescription] Promise<undefined> delete(DOMString id);
     [CallWith=ScriptState, RaisesException, MeasureAs=ContentIndexGet, ImplementedAs=getDescriptions] Promise<sequence<ContentDescription>> getAll();
 };

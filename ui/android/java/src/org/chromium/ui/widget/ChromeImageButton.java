@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 
-// TODO(https://crbug.com/1400720): See if we still need this class.
+// TODO(crbug.com/40883889): See if we still need this class.
 /**
  * A subclass of AppCompatImageButton to add workarounds for bugs in Android Framework and Support
  * Library.

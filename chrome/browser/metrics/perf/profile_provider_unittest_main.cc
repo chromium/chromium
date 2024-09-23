@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
-
 #include <tuple>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/statistics_recorder.h"
@@ -23,10 +20,12 @@
 #include "chrome/browser/metrics/perf/collection_params.h"
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/perf_events_collector.h"
+#include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 #include "ui/aura/env.h"
 
@@ -194,9 +193,8 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   }
 
   void AssertProfileData(SampledProfile::TriggerEvent trigger_event) {
-    // Sets up a ScopedClosureRunner for logging extra information on assertion
-    // failure.
-    base::ScopedClosureRunner scoped_log_error(base::BindOnce([]() {
+    // Log extra information on assertion failure.
+    absl::Cleanup scoped_log_error = [] {
       // Collection failed: log the failure in the UMA histogram.
       auto* histogram =
           base::StatisticsRecorder::FindHistogram("ChromeOS.CWP.CollectPerf");
@@ -209,7 +207,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
       std::string histogram_ascii;
       histogram->WriteAscii(&histogram_ascii);
       LOG(ERROR) << "Profile collection result: " << histogram_ascii;
-    }));
+    };
 
     std::vector<SampledProfile> stored_profiles;
     ASSERT_TRUE(profile_provider_->GetSampledProfiles(&stored_profiles));
@@ -220,7 +218,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     ASSERT_TRUE(profile.has_perf_data());
 
     // Collection succeeded: don't output the error log.
-    std::ignore = scoped_log_error.Release();
+    std::move(scoped_log_error).Cancel();
   }
 
  protected:

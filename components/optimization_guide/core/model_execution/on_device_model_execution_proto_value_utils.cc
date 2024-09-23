@@ -22,7 +22,7 @@ std::string GetStringFromValue(const proto::Value& value) {
     case proto::Value::kFloatValue:
       return base::NumberToString(value.float_value());
     case proto::Value::TYPE_NOT_SET:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return std::string();
   }
 }
@@ -44,7 +44,7 @@ bool AreValuesEqual(const proto::Value& a, const proto::Value& b) {
     case proto::Value::kFloatValue:
       return a.float_value() == b.float_value();
     case proto::Value::TYPE_NOT_SET:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }

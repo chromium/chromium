@@ -9,6 +9,8 @@
 
 const CGFloat kButtonVerticalInsets = 14.5;
 const CGFloat kPrimaryButtonCornerRadius = 15;
+// Alpha value for the disabled action button.
+const CGFloat kDisabledButtonAlpha = 0.5;
 
 UIButton* PrimaryActionButton(BOOL pointer_interaction_enabled) {
   UIButton* primary_blue_button = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -50,7 +52,7 @@ void SetConfigurationTitle(UIButton* button, NSString* newString) {
     NSMutableAttributedString* attributedString =
         [[NSMutableAttributedString alloc]
             initWithAttributedString:buttonConfiguration.attributedTitle];
-    [attributedString.mutableString setString:newString];
+    [attributedString.mutableString setString:newString ? newString : @""];
     buttonConfiguration.attributedTitle = attributedString;
     button.configuration = buttonConfiguration;
   }
@@ -69,5 +71,25 @@ void SetConfigurationFont(UIButton* button, UIFont* font) {
       buttonConfiguration.attributedTitle = string;
       button.configuration = buttonConfiguration;
     }
+  }
+}
+
+void UpdateButtonColorOnEnableDisable(UIButton* button) {
+  if (@available(iOS 15.0, *)) {
+    UIButtonConfiguration* buttonConfiguration = button.configuration;
+    if (button.enabled) {
+      buttonConfiguration.background.backgroundColor =
+          [UIColor colorNamed:kBlueColor];
+      buttonConfiguration.baseForegroundColor =
+          [UIColor colorNamed:kSolidButtonTextColor];
+    } else {
+      buttonConfiguration.background.backgroundColor =
+          [buttonConfiguration.background.backgroundColor
+              colorWithAlphaComponent:kDisabledButtonAlpha];
+      buttonConfiguration.baseForegroundColor =
+          [buttonConfiguration.baseForegroundColor
+              colorWithAlphaComponent:kDisabledButtonAlpha];
+    }
+    button.configuration = buttonConfiguration;
   }
 }

@@ -26,9 +26,8 @@ namespace network {
 class NetworkContext;
 
 // API implementation for exporting ongoing netlogs.
-class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
-    : public mojom::NetLogExporter,
-      public base::SupportsWeakPtr<NetLogExporter> {
+class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter final
+    : public mojom::NetLogExporter {
  public:
   // This expects to live on the same thread as NetworkContext, e.g.
   // IO thread or NetworkService main thread.
@@ -90,6 +89,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
       scratch_dir_create_handler_for_tests_;
 
   THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<NetLogExporter> weak_ptr_factory_{this};
 };
 
 }  // namespace network

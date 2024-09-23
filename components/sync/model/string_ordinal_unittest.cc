@@ -125,8 +125,9 @@ TEST(StringOrdinalTest, ToInternalValue) {
 }
 
 bool IsNonEmptyPrintableString(const std::string& str) {
-  if (str.empty())
+  if (str.empty()) {
     return false;
+  }
   for (char c : str) {
     if (!absl::ascii_isprint(static_cast<unsigned char>(c))) {
       return false;

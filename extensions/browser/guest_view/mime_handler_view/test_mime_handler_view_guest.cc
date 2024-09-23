@@ -44,8 +44,9 @@ void TestMimeHandlerViewGuest::DelayNextCreateWebContents(int delay) {
 }
 
 void TestMimeHandlerViewGuest::WaitForGuestAttached() {
-  if (attached())
+  if (attached()) {
     return;
+  }
   created_message_loop_runner_ = new content::MessageLoopRunner;
   created_message_loop_runner_->Run();
 }

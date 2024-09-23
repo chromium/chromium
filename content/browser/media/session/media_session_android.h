@@ -71,6 +71,7 @@ class MediaSessionAndroid final
       const base::android::JavaParamRef<jobject>& j_obj);
 
  private:
+  friend class WebContentsObserverProxy;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   // The linked Java object. The strong reference is hold by Java WebContensImpl

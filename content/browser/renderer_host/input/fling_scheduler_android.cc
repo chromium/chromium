@@ -23,7 +23,7 @@ FlingSchedulerAndroid::~FlingSchedulerAndroid() {
 }
 
 void FlingSchedulerAndroid::ScheduleFlingProgress(
-    base::WeakPtr<FlingController> fling_controller) {
+    base::WeakPtr<input::FlingController> fling_controller) {
   DCHECK(fling_controller);
   fling_controller_ = fling_controller;
   if (observed_compositor_)
@@ -49,11 +49,11 @@ void FlingSchedulerAndroid::ScheduleFlingProgress(
 }
 
 void FlingSchedulerAndroid::DidStopFlingingOnBrowser(
-    base::WeakPtr<FlingController> fling_controller) {
+    base::WeakPtr<input::FlingController> fling_controller) {
   DCHECK(fling_controller);
   RemoveCompositorTick();
   fling_controller_ = nullptr;
-  host_->DidStopFlinging();
+  host_->GetRenderInputRouter()->DidStopFlinging();
 }
 
 bool FlingSchedulerAndroid::NeedsBeginFrameForFlingProgress() {
@@ -62,6 +62,15 @@ bool FlingSchedulerAndroid::NeedsBeginFrameForFlingProgress() {
   // WebView), we'll never receive an OnAnimate call. In this case fall back
   // to BeginFrames coming from the host.
   return !window || !window->GetCompositor();
+}
+
+bool FlingSchedulerAndroid::ShouldUseMobileFlingCurve() {
+  return true;
+}
+gfx::Vector2dF FlingSchedulerAndroid::GetPixelsPerInch(
+    const gfx::PointF& position_in_screen) {
+  return gfx::Vector2dF(input::kDefaultPixelsPerInch,
+                        input::kDefaultPixelsPerInch);
 }
 
 void FlingSchedulerAndroid::ProgressFlingOnBeginFrameIfneeded(
@@ -150,10 +159,18 @@ void FlingSchedulerAndroid::OnViewAndroidDestroyed() {
   RemoveCompositorTick();
 }
 
-void FlingSchedulerAndroid::OnBeginFrame(base::TimeTicks frame_begin_time) {
+void FlingSchedulerAndroid::OnBeginFrame(base::TimeTicks frame_begin_time,
+                                         base::TimeDelta frame_interval) {
   DCHECK(observed_compositor_);
   if (fling_controller_)
     fling_controller_->ProgressFling(frame_begin_time);
+}
+
+void FlingSchedulerAndroid::OnBeginFrameSourceShuttingDown() {
+  if (observed_compositor_) {
+    observed_compositor_->RemoveSimpleBeginFrameObserver(this);
+    observed_compositor_ = nullptr;
+  }
 }
 
 }  // namespace content

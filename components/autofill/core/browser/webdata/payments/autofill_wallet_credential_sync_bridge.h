@@ -15,10 +15,10 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/mutable_data_batch.h"
 
 namespace autofill {
@@ -32,7 +32,7 @@ class PaymentsAutofillTable;
 // credential data between the local database and the Chrome sync server.
 class AutofillWalletCredentialSyncBridge
     : public base::SupportsUserData::Data,
-      public syncer::ModelTypeSyncBridge,
+      public syncer::DataTypeSyncBridge,
       public AutofillWebDataServiceObserverOnDBSequence {
  public:
   // Factory method that hides dealing with change_processor and also stores the
@@ -46,7 +46,7 @@ class AutofillWalletCredentialSyncBridge
       AutofillWebDataService* web_data_service);
 
   explicit AutofillWalletCredentialSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
 
   AutofillWalletCredentialSyncBridge(
@@ -56,7 +56,7 @@ class AutofillWalletCredentialSyncBridge
 
   ~AutofillWalletCredentialSyncBridge() override;
 
-  // ModelTypeSyncBridge
+  // DataTypeSyncBridge
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -65,8 +65,9 @@ class AutofillWalletCredentialSyncBridge
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
-  void GetData(StorageKeyList storage_keys, DataCallback callback) override;
-  void GetAllDataForDebugging(DataCallback callback) override;
+  std::unique_ptr<syncer::DataBatch> GetDataForCommit(
+      StorageKeyList storage_keys) override;
+  std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
@@ -74,7 +75,6 @@ class AutofillWalletCredentialSyncBridge
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
   // AutofillWebDataServiceObserverOnDBSequence.
-  void CreditCardChanged(const CreditCardChange& change) override;
   void ServerCvcChanged(const ServerCvcChange& change) override;
 
  private:

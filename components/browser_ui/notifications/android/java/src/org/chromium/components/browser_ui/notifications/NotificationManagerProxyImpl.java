@@ -11,18 +11,21 @@ import android.content.Context;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Default implementation of the NotificationManagerProxy, which passes through
- * all calls to the normal Android Notification Manager.
+ * Default implementation of the NotificationManagerProxy, which passes through all calls to the
+ * normal Android Notification Manager.
  */
 public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     private static final String TAG = "NotifManagerProxy";
@@ -60,17 +63,14 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannel(NotificationChannel channel) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.createNotificationChannel")) {
             mNotificationManager.createNotificationChannel(channel);
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
@@ -80,33 +80,50 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public List<NotificationChannel> getNotificationChannels() {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannels")) {
             return mNotificationManager.getNotificationChannels();
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
-    public List<NotificationChannelGroup> getNotificationChannelGroups() {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    public void getNotificationChannels(Callback<List<NotificationChannel>> callback) {
         try (TraceEvent e =
-                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannelGroups")) {
-            return mNotificationManager.getNotificationChannelGroups();
+                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannels")) {
+            List<NotificationChannel> channels = mNotificationManager.getNotificationChannels();
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(channels));
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @Override
+    public void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.getNotificationChannelGroups")) {
+            List<NotificationChannelGroup> groups =
+                    mNotificationManager.getNotificationChannelGroups();
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(groups));
+        }
+    }
+
     @Override
     public void deleteNotificationChannel(String id) {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannel")) {
             mNotificationManager.deleteNotificationChannel(id);
+        }
+    }
+
+    @Override
+    public void deleteAllNotificationChannels(Function<String, Boolean> func) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.deleteAllNotificationChannels")) {
+            for (NotificationChannel channel : mNotificationManager.getNotificationChannels()) {
+                if (func.apply(channel.getId())) {
+                    mNotificationManager.deleteNotificationChannel(channel.getId());
+                }
+            }
         }
     }
 
@@ -153,7 +170,6 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public NotificationChannel getNotificationChannel(String channelId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
@@ -163,7 +179,6 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void deleteNotificationChannelGroup(String groupId) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
@@ -197,13 +212,15 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     }
 
     @Override
-    public List<? extends StatusBarNotificationProxy> getActiveNotifications() {
-        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    public void getActiveNotifications(
+            Callback<List<? extends StatusBarNotificationProxy>> callback) {
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.getActiveNotifications")) {
-            return mNotificationManager.getActiveNotifications().stream()
-                    .map((sbn) -> new StatusBarNotificationAdaptor(sbn))
-                    .collect(Collectors.toList());
+            List<StatusBarNotificationAdaptor> notifications =
+                    mNotificationManager.getActiveNotifications().stream()
+                            .map((sbn) -> new StatusBarNotificationAdaptor(sbn))
+                            .collect(Collectors.toList());
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(notifications));
         }
     }
 }

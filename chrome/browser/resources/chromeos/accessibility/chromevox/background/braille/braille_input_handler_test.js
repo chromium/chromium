@@ -430,26 +430,6 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      // Alphabetical by path.
-      importModule(
-          'BrailleInputHandler',
-          '/chromevox/background/braille/braille_input_handler.js'),
-      importModule(
-          'BrailleTranslatorManager',
-          '/chromevox/background/braille/braille_translator_manager.js'),
-      importModule(
-          'ExpandingBrailleTranslator',
-          '/chromevox/background/braille/expanding_braille_translator.js'),
-      importModule(
-          ['ExtraCellsSpan', 'ValueSelectionSpan', 'ValueSpan'],
-          '/chromevox/background/braille/spans.js'),
-      importModule('Spannable', '/chromevox/common/spannable.js'),
-      importModule(
-          'BrailleKeyCommand',
-          '/chromevox/common/braille/braille_key_types.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-    ]);
 
     chrome.runtime.onConnectExternal = new FakeChromeEvent();
     this.port = new FakePort();

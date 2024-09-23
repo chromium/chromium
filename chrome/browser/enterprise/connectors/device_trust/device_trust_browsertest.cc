@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
@@ -24,12 +25,12 @@
 #include "components/device_signals/test/signals_contract.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/device_trust_test_environment_win.h"
 #include "chrome/browser/enterprise/connectors/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -225,8 +226,12 @@ class DeviceTrustDelayedManagementBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
+#if BUILDFLAG(IS_MAC)
+            kDTCKeyRotationUploadedBySharedAPIEnabled,
+#endif  // BUILDFLAG(IS_MAC)
+            kDTCKeyUploadedBySharedAPIEnabled,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-          ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
+            ash::features::kUnmanagedDeviceDeviceTrustConnectorEnabled
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         },
         /*disabled_features=*/{});
@@ -321,27 +326,23 @@ class DeviceTrustCreateKeyBrowserTest : public DeviceTrustDesktopBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyBrowserTest,
                        AttestationFullFlowKeyCreation) {
-  std::vector<uint8_t> wrapped_key =
-      device_trust_test_environment_win_->GetWrappedKey();
   TriggerUrlNavigation();
   VerifyAttestationFlowSuccessful();
   // Make sure DeviceTrustKeyManager successfully created a key in storage
   // via no-nonce key rotation.
   VerifyKeyRotationSuccess(/*with_nonce=*/false);
 
-  // Make sure key in storage remains unchanged.
-  EXPECT_EQ(device_trust_test_environment_win_->GetWrappedKey(), wrapped_key);
+  EXPECT_FALSE(device_trust_test_environment_win_->GetWrappedKey().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyBrowserTest,
                        AttestationFullFlowKeyCreationV1) {
-  std::vector<uint8_t> wrapped_key =
-      device_trust_test_environment_win_->GetWrappedKey();
   SetChallengeValue(kChallengeV1);
   TriggerUrlNavigation();
   VerifyAttestationFlowFailure(test::kFailedToParseChallengeJsonResponse);
   VerifyKeyRotationSuccess(/*with_nonce=*/false);
-  EXPECT_EQ(device_trust_test_environment_win_->GetWrappedKey(), wrapped_key);
+
+  EXPECT_FALSE(device_trust_test_environment_win_->GetWrappedKey().empty());
 }
 
 // To test "create key" flows where the initial upload fails, the response code
@@ -386,7 +387,12 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyUploadFailedBrowserTest,
 class DeviceTrustKeyRotationBrowserTest : public DeviceTrustDesktopBrowserTest {
  protected:
   DeviceTrustKeyRotationBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(kDTCKeyRotationEnabled, true);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            kDTCKeyUploadedBySharedAPIEnabled,
+        },
+        /*disabled_features=*/{kDTCKeyRotationEnabled});
   }
 };
 
@@ -470,8 +476,16 @@ class DeviceTrustBrowserTestWithConsent
                 .is_inline_policy_enabled = testing::get<4>(GetParam()),
             }),
         })) {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_signals::features::kDeviceSignalsConsentDialog, true);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            enterprise_signals::features::kDeviceSignalsConsentDialog,
+            kDTCKeyUploadedBySharedAPIEnabled,
+#if BUILDFLAG(IS_MAC)
+            kDTCKeyRotationUploadedBySharedAPIEnabled,
+#endif  // BUILDFLAG(IS_MAC)
+        },
+        /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {
@@ -518,7 +532,7 @@ class DeviceTrustBrowserTestWithConsent
   bool is_device_inline_flow_enabled() { return testing::get<4>(GetParam()); }
   bool is_consent_policy_enabled() { return testing::get<5>(GetParam()); }
 
-  bool ShouldTriggerConsent() {
+  virtual bool ShouldTriggerConsent() {
     if ((is_device_managed() && is_affiliated()) || !is_profile_managed()) {
       return false;
     }
@@ -622,6 +636,86 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     UnmanagedUserAndUnmanagedDevice,
     DeviceTrustBrowserTestWithConsent,
+    testing::Combine(/*is_affiliated=*/testing::Values(true),
+                     /*is_profile_managed=*/testing::Values(false),
+                     /*is_user_inline_flow_enabled=*/testing::Values(false),
+                     /*is_device_managed=*/testing::Values(false),
+                     /*is_device_inline_flow_enabled=*/testing::Values(false),
+                     /*is_consent_policy_enabled=*/testing::Values(false)));
+
+class DeviceTrustBrowserTestWithPermanentConsent
+    : public DeviceTrustBrowserTestWithConsent {
+ protected:
+  DeviceTrustBrowserTestWithPermanentConsent() = default;
+
+  void SetUpOnMainThread() override {
+    DeviceTrustBrowserTestWithConsent::SetUpOnMainThread();
+    device_trust_mixin_->SetPermanentConsentGiven(true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTestWithPermanentConsent,
+                       ConsentDialogWithPolicyAndAttestation) {
+  NavigateWithUserGesture();
+
+  DTAttestationResult success_result =
+      is_device_inline_flow_enabled()
+          ? DTAttestationResult::kSuccess
+          : DTAttestationResult::kSuccessNoSignature;
+
+  std::optional<enterprise_connectors::DTAttestationPolicyLevel> policy_level =
+      GetExpectedAttestationPolicyLevel();
+
+  RunTestSequence(EnsureNotPresent(kDeviceSignalsConsentOkButtonElementId));
+  WaitForNavigation();
+
+  policy_level ? VerifyAttestationFlowSuccessful(success_result, policy_level)
+               : VerifyNoInlineFlowOccurred();
+
+  // Test case where the user becomes managed with DTC enabled.
+  if (!is_profile_managed() && !is_device_managed()) {
+    device_trust_mixin_->ManageCloudUser();
+    device_trust_mixin_->EnableUserInlinePolicy();
+
+    NavigateWithUserGesture();
+    WaitForNavigation();
+    VerifyAttestationFlowSuccessful(success_result, policy_level);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ManagedUserAndUnmanagedDevice,
+    DeviceTrustBrowserTestWithPermanentConsent,
+    testing::Combine(/*is_affiliated=*/testing::Values(true),
+                     /*is_profile_managed=*/testing::Values(true),
+                     /*is_user_inline_flow_enabled=*/testing::Bool(),
+                     /*is_device_managed=*/testing::Values(false),
+                     /*is_device_inline_flow_enabled=*/testing::Values(false),
+                     /*is_consent_policy_enabled=*/testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManagedUserAndManagedDevice,
+    DeviceTrustBrowserTestWithPermanentConsent,
+    testing::Combine(/*is_affiliated=*/testing::Bool(),
+                     /*is_profile_managed=*/testing::Values(true),
+                     /*is_user_inline_flow_enabled=*/testing::Bool(),
+                     /*is_device_managed=*/testing::Values(true),
+                     /*is_device_inline_flow_enabled=*/testing::Bool(),
+                     /*is_consent_policy_enabled=*/testing::Bool()));
+
+INSTANTIATE_TEST_SUITE_P(
+    UnmanagedUserAndManagedDevice,
+    DeviceTrustBrowserTestWithPermanentConsent,
+    testing::Combine(/*is_affiliated=*/testing::Values(true),
+                     /*is_profile_managed=*/testing::Values(false),
+                     /*is_user_inline_flow_enabled=*/testing::Values(false),
+                     /*is_device_managed=*/testing::Values(true),
+                     /*is_device_inline_flow_enabled=*/testing::Bool(),
+                     /*is_consent_policy_enabled=*/testing::Values(false)));
+
+INSTANTIATE_TEST_SUITE_P(
+    UnmanagedUserAndUnmanagedDevice,
+    DeviceTrustBrowserTestWithPermanentConsent,
     testing::Combine(/*is_affiliated=*/testing::Values(true),
                      /*is_profile_managed=*/testing::Values(false),
                      /*is_user_inline_flow_enabled=*/testing::Values(false),

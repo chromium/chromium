@@ -1,0 +1,25 @@
+<style include="settings-shared input-device-settings-shared">
+  #appIcon {
+    order: -1;
+    padding-inline-end: 12px;
+    padding-left: 0px;
+  }
+
+  #openApp {
+    padding-inline-start: 0px;
+  }
+</style>
+<cr-link-row
+    id="openApp"
+    class="hr"
+    on-click="onCompanionAppRowClick"
+    label="[[openAppLabel]]"
+    external>
+    <img
+        id="appIcon"
+        is="cr-auto-img"
+        width="32"
+        height="32"
+        alt=""
+        auto-src="[[appInfo.iconUrl]]">
+</cr-link-row>

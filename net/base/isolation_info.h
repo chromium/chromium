@@ -28,17 +28,18 @@ struct StructTraits;
 namespace net {
 
 // Class to store information about network stack requests based on the context
-// in which they are made. It provides NetworkIsolationKeys, used to shard
-// storage, and SiteForCookies, used determine when to send same site cookies.
-// The IsolationInfo is typically the same for all subresource requests made in
-// the context of the same frame, but may be different for different frames
-// within a page. The IsolationInfo associated with requests for frames may
-// change as redirects are followed, and this class also contains the logic on
-// how to do that.
+// in which they are made. It provides NetworkIsolationKeys, used to shard the
+// HTTP cache, NetworkAnonymizationKeys, used to shard other network state, and
+// SiteForCookies, used determine when to send same site cookies. The
+// IsolationInfo is typically the same for all subresource requests made in the
+// context of the same frame, but may be different for different frames within a
+// page. The IsolationInfo associated with requests for frames may change as
+// redirects are followed, and this class also contains the logic on how to do
+// that.
 //
-// The SiteForCookies logic in this class is currently unused, but will
-// eventually replace the logic in URLRequest/RedirectInfo for tracking and
-// updating that value.
+// TODO(crbug.com/40093296): The SiteForCookies logic in this class is currently
+// unused, but will eventually replace the logic in URLRequest/RedirectInfo for
+// tracking and updating that value.
 class NET_EXPORT IsolationInfo {
  public:
   // The update-on-redirect patterns.
@@ -89,6 +90,13 @@ class NET_EXPORT IsolationInfo {
   // CreateForInternalRequest with a fresh opaque origin.
   static IsolationInfo CreateTransient();
 
+  // Same as CreateTransient, with a `nonce` used to identify requests tagged
+  // with this IsolationInfo in the network service. The `nonce` provides no
+  // additional resource isolation, because the opaque origin in the resulting
+  // IsolationInfo already represents a unique partition.
+  static IsolationInfo CreateTransientWithNonce(
+      const base::UnguessableToken& nonce);
+
   // Creates an IsolationInfo from the serialized contents. Returns a nullopt
   // if deserialization fails or if data is inconsistent.
   static std::optional<IsolationInfo> Deserialize(
@@ -116,8 +124,8 @@ class NET_EXPORT IsolationInfo {
       const SiteForCookies& site_for_cookies,
       const std::optional<base::UnguessableToken>& nonce = std::nullopt);
 
-  // TODO(crbug/1372769): Remove this and create a safer way to ensure NIKs
-  // created from NAKs aren't used by accident.
+  // TODO(crbug.com/344943210): Remove this and create a safer way to ensure
+  // NIKs created from NAKs aren't used by accident.
   static IsolationInfo DoNotUseCreatePartialFromNak(
       const net::NetworkAnonymizationKey& network_anonymization_key);
 
@@ -139,6 +147,10 @@ class NET_EXPORT IsolationInfo {
   IsolationInfo CreateForRedirect(const url::Origin& new_origin) const;
 
   RequestType request_type() const { return request_type_; }
+
+  bool IsMainFrameRequest() const {
+    return RequestType::kMainFrame == request_type_;
+  }
 
   bool IsEmpty() const { return !top_frame_origin_; }
 
@@ -171,15 +183,7 @@ class NET_EXPORT IsolationInfo {
   //          policy. It MUST NEVER be used for any kind of SECURITY check.
   const SiteForCookies& site_for_cookies() const { return site_for_cookies_; }
 
-  // Do not use outside of testing. Returns the `frame_origin_`.
-  const std::optional<url::Origin>& frame_origin_for_testing() const;
-
   bool IsEqualForTesting(const IsolationInfo& other) const;
-
-  NetworkAnonymizationKey CreateNetworkAnonymizationKeyForIsolationInfo(
-      const std::optional<url::Origin>& top_frame_origin,
-      const std::optional<url::Origin>& frame_origin,
-      const std::optional<base::UnguessableToken>& nonce) const;
 
   // Serialize the `IsolationInfo` into a string. Fails if transient, returning
   // an empty string.

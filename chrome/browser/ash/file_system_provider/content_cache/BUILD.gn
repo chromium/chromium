@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("content_cache") {
+  sources = [
+    "cache_file_context.cc",
+    "cache_file_context.h",
+    "cache_manager.h",
+    "cache_manager_impl.cc",
+    "cache_manager_impl.h",
+    "content_cache.h",
+    "content_cache_impl.cc",
+    "content_cache_impl.h",
+    "content_lru_cache.cc",
+    "content_lru_cache.h",
+    "context_database.cc",
+    "context_database.h",
+    "local_fd.cc",
+    "local_fd.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/spaced",
+    "//net",
+    "//sql",
+
+    # //chrome/common is added as a workaround to resolve crbug.com/350764047.
+    # //c/b/ash/file_system_provider/content_cache does not depend on
+    # //chrome/common, but //c/b/ash/file_system_provider does. Due to the
+    # circular dependency, there is no guarantee of the ordering.
+    "//chrome/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cache_manager_impl_unittest.cc",
+    "content_cache_impl_unittest.cc",
+    "content_lru_cache_unittest.cc",
+    "context_database_unittest.cc",
+    "local_fd_unittest.cc",
+  ]
+
+  deps = [
+    ":content_cache",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_system_provider",
+    "//chromeos/ash/components/dbus/spaced",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

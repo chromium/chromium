@@ -1,0 +1,29 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../cr_shared_style_lit.css.js
+ * #import=../cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;  /* Position independently from the line-height. */
+}
+
+cr-icon {
+  --iron-icon-width: var(--cr-icon-size);
+  --iron-icon-height: var(--cr-icon-size);
+  --iron-icon-fill-color:
+      var(--cr-tooltip-icon-fill-color, var(--google-grey-700));
+}
+
+@media (prefers-color-scheme: dark) {
+  cr-icon {
+    --iron-icon-fill-color:
+        var(--cr-tooltip-icon-fill-color, var(--google-grey-500));
+  }
+}

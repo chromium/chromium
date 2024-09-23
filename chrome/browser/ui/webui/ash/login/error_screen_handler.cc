@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 
 #include "base/values.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -49,6 +49,10 @@ void ErrorScreenHandler::SetShowConnectingIndicator(bool value) {
 
 void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
   CallExternalAPI("setUiState", static_cast<int>(ui_state));
+}
+
+base::WeakPtr<ErrorScreenView> ErrorScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ErrorScreenHandler::DeclareLocalizedValues(

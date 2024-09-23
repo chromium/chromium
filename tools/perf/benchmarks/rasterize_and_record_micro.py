@@ -13,25 +13,29 @@ class _RasterizeAndRecordMicro(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option('--start-wait-time', type='float',
-                      default=2,
-                      help='Wait time before the benchmark is started '
-                      '(must be long enough to load all content)')
-    parser.add_option('--rasterize-repeat', type='int',
-                      default=100,
-                      help='Repeat each raster this many times. Increase '
-                      'this value to reduce variance.')
-    parser.add_option('--record-repeat', type='int',
-                      default=100,
-                      help='Repeat each record this many times. Increase '
-                      'this value to reduce variance.')
-    parser.add_option('--timeout', type='int',
-                      default=120,
-                      help='The length of time to wait for the micro '
-                      'benchmark to finish, expressed in seconds.')
-    parser.add_option('--report-detailed-results',
-                      action='store_true',
-                      help='Whether to report additional detailed results.')
+    parser.add_argument('--start-wait-time',
+                        type=float,
+                        default=2,
+                        help=('Wait time before the benchmark is started '
+                              '(must be long enough to load all content)'))
+    parser.add_argument('--rasterize-repeat',
+                        type=int,
+                        default=100,
+                        help=('Repeat each raster this many times. Increase '
+                              'this value to reduce variance.'))
+    parser.add_argument('--record-repeat',
+                        type=int,
+                        default=100,
+                        help=('Repeat each record this many times. Increase '
+                              'this value to reduce variance.'))
+    parser.add_argument('--timeout',
+                        type=int,
+                        default=120,
+                        help=('The length of time to wait for the micro '
+                              'benchmark to finish, expressed in seconds.'))
+    parser.add_argument('--report-detailed-results',
+                        action='store_true',
+                        help='Whether to report additional detailed results.')
 
   @classmethod
   def Name(cls):

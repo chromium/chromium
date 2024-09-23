@@ -17,7 +17,7 @@ promise_test(async (t) => {
   const actions = new test_driver.Actions();
   const fencedframe = await attachFencedFrameContext({
     generator_api: "fledge",
-    automatic_beacon: true,
+    register_beacon: true,
   });
   const new_url = new URL("resources/dummy.html", location.href);
 
@@ -40,8 +40,8 @@ promise_test(async (t) => {
     .pointerDown()
     .pointerUp()
     .send();
-  await verifyBeaconData("reserved.top_navigation_start", "<No data>", false,
-      t);
+  await verifyBeaconData("reserved.top_navigation_start", "<No data>", null,
+      false, t);
 }, "Automatic beacons will not send if the document does not opt in.");
 
 </script>

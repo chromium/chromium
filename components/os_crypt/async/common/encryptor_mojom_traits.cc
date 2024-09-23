@@ -4,14 +4,25 @@
 
 #include "components/os_crypt/async/common/encryptor_mojom_traits.h"
 
+#include <algorithm>
+#include <map>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/async/common/encryptor.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
-#include <map>
-#include <string>
-#include <vector>
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <dpapi.h>
+
+#include "base/feature_list.h"
+#include "components/os_crypt/async/common/encryptor_features.h"
+#endif
 
 namespace mojo {
 
@@ -51,20 +62,47 @@ bool StructTraits<os_crypt_async::mojom::KeyDataView,
                   os_crypt_async::Encryptor::Key>::
     Read(os_crypt_async::mojom::KeyDataView data,
          os_crypt_async::Encryptor::Key* out) {
-  out->algorithm_ = data.algorithm();
+  std::optional<size_t> key_size;
+  switch (data.algorithm()) {
+    case os_crypt_async::mojom::Algorithm::kAES256GCM:
+      key_size.emplace(os_crypt_async::Encryptor::Key::kAES256GCMKeySize);
+  }
 
-  if (!data.ReadKey(&out->key_)) {
+  if (!key_size.has_value()) {
     return false;
   }
 
-  switch (*out->algorithm_) {
-    case os_crypt_async::mojom::Algorithm::kAES256GCM:
-      if (out->key_.size() !=
-          os_crypt_async::Encryptor::Key::kAES256GCMKeySize) {
-        return false;
-      }
-      break;
+  // Using shared memory here means that the key never transits any mojo
+  // buffers, but is completely controlled by the traits.
+  base::UnsafeSharedMemoryRegion key_memory;
+  if (!data.ReadKey(&key_memory)) {
+    return false;
   }
+
+  if (key_memory.GetSize() != *key_size) {
+    return false;
+  }
+
+  out->key_.resize(*key_size);
+  auto mapping = key_memory.Map();
+  if (!mapping.IsValid()) {
+    return false;
+  }
+
+  auto memory_span = mapping.GetMemoryAsSpan<uint8_t>();
+  std::copy(memory_span.begin(), memory_span.end(), out->key_.begin());
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(
+          os_crypt_async::features::kProtectEncryptionKey)) {
+    SecureZeroMemory(std::data(memory_span), std::size(memory_span));
+    out->encrypted_ =
+        ::CryptProtectMemory(std::data(out->key_), std::size(out->key_),
+                             CRYPTPROTECTMEMORY_SAME_PROCESS);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  out->algorithm_ = data.algorithm();
 
   return true;
 }
@@ -77,14 +115,26 @@ StructTraits<os_crypt_async::mojom::KeyDataView,
   if (in.algorithm_) {
     return *in.algorithm_;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
-const std::vector<uint8_t>& StructTraits<os_crypt_async::mojom::KeyDataView,
-                                         os_crypt_async::Encryptor::Key>::
+base::UnsafeSharedMemoryRegion StructTraits<os_crypt_async::mojom::KeyDataView,
+                                            os_crypt_async::Encryptor::Key>::
     key(const os_crypt_async::Encryptor::Key& in) {
-  return in.key_;
+  auto region = base::UnsafeSharedMemoryRegion::Create(in.key_.size());
+  auto mapping = region.Map();
+  auto memory_span = mapping.GetMemoryAsSpan<uint8_t>();
+  memory_span.copy_from(in.key_);
+#if BUILDFLAG(IS_WIN)
+  if (in.encrypted_) {
+    // Not much we can do if this fails.
+    std::ignore =
+        ::CryptUnprotectMemory(std::data(memory_span), std::size(memory_span),
+                               CRYPTPROTECTMEMORY_SAME_PROCESS);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  return region;
 }
 
 }  // namespace mojo

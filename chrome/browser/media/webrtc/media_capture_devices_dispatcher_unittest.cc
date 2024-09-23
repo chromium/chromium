@@ -148,10 +148,32 @@ TEST_F(MediaCaptureDevicesDispatcherTest,
   // Ranking at this point is [device_0, device_2, device_1].
 
   // Exclude the first device from the eligible list to exercise filtering.
+  const auto eligible_device_ids = GetIds(kFakeAudioDevices, 1);
   const auto preferred_device =
       dispatcher_->GetPreferredAudioDeviceForBrowserContext(
-          browser_context(), GetIds(kFakeAudioDevices, 1));
+          browser_context(), eligible_device_ids);
   ASSERT_TRUE(preferred_device->IsSameDevice(kFakeAudioDevices.back()));
+}
+
+TEST_F(
+    MediaCaptureDevicesDispatcherTest,
+    GetPreferredAudioDeviceForBrowserContext_EmptyEligibleDevicesReturnsDefault) {
+  const auto kFakeAudioDevices =
+      CreateFakeDevices(blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+  dispatcher_->SetTestAudioCaptureDevices(kFakeAudioDevices);
+  UpdateAudioDevicePreferenceRanking(
+      dispatcher_->GetAudioCaptureDevices().end() - 1);
+  UpdateAudioDevicePreferenceRanking(
+      dispatcher_->GetAudioCaptureDevices().begin());
+  // Ranking at this point is [device_0, device_2, device_1].
+
+  // Pass empty eligible devices to disable filtering.
+  const auto preferred_device =
+      dispatcher_->GetPreferredAudioDeviceForBrowserContext(browser_context(),
+                                                            {});
+  // Preferred device should be the most preferred device in the ranking without
+  // any filtering. That device is device_0.
+  ASSERT_TRUE(preferred_device->IsSameDevice(kFakeAudioDevices.front()));
 }
 
 TEST_F(MediaCaptureDevicesDispatcherTest,
@@ -166,8 +188,28 @@ TEST_F(MediaCaptureDevicesDispatcherTest,
   // Ranking at this point is [device_0, device_2, device_1].
 
   // Exclude the first device from the eligible list to exercise filtering.
+  const auto eligible_device_ids = GetIds(kFakeVideoDevices, 1);
   const auto preferred_device =
       dispatcher_->GetPreferredVideoDeviceForBrowserContext(
-          browser_context(), GetIds(kFakeVideoDevices, 1));
+          browser_context(), eligible_device_ids);
   ASSERT_TRUE(preferred_device->IsSameDevice(kFakeVideoDevices.back()));
+}
+
+TEST_F(
+    MediaCaptureDevicesDispatcherTest,
+    GetPreferredVideoDeviceForBrowserContext_EmptyEligibleDevicesReturnsDefault) {
+  const auto kFakeVideoDevices =
+      CreateFakeDevices(blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  dispatcher_->SetTestVideoCaptureDevices(kFakeVideoDevices);
+  UpdateVideoDevicePreferenceRanking(
+      dispatcher_->GetVideoCaptureDevices().end() - 1);
+  UpdateVideoDevicePreferenceRanking(
+      dispatcher_->GetVideoCaptureDevices().begin());
+  // Ranking at this point is [device_0, device_2, device_1].
+
+  // Exclude the first device from the eligible list to exercise filtering.
+  const auto preferred_device =
+      dispatcher_->GetPreferredVideoDeviceForBrowserContext(browser_context(),
+                                                            {});
+  ASSERT_TRUE(preferred_device->IsSameDevice(kFakeVideoDevices.front()));
 }

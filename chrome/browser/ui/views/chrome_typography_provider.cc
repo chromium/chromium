@@ -11,7 +11,6 @@
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -41,7 +40,7 @@ bool ChromeTypographyProvider::StyleAllowedForContext(int context,
     // hit this check, ensure it's sane and UX-approved to extend it to your
     // new case (e.g. don't add CONTEXT_BUTTON_MD).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(https://crbug.com/1352340): Limit more specific Ash contexts.
+    // TODO(crbug.com/40234831): Limit more specific Ash contexts.
     return true;
 #else
     return context == views::style::CONTEXT_LABEL ||
@@ -90,9 +89,7 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
     case views::style::CONTEXT_BUTTON_MD:
       details.weight = MediumWeightForUI();
       details.size_delta =
-          features::IsChromeRefresh2023()
-              ? gfx::PlatformFont::GetFontSizeDelta(kCR23ButtonTextSize)
-              : ui::kLabelFontSizeDelta;
+          gfx::PlatformFont::GetFontSizeDelta(kCR23ButtonTextSize);
       break;
     case views::style::CONTEXT_DIALOG_TITLE:
       details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kTitleSize);
@@ -138,8 +135,8 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
     details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
-  if (style == STYLE_PRIMARY_MONOSPACED ||
-      style == STYLE_SECONDARY_MONOSPACED) {
+  if (style == views::style::STYLE_PRIMARY_MONOSPACED ||
+      style == views::style::STYLE_SECONDARY_MONOSPACED) {
 #if BUILDFLAG(IS_MAC)
     details.typeface = "Menlo";
 #elif BUILDFLAG(IS_WIN)
@@ -160,9 +157,9 @@ ui::ColorId ChromeTypographyProvider::GetColorIdImpl(int context,
     context = views::style::CONTEXT_LABEL;
 
   // Monospaced styles have the same colors as their normal counterparts.
-  if (style == STYLE_PRIMARY_MONOSPACED) {
+  if (style == views::style::STYLE_PRIMARY_MONOSPACED) {
     style = views::style::STYLE_PRIMARY;
-  } else if (style == STYLE_SECONDARY_MONOSPACED) {
+  } else if (style == views::style::STYLE_SECONDARY_MONOSPACED) {
     style = views::style::STYLE_SECONDARY;
   }
 

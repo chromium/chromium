@@ -23,6 +23,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom.h"
@@ -30,11 +31,18 @@
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "url/gurl.h"
 
+namespace cc {
+struct BrowserControlsOffsetTagsInfo;
+}  // namespace cc
+
+namespace input {
+class PeakGpuMemoryTracker;
+}  // namespace input
+
 namespace content {
 
 class NavigationRequest;
 class PageDelegate;
-class PeakGpuMemoryTracker;
 class RenderFrameHostImpl;
 
 // This implements the Page interface that is exposed to embedders of content,
@@ -50,6 +58,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate);
 
   ~PageImpl() override;
+
+  using base::SupportsUserData::ClearAllUserData;
 
   // Page implementation.
   const std::optional<GURL>& GetManifestUrl() const override;
@@ -169,9 +179,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Hide or show the browser controls for the given Page, based on allowed
   // states, desired state and whether the transition should be animated or
   // not.
-  void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
-                                  cc::BrowserControlsState current,
-                                  bool animate);
+  void UpdateBrowserControlsState(
+      cc::BrowserControlsState constraints,
+      cc::BrowserControlsState current,
+      bool animate,
+      const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info);
 
   float GetPageScaleFactor() const;
 
@@ -194,13 +206,16 @@ class CONTENT_EXPORT PageImpl : public Page {
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
   // Returns whether a pending call to `sharedStorage.selectURL()` has
-  // sufficient budget for `origin`, debiting `select_url_overall_budget_` and
-  // `select_url_per_origin_budget_[origin]` if so and if
+  // sufficient budget for `site`, debiting `select_url_overall_budget_` and
+  // `select_url_per_site_budget_[site]` if so and if
   // `blink::features::kSharedStorageSelectURLLimit` is enabled. If
   // `blink::features::kSharedStorageSelectURLLimit` is disabled, always returns
-  // true.
-  bool CheckAndMaybeDebitSelectURLBudgets(const net::SchemefulSite& site,
-                                          double bits_to_charge);
+  // `blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget`. If there is
+  // insufficient budget, the returned enum value specifies which budget was
+  // insufficient.
+  blink::SharedStorageSelectUrlBudgetStatus CheckAndMaybeDebitSelectURLBudgets(
+      const net::SchemefulSite& site,
+      double bits_to_charge);
 
   // See documentation for |credentialless_iframes_nonce_|.
   const base::UnguessableToken& credentialless_iframes_nonce() const {
@@ -361,7 +376,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Created by NavigationRequest; ownership is maintained until the frame has
   // stopped loading, or we navigate away from the page before it finishes
   // loading.
-  std::unique_ptr<PeakGpuMemoryTracker> loading_memory_tracker_;
+  std::unique_ptr<input::PeakGpuMemoryTracker> loading_memory_tracker_;
 
   // Whether the page is overriding the user agent or not.
   bool is_overriding_user_agent_ = false;

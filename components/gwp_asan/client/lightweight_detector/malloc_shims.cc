@@ -7,29 +7,32 @@
 #include <limits>
 #include <optional>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "components/gwp_asan/client/lightweight_detector/random_eviction_quarantine.h"
 #include "components/gwp_asan/client/sampling_state.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 namespace gwp_asan::internal::lud {
 
 namespace {
+
 using allocator_shim::AllocatorDispatch;
+
+extern AllocatorDispatch g_allocator_dispatch;
 
 // By being implemented as a global with inline method definitions, method calls
 // and member accesses are inlined and as efficient as possible in the
 // performance-sensitive allocation hot-path.
 SamplingState<LIGHTWEIGHTDETECTOR> sampling_state;
 
-bool MaybeQuarantine(const AllocatorDispatch* self,
-                     void* address,
+bool MaybeQuarantine(void* address,
                      std::optional<size_t> maybe_size,
                      void* context,
                      FreeFunctionKind kind) {
-  if (LIKELY(!sampling_state.Sample())) {
+  if (!sampling_state.Sample()) [[likely]] {
     return false;
   }
 
@@ -41,159 +44,75 @@ bool MaybeQuarantine(const AllocatorDispatch* self,
   DCHECK_EQ(context, nullptr);
 #endif
   base::CheckedNumeric<size_t> size = maybe_size.value_or(
-      self->next->get_size_estimate_function(self->next, address, context));
+      g_allocator_dispatch.next->get_size_estimate_function(address, context));
   info.free_fn_kind = kind;
-  if (UNLIKELY(!size.AssignIfValid(&info.size))) {
+  if (!size.AssignIfValid(&info.size)) [[unlikely]] {
     return false;
   }
 
   return RandomEvictionQuarantine::Get()->Add(info);
 }
 
-void* AllocFn(const AllocatorDispatch* self, size_t size, void* context) {
-  return self->next->alloc_function(self->next, size, context);
-}
-
-void* AllocUncheckedFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void* context) {
-  return self->next->alloc_unchecked_function(self->next, size, context);
-}
-
-void* AllocZeroInitializedFn(const AllocatorDispatch* self,
-                             size_t n,
-                             size_t size,
-                             void* context) {
-  return self->next->alloc_zero_initialized_function(self->next, n, size,
-                                                     context);
-}
-
-void* AllocAlignedFn(const AllocatorDispatch* self,
-                     size_t alignment,
-                     size_t size,
-                     void* context) {
-  return self->next->alloc_aligned_function(self->next, alignment, size,
-                                            context);
-}
-
-void* ReallocFn(const AllocatorDispatch* self,
-                void* address,
-                size_t size,
-                void* context) {
-  return self->next->realloc_function(self->next, address, size, context);
-}
-
-void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
-  if (MaybeQuarantine(self, address, std::nullopt, context,
+void FreeFn(void* address, void* context) {
+  if (MaybeQuarantine(address, std::nullopt, context,
                       FreeFunctionKind::kFree)) {
     return;
   }
 
-  self->next->free_function(self->next, address, context);
+  MUSTTAIL return g_allocator_dispatch.next->free_function(address, context);
 }
 
-size_t GetSizeEstimateFn(const AllocatorDispatch* self,
-                         void* address,
-                         void* context) {
-  return self->next->get_size_estimate_function(self->next, address, context);
-}
-
-size_t GoodSizeFn(const AllocatorDispatch* self, size_t size, void* context) {
-  return self->next->good_size_function(self->next, size, context);
-}
-
-bool ClaimedAddressFn(const AllocatorDispatch* self,
-                      void* address,
-                      void* context) {
-  return self->next->claimed_address_function(self->next, address, context);
-}
-
-unsigned BatchMallocFn(const AllocatorDispatch* self,
-                       size_t size,
-                       void** results,
-                       unsigned num_requested,
-                       void* context) {
-  return self->next->batch_malloc_function(self->next, size, results,
-                                           num_requested, context);
-}
-
-void BatchFreeFn(const AllocatorDispatch* self,
-                 void** to_be_freed,
-                 unsigned num_to_be_freed,
-                 void* context) {
-  self->next->batch_free_function(self->next, to_be_freed, num_to_be_freed,
-                                  context);
-}
-
-void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                        void* address,
-                        size_t size,
-                        void* context) {
-  if (MaybeQuarantine(self, address, size, context,
+void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
+  if (MaybeQuarantine(address, size, context,
                       FreeFunctionKind::kFreeDefiniteSize)) {
     return;
   }
 
-  self->next->free_definite_size_function(self->next, address, size, context);
+  MUSTTAIL return g_allocator_dispatch.next->free_definite_size_function(
+      address, size, context);
 }
 
-void TryFreeDefaultFn(const AllocatorDispatch* self,
-                      void* address,
-                      void* context) {
-  if (MaybeQuarantine(self, address, std::nullopt, context,
+void TryFreeDefaultFn(void* address, void* context) {
+  if (MaybeQuarantine(address, std::nullopt, context,
                       FreeFunctionKind::kTryFreeDefault)) {
     return;
   }
 
-  self->next->try_free_default_function(self->next, address, context);
+  MUSTTAIL return g_allocator_dispatch.next->try_free_default_function(address,
+                                                                       context);
 }
 
-static void* AlignedMallocFn(const AllocatorDispatch* self,
-                             size_t size,
-                             size_t alignment,
-                             void* context) {
-  return self->next->aligned_malloc_function(self->next, size, alignment,
-                                             context);
-}
-
-static void* AlignedReallocFn(const AllocatorDispatch* self,
-                              void* address,
-                              size_t size,
-                              size_t alignment,
-                              void* context) {
-  return self->next->aligned_realloc_function(self->next, address, size,
-                                              alignment, context);
-}
-
-static void AlignedFreeFn(const AllocatorDispatch* self,
-                          void* address,
-                          void* context) {
-  if (MaybeQuarantine(self, address, std::nullopt, context,
+static void AlignedFreeFn(void* address, void* context) {
+  if (MaybeQuarantine(address, std::nullopt, context,
                       FreeFunctionKind::kAlignedFree)) {
     return;
   }
 
-  self->next->aligned_free_function(self->next, address, context);
+  MUSTTAIL return g_allocator_dispatch.next->aligned_free_function(address,
+                                                                   context);
 }
 
 AllocatorDispatch g_allocator_dispatch = {
-    &AllocFn,
-    &AllocUncheckedFn,
-    &AllocZeroInitializedFn,
-    &AllocAlignedFn,
-    &ReallocFn,
-    &FreeFn,
-    &GetSizeEstimateFn,
-    &GoodSizeFn,
-    &ClaimedAddressFn,
-    &BatchMallocFn,
-    &BatchFreeFn,
-    &FreeDefiniteSizeFn,
-    &TryFreeDefaultFn,
-    &AlignedMallocFn,
-    &AlignedReallocFn,
-    &AlignedFreeFn,
-    nullptr /* next */
+    nullptr,             // alloc_function
+    nullptr,             // alloc_unchecked_function
+    nullptr,             // alloc_zero_initialized_function
+    nullptr,             // alloc_aligned_function
+    nullptr,             // realloc_function
+    nullptr,             // realloc_unchecked_function
+    FreeFn,              // free_function
+    nullptr,             // get_size_estimate_function
+    nullptr,             // good_size_function
+    nullptr,             // claimed_address_function
+    nullptr,             // batch_malloc_function
+    nullptr,             // batch_free_function
+    FreeDefiniteSizeFn,  // free_definite_size_function
+    TryFreeDefaultFn,    // try_free_default_function
+    nullptr,             // aligned_malloc_function
+    nullptr,             // aligned_malloc_unchecked_function
+    nullptr,             // aligned_realloc_function
+    nullptr,             // aligned_realloc_unchecked_function
+    AlignedFreeFn,       // aligned_free_function
+    nullptr              // next
 };
 
 }  // namespace
@@ -224,20 +143,20 @@ void FinishFree(const AllocationInfo& allocation) {
 
   switch (allocation.free_fn_kind) {
     case FreeFunctionKind::kFree:
-      next->free_function(next, allocation.address, context);
+      next->free_function(allocation.address, context);
       break;
     case FreeFunctionKind::kFreeDefiniteSize:
-      next->free_definite_size_function(next, allocation.address,
-                                        allocation.size, context);
+      next->free_definite_size_function(allocation.address, allocation.size,
+                                        context);
       break;
     case FreeFunctionKind::kTryFreeDefault:
-      next->try_free_default_function(next, allocation.address, context);
+      next->try_free_default_function(allocation.address, context);
       break;
     case FreeFunctionKind::kAlignedFree:
-      next->aligned_free_function(next, allocation.address, context);
+      next->aligned_free_function(allocation.address, context);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

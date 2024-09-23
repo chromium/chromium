@@ -35,8 +35,142 @@ _DESTINATION = 'A4E66321-177A-450A-9BA1-488D85B7278E'
 _OUT_DIR = 'out/dir'
 _XTEST_RUN = '/tmp/temp_file.xctestrun'
 _EGTESTS_APP_PATH = '%s/any_egtests.app' % _ROOT_FOLDER_PATH
+_ALL_EG_TEST_NAMES = [('Class1', 'passedTest1'), ('Class1', 'passedTest2')]
 _FLAKY_EGTEST_APP_PATH = 'path/to/ios_chrome_flaky_eg2test_module.app'
 
+_ENUMERATE_TESTS_OUTPUT = """
+{
+  "errors" : [
+
+  ],
+  "values" : [
+    {
+      "children" : [
+        {
+          "children" : [
+            {
+              "children" : [
+
+              ],
+              "disabled" : false,
+              "kind" : "class",
+              "name" : "BaseEarlGreyTestCase"
+            },
+            {
+              "children" : [
+
+              ],
+              "disabled" : false,
+              "kind" : "class",
+              "name" : "ChromeTestCase"
+            },
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "disabled" : false,
+                  "kind" : "test",
+                  "name" : "passedTest1"
+                },
+                {
+                  "children" : [
+
+                  ],
+                  "disabled" : false,
+                  "kind" : "test",
+                  "name" : "passedTest2"
+                }
+              ],
+              "disabled" : false,
+              "kind" : "class",
+              "name" : "Class1"
+            },
+            {
+              "children" : [
+
+              ],
+              "disabled" : false,
+              "kind" : "class",
+              "name" : "WebHttpServerChromeTestCase"
+            }
+          ],
+          "disabled" : false,
+          "kind" : "target",
+          "name" : "ios_chrome_ui_eg2tests_module-Runner_module"
+        }
+      ],
+      "disabled" : false,
+      "kind" : "plan",
+      "name" : ""
+    }
+  ]
+}
+"""
+
+_ENUMERATE_DISABLED_TESTS_OUTPUT = """
+{
+  "errors" : [
+
+  ],
+  "values" : [
+    {
+      "children" : [
+        {
+          "children" : [
+            {
+              "children" : [
+
+              ],
+              "disabled" : false,
+              "kind" : "class",
+              "name" : "BaseEarlGreyTestCase"
+            },
+            {
+              "children" : [
+
+              ],
+              "disabled" : false,
+              "kind" : "class",
+              "name" : "ChromeTestCase"
+            },
+            {
+              "children" : [
+                {
+                  "children" : [
+
+                  ],
+                  "disabled" : false,
+                  "kind" : "test",
+                  "name" : "disabled_test3"
+                }
+              ],
+              "disabled" : false,
+              "kind" : "class",
+              "name" : "Class2"
+            },
+            {
+              "children" : [
+
+              ],
+              "disabled" : false,
+              "kind" : "class",
+              "name" : "WebHttpServerChromeTestCase"
+            }
+          ],
+          "disabled" : false,
+          "kind" : "target",
+          "name" : "ios_chrome_ui_eg2tests_module-Runner_module"
+        }
+      ],
+      "disabled" : false,
+      "kind" : "plan",
+      "name" : ""
+    }
+  ]
+}
+"""
 
 class XCodebuildRunnerTest(test_runner_test.TestCase):
   """Test case to test xcodebuild_runner."""
@@ -48,11 +182,10 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
     self.mock(result_sink_util.ResultSinkClient,
               'post', lambda *args, **kwargs: None)
-    self.mock(
-        test_apps.GTestsApp,
-        'get_all_tests', lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
-    self.mock(test_apps.EgtestsApp,
-              'fill_xctest_run', lambda _1, _2: 'xctestrun')
+    self.mock(test_apps.EgtestsApp, 'get_all_tests',
+              lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
+    self.mock(test_apps.EgtestsApp, 'fill_xctest_run',
+              lambda _1, _2: 'xctestrun')
     self.mock(iossim_util, 'get_simulator', lambda _1, _2: 'sim-UUID')
     self.mock(test_apps, 'get_bundle_id', lambda _: "fake-bundle-id")
     self.mock(test_apps, 'is_running_rosetta', lambda: False)
@@ -62,13 +195,18 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     self.mock(xcodebuild_runner.subprocess,
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
     self.mock(test_runner, 'print_process_output', lambda _, timeout: [])
+    self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
+    self.mock(os.path, 'isfile', lambda _: True)
+    self.mock(xcodebuild_runner.SimulatorParallelTestRunner,
+              '_create_xctest_run_enum_tests',
+              lambda _, include_disabled: 'fake-path')
 
   def tearDown(self):
     super(XCodebuildRunnerTest, self).tearDown()
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   def testLaunchCommand_restartCrashed1stAttempt(self, mock_collect_results):
-    egtests = test_apps.EgtestsApp(_EGTESTS_APP_PATH)
+    egtests = test_apps.EgtestsApp(_EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES)
     crashed_collection = ResultCollection()
     crashed_collection.crashed = True
     mock_collect_results.side_effect = [
@@ -88,7 +226,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   def testLaunchCommand_notRestartPassedTest(self, mock_collect_results):
-    egtests = test_apps.EgtestsApp(_EGTESTS_APP_PATH)
+    egtests = test_apps.EgtestsApp(_EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES)
     collection = ResultCollection(test_results=[
         TestResult('Class1/passedTest1', TestStatus.PASS),
         TestResult('Class1/passedTest2', TestStatus.PASS)
@@ -103,7 +241,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   def test_launch_command_restart_failed_attempt(self, mock_collect_results):
-    egtests = test_apps.EgtestsApp(_EGTESTS_APP_PATH)
+    egtests = test_apps.EgtestsApp(_EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES)
     mock_collect_results.side_effect = [
         ResultCollection(test_results=[
             TestResult('Class1/passedTest1', TestStatus.FAIL),
@@ -125,7 +263,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
   def test_launch_command_not_restart_crashed_attempt(self,
                                                       mock_collect_results):
     """Crashed first attempt of runtime select test suite won't be retried."""
-    egtests = test_apps.EgtestsApp(_FLAKY_EGTEST_APP_PATH)
+    egtests = test_apps.EgtestsApp(_FLAKY_EGTEST_APP_PATH, _ALL_EG_TEST_NAMES)
     crashed_collection = ResultCollection()
     crashed_collection.crashed = True
     mock_collect_results.return_value = crashed_collection
@@ -139,7 +277,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   def test_launch_command_reset_video_plugin_before_attempt(
       self, mock_collect_results):
-    egtests = test_apps.EgtestsApp(_EGTESTS_APP_PATH)
+    egtests = test_apps.EgtestsApp(_EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES)
     collection = ResultCollection(test_results=[
         TestResult('Class1/passedTest1', TestStatus.PASS),
         TestResult('Class1/passedTest2', TestStatus.PASS)
@@ -172,7 +310,10 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
 
     self.mock(result_sink_util.ResultSinkClient,
               'post', lambda *args, **kwargs: None)
-    self.mock(test_runner.subprocess, 'check_output', lambda _: b'fake-output')
+    self.mock(
+        test_runner.subprocess,
+        'check_output',
+        lambda _, stderr=None: b'fake-output')
     self.mock(test_runner.subprocess, 'check_call', lambda _: b'fake-out')
     self.mock(test_runner.subprocess,
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
@@ -190,13 +331,19 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.mock(test_runner.TestRunner, 'process_xcresult_dir', lambda _: None)
     self.mock(test_apps.EgtestsApp,
               'fill_xctest_run', lambda _1, _2: 'xctestrun')
-    self.mock(
-        test_apps.GTestsApp,
-        'get_all_tests', lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
+    self.mock(test_apps.EgtestsApp, 'get_all_tests',
+              lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
     self.mock(xcode_util, 'using_xcode_15_or_higher', lambda: True)
-    self.mock(mac_util, 'stop_usbmuxd', lambda: None)
+    self.mock(mac_util, 'kill_usbmuxd', lambda: None)
+    self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
+    self.mock(os.path, 'isfile', lambda _: True)
+    self.mock(xcodebuild_runner.SimulatorParallelTestRunner,
+              '_create_xctest_run_enum_tests',
+              lambda _, include_disabled: 'fake-path')
 
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=_ENUMERATE_TESTS_OUTPUT))
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   @mock.patch('platform.system', return_value='Darwin')
   def test_launch(self, _, mock_result):
@@ -211,6 +358,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.assertTrue(tr.launch())
     self.assertEqual(len(tr.test_results['tests']), 2)
 
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=_ENUMERATE_TESTS_OUTPUT))
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   @mock.patch('platform.system', return_value='Darwin')
   def test_unexpected_skipped_crash_reported(self, _, mock_result):
@@ -229,6 +378,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.assertEqual(tests['Class1/passedTest2']['actual'], 'SKIP')
     self.assertEqual(tests['Class1/passedTest2']['expected'], 'PASS')
 
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=_ENUMERATE_TESTS_OUTPUT))
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   @mock.patch('platform.system', return_value='Darwin')
   def test_unexpected_skipped_not_reported(self, _, mock_result):
@@ -246,6 +397,9 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.assertEqual(tests['Class1/passedTest1']['actual'], 'PASS')
     # Class1/passedTest2 doesn't appear in test results.
 
+  @mock.patch(
+      'builtins.open',
+      new=mock.mock_open(read_data=_ENUMERATE_DISABLED_TESTS_OUTPUT))
   @mock.patch('xcodebuild_runner.isinstance', return_value=True)
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   @mock.patch('test_apps.EgtestsApp', autospec=True)
@@ -254,7 +408,6 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     """Tests launch method in DeviceXcodeTestRunner"""
     test_app = mock_test_app.return_value
     test_app.test_app_path = _EGTESTS_APP_PATH
-    test_app.disabled_tests = ['Class2/disabled_test3']
     test_app.get_all_tests.return_value = [
         'Class1/passedTest1', 'Class1/passedTest2'
     ]
@@ -275,6 +428,8 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
     self.assertEqual(tests['Class2/disabled_test3']['actual'], 'SKIP')
     self.assertEqual(tests['Class2/disabled_test3']['expected'], 'SKIP')
 
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=_ENUMERATE_TESTS_OUTPUT))
   def test_tear_down(self):
     tr = xcodebuild_runner.DeviceXcodeTestRunner(
         "fake-app-path", "fake-host-app-path", "fake-out-dir")
@@ -303,7 +458,10 @@ class SimulatorParallelTestRunnerTest(test_runner_test.TestCase):
 
     self.mock(result_sink_util.ResultSinkClient,
               'post', lambda *args, **kwargs: None)
-    self.mock(test_runner.subprocess, 'check_output', lambda _: b'fake-output')
+    self.mock(
+        test_runner.subprocess,
+        'check_output',
+        lambda _, stderr=None: b'fake-output')
     self.mock(test_runner.subprocess, 'check_call', lambda _: b'fake-out')
     self.mock(test_runner.subprocess,
               'Popen', lambda cmd, env, stdout, stderr: 'fake-out')
@@ -316,16 +474,19 @@ class SimulatorParallelTestRunnerTest(test_runner_test.TestCase):
     self.mock(test_runner.TestRunner, 'start_proc', lambda self, cmd: 0)
     self.mock(test_runner.TestRunner, 'retrieve_derived_data', lambda _: None)
     self.mock(test_runner.TestRunner, 'process_xcresult_dir', lambda _: None)
-    self.mock(test_apps.EgtestsApp,
-              'fill_xctest_run', lambda _1, _2: 'xctestrun')
-    self.mock(
-        test_apps.GTestsApp,
-        'get_all_tests', lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
-    self.mock(
-        test_apps.EgtestsApp,
-        'get_all_tests', lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
+    self.mock(test_apps.EgtestsApp, 'fill_xctest_run',
+              lambda _1, _2: 'xctestrun')
+    self.mock(test_apps.EgtestsApp, 'get_all_tests',
+              lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
+    self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
+    self.mock(os.path, 'isfile', lambda _: True)
+    self.mock(xcodebuild_runner.SimulatorParallelTestRunner,
+              '_create_xctest_run_enum_tests',
+              lambda _, include_disabled: 'fake-path')
 
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=_ENUMERATE_TESTS_OUTPUT))
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   @mock.patch('platform.system', return_value='Darwin')
   def test_launch_egtest(self, _, mock_result):
@@ -340,6 +501,8 @@ class SimulatorParallelTestRunnerTest(test_runner_test.TestCase):
     self.assertTrue(tr.launch())
     self.assertEqual(len(tr.test_results['tests']), 2)
 
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=_ENUMERATE_TESTS_OUTPUT))
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   @mock.patch('xcodebuild_runner.TestPluginServicerWrapper')
   @mock.patch('platform.system', return_value='Darwin')

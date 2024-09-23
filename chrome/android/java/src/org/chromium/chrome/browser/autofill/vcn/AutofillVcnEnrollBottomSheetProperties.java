@@ -10,8 +10,9 @@ import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
-import java.util.LinkedList;
+import java.util.List;
 
 /** The model of the autofill virtual card number (VCN) enrollment bottom sheet UI. */
 /*package*/ abstract class AutofillVcnEnrollBottomSheetProperties {
@@ -71,7 +72,7 @@ import java.util.LinkedList;
     /** Legal messages. */
     static class LegalMessages {
         /** Legal message lines. */
-        final LinkedList<LegalMessageLine> mLines;
+        final List<LegalMessageLine> mLines;
 
         /** The type of link to record in metrics when a link is tapped. */
         @VirtualCardEnrollmentLinkType final int mLinkType;
@@ -86,7 +87,7 @@ import java.util.LinkedList;
          * @param linkType the type of link to record in metrics when link is tapped.
          */
         LegalMessages(
-                LinkedList<LegalMessageLine> lines,
+                List<LegalMessageLine> lines,
                 @VirtualCardEnrollmentLinkType int linkType,
                 LinkOpener linkOpener) {
             mLines = lines;
@@ -155,6 +156,13 @@ import java.util.LinkedList;
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
+    /** Indicates whether the bottom sheet is in a loading state. */
+    static final WritableBooleanPropertyKey SHOW_LOADING_STATE = new WritableBooleanPropertyKey();
+
+    /** The description for the loading view. */
+    static final ReadableObjectPropertyKey<String> LOADING_DESCRIPTION =
+            new ReadableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
         MESSAGE_TEXT,
         DESCRIPTION,
@@ -165,7 +173,9 @@ import java.util.LinkedList;
         GOOGLE_LEGAL_MESSAGES,
         ISSUER_LEGAL_MESSAGES,
         ACCEPT_BUTTON_LABEL,
-        CANCEL_BUTTON_LABEL
+        CANCEL_BUTTON_LABEL,
+        SHOW_LOADING_STATE,
+        LOADING_DESCRIPTION
     };
 
     /** Do not instantiate. */

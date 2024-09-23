@@ -6,6 +6,20 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
 
 namespace chromeos {
 
@@ -14,6 +28,12 @@ namespace {
 MahiManager* g_instance = nullptr;
 
 }  // namespace
+
+// MahiOutline ----------------------------------------------------------------
+
+bool MahiOutline::operator==(const MahiOutline&) const = default;
+
+// MahiManager -----------------------------------------------------------------
 
 // static
 MahiManager* MahiManager::Get() {
@@ -30,13 +50,18 @@ MahiManager::~MahiManager() {
   g_instance = nullptr;
 }
 
+std::optional<base::UnguessableToken> MahiManager::GetMediaAppPDFClientId()
+    const {
+  return std::nullopt;
+}
+
 // static
 ScopedMahiManagerSetter* ScopedMahiManagerSetter::instance_ = nullptr;
 
 ScopedMahiManagerSetter::ScopedMahiManagerSetter(MahiManager* manager) {
   // Only allow one scoped instance at a time.
   if (instance_) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   instance_ = this;
@@ -48,7 +73,7 @@ ScopedMahiManagerSetter::ScopedMahiManagerSetter(MahiManager* manager) {
 
 ScopedMahiManagerSetter::~ScopedMahiManagerSetter() {
   if (instance_ != this) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

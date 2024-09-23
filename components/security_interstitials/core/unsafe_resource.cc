@@ -24,12 +24,8 @@ UnsafeResource::UrlCheckResult::UrlCheckResult(
 }
 
 UnsafeResource::UnsafeResource()
-    : is_subresource(false),
-      is_subframe(false),
-      threat_type(safe_browsing::SB_THREAT_TYPE_SAFE),
-      request_destination(network::mojom::RequestDestination::kDocument),
+    : threat_type(safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE),
       is_delayed_warning(false),
-      should_send_reports(true),
       is_async_check(false) {}
 
 UnsafeResource::UnsafeResource(const UnsafeResource& other) = default;
@@ -37,33 +33,30 @@ UnsafeResource::UnsafeResource(const UnsafeResource& other) = default;
 UnsafeResource::~UnsafeResource() = default;
 
 bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck() const {
-  // Subresource hits cannot happen until after main page load is committed.
-  if (is_subresource)
-    return false;
-
+  using enum safe_browsing::SBThreatType;
   switch (threat_type) {
     // Client-side phishing detection interstitials never block the main
     // frame load, since they happen after the page is finished loading.
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
     // Malicious ad activity reporting happens in the background.
-    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
-    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
     // Ad sampling happens in the background.
-    case safe_browsing::SB_THREAT_TYPE_AD_SAMPLE:
+    case SB_THREAT_TYPE_AD_SAMPLE:
     // Chrome SAVED password reuse warning happens after the page is finished
     // loading.
-    case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
     // Chrome GAIA signed in and syncing password reuse warning happens after
     // the page is finished loading.
-    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
     // Chrome GAIA signed in and non-syncing password reuse warning happens
     // after the page is finished loading.
-    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
     // Enterprise password reuse warning happens after the page is finished
     // loading.
-    case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
     // Suspicious site collection happens in the background
-    case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
       return false;
 
     default:
@@ -84,7 +77,11 @@ void UnsafeResource::DispatchCallback(
   DCHECK(callback_sequence);
   UrlCheckResult result(proceed, showed_interstitial,
                         has_post_commit_interstitial_skipped);
-  callback_sequence->PostTask(from_here, base::BindOnce(callback, result));
+  if (callback_sequence->RunsTasksInCurrentSequence()) {
+    callback.Run(result);
+  } else {
+    callback_sequence->PostTask(from_here, base::BindOnce(callback, result));
+  }
 }
 
 }  // namespace security_interstitials

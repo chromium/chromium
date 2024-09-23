@@ -150,10 +150,6 @@ class ActiveHost {
                      const std::string& tether_network_guid,
                      const std::string& wifi_network_guid);
 
-  void OnTetherHostFetched(
-      ActiveHostCallback active_host_callback,
-      std::optional<multidevice::RemoteDeviceRef> active_host);
-
   raw_ptr<TetherHostFetcher> tether_host_fetcher_;
   raw_ptr<PrefService> pref_service_;
 

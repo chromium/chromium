@@ -4,8 +4,18 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -25,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
 import org.chromium.chrome.browser.omnibox.test.R;
 
 /** Tests for {@link BaseSuggestionView}. */
@@ -61,90 +72,117 @@ public class BaseSuggestionViewUnitTest {
         // We currently don't pass onKeyUp event, which incorrectly triggers a long-press event.
         // This test evaluates that <Enter> key triggers the navigation event until we plumb both
         // keyDown and keyUp events.
-        sendKey(KeyEvent.KEYCODE_ENTER);
+        assertTrue(sendKey(KeyEvent.KEYCODE_ENTER));
         verify(mOnClickListener).onClick(any());
         verifyNoMoreInteractions(mOnClickListener, mOnLongClickListener);
+        verify(mView, never()).super_onKeyDown(anyInt(), any());
     }
 
     @Test
-    public void onKeyDown_actionButtonActivation_noActionButtons_ltr() {
-        mView.setActionButtonsCount(0);
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mView).getLayoutDirection();
+    public void onKeyDown_actionButtonKeysAreConsumedIfActionsArePresent() {
+        var controller = mock(RecyclerViewSelectionController.class);
+        mView.actionChipsView.setSelectionControllerForTesting(controller);
 
-        // Observe no crashes or other bad behavior when buttons are not available.
-        sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+        // Simulate Actions consuming key stroke.
+        doReturn(true).when(controller).selectNextItem();
+        assertTrue(sendKey(KeyEvent.KEYCODE_TAB));
+        verify(mView, never()).super_onKeyDown(anyInt(), any());
+
+        // Simulate Actions rejecting key stroke.
+        doReturn(false).when(controller).selectNextItem();
+        assertFalse(sendKey(KeyEvent.KEYCODE_TAB));
+        verify(mView).super_onKeyDown(anyInt(), any());
     }
 
     @Test
-    public void onKeyDown_actionButtonActivation_noActionButtons_rtl() {
-        mView.setActionButtonsCount(0);
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mView).getLayoutDirection();
-
-        // Observe no crashes or other bad behavior when buttons are not available.
-        sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
+    public void onKeyDown_unrecognizedKeysPassedToSuper() {
+        assertFalse(sendKey(KeyEvent.KEYCODE_A));
+        verifyNoMoreInteractions(mOnClickListener, mOnLongClickListener);
+        verify(mView).super_onKeyDown(eq(KeyEvent.KEYCODE_A), any());
     }
 
     @Test
-    public void onKeyDown_actionButtonActivation_oneActionButton_ltr() {
+    public void setSelected_noFocusListener() {
+        // No side effects if the listener is not installed.
+        mView.setOnFocusViaSelectionListener(null);
+        mView.setSelected(false);
+        mView.setSelected(true);
+        mView.setSelected(false);
+    }
+
+    @Test
+    public void setSelected_withFocusListener() {
+        Runnable callback = mock(Runnable.class);
+        mView.setOnFocusViaSelectionListener(callback);
+
+        mView.setSelected(false);
+        verifyNoMoreInteractions(callback);
+
+        mView.setSelected(true);
+        verify(callback).run();
+        clearInvocations(callback);
+
+        mView.setSelected(false);
+        verifyNoMoreInteractions(callback);
+    }
+
+    @Test
+    public void setActionButtonsCount_addButtons() {
+        // Verify that we don't unnecessarily create new buttons / retain already created ones.
+        assertEquals(0, mView.getActionButtons().size());
+
         mView.setActionButtonsCount(1);
-        View v = (View) mView.getActionButtons().get(0);
-        v.setOnClickListener(mOnClickListener);
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mView).getLayoutDirection();
+        assertEquals(1, mView.getActionButtons().size());
+        var btn0 = mView.getActionButtons().get(0);
+        assertNotNull(btn0);
 
-        // DPAD_RIGHT activates the only action button.
-        sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        verify(mOnClickListener).onClick(any());
-        verifyNoMoreInteractions(mOnClickListener);
+        mView.setActionButtonsCount(2);
+        assertEquals(2, mView.getActionButtons().size());
+        assertEquals(btn0, mView.getActionButtons().get(0));
+        var btn1 = mView.getActionButtons().get(1);
+        assertNotEquals(btn0, btn1);
 
-        // DPAD_LEFT is no-op.
-        sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
-        verifyNoMoreInteractions(mOnClickListener);
+        // Retain buttons / no change.
+        mView.setActionButtonsCount(2);
+        assertEquals(2, mView.getActionButtons().size());
+        assertEquals(btn0, mView.getActionButtons().get(0));
+        assertEquals(btn1, mView.getActionButtons().get(1));
     }
 
     @Test
-    public void onKeyDown_actionButtonActivation_oneActionButton_rtl() {
+    public void setActionButtonsCount_removeButtons() {
+        // Verify that we don't unnecessarily create new buttons / retain already created ones.
+        assertEquals(0, mView.getActionButtons().size());
+
+        mView.setActionButtonsCount(2);
+        assertEquals(2, mView.getActionButtons().size());
+        var btn0 = mView.getActionButtons().get(0);
+        assertNotNull(btn0);
+
         mView.setActionButtonsCount(1);
-        View v = (View) mView.getActionButtons().get(0);
-        v.setOnClickListener(mOnClickListener);
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mView).getLayoutDirection();
-
-        // DPAD_LEFT activates the only action button.
-        sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
-        verify(mOnClickListener).onClick(any());
-        verifyNoMoreInteractions(mOnClickListener);
-
-        // DPAD_RIGHT is no-op.
-        sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        verifyNoMoreInteractions(mOnClickListener);
+        assertEquals(1, mView.getActionButtons().size());
+        assertEquals(btn0, mView.getActionButtons().get(0));
     }
 
     @Test
-    public void onKeyDown_actionButtonActivation_manyActionButtons_ltr() {
-        mView.setActionButtonsCount(2);
-        ((View) mView.getActionButtons().get(0)).setOnClickListener(mOnClickListener);
-        ((View) mView.getActionButtons().get(1)).setOnClickListener(mOnClickListener);
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mView).getLayoutDirection();
+    public void isFocused_replicatesSuperFocus() {
+        mView.setSelected(false);
 
-        // Observe no interactions.
-        sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        verifyNoMoreInteractions(mOnClickListener);
-        sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
-        verifyNoMoreInteractions(mOnClickListener);
+        doReturn(false).when(mView).super_isFocused();
+        assertFalse(mView.isFocused());
+
+        doReturn(true).when(mView).super_isFocused();
+        assertTrue(mView.isFocused());
     }
 
     @Test
-    public void onKeyDown_actionButtonActivation_manyActionButtons_rtl() {
-        mView.setActionButtonsCount(2);
-        ((View) mView.getActionButtons().get(0)).setOnClickListener(mOnClickListener);
-        ((View) mView.getActionButtons().get(1)).setOnClickListener(mOnClickListener);
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mView).getLayoutDirection();
+    public void isFocused_selectionHintsFocusExceptTouchMode() {
+        doReturn(false).when(mView).super_isFocused();
 
-        // Observe no interactions.
-        sendKey(KeyEvent.KEYCODE_DPAD_RIGHT);
-        verifyNoMoreInteractions(mOnClickListener);
-        sendKey(KeyEvent.KEYCODE_DPAD_LEFT);
-        verifyNoMoreInteractions(mOnClickListener);
+        mView.setSelected(true);
+        assertTrue(mView.isFocused());
+
+        mView.setSelected(false);
+        assertFalse(mView.isFocused());
     }
 }

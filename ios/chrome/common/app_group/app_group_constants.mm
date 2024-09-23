@@ -47,6 +47,8 @@ const char kChromeAppGroupSupportsSearchByImage[] = "supportsSearchByImage";
 const char kChromeAppGroupIsGoogleDefaultSearchEngine[] =
     "isGoogleDefaultSearchEngine";
 const char kChromeAppGroupEnableLensInWidget[] = "enableLensInWidget";
+const char kChromeAppGroupEnableColorLensAndVoiceIconsInWidget[] =
+    "enableColorLensAndVoiceIconsInWidget";
 
 const char kChromeAppClientID[] = "ClientID";
 const char kUserMetricsEnabledDate[] = "UserMetricsEnabledDate";
@@ -189,7 +191,7 @@ NSString* KeyForOpenExtensionOutcomeType(OpenExtensionOutcome type) {
     case OpenExtensionOutcome::kFailureUnsupportedScheme:
       return kOpenExtensionOutcomeFailureUnsupportedScheme;
     case OpenExtensionOutcome::kInvalid:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

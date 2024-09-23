@@ -57,6 +57,24 @@ interface Params {
   // Runs the empty callback. CHECKs if `optional_enum` is not null.
   SendNullEnum(RegularEnum? optional_enum) => ();
 
+  // Runs the empty callback. CHECKs if `optional_bools` is not null.
+  SendNullBools(array<bool?> optional_bools) => ();
+  // Runs the empty callback. CHECKs if `optional_int16s` is not null.
+  SendNullInt16s(array<int16?> optional_int16s) => ();
+  // Runs the empty callback. CHECKs if `optional_uint32s` is not null.
+  SendNullUint32s(array<uint32?> optional_uint32s) => ();
+  // Runs the empty callback. CHECKs if `optional_doubles` is not null.
+  SendNullDoubles(array<double?> optional_doubles) => ();
+  // Runs the empty callback. CHECKs if `optional_enums` is not null.
+  SendNullEnums(array<RegularEnum?> optional_enums) => ();
+
+  // Runs the empty callback. CHECKs if `optional_bools` is not null.
+  SendNullBoolMap(map<int32, bool?> values) => ();
+  // Runs the empty callback. CHECKs if `optional_bools` is not null.
+  SendNullDoubleMap(map<int32, double?> values) => ();
+  // Runs the empty callback. CHECKs if `optional_bools` is not null.
+  SendNullEnumMap(map<int32, RegularEnum?> values) => ();
+
   // The following methods help test that JS correctly handles optional
   // numerics with a value.
   //
@@ -84,6 +102,30 @@ interface Params {
   SendOptionalDouble(double? optional_double) => (double value);
   // Runs callback with `optional_enum`.
   SendOptionalEnum(RegularEnum? optional_enum) => (RegularEnum value);
+
+  // Runs callback with `optional_enum`.
+  SendOptionalBools(array<bool?> optional_enums) => (array<bool> values);
+  // Runs callback with `optional_int16`.
+  SendOptionalInt16s(array<int16?> optional_int16s) => (array<int16> values);
+  // Runs callback with `optional_uint32`.
+  SendOptionalUint32s(array<uint32?> optional_uint32s)
+        => (array<uint32> values);
+  // Runs callback with `optional_double`.
+  SendOptionalDoubles(array<double?> optional_doubles)
+        => (array<double> values);
+  // Runs callback with `optional_enum`.
+  SendOptionalEnums(array<RegularEnum?> optional_enums)
+        => (array<RegularEnum> values);
+
+  // Runs callback by unwrapping all null values.
+  SendOptionalBoolMap(map<int32, bool?> values)
+        => (map<int32, bool> values);
+  // Runs callback by unwrapping all null values.
+  SendOptionalDoubleMap(map<int32, double?> values)
+        => (map<int32, double> values);
+  // Runs callback by unwrapping all null values.
+  SendOptionalEnumMap(map<int32, RegularEnum?> values)
+        => (map<int32, RegularEnum> values);
 
   // Runs a callback with null. Helps test that JS can correctly handle null
   // structs with optional numerics.
@@ -143,6 +185,24 @@ interface ResponseParams {
   // Returns a null optional enum.
   GetNullEnum() => (RegularEnum? optional_value);
 
+  // Returns a list of optional bools.
+  GetNullBools() => (array<bool?> optional_values);
+  // Returns a list of optional int16s.
+  GetNullInt16s() => (array<int16?> optional_values);
+  // Returns a list of optional uint32s.
+  GetNullUint32s() => (array<uint32?> optional_values);
+  // Returns a list of optional doubles.
+  GetNullDoubles() => (array<double?> optional_values);
+  // Returns a list of optional enums.
+  GetNullEnums() => (array<RegularEnum?> optional_values);
+
+  // Returns a simple map with a single {0, null} entry.
+  GetNullBoolMap() => (map<int16, bool?> optional_values);
+  // Returns a simple map with a single {0, null} entry.
+  GetNullInt32Map() => (map<int16, int32?> optional_values);
+  // Returns a simple map with a single {0, null} entry.
+  GetNullEnumMap() => (map<int16, RegularEnum?> optional_values);
+
   // The following methods help test that JS can correctly handle optional
   // numerics in response params.
   //
@@ -170,6 +230,37 @@ interface ResponseParams {
   GetOptionalDouble(double value) => (double? optional_value);
   // Returns |value| in an optional enum.
   GetOptionalEnum(RegularEnum value) => (RegularEnum? optional_value);
+
+  // Returns |value| sandwiched between two null values. E.g.:
+  // [null, |value|, null].
+  GetOptionalBools(bool value) => (array<bool?> optional_values);
+  // Returns |value| sandwiched between two null values. E.g.:
+  // [null, |value|, null].
+  GetOptionalInt16s(int16 value) => (array<int16?> optional_values);
+  // Returns |value| sandwiched between two null values. E.g.:
+  // [null, |value|, null].
+  GetOptionalUint32s(uint32 value) => (array<uint32?> optional_values);
+  // Returns |value| sandwiched between two null values. E.g.:
+  // [null, |value|, null].
+  GetOptionalDoubles(double value) => (array<double?> optional_values);
+  // Returns |value| sandwiched between two null values. E.g.:
+  // [null, |value|, null].
+  GetOptionalEnums(RegularEnum value) => (array<RegularEnum?> optional_values);
+
+  // Returns {|key|, |value|} sandwiched between two null values. E.g.:
+  // {
+  //   [key - 1]: null,
+  //   [key]: value,
+  //   [key +1]: value,
+  // }
+  GetOptionalBoolMap(int16 key, bool value)
+        => (map<int16, bool?> optional_values);
+  // Same as above.
+  GetOptionalFloatMap(int16 key, float value)
+        => (map<int16, float?> optional_values);
+  // Same as above.
+  GetOptionalEnumMap(int16 key, RegularEnum value)
+        => (map<int16, RegularEnum?> optional_values);
 
   // Runs a callback with null. Helps test that JS can correctly handle null
   // structs with optional numerics.

@@ -73,4 +73,8 @@ void DnsSdDeviceLister::OnDeviceCacheFlushed(const std::string& service_type) {
   device_lister_->DiscoverNewDevices();
 }
 
+void DnsSdDeviceLister::OnPermissionRejected() {
+  delegate_->ServicesPermissionRejected();
+}
+
 }  // namespace media_router

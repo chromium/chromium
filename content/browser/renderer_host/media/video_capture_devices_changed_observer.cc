@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 
 #include "content/public/browser/video_capture_service.h"
-#include "services/video_capture/public/cpp/features.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
 namespace content {

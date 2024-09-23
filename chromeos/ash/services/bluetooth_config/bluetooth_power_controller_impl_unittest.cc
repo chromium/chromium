@@ -91,8 +91,8 @@ class BluetoothPowerControllerImplTest : public testing::Test {
     bluetooth_power_controller_->SetBluetoothEnabledState(enabled);
   }
 
-  void SetBluetoothHidDetectionActive() {
-    bluetooth_power_controller_->SetBluetoothHidDetectionActive();
+  void SetBluetoothEnabledWithoutPersistence() {
+    bluetooth_power_controller_->SetBluetoothEnabledWithoutPersistence();
   }
 
   void SetBluetoothHidDetectionInactive(bool is_using_bluetooth) {
@@ -330,15 +330,15 @@ TEST_F(BluetoothPowerControllerImplTest, ApplyBluetoothPrimaryUserPrefOn) {
 }
 
 TEST_F(BluetoothPowerControllerImplTest,
-       SetHidDetectionActive_LocalStatePrefOn) {
+       EnableBluetoothWithoutPersistence_LocalStatePrefOn) {
   Init();
 
   // Pref should be set to enabled.
   EXPECT_TRUE(local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kEnabled);
 
-  // Set HID detection active.
-  SetBluetoothHidDetectionActive();
+  // Set Bluetooth enabled.
+  SetBluetoothEnabledWithoutPersistence();
 
   // The pref and adapter state should remain unchanged.
   EXPECT_TRUE(local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
@@ -353,7 +353,7 @@ TEST_F(BluetoothPowerControllerImplTest,
 }
 
 TEST_F(BluetoothPowerControllerImplTest,
-       SetHidDetectionActive_LocalStatePrefOff_BluetoothUnused) {
+       EnableBluetoothWithoutPersistence_LocalStatePrefOff_BluetoothUnused) {
   Init();
 
   // Turn Bluetooth off.
@@ -364,8 +364,8 @@ TEST_F(BluetoothPowerControllerImplTest,
   EXPECT_FALSE(
       local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
 
-  // Set HID detection active.
-  SetBluetoothHidDetectionActive();
+  // Set Bluetooth enabled.
+  SetBluetoothEnabledWithoutPersistence();
 
   // The adapter should enable but the pref remain unchanged.
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kEnabling);
@@ -382,7 +382,7 @@ TEST_F(BluetoothPowerControllerImplTest,
 }
 
 TEST_F(BluetoothPowerControllerImplTest,
-       SetHidDetectionActive_LocalStatePrefOff_BluetoothUsed) {
+       EnableBluetoothWithoutPersistence_LocalStatePrefOff_BluetoothUsed) {
   Init();
 
   // Turn Bluetooth off.
@@ -393,8 +393,8 @@ TEST_F(BluetoothPowerControllerImplTest,
   EXPECT_FALSE(
       local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
 
-  // Set HID detection active.
-  SetBluetoothHidDetectionActive();
+  // Set Bluetooth enabled.
+  SetBluetoothEnabledWithoutPersistence();
 
   // The adapter should enable but the pref remain unchanged.
   EXPECT_EQ(GetAdapterState(), mojom::BluetoothSystemState::kEnabling);

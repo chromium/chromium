@@ -1,0 +1,169 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("enrollment") {
+  sources = [
+    "account_status_check_fetcher.cc",
+    "account_status_check_fetcher.h",
+    "auto_enrollment_client.h",
+    "auto_enrollment_client_impl.cc",
+    "auto_enrollment_client_impl.h",
+    "auto_enrollment_controller.cc",
+    "auto_enrollment_controller.h",
+    "auto_enrollment_state.cc",
+    "auto_enrollment_state.h",
+    "auto_enrollment_state_message_processor.cc",
+    "auto_enrollment_state_message_processor.h",
+    "auto_enrollment_type_checker.cc",
+    "auto_enrollment_type_checker.h",
+    "device_cloud_policy_initializer.cc",
+    "device_cloud_policy_initializer.h",
+    "enrollment_config.cc",
+    "enrollment_config.h",
+    "enrollment_handler.cc",
+    "enrollment_handler.h",
+    "enrollment_requisition_manager.cc",
+    "enrollment_requisition_manager.h",
+    "enrollment_state_fetcher.cc",
+    "enrollment_state_fetcher.h",
+    "enrollment_status.cc",
+    "enrollment_status.h",
+    "enrollment_token_provider.cc",
+    "enrollment_token_provider.h",
+    "tpm_enrollment_key_signing_service.cc",
+    "tpm_enrollment_key_signing_service.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/ash/policy/server_backed_state",
+    "//chrome/browser/ash/settings",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/dbus/device_management:device_management_proto",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/network",
+    "//third_party/private_membership",
+  ]
+
+  deps = [
+    "//build/config/cuttlefish:buildflags",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/policy/dev_mode",
+    "//chrome/browser/ash/policy/enrollment/psm",
+    "//chrome/browser/ash/tpm",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/device_management",
+    "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/system",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/enrollment/psm",
+    "//chrome/browser/ash/tpm",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "enrollment_test_helper.cc",
+    "enrollment_test_helper.h",
+    "fake_auto_enrollment_client.cc",
+    "fake_auto_enrollment_client.h",
+  ]
+
+  public_deps = [ "//build:branding_buildflags" ]
+
+  deps = [
+    ":enrollment",
+    "//base",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/policy/enrollment/psm",
+    "//chromeos/ash/components/dbus/oobe_config",
+    "//chromeos/ash/components/system",
+    "//components/policy/proto:",
+    "//components/policy/test_support",
+    "//services/network/public/cpp",
+    "//third_party/private_membership",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "account_status_check_fetcher_unittest.cc",
+    "auto_enrollment_client_impl_unittest.cc",
+    "auto_enrollment_controller_unittest.cc",
+    "auto_enrollment_type_checker_unittest.cc",
+    "enrollment_config_unittest.cc",
+    "enrollment_state_fetcher_unittest.cc",
+    "enrollment_token_provider_unittest.cc",
+    "tpm_enrollment_key_signing_service_unittest.cc",
+  ]
+
+  deps = [
+    ":enrollment",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment/psm",
+    "//chrome/browser/ash/policy/enrollment/psm:test_support",
+    "//chrome/browser/ash/policy/server_backed_state",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ui/ash/login:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/dbus/device_management",
+    "//chromeos/ash/components/dbus/oobe_config",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/system",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto:",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//crypto",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/icu:icui18n",
+    "//third_party/private_membership",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+}

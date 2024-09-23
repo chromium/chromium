@@ -4,7 +4,8 @@
 
 #include "chrome/browser/private_network_access/private_network_device_permission_context.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/private_network_access/private_network_device_permission_context_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,9 +23,9 @@ namespace {
 using Validity = PrivateNetworkDeviceValidity;
 using Type = NewAcceptedDeviceType;
 
-constexpr base::StringPiece kPrivateNetworkDeviceValidityHistogramName =
+constexpr std::string_view kPrivateNetworkDeviceValidityHistogramName =
     "Security.PrivateNetworkAccess.PermissionDeviceValidity";
-constexpr base::StringPiece kUserAcceptedPrivateNetworkDeviceHistogramName =
+constexpr std::string_view kUserAcceptedPrivateNetworkDeviceHistogramName =
     "Security.PrivateNetworkAccess.PermissionNewAcceptedDeviceType";
 
 class PrivateNetworkDevicePermissionContextTest : public testing::Test {

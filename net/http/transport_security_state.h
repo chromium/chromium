@@ -17,7 +17,6 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -40,13 +39,20 @@ enum class CTPolicyCompliance;
 class HostPortPair;
 class X509Certificate;
 
-// Feature that controls whether Certificate Transparency is enforced. This
-// feature is default enabled and meant only as an emergency killswitch. It
-// will not enable enforcement in platforms that otherwise have it disabled.
-NET_EXPORT BASE_DECLARE_FEATURE(kCertificateTransparencyEnforcement);
-
 void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source);
+
+// Whether an insecure connection should be upgraded to use SSL. For metrics
+// this includes whether the decision came from static or dynamic state.
+enum class SSLUpgradeDecision {
+  // No state indicated an upgrade.
+  kNoUpgrade,
+  // Dynamic state indicated an upgrade.
+  kDynamicUpgrade,
+  // Static state indicated an upgrade. If dynamic state existed, it gave the
+  // same result as the static state.
+  kStaticUpgrade,
+};
 
 // Tracks which hosts have enabled strict transport security and/or public
 // key pins.
@@ -280,6 +286,12 @@ class NET_EXPORT TransportSecurityState {
 
   ~TransportSecurityState();
 
+  // As ShouldUpgradeToSSL(), but also returns whether the decision came from
+  // static or dynamic state, for metrics.
+  SSLUpgradeDecision GetSSLUpgradeDecision(
+      const std::string& host,
+      const NetLogWithSource& net_log = NetLogWithSource());
+
   // These functions search for static and dynamic STS and PKP states, and
   // invoke the functions of the same name on them. These functions are the
   // primary public interface; direct access to STS and PKP states is best
@@ -303,7 +315,7 @@ class NET_EXPORT TransportSecurityState {
   // The behavior may be further be altered by setting a RequireCTDelegate
   // via |SetRequireCTDelegate()|.
   CTRequirementsStatus CheckCTRequirements(
-      const net::HostPortPair& host_port_pair,
+      const HostPortPair& host_port_pair,
       bool is_issued_by_known_root,
       const HashValueVector& public_key_hashes,
       const X509Certificate* validated_certificate_chain,
@@ -431,10 +443,6 @@ class NET_EXPORT TransportSecurityState {
   void AssertCalledOnValidThread() const {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   }
-
-  // For unit tests only. Forces CheckCTRequirements() to unconditionally
-  // check compliance.
-  static void SetRequireCTForTesting(bool required);
 
   // For unit tests only.
   void EnableStaticPinsForTesting() { enable_static_pins_ = true; }

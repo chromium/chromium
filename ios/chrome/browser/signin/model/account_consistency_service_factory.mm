@@ -4,21 +4,21 @@
 
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 
+#import "base/functional/bind.h"
 #import "base/no_destructor.h"
 #import "components/content_settings/core/browser/cookie_settings.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace ios {
 
 AccountConsistencyServiceFactory::AccountConsistencyServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AccountConsistencyService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AccountConsistencyService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(ios::AccountReconcilorFactory::GetInstance());
   DependsOn(ios::CookieSettingsFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -27,10 +27,10 @@ AccountConsistencyServiceFactory::AccountConsistencyServiceFactory()
 AccountConsistencyServiceFactory::~AccountConsistencyServiceFactory() {}
 
 // static
-AccountConsistencyService* AccountConsistencyServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<AccountConsistencyService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+AccountConsistencyService* AccountConsistencyServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<AccountConsistencyService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -43,13 +43,19 @@ AccountConsistencyServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 AccountConsistencyServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+
+  // The base::Unretained(profile) is safe since the callback is only called
+  // from the returned AccountConsistencyService instance which is owned by
+  // the Profile object (as it is a KeyedService).
+  auto cookie_manager_callback = base::BindRepeating(
+      &web::BrowserState::GetCookieManager, base::Unretained(profile));
+
   return std::make_unique<AccountConsistencyService>(
-      chrome_browser_state,
-      ios::AccountReconcilorFactory::GetForBrowserState(chrome_browser_state),
-      ios::CookieSettingsFactory::GetForBrowserState(chrome_browser_state),
-      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
+      std::move(cookie_manager_callback),
+      ios::AccountReconcilorFactory::GetForProfile(profile),
+      ios::CookieSettingsFactory::GetForProfile(profile),
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace ios

@@ -1,0 +1,82 @@
+# Copyright 2018 The Fuchsia Authors
+#
+# Licensed under a BSD-style license <LICENSE-BSD>, Apache License, Version 2.0
+# <LICENSE-APACHE or https://www.apache.org/licenses/LICENSE-2.0>, or the MIT
+# license <LICENSE-MIT or https://opensource.org/licenses/MIT>, at your option.
+# This file may not be copied, modified, or distributed except according to
+# those terms.
+
+# Put both crates in a single workspace so that `trybuild` compiler errors have
+# paths that are stable regardless of the path to the repository root. This
+# avoids issues like:
+# https://github.com/dtolnay/trybuild/issues/207#issuecomment-131227.594
+[workspace]
+
+[package]
+edition = "2018"
+name = "zerocopy"
+version = "0.7.35"
+authors = ["Joshua Liebow-Feeser <joshlf@google.com>"]
+description = "Utilities for zero-copy parsing and serialization"
+categories = ["embedded", "encoding", "no-std::no-alloc", "parsing", "rust-patterns"]
+keywords = ["cast", "convert", "transmute", "transmutation", "type-punning"]
+license = "BSD-2-Clause OR Apache-2.0 OR MIT"
+repository = "https://github.com/google/zerocopy"
+rust-version = "1.60.0"
+
+exclude = [".*"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "doc_cfg", "--generate-link-to-definition"]
+
+[package.metadata.ci]
+# The versions of the stable and nightly compiler toolchains to use in CI.
+pinned-stable = "1.79.0"
+pinned-nightly = "nightly-2024-06-19"
+
+[package.metadata.playground]
+features = ["__internal_use_only_features_that_work_on_stable"]
+
+[features]
+default = ["byteorder"]
+
+alloc = []
+derive = ["zerocopy-derive"]
+simd = []
+simd-nightly = ["simd"]
+# This feature depends on all other features that work on the stable compiler.
+# We make no stability guarantees about this feature; it may be modified or
+# removed at any time.
+__internal_use_only_features_that_work_on_stable = ["alloc", "derive", "simd"]
+
+[dependencies]
+zerocopy-derive = { version = "=0.7.35", path = "zerocopy-derive", optional = true }
+
+[dependencies.byteorder]
+version = "1.3"
+default-features = false
+optional = true
+
+# The "associated proc macro pattern" ensures that the versions of zerocopy and
+# zerocopy-derive remain equal, even if the 'derive' feature isn't used.
+# See: https://github.com/matklad/macro-dep-test
+[target.'cfg(any())'.dependencies]
+zerocopy-derive = { version = "=0.7.35", path = "zerocopy-derive" }
+
+[dev-dependencies]
+assert_matches = "1.5"
+itertools = "0.11"
+rand = { version = "0.8.5", features = ["small_rng"] }
+rustversion = "1.0"
+static_assertions = "1.1"
+testutil = { path = "testutil" }
+# Pinned to a specific version so that the version used for local development
+# and the version used in CI are guaranteed to be the same. Future versions
+# sometimes change the output format slightly, so a version mismatch can cause
+# CI test failures.
+trybuild = { version = "=1.0.85", features = ["diff"] }
+# In tests, unlike in production, zerocopy-derive is not optional
+zerocopy-derive = { version = "=0.7.35", path = "zerocopy-derive" }
+# TODO(#381) Remove this dependency once we have our own layout gadgets.
+elain = "0.3.0"

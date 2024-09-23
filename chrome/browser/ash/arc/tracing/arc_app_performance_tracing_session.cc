@@ -48,11 +48,10 @@ double CalcVSyncError(const base::TimeDelta& frame_delta) {
   return (vsync_error.InMicrosecondsF() * vsync_error.InMicrosecondsF());
 }
 
-double CalcJanksPerMinute(const std::deque<int64_t>& presents,
-                          const base::TimeDelta& duration) {
+int CalcJankCount(const std::deque<int64_t>& presents) {
   int jank_count = 0;
   ArcGraphicsJankDetector jank_detector(base::BindRepeating(
-      [](int* out_count, const base::Time& timestamp) { (*out_count)++; },
+      [](int* out_count, base::Time timestamp) { (*out_count)++; },
       &jank_count));
 
   // Feed minimum samples into detector to obtain sampling rate.
@@ -74,7 +73,7 @@ double CalcJanksPerMinute(const std::deque<int64_t>& presents,
     jank_detector.OnSample(
         base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(ts_usec)));
   }
-  return jank_count / (duration.InSecondsF() / 60.0);
+  return jank_count;
 }
 
 }  // namespace
@@ -204,7 +203,11 @@ void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
   }
 
   frame_times_.emplace_back(ticks_now_callback_.Run());
-  frames_->ListenForPresent(surface);
+  if (trace_real_presents_) {
+    frames_->ListenForPresent(surface);
+  } else {
+    frames_->AddPresent(ticks_now_callback_.Run());
+  }
 }
 
 void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
@@ -236,7 +239,8 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
 
   // Number of presents could be zero if display-less device (e.g. Chromebox),
   // in this case skip calculating present metrics with less than two frames.
-  result.present_deviation = result.perceived_fps = result.janks_per_minute = 0;
+  result.present_deviation = result.perceived_fps = result.janks_per_minute =
+      result.janks_percentage = 0;
   if (num_presents > 1) {
     present_deltas.reserve(num_presents - 1);
     vsync_error_deviation_accumulator = 0;
@@ -249,7 +253,10 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
         sqrt(vsync_error_deviation_accumulator / present_deltas.size());
     result.perceived_fps = num_presents / tracing_period.InSecondsF();
     if (ArcGraphicsJankDetector::IsEnoughSamplesToDetect(num_presents)) {
-      result.janks_per_minute = CalcJanksPerMinute(presents, tracing_period);
+      const double jank_count = static_cast<double>(CalcJankCount(presents));
+      result.janks_per_minute =
+          jank_count / (tracing_period.InSecondsF() / 60.0);
+      result.janks_percentage = jank_count / num_presents * 100.0;
     }
   }
 

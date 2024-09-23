@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_INITIATOR_OPERATION_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +18,6 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::secure_channel {
 
@@ -106,7 +106,7 @@ class NearbyInitiatorOperation
 
   void OnBleDiscoveryStateChanged(
       mojom::DiscoveryResult discovery_result,
-      absl::optional<mojom::DiscoveryErrorCode> potential_error_code);
+      std::optional<mojom::DiscoveryErrorCode> potential_error_code);
   void OnNearbyConnectionStateChanged(mojom::NearbyConnectionStep step,
                                       mojom::NearbyConnectionStepResult result);
   void OnSecureChannelAuthenticationStateChanged(

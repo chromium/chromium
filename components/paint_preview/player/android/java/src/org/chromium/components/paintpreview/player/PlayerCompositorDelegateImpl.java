@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -61,19 +62,19 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
                                     SysUtils.amountOfPhysicalMemoryKB() < LOW_MEMORY_THRESHOLD_KB);
             TraceEvent.end("PlayerCompositorDelegateImplJni.initialize()");
         }
-        // TODO(crbug.com/1021590): Handle initialization errors when
+        // TODO(crbug.com/40106234): Handle initialization errors when
         // mNativePlayerCompositorDelegate == 0.
     }
 
     @CalledByNative
     void onCompositorReady(
-            UnguessableToken rootFrameGuid,
-            UnguessableToken[] frameGuids,
-            int[] frameContentSize,
-            int[] scrollOffsets,
-            int[] subFramesCount,
-            UnguessableToken[] subFrameGuids,
-            int[] subFrameClipRects,
+            @JniType("base::UnguessableToken") UnguessableToken rootFrameGuid,
+            @JniType("std::vector<base::UnguessableToken>") UnguessableToken[] frameGuids,
+            @JniType("std::vector") int[] frameContentSize,
+            @JniType("std::vector") int[] scrollOffsets,
+            @JniType("std::vector") int[] subFramesCount,
+            @JniType("std::vector<base::UnguessableToken>") UnguessableToken[] subFrameGuids,
+            @JniType("std::vector") int[] subFrameClipRects,
             float pageScaleFactor,
             long nativeAxTree) {
         mCompositorListener.onCompositorReady(
@@ -215,7 +216,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
         int requestBitmap(
                 long nativePlayerCompositorDelegateAndroid,
-                UnguessableToken frameGuid,
+                @JniType("std::optional<base::UnguessableToken>") UnguessableToken frameGuid,
                 Callback<Bitmap> bitmapCallback,
                 Runnable errorCallback,
                 float scaleFactor,
@@ -230,7 +231,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
 
         String onClick(
                 long nativePlayerCompositorDelegateAndroid,
-                UnguessableToken frameGuid,
+                @JniType("std::optional<base::UnguessableToken>") UnguessableToken frameGuid,
                 int x,
                 int y);
 

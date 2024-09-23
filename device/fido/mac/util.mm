@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/fido/mac/util.h"
+
+#import <Foundation/Foundation.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 
 #include <array>
 #include <set>
 #include <string>
-
-#import <Foundation/Foundation.h>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
@@ -160,7 +166,30 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
   return key;
 }
 
+std::optional<CodeSigningState>& GetProcessIsSignedOverride() {
+  static std::optional<CodeSigningState> flag;
+  return flag;
+}
+
+ScopedProcessIsSignedOverride::ScopedProcessIsSignedOverride(
+    CodeSigningState process_is_signed) {
+  std::optional<CodeSigningState>& flag = GetProcessIsSignedOverride();
+  // Overrides don't nest.
+  CHECK(!flag.has_value());
+  flag = process_is_signed;
+}
+
+ScopedProcessIsSignedOverride::~ScopedProcessIsSignedOverride() {
+  std::optional<CodeSigningState>& flag = GetProcessIsSignedOverride();
+  CHECK(flag.has_value());
+  flag.reset();
+}
+
 CodeSigningState ProcessIsSigned() {
+  std::optional<CodeSigningState>& flag = GetProcessIsSignedOverride();
+  if (flag.has_value()) {
+    return *flag;
+  }
   base::apple::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
   if (!task) {
     return CodeSigningState::kNotSigned;
@@ -172,12 +201,39 @@ CodeSigningState ProcessIsSigned() {
                                     : CodeSigningState::kNotSigned;
 }
 
+bool ProfileAuthenticatorWillDoUserVerification(
+    device::UserVerificationRequirement requirement,
+    bool platform_has_biometrics) {
+  return requirement == device::UserVerificationRequirement::kRequired ||
+         platform_has_biometrics;
+}
+
+std::optional<bool>& GetBiometricOverride() {
+  static std::optional<bool> flag;
+  return flag;
+}
+
+ScopedBiometricsOverride::ScopedBiometricsOverride(bool has_biometrics) {
+  std::optional<bool>& flag = GetBiometricOverride();
+  // Overrides don't nest.
+  CHECK(!flag.has_value());
+  flag = has_biometrics;
+}
+
+ScopedBiometricsOverride::~ScopedBiometricsOverride() {
+  std::optional<bool>& flag = GetBiometricOverride();
+  CHECK(flag.has_value());
+  flag.reset();
+}
+
 bool DeviceHasBiometricsAvailable() {
-  LAContext* context = [[LAContext alloc] init];
-  NSError* nserr;
-  return
-      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                           error:&nserr];
+  std::optional<bool>& flag = GetBiometricOverride();
+  if (flag.has_value()) {
+    return *flag;
+  }
+
+  return crypto::AppleKeychainV2::GetInstance().LAContextCanEvaluatePolicy(
+      LAPolicyDeviceOwnerAuthenticationWithBiometrics, /*error=*/nil);
 }
 
 }  // namespace device::fido::mac

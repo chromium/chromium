@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
-#include "base/at_exit.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"
 #include "media/base/test_data_util.h"

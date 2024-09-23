@@ -8,11 +8,11 @@ import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/c
 import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {VolumeType} from '../../../common/js/volume_manager_types.js';
 
-import {ContentMetadataProvider} from './content_metadata_provider.js';
-import {DlpMetadataProvider} from './dlp_metadata_provider.js';
-import {ExternalMetadataProvider} from './external_metadata_provider.js';
-import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
-import {MetadataItem} from './metadata_item.js';
+import type {ContentMetadataProvider} from './content_metadata_provider.js';
+import type {DlpMetadataProvider} from './dlp_metadata_provider.js';
+import type {ExternalMetadataProvider} from './external_metadata_provider.js';
+import type {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
+import type {MetadataItem} from './metadata_item.js';
 import {MetadataRequest} from './metadata_request.js';
 import {MultiMetadataProvider} from './multi_metadata_provider.js';
 

@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -90,10 +91,6 @@ SkiaOutputSurfaceDependencyImpl::GetGpuFeatureInfo() {
   return gpu_service_impl_->gpu_feature_info();
 }
 
-gpu::MailboxManager* SkiaOutputSurfaceDependencyImpl::GetMailboxManager() {
-  return gpu_service_impl_->mailbox_manager();
-}
-
 bool SkiaOutputSurfaceDependencyImpl::IsOffscreen() {
   return surface_handle_ == gpu::kNullSurfaceHandle;
 }
@@ -102,37 +99,39 @@ gpu::SurfaceHandle SkiaOutputSurfaceDependencyImpl::GetSurfaceHandle() {
   return surface_handle_;
 }
 
-scoped_refptr<gl::Presenter> SkiaOutputSurfaceDependencyImpl::CreatePresenter(
-    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) {
+scoped_refptr<gl::Presenter>
+SkiaOutputSurfaceDependencyImpl::CreatePresenter() {
   DCHECK(!IsOffscreen());
 
   auto context_state = GetSharedContextState();
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(SKIA_USE_DAWN)
   // DirectComposition is only supported with dawn D3D11 backend.
-  if (context_state->gr_context_type() == gpu::GrContextType::kGraphiteDawn &&
+  if (context_state->IsGraphiteDawn() &&
       context_state->dawn_context_provider()->backend_type() !=
           wgpu::BackendType::D3D11) {
     return {};
   }
 #endif
 
+  auto* dawn_context_provider = context_state->dawn_context_provider();
   auto presenter = gpu::ImageTransportSurface::CreatePresenter(
-      context_state->display(), stub, surface_handle_);
+      context_state->display(), GetGpuDriverBugWorkarounds(),
+      GetGpuFeatureInfo(), surface_handle_, dawn_context_provider);
   if (presenter &&
-      GetGpuDriverBugWorkarounds().rely_on_implicit_sync_for_swap_buffers) {
-    presenter->SetRelyOnImplicitSync();
+      base::FeatureList::IsEnabled(features::kHandleOverlaysSwapFailure)) {
+    presenter->SetNotifyNonSimpleOverlayFailure();
   }
   return presenter;
 }
 
 scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
-    base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
     gl::GLSurfaceFormat format) {
   CHECK(!IsOffscreen());
   return gpu::ImageTransportSurface::CreateNativeGLSurface(
-      GetSharedContextState()->display(), stub, surface_handle_, format);
+      GetSharedContextState()->display(), surface_handle_, format);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CachePresenter(
     gl::Presenter* presenter) {
   // We're running on the viz thread here. We want to release ref on the
@@ -172,8 +171,9 @@ base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CacheGLSurface(
 
   return base::ScopedClosureRunner(std::move(release_callback));
 }
+#endif
 
-scoped_refptr<base::TaskRunner>
+scoped_refptr<base::SingleThreadTaskRunner>
 SkiaOutputSurfaceDependencyImpl::GetClientTaskRunner() {
   return client_thread_task_runner_;
 }

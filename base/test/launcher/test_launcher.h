@@ -162,7 +162,7 @@ class TestLauncher {
 #if BUILDFLAG(IS_WIN)
     return true;
 #else
-    // TODO(https://crbug.com/1038857): Enable for macOS, Linux, and Fuchsia.
+    // TODO(crbug.com/40666527): Enable for macOS, Linux, and Fuchsia.
     return false;
 #endif
   }
@@ -393,7 +393,7 @@ std::string GetTestOutputSnippet(const TestResult& result,
 
 // Truncates a snippet to approximately the allowed length, while trying to
 // retain fatal messages. Exposed for testing only.
-std::string TruncateSnippetFocused(const base::StringPiece snippet,
+std::string TruncateSnippetFocused(const std::string_view snippet,
                                    size_t byte_limit);
 
 }  // namespace base

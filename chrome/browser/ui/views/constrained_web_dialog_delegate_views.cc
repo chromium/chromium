@@ -8,21 +8,24 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -84,7 +87,8 @@ class ConstrainedDialogWebView : public views::WebView,
 
   // views::WebView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
@@ -126,7 +130,7 @@ class WebDialogWebContentsDelegateViews
   // ui::WebDialogWebContentsDelegate:
   bool HandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override {
+      const input::NativeWebKeyboardEvent& event) override {
     // Forward shortcut keys in dialog to our initiator's delegate.
     // http://crbug.com/104586
     if (!initiator_web_contents_)
@@ -216,7 +220,7 @@ class ConstrainedWebDialogDelegateViews
   // contents::WebContentsDelegate:
   bool HandleKeyboardEvent(
       content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override {
+      const input::NativeWebKeyboardEvent& event) override {
     return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
         event, view_->GetFocusManager());
   }
@@ -246,8 +250,8 @@ class ConstrainedWebDialogDelegateViews
   std::unique_ptr<WebDialogWebContentsDelegate> override_tab_delegate_;
 };
 
-using content::NativeWebKeyboardEvent;
 using content::WebContents;
+using input::NativeWebKeyboardEvent;
 using ui::WebDialogDelegate;
 using ui::WebDialogWebContentsDelegate;
 
@@ -325,23 +329,23 @@ WebContents* ConstrainedWebDialogDelegateViews::GetWebContents() {
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogMinimumSize() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogMaximumSize() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogPreferredSize()
     const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ConstrainedWebDialogDelegateViews::ResizeToGivenSize(
     const gfx::Size size) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ConstrainedDialogWebView::ConstrainedDialogWebView(
@@ -358,13 +362,14 @@ ConstrainedDialogWebView::ConstrainedDialogWebView(
           std::move(delegate),
           web_contents,
           this)) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetWebContents(GetWebContents());
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   if (!max_size.IsEmpty()) {
     EnableSizingFromWebContents(RestrictToPlatformMinimumSize(min_size),
                                 max_size);
   }
+  SetProperty(views::kElementIdentifierKey, kConstrainedDialogWebViewElementId);
 }
 ConstrainedDialogWebView::~ConstrainedDialogWebView() {}
 
@@ -458,14 +463,16 @@ bool ConstrainedDialogWebView::AcceleratorPressed(
   return true;
 }
 
-gfx::Size ConstrainedDialogWebView::CalculatePreferredSize() const {
-  if (impl_->closed_via_webui())
+gfx::Size ConstrainedDialogWebView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (impl_->closed_via_webui()) {
     return gfx::Size();
+  }
 
   // If auto-resizing is enabled and the dialog has been auto-resized,
   // View::GetPreferredSize() won't try to calculate the size again, since a
   // preferred size has been set explicitly from the renderer.
-  gfx::Size size = WebView::CalculatePreferredSize();
+  gfx::Size size = WebView::CalculatePreferredSize(available_size);
   GetWebDialogDelegate()->GetDialogSize(&size);
   return size;
 }

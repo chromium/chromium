@@ -5,10 +5,10 @@
 #include "components/reporting/encryption/test_encryption_module.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/statusor.h"
 

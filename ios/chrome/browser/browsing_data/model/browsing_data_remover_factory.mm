@@ -10,20 +10,20 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_impl.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return static_cast<BrowsingDataRemover*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
-BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserStateIfExists(
-    ChromeBrowserState* browser_state) {
+BrowsingDataRemover* BrowsingDataRemoverFactory::GetForProfileIfExists(
+    ProfileIOS* profile) {
   return static_cast<BrowsingDataRemover*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static
@@ -42,7 +42,7 @@ BrowsingDataRemoverFactory::~BrowsingDataRemoverFactory() = default;
 std::unique_ptr<KeyedService>
 BrowsingDataRemoverFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  // TODO(crbug.com/1500603): the factory should declare the services
+  // TODO(crbug.com/40940855): the factory should declare the services
   // used by BrowsingDataRemoverImpl and inject them in the constructor.
   return std::make_unique<BrowsingDataRemoverImpl>(
       ChromeBrowserState::FromBrowserState(context));

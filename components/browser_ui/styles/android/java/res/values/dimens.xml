@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Standard width for overflow menu in Chrome. -->
     <dimen name="menu_width">258dp</dimen>
+    <dimen name="tab_group_menu_width">156dp</dimen>
 
     <!-- Button bar dimensions -->
     <dimen name="button_bar_stacked_margin">8dp</dimen>
@@ -17,11 +18,13 @@ found in the LICENSE file.
     <dimen name="dialog_padding_sides">@dimen/abc_dialog_padding_material</dimen>
 
     <!-- Toolbar dimensions -->
+    <dimen name="default_action_bar_height">56dp</dimen>
     <dimen name="toolbar_shadow_height">8dp</dimen>
     <dimen name="toolbar_hairline_height">1dp</dimen>
 
     <!-- Alpha values for various things -->
     <item name="icon_animated_faded_alpha" format="float" type="dimen">0.3</item>
+    <item name="iph_highlight_alpha" format="float" type="dimen">0.08</item>
     <item name="text_highlight_alpha" format="float" type="dimen">0.2</item>
     <item name="progress_bar_bg_alpha" format="float" type="dimen">0.2</item>
     <item name="filled_button_bg_disabled_alpha" format="float" type="dimen">0.12</item>
@@ -46,8 +49,11 @@ found in the LICENSE file.
     <dimen name="default_favicon_min_size" tools:ignore="PxUsage,UnusedResources">16px</dimen>
     <dimen name="circular_monogram_size">20dp</dimen>
     <dimen name="circular_monogram_text_size">14dp</dimen>
+    <dimen name="navigation_transitions_favicon_size">24dp</dimen>
 
     <!-- Section tab dimensions -->
-    <dimen name="section_tab_bg_elevation">@dimen/default_elevation_2</dimen>
     <dimen name="section_tab_selected_bg_elevation">@dimen/default_elevation_0</dimen>
+
+    <!-- NewTabPage dimensions -->
+    <dimen name="ntp_search_box_lateral_margin_narrow_window_tablet">16dp</dimen>
 </resources>

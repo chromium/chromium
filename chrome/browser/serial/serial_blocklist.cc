@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/metrics/field_trial_params.h"
@@ -23,7 +24,7 @@ const char kBluetoothStandardUUID[] = "0000-1000-8000-00805f9b34fb";
 
 // Returns true if the passed string is exactly 4 digits long and only contains
 // valid hexadecimal characters (no leading 0x).
-bool IsHexComponent(base::StringPiece string) {
+bool IsHexComponent(std::string_view string) {
   if (string.length() != 4)
     return false;
 
@@ -129,7 +130,7 @@ void SerialBlocklist::PopulateWithServerProvidedValues() {
   for (const auto& entry :
        base::SplitStringPiece(blocklist_string, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
-    std::vector<base::StringPiece> components = base::SplitStringPiece(
+    std::vector<std::string_view> components = base::SplitStringPiece(
         entry, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     // Entry must at least indicate the type
     if (components.empty()) {

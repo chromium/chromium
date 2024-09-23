@@ -34,16 +34,16 @@ namespace blink {
 // https://drafts.csswg.org/css-variables/#defining-variables
 class CORE_EXPORT CSSUnparsedDeclarationValue final : public CSSValue {
  public:
-  explicit CSSUnparsedDeclarationValue(scoped_refptr<CSSVariableData> data)
-      : CSSValue(kUnparsedDeclarationClass), data_(std::move(data)) {}
+  explicit CSSUnparsedDeclarationValue(CSSVariableData* data)
+      : CSSValue(kUnparsedDeclarationClass), data_(data) {}
 
-  CSSUnparsedDeclarationValue(scoped_refptr<CSSVariableData> data,
+  CSSUnparsedDeclarationValue(CSSVariableData* data,
                               const CSSParserContext* context)
       : CSSValue(kUnparsedDeclarationClass),
         parser_context_(context),
-        data_(std::move(data)) {}
+        data_(data) {}
 
-  CSSVariableData* VariableDataValue() const { return data_.get(); }
+  CSSVariableData* VariableDataValue() const { return data_.Get(); }
   const CSSParserContext* ParserContext() const {
     // TODO(crbug.com/985028): CSSUnparsedDeclarationValue should always have
     // a CSSParserContext.
@@ -61,7 +61,7 @@ class CORE_EXPORT CSSUnparsedDeclarationValue final : public CSSValue {
   // The parser context is used to resolve relative URLs, as described in:
   // https://drafts.css-houdini.org/css-properties-values-api-1/#relative-urls
   const Member<const CSSParserContext> parser_context_;
-  scoped_refptr<CSSVariableData> data_;
+  Member<CSSVariableData> data_;
 };
 
 template <>

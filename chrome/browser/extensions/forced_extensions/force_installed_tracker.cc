@@ -231,6 +231,10 @@ bool ForceInstalledTracker::IsReady() const {
   return status_ == kComplete || status_ == kWaitingForInstallForcelistPref;
 }
 
+bool ForceInstalledTracker::IsComplete() const {
+  return status_ == kComplete;
+}
+
 bool ForceInstalledTracker::IsMisconfiguration(
     const InstallStageTracker::InstallationData& installation_data,
     const ExtensionId& id) const {

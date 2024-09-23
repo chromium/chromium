@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("safe_browsing") {
+  sources = [
+    "enhanced_safe_browsing_infobar_overlay_mediator.h",
+    "enhanced_safe_browsing_infobar_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
+    "//ios/chrome/browser/safe_browsing/model:infobar_delegate",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/infobars/banners",
+    "//ui/base",
+  ]
+}

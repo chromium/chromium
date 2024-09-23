@@ -45,8 +45,7 @@
 #endif  // BUILDFLAG(ENABLE_NACL)
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/common/pdf_util.h"
-#include "components/pdf/common/internal_plugin_helpers.h"
+#include "components/pdf/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
@@ -297,11 +296,11 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   PluginInfoPtr plugin_info =
-      GetPluginInfo(GURL("fake.pdf"), url::Origin(), kPDFMimeType);
+      GetPluginInfo(GURL("fake.pdf"), url::Origin(), pdf::kPDFMimeType);
   ASSERT_TRUE(plugin_info);
 
   EXPECT_EQ(PluginStatus::kAllowed, plugin_info->status);
-  EXPECT_EQ(kPDFMimeType, plugin_info->actual_mime_type);
+  EXPECT_EQ(pdf::kPDFMimeType, plugin_info->actual_mime_type);
 
   // Group ID and name defined by `PluginInfoHostImpl`.
   EXPECT_EQ(kGroupId, plugin_info->group_identifier);
@@ -331,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
   ASSERT_THAT(plugin_info->plugin.mime_types, SizeIs(1));
 
   WebPluginMimeType mime_type = plugin_info->plugin.mime_types[0];
-  EXPECT_EQ(kPDFMimeType, mime_type.mime_type);
+  EXPECT_EQ(pdf::kPDFMimeType, mime_type.mime_type);
   EXPECT_THAT(mime_type.file_extensions, ElementsAre("pdf"));
   EXPECT_EQ(u"", mime_type.description);
   EXPECT_THAT(mime_type.additional_params, IsEmpty());
@@ -342,12 +341,12 @@ IN_PROC_BROWSER_TEST_P(PluginInfoHostImplBidiTest,
   SetAlwaysOpenPdfExternally();
 
   PluginInfoPtr plugin_info =
-      GetPluginInfo(GURL("fake.pdf"), url::Origin(), kPDFMimeType);
+      GetPluginInfo(GURL("fake.pdf"), url::Origin(), pdf::kPDFMimeType);
   ASSERT_TRUE(plugin_info);
 
   // PDF viewer extension is disabled by PDF content setting.
   EXPECT_EQ(PluginStatus::kDisabled, plugin_info->status);
-  EXPECT_EQ(kPDFMimeType, plugin_info->actual_mime_type);
+  EXPECT_EQ(pdf::kPDFMimeType, plugin_info->actual_mime_type);
 }
 
 IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,

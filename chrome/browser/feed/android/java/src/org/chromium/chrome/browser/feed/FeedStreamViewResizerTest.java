@@ -12,9 +12,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,7 +20,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
@@ -31,7 +28,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 /** Unit tests for {@link FeedStreamViewResizer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class FeedStreamViewResizerTest {
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private Activity mActivity;
     @Mock private RecyclerView mRecyclerView;

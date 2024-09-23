@@ -1,0 +1,212 @@
+This is a testharness.js-based test.
+Found 104 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] scrollHeight with negative margins: display: block; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: row;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: block; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-direction: row;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: block; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-direction: row;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: block; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-direction: row;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: row; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-direction: row; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-direction: row; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-direction: row; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: horizontal-tb; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: horizontal-tb; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-lr; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-lr; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-rl; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-rl; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: horizontal-tb; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: horizontal-tb; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-flow: wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: horizontal-tb; flex-direction: row-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: horizontal-tb; flex-direction: row-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-lr; flex-direction: row-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-lr; flex-direction: row-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-rl; flex-direction: row-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-rl; flex-direction: row-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: horizontal-tb; flex-direction: row-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: horizontal-tb; flex-direction: row-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: horizontal-tb; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: horizontal-tb; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: horizontal-tb; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: horizontal-tb; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-lr; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-lr; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-lr; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-lr; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-rl; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-rl; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-rl; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-rl; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: horizontal-tb; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: horizontal-tb; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: horizontal-tb; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: horizontal-tb; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-flow: row-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: column; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-direction: column; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-direction: column; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-direction: column; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: horizontal-tb; flex-flow: column wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: horizontal-tb; flex-flow: column wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-lr; flex-flow: column wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-lr; flex-flow: column wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-rl; flex-flow: column wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-rl; flex-flow: column wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: horizontal-tb; flex-flow: column wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: horizontal-tb; flex-flow: column wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: horizontal-tb; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: horizontal-tb; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-lr; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-lr; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-rl; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-rl; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: horizontal-tb; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: horizontal-tb; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-direction: column-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: horizontal-tb; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: horizontal-tb; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: horizontal-tb; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 204 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: horizontal-tb; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-lr; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-lr; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-lr; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-lr; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-rl; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: ltr; writing-mode: vertical-rl; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-rl; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: ltr; writing-mode: vertical-rl; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: horizontal-tb; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: horizontal-tb; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: horizontal-tb; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 216 but got 184
+[FAIL] scrollHeight with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: horizontal-tb; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollHeight expected 188 but got 181
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 184 but got 196
+[FAIL] scrollWidth with negative margins: display: flex; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollWidth with negative margins: display: flex; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-flow: column-reverse wrap-reverse; scrollbar-width: none;
+  assert_equals: scrollWidth expected 196 but got 184
+[FAIL] scrollHeight with negative margins: display: grid; overflow: visible; direction: rtl; writing-mode: vertical-lr; flex-direction: row;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: grid; overflow: clip; direction: rtl; writing-mode: vertical-lr; flex-direction: row;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: grid; overflow: visible; direction: rtl; writing-mode: vertical-rl; flex-direction: row;
+  assert_equals: scrollHeight expected 208 but got 181
+[FAIL] scrollHeight with negative margins: display: grid; overflow: clip; direction: rtl; writing-mode: vertical-rl; flex-direction: row;
+  assert_equals: scrollHeight expected 208 but got 181
+Harness: the test ran to completion.
+

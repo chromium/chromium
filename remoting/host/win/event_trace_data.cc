@@ -20,13 +20,11 @@ constexpr char kWarningSeverity[] = "WARNING";
 constexpr char kErrorSeverity[] = "ERROR";
 constexpr char kFatalSeverity[] = "FATAL";
 constexpr char kVerboseSeverity[] = "VERBOSE";
-constexpr char kUnknownSeverity[] = "UNKNOWN";
 
 logging::LogSeverity EventTraceLevelToSeverity(uint8_t level) {
   switch (level) {
     case TRACE_LEVEL_NONE:
       NOTREACHED();
-      return logging::LOGGING_ERROR;
     case TRACE_LEVEL_FATAL:
       return logging::LOGGING_FATAL;
     case TRACE_LEVEL_ERROR:
@@ -123,7 +121,6 @@ std::string EventTraceData::SeverityToString(logging::LogSeverity severity) {
         return kVerboseSeverity;
       }
       NOTREACHED();
-      return kUnknownSeverity;
   }
 }
 

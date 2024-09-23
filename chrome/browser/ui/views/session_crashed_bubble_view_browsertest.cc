@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
 
 // Regression test for https://crbug.com/1042010, it should be possible to focus
 // the bubble with the "focus dialog" hotkey combination (Alt+Shift+A).
-// TODO(https://crbug.com/1350659): Flaky on mac-12-arm64-rel.
+// TODO(crbug.com/40856612): Flaky on mac-12-arm64-rel.
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64) && defined(NDEBUG)
 #define MAYBE_CanFocusBubbleWithFocusDialogHotkey \
   DISABLED_CanFocusBubbleWithFocusDialogHotkey
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(SessionCrashedBubbleViewTest,
 
 // Regression test for https://crbug.com/1042010, it should be possible to focus
 // the bubble with the "rotate pane focus" (F6) hotkey.
-// TODO(crbug.com/1343849): Flaky on Mac.
+// TODO(crbug.com/40852599): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey \
   DISABLED_CanFocusBubbleWithRotatePaneFocusHotkey

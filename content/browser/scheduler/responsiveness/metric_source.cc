@@ -103,7 +103,7 @@ void MetricSource::TearDownOnIOThread(
 
   message_loop_observer_io_.reset();
 
-  content::GetUIThreadTaskRunner({})->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MetricSource::TearDownOnUIThread, base::Unretained(this),
                      std::move(on_finish_destroy)));

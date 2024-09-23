@@ -4,6 +4,8 @@
 
 #include "components/metrics/metrics_service_accessor.h"
 
+#include <string_view>
+
 #include "base/base_switches.h"
 #include "build/branding_buildflags.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -18,26 +20,26 @@ namespace {
 
 bool g_force_official_enabled_test = false;
 
-bool IsMetricsReportingEnabledForOfficialBuild(PrefService* pref_service) {
-  return pref_service->GetBoolean(prefs::kMetricsReportingEnabled);
+bool IsMetricsReportingEnabledForOfficialBuild(PrefService* local_state) {
+  return local_state->GetBoolean(prefs::kMetricsReportingEnabled);
 }
 
 }  // namespace
 
 // static
 bool MetricsServiceAccessor::IsMetricsReportingEnabled(
-    PrefService* pref_service) {
+    PrefService* local_state) {
   if (IsMetricsReportingForceEnabled()) {
     LOG(WARNING) << "Metrics Reporting is force enabled, data will be sent to "
                     "servers. Should not be used for tests.";
     return true;
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return IsMetricsReportingEnabledForOfficialBuild(pref_service);
+  return IsMetricsReportingEnabledForOfficialBuild(local_state);
 #else
   // In non-official builds, disable metrics reporting completely.
   return g_force_official_enabled_test
-             ? IsMetricsReportingEnabledForOfficialBuild(pref_service)
+             ? IsMetricsReportingEnabledForOfficialBuild(local_state)
              : false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
@@ -45,8 +47,8 @@ bool MetricsServiceAccessor::IsMetricsReportingEnabled(
 // static
 bool MetricsServiceAccessor::RegisterSyntheticFieldTrial(
     MetricsService* metrics_service,
-    base::StringPiece trial_name,
-    base::StringPiece group_name,
+    std::string_view trial_name,
+    std::string_view group_name,
     variations::SyntheticTrialAnnotationMode annotation_mode) {
   if (!metrics_service)
     return false;

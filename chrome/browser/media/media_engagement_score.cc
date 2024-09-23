@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/media_engagement_score.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
@@ -51,7 +52,7 @@ base::Value::Dict GetMediaEngagementScoreDictForSettings(
 }
 
 void GetIntegerFromScore(const base::Value::Dict& dict,
-                         base::StringPiece key,
+                         std::string_view key,
                          int* out) {
   if (std::optional<int> v = dict.FindInt(key)) {
     *out = v.value();

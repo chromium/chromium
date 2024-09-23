@@ -155,7 +155,6 @@ std::string MCSClient::GetStateString() const {
       return "CONNECTED";
   }
   NOTREACHED();
-  return std::string();
 }
 
 MCSClient::MCSClient(const std::string& version_string,

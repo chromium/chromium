@@ -16,7 +16,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -37,19 +36,21 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
     const ui::ImageModel& icon,
     std::u16string item_title,
     std::u16string item_description,
+    bool enabled,
     views::Button::PressedCallback callback) {
-  constexpr int kChevronSize = 8;
+  constexpr int kChevronSize = 20;
   auto secondary_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kChevronSize));
+          vector_icons::kSubmenuArrowChromeRefreshIcon,
+          enabled ? ui::kColorIcon : ui::kColorIconDisabled, kChevronSize));
 
-  const int kIconSize = features::IsChromeRefresh2023() ? 24 : 20;
+  const int kIconSize = 24;
   auto item_image = std::make_unique<views::ImageView>(icon);
   item_image->SetImageSize(gfx::Size(kIconSize, kIconSize));
 
   return std::make_unique<WebAuthnHoverButton>(
       std::move(callback), std::move(item_image), item_title, item_description,
-      std::move(secondary_view), false /*XXX*/);
+      std::move(secondary_view), enabled);
 }
 
 }  // namespace
@@ -72,7 +73,8 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
   for (const auto item_tag : model_->GetButtonTags()) {
     AppendListItemView(model_->GetItemIcon(item_tag),
                        model_->GetItemText(item_tag),
-                       model_->GetDescriptionText(item_tag), item_tag);
+                       model_->GetDescriptionText(item_tag),
+                       model_->IsButtonEnabled(item_tag), item_tag);
   }
 
   scroll_view_ = new views::ScrollView();
@@ -87,9 +89,10 @@ HoverListView::~HoverListView() = default;
 void HoverListView::AppendListItemView(const ui::ImageModel& icon,
                                        std::u16string item_text,
                                        std::u16string description_text,
+                                       bool enabled,
                                        int item_tag) {
   auto hover_button = CreateHoverButtonForListItem(
-      icon, item_text, description_text,
+      icon, item_text, description_text, enabled,
       base::BindRepeating(&HoverListModel::OnListItemSelected,
                           base::Unretained(model_.get()), item_tag));
 
@@ -130,7 +133,7 @@ int HoverListView::GetPreferredViewHeight() const {
   if (reserved_items > 0) {
     auto dummy_hover_button = CreateHoverButtonForListItem(
         ui::ImageModel(), std::u16string(), std::u16string(),
-        views::Button::PressedCallback());
+        /*enabled=*/true, views::Button::PressedCallback());
     const auto list_item_height =
         separator_height + dummy_hover_button->GetPreferredSize().height();
     size += list_item_height * reserved_items;

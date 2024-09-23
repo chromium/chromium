@@ -4,6 +4,7 @@
 
 #include "components/reporting/util/status_macros.h"
 
+#include "base/debug/stack_trace.h"
 #include "base/types/expected.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -98,6 +99,15 @@ void AssertOKErrorStatus() {
 }
 
 TEST(StatusMacros, AssertOKOnStatus) {
+  // The assertion failure in AssertOKErrorStatus will generate a stack trace.
+  // This is desirable for the normal case, where the trace can help the
+  // developer understand the failure. In this test, however, the failure is
+  // expected and its output is swallowed. Suppress generation of stack traces
+  // so that the cost of generating them does not lead to flaky timeouts in
+  // configurations where the collection and emission of stack traces is
+  // expensive (e.g., in debug builds).
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   const auto ok_status = Status::StatusOK();
   ASSERT_OK(ok_status);
   ASSERT_OK(ok_status) << "error message";
@@ -111,6 +121,15 @@ void ExpectOKErrorStatus() {
 }
 
 TEST(StatusMacros, ExpectOKOnStatus) {
+  // The assertion failure in ExpectOKErrorStatus will generate a stack trace.
+  // This is desirable for the normal case, where the trace can help the
+  // developer understand the failure. In this test, however, the failure is
+  // expected and its output is swallowed. Suppress generation of stack traces
+  // so that the cost of generating them does not lead to flaky timeouts in
+  // configurations where the collection and emission of stack traces is
+  // expensive (e.g., in debug builds).
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   EXPECT_OK(Status::StatusOK());
   EXPECT_OK(Status::StatusOK()) << "error message";
   EXPECT_NONFATAL_FAILURE(ExpectOKErrorStatus(), "error::INTERNAL");
@@ -141,6 +160,15 @@ void AssertOKErrorStatusOr() {
 }
 
 TEST(StatusMacros, AssertOKOnStatusOr) {
+  // The assertion failure in AssertOKErrorStatusOr will generate a stack trace.
+  // This is desirable for the normal case, where the trace can help the
+  // developer understand the failure. In this test, however, the failure is
+  // expected and its output is swallowed. Suppress generation of stack traces
+  // so that the cost of generating them does not lead to flaky timeouts in
+  // configurations where the collection and emission of stack traces is
+  // expensive (e.g., in debug builds).
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   StatusOr<int> status_or(2);
   ASSERT_OK(status_or);
   ASSERT_OK(status_or) << "error message";
@@ -154,6 +182,15 @@ void ExpectOKErrorStatusOr() {
 }
 
 TEST(StatusMacros, ExpectOKOnStatusOr) {
+  // The assertion failure in ExpectOKErrorStatusOr will generate a stack trace.
+  // This is desirable for the normal case, where the trace can help the
+  // developer understand the failure. In this test, however, the failure is
+  // expected and its output is swallowed. Suppress generation of stack traces
+  // so that the cost of generating them does not lead to flaky timeouts in
+  // configurations where the collection and emission of stack traces is
+  // expensive (e.g., in debug builds).
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   StatusOr<int> status_or(2);
   EXPECT_OK(status_or);
   EXPECT_OK(status_or) << "error message";

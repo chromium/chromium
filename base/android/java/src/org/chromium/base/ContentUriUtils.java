@@ -10,77 +10,43 @@ import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
-import java.io.File;
 import java.io.IOException;
 
 /** This class provides methods to access content URI schemes. */
+@JNINamespace("base")
 public abstract class ContentUriUtils {
     private static final String TAG = "ContentUriUtils";
-    private static FileProviderUtil sFileProviderUtil;
-
-    // Guards access to sFileProviderUtil.
-    private static final Object sLock = new Object();
-
-    /**
-     * Provides functionality to translate a file into a content URI for use
-     * with a content provider.
-     */
-    public interface FileProviderUtil {
-        /**
-         * Generate a content URI from the given file.
-         *
-         * @param file The file to be translated.
-         */
-        Uri getContentUriFromFile(File file);
-    }
 
     // Prevent instantiation.
     private ContentUriUtils() {}
 
-    public static void setFileProviderUtil(FileProviderUtil util) {
-        synchronized (sLock) {
-            sFileProviderUtil = util;
-        }
-    }
-
     /**
-     * Get a URI for |file| which has the image capture. This function assumes that path of |file|
-     * is based on the result of UiUtils.getDirectoryForImageCapture().
-     *
-     * @param file image capture file.
-     * @return URI for |file|.
-     * @throws IllegalArgumentException when the given File is outside the paths supported by the
-     *         provider.
-     */
-    public static Uri getContentUriFromFile(File file) {
-        synchronized (sLock) {
-            if (sFileProviderUtil != null) {
-                return sFileProviderUtil.getContentUriFromFile(file);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Opens the content URI for reading, and returns the file descriptor to
-     * the caller. The caller is responsible for closing the file descriptor.
+     * Opens the content URI for the specified mode, and returns the file descriptor to the caller.
+     * The caller is responsible for closing the file descriptor.
      *
      * @param uriString the content URI to open
+     * @param mode the mode to open. Allows all values from ParcelFileDescriptor#parseMode(): ("r",
+     *     "w", "wt", "wa", "rw" or "rwt"), but disallows "w" which has been the source of android
+     *     security issues.
      * @return file descriptor upon success, or -1 otherwise.
      */
     @CalledByNative
-    public static int openContentUriForRead(String uriString) {
-        AssetFileDescriptor afd = getAssetFileDescriptor(uriString);
+    public static int openContentUri(
+            @JniType("std::string") String uriString, @JniType("std::string") String mode) {
+        AssetFileDescriptor afd = getAssetFileDescriptor(uriString, mode);
         if (afd != null) {
             return afd.getParcelFileDescriptor().detachFd();
         }
@@ -94,11 +60,13 @@ public abstract class ContentUriUtils {
      * @return true if the URI exists, or false otherwise.
      */
     @CalledByNative
-    public static boolean contentUriExists(String uriString) {
+    public static boolean contentUriExists(@JniType("std::string") String uriString) {
         AssetFileDescriptor asf = null;
         try {
-            asf = getAssetFileDescriptor(uriString);
-            return asf != null;
+            asf = getAssetFileDescriptor(uriString, "r");
+            if (asf != null) {
+                return true;
+            }
         } finally {
             // Do not use StreamUtil.closeQuietly here, as AssetFileDescriptor
             // does not implement Closeable until KitKat.
@@ -110,6 +78,113 @@ public abstract class ContentUriUtils {
                 }
             }
         }
+
+        try {
+            DocumentFile file =
+                    DocumentFile.fromTreeUri(
+                            ContextUtils.getApplicationContext(), Uri.parse(uriString));
+            return file != null && file.exists();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Query with queryUri and populate nativeVector with results.
+     *
+     * @param uriString the content URI to look up.
+     * @param listFiles if true, the children of uri are populated, else uri info is populated.
+     * @param nativeVector vector to populate with results via Natives#addFileInfoToVector(). Called
+     *     only if file is found.
+     */
+    private static void populateFileInfo(String uriString, boolean listFiles, long nativeVector) {
+        String[] columns = {
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_MIME_TYPE,
+            DocumentsContract.Document.COLUMN_SIZE,
+            DocumentsContract.Document.COLUMN_LAST_MODIFIED,
+        };
+
+        Uri queryUri = null;
+        try {
+            DocumentFile file =
+                    DocumentFile.fromTreeUri(
+                            ContextUtils.getApplicationContext(), Uri.parse(uriString));
+            if (file != null) {
+                if (listFiles) {
+                    String documentId = DocumentsContract.getDocumentId(file.getUri());
+                    queryUri =
+                            DocumentsContract.buildChildDocumentsUriUsingTree(
+                                    file.getUri(), documentId);
+                } else {
+                    queryUri = file.getUri();
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to get Documents URI for %s, listFiles=%s", uriString, listFiles);
+        }
+        if (queryUri == null) {
+            // If URI is not a documents URI, then try to get size from AFD.
+            if (!listFiles) {
+                AssetFileDescriptor afd = getAssetFileDescriptor(uriString, "r");
+                if (afd != null) {
+                    ContentUriUtilsJni.get()
+                            .addFileInfoToVector(
+                                    nativeVector, uriString, null, false, afd.getLength(), 0);
+                    StreamUtil.closeQuietly(afd);
+                }
+            }
+            return;
+        }
+
+        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+        try (Cursor c = resolver.query(queryUri, columns, null, null, null)) {
+            while (c.moveToNext()) {
+                String uri =
+                        c.isNull(0)
+                                ? null
+                                : DocumentsContract.buildDocumentUriUsingTree(
+                                                queryUri, c.getString(0))
+                                        .toString();
+                String displayName = c.isNull(1) ? null : c.getString(1);
+                boolean isDirectory =
+                        !c.isNull(2)
+                                && DocumentsContract.Document.MIME_TYPE_DIR.equals(c.getString(2));
+                long size = c.isNull(3) ? 0 : c.getLong(3);
+                long lastModified = c.isNull(4) ? 0 : c.getLong(4);
+                ContentUriUtilsJni.get()
+                        .addFileInfoToVector(
+                                nativeVector, uri, displayName, isDirectory, size, lastModified);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed query for uri=" + uriString + ", listFiles=" + listFiles, e);
+        }
+    }
+
+    /**
+     * Provides file info of the given content URI if file is found. Files can report size of -1
+     * when length is unknown.
+     *
+     * @param uriString the content URI to look up.
+     * @param nativeVector vector to populate with results via Natives#addFileInfoToVector(). Called
+     *     once if file is found, else not called.
+     */
+    @CalledByNative
+    private static void getFileInfo(@JniType("std::string") String uriString, long nativeVector) {
+        populateFileInfo(uriString, false, nativeVector);
+    }
+
+    /**
+     * Provices an array of files and directories contained in the given directory.
+     *
+     * @param uriString the content URI to look up.
+     * @param nativeVector vector to populate with results via Natives#addFileInfoToVector(). Called
+     *     for each file in this directory.
+     */
+    @CalledByNative
+    private static void listDirectory(@JniType("std::string") String uriString, long nativeVector) {
+        populateFileInfo(uriString, true, nativeVector);
     }
 
     /**
@@ -118,8 +193,9 @@ public abstract class ContentUriUtils {
      * @param uriString the content URI to look up.
      * @return MIME type or null if the input params are empty or invalid.
      */
+    @Nullable
     @CalledByNative
-    public static String getMimeType(String uriString) {
+    public static String getMimeType(@JniType("std::string") String uriString) {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Uri uri = Uri.parse(uriString);
         if (isVirtualDocument(uri)) {
@@ -133,36 +209,36 @@ public abstract class ContentUriUtils {
      * Helper method to open a content URI and returns the ParcelFileDescriptor.
      *
      * @param uriString the content URI to open.
+     * @param mode the mode to open. Allows all values from ParcelFileDescriptor#parseMode(): ("r",
+     *     "w", "wt", "wa", "rw" or "rwt"), but disallows "w" which has been the source of android
+     *     security issues.
      * @return AssetFileDescriptor of the content URI, or NULL if the file does not exist.
      */
-    private static AssetFileDescriptor getAssetFileDescriptor(String uriString) {
+    @Nullable
+    private static AssetFileDescriptor getAssetFileDescriptor(String uriString, String mode) {
+        if ("w".equals(mode)) {
+            Log.e(TAG, "Cannot open files with mode 'w'");
+            return null;
+        }
+
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Uri uri = Uri.parse(uriString);
 
         try {
+            AssetFileDescriptor afd = null;
             if (isVirtualDocument(uri)) {
                 String[] streamTypes = resolver.getStreamTypes(uri, "*/*");
                 if (streamTypes != null && streamTypes.length > 0) {
-                    AssetFileDescriptor afd =
-                            resolver.openTypedAssetFileDescriptor(uri, streamTypes[0], null);
-                    if (afd != null && afd.getStartOffset() != 0) {
-                        // Do not use StreamUtil.closeQuietly here, as AssetFileDescriptor
-                        // does not implement Closeable until KitKat.
-                        try {
-                            afd.close();
-                        } catch (IOException e) {
-                            // Closing quietly.
-                        }
-                        throw new SecurityException("Cannot open files with non-zero offset type.");
-                    }
-                    return afd;
+                    afd = resolver.openTypedAssetFileDescriptor(uri, streamTypes[0], null);
                 }
             } else {
-                ParcelFileDescriptor pfd = resolver.openFileDescriptor(uri, "r");
-                if (pfd != null) {
-                    return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
-                }
+                afd = resolver.openAssetFileDescriptor(uri, mode);
             }
+            if (afd != null && afd.getStartOffset() != 0) {
+                StreamUtil.closeQuietly(afd);
+                throw new SecurityException("Cannot open files with non-zero offset type.");
+            }
+            return afd;
         } catch (Exception e) {
             Log.w(TAG, "Cannot open content uri: %s", uriString, e);
         }
@@ -172,14 +248,25 @@ public abstract class ContentUriUtils {
     /**
      * Method to resolve the display name of a content URI.
      *
-     * @param uri         the content URI to be resolved.
-     * @param context     {@link Context} in interest.
+     * @param uri the content URI to be resolved.
+     * @param context {@link Context} in interest.
      * @param columnField the column field to query.
-     * @return the display name of the @code uri if present in the database
-     * or an empty string otherwise.
+     * @return the display name of the @code uri if present in the database or an empty string
+     *     otherwise.
      */
     public static String getDisplayName(Uri uri, Context context, String columnField) {
         if (uri == null) return "";
+
+        // For a URI without a document ID such as a directory which is a tree URI /tree/<treeId>,
+        // we need to get a URI which includes /tree/<treeId>/document/<docId>.
+        if (DocumentsContract.isTreeUri(uri) && !DocumentsContract.isDocumentUri(context, uri)) {
+            try {
+                uri = DocumentFile.fromTreeUri(context, uri).getUri();
+            } catch (Exception e) {
+                // Ignore if URI fails to build, and attempt with the existing uri.
+            }
+        }
+
         ContentResolver contentResolver = context.getContentResolver();
         try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
             if (cursor != null && cursor.getCount() >= 1) {
@@ -209,6 +296,10 @@ public abstract class ContentUriUtils {
             // Some android models don't handle the provider call correctly.
             // see crbug.com/345393
             return "";
+        } catch (UnsupportedOperationException e) {
+            // Fails for URIs such as a directory tree URI without a document ID.
+            Log.w(TAG, "Cannot get display name for %s", uri, e);
+            return "";
         }
         return "";
     }
@@ -221,7 +312,7 @@ public abstract class ContentUriUtils {
      */
     @Nullable
     @CalledByNative
-    public static String maybeGetDisplayName(String uriString) {
+    public static String maybeGetDisplayName(@JniType("std::string") String uriString) {
         Uri uri = Uri.parse(uriString);
 
         try {
@@ -297,30 +388,57 @@ public abstract class ContentUriUtils {
      * @return True if the uri was deleted.
      */
     @CalledByNative
-    public static boolean delete(String uriString) {
+    public static boolean delete(@JniType("std::string") String uriString) {
         assert isContentUri(uriString);
         Uri parsedUri = Uri.parse(uriString);
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
-        return resolver.delete(parsedUri, null, null) > 0;
+        try {
+            if (DocumentsContract.deleteDocument(resolver, parsedUri)) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "DocumentsContract could not delete %s: %s", uriString, e.getMessage());
+        }
+        try {
+            if (resolver.delete(parsedUri, null, null) > 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "ContentResolver could not delete %s: %s", uriString, e.getMessage());
+        }
+        return false;
     }
 
     /**
-     * Retrieve the content URI from the file path.
+     * Build URI using treeUri and encodedDocumentId.
      *
-     * @param filePathString the file path.
-     * @return content URI or null if the input params are invalid.
+     * @param treeUri URI of directory.
+     * @param encodedDocumentId URL-encoded documentID of file.
+     * @return uri
+     * @see DocumentsContract#buildDocumentUriUsingTree(Uri, String)
      */
+    @Nullable
     @CalledByNative
-    public static String getContentUriFromFilePath(String filePathString) {
+    public static String buildDocumentUriUsingTree(
+            @JniType("std::string") String treeUri,
+            @JniType("std::string") String encodedDocumentId) {
         try {
-            Uri contentUri = getContentUriFromFile(new File(filePathString));
-            if (contentUri != null) {
-                return contentUri.toString();
-            }
-        } catch (IllegalArgumentException e) {
-            // This happens when the given File is outside the paths supported by the provider.
-            Log.e(TAG, "Cannot retrieve content uri from file: %s", filePathString, e);
+            return DocumentsContract.buildDocumentUriUsingTree(
+                            Uri.parse(treeUri), Uri.decode(encodedDocumentId))
+                    .toString();
+        } catch (Exception e) {
+            return null;
         }
-        return null;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void addFileInfoToVector(
+                long vectorPointer,
+                String uri,
+                String displayName,
+                boolean isDirectory,
+                long size,
+                long lastModified);
     }
 }

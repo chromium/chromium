@@ -20,7 +20,7 @@ std::string_view GetBackgroundTaskPrioritySuffixForHistograms(
     case BackgroundTaskPriority::kUserBlocking:
       return ".UserBlocking";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace unexportable_keys

@@ -5,7 +5,7 @@
 package org.chromium.components.browser_ui.settings;
 
 /**
- * Interface for injecting SettingsLauncher to a fragment. It is useful for modularized fragments
+ * Interface for injecting SettingsLauncher to a fragment. It is useful for fragments in components
  * that need access to SettingsLauncher. See: go/clank-modularize-settings-launcher.
  */
 public interface FragmentSettingsLauncher {

@@ -7,18 +7,30 @@
 
 #include <memory>
 
-#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
+#include "ash/webui/camera_app_ui/pdf_builder.mojom.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "chrome/services/pdf/public/mojom/pdf_progressive_searchifier.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
+#include "chrome/services/pdf/public/mojom/pdf_thumbnailer.mojom.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_ui.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace content {
 struct MediaStreamRequest;
@@ -31,10 +43,6 @@ namespace mojom {
 enum class MediaStreamType;
 }  // namespace mojom
 }  // namespace blink
-
-namespace ui {
-enum ModalType;
-}  // namespace ui
 
 /**
  * Implementation of the CameraAppUIDelegate interface. Provides the camera app
@@ -113,6 +121,72 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
         weak_factory_{this};
   };
 
+  class PdfServiceManager : public pdf::mojom::Ocr {
+   public:
+    explicit PdfServiceManager(
+        scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+            optical_character_recognizer);
+    PdfServiceManager(const PdfServiceManager&) = delete;
+    PdfServiceManager& operator=(const PdfServiceManager&) = delete;
+    ~PdfServiceManager() override;
+
+    class ProgressivePdf : public ash::camera_app::mojom::PdfBuilder {
+     public:
+      ProgressivePdf(
+          mojo::Remote<pdf::mojom::PdfService> pdf_service,
+          mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier);
+      ProgressivePdf(const ProgressivePdf&) = delete;
+      ProgressivePdf& operator=(const ProgressivePdf&) = delete;
+      ~ProgressivePdf() override;
+
+      // ash::camera_app::mojom::PdfBuilder
+      void AddPage(mojo_base::BigBuffer jpg, uint32_t index) override;
+      void AddPageInline(const std::vector<uint8_t>& jpg,
+                         uint32_t index) override;
+      void DeletePage(uint32_t index) override;
+      void Save(SaveCallback callback) override;
+      void SaveInline(SaveInlineCallback callback) override;
+
+     private:
+      void AddPageInternal(base::span<const uint8_t> jpg, uint32_t index);
+      void ConsumeSaveCallback(const std::vector<uint8_t>& searchified_pdf);
+
+      SaveInlineCallback save_callback_;
+      mojo::Remote<pdf::mojom::PdfService> pdf_service_;
+      mojo::Remote<pdf::mojom::PdfProgressiveSearchifier> pdf_searchifier_;
+      base::WeakPtrFactory<ProgressivePdf> weak_factory_{this};
+    };
+
+    void GetThumbnail(
+        const std::vector<uint8_t>& pdf,
+        base::OnceCallback<void(const std::vector<uint8_t>&)> callback);
+    std::unique_ptr<ProgressivePdf> CreateProgressivePdf();
+
+   private:
+    void GotThumbnail(mojo::RemoteSetElementId pdf_service_id,
+                      mojo::RemoteSetElementId pdf_thumbnailer_id,
+                      const SkBitmap& bitmap);
+    void ConsumeGotThumbnailCallback(const std::vector<uint8_t>& thumbnail,
+                                     mojo::RemoteSetElementId id);
+    mojo::PendingRemote<pdf::mojom::Ocr> CreateOcrRemote();
+
+    //  pdf::mojom::Ocr
+    void PerformOcr(const SkBitmap& image,
+                    PerformOcrCallback callback) override;
+
+    mojo::RemoteSet<pdf::mojom::PdfThumbnailer> pdf_thumbnailers_;
+    base::flat_map<mojo::RemoteSetElementId,
+                   base::OnceCallback<void(const std::vector<uint8_t>&)>>
+        pdf_thumbnailer_callbacks;
+
+    mojo::ReceiverSet<pdf::mojom::Ocr> ocr_receivers_;
+    scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+        optical_character_recognizer_;
+
+    mojo::RemoteSet<pdf::mojom::PdfService> pdf_services_;
+    base::WeakPtrFactory<PdfServiceManager> weak_factory_{this};
+  };
+
   explicit ChromeCameraAppUIDelegate(content::WebUI* web_ui);
 
   ChromeCameraAppUIDelegate(const ChromeCameraAppUIDelegate&) = delete;
@@ -121,7 +195,6 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   ~ChromeCameraAppUIDelegate() override;
 
   // ash::CameraAppUIDelegate
-  ash::HoldingSpaceClient* GetHoldingSpaceClient() override;
   void SetLaunchDirectory() override;
   void PopulateLoadTimeData(content::WebUIDataSource* source) override;
   bool IsMetricsAndCrashReportingEnabled() override;
@@ -141,6 +214,16 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   media_device_salt::MediaDeviceSaltService* GetMediaDeviceSaltService(
       content::BrowserContext* context) override;
   void OpenWifiDialog(WifiConfig wifi_config) override;
+  std::string GetSystemLanguage() override;
+  void RenderPdfAsJpeg(
+      const std::vector<uint8_t>& pdf,
+      base::OnceCallback<void(const std::vector<uint8_t>&)> callback) override;
+  void PerformOcr(base::span<const uint8_t> jpeg_data,
+                  base::OnceCallback<void(ash::camera_app::mojom::OcrResultPtr)>
+                      callback) override;
+  void CreatePdfBuilder(
+      mojo::PendingReceiver<ash::camera_app::mojom::PdfBuilder> receiver)
+      override;
 
  private:
   base::FilePath GetMyFilesFolder();
@@ -150,7 +233,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
       const base::FilePath& file_path,
       base::OnceCallback<void(FileMonitorResult)> callback);
 
-  void IntializeStorageMonitor();
+  void InitializeStorageMonitor();
   void OnStorageMonitorInitialized(std::unique_ptr<StorageMonitor> monitor);
 
   raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
@@ -166,6 +249,11 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   std::unique_ptr<StorageMonitor> storage_monitor_;
   base::WeakPtr<ChromeCameraAppUIDelegate::StorageMonitor>
       storage_monitor_weak_ptr_;
+
+  std::unique_ptr<PdfServiceManager> pdf_service_manager_;
+
+  scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+      optical_character_recognizer_;
 
   // Weak pointer for this class |ChromeCameraAppUIDelegate|, used to run on
   // main thread (mojo thread).

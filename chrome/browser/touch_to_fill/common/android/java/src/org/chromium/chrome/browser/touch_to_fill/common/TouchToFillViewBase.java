@@ -193,7 +193,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      */
     protected @Px int getMaximumSheetHeightPx() {
         if (mSheetItemListView.getAdapter() == null) {
-            // TODO(crbug.com/1330933): Assert this condition in setVisible. Should never happen.
+            // TODO(crbug.com/40843561): Assert this condition in setVisible. Should never happen.
             return BottomSheetContent.HeightMode.DEFAULT;
         }
         @Px int requiredMaxHeight = getHeightWhenFullyExtendedPx();
@@ -206,7 +206,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
     }
 
     /**
-     * Returns the height of the half state. Does not show the footer items. For 1 suggestion  (plus
+     * Returns the height of the half state. Does not show the footer items. For 1 suggestion (plus
      * fill button), 2 or 3 suggestions, it shows all items fully. For 4+ suggestions, it shows the
      * first 3.5 suggestion to encourage scrolling.
      *
@@ -214,7 +214,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      */
     protected @Px int getDesiredSheetHeightPx() {
         if (mSheetItemListView.getAdapter() == null) {
-            // TODO(crbug.com/1330933): Assert this condition in setVisible. Should never happen.
+            // TODO(crbug.com/40843561): Assert this condition in setVisible. Should never happen.
             return BottomSheetContent.HeightMode.DEFAULT;
         }
         int height =

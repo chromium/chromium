@@ -134,7 +134,7 @@ void MoveCommands::UpdateFocusForCaretBrowsing(LocalFrame& frame) {
   if (!selection.IsCaret())
     return;
 
-  Node* node = selection.Extent().ComputeContainerNode();
+  Node* node = selection.Focus().ComputeContainerNode();
   if (!node)
     return;
 

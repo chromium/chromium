@@ -34,37 +34,8 @@
 
 namespace blink {
 
-class ANGLEInstancedArrays;
 class CanvasContextCreationAttributesCore;
 class ExceptionState;
-class EXTBlendMinMax;
-class EXTClipControl;
-class EXTColorBufferHalfFloat;
-class EXTDepthClamp;
-class EXTFloatBlend;
-class EXTFragDepth;
-class EXTPolygonOffsetClamp;
-class EXTShaderTextureLOD;
-class EXTsRGB;
-class EXTTextureCompressionBPTC;
-class EXTTextureCompressionRGTC;
-class EXTTextureFilterAnisotropic;
-class EXTTextureMirrorClampToEdge;
-class KHRParallelShaderCompile;
-class OESElementIndexUint;
-class OESFboRenderMipmap;
-class OESStandardDerivatives;
-class OESTextureFloat;
-class OESTextureFloatLinear;
-class OESTextureHalfFloat;
-class OESTextureHalfFloatLinear;
-class WebGLBlendFuncExtended;
-class WebGLColorBufferFloat;
-class WebGLDebugRendererInfo;
-class WebGLDepthTexture;
-class WebGLLoseContext;
-class WebGLMultiDraw;
-class WebGLPolygonMode;
 
 class WebGLRenderingContext final : public WebGLRenderingContextBase {
   DEFINE_WRAPPERTYPEINFO();
@@ -100,50 +71,6 @@ class WebGLRenderingContext final : public WebGLRenderingContextBase {
   void RegisterContextExtensions() override;
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
-
-  void Trace(Visitor*) const override;
-
- private:
-  // Enabled extension objects.
-  Member<ANGLEInstancedArrays> angle_instanced_arrays_;
-  Member<EXTBlendMinMax> ext_blend_min_max_;
-  Member<EXTClipControl> ext_clip_control_;
-  Member<EXTColorBufferHalfFloat> ext_color_buffer_half_float_;
-  Member<EXTDepthClamp> ext_depth_clamp_;
-  Member<EXTDisjointTimerQuery> ext_disjoint_timer_query_;
-  Member<EXTFloatBlend> ext_float_blend_;
-  Member<EXTFragDepth> ext_frag_depth_;
-  Member<EXTPolygonOffsetClamp> ext_polygon_offset_clamp_;
-  Member<EXTShaderTextureLOD> ext_shader_texture_lod_;
-  Member<EXTTextureCompressionBPTC> ext_texture_compression_bptc_;
-  Member<EXTTextureCompressionRGTC> ext_texture_compression_rgtc_;
-  Member<EXTTextureFilterAnisotropic> ext_texture_filter_anisotropic_;
-  Member<EXTTextureMirrorClampToEdge> ext_texture_mirror_clamp_to_edge_;
-  Member<EXTsRGB> exts_rgb_;
-  Member<KHRParallelShaderCompile> khr_parallel_shader_compile_;
-  Member<OESElementIndexUint> oes_element_index_uint_;
-  Member<OESFboRenderMipmap> oes_fbo_render_mipmap_;
-  Member<OESStandardDerivatives> oes_standard_derivatives_;
-  Member<OESTextureFloat> oes_texture_float_;
-  Member<OESTextureFloatLinear> oes_texture_float_linear_;
-  Member<OESTextureHalfFloat> oes_texture_half_float_;
-  Member<OESTextureHalfFloatLinear> oes_texture_half_float_linear_;
-  Member<OESVertexArrayObject> oes_vertex_array_object_;
-  Member<WebGLBlendFuncExtended> webgl_blend_func_extended_;
-  Member<WebGLColorBufferFloat> webgl_color_buffer_float_;
-  Member<WebGLCompressedTextureASTC> webgl_compressed_texture_astc_;
-  Member<WebGLCompressedTextureETC> webgl_compressed_texture_etc_;
-  Member<WebGLCompressedTextureETC1> webgl_compressed_texture_etc1_;
-  Member<WebGLCompressedTexturePVRTC> webgl_compressed_texture_pvrtc_;
-  Member<WebGLCompressedTextureS3TC> webgl_compressed_texture_s3tc_;
-  Member<WebGLCompressedTextureS3TCsRGB> webgl_compressed_texture_s3tc_srgb_;
-  Member<WebGLDebugRendererInfo> webgl_debug_renderer_info_;
-  Member<WebGLDebugShaders> webgl_debug_shaders_;
-  Member<WebGLDepthTexture> webgl_depth_texture_;
-  Member<WebGLDrawBuffers> webgl_draw_buffers_;
-  Member<WebGLLoseContext> webgl_lose_context_;
-  Member<WebGLMultiDraw> webgl_multi_draw_;
-  Member<WebGLPolygonMode> webgl_polygon_mode_;
 };
 
 }  // namespace blink

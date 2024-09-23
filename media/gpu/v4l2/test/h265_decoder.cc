@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_parser.h"
 
 namespace media {
 namespace v4l2_test {
@@ -278,19 +278,45 @@ v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
                                    ? pps->scaling_list_data
                                    : sps->scaling_list_data;
 
-    memcpy(v4l2_scaling_matrix.scaling_list_4x4, scaling_list.scaling_list_4x4,
-           sizeof(v4l2_scaling_matrix.scaling_list_4x4));
-    memcpy(v4l2_scaling_matrix.scaling_list_8x8, scaling_list.scaling_list_8x8,
-           sizeof(v4l2_scaling_matrix.scaling_list_8x8));
-    memcpy(v4l2_scaling_matrix.scaling_list_16x16,
-           scaling_list.scaling_list_16x16,
-           sizeof(v4l2_scaling_matrix.scaling_list_16x16));
-    memcpy(v4l2_scaling_matrix.scaling_list_32x32[0],
-           scaling_list.scaling_list_32x32[0],
-           sizeof(v4l2_scaling_matrix.scaling_list_32x32[0]));
-    memcpy(v4l2_scaling_matrix.scaling_list_32x32[1],
-           scaling_list.scaling_list_32x32[3],
-           sizeof(v4l2_scaling_matrix.scaling_list_32x32[1]));
+    for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
+      for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId0Count;
+           ++j) {
+        v4l2_scaling_matrix.scaling_list_4x4[i][j] =
+            scaling_list.GetScalingList4x4EntryInRasterOrder(/*matrix_id=*/i,
+                                                             /*raster_idx=*/j);
+      }
+    }
+
+    for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
+      for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
+           ++j) {
+        v4l2_scaling_matrix.scaling_list_8x8[i][j] =
+            scaling_list.GetScalingList8x8EntryInRasterOrder(/*matrix_id=*/i,
+                                                             /*raster_idx=*/j);
+      }
+    }
+
+    for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices; ++i) {
+      for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
+           ++j) {
+        v4l2_scaling_matrix.scaling_list_16x16[i][j] =
+            scaling_list.GetScalingList16x16EntryInRasterOrder(
+                /*matrix_id=*/i,
+                /*raster_idx=*/j);
+      }
+    }
+
+    for (size_t i = 0; i < H265ScalingListData::kNumScalingListMatrices;
+         i += 3) {
+      for (size_t j = 0; j < H265ScalingListData::kScalingListSizeId1To3Count;
+           ++j) {
+        v4l2_scaling_matrix.scaling_list_32x32[i / 3][j] =
+            scaling_list.GetScalingList32x32EntryInRasterOrder(
+                /*matrix_id=*/i,
+                /*raster_idx=*/j);
+      }
+    }
+
     memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
            scaling_list.scaling_list_dc_coef_16x16,
            sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));
@@ -615,8 +641,9 @@ bool H265Decoder::ProcessCurrentSlice() {
   // supported in ChromeOS require the start code prefix.
   std::vector<uint8_t> slice_data = {0x00, 0x00, 0x01};
 
-  slice_data.insert(slice_data.end(), curr_slice_hdr_->nalu_data,
-                    curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size);
+  slice_data.insert(
+      slice_data.end(), curr_slice_hdr_->nalu_data.get(),
+      (curr_slice_hdr_->nalu_data + curr_slice_hdr_->nalu_size).get());
 
   scoped_refptr<MmappedBuffer> OUTPUT_buffer = OUTPUT_queue_->GetBuffer(0);
   OUTPUT_buffer->mmapped_planes()[0].CopyInSlice(
@@ -661,8 +688,9 @@ void H265Decoder::CalcPictureOrderCount(const H265PPS* pps,
                                         const H265SliceHeader* slice_hdr) {
   // 8.3.1 Decoding process for picture order count.
   curr_pic_->valid_for_prev_tid0_pic_ =
-      !pps->temporal_id && (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
-                            slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
+      !slice_hdr->temporal_id &&
+      (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
+       slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
   curr_pic_->slice_pic_order_cnt_lsb_ = slice_hdr->slice_pic_order_cnt_lsb;
 
   // Calculate POC for current picture.
@@ -1139,6 +1167,8 @@ bool H265Decoder::DecodePicture() {
     CreateCAPTUREQueue(kNumberOfBuffersInCaptureQueue);
   }
 
+  v4l2_ioctl_->WaitForRequestCompletion(OUTPUT_queue_);
+
   uint32_t CAPTURE_id;
   v4l2_ioctl_->DQBuf(CAPTURE_queue_, &CAPTURE_id);
 
@@ -1388,7 +1418,8 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
                                                   std::vector<uint8_t>& y_plane,
                                                   std::vector<uint8_t>& u_plane,
                                                   std::vector<uint8_t>& v_plane,
-                                                  gfx::Size& size) {
+                                                  gfx::Size& size,
+                                                  BitDepth& bit_depth) {
   if (!parser_) {
     parser_ = std::make_unique<H265Parser>();
     parser_->SetStream(data_stream_->data(), data_stream_->length());
@@ -1412,7 +1443,8 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
   }
 
   if (frames_ready_to_be_outputted_.empty()) {
-    NOTREACHED() << "Stream ended with |frames_ready_to_be_outputted_| empty";
+    NOTREACHED_IN_MIGRATION()
+        << "Stream ended with |frames_ready_to_be_outputted_| empty";
   }
 
   scoped_refptr<H265Picture> picture = frames_ready_to_be_outputted_.front();
@@ -1420,9 +1452,10 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
   scoped_refptr<MmappedBuffer> buffer =
       CAPTURE_queue_->GetBuffer(picture->capture_queue_buffer_id_);
 
-  ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
-               buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
-               CAPTURE_queue_->fourcc());
+  bit_depth =
+      ConvertToYUV(y_plane, u_plane, v_plane, OUTPUT_queue_->resolution(),
+                   buffer->mmapped_planes(), CAPTURE_queue_->resolution(),
+                   CAPTURE_queue_->fourcc());
 
   frames_ready_to_be_outputted_.pop();
 

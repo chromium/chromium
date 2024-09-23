@@ -6,7 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/metrics/structured/event_logging_features.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -58,9 +59,7 @@ void AppPlatformMetricsService::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kAppInputEventsKey);
   registry->RegisterDictionaryPref(kWebsiteUsageTime);
 
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    AppDiscoveryMetrics::RegisterProfilePrefs(registry);
-  }
+  AppDiscoveryMetrics::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -70,20 +69,17 @@ int AppPlatformMetricsService::GetDayIdForTesting(base::Time time) {
 
 void AppPlatformMetricsService::Start(
     apps::AppRegistryCache& app_registry_cache,
-    InstanceRegistry& instance_registry) {
+    InstanceRegistry& instance_registry,
+    apps::AppCapabilityAccessCache& app_capability_access_cache) {
   app_platform_app_metrics_ = std::make_unique<apps::AppPlatformMetrics>(
       profile_, app_registry_cache, instance_registry);
   app_platform_input_metrics_ = std::make_unique<apps::AppPlatformInputMetrics>(
       profile_, app_registry_cache, instance_registry);
   website_metrics_ = std::make_unique<apps::WebsiteMetrics>(
       profile_, GetUserTypeByDeviceTypeMetrics());
-
-  // App discovery logging.
-  if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    app_discovery_metrics_ = std::make_unique<apps::AppDiscoveryMetrics>(
-        profile_, app_registry_cache, instance_registry,
-        app_platform_app_metrics_.get());
-  }
+  app_discovery_metrics_ = std::make_unique<apps::AppDiscoveryMetrics>(
+      profile_, app_registry_cache, instance_registry,
+      app_platform_app_metrics_.get(), app_capability_access_cache);
 
   day_id_ = profile_->GetPrefs()->GetInteger(kAppPlatformMetricsDayId);
   CheckForNewDay();

@@ -23,7 +23,6 @@ bool MatchRealm(const std::string& realm, RealmRestriction restriction) {
       return true;
     default:
       NOTREACHED();
-      return false;
   }
 }
 

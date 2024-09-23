@@ -1,0 +1,418 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "discover_feed_manage_delegate.h",
+    "discover_feed_preview_delegate.h",
+    "feed_control_delegate.h",
+    "feed_sign_in_promo_delegate.h",
+    "home_start_data_source.h",
+    "new_tab_page_actions_delegate.h",
+    "new_tab_page_configuring.h",
+    "new_tab_page_content_delegate.h",
+    "new_tab_page_controller_delegate.h",
+    "new_tab_page_delegate.h",
+    "new_tab_page_follow_delegate.h",
+    "new_tab_page_url_loader_delegate.h",
+  ]
+  public_deps = [
+    ":constants",
+    ":feature_flags",
+  ]
+}
+
+source_set("logo") {
+  sources = [
+    "logo_animation_controller.h",
+    "logo_vendor.h",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "discover_feed_constants.h",
+    "discover_feed_constants.mm",
+    "new_tab_page_constants.h",
+    "new_tab_page_constants.mm",
+    "new_tab_page_header_constants.h",
+    "new_tab_page_header_constants.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/discover_feed/model:constants" ]
+}
+
+source_set("component_factory_protocol") {
+  sources = [ "new_tab_page_component_factory_protocol.h" ]
+}
+
+source_set("component_factory") {
+  sources = [
+    "new_tab_page_component_factory.h",
+    "new_tab_page_component_factory.mm",
+  ]
+  deps = [
+    ":component_factory_protocol",
+    ":constants",
+    ":ntp_internal",
+    "//components/prefs",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/content_suggestions",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+  ]
+}
+
+source_set("coordinator") {
+  sources = [
+    "new_tab_page_coordinator+Testing.h",
+    "new_tab_page_coordinator.h",
+    "new_tab_page_coordinator.mm",
+  ]
+  deps = [
+    ":component_factory_protocol",
+    ":constants",
+    ":feature_flags",
+    ":feed_menu",
+    ":logo",
+    ":ntp_internal",
+    ":ui_bundled",
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/feed/core/v2/public:common",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/policy:policy_code_generate",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/search",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager/objc",
+    "//components/supervised_user/core/common:features",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bubble/ui_bundled",
+    "//ios/chrome/browser/context_menu/ui_bundled/link_preview",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:constants",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/follow/model:browser_agent",
+    "//ios/chrome/browser/follow/model:enums",
+    "//ios/chrome/browser/follow/model:service",
+    "//ios/chrome/browser/home_customization/coordinator",
+    "//ios/chrome/browser/home_customization/utils",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/ntp/ui_bundled/feed_management",
+    "//ios/chrome/browser/ntp/ui_bundled/feed_top_section",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito",
+    "//ios/chrome/browser/overscroll_actions/ui_bundled",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/supervised_user/model:capabilities",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication/account_menu",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
+    "//ios/chrome/browser/ui/content_suggestions",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/tab_groups/coordinator",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ui/base",
+  ]
+}
+
+source_set("ntp_internal") {
+  sources = [
+    "feed_header_view_controller.h",
+    "feed_header_view_controller.mm",
+    "feed_menu_commands.h",
+    "feed_wrapper_view_controller.h",
+    "feed_wrapper_view_controller.mm",
+    "new_tab_page_consumer.h",
+    "new_tab_page_header_commands.h",
+    "new_tab_page_header_consumer.h",
+    "new_tab_page_header_view.h",
+    "new_tab_page_header_view.mm",
+    "new_tab_page_header_view_controller+Testing.h",
+    "new_tab_page_header_view_controller.h",
+    "new_tab_page_header_view_controller.mm",
+    "new_tab_page_header_view_controller_delegate.h",
+    "new_tab_page_mediator.h",
+    "new_tab_page_mediator.mm",
+    "new_tab_page_mutator.h",
+    "new_tab_page_view_controller.h",
+    "new_tab_page_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    ":feature_flags",
+    ":logo",
+    ":ui_bundled",
+    "//base",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/search",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager/objc",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bubble/ui_bundled",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:constants",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/home_customization/coordinator",
+    "//ios/chrome/browser/metrics/model:metrics_internal",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/ntp/ui_bundled/feed_management:navigation_delegate",
+    "//ios/chrome/browser/ntp/ui_bundled/resources",
+    "//ios/chrome/browser/overscroll_actions/ui_bundled",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/content_suggestions",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
+    "//ios/chrome/browser/ui/content_suggestions:metrics",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:constants",
+    "//ios/chrome/browser/ui/lens:lens_availability",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
+    "//ios/chrome/browser/ui/toolbar/buttons",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
+    "//ios/chrome/browser/ui/toolbar/tab_groups/ui",
+    "//ios/chrome/browser/ui/toolbar/tab_groups/ui:constants",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ui/base",
+    "//ui/gfx/ios:uikit_util",
+    "//url",
+  ]
+  frameworks = [
+    "CoreGraphics.framework",
+    "QuartzCore.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("feed_menu") {
+  sources = [
+    "feed_menu_coordinator.h",
+    "feed_menu_coordinator.mm",
+  ]
+  deps = [
+    ":ntp_internal",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/signin/model",
+    "//ui/strings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "feed_menu_coordinator_unittest.mm",
+    "new_tab_page_coordinator_unittest.mm",
+    "new_tab_page_header_view_controller_unittest.mm",
+    "new_tab_page_mediator_unittest.mm",
+  ]
+  deps = [
+    ":component_factory",
+    ":coordinator",
+    ":feature_flags",
+    ":feed_menu",
+    ":logo",
+    ":ntp_internal",
+    ":ui_bundled",
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/feed/core/v2/public:common",
+    "//components/feed/core/v2/public/ios:feed_ios_public",
+    "//components/ntp_tiles",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/signin/public/identity_manager",
+    "//components/variations",
+    "//components/variations/service",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/ntp/ui_bundled/incognito",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/start_surface/ui_bundled",
+    "//ios/chrome/browser/ui/content_suggestions",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/toolbar/test",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:block_swizzler",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//services/network:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base:test_support",
+    "//ui/strings",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "new_tab_page_egtest.mm" ]
+  deps = [
+    "//base/test:test_support",
+    "//components/policy:generated",
+    "//components/policy/core/common:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("feature_flags") {
+  sources = [
+    "new_tab_page_feature.h",
+    "new_tab_page_feature.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/variations/service",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/authentication/cells:constants",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("utils") {
+  sources = [
+    "new_tab_page_utils.h",
+    "new_tab_page_utils.mm",
+  ]
+  deps = [
+    ":feature_flags",
+    "//ios/chrome/browser/first_run/ui_bundled:utils",
+  ]
+  public_deps = [ "//base" ]
+}

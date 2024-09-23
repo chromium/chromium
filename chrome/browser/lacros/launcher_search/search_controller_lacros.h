@@ -26,13 +26,21 @@ class SearchControllerLacros : public mojom::SearchController,
                                public AutocompleteController::Observer,
                                public ProfileObserver {
  public:
-  SearchControllerLacros();
+  // Does not automatically register with Ash's `SearchControllerRegistry`.
+  // Call `RegisterWithAsh()` to do so.
+  // `provider_types` is a bitmap containing `AutocompleteProvider::Type` values
+  // to control which types of search results are returned from the
+  // `AutocompleteController`.
+  explicit SearchControllerLacros(int provider_types);
   SearchControllerLacros(const SearchControllerLacros&) = delete;
   SearchControllerLacros& operator=(const SearchControllerLacros&) = delete;
   ~SearchControllerLacros() override;
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
+
+  // Registers this with Ash's `SearchControllerRegistry`.
+  void RegisterWithAsh();
 
  private:
   // mojom::SearchController:

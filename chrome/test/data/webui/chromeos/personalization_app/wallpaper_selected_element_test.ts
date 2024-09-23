@@ -738,7 +738,6 @@ suite('WallpaperSelectedElementTest', function() {
       });
 
   test('shows description options when wallpaper has description', async () => {
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
@@ -777,7 +776,6 @@ suite('WallpaperSelectedElementTest', function() {
   });
 
   test('hides description options when viewing Google Photos', async () => {
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
@@ -818,7 +816,6 @@ suite('WallpaperSelectedElementTest', function() {
   test(
       'hides description options when viewing a different collection',
       async () => {
-        loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
         personalizationStore.data.wallpaper.currentSelected = {
           descriptionContent: '',
           descriptionTitle: '',
@@ -859,7 +856,6 @@ suite('WallpaperSelectedElementTest', function() {
       });
 
   test('clicking description options opens dialog', async () => {
-    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: 'content text',
       descriptionTitle: 'title text',

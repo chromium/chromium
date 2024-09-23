@@ -162,7 +162,7 @@ found in the LICENSE file.
             android:drawableEnd="@drawable/ic_arrow_down"
             android:drawableTint="?attr/globalFilledButtonTextColor"
             android:drawablePadding="@dimen/privacy_sandbox_more_button_drawable_padding"
-            style="@style/FilledButton.Flat" />
+            style="@style/FilledButton" />
 
         <LinearLayout
             android:id="@+id/action_buttons"
@@ -193,5 +193,43 @@ found in the LICENSE file.
                 style="@style/OutlinedButton" />
 
         </LinearLayout>
+    </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
+
+   <org.chromium.components.browser_ui.widget.BoundedLinearLayout
+        android:id="@+id/privacy_policy_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="?android:attr/colorBackground">
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/privacy_policy_back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/privacy_sandbox_privacy_policy_back_button" />
+
+            <TextView
+                android:id="@+id/privacy_policy_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/privacy_sandbox_privacy_policy_page_title"
+                android:layout_marginStart="16dp"
+                style="@style/TextAppearance.Headline.Primary"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/privacy_policy_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </FrameLayout>
     </org.chromium.components.browser_ui.widget.BoundedLinearLayout>
 </LinearLayout>

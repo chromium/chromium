@@ -426,6 +426,10 @@
       light: '$cros.ref.neutral40',
       dark: '$cros.ref.neutral70',
     },
+    'inverse-whiteblack': {
+      light: '$cros.ref.neutral0',
+      dark: '$cros.ref.neutral100',
+    },
     'disabled': {
       light: 'rgba($cros.sys.on-surface.rgb, 0.38)',
       dark: 'rgba($cros.sys.on-surface.rgb, 0.38)',
@@ -518,6 +522,9 @@
       light: '$cros.ref.neutral30',
       dark: '$cros.ref.neutral0',
     },
+    'shadow-ambient': 'rgba($cros.sys.shadow.rgb, 0.2)',
+    'shadow-key': 'rgba($cros.sys.shadow.rgb, 0.1)',
+
     /* When the button is pressed, we layer the ripple color on top of the hover color to form the pressed color, that's what blend() does here. */
     'pressed-on-prominent': 'blend($cros.sys.hover-on-prominent, $cros.sys.ripple-neutral-on-prominent)',
     'pressed-on-subtle': 'blend($cros.sys.hover-on-subtle, $cros.sys.ripple-neutral-on-subtle)',
@@ -555,7 +562,7 @@
 
     /* Illustration colors. */
     'illo.color1': {
-      light: '$cros.ref.primary30',
+      light: '$cros.ref.primary40',
       dark: '$cros.ref.primary80',
       generate_per_mode: true,
     },
@@ -674,6 +681,7 @@
     'illo.elevated.color1.2': '$cros.sys.illo.color1.2',
     'illo.elevated.base': '$cros.sys.illo.base',
     'illo.elevated.secondary': '$cros.sys.illo.secondary',
+    'illo.on-primary-container': '$cros.sys.on-primary-container',
 
     /*
      * Gaming colors
@@ -688,6 +696,10 @@
     'gaming-control-button-hover': '#c900eb',
     /* Primary 80 Vibrant */
     'gaming-control-button-border-hover': '#f9acff',
+    'gaming.window-button-border': {
+      light: 'rgba($cros.sys.black.rgb, .08)',
+      dark: 'rgba($cros.sys.white.rgb, .08)',
+    },
 
     /* Icon colors. */
     'file-ms-excel': '#16a765',

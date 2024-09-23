@@ -8,38 +8,34 @@ import './activation_code_page.js';
 import './activation_verification_page.js';
 import './final_page.js';
 import './profile_discovery_consent_page.js';
-import './profile_discovery_list_page_legacy.js';
 import './profile_discovery_list_page.js';
-import './confirmation_code_page_legacy.js';
 import './confirmation_code_page.js';
 
+import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
+import {hasActiveCellularNetwork} from '//resources/ash/common/network/cellular_utils.js';
+import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkListenerBehavior} from '//resources/ash/common/network/network_listener_behavior.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
+import {ESimManagerInterface, ESimOperationResult, ESimProfileProperties, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import {FilterType, NetworkStateProperties, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {hasActiveCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ESimManagerInterface, ESimOperationResult, ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallMethod, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
-import {FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
+import {ActivationCodePageElement} from './activation_code_page.js';
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonBarState, ButtonState} from './cellular_types.js';
 import {getTemplate} from './esim_flow_ui.html.js';
-import {getEuicc, getPendingESimProfiles} from './esim_manager_utils.js';
+import {getEuicc} from './esim_manager_utils.js';
 import {getESimManagerRemote} from './mojo_interface_provider.js';
-import {ProfileDiscoveryListPageElement} from './profile_discovery_list_page';
+import {ProfileDiscoveryListPageElement} from './profile_discovery_list_page.js';
 import {SubflowMixin} from './subflow_mixin.js';
 
 export enum EsimPageName {
   PROFILE_LOADING = 'profileLoadingPage',
   PROFILE_DISCOVERY_CONSENT = 'profileDiscoveryConsentPage',
   PROFILE_DISCOVERY = 'profileDiscoveryPage',
-  PROFILE_DISCOVERY_LEGACY = 'profileDiscoveryPageLegacy',
   ACTIVATION_CODE = 'activationCodePage',
   CONFIRMATION_CODE = 'confirmationCodePage',
-  CONFIRMATION_CODE_LEGACY = 'confirmationCodePageLegacy',
   PROFILE_INSTALLING = 'profileInstallingPage',
   FINAL = 'finalPage',
 }
@@ -126,13 +122,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
 
       state_: {
         type: String,
-        value: function() {
-          if (loadTimeData.valueExists('isSmdsSupportEnabled') &&
-              loadTimeData.getBoolean('isSmdsSupportEnabled')) {
-            return EsimUiState.PROFILE_SEARCH_CONSENT;
-          }
-          return EsimUiState.PROFILE_SEARCH;
-        },
+        value: EsimUiState.PROFILE_SEARCH_CONSENT,
         observer: 'onStateChanged_',
       },
 
@@ -167,19 +157,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       },
 
       /**
-       * Profiles fetched that have status kPending.
-       */
-      pendingProfiles_: Array,
-
-      /**
-       * Profile selected to be installed.
-       */
-      selectedProfile_: {
-        type: Object,
-        observer: 'onSelectedProfileChanged_',
-      },
-
-      /**
        * Profile properties fetched from the latest SM-DS scan.
        */
       pendingProfileProperties_: Array,
@@ -209,18 +186,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       },
 
       isActivationCodeFromQrCode_: Boolean,
-
-      /**
-       * Return true if SmdsSupportEnabled feature flag is enabled.
-       */
-      smdsSupportEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isSmdsSupportEnabled') &&
-              loadTimeData.getBoolean('isSmdsSupportEnabled');
-        },
-      },
-
     };
   }
 
@@ -232,15 +197,12 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
   private hasConsentedForDiscovery_: boolean;
   private shouldSkipDiscovery_: boolean;
   private showError_: boolean;
-  private pendingProfiles_: ESimProfileRemote[];
-  private selectedProfile_: ESimProfileRemote|null;
   private pendingProfileProperties_: ESimProfileProperties[];
   private selectedProfileProperties_: ESimProfileProperties|null;
   private activationCode_: string;
   private confirmationCode_: string;
   private hasHadActiveCellularNetwork_: boolean;
   private isActivationCodeFromQrCode_: boolean;
-  private smdsSupportEnabled_: boolean;
 
   /**
    * Provides an interface to the ESimManager Mojo service.
@@ -356,11 +318,12 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
   }
 
   override initSubflow(): void {
-    if (!this.smdsSupportEnabled_) {
-      this.fetchProfiles_();
-    } else {
-      this.getEuicc_();
-    }
+    // Installing an eSIM profile may result in Hermes restarting and losing
+    // its state. When this happens the cache of profiles used for the UI may
+    // become corrupted and will not include all installed profiles.
+    // Explicitly refresh the cache when this dialog is opened to ensure the
+    // cache is regenerated and valid.
+    this.refreshInstalledProfiles_();
     this.onNetworkStateListChanged();
   }
 
@@ -370,11 +333,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       return;
     }
 
-    if (this.smdsSupportEnabled_) {
-      await this.getAvailableProfileProperties_();
-    } else {
-      await this.getPendingProfiles_();
-    }
+    await this.getAvailableProfileProperties_();
     if (this.noProfilesFound_()) {
       this.state_ = EsimUiState.ACTIVATION_CODE_ENTRY;
     } else {
@@ -413,19 +372,12 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         });
   }
 
-  private async getPendingProfiles_(): Promise<void> {
-    assert(this.euicc_);
-    const requestPendingProfilesResponse =
-        await this.euicc_.requestPendingProfiles();
-    if (requestPendingProfilesResponse.result ===
-        ESimOperationResult.kFailure) {
-      this.hasFailedFetchingProfiles_ = true;
-      console.warn(
-          'Error requesting pending profiles: ',
-          requestPendingProfilesResponse);
-      this.pendingProfiles_ = [];
+  private async refreshInstalledProfiles_(): Promise<void> {
+    await this.getEuicc_();
+    if (!this.euicc_) {
+      return;
     }
-    this.pendingProfiles_ = await getPendingESimProfiles(this.euicc_);
+    await this.euicc_.refreshInstalledProfiles();
   }
 
   private handleProfileInstallResponse_(
@@ -442,8 +394,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       return;
     }
     if (response.result === ProfileInstallResult.kErrorInvalidActivationCode &&
-        (!this.smdsSupportEnabled_ ||
-         this.state_ !== EsimUiState.PROFILE_SELECTION_INSTALLING)) {
+        this.state_ !== EsimUiState.PROFILE_SELECTION_INSTALLING) {
       this.state_ = EsimUiState.ACTIVATION_CODE_ENTRY_READY;
       return;
     }
@@ -481,32 +432,16 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         break;
       case EsimUiState.CONFIRMATION_CODE_ENTRY:
       case EsimUiState.CONFIRMATION_CODE_ENTRY_READY:
-        if (this.smdsSupportEnabled_) {
           this.selectedEsimPageName_ = EsimPageName.CONFIRMATION_CODE;
-        } else {
-          this.selectedEsimPageName_ = EsimPageName.CONFIRMATION_CODE_LEGACY;
-        }
         break;
       case EsimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
-        if (this.smdsSupportEnabled_) {
           this.selectedEsimPageName_ = EsimPageName.PROFILE_INSTALLING;
-        } else {
-          this.selectedEsimPageName_ = EsimPageName.CONFIRMATION_CODE_LEGACY;
-        }
         break;
       case EsimUiState.PROFILE_SELECTION:
-        if (this.smdsSupportEnabled_) {
           this.selectedEsimPageName_ = EsimPageName.PROFILE_DISCOVERY;
-        } else {
-          this.selectedEsimPageName_ = EsimPageName.PROFILE_DISCOVERY_LEGACY;
-        }
         break;
       case EsimUiState.PROFILE_SELECTION_INSTALLING:
-        if (this.smdsSupportEnabled_) {
           this.selectedEsimPageName_ = EsimPageName.PROFILE_INSTALLING;
-        } else {
-          this.selectedEsimPageName_ = EsimPageName.PROFILE_DISCOVERY_LEGACY;
-        }
         break;
       case EsimUiState.SETUP_FINISH:
         this.selectedEsimPageName_ = EsimPageName.FINAL;
@@ -523,31 +458,20 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
   }
 
   private generateButtonStateForActivationPage_(
-      enableForwardBtn: boolean, cancelButtonStateIfEnabled: ButtonState,
-      isInstalling: boolean): ButtonBarState {
+      enableForwardBtn: boolean,
+      cancelButtonStateIfEnabled: ButtonState): ButtonBarState {
     this.forwardButtonLabel = this.i18n('next');
-    let backBtnState = ButtonState.HIDDEN;
-    if (this.profilesFound_() && !this.smdsSupportEnabled_) {
-      backBtnState = isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED;
-    }
     return {
-      backward: backBtnState,
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };
   }
 
   private generateButtonStateForConfirmationPage_(
-      enableForwardBtn: boolean, cancelButtonStateIfEnabled: ButtonState,
-      isInstalling: boolean): ButtonBarState {
+      enableForwardBtn: boolean,
+      cancelButtonStateIfEnabled: ButtonState): ButtonBarState {
     this.forwardButtonLabel = this.i18n('confirm');
-    let backBtnState = isInstalling ?
-        ButtonState.DISABLED : ButtonState.ENABLED;
-    if (this.smdsSupportEnabled_) {
-      backBtnState = ButtonState.HIDDEN;
-    }
     return {
-      backward: backBtnState,
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };
@@ -565,7 +489,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case EsimUiState.PROFILE_SEARCH:
         this.forwardButtonLabel = this.i18n('next');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: cancelButtonStateIfEnabled,
           forward: ButtonState.DISABLED,
         };
@@ -573,52 +496,43 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case EsimUiState.PROFILE_SEARCH_CONSENT:
         this.forwardButtonLabel = this.i18n('profileDiscoveryConsentScan');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.ENABLED,
         };
         break;
       case EsimUiState.ACTIVATION_CODE_ENTRY:
         buttonState = this.generateButtonStateForActivationPage_(
-            /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
-            /*isInstalling*/ false);
+            /*enableForwardBtn*/ false, cancelButtonStateIfEnabled);
         break;
       case EsimUiState.ACTIVATION_CODE_ENTRY_READY:
         buttonState = this.generateButtonStateForActivationPage_(
-            /*enableForwardBtn*/ true, cancelButtonStateIfEnabled,
-            /*isInstalling*/ false);
+            /*enableForwardBtn*/ true, cancelButtonStateIfEnabled);
         break;
       case EsimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
         buttonState = this.generateButtonStateForActivationPage_(
-            /*enableForwardBtn*/ false, cancelButtonStateIfDisabled,
-            /*isInstalling*/ true);
+            /*enableForwardBtn*/ false, cancelButtonStateIfDisabled);
         break;
       case EsimUiState.CONFIRMATION_CODE_ENTRY:
         buttonState = this.generateButtonStateForConfirmationPage_(
-            /*enableForwardBtn*/ false, cancelButtonStateIfEnabled,
-            /*isInstalling*/ false);
+            /*enableForwardBtn*/ false, cancelButtonStateIfEnabled);
         break;
       case EsimUiState.CONFIRMATION_CODE_ENTRY_READY:
         buttonState = this.generateButtonStateForConfirmationPage_(
-            /*enableForwardBtn*/ true, cancelButtonStateIfEnabled,
-            /*isInstalling*/ false);
+            /*enableForwardBtn*/ true, cancelButtonStateIfEnabled);
         break;
       case EsimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
         buttonState = this.generateButtonStateForConfirmationPage_(
-            /*enableForwardBtn*/ false, cancelButtonStateIfDisabled,
-            /*isInstalling*/ true);
+            /*enableForwardBtn*/ false, cancelButtonStateIfDisabled);
         break;
       case EsimUiState.PROFILE_SELECTION:
         this.updateForwardButtonLabel_();
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: cancelButtonStateIfEnabled,
           forward: ButtonState.ENABLED,
         };
         break;
       case EsimUiState.PROFILE_SELECTION_INSTALLING:
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: cancelButtonStateIfDisabled,
           forward: ButtonState.DISABLED,
         };
@@ -626,7 +540,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case EsimUiState.SETUP_FINISH:
         this.forwardButtonLabel = this.i18n('done');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.HIDDEN,
           forward: ButtonState.ENABLED,
         };
@@ -638,15 +551,9 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
   }
 
   private updateForwardButtonLabel_(): void {
-    if (this.smdsSupportEnabled_) {
-      this.forwardButtonLabel = this.selectedProfileProperties_ ?
-          this.i18n('next') :
-          this.i18n('skipDiscovery');
-    } else {
-      this.forwardButtonLabel = this.selectedProfile_ ?
-          this.i18n('next') :
-          this.i18n('skipDiscovery');
-    }
+    this.forwardButtonLabel = this.selectedProfileProperties_ ?
+        this.i18n('next') :
+        this.i18n('skipDiscovery');
   }
 
   private initializePageState_(newState: EsimUiState, oldState: EsimUiState):
@@ -674,19 +581,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         EsimUiState.ACTIVATION_CODE_ENTRY;
   }
 
-  private onSelectedProfileChanged_(): void {
-    // initializePageState_() may cause this observer to fire and update the
-    // buttonState when we're not on the profile selection page. Check we're
-    // on the profile selection page before proceeding.
-    if (this.state_ !== EsimUiState.PROFILE_SELECTION) {
-      return;
-    }
-    if (this.smdsSupportEnabled_) {
-      return;
-    }
-    this.updateForwardButtonLabel_();
-  }
-
   private onSelectedProfilePropertiesChanged_(): void {
     // initializePageState_() may cause this observer to fire and update the
     // buttonState when we're not on the profile selection page. Check we're
@@ -694,9 +588,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     if (this.state_ !== EsimUiState.PROFILE_SELECTION) {
       return;
     }
-    if (!this.smdsSupportEnabled_) {
-      return;
-    }
+
     this.updateForwardButtonLabel_();
   }
 
@@ -741,7 +633,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
             .then(this.handleProfileInstallResponse_.bind(this));
         break;
       case EsimUiState.PROFILE_SELECTION:
-        if (this.smdsSupportEnabled_) {
           if (this.selectedProfileProperties_) {
             assert(this.euicc_);
             this.state_ = EsimUiState.PROFILE_SELECTION_INSTALLING;
@@ -756,44 +647,19 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
           } else {
             this.state_ = EsimUiState.ACTIVATION_CODE_ENTRY;
           }
-        } else {
-          if (this.selectedProfile_) {
-            this.state_ = EsimUiState.PROFILE_SELECTION_INSTALLING;
-            // Assume installing the profile doesn't require a confirmation
-            // code, send an empty string.
-            this.selectedProfile_.installProfile('').then(
-                this.handleProfileInstallResponse_.bind(this));
-          } else {
-            this.state_ = EsimUiState.ACTIVATION_CODE_ENTRY;
-          }
-        }
         break;
       case EsimUiState.CONFIRMATION_CODE_ENTRY_READY:
         this.state_ = EsimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING;
-        if (this.smdsSupportEnabled_) {
-          assert(this.euicc_);
-          const fromQrCode = this.selectedProfileProperties_ ? true : false;
-          const activationCode = fromQrCode ?
-              this.selectedProfileProperties_!.activationCode :
-              this.activationCode_;
-          this.euicc_
-              .installProfileFromActivationCode(
-                  activationCode, this.confirmationCode_,
-                  this.computeProfileInstallMethod_())
-              .then(this.handleProfileInstallResponse_.bind(this));
-        } else {
-          if (this.selectedProfile_) {
-            this.selectedProfile_.installProfile(this.confirmationCode_)
-                .then(this.handleProfileInstallResponse_.bind(this));
-          } else {
-            assert(this.euicc_);
-            this.euicc_
-                .installProfileFromActivationCode(
-                    this.activationCode_, this.confirmationCode_,
-                    this.computeProfileInstallMethod_())
-                .then(this.handleProfileInstallResponse_.bind(this));
-          }
-        }
+        assert(this.euicc_);
+        const fromQrCode = this.selectedProfileProperties_ ? true : false;
+        const activationCode = fromQrCode ?
+            this.selectedProfileProperties_!.activationCode :
+            this.activationCode_;
+        this.euicc_
+            .installProfileFromActivationCode(
+                activationCode, this.confirmationCode_,
+                this.computeProfileInstallMethod_())
+            .then(this.handleProfileInstallResponse_.bind(this));
         break;
       case EsimUiState.SETUP_FINISH:
         this.dispatchEvent(new CustomEvent('exit-cellular-setup', {
@@ -806,44 +672,30 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
   }
 
   /** SubflowMixin override */
-  override navigateBackward(): void {
-    if (this.profilesFound_() &&
-        (this.state_ === EsimUiState.ACTIVATION_CODE_ENTRY ||
-         this.state_ === EsimUiState.ACTIVATION_CODE_ENTRY_READY)) {
-      this.state_ = EsimUiState.PROFILE_SELECTION;
-      return;
-    }
-
-    if (this.state_ === EsimUiState.CONFIRMATION_CODE_ENTRY ||
-        this.state_ === EsimUiState.CONFIRMATION_CODE_ENTRY_READY) {
-      if (this.activationCode_) {
-        this.state_ = EsimUiState.ACTIVATION_CODE_ENTRY_READY;
-        return;
-      } else if (this.profilesFound_()) {
-        this.state_ = EsimUiState.PROFILE_SELECTION;
-        return;
-      }
-    }
-    console.error(
-        'Navigate backward faled for : ' + this.state_ +
-        ' this state does not support backward navigation.');
-    assertNotReached();
-  }
-
-  /** SubflowMixin override */
   override maybeFocusPageElement(): boolean {
-    if (this.state_ !== EsimUiState.PROFILE_SELECTION) {
-      return false;
-    }
+    switch (this.state_) {
+      case EsimUiState.ACTIVATION_CODE_ENTRY:
+      case EsimUiState.ACTIVATION_CODE_ENTRY_READY:
+        const activationCodePage =
+            this.shadowRoot!.querySelector<ActivationCodePageElement>(
+                '#activationCodePage');
 
-    const profileDiscoveryPage =
-        this.shadowRoot!.querySelector<ProfileDiscoveryListPageElement>(
-            '#profileDiscoveryPage');
+        if (!activationCodePage) {
+          return false;
+        }
+        return activationCodePage!.attemptToFocusOnPageContent();
+      case EsimUiState.PROFILE_SELECTION:
+        const profileDiscoveryPage =
+            this.shadowRoot!.querySelector<ProfileDiscoveryListPageElement>(
+                '#profileDiscoveryPage');
 
-    if (!profileDiscoveryPage) {
-      return false;
+        if (!profileDiscoveryPage) {
+          return false;
+        }
+        return profileDiscoveryPage.attemptToFocusOnFirstProfile();
+      default:
+        return false;
     }
-    return profileDiscoveryPage!.attemptToFocusOnFirstProfile();
   }
 
   private onForwardNavigationRequested_(): void {
@@ -866,22 +718,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     }
   }
 
-  private shouldShowSubpageBusy_(): boolean {
-    return this.state_ === EsimUiState.ACTIVATION_CODE_ENTRY_INSTALLING ||
-        this.state_ === EsimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING ||
-        this.state_ === EsimUiState.PROFILE_SELECTION_INSTALLING;
-  }
-
-  private getLoadingMessage_(): string {
-    if (this.smdsSupportEnabled_) {
-      return this.i18n('profileLoadingPageMessage');
-    }
-
-    return this.hasHadActiveCellularNetwork_ ?
-        this.i18n('eSimProfileDetectDuringActiveCellularConnectionMessage') :
-        this.i18n('eSimProfileDetectMessage');
-  }
-
   private computeHeader_(): string {
     if (this.selectedEsimPageName_ === EsimPageName.FINAL && !this.showError_) {
       return this.i18n('eSimFinalPageSuccessHeader');
@@ -891,17 +727,15 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       return this.i18n('profileDiscoveryConsentTitle');
     }
 
-    if (this.smdsSupportEnabled_) {
-      if (this.selectedEsimPageName_ === EsimPageName.PROFILE_DISCOVERY) {
-        return this.i18n('profileDiscoveryPageTitle');
-      }
+    if (this.selectedEsimPageName_ === EsimPageName.PROFILE_DISCOVERY) {
+      return this.i18n('profileDiscoveryPageTitle');
+    }
 
-      if (this.selectedEsimPageName_ == EsimPageName.CONFIRMATION_CODE) {
-        return this.i18n('confimationCodePageTitle');
-      }
-      if (this.selectedEsimPageName_ == EsimPageName.PROFILE_LOADING) {
-        return this.i18n('profileLoadingPageTitle');
-      }
+    if (this.selectedEsimPageName_ == EsimPageName.CONFIRMATION_CODE) {
+      return this.i18n('confimationCodePageTitle');
+    }
+    if (this.selectedEsimPageName_ == EsimPageName.PROFILE_LOADING) {
+      return this.i18n('profileLoadingPageTitle');
     }
 
     return '';
@@ -922,23 +756,13 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
    * Returns true if profiles have been received and none were found.
    */
   private noProfilesFound_(): boolean {
-    if (this.smdsSupportEnabled_) {
-      return this.hasConsentedForDiscovery_ &&
-          !!this.pendingProfileProperties_ &&
-          this.pendingProfileProperties_.length === 0;
-    } else {
-      return (this.pendingProfiles_ && this.pendingProfiles_.length === 0);
-    }
+    return this.hasConsentedForDiscovery_ && !!this.pendingProfileProperties_ &&
+        this.pendingProfileProperties_.length === 0;
   }
 
   private profilesFound_(): boolean {
-    if (this.smdsSupportEnabled_) {
-      return this.hasConsentedForDiscovery_ &&
-          !!this.pendingProfileProperties_ &&
-          this.pendingProfileProperties_.length > 0;
-    } else {
-      return (this.pendingProfiles_ && this.pendingProfiles_.length > 0);
-    }
+    return this.hasConsentedForDiscovery_ && !!this.pendingProfileProperties_ &&
+        this.pendingProfileProperties_.length > 0;
   }
 
   getSelectedEsimPageNameForTest(): string {

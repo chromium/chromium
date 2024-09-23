@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Brown Rhosliw</translation>
 <translation id="249330843868392562">Agor gosodiadau testun i leferydd</translation>
 <translation id="2497706219848005458">Melyn Gwyrdd</translation>
+<translation id="2512979179176933762">dangos ffenestri</translation>
 <translation id="2523609930580546572">Tiwtorial ChromeVox</translation>
 <translation id="2525706221823668172">Llwybrau byr bysellfwrdd Chromebook</translation>
 <translation id="2553108862507765288">camgymeriad gramadegol</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}zero{+#}two{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Gallwch hefyd sweipio un bys o'r dde i'r chwith i symud i'r eitem flaenorol. Rhowch gynnig arni nawr.</translation>
 <translation id="280499067616661124">Chwilio tudalen ChromeVox</translation>
-<translation id="2811019999044652585">I neidio i rannau eraill o'r sgrîn, megis bariau offer neu hambwrdd y system, pwyswch Control+Forward. Ar Chromebook, yn union uwchben y fysell rhif 2 yw'r fysell Forward.</translation>
 <translation id="2811204574343810641">Rhes</translation>
 <translation id="2816868829355607410">Maes ymarfer: Gorchmynion neidio</translation>
 <translation id="2841013758207633010">Amser</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Glas Dur</translation>
 <translation id="4253168017788158739">Nodyn</translation>
 <translation id="4254798249533888099">Coeden</translation>
+<translation id="4259220820964911921">Galluogi rheoli ag wyneb?</translation>
 <translation id="4271220233568730077">Mathemateg nesaf</translation>
 <translation id="4275397969489577657">Galluogi logio ffrydiau digwyddiadau</translation>
 <translation id="4278486392851938658">Dim dolen yr ymwelwyd â hi flaenorol</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Coch Indiaidd</translation>
 <translation id="4432896207833262240">Cynnwys sydd wedi'i farcio</translation>
 <translation id="4437615272777527928">Teipiwch i chwilio'r dewislenni. Defnyddiwch y saethau i fyny ac i lawr i fynd drwy'r canlyniadau. Defnyddiwch y saethau chwith a de i addasu'r caret testun, ac i symud rhwng dewislenni.</translation>
+<translation id="4453530046591759283">I neidio i rannau eraill o'r sgrîn, megis bariau offer neu hambwrdd y system, pwyswch Control+F1. F1 yw'r fysell gyntaf i'r dde o'r fysell Escape.</translation>
 <translation id="4457472090507035117">Dewis y llais presennol:</translation>
 <translation id="4476183483923481720">llinell newydd</translation>
 <translation id="4479068155583208887">Bricsen Fflamgoch</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Atodiad</translation>
 <translation id="5761219715606611783">Da iawn! Rydych wedi dysgu hanfodion cyffwrdd ChromeVox. Gallwch fynd drwy'r tiwtorial eto neu adael y tiwtorial hwn gan ddefnyddio'r botymau isod.</translation>
 <translation id="5776001898637896684">Estyniad testun i leferydd Rhwydwaith Uwch Google</translation>
+<translation id="5783252477644995371">Mae rheoli ag wyneb yn rhoi rheolaeth cyrchwr i chi gyda phwyntio wyneb a'r gallu i berfformio gweithredoedd, megis clicio chwith gydag ystumiau wyneb megis gwên</translation>
 <translation id="5805940204952508776">Tapiwch gyda dau fys</translation>
 <translation id="5819072574982403430">Eitem coeden</translation>
 <translation id="5822819874379903994">Gwyrddlas Tywyll</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Gwyn Navajo</translation>
 <translation id="7095834689119144465">Golygu testun rhifol yn unig</translation>
 <translation id="7096001299300236431">Cyfryngau blaenorol</translation>
+<translation id="7096668131290451939">Pwyswch Escape eto i adael y Modd Dysgu</translation>
 <translation id="7116595520562830928">amllnell</translation>
 <translation id="712735679809149106">adleisio geiriau</translation>
 <translation id="7137397390322864165">Pinc Eog</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Dim blwch ticio nesaf</translation>
 <translation id="8473540203671727883">Adrodd testun sydd o dan y llygoden</translation>
 <translation id="8476408756881832830">Seibio'r chwarae pan mae ChromeVox yn siarad</translation>
-<translation id="8476508772960940536">trosolwg ffenestr</translation>
 <translation id="8480873377842220259">Nawr byddwch yn dysgu rhywfaint o sgiliau lywio sylfaenol. Gallwch ddal Search a phwyso'r bysellau saeth i symud o amgylch y sgrîn. I barhau, pwyswch Search + Saeth dde.</translation>
 <translation id="8503360654911991865">Gostwng gronynnedd llywio</translation>
 <translation id="8520472399088452386">Botwm troelli</translation>

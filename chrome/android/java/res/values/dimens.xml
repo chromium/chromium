@@ -20,9 +20,6 @@ found in the LICENSE file.
     <!-- Text size of descriptive controls on an infobar. -->
     <dimen name="infobar_descriptive_text_size">14sp</dimen>
 
-    <!-- Dimensions for compact translate infobar. -->
-    <dimen name="infobar_translate_fade_edge_length">18dp</dimen>
-
     <!-- Overlay Panel dimensions -->
     <dimen name="overlay_panel_end_buttons_width">94dp</dimen>
     <dimen name="overlay_panel_padded_button_width">41dp</dimen>
@@ -83,9 +80,6 @@ found in the LICENSE file.
     <dimen name="password_generation_horizontal_margin">10dp</dimen>
     <dimen name="password_generation_text_vertical_margin">12dp</dimen>
 
-    <!-- Password generation dialog dimensions -->
-    <dimen name="password_generation_dialog_padding">24dp</dimen>
-
     <!-- Password manager illustration dialogs -->
     <dimen name="password_manager_dialog_padding">8dp</dimen>
     <dimen name="password_manager_dialog_illustration_height">156dp</dimen>
@@ -121,11 +115,8 @@ found in the LICENSE file.
     <dimen name="tab_modal_scrim_vertical_margin">16dp</dimen>
 
     <!-- Should match toolbar_height_no_shadow -->
-    <dimen name="control_container_height">56dp</dimen>
-    <dimen name="custom_tabs_control_container_height">56dp</dimen>
-
-    <!-- The combined height of the tab strip and toolbar. -->
-    <dimen name="tab_strip_and_toolbar_height">56dp</dimen>
+    <dimen name="control_container_height">@dimen/default_action_bar_height</dimen>
+    <dimen name="custom_tabs_control_container_height">@dimen/default_action_bar_height</dimen>
 
     <!-- Find in Page dimensions -->
     <dimen name="find_in_page_popup_width">375dp</dimen>
@@ -133,51 +124,16 @@ found in the LICENSE file.
     <dimen name="find_in_page_popup_margin_end">62dp</dimen>
 
     <!-- NTP dimensions -->
-    <dimen name="tile_grid_layout_top_margin">24dp</dimen>
-    <dimen name="tile_grid_layout_top_margin_push_down_small">36dp</dimen>
-    <dimen name="tile_grid_layout_top_margin_push_down_large">54dp</dimen>
-    <dimen name="tile_grid_layout_top_margin_pull_up">16dp</dimen>
-    <dimen name="tile_grid_layout_no_logo_top_margin">20dp</dimen>
-    <dimen name="tile_grid_layout_bleed">8dp</dimen>
-    <dimen name="tile_grid_layout_vertical_spacing">6dp</dimen>
-    <dimen name="tile_grid_layout_vertical_spacing_push_down_small">24dp</dimen>
-    <dimen name="tile_grid_layout_vertical_spacing_push_down_large">36dp</dimen>
-    <dimen name="tile_grid_layout_vertical_spacing_polish">15dp</dimen>
-    <dimen name="tile_grid_layout_min_horizontal_spacing">4dp</dimen>
-    <dimen name="tile_grid_layout_bottom_margin">24dp</dimen>
-    <dimen name="tile_grid_layout_bottom_margin_push_down_small">48dp</dimen>
-    <dimen name="tile_grid_layout_bottom_margin_push_down_large">64dp</dimen>
-    <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
-    <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
-    <dimen name="mvt_container_lateral_margin_polish">@dimen/signin_promo_lateral_paddings</dimen>
-    <dimen name="search_box_lateral_margin_polish">16dp</dimen>
-    <dimen name="mvt_container_top_padding_polish">17dp</dimen>
-    <dimen name="mvt_container_bottom_padding_polish">22dp</dimen>
-    <dimen name="tile_view_title_margin_top_modern_polish">63dp</dimen>
-    <dimen name="mvt_container_top_margin_polish">23dp</dimen>
-    <dimen name="mvt_container_to_ntp_right_extra_margin_two_feed_tablet">16dp</dimen>
-    <dimen name="mvt_container_bottom_margin_tablet">48dp</dimen>
-    <dimen name="tile_grid_layout_landscape_edge_margin_tablet">100dp</dimen>
-    <dimen name="tile_grid_layout_portrait_edge_margin_tablet">84dp</dimen>
-    <dimen name="tile_carousel_layout_max_interval_margin_tablet">48dp</dimen>
-    <dimen name="tile_carousel_layout_min_interval_margin_tablet">16dp</dimen>
-    <dimen name="ntp_single_tab_card_top_margin">@dimen/tile_grid_layout_top_margin</dimen>
-    <dimen name="ntp_single_tab_card_bottom_margin">@dimen/tile_grid_layout_bottom_margin</dimen>
-    <dimen name="ntp_iph_searchbox_y_inset">6dp</dimen>
-    <dimen name="ntp_logo_height">100dp</dimen>
-    <dimen name="ntp_logo_margin_top">26dp</dimen>
-    <dimen name="ntp_logo_margin_bottom">23dp</dimen>
-    <dimen name="ntp_logo_height_shrink">72dp</dimen>
-    <dimen name="ntp_logo_vertical_top_margin_tablet">36dp</dimen>
-    <dimen name="ntp_logo_vertical_bottom_margin_tablet">24dp</dimen>
-    <dimen name="ntp_search_box_height">48dp</dimen>
+    <dimen name="tile_layout_no_logo_top_margin">20dp</dimen>
+    <dimen name="mvt_container_lateral_margin">@dimen/signin_promo_lateral_paddings</dimen>
+    <dimen name="mvt_container_top_padding">17dp</dimen>
+    <dimen name="mvt_container_bottom_padding">22dp</dimen>
+    <dimen name="mvt_container_top_margin">23dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
-    <dimen name="ntp_search_box_start_margin">44dp</dimen>
-    <dimen name="ntp_search_box_transition_length">16dp</dimen>
-    <dimen name="ntp_search_box_transition_length_polish_offset">4dp</dimen>
-    <dimen name="ntp_search_box_lateral_margin_tablet_polish">100dp</dimen>
+    <dimen name="ntp_search_box_transition_start_offset">16dp</dimen>
+    <dimen name="ntp_search_box_transition_end_offset">4dp</dimen>
+    <dimen name="ntp_search_box_lateral_margin_tablet">100dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
-    <dimen name="snippets_article_header_menu_size">48dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
@@ -188,29 +144,11 @@ found in the LICENSE file.
     <dimen name="feed_header_icon_margin">16dp</dimen>
     <dimen name="feed_header_icon_size">20dp</dimen>
     <dimen name="feed_header_tab_layout_height">40dp</dimen>
-    <dimen name="feed_v2_header_menu_width">20dp</dimen>
     <dimen name="feed_header_tab_list_view_top_bottom_margin">8dp</dimen>
 
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
-
-    <!-- Revamped Incognito NTP -->
-    <dimen name="incognito_ntp_portrait_small_or_big_threshold">320dp</dimen>
-    <dimen name="incognito_ntp_portrait_horizontal_small_padding">16dp</dimen>
-    <dimen name="incognito_ntp_portrait_horizontal_big_padding">32dp</dimen>
-    <dimen name="incognito_ntp_portrait_vertical_padding">48dp</dimen>
-    <dimen name="incognito_ntp_landscape_small_or_big_threshold">320dp</dimen>
-    <dimen name="incognito_ntp_landscape_horizontal_padding">24dp</dimen>
-    <dimen name="incognito_ntp_landscape_vertical_small_padding">24dp</dimen>
-    <dimen name="incognito_ntp_landscape_vertical_big_padding">32dp</dimen>
-    <dimen name="incognito_ntp_icon_size">72dp</dimen>
-    <dimen name="incognito_ntp_space_between_icon_and_title">16dp</dimen>
-    <dimen name="incognito_ntp_wide_layout_threshold">720dp</dimen>
-    <dimen name="incognito_ntp_content_max_width">704dp</dimen>
-    <dimen name="incognito_ntp_does_and_doesnt_top_spacing">32dp</dimen>
-    <dimen name="incognito_ntp_descriptions_horizontal_spacing">32dp</dimen>
-    <dimen name="incognito_ntp_space_between_header_and_description">8dp</dimen>
-    <dimen name="incognito_ntp_learn_more_vertical_spacing">22dp</dimen>
+    <dimen name="incognito_ntp_fading_shadow_size">16dp</dimen>
 
     <!-- Recent tabs page -->
     <dimen name="recent_tabs_visible_separator_padding">8dp</dimen>
@@ -222,11 +160,9 @@ found in the LICENSE file.
     <dimen name="recent_tabs_count_text_size">10dp</dimen>
 
     <!-- Bookmarks dimensions -->
-    <dimen name="bookmark_folder_item_left">16dp</dimen>
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
-    <dimen name="bookmark_favicon_display_size">20dp</dimen>
     <dimen name="improved_bookmark_favicon_text_size">18dp</dimen>
 
      <!-- Improved bookmark row properties. -->
@@ -249,9 +185,6 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_save_flow_outer_radius">8dp</dimen>
     <dimen name="improved_bookmark_save_flow_inner_radius">4dp</dimen>
     <dimen name="improved_bookmark_save_flow_image_size">75dp</dimen>
-
-    <!-- Bookmark visual refresh dimensions. -->
-     <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>
 
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>
@@ -282,6 +215,11 @@ found in the LICENSE file.
     <dimen name="custom_tabs_toast_branding_height">50dp</dimen>
     <dimen name="custom_tabs_toast_branding_padding">16dp</dimen>
 
+    <!-- Search in CCT specific dimensions for presenting interactable Omnibox -->
+    <dimen name="custom_tabs_location_bar_active_height">40dp</dimen>
+    <dimen name="custom_tabs_url_bar_active_height">48dp</dimen>
+    <dimen name="custom_tabs_url_bar_bg_horizontal_padding">4dp</dimen>
+
     <!-- Account chooser dialog dimensions -->
     <dimen name="account_chooser_dialog_margin">24dp</dimen>
     <dimen name="account_chooser_dialog_item_margin">24dp</dimen>
@@ -307,9 +245,7 @@ found in the LICENSE file.
     <dimen name="legacy_sync_promo_view_padding">16dp</dimen>
     <!-- 18dp padding is added to each side of the remove button to limit the image width to 20dp (56dp - 2 * 18dp). -->
     <dimen name="history_item_remove_button_lateral_padding">18dp</dimen>
-    <!-- The List/Journeys toggle in the history UI is laid out at 40 dp (less than the typical minimum of 48dp)
-         but has its touch target expanded by 4dp on top and bottom to compensate. -->
-    <dimen name="history_toggle_added_touch_target_height">4dp</dimen>
+    <dimen name="history_item_leading_padding">2dp</dimen>
 
     <!-- Context Menu Dimensions -->
     <!-- Prevent the chip from reaching the edges of the screen for long translations. -->
@@ -320,34 +256,8 @@ found in the LICENSE file.
     <dimen name="context_menu_chip_vertical_inset">4dp</dimen>
     <dimen name="context_menu_chip_icon_size">24dp</dimen>
 
-    <dimen name="context_menu_max_width">500dp</dimen>
-    <dimen name="context_menu_lateral_margin">40dp</dimen>
-    <dimen name="context_menu_vertical_margin">20dp</dimen>
-    <dimen name="context_menu_list_lateral_padding">16dp</dimen>
-    <dimen name="context_menu_bottom_padding">8dp</dimen>
-    <dimen name="context_menu_header_vertical_padding">16dp</dimen>
-    <dimen name="context_menu_header_image_max_size">60dp</dimen>
-    <dimen name="context_menu_header_circle_bg_diameter">48dp</dimen>
-    <dimen name="context_menu_header_circle_bg_margin">6dp</dimen>
-    <dimen name="context_menu_header_monogram_text_size">16dp</dimen>
-    <dimen name="context_menu_header_monogram_size">26dp</dimen>
-    <dimen name="context_menu_small_width">268dp</dimen>
-    <dimen name="context_menu_small_lateral_margin">30dp</dimen>
-    <dimen name="context_menu_popup_max_width">319dp</dimen>
-    <dimen name="context_menu_fading_edge_size">52dp</dimen>
-
     <dimen name="context_menu_popup_header_image_max_size">36dp</dimen>
     <dimen name="context_menu_popup_header_monogram_size">16dp</dimen>
-
-    <!-- Defaults for TabbedModeFirstRunActivity values. -->
-    <item type="dimen" name="dialog_fixed_width_major">100%</item>
-    <item type="dimen" name="dialog_fixed_width_minor">100%</item>
-    <item type="dimen" name="dialog_fixed_height_major">100%</item>
-    <item type="dimen" name="dialog_fixed_height_minor">100%</item>
-    <item type="dimen" name="dialog_fixed_width_major_automotive">100%</item>
-    <item type="dimen" name="dialog_fixed_width_minor_automotive">100%</item>
-    <item type="dimen" name="dialog_fixed_height_major_automotive">100%</item>
-    <item type="dimen" name="dialog_fixed_height_minor_automotive">100%</item>
 
     <!-- History Navigation UI Item -->
     <dimen name="navigation_bubble_size">44dp</dimen>
@@ -422,10 +332,6 @@ found in the LICENSE file.
     <dimen name="virtual_card_enrollment_dialog_google_legal_message_margin_top">20dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_google_issuer_message_margin_top">8dp</dimen>
 
-    <!-- Section tab dimensions -->
-    <dimen name="section_tab_background_corner_radius">60dp</dimen>
-    <dimen name="section_tab_bezel_width">2dp</dimen>
-
     <!-- Price Drop dimensions -->
     <dimen name="price_drop_spotted_iph_ntp_tabswitcher_y_inset">4dp</dimen>
 
@@ -438,14 +344,11 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_row_secondary_inner_half_size">19.5dp</dimen>
 
     <!-- Autofill "save card" bottom sheet dimensions. -->
-    <dimen name="autofill_bottom_sheet_card_chip_top_margin">22dp</dimen>
-    <dimen name="autofill_bottom_sheet_confirm_button_top_margin">22dp</dimen>
     <dimen name="autofill_bottom_sheet_credit_card_height">24dp</dimen>
     <dimen name="autofill_bottom_sheet_credit_card_spacing">16dp</dimen>
     <dimen name="autofill_bottom_sheet_credit_card_width">40dp</dimen>
-    <dimen name="autofill_bottom_sheet_drag_handlebar_spacing_top">8dp</dimen>
+    <dimen name="autofill_bottom_sheet_loading_view_bottom_margin">64dp</dimen>
     <dimen name="autofill_bottom_sheet_logo_height">32dp</dimen>
-    <dimen name="autofill_bottom_sheet_title_top_margin">24dp</dimen>
 
     <!-- Autofill "virtual card number enrollment" bottom sheet dimensions. -->
     <dimen name="autofill_bottom_sheet_drag_handlebar_height">4dp</dimen>
@@ -455,12 +358,21 @@ found in the LICENSE file.
     <dimen name="autofill_bottom_sheet_spacing_large">22dp</dimen>
     <dimen name="autofill_bottom_sheet_spacing_small">12dp</dimen>
 
+    <!-- Autofill "save IBAN" bottom sheet dimensions. -->
+    <dimen name="autofill_bottom_sheet_iban_text_input_top_margin">20dp</dimen>
+
     <!-- Common autofill bottom sheet dimensions. -->
+    <dimen name="autofill_bottom_sheet_chip_top_margin">22dp</dimen>
+    <dimen name="autofill_bottom_sheet_confirm_button_top_margin">22dp</dimen>
+    <dimen name="autofill_bottom_sheet_drag_handlebar_spacing_top">8dp</dimen>
     <dimen name="autofill_bottom_sheet_padding_horizontal">24dp</dimen>
     <dimen name="autofill_bottom_sheet_spacing_extra_small">8dp</dimen>
     <dimen name="autofill_bottom_sheet_spacing_medium">16dp</dimen>
+    <dimen name="autofill_bottom_sheet_title_top_margin">24dp</dimen>
 
     <!-- Autofill dialog dimensions. -->
     <dimen name="autofill_dialog_progress_bar_size">36dp</dimen>
 
+    <!-- tab strip context menu-->
+    <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
 </resources>

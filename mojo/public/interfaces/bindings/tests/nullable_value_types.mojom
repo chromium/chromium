@@ -11,6 +11,11 @@ enum RegularEnum {
   kThatValue = 2,
 };
 
+[Extensible]
+enum ExtensibleEnum {
+  [Default] kUnknown = 0,
+};
+
 enum TypemappedEnum {
   kThisOtherValue = 4,
   kThatOtherValue = 8,
@@ -230,5 +235,47 @@ interface InterfaceV2 {
       [MinVersion=1] TypemappedEnum? mapped_enum_value
   );
 
+  // Test method for versioned struct.
   MethodWithVersionedStruct@6(VersionedStructV2 in) => (VersionedStructV2 out);
+
+  // Test method for containers of nullables.
+  MethodWithContainers@7(
+        array<bool?> bool_values,
+        array<uint8?> u8_values,
+        array<uint16?> u16_values,
+        array<uint32?> u32_values,
+        array<uint64?> u64_values,
+        array<int8?> i8_values,
+        array<int16?> i16_values,
+        array<int32?> i32_values,
+        array<int64?> i64_values,
+        array<float?> float_values,
+        array<double?> double_values,
+        array<RegularEnum?> enum_value,
+        array<ExtensibleEnum?> extensible_enum_values,
+        map<int32, bool?> bool_map,
+        map<int32, int32?> int_map
+  ) => (
+        array<bool?> bool_values,
+        array<uint8?> u8_values,
+        array<uint16?> u16_values,
+        array<uint32?> u32_values,
+        array<uint64?> u64_values,
+        array<int8?> i8_values,
+        array<int16?> i16_values,
+        array<int32?> i32_values,
+        array<int64?> i64_values,
+        array<float?> float_values,
+        array<double?> double_values,
+        array<RegularEnum?> enum_value,
+        array<ExtensibleEnum?> extensible_enum_values,
+        map<int32, bool?> bool_map,
+        map<int32, int32?> int_map
+  );
+
+  // C++ implementation will purposely send an unknown enum to exercise Java
+  // unknown enum handling.
+  // Result should be an array of a single unknown enum value followed by a null
+  // value, i.e.: {[unknown enum value], null}.
+  MethodToSendUnknownEnum@8() => (array<ExtensibleEnum?> out);
 };

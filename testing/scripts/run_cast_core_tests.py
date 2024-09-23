@@ -2,7 +2,6 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Runs an isolate bundled Cast Core integration test.
 
 If optional argument --isolated-script-test-output=[FILENAME] is passed
@@ -19,19 +18,16 @@ invoke an arbitrary executable.
 """
 
 import json
-import os
 import sys
 
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from scripts import common
+import common
 
 
 class CastCoreIntegrationTestAdapter(common.BaseIsolatedScriptArgsAdapter):
 
   def generate_test_output_args(self, output):
     return ['--write-full-results-to', output]
+
 
 def main():
   adapter = CastCoreIntegrationTestAdapter()
@@ -43,12 +39,13 @@ def main():
 def main_compile_targets(args):
   json.dump([], args.output)
 
+
 if __name__ == '__main__':
   # Conform minimally to the protocol defined by ScriptTest.
   if 'compile_targets' in sys.argv:
     funcs = {
-      'run': None,
-      'compile_targets': main_compile_targets,
+        'run': None,
+        'compile_targets': main_compile_targets,
     }
     sys.exit(common.run_script(sys.argv[1:], funcs))
   sys.exit(main())

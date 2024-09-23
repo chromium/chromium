@@ -639,17 +639,17 @@ class ResultSelectionTest : public testing::Test,
 
   // Set up key events for test. These will never be marked as 'handled'.
   ui::KeyEvent down_arrow_ =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE);
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE);
   ui::KeyEvent up_arrow_ =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::EF_NONE);
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_UP, ui::EF_NONE);
   ui::KeyEvent left_arrow_ =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_LEFT, ui::EF_NONE);
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_LEFT, ui::EF_NONE);
   ui::KeyEvent right_arrow_ =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE);
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RIGHT, ui::EF_NONE);
   ui::KeyEvent tab_key_ =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_NONE);
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_TAB, ui::EF_NONE);
   ui::KeyEvent shift_tab_key_ =
-      ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+      ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
 
   int GetAndResetSelectionChangeCount() {
     const int result = selection_change_count_;

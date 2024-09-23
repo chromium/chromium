@@ -217,10 +217,6 @@ RootWebArea
                 attribute : aria-label
                 type : attribute
             }
-            [2] : {
-                attribute : title
-                type : attribute
-            }
         ]
         type : computedString
         value : 
@@ -427,9 +423,7 @@ RootWebArea
     none
       *combobox
         MenuListPopup
-          menuitem "Options should be"
-          menuitem "sent down even though"
-          menuitem "they are grandchildren"
+        MenuListPopup
 {
     childIds : <object>
     chromeRole : {
@@ -498,7 +492,7 @@ RootWebArea
     }
     value : {
         type : string
-        value : Options should be
+        value : Options are not sent
     }
 }
 
@@ -507,7 +501,7 @@ RootWebArea
     none
       combobox
         MenuListPopup
-          *menuitem "Options should be"
+          *option "Options are not sent"
 {
     childIds : <object>
     chromeRole : {
@@ -530,12 +524,17 @@ RootWebArea
                 type : contents
                 value : {
                     type : computedString
-                    value : Options should be
+                    value : Options are not sent
                 }
+            }
+            [3] : {
+                attribute : title
+                superseded : true
+                type : attribute
             }
         ]
         type : computedString
-        value : Options should be
+        value : Options are not sent
     }
     nodeId : <string>
     parentId : <string>
@@ -557,7 +556,7 @@ RootWebArea
     ]
     role : {
         type : role
-        value : menuitem
+        value : option
     }
 }
 
@@ -655,11 +654,6 @@ RootWebArea
                     value : span with ARIA label
                 }
             }
-            [2] : {
-                attribute : title
-                superseded : true
-                type : attribute
-            }
         ]
         type : computedString
         value : span with ARIA label
@@ -728,10 +722,6 @@ RootWebArea
             }
             [1] : {
                 attribute : aria-label
-                type : attribute
-            }
-            [2] : {
-                attribute : title
                 type : attribute
             }
         ]

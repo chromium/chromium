@@ -43,6 +43,7 @@ class TestAshWebView : public AshWebView {
   const GURL& GetVisibleURL() override;
   bool IsErrorDocument() override;
   void SetCornerRadii(const gfx::RoundedCornersF& corner_radii) override;
+  const base::UnguessableToken& GetMediaSessionRequestId() override;
 
   const AshWebView::InitParams& init_params_for_testing() const {
     return init_params_;

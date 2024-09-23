@@ -11,7 +11,7 @@ import logging
 import os
 import sys
 
-# TODO(crbug.com/1012687): Adding tools/perf to path. We can remove this when
+# TODO(crbug.com/40102479): Adding tools/perf to path. We can remove this when
 # we have a wrapper script under tools/perf that sets up import paths more
 # nicely.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))

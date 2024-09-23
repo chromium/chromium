@@ -3,18 +3,18 @@
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
+import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
-import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './icons.html.js';
 import './shared_vars.css.js';
 
+import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
@@ -22,7 +22,7 @@ import {getTemplate} from './sidebar.html.js';
 
 export interface ExtensionsSidebarElement {
   $: {
-    sectionMenu: IronSelectorElement,
+    sectionMenu: CrMenuSelector,
     sectionsExtensions: HTMLElement,
     sectionsShortcuts: HTMLElement,
     sectionsSitePermissions: HTMLElement,
@@ -124,7 +124,7 @@ export class ExtensionsSidebarElement extends ExtensionsSidebarElementBase {
   private computeDiscoverMoreText_(): TrustedHTML {
     return this.i18nAdvanced('sidebarDiscoverMore', {
       tags: ['a'],
-      attrs: ['target', 'on-click'],
+      attrs: ['target'],
       substitutions: [loadTimeData.getString('getMoreExtensionsUrl')],
     });
   }

@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_layout_linux_native.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/window/frame_background.h"
@@ -26,7 +27,7 @@ ui::NavButtonProvider::ButtonState ButtonStateToNavButtonProviderState(
 
     case views::Button::STATE_COUNT:
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -49,16 +50,6 @@ BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
 
 BrowserFrameViewLinuxNative::~BrowserFrameViewLinuxNative() = default;
 
-float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
-  return layout_->GetFrameProvider()->GetTopCornerRadiusDip();
-}
-
-int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
-  return layout_->GetFrameProvider()->IsTopFrameTranslucent()
-             ? GetTopAreaHeight()
-             : 0;
-}
-
 void BrowserFrameViewLinuxNative::Layout(PassKey) {
   // Calling MaybeUpdateCachedFrameButtonImages() here is sufficient to catch
   // all cases that could update the appearance, since
@@ -71,6 +62,16 @@ void BrowserFrameViewLinuxNative::Layout(PassKey) {
 BrowserFrameViewLinuxNative::FrameButtonStyle
 BrowserFrameViewLinuxNative::GetFrameButtonStyle() const {
   return FrameButtonStyle::kImageButton;
+}
+
+int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
+  return layout_->GetFrameProvider()->IsTopFrameTranslucent()
+             ? GetTopAreaHeight()
+             : 0;
+}
+
+float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
+  return layout_->GetFrameProvider()->GetTopCornerRadiusDip();
 }
 
 void BrowserFrameViewLinuxNative::PaintRestoredFrameBorder(
@@ -123,6 +124,9 @@ views::Button* BrowserFrameViewLinuxNative::GetButtonFromDisplayType(
     case ui::NavButtonProvider::FrameButtonDisplayType::kClose:
       return close_button();
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
+
+BEGIN_METADATA(BrowserFrameViewLinuxNative)
+END_METADATA

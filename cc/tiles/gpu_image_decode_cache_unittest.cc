@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/tiles/gpu_image_decode_cache.h"
 
 #include <algorithm>
@@ -53,8 +58,8 @@
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "third_party/skia/include/effects/SkHighContrastFilter.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 
 using testing::_;
@@ -3124,7 +3129,7 @@ TEST_P(GpuImageDecodeCacheTest, KeepOnlyLast2ContentIds) {
 
 TEST_P(GpuImageDecodeCacheTest, DecodeToScale) {
   if (do_yuv_decode_) {
-    // TODO(crbug.com/927437): Modify test after decoding to scale for YUV is
+    // TODO(crbug.com/40612018): Modify test after decoding to scale for YUV is
     // implemented.
     return;
   }
@@ -3168,7 +3173,7 @@ TEST_P(GpuImageDecodeCacheTest, DecodeToScale) {
 
 TEST_P(GpuImageDecodeCacheTest, DecodeToScaleNoneQuality) {
   if (do_yuv_decode_) {
-    // TODO(crbug.com/927437): Modify test after decoding to scale for YUV is
+    // TODO(crbug.com/40612018): Modify test after decoding to scale for YUV is
     // implemented.
     return;
   }
@@ -3699,7 +3704,7 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
 
   gpu::Capabilities original_caps;
   {
-    // TODO(crbug.com/1110007): We shouldn't need to lock to get capabilities.
+    // TODO(crbug.com/40141944): We shouldn't need to lock to get capabilities.
     viz::RasterContextProvider::ScopedRasterContextLock auto_lock(
         context_provider_.get());
     original_caps = context_provider_->ContextCapabilities();

@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "components/prefs/pref_store.h"
@@ -32,59 +33,58 @@ class COMPONENTS_PREFS_EXPORT WriteablePrefStore : public PrefStore {
     LOSSY_PREF_WRITE_FLAG = 1 << 1
   };
 
-  WriteablePrefStore() {}
+  WriteablePrefStore() = default;
 
   WriteablePrefStore(const WriteablePrefStore&) = delete;
   WriteablePrefStore& operator=(const WriteablePrefStore&) = delete;
 
-  // Sets a |value| for |key| in the store. |flags| is a bitmask of
+  // Sets a `value` for `key` in the store. `flags` is a bitmask of
   // PrefWriteFlags.
-  virtual void SetValue(const std::string& key,
+  virtual void SetValue(std::string_view key,
                         base::Value value,
                         uint32_t flags) = 0;
 
-  // Removes the value for |key|. |flags| is a bitmask of
+  // Removes the value for `key`. `flags` is a bitmask of
   // PrefWriteFlags.
-  virtual void RemoveValue(const std::string& key, uint32_t flags) = 0;
+  virtual void RemoveValue(std::string_view key, uint32_t flags) = 0;
 
   // Equivalent to PrefStore::GetValue but returns a mutable value.
-  virtual bool GetMutableValue(const std::string& key,
-                               base::Value** result) = 0;
+  virtual bool GetMutableValue(std::string_view key, base::Value** result) = 0;
 
   // Triggers a value changed notification. This function or
   // ReportSubValuesChanged needs to be called if one retrieves a list or
   // dictionary with GetMutableValue and change its value. SetValue takes care
   // of notifications itself. Note that ReportValueChanged will trigger
-  // notifications even if nothing has changed.  |flags| is a bitmask of
+  // notifications even if nothing has changed.  `flags` is a bitmask of
   // PrefWriteFlags.
-  virtual void ReportValueChanged(const std::string& key, uint32_t flags) = 0;
+  virtual void ReportValueChanged(std::string_view key, uint32_t flags) = 0;
 
-  // Triggers a value changed notification for |path_components| in the |key|
+  // Triggers a value changed notification for `path_components` in the `key`
   // pref. This function or ReportValueChanged needs to be called if one
   // retrieves a list or dictionary with GetMutableValue and change its value.
   // SetValue takes care of notifications itself. Note that
   // ReportSubValuesChanged will trigger notifications even if nothing has
-  // changed. |flags| is a bitmask of PrefWriteFlags.
+  // changed. `flags` is a bitmask of PrefWriteFlags.
   virtual void ReportSubValuesChanged(
-      const std::string& key,
+      std::string_view key,
       std::set<std::vector<std::string>> path_components,
       uint32_t flags);
 
   // Same as SetValue, but doesn't generate notifications. This is used by
   // PrefService::GetMutableUserPref() in order to put empty entries
   // into the user pref store. Using SetValue is not an option since existing
-  // tests rely on the number of notifications generated. |flags| is a bitmask
+  // tests rely on the number of notifications generated. `flags` is a bitmask
   // of PrefWriteFlags.
-  virtual void SetValueSilently(const std::string& key,
+  virtual void SetValueSilently(std::string_view key,
                                 base::Value value,
                                 uint32_t flags) = 0;
 
-  // Clears all the preferences which names start with |prefix| and doesn't
+  // Clears all the preferences which names start with `prefix` and doesn't
   // generate update notifications.
-  virtual void RemoveValuesByPrefixSilently(const std::string& prefix) = 0;
+  virtual void RemoveValuesByPrefixSilently(std::string_view prefix) = 0;
 
  protected:
-  ~WriteablePrefStore() override {}
+  ~WriteablePrefStore() override = default;
 };
 
 #endif  // COMPONENTS_PREFS_WRITEABLE_PREF_STORE_H_

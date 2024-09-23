@@ -84,7 +84,8 @@
           "builder": "android-cronet-x64-dbg-12-tests",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-x64-dbg-12-tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

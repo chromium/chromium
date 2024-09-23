@@ -4,11 +4,11 @@
 
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <optional>
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -406,18 +407,28 @@ void GaiaAuthFetcher::StartRevokeOAuth2Token(const std::string& auth_token) {
 
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchange(
     const std::string& auth_code,
+    const std::string& user_agent_full_version_list,
     const std::string& binding_registration_token) {
   StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
-      auth_code, /*device_id=*/std::string(), binding_registration_token);
+      auth_code, /*device_id=*/std::string(), user_agent_full_version_list,
+      binding_registration_token);
 }
 
 void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
     const std::string& auth_code,
     const std::string& device_id,
+    const std::string& user_agent_full_version_list,
     const std::string& binding_registration_token) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
   VLOG(1) << "Starting OAuth token pair fetch";
+
+  std::string user_agent_full_version_list_header;
+  if (!user_agent_full_version_list.empty()) {
+    user_agent_full_version_list_header = base::StrCat(
+        {"Sec-CH-UA-Full-Version-List: ", user_agent_full_version_list});
+  }
+
   request_body_ =
       MakeGetTokenPairBody(auth_code, device_id, binding_registration_token);
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -450,7 +461,8 @@ void GaiaAuthFetcher::StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
           }
         })");
   CreateAndStartGaiaFetcher(
-      request_body_, kFormEncodedContentType, std::string(), oauth2_token_gurl_,
+      request_body_, kFormEncodedContentType,
+      user_agent_full_version_list_header, oauth2_token_gurl_,
       google_apis::GetOmitCredentialsModeForGaiaRequests(), traffic_annotation);
 }
 
@@ -753,7 +765,6 @@ void GaiaAuthFetcher::OnOAuth2RevokeTokenFetched(const std::string& data,
       break;
     case net::ERR_IO_PENDING:
       NOTREACHED();
-      break;
     case net::ERR_ABORTED:
       revocation_status =
           GaiaAuthConsumer::TokenRevocationStatus::kConnectionCanceled;

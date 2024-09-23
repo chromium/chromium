@@ -9,9 +9,11 @@ source_set("drive_availability") {
   ]
   deps = [
     ":drive_service",
+    ":policy",
+    "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
   ]
 }
@@ -27,6 +29,8 @@ source_set("drive_tab_helper") {
     "//base",
     "//ios/chrome/browser/drive/model:drive_service",
     "//ios/chrome/browser/drive/model:drive_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/download",
@@ -38,7 +42,14 @@ source_set("drive_upload_task") {
     "drive_upload_task.h",
     "drive_upload_task.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":metrics",
+    "//base",
+    "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//net",
+    "//url",
+  ]
   public_deps = [
     ":drive_file_uploader",
     ":upload_task",
@@ -61,9 +72,14 @@ source_set("drive_service") {
     "drive_service.mm",
     "drive_service_configuration.h",
   ]
-  deps = [
-    "//components/keyed_service/core",
-    "//ios/chrome/browser/shared/model/browser_state",
+  deps = [ "//components/keyed_service/core" ]
+  public_deps = [ "//base" ]
+}
+
+source_set("drive_file_downloader") {
+  sources = [
+    "drive_file_downloader.h",
+    "drive_file_downloader.mm",
   ]
   public_deps = [ "//base" ]
 }
@@ -72,6 +88,14 @@ source_set("drive_file_uploader") {
   sources = [
     "drive_file_uploader.h",
     "drive_file_uploader.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("drive_list") {
+  sources = [
+    "drive_list.h",
+    "drive_list.mm",
   ]
   public_deps = [ "//base" ]
 }
@@ -88,6 +112,8 @@ source_set("drive_service_factory") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/drive:drive_api",
   ]
@@ -105,6 +131,17 @@ source_set("manage_storage_url_util") {
   ]
 }
 
+source_set("metrics") {
+  sources = [
+    "drive_metrics.h",
+    "drive_metrics.mm",
+  ]
+}
+
+source_set("policy") {
+  sources = [ "drive_policy.h" ]
+}
+
 source_set("test_constants") {
   testonly = true
   sources = [
@@ -116,13 +153,19 @@ source_set("test_constants") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "test_drive_file_downloader.h",
+    "test_drive_file_downloader.mm",
     "test_drive_file_uploader.h",
     "test_drive_file_uploader.mm",
+    "test_drive_list.h",
+    "test_drive_list.mm",
     "test_drive_service.h",
     "test_drive_service.mm",
   ]
   public_deps = [
+    ":drive_file_downloader",
     ":drive_file_uploader",
+    ":drive_list",
     ":drive_service",
     ":test_constants",
     "//base",
@@ -143,10 +186,13 @@ source_set("unit_tests") {
     ":drive_service_factory",
     ":drive_tab_helper",
     ":drive_upload_task",
+    ":metrics",
     ":test_support",
     "//base/test:test_support",
+    "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/drive/model:upload_task",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

@@ -4,9 +4,12 @@ Please refer to the lint doc for how to use this file and what should go in it:
 https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
 -->
 <lint>
-  <issue id="SetJavaScriptEnabled" severity="ignore"/>
+  <issue id="all">
+    <ignore regexp="../../../base/"/>
+  </issue>
   <issue id="AcceptsUserCertificates" severity="ignore"/>
+  <issue id="ForegroundServiceType" severity="ignore" />
   <issue id="InsecureBaseConfiguration" severity="ignore"/>
   <issue id="ScopedStorage" severity="ignore"/>
-  <issue id="ForegroundServiceType" severity="ignore" />
+  <issue id="SetJavaScriptEnabled" severity="ignore"/>
 </lint>

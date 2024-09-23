@@ -7,6 +7,7 @@
 #include "base/observer_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -31,7 +32,7 @@ namespace {
 class MockSyncService : public syncer::TestSyncService {
  public:
   MockSyncService() {
-    SetTransportState(TransportState::INITIALIZING);
+    SetMaxTransportState(TransportState::INITIALIZING);
     SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -45,8 +46,8 @@ class MockSyncService : public syncer::TestSyncService {
   ~MockSyncService() override { Shutdown(); }
 
   void SetStatus(bool has_passphrase, bool history_enabled, bool active) {
-    SetTransportState(active ? TransportState::ACTIVE
-                             : TransportState::INITIALIZING);
+    SetMaxTransportState(active ? TransportState::ACTIVE
+                                : TransportState::INITIALIZING);
     SetIsUsingExplicitPassphrase(has_passphrase);
 
     GetUserSettings()->SetSelectedTypes(
@@ -113,7 +114,8 @@ class MockSyncService : public syncer::TestSyncService {
 
 class TestUkmConsentStateObserver : public UkmConsentStateObserver {
  public:
-  TestUkmConsentStateObserver() = default;
+  // Inherits UkmConsentStateObserver constructors.
+  using UkmConsentStateObserver::UkmConsentStateObserver;
 
   TestUkmConsentStateObserver(const TestUkmConsentStateObserver&) = delete;
   TestUkmConsentStateObserver& operator=(const TestUkmConsentStateObserver&) =
@@ -274,6 +276,19 @@ TEST_F(UkmConsentStateObserverTest, PurgeOnDisable) {
   EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
   EXPECT_FALSE(observer.ResetNotified());
   EXPECT_FALSE(observer.ResetPurged());
+}
+
+TEST_F(UkmConsentStateObserverTest, NoInitialUkmConsentState) {
+  MockSyncService sync;
+  sync.SetStatus(false, true, false);
+  sync_preferences::TestingPrefServiceSyncable prefs;
+  RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);
+  TestUkmConsentStateObserver observer(NoInitialUkmConsentState);
+  observer.StartObserving(&sync, &prefs);
+  EXPECT_FALSE(observer.IsUkmAllowedForAllProfiles());
+  EXPECT_TRUE(observer.ResetNotified());
+  EXPECT_FALSE(observer.ResetPurged());
+  sync.Shutdown();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

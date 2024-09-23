@@ -1,0 +1,244 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<!-- https://github.com/apple-oss-distributions/Security/blob/Security-61040.80.10.0.1/OSX/libsecurity_codesigning/lib/CSCommon.h#L64 -->
+
+<enum name="CodeSigningOSStatus">
+  <int value="-67072" label="errSecCSUnimplemented"/>
+  <int value="-67071" label="errSecCSInvalidObjectRef"/>
+  <int value="-67070" label="errSecCSInvalidFlags"/>
+  <int value="-67069" label="errSecCSObjectRequired"/>
+  <int value="-67068" label="errSecCSStaticCodeNotFound"/>
+  <int value="-67067" label="errSecCSUnsupportedGuestAttributes"/>
+  <int value="-67066" label="errSecCSInvalidAttributeValues"/>
+  <int value="-67065" label="errSecCSNoSuchCode"/>
+  <int value="-67064" label="errSecCSMultipleGuests"/>
+  <int value="-67063" label="errSecCSGuestInvalid"/>
+  <int value="-67062" label="errSecCSUnsigned"/>
+  <int value="-67061" label="errSecCSSignatureFailed"/>
+  <int value="-67060" label="errSecCSSignatureNotVerifiable"/>
+  <int value="-67059" label="errSecCSSignatureUnsupported"/>
+  <int value="-67058" label="errSecCSBadDictionaryFormat"/>
+  <int value="-67057" label="errSecCSResourcesNotSealed"/>
+  <int value="-67056" label="errSecCSResourcesNotFound"/>
+  <int value="-67055" label="errSecCSResourcesInvalid"/>
+  <int value="-67054" label="errSecCSBadResource"/>
+  <int value="-67053" label="errSecCSResourceRulesInvalid"/>
+  <int value="-67052" label="errSecCSReqInvalid"/>
+  <int value="-67051" label="errSecCSReqUnsupported"/>
+  <int value="-67050" label="errSecCSReqFailed"/>
+  <int value="-67049" label="errSecCSBadObjectFormat"/>
+  <int value="-67048" label="errSecCSInternalError"/>
+  <int value="-67047" label="errSecCSHostReject"/>
+  <int value="-67046" label="errSecCSNotAHost"/>
+  <int value="-67045" label="errSecCSSignatureInvalid"/>
+  <int value="-67044" label="errSecCSHostProtocolRelativePath"/>
+  <int value="-67043" label="errSecCSHostProtocolContradiction"/>
+  <int value="-67042" label="errSecCSHostProtocolDedicationError"/>
+  <int value="-67041" label="errSecCSHostProtocolNotProxy"/>
+  <int value="-67040" label="errSecCSHostProtocolStateError"/>
+  <int value="-67039" label="errSecCSHostProtocolUnrelated"/>
+  <int value="-67037" label="errSecCSNotSupported"/>
+  <int value="-67036" label="errSecCSCMSTooLarge"/>
+  <int value="-67035" label="errSecCSHostProtocolInvalidHash"/>
+  <int value="-67034" label="errSecCSStaticCodeChanged"/>
+  <int value="-67033" label="errSecCSDBDenied"/>
+  <int value="-67032" label="errSecCSDBAccess"/>
+  <int value="-67031" label="errSecCSHostProtocolInvalidAttribute"/>
+  <int value="-67030" label="errSecCSInfoPlistFailed"/>
+  <int value="-67029" label="errSecCSNoMainExecutable"/>
+  <int value="-67028" label="errSecCSBadBundleFormat"/>
+  <int value="-67027" label="errSecCSNoMatches"/>
+  <int value="-67026" label="errSecCSFileHardQuarantined"/>
+  <int value="-67025" label="errSecCSOutdated"/>
+  <int value="-67024" label="errSecCSDbCorrupt"/>
+  <int value="-67023" label="errSecCSResourceDirectoryFailed"/>
+  <int value="-67022" label="errSecCSUnsignedNestedCode"/>
+  <int value="-67021" label="errSecCSBadNestedCode"/>
+  <int value="-67020" label="errSecCSBadCallbackValue"/>
+  <int value="-67019" label="errSecCSHelperFailed"/>
+  <int value="-67018" label="errSecCSVetoed"/>
+  <int value="-67017" label="errSecCSBadLVArch"/>
+  <int value="-67016" label="errSecCSResourceNotSupported"/>
+  <int value="-67015" label="errSecCSRegularFile"/>
+  <int value="-67014" label="errSecCSUnsealedAppRoot"/>
+  <int value="-67013" label="errSecCSWeakResourceRules"/>
+  <int value="-67012" label="errSecCSDSStoreSymlink"/>
+  <int value="-67011" label="errSecCSAmbiguousBundleFormat"/>
+  <int value="-67010" label="errSecCSBadMainExecutable"/>
+  <int value="-67009" label="errSecCSBadFrameworkVersion"/>
+  <int value="-67008" label="errSecCSUnsealedFrameworkRoot"/>
+  <int value="-67007" label="errSecCSWeakResourceEnvelope"/>
+  <int value="-67006" label="errSecCSCancelled"/>
+  <int value="-67005" label="errSecCSInvalidPlatform"/>
+  <int value="-67004" label="errSecCSTooBig"/>
+  <int value="-67003" label="errSecCSInvalidSymlink"/>
+  <int value="-67002" label="errSecCSNotAppLike"/>
+  <int value="-67001" label="errSecCSBadDiskImageFormat"/>
+  <int value="-67000" label="errSecCSUnsupportedDigestAlgorithm"/>
+  <int value="-66999" label="errSecCSInvalidAssociatedFileData"/>
+  <int value="-66998" label="errSecCSInvalidTeamIdentifier"/>
+  <int value="-66997" label="errSecCSBadTeamIdentifier"/>
+  <int value="-66996" label="errSecCSSignatureUntrusted"/>
+  <int value="-66995" label="errSecMultipleExecSegments"/>
+  <int value="-66994" label="errSecCSInvalidEntitlements"/>
+  <int value="-66993" label="errSecCSInvalidRuntimeVersion"/>
+  <int value="-66992" label="errSecCSRevokedNotarization"/>
+  <int value="-66991" label="errSecCSCMSConstructionFailed"/>
+  <int value="-66990" label="errSecCSRemoteSignerFailed"/>
+  <int value="0" label="errSecSuccess"/>
+</enum>
+
+<enum name="MacCloneExists">
+  <int value="0" label="EXISTS"/>
+  <int value="1" label="MISSING_MAIN_EXECUTABLE"/>
+  <int value="2" label="MISSING_INFO_PLIST"/>
+  <int value="3" label="MISSING_MAIN_EXECUTABLE_AND_INFO_PLIST"/>
+</enum>
+
+<!-- Generated from macOS 14 SDK: <sys/errno.h> -->
+
+<enum name="MacErrno">
+  <int value="0" label="OK"/>
+  <int value="1" label="EPERM"/>
+  <int value="2" label="ENOENT"/>
+  <int value="3" label="ESRCH"/>
+  <int value="4" label="EINTR"/>
+  <int value="5" label="EIO"/>
+  <int value="6" label="ENXIO"/>
+  <int value="7" label="E2BIG"/>
+  <int value="8" label="ENOEXEC"/>
+  <int value="9" label="EBADF"/>
+  <int value="10" label="ECHILD"/>
+  <int value="11" label="EDEADLK"/>
+  <int value="12" label="ENOMEM"/>
+  <int value="13" label="EACCES"/>
+  <int value="14" label="EFAULT"/>
+  <int value="15" label="ENOTBLK"/>
+  <int value="16" label="EBUSY"/>
+  <int value="17" label="EEXIST"/>
+  <int value="18" label="EXDEV"/>
+  <int value="19" label="ENODEV"/>
+  <int value="20" label="ENOTDIR"/>
+  <int value="21" label="EISDIR"/>
+  <int value="22" label="EINVAL"/>
+  <int value="23" label="ENFILE"/>
+  <int value="24" label="EMFILE"/>
+  <int value="25" label="ENOTTY"/>
+  <int value="26" label="ETXTBSY"/>
+  <int value="27" label="EFBIG"/>
+  <int value="28" label="ENOSPC"/>
+  <int value="29" label="ESPIPE"/>
+  <int value="30" label="EROFS"/>
+  <int value="31" label="EMLINK"/>
+  <int value="32" label="EPIPE"/>
+  <int value="33" label="EDOM"/>
+  <int value="34" label="ERANGE"/>
+  <int value="35" label="EAGAIN"/>
+  <int value="36" label="EINPROGRESS"/>
+  <int value="37" label="EALREADY"/>
+  <int value="38" label="ENOTSOCK"/>
+  <int value="39" label="EDESTADDRREQ"/>
+  <int value="40" label="EMSGSIZE"/>
+  <int value="41" label="EPROTOTYPE"/>
+  <int value="42" label="ENOPROTOOPT"/>
+  <int value="43" label="EPROTONOSUPPORT"/>
+  <int value="44" label="ESOCKTNOSUPPORT"/>
+  <int value="45" label="ENOTSUP"/>
+  <int value="46" label="EPFNOSUPPORT"/>
+  <int value="47" label="EAFNOSUPPORT"/>
+  <int value="48" label="EADDRINUSE"/>
+  <int value="49" label="EADDRNOTAVAIL"/>
+  <int value="50" label="ENETDOWN"/>
+  <int value="51" label="ENETUNREACH"/>
+  <int value="52" label="ENETRESET"/>
+  <int value="53" label="ECONNABORTED"/>
+  <int value="54" label="ECONNRESET"/>
+  <int value="55" label="ENOBUFS"/>
+  <int value="56" label="EISCONN"/>
+  <int value="57" label="ENOTCONN"/>
+  <int value="58" label="ESHUTDOWN"/>
+  <int value="59" label="ETOOMANYREFS"/>
+  <int value="60" label="ETIMEDOUT"/>
+  <int value="61" label="ECONNREFUSED"/>
+  <int value="62" label="ELOOP"/>
+  <int value="63" label="ENAMETOOLONG"/>
+  <int value="64" label="EHOSTDOWN"/>
+  <int value="65" label="EHOSTUNREACH"/>
+  <int value="66" label="ENOTEMPTY"/>
+  <int value="67" label="EPROCLIM"/>
+  <int value="68" label="EUSERS"/>
+  <int value="69" label="EDQUOT"/>
+  <int value="70" label="ESTALE"/>
+  <int value="71" label="EREMOTE"/>
+  <int value="72" label="EBADRPC"/>
+  <int value="73" label="ERPCMISMATCH"/>
+  <int value="74" label="EPROGUNAVAIL"/>
+  <int value="75" label="EPROGMISMATCH"/>
+  <int value="76" label="EPROCUNAVAIL"/>
+  <int value="77" label="ENOLCK"/>
+  <int value="78" label="ENOSYS"/>
+  <int value="79" label="EFTYPE"/>
+  <int value="80" label="EAUTH"/>
+  <int value="81" label="ENEEDAUTH"/>
+  <int value="82" label="EPWROFF"/>
+  <int value="83" label="EDEVERR"/>
+  <int value="84" label="EOVERFLOW"/>
+  <int value="85" label="EBADEXEC"/>
+  <int value="86" label="EBADARCH"/>
+  <int value="87" label="ESHLIBVERS"/>
+  <int value="88" label="EBADMACHO"/>
+  <int value="89" label="ECANCELED"/>
+  <int value="90" label="EIDRM"/>
+  <int value="91" label="ENOMSG"/>
+  <int value="92" label="EILSEQ"/>
+  <int value="93" label="ENOATTR"/>
+  <int value="94" label="EBADMSG"/>
+  <int value="95" label="EMULTIHOP"/>
+  <int value="96" label="ENODATA"/>
+  <int value="97" label="ENOLINK"/>
+  <int value="98" label="ENOSR"/>
+  <int value="99" label="ENOSTR"/>
+  <int value="100" label="EPROTO"/>
+  <int value="101" label="ETIME"/>
+  <int value="102" label="EOPNOTSUPP"/>
+  <int value="103" label="ENOPOLICY"/>
+  <int value="104" label="ENOTRECOVERABLE"/>
+  <int value="105" label="EOWNERDEAD"/>
+  <int value="106" label="EQFULL"/>
+</enum>
+
+<enum name="MacFileSystemType">
+  <int value="0" label="HFS+"/>
+  <int value="1" label="APFS"/>
+  <int value="2" label="OTHER"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

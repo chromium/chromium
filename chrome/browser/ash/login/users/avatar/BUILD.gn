@@ -1,0 +1,171 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("avatar") {
+  sources = [
+    "user_image_file_selector.cc",
+    "user_image_file_selector.h",
+    "user_image_loader.cc",
+    "user_image_loader.h",
+    "user_image_loader_delegate.h",
+    "user_image_loader_delegate_impl.cc",
+    "user_image_loader_delegate_impl.h",
+    "user_image_manager_impl.cc",
+    "user_image_manager_impl.h",
+    "user_image_manager_registry.cc",
+    "user_image_manager_registry.h",
+    "user_image_prefs.cc",
+    "user_image_prefs.h",
+    "user_image_sync_observer.cc",
+    "user_image_sync_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/image_decoder",
+    "//components/session_manager/core",
+    "//components/sync_preferences",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/gfx",
+    "//ui/shell_dialogs",
+    "//url",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/image_downloader",
+    "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
+    "//components/account_id",
+    "//components/policy:generated",
+    "//components/policy:policy_code_generate",
+    "//components/prefs",
+    "//components/user_manager:common",
+    "//google_apis",
+    "//ipc",
+    "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
+    "//services/data_decoder/public/mojom",
+    "//services/network/public/cpp",
+    "//skia",
+    "//ui/base",
+    "//ui/chromeos/resources",
+    "//ui/chromeos/strings",
+    "//ui/gfx/codec",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_user_image_file_selector.cc",
+    "fake_user_image_file_selector.h",
+    "mock_user_image_loader_delegate.cc",
+    "mock_user_image_loader_delegate.h",
+    "user_image_manager_test_util.cc",
+    "user_image_manager_test_util.h",
+  ]
+
+  public_deps = [
+    ":avatar",
+    "//base",
+    "//chrome/browser/image_decoder",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//testing/gmock",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  deps = [ "//skia" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "user_image_manager_browsertest.cc" ]
+
+  deps = [
+    ":avatar",
+    ":test_support",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/external_data:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/dbus/constants",
+    "//components/ownership",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//crypto",
+    "//google_apis",
+    "//net:test_support",
+    "//skia",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "user_image_loader_unittest.cc",
+    "user_image_manager_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":avatar",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

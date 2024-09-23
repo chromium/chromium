@@ -9,6 +9,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1192844206376121885">這會刪除 <ph name="ORIGIN" /> 儲存的所有資料和 Cookie。</translation>
 <translation id="1201402288615127009">繼續</translation>
+<translation id="1240190568154816272">Chrome 提示</translation>
 <translation id="1242008676835033345">嵌入至 <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1289742167380433257">Google 已將這個頁面的圖片進行最佳化處理，為你節省資料用量。</translation>
@@ -21,9 +22,9 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384959399684842514">已暫停下載</translation>
 <translation id="1415402041810619267">已截斷網址</translation>
-<translation id="1434873037477293673">價格下降資訊卡</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 個網站}other{<ph name="SITE_COUNT" /> 個網站}}</translation>
+<translation id="1500473259453106018">隱藏「分頁中的降價資訊」資訊卡</translation>
 <translation id="1510341833810331442">禁止網站將資料儲存到裝置</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1568470248891039841">你造訪的網站可能會嵌入其他網站的內容，例如圖片、廣告和文字。這些其他網站可要求你授予權限，在你瀏覽網站時使用與你相關的既有資訊。<ph name="BEGIN_LINK" />進一步瞭解嵌入的內容<ph name="END_LINK" /></translation>
@@ -31,7 +32,6 @@
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1633720957382884102">相關網站</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
-<translation id="1647582022260550163">確定要重設權限，並且清除 Cookie 和網站資料嗎？</translation>
 <translation id="1652197001188145583">如果啟用，網站就可以要求使用 NFC 裝置。如果停用，網站將無法使用 NFC 裝置。</translation>
 <translation id="1660204651932907780">允許網站播放音訊 (建議)</translation>
 <translation id="1677097821151855053">系統會使用 Cookie 和其他網站資料來記住你，以便將你登入帳戶或是提供個人化廣告等服務。如要管理所有網站的 Cookie，請查看<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />。</translation>
@@ -40,6 +40,7 @@
 <translation id="1743802530341753419">允許網站連線至裝置前，必須先詢問你 (建議)</translation>
 <translation id="1779089405699405702">影像解碼器</translation>
 <translation id="1785415724048343560">建議勾選以獲得最佳體驗</translation>
+<translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1818308510395330587">如要允許 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟攝影機。</translation>
 <translation id="1887786770086287077">這部裝置的位置資訊存取權已關閉。請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中予以開啟。</translation>
 <translation id="1915307458270490472">掛斷</translation>
@@ -69,7 +70,6 @@
 <translation id="2241587408274973373">新分頁資訊卡</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2253414712144136228">移除<ph name="NAME_OF_LIST_ITEM" /></translation>
-<translation id="2253989982043948086">{NUM_SELECTED,plural, =1{已封鎖 1 個網站}other{已封鎖 # 個網站}}</translation>
 <translation id="228293613124499805">你造訪的大多數網站可能會在裝置上儲存資料 (偏好設定或你與網站分享的資訊)，通常是為了改善使用體驗。建議你將這項設定保持開啟。</translation>
 <translation id="2289270750774289114">當網站要搜尋附近的藍牙裝置時，必須先詢問你 (建議)</translation>
 <translation id="2315043854645842844">作業系統不允許您在用戶端選取憑證。</translation>
@@ -93,10 +93,10 @@
 <translation id="2498359688066513246">說明與意見回饋</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2546283357679194313">Cookie 和網站資料</translation>
-<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{已封鎖 1 個 Cookie}other{已封鎖 # 個 Cookie}}</translation>
 <translation id="2570922361219980984">此外，這部裝置的位置資訊存取權已關閉。請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中予以開啟。</translation>
 <translation id="257931822824936280">已展開 - 按一下即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
+<translation id="2588271083332682494">使用分頁群組，分頁有條不紊</translation>
 <translation id="2597457036804169544">不要對網站套用深色主題</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
@@ -115,15 +115,14 @@
 <translation id="2891975107962658722">禁止特定網站將資料儲存到裝置</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="2910701580606108292">允許網站播放受保護的內容前，必須先詢問你</translation>
+<translation id="2918484639460781603">前往設定</translation>
 <translation id="2932883381142163287">檢舉濫用情形</translation>
 <translation id="2939338015096024043">如果啟用，網站就可以要求追蹤攝影機位置，並瞭解周遭環境動靜。如果停用，網站將無法追蹤攝影機位置，也無法瞭解周遭環境動靜。</translation>
 <translation id="2968755619301702150">憑證檢視器</translation>
 <translation id="2979365474350987274">限制使用第三方 Cookie</translation>
 <translation id="3008272652534848354">重設權限</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
-<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">允許特定網站使用第三方登入功能。</translation>
-<translation id="3082992102194421695">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3109724472072898302">已收合</translation>
 <translation id="3114012059975132928">影片播放器</translation>
@@ -135,7 +134,9 @@
 <translation id="3198916472715691905">儲存了 <ph name="STORAGE_AMOUNT" /> 的資料</translation>
 <translation id="321187648315454507">如要允許 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
 <translation id="3227137524299004712">麥克風</translation>
+<translation id="3232293466644486101">刪除瀏覽資料…</translation>
 <translation id="3242646949159196181">如果啟用，網站就可以播放音效。如果停用，網站將無法播放音效。</translation>
+<translation id="3273479183583863618">分頁中的降價資訊</translation>
 <translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
 <translation id="3285500645985761267">允許相關網站查看你在群組中的活動</translation>
 <translation id="3295019059349372795">第 11 章：奧茲國的翡翠城</translation>
@@ -149,6 +150,7 @@
 <translation id="3448554387819310837">如果啟用，網站就可以要求使用攝影機。如果停用，網站將無法使用攝影機。</translation>
 <translation id="3465378418721443318">{DAYS,plural, =1{Chrome 將於明天再次封鎖 Cookie}other{Chrome 將於 # 天後再次封鎖 Cookie}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> 底下的網站</translation>
+<translation id="3523447078673133727">禁止網站追蹤手勢</translation>
 <translation id="3536227077203206203">這次允許</translation>
 <translation id="3538390592868664640">禁止網站根據你的周遭環境建立 3D 地圖或追蹤攝影機位置</translation>
 <translation id="3544058026430919413">公司可定義網站群組，指定哪些網站能夠使用 Cookie 分享你在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
@@ -159,11 +161,13 @@
 <translation id="3600792891314830896">將播放音訊的網站設為靜音</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3628308229821498208">建議搜尋</translation>
+<translation id="3669841141196828854">{COUNT,plural, =1{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
 <translation id="3697164069658504920">如果啟用，網站就可以要求使用 USB 裝置。如果停用，網站將無法使用 USB 裝置。</translation>
 <translation id="3707034683772193706">你造訪的網站可將少量資訊儲存在 Chrome，主要用來證明你不是機器人</translation>
 <translation id="3721953990244350188">關閉並顯示下一個可執行的動作</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕觸兩下影片的左側或右側可跳過 10 秒</translation>
+<translation id="3779154269823594982">變更密碼</translation>
 <translation id="3797520601150691162">不要對特定網站套用深色主題</translation>
 <translation id="3803367742635802571">你造訪的網站可能無法正常運作</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>
@@ -174,30 +178,32 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3859306556332390985">快轉到特定的播放時間點</translation>
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
+<translation id="3905475044299942653">停止大量通知</translation>
 <translation id="3908288065506437185">在無痕模式中封鎖第三方 Cookie</translation>
+<translation id="3913461097001554748"><ph name="DOMAIN_URL" /> <ph name="SEPARATOR1" /> <ph name="DEVICE_NAME" /></translation>
 <translation id="3918378745482005425">某些功能可能無法運作，相關網站仍可使用第三方 Cookie。</translation>
+<translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
 <translation id="3955193568934677022">允許網站播放受保護的內容 (建議)</translation>
 <translation id="3967822245660637423">下載完成</translation>
-<translation id="3974105241379491420">網站可以要求使用與你相關的既有資訊</translation>
+<translation id="3974105241379491420">網站可以要求使用與你相關的已儲存網站資訊</translation>
 <translation id="3987993985790029246">複製連結</translation>
 <translation id="3991845972263764475">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：不明</translation>
-<translation id="3992684624889376114">為何顯示此頁</translation>
+<translation id="3992684624889376114">關於本頁</translation>
 <translation id="4002066346123236978">標題</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4149890623864272035">確定要刪除 Cookie 等所有本機資料，並重設這個網站的所有權限嗎？</translation>
 <translation id="4149994727733219643">使用簡易檢視模式查看網頁</translation>
 <translation id="4151930093518524179">預設縮放</translation>
 <translation id="4165986682804962316">網站設定</translation>
-<translation id="4169019654293892025">隱藏「<ph name="TITLE_OF_MODULE" />」</translation>
 <translation id="4169549551965910670">已連接至 USB 裝置</translation>
 <translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
 <translation id="4200726100658658164">開啟位置資訊設定</translation>
-<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> 來自「<ph name="FROM_DEVICE" />」</translation>
 <translation id="4226663524361240545">收到通知時裝置會震動</translation>
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4278390842282768270">允許</translation>
 <translation id="429312253194641664">一個網站正在播放媒體內容</translation>
 <translation id="42981349822642051">展開</translation>
+<translation id="4336219115486912529">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
 <translation id="4336566011000459927">Chrome 將於今天再次限制 Cookie</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 底下的所有網站</translation>
 <translation id="4402755511846832236">禁止網站取得這部裝置的使用狀態</translation>
@@ -213,17 +219,21 @@
 <translation id="4566417217121906555">將麥克風設為靜音</translation>
 <translation id="4570913071927164677">詳細資料</translation>
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解你的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。某些網站的功能可能無法運作。</translation>
+<translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4644713492825682049">刪除並重設</translation>
-<translation id="4645575059429386691">你的家長已停用這項功能</translation>
+<translation id="4645575059429386691">這個瀏覽器是由家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
+<translation id="4676059169848868271">如要讓 <ph name="APP_NAME" /> 使用手勢追蹤功能，請一併在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中開啟手勢追蹤。</translation>
 <translation id="4751476147751820511">動作或光源感應器</translation>
 <translation id="4755971844837804407">如果啟用，網站就可以向你顯示任何廣告。如果停用，網站將無法顯示誤導性或侵入式廣告。</translation>
 <translation id="4779083564647765204">縮放</translation>
+<translation id="4807122856660838973">開啟安全瀏覽功能</translation>
 <translation id="4811450222531576619">瞭解來源和主題</translation>
 <translation id="4836046166855586901">允許網站詢問你使用這部裝置的時間</translation>
 <translation id="483914009762354899">包括這個網域中的所有網站</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">系統必須先詢問你，才能允許網站使用你的虛擬實境裝置和資料 (建議設定)</translation>
+<translation id="4936863036653376783">你可以在「分頁群組」專區中查看所有裝置中的群組</translation>
 <translation id="4953688446973710931">如果啟用，網站就可以要求自動下載多個檔案。如果停用，網站將無法自動下載多個檔案。</translation>
 <translation id="4962975101802056554">撤銷裝置的所有權限</translation>
 <translation id="497421865427891073">往前</translation>
@@ -232,8 +242,11 @@
 <translation id="4994033804516042629">找不到任何聯絡人</translation>
 <translation id="4996978546172906250">分享方式：</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
+<translation id="5007392906805964215">查看</translation>
+<translation id="5014182796621173645">你曾在 <ph name="RECENCY" />造訪過這個分頁</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
+<translation id="5048841907079026162">管理瀏覽資料</translation>
 <translation id="5050380848339752099">這個網站即將退出無痕模式並與外部應用程式分享資訊。</translation>
 <translation id="5063480226653192405">用量</translation>
 <translation id="5091013926750941408">行動版網站</translation>
@@ -241,6 +254,7 @@
 <translation id="5091663350197390230">如果啟用，網站就可以使用 JavaScript。如果停用，網站將無法使用 JavaScript，</translation>
 <translation id="5099358668261120049">這會刪除 <ph name="ORIGIN" /> 或該網站在主畫面上的應用程式儲存的所有資料和 Cookie。</translation>
 <translation id="5100237604440890931">已收合 - 按一下即可展開。</translation>
+<translation id="5116239826668864748">你隨時可以輕觸訊息、文件或其他應用程式中的連結，使用 Chrome 開啟</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{開啟的分頁中有商品降價}other{開啟的分頁中有商品降價}}</translation>
 <translation id="5186036860380548585">選項位於畫面頂端</translation>
@@ -258,6 +272,7 @@
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告隱私權設定</translation>
+<translation id="5373874281522292782">系統會儲存你的分頁群組</translation>
 <translation id="5389626883706033615">已禁止網站要求使用與你相關的既有資訊</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
@@ -272,6 +287,7 @@
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5591840828808741583">已封鎖「<ph name="SITE_NAME" />」</translation>
+<translation id="5632485077360054581">顯示操作說明</translation>
 <translation id="5649053991847567735">自動下載</translation>
 <translation id="5668404140385795438">覆寫網站禁止放大的要求</translation>
 <translation id="5677928146339483299">已封鎖</translation>
@@ -282,12 +298,14 @@
 <translation id="5706552988683188916">如果這麼做，系統將刪除 <ph name="WEBSITE" /> 的 Cookie 及其他網站資料</translation>
 <translation id="5723967018671998714">已封鎖無痕模式中的第三方 Cookie</translation>
 <translation id="5740126560802162366">網站可將資料儲存到裝置</translation>
+<translation id="5750869797196646528">手勢追蹤</translation>
 <translation id="5771720122942595109">已封鎖「<ph name="PERMISSION_1" />」</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5844448279347999754">如果啟用，網站就可以要求查看已儲存到剪貼簿的文字和圖片。如果停用，網站將無法查看已儲存到剪貼簿的文字或圖片。</translation>
 <translation id="5853982612236235577">如果啟用，網站就可以要求傳送通知。如果停用，網站將無法傳送通知。</translation>
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5876056640971328065">暫停影片</translation>
+<translation id="5877248419911025165">收合所有要求</translation>
 <translation id="5884085660368669834">網站偏好設定</translation>
 <translation id="5887687176710214216">上次造訪日期：昨天</translation>
 <translation id="5916664084637901428">開啟</translation>
@@ -305,6 +323,7 @@
 <translation id="6064125863973209585">下載完成</translation>
 <translation id="6071501408666570960">系統可能會將你登出這個網站</translation>
 <translation id="6120483543004435978">如果啟用，網站就可以要求偵測你是否正在使用裝置。如果停用，網站將無法得知你是否正在使用裝置。</translation>
+<translation id="6140839633433422817">確定要重設權限，並且刪除 Cookie 和網站資料嗎？</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6171020522141473435">如果啟用，網站就可以要求使用藍牙裝置。如果停用，網站將無法使用藍牙裝置。</translation>
 <translation id="6177111841848151710">禁止目前的搜尋引擎存取位置資訊</translation>
@@ -338,14 +357,18 @@
 <translation id="6545864417968258051">藍牙掃描</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已封鎖「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="6554732001434021288">上次造訪日期：<ph name="NUM_DAYS" /> 天前</translation>
+<translation id="656065428026159829">顯示更多</translation>
 <translation id="6561560012278703671">使用低擾式通知 (禁止網站顯示通知，以免干擾)</translation>
 <translation id="6593061639179217415">電腦版網站</translation>
+<translation id="659938948789980540">{COUNT,plural, =1{已允許 <ph name="RWS_MEMBERS_COUNT" /> 個 <ph name="RWS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="RWS_MEMBERS_COUNT" /> 個 <ph name="RWS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
 <translation id="6653342741369270081">按下返回按鈕即可結束全螢幕模式。</translation>
+<translation id="6683865262523156564">這個網站所屬的群組可以查看你的活動。這是由 <ph name="RWS_OWNER" /> 定義的群組</translation>
 <translation id="6689172468748959065">個人資料相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
+<translation id="6709432001666529933">系統必須先詢問你，才能允許網站追蹤手勢 (建議選項)</translation>
 <translation id="6722828510648505498">封鎖身分識別服務的登入提示。</translation>
 <translation id="6746124502594467657">下移</translation>
 <translation id="6749077623962119521">要重設權限嗎？</translation>
@@ -353,12 +376,16 @@
 <translation id="6787751205395685251">選取用於 <ph name="SITE_NAME" /> 的選項</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6818926723028410516">選取項目</translation>
+<translation id="6838525730752203626">預設為使用 Chrome</translation>
+<translation id="6840760312327750441">如要將分頁加入群組，請輕觸並按住分頁，然後將其拖曳到其他分頁上。</translation>
 <translation id="6864395892908308021">這部裝置無法讀取 NFC</translation>
-<translation id="6867014948848323204">來自「<ph name="FROM_DEVICE" />」</translation>
+<translation id="6870169401250095575">隱藏「安全檢查」資訊卡</translation>
+<translation id="6900883974539674431">建立分頁群組後，系統會自動儲存群組，並同步到所有裝置</translation>
 <translation id="6912998170423641340">禁止網站讀取剪貼簿中的文字和圖片</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6950072572526089586">你造訪的網站可儲存使用者的活動資訊，協助正常運作，例如在網站上保持登入狀態或儲存購物車內的項目。網站通常會暫時在裝置上儲存這項資訊。</translation>
 <translation id="6965382102122355670">確定</translation>
+<translation id="6980861169612950611">要刪除網站資料嗎？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">無障礙設定</translation>
 <translation id="6992289844737586249">允許網站使用你的麥克風前，必須先詢問你 (建議)</translation>
 <translation id="7000754031042624318">已在 Android 設定中關閉</translation>
@@ -366,6 +393,7 @@
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已選取 1 個項目}other{已選取 # 個項目}}</translation>
+<translation id="708014373017851679">「<ph name="APP_NAME" />」版本過舊，請更新應用程式。</translation>
 <translation id="7087918508125750058">已選取 <ph name="ITEM_COUNT" /> 個項目。選項位於畫面頂端</translation>
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -385,6 +413,7 @@
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7368695150573390554">所有離線資料都會刪除</translation>
 <translation id="7383715096023715447">「<ph name="DOMAIN" />」的設定</translation>
+<translation id="7399802613464275309">安全檢查</translation>
 <translation id="7406113532070524618">你不必提供身分識別資訊或授權讓網站查看瀏覽記錄，這項設定也能完成驗證。不過，網站在驗證時，可能會分享少量資訊</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
@@ -396,11 +425,12 @@
 <translation id="7561196759112975576">一律使用</translation>
 <translation id="757524316907819857">禁止網站播放受保護的內容</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
-<translation id="7641339528570811325">清除瀏覽資料…</translation>
+<translation id="7617547684249261169">你可以刪除部分或全部的歷史記錄、Cookie、網站資料和其他資料</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">綠野仙蹤</translation>
 <translation id="7684642910516280563">不允許網站使用第三方 Cookie</translation>
+<translation id="7688240020069572972">隱藏 Chrome 提示資訊卡</translation>
 <translation id="7719367874908701697">頁面縮放</translation>
 <translation id="7759147511335618829">控制 MIDI 裝置及重設程式</translation>
 <translation id="7781829728241885113">昨天</translation>
@@ -416,10 +446,10 @@
 <translation id="7882806643839505685">允許特定網站播放音訊。</translation>
 <translation id="789180354981963912">在無痕模式中封鎖第三方 Cookie：</translation>
 <translation id="7940722705963108451">提醒我</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{在 <ph name="FPS_OWNER" /> 的網站群組中，有 <ph name="FPS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="FPS_OWNER" /> 的網站群組中，有 <ph name="FPS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7990211076305263060">如果啟用，網站就可以要求使用麥克風。如果停用，網站將無法使用麥克風。</translation>
 <translation id="8007176423574883786">已在這個裝置上關閉</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{隱藏「繼續使用這個分頁」資訊卡}other{隱藏「繼續使用這些分頁」資訊卡}}</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序依據：</translation>
 <translation id="8067883171444229417">播放影片</translation>
@@ -454,7 +484,7 @@
 <translation id="8441146129660941386">倒轉到特定的播放時間點</translation>
 <translation id="8444433999583714703">如要允許 <ph name="APP_NAME" /> 存取你的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟定位功能。</translation>
 <translation id="8447861592752582886">撤銷裝置權限</translation>
-<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{目前使用 1 個 Cookie}other{目前使用 # 個 Cookie}}</translation>
+<translation id="8473055640493819707">「<ph name="APP_NAME" />」版本過舊，請重新安裝應用程式。</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="848952951823693243">一律要求行動版網站</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
@@ -462,20 +492,20 @@
 <translation id="851751545965956758">禁止網站連線至裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8541410041357371550">這個網站會從 Chrome 中取得你的廣告主題，為你顯示更貼近需求的廣告</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="857943718398505171">已允許 (建議)</translation>
 <translation id="8609465669617005112">上移</translation>
 <translation id="8617611086246832542">如果啟用，系統將顯示網站的電腦檢視畫面。如果停用，系統將顯示網站的行動裝置檢視畫面。</translation>
 <translation id="8649036394979866943">Chrome 會限制大多數網站使用第三方 Cookie 追蹤瀏覽網站的使用者。前往設定頁面<ph name="BEGIN_LINK" />管理追蹤防護設定<ph name="END_LINK" />。</translation>
+<translation id="8676316391139423634">開啟後，網站可以要求追蹤你的手勢。如果關閉，網站就無法追蹤你的手勢。</translation>
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的侵入式廣告或誤導性廣告</translation>
 <translation id="868929229000858085">搜尋聯絡人</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
+<translation id="8715862698998036666">從頂端向下拖曳並向右側或左側滑動，即可退出全螢幕模式。</translation>
 <translation id="8719283222052720129">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>
 <translation id="8721719390026067591">如果啟用，網站就可以要求尋找藍牙裝置。如果停用，網站將無法尋找藍牙裝置。</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8730621377337864115">完成</translation>
-<translation id="8736193154595564524">{NUM_SELECTED,plural, =1{已允許 1 個網站}other{已允許 # 個網站}}</translation>
 <translation id="8751914237388039244">選取圖片</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8801436777607969138">封鎖特定網站的 JavaScript。</translation>
@@ -494,12 +524,12 @@
 <translation id="8959122750345127698">瀏覽的網址無法存取：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">系統會將你登出所有網站</translation>
+<translation id="8993853206419610596">展開所有要求</translation>
 <translation id="9002538116239926534">如果啟用，網站就可以在裝置上儲存資料。如果停用，網站將無法在裝置上儲存資料。</translation>
 <translation id="9011903857143958461">已允許「<ph name="SITE_NAME" />」</translation>
 <translation id="9019902583201351841">你的家長已停用這項功能</translation>
 <translation id="9039697262778250930">系統可能已將你登出這些網站</translation>
 <translation id="9074739597929991885">藍牙</translation>
-<translation id="9090268041676521955">這個網站所屬的群組可以查看你的活動。這是 <ph name="FPS_OWNER" /> 定義的群組</translation>
 <translation id="9106233582039520022">要刪除 Cookie 嗎？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>
@@ -507,5 +537,6 @@
 <translation id="9162462602695099906">這是危險網頁</translation>
 <translation id="930525582205581608">要清除這個網站的資料嗎？</translation>
 <translation id="947156494302904893">你造訪的網站可驗證你是真人，而不是機器人</translation>
+<translation id="959682366969460160">保持井然有序</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 </translationbundle>

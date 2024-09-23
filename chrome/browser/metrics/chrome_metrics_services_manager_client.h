@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
+#include "components/variations/synthetic_trial_registry.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"  // nogncheck
@@ -26,7 +27,6 @@ class MetricsStateManager;
 
 // Used only for testing.
 namespace internal {
-// TODO(crbug.com/1068796): Replace kMetricsReportingFeature with a better name.
 BASE_DECLARE_FEATURE(kMetricsReportingFeature);
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPostFREFixMetricsReportingFeature);
@@ -56,12 +56,12 @@ class ChromeMetricsServicesManagerClient
 
   // Determines if this client is eligible to send metrics. If they are, and
   // there was user consent, then metrics and crashes would be reported.
-  static bool IsClientInSample();
+  static bool IsClientInSampleForMetrics();
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   // Same as above, but specifically just for crash reporting.
-  static bool IsClientInSampleForCrash();
-#endif  // BUILDFLAG(IS_WIN)
+  static bool IsClientInSampleForCrashes();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
   // Gets the sample rate for in-sample clients. If the sample rate is not
   // defined, returns false, and |rate| is unchanged, otherwise returns true,
@@ -74,29 +74,25 @@ class ChromeMetricsServicesManagerClient
   void OnCrosSettingsCreated();
 #endif
 
-  // Accessor for the EnabledStateProvider instance used by this object.
-  const metrics::EnabledStateProvider& GetEnabledStateProviderForTesting();
+  // metrics_services_manager::MetricsServicesManagerClient:
+  std::unique_ptr<variations::VariationsService> CreateVariationsService(
+      variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
+  std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient(
+      variations::SyntheticTrialRegistry* synthetic_trial_registry) override;
+  metrics::MetricsStateManager* GetMetricsStateManager() override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  const metrics::EnabledStateProvider& GetEnabledStateProvider() override;
+  bool IsOffTheRecordSessionActive() override;
+#if BUILDFLAG(IS_WIN)
+  // On Windows, the client controls whether Crashpad can upload crash reports.
+  void UpdateRunningServices(bool may_record, bool may_upload) override;
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   // This is defined as a member class to get access to
   // ChromeMetricsServiceAccessor through ChromeMetricsServicesManagerClient's
   // friendship.
   class ChromeEnabledStateProvider;
-
-  // metrics_services_manager::MetricsServicesManagerClient:
-  std::unique_ptr<variations::VariationsService> CreateVariationsService()
-      override;
-  std::unique_ptr<metrics::MetricsServiceClient> CreateMetricsServiceClient()
-      override;
-  metrics::MetricsStateManager* GetMetricsStateManager() override;
-  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  bool IsMetricsReportingEnabled() override;
-  bool IsMetricsConsentGiven() override;
-  bool IsOffTheRecordSessionActive() override;
-#if BUILDFLAG(IS_WIN)
-  // On Windows, the client controls whether Crashpad can upload crash reports.
-  void UpdateRunningServices(bool may_record, bool may_upload) override;
-#endif  // BUILDFLAG(IS_WIN)
 
   // EnabledStateProvider to communicate if the client has consented to metrics
   // reporting, and if it's enabled.

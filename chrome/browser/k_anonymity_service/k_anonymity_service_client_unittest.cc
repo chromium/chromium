@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_client.h"
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -21,6 +22,7 @@
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/features.h"
@@ -34,6 +36,9 @@ namespace {
 
 class KAnonymityServiceClientTest : public testing::Test {
  public:
+  const std::string kId1ToJoinAndQuery = crypto::SHA256HashString("1");
+  const std::string kId2ToJoinAndQuery = crypto::SHA256HashString("2");
+
   KAnonymityServiceClientTest()
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()) {
   }
@@ -171,7 +176,7 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetFails) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1",
+  k_service.JoinSet(kId1ToJoinAndQuery,
 
                     base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_FALSE(result);
@@ -187,7 +192,7 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetSuccess) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1",
+  k_service.JoinSet(kId1ToJoinAndQuery,
 
                     base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_TRUE(result);
@@ -210,20 +215,23 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetRepeatedly) {
   base::RunLoop run_loop;
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
-    k_service.JoinSet("1", base::BindLambdaForTesting(
-                               [&callback_count, &run_loop, i](bool result) {
-                                 EXPECT_TRUE(result) << "iteration " << i;
-                                 callback_count++;
-                                 if (callback_count == 10)
-                                   run_loop.Quit();
-                               }));
+    k_service.JoinSet(kId1ToJoinAndQuery,
+                      base::BindLambdaForTesting(
+                          [&callback_count, &run_loop, i](bool result) {
+                            EXPECT_TRUE(result) << "iteration " << i;
+                            callback_count++;
+                            if (callback_count == 10) {
+                              run_loop.Quit();
+                            }
+                          }));
   }
   RespondWithTrustTokenNonUniqueUserID(2);
   RespondWithTrustTokenKeys(2);
   // The network layer doesn't actually get a token, so the fetcher requests one
   // every time.
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; i++) {
     RespondWithTrustTokenIssued(2);
+  }
   run_loop.Run();
   EXPECT_EQ(10, callback_count);
   CheckJoinSetHistogramActions(
@@ -238,12 +246,13 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetOneAtATime) {
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
     base::RunLoop run_loop;
-    k_service.JoinSet("1", base::BindLambdaForTesting(
-                               [&callback_count, &run_loop, i](bool result) {
-                                 EXPECT_TRUE(result) << "iteration " << i;
-                                 callback_count++;
-                                 run_loop.Quit();
-                               }));
+    k_service.JoinSet(kId1ToJoinAndQuery,
+                      base::BindLambdaForTesting(
+                          [&callback_count, &run_loop, i](bool result) {
+                            EXPECT_TRUE(result) << "iteration " << i;
+                            callback_count++;
+                            run_loop.Quit();
+                          }));
     if (i == 0) {
       RespondWithTrustTokenNonUniqueUserID(2);
       RespondWithTrustTokenKeys(2);
@@ -267,14 +276,16 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetFailureDropsAllRequests) {
   base::RunLoop run_loop;
   int callback_count = 0;
   for (int i = 0; i < 10; i++) {
-    k_service.JoinSet("1", base::BindLambdaForTesting(
-                               [&callback_count, &run_loop, i](bool result) {
-                                 EXPECT_FALSE(result) << "iteration " << i;
-                                 EXPECT_EQ(i, callback_count);
-                                 callback_count++;
-                                 if (callback_count == 10)
-                                   run_loop.Quit();
-                               }));
+    k_service.JoinSet(kId1ToJoinAndQuery,
+                      base::BindLambdaForTesting(
+                          [&callback_count, &run_loop, i](bool result) {
+                            EXPECT_FALSE(result) << "iteration " << i;
+                            EXPECT_EQ(i, callback_count);
+                            callback_count++;
+                            if (callback_count == 10) {
+                              run_loop.Quit();
+                            }
+                          }));
   }
   SimulateFailedResponseForPendingRequest(
       "https://chromekanonymityauth-pa.googleapis.com/v1/"
@@ -295,14 +306,16 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetOverflowQueue) {
   base::RunLoop run_loop;
   int callback_count = 0;
   for (int i = 0; i < 100; i++) {
-    k_service.JoinSet("1", base::BindLambdaForTesting(
-                               [&callback_count, &run_loop, i](bool result) {
-                                 EXPECT_TRUE(result) << "iteration " << i;
-                                 EXPECT_EQ(i + 1, callback_count);
-                                 callback_count++;
-                                 if (callback_count == 101)
-                                   run_loop.Quit();
-                               }));
+    k_service.JoinSet(kId1ToJoinAndQuery,
+                      base::BindLambdaForTesting(
+                          [&callback_count, &run_loop, i](bool result) {
+                            EXPECT_TRUE(result) << "iteration " << i;
+                            EXPECT_EQ(i + 1, callback_count);
+                            callback_count++;
+                            if (callback_count == 101) {
+                              run_loop.Quit();
+                            }
+                          }));
   }
   // Queue should be full, so the next request should fail (asynchronously, but
   // before any successes).
@@ -316,8 +329,9 @@ TEST_F(KAnonymityServiceClientTest, TryJoinSetOverflowQueue) {
   RespondWithTrustTokenKeys(2);
   // The network layer doesn't actually get a token, so the fetcher requests one
   // every time.
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 100; i++) {
     RespondWithTrustTokenIssued(2);
+  }
   run_loop.Run();
   EXPECT_EQ(0, GetNumPendingURLRequests());
   EXPECT_EQ(101, callback_count);
@@ -335,8 +349,8 @@ TEST_F(KAnonymityServiceClientTest, TryQuerySetFailed) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   std::vector<std::string> sets;
-  sets.push_back("1");
-  sets.push_back("2");
+  sets.push_back(kId1ToJoinAndQuery);
+  sets.push_back(kId2ToJoinAndQuery);
   k_service.QuerySets(
       std::move(sets),
       base::BindLambdaForTesting([&run_loop](std::vector<bool> result) {
@@ -355,8 +369,8 @@ TEST_F(KAnonymityServiceClientTest, TryQuerySetAllNotKAnon) {
   base::HistogramTester hist;
   base::RunLoop run_loop;
   std::vector<std::string> sets;
-  sets.push_back("1");
-  sets.push_back("2");
+  sets.push_back(kId1ToJoinAndQuery);
+  sets.push_back(kId2ToJoinAndQuery);
   k_service.QuerySets(
       std::move(sets),
       base::BindLambdaForTesting([&run_loop](std::vector<bool> result) {
@@ -412,8 +426,9 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
       override {
     EXPECT_FALSE(remote_.is_bound());
     remote_.reset();
-    if (drop_requests_)
+    if (drop_requests_) {
       return;
+    }
 
     remote_.Bind(std::move(client));
     EXPECT_EQ("binaryKeyInBase64", request->key_config);
@@ -579,7 +594,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetGetOHTTPKeyFailed) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1",
+  k_service.JoinSet(kId1ToJoinAndQuery,
 
                     base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_FALSE(result);
@@ -599,7 +614,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetSignedIn) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+  k_service.JoinSet(kId1ToJoinAndQuery,
+                    base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_TRUE(result);
                       run_loop.Quit();
                     }));
@@ -623,7 +639,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetNetworkDrop) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+  k_service.JoinSet(kId1ToJoinAndQuery,
+                    base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_FALSE(result);
                       run_loop.Quit();
                     }));
@@ -645,7 +662,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryJoinSetTokenAlreadyUsedOnce) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+  k_service.JoinSet(kId1ToJoinAndQuery,
+                    base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_TRUE(result);
                       run_loop.Quit();
                     }));
@@ -671,7 +689,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest,
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+  k_service.JoinSet(kId1ToJoinAndQuery,
+                    base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_FALSE(result);
                       run_loop.Quit();
                     }));
@@ -695,7 +714,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest,
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+  k_service.JoinSet(kId1ToJoinAndQuery,
+                    base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_FALSE(result);
                       run_loop.Quit();
                     }));
@@ -719,7 +739,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest,
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+  k_service.JoinSet(kId1ToJoinAndQuery,
+                    base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_FALSE(result);
                       run_loop.Quit();
                     }));
@@ -742,7 +763,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest,
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   base::RunLoop run_loop;
-  k_service.JoinSet("1", base::BindLambdaForTesting([&run_loop](bool result) {
+  k_service.JoinSet(kId1ToJoinAndQuery,
+                    base::BindLambdaForTesting([&run_loop](bool result) {
                       EXPECT_FALSE(result);
                       run_loop.Quit();
                     }));
@@ -767,7 +789,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetGetOHTTPKeyFailed) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   std::vector<std::string> sets;
-  sets.push_back("1");
+  sets.push_back(kId1ToJoinAndQuery);
   base::RunLoop run_loop;
   k_service.QuerySets(
       sets, base::BindLambdaForTesting([&run_loop](std::vector<bool> result) {
@@ -788,7 +810,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetBadResponse) {
   InitializeIdentity(true);
   base::HistogramTester hist;
   std::vector<std::string> sets;
-  sets.push_back("1");
+  sets.push_back(kId1ToJoinAndQuery);
 
   std::vector<std::string> bad_responses = {
       "",                              // empty
@@ -870,7 +892,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySet) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   std::vector<std::string> sets;
-  sets.push_back("1");
+  sets.push_back(kId1ToJoinAndQuery);
   base::RunLoop run_loop;
   k_service.QuerySets(
       sets, base::BindLambdaForTesting([&run_loop](std::vector<bool> result) {
@@ -901,8 +923,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetMultipleSets) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   std::vector<std::string> sets;
-  sets.push_back("1");
-  sets.push_back("2");
+  sets.push_back(kId1ToJoinAndQuery);
+  sets.push_back(kId2ToJoinAndQuery);
   base::RunLoop run_loop;
   k_service.QuerySets(sets,
                       base::BindLambdaForTesting([](std::vector<bool> result) {
@@ -918,7 +940,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetMultipleSets) {
         EXPECT_TRUE(result[1]);
       }));
   RespondWithQueryKey();
-  // The first response includes the hashes for "1" and "2".
+  // The first response includes the hashes for kId1ToJoinAndQuery and
+  // kId2ToJoinAndQuery.
   RespondWithQuery(R"({
     "kAnonymousSets": [{
        "type": "fledge",
@@ -928,7 +951,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetMultipleSets) {
           ]
       }]
     })");
-  // The second response only includes the hash for "2".
+  // The second response only includes the hash for kId2ToJoinAndQuery.
   RespondWithQuery(R"({
     "kAnonymousSets": [
       { "type": "fledge",
@@ -952,8 +975,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest, TryQuerySetCoalescesSplitSets) {
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   std::vector<std::string> sets;
-  sets.push_back("1");
-  sets.push_back("2");
+  sets.push_back(kId1ToJoinAndQuery);
+  sets.push_back(kId2ToJoinAndQuery);
   base::RunLoop run_loop;
   k_service.QuerySets(
       sets, base::BindLambdaForTesting([&run_loop](std::vector<bool> result) {
@@ -993,8 +1016,8 @@ TEST_F(KAnonymityServiceClientJoinQueryTest,
   KAnonymityServiceClient k_service(profile());
   base::HistogramTester hist;
   std::vector<std::string> sets;
-  sets.push_back("1");
-  sets.push_back("2");
+  sets.push_back(kId1ToJoinAndQuery);
+  sets.push_back(kId2ToJoinAndQuery);
   base::RunLoop run_loop;
   int callback_count = 0;
   k_service.QuerySets(
@@ -1031,7 +1054,7 @@ TEST_F(KAnonymityServiceClientJoinQueryTest,
        DISABLED_StorageDoesNotPersistWhenOffTheRecord) {
   CreateOffTheRecordProfile();
   std::vector<std::string> sets;
-  sets.push_back("1");
+  sets.push_back(kId1ToJoinAndQuery);
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/false);
   ASSERT_TRUE(otr_profile);

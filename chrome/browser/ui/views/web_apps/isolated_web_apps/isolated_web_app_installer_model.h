@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -55,13 +56,13 @@ class IsolatedWebAppInstallerModel {
                                ConfirmInstallationDialog,
                                InstallationFailedDialog>;
 
-  explicit IsolatedWebAppInstallerModel(const base::FilePath& bundle_path);
+  explicit IsolatedWebAppInstallerModel(const IwaSourceBundleWithMode& source);
   ~IsolatedWebAppInstallerModel();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  const base::FilePath& bundle_path() { return bundle_path_; }
+  const IwaSourceBundleWithMode& source() { return source_; }
 
   void SetStep(Step step);
   Step step() { return step_; }
@@ -76,7 +77,7 @@ class IsolatedWebAppInstallerModel {
 
  private:
   base::ObserverList<Observer> observers_;
-  base::FilePath bundle_path_;
+  IwaSourceBundleWithMode source_;
   Step step_;
   std::optional<SignedWebBundleMetadata> bundle_metadata_;
   std::optional<Dialog> dialog_;

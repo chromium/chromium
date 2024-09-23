@@ -13,10 +13,10 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/cookies/cookies_api_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +39,9 @@ namespace GetAll = extensions::api::cookies::GetAll;
 namespace extensions {
 
 namespace {
+
+constexpr char kIdKey[] = "id";
+constexpr char kTabIdsKey[] = "tabIds";
 
 void AppendCookieToVectorIfMatchAndHasHostPermission(
     const net::CanonicalCookie cookie,
@@ -136,14 +139,16 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
   cookie.store_id = store_id;
 
   if (canonical_cookie.PartitionKey()) {
-    CHECK(canonical_cookie.PartitionKey()->IsSerializeable());
-    std::string top_level_site;
-    CHECK_EQ(base::FeatureList::IsEnabled(net::features::kPartitionedCookies),
-             net::CookiePartitionKey::Serialize(canonical_cookie.PartitionKey(),
-                                                top_level_site));
-
+    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_partition_key =
+            net::CookiePartitionKey::Serialize(canonical_cookie.PartitionKey());
+    CHECK(serialized_partition_key.has_value());
     cookie.partition_key = extensions::api::cookies::CookiePartitionKey();
-    cookie.partition_key->top_level_site = top_level_site;
+    cookie.partition_key->top_level_site =
+        serialized_partition_key->TopLevelSite();
+    cookie.partition_key->has_cross_site_ancestor =
+        serialized_partition_key->has_cross_site_ancestor();
   }
   return cookie;
 }
@@ -151,8 +156,8 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
 CookieStore CreateCookieStore(Profile* profile, base::Value::List tab_ids) {
   DCHECK(profile);
   base::Value::Dict dict;
-  dict.Set(cookies_api_constants::kIdKey, GetStoreIdFromProfile(profile));
-  dict.Set(cookies_api_constants::kTabIdsKey, std::move(tab_ids));
+  dict.Set(kIdKey, GetStoreIdFromProfile(profile));
+  dict.Set(kTabIdsKey, std::move(tab_ids));
 
   auto cookie_store = CookieStore::FromValue(dict);
   CHECK(cookie_store);
@@ -213,29 +218,149 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
   }
 }
 
-void AppendToTabIdList(Browser* browser, base::Value::List& tab_ids) {
-  DCHECK(browser);
-  TabStripModel* tab_strip = browser->tab_strip_model();
-  for (int i = 0; i < tab_strip->count(); ++i) {
-    tab_ids.Append(ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
+void AppendToTabIdList(WindowController* window, base::Value::List& tab_ids) {
+  for (int i = 0; i < window->GetTabCount(); ++i) {
+    tab_ids.Append(ExtensionTabUtil::GetTabId(window->GetWebContentsAt(i)));
   }
 }
 
-bool ValidateCookieApiPartitionKey(
+base::expected<bool, std::string> CalculateHasCrossSiteAncestor(
+    const std::string& url_string,
+    std::optional<extensions::api::cookies::CookiePartitionKey>&
+        partition_key) {
+  // Can not calculate hasCrossSiteAncestor for a key that is not present or
+  // does not have a top_level_site.
+  CHECK(partition_key.has_value() ||
+        !partition_key->top_level_site.has_value());
+
+  if (partition_key->has_cross_site_ancestor.has_value()) {
+    return base::ok(partition_key->has_cross_site_ancestor.value());
+  }
+
+  // Empty top_level_site indicates an unpartitioned cookie which always has a
+  // hasCrossSiteAncestor of false.
+  if (partition_key->top_level_site.value().empty()) {
+    return base::ok(false);
+  }
+
+  GURL url = GURL(url_string);
+  if (!url.is_valid()) {
+    return base::unexpected("Invalid url_string.");
+  }
+
+  GURL top_level_site = GURL(partition_key->top_level_site.value());
+  if (!top_level_site.is_valid()) {
+    return base::unexpected(
+        "Invalid value for CookiePartitionKey.topLevelSite.");
+  }
+
+  return !net::SiteForCookies::FromUrl(url).IsFirstParty(top_level_site);
+}
+
+bool ValidateCrossSiteAncestor(
+    const std::string& url_string,
     const std::optional<extensions::api::cookies::CookiePartitionKey>&
         partition_key,
-    std::optional<net::CookiePartitionKey>& net_partition_key,
-    std::string& error_message) {
-  if (partition_key &&
-      base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
-    if (partition_key->top_level_site &&
-        !net::CookiePartitionKey::Deserialize(
-            partition_key->top_level_site.value(), net_partition_key)) {
-      error_message = "Invalid format for partitionKey.topLevelSite.";
+    std::string* error_out) {
+  // Unpartitioned cookie has no value to validate.
+  if (!partition_key.has_value()) {
+    return true;
+  }
+
+  // A has_cross_site_ancestor value cannot be valid without a top_level_site.
+  if (!partition_key->top_level_site.has_value()) {
+    if (partition_key->has_cross_site_ancestor.has_value()) {
+      *error_out =
+          "CookiePartitionKey.topLevelSite is not present when "
+          "CookiePartitionKey.hasCrossSiteAncestor is present.";
       return false;
     }
+    return true;
+  }
+
+  // Empty top_level_site indicates an unpartitioned cookie which must have a
+  // value of false.
+  if (partition_key->top_level_site.value().empty()) {
+    if (partition_key->has_cross_site_ancestor.has_value() &&
+        partition_key->has_cross_site_ancestor.value()) {
+      *error_out = "CookiePartitionKey.hasCrossSiteAncestor is invalid.";
+      return false;
+    }
+    return true;
+  }
+
+  if (!partition_key->has_cross_site_ancestor.has_value()) {
+    *error_out =
+        "Can not validate an empty value for "
+        "hasCrossSiteAncestor.";
+    return false;
+  }
+
+  GURL url = GURL(url_string);
+  if (!url.is_valid()) {
+    *error_out = "Invalid url_string.";
+    return false;
+  }
+
+  GURL top_level_site = GURL(partition_key->top_level_site.value());
+  if (!top_level_site.is_valid()) {
+    *error_out = "Invalid value for CookiePartitionKey.topLevelSite.";
+    return false;
+  }
+
+  // has_cross_site_ancestor can not be false if url and top_level_site aren't
+  // first party.
+  if (!net::SiteForCookies::FromUrl(GURL(url)).IsFirstParty(top_level_site) &&
+      !partition_key->has_cross_site_ancestor.value()) {
+    *error_out =
+        "partitionKey has a first party value for hasCrossSiteAncestor "
+        "when the url and the topLevelSite are not first party.";
+    return false;
   }
   return true;
+}
+
+base::expected<std::optional<net::CookiePartitionKey>, std::string>
+ToNetCookiePartitionKey(
+    const std::optional<extensions::api::cookies::CookiePartitionKey>&
+        partition_key) {
+  if (!partition_key.has_value()) {
+    return std::nullopt;
+  }
+
+  if (!partition_key->top_level_site.has_value()) {
+    if (partition_key->has_cross_site_ancestor.has_value()) {
+      return base::unexpected(
+          "CookiePartitionKey.topLevelSite unexpectedly not present.");
+    }
+    return base::ok(std::nullopt);
+  }
+
+  if (partition_key->top_level_site->empty()) {
+    if (partition_key->has_cross_site_ancestor.has_value() &&
+        partition_key->has_cross_site_ancestor.value()) {
+      return base::unexpected(
+          "partitionKey with empty topLevelSite unexpectedly has a cross-site "
+          "ancestor value of true.");
+    }
+    return base::ok(std::nullopt);
+  }
+
+  base::expected<net::CookiePartitionKey, std::string> key =
+      net::CookiePartitionKey::FromUntrustedInput(
+          partition_key->top_level_site.value(),
+          partition_key->has_cross_site_ancestor.value_or(true));
+  if (!key.has_value()) {
+    return base::unexpected(key.error());
+  }
+
+  // Record 'well formatted' uma here so that we count only coercible
+  // partition keys.
+  base::UmaHistogramBoolean(
+      "Extensions.CookieAPIPartitionKeyWellFormatted",
+      net::SchemefulSite::Deserialize(partition_key->top_level_site.value())
+              .Serialize() == partition_key->top_level_site.value());
+  return key;
 }
 
 bool CookieMatchesPartitionKeyCollection(
@@ -251,12 +376,17 @@ bool CookieMatchesPartitionKeyCollection(
 bool CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
     const std::optional<extensions::api::cookies::CookiePartitionKey>&
         api_partition_key,
-    const absl::optional<net::CookiePartitionKey>& net_partition_key) {
-  if (!api_partition_key.has_value()) {
-    return !net_partition_key.has_value();
+    const std::optional<net::CookiePartitionKey>& net_partition_key) {
+  if (!net_partition_key.has_value()) {
+    // Check to see if the api_partition_key is also unpartitioned.
+    return !api_partition_key.has_value() ||
+           !api_partition_key->top_level_site.has_value() ||
+           api_partition_key.value().top_level_site.value().empty();
   }
 
-  if (!net_partition_key.has_value()) {
+  if (api_partition_key->has_cross_site_ancestor.has_value() &&
+      net_partition_key->IsThirdParty() !=
+          api_partition_key->has_cross_site_ancestor.value()) {
     return false;
   }
 
@@ -266,11 +396,17 @@ bool CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
     return false;
   }
 
-  std::string serialized_net_partition_key;
-  return net::CookiePartitionKey::Serialize(net_partition_key,
-                                            serialized_net_partition_key) &&
-         serialized_net_partition_key ==
-             api_partition_key->top_level_site.value();
+  base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                 std::string>
+      net_serialized_result =
+          net::CookiePartitionKey::Serialize(net_partition_key);
+
+  if (!net_serialized_result.has_value()) {
+    return false;
+  }
+
+  return net_serialized_result->TopLevelSite() ==
+         api_partition_key->top_level_site.value();
 }
 
 net::CookiePartitionKeyCollection
@@ -285,13 +421,25 @@ CookiePartitionKeyCollectionFromApiPartitionKey(
     return net::CookiePartitionKeyCollection::ContainsAll();
   }
 
-  std::optional<net::CookiePartitionKey> net_partition_key;
-  if (!net::CookiePartitionKey::Deserialize(
-          partition_key->top_level_site.value(), net_partition_key)) {
+  if (partition_key->top_level_site.value().empty()) {
     return net::CookiePartitionKeyCollection();
   }
 
-  return net::CookiePartitionKeyCollection::FromOptional(net_partition_key);
+  if (!partition_key->has_cross_site_ancestor.has_value()) {
+    return net::CookiePartitionKeyCollection::MatchesSite(
+        net::SchemefulSite(GURL(partition_key->top_level_site.value())));
+  }
+
+  base::expected<net::CookiePartitionKey, std::string> net_partition_key =
+      net::CookiePartitionKey::FromUntrustedInput(
+          partition_key->top_level_site.value(),
+          partition_key->has_cross_site_ancestor.value());
+  if (!net_partition_key.has_value()) {
+    return net::CookiePartitionKeyCollection();
+  }
+
+  return net::CookiePartitionKeyCollection::FromOptional(
+      net_partition_key.value());
 }
 
 MatchFilter::MatchFilter(GetAll::Params::Details* details) : details_(details) {

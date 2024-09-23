@@ -9,9 +9,9 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
-#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/message_center_utils.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/notification_center/views/notification_list_view.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -20,7 +20,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -188,13 +187,16 @@ class NotificationGroupingControllerTest : public AshTestBase {
 
   void GenerateSwipe(int swipe_amount,
                      views::SlideOutController* slide_out_controller) {
-    GenerateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN),
-                         slide_out_controller);
     GenerateGestureEvent(
-        ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, swipe_amount, 0),
+        ui::GestureEventDetails(ui::EventType::kGestureScrollBegin),
         slide_out_controller);
-    GenerateGestureEvent(ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END),
-                         slide_out_controller);
+    GenerateGestureEvent(
+        ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate,
+                                swipe_amount, 0),
+        slide_out_controller);
+    GenerateGestureEvent(
+        ui::GestureEventDetails(ui::EventType::kGestureScrollEnd),
+        slide_out_controller);
   }
 
   views::SlideOutController* GetSlideOutController(AshNotificationView* view) {
@@ -395,7 +397,7 @@ TEST_F(NotificationGroupingControllerTest, ParentNotificationMetadata) {
   notification->set_accent_color_id(ui::kColorAshSystemUIMenuIcon);
   notification->set_accent_color(SK_ColorRED);
   notification->set_parent_vector_small_image(icon);
-  notification->set_small_image(small_image);
+  notification->SetSmallImage(small_image);
   notification->set_display_source(display_source0);
   message_center->AddNotification(std::move(notification));
 
@@ -565,10 +567,6 @@ TEST_F(NotificationGroupingControllerTest,
 // the center of the screen. Also, tests that the correct notifications are
 // dismissed by swiping in the expanded state.
 TEST_F(NotificationGroupingControllerTest, NotificationSwipeGestureBehavior) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      ::features::kNotificationGesturesUpdate);
-
   auto* message_center = MessageCenter::Get();
   std::string parent_id, id0, id1, id2, id3;
   const GURL url(u"http://test-url.com/");

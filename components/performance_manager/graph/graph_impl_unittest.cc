@@ -4,6 +4,9 @@
 
 #include "components/performance_manager/graph/graph_impl.h"
 
+#include <string_view>
+
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -22,7 +25,7 @@ namespace performance_manager {
 
 using GraphImplTest = GraphTestHarness;
 
-using ::testing::UnorderedElementsAreArray;
+using ::testing::ElementsAreArray;
 
 TEST_F(GraphImplTest, SafeCasting) {
   const Graph* graph_base = graph();
@@ -90,172 +93,74 @@ TEST_F(GraphImplTest, PIDReuse) {
 TEST_F(GraphImplTest, GetAllCUsByType) {
   MockMultiplePagesInSingleProcessGraph mock_graph(graph());
 
-  std::vector<ProcessNodeImpl*> processes = graph()->GetAllProcessNodeImpls();
+  std::vector<ProcessNodeImpl*> processes =
+      graph()->GetAllProcessNodeImpls().AsVector();
 
   // Graph contains a browser process and 1 renderer process.
   ASSERT_EQ(2u, processes.size());
   EXPECT_NE(nullptr, processes[0]);
   EXPECT_NE(nullptr, processes[1]);
 
-  std::vector<FrameNodeImpl*> frames = graph()->GetAllFrameNodeImpls();
+  std::vector<FrameNodeImpl*> frames =
+      graph()->GetAllFrameNodeImpls().AsVector();
   ASSERT_EQ(2u, frames.size());
   EXPECT_NE(nullptr, frames[0]);
   EXPECT_NE(nullptr, frames[1]);
 
-  std::vector<PageNodeImpl*> pages = graph()->GetAllPageNodeImpls();
+  std::vector<PageNodeImpl*> pages = graph()->GetAllPageNodeImpls().AsVector();
   ASSERT_EQ(2u, pages.size());
   EXPECT_NE(nullptr, pages[0]);
   EXPECT_NE(nullptr, pages[1]);
 }
 
-TEST_F(GraphImplTest, Visitors) {
+TEST_F(GraphImplTest, GetAllNodes) {
+  // This mock graphs contains 2 pages with 2 main frames in a single process.
+  // There is a total of 2 process nodes because of the browser process node.
   MockMultiplePagesInSingleProcessGraph mock_graph(graph());
 
-  std::vector<const FrameNode*> visited_frame_nodes;
-  EXPECT_EQ(true, graph()->VisitAllFrameNodes([&](const FrameNode* node) {
-    visited_frame_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_frame_nodes,
-              UnorderedElementsAreArray(graph()->GetAllFrameNodes()));
+  // 1 renderer and 1 browser process.
+  auto process_nodes = graph()->GetAllProcessNodes().AsVector();
+  EXPECT_EQ(process_nodes.size(), 2u);
+  EXPECT_TRUE(base::Contains(process_nodes, mock_graph.process.get()));
 
-  std::vector<const PageNode*> visited_page_nodes;
-  EXPECT_EQ(true, graph()->VisitAllPageNodes([&](const PageNode* node) {
-    visited_page_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_page_nodes,
-              UnorderedElementsAreArray(graph()->GetAllPageNodes()));
+  // 2 pages.
+  EXPECT_THAT(graph()->GetAllPageNodes().AsVector(),
+              ::testing::UnorderedElementsAre(mock_graph.page.get(),
+                                              mock_graph.other_page.get()));
 
-  std::vector<const ProcessNode*> visited_process_nodes;
-  EXPECT_EQ(true, graph()->VisitAllProcessNodes([&](const ProcessNode* node) {
-    visited_process_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_process_nodes,
-              UnorderedElementsAreArray(graph()->GetAllProcessNodes()));
+  // 2 frames.
+  EXPECT_THAT(graph()->GetAllFrameNodes().AsVector(),
+              ::testing::UnorderedElementsAre(mock_graph.frame.get(),
+                                              mock_graph.other_frame.get()));
 
-  std::vector<const WorkerNode*> visited_worker_nodes;
-  EXPECT_EQ(true, graph()->VisitAllWorkerNodes([&](const WorkerNode* node) {
-    visited_worker_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_worker_nodes,
-              UnorderedElementsAreArray(graph()->GetAllWorkerNodes()));
-
-  size_t visited_nodes = 0;
-  EXPECT_EQ(false, graph()->VisitAllFrameNodes([&](const FrameNode*) {
-    ++visited_nodes;
-    return false;
-  }));
-  EXPECT_EQ(false, graph()->VisitAllPageNodes([&](const PageNode*) {
-    ++visited_nodes;
-    return false;
-  }));
-  EXPECT_EQ(false, graph()->VisitAllProcessNodes([&](const ProcessNode*) {
-    ++visited_nodes;
-    return false;
-  }));
-  // There are no worker nodes, so the visitor never runs.
-  EXPECT_EQ(true, graph()->VisitAllWorkerNodes([&](const WorkerNode*) {
-    ++visited_nodes;
-    return false;
-  }));
-  // Visited one node of each type except workers.
-  EXPECT_EQ(visited_nodes, 3u);
+  // No workers.
+  EXPECT_THAT(graph()->GetAllWorkerNodes().AsVector(),
+              ::testing::UnorderedElementsAre());
 }
 
-TEST_F(GraphImplTest, ImplVisitors) {
+TEST_F(GraphImplTest, GetAllNodeImpls) {
+  // This mock graphs contains 2 pages with 2 main frames in a single process.
+  // There is a total of 2 process nodes because of the browser process node.
   MockMultiplePagesInSingleProcessGraph mock_graph(graph());
 
-  std::vector<FrameNodeImpl*> visited_frame_nodes;
-  EXPECT_EQ(true, graph()->VisitAllFrameNodeImpls([&](FrameNodeImpl* node) {
-    visited_frame_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_frame_nodes,
-              UnorderedElementsAreArray(graph()->GetAllFrameNodeImpls()));
+  // 1 renderer and 1 browser process.
+  auto process_nodes = graph()->GetAllProcessNodeImpls().AsVector();
+  EXPECT_EQ(process_nodes.size(), 2u);
+  EXPECT_TRUE(base::Contains(process_nodes, mock_graph.process.get()));
 
-  std::vector<PageNodeImpl*> visited_page_nodes;
-  EXPECT_EQ(true, graph()->VisitAllPageNodeImpls([&](PageNodeImpl* node) {
-    visited_page_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_page_nodes,
-              UnorderedElementsAreArray(graph()->GetAllPageNodeImpls()));
+  // 2 pages.
+  EXPECT_THAT(graph()->GetAllPageNodeImpls().AsVector(),
+              ::testing::UnorderedElementsAre(mock_graph.page.get(),
+                                              mock_graph.other_page.get()));
 
-  std::vector<ProcessNodeImpl*> visited_process_nodes;
-  EXPECT_EQ(true, graph()->VisitAllProcessNodeImpls([&](ProcessNodeImpl* node) {
-    visited_process_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_process_nodes,
-              UnorderedElementsAreArray(graph()->GetAllProcessNodeImpls()));
+  // 2 frames.
+  EXPECT_THAT(graph()->GetAllFrameNodeImpls().AsVector(),
+              ::testing::UnorderedElementsAre(mock_graph.frame.get(),
+                                              mock_graph.other_frame.get()));
 
-  std::vector<WorkerNodeImpl*> visited_worker_nodes;
-  EXPECT_EQ(true, graph()->VisitAllWorkerNodeImpls([&](WorkerNodeImpl* node) {
-    visited_worker_nodes.push_back(node);
-    return true;
-  }));
-  EXPECT_THAT(visited_worker_nodes,
-              UnorderedElementsAreArray(graph()->GetAllWorkerNodeImpls()));
-
-  size_t visited_nodes = 0;
-  EXPECT_EQ(false, graph()->VisitAllFrameNodeImpls([&](FrameNodeImpl*) {
-    ++visited_nodes;
-    return false;
-  }));
-  EXPECT_EQ(false, graph()->VisitAllPageNodeImpls([&](PageNodeImpl*) {
-    ++visited_nodes;
-    return false;
-  }));
-  EXPECT_EQ(false, graph()->VisitAllProcessNodeImpls([&](ProcessNodeImpl*) {
-    ++visited_nodes;
-    return false;
-  }));
-  // There are no worker nodes, so the visitor never runs.
-  EXPECT_EQ(true, graph()->VisitAllWorkerNodeImpls([&](WorkerNodeImpl*) {
-    ++visited_nodes;
-    return false;
-  }));
-  // Visited one node of each type except workers.
-  EXPECT_EQ(visited_nodes, 3u);
-}
-
-namespace {
-
-class LenientMockObserver : public GraphObserver {
- public:
-  LenientMockObserver() {}
-  ~LenientMockObserver() override {}
-
-  MOCK_METHOD1(OnBeforeGraphDestroyed, void(Graph*));
-};
-
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
-
-using testing::_;
-using testing::Invoke;
-
-}  // namespace
-
-TEST_F(GraphImplTest, ObserverWorks) {
-  std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
-  graph->SetUp();
-  Graph* raw_graph = graph.get();
-
-  MockObserver obs;
-  graph->AddGraphObserver(&obs);
-  graph->RemoveGraphObserver(&obs);
-  graph->AddGraphObserver(&obs);
-
-  // Expect the graph teardown callback to be invoked. We have to unregister our
-  // observer in order to maintain graph invariants.
-  EXPECT_CALL(obs, OnBeforeGraphDestroyed(raw_graph))
-      .WillOnce(testing::Invoke(
-          [&obs](Graph* graph) { graph->RemoveGraphObserver(&obs); }));
-  graph->TearDown();
-  graph.reset();
+  // No workers.
+  EXPECT_THAT(graph()->GetAllWorkerNodeImpls().AsVector(),
+              ::testing::UnorderedElementsAre());
 }
 
 namespace {
@@ -267,8 +172,14 @@ class Foo : public GraphOwned {
   ~Foo() override { (*destructor_count_)++; }
 
   // GraphOwned implementation:
-  void OnPassedToGraph(Graph* graph) override { passed_to_called_ = true; }
-  void OnTakenFromGraph(Graph* graph) override { taken_from_called_ = true; }
+  void OnPassedToGraph(Graph* graph) override {
+    EXPECT_EQ(GetOwningGraph(), graph);
+    passed_to_called_ = true;
+  }
+  void OnTakenFromGraph(Graph* graph) override {
+    EXPECT_EQ(GetOwningGraph(), graph);
+    taken_from_called_ = true;
+  }
 
   bool passed_to_called() const { return passed_to_called_; }
   bool taken_from_called() const { return taken_from_called_; }
@@ -293,19 +204,26 @@ TEST_F(GraphImplTest, GraphOwned) {
   std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
   graph->SetUp();
   EXPECT_EQ(0u, graph->GraphOwnedCountForTesting());
+
   EXPECT_FALSE(raw1->passed_to_called());
+  EXPECT_EQ(raw1->GetOwningGraph(), nullptr);
   graph->PassToGraph(std::move(foo1));
   EXPECT_TRUE(raw1->passed_to_called());
+  EXPECT_EQ(raw1->GetOwningGraph(), graph.get());
   EXPECT_EQ(1u, graph->GraphOwnedCountForTesting());
+
   EXPECT_FALSE(raw2->passed_to_called());
+  EXPECT_EQ(raw2->GetOwningGraph(), nullptr);
   graph->PassToGraph(std::move(foo2));
   EXPECT_TRUE(raw2->passed_to_called());
+  EXPECT_EQ(raw2->GetOwningGraph(), graph.get());
   EXPECT_EQ(2u, graph->GraphOwnedCountForTesting());
 
   // Take one back.
   EXPECT_FALSE(raw1->taken_from_called());
   foo1 = graph->TakeFromGraphAs<Foo>(raw1);
   EXPECT_TRUE(raw1->taken_from_called());
+  EXPECT_EQ(raw1->GetOwningGraph(), nullptr);
   EXPECT_EQ(1u, graph->GraphOwnedCountForTesting());
 
   // Destroy that object and expect its destructor to have been invoked.
@@ -324,7 +242,7 @@ namespace {
 
 class TestNodeDataDescriber : public NodeDataDescriber {
  public:
-  explicit TestNodeDataDescriber(base::StringPiece name) : name_(name) {}
+  explicit TestNodeDataDescriber(std::string_view name) : name_(name) {}
 
   base::Value::Dict DescribeFrameNodeData(
       const FrameNode* node) const override {

@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_SURFACE_H_
 
 #include <list>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -23,7 +24,6 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "ui/aura/window.h"
-#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -53,6 +53,11 @@ class CompositorFrame;
 }
 
 namespace exo {
+
+// Occluded surfaces can be detected and not emitted as a quad in the
+// corresponding compositor frame.
+BASE_DECLARE_FEATURE(kExoPerSurfaceOcclusion);
+
 class Buffer;
 class SecurityDelegate;
 class FrameSinkResourceManager;
@@ -84,10 +89,6 @@ extern const ui::ClassProperty<std::string*>* const kClientSurfaceIdKey;
 // component.
 extern const ui::ClassProperty<int32_t>* const kWindowSessionId;
 
-// A property key containing a boolean set to true if a surface augmenter is
-// associated with with surface object.
-extern const ui::ClassProperty<bool>* const kSurfaceHasAugmentedSurfaceKey;
-
 // This class represents a rectangular area that is displayed on the screen.
 // It has a location, size and pixel contents.
 class Surface final : public ui::PropertyHandler {
@@ -117,6 +118,9 @@ class Surface final : public ui::PropertyHandler {
   void set_legacy_buffer_release_skippable(bool skippable) {
     legacy_buffer_release_skippable_ = skippable;
   }
+
+  bool is_augmented() const { return is_augmented_; }
+  void set_is_augmented(bool augmented) { is_augmented_ = augmented; }
 
   // Called when the display the surface is on has changed.
   // Returns true if successful, and false if it fails.
@@ -193,13 +197,12 @@ class Surface final : public ui::PropertyHandler {
   using SubSurfaceEntry = std::pair<Surface*, gfx::PointF>;
   using SubSurfaceEntryList = std::list<SubSurfaceEntry>;
   SubSurfaceEntryList& sub_surfaces() { return sub_surfaces_; }
+  SubSurfaceEntryList& render_layers() { return render_layers_; }
 
-  // `is_root_coordinates` specifies whether `rounded_corners_bounds` is on its
-  // root surface coordinates or on the local surface coordinates.
+  // `rounded_corners_bounds` is on the local surface coordinates.
   // If `commit` is true, rounded corner bounds are add to committed state,
   // overriding the previously committed value.
   void SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds,
-                         bool is_root_coordinates,
                          bool commit_override);
   void SetOverlayPriorityHint(OverlayPriority hint);
 
@@ -210,19 +213,12 @@ class Surface final : public ui::PropertyHandler {
   // surface commit.
   void SetFrameTraceId(int64_t frame_trace_id);
 
-  // Sets the surface's clip rectangle on parent surface coordinates.
-  // TODO(crbug.com/1457446): Remove this.
-  void SetClipRectOnParentSurface(const std::optional<gfx::RectF>& clip_rect);
-
   // Sets the surface's transformation matrix.
   void SetSurfaceTransform(const gfx::Transform& transform);
 
   // Sets the background color that shall be associated with the next buffer
   // commit.
   void SetBackgroundColor(std::optional<SkColor4f> background_color);
-
-  // Sets that this surface uses trusted damage.
-  void SetTrustedDamage(bool trusted_damage);
 
   // This sets the surface viewport for scaling.
   void SetViewport(const gfx::SizeF& viewport);
@@ -585,13 +581,6 @@ class Surface final : public ui::PropertyHandler {
     // The rounded corners bounds for the surface.
     // Persisted between commits.
     gfx::RRectF rounded_corners_bounds;
-    // True if `rounded_corners_bounds` is on root surface coordinate space.
-    // `rounded_corners_bounds` should be on local surface coordinates, but the
-    // outdated implementation was on root surface coordinate space. This flag
-    // is to support the fallback implementation.
-    // Persisted between commits.
-    // TODO(crbug.com/1470955): Remove this.
-    bool rounded_corners_is_root_coordinates = false;
     // The damage region to schedule paint for.
     // Not persisted between commits.
     cc::Region damage;
@@ -619,13 +608,6 @@ class Surface final : public ui::PropertyHandler {
     // should only be set for subsurfaces.
     // Persisted between commits.
     std::optional<gfx::RectF> clip_rect;
-    // True if `clip_rect` is on parent coordinate space. `clip_rect` should be
-    // on local surface coordinates, but the outdated implementation was on
-    // parent coordinate space. This flag is to support the fallback
-    // implementation.
-    // Persisted between commits.
-    // TODO(crbug.com/1457446): Remove this.
-    bool clip_rect_is_parent_coordinates = false;
     // The transform to apply when drawing this surface. This should only be set
     // for subsurfaces, and doesn't apply to children of this surface.
     // Persisted between commits.
@@ -637,6 +619,13 @@ class Surface final : public ui::PropertyHandler {
   };
 
   friend class subtle::PropertyHelper;
+
+  // Adjust the stacking order of `list`, returns true if the `list` ordering is
+  // altered.
+  bool DoPlaceAboveOrBelow(Surface* child,
+                           Surface* reference,
+                           SubSurfaceEntryList& list,
+                           bool place_above);
 
   // Updates current_resource_ with a new resource id corresponding to the
   // contents of the attached buffer (or id 0, if no buffer is attached).
@@ -651,7 +640,8 @@ class Surface final : public ui::PropertyHandler {
   void UpdateOverlayPriorityHint(OverlayPriority overlay_priority_hint);
 
   // Puts the current surface into a draw quad, and appends the draw quads into
-  // the |frame|.
+  // the `frame`. `device_scale_factor` is supplied if the client does not
+  // submit surfaces in pixel coordinates.
   void AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                              const gfx::PointF& to_parent_dp,
                              bool needs_full_damage,
@@ -669,11 +659,54 @@ class Surface final : public ui::PropertyHandler {
   // This window has the layer which contains the Surface contents.
   std::unique_ptr<aura::Window> window_;
 
-  // This true, if sub_surfaces_ has changes (order, position, etc).
+  // Whether this surface is an object only to composite its parent.
+  bool is_augmented_ = false;
+
+  // This is true, if sub_surfaces_ has changes (order, position, etc).
   bool sub_surfaces_changed_ = false;
 
-  // This is true if damage reported by the client should be trusted.
-  bool trusted_damage_ = false;
+  // Because client side damage does not expand past `content_size_`. This
+  // accounts for damage that are outside of this surface. 3 ways extended
+  // damage can be introduced if this surface is a subsurface that fits within
+  // the overall shell_surface's host_window bounds:
+  //
+  // 1) This surface's width/height shrinks without changing stacking/position,
+  // it will not fully damage the parent surface, introduced damage area (dotted
+  // line). s1 (child of s) shrunk:
+  //
+  //  _host_window__________         _host_window__________
+  // |s    ______           |       |s    ____...          |
+  // |    |s1    |          |       |    |s1  | :          |
+  // |    |      |          |  =>   |    |    | :          |
+  // |    |      |          |       |    |____| :          |
+  // |    |______|          |       |    :......:          |
+  // |______________________|       |______________________|
+  //
+  // 2) The toplevel surface shrinks but not in a way that affects host_window
+  // bounds due to a subsurface expanding it, introduced damage area (dotted
+  // line). s (parent of s1) shrunk:
+  //
+  //  _host_window__________         _host_window__________
+  // |s    ______           |       |s    ______           |
+  // |    |s1    |          |       |    |s1    |          |
+  // |    |      |          |  =>   |____|      |__________|
+  // |    |      |          |       :    |      |          :
+  // |____|______|__________|       :....|______|..........:
+  //
+  // 3) This surface has a subsurface that is shown outside, but fits within the
+  // overall shell_surface's host_window, when the subsurface is removed, it
+  // fully damage the parent surface, but not the part outside of the parent
+  // (dotted line). s11 (child of s1) is removed:
+  //
+  //  _host_window__________         _host_window__________
+  // |s0   __________       |       |s0   __________       |
+  // |    |s1        |      |       |    |s1        |      |
+  // |    |  ______  |      |  =>   |    |          |      |
+  // |    |_|s11   |_|      |       |    |__________|      |
+  // |      |______|        |       |      :......:        |
+  // |______________________|       |______________________|
+  //
+  std::optional<gfx::RectF> extended_damage_dp_ = std::nullopt;
 
   // This is the size of the last committed contents.
   gfx::SizeF content_size_;
@@ -703,6 +736,26 @@ class Surface final : public ui::PropertyHandler {
   // at the back.
   SubSurfaceEntryList pending_sub_surfaces_;
   SubSurfaceEntryList sub_surfaces_;
+
+  // The stack of delegate compositing render_layers for this surface when
+  // Commit() is called.
+  // The tree structure of this with sub_surface is this (Surface2 is stacked
+  // beneath Surface3):
+  //
+  //             Surface1: { layer1, layer2 }
+  //            /         \
+  //           /           \
+  // Surface2: { layer3 }   \
+  //                       Surface3: { layer4, layer5 }
+  //
+  // When compositing, from bottom to top, the content order is visually:
+  // { Surface1, layer1, layer2, Surface2, layer3, Surface3, layer4, layer5 }
+  //
+  // TODO(fangzhoug): Reusing wl_subsurface and SubSurface class is not ideal,
+  // consider introducing a different role object like wl_subsurface, or a base
+  // object like wl_surface, to better prevent the unintended behavior such has
+  // a layer parenting a subsurface.
+  SubSurfaceEntryList render_layers_;
 
   // The last resource that was sent to a surface.
   viz::TransferableResource current_resource_;

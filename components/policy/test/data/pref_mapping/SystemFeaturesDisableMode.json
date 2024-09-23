@@ -10,7 +10,8 @@
         },
         "prefs": {
           "policy.system_features_disable_mode": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "hidden"
           }
         }
       }

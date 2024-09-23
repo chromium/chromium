@@ -164,13 +164,9 @@ void TabCaptureRegistry::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   // Cleanup all the requested media streams for this extension.
-  for (auto it = requests_.begin(); it != requests_.end();) {
-    if ((*it)->extension_id() == extension->id()) {
-      it = requests_.erase(it);
-    } else {
-      ++it;
-    }
-  }
+  std::erase_if(requests_, [extension](const auto& entry) {
+    return entry->extension_id() == extension->id();
+  });
 }
 
 std::string TabCaptureRegistry::AddRequest(
@@ -260,7 +256,7 @@ void TabCaptureRegistry::OnRequestUpdate(
       return;
     case content::MEDIA_REQUEST_STATE_REQUESTED:
     case content::MEDIA_REQUEST_STATE_NOT_REQUESTED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
 
@@ -271,7 +267,7 @@ void TabCaptureRegistry::OnRequestUpdate(
       request->capture_state() != tab_capture::TabCaptureState::kError) {
     // Despite other code preventing multiple captures of the same tab, we can
     // reach this case due to a race condition (see crbug.com/1370338).
-    // TODO(crbug.com/1377780): Handle status updates for multiple capturers.
+    // TODO(crbug.com/40874553): Handle status updates for multiple capturers.
     return;
   }
 
@@ -326,7 +322,7 @@ void TabCaptureRegistry::KillRequest(LiveRequest* request) {
       return;
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace extensions

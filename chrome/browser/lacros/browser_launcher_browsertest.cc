@@ -44,8 +44,8 @@
 namespace {
 
 webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = start_url;
+  auto web_app_info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -97,10 +97,6 @@ class BrowserLauncherTest : public InProcessBrowserTest {
   void DisableWelcomePages(const std::vector<Profile*>& profiles) {
     for (Profile* profile : profiles)
       profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
-
-    // Also disable What's New.
-    PrefService* pref_service = g_browser_process->local_state();
-    pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
   }
 
   // Creates a new profile with a URLS startup preference and an open tab.

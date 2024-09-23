@@ -1,0 +1,68 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromebox_for_meetings/buildflags.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+assert(is_cfm)
+
+static_library("artemis") {
+  sources = [
+    "command_source.cc",
+    "command_source.h",
+    "data_aggregator_service.cc",
+    "data_aggregator_service.h",
+    "local_data_source.cc",
+    "local_data_source.h",
+    "log_file.cc",
+    "log_file.h",
+    "log_source.cc",
+    "log_source.h",
+    "persistent_db.cc",
+    "persistent_db.h",
+    "specialized_log_sources.cc",
+    "specialized_log_sources.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chromeos/ash/components/dbus/chromebox_for_meetings",
+    "//chromeos/services/chromebox_for_meetings/public/cpp",
+    "//chromeos/services/chromebox_for_meetings/public/mojom",
+    "//chromeos/services/chromebox_for_meetings/public/mojom:mojom_shared",
+    "//chromeos/services/chromebox_for_meetings/public/mojom:mojom_shared_cpp_sources",
+    "//chromeos/services/chromebox_for_meetings/public/proto",
+    "//components/feedback/redaction_tool",
+    "//mojo/public/cpp/bindings",
+    "//net:net",
+    "//third_party/re2",
+  ]
+
+  deps = [ "//base:i18n" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "local_data_source_unittest.cc",
+    "log_source_unittest.cc",
+    "test_data_aggregator_service.cc",
+    "test_data_aggregator_service.h",
+    "test_watchdog.cc",
+    "test_watchdog.h",
+  ]
+
+  deps = [
+    ":artemis",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/services/chromebox_for_meetings/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//third_party/re2",
+  ]
+}

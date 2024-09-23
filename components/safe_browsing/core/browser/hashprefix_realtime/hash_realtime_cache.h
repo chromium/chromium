@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_CACHE_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_HASHPREFIX_REALTIME_HASH_REALTIME_CACHE_H_
 
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "base/time/time.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 

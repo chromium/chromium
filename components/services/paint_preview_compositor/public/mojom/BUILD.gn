@@ -15,6 +15,7 @@ mojom("mojom") {
     "//components/discardable_memory/public/mojom",
     "//components/paint_preview/common/mojom",
     "//mojo/public/mojom/base",
+    "//mojo/public/mojom/base:protobuf_support",
     "//sandbox/policy/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",

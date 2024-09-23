@@ -65,7 +65,8 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
   void MakeDevicesEligibleHosts() {
     fake_eligible_host_devices_provider_->set_eligible_host_devices(
         test_devices_);
-    fake_device_sync_client_->NotifyNewDevicesSynced();
+    fake_eligible_host_devices_provider_
+        ->NotifyObserversEligibleDevicesSynced();
   }
 
   // Verifies the current status and, if |expected_observer_index| is non-null,
@@ -98,8 +99,8 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
 
   FakeHostVerifier* fake_host_verifier() { return fake_host_verifier_.get(); }
 
-  device_sync::FakeDeviceSyncClient* fake_device_sync_client() {
-    return fake_device_sync_client_.get();
+  FakeEligibleHostDevicesProvider* fake_eligible_host_devices_provider() {
+    return fake_eligible_host_devices_provider_.get();
   }
 
  private:
@@ -159,7 +160,7 @@ TEST_F(MultiDeviceSetupHostStatusProviderImplTest,
        OnNewDevicesSyncedNotifiesHostStatusChange) {
   MakeDevicesEligibleHosts();
   EXPECT_EQ(1u, GetNumChangeEvents());
-  fake_device_sync_client()->NotifyNewDevicesSynced();
+  fake_eligible_host_devices_provider()->NotifyObserversEligibleDevicesSynced();
   EXPECT_EQ(2u, GetNumChangeEvents());
 }
 

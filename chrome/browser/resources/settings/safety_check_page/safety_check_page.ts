@@ -9,12 +9,12 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_shared.css.js';
 import './safety_check_extensions_child.js';
 import './safety_check_passwords_child.js';
@@ -70,15 +70,6 @@ export class SettingsSafetyCheckPageElement extends
       /** UI string to display for the parent status. */
       parentDisplayString_: String,
 
-      /** Boolean to check safety check notification permissions enabled . */
-      safetyCheckNotificationPermissionsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'safetyCheckNotificationPermissionsEnabled');
-        },
-      },
-
       /** Boolean to show/hide entry point for unused site permissions. */
       safetyCheckUnusedSitePermissionsEnabled_: {
         type: Boolean,
@@ -103,7 +94,6 @@ export class SettingsSafetyCheckPageElement extends
 
   private parentStatus_: SafetyCheckParentStatus;
   private parentDisplayString_: string;
-  private safetyCheckNotificationPermissionsEnabled_: boolean;
   private safetyCheckUnusedSitePermissionsEnabled_: boolean;
   private safetyCheckExtensionsReviewEnabled_: boolean;
   private safetyCheckNumberOfExtensionsThatNeedReview_: number;
@@ -250,8 +240,7 @@ export class SettingsSafetyCheckPageElement extends
   }
 
   private shouldShowNotificationPermissions_(): boolean {
-    return this.notificationPermissionSites_.length !== 0 &&
-        this.safetyCheckNotificationPermissionsEnabled_;
+    return this.notificationPermissionSites_.length !== 0;
   }
 
   private onUnusedSitePermissionListChanged_(sites: UnusedSitePermissions[]) {

@@ -18,12 +18,12 @@
 #include "chrome/browser/enterprise/connectors/reporting/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_service_settings.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/test_event_router.h"
@@ -51,12 +51,16 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #endif
 
 using testing::_;
 
 namespace enterprise_connectors {
+
+namespace {
 
 std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
     content::BrowserContext* context) {
@@ -173,6 +177,27 @@ class RealtimeReportingClientIsRealtimeReportingEnabledTest
 #endif
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class RealtimeReportingClientOidcTest : public RealtimeReportingClientTestBase {
+ public:
+  RealtimeReportingClientOidcTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        profile_management::features::kOidcAuthProfileManagement);
+  }
+
+  void SetUp() override {
+    RealtimeReportingClientTestBase::SetUp();
+    profile_->GetPrefs()->SetString(enterprise_signin::prefs::kProfileUserEmail,
+                                    "oidc@user.email");
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+}  // namespace
+
 TEST_P(RealtimeReportingClientIsRealtimeReportingEnabledTest,
        ShouldInitRealtimeReportingClient) {
   EXPECT_EQ(should_init(),
@@ -203,12 +228,11 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
   ReportingSettings settings;
   base::Value::Dict event;
 
-  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _, _))
-      .WillOnce(MoveArg<3>(&upload_callback));
+  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
+      .WillOnce(MoveArg<2>(&upload_callback));
 
-  reporting_client_->ReportRealtimeEvent(
-      ReportingServiceSettings::kExtensionInstallEvent, std::move(settings),
-      std::move(event));
+  reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
+                                         std::move(settings), std::move(event));
 
   std::move(upload_callback)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
@@ -223,12 +247,11 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
   ReportingSettings settings;
   base::Value::Dict event;
 
-  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _, _))
-      .WillOnce(MoveArg<3>(&upload_callback));
+  EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
+      .WillOnce(MoveArg<2>(&upload_callback));
 
-  reporting_client_->ReportRealtimeEvent(
-      ReportingServiceSettings::kExtensionInstallEvent, std::move(settings),
-      std::move(event));
+  reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
+                                         std::move(settings), std::move(event));
 
   std::move(upload_callback)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_REQUEST_FAILED));
@@ -241,10 +264,9 @@ TEST_F(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
 
 TEST_F(RealtimeReportingClientTestBase,
        TestEventNameToUmaEnumMapIncludesAllEvents) {
-  EXPECT_EQ(sizeof(ReportingServiceSettings::kAllReportingEvents) /
-                sizeof(ReportingServiceSettings::kAllReportingEvents[0]),
+  EXPECT_EQ(sizeof(kAllReportingEvents) / sizeof(kAllReportingEvents[0]),
             kEventNameToUmaEnumMap.size());
-  for (const char* eventName : ReportingServiceSettings::kAllReportingEvents) {
+  for (const char* eventName : kAllReportingEvents) {
     EXPECT_TRUE(kEventNameToUmaEnumMap.contains(eventName));
   }
 }
@@ -283,6 +305,14 @@ TEST_F(RealtimeReportingClientTestBase,
   AddCrowdstrikeSignalsToEvent(event, response);
   EXPECT_EQ(event.Find("securityAgents"), nullptr);
 }
+
+TEST_F(RealtimeReportingClientOidcTest, Username) {
+  RealtimeReportingClient client(profile_);
+  ASSERT_EQ(client.GetProfileUserName(), "oidc@user.email");
+}
+
+// TODO(b/342232001): Add more tests for the `RealtimeReportingClientOidcTest`
+// fixture to cover key use cases.
 
 #endif
 }  // namespace enterprise_connectors

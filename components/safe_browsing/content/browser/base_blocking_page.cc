@@ -16,6 +16,7 @@
 #include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
@@ -62,7 +63,6 @@ BaseBlockingPage::BaseBlockingPage(
       threat_details_proceed_delay_ms_(kThreatDetailsProceedDelayMilliSeconds),
       sb_error_ui_(std::make_unique<SafeBrowsingLoudErrorUI>(
           unsafe_resources_[0].url,
-          main_frame_url_,
           GetInterstitialReason(unsafe_resources_),
           display_options,
           ui_manager->app_locale(),
@@ -78,7 +78,7 @@ const security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions
 BaseBlockingPage::CreateDefaultDisplayOptions(
     const UnsafeResourceList& unsafe_resources) {
   return BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-      IsMainPageLoadPending(unsafe_resources), IsSubresource(unsafe_resources),
+      IsMainPageLoadPending(unsafe_resources),
       false,                 // kSafeBrowsingExtendedReportingOptInAllowed
       false,                 // is_off_the_record
       false,                 // is_extended_reporting
@@ -99,19 +99,6 @@ bool BaseBlockingPage::IsMainPageLoadPending(
   // pending. Otherwise, check if the one resource is.
   return unsafe_resources.size() == 1 &&
          AsyncCheckTracker::IsMainPageLoadPending(unsafe_resources[0]);
-}
-
-// static
-bool BaseBlockingPage::IsSubresource(
-    const UnsafeResourceList& unsafe_resources) {
-  // As long as there is one resource that is from subresource, the page is
-  // considered unsafe due to a subresource.
-  for (auto unsafe_resource : unsafe_resources) {
-    if (unsafe_resource.is_subresource) {
-      return true;
-    }
-  }
-  return false;
 }
 
 void BaseBlockingPage::SetThreatDetailsProceedDelayForTesting(int64_t delay) {
@@ -162,51 +149,26 @@ BaseBlockingPage::UnsafeResourceMap* BaseBlockingPage::GetUnsafeResourcesMap() {
 std::string BaseBlockingPage::GetMetricPrefix(
     const UnsafeResourceList& unsafe_resources,
     BaseSafeBrowsingErrorUI::SBInterstitialReason interstitial_reason) {
-  bool primary_subresource = unsafe_resources[0].is_subresource;
   switch (interstitial_reason) {
     case BaseSafeBrowsingErrorUI::SB_REASON_MALWARE:
-      return primary_subresource ? "malware_subresource" : "malware";
+      return "malware";
     case BaseSafeBrowsingErrorUI::SB_REASON_HARMFUL:
-      return primary_subresource ? "harmful_subresource" : "harmful";
+      return "harmful";
     case BaseSafeBrowsingErrorUI::SB_REASON_BILLING:
-      return primary_subresource ? "billing_subresource" : "billing";
+      return "billing";
     case BaseSafeBrowsingErrorUI::SB_REASON_PHISHING:
-      return primary_subresource ? "phishing_subresource" : "phishing";
+      return "phishing";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unkown_metric_prefix";
-}
-
-// We populate a parallel set of metrics to differentiate some threat sources.
-// static
-std::string BaseBlockingPage::GetExtraMetricsSuffix(
-    const UnsafeResourceList& unsafe_resources) {
-  switch (unsafe_resources[0].threat_source) {
-    case safe_browsing::ThreatSource::REMOTE:
-      return "from_device";
-    case safe_browsing::ThreatSource::LOCAL_PVER4:
-      return "from_device_v4";
-    case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
-      return "from_client_side_detection";
-    case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
-      return "from_real_time_check";
-    case safe_browsing::ThreatSource::NATIVE_PVER5_REAL_TIME:
-      return "from_hash_prefix_real_time_check_v5";
-    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
-      return "from_android_safebrowsing_real_time";
-    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING:
-      return "from_android_safebrowsing";
-    case safe_browsing::ThreatSource::UNKNOWN:
-      break;
-  }
-  NOTREACHED();
-  return std::string();
 }
 
 // static
 security_interstitials::BaseSafeBrowsingErrorUI::SBInterstitialReason
 BaseBlockingPage::GetInterstitialReason(
     const UnsafeResourceList& unsafe_resources) {
+  using enum SBThreatType;
+
   bool harmful = false;
   for (auto iter = unsafe_resources.begin(); iter != unsafe_resources.end();
        ++iter) {
@@ -272,7 +234,8 @@ BaseBlockingPage::GetReportingInfo(
   security_interstitials::MetricsHelper::ReportDetails reporting_info;
   reporting_info.metric_prefix =
       GetMetricPrefix(unsafe_resources, interstitial_reason);
-  reporting_info.extra_suffix = GetExtraMetricsSuffix(unsafe_resources);
+  CHECK_GE(unsafe_resources.size(), 1u);
+  reporting_info.extra_suffix = GetExtraMetricsSuffix(unsafe_resources[0]);
   reporting_info.blocked_page_shown_timestamp = blocked_page_shown_timestamp;
   return reporting_info;
 }
@@ -349,6 +312,7 @@ void BaseBlockingPage::OnDontProceedDone() {
 
 // static
 bool BaseBlockingPage::ShouldReportThreatDetails(SBThreatType threat_type) {
+  using enum SBThreatType;
   return threat_type == SB_THREAT_TYPE_BILLING ||
          threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
          threat_type == SB_THREAT_TYPE_URL_MALWARE ||

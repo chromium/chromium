@@ -101,14 +101,16 @@ public class ConsentTextTracker {
     }
 
     /**
-     * Assigns a |text| to the given |view| and remembers that this text should be out of scope
-     * for consent recording.
+     * Assigns a |text| to the given |view| and remembers that this text should be out of scope for
+     * consent recording.
+     *
      * @see #setText(TextView, int, TextTransformation)
      * @param view The TextView to which the text should be assigned.
      * @param text The text to be assigned.
      */
     public void setTextNonRecordable(TextView view, CharSequence text) {
-        // TODO(crbug.com/821908): The selected account name, which is assigned to its |view| using
+        // TODO(crbug.com/41376544): The selected account name, which is assigned to its |view|
+        // using
         // this method, can be null in rare circumstances.
         CharSequence textSanitized = text != null ? text : "";
 

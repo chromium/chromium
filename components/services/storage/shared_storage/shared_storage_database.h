@@ -120,7 +120,6 @@ class SharedStorageDatabase {
     kTooManyFound = 8,  // Result if the number of keys/entries retrieved for
                         // `Keys()`/`Entries()` exceeds INT_MAX.
     kExpired = 9,       // Result if the retrieved entry is expired.
-    // Update `kMaxValue` when adding a new value to the enum.
     kMaxValue = kExpired,
   };
 
@@ -259,10 +258,11 @@ class SharedStorageDatabase {
   // Returns an enum indicating whether or not a new entry is added, the request
   // is ignored, or if there is an error.
   //
-  // Note that `key` and `value` assumed to be each of length at
-  // most `max_string_length_`, with the burden on the caller to handle errors
-  // for strings that exceed this length. Moreover, if `Length(context_origin)`
-  // equals `max_entries_per_origin_`, `Set()` will return a value of
+  // Note that `key` and `value` are assumed to be each of length at most
+  // `max_string_length_`, with the burden on the caller to handle errors for
+  // strings that exceed this length. Moreover, if `BytesUsed(context_origin)`
+  // plus any additional bytes to be stored by this call would exceed
+  // `max_bytes_per_origin_`, `Set()` will return a value of
   // `OperationResult::kNoCapacity` and the table will not be modified.
   [[nodiscard]] OperationResult Set(
       url::Origin context_origin,
@@ -277,24 +277,26 @@ class SharedStorageDatabase {
   // after deleting the expired entry. Returns an enum indicating whether or not
   // an entry is added/modified or if there is an error.
   //
-  // Note that `key` and `value` are assumed to be each of length
-  // at most `max_string_length_`, with the burden on the caller to handle
-  // errors for strings that exceed this length. Moreover, if the length of the
-  // string obtained by concatening the current `value` (if one exists)
-  // and `tail_value` exceeds `max_string_length_`, or if
-  // `Length(context_origin)` equals `max_entries_per_origin_`, `Append()` will
+  // Note that `key` and `tail_value` are assumed to be each of length at most
+  // `max_string_length_`, with the burden on the caller to handle errors for
+  // strings that exceed this length. Moreover, if the length of the string
+  // obtained by concatening the current `value` (if one exists) and
+  // `tail_value` exceeds `max_string_length_`, `Append()` will return a value
+  // of `OperationResult::kInvalidAppend` and the table will not be modified.
+  // Similarly,if `BytesUsed(context_origin)` plus any additional bytes to be
+  // stored by this call would exceed `max_bytes_per_origin_`, `Append()` will
   // return a value of `OperationResult::kNoCapacity` and the table will not be
   // modified.
   [[nodiscard]] OperationResult Append(url::Origin context_origin,
                                        std::u16string key,
                                        std::u16string tail_value);
 
-  // Deletes the entry for `context_origin` and `key`. Returns
-  // whether the deletion is successful.
+  // Deletes the entry for `context_origin` and `key`. Returns whether the
+  // deletion is successful.
   //
-  // Note that `key` is assumed to be of length at most
-  // `max_string_length_`, with the burden on the caller to handle errors for
-  // strings that exceed this length.
+  // Note that `key` is assumed to be of length at most `max_string_length_`,
+  // with the burden on the caller to handle errors for strings that exceed this
+  // length.
   [[nodiscard]] OperationResult Delete(url::Origin context_origin,
                                        std::u16string key);
 
@@ -304,7 +306,7 @@ class SharedStorageDatabase {
 
   // Returns the number of unexpired entries for `context_origin` in the
   // database, or -1 on error.
-  // TODO(crbug.com/1277662): Consider renaming to something more descriptive.
+  // TODO(crbug.com/40207867): Consider renaming to something more descriptive.
   [[nodiscard]] int64_t Length(url::Origin context_origin);
 
   // From a list of all the unexpired keys for `context_origin` taken in
@@ -444,6 +446,10 @@ class SharedStorageDatabase {
   [[nodiscard]] InitStatus LazyInit(DBCreationPolicy policy)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Calls `db_.Open(db_path_)` and records a histogram measuring the load
+  // timing.
+  [[nodiscard]] bool OpenImpl() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Determines whether or not an uninitialized DB already exists on disk.
   [[nodiscard]] bool DBExists() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -474,16 +480,17 @@ class SharedStorageDatabase {
   [[nodiscard]] bool Purge(const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Returns the total number of entries for `context_origin`, including any
-  // expired entries for `context_origin` that have not yet been purged. Returns
-  // 0 if there is a database error.
-  [[nodiscard]] int64_t NumEntriesIncludeExpired(
-      const std::string& context_origin)
+  // Performs the common last steps for calls to `Set()` or `Append()`.
+  [[nodiscard]] OperationResult InternalSetOrAppend(
+      const std::string& context_origin,
+      const std::u16string& key,
+      const std::u16string& value,
+      OperationResult result_for_get,
+      std::optional<std::u16string> previous_value)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the number of entries for `context_origin`, not including any
-  // expired entries, as determined by a manual "COUNT(*)" query, rather than by
-  // relying on the `length` recorded in `per_origin_mapping`. Returns -1 if
+  // expired entries, as determined by a manual "COUNT(*)" query. Returns -1 if
   // there is a database error.
   [[nodiscard]] int64_t NumEntriesManualCountExcludeExpired(
       const std::string& context_origin)
@@ -511,30 +518,26 @@ class SharedStorageDatabase {
       const std::string& context_origin,
       const std::u16string& key) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Retrieves the `length` in `out_length`, `num_bytes` in `out_num_bytes`,
-  // and `creation_time` in `out_creation_time`, of `context_origin`. Leaves the
-  // `out_*` parameters unchanged if `context_origin` is not found in the
-  // database. Returns an `OperationResult` indicating success, error, or that
-  // the origin was not found.
+  // Retrieves the `num_bytes` in `out_num_bytes` and `creation_time` in
+  // `out_creation_time`, of `context_origin`. Leaves the `out_*` parameters
+  // unchanged if `context_origin` is not found in the database. Returns an
+  // `OperationResult` indicating success, error, or that the origin was not
+  // found.
   [[nodiscard]] OperationResult GetOriginInfo(const std::string& context_origin,
-                                              int64_t* out_length,
                                               int64_t* out_num_bytes,
                                               base::Time* out_creation_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Updates `length` by `delta_length` and `num_bytes` by `delta_bytes` for
-  // `context_origin`. If `length + delta_length == 0L`, then we remove
-  // `context_origin` from `per_origin_mapping`.
-  [[nodiscard]] bool UpdateLength(const std::string& context_origin,
-                                  int64_t delta_length,
-                                  int64_t delta_bytes)
+  // Updates `num_bytes` by `delta_bytes` for `context_origin`.
+  [[nodiscard]] bool UpdateBytes(const std::string& context_origin,
+                                 int64_t delta_bytes)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // If `previous_value` is non-null, this means the key already exists; this
   // method then updates the row for `context_origin` in `values_mapping` to
   // `(context_origin,key,value,last_used_time)`. Otherwise, inserts a tuple for
   // `(context_origin,key,value,last_used_time)` into `values_mapping` and calls
-  // `UpdateLength()` with `delta_length=1`.
+  // `UpdateBytes()` with a positive `delta_bytes`.
   //
   // Precondition: Must have called `Get()` synchronously beforehand to check
   // whether row already exists and populated the `previous_value` if it does.
@@ -551,7 +554,7 @@ class SharedStorageDatabase {
   // `(context_origin,key,value,clock_->Now())`  (i.e. uses the current time as
   // `last_used_time`). Otherwise, inserts a tuple for
   // `(context_origin,key,value,clock_->Now())` into `values_mapping` and calls
-  // `UpdateLength()` with `delta_length=1`.
+  // `UpdateBytes()` with a positive `delta_bytes`.
   //
   // Precondition: Must have called `Get()` synchronously beforehand to check
   // whether row already exists.
@@ -567,19 +570,18 @@ class SharedStorageDatabase {
       const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Inserts the tuple for `(context_origin, creation_time, length, num_bytes)`
+  // Inserts the tuple for `(context_origin, creation_time, num_bytes)`
   // into `per_origin_mapping`.
   [[nodiscard]] bool InsertIntoPerOriginMapping(
       const std::string& context_origin,
       base::Time creation_time,
-      uint64_t length,
       uint64_t num_bytes) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Updates the row for `context_origin` from `per_origin_mapping` with the
-  // tuple `(context_origin, creation_time, length, num_bytes)`, unless `length`
-  // is 0 and/or `context_origin` does not yet exist. In the case where `length`
+  // tuple `(context_origin, creation_time, num_bytes)`, unless `num_bytes` is 0
+  // and/or `context_origin` does not yet exist. In the case where `num_bytes`
   // is 0 and `context_origin` exists, we simply delete the existing row. If
-  // `context_origin` does not yet exist, and `length` is positive, we simply
+  // `context_origin` does not yet exist, and `num_bytes` is positive, we simply
   // insert the row instead of updating. `origin_exists` specifies whether or
   // not `context_origin` already exists in `per_origin_mapping`.
   //
@@ -587,19 +589,27 @@ class SharedStorageDatabase {
   // to determine whether origin already exists.
   [[nodiscard]] bool UpdatePerOriginMapping(const std::string& context_origin,
                                             base::Time creation_time,
-                                            uint64_t length,
                                             uint64_t num_bytes,
                                             bool origin_exists)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Returns whether the `length` for `context_origin` is less than
-  // `max_entries_per_origin_`.
-  [[nodiscard]] bool HasCapacity(const std::string& context_origin)
+  // Returns whether the `num_bytes` for `context_origin` in
+  // `per_origin_mapping` is less than or equal to `max_bytes_per_origin_ -
+  // delta_bytes`. This byte count includes the bytes for any expired but
+  // unpurged entries for `context_origin`.
+  [[nodiscard]] bool HasCapacityIncludingExpired(
+      const std::string& context_origin,
+      int64_t delta_bytes) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Purges expired rows from `values_mapping` for `context_origin`, then
+  // updates `context_origin`'s row in `per_origin_mapping`. Returns true on
+  // success, false on database error.
+  [[nodiscard]] bool ManualPurgeExpiredValues(const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Logs following initialization various histograms, including e.g. the number
-  // of origins currently in `per_origin_mapping`, as well as each of the
-  // lengths listed in `per_origin_mapping`.
+  // of origins currently in `per_origin_mapping`, as well as 5-number summaries
+  // of the bytes used and the lengths of the origins.
   void LogInitHistograms() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Database containing the actual data.
@@ -622,8 +632,8 @@ class SharedStorageDatabase {
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Maximum allowed number of entries per origin.
-  const int64_t max_entries_per_origin_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Maximum allowed number of total bytes in database entries per origin.
+  const int64_t max_bytes_per_origin_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Maximum size of a string input from any origin's script. Applies
   // separately to both script keys and script values.

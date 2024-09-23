@@ -30,7 +30,7 @@ class AXActionHandlerObserver : public base::CheckedObserver {
   // routing is asynchronous and we do not know which observers intend to
   // respond to which actions -- so we forward all actions to all observers.
   // Only the observer that owns the unique |tree_id| will perform the action.
-  virtual void PerformAction(const ui::AXActionData& action_data) {}
+  virtual void PerformAction(const AXActionData& action_data) {}
 
   // Informs the observer that a tree has been removed.
   virtual void TreeRemoved(AXTreeID tree_id) {}
@@ -64,6 +64,10 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   // Retrieve an |AXActionHandlerBase| based on an ax tree id.
   AXActionHandlerBase* GetActionHandler(AXTreeID ax_tree_id);
 
+  // Set a mapping between an AXTreeID and AXActionHandlerBase explicitly.
+  void SetAXTreeID(const AXTreeID& ax_tree_id,
+                   AXActionHandlerBase* action_handler);
+
   // Removes an ax tree id, and its associated delegate and frame id (if it
   // exists).
   void RemoveAXTreeID(AXTreeID ax_tree_id);
@@ -76,7 +80,7 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
   void RemoveObserver(AXActionHandlerObserver* observer);
 
   // Calls PerformAction on all observers.
-  void PerformAction(const ui::AXActionData& action_data);
+  void PerformAction(const AXActionData& action_data);
 
  private:
   friend base::NoDestructor<AXActionHandlerRegistry>;
@@ -90,10 +94,6 @@ class AX_BASE_EXPORT AXActionHandlerRegistry final {
 
   // Get or create a ax tree id keyed on |handler|.
   AXTreeID GetOrCreateAXTreeID(AXActionHandlerBase* handler);
-
-  // Set a mapping between an AXTreeID and AXActionHandlerBase explicitly.
-  void SetAXTreeID(const AXTreeID& ax_tree_id,
-                   AXActionHandlerBase* action_handler);
 
   // Maps an accessibility tree to its frame via ids.
   std::map<AXTreeID, FrameID> ax_tree_to_frame_id_map_;

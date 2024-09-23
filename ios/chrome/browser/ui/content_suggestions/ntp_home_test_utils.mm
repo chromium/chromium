@@ -9,12 +9,11 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/common/uikit_ui_util.h"
 
@@ -38,16 +37,14 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
   return nil;
 }
 
-// Returns the SetUpListView, if present.
-SetUpListView* GetSetUpListView() {
-  return base::apple::ObjCCast<SetUpListView>(
-      SubviewWithAccessibilityIdentifier(set_up_list::kAccessibilityID,
-                                         GetAnyKeyWindow()));
-}
-
 }  // namespace
 
 namespace ntp_home {
+
+UIView* NTPView() {
+  return base::apple::ObjCCast<UIView>(SubviewWithAccessibilityIdentifier(
+      kNTPViewIdentifier, GetAnyKeyWindow()));
+}
 
 UICollectionView* CollectionView() {
   return base::apple::ObjCCast<UICollectionView>(
@@ -69,12 +66,6 @@ UIView* FakeOmnibox() {
 UILabel* DiscoverHeaderLabel() {
   return base::apple::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
       DiscoverHeaderTitleAccessibilityID(), GetAnyKeyWindow()));
-}
-
-SetUpListItemView* SetUpListItemViewWithAccessibilityId(
-    NSString* accessibility_id) {
-  return base::apple::ObjCCast<SetUpListItemView>(
-      SubviewWithAccessibilityIdentifier(accessibility_id, GetSetUpListView()));
 }
 
 SetUpListItemView* SetUpListItemViewInMagicStackWithAccessibilityId(

@@ -7,14 +7,14 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned, children-inline) DIV id='container' class='relative blue'",
+      "name": "LayoutBlockFlow (relative positioned, children-inline) DIV id='container' class='relative blue'",
       "position": [8, 208],
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF"
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='absolute green'",
+      "name": "LayoutBlockFlow (positioned) DIV class='absolute green'",
       "position": [108, 308],
       "bounds": [100, 100],
       "contentsOpaque": true,

@@ -52,7 +52,8 @@ class TabSharingUIViews : public TabSharingUI,
                     const std::u16string& capturer_name,
                     bool favicons_used_for_switch_to_tab_button,
                     bool app_preferred_current_tab,
-                    TabSharingInfoBarDelegate::TabShareType capture_type);
+                    TabSharingInfoBarDelegate::TabShareType capture_type,
+                    bool captured_surface_control_active);
   ~TabSharingUIViews() override;
 
   // MediaStreamUI:
@@ -61,6 +62,8 @@ class TabSharingUIViews : public TabSharingUI,
       base::OnceClosure stop_callback,
       content::MediaStreamUI::SourceCallback source_callback,
       const std::vector<content::DesktopMediaID>& media_ids) override;
+  void OnRegionCaptureRectChanged(
+      const std::optional<gfx::Rect>& region_capture_rect) override;
 
   // TabSharingUI:
   // Runs |source_callback_| to start sharing the tab containing |infobar|.
@@ -96,9 +99,6 @@ class TabSharingUIViews : public TabSharingUI,
   // toggle its favicon back and forth at an arbitrary rate, but we implicitly
   // rate-limit our response.
 
-  void OnRegionCaptureRectChanged(
-      const std::optional<gfx::Rect>& region_capture_rect) override;
-
  protected:
 #if BUILDFLAG(IS_CHROMEOS)
   // DlpContentManagerObserver:
@@ -116,6 +116,21 @@ class TabSharingUIViews : public TabSharingUI,
   // |TabCaptureContentsBorderHelper|, without passing pointers,
   // which is less robust lifetime-wise.
   using CaptureSessionId = TabCaptureContentsBorderHelper::CaptureSessionId;
+
+  // Observes the first invocation of a Captured Surface Control API by the
+  // capturing tab and executes a once-callback.
+  class CapturedSurfaceControlObserver : public content::WebContentsObserver {
+   public:
+    CapturedSurfaceControlObserver(content::WebContents* web_contents,
+                                   base::OnceClosure callback);
+    ~CapturedSurfaceControlObserver() override;
+
+    // content::WebContentsObserver:
+    void OnCapturedSurfaceControl() override;
+
+   private:
+    base::OnceClosure callback_;
+  };
 
   enum class TabCaptureUpdate {
     kCaptureAdded,
@@ -168,6 +183,15 @@ class TabSharingUIViews : public TabSharingUI,
   //   "original" session might be an arbitrary non-guest session.)
   bool IsCapturableByCapturer(const Profile* profile) const;
 
+  // Invoked when the app in the capturing tab, which is observed by
+  // `csc_observer_`, invokes a Captured Surface Control API for the first time
+  // within the lifetime of `this` object.
+  //
+  // Note that `OnCapturedSurfaceControl()` is *NOT* overridden by
+  // `TabSharingUIViews`, as `this` observes the captured tab,
+  // whereas `csc_observer_` observes the capturing tab.
+  void OnCapturedSurfaceControlByCapturer();
+
   // As for the purpose of this identification:
   // Assume a tab is captured twice, and both sessions use Region Capture.
   // The blue border falls back on its viewport-encompassing form. But when
@@ -207,13 +231,16 @@ class TabSharingUIViews : public TabSharingUI,
   content::MediaStreamUI::SourceCallback source_callback_;
   base::OnceClosure stop_callback_;
 
-  // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
+  // TODO(crbug.com/40188004): Re-enable favicons by default or drop the code.
   const bool favicons_used_for_switch_to_tab_button_;
 
   const bool app_preferred_current_tab_;
 
   // Indicates whether this instance is used for casting or capturing.
   const TabSharingInfoBarDelegate::TabShareType capture_type_;
+
+  bool captured_surface_control_active_ = false;
+  std::unique_ptr<CapturedSurfaceControlObserver> csc_observer_;
 
   std::optional<uint32_t> capturer_favicon_hash_;
   std::optional<uint32_t> captured_favicon_hash_;

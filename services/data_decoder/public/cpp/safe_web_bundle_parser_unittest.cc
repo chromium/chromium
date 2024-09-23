@@ -15,6 +15,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/constants.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -224,8 +226,9 @@ TEST_F(SafeWebBundleParserTest, OpenInvalidFile) {
              web_package::mojom::BundleMetadataParseErrorPtr error) {
             EXPECT_FALSE(metadata);
             EXPECT_TRUE(error);
-            if (error)
+            if (error) {
               EXPECT_EQ("FILE_ERROR_NOT_FOUND", error->message);
+            }
             *metadata_parsed = true;
           },
           &metadata_parsed));
@@ -240,8 +243,9 @@ TEST_F(SafeWebBundleParserTest, OpenInvalidFile) {
              web_package::mojom::BundleResponseParseErrorPtr error) {
             EXPECT_FALSE(response);
             EXPECT_TRUE(error);
-            if (error)
+            if (error) {
               EXPECT_EQ("FILE_ERROR_NOT_FOUND", error->message);
+            }
             *response_parsed = true;
           },
           &response_parsed));
@@ -352,9 +356,21 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
   EXPECT_EQ(response_error->message, kConnectionError);
 }
 
-TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
-  base::File test_file =
-      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")));
+struct IntegrityBlockInfo {
+  uint64_t size_bytes;
+  uint32_t num_signatures;
+  std::string web_bundle_id;
+};
+
+class SafeSignedWebBundleParserTest
+    : public SafeWebBundleParserTest,
+      public testing::WithParamInterface<
+          std::tuple<base::FilePath, IntegrityBlockInfo, std::string>> {};
+
+TEST_P(SafeSignedWebBundleParserTest, ParseSignedWebBundle) {
+  const auto& [file_path, ib_info, test_suffix] = GetParam();
+
+  base::File test_file = OpenTestFile(file_path);
   SafeWebBundleParser parser = SafeWebBundleParser(
       /*base_url=*/std::nullopt,
       data_decoder::SafeWebBundleParser::GetFileStrategy(std::move(test_file)));
@@ -366,8 +382,14 @@ TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
   auto [integrity_block, integrity_block_error] = integrity_block_future.Take();
   ASSERT_TRUE(integrity_block);
   ASSERT_FALSE(integrity_block_error);
-  ASSERT_EQ(integrity_block->size, 135u);
-  ASSERT_EQ(integrity_block->signature_stack.size(), 1u);
+  ASSERT_EQ(integrity_block->size, ib_info.size_bytes);
+  ASSERT_EQ(integrity_block->signature_stack.size(), ib_info.num_signatures);
+
+  EXPECT_EQ(integrity_block->attributes.web_bundle_id(), ib_info.web_bundle_id);
+
+  integrity_block->attributes =
+      web_package::test::GetAttributesForSignedWebBundleId(
+          ib_info.web_bundle_id);
 
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
@@ -399,6 +421,36 @@ TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
       "text/html; charset=UTF-8");
   EXPECT_TRUE(responses["https://test.example.org/index.html"]);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /**/,
+    SafeSignedWebBundleParserTest,
+    testing::Values(
+        std::make_tuple(base::FilePath(FILE_PATH_LITERAL(
+                            "simple_b2_signed_v2_ed25519.swbn")),
+                        IntegrityBlockInfo(
+                            {.size_bytes = 206u,
+                             .num_signatures = 1u,
+                             .web_bundle_id = "4tkrnsmftl4ggvvdkfth3piainqragus"
+                                              "2qbhf7rlz2a3wo3rh4wqaaic"}),
+                        /*test_suffix=*/"Ed25519_v2"),
+        std::make_tuple(base::FilePath(FILE_PATH_LITERAL(
+                            "simple_b2_signed_v2_ecdsa_p256.swbn")),
+                        IntegrityBlockInfo(
+                            {.size_bytes = 224u,
+                             .num_signatures = 1u,
+                             .web_bundle_id = "amfcf7c4bmpbjbmq4h4yptcobves56hf"
+                                              "dyr7tm3doxqvfmsk5ss6maacai"}),
+                        /*test_suffix=*/"EcdsaP256SHA256_v2"),
+        std::make_tuple(
+            base::FilePath(FILE_PATH_LITERAL("simple_b2_signed_v2.swbn")),
+            IntegrityBlockInfo(
+                {.size_bytes = 343u,
+                 .num_signatures = 2u,
+                 .web_bundle_id = "amfcf7c4bmpbjbmq4h4yptcobves56hfdyr7tm3doxqv"
+                                  "fmsk5ss6maacai"}),
+            /*test_suffix=*/"Ed25519_and_EcdsaP256SHA256_v2")),
+    [](const auto& info) { return std::get<2>(info.param); });
 
 TEST_F(SafeWebBundleParserTest, ParseWebBundleWithRelativeUrls) {
   base::File test_file = OpenTestFile(

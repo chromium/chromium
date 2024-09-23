@@ -164,22 +164,24 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
         "Cannot call '" + property_node.ToFlatString() + "' on null value");
   }
 
-  if (AXElementWrapper::IsValidElement(target))
+  if (AXElementWrapper::IsValidElement(target)) {
     return InvokeForAXElement(AXElementWrapper{target}, property_node);
+  }
 
   if (IsAXTextMarkerRange(target)) {
     return InvokeForAXTextMarkerRange(target, property_node);
   }
 
-  if ([target isKindOfClass:[NSArray class]])
+  if ([target isKindOfClass:[NSArray class]]) {
     return InvokeForArray(target, property_node);
+  }
 
-  if ([target isKindOfClass:[NSDictionary class]])
+  if ([target isKindOfClass:[NSDictionary class]]) {
     return InvokeForDictionary(target, property_node);
+  }
 
-  if (@available(macOS 11.0, *)) {
-    if ([target isKindOfClass:[AXCustomContent class]])
-      return InvokeForAXCustomContent(target, property_node);
+  if ([target isKindOfClass:[AXCustomContent class]]) {
+    return InvokeForAXCustomContent(target, property_node);
   }
 
   LOG(ERROR) << "Unexpected target type for " << property_node.ToFlatString();
@@ -189,19 +191,18 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
 AXOptionalNSObject AXCallStatementInvoker::InvokeForAXCustomContent(
     const id target,
     const AXPropertyNode& property_node) const {
-  if (@available(macOS 11.0, *)) {
-    AXCustomContent* content = target;
+  AXCustomContent* content = target;
 
-    if (property_node.name_or_value == "label")
-      return AXOptionalNSObject(content.label);
-    if (property_node.name_or_value == "value")
-      return AXOptionalNSObject(content.value);
-
-    return AXOptionalNSObject::Error(
-        "Unrecognized '" + property_node.name_or_value +
-        "' attribute called on AXCustomContent object.");
+  if (property_node.name_or_value == "label") {
+    return AXOptionalNSObject(content.label);
   }
-  return AXOptionalNSObject::Error();
+  if (property_node.name_or_value == "value") {
+    return AXOptionalNSObject(content.value);
+  }
+
+  return AXOptionalNSObject::Error(
+      "Unrecognized '" + property_node.name_or_value +
+      "' attribute called on AXCustomContent object.");
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(

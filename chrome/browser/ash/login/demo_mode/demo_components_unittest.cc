@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_components.h"
 
 #include <memory>
 #include <utility>
@@ -11,18 +10,19 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ash/login/demo_mode/demo_components.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
+#include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
 
-using ::component_updater::FakeCrOSComponentManager;
+using ::component_updater::FakeComponentManagerAsh;
 
 constexpr char kResourcesComponent[] = "demo-mode-resources";
 constexpr char kAppComponent[] = "demo-mode-app";
@@ -47,39 +47,38 @@ class DemoComponentsTest : public testing::Test {
 
   ~DemoComponentsTest() override = default;
 
-  void SetUp() override { InitializeCrosComponentManager(); }
+  void SetUp() override { InitializeComponentManager(); }
 
   void TearDown() override {
-    cros_component_manager_ = nullptr;
-    browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
+    component_manager_ash_ = nullptr;
+    browser_process_platform_part_test_api_.ShutdownComponentManager();
   }
 
  protected:
   bool FinishComponentLoad(const std::string& component_name,
                            const base::FilePath& mount_path) {
-    EXPECT_TRUE(cros_component_manager_->HasPendingInstall(component_name));
-    EXPECT_TRUE(cros_component_manager_->UpdateRequested(component_name));
+    EXPECT_TRUE(component_manager_ash_->HasPendingInstall(component_name));
+    EXPECT_TRUE(component_manager_ash_->UpdateRequested(component_name));
 
-    return cros_component_manager_->FinishLoadRequest(
-        component_name,
-        FakeCrOSComponentManager::ComponentInfo(
-            component_updater::CrOSComponentManager::Error::NONE,
-            base::FilePath("/dev/null"), mount_path));
+    return component_manager_ash_->FinishLoadRequest(
+        component_name, FakeComponentManagerAsh::ComponentInfo(
+                            component_updater::ComponentManagerAsh::Error::NONE,
+                            base::FilePath("/dev/null"), mount_path));
   }
 
-  void InitializeCrosComponentManager() {
-    auto fake_cros_component_manager =
-        base::MakeRefCounted<FakeCrOSComponentManager>();
-    fake_cros_component_manager->set_queue_load_requests(true);
-    fake_cros_component_manager->set_supported_components(
+  void InitializeComponentManager() {
+    auto fake_component_manager_ash =
+        base::MakeRefCounted<FakeComponentManagerAsh>();
+    fake_component_manager_ash->set_queue_load_requests(true);
+    fake_component_manager_ash->set_supported_components(
         {kResourcesComponent, kAppComponent});
-    cros_component_manager_ = fake_cros_component_manager.get();
+    component_manager_ash_ = fake_component_manager_ash.get();
 
-    browser_process_platform_part_test_api_.InitializeCrosComponentManager(
-        std::move(fake_cros_component_manager));
+    browser_process_platform_part_test_api_.InitializeComponentManager(
+        std::move(fake_component_manager_ash));
   }
 
-  raw_ptr<FakeCrOSComponentManager> cros_component_manager_ = nullptr;
+  raw_ptr<FakeComponentManagerAsh> component_manager_ash_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
 
  private:
@@ -120,7 +119,7 @@ TEST_F(DemoComponentsTest, LoadResourcesComponent) {
 
   ASSERT_TRUE(FinishComponentLoad(
       kResourcesComponent, base::FilePath(kTestDemoModeResourcesMountPoint)));
-  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kResourcesComponent));
+  EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kResourcesComponent));
   EXPECT_TRUE(demo_components.resources_component_loaded());
 }
 
@@ -146,7 +145,7 @@ TEST_F(DemoComponentsTest, EnsureResourcesLoadedRepeatedly) {
 
   ASSERT_TRUE(FinishComponentLoad(
       kResourcesComponent, base::FilePath(kTestDemoModeResourcesMountPoint)));
-  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kResourcesComponent));
+  EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kResourcesComponent));
 
   EXPECT_TRUE(demo_components.resources_component_loaded());
   EXPECT_TRUE(first_callback_called);
@@ -173,7 +172,7 @@ TEST_F(DemoComponentsTest, LoadAppComponent) {
   ASSERT_TRUE(FinishComponentLoad(kAppComponent,
                                   base::FilePath(kTestDemoModeAppMountPoint)));
 
-  EXPECT_FALSE(cros_component_manager_->HasPendingInstall(kAppComponent));
+  EXPECT_FALSE(component_manager_ash_->HasPendingInstall(kAppComponent));
   EXPECT_EQ(demo_cros_components.default_app_component_path().value(),
             kTestDemoModeAppMountPoint);
 }

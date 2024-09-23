@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 
+#include "base/debug/dump_without_crashing.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
@@ -93,7 +95,7 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
         base::StringPrintf("%s.%s", api_name_.c_str(), method_name.c_str());
     v8::Global<v8::Function>& entry = (*map)[qualified_method_name];
     if (!entry.IsEmpty()) {
-      NOTREACHED() << "Hooks can only be set once.";
+      NOTREACHED_IN_MIGRATION() << "Hooks can only be set once.";
       return;
     }
     entry.Reset(isolate, hook);
@@ -151,7 +153,7 @@ struct APIHooksPerContextData : public base::SupportsUserData::Data {
     }
   }
 
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate;
+  raw_ptr<v8::Isolate> isolate;
 
   std::map<std::string, v8::Global<v8::Object>> hook_interfaces;
 
@@ -233,7 +235,8 @@ void CompleteHandleRequestHelper(
     // TODO(tjudkins): Audit existing handle request custom hooks to see if this
     // could happen in any of them. crbug.com/1298409 seemed to indicate this
     // was happening, hence why we fail gracefully here to avoid a crash.
-    NOTREACHED() << "No callback found for the specified request ID.";
+    LOG(ERROR) << "No callback found for the specified request ID.";
+    base::debug::DumpWithoutCrashing();
     return;
   }
   auto callback = std::move(iter->second);

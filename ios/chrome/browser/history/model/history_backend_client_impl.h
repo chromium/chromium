@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_BACKEND_CLIENT_IMPL_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_BACKEND_CLIENT_IMPL_H_
 
-#include <vector>
-
 #include "base/memory/scoped_refptr.h"
 #include "components/history/core/browser/history_backend_client.h"
 
@@ -18,9 +16,9 @@ class ModelLoader;
 
 class HistoryBackendClientImpl : public history::HistoryBackendClient {
  public:
-  // `model_loaders` may be empty, but may not contain the nullptr loader.
+  // `model_loader` may be nullptr.
   explicit HistoryBackendClientImpl(
-      std::vector<scoped_refptr<bookmarks::ModelLoader>> model_loaders);
+      scoped_refptr<bookmarks::ModelLoader> model_loader);
   HistoryBackendClientImpl(const HistoryBackendClientImpl&) = delete;
   HistoryBackendClientImpl& operator=(const HistoryBackendClientImpl&) = delete;
 
@@ -32,8 +30,8 @@ class HistoryBackendClientImpl : public history::HistoryBackendClient {
   std::vector<history::URLAndTitle> GetPinnedURLs() override;
   bool IsWebSafe(const GURL& url) override;
 
-  // ModelLoader is used to access bookmarks. May be empty during testing.
-  std::vector<scoped_refptr<bookmarks::ModelLoader>> model_loaders_;
+  // ModelLoader is used to access bookmarks.
+  const scoped_refptr<bookmarks::ModelLoader> model_loader_;
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_BACKEND_CLIENT_IMPL_H_

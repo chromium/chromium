@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace gpu {
@@ -255,35 +256,27 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
   wgpu::Queue queue = device_.GetQueue();
   queue.Submit(1, &commandBuffer);
 
-  struct MapCallbackData {
-    base::AtomicFlag map_complete;
-    WGPUBufferMapAsyncStatus status;
-  };
-
   // Map the staging buffer for read.
   std::vector<SkPixmap> staging_pixmaps;
   for (int plane_index = 0;
        plane_index < static_cast<int>(staging_buffers.size()); ++plane_index) {
     const auto& staging_buffer_entry = staging_buffers[plane_index];
 
-    MapCallbackData map_callback_data;
-    staging_buffer_entry.buffer.MapAsync(
+    bool success = false;
+    wgpu::FutureWaitInfo wait_info = {staging_buffer_entry.buffer.MapAsync(
         wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
-        [](WGPUBufferMapAsyncStatus status, void* void_userdata) {
-          MapCallbackData* userdata =
-              static_cast<MapCallbackData*>(void_userdata);
-          userdata->status = status;
-          userdata->map_complete.Set();
+        wgpu::CallbackMode::WaitAnyOnly,
+        [](wgpu::MapAsyncStatus status, const char*, bool* success) {
+          *success = status == wgpu::MapAsyncStatus::Success;
         },
-        &map_callback_data);
+        &success)};
 
-    // Poll for the map to complete.
-    while (!map_callback_data.map_complete.IsSet()) {
-      base::PlatformThread::Sleep(base::Milliseconds(1));
-      device_.Tick();
+    if (device_.GetAdapter().GetInstance().WaitAny(1, &wait_info, UINT64_MAX) !=
+        wgpu::WaitStatus::Success) {
+      return false;
     }
 
-    if (map_callback_data.status != WGPUBufferMapAsyncStatus_Success) {
+    if (!wait_info.completed || !success) {
       return false;
     }
 
@@ -295,7 +288,8 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
 }
 
 wgpu::Texture DawnFallbackImageRepresentation::BeginAccess(
-    wgpu::TextureUsage wgpu_texture_usage) {
+    wgpu::TextureUsage wgpu_texture_usage,
+    wgpu::TextureUsage internal_usage) {
   const std::string debug_label = "DawnFallbackSharedImageRep(" +
                                   CreateLabelForSharedImageUsage(usage()) + ")";
 
@@ -312,15 +306,24 @@ wgpu::Texture DawnFallbackImageRepresentation::BeginAccess(
   texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.viewFormats = view_formats_.data();
 
-  // We need to have internal usages of CopySrc & CopyDst for copies. If texture
-  // is not for video frame import, we also need RenderAttachment usage for
-  // clears, and TextureBinding for copyTextureForBrowser.
+  // Note: The texture must be internally copyable as this class itself uses the
+  // texture as the dest and source of copies for readback from and upload to
+  // the backing respectively.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                               wgpu::TextureUsage::CopyDst |
-                               wgpu::TextureUsage::TextureBinding;
-  if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
-    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    internalDesc.internalUsage = internal_usage | wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::CopyDst;
+  } else {
+    // If texture is not for video frame import, we need RenderAttachment usage
+    // for clears, and TextureBinding for copyTextureForBrowser.
+    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::CopyDst |
+                                 wgpu::TextureUsage::TextureBinding;
+
+    if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
+      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+    }
   }
 
   texture_descriptor.nextInChain = &internalDesc;

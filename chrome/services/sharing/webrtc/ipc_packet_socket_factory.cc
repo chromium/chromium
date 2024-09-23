@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 
 #include <stddef.h>
@@ -53,13 +58,16 @@ bool JingleSocketOptionToP2PSocketOption(rtc::Socket::Option option,
     case rtc::Socket::OPT_DSCP:
       *ipc_option = network::P2P_SOCKET_OPT_DSCP;
       break;
+    case rtc::Socket::OPT_RECV_ECN:
+      *ipc_option = network::P2P_SOCKET_OPT_RECV_ECN;
+      break;
     case rtc::Socket::OPT_DONTFRAGMENT:
     case rtc::Socket::OPT_NODELAY:
     case rtc::Socket::OPT_IPV6_V6ONLY:
     case rtc::Socket::OPT_RTP_SENDTIME_EXTN_ID:
       return false;  // Not supported by the chrome sockets.
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   return true;
@@ -351,7 +359,7 @@ int IpcPacketSocket::SendTo(const void* data,
 
   switch (state_) {
     case IS_UNINITIALIZED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       error_ = EWOULDBLOCK;
       return -1;
     case IS_OPENING:
@@ -368,7 +376,7 @@ int IpcPacketSocket::SendTo(const void* data,
   }
 
   if (data_size == 0) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
@@ -394,7 +402,7 @@ int IpcPacketSocket::SendTo(const void* data,
                    << address.ipaddr().ToSensitiveString()
                    << ", remote_address_="
                    << remote_address_.ipaddr().ToSensitiveString();
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       error_ = EINVAL;
       return -1;
     }
@@ -431,7 +439,7 @@ rtc::AsyncPacketSocket::State IpcPacketSocket::GetState() const {
 
   switch (state_) {
     case IS_UNINITIALIZED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return STATE_CLOSED;
 
     case IS_OPENING:
@@ -449,7 +457,7 @@ rtc::AsyncPacketSocket::State IpcPacketSocket::GetState() const {
       return STATE_CLOSED;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return STATE_CLOSED;
 }
 
@@ -506,7 +514,7 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
 
   if (!webrtc::IPEndPointToSocketAddress(local_address, &local_address_)) {
     // Always expect correct IPv4 address to be allocated.
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     OnError();
     return;
   }
@@ -599,7 +607,7 @@ void IpcPacketSocket::OnDataReceived(const net::IPEndPoint& address,
     if (!webrtc::IPEndPointToSocketAddress(address, &address_lj)) {
       // We should always be able to convert address here because we
       // don't expect IPv6 address on IPv4 connections.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     }
   }
@@ -674,7 +682,7 @@ void AsyncDnsAddressResolverImpl::OnAddressResolved(
     rtc::SocketAddress socket_address;
     if (!webrtc::IPEndPointToSocketAddress(net::IPEndPoint(address, 0),
                                            &socket_address)) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
     addresses_.push_back(socket_address.ipaddr());
   }
@@ -711,15 +719,13 @@ rtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
     uint16_t min_port,
     uint16_t max_port,
     int opts) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
     const rtc::SocketAddress& local_address,
     const rtc::SocketAddress& remote_address,
-    const rtc::ProxyInfo& proxy_info,
-    const std::string& user_agent,
     const rtc::PacketSocketTcpOptions& opts) {
   network::P2PSocketType type;
   if (opts.opts & rtc::PacketSocketFactory::OPT_SSLTCP) {

@@ -21,12 +21,6 @@ class VIEWS_EXPORT TableHeader : public View {
   METADATA_HEADER(TableHeader, View)
 
  public:
-  // Amount the text is padded on the left/right side.
-  static const int kHorizontalPadding;
-
-  // Amount of space reserved for the indicator and padding.
-  static const int kSortIndicatorWidth;
-
   explicit TableHeader(base::WeakPtr<TableView> table);
   TableHeader(const TableHeader&) = delete;
   TableHeader& operator=(const TableHeader&) = delete;
@@ -41,9 +35,15 @@ class VIEWS_EXPORT TableHeader : public View {
   // corresponding virtual accessibility views.
   void UpdateFocusState();
 
+  // TableHeader customization getters.
+  int GetVerticalPadding() const;
+  int GetHorizontalPadding() const;
+  int GetSortIndicatorWidth() const;
+
   // views::View overrides.
   void OnPaint(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& /*available_size*/) const override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
   void AddedToWidget() override;

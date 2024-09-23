@@ -115,8 +115,8 @@ void PersistentWindowController::OnDisplayAdded(
                      base::Unretained(this));
 }
 
-void PersistentWindowController::OnDisplayRemoved(
-    const display::Display& old_display) {
+void PersistentWindowController::OnWillRemoveDisplays(
+    const display::Displays& removed_displays) {
   for (const auto& [window, restore_bounds_in_parent] :
        need_persistent_info_windows_.window_restore_bounds_map()) {
     WindowState* window_state = WindowState::Get(window);
@@ -125,7 +125,9 @@ void PersistentWindowController::OnDisplayRemoved(
         /*for_display_removal=*/true);
   }
   need_persistent_info_windows_.RemoveAll();
-  is_landscape_orientation_map_.erase(old_display.id());
+  for (const auto& removed : removed_displays) {
+    is_landscape_orientation_map_.erase(removed.id());
+  }
 }
 
 void PersistentWindowController::OnDisplayMetricsChanged(
@@ -256,10 +258,9 @@ void PersistentWindowController::
     const auto& display =
         display_manager->GetDisplayForId(persistent_display_id);
 
-    const auto& persistent_display_bounds = info->display_bounds_in_screen();
-    // It is possible to have display size change, such as changing cable, bad
-    // cable signal etc., but it should be rare.
-    if (display.bounds().size() != persistent_display_bounds.size()) {
+    // It is possible to have display size in pixel changes, such as changing
+    // cable, bad cable signal etc., but it should be rare.
+    if (display.GetSizeInPixel() != info->display_size_in_pixel()) {
       continue;
     }
     const int64_t display_id_after_removal = info->display_id_after_removal();
@@ -279,7 +280,7 @@ void PersistentWindowController::
       // |persistent_window_bounds| is associated with the right target display.
       gfx::Rect persistent_window_bounds = info->window_bounds_in_screen();
       const gfx::Vector2d offset = display.bounds().OffsetFromOrigin() -
-                                   persistent_display_bounds.OffsetFromOrigin();
+                                   info->display_offset_from_origin_in_screen();
       persistent_window_bounds.Offset(offset);
       window->SetBoundsInScreen(persistent_window_bounds, display);
     }

@@ -49,7 +49,7 @@ openscreen::cast::EncodedFrame DecoderBufferToEncodedFrame(
   encoded_frame.reference_time = openscreen::Clock::time_point(timestamp);
 
   encoded_frame.data = openscreen::ByteView(decoder_buffer->writable_data(),
-                                            decoder_buffer->data_size());
+                                            decoder_buffer->size());
 
   return encoded_frame;
 }
@@ -127,7 +127,7 @@ void CastStreamingTestSender::Start(
                      base::Unretained(this)));
   sender_session_ = std::make_unique<openscreen::cast::SenderSession>(
       openscreen::cast::SenderSession::Configuration{
-          openscreen::IPAddress::kV4LoopbackAddress(), this, &environment_,
+          openscreen::IPAddress::kV4LoopbackAddress(), *this, &environment_,
           message_port_.get(), kSenderId, kReceiverId,
           true /* use_android_rtp_hack */});
 
@@ -151,8 +151,9 @@ void CastStreamingTestSender::Stop() {
 
   // Disconnect the message port before destructing its client.
   if (message_port_) {
-    // TODO(crbug.com/1420075): CastMessagePortSender should be RAII and clean itself during
-    // the destruction instead of relying the client to call its ResetClient function.
+    // TODO(crbug.com/42050578): CastMessagePortSender should be RAII and clean
+    // itself during the destruction instead of relying the client to call its
+    // ResetClient function.
     message_port_->ResetClient();
   }
   sender_session_.reset();
@@ -263,7 +264,7 @@ void CastStreamingTestSender::OnNegotiated(
 
 void CastStreamingTestSender::OnError(
     const openscreen::cast::SenderSession* session,
-    openscreen::Error error) {
+    const openscreen::Error& error) {
   LOG(ERROR) << "Sender Session error: " << error.ToString();
   CHECK_EQ(session, sender_session_.get());
   Stop();

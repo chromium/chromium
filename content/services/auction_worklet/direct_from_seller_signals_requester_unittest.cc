@@ -84,8 +84,9 @@ class DirectFromSellerSignalsRequesterTest : public testing::Test {
           if (!errors.empty()) {
             EXPECT_TRUE(value->IsNull());
             signals = base::JoinString(errors, "\n");
-          } else if (v8_helper_->ExtractJson(context, value, &signals) !=
-                     AuctionV8Helper::ExtractJsonResult::kSuccess) {
+          } else if (v8_helper_->ExtractJson(
+                         context, value, /*script_timeout=*/nullptr,
+                         &signals) != AuctionV8Helper::Result::kSuccess) {
             signals = "JSON extraction failed.";
           }
 

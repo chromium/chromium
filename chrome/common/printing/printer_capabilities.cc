@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -129,6 +128,8 @@ base::Value AssemblePrinterCapabilities(const std::string& device_name,
 #if BUILDFLAG(PRINT_MEDIA_L10N_ENABLED)
   bool populate_paper_names = true;
 #if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/339188518): Is this needed on Linux?
+  //
   // Paper display name localization and vendor ID assignment is intended for
   // use with the CUPS IPP backend. If the CUPS IPP backend is not enabled,
   // localization will not properly occur.

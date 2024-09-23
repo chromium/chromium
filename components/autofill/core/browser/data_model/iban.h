@@ -16,6 +16,8 @@
 
 namespace autofill {
 
+struct PaymentsMetadata;
+
 // A form group that stores IBAN information.
 class Iban : public AutofillDataModel {
  public:
@@ -41,6 +43,91 @@ class Iban : public AutofillDataModel {
     // the GPay server to view. The server IBAN will be synced across all
     // devices.
     kServerIban,
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class IbanSupportedCountry {
+    kUnsupported = 0,
+    kAD = 1,   // Andorra
+    kAE = 2,   // United Arab Emirates
+    kAL = 3,   // Albania
+    kAT = 4,   // Austria
+    kAZ = 5,   // Azerbaijan
+    kBA = 6,   // Bosnia and Herzegovina
+    kBE = 7,   // Belgium
+    kBG = 8,   // Bulgaria
+    kBH = 9,   // Bahrain
+    kBR = 10,  // Brazil
+    kBY = 11,  // Belarus
+    kCH = 12,  // Switzerland
+    kCR = 13,  // Costa Rica
+    kCY = 14,  // Cyprus
+    kCZ = 15,  // Czech Republic
+    kDE = 16,  // Germany
+    kDK = 17,  // Denmark
+    kDO = 18,  // Dominican Republic
+    kEE = 19,  // Estonia
+    kEG = 20,  // Egypt
+    kES = 21,  // Spain
+    kFI = 22,  // Finland
+    kFO = 23,  // Faroe Islands
+    kFR = 24,  // France
+    kGB = 25,  // United Kingdom
+    kGE = 26,  // Georgia
+    kGI = 27,  // Gibraltar
+    kGL = 28,  // Greenland
+    kGR = 29,  // Greece
+    kGT = 30,  // Guatemala
+    kHR = 31,  // Croatia
+    kHU = 32,  // Hungary
+    kIL = 33,  // Israel
+    kIQ = 34,  // Iraq
+    kIS = 35,  // Iceland
+    kIT = 36,  // Italy
+    kJO = 37,  // Jordan
+    kKW = 38,  // Kuwait
+    kKZ = 39,  // Kazakhstan
+    kLB = 40,  // Lebanon
+    kLC = 41,  // Saint Lucia
+    kLI = 42,  // Liechtenstein
+    kLT = 43,  // Lithuania
+    kLU = 44,  // Luxembourg
+    kLV = 45,  // Latvia
+    kLY = 46,  // Libya
+    kMC = 47,  // Monaco
+    kMD = 48,  // Moldova
+    kME = 49,  // Montenegro
+    kMK = 50,  // North Macedonia
+    kMR = 51,  // Mauritania
+    kMT = 52,  // Malta
+    kMU = 53,  // Mauritius
+    kNL = 54,  // Netherlands
+    kPK = 55,  // Pakistan
+    kPL = 56,  // Poland
+    kPS = 57,  // Palestinian territories
+    kPT = 58,  // Portugal
+    kQA = 59,  // Qatar
+    kRO = 60,  // Romania
+    kRS = 61,  // Serbia
+    kRU = 62,  // Russia
+    kSA = 63,  // Saudi Arabia
+    kSC = 64,  // Seychelles
+    kSD = 65,  // Sudan
+    kSE = 66,  // Sweden
+    kSI = 67,  // Slovenia
+    kSK = 68,  // Slovakia
+    kSM = 69,  // San Marino
+    kST = 70,  // São Tomé and Príncipe
+    kSV = 71,  // El Salvador
+    kTL = 72,  // East Timor
+    kTN = 73,  // Tunisia
+    kTR = 74,  // Turkey
+    kUA = 75,  // Ukraine
+    kVA = 76,  // Vatican City
+    kVG = 77,  // Virgin Islands, British
+    kXK = 78,  // Kosovo
+    kMaxValue = kXK,
   };
 
   // Creates an IBAN with `kUnknown` record type.
@@ -72,12 +159,19 @@ class Iban : public AutofillDataModel {
   // https://en.wikipedia.org/wiki/International_Bank_Account_Number#Algorithms
   static bool IsValid(const std::u16string& value);
 
+  // Returns the capitalized country code of the given `iban_value`.
+  static std::string GetCountryCode(const std::u16string& iban_value);
+
   // Returns true if `country_code` is in the IBAN-supported country list.
   static bool IsIbanApplicableInCountry(const std::string& country_code);
 
-  // AutofillDataModel:
-  AutofillMetadata GetMetadata() const override;
-  bool SetMetadata(const AutofillMetadata& metadata) override;
+  static IbanSupportedCountry GetIbanSupportedCountry(
+      std::string_view country_code);
+
+  static size_t GetLengthOfIbanCountry(IbanSupportedCountry supported_country);
+
+  PaymentsMetadata GetMetadata() const;
+  bool SetMetadata(const PaymentsMetadata& metadata);
 
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
@@ -88,13 +182,14 @@ class Iban : public AutofillDataModel {
   // Returns true if there are no values (field types) set.
   bool IsEmpty(const std::string& app_locale) const;
 
-  // Comparison for Sync. Returns 0 if |iban| is the same as this, or < 0,
-  // or > 0 if it is different. The implied ordering can be used for culling
+  // Returns 0 if `iban` is the same as this, or < 0, or > 0 if it is different.
+  // It compares `identifier_`, `value_`, `prefix_`, `suffix_`, `nickname_`,
+  // `length_` and `record_type_`. The implied ordering can be used for culling
   // duplicates. The ordering is based on the collation order of the textual
   // contents of the fields.
   int Compare(const Iban& iban) const;
 
-  // Equality operators compare GUIDs, origins, |value_| and |nickname_|.
+  // Equality operators call `Compare()` above.
   bool operator==(const Iban& iban) const;
 
   void set_identifier(const absl::variant<Guid, InstrumentId>& identifier);
@@ -121,39 +216,32 @@ class Iban : public AutofillDataModel {
   void set_prefix(std::u16string prefix);
   const std::u16string& suffix() const { return suffix_; }
   void set_suffix(std::u16string suffix);
-  int length() const { return length_; }
-  void set_length(int length);
 
   // For local IBANs, checks on `IsValid(value_)`. Always returns true for
   // server-based IBANs because server-based IBANs don't store the full `value`.
   bool IsValid();
 
+  // Returns the capitalized country code of this IBAN.
+  std::string GetCountryCode() const;
+
   // Logs the number of days since this IBAN was last used, increments its use
   // count, and updates its last used date to today.
   void RecordAndLogUse();
 
-  // Construct an IBAN identifier from `prefix_`, `suffix_`, `length_` (and
-  // `value_` if it's a local-based IBAN) by the following rules:
-  // 1. Always reveal the first and the last four characters.
-  // 2. Mask the remaining digits if `is_value_masked` is true, otherwise,
-  //    display the digits. `is_value_masked` is true only for local IBANs
-  //    because revealing a server IBAN needs an additional retrieval step from
-  //    the GPay server.
-  // 3. The identifier string will be arranged in groups of four with a space
-  //    between each group.
-  //
-  // Note: The condition "is_value_masked" being false will not function
-  //       properly for IBANs with the "kServerIban" record type.
+  // Construct an IBAN identifier from `prefix_` and `suffix_`.
+  // If `is_value_masked` is true, the identifier is constructed by
+  // first 2 country code (prefix) + space + 2 masking dots + suffix.
   // Here are some examples:
-  // BE71 0961 2345 6769 will be shown as: BE71 **** **** 6769.
-  // CH56 0483 5012 3456 7800 9 will be shown as: CH56 **** **** **** *800 9.
-  // DE91 1000 0000 0123 4567 89 will be shown as: DE91 **** **** **** **67 89.
+  // BE71 0961 2345 6769 will be shown as: BE **6769.
+  // CH56 0483 5012 3456 7800 9 will be shown as: CH **8009.
+  // DE91 1000 0000 0123 4567 89 will be shown as: DE **6789.
+  // Otherwise, the full unmasked value is shown in groups of four characters.
   std::u16string GetIdentifierStringForAutofillDisplay(
       bool is_value_masked = true) const;
 
-  // Returns true if the `prefix_`, `suffix_` and `length_` of the given `iban`
-  // matches this IBAN.
-  bool MatchesPrefixSuffixAndLength(const Iban& iban) const;
+  // Returns true if the `prefix_` and `suffix_` of the given `iban` matches
+  // this IBAN.
+  bool MatchesPrefixAndSuffix(const Iban& iban) const;
 
  private:
   // To distinguish between local IBANs, utilize the Guid as the identifier. For
@@ -171,13 +259,11 @@ class Iban : public AutofillDataModel {
   RecordType record_type_;
 
   // `prefix_` and `suffix_` are the beginning and ending characters of the
-  // IBAN's value, respectively. `length_` is the length of the complete IBAN
-  // value, ignoring spaces. These three fields are used when showing the IBAN
+  // IBAN's value, respectively. These two fields are used when showing the IBAN
   // to the user in a masked format, where the prefix and suffix are shown
   // but all characters between them stay masked.
   std::u16string prefix_;
   std::u16string suffix_;
-  int length_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& os, const Iban& iban);

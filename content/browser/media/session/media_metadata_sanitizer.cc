@@ -59,16 +59,16 @@ bool CheckMediaImageSanity(const media_session::MediaImage& image) {
 }
 
 bool CheckChapterInformationSanity(
-    const media_session::mojom::ChapterInformationPtr& chapter) {
-  if (chapter->title.size() > kMaxIPCStringLength) {
+    const media_session::ChapterInformation& chapter) {
+  if (chapter.title().size() > kMaxIPCStringLength) {
     return false;
   }
 
-  if (chapter->startTime < base::Seconds(0)) {
+  if (chapter.startTime() < base::Seconds(0)) {
     return false;
   }
 
-  for (const auto& image : chapter->artwork) {
+  for (const auto& image : chapter.artwork()) {
     if (!CheckMediaImageSanity(image)) {
       return false;
     }

@@ -1,0 +1,9 @@
+Name: Protocol Buffers (javascript)
+Short Name: protobuf-javascript
+URL: https://github.com/protocolbuffers/protobuf-javascript
+License: BSD
+License File: LICENSE
+Version: 3.21.2
+Revision: e34549db516f8712f678fcd4bc411613b5cc5295
+Security Critical: yes
+Shipped: yes

@@ -49,6 +49,11 @@ mojom::ExecutionWorld ProgrammaticScriptInjector::GetExecutionWorld() const {
   return params_->injection->get_js()->world;
 }
 
+const std::optional<std::string>&
+ProgrammaticScriptInjector::GetExecutionWorldId() const {
+  return params_->injection->get_js()->world_id;
+}
+
 mojom::CSSOrigin ProgrammaticScriptInjector::GetCssOrigin() const {
   DCHECK(params_->injection->is_css());
   return params_->injection->get_css()->css_origin;

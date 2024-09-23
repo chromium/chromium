@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("auth") {
+  sources = [
+    "chrome_login_performer.cc",
+    "chrome_login_performer.h",
+    "chrome_safe_mode_delegate.cc",
+    "chrome_safe_mode_delegate.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/login/osauth",
+    "//chromeos/ash/components/early_prefs:reader",
+    "//chromeos/ash/components/login/auth",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//components/user_manager:common",
+    "//google_apis",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/login",
+    "//chrome/browser/ash/profiles",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/osauth/impl",
+    "//chromeos/ash/components/settings",
+    "//components/account_id",
+    "//components/signin/public/identity_manager",
+    "//services/network/public/cpp",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}

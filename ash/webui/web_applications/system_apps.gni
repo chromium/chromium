@@ -9,7 +9,7 @@ declare_args() {
 system_app_closure_flags =
     default_closure_args + [
       "jscomp_error=strictCheckTypes",
-      "language_in=ECMASCRIPT_2018",
+      "language_in=ECMASCRIPT_2020",
 
       # TODO(crbug/1048973): Remove these when the mojo bindings
       # js is updated to pass a closure compile check.

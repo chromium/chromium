@@ -4,8 +4,6 @@
 
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
-#include <optional>
-
 using blink::mojom::EmbeddedPermissionControlClient;
 using blink::mojom::PermissionName;
 
@@ -17,7 +15,7 @@ namespace {
 // type, so as to limit the potential for abuse/misuse, for example: embedded
 // iframes can be intentionally disruptive by appending too many embedded
 // permission elements.
-// TODO(crbug.com/1462930): Add a command line switch to disable the check
+// TODO(crbug.com/40275129): Add a command line switch to disable the check
 // policy and other security measures.
 constexpr static int kMaxPEPCPerPage = 2;
 

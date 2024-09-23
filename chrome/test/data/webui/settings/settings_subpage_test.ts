@@ -75,11 +75,11 @@ suite('SettingsSubpage', function() {
     // Check that the help icon only shows up when a |learnMoreUrl| is
     // specified.
     assertFalse(
-        !!subpage.shadowRoot!.querySelector('[iron-icon="cr:help-outline"]'));
+        !!subpage.shadowRoot!.querySelector('[cr-icon="cr:help-outline"]'));
     subpage.learnMoreUrl = 'https://www.chromium.org';
     flush();
     const icon = subpage.shadowRoot!.querySelector<HTMLElement>(
-        '[iron-icon="cr:help-outline"]');
+        '[cr-icon="cr:help-outline"]');
     assertTrue(!!icon);
     // Check that the icon is forced to always use 'ltr' mode.
     assertEquals('ltr', icon!.getAttribute('dir'));

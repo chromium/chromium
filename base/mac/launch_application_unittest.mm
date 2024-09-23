@@ -9,6 +9,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -44,9 +45,11 @@ void ReadLaunchEventsFromFifo(
   std::string data;
   while (true) {
     char buf[4096];
-    int read_count = f.ReadAtCurrentPosNoBestEffort(buf, sizeof buf);
-    if (read_count) {
-      data += std::string(buf, read_count);
+    std::optional<size_t> read_count =
+        f.ReadAtCurrentPosNoBestEffort(base::as_writable_byte_span(buf));
+    ASSERT_TRUE(read_count.has_value());
+    if (read_count.value()) {
+      data += std::string_view(buf, read_count.value());
       // Assume that at any point the beginning of the data buffer is the start
       // of a plist. Search for the first end, and parse that substring.
       size_t end_of_plist;
@@ -133,6 +136,14 @@ class LaunchApplicationTest : public testing::Test {
     ASSERT_TRUE(base::CopyFile(
         asan_library_path,
         destination_executable_path.Append(asan_library_path.BaseName())));
+#endif
+
+#if defined(UNDEFINED_SANITIZER)
+    const base::FilePath ubsan_library_path =
+        data_root.AppendASCII("libclang_rt.ubsan_osx_dynamic.dylib");
+    ASSERT_TRUE(base::CopyFile(
+        ubsan_library_path,
+        destination_executable_path.Append(ubsan_library_path.BaseName())));
 #endif
 
     // Generate the Plist file

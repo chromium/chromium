@@ -67,7 +67,7 @@ enum Event {
   kMediaStartedPlaying = 27,   // Native / Automation
   kMediaStoppedPlaying = 28,   // Native / Automation
   kMenuEnd = 29,               // Native / web: menu interaction has ended.
-  kMenuListValueChanged = 30,  // Web
+  kMenuListValueChangedDeprecated = 30,  // Web
   kMenuPopupEnd = 31,          // Native / web: a menu/submenu is hidden/closed.
   kMenuPopupStart = 32,        // Native / web: a menu/submenu is shown/opened.
   kMenuStart = 33,             // Native / web: menu interaction has begun.
@@ -112,8 +112,8 @@ enum Event {
 // Web: this attribute is only used in web content.
 //
 // Native: this attribute is only used in native UI.
-// Next version: 6
-// Next value: 211
+// Next version: 8
+// Next value: 213
 [Extensible, Stable, Uuid="d258eb73-e0cc-490c-b881-80ee11d3fec2"]
 enum Role {
   [Default]kUnknown = 181, // The role has not been set.
@@ -155,12 +155,12 @@ enum Role {
   kDateTime = 28,
   kDefinition = 29,
   kDescriptionList = 30,
-  kDescriptionListDetail = 31,
-  kDescriptionListTerm = 32,
+  kDescriptionListDetailDeprecated = 31, // Replaced with kDefinition.
+  kDescriptionListTermDeprecated = 32,  // Replaced with kTerm.
   kDesktop = 33,  // internal
   kDetails = 34,
   kDialog = 35,
-  kDirectory = 36,
+  kDirectoryDeprecated = 36,
   kDisclosureTriangle = 37,
   [MinVersion=5] kDisclosureTriangleGrouped = 210,
   // --------------------------------------------------------------
@@ -216,7 +216,7 @@ enum Role {
   kFigcaption = 83,
   kFigure = 84,
   kFooter = 85,
-  kFooterAsNonLandmark = 86,
+  kSectionFooter = 86, // Previously kFooterAsNonLandmark.
   kForm = 87,
   kGenericContainer = 88,
   // --------------------------------------------------------------
@@ -228,9 +228,10 @@ enum Role {
   // End ARIA Graphics module roles.
   // --------------------------------------------------------------
   kGrid = 92,
+  [MinVersion=7] kGridCell = 212,
   kGroup = 93,
   kHeader = 94,
-  kHeaderAsNonLandmark = 95,
+  kSectionHeader = 95, // Previously kHeaderAsNonLandmark.
   kHeading = 96,
   kIframe = 97,
   kIframePresentational = 98,
@@ -303,7 +304,7 @@ enum Role {
   // kPopUpButton is used for a button role that has a popup. It is not a
   // combobox which can contain a value and associated list of values.
   kPopUpButton = 137,
-  kPortal = 138,
+  kPortalDeprecated = 138,
   kPreDeprecated = 139,
   kProgressIndicator = 140,
   kRadioButton = 141,
@@ -320,6 +321,7 @@ enum Role {
   kSearch = 152,
   kSearchBox = 153,
   kSection = 154,
+  [MinVersion=6] kSectionWithoutName = 211,
   kSlider = 155,
   kSpinButton = 156,
   kSplitter = 157,
@@ -571,8 +573,8 @@ enum Mutation {
   kSubtreeUpdateEnd,
 };
 
-// Next version: 4
-// Next value: 36
+// Next version: 7
+// Next value: 41
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -585,6 +587,13 @@ enum StringAttribute {
   kAutoComplete = 4,
   [MinVersion=2] kAriaBrailleLabel = 33,
   [MinVersion=2] kAriaBrailleRoleDescription = 34,
+  [MinVersion=6] kAriaCellColumnIndexText = 39,
+  [MinVersion=6] kAriaCellRowIndexText = 40,
+  // Deprecated - Do not use.
+  // These attributes are replaced by its `StringListAttribute` equivalents to
+  // support multiple contiguous calls to `ariaNotify`.
+  [MinVersion=4] kAriaNotificationAnnouncementDeprecated = 36,
+  [MinVersion=4] kAriaNotificationIdDeprecated = 37,
   kCheckedStateDescription = 5,
   kChildTreeId = 6,
   kChildTreeNodeAppId = 7,
@@ -596,6 +605,7 @@ enum StringAttribute {
   [MinVersion=1] kDoDefaultLabel = 31, // Only for ARC
   // Only present when different from parent.
   kFontFamily = 13,
+  [MinVersion=5] kHtmlId = 38,
   kHtmlTag = 14,
   // Stores an automatic image annotation if one is available. Only valid on
   // ax::mojom::Role::kImage. See kImageAnnotationStatus, too.
@@ -624,8 +634,8 @@ enum StringAttribute {
   kVirtualContent = 30,
 };
 
-// Next version: 3
-// Next value: 64
+// Next version: 4
+// Next value: 66
 [Extensible, Stable, Uuid="c350e50f-5177-405d-b155-79868449ba7b"]
 enum IntAttribute {
   [Default]kNone = 0,
@@ -762,16 +772,19 @@ enum IntAttribute {
   // Note: aria-dropeffect is deprecated in WAI-ARIA 1.1.
   kDropeffectDeprecated = 59,
 
-  // The DOMNodeID from Blink. Currently only populated when using
-  // the accessibility tree for PDF exporting. Warning, this is totally
-  // unrelated to the accessibility node ID, or the ID attribute for an
-  // HTML element - it's an ID used to uniquely identify nodes in Blink.
-  kDOMNodeId = 60,
+  // Deprecated, use AXNodeData.id (see ui/accessibility/ax_node_id_forward.h).
+  kDOMNodeIdDeprecated = 60,
 
   // Indicates whether the element is a popover ("popup") and if so, what type.
   [MinVersion=1] kIsPopup = 61,
   [MinVersion=2] kNextWindowFocusId = 62,
   [MinVersion=2] kPreviousWindowFocusId = 63,
+
+  // Deprecated - Do not use.
+  // These attributes are replaced by its `IntListAttribute` equivalents to
+  // support multiple contiguous calls to `ariaNotify`.
+  [MinVersion=3] kAriaNotificationInterruptDeprecated = 64,
+  [MinVersion=3] kAriaNotificationPriorityDeprecated = 65,
 };
 
 // Next version: 2
@@ -890,11 +903,14 @@ enum BoolAttribute {
 
   // Android does not provide nodes that are not on screen.
   // We need to distinguish containers that are like this.
-  [MinVersion=2] kHasHiddenOffscreenNodes,
+  [MinVersion=2] kHasHiddenOffscreenNodes = 22,
 };
 
-// Next version: 6
-// Next value: 27
+// Next version: 7
+// Next value: 29
+// Note: if changing an IntListAttribute property that stores a relation where
+// the reverse should be computed, be sure to also update
+// kReverseRelationIntListAttributes in AXTree.
 [Extensible, Stable, Uuid="6d1f823f-28a9-4263-bc4a-69fb19a4ef46"]
 enum IntListAttribute {
   [Default]kNone = 0,
@@ -965,12 +981,20 @@ enum IntListAttribute {
   [MinVersion=4] kTextOperationEndAnchorIds = 23,
   [MinVersion=4] kTextOperationEndOffsets = 24,
   [MinVersion=4] kTextOperations = 25,
+
+  // List of `AriaNotificationInterrupt` and `AriaNotificationPriority`
+  // properties for their respective ARIA notifications.
+  [MinVersion=6] kAriaNotificationInterruptProperties = 27,
+  [MinVersion=6] kAriaNotificationPriorityProperties = 28,
 };
 
-// Next value: 2
+// Next version: 2
+// Next value: 4
 [Extensible, Stable, Uuid="b3b576a7-9335-4f79-bc8c-595fd9346d81"]
 enum StringListAttribute {
   [Default]kNone = 0,
+  [MinVersion=1] kAriaNotificationAnnouncements = 2,
+  [MinVersion=1] kAriaNotificationIds = 3,
   // Descriptions for custom actions. This must be aligned with
   // custom_action_ids.
   kCustomActionDescriptions = 1,
@@ -1045,7 +1069,8 @@ enum Command {
 // Please keep in sync with the following specification and file:
 // https://w3c.github.io/input-events/#h-interface-inputevent-attributes
 // //third_party/blink/renderer/core/events/input_event.h
-// Next value: 39
+// Next Version: 2
+// Next value: 40
 [Extensible, Stable, Uuid="f53115ff-b29d-4a07-a497-9c49dc5b5ebd"]
 enum InputEventType {
   [Default]kNone = 0,
@@ -1062,6 +1087,7 @@ enum InputEventType {
   kInsertTranspose = 10,
   kInsertReplacementText = 11,
   kInsertCompositionText = 12,
+  [MinVersion=1] kInsertLink = 39,
   // Deletion.
   kDeleteWordBackward = 13,
   kDeleteWordForward = 14,
@@ -1271,12 +1297,23 @@ enum NameFrom {
   // text fields.
   kContents,
 
+  // The name comes from CSS alt text.
+  kCssAltText,
+
   // The name of this text field comes from its placeholder.
   kPlaceholder,
 
   // The name comes from some other object in the content or UI, such as
   // the figcaption element in a figure, or another View present in the UI.
   kRelatedElement,
+
+  // Applies to roles that cannot be named as per the ARIA spec, where the
+  // name may be repaired by moving to the description.
+  kProhibited,
+
+  // Applies to roles that cannot be named as per the ARIA spec, where the
+  // name would have been redundant with the inner text.
+  kProhibitedAndRedundant,
 
   // The name comes from the title attribute (HTML), the title element (SVG),
   // or a View's tooltip.
@@ -1319,6 +1356,11 @@ enum DescriptionFrom {
 
   // The description comes from a Ruby annotation.
   kRubyAnnotation,
+
+  // The description contains a name that was prohibited because of the
+  // object's role. Exposing as a description allows screen reader users to
+  // experience the prohibited name as an annotation.
+  kProhibitedNameRepair,
 
   // The description comes from the contents of a summary element.
   // See HTML-AAM's Accessible Name and Description Computation.
@@ -1400,7 +1442,7 @@ enum TreeOrder {
   kAfter,
 };
 
-// For internal use by ui::AXTreeID / ax::mojom::AXTreeID.
+// For internal use by AXTreeID / ax::mojom::AXTreeID.
 enum AXTreeIDType {
   kUnknown,  // The Tree ID is unknown.
   kToken,    // Every other tree ID must have a valid unguessable token.
@@ -1446,11 +1488,13 @@ enum ImageAnnotationStatus {
   kAnnotationProcessFailed,
 };
 
-enum Dropeffect {
+enum AriaNotificationInterrupt {
   kNone,
-  kCopy,
-  kExecute,
-  kLink,
-  kMove,
-  kPopup,
+  kAll,
+  kPending,
+};
+
+enum AriaNotificationPriority {
+  kNone,
+  kImportant,
 };

@@ -14,6 +14,21 @@ class WebContents;
 
 namespace chrome_browser_interstitials {
 
+enum class HFMInterstitialType {
+  // No HFM interstitial is being displayed.
+  kNone,
+  // The standard, non-heuristic and non-incognito interstitial is being
+  // displayed.
+  kStandard,
+  // The incognito interstitial is being displayed.
+  kIncognito,
+  // The interstitial is being displayed due to the Typically Secure User
+  // heuristic.
+  kTypicallySecure,
+  // The interstitial is being displayed due to the Site Engagement heuristic.
+  kSiteEngagement,
+};
+
 // Looks for text in the |textContent| of |interstitial_frame|'s body and
 // returns true if found. This can be used for either transient or committed
 // interstitials. For the former, pass
@@ -52,8 +67,13 @@ bool IsShowingBadClockInterstitial(content::WebContents* tab);
 // Returns true if |tab| is displaying a known-interception interstitial.
 bool IsShowingBlockedInterceptionInterstitial(content::WebContents* tab);
 
-// Returns true if `tab` is displaying an HTTPS-First Mode interstitial.
+// Returns true if `tab` is displaying any variant of the HTTPS-First Mode
+// interstitial, including those that can be shown due to HFM heuristics.
 bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab);
+
+// Returns the type of the HTTPS-First Mode interstitial being displayed in
+// `tab`. If no HFM interstitial is being displayed, returns kNone.
+HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab);
 
 }  // namespace chrome_browser_interstitials
 

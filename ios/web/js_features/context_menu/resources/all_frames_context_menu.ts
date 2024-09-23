@@ -19,7 +19,7 @@ const OPACITY_THRESHOLD = 0.9;
 const TRANSPARENCY_THRESHOLD = 0.1;
 
 // The maximum depth to search for elements at any point.
-const MAX_SEARCH_DEPTH = 8;
+const MAX_SEARCH_DEPTH = 20;
 
 /**
  * Response from `findElementAtPoint` describing an image element.
@@ -251,7 +251,17 @@ function findElementAtPoint(
     requestId: string, root: Document|ShadowRoot,
     processedElements: Set<Element>, pointX: number, pointY: number,
     centerX: number, centerY: number): boolean {
+  // Make chrome_annotation temporary available for `elementsFromPoint`.
+  const annotations = document.querySelectorAll('chrome_annotation');
+  for (let annotation of annotations) {
+    if (annotation instanceof HTMLElement)
+      annotation.style.pointerEvents = 'all';
+  }
   const elements = root.elementsFromPoint(pointX, pointY);
+  for (let annotation of annotations) {
+    if (annotation instanceof HTMLElement)
+      annotation.style.pointerEvents = 'none';
+  }
   let foundLinkElement: HTMLAnchorElement|SVGAElement|null = null;
   let foundTextElement: Element|null = null;
   let foundImageElement: HTMLElement|null = null;

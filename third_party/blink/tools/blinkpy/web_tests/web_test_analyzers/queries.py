@@ -10,7 +10,6 @@ from typing import List, Optional
 
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import queries as queries_module
-from unexpected_passes_common import queries as upc_queries
 
 # Gets all image comparison failures from the past |sample_period| days from CI
 # bots.
@@ -270,7 +269,7 @@ class Querier:
         Returns:
           The loaded JSON results from running |query|.
         """
-        cmd = upc_queries.GenerateBigQueryCommand(
+        cmd = queries_module.GenerateBigQueryCommand(
             self._billing_project,
             {'INT64': {
                 'sample_period': self._sample_period
@@ -298,8 +297,8 @@ class Querier:
         Args:
           query: A string containing the SQL query to run in BigQuery.
         """
-        cmd = upc_queries.GenerateBigQueryCommand(self._billing_project, {},
-                                                  batch=False)
+        cmd = queries_module.GenerateBigQueryCommand(self._billing_project, {},
+                                                     batch=False)
 
         with open(os.devnull, 'w') as devnull:
             try:

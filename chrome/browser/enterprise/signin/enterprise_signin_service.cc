@@ -43,14 +43,6 @@ Browser* GetRecentBrowserForProfile(Profile* profile) {
   return nullptr;
 }
 
-// Returns true if `p` has at least one normal browser (that's not e.g. a PWA
-// window). Doesn't count Incognito.
-bool ProfileHasBrowser(Profile* p) {
-  return base::ranges::any_of(*BrowserList::GetInstance(), [p](Browser* b) {
-    return IsNormalBrowserWithProfile(b, p);
-  });
-}
-
 }  // namespace
 
 using TransportState = syncer::SyncService::TransportState;
@@ -69,12 +61,6 @@ EnterpriseSigninService::EnterpriseSigninService(Profile* profile)
 EnterpriseSigninService::~EnterpriseSigninService() = default;
 
 void EnterpriseSigninService::OnStateChanged(syncer::SyncService* sync) {
-  if (!ProfileHasBrowser(profile_.get())) {
-    // For profiles that don't have browsers, don't open a new window just for
-    // this.
-    return;
-  }
-
   TransportState new_transport_state = sync->GetTransportState();
   if (new_transport_state == last_transport_state_) {
     // Not a TransportState change, do nothing.
@@ -84,13 +70,26 @@ void EnterpriseSigninService::OnStateChanged(syncer::SyncService* sync) {
   last_transport_state_ = new_transport_state;
   VLOG(2) << "TransportState changed: "
           << static_cast<int>(last_transport_state_);
+
   if (last_transport_state_ == TransportState::PAUSED) {
     OpenOrActivateGaiaReauthTab();
+  } else {
+    browser_list_observation_.Reset();
   }
 }
 
+void EnterpriseSigninService::OnBrowserSetLastActive(Browser* browser) {
+  DCHECK(browser);
+  if (browser->profile() != profile_.get()) {
+    return;
+  }
+  VLOG(2) << "Browser just became active.";
+  DCHECK(last_transport_state_ == TransportState::PAUSED);
+  OpenOrActivateGaiaReauthTab();
+}
+
 void EnterpriseSigninService::OnSyncShutdown(syncer::SyncService* sync) {
-  observation_.Reset();
+  sync_service_observation_.Reset();
 }
 
 void EnterpriseSigninService::OnPrefChanged(const std::string& pref_name) {
@@ -99,29 +98,42 @@ void EnterpriseSigninService::OnPrefChanged(const std::string& pref_name) {
   if (prompt_type == ProfileReauthPrompt::kPromptInTab) {
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetInstance()->GetForProfile(profile_.get());
-    if (!observation_.IsObservingSource(sync_service)) {
-      observation_.Reset();
+    if (!sync_service_observation_.IsObservingSource(sync_service)) {
+      sync_service_observation_.Reset();
+      // We're observing this SyncService for the first time. Trigger
+      // OnStateChanged() immediately, in case it's already in a paused state.
+      OnStateChanged(sync_service);
     }
-    observation_.Observe(sync_service);
+    sync_service_observation_.Observe(sync_service);
   } else {
-    observation_.Reset();
+    sync_service_observation_.Reset();
   }
 }
 
 void EnterpriseSigninService::OpenOrActivateGaiaReauthTab() {
-  if (Browser* browser = GetRecentBrowserForProfile(profile_.get())) {
-    content::WebContents* tab =
-        browser->tab_strip_model()->GetActiveWebContents();
-    const GURL& tab_url = tab->GetVisibleURL();
-    if (tab_url.SchemeIsHTTPOrHTTPS() &&
-        GaiaUrls::GetInstance()->gaia_origin().IsSameOriginWith(tab_url)) {
-      VLOG(2) << "Focused tab is a login page, nothing to do.";
-    } else {
-      VLOG(2) << "Focused tab is not a login page, opening a new one.";
-      browser->command_controller()->ExecuteCommandWithDisposition(
-          IDC_SHOW_SIGNIN_WHEN_PAUSED,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  VLOG(2) << "Trying to open or activate a reauth tab...";
+  Browser* browser = GetRecentBrowserForProfile(profile_.get());
+  if (!browser) {
+    VLOG(2) << "No browsers open.";
+    if (!browser_list_observation_.IsObserving()) {
+      VLOG(2) << "Waiting for a browser to become active first...";
+      browser_list_observation_.Observe(BrowserList::GetInstance());
     }
+    return;
+  }
+
+  browser_list_observation_.Reset();
+
+  content::WebContents* tab =
+      browser->tab_strip_model()->GetActiveWebContents();
+  const GURL& tab_url = tab->GetVisibleURL();
+  if (tab_url.SchemeIsHTTPOrHTTPS() &&
+      GaiaUrls::GetInstance()->gaia_origin().IsSameOriginWith(tab_url)) {
+    VLOG(2) << "Focused tab is a login page, nothing to do.";
+  } else {
+    VLOG(2) << "Focused tab is not a login page, opening a new one.";
+    browser->command_controller()->ExecuteCommandWithDisposition(
+        IDC_SHOW_SIGNIN_WHEN_PAUSED, WindowOpenDisposition::NEW_FOREGROUND_TAB);
   }
 }
 

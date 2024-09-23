@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
-
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -16,9 +14,12 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/native_frame_view.h"
 
@@ -55,8 +56,8 @@ bool IsNonClientComponent(int hittest) {
 
 std::unique_ptr<Widget> CreateWidget(const gfx::Rect& bounds) {
   std::unique_ptr<Widget> widget(new Widget);
-  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
-  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW);
   params.remove_standard_frame = true;
   params.native_widget = new DesktopNativeWidgetAura(widget.get());
   params.bounds = bounds;
@@ -90,8 +91,10 @@ class MouseMoveCounterHandler : public ui::EventHandler {
     // aura::WindowTreeHostPlatform::MoveCursorToScreenLocationInPixels. Thus,
     // two events will come - one is synthetic and another one is our real one.
     // Ignore the synthetic events as we are not interested in them.
-    if (event->type() == ui::ET_MOUSE_MOVED && !event->IsSynthesized())
+    if (event->type() == ui::EventType::kMouseMoved &&
+        !event->IsSynthesized()) {
       ++count_;
+    }
   }
 
   int num_mouse_moves() const { return count_; }
@@ -208,7 +211,7 @@ class HitTestWidgetDelegate : public WidgetDelegate {
   }
 
  private:
-  raw_ptr<HitTestNonClientFrameView> frame_view_ = nullptr;
+  raw_ptr<HitTestNonClientFrameView, DanglingUntriaged> frame_view_ = nullptr;
 };
 
 // Test host that can intercept calls to the real host.
@@ -267,13 +270,13 @@ class DesktopWindowTreeHostPlatformImplTest
     Widget* toplevel = new Widget;
     delegate_ = std::make_unique<HitTestWidgetDelegate>();
     Widget::InitParams toplevel_params =
-        CreateParams(Widget::InitParams::TYPE_WINDOW);
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     auto* native_widget = new DesktopNativeWidgetAura(toplevel);
     toplevel_params.native_widget = native_widget;
     host_ = new TestDesktopWindowTreeHostPlatformImpl(toplevel, native_widget);
     toplevel_params.desktop_window_tree_host = host_.get();
     toplevel_params.delegate = delegate_.get();
-    toplevel_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     toplevel_params.bounds = bounds;
     toplevel_params.remove_standard_frame = true;
     toplevel->Init(std::move(toplevel_params));
@@ -290,10 +293,10 @@ class DesktopWindowTreeHostPlatformImplTest
   void GenerateAndDispatchClickMouseEvent(const gfx::Point& click_location,
                                           int flags) {
     DCHECK(host_);
-    DispatchEvent(
-        GenerateMouseEvent(ui::ET_MOUSE_PRESSED, click_location, flags));
-    DispatchEvent(
-        GenerateMouseEvent(ui::ET_MOUSE_RELEASED, click_location, flags));
+    DispatchEvent(GenerateMouseEvent(ui::EventType::kMousePressed,
+                                     click_location, flags));
+    DispatchEvent(GenerateMouseEvent(ui::EventType::kMouseReleased,
+                                     click_location, flags));
   }
 
   ui::MouseEvent* GenerateMouseEvent(ui::EventType event_type,
@@ -414,11 +417,12 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
     // |hittest| value we specified.
 
     if (use_touch_event()) {
-      ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_BEGIN);
+      ui::GestureEventDetails gesture_details(
+          ui::EventType::kGestureScrollBegin);
       DispatchEvent(
           GenerateGestureEvent(pointer_location_in_px, gesture_details));
     } else {
-      DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_PRESSED,
+      DispatchEvent(GenerateMouseEvent(ui::EventType::kMousePressed,
                                        pointer_location_in_px,
                                        ui::EF_LEFT_MOUSE_BUTTON));
     }
@@ -435,17 +439,17 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch, MAYBE_HitTest) {
     // Dispatch mouse/touch release event to release a mouse/touch pressed
     // handler and be able to consume future events.
     if (use_touch_event()) {
-      ui::GestureEventDetails gesture_details(ui::ET_GESTURE_SCROLL_END);
+      ui::GestureEventDetails gesture_details(ui::EventType::kGestureScrollEnd);
       DispatchEvent(
           GenerateGestureEvent(pointer_location_in_px, gesture_details));
     } else {
-      DispatchEvent(GenerateMouseEvent(ui::ET_MOUSE_RELEASED,
+      DispatchEvent(GenerateMouseEvent(ui::EventType::kMouseReleased,
                                        pointer_location_in_px,
                                        ui::EF_LEFT_MOUSE_BUTTON));
     }
   }
   handler->set_platform_window(nullptr);
-  widget.reset();
+  widget->CloseNow();
 }
 
 // Tests that the window is maximized in response to a double click event.
@@ -471,7 +475,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
   host_->ResetCalledMaximize();
 
   if (use_touch_event()) {
-    ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+    ui::GestureEventDetails details(ui::EventType::kGestureTap);
     details.set_tap_count(1);
     DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
     details.set_tap_count(2);
@@ -509,7 +513,7 @@ TEST_P(DesktopWindowTreeHostPlatformImplTestWithTouch,
 
   if (use_touch_event()) {
     frame_view->set_hit_test_result(HTCLIENT);
-    ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+    ui::GestureEventDetails details(ui::EventType::kGestureTap);
     details.set_tap_count(1);
     DispatchEvent(GenerateGestureEvent(gfx::Point(), details));
 
@@ -571,18 +575,16 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, Deactivate) {
   std::unique_ptr<Widget> widget(CreateWidget(gfx::Rect(100, 100, 100, 100)));
 
   {
-    views::test::WidgetActivationWaiter waiter(widget.get(), true);
     widget->Show();
     widget->Activate();
-    waiter.Wait();
+    views::test::WaitForWidgetActive(widget.get(), true);
   }
 
   {
     // Regardless of whether |widget|'s X11 window eventually gets deactivated,
     // |widget|'s "active" state should change.
-    views::test::WidgetActivationWaiter waiter(widget.get(), false);
     widget->Deactivate();
-    waiter.Wait();
+    views::test::WaitForWidgetActive(widget.get(), false);
     EXPECT_FALSE(widget->IsActive());
   }
 
@@ -591,9 +593,8 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, Deactivate) {
     // should update the widget's "active" state. Note: Activating a widget
     // whose X11 window is not active does not synchronously update the widget's
     // "active" state.
-    views::test::WidgetActivationWaiter waiter(widget.get(), true);
     widget->Activate();
-    waiter.Wait();
+    views::test::WaitForWidgetActive(widget.get(), true);
     EXPECT_TRUE(widget->IsActive());
   }
 }
@@ -606,15 +607,13 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, CaptureEventForwarding) {
 
   std::unique_ptr<Widget> widget1(CreateWidget(gfx::Rect(100, 100, 100, 100)));
   aura::Window* window1 = widget1->GetNativeWindow();
-  views::test::WidgetActivationWaiter waiter1(widget1.get(), true);
   widget1->Show();
-  waiter1.Wait();
+  views::test::WaitForWidgetActive(widget1.get(), true);
 
   std::unique_ptr<Widget> widget2(CreateWidget(gfx::Rect(200, 100, 100, 100)));
   aura::Window* window2 = widget2->GetNativeWindow();
-  views::test::WidgetActivationWaiter waiter2(widget2.get(), true);
   widget2->Show();
-  waiter2.Wait();
+  views::test::WaitForWidgetActive(widget2.get(), true);
 
   MouseMoveCounterHandler recorder1;
   window1->AddPreTargetHandler(&recorder1);
@@ -682,7 +681,7 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, InputMethodFocus) {
 
   std::unique_ptr<Textfield> textfield(new Textfield);
   // Provide an accessible name so that accessibility paint checks pass.
-  textfield->SetAccessibleName(u"test");
+  textfield->GetViewAccessibility().SetName(u"test");
   textfield->SetBounds(0, 0, 200, 20);
   widget->GetRootView()->AddChildView(textfield.get());
   widget->ShowInactive();
@@ -694,9 +693,8 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest, InputMethodFocus) {
   // EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
   //           widget->GetInputMethod()->GetTextInputType());
 
-  views::test::WidgetActivationWaiter waiter(widget.get(), true);
   widget->Activate();
-  waiter.Wait();
+  views::test::WaitForWidgetActive(widget.get(), true);
 
   EXPECT_TRUE(widget->IsActive());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_TEXT,

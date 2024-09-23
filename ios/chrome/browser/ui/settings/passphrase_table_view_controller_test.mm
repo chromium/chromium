@@ -19,14 +19,15 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -80,7 +81,7 @@ void PassphraseTableViewControllerTest::SetUp() {
       base::BindRepeating(&CreateNiceMockSyncService));
   RegisterTestingFactories(test_cbs_builder);
   test_cbs_builder.SetPrefService(CreatePrefService());
-  chrome_browser_state_ = test_cbs_builder.Build();
+  chrome_browser_state_ = std::move(test_cbs_builder).Build();
   AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -98,10 +99,11 @@ void PassphraseTableViewControllerTest::SetUp() {
   ON_CALL(*fake_sync_service_, GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
 
-  FakeSystemIdentityManager* system_identity_manager =
+  FakeSystemIdentityManager* fake_system_identity_manager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
-  system_identity_manager->AddIdentities(@[ @"identity1" ]);
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager->AddIdentity(fake_identity);
 
   ChromeAccountManagerService* account_manager_service =
       ChromeAccountManagerServiceFactory::GetForBrowserState(

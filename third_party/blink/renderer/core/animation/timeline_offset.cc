@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -91,16 +90,14 @@ std::optional<TimelineOffset> TimelineOffset::Create(
 
   Document& document = element->GetDocument();
 
-  CSSTokenizer tokenizer(css_text);
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  range.ConsumeWhitespace();
+  CSSParserTokenStream stream(css_text);
+  stream.ConsumeWhitespace();
 
   const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
-      range, *document.ElementSheet().Contents()->ParserContext(),
+      stream, *document.ElementSheet().Contents()->ParserContext(),
       /* default_offset_percent */ default_percent);
 
-  if (!value || !range.AtEnd()) {
+  if (!value || !stream.AtEnd()) {
     ThrowExceptionForInvalidTimelineOffset(exception_state);
     return std::nullopt;
   }
@@ -225,6 +222,7 @@ Length TimelineOffset::ResolveLength(Element* element, const CSSValue* value) {
       element_resolve_context.RootElementStyle(),
       CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
       CSSToLengthConversionData::ContainerSizes(element),
+      CSSToLengthConversionData::AnchorData(),
       element->GetComputedStyle()->EffectiveZoom(), ignored_flags);
 
   return DynamicTo<CSSPrimitiveValue>(value)->ConvertToLength(
@@ -237,16 +235,14 @@ CSSValue* TimelineOffset::ParseOffset(Document* document, String css_text) {
     return nullptr;
   }
 
-  CSSTokenizer tokenizer(css_text);
-  Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-  CSSParserTokenRange range(tokens);
-  range.ConsumeWhitespace();
+  CSSParserTokenStream stream(css_text);
+  stream.ConsumeWhitespace();
 
   CSSValue* value = css_parsing_utils::ConsumeLengthOrPercent(
-      range, *document->ElementSheet().Contents()->ParserContext(),
+      stream, *document->ElementSheet().Contents()->ParserContext(),
       CSSPrimitiveValue::ValueRange::kAll);
 
-  if (!range.AtEnd()) {
+  if (!stream.AtEnd()) {
     return nullptr;
   }
 

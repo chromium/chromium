@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 
 #include <string>
@@ -9,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/debug/stack_trace.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -19,16 +23,17 @@
 #include "base/trace_event/malloc_dump_provider.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#endif  // BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+        // && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 using base::allocator::dispatcher::AllocationSubsystem;
 
@@ -42,8 +47,8 @@ void ProfilingClient::BindToInterface(
   receivers_.Add(this, std::move(receiver));
 }
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 void ShimNewMallocZonesAndReschedule(base::Time end_time,
                                      base::TimeDelta delay) {
   allocator_shim::ShimNewMallocZones();
@@ -58,8 +63,8 @@ void ShimNewMallocZonesAndReschedule(base::Time end_time,
       base::BindOnce(&ShimNewMallocZonesAndReschedule, end_time, next_delay),
       delay);
 }
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BULDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+        // && BULDFLAG(USE_ALLOCATOR_SHIM)
 
 void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
                                      StartProfilingCallback callback) {
@@ -67,8 +72,8 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
     return;
   started_profiling_ = true;
 
-#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   // On macOS, this call is necessary to shim malloc zones that were created
   // after startup. This cannot be done during shim initialization because the
   // task scheduler has not yet been initialized.
@@ -78,8 +83,8 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
   base::Time end_time = base::Time::Now() + base::Minutes(1);
   base::TimeDelta initial_delay = base::Seconds(1);
   ShimNewMallocZonesAndReschedule(end_time, initial_delay);
-#endif  // BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(USE_ALLOCATOR_SHIM)
+#endif  // BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+        // && PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 
   StartProfilingInternal(std::move(params), std::move(callback));
 
@@ -149,7 +154,7 @@ mojom::AllocatorType ConvertType(AllocationSubsystem type) {
     case AllocationSubsystem::kPartitionAllocator:
       return mojom::AllocatorType::kPartitionAlloc;
     case AllocationSubsystem::kManualForTesting:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return mojom::AllocatorType::kMalloc;
   }
 }
@@ -236,7 +241,7 @@ void ProfilingClient::AddHeapProfileToTrace(
 #else
   bool success = false;
   // Tracing is not supported in iOS.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 #endif
 
   std::move(callback).Run(success);

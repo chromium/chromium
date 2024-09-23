@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -110,6 +111,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetTrustTokenParams(original->TrustTokenParams());
   request->SetAttributionReportingEligibility(
       original->AttributionReportingEligibility());
+  request->SetAttributionReportingSupport(original->AttributionSupport());
   request->SetServiceWorkerRaceNetworkRequestToken(
       original->ServiceWorkerRaceNetworkRequestToken());
 
@@ -557,6 +559,8 @@ Request* Request::CreateRequestWithRequestOrString(
     if (init->browsingTopics()) {
       UseCounter::Count(execution_context,
                         mojom::blink::WebFeature::kTopicsAPIFetch);
+      UseCounter::Count(execution_context,
+                        mojom::blink::WebFeature::kTopicsAPIAll);
     }
   }
 
@@ -579,7 +583,7 @@ Request* Request::CreateRequestWithRequestOrString(
           " in secure contexts.");
       return nullptr;
     }
-    if (origin->IsOpaque()) {
+    if (SecurityOrigin::Create(request->Url())->IsOpaque()) {
       exception_state.ThrowTypeError(
           "sharedStorageWritable: sharedStorage operations are not available"
           " for opaque origins.");
@@ -843,7 +847,7 @@ Request* Request::Create(ScriptState* script_state,
                     exception_state);
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -901,7 +905,7 @@ std::optional<network::mojom::CredentialsMode> Request::ParseCredentialsMode(
     return network::mojom::CredentialsMode::kSameOrigin;
   if (credentials_mode == "include")
     return network::mojom::CredentialsMode::kInclude;
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::nullopt;
 }
 
@@ -965,7 +969,7 @@ String Request::mode() const {
     case network::mojom::RequestMode::kNavigate:
       return "navigate";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -982,7 +986,7 @@ String Request::credentials() const {
     case network::mojom::CredentialsMode::kInclude:
       return "include";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -1003,10 +1007,10 @@ String Request::cache() const {
       return "only-if-cached";
     case mojom::blink::FetchCacheMode::kUnspecifiedOnlyIfCachedStrict:
     case mojom::blink::FetchCacheMode::kUnspecifiedForceCacheMiss:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -1020,12 +1024,16 @@ String Request::redirect() const {
     case network::mojom::RedirectMode::kManual:
       return "manual";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
 String Request::integrity() const {
   return request_->Integrity();
+}
+
+String Request::duplex() const {
+  return "half";
 }
 
 bool Request::keepalive() const {
@@ -1042,7 +1050,7 @@ String Request::targetAddressSpace() const {
     case network::mojom::IPAddressSpace::kUnknown:
       return "unknown";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "unknown";
 }
 

@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_GENERATED_ICON_FIX_UTIL_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_GENERATED_ICON_FIX_UTIL_H_
 
+#include <iosfwd>
+
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
-#include "chrome/browser/web_applications/web_app.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace base {
 class Value;
@@ -15,6 +17,7 @@ class Value;
 
 namespace web_app {
 
+class WebApp;
 class WithAppResources;
 class ScopedRegistryUpdate;
 

@@ -18,10 +18,7 @@
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/browser_state/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_service_client.h"
@@ -56,8 +53,9 @@ IOSChromeMetricsServicesManagerClient::
     ~IOSChromeMetricsServicesManagerClient() = default;
 
 std::unique_ptr<variations::VariationsService>
-IOSChromeMetricsServicesManagerClient::CreateVariationsService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+IOSChromeMetricsServicesManagerClient::CreateVariationsService(
+    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // NOTE: On iOS, disabling background networking is not supported, so pass in
   // a dummy value for the name of the switch that disables background
@@ -67,18 +65,21 @@ IOSChromeMetricsServicesManagerClient::CreateVariationsService() {
       GetMetricsStateManager(), "dummy-disable-background-switch",
       ::CreateUIStringOverrider(),
       base::BindOnce(&ApplicationContext::GetNetworkConnectionTracker,
-                     base::Unretained(GetApplicationContext())));
+                     base::Unretained(GetApplicationContext())),
+      synthetic_trial_registry);
 }
 
 std::unique_ptr<metrics::MetricsServiceClient>
-IOSChromeMetricsServicesManagerClient::CreateMetricsServiceClient() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return IOSChromeMetricsServiceClient::Create(GetMetricsStateManager());
+IOSChromeMetricsServicesManagerClient::CreateMetricsServiceClient(
+    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return IOSChromeMetricsServiceClient::Create(GetMetricsStateManager(),
+                                               synthetic_trial_registry);
 }
 
 metrics::MetricsStateManager*
 IOSChromeMetricsServicesManagerClient::GetMetricsStateManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!metrics_state_manager_) {
     base::FilePath user_data_dir;
     base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
@@ -94,12 +95,9 @@ IOSChromeMetricsServicesManagerClient::GetURLLoaderFactory() {
   return GetApplicationContext()->GetSharedURLLoaderFactory();
 }
 
-bool IOSChromeMetricsServicesManagerClient::IsMetricsReportingEnabled() {
-  return enabled_state_provider_->IsReportingEnabled();
-}
-
-bool IOSChromeMetricsServicesManagerClient::IsMetricsConsentGiven() {
-  return enabled_state_provider_->IsConsentGiven();
+const metrics::EnabledStateProvider&
+IOSChromeMetricsServicesManagerClient::GetEnabledStateProvider() {
+  return *enabled_state_provider_;
 }
 
 bool IOSChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
@@ -108,19 +106,11 @@ bool IOSChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
 
 // static
 bool IOSChromeMetricsServicesManagerClient::AreIncognitoTabsPresent() {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-
-  for (ChromeBrowserState* browser_state : browser_states) {
-    BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state);
-    for (Browser* browser : browser_list->AllIncognitoBrowsers()) {
-      if (!browser->GetWebStateList()->empty()) {
-        return true;
-      }
-    }
+  // The IncognitoSessionTracker may be null during unit tests.
+  if (IncognitoSessionTracker* tracker =
+          GetApplicationContext()->GetIncognitoSessionTracker()) {
+    return tracker->HasIncognitoSessionTabs();
   }
+
   return false;
 }

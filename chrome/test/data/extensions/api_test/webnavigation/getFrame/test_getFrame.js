@@ -20,8 +20,8 @@ if (inServiceWorker) {
 }
 
 ready.then(async function() {
-  var URL = chrome.extension.getURL("a.html");
-  var URL_FRAMES = chrome.extension.getURL("b.html");
+  var URL = chrome.runtime.getURL("a.html");
+  var URL_FRAMES = chrome.runtime.getURL("b.html");
   let config = await promise(chrome.test.getConfig);
   let port = config.testServer.port;
   var processId = -1;
@@ -150,6 +150,13 @@ ready.then(async function() {
       });
     },
     async function testGetPrerenderingFrames() {
+      // This test is not valid for MV3+ because it uses
+      // chrome.tabs.executeScript. See crbug.com/332328868
+      if (chrome.runtime.getManifest().manifest_version > 2) {
+        chrome.test.succeed();
+        return;
+      }
+
       const urlPrefix =
       `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
       const initialUrl = urlPrefix + "a.html?initial";
@@ -184,8 +191,8 @@ ready.then(async function() {
           });
       });
 
-      // TODO(crbug/1273341): Modify the testcase to be triggering concurrent
-      // multiple prerendering pages once it is supported.
+      // TODO(crbug.com/40206306): Modify the testcase to be triggering
+      // concurrent multiple prerendering pages once it is supported.
       // Navigate to a page that initiates prerendering "a.html".
       chrome.tabs.update(tab.id, {"url": initiatorUrl});
     },
@@ -244,6 +251,13 @@ ready.then(async function() {
       chrome.tabs.update(tab.id, {"url": initiatorUrl});
     },
     async function testGetPrerenderingFramesInNewTab() {
+      // This test is not valid for MV3+ because it uses
+      // chrome.tabs.executeScript. See crbug.com/332328868
+      if (chrome.runtime.getManifest().manifest_version > 2) {
+        chrome.test.succeed();
+        return;
+      }
+
       const urlPrefix =
           `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
       const initialUrl = urlPrefix + 'a.html?initial';
@@ -294,6 +308,13 @@ ready.then(async function() {
       chrome.tabs.update(initiatorTab.id, {'url': initiatorUrl});
     },
     async function testGetActivatedPrerenderingFrames() {
+      // This test is not valid for MV3+ because it uses
+      // chrome.tabs.executeScript. See crbug.com/332328868
+      if (chrome.runtime.getManifest().manifest_version > 2) {
+        chrome.test.succeed();
+        return;
+      }
+
       const urlPrefix =
           `http://a.test:${port}/extensions/api_test/webnavigation/getFrame/`;
       const initialUrl = urlPrefix + "a.html?initial";
@@ -340,7 +361,7 @@ ready.then(async function() {
     // Load an URL with a frame which is detached during load.
     // getAllFrames should only return the remaining (main) frame.
     async function testFrameDetach() {
-      // TODO(crbug.com/1194800): Extremely flaky for Service Worker. Note that
+      // TODO(crbug.com/40758628): Extremely flaky for Service Worker. Note that
       // this test is also (very infrequently) flaky for non-Service Worker.
       if (inServiceWorker)
         chrome.test.succeed();

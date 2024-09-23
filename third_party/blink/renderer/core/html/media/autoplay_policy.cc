@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_uma_helper.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
@@ -55,7 +57,7 @@ bool ComputeLockPendingUserGestureRequired(const Document& document) {
       return false;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -285,6 +287,12 @@ bool AutoplayPolicy::HasTransientUserActivation() const {
 }
 
 std::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
+  if (RuntimeEnabledFeatures::
+          MediaPlaybackWhileNotVisiblePermissionPolicyEnabled() &&
+      !CanPlayWhileHidden() && IsFrameHidden()) {
+    return DOMExceptionCode::kNotAllowedError;
+  }
+
   if (!HasTransientUserActivation()) {
     autoplay_uma_helper_->OnAutoplayInitiated(AutoplaySource::kMethod);
     if (IsGestureNeededForPlayback())
@@ -338,6 +346,20 @@ bool AutoplayPolicy::IsGestureNeededForPlayback() const {
   return !IsEligibleForAutoplayMuted();
 }
 
+bool AutoplayPolicy::CanPlayWhileHidden() const {
+  return element_->GetExecutionContext() &&
+         element_->GetExecutionContext()->IsFeatureEnabled(
+             mojom::blink::PermissionsPolicyFeature::
+                 kMediaPlaybackWhileNotVisible);
+}
+
+bool AutoplayPolicy::IsFrameHidden() const {
+  Frame* frame = element_->GetDocument().GetFrame();
+  return frame && (frame->View()->GetFrameVisibility().value_or(
+                       mojom::blink::FrameVisibility::kRenderedInViewport) ==
+                   mojom::blink::FrameVisibility::kNotRendered);
+}
+
 String AutoplayPolicy::GetPlayErrorMessage() const {
   return IsUsingDocumentUserActivationRequiredPolicy()
              ? kErrorAutoplayFuncUnified
@@ -387,7 +409,7 @@ void AutoplayPolicy::OnIntersectionChangedForAutoplay(
     if (self->ShouldAutoplay()) {
       self->element_->paused_ = false;
       self->element_->SetShowPosterFlag(false);
-      self->element_->ScheduleEvent(event_type_names::kPlay);
+      self->element_->ScheduleNamedEvent(event_type_names::kPlay);
       self->element_->ScheduleNotifyPlaying();
 
       self->element_->UpdatePlayState();

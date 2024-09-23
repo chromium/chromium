@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Dynamically changing counter-reset with counter-resets in parent and sibling updates counters accordingly
-  assert_equals: expected "1" but got "2"
-Harness: the test ran to completion.
-

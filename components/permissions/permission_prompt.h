@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -157,6 +158,11 @@ class PermissionPrompt {
   // Get the type of prompt UI shown for metrics.
   virtual PermissionPromptDisposition GetPromptDisposition() const = 0;
 
+  // Check if the view shown is an "Ask" prompt for metrics. Currently this only
+  // distinguishes different prompt views displayed through the Page Embedded
+  // Permission Element.
+  virtual bool IsAskPrompt() const = 0;
+
   // Get the prompt view bounds in screen coordinates.
   virtual std::optional<gfx::Rect> GetViewBoundsInScreen() const = 0;
 
@@ -164,8 +170,15 @@ class PermissionPrompt {
   // decision is transmitted. If this returns `false` the delegate should wait
   // for an explicit |Delegate::FinalizeCurrentRequests()| call to be made.
   virtual bool ShouldFinalizeRequestAfterDecided() const = 0;
-};
 
+  // Return what variant of the secondary UI is shown for Page Embedded
+  // Permission Element.
+  virtual std::vector<permissions::ElementAnchoredBubbleVariant>
+  GetPromptVariants() const = 0;
+
+  virtual std::optional<feature_params::PermissionElementPromptPosition>
+  GetPromptPosition() const = 0;
+};
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_PERMISSION_PROMPT_H_

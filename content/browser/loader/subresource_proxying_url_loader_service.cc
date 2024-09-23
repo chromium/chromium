@@ -24,7 +24,7 @@
 namespace content {
 
 SubresourceProxyingURLLoaderService::BindContext::BindContext(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     base::WeakPtr<RenderFrameHostImpl> render_frame_host,
     scoped_refptr<PrefetchedSignedExchangeCache>
@@ -55,7 +55,7 @@ SubresourceProxyingURLLoaderService::SubresourceProxyingURLLoaderService(
 base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
 SubresourceProxyingURLLoaderService::GetFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     scoped_refptr<network::SharedURLLoaderFactory>
         subresource_proxying_factory_bundle,
     base::WeakPtr<RenderFrameHostImpl> render_frame_host,

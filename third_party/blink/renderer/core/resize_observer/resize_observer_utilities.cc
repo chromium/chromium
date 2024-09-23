@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_box_options.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -54,7 +53,7 @@ gfx::SizeF ResizeObserverUtilities::ComputeZoomAdjustedBox(
       return ComputeSnappedDevicePixelContentBox(box_size, layout_box, style);
     }
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -78,7 +77,7 @@ gfx::SizeF ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
       layout_object, style);
 }
 
-DOMRectReadOnly* ResizeObserverUtilities::ZoomAdjustedLayoutRect(
+DOMRectReadOnly* ResizeObserverUtilities::ZoomAdjustedPhysicalRect(
     PhysicalRect content_rect,
     const ComputedStyle& style) {
   content_rect.SetX(

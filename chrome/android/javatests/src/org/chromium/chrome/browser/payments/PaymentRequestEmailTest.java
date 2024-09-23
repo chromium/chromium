@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.payments.Event;
+import org.chromium.components.payments.Event2;
 
 import java.util.concurrent.TimeoutException;
 
@@ -200,20 +200,17 @@ public class PaymentRequestEmailTest {
         mPaymentRequestTestRule.expectResultContains(new String[] {"jon.doe@google.com"});
 
         int expectedSample =
-                Event.SHOWN
-                        | Event.COMPLETED
-                        | Event.PAY_CLICKED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.RECEIVED_INSTRUMENT_DETAILS
-                        | Event.REQUEST_PAYER_EMAIL
-                        | Event.REQUEST_METHOD_BASIC_CARD
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER
-                        | Event.SELECTED_OTHER;
+                Event2.SHOWN
+                        | Event2.COMPLETED
+                        | Event2.PAY_CLICKED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_PAYER_DATA
+                        | Event2.REQUEST_METHOD_BASIC_CARD
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.SELECTED_OTHER;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 }

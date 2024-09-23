@@ -12,20 +12,129 @@ mojom("mojo_bindings") {
     "emoji_picker.mojom",
     "new_window_proxy.mojom",
   ]
+
   public_deps = [
     "//chromeos/ash/components/emoji:mojo_bindings",
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+
   webui_module_path = "/"
 }
 
 mojom("seal_mojom") {
   sources = [ "seal.mojom" ]
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
+  ]
+}
+
+static_library("emoji") {
+  sources = [
+    "bubble_utils.cc",
+    "bubble_utils.h",
+    "emoji_page_handler.cc",
+    "emoji_page_handler.h",
+    "emoji_search_proxy.cc",
+    "emoji_search_proxy.h",
+    "emoji_ui.cc",
+    "emoji_ui.h",
+    "gif_tenor_api_fetcher.cc",
+    "gif_tenor_api_fetcher.h",
+    "new_window_proxy.cc",
+    "new_window_proxy.h",
+    "seal.cc",
+    "seal.h",
+    "seal_utils.cc",
+    "seal_utils.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    ":seal_mojom",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+    "//chromeos/ash/components/emoji",
+    "//chromeos/ash/components/emoji:mojo_bindings",
+    "//components/endpoint_fetcher",
+    "//components/manta",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//services/data_decoder/public/cpp",
+    "//ui/base/ime",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+    "//url",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/resources/chromeos/emoji_picker:resources",
+    "//chrome/browser/resources/chromeos/seal:resources",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common:channel_info",
+    "//chromeos/ash/components/emoji:resources",
+    "//components/prefs",
+    "//components/version_info:channel",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/emoji",
+    "//ui/base/ime/ash",
+    "//ui/base/metadata",
+    "//ui/display",
+    "//ui/gfx/geometry",
+    "//ui/resources:webui_resources_grd",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "bubble_utils_unittest.cc",
+    "emoji_page_handler_unittest.cc",
+    "emoji_ui_unittest.cc",
+    "gif_tenor_api_fetcher_unittest.cc",
+    "seal_unittest.cc",
+  ]
+
+  deps = [
+    ":emoji",
+    ":mojo_bindings",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/endpoint_fetcher",
+    "//components/prefs",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/base/emoji",
+    "//ui/display:test_support",
+    "//ui/gfx/geometry",
+    "//url",
   ]
 }

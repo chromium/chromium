@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/ui/authentication",
+  "+ios/chrome/browser/drive/model",
+  "+ios/chrome/browser/ui/menu",
+]

@@ -41,7 +41,6 @@ final class AccountCapabilitiesFetcherTestUtil {
     /** Restores the global state after the test completes. */
     @CalledByNative
     public void destroy() {
-        AccountManagerFacadeProvider.resetInstanceForTests();
         mMockFacade = null;
     }
 
@@ -73,7 +72,7 @@ final class AccountCapabilitiesFetcherTestUtil {
         mCapabilitiesPromise.fulfill(capabilities);
         // `Promise` posts callback tasks on Android Looper which is not integrated with native
         // RunLoop in NativeTest. Run these tasks synchronously now.
-        // TODO(crbug.com/1135593): remove this hack once Promise uses PostTask.
+        // TODO(crbug.com/40723709): remove this hack once Promise uses PostTask.
         runLooperTasks();
 
         mCapabilitiesPromise = null;

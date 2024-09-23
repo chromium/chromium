@@ -60,9 +60,9 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
   if (errorUiType == ErrorUiType::QUIET_SMALL ||
       errorUiType == ErrorUiType::QUIET_GIANT) {
     set_sb_error_ui(std::make_unique<SafeBrowsingQuietErrorUI>(
-        unsafe_resources[0].url, main_frame_url,
-        GetInterstitialReason(unsafe_resources), display_options,
-        ui_manager->app_locale(), base::Time::NowFromSystemTime(), controller(),
+        unsafe_resources[0].url, GetInterstitialReason(unsafe_resources),
+        display_options, ui_manager->app_locale(),
+        base::Time::NowFromSystemTime(), controller(),
         errorUiType == ErrorUiType::QUIET_GIANT));
   }
 
@@ -95,23 +95,23 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
     const GURL& main_frame_url,
     const UnsafeResource& unsafe_resource,
     std::unique_ptr<AwWebResourceRequest> resource_request,
-    absl::optional<base::TimeTicks> blocked_page_shown_timestamp) {
-  // Log the request destination that triggers the safe browsing blocking page.
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
-                            unsafe_resource.request_destination);
+    std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
+  // Log the threat type that triggers the safe browsing blocking page.
+  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.ThreatType",
+                            unsafe_resource.threat_type);
   const UnsafeResourceList unsafe_resources{unsafe_resource};
   AwBrowserContext* browser_context =
       AwBrowserContext::FromWebContents(web_contents);
   PrefService* pref_service = browser_context->GetPrefService();
-  // TODO(crbug.com/1134678): Set is_enhanced_protection_message_enabled once
+  // TODO(crbug.com/40723201): Set is_enhanced_protection_message_enabled once
   // enhanced protection is supported on aw.
   BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options =
       BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
           IsMainPageLoadPending(unsafe_resources),
-          IsSubresource(unsafe_resources),
           safe_browsing::IsExtendedReportingOptInAllowed(*pref_service),
           browser_context->IsOffTheRecord(),
-          safe_browsing::IsExtendedReportingEnabled(*pref_service),
+          safe_browsing::IsExtendedReportingEnabledBypassDeprecationFlag(
+              *pref_service),
           safe_browsing::IsExtendedReportingPolicyManaged(*pref_service),
           safe_browsing::IsEnhancedProtectionEnabled(*pref_service),
           pref_service->GetBoolean(::prefs::kSafeBrowsingProceedAnywayDisabled),
@@ -133,7 +133,7 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
   GURL url =
       (main_frame_url.is_empty() && entry) ? entry->GetURL() : main_frame_url;
 
-  // TODO(crbug.com/1134678): Set settings_page_helper once enhanced protection
+  // TODO(crbug.com/40723201): Set settings_page_helper once enhanced protection
   // is supported on aw.
   return new AwSafeBrowsingBlockingPage(
       ui_manager, web_contents, url, unsafe_resources,

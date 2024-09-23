@@ -19,7 +19,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -42,6 +41,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Base class for First Run Experience. */
+// TODO(b/41493788): Consider renaming it now that it is also the base for the upgrade promo.
 public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         implements BackPressHandler {
     private static final String TAG = "FirstRunActivity";
@@ -78,10 +78,9 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
                     set(true);
                 }
             };
-    private PolicyLoadListener mPolicyLoadListener;
+    private final PolicyLoadListener mPolicyLoadListener;
 
     private final long mStartTime;
-    private long mNativeInitializedTime;
 
     private ChildAccountStatusSupplier mChildAccountStatusSupplier;
 
@@ -96,6 +95,10 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
                                 mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
         mStartTime = SystemClock.elapsedRealtime();
         mPolicyLoadListener.onAvailable(this::onPolicyLoadListenerAvailable);
+    }
+
+    protected long getStartTime() {
+        return mStartTime;
     }
 
     @Override
@@ -116,7 +119,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         mChildAccountStatusSupplier =
                 new ChildAccountStatusSupplier(accountManagerFacade, mFirstRunAppRestrictionInfo);
 
-        // TODO(crbug.com/1498708): Find the underlying issue causing the status bar not to be set
+        // TODO(crbug.com/40939710): Find the underlying issue causing the status bar not to be set
         //  during FRE, this is just a temporary visual fix.
         if (BuildInfo.getInstance().isAutomotive) {
             StatusBarColorController.setStatusBarColor(getWindow(), Color.BLACK);
@@ -166,9 +169,6 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
         mNativeInitialized = true;
-        mNativeInitializedTime = SystemClock.elapsedRealtime();
-        RecordHistogram.recordTimesHistogram(
-                "MobileFre.NativeInitialized", mNativeInitializedTime - mStartTime);
         mPolicyServiceSupplier.set(PolicyServiceFactory.getGlobalPolicyService());
     }
 
@@ -247,11 +247,8 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         return mFirstRunAppRestrictionInfo;
     }
 
-    protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {
-        if (!mNativeInitialized) return;
-
-        assert mNativeInitializedTime != 0;
-    }
+    /** Observer method for the policy load listener. Overridden by inheriting classes. */
+    protected void onPolicyLoadListenerAvailable(boolean onDevicePolicyFound) {}
 
     /**
      * @return PolicyLoadListener used to indicate if policy initialization is complete.

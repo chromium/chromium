@@ -8,39 +8,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_chapter_information.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_chapter_information_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_metadata_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/mediasession/chapter_information.h"
 #include "third_party/blink/renderer/modules/mediasession/media_session.h"
+#include "third_party/blink/renderer/modules/mediasession/media_session_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
-
-namespace {
-
-// Processes the `MediaImage` with a parsed url in the artwork list. Returns an
-// empty list when any exception happens.
-HeapVector<Member<MediaImage>> ProcessArtworkVector(
-    ScriptState* script_state,
-    const HeapVector<Member<MediaImage>>& artwork,
-    ExceptionState& exception_state) {
-  HeapVector<Member<MediaImage>> processed_artwork(artwork);
-
-  for (MediaImage* image : processed_artwork) {
-    KURL url = ExecutionContext::From(script_state)->CompleteURL(image->src());
-    if (!url.IsValid()) {
-      exception_state.ThrowTypeError("'" + image->src() +
-                                     "' can't be resolved to a valid URL.");
-      return {};
-    }
-    image->setSrc(url);
-  }
-
-  DCHECK(!exception_state.HadException());
-  return processed_artwork;
-}
-
-}  // namespace
 
 // static
 MediaMetadata* MediaMetadata::Create(ScriptState* script_state,
@@ -61,6 +38,8 @@ MediaMetadata::MediaMetadata(ScriptState* script_state,
   artist_ = metadata->artist();
   album_ = metadata->album();
   SetArtworkInternal(script_state, metadata->artwork(), exception_state);
+  SetChapterInfoFromInit(script_state, metadata->chapterInfo(),
+                         exception_state);
 }
 
 String MediaMetadata::title() const {
@@ -104,9 +83,9 @@ v8::LocalVector<v8::Value> MediaMetadata::chapterInfo(
                                     chapterInfo_.size());
 
   for (wtf_size_t i = 0; i < chapterInfo_.size(); ++i) {
-    result[i] = FreezeV8Object(
-        ToV8Traits<ChapterInformation>::ToV8(script_state, chapterInfo_[i]),
-        script_state->GetIsolate());
+    result[i] = FreezeV8Object(ToV8Traits<blink::ChapterInformation>::ToV8(
+                                   script_state, chapterInfo_[i]),
+                               script_state->GetIsolate());
   }
 
   return result;
@@ -134,24 +113,6 @@ void MediaMetadata::setArtwork(ScriptState* script_state,
   NotifySessionAsync();
 }
 
-void MediaMetadata::setChapterInfo(
-    ScriptState* script_state,
-    const HeapVector<Member<ChapterInformation>>& chapter_info,
-    ExceptionState& exception_state) {
-  HeapVector<Member<ChapterInformation>> processed_chapters(chapter_info);
-
-  for (ChapterInformation* chapter : processed_chapters) {
-    HeapVector<Member<MediaImage>> processed_artwork =
-        ProcessArtworkVector(script_state, chapter->artwork(), exception_state);
-    if (processed_artwork.empty()) {
-      return;
-    }
-    chapter->setArtwork(processed_artwork);
-  }
-  chapterInfo_.swap(processed_chapters);
-  NotifySessionAsync();
-}
-
 void MediaMetadata::SetSession(MediaSession* session) {
   session_ = session;
 }
@@ -173,11 +134,25 @@ void MediaMetadata::SetArtworkInternal(
     const HeapVector<Member<MediaImage>>& artwork,
     ExceptionState& exception_state) {
   HeapVector<Member<MediaImage>> processed_artwork =
-      ProcessArtworkVector(script_state, artwork, exception_state);
+      media_session_utils::ProcessArtworkVector(script_state, artwork,
+                                                exception_state);
   if (processed_artwork.empty()) {
     return;
   }
   artwork_.swap(processed_artwork);
+}
+
+void MediaMetadata::SetChapterInfoFromInit(
+    ScriptState* script_state,
+    const HeapVector<Member<ChapterInformationInit>>& chapter_info,
+    ExceptionState& exception_state) {
+  HeapVector<Member<ChapterInformation>> processed_chapters;
+  for (ChapterInformationInit* init_chapter : chapter_info) {
+    auto* chapter =
+        ChapterInformation::From(script_state, init_chapter, exception_state);
+    processed_chapters.push_back(chapter);
+  }
+  chapterInfo_.swap(processed_chapters);
 }
 
 void MediaMetadata::Trace(Visitor* visitor) const {

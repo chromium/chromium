@@ -21,6 +21,7 @@ AX_BASE_EXPORT extern const char
 AX_BASE_EXPORT extern const char kEnableExperimentalAccessibilityManifestV3[];
 AX_BASE_EXPORT extern const char
     kEnableExperimentalAccessibilitySwitchAccessText[];
+AX_BASE_EXPORT extern const char kEnableMacAccessibilityAPIMigration[];
 
 // Returns true if experimental accessibility language detection is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityLanguageDetectionEnabled();
@@ -36,16 +37,16 @@ AX_BASE_EXPORT bool IsExperimentalAccessibilitySwitchAccessTextEnabled();
 // Returns true if Switch Access point scanning is enabled.
 AX_BASE_EXPORT bool IsMagnifierDebugDrawRectEnabled();
 
-// Optionally disable AXMenuList, which makes the internal pop-up menu
-// UI for a select element directly accessible.
-AX_BASE_EXPORT extern const char kDisableAXMenuList[];
-
 // For development / testing only.
 // When enabled the switch generates expectations files upon running an
 // ax_inspect test. For example, when running content_browsertests, it saves
 // output of failing accessibility tests to their expectations files in
 // content/test/data/accessibility/, overwriting existing file content.
 AX_BASE_EXPORT extern const char kGenerateAccessibilityTestExpectations[];
+
+AX_BASE_EXPORT extern const char kDisableRendererAccessibility[];
+
+AX_BASE_EXPORT extern const char kForceRendererAccessibility[];
 
 }  // namespace switches
 

@@ -33,6 +33,7 @@ class WebContents;
 
 namespace global_media_controls {
 class MediaItemUIListView;
+class MediaItemUIUpdatedView;
 class MediaItemUIView;
 }  // namespace global_media_controls
 
@@ -89,7 +90,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   // views::View implementation.
   void AddedToWidget() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // global_media_controls::MediaItemUIObserver implementation.
   void OnMediaItemUISizeChanged() override;
@@ -104,6 +106,10 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   const std::map<const std::string, global_media_controls::MediaItemUIView*>&
   GetItemsForTesting() const;
+
+  const std::map<const std::string,
+                 global_media_controls::MediaItemUIUpdatedView*>&
+  GetUpdatedItemsForTesting() const;
 
   const global_media_controls::MediaItemUIListView* GetListViewForTesting()
       const;
@@ -156,6 +162,10 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   std::unique_ptr<global_media_controls::MediaItemUIView> BuildMediaItemUIView(
       const std::string& id,
       base::WeakPtr<media_message_center::MediaNotificationItem> item);
+  std::unique_ptr<global_media_controls::MediaItemUIUpdatedView>
+  BuildMediaItemUIUpdatedView(
+      const std::string& id,
+      base::WeakPtr<media_message_center::MediaNotificationItem> item);
 
   const raw_ptr<MediaNotificationService> service_;
 
@@ -167,9 +177,13 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   base::ObserverList<MediaDialogViewObserver> observers_;
 
-  // A map of all containers we're currently observing.
+  // A map of all the media item UIs that `MediaDialogView` is currently
+  // observing. If media::kGlobalMediaControlsUpdatedUI on non-CrOS is enabled,
+  // `updated_items_` is used, otherwise `observed_items_` is used.
   std::map<const std::string, global_media_controls::MediaItemUIView*>
       observed_items_;
+  std::map<const std::string, global_media_controls::MediaItemUIUpdatedView*>
+      updated_items_;
 
   raw_ptr<views::View> live_caption_container_ = nullptr;
   raw_ptr<views::Label> live_caption_title_ = nullptr;

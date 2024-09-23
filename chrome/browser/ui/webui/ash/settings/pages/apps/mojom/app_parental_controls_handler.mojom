@@ -1,0 +1,69 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.app_parental_controls.mojom;
+
+// Types of validation results for a PIN.
+enum PinValidationResult {
+  kPinValidationSuccess,
+  // PIN is not the correct length.
+  kPinLengthError,
+  // PIN is not numbers only.
+  kPinNumericError,
+};
+
+// App representation for on-device parental controls settings. Contains the app
+// id and title. Represents Apps that can be managed.
+struct App {
+  // Unique identifier of the App.
+  string id;
+
+  // The title of the app.
+  // This field may be null when this struct is used to signal updates.
+  string? title;
+
+  // Whether the app is blocked by the local parental controls.
+  bool is_blocked;
+};
+
+// Interface for fetching and setting the state of apps for on-device parental
+// controls in OS Settings.
+interface AppParentalControlsHandler {
+  // Get the list of installed apps.
+  GetApps() => (array<App> apps);
+
+  // Updates the blocked state of the app identified by `app_id`.
+  UpdateApp(string app_id, bool is_blocked);
+
+  // Binds remote and notifies receiver in app parental controls page UI.
+  AddObserver(pending_remote<AppParentalControlsObserver> observer);
+
+  // Called when app controls are disabled in settings.
+  OnControlsDisabled();
+
+  // Returns if the PIN is a valid PIN that can be stored. If it is not a valid
+  // PIN, returns the type of error that makes the PIN invalid.
+  ValidatePin(string pin) => (PinValidationResult result);
+
+  // Stores a PIN for on-device controls and marks the feature as being set up.
+  // Returns false if the PIN being stored is not valid.
+  SetUpPin(string pin) => (bool is_success);
+
+  // Returns if the received PIN matches the PIN for on-device controls.
+  VerifyPin(string pin) => (bool is_success);
+
+  // Returns if setup for the on-device controls is completed.
+  IsSetupCompleted() => (bool is_completed);
+};
+
+// Observer interface that sends remote updates to the app parental controls UI
+// in OSSettings.
+interface AppParentalControlsObserver {
+  // Notifies clients when a new app is installed or an already installed app
+  // has been updated.
+  OnAppInstalledOrUpdated(App app);
+
+  // Notifies clients when an app has been uninstalled.
+  OnAppUninstalled(App app);
+};

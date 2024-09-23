@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("oobe_apps_service") {
+  sources = [
+    "oobe_apps_almanac_endpoint.cc",
+    "oobe_apps_almanac_endpoint.h",
+    "oobe_apps_discovery_service.cc",
+    "oobe_apps_discovery_service.h",
+    "oobe_apps_discovery_service_factory.cc",
+    "oobe_apps_discovery_service_factory.h",
+    "oobe_apps_types.cc",
+    "oobe_apps_types.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_service:app_service",
+    "//chrome/browser/apps/app_service/app_install",
+    "//chrome/browser/ash/login/oobe_apps_service/proto",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/constants",
+    "//components/country_codes",
+    "//components/keyed_service/core",
+    "//components/language/core/browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//content/public/browser",
+    "//google_apis",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}

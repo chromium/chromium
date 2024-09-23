@@ -7,15 +7,17 @@ var otherTabId;
 var firstWindowId;
 var secondWindowId;
 
+const manifest = chrome.runtime.getManifest();
+
 const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(async function() {
 chrome.test.runTests([
   function init() {
-    chrome.tabs.getSelected(null, pass(function(tab) {
-      testTabId = tab.id;
-      firstWindowId = tab.windowId;
+    chrome.tabs.query({active: true}, pass(function(tabs) {
+      testTabId = tabs[0].id;
+      firstWindowId = tabs[0].windowId;
     }));
   },
 
@@ -77,6 +79,11 @@ chrome.test.runTests([
 
   function tabsOnSelectionChanged() {
     // Note: tabs.onSelectionChanged is deprecated.
+    if (manifest.manifest_version > 2) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.test.listenOnce(chrome.tabs.onSelectionChanged,
       function(tabid, info) {
         assertEq(testTabId, tabid);
@@ -89,6 +96,11 @@ chrome.test.runTests([
 
   function tabsOnActiveChanged() {
     // Note: tabs.onActiveChanged is deprecated.
+    if (manifest.manifest_version > 2) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.test.listenOnce(chrome.tabs.onActiveChanged,
       function(tabid, info) {
         assertEq(otherTabId, tabid);
@@ -185,7 +197,7 @@ chrome.test.runTests([
       assertEq("normal", window.type);
       assertTrue(!window.incognito);
       windowEventsWindow = window;
-      chrome.tabs.getAllInWindow(window.id, pass(function(tabs) {
+      chrome.tabs.query({windowId:window.id}, pass(function(tabs) {
         assertEq(pageUrl("a"), tabs[0].pendingUrl || tabs[0].url);
       }));
     });

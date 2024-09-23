@@ -4,6 +4,7 @@
 
 #include "content/browser/web_package/signed_exchange_handler.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -24,7 +25,6 @@
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -79,13 +79,13 @@ bool IsCTSupported() {
 }
 
 // "wildcard_example.org.public.pem.cbor" has dummy data in its "ocsp" field.
-constexpr base::StringPiece kDummyOCSPDer = "OCSP";
+constexpr std::string_view kDummyOCSPDer = "OCSP";
 
 class TestBrowserClient : public ContentBrowserClient {
   bool CanAcceptUntrustedExchangesIfNeeded() override { return true; }
 };
 
-std::string GetTestFileContents(base::StringPiece name) {
+std::string GetTestFileContents(std::string_view name) {
   base::FilePath path;
   base::PathService::Get(content::DIR_TEST_DATA, &path);
   path = path.AppendASCII("sxg").AppendASCII(name);
@@ -191,7 +191,6 @@ class SignedExchangeHandlerTest
     original_client_ = SetBrowserClientForTesting(&browser_client_);
     signed_exchange_utils::SetVerificationTimeForTesting(
         base::Time::UnixEpoch() + base::Seconds(kSignatureHeaderDate));
-    feature_list_.InitAndEnableFeature(features::kSignedHTTPExchange);
 
     source_stream_ = std::make_unique<net::MockSourceStream>();
     source_stream_->set_read_one_byte_at_a_time(true);
@@ -260,7 +259,7 @@ class SignedExchangeHandlerTest
   }
 
   // Sets up |source_| stream with the contents of |file|.
-  void SetSourceStreamContents(base::StringPiece file) {
+  void SetSourceStreamContents(std::string_view file) {
     // MockSourceStream doesn't take ownership of the buffer, so we must keep it
     // alive.
     source_stream_contents_ = GetTestFileContents(file);
@@ -340,7 +339,7 @@ class SignedExchangeHandlerTest
         std::make_unique<blink::WebPackageRequestMatcher>(
             net::HttpRequestHeaders(), std::string() /* accept_langs */),
         nullptr /* devtools_proxy */, nullptr /* reporter */,
-        FrameTreeNode::kFrameTreeNodeInvalidId);
+        FrameTreeNodeId());
   }
 
   void WaitForHeader() {

@@ -202,14 +202,6 @@ source_set("tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash || is_castos || is_cast_android) {
-    sources += [
-      "public/cpp/sounds/audio_stream_handler_unittest.cc",
-      "public/cpp/sounds/sounds_manager_unittest.cc",
-    ]
-    data = [ "//media/test/data/" ]
-  }
-
   if (chrome_wide_echo_cancellation_supported) {
     sources += [
       "mixing_graph_impl_unittest.cc",

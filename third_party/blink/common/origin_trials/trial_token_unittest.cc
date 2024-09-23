@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"

@@ -58,6 +58,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onemptied;
   attribute EventHandler onended;
   attribute OnErrorEventHandler onerror;
+  [RuntimeEnabled=FencedFramesLocalUnpartitionedDataAccess] attribute EventHandler onfencedtreeclick;
   attribute EventHandler onfocus;
   attribute EventHandler onformdata;
   attribute EventHandler oninput;
@@ -92,8 +93,8 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onseeking;
   attribute EventHandler onselect;
   attribute EventHandler onslotchange;
-  [RuntimeEnabled=CSSSnapChangedEvent] attribute EventHandler onsnapchanged;
-  [RuntimeEnabled=CSSSnapChangingEvent] attribute EventHandler onsnapchanging;
+  [RuntimeEnabled=CSSScrollSnapChangeEvent] attribute EventHandler onscrollsnapchange;
+  [RuntimeEnabled=CSSScrollSnapChangingEvent] attribute EventHandler onscrollsnapchanging;
   //attribute EventHandler onsort;
   attribute EventHandler onstalled;
   attribute EventHandler onsubmit;

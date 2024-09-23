@@ -1,0 +1,41 @@
+caption: Set the data regions preference for data storage
+desc: |-
+  Choose to store your covered data from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> in a specific geographic location.
+
+  If this policy is left unset or is set to <ph name="DATA_REGION_SETTING_NO_PREFERENCE_OPTION_NAME">No preference</ph> (value 0), covered data may be stored in any geographic location(s).
+
+  If this policy is set to <ph name="DATA_REGION_SETTING_UNITED_STATES_OPTION_NAME">United States</ph> (value 1), covered data will be stored in United States.
+
+  If this policy is set to <ph name="DATA_REGION_SETTING_EUROPE_OPTION_NAME">Europe</ph> (value 2), covered data will be stored in Europe.
+default: 0
+example_value: 0
+features:
+  cloud_only: true
+  dynamic_refresh: false
+  per_profile: true
+  unlisted: true
+  user_only: true
+items:
+- caption: No preference.
+  name: NoPreference
+  value: 0
+- caption: United States.
+  name: UnitedStates
+  value: 1
+- caption: Europe.
+  name: Europe
+  value: 2
+owners:
+- alexwchen@chromium.org
+- file://chrome/browser/enterprise/OWNERS
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+  - 2
+future_on:
+- chrome.*
+- chrome_os
+tags: []
+type: int-enum

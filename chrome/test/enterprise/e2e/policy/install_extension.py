@@ -7,6 +7,7 @@ import time
 from absl import app, flags
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 from pywinauto.application import Application
 from pywinauto.findwindows import ElementNotFoundError
 
@@ -30,10 +31,11 @@ def main(argv):
   time.sleep(5)
 
   try:
-    driver.find_element_by_xpath(
-        "//div[@aria-label='Blocked by admin']").click()
+    driver.find_element(By.XPATH,
+                        "//div[@aria-label='Blocked by admin']").click()
     app.top_window() \
-       .child_window(title_re='.*Your admin has blocked', control_type="TitleBar") \
+       .child_window(title_re='.*Your admin has blocked',
+                      control_type="TitleBar") \
        .print_control_identifiers()
   except NoSuchElementException:
     print("Not blocked")

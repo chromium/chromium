@@ -7,30 +7,27 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/side_panel/read_anything/read_anything_tab_helper.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
-#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/accessibility/reading/distillable_pages.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
-#include "read_anything_controller.h"
-#include "read_anything_coordinator.h"
-#include "read_anything_side_panel_controller.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -40,138 +37,75 @@ using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
 DECLARE_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
                           SidePanelWebUIViewT);
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingSidePanelControllerGlue);
+
+ReadAnythingSidePanelControllerGlue::ReadAnythingSidePanelControllerGlue(
+    content::WebContents* contents,
+    ReadAnythingSidePanelController* controller)
+    : content::WebContentsUserData<ReadAnythingSidePanelControllerGlue>(
+          *contents),
+      controller_(controller) {}
+
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-  // Create the model and initialize it with user prefs (if present).
-  model_ = std::make_unique<ReadAnythingModel>();
-  InitModelWithUserPrefs();
-
-  // Create the controller.
-  controller_ =
-      std::make_unique<ReadAnythingController>(model_.get(), web_contents_);
-}
-
-void ReadAnythingSidePanelController::InitModelWithUserPrefs() {
-  if (!Profile::FromBrowserContext(web_contents_->GetBrowserContext()) ||
-      !Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-           ->GetPrefs()) {
-    return;
-  }
-
-  // Get user's default language to check for compatible fonts.
-  language::LanguageModel* language_model =
-      LanguageModelManagerFactory::GetForBrowserContext(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
-          ->GetPrimaryModel();
-  std::string prefs_lang = language_model->GetLanguages().front().lang_code;
-  prefs_lang = language::ExtractBaseLanguage(prefs_lang);
-
-  std::string prefs_font_name =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-          ->GetPrefs()
-          ->GetString(prefs::kAccessibilityReadAnythingFontName);
-
-  double prefs_font_scale =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-          ->GetPrefs()
-          ->GetDouble(prefs::kAccessibilityReadAnythingFontScale);
-
-  bool prefs_links_enabled =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-          ->GetPrefs()
-          ->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled);
-
-  read_anything::mojom::Colors prefs_colors =
-      static_cast<read_anything::mojom::Colors>(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-              ->GetPrefs()
-              ->GetInteger(prefs::kAccessibilityReadAnythingColorInfo));
-
-  read_anything::mojom::LineSpacing prefs_line_spacing =
-      static_cast<read_anything::mojom::LineSpacing>(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-              ->GetPrefs()
-              ->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing));
-
-  read_anything::mojom::LetterSpacing prefs_letter_spacing =
-      static_cast<read_anything::mojom::LetterSpacing>(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())
-              ->GetPrefs()
-              ->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
-
-  model_->Init(
-      /* lang code = */ prefs_lang,
-      /* font name = */ prefs_font_name,
-      /* font scale = */ prefs_font_scale,
-      /* links enabled = */ prefs_links_enabled,
-      /* colors = */ prefs_colors,
-      /* line spacing = */ prefs_line_spacing,
-      /* letter spacing = */ prefs_letter_spacing);
-  default_language_code_ = prefs_lang;
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.SetDefaultLanguageCode(prefs_lang);
-  }
-}
-
-ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
-  // Inform observers when |this| is destroyed so they can do their own cleanup.
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.OnSidePanelControllerDestroyed();
-  }
-}
-
-void ReadAnythingSidePanelController::CreateAndRegisterEntry() {
-  auto* registry = SidePanelRegistry::Get(web_contents_);
-  if (!registry || registry->GetEntryForKey(SidePanelEntry::Key(
-                       SidePanelEntry::Id::kReadAnything))) {
-    return;
-  }
+    tabs::TabInterface* tab,
+    SidePanelRegistry* side_panel_registry)
+    : tab_(tab), side_panel_registry_(side_panel_registry) {
+  CHECK(!side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)));
 
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
-      l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
-      ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
-                                     ui::kColorIcon),
       base::BindRepeating(&ReadAnythingSidePanelController::CreateContainerView,
                           base::Unretained(this)));
   side_panel_entry->AddObserver(this);
-  registry->Register(std::move(side_panel_entry));
+  side_panel_registry_->Register(std::move(side_panel_entry));
+
+  tab_subscriptions_.push_back(tab_->RegisterWillDetach(
+      base::BindRepeating(&ReadAnythingSidePanelController::TabWillDetach,
+                          weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
+      base::BindRepeating(&ReadAnythingSidePanelController::TabForegrounded,
+                          weak_factory_.GetWeakPtr())));
+  Observe(tab_->GetContents());
+
+  // We do not know if the current tab is in the process of loading a page.
+  // Assume that a page just finished loading to populate initial state.
+  distillable_ = IsActivePageDistillable();
+  UpdateIphVisibility();
 }
 
-void ReadAnythingSidePanelController::DeregisterEntry() {
-  auto* registry = SidePanelRegistry::Get(web_contents_);
-  if (!registry) {
-    return;
+ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
+  if (web_view_) {
+    web_view_->contents_wrapper()->web_contents()->RemoveUserData(
+        ReadAnythingSidePanelControllerGlue::UserDataKey());
   }
 
-  if (auto* current_entry = registry->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
-    current_entry->RemoveObserver(this);
-  }
-  registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  // Inform observers when |this| is destroyed so they can do their own cleanup.
+  observers_.Notify(&ReadAnythingSidePanelController::Observer::
+                        OnSidePanelControllerDestroyed);
+}
+
+void ReadAnythingSidePanelController::ResetForTabDiscard() {
+  auto* current_entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  current_entry->RemoveObserver(this);
+  side_panel_registry_->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 }
 
 void ReadAnythingSidePanelController::AddPageHandlerAsObserver(
     base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
   AddObserver(page_handler.get());
-  AddModelObserver(page_handler.get());
 }
 
 void ReadAnythingSidePanelController::RemovePageHandlerAsObserver(
     base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
   RemoveObserver(page_handler.get());
-  RemoveModelObserver(page_handler.get());
 }
 
 void ReadAnythingSidePanelController::AddObserver(
     ReadAnythingSidePanelController::Observer* observer) {
   observers_.AddObserver(observer);
-
-  // InitModelWithUserPrefs where default_language_code_ is set may be called
-  // before all observerers have been added, so ensure that observers are
-  // updated with the correct language code as they're added.
-  observer->SetDefaultLanguageCode(default_language_code_);
 }
 
 void ReadAnythingSidePanelController::RemoveObserver(
@@ -179,62 +113,122 @@ void ReadAnythingSidePanelController::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void ReadAnythingSidePanelController::AddModelObserver(
-    ReadAnythingModel::Observer* observer) {
-  DCHECK(model_);
-  model_->AddObserver(observer);
-}
-
-void ReadAnythingSidePanelController::RemoveModelObserver(
-    ReadAnythingModel::Observer* observer) {
-  DCHECK(model_);
-  model_->RemoveObserver(observer);
-}
-
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
-  if (Browser* browser = chrome::FindBrowserWithTab(web_contents_)) {
-    auto* coordinator = ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
-    coordinator->OnReadAnythingSidePanelEntryShown();
+  auto* service =
+      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+  // At the moment, services are created for normal and incognito profiles but
+  // not unusual profile types. On the other hand,
+  // ReadAnythingSidePanelController is created for all tabs. Thus we need a
+  // nullptr check.
+  if (service) {
+    service->OnReadAnythingSidePanelEntryShown();
   }
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.Activate(true);
-  }
+
+  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate, true);
 }
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
-  if (Browser* browser = chrome::FindBrowserWithTab(web_contents_)) {
-    auto* coordinator = ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
-    coordinator->OnReadAnythingSidePanelEntryHidden();
+  auto* service =
+      ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+  // At the moment, services are created for normal and incognito profiles but
+  // not unusual profile types. On the other hand,
+  // ReadAnythingSidePanelController is created for all tabs. Thus we need a
+  // nullptr check.
+  if (service) {
+    service->OnReadAnythingSidePanelEntryHidden();
   }
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.Activate(false);
-  }
+  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate,
+                    false);
 }
 
 std::unique_ptr<views::View>
 ReadAnythingSidePanelController::CreateContainerView() {
-  auto web_view = std::make_unique<ReadAnythingSidePanelWebView>(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-
-  if (features::IsReadAnythingWebUIToolbarEnabled()) {
-    return std::move(web_view);
+  // If there was an old WebView, clear the reference.
+  if (web_view_) {
+    web_view_->contents_wrapper()->web_contents()->RemoveUserData(
+        ReadAnythingSidePanelControllerGlue::UserDataKey());
   }
 
-  // Create the views.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
-      this,
-      /*toolbar_delegate=*/controller_.get(),
-      /*font_combobox_delegate=*/controller_.get());
+  auto web_view = std::make_unique<ReadAnythingSidePanelWebView>(
+      tab_->GetBrowserWindowInterface()->GetProfile());
 
-  // Create the component.
-  // Note that a side panel controller would normally maintain ownership of
-  // these objects, but objects extending {ui/views/view.h} prefer ownership
-  // over raw pointers (View ownership is typically managed by the View
-  // hierarchy, rather than by outside controllers).
-  auto container_view = std::make_unique<ReadAnythingContainerView>(
-      this, std::move(toolbar), std::move(web_view));
+  ReadAnythingSidePanelControllerGlue::CreateForWebContents(
+      web_view->contents_wrapper()->web_contents(), this);
+  web_view_ = web_view->GetWeakPtr();
+  return std::move(web_view);
+}
 
-  return std::move(container_view);
+bool ReadAnythingSidePanelController::IsActivePageDistillable() const {
+  auto url = tab_->GetContents()->GetLastCommittedURL();
+
+  for (const std::string& distillable_domain : a11y::GetDistillableDomains()) {
+    // If the url's domain is found in distillable domains AND the url has a
+    // filename (i.e. it is not a home page or sub-home page), show the promo.
+    if (url.DomainIs(distillable_domain) && !url.ExtractFileName().empty()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
+  UpdateIphVisibility();
+}
+
+void ReadAnythingSidePanelController::TabWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  auto* coordinator =
+      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
+  // TODO(https://crbug.com/360163254): BrowserWithTestWindowTest currently does
+  // not create a SidePanelCoordinator. This block will be unnecessary once that
+  // changes.
+  if (!coordinator) {
+    CHECK_IS_TEST();
+    return;  // IN-TEST
+  }
+  if (coordinator->IsSidePanelEntryShowing(
+          SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything))) {
+    coordinator->Close(/*suppress_animation=*/true);
+  }
+}
+
+void ReadAnythingSidePanelController::DidStopLoading() {
+  // The page finished loading.
+  loading_ = false;
+  UpdateIphVisibility();
+}
+
+void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {
+  // A navigation was committed but the page is still loading.
+  previous_page_distillable_ = distillable_;
+  loading_ = true;
+  distillable_ = IsActivePageDistillable();
+  UpdateIphVisibility();
+}
+
+void ReadAnythingSidePanelController::UpdateIphVisibility() {
+  if (!tab_->IsInForeground()) {
+    return;
+  }
+
+  bool should_show_iph = loading_ ? previous_page_distillable_ : distillable_;
+
+  // Promo controller does not exist for incognito windows.
+  auto* promo_controller =
+      tab_->GetBrowserWindowInterface()->GetFeaturePromoController();
+  if (!promo_controller) {
+    return;
+  }
+
+  if (should_show_iph) {
+    promo_controller->MaybeShowPromo(
+        feature_engagement::kIPHReadingModeSidePanelFeature);
+  } else {
+    promo_controller->EndPromo(
+        feature_engagement::kIPHReadingModeSidePanelFeature,
+        user_education::EndFeaturePromoReason::kAbortPromo);
+  }
 }

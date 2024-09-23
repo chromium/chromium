@@ -36,13 +36,6 @@ source_set("cpp") {
       ]
     }
 
-    if (is_linux || is_win) {
-      sources += [
-        "sandboxed_document_analyzer.cc",
-        "sandboxed_document_analyzer.h",
-      ]
-    }
-
     deps += [
       "//components/services/filesystem:lib",
       "//content/public/browser",
@@ -66,10 +59,6 @@ if (safe_browsing_mode == 1) {
       sources += [ "sandboxed_dmg_analyzer_mac_unittest.cc" ]
     }
 
-    if (is_linux || is_win) {
-      sources += [ "sandboxed_document_analyzer_unittest.cc" ]
-    }
-
     deps = [
       ":cpp",
       "//base/test:test_support",
@@ -84,10 +73,6 @@ if (safe_browsing_mode == 1) {
       "//testing/gmock",
       "//testing/gtest",
     ]
-
-    if (is_linux || is_win) {
-      deps += [ "//chrome/common/safe_browsing:document_analyzer_results" ]
-    }
   }
 }
 

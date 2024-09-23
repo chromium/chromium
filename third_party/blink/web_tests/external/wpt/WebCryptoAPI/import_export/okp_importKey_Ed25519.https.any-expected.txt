@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Good parameters with ignored JWK alg: Ed25519 (jwk, object(kty, crv, x), {name: Ed25519}, true, [verify])
+  assert_unreached: Threw an unexpected error: DataError: The JWK "alg" member was inconsistent with that specified by the Web Crypto call Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed25519 (jwk, object(kty, crv, x), {name: Ed25519}, true, [])
+  assert_unreached: Threw an unexpected error: DataError: The JWK "alg" member was inconsistent with that specified by the Web Crypto call Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed25519 (jwk, object(kty, crv, x), {name: Ed25519}, true, [verify, verify])
+  assert_unreached: Threw an unexpected error: DataError: The JWK "alg" member was inconsistent with that specified by the Web Crypto call Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed25519 (jwk, object(crv, d, x, kty), {name: Ed25519}, true, [sign])
+  assert_unreached: Threw an unexpected error: DataError: The JWK "alg" member was inconsistent with that specified by the Web Crypto call Reached unreachable code
+[FAIL] Good parameters with ignored JWK alg: Ed25519 (jwk, object(crv, d, x, kty), {name: Ed25519}, true, [sign, sign])
+  assert_unreached: Threw an unexpected error: DataError: The JWK "alg" member was inconsistent with that specified by the Web Crypto call Reached unreachable code
+Harness: the test ran to completion.
+

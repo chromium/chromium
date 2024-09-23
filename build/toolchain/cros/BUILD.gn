@@ -24,15 +24,12 @@ template("cros_toolchain") {
       toolchain_args.cc_wrapper = ""
       toolchain_args.clang_use_chrome_plugins = false
 
-      # CrOS's target toolchain wrapper prefers to invoke gomacc itself, so pass
-      # it the gomacc path via cmd-line arg. Otherwise, for both CrOS's host
-      # wrapper (used in the ebuild) and Chrome's clang (used in Simple Chrome),
-      # prepend gomacc like normal.
-      if (use_goma && invoker.needs_gomacc_path_arg) {
-        extra_cppflags += " --gomacc-path $goma_dir/gomacc"
-      }
-      if (use_remoteexec && invoker.needs_gomacc_path_arg) {
-        extra_cppflags += "--rewrapper-path $rbe_cros_cc_wrapper --rewrapper-cfg ${rbe_cc_cfg_file}"
+      # CrOS's target toolchain wrapper prefers to invoke rewrapper itself, so
+      # pass it the rewrapper path via cmd-line arg. Otherwise, for both CrOS's
+      # host wrapper (used in the ebuild) and Chrome's clang (used in Simple
+      # Chrome), prepend rewrapper like normal.
+      if (use_reclient && invoker.needs_rewrapper_path_arg) {
+        extra_cppflags += "--rewrapper-path $reclient_cros_cc_wrapper --rewrapper-cfg ${reclient_cc_cfg_file}"
       }
 
       # Relativize path if compiler is specified such that not to lookup from
@@ -82,14 +79,14 @@ cros_toolchain("target") {
     extra_cxxflags = cros_target_extra_cxxflags
     extra_ldflags = cros_target_extra_ldflags
 
-    needs_gomacc_path_arg = true
+    needs_rewrapper_path_arg = true
   }
 }
 
 # This is a special toolchain needed just for the nacl_bootstrap target in
 # //native_client/src/trusted/service_runtime/linux. It is identical
-# to ":target" except that it forces use_debug_fission, use_gold, and
-# use_sysroot off, and allows the user to set different sets of extra flags.
+# to ":target" except that it forces `use_debug_fission1 and `use_sysroot` off,
+# and allows the user to set different sets of extra flags.
 cros_toolchain("nacl_bootstrap") {
   toolchain_args = {
     if (target_cpu == "arm64") {
@@ -99,7 +96,6 @@ cros_toolchain("nacl_bootstrap") {
     }
     current_os = "chromeos"
     use_debug_fission = false
-    use_gold = false
     use_sysroot = false
   }
 
@@ -120,7 +116,7 @@ cros_toolchain("nacl_bootstrap") {
     extra_cxxflags = cros_nacl_bootstrap_extra_cxxflags
     extra_ldflags = cros_nacl_bootstrap_extra_ldflags
 
-    needs_gomacc_path_arg = true
+    needs_rewrapper_path_arg = true
   }
 
   # We build for ARM32, even when the rest of the build targets ARM64.
@@ -143,7 +139,6 @@ cros_toolchain("nacl_helper_arm32") {
     current_cpu = "arm"
     current_os = "chromeos"
     use_debug_fission = false
-    use_gold = false
     sysroot = cros_nacl_helper_arm32_sysroot
 
     # Disable some uses of libraries that this build does not require. The
@@ -166,7 +161,7 @@ cros_toolchain("nacl_helper_arm32") {
   extra_ldflags = ""
 
   if (!lacros_use_chromium_toolchain) {
-    needs_gomacc_path_arg = true
+    needs_rewrapper_path_arg = true
   }
 }
 
@@ -195,7 +190,7 @@ cros_toolchain("host") {
     extra_cxxflags = cros_host_extra_cxxflags
     extra_ldflags = cros_host_extra_ldflags
 
-    needs_gomacc_path_arg = false
+    needs_rewrapper_path_arg = false
   }
 }
 
@@ -229,7 +224,7 @@ cros_toolchain("v8_snapshot") {
     extra_cxxflags = cros_v8_snapshot_extra_cxxflags
     extra_ldflags = cros_v8_snapshot_extra_ldflags
 
-    needs_gomacc_path_arg = false
+    needs_rewrapper_path_arg = false
   }
 }
 
@@ -259,7 +254,7 @@ if (also_build_lacros_chrome_for_architecture != "") {
     toolchain_args = {
       forward_variables_from(lacros_args, "*")
 
-      # TODO(crbug.com/1298821) Change to a better way to set gn args.
+      # TODO(crbug.com/40823173) Change to a better way to set gn args.
       # The following gn args are present in ash config like
       # //build/args/chromeos/atlas.gni but not in
       # //build/args/chromeos/amd64-generic-crostoolchain.gni.
@@ -305,7 +300,7 @@ if (also_build_lacros_chrome_for_architecture != "") {
       extra_cxxflags = lacros_args.cros_target_extra_cxxflags
       extra_ldflags = lacros_args.cros_target_extra_ldflags
 
-      needs_gomacc_path_arg = true
+      needs_rewrapper_path_arg = true
     }
   }
 }

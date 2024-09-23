@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -142,7 +142,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
   return frame;
 }
 
-WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
+WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForFencedFrame(
     mojom::blink::TreeScopeType scope,
     const RemoteFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
@@ -180,12 +180,12 @@ bool WebRemoteFrameImpl::IsWebLocalFrame() const {
 }
 
 WebLocalFrame* WebRemoteFrameImpl::ToWebLocalFrame() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 const WebLocalFrame* WebRemoteFrameImpl::ToWebLocalFrame() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -226,6 +226,8 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     const LocalFrameToken& frame_token,
     WebFrame* opener,
     const DocumentToken& document_token,
+    CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
+        interface_broker,
     std::unique_ptr<WebPolicyContainer> policy_container) {
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
@@ -250,7 +252,8 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
   child->InitializeCoreFrame(
       *GetFrame()->GetPage(), owner, this, previous_sibling,
       FrameInsertType::kInsertInConstructor, name, window_agent_factory, opener,
-      document_token, std::move(policy_container), storage_key,
+      document_token, std::move(interface_broker), std::move(policy_container),
+      storage_key,
       /*creator_base_url=*/KURL());
   DCHECK(child->GetFrame());
   return child;
@@ -278,11 +281,11 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
   // WebFrameWidget containing this frame, and this is true for regular frames
   // in the frame tree as well as for fenced frames, which are not in the frame
   // tree; hence the code to traverse up through FrameOwner.
-  WebFrameWidget* ancestor_widget = nullptr;
+  WebFrameWidgetImpl* ancestor_widget = nullptr;
   if (parent) {
     if (parent->IsWebLocalFrame()) {
       ancestor_widget =
-          To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidget();
+          To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidgetImpl();
     }
   } else if (owner && owner->IsLocal()) {
     // Never gets to this point unless |owner| is a <fencedframe>
@@ -291,7 +294,8 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
     DCHECK(owner_element->IsHTMLFencedFrameElement());
     LocalFrame& local_frame =
         owner_element->GetDocument().GetFrame()->LocalFrameRoot();
-    ancestor_widget = WebLocalFrameImpl::FromFrame(local_frame)->FrameWidget();
+    ancestor_widget =
+        WebLocalFrameImpl::FromFrame(local_frame)->FrameWidgetImpl();
   }
 
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(
@@ -352,20 +356,21 @@ void WebRemoteFrameImpl::SetCoreFrame(RemoteFrame* frame) {
 }
 
 void WebRemoteFrameImpl::InitializeFrameVisualProperties(
-    WebFrameWidget* ancestor_widget,
+    WebFrameWidgetImpl* ancestor_widget,
     WebView* web_view) {
   FrameVisualProperties visual_properties;
-  visual_properties.zoom_level = web_view->ZoomLevel();
+  visual_properties.zoom_level = ancestor_widget->GetZoomLevel();
+  visual_properties.css_zoom_factor = ancestor_widget->GetCSSZoomFactor();
   visual_properties.page_scale_factor = ancestor_widget->PageScaleInMainFrame();
   visual_properties.is_pinch_gesture_active =
       ancestor_widget->PinchGestureActiveInMainFrame();
   visual_properties.screen_infos = ancestor_widget->GetOriginalScreenInfos();
   visual_properties.visible_viewport_size =
       ancestor_widget->VisibleViewportSizeInDIPs();
-  const WebVector<gfx::Rect>& window_segments =
-      ancestor_widget->WindowSegments();
-  visual_properties.root_widget_window_segments.assign(window_segments.begin(),
-                                                       window_segments.end());
+  const WebVector<gfx::Rect>& viewport_segments =
+      ancestor_widget->ViewportSegments();
+  visual_properties.root_widget_viewport_segments.assign(
+      viewport_segments.begin(), viewport_segments.end());
   GetFrame()->InitializeFrameVisualProperties(visual_properties);
 }
 
@@ -398,7 +403,8 @@ v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy(
     v8::Isolate* isolate) const {
   return GetFrame()
       ->GetWindowProxy(DOMWrapperWorld::MainWorld(isolate))
-      ->GlobalProxyIfNotDetached();
+      ->GlobalProxyIfNotDetached()
+      .ToLocalChecked();
 }
 
 gfx::Rect WebRemoteFrameImpl::GetCompositingRect() {

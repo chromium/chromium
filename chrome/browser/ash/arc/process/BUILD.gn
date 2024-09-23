@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("process") {
+  sources = [
+    "arc_process.cc",
+    "arc_process.h",
+    "arc_process_service.cc",
+    "arc_process_service.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/process_snapshot",
+  ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "arc_process_unittest.cc" ]
+
+  deps = [
+    ":process",
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

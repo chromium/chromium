@@ -51,6 +51,18 @@ enum FullscreenVisibility {
   kOverUser = 1,
 };
 
+[Stable, Extensible]
+enum SettingsButtonHandler {
+  // No settings handler, no settings options shown for notification.
+  [Default]kNone = 0,
+
+  // Settings available, handled inline.
+  kInline = 1,
+
+  // Settings available, actions are handled by notification's delegate.
+  kDelegate = 2,
+};
+
 [Stable]
 struct NotifierId {
   NotifierType type@0;
@@ -203,4 +215,9 @@ struct Notification {
   // by files. Therefore, the existence of `image` does not necessarily imply
   // the existence of `image_path`.
   mojo_base.mojom.FilePath? image_path@28;
+
+  [MinVersion=6]
+  // Whether to show settings options and how they are handled.
+  // See enum definition.
+  SettingsButtonHandler settings_button_handler@29;
 };

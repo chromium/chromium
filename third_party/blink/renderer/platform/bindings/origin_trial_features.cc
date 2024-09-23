@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 
+#include "base/check.h"
+
 namespace blink {
 
 namespace {

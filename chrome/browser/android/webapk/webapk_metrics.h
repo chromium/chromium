@@ -31,7 +31,6 @@ void TrackRequestTokenDuration(base::TimeDelta delta,
 void TrackInstallDuration(base::TimeDelta delta);
 void TrackInstallEvent(InstallEvent event);
 void TrackInstallResult(webapps::WebApkInstallResult result);
-void TrackInstallRetryResult(webapps::WebApkInstallResult result);
 
 }  // namespace webapk
 

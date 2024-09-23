@@ -18,17 +18,25 @@ suite('CrContainerShadowMixinLit', function() {
 
     static override get styles() {
       return css`
-         #container {
-           height: 50px;
-         }
+          #container {
+            height: 50px;
+            overflow: auto;
+            width: 100%;
+          }
+
+          #content {
+            height: 200%;
+            width: 100%;
+          }
       `;
     }
 
     override render() {
       return html`
          <div id="before"></div>
-         <div id="container"
-             ?show-bottom-shadow="${this.showBottomShadow}"></div>
+         <div id="container" ?show-bottom-shadow="${this.showBottomShadow}">
+           <div id="content"></div>
+         </div>
          <div id="after"></div>
        `;
     }

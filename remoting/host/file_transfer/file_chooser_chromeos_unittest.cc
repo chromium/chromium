@@ -79,7 +79,7 @@ class FileChooserChromeOsTest : public testing::Test {
 };
 
 #if defined(LEAK_SANITIZER)
-// TODO(https://crbug.com/1453685): Fix LeakSanitizer failure.
+// TODO(crbug.com/40916564): Fix LeakSanitizer failure.
 #define MAYBE_DISABLED(name) DISABLED_##name
 #else
 #define MAYBE_DISABLED(name) name

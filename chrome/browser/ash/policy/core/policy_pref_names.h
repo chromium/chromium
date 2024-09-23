@@ -11,6 +11,8 @@ namespace prefs {
 // Non-specific prefs.
 extern const char kStoreLogStatesAcrossReboots[];
 
+extern const char kEventBasedLogLastUploadTimes[];
+
 }  // namespace prefs
 }  // namespace policy
 

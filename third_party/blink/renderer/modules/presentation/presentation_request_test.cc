@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_presentationsource_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/exception_state_matchers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -84,9 +85,8 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorInvalidUrl) {
 
   PresentationRequest::Create(scope.GetExecutionContext(), sources,
                               scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kSyntaxError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_THAT(scope.GetExceptionState(),
+              HadException(DOMExceptionCode::kSyntaxError));
 }
 
 TEST(PresentationRequestTest, TestMixedContentNotCheckedForNonHttpFamily) {
@@ -110,9 +110,8 @@ TEST(PresentationRequestTest, TestSingleUrlConstructorMixedContent) {
 
   PresentationRequest::Create(scope.GetExecutionContext(), "http://example.com",
                               scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kSecurityError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_THAT(scope.GetExceptionState(),
+              HadException(DOMExceptionCode::kSecurityError));
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
@@ -124,9 +123,8 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
 
   PresentationRequest::Create(scope.GetExecutionContext(), sources,
                               scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kSecurityError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_THAT(scope.GetExceptionState(),
+              HadException(DOMExceptionCode::kSecurityError));
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorEmptySequence) {
@@ -136,9 +134,8 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorEmptySequence) {
 
   PresentationRequest::Create(scope.GetExecutionContext(), sources,
                               scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_THAT(scope.GetExceptionState(),
+              HadException(DOMExceptionCode::kNotSupportedError));
 }
 
 TEST(PresentationRequestTest, TestSingleUrlConstructorUnknownScheme) {
@@ -146,9 +143,8 @@ TEST(PresentationRequestTest, TestSingleUrlConstructorUnknownScheme) {
   V8TestingScope scope;
   PresentationRequest::Create(scope.GetExecutionContext(), "foobar:unknown",
                               scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_THAT(scope.GetExceptionState(),
+              HadException(DOMExceptionCode::kNotSupportedError));
 }
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
@@ -160,7 +156,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
 
   PresentationRequest* request = PresentationRequest::Create(
       scope.GetExecutionContext(), sources, scope.GetExceptionState());
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
 
   WTF::Vector<KURL> request_urls = request->Urls();
   EXPECT_EQ(static_cast<size_t>(2), request_urls.size());
@@ -178,9 +174,8 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorAllUnknownSchemes) {
 
   PresentationRequest::Create(scope.GetExecutionContext(), sources,
                               scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_THAT(scope.GetExceptionState(),
+              HadException(DOMExceptionCode::kNotSupportedError));
 }
 
 // If the site-initiated mirroring feature is disabled, then we do not allow
@@ -193,9 +188,8 @@ TEST(PresentationRequestTest, TestPresentationSourceNotAllowed) {
   PresentationRequest::Create(scope.GetExecutionContext(),
                               {CreatePresentationSource("https://example.com")},
                               scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_THAT(scope.GetExceptionState(),
+              HadException(DOMExceptionCode::kNotSupportedError));
 }
 
 TEST(PresentationRequestTest, TestPresentationSourcesInConstructor) {
@@ -208,7 +202,7 @@ TEST(PresentationRequestTest, TestPresentationSourcesInConstructor) {
        CreateMirroringSource()},
       scope.GetExceptionState());
   CHECK(request);
-  ASSERT_FALSE(scope.GetExceptionState().HadException());
+  ASSERT_THAT(scope.GetExceptionState(), HadNoException());
   EXPECT_EQ(static_cast<size_t>(2), request->Urls().size());
   EXPECT_TRUE(request->Urls()[0].IsValid());
   EXPECT_EQ("https://example.com/", request->Urls()[0].GetString());
@@ -228,9 +222,8 @@ TEST(PresentationRequestTest, TestInvalidPresentationSource) {
   PresentationRequest::Create(scope.GetExecutionContext(),
                               {CreatePresentationSource("invalid_url")},
                               scope.GetExceptionState());
-  EXPECT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_EQ(DOMExceptionCode::kNotSupportedError,
-            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_THAT(scope.GetExceptionState(),
+              HadException(DOMExceptionCode::kNotSupportedError));
 }
 
 }  // anonymous namespace

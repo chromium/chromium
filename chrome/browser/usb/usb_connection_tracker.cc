@@ -18,6 +18,11 @@ void UsbConnectionTracker::ShowContentSettingsExceptions() {
       profile_, ContentSettingsType::USB_CHOOSER_DATA);
 }
 
+void UsbConnectionTracker::Shutdown() {
+  CleanUp();
+  DeviceConnectionTracker::Shutdown();
+}
+
 DeviceSystemTrayIcon* UsbConnectionTracker::GetSystemTrayIcon() {
   return static_cast<DeviceSystemTrayIcon*>(
       g_browser_process->usb_system_tray_icon());

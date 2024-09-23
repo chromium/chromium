@@ -1,5 +1,6 @@
 hychao@chromium.org
 yuhsuan@chromium.org
+zhangwenyu@google.com # Owner of audio selection code only
 
 file://chrome/browser/ash/audio/OWNERS
 
@@ -7,4 +8,4 @@ file://chrome/browser/ash/audio/OWNERS
 per-file cros_audio_config*=ashleydp@google.com
 per-file cros_audio_config*=gavinwill@chromium.org
 per-file cros_audio_config*=michaelcheco@google.com
-per-file cros_audio_config*=zentaro@chromium.org
+per-file cros_audio_config*=zhangwenyu@google.com

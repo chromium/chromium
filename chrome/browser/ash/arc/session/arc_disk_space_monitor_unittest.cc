@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -111,6 +112,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  session_manager::SessionManager session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;

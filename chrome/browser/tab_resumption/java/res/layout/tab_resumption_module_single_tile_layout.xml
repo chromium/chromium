@@ -21,7 +21,7 @@ found in the LICENSE file.
     android:foreground="@drawable/tab_resumption_module_ripple"
     android:orientation="vertical">
 
-    <ImageView
+    <org.chromium.components.browser_ui.widget.RoundedCornerImageView
         android:id="@+id/tile_icon"
         android:contentDescription="@string/DefaultSearchProviderSuggestURLDesc"
         android:layout_width="@dimen/tab_resumption_module_single_icon_size"
@@ -38,21 +38,38 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/tab_resumption_module_single_icon_sep"
         android:layout_alignTop="@id/tile_icon"
         android:layout_alignBottom="@id/tile_icon"
-        android:layout_toEndOf="@+id/tile_icon"
+        android:layout_toEndOf="@id/tile_icon"
         android:layout_centerVertical="true"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/tile_pre_info_text"
-            android:layout_width="match_parent"
+            android:layout_gravity="center_vertical|start"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:paddingStart="@dimen/tab_resumption_module_reason_padding_start"
+            android:paddingEnd="@dimen/tab_resumption_module_reason_padding_start"
+            android:paddingTop="@dimen/tab_resumption_module_reason_padding_top"
+            android:paddingBottom="@dimen/tab_resumption_module_reason_padding_top"
+            android:layout_marginBottom="5dp"
             android:singleLine="true"
-            android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
+            android:visibility="gone"
+            android:background="@drawable/tab_resumption_module_tile_reason_background"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
+
+        <org.chromium.components.browser_ui.widget.chips.ChipView
+            android:id="@+id/tile_app_chip"
+            android:layout_gravity="center_vertical|start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"
+            style="@style/TabResumptionAppChip" />
 
         <TextView
             android:id="@+id/tile_display_text"
-            android:layout_below="@+id/tile_pre_info_text"
+            android:layout_below="@id/tile_pre_info_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
@@ -66,6 +83,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:singleLine="true"
+            android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.TextSmall.Primary"/>
     </RelativeLayout>
 </org.chromium.chrome.browser.tab_resumption.TabResumptionTileView>

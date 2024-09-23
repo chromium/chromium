@@ -52,7 +52,7 @@ void PresentationTimeCallbackBuffer::RegisterMainThreadCallbacks(
 
 void PresentationTimeCallbackBuffer::RegisterMainThreadSuccessfulCallbacks(
     uint32_t frame_token,
-    std::vector<SuccessfulCallback> callbacks) {
+    std::vector<SuccessfulCallbackWithDetails> callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (callbacks.empty())
     return;

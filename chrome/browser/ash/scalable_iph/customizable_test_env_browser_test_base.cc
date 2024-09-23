@@ -101,22 +101,19 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
       break;
     case UserSessionType::kChild:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
-          embedded_test_server(), this, /*should_launch_browser=*/false);
+          &mixin_host_, /*test_base=*/this, embedded_test_server(),
+          ash::LoggedInUserMixin::LogInType::kChild);
       break;
     case UserSessionType::kChildOwner:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kChild,
-          embedded_test_server(), this, /*should_launch_browser=*/false);
+          &mixin_host_, /*test_base=*/this, embedded_test_server(),
+          ash::LoggedInUserMixin::LogInType::kChild);
       owner_user_email_ = logged_in_user_mixin_->GetAccountId().GetUserEmail();
       break;
     case UserSessionType::kManaged:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-          embedded_test_server(), this, /*should_launch_browser=*/false,
-          AccountId::FromUserEmailGaiaId(
-              FakeGaiaMixin::kEnterpriseUser1,
-              FakeGaiaMixin::kEnterpriseUser1GaiaId));
+          &mixin_host_, /*test_base=*/this, embedded_test_server(),
+          ash::LoggedInUserMixin::LogInType::kManaged);
 
       // If a device is not enrolled, simulate a case where a device is owned by
       // the managed account. This is a managed account on not-enrolled device
@@ -130,24 +127,23 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
       break;
     case UserSessionType::kRegular:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-          embedded_test_server(), this);
+          &mixin_host_, /*test_base=*/this, embedded_test_server(),
+          ash::LoggedInUserMixin::LogInType::kConsumer);
       owner_user_email_ = logged_in_user_mixin_->GetAccountId().GetUserEmail();
       break;
     case UserSessionType::kRegularNonOwner:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-          embedded_test_server(), this);
-
+          &mixin_host_, /*test_base=*/this, embedded_test_server(),
+          ash::LoggedInUserMixin::LogInType::kConsumer);
       CHECK(kOwnerEmail !=
             logged_in_user_mixin_->GetAccountId().GetUserEmail());
       owner_user_email_ = kOwnerEmail;
       break;
     case UserSessionType::kRegularWithOobe:
       logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
-          &mixin_host_, ash::LoggedInUserMixin::LogInType::kRegular,
-          embedded_test_server(), this, /*should_launch_browser=*/false,
-          /*account_id=*/std::nullopt, /*include_initial_user=*/false);
+          &mixin_host_, /*test_base=*/this, embedded_test_server(),
+          ash::LoggedInUserMixin::LogInType::kConsumer,
+          /*include_initial_user=*/false);
       break;
   }
 
@@ -161,23 +157,34 @@ void CustomizableTestEnvBrowserTestBase::SetUp() {
 
 void CustomizableTestEnvBrowserTestBase::SetUpOnMainThread() {
   if (logged_in_user_mixin_) {
+    base::flat_set<LoggedInUserMixin::LoginDetails> login_details;
+    switch (test_environment_.user_session_type()) {
+      case UserSessionType::kChild:
+      case UserSessionType::kChildOwner:
+      case UserSessionType::kManaged:
+        login_details.insert(LoggedInUserMixin::LoginDetails::kNoBrowserLaunch);
+        break;
+      case UserSessionType::kRegularWithOobe:
+        login_details.insert(LoggedInUserMixin::LoginDetails::kNoBrowserLaunch);
+        login_details.insert(LoggedInUserMixin::LoginDetails::kUserOnboarding);
+        login_details.insert(
+            LoggedInUserMixin::LoginDetails::kDontWaitForSession);
+        break;
+      default:
+        break;
+    }
     if (test_environment_.user_session_type() ==
         UserSessionType::kRegularWithOobe) {
       // For WithOobe session type, we don't wait an active session but a
       // profile creation.
       test::ProfilePreparedWaiter profile_prepared_waiter(
           logged_in_user_mixin_->GetAccountId());
-      logged_in_user_mixin_->LogInUser(/*issue_any_scope_token=*/false,
-                                       /*wait_for_active_session=*/false,
-                                       /*request_policy_update=*/true,
-                                       /*skip_post_login_screens=*/false);
+      logged_in_user_mixin_->LogInUser(login_details);
       profile_prepared_waiter.Wait();
     } else {
-      // `LoggedInUserMixin::LogInUser` waits an active session by default.
-      logged_in_user_mixin_->LogInUser();
+      logged_in_user_mixin_->LogInUser(login_details);
     }
   }
-
   MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 }
 

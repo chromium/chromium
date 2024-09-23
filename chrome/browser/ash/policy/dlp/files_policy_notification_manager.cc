@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
-#include "components/enterprise/data_controls/dlp_histogram_helper.h"
+#include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -448,8 +448,10 @@ void FilesPolicyNotificationManager::OnIOTaskResumed(
     return;
   }
 
-  std::move(io_tasks_.at(task_id).GetWarningInfo()->warning_callback)
-      .Run(/*user_justification=*/std::nullopt, /*should_proceed=*/true);
+  auto* warning_info = io_tasks_.at(task_id).GetWarningInfo();
+  std::move(warning_info->warning_callback)
+      .Run(/*user_justification=*/warning_info->user_justification,
+           /*should_proceed=*/true);
   io_tasks_.at(task_id).ResetWarningInfo();
 }
 
@@ -528,7 +530,7 @@ void FilesPolicyNotificationManager::HandleDlpWarningNotificationClick(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -577,7 +579,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -843,7 +845,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
       }
       return;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1045,6 +1047,8 @@ void FilesPolicyNotificationManager::OnIOTaskWarningDialogClicked(
     return;
   }
   if (should_proceed) {
+    io_tasks_.at(task_id).GetWarningInfo()->user_justification =
+        user_justification;
     Resume(task_id);
   } else {
     Cancel(task_id);

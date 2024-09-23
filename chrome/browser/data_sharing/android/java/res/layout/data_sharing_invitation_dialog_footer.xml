@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/data_sharing_invitation_dialog_footer"
+    android:orientation="horizontal"
+    android:layout_width="@dimen/data_sharing_invitation_footer_width"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/data_sharing_invitation_block"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="@dimen/data_sharing_invitation_button_margin"
+        android:text="@string/data_sharing_invitation_dialog_block"
+        style="@style/TextButton" />
+    <!-- This view will push to right align all following buttons without changing each element's width. -->
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/data_sharing_invitation_now_now"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="@dimen/data_sharing_invitation_button_margin"
+        android:text="@string/data_sharing_invitation_dialog_not_now"
+        style="@style/TextButton" />
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/data_sharing_invitation_accept"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:text="@string/data_sharing_invitation_dialog_accept"
+        style="@style/FilledButton" />
+</LinearLayout>

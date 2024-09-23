@@ -37,12 +37,13 @@ const char kEnableLowEndDeviceMode[]        = "enable-low-end-device-mode";
 const char kEnableBackgroundThreadPool[] = "enable-background-thread-pool";
 
 // Handle to the shared memory segment containing field trial state that is to
-// be shared between processes. The argument to this switch is made of 4
-// segments, separated by commas:
-// 1. The platform-specific handle id for the shared memory as a string.
-// 2. The high 64 bits of the shared memory block GUID.
-// 3. The low 64 bits of the shared memory block GUID.
-// 4. The size of the shared memory segment as a string.
+// be shared between processes. The argument to this switch is made of segments
+// separated by commas:
+// - The platform-specific handle id for the shared memory as a string.
+// - (Windows only) i=inherited by duplication or p=child must open parent.
+// - The high 64 bits of the shared memory block GUID.
+// - The low 64 bits of the shared memory block GUID.
+// - The size of the shared memory segment as a string.
 const char kFieldTrialHandle[] = "field-trial-handle";
 
 // This option can be used to force field trials when testing changes locally.
@@ -173,7 +174,6 @@ const char kHostPackageLabel[] = "host-package-label";
 const char kHostVersionCode[] = "host-version-code";
 const char kPackageName[] = "package-name";
 const char kPackageVersionName[] = "package-version-name";
-const char kPackageVersionCode[] = "package-version-code";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

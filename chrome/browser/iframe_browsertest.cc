@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, InEmptyFrame) {
 // SelectFileDialogLacros is unavailable in tests.
 // Note: This test is disabled temporarily to track down a memory leak reported
 // by the ASan bots. It will be enabled once the root cause is found.
-// TODO(crbug.com/1434874): Re-enable this test
+// TODO(crbug.com/40904458): Re-enable this test
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_FileChooserInDestroyedSubframe \

@@ -7,10 +7,11 @@
 #include <lib/fidl/cpp/binding.h>
 #include <zircon/types.h>
 
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"
@@ -63,7 +64,7 @@ void FakeSemanticTree::RunUntilNodeCountAtLeast(size_t count) {
   run_loop.Run();
 }
 
-void FakeSemanticTree::RunUntilNodeWithLabelIsInTree(base::StringPiece label) {
+void FakeSemanticTree::RunUntilNodeWithLabelIsInTree(std::string_view label) {
   DCHECK(!on_commit_updates_);
   if (GetNodeFromLabel(label))
     return;
@@ -108,7 +109,7 @@ fuchsia::accessibility::semantics::Node* FakeSemanticTree::GetNodeWithId(
 }
 
 fuchsia::accessibility::semantics::Node* FakeSemanticTree::GetNodeFromLabel(
-    base::StringPiece label) {
+    std::string_view label) {
   auto it = nodes_.find(ui::AXFuchsiaSemanticProvider::kFuchsiaRootNodeId);
   if (it == nodes_.end()) {
     DCHECK(nodes_.empty()) << "Missing root.";
@@ -123,7 +124,7 @@ fuchsia::accessibility::semantics::Node* FakeSemanticTree::GetNodeFromLabel(
 fuchsia::accessibility::semantics::Node*
 FakeSemanticTree::GetNodeFromLabelRecursive(
     fuchsia::accessibility::semantics::Node& node,
-    base::StringPiece label) {
+    std::string_view label) {
   if (node.has_attributes() && node.attributes().has_label() &&
       node.attributes().label() == label) {
     return &node;

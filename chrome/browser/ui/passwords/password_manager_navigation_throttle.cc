@@ -33,12 +33,14 @@ using content::WebContents;
 bool IsTriggeredOnGoogleOwnedUI(NavigationHandle* handle) {
   // Only cover cases when the user clicked on a link.
   if (!ui::PageTransitionCoreTypeIs(handle->GetPageTransition(),
-                                    ui::PAGE_TRANSITION_LINK))
+                                    ui::PAGE_TRANSITION_LINK)) {
     return false;
+  }
 
   // Referrer origin and target URL must match.
-  if (handle->GetURL() != GURL(password_manager::kManageMyPasswordsURL))
+  if (handle->GetURL() != GURL(password_manager::kManageMyPasswordsURL)) {
     return false;
+  }
 
   url::Origin origin = handle->GetInitiatorOrigin().value_or(url::Origin());
   if (origin != url::Origin::Create(GURL(password_manager::kReferrerURL)) &&
@@ -64,7 +66,7 @@ std::unique_ptr<PasswordManagerNavigationThrottle>
 PasswordManagerNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
   // Don't handle navigations in subframes or main frames that are in a nested
-  // frame tree (e.g. portals, fenced frames)
+  // frame tree (e.g. fenced frames)
   if (!handle->GetParentFrameOrOuterDocument() &&
       IsTriggeredOnGoogleOwnedUI(handle)) {
     return std::make_unique<PasswordManagerNavigationThrottle>(handle);
@@ -76,8 +78,9 @@ PasswordManagerNavigationThrottle::MaybeCreateThrottleFor(
 NavigationThrottle::ThrottleCheckResult
 PasswordManagerNavigationThrottle::WillStartRequest() {
   WebContents* web_contents = navigation_handle()->GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return NavigationThrottle::PROCEED;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   password_manager_launcher::ShowPasswordSettings(

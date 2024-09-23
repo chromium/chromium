@@ -1,0 +1,132 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Ash histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="CampaignButtonId">
+  <variant name="0" summary="Primary"/>
+  <variant name="1" summary="Secondary"/>
+  <variant name="2" summary="Others"/>
+  <variant name="3" summary="Close"/>
+</variants>
+
+<histogram name="Ash.Growth.CampaignsComponent.DownloadDurationInOobe"
+    units="ms" expires_after="2025-02-23">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Records the time (in ms) the Campaigns Manager takes to download the
+    campaigns component from Omaha during OOBE flow. Recorded when loading the
+    campaigns component in OOBE flow has completed. This metric was split from
+    Ash.Growth.CampaignsComponent.DownloadDuration in M124.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsComponent.DownloadDurationSessionStart"
+    units="ms" expires_after="2025-02-23">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Records the time (in ms) the Campaigns Manager takes to download the
+    campaigns component from Omaha during session start. Recorded when loading
+    the campaigns component at session start has completed. This metric was
+    split from Ash.Growth.CampaignsComponent.DownloadDuration in M124.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsComponent.ParseDuration" units="ms"
+    expires_after="2025-02-23">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Records the time (in ms) the Campaigns Manager takes to read and parsed (as
+    JSON) from disk. Recorded when a component is loaded into Campaign Matcher.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsManager.Error"
+    enum="CampaignsManagerError" expires_after="2025-02-23">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Tracks unexpected error while loading and matching campaigns. Recorded each
+    time an unexpected error occurs.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsManager.GetCampaignBySlot"
+    enum="CampaignSlot" expires_after="2025-02-23">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Tracks the slot of the fetched campaign. Recorded each time a campaign is
+    fetched.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsManager.MatchDuration" units="ms"
+    expires_after="2025-02-23">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Records the time (in ms) the Campaigns Manager takes to match a campaign
+    based on the targeting criteria. Recorded when fetching a campaign for a
+    particular slot completed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.Ui.ButtonPressed.Button{ButtonId}.Campaigns500"
+    units="int" expires_after="2025-03-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Recorded when the button of {ButtonId} in the UI is pressed. The bucket is
+    indexed by the campaign_id. The campaign_id recorded in this histogram
+    should be less than 500.
+  </summary>
+  <token key="ButtonId" variants="CampaignButtonId"/>
+</histogram>
+
+<histogram name="Ash.Growth.Ui.Dismissed.Campaigns500" units="int"
+    expires_after="2025-03-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Recorded when the UI is dismissed. The bucket is indexed by the campaign_id.
+    The campaign_id recorded in this histogram should be less than 500.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.Ui.Impression.Campaigns500" units="int"
+    expires_after="2025-03-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Recorded when it is ready to log a UI impression. Normally this is called
+    right after a call to show the UI. The bucket is indexed by the campaign_id.
+    The campaign_id recorded in this histogram should be less than 500.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

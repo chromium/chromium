@@ -5,16 +5,14 @@
 import("//build/config/rust.gni")
 import("//build/rust/rust_static_library.gni")
 import("//mojo/public/interfaces/bindings/tests/validation_data_files.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 rust_static_library("mojo_rust_system_tests") {
   testonly = true
   is_gtest_unittests = true
   allow_unsafe = true
   crate_root = "system/lib.rs"
-  sources = [
-    "system/lib.rs",
-    "system/run_loop.rs",
-  ]
+  sources = [ "system/lib.rs" ]
   deps = [
     ":c_test_support",
     ":test_util",
@@ -24,57 +22,32 @@ rust_static_library("mojo_rust_system_tests") {
   ]
 }
 
-rust_static_library("mojo_rust_encoding_tests") {
-  testonly = true
-  is_gtest_unittests = true
-  allow_unsafe = true
-  crate_root = "encoding/lib.rs"
-  sources = [
-    "encoding/encoding.rs",
-    "encoding/lib.rs",
-    "encoding/mojom_validation.rs",
-    "encoding/regression.rs",
-    "encoding/validation.rs",
-  ]
-  deps = [
-    ":c_test_support",
-    ":test_util",
-    "//mojo/public/c/system",
-    "//mojo/public/rust:mojo",
-    "//mojo/public/rust:mojo_system_test_support",
-    "//testing/rust_gtest_interop",
-  ]
+if (enable_rust_mojom_bindings) {
+  rust_static_library("mojo_rust_bindings_tests") {
+    testonly = true
+    is_gtest_unittests = true
+    crate_root = "bindings/lib.rs"
+    sources = [
+      "bindings/lib.rs",
+      "bindings/validation.rs",
+    ]
 
-  # TODO(danakj): There is no way to get the set of files from a copy() rule
-  # such as //mojo/public/interfaces/bindings/tests:validation_test_data as a
-  # set of inputs here directly through GN. So we have to use a variable and
-  # rebase them on that directory.
-  #
-  # Depending on the rule and using get_target_outputs() is only allowed for
-  # rules located in the same GN file.
-  inputs = []
-  foreach(f, mojo_public_interfaces_bindings_test_validation_data_files) {
-    inputs += [ "//mojo/public/interfaces/bindings/tests/$f" ]
+    inputs = []
+    foreach(f, mojo_public_interfaces_bindings_test_validation_data_files) {
+      inputs += [ get_path_info(
+              rebase_path(f, ".", "//mojo/public/interfaces/bindings/tests/"),
+              "abspath") ]
+    }
+
+    deps = [
+      ":test_util",
+      "//mojo/public/interfaces/bindings/tests:test_interfaces_rust",
+      "//mojo/public/interfaces/bindings/tests:test_mojom_import_rust",
+      "//mojo/public/rust:mojo_bindings",
+      "//testing/rust_gtest_interop",
+      "//third_party/rust/bytemuck/v1:lib",
+    ]
   }
-}
-
-rust_static_library("mojo_rust_integration_tests") {
-  testonly = true
-  is_gtest_unittests = true
-  allow_unsafe = true
-  crate_root = "integration/lib.rs"
-  sources = [
-    # TODO(crbug.com/1274864): This is also in mojo_rust_encoding_tests, split
-    # it into another library?
-    "encoding/mojom_validation.rs",
-    "integration/lib.rs",
-  ]
-  deps = [
-    ":c_test_support",
-    ":test_util",
-    "//mojo/public/rust:mojo",
-    "//testing/rust_gtest_interop",
-  ]
 }
 
 rust_static_library("test_util") {
@@ -82,13 +55,21 @@ rust_static_library("test_util") {
   allow_unsafe = true
   crate_root = "util/lib.rs"
   edition = "2021"
+
   sources = [ "util/lib.rs" ]
-  deps = [ "//testing/rust_gtest_interop" ]
+  cxx_bindings = [ "util/lib.rs" ]
+  deps = [
+    ":c_test_support",
+    "//testing/rust_gtest_interop",
+  ]
 }
 
 static_library("c_test_support") {
   testonly = true
-  sources = [ "test_support.cc" ]
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+  ]
   deps = [
     "//base",
     "//mojo/core/embedder",

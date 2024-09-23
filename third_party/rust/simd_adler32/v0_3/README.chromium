@@ -1,0 +1,9 @@
+Name: simd-adler32
+URL: https://crates.io/crates/simd-adler32
+Description: A SIMD-accelerated Adler-32 hash algorithm implementation.
+Version: 0.3.7
+Security Critical: yes
+Shipped: yes
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/simd-adler32-0.3.7/LICENSE.md
+Revision: 94f3f72eb7346d9e2bfe7e985a496582da409a63

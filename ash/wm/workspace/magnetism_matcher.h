@@ -72,7 +72,6 @@ class MagnetismEdgeMatcher {
         return bounds.right();
     }
     NOTREACHED();
-    return 0;
   }
 
   static MagnetismEdge FlipEdge(MagnetismEdge edge) {
@@ -87,7 +86,6 @@ class MagnetismEdgeMatcher {
         return MAGNETISM_EDGE_LEFT;
     }
     NOTREACHED();
-    return MAGNETISM_EDGE_LEFT;
   }
 
   Range GetPrimaryRange(const gfx::Rect& bounds) const {
@@ -100,7 +98,6 @@ class MagnetismEdgeMatcher {
         return Range(bounds.x(), bounds.right());
     }
     NOTREACHED();
-    return Range();
   }
 
   Range GetSecondaryRange(const gfx::Rect& bounds) const {
@@ -113,7 +110,6 @@ class MagnetismEdgeMatcher {
         return Range(bounds.y(), bounds.bottom());
     }
     NOTREACHED();
-    return Range();
   }
 
   static bool RangesIntersect(const Range& r1, const Range& r2) {

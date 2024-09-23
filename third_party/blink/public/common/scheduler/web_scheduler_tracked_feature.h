@@ -47,7 +47,9 @@ enum class WebSchedulerTrackedFeature : uint32_t {
 
   kContainsPlugins = 12,
   kDocumentLoaded = 13,
-  kDedicatedWorkerOrWorklet = 14,
+
+  // Removed in https://crbug.com/1146955
+  // kDedicatedWorkerOrWorklet = 14,
 
   // There are some other values defined for specific request context types
   // (e.g., XHR). This value corresponds to a network requests not covered by
@@ -116,11 +118,11 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   kPrinting = 43,
   kWebDatabase = 44,
   kPictureInPicture = 45,
-  kPortal = 46,
+  // kPortal = 46. Removed
   kSpeechRecognizer = 47,
   kIdleManager = 48,
   kPaymentManager = 49,
-  kSpeechSynthesis = 50,
+  // kSpeechSynthesis = 50. Removed
   kKeyboardLock = 51,
   kWebOTPService = 52,
   kOutstandingNetworkRequestDirectSocket = 53,
@@ -159,11 +161,12 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // so that the source location can be tracked. See https://crbug.com/1513120
   // for details.
   kUnloadHandler = 67,
+  kParserAborted = 68,
 
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  kMaxValue = kUnloadHandler,
+  kMaxValue = kParserAborted,
 };
 
 using WebSchedulerTrackedFeatures =
@@ -189,12 +192,6 @@ BLINK_COMMON_EXPORT bool IsFeatureSticky(WebSchedulerTrackedFeature feature);
 
 // All the sticky features.
 BLINK_COMMON_EXPORT WebSchedulerTrackedFeatures StickyFeatures();
-
-// Generates a list of uint64_t bit masks for the `WebSchedulerTrackedFeatures`
-// in the following order:
-// [<bit mask for 0-63>, <bit mask for 64-127>, ...]
-BLINK_COMMON_EXPORT std::vector<uint64_t> ToEnumBitMasks(
-    WebSchedulerTrackedFeatures features);
 
 // Disables wake up alignment permanently for the process. This is called when a
 // feature that is incompatible with wake up alignment is used. Thread-safe.

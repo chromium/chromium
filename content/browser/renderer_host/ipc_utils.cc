@@ -12,6 +12,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/common/features.h"
 #include "content/common/frame.mojom.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -50,21 +51,49 @@ bool VerifyInitiatorOrigin(
     const RenderFrameHostImpl* current_rfh = nullptr,
     GURL* navigation_url = nullptr,
     std::optional<blink::LocalFrameToken>* initiator_frame_token = nullptr) {
-  // TODO(acolwell, nasko): https://crbug.com/1029092: Ensure the precursor of
-  // opaque origins matches the origin lock.  One known problematic case are
-  // reloads initiated from error pages - see the following
-  // RenderFrameHostManagerTest tests:
-  // 1. ErrorPageNavigationReload:
-  //    - renderer origin lock = chrome-error://chromewebdata/
-  //    - precursor of initiator origin = http://127.0.0.1:.../
-  // 2. ErrorPageNavigationReload_InSubframe_BlockedByClient
-  //    - renderer origin lock = http://b.com:.../
-  //    - precursor of initiator origin = http://c.com:.../
-  if (initiator_origin.opaque())
-    return true;
+  // TODO(crbug.com/40109437): Ideally, origin verification should be performed
+  // even if `initiator_origin` is opaque, to ensure that the precursor origin
+  // matches the process lock. However, there are a couple of cases where this
+  // doesn't yet work, which are documented and skipped below.
+  if (initiator_origin.opaque()) {
+    // TODO(alexmos): This used to allow all opaque origins; this behavior is
+    // now behind a kill switch and should be removed once the rollout in M128
+    // is complete.
+    if (!base::FeatureList::IsEnabled(
+            features::kAdditionalOpaqueOriginEnforcements)) {
+      return true;
+    }
+
+    // Reloads initiated from error pages may currently lead to a precursor
+    // mismatch, since the error page loads with an opaque origin with the
+    // original URL's origin as its precursor, which may not match the error
+    // page's process lock. This is seen in the following
+    // RenderFrameHostManagerTest tests:
+    // 1. ErrorPageNavigationReload:
+    //    - renderer origin lock = chrome-error://chromewebdata/
+    //    - precursor of initiator origin = http://127.0.0.1:.../
+    // 2. ErrorPageNavigationReload_InSubframe_BlockedByClient
+    //    - renderer origin lock = http://b.com:.../
+    //    - precursor of initiator origin = http://c.com:.../
+    if (current_rfh && current_rfh->IsErrorDocument()) {
+      return true;
+    }
+
+    // Certain (e.g., data:) navigations in subframes of MHTML documents may
+    // have precursor origins that do not match the process lock of the MHTML
+    // document. This is seen in NavigationMhtmlBrowserTest.DataIframe, where:
+    //   - renderer origin lock = { file:/// sandboxed }
+    //   - precursor of initiator origin = http://8.8.8.8/
+    // Note that RenderFrameHostImpl::CanCommitOriginAndUrl() similarly allows
+    // such navigations to commit, and it also ensures that they can only commit
+    // in the main frame MHTML document's process.
+    if (current_rfh && current_rfh->IsMhtmlSubframe()) {
+      return true;
+    }
+  }
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanAccessDataForOrigin(process_id, initiator_origin)) {
+  if (!policy->HostsOrigin(process_id, initiator_origin)) {
     if (navigation_url) {
       static auto* const navigation_url_key =
           base::debug::AllocateCrashKeyString(
@@ -294,6 +323,17 @@ bool VerifyBeginNavigationCommonParams(
     // Kills the process. http://crbug.com/726142
     bad_message::ReceivedBadMessage(
         process, bad_message::RFH_BASE_URL_FOR_DATA_URL_SPECIFIED);
+    return false;
+  }
+
+  // Verify |initiator_base_url|. The value is allowed to be nullopt, but if it
+  // isn't then it's required to be non-empty (the renderer is supposed to
+  // guarantee this). If this condition isn't met, CHECK in NavigationRequest's
+  // constructor will fail.
+  if (common_params->initiator_base_url &&
+      common_params->initiator_base_url->is_empty()) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::RFH_INITIATOR_BASE_URL_IS_EMPTY);
     return false;
   }
 

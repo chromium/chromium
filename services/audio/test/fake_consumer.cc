@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "services/audio/test/fake_consumer.h"
 
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <numbers>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/files/file.h"
-#include "base/numerics/math_constants.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_debug_file_writer.h"
@@ -107,7 +112,7 @@ double FakeConsumer::ComputeAmplitudeAt(int channel,
 
   // Compute the amplitude for just the |frequency| of interest, as opposed to
   // doing a full Discrete Fourier Transform.
-  const double step = 2.0 * base::kPiDouble * frequency / sample_rate_;
+  const double step = 2.0 * std::numbers::pi * frequency / sample_rate_;
   double real_part = 0.0;
   double img_part = 0.0;
   for (int i = end_frame - analysis_length; i < end_frame; ++i) {

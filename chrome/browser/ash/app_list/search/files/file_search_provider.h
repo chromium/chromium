@@ -9,13 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
-#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 class Profile;
@@ -39,7 +40,13 @@ class FileSearchProvider : public SearchProvider {
           last_accessed(last_accessed) {}
   };
 
-  explicit FileSearchProvider(Profile* profile);
+  // If `allowed_extensions` is not empty, then only results that have an
+  // extension in `allowed_extensions` will be returned.
+  explicit FileSearchProvider(
+      Profile* profile,
+      int file_type = base::FileEnumerator::FileType::FILES |
+                      base::FileEnumerator::FileType::DIRECTORIES,
+      std::vector<std::string> allowed_extensions = {});
   ~FileSearchProvider() override;
 
   FileSearchProvider(const FileSearchProvider&) = delete;
@@ -52,6 +59,11 @@ class FileSearchProvider : public SearchProvider {
 
   void SetRootPathForTesting(const base::FilePath& root_path) {
     root_path_ = root_path;
+  }
+  void SetFileTypeForTesting(int file_type) { file_type_ = file_type; }
+  void SetAllowedExtensionsForTesting(
+      std::vector<std::string> allowed_extensions) {
+    allowed_extensions_ = allowed_extensions;
   }
 
  private:
@@ -67,8 +79,10 @@ class FileSearchProvider : public SearchProvider {
   const raw_ptr<Profile> profile_;
   ash::ThumbnailLoader thumbnail_loader_;
   base::FilePath root_path_;
+  int file_type_;
 
   std::vector<base::FilePath> trash_paths_;
+  std::vector<std::string> allowed_extensions_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileSearchProvider> weak_factory_{this};

@@ -8,9 +8,9 @@
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
-#include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -81,9 +81,8 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, PRE_RestartToApplyFlags) {
         waiter.OnUserSessionStarted(true);
         restart_requested = true;
       }));
-
-  login_manager_.LoginWithDefaultContext(login_manager_.users()[0],
-                                         /*wait_for_profile_prepared=*/false);
+  login_manager_.set_should_wait_for_profile(false);
+  login_manager_.LoginWithDefaultContext(login_manager_.users()[0]);
   waiter.Wait();
   EXPECT_TRUE(restart_requested);
 }

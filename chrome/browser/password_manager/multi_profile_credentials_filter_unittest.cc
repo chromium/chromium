@@ -48,6 +48,17 @@ class TestDiceWebSigninInterceptorDelegate
       base::OnceCallback<void(SigninInterceptionResult)> callback) override {
     return nullptr;
   }
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
+  ShowOidcInterceptionDialog(
+      content::WebContents* web_contents,
+      const BubbleParameters& bubble_parameters,
+      signin::SigninChoiceWithConfirmationCallback callback,
+      base::OnceClosure dialog_closed_closure) override {
+    std::move(callback)
+        .Then(std::move(dialog_closed_closure))
+        .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
+    return nullptr;
+  }
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,
@@ -178,7 +189,7 @@ TEST_F(MultiProfileCredentialsFilterTest, SyncCredentialsFilter) {
   password_manager::PasswordForm form =
       password_manager::SyncUsernameTestBase::SimpleGaiaForm(
           "user@example.org");
-  form.form_data.is_gaia_with_skip_save_password_form = true;
+  form.form_data.set_is_gaia_with_skip_save_password_form(true);
 
   ASSERT_FALSE(sync_filter_.ShouldSave(form));
   MultiProfileCredentialsFilter multi_profile_filter(

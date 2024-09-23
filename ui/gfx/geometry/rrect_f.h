@@ -111,6 +111,9 @@ class GEOMETRY_SKIA_EXPORT RRectF {
   Type GetType() const;
 
   bool IsEmpty() const { return GetType() == Type::kEmpty; }
+  bool HasRoundedCorners() const {
+    return !IsEmpty() && GetType() != Type::kRect;
+  }
 
   // Enumeration of the corners of a rectangle in clockwise order. Values match
   // SkRRect::Corner.
@@ -170,6 +173,8 @@ class GEOMETRY_SKIA_EXPORT RRectF {
   explicit operator SkRRect() const { return skrrect_; }
 
   static RRectF ToEnclosingRRectF(const RRectF& rrect);
+  static RRectF ToEnclosingRRectFIgnoringError(const RRectF& rrect,
+                                               float error = 0.001f);
 
  private:
   void GetAllRadii(SkVector radii[4]) const;

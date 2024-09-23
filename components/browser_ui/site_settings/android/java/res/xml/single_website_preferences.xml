@@ -47,8 +47,6 @@ found in the LICENSE file.
     <PreferenceCategory
         android:key="related_sites_header"
         android:title="@string/website_settings_related_sites" />
-    <org.chromium.components.browser_ui.settings.TextMessagePreference
-        android:key="related_sites" />
     <PreferenceCategory
         android:key="site_permissions"
         android:title="@string/website_settings_permissions_category" />

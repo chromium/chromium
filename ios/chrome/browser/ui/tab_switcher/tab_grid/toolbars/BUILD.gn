@@ -14,10 +14,20 @@ source_set("toolbars") {
   deps = [
     ":toolbars_ui",
     "//base",
+    "//components/feature_engagement/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/bubble/ui_bundled",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_mode",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
+    "//ui/base",
   ]
 }
 
@@ -40,15 +50,16 @@ source_set("toolbars_ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ui/base",
   ]
 }

@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 
 class AppIconLoader;
@@ -43,7 +42,6 @@ class ShelfSpinnerController;
 
 namespace apps {
 class PromiseAppUpdate;
-class ShortcutUpdate;
 }
 
 namespace ash {
@@ -250,11 +248,7 @@ class ChromeShelfController
   void ReplacePinnedItem(const std::string& old_app_id,
                          const std::string& new_app_id);
 
-  // This method is only used by ApkWebAppService and tests. This method
-  // relies on implicit assumptions and is likely unsuitable for other use
-  // cases.
-  //
-  // Pins app with |app_id| at |target_index|.
+  // Pins app with |app_id| at |target_index| if it is not already pinned.
   void PinAppAtIndex(const std::string& app_id, int target_index);
 
   // Converts |app_id| to shelf_id and calls ShelfModel function ItemIndexbyID
@@ -283,8 +277,6 @@ class ChromeShelfController
                                 bool by_migration) override;
   void OnPromiseAppUpdate(const apps::PromiseAppUpdate& update) override;
   void OnPromiseAppRemoved(const apps::PackageId& package_id) override;
-  void OnShortcutUpdated(const apps::ShortcutUpdate& update) override;
-  void OnShortcutRemoved(const apps::ShortcutId& id) override;
 
   // AppIconLoaderDelegate:
   void OnAppImageUpdated(
@@ -450,7 +442,7 @@ class ChromeShelfController
   // Used to get app info for tabs.
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 
-  // TODO(crbug.com/836128): Remove this once SystemWebApps are enabled by
+  // TODO(crbug.com/40573204): Remove this once SystemWebApps are enabled by
   // default.
   // An observer that manages the shelf title and icon for settings windows.
   std::unique_ptr<SettingsWindowObserver> settings_window_observer_;

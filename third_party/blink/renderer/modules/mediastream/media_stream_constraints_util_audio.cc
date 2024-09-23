@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
 
 #include <algorithm>
@@ -765,7 +770,7 @@ class ProcessingBasedContainer {
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
-    int sample_rate_hz = media::kAudioProcessingSampleRateHz;
+    int sample_rate_hz = media::WebRtcAudioProcessingSampleRateHz();
     if (stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
         !ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate()) {
       // If audio processing runs in the audio service without any mitigations
@@ -1271,7 +1276,7 @@ class DeviceContainer {
 
     // For each processing based container, apply the constraints and only fail
     // if all of them failed.
-    for (auto* it = processing_based_containers_.begin();
+    for (auto it = processing_based_containers_.begin();
          it != processing_based_containers_.end();) {
       DCHECK(!it->IsEmpty());
       failed_constraint_name = it->ApplyConstraintSet(constraint_set);
@@ -1477,7 +1482,7 @@ class CandidatesContainer {
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
     const char* latest_failed_constraint_name = nullptr;
-    for (auto* it = devices_.begin(); it != devices_.end();) {
+    for (auto it = devices_.begin(); it != devices_.end();) {
       DCHECK(!it->IsEmpty());
       auto* failed_constraint_name = it->ApplyConstraintSet(constraint_set);
       if (failed_constraint_name) {
@@ -1661,6 +1666,32 @@ AudioCaptureSettings SelectSettingsAudioCapture(
   return SelectSettingsAudioCapture(capabilities, constraints,
                                     source->device().type,
                                     should_disable_hardware_noise_suppression);
+}
+
+MODULES_EXPORT base::expected<Vector<blink::AudioCaptureSettings>, std::string>
+SelectEligibleSettingsAudioCapture(
+    const AudioDeviceCaptureCapabilities& capabilities,
+    const MediaConstraints& constraints,
+    mojom::blink::MediaStreamType stream_type,
+    bool should_disable_hardware_noise_suppression,
+    bool is_reconfiguration_allowed) {
+  Vector<AudioCaptureSettings> settings;
+  std::string failed_constraint_name;
+  for (const auto& device : capabilities) {
+    const auto device_settings = SelectSettingsAudioCapture(
+        {device}, constraints, stream_type,
+        should_disable_hardware_noise_suppression, is_reconfiguration_allowed);
+    if (device_settings.HasValue()) {
+      settings.push_back(device_settings);
+    } else {
+      failed_constraint_name = device_settings.failed_constraint_name();
+    }
+  }
+
+  if (settings.empty()) {
+    return base::unexpected(failed_constraint_name);
+  }
+  return settings;
 }
 
 std::tuple<int, int> GetMinMaxBufferSizesForAudioParameters(

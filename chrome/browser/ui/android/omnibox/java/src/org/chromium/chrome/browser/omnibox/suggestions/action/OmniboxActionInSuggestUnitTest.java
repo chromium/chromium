@@ -30,6 +30,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -109,7 +110,8 @@ public class OmniboxActionInSuggestUnitTest {
                                         0,
                                         "hint",
                                         "accessibility",
-                                        null) {
+                                        null,
+                                        R.style.TextAppearance_ChipText) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));

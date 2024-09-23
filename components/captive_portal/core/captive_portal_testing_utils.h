@@ -36,6 +36,7 @@ class CaptivePortalDetectorTestBase {
   // Sets URL fetcher state and notifies portal detector.
   void CompleteURLFetch(int net_error,
                         int status_code,
+                        std::optional<size_t> content_length,
                         const char* response_headers);
 
   void set_detector(CaptivePortalDetector* detector) { detector_ = detector; }

@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -34,6 +35,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/button/button.h"
@@ -146,7 +148,8 @@ content::WebContents* ToolbarActionView::GetCurrentWebContents() const {
 
 void ToolbarActionView::UpdateState() {
   content::WebContents* web_contents = GetCurrentWebContents();
-  SetAccessibleName(view_controller_->GetAccessibleName(web_contents));
+  GetViewAccessibility().SetName(
+      view_controller_->GetAccessibleName(web_contents));
   if (!sessions::SessionTabHelper::IdForTab(web_contents).is_valid())
     return;
 
@@ -154,6 +157,8 @@ void ToolbarActionView::UpdateState() {
       view_controller_->GetIcon(web_contents, GetPreferredSize());
   if (!icon.IsEmpty()) {
     SetImageModel(views::Button::STATE_NORMAL, icon);
+    SetImageModel(views::Button::STATE_DISABLED,
+                  ui::GetDefaultDisabledIconFromImageModel(icon));
   }
 
   if (!base::FeatureList::IsEnabled(
@@ -161,8 +166,6 @@ void ToolbarActionView::UpdateState() {
     SetTooltipText(view_controller_->GetTooltip(web_contents));
   }
 
-  DeprecatedLayoutImmediately();  // We need to layout since we may have added
-                                  // an icon as a result.
   SchedulePaint();
 }
 
@@ -174,7 +177,8 @@ int ToolbarActionView::GetDragOperationsForTest(const gfx::Point& point) {
   return views::View::GetDragOperations(point);
 }
 
-gfx::Size ToolbarActionView::CalculatePreferredSize() const {
+gfx::Size ToolbarActionView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return delegate_->GetToolbarActionSize();
 }
 

@@ -19,25 +19,34 @@ var tests = [
   },
 
   // Tests that executeScript works in fenced frames.
-  function executeScript() {
-    // allFrames == true should execute in fenced fenced frames.
+  function executeScriptInAllFrames() {
+    // allFrames == true should execute in fenced frames.
     chrome.tabs.executeScript(
         testTab.id,
         {code: 'window.location.pathname', allFrames: true, runAt:
          'document_idle'},
         (result) => {
-          chrome.test.assertEq(result.length, 2);
+          // Even though the document has 3 frames (the main frame and two
+          // fenced frames), we only expect two frames to be included in the
+          // injection, since one of the fenced frames is in its initial
+          // un-navigated state. Regression test for
+          // https://crbug.com/334991040.
+          chrome.test.assertEq(2, result.length);
           chrome.test.assertTrue(result[0].endsWith('main.html'));
           chrome.test.assertTrue(result[1].endsWith('fenced_frame.html'));
           chrome.test.succeed();
         });
+  },
+
+  // Tests that executeScript works in main frames with child fenced frames.
+  function executeScriptInMainFrame() {
     // allFrames == false should not execute in fenced fenced frames.
     chrome.tabs.executeScript(
         testTab.id,
         {code: 'window.location.pathname', allFrames: false, runAt:
          'document_idle'},
         (result) => {
-          chrome.test.assertEq(result.length, 1);
+          chrome.test.assertEq(1, result.length);
           chrome.test.assertTrue(result[0].endsWith('main.html'));
           chrome.test.succeed();
         });

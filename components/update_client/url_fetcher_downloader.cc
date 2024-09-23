@@ -18,6 +18,7 @@
 #include "base/task/thread_pool.h"
 #include "components/update_client/network.h"
 #include "components/update_client/task_traits.h"
+#include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
 
@@ -50,7 +51,9 @@ void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
 
   if (cancelled_ || download_dir_.empty()) {
     Result result;
-    result.error = -1;
+    result.error =
+        static_cast<int>(cancelled_ ? CrxDownloaderError::CANCELLED
+                                    : CrxDownloaderError::NO_DOWNLOAD_DIR);
 
     DownloadMetrics download_metrics;
     download_metrics.url = url;
@@ -70,7 +73,7 @@ void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
   network_fetcher_ = network_fetcher_factory_->Create();
   cancel_callback_ = network_fetcher_->DownloadToFile(
       url, file_path_,
-      base::BindOnce(&UrlFetcherDownloader::OnResponseStarted, this),
+      base::BindRepeating(&UrlFetcherDownloader::OnResponseStarted, this),
       base::BindRepeating(&UrlFetcherDownloader::OnDownloadProgress, this),
       base::BindOnce(&UrlFetcherDownloader::OnNetworkFetcherComplete, this));
 
@@ -113,6 +116,7 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
 
   Result result;
   result.error = error;
+  result.extra_code1 = extra_code1;
   if (!error) {
     result.response = file_path_;
   }
@@ -135,7 +139,7 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
   if (error && !download_dir_.empty()) {
     base::ThreadPool::PostTask(
         FROM_HERE, kTaskTraits,
-        base::BindOnce(IgnoreResult(&base::DeletePathRecursively),
+        base::BindOnce(IgnoreResult(&RetryDeletePathRecursively),
                        download_dir_));
   }
 

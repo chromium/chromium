@@ -29,6 +29,7 @@ import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.android_webview.test.util.JavascriptEventObserver;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
@@ -37,7 +38,6 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
@@ -454,7 +454,7 @@ public class VisualStateTest extends AwParameterizedTest {
 
     private AwTestContainerView createDetachedTestContainerViewOnMainSync(
             final AwContentsClient awContentsClient) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwTestContainerView detachedView =
                             mActivityTestRule.createDetachedAwTestContainerView(awContentsClient);
@@ -502,7 +502,7 @@ public class VisualStateTest extends AwParameterizedTest {
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
                         () -> {
-                            JavascriptInjector.fromWebContents(awContents.getWebContents(), false)
+                            JavascriptInjector.fromWebContents(awContents.getWebContents())
                                     .addPossiblyUnsafeInterface(
                                             pageChangeNotifier, "pageChangeNotifier", null);
                             awContents.loadUrl(WAIT_FOR_JS_DETACHED_TEST_URL);

@@ -57,6 +57,7 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   void ParentObjectDestroyed();
 
   void CountFeature(WebFeature);
+  void CountWebDXFeature(mojom::blink::WebDXFeature);
 
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
@@ -124,9 +125,6 @@ class CORE_EXPORT ThreadedMessagingProxyBase
   // Used to terminate the synchronous resource loading (XMLHttpRequest) on the
   // worker thread from the main thread.
   base::WaitableEvent terminate_sync_load_event_;
-
-  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
-      feature_handle_for_scheduler_;
 
   // Used to keep this alive until the worker thread gets terminated. This is
   // necessary because the co-owner (i.e., Worker or Worklet object) can be

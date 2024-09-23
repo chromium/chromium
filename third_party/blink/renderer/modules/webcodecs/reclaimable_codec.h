@@ -26,9 +26,6 @@ class CodecPressureManager;
 class DOMException;
 class ExecutionContext;
 
-MODULES_EXPORT BASE_DECLARE_FEATURE(kReclaimInactiveWebCodecs);
-MODULES_EXPORT BASE_DECLARE_FEATURE(kOnlyReclaimBackgroundWebCodecs);
-
 class MODULES_EXPORT ReclaimableCodec
     : public ExecutionContextLifecycleObserver {
   USING_PRE_FINALIZER(ReclaimableCodec, Dispose);
@@ -124,7 +121,7 @@ class MODULES_EXPORT ReclaimableCodec
   // Whether this codec is holding on to platform resources.
   bool is_applying_pressure_ = false;
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Period of time after which a codec is considered to be inactive.
   base::TimeDelta inactivity_threshold_;

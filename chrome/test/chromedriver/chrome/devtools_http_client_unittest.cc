@@ -93,6 +93,9 @@ TEST(ParseWebViewsInfo, Types) {
   AssertTypeIsOk("iframe", WebViewInfo::kIFrame);
   AssertTypeIsOk("other", WebViewInfo::kOther);
   AssertTypeIsOk("service_worker", WebViewInfo::kServiceWorker);
+  // Unknown type is treated as other
+  AssertTypeIsOk("unknown", WebViewInfo::kOther);
+  // Empty type field is treated as error
   AssertFails("[{\"type\": \"\", \"id\": \"1\", \"url\": \"http://page1\"}]");
 }
 
@@ -119,12 +122,6 @@ TEST(ParseWebViewsInfo, InvalidId) {
 TEST(ParseWebViewsInfo, NoType) {
   AssertFails(
       "[{\"id\": \"1\", \"url\": \"http://page1\","
-      "  \"webSocketDebuggerUrl\": \"ws://debugurl1\"}]");
-}
-
-TEST(ParseWebViewsInfo, InvalidType) {
-  AssertFails(
-      "[{\"type\": \"123\", \"id\": \"1\", \"url\": \"http://page1\","
       "  \"webSocketDebuggerUrl\": \"ws://debugurl1\"}]");
 }
 

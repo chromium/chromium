@@ -1,5 +1,5 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
+++genericContainer ignored
 ++++genericContainer htmlTag='body'
 ++++++image htmlTag='svg' name='animate should not be exposed'
 ++++++image htmlTag='svg' name='animateMotion should not be exposed'
@@ -35,7 +35,7 @@ rootWebArea htmlTag='#document'
 ++++++image htmlTag='svg' name='circle which lacks criteria for inclusion should not be exposed'
 ++++++image htmlTag='svg' name='ellipse which lacks criteria for inclusion should not be exposed'
 ++++++svgRoot htmlTag='svg' name='foreignObject which lacks criteria for inclusion should not be exposed'
-++++++++group ignored htmlTag='foreignobject'
+++++++++group ignored
 ++++++++++paragraph htmlTag='p'
 ++++++++++++staticText name='Hello world'
 ++++++++++++++inlineTextBox name='Hello '
@@ -48,8 +48,8 @@ rootWebArea htmlTag='#document'
 ++++++image htmlTag='svg' name='polyline which lacks criteria for inclusion should not be exposed'
 ++++++image htmlTag='svg' name='rect which lacks criteria for inclusion should not be exposed'
 ++++++image htmlTag='svg' name='symbol which lacks criteria for inclusion should not be exposed'
-++++++++group ignored htmlTag='svg'
-++++++++group ignored htmlTag='svg'
+++++++++group ignored
+++++++++group ignored
 ++++++svgRoot htmlTag='svg' name='textPath which lacks criteria for inclusion should not be exposed'
 ++++++++genericContainer htmlTag='text'
 ++++++++++staticText name='Hello'

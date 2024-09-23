@@ -1,0 +1,19 @@
+Tests that sameSite cookies can be set
+Result of Network.setCookie: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Result of Network.setCookie: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Num of cookies 2
+name: foo1, value: bar1, domain: 127.0.0.1, path: /, session, Lax
+name: foo2, value: bar2, domain: 127.0.0.1, path: /, session, Strict
+

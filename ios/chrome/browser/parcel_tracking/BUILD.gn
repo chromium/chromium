@@ -32,7 +32,7 @@ source_set("infobar_delegate") {
     "//components/commerce/core:shopping_service",
     "//components/infobars/core",
     "//ios/chrome/browser/commerce/model:shopping_service",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/web/model/annotations",
     "//ios/web/public",
@@ -44,6 +44,30 @@ source_set("parcel_tracking_step") {
   sources = [ "parcel_tracking_step.h" ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/variations/service",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
+source_set("opt_in_status") {
+  sources = [
+    "parcel_tracking_opt_in_status.h",
+    "parcel_tracking_opt_in_status.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
 source_set("prefs") {
   sources = [
     "parcel_tracking_prefs.h",
@@ -52,6 +76,8 @@ source_set("prefs") {
   deps = [
     "//base",
     "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }
 
@@ -63,6 +89,7 @@ source_set("util") {
   deps = [
     ":features",
     ":metrics",
+    ":opt_in_status",
     ":prefs",
     ":tracking_source",
     "//base",
@@ -71,36 +98,29 @@ source_set("util") {
     "//components/prefs",
     "//components/signin/public/base",
     "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/content_suggestions:constants",
-    "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/web/public/annotations:custom_text_check_result",
   ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [ "parcel_tracking_util_unittest.mm" ]
   deps = [
-    ":features",
     ":util",
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",
+    "//components/variations",
+    "//components/variations/service",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:fake_system_identity",

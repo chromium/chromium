@@ -11,7 +11,8 @@ example_value: '{ "NetworkConfigurations": [ { "GUID": "{4b224dfd-6849-7a63-5e39
 features:
   dynamic_refresh: true
 owners:
-- pmarko@chromium.org
+- acostinas@google.com
+- miersh@google.com
 - file://components/policy/OWNERS
 schema:
   type: string
@@ -21,3 +22,4 @@ tags:
 - full-admin-access
 type: string
 url_schema: https://chromium.googlesource.com/chromium/src/+/HEAD/components/onc/docs/onc_spec.md
+generate_device_proto: False

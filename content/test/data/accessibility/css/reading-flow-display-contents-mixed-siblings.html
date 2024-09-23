@@ -1,0 +1,39 @@
+<style>
+.wrapper {
+  display: flex;
+  reading-flow: flex-visual;
+}
+</style>
+
+<!---Test reading flow for flex items re-ordered using CSS property order.
+If items are in a display: contents element that has reading flow layout parent,
+its direct children should also follow reading flow order.
+In this test, display: contents or not display: contents children are siblings
+of the same reading flow container.
+
+Expect order to be:
+1  -> 3 -> (contents) -> 2 -> 4
+-->
+
+<div class="wrapper">
+  <div style="display: contents" tabindex="0" role="group">
+    <button style="order: 3">3</button>
+    <button style="order: 1">1</button>
+    <div style="display: contents" tabindex="0" role="group">
+      <button style="order: 4">4</button>
+      <button style="order: 2">2</button>
+    </div>
+  </div>
+</div>
+
+<!-- Copy of the test above, but without tabindex/group. -->
+<div class="wrapper">
+  <div style="display: contents">
+    <button style="order: 3">3</button>
+    <button style="order: 1">1</button>
+    <div style="display: contents">
+      <button style="order: 4">4</button>
+      <button style="order: 2">2</button>
+    </div>
+  </div>
+</div>

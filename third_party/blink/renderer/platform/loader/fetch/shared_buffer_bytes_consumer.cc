@@ -2,9 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/loader/fetch/shared_buffer_bytes_consumer.h"
 
 #include <utility>
+
+#include "base/not_fatal_until.h"
 
 namespace blink {
 
@@ -24,7 +31,7 @@ BytesConsumer::Result SharedBufferBytesConsumer::BeginRead(const char** buffer,
 }
 
 BytesConsumer::Result SharedBufferBytesConsumer::EndRead(size_t read_size) {
-  DCHECK(iterator_ != data_->end());
+  CHECK(iterator_ != data_->end(), base::NotFatalUntil::M130);
   DCHECK_LE(read_size + bytes_read_in_chunk_, iterator_->size());
   bytes_read_in_chunk_ += read_size;
   if (bytes_read_in_chunk_ == iterator_->size()) {

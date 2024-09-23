@@ -46,7 +46,7 @@
 <translation id="1363028406613469049">ଟ୍ରାକ୍‌ କରନ୍ତୁ</translation>
 <translation id="1378727793141957596">Google Driveକୁ ସ୍ୱାଗତ!</translation>
 <translation id="1379911846207762492">ଯେତେବେଳେ ଆପଣଙ୍କ ପାଖରେ ଇଣ୍ଟରନେଟ୍ ସଂଯୋଗ ନଥାଏ, ସେତେବେଳେ ଆପଣ ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିପାରିବେ।</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">ସର୍ଚ୍ଚ</translation>
 <translation id="1388045380422025115">ସମସ୍ତ ପ୍ରକାରର</translation>
 <translation id="1395262318152388157">ସୀକ୍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="1399511500114202393">କୌଣସି ୟୁଜର ସାର୍ଟିଫିକେଟ ନାହିଁ</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS ହୋଷ୍ଟ୍</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି, ବିବରଣୀ</translation>
-<translation id="3113153474486991170">ଏହି ଲୋକେସନରୁ "<ph name="PATH" />"କୁ ଖୋଲା ଯାଇପାରିଲା ନାହିଁ। ଖୋଲିବା ପାଇଁ ଦୟାକରି ଏହାକୁ "ମୋ ଫାଇଲଗୁଡ଼ିକ"ରେ କପି କରନ୍ତୁ।</translation>
 <translation id="3113592018909187986">ଆପଣଙ୍କ ପାଖରେ 1ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି। ଆପଣ ଏକ ନୂଆ PIN ସେଟ୍ ଅପ୍ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଏହି ନେଟୱାର୍କକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
 <translation id="3124404833828281817">ଦିନରେ ସ୍ୱପ୍ନ ଦେଖୁଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ବାତିଲ୍ କରନ୍ତୁ।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" />ର <ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କକୁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="3691184985318546178">ସିଂହଳ</translation>
+<translation id="3702842351052426940">ଆପଣଙ୍କ SIM କାର୍ଡ କିମ୍ୱା eSIM ପ୍ରୋଫାଇଲ ନିଷ୍କ୍ରିୟ ଥାଇପାରେ। ଆପଣଙ୍କ SIM କାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରି କିମ୍ୱା eSIM ପ୍ରୋଫାଇଲ ସୁଇଚ କରି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3722341589402358578">ଏକ ତ୍ରୁଟି ହୋଇଛି। କିଛି ଆଇଟମକୁ ଟ୍ରାସ କରାଯାଇନପାରେ।</translation>
 <translation id="3726463242007121105">ଏହି ଡିଭାଇସ୍‌ ଖୋଲାଯାଇପାରିବ ନାହିଁ କାରଣ ଏହାର ଫାଇଲ୍‌ସିଷ୍ଟମ୍‌ ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="3727148787322499904">ଏହି ସେଟିଂସ୍‍‍ରେ ପରିବର୍ତ୍ତନ କରିବା ଦ୍ୱାରା ସମସ୍ତ ସେୟାର୍‍ କରାଯାଇଥିବା ନେଟ୍‍ୱର୍କ ପ୍ରଭାବିତ ହେବ</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">ଏହି ପ୍ରୋକ୍ସି ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ଲାଗୁ କରାଯାଇଛି।</translation>
 <translation id="3830674330436234648">କୌଣସି ପ୍ଲେବ୍ୟାକ୍‍ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="383652340667548381">ସର୍ବିଆନ୍</translation>
+<translation id="3839045880592694915">ଆପଣଙ୍କ ମୋଡେମକୁ ଆପଣଙ୍କର କେରିଅର ଦ୍ୱାରା କନେକ୍ଟ କରିବାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ। ଅଧିକ ବିବରଣୀ ପାଇଁ ଆପଣଙ୍କ କେରିଅର ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
-<translation id="3851491607336266896">କନେକ୍ଟ ହୋଇଛି, କନେକ୍ଟିଭିଟି ସୀମିତ ଅଛି</translation>
 <translation id="3855472144336161447">ଜର୍ମନ୍ ନିଓ 2</translation>
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3866249974567520381">ବିବରଣୀ</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">ବର୍ତ୍ତମାନ ଖୋଲାଯାଇଥିବା Microsoft ଫାଇଲଗୁଡ଼ିକ OneDriveକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4017788180641807848">ୱାର୍କମ୍ୟାନ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
-<translation id="4019998208269143058">କ୍ୱିକ ଫାଇଲଗୁଡ଼ିକରେ ପିନ କରନ୍ତୁ</translation>
 <translation id="4040753847560036377">ଭୁଲ PUK</translation>
 <translation id="4057991113334098539">ସକ୍ରିୟ ହେଉଛି...</translation>
 <translation id="4092890906744441904">ଆଇରିଶ୍</translation>
+<translation id="4101601646343868113">ଆପଣଙ୍କ ମୋବାଇଲ ନେଟୱାର୍କରେ ସାଇନ ଇନ କରି ଆପଣଙ୍କ ମୋବାଇଲ ଡାଟା ପ୍ଲାନ ସକ୍ରିୟ ଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="4124731372776320263">1ଟି Drive ଫାଇଲ ସିଙ୍କ କରାଯାଉଛି</translation>
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
 <translation id="4131235941541910880">ଆପଣ ଆବଶ୍ୟକ କରୁନଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଟ୍ରାସକୁ ମୁଭ କରନ୍ତୁ</translation>
@@ -557,7 +557,7 @@
 <translation id="5288441970121584418">ବର୍ଗର୍</translation>
 <translation id="5293615890992542006">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲ ମୁଭ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="5305688511332277257">କିଛି ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
-<translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
+<translation id="5317780077021120954">ସେଭ କରନ୍ତୁ</translation>
 <translation id="5318819489018851358">Linux ସହିତ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5323213332664049067">ଲାଟିନ୍‍ ଆମେରିକାନ୍‍</translation>
 <translation id="5330145655348521461">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଏକ ଅଲଗା ଡେସ୍କଟପ୍‌ରେ ଖୋଲାଗଲା। ଏହାକୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)କୁ ଯାଆନ୍ତୁ।</translation>
@@ -600,6 +600,7 @@
 <translation id="5625294776298156701">ତାମିଲ99 କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="5633226425545095130">ଏହି ଆଇଟମକୁ ମୁଭ୍ କରିବା ଫଳରେ, ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡର୍ '<ph name="DESTINATION_NAME" />'କୁ ଦେଖିପାରୁଥିବା ସମସ୍ତ ଲୋକଙ୍କ ସହିତ ଏହା ସେୟାର୍ ହେବ।</translation>
 <translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
+<translation id="5650895901941743674">ଆପଣଙ୍କ APN କନଫିଗରେସନ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="5669691691057771421">ନୂଆ ପିନ୍‍ ଲେଖନ୍ତୁ</translation>
 <translation id="5678784840044122290">Linux ଆପ୍ଲିକେସନ୍‌ଟି ଆପଣଙ୍କର ଟର୍ମିନାଲ୍ ଭିତରେ ଉପଲବ୍ଧ ହେବ ଏବଂ ଆପଣଙ୍କର ଲଞ୍ଚର୍‌ରେ ହୁଏତ ଏକ ଆଇକନ୍ ମଧ୍ୟ ଦେଖାଇବ।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />ଏକ ଆର୍କାଇଭ୍‍ କିମ୍ବା ଭର୍ଚୁଆଲ୍‌ ଡିକ୍ସରୁ ବିଚ୍ଛିନ୍ନ କରାଯାଇପାରିବ ନାହିଁ<ph name="END_BOLD" />
@@ -679,6 +680,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="PHONE_NAME" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍‌ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6269630227984243955">ମଲୟ</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />"ରେ ଯଥେଷ୍ଟ ଷ୍ଟୋରେଜ ନଥିବା ଯୋଗୁଁ ଫାଇଲଗୁଡ଼ିକୁ ଅପଲୋଡ କରାଯାଇପାରିବ ନାହିଁ।</translation>
+<translation id="6279140785485544797">ଆପଣଙ୍କ ମୋବାଇଲର ଡାଟା ପ୍ଲାନର ମିଆଦ ଶେଷ ହୋଇଥାଇପାରେ। ସପୋର୍ଟ ପାଇଁ ଆପଣଙ୍କ କେରିଅର ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="6287852322318138013">ଏହି ଫାଇଲ୍ ଖୋଲିବା ପାଇଁ ଗୋଟିଏ ଆପ୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6295542640242147836">SIMକୁ ଲକ କରନ୍ତୁ</translation>
 <translation id="6296410173147755564">ଅବୈଧ PUK</translation>
@@ -688,7 +690,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ଆର୍କାଇଭ</translation>
 <translation id="6321303798550928047">ହାତ ହଲାଇବା</translation>
 <translation id="6327785803543103246">ୱେବ୍ ପ୍ରକ୍ସି ଅଟୋଡିସ୍କୋଭରୀ</translation>
-<translation id="6337014272874260727">କ୍ୱିକ ଫାଇଲଗୁଡ଼ିକରୁ ଅନପିନ କରନ୍ତୁ</translation>
 <translation id="6339145975392024142">US ଆନ୍ତର୍ଜାତିକ (PC)</translation>
 <translation id="6356685157277930264">ଫାଇଲ୍ସ ଫିଡ୍‍ବ୍ୟାକ୍ ୱିଣ୍ଡୋ</translation>
 <translation id="6358884629796491903">ଡ୍ରାଗନ୍</translation>
@@ -734,6 +735,7 @@
 <translation id="6750737795876287924">ବର୍ତ୍ତମାନର ଡିରେକ୍ଟୋରୀ</translation>
 <translation id="6751256176799620176">1ଟି ଫୋଲ୍ଡର୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6755827872271341378">ChromeOS Flex ଡିଭାଇସ</translation>
+<translation id="6777029074498310250">ଅଧିକ ସୂଚନା ପାଇଁ <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" />କୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6794539005637808366">ଆଇଟମକୁ ରିଷ୍ଟୋର କରନ୍ତୁ କିମ୍ବା ଟ୍ରାସ ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଏହାକୁ ଡ୍ରାଗ କରନ୍ତୁ</translation>
 <translation id="6795884519221689054">ପାଣ୍ଡା</translation>
@@ -787,6 +789,7 @@
 <translation id="7086590977277044826">InScript କୀବୋର୍ଡ ସହ ତାମିଲ</translation>
 <translation id="7088615885725309056">ପୁରାତନ</translation>
 <translation id="7103992300314999525">ମାସିଡୋନିଆନ୍</translation>
+<translation id="7104338189998813914">ଆପଣଙ୍କ OneDrive ଆକାଉଣ୍ଟକୁ ଆକ୍ସେସ କରିବାରେ ଏକ ସମସ୍ୟା ଅଛି</translation>
 <translation id="7106346894903675391">ଅଧିକ ଷ୍ଟୋରେଜ୍ କିଣନ୍ତୁ...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ଡ୍ରାଇଭ୍‍‍ରେ ଖୋଜନ୍ତୁ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">କନ୍ନଡ଼ ଫୋନେଟିକ୍</translation>
@@ -847,6 +850,7 @@
 <translation id="7589661784326793847">ଗୋଟିଏ ସେକେଣ୍ଡ ଅପେକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="7600126690270271294">ସର୍ବିଆନ୍</translation>
 <translation id="7603724359189955920">ଗ୍ରିଡ୍ସ</translation>
+<translation id="7624010287655004652">ଅନ୍ୟ ଏକ ମୋବାଇଲ ସେବା ପ୍ରଦାନକାରୀ ଦ୍ୱାରା ଲକ କରାଯାଇଛି</translation>
 <translation id="7627790789328695202">ଓହୋଃ, <ph name="FILE_NAME" /> ପୂର୍ବରୁ ଅଛି। ଏହାକୁ ରିନେମ୍ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
@@ -904,7 +908,7 @@
 <translation id="7953739707111622108">ଏହି ଡିଭାଇସ୍‌ ଖୋଲାଯାଇପାରିବ ନାହିଁ କାରଣ ଏହାର ଫାଇଲ୍‌ସିଷ୍ଟମ୍‌କୁ ଚିହ୍ନଟ କରାଯାଇପାରିନଥିଲା।</translation>
 <translation id="7969525169268594403">ସ୍ଲୋଭେନିଆନ୍</translation>
 <translation id="7972920761225148017">ଫରାସୀ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
-<translation id="7973962044839454485">ଏକ ଭୁଲ ଉପଯୋଗକର୍ତ୍ତା ନାମ କିମ୍ୱା ପାସ୍‌ୱର୍ଡ୍ କାରଣରୁ PPP ପ୍ରମାଣୀକରଣ ହୋଇପାରିଲା ନାହିଁ</translation>
+<translation id="7973962044839454485">ଏକ ଭୁଲ ୟୁଜରନେମ କିମ୍ୱା ପାସୱାର୍ଡ ଯୋଗୁଁ PPP ପ୍ରମାଣୀକରଣ ହୋଇପାରିଲା ନାହିଁ</translation>
 <translation id="7980421588063892270">କୋଲମାକ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="8000066093800657092">କୌଣସି ନେଟ୍‌ୱର୍କ ନାହିଁ</translation>
 <translation id="8008366997883261463">ଶ୍ୱାନ</translation>
@@ -941,7 +945,7 @@
 <translation id="8250690786522693009">ଲାଟିନ</translation>
 <translation id="8250920743982581267">ଡକୁମେଣ୍ଟ</translation>
 <translation id="8255595130163158297">ଟ୍ରାସରେ ଥିବା ସମସ୍ତ ଆଇଟମକୁ ଡିଲିଟ କରିଦିଆଯିବ ଏବଂ ଆପଣ ସେଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରିବାକୁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
-<translation id="8261506727792406068">ବିଲୋପ</translation>
+<translation id="8261506727792406068">ଡିଲିଟ</translation>
 <translation id="8261561378965667560">ଚାଇନିଜ୍ ଆରେ</translation>
 <translation id="8262872909443689080">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି</translation>
 <translation id="8264024885325823677">ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
@@ -1004,6 +1008,7 @@
 <translation id="8600173386174225982">ଫାଇଲ୍‌ ତାଲିକାକୁ ଥମ୍ବନେଲ୍ ଭ୍ୟୁରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି।</translation>
 <translation id="8601932370724196034">Crostini ଛବି ଫାଇଲ୍</translation>
 <translation id="8609695766746872526">ଆଇସଲାଣ୍ଡିକ୍</translation>
+<translation id="8630384863424041081">ଆପଣଙ୍କ SIM କାର୍ଡ PIN କିମ୍ବା ଆପଣଙ୍କ କେରିଅର ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା ଡିଫଲ୍ଟ PIN ଲେଖନ୍ତୁ। ସପୋର୍ଟ ପାଇଁ ଆପଣଙ୍କ କେରିଅର ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="863903787380594467">ଭୁଲ PIN। ଆପଣଙ୍କ ପାଖରେ <ph name="RETRIES" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ପୋର୍ଟ</translation>
 <translation id="8656407365183407932">ଆପଣଙ୍କ ଅଫଲାଇନ ଫାଇଲଗୁଡ଼ିକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
@@ -1013,7 +1018,6 @@
 <translation id="8698877009525468705">ଏହି ଫାଇଲଟି ଗୋପନୀୟ ଅଟେ ଏବଂ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ନୀତି ଅନୁସାରେ ପ୍ରତିବନ୍ଧକଗୁଡ଼ିକର ଅଧୀନ ଅଟେ।</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8713112442029511308">ମାଲଟିଜ୍</translation>
-<translation id="8714138378966541668">ପ୍ରଦାନକାରୀ ଦ୍ୱାରା ଲକ କରାଯାଇଛି</translation>
 <translation id="8714406895390098252">ସାଇକେଲ୍</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ବଛାଯାଇଛି।</translation>
 <translation id="872537912056138402">କ୍ରୋଏସିଆନ୍</translation>

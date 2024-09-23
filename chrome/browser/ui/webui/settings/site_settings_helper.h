@@ -9,10 +9,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -51,6 +51,24 @@ struct StorageAccessEmbeddingException {
   base::Time expiration;
 };
 
+// An enum representing the source of a per-site content setting (corresponds to
+// UI enum of the same name in constants.ts).
+// Note: this should not be used for default content setting sources, which
+// instead use `ProviderToDefaultSettingSourceString`.
+enum class SiteSettingSource {
+  kAdsFilterBlocklist,
+  kEmbargo,
+  kInsecureOrigin,
+  kKillSwitch,
+  kAllowlist,
+  kPolicy,
+  kExtension,
+  kHostedApp,
+  kPreference,
+  kDefault,
+  kNumSources,
+};
+
 // Maps from a pair(secondary pattern, incognito)  to a setting and if it's
 // embargoed.
 typedef std::map<std::pair<ContentSettingsPattern, bool>, SiteExceptionInfo>
@@ -63,14 +81,17 @@ typedef std::map<std::pair<ContentSettingsPattern, bool>, SiteExceptionInfo>
 // preferences are saved in lowest precedence pattern to the highest. However,
 // we want to show the patterns with the highest precedence (the more specific
 // ones) on the top, hence `std::greater<>`.
-typedef std::map<std::pair<ContentSettingsPattern, std::string>,
+typedef std::map<std::pair<ContentSettingsPattern, SiteSettingSource>,
                  OnePatternSettings,
                  std::greater<>>
     AllPatternsSettings;
 
 // A set of <origin, source, incognito> tuple for organizing granted permission
 // objects that belong to the same device.
-using ChooserExceptionDetails = std::set<std::tuple<GURL, std::string, bool>>;
+
+using ChooserExceptionDetails =
+    std::set<std::tuple<GURL, SiteSettingSource, bool>>;
+
 constexpr char kChooserType[] = "chooserType";
 constexpr char kCloseDescription[] = "closeDescription";
 constexpr char kDisabled[] = "disabled";
@@ -100,31 +121,19 @@ constexpr char kType[] = "type";
 constexpr char kNotificationPermissionsReviewListMaybeChangedEvent[] =
     "notification-permission-review-list-maybe-changed";
 
-enum class SiteSettingSource {
-  kAllowlist,
-  kAdsFilterBlocklist,
-  kDefault,
-  kEmbargo,
-  kExtension,
-  kHostedApp,
-  kInsecureOrigin,
-  kKillSwitch,
-  kPolicy,
-  kPreference,
-  kNumSources,
-};
-
 // Returns whether a group name has been registered for the given type.
 bool HasRegisteredGroupName(ContentSettingsType type);
 
 // Converts a ContentSettingsType to/from its group name identifier.
-ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name);
-base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type);
+ContentSettingsType ContentSettingsTypeFromGroupName(std::string_view name);
+std::string_view ContentSettingsTypeToGroupName(ContentSettingsType type);
 
 // Returns a list of all content settings types that correspond to permissions
-// and which should be displayed in chrome://settings, for any situation not
-// tied to particular a origin.
-const std::vector<ContentSettingsType>& GetVisiblePermissionCategories();
+// and which should be displayed in chrome://settings. An origin and profile may
+// be passed to get lists pertinent to particular origins and their settings.
+std::vector<ContentSettingsType> GetVisiblePermissionCategories(
+    const std::string& origin = std::string(),
+    Profile* profile = nullptr);
 
 // Converts a SiteSettingSource to its string identifier.
 std::string SiteSettingSourceToString(const SiteSettingSource source);
@@ -136,7 +145,7 @@ base::Value::Dict GetFileSystemExceptionForPage(
     const std::string& origin,
     const base::FilePath& file_path,
     const ContentSetting& setting,
-    const std::string& provider_name,
+    SiteSettingSource source,
     bool incognito,
     bool is_embargoed = false);
 
@@ -169,7 +178,7 @@ base::Value::Dict GetExceptionForPage(
     const ContentSettingsPattern& secondary_pattern,
     const std::string& display_name,
     const ContentSetting& setting,
-    const std::string& provider_name,
+    const SiteSettingSource source,
     const base::Time& expiration,
     bool incognito,
     bool is_embargoed = false);
@@ -210,7 +219,7 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
                                           const HostContentSettingsMap* map,
                                           const GURL& origin,
                                           ContentSettingsType content_type,
-                                          std::string* source_string);
+                                          SiteSettingSource* source);
 
 // Returns URLs with granted entries from the File System Access API.
 void GetFileSystemGrantedEntries(std::vector<base::Value::Dict>* exceptions,
@@ -235,7 +244,7 @@ struct ContentSettingsTypeNameEntry {
   const char* name;
 };
 
-const ChooserTypeNameEntry* ChooserTypeFromGroupName(base::StringPiece name);
+const ChooserTypeNameEntry* ChooserTypeFromGroupName(std::string_view name);
 
 // Creates a chooser exception object for the object with |display_name|. The
 // object contains the following properties

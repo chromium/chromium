@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("manager") {
+  visibility = [
+    ":*",
+    "//services/network:network_service",
+    "//services/network:tests",
+  ]
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [
+    "manager.cc",
+    "manager.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/content_settings/core/common",
+    "//components/content_settings/core/common:content_settings_enums",
+    "//components/content_settings/core/common:features",
+    "//components/tpcd/metadata/common",
+    "//net",
+    "//url",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [ "manager_unittest.cc" ]
+
+  deps = [
+    ":manager",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

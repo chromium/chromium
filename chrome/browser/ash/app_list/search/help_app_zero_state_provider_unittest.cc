@@ -80,8 +80,6 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
 TEST_F(HelpAppZeroStateProviderTest,
        HasNoResultsForEmptyQueryIfTimesLeftToShowIsZero) {
   profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
-  profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
 
   StartZeroStateSearch();
@@ -90,22 +88,8 @@ TEST_F(HelpAppZeroStateProviderTest,
 }
 
 TEST_F(HelpAppZeroStateProviderTest,
-       ReturnsDiscoverTabChipForEmptyQueryIfTimesLeftIsPositive) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 1);
-  profile()->GetPrefs()->SetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 0);
-
-  StartZeroStateSearch();
-
-  ASSERT_EQ(0u, GetLatestResults().size());
-}
-
-TEST_F(HelpAppZeroStateProviderTest,
        ReturnsReleaseNotesChipForEmptyQueryIfTimesLeftIsPositive) {
   profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
-  profile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
 
   StartZeroStateSearch();
@@ -114,31 +98,6 @@ TEST_F(HelpAppZeroStateProviderTest,
   ChromeSearchResult* result = GetLatestResults().at(0).get();
   ExpectReleaseNotesChip(result, IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE,
                          ash::SearchResultDisplayType::kContinue);
-}
-
-TEST_F(HelpAppZeroStateProviderTest, PrioritizesDiscoverTabChipForEmptyQuery) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 1);
-  profile()->GetPrefs()->SetInteger(
-      prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 1);
-
-  StartZeroStateSearch();
-
-  ASSERT_EQ(1u, GetLatestResults().size());
-
-  ChromeSearchResult* result = GetLatestResults().at(0).get();
-  ExpectReleaseNotesChip(result, IDS_HELP_APP_WHATS_NEW_CONTINUE_TASK_TITLE,
-                         ash::SearchResultDisplayType::kContinue);
-}
-
-TEST_F(HelpAppZeroStateProviderTest,
-       DecrementsTimesLeftToShowDiscoverTabChipUponShowing) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
-
-  StartZeroStateSearch();
-
-  EXPECT_EQ(0u, GetLatestResults().size());
 }
 
 TEST_F(HelpAppZeroStateProviderTest,
@@ -161,7 +120,7 @@ TEST_F(HelpAppZeroStateProviderTest,
   app_list_notifier()->NotifyResultsUpdated(
       ash::SearchResultDisplayType::kContinue,
       {ash::AppListNotifier::Result(kReleaseNotesResultId,
-                                    ash::HELP_APP_UPDATES)});
+                                    ash::HELP_APP_UPDATES, std::nullopt)});
   EXPECT_FALSE(app_list_notifier()->FireImpressionTimerForTesting(
       ash::AppListNotifier::Location::kContinue));
 
@@ -176,16 +135,6 @@ TEST_F(HelpAppZeroStateProviderTest,
 
   EXPECT_EQ(2, profile()->GetPrefs()->GetInteger(
                    prefs::kReleaseNotesSuggestionChipTimesLeftToShow));
-}
-
-TEST_F(HelpAppZeroStateProviderTest,
-       ClickingDiscoverTabChipStopsItFromShowing) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
-
-  StartZeroStateSearch();
-
-  EXPECT_EQ(0u, GetLatestResults().size());
 }
 
 TEST_F(HelpAppZeroStateProviderTest,

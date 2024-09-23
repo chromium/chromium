@@ -4,9 +4,10 @@
 
 import {getPluralString, str, strf} from '../../common/js/translations.js';
 
-import {PanelButton} from './xf_button.js';
+import type {PanelButton} from './xf_button.js';
 import {getTemplate} from './xf_display_panel.html.js';
-import {PanelItem, PanelType} from './xf_panel_item.js';
+import type {PanelItem} from './xf_panel_item.js';
+import {PanelType} from './xf_panel_item.js';
 
 /**
  * A panel to display a collection of PanelItem.

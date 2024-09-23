@@ -1,41 +1,41 @@
 Tests that VT advances in lockstep between worker and host page.
 Request to http://test.com/index.html, type: Document
 Request to http://test.com/worker.js, type: Other
-[WORKER] Time in worker: 100120
-Time in page: 100170
-[WORKER] Time in worker: 100220
-Time in page: 100270
-[WORKER] Time in worker: 100320
-Time in page: 100370
-[WORKER] Time in worker: 100420
-Time in page: 100470
-[WORKER] Time in worker: 100520
-Time in page: 100570
-[WORKER] Time in worker: 100620
-Time in page: 100670
-[WORKER] Time in worker: 100720
-Time in page: 100770
-[WORKER] Time in worker: 100820
-Time in page: 100870
-[WORKER] Time in worker: 100920
-Time in page: 100970
-[WORKER] Time in worker: 101020
-Time in page: 101070
-[WORKER] Time in worker: 101120
-Time in page: 101170
-[WORKER] Time in worker: 101220
-Time in page: 101270
-[WORKER] Time in worker: 101320
-Time in page: 101370
-[WORKER] Time in worker: 101420
-Time in page: 101470
-[WORKER] Time in worker: 101520
-Time in page: 101570
-[WORKER] Time in worker: 101620
-Time in page: 101670
-[WORKER] Time in worker: 101720
-Time in page: 101770
-[WORKER] Time in worker: 101820
-Time in page: 101870
-[WORKER] Time in worker: 101920
-Time in page: 101970
+[WORKER] Time in worker: 100110
+Time in page: 100160
+[WORKER] Time in worker: 100210
+Time in page: 100260
+[WORKER] Time in worker: 100310
+Time in page: 100360
+[WORKER] Time in worker: 100410
+Time in page: 100460
+[WORKER] Time in worker: 100510
+Time in page: 100560
+[WORKER] Time in worker: 100610
+Time in page: 100660
+[WORKER] Time in worker: 100710
+Time in page: 100760
+[WORKER] Time in worker: 100810
+Time in page: 100860
+[WORKER] Time in worker: 100910
+Time in page: 100960
+[WORKER] Time in worker: 101010
+Time in page: 101060
+[WORKER] Time in worker: 101110
+Time in page: 101160
+[WORKER] Time in worker: 101210
+Time in page: 101260
+[WORKER] Time in worker: 101310
+Time in page: 101360
+[WORKER] Time in worker: 101410
+Time in page: 101460
+[WORKER] Time in worker: 101510
+Time in page: 101560
+[WORKER] Time in worker: 101610
+Time in page: 101660
+[WORKER] Time in worker: 101710
+Time in page: 101760
+[WORKER] Time in worker: 101810
+Time in page: 101860
+[WORKER] Time in worker: 101910
+Time in page: 101960

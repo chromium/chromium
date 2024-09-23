@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -87,13 +88,17 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private static final int CHANGING_ICON_SHELL_UPDATE = 1 << 5;
     private static final int HISTOGRAM_SCOPE = 1 << 6;
 
+    private static final int WEB_APK_ICON_UPDATE_BLOCKED_AT_PERCENTAGE = 11;
+
     private static final String PARAM_SHELL_VERSION = "shell_version";
-    private static final String PARAM_CHANGE_THRESHOLD = "change_threshold";
 
     private final ActivityTabProvider mTabProvider;
 
     /** Whether updates are enabled. Some tests disable updates. */
     private static boolean sUpdatesDisabledForTesting;
+
+    /** The icon change threshold while testing updates. */
+    private static Integer sIconThresholdForTesting;
 
     /** The activity context to use. */
     private Context mContext;
@@ -177,6 +182,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     public static void setUpdatesDisabledForTesting(boolean value) {
         sUpdatesDisabledForTesting = value;
         ResettersForTesting.register(() -> sUpdatesDisabledForTesting = false);
+    }
+
+    public static void setIconThresholdForTesting(int percentage) {
+        sIconThresholdForTesting = percentage;
+        ResettersForTesting.register(
+                () -> sIconThresholdForTesting = WEB_APK_ICON_UPDATE_BLOCKED_AT_PERCENTAGE);
     }
 
     /**
@@ -422,11 +433,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
      *     changes up to 1%).
      */
     private static boolean belowAppIdIconUpdateThreshold(int percentage) {
-        return percentage
-                < ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.WEB_APK_ICON_UPDATE_THRESHOLD,
-                        PARAM_CHANGE_THRESHOLD,
-                        -1);
+        // See also go/app-id-update-threshold/ for (internal) discussion.
+        int threshold =
+                sIconThresholdForTesting != null
+                        ? sIconThresholdForTesting
+                        : WEB_APK_ICON_UPDATE_BLOCKED_AT_PERCENTAGE;
+        return percentage < threshold;
     }
 
     protected void showIconOrNameUpdateDialog(
@@ -474,7 +486,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         // in the update dialog warning (presses Back). Otherwise, they can be left in a state where
         // they always press Back and are stuck on an old version of the app forever.
         if (dismissalCause != DialogDismissalCause.POSITIVE_BUTTON_CLICKED
-                && dismissalCause != DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE) {
+                && dismissalCause != DialogDismissalCause.NAVIGATE_BACK
+                && dismissalCause != DialogDismissalCause.TOUCH_OUTSIDE) {
             return;
         }
 
@@ -525,8 +538,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             boolean isManifestStale,
             boolean appIdentityUpdateSupported,
             List<Integer> updateReasons) {
-        recordWebApkUpdateUniqueIdHistogram(mInfo, mFetchedInfo);
-
         Callback<Boolean> callback =
                 (success) -> {
                     if (!success) {
@@ -546,20 +557,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 appIdentityUpdateSupported,
                 updateReasons,
                 callback);
-    }
-
-    private void recordWebApkUpdateUniqueIdHistogram(WebappInfo oldInfo, WebappInfo fetchedInfo) {
-        if (fetchedInfo == null) return;
-
-        String baseName =
-                "WebApk.Update.UniqueId"
-                        + (TextUtils.isEmpty(oldInfo.manifestId()) ? "Empty" : "Same");
-        RecordHistogram.recordBooleanHistogram(
-                baseName + ".ManifestUrl",
-                TextUtils.equals(oldInfo.manifestUrl(), fetchedInfo.manifestUrl()));
-        RecordHistogram.recordBooleanHistogram(
-                baseName + ".StartUrl",
-                TextUtils.equals(oldInfo.manifestStartUrl(), fetchedInfo.manifestStartUrl()));
     }
 
     /** Schedules update for when WebAPK is not running. */
@@ -897,9 +894,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             i++;
         }
 
-        String maniefstId =
-                TextUtils.isEmpty(info.manifestId()) ? info.manifestStartUrl() : info.manifestId();
-
         String[][] shortcuts = new String[info.shortcutItems().size()][];
         byte[][] shortcutIconData = new byte[info.shortcutItems().size()][];
         for (int j = 0; j < info.shortcutItems().size(); j++) {
@@ -945,7 +939,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                         info.scopeUrl(),
                         info.name(),
                         info.shortName(),
-                        maniefstId,
+                        info.hasCustomName(),
+                        info.manifestIdWithFallback(),
                         info.appKey(),
                         primaryIconUrl,
                         primaryIconData,
@@ -982,38 +977,39 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     @NativeMethods
     interface Natives {
         public void storeWebApkUpdateRequestToFile(
-                String updateRequestPath,
-                String startUrl,
-                String scope,
-                String name,
-                String shortName,
-                String manifestId,
-                String appKey,
-                String primaryIconUrl,
+                @JniType("std::string") String updateRequestPath,
+                @JniType("std::string") String startUrl,
+                @JniType("std::string") String scope,
+                @JniType("std::u16string") String name,
+                @JniType("std::u16string") String shortName,
+                boolean hasCustomName,
+                @JniType("std::string") String manifestId,
+                @JniType("std::string") String appKey,
+                @JniType("std::string") String primaryIconUrl,
                 byte[] primaryIconData,
                 boolean isPrimaryIconMaskable,
-                String splashIconUrl,
+                @JniType("std::string") String splashIconUrl,
                 byte[] splashIconData,
                 boolean isSplashIconMaskable,
-                String[] iconUrls,
-                String[] iconHashes,
+                @JniType("std::vector<std::string>") String[] iconUrls,
+                @JniType("std::vector<std::string>") String[] iconHashes,
                 @DisplayMode.EnumType int displayMode,
                 int orientation,
                 long themeColor,
                 long backgroundColor,
                 long darkThemeColor,
                 long darkBackgroundColor,
-                String shareTargetAction,
-                String shareTargetParamTitle,
-                String shareTargetParamText,
+                @JniType("std::string") String shareTargetAction,
+                @JniType("std::u16string") String shareTargetParamTitle,
+                @JniType("std::u16string") String shareTargetParamText,
                 boolean shareTargetParamIsMethodPost,
                 boolean shareTargetParamIsEncTypeMultipart,
-                String[] shareTargetParamFileNames,
+                @JniType("std::vector<std::u16string>") String[] shareTargetParamFileNames,
                 Object[] shareTargetParamAccepts,
                 String[][] shortcuts,
                 byte[][] shortcutIconData,
-                String manifestUrl,
-                String webApkPackage,
+                @JniType("std::string") String manifestUrl,
+                @JniType("std::string") String webApkPackage,
                 int webApkVersion,
                 boolean isManifestStale,
                 boolean isAppIdentityUpdateSupported,

@@ -7,26 +7,27 @@
 #include <cstddef>
 #include <limits>
 
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base::bits {
 
-TEST(BitsTestPA, Log2Floor) {
-  EXPECT_EQ(-1, Log2Floor(0));
-  EXPECT_EQ(0, Log2Floor(1));
-  EXPECT_EQ(1, Log2Floor(2));
-  EXPECT_EQ(1, Log2Floor(3));
-  EXPECT_EQ(2, Log2Floor(4));
+TEST(BitsTestPA, BitWidth) {
+  EXPECT_EQ(0, BitWidth(0));
+  EXPECT_EQ(1, BitWidth(1));
+  EXPECT_EQ(2, BitWidth(2));
+  EXPECT_EQ(2, BitWidth(3));
+  EXPECT_EQ(3, BitWidth(4));
   for (int i = 3; i < 31; ++i) {
     unsigned int value = 1U << i;
-    EXPECT_EQ(i, Log2Floor(value));
-    EXPECT_EQ(i, Log2Floor(value + 1));
-    EXPECT_EQ(i, Log2Floor(value + 2));
-    EXPECT_EQ(i - 1, Log2Floor(value - 1));
-    EXPECT_EQ(i - 1, Log2Floor(value - 2));
+    EXPECT_EQ(i + 1, BitWidth(value));
+    EXPECT_EQ(i + 1, BitWidth(value + 1));
+    EXPECT_EQ(i + 1, BitWidth(value + 2));
+    EXPECT_EQ(i, BitWidth(value - 1));
+    EXPECT_EQ(i, BitWidth(value - 2));
   }
-  EXPECT_EQ(31, Log2Floor(0xffffffffU));
+  EXPECT_EQ(32, BitWidth(0xffffffffU));
 }
 
 TEST(BitsTestPA, Log2Ceiling) {
@@ -115,32 +116,119 @@ TEST(BitsTestPA, AlignDownPointer) {
             AlignDown(reinterpret_cast<uint8_t*>(1), kUintPtrTMax / 2 + 1));
 }
 
-TEST(BitsTestPA, LeftMostBit) {
-  // Construction of a signed type from an unsigned one of the same width
-  // preserves all bits. Explicitly confirming this behavior here to illustrate
-  // correctness of reusing unsigned literals to test behavior of signed types.
-  // Using signed literals does not work with EXPECT_EQ.
-  static_assert(
-      static_cast<int64_t>(0xFFFFFFFFFFFFFFFFu) == 0xFFFFFFFFFFFFFFFFl,
-      "Comparing signed with unsigned literals compares bits.");
-  static_assert((0xFFFFFFFFFFFFFFFFu ^ 0xFFFFFFFFFFFFFFFFl) == 0,
-                "Signed and unsigned literals have the same bits set");
+TEST(BitsTestPA, PowerOfTwo) {
+  EXPECT_FALSE(HasSingleBit(0u));
+  EXPECT_TRUE(HasSingleBit(1u));
+  EXPECT_TRUE(HasSingleBit(2u));
+  // Unsigned 64 bit cases.
+  for (uint32_t i = 2; i < 64; i++) {
+    const uint64_t val = uint64_t{1} << i;
+    EXPECT_FALSE(HasSingleBit(val - 1));
+    EXPECT_TRUE(HasSingleBit(val));
+    EXPECT_FALSE(HasSingleBit(val + 1));
+  }
+}
 
-  uint64_t unsigned_long_long_value = 0x8000000000000000u;
-  EXPECT_EQ(LeftmostBit<uint64_t>(), unsigned_long_long_value);
-  EXPECT_EQ(LeftmostBit<int64_t>(), int64_t(unsigned_long_long_value));
+TEST(BitsTestPA, CountlZero8) {
+  EXPECT_EQ(8, CountlZero(uint8_t{0}));
+  EXPECT_EQ(7, CountlZero(uint8_t{1}));
+  for (int shift = 0; shift <= 7; ++shift) {
+    EXPECT_EQ(7 - shift, CountlZero(static_cast<uint8_t>(1 << shift)));
+  }
+  EXPECT_EQ(4, CountlZero(uint8_t{0x0f}));
+}
 
-  uint32_t unsigned_long_value = 0x80000000u;
-  EXPECT_EQ(LeftmostBit<uint32_t>(), unsigned_long_value);
-  EXPECT_EQ(LeftmostBit<int32_t>(), int32_t(unsigned_long_value));
+TEST(BitsTestPA, CountlZero16) {
+  EXPECT_EQ(16, CountlZero(uint16_t{0}));
+  EXPECT_EQ(15, CountlZero(uint16_t{1}));
+  for (int shift = 0; shift <= 15; ++shift) {
+    EXPECT_EQ(15 - shift, CountlZero(static_cast<uint16_t>(1 << shift)));
+  }
+  EXPECT_EQ(4, CountlZero(uint16_t{0x0f0f}));
+}
 
-  uint16_t unsigned_short_value = 0x8000u;
-  EXPECT_EQ(LeftmostBit<uint16_t>(), unsigned_short_value);
-  EXPECT_EQ(LeftmostBit<int16_t>(), int16_t(unsigned_short_value));
+TEST(BitsTestPA, CountlZero32) {
+  EXPECT_EQ(32, CountlZero(uint32_t{0}));
+  EXPECT_EQ(31, CountlZero(uint32_t{1}));
+  for (int shift = 0; shift <= 31; ++shift) {
+    EXPECT_EQ(31 - shift, CountlZero(uint32_t{1} << shift));
+  }
+  EXPECT_EQ(4, CountlZero(uint32_t{0x0f0f0f0f}));
+}
 
-  uint8_t unsigned_byte_value = 0x80u;
-  EXPECT_EQ(LeftmostBit<uint8_t>(), unsigned_byte_value);
-  EXPECT_EQ(LeftmostBit<int8_t>(), int8_t(unsigned_byte_value));
+TEST(BitsTestPA, CountrZero8) {
+  EXPECT_EQ(8, CountrZero(uint8_t{0}));
+  EXPECT_EQ(7, CountrZero(uint8_t{128}));
+  for (int shift = 0; shift <= 7; ++shift) {
+    EXPECT_EQ(shift, CountrZero(static_cast<uint8_t>(1 << shift)));
+  }
+  EXPECT_EQ(4, CountrZero(uint8_t{0xf0}));
+}
+
+TEST(BitsTestPA, CountrZero16) {
+  EXPECT_EQ(16, CountrZero(uint16_t{0}));
+  EXPECT_EQ(15, CountrZero(uint16_t{32768}));
+  for (int shift = 0; shift <= 15; ++shift) {
+    EXPECT_EQ(shift, CountrZero(static_cast<uint16_t>(1 << shift)));
+  }
+  EXPECT_EQ(4, CountrZero(uint16_t{0xf0f0}));
+}
+
+TEST(BitsTestPA, CountrZero32) {
+  EXPECT_EQ(32, CountrZero(uint32_t{0}));
+  EXPECT_EQ(31, CountrZero(uint32_t{1} << 31));
+  for (int shift = 0; shift <= 31; ++shift) {
+    EXPECT_EQ(shift, CountrZero(uint32_t{1} << shift));
+  }
+  EXPECT_EQ(4, CountrZero(uint32_t{0xf0f0f0f0}));
+}
+
+TEST(BitsTestPA, CountlZero64) {
+  EXPECT_EQ(64, CountlZero(uint64_t{0}));
+  EXPECT_EQ(63, CountlZero(uint64_t{1}));
+  for (int shift = 0; shift <= 63; ++shift) {
+    EXPECT_EQ(63 - shift, CountlZero(uint64_t{1} << shift));
+  }
+  EXPECT_EQ(4, CountlZero(uint64_t{0x0f0f0f0f0f0f0f0f}));
+}
+
+TEST(BitsTestPA, CountrZero64) {
+  EXPECT_EQ(64, CountrZero(uint64_t{0}));
+  EXPECT_EQ(63, CountrZero(uint64_t{1} << 63));
+  for (int shift = 0; shift <= 31; ++shift) {
+    EXPECT_EQ(shift, CountrZero(uint64_t{1} << shift));
+  }
+  EXPECT_EQ(4, CountrZero(uint64_t{0xf0f0f0f0f0f0f0f0}));
+}
+
+TEST(BitsTestPA, CountlZeroSizeT) {
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
+  EXPECT_EQ(64, CountlZero(size_t{0}));
+  EXPECT_EQ(63, CountlZero(size_t{1}));
+  EXPECT_EQ(32, CountlZero(size_t{1} << 31));
+  EXPECT_EQ(1, CountlZero(size_t{1} << 62));
+  EXPECT_EQ(0, CountlZero(size_t{1} << 63));
+#else
+  EXPECT_EQ(32, CountlZero(size_t{0}));
+  EXPECT_EQ(31, CountlZero(size_t{1}));
+  EXPECT_EQ(1, CountlZero(size_t{1} << 30));
+  EXPECT_EQ(0, CountlZero(size_t{1} << 31));
+#endif
+}
+
+TEST(BitsTestPA, CountrZeroSizeT) {
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
+  EXPECT_EQ(64, CountrZero(size_t{0}));
+  EXPECT_EQ(63, CountrZero(size_t{1} << 63));
+  EXPECT_EQ(31, CountrZero(size_t{1} << 31));
+  EXPECT_EQ(1, CountrZero(size_t{2}));
+  EXPECT_EQ(0, CountrZero(size_t{1}));
+#else
+  EXPECT_EQ(32, CountrZero(size_t{0}));
+  EXPECT_EQ(31, CountrZero(size_t{1} << 31));
+  EXPECT_EQ(1, CountrZero(size_t{2}));
+  EXPECT_EQ(0, CountrZero(size_t{1}));
+#endif
 }
 
 }  // namespace partition_alloc::internal::base::bits

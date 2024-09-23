@@ -13,12 +13,13 @@
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
 namespace ui {
-class WaylandExtension;
+class WaylandToplevelExtension;
 class DeskExtension;
 class PinnedModeExtension;
 }  // namespace ui
@@ -45,8 +46,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
 
   ~DesktopWindowTreeHostLacros() override;
 
-  ui::WaylandExtension* GetWaylandExtension();
-  const ui::WaylandExtension* GetWaylandExtension() const;
+  ui::WaylandToplevelExtension* GetWaylandToplevelExtension();
+  const ui::WaylandToplevelExtension* GetWaylandToplevelExtension() const;
 
   ui::DeskExtension* GetDeskExtension();
   const ui::DeskExtension* GetDeskExtension() const;
@@ -57,13 +58,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostLacros
  protected:
   // Overridden from DesktopWindowTreeHost:
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
-  void InitModalType(ui::ModalType modal_type) override;
+  void InitModalType(ui::mojom::ModalType modal_type) override;
 
   // PlatformWindowDelegate:
   void OnClosed() override;
-  void OnWindowStateChanged(
-      ui::PlatformWindowState old_window_show_state,
-      ui::PlatformWindowState new_window_show_state) override;
+  void OnWindowStateChanged(ui::PlatformWindowState old_state,
+                            ui::PlatformWindowState new_state) override;
   void OnFullscreenTypeChanged(ui::PlatformFullscreenType old_type,
                                ui::PlatformFullscreenType new_type) override;
   void OnOverviewModeChanged(bool in_overview) override;

@@ -1188,16 +1188,18 @@ class MockRuntime {
 
         const enabled_features = [];
         for (let i = 0; i < sessionOptions.requiredFeatures.length; i++) {
-          if (this.supportedFeatures_.indexOf(sessionOptions.requiredFeatures[i]) !== -1) {
-            enabled_features.push(sessionOptions.requiredFeatures[i]);
+          const feature = sessionOptions.requiredFeatures[i];
+          if (this._runtimeSupportsFeature(feature, sessionOptions)) {
+            enabled_features.push(feature);
           } else {
             return Promise.resolve({session: null});
           }
         }
 
         for (let i =0; i < sessionOptions.optionalFeatures.length; i++) {
-          if (this.supportedFeatures_.indexOf(sessionOptions.optionalFeatures[i]) !== -1) {
-            enabled_features.push(sessionOptions.optionalFeatures[i]);
+          const feature = sessionOptions.optionalFeatures[i];
+          if (this._runtimeSupportsFeature(feature, sessionOptions)) {
+            enabled_features.push(feature);
           }
         }
 
@@ -1234,18 +1236,29 @@ class MockRuntime {
 
   _runtimeSupportsSession(options) {
     let result = this.supportedModes_.includes(options.mode);
-
-    if (options.requiredFeatures.includes(xrSessionMojom.XRSessionFeature.DEPTH)
-    || options.optionalFeatures.includes(xrSessionMojom.XRSessionFeature.DEPTH)) {
-      result &= options.depthOptions.usagePreferences.includes(
-          xrSessionMojom.XRDepthUsage.kCPUOptimized);
-      result &= options.depthOptions.dataFormatPreferences.includes(
-          xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha);
-    }
-
     return Promise.resolve({
       supportsSession: result,
     });
+  }
+
+  _runtimeSupportsFeature(feature, options) {
+    if (this.supportedFeatures_.indexOf(feature) === -1) {
+      return false;
+    }
+
+    switch (feature) {
+      case xrSessionMojom.XRSessionFeature.DEPTH:
+        // This matches what Chrome can currently support.
+        return options.depthOptions &&
+               (options.depthOptions.usagePreferences.length == 0 ||
+                options.depthOptions.usagePreferences.includes(
+                  xrSessionMojom.XRDepthUsage.kCPUOptimized)) &&
+               (options.depthOptions.dataFormatPreferences.length == 0 ||
+                options.depthOptions.dataFormatPreferences.includes(
+                 xrSessionMojom.XRDepthDataFormat.kLuminanceAlpha));
+      default:
+        return true;
+    }
   }
 
   // Private functions - utilities:
@@ -1312,27 +1325,34 @@ class MockRuntime {
       return;
     }
 
+    let newDepthData;
+
     // If we don't have a current depth data, we'll return null
     // (i.e. no data is not a valid data, so it cannot be "StillValid").
     if (this.depthSensingData_ == null) {
-      frameData.depthData = null;
-      return;
+      newDepthData = null;
+    } else if(!this.depthSensingDataDirty_) {
+      newDepthData = { dataStillValid: {}};
+    } else {
+      newDepthData = {
+        updatedDepthData: {
+          timeDelta: frameData.timeDelta,
+          normTextureFromNormView: this.depthSensingData_.normDepthBufferFromNormView,
+          rawValueToMeters: this.depthSensingData_.rawValueToMeters,
+          size: { width: this.depthSensingData_.width, height: this.depthSensingData_.height },
+          pixelData: { bytes: this.depthSensingData_.depthData }
+        }
+      };
     }
 
-    if(!this.depthSensingDataDirty_) {
-      frameData.depthData = { dataStillValid: {}};
-      return;
+    for (let i = 0; i < this.primaryViews_.length; i++) {
+      this.primaryViews_[i].depthData = newDepthData;
     }
-
-    frameData.depthData = {
-      updatedDepthData: {
-        timeDelta: frameData.timeDelta,
-        normTextureFromNormView: this.depthSensingData_.normDepthBufferFromNormView,
-        rawValueToMeters: this.depthSensingData_.rawValueToMeters,
-        size: { width: this.depthSensingData_.width, height: this.depthSensingData_.height },
-        pixelData: { bytes: this.depthSensingData_.depthData }
+    if (this.enabledFeatures_.includes(xrSessionMojom.XRSessionFeature.SECONDARY_VIEWS)) {
+      for (let i = 0; i < this.secondaryViews_.length; i++) {
+        this.secondaryViews_[i].depthData = newDepthData;
       }
-    };
+    }
 
     this.depthSensingDataDirty_ = false;
   }

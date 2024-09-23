@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_SPACED_FAKE_SPACED_CLIENT_H_
 
 #include <map>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -48,6 +49,13 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
   void GetQuotaCurrentSpaceForProjectId(const std::string& path,
                                         uint32_t project_id,
                                         GetSizeCallback callback) override;
+  void GetQuotaCurrentSpacesForIds(const std::string& path,
+                                   const std::vector<uint32_t>& uids,
+                                   const std::vector<uint32_t>& gids,
+                                   const std::vector<uint32_t>& project_ids,
+                                   GetSpacesForIdsCallback callback) override;
+
+  void SendStatefulDiskSpaceUpdate(const Observer::SpaceEvent& event);
 
   void set_free_disk_space(std::optional<int64_t> space) {
     free_disk_space_ = space;

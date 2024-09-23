@@ -98,10 +98,6 @@ class IdentityProvider {
   // |account_id| is the active account.
   void ProcessRefreshTokenUpdateForAccount(const CoreAccountId& account_id);
 
-  // Processes a refresh token removal, firing the observer callback if
-  // |account_id| is the active account.
-  void ProcessRefreshTokenRemovalForAccount(const CoreAccountId& account_id);
-
   // Fires an OnActiveAccountLogin notification.
   void FireOnActiveAccountLogin();
 

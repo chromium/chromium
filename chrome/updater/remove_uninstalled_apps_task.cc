@@ -26,6 +26,7 @@
 #include "chrome/updater/update_service_impl.h"
 #include "chrome/updater/util/util.h"
 #include "components/prefs/pref_service.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
 
 namespace updater {
@@ -98,6 +99,18 @@ void RemoveAppIDsAndSendUninstallPings(
     return;
   }
 
+  // If the terms of service have not been accepted, don't ping.
+  if (persisted_data->GetEulaRequired()) {
+    for (const PingInfo& app_id_to_remove : app_ids_to_remove) {
+      const std::string& app_id = app_id_to_remove.app_id_;
+      if (!persisted_data->RemoveApp(app_id)) {
+        VLOG(0) << "Could not remove registration of app " << app_id;
+      }
+    }
+    std::move(callback).Run();
+    return;
+  }
+
   const auto barrier_closure =
       base::BarrierClosure(app_ids_to_remove.size(), std::move(callback));
 
@@ -117,8 +130,12 @@ void RemoveAppIDsAndSendUninstallPings(
       crx_component.brand = brand;
       crx_component.version = app_version;
       crx_component.requires_network_encryption = false;
-      update_client->SendUninstallPing(
-          crx_component, ping_reason,
+      update_client->SendPing(
+          crx_component,
+          {.event_type = update_client::protocol_request::kEventUninstall,
+           .result = 1,
+           .error_code = 0,
+           .extra_code1 = ping_reason},
           base::BindOnce(&UninstallPingSent, barrier_closure));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;

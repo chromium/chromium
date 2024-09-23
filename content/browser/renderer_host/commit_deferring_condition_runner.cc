@@ -6,6 +6,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "content/browser/preloading/prerender/prerender_commit_deferring_condition.h"
+#include "content/browser/preloading/prerender/prerender_no_vary_search_commit_deferring_condition.h"
+#include "content/browser/preloading/prerender/prerender_no_vary_search_hint_commit_deferring_condition.h"
 #include "content/browser/renderer_host/back_forward_cache_commit_deferring_condition.h"
 #include "content/browser/renderer_host/concurrent_navigations_commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -35,7 +38,7 @@ std::unique_ptr<CommitDeferringConditionRunner>
 CommitDeferringConditionRunner::Create(
     NavigationRequest& navigation_request,
     CommitDeferringCondition::NavigationType navigation_type,
-    std::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
   auto runner = base::WrapUnique(new CommitDeferringConditionRunner(
       navigation_request, navigation_type,
       candidate_prerender_frame_tree_node_id));
@@ -45,7 +48,7 @@ CommitDeferringConditionRunner::Create(
 CommitDeferringConditionRunner::CommitDeferringConditionRunner(
     Delegate& delegate,
     CommitDeferringCondition::NavigationType navigation_type,
-    std::optional<int> candidate_prerender_frame_tree_node_id)
+    std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id)
     : delegate_(delegate),
       navigation_type_(navigation_type),
       candidate_prerender_frame_tree_node_id_(
@@ -109,7 +112,24 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
     AddCondition(std::move(condition));
   }
 
+  // PrerenderNoVarySearchHintCommitDeferringCondition should run before
+  // PrerenderCommitDeferringCondition as it needs to defer until headers
+  // are received. Headers are a required prerequisite for the correctness of
+  // PrerenderCommitDeferringCondition and
+  // PrerenderNoVarySearchCommitDeferringCondition in the presence of
+  // No-Vary-Search hint/header.
+  AddCondition(PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
+      navigation_request, navigation_type_,
+      candidate_prerender_frame_tree_node_id_));
+
   AddCondition(PrerenderCommitDeferringCondition::MaybeCreate(
+      navigation_request, navigation_type_,
+      candidate_prerender_frame_tree_node_id_));
+
+  // PrerenderNoVarySearchCommitDeferringCondition should run after we've
+  // made the decision to activate the prerender as it changes the
+  // prerender renderer's URL.
+  AddCondition(PrerenderNoVarySearchCommitDeferringCondition::MaybeCreate(
       navigation_request, navigation_type_,
       candidate_prerender_frame_tree_node_id_));
 

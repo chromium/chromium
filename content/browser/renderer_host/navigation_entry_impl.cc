@@ -19,7 +19,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -28,6 +30,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
@@ -89,8 +92,7 @@ void RecursivelyGenerateFrameEntries(
 
   if (!entry) {
     std::optional<GURL> initiator_base_url;
-    if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-        state.initiator_base_url_string) {
+    if (state.initiator_base_url_string) {
       GURL initiator_base_url_from_state =
           GURL(UTF16ToUTF8(state.initiator_base_url_string.value()));
       // If `state.initiator_base_url_string` has a value, it should be
@@ -113,7 +115,7 @@ void RecursivelyGenerateFrameEntries(
         state.initiator_origin, initiator_base_url, std::vector<GURL>(),
         blink::PageState::CreateFromEncodedData(data), "GET", -1,
         nullptr /* blob_url_loader_factory */,
-        // TODO(https://crbug.com/1140393): We should restore the policy
+        // TODO(crbug.com/40053667): We should restore the policy
         // container.
         nullptr /* policy_container_policies */,
         state.protect_url_in_navigation_api);
@@ -149,7 +151,7 @@ void RecursivelyGenerateFrameState(
   blink::ExplodedPageState exploded_page_state;
   if (!blink::DecodePageState(node->frame_entry->page_state().ToEncodedData(),
                               &exploded_page_state)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   blink::ExplodedFrameState frame_state = exploded_page_state.top;
@@ -431,7 +433,6 @@ NavigationEntryImpl::NavigationEntryImpl(
       is_renderer_initiated_(is_renderer_initiated),
       should_clear_history_list_(false),
       can_load_local_resources_(false),
-      frame_tree_node_id_(FrameTreeNode::kFrameTreeNodeInvalidId),
       has_user_gesture_(false),
       reload_type_(ReloadType::NONE),
       started_from_context_menu_(false),
@@ -442,7 +443,23 @@ NavigationEntryImpl::NavigationEntryImpl(
               ? InitialNavigationEntryState::kInitialNotForSynchronousAboutBlank
               : InitialNavigationEntryState::kNonInitial) {}
 
-NavigationEntryImpl::~NavigationEntryImpl() {}
+NavigationEntryImpl::~NavigationEntryImpl() {
+  if (navigation_transition_data_
+          .same_document_navigation_entry_screenshot_token()
+          .has_value()) {
+    // We get here if:
+    // - `DidCommitSameDocumentNavigation` sets the token, promising a
+    //    screenshot was supposed to arrive.
+    // - However the navigation entry was destroyed before the screenshot could
+    //   arrive.
+    viz::HostFrameSinkManager* manager = GetHostFrameSinkManager();
+    CHECK(manager);
+    manager->InvalidateCopyOutputReadyCallback(
+        navigation_transition_data_
+            .same_document_navigation_entry_screenshot_token()
+            .value());
+  }
+}
 
 int NavigationEntryImpl::GetUniqueID() {
   return unique_id_;
@@ -474,7 +491,7 @@ void NavigationEntryImpl::SetDataURLAsString(
     scoped_refptr<base::RefCountedString> data_url) {
   if (data_url) {
     // A quick check that it's actually a data URL.
-    DCHECK(base::StartsWith(data_url->front_as<char>(), url::kDataScheme,
+    DCHECK(base::StartsWith(base::as_string_view(*data_url), url::kDataScheme,
                             base::CompareCase::SENSITIVE));
   }
   data_url_as_string_ = std::move(data_url);
@@ -503,8 +520,8 @@ const GURL& NavigationEntryImpl::GetVirtualURL() {
   return virtual_url_.is_empty() ? GetURL() : virtual_url_;
 }
 
-void NavigationEntryImpl::SetTitle(const std::u16string& title) {
-  title_ = title;
+void NavigationEntryImpl::SetTitle(std::u16string title) {
+  title_ = std::move(title);
   cached_display_title_.clear();
 }
 
@@ -516,7 +533,7 @@ void NavigationEntryImpl::SetAppTitle(const std::u16string& app_title) {
   app_title_ = app_title;
 }
 
-const std::u16string& NavigationEntryImpl::GetAppTitle() {
+const std::optional<std::u16string>& NavigationEntryImpl::GetAppTitle() {
   return app_title_;
 }
 
@@ -841,6 +858,16 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   copy->should_skip_on_back_forward_ui_ = should_skip_on_back_forward_ui_;
   copy->initial_navigation_entry_state_ = initial_navigation_entry_state_;
 
+  if (navigation_transition_data().cache_hit_or_miss_reason() ==
+      NavigationTransitionData::CacheHitOrMissReason::kCacheHit) {
+    copy->navigation_transition_data().set_cache_hit_or_miss_reason(
+        NavigationTransitionData::CacheHitOrMissReason::
+            kCacheMissClonedNavigationEntry);
+  } else {
+    copy->navigation_transition_data().set_cache_hit_or_miss_reason(
+        navigation_transition_data().cache_hit_or_miss_reason());
+  }
+
   return copy;
 }
 
@@ -905,7 +932,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
   // Note that this is actually does not work as intended right now because
   // we're only copying the redirect URLs into the new CommitNavigationParams,
   // keeping redirect_response and redirect_infos as empty.
-  // TODO(https://crbug.com/1171225): Save redirect_response & redirect_infos in
+  // TODO(crbug.com/40166073): Save redirect_response & redirect_infos in
   // FNE and copy them too?
   std::vector<GURL> redirects;
   if (ui::PageTransitionIsNewNavigation(GetTransitionType())) {
@@ -927,10 +954,10 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
           std::nullopt,
-          // The correct storage key and session storage key will be computed
-          // before committing the navigation.
-          blink::StorageKey(), blink::StorageKey(), GetIsOverridingUserAgent(),
-          redirects, std::vector<network::mojom::URLResponseHeadPtr>(),
+          // The correct storage key will be computed before committing the
+          // navigation.
+          blink::StorageKey(), GetIsOverridingUserAgent(), redirects,
+          std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(), std::string(), original_url,
           original_method, GetCanLoadLocalResources(),
           frame_entry.page_state().ToEncodedData(), GetUniqueID(),
@@ -944,15 +971,16 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
 #if BUILDFLAG(IS_ANDROID)
           std::string(),
 #endif
-          false /* is_browser_initiated */,
+          false /* is_browser_initiated */, false /*has_ua_visual_transition*/,
           ukm::kInvalidSourceId /* document_ukm_source_id */, frame_policy,
           std::vector<std::string>() /* force_enabled_origin_trials */,
           false /* origin_agent_cluster */,
           true /* origin_agent_cluster_left_as_default */,
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
-          false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
-          -1 /* http_response_code */,
+          false /* is_cross_site_cross_browsing_context_group */,
+          false /* should_have_sticky_user_activation */,
+          nullptr /* old_page_info */, -1 /* http_response_code */,
           blink::mojom::NavigationApiHistoryEntryArrays::New(),
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           // This timestamp will be populated when the commit IPC is sent.
@@ -967,18 +995,22 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           base::flat_map<::blink::mojom::RuntimeFeature, bool>(),
           /*fenced_frame_properties=*/std::nullopt,
           /*not_restored_reasons=*/nullptr,
-          /*load_with_storage_access=*/false,
+          /*load_with_storage_access=*/
+          net::StorageAccessApiStatus::kNone,
           /*browsing_context_group_info=*/std::nullopt,
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
-          /*cookie_deprecation_label=*/std::nullopt);
+          /*cookie_deprecation_label=*/std::nullopt,
+          /*visited_link_salt=*/std::nullopt,
+          /*local_surface_id=*/std::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main
   // frame.
   bool is_for_main_frame = (root_node()->frame_entry == &frame_entry);
+  scoped_refptr<const base::RefCountedString> string = GetDataURLAsString();
   if (is_for_main_frame &&
-      NavigationControllerImpl::ValidateDataURLAsString(GetDataURLAsString())) {
-    commit_params->data_url_as_string = GetDataURLAsString()->data();
+      NavigationControllerImpl::ValidateDataURLAsString(string)) {
+    commit_params->data_url_as_string = string->as_string();
   }
 #endif
 
@@ -996,7 +1028,7 @@ void NavigationEntryImpl::ResetForCommit(FrameNavigationEntry* frame_entry) {
   set_is_renderer_initiated(false);
 
   set_should_clear_history_list(false);
-  set_frame_tree_node_id(FrameTreeNode::kFrameTreeNodeInvalidId);
+  set_frame_tree_node_id(FrameTreeNodeId());
   set_reload_type(ReloadType::NONE);
 
   if (frame_entry) {

@@ -11,7 +11,7 @@ import android.os.Bundle;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
@@ -52,7 +52,7 @@ public class TrustedWebActivitySettingsLauncher {
             Context context, String packageName, String webApkUrl) {
         // Handle the case when settings are selected but Chrome was not running.
         ChromeWebApkHost.init();
-        if (!WebApkValidator.canWebApkHandleUrl(context, packageName, webApkUrl)) {
+        if (!WebApkValidator.canWebApkHandleUrl(context, packageName, webApkUrl, 0)) {
             Log.d(TAG, "WebApk " + packageName + " can't handle url " + webApkUrl);
             return;
         }
@@ -102,15 +102,15 @@ public class TrustedWebActivitySettingsLauncher {
                 context.getString(R.string.twa_clear_data_site_selection_title));
         extras.putStringArrayList(AllSiteSettings.EXTRA_SELECTED_DOMAINS, new ArrayList<>(domains));
 
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         settingsLauncher.launchSettingsActivity(context, AllSiteSettings.class, extras);
     }
 
     /** Creates an intent to launch single website preferences for the specified {@param url}. */
     private static Intent createIntentForSingleWebsitePreferences(Context context, String url) {
         Bundle args = SingleWebsiteSettings.createFragmentArgsForSite(url);
-        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
         return settingsLauncher.createSettingsActivityIntent(
-                context, SingleWebsiteSettings.class.getName(), args);
+                context, SingleWebsiteSettings.class, args);
     }
 }

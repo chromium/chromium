@@ -8,7 +8,7 @@
       "purpose": "any monochrome"
     }
   ],
-  "start_url": "get_manifest.html",
+  "start_url": "get_manifest.html?tab_strip_fixed_home_scope.json",
   "display": "standalone",
   "display_override": [ "tabbed" ],
   "theme_color": "black",

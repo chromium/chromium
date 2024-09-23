@@ -1,0 +1,38 @@
+caption: Automatically reload authentication flow on ChromeOS
+
+default: null
+
+desc: |-
+  Sets the time interval (in minutes) used to automatically reload the user's authentication flow on their <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device. This policy is introduced to handle the expiry of some services used in authentication flows when the device is left idle for some time.
+
+  When the policy is unset or has a value of zero, the authentication flow will never be reloaded.
+
+  When the policy is set to a positive value, the authentication flow will automatically be reloaded by the set interval.
+
+  The maximum possible reload interval is one week (10080 minutes).
+
+  This policy affects both login and lockscreen authentication flows.
+
+device_only: true
+
+example_value: 15
+
+features:
+  dynamic_refresh: true
+  per_profile: false
+
+supported_on:
+- chrome_os:129-
+
+owners:
+- ayag@chromium.org
+- chromeos-commercial-identity@google.com
+
+schema:
+  maximum: 10080
+  minimum: 0
+  type: integer
+
+tags: []
+
+type: int

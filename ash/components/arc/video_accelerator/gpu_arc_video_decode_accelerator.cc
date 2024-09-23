@@ -143,21 +143,11 @@ GpuArcVideoDecodeAccelerator::~GpuArcVideoDecodeAccelerator() {
   instance_count_--;
 }
 
-void GpuArcVideoDecodeAccelerator::ProvidePictureBuffers(
-    uint32_t requested_num_of_buffers,
-    media::VideoPixelFormat format,
-    const gfx::Size& dimensions,
-    uint32_t texture_target) {
-  NOTIMPLEMENTED() << "VDA must call ProvidePictureBuffersWithVisibleRect() "
-                   << "for ARC++ video decoding";
-}
-
 void GpuArcVideoDecodeAccelerator::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     media::VideoPixelFormat format,
     const gfx::Size& dimensions,
-    const gfx::Rect& visible_rect,
-    uint32_t texture_target) {
+    const gfx::Rect& visible_rect) {
   VLOGF(2);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -400,15 +390,13 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
     // Decoded video frames are sent "quickly" (i.e. without much buffering)
     // to SurfaceFlinger, so we consider it a |low_delay| pipeline.
     vda_ = media::VdVideoDecodeAccelerator::Create(
-        base::BindRepeating(&media::VideoDecoderPipeline::Create), this,
-        vda_config, true /* low_delay */,
-        base::SequencedTaskRunner::GetCurrentDefault());
+        base::BindRepeating(
+            &media::VideoDecoderPipeline::CreateForVDAAdapterForARC),
+        this, vda_config, base::SequencedTaskRunner::GetCurrentDefault());
   } else {
     VLOGF(2) << "Using original VDA";
-    auto vda_factory = media::GpuVideoDecodeAcceleratorFactory::Create(
-        media::GpuVideoDecodeGLClient());
-    vda_ = vda_factory->CreateVDA(this, vda_config, gpu_workarounds_,
-                                  gpu_preferences_);
+    vda_ = media::GpuVideoDecodeAcceleratorFactory::CreateVDA(this, vda_config,
+                                                              gpu_preferences_);
   }
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
@@ -837,12 +825,9 @@ void GpuArcVideoDecodeAccelerator::ContinueImportBufferForPicture(
   // AssignPictureBuffers() is called. Call VDA::AssignPictureBuffers() here.
   if (awaiting_first_import_) {
     awaiting_first_import_ = false;
-    gfx::Size picture_size(gmb_handle.native_pixmap_handle.planes[0].stride,
-                           coded_size_.height());
     std::vector<media::PictureBuffer> buffers;
     for (size_t id = 0; id < output_buffer_count_; ++id) {
-      buffers.push_back(
-          media::PictureBuffer(static_cast<int32_t>(id), picture_size));
+      buffers.push_back(media::PictureBuffer(static_cast<int32_t>(id)));
     }
 
     vda_->AssignPictureBuffers(std::move(buffers));

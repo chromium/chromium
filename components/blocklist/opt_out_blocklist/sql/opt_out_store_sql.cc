@@ -28,13 +28,6 @@
 
 namespace blocklist {
 
-// When enabled, prefer to use the new recovery module to recover the
-// `OptOutStoreSQL` database. See https://crbug.com/1385500 for details.
-// This is a kill switch and is not intended to be used in a field trial.
-BASE_FEATURE(kOptOutStoreSQLUseBuiltInRecoveryIfSupported,
-             "OptOutStoreSQLUseBuiltInRecoveryIfSupported",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 // Command line switch to change the entry per host DB size.
@@ -85,25 +78,26 @@ void CreateSchema(sql::Database* db) {
       " opt_out INTEGER NOT NULL,"
       " type INTEGER NOT NULL,"
       " PRIMARY KEY(host_name, time DESC, opt_out, type))";
-  if (!db->Execute(kSqlCreateTable))
+  if (!db->Execute(kSqlCreateTable)) {
     return;
+  }
 
   static const char kSqlCreateEnabledTypeVersionTable[] =
       "CREATE TABLE IF NOT EXISTS " ENABLED_TYPES_TABLE_NAME
       " (type INTEGER NOT NULL,"
       " version INTEGER NOT NULL,"
       " PRIMARY KEY(type))";
-  if (!db->Execute(kSqlCreateEnabledTypeVersionTable))
+  if (!db->Execute(kSqlCreateEnabledTypeVersionTable)) {
     return;
+  }
 }
 
 void DatabaseErrorCallback(sql::Database* db,
                            int extended_error,
                            sql::Statement* stmt) {
   // Attempt to recover a corrupt database, if it is eligible to be recovered.
-  if (sql::BuiltInRecovery::RecoverIfPossible(
-          db, extended_error, sql::BuiltInRecovery::Strategy::kRecoverOrRaze,
-          &kOptOutStoreSQLUseBuiltInRecoveryIfSupported)) {
+  if (sql::Recovery::RecoverIfPossible(
+          db, extended_error, sql::Recovery::Strategy::kRecoverOrRaze)) {
     // Recovery was attempted. The database handle has been poisoned and the
     // error callback has been reset.
 
@@ -114,7 +108,7 @@ void DatabaseErrorCallback(sql::Database* db,
 }
 
 void InitDatabase(sql::Database* db, base::FilePath path) {
-  // TODO(crbug.com/1092101): Migrate to OptOutBlocklist and update any backend
+  // TODO(crbug.com/40134470): Migrate to OptOutBlocklist and update any backend
   // code that may depend on this tag.
   db->set_histogram_tag("OptOutBlacklist");
 
@@ -313,8 +307,9 @@ void LoadBlockListSync(sql::Database* db,
                        std::unique_ptr<BlocklistData> blocklist_data,
                        scoped_refptr<base::SingleThreadTaskRunner> runner,
                        LoadBlockListCallback callback) {
-  if (!db->is_open())
+  if (!db->is_open()) {
     InitDatabase(db, path);
+  }
 
   LoadBlockListFromDataBase(db, std::move(blocklist_data), runner,
                             std::move(callback));
@@ -340,8 +335,9 @@ void AddEntrySync(bool opt_out,
                   base::Time now,
                   sql::Database* db) {
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return;
+  }
   AddEntryToDataBase(db, opt_out, host_name, type, now);
   MaybeEvictHostEntryFromDataBase(db, host_name);
   transaction.Commit();

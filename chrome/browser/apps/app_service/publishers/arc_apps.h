@@ -127,6 +127,8 @@ class ArcApps : public KeyedService,
 
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
+  void BlockApp(const std::string& app_id) override;
+  void UnblockApp(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
   void UpdateAppSize(const std::string& app_id) override;
   void ExecuteContextMenuCommand(const std::string& app_id,
@@ -165,6 +167,7 @@ class ArcApps : public KeyedService,
   void OnInstallationFinished(const std::string& package_name,
                               bool success,
                               bool is_launchable_app) override;
+  void OnAppConnectionClosed() override;
 
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(
@@ -233,6 +236,11 @@ class ArcApps : public KeyedService,
   bool IsAppSuspended(const std::string& app_id,
                       const ArcAppListPrefs::AppInfo& app_info);
 
+  // Calculates the readiness state. Use this function for installed apps to be
+  // consistent.
+  Readiness GetReadiness(const std::string& app_id,
+                         const ArcAppListPrefs::AppInfo& app_info);
+
   const raw_ptr<Profile> profile_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;
 
@@ -276,6 +284,8 @@ class ArcApps : public KeyedService,
   bool settings_app_is_disabled_ = false;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
+
+  std::set<std::string> blocked_app_ids_;
 
   base::WeakPtrFactory<ArcApps> weak_ptr_factory_{this};
 };

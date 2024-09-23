@@ -8,23 +8,31 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/sync/base/features.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
 // static
 CredentialProviderService* CredentialProviderServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+CredentialProviderService* CredentialProviderServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<CredentialProviderService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 // static
@@ -51,30 +59,33 @@ CredentialProviderServiceFactory::~CredentialProviderServiceFactory() = default;
 std::unique_ptr<KeyedService>
 CredentialProviderServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store =
-          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+          IOSChromeProfilePasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::IMPLICIT_ACCESS);
   scoped_refptr<password_manager::PasswordStoreInterface>
       account_password_store =
-          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::IMPLICIT_ACCESS);
+  webauthn::PasskeyModel* passkeyModel =
+      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
+          ? IOSPasskeyModelFactory::GetForProfile(profile)
+          : nullptr;
   ArchivableCredentialStore* credential_store =
       [[ArchivableCredentialStore alloc]
           initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
-  password_manager::AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+      SyncServiceFactory::GetForProfile(profile);
+  affiliations::AffiliationService* affiliation_service =
+      IOSChromeAffiliationServiceFactory::GetForProfile(profile);
   FaviconLoader* favicon_loader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
   return std::make_unique<CredentialProviderService>(
-      browser_state->GetPrefs(), profile_password_store, account_password_store,
-      credential_store, identity_manager, sync_service, affiliation_service,
-      favicon_loader);
+      profile->GetPrefs(), profile_password_store, account_password_store,
+      passkeyModel, credential_store, identity_manager, sync_service,
+      affiliation_service, favicon_loader);
 }

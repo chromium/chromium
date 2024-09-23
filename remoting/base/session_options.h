@@ -5,9 +5,9 @@
 #ifndef REMOTING_BASE_SESSION_OPTIONS_H_
 #define REMOTING_BASE_SESSION_OPTIONS_H_
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/containers/flat_map.h"
 
 namespace remoting {

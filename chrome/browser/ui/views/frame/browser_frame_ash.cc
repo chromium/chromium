@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_restore_info.h"
@@ -31,6 +31,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -126,7 +127,7 @@ bool BrowserFrameAsh::ShouldSaveWindowPlacement() const {
 
 void BrowserFrameAsh::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   aura::Window* window = GetWidget()->GetNativeWindow();
   gfx::Rect* override_bounds =
       window->GetProperty(ash::kRestoreBoundsOverrideKey);
@@ -160,24 +161,25 @@ void BrowserFrameAsh::GetWindowPlacement(
 
   // Session restore might be unable to correctly restore other states.
   // For the record, https://crbug.com/396272
-  if (*show_state != ui::SHOW_STATE_MAXIMIZED &&
-      *show_state != ui::SHOW_STATE_MINIMIZED) {
-    *show_state = ui::SHOW_STATE_NORMAL;
+  if (*show_state != ui::mojom::WindowShowState::kMaximized &&
+      *show_state != ui::mojom::WindowShowState::kMinimized) {
+    *show_state = ui::mojom::WindowShowState::kNormal;
   }
 }
 
 content::KeyboardEventProcessingResult BrowserFrameAsh::PreHandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return content::KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
 bool BrowserFrameAsh::HandleKeyboardEvent(
-    const content::NativeWebKeyboardEvent& event) {
+    const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 
 views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.native_widget = this;
   params.context = ash::Shell::GetPrimaryRootWindow();
 
@@ -202,13 +204,12 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
   bool is_app = browser->is_type_app() || browser->is_type_app_popup();
   web_app::AppBrowserController* controller = browser->app_controller();
   if (controller && controller->system_app()) {
-    params.init_properties_container.SetProperty(
-        aura::client::kAppType, static_cast<int>(ash::AppType::SYSTEM_APP));
+    params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
+                                                 chromeos::AppType::SYSTEM_APP);
   } else {
     params.init_properties_container.SetProperty(
-        aura::client::kAppType,
-        static_cast<int>(is_app ? ash::AppType::CHROME_APP
-                                : ash::AppType::BROWSER));
+        chromeos::kAppTypeKey,
+        is_app ? chromeos::AppType::CHROME_APP : chromeos::AppType::BROWSER);
   }
 
   app_restore::ModifyWidgetParams(restore_id, &params);

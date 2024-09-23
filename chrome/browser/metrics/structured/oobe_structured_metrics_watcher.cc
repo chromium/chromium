@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/structured/oobe_structured_metrics_watcher.h"
+
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "components/metrics/structured/structured_metrics_service.h"
 

@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/intents/user_activity_browser_agent.h"
 
-#import <memory>
-
 #import <CoreSpotlight/CoreSpotlight.h>
+
+#import <memory>
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -442,7 +442,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBrowsingWeb) {
       initWithActivityType:NSUserActivityTypeBrowsingWeb];
   // This URL is passed to application by iOS but is not used in this part
   // of application logic.
-  NSURL* nsurl = [NSURL URLWithString:@"http://goo.gl/foo/bar"];
+  NSURL* nsurl = [NSURL URLWithString:@"http://google.com/foo/bar"];
   [user_activity setWebpageURL:nsurl];
 
   BOOL result =
@@ -669,7 +669,7 @@ TEST_F(UserActivityBrowserAgentTest, HandleStartupParamsWithExternalFile) {
 
 // Tests that performActionForShortcutItem set startupParameters accordingly
 // to the shortcut used
-// TODO(crbug.com/1172529): The test fails on device.
+// TODO(crbug.com/40166681): The test fails on device.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_PerformActionForShortcutItemWithRealShortcut \
   PerformActionForShortcutItemWithRealShortcut

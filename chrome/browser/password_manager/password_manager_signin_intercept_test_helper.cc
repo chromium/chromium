@@ -46,8 +46,7 @@ constexpr char kGaiaId[] = "test_gaia_id";
 PasswordManagerSigninInterceptTestHelper::
     PasswordManagerSigninInterceptTestHelper(
         net::test_server::EmbeddedTestServer* https_test_server)
-    : https_test_server_(https_test_server) {
-}
+    : https_test_server_(https_test_server) {}
 
 PasswordManagerSigninInterceptTestHelper::
     ~PasswordManagerSigninInterceptTestHelper() = default;

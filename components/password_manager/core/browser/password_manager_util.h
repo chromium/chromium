@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -42,6 +44,10 @@ enum class GetLoginMatchType {
   kAffiliated,
   // eTLD + 1 match.
   kPSL,
+  // Singon realm is grouped with the requesting page URL as determined by the
+  // `AffiliationService`. This relation to the requesting page is weaker than
+  // `kAffiliated`.
+  kGrouped,
 };
 
 // Update |credential| to reflect usage.
@@ -78,33 +84,29 @@ bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client);
 // example if the signon_realm is "https://www.google.com/", after
 // excluding protocol it becomes "www.google.com/".
 // This assumes that the |form|'s host is a substring of the signon_realm.
-base::StringPiece GetSignonRealmWithProtocolExcluded(
+std::string_view GetSignonRealmWithProtocolExcluded(
     const password_manager::PasswordForm& form);
 
 // For credentials returned from PasswordStore::GetLogins, specifies the type of
 // the match for the requested page.
 GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form);
 
-// Given all non-blocklisted |non_federated_matches|, finds and populates
-// |non_federated_same_scheme|, |best_matches| accordingly.
-// For comparing credentials the following rule is used: non-psl match is better
-// than psl match, most recently used match is better than other matches. In
-// case of tie, an arbitrary credential from the tied ones is chosen for
-// |best_matches|.
-void FindBestMatches(
-    const std::vector<raw_ptr<const password_manager::PasswordForm,
-                              VectorExperimental>>& non_federated_matches,
-    password_manager::PasswordForm::Scheme scheme,
-    std::vector<raw_ptr<const password_manager::PasswordForm,
-                        VectorExperimental>>* non_federated_same_scheme,
-    std::vector<raw_ptr<const password_manager::PasswordForm,
-                        VectorExperimental>>* best_matches);
+// Given all non-blocklisted |matches| returns best matches as the result of the
+// function. For comparing credentials the following rule is used:
+//   - non-psl match is better than psl match,
+//   - most recently used match is better than other matches.
+//   - In case of tie, an arbitrary credential from the tied ones is chosen for
+//     best matches.
+// TODO(crbug.com/343879843) FindBestMatches should be part of FormFetcherImpl
+// implementation detail as it has a strong coupling to form fetcher's internal
+// state.
+std::vector<password_manager::PasswordForm> FindBestMatches(
+    base::span<password_manager::PasswordForm> matches);
 
 // Returns a form with the given |username_value| from |forms|, or nullptr if
 // none exists. If multiple matches exist, returns the first one.
 const password_manager::PasswordForm* FindFormByUsername(
-    const std::vector<raw_ptr<const password_manager::PasswordForm,
-                              VectorExperimental>>& forms,
+    base::span<const password_manager::PasswordForm> forms,
     const std::u16string& username_value);
 
 // If the user submits a form, they may have used existing credentials, new
@@ -131,20 +133,13 @@ const password_manager::PasswordForm* GetMatchForUpdating(
 password_manager::PasswordForm MakeNormalizedBlocklistedForm(
     password_manager::PasswordFormDigest digest);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-bool IsBiometricAuthenticationForFillingEnabled(
-    password_manager::PasswordManagerClient* client);
-
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 bool ShouldBiometricAuthenticationForFillingToggleBeVisible(
     const PrefService* local_state);
 
 bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
     password_manager::PasswordManagerClient* client);
 #endif
-
-// Helper which checks if biometric authentication is available.
-bool CanUseBiometricAuth(device_reauth::DeviceAuthenticator* authenticator,
-                         password_manager::PasswordManagerClient* client);
 
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);
@@ -153,7 +148,7 @@ GURL StripAuthAndParams(const GURL& gurl);
 // by default. For ip-addresses, scheme "http://" is used.
 GURL ConstructGURLWithScheme(const std::string& url);
 
-// TODO(crbug.com/1261752): Deduplicate GetSignonRealm implementations.
+// TODO(crbug.com/40202333): Deduplicate GetSignonRealm implementations.
 // Returns the value of PasswordForm::signon_realm for an HTML form with the
 // origin |url|.
 std::string GetSignonRealm(const GURL& url);
@@ -161,15 +156,17 @@ std::string GetSignonRealm(const GURL& url);
 #if BUILDFLAG(IS_IOS)
 // Returns a boolean indicating whether the user had enabled the credential
 // provider in their iOS settings at startup.
-bool IsCredentialProviderEnabledOnStartup(const PrefService* prefs);
+bool IsCredentialProviderEnabledOnStartup(const PrefService* local_state);
 
 // Sets the boolean indicating whether the user had enabled the credential
 // provider in their iOS settings at startup.
-void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled);
+void SetCredentialProviderEnabledOnStartup(PrefService* local_state,
+                                           bool enabled);
 #endif
 
 // Contains all special symbols considered for password-generation.
-inline constexpr char kSpecialSymbols[] = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+inline constexpr std::u16string_view kSpecialSymbols =
+    u"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 // Helper functions for character type classification. The built-in functions
 // depend on locale, platform and other stuff. To make the output more

@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/protocol/sync.pb.h"
 
@@ -22,7 +22,7 @@ class CommitRequestEvent : public ProtocolEvent {
  public:
   CommitRequestEvent(base::Time timestamp,
                      size_t num_items,
-                     ModelTypeSet contributing_types,
+                     DataTypeSet contributing_types,
                      const sync_pb::ClientToServerMessage& request);
 
   CommitRequestEvent(const CommitRequestEvent&) = delete;
@@ -39,7 +39,7 @@ class CommitRequestEvent : public ProtocolEvent {
   base::Value::Dict GetProtoMessage(bool include_specifics) const override;
   const base::Time timestamp_;
   const size_t num_items_;
-  const ModelTypeSet contributing_types_;
+  const DataTypeSet contributing_types_;
   const sync_pb::ClientToServerMessage request_;
 };
 

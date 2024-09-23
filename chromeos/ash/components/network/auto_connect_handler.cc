@@ -235,8 +235,13 @@ void AutoConnectHandler::NotifyAutoConnectInitiatedForTest(
 void AutoConnectHandler::NotifyAutoConnectInitiated(int auto_connect_reasons) {
   NET_LOG(EVENT) << "AutoConnectInitiated ["
                  << AutoConnectReasonsToString(auto_connect_reasons_) << "]";
-  for (auto& observer : observer_list_)
+  for (auto& observer : observer_list_) {
     observer.OnAutoConnectedInitiated(auto_connect_reasons);
+  }
+
+  if (network_connection_handler_) {
+    network_connection_handler_->OnAutoConnectedInitiated(auto_connect_reasons);
+  }
 }
 
 void AutoConnectHandler::RequestBestConnection(
@@ -420,7 +425,7 @@ void AutoConnectHandler::DisableAutoconnectForNetwork(
     autoconnect_path = base::StrCat(
         {::onc::network_config::kCellular, ".", ::onc::cellular::kAutoConnect});
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   properties.SetByDottedPath(autoconnect_path, false);
   managed_configuration_handler_->SetProperties(

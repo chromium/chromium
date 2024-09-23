@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '../../testing/test_import_manager.js';
+
 import {Macro, RunMacroResult} from './macro.js';
 import {MacroName} from './macro_names.js';
 
@@ -19,3 +21,5 @@ export class ToggleDictationMacro extends Macro {
     return this.createRunMacroResult_(/*isSuccess=*/ true);
   }
 }
+
+TestImportManager.exportForTesting(ToggleDictationMacro);

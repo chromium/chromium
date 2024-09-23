@@ -4,6 +4,7 @@
 
 #include "components/supervised_user/core/browser/fetcher_config.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -150,7 +151,7 @@ std::string FetcherConfig::GetHttpMethod() const {
     case Method::kPost:
       return net::HttpRequestHeaders::kPostMethod;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -168,6 +169,7 @@ std::string FetcherConfig::ServicePath(const PathArgs& args) const {
   }
 
   const PathTemplate path_template = absl::get<PathTemplate>(service_path);
+  CHECK(!path_template.value().empty()) << "Service path is required";
 
   // Implementation detail: Placeholders are not substituted, but used to split
   // template and put in between as many args as possible. Outstanding args are
@@ -191,4 +193,10 @@ std::string FetcherConfig::ServicePath(const PathArgs& args) const {
   return base::StrCat(target);
 }
 
+std::unique_ptr<net::BackoffEntry> FetcherConfig::BackoffEntry() const {
+  if (!backoff_policy.has_value()) {
+    return nullptr;
+  }
+  return std::make_unique<net::BackoffEntry>(&backoff_policy.value());
+}
 }  // namespace supervised_user

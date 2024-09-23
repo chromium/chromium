@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -165,7 +166,7 @@ class FirstPartySetsHandlerImplTest : public ::testing::Test {
     CHECK(PathExists(scoped_dir_.GetPath()));
   }
 
-  base::File WritePublicSetsFile(base::StringPiece content) {
+  base::File WritePublicSetsFile(std::string_view content) {
     base::FilePath path =
         scoped_dir_.GetPath().Append(FILE_PATH_LITERAL("sets_file.json"));
     CHECK(base::WriteFile(path, content));
@@ -690,7 +691,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       net::FirstPartySetsContextConfig(),
       [&](const net::SchemefulSite& site,
           const net::FirstPartySetEntry& entry) {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
         return true;
       }));
 

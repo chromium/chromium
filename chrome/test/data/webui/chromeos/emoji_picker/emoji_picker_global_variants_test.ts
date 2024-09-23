@@ -35,45 +35,57 @@ suite('emoji-picker-global-variants', () => {
 
   test('tone should sync from group 1 to group 2', async () => {
     const thumbsUp = await expectEmojiButton('👍');
+
     await clickVariant('👍🏿', thumbsUp);
     await reload();
+
     await expectEmojiButtons(['👍🏿', '🤷🏿']);
   });
 
   test('gender should sync from group 3 to group 2', async () => {
     const genie = await expectEmojiButton('🧞');
+
     await clickVariant('🧞‍♀', genie);
     await reload();
+
     await expectEmojiButtons(['🧞‍♀', '🤷‍♀']);
   });
 
   test('tone & gender should sync from groups 1 & 3 to group 2', async () => {
     const thumbsUp = await expectEmojiButton('👍');
+
     const genie = await expectEmojiButton('🧞');
     await clickVariant('👍🏿', thumbsUp);
     await clickVariant('🧞‍♀', genie);
     await reload();
+
     await expectEmojiButton('🤷🏿‍♀');
   });
 
   test('tone & gender should sync from groups 2 to group 1 & 3', async () => {
     const shrug = await expectEmojiButton('🤷');
+
     await clickVariant('🤷🏿‍♀', shrug);
     await reload();
+
     await expectEmojiButtons(['🤷🏿‍♀', '👍🏿', '🧞‍♀']);
   });
 
   test('tone preference should be individual for group 4', async () => {
     const handshake = await expectEmojiButton('🤝');
+
     await clickVariant('🫱🏻‍🫲🏿', handshake);
     await reload();
+
     await expectEmojiButtons(['🫱🏻‍🫲🏿', '👬', '👍', '🤷']);
   });
 
   test('tone preference should be individual for group 5', async () => {
     const holdingHands = await expectEmojiButton('👬');
+
     await clickVariant('👨🏿‍🤝‍👨🏻', holdingHands);
     await reload();
+
     await expectEmojiButtons(['👨🏿‍🤝‍👨🏻', '🤝', '👍', '🤷']);
   });
 
@@ -81,8 +93,10 @@ suite('emoji-picker-global-variants', () => {
       'tone preference for multi-part emojis with a single tone codepoint should be individual',
       async () => {
         const handshake = await expectEmojiButton('🤝');
+
         await clickVariant('🤝🏿', handshake);
         await reload();
+
         await expectEmojiButtons(['🤝🏿', '👍']);
       });
 
@@ -91,9 +105,11 @@ suite('emoji-picker-global-variants', () => {
       async () => {
         const shrug = await expectEmojiButton('🤷');
         const thumbsUp = await expectEmojiButton('👍');
+
         await clickVariant('🤷🏿‍♀', shrug);
         await clickVariant('👍', thumbsUp);
         await reload();
+
         await expectEmojiButtons(['🤷‍♀', '👍']);
       });
 
@@ -102,9 +118,11 @@ suite('emoji-picker-global-variants', () => {
       async () => {
         const shrug = await expectEmojiButton('🤷');
         const genie = await expectEmojiButton('🧞');
+
         await clickVariant('🤷🏿‍♀', shrug);
         await clickVariant('🧞', genie);
         await reload();
+
         await expectEmojiButtons(['🤷🏿', '🧞']);
       });
 
@@ -115,8 +133,10 @@ suite('emoji-picker-global-variants', () => {
         shrug.click();
         const historyEmoji =
             await expectEmojiButton('🤷', () => findGroup('emoji-history'));
+
         await clickVariant('🤷🏿‍♀', historyEmoji);
         await reload();
+
         await expectEmojiButtons(['🤷🏿‍♀', '👍🏿', '🧞‍♀']);
       });
 
@@ -126,25 +146,31 @@ suite('emoji-picker-global-variants', () => {
         const shrug = await expectEmojiButton('🤷');
         await clickVariant('🤷🏿‍♀', shrug);
         await clickVariant('🤷🏻‍♂', shrug);
+
         const historyEmoji = await expectEmojiButton(
             '🤷🏿‍♀', () => findGroup('emoji-history'));
         historyEmoji.click();
         await reload();
+
         await expectEmojiButtons(['🤷🏻‍♂', '👍🏻', '🧞‍♂']);
       });
 
   test('preferences should not be applied in emoji history', async () => {
     const shrug = await expectEmojiButton('🤷');
+
     await clickVariant('🤷🏻‍♂', shrug);
     await clickVariant('🤷🏿‍♀', shrug);
+
     await expectEmojiButtons(
         ['🤷🏿‍♀', '🤷🏻‍♂'], () => findGroup('emoji-history'));
   });
 
   test('preferences should be applied in other subcategories', async () => {
     const shrug = await expectEmojiButton('🤷');
+
     await clickVariant('🤷🏿‍♀', shrug);
     await reload();
+
     await expectEmojiButton('🧍🏿‍♀', () => findGroup('1'));
   });
 });

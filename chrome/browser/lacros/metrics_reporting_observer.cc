@@ -17,9 +17,6 @@
 
 namespace {
 
-// Time delay between Lacros startup and metrics processing state.
-constexpr base::TimeDelta kLacrosStartupMetricsUpdateDelay = base::Seconds(5);
-
 // Called within Lacros after startup to delay the metrics enablement change as
 // turning off the metric might be a fluke, but disabling would cause the
 // entropy value to change, which will result in a metrics package loss.
@@ -100,13 +97,7 @@ void MetricsReportingObserver::InitSettingsFromAsh() {
     return;
   }
 
-  // This is a speculative fix to address crbug/1478419:
-  // Prevent that a quick state fluctuation at boot time can change the metrics
-  // state as it would erase the entropy value which would cause all metrics to
-  // be dropped server side.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&ChangeMetricsReportingStateOnLacrosStart),
-      kLacrosStartupMetricsUpdateDelay);
+  ChangeMetricsReportingStateOnLacrosStart();
 }
 
 void MetricsReportingObserver::OnMetricsReportingChanged(

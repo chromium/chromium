@@ -2,39 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import './button_label.js';
 
-import {getTemplate} from './hover_button.html.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-export class HoverButtonElement extends PolymerElement {
+import {getCss} from './hover_button.css.js';
+import {getHtml} from './hover_button.html.js';
+
+export interface HoverButtonElement {
+  $: {
+    hoverButton: HTMLDivElement,
+  };
+}
+
+export class HoverButtonElement extends CrLitElement {
   static get is() {
     return 'customize-chrome-hover-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      label: {
-        reflectToAttribute: true,
-        type: String,
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      labelDescription: {
-        reflectToAttribute: true,
-        type: String,
-      },
+  static override get properties() {
+    return {
+      label: {type: String},
+      labelDescription: {type: String},
     };
   }
 
-  label: string;
+  label: string = '';
   labelDescription: string|null = null;
 
   constructor() {
     super();
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
+  }
+
+  override focus() {
+    this.$.hoverButton.focus();
   }
 
   private onKeyDown_(e: KeyboardEvent) {

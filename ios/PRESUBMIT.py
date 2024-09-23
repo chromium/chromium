@@ -12,7 +12,8 @@ import os
 
 NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
-BUG_PATTERN = r'(crbug\.com|b)/\d+$'
+BUG_PATTERN = r'^(crbug\.com|b)/\d+$'
+DEPRECATED_BUG_PATTERN = r'^b/\d+$'
 INCLUDE_PATTERN = r'^#include'
 PIPE_IN_COMMENT_PATTERN = r'//.*[^|]\|(?!\|)'
 IOS_PACKAGE_PATTERN = r'^ios'
@@ -28,11 +29,19 @@ def IsSubListOf(needle, hay):
 
 
 def _CheckNullabilityAnnotations(input_api, output_api):
-    """ Checks whether there are nullability annotations in ios code."""
+    """ Checks whether there are nullability annotations in ios code.
+
+    They are accepted in ios/web_view/public since it tries to mimic
+    the platform library but not anywhere else.
+    """
     nullability_regex = input_api.re.compile(NULLABILITY_PATTERN)
 
     errors = []
     for f in input_api.AffectedFiles():
+        if f.LocalPath().startswith('ios/web_view/public/'):
+            # ios/web_view/public tries to mimic an existing API that
+            # might have nullability in it and that is acceptable.
+            continue
         for line_num, line in f.ChangedContents():
             if nullability_regex.search(line):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
@@ -40,35 +49,56 @@ def _CheckNullabilityAnnotations(input_api, output_api):
         return []
 
     plural_suffix = '' if len(errors) == 1 else 's'
-    error_message = ('Found Nullability annotation%(plural)s. '
+    warning_message = ('Found Nullability annotation%(plural)s. '
                      'Prefer DCHECKs in ios code to check for nullness:' % {
                          'plural': plural_suffix
                      })
 
-    return [output_api.PresubmitPromptWarning(error_message, items=errors)]
+    return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
 
 def _CheckBugInToDo(input_api, output_api):
     """ Checks whether TODOs in ios code are identified by a bug number."""
     errors = []
+    warnings = []
     for f in input_api.AffectedFiles():
         for line_num, line in f.ChangedContents():
             if _HasToDoWithNoBug(input_api, line):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
-    if not errors:
+            if _HasToDoWithDeprecatedBug(input_api, line):
+                warnings.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors and not warnings:
         return []
 
-    plural_suffix = '' if len(errors) == 1 else 's'
-    error_message = '\n'.join([
-        'Found TO'
-        'DO%(plural)s without bug number%(plural)s (expected format '
-        'is \"TO'
-        'DO(crbug.com/######)\":' % {
-            'plural': plural_suffix
-        }
-    ] + errors) + '\n'
+    output = []
+    if errors:
+      singular_article = 'a ' if len(errors) == 1 else ''
+      plural_suffix = '' if len(errors) == 1 else 's'
+      error_message = '\n'.join([
+          'Found TO'
+          'DO%(plural)s without %(a)sbug number%(plural)s (expected format '
+          'is \"TO'
+          'DO(crbug.com/######)\"):' % {
+              'plural': plural_suffix,
+              'a' : singular_article
+          }
+      ] + errors) + '\n'
+      output.append(output_api.PresubmitError(error_message))
 
-    return [output_api.PresubmitError(error_message)]
+    if warnings:
+      singular_article = 'a ' if len(warnings) == 1 else ''
+      plural_suffix = '' if len(warnings) == 1 else 's'
+      warning_message = '\n'.join([
+          'Found TO'
+          'DO%(plural)s with %(a)sdeprecated bug link%(plural)s (found '
+          '"b/#####\", expected format is \"crbug.com/######"):' % {
+              'plural': plural_suffix,
+              'a' : singular_article
+          }
+      ] + warnings) + '\n'
+      output.append(output_api.PresubmitPromptWarning(warning_message))
+
+    return output
 
 
 def _CheckHasNoIncludeDirectives(input_api, output_api):
@@ -119,14 +149,71 @@ def _CheckHasNoPipeInComment(input_api, output_api):
                 errors.append('%s:%s' % (f.LocalPath(), line_num))
     if not errors:
         return []
-    error_message = '\n'.join([
+    warning_message = '\n'.join([
         'Please use backticks "`" instead of pipes "|" if you need to quote'
         ' variable names and symbols in comments.\n'
         'Found potential uses of pipes in:'
     ] + errors) + '\n'
 
-    return [output_api.PresubmitPromptWarning(error_message)]
+    return [output_api.PresubmitPromptWarning(warning_message)]
 
+def _CheckHasNoChromeBrowserStateForwardDeclaration(input_api, output_api):
+    """ Checks that header files don't forward-declare ChromeBrowserState."""
+    errors = []
+    for f in input_api.AffectedFiles():
+        for line_num, line in f.ChangedContents():
+            if line == 'class ChromeBrowserState;':
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+    if not errors:
+        return []
+
+    plural_suffix = '' if len(errors) == 1 else 's'
+    error_message = '\n'.join([
+         'Found forward-declaration%(plural)s of ChromeBrowserState. Please'
+         ' instead import this header:'
+         ' ios/chrome/browser/shared/model/profile/profile_ios_forward.h'
+         '\n\nAffected file%(plural)s:' % {
+            'plural': plural_suffix,
+          }
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitError(error_message)]
+
+def _CheckCanImproveTestUsingExpectNSEQ(input_api, output_api):
+    """ Checks that test files use EXPECT_NSEQ when possible."""
+    errors = []
+    # Substrings that should not be used together with EXPECT_TRUE or
+    # EXPECT_FALSE in tests.
+    wrong_patterns = ["isEqualToString:", "isEqualToData:", "isEqualToArray:"]
+    for f in input_api.AffectedFiles():
+        if not '_unittest.' in f.LocalPath():
+          continue
+        for line_num, line in f.ChangedContents():
+            if line.startswith(("EXPECT_TRUE", "EXPECT_FALSE")):
+              # Condition is in one line.
+              if any(x in line for x in wrong_patterns):
+                errors.append('%s:%s' % (f.LocalPath(), line_num))
+              # Condition is split on multiple lines.
+              elif not line.endswith(";"):
+                # Check this is not the last line.
+                if line_num < len(f.NewContents()):
+                  next_line = f.NewContents()[line_num]
+                  if any(x in next_line for x in wrong_patterns):
+                    errors.append('%s:%s' % (f.LocalPath(), line_num))
+
+    if not errors:
+        return []
+
+    plural_suffix = '' if len(errors) == 1 else 's'
+    warning_message = '\n'.join([
+         'Found possible improvement in unittest. Prefer using'
+         ' EXPECT_NSEQ() or EXPECT_NSNE() when possible.'
+         '\n\nAffected file%(plural)s:' % {
+            'plural': plural_suffix,
+          }
+    ] + errors) + '\n'
+
+    return [output_api.PresubmitPromptWarning(warning_message)]
 
 def _IsInIosPackage(input_api, path):
     """ Returns True if path is within ios package"""
@@ -150,7 +237,18 @@ def _HasToDoWithNoBug(input_api, line):
     todo_match = todo_regex.search(line)
     if not todo_match:
         return False
+
     return not bug_regex.match(todo_match.group(1))
+
+def _HasToDoWithDeprecatedBug(input_api, line):
+    """ Returns True if TODO is identified by a deprecated bug number format."""
+    todo_regex = input_api.re.compile(TODO_PATTERN)
+    deprecated_bug_regex = input_api.re.compile(DEPRECATED_BUG_PATTERN)
+
+    todo_match = todo_regex.search(line)
+    if not todo_match:
+        return False
+    return deprecated_bug_regex.match(todo_match.group(1))
 
 def _CheckHasNoBoxedBOOL(input_api, output_api):
     """ Checks that there are no @(YES) or @(NO)."""
@@ -165,12 +263,12 @@ def _CheckHasNoBoxedBOOL(input_api, output_api):
         return []
 
     plural_suffix = '' if len(errors) == 1 else 's'
-    error_message = ('Found boxed BOOL%(plural)s. '
+    warning_message = ('Found boxed BOOL%(plural)s. '
                      'Prefer @YES or @NO in ios code:' % {
                          'plural': plural_suffix
                      })
 
-    return [output_api.PresubmitPromptWarning(error_message, items=errors)]
+    return [output_api.PresubmitPromptWarning(warning_message, items=errors)]
 
 def CheckChangeOnUpload(input_api, output_api):
     results = []
@@ -179,4 +277,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckHasNoIncludeDirectives(input_api, output_api))
     results.extend(_CheckHasNoPipeInComment(input_api, output_api))
     results.extend(_CheckHasNoBoxedBOOL(input_api, output_api))
+    results.extend(_CheckHasNoChromeBrowserStateForwardDeclaration(input_api,
+        output_api))
+    results.extend(_CheckCanImproveTestUsingExpectNSEQ(input_api, output_api))
     return results

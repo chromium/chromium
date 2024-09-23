@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/parsers/vp8_parser.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
-#include "media/filters/ivf_parser.h"
-#include "media/parsers/vp8_parser.h"
+#include "media/parsers/ivf_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

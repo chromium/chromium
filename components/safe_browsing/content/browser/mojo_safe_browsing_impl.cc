@@ -16,8 +16,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -43,32 +44,6 @@ content::WebContents* GetWebContentsFromToken(
   return content::WebContents::FromRenderFrameHost(render_frame_host);
 }
 
-// This class wraps a callback for checking URL, and runs it on destruction,
-// if it hasn't been run yet.
-class CheckUrlCallbackWrapper {
- public:
-  using Callback = base::OnceCallback<
-      void(mojo::PendingReceiver<mojom::UrlCheckNotifier>, bool, bool)>;
-
-  explicit CheckUrlCallbackWrapper(Callback callback)
-      : callback_(std::move(callback)) {}
-  ~CheckUrlCallbackWrapper() {
-    if (callback_) {
-      Run(mojo::NullReceiver(), true, false);
-    }
-  }
-
-  void Run(mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
-           bool proceed,
-           bool showed_interstitial) {
-    std::move(callback_).Run(std::move(slow_check_notifier), proceed,
-                             showed_interstitial);
-  }
-
- private:
-  Callback callback_;
-};
-
 }  // namespace
 
 MojoSafeBrowsingImpl::MojoSafeBrowsingImpl(
@@ -85,23 +60,16 @@ MojoSafeBrowsingImpl::MojoSafeBrowsingImpl(
 }
 
 MojoSafeBrowsingImpl::~MojoSafeBrowsingImpl() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 // static
 void MojoSafeBrowsingImpl::MaybeCreate(
     int render_process_id,
-    base::WeakPtr<content::ResourceContext> resource_context,
     const base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>&
         delegate_getter,
     mojo::PendingReceiver<mojom::SafeBrowsing> receiver) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   scoped_refptr<UrlCheckerDelegate> delegate = delegate_getter.Run();
 
@@ -109,22 +77,11 @@ void MojoSafeBrowsingImpl::MaybeCreate(
     return;
   }
 
-  // MojoSafeBrowsingImpl is either a UserData on ResourceContext or
-  // BrowserContext depending on which thread safe browsing runs on.
   base::SupportsUserData* user_data;
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(render_process_id);
-    DCHECK(rph);
-    user_data = rph->GetBrowserContext();
-  } else {
-    if (!resource_context) {
-      // The ResourceContext was deleted in between the hop from the UI thread
-      // to the IO thread.
-      return;
-    }
-    user_data = resource_context.get();
-  }
+  content::RenderProcessHost* rph =
+      content::RenderProcessHost::FromID(render_process_id);
+  DCHECK(rph);
+  user_data = rph->GetBrowserContext();
 
   std::unique_ptr<MojoSafeBrowsingImpl> impl(new MojoSafeBrowsingImpl(
       std::move(delegate), render_process_id, user_data));
@@ -144,25 +101,21 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     const std::string& method,
     const net::HttpRequestHeaders& headers,
     int32_t load_flags,
-    network::mojom::RequestDestination request_destination,
     bool has_user_gesture,
     bool originated_from_service_worker,
     CreateCheckerAndCheckCallback callback) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::optional<base::UnguessableToken> sb_frame_token;
   if (frame_token) {
     sb_frame_token = frame_token->value();
   }
-  if (delegate_->ShouldSkipRequestCheck(
-          url, content::RenderFrameHost::kNoFrameTreeNodeId, render_process_id_,
-          sb_frame_token, originated_from_service_worker)) {
+  if (delegate_->ShouldSkipRequestCheck(url, content::FrameTreeNodeId().value(),
+                                        render_process_id_, sb_frame_token,
+                                        originated_from_service_worker)) {
     // Ensure that we don't destroy an uncalled CreateCheckerAndCheckCallback
     if (callback) {
-      std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
+      std::move(callback).Run(true /* proceed */,
                               false /* showed_interstitial */);
     }
 
@@ -178,12 +131,11 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
   // hash-prefix real-time checks to support non-main frames, we will need to
   // provide the hash_realtime_service_on_ui here.
   auto checker_impl = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-      headers, static_cast<int>(load_flags), request_destination,
-      has_user_gesture, delegate_,
+      headers, static_cast<int>(load_flags), has_user_gesture, delegate_,
       base::BindRepeating(&GetWebContentsFromToken, render_process_id_,
                           frame_token),
       /*weak_web_state=*/nullptr, render_process_id_, sb_frame_token,
-      content::RenderFrameHost::kNoFrameTreeNodeId,
+      content::FrameTreeNodeId().value(),
       /*navigation_id=*/std::nullopt,
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
@@ -193,14 +145,14 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*hash_realtime_service_on_ui=*/nullptr,
       /*hash_realtime_selection=*/
       hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*is_async_check=*/false);
+      /*is_async_check=*/false, /*check_allowlist_before_hash_database=*/false,
+      SessionID::InvalidValue());
   auto weak_impl = checker_impl->WeakPtr();
 
-  checker_impl->CheckUrl(
-      url, method,
-      base::BindOnce(
-          &CheckUrlCallbackWrapper::Run,
-          base::Owned(new CheckUrlCallbackWrapper(std::move(callback)))));
+  checker_impl->CheckUrl(url, method,
+                         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                             std::move(callback),
+                             /*proceed=*/true, /*showed_interstitial=*/false));
   CHECK(weak_impl);  // This is to ensure calling CheckUrl doesn't delete itself
   mojo::MakeSelfOwnedReceiver(std::move(checker_impl), std::move(receiver));
 }

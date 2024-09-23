@@ -324,7 +324,7 @@ class MediaVideoTaskWrapper {
   base::WeakPtr<CrossThreadVideoDecoderClient> weak_client_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
+  raw_ptr<media::GpuVideoAcceleratorFactories, DanglingUntriaged>
       gpu_factories_;
   std::unique_ptr<media::MediaLog> media_log_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;

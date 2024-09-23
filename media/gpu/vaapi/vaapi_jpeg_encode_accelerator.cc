@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -31,6 +30,7 @@
 #include "media/gpu/vaapi/vaapi_jpeg_encoder.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/parsers/jpeg_parser.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace media {
 
@@ -142,22 +142,27 @@ void VaapiJpegEncodeAccelerator::Encoder::Initialize(
     return;
   }
 
-  vaapi_wrapper_ = VaapiWrapper::Create(
-      VaapiWrapper::kEncodeConstantBitrate, VAProfileJPEGBaseline,
-      EncryptionScheme::kUnencrypted,
-      base::BindRepeating(&ReportVaapiErrorToUMA,
-                          "Media.VaapiJpegEncodeAccelerator.VAAPIError"));
+  vaapi_wrapper_ =
+      VaapiWrapper::Create(
+          VaapiWrapper::kEncodeConstantBitrate, VAProfileJPEGBaseline,
+          EncryptionScheme::kUnencrypted,
+          base::BindRepeating(&ReportVaapiErrorToUMA,
+                              "Media.VaapiJpegEncodeAccelerator.VAAPIError"))
+          .value_or(nullptr);
   if (!vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI";
     std::move(init_cb).Run(PLATFORM_FAILURE);
     return;
   }
 
-  vpp_vaapi_wrapper_ = VaapiWrapper::Create(
-      VaapiWrapper::kVideoProcess, VAProfileNone,
-      EncryptionScheme::kUnencrypted,
-      base::BindRepeating(&ReportVaapiErrorToUMA,
-                          "Media.VaapiJpegEncodeAccelerator.Vpp.VAAPIError"));
+  vpp_vaapi_wrapper_ =
+      VaapiWrapper::Create(
+          VaapiWrapper::kVideoProcess, VAProfileNone,
+          EncryptionScheme::kUnencrypted,
+          base::BindRepeating(
+              &ReportVaapiErrorToUMA,
+              "Media.VaapiJpegEncodeAccelerator.Vpp.VAAPIError"))
+          .value_or(nullptr);
   if (!vpp_vaapi_wrapper_) {
     VLOGF(1) << "Failed initializing VAAPI wrapper for VPP";
     std::move(init_cb).Run(PLATFORM_FAILURE);
@@ -232,18 +237,17 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
-  auto blit_surface =
-      base::MakeRefCounted<VASurface>(va_surface_id_, input_size, va_format,
-                                      base::DoNothing() /* release_cb */);
-  if (!vpp_vaapi_wrapper_->BlitSurface(*input_surface, *blit_surface)) {
+  if (!vpp_vaapi_wrapper_->BlitSurface(input_surface->id(),
+                                       input_surface->size(), va_surface_id_,
+                                       input_size)) {
     VLOGF(1) << "Failed to blit surfaces";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
   // We should call vaSyncSurface() when passing surface between contexts. See:
   // https://lists.01.org/pipermail/intel-vaapi-media/2019-June/000131.html
-  // Sync |blit_surface| since it it passing to the JPEG encoding context.
-  if (!vpp_vaapi_wrapper_->SyncSurface(blit_surface->id())) {
+  // Sync |va_surface_id_| since it it passing to the JPEG encoding context.
+  if (!vpp_vaapi_wrapper_->SyncSurface(va_surface_id_)) {
     VLOGF(1) << "Cannot sync VPP output surface";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
@@ -275,8 +279,8 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   }
 
   if (!jpeg_encoder_->Encode(input_size, /*exif_buffer=*/nullptr,
-                             /*exif_buffer_size=*/0u, quality,
-                             blit_surface->id(), cached_output_buffer_->id(),
+                             /*exif_buffer_size=*/0u, quality, va_surface_id_,
+                             cached_output_buffer_->id(),
                              /*exif_offset=*/nullptr)) {
     VLOGF(1) << "Encode JPEG failed";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
@@ -312,8 +316,9 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
-  base::ScopedClosureRunner output_gmb_buffer_unmapper(base::BindOnce(
-      &gfx::GpuMemoryBuffer::Unmap, base::Unretained(output_gmb_buffer.get())));
+  absl::Cleanup output_gmb_buffer_unmapper = [&output_gmb_buffer] {
+    output_gmb_buffer->Unmap();
+  };
 
   // Get the encoded output. DownloadFromVABuffer() is a blocking call. It
   // would wait until encoding is finished.
@@ -351,7 +356,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   uint8_t* frame_content = output_memory + output_offset;
   const size_t max_frame_size = output_size - output_offset;
   if (!vaapi_wrapper_->DownloadFromVABuffer(cached_output_buffer_->id(),
-                                            blit_surface->id(), frame_content,
+                                            va_surface_id_, frame_content,
                                             max_frame_size, &encoded_size)) {
     VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);

@@ -26,8 +26,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -40,6 +39,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/session_storage_namespace.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/app_controller_mac.h"
@@ -200,9 +200,10 @@ void SessionServiceBase::SetTabWindow(SessionID window_id, SessionID tab_id) {
   ScheduleCommand(sessions::CreateSetTabWindowCommand(window_id, tab_id));
 }
 
-void SessionServiceBase::SetWindowBounds(SessionID window_id,
-                                         const gfx::Rect& bounds,
-                                         ui::WindowShowState show_state) {
+void SessionServiceBase::SetWindowBounds(
+    SessionID window_id,
+    const gfx::Rect& bounds,
+    ui::mojom::WindowShowState show_state) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -313,7 +314,7 @@ void SessionServiceBase::SetTabExtensionAppID(
 
 void SessionServiceBase::SetLastActiveTime(SessionID window_id,
                                            SessionID tab_id,
-                                           base::TimeTicks last_active_time) {
+                                           base::Time last_active_time) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -377,7 +378,7 @@ void SessionServiceBase::SetTabUserAgentOverride(
   // This is overridden by session_service implementation.
   // We still need it here because we derive from
   // sessions::SessionTabHelperDelegate.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return;
 }
 
@@ -628,10 +629,9 @@ void SessionServiceBase::BuildCommandsForBrowser(
   TabStripModel* tab_strip = browser->tab_strip_model();
   if (tab_strip->SupportsTabGroups()) {
     TabGroupModel* group_model = tab_strip->group_model();
-    const SavedTabGroupKeyedService* const saved_tab_group_keyed_service =
-        base::FeatureList::IsEnabled(features::kTabGroupsSave)
-            ? SavedTabGroupServiceFactory::GetForProfile(browser->profile())
-            : nullptr;
+    tab_groups::TabGroupSyncService* tab_group_service =
+        tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+            browser->profile());
 
     for (const tab_groups::TabGroupId& group_id :
          group_model->ListTabGroups()) {
@@ -639,10 +639,10 @@ void SessionServiceBase::BuildCommandsForBrowser(
           group_model->GetTabGroup(group_id)->visual_data();
 
       std::optional<std::string> saved_guid;
-      if (saved_tab_group_keyed_service) {
-        const SavedTabGroup* const saved_group =
-            saved_tab_group_keyed_service->model()->Get(group_id);
-        if (saved_group) {
+      if (tab_group_service) {
+        const std::optional<tab_groups::SavedTabGroup> saved_group =
+            tab_group_service->GetGroup(group_id);
+        if (saved_group.has_value()) {
           saved_guid = saved_group->saved_guid().AsLowercaseString();
         }
       }

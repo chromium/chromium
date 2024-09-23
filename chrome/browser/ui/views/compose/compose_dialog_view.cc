@@ -163,7 +163,7 @@ void ComposeDialogView::OnBeforeBubbleWidgetInit(
   // In linux, windows may be clipped to their anchors' bounds,
   // resulting in visual errors, unless they use accelerated rendering. See
   // crbug.com/1445770 for details.
-  params->requires_accelerated_widget = true;
+  params->use_accelerated_widget_override = true;
 #endif
 }
 

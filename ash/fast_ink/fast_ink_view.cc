@@ -19,8 +19,9 @@ FastInkView::~FastInkView() = default;
 views::UniqueWidgetPtr FastInkView::CreateWidgetWithContents(
     std::unique_ptr<FastInkView> fast_ink_view,
     aura::Window* container) {
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "FastInkOverlay";
   params.accept_events = false;
   params.activatable = views::Widget::InitParams::Activatable::kNo;

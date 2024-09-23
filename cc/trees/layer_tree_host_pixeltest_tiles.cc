@@ -240,7 +240,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER) || \
     defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/1045521): Flakes on all slower bots.
+// TODO(crbug.com/40116070): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #else
 #define MAYBE_PartialRaster PartialRaster
@@ -299,7 +299,7 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER) || \
     defined(ADDRESS_SANITIZER)
-// TODO(crbug.com/1045521): Flakes on all slower bots.
+// TODO(crbug.com/40116070): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #else
 #define MAYBE_PartialRaster PartialRaster
@@ -384,7 +384,7 @@ TEST_P(LayerTreeHostTilesTestRasterColorSpace, CustomColorSpace) {
 // This test doesn't work on Vulkan because on our hardware we can't render to
 // RGBA4444 format using either SwiftShader or native Vulkan. See
 // crbug.com/987278 for details.
-// TODO(crbug.com/1151490) : Re-enable after this is supported for OOPR.
+// TODO(crbug.com/40042400) : Re-enable after this is supported for OOPR.
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 class LayerTreeHostTilesTestPartialInvalidationLowBitDepth
     : public LayerTreeHostTilesTestPartialInvalidation {

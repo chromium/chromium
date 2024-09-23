@@ -8,11 +8,15 @@ import org.chromium.url.GURL;
 
 /** The set of operations that inform the C++ side of actions taken. */
 public interface PlusAddressCreationDelegate {
+    public void onRefreshClicked();
+
     public void onConfirmRequested();
 
-    public void onConfirmFinished();
+    public void onTryAgain();
 
     public void onCanceled();
+
+    public void onConfirmFinished();
 
     public void onPromptDismissed();
 

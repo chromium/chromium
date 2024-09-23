@@ -6,24 +6,24 @@
 // the low-level platform-specific abstraction to the OS's threading interface.
 // You should instead be using a message-loop driven Thread, see thread.h.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_H_
 
 #include <cstddef>
 #include <iosfwd>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_ref.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include "partition_alloc/partition_alloc_base/win/windows_types.h"
-#elif BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
-#elif BUILDFLAG(IS_APPLE)
+#elif PA_BUILDFLAG(IS_APPLE)
 #include <mach/mach_types.h>
-#elif BUILDFLAG(IS_POSIX)
+#elif PA_BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #include <unistd.h>
 #endif
@@ -31,22 +31,22 @@
 namespace partition_alloc::internal::base {
 
 // Used for logging. Always an integer value.
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 typedef DWORD PlatformThreadId;
-#elif BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_FUCHSIA)
 typedef zx_handle_t PlatformThreadId;
-#elif BUILDFLAG(IS_APPLE)
+#elif PA_BUILDFLAG(IS_APPLE)
 typedef mach_port_t PlatformThreadId;
-#elif BUILDFLAG(IS_POSIX)
+#elif PA_BUILDFLAG(IS_POSIX)
 typedef pid_t PlatformThreadId;
 #endif
 
 // Used to operate on threads.
 class PlatformThreadHandle {
  public:
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   typedef void* Handle;
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
   typedef pthread_t Handle;
 #endif
 
@@ -106,4 +106,4 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) PlatformThread {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_THREADING_PLATFORM_THREAD_H_

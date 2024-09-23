@@ -147,7 +147,7 @@ bool ChromeBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsDeviceEnterprisedManaged();
 #else
-  NOTREACHED() << "This method is only defined for ChromeOS";
+  NOTREACHED_IN_MIGRATION() << "This method is only defined for ChromeOS";
   return false;
 #endif
 }
@@ -280,6 +280,9 @@ void ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting() {
 
 base::flat_set<std::string>
 ChromeBrowserPolicyConnector::device_affiliation_ids() const {
+  if (!device_affiliation_ids_for_testing_.empty()) {
+    return device_affiliation_ids_for_testing_;
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return PolicyLoaderLacros::device_affiliation_ids();
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -298,6 +301,11 @@ ChromeBrowserPolicyConnector::device_affiliation_ids() const {
 #else
   return {};
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+void ChromeBrowserPolicyConnector::SetDeviceAffiliatedIdsForTesting(
+    const base::flat_set<std::string>& device_affiliation_ids) {
+  device_affiliation_ids_for_testing_ = device_affiliation_ids;
 }
 
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>
@@ -361,6 +369,8 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
   // app's bundle ID actually is. All channels of Chrome should obey the same
   // policies.
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
+#elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+  CFStringRef bundle_id = CFSTR("com.google.ChromeForTesting");
 #else
   base::apple::ScopedCFTypeRef<CFStringRef> bundle_id_scoper =
       base::SysUTF8ToCFStringRef(base::apple::BaseBundleID());

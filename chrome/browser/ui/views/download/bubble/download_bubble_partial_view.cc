@@ -22,6 +22,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/link_fragment.h"
@@ -89,7 +90,7 @@ class SuppressBubbleSettingRow : public views::View,
         std::u16string(),
         base::BindRepeating(&SuppressBubbleSettingRow::CheckboxClicked,
                             base::Unretained(this))));
-    checkbox_->SetAccessibleName(
+    checkbox_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW));
     checkbox_->SetChecked(
         !download::IsDownloadBubblePartialViewEnabled(browser_->profile()));
@@ -157,7 +158,6 @@ class SuppressBubbleSettingRow : public views::View,
       download::SetDownloadBubblePartialViewEnabled(browser_->profile(),
                                                     !checkbox_->GetChecked());
       settings_text_->SetVisible(true);
-      navigation_handler_->ResizeDialog();
     }
   }
 
@@ -252,7 +252,7 @@ DownloadBubblePartialView::~DownloadBubblePartialView() {
   LogVisibleTimeMetrics();
 }
 
-base::StringPiece DownloadBubblePartialView::GetVisibleTimeHistogramName()
+std::string_view DownloadBubblePartialView::GetVisibleTimeHistogramName()
     const {
   return kPartialBubbleVisibleHistogramName;
 }
@@ -271,7 +271,9 @@ void DownloadBubblePartialView::AddedToWidget() {
     GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
             [](base::Time download_completed_time_,
-               base::TimeTicks presentation_time) {
+               const viz::FrameTimingDetails& frame_timing_details) {
+              base::TimeTicks presentation_time =
+                  frame_timing_details.presentation_feedback.timestamp;
               UmaHistogramTimes(
                   "Download.Bubble.DownloadCompletionToPartialViewShownLatency",
                   (presentation_time - base::TimeTicks::UnixEpoch()) -

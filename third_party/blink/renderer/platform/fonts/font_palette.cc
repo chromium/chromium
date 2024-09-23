@@ -17,7 +17,7 @@ namespace {
 // This converts -0.0 to 0.0, so that they have the same hash value. This
 // ensures that equal FontDescription have the same hash value.
 float NormalizeSign(float number) {
-  if (UNLIKELY(number == 0.0)) {
+  if (number == 0.0) [[unlikely]] {
     return 0.0;
   }
   return number;
@@ -72,7 +72,6 @@ String FontPalette::ToString() const {
     case kCustomPalette:
       return palette_values_name_.GetString();
     case kInterpolablePalette:
-      DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
       StringBuilder builder;
       builder.Append("palette-mix(in ");
       if (hue_interpolation_method_.has_value()) {
@@ -97,11 +96,9 @@ String FontPalette::ToString() const {
 
 bool FontPalette::operator==(const FontPalette& other) const {
   if (IsInterpolablePalette() != other.IsInterpolablePalette()) {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return false;
   }
   if (IsInterpolablePalette() && other.IsInterpolablePalette()) {
-    DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
     return *start_.get() == *other.start_.get() &&
            *end_.get() == *other.end_.get() &&
            percentages_ == other.percentages_ &&

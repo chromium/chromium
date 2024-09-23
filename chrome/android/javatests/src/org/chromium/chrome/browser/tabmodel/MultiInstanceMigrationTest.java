@@ -20,10 +20,12 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -31,7 +33,6 @@ import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +49,7 @@ public class MultiInstanceMigrationTest {
     @Mock private Profile mIncognitoProfile;
 
     private Context mAppContext;
+    private CipherFactory mCipherFactory;
 
     @Before
     public void setUp() {
@@ -62,6 +64,8 @@ public class MultiInstanceMigrationTest {
                                 .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
 
+        mCipherFactory = new CipherFactory();
+
         // Set the shared pref stating that the legacy file migration has occurred. The
         // multi-instance migration won't happen if the legacy path is taken.
         ChromeSharedPreferences.getInstance()
@@ -73,7 +77,7 @@ public class MultiInstanceMigrationTest {
         // Cleanup filesystem changes, shared preference changes and reset sMigrationTask
         // between tests - otherwise changes to these in one test will interfere with the other
         // tests.
-        // TODO(crbug.com/1086663) Don't persist changes to SharedPreferences.
+        // TODO(crbug.com/40694404) Don't persist changes to SharedPreferences.
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.TABMODEL_HAS_RUN_MULTI_INSTANCE_FILE_MIGRATION, false);
@@ -84,14 +88,20 @@ public class MultiInstanceMigrationTest {
     }
 
     private void buildPersistentStoreAndWaitForMigration() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MockTabModelSelector selector =
                             new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
                     TabbedModeTabPersistencePolicy persistencePolicy =
                             new TabbedModeTabPersistencePolicy(0, false, true);
                     TabPersistentStore store =
-                            new TabPersistentStore(persistencePolicy, selector, null);
+                            new TabPersistentStore(
+                                    TabPersistentStore.CLIENT_TAG_REGULAR,
+                                    persistencePolicy,
+                                    selector,
+                                    null,
+                                    TabWindowManagerSingleton.getInstance(),
+                                    mCipherFactory);
                     store.waitForMigrationToFinish();
                 });
     }
@@ -351,7 +361,7 @@ public class MultiInstanceMigrationTest {
     public void testNewMetataFileExists() throws Exception {
         // Set up two old metadata files.
         int maxCount =
-                TestThreadUtils.runOnUiThreadBlocking(
+                ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 TabWindowManagerSingleton.getInstance()
                                         .getMaxSimultaneousSelectors());

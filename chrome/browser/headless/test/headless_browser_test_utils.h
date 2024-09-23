@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_HEADLESS_TEST_HEADLESS_BROWSER_TEST_UTILS_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace simple_devtools_protocol_client {
@@ -34,7 +34,7 @@ base::Value::Dict SendCommandSync(
 
 // Convenience function to create a single key/value Dict.
 template <typename T>
-base::Value::Dict Param(base::StringPiece key, T&& value) {
+base::Value::Dict Param(std::string_view key, T&& value) {
   base::Value::Dict param;
   param.Set(key, std::move(value));
   return param;

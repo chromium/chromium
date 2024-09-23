@@ -43,7 +43,7 @@ TEST_F(FontCacheAndroidTest, FallbackFontForCharacter) {
     font_description.SetGenericFamily(family_type);
 
     FontCache& font_cache = FontCache::Get();
-    scoped_refptr<SimpleFontData> font_data =
+    const SimpleFontData* font_data =
         font_cache.FallbackFontForCharacter(font_description, kTestChar, 0);
     EXPECT_TRUE(font_data);
   }
@@ -63,7 +63,7 @@ TEST_F(FontCacheAndroidTest, FallbackFontForCharacterSerif) {
   font_description.SetLocale(ja);
   FontCache& font_cache = FontCache::Get();
   const UChar32 kTestChar = 0x4E00;  // U+4E00 CJK UNIFIED IDEOGRAPH-4E00
-  scoped_refptr<SimpleFontData> font_data =
+  const SimpleFontData* font_data =
       font_cache.FallbackFontForCharacter(font_description, kTestChar, nullptr);
   EXPECT_TRUE(font_data);
   EXPECT_EQ(serif_ja_typeface.get(), font_data->PlatformData().Typeface());

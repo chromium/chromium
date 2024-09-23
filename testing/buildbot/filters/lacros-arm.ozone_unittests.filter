@@ -1,4 +1,4 @@
-# TODO(https://crbug.com/1283076): re-enable the tests when they are fixed.
+# TODO(crbug.com/40209748): re-enable the tests when they are fixed.
 -XdgVersionStableTest/WaylandDataDragControllerTest.AsyncNoopStartDrag/0
 -XdgVersionStableTest/WaylandDataDragControllerTest.DestroyEnteredSurface/0
 -XdgVersionStableTest/WaylandDataDragControllerTest.DestroyOriginSurface/0

@@ -1,0 +1,21 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js
+ * #include=cros-color-overrides
+ * #css_wrapper_metadata_end */
+
+.flex-container {
+  align-items: flex-start;
+  display: inline-flex;
+  flex-flow: row nowrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.flex-container.flex-column {
+  flex-flow: column nowrap;
+}

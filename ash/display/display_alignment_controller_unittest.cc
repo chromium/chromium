@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_alignment_indicator.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"

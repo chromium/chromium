@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/mojo/mojom/stable/stable_video_decoder_types_mojom_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,7 +51,7 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidNonEOSDecoderBuffer) {
             mojom_decoder_buffer->timestamp);
   EXPECT_EQ(deserialized_decoder_buffer->duration(),
             mojom_decoder_buffer->duration);
-  EXPECT_EQ(deserialized_decoder_buffer->data_size(),
+  EXPECT_EQ(deserialized_decoder_buffer->size(),
             base::strict_cast<size_t>(mojom_decoder_buffer->data_size));
   EXPECT_EQ(deserialized_decoder_buffer->is_key_frame(),
             mojom_decoder_buffer->is_key_frame);
@@ -759,7 +764,6 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidVideoDecoderConfig) {
             mojom_video_decoder_config->natural_size);
   EXPECT_EQ(deserialized_video_decoder_config.hdr_metadata(),
             mojom_video_decoder_config->hdr_metadata);
-  EXPECT_FALSE(deserialized_video_decoder_config.is_rtc());
   EXPECT_TRUE(deserialized_video_decoder_config.IsValidConfig());
 }
 

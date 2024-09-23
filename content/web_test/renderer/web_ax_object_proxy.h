@@ -57,11 +57,11 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
       const std::vector<ui::AXEventIntent>& event_intents);
   void Reset();
 
- protected:
   const blink::WebAXObject& accessibility_object() const {
     return accessibility_object_;
   }
 
+ protected:
   Factory* factory() const { return factory_; }
 
   bool IsDetached() const { return !factory_ || !factory_->GetAXContext(); }
@@ -121,7 +121,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   bool IsSelectable();
   bool IsMultiLine();
   bool IsMultiSelectable();
-  bool IsSelectedOptionActive();
   bool IsExpanded();
   std::string Checked();
   bool IsVisible();
@@ -248,7 +247,7 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   std::string Placeholder();
 
   blink::WebAXObject accessibility_object_;
-  raw_ptr<Factory, ExperimentalRenderer> factory_;
+  raw_ptr<Factory> factory_;
 
   v8::Global<v8::Function> notification_callback_;
 };
@@ -272,10 +271,10 @@ class WebAXObjectProxyList : public WebAXObjectProxy::Factory {
   blink::WebAXContext* GetAXContext() override;
 
  private:
-  raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
+  raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
   // Maps from AxID to corresponding v8 wrapper object for an AX object..
   std::unordered_map<unsigned, v8::Global<v8::Object>> ax_objects_;
-  const raw_ptr<blink::WebAXContext, ExperimentalRenderer> ax_context_;
+  const raw_ptr<blink::WebAXContext, DanglingUntriaged> ax_context_;
 };
 
 }  // namespace content

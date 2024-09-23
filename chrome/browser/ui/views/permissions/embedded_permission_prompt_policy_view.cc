@@ -26,7 +26,29 @@ std::u16string EmbeddedPermissionPromptPolicyView::GetAccessibleWindowTitle()
   return GetWindowTitle();
 }
 
-std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitle() const {
+std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitleAdminAllowed()
+    const {
+  auto& requests = delegate()->Requests();
+  std::u16string permission_name;
+  if (requests.size() == 2) {
+    permission_name = l10n_util::GetStringUTF16(
+        IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT_CAPITALIZED);
+  } else if (requests[0]->request_type() ==
+             permissions::RequestType::kCameraStream) {
+    permission_name = l10n_util::GetStringUTF16(
+        IDS_CAMERA_PERMISSION_NAME_FRAGMENT_CAPITALIZED);
+  } else if (requests[0]->request_type() ==
+             permissions::RequestType::kMicStream) {
+    permission_name = l10n_util::GetStringUTF16(
+        IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT_CAPITALIZED);
+  }
+
+  return l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED,
+                                    permission_name);
+}
+
+std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitleAdminBlocked()
+    const {
   auto& requests = delegate()->Requests();
   std::u16string permission_name;
   if (requests.size() == 2) {
@@ -36,11 +58,13 @@ std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitle() const {
     permission_name = requests[0]->GetPermissionNameTextFragment();
   }
 
-  int template_id = is_permission_allowed_ ? IDS_EMBEDDED_PROMPT_ADMIN_ALLOWED
-                                           : IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED;
+  return l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_ADMIN_BLOCKED,
+                                    permission_name);
+}
 
-  return l10n_util::GetStringFUTF16(template_id, permission_name,
-                                    GetUrlIdentityObject().name);
+std::u16string EmbeddedPermissionPromptPolicyView::GetWindowTitle() const {
+  return is_permission_allowed_ ? GetWindowTitleAdminAllowed()
+                                : GetWindowTitleAdminBlocked();
 }
 
 const gfx::VectorIcon& EmbeddedPermissionPromptPolicyView::GetIcon() const {

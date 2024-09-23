@@ -19,7 +19,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_restore_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -36,9 +36,9 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_instance.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_observer.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -149,7 +149,8 @@ class LacrosAppWindowObserver : public apps::BrowserAppInstanceObserver {
   // BrowserAppInstanceObserver:
   void OnBrowserWindowAdded(
       const apps::BrowserWindowInstance& instance) override {
-    if (chromeos::features::IsDeskProfilesEnabled()) {
+    if (chromeos::features::IsDeskProfilesEnabled() ||
+        ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
       instance.window->SetProperty(ash::kLacrosProfileId,
                                    instance.lacros_profile_id);
     }

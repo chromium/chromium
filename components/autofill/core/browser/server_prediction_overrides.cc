@@ -94,8 +94,7 @@ ParseSingleServerPredictionOverride(std::string_view specification) {
 
   base::expected<FieldSuggestion, std::string> parsed_suggestions =
       ParseFieldTypePredictions(
-          field_signature, base::span<const std::string>{
-                               spec_split.cbegin() + 2, spec_split.cend()});
+          field_signature, base::span(spec_split).last(spec_split.size() - 2));
   if (!parsed_suggestions.has_value()) {
     return base::unexpected(parsed_suggestions.error());
   }

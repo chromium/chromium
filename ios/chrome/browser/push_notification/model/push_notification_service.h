@@ -5,20 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_SERVICE_H_
 
-#import <memory>
+#import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/push_notification/model/push_notification_configuration.h"
+#import <memory>
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
-namespace ios {
-class ChromeBrowserStateManager;
-}
+
 class PrefRegistrySimple;
+
 @class PushNotificationAccountContextManager;
 enum class PushNotificationClientId;
 class PushNotificationClientManager;
+@class PushNotificationConfiguration;
 
 // Service responsible for establishing connection and interacting
 // with the push notification server.
@@ -43,6 +43,11 @@ class PushNotificationService {
 
   // Returns whether the device has retrieved and stored its APNS device token.
   virtual bool DeviceTokenIsSet() const = 0;
+
+  // Returns the representative target ID for the given Gaia ID. Returns null if
+  // the user with the associated gaia_id is not registered for push
+  // notifications.
+  virtual std::string GetRepresentativeTargetIdForGaiaId(NSString* gaia_id);
 
   // Returns PushNotificationService's PushNotificationClientManager.
   PushNotificationClientManager* GetPushNotificationClientManager();
@@ -79,7 +84,6 @@ class PushNotificationService {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  protected:
-  PushNotificationService(ios::ChromeBrowserStateManager* manager);
   // Registers the device with the push notification server. By supplying a list
   // of the GAIA IDs currently logged into Chrome on the device and the device's
   // APNS token, the server associates the GAIA IDs to the device, which allows

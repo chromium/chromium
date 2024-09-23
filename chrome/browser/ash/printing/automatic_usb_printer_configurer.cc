@@ -144,7 +144,10 @@ void AutomaticUsbPrinterConfigurer::OnResolvePpdReferenceDone(
   // new printer's configuration is saved to `connected_printers_` only if the
   // setup succeeds.
   chromeos::Printer printer = detected.printer;
-  if (printer.supports_ippusb()) {
+  // If the printer supports ipp-over-usb and has a PPD, it will be affected by
+  // the PPD -> IPP-over-USB migration. We need to mark it to gather extra info
+  // in dedicated histograms.
+  if (printer.supports_ippusb() && code == chromeos::PpdProvider::SUCCESS) {
     printer.SetAffectedByIppUsbMigration(true);
   }
 
@@ -185,26 +188,13 @@ void AutomaticUsbPrinterConfigurer::OnSetupComplete(
     return;
   }
 
-  auto it_ref = ppd_references_.find(printer.id());
-
-  // Notify metrics when necessary.
-  if (printer.ppd_reference().autoconf) {
-    // This setup attempt was performed via IPP Everywhere.
-    if (it_ref != ppd_references_.end()) {
-      // And there is a PPD file for this printer.
-      base::UmaHistogramEnumeration(
-          "Printing.CUPS.AutomaticIppSetupResultOfUsbPrinterWithPpd", result);
-    }
-  } else {
-    // This setup attempt was performed with PPD file.
-    if (printer.supports_ippusb()) {
-      // And the printer supports IPP-over-USB.
-      base::UmaHistogramEnumeration(
-          "Printing.CUPS.AutomaticPpdSetupResultOfUsbPrinterSupportingIpp",
-          result);
-    }
+  if (printer.AffectedByIppUsbMigration()) {
+    base::UmaHistogramEnumeration(
+        "Printing.CUPS.AutomaticSetupResultOfUsbPrinterSupportingIppAndPpd",
+        result);
   }
 
+  auto it_ref = ppd_references_.find(printer.id());
   if (it_ref != ppd_references_.end()) {
     // We have a PPD for this printer. We can try to use it if IPP Everywhere
     // setup failed.

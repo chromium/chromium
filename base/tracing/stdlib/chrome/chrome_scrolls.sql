@@ -2,6 +2,8 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
+INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
+
 -- Defines slices for all of the individual scrolls in a trace based on the
 -- LatencyInfo-based scroll definition.
 --
@@ -19,36 +21,41 @@ CREATE PERFETTO TABLE chrome_scrolls(
   ts INT,
   -- The duration of the scroll.
   dur INT,
-  -- The earliest timestamp of the InputLatency::GestureScrollBegin for the
+  -- The earliest timestamp of the EventLatency slice of the GESTURE_SCROLL_BEGIN type for the
   -- corresponding scroll id.
   gesture_scroll_begin_ts INT,
-  -- The earliest timestamp of the InputLatency::GestureScrollEnd for the
+  -- The earliest timestamp of the EventLatency slice of the GESTURE_SCROLL_END type /
+  -- the latest timestamp of the EventLatency slice of the GESTURE_SCROLL_UPDATE type for the
   -- corresponding scroll id.
   gesture_scroll_end_ts INT
 ) AS
 WITH all_scrolls AS (
   SELECT
-    name,
+    event_type AS name,
     ts,
     dur,
-    extract_arg(arg_set_id, 'chrome_latency_info.gesture_scroll_id') AS scroll_id
-  FROM slice
-  WHERE name GLOB 'InputLatency::GestureScroll*'
-  AND extract_arg(arg_set_id, 'chrome_latency_info.gesture_scroll_id') IS NOT NULL
+    scroll_id
+  FROM chrome_gesture_scroll_events
 ),
 scroll_starts AS (
   SELECT
     scroll_id,
     MIN(ts) AS gesture_scroll_begin_ts
   FROM all_scrolls
-  WHERE name = 'InputLatency::GestureScrollBegin'
+  WHERE name = 'GESTURE_SCROLL_BEGIN'
   GROUP BY scroll_id
-), scroll_ends AS (
+),
+scroll_ends AS (
   SELECT
     scroll_id,
-    MIN(ts) AS gesture_scroll_end_ts
+    MAX(ts) AS gesture_scroll_end_ts
   FROM all_scrolls
-  WHERE name = 'InputLatency::GestureScrollEnd'
+  WHERE name IN (
+    'GESTURE_SCROLL_UPDATE',
+    'FIRST_GESTURE_SCROLL_UPDATE',
+    'INERTIAL_GESTURE_SCROLL_UPDATE',
+    'GESTURE_SCROLL_END'
+  )
   GROUP BY scroll_id
 )
 SELECT
@@ -63,49 +70,3 @@ FROM all_scrolls sa
   LEFT JOIN scroll_ends se ON
     sa.scroll_id = se.scroll_id
 GROUP BY sa.scroll_id;
-
--- Defines slices for all of scrolls intervals in a trace based on the scroll
--- definition in chrome_scrolls. Note that scrolls may overlap (particularly in
--- cases of jank/broken traces, etc); so scrolling intervals are not exactly the
--- same as individual scrolls.
-CREATE PERFETTO VIEW chrome_scrolling_intervals(
-  -- The unique identifier of the scroll interval. This may span multiple scrolls if they overlap.
-  id INT,
-  -- Comma-separated list of scroll ids that are included in this interval.
-  scroll_ids STRING,
-  -- The start timestamp of the scroll interval.
-  ts INT,
-  -- The duration of the scroll interval.
-  dur INT
-) AS
-WITH all_scrolls AS (
-  SELECT
-    id AS scroll_id,
-    s.ts AS start_ts,
-    s.ts + s.dur AS end_ts
-  FROM chrome_scrolls s),
-ordered_end_ts AS (
-  SELECT
-    *,
-    MAX(end_ts) OVER (ORDER BY start_ts) AS max_end_ts_so_far
-  FROM all_scrolls),
-range_starts AS (
-  SELECT
-    *,
-    CASE
-      WHEN start_ts <= 1 + LAG(max_end_ts_so_far) OVER (ORDER BY start_ts) THEN 0
-      ELSE 1
-    END AS range_start
-  FROM ordered_end_ts),
-range_groups AS (
-  SELECT
-    *,
-    SUM(range_start) OVER (ORDER BY start_ts) AS range_group
-  FROM range_starts)
-SELECT
-  range_group AS id,
-  GROUP_CONCAT(scroll_id) AS scroll_ids,
-  MIN(start_ts) AS ts,
-  MAX(end_ts) - MIN(start_ts) AS dur
-FROM range_groups
-GROUP BY range_group;

@@ -14,6 +14,7 @@
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -61,7 +62,7 @@ class RequestPinView final : public views::DialogDelegateView,
 
   // views::DialogDelegateView:
   bool Accept() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
   std::u16string GetWindowTitle() const override;
 

@@ -118,6 +118,7 @@ public class LensMetrics {
         CameraOpenEntryPoint.INTENTS,
         CameraOpenEntryPoint.WEB_IMAGES_SEARCH_BAR,
         CameraOpenEntryPoint.WHATS_NEW_PROMO,
+        CameraOpenEntryPoint.GOOGLE_BOTTOM_BAR,
         CameraOpenEntryPoint.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -135,7 +136,8 @@ public class LensMetrics {
         int INTENTS = 10;
         int WEB_IMAGES_SEARCH_BAR = 11;
         int WHATS_NEW_PROMO = 12;
-        int NUM_ENTRIES = 13;
+        int GOOGLE_BOTTOM_BAR = 13;
+        int NUM_ENTRIES = 14;
     }
 
     /** Record an ambient search query along with the entry point that initiated. */
@@ -174,6 +176,8 @@ public class LensMetrics {
                 return "ContextMenu.LensSupportStatus";
             case LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET:
                 return "Lens.QuickActionSearchWidget.LensSupportStatus";
+            case LensEntryPoint.GOOGLE_BOTTOM_BAR:
+                return "CustomTabs.GoogleBottomBar.LensSupportStatus";
             case LensEntryPoint.CONTEXT_MENU_CHIP:
             default:
                 assert false : "Method not implemented.";
@@ -224,6 +228,7 @@ public class LensMetrics {
             case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_CHIP:
+            case LensEntryPoint.GOOGLE_BOTTOM_BAR:
             default:
                 assert false : "Method not implemented.";
         }
@@ -241,6 +246,7 @@ public class LensMetrics {
             case LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_SHOP_MENU_ITEM:
             case LensEntryPoint.CONTEXT_MENU_CHIP:
+            case LensEntryPoint.GOOGLE_BOTTOM_BAR:
             default:
                 assert false : "Method not implemented.";
         }

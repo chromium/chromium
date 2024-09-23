@@ -5,6 +5,8 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+#include "base/functional/overloaded.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
@@ -12,12 +14,46 @@
 
 namespace web_package {
 
+namespace {
+
+SignedWebBundleSignatureStackEntry CreateSignatureEntry(
+    const mojom::BundleIntegrityBlockSignatureStackEntryPtr& entry) {
+  const auto& signature_info = entry->signature_info;
+  switch (signature_info->which()) {
+    case mojom::SignatureInfo::Tag::kEd25519:
+      return SignedWebBundleSignatureStackEntry(
+          entry->attributes_cbor,
+          SignedWebBundleSignatureInfoEd25519(
+              signature_info->get_ed25519()->public_key,
+              signature_info->get_ed25519()->signature));
+    case mojom::SignatureInfo::Tag::kEcdsaP256Sha256:
+      return SignedWebBundleSignatureStackEntry(
+          entry->attributes_cbor,
+          SignedWebBundleSignatureInfoEcdsaP256SHA256(
+              signature_info->get_ecdsa_p256_sha256()->public_key,
+              signature_info->get_ecdsa_p256_sha256()->signature));
+    case mojom::SignatureInfo::Tag::kUnknown:
+      return SignedWebBundleSignatureStackEntry(
+          entry->attributes_cbor, SignedWebBundleSignatureInfoUnknown());
+  }
+}
+
+}  // namespace
+
 // static
 base::expected<SignedWebBundleSignatureStack, std::string>
 SignedWebBundleSignatureStack::Create(
     base::span<const SignedWebBundleSignatureStackEntry> entries) {
   if (entries.empty()) {
     return base::unexpected("The signature stack needs at least one entry.");
+  }
+
+  if (base::ranges::all_of(entries, [](const auto& signature) {
+        return absl::holds_alternative<SignedWebBundleSignatureInfoUnknown>(
+            signature.signature_info());
+      })) {
+    return base::unexpected(
+        "There must be at least one signature of known type.");
   }
 
   return SignedWebBundleSignatureStack(
@@ -29,17 +65,8 @@ base::expected<SignedWebBundleSignatureStack, std::string>
 SignedWebBundleSignatureStack::Create(
     std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>&&
         raw_entries) {
-  std::vector<SignedWebBundleSignatureStackEntry> entries;
-  entries.reserve(raw_entries.size());
-  base::ranges::transform(
-      raw_entries, std::back_inserter(entries),
-      [](mojom::BundleIntegrityBlockSignatureStackEntryPtr& raw_entry) {
-        return SignedWebBundleSignatureStackEntry(
-            raw_entry->complete_entry_cbor, raw_entry->attributes_cbor,
-            raw_entry->public_key, raw_entry->signature);
-      });
-
-  return SignedWebBundleSignatureStack::Create(std::move(entries));
+  return SignedWebBundleSignatureStack::Create(
+      base::ToVector(raw_entries, &CreateSignatureEntry));
 }
 
 SignedWebBundleSignatureStack::SignedWebBundleSignatureStack(
@@ -64,6 +91,21 @@ bool SignedWebBundleSignatureStack::operator==(
 bool SignedWebBundleSignatureStack::operator!=(
     const SignedWebBundleSignatureStack& other) const {
   return !operator==(other);
+}
+
+std::vector<PublicKey> SignedWebBundleSignatureStack::public_keys() const {
+  std::vector<PublicKey> public_keys;
+  for (const auto& signature : entries()) {
+    absl::visit(
+        base::Overloaded{[&](const auto& signature_info) {
+                           public_keys.push_back(signature_info.public_key());
+                         },
+                         [](const SignedWebBundleSignatureInfoUnknown&) {
+                           // Unknown signatures cannot provide a public key.
+                         }},
+        signature.signature_info());
+  }
+  return public_keys;
 }
 
 }  // namespace web_package

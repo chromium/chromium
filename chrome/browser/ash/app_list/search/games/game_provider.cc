@@ -93,8 +93,7 @@ std::u16string GetStrippedText(const std::u16string& text) {
 
 double CalculateTitleRelevance(const TokenizedString& tokenized_query,
                                const std::u16string& game_title) {
-  std::u16string stripped_title = GetStrippedText(game_title);
-  const TokenizedString tokenized_title(stripped_title,
+  const TokenizedString tokenized_title(GetStrippedText(game_title),
                                         TokenizedString::Mode::kWords);
 
   if (tokenized_query.text().empty() || tokenized_title.text().empty()) {
@@ -112,8 +111,7 @@ std::vector<std::pair<const apps::Result*, double>> SearchGames(
     const GameProvider::GameIndex* index) {
   DCHECK(index);
 
-  std::u16string stripped_query = GetStrippedText(query);
-  TokenizedString tokenized_query(stripped_query,
+  TokenizedString tokenized_query(GetStrippedText(query),
                                   TokenizedString::Mode::kWords);
   std::vector<std::pair<const apps::Result*, double>> matches;
   for (const auto& game : *index) {
@@ -172,7 +170,7 @@ void GameProvider::OnIndexUpdated(const GameIndex& index,
 }
 
 void GameProvider::OnIndexUpdatedBySubscription(const GameIndex& index) {
-  // TODO(crbug.com/1305880): Add tests to check that this is called when the
+  // TODO(crbug.com/40218201): Add tests to check that this is called when the
   // app discovery service notifies its subscribers.
   if (!index.empty())
     game_index_ = index;

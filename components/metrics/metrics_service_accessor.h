@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "components/variations/synthetic_trials.h"
 
 class PrefService;
@@ -34,9 +35,9 @@ class MetricsServiceAccessor {
   MetricsServiceAccessor() {}
 
   // Returns whether metrics reporting is enabled, using the value of the
-  // kMetricsReportingEnabled pref in |pref_service| to determine whether user
+  // kMetricsReportingEnabled pref in |local_state| to determine whether user
   // has enabled reporting.
-  static bool IsMetricsReportingEnabled(PrefService* pref_service);
+  static bool IsMetricsReportingEnabled(PrefService* local_state);
 
   // Registers a field trial name and group with |metrics_service| (if not
   // null), to be used to annotate a UMA report with a particular configuration
@@ -47,8 +48,8 @@ class MetricsServiceAccessor {
   // details.
   static bool RegisterSyntheticFieldTrial(
       MetricsService* metrics_service,
-      base::StringPiece trial_name,
-      base::StringPiece group_name,
+      std::string_view trial_name,
+      std::string_view group_name,
       variations::SyntheticTrialAnnotationMode annotation_mode);
 
   // IsMetricsReportingEnabled() in non-official builds unconditionally returns

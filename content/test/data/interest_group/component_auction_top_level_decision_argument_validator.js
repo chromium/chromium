@@ -39,7 +39,7 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (Object.keys(auctionConfig).length !== 14) {
+  if (Object.keys(auctionConfig).length !== 15) {
     throw 'Wrong number of auctionConfig fields ' +
         JSON.stringify(auctionConfig);
   }
@@ -83,7 +83,7 @@ function validateAuctionConfig(auctionConfig) {
   const sellerSignalsJson = JSON.stringify(auctionConfig.sellerSignals);
   if (sellerSignalsJson !== '["top-level seller signals"]')
     throw 'Wrong sellerSignals ' + auctionConfig.sellerSignalsJSON;
-  if (auctionConfig.sellerTimeout !== 300)
+  if (auctionConfig.sellerTimeout !== 30000)
     throw 'Wrong sellerTimeout ' + auctionConfig.sellerTimeout;
 
   const perBuyerSignalsJson = JSON.stringify(auctionConfig.perBuyerSignals);
@@ -94,8 +94,8 @@ function validateAuctionConfig(auctionConfig) {
 
   const perBuyerTimeoutsJson = JSON.stringify(auctionConfig.perBuyerTimeouts);
   if (!perBuyerTimeoutsJson.includes('a.test') ||
-      !perBuyerTimeoutsJson.includes('110') ||
-      auctionConfig.perBuyerTimeouts['*'] != 150) {
+      !perBuyerTimeoutsJson.includes('11000') ||
+      auctionConfig.perBuyerTimeouts['*'] != 15000) {
     throw 'Wrong perBuyerTimeouts ' + perBuyerTimeoutsJson;
   }
 
@@ -106,6 +106,9 @@ function validateAuctionConfig(auctionConfig) {
       auctionConfig.perBuyerCumulativeTimeouts['*'] != 15100) {
     throw 'Wrong perBuyerCumulativeTimeouts ' + perBuyerCumulativeTimeoutsJson;
   }
+
+  if (auctionConfig.reportingTimeout !== 3000)
+    throw 'Wrong reportingTimeout ' + auctionConfig.reportingTimeout;
 
   if (auctionConfig.perBuyerCurrencies[
           auctionConfig.componentAuctions[0].seller] !== 'CAD' ||
@@ -140,7 +143,8 @@ function validateAuctionConfig(auctionConfig) {
           '/interest_group/trusted_scoring_signals2.json' ||
       componentAuction.trustedScoringSignalsUrl !== componentAuction.seller +
           '/interest_group/trusted_scoring_signals2.json' ||
-      componentAuction.sellerTimeout !== 200) {
+      componentAuction.sellerTimeout !== 20000 ||
+      componentAuction.reportingTimeout !== 2000) {
     throw 'Wrong componentAuction ' + JSON.stringify(componentAuction);
   }
 }

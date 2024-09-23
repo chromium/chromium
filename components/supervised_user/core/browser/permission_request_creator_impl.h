@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PERMISSION_REQUEST_CREATOR_IMPL_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PERMISSION_REQUEST_CREATOR_IMPL_H_
 
+#include "components/supervised_user/core/browser/parallel_fetch_manager.h"
 #include "components/supervised_user/core/browser/permission_request_creator.h"
-
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 
 namespace network {
@@ -37,8 +37,8 @@ class PermissionRequestCreatorImpl : public PermissionRequestCreator {
 
  private:
   // Manages the lifetime of every issued fetch.
-  ParallelFetchManager<kids_chrome_management::PermissionRequest,
-                       kids_chrome_management::CreatePermissionRequestResponse>
+  ParallelFetchManager<kidsmanagement::PermissionRequest,
+                       kidsmanagement::CreatePermissionRequestResponse>
       fetch_manager_;
 };
 

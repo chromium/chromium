@@ -5,37 +5,53 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+
+namespace {
+
+// Contains the pref service and key to access the permissions dict, and the
+// client key to access the bool field within the dict that holds the
+// permission state for a client.
+struct PermissionsPref {
+  raw_ptr<PrefService> service;
+  const std::string key;
+  const std::string client_key;
+};
+
+}  // namespace
 
 @implementation PushNotificationAccountContextManager {
-  // Used to retrieve BrowserStates located at a given path.
-  raw_ptr<ios::ChromeBrowserStateManager> _chromeBrowserStateManager;
+  // Used to retrieve Profiles located at a given path.
+  raw_ptr<ProfileManagerIOS> _profileManager;
 
   // A dictionary that maps a user's GAIA ID to an unsigned integer representing
   // the number of times the account is signed in across BrowserStates.
   std::map<std::string, size_t> _contextMap;
 }
 
-- (instancetype)initWithChromeBrowserStateManager:
-    (ios::ChromeBrowserStateManager*)manager {
+- (instancetype)initWithProfileManager:(ProfileManagerIOS*)manager {
   self = [super init];
 
   if (self) {
-    _chromeBrowserStateManager = manager;
-    BrowserStateInfoCache* infoCache = manager->GetBrowserStateInfoCache();
-    const size_t numberOfBrowserStates = infoCache->GetNumberOfBrowserStates();
-    for (size_t i = 0; i < numberOfBrowserStates; i++) {
-      std::string gaiaID = infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
-      [self addAccount:gaiaID];
+    _profileManager = manager;
+    ProfileAttributesStorageIOS* storage =
+        manager->GetProfileAttributesStorage();
+    const size_t numberOfProfiles = storage->GetNumberOfProfiles();
+    for (size_t i = 0; i < numberOfProfiles; i++) {
+      ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
+      [self addAccount:attr.GetGaiaId()];
     }
   }
 
@@ -53,7 +69,11 @@
 
 - (BOOL)removeAccount:(const std::string&)gaiaID {
   auto iterator = _contextMap.find(gaiaID);
-  DCHECK(iterator != _contextMap.end());
+  if (iterator == _contextMap.end()) {
+    // The account was unexpectedly not found, so return NO to indicate that
+    // it was not removed.
+    return NO;
+  }
   size_t& occurrencesAcrossBrowserStates = iterator->second;
 
   occurrencesAcrossBrowserStates--;
@@ -67,40 +87,42 @@
 
 - (void)enablePushNotification:(PushNotificationClientId)clientID
                     forAccount:(const std::string&)gaiaID {
-  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
-  DCHECK(browserState);
-  ScopedDictPrefUpdate update(browserState->GetPrefs(),
-                              prefs::kFeaturePushNotificationPermissions);
-  std::string key =
-      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
-  update->Set(key, true);
+  PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
+  // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
+  // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
+  if (!pref.service) {
+    return;
+  }
+  ScopedDictPrefUpdate update(pref.service, pref.key);
+  update->Set(pref.client_key, true);
+  base::UmaHistogramEnumeration("IOS.PushNotification.Client.Enabled",
+                                clientID);
 }
 
 - (void)disablePushNotification:(PushNotificationClientId)clientID
                      forAccount:(const std::string&)gaiaID {
-  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
-  DCHECK(browserState);
-  ScopedDictPrefUpdate update(browserState->GetPrefs(),
-                              prefs::kFeaturePushNotificationPermissions);
-  std::string key =
-      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
-  update->Set(key, false);
+  PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
+  // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
+  // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
+  if (!pref.service) {
+    return;
+  }
+  ScopedDictPrefUpdate update(pref.service, pref.key);
+  update->Set(pref.client_key, false);
+  base::UmaHistogramEnumeration("IOS.PushNotification.Client.Disabled",
+                                clientID);
 }
 
 - (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
                                 forAccount:(const std::string&)gaiaID {
-  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+  PermissionsPref pref = [self prefsForClient:clientID account:gaiaID];
   // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
-  // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
-  if (!browserState) {
-    return false;
+  // ConsistencySigninPromo UI updates the ProfileAttributesStorageIOS.
+  if (!pref.service) {
+    return NO;
   }
-
-  std::string key =
-      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
-  return browserState->GetPrefs()
-      ->GetDict(prefs::kFeaturePushNotificationPermissions)
-      .FindBool(key)
+  return pref.service->GetDict(pref.key)
+      .FindBool(pref.client_key)
       .value_or(false);
 }
 
@@ -138,27 +160,53 @@
 #pragma mark - Private
 
 // Returns the ChromeBrowserState that has the given gaiaID set as the primary
-// account. TODO(crbug.com/1400732) Implement policy that computes correct
+// account. TODO(crbug.com/40250402) Implement policy that computes correct
 // permission set. This function naively chooses the first ChromeBrowserState
 // that is associated with the given gaiaID. In a multi-profile environment
 // where the given gaiaID is signed into multiple profiles, it is possible that
 // the push notification enabled features' permissions may be incorrectly
 // applied.
 - (ChromeBrowserState*)chromeBrowserStateFrom:(const std::string&)gaiaID {
-  BrowserStateInfoCache* infoCache =
-      _chromeBrowserStateManager->GetBrowserStateInfoCache();
-  const size_t numberOfBrowserStates = infoCache->GetNumberOfBrowserStates();
+  ProfileAttributesStorageIOS* storage =
+      _profileManager->GetProfileAttributesStorage();
 
-  for (size_t i = 0; i < numberOfBrowserStates; i++) {
-    std::string browserStateGaiaID =
-        infoCache->GetGAIAIdOfBrowserStateAtIndex(i);
-    if (gaiaID == browserStateGaiaID) {
-      base::FilePath path = infoCache->GetPathOfBrowserStateAtIndex(i);
-      return _chromeBrowserStateManager->GetBrowserState(path);
+  const size_t numberOfProfiles = storage->GetNumberOfProfiles();
+  for (size_t i = 0; i < numberOfProfiles; i++) {
+    ProfileAttributesIOS attr = storage->GetAttributesForProfileAtIndex(i);
+    if (gaiaID == attr.GetGaiaId()) {
+      return _profileManager->GetProfileWithName(attr.GetProfileName());
     }
   }
 
-  return nil;
+  return nullptr;
+}
+
+// Returns the appropriate `PermissionsPref` for the given `clientID` and
+// `gaiaID`. This can be either BrowserState prefs or LocalState prefs.
+- (PermissionsPref)prefsForClient:(PushNotificationClientId)clientID
+                          account:(const std::string&)gaiaID {
+  std::string clientKey =
+      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
+  switch (clientID) {
+    case PushNotificationClientId::kCommerce:
+    case PushNotificationClientId::kContent:
+    case PushNotificationClientId::kSports:
+    case PushNotificationClientId::kSendTab: {
+      ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+      if (!browserState) {
+        // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome
+        // via ConsistencySigninPromo UI updates the
+        // ProfileAttributesStorageIOS.
+        return {nullptr, prefs::kFeaturePushNotificationPermissions, clientKey};
+      }
+      return {browserState->GetPrefs(),
+              prefs::kFeaturePushNotificationPermissions, clientKey};
+    }
+    case PushNotificationClientId::kTips:
+    case PushNotificationClientId::kSafetyCheck:
+      return {GetApplicationContext()->GetLocalState(),
+              prefs::kAppLevelPushNotificationPermissions, clientKey};
+  }
 }
 
 @end

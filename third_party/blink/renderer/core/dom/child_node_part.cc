@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -41,11 +42,16 @@ ChildNodePart::ChildNodePart(PartRoot& root,
       next_sibling_(next_sibling) {
   CHECK(IsAcceptableNodeType(previous_sibling));
   CHECK(IsAcceptableNodeType(next_sibling));
-  previous_sibling.AddDOMPart(*this);
-  if (previous_sibling != next_sibling) {
-    next_sibling.AddDOMPart(*this);
+  if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+    previous_sibling.SetHasNodePart();
+    next_sibling.SetHasNodePart();
+  } else {
+    previous_sibling.AddDOMPart(*this);
+    if (previous_sibling != next_sibling) {
+      next_sibling.AddDOMPart(*this);
+    }
+    root.AddPart(*this);
   }
-  root.AddPart(*this);
 }
 
 void ChildNodePart::disconnect() {
@@ -53,17 +59,25 @@ void ChildNodePart::disconnect() {
     CHECK(!previous_sibling_ && !next_sibling_);
     return;
   }
-  previous_sibling_->RemoveDOMPart(*this);
-  if (next_sibling_ != previous_sibling_) {
-    next_sibling_->RemoveDOMPart(*this);
+  if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+    // TODO(crbug.com/40271855): This assumes the endpoint nodes have exactly
+    // one NodePart/ChildNodePart attached. The consequence of that is that if
+    // you (imperatively) construct multiple Parts attached to the same Nodes,
+    // disconnecting one of them will disconnect all of them.
+    previous_sibling_->ClearHasNodePart();
+    next_sibling_->ClearHasNodePart();
+  } else {
+    previous_sibling_->RemoveDOMPart(*this);
+    if (next_sibling_ != previous_sibling_) {
+      next_sibling_->RemoveDOMPart(*this);
+    }
   }
   previous_sibling_ = nullptr;
   next_sibling_ = nullptr;
   Part::disconnect();
 }
 
-PartRootUnion* ChildNodePart::clone(PartRootCloneOptions* options,
-                                    ExceptionState& exception_state) {
+PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   // Since we're only cloning a part of the tree, not including this
   // ChildNodePart's `root`, we use a temporary DocumentFragment and its
   // PartRoot during the clone.
@@ -76,9 +90,10 @@ PartRootUnion* ChildNodePart::clone(PartRootCloneOptions* options,
     return nullptr;
   }
   auto& document = GetDocument();
-  auto* fragment = To<DocumentFragment>(DocumentFragment::Create(document));
-  NodeCloningData data{CloneOption::kPreserveDOMParts};
-  data.SetPartRootCloneOptions(options);
+  auto* fragment = DocumentFragment::Create(document);
+  NodeCloningData data{RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()
+                           ? CloneOption::kPreserveDOMPartsMinimalAPI
+                           : CloneOption::kPreserveDOMParts};
   auto& fragment_part_root = fragment->getPartRoot();
   data.PushPartRoot(fragment_part_root);
   ContainerNode* new_parent = To<ContainerNode>(
@@ -109,6 +124,7 @@ PartRootUnion* ChildNodePart::clone(PartRootCloneOptions* options,
 }
 
 void ChildNodePart::setNextSibling(Node& next_sibling) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   if (next_sibling_ == &next_sibling) {
     return;
   }
@@ -116,15 +132,15 @@ void ChildNodePart::setNextSibling(Node& next_sibling) {
     // Unregister this part from the old |next_sibling_| node, unless previous
     // and next were the same before.
     if (next_sibling_ != parentNode()) {
-      // TODO(crbug.com/1453291) It is currently possible to build
+      // TODO(crbug.com/40271855) It is currently possible to build
       // ChildNodeParts with `next_sibling === parentNode`. Eventually,
       // outlaw that in the appropriate place, and CHECK() here that it isn't
       // true. For now, in that case, don't remove the part.
       next_sibling_->RemoveDOMPart(*this);
     }
   }
-  next_sibling_ = &next_sibling;
   next_sibling.AddDOMPart(*this);
+  next_sibling_ = &next_sibling;
 }
 
 HeapVector<Member<Node>> ChildNodePart::children() const {
@@ -165,7 +181,7 @@ void ChildNodePart::replaceChildren(
   }
   // Insert new contents.
   Node* nodes_as_node = Node::ConvertNodeUnionsIntoNode(
-      parent, nodes, parent->GetDocument(), exception_state);
+      parent, nodes, parent->GetDocument(), "replaceChildren", exception_state);
   if (exception_state.HadException()) {
     return;
   }

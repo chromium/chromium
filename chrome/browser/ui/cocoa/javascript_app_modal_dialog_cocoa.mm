@@ -95,7 +95,7 @@ JavaScriptAppModalDialogCocoa::GetAlertParams() {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return params;
 }

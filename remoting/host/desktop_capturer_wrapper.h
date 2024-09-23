@@ -28,7 +28,8 @@ class DesktopCapturerWrapper : public DesktopCapturer,
   DesktopCapturerWrapper& operator=(const DesktopCapturerWrapper&) = delete;
   ~DesktopCapturerWrapper() override;
 
-  void CreateCapturer(const webrtc::DesktopCaptureOptions& options);
+  void CreateCapturer(const webrtc::DesktopCaptureOptions& options,
+                      SourceId id);
 
   // webrtc::DesktopCapturer interface.
   void Start(Callback* callback) override;

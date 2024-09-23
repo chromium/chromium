@@ -7,8 +7,8 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
+#import "ios/chrome/browser/blocking_overlay/ui_bundled/blocking_overlay_view_controller.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/blocking_overlay/blocking_overlay_view_controller.h"
 
 @interface UIBlockerSceneAgent ()
 
@@ -59,7 +59,7 @@
       stringByAppendingString:self.sceneState.window.accessibilityIdentifier];
   self.overlayWindow.accessibilityIdentifier = a11yIdentifier;
 
-  // TODO(crbug.com/1107873): Create a coordinator to own this view controller.
+  // TODO(crbug.com/40707167): Create a coordinator to own this view controller.
   // The view controller that blocks all interactions with the scene.
   BlockingOverlayViewController* blockingOverlayViewController =
 

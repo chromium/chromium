@@ -7,6 +7,8 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_string.h"
 #include "base/no_destructor.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/VideoAcceleratorUtil_jni.h"
 
 namespace media {
@@ -53,6 +55,17 @@ const std::vector<MediaCodecEncoderInfo>& GetEncoderInfoCache() {
       info.profile.is_software_codec =
           Java_SupportedProfileAdapter_isSoftwareCodec(env, java_profile);
 
+      int num_temporal_layers =
+          Java_SupportedProfileAdapter_getMaxNumberOfTemporalLayers(
+              env, java_profile);
+
+      info.profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
+      if (num_temporal_layers >= 2) {
+        info.profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
+      }
+      if (num_temporal_layers >= 3) {
+        info.profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
+      }
       info.name = base::android::ConvertJavaStringToUTF8(
           Java_SupportedProfileAdapter_getName(env, java_profile));
       cpp_infos.push_back(info);

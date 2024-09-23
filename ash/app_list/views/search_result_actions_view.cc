@@ -104,11 +104,11 @@ SearchResultActionButton::SearchResultActionButton(
 
 void SearchResultActionButton::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
-    case ui::ET_GESTURE_LONG_PRESS:
+    case ui::EventType::kGestureLongPress:
       to_be_activate_by_long_press_ = true;
       event->SetHandled();
       break;
-    case ui::ET_GESTURE_END:
+    case ui::EventType::kGestureEnd:
       if (to_be_activate_by_long_press_) {
         NotifyClick(*event);
         SetState(STATE_NORMAL);

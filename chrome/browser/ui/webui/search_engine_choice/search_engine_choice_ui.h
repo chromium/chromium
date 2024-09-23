@@ -51,11 +51,15 @@ class SearchEngineChoiceUI
       override;
 
   // Notifies the search engine choice service that a choice has been made.
-  void HandleSearchEngineChoiceMade(int prepopulate_id);
+  void HandleSearchEngineChoiceMade(int prepopulate_id,
+                                    bool save_guest_mode_selection);
 
   // Notifies the search engine choice service that the learn more link was
   // clicked.
   void HandleLearnMoreLinkClicked();
+
+  // Notifies the search engine choice service that the more button was clicked.
+  void HandleMoreButtonClicked();
 
   std::unique_ptr<SearchEngineChoiceHandler> page_handler_;
 

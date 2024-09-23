@@ -20,7 +20,7 @@ class DevToolsFrontendHost;
 class DevToolsProtocolTestBindings : public WebContentsObserver,
                                      public DevToolsAgentHostClient {
  public:
-  explicit DevToolsProtocolTestBindings(WebContents* devtools);
+  explicit DevToolsProtocolTestBindings(WebContents* devtools, std::string log);
 
   DevToolsProtocolTestBindings(const DevToolsProtocolTestBindings&) = delete;
   DevToolsProtocolTestBindings& operator=(const DevToolsProtocolTestBindings&) =
@@ -40,6 +40,8 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
+  void ParseLog(const std::string_view log);
+  void HandleMessagesFromLog(const std::string_view protocol_message_string);
   void HandleMessageFromTest(base::Value::Dict message);
 
   scoped_refptr<DevToolsAgentHost> agent_host_;
@@ -48,6 +50,13 @@ class DevToolsProtocolTestBindings : public WebContentsObserver,
   // run web tests natively on Android.
   std::unique_ptr<DevToolsFrontendHost> frontend_host_;
 #endif
+  // Log of protocol messages, used to script the bindings behavior.
+  std::vector<base::Value::Dict> log_;
+  // The index of the next message in the log.
+  size_t log_pos_ = 0;
+  // If true, the binding is using the log instead of sending real messages.
+  // The log is enabled if a non-empty log is provided via the constructor.
+  bool log_enabled_ = false;
 };
 
 }  // namespace content

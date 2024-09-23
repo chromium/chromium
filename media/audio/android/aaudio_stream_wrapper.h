@@ -89,9 +89,7 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioStreamWrapper {
 
   bool is_closed_ = false;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION AAudioStream* aaudio_stream_ = nullptr;
+  raw_ptr<AAudioStream> aaudio_stream_ = nullptr;
 
   // Constant used for calculating latency. Amount of nanoseconds per frame.
   const double ns_per_frame_;

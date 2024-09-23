@@ -7,8 +7,13 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/tts_controller.h"
+#include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_function.h"
 
 namespace content {
@@ -63,7 +68,9 @@ class TtsGetVoicesFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("tts.getVoices", TTS_GETVOICES)
 };
 
-class TtsAPI : public BrowserContextKeyedAPI {
+class TtsAPI : public BrowserContextKeyedAPI,
+               public EventRouter::Observer,
+               public content::VoicesChangedDelegate {
  public:
   explicit TtsAPI(content::BrowserContext* context);
   ~TtsAPI() override;
@@ -74,11 +81,32 @@ class TtsAPI : public BrowserContextKeyedAPI {
  private:
   friend class BrowserContextKeyedAPIFactory<TtsAPI>;
 
+  // VoicesChangedDelegate:
+  void OnVoicesChanged() override;
+
+  // EventRouter::Observer:
+  // We will only broadcast voices changed if we have any listeners.
+  void OnListenerAdded(const EventListenerInfo& details) override;
+  void OnListenerRemoved(const EventListenerInfo& details) override;
+
+  void StartOrStopListeningForVoicesChanged();
+
+  raw_ptr<EventRouter> event_router_;
+  bool broadcast_events_ = false;
+
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {
     return "TtsAPI";
   }
   static const bool kServiceIsNULLWhileTesting = true;
+};
+
+template <>
+struct BrowserContextFactoryDependencies<TtsAPI> {
+  static void DeclareFactoryDependencies(
+      BrowserContextKeyedAPIFactory<TtsAPI>* factory) {
+    factory->DependsOn(EventRouterFactory::GetInstance());
+  }
 };
 
 }  // namespace extensions

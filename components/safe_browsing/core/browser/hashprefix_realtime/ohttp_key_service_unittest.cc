@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -16,9 +17,10 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/variations/pref_names.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -52,20 +54,35 @@ scoped_refptr<net::HttpResponseHeaders> CreateKeyRotatedHeaders() {
 
 class OhttpKeyServiceTest : public ::testing::Test {
  public:
-  OhttpKeyServiceTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kHashPrefixRealTimeLookups},
-        /*disabled_features=*/{});
-  }
+  OhttpKeyServiceTest() = default;
 
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (is_hash_prefix_feature_enabled_) {
+      enabled_features.emplace_back(kHashPrefixRealTimeLookups);
+    } else {
+      disabled_features.emplace_back(kHashPrefixRealTimeLookups);
+    }
+    if (is_fast_key_rotation_enabled_) {
+      enabled_features.emplace_back(
+          kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
+    } else {
+      disabled_features.emplace_back(
+          kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
     RegisterProfilePrefs(pref_service_.registry());
+    local_state_.registry()->RegisterStringPref(
+        variations::prefs::kVariationsCountry, std::string());
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
     test_shared_loader_factory_ =
         test_url_loader_factory_->GetSafeWeakWrapper();
     ohttp_key_service_ = std::make_unique<OhttpKeyService>(
-        test_shared_loader_factory_, &pref_service_);
+        test_shared_loader_factory_, &pref_service_, &local_state_,
+        base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
+                            base::Unretained(this)));
     std::string key = google_apis::GetAPIKey();
     key_param_ =
         !key.empty()
@@ -75,6 +92,8 @@ class OhttpKeyServiceTest : public ::testing::Test {
   }
 
   void TearDown() override { ohttp_key_service_->Shutdown(); }
+
+  std::optional<std::string> GetCountry() { return country_; }
 
  protected:
   std::string GetExpectedKeyFetchServerUrl() {
@@ -88,6 +107,8 @@ class OhttpKeyServiceTest : public ::testing::Test {
                     resource_request.url.spec());
           ASSERT_EQ(network::mojom::CredentialsMode::kOmit,
                     resource_request.credentials_mode);
+          ASSERT_EQ(is_fast_key_rotation_enabled_,
+                    resource_request.headers.HasHeader("X-OhttpPublickey-Fst"));
         }));
     test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                           kTestOhttpKey);
@@ -120,11 +141,32 @@ class OhttpKeyServiceTest : public ::testing::Test {
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestingPrefServiceSimple pref_service_;
+  TestingPrefServiceSimple local_state_;
   std::string key_param_;
   base::HistogramTester histogram_tester_;
+  std::optional<std::string> country_;
+  bool is_hash_prefix_feature_enabled_ = true;
+  bool is_fast_key_rotation_enabled_ = true;
 
  private:
   hash_realtime_utils::GoogleChromeBrandingPretenderForTesting apply_branding_;
+};
+
+class OhttpKeyServiceFeatureOffTest : public OhttpKeyServiceTest {
+ public:
+  OhttpKeyServiceFeatureOffTest() { is_hash_prefix_feature_enabled_ = false; }
+};
+
+class OhttpKeyServiceLocationDisabledTest : public OhttpKeyServiceTest {
+ public:
+  OhttpKeyServiceLocationDisabledTest() { country_ = "cn"; }
+};
+
+class OhttpKeyServiceFastKeyRotationDisabledTest : public OhttpKeyServiceTest {
+ public:
+  OhttpKeyServiceFastKeyRotationDisabledTest() {
+    is_fast_key_rotation_enabled_ = false;
+  }
 };
 
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
@@ -139,13 +181,13 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Success) {
   std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service_->get_ohttp_key_for_testing();
   EXPECT_TRUE(ohttp_key.has_value());
-  EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(7));
+  EXPECT_EQ(ohttp_key.value().expiration, base::Time::Now() + base::Days(3));
   EXPECT_EQ(ohttp_key.value().key, kTestOhttpKey);
   EXPECT_EQ(pref_service_.GetString(prefs::kSafeBrowsingHashRealTimeOhttpKey),
             kEncodedTestOhttpKey);
   EXPECT_EQ(pref_service_.GetTime(
                 prefs::kSafeBrowsingHashRealTimeOhttpExpirationTime),
-            base::Time::Now() + base::Days(7));
+            base::Time::Now() + base::Days(3));
 
   histogram_tester_.ExpectBucketCount(
       "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
@@ -234,7 +276,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithExpiredCache) {
 
   test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
                                         kTestNewOhttpKey);
-  task_environment_.FastForwardBy(base::Days(5));
+  task_environment_.FastForwardBy(base::Days(1));
   base::MockCallback<OhttpKeyService::Callback> response_callback2;
   // The new key should not be fetched because the old key has not expired.
   EXPECT_CALL(response_callback2, Run(Optional(std::string(kTestOhttpKey))))
@@ -243,7 +285,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithExpiredCache) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(OhttpKeyServiceTest, GetOhttpKey_Disabled) {
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_SafeBrowsingDisabled) {
   SetupSuccessResponse();
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
   base::MockCallback<OhttpKeyService::Callback> response_callback;
@@ -253,6 +295,52 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_Disabled) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(OhttpKeyServiceLocationDisabledTest, GetOhttpKey_LocationDisabled) {
+  SetupSuccessResponse();
+  base::MockCallback<OhttpKeyService::Callback> response_callback;
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
+
+  ohttp_key_service_->GetOhttpKey(response_callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(OhttpKeyServiceFeatureOffTest, GetOhttpKey_FeatureDisabled) {
+  SetupSuccessResponse();
+  base::MockCallback<OhttpKeyService::Callback> response_callback;
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
+
+  ohttp_key_service_->GetOhttpKey(response_callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(OhttpKeyServiceLocationDisabledTest, GetOhttpKey_FreshnessHistogram) {
+  SetupSuccessResponse();
+  base::MockCallback<OhttpKeyService::Callback> response_callback;
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
+
+  ohttp_key_service_->GetOhttpKey(response_callback.Get());
+  task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
+      /*sample=*/true,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch", 1);
+
+  country_ = std::nullopt;
+  base::MockCallback<OhttpKeyService::Callback> response_callback2;
+  EXPECT_CALL(response_callback2, Run(Eq(std::nullopt))).Times(1);
+
+  ohttp_key_service_->GetOhttpKey(response_callback2.Get());
+  task_environment_.RunUntilIdle();
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
+      /*sample=*/false,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch", 2);
+}
+
 TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
   pref_service_.SetString(prefs::kSafeBrowsingHashRealTimeOhttpKey,
                           kEncodedTestOhttpKey);
@@ -260,7 +348,9 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
                         base::Time::Now() + base::Days(10));
 
   auto ohttp_key_service = std::make_unique<OhttpKeyService>(
-      test_shared_loader_factory_, &pref_service_);
+      test_shared_loader_factory_, &pref_service_, &local_state_,
+      base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
+                          base::Unretained(this)));
 
   std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
@@ -272,7 +362,9 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
                         base::Time::Now() - base::Days(10));
 
   ohttp_key_service = std::make_unique<OhttpKeyService>(
-      test_shared_loader_factory_, &pref_service_);
+      test_shared_loader_factory_, &pref_service_, &local_state_,
+      base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
+                          base::Unretained(this)));
   ohttp_key = ohttp_key_service->get_ohttp_key_for_testing();
   EXPECT_FALSE(ohttp_key.has_value());
 }
@@ -282,7 +374,9 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_EmptyKey) {
                         base::Time::Now() + base::Days(10));
 
   auto ohttp_key_service = std::make_unique<OhttpKeyService>(
-      test_shared_loader_factory_, &pref_service_);
+      test_shared_loader_factory_, &pref_service_, &local_state_,
+      base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
+                          base::Unretained(this)));
 
   std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
@@ -293,7 +387,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch) {
   SetupSuccessResponse();
 
   task_environment_.RunUntilIdle();
-  auto original_expiration = base::Time::Now() + base::Days(7);
+  auto original_expiration = base::Time::Now() + base::Days(3);
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
             original_expiration);
 
@@ -301,7 +395,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch) {
       "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
       /*sample=*/OhttpKeyService::FetchTriggerReason::kAsyncFetch);
 
-  task_environment_.FastForwardBy(base::Days(5));
+  task_environment_.FastForwardBy(base::Days(1));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
             original_expiration);
@@ -310,7 +404,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch) {
   task_environment_.RunUntilIdle();
   // OHTTP key is extended by async fetch.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration + base::Days(6));
+            original_expiration + base::Days(2));
 
   histogram_tester_.ExpectBucketCount(
       "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
@@ -322,44 +416,62 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
   SetupSuccessResponse();
 
   task_environment_.RunUntilIdle();
-  auto original_expiration = base::Time::Now() + base::Days(7);
+  auto expiration1 = base::Time::Now() + base::Days(3);
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration);
+            expiration1);
 
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
-  task_environment_.FastForwardBy(base::Days(6));
+  task_environment_.FastForwardBy(base::Days(2));
   task_environment_.RunUntilIdle();
   // The expiration is not extended because the service is disabled.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration);
+            expiration1);
 
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
-  task_environment_.FastForwardBy(base::Days(6));
+  task_environment_.FastForwardBy(base::Days(2));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration);
+            expiration1);
 
-  auto new_expiration = base::Time::Now() + base::Days(7);
+  auto expiration2 = base::Time::Now() + base::Days(3);
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
   task_environment_.RunUntilIdle();
   // The service is re-enabled, so the expiration date is updated.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            new_expiration);
+            expiration2);
 
   pref_service_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
                            false);
-  task_environment_.FastForwardBy(base::Days(6));
+  task_environment_.FastForwardBy(base::Days(2));
   task_environment_.RunUntilIdle();
   // The expiration is not extended because the service is disabled.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            new_expiration);
+            expiration2);
 
+  auto expiration3 = base::Time::Now() + base::Days(3);
   pref_service_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
                            true);
   task_environment_.RunUntilIdle();
   // The service is re-enabled, so the expiration date is updated.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            base::Time::Now() + base::Days(7));
+            expiration3);
+
+  country_ = "cn";
+  local_state_.SetString(variations::prefs::kVariationsCountry,
+                         country_.value());
+  task_environment_.FastForwardBy(base::Days(2));
+  task_environment_.RunUntilIdle();
+  // The expiration is not extended because the service is disabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            expiration3);
+
+  country_ = "us";
+  local_state_.SetString(variations::prefs::kVariationsCountry,
+                         country_.value());
+  task_environment_.RunUntilIdle();
+  // The service is re-enabled, so the expiration date is updated.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            base::Time::Now() + base::Days(3));
 }
 
 TEST_F(OhttpKeyServiceTest, AsyncFetch_Backoff) {
@@ -403,7 +515,7 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_Backoff) {
                                         kTestNewOhttpKey);
   // After exiting the backoff mode, a new key should be fetched based on the
   // key expiration date.
-  forward_and_check(base::Days(5), /*expected_key=*/kTestOhttpKey);
+  forward_and_check(base::Days(1), /*expected_key=*/kTestOhttpKey);
   forward_and_check(base::Days(1),
                     /*expected_key=*/kTestNewOhttpKey);
 }
@@ -517,6 +629,35 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_Backoff) {
   FastForwardAndVerifyKeyValue(kTestOldOhttpKey);
 }
 
+TEST_F(OhttpKeyServiceTest,
+       NotifyLookupResponse_LogFirstLookupResponseHistogram) {
+  constexpr char kFirstLookupHistogramName[] =
+      "SafeBrowsing.HPRT.OhttpKeyService.FirstLookupResponseCodeFromCurrentKey";
+  SetupOldKeyAndPendingNewKey();
+  task_environment_.RunUntilIdle();
+
+  ohttp_key_service_->NotifyLookupResponse(
+      kTestOldOhttpKey, net::HTTP_UNPROCESSABLE_CONTENT, /*headers=*/nullptr);
+  // Histogram is not logged because it is not a new key.
+  histogram_tester_.ExpectTotalCount(kFirstLookupHistogramName,
+                                     /*expected_count=*/0);
+
+  FastForwardAndVerifyKeyValue(kTestNewOhttpKey);
+
+  ohttp_key_service_->NotifyLookupResponse(kTestNewOhttpKey, net::HTTP_OK,
+                                           CreateSuccessHeaders());
+  histogram_tester_.ExpectUniqueSample(kFirstLookupHistogramName,
+                                       /*sample=*/net::HTTP_OK,
+                                       /*expected_bucket_count=*/1);
+
+  ohttp_key_service_->NotifyLookupResponse(kTestNewOhttpKey, net::HTTP_OK,
+                                           CreateSuccessHeaders());
+  // Histogram is not logged again because it is not the first lookup response
+  // with this key.
+  histogram_tester_.ExpectTotalCount(kFirstLookupHistogramName,
+                                     /*expected_count=*/1);
+}
+
 TEST_F(OhttpKeyServiceTest, Shutdown) {
   base::MockCallback<OhttpKeyService::Callback> response_callback;
   // Pending callbacks should be run during shutdown.
@@ -525,6 +666,45 @@ TEST_F(OhttpKeyServiceTest, Shutdown) {
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   ohttp_key_service_->Shutdown();
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(OhttpKeyServiceFastKeyRotationDisabledTest, NoFastRotationHeader) {
+  SetupSuccessResponse();
+  base::MockCallback<OhttpKeyService::Callback> response_callback;
+  EXPECT_CALL(response_callback, Run(Optional(std::string(kTestOhttpKey))))
+      .Times(1);
+
+  ohttp_key_service_->GetOhttpKey(response_callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(OhttpKeyServiceFastKeyRotationDisabledTest, AsyncFetch) {
+  SetupSuccessResponse();
+
+  task_environment_.RunUntilIdle();
+  auto original_expiration = base::Time::Now() + base::Days(7);
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
+
+  int32_t original_bucket_count = histogram_tester_.GetBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
+      /*sample=*/OhttpKeyService::FetchTriggerReason::kAsyncFetch);
+
+  task_environment_.FastForwardBy(base::Days(5));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration);
+
+  task_environment_.FastForwardBy(base::Days(1));
+  task_environment_.RunUntilIdle();
+  // OHTTP key is extended by async fetch.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            original_expiration + base::Days(6));
+
+  histogram_tester_.ExpectBucketCount(
+      "SafeBrowsing.HPRT.OhttpKeyService.FetchKeyTriggerReason",
+      /*sample=*/OhttpKeyService::FetchTriggerReason::kAsyncFetch,
+      /*expected_count=*/original_bucket_count + 1);
 }
 
 }  // namespace safe_browsing

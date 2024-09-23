@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 
 #include <stddef.h>
@@ -48,8 +53,7 @@ class CameraHalDelegateTest : public ::testing::Test {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         &mock_gpu_memory_buffer_manager_);
     camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(
-        base::ThreadPool::CreateSingleThreadTaskRunner(
-            {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED));
+        base::SingleThreadTaskRunner::GetCurrentDefault());
     if (!camera_hal_delegate_->Init()) {
       LOG(ERROR) << "Failed to initialize CameraHalDelegate";
       camera_hal_delegate_.reset();
@@ -59,7 +63,10 @@ class CameraHalDelegateTest : public ::testing::Test {
         mock_camera_module_.GetPendingRemote());
   }
 
-  void TearDown() override {}
+  void TearDown() override {
+    camera_hal_delegate_.reset();
+    task_environment_.RunUntilIdle();
+  }
 
   void Wait() {
     run_loop_ = std::make_unique<base::RunLoop>();

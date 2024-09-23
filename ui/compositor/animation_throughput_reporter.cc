@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/compositor.h"
@@ -76,7 +77,11 @@ class AnimationThroughputReporter::AnimationTracker
   void OnLayerAnimationStarted(LayerAnimationSequence* sequence) override {
     CallbackLayerAnimationObserver::OnLayerAnimationStarted(sequence);
 
-    if (!first_animation_group_id_.has_value()) {
+    // Start tracking on the first animation. Do not start tracking if the
+    // animation is finished when started, which happens when an animation
+    // is created either with 0 duration, or in its final state.
+    if (!first_animation_group_id_.has_value() &&
+        !sequence->IsFinished(base::TimeTicks::Now())) {
       first_animation_group_id_ = sequence->animation_group_id();
       MaybeStartTracking();
     }
@@ -124,6 +129,12 @@ class AnimationThroughputReporter::AnimationTracker
         throughput_tracker_->Cancel();
       else
         throughput_tracker_->Stop();
+
+      // `OnAnimationEnded` could be called multiple times when scheduling
+      // animations. Destroy the tracker so that it is not stopped/canceled
+      // more than once. New tracker will be created when new animation sequence
+      // is started.
+      throughput_tracker_.reset();
     }
 
     first_animation_group_id_.reset();

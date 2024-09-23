@@ -11,12 +11,13 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/webapps_utils.h"
@@ -59,7 +60,7 @@ WebappInstallSource WebappsClientAndroid::GetInstallSource(
       DCHECK(!is_custom_tab);
       return WebappInstallSource::MENU_CREATE_SHORTCUT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return WebappInstallSource::COUNT;
 }
 
@@ -68,7 +69,7 @@ AppBannerManager* WebappsClientAndroid::GetAppBannerManager(
   return AppBannerManagerAndroid::FromWebContents(web_contents);
 }
 
-bool WebappsClientAndroid::IsWebAppConsideredFullyInstalled(
+bool WebappsClientAndroid::DoesNewWebAppConflictWithExistingInstallation(
     content::BrowserContext* browsing_context,
     const GURL& start_url,
     const ManifestId& manifest_id) const {
@@ -93,6 +94,16 @@ bool WebappsClientAndroid::IsAppFullyInstalledForSiteUrl(
     const GURL& site_url) const {
   return false;
 }
+bool WebappsClientAndroid::IsUrlControlledBySeenManifest(
+    content::BrowserContext* browsing_context,
+    const GURL& site_url) const {
+  return false;
+}
+
+void WebappsClientAndroid::OnManifestSeen(
+    content::BrowserContext* browsing_context,
+    const blink::mojom::Manifest& manifest) const {}
+
 void WebappsClientAndroid::SaveInstallationDismissedForMl(
     content::BrowserContext* browsing_context,
     const GURL& manifest_id) const {
@@ -114,7 +125,7 @@ bool WebappsClientAndroid::IsMlPromotionBlockedByHistoryGuardrail(
 segmentation_platform::SegmentationPlatformService*
 WebappsClientAndroid::GetSegmentationPlatformService(
     content::BrowserContext* browsing_context) const {
-  // TODO(https://crbug.com/1449993): Implement.
+  // TODO(crbug.com/40269982): Implement.
   // Note: By returning a non-nullptr, all of the Ml code (after metrics
   // gathering) in `MlInstallabilityPromoter` will execute, including requesting
   // classifiction & eventually calling `OnMlInstallPrediction` above. Make sure
@@ -131,7 +142,7 @@ bool WebappsClientAndroid::IsInstallationInProgress(
 }
 
 bool WebappsClientAndroid::CanShowAppBanners(
-    content::WebContents* web_contents) {
+    const content::WebContents* web_contents) {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   return tab && static_cast<android::TabWebContentsDelegateAndroid*>(
                     tab->web_contents()->GetDelegate())
@@ -149,7 +160,8 @@ void WebappsClientAndroid::OnWebApkInstallInitiatedFromAppMenu(
 
 void WebappsClientAndroid::InstallWebApk(content::WebContents* web_contents,
                                          const AddToHomescreenParams& params) {
-  WebApkInstallService::Get(web_contents->GetBrowserContext())
+  WebApkInstallServiceFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext())
       ->InstallAsync(web_contents, *(params.shortcut_info), params.primary_icon,
                      params.install_source);
 }
@@ -165,7 +177,7 @@ void WebappsClientAndroid::InstallShortcut(
 bool WebappsClientAndroid::IsInstallationInProgress(
     content::BrowserContext* browser_context,
     const GURL& manifest_id) const {
-  return WebApkInstallService::Get(browser_context)
+  return WebApkInstallServiceFactory::GetForBrowserContext(browser_context)
       ->IsInstallInProgress(manifest_id);
 }
 

@@ -43,10 +43,6 @@ struct VIEWS_EXPORT MenuConfig {
   bool ShouldShowAcceleratorText(const MenuItemView* item_view,
                                  std::u16string* text) const;
 
-  // Initialize menu config for CR2023
-  void InitCR2023();
-  void InitPlatformCR2023();
-
   // Font lists used by menus.
   gfx::FontList font_list;
   gfx::FontList context_menu_font_list;
@@ -229,8 +225,13 @@ struct VIEWS_EXPORT MenuConfig {
   bool use_bubble_border = false;
 
  private:
-  // Configures a MenuConfig as appropriate for the current platform.
-  void Init();
+  // Set configuration as appropriate for the current platform. Called after
+  // InitCommon to make sure that fonts are correct or that other settings are
+  // overridden from their defaults.
+  void InitPlatform();
+
+  // Set default configuration that is shared by all platforms.
+  void InitCommon();
 };
 
 }  // namespace views

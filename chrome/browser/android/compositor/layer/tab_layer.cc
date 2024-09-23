@@ -16,6 +16,7 @@
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
@@ -85,7 +86,7 @@ static void PositionPadding(
                       padding_rect.y() + content_position.y());
   transform.Translate(descaled_local_content_area.x(),
                       descaled_local_content_area.y());
-  padding_layer->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
+  padding_layer->SetTransformOrigin(gfx::PointF(0.f, 0.f));
   padding_layer->SetTransform(transform);
 }
 
@@ -191,7 +192,7 @@ void TabLayer::SetProperties(int id,
   toolbar_layer_->PushResource(
       toolbar_resource_id, toolbar_background_color, anonymize_toolbar,
       toolbar_textbox_background_color, toolbar_textbox_resource_id, 0,
-      content_offset, false, false);
+      content_offset, false, false, viz::OffsetTag());
   toolbar_layer_->UpdateProgressBar(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
   float toolbar_impact_height = 0;
@@ -295,7 +296,7 @@ void TabLayer::SetProperties(int id,
   front_border_inner_shadow_->SetBorder(border_inner_shadow_resource->Border(
       border_inner_shadow_size));
 
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   side_padding_->SetBackgroundColor(
       SkColor4f::FromColor(default_background_color));
   bottom_padding_->SetBackgroundColor(
@@ -349,7 +350,7 @@ void TabLayer::SetProperties(int id,
     gfx::Transform transform;
     transform.Scale(content_scale, content_scale);
     transform.Translate(toolbar_position.x(), toolbar_position.y());
-    toolbar_layer_->layer()->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
+    toolbar_layer_->layer()->SetTransformOrigin(gfx::PointF(0.f, 0.f));
     toolbar_layer_->layer()->SetTransform(transform);
     toolbar_layer_->SetOpacity(toolbar_alpha);
 
@@ -367,7 +368,7 @@ void TabLayer::SetProperties(int id,
                           descaled_local_content_area.y());
 
       content_->layer()->SetHideLayerAndSubtree(false);
-      content_->layer()->SetTransformOrigin(gfx::Point3F(0.f, 0.f, 0.f));
+      content_->layer()->SetTransformOrigin(gfx::PointF(0.f, 0.f));
       content_->layer()->SetTransform(transform);
     }
 

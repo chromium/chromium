@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_CHROMEVOX_PANEL_H_
 
 #include "chrome/browser/ash/accessibility/accessibility_panel.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace ash {
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kChromeVoxPanelElementId);
 
 // Displays spoken feedback UI controls for the ChromeVox component extension
 class ChromeVoxPanel : public AccessibilityPanel {

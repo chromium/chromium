@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("launcher_search") {
+  sources = [
+    "system_info/launcher_util.cc",
+    "system_info/launcher_util.h",
+    "system_info/system_info_keyword_input.cc",
+    "system_info/system_info_keyword_input.h",
+  ]
+
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_LAUNCHER_SEARCH_IMPL" ]
+
+  deps = [
+    "//ash/strings:strings",
+    "//base",
+    "//chromeos/ash/components/system_info",
+    "//chromeos/ash/services/cros_healthd/public/mojom:mojom",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//ui/base",
+  ]
+}

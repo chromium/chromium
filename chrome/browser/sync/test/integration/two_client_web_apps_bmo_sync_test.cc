@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -52,7 +51,8 @@ using testing::Not;
 std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
   auto provider = std::make_unique<FakeWebAppProvider>(profile);
   provider->SetOsIntegrationManager(std::make_unique<FakeOsIntegrationManager>(
-      profile, nullptr, nullptr, nullptr, nullptr));
+      profile, /*file_handler_manager=*/nullptr,
+      /*protocol_handling_manager=*/nullptr));
   provider->StartWithSubsystems();
   DCHECK(provider);
   return provider;
@@ -130,28 +130,23 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
           app_id = new_app_id;
           run_loop.Quit();
         }),
-        /*use_fallback=*/true);
+        FallbackBehavior::kAllowFallbackDataAlways);
     run_loop.Run();
     return app_id;
   }
 
-  webapps::AppId InstallApp(const web_app::WebAppInstallInfo& info,
+  webapps::AppId InstallApp(std::unique_ptr<WebAppInstallInfo> info,
                             Profile* profile) {
-    return InstallApp(info, profile,
-                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-  }
-
-  webapps::AppId InstallApp(const web_app::WebAppInstallInfo& info,
-                            Profile* profile,
-                            webapps::WebappInstallSource source) {
-    DCHECK(info.start_url.is_valid());
+    GURL start_url = info->start_url();
+    std::u16string title = info->title;
 
     base::RunLoop run_loop;
     webapps::AppId app_id;
     auto* provider = WebAppProvider::GetForTest(profile);
-    provider->scheduler().InstallFromInfo(
-        std::make_unique<web_app::WebAppInstallInfo>(info.Clone()),
-        /*overwrite_existing_manifest_fields=*/true, source,
+    provider->scheduler().InstallFromInfoNoIntegrationForTesting(
+        std::move(info),
+        /*overwrite_existing_manifest_fields=*/true,
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindLambdaForTesting(
             [&run_loop, &app_id](const webapps::AppId& new_app_id,
                                  webapps::InstallResultCode code) {
@@ -163,8 +158,8 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     run_loop.Run();
 
     const WebAppRegistrar& registrar = GetRegistrar(profile);
-    EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
-    EXPECT_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
+    EXPECT_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), title);
+    EXPECT_EQ(registrar.GetAppStartUrl(app_id), start_url);
 
     return app_id;
   }
@@ -215,15 +210,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        SyncDoubleInstallationDifferentNames) {
   ASSERT_TRUE(SetupClients());
-  web_app::WebAppInstallInfo info;
-  info.title = u"Test name";
-  info.start_url = GURL("http://www.chromium.org/path");
 
   // Install web app to both profiles.
-  webapps::AppId app_id = InstallApp(info, GetProfile(0));
+  webapps::AppId app_id = test::InstallDummyWebApp(
+      GetProfile(0), "Test name", GURL("http://www.chromium.org/path"));
   // The web app has a different title on the second profile.
-  info.title = u"Test name 2";
-  webapps::AppId app_id2 = InstallApp(info, GetProfile(1));
+  webapps::AppId app_id2 = test::InstallDummyWebApp(
+      GetProfile(1), "Test name 2", GURL("http://www.chromium.org/path"));
 
   EXPECT_EQ(app_id, app_id2);
 
@@ -253,16 +246,17 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
 
-  web_app::WebAppInstallInfo info;
-  info.title = u"Test name";
-  info.start_url = GURL("http://www.chromium.org/path");
-  info.user_display_mode = mojom::UserDisplayMode::kStandalone;
+  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("http://www.chromium.org/path"));
+  info->title = u"Test name";
+  info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
   // Install web app to both profiles.
-  webapps::AppId app_id = InstallApp(info, GetProfile(0));
+  webapps::AppId app_id = InstallApp(
+      std::make_unique<WebAppInstallInfo>(info->Clone()), GetProfile(0));
   // The web app has a different open on the second profile.
-  info.user_display_mode = mojom::UserDisplayMode::kBrowser;
-  webapps::AppId app_id2 = InstallApp(info, GetProfile(1));
+  info->user_display_mode = mojom::UserDisplayMode::kBrowser;
+  webapps::AppId app_id2 = InstallApp(std::move(info), GetProfile(1));
 
   EXPECT_EQ(app_id, app_id2);
 
@@ -299,8 +293,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
   }
   WebAppProvider::GetForTest(GetProfile(1))
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+      .SetAppUserDisplayModeForTesting(app_id,
+                                       mojom::UserDisplayMode::kBrowser);
 
   ASSERT_TRUE(AwaitWebAppQuiescence());
 
@@ -391,8 +385,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
   // on profile 0. So changes should propagate from profile 0 to profile 1 now.
   WebAppProvider::GetForTest(GetProfile(0))
       ->sync_bridge_unsafe()
-      .SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+      .SetAppUserDisplayModeForTesting(app_id,
+                                       mojom::UserDisplayMode::kBrowser);
 
   ASSERT_TRUE(AwaitWebAppQuiescence());
 
@@ -672,30 +666,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
     EXPECT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
                 ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
   }
-  EXPECT_EQ(
-      1u, GetOsIntegrationManager(GetProfile(0)).num_create_shortcuts_calls());
-#if BUILDFLAG(IS_CHROMEOS)
-  std::optional<InstallOsHooksOptions> last_options =
-      GetOsIntegrationManager(GetProfile(1)).get_last_install_options();
-  EXPECT_TRUE(last_options.has_value());
-  OsHooksOptions expected_os_hook_requests;
-  expected_os_hook_requests[OsHookType::kShortcuts] = true;
-  expected_os_hook_requests[OsHookType::kRunOnOsLogin] = false;
-  expected_os_hook_requests[OsHookType::kShortcutsMenu] = true;
-  expected_os_hook_requests[OsHookType::kUninstallationViaOsSettings] = true;
-  expected_os_hook_requests[OsHookType::kFileHandlers] = true;
-  expected_os_hook_requests[OsHookType::kProtocolHandlers] = true;
-  expected_os_hook_requests[OsHookType::kUrlHandlers] = false;
-  EXPECT_EQ(expected_os_hook_requests, last_options->os_hooks);
-  EXPECT_TRUE(last_options->add_to_desktop);
-  EXPECT_FALSE(last_options->add_to_quick_launch_bar);
-  EXPECT_EQ(
-      1u, GetOsIntegrationManager(GetProfile(1)).num_create_shortcuts_calls());
-#else
-  EXPECT_FALSE(GetOsIntegrationManager(GetProfile(1))
-                   .get_last_install_options()
-                   .has_value());
-#endif
 }
 
 }  // namespace

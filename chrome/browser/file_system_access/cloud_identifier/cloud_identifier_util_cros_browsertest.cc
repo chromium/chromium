@@ -19,6 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_file_system_access_permission_context.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"

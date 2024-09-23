@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // devguid requires Windows.h be imported first.
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
 
 #include <windows.h>
+
 #include <setupapi.h>
 
 // LogSeverity is both a macro in setupapi.h and a typedef in base/logging.h
@@ -15,6 +21,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,12 +51,12 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
     return false;
   }
 
-  std::unique_ptr<char[]> interface_detail_data_buffer(
-      new char[interface_detail_data_size]);
+  auto interface_detail_data_buffer =
+      base::HeapArray<char>::Uninit(interface_detail_data_size);
 
   SP_DEVICE_INTERFACE_DETAIL_DATA* interface_detail_data =
       reinterpret_cast<SP_DEVICE_INTERFACE_DETAIL_DATA*>(
-          interface_detail_data_buffer.get());
+          interface_detail_data_buffer.data());
 
   interface_detail_data->cbSize = sizeof(SP_INTERFACE_DEVICE_DETAIL_DATA);
 
@@ -110,17 +117,17 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
   query.PropertyId = StorageDeviceProperty;
   query.QueryType = PropertyStandardQuery;
 
-  std::unique_ptr<char[]> output_buf(new char[1024]);
+  auto output_buf = base::HeapArray<char>::Uninit(1024);
   status = DeviceIoControl(
-      device_handle.Get(),            // Device handle.
-      IOCTL_STORAGE_QUERY_PROPERTY,   // Flag to request device properties.
-      &query,                         // Query parameters.
-      sizeof(STORAGE_PROPERTY_QUERY), // query parameters size.
-      output_buf.get(),               // output buffer.
-      1024,                           // Size of buffer.
-      &bytes_returned,                // Number of bytes returned.
-                                      // Must not be null.
-      NULL);                          // Optional unused overlapped perameter.
+      device_handle.Get(),             // Device handle.
+      IOCTL_STORAGE_QUERY_PROPERTY,    // Flag to request device properties.
+      &query,                          // Query parameters.
+      sizeof(STORAGE_PROPERTY_QUERY),  // query parameters size.
+      output_buf.data(),               // output buffer.
+      1024,                            // Size of buffer.
+      &bytes_returned,                 // Number of bytes returned.
+                                       // Must not be null.
+      NULL);                           // Optional unused overlapped perameter.
 
   if (status == FALSE) {
     PLOG(ERROR) << "Storage property query failed.";
@@ -128,7 +135,7 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
   }
 
   STORAGE_DEVICE_DESCRIPTOR* device_descriptor =
-      reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(output_buf.get());
+      reinterpret_cast<STORAGE_DEVICE_DESCRIPTOR*>(output_buf.data());
 
   if (!device_descriptor->RemovableMedia &&
       !(device_descriptor->BusType == BusTypeUsb)) {
@@ -164,13 +171,13 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
 
   if (device_descriptor->VendorIdOffset &&
       output_buf[device_descriptor->VendorIdOffset]) {
-    device.vendor.assign(output_buf.get() + device_descriptor->VendorIdOffset);
+    device.vendor.assign(output_buf.data() + device_descriptor->VendorIdOffset);
   }
 
   std::string product_id;
   if (device_descriptor->ProductIdOffset &&
       output_buf[device_descriptor->ProductIdOffset]) {
-    device.model.assign(output_buf.get() + device_descriptor->ProductIdOffset);
+    device.model.assign(output_buf.data() + device_descriptor->ProductIdOffset);
   }
 
   device_list->data.push_back(std::move(device));

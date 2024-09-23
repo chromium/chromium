@@ -16,6 +16,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -114,7 +115,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
-  ui::ModalType GetModalType() const override;
+  ui::mojom::ModalType GetModalType() const override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
@@ -303,14 +304,11 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_;
 
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
-
   // Views above the buttons. `contents_view_` owns every other view.
   raw_ptr<views::BoxLayoutView> contents_view_ = nullptr;
   raw_ptr<DeepScanningTopImageView> image_ = nullptr;
   raw_ptr<DeepScanningSideIconImageView> side_icon_image_ = nullptr;
-  raw_ptr<DeepScanningSideIconSpinnerView, DanglingUntriaged>
-      side_icon_spinner_ = nullptr;
+  raw_ptr<DeepScanningSideIconSpinnerView> side_icon_spinner_ = nullptr;
   raw_ptr<views::StyledLabel> message_ = nullptr;
 
   // The following views are also owned by `contents_view_`, but remain nullptr

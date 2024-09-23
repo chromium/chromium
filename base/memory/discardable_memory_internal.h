@@ -5,6 +5,8 @@
 #ifndef BASE_MEMORY_DISCARDABLE_MEMORY_INTERNAL_H_
 #define BASE_MEMORY_DISCARDABLE_MEMORY_INTERNAL_H_
 
+#include <array>
+
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -30,11 +32,22 @@ namespace features {
 // Feature flag enabling the discardable memory backing trial.
 BASE_EXPORT BASE_DECLARE_FEATURE(kDiscardableMemoryBackingTrial);
 
-BASE_EXPORT extern const base::FeatureParam<DiscardableMemoryTrialGroup>::Option
-    kDiscardableMemoryBackingParamOptions[];
+// Association of trial group names to trial group enum. Array order must match
+// order of DiscardableMemoryTrialGroup enum.
+constexpr inline auto kDiscardableMemoryBackingParamOptions =
+    std::to_array<base::FeatureParam<DiscardableMemoryTrialGroup>::Option>({
+        {DiscardableMemoryTrialGroup::kEmulatedSharedMemory, "shmem"},
+        {DiscardableMemoryTrialGroup::kMadvFree, "madvfree"},
+        {DiscardableMemoryTrialGroup::kAshmem, "ashmem"},
+    });
 
-BASE_EXPORT extern const base::FeatureParam<DiscardableMemoryTrialGroup>
-    kDiscardableMemoryBackingParam;
+constexpr inline base::FeatureParam<DiscardableMemoryTrialGroup>
+    kDiscardableMemoryBackingParam(
+        &kDiscardableMemoryBackingTrial,
+        "DiscardableMemoryBacking",
+        DiscardableMemoryTrialGroup::kEmulatedSharedMemory,
+        kDiscardableMemoryBackingParamOptions);
+
 }  // namespace features
 
 // Whether we should do the discardable memory backing trial for this session.
@@ -50,4 +63,4 @@ GetDiscardableMemoryBackingFieldTrialGroup();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
-#endif  //  BASE_MEMORY_DISCARDABLE_MEMORY_INTERNAL_H_
+#endif  // BASE_MEMORY_DISCARDABLE_MEMORY_INTERNAL_H_

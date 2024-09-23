@@ -15,6 +15,8 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/messaging_layer/util/upload_declarations.h"
+#include "components/reporting/proto/synced/configuration_file.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
@@ -24,18 +26,6 @@
 #include "net/base/backoff_entry.h"
 
 namespace reporting {
-
-// ReportSuccessfulUploadCallback is used to pass server responses back to
-// the caller (the response consists of sequence information and force_confirm
-// flag).
-using ReportSuccessfulUploadCallback =
-    base::RepeatingCallback<void(SequenceInformation,
-                                 /*force_confirm*/ bool)>;
-
-// ReceivedEncryptionKeyCallback is called if server attached encryption key
-// to the response.
-using EncryptionKeyAttachedCallback =
-    base::RepeatingCallback<void(SignedEncryptionInfo)>;
 
 // UpdateConfigInMissiveCallback is called if the configuration file obtained
 // from the server is different from the one that was sent previously using
@@ -82,8 +72,10 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
         int config_file_version,
         std::vector<EncryptedRecord> records,
         ScopedReservation scoped_reservation,
+        UploadEnqueuedCallback enqueued_cb,
         CompletionCallback upload_complete,
-        EncryptionKeyAttachedCallback encryption_key_attached_cb) = 0;
+        EncryptionKeyAttachedCallback encryption_key_attached_cb,
+        ConfigFileAttachedCallback config_file_attached_cb) = 0;
 
    protected:
     RecordHandler() = default;
@@ -95,8 +87,10 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
       std::unique_ptr<RecordHandler> handler,
+      UploadEnqueuedCallback enqueued_cb,
       ReportSuccessfulUploadCallback report_success_upload_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb,
       CompletionCallback completion_cb,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
@@ -133,8 +127,10 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
   std::vector<EncryptedRecord> encrypted_records_
       GUARDED_BY_CONTEXT(sequence_checker_);
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
+  UploadEnqueuedCallback enqueued_cb_;
   const ReportSuccessfulUploadCallback report_success_upload_cb_;
   const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
+  const ConfigFileAttachedCallback config_file_attached_cb_;
   const std::unique_ptr<RecordHandler> handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);

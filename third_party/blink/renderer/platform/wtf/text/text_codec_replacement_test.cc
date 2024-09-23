@@ -24,7 +24,7 @@ TEST(TextCodecReplacement, Aliases) {
   EXPECT_TRUE(TextEncoding("rEpLaCeMeNt").IsValid());
 
   EXPECT_TRUE(TextEncoding(g_replacement_alias).IsValid());
-  EXPECT_STREQ("replacement", TextEncoding(g_replacement_alias).GetName());
+  EXPECT_EQ("replacement", TextEncoding(g_replacement_alias).GetName());
 }
 
 TEST(TextCodecReplacement, DecodesToFFFD) {
@@ -32,12 +32,10 @@ TEST(TextCodecReplacement, DecodesToFFFD) {
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
   bool saw_error = false;
-  const char kTestCase[] = "hello world";
-  wtf_size_t test_case_size = sizeof(kTestCase) - 1;
 
   const String result =
-      codec->Decode(kTestCase, test_case_size, FlushBehavior::kDataEOF,
-                    false, saw_error);
+      codec->Decode(base::byte_span_from_cstring("hello world"),
+                    FlushBehavior::kDataEOF, false, saw_error);
   EXPECT_TRUE(saw_error);
   ASSERT_EQ(1u, result.length());
   EXPECT_EQ(0xFFFDU, result[0]);
@@ -49,9 +47,7 @@ TEST(TextCodecReplacement, EncodesToUTF8) {
 
   // "Kanji" in Chinese characters.
   const UChar kTestCase[] = {0x6F22, 0x5B57};
-  wtf_size_t test_case_size = std::size(kTestCase);
-  std::string result =
-      codec->Encode(kTestCase, test_case_size, kEntitiesForUnencodables);
+  std::string result = codec->Encode(kTestCase, kEntitiesForUnencodables);
 
   EXPECT_EQ("\xE6\xBC\xA2\xE5\xAD\x97", result);
 }

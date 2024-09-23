@@ -618,7 +618,7 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
         // NOTE: This crash has been observed, but we aren't able to find a
         // reproducible testcase. See: crbug.com/1179369.
         if (table_column + 1 >= collapsed_borders_geometry->columns.size()) {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           continue;
         }
 
@@ -719,7 +719,7 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
       physical_border_rect.offset += child.offset + paint_offset;
 
       BoxSide box_side;
-      if (IsHorizontalWritingMode(fragment_.Style().GetWritingMode())) {
+      if (fragment_.Style().IsHorizontalWritingMode()) {
         box_side = edge.IsInlineAxis() ? BoxSide::kTop : BoxSide::kLeft;
       } else {
         box_side = edge.IsInlineAxis() ? BoxSide::kLeft : BoxSide::kTop;
@@ -882,8 +882,9 @@ void TableCellPainter::PaintBackgroundForTablePart(
     const LayoutBox& table_part,
     const PhysicalRect& table_part_paint_rect,
     const PhysicalOffset& table_cell_paint_offset) {
-  if (fragment_.Style().Visibility() != EVisibility::kVisible)
+  if (fragment_.Style().UsedVisibility() != EVisibility::kVisible) {
     return;
+  }
   const auto& layout_table_cell =
       *To<LayoutTableCell>(fragment_.GetLayoutObject());
   if (layout_table_cell.BackgroundTransfersToView())

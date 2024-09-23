@@ -5,10 +5,12 @@
 #ifndef ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_H_
 #define ASH_IN_SESSION_AUTH_IN_SESSION_AUTH_DIALOG_H_
 
+#include <cstdint>
 #include <memory>
+#include <string>
 
-#include "ash/ash_export.h"
 #include "ash/in_session_auth/auth_dialog_contents_view.h"
+#include "ash/public/cpp/session/user_info.h"
 
 namespace aura {
 class Window;

@@ -48,7 +48,7 @@ void SVGPreserveAspectRatioTearOff::setAlign(uint16_t align,
   }
   Target()->SetAlign(
       static_cast<SVGPreserveAspectRatio::SVGPreserveAspectRatioType>(align));
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGPreserveAspectRatioTearOff::setMeetOrSlice(
@@ -66,7 +66,7 @@ void SVGPreserveAspectRatioTearOff::setMeetOrSlice(
   }
   Target()->SetMeetOrSlice(
       static_cast<SVGPreserveAspectRatio::SVGMeetOrSliceType>(meet_or_slice));
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 SVGPreserveAspectRatioTearOff::SVGPreserveAspectRatioTearOff(

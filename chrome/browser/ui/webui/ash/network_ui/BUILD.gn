@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("network_ui") {
+  sources = [
+    "network_logs_message_handler.cc",
+    "network_logs_message_handler.h",
+    "network_ui.cc",
+    "network_ui.h",
+    "onc_import_message_handler.cc",
+    "onc_import_message_handler.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/webui/common:trusted_types_util",
+    "//ash/webui/network_ui:network_diagnostics_resource_provider",
+    "//ash/webui/network_ui:network_health_resource_provider",
+    "//ash/webui/network_ui:traffic_counters_resource_provider",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/net/network_health",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/system_logs",
+    "//chrome/browser/extensions",
+    "//chrome/browser/feedback",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/network_ui:resources",
+    "//chrome/browser/ui/ash/system",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/ash/cellular_setup",
+    "//chrome/browser/ui/webui/ash/internet",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/components/onc",
+    "//chromeos/services/network_health/public/mojom",
+    "//chromeos/strings:strings_grit",
+    "//components/device_event_log",
+    "//components/onc",
+    "//components/policy/core/browser",
+    "//content/public/browser",
+    "//ui/chromeos/strings:strings_provider",
+    "//ui/webui",
+  ]
+}

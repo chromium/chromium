@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API IDP signin confirmation dialog tests.</title>
+<link rel="help" href="https://fedidcg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<!--
+Token generated with:
+generate_token.py https://web-platform.test:8444/ FedCmIdpSigninStatus --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial"
+  content="AxsFYFt0hYa+TYkw+/9aNgaGvhJMjPQO9ec5OuuMNFcbVKnhXzUWEricRljJdLkft10VZ1DWQ7vOJPbLbzByNgMAAABleyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiRmVkQ21JZHBTaWduaW5TdGF0dXMiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=">
+
+<body>
+
+<script type="module">
+import {request_options_with_mediation_required,
+        fedcm_test,
+        select_manifest,
+        fedcm_get_dialog_type_promise,
+        mark_signed_in} from '/fedcm/support/fedcm-helper.sub.js';
+
+fedcm_test(async t => {
+  await mark_signed_in();
+
+  let test_options = request_options_with_mediation_required("manifest_with_no_accounts.json");
+  await select_manifest(t, test_options);
+
+  let cred_promise = navigator.credentials.get(test_options);
+  // Because we cancel the dialog, we expect a NetworkError here.
+  cred_promise = promise_rejects_dom(t, "NetworkError", cred_promise);
+
+  let type = await fedcm_get_dialog_type_promise(t);
+  assert_equals("ConfirmIdpLogin", type);
+
+  window.test_driver.cancel_fedcm_dialog();
+  return cred_promise;
+}, "Dismiss IDP login dialog");
+</script>

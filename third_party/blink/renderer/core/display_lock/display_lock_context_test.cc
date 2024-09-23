@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 
 #include <memory>
@@ -942,7 +947,7 @@ TEST_P(DisplayLockContextTest, DisplayLockPreventsActivation) {
       *slotted, DisplayLockActivationReason::kAny));
 
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(
       "<div id='container' style='contain:style layout "
       "paint;'><slot></slot></div>");
@@ -1045,7 +1050,7 @@ TEST_P(DisplayLockContextTest,
   auto* host = GetDocument().getElementById(AtomicString("shadowHost"));
   auto* text_field = GetDocument().getElementById(AtomicString("textfield"));
   ShadowRoot& shadow_root =
-      host->AttachShadowRootForTesting(ShadowRootType::kOpen);
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.setInnerHTML(
       "<div id='container' style='contain:style layout "
       "paint;'><slot></slot></div>");
@@ -3356,10 +3361,10 @@ TEST_P(DisplayLockContextTest, ConnectedElementDefersSubtreeChecks) {
   range->setEnd(GetDocument().getElementById(AtomicString("s2"))->firstChild(),
                 5);
 
-  Selection().SetSelectionAndEndTyping(
-      SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(EphemeralRange(range))
-          .Build());
+  Selection().SetSelection(SelectionInDOMTree::Builder()
+                               .SetBaseAndExtent(EphemeralRange(range))
+                               .Build(),
+                           SetSelectionOptions());
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -3376,7 +3381,7 @@ TEST_P(DisplayLockContextTest, ConnectedElementDefersSubtreeChecks) {
 }
 
 TEST_P(DisplayLockContextTest, BlockedReattachOfSlotted) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <div id="host">
       <template shadowrootmode="open">
         <style>
@@ -3405,7 +3410,7 @@ TEST_P(DisplayLockContextTest, BlockedReattachOfSlotted) {
 }
 
 TEST_P(DisplayLockContextTest, BlockedReattachOfShadowTree) {
-  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+  GetDocument().body()->setHTMLUnsafe(R"HTML(
     <style>
       .locked { content-visibility: hidden; }
     </style>

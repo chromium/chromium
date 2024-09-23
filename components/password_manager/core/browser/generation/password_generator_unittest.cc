@@ -43,7 +43,7 @@ bool IsCharInClass(char16_t c, const std::string& class_name) {
   // Symbols are not covered because there is not fixed definition and because
   // symbols are treated like other character classes, so the importance of
   // dealing with them here is limited.
-  NOTREACHED() << "Don't call IsCharInClass for symbols";
+  NOTREACHED_IN_MIGRATION() << "Don't call IsCharInClass for symbols";
   return false;
 }
 
@@ -68,7 +68,7 @@ PasswordRequirementsSpec_CharacterClass* GetMutableCharClass(
   } else if (class_name == kSymbol) {
     return spec->mutable_symbols();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -242,8 +242,9 @@ TEST_F(PasswordGeneratorTest, CharacterSetCanBeOverridden) {
   // as an indicator that the override was respected.
   size_t num_as_and_bs = 0;
   for (char16_t c : password) {
-    if (c == 'a' || c == 'b')
+    if (c == 'a' || c == 'b') {
       ++num_as_and_bs;
+    }
   }
   EXPECT_EQ(5u, num_as_and_bs);
 }
@@ -264,10 +265,12 @@ TEST_F(PasswordGeneratorTest, AllCharactersAreGenerated) {
     size_t num_as = 0;
     size_t num_bs = 0;
     for (char16_t c : password) {
-      if (c == 'a')
+      if (c == 'a') {
         ++num_as;
-      if (c == 'b')
+      }
+      if (c == 'b') {
         ++num_bs;
+      }
     }
     if (num_as > 0u && num_bs > 0u) {
       success = true;
@@ -311,12 +314,8 @@ TEST_F(PasswordGeneratorTest, ZeroLength) {
 class PasswordGeneratorChunkingTest : public testing::Test {
  public:
   PasswordGeneratorChunkingTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{password_manager::features::
-                                   kPasswordGenerationExperiment,
-                               {{"password_generation_variation",
-                                 "chunk_password"}}}},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordGenerationChunking);
   }
   ~PasswordGeneratorChunkingTest() override = default;
 

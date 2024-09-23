@@ -9,9 +9,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "net/log/net_log_event_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,20 +76,19 @@ size_t ExpectLogContainsSomewhereAfter(const std::vector<NetLogEntry>& entries,
 // or nullopt if there is none.
 std::optional<std::string> GetOptionalStringValueFromParams(
     const NetLogEntry& entry,
-    base::StringPiece path);
+    std::string_view path);
 std::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
-                                                      base::StringPiece path);
+                                                      std::string_view path);
 std::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
-                                                     base::StringPiece path);
+                                                     std::string_view path);
 std::optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry);
 
 // Same as the *Optional* versions above, except will add a Gtest failure if the
 // value was not present, and then return some default.
 std::string GetStringValueFromParams(const NetLogEntry& entry,
-                                     base::StringPiece path);
-int GetIntegerValueFromParams(const NetLogEntry& entry, base::StringPiece path);
-bool GetBooleanValueFromParams(const NetLogEntry& entry,
-                               base::StringPiece path);
+                                     std::string_view path);
+int GetIntegerValueFromParams(const NetLogEntry& entry, std::string_view path);
+bool GetBooleanValueFromParams(const NetLogEntry& entry, std::string_view path);
 int GetNetErrorCodeFromParams(const NetLogEntry& entry);
 
 }  // namespace net

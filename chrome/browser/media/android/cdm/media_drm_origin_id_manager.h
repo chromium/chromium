@@ -59,7 +59,7 @@ class MediaDrmOriginIdManager : public KeyedService {
   // Asynchronously returns a preprovisioned origin ID using |callback|, if one
   // is available. If none are available, an un-provisioned origin ID is
   // returned.
-  // TODO(crbug.com/917527): Return an empty origin ID once callers
+  // TODO(crbug.com/41433110): Return an empty origin ID once callers
   // can handle it.
   void GetOriginId(ProvisionedOriginIdCB callback);
 

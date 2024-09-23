@@ -15,6 +15,8 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/gcm_driver/instance_id/android/jni_headers/InstanceIDBridge_jni.h"
 
 using base::android::AttachCurrentThread;

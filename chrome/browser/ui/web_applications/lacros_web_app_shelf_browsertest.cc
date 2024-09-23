@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -53,7 +54,7 @@ constexpr char kSecondAppUrlHost[] = "second-pwa.test";
 
 namespace web_app {
 
-class LacrosWebAppShelfBrowserTest : public WebAppControllerBrowserTest {
+class LacrosWebAppShelfBrowserTest : public WebAppBrowserTestBase {
  public:
   LacrosWebAppShelfBrowserTest() = default;
   ~LacrosWebAppShelfBrowserTest() override = default;
@@ -241,8 +242,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
       EXPECT_TRUE(success_future.Get());
     }
     CloseAndWait(app_browser1);
-    sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
-                                      /*is_user_action=*/true);
+    sync_bridge.SetAppUserDisplayModeForTesting(
+        app1_id, mojom::UserDisplayMode::kBrowser);
     apps::AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser)
         .Await();
 
@@ -256,8 +257,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
       EXPECT_TRUE(success_future.Get());
     }
     CloseAndWait(app_browser2);
-    sync_bridge.SetAppUserDisplayMode(app2_id, mojom::UserDisplayMode::kBrowser,
-                                      /*is_user_action=*/true);
+    sync_bridge.SetAppUserDisplayModeForTesting(
+        app2_id, mojom::UserDisplayMode::kBrowser);
     apps::AppWindowModeWaiter(profile(), app2_id, apps::WindowMode::kBrowser)
         .Await();
   }
@@ -356,8 +357,13 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
 
     // Install app1 shortcut.
     browser()->tab_strip_model()->ActivateTabAt(/*index=*/1);
+    AppMenuCommandState install_pwa_state =
+        base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
+            ? kEnabled
+            : kNotPresent;
     EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
-    EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
+    EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()),
+              install_pwa_state);
 
     SetAutoAcceptWebAppDialogForTesting(
         /*auto_accept=*/true,
@@ -383,8 +389,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
 
   // Launch app1 in a browser tab (only).
   {
-    sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
-                                      /*is_user_action=*/false);
+    sync_bridge.SetAppUserDisplayModeForTesting(
+        app1_id, mojom::UserDisplayMode::kBrowser);
     apps::AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser)
         .Await();
 
@@ -437,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
 }
 
 // Tests that opening a new window for a tabbed web app opens a new window.
-// TODO(crbug.com/1490336): Make this run on Ash as well.
+// TODO(crbug.com/40284715): Make this run on Ash as well.
 IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, NewTabbedWindow) {
   const std::optional<std::vector<std::string>>& capabilities =
       chromeos::BrowserParamsProxy::Get()->AshCapabilities();

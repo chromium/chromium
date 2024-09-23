@@ -3,22 +3,21 @@
 // found in the LICENSE file.
 
 import './cluster_menu.js';
-import './history_clusters_shared_style.css.js';
 import './horizontal_carousel.js';
 import './search_query.js';
-import './shared_vars.css.js';
 import './url_visit.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {HistoryResultType} from '//resources/cr_components/history/constants.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {getTemplate} from './cluster.html.js';
+import {getCss} from './cluster.css.js';
+import {getHtml} from './cluster.html.js';
 import type {Cluster, SearchQuery, URLVisit} from './history_cluster_types.mojom-webui.js';
 import type {PageCallbackRouter} from './history_clusters.mojom-webui.js';
 import {ClusterAction, VisitAction} from './history_clusters.mojom-webui.js';
@@ -31,83 +30,77 @@ import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'history-cluster': HistoryClusterElement;
+    'history-cluster': ClusterElement;
   }
 }
 
-const HistoryClusterElementBase = I18nMixin(PolymerElement);
+const ClusterElementBase = I18nMixinLit(CrLitElement);
 
-interface HistoryClusterElement {
+export interface ClusterElement {
   $: {
     label: HTMLElement,
     container: HTMLElement,
   };
 }
 
-class HistoryClusterElement extends HistoryClusterElementBase {
+export class ClusterElement extends ClusterElementBase {
   static get is() {
     return 'history-cluster';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The cluster displayed by this element.
        */
-      cluster: Object,
+      cluster: {type: Object},
 
       /**
        * The index of the cluster.
        */
-      index: {
-        type: Number,
-        value: -1,  // Initialized to an invalid value.
-      },
+      index: {type: Number},
 
       /**
        * Whether the cluster is in the side panel.
        */
       inSidePanel: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('inSidePanel'),
-        reflectToAttribute: true,
+        reflect: true,
       },
 
       /**
        * The current query for which related clusters are requested and shown.
        */
-      query: String,
+      query: {type: String},
 
       /**
        * The visible related searches.
        */
-      relatedSearches_: {
-        type: Object,
-        computed: `computeRelatedSearches_(cluster.relatedSearches.*)`,
-      },
+      relatedSearches_: {type: Array},
 
       /**
        * The label for the cluster. This property is actually unused. The side
        * effect of the compute function is used to insert the HTML elements for
        * highlighting into this.$.label element.
        */
-      unusedLabel_: {
+      label_: {
         type: String,
-        computed: 'computeLabel_(cluster.label)',
+        state: true,
       },
 
       /**
        * The cluster's image URL in a form easily passed to cr-auto-img.
        * Also notifies the outer iron-list of a resize.
        */
-      imageUrl_: {
-        type: String,
-        computed: `computeImageUrl_(cluster.imageUrl)`,
-      },
+      imageUrl_: {type: String},
     };
   }
 
@@ -115,15 +108,17 @@ class HistoryClusterElement extends HistoryClusterElementBase {
   // Properties
   //============================================================================
 
-  cluster: Cluster;
-  index: number;
-  query: string;
-  private callbackRouter_: PageCallbackRouter;
+  cluster?: Cluster;
+  index: number = -1;  // Initialized to an invalid value.
+  inSidePanel: boolean = loadTimeData.getBoolean('inSidePanel');
+  query: string = '';
+  protected imageUrl_: string = '';
+  protected relatedSearches_: SearchQuery[] = [];
 
-  inSidePanel: boolean;
+  private callbackRouter_: PageCallbackRouter;
   private onVisitsHiddenListenerId_: number|null = null;
   private onVisitsRemovedListenerId_: number|null = null;
-  private unusedLabel_: string;
+  private label_: string = 'no_label';
 
   //============================================================================
   // Overridden methods
@@ -132,12 +127,6 @@ class HistoryClusterElement extends HistoryClusterElementBase {
   constructor() {
     super();
     this.callbackRouter_ = BrowserProxyImpl.getInstance().callbackRouter;
-
-    // This element receives a tabindex, because it's an iron-list item.
-    // However, what we really want to do is to pass that focus onto an
-    // eligible child, so we want to set `delegatesFocus` to true. But
-    // delegatesFocus removes the text selection. So temporarily removing
-    // the delegatesFocus until that issue is fixed.
   }
 
   override connectedCallback() {
@@ -162,18 +151,58 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     this.onVisitsRemovedListenerId_ = null;
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('cluster')) {
+      assert(this.cluster);
+      this.label_ = this.cluster.label ? this.cluster.label : 'no_label';
+      this.imageUrl_ = this.cluster.imageUrl ? this.cluster.imageUrl.url : '';
+      this.relatedSearches_ = this.cluster.relatedSearches.filter(
+          (query: SearchQuery, index: number) => {
+            return query && !(this.inSidePanel && index > 2);
+          });
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('label_') && this.label_ !== 'no_label' &&
+        this.cluster) {
+      insertHighlightedTextWithMatchesIntoElement(
+          this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
+    }
+    if (changedPrivateProperties.has('imageUrl_')) {
+      // iron-list can't handle our size changing because of loading an image
+      // without an explicit event. But we also can't send this until we have
+      // updated the image property, so send it on the next idle.
+      requestIdleCallback(() => {
+        this.fire('iron-resize');
+      });
+    } else if (changedProperties.has('cluster')) {
+      // Iron-list re-assigns the `cluster` property to reuse existing elements
+      // as the user scrolls. Since this property can change the height of this
+      // element, we need to notify iron-list that this element's height may
+      // need to be re-calculated.
+      this.fire('iron-resize');
+    }
+  }
+
   //============================================================================
   // Event handlers
   //============================================================================
 
-  private onRelatedSearchClicked_() {
+  protected onRelatedSearchClicked_() {
     MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.kRelatedSearchClicked, this.index);
   }
 
   /* Clears selection on non alt mouse clicks. Need to wait for browser to
    *  update the DOM fully. */
-  private clearSelection_(event: MouseEvent) {
+  protected clearSelection_(event: MouseEvent) {
     this.onBrowserIdle_().then(() => {
       if (window.getSelection() && !event.altKey) {
         window.getSelection()?.empty();
@@ -181,17 +210,23 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     });
   }
 
-  private onVisitClicked_(event: CustomEvent<URLVisit>) {
+  protected onVisitClicked_(event: CustomEvent<URLVisit>) {
     MetricsProxyImpl.getInstance().recordClusterAction(
         ClusterAction.kVisitClicked, this.index);
 
     const visit = event.detail;
+    const visitIndex = this.getVisitIndex_(visit);
     MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.kClicked, this.getVisitIndex_(visit),
-        MetricsProxyImpl.getVisitType(visit));
+        VisitAction.kClicked, visitIndex, MetricsProxyImpl.getVisitType(visit));
+
+    this.fire('record-history-link-click', {
+      resultType: HistoryResultType.GROUPED,
+      index: visitIndex,
+    });
   }
 
-  private onOpenAllVisits_() {
+  protected onOpenAllVisits_() {
+    assert(this.cluster);
     BrowserProxyImpl.getInstance().handler.openVisitUrlsInTabGroup(
         this.cluster.visits, this.cluster.tabGroupName ?? null);
 
@@ -199,24 +234,16 @@ class HistoryClusterElement extends HistoryClusterElementBase {
         ClusterAction.kOpenedInTabGroup, this.index);
   }
 
-  private onHideAllVisits_() {
-    this.dispatchEvent(new CustomEvent('hide-visits', {
-      bubbles: true,
-      composed: true,
-      detail: this.cluster.visits,
-    }));
+  protected onHideAllVisits_() {
+    this.fire('hide-visits', this.cluster ? this.cluster.visits : []);
   }
 
-  private onRemoveAllVisits_() {
+  protected onRemoveAllVisits_() {
     // Pass event up with new detail of all this cluster's visits.
-    this.dispatchEvent(new CustomEvent('remove-visits', {
-      bubbles: true,
-      composed: true,
-      detail: this.cluster.visits,
-    }));
+    this.fire('remove-visits', this.cluster ? this.cluster.visits : []);
   }
 
-  private onHideVisit_(event: CustomEvent<URLVisit>) {
+  protected onHideVisit_(event: CustomEvent<URLVisit>) {
     // The actual hiding is handled in clusters.ts. This is just a good place to
     // record the metric.
     const visit = event.detail;
@@ -225,7 +252,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
         MetricsProxyImpl.getVisitType(visit));
   }
 
-  private onRemoveVisit_(event: CustomEvent<URLVisit>) {
+  protected onRemoveVisit_(event: CustomEvent<URLVisit>) {
     // The actual removal is handled in clusters.ts. This is just a good place
     // to record the metric.
     const visit = event.detail;
@@ -233,11 +260,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
         VisitAction.kDeleted, this.getVisitIndex_(visit),
         MetricsProxyImpl.getVisitType(visit));
 
-    this.dispatchEvent(new CustomEvent('remove-visits', {
-      bubbles: true,
-      composed: true,
-      detail: [visit],
-    }));
+    this.fire('remove-visits', [visit]);
   }
 
   //============================================================================
@@ -262,6 +285,7 @@ class HistoryClusterElement extends HistoryClusterElementBase {
    * order to get a chance to remove their matching visits.
    */
   private onVisitsRemovedOrHidden_(removedVisits: URLVisit[]) {
+    assert(this.cluster);
     const visitHasBeenRemoved = (visit: URLVisit) => {
       return removedVisits.findIndex((removedVisit) => {
         if (visit.normalizedUrl.url !== removedVisit.normalizedUrl.url) {
@@ -287,59 +311,18 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     if (!remainingVisits.length) {
       // If all the visits are removed, fire an event to also remove this
       // cluster from the list of clusters.
-      this.dispatchEvent(new CustomEvent('remove-cluster', {
-        bubbles: true,
-        composed: true,
-        detail: this.index,
-      }));
+      this.fire('remove-cluster', this.index);
 
       MetricsProxyImpl.getInstance().recordClusterAction(
           ClusterAction.kDeleted, this.index);
     } else {
-      this.set('cluster.visits', remainingVisits);
+      this.cluster.visits = remainingVisits;
+      this.requestUpdate();
     }
 
-    this.dispatchEvent(new CustomEvent('iron-resize', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  private computeLabel_(): string {
-    if (!this.cluster.label) {
-      // This never happens unless we misconfigured our variations config.
-      // This sentinel string matches the Android UI.
-      return 'no_label';
-    }
-
-    insertHighlightedTextWithMatchesIntoElement(
-        this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
-    return this.cluster.label!;
-  }
-
-  private computeRelatedSearches_(): SearchQuery[] {
-    return this.cluster.relatedSearches.filter(
-        (query: SearchQuery, index: number) => {
-          return query && !(this.inSidePanel && index > 2);
-        });
-  }
-
-  private computeImageUrl_(): string {
-    if (!this.cluster.imageUrl) {
-      return '';
-    }
-
-    // iron-list can't handle our size changing because of loading an image
-    // without an explicit event. But we also can't send this until we have
-    // updated the image property, so send it on the next idle.
-    requestIdleCallback(() => {
-      this.dispatchEvent(new CustomEvent('iron-resize', {
-        bubbles: true,
-        composed: true,
-      }));
+    this.updateComplete.then(() => {
+      this.fire('iron-resize');
     });
-
-    return this.cluster.imageUrl.url;
   }
 
   /**
@@ -347,8 +330,26 @@ class HistoryClusterElement extends HistoryClusterElementBase {
    * if the visit is not found in the cluster at all.
    */
   private getVisitIndex_(visit: URLVisit): number {
-    return this.cluster.visits.indexOf(visit);
+    return this.cluster ? this.cluster.visits.indexOf(visit) : -1;
+  }
+
+  protected hideRelatedSearches_(): boolean {
+    return !this.cluster || !this.cluster.relatedSearches.length;
+  }
+
+  protected debugInfo_(): string {
+    return this.cluster && this.cluster.debugInfo ? this.cluster.debugInfo : '';
+  }
+
+  protected timestamp_(): string {
+    return this.cluster && this.cluster.visits.length > 0 ?
+        this.cluster.visits[0]!.relativeDate :
+        '';
+  }
+
+  protected visits_(): URLVisit[] {
+    return this.cluster ? this.cluster.visits : [];
   }
 }
 
-customElements.define(HistoryClusterElement.is, HistoryClusterElement);
+customElements.define(ClusterElement.is, ClusterElement);

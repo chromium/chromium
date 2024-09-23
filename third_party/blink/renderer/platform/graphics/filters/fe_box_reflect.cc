@@ -22,7 +22,7 @@ gfx::RectF FEBoxReflect::MapEffect(const gfx::RectF& rect) const {
 WTF::TextStream& FEBoxReflect::ExternalRepresentation(WTF::TextStream& ts,
                                                       int indent) const {
   // Only called for SVG layout tree printing.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ts;
 }
 

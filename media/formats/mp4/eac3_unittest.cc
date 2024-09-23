@@ -48,6 +48,78 @@ TEST_F(EAC3Test, NormalInputTest) {
   EXPECT_EQ(eac3_.GetChannelCount(), 2u);
 }
 
+TEST_F(EAC3Test, ChannelLayout_Mono_Test) {
+  std::vector<uint8_t> data({0x03, 0x00, 0x20, 0x02, 0x00});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 1u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_MONO);
+}
+
+TEST_F(EAC3Test, ChannelLayout_Stereo_Test) {
+  std::vector<uint8_t> data({0x06, 0x00, 0x20, 0x04, 0x00});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 2u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_STEREO);
+}
+
+TEST_F(EAC3Test, ChannelLayout_Surround_Test) {
+  std::vector<uint8_t> data({0x0a, 0x00, 0x20, 0x06, 0x00});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 3u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_SURROUND);
+}
+
+TEST_F(EAC3Test, ChannelLayout_2Point1_Test) {
+  std::vector<uint8_t> data({0x06, 0x00, 0x20, 0x05, 0x00});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 3u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_2POINT1);
+}
+
+TEST_F(EAC3Test, ChannelLayout_2_2_Test) {
+  std::vector<uint8_t> data({0x0c, 0x00, 0x20, 0x0c, 0x00});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 4u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_2_2);
+}
+
+TEST_F(EAC3Test, ChannelLayout_4_0_Test) {
+  std::vector<uint8_t> data({0x0c, 0x00, 0x20, 0x0a, 0x00});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 4u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_4_0);
+}
+
+TEST_F(EAC3Test, ChannelLayout_5_0_Test) {
+  std::vector<uint8_t> data({0x0e, 0x00, 0x20, 0x0e, 0x00});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 5u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_5_0);
+}
+
+TEST_F(EAC3Test, ChannelLayout_5_1_Test) {
+  std::vector<uint8_t> data({0x0e, 0x00, 0x20, 0x0f, 0x00});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 6u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_5_1);
+}
+
+TEST_F(EAC3Test, ChannelLayout_7_1_Test) {
+  std::vector<uint8_t> data({0x08, 0xa8, 0x20, 0x0f, 0x02, 0x02});
+
+  EXPECT_TRUE(Parse(data));
+  EXPECT_EQ(eac3_.GetChannelCount(), 8u);
+  EXPECT_EQ(eac3_.GetChannelLayout(), CHANNEL_LAYOUT_7_1);
+}
+
 }  // namespace mp4
 
 }  // namespace media

@@ -9,7 +9,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 group("common_constants") {
   if (is_component_build) {
@@ -81,7 +81,6 @@ mojom("mojom") {
     "mojom/extra_response_data.mojom",
     "mojom/feature_session_type.mojom",
     "mojom/frame.mojom",
-    "mojom/guest_view.mojom",
     "mojom/host_id.mojom",
     "mojom/injection_type.mojom",
     "mojom/keep_alive.mojom",
@@ -103,9 +102,14 @@ mojom("mojom") {
     "//extensions/common/api:mojom",
     "//mojo/public/mojom/base",
     "//services/accessibility/public/mojom:automation",
+    "//third_party/blink/public/mojom:mojom_core",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  if (enable_guest_view) {
+    sources += [ "mojom/guest_view.mojom" ]
+  }
 
   cpp_typemaps = [
     {
@@ -202,7 +206,10 @@ mojom("mojom") {
           [ "//extensions/common/mojom/message_port_mojom_traits.cc" ]
     },
   ]
-  overridden_deps = [ "//content/public/common:interfaces" ]
+  overridden_deps = [
+    "//content/public/common:interfaces",
+    "//third_party/blink/public/mojom:mojom_core",
+  ]
 
   component_deps = [ "//content/public/common" ]
 }
@@ -254,6 +261,8 @@ static_library("common") {
     "api/sockets/sockets_manifest_handler.h",
     "api/sockets/sockets_manifest_permission.cc",
     "api/sockets/sockets_manifest_permission.h",
+    "api/web_request/web_request_activity_log_constants.cc",
+    "api/web_request/web_request_activity_log_constants.h",
     "command.cc",
     "command.h",
     "common_manifest_handlers.cc",
@@ -264,6 +273,8 @@ static_library("common") {
     "context_data.h",
     "cors_util.cc",
     "cors_util.h",
+    "crash_keys.cc",
+    "crash_keys.h",
     "csp_validator.cc",
     "csp_validator.h",
     "dom_action_types.h",
@@ -279,8 +290,6 @@ static_library("common") {
     "extension_api.h",
     "extension_features.cc",
     "extension_features.h",
-    "extension_icon_set.cc",
-    "extension_icon_set.h",
     "extension_id.h",
     "extension_l10n_util.cc",
     "extension_l10n_util.h",
@@ -329,6 +338,14 @@ static_library("common") {
     "frame_context_data.h",
     "hashed_extension_id.cc",
     "hashed_extension_id.h",
+    "icons/extension_icon_set.cc",
+    "icons/extension_icon_set.h",
+    "icons/extension_icon_variant.cc",
+    "icons/extension_icon_variant.h",
+    "icons/extension_icon_variants.cc",
+    "icons/extension_icon_variants.h",
+    "icons/extension_icon_variants_diagnostics.cc",
+    "icons/extension_icon_variants_diagnostics.h",
     "image_util.cc",
     "image_util.h",
     "install_warning.cc",
@@ -340,6 +357,8 @@ static_library("common") {
     "manifest_handler.h",
     "manifest_handler_helpers.cc",
     "manifest_handler_helpers.h",
+    "manifest_handler_registry.cc",
+    "manifest_handler_registry.h",
     "manifest_handlers/app_display_info.cc",
     "manifest_handlers/app_display_info.h",
     "manifest_handlers/automation.cc",
@@ -362,6 +381,8 @@ static_library("common") {
     "manifest_handlers/externally_connectable.h",
     "manifest_handlers/file_handler_info.cc",
     "manifest_handlers/file_handler_info.h",
+    "manifest_handlers/icon_variants_handler.cc",
+    "manifest_handlers/icon_variants_handler.h",
     "manifest_handlers/icons_handler.cc",
     "manifest_handlers/icons_handler.h",
     "manifest_handlers/incognito_info.cc",
@@ -485,18 +506,20 @@ static_library("common") {
 
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
+    "//components/crash/core/common",
     "//components/crx_file",
     "//components/nacl/common:buildflags",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/url_formatter",
     "//components/url_matcher",
     "//components/version_info",
     "//crypto",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
-    "//extensions:extensions_resources",
-    "//extensions/common:mojom",
     "//extensions/common/api",
     "//extensions/strings",
     "//net",
@@ -516,6 +539,10 @@ static_library("common") {
     "//url",
   ]
 
+  if (enable_extensions) {
+    deps += [ "//extensions:extensions_resources" ]
+  }
+
   if (enable_nacl) {
     sources += [
       "manifest_handlers/nacl_modules_handler.cc",
@@ -527,6 +554,12 @@ static_library("common") {
     sources += [
       "manifest_handlers/action_handlers_handler.cc",
       "manifest_handlers/action_handlers_handler.h",
+    ]
+  }
+  if (is_chromeos_ash) {
+    sources += [
+      "manifest_handlers/input_components_handler.cc",
+      "manifest_handlers/input_components_handler.h",
     ]
   }
 }
@@ -584,11 +617,11 @@ source_set("unit_tests") {
     "api/sockets/sockets_manifest_permission_unittest.cc",
     "command_unittest.cc",
     "component_extension_url_pattern_unittest.cc",
+    "crash_keys_unittest.cc",
     "csp_validator_unittest.cc",
     "error_utils_unittest.cc",
     "event_filter_unittest.cc",
     "extension_builder_unittest.cc",
-    "extension_icon_set_unittest.cc",
     "extension_l10n_util_unittest.cc",
     "extension_resource_path_normalizer_unittest.cc",
     "extension_resource_unittest.cc",
@@ -601,6 +634,7 @@ source_set("unit_tests") {
     "features/simple_feature_unittest.cc",
     "file_util_unittest.cc",
     "hashed_extension_id_unittest.cc",
+    "icons/extension_icon_set_unittest.cc",
     "image_util_unittest.cc",
     "manifest_handler_perf_test.cc",
     "manifest_handler_unittest.cc",
@@ -608,16 +642,22 @@ source_set("unit_tests") {
     "manifest_handlers/csp_info_unittest.cc",
     "manifest_handlers/default_locale_manifest_unittest.cc",
     "manifest_handlers/extension_action_handler_unittest.cc",
+    "manifest_handlers/extension_action_page_action_unittest.cc",
+    "manifest_handlers/extension_manifests_icon_variants_unittest.cc",
     "manifest_handlers/externally_connectable_unittest.cc",
+    "manifest_handlers/homepage_url_unittest.cc",
     "manifest_handlers/icons_handler_unittest.cc",
     "manifest_handlers/incognito_manifest_unittest.cc",
     "manifest_handlers/kiosk_mode_info_unittest.cc",
+    "manifest_handlers/manifest_url_about_unittest.cc",
     "manifest_handlers/manifest_v3_permissions_unittest.cc",
     "manifest_handlers/mime_types_handler_unittest.cc",
     "manifest_handlers/oauth2_manifest_unittest.cc",
     "manifest_handlers/replacement_apps_unittest.cc",
+    "manifest_handlers/requirements_unittest.cc",
     "manifest_handlers/shared_module_manifest_unittest.cc",
     "manifest_handlers/trial_tokens_unittest.cc",
+    "manifest_handlers/update_url_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
     "mojom/message_port_mojom_traits_unittest.cc",
@@ -643,6 +683,7 @@ source_set("unit_tests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//build:android_buildflags",
     "//components/crx_file",
     "//components/version_info:version_info",
     "//content/test:test_support",
@@ -680,57 +721,61 @@ source_set("unit_tests") {
   ]
 }
 
-fuzzer_test("extension_fuzzer") {
-  sources = [ "extension_fuzzer.cc" ]
-  deps = [
-    ":common",
-    "//base",
-  ]
-}
+# TODO(https://crbug.com/356905053): Gradually include more of these sources
+# in the desktop-android build.
+if (enable_extensions) {
+  fuzzer_test("extension_fuzzer") {
+    sources = [ "extension_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+    ]
+  }
 
-fuzzer_test("extension_manifest_fuzzer") {
-  sources = [ "manifest_fuzzer.cc" ]
-  deps = [
-    ":common",
-    "//base",
-    "//extensions:test_support",
-  ]
+  fuzzer_test("extension_manifest_fuzzer") {
+    sources = [ "manifest_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+      "//extensions:test_support",
+    ]
 
-  # The fuzzed code needs more RAM that the default limit.
-  libfuzzer_options = [ "rss_limit_mb=4096" ]
-}
+    # The fuzzed code needs more RAM that the default limit.
+    libfuzzer_options = [ "rss_limit_mb=4096" ]
+  }
 
-fuzzer_test("extension_url_pattern_fuzzer") {
-  sources = [ "url_pattern_fuzzer.cc" ]
-  deps = [
-    ":common",
-    "//base",
-  ]
-}
+  fuzzer_test("extension_url_pattern_fuzzer") {
+    sources = [ "url_pattern_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+    ]
+  }
 
-fuzzer_test("extension_csp_validator_fuzzer") {
-  sources = [ "csp_validator_fuzzer.cc" ]
-  deps = [
-    ":common",
-    "//base",
-    "//third_party/icu/fuzzers:fuzzer_support",
-  ]
+  fuzzer_test("extension_csp_validator_fuzzer") {
+    sources = [ "csp_validator_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+      "//third_party/icu/fuzzers:fuzzer_support",
+    ]
 
-  # The fuzzed code needs more RAM that the default limit.
-  libfuzzer_options = [ "rss_limit_mb=4096" ]
-}
+    # The fuzzed code needs more RAM that the default limit.
+    libfuzzer_options = [ "rss_limit_mb=4096" ]
+  }
 
-fuzzer_test("extension_api_scripts_internal_serialization_fuzzer") {
-  sources = [ "api/scripts_internal/script_serialization_fuzzer.cc" ]
-  deps = [
-    ":common",
-    "//base",
-    "//extensions:test_support",
-    "//extensions/common/api",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/icu/fuzzers:fuzzer_support",
-  ]
+  fuzzer_test("extension_api_scripts_internal_serialization_fuzzer") {
+    sources = [ "api/scripts_internal/script_serialization_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+      "//extensions:test_support",
+      "//extensions/common/api",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/icu/fuzzers:fuzzer_support",
+    ]
 
-  # The fuzzed code needs more RAM that the default limit.
-  libfuzzer_options = [ "rss_limit_mb=4096" ]
+    # The fuzzed code needs more RAM that the default limit.
+    libfuzzer_options = [ "rss_limit_mb=4096" ]
+  }
 }

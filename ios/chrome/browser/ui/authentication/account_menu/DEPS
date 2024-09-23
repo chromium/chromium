@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/shared/model/browser_state",
+  "+components/trusted_vault/trusted_vault_server_constants.h",
+]

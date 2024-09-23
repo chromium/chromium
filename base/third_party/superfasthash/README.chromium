@@ -17,6 +17,7 @@ Local Modifications:
 - #include <stdint.h> instead of "pstdint.h".
 - #include <stdlib.h>.
 - Added casts.
+- Fix some undefined behavior (signed left-shift overflow, bad pointer cast)
 
 The license is a standard 3-clause BSD license with the following minor changes:
 

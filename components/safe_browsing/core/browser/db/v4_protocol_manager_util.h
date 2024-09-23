@@ -13,13 +13,13 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "url/gurl.h"
@@ -105,7 +105,7 @@ enum class CheckBrowseUrlType {
 // numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
 // GENERATED_JAVA_PREFIX_TO_STRIP: SB_THREAT_TYPE_
-enum SBThreatType {
+enum class SBThreatType {
   // This type can be used for lists that can be checked synchronously so a
   // client callback isn't required, or for allowlists.
   SB_THREAT_TYPE_UNUSED = 0,
@@ -138,7 +138,7 @@ enum SBThreatType {
 
   // Url leads to a blocklisted resource script. Note that no warnings should be
   // shown on this threat type, but an incident report might be sent.
-  SB_THREAT_TYPE_BLOCKLISTED_RESOURCE = 9,
+  // DEPRECATED: SB_THREAT_TYPE_BLOCKLISTED_RESOURCE = 9,
 
   // Url abuses a permission API.
   SB_THREAT_TYPE_API_ABUSE = 10,
@@ -196,7 +196,7 @@ enum SBThreatType {
   // Managed policy indicated to block a navigation.
   SB_THREAT_TYPE_MANAGED_POLICY_BLOCK = 27,
 
-  SB_THREAT_TYPE_MAX = SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
+  kMaxValue = SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
 };
 
 using SBThreatTypeSet = base::flat_set<SBThreatType>;
@@ -247,7 +247,6 @@ std::ostream& operator<<(std::ostream& os, const ListIdentifier& id);
 PlatformType GetCurrentPlatformType();
 ListIdentifier GetChromeExtMalwareId();
 ListIdentifier GetChromeUrlApiId();
-ListIdentifier GetChromeUrlClientIncidentId();
 ListIdentifier GetUrlBillingId();
 ListIdentifier GetUrlCsdDownloadAllowlistId();
 ListIdentifier GetUrlCsdAllowlistId();
@@ -437,8 +436,7 @@ class V4ProtocolManagerUtil {
   static void GeneratePathsToCheck(const GURL& url,
                                    std::vector<std::string>* paths);
 
-  static std::string RemoveConsecutiveChars(base::StringPiece str,
-                                            const char c);
+  static std::string RemoveConsecutiveChars(std::string_view str, const char c);
 };
 
 using StoresToCheck = std::unordered_set<ListIdentifier>;

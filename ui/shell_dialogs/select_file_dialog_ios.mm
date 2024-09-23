@@ -21,7 +21,6 @@
   base::WeakPtr<ui::SelectFileDialogImpl> _dialog;
   UIViewController* __weak _viewController;
   bool _allowMultipleFiles;
-  void* _params;
   UIDocumentPickerViewController* __strong _documentPickerController;
   NSArray<UTType*>* __strong _fileUTTypeLists;
   bool _allowsOtherFileTypes;
@@ -30,7 +29,6 @@
 - (instancetype)initWithDialog:(base::WeakPtr<ui::SelectFileDialogImpl>)dialog
                 viewController:(UIViewController*)viewController
             allowMultipleFiles:(bool)allowMultipleFiles
-                        params:(void*)params
                fileUTTypeLists:(NSArray<UTType*>*)fileUTTypeLists
           allowsOtherFileTypes:(bool)allowsOtherFileTypes;
 - (void)dealloc;
@@ -45,7 +43,6 @@
 - (instancetype)initWithDialog:(base::WeakPtr<ui::SelectFileDialogImpl>)dialog
                 viewController:(UIViewController*)viewController
             allowMultipleFiles:(bool)allowMultipleFiles
-                        params:(void*)params
                fileUTTypeLists:(NSArray<UTType*>*)fileUTTypeLists
           allowsOtherFileTypes:(bool)allowsOtherFileTypes {
   if (!(self = [super init])) {
@@ -54,7 +51,6 @@
   _dialog = dialog;
   _viewController = viewController;
   _allowMultipleFiles = allowMultipleFiles;
-  _params = params;
   _fileUTTypeLists = fileUTTypeLists;
   _allowsOtherFileTypes = allowsOtherFileTypes;
   return self;
@@ -94,7 +90,7 @@
     NSString* path = url.path;
     paths.push_back(base::apple::NSStringToFilePath(path));
   }
-  _dialog->FileWasSelected(_params, _allowMultipleFiles, false, paths, 0);
+  _dialog->FileWasSelected(_allowMultipleFiles, false, paths, 0);
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller {
@@ -102,7 +98,7 @@
     return;
   }
   std::vector<base::FilePath> paths;
-  _dialog->FileWasSelected(_params, _allowMultipleFiles, true, paths, 0);
+  _dialog->FileWasSelected(_allowMultipleFiles, true, paths, 0);
 }
 
 @end
@@ -123,7 +119,6 @@ void SelectFileDialogImpl::ListenerDestroyed() {
 }
 
 void SelectFileDialogImpl::FileWasSelected(
-    void* params,
     bool is_multi,
     bool was_cancelled,
     const std::vector<base::FilePath>& files,
@@ -133,13 +128,12 @@ void SelectFileDialogImpl::FileWasSelected(
   }
 
   if (was_cancelled || files.empty()) {
-    listener_->FileSelectionCanceled(params);
+    listener_->FileSelectionCanceled();
   } else {
     if (is_multi) {
-      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files),
-                                    params);
+      listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files));
     } else {
-      listener_->FileSelected(SelectedFileInfo(files[0]), index, params);
+      listener_->FileSelected(SelectedFileInfo(files[0]), index);
     }
   }
 }
@@ -152,7 +146,6 @@ void SelectFileDialogImpl::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow gfx_window,
-    void* params,
     const GURL* caller) {
   has_multiple_file_type_choices_ =
       SelectFileDialog::SELECT_OPEN_MULTI_FILE == type;
@@ -181,7 +174,6 @@ void SelectFileDialogImpl::SelectFileImpl(
       [[NativeFileDialog alloc] initWithDialog:weak_factory_.GetWeakPtr()
                                 viewController:controller
                             allowMultipleFiles:has_multiple_file_type_choices_
-                                        params:params
                                fileUTTypeLists:file_uttype_lists
                           allowsOtherFileTypes:allows_other_file_types];
   [native_file_dialog_ showFilePickerMenu:directory];

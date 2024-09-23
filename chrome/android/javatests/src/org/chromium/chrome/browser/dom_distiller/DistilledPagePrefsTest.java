@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.AtomicDouble;
@@ -15,15 +16,14 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
@@ -58,12 +58,12 @@ public class DistilledPagePrefsTest {
     }
 
     private void getDistilledPagePrefs() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // TODO (https://crbug.com/1063807):  Add incognito mode tests.
                     DomDistillerService domDistillerService =
                             DomDistillerServiceFactory.getForProfile(
-                                    Profile.getLastUsedRegularProfile());
+                                    ProfileManager.getLastUsedRegularProfile());
                     mDistilledPagePrefs = domDistillerService.getDistilledPagePrefs();
                 });
     }
@@ -307,27 +307,27 @@ public class DistilledPagePrefsTest {
     }
 
     private void setFontFamily(final int font) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setFontFamily(font));
+        ThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setFontFamily(font));
     }
 
     private void setTheme(final int theme) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setTheme(theme));
+        ThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setTheme(theme));
     }
 
     private void setFontScaling(final float scaling) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setFontScaling(scaling));
+        ThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setFontScaling(scaling));
     }
 
     private boolean removeObserver(TestingObserver testObserver) {
         AtomicBoolean wasRemoved = new AtomicBoolean();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> wasRemoved.set(mDistilledPagePrefs.removeObserver(testObserver)));
         return wasRemoved.get();
     }
 
     private boolean addObserver(TestingObserver testObserver) {
         AtomicBoolean wasAdded = new AtomicBoolean();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> wasAdded.set(mDistilledPagePrefs.addObserver(testObserver)));
         return wasAdded.get();
     }

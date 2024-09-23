@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/persistence/site_data/non_recording_site_data_cache.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "components/performance_manager/persistence/site_data/leveldb_site_data_store.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
@@ -53,7 +54,7 @@ class NonRecordingSiteDataCacheTest : public testing::Test {
 
   // Ensure that the database used by the data store owned by
   // |recording_data_cache_| gets created in memory.
-  std::unique_ptr<base::AutoReset<bool>> use_in_memory_db_for_testing_;
+  base::ScopedClosureRunner use_in_memory_db_for_testing_;
 
   // The data cache factory that will be used by the caches tested here.
   std::unique_ptr<SiteDataCacheFactory> factory_;

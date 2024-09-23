@@ -10,23 +10,25 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/android/webapk/proto/webapk_database.pb.h"
-#include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
 #include "chrome/browser/android/webapk/webapk_sync_bridge.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
 
 namespace webapk {
-WebApkDatabase::WebApkDatabase(AbstractWebApkDatabaseFactory* database_factory,
-                               ReportErrorCallback error_callback)
-    : database_factory_(database_factory),
+WebApkDatabase::WebApkDatabase(
+    syncer::DataTypeStoreService* data_type_store_service,
+    ReportErrorCallback error_callback)
+    : data_type_store_service_(data_type_store_service),
       error_callback_(std::move(error_callback)) {
-  CHECK(database_factory_);
+  CHECK(data_type_store_service_);
 }
 
 WebApkDatabase::~WebApkDatabase() {
@@ -37,8 +39,8 @@ void WebApkDatabase::OpenDatabase(RegistryOpenedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!store_);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      database_factory_->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      data_type_store_service_->GetStoreFactory();
 
   std::move(store_factory)
       .Run(syncer::WEB_APPS,
@@ -53,7 +55,7 @@ void WebApkDatabase::Write(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(opened_);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
   // |update_data| can be empty here but we should write |metadata_change_list|
@@ -78,7 +80,7 @@ void WebApkDatabase::Write(
 }
 
 void WebApkDatabase::DeleteAllDataAndMetadata(
-    syncer::ModelTypeStore::CallbackWithResult callback) {
+    syncer::DataTypeStore::CallbackWithResult callback) {
   CHECK(store_);
   store_->DeleteAllDataAndMetadata(std::move(callback));
 }
@@ -86,7 +88,7 @@ void WebApkDatabase::DeleteAllDataAndMetadata(
 void WebApkDatabase::OnDatabaseOpened(
     RegistryOpenedCallback callback,
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
@@ -96,41 +98,25 @@ void WebApkDatabase::OnDatabaseOpened(
   }
 
   store_ = std::move(store);
-  store_->ReadAllData(base::BindOnce(&WebApkDatabase::OnAllDataRead,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     std::move(callback)));
+  store_->ReadAllDataAndMetadata(
+      base::BindOnce(&WebApkDatabase::OnAllDataAndMetadataRead,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebApkDatabase::OnAllDataRead(
+void WebApkDatabase::OnAllDataAndMetadataRead(
     RegistryOpenedCallback callback,
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (error) {
-    error_callback_.Run(*error);
-    DLOG(ERROR) << "WebApks LevelDB data read error: " << error->ToString();
-    return;
-  }
-
-  store_->ReadAllMetadata(base::BindOnce(
-      &WebApkDatabase::OnAllMetadataRead, weak_ptr_factory_.GetWeakPtr(),
-      std::move(data_records), std::move(callback)));
-}
-
-void WebApkDatabase::OnAllMetadataRead(
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
-    RegistryOpenedCallback callback,
-    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     error_callback_.Run(*error);
-    DLOG(ERROR) << "WebApks LevelDB metadata read error: " << error->ToString();
+    DLOG(ERROR) << "WebApks LevelDB read error: " << error->ToString();
     return;
   }
 
   Registry registry;
-  for (const syncer::ModelTypeStore::Record& record : *data_records) {
+  for (const syncer::DataTypeStore::Record& record : *data_records) {
     std::unique_ptr<WebApkProto> proto = std::make_unique<WebApkProto>();
     const bool parsed = proto->ParseFromString(record.value);
     if (!parsed) {
@@ -139,6 +125,8 @@ void WebApkDatabase::OnAllMetadataRead(
 
     registry.emplace(record.id, std::move(proto));
   }
+
+  RecordSyncedWebApkCountHistogram(registry.size());
 
   opened_ = true;
   // This should be a tail call: a callback code may indirectly call |this|
@@ -156,6 +144,11 @@ void WebApkDatabase::OnDataWritten(
   }
 
   std::move(callback).Run(!error);
+}
+
+void WebApkDatabase::RecordSyncedWebApkCountHistogram(int num_web_apks) const {
+  base::UmaHistogramExactLinear("WebApk.Sync.SyncedWebApkCount", num_web_apks,
+                                51 /* max_count */);
 }
 
 }  // namespace webapk

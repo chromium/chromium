@@ -7,7 +7,6 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/net/http_response_headers_util.h"
 #import "ios/web/common/features.h"
 #import "ios/web/common/url_util.h"
 #import "ios/web/navigation/crw_error_page_helper.h"
@@ -21,6 +20,7 @@
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "ios/web/web_view/wk_web_view_util.h"
+#import "net/base/apple/http_response_headers_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
@@ -134,35 +134,24 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 
   GURL webViewURL = net::GURLWithNSURL(self.webView.URL);
 
-  if (![self.navigationHandler isCurrentNavigationBackForward])
+  if (![self.navigationHandler isCurrentNavigationBackForward]) {
+    [self.delegate webViewHandlerUpdateSSLStatusForCurrentNavigationItem:self];
     return;
-
-  web::NavigationContextImpl* existingContext = [self.navigationHandler
-      contextForPendingMainFrameNavigationWithURL:webViewURL];
+  }
 
   // When traversing history restored from a previous session, WKWebView does
   // not fire 'pageshow', 'onload', 'popstate' or any of the
   // WKNavigationDelegate callbacks for back/forward navigation from an about:
-  // scheme placeholder URL to another entry or if either of the redirect fails
-  // to load (e.g. in airplane mode, <iOS13). Loading state KVO is the only
+  // scheme placeholder URL to another entry. Loading state KVO is the only
   // observable event in this scenario, so force a reload to trigger redirect
   // from restore_session.html to the restored URL.
   bool previousURLHasAboutScheme =
       self.documentURL.SchemeIs(url::kAboutScheme) ||
       web::GetWebClient()->IsAppSpecificURL(self.documentURL);
-  bool needs_back_forward_navigation_reload =
-      existingContext &&
-      (existingContext->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK);
-  // The back-forward workaround isn't need on iOS13.
-  needs_back_forward_navigation_reload = false;
-
-  if (IsRestoreSessionUrl(webViewURL)) {
-    if (previousURLHasAboutScheme || needs_back_forward_navigation_reload) {
-      [self.webView reload];
-      self.navigationHandler.navigationState =
-          web::WKNavigationState::REQUESTED;
-      return;
-    }
+  if (IsRestoreSessionUrl(webViewURL) && previousURLHasAboutScheme) {
+    [self.webView reload];
+    self.navigationHandler.navigationState = web::WKNavigationState::REQUESTED;
+    return;
   }
 
   // For failed navigations, WKWebView will sometimes revert to the previous URL
@@ -176,6 +165,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
     return;
   }
 
+  web::NavigationContextImpl* existingContext = [self.navigationHandler
+      contextForPendingMainFrameNavigationWithURL:webViewURL];
   if (!navigationWasCommitted &&
       !self.navigationHandler.pendingNavigationInfo.cancelled) {
     // A fast back-forward navigation does not call `didCommitNavigation:`, so
@@ -218,7 +209,7 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 
 // Called when WKWebView URL has been changed.
 - (void)webViewURLDidChange {
-  // TODO(crbug.com/966412): Determine if there are any cases where this still
+  // TODO(crbug.com/41460688): Determine if there are any cases where this still
   // happens, and if so whether anything should be done when it does.
   if (self.webView.URL.absoluteString.length == 0) {
     DVLOG(1) << "Received nil/empty URL callback";
@@ -276,8 +267,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
     //    synced to self.webView.URL.
     // This needs to be done before `URLDidChangeWithoutDocumentChange` so any
     // WebStateObserver callbacks will see the updated URL.
-    // TODO(crbug.com/809287) use currentItem.URL instead of self.webView.URL to
-    // update NavigationItem URL.
+    // TODO(crbug.com/41368944) use currentItem.URL instead of self.webView.URL
+    // to update NavigationItem URL.
     const GURL webViewURL = net::GURLWithNSURL(self.webView.URL);
     web::NavigationItem* currentItem = nullptr;
     if (self.webView.backForwardList.currentItem) {
@@ -329,7 +320,7 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
                self.documentURL.DeprecatedGetOriginAsURL() ==
                URL.DeprecatedGetOriginAsURL();
            // Check that the web view URL still matches the new URL.
-           // TODO(crbug.com/563568): webViewURLMatchesNewURL check
+           // TODO(crbug.com/41224497): webViewURLMatchesNewURL check
            // may drop same document URL changes if pending URL
            // change occurs immediately after. Revisit heuristics to
            // prevent this.
@@ -342,8 +333,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
            // completion block fires. Check WKNavigationState to make sure this
            // navigation has started in WKWebView. If so, don't run the block to
            // avoid clobbering global states. See crbug.com/788452.
-           // TODO(crbug.com/788465): simplify hisgtory state handling to avoid
-           // this hack.
+           // TODO(crbug.com/40551549): simplify hisgtory state handling to
+           // avoid this hack.
            WKNavigation* last_added_navigation =
                [self.navigationHandler.navigationStates lastAddedNavigation];
            BOOL differentDocumentNavigationStarted =

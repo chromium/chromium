@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -30,7 +31,6 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/common/capabilities.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 
 using base::trace_event::MemoryAllocatorDump;
@@ -215,10 +215,12 @@ ResourcePool::TryAcquireResourceForPartialRaster(
   for (auto it = unused_resources_.begin(); it != unused_resources_.end();
        ++it) {
     PoolResource* resource = it->get();
-    if (resource->color_space() != raster_color_space)
-      continue;
 
     if (resource->content_id() == previous_content_id) {
+      // Skip the old resource if color space changed.
+      if (resource->color_space() != raster_color_space)
+        continue;
+
       UpdateResourceContentIdAndInvalidation(resource, new_content_id,
                                              new_invalidated_rect);
 
@@ -297,7 +299,7 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
   // If the resource isn't busy then we made it available for reuse already
   // somehow, even though it was exported to the ResourceProvider, or we evicted
   // a resource that was still in use by the display compositor.
-  DCHECK(busy_it != busy_resources_.end());
+  CHECK(busy_it != busy_resources_.end(), base::NotFatalUntil::M130);
 
   PoolResource* resource = busy_it->get();
   resource->set_state(PoolResource::kUnused);
@@ -332,8 +334,9 @@ bool ResourcePool::PrepareForExport(
       resource->mark_avoid_reuse();
       return false;
     }
+    uint32_t texture_target = gpu_backing->shared_image->GetTextureTarget();
     transferable = viz::TransferableResource::MakeGpu(
-        gpu_backing->shared_image->mailbox(), gpu_backing->texture_target,
+        gpu_backing->shared_image->mailbox(), texture_target,
         gpu_backing->mailbox_sync_token, resource->size(), resource->format(),
         gpu_backing->overlay_candidate, resource_source);
     if (gpu_backing->wait_on_fence_required)
@@ -341,13 +344,16 @@ bool ResourcePool::PrepareForExport(
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
     SoftwareBacking* software_backing = resource->software_backing();
-    const gpu::Mailbox& mailbox =
+    transferable =
         software_backing->shared_image
-            ? software_backing->shared_image->mailbox()
-            : software_backing->shared_bitmap_id;
-    transferable = viz::TransferableResource::MakeSoftware(
-        mailbox, software_backing->mailbox_sync_token, resource->size(),
-        resource->format(), resource_source);
+            ? viz::TransferableResource::MakeSoftwareSharedImage(
+                  software_backing->shared_image,
+                  software_backing->mailbox_sync_token, resource->size(),
+                  resource->format(), resource_source)
+            : viz::TransferableResource::MakeSoftwareSharedBitmap(
+                  software_backing->shared_bitmap_id,
+                  software_backing->mailbox_sync_token, resource->size(),
+                  resource->format(), resource_source);
   }
   transferable.color_space = resource->color_space();
   resource->set_resource_id(resource_provider_->ImportResource(

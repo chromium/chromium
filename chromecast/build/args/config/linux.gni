@@ -1,0 +1,16 @@
+# Args common to ALL Linux builds targeting Linux TVs.
+is_castos = true
+is_cast_desktop_build = true
+target_os = "linux"
+
+media_use_ffmpeg = true
+enable_widevine = true
+
+# The below flags do not add any dependencies to the chromecast:all builds, but
+# are required to gn gen the x64_eng build.
+enable_extensions = true
+enable_plugins = true
+
+# //pdf:buildflags seems to be leaking, but does not add to actual binary.
+enable_pdf = true
+enable_printing = true

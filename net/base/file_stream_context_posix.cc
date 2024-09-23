@@ -5,6 +5,8 @@
 #include "net/base/file_stream_context.h"
 
 #include <errno.h>
+
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -13,10 +15,15 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "net/base/apple/guarded_fd.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace net {
 
@@ -25,7 +32,19 @@ FileStream::Context::Context(scoped_refptr<base::TaskRunner> task_runner)
 
 FileStream::Context::Context(base::File file,
                              scoped_refptr<base::TaskRunner> task_runner)
-    : file_(std::move(file)), task_runner_(std::move(task_runner)) {}
+    : file_(std::move(file)), task_runner_(std::move(task_runner)) {
+#if BUILDFLAG(IS_MAC)
+  // https://crbug.com/330771755: Guard against a file descriptor being closed
+  // out from underneath the file.
+  if (file_.IsValid()) {
+    guardid_t guardid = reinterpret_cast<guardid_t>(this);
+    PCHECK(change_fdguard_np(file_.GetPlatformFile(), /*guard=*/nullptr,
+                             /*guardflags=*/0, &guardid,
+                             GUARD_CLOSE | GUARD_DUP,
+                             /*fdflagsp=*/nullptr) == 0);
+  }
+#endif
+}
 
 FileStream::Context::~Context() = default;
 
@@ -80,21 +99,23 @@ void FileStream::Context::OnFileOpened() {
 FileStream::Context::IOResult FileStream::Context::ReadFileImpl(
     scoped_refptr<IOBuffer> buf,
     int buf_len) {
-  int res = file_.ReadAtCurrentPosNoBestEffort(buf->data(), buf_len);
-  if (res == -1)
+  std::optional<size_t> res = file_.ReadAtCurrentPosNoBestEffort(
+      buf->span().first(base::checked_cast<size_t>(buf_len)));
+  if (!res.has_value()) {
     return IOResult::FromOSError(errno);
-
-  return IOResult(res, 0);
+  }
+  return IOResult(res.value(), 0);
 }
 
 FileStream::Context::IOResult FileStream::Context::WriteFileImpl(
     scoped_refptr<IOBuffer> buf,
     int buf_len) {
-  int res = file_.WriteAtCurrentPosNoBestEffort(buf->data(), buf_len);
-  if (res == -1)
+  std::optional<size_t> res = file_.WriteAtCurrentPosNoBestEffort(
+      buf->span().first(base::checked_cast<size_t>(buf_len)));
+  if (!res.has_value()) {
     return IOResult::FromOSError(errno);
-
-  return IOResult(res, 0);
+  }
+  return IOResult(res.value(), 0);
 }
 
 }  // namespace net

@@ -97,9 +97,7 @@ bool KeywordEditorController::ShouldConfirmDeletion(
 bool KeywordEditorController::IsManaged(const TemplateURL* url) const {
   return url->created_by_policy() ==
              TemplateURLData::CreatedByPolicy::kSiteSearch ||
-         (base::FeatureList::IsEnabled(
-              omnibox::kPolicyIndicationForManagedDefaultSearch) &&
-          url->created_by_policy() ==
+         (url->created_by_policy() ==
               TemplateURLData::CreatedByPolicy::kDefaultSearchProvider &&
           url->enforced_by_policy());
 }

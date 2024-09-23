@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
+#include "base/containers/heap_array.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 
@@ -705,11 +711,11 @@ TEST_P(GLES3DecoderTest, CopyBufferSubDataValidArgs) {
   // Set up the buffer so first half is kValue0 and second half is kValue1.
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
   DoBufferData(kTarget, kSize);
-  std::unique_ptr<char[]> data(new char[kHalfSize]);
-  memset(data.get(), kValue0, kHalfSize);
-  DoBufferSubData(kTarget, 0, kHalfSize, data.get());
-  memset(data.get(), kValue1, kHalfSize);
-  DoBufferSubData(kTarget, kHalfSize, kHalfSize, data.get());
+  auto data = base::HeapArray<char>::Uninit(kHalfSize);
+  memset(data.data(), kValue0, kHalfSize);
+  DoBufferSubData(kTarget, 0, kHalfSize, data.data());
+  memset(data.data(), kValue1, kHalfSize);
+  DoBufferSubData(kTarget, kHalfSize, kHalfSize, data.data());
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   Buffer* buffer = GetBuffer(client_buffer_id_);
   EXPECT_TRUE(buffer);

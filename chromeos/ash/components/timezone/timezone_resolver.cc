@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
@@ -26,6 +25,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace ash {
 
@@ -207,9 +207,9 @@ void TZRequest::Start() {
 void TZRequest::OnLocationResolved(const Geoposition& position,
                                    bool server_error,
                                    const base::TimeDelta elapsed) {
-  base::ScopedClosureRunner on_request_finished(
-      base::BindOnce(&TimeZoneResolver::TimeZoneResolverImpl::RequestIsFinished,
-                     base::Unretained(resolver_)));
+  absl::Cleanup on_request_finished = [this] {
+    resolver_->RequestIsFinished();
+  };
 
   // Ignore invalid position.
   if (!position.Valid())
@@ -227,16 +227,16 @@ void TZRequest::OnLocationResolved(const Geoposition& position,
       position, timeout - elapsed,
       base::BindOnce(&TZRequest::OnTimezoneResolved, AsWeakPtr()));
 
-  // Prevent |on_request_finished| from firing here.
-  base::OnceClosure unused = on_request_finished.Release();
+  // `OnTimezoneResolved` is responsible for calling `RequestIsFinished()` now.
+  std::move(on_request_finished).Cancel();
 }
 
 void TZRequest::OnTimezoneResolved(
     std::unique_ptr<TimeZoneResponseData> timezone,
     bool server_error) {
-  base::ScopedClosureRunner on_request_finished(
-      base::BindOnce(&TimeZoneResolver::TimeZoneResolverImpl::RequestIsFinished,
-                     base::Unretained(resolver_)));
+  absl::Cleanup on_request_finished = [this] {
+    resolver_->RequestIsFinished();
+  };
 
   DCHECK(timezone);
   VLOG(1) << "Refreshed local timezone={" << timezone->ToStringForDebug()
@@ -269,7 +269,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
   DCHECK(!resolver_->apply_timezone().is_null());
   DCHECK(!resolver_->delay_network_call().is_null());
 
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 
   const int64_t last_refresh_at_us =
       resolver_->local_state()->GetInt64(kLastTimeZoneRefreshTime);
@@ -285,7 +285,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
 }
 
 TimeZoneResolver::TimeZoneResolverImpl::~TimeZoneResolverImpl() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 void TimeZoneResolver::TimeZoneResolverImpl::Start() {

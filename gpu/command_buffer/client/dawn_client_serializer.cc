@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/client/dawn_client_serializer.h"
 
 #include "base/numerics/checked_math.h"
@@ -36,7 +41,7 @@ size_t DawnClientSerializer::GetMaximumAllocationSize() const {
 
 #if DCHECK_IS_ON()
 void DawnClientSerializer::OnSerializeError() {
-  NOTREACHED() << "DawnClientSerializer error";
+  NOTREACHED_IN_MIGRATION() << "DawnClientSerializer error";
 }
 #endif
 
@@ -52,7 +57,7 @@ void* DawnClientSerializer::GetCmdSpace(size_t size) {
   const bool overflows_remaining_space =
       size > static_cast<size_t>(buffer_.size() - put_offset_);
 
-  if (LIKELY(buffer_.valid() && !overflows_remaining_space)) {
+  if (buffer_.valid() && !overflows_remaining_space) [[likely]] {
     // If the buffer is valid and has sufficient space, return the
     // pointer and increment the offset.
     uint8_t* ptr = static_cast<uint8_t*>(buffer_.address());
@@ -128,7 +133,7 @@ void DawnClientSerializer::Disconnect() {
     auto transfer_buffer = std::move(transfer_buffer_);
     // Wait for commands to finish before we free shared memory that
     // the GPU process is using.
-    // TODO(crbug.com/1231599): This Finish may not be necessary if the
+    // TODO(crbug.com/40779774): This Finish may not be necessary if the
     // shared memory is not immediately freed. Investigate this and
     // consider optimization.
     helper_->Finish();

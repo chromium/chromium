@@ -1,0 +1,126 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("omnibox") {
+  sources = [
+    "omnibox_answer_result.cc",
+    "omnibox_answer_result.h",
+    "omnibox_lacros_provider.cc",
+    "omnibox_lacros_provider.h",
+    "omnibox_provider.cc",
+    "omnibox_provider.h",
+    "omnibox_result.cc",
+    "omnibox_result.h",
+    "omnibox_util.cc",
+    "omnibox_util.h",
+    "open_tab_result.cc",
+    "open_tab_result.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/cpp/app_list/vector_icons",
+    "//ash/strings",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/ranking",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/chromeos/launcher_search:search_util",
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/crosapi/cpp",
+    "//chromeos/crosapi/mojom",
+    "//components/favicon/core",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
+    "//components/omnibox/browser:vector_icons",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/strings:components_strings",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/ranking",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "omnibox_answer_result_unittest.cc",
+    "omnibox_lacros_provider_unittest.cc",
+    "omnibox_provider_unittest.cc",
+    "omnibox_result_unittest.cc",
+    "open_tab_result_unittest.cc",
+  ]
+
+  deps = [
+    ":omnibox",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/common",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/chromeos/launcher_search:search_util",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/string_matching",
+    "//chromeos/crosapi/mojom",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/favicon/core/test:test_support",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
+    "//components/omnibox/browser:test_support",
+    "//components/omnibox/browser:vector_icons",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//skia:skia_core_public_headers",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx:gfx_skia",
+    "//url",
+  ]
+}

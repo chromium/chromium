@@ -4,7 +4,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++TextView text:"Unnamed aside inside article." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
 ++++View text:"aside" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="complementary", roleDescription="complementary"]
 ++++++TextView text:"Named aside inside article." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="section"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="sectionWithoutName"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++++TextView text:"Unnamed aside inside section." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
 ++++View text:"aside" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="complementary", roleDescription="complementary"]

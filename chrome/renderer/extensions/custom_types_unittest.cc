@@ -44,7 +44,7 @@ class CustomTypesTest : public NativeExtensionBindingsSystemUnittest {
                                   const char* api_script,
                                   const char* use_api_script) {
     scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
-                                                   .AddPermission(permission)
+                                                   .AddAPIPermission(permission)
                                                    .SetID(extension_id_)
                                                    .Build();
     RegisterExtension(extension);
@@ -107,7 +107,7 @@ TEST_F(CustomTypesTest, ContentSettingsPromisesForManifestV3) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
           .SetManifestVersion(3)
-          .AddPermission("contentSettings")
+          .AddAPIPermission("contentSettings")
           .Build();
   RegisterExtension(extension);
 
@@ -180,7 +180,10 @@ TEST_F(CustomTypesTest, ContentSettingsPromisesForManifestV3) {
 
 TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationForManifestV2) {
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("contentSettings").Build();
+      ExtensionBuilder("foo")
+          .SetManifestVersion(2)
+          .AddAPIPermission("contentSettings")
+          .Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -235,7 +238,7 @@ TEST_F(CustomTypesTest, ContentSettingsInvalidInvocationForManifestV2) {
 TEST_F(CustomTypesTest, ChromeSettingPromisesForManifestV3) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
                                                  .SetManifestVersion(3)
-                                                 .AddPermission("privacy")
+                                                 .AddAPIPermission("privacy")
                                                  .Build();
   RegisterExtension(extension);
 
@@ -306,8 +309,10 @@ TEST_F(CustomTypesTest, ChromeSettingPromisesForManifestV3) {
 }
 
 TEST_F(CustomTypesTest, ChromeSettingInvalidInvocationForManifestV2) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo").AddPermission("privacy").Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
+                                                 .SetManifestVersion(2)
+                                                 .AddAPIPermission("privacy")
+                                                 .Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());

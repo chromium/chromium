@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/message_receiver.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
@@ -62,7 +63,8 @@ class PhoneStatusProcessor
       AppStreamManager* app_stream_manager,
       AppStreamLauncherDataModel* app_stream_launcher_data_model,
       IconDecoder* icon_decoder_,
-      PhoneHubUiReadinessRecorder* phone_hub_ui_readiness_recorder);
+      PhoneHubUiReadinessRecorder* phone_hub_ui_readiness_recorder,
+      PhoneHubStructuredMetricsLogger* phone_hub_structured_metrics_logger);
   ~PhoneStatusProcessor() override;
 
   PhoneStatusProcessor(const PhoneStatusProcessor&) = delete;
@@ -127,6 +129,7 @@ class PhoneStatusProcessor
   raw_ptr<AppStreamLauncherDataModel> app_stream_launcher_data_model_;
   raw_ptr<IconDecoder> icon_decoder_;
   raw_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_;
+  raw_ptr<PhoneHubStructuredMetricsLogger> phone_hub_structured_metrics_logger_;
   base::TimeTicks connection_initialized_timestamp_ = base::TimeTicks();
   bool has_received_first_app_list_update_ = false;
 

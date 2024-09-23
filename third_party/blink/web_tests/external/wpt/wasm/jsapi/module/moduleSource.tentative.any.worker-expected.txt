@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] AbstractModuleSource intrinsic
-  Cannot access 'AbstractModuleSource' before initialization
+  assert_equals: expected "AbstractModuleSource" but got ""
 [FAIL] AbstractModuleSourceProto intrinsic
-  assert_equals: expected (object) object "[object Object]" but got (undefined) undefined
+  assert_not_equals: got disallowed value object "[object Object]"
 [FAIL] AbstractModuleSourceProto toStringTag brand check
   Cannot convert undefined or null to object
 Harness: the test ran to completion.

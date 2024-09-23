@@ -4,12 +4,23 @@
 
 #include "chromeos/ash/components/osauth/impl/cryptohome_core_impl.h"
 
+#include <memory>
 #include <optional>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
+#include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -32,9 +43,9 @@ AuthSessionIntent MapPurposeToIntent(AuthPurpose purpose) {
 }  // namespace
 
 CryptohomeCoreImpl::CryptohomeCoreImpl(UserDataAuthClient* client)
-    : dbus_client_(client) {
-  performer_ = std::make_unique<AuthPerformer>(dbus_client_);
-}
+    : dbus_client_(client),
+      performer_(std::make_unique<AuthPerformer>(dbus_client_)),
+      editor_(std::make_unique<AuthFactorEditor>(dbus_client_)) {}
 
 CryptohomeCoreImpl::~CryptohomeCoreImpl() = default;
 
@@ -61,13 +72,14 @@ void CryptohomeCoreImpl::StartAuthSession(const AuthAttemptVector& attempt,
   }
   DCHECK(!clients_.contains(client));
 
-  if (current_stage_ == Stage::kAuthSessionRequested) {
-    // All events would be sent in OnAuthSessionStarted.
+  if (current_stage_ == Stage::kAuthSessionRequested ||
+      current_stage_ == Stage::kAuthFactorConfigurationRequested) {
+    // All events would be sent in OnGetAuthFactorsConfiguration.
     clients_.insert(client);
     return;
   }
 
-  if (current_stage_ == Stage::kAuthSessionRequestFinished) {
+  if (current_stage_ == Stage::kFinished) {
     if (auth_session_started_) {
       clients_.insert(client);
       client->OnCryptohomeAuthSessionStarted();
@@ -100,7 +112,7 @@ void CryptohomeCoreImpl::OnAuthSessionStarted(
     std::unique_ptr<UserContext> context,
     std::optional<AuthenticationError> error) {
   CHECK_EQ(current_stage_, Stage::kAuthSessionRequested);
-  current_stage_ = Stage::kAuthSessionRequestFinished;
+  current_stage_ = Stage::kAuthFactorConfigurationRequested;
   if (!user_exists) {
     // Somehow user home directory does not exist.
     LOG(ERROR) << "Cryptohome Core: user does not exist";
@@ -120,9 +132,30 @@ void CryptohomeCoreImpl::OnAuthSessionStarted(
     return;
   }
 
+  // Next step after starting the session is to load the factor configuration.
+  editor_->GetAuthFactorsConfiguration(
+      std::move(context),
+      base::BindOnce(&CryptohomeCoreImpl::OnGetAuthFactorsConfiguration,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void CryptohomeCoreImpl::OnGetAuthFactorsConfiguration(
+    std::unique_ptr<UserContext> context,
+    std::optional<AuthenticationError> error) {
+  CHECK_EQ(current_stage_, Stage::kAuthFactorConfigurationRequested);
+  current_stage_ = Stage::kFinished;
+  if (error.has_value()) {
+    // Error is already logged by Authenticator.
+    for (auto& client : clients_) {
+      client->OnAuthSessionStartFailure();
+    }
+    clients_.clear();
+    return;
+  }
+
+  // Everything is now fully started and loaded, signal all the clients.
   context_ = std::move(context);
   auth_session_started_ = true;
-
   for (auto& client : clients_) {
     client->OnCryptohomeAuthSessionStarted();
   }
@@ -199,14 +232,30 @@ AuthProofToken CryptohomeCoreImpl::StoreAuthenticationContext() {
   return AuthSessionStorage::Get()->Store(std::move(context_));
 }
 
-std::unique_ptr<UserContext> CryptohomeCoreImpl::BorrowContext() {
-  CHECK(context_);
-  return std::move(context_);
+void CryptohomeCoreImpl::BorrowContext(BorrowContextCallback callback) {
+  if (!context_) {
+    borrow_callback_queue_.emplace(std::move(callback));
+    return;
+  }
+  BorrowContextAndRun(std::move(callback));
+  return;
 }
 
 void CryptohomeCoreImpl::ReturnContext(std::unique_ptr<UserContext> context) {
   CHECK(!context_);
   context_ = std::move(context);
+  if (!borrow_callback_queue_.empty()) {
+    auto callback = std::move(borrow_callback_queue_.front());
+    borrow_callback_queue_.pop();
+    BorrowContextAndRun(std::move(callback));
+    return;
+  }
+}
+
+void CryptohomeCoreImpl::BorrowContextAndRun(BorrowContextCallback callback) {
+  CHECK(context_);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(context_)));
 }
 
 }  // namespace ash

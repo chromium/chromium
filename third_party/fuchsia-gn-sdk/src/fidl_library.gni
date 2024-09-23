@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/fuchsia/gn_configs.gni")
+import("gn_configs.gni")
 import("gn_sdk_configs.gni")
 
 # Defines a base fidl library with no bindings.
@@ -60,12 +60,11 @@ template("fidl_base_library") {
            ] + rebase_path(sources, root_build_dir)
 
     # Pass the target API level if it has been specified.
-    if (fuchsia_target_api_level != -1) {
-      args += [
-        "--target-api-level",
-        "${fuchsia_target_api_level}",
-      ]
-    }
+    assert(fuchsia_target_api_level >= 1)
+    args += [
+      "--target-api-level",
+      "${fuchsia_target_api_level}",
+    ]
 
     if (defined(invoker.experimental_flags)) {
       foreach(flag, invoker.experimental_flags) {

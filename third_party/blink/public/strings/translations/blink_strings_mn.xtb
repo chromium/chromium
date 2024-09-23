@@ -1,29 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
-<translation id="1088086359088493902">Секунд</translation>
-<translation id="1142001580032786438">Долоо хоног сонгогчийг харуулах</translation>
+<translation id="1012241361789814178">Дебаг хийгчийг өөр табд түр зогсоосон. Тухайн таб руу сэлгэхийн тулд товшино уу.</translation>
 <translation id="1171774979989969504">И-мэйл хаягаа оруулна уу.</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
 <translation id="1306460908038601864">Унтраалттай</translation>
 <translation id="1311894908970423688">Утга нь <ph name="VALUE_DATE_OR_TIME" /> байх ёстой.</translation>
-<translation id="1480676835519562650">олныг сонгох боломжтой, <ph name="COUNT" />-c <ph name="SELECTED" />-г сонгосон</translation>
 <translation id="1588438908519853928">Хэвийн</translation>
 <translation id="1591562245178063882">Энэ сар</translation>
 <translation id="1637811476055996098">Файлуудыг сонгох</translation>
-<translation id="1681022320378710418">одоогийн цаг</translation>
-<translation id="1727839386348365796">Eyedropper</translation>
+<translation id="1680090928918677457">Камер ашиглах</translation>
 <translation id="1729654308190250600">Заавал имэйл хаяг оруулах ёстой.</translation>
 <translation id="1758486001363313524">Бусад ...</translation>
-<translation id="1787192514241997742">нийт хугацаа: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Камерыг зөвшөөрөх</translation>
-<translation id="1822429046913737220">AM/PM</translation>
-<translation id="1832974991323546415">алсын төхөөрөмж дээр тоглуулах</translation>
 <translation id="1921819250265091946">өө</translation>
 <translation id="1938124657309484470">Оруулсан утга <ph name="MAXIMUM_DATE_OR_TIME" /> эсвэл түүнээс өмнөх хувилбар байх ёстой.</translation>
-<translation id="1946271899482435442">Огноо сонгогчийг харуулах</translation>
 <translation id="1993104285338243655">Тусгал үүсгэх рүү сэлгэсэн</translation>
-<translation id="2031987842108996681">Улаан суваг</translation>
 <translation id="2060505056492490888">" <ph name="DOT" /> '' нь <ph name="INVALIDDOMAIN" />-ны хувьд буруу байрлалд ашиглагдаж байна.</translation>
 <translation id="2068711044993563745">Доод утга (<ph name="MINIMUM" />) нь дээд утгаас (<ph name="MAXIMUM" />) бага байх ёстой.</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
@@ -31,29 +22,16 @@
 <translation id="2247351761944213033">Долоо хоног <ph name="WEEKNUMBER" /> , <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-р бичлэг</translation>
 <translation id="2353297238722298836">Камер болон микрофоныг зөвшөөрсөн</translation>
-<translation id="2393030564806080191">Арван зургаатын өнгөний утга</translation>
-<translation id="2398813069815436052">харилцах цонхыг нээсэн.</translation>
-<translation id="245932805758469625">видео үргэлжлэх үлдсэн секундийн тоо</translation>
-<translation id="248395913932153421">Өдөр</translation>
 <translation id="2507943997699731163">Энэ талбарыг бөглөнө үү.</translation>
-<translation id="2530182415807757784">олныг сонгох боломжтой, алийг нь ч сонгоогүй.</translation>
-<translation id="2561842179657104141">бусад медиа хяналтыг харуулах</translation>
-<translation id="2572483411312390101">Тоглуулах</translation>
 <translation id="2613802280814924224">Хүчинтэй утга оруулна уу. Хамгийн ойролцоо хүчинтэй утга нь <ph name="VALID_VALUE" /> юм.</translation>
-<translation id="2634240155926812724">Ногоон суваг</translation>
 <translation id="2653659639078652383">Илгээх</translation>
-<translation id="2723001399770238859">Дуу</translation>
 <translation id="2746543609216772311">Утга нь <ph name="MINIMUM_DATE_OR_TIME" />-тай адил эсвэл үүнээс дараа байх ёстой.</translation>
 <translation id="2761667185364618470">Цааш нь үргэлжлүүлэхийг хүсвэл энэ хайрцгийг зөвлөнө үү.</translation>
 <translation id="2908441821576996758">Цэгээр тусгаарлагдсан и-мэйл хаягуудын жагсаалтыг оруулна уу.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
-<translation id="3053226512517284904">аудио тайлбаруудын цэсийг харуулах</translation>
 <translation id="3075154866155599887">Энэ талбар нь бүрэн бус эсвэл хүчин төгөлдөр бус огноотой байна. Хүчин төгөлдөр утга оруулна уу.</translation>
 <translation id="310520048233152454">URL-аа оруулна уу.</translation>
-<translation id="3220661731597678625">одоогийн алхам</translation>
 <translation id="3321030238473337787">Дахин тоглуулах хурд</translation>
-<translation id="3329013043687509092">Өнгөний нэвчилт</translation>
-<translation id="3377518164566272702">Микрофон болон камерыг зөвшөөрөх</translation>
 <translation id="3450233048674729344">Оруулсан утга нь <ph name="MAXIMUM" />-тай тэнцүү эсвэл бага байх ёстой.</translation>
 <translation id="3732799496749320381">сс</translation>
 <translation id="3754210790023674521">Дэлгэцэн доторх дэлгэцээс гарах</translation>
@@ -62,132 +40,71 @@
 <translation id="383465348367842624">'<ph name="ATSIGN" />'-д хамаарах хэсэг нь '<ph name="INVALIDCHARACTER" />' тэмдэгтийг агуулах ёсгүй.</translation>
 <translation id="3846214748874656680">Бүтэн дэлгэцийг хумих</translation>
 <translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
-<translation id="4103419683916926126">Миллисекунт</translation>
-<translation id="4201051445878709314">Өмнөх сарыг харуулах</translation>
 <translation id="4360991593054037559">Хүчинтэй утгыг оруулна уу. Хамгийн ойрын хүчинтэй дараах хоёр <ph name="VALID_VALUE_LOW" /> болон <ph name="VALID_VALUE_HIGHER" />  утгууд байна.</translation>
 <translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4663373278480897665">Камерыг зөвшөөрсөн</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'-ын дараах хэсэгт '<ph name="INVALIDCHARACTER" />' тэмдэг оруулахгүй байх хэрэгтэй.</translation>
 <translation id="4718048029184481307">Дэлгэцэн доторх дэлгэц дээр тоглуулж байна</translation>
-<translation id="4748357248530471599">дэлгэцийг таслахыг бүтэн дэлгэцээр асаах/унтраах</translation>
-<translation id="4763480195061959176">видео</translation>
 <translation id="4792862212177489858">Байршил хуваалцах</translation>
 <translation id="4812940957355064477">Нэг тоо оруулна уу.</translation>
-<translation id="4912200001568447310">одоогийн зүйл</translation>
-<translation id="4915360478455618802">Цаг сонгогчийг харуулах</translation>
-<translation id="4924138096460353083">тодорхойгүй</translation>
-<translation id="4950364064308314478">Орон нутгийн огноо болон цаг сонгогчийг харуулах</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" />-г сонголоо</translation>
+<translation id="49269513399674318">Микрофон ашиглах</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> сонгогдсон</translation>
 <translation id="4992066212339426712">Дууг нээх</translation>
 <translation id="49969490063480558"><ph name="ATSIGN" /> -ны дараа байгаа хэсгийг оруулна уу. " <ph name="INVALIDADDRESS" /> " нь бүрэн бус байна.</translation>
-<translation id="5037575921016181960">Сайн нууц үг</translation>
-<translation id="5090250355906949916">видеоны цаг устгагч</translation>
-<translation id="509897012892853729">Цэнхэр суваг</translation>
-<translation id="5117590920725113268">Дараагийн сарыг харуулах</translation>
 <translation id="5164977714490026579">Оруулсан утга нь <ph name="MINIMUM" />-тай тэнцүү эсвэл илүү байх ёстой.</translation>
 <translation id="5196716972587102051">2</translation>
-<translation id="5199514351668672591">сонголт руу буцах</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
-<translation id="5272594226096532950">Тэмдэглээгүй. Бүлэгт <ph name="COUNT" />-с <ph name="INDEX" />-р сонголт</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' нь бүрэн гүйцэд биш бөгөөд бүрэн хаягаа оруулна уу.</translation>
 <translation id="5334352251556557839">Медиа тоглуулах боломжгүй байна.</translation>
 <translation id="537648784377940524">Хамгийн бага огноо (<ph name="MIN_DATE_OR_TIME" />) нь хамгийн их огнооны (<ph name="MAX_DATE_OR_TIME" />) өмнө байх ёстой.</translation>
-<translation id="5378437566635403538">дэлгэсэн, харилцах цонхыг нээсэн.</translation>
-<translation id="5425179576310518467">одоогийн огноо</translation>
 <translation id="5466621249238537318">Нэг буюу түүнээс дээш файлыг сонгоно уу.</translation>
-<translation id="5468998798572797635">Дэлгэцийг хумих</translation>
 <translation id="5514612371225420585">Таны төхөөрөмжийн файл</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">Cast</translation>
-<translation id="5546461542133609677">Дууг нээх</translation>
 <translation id="5630795885300617244">10с алгасахын тулд зүүн эсвэл баруун талд давхар товшино уу</translation>
-<translation id="5677946354068040947">бусад сонголт</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
-<translation id="5786442179789148008">дахин тоглуулах хурдны цэсийг харуулах</translation>
-<translation id="5787939484346677755">дэлгэсэн, автоматаар бөглөх сонголт боломжтой.</translation>
-<translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="588258955323874662">Дэлгэц дүүрэн</translation>
 <translation id="5888666972993069672">Одоо <ph name="DEVICE_FRIENDLY_NAME" />-д дамжуулж байна</translation>
-<translation id="5916664084637901428">Асаах</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="5966707198760109579">Долоо хоног</translation>
 <translation id="5985507339671257014">0.5</translation>
-<translation id="6011459053400940133">дууны түвшин тохируулагч</translation>
-<translation id="6015796118275082299">Жил</translation>
-<translation id="6165053282446038410">дэлгэсэн, автоматаар бөглөх <ph name="COUNT" /> сонголт боломжтой.</translation>
-<translation id="6212595056017402527">одоогийн хуудас</translation>
-<translation id="6281588256137006900">Цайвар байдал</translation>
 <translation id="6310801910862476708">Дэлгэцэн доторх дэлгэцийг хаах</translation>
-<translation id="6398862346408813489">Сар сонгох самбар харуулах</translation>
-<translation id="6404546809543547843">аудио цаг цэвэрлэгч</translation>
-<translation id="6443871981718447451">хаалттай тайлбаруудын цэсийг харуулах</translation>
 <translation id="6484738902856791350">Pretty-print</translation>
 <translation id="6550675742724504774">Сонголтууд</translation>
-<translation id="6572309429103589720">Дүрмийн алдаатай байна</translation>
-<translation id="658823671542763450">бүтэн дэлгэцэнд шилж</translation>
-<translation id="6606094904835912297">Системийн өнгө</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="668171684555832681">Бусад...</translation>
 <translation id="6709093583001123835">Утга нь <ph name="VALUE" /> байх ёстой.</translation>
 <translation id="6709570249143506788">Тоглуулагчийн чанар муу байна</translation>
-<translation id="6719914554879143100">Тэмдэглэсэн. Бүлэгт <ph name="COUNT" />-с <ph name="INDEX" />-р сонголт</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6820355525329141109">Нэмэлт өгөгдлийг ачаалж чадсангүй.</translation>
-<translation id="6831465880655513317">Өнгө ялгалт болон цайвар байдлыг сонгоход зориулсан 2 хэмжээст тохируулагчтай өнгөний хүрд</translation>
-<translation id="6843725295806269523">дууг хаах</translation>
 <translation id="6919891270253167948">1.5</translation>
-<translation id="6941933287844615239">медиа татах</translation>
-<translation id="698788488269350478">дэлгэсэн.</translation>
 <translation id="6989848892321993519">Энэ текстийг <ph name="MIN_CHARACTERS" /> болон түүнээс дээш тэмдэгтээр уртасгана уу (та одоогоор 1 тэмдэгт оруулсан байна).</translation>
 <translation id="7080893216867146095">Байршил хуваалцахыг зөвшөөрсөн</translation>
 <translation id="709897737746224366">Заагдсан форматанд тааруулна уу.</translation>
-<translation id="7102274145889307184">одоогийн байршил</translation>
+<translation id="7134810312945846184">Микрофон, камер ашиглах</translation>
 <translation id="7263440858009898357">Жагсаалтаас нэг зүйлийг сонгоно уу.</translation>
-<translation id="7320576522385648310">буферлэж байна</translation>
-<translation id="7341556277900466204">Өнгөний хүрд</translation>
 <translation id="7364796246159120393">Файлаа сонгоно уу</translation>
 <translation id="739024184232394898">Бусад...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
 <translation id="7514365320538308">Татаж авах</translation>
-<translation id="7673697353781729403">Цаг</translation>
 <translation id="7750228210027921155">Дэлгэцэн доторх дэлгэц</translation>
-<translation id="775297008183122718">Буруу утга</translation>
 <translation id="7782515065589691344">1.25</translation>
-<translation id="7789962463072032349">Түр зогсох</translation>
-<translation id="7852167693871241274">Өнгө тохируулагч</translation>
 <translation id="7888071071722539607">Имэйл хаягт "<ph name="ATSIGN" />"-ыг оруулж өгнө үү. '<ph name="INVALIDADDRESS" />'-д <ph name="ATSIGN" /> дутуу байна.</translation>
 <translation id="795667975304826397">Ямар ч файл сонгогдоогүй байна</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" />-г сонгоогүй</translation>
 <translation id="8117451130807776954">Энэ долоо хоног</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">жжжж</translation>
-<translation id="8261464734335370856">Буруу бичсэн байна</translation>
 <translation id="8284326494547611709">Тайлбар</translation>
 <translation id="835897206747267392">Утга буруу байна.</translation>
 <translation id="839593075537728968">Утга нь <ph name="MINIMUM_TIME" />-с <ph name="MAXIMUM_TIME" />-н хооронд байх ёстой.</translation>
-<translation id="8403857369060869934">өнгөрсөн хугацаа: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> файлууд</translation>
 <translation id="8451268428117625855">Файлаа сонгоно уу.</translation>
-<translation id="8534579021159131403">Минут</translation>
-<translation id="8541249477527128034">медиа хяналт</translation>
-<translation id="8613126697340063924">алсаас дахин тоглуулахыг хянах</translation>
-<translation id="8634971699417195529">Сар сонгогчийг харуулах</translation>
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Мөрийг багтаах</translation>
 <translation id="8750798805984357768">Эдгээр сонголтоос нэгийг нь сонгоно уу.</translation>
 <translation id="8845239796550121995">Одоо таны ТВ-д дамжуулж байна</translation>
 <translation id="8875657656876809964">Видеог дахин тоглуулахaд алдаа гарлаа</translation>
-<translation id="8889402386540077796">Hue</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> килобайт</translation>
-<translation id="894736920926684893">Формат сэлгэгч</translation>
-<translation id="8987927404178983737">Сар</translation>
-<translation id="901493112792887934">Секунтаар илэрхийлэгдсэн цаг</translation>
-<translation id="9093215626363556771">дэлгэцэн доторх дэлгэцийг хаах</translation>
 <translation id="9132465097189459683">Бусад...</translation>
-<translation id="9155987714137265666"><ph name="WEEK_START_DATE" />-ээс эхэлж буй <ph name="WEEK" /></translation>
 <translation id="916607977885256133">Дэлгэцэн доторх дэлгэц</translation>
-<translation id="918430632320614861">Микрофоныг зөвшөөрөх</translation>
-<translation id="945780513535800434">Хэсэгчлэн тэмдэглэсэн</translation>
-<translation id="954003015749068518">дэлгэцэн доторх дэлгэцийг оруулах</translation>
 </translationbundle>

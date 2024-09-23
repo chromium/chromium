@@ -5,7 +5,6 @@
 // Forked from
 // ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button.ts
 
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../cr_hidden_style.css.js';
 import '../cr_shared_vars.css.js';
 import './cr_radio_button_style.css.js';
@@ -46,7 +45,7 @@ export class CrRadioButtonElement extends CrRadioButtonElementBase {
     const ripple = super._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle', 'toggle-ink');
+    ripple.classList.add('circle');
     return ripple;
   }
 }

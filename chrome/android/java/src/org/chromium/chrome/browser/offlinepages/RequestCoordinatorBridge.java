@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -255,18 +256,21 @@ public class RequestCoordinatorBridge {
 
     @NativeMethods
     public interface Natives {
-        void getRequestsInQueue(Profile profile, Callback<SavePageRequest[]> callback);
+        void getRequestsInQueue(
+                @JniType("Profile*") Profile profile, Callback<SavePageRequest[]> callback);
 
         void removeRequestsFromQueue(
-                Profile profile, long[] requestIds, RequestsRemovedCallback callback);
+                @JniType("Profile*") Profile profile,
+                long[] requestIds,
+                RequestsRemovedCallback callback);
 
         void savePageLater(
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 Callback<Integer> callback,
-                String url,
-                String clientNamespace,
-                String clientId,
-                String origin,
+                @JniType("std::string") String url,
+                @JniType("std::string") String clientNamespace,
+                @JniType("std::string") String clientId,
+                @JniType("std::string") String origin,
                 boolean userRequested);
     }
 }

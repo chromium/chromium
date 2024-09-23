@@ -32,8 +32,12 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/text/text_run.h"
 
 namespace blink {
+
+class DOMRectReadOnly;
 
 class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -47,7 +51,6 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
               const String& text);
 
   double width() const { return width_; }
-  const Vector<double>& advances() const { return advances_; }
   double actualBoundingBoxLeft() const { return actual_bounding_box_left_; }
   double actualBoundingBoxRight() const { return actual_bounding_box_right_; }
   double fontBoundingBoxAscent() const { return font_bounding_box_ascent_; }
@@ -64,7 +67,31 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
   static float GetFontBaseline(const TextBaseline&, const SimpleFontData&);
 
+  unsigned caretPositionFromPoint(double x);
+
+  const HeapVector<Member<DOMRectReadOnly>> getSelectionRects(
+      uint32_t start,
+      uint32_t end,
+      ExceptionState& exception_state);
+  const DOMRectReadOnly* getActualBoundingBox(uint32_t start,
+                                              uint32_t end,
+                                              ExceptionState& exception_state);
+
   void Trace(Visitor*) const override;
+
+  struct RunWithOffset {
+    DISALLOW_NEW();
+
+    void Trace(Visitor* visitor) const { visitor->Trace(shape_result_); }
+
+    Member<const ShapeResult> shape_result_{
+        nullptr, Member<const ShapeResult>::AtomicInitializerTag{}};
+    String text_;
+    TextDirection direction_;
+    unsigned character_offset_;
+    unsigned num_characters_;
+    float x_position_;
+  };
 
  private:
   void Update(const Font&,
@@ -73,12 +100,14 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
               const TextAlign&,
               const String&);
 
+  void ShapeTextIfNeeded();
+
   // x-direction
   double width_ = 0.0;
-  Vector<double> advances_;
   double actual_bounding_box_left_ = 0.0;
   double actual_bounding_box_right_ = 0.0;
-
+  // Delta needed for handling textAlign correctly.
+  float text_align_dx_ = 0.0;
   // y-direction
   double font_bounding_box_ascent_ = 0.0;
   double font_bounding_box_descent_ = 0.0;
@@ -86,9 +115,30 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   double actual_bounding_box_descent_ = 0.0;
   double em_height_ascent_ = 0.0;
   double em_height_descent_ = 0.0;
+  float baseline_y = 0.0;
   Member<Baselines> baselines_;
+
+  // Needed for selection rects, bounding boxes and caret position.
+  Font font_;
+  uint32_t text_length_ = 0;
+  TextDirection direction_;
+
+  // Cache of ShapeResults that is lazily created the first time it's needed.
+  HeapVector<RunWithOffset> runs_with_offset_;
+  bool shaping_needed_ = false;
 };
 
 }  // namespace blink
+
+namespace WTF {
+
+template <>
+struct VectorTraits<blink::TextMetrics::RunWithOffset>
+    : VectorTraitsBase<blink::TextMetrics::RunWithOffset> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+  static constexpr bool kCanTraceConcurrently = true;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_TEXT_METRICS_H_

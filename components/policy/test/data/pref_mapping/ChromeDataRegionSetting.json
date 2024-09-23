@@ -1,0 +1,90 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "chrome_data_region_setting",
+      "policy_settings": {
+        "scope": "user",
+        "source": "cloud"
+      },
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    },
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ChromeDataRegionSetting": 1
+        },
+        "policies_settings": {
+          "ChromeDataRegionSetting": {
+            "scope": "machine",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "chrome_data_region_setting": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromeDataRegionSetting": 1
+        },
+        "policies_settings": {
+          "ChromeDataRegionSetting": {
+            "scope": "user",
+            "source": "active_directory"
+          }
+        },
+        "prefs": {
+          "chrome_data_region_setting": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromeDataRegionSetting": -1
+        },
+        "policies_settings": {
+          "ChromeDataRegionSetting": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "chrome_data_region_setting": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromeDataRegionSetting": 3
+        },
+        "policies_settings": {
+          "ChromeDataRegionSetting": {
+            "scope": "user",
+            "source": "cloud"
+          }
+        },
+        "prefs": {
+          "chrome_data_region_setting": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

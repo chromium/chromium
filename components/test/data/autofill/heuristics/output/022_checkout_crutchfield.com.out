@@ -20,4 +20,4 @@ ADDRESS_HOME_CITY | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$sh
 ADDRESS_HOME_STATE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingState | State | Select Your State | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
 ADDRESS_HOME_ZIP | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingZip | Zip/Postal Code |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
 PHONE_HOME_CITY_AND_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingPhone | Shipping Phone |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
-UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$customerID | Customer # |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2
+UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$customerID | Customer # |  | -default

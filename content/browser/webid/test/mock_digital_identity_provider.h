@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_WEBID_TEST_MOCK_DIGITAL_IDENTITY_PROVIDER_H_
 
 #include "base/values.h"
-#include "content/browser/webid/digital_credentials/digital_identity_provider.h"
+#include "content/public/browser/digital_identity_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -21,11 +21,24 @@ class MockDigitalIdentityProvider : public DigitalIdentityProvider {
   MockDigitalIdentityProvider& operator=(const MockDigitalIdentityProvider&) =
       delete;
 
-  MOCK_METHOD4(Request,
-               void(WebContents*,
-                    const url::Origin& origin,
-                    const base::Value::Dict&,
-                    DigitalCredentialCallback));
+  MOCK_METHOD(bool,
+              IsLowRiskOrigin,
+              (const url::Origin& to_check),
+              (const override));
+  MOCK_METHOD(DigitalIdentityInterstitialAbortCallback,
+              ShowDigitalIdentityInterstitial,
+              (WebContents & web_contents,
+               const url::Origin& origin,
+               DigitalIdentityInterstitialType interstitial_type,
+               DigitalIdentityInterstitialCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              Request,
+              (WebContents*,
+               const url::Origin& origin,
+               const base::Value request,
+               DigitalIdentityCallback),
+              (override));
 };
 
 }  // namespace content

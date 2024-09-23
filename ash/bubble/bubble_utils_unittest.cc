@@ -23,7 +23,7 @@ namespace {
 
 // Creates a mouse event with a given event `target`.
 ui::MouseEvent CreateEventWithTarget(aura::Window* target) {
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
   ui::Event::DispatcherApi(&event).set_target(target);

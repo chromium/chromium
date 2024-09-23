@@ -90,10 +90,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
-  virtual void UpdateAnimationMode();
-  void SetAnimationMode(AnimationMode animation_mode) {
-    animation_mode_ = animation_mode;
-  }
+  virtual AnimationMode CalculateAnimationMode();
   AnimationMode GetAnimationMode() const { return animation_mode_; }
   void SetCalcMode(CalcMode calc_mode) {
     use_paced_key_times_ = false;
@@ -125,12 +122,15 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   String ByValue() const;
   String FromValue() const;
 
-  bool CheckAnimationParameters();
+  bool UpdateAnimationParameters();
+  bool CheckAnimationParameters() const;
+  bool UpdateAnimationValues();
+
   virtual bool CalculateToAtEndOfDurationValue(
       const String& to_at_end_of_duration_string) = 0;
-  virtual bool CalculateFromAndToValues(const String& from_string,
+  virtual void CalculateFromAndToValues(const String& from_string,
                                         const String& to_string) = 0;
-  virtual bool CalculateFromAndByValues(const String& from_string,
+  virtual void CalculateFromAndByValues(const String& from_string,
                                         const String& by_string) = 0;
   virtual void CalculateAnimationValue(SMILAnimationValue&,
                                        float percent,
@@ -140,7 +140,6 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
     return -1.f;
   }
 
-  bool CalculateValuesAnimation();
   float CurrentValuesForValuesAnimation(float percent,
                                         String& from,
                                         String& to) const;

@@ -1,11 +1,12 @@
-import {PressureManager, PressureManagerReceiver, PressureStatus} from '/gen/services/device/public/mojom/pressure_manager.mojom.m.js'
+import {PressureClientRemote, PressureManagerAddClientError} from "/gen/services/device/public/mojom/pressure_manager.mojom.m.js";
 import {PressureSource, PressureState} from '/gen/services/device/public/mojom/pressure_update.mojom.m.js'
+import {WebPressureManager, WebPressureManagerReceiver} from '/gen/third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.m.js'
 
-class MockPressureService {
+class MockWebPressureService {
   constructor() {
-    this.receiver_ = new PressureManagerReceiver(this);
+    this.receiver_ = new WebPressureManagerReceiver(this);
     this.interceptor_ =
-        new MojoInterfaceInterceptor(PressureManager.$interfaceName);
+        new MojoInterfaceInterceptor(WebPressureManager.$interfaceName);
     this.interceptor_.oninterfacerequest = e => {
       this.receiver_.$.bindHandle(e.handle);
     };
@@ -36,61 +37,57 @@ class MockPressureService {
     this.observers_ = [];
     this.pressureUpdate_ = null;
     this.pressureServiceReadingTimerId_ = null;
-    this.pressureStatus_ = PressureStatus.kOk;
+    this.addClientError_ = null;
     this.updatesDelivered_ = 0;
   }
 
-  async addClient(observer, source) {
-    if (this.observers_.indexOf(observer) >= 0)
-      throw new Error('addClient() has already been called');
-
+  async addClient(source) {
     // TODO(crbug.com/1342184): Consider other sources.
     // For now, "cpu" is the only source.
     if (source !== PressureSource.kCpu)
       throw new Error('Call addClient() with a wrong PressureSource');
 
-    observer.onConnectionError.addListener(() => {
-      // Remove this observer from observer array.
-      this.observers_.splice(this.observers_.indexOf(observer), 1);
-    });
-    this.observers_.push(observer);
+    if (this.addClientError_ !== null) {
+      return {result: {error: this.addClientError_}};
+    }
 
-    return {status: this.pressureStatus_};
+    const pressureClientRemote = new PressureClientRemote();
+    pressureClientRemote.onConnectionError.addListener(() => {
+      // Remove this observer from observer array.
+      this.observers_.splice(this.observers_.indexOf(pressureClientRemote), 1);
+    });
+    const pendingReceiver = pressureClientRemote.$.bindNewPipeAndPassReceiver();
+    this.observers_.push(pressureClientRemote);
+
+    return {result: {pressureClient: pendingReceiver}};
   }
 
-  startPlatformCollector(sampleRate) {
-    if (sampleRate === 0)
+  startPlatformCollector(sampleInterval) {
+    if (sampleInterval === 0)
       return;
 
     if (this.pressureServiceReadingTimerId_ != null)
       this.stopPlatformCollector();
 
-    // The following code for calculating the timestamp was taken from
-    // https://source.chromium.org/chromium/chromium/src/+/main:third_party/
-    // blink/web_tests/http/tests/resources/
-    // geolocation-mock.js;l=131;drc=37a9b6c03b9bda9fcd62fc0e5e8016c278abd31f
-
-    // The new Date().getTime() returns the number of milliseconds since the
-    // UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue| of the
-    // device.mojom.PressureUpdate represents the value of microseconds since
-    // the Windows FILETIME epoch (1601-01-01 00:00:00 UTC). So add the delta
-    // when sets the |internalValue|. See more info in //base/time/time.h.
-    const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
-    const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
-    // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
-    const epochDeltaInMs = unixEpoch - windowsEpoch;
-
-    const timeout = (1 / sampleRate) * 1000;
     this.pressureServiceReadingTimerId_ = self.setInterval(() => {
       if (this.pressureUpdate_ === null || this.observers_.length === 0)
         return;
+
+      // Because we cannot retrieve directly the timeOrigin internal in
+      // TimeTicks from Chromium, we need to create a timestamp that
+      // would help to test basic functionality.
+      // by multiplying performance.timeOrigin by 10 we make sure that the
+      // origin is higher than the internal time origin in TimeTicks.
+      // performance.now() allows us to have an increase matching the TimeTicks
+      // that would be read from the platform collector.
       this.pressureUpdate_.timestamp = {
-        internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)
+        internalValue:
+            Math.round((performance.timeOrigin * 10) + performance.now()) * 1000
       };
       for (let observer of this.observers_)
         observer.onPressureUpdated(this.pressureUpdate_);
       this.updatesDelivered_++;
-    }, timeout);
+    }, sampleInterval);
   }
 
   stopPlatformCollector() {
@@ -123,7 +120,7 @@ class MockPressureService {
         expectedException instanceof DOMException,
         'setExpectedFailure() expects a DOMException instance');
     if (expectedException.name === 'NotSupportedError') {
-      this.pressureStatus_ = PressureStatus.kNotSupported;
+      this.addClientError_ = PressureManagerAddClientError.kNotSupported;
     } else {
       throw new TypeError(
           `Unexpected DOMException '${expectedException.name}'`);
@@ -131,4 +128,4 @@ class MockPressureService {
   }
 }
 
-export const mockPressureService = new MockPressureService();
+export const mockPressureService = new MockWebPressureService();

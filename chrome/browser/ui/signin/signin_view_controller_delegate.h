@@ -13,9 +13,10 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
-class Browser;
 struct AccountInfo;
+class Browser;
 struct CoreAccountId;
+enum class SyncConfirmationStyle;
 
 namespace content {
 class WebContents;
@@ -31,7 +32,7 @@ enum class ReauthAccessPoint;
 // as well as managing the navigation inside them.
 // Subclasses are responsible for deleting themselves when the window they're
 // managing closes.
-// TODO(https://crbug.com/1282157): rename to SigninModalDialogDelegate.
+// TODO(crbug.com/40209493): rename to SigninModalDialogDelegate.
 class SigninViewControllerDelegate {
  public:
   class Observer : public base::CheckedObserver {
@@ -50,7 +51,8 @@ class SigninViewControllerDelegate {
   // itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSyncConfirmationDelegate(
       Browser* browser,
-      bool is_signin_intercept = false);
+      SyncConfirmationStyle style,
+      bool is_sync_promo);
 
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the modal sign in error dialog. The returned object should delete
@@ -88,9 +90,11 @@ class SigninViewControllerDelegate {
   static SigninViewControllerDelegate* CreateManagedUserNoticeDelegate(
       Browser* browser,
       const AccountInfo& account_info,
+      bool is_oidc_account,
       bool force_new_profile,
       bool show_link_data_option,
-      signin::SigninChoiceCallback callback);
+      signin::SigninChoiceCallbackVariant process_user_choice_callback,
+      base::OnceClosure done_callback);
 #endif
 
   void AddObserver(Observer* observer);

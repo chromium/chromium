@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/media_router/media_router_action_controller.h"
+#include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/app_menu_test_api.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
@@ -42,9 +42,10 @@ namespace media_router {
 class MediaRouterUIBrowserTest : public InProcessBrowserTest {
  public:
   MediaRouterUIBrowserTest()
-      : issue_(IssueInfo("title notification",
-                         IssueInfo::Severity::NOTIFICATION,
-                         "sinkId1")) {}
+      : issue_(Issue::CreateIssueWithIssueInfo(
+            IssueInfo("title notification",
+                      IssueInfo::Severity::NOTIFICATION,
+                      "sinkId1"))) {}
   ~MediaRouterUIBrowserTest() override {}
 
   void SetUpOnMainThread() override {
@@ -62,7 +63,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   }
 
   void SetAlwaysShowActionPref(bool always_show) {
-    MediaRouterActionController::SetAlwaysShowActionPref(browser()->profile(),
+    CastToolbarButtonController::SetAlwaysShowActionPref(browser()->profile(),
                                                          always_show);
   }
 
@@ -78,7 +79,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   // A vector of MediaRoutes that includes a local route.
   std::vector<MediaRoute> routes_;
 
-  raw_ptr<MediaRouterActionController, DanglingUntriaged> action_controller_ =
+  raw_ptr<CastToolbarButtonController, DanglingUntriaged> action_controller_ =
       nullptr;
 };
 

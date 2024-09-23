@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View name='Unnamed ARIA region: must fall back to the native role.'
 ++android.widget.TextView name='Unnamed ARIA region on plain div uses generic container role.'
 ++android.view.View role_description='region' name='Named region'

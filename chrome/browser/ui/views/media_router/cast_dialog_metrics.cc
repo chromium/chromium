@@ -116,7 +116,7 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
     case MediaRouterDialogActivationLocation::TOTAL_COUNT:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -137,8 +137,8 @@ CastDialogMetrics::~CastDialogMetrics() = default;
 void CastDialogMetrics::OnSinksLoaded(const base::Time& sinks_load_time) {
   if (!sinks_load_time_.is_null())
     return;
-  MediaRouterMetrics::RecordMediaRouterDialogLoaded(sinks_load_time -
-                                                    initialization_time_);
+  MediaRouterMetrics::RecordCastDialogLoaded(sinks_load_time -
+                                             initialization_time_);
   sinks_load_time_ = sinks_load_time;
 }
 

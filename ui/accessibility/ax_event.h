@@ -24,6 +24,11 @@ struct AX_BASE_EXPORT AXEvent final {
           const std::vector<AXEventIntent>& event_intents = {},
           int action_request_id = -1);
   virtual ~AXEvent();
+
+  AXEvent& operator=(AXEvent&& event);
+  AXEvent(AXEvent&& other);
+
+  // TODO(accessibility): try to = delete these or finish auditing all sites.
   AXEvent(const AXEvent& event);
   AXEvent& operator=(const AXEvent& event);
 

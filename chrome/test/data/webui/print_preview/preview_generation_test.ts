@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range} from 'chrome://print/print_preview.js';
+import type {NativeInitialSettings, PreviewTicket, PrintPreviewAppElement, PrintPreviewDestinationSettingsElement, Range, Settings} from 'chrome://print/print_preview.js';
 import {ColorMode, CustomMarginsOrientation, Destination, DestinationOrigin, DestinationState, Margins, MarginsType, NativeLayerImpl, PluginProxyImpl, ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -16,7 +16,7 @@ import {TestPluginProxy} from './test_plugin_proxy.js';
 
 interface ValidateScalingChangeParams {
   printTicket: string;
-  scalingTypeKey: string;
+  scalingTypeKey: keyof Settings;
   expectedTicketId: number;
   expectedTicketScaleFactor: number;
   expectedScalingValue: string;
@@ -87,7 +87,7 @@ suite('PreviewGenerationTest', function() {
    *     UI state have been verified.
    */
   function testSimpleSetting(
-      settingName: string, initialSettingValue: SimpleSettingType,
+      settingName: keyof Settings, initialSettingValue: SimpleSettingType,
       updatedSettingValue: SimpleSettingType, ticketKey: string,
       initialTicketValue: SimpleSettingType,
       updatedTicketValue: SimpleSettingType): Promise<void> {

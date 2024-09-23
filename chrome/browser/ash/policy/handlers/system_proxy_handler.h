@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_SYSTEM_PROXY_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 
 namespace ash {
 class SystemProxyManager;

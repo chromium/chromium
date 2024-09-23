@@ -213,6 +213,7 @@ class OzonePlatformX11 : public OzonePlatform,
       // called on the gpu process side.
       properties.supports_native_pixmaps = true;
     }
+    properties.supports_subwindows_as_accelerated_widgets = true;
 
     return properties;
   }
@@ -252,7 +253,7 @@ class OzonePlatformX11 : public OzonePlatform,
     cursor_factory_ = std::make_unique<X11CursorFactory>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
 
-    // TODO(crbug.com/987939): Support XKB.
+    // TODO(crbug.com/41472924): Support XKB.
     keyboard_layout_engine_ = std::make_unique<StubKeyboardLayoutEngine>();
     KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(
         keyboard_layout_engine_.get());

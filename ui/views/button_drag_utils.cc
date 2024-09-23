@@ -37,21 +37,19 @@ static constexpr int kLinkDragImageMaxWidth = 150;
 
 class ScopedWidget {
  public:
-  explicit ScopedWidget(views::Widget* widget) : widget_(widget) {}
+  explicit ScopedWidget(std::unique_ptr<views::Widget> widget)
+      : widget_(std::move(widget)) {}
 
   ScopedWidget(const ScopedWidget&) = delete;
   ScopedWidget& operator=(const ScopedWidget&) = delete;
 
-  ~ScopedWidget() {
-    if (widget_)
-      widget_.ExtractAsDangling()->CloseNow();
-  }
+  ~ScopedWidget() = default;
 
-  views::Widget* operator->() const { return widget_; }
-  views::Widget* get() const { return widget_; }
+  views::Widget* operator->() const { return widget_.get(); }
+  views::Widget* get() const { return widget_.get(); }
 
  private:
-  raw_ptr<views::Widget> widget_;
+  std::unique_ptr<views::Widget> widget_;
 };
 
 void SetURLAndDragImage(const GURL& url,
@@ -71,10 +69,11 @@ void SetDragImage(const GURL& url,
                   const gfx::Point* press_pt,
                   ui::OSExchangeData* data) {
   // Create a widget to render the drag image for us.
-  ScopedWidget drag_widget(new views::Widget());
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_DRAG);
+  ScopedWidget drag_widget(std::make_unique<views::Widget>());
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_DRAG);
   params.accept_events = false;
-  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   drag_widget->Init(std::move(params));
@@ -86,8 +85,8 @@ void SetDragImage(const GURL& url,
           title.empty() ? base::UTF8ToUTF16(url.spec()) : title));
   button->SetTextSubpixelRenderingEnabled(false);
   const ui::ColorProvider* color_provider = drag_widget->GetColorProvider();
-  button->SetTextColor(views::Button::STATE_NORMAL,
-                       color_provider->GetColor(ui::kColorTextfieldForeground));
+  button->SetTextColorId(views::Button::STATE_NORMAL,
+                         ui::kColorTextfieldForeground);
 
   SkColor bg_color = color_provider->GetColor(ui::kColorTextfieldBackground);
   if (views::Widget::IsWindowCompositingSupported()) {
@@ -106,7 +105,7 @@ void SetDragImage(const GURL& url,
                           ui::ImageModel::FromImageSkia(icon));
   }
 
-  gfx::Size size(button->GetPreferredSize());
+  gfx::Size size(button->GetPreferredSize({}));
   // drag_widget's size must be set to show the drag image in RTL.
   // However, on Windows, calling Widget::SetSize() resets
   // the LabelButton's bounds via OnNativeWidgetSizeChanged().

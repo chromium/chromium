@@ -12,6 +12,7 @@
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/resources/toolbar_resource.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
@@ -36,7 +37,8 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
                                 float x_offset,
                                 float content_offset,
                                 bool show_debug,
-                                bool clip_shadow) {
+                                bool clip_shadow,
+                                const viz::OffsetTag& offset_tag) {
   ToolbarResource* resource =
       ToolbarResource::From(resource_manager_->GetResource(
           ui::ANDROID_RESOURCE_TYPE_DYNAMIC, toolbar_resource_id));
@@ -57,7 +59,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   toolbar_background_layer_->SetBounds(resource->toolbar_rect().size());
   toolbar_background_layer_->SetPosition(
       gfx::PointF(resource->toolbar_rect().origin()));
-  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
   toolbar_background_layer_->SetBackgroundColor(
       SkColor4f::FromColor(toolbar_background_color));
 
@@ -115,6 +117,8 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   // Position the toolbar at the bottom of the space available for top controls.
   layer_->SetPosition(
       gfx::PointF(x_offset, content_offset - layer_->bounds().height()));
+
+  layer_->SetOffsetTag(offset_tag);
 }
 
 int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer) {
@@ -145,7 +149,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
     progress_bar_background_layer_->SetBounds(
         gfx::Size(progress_bar_background_width,
                   progress_bar_background_height));
-    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+    // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
     progress_bar_background_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_background_color));
   }
@@ -157,7 +161,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
         gfx::PointF(progress_bar_x, progress_bar_y));
     progress_bar_layer_->SetBounds(
         gfx::Size(progress_bar_width, progress_bar_height));
-    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+    // TODO(crbug.com/40219248): Remove FromColor and make all SkColor4f.
     progress_bar_layer_->SetBackgroundColor(
         SkColor4f::FromColor(progress_bar_color));
   }

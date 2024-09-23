@@ -5,17 +5,17 @@
 #ifndef SERVICES_WEBNN_DML_TENSOR_DESC_H_
 #define SERVICES_WEBNN_DML_TENSOR_DESC_H_
 
-#include <DirectML.h>
-#include <wrl.h>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
+#include "third_party/microsoft_dxheaders/include/directml.h"
+
+// Windows SDK headers should be included after DirectX headers.
+#include <wrl.h>
 
 namespace webnn::dml {
-
-using Microsoft::WRL::ComPtr;
 
 // The TensorDesc wraps a tensor description (DML_TENSOR_DESC) needed by a DML
 // graph. It owns the tensor's dimensions, strides and DML_BUFFER_TENSOR_DESC.
@@ -63,6 +63,23 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorDesc final {
   void BroadcastTo(base::span<const uint32_t> broadcasted_dims,
                    size_t ignorable_tails_count = 0);
 
+  // Flatten the tensor from the leftmost dimensions to reduce its rank,
+  // aligning the right dimensions. The strides of the TensorDesc will be
+  // adjusted accordingly. The flattened rank must be greater than zero and not
+  // exceed the original rank.
+  // For example, a 5D tensor descriptor with dimensions [3, 4, 5, 6, 7] can be
+  // flattened to a 4D tensor descriptor with dimensions [12, 5, 6, 7] by
+  // folding the two leftmost dimensions [3, 4] to [12].
+  // Some tensor descriptors with non-default strides cannot be flattened.
+  // For example, if a tensor descriptor with dimensions [1, 2, 3] is
+  // broadcasted to [2, 2, 3], the resulting tensor descriptor cannot be
+  // flattened to 2D. Similarly, if a tensor descriptor with dimensions [5, 4,
+  // 3, 2, 1] is transposed to [4, 5, 3, 2, 1], the resulting tensor descriptor
+  // cannot be flattened to 4D.
+  // Appending an identity operator to consume the non-default strides in
+  // advance can ensure successful flattening.
+  bool RightAlignedFlattenTo(size_t flattened_rank);
+
   // Add leading or trailing ones to dimensions and zeros to strides to ensure
   // the tensor rank >= minimum_rank.
   void EnsureMinimumRank(size_t minimum_rank, Alignment alignment);
@@ -72,6 +89,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorDesc final {
   // target axes of [0, 3], the new shape would be [2, 1, 1, 3].
   void MakeBroadcastCompatible(size_t minimum_rank,
                                base::span<const uint32_t> axes);
+
+  void SetTotalTensorSizeInBytes(uint64_t new_total_tensor_size_bytes);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebNNTensorDescTest, CreateAndCopyTensorDescA);

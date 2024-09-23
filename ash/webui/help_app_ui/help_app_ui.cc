@@ -14,9 +14,11 @@
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
+#include "base/strings/strcat.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/types.mojom.h"
+#include "chromeos/constants/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
@@ -51,9 +53,11 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
       CreateAndAddHostDataSource(browser_context);
-  // We need a CSP override to use the chrome-untrusted:// scheme in the host.
-  std::string csp =
-      std::string("frame-src ") + kChromeUIHelpAppUntrustedURL + ";";
+  // We need a CSP override to use the chrome-untrusted://, almanac:// and
+  // cros-apps:// schemes in the host.
+  std::string csp = base::StrCat({"frame-src ", kChromeUIHelpAppUntrustedURL,
+                                  " ", chromeos::kAppInstallUriScheme, ": ",
+                                  chromeos::kLegacyAppInstallUriScheme, ":;"});
   host_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
 
@@ -61,7 +65,7 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
   // Register common permissions for chrome-untrusted:// pages.
-  // TODO(https://crbug.com/1113568): Remove this after common permissions are
+  // TODO(crbug.com/40710326): Remove this after common permissions are
   // granted by default.
   auto* permissions_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
   const url::Origin untrusted_origin =
@@ -84,7 +88,7 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
   }
 
   // Register common permissions for chrome-untrusted:// pages.
-  // TODO(https://crbug.com/1113568): Remove this after common permissions are
+  // TODO(crbug.com/40710326): Remove this after common permissions are
   // granted by default.
   auto* magazine_permissions_allowlist =
       WebUIAllowlist::GetOrCreate(browser_context);

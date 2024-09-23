@@ -29,6 +29,7 @@ class IsolationInfo;
 class SchemefulSite;
 class CookieAccessDelegate;
 class CookieInclusionStatus;
+class ParsedCookie;
 
 namespace cookie_util {
 
@@ -49,9 +50,24 @@ enum class StorageAccessResult {
   ACCESS_ALLOWED_3PCD_TRIAL = 5,
   ACCESS_ALLOWED_3PCD_METADATA_GRANT = 6,
   ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT = 7,
-  ACCESS_ALLOWED_CORS_EXCEPTION = 8,
+  // ACCESS_ALLOWED_CORS_EXCEPTION = 8,  // Deprecated
   ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL = 9,
-  kMaxValue = ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL,
+  ACCESS_ALLOWED_SCHEME = 10,
+  kMaxValue = ACCESS_ALLOWED_SCHEME,
+};
+
+// This enum's values correspond to the values of the HTTP request header
+// `Sec-Fetch-Storage-Access`, which is applied to cross-site requests.
+enum class StorageAccessStatus {
+  // Applies to context that does not have unpartitioned cookie access, and does
+  // not have the `storage-access` permission.
+  kNone = 0,
+  // Applies to context that has `storage-access` permission, but has not opted
+  // into using it; the context also does not have unpartitioned cookie access
+  // through some other means.
+  kInactive = 1,
+  // Applies to context that has unpartitioned cookie access.
+  kActive = 2
 };
 
 // Helper to fire telemetry indicating if a given request for storage was
@@ -94,6 +110,12 @@ NET_EXPORT std::string CookieDomainAsHost(const std::string& cookie_domain);
 // supported by Time::FromUTCExplodeded(), then this will return Time(1) or
 // Time::Max(), respectively.
 NET_EXPORT base::Time ParseCookieExpirationTime(const std::string& time_string);
+
+// Returns the canonical path based on the specified url and path attribute
+// value. Note that this method does not enforce character set or size
+// checks on `path_string`.
+NET_EXPORT std::string CanonPathWithString(const GURL& url,
+                                           const std::string& path_string);
 
 // Get a cookie's URL from it's domain, path, and source scheme.
 // The first field can be the combined domain-and-host-only-flag (e.g. the
@@ -141,6 +163,36 @@ NET_EXPORT bool IsDomainMatch(const std::string& domain,
 // |cookie_path|.
 NET_EXPORT bool IsOnPath(const std::string& cookie_path,
                          const std::string& url_path);
+
+// Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
+// applies to the given cookie |name|.
+CookiePrefix GetCookiePrefix(const std::string& name);
+
+// Returns true if the cookie does not violate any constraints imposed
+// by the cookie name's prefix, as described in
+// https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-13#name-cookie-name-prefixes
+bool IsCookiePrefixValid(CookiePrefix prefix,
+                         const GURL& url,
+                         const ParsedCookie& parsed_cookie);
+// As above. `secure`, `domain`, and `path` are the raw attribute values (i.e.
+// as taken from a ParsedCookie), NOT in normalized form as represented in
+// CookieBase.
+bool IsCookiePrefixValid(CookiePrefix prefix,
+                         const GURL& url,
+                         bool secure,
+                         const std::string& domain,
+                         const std::string& path);
+
+// Returns true iff the cookie is a partitioned cookie with a nonce or that
+// does not violate the semantics of the Partitioned attribute:
+// - Must have the Secure attribute OR the cookie partition contains a nonce.
+bool IsCookiePartitionedValid(const GURL& url,
+                              const ParsedCookie& parsed_cookie,
+                              bool partition_has_nonce);
+bool IsCookiePartitionedValid(const GURL& url,
+                              bool secure,
+                              bool is_partitioned,
+                              bool partition_has_nonce);
 
 // A ParsedRequestCookie consists of the key and value of the cookie.
 using ParsedRequestCookie = std::pair<std::string, std::string>;
@@ -259,6 +311,9 @@ NET_EXPORT bool IsPortBoundCookiesEnabled();
 
 NET_EXPORT bool IsSchemeBoundCookiesEnabled();
 
+// Returns true if either portion of OBC is enabled.
+NET_EXPORT bool IsOriginBoundCookiesPartiallyEnabled();
+
 NET_EXPORT bool IsTimeLimitedInsecureCookiesEnabled();
 
 // Returns whether the respective feature is enabled.
@@ -315,6 +370,8 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
 // unless you enable ForceThirdPartyCookieBlocking with the command line switch
 // --test-third-party-cookie-phaseout.
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
+
+NET_EXPORT bool PartitionedCookiesDisabledByCommandLine();
 
 }  // namespace cookie_util
 

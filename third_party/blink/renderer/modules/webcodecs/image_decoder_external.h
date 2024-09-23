@@ -32,7 +32,6 @@ class ImageDecoderInit;
 class ImageDecodeResult;
 class ImageTrackList;
 class ReadableStreamBytesConsumer;
-class ScriptPromiseResolver;
 
 class MODULES_EXPORT ImageDecoderExternal final
     : public ScriptWrappable,
@@ -49,15 +48,16 @@ class MODULES_EXPORT ImageDecoderExternal final
   ImageDecoderExternal(ScriptState*, const ImageDecoderInit*, ExceptionState&);
   ~ImageDecoderExternal() override;
 
-  static ScriptPromise isTypeSupported(ScriptState*, String type);
+  static ScriptPromise<IDLBoolean> isTypeSupported(ScriptState*, String type);
 
   // image_decoder.idl implementation.
-  ScriptPromise decode(const ImageDecodeOptions* options = nullptr);
+  ScriptPromise<ImageDecodeResult> decode(
+      const ImageDecodeOptions* options = nullptr);
   void reset(DOMException* exception = nullptr);
   void close();
   String type() const;
   bool complete() const;
-  ScriptPromiseTyped<IDLUndefined> completed(ScriptState* script_state);
+  ScriptPromise<IDLUndefined> completed(ScriptState* script_state);
   ImageTrackList& tracks() const;
 
   // BytesConsumer::Client implementation.
@@ -140,14 +140,14 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   // Pending decode() requests.
   struct DecodeRequest final : public GarbageCollected<DecodeRequest> {
-    DecodeRequest(ScriptPromiseResolver* resolver,
+    DecodeRequest(ScriptPromiseResolver<ImageDecodeResult>* resolver,
                   uint32_t frame_index,
                   bool complete_frames_only);
     ~DecodeRequest();
     void Trace(Visitor*) const;
     bool IsFinal() const;
 
-    Member<ScriptPromiseResolver> resolver;
+    Member<ScriptPromiseResolver<ImageDecodeResult>> resolver;
     uint32_t frame_index;
     bool complete_frames_only;
     bool pending = false;

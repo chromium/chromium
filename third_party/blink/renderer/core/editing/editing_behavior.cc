@@ -31,6 +31,7 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 
 namespace blink {
 
@@ -210,40 +211,19 @@ const int kVkeyBackwardChar = VKEY_LEFT;
 const int kVkeyNextLine = VKEY_DOWN;
 const int kVkeyPreviousLine = VKEY_UP;
 
-// Each of the following arrays contains logical behaviors in kVerticalRl,
-// kVerticalLr, kSidewaysRl, and kSidewaysLr.
-const int kPhysicalLeftToLogical[] = {kVkeyNextLine, kVkeyPreviousLine,
-                                      kVkeyNextLine, kVkeyPreviousLine};
-const int kPhysicalRightToLogical[] = {kVkeyPreviousLine, kVkeyNextLine,
-                                       kVkeyPreviousLine, kVkeyNextLine};
-const int kPhysicalUpToLogical[] = {kVkeyBackwardChar, kVkeyBackwardChar,
-                                    kVkeyForwardChar, kVkeyForwardChar};
-const int kPhysicalDownToLogical[] = {kVkeyForwardChar, kVkeyForwardChar,
-                                      kVkeyBackwardChar, kVkeyBackwardChar};
-
 int TransposeArrowKey(int key_code, WritingMode writing_mode) {
-  if (writing_mode == WritingMode::kHorizontalTb) {
-    return key_code;
-  }
-  DCHECK_EQ(1, static_cast<uint8_t>(WritingMode::kVerticalRl));
-  DCHECK_EQ(2, static_cast<uint8_t>(WritingMode::kVerticalLr));
-  DCHECK_EQ(3, static_cast<uint8_t>(WritingMode::kSidewaysRl));
-  DCHECK_EQ(4, static_cast<uint8_t>(WritingMode::kSidewaysLr));
-  DCHECK_EQ(4, static_cast<uint8_t>(WritingMode::kMaxWritingMode));
-  unsigned index = static_cast<uint8_t>(writing_mode) - 1;
+  LogicalToPhysical<int> key_map({writing_mode, TextDirection::kLtr},
+                                 kVkeyBackwardChar, kVkeyForwardChar,
+                                 kVkeyPreviousLine, kVkeyNextLine);
   switch (key_code) {
     case VKEY_LEFT:
-      CHECK_LT(index, std::size(kPhysicalLeftToLogical));
-      return kPhysicalLeftToLogical[index];
+      return key_map.Left();
     case VKEY_RIGHT:
-      CHECK_LT(index, std::size(kPhysicalRightToLogical));
-      return kPhysicalRightToLogical[index];
+      return key_map.Right();
     case VKEY_UP:
-      CHECK_LT(index, std::size(kPhysicalUpToLogical));
-      return kPhysicalUpToLogical[index];
+      return key_map.Top();
     case VKEY_DOWN:
-      CHECK_LT(index, std::size(kPhysicalDownToLogical));
-      return kPhysicalDownToLogical[index];
+      return key_map.Bottom();
   }
   return key_code;
 }

@@ -1,0 +1,15 @@
+# Prefer top level keyboard accessory owners over the per-file owners below.
+
+# Autofill & Password specialists for C++ code:
+per-file *.h,*.cc,*.gn,*.grd,DEPS=mamir@chromium.org
+per-file *.h,*.cc,*.gn,*.grd,DEPS=schwering@google.com
+
+#Legacy autofill owners (because annotations are only supported per user):
+per-file *.h,*.cc,*.gn,*.grd,DEPS=battre@chromium.org #[LAST_RESORT_SUGGESTION}
+per-file *.h,*.cc,*.gn,*.grd,DEPS=koerber@google.com #[LAST_RESORT_SUGGESTION}
+per-file *.h,*.cc,*.gn,*.grd,DEPS=fleimgruber@google.com #[LAST_RESORT_SUGGESTION}
+per-file *.h,*.cc,*.gn,*.grd,DEPS=pkotwicz@chromium.org #[LAST_RESORT_SUGGESTION}
+per-file *.h,*.cc,*.gn,*.grd,DEPS=smcgruer@chromium.org #[LAST_RESORT_SUGGESTION}
+
+#Legacy password_manager owners (because annotations are only supported per user):
+per-file *.h,*.cc,*.gn,*.grd,DEPS=vasilii@chromium.org #[LAST_RESORT_SUGGESTION}

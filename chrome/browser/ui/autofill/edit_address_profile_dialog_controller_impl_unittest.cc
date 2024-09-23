@@ -14,7 +14,9 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -37,9 +39,12 @@ class EditAddressProfileDialogControllerImplTest
     controller()->SetViewFactoryForTest(base::BindRepeating(
         &EditAddressProfileDialogControllerImplTest::GetAutofillBubbleBase,
         base::Unretained(this)));
-    controller()->OfferEdit(profile_, /*original_profile=*/nullptr,
-                            /*footer_message=*/u"", save_callback_.Get(),
-                            /*is_migration_to_account=*/false);
+    controller()->OfferEdit(profile_,
+                            /*title_override=*/u"",
+                            /*footer_message=*/u"",
+                            /*is_editing_existing_address*/ false,
+                            /*is_migration_to_account=*/false,
+                            save_callback_.Get());
   }
 
  protected:
@@ -60,9 +65,8 @@ class EditAddressProfileDialogControllerImplTest
 
   AutofillProfile profile_ = test::GetFullProfile();
   TestAutofillBubble autofill_bubble_;
-  base::MockOnceCallback<void(
-      AutofillClient::SaveAddressProfileOfferUserDecision,
-      profile_ref profile)>
+  base::MockOnceCallback<void(AutofillClient::AddressPromptUserDecision,
+                              profile_ref profile)>
       save_callback_;
 };
 
@@ -78,37 +82,53 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
 TEST_F(EditAddressProfileDialogControllerImplTest,
        IgnoreDialog_CancelCallbackInvoked) {
   EXPECT_CALL(save_callback_,
-              Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+              Run(AutofillClient::AddressPromptUserDecision::kIgnored,
                   Property(&profile_ref::has_value, false)));
 
   controller()->OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-      std::nullopt);
+      AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
 }
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
        CancelEditing_CancelCallbackInvoked) {
-  EXPECT_CALL(
-      save_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kEditDeclined,
+                  Property(&profile_ref::has_value, false)));
 
   controller()->OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
-      std::nullopt);
+      AutofillClient::AddressPromptUserDecision::kEditDeclined, std::nullopt);
 }
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
        SaveAddress_SaveCallbackInvoked) {
-  EXPECT_CALL(
-      save_callback_,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-          AllOf(Property(&profile_ref::has_value, true),
-                Property(&profile_ref::value, profile_))));
+  EXPECT_CALL(save_callback_,
+              Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
+                  AllOf(Property(&profile_ref::has_value, true),
+                        Property(&profile_ref::value, profile_))));
 
   controller()->OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-      profile_);
+      AutofillClient::AddressPromptUserDecision::kEditAccepted, profile_);
+}
+
+TEST_F(EditAddressProfileDialogControllerImplTest,
+       WindowTitleOverride_TitleUpdatedWhenParamIsPresent) {
+  controller()->OfferEdit(profile_,
+                          /*title_override=*/u"",
+                          /*footer_message=*/u"",
+                          /*is_editing_existing_address*/ false,
+                          /*is_migration_to_account=*/false,
+                          save_callback_.Get());
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE));
+
+  controller()->OnDialogClosed(
+      AutofillClient::AddressPromptUserDecision::kEditDeclined, std::nullopt);
+  controller()->OfferEdit(profile_, u"Overridden title",
+                          /*footer_message=*/u"",
+                          /*is_editing_existing_address*/ false,
+                          /*is_migration_to_account=*/false,
+                          save_callback_.Get());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Overridden title");
 }
 
 }  // namespace autofill

@@ -18,7 +18,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.compat.ApiHelperForP;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -86,7 +85,7 @@ public class LocationUtils {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             LocationManager locationManager =
                     (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            return locationManager != null && ApiHelperForP.isLocationEnabled(locationManager);
+            return locationManager != null && locationManager.isLocationEnabled();
         }
 
         return Settings.Secure.getInt(
@@ -115,8 +114,8 @@ public class LocationUtils {
      * <p>The callback is guaranteed to be called unless the user never replies to the prompt
      * dialog, which in practice happens very infrequently since the dialog is modal.
      *
-     * TODO(crbug/730711): Add back @LocationSettingsDialogOutcome to the callback when type
-     *     annotations are allowed in Java 8.
+     * <p>TODO(crbug.com/40524602): Add back @LocationSettingsDialogOutcome to the callback when
+     * type annotations are allowed in Java 8.
      */
     public void promptToEnableSystemLocationSetting(
             @LocationSettingsDialogContext int promptContext,

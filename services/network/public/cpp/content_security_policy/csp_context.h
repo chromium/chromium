@@ -56,7 +56,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
       const GURL& url,
       const GURL& url_before_redirects,
       bool has_followed_redirect,
-      bool is_response_check,
       const mojom::SourceLocationPtr& source_location,
       CheckCSPDisposition check_csp_disposition,
       bool is_form_submission,

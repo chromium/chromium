@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -48,7 +49,13 @@ class OneDrivePageHandler : public one_drive::mojom::PageHandler,
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
       base::File::Error error) override;
 
+  void OnAllowUserToRemoveODFSChanged();
+
   raw_ptr<Profile> profile_;
+
+  // The registrar used to watch prefs changes.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
   mojo::Remote<one_drive::mojom::Page> page_;
   mojo::Receiver<one_drive::mojom::PageHandler> receiver_{this};
   base::WeakPtrFactory<OneDrivePageHandler> weak_ptr_factory_{this};

@@ -41,6 +41,8 @@ For some teams in Chrome, we have turned on a coverage check, which blocks a CL 
 
 Once the tests are added, another run of coverage builders (through CQ+1 or CQ+2) changes the label to `CodeCoverage+1`, allowing CLs to proceed with submission.
 
+Tests themselves, as well as test-only files, are generally excluded from coverage checks based on their path or filename. If you are getting coverage warnings for test-related files themselves, check whether the files end in "test" or "tests" (for example, "SomethingTest.java" or "something_unittests.cc") or that their path contains a directory named exactly "test", "tests", or "testing". There is no manual list to which files can be added for long-term exclusion.
+
 Devs can also choose to bypass this block, in case they think they are being unfairly punished. They can do so by adding a *Low-Coverage-Reason: reason* footer to the change description. This should follow certain formatting constraints which are mentioned below
 
 ### Mention the Bypass Category

@@ -10,7 +10,7 @@
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/net/protocol_handler_util.h"
@@ -35,7 +35,7 @@ using LoggingBlock = void (^)(const std::string& event);
 }
 
 - (instancetype)initWithLoggingBlock:(LoggingBlock)loggingBlock {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _loggingBlock = loggingBlock;
   }
   return self;
@@ -78,8 +78,8 @@ void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
     sequentially_scrolled_ = 0;
   }
 
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-      web_state_->GetBrowserState())
+  BreadcrumbManagerKeyedServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState()))
       ->AddEvent(event);
 }
 

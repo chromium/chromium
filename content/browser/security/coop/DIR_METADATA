@@ -1,0 +1,9 @@
+monorail: {
+  component: "Blink>SecurityFeature>COOP"
+}
+
+buganizer_public: {
+  component_id: 1456645
+}
+
+team_email: "chrome-security-owp-team@google.com"

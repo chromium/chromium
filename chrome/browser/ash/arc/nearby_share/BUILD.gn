@@ -1,0 +1,80 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("nearby_share") {
+  sources = [
+    "arc_nearby_share_bridge.cc",
+    "arc_nearby_share_bridge.h",
+    "arc_nearby_share_uma.cc",
+    "arc_nearby_share_uma.h",
+    "nearby_share_session_impl.cc",
+    "nearby_share_session_impl.h",
+    "share_info_file_handler.cc",
+    "share_info_file_handler.h",
+    "share_info_file_stream_adapter.cc",
+    "share_info_file_stream_adapter.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/arc/nearby_share/ui",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/webshare:storage",
+    "//chrome/common",
+    "//chromeos/components/sharesheet:constants",
+    "//components/arc",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_nearby_share_bridge_unittest.cc",
+    "nearby_share_session_impl_unittest.cc",
+    "share_info_file_stream_adapter_unittest.cc",
+  ]
+
+  deps = [
+    ":nearby_share",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/test:test_support",
+    "//chromeos/ui/base",
+    "//components/exo",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//storage/browser:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/aura:test_support",
+
+    # Gather unit tests from subdirectories.
+    "//chrome/browser/ash/arc/nearby_share/ui:unit_tests",
+  ]
+}

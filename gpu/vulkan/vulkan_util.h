@@ -27,7 +27,19 @@ constexpr uint32_t kVendorGoogle = 0x1AE0;
 constexpr uint32_t kDeviceSwiftShader = 0xC0DE;
 
 struct GPUInfo;
-class VulkanInfo;
+
+// Mirrors a subset of information from VkPhysicalDeviceProperties.
+struct COMPONENT_EXPORT(VULKAN) VulkanPhysicalDeviceProperties {
+  VulkanPhysicalDeviceProperties();
+  explicit VulkanPhysicalDeviceProperties(
+      const VkPhysicalDeviceProperties& properties);
+  ~VulkanPhysicalDeviceProperties();
+
+  uint32_t driver_version = 0;
+  uint32_t vendor_id = 0;
+  uint32_t device_id = 0;
+  std::string device_name;
+};
 
 // Submits semaphores to be signaled to the vulkan queue. Semaphores are
 // signaled once this submission is executed. vk_fence is an optional handle
@@ -109,10 +121,9 @@ VKAPI_ATTR VkResult VKAPI_CALL
 VulkanQueuePresentKHRHook(VkQueue queue, const VkPresentInfoKHR* pPresentInfo);
 
 COMPONENT_EXPORT(VULKAN)
-bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
-                                const GPUInfo& gpu_info,
-                                const std::string& enable_by_device_name,
-                                bool disabled);
+bool CheckVulkanCompatibilities(
+    const VulkanPhysicalDeviceProperties& device_properties,
+    const GPUInfo& gpu_info);
 
 COMPONENT_EXPORT(VULKAN)
 VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout);

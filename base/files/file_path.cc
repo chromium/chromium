@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/files/file_path.h"
 
 #include <string.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/files/safe_base_name.h"
@@ -14,7 +20,6 @@
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_ostream_operators.h"
@@ -28,6 +33,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/win/win_util.h"
 #elif BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
@@ -438,8 +444,7 @@ FilePath FilePath::InsertBeforeExtension(StringPieceType suffix) const {
       base::StrCat({RemoveExtension().value(), suffix, Extension()}));
 }
 
-FilePath FilePath::InsertBeforeExtensionASCII(StringPiece suffix)
-    const {
+FilePath FilePath::InsertBeforeExtensionASCII(std::string_view suffix) const {
   DCHECK(IsStringASCII(suffix));
 #if BUILDFLAG(IS_WIN)
   return InsertBeforeExtension(UTF8ToWide(suffix));
@@ -466,7 +471,7 @@ FilePath FilePath::AddExtension(StringPieceType extension) const {
   return FilePath(str);
 }
 
-FilePath FilePath::AddExtensionASCII(StringPiece extension) const {
+FilePath FilePath::AddExtensionASCII(std::string_view extension) const {
   DCHECK(IsStringASCII(extension));
 #if BUILDFLAG(IS_WIN)
   return AddExtension(UTF8ToWide(extension));
@@ -566,7 +571,7 @@ FilePath FilePath::Append(const SafeBaseName& component) const {
   return Append(component.path().value());
 }
 
-FilePath FilePath::AppendASCII(StringPiece component) const {
+FilePath FilePath::AppendASCII(std::string_view component) const {
   DCHECK(base::IsStringASCII(component));
 #if BUILDFLAG(IS_WIN)
   return Append(UTF8ToWide(component));
@@ -652,18 +657,18 @@ std::u16string FilePath::AsUTF16Unsafe() const {
 }
 
 // static
-FilePath FilePath::FromASCII(StringPiece ascii) {
+FilePath FilePath::FromASCII(std::string_view ascii) {
   DCHECK(base::IsStringASCII(ascii));
   return FilePath(ASCIIToWide(ascii));
 }
 
 // static
-FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
+FilePath FilePath::FromUTF8Unsafe(std::string_view utf8) {
   return FilePath(UTF8ToWide(utf8));
 }
 
 // static
-FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
+FilePath FilePath::FromUTF16Unsafe(std::u16string_view utf16) {
   return FilePath(AsWStringView(utf16));
 }
 
@@ -699,13 +704,13 @@ std::u16string FilePath::AsUTF16Unsafe() const {
 }
 
 // static
-FilePath FilePath::FromASCII(StringPiece ascii) {
+FilePath FilePath::FromASCII(std::string_view ascii) {
   DCHECK(base::IsStringASCII(ascii));
   return FilePath(ascii);
 }
 
 // static
-FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
+FilePath FilePath::FromUTF8Unsafe(std::string_view utf8) {
 #if defined(SYSTEM_NATIVE_UTF8)
   return FilePath(utf8);
 #else
@@ -714,7 +719,7 @@ FilePath FilePath::FromUTF8Unsafe(StringPiece utf8) {
 }
 
 // static
-FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
+FilePath FilePath::FromUTF16Unsafe(std::u16string_view utf16) {
 #if defined(SYSTEM_NATIVE_UTF8)
   return FilePath(UTF16ToUTF8(utf16));
 #else
@@ -1267,32 +1272,37 @@ int FilePath::HFSFastUnicodeCompare(StringPieceType string1,
 }
 
 StringType FilePath::GetHFSDecomposedForm(StringPieceType string) {
-  StringType result;
   apple::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytesNoCopy(
-      NULL, reinterpret_cast<const UInt8*>(string.data()),
+      nullptr, reinterpret_cast<const UInt8*>(string.data()),
       checked_cast<CFIndex>(string.length()), kCFStringEncodingUTF8, false,
       kCFAllocatorNull));
-  if (cfstring) {
-    // Query the maximum length needed to store the result. In most cases this
-    // will overestimate the required space. The return value also already
-    // includes the space needed for a terminating 0.
-    CFIndex length =
-        CFStringGetMaximumSizeOfFileSystemRepresentation(cfstring.get());
-    DCHECK_GT(length, 0);  // should be at least 1 for the 0-terminator.
-    // Reserve enough space for CFStringGetFileSystemRepresentation to write
-    // into. Also set the length to the maximum so that we can shrink it later.
-    // (Increasing rather than decreasing it would clobber the string contents!)
-    result.reserve(static_cast<size_t>(length));
-    result.resize(static_cast<size_t>(length) - 1);
-    Boolean success =
-        CFStringGetFileSystemRepresentation(cfstring.get(), &result[0], length);
-    if (success) {
-      // Reduce result.length() to actual string length.
-      result.resize(strlen(result.c_str()));
-    } else {
-      // An error occurred -> clear result.
-      result.clear();
-    }
+  return GetHFSDecomposedForm(cfstring.get());
+}
+
+StringType FilePath::GetHFSDecomposedForm(CFStringRef cfstring) {
+  if (!cfstring) {
+    return StringType();
+  }
+
+  StringType result;
+  // Query the maximum length needed to store the result. In most cases this
+  // will overestimate the required space. The return value also already
+  // includes the space needed for a terminating 0.
+  CFIndex length = CFStringGetMaximumSizeOfFileSystemRepresentation(cfstring);
+  DCHECK_GT(length, 0);  // should be at least 1 for the 0-terminator.
+  // Reserve enough space for CFStringGetFileSystemRepresentation to write
+  // into. Also set the length to the maximum so that we can shrink it later.
+  // (Increasing rather than decreasing it would clobber the string contents!)
+  result.reserve(static_cast<size_t>(length));
+  result.resize(static_cast<size_t>(length) - 1);
+  Boolean success =
+      CFStringGetFileSystemRepresentation(cfstring, &result[0], length);
+  if (success) {
+    // Reduce result.length() to actual string length.
+    result.resize(strlen(result.c_str()));
+  } else {
+    // An error occurred -> clear result.
+    result.clear();
   }
   return result;
 }

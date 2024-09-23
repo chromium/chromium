@@ -1,0 +1,4 @@
+# Bluetooth Device Emulation is currently not enabled on
+# binary size constrained platforms.
+
+enable_bluetooth_emulation = is_win || is_mac || is_linux || is_chromeos

@@ -15,7 +15,7 @@
     --cr-toolbar-padding-top: 8px;
   }
 
-  os-toolbar {
+  settings-toolbar {
     /* TODO(hsuregan): update for dark mode when needed. */
     min-height: 56px;
     /* Needs to be higher than #cr-container-show-top's z-index so that the
@@ -44,10 +44,6 @@
     position: relative;
   }
 
-  :host-context(body.revamp-wayfinding-enabled) #container {
-    padding-top: 8px;
-  }
-
   #left,
   #center,
   #right {
@@ -58,6 +54,12 @@
     height: 100%;
     position: sticky;
     top: 0;
+    /* Specify z-index so menu item tooltips overlay #center content. */
+    z-index: 100;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #left {
+    flex-grow: 0;
   }
 
   #left os-settings-menu {
@@ -81,12 +83,18 @@
   }
 
   :host-context(body.revamp-wayfinding-enabled) #center  {
+    box-sizing: border-box;
     height: 100%;
+    padding-top: 8px;
   }
 
   /* Take up all remaining vertical space. */
   :host-context(body.revamp-wayfinding-enabled) #center > os-settings-main {
     min-height: 100%;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #right {
+    display: none;
   }
 
   /* The breakpoint of 980px was decided on by the rounded sum of
@@ -123,31 +131,28 @@
     query-matches="{{isNarrow}}">
 </iron-media-query>
 <template is="dom-if" if="[[showToolbar_]]">
-  <os-toolbar on-os-toolbar-menu-tap="onMenuButtonClick_"
+  <settings-toolbar on-settings-toolbar-menu-tap="onMenuButtonClick_"
       spinner-active="[[toolbarSpinnerActive_]]"
       role="banner"
       narrow="[[isNarrow]]"
       narrow-threshold="980"
       show-menu="[[isNarrow]]">
-  </os-toolbar>
+  </settings-toolbar>
 </template>
 <template is="dom-if" if="[[showNavMenu_]]">
   <cr-drawer id="drawer" on-close="onMenuClose_" heading="$i18n{settings}"
       align="$i18n{textdirection}">
     <div slot="header-icon">
-      <!-- Hidden from a11y because this icon is decorative. Clicking closes
-          the dialog, but screen reader users can do this by pressing ESC,
-          so aria-hidden is OK here. -->
       <cr-icon-button id="drawerIcon"
           iron-icon="cr20:menu"
           on-click="onDrawerIconClick_"
-          title="$i18n{close}"
-          aria-hidden="true">
+          title="$i18n{close}">
       </cr-icon-button>
     </div>
     <div slot="body">
       <template is="dom-if" id="drawerTemplate">
         <os-settings-menu
+            is-drawer-menu
             page-availability="[[pageAvailability_]]"
             on-iron-activate="onMenuItemSelected_"
             advanced-opened="{{advancedOpenedInMenu_}}">

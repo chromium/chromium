@@ -9,38 +9,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "cors_non_wildcard_request_headers_support": {
-            "default_value": true,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "CORSNonWildcardRequestHeadersSupport": false
-        },
-        "prefs": {
-          "cors_non_wildcard_request_headers_support": {
-            "location": "user_profile",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "CORSNonWildcardRequestHeadersSupport": true
-        },
-        "prefs": {
-          "cors_non_wildcard_request_headers_support": {
-            "location": "user_profile",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "cors_non_wildcard_request_headers_support",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_LEGACY_TECH_LEGACY_TECH_SERVICE_H_
 
 #include <optional>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_url_matcher.h"

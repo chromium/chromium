@@ -33,11 +33,10 @@
 ] interface CSSKeyframesRule : CSSRule {
     attribute DOMString name;
     readonly attribute CSSRuleList cssRules;
+    [RuntimeEnabled=CSSKeyframesRuleLength] readonly attribute unsigned long length;
 
+    getter CSSKeyframeRule (unsigned long index);
     [CallWith=ExecutionContext] void appendRule(DOMString rule);
     [CallWith=ExecutionContext] void deleteRule(DOMString select);
     [CallWith=ExecutionContext] CSSKeyframeRule? findRule(DOMString select);
-
-    // Non-standard APIs
-    [NotEnumerable] getter CSSKeyframeRule (unsigned long index);
 };

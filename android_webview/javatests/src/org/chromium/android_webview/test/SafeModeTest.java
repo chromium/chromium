@@ -8,6 +8,8 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.app.job.JobWorkItem;
@@ -73,6 +75,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Test WebView SafeMode. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class SafeModeTest extends AwParameterizedTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
     // provider.
@@ -603,6 +606,21 @@ public class SafeModeTest extends AwParameterizedTest {
         Assert.assertFalse(
                 "SafeMode should be disabled after querying ContentProvider",
                 SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testQueryActions_emptyAction() throws Throwable {
+        final String invalidWebViewPackageName = "org.chromium.android_webview.test";
+
+        Assert.assertFalse(
+                "SafeMode should be disabled",
+                SafeModeController.getInstance().isSafeModeEnabled(invalidWebViewPackageName));
+        Assert.assertEquals(
+                "ContentProvider should return empty set when cursor is null",
+                asSet(),
+                SafeModeController.getInstance().queryActions(invalidWebViewPackageName));
     }
 
     private class TestSafeModeAction implements SafeModeAction {
@@ -1150,6 +1168,10 @@ public class SafeModeTest extends AwParameterizedTest {
         FastVariationsSeedSafeModeAction.setAlternateSeedFilePath(embeddedSeedFile);
 
         try {
+            File oldFile = VariationsUtils.getSeedFile();
+            File newFile = VariationsUtils.getNewSeedFile();
+            VariationsTestUtils.writeMockSeed(oldFile);
+            VariationsTestUtils.writeMockSeed(newFile);
             setSafeMode(Arrays.asList(action.getId()));
 
             boolean success = action.execute();

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/ash/net/dns_over_https/templates_uri_resolver.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
@@ -44,7 +45,7 @@ class TemplatesUriResolverImpl : public TemplatesUriResolver {
   ~TemplatesUriResolverImpl() override;
 
   // TemplatesUriResolver implementation.
-  void UpdateFromPrefs(PrefService* pref_service) override;
+  void Update(PrefService* pref_service) override;
 
   // This function checks whether the DoH system is configured to provide
   // DoH identifiers in the DNS URL
@@ -60,6 +61,12 @@ class TemplatesUriResolverImpl : public TemplatesUriResolver {
 
   void SetDeviceAttributesForTesting(
       std::unique_ptr<policy::FakeDeviceAttributes> attributes);
+
+  // Indicates if `uri_templates` contains the template URI placeholder for the
+  // device IP addresses, as defined by the policy
+  // DnsOverHttpsTemplatesWithIdentifiers.
+  static bool IsDeviceIpAddressIncludedInUriTemplate(
+      std::string_view uri_templates);
 
  private:
   bool doh_with_identifiers_active_ = false;

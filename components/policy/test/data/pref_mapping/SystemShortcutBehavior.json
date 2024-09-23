@@ -1,0 +1,18 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.settings.system_shortcut_behavior",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  }
+]

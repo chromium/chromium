@@ -6,9 +6,9 @@
 
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/content/renderer/html_based_username_detector.h"
+#include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -52,18 +52,16 @@ base::LazyInstance<re2::RE2, PasswordSiteUrlLazyInstanceTraits>
 // representation of that form. |username_detector_cache| is optional, and can
 // be used to spare recomputation if called multiple times for the same form.
 std::vector<FieldRendererId> GetUsernamePredictions(
-    const std::vector<WebFormControlElement>& control_elements,
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache,
-    const WebFormElement& form) {
+    UsernameDetectorCache* username_detector_cache) {
   // Dummy cache stores the predictions in case no real cache was passed to
   // here.
   UsernameDetectorCache dummy_cache;
   if (!username_detector_cache)
     username_detector_cache = &dummy_cache;
 
-  return GetPredictionsFieldBasedOnHtmlAttributes(
-      control_elements, form_data, username_detector_cache, form);
+  return GetPredictionsFieldBasedOnHtmlAttributes(form_data,
+                                                  username_detector_cache);
 }
 
 }  // namespace
@@ -89,8 +87,8 @@ bool IsGaiaReauthenticationForm(const blink::WebFormElement& form) {
     // We're only interested in the presence
     // of <input type="hidden" /> elements.
     const WebInputElement input = element.DynamicTo<WebInputElement>();
-    if (input.IsNull() || input.FormControlTypeForAutofill() !=
-                              blink::mojom::FormControlType::kInputHidden) {
+    if (!input || input.FormControlTypeForAutofill() !=
+                      blink::mojom::FormControlType::kInputHidden) {
       continue;
     }
 
@@ -120,59 +118,44 @@ bool IsGaiaWithSkipSavePasswordForm(const blink::WebFormElement& form) {
   return should_skip_password == "1";
 }
 
-std::unique_ptr<FormData> CreateFormDataFromWebForm(
+std::optional<FormData> CreateFormDataFromWebForm(
     const WebFormElement& web_form,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
-    form_util::ButtonTitlesCache* button_titles_cache) {
-  if (web_form.IsNull()) {
-    return nullptr;
+    form_util::ButtonTitlesCache* button_titles_cache,
+    const CallTimerState& timer_state) {
+  if (!web_form) {
+    return std::nullopt;
   }
-  std::optional<FormData> form =
-      form_util::ExtractFormData(web_form.GetDocument(), web_form,
-                                 field_data_manager, {ExtractOption::kValue});
-  if (!form) {
-    return nullptr;
+  std::optional<FormData> form_data = form_util::ExtractFormData(
+      web_form.GetDocument(), web_form, field_data_manager, timer_state);
+  if (!form_data) {
+    return std::nullopt;
   }
-  auto form_data = std::make_unique<FormData>(std::move(*form));
-  form_data->is_gaia_with_skip_save_password_form =
+  form_data->set_is_gaia_with_skip_save_password_form(
       IsGaiaWithSkipSavePasswordForm(web_form) ||
-      IsGaiaReauthenticationForm(web_form);
+      IsGaiaReauthenticationForm(web_form));
 
-  blink::WebVector<WebFormControlElement> control_elements =
-      web_form.GetFormControlElements();
-  if (control_elements.empty()) {
-    return nullptr;
-  }
-  form_data->username_predictions =
-      GetUsernamePredictions(control_elements.ReleaseVector(), *form_data,
-                             username_detector_cache, web_form);
-  form_data->button_titles =
-      form_util::GetButtonTitles(web_form, button_titles_cache);
-
+  form_data->set_username_predictions(
+      GetUsernamePredictions(*form_data, username_detector_cache));
+  form_data->set_button_titles(
+      form_util::GetButtonTitles(web_form, button_titles_cache));
   return form_data;
 }
 
-std::unique_ptr<FormData> CreateFormDataFromUnownedInputElements(
+std::optional<FormData> CreateFormDataFromUnownedInputElements(
     const WebLocalFrame& frame,
     const FieldDataManager& field_data_manager,
     UsernameDetectorCache* username_detector_cache,
-    form_util::ButtonTitlesCache* button_titles_cache) {
-  std::vector<WebFormControlElement> control_elements =
-      form_util::GetFormControlElements(frame.GetDocument(), WebFormElement());
-  if (control_elements.empty()) {
-    return nullptr;
+    form_util::ButtonTitlesCache* button_titles_cache,
+    const CallTimerState& timer_state) {
+  std::optional<FormData> form_data = form_util::ExtractFormData(
+      frame.GetDocument(), WebFormElement(), field_data_manager, timer_state);
+  if (!form_data) {
+    return std::nullopt;
   }
-  std::optional<FormData> form =
-      form_util::ExtractFormData(frame.GetDocument(), WebFormElement(),
-                                 field_data_manager, {ExtractOption::kValue});
-  if (!form) {
-    return nullptr;
-  }
-  auto form_data = std::make_unique<FormData>(std::move(*form));
-  form_data->username_predictions =
-      GetUsernamePredictions(std::move(control_elements), *form_data,
-                             username_detector_cache, WebFormElement());
+  form_data->set_username_predictions(
+      GetUsernamePredictions(*form_data, username_detector_cache));
   return form_data;
 }
 

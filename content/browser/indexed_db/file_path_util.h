@@ -14,8 +14,7 @@ namespace storage {
 struct BucketLocator;
 }
 
-namespace content {
-namespace indexed_db {
+namespace content::indexed_db {
 
 extern CONTENT_EXPORT const base::FilePath::CharType kIndexedDBExtension[];
 extern const base::FilePath::CharType kIndexedDBFile[];
@@ -45,7 +44,6 @@ base::FilePath GetBlobFileNameForKey(const base::FilePath& path_base,
 // file system.
 bool IsPathTooLong(const base::FilePath& leveldb_dir);
 
-}  // namespace indexed_db
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_FILE_PATH_UTIL_H_

@@ -4,11 +4,11 @@
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
@@ -526,7 +526,7 @@ void CookieStoreManager::DeactivateSubscriptions(
     subscription->RemoveFromList();
   }
   auto it = subscriptions_by_url_key_.find(url_key);
-  DCHECK(it != subscriptions_by_url_key_.end());
+  CHECK(it != subscriptions_by_url_key_.end(), base::NotFatalUntil::M130);
   if (it->second.empty())
     subscriptions_by_url_key_.erase(it);
 }
@@ -614,8 +614,8 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
 
               if (content_browser_client && !change.cookie.IsPartitioned() &&
                   !content_browser_client->IsFullCookieAccessAllowed(
-                      browser_context, registration->scope(),
-                      registration->key())) {
+                      browser_context, /*web_contents=*/nullptr,
+                      registration->scope(), registration->key())) {
                 return;
               }
 
@@ -640,10 +640,10 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
                 return;
               }
 
-              // TODO(crbug.com/1427879): Third-party partitioned workers should
-              // not have access to unpartitioned state when third-party cookie
-              // blocking is on.
-              // TODO(crbug.com/1427879): Should RSA grant unpartitioned cookie
+              // TODO(crbug.com/40063772): Third-party partitioned workers
+              // should not have access to unpartitioned state when third-party
+              // cookie blocking is on.
+              // TODO(crbug.com/40063772): Should RSA grant unpartitioned cookie
               // access?
 
               manager->DispatchChangeEvent(std::move(registration), change);

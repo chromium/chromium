@@ -20,6 +20,7 @@ class MainThreadTaskRunnerRestricted {
   friend class BlinkInitializer;
   friend class BlobBytesProvider;
   friend class CachedStorageArea;
+  friend class DevToolsAgent;
   friend class FontCache;
   friend class InspectorNetworkAgent;
   friend class MemoryCache;

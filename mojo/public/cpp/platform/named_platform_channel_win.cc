@@ -5,10 +5,10 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 #include <windows.h>
-#include <memory>
 
-// NOTE: This needs to be included *after* windows.h.
 #include <sddl.h>
+
+#include <memory>
 
 #include "base/logging.h"
 #include "base/rand_util.h"

@@ -57,80 +57,78 @@ require a slightly different setup. Please update this page accordingly.
 ### Installation
 
 *** promo
-Googlers: See [go/vscode/install](http://go/vscode/install).
+Googlers: See [go/vscode/install](http://go/vscode/install) instead.
 ***
 
-Follow the steps on [Setting up Visual Studio Code](https://code.visualstudio.com/docs/setup/setup-overview).
+Follow the steps on [Setting up Visual Studio Code][setup] to install a proper
+version for you development platform.
+
+[setup]: https://code.visualstudio.com/docs/setup/setup-overview
 
 ### Usage
 
-To run it on Linux or on macOS, just navigate to Chromium's `src` folder and
-type `code .` in a terminal. The argument to `code` is the base directory of the
-workspace. VS Code does not require project or solution files. However, it does
-store workspace settings in a `.vscode` folder in your base directory (i.e. your
-project root folder).
+To run it on Linux or on macOS:
+
+```bash
+cd /path/to/chromium/src
+code .
+```
 
 If you installed Code Insiders, the binary name is `code-insiders` instead.
 
-### Fixes for Known Issues
-
-#### Git on Windows
-
-If you only have the `depot_tools` Git installed on your machine, even though it
-is in your PATH, VS Code will ignore it as it seems to be looking for `git.exe`.
-You will have to add the following to your settings in order for the Git
-integration to work:
-
-```json
-{
-  "git.path": "C:\\src\\depot_tools\\git.bat"
-
-  // more settings here...
-}
-```
-
-Tip: you can jump to the settings JSON file by using `Ctrl+Shift+P` and using
-the "Preferences: Open User Settings (JSON)" verb (for whatever reason, setting
-`git.path` as a folder setting does not appear to work).
+Note that VS Code does not require project or solution files. However, it does
+store workspace settings in a `.vscode` folder in your base directory (i.e. your
+project root folder). See the [Chromium Workspace Settings](#setup-for-chromium)
+section for details.
 
 ### Useful Extensions
 
 Up to now, you have a basic version of VS Code without much language support.
-Next, we will install some useful extensions. Jump to the extensions window
-(`Ctrl+Shift+X`, or `Cmd+Shift+X` in macOS) and install the extensions, or run
-the following commands.
+Next, we will install some useful extensions.
+
+#### Recommended Extensions
 
 You will most likely use the following extensions every day:
 
-```bash
-$ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.python bbenoist.togglehs peterj.proto Google.vscode-mojom msedge-dev.gnls stkb.rewrap ms-vscode-remote.remote-ssh eamodio.gitlens" | xargs -n 1 code --force --install-extension
-```
+There are 2 ways to install them:
 
+*   Follow the instructions from
+    [Install Recommended Extensions](#install-recommended-extensions).
+*   Manual installation. Jump to the extensions window (`Ctrl+Shift+X`, or
+    `Cmd+Shift+X` in macOS) and search the names of the following extensions.
+
+*** aside
+Note: All the extension settings mentioned below are already set in
+`tools/vscode/settings.json`. You don't have do anything if you have followed
+[the instructions](#setup-for-chromium) to copy that file into your workspace.
+***
+
+*   [**ChromiumIDE**](https://marketplace.visualstudio.com/items?itemName=Google.cros-ide) -
+    The critical extension to make Chromium/ChromiumOS development easier and
+    faster by anchoring core tools in one place.
+*   [**Chromium Context**](https://marketplace.visualstudio.com/items?itemName=solomonkinard.chromium-context) -
+    Provides Chromium-specific context, e.g. code owners, release version,
+    author blame list, in a single tab for an opened file.
 *   [**C/C++**](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) -
     Code formatting, debugging, Intellisense. Enables the use of clang-format
     (via the `C_Cpp.clang_format_path` setting) and format-on-save (via the
     `editor.formatOnSave` setting).
 *   [**vscode-clangd**](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) -
     Enables VS Code to compile Chromium, provide Chromium XRefs to support
-    functions like jumping to definition, and provide smarter autocompletion
-    than **C/C++** extension's IntelliSense, but they also conflicts with each
+    functions like jumping to definition, and provide a clangd
+    [language server][lang-server] powering smarter autocompletion than
+    **C/C++** extension's IntelliSense, but they also conflicts with each
     other. To resolve the conflict, add the following to `settings.json`:
-    `"C_Cpp.intelliSenseEngine": "Disabled"`.  See [clangd.md](clangd.md) for
+    `"C_Cpp.intelliSenseEngine": "disabled"`.  See [clangd.md](clangd.md) for
     setup instructions.
-*   [**Python**](https://marketplace.visualstudio.com/items?itemName=ms-python.python) -
-    Linting, intellisense, code formatting, refactoring, debugging, snippets.
-    * If you want type checking, add: `"python.analysis.typeCheckingMode": "basic",`
-      to your `settings.json` file (you can also find it in the settings UI).
 *   [**Toggle Header/Source**](https://marketplace.visualstudio.com/items?itemName=bbenoist.togglehs) -
     Toggles between .cc and .h with `F4`. The C/C++ extension supports this as
     well through `Alt+O` but sometimes chooses the wrong file when there are
     multiple files in the workspace that have the same name.
-*   [**Protobuf support**](https://marketplace.visualstudio.com/items?itemName=peterj.proto) -
+*   [**vscode-proto3**](https://marketplace.visualstudio.com/items?itemName=zxh404.vscode-proto3) -
     Syntax highlighting for .proto files.
 *   [**Mojom IDL support**](https://marketplace.visualstudio.com/items?itemName=Google.vscode-mojom) -
-    Syntax highlighting and a
-    [language server](https://microsoft.github.io/language-server-protocol/)
-    for .mojom files.
+    Syntax highlighting and a [language server][lang-server] for .mojom files.
 *   [**GN**](https://marketplace.visualstudio.com/items?itemName=msedge-dev.gnls) -
     Code IntelliSense for the GN build system.
 *   [**Rewrap**](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) -
@@ -141,17 +139,25 @@ $ echo "ms-vscode.cpptools llvm-vs-code-extensions.vscode-clangd ms-python.pytho
 *   [**GitLens**](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) -
     Git supercharged. A Powerful, feature rich, and highly customizable git
     extension.
+*   [**Python**](https://marketplace.visualstudio.com/items?itemName=ms-python.python) -
+    Linting, intellisense, code formatting, refactoring, debugging, snippets.
+    * If you want type checking, add: `"python.analysis.typeCheckingMode": "basic",`
+      to your `settings.json` file (you can also find it in the settings UI).
 
-The following extensions might be useful for you as well:
+[lang-server]: https://microsoft.github.io/language-server-protocol/
+
+#### Optional Extensions
+
+The following extensions are not included in
+[//tools/vscode/settings.json](/tools/vscode/settings.json), but they might be
+useful for you as well:
 
 ```bash
-$ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker george-alisson.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --force --install-extension
+$ echo "ryu1kn.annotator wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo-tree alefragnani.Bookmarks spmeesseman.vscode-taskexplorer streetsidesoftware.code-spell-checker george-alisson.html-preview-vscode anseki.vscode-color" | xargs -n 1 code --force --install-extension
 ```
 
-*   **chromium-codesearch** -
-    macOS and Linux only: adds ability to open the current line in [Chromium Code
-    Search](https://cs.chromium.org/). All other functionality is deprecated, so
-    currently only of limited usefulness.
+*   [**Annotator**](https://marketplace.visualstudio.com/items?itemName=ryu1kn.annotator) -
+    Display git blame info along with your code. Can open the diff of a particular commit from there.
 *   [**change-case**](https://marketplace.visualstudio.com/items?itemName=wmaurer.change-case) -
     Quickly change the case of the current selection or current word.
 *   [**Markdown Preview Enhanced**](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced) -
@@ -173,6 +179,12 @@ $ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo
 *   [**Color Picker**](https://marketplace.visualstudio.com/items?itemName=anseki.vscode-color) -
     Visualizes color codes inline and provides color picker GUI to generates new
     color codes.
+*   [**Bazel**](https://marketplace.visualstudio.com/items?itemName=BazelBuild.vscode-bazel) -
+    This is very useful for editing `*.star` starlark files. If you want "Go
+    to definition" to work in our `infra/config` directory, see the
+    [//tools/vscode/bazel_lsp/README.md][lsp_patches_readme]
+
+[lsp_patches_readme]: ../tools/vscode/bazel_lsp/README.md
 
 
 Also be sure to take a look at the
@@ -232,48 +244,43 @@ of compile errors/warnings, Javadocs, etc.) when editing `.java` files in
 Chromium:
 
 1. **Add the following to your VS Code workspace `settings.json`:**
-    * `"java.import.gradle.enabled": false`
-      `"java.import.maven.enabled": false`
-      This will prevent the language server from attempting to build *all*
-      Gradle and Maven projects that can be found anywhere in the Chromium
-      source tree, which typically results in hilarity.
-    * `"java.jdt.ls.java.home": "<< ABSOLUTE PATH TO YOUR WORKING COPY OF CHROMIUM >>/src/third_party/jdk/current"`
-      This one is optional but reduces the likelihood of problems by making sure
-      the language server uses the same JDK as the Chromium build system (as
-      opposed to some random JDK from your host system).
+
+   ```
+   "java.import.gradle.enabled": false,
+   "java.import.maven.enabled": false
+   ```
+
+   This will prevent the language server from attempting to build *all* Gradle
+   and Maven projects that can be found anywhere in the Chromium source tree,
+   which typically results in hilarity.
+
+   ```
+   "java.jdt.ls.java.home": "<< ABSOLUTE PATH TO YOUR WORKING COPY OF CHROMIUM >>/src/third_party/jdk/current"
+   ```
+
+   This one is optional but reduces the likelihood of problems by making sure
+   the language server uses the same JDK as the Chromium build system (as
+   opposed to some random JDK from your host system).
+
 2. **Install the
    [*Language Support for Java™ by Red Hat*](https://marketplace.visualstudio.com/items?itemName=redhat.java)
    extension.**
    You do not need any other extension.
-3. In the VS Code explorer (left-hand pane) **right-click on a folder (any folder)
-   and click *Add Folder to Java Source Path***.
-   This is just one way to force the extension to generate an internal build
-   project for the language server. The specific folder doesn't matter because
-   the source path configuration will be overwritten in step 6.
-4. **Wait for the *Successfully added '...' to the project src_...'s source
-   path* pop-up notification to appear**.
-   Note that this can take some time (1-2 minutes), during which VS Code seems
-   to be idle.
-5. **Build your code** in the usual way (i.e. using gn and ninja commands).
+3. **Build your code** in the usual way (i.e. using gn and ninja commands).
    This will produce build config files that are necessary for the next step. It
    will also make autogenerated code visible to the language server.
-6. **Generate the `.classpath` file** for the internal build project by running
-   `build/android/generate_vscode_classpath.py` with the appropriate arguments
-   from the root of your VS Code workspace folder.
-   For example, if your VS Code workspace is rooted in `src`, your build
-   output directory is `out/Debug-x86` and your build target is
-   `//components/cronet/android:cronet_javatests`, run:
-   `build/android/generate_vscode_classpath.py --output-dir out/Debug-x86 --build-config gen/components/cronet/android/cronet_javatests.build_config.json > ~/.vscode*/data/User/workspaceStorage/*/redhat.java/jdt_ws/.metadata/.plugins/org.eclipse.core.resources/.projects/src_*/.classpath`
-7. **Reload** your VS Code window.
-8. **Open a Java source file then wait a couple of minutes** for the language
+4. **Generate the Eclipse JDT project** by running
+   `build/android/generate_vscode_project.py` from the `src` directory.
+   For example, if your build output directory is `out/Debug-x86` and your build
+   target is `//chrome/android:chrome_java`, run:
+   `build/android/generate_vscode_project.py --output-dir out/Debug-x86 --build-config gen/chrome/android/chrome_java.build_config.json`.
+   This will create `.project` and `.classpath` in the `src` directory.
+5. **Reload** your VS Code window to let it start importing the generated
+   project.
+6. **Open a Java source file then wait a couple of minutes** for the language
    server to build the project.
-9. **Done!** You should now have full Java language support for any `.java` file
+7. **Done!** You should now have full Java language support for any `.java` file
    that is included in the build.
-
-*** note
-**Warning:** do not attempt to change the extension's source path settings, as
-that risks overwriting the generated `.classpath` file.
-***
 
 #### Known issues
 
@@ -281,6 +288,15 @@ that risks overwriting the generated `.classpath` file.
   getting confused about multiple definitions of the
   [autogenerated](/third_party/jni_zero/README.md) `GEN_JNI` class. This
   is a known quirk of the JNI generator.
+
+#### Troubleshooting
+
+* If you have used the previous instructions to use
+  `generate_vscode_classpath.py` or you think something went wrong, try clearing
+  the internal state of the language server by executing
+  `Java: Clean Java Language Server Workspace` from the command palette. This
+  will force the language server to rebuild its internal workspace by importing
+  the generated Eclipse JDT project.
 
 #### Automatic formatting
 
@@ -306,49 +322,68 @@ workspace `settings.json`:
 
 ## Setup For Chromium
 
-VS Code is configured via JSON files. This paragraph contains JSON configuration
-files that are useful for Chromium development, in particular. See [VS Code
-documentation](https://code.visualstudio.com/docs/customization/overview) for an
-introduction to VS Code customization.
+VS Code is configured via JSON files. This section describes how to configure
+it for a better Chromium development experience.
 
-### Workspace Settings
+*** aside
+Note: See [VS Code
+documentation](https://code.visualstudio.com/docs/customization/overview) for a
+more general introduction to VS Code customization.
+***
+
+The Chromium repository comes with some basic configuration. Run the following
+commands to initialize VS Code for your Chromium checkout:
+
+```bash
+cd /path/to/chromium/src
+mkdir .vscode
+cp tools/vscode/*.json .vscode/
+cp tools/vscode/cpp.code-snippets .vscode/
+```
+
+Once you have done, proceed to the next sections to install recommended
+extensions and perform customization.
+
+### Install Recommended Extensions
+
+As described in the [Useful Extensions](#useful-extensions) sections, there are
+essential extensions to help Chromium development. Follow the steps below:
+
+1. In VS Code's Command Palette (`Ctrl+P`, or `Cmd+Shift+P` in macOS),
+   type `Show Recommended Extensions`, and press `Enter`.
+2. In the WORKSPACE RECOMMENDATIONS section of the EXTENSIONS sidebar, click the
+   `Install Workspace Recommended Extensions` (shown as a cloud icon).
+
+Now you are all set.
+
+### Customize Workspace Settings
 
 Open the file [//tools/vscode/settings.json](/tools/vscode/settings.json),
 and check out the default settings there. Feel free to commit added or removed
-settings to enable better team development, or change settings locally to suit
-personal preference.
+settings to enable better team development, or change settings locally in
+`.vscode/settings.json` to suit personal preference.
 
-To use these settings wholesale, enter the following commands into your terminal
-while at the `src/` directory:
 
-```bash
-$ mkdir .vscode/
-$ cp tools/vscode/settings.json .vscode
-```
-
+*** aside
 Note: these settings assume that the workspace folder (the root folder displayed
 in the Explorer tab) is Chromium's `src/` directory. If this is not the case,
-replace any references to ${workspaceFolder} with the path to your `src/`.
+replace any references to `${workspaceFolder}` with the path to your `src/`.
+***
 
 ### Tasks
 
 Next, we'll tell VS Code how to compile our code, run tests, and to read
-warnings and errors from the build output. Open the file
-[//tools/vscode/tasks.json](/tools/vscode/tasks.json). This will provide tasks
-to do basic things. You might have to adjust the commands to your situation and
-needs. To use these settings wholesale, enter the following command into your
-terminal:
-```bash
-$ cp tools/vscode/tasks.json .vscode
-```
+warnings and errors from the build output.
 
-Before running most of the tasks, you'll need to set the `chromeOutputDir` value
-in your `.vscode/tasks.json` file.
+Open the file `.vscode/tasks.json`. This will provide tasks to do basic things.
+You might have to adjust the commands to your situation and needs. For example,
+before running most of the tasks, you'll need to set the `chromeOutputDir` value
+in that file.
 
 Now you can run tasks by using `Ctrl+P` (`Cmd+Shift+P` in macOS) and typing
 "task " and then a number of your choice. If you select one of the build tasks,
 the build output will display in the terminal pane. Jump through build problems
-quickly using F8 / Shift-F8. See [task names](#task-names) for more info on
+quickly using `F8` / `Shift-F8`. See [task names](#task-names) for more info on
 running tasks.
 
 If you have intellisense enabled but do not have include paths set up correctly,
@@ -360,7 +395,7 @@ set intellisense to "tag parser" mode by doing the following:
 2. Type "intellisense engine" in the settings search box.
 3. Select "Tag Parser" as the provider.
 
-Note: on a Chromebook, use 🔍+<8th button in the top row that's not ESC>. In
+Note: on a Chromebook, use **🔍+<8th button in the top row that's not ESC>**. In
 most cases, this is the top row button that is the closest to be directly above
 the 8 key.
 
@@ -369,21 +404,18 @@ the 8 key.
 Launch commands are the equivalent of `F5` in Visual Studio: They launch some
 program or a debugger. Optionally, they can run some task defined in
 `tasks.json`. Launch commands can be run from the debug view (`Ctrl+Shift+D`).
-Open the file at [//tools/vscode/launch.json](/tools/vscode/launch.json) and
-adjust the example launch commands to your situation and needs (e.g., the value
-of "type" needs adjustment for Windows). To use these settings wholesale, enter
-the following command into your terminal:
 
-```bash
-$ cp tools/vscode/launch.json .vscode
-```
+Open the file at `.vscode/launch.json` and adjust the example launch commands to
+your situation and needs (e.g., the value of "type" needs adjustment for
+Windows).
 
 ### Key Bindings
 
 To edit key bindings, press `Ctrl+K, Ctrl+S`. You'll see the defaults on the
-left and your overrides on the right stored in the file `keybindings.json`. To
-change a key binding, copy the corresponding key binding to the right. It's
-fairly self-explanatory.
+left and your overrides on the right stored in the file
+`.vscode/keybindings.json`. Please take a look and adjust them to your situation
+and needs. To change a key binding, copy the corresponding key binding to the
+right. It's fairly self-explanatory.
 
 You can bind any command to a key, even commands specified by extensions like
 `CodeSearchOpen`. For instance, to bind `CodeSearchOpen` to `F2` to , simply add
@@ -398,19 +430,31 @@ For instance, to install eclipse keymaps, install the
 `vscode-eclipse-keybindings` extension. More keymaps can be found
 [in the marketplace](https://marketplace.visualstudio.com/search?target=vscode&category=Keymaps).
 
-Some key bindings that are likely to be useful for you are available at
-[//tools/vscode/keybindings.json](/tools/vscode/keybindings.json). Please
-take a look and adjust them to your situation and needs. To use these settings
-wholesale, enter the following command into your terminal:
+### Fixes for Known Issues
 
-```bash
-$ cp tools/vscode/keybindings.json .vscode
+#### Git on Windows
+
+If you only have the `depot_tools` Git installed on your machine, even though it
+is in your PATH, VS Code will ignore it as it seems to be looking for `git.exe`.
+You will have to add the following to your settings in order for the Git
+integration to work:
+
+```json
+{
+  "git.path": "C:\\src\\depot_tools\\git.bat"
+
+  // more settings here...
+}
 ```
+
+Tip: you can jump to the settings JSON file by using `Ctrl+Shift+P` and using
+the "Preferences: Open User Settings (JSON)" verb (for whatever reason, setting
+`git.path` as a folder setting does not appear to work).
 
 ### Remote
 
 *** promo
-Googlers: See [go/vscode-remote](http://go/vscode-remote).
+Googlers: See [go/vscode-remote](http://go/vscode-remote) instead.
 ***
 
 VS Code now has a
@@ -458,19 +502,8 @@ VS Code should work remotely after following this step.
 ### Snippets
 
 There are some useful snippets provided in
-[//tools/vscode/cpp.json](/tools/vscode/cpp.json).
-
-You can either install them in your user profile (path may vary depending on the
-platform):
-```bash
-$ mkdir -p ~/.config/Code/User/snippets
-$ cp tools/vscode/cpp.json ~/.config/Code/User/snippets
-```
-
-Or install them as project snippets:
-```bash
-$ cp tools/vscode/cpp.json .vscode/cpp.code-snippets
-```
+[//tools/vscode/cpp.json](/tools/vscode/cpp.json), which are already installed
+to your workspace at `.vscode/cpp.code-snippets`
 
 ### Tips
 

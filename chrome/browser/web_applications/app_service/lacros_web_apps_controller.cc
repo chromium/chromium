@@ -15,14 +15,13 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
+#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/profiles/profile.h"
-// TODO(crbug.com/1402145): Remove circular dependencies on //c/b/ui.
+// TODO(crbug.com/40251079): Remove circular dependencies on //c/b/ui.
 #include "chrome/browser/ui/startup/first_run_service.h"  // nogncheck
-#include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -126,9 +125,6 @@ void LacrosWebAppsController::OnReady() {
 
   std::vector<apps::AppPtr> apps;
   for (const WebApp& web_app : registrar().GetApps()) {
-    if (IsAppServiceShortcut(web_app.app_id(), *provider_)) {
-      continue;
-    }
     apps.push_back(publisher_helper().CreateWebApp(&web_app));
   }
   PublishWebApps(std::move(apps));
@@ -161,7 +157,7 @@ void LacrosWebAppsController::DEPRECATED_LoadIcon(
     apps::IconType icon_type,
     int32_t size_hint_in_dip,
     apps::LoadIconCallback callback) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void LacrosWebAppsController::GetCompressedIcon(
@@ -266,7 +262,7 @@ void LacrosWebAppsController::SetPermission(const std::string& app_id,
   publisher_helper().SetPermission(app_id, std::move(permission));
 }
 
-// TODO(crbug.com/1144877): Clean up the multiple launch interfaces and remove
+// TODO(crbug.com/40155636): Clean up the multiple launch interfaces and remove
 // duplicated code.
 void LacrosWebAppsController::Launch(
     crosapi::mojom::LaunchParamsPtr launch_params,
@@ -346,8 +342,8 @@ void LacrosWebAppsController::ReturnLaunchResults(
                              ? crosapi::mojom::LaunchResultState::kSuccess
                              : crosapi::mojom::LaunchResultState::kFailed;
 
-  // TODO(crbug.com/1144877): Replaced with DCHECK when the app instance tracker
-  // flag is turned on.
+  // TODO(crbug.com/40155636): Replaced with DCHECK when the app instance
+  // tracker flag is turned on.
   if (app_instance_tracker) {
     for (content::WebContents* web_contents : web_contentses) {
       const apps::BrowserAppInstance* app_instance =
@@ -416,11 +412,6 @@ void LacrosWebAppsController::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (!remote_publisher_) {
     return;
   }
-  // Make sure none of the shortcuts that are supposed to be published as
-  // apps::Shortcut instead of apps::App get published here.
-  for (auto& app : apps) {
-    CHECK(!IsAppServiceShortcut(app->app_id, *provider_));
-  }
 
   remote_publisher_->OnApps(std::move(apps));
 }
@@ -429,9 +420,6 @@ void LacrosWebAppsController::PublishWebApp(apps::AppPtr app) {
   if (!remote_publisher_) {
     return;
   }
-  // Make sure none of the shortcuts that are supposed to be published as
-  // apps::Shortcut instead of apps::App get published here.
-  CHECK(!IsAppServiceShortcut(app->app_id, *provider_));
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));

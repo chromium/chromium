@@ -6,6 +6,7 @@
 #define CHROMECAST_BROWSER_CAST_WEB_PREFERENCES_H_
 
 #include <optional>
+
 #include "base/supports_user_data.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 

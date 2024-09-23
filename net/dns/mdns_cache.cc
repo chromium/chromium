@@ -106,8 +106,8 @@ void MDnsCache::CleanupRecords(
     const RecordRemovedCallback& record_removed_callback) {
   base::Time next_expiration;
 
-  // TODO(crbug.com/946688): Make overfill pruning more intelligent than a bulk
-  // clearing of everything.
+  // TODO(crbug.com/41449550): Make overfill pruning more intelligent than a
+  // bulk clearing of everything.
   bool clear_cache = IsCacheOverfilled();
 
   // We are guaranteed that |next_expiration_| will be at or before the next

@@ -1,9 +1,0 @@
-This tests outdenting "two", the second paragraph in a regular blockquote (not created by WebKit). After outdenting two, there should be exactly two blockquotes.
-
-one
-
-two
-
-three
-Before: <blockquote id="test">one<br>two<br>three</blockquote>
-After: <blockquote id="test">one<br></blockquote>two<br><blockquote>three</blockquote>

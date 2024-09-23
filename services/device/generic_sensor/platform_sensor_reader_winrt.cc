@@ -6,8 +6,10 @@
 
 #include <cmath>
 
+#include "base/numerics/angle_conversions.h"
 #include "base/numerics/math_constants.h"
 #include "base/time/time.h"
+#include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/public/mojom/sensor.mojom.h"
@@ -99,7 +101,11 @@ PlatformSensorReaderWinrtBase<
     ISensorWinrtStatics,
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
-    ISensorReadingChangedEventArgs>::PlatformSensorReaderWinrtBase() {
+    ISensorReadingChangedEventArgs>::PlatformSensorReaderWinrtBase()
+    : com_sta_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+  DETACH_FROM_SEQUENCE(main_sequence_checker_);
+
   get_sensor_factory_callback_ =
       base::BindRepeating([](ISensorWinrtStatics** sensor_factory) -> HRESULT {
         return base::win::GetActivationFactory<ISensorWinrtStatics,
@@ -119,6 +125,8 @@ void PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::SetClient(Client* client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
   base::AutoLock autolock(lock_);
   client_ = client;
 }
@@ -136,6 +144,8 @@ HRESULT PlatformSensorReaderWinrtBase<runtime_class_id,
                                       ISensorReadingChangedEventArgs>::
     ConvertSensorReadingTimeStamp(ComPtr<ISensorReading> sensor_reading,
                                   base::TimeDelta* timestamp_delta) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   DateTime timestamp;
   HRESULT hr = sensor_reading->get_Timestamp(&timestamp);
   if (FAILED(hr))
@@ -157,6 +167,8 @@ bool PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   ComPtr<ISensorWinrtStatics> sensor_statics;
 
   HRESULT hr = get_sensor_factory_callback_.Run(&sensor_statics);
@@ -180,10 +192,14 @@ bool PlatformSensorReaderWinrtBase<
     return false;
   }
 
-  minimum_report_interval_ = GetMinimumReportIntervalFromSensor();
+  {
+    base::AutoLock autolock(lock_);
+    minimum_report_interval_ = GetMinimumReportIntervalFromSensor();
 
-  if (minimum_report_interval_.is_zero())
-    DLOG(WARNING) << "Failed to get sensor minimum report interval";
+    if (minimum_report_interval_.is_zero()) {
+      DLOG(WARNING) << "Failed to get sensor minimum report interval";
+    }
+  }
 
   return true;
 }
@@ -199,6 +215,8 @@ base::TimeDelta PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::GetMinimumReportIntervalFromSensor() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   UINT32 minimum_report_interval_ms = 0;
   HRESULT hr = sensor_->get_MinimumReportInterval(&minimum_report_interval_ms);
 
@@ -225,6 +243,9 @@ base::TimeDelta PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::GetMinimalReportingInterval() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  base::AutoLock autolock(lock_);
   return minimum_report_interval_;
 }
 
@@ -239,6 +260,8 @@ bool PlatformSensorReaderWinrtBase<runtime_class_id,
                                    ISensorReadingChangedHandler,
                                    ISensorReadingChangedEventArgs>::
     StartSensor(const PlatformSensorConfiguration& configuration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
   base::AutoLock autolock(lock_);
 
   if (!reading_callback_token_) {
@@ -256,7 +279,34 @@ bool PlatformSensorReaderWinrtBase<runtime_class_id,
     }
 
     auto reading_changed_handler = Callback<ISensorReadingChangedHandler>(
-        this, &PlatformSensorReaderWinrtBase::OnReadingChangedCallback);
+        [weak_ptr(weak_ptr_factory_.GetWeakPtr()),
+         com_sta_task_runner(com_sta_task_runner_)](
+            ISensorWinrtClass* sender, ISensorReadingChangedEventArgs* args) {
+          // We cannot invoke OnReadingChangedCallback() directly because this
+          // callback is run on a COM MTA thread spawned by Windows (on tests,
+          // we mimic the behavior by using base::ThreadPool, as the task
+          // scheduler threads live in the MTA).
+          //
+          // This callback is invoked on an MTA thread because the
+          // ISensorReadingChangedHandler declarations explicitly inherit from
+          // Microsoft::WRL::FtmBase, which makes them agile, free-threaded
+          // objects.
+          //
+          // We could CHECK() this behavior here, but ::CoGetApartmentType()
+          // depends on ole32.dll and base::win::GetComApartmentTypeForThread()
+          // returns NONE in the non-test code path even though
+          // ::GoGetApartmentType() returns MTA, so the best we can do is just
+          // double-check that this is not running on an STA.
+          DCHECK_NE(base::win::GetComApartmentTypeForThread(),
+                    base::win::ComApartmentType::STA);
+          com_sta_task_runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &PlatformSensorReaderWinrtBase::OnReadingChangedCallback,
+                  weak_ptr, ComPtr<ISensorWinrtClass>(sender),
+                  ComPtr<ISensorReadingChangedEventArgs>(args)));
+          return S_OK;
+        });
 
     EventRegistrationToken event_token;
     hr = sensor_->add_ReadingChanged(reading_changed_handler.Get(),
@@ -285,6 +335,9 @@ void PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::StopSensor() {
+  // This function is called in the main task runner by PlatformSensorWin as
+  // well as in the com_sta_task_runner_ by the destructor.
+
   base::AutoLock autolock(lock_);
 
   if (reading_callback_token_) {
@@ -313,9 +366,11 @@ PlatformSensorReaderWinrtLightSensor::Create() {
 PlatformSensorReaderWinrtLightSensor::PlatformSensorReaderWinrtLightSensor() =
     default;
 
-HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
+void PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
     ILightSensor* light_sensor,
     ILightSensorReadingChangedEventArgs* reading_changed_args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   ComPtr<ILightSensorReading> light_sensor_reading;
   HRESULT hr = reading_changed_args->get_Reading(&light_sensor_reading);
   if (FAILED(hr)) {
@@ -323,7 +378,7 @@ HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
                 << logging::SystemErrorCodeToString(hr);
     // Failing to parse a reading sample should not be fatal so always
     // return S_OK.
-    return S_OK;
+    return;
   }
 
   float lux = 0.0f;
@@ -331,7 +386,7 @@ HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get the lux level: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   base::TimeDelta timestamp_delta;
@@ -339,7 +394,7 @@ HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get sensor reading timestamp: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   if (!has_received_first_sample_ ||
@@ -347,7 +402,7 @@ HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
        (last_reported_lux_ * kLuxPercentThreshold))) {
     base::AutoLock autolock(lock_);
     if (!client_) {
-      return S_OK;
+      return;
     }
 
     SensorReading reading;
@@ -358,8 +413,6 @@ HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
     last_reported_lux_ = lux;
     has_received_first_sample_ = true;
   }
-
-  return S_OK;
 }
 
 // static
@@ -376,15 +429,17 @@ PlatformSensorReaderWinrtAccelerometer::Create() {
 PlatformSensorReaderWinrtAccelerometer::
     PlatformSensorReaderWinrtAccelerometer() = default;
 
-HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
+void PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
     IAccelerometer* accelerometer,
     IAccelerometerReadingChangedEventArgs* reading_changed_args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   ComPtr<IAccelerometerReading> accelerometer_reading;
   HRESULT hr = reading_changed_args->get_Reading(&accelerometer_reading);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get acc reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   double x = 0.0;
@@ -392,7 +447,7 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get x axis from acc reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   double y = 0.0;
@@ -400,7 +455,7 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get y axis from acc reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   double z = 0.0;
@@ -408,7 +463,7 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get z axis from acc reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   base::TimeDelta timestamp_delta;
@@ -416,7 +471,7 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get sensor reading timestamp: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   if (!has_received_first_sample_ ||
@@ -425,7 +480,7 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
       (abs(z - last_reported_z_) >= kAxisThreshold)) {
     base::AutoLock autolock(lock_);
     if (!client_) {
-      return S_OK;
+      return;
     }
 
     // Windows.Devices.Sensors.Accelerometer exposes acceleration as
@@ -444,8 +499,6 @@ HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
     last_reported_z_ = z;
     has_received_first_sample_ = true;
   }
-
-  return S_OK;
 }
 
 // static
@@ -461,15 +514,17 @@ PlatformSensorReaderWinrtGyrometer::Create() {
 PlatformSensorReaderWinrtGyrometer::PlatformSensorReaderWinrtGyrometer() =
     default;
 
-HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
+void PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
     IGyrometer* gyrometer,
     IGyrometerReadingChangedEventArgs* reading_changed_args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   ComPtr<IGyrometerReading> gyrometer_reading;
   HRESULT hr = reading_changed_args->get_Reading(&gyrometer_reading);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to gyro reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   double x = 0.0;
@@ -477,7 +532,7 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get x axis from gyro reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   double y = 0.0;
@@ -485,7 +540,7 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get y axis from gyro reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   double z = 0.0;
@@ -493,7 +548,7 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get z axis from gyro reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   base::TimeDelta timestamp_delta;
@@ -501,7 +556,7 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get timestamp from gyro reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   if (!has_received_first_sample_ ||
@@ -510,16 +565,16 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
       (abs(z - last_reported_z_) >= kDegreeThreshold)) {
     base::AutoLock autolock(lock_);
     if (!client_) {
-      return S_OK;
+      return;
     }
 
     // Windows.Devices.Sensors.Gyrometer exposes angular velocity as degrees,
     // but the generic sensor interface uses radians so the data must be
     // converted.
     SensorReading reading;
-    reading.gyro.x = gfx::DegToRad(x);
-    reading.gyro.y = gfx::DegToRad(y);
-    reading.gyro.z = gfx::DegToRad(z);
+    reading.gyro.x = base::DegToRad(x);
+    reading.gyro.y = base::DegToRad(y);
+    reading.gyro.z = base::DegToRad(z);
     reading.gyro.timestamp = timestamp_delta.InSecondsF();
     client_->OnReadingUpdated(reading);
 
@@ -528,8 +583,6 @@ HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
     last_reported_z_ = z;
     has_received_first_sample_ = true;
   }
-
-  return S_OK;
 }
 
 // static
@@ -545,15 +598,17 @@ PlatformSensorReaderWinrtMagnetometer::Create() {
 PlatformSensorReaderWinrtMagnetometer::PlatformSensorReaderWinrtMagnetometer() =
     default;
 
-HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
+void PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
     IMagnetometer* magnetometer,
     IMagnetometerReadingChangedEventArgs* reading_changed_args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   ComPtr<IMagnetometerReading> magnetometer_reading;
   HRESULT hr = reading_changed_args->get_Reading(&magnetometer_reading);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get mag reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float x = 0.0;
@@ -561,7 +616,7 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get x axis from mag reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float y = 0.0;
@@ -569,7 +624,7 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get y axis from mag reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float z = 0.0;
@@ -577,7 +632,7 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get z axis from mag reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   base::TimeDelta timestamp_delta;
@@ -585,7 +640,7 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get timestamp from mag reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   if (!has_received_first_sample_ ||
@@ -594,7 +649,7 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
       (abs(z - last_reported_z_) >= kMicroteslaThreshold)) {
     base::AutoLock autolock(lock_);
     if (!client_) {
-      return S_OK;
+      return;
     }
 
     SensorReading reading;
@@ -609,8 +664,6 @@ HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
     last_reported_z_ = z;
     has_received_first_sample_ = true;
   }
-
-  return S_OK;
 }
 
 // static
@@ -627,16 +680,18 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::Create() {
 PlatformSensorReaderWinrtAbsOrientationEulerAngles::
     PlatformSensorReaderWinrtAbsOrientationEulerAngles() = default;
 
-HRESULT
-PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
-    IInclinometer* inclinometer,
-    IInclinometerReadingChangedEventArgs* reading_changed_args) {
+void PlatformSensorReaderWinrtAbsOrientationEulerAngles::
+    OnReadingChangedCallback(
+        IInclinometer* inclinometer,
+        IInclinometerReadingChangedEventArgs* reading_changed_args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   ComPtr<IInclinometerReading> inclinometer_reading;
   HRESULT hr = reading_changed_args->get_Reading(&inclinometer_reading);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get inclinometer reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float x = 0.0;
@@ -644,7 +699,7 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get pitch from inclinometer reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float y = 0.0;
@@ -652,7 +707,7 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get roll from inclinometer reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float z = 0.0;
@@ -660,7 +715,7 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get yaw from inclinometer reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   base::TimeDelta timestamp_delta;
@@ -668,7 +723,7 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get timestamp from inclinometer reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   if (!has_received_first_sample_ ||
@@ -677,7 +732,7 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
       (abs(z - last_reported_z_) >= kDegreeThreshold)) {
     base::AutoLock autolock(lock_);
     if (!client_) {
-      return S_OK;
+      return;
     }
 
     SensorReading reading;
@@ -692,8 +747,6 @@ PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
     last_reported_z_ = z;
     has_received_first_sample_ = true;
   }
-
-  return S_OK;
 }
 
 // static
@@ -713,16 +766,18 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::
 PlatformSensorReaderWinrtAbsOrientationQuaternion::
     ~PlatformSensorReaderWinrtAbsOrientationQuaternion() = default;
 
-HRESULT
-PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
-    IOrientationSensor* orientation_sensor,
-    IOrientationSensorReadingChangedEventArgs* reading_changed_args) {
+void PlatformSensorReaderWinrtAbsOrientationQuaternion::
+    OnReadingChangedCallback(
+        IOrientationSensor* orientation_sensor,
+        IOrientationSensorReadingChangedEventArgs* reading_changed_args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+
   ComPtr<IOrientationSensorReading> orientation_sensor_reading;
   HRESULT hr = reading_changed_args->get_Reading(&orientation_sensor_reading);
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get orientation reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   ComPtr<ISensorQuaternion> quaternion;
@@ -730,7 +785,7 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get quaternion from orientation reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float w = 0.0;
@@ -738,7 +793,7 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get w component of orientation reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float x = 0.0;
@@ -746,7 +801,7 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get x component of orientation reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float y = 0.0;
@@ -754,7 +809,7 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get y component of orientation reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   float z = 0.0;
@@ -762,7 +817,7 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get the z component of orientation reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   base::TimeDelta timestamp_delta;
@@ -771,7 +826,7 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to get timestamp from orientation reading: "
                 << logging::SystemErrorCodeToString(hr);
-    return S_OK;
+    return;
   }
 
   SensorReading reading;
@@ -790,7 +845,7 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
   if (!has_received_first_sample_ || (angle >= kRadianThreshold)) {
     base::AutoLock autolock(lock_);
     if (!client_) {
-      return S_OK;
+      return;
     }
 
     client_->OnReadingUpdated(reading);
@@ -798,8 +853,6 @@ PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
     last_reported_sample = reading;
     has_received_first_sample_ = true;
   }
-
-  return S_OK;
 }
 
 }  // namespace device

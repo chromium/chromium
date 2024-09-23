@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "ash/ash_element_identifiers.h"
 #include "ash/public/cpp/debug_utils.h"
 #include "ash/root_window_controller.h"
@@ -16,9 +18,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_switches.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -51,10 +54,14 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(DeskBarExpandedObserver,
 
 class DesksInteractiveUiTest : public InteractiveAshTest {
  public:
+  DesksInteractiveUiTest() {
+    scoped_feature_list_.InitAndDisableFeature({features::kForestFeature});
+  }
+
   // This function is used to name the DeskMiniView that is associated with the
   // desk at `desk_index`. This will find the right view regardless of how the
   // mini views may be organized as child views.
-  auto NameDeskMiniView(base::StringPiece name, int desk_index) {
+  auto NameDeskMiniView(std::string_view name, int desk_index) {
     return NameDescendantView(
         kOverviewDeskBarElementId, name,
         base::BindRepeating(
@@ -70,6 +77,9 @@ class DesksInteractiveUiTest : public InteractiveAshTest {
             },
             desk_index));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
@@ -124,9 +134,7 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
                                   /*alt=*/false, /*command=*/false);
       }),
 
-      // Note: FlushEvents is needed here. Without it, the desk
-      // name text field does not gain focus
-      Log("Wait for the overview desk bar to show"), FlushEvents(),
+      Log("Wait for the overview desk bar to show"),
       AfterShow(kOverviewDeskBarElementId,
                 [&desk_bar_view](ui::TrackedElement* el) {
                   desk_bar_view = AsView<DeskBarViewBase>(el);
@@ -137,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
 
       // Press the new desk button.
       PressButton(kOverviewDeskBarNewDeskButtonElementId),
-      WaitForState(kDeskBarExpandedState, true), FlushEvents(),
+      WaitForState(kDeskBarExpandedState, true),
 
       // We should now have two mini views.
       CheckView(
@@ -167,11 +175,13 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
         ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_TAB,
                                   /*control=*/false, /*shift=*/true,
                                   /*alt=*/false, /*command=*/false);
+        ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_TAB,
+                                  /*control=*/false, /*shift=*/true,
+                                  /*alt=*/false, /*command=*/false);
         ui_controls::SendKeyPress(/*window=*/nullptr, ui::VKEY_LEFT,
                                   /*control=*/true, /*shift=*/false,
                                   /*alt=*/false, /*command=*/false);
       }),
-      FlushEvents(),
 
       // Verify that the desks have been swapped.
       CheckResult(
@@ -187,7 +197,6 @@ IN_PROC_BROWSER_TEST_F(DesksInteractiveUiTest, DesksBasic) {
                                   /*control=*/false, /*shift=*/true,
                                   /*alt=*/false, /*command=*/true);
       }),
-      FlushEvents(),
 
       // Verify that the two browsers now live on different desks.
       Check([&] {

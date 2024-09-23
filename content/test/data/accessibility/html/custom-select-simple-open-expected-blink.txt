@@ -1,0 +1,8 @@
+rootWebArea focusable htmlTag='#document'
+++genericContainer ignored
+++++genericContainer htmlTag='body'
+++++++comboBoxSelect expanded focusable htmlTag='select' name='Fruit' value='Apple' setSize=3 posInSet=1 haspopup=menu
+++++++++menuListPopup htmlTag='div' activedescendantId=menuListOption setSize=3 ispopup=auto
+++++++++++menuListOption focusable htmlTag='option' name='Apple' setSize=3 posInSet=1 selected=true
+++++++++++menuListOption focusable htmlTag='option' name='Orange' setSize=3 posInSet=2 selected=false
+++++++++++menuListOption focusable htmlTag='option' name='Banana' setSize=3 posInSet=3 selected=false

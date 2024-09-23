@@ -13,7 +13,6 @@ namespace blink {
 AttributePart* AttributePart::Create(PartRootUnion* root_union,
                                      Node* node,
                                      AtomicString local_name,
-                                     bool automatic,
                                      const PartInit* init,
                                      ExceptionState& exception_state) {
   Element* element = DynamicTo<Element>(node);
@@ -24,29 +23,21 @@ AttributePart* AttributePart::Create(PartRootUnion* root_union,
     return nullptr;
   }
   return MakeGarbageCollected<AttributePart>(
-      *PartRoot::GetPartRootFromUnion(root_union), *element, local_name,
-      automatic, init);
+      *PartRoot::GetPartRootFromUnion(root_union), *element, local_name, init);
 }
 
 AttributePart::AttributePart(PartRoot& root,
                              Element& element,
                              AtomicString local_name,
-                             bool automatic,
                              Vector<String> metadata)
-    : NodePart(root, element, !automatic, std::move(metadata)),
-      local_name_(local_name),
-      automatic_(automatic) {}
+    : NodePart(root, element, std::move(metadata)), local_name_(local_name) {}
 
 Part* AttributePart::ClonePart(NodeCloningData& data, Node& node_clone) const {
   DCHECK(IsValid());
   Element& element_clone = To<Element>(node_clone);
-  Part* new_part = MakeGarbageCollected<AttributePart>(
-      data.CurrentPartRoot(), element_clone, local_name_, automatic_,
-      metadata().AsVector());
-  AtomicString attribute_value = data.NextAttributeValue();
-  if (attribute_value) {
-    element_clone.setAttribute(local_name_, attribute_value);
-  }
+  Part* new_part =
+      MakeGarbageCollected<AttributePart>(data.CurrentPartRoot(), element_clone,
+                                          local_name_, metadata().AsVector());
   return new_part;
 }
 

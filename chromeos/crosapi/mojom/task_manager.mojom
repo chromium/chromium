@@ -122,7 +122,7 @@ struct TaskGroup {
 
 // Interface for task manager provider. Implemented by lacros-chrome. Used by
 // ash-chrome to get lacros task data remotely.
-// Next version: 3
+// Next version: 4
 // Next method id: 5
 [Stable, Uuid="c5073375-8e4b-43c3-85ca-8813adeb0324"]
 interface TaskManagerProvider {
@@ -135,7 +135,8 @@ interface TaskManagerProvider {
   // Note: SetRefreshFlags must be called before to set the desired refresh
   // interval and refresh flags.
   GetTaskManagerTasks@1()
-      => (array<Task> task_results, array<TaskGroup> task_group_results);
+      => (array<Task> task_results, array<TaskGroup> task_group_results,
+          [MinVersion=3] string? active_task_uuid);
 
   // Notifies Lacros that task manager is closed in ash.
   OnTaskManagerClosed@2();

@@ -2,7 +2,7 @@ Name: Immersive Web - WebXR Samples
 Short Name: webxr-samples
 URL: https://github.com/immersive-web/webxr-samples/
 Version: 0
-Revision: 2727b46707d766e358152194fbb4f6b2647ef2e9
+Revision: ddcb40e3b86f01d481461b4c856808988fab9610
 Date: 2019-01-15
 License: MIT
 License File: LICENSE
@@ -129,7 +129,7 @@ To create a Google Cloud WebXR-Samples bucket:
    e. Add the member "allAuthenticatedUsers" with the role "Storage Object Viewer"
    f. Accept the prompt notifying you that you will make the bucket public to the internet.
 
-5. Select a project as bucket owner. (If this is not the default 'chromium-webxr-test' 
+5. Select a project as bucket owner. (If this is not the default 'chromium-webxr-test'
    use `update_bucket.py --bucket gs://PROJECT_ID` in the steps below to override its default.)
 
 6. Create a "media" folder at the top level directory of your bucket, this folder should contain a

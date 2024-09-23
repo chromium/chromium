@@ -53,6 +53,6 @@ namespace printerProviderInternal {
     // |requestId|: The request id for the print request for which data is
     //     needed.
     // |callback|: Callback called with a blob of print data.
-    [supportsPromises] void getPrintData(long requestId, BlobCallback callback);
+    void getPrintData(long requestId, BlobCallback callback);
   };
 };

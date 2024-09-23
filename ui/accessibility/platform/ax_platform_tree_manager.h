@@ -44,6 +44,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  // Fire a sentinel event and wait until it is received, to ensure all pending
+  // notifications are processed.
+  // Note: not all platforms need this. For example, IA2 can listen to events
+  // synchronously.
+  virtual void FireSentinelEventForTesting();
+
  private:
   base::WeakPtrFactory<AXPlatformTreeManager> weak_ptr_factory_{this};
 };

@@ -46,7 +46,7 @@ scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
     result = Create(scrollbar->Orientation(), thumb_thickness, track_start,
                     scrollbar->IsLeftSideVerticalScrollbar());
   }
-  result->SetColor(scrollbar->GetSolidColor());
+  result->SetColor(scrollbar->ThumbColor());
   return result;
 }
 
@@ -110,7 +110,7 @@ void SolidColorScrollbarLayer::SetColor(SkColor4f color) {
   if (layer_tree_host() &&
       layer_tree_host()->GetSettings().using_synchronous_renderer_compositor) {
     // Root frame in Android WebView uses system scrollbars, so make ours
-    // invisible. TODO(crbug.com/1327047): We should apply this to the root
+    // invisible. TODO(crbug.com/40226034): We should apply this to the root
     // scrollbars only, or consider other choices listed in the bug.
     color = SkColors::kTransparent;
   }

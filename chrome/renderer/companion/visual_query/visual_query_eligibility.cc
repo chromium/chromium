@@ -365,7 +365,7 @@ bool EligibilityModule::EvaluateThresholdingRule(
     }
     return feature_value < thresholding_rule.threshold();
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -510,7 +510,7 @@ double EligibilityModule::GetImageFeatureValue(
     // TODO(b/314789511): Implement these after setting server-side
     case FeatureLibrary::NAT_WORLD_CLASSIFIER_SCORE:
     case FeatureLibrary::PUB_FIGURES_CLASSIFIER_SCORE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   // Cache it and return.
@@ -555,7 +555,7 @@ double EligibilityModule::RetrieveNormalizingFeatureOrDie(
     }
     CHECK(false) << "Did not find normalizing feature.";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 1;
 }
 
@@ -574,7 +574,7 @@ double EligibilityModule::ComputeAndGetNormalizingFeatureValue(
       return MaxFeatureValueAfterSecondPass(feature_name);
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 1;
 }
 
@@ -651,7 +651,7 @@ void EligibilityModule::SortImages(
       std::stable_sort(images_with_feature_values->begin(),
                        images_with_feature_values->end(), SortDesc);
     } else {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
     }
   }
 }

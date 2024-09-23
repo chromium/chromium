@@ -1,0 +1,75 @@
+This is a testharness.js-based test.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Serial interface: existence and properties of interface object
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface object length
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface object name
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface: attribute onconnect
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface: attribute ondisconnect
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface: operation getPorts()
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial interface: operation requestPort(optional SerialPortRequestOptions)
+  assert_own_property: self does not have own property "Serial" expected property "Serial" missing
+[FAIL] Serial must be primary interface of navigator.serial
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of navigator.serial
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Serial interface: navigator.serial must inherit property "onconnect" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Serial interface: navigator.serial must inherit property "ondisconnect" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Serial interface: navigator.serial must inherit property "getPorts()" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Serial interface: navigator.serial must inherit property "requestPort(optional SerialPortRequestOptions)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Serial interface: calling requestPort(optional SerialPortRequestOptions) on navigator.serial with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] SerialPort interface: existence and properties of interface object
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface object length
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface object name
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: attribute onconnect
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: attribute ondisconnect
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: attribute connected
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: attribute readable
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: attribute writable
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: operation getInfo()
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: operation open(SerialOptions)
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: operation setSignals(optional SerialOutputSignals)
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: operation getSignals()
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: operation close()
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] SerialPort interface: operation forget()
+  assert_own_property: self does not have own property "SerialPort" expected property "SerialPort" missing
+[FAIL] Navigator interface: attribute serial
+  assert_true: The prototype object must have a property "serial" expected true got false
+[FAIL] Navigator interface: navigator must inherit property "serial" with the proper type
+  assert_inherits: property "serial" not found in prototype chain
+Harness: the test ran to completion.

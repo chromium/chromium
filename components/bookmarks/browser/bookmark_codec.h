@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -35,6 +36,9 @@ class BookmarkCodec {
   ~BookmarkCodec();
 
   // Encodes the bookmark bar and other folders returning the JSON value.
+  // Either none or all permanent nodes must be null. The null case it useful to
+  // encode sync metadata only (which is useful in error cases, when a user may
+  // contain too many bookmarks in sync, server-side).
   base::Value::Dict Encode(
       const BookmarkNode* bookmark_bar_node,
       const BookmarkNode* other_folder_node,
@@ -68,6 +72,12 @@ class BookmarkCodec {
   // Returns whether the IDs were reassigned during decoding. Always returns
   // false after encoding.
   bool ids_reassigned() const { return ids_reassigned_; }
+
+  // If IDs are reassigned during decoding, it returns the mapping from old
+  // (i.e. on-disk) ID to the newly-assigned ones.
+  std::multimap<int64_t, int64_t> release_reassigned_ids_per_old_id() {
+    return std::move(reassigned_ids_per_old_id_);
+  }
 
   // Test-only APIs.
   const std::string& ComputedChecksumForTest() const {
@@ -171,6 +181,10 @@ class BookmarkCodec {
 
   // Whether or not IDs were reassigned by the codec.
   bool ids_reassigned_{false};
+
+  // Mapping from old ID to new IDs if IDs were reassigned. Note that old IDs
+  // may contain duplicates, and therefore the mapping could be ambiguous.
+  std::multimap<int64_t, int64_t> reassigned_ids_per_old_id_;
 
   // Whether or not UUIDs were reassigned by the codec.
   bool uuids_reassigned_{false};

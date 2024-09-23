@@ -62,7 +62,7 @@ static constexpr skcms_TransferFunction kIEC61966_2_4 = kRec709;
 // SkNamedTransferFnExt::kSRGB. The differences are rounding errors that
 // cause test failures (and should be unified).
 static constexpr skcms_TransferFunction kIEC61966_2_1 = {
-    2.4, 0.947867345704f, 0.052132654296f, 0.077399380805f, 0.040449937172f};
+    2.4f, 0.947867345704f, 0.052132654296f, 0.077399380805f, 0.040449937172f};
 
 // Rec. ITU-R BT.2020-2 (10-bit system), value 14.
 static constexpr skcms_TransferFunction kRec2020_10bit = kRec709;

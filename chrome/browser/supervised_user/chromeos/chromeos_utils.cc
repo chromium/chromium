@@ -27,7 +27,7 @@ crosapi::mojom::ParentAccess* GetParentAccessApi() {
       ->GetRemote<crosapi::mojom::ParentAccess>()
       .get();
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

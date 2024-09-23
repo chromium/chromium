@@ -1,0 +1,47 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_multiple_files = true;
+
+// The file is a manual copy of the google3 file
+// //chrome/intelligence/proto/features/summarize.proto
+// Be sure to update the google3 file before making the change here.
+
+enum SummarizerOutputType {
+  SUMMARIZER_OUTPUT_TYPE_NOT_SPECIFIED = 0;
+  SUMMARIZER_OUTPUT_TYPE_TL_DR = 1;
+  SUMMARIZER_OUTPUT_TYPE_KEYPOINTS = 2;
+  SUMMARIZER_OUTPUT_TYPE_TEASER = 3;
+  SUMMARIZER_OUTPUT_TYPE_HEADLINES = 4;
+}
+
+enum SummarizerOutputFormat {
+  SUMMARIZER_OUTPUT_FORMAT_NOT_SPECIFIED = 0;
+  SUMMARIZER_OUTPUT_FORMAT_PLAIN_TEXT = 1;
+  SUMMARIZER_OUTPUT_FORMAT_MARKDOWN = 2;
+}
+
+enum SummarizerOutputLength {
+  SUMMARIZER_OUTPUT_LENGTH_NOT_SPECIFIED = 0;
+  SUMMARIZER_OUTPUT_LENGTH_SHORT = 1;
+  SUMMARIZER_OUTPUT_LENGTH_MEDIUM = 2;
+  SUMMARIZER_OUTPUT_LENGTH_LONG = 3;
+}
+
+message SummarizeOptions {
+  SummarizerOutputType output_type = 1;
+  SummarizerOutputFormat output_format = 2;
+  SummarizerOutputLength output_length = 3;
+}
+
+message SummarizeRequest {
+  string article = 1;
+  string context = 2;
+  SummarizeOptions options = 3;
+}

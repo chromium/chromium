@@ -17,7 +17,9 @@ public class TopicsUtils {
     @SuppressWarnings("DiscouragedApi")
     public static int getIconResourceIdForTopic(Context context, Topic topic) {
         // Check all the previous taxonomy versions as well, in case the version is increased.
-        for (int version = topic.getTaxonomyVersion(); version > 0; version--) {
+        int taxonomyVersion = topic.getTaxonomyVersion();
+        if (taxonomyVersion < 1) taxonomyVersion = 1;
+        for (int version = taxonomyVersion; version > 0; version--) {
             String iconName = String.format("topic_taxonomy_%s_id_%s", version, topic.getTopicId());
             int iconId =
                     context.getResources()

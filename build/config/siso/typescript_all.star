@@ -6,36 +6,6 @@ load("./tsc.star", "tsc")
 
 # TODO: crbug.com/1298825 - fix missing *.d.ts in tsconfig.
 __input_deps = {
-    "tools/typescript/definitions/settings_private.d.ts": [
-        "tools/typescript/definitions/chrome_event.d.ts",
-    ],
-    "tools/typescript/definitions/tabs.d.ts": [
-        "tools/typescript/definitions/chrome_event.d.ts",
-    ],
-    "chrome/browser/resources/inline_login/inline_login_app.ts": [
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
-        "chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
-        "chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
-    ],
-    "chrome/test/data/webui/inline_login/arc_account_picker_page_test.ts": [
-        "chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
-    ],
-    "third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts": [
-        "third_party/polymer/v3_0/components-chromium/iron-dropdown/iron-dropdown.d.ts",
-        "third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts",
-        "third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-scroll-manager.d.ts",
-        "third_party/polymer/v3_0/components-chromium/neon-animation/neon-animatable-behavior.d.ts",
-        "third_party/polymer/v3_0/components-chromium/neon-animation/neon-animation-runner-behavior.d.ts",
-        "third_party/polymer/v3_0/components-chromium/paper-behaviors/paper-ripple-behavior.d.ts",
-        "third_party/polymer/v3_0/components-chromium/polymer/lib/utils/hide-template-controls.d.ts",
-        "third_party/polymer/v3_0/components-chromium/polymer/lib/utils/scope-subtree.d.ts",
-    ],
-    "./gen/chrome/test/data/webui/inline_login/preprocessed/arc_account_picker_page_test.ts": [
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
-        "chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
-    ],
     "third_party/material_web_components/tsconfig_base.json": [
         "third_party/material_web_components/components-chromium/node_modules:node_modules",
     ],
@@ -50,7 +20,7 @@ def __filegroups(ctx):
         },
         "third_party/material_web_components/components-chromium/node_modules:node_modules": {
             "type": "glob",
-            "includes": ["*.js", "*.json", "*.ts"],
+            "includes": ["package.json"],
         },
     }
 

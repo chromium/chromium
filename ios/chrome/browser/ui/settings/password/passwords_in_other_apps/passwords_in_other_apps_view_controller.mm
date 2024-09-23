@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
@@ -100,7 +101,11 @@ CGFloat const kContentOptimalWidth = 327;
           IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE);
     }
 
-    _bannerName = @"settings_passwords_in_other_apps_banner";
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+    _bannerName = kGoogleSettingsPasswordsInOtherAppsBannerImage;
+#else
+    _bannerName = kChromiumSettingsPasswordsInOtherAppsBannerImage;
+#endif
 
     self.bannerStyle = UIUserInterfaceStyleUnspecified;
   }

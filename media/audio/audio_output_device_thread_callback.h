@@ -39,13 +39,17 @@ class MEDIA_EXPORT AudioOutputDeviceThreadCallback
   // Called whenever we receive notifications about pending data.
   void Process(uint32_t control_signal) override;
 
+  // Called when the AudioDeviceThread shuts down. Unexpected calls are treated
+  // as errors.
+  void OnSocketError() override;
+
   // Returns whether the current thread is the audio device thread or not.
   // Will always return true if DCHECKs are not enabled.
   bool CurrentThreadIsAudioDeviceThread();
 
   // Sets |first_play_start_time_| to the current time unless it's already set,
   // in which case it's a no-op. The first call to this method MUST have
-  // completed by the time we recieve our first Process() callback to avoid
+  // completed by the time we receive our first Process() callback to avoid
   // data races.
   void InitializePlayStartTime();
 

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/themes/browser_theme_pack.h"
 
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
@@ -78,14 +84,21 @@ class BrowserThemePackTest : public ::testing::Test {
   static void BuildFromUnpackedExtension(const base::FilePath& extension_path,
                                          BrowserThemePack* pack);
 
+  // Same as BuildFromUnpackedExtension() but also asserts
+  // BrowserThemeBack::is_valid() on the returned browser theme pack.
+  static void BuildFromUnpackedExtensionCheckValid(
+      const base::FilePath& extension_path,
+      BrowserThemePack* pack);
+
   // Builds the theme represented by an unpacked extension (located in
   // {DIR_TEST_DATA}/extensions/|theme_folder|).
+  // Asserts BrowserThemeBack::is_valid().
   // The BrowserThemePack is returned in |pack|.
-  static void BuildTestExtensionTheme(const base::StringPiece theme_folder,
-                                      BrowserThemePack* pack);
+  static void BuildTestExtensionThemeCheckValid(std::string_view theme_folder,
+                                                BrowserThemePack* pack);
 
   static base::FilePath GetTestExtensionThemePath(
-      base::StringPiece theme_folder);
+      std::string_view theme_folder);
   static base::FilePath GetStarGazingPath();
   static base::FilePath GetHiDpiThemePath();
 
@@ -236,20 +249,27 @@ void BrowserThemePackTest::BuildFromUnpackedExtension(
   ASSERT_TRUE(extension.get());
   ASSERT_EQ("", error);
   BrowserThemePack::BuildFromExtension(extension.get(), pack);
+}
+
+// static
+void BrowserThemePackTest::BuildFromUnpackedExtensionCheckValid(
+    const base::FilePath& extension_path,
+    BrowserThemePack* pack) {
+  BuildFromUnpackedExtension(extension_path, pack);
   ASSERT_TRUE(pack->is_valid());
 }
 
 // static
-void BrowserThemePackTest::BuildTestExtensionTheme(
-    const base::StringPiece theme_folder,
+void BrowserThemePackTest::BuildTestExtensionThemeCheckValid(
+    std::string_view theme_folder,
     BrowserThemePack* pack) {
   base::FilePath contrast_theme_path = GetTestExtensionThemePath(theme_folder);
-  BuildFromUnpackedExtension(contrast_theme_path, pack);
+  BuildFromUnpackedExtensionCheckValid(contrast_theme_path, pack);
 }
 
 // static
 base::FilePath BrowserThemePackTest::GetTestExtensionThemePath(
-    base::StringPiece theme_folder) {
+    std::string_view theme_folder) {
   base::FilePath test_path;
   const bool result = base::PathService::Get(chrome::DIR_TEST_DATA, &test_path);
   DCHECK(result);
@@ -749,7 +769,6 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxAllValues) {
                                 "omnibox_background": [120, 140, 160] })";
   LoadColorJSON(color_json);
   theme_pack().AddColorMixers(&provider, ui::ColorProviderKey());
-  provider.GenerateColorMap();
   EXPECT_EQ(SkColorSetRGB(0, 20, 40), provider.GetColor(kColorToolbar));
   EXPECT_EQ(SkColorSetRGB(60, 80, 100), provider.GetColor(kColorOmniboxText));
   EXPECT_EQ(SkColorSetRGB(120, 140, 160),
@@ -768,7 +787,7 @@ TEST_F(BrowserThemePackTest, CanBuildAndReadPack) {
     base::FilePath star_gazing_path = GetStarGazingPath();
     scoped_refptr<BrowserThemePack> pack(
         new BrowserThemePack(ThemeType::kExtension));
-    BuildFromUnpackedExtension(star_gazing_path, pack.get());
+    BuildFromUnpackedExtensionCheckValid(star_gazing_path, pack.get());
     ASSERT_TRUE(pack->WriteToDisk(file));
     VerifyStarGazing(pack.get());
   }
@@ -793,7 +812,7 @@ TEST_F(BrowserThemePackTest, HiDpiThemeTest) {
     base::FilePath hidpi_path = GetHiDpiThemePath();
     scoped_refptr<BrowserThemePack> pack(
         new BrowserThemePack(ThemeType::kExtension));
-    BuildFromUnpackedExtension(hidpi_path, pack.get());
+    BuildFromUnpackedExtensionCheckValid(hidpi_path, pack.get());
     ASSERT_TRUE(pack->WriteToDisk(file));
     VerifyHiDpiTheme(pack.get());
   }
@@ -812,7 +831,8 @@ TEST_F(BrowserThemePackTest, HiDpiThemeTest) {
 TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_FrameColor) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_test_captionbutton_framecolor", pack.get());
+  BuildTestExtensionThemeCheckValid("theme_test_captionbutton_framecolor",
+                                    pack.get());
 
   // Verify that control button background colors are matching the frame colors.
   VerifyColorsMatch(pack.get(),
@@ -835,7 +855,8 @@ TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_FrameColor) {
 TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_ButtonBGColor) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_test_captionbutton_buttoncolor", pack.get());
+  BuildTestExtensionThemeCheckValid("theme_test_captionbutton_buttoncolor",
+                                    pack.get());
 
   SkColor button_bg_color;
   const bool has_button_bg_color =
@@ -884,7 +905,8 @@ TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_ButtonBGColor) {
 TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_ButtonBGImage) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_test_captionbutton_buttonimage", pack.get());
+  BuildTestExtensionThemeCheckValid("theme_test_captionbutton_buttonimage",
+                                    pack.get());
 
   // Verify that all of the calculated button background colors are on the
   // 'dark' end of the spectrum.
@@ -908,7 +930,8 @@ TEST_F(BrowserThemePackTest, TestWindowControlButtonBGColor_ButtonBGImage) {
 TEST_F(BrowserThemePackTest, TestFrameAndToolbarColorPropagation) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_test_toolbar_color_no_image", pack.get());
+  BuildTestExtensionThemeCheckValid("theme_test_toolbar_color_no_image",
+                                    pack.get());
 
   // Toolbar button icon colors.
   SkColor toolbar_button_icon_hovered_color;
@@ -939,8 +962,8 @@ TEST_F(BrowserThemePackTest,
        TestToolbarColorComputedFromImageOverridesInputColor) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_test_toolbar_frame_images_and_colors",
-                          pack.get());
+  BuildTestExtensionThemeCheckValid(
+      "theme_test_toolbar_frame_images_and_colors", pack.get());
 
   SkColor toolbar_color;
   EXPECT_TRUE(pack->GetColor(TP::COLOR_TOOLBAR, &toolbar_color));
@@ -955,8 +978,8 @@ TEST_F(BrowserThemePackTest,
        TestFrameColorComputedFromImageOverridesInputColor) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_test_toolbar_frame_images_and_colors",
-                          pack.get());
+  BuildTestExtensionThemeCheckValid(
+      "theme_test_toolbar_frame_images_and_colors", pack.get());
 
   SkColor frame_color;
   EXPECT_TRUE(pack->GetColor(TP::COLOR_FRAME_ACTIVE, &frame_color));
@@ -1100,7 +1123,8 @@ TEST_F(BrowserThemePackTest, BuildFromColor_TestPreferredActiveTabContrast) {
 TEST_F(BrowserThemePackTest, TestToolbarButtonColor) {
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_test_toolbar_button_color", pack.get());
+  BuildTestExtensionThemeCheckValid("theme_test_toolbar_button_color",
+                                    pack.get());
 
   SkColor button_color;
   EXPECT_TRUE(pack->GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, &button_color));
@@ -1115,7 +1139,7 @@ TEST_F(BrowserThemePackTest, TestNtpTextCaclulation) {
   // background image.
   scoped_refptr<BrowserThemePack> pack(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_ntp_background_image", pack.get());
+  BuildTestExtensionThemeCheckValid("theme_ntp_background_image", pack.get());
 
   SkColor ntp_text;
   EXPECT_TRUE(pack->GetColor(TP::COLOR_NTP_TEXT, &ntp_text));
@@ -1135,29 +1159,30 @@ TEST_F(BrowserThemePackTest, TestLogoColors) {
   // be specified.
   scoped_refptr<BrowserThemePack> theme_minimal(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_minimal", theme_minimal.get());
+  BuildTestExtensionThemeCheckValid("theme_minimal", theme_minimal.get());
   SkColor color;
   EXPECT_FALSE(theme_minimal->GetColor(TP::COLOR_NTP_LOGO, &color));
 
   // For themes with image logo, colors shouldn't be set.
   scoped_refptr<BrowserThemePack> theme_with_image(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_ntp_background_image", theme_with_image.get());
+  BuildTestExtensionThemeCheckValid("theme_ntp_background_image",
+                                    theme_with_image.get());
   EXPECT_FALSE(theme_with_image->GetColor(TP::COLOR_NTP_LOGO, &color));
 
   // For themes with no image but with colorful logo, the logo color shouldn't
   // be specified.
   scoped_refptr<BrowserThemePack> theme_colorful_logo(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_color_ntp_colorful_logo",
-                          theme_colorful_logo.get());
+  BuildTestExtensionThemeCheckValid("theme_color_ntp_colorful_logo",
+                                    theme_colorful_logo.get());
   EXPECT_FALSE(theme_colorful_logo->GetColor(TP::COLOR_NTP_LOGO, &color));
 
   // For themes with no image and with alternate logo, color should be set.
   scoped_refptr<BrowserThemePack> theme_alternate_logo(
       new BrowserThemePack(ThemeType::kExtension));
-  BuildTestExtensionTheme("theme_color_ntp_white_logo",
-                          theme_alternate_logo.get());
+  BuildTestExtensionThemeCheckValid("theme_color_ntp_white_logo",
+                                    theme_alternate_logo.get());
   EXPECT_TRUE(theme_alternate_logo->GetColor(TP::COLOR_NTP_LOGO, &color));
   EXPECT_NE(SK_ColorWHITE, color);
 
@@ -1177,4 +1202,23 @@ TEST_F(BrowserThemePackTest, TestLogoColors) {
   ASSERT_TRUE(white_theme->GetColor(TP::COLOR_NTP_BACKGROUND, &color));
   ASSERT_EQ(SK_ColorWHITE, color);
   EXPECT_FALSE(white_theme->GetColor(TP::COLOR_NTP_LOGO, &color));
+}
+
+// Test that building a theme from an extension where "theme_ntp_background"
+// points to a jpg does not crash.
+TEST_F(BrowserThemePackTest, JpegNtpBackground) {
+  scoped_refptr<BrowserThemePack> theme(
+      new BrowserThemePack(ThemeType::kExtension));
+  BuildFromUnpackedExtensionCheckValid(
+      GetTestExtensionThemePath("theme_jpeg_ntp_background"), theme.get());
+}
+
+// Test that building a theme from an extension where "theme_frame" points to a
+// jpg fails.
+TEST_F(BrowserThemePackTest, JpegThemeFrame) {
+  scoped_refptr<BrowserThemePack> theme(
+      new BrowserThemePack(ThemeType::kExtension));
+  BuildFromUnpackedExtension(
+      GetTestExtensionThemePath("theme_jpeg_theme_frame"), theme.get());
+  EXPECT_FALSE(theme->is_valid());
 }

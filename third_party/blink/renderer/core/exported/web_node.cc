@@ -30,6 +30,8 @@
 
 #include "third_party/blink/public/web/web_node.h"
 
+#include <ostream>
+
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -42,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -55,6 +58,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -159,6 +163,10 @@ bool WebNode::IsContentEditable() const {
   return blink::IsEditable(*private_);
 }
 
+WebElement WebNode::RootEditableElement() const {
+  return blink::RootEditableElement(*private_);
+}
+
 bool WebNode::IsInsideFocusableElementOrARIAWidget() const {
   return AXObjectCache::IsInsideFocusableElementOrARIAWidget(
       *this->ConstUnwrap<Node>());
@@ -167,7 +175,7 @@ bool WebNode::IsInsideFocusableElementOrARIAWidget() const {
 v8::Local<v8::Value> WebNode::ToV8Value(v8::Isolate* isolate) {
   if (!private_.Get())
     return v8::Local<v8::Value>();
-  return ToV8Traits<Node>::ToV8(ScriptState::From(isolate->GetCurrentContext()),
+  return ToV8Traits<Node>::ToV8(ScriptState::ForCurrentRealm(isolate),
                                 private_.Get());
 }
 
@@ -225,13 +233,16 @@ WebVector<WebElement> WebNode::QuerySelectorAll(
   return WebVector<WebElement>();
 }
 
-WebString WebNode::FindTextInElementWith(const WebString& substring) const {
+WebString WebNode::FindTextInElementWith(
+    const WebString& substring,
+    base::FunctionRef<bool(const WebString&)> validity_checker) const {
   ContainerNode* container_node =
       blink::DynamicTo<ContainerNode>(private_.Get());
   if (!container_node) {
     return WebString();
   }
-  return WebString(container_node->FindTextInElementWith(substring));
+  return WebString(container_node->FindTextInElementWith(
+      substring, [&](const String& text) { return validity_checker(text); }));
 }
 
 bool WebNode::Focused() const {
@@ -266,6 +277,59 @@ int WebNode::GetDomNodeId() const {
 // static
 WebNode WebNode::FromDomNodeId(int dom_node_id) {
   return WebNode(Node::FromDomNodeId(dom_node_id));
+}
+
+base::ScopedClosureRunner WebNode::AddEventListener(
+    EventType event_type,
+    base::RepeatingCallback<void(WebDOMEvent)> handler) {
+  class EventListener : public NativeEventListener {
+   public:
+    EventListener(Node* node,
+                  base::RepeatingCallback<void(WebDOMEvent)> handler)
+        : node_(node), handler_(std::move(handler)) {}
+
+    void Invoke(ExecutionContext*, Event* event) override {
+      handler_.Run(WebDOMEvent(event));
+    }
+
+    void AddListener() {
+      node_->addEventListener(event_type_name(), this,
+                              /*use_capture=*/false);
+    }
+
+    void RemoveListener() {
+      node_->removeEventListener(event_type_name(), this,
+                                 /*use_capture=*/false);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      NativeEventListener::Trace(visitor);
+      visitor->Trace(node_);
+    }
+
+   private:
+    const AtomicString& event_type_name() {
+      switch (event_type_) {
+        case EventType::kSelectionchange:
+          return event_type_names::kSelectionchange;
+      }
+      NOTREACHED();
+    }
+
+    Member<Node> node_;
+    EventType event_type_;
+    base::RepeatingCallback<void(WebDOMEvent)> handler_;
+  };
+
+  WebPrivatePtrForGC<EventListener> listener =
+      MakeGarbageCollected<EventListener>(Unwrap<Node>(), std::move(handler));
+  listener->AddListener();
+  return base::ScopedClosureRunner(WTF::BindOnce(
+      &EventListener::RemoveListener, WrapWeakPersistent(listener.Get())));
+}
+
+std::ostream& operator<<(std::ostream& ostream, const WebNode& node) {
+  return ostream << node.ConstUnwrap<Node>();
 }
 
 }  // namespace blink

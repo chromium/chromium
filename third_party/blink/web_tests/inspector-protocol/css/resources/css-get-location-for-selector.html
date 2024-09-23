@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test CSS.getLocationForSelector</title>
+    <link rel="stylesheet" type="text/css" href="css-get-location-for-selector.css">
+    <script>let stylesheet1 = new CSSStyleSheet();stylesheet1.replaceSync(".class7 {color: red;}");document.adoptedStyleSheets = [stylesheet1];</script><style>div#item3{color: blue;} div
+    #item3 {padding: 10px;}
+    
+    /* intentionally not aligned for test purpose */div#item3 {font-size: 6rem;}</style>
+</head>
+
+<body>
+    <div class="class1">
+        item1
+        <div class="class11">
+        item11
+        </div>
+        <div class="class2">
+            item2
+            <div class="class11">
+            item21
+            </div>
+        </div>
+        <div id="item3">
+            item3
+        </div>
+        <div style="color:green">
+            item4
+        </div>
+        <div class="class6">
+            item6
+        </div>
+        <div class="class7">
+            item7
+        </div>
+        <div class="second-in-selector-list">
+            item7
+        </div>
+    </div>
+</body>
+
+</html>

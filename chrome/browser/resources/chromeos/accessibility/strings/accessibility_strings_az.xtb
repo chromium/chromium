@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Çəhrayımtıl Qəhvəyi</translation>
 <translation id="249330843868392562">Mətndən-nitqə ayarlarını açın</translation>
 <translation id="2497706219848005458">Yaşılımtıl Sarı</translation>
+<translation id="2512979179176933762">pəncərələri göstərin</translation>
 <translation id="2523609930580546572">ChromeVox Öyrədicisi</translation>
 <translation id="2525706221823668172">Chromebook klaviatura qısa yolları</translation>
 <translation id="2553108862507765288">qrammatik səhv</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Həmçinin əvvəlki elementə keçmək üçün bir barmağınızı sağdan sola sürüşdürə bilərsiniz. İndi sınayın.</translation>
 <translation id="280499067616661124">ChromeVox səhifədə tapma</translation>
-<translation id="2811019999044652585">Ekranın digər hissələrinə, məsələn, alətlər paneli və ya sistem seçimlərinə keçmək üçün Control+Forward basın. Chromebook'da Forward düyməsi 2 rəqəminin tam üstündədir.</translation>
 <translation id="2811204574343810641">Sıra</translation>
 <translation id="2816868829355607410">Təcrübə sahəsi: Keçid əmrləri</translation>
 <translation id="2841013758207633010">Vaxt</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Polad Mavisi</translation>
 <translation id="4253168017788158739">Qeyd</translation>
 <translation id="4254798249533888099">Ağac</translation>
+<translation id="4259220820964911921">Üz ilə idarə aktivləşdirilsin?</translation>
 <translation id="4271220233568730077">Növbəti riyaziyyat</translation>
 <translation id="4275397969489577657">Tədbir yayım girişini aktiv edin</translation>
 <translation id="4278486392851938658">Öncəki ziyarət edilmiş keçid yoxdur</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Hindu Qırmızısı</translation>
 <translation id="4432896207833262240">İşarələnmiş məzmun</translation>
 <translation id="4437615272777527928">Menyularda axtarış etmək üçün yazın. Nəticələri gözdən keçirmək üçün yuxarı və aşağı ox düymələrini basın. Mətn kursorunu tənzimləmək və menyular arasında keçid etmək üçün sol və sağ ox düymələrini basın.</translation>
+<translation id="4453530046591759283">Ekranın alətlər paneli və ya bildiriş sahəsi kimi digər hissələrinə keçmək üçün Control+F1 üstünə basın. F1 escape düyməsinin sağındakı ilk düymədir.</translation>
 <translation id="4457472090507035117">Cari səs seçin:</translation>
 <translation id="4476183483923481720">yeni xətt</translation>
 <translation id="4479068155583208887">Tünd-qırmızı</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Əlavə</translation>
 <translation id="5761219715606611783">Əla! ChromeVox toxunmanın əsaslarını öyrəndiniz. Dərsliyə yenidən nəzər sala, yaxud aşağıdakı düymələrdən istifadə edərək bu dərslikdən çıxa bilərsiniz.</translation>
 <translation id="5776001898637896684">Google Təkmil Şəbəkədə nitqi səsləndirmənin genişləndirilməsi</translation>
+<translation id="5783252477644995371">Üz ilə idarə üzünüzlə kursoru idarə etməyə və üz jestlərindən (məsələn, təbəssüm) istifadə edərək sol klik kimi əməliyyatları icra etməyə imkan verir</translation>
 <translation id="5805940204952508776">İki barmağınızla klikləyin</translation>
 <translation id="5819072574982403430">Ağac elementi</translation>
 <translation id="5822819874379903994">Tünd-firuzəyi</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Sarımtıl Ağ</translation>
 <translation id="7095834689119144465">Yalnız rəqəmli mətnə düzəliş edin</translation>
 <translation id="7096001299300236431">Əvvəlki media</translation>
+<translation id="7096668131290451939">Öyrənmə rejimindən çıxmaq üçün yenidən escape üstünə basın</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">söz exosu</translation>
 <translation id="7137397390322864165">Qırmızımtıl narıncı</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Sonrakı qeyd xanası yoxdur</translation>
 <translation id="8473540203671727883">Mətni maus ilə səsləndirin</translation>
 <translation id="8476408756881832830">ChromeVox danışanda oxutmağa fasilə verin</translation>
-<translation id="8476508772960940536">pəncərənin ümumi görünüşü</translation>
 <translation id="8480873377842220259">İndi bəzi əsas naviqasiya qaydalarını öyrənəcəksiniz. Ekranda hərəkət etmək üçün Axtarış düyməsinə basıb saxlaya və ox düymələrinə basa bilərsiniz. Davam etmək üçün Axtarış + Sağ ox üzərinə basın.</translation>
 <translation id="8503360654911991865">Naviqasiya qranulluğunu azaldın</translation>
 <translation id="8520472399088452386">Spin düyməsi</translation>

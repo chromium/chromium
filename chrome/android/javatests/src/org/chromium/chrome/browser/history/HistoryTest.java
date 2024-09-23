@@ -14,15 +14,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
@@ -42,7 +42,7 @@ public class HistoryTest {
         }
 
         public Bitmap waitForFavicon() throws TimeoutException {
-            waitForFirst();
+            waitForOnly();
             return mFavicon;
         }
     }
@@ -59,7 +59,7 @@ public class HistoryTest {
     public void testFavicon() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        FaviconHelper helper = TestThreadUtils.runOnUiThreadBlocking(FaviconHelper::new);
+        FaviconHelper helper = ThreadUtils.runOnUiThreadBlocking(FaviconHelper::new);
         // If the returned favicons are non-null Bitmap#sameAs() should be used.
         assertNull(getFavicon(helper, new GURL(UrlConstants.HISTORY_URL)));
         assertNull(getFavicon(helper, new GURL(UrlConstants.NATIVE_HISTORY_URL)));
@@ -67,10 +67,10 @@ public class HistoryTest {
 
     public Bitmap getFavicon(FaviconHelper helper, GURL pageUrl) throws TimeoutException {
         FaviconWaiter waiter = new FaviconWaiter();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     helper.getLocalFaviconImageForURL(
-                            Profile.getLastUsedRegularProfile(), pageUrl, 0, waiter);
+                            ProfileManager.getLastUsedRegularProfile(), pageUrl, 0, waiter);
                 });
         return waiter.waitForFavicon();
     }

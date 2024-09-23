@@ -19,6 +19,8 @@ This is a testharness.js-based test.
   assert_equals: afterLeft expected 0 but got 256
 [FAIL] display: ruby-base
   assert_true: display: ruby-base is not supported expected true got false
+[FAIL] display: ruby-text
+  assert_equals: buttonHeight expected 122 but got 125
 [FAIL] display: ruby-base-container
   assert_true: display: ruby-base-container is not supported expected true got false
 [FAIL] display: ruby-text-container

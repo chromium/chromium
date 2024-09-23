@@ -4,6 +4,7 @@ include_rules = [
   "+components/os_crypt/sync",
   "+components/prefs",
   "+components/strings/grit",
+  "+components/sync/engine",
   "+components/sync/model",
   "+components/sync/protocol",
   "+net/base",
@@ -14,7 +15,6 @@ include_rules = [
   "+sql",
   "+third_party/boringssl/src/include/openssl",
   "+third_party/re2",
-  "+third_party/sqlite/sqlite3.h",
   "+ui",
   # PasswordManager is a layered component; subdirectories must explicitly
   # introduce the ability to use non-core layers as appropriate.

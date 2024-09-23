@@ -13,8 +13,6 @@ namespace app_restore {
 
 // AppRestoreArcInfo is responsible for providing information about ARC apps to
 // its observers.
-// TODO(sammiequon): Investigate if we should add more function here, and
-// promote it to AppRestoreInfo.
 class COMPONENT_EXPORT(APP_RESTORE) AppRestoreArcInfo {
  public:
   class Observer : public base::CheckedObserver {

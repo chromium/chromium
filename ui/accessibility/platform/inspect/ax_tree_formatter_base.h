@@ -39,10 +39,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
   std::string Format(AXPlatformNodeDelegate* root) const override;
   std::string FormatNode(AXPlatformNodeDelegate* node) const override;
   std::string FormatTree(const base::Value::Dict& tree_node) const override;
-  base::Value::Dict BuildTreeForNode(ui::AXNode* root) const override;
-  std::string EvaluateScript(
-      const AXTreeSelector& selector,
-      const ui::AXInspectScenario& scenario) const override;
+  base::Value::Dict BuildTreeForNode(AXNode* root) const override;
+  std::string EvaluateScript(const AXTreeSelector& selector,
+                             const AXInspectScenario& scenario) const override;
   std::string EvaluateScript(
       AXPlatformNodeDelegate* root,
       const std::vector<AXScriptInstruction>& instructions,
@@ -53,7 +52,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
   void SetNodeFilters(const std::vector<AXNodeFilter>& node_filters) override;
   void set_show_ids(bool show_ids) override;
   std::string DumpInternalAccessibilityTree(
-      ui::AXTreeID tree_id,
+      AXTreeID tree_id,
       const std::vector<AXPropertyFilter>& property_filters) override;
 
  protected:
@@ -73,7 +72,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
       const std::string& line_index) const;
 
   // Returns a list of script property nodes.
-  std::vector<ui::AXPropertyNode> ScriptPropertyNodes() const;
+  std::vector<AXPropertyNode> ScriptPropertyNodes() const;
 
   // Return true if match-all filter is present.
   bool HasMatchAllPropertyFilter() const;
@@ -115,7 +114,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterBase
                          AXPropertyFilter::Type type = AXPropertyFilter::ALLOW);
   bool show_ids() const { return show_ids_; }
 
-  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
 
  private:
   void RecursiveFormatTree(const base::Value::Dict& tree_node,

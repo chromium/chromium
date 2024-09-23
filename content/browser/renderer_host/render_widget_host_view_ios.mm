@@ -9,7 +9,8 @@
 #include <cstdint>
 
 #include "base/command_line.h"
-#include "base/strings/sys_string_conversions.h"
+#include "build/ios_buildflags.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
@@ -17,22 +18,18 @@
 #include "content/browser/renderer_host/input/synthetic_gesture_target_ios.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
+#include "content/browser/renderer_host/render_widget_host_view_ios_uiview.h"
 #include "content/browser/renderer_host/text_input_manager.h"
-#include "content/browser/renderer_host/ui_events_helper.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/input/web_input_event_builders_ios.h"
+#include "content/common/input/events_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_switches.h"
-#include "ui/accelerated_widget_mac/ca_layer_frame_sink_provider.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/display/screen.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 #include "ui/gfx/geometry/size_conversions.h"
-
-static void* kObservingContext = &kObservingContext;
 
 @interface UIApplication (Testing)
 - (BOOL)isRunningTests;
@@ -52,7 +49,13 @@ constexpr gfx::Size KDefaultSizeForPreventResizingForTesting =
     gfx::Size(980, 735);
 
 bool IsTesting() {
+#if BUILDFLAG(IS_IOS_APP_EXTENSION)
+  // This class shouldn't really be build with extension anyways.
+  // Fix the build to avoid building browser code in extensions.
+  return false;
+#else
   return [[UIApplication sharedApplication] isRunningTests];
+#endif
 }
 
 gfx::Rect GetDefaultSizeForTesting() {
@@ -63,269 +66,6 @@ gfx::Rect GetDefaultSizeForTesting() {
 }
 
 }  // namespace
-
-// TODO(dtapuska): Change this to be UITextInput and handle the other
-// events to implement the composition and selection ranges.
-@interface RenderWidgetUIViewTextInput : UIView <UIKeyInput> {
-  base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
-}
-- (void)onUpdateTextInputState:(const ui::mojom::TextInputState&)state
-                    withBounds:(CGRect)bounds;
-- (void)showKeyboard:(bool)has_text withBounds:(CGRect)bounds;
-- (void)hideKeyboard;
-
-@end
-
-@interface RenderWidgetUIView : CALayerFrameSinkProvider {
-  base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
-  std::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
-}
-
-// TextInput state.
-@property(nonatomic, strong) RenderWidgetUIViewTextInput* textInput;
-
-- (void)updateView:(UIScrollView*)view;
-- (void)removeView;
-@end
-
-@implementation CALayerFrameSinkProvider
-
-- (ui::CALayerFrameSink*)frameSink {
-  return nil;
-}
-
-@end
-
-@implementation RenderWidgetUIViewTextInput {
-  BOOL _hasText;
-}
-
-- (instancetype)initWithWidget:
-    (base::WeakPtr<content::RenderWidgetHostViewIOS>)view {
-  _view = view;
-  _hasText = NO;
-  self.multipleTouchEnabled = YES;
-  self.autoresizingMask =
-      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  return [self init];
-}
-
-- (void)onUpdateTextInputState:(const ui::mojom::TextInputState&)state
-                    withBounds:(CGRect)bounds {
-  // Check for the visibility request and policy if VK APIs are enabled.
-  if (state.vk_policy == ui::mojom::VirtualKeyboardPolicy::MANUAL) {
-    // policy is manual.
-    if (state.last_vk_visibility_request ==
-        ui::mojom::VirtualKeyboardVisibilityRequest::SHOW) {
-      [self showKeyboard:(state.value && !state.value->empty())
-              withBounds:bounds];
-    } else if (state.last_vk_visibility_request ==
-               ui::mojom::VirtualKeyboardVisibilityRequest::HIDE) {
-      [self hideKeyboard];
-    }
-  } else {
-    bool hide = state.always_hide_ime ||
-                state.mode == ui::TextInputMode::TEXT_INPUT_MODE_NONE ||
-                state.type == ui::TextInputType::TEXT_INPUT_TYPE_NONE;
-    if (hide) {
-      [self hideKeyboard];
-    } else if (state.show_ime_if_needed) {
-      [self showKeyboard:(state.value && !state.value->empty())
-              withBounds:bounds];
-    }
-  }
-}
-
-- (void)showKeyboard:(bool)has_text withBounds:(CGRect)bounds {
-  self.frame = bounds;
-  [self becomeFirstResponder];
-  _hasText = has_text;
-}
-
-- (void)hideKeyboard {
-  [self resignFirstResponder];
-  _hasText = NO;
-}
-
-- (BOOL)canBecomeFirstResponder {
-  return YES;
-}
-
-- (BOOL)hasText {
-  return _hasText;
-}
-
-- (void)insertText:(NSString*)text {
-  CHECK(_view);
-  _view->ImeCommitText(base::SysNSStringToUTF16(text),
-                       gfx::Range::InvalidRange(), 0);
-}
-
-- (void)deleteBackward {
-  CHECK(_view);
-  std::vector<ui::ImeTextSpan> ime_text_spans;
-  _view->ImeSetComposition(std::u16string(), ime_text_spans,
-                           gfx::Range::InvalidRange(), -1, 0);
-  _view->ImeCommitText(std::u16string(), gfx::Range::InvalidRange(), 0);
-}
-
-- (BOOL)becomeFirstResponder {
-  BOOL result = [super becomeFirstResponder];
-  if (result && _view) {
-    _view->OnFirstResponderChanged();
-  }
-  return result;
-}
-
-- (BOOL)resignFirstResponder {
-  BOOL result = [super resignFirstResponder];
-  if (result && _view) {
-    _view->OnFirstResponderChanged();
-  }
-  return result;
-}
-
-@end
-
-@implementation RenderWidgetUIView
-@synthesize textInput = _textInput;
-
-- (instancetype)initWithWidget:
-    (base::WeakPtr<content::RenderWidgetHostViewIOS>)view {
-  self = [self init];
-  if (self) {
-    _view = view;
-    self.multipleTouchEnabled = YES;
-    self.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _textInput = [[RenderWidgetUIViewTextInput alloc] initWithWidget:view];
-    [self addSubview:_textInput];
-  }
-  return self;
-}
-
-- (void)layoutSubviews {
-  CHECK(_view);
-  [super layoutSubviews];
-  _view->UpdateScreenInfo();
-
-  // TODO(dtapuska): This isn't correct, we need to figure out when the window
-  // gains/loses focus.
-  _view->SetActive(true);
-}
-
-- (ui::CALayerFrameSink*)frameSink {
-  return _view.get();
-}
-
-- (BOOL)canBecomeFirstResponder {
-  return YES;
-}
-
-- (BOOL)becomeFirstResponder {
-  CHECK(_view);
-  BOOL result = [super becomeFirstResponder];
-  if (result || _view->CanBecomeFirstResponderForTesting()) {
-    _view->OnFirstResponderChanged();
-  }
-  return result;
-}
-
-- (BOOL)resignFirstResponder {
-  BOOL result = [super resignFirstResponder];
-  if (_view && (result || _view->CanResignFirstResponderForTesting())) {
-    _view->OnFirstResponderChanged();
-  }
-  return result;
-}
-
-- (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  CHECK(_view);
-  if (!_view->HasFocus()) {
-    if ([self becomeFirstResponder]) {
-      _view->OnFirstResponderChanged();
-    }
-  }
-  for (UITouch* touch in touches) {
-    blink::WebTouchEvent webTouchEvent = content::WebTouchEventBuilder::Build(
-        blink::WebInputEvent::Type::kTouchStart, touch, event, self,
-        _viewOffsetDuringTouchSequence);
-    if (!_viewOffsetDuringTouchSequence) {
-      _viewOffsetDuringTouchSequence =
-          webTouchEvent.touches[0].PositionInWidget() -
-          webTouchEvent.touches[0].PositionInScreen();
-    }
-    _view->OnTouchEvent(std::move(webTouchEvent));
-  }
-}
-
-- (void)touchesEnded:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  CHECK(_view);
-  for (UITouch* touch in touches) {
-    _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
-        blink::WebInputEvent::Type::kTouchEnd, touch, event, self,
-        _viewOffsetDuringTouchSequence));
-  }
-  if (event.allTouches.count == 1) {
-    _viewOffsetDuringTouchSequence.reset();
-  }
-}
-
-- (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  CHECK(_view);
-  for (UITouch* touch in touches) {
-    _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
-        blink::WebInputEvent::Type::kTouchMove, touch, event, self,
-        _viewOffsetDuringTouchSequence));
-  }
-}
-
-- (void)touchesCancelled:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  CHECK(_view);
-  for (UITouch* touch in touches) {
-    _view->OnTouchEvent(content::WebTouchEventBuilder::Build(
-        blink::WebInputEvent::Type::kTouchCancel, touch, event, self,
-        _viewOffsetDuringTouchSequence));
-  }
-  _viewOffsetDuringTouchSequence.reset();
-}
-
-- (void)observeValueForKeyPath:(NSString*)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary*)change
-                       context:(void*)context {
-  CHECK(_view);
-  if (context == kObservingContext) {
-    _view->ContentInsetChanged();
-  } else {
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
-  }
-}
-
-- (void)removeView {
-  UIScrollView* view = (UIScrollView*)[self superview];
-  [view removeObserver:self
-            forKeyPath:NSStringFromSelector(@selector(contentInset))];
-  [self removeFromSuperview];
-}
-
-- (void)updateView:(UIScrollView*)view {
-  [view addSubview:self];
-  view.scrollEnabled = NO;
-  // Remove all existing gestureRecognizers since the header might be reused.
-  for (UIGestureRecognizer* recognizer in view.gestureRecognizers) {
-    [view removeGestureRecognizer:recognizer];
-  }
-  [view addObserver:self
-         forKeyPath:NSStringFromSelector(@selector(contentInset))
-            options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-            context:kObservingContext];
-}
-
-@end
 
 namespace content {
 
@@ -386,6 +126,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
 RenderWidgetHostViewIOS::~RenderWidgetHostViewIOS() = default;
 
 void RenderWidgetHostViewIOS::Destroy() {
+  [ui_view_->view_ removeView];
   host()->render_frame_metadata_provider()->RemoveObserver(this);
   if (text_input_manager_) {
     text_input_manager_->RemoveObserver(this);
@@ -422,8 +163,14 @@ void RenderWidgetHostViewIOS::SetBounds(const gfx::Rect& rect) {}
 gfx::NativeView RenderWidgetHostViewIOS::GetNativeView() {
   return gfx::NativeView(ui_view_->view_);
 }
+
 gfx::NativeViewAccessible RenderWidgetHostViewIOS::GetNativeViewAccessible() {
-  return {};
+  return ui_view_->view_;
+}
+
+gfx::NativeViewAccessible
+RenderWidgetHostViewIOS::AccessibilityGetNativeViewAccessible() {
+  return ui_view_->view_;
 }
 
 void RenderWidgetHostViewIOS::Focus() {
@@ -745,15 +492,15 @@ bool RenderWidgetHostViewIOS::HasFallbackSurface() const {
 
 bool RenderWidgetHostViewIOS::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
-    RenderWidgetHostViewBase* target_view,
+    RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
   if (target_view == this) {
     *transformed_point = point;
     return true;
   }
 
-  return target_view->TransformPointToLocalCoordSpace(
-      point, GetCurrentSurfaceId(), transformed_point);
+  return target_view->TransformPointToLocalCoordSpace(point, GetFrameSinkId(),
+                                                      transformed_point);
 }
 
 display::ScreenInfo RenderWidgetHostViewIOS::GetCurrentScreenInfo() const {
@@ -762,7 +509,7 @@ display::ScreenInfo RenderWidgetHostViewIOS::GetCurrentScreenInfo() const {
 
 void RenderWidgetHostViewIOS::SetCurrentDeviceScaleFactor(
     float device_scale_factor) {
-  // TODO(https://crbug.com/1337094): does this need to be upscaled by
+  // TODO(crbug.com/40229152): does this need to be upscaled by
   // scale_override_for_capture_ for HiDPI capture mode?
   screen_infos_.mutable_current().device_scale_factor = device_scale_factor;
 }
@@ -798,18 +545,19 @@ void RenderWidgetHostViewIOS::OnTouchEvent(blink::WebTouchEvent web_event) {
   }
 
   web_event.moved_beyond_slop_region = result.moved_beyond_slop_region;
-  ui::LatencyInfo latency_info(ui::SourceEventType::TOUCH);
+  ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
   if (ShouldRouteEvents()) {
     host()->delegate()->GetInputEventRouter()->RouteTouchEvent(this, &web_event,
                                                                latency_info);
   } else {
-    host()->ForwardTouchEventWithLatencyInfo(web_event, latency_info);
+    host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
+        web_event, latency_info);
   }
 }
 
 void RenderWidgetHostViewIOS::ProcessAckedTouchEvent(
-    const TouchEventWithLatencyInfo& touch,
+    const input::TouchEventWithLatencyInfo& touch,
     blink::mojom::InputEventResultState ack_result) {
   const bool event_consumed =
       ack_result == blink::mojom::InputEventResultState::kConsumed;
@@ -828,9 +576,9 @@ void RenderWidgetHostViewIOS::ProcessAckedTouchEvent(
 
 void RenderWidgetHostViewIOS::OnGestureEvent(
     const ui::GestureEventData& gesture) {
-  if ((gesture.type() == ui::ET_GESTURE_PINCH_BEGIN ||
-       gesture.type() == ui::ET_GESTURE_PINCH_UPDATE ||
-       gesture.type() == ui::ET_GESTURE_PINCH_END) &&
+  if ((gesture.type() == ui::EventType::kGesturePinchBegin ||
+       gesture.type() == ui::EventType::kGesturePinchUpdate ||
+       gesture.type() == ui::EventType::kGesturePinchEnd) &&
       !IsPinchToZoomEnabled()) {
     return;
   }
@@ -846,9 +594,7 @@ bool RenderWidgetHostViewIOS::RequiresDoubleTapGestureEvents() const {
 
 void RenderWidgetHostViewIOS::SendGestureEvent(
     const blink::WebGestureEvent& event) {
-  ui::LatencyInfo latency_info =
-      ui::WebInputEventTraits::CreateLatencyInfoForWebGestureEvent(event);
-  InjectGestureEvent(event, latency_info);
+  InjectGestureEvent(event, ui::LatencyInfo());
 }
 
 void RenderWidgetHostViewIOS::InjectTouchEvent(
@@ -865,7 +611,8 @@ void RenderWidgetHostViewIOS::InjectTouchEvent(
     host()->delegate()->GetInputEventRouter()->RouteTouchEvent(
         this, &touch_event, latency_info);
   } else {
-    host()->ForwardTouchEventWithLatencyInfo(event, latency_info);
+    host()->GetRenderInputRouter()->ForwardTouchEventWithLatencyInfo(
+        event, latency_info);
   }
 }
 
@@ -877,7 +624,8 @@ void RenderWidgetHostViewIOS::InjectGestureEvent(
     host()->delegate()->GetInputEventRouter()->RouteGestureEvent(
         this, &gesture_event, latency_info);
   } else {
-    host()->ForwardGestureEventWithLatencyInfo(event, latency_info);
+    host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(
+        event, latency_info);
   }
 }
 
@@ -987,12 +735,54 @@ void RenderWidgetHostViewIOS::OnUpdateTextInputStateCalled(
   }
 }
 
+void RenderWidgetHostViewIOS::OnTextSelectionChanged(
+    TextInputManager* text_input_manager,
+    RenderWidgetHostViewBase* updated_view) {
+  DCHECK_EQ(GetTextInputManager(), text_input_manager);
+  const TextInputManager::TextSelection* selection =
+      text_input_manager->GetTextSelection(updated_view);
+  if (selection && selection->selected_text().length()) {
+    [ui_view_->view_.textInteraction refreshKeyboardUI];
+    [ui_view_->view_.textInteraction textSelectionDisplayInteraction]
+        .activated = YES;
+
+    // This seems like a bug. BETextInput always sets the
+    // textSelectionDisplayInteraction lolipop dot size to 16.5,16.5, expecting
+    // the entire web content to be transformed down for some reason. Instead,
+    // scale it down here with a very naive implementation.
+    UITextSelectionDisplayInteraction* textSelectionDisplayInteraction =
+        ui_view_->view_.textInteraction.textSelectionDisplayInteraction;
+    NSArray<UIView<UITextSelectionHandleView>*>* handleViews =
+        textSelectionDisplayInteraction.handleViews;
+
+    CGFloat shrink = handleViews[0].subviews[0].frame.size.height / 20;
+    shrink = std::max(std::min(shrink, 1.0), 0.65);
+    handleViews[0].subviews[1].layer.transform =
+        CATransform3DMakeScale(shrink, shrink, 1);
+
+    shrink = handleViews[1].subviews[0].frame.size.height / 20;
+    shrink = std::max(std::min(shrink, 1.0), 0.65);
+    handleViews[1].subviews[1].layer.transform =
+        CATransform3DMakeScale(shrink, shrink, 1);
+  } else {
+    [ui_view_->view_.textInteraction textSelectionDisplayInteraction]
+        .activated = NO;
+  }
+}
+void RenderWidgetHostViewIOS::OnSelectionBoundsChanged(
+    TextInputManager* text_input_manager,
+    RenderWidgetHostViewBase* updated_view) {
+  [ui_view_->view_.textInteraction
+          .textSelectionDisplayInteraction setNeedsSelectionUpdate];
+}
+
 ui::Compositor* RenderWidgetHostViewIOS::GetCompositor() {
   return browser_compositor_->GetCompositor();
 }
 
 void RenderWidgetHostViewIOS::GestureEventAck(
     const blink::WebGestureEvent& event,
+    blink::mojom::InputEventResultSource ack_source,
     blink::mojom::InputEventResultState ack_result) {
   // Stop flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
@@ -1008,7 +798,7 @@ void RenderWidgetHostViewIOS::GestureEventAck(
       [[scrollView delegate] scrollViewWillBeginDragging:scrollView];
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
-      // TODO(crbug.com/1458640): Since ScrollResultData has been removed from
+      // TODO(crbug.com/40274032): Since ScrollResultData has been removed from
       // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here
       // has also been eliminated for now. We should address the
       // GestureScrollUpdate event after examining how the bug implements
@@ -1040,7 +830,7 @@ void RenderWidgetHostViewIOS::GestureEventAck(
 void RenderWidgetHostViewIOS::ChildDidAckGestureEvent(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultState ack_result) {
-  // TODO(crbug.com/1458640): Since ScrollResultData has been removed from
+  // TODO(crbug.com/40274032): Since ScrollResultData has been removed from
   // GestureEventAck, the invocation of ApplyRootScrollOffsetChanged here has
   // also been eliminated for now. We should address the GestureScrollUpdate
   // event after examining how the bug implements GestureEventAck.

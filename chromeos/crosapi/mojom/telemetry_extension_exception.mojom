@@ -45,6 +45,9 @@ struct TelemetryExtensionException {
     // clients should use methods which return `TelemetryExtensionSupportStatus`
     // for support status check.
     kUnsupported = 3,
+    // Raises this if a camera frontend needs to be opened but it is actually
+    // not opened.
+    [MinVersion=1] kCameraFrontendNotOpened = 4,
   };
 
   Reason reason@0;

@@ -46,12 +46,12 @@ bool TabGroupModel::ContainsTabGroup(const tab_groups::TabGroupId& id) const {
 }
 
 TabGroup* TabGroupModel::GetTabGroup(const tab_groups::TabGroupId& id) const {
-  DCHECK(ContainsTabGroup(id));
+  CHECK(ContainsTabGroup(id), base::NotFatalUntil::M127);
   return groups_.find(id)->second.get();
 }
 
 void TabGroupModel::RemoveTabGroup(const tab_groups::TabGroupId& id) {
-  DCHECK(ContainsTabGroup(id));
+  CHECK(ContainsTabGroup(id));
   group_ids_.erase(base::ranges::remove(group_ids_, id));
   groups_.erase(id);
 }

@@ -12,9 +12,11 @@ use crate::group::Group;
 use crate::paths;
 use crate::platforms;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::ops::Deref;
 
-use anyhow::Result;
+use anyhow::{bail, Result};
+use itertools::Itertools;
 use serde::Serialize;
 
 /// Describes a BUILD.gn file for a single crate epoch. Each file may have
@@ -81,6 +83,7 @@ pub struct RuleDetail {
     pub build_script_sources: Vec<String>,
     pub build_script_inputs: Vec<String>,
     pub build_script_outputs: Vec<String>,
+    pub native_libs: Vec<String>,
     /// Data passed unchanged from gnrt_config.toml to the build file template.
     pub extra_kv: HashMap<String, serde_json::Value>,
     /// Whether this rule depends on the main lib target in its group (e.g. a
@@ -115,7 +118,7 @@ pub enum NameLibStyle {
     LibLiteral,
 }
 
-pub fn build_file_from_std_deps<'a, 'b, Iter, GetFiles>(
+pub fn build_file_from_deps<'a, 'b, Iter, GetFiles>(
     deps: Iter,
     paths: &'b paths::ChromiumPaths,
     extra_config: &'b BuildConfig,
@@ -129,7 +132,7 @@ where
     let mut b = BuildFile { rules: Vec::new() };
     for dep in deps {
         let crate_id = dep.crate_id();
-        b.rules.extend(build_rule_from_std_dep(
+        b.rules.extend(build_rule_from_dep(
             dep,
             paths,
             get_files(&crate_id),
@@ -140,7 +143,7 @@ where
     Ok(b)
 }
 
-pub fn build_rule_from_std_dep(
+pub fn build_rule_from_dep(
     dep: &deps::Package,
     paths: &paths::ChromiumPaths,
     details: &CrateFiles,
@@ -231,6 +234,16 @@ pub fn build_rule_from_std_dep(
     });
     detail_template.aliased_deps = aliased_normal_deps;
 
+    detail_template.sources =
+        details.sources.iter().map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap())).collect();
+    detail_template.inputs =
+        details.inputs.iter().map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap())).collect();
+    detail_template.native_libs = details
+        .native_libs
+        .iter()
+        .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
+        .collect();
+
     let requested_features_for_normal = {
         let mut features = dep
             .dependency_kinds
@@ -252,6 +265,23 @@ pub fn build_rule_from_std_dep(
         features.dedup();
         features
     };
+
+    let unexpected_features: Vec<&str> = {
+        let banned_features =
+            extra_config.get_combined_set(&*dep.package_name, |cfg| &cfg.ban_features);
+        let mut actual_features = HashSet::new();
+        actual_features.extend(requested_features_for_normal.iter().map(Deref::deref));
+        actual_features.extend(requested_features_for_build.iter().map(Deref::deref));
+        banned_features.intersection(&actual_features).map(|s| *s).sorted_unstable().collect()
+    };
+    if !unexpected_features.is_empty() {
+        bail!(
+            "The following crate features are enabled in crate `{}` \
+             despite being listed in `ban_features`: {}",
+            &*dep.package_name,
+            unexpected_features.iter().map(|f| format!("`{f}`")).join(", "),
+        );
+    }
 
     if !per_crate_config.map(|config| config.remove_build_rs).unwrap_or(false) {
         let build_script_from_src =
@@ -291,16 +321,6 @@ pub fn build_rule_from_std_dep(
         let mut bin_detail = detail_template.clone();
         bin_detail.crate_type = "bin".to_string();
         bin_detail.crate_root = format!("//{bin_root_from_src}");
-        bin_detail.sources = details
-            .sources
-            .iter()
-            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
-            .collect();
-        bin_detail.inputs = details
-            .inputs
-            .iter()
-            .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
-            .collect();
         // Bins are not part of a build script, so they don't need build-script
         // deps, only normal deps.
         bin_detail.features = requested_features_for_normal.clone();
@@ -357,16 +377,6 @@ pub fn build_rule_from_std_dep(
             lib_detail.epoch = epoch;
             lib_detail.crate_type = crate_type;
             lib_detail.crate_root = format!("//{lib_root_from_src}");
-            lib_detail.sources = details
-                .sources
-                .iter()
-                .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
-                .collect();
-            lib_detail.inputs = details
-                .inputs
-                .iter()
-                .map(|p| format!("//{}", paths.to_gn_abs_path(p).unwrap()))
-                .collect();
             lib_detail.features = match &dep_kind {
                 Normal => requested_features_for_normal.clone(),
                 Build => requested_features_for_build.clone(),
@@ -486,16 +496,34 @@ pub fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> String {
             "windows" => "is_win",
             _ => unreachable!(),
         },
-        cargo_platform::Cfg::KeyPair(key, value) => {
-            assert_eq!(key, "target_os");
-            target_os_to_condition(value)
-        }
+        cargo_platform::Cfg::KeyPair(key, value) => match key.as_ref() {
+            "target_os" => target_os_to_condition(value),
+            "target_arch" => target_arch_to_condition(value),
+            _ => unreachable!("unknown key in cargo_platform::Cfg"),
+        },
     }
     .to_string()
 }
 
 fn triple_to_condition(triple: &str) -> &'static str {
-    for (t, c) in TRIPLE_TO_GN_CONDITION {
+    for (t, c) in &[
+        ("i686-linux-android", "is_android && current_cpu == \"x86\""),
+        ("x86_64-linux-android", "is_android && current_cpu == \"x64\""),
+        ("armv7-linux-android", "is_android && current_cpu == \"arm\""),
+        ("aarch64-linux-android", "is_android && current_cpu == \"arm64\""),
+        ("aarch64-fuchsia", "is_fuchsia && current_cpu == \"arm64\""),
+        ("x86_64-fuchsia", "is_fuchsia && current_cpu == \"x64\""),
+        ("aarch64-apple-ios", "is_ios && current_cpu == \"arm64\""),
+        ("armv7-apple-ios", "is_ios && current_cpu == \"arm\""),
+        ("x86_64-apple-ios", "is_ios && current_cpu == \"x64\""),
+        ("i386-apple-ios", "is_ios && current_cpu == \"x86\""),
+        ("i686-pc-windows-msvc", "is_win && current_cpu == \"x86\""),
+        ("x86_64-pc-windows-msvc", "is_win && current_cpu == \"x64\""),
+        ("i686-unknown-linux-gnu", "(is_linux || is_chromeos) && current_cpu == \"x86\""),
+        ("x86_64-unknown-linux-gnu", "(is_linux || is_chromeos) && current_cpu == \"x64\""),
+        ("x86_64-apple-darwin", "is_mac && current_cpu == \"x64\""),
+        ("aarch64-apple-darwin", "is_mac && current_cpu == \"arm64\""),
+    ] {
         if *t == triple {
             return c;
         }
@@ -505,7 +533,14 @@ fn triple_to_condition(triple: &str) -> &'static str {
 }
 
 fn target_os_to_condition(target_os: &str) -> &'static str {
-    for (t, c) in TARGET_OS_TO_GN_CONDITION {
+    for (t, c) in &[
+        ("android", "is_android"),
+        ("darwin", "is_mac"),
+        ("fuchsia", "is_fuchsia"),
+        ("ios", "is_ios"),
+        ("linux", "is_linux || is_chromeos"),
+        ("windows", "is_win"),
+    ] {
         if *t == target_os {
             return c;
         }
@@ -514,33 +549,20 @@ fn target_os_to_condition(target_os: &str) -> &'static str {
     panic!("target os {target_os} not found")
 }
 
-static TRIPLE_TO_GN_CONDITION: &[(&str, &str)] = &[
-    ("i686-linux-android", "is_android && target_cpu == \"x86\""),
-    ("x86_64-linux-android", "is_android && target_cpu == \"x64\""),
-    ("armv7-linux-android", "is_android && target_cpu == \"arm\""),
-    ("aarch64-linux-android", "is_android && target_cpu == \"arm64\""),
-    ("aarch64-fuchsia", "is_fuchsia && target_cpu == \"arm64\""),
-    ("x86_64-fuchsia", "is_fuchsia && target_cpu == \"x64\""),
-    ("aarch64-apple-ios", "is_ios && target_cpu == \"arm64\""),
-    ("armv7-apple-ios", "is_ios && target_cpu == \"arm\""),
-    ("x86_64-apple-ios", "is_ios && target_cpu == \"x64\""),
-    ("i386-apple-ios", "is_ios && target_cpu == \"x86\""),
-    ("i686-pc-windows-msvc", "is_win && target_cpu == \"x86\""),
-    ("x86_64-pc-windows-msvc", "is_win && target_cpu == \"x64\""),
-    ("i686-unknown-linux-gnu", "(is_linux || is_chromeos) && target_cpu == \"x86\""),
-    ("x86_64-unknown-linux-gnu", "(is_linux || is_chromeos) && target_cpu == \"x64\""),
-    ("x86_64-apple-darwin", "is_mac && target_cpu == \"x64\""),
-    ("aarch64-apple-darwin", "is_mac && target_cpu == \"arm64\""),
-];
+fn target_arch_to_condition(target_arch: &str) -> &'static str {
+    for (t, c) in &[
+        ("aarch64", "current_cpu == \"arm64\""),
+        ("arm", "current_cpu == \"arm\""),
+        ("x86", "current_cpu == \"x86\""),
+        ("x86_64", "current_cpu == \"x64\""),
+    ] {
+        if *t == target_arch {
+            return c;
+        }
+    }
 
-static TARGET_OS_TO_GN_CONDITION: &[(&str, &str)] = &[
-    ("android", "is_android"),
-    ("darwin", "is_mac"),
-    ("fuchsia", "is_fuchsia"),
-    ("ios", "is_ios"),
-    ("linux", "is_linux || is_chromeos"),
-    ("windows", "is_win"),
-];
+    panic!("target arch {target_arch} not found")
+}
 
 #[cfg(test)]
 mod tests {
@@ -562,7 +584,7 @@ mod tests {
             ))))
             .unwrap()
             .0,
-            "(is_win && target_cpu == \"x64\")"
+            "(is_win && current_cpu == \"x64\")"
         );
 
         // Try a cfg expression.
@@ -591,7 +613,27 @@ mod tests {
         platform_set.add(Some(Platform::Cfg(CfgExpr::from_str("windows").unwrap())));
         assert_eq!(
             Condition::from_platform_set(platform_set).unwrap().0,
-            "(is_android && target_cpu == \"arm\") || (is_win)"
+            "(is_android && current_cpu == \"arm\") || (is_win)"
+        );
+
+        // A cfg expression on arch only.
+        assert_eq!(
+            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
+                CfgExpr::from_str("target_arch = \"aarch64\"").unwrap()
+            ))))
+            .unwrap()
+            .0,
+            "(current_cpu == \"arm64\")"
+        );
+
+        // A cfg expression on arch and OS (but not via the target triple string).
+        assert_eq!(
+            Condition::from_platform_set(PlatformSet::one(Some(Platform::Cfg(
+                CfgExpr::from_str("all(target_arch = \"aarch64\", unix)").unwrap()
+            ))))
+            .unwrap()
+            .0,
+            "((!is_win) && (current_cpu == \"arm64\"))"
         );
     }
 }

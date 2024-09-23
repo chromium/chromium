@@ -19,6 +19,10 @@
 
 class FakeGaiaMixin;
 
+namespace base {
+class CommandLine;
+}
+
 namespace ash {
 
 class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {

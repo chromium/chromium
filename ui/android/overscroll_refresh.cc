@@ -7,9 +7,13 @@
 #include <ostream>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "cc/input/overscroll_behavior.h"
 #include "ui/android/overscroll_refresh_handler.h"
+#include "ui/android/ui_android_features.h"
+#include "ui/events/back_gesture_event.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
@@ -28,7 +32,9 @@ const float kWeightAngle30 = 1.73f;
 OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler,
                                      float edge_width)
     : scrolled_to_top_(true),
+      scrolled_to_bottom_(false),
       top_at_scroll_start_(true),
+      bottom_at_scroll_start_(false),
       overflow_y_hidden_(false),
       scroll_consumption_state_(DISABLED),
       edge_width_(edge_width),
@@ -38,6 +44,7 @@ OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler,
 
 OverscrollRefresh::OverscrollRefresh()
     : scrolled_to_top_(true),
+      scrolled_to_bottom_(false),
       overflow_y_hidden_(false),
       scroll_consumption_state_(DISABLED),
       edge_width_(kDefaultNavigationEdgeWidth * 1.f),
@@ -57,6 +64,7 @@ void OverscrollRefresh::OnScrollBegin(const gfx::PointF& pos) {
   scroll_begin_x_ = pos.x();
   scroll_begin_y_ = pos.y();
   top_at_scroll_start_ = scrolled_to_top_;
+  bottom_at_scroll_start_ = scrolled_to_bottom_;
   ReleaseWithoutActivation();
   scroll_consumption_state_ = AWAITING_SCROLL_UPDATE_ACK;
 }
@@ -75,14 +83,18 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
   bool in_y_direction = std::abs(ydelta) > std::abs(xdelta);
   bool in_x_direction = std::abs(ydelta) * kWeightAngle30 < std::abs(xdelta);
   OverscrollAction type = OverscrollAction::NONE;
-  bool navigate_forward = false;
-  if (ydelta > 0 && in_y_direction) {
-    // Pull-to-refresh. Check overscroll-behavior-y
+  std::optional<BackGestureEventSwipeEdge> overscroll_edge;
+  if (in_y_direction) {
     if (behavior.y != cc::OverscrollBehavior::Type::kAuto) {
       Reset();
       return;
     }
-    type = OverscrollAction::PULL_TO_REFRESH;
+    // Pull-to-refresh. Check overscroll-behavior-y
+    if (ydelta > 0) {
+      type = OverscrollAction::PULL_TO_REFRESH;
+    } else if (scrolled_to_bottom_) {  // ydelta < 0
+      type = OverscrollAction::PULL_FROM_BOTTOM_EDGE;
+    }
   } else if (in_x_direction &&
              (scroll_begin_x_ < edge_width_ ||
               viewport_width_ - scroll_begin_x_ < edge_width_)) {
@@ -92,15 +104,16 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior) {
       return;
     }
     type = OverscrollAction::HISTORY_NAVIGATION;
-    navigate_forward = xdelta < 0;
+    overscroll_edge = xdelta < 0 ? BackGestureEventSwipeEdge::RIGHT
+                                 : BackGestureEventSwipeEdge::LEFT;
   }
+
+  CHECK_EQ(overscroll_edge.has_value(),
+           type == OverscrollAction::HISTORY_NAVIGATION);
 
   if (type != OverscrollAction::NONE) {
     scroll_consumption_state_ =
-        handler_->PullStart(type, scroll_begin_x_, scroll_begin_y_,
-                            navigate_forward)
-            ? ENABLED
-            : DISABLED;
+        handler_->PullStart(type, overscroll_edge) ? ENABLED : DISABLED;
   }
 }
 
@@ -111,12 +124,17 @@ bool OverscrollRefresh::WillHandleScrollUpdate(
       return false;
 
     case AWAITING_SCROLL_UPDATE_ACK:
-      // Check applies for the pull-to-refresh condition only.
       if (std::abs(scroll_delta.y()) > std::abs(scroll_delta.x())) {
-        // If the initial scroll motion is downward, or we're in other cases
-        // where activation shouldn't have happened, stop here.
-        if (scroll_delta.y() <= 0 || !top_at_scroll_start_ ||
-            overflow_y_hidden_) {
+        // Check applies for the pull-to-refresh.
+        bool is_pull_to_refresh = scroll_delta.y() > 0 && top_at_scroll_start_;
+        // Check applies for the pull-from-bottom-edge.
+        bool is_pull_from_bottom_edge = scroll_delta.y() < 0 &&
+                                        bottom_at_scroll_start_ &&
+                                        !top_at_scroll_start_;
+
+        // If the activation shouldn't have happened, stop here.
+        if (overflow_y_hidden_ ||
+            (!is_pull_to_refresh && !is_pull_from_bottom_edge)) {
           scroll_consumption_state_ = DISABLED;
           return false;
         }
@@ -129,7 +147,8 @@ bool OverscrollRefresh::WillHandleScrollUpdate(
       return true;
   }
 
-  NOTREACHED() << "Invalid overscroll state: " << scroll_consumption_state_;
+  NOTREACHED_IN_MIGRATION()
+      << "Invalid overscroll state: " << scroll_consumption_state_;
   return false;
 }
 
@@ -148,9 +167,14 @@ bool OverscrollRefresh::IsAwaitingScrollUpdateAck() const {
 
 void OverscrollRefresh::OnFrameUpdated(const gfx::SizeF& viewport_size,
                                        const gfx::PointF& content_scroll_offset,
+                                       const gfx::SizeF& content_size,
                                        bool root_overflow_y_hidden) {
   viewport_width_ = viewport_size.width();
   scrolled_to_top_ = content_scroll_offset.y() == 0;
+  if (base::FeatureList::IsEnabled(kReportBottomOverscrolls)) {
+    scrolled_to_bottom_ = content_size.height() <=
+                          content_scroll_offset.y() + viewport_size.height();
+  }
   overflow_y_hidden_ = root_overflow_y_hidden;
 }
 

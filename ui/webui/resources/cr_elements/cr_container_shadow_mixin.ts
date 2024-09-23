@@ -4,13 +4,15 @@
 
 /**
  * @fileoverview CrContainerShadowMixin holds logic for showing a drop shadow
- * near the top of a container element, when the content has scrolled.
+ * near the top of a container element, when the content has scrolled. Inherits
+ * from CrScrollObserverMixin.
  *
- * Elements using this mixin are expected to define a #container element,
- * which is the element being scrolled. If the #container element has a
- * show-bottom-shadow attribute, a drop shadow will also be shown near the
- * bottom of the container element, when there is additional content to scroll
- * to. Examples:
+ * Elements using this mixin are expected to define a #container element which
+ * is the element being scrolled.
+ *
+ * If the #container element has a show-bottom-shadow attribute, a drop shadow
+ * will also be shown near the bottom of the container element, when there
+ * is additional content to scroll to. Examples:
  *
  * For both top and bottom shadows:
  * <div id="container" show-bottom-shadow>...</div>
@@ -21,19 +23,24 @@
  * The mixin will take care of inserting an element with ID
  * 'cr-container-shadow-top' which holds the drop shadow effect, and,
  * optionally, an element with ID 'cr-container-shadow-bottom' which holds the
- * same effect. A 'has-shadow' CSS class is automatically added to/removed from
- * both elements while scrolling, as necessary. Note that the show-bottom-shadow
- * attribute is inspected only during attached(), and any changes to it that
- * occur after that point will not be respected.
+ * same effect. Note that the show-bottom-shadow attribute is inspected only
+ * during connectedCallback(), and any changes that occur after that point
+ * will not be respected.
  *
  * Clients should either use the existing shared styling in
  * cr_shared_style.css, '#cr-container-shadow-[top/bottom]' and
- * '#cr-container-shadow-[top/bottom].has-shadow', or define their own styles.
+ * '#cr-container-shadow-top:has(+ #container.can-scroll:not(.scrolled-to-top))'
+ * and '#container.can-scroll:not(.scrolled-to-bottom) +
+ *     #cr-container-shadow-bottom'
+ * or define their own styles.
  */
 
 import {assert} from '//resources/js/assert.js';
 import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import type {CrScrollObserverMixinInterface} from './cr_scroll_observer_mixin.js';
+import {CrScrollObserverMixin} from './cr_scroll_observer_mixin.js';
 
 export enum CrContainerShadowSide {
   TOP = 'top',
@@ -45,20 +52,20 @@ type Constructor<T> = new (...args: any[]) => T;
 export const CrContainerShadowMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<CrContainerShadowMixinInterface> => {
-      class CrContainerShadowMixin extends superClass implements
+      const superClassBase = CrScrollObserverMixin(superClass);
+
+      class CrContainerShadowMixin extends superClassBase implements
           CrContainerShadowMixinInterface {
-        private intersectionObserver_: IntersectionObserver|null = null;
-        private dropShadows_: Map<CrContainerShadowSide, HTMLDivElement> =
+        private dropShadows_: Map<CrContainerShadowSide, HTMLElement> =
             new Map();
-        private intersectionProbes_:
-            Map<CrContainerShadowSide, HTMLDivElement> = new Map();
-        private sides_: CrContainerShadowSide[]|null = null;
+        private sides_: CrContainerShadowSide[] = [];
 
         override connectedCallback() {
           super.connectedCallback();
 
-          const hasBottomShadow =
-              this.getContainer_().hasAttribute('show-bottom-shadow');
+          const container = this.shadowRoot!.querySelector('#container');
+          assert(container);
+          const hasBottomShadow = container.hasAttribute('show-bottom-shadow');
           this.sides_ = hasBottomShadow ?
               [CrContainerShadowSide.TOP, CrContainerShadowSide.BOTTOM] :
               [CrContainerShadowSide.TOP];
@@ -68,97 +75,28 @@ export const CrContainerShadowMixin = dedupingMixin(
             shadow.id = `cr-container-shadow-${side}`;
             shadow.classList.add('cr-container-shadow');
             this.dropShadows_.set(side, shadow);
-            this.intersectionProbes_.set(side, document.createElement('div'));
           });
 
-          this.getContainer_().parentNode!.insertBefore(
-              this.dropShadows_.get(CrContainerShadowSide.TOP)!,
-              this.getContainer_());
-          this.getContainer_().prepend(
-              this.intersectionProbes_.get(CrContainerShadowSide.TOP)!);
-
+          container.parentNode!.insertBefore(
+              this.dropShadows_.get(CrContainerShadowSide.TOP)!, container);
           if (hasBottomShadow) {
-            this.getContainer_().parentNode!.insertBefore(
+            container.parentNode!.insertBefore(
                 this.dropShadows_.get(CrContainerShadowSide.BOTTOM)!,
-                this.getContainer_().nextSibling);
-            this.getContainer_().append(
-                this.intersectionProbes_.get(CrContainerShadowSide.BOTTOM)!);
+                container.nextSibling);
           }
-
-          this.enableShadowBehavior(true);
-        }
-
-        override disconnectedCallback() {
-          super.disconnectedCallback();
-
-          this.enableShadowBehavior(false);
-        }
-
-        private getContainer_(): HTMLElement {
-          return this.shadowRoot!.querySelector('#container')!;
-        }
-
-        private getIntersectionObserver_(): IntersectionObserver {
-          const callback = (entries: IntersectionObserverEntry[]) => {
-            // In some rare cases, there could be more than one entry per
-            // observed element, in which case the last entry's result
-            // stands.
-            for (const entry of entries) {
-              const target = entry.target;
-              this.sides_!.forEach(side => {
-                if (target === this.intersectionProbes_.get(side)) {
-                  this.dropShadows_.get(side)!.classList.toggle(
-                      'has-shadow', entry.intersectionRatio === 0);
-                }
-              });
-            }
-          };
-          return new IntersectionObserver(
-              callback, {root: this.getContainer_(), threshold: 0});
         }
 
         /**
-         * @param enable Whether to enable the mixin or disable it.
-         *     This function does nothing if the mixin is already in the
-         *     requested state.
+         * Toggles the force-shadow class. If |enabled| is true, shadows will be
+         * forced to show regardless of scroll state when using the shared
+         * styles in cr_shared_style.css. If false, shadows can be shown using
+         * classes set by CrScrollObserverMixin.
          */
-        enableShadowBehavior(enable: boolean) {
-          // Behavior is already enabled/disabled. Return early.
-          if (enable === !!this.intersectionObserver_) {
-            return;
-          }
-
-          if (!enable) {
-            this.intersectionObserver_!.disconnect();
-            this.intersectionObserver_ = null;
-            return;
-          }
-
-          this.intersectionObserver_ = this.getIntersectionObserver_();
-
-          // Need to register the observer within a setTimeout() callback,
-          // otherwise the drop shadow flashes once on startup, because of the
-          // DOM modifications earlier in this function causing a relayout.
-          window.setTimeout(() => {
-            if (this.intersectionObserver_) {
-              // In case this is already detached.
-              this.intersectionProbes_.forEach(probe => {
-                this.intersectionObserver_!.observe(probe);
-              });
-            }
-          });
-        }
-
-        /**
-         * Shows the shadows. The shadow mixin must be disabled before
-         * calling this method, otherwise the intersection observer might
-         * show the shadows again.
-         */
-        showDropShadows() {
-          assert(!this.intersectionObserver_);
-          assert(this.sides_);
+        setForceDropShadows(enabled: boolean) {
+          assert(this.sides_.length > 0);
           for (const side of this.sides_) {
-            this.dropShadows_.get(side)!.classList.toggle('has-shadow', true);
+            this.dropShadows_.get(side)!.classList.toggle(
+                'force-shadow', enabled);
           }
         }
       }
@@ -166,8 +104,7 @@ export const CrContainerShadowMixin = dedupingMixin(
       return CrContainerShadowMixin;
     });
 
-export interface CrContainerShadowMixinInterface {
-  enableShadowBehavior(enable: boolean): void;
-
-  showDropShadows(): void;
+export interface CrContainerShadowMixinInterface extends
+    CrScrollObserverMixinInterface {
+  setForceDropShadows(enabled: boolean): void;
 }

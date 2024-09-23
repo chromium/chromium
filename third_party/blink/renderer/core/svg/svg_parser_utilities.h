@@ -19,6 +19,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PARSER_UTILITIES_H_
 
@@ -43,8 +48,6 @@ bool ParseNumber(const UChar*& ptr,
                  float& number,
                  WhitespaceMode = kAllowLeadingAndTrailingWhitespace);
 bool ParseNumberOptionalNumber(const String& s, float& h, float& v);
-bool ParseArcFlag(const LChar*& ptr, const LChar* end, bool& flag);
-bool ParseArcFlag(const UChar*& ptr, const UChar* end, bool& flag);
 
 template <typename CharType>
 inline bool SkipOptionalSVGSpaces(const CharType*& ptr, const CharType* end) {

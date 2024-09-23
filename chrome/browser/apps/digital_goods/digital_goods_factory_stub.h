@@ -17,7 +17,7 @@ namespace apps {
 
 // A stub implementation that returns an error trying to create a digital goods
 // instance.
-// TODO(crbug.com/1203666): Remove when Lacros is permanently enabled.
+// TODO(crbug.com/40179639): Remove when Lacros is permanently enabled.
 class DigitalGoodsFactoryStub : public payments::mojom::DigitalGoodsFactory {
  public:
   DigitalGoodsFactoryStub();

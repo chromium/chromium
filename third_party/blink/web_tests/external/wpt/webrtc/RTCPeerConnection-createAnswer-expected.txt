@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] createAnswer() after setting remote description should succeed
-  assert_false: Expect answer to not be instance of RTCSessionDescription expected false got true
-Harness: the test ran to completion.
-

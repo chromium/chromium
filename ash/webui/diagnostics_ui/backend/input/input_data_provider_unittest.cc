@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 
 #include <cstdint>
@@ -11,6 +16,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
@@ -568,6 +574,13 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
     } else if (base_name == "event14") {
       device_caps = ui::kBaskingTouchScreen;
       EXPECT_EQ(14, id);
+    } else if (base_name == "event15") {
+      device_caps = ui::kSplitModifierKeyboard;
+      info->keyboard_type =
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+      EXPECT_EQ(15, id);
     } else if (base_name == kSillyDeviceName) {
       // Simulate a device that is properly described, but has a malformed
       // device name.
@@ -664,7 +677,8 @@ class InputDataProviderTest : public AshTestBase {
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     fake_udev_ = std::make_unique<testing::FakeUdevLoader>();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     provider_ = std::make_unique<TestInputDataProvider>(
         widget_.get(), watchers_, &event_rewriter_delegate_);
     DiagnosticsLogController::Initialize(
@@ -866,6 +880,68 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_HasInternalKeyboard) {
   ASSERT_TRUE(future.IsReady());
   const auto& keyboards = future.Get<0>();
   ASSERT_EQ(1ul, keyboards.size());
+}
+
+TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto ignore_modifier_split_secret_key =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
+  // Initialize one split modifier keyboard in DeviceDataManager.
+  std::vector<ui::KeyboardDevice> keyboard_devices;
+  keyboard_devices.emplace_back(
+      kDeviceId1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      "Split Modifier Keyboard", /*has_assistant_key=*/true,
+      /*has_function_key=*/true);
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  // The return values are supposed to be ready since GetConnectedDevices()
+  // function won't wait for the split modifier keyboard to be added.
+  ASSERT_TRUE(future.IsReady());
+}
+
+TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboard) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto ignore_modifier_split_secret_key =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+
+  Shell::Get()
+      ->keyboard_capability()
+      ->ResetModifierSplitDogfoodControllerForTesting();
+
+  // Initialize one split modifier keyboard in DeviceDataManager.
+  std::vector<ui::KeyboardDevice> keyboard_devices;
+  keyboard_devices.emplace_back(
+      kDeviceId1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      "Split Modifier Keyboard", /*has_assistant_key=*/true,
+      /*has_function_key=*/true);
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
+
+  base::test::TestFuture<std::vector<mojom::KeyboardInfoPtr>,
+                         std::vector<mojom::TouchDeviceInfoPtr>>
+      future;
+  provider_->GetConnectedDevices(future.GetCallback());
+
+  // Add an split modifier keyboard.
+  ui::DeviceEvent event(ui::DeviceEvent::DeviceType::INPUT,
+                        ui::DeviceEvent::ActionType::ADD,
+                        base::FilePath("/dev/input/event15"));
+  provider_->OnDeviceEvent(event);
+  base::RunLoop().RunUntilIdle();
+
+  const auto& keyboards = future.Get<0>();
+  ASSERT_EQ(0ul, keyboards.size());
 }
 
 TEST_F(InputDataProviderTest, GetConnectedDevices_AddEventAfterFirstCall) {
@@ -1674,7 +1750,8 @@ TEST_F(InputDataProviderTest, KeyObservationDisconnect) {
 TEST_F(InputDataProviderTest, KeyObservationObeysFocusSwitching) {
   std::unique_ptr<FakeKeyboardObserver> fake_observer =
       std::make_unique<FakeKeyboardObserver>();
-  std::unique_ptr<views::Widget> other_widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> other_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Provider's widget must be active and visible.
   provider_->attached_widget_->Show();
@@ -1937,7 +2014,8 @@ TEST_F(InputDataProviderTest, KeyObservationMultipleProviders) {
   // Create a second InputDataProvider, with a separate window/widget,
   // as would happen if multiple instances of the SWA were created.
   watchers_t provider2_watchers;
-  auto provider2_widget = CreateTestWidget();
+  auto provider2_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   std::unique_ptr<TestInputDataProvider> provider2_ =
       std::make_unique<TestInputDataProvider>(provider2_widget.get(),
@@ -2067,7 +2145,8 @@ TEST_F(InputDataProviderTest, KeyObservationMultipleProviders) {
   fake_observer2->events_.clear();
 
   // Activate a new widget, ensuring neither previous window is active.
-  auto widget3 = CreateTestWidget();
+  auto widget3 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget3->Activate();
   base::RunLoop().RunUntilIdle();
 

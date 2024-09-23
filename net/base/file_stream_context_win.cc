@@ -5,6 +5,7 @@
 #include "net/base/file_stream_context.h"
 
 #include <windows.h>
+
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -97,6 +98,26 @@ int FileStream::Context::Write(IOBuffer* buf,
 
   IOCompletionIsPending(std::move(callback), buf);
   return ERR_IO_PENDING;
+}
+
+int FileStream::Context::ConnectNamedPipe(CompletionOnceCallback callback) {
+  DCHECK(!async_in_progress_);
+
+  result_ = 0;
+  // Always returns zero when making an asynchronous call.
+  ::ConnectNamedPipe(file_.GetPlatformFile(), &io_context_.overlapped);
+  const auto error = ::GetLastError();
+  if (error == ERROR_PIPE_CONNECTED) {
+    return OK;  // The client has already connected; operation complete.
+  }
+  if (error == ERROR_IO_PENDING) {
+    IOCompletionIsPending(std::move(callback), /*buf=*/nullptr);
+    return ERR_IO_PENDING;  // Wait for an I/O completion packet.
+  }
+  // ERROR_INVALID_FUNCTION means that `file_` isn't a handle to a named pipe,
+  // but to an actual file. This is a programming error.
+  CHECK_NE(error, static_cast<DWORD>(ERROR_INVALID_FUNCTION));
+  return static_cast<int>(MapSystemError(error));
 }
 
 FileStream::Context::IOResult FileStream::Context::SeekFileImpl(

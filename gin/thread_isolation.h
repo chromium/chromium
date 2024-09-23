@@ -5,14 +5,14 @@
 #ifndef GIN_THREAD_ISOLATION_H_
 #define GIN_THREAD_ISOLATION_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/buildflags.h"
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_isolation/alignment.h"
 #include "base/no_destructor.h"
 #include "gin/gin_export.h"
 #include "gin/v8_platform_thread_isolated_allocator.h"
+#include "partition_alloc/thread_isolation/alignment.h"
 
 namespace gin {
 
@@ -40,6 +40,6 @@ GIN_EXPORT ThreadIsolationData& GetThreadIsolationData();
 
 }  // namespace gin
 
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 #endif  // GIN_THREAD_ISOLATION_H_

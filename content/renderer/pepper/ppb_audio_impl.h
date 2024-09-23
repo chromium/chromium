@@ -64,7 +64,7 @@ class PPB_Audio_Impl : public ppapi::Resource,
 
   // PluginDelegate audio object that we delegate audio IPC through. We don't
   // own this pointer but are responsible for calling Shutdown on it.
-  raw_ptr<PepperPlatformAudioOutput, ExperimentalRenderer> audio_;
+  raw_ptr<PepperPlatformAudioOutput> audio_;
 };
 
 }  // namespace content

@@ -50,19 +50,24 @@ class MockEnrollmentLauncher {
   MockEnrollmentLauncher();
   ~MockEnrollmentLauncher();
 
-  MOCK_METHOD3(Setup,
-               void(const policy::EnrollmentConfig& enrollment_config,
-                    const std::string& enrolling_user_domain,
-                    policy::LicenseType license_type));
-  MOCK_METHOD1(EnrollUsingAuthCode, void(const std::string& auth_code));
-  MOCK_METHOD1(EnrollUsingToken, void(const std::string& token));
-  MOCK_METHOD0(EnrollUsingAttestation, void());
-  MOCK_METHOD0(RestoreAfterRollback, void());
-  MOCK_METHOD0(GetDeviceAttributeUpdatePermission, void());
-  MOCK_METHOD2(UpdateDeviceAttributes,
-               void(const std::string& asset_id, const std::string& location));
-  MOCK_METHOD1(ClearAuth, void(base::OnceClosure callback));
+  MOCK_METHOD(void,
+              Setup,
+              (const policy::EnrollmentConfig& enrollment_config,
+               const std::string& enrolling_user_domain));
+  MOCK_METHOD(void, EnrollUsingAuthCode, (const std::string& auth_code));
+  MOCK_METHOD(void, EnrollUsingToken, (const std::string& token));
+  MOCK_METHOD(void, EnrollUsingAttestation, ());
+  MOCK_METHOD(void, EnrollUsingEnrollmentToken, ());
+  MOCK_METHOD(void, RestoreAfterRollback, ());
+  MOCK_METHOD(void, GetDeviceAttributeUpdatePermission, ());
+  MOCK_METHOD(void,
+              UpdateDeviceAttributes,
+              (const std::string& asset_id, const std::string& location));
+  MOCK_METHOD(void,
+              ClearAuth,
+              (base::OnceClosure callback, bool revoke_oauth2_tokens));
   MOCK_METHOD(bool, InProgress, (), (const));
+  MOCK_METHOD(std::string, GetOAuth2RefreshToken, (), (const));
 
   // Returns status consumer associated with the bound fake launcher. Crashes if
   // no fake launcher was create and bound to the mock.
@@ -99,8 +104,7 @@ class FakeEnrollmentLauncher : public EnrollmentLauncher {
       MockEnrollmentLauncher* mock,
       EnrollmentStatusConsumer* status_consumer,
       const policy::EnrollmentConfig& enrollment_config,
-      const std::string& enrolling_user_domain,
-      policy::LicenseType license_type);
+      const std::string& enrolling_user_domain);
 
   ~FakeEnrollmentLauncher() override;
 
@@ -108,14 +112,16 @@ class FakeEnrollmentLauncher : public EnrollmentLauncher {
   void EnrollUsingAuthCode(const std::string& auth_code) override;
   void EnrollUsingToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
-  void ClearAuth(base::OnceClosure callback) override;
+  void EnrollUsingEnrollmentToken() override;
+  void ClearAuth(base::OnceClosure callback,
+                 bool revoke_oauth2_tokens) override;
   void GetDeviceAttributeUpdatePermission() override;
   void UpdateDeviceAttributes(const std::string& asset_id,
                               const std::string& location) override;
   void Setup(const policy::EnrollmentConfig& enrollment_config,
-             const std::string& enrolling_user_domain,
-             policy::LicenseType license_type) override;
+             const std::string& enrolling_user_domain) override;
   bool InProgress() const override;
+  std::string GetOAuth2RefreshToken() const override;
 
  private:
   FakeEnrollmentLauncher(MockEnrollmentLauncher* mock,

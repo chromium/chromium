@@ -12,6 +12,9 @@
 // Shows tracking price screen.
 - (void)showTrackingPrice;
 
+// Shows the content screen.
+- (void)showContent;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_NAVIGATION_COMMANDS_H_

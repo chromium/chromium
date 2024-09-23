@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] local description should have a=end-of-candidates when gathering completes
+  assert_true: expected true got false
+[FAIL] gathering state and candidate callbacks should fire in the correct order
+  assert_not_equals: Global null candidate event should not fire yet got disallowed value null
+Harness: the test ran to completion.
+

@@ -10,6 +10,7 @@ if (is_android) {
 
 if (is_android) {
   android_library("internal_java") {
+    mergeable_android_manifests = [ "android/AndroidManifest.xml" ]
     sources = [
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskBroadcastReceiver.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskJobService.java",

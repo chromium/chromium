@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Canvas2D WebGPU Transfer: getTextureFormat-rgba16float</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: getTextureFormat-rgba16f</h1>
+
+<p>getTextureFormat() returns RGBA16F for a float16 context</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      test_getTextureFormat_rgba16f(device, document.getElementById('c'));
+    });
+  }, 'getTextureFormat() returns RGBA16F for a float16 context'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      test_getTextureFormat_rgba16f(device, new OffscreenCanvas(50, 50));
+    });
+  }, 'getTextureFormat() returns RGBA16F for a float16 offscreen context'
+);
+
+</script>

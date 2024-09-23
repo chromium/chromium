@@ -387,6 +387,7 @@ source_set("sandbox_services_headers") {
     "system_headers/arm_linux_syscalls.h",
     "system_headers/arm_linux_ucontext.h",
     "system_headers/i386_linux_ucontext.h",
+    "system_headers/landlock.h",
     "system_headers/linux_filter.h",
     "system_headers/linux_futex.h",
     "system_headers/linux_prctl.h",

@@ -1,0 +1,82 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("live_caption") {
+  sources = [
+    "system_live_caption_service.cc",
+    "system_live_caption_service.h",
+    "system_live_caption_service_factory.cc",
+    "system_live_caption_service_factory.h",
+  ]
+
+  deps = [
+    "//ash/webui/settings/public/constants:mojom",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/live_caption:live_translate",
+    "//components/live_caption:utils",
+    "//media/mojo/mojom",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/audio",
+    "//components/soda",
+    "//components/soda:constants",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "system_live_caption_service_browsertest.cc" ]
+
+  deps = [
+    ":live_caption",
+    "//base",
+    "//chrome/browser/ash/login/session",
+    "//chrome/test:test_support",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "live_caption_ui_remote_driver_browsertest.cc" ]
+
+    deps = [
+      "//ash/constants",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//components/live_caption",
+      "//components/live_caption:constants",
+      "//components/soda",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/events",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+  }
+}

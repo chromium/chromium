@@ -13,8 +13,14 @@ namespace enterprise_connectors {
 // not affect interstitials custom message per rule feature.
 BASE_DECLARE_FEATURE(kDialogCustomRuleMessageEnabled);
 
-// Return true if custom rule message is enabled.
+// Controls whether the resumable upload protocol is enabled or not.
+BASE_DECLARE_FEATURE(kResumableUploadEnabled);
+
+// Returns true if custom rule message is enabled.
 bool IsDialogCustomRuleMessageEnabled();
+
+// Returns true if resumable upload is enabled.
+bool IsResumableUploadEnabled();
 
 }  // namespace enterprise_connectors
 

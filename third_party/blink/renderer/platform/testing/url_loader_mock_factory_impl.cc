@@ -74,7 +74,7 @@ void URLLoaderMockFactoryImpl::RegisterErrorURL(const WebURL& url,
 
 void URLLoaderMockFactoryImpl::UnregisterURL(const blink::WebURL& url) {
   URLToResponseMap::iterator iter = url_to_response_info_.find(url);
-  DCHECK(iter != url_to_response_info_.end());
+  CHECK(iter != url_to_response_info_.end());
   url_to_response_info_.erase(iter);
 
   URLToErrorMap::iterator error_iter = url_to_error_info_.find(url);
@@ -105,7 +105,7 @@ void URLLoaderMockFactoryImpl::UnregisterURLProtocol(
     const WebString& protocol) {
   ProtocolToResponseMap::iterator iter =
       protocol_to_response_info_.find(protocol);
-  DCHECK(iter != protocol_to_response_info_.end());
+  CHECK(iter != protocol_to_response_info_.end());
   protocol_to_response_info_.erase(iter);
 }
 
@@ -163,11 +163,9 @@ void URLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     DCHECK(buffer);
     DCHECK_EQ(net::OK, result);
     params->response = WrappedResourceResponse(response);
-    auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-    body_loader->Write(*buffer);
-    body_loader->Finish();
     params->is_static_data = true;
-    params->body_loader = std::move(body_loader);
+    params->body_loader =
+        StaticDataNavigationBodyLoader::CreateWithData(std::move(buffer));
     return;
   }
 
@@ -194,13 +192,9 @@ void URLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     DCHECK(!error);
   }
 
-  auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-  if (data) {
-    body_loader->Write(*data);
-    body_loader->Finish();
-  }
   params->is_static_data = true;
-  params->body_loader = std::move(body_loader);
+  params->body_loader =
+      StaticDataNavigationBodyLoader::CreateWithData(std::move(data));
 }
 
 bool URLLoaderMockFactoryImpl::IsMockedURL(const blink::WebURL& url) {
@@ -245,12 +239,12 @@ void URLLoaderMockFactoryImpl::LoadRequest(const WebURL& url,
   ResponseInfo response_info;
   if (!LookupURL(url, error, &response_info)) {
     // Non mocked URLs should not have been passed to the default URLLoader.
-    NOTREACHED() << url;
+    NOTREACHED_IN_MIGRATION() << url;
     return;
   }
 
   if (!*error && !ReadFile(response_info.file_path, data)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

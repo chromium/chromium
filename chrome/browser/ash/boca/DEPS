@@ -1,0 +1,42 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/boca",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/apps/app_service/launch_result_type.h",
+  "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
+  "+chrome/browser/login_detection/login_detection_util.h",
+  "+chrome/browser/platform_util.h",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/profiles/profile_keyed_service_factory.h",
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/signin/identity_manager_factory.h",
+  "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_command_controller.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_list_observer.h",
+  "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/tabs/tab_enums.h",
+  "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
+  "+chrome/browser/ui/chromeos/window_pin_util.h",
+  "+chrome/test/base/in_process_browser_test.h",
+  "+chrome/test/base/testing_browser_process.h",
+  "+chrome/test/base/testing_profile.h",
+  "+chrome/test/base/testing_profile_manager.h",
+  "+chrome/test/base/browser_with_test_window_test.h",
+  "+components/sessions/core/session_id.h"
+
+]

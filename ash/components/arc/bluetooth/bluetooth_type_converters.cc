@@ -211,7 +211,6 @@ TypeConverter<bluez::BluetoothServiceRecordBlueZ,
         break;
       default:
         NOTREACHED();
-        break;
     }
   }
 

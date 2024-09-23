@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/renderer/pepper/event_conversion.h"
 
 #include <stddef.h>
@@ -11,6 +16,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -21,7 +27,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/common/input/web_touch_event_traits.h"
+#include "components/input/web_touch_event_traits.h"
 #include "content/public/common/content_features.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "ppapi/c/pp_input_event.h"
@@ -183,17 +189,12 @@ void AppendCharEvent(const WebInputEvent& event,
   // character in it, but may be zero or more than one. The text array is
   // just padded with 0 values for the unused ones, but is not necessarily
   // null-terminated.
-  //
-  // Here we see how many UTF-16 characters we have.
-  size_t utf16_char_count = 0;
-  while (utf16_char_count < WebKeyboardEvent::kTextLengthCap &&
-         key_event.text[utf16_char_count])
-    utf16_char_count++;
+  const std::u16string_view key_event_text_view(
+      key_event.text.begin(), std::ranges::find(key_event.text, 0));
 
   // Make a separate InputEventData for each Unicode character in the input.
-  for (base::i18n::UTF16CharIterator iter(
-           base::StringPiece16(key_event.text, utf16_char_count));
-       !iter.end(); iter.Advance()) {
+  for (base::i18n::UTF16CharIterator iter(key_event_text_view); !iter.end();
+       iter.Advance()) {
     InputEventData result = GetEventWithCommonFieldsAndType(event);
     result.event_modifiers = ConvertEventModifiers(key_event.GetModifiers());
     base::WriteUnicodeCharacter(iter.get(), &result.character_text);
@@ -266,12 +267,10 @@ enum IncludedTouchPointTypes {
   ACTIVE,  // Only pointers that are currently down.
   CHANGED  // Only pointers that have changed since the previous event.
 };
-void SetPPTouchPoints(const WebTouchPoint* touches,
-                      uint32_t touches_length,
+void SetPPTouchPoints(base::span<const WebTouchPoint> touches,
                       IncludedTouchPointTypes included_types,
                       std::vector<TouchPointWithTilt>* result) {
-  for (uint32_t i = 0; i < touches_length; i++) {
-    const WebTouchPoint& touch_point = touches[i];
+  for (const WebTouchPoint& touch_point : touches) {
     if (included_types == ACTIVE &&
         (touch_point.state == WebTouchPoint::State::kStateReleased ||
          touch_point.state == WebTouchPoint::State::kStateCancelled)) {
@@ -314,12 +313,15 @@ void AppendTouchEvent(const WebInputEvent& event,
     }
   }
 
-  SetPPTouchPoints(touch_event.touches, touch_event.touches_length, ACTIVE,
-                   &result.touches);
-  SetPPTouchPoints(touch_event.touches, touch_event.touches_length, CHANGED,
-                   &result.changed_touches);
-  SetPPTouchPoints(touch_event.touches, touch_event.touches_length, ALL,
-                   &result.target_touches);
+  SetPPTouchPoints(
+      base::make_span(touch_event.touches).first(touch_event.touches_length),
+      ACTIVE, &result.touches);
+  SetPPTouchPoints(
+      base::make_span(touch_event.touches).first(touch_event.touches_length),
+      CHANGED, &result.changed_touches);
+  SetPPTouchPoints(
+      base::make_span(touch_event.touches).first(touch_event.touches_length),
+      ALL, &result.target_touches);
 
   result_events->push_back(result);
 }
@@ -330,7 +332,7 @@ WebTouchPoint CreateWebTouchPoint(const PP_TouchPoint& pp_pt,
   pt.pointer_type = blink::WebPointerProperties::PointerType::kTouch;
   pt.id = pp_pt.id;
   pt.SetPositionInWidget(pp_pt.position.x, pp_pt.position.y);
-  // TODO(crbug.com/93902): Add screen coordinate calculation.
+  // TODO(crbug.com/40616919): Add screen coordinate calculation.
   pt.SetPositionInScreen(0, 0);
   pt.force = pp_pt.pressure;
   pt.radius_x = pp_pt.radius.x;
@@ -397,21 +399,21 @@ WebTouchEvent* BuildTouchEvent(const InputEventData& event) {
       state = WebTouchPoint::State::kStateCancelled;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
-  WebTouchEventTraits::ResetType(
+  input::WebTouchEventTraits::ResetType(
       type, base::TimeTicks() + base::Seconds(event.event_time_stamp),
       web_event);
   web_event->touches_length = 0;
 
   // First add all changed touches, then add only the remaining unset
   // (stationary) touches.
-  SetWebTouchPointsIfNotYetSet(event.changed_touches, state, web_event->touches,
+  SetWebTouchPointsIfNotYetSet(event.changed_touches, state,
+                               web_event->touches.data(),
                                &web_event->touches_length);
-  SetWebTouchPointsIfNotYetSet(event.touches,
-                               WebTouchPoint::State::kStateStationary,
-                               web_event->touches, &web_event->touches_length);
-
+  SetWebTouchPointsIfNotYetSet(
+      event.touches, WebTouchPoint::State::kStateStationary,
+      web_event->touches.data(), &web_event->touches_length);
   return web_event;
 }
 
@@ -428,7 +430,7 @@ WebKeyboardEvent* BuildKeyEvent(const InputEventData& event) {
       type = WebInputEvent::Type::kKeyUp;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   WebKeyboardEvent* key_event = new WebKeyboardEvent(
       type, event.event_modifiers,
@@ -444,13 +446,13 @@ WebKeyboardEvent* BuildCharEvent(const InputEventData& event) {
 
   // Make sure to not read beyond the buffer in case some bad code doesn't
   // NULL-terminate it (this is called from plugins).
-  size_t text_length_cap = WebKeyboardEvent::kTextLengthCap;
   std::u16string text16 = base::UTF8ToUTF16(event.character_text);
 
-  std::fill_n(key_event->text, text_length_cap, 0);
-  std::fill_n(key_event->unmodified_text, text_length_cap, 0);
-  for (size_t i = 0; i < std::min(text_length_cap, text16.size()); ++i)
+  std::ranges::fill(key_event->text, 0);
+  std::ranges::fill(key_event->unmodified_text, 0);
+  for (size_t i = 0; i < std::min(key_event->text.size(), text16.size()); ++i) {
     key_event->text[i] = text16[i];
+  }
   return key_event;
 }
 
@@ -476,7 +478,7 @@ WebMouseEvent* BuildMouseEvent(const InputEventData& event) {
       type = WebInputEvent::Type::kContextMenu;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   WebMouseEvent* mouse_event = new WebMouseEvent(
       type, event.event_modifiers,
@@ -666,7 +668,7 @@ WebInputEvent* CreateWebInputEvent(const InputEventData& event) {
     case PP_INPUTEVENT_TYPE_IME_TEXT:
       // TODO(kinaba) implement in WebKit an event structure to handle
       // composition events.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     case PP_INPUTEVENT_TYPE_TOUCHSTART:
     case PP_INPUTEVENT_TYPE_TOUCHMOVE:

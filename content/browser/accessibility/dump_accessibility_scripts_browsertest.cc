@@ -5,13 +5,13 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -89,7 +89,8 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
   std::vector<std::string> Dump(ui::AXMode mode) override {
     std::vector<std::string> dump;
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
-    BrowserAccessibility* root = GetManager()->GetBrowserAccessibilityRoot();
+    ui::BrowserAccessibility* root =
+        GetManager()->GetBrowserAccessibilityRoot();
 
     size_t start_index = 0;
     size_t length = scenario_.script_instructions.size();
@@ -167,7 +168,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
 
   EvalJsResult EvaluateScript(
       AXTreeFormatter* formatter,
-      BrowserAccessibility* root,
+      ui::BrowserAccessibility* root,
       const std::vector<AXScriptInstruction>& instructions,
       size_t start_index,
       size_t end_index) {
@@ -283,20 +284,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXEditableAncestor) {
   RunTypedTest<kMacAttributes>("ax-editable-ancestor.html");
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDropEffects) {
-  RunTypedTest<kMacAttributes>("ax-drop-effects.html");
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXElementBusy) {
   RunTypedTest<kMacAttributes>("ax-element-busy.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXFocusableAncestor) {
   RunTypedTest<kMacAttributes>("ax-focusable-ancestor.html");
-}
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXGrabbed) {
-  RunTypedTest<kMacAttributes>("ax-grabbed.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHasPopup) {
@@ -311,14 +304,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHighestEditableAncestor) {
   RunTypedTest<kMacAttributes>("ax-highest-editable-ancestor.html");
 }
 
-// TODO(crbug.com/1480429): Flaky
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AXInsertionPointLineNumber DISABLED_AXInsertionPointLineNumber
-#else
-#define MAYBE_AXInsertionPointLineNumber AXInsertionPointLineNumber
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
-                       MAYBE_AXInsertionPointLineNumber) {
+                       AXInsertionPointLineNumber) {
   RunTypedTest<kMacAttributes>("ax-insertion-point-line-number.html");
 }
 
@@ -482,14 +469,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, ChromeAXNodeId) {
   RunTypedTest<kMacAttributes>("chrome-ax-node-id.html");
 }
 
-// Before macOS 11 aria-description must be exposed in AXHelp, and since macOS
-// 11, it should only be exposed in AXCustomContent.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AriaDescription) {
-  if (base::mac::MacOSMajorVersion() >= 11) {
-    RunTypedTest<kMacDescription>("aria-description-in-axcustomcontent.html");
-  } else {
-    RunTypedTest<kMacDescription>("aria-description-in-axhelp.html");
-  }
+  RunTypedTest<kMacDescription>("aria-description-in-axcustomcontent.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {

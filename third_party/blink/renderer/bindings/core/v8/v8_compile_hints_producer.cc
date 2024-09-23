@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 
 #if BUILDFLAG(PRODUCE_V8_COMPILE_HINTS)
@@ -27,13 +32,8 @@ std::atomic<bool>
         false;
 
 namespace {
-bool ShouldThisProcessGenerateData() {
-  bool compile_hints_forced =
-      base::FeatureList::IsEnabled(features::kForceProduceCompileHints);
-  if (compile_hints_forced) {
-    return true;
-  }
 
+bool RandomlySelectedToGenerateData() {
   // Data collection is only enabled on Windows. TODO(chromium:1406506): enable
   // on more platforms.
 #if BUILDFLAG(IS_WIN)
@@ -49,17 +49,27 @@ bool ShouldThisProcessGenerateData() {
   double data_production_level =
       features::kProduceCompileHintsDataProductionLevel.Get();
   return base::RandDouble() < data_production_level;
-#else
+#else   //  BUILDFLAG(IS_WIN)
   return false;
-#endif
+#endif  //  BUILDFLAG(IS_WIN)
 }
+
+bool ShouldThisProcessGenerateData() {
+  if (base::FeatureList::IsEnabled(features::kForceProduceCompileHints)) {
+    return true;
+  }
+  static bool randomly_selected_to_generate_data =
+      RandomlySelectedToGenerateData();
+  return randomly_selected_to_generate_data;
+}
+
 }  // namespace
 
 V8CrowdsourcedCompileHintsProducer::V8CrowdsourcedCompileHintsProducer(
     Page* page)
     : page_(page) {
   // Decide whether to produce the data once per renderer process.
-  static bool should_generate_data = ShouldThisProcessGenerateData();
+  bool should_generate_data = ShouldThisProcessGenerateData();
   if (should_generate_data && !data_generated_for_this_process_) {
     state_ = State::kCollectingData;
   }
@@ -87,10 +97,11 @@ void V8CrowdsourcedCompileHintsProducer::RecordScript(
   uint32_t script_name_hash =
       ScriptNameHash(script->GetResourceName(), context, isolate);
 
-  scripts_.emplace_back(v8::TracedReference<v8::Script>(isolate, script));
+  compile_hints_collectors_.emplace_back(isolate,
+                                         script->GetCompileHintsCollector());
   script_name_hashes_.emplace_back(script_name_hash);
 
-  if (scripts_.size() == 1) {
+  if (compile_hints_collectors_.size() == 1) {
     ScheduleDataDeletionTask(execution_context);
   }
 }
@@ -110,13 +121,13 @@ void V8CrowdsourcedCompileHintsProducer::GenerateData() {
 
 void V8CrowdsourcedCompileHintsProducer::Trace(Visitor* visitor) const {
   visitor->Trace(page_);
-  visitor->Trace(scripts_);
+  visitor->Trace(compile_hints_collectors_);
 }
 
 void V8CrowdsourcedCompileHintsProducer::ClearData() {
   // Stop logging script executions for this page.
   state_ = State::kFinishedOrDisabled;
-  scripts_.clear();
+  compile_hints_collectors_.clear();
   script_name_hashes_.clear();
 }
 
@@ -172,7 +183,7 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
   v8::HandleScope handle_scope(isolate);
   int total_funcs = 0;
 
-  DCHECK_EQ(scripts_.size(), script_name_hashes_.size());
+  DCHECK_EQ(compile_hints_collectors_.size(), script_name_hashes_.size());
 
   // Create a Bloom filter w/ 16 key bits. This results in a Bloom filter
   // containing 2 ^ 16 bits, which equals to 1024 64-bit ints.
@@ -180,9 +191,12 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
                 kBloomFilterInt32Count);
   WTF::BloomFilter<kBloomFilterKeySize> bloom;
 
-  for (wtf_size_t script_ix = 0; script_ix < scripts_.size(); ++script_ix) {
-    v8::Local<v8::Script> script = scripts_[script_ix].Get(isolate);
-    std::vector<int> compile_hints = script->GetProducedCompileHints();
+  for (wtf_size_t script_ix = 0; script_ix < compile_hints_collectors_.size();
+       ++script_ix) {
+    v8::Local<v8::CompileHintsCollector> compile_hints_collector =
+        compile_hints_collectors_[script_ix].Get(isolate);
+    std::vector<int> compile_hints =
+        compile_hints_collector->GetCompileHints(isolate);
     for (int function_position : compile_hints) {
       uint32_t hash =
           CombineHash(script_name_hashes_[script_ix], function_position);

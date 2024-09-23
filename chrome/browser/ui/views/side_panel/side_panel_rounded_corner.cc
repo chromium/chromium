@@ -22,7 +22,7 @@ SidePanelRoundedCorner::SidePanelRoundedCorner(BrowserView* browser_view)
 void SidePanelRoundedCorner::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
   SkPath path;
-  if (features::IsChromeRefresh2023() && browser_view_->unified_side_panel()) {
+  if (browser_view_->unified_side_panel()) {
     bool is_right_aligned =
         browser_view_->unified_side_panel()->IsRightAligned();
     const float corner_radius = GetLayoutProvider()->GetCornerRadiusMetric(

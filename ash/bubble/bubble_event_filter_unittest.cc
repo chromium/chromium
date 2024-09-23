@@ -62,7 +62,8 @@ INSTANTIATE_TEST_SUITE_P(MouseOrTouch, BubbleEventFilterTest, testing::Bool());
 
 TEST_P(BubbleEventFilterTest, ClickOutsideWidgetRunsCallback) {
   int callback_count = 0;
-  auto callback = base::BindLambdaForTesting([&]() { ++callback_count; });
+  auto callback = base::BindLambdaForTesting(
+      [&](const ui::LocatedEvent& event) { ++callback_count; });
   BubbleEventFilter filter(widget_.get(), view_, callback);
 
   // Click outside the widget.
@@ -75,7 +76,8 @@ TEST_P(BubbleEventFilterTest, ClickOutsideWidgetRunsCallback) {
 
 TEST_P(BubbleEventFilterTest, ClickInsideWidgetDoesNotRunCallback) {
   bool callback_ran = false;
-  auto callback = base::BindLambdaForTesting([&]() { callback_ran = true; });
+  auto callback = base::BindLambdaForTesting(
+      [&](const ui::LocatedEvent& event) { callback_ran = true; });
   BubbleEventFilter filter(widget_.get(), view_, callback);
 
   // Click inside the widget.
@@ -86,7 +88,8 @@ TEST_P(BubbleEventFilterTest, ClickInsideWidgetDoesNotRunCallback) {
 
 TEST_P(BubbleEventFilterTest, ClickInsideViewDoesNotRunCallback) {
   bool callback_ran = false;
-  auto callback = base::BindLambdaForTesting([&]() { callback_ran = true; });
+  auto callback = base::BindLambdaForTesting(
+      [&](const ui::LocatedEvent& event) { callback_ran = true; });
   BubbleEventFilter filter(widget_.get(), view_, callback);
 
   // Click inside the view.

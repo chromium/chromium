@@ -876,7 +876,7 @@ void FakeBluetoothDeviceClient::CreateDevice(
     properties->name.ReplaceValue(kConnectedTrustedNotPairedDeviceName);
     properties->name.set_valid(true);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   properties_map_.insert(std::make_pair(device_path, std::move(properties)));
@@ -1667,7 +1667,7 @@ void FakeBluetoothDeviceClient::UpdateServiceAndManufacturerData(
 
   // BlueZ caches all the previously received advertisements. To mimic BlueZ
   // caching behavior, merge the new data here with the existing data.
-  // TODO(crbug.com/707039): once the BlueZ caching behavior is changed, this
+  // TODO(crbug.com/41310506): once the BlueZ caching behavior is changed, this
   // needs to be updated as well.
 
   std::vector<std::string> merged_uuids = service_uuids;
@@ -1974,7 +1974,7 @@ void FakeBluetoothDeviceClient::CreateTestDevice(
       properties->type.ReplaceValue(BluetoothDeviceClient::kTypeDual);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   properties->type.set_valid(true);
 

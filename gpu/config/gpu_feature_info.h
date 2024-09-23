@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -50,9 +51,9 @@ struct GPU_EXPORT GpuFeatureInfo {
   GpuFeatureInfo& operator=(const GpuFeatureInfo&);
   GpuFeatureInfo& operator=(GpuFeatureInfo&&);
 
-  // A vector of GpuFeatureStatus values, one per GpuFeatureType.
+  // An array of GpuFeatureStatus values, one per GpuFeatureType.
   // By default, all features are disabled.
-  GpuFeatureStatus status_values[NUMBER_OF_GPU_FEATURE_TYPES];
+  std::array<GpuFeatureStatus, NUMBER_OF_GPU_FEATURE_TYPES> status_values;
   // Active gpu driver bug workaround IDs.
   // See gpu/config/gpu_driver_bug_workaround_type.h for ID mappings.
   std::vector<int32_t> enabled_gpu_driver_bug_workarounds;

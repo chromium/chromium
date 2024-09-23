@@ -179,11 +179,6 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->variable_refresh_rate_state();
   }
 
-  static uint16_t vsync_rate_min(
-      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
-    return snapshot->vsync_rate_min().value_or(0);
-  }
-
   static const display::DrmFormatsAndModifiers& drm_formats_and_modifiers(
       const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
     return snapshot->GetDRMFormatsAndModifiers();

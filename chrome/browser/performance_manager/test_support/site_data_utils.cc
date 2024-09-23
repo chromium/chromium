@@ -49,7 +49,7 @@ void SiteDataTestHarness::TearDown() {
 }
 
 internal::SiteDataImpl* GetSiteDataImplForPageNode(PageNode* page_node) {
-  auto* writer = SiteDataRecorder::Data::FromPageNode(page_node)->writer();
+  auto* writer = SiteDataRecorder::Data::FromPageNode(page_node).writer();
 
   if (!writer)
     return nullptr;

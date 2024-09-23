@@ -246,7 +246,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest, ReadFakeStream) {
       std::make_unique<network::TestURLLoaderClient>();
   AndroidStreamReaderURLLoader* loader =
       CreateLoader(request, client.get(), std::make_unique<FakeInputStream>());
-  loader->Start();
+  loader->Start(nullptr);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
   EXPECT_EQ("HTTP/1.1 200 OK",
@@ -259,7 +259,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest, ReadFailingStream) {
       std::make_unique<network::TestURLLoaderClient>();
   AndroidStreamReaderURLLoader* loader = CreateLoader(
       request, client.get(), std::make_unique<FakeFailingInputStream>());
-  loader->Start();
+  loader->Start(nullptr);
   client->RunUntilComplete();
   EXPECT_EQ(net::ERR_FAILED, client->completion_status().error_code);
 }
@@ -272,7 +272,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest, ValidRangeRequest) {
       std::make_unique<network::TestURLLoaderClient>();
   AndroidStreamReaderURLLoader* loader =
       CreateLoader(request, client.get(), std::make_unique<FakeInputStream>());
-  loader->Start();
+  loader->Start(nullptr);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
   EXPECT_EQ("HTTP/1.1 200 OK",
@@ -287,7 +287,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest, InvalidRangeRequest) {
       std::make_unique<network::TestURLLoaderClient>();
   AndroidStreamReaderURLLoader* loader =
       CreateLoader(request, client.get(), std::make_unique<FakeInputStream>());
-  loader->Start();
+  loader->Start(nullptr);
   client->RunUntilComplete();
   EXPECT_EQ(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE,
             client->completion_status().error_code);
@@ -300,7 +300,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest, NullInputStream) {
       std::make_unique<network::TestURLLoaderClient>();
   AndroidStreamReaderURLLoader* loader =
       CreateLoader(request, client.get(), nullptr);
-  loader->Start();
+  loader->Start(nullptr);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
   EXPECT_EQ("HTTP/1.1 404 Not Found",
@@ -315,7 +315,25 @@ TEST_F(AndroidStreamReaderURLLoaderTest, ReadFakeStreamWithBody) {
       std::make_unique<network::TestURLLoaderClient>();
   AndroidStreamReaderURLLoader* loader = CreateLoader(
       request, client.get(), std::make_unique<FakeInputStream>(expected_body));
-  loader->Start();
+  loader->Start(nullptr);
+  client->RunUntilComplete();
+  EXPECT_EQ(net::OK, client->completion_status().error_code);
+  EXPECT_EQ("HTTP/1.1 200 OK",
+            client->response_head()->headers->GetStatusLine());
+  std::string body = ReadAvailableBody(client.get());
+  EXPECT_EQ(expected_body, body);
+}
+
+TEST_F(AndroidStreamReaderURLLoaderTest,
+       ReadFakeStreamWithBodySuppliedToStart) {
+  network::ResourceRequest request = CreateRequest();
+
+  std::string expected_body("test");
+  std::unique_ptr<network::TestURLLoaderClient> client =
+      std::make_unique<network::TestURLLoaderClient>();
+  AndroidStreamReaderURLLoader* loader =
+      CreateLoader(request, client.get(), nullptr);
+  loader->Start(std::make_unique<FakeInputStream>(expected_body));
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
   EXPECT_EQ("HTTP/1.1 200 OK",
@@ -333,7 +351,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest, ReadFakeStreamWithBodyMultipleReads) {
   AndroidStreamReaderURLLoader* loader =
       CreateLoader(request, client.get(),
                    std::make_unique<FakeInputStream>(expected_body, 2));
-  loader->Start();
+  loader->Start(nullptr);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
   EXPECT_EQ("HTTP/1.1 200 OK",
@@ -355,7 +373,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest,
   AndroidStreamReaderURLLoader* loader = CreateLoaderWithMimeType(
       request, client.get(), std::make_unique<FakeInputStream>(expected_body),
       valid_mime_type);
-  loader->Start();
+  loader->Start(nullptr);
   client->RunUntilResponseBodyArrived();
   EXPECT_TRUE(client->has_received_response());
   EXPECT_FALSE(client->has_received_completion());
@@ -381,7 +399,7 @@ TEST_F(AndroidStreamReaderURLLoaderTest, CustomResponseHeaderAndStatus) {
           request, client.get(),
           std::make_unique<FakeInputStream>(expected_body), custom_status_line,
           custom_header_name, custom_header_value);
-  loader->Start();
+  loader->Start(nullptr);
   client->RunUntilComplete();
   EXPECT_EQ(net::OK, client->completion_status().error_code);
   EXPECT_EQ(custom_status_line,

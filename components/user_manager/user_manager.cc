@@ -54,8 +54,7 @@ void UserManager::UserSessionStateObserver::UserAddedToSession(
     const User* active_user) {}
 
 void UserManager::UserSessionStateObserver::OnLoginStateUpdated(
-    const User* active_user,
-    bool is_current_user_owner) {}
+    const User* active_user) {}
 
 UserManager::UserSessionStateObserver::~UserSessionStateObserver() {}
 
@@ -66,6 +65,19 @@ UserManager::UserAccountData::UserAccountData(
     : display_name_(display_name), given_name_(given_name), locale_(locale) {}
 
 UserManager::UserAccountData::~UserAccountData() {}
+
+UserManager::DeviceLocalAccountInfo::DeviceLocalAccountInfo(std::string user_id,
+                                                            UserType type)
+    : user_id(std::move(user_id)), type(type) {}
+
+UserManager::DeviceLocalAccountInfo::DeviceLocalAccountInfo(
+    const UserManager::DeviceLocalAccountInfo&) = default;
+
+UserManager::DeviceLocalAccountInfo&
+UserManager::DeviceLocalAccountInfo::operator=(
+    const UserManager::DeviceLocalAccountInfo&) = default;
+
+UserManager::DeviceLocalAccountInfo::~DeviceLocalAccountInfo() = default;
 
 void UserManager::Initialize() {
   DCHECK(!UserManager::instance);
@@ -153,6 +165,22 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
   CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
 
   return UserType::kRegular;
+}
+
+bool UserManager::IsUserAllowed(const user_manager::User& user,
+                                bool is_guest_allowed,
+                                bool is_user_allowlisted) {
+  DCHECK(user.GetType() == UserType::kRegular ||
+         user.GetType() == UserType::kGuest ||
+         user.GetType() == UserType::kChild);
+
+  if (user.GetType() == UserType::kGuest && !is_guest_allowed) {
+    return false;
+  }
+  if (user.HasGaiaAccount() && !is_user_allowlisted) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace user_manager

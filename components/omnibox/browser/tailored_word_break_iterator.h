@@ -6,9 +6,9 @@
 #define COMPONENTS_OMNIBOX_BROWSER_TAILORED_WORD_BREAK_ITERATOR_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/i18n/break_iterator.h"
-#include "base/strings/string_piece.h"
 
 // Breaks on an underscore and numbers. Otherwise, it behaves like its parent
 // class with `BreakIterator::BREAK_WORD`.
@@ -17,7 +17,7 @@
 //  Astrophysicist, !, !].
 class TailoredWordBreakIterator : public base::i18n::BreakIterator {
  public:
-  explicit TailoredWordBreakIterator(const base::StringPiece16& str);
+  explicit TailoredWordBreakIterator(std::u16string_view str);
 
   ~TailoredWordBreakIterator();
   TailoredWordBreakIterator(const TailoredWordBreakIterator&) = delete;
@@ -29,7 +29,7 @@ class TailoredWordBreakIterator : public base::i18n::BreakIterator {
   // Returns characters between `prev_` and `pos_` if `special_word_` is not
   // empty. Otherwise returns the normal `BreakIterator`-determined current
   // word.
-  base::StringPiece16 GetStringPiece() const;
+  std::u16string_view GetStringView() const;
   std::u16string GetString() const;
   size_t prev() const;
   size_t pos() const;
@@ -47,9 +47,9 @@ class TailoredWordBreakIterator : public base::i18n::BreakIterator {
 
   // `prev_` and `pos_` are indices to `special_word_`.
   size_t prev_, pos_;
-  // Set if `BreakIterator::GetStringPiece()` contains '_' or numbers, otherwise
+  // Set if `BreakIterator::GetStringView()` contains '_' or numbers, otherwise
   // it's empty.
-  base::StringPiece16 special_word_;
+  std::u16string_view special_word_;
 
   // The additional chars to break on that aren't broken on by `BreakIterator`.
   // Subset of `all_breaks_` that return true from `IsWord()` (e.g. numbers).

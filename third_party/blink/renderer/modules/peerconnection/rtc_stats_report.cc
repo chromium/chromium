@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
@@ -53,7 +52,7 @@ v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
   }
   v8::Local<v8::Object> v8_object = builder.V8Value();
   if (v8_object.IsEmpty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Undefined(script_state->GetIsolate());
   }
   return v8_object;
@@ -202,7 +201,7 @@ RTCInboundRtpStreamStats* ToV8Stat(
     v8_stat->setFecPacketsDiscarded(*webrtc_stat.fec_packets_discarded);
   }
   if (webrtc_stat.fec_bytes_received.has_value()) {
-    v8_stat->setFecPacketsDiscarded(*webrtc_stat.fec_bytes_received);
+    v8_stat->setFecBytesReceived(*webrtc_stat.fec_bytes_received);
   }
   if (webrtc_stat.fec_ssrc.has_value()) {
     v8_stat->setFecSsrc(*webrtc_stat.fec_ssrc);

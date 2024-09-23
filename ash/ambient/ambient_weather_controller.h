@@ -9,10 +9,12 @@
 #include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_change_registrar.h"
 
 namespace gfx {
 class ImageSkia;
@@ -27,7 +29,8 @@ struct WeatherInfo;
 // weather condition icon image (a sun, a cloud, etc.). Owns the data model that
 // caches the current weather info.
 class ASH_EXPORT AmbientWeatherController
-    : public SimpleGeolocationProvider::Observer {
+    : public SimpleGeolocationProvider::Observer,
+      public SessionObserver {
  public:
   // Causes AmbientWeatherController to periodically refresh the weather info
   // in the model for as long as this object is alive. The latest weather is
@@ -56,6 +59,9 @@ class ASH_EXPORT AmbientWeatherController
   // SimpleGeolocationProvider::Observer:
   void OnGeolocationPermissionChanged(bool enabled) override;
 
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
   // Always returns non-null.
   std::unique_ptr<ScopedRefresher> CreateScopedRefresher();
 
@@ -82,10 +88,21 @@ class ASH_EXPORT AmbientWeatherController
   // allowed for system".
   bool IsGeolocationUsageAllowed();
 
+  // Returns true when weather has been disabled by policy.
+  bool IsWeatherDisabledByPolicy();
+
   // Deletes the cached weather model.
   void ClearAmbientWeatherModel();
 
   void OnScopedRefresherDestroyed();
+
+  // Callback used when the pref `kContextualGoogleIntegrationsConfiguration`
+  // changes.
+  void OnWeatherIntegrationPreferenceChanged(const std::string& pref_name);
+
+  // Called when either geolocation permission or weather policy changes, which
+  // determines if fetching weather is allowed.
+  void OnPermissionChanged();
 
   const raw_ptr<SimpleGeolocationProvider> location_permission_provider_ =
       nullptr;
@@ -95,6 +112,10 @@ class ASH_EXPORT AmbientWeatherController
   int num_active_scoped_refreshers_ = 0;
 
   base::RepeatingTimer weather_refresh_timer_;
+
+  PrefChangeRegistrar pref_change_registrar_;
+
+  ScopedSessionObserver scoped_session_observer_{this};
 
   base::WeakPtrFactory<AmbientWeatherController> weak_factory_{this};
 };

@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
@@ -16,15 +17,15 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/common/chrome_constants.h"
-#include "components/sync/base/model_type.h"
+#include "chromeos/ash/components/standalone_browser/migration_progress_tracker.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/blocking_model_type_store_impl.h"
+#include "components/sync/model/blocking_data_type_store_impl.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace ash::browser_data_migrator_util {
@@ -38,7 +39,7 @@ struct PathNamePair {
 struct PathNameComparator {
   constexpr bool operator()(const PathNamePair& p1,
                             const PathNamePair& p2) const {
-    return base::StringPiece(p1.key) < base::StringPiece(p2.key);
+    return std::string_view(p1.key) < std::string_view(p2.key);
   }
 };
 
@@ -150,7 +151,7 @@ constexpr char kKeyPrefix[] = "_chrome-extension://";
 constexpr char kIndexedDBBlobExtension[] = ".indexeddb.blob";
 constexpr char kIndexedDBLevelDBExtension[] = ".indexeddb.leveldb";
 
-bool ShouldRemoveExtensionByType(const base::StringPiece extension_id,
+bool ShouldRemoveExtensionByType(const std::string_view extension_id,
                                  ChromeType chrome_type) {
   switch (chrome_type) {
     case ChromeType::kAsh:
@@ -170,7 +171,7 @@ void UpdatePreferencesDictByType(base::Value::Dict& dict,
 
   // Collect keys that don't belong in `chrome_type`.
   for (const auto entry : dict) {
-    const base::StringPiece extension_id = entry.first;
+    const std::string_view extension_id = entry.first;
     if (ShouldRemoveExtensionByType(extension_id, chrome_type))
       keys_to_remove.emplace_back(extension_id);
   }
@@ -188,7 +189,7 @@ void UpdatePreferencesListByType(base::Value::List& list,
     if (!item.is_string())
       return false;
 
-    const base::StringPiece extension_id = item.GetString();
+    const std::string_view extension_id = item.GetString();
     return ShouldRemoveExtensionByType(extension_id, chrome_type);
   });
 }
@@ -214,10 +215,11 @@ TargetItems::~TargetItems() = default;
 
 // Copies `item` to location pointed by `dest`. Returns true on success and
 // false on failure.
-bool CopyTargetItem(const TargetItem& item,
-                    const base::FilePath& dest,
-                    CancelFlag* cancel_flag,
-                    MigrationProgressTracker* progress_tracker) {
+bool CopyTargetItem(
+    const TargetItem& item,
+    const base::FilePath& dest,
+    CancelFlag* cancel_flag,
+    standalone_browser::MigrationProgressTracker* progress_tracker) {
   if (cancel_flag->IsSet())
     return false;
 
@@ -255,7 +257,7 @@ TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
       target_paths = base::span<const char* const>(kNeedCopyForCopyDataPaths);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   TargetItems target_items;
@@ -352,10 +354,11 @@ ScopedExtraBytesRequiredToBeFreedForTesting::
   g_extra_bytes_required_to_be_freed_for_testing.reset();
 }
 
-bool CopyDirectory(const base::FilePath& from_path,
-                   const base::FilePath& to_path,
-                   CancelFlag* cancel_flag,
-                   MigrationProgressTracker* progress_tracker) {
+bool CopyDirectory(
+    const base::FilePath& from_path,
+    const base::FilePath& to_path,
+    CancelFlag* cancel_flag,
+    standalone_browser::MigrationProgressTracker* progress_tracker) {
   if (cancel_flag->IsSet())
     return false;
 
@@ -393,10 +396,11 @@ bool CopyDirectory(const base::FilePath& from_path,
   return true;
 }
 
-bool CopyTargetItems(const base::FilePath& to_dir,
-                     const TargetItems& target_items,
-                     CancelFlag* cancel_flag,
-                     MigrationProgressTracker* progress_tracker) {
+bool CopyTargetItems(
+    const base::FilePath& to_dir,
+    const TargetItems& target_items,
+    CancelFlag* cancel_flag,
+    standalone_browser::MigrationProgressTracker* progress_tracker) {
   for (const auto& item : target_items.items) {
     if (cancel_flag->IsSet())
       return false;
@@ -457,8 +461,10 @@ std::string GetUMAItemName(const base::FilePath& path) {
       std::begin(kPathNamePairs), std::end(kPathNamePairs),
       PathNamePair{path_name.c_str(), nullptr}, PathNameComparator());
 
-  if (it != std::end(kPathNamePairs) && base::StringPiece(it->key) == path_name)
+  if (it != std::end(kPathNamePairs) &&
+      std::string_view(it->key) == path_name) {
     return it->value;
+  }
 
   // If `path_name` was not found in kPathNamePairs, return "Unknown" as name.
   return kUnknownUMAName;
@@ -583,8 +589,8 @@ leveldb::Status GetExtensionKeys(leveldb::DB* db,
   return it->status();
 }
 
-bool IsAshOnlySyncDataType(base::StringPiece key) {
-  for (auto type : kAshOnlySyncDataTypes) {
+bool IsAshOnlySyncDataType(std::string_view key) {
+  for (auto type : kAshOnlySyncDataTypesForLacrosMigration) {
     if ((base::StartsWith(
              key, FormatDataPrefix(type, syncer::StorageType::kUnspecified)) ||
          base::StartsWith(
@@ -764,7 +770,7 @@ bool MigrateSyncDataLevelDB(const base::FilePath& original_path,
 }
 
 void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
-                                const base::StringPiece key,
+                                const std::string_view key,
                                 ChromeType chrome_type) {
   base::Value* value = root_dict->FindByDottedPath(key);
   if (!value)
@@ -778,7 +784,7 @@ void UpdatePreferencesKeyByType(base::Value::Dict* root_dict,
 }
 
 std::optional<PreferencesContents> MigratePreferencesContents(
-    const base::StringPiece original_contents) {
+    const std::string_view original_contents) {
   // Parse the original JSON file from Ash.
   std::optional<base::Value> ash_root =
       base::JSONReader::Read(original_contents);

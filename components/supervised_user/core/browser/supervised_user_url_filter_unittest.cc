@@ -18,6 +18,7 @@
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -29,6 +30,8 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   SupervisedUserURLFilterTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     supervised_user::RegisterProfilePrefs(registry);
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
     filter_.AddObserver(this);
   }
@@ -36,13 +39,11 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   ~SupervisedUserURLFilterTest() override { filter_.RemoveObserver(this); }
 
   // SupervisedUserURLFilter::Observer:
-  void OnSiteListUpdated() override { run_loop_.Quit(); }
   void OnURLChecked(const GURL& url,
                     supervised_user::FilteringBehavior behavior,
-                    supervised_user::FilteringBehaviorReason reason,
-                    bool uncertain) override {
+                    supervised_user::FilteringBehaviorDetails details) override {
     behavior_ = behavior;
-    reason_ = reason;
+    reason_ = details.reason;
   }
 
  protected:
@@ -72,12 +73,10 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
   TestingPrefServiceSimple pref_service_;
-  SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
-      pref_service_,
-      std::make_unique<safe_search_api::FakeURLCheckerClient>(),
-      base::BindRepeating([](const GURL& url) { return false; }));
+  SupervisedUserURLFilter filter_ =
+      SupervisedUserURLFilter(pref_service_,
+                              std::make_unique<FakeURLFilterDelegate>());
   supervised_user::FilteringBehavior behavior_;
   supervised_user::FilteringBehaviorReason reason_;
 
@@ -119,7 +118,8 @@ TEST_F(SupervisedUserURLFilterTest, Basic) {
   EXPECT_TRUE(IsURLAllowlisted("chrome://youtube.com/"));
   EXPECT_TRUE(IsURLAllowlisted("chrome://extensions/"));
   EXPECT_TRUE(IsURLAllowlisted("chrome-extension://foo/main.html"));
-  EXPECT_TRUE(IsURLAllowlisted("file:///home/chronos/user/Downloads/img.jpg"));
+  EXPECT_TRUE(
+      IsURLAllowlisted("file:///home/chronos/user/MyFiles/Downloads/img.jpg"));
 }
 
 TEST_F(SupervisedUserURLFilterTest, EffectiveURL) {
@@ -520,6 +520,8 @@ class SupervisedUserURLFilteringWithConflictsTest
   SupervisedUserURLFilteringWithConflictsTest() {
     PrefRegistrySimple* registry = pref_service_.registry();
     supervised_user::RegisterProfilePrefs(registry);
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
   }
 
@@ -533,10 +535,9 @@ class SupervisedUserURLFilteringWithConflictsTest
 
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
-  SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
-      pref_service_,
-      std::make_unique<safe_search_api::FakeURLCheckerClient>(),
-      base::BindRepeating([](const GURL& url) { return false; }));
+  SupervisedUserURLFilter filter_ =
+      SupervisedUserURLFilter(pref_service_,
+                              std::make_unique<FakeURLFilterDelegate>());
 };
 
 // Tests that the new histogram that records www-subdomain conflicts

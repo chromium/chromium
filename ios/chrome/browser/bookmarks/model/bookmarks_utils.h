@@ -5,42 +5,50 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_
 
+#include <map>
 #include <set>
 #include <vector>
 
-class ChromeBrowserState;
+enum class BookmarkStorageType;
 class PrefService;
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
-enum class StorageType;
 }  // namespace bookmarks
+
+// Enum representing the internal behavior's outcome for
+// `GetDefaultBookmarkFolder()`, distinguishing the various cases depending on
+// the values in PrefService. These values are persisted to logs. Entries should
+// not be renumbered and numeric values should never be reused.
+enum class DefaultBookmarkFolderOutcomeForMetrics {
+  kUnset = 0,
+  kExistingLocalFolderSet = 1,
+  kExistingAccountFolderSet = 2,
+  kMissingLocalFolderSet = 3,
+  kMissingAccountFolderSet = 4,
+  kMaxValue = kMissingAccountFolderSet
+};
 
 // Used in the preference kIosBookmarkLastUsedFolderReceivingBookmarks.
 // It means that the user has not set a folder for bookmarks explicitly.
 extern const int64_t kLastUsedBookmarkFolderNone;
 
-// Checks whether all available bookmark models are loaded.
-// Return true if the bookmarks model are loaded, false otherwise.
-[[nodiscard]] bool AreAllAvailableBookmarkModelsLoaded(
-    ChromeBrowserState* browser_state);
-
-// Removes all user bookmarks and clears bookmark-related pref. Requires
-// bookmark model to be loaded.
-// Return true if the bookmarks were successfully removed and false otherwise.
-[[nodiscard]] bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state);
-
-// Returns the permanent nodes whose url children are considered uncategorized
-// and whose folder children should be shown in the bookmark menu.
-// `model` must be loaded.
+// Returns the permanent bookmark folders that match `type`.
+// `model` must not be null and must be loaded. The returned list follows the
+// ordering used to display the folders in the management UI. Note that the
+// managed bookmarks folder is never included.
+//
+// Additional caveats if `BookmarkStorageType::kAccount` is used:
+// 1. The function may return an empty result if account bookmarks don't
+//    actually exist (e.g. the user is signed out).
+// 2. In rare cases, it may also return a non-empty but partial list, if this
+//    function is exercised *during* the creation of account permanent folders,
+//    which report BookmarkModelObserver::BookmarkNodeAdded() individually. The
+//    same is true during their destruction (during signout).
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
-    bookmarks::BookmarkModel* model);
-
-// Returns whether `node` is a primary permanent node in the sense of
-// `PrimaryPermanentNodes`.
-bool IsPrimaryPermanentNode(const bookmarks::BookmarkNode* node,
-                            bookmarks::BookmarkModel* model);
+    const bookmarks::BookmarkModel* model,
+    BookmarkStorageType type);
 
 // Whether a bookmark was manually moved by the user to a different folder since
 // last signin/signout.
@@ -53,17 +61,22 @@ void ResetLastUsedBookmarkFolder(PrefService* prefs);
 // or move bookmarks.
 void SetLastUsedBookmarkFolder(PrefService* prefs,
                                const bookmarks::BookmarkNode* folder,
-                               bookmarks::StorageType type);
+                               BookmarkStorageType type);
 
 // It returns the first bookmark folder that exists, with the following
 // priority:
 //- Last used folder
 //- Account mobile folder
-//- Profile mobile folder
+//- Local mobile folder
 const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     PrefService* prefs,
-    bool is_account_bookmark_model_available,
-    bookmarks::BookmarkModel* profile_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model);
+    const bookmarks::BookmarkModel* bookmark_model);
+
+// Used when on-disk bookmark IDs have been reassigned and therefore the prefs
+// need to be migrated accordingly.
+void MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(
+    PrefService* prefs,
+    const std::multimap<int64_t, int64_t>&
+        local_or_syncable_reassigned_ids_per_old_id);
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_

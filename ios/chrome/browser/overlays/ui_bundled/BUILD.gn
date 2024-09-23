@@ -1,0 +1,155 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  public = [
+    "overlay_container_coordinator.h",
+    "overlay_coordinator_factory.h",
+  ]
+  sources = [
+    "overlay_container_coordinator+initialization.h",
+    "overlay_container_coordinator.mm",
+    "overlay_coordinator_factory.mm",
+    "overlay_presentation_context_coordinator.h",
+    "overlay_presentation_context_coordinator.mm",
+    "overlay_presentation_context_fullscreen_disabler.h",
+    "overlay_presentation_context_fullscreen_disabler.mm",
+    "overlay_presentation_context_impl.h",
+    "overlay_presentation_context_impl.mm",
+    "overlay_presentation_context_impl_delegate.h",
+    "overlay_request_ui_state.h",
+    "overlay_request_ui_state.mm",
+  ]
+
+  friend = [
+    ":unit_tests",
+    "//ios/chrome/browser/overlays/ui_bundled/web_content_area/java_script_dialogs/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+  ]
+
+  deps = [
+    ":coordinators",
+    ":ui",
+    "//base",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/autofill_address_profile",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/parcel_tracking",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/passwords",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/permissions",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/translate",
+    "//ios/chrome/browser/overlays/ui_bundled/web_content_area/alerts",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "overlay_container_view_controller.h",
+    "overlay_container_view_controller.mm",
+    "overlay_presentation_context_view_controller.h",
+    "overlay_presentation_context_view_controller.mm",
+  ]
+
+  deps = [
+    ":presentation_controller",
+    "//base",
+  ]
+}
+
+source_set("presentation_controller") {
+  sources = [
+    "overlay_presentation_controller.h",
+    "overlay_presentation_controller.mm",
+  ]
+}
+
+source_set("coordinators") {
+  sources = [
+    "overlay_request_coordinator+subclassing.h",
+    "overlay_request_coordinator.h",
+    "overlay_request_coordinator.mm",
+    "overlay_request_coordinator_delegate.h",
+    "overlay_request_mediator+subclassing.h",
+    "overlay_request_mediator.h",
+    "overlay_request_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+}
+
+source_set("util") {
+  sources = [
+    "overlay_presentation_context_util.h",
+    "overlay_presentation_context_util.mm",
+    "overlay_presentation_util.h",
+    "overlay_presentation_util.mm",
+    "overlay_request_mediator_util.h",
+    "overlay_request_mediator_util.mm",
+  ]
+
+  deps = [
+    ":coordinators",
+    "//base",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/ui/infobars/presentation:positioner",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "overlay_container_coordinator_unittest.mm",
+    "overlay_container_view_controller_unittest.mm",
+    "overlay_presentation_context_coordinator_unittest.mm",
+    "overlay_presentation_context_fullscreen_disabler_unittest.mm",
+    "overlay_presentation_context_impl_unittest.mm",
+    "overlay_presentation_context_view_controller_unittest.mm",
+    "overlay_presentation_util_unittest.mm",
+    "overlay_request_mediator_unittest.mm",
+    "overlay_request_mediator_util_unittest.mm",
+    "overlay_request_ui_state_unittest.mm",
+  ]
+
+  deps = [
+    ":coordinators",
+    ":ui",
+    ":ui_bundled",
+    ":util",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/test_modality",
+    "//ios/chrome/browser/overlays/model/public/web_content_area",
+    "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test_modality",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/browser/ui/infobars/presentation",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/test:test_support",
+    "//ios/web/common",
+    "//ios/web/common:uikit",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

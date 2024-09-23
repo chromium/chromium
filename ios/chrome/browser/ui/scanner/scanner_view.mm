@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/ui/scanner/scanner_view.h"
 
+#import <numbers>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/scanner/preview_overlay_view.h"
 #import "ios/chrome/browser/ui/scanner/video_preview_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -64,12 +67,19 @@ const CGFloat kFlashDuration = 0.5;
   }
   DCHECK(delegate);
   _delegate = delegate;
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(maybeHideCaptions)];
+  }
+
   return self;
 }
 
 #pragma mark - UIView
 
-// TODO(crbug.com/633577): Replace the preview overlay with a UIView which is
+// TODO(crbug.com/40478852): Replace the preview overlay with a UIView which is
 // not resized.
 - (void)layoutSubviews {
   [super layoutSubviews];
@@ -135,9 +145,10 @@ const CGFloat kFlashDuration = 0.5;
   // Check that the current transform is either an identity or a 90, -90, or 180
   // degree rotation.
   DCHECK(fabs(atan2f(rotation.b, rotation.a)) < 0.001 ||
-         fabs(fabs(atan2f(rotation.b, rotation.a)) - base::kPiFloat) < 0.001 ||
-         fabs(fabs(atan2f(rotation.b, rotation.a)) - base::kPiFloat / 2) <
-             0.001);
+         fabs(fabs(atan2f(rotation.b, rotation.a)) -
+              std::numbers::pi_v<float>) < 0.001 ||
+         fabs(fabs(atan2f(rotation.b, rotation.a)) -
+              std::numbers::pi_v<float> / 2) < 0.001);
   rotation.a = round(rotation.a);
   rotation.b = round(rotation.b);
   rotation.c = round(rotation.c);
@@ -178,11 +189,16 @@ const CGFloat kFlashDuration = 0.5;
   return @"";
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  _captionContainer.hidden =
-      UIUserInterfaceSizeClassCompact == self.traitCollection.verticalSizeClass;
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  [self maybeHideCaptions];
 }
+#endif
 
 #pragma mark - private methods
 
@@ -351,6 +367,13 @@ const CGFloat kFlashDuration = 0.5;
         constraintEqualToAnchor:[self centerYAnchor]],
     _overlaySquareConstraint, _overlayWidthConstraint, _overlayHeightConstraint
   ]];
+}
+
+// Hides the UIScrollView that contains the caption if the UI's vertical size is
+// compact.
+- (void)maybeHideCaptions {
+  _captionContainer.hidden =
+      UIUserInterfaceSizeClassCompact == self.traitCollection.verticalSizeClass;
 }
 
 @end

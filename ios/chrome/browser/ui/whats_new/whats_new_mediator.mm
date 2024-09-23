@@ -10,9 +10,10 @@
 #import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
@@ -48,15 +49,9 @@
 #pragma mark - WhatsNewDetailViewActionHandler
 
 - (void)didTapActionButton:(WhatsNewType)type
-             primaryAction:(WhatsNewPrimaryAction)primaryAction {
-  const char* type_str = WhatsNewTypeToString(type);
-  if (!type_str) {
-    return;
-  }
-
-  std::string metric =
-      base::StrCat({"WhatsNew.", type_str, ".PrimaryActionTapped"});
-  base::RecordAction(base::UserMetricsAction(metric.c_str()));
+             primaryAction:(WhatsNewPrimaryAction)primaryAction
+        baseViewController:(UIViewController*)baseViewController {
+  base::UmaHistogramEnumeration("IOS.WhatsNew.PrimaryActionTapped", type);
 
   switch (primaryAction) {
     case WhatsNewPrimaryAction::kIOSSettings:
@@ -66,12 +61,12 @@
     case WhatsNewPrimaryAction::kPrivacySettings:
       // Handles actions that open privacy in Chrome settings.
       [self.applicationHandler
-          showPrivacySettingsFromViewController:self.baseViewController];
+          showPrivacySettingsFromViewController:baseViewController];
       break;
     case WhatsNewPrimaryAction::kChromeSettings:
       // Handles actions that open Chrome Settings.
       [self.applicationHandler
-          showSettingsFromViewController:self.baseViewController];
+          showSettingsFromViewController:baseViewController];
       break;
     case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       // Handles actions that open Passwords in iOS Settings.
@@ -79,13 +74,23 @@
       break;
     case WhatsNewPrimaryAction::kLens:
       // Handles actions that open Lens.
-      // TODO(crbug.com/1502927): Add the Lens promo that contains the
+      // TODO(crbug.com/40943329): Add the Lens promo that contains the
       // button that triggers the Lens action.
       [self openLens];
       break;
+    case WhatsNewPrimaryAction::kSafeBrowsingSettings:
+      // Handles actions that open ESB in Chrome settings.
+      [self.applicationHandler
+          showSafeBrowsingSettingsFromViewController:baseViewController];
+      break;
+    case WhatsNewPrimaryAction::kChromePasswordManager:
+      // Handles actions that open Chrome Password Manager.
+      [self.settingsHandler showSavedPasswordsSettingsFromViewController:nil
+                                                        showCancelButton:NO];
+      break;
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   };
 }
@@ -95,31 +100,16 @@
   UrlLoadParams params = UrlLoadParams::InNewTab(learnMoreURL);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   self.urlLoadingAgent->Load(params);
-  [self recordLearnMoreInteraction:type];
+  base::UmaHistogramEnumeration("IOS.WhatsNew.LearnMoreTapped", type);
 }
 
 - (void)didTapInstructions:(WhatsNewType)type {
-  const char* type_str = WhatsNewTypeToString(type);
-  if (!type_str) {
-    return;
-  }
-
-  std::string metric =
-      base::StrCat({"WhatsNew.", type_str, ".InstructionsTapped"});
-  base::RecordAction(base::UserMetricsAction(metric.c_str()));
   base::UmaHistogramEnumeration("IOS.WhatsNew.InstructionsShown", type);
 }
 
 #pragma mark - WhatsNewTableViewActionHandler
 
 - (void)recordWhatsNewInteraction:(WhatsNewItem*)item {
-  const char* type = WhatsNewTypeToString(item.type);
-  if (!type) {
-    return;
-  }
-
-  std::string metric = base::StrCat({"WhatsNew.", type});
-  base::RecordAction(base::UserMetricsAction(metric.c_str()));
   base::UmaHistogramEnumeration("IOS.WhatsNew.Shown", item.type);
 }
 
@@ -157,7 +147,7 @@
 - (void)openLens {
   // Dismiss the What's New modal since Lens must be displayed in a fullscreen
   // modal.
-  [self.browserCoordinatorHandler dismissWhatsNew];
+  [self.whatsNewHandler dismissWhatsNew];
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
           initWithEntryPoint:LensEntrypoint::WhatsNewPromo
@@ -170,18 +160,6 @@
 - (void)updateConsumer {
   [self.consumer setWhatsNewProperties:[self whatsNewChromeTipItem]
                           featureItems:[self whatsNewFeatureItems]];
-}
-
-// Record when a user tap on learn more.
-- (void)recordLearnMoreInteraction:(WhatsNewType)type {
-  const char* type_str = WhatsNewTypeToString(type);
-  if (!type_str) {
-    return;
-  }
-
-  std::string metric =
-      base::StrCat({"WhatsNew.", type_str, ".LearnMoreTapped"});
-  base::RecordAction(base::UserMetricsAction(metric.c_str()));
 }
 
 @end

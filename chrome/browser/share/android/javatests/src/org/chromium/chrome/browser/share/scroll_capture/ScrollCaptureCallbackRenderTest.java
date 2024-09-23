@@ -33,21 +33,20 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.RenderCoordinates;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.GURL;
 
@@ -57,6 +56,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisabledTest(message = "crbug.com/359632845")
 public class ScrollCaptureCallbackRenderTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -82,7 +82,7 @@ public class ScrollCaptureCallbackRenderTest {
 
     @Before
     public void setUp() {
-        // TODO(https://crbug.com/1254801): create a page that checkboards in a gradient or
+        // TODO(crbug.com/40199744): create a page that checkboards in a gradient or
         // something more complex to generate better test images.
         GURL url =
                 new GURL(
@@ -116,8 +116,6 @@ public class ScrollCaptureCallbackRenderTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testCaptureTop() throws Exception {
         View view = mTab.getView();
         Size size = new Size(view.getWidth(), view.getHeight());
@@ -131,8 +129,6 @@ public class ScrollCaptureCallbackRenderTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testCaptureBottom() throws Exception {
         RenderCoordinates renderCoordinates =
                 RenderCoordinates.fromWebContents(mTab.getWebContents());
@@ -140,7 +136,7 @@ public class ScrollCaptureCallbackRenderTest {
         final int offset =
                 renderCoordinates.getContentHeightPixInt()
                         - renderCoordinates.getLastFrameViewportHeightPixInt();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTab.getWebContents().getEventForwarder().scrollBy(0, offset);
                 });
@@ -168,7 +164,7 @@ public class ScrollCaptureCallbackRenderTest {
     private void createTextureView(Size size, CallbackHelper surfaceChanged)
             throws TimeoutException {
         CallbackHelper surfaceReady = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTextureView = new TextureView(ContextUtils.getApplicationContext());
                     mTextureView.setSurfaceTextureListener(
@@ -202,7 +198,7 @@ public class ScrollCaptureCallbackRenderTest {
                     group.addView(
                             mTextureView, new LayoutParams(size.getWidth(), size.getHeight()));
                 });
-        surfaceReady.waitForFirst();
+        surfaceReady.waitForOnly();
     }
 
     /** Drives a scroll capture several viewports above and below the current viewport location. */
@@ -212,13 +208,13 @@ public class ScrollCaptureCallbackRenderTest {
 
         // Start the session.
         CallbackHelper ready = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Rect r = mCallback.onScrollCaptureSearch(signal);
                     mCallback.onScrollCaptureStart(signal, ready::notifyCalled);
                     Assert.assertFalse(r.isEmpty());
                 });
-        ready.waitForFirst();
+        ready.waitForOnly();
 
         Surface surface = new Surface(mTextureView.getSurfaceTexture());
         // Current viewport should always succeed.
@@ -237,11 +233,11 @@ public class ScrollCaptureCallbackRenderTest {
 
         // End the session.
         CallbackHelper finished = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCallback.onScrollCaptureEnd(finished::notifyCalled);
                 });
-        finished.waitForFirst();
+        finished.waitForOnly();
     }
 
     /** Captures the viewport at i * initialSize.getHeight() offset to the current viewport. */
@@ -270,7 +266,7 @@ public class ScrollCaptureCallbackRenderTest {
         // Capture the content in the right location.
         callCount = surfaceChanged.getCallCount();
         final int offset = index * initialSize.getHeight();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Rect captureArea =
                             new Rect(
@@ -280,7 +276,7 @@ public class ScrollCaptureCallbackRenderTest {
                                     offset + initialSize.getHeight());
                     mCallback.onScrollCaptureImageRequest(surface, signal, captureArea, consume);
                 });
-        bitmapReady.waitForFirst();
+        bitmapReady.waitForOnly();
         if (mCapturedRect.isEmpty()) return false;
 
         // Only record when the rect is not empty otherwise the bitmap won't have changed.

@@ -1,0 +1,90 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="MagicStack.Clank.TabResumption.ClickInfo">
+  <int value="0"
+      label="Clicked on foreign first tile of config foreign (single tile)"/>
+  <int value="1"
+      label="Clicked on foreign first tile of config foreign+foreign (double
+             tiles)"/>
+  <int value="2"
+      label="Clicked on foreign second tile of config foreign+foreign (double
+             tiles)"/>
+  <int value="3"
+      label="Clicked on local first tile of config local (single tile)"/>
+  <int value="4"
+      label="Clicked on local first tile of config local+foreign (double
+             tiles)"/>
+  <int value="5"
+      label="Clicked on foreign second tile of config local+foreign (double
+             tiles)"/>
+  <int value="6"
+      label="Clicked on history tile of config history (single tile)"/>
+  <int value="7" label="Clicked on a foreign tile of config double tiles"/>
+  <int value="8" label="Clicked on a local tile of config double tiles"/>
+  <int value="9" label="Clicked on a history tile of config double tiles"/>
+</enum>
+
+<enum name="MagicStack.Clank.TabResumption.ModuleNotShownReason">
+  <int value="0" label="No suggestions"/>
+  <int value="1" label="Feature flag disabled"/>
+  <int value="2" label="User not sign in"/>
+  <int value="3" label="User disabled sync"/>
+</enum>
+
+<enum name="MagicStack.Clank.TabResumption.ModuleShowConfig">
+  <int value="0" label="Showing config foreign (single tile)"/>
+  <int value="1" label="Showing config foreign+foreign (double tiles)"/>
+  <int value="2" label="Showing config local (single tile)"/>
+  <int value="3" label="Showing config local+foreign (double tiles)"/>
+  <int value="4" label="Showing config foreign+history (double tiles)"/>
+  <int value="5" label="Showing config local+local (double tiles)"/>
+  <int value="6" label="Showing config local+history (double tiles)"/>
+  <int value="7" label="Showing config history (single tile)"/>
+  <int value="8" label="Showing config history+history (double tiles)"/>
+  <int value="9" label="Showing config a single tile without type finalized"/>
+  <int value="10" label="Showing config double tiles without type finalized"/>
+</enum>
+
+<enum name="ModulePosition">
+  <int value="0" label="1st module"/>
+  <int value="1" label="2nd module"/>
+  <int value="2" label="3rd module"/>
+  <int value="3" label="4th module"/>
+  <int value="4" label="5th module"/>
+</enum>
+
+<enum name="ModuleType">
+  <int value="0" label="Sinlge tab module"/>
+  <int value="1" label="Price change module"/>
+  <int value="2" label="Tab resumption module"/>
+  <int value="3" label="Safety hub module"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -1,0 +1,74 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Note that scripts/cra/build.py parse this file by heuristic, so if the
+# variable names / structure change, the script needs to be changed too.
+icons = [
+  "arrow_back.svg",
+  "checked.svg",
+  "chevron_down.svg",
+  "chevron_up.svg",
+  "circle_fill.svg",
+  "close.svg",
+  "delete.svg",
+  "done.svg",
+  "duration.svg",
+  "export.svg",
+  "forward_10.svg",
+  "info.svg",
+  "laptop_chromebook.svg",
+  "mic.svg",
+  "mic_external_on.svg",
+  "mic_mute.svg",
+  "more_vertical.svg",
+  "music_note.svg",
+  "notes.svg",
+  "page.svg",
+  "pause.svg",
+  "pause_hero.svg",
+  "pen_spark.svg",
+  "play_arrow.svg",
+  "play_hero.svg",
+  "rate_0_25.svg",
+  "rate_0_5.svg",
+  "rate_0_75.svg",
+  "rate_1_0.svg",
+  "rate_1_25.svg",
+  "rate_1_5.svg",
+  "rate_1_75.svg",
+  "rate_2_0.svg",
+  "remove_fill.svg",
+  "replay_10.svg",
+  "search.svg",
+  "settings.svg",
+  "sort_by.svg",
+  "stop.svg",
+  "summarize_auto.svg",
+  "thumb_down.svg",
+  "thumb_down_filled.svg",
+  "thumb_up.svg",
+  "thumb_up_filled.svg",
+  "time_created.svg",
+  "volume_down.svg",
+  "volume_mute.svg",
+  "volume_off.svg",
+  "volume_up.svg",
+]
+
+images = [
+  "genai_error_general.svg",
+  "genai_error_unsafe.svg",
+  "onboarding_speaker_label.svg",
+  "onboarding_transcription.svg",
+  "onboarding_welcome.svg",
+  "recording_list_empty.svg",
+  "recording_list_no_result_found.svg",
+  "transcription_enable.svg",
+  "transcription_no_speech.svg",
+  "transcription_off.svg",
+]
+
+foreach(icon, icons) {
+  images += [ "icons/${icon}" ]
+}

@@ -7,6 +7,7 @@ import("//build/config/ui.gni")  # For the toolkit_views variables.
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
 import("//printing/buildflags/buildflags.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -121,6 +122,8 @@ static_library("web_test_browser") {
     "browser/web_test_control_host.h",
     "browser/web_test_cookie_manager.cc",
     "browser/web_test_cookie_manager.h",
+    "browser/web_test_device_posture_provider.cc",
+    "browser/web_test_device_posture_provider.h",
     "browser/web_test_devtools_bindings.cc",
     "browser/web_test_devtools_bindings.h",
     "browser/web_test_download_manager_delegate.cc",
@@ -148,6 +151,13 @@ static_library("web_test_browser") {
     "browser/web_test_tts_platform.cc",
     "browser/web_test_tts_platform.h",
   ]
+
+  if (enable_compute_pressure) {
+    sources += [
+      "browser/web_test_pressure_manager.cc",
+      "browser/web_test_pressure_manager.h",
+    ]
+  }
 
   if (is_mac) {
     sources += [ "browser/web_test_shell_platform_delegate_mac.mm" ]
@@ -177,6 +187,8 @@ static_library("web_test_browser") {
     "//build:chromeos_buildflags",
     "//cc/base",
     "//cc/paint",
+    "//components/custom_handlers:custom_handlers",
+    "//components/custom_handlers:test_support",
     "//components/download/content/factory",
     "//components/download/public/background_service:public",
     "//components/download/public/common:public",
@@ -201,6 +213,7 @@ static_library("web_test_browser") {
     "//ppapi/buildflags",
     "//sandbox",
     "//services/device/public/cpp:test_support",
+    "//services/device/public/cpp/compute_pressure:buildflags",
     "//services/network/public/cpp",
     "//services/service_manager/public/cpp",
     "//storage/browser",
@@ -217,7 +230,7 @@ static_library("web_test_browser") {
     "//url",
   ]
 
-  # TODO(crbug.com/1103882): Blink test plugin must be migrated from PPAPI.
+  # TODO(crbug.com/40139469): Blink test plugin must be migrated from PPAPI.
   if (enable_ppapi) {
     deps += [
       "//content/ppapi_plugin",
@@ -239,7 +252,7 @@ static_library("web_test_browser") {
   }
 }
 
-# TODO(crbug.com/1154721): The `allow_circular_includes_from` declared in
+# TODO(crbug.com/40159584): The `allow_circular_includes_from` declared in
 # `:web_test_renderer` does not propagate the public_deps
 # from `:web_test_renderer`'s own dependencies. This means that those targets
 # are not built when `//third_party/blink/renderer/core/web_test` is built,
@@ -345,7 +358,7 @@ static_library("web_test_renderer") {
     "//media/capture",
     "//printing/buildflags",
 
-    # TODO(crbug.com/1200443) Remove //printing/mojom requirement coming from
+    # TODO(crbug.com/40178248) Remove //printing/mojom requirement coming from
     # //third_party/blink/public:blink_headers.
     "//printing/mojom",
     "//services/service_manager/public/cpp",
@@ -365,10 +378,6 @@ static_library("web_test_renderer") {
   ]
 
   if (enable_printing || enable_printing_tests) {
-    sources += [
-      "renderer/pixel_dump.cc",
-      "renderer/pixel_dump.h",
-    ]
     deps += [ "//printing" ]
   }
 }

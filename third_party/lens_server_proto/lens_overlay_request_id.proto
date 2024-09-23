@@ -1,0 +1,30 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Request Id definition to support request sequencing and state lookup.
+message LensOverlayRequestId {
+  // A unique identifier for a sequence of related Lens requests.
+  uint64 uuid = 1;
+
+  // An id to indicate the order of the current request within a sequence of
+  // requests sharing the same uuid. Starts from 1, increments by 1 if there is
+  // a new request with the same uuid.
+  int32 sequence_id = 2;
+
+  // An id to indicate the order of image payload sent within a sequence of
+  // requests sharing the same uuid. Starts from 1, increments by 1 if there is
+  // a new request with an image payload with the same uuid.
+  // Note, region search request does not increment this id.
+  int32 image_sequence_id = 3;
+
+  // Analytics ID for the Lens request. Will be updated on the initial request
+  // and once per interaction request.
+  bytes analytics_id = 4;
+}

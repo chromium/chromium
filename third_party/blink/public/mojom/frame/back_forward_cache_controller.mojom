@@ -4,38 +4,19 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/script_source_location.mojom";
 import "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom";
 
-// This struct contains source location information about a BFCache blocker that is
-// caused by JavaScript: either the accidental execution of script while the document is
-// BFCached, or usage of a WebSchedulerTrackedFeature.
+// This struct contains detailed information about a WebSchedulerTrackedFeature.
 struct BlockingDetails {
   // The index of WebSchedulerTrackedFeature; the value set must correspond to the
-  // WebSchedulerTrackedFeature enum. This must be null when this `BlockingDetails` is
-  // used in EvictFromBackForwardCache() for JavaScript execution, as it doesn't involve a
-  // WebSchedulerTrackedFeature.
+  // WebSchedulerTrackedFeature enum.
   // TODO(crbug.com/1522767): Use enum instead of uint32 or have validation to
   // really avoid unintended messages.
-  uint32? feature;
-  // The absolute URL of the JavaScript file where the feature is used or where JavaScript
-  // executed. This will be empty when when a flag is disabled to send this information, and
-  // will be null when a feature is used from C++ in tests.
-  // TODO(crbug.com/324031239): Use the struct url.mojom.Url instead of string.
-  string? url;
-  // The function in the JavaScript file where the feature is used or where JavaScript executed.
-  // This will be empty when a flag is disabled to send this information, and will be null when
-  // a feature is used from C++ in tests, or when a feature is used in anonymous functions.
-  string? function_name;
-  // The line number in JavaScript file where the feature is used or where JavaScript executed.
-  // This will be zero when a flag is disabled to send this information, and when a feature is
-  // used from C++ in tests.
-  // TODO(crbug.com/1523193): Make `line_number` and `column_number` nullable, so the types here
-  // will correspond to blink::mojom::BFCacheBlockingDetailedReason.
-  uint64 line_number;
-  // The column number in JavaScript file where the feature is used or where JavaScript executed.
-  // This will be zero when a flag is disabled to send this information, and when a feature is
-  // used from C++ in tests.
-  uint64 column_number;
+  uint32 feature;
+  // The JavaScript source location of `feature`. This should be null when the
+  // feature doesn't involve source location.
+  ScriptSourceLocation? source;
 };
 
 // This interface defines back-forward cache related methods that will be
@@ -48,9 +29,9 @@ struct BlockingDetails {
 interface BackForwardCacheControllerHost {
   // Evicts the page from the back/forward cache due to e.g., JavaScript
   // execution and network request redirect. If the reason is kJavaScriptExecution,
-  // `details` should indicate the source location where the script executed. It should
+  // `source` should indicate the source location where the script executed. It should
   // be null otherwise.
-  EvictFromBackForwardCache(RendererEvictionReason reason, BlockingDetails? details);
+  EvictFromBackForwardCache(RendererEvictionReason reason, ScriptSourceLocation? source);
 
   // Sent by the blink's FrameScheduler when a list of active features
   // the scheduler tracks changes.

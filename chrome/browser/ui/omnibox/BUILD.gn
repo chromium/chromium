@@ -1,0 +1,109 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+# The public interface has no circular dependencies.
+source_set("omnibox") {
+  sources = [ "omnibox_pedal_implementations.h" ]
+  deps = []
+  public_deps = [
+    "//base",
+    "//components/omnibox/browser",
+  ]
+  if (!is_android) {
+    sources += [
+      "alternate_nav_infobar_delegate.h",
+      "chrome_omnibox_client.h",
+      "chrome_omnibox_navigation_observer.h",
+      "clipboard_utils.h",
+      "omnibox_tab_helper.h",
+      "omnibox_theme.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/bitmap_fetcher",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/common",
+      "//components/infobars/core",
+      "//components/omnibox/browser:mojo_bindings_shared",
+      "//components/omnibox/browser:mojo_bindings_shared_cpp_sources",
+      "//components/omnibox/common",
+      "//content/public/browser",
+      "//services/network/public/mojom:url_loader_base",
+    ]
+  }
+}
+
+# The implementation must be linked into the same binary as the public
+# interface. This does have circular dependencies with //chrome/browser and
+# //chrome/browser/ui.
+source_set("impl") {
+  sources = [ "omnibox_pedal_implementations.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":omnibox",
+    "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/feedback:feedback",
+    "//chrome/browser/feedback:feedback_enum",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:vector_icons",
+    "//components/omnibox/common",
+    "//components/omnibox/resources:omnibox_pedal_synonyms",
+    "//components/omnibox/resources:omnibox_pedal_synonyms_grit",
+    "//components/prefs",
+    "//components/search",
+    "//components/strings:components_strings",
+    "//components/strings:components_strings_grit",
+    "//components/vector_icons",
+  ]
+  if (!is_android) {
+    sources += [
+      "alternate_nav_infobar_delegate.cc",
+      "chrome_omnibox_client.cc",
+      "chrome_omnibox_navigation_observer.cc",
+      "clipboard_utils.cc",
+      "omnibox_tab_helper.cc",
+    ]
+    deps += [
+      "//chrome/app:command_ids",
+      "//chrome/browser:primitives",
+      "//chrome/browser/bitmap_fetcher",
+      "//chrome/browser/extensions/api/omnibox",
+      "//chrome/browser/favicon",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui:browser_list",
+      "//components/bookmarks/browser",
+      "//components/favicon/content",
+      "//components/favicon/core",
+      "//components/history/core/browser",
+      "//components/infobars/content",
+      "//components/infobars/core",
+      "//components/profile_metrics",
+      "//components/search_engines",
+      "//components/sessions",
+      "//content/public/browser",
+      "//extensions/buildflags",
+      "//net",
+      "//net/traffic_annotation",
+      "//services/metrics/public/cpp:gen_ukm_builders",
+      "//services/metrics/public/cpp:metrics_cpp",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom:url_loader_base",
+      "//ui/base",
+      "//ui/base:types",
+      "//ui/base/clipboard",
+      "//ui/base/data_transfer_policy",
+      "//ui/gfx",
+      "//url",
+    ]
+  }
+}

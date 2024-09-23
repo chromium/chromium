@@ -1,0 +1,25 @@
+<!--
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@DEFAULT-ACTION-ON:Fruit
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  select, select::picker(select) { appearance: base-select; }
+</style>
+</head>
+
+<body>
+<select aria-label="Fruit" autofocus>
+  <option selected>Apple</option>
+  <option>Orange</option>
+  <option>Banana</option>
+</select>
+<script>
+function go() {
+  document.querySelector('select').selectedIndex = 1;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("vc_background_ui") {
+  sources = [
+    "vc_background_ui_sea_pen_provider_impl.cc",
+    "vc_background_ui_sea_pen_provider_impl.h",
+    "vc_background_ui_system_app_delegate.cc",
+    "vc_background_ui_system_app_delegate.h",
+    "vc_background_ui_utils.cc",
+    "vc_background_ui_utils.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//ash/webui/common/mojom:sea_pen",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/system_apps/public:system_web_app_type",
+    "//ash/webui/vc_background_ui",
+    "//ash/webui/vc_background_ui/resources",
+    "//base",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/wallpaper_handlers",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum_shared_cpp_sources",
+    "//chromeos/strings",
+    "//components/manta",
+    "//media/capture:capture_lib",
+    "//third_party/blink/public/mojom:mojom_platform_shared",
+    "//third_party/blink/public/mojom:mojom_platform_shared_cpp_sources",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gfx",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "vc_background_ui_sea_pen_provider_impl_browsertest.cc" ]
+
+  deps = [
+    ":vc_background_ui",
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/common/mojom:sea_pen",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser",
+    "//chrome/browser/ash/system_web_apps/apps/personalization_app:test_support",
+    "//chrome/browser/ash/wallpaper_handlers:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//chrome/test:webrtc_browser_tests_base",
+    "//components/manta",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx/codec",
+  ]
+}

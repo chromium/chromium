@@ -14,7 +14,7 @@
 <translation id="1291104554099683393">টেক্সটটি ছোট ছোট ভাগে ভাগ করে পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">বাঁ থেকে ডান</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">খুঁজুন</translation>
 <translation id="1398853756734560583">বড় করুন</translation>
 <translation id="1432724887402139994">{SECONDS,plural, =1{১ মিনিট আগে}one{# মিনিট আগে}other{# মিনিট আগে}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
@@ -49,6 +49,7 @@
 <translation id="2295140143284145483">সমীক্ষা</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/s</translation>
 <translation id="2353636109065292463">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা সেটি দেখা হচ্ছে</translation>
+<translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2388990488038464401">আপনার ফোন থেকে এই নম্বরে কল করতে চান?</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="24452542372838207">বিজ্ঞপ্তি প্রসারিত করুন</translation>
@@ -65,7 +66,6 @@
 <translation id="2653844658857826081">নতুন</translation>
 <translation id="2666092431469916601">শীর্ষ</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> থেকে শেয়ার করা হয়েছে</translation>
-<translation id="271033894570825754">নতুন</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{১ বছর আগে}one{# বছর আগে}other{# বছর আগে}}</translation>
 <translation id="2878511608894704031">সব মুছুন</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{১ দিনের মধ্যে}one{# দিনের মধ্যে}other{# দিনের মধ্যে}}</translation>
@@ -130,6 +130,7 @@
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> সিস্টেম</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Left Arrow</translation>
+<translation id="5633029987065897167">ফাঁকা</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{১ মিনিট}one{# মিনিট}other{# মিনিট}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{আজ ব্যবহার করা হয়েছে}=1{১ দিন আগে ব্যবহার করা হয়েছে}one{# দিন আগে ব্যবহার করা হয়েছে}other{# দিন আগে ব্যবহার করা হয়েছে}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{১ দিন এবং }one{# দিন এবং }other{# দিন এবং }}</translation>
@@ -158,7 +159,6 @@
 <translation id="6503257047630241175">RTF কন্টেন্ট</translation>
 <translation id="6539092367496845964">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="654149438358937226">সমস্ত বিজ্ঞপ্তি ব্লক করুন</translation>
-<translation id="6612467943526193239">ক্রমাঙ্কন থেকে বেরিয়ে যেতে Esc টিপুন।</translation>
 <translation id="6620110761915583480">ফাইল সেভ করুন</translation>
 <translation id="6699343763173986273">মিডিয়া পরবর্তী ট্র্যাক</translation>
 <translation id="6808150112686056157">মিডিয়া থামান</translation>

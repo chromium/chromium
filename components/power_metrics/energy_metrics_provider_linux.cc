@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/power_metrics/energy_metrics_provider_linux.h"
 
 #include <linux/perf_event.h>
@@ -107,10 +112,10 @@ EnergyMetricsProviderLinux::Create() {
   return base::WrapUnique(new EnergyMetricsProviderLinux());
 }
 
-absl::optional<EnergyMetricsProvider::EnergyMetrics>
+std::optional<EnergyMetricsProvider::EnergyMetrics>
 EnergyMetricsProviderLinux::CaptureMetrics() {
   if (!Initialize()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   EnergyMetrics energy_metrics = {0};
@@ -118,7 +123,7 @@ EnergyMetricsProviderLinux::CaptureMetrics() {
     uint64_t absolute_energy;
     if (!base::ReadFromFD(
             event.fd.get(),
-            base::as_writable_chars(base::make_span(&absolute_energy, 1u)))) {
+            base::as_writable_chars(base::span_from_ref(absolute_energy)))) {
       LOG(ERROR) << "Failed to read absolute energy of " << event.metric_type;
       continue;
     }

@@ -4,17 +4,14 @@
 
 import './icons.html.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {I18nMixin} from '../../i18n_setup.js';
-
-import {getTemplate} from './module_header.html.js';
+import {getCss} from './module_header.css.js';
+import {getHtml} from './module_header.html.js';
 
 export interface MenuItem {
   action: string;
@@ -22,41 +19,44 @@ export interface MenuItem {
   text: string;
 }
 
-export interface ModuleHeaderElementV2 {
+export interface ModuleHeaderElement {
   $: {
     actionMenu: CrActionMenuElement,
   };
 }
 
 /** Element that displays a header inside a module.  */
-export class ModuleHeaderElementV2 extends I18nMixin
-(PolymerElement) {
+export class ModuleHeaderElement extends CrLitElement {
   static get is() {
     return 'ntp-module-header-v2';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      headerText: String,
-      moreActionsText: String,
-      menuItemGroups: Array,
+      headerText: {type: String},
+      moreActionsText: {type: String},
+      menuItemGroups: {type: Array},
     };
   }
 
   headerText: string;
-  menuItemGroups: MenuItem[][];
+  menuItemGroups: MenuItem[][] = [];
   moreActionsText: string;
 
   showAt(e: Event) {
     this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
-  private onButtonClick_(e: DomRepeatEvent<MenuItem>) {
-    const {action} = e.model.item;
+  protected onButtonClick_(e: Event) {
+    const action = (e.currentTarget as HTMLElement).dataset['action'];
     assert(action);
     e.stopPropagation();
     this.$.actionMenu.close();
@@ -69,21 +69,21 @@ export class ModuleHeaderElementV2 extends I18nMixin
     }
   }
 
-  private onMenuButtonClick_(e: Event) {
+  protected onMenuButtonClick_(e: Event) {
     e.stopPropagation();
     this.dispatchEvent(
         new Event('menu-button-click', {bubbles: true, composed: true}));
   }
 
-  private showDivider_(index: number): boolean {
+  protected showDivider_(index: number): boolean {
     return index === 0;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-module-header-v2': ModuleHeaderElementV2;
+    'ntp-module-header-v2': ModuleHeaderElement;
   }
 }
 
-customElements.define(ModuleHeaderElementV2.is, ModuleHeaderElementV2);
+customElements.define(ModuleHeaderElement.is, ModuleHeaderElement);

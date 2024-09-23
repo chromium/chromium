@@ -31,8 +31,9 @@ namespace policy {
 
 void CheckYouTubeRestricted(int youtube_restrict_mode,
                             const net::HttpRequestHeaders& headers) {
-  std::string header;
-  headers.GetHeader(safe_search_api::kYouTubeRestrictHeaderName, &header);
+  std::string header =
+      headers.GetHeader(safe_search_api::kYouTubeRestrictHeaderName)
+          .value_or(std::string());
   if (youtube_restrict_mode == safe_search_api::YOUTUBE_RESTRICT_OFF) {
     EXPECT_TRUE(header.empty());
   } else if (youtube_restrict_mode ==
@@ -51,9 +52,8 @@ void CheckAllowedDomainsHeader(const std::string& allowed_domain,
     return;
   }
 
-  std::string header;
-  headers.GetHeader(safe_search_api::kGoogleAppsAllowedDomains, &header);
-  EXPECT_EQ(header, allowed_domain);
+  EXPECT_EQ(headers.GetHeader(safe_search_api::kGoogleAppsAllowedDomains),
+            allowed_domain);
 }
 
 class PolicyTestGoogle : public SafeSearchPolicyTest,

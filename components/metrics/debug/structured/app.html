@@ -1,0 +1,91 @@
+<style>
+  th {
+    text-align: start;
+  }
+
+  tbody tr:nth-child(odd) {
+    background: rgb(239, 243, 255);
+  }
+
+  #structured-metrics-event-template {
+    text-align: center;
+  }
+
+  .sm-metric-row {
+    display: none;
+  }
+
+  #event-row:hover {
+    background-color: lightsteelblue;
+    cursor: pointer;
+  }
+
+  #sm-refresh-events {
+    margin-top: 10px;
+  }
+
+  #summary-row-template .td {
+    text-align: center;
+  }
+
+  #search-error-msg{
+    display: none;
+    color: rgb(229, 26, 67);
+  }
+
+  #search-bar {
+    width: fit-content;
+  }
+</style>
+
+<h2>Structured Metrics Summary</h2>
+<table>
+  <tbody id="sm-summary-body"></tbody>
+</table>
+<h2>Structured Metrics Events</h2>
+<p>Events are not polled, please refresh to view new events.</p>
+<button id="sm-refresh-events">Refresh</button>
+<h3>Search:</h3>
+<p>Searching is implemented as key-value pair search param in the format of 'key:value'.</p>
+<p>Valid keys are: project, event, metric.</p>
+<input id="search-bar" type="search"></input>
+<p id="search-error-msg"></p>
+<table class="event-table">
+  <thead>
+    <tr>
+      <th>Project</th>
+      <th>Event</th>
+      <th>Type</th>
+      <th>Uptime</th>
+    </tr>
+  </thead>
+  <tbody id="sm-events-body"></tbody>
+</table>
+<template id="summary-row-template">
+  <tr>
+    <td><!-- Key --></td>
+    <td><!-- Value --></td>
+  </tr>
+</template>
+<template id="structured-metrics-event-row-template">
+  <tr id="event-row">
+    <td><!-- Project --></td>
+    <td><!-- Event --></td>
+    <td><!-- Type --></td>
+    <td><!-- Uptime --></td>
+  </tr>
+</template>
+<template id="structured-metrics-event-details-template">
+  <tr id="metrics-row" class="sm-metric-row">
+    <td colSpan="4">
+      <div><b>Details</b></div>
+      <table>
+        <tbody id="details-table"></tbody>
+      </table>
+      <div><b>Metrics</b></div>
+      <table>
+        <tbody id="metrics-table"></tbody>
+      </table>
+    </td>
+  </tr>
+</template>

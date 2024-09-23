@@ -18,10 +18,6 @@
 #include "base/values.h"
 #include "components/autofill/core/common/signatures.h"
 
-using base::checked_cast;
-using base::NumberToString;
-using base::Value;
-
 namespace autofill {
 
 namespace {
@@ -39,14 +35,15 @@ SavePasswordProgressLogger::SavePasswordProgressLogger() = default;
 SavePasswordProgressLogger::~SavePasswordProgressLogger() = default;
 
 std::string FormSignatureToDebugString(FormSignature form_signature) {
-  return base::StrCat({NumberToString(form_signature.value()), " - ",
-                       NumberToString(HashFormSignature(form_signature))});
+  return base::StrCat(
+      {base::NumberToString(form_signature.value()), " - ",
+       base::NumberToString(HashFormSignature(form_signature))});
 }
 
 void SavePasswordProgressLogger::LogFormData(
     SavePasswordProgressLogger::StringID label,
     const FormData& form_data) {
-  CHECK(!form_data.url.is_empty());
+  CHECK(!form_data.url().is_empty());
   std::string message = GetStringFromID(label) + ": {\n";
   message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
              FormSignatureToDebugString(CalculateFormSignature(form_data)) +
@@ -56,24 +53,24 @@ void SavePasswordProgressLogger::LogFormData(
       FormSignatureToDebugString(CalculateAlternativeFormSignature(form_data)) +
       "\n";
   message +=
-      GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url) + "\n";
-  message +=
-      GetStringFromID(STRING_ACTION) + ": " + ScrubURL(form_data.action) + "\n";
-  if (form_data.main_frame_origin.GetURL().is_valid())
+      GetStringFromID(STRING_ORIGIN) + ": " + ScrubURL(form_data.url()) + "\n";
+  message += GetStringFromID(STRING_ACTION) + ": " +
+             ScrubURL(form_data.action()) + "\n";
+  if (form_data.main_frame_origin().GetURL().is_valid()) {
     message += GetStringFromID(STRING_MAIN_FRAME_ORIGIN) + ": " +
-               ScrubURL(form_data.main_frame_origin.GetURL()) + "\n";
+               ScrubURL(form_data.main_frame_origin().GetURL()) + "\n";
+  }
   message += GetStringFromID(STRING_FORM_NAME) + ": " +
-             ScrubElementID(form_data.name) + "\n";
+             ScrubElementID(form_data.name()) + "\n";
 
-  if (!form_data.renderer_id.is_null()) {
-    message +=
-        "Form renderer id: " + NumberToString(form_data.renderer_id.value()) +
-        "\n";
+  if (!form_data.renderer_id().is_null()) {
+    message += "Form renderer id: " +
+               base::NumberToString(form_data.renderer_id().value()) + "\n";
   }
 
   // Log fields.
   message += GetStringFromID(STRING_FIELDS) + ": " + "\n";
-  for (const auto& field : form_data.fields) {
+  for (const auto& field : form_data.fields()) {
     message += GetFormFieldDataLogString(field) + "\n";
   }
   message += "}";
@@ -84,58 +81,59 @@ void SavePasswordProgressLogger::LogHTMLForm(
     SavePasswordProgressLogger::StringID label,
     const std::string& name_or_id,
     const GURL& action) {
-  Value::Dict log;
+  base::Value::Dict log;
   log.Set(GetStringFromID(STRING_NAME_OR_ID), ScrubElementID(name_or_id));
   log.Set(GetStringFromID(STRING_ACTION), ScrubURL(action));
-  LogValue(label, Value(std::move(log)));
+  LogValue(label, base::Value(std::move(log)));
 }
 
 void SavePasswordProgressLogger::LogURL(
     SavePasswordProgressLogger::StringID label,
     const GURL& url) {
-  LogValue(label, Value(ScrubURL(url)));
+  LogValue(label, base::Value(ScrubURL(url)));
 }
 
 void SavePasswordProgressLogger::LogBoolean(
     SavePasswordProgressLogger::StringID label,
     bool truth_value) {
-  LogValue(label, Value(truth_value));
+  LogValue(label, base::Value(truth_value));
 }
 
 void SavePasswordProgressLogger::LogNumber(
     SavePasswordProgressLogger::StringID label,
     int signed_number) {
-  LogValue(label, Value(signed_number));
+  LogValue(label, base::Value(signed_number));
 }
 
 void SavePasswordProgressLogger::LogNumber(
     SavePasswordProgressLogger::StringID label,
     size_t unsigned_number) {
-  LogNumber(label, checked_cast<int>(unsigned_number));
+  LogNumber(label, base::checked_cast<int>(unsigned_number));
 }
 
 void SavePasswordProgressLogger::LogMessage(
     SavePasswordProgressLogger::StringID message) {
-  LogValue(STRING_MESSAGE, Value(GetStringFromID(message)));
+  LogValue(STRING_MESSAGE, base::Value(GetStringFromID(message)));
 }
 
 // static
 std::string SavePasswordProgressLogger::GetFormFieldDataLogString(
     const FormFieldData& field) {
-  const char* const is_visible = field.is_focusable ? "visible" : "invisible";
-  const char* const is_empty = field.value.empty() ? "empty" : "non-empty";
+  const char* const is_visible = field.is_focusable() ? "visible" : "invisible";
+  const char* const is_empty = field.value().empty() ? "empty" : "non-empty";
   std::string autocomplete =
-      field.autocomplete_attribute.empty()
+      field.autocomplete_attribute().empty()
           ? std::string()
-          : (", autocomplete=" + ScrubElementID(field.autocomplete_attribute));
+          : (", autocomplete=" +
+             ScrubElementID(field.autocomplete_attribute()));
   return base::StringPrintf(
       "%s: signature=%s, type=%s, renderer_id=%s, %s, %s%s",
-      ScrubElementID(field.name).c_str(),
+      ScrubElementID(field.name()).c_str(),
       base::NumberToString(*CalculateFieldSignatureForField(field)).c_str(),
       ScrubElementID(std::string(autofill::FormControlTypeToString(
-                         field.form_control_type)))
+                         field.form_control_type())))
           .c_str(),
-      NumberToString(*field.renderer_id).c_str(), is_visible, is_empty,
+      base::NumberToString(*field.renderer_id()).c_str(), is_visible, is_empty,
       autocomplete.c_str());
 }
 
@@ -146,7 +144,8 @@ std::string SavePasswordProgressLogger::ScrubURL(const GURL& url) {
   return std::string();
 }
 
-void SavePasswordProgressLogger::LogValue(StringID label, const Value& log) {
+void SavePasswordProgressLogger::LogValue(StringID label,
+                                          const base::Value& log) {
   std::string log_string;
   bool conversion_to_string_successful = base::JSONWriter::WriteWithOptions(
       log, base::JSONWriter::OPTIONS_PRETTY_PRINT, &log_string);
@@ -365,6 +364,10 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_SAVING_DISABLED:
       return "Generation disabled: saving disabled";
     case SavePasswordProgressLogger::
+        STRING_GENERATION_DISABLED_CHROME_DOES_NOT_SYNC_PASSWORDS:
+      return "Generation disabled: Chrome no longer syncs passwords and GMS is "
+             "no up to date to do it either";
+    case SavePasswordProgressLogger::
         STRING_GENERATION_DISABLED_NOT_ABLE_TO_SAVE_PASSWORDS:
       return "Generation disabled: not able to save passwords";
     case SavePasswordProgressLogger::STRING_GENERATION_DISABLED_NO_SYNC:
@@ -422,6 +425,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Leak detection failed: network error";
     case STRING_LEAK_DETECTION_QUOTA_LIMIT:
       return "Leak detection failed: quota limit";
+    case STRING_LEAK_DETECTION_URL_BLOCKED:
+      return "Leak detection disabled by SafeBrowsingAllowlistDomains policy";
     case SavePasswordProgressLogger::
         STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LETTER:
       return "Uploading password requirements vote for using letters";
@@ -448,11 +453,16 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Possible username is used";
     case STRING_POSSIBLE_USERNAME_NOT_USED:
       return "Possible username is not used";
+    case STRING_SAVING_BLOCKLISTED_EXPLICITLY:
+      return "Saving on this domain is explicitly blocklisted";
+    case STRING_SAVING_BLOCKLISTED_BY_SMART_BUBBLE:
+      return "Saving on this domain is blocklisted by the smart bubble";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.
   }
-  NOTREACHED();  // Win compilers don't believe this is unreachable.
+  NOTREACHED_IN_MIGRATION();  // Win compilers don't believe this is
+                              // unreachable.
   return std::string();
 }
 

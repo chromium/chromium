@@ -98,7 +98,7 @@ class SchemaRegistryNativeHandler : public ObjectBackedNativeHandler {
   }
 
   std::unique_ptr<ScriptContext> context_;
-  raw_ptr<V8SchemaRegistry, ExperimentalRenderer> registry_;
+  raw_ptr<V8SchemaRegistry> registry_;
 };
 
 }  // namespace
@@ -116,6 +116,7 @@ std::unique_ptr<NativeHandler> V8SchemaRegistry::AsNativeHandler(
                         nullptr,          // no frame
                         mojom::HostID(),  // no host_id
                         nullptr,          // no extension
+                        /*blink_isolated_world_id=*/std::nullopt,
                         mojom::ContextType::kUnspecified,
                         nullptr,  // no effective extension
                         mojom::ContextType::kUnspecified));

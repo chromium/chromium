@@ -4,12 +4,13 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 
-#include "ash/constants/app_types.h"
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -23,19 +24,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/user_manager/user.h"
@@ -49,7 +48,7 @@
 namespace {
 
 constexpr auto kAppTypeNameMap =
-    base::MakeFixedFlatMap<base::StringPiece, apps::AppTypeName>({
+    base::MakeFixedFlatMap<std::string_view, apps::AppTypeName>({
         {apps::kArcHistogramName, apps::AppTypeName::kArc},
         {apps::kBuiltInHistogramName, apps::AppTypeName::kBuiltIn},
         {apps::kCrostiniHistogramName, apps::AppTypeName::kCrostini},
@@ -67,7 +66,21 @@ constexpr auto kAppTypeNameMap =
         {apps::kExtensionHistogramName, apps::AppTypeName::kExtension},
         {apps::kStandaloneBrowserExtensionHistogramName,
          apps::AppTypeName::kStandaloneBrowserExtension},
+        {apps::kStandaloneBrowserWebAppHistogramName,
+         apps::AppTypeName::kStandaloneBrowserWebApp},
+        {apps::kBruschettaHistogramName, apps::AppTypeName::kBruschetta},
     });
+
+constexpr char kInstallReasonUnknownHistogram[] = "Unknown";
+constexpr char kInstallReasonSystemHistogram[] = "System";
+constexpr char kInstallReasonPolicyHistogram[] = "Policy";
+constexpr char kInstallReasonOemHistogram[] = "Oem";
+constexpr char kInstallReasonPreloadHistogram[] = "Preload";
+constexpr char kInstallReasonSyncHistogram[] = "Sync";
+constexpr char kInstallReasonUserHistogram[] = "User";
+constexpr char kInstallReasonSubAppHistogram[] = "SubApp";
+constexpr char kInstallReasonKioskHistogram[] = "Kiosk";
+constexpr char kInstallReasonCommandLineHistogram[] = "CommandLine";
 
 // Determines what app type a Chrome App should be logged as based on its launch
 // container and app id. In particular, Chrome apps in tabs are logged as part
@@ -113,7 +126,7 @@ apps::AppTypeName GetAppTypeNameForChromeApp(Profile* profile,
 }
 
 apps::AppTypeName GetWebAppTypeName() {
-  return web_app::IsWebAppsCrosapiEnabled()
+  return crosapi::browser_util::IsLacrosEnabled()
              ? apps::AppTypeName::kStandaloneBrowserWebApp
              : apps::AppTypeName::kWeb;
 }
@@ -145,7 +158,7 @@ constexpr int kUsageTimeBuckets = 50;
 AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
                                     apps::LaunchContainer container) {
-  AppTypeName default_type_name = web_app::IsWebAppsCrosapiEnabled()
+  AppTypeName default_type_name = crosapi::browser_util::IsLacrosEnabled()
                                       ? AppTypeName::kStandaloneBrowser
                                       : AppTypeName::kChromeBrowser;
   AppTypeName type_name = default_type_name;
@@ -166,14 +179,6 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
 
   if (type_name != AppTypeName::kWeb) {
     return type_name;
-  }
-  // TODO(b/321143888): When Shortstand is enabled, the window mode will
-  // always be kWindow. update.WindowMode is now used to check previous
-  // window mode for use by migration nudge. The WindowMode value for web
-  // apps will be updated to accurately represent the change after
-  // migration has been completed.
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    return GetWebAppTypeName();
   }
 
   switch (container) {
@@ -236,7 +241,7 @@ bool IsAshBrowserWindow(aura::Window* window) {
 }
 
 bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
+  if (!crosapi::browser_util::IsLacrosEnabled()) {
     return false;
   }
 
@@ -252,8 +257,8 @@ bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window) {
 }
 
 bool IsLacrosWindow(aura::Window* window) {
-  return window->GetProperty(aura::client::kAppType) ==
-         static_cast<int>(ash::AppType::LACROS);
+  return window->GetProperty(chromeos::kAppTypeKey) ==
+         chromeos::AppType::LACROS;
 }
 
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id) {
@@ -387,11 +392,36 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
 }
 
 AppTypeName GetAppTypeNameFromString(const std::string& app_type_name) {
-  auto* it = kAppTypeNameMap.find(app_type_name);
+  auto it = kAppTypeNameMap.find(app_type_name);
   return it != kAppTypeNameMap.end() ? it->second : apps::AppTypeName::kUnknown;
 }
 
-bool ShouldRecordUkm(Profile* profile) {
+std::string GetInstallReason(InstallReason install_reason) {
+  switch (install_reason) {
+    case apps::InstallReason::kUnknown:
+      return kInstallReasonUnknownHistogram;
+    case apps::InstallReason::kSystem:
+      return kInstallReasonSystemHistogram;
+    case apps::InstallReason::kPolicy:
+      return kInstallReasonPolicyHistogram;
+    case apps::InstallReason::kOem:
+      return kInstallReasonOemHistogram;
+    case apps::InstallReason::kDefault:
+      return kInstallReasonPreloadHistogram;
+    case apps::InstallReason::kSync:
+      return kInstallReasonSyncHistogram;
+    case apps::InstallReason::kUser:
+      return kInstallReasonUserHistogram;
+    case apps::InstallReason::kSubApp:
+      return kInstallReasonSubAppHistogram;
+    case apps::InstallReason::kKiosk:
+      return kInstallReasonKioskHistogram;
+    case apps::InstallReason::kCommandLine:
+      return kInstallReasonCommandLineHistogram;
+  }
+}
+
+bool ShouldRecordAppKM(Profile* profile) {
   // Bypass AppKM App Sync check for Demo Mode devices to collect app metrics.
   if (ash::DemoSession::IsDeviceInDemoMode()) {
     return true;
@@ -403,7 +433,7 @@ bool ShouldRecordUkm(Profile* profile) {
   }
 
   switch (syncer::GetUploadToGoogleState(
-      SyncServiceFactory::GetForProfile(profile), syncer::ModelType::APPS)) {
+      SyncServiceFactory::GetForProfile(profile), syncer::DataType::APPS)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
     case syncer::UploadState::INITIALIZING:
@@ -414,8 +444,13 @@ bool ShouldRecordUkm(Profile* profile) {
   }
 }
 
-bool ShouldRecordUkmForAppId(const std::string& app_id,
-                             const apps::AppRegistryCache& cache) {
+bool ShouldRecordAppKMForAppId(Profile* profile,
+                               const AppRegistryCache& cache,
+                               const std::string& app_id) {
+  if (!ShouldRecordAppKM(profile)) {
+    return false;
+  }
+
   if (chromeos::IsManagedGuestSession() &&
       !UkmReportingIsAllowedForAppInManagedGuestSession(app_id, cache)) {
     return false;
@@ -423,7 +458,7 @@ bool ShouldRecordUkmForAppId(const std::string& app_id,
   return true;
 }
 
-bool ShouldRecordUkmForAppTypeName(AppType app_type) {
+bool ShouldRecordAppKMForAppTypeName(AppType app_type) {
   switch (app_type) {
     case AppType::kArc:
     case AppType::kBuiltIn:

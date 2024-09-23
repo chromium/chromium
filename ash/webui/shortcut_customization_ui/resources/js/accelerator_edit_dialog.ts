@@ -47,7 +47,6 @@ const MAX_NUM_ACCELERATORS = 5;
  * @fileoverview
  * 'accelerator-edit-dialog' is a dialog that displays the accelerators for
  * a given shortcut. Allows users to edit the accelerators.
- * TODO(jimmyxgong): Implement editing accelerators.
  */
 const AcceleratorEditDialogElementBase = I18nMixin(PolymerElement);
 
@@ -206,6 +205,8 @@ export class AcceleratorEditDialogElement extends
 
   private onAcceleratorCapturingEnded(): void {
     this.isAcceleratorCapturing = false;
+    // Focus on the next logical step after the user is done editing.
+    this.focusAddOrDone();
   }
 
   private onDefaultConflictResolved(
@@ -235,6 +236,16 @@ export class AcceleratorEditDialogElement extends
         accelItem.shadowRoot!.querySelector<HTMLElement>('#container');
     assert(container);
     container!.focus();
+  }
+
+  private focusAddOrDone(): void {
+    const selector = this.acceleratorLimitNotReached() ?
+        '#addAcceleratorButton' :
+        '#doneButton';
+    const buttonToFocus =
+        this.$.editDialog.querySelector<HTMLButtonElement>(selector);
+    assert(buttonToFocus);
+    buttonToFocus.focus();
   }
 
   protected onAddAcceleratorClicked(): void {

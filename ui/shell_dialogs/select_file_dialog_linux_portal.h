@@ -54,7 +54,6 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   bool IsRunning(gfx::NativeWindow parent_window) const override;
 
   // SelectFileDialog implementation.
-  // |params| is user data we pass back via the Listener interface.
   void SelectFileImpl(Type type,
                       const std::u16string& title,
                       const base::FilePath& default_path,
@@ -62,7 +61,6 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override;
 
   bool HasMultipleFileTypeChoicesImpl() override;
@@ -202,10 +200,6 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
 
   // This should be used in the main thread.
   base::WeakPtr<aura::WindowTreeHost> host_;
-
-  // The untyped params to pass to the listener, it should be used in the main
-  // thread.
-  raw_ptr<void> listener_params_ = nullptr;
 
   // Data shared across main thread and D-Bus thread.
   scoped_refptr<DialogInfo> info_;

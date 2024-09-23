@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -259,6 +260,9 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
   // keepalive request handling.
   // |keep_alive_loader_factory_| only presents when
   // features::kKeepAliveInBrowserMigration is true.
+  if (request.keepalive) {
+    FetchUtils::LogFetchKeepAliveRequestSentToServiceMetric(request);
+  }
   if (request.keepalive && keep_alive_loader_factory_ &&
       base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) &&
       (request.attribution_reporting_eligibility ==

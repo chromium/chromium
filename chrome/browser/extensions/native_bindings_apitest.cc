@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -121,10 +122,8 @@ class NativeBindingsRestrictedToDeveloperModeApiTest
     : public NativeBindingsApiTest {
  public:
   NativeBindingsRestrictedToDeveloperModeApiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {extensions_features::kRestrictDeveloperModeAPIs,
-         extensions_features::kApiUserScripts},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kRestrictDeveloperModeAPIs);
   }
 
   NativeBindingsRestrictedToDeveloperModeApiTest(
@@ -136,7 +135,7 @@ class NativeBindingsRestrictedToDeveloperModeApiTest
 
  private:
   // The userScripts API is currently behind a feature restriction.
-  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
+  // TODO(crbug.com/40926805): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -792,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsRestrictedToDeveloperModeApiTest,
 
 // Tests that changing the developer mode setting affects existing renderers
 // for service worker contexts (which run off the main thread in the renderer).
-// TODO(crbug.com/1505673): Test flaky on multiple platforms
+// TODO(crbug.com/40946312): Test flaky on multiple platforms
 IN_PROC_BROWSER_TEST_F(
     NativeBindingsRestrictedToDeveloperModeApiTest,
     DISABLED_SwitchingDeveloperModeAffectsExistingRenderers_ServiceWorkers) {

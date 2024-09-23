@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -121,8 +122,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_saveToPhotosAskEveryTimeSwitch) {
     _saveToPhotosAskEveryTimeSwitch =
         [[TableViewSwitchItem alloc] initWithType:ItemTypeAskEveryTime];
-    _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
-        IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
+    if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
+      _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
+          IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME);
+    } else {
+      _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
+          IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
+    }
   }
   return _saveToPhotosAskEveryTimeSwitch;
 }
@@ -154,9 +160,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)saveToPhotosAskEveryTimeSwitchAction:(UISwitch*)sender {
+  BOOL askWhichAccountToUseEveryTime = sender.isOn;
+  if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
+    askWhichAccountToUseEveryTime = !sender.isOn;
+  }
   [self.saveToPhotosSettingsMutator
-      setAskWhichAccountToUseEveryTime:sender.isOn];
-  if (!sender.isOn) {
+      setAskWhichAccountToUseEveryTime:askWhichAccountToUseEveryTime];
+  if (!askWhichAccountToUseEveryTime) {
     [self.saveToPhotosSettingsMutator
         setSelectedIdentityGaiaID:self.saveToPhotosDefaultIdentityItem
                                       .identityGaiaID];

@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.sync.ui;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -26,45 +23,34 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.sync.PassphraseType;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
-import java.text.DateFormat;
-import java.util.Date;
-
 /** Dialog to ask to user to enter their sync passphrase. */
-public class PassphraseDialogFragment extends DialogFragment
-        implements OnClickListener, ProfileDependentSetting, FragmentHelpAndFeedbackLauncher {
+public class PassphraseDialogFragment extends DialogFragment implements OnClickListener {
     private static final String TAG = "Sync_UI";
 
-    /** A listener for passphrase events. */
-    public interface Listener {
+    /** A delegate for passphrase events/dependencies. */
+    public interface Delegate {
         /**
          * @return whether passphrase was valid.
          */
         boolean onPassphraseEntered(String passphrase);
 
         void onPassphraseCanceled();
-    }
 
-    private Profile mProfile;
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+        /** Return the Profile associated with the passphrase. */
+        Profile getProfile();
+    }
 
     private EditText mPassphraseEditText;
     private TextView mVerifyingTextView;
@@ -81,35 +67,33 @@ public class PassphraseDialogFragment extends DialogFragment
         return dialog;
     }
 
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
-    }
-
-    @Override
-    public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
-        mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    private Profile getProfile() {
+        Profile profile = getDelegate().getProfile();
+        assert profile != null : "Attempting to use PassphraseDialogFragment with a null profile";
+        // TODO(crbug/327687076): Remove the following profile fallback assuming no asserts are
+        //                        triggered for the above profile assert.
+        return profile == null ? ProfileManager.getLastUsedRegularProfile() : profile;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        assert SyncServiceFactory.getForProfile(mProfile) != null;
+        assert SyncServiceFactory.getForProfile(getProfile()) != null;
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.sync_enter_passphrase, null);
 
-        TextView promptText = (TextView) v.findViewById(R.id.prompt_text);
+        TextView promptText = v.findViewById(R.id.prompt_text);
         promptText.setText(getPromptText());
         promptText.setMovementMethod(LinkMovementMethod.getInstance());
 
-        TextView resetText = (TextView) v.findViewById(R.id.reset_text);
+        TextView resetText = v.findViewById(R.id.reset_text);
         resetText.setText(getResetText());
         resetText.setMovementMethod(LinkMovementMethod.getInstance());
         resetText.setVisibility(View.VISIBLE);
 
-        mVerifyingTextView = (TextView) v.findViewById(R.id.verifying);
+        mVerifyingTextView = v.findViewById(R.id.verifying);
 
-        mPassphraseEditText = (EditText) v.findViewById(R.id.passphrase);
+        mPassphraseEditText = v.findViewById(R.id.passphrase);
         mPassphraseEditText.setOnEditorActionListener(
                 new OnEditorActionListener() {
                     @Override
@@ -147,7 +131,7 @@ public class PassphraseDialogFragment extends DialogFragment
                                     }
                                 })
                         .setNegativeButton(R.string.cancel, this)
-                        .setTitle(R.string.sign_in_google_account)
+                        .setTitle(R.string.sync_enter_passphrase_title)
                         .create();
 
         d.getDelegate().setHandleNativeActionModesEnabled(false);
@@ -181,80 +165,31 @@ public class PassphraseDialogFragment extends DialogFragment
         super.onResume();
     }
 
-    private SpannableString applyInProductHelpSpan(
-            String stringWithLearnMoreTag, String helpContext) {
-        return SpanApplier.applySpans(
-                stringWithLearnMoreTag,
-                new SpanInfo(
-                        "<learnmore>",
-                        "</learnmore>",
-                        new ClickableSpan() {
-                            @Override
-                            public void onClick(View view) {
-                                mHelpAndFeedbackLauncher.show(getActivity(), helpContext, null);
-                            }
-                        }));
-    }
-
     private SpannableString getPromptText() {
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         String accountName =
                 getString(R.string.sync_account_info, syncService.getAccountInfo().getEmail())
                         + "\n\n";
-        Date passphraseTime = syncService.getExplicitPassphraseTime();
-        if (passphraseTime != null) {
-            String syncPassphraseHelpContext =
-                    getString(R.string.help_context_change_sync_passphrase);
-            String passphraseTimeString =
-                    DateFormat.getDateInstance(DateFormat.MEDIUM).format(passphraseTime);
-            @PassphraseType int passphraseType = syncService.getPassphraseType();
-            switch (passphraseType) {
-                case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
-                case PassphraseType.CUSTOM_PASSPHRASE:
-                    return applyInProductHelpSpan(
-                            accountName
-                                    + getString(
-                                            R.string.sync_enter_passphrase_body_with_date_android,
-                                            passphraseTimeString),
-                            syncPassphraseHelpContext);
-                case PassphraseType.IMPLICIT_PASSPHRASE:
-                case PassphraseType.KEYSTORE_PASSPHRASE:
-                case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
-                default:
-                    Log.w(
-                            TAG,
-                            "Found incorrect passphrase type "
-                                    + passphraseType
-                                    + ". Falling back to default string.");
-            }
-        }
-        return new SpannableString(accountName + getString(R.string.sync_enter_passphrase_body));
+        return new SpannableString(
+                accountName + getString(R.string.sync_enter_passphrase_body_with_email));
     }
 
     private SpannableString getResetText() {
-        final Context context = getActivity();
         return SpanApplier.applySpans(
-                getString(R.string.sync_passphrase_reset_instructions),
+                getString(R.string.sync_passphrase_recover),
                 new SpanInfo(
-                        "<resetlink>",
-                        "</resetlink>",
+                        "BEGIN_LINK",
+                        "END_LINK",
                         new ClickableSpan() {
                             @Override
                             public void onClick(View view) {
-                                Uri syncDashboardUrl =
-                                        Uri.parse(ChromeStringConstants.SYNC_DASHBOARD_URL);
-                                Intent intent = new Intent(Intent.ACTION_VIEW, syncDashboardUrl);
-                                intent.setPackage(
-                                        ContextUtils.getApplicationContext().getPackageName());
-                                IntentUtils.safePutBinderExtra(
-                                        intent, CustomTabsIntent.EXTRA_SESSION, null);
-                                context.startActivity(intent);
+                                SyncSettingsUtils.openSyncDashboard(getActivity());
                             }
                         }));
     }
 
     private void handleCancel() {
-        getListener().onPassphraseCanceled();
+        getDelegate().onPassphraseCanceled();
     }
 
     private void handleSubmit() {
@@ -262,18 +197,18 @@ public class PassphraseDialogFragment extends DialogFragment
         mVerifyingTextView.setText(R.string.sync_verifying);
 
         String passphrase = mPassphraseEditText.getText().toString();
-        boolean success = getListener().onPassphraseEntered(passphrase);
+        boolean success = getDelegate().onPassphraseEntered(passphrase);
         if (!success) {
             invalidPassphrase();
         }
     }
 
-    private Listener getListener() {
+    private Delegate getDelegate() {
         Fragment target = getTargetFragment();
-        if (target instanceof Listener) {
-            return (Listener) target;
+        if (target instanceof Delegate) {
+            return (Delegate) target;
         }
-        return (Listener) getActivity();
+        return (Delegate) getActivity();
     }
 
     /** Notify this fragment that the passphrase the user entered is incorrect. */

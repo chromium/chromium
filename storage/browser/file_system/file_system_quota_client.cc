@@ -71,8 +71,8 @@ base::span<const FileSystemType> QuotaStorageTypeToFileSystemTypes(
     case StorageType::kDeprecatedPersistent:
     case StorageType::kUnknown:
       NOTREACHED();
-      return {};
   }
+  return {};
 }
 
 std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(

@@ -86,8 +86,12 @@ class AndroidSkiaGoldSessionDiffLinksTest(fake_filesystem_unittest.TestCase):
     self.setUpPyfakefs()
     self._working_dir = tempfile.mkdtemp()
     self._json_keys = tempfile.NamedTemporaryFile(delete=False).name
+    self._timestamp_patcher = mock.patch.object(gold_utils, '_GetTimestamp')
+    self._timestamp_mock = self._timestamp_patcher.start()
+    self.addCleanup(self._timestamp_patcher.stop)
 
   def test_outputManagerUsed(self):
+    self._timestamp_mock.return_value = 'ts0'
     args = createSkiaGoldArgs(git_revision='a', local_pixel_tests=True)
     sgp = gold_utils.AndroidSkiaGoldProperties(args)
     session = gold_utils.AndroidSkiaGoldSession(self._working_dir, sgp,
@@ -103,9 +107,10 @@ class AndroidSkiaGoldSessionDiffLinksTest(fake_filesystem_unittest.TestCase):
     output_manager = AndroidSkiaGoldSessionDiffLinksTest.FakeOutputManager()
     session._StoreDiffLinks('foo', output_manager, self._working_dir)
 
-    copied_input = os.path.join(output_manager.output_dir, 'given_foo.png')
-    copied_closest = os.path.join(output_manager.output_dir, 'closest_foo.png')
-    copied_diff = os.path.join(output_manager.output_dir, 'diff_foo.png')
+    copied_input = os.path.join(output_manager.output_dir, 'given_foo_ts0.png')
+    copied_closest = os.path.join(output_manager.output_dir,
+                                  'closest_foo_ts0.png')
+    copied_diff = os.path.join(output_manager.output_dir, 'diff_foo_ts0.png')
     with open(copied_input) as f:
       self.assertEqual(f.read(), 'input')
     with open(copied_closest) as f:
@@ -117,6 +122,91 @@ class AndroidSkiaGoldSessionDiffLinksTest(fake_filesystem_unittest.TestCase):
     self.assertEqual(session.GetClosestImageLink('foo'),
                      'file://' + copied_closest)
     self.assertEqual(session.GetDiffImageLink('foo'), 'file://' + copied_diff)
+
+  def test_diffLinksDoNotClobber(self):
+    """Tests that multiple calls to store links does not clobber files."""
+
+    def side_effect():
+      side_effect.count += 1
+      return f'ts{side_effect.count}'
+
+    side_effect.count = -1
+    self._timestamp_mock.side_effect = side_effect
+
+    args = createSkiaGoldArgs(git_revision='a', local_pixel_tests=True)
+    sgp = gold_utils.AndroidSkiaGoldProperties(args)
+    session = gold_utils.AndroidSkiaGoldSession(self._working_dir, sgp,
+                                                self._json_keys, None, None)
+    with open(os.path.join(self._working_dir, 'input-inputhash.png'), 'w') as f:
+      f.write('first input')
+    with open(os.path.join(self._working_dir, 'closest-closesthash.png'),
+              'w') as f:
+      f.write('first closest')
+    with open(os.path.join(self._working_dir, 'diff.png'), 'w') as f:
+      f.write('first diff')
+
+    output_manager = AndroidSkiaGoldSessionDiffLinksTest.FakeOutputManager()
+    session._StoreDiffLinks('foo', output_manager, self._working_dir)
+
+    # Store links normally once.
+    first_copied_input = os.path.join(output_manager.output_dir,
+                                      'given_foo_ts0.png')
+    first_copied_closest = os.path.join(output_manager.output_dir,
+                                        'closest_foo_ts0.png')
+    first_copied_diff = os.path.join(output_manager.output_dir,
+                                     'diff_foo_ts0.png')
+    with open(first_copied_input) as f:
+      self.assertEqual(f.read(), 'first input')
+    with open(first_copied_closest) as f:
+      self.assertEqual(f.read(), 'first closest')
+    with open(first_copied_diff) as f:
+      self.assertEqual(f.read(), 'first diff')
+
+    with open(os.path.join(self._working_dir, 'input-inputhash.png'), 'w') as f:
+      f.write('second input')
+    with open(os.path.join(self._working_dir, 'closest-closesthash.png'),
+              'w') as f:
+      f.write('second closest')
+    with open(os.path.join(self._working_dir, 'diff.png'), 'w') as f:
+      f.write('second diff')
+
+    self.assertEqual(session.GetGivenImageLink('foo'),
+                     'file://' + first_copied_input)
+    self.assertEqual(session.GetClosestImageLink('foo'),
+                     'file://' + first_copied_closest)
+    self.assertEqual(session.GetDiffImageLink('foo'),
+                     'file://' + first_copied_diff)
+
+    # Store links again and check that the new data is surfaced.
+    session._StoreDiffLinks('foo', output_manager, self._working_dir)
+
+    second_copied_input = os.path.join(output_manager.output_dir,
+                                       'given_foo_ts1.png')
+    second_copied_closest = os.path.join(output_manager.output_dir,
+                                         'closest_foo_ts1.png')
+    second_copied_diff = os.path.join(output_manager.output_dir,
+                                      'diff_foo_ts1.png')
+    with open(second_copied_input) as f:
+      self.assertEqual(f.read(), 'second input')
+    with open(second_copied_closest) as f:
+      self.assertEqual(f.read(), 'second closest')
+    with open(second_copied_diff) as f:
+      self.assertEqual(f.read(), 'second diff')
+
+    self.assertEqual(session.GetGivenImageLink('foo'),
+                     'file://' + second_copied_input)
+    self.assertEqual(session.GetClosestImageLink('foo'),
+                     'file://' + second_copied_closest)
+    self.assertEqual(session.GetDiffImageLink('foo'),
+                     'file://' + second_copied_diff)
+
+    # Check to make sure the first images still exist on disk and are unchanged.
+    with open(first_copied_input) as f:
+      self.assertEqual(f.read(), 'first input')
+    with open(first_copied_closest) as f:
+      self.assertEqual(f.read(), 'first closest')
+    with open(first_copied_diff) as f:
+      self.assertEqual(f.read(), 'first diff')
 
 
 if __name__ == '__main__':

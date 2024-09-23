@@ -173,7 +173,6 @@ class ImeMenuLabel : public views::Label {
       const views::SizeBounds& available_size) const override {
     return gfx::Size(kTrayItemSize, kTrayItemSize);
   }
-  int GetHeightForWidth(int width) const override { return kTrayItemSize; }
 };
 
 BEGIN_METADATA(ImeMenuLabel)
@@ -510,7 +509,7 @@ void ImeMenuTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
   }
 }
 
-void ImeMenuTray::ClickedOutsideBubble() {
+void ImeMenuTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
   CloseBubble();
 }
 
@@ -519,7 +518,7 @@ void ImeMenuTray::UpdateTrayItemColor(bool is_active) {
       extension_ime_util::IsArcIME(ime_controller_->current_ime().id));
 }
 
-void ImeMenuTray::CloseBubble() {
+void ImeMenuTray::CloseBubbleInternal() {
   bubble_.reset();
   ime_list_view_ = nullptr;
   SetIsActive(false);

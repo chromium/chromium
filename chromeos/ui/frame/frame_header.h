@@ -11,13 +11,14 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_observer.h"
-#include "ui/views/window/frame_caption_button.h"
+#include "ui/compositor/layer_owner.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace ash {
 FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, BackButtonAlignment);
@@ -38,6 +39,7 @@ class LayerTreeOwner;
 
 namespace views {
 enum class CaptionButtonLayoutSize;
+class FrameCaptionButton;
 class NonClientFrameView;
 class View;
 class Widget;
@@ -46,6 +48,8 @@ class Widget;
 namespace chromeos {
 
 class CaptionButtonModel;
+class FrameCenterButton;
+class FrameCaptionButtonContainerView;
 
 // Helper class for managing the window header.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
@@ -134,7 +138,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   virtual void SetPaintAsActive(bool paint_as_active);
 
   // Called when frame show state is changed.
-  void OnShowStateChanged(ui::WindowShowState show_state);
+  void OnShowStateChanged(ui::mojom::WindowShowState show_state);
 
   void OnFloatStateChanged();
 
@@ -225,7 +229,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
 
   // The widget that the caption buttons act on. This can be different from
   // |view_|'s widget.
-  raw_ptr<views::Widget, DanglingUntriaged> target_widget_;
+  raw_ptr<views::Widget> target_widget_;
 
   // The view into which |this| paints.
   raw_ptr<views::View, DanglingUntriaged> view_;

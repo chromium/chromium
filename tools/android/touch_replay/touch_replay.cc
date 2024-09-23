@@ -13,6 +13,8 @@
 #include <iostream>
 #include <string>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -248,7 +250,8 @@ bool RecordForever(const base::FilePath& file_path) {
   }
 
   // Write the magic.
-  if (!dump_file.WriteAtCurrentPos(kLogFileHeader, sizeof(kLogFileHeader))) {
+  if (!dump_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_with_nul_from_cstring(kLogFileHeader))) {
     LOG(ERROR) << "Could not write magic";
   }
 
@@ -273,9 +276,10 @@ bool RecordForever(const base::FilePath& file_path) {
     return false;
   }
 
-  // Write the device file name to the dump.
-  const std::string& s = device->path().MaybeAsASCII();
-  if (!dump_file.WriteAtCurrentPos(s.c_str(), s.size() + 1)) {
+  // Write the device file name to the dump (inc. terminating NUL).
+  std::string s = device->path().MaybeAsASCII();
+  if (!dump_file.WriteAtCurrentPosAndCheck(
+          base::as_bytes(UNSAFE_TODO(base::span(s.c_str(), s.size() + 1))))) {
     LOG(ERROR) << "Could not write device name";
     return false;
   }
@@ -297,8 +301,8 @@ bool RecordForever(const base::FilePath& file_path) {
                                    .type = event.type,
                                    .code = event.code,
                                    .value = event.value};
-      if (!dump_file.WriteAtCurrentPos(reinterpret_cast<char*>(&record),
-                                       sizeof(record))) {
+      if (!dump_file.WriteAtCurrentPosAndCheck(
+              base::byte_span_from_ref(record))) {
         LOG(ERROR) << "Failed to write record";
         return false;
       }

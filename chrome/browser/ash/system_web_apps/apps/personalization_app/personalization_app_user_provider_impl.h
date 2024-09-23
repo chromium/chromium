@@ -12,8 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
+#include "chromeos/ash/components/camera_presence_notifier/camera_presence_notifier.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -142,9 +142,9 @@ class PersonalizationAppUserProviderImpl
   mojo::Receiver<ash::personalization_app::mojom::UserProvider> user_receiver_{
       this};
 
-  std::unique_ptr<ash::UserImageFileSelector> user_image_file_selector_;
-
   scoped_refptr<base::SequencedTaskRunner> image_encoding_task_runner_;
+
+  std::unique_ptr<ash::UserImageFileSelector> user_image_file_selector_;
 
   base::WeakPtrFactory<PersonalizationAppUserProviderImpl> weak_ptr_factory_{
       this};

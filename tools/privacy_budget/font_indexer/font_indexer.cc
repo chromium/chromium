@@ -116,7 +116,7 @@ void FontIndexer::FontListHasLoaded(base::Value::List list) {
 bool FontIndexer::DoesFontHaveDigest(WTF::AtomicString name,
                                      blink::FontDescription font_description,
                                      int64_t digest) {
-  scoped_refptr<blink::SimpleFontData> font_data =
+  const blink::SimpleFontData* font_data =
       font_cache_->GetFontData(font_description, name);
   DCHECK(font_data);
   return blink::FontGlobalContext::Get()
@@ -170,7 +170,7 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
   // exists and for later comparison.
   int64_t default_font_digest;
   {
-    scoped_refptr<blink::SimpleFontData> font_data =
+    const blink::SimpleFontData* font_data =
         font_cache_->GetFontData(blink::FontDescription(), name);
     default_font_digest =
         font_data ? blink::FontGlobalContext::Get()
@@ -231,7 +231,7 @@ void FontIndexer::PrintAllFontsWithName(WTF::AtomicString name) {
       for (auto slope_pair : slopes) {
         font_description.SetStyle(slope_pair.first);
 
-        if (scoped_refptr<blink::SimpleFontData> font_data =
+        if (const blink::SimpleFontData* font_data =
                 font_cache_->GetFontData(font_description, name)) {
           uint64_t typeface_digest =
               blink::FontGlobalContext::Get()

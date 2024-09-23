@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 
 #include <string.h>
@@ -109,7 +114,7 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
     DCHECK(reader_);
 
     ExceptionState exception_state(script_state_->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     auto* read_request = MakeGarbageCollected<BytesConsumerReadRequest>(this);
     ReadableStreamDefaultReader::Read(script_state_, reader_, read_request,
                                       exception_state);
@@ -157,7 +162,7 @@ void ReadableStreamBytesConsumer::Cancel() {
   if (!ScriptForbiddenScope::IsScriptForbidden()) {
     ScriptState::Scope scope(script_state_);
     ExceptionState exception_state(script_state_->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     reader_->cancel(script_state_, exception_state);
     // We ignore exceptions as we can do nothing here.
   }

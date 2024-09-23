@@ -11,9 +11,13 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <unistd.h>
+
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_path.h"
 #include "base/process/process_handle.h"
@@ -46,24 +50,24 @@ bool ReadProcFile(const FilePath& file, std::string* buffer);
 // a process, convert it to a pid_t.
 // Returns 0 on failure.
 // e.g. /proc/self/ will return 0, whereas /proc/1234 will return 1234.
-pid_t ProcDirSlotToPid(const char* d_name);
+pid_t ProcDirSlotToPid(std::string_view d_name);
 
 // Read |filename| in /proc/<pid>/, split the entries into key/value pairs, and
 // trim the key and value. On success, return true and write the trimmed
 // key/value pairs into |key_value_pairs|.
 bool ReadProcFileToTrimmedStringPairs(pid_t pid,
-                                      StringPiece filename,
+                                      std::string_view filename,
                                       StringPairs* key_value_pairs);
 
 // Read /proc/<pid>/status and return the value for |field|, or 0 on failure.
 // Only works for fields in the form of "Field: value kB".
-size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, StringPiece field);
+size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field);
 
 // Read /proc/<pid>/status and look for |field|. On success, return true and
 // write the value for |field| into |result|.
 // Only works for fields in the form of "field    :     uint_value"
 bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
-                                       StringPiece field,
+                                       std::string_view field,
                                        uint64_t* result);
 
 // Reads /proc/<pid>/stat into |buffer|. Returns true if the file can be read
@@ -99,6 +103,13 @@ enum ProcStatsFields {
 // simply |pid|, and the next two values are strings.
 int64_t GetProcStatsFieldAsInt64(const std::vector<std::string>& proc_stats,
                                  ProcStatsFields field_num);
+
+// Reads the `field_num`th field from `proc_stats`. Asserts that `field_num` is
+// a valid index into `proc_stats`. Returns nullopt if the field doesn't contain
+// a valid integer.
+std::optional<int64_t> GetProcStatsFieldAsOptionalInt64(
+    base::span<const std::string> proc_stats,
+    ProcStatsFields field_num);
 
 // Same as GetProcStatsFieldAsInt64(), but for size_t values.
 size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,

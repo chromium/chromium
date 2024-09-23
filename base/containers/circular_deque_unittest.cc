@@ -9,9 +9,11 @@
 #include "base/test/copy_only_int.h"
 #include "base/test/gtest_util.h"
 #include "base/test/move_only_int.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::internal::VectorBuffer;
+using testing::ElementsAre;
 
 namespace base {
 
@@ -19,8 +21,9 @@ namespace {
 
 circular_deque<int> MakeSequence(size_t max) {
   circular_deque<int> ret;
-  for (size_t i = 0; i < max; i++)
+  for (size_t i = 0; i < max; i++) {
     ret.push_back(i);
+  }
   return ret;
 }
 
@@ -76,8 +79,9 @@ TEST(CircularDeque, FillConstructor) {
     EXPECT_EQ(num_elts, buf.size());
     EXPECT_EQ(num_elts, static_cast<size_t>(buf.end() - buf.begin()));
 
-    for (size_t i = 0; i < num_elts; i++)
+    for (size_t i = 0; i < num_elts; i++) {
       EXPECT_EQ(0, buf[i]);
+    }
   }
 
   // Fill with explicit value.
@@ -88,30 +92,35 @@ TEST(CircularDeque, FillConstructor) {
     EXPECT_EQ(num_elts, buf.size());
     EXPECT_EQ(num_elts, static_cast<size_t>(buf.end() - buf.begin()));
 
-    for (size_t i = 0; i < num_elts; i++)
+    for (size_t i = 0; i < num_elts; i++) {
       EXPECT_EQ(value, buf[i]);
+    }
   }
 }
 
-TEST(CircularDeque, CopyAndRangeConstructor) {
+TEST(CircularDeque, IteratorConstructor) {
   int values[] = {1, 2, 3, 4, 5, 6};
-  circular_deque<CopyOnlyInt> first(std::begin(values), std::end(values));
+  // SAFETY: Testing the unsafe ctor. begin/end form a valid iterator pair.
+  auto first = UNSAFE_BUFFERS(
+      circular_deque<CopyOnlyInt>(std::begin(values), std::end(values)));
 
   circular_deque<CopyOnlyInt> second(first);
   EXPECT_EQ(6u, second.size());
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; i++) {
     EXPECT_EQ(i + 1, second[i].data());
+  }
 }
 
 TEST(CircularDeque, MoveConstructor) {
   int values[] = {1, 2, 3, 4, 5, 6};
-  circular_deque<MoveOnlyInt> first(std::begin(values), std::end(values));
+  circular_deque<MoveOnlyInt> first(base::from_range, values);
 
   circular_deque<MoveOnlyInt> second(std::move(first));
   EXPECT_TRUE(first.empty());
   EXPECT_EQ(6u, second.size());
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; i++) {
     EXPECT_EQ(i + 1, second[i].data());
+  }
 }
 
 TEST(CircularDeque, InitializerListConstructor) {
@@ -120,8 +129,18 @@ TEST(CircularDeque, InitializerListConstructor) {
 
   circular_deque<int> first({1, 2, 3, 4, 5, 6});
   EXPECT_EQ(6u, first.size());
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; i++) {
     EXPECT_EQ(i + 1, first[i]);
+  }
+}
+
+TEST(CircularDeque, RangeConstructor) {
+  circular_deque<CopyOnlyInt> deq(base::from_range,
+                                  std::vector({1, 2, 3, 4, 5, 6}));
+  EXPECT_EQ(6u, deq.size());
+  for (int i = 0; i < 6; i++) {
+    EXPECT_EQ(i + 1, deq[i].data());
+  }
 }
 
 TEST(CircularDeque, Destructor) {
@@ -175,8 +194,9 @@ TEST(CircularDeque, EqualsMove) {
   move = std::move(first);
   EXPECT_TRUE(first.empty());
   EXPECT_EQ(6u, move.size());
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; i++) {
     EXPECT_EQ(i + 1, move[i]);
+  }
 }
 
 // Tests that self-assignment is a no-op.
@@ -184,8 +204,9 @@ TEST(CircularDeque, EqualsSelf) {
   circular_deque<int> q = {1, 2, 3, 4, 5, 6};
   q = *&q;  // The *& defeats Clang's -Wself-assign warning.
   EXPECT_EQ(6u, q.size());
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; i++) {
     EXPECT_EQ(i + 1, q[i]);
+  }
 }
 
 TEST(CircularDeque, EqualsInitializerList) {
@@ -193,8 +214,9 @@ TEST(CircularDeque, EqualsInitializerList) {
   EXPECT_TRUE(q.empty());
   q = {1, 2, 3, 4, 5, 6};
   EXPECT_EQ(6u, q.size());
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 6; i++) {
     EXPECT_EQ(i + 1, q[i]);
+  }
 }
 
 TEST(CircularDeque, AssignCountValue) {
@@ -208,22 +230,26 @@ TEST(CircularDeque, AssignCountValue) {
   full.assign(count, value);
   EXPECT_EQ(count, full.size());
 
-  for (size_t i = 0; i < count; i++)
+  for (size_t i = 0; i < count; i++) {
     EXPECT_EQ(value, full[i]);
+  }
 }
 
 TEST(CircularDeque, AssignIterator) {
-  int range[8] = {11, 12, 13, 14, 15, 16, 17, 18};
+  auto range = std::to_array<int>({11, 12, 13, 14, 15, 16, 17, 18});
 
   circular_deque<int> empty;
-  empty.assign(std::begin(range), std::begin(range));
+  // SAFETY: begin and begin provide an valid iterator pair over `range`.
+  UNSAFE_BUFFERS(empty.assign(std::begin(range), std::begin(range)));
   EXPECT_TRUE(empty.empty());
 
   circular_deque<int> full;
-  full.assign(std::begin(range), std::end(range));
+  // SAFETY: begin and end provide an valid iterator pair over `range`.
+  UNSAFE_BUFFERS(full.assign(std::begin(range), std::end(range)));
   EXPECT_EQ(8u, full.size());
-  for (size_t i = 0; i < 8; i++)
+  for (size_t i = 0; i < 8u; i++) {
     EXPECT_EQ(range[i], full[i]);
+  }
 }
 
 TEST(CircularDeque, AssignInitializerList) {
@@ -234,8 +260,22 @@ TEST(CircularDeque, AssignInitializerList) {
   circular_deque<int> full;
   full.assign({11, 12, 13, 14, 15, 16, 17, 18});
   EXPECT_EQ(8u, full.size());
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < 8; i++) {
     EXPECT_EQ(11 + i, full[i]);
+  }
+}
+
+TEST(CircularDeque, AssignRange) {
+  circular_deque<int> empty;
+  empty.assign_range(std::vector<int>{});
+  EXPECT_TRUE(empty.empty());
+
+  circular_deque<int> full;
+  full.assign_range(std::vector<int>{11, 12, 13, 14, 15, 16, 17, 18});
+  EXPECT_EQ(8u, full.size());
+  for (int i = 0; i < 8; i++) {
+    EXPECT_EQ(11 + i, full[i]);
+  }
 }
 
 // Tests [] and .at().
@@ -341,12 +381,14 @@ TEST(CircularDeque, Swap) {
 
   a.swap(b);
   EXPECT_EQ(100u, a.size());
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < 100; i++) {
     EXPECT_EQ(i, a[i]);
+  }
 
   EXPECT_EQ(10u, b.size());
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 10; i++) {
     EXPECT_EQ(i, b[i]);
+  }
 }
 
 TEST(CircularDeque, Iteration) {
@@ -559,8 +601,9 @@ TEST(CircularDeque, CapacityReserveShrink) {
   EXPECT_EQ(new_capacity, q.capacity());
 
   // Adding that many items should not cause a resize.
-  for (size_t i = 0; i < new_capacity; i++)
+  for (size_t i = 0; i < new_capacity; i++) {
     q.push_back(i);
+  }
   EXPECT_EQ(new_capacity, q.size());
   EXPECT_EQ(new_capacity, q.capacity());
 
@@ -580,8 +623,9 @@ TEST(CircularDeque, CapacityAutoShrink) {
   size_t big_capacity = q.capacity();
 
   // Delete 3/4 of the items.
-  for (size_t i = 0; i < big_size / 4 * 3; i++)
+  for (size_t i = 0; i < big_size / 4 * 3; i++) {
     q.pop_back();
+  }
 
   // The capacity should have shrunk by deleting that many items.
   size_t medium_capacity = q.capacity();
@@ -622,17 +666,20 @@ TEST(CircularDeque, Resize) {
   size_t first_size = 10;
   q.resize(first_size);
   EXPECT_EQ(first_size, q.size());
-  for (size_t i = 0; i < first_size; i++)
+  for (size_t i = 0; i < first_size; i++) {
     EXPECT_EQ(0, q[i]);
+  }
 
   // Resize with different value.
   size_t second_expand = 10;
   q.resize(first_size + second_expand, 3);
   EXPECT_EQ(first_size + second_expand, q.size());
-  for (size_t i = 0; i < first_size; i++)
+  for (size_t i = 0; i < first_size; i++) {
     EXPECT_EQ(0, q[i]);
-  for (size_t i = 0; i < second_expand; i++)
+  }
+  for (size_t i = 0; i < second_expand; i++) {
     EXPECT_EQ(3, q[i + first_size]);
+  }
 
   // Erase from the end and add to the beginning so resize is forced to cross
   // a circular buffer wrap boundary.
@@ -766,6 +813,14 @@ TEST(CircularDeque, InsertFill) {
   EXPECT_EQ(200, q[7]);
 }
 
+TEST(CircularDeque, InsertFromPointers) {
+  circular_deque<int> q;
+
+  int data[] = {1, 2, 3};
+  q.insert(q.begin(), std::begin(data), std::end(data));
+  EXPECT_THAT(q, ElementsAre(1, 2, 3));
+}
+
 TEST(CircularDeque, InsertEraseRange) {
   circular_deque<int> q;
 
@@ -773,17 +828,23 @@ TEST(CircularDeque, InsertEraseRange) {
   q.erase(q.begin(), q.end());
 
   // Loop index used below to shift the used items in the buffer.
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 1; i++) {
     circular_deque<int> source;
 
     // Fill empty range.
     q.insert(q.begin(), source.begin(), source.end());
+    ASSERT_EQ(0u, q.size());
 
     // Have some stuff to insert.
     source.push_back(1);
     source.push_back(2);
+    EXPECT_EQ(1, source[0]);
+    EXPECT_EQ(2, source[1]);
 
     q.insert(q.begin(), source.begin(), source.end());
+    ASSERT_EQ(2u, q.size());
+    EXPECT_EQ(1, q[0]);
+    EXPECT_EQ(2, q[1]);
 
     // Shift the used items in the buffer by i which will place the two used
     // elements in different places in the buffer each time through this loop.
@@ -842,7 +903,7 @@ TEST(CircularDeque, InsertEraseRange) {
 
 TEST(CircularDeque, EmplaceMoveOnly) {
   int values[] = {1, 3};
-  circular_deque<MoveOnlyInt> q(std::begin(values), std::end(values));
+  circular_deque<MoveOnlyInt> q(base::from_range, values);
 
   q.emplace(q.begin(), MoveOnlyInt(0));
   q.emplace(q.begin() + 2, MoveOnlyInt(2));
@@ -914,6 +975,115 @@ TEST(CircularDeque, DoesntChurnRefCount) {
   EXPECT_GE(deque.capacity(), kCount);
   for (const auto& counter : counters) {
     EXPECT_EQ(1, counter.ref_count_changes());
+  }
+}
+
+TEST(CircularDeque, EraseBoundaryConditions) {
+  {
+    circular_deque<int> d;
+
+    d.reserve(3u);
+    d.push_back(0);
+    d.push_back(1);
+    d.pop_front();  // Drop 0, making 1 empty spot at the front.
+    d.push_back(2);
+    d.push_back(3);
+    EXPECT_THAT(d, ElementsAre(1, 2, 3));
+    // Now the buffer has [_, 1, 2, 3] and the erase will make us copy elements
+    // from the end of the buffer. It's erasing from the middle of the values so
+    // that we can't just shift the begin up. We will try to copy 1 items from
+    // the back of the buffer, but if we do it wrong as the end of the copy
+    // range is at the start of the buffer, we'll end up trying to copy from
+    // outside the buffer.
+    d.erase(std::ranges::find(d, 2));
+    EXPECT_THAT(d, ElementsAre(1, 3));
+  }
+
+  {
+    circular_deque<int> d;
+
+    d.reserve(4u);
+    d.push_back(0);
+    d.push_back(0);
+    d.pop_front();  // Drop 0, making 1 empty spot at the front.
+    d.push_back(1);
+    d.pop_front();  // Drop 0, making 2 empty spots at the front.
+    d.push_back(2);
+    d.push_back(3);
+    d.push_back(4);  // Eats the first empty spot at the front.
+    EXPECT_THAT(d, ElementsAre(1, 2, 3, 4));
+    // Now the buffer has [4, _, 1, 2, 3] and the erase will make us copy
+    // elements from the end of the buffer and from the start of the buffer.
+    // It's erasing from the middle of the values so that we can't just shift
+    // the begin up. We will try to copy 1 items from the back of the buffer,
+    // and 1 fro mthe start, but if we do it wrong we'll end up trying to copy
+    // from outside the buffer.
+    d.erase(std::ranges::find(d, 2), std::ranges::find(d, 4));
+    EXPECT_THAT(d, ElementsAre(1, 4));
+  }
+
+  {
+    circular_deque<int> d;
+
+    d.reserve(4u);
+    d.push_back(0);
+    d.push_back(0);
+    d.pop_front();  // Drop 0, making 1 empty spot at the front.
+    d.push_back(0);
+    d.pop_front();  // Drop 0, making 2 empty spots at the front.
+    d.push_back(1);
+    d.pop_front();  // Drop 0, making 3 empty spots at the front.
+    d.push_back(2);
+    d.push_back(3);  // Eats the first empty spot at the front.
+    d.push_back(4);  // Eats the second empty spot at the front.
+    EXPECT_THAT(d, ElementsAre(1, 2, 3, 4));
+    // Now the buffer has [3, 4, _, 1, 2] and the erase will wrap around the
+    // end. It's erasing from the middle of the values so that we can't just
+    // shift the begin up. We're going to move more than one element from the
+    // front of the buffer to the back. If we do it wrong, we'll write out the
+    // back of the buffer.
+    d.erase(std::ranges::find(d, 2), std::ranges::find(d, 4));
+    EXPECT_THAT(d, ElementsAre(1, 4));
+  }
+}
+
+TEST(CircularDeque, InsertBoundaryConditions) {
+  {
+    circular_deque<int> d;
+
+    d.reserve(3u);
+    d.push_back(0);
+    d.push_back(1);
+    d.pop_front();  // Drop 0, making 1 empty spot at the front.
+    d.push_back(2);
+    EXPECT_THAT(d, ElementsAre(1, 2));
+    // Now the buffer has [_, 1, 2], when we insert between 1 and 2, it will
+    // have to copy 2 to the front of the buffer. If we do it wrong, it will
+    // copy it out of bounds.
+    d.insert(std::ranges::find(d, 2), 3);
+    EXPECT_THAT(d, ElementsAre(1, 3, 2));
+  }
+
+  {
+    circular_deque<int> d;
+
+    d.reserve(4u);
+    d.push_back(0);
+    d.push_back(0);
+    d.push_back(0);
+    d.push_back(1);
+    d.pop_front();  // Drop 0, making 1 empty spot at the front.
+    d.pop_front();  // Drop 0, making 2 empty spots at the front.
+    d.pop_front();  // Drop 0, making 3 empty spots at the front.
+    d.push_back(2);
+    d.push_back(3);  // Eat the first empty spot at the front.
+    EXPECT_THAT(d, ElementsAre(1, 2, 3));
+    // Now the buffer has [3, _, _, 1, 2], when we insert between 1 and 2, it
+    // will have to copy 2 to the front of the buffer and copy from 3 at the
+    // front of the buffer. If we do it wrong, it will copy to/from outside the
+    // bounds of the buffer.
+    d.insert(std::ranges::find(d, 2), 4);
+    EXPECT_THAT(d, ElementsAre(1, 4, 2, 3));
   }
 }
 

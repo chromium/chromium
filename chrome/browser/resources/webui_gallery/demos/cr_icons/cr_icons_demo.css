@@ -1,0 +1,40 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=../demo.css.js
+ * #scheme=relative
+ * #include=demo
+ * #css_wrapper_metadata_end */
+
+.icons {
+  display: grid;
+  font-size: 11px;
+  gap: 12px;
+  grid-auto-rows: 75px;
+  grid-template-columns: repeat(auto-fill, 75px);
+  text-align: center;
+  width: 100%;
+}
+
+.icon {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.icon cr-icon,
+.icon .cr-icon {
+  margin-block-end: 12px;
+}
+
+.label {
+  height: 30%;
+}
+
+cr-input {
+  --cr-input-error-display: none;
+}

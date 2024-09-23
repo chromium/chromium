@@ -153,9 +153,8 @@ ScrollNode& CreateScrollNodeInternal(LayerType* layer,
   }
   node->bounds = layer->bounds();
   node->container_bounds = scroll_container_bounds;
-  node->scrollable = !scroll_container_bounds.IsEmpty();
-  node->user_scrollable_horizontal = true;
-  node->user_scrollable_vertical = true;
+  node->user_scrollable_horizontal = node->user_scrollable_vertical =
+      !scroll_container_bounds.IsEmpty();
   node->is_composited = true;
 
   DCHECK(layer->has_transform_node());
@@ -323,13 +322,10 @@ ScrollNode& CreateScrollNode(Layer* layer,
 ScrollNode& CreateScrollNode(LayerImpl* layer,
                              const gfx::Size& scroll_container_bounds,
                              int parent_id) {
-  auto& node =
-      CreateScrollNodeInternal(layer, scroll_container_bounds, parent_id);
-  layer->UpdateScrollable();
-  return node;
+  return CreateScrollNodeInternal(layer, scroll_container_bounds, parent_id);
 }
 
-ScrollNode& CreateScrollNodeForUncompositedScroller(
+ScrollNode& CreateScrollNodeForNonCompositedScroller(
     PropertyTrees* property_trees,
     int parent_id,
     ElementId element_id,
@@ -347,9 +343,8 @@ ScrollNode& CreateScrollNodeForUncompositedScroller(
 
   node->bounds = bounds;
   node->container_bounds = scroll_container_bounds;
-  node->scrollable = !scroll_container_bounds.IsEmpty();
-  node->user_scrollable_horizontal = true;
-  node->user_scrollable_vertical = true;
+  node->user_scrollable_horizontal = node->user_scrollable_vertical =
+      !scroll_container_bounds.IsEmpty();
   node->is_composited = false;
 
   // Create a matching transform node.

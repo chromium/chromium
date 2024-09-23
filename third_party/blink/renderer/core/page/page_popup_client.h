@@ -57,7 +57,7 @@ class CORE_EXPORT PagePopupClient {
   // The content HTML supports:
   //  - No <select> popups
   //  - window.setValueAndClosePopup(number, string).
-  virtual void WriteDocument(SharedBuffer*) = 0;
+  virtual void WriteDocument(SegmentedBuffer&) = 0;
 
   virtual Element& OwnerElement() = 0;
 
@@ -102,18 +102,22 @@ class CORE_EXPORT PagePopupClient {
   virtual ~PagePopupClient() = default;
 
   // Helper functions to be used in PagePopupClient::WriteDocument().
-  static void AddString(const String&, SharedBuffer*);
-  static void AddJavaScriptString(const String&, SharedBuffer*);
-  static void AddProperty(const char* name, const String& value, SharedBuffer*);
-  static void AddProperty(const char* name, int value, SharedBuffer*);
-  static void AddProperty(const char* name, unsigned value, SharedBuffer*);
-  static void AddProperty(const char* name, bool value, SharedBuffer*);
-  static void AddProperty(const char* name, double, SharedBuffer*);
+  static void AddString(const String&, SegmentedBuffer&);
+  static void AddJavaScriptString(const String&, SegmentedBuffer&);
+  static void AddProperty(const char* name,
+                          const String& value,
+                          SegmentedBuffer&);
+  static void AddProperty(const char* name, int value, SegmentedBuffer&);
+  static void AddProperty(const char* name, unsigned value, SegmentedBuffer&);
+  static void AddProperty(const char* name, bool value, SegmentedBuffer&);
+  static void AddProperty(const char* name, double, SegmentedBuffer&);
   static void AddProperty(const char* name,
                           const Vector<String>& values,
-                          SharedBuffer*);
-  static void AddProperty(const char* name, const gfx::Rect&, SharedBuffer*);
-  void AddLocalizedProperty(const char* name, int resource_id, SharedBuffer*);
+                          SegmentedBuffer&);
+  static void AddProperty(const char* name, const gfx::Rect&, SegmentedBuffer&);
+  void AddLocalizedProperty(const char* name,
+                            int resource_id,
+                            SegmentedBuffer&);
 
   virtual void SetMenuListOptionsBoundsInAXTree(WTF::Vector<gfx::Rect>&,
                                                 gfx::Point) {}
@@ -122,9 +126,10 @@ class CORE_EXPORT PagePopupClient {
   void AdjustSettingsFromOwnerColorScheme(Settings& popup_settings);
 };
 
-inline void PagePopupClient::AddString(const String& str, SharedBuffer* data) {
+inline void PagePopupClient::AddString(const String& str,
+                                       SegmentedBuffer& data) {
   StringUTF8Adaptor utf8(str);
-  data->Append(utf8.data(), utf8.size());
+  data.Append(utf8.data(), utf8.size());
 }
 
 }  // namespace blink

@@ -2,8 +2,8 @@ Name: WebRTC
 URL: http://www.webrtc.org
 Version: 0
 Revision: 0
-License: BSD
-License File: ../webrtc/LICENSE
+License: BSD 3-Clause
+License File: LICENSE
 Security Critical: yes
 Shipped: yes
 

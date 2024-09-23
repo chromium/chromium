@@ -2,27 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_
+#ifndef PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_
+#define PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_
 
 #include <bitset>
 #include <limits>
 
-#include "build/build_config.h"
 #include "partition_alloc/address_pool_manager_types.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
-#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 #include "partition_alloc/address_pool_manager_bitmap.h"
 #endif
 
@@ -59,7 +58,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   AddressPoolManager(const AddressPoolManager&) = delete;
   AddressPoolManager& operator=(const AddressPoolManager&) = delete;
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   void Add(pool_handle handle, uintptr_t address, size_t length);
   void Remove(pool_handle handle);
 
@@ -69,7 +68,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
   // Return the base address of a pool.
   uintptr_t GetPoolBaseAddress(pool_handle handle);
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   // Reserves address space from the pool.
   uintptr_t Reserve(pool_handle handle,
@@ -82,7 +81,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
                             size_t length);
   void ResetForTesting();
 
-#if !BUILDFLAG(HAS_64_BIT_POINTERS)
+#if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   void MarkUsed(pool_handle handle, uintptr_t address, size_t size);
   void MarkUnused(pool_handle handle, uintptr_t address, size_t size);
 
@@ -93,13 +92,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   static bool IsManagedByBRPPool(uintptr_t address) {
     return AddressPoolManagerBitmap::IsManagedByBRPPool(address);
   }
-#endif  // !BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   void DumpStats(AddressSpaceStatsDumper* dumper);
 
  private:
   friend class AddressPoolManagerForTesting;
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // If we use a thread isolated pool, we need to write-protect its metadata.
   // Allow the function to get access to the pool pointer.
   friend void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption);
@@ -113,11 +112,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   // if PartitionAlloc is wholly unused in this process.)
   bool GetStats(AddressSpaceStats* stats);
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  // This function just exists to static_assert the layout of the private fields
+  // in Pool. It is never called.
   static void AssertThreadIsolatedLayout();
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
-#if BUILDFLAG(HAS_64_BIT_POINTERS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
   class Pool {
    public:
@@ -162,14 +163,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
     size_t total_bits_ = 0;
     uintptr_t address_begin_ = 0;
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     uintptr_t address_end_ = 0;
 #endif
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     friend class AddressPoolManager;
     friend void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption);
-#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   };
 
   PA_ALWAYS_INLINE Pool* GetPool(pool_handle handle) {
@@ -199,11 +200,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 #endif
   Pool pools_[kNumPools];
 
-#endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-  static PA_CONSTINIT AddressPoolManager singleton_;
+  PA_CONSTINIT static AddressPoolManager singleton_;
 };
 
 }  // namespace partition_alloc::internal
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_
+#endif  // PARTITION_ALLOC_ADDRESS_POOL_MANAGER_H_

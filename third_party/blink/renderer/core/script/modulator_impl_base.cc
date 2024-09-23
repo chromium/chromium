@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/script/modulator_impl_base.h"
+
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_tree_linker_registry.h"
+#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/script/dynamic_module_resolver.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/js_module_script.h"
@@ -25,7 +27,7 @@
 #include "third_party/blink/renderer/core/script/parsed_specifier.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
 namespace blink {
 
@@ -152,7 +154,7 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
 
   switch (parsed_specifier.GetType()) {
     case ParsedSpecifier::Type::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return KURL();
 
     case ParsedSpecifier::Type::kBare:
@@ -176,7 +178,7 @@ bool ModulatorImplBase::HasValidContext() {
 void ModulatorImplBase::ResolveDynamically(
     const ModuleRequest& module_request,
     const ReferrerScriptInfo& referrer_info,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolver<IDLAny>* resolver) {
   String reason;
   if (IsDynamicImportForbidden(&reason)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
@@ -204,6 +206,28 @@ ModuleImportMeta ModulatorImplBase::HostGetImportMetaProperties(
   // <spec step="4">Return « Record { [[Key]]: "url", [[Value]]: urlString }
   // ».</spec>
   return ModuleImportMeta(url_string);
+}
+
+String ModulatorImplBase::GetIntegrityMetadataString(const KURL& url) const {
+  const ImportMap* import_map = GetImportMap();
+  if (!import_map) {
+    return String();
+  }
+  return import_map->GetIntegrity(url);
+}
+
+IntegrityMetadataSet ModulatorImplBase::GetIntegrityMetadata(
+    const KURL& url) const {
+  String value = GetIntegrityMetadataString(url);
+  IntegrityMetadataSet integrity_metadata;
+  if (!value.IsNull()) {
+    SubresourceIntegrity::ReportInfo report_info;
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        value, SubresourceIntegrity::IntegrityFeatures::kDefault,
+        integrity_metadata, &report_info);
+    SubresourceIntegrityHelper::DoReport(*GetExecutionContext(), report_info);
+  }
+  return integrity_metadata;
 }
 
 ModuleType ModulatorImplBase::ModuleTypeFromRequest(

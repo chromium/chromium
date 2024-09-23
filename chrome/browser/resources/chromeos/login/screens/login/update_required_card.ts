@@ -16,13 +16,13 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {CheckingDownloadingUpdate} from './checking_downloading_update.js';
 import {getTemplate} from './update_required_card.html.js';
@@ -43,12 +43,7 @@ enum UpdateRequiredUiState {
 }
 
 const UpdateRequiredBase =
-    mixinBehaviors(
-        [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-        PolymerElement) as {
-      new (): PolymerElement & OobeI18nBehaviorInterface &
-          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 export class UpdateRequired extends UpdateRequiredBase {
   static get is() {
@@ -153,8 +148,8 @@ export class UpdateRequired extends UpdateRequiredBase {
 
   /** Initial UI State for screen */
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  override getOobeUIInitialState() {
-    return OOBE_UI_STATE.BLOCKING;
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.BLOCKING;
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -166,7 +161,8 @@ export class UpdateRequired extends UpdateRequiredBase {
     return UpdateRequiredUiState;
   }
 
-  onBeforeShow(): void {
+  override onBeforeShow(): void {
+    super.onBeforeShow();
     const elem = this.shadowRoot?.querySelector('#downloadingUpdate');
     if (elem instanceof CheckingDownloadingUpdate) {
       elem.onBeforeShow();
@@ -277,7 +273,7 @@ export class UpdateRequired extends UpdateRequiredBase {
   }
 
   private isEmpty(eolAdminMessage: string): boolean {
-    return !eolAdminMessage || eolAdminMessage.trim().length == 0;
+    return !eolAdminMessage || eolAdminMessage.trim().length === 0;
   }
 
   private updateEolDeleteUsersDataMessage(): void {
@@ -291,6 +287,7 @@ export class UpdateRequired extends UpdateRequiredBase {
     const linkElement = this.shadowRoot?.querySelector('#deleteDataLink')!;
     if (linkElement instanceof HTMLAnchorElement) {
       linkElement.setAttribute('is', 'action-link');
+      linkElement.setAttribute('aria-describedby', 'deleteUsersDataMessage');
       linkElement.classList.add('oobe-local-link');
       linkElement.addEventListener(
           'click', () => this.showConfirmationDialog());

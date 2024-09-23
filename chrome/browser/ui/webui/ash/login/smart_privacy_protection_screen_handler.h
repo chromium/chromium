@@ -15,8 +15,7 @@ class SmartPrivacyProtectionScreen;
 
 // Interface between SmartPrivacyProtection screen and its representation,
 // either WebUI or Views one.
-class SmartPrivacyProtectionView
-    : public base::SupportsWeakPtr<SmartPrivacyProtectionView> {
+class SmartPrivacyProtectionView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "smart-privacy-protection", "SmartPrivacyProtectionScreen"};
@@ -24,12 +23,14 @@ class SmartPrivacyProtectionView
   virtual ~SmartPrivacyProtectionView() {}
 
   virtual void Show() = 0;
+  virtual base::WeakPtr<SmartPrivacyProtectionView> AsWeakPtr() = 0;
 };
 
 // WebUI implementation of SmartPrivacyProtectionView. It is used to interact
 // with the SmartPrivacyProtection part of the JS page.
-class SmartPrivacyProtectionScreenHandler : public SmartPrivacyProtectionView,
-                                            public BaseScreenHandler {
+class SmartPrivacyProtectionScreenHandler final
+    : public SmartPrivacyProtectionView,
+      public BaseScreenHandler {
  public:
   using TView = SmartPrivacyProtectionView;
 
@@ -44,11 +45,15 @@ class SmartPrivacyProtectionScreenHandler : public SmartPrivacyProtectionView,
 
   // SmartPrivacyProtectionView implementation:
   void Show() override;
+  base::WeakPtr<SmartPrivacyProtectionView> AsWeakPtr() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void GetAdditionalParameters(base::Value::Dict* dict) override;
+
+ private:
+  base::WeakPtrFactory<SmartPrivacyProtectionView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

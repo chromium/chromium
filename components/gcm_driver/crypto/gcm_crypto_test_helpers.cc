@@ -8,9 +8,10 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 
 #include "base/base64url.h"
-#include "base/strings/string_util.h"
+#include "base/containers/span.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/crypto/gcm_message_cryptographer.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
@@ -19,9 +20,9 @@
 
 namespace gcm {
 
-bool CreateEncryptedPayloadForTesting(const base::StringPiece& payload,
-                                      const base::StringPiece& peer_public_key,
-                                      const base::StringPiece& auth_secret,
+bool CreateEncryptedPayloadForTesting(std::string_view payload,
+                                      std::string_view peer_public_key,
+                                      std::string_view auth_secret,
                                       IncomingMessage* message) {
   DCHECK(message);
 
@@ -36,11 +37,9 @@ bool CreateEncryptedPayloadForTesting(const base::StringPiece& payload,
     return false;
   }
 
-  std::string salt;
-
   // Generate a cryptographically secure random salt for the message.
-  const size_t salt_size = GCMMessageCryptographer::kSaltSize;
-  crypto::RandBytes(base::WriteInto(&salt, salt_size + 1), salt_size);
+  std::string salt(GCMMessageCryptographer::kSaltSize, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(salt));
 
   GCMMessageCryptographer cryptographer(
       GCMMessageCryptographer::Version::DRAFT_03);

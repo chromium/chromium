@@ -39,9 +39,8 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
 
     // Create the anchor Widget.
     views::Widget::InitParams anchor_view_widget_params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    anchor_view_widget_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                     views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     anchor_view_widget_params.bounds = gfx::Rect(200, 200, 50, 10);
     anchor_view_widget_ =
         CreateTestWidget(std::move(anchor_view_widget_params));
@@ -49,13 +48,9 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
 
-    // Define the browser view overridden bounds.
-    const gfx::Rect browser_view_overridden_bounds(0, 0, 500, 500);
-
     // Create the Auto PiP Setting View.
     setting_view_ = std::make_unique<AutoPipSettingView>(
-        result_cb().Get(), hide_view_cb().Get(), origin_,
-        browser_view_overridden_bounds, anchor_view,
+        result_cb().Get(), hide_view_cb().Get(), origin_, anchor_view,
         views::BubbleBorder::TOP_CENTER);
   }
 
@@ -149,13 +144,14 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForNonFileURL) {
   const GURL origin{
       "https://example_very_long_url_for_testing_that_should_be_elided.com"};
 
-  auto anchor_view_widget = CreateTestWidget();
+  auto anchor_view_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   anchor_view_widget->Show();
   auto* anchor_view =
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
 
   auto setting_view = std::make_unique<AutoPipSettingView>(
-      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      result_cb().Get(), hide_view_cb().Get(), origin, anchor_view,
       views::BubbleBorder::TOP_CENTER);
 
   // Get the origin text for testing.
@@ -176,13 +172,14 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForFileURL) {
   const GURL origin{
       "file://example_very_long_file_url_for_testing_that_should_be_elided"};
 
-  auto anchor_view_widget = CreateTestWidget();
+  auto anchor_view_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   anchor_view_widget->Show();
   auto* anchor_view =
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
 
   auto setting_view = std::make_unique<AutoPipSettingView>(
-      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      result_cb().Get(), hide_view_cb().Get(), origin, anchor_view,
       views::BubbleBorder::TOP_CENTER);
 
   // Get the origin text for testing.
@@ -202,13 +199,14 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
   const GURL origin{
       "file:///example_very_long_file_url_for_testing_that_should_be_elided"};
 
-  auto anchor_view_widget = CreateTestWidget();
+  auto anchor_view_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   anchor_view_widget->Show();
   auto* anchor_view =
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
 
   auto setting_view = std::make_unique<AutoPipSettingView>(
-      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      result_cb().Get(), hide_view_cb().Get(), origin, anchor_view,
       views::BubbleBorder::TOP_CENTER);
 
   // Get the origin text for testing.
@@ -226,19 +224,19 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
                                origin_text_without_ellipsis));
 }
 
-TEST_F(AutoPipSettingViewTest, WidgetIsCenteredWhenArrowIsFloat) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
     BUILDFLAG(IS_LINUX)
-  // TODO (crbug/1521332): Evaluate fix and re-enable
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+// TODO (crbug/1521332): Evaluate fix and re-enable
+#define MAYBE_WidgetIsCenteredWhenArrowIsFloat \
+  DISABLED_WidgetIsCenteredWhenArrowIsFloat
+#else
+#define MAYBE_WidgetIsCenteredWhenArrowIsFloat WidgetIsCenteredWhenArrowIsFloat
 #endif
+TEST_F(AutoPipSettingViewTest, MAYBE_WidgetIsCenteredWhenArrowIsFloat) {
   // Set up the anchor view.
   views::Widget::InitParams anchor_view_widget_params =
-      CreateParams(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  anchor_view_widget_params.ownership =
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+      CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   anchor_view_widget_params.bounds = gfx::Rect(200, 200, 700, 700);
   auto anchor_view_widget =
       CreateTestWidget(std::move(anchor_view_widget_params));
@@ -249,7 +247,7 @@ TEST_F(AutoPipSettingViewTest, WidgetIsCenteredWhenArrowIsFloat) {
   // Set up the setting view.
   auto setting_view = std::make_unique<AutoPipSettingView>(
       result_cb().Get(), hide_view_cb().Get(), GURL("https://example.com"),
-      gfx::Rect(), anchor_view, views::BubbleBorder::FLOAT);
+      anchor_view, views::BubbleBorder::FLOAT);
 
   // Create and show bubble.
   views::Widget* widget =

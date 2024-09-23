@@ -1,0 +1,31 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <title>Private State Tokens</title>
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <style>
+    html {
+      overflow: hidden;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        background: var(--md-background-color);
+      }
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <private-state-tokens-app></private-state-tokens-app>
+  <script type="module"
+      src="private_state_tokens/private_state_tokens.js"></script>
+</body>
+</html>

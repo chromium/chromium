@@ -9,6 +9,7 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include <optional>
+
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 #endif
 

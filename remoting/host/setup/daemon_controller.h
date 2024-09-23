@@ -6,9 +6,9 @@
 #define REMOTING_HOST_SETUP_DAEMON_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"

@@ -15,8 +15,7 @@ namespace ash {
 
 // Interface for dependency injection between TermsOfServiceScreen and its
 // WebUI representation.
-class TermsOfServiceScreenView
-    : public base::SupportsWeakPtr<TermsOfServiceScreenView> {
+class TermsOfServiceScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"terms-of-service",
                                                        "TermsOfServiceScreen"};
@@ -36,11 +35,14 @@ class TermsOfServiceScreenView
 
   // Whether TOS are successfully loaded.
   virtual bool AreTermsLoaded() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<TermsOfServiceScreenView> AsWeakPtr() = 0;
 };
 
 // The sole implementation of the TermsOfServiceScreenView, using WebUI.
-class TermsOfServiceScreenHandler : public BaseScreenHandler,
-                                    public TermsOfServiceScreenView {
+class TermsOfServiceScreenHandler final : public BaseScreenHandler,
+                                          public TermsOfServiceScreenView {
  public:
   using TView = TermsOfServiceScreenView;
 
@@ -61,10 +63,13 @@ class TermsOfServiceScreenHandler : public BaseScreenHandler,
   void OnLoadError() override;
   void OnLoadSuccess(const std::string& terms_of_service) override;
   bool AreTermsLoaded() override;
+  base::WeakPtr<TermsOfServiceScreenView> AsWeakPtr() override;
 
  private:
   // Set to `true` when the download of the Terms of Service succeeds.
   bool terms_loaded_ = false;
+
+  base::WeakPtrFactory<TermsOfServiceScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

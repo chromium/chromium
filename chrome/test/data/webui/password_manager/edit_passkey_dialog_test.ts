@@ -57,6 +57,10 @@ suite('EditPasskeyDialogTest', function() {
   test('passkey is updated', async function() {
     dialog.$.usernameInput.value = 'teko';
     dialog.$.displayNameInput.value = 'Futaba Ooki';
+    await Promise.all([
+      dialog.$.usernameInput.updateComplete,
+      dialog.$.displayNameInput.updateComplete,
+    ]);
 
     assertFalse(dialog.$.saveButton.disabled);
     dialog.$.saveButton.click();

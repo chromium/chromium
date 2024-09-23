@@ -67,9 +67,11 @@ class InheritedIndentChecker
   const Length length_;
 };
 
-InterpolationValue CreateValue(const Length& length, double zoom) {
-  InterpolationValue converted_length(
-      InterpolableLength::MaybeConvertLength(length, zoom));
+InterpolationValue CreateValue(const Length& length,
+                               const CSSProperty& property,
+                               double zoom) {
+  InterpolationValue converted_length(InterpolableLength::MaybeConvertLength(
+      length, property, zoom, /*interpolate_size=*/std::nullopt));
   DCHECK(converted_length);
   return InterpolationValue(std::move(converted_length.interpolable_value),
                             CSSTextIndentNonInterpolableValue::Create(std::move(
@@ -81,13 +83,14 @@ InterpolationValue CreateValue(const Length& length, double zoom) {
 InterpolationValue CSSTextIndentInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
-  return CreateValue(Length::Fixed(0), 1);
+  return CreateValue(Length::Fixed(0), CssProperty(), 1);
 }
 
 InterpolationValue CSSTextIndentInterpolationType::MaybeConvertInitial(
     const StyleResolverState&,
     ConversionCheckers&) const {
-  return CreateValue(ComputedStyleInitialValues::InitialTextIndent(), 1);
+  return CreateValue(ComputedStyleInitialValues::InitialTextIndent(),
+                     CssProperty(), 1);
 }
 
 InterpolationValue CSSTextIndentInterpolationType::MaybeConvertInherit(
@@ -95,8 +98,9 @@ InterpolationValue CSSTextIndentInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   const ComputedStyle& parent_style = *state.ParentStyle();
   conversion_checkers.push_back(
-      std::make_unique<InheritedIndentChecker>(parent_style.TextIndent()));
-  return CreateValue(parent_style.TextIndent(), parent_style.EffectiveZoom());
+      MakeGarbageCollected<InheritedIndentChecker>(parent_style.TextIndent()));
+  return CreateValue(parent_style.TextIndent(), CssProperty(),
+                     parent_style.EffectiveZoom());
 }
 
 InterpolationValue CSSTextIndentInterpolationType::MaybeConvertValue(
@@ -119,13 +123,13 @@ InterpolationValue CSSTextIndentInterpolationType::MaybeConvertValue(
 InterpolationValue
 CSSTextIndentInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
-  return CreateValue(style.TextIndent(), style.EffectiveZoom());
+  return CreateValue(style.TextIndent(), CssProperty(), style.EffectiveZoom());
 }
 
 PairwiseInterpolationValue CSSTextIndentInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  PairwiseInterpolationValue result = InterpolableLength::MergeSingles(
+  PairwiseInterpolationValue result = InterpolableLength::MaybeMergeSingles(
       std::move(start.interpolable_value), std::move(end.interpolable_value));
   result.non_interpolable_value = CSSTextIndentNonInterpolableValue::Create(
       std::move(result.non_interpolable_value));

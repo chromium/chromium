@@ -134,28 +134,33 @@ At this point you should make sure the appropriate VA driver backend is working
 correctly; try running `vainfo` from the command line and verify no errors show
 up, see the [previous section](#verify-driver).
 
-To run Chromium using VaAPI two arguments are necessary:
-* `--use-gl=angle`
-* `--use-angle=gl`
+The following feature switch controls video encoding (see [media
+switches](https://source.chromium.org/chromium/chromium/src/+/main:media/base/media_switches.cc)
+for more details):
+* `--enable-features=VaapiVideoEncoder`
 
 The following two arguments are optional:
 * `--ignore-gpu-blocklist`
 * `--disable-gpu-driver-bug-workaround`
-
-The following feature switches control video decoding and encoding (see [media
-switches](https://source.chromium.org/chromium/chromium/src/+/main:media/base/media_switches.cc)
-for more details):
-* `--enable-features=VaapiVideoDecodeLinuxGL`
-* `--enable-features=VaapiVideoEncoder`
 
 The NVIDIA VaAPI drivers are known to not support Chromium (see
 [crbug.com/1492880](https://crbug.com/1492880)). This feature switch is
 provided for developers to test VaAPI drivers on NVIDIA GPUs:
 * `--enable-features=VaapiOnNvidiaGPUs`, disabled by default
 
+### VaAPI on Linux with OpenGL
+
 ```shell
 ./out/gn/chrome --use-gl=angle --use-angle=gl \
---enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,VaapiOnNvidiaGPUs \
+--enable-features=VaapiVideoEncoder,VaapiVideoDecodeLinuxGL,VaapiOnNvidiaGPUs \
+--ignore-gpu-blocklist --disable-gpu-driver-bug-workaround
+```
+
+### VaAPI on Linux with Vulkan
+
+```shell
+./out/gn/chrome --use-gl=angle --use-angle=vulkan \
+--enable-features=VaapiVideoEncoder,VaapiOnNvidiaGPUs,VaapiIgnoreDriverChecks,Vulkan,DefaultANGLEVulkan,VulkanFromANGLE \
 --ignore-gpu-blocklist --disable-gpu-driver-bug-workaround
 ```
 

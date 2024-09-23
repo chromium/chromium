@@ -137,7 +137,7 @@ std::u16string StateToText(CertProvisioningProcessState state) {
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_CERTIFICATE_MANAGER_PROVISIONING_STATUS_IMPORT_CERTIFICATE_INSTRUCTION_RECEIVED);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 // Returns the status message of the process.

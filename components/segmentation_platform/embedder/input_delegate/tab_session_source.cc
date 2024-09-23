@@ -103,14 +103,6 @@ void TabSessionSource::AddTabInfo(const sessions::SessionTab* session_tab,
         base::Time::Now() - session_tab->navigations[0].timestamp();
     last_transition = current_navigation.transition_type();
   }
-  int password_used_count = 0;
-  for (const auto& navigation : session_tab->navigations) {
-    if (navigation.password_state() == sessions::SerializedNavigationEntry::
-                                           PasswordState::HAS_PASSWORD_FIELD) {
-      password_used_count++;
-    }
-  }
-
   inputs[kInputTimeSinceModifiedSec] = ProcessedValue::FromFloat(
       BucketizeExp(time_since_modified.InSeconds(), /*max_buckets*/50));
   inputs[kInputTimeSinceLastNavSec] = ProcessedValue::FromFloat(
@@ -118,8 +110,8 @@ void TabSessionSource::AddTabInfo(const sessions::SessionTab* session_tab,
   inputs[kInputTimeSinceFirstNavSec] = ProcessedValue::FromFloat(
       BucketizeExp(time_since_first_nav.InSeconds(), /*max_buckets*/50));
   inputs[kInputLastTransitionType] = ProcessedValue::FromFloat(last_transition);
-  inputs[kInputPasswordFieldCount] =
-      ProcessedValue::FromFloat(BucketizeExp(password_used_count, /*max_buckets*/10));
+  // Removed 06/2024.
+  inputs[kInputPasswordFieldCount] = ProcessedValue(-1);
 }
 
 void TabSessionSource::AddTabRanks(const std::string& session_tag,

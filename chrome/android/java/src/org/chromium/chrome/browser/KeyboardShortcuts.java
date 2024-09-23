@@ -9,6 +9,9 @@ import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -20,6 +23,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
+import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +36,190 @@ public class KeyboardShortcuts {
     private static final int SHIFT = 1 << 29;
 
     private KeyboardShortcuts() {}
+
+    // KeyboardShortcutsSemanticMeaning defined in tools/metrics/histograms/enums.xml.
+    // Add new values before MAX_VALUE. These values are persisted to logs. Entries should not be
+    // renumbered and numeric values should never be reused.
+    // LINT.IfChange(KeyboardShortcutsSemanticMeaning)
+    @IntDef({
+        KeyboardShortcutsSemanticMeaning.UNKNOWN,
+        KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB,
+        KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB,
+        KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO,
+        KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW,
+        KeyboardShortcutsSemanticMeaning.RELOAD_TAB,
+        KeyboardShortcutsSemanticMeaning.CLOSE_TAB,
+        KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT,
+        KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT,
+        KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB,
+        KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB,
+        KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX,
+        KeyboardShortcutsSemanticMeaning.GO_BACK,
+        KeyboardShortcutsSemanticMeaning.GO_FORWARD,
+        KeyboardShortcutsSemanticMeaning.OPEN_MENU,
+        KeyboardShortcutsSemanticMeaning.OPEN_HELP,
+        KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE,
+        KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS,
+        KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE,
+        KeyboardShortcutsSemanticMeaning.OPEN_HISTORY,
+        KeyboardShortcutsSemanticMeaning.SAVE_PAGE,
+        KeyboardShortcutsSemanticMeaning.PRINT,
+        KeyboardShortcutsSemanticMeaning.ZOOM_IN,
+        KeyboardShortcutsSemanticMeaning.ZOOM_OUT,
+        KeyboardShortcutsSemanticMeaning.ZOOM_RESET,
+        KeyboardShortcutsSemanticMeaning.MAX_VALUE
+    })
+    public @interface KeyboardShortcutsSemanticMeaning {
+        // Unrecognized key combination.
+        int UNKNOWN = 0;
+
+        // Tab/window creation.
+        int OPEN_RECENTLY_CLOSED_TAB = 1;
+        int OPEN_NEW_TAB = 2;
+        int OPEN_NEW_TAB_INCOGNITO = 3;
+        int OPEN_NEW_WINDOW = 4;
+
+        // Tab control.
+        int RELOAD_TAB = 5;
+        int CLOSE_TAB = 6;
+        int MOVE_TO_TAB_LEFT = 7;
+        int MOVE_TO_TAB_RIGHT = 8;
+        int MOVE_TO_SPECIFIC_TAB = 9;
+        int MOVE_TO_LAST_TAB = 10;
+
+        // Navigation controls.
+        int JUMP_TO_OMNIBOX = 11;
+        int GO_BACK = 12;
+        int GO_FORWARD = 13;
+
+        // 3-dot menu controls.
+        int OPEN_MENU = 14;
+        int OPEN_HELP = 15;
+        int FIND_IN_PAGE = 16;
+        int OPEN_BOOKMARKS = 17;
+        int BOOKMARK_PAGE = 18;
+        int OPEN_HISTORY = 19;
+        int SAVE_PAGE = 20;
+        int PRINT = 21;
+
+        // Zoom controls.
+        int ZOOM_IN = 22;
+        int ZOOM_OUT = 23;
+        int ZOOM_RESET = 24;
+
+        // Be sure to also update enums.xml when updating these values.
+        int MAX_VALUE = 25;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning)
+
+    private static @KeyboardShortcutsSemanticMeaning int getKeyboardSemanticMeaning(
+            int keyCodeAndMeta) {
+        switch (keyCodeAndMeta) {
+                // Tab/window creation.
+            case CTRL | SHIFT | KeyEvent.KEYCODE_T:
+                return KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB;
+            case CTRL | KeyEvent.KEYCODE_T:
+                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_N:
+                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO;
+            case CTRL | KeyEvent.KEYCODE_N:
+                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW;
+
+                // Tab control.
+            case CTRL | SHIFT | KeyEvent.KEYCODE_R:
+            case CTRL | KeyEvent.KEYCODE_R:
+            case SHIFT | KeyEvent.KEYCODE_F5:
+            case KeyEvent.KEYCODE_F5:
+            case KeyEvent.KEYCODE_REFRESH:
+                return KeyboardShortcutsSemanticMeaning.RELOAD_TAB;
+            case CTRL | KeyEvent.KEYCODE_W:
+            case CTRL | KeyEvent.KEYCODE_F4:
+            case KeyEvent.KEYCODE_BUTTON_B:
+                return KeyboardShortcutsSemanticMeaning.CLOSE_TAB;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_TAB:
+            case CTRL | KeyEvent.KEYCODE_PAGE_UP:
+            case KeyEvent.KEYCODE_BUTTON_L1:
+                return KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT;
+            case CTRL | KeyEvent.KEYCODE_TAB:
+            case CTRL | KeyEvent.KEYCODE_PAGE_DOWN:
+            case KeyEvent.KEYCODE_BUTTON_R1:
+                return KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT;
+            case CTRL | KeyEvent.KEYCODE_1:
+            case CTRL | KeyEvent.KEYCODE_2:
+            case CTRL | KeyEvent.KEYCODE_3:
+            case CTRL | KeyEvent.KEYCODE_4:
+            case CTRL | KeyEvent.KEYCODE_5:
+            case CTRL | KeyEvent.KEYCODE_6:
+            case CTRL | KeyEvent.KEYCODE_7:
+            case CTRL | KeyEvent.KEYCODE_8:
+            case ALT | KeyEvent.KEYCODE_1:
+            case ALT | KeyEvent.KEYCODE_2:
+            case ALT | KeyEvent.KEYCODE_3:
+            case ALT | KeyEvent.KEYCODE_4:
+            case ALT | KeyEvent.KEYCODE_5:
+            case ALT | KeyEvent.KEYCODE_6:
+            case ALT | KeyEvent.KEYCODE_7:
+            case ALT | KeyEvent.KEYCODE_8:
+                return KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB;
+            case CTRL | KeyEvent.KEYCODE_9:
+            case ALT | KeyEvent.KEYCODE_9:
+                return KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB;
+
+                // Navigation controls.
+            case CTRL | KeyEvent.KEYCODE_L:
+            case ALT | KeyEvent.KEYCODE_D:
+            case KeyEvent.KEYCODE_BUTTON_X:
+                return KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX;
+            case ALT | KeyEvent.KEYCODE_DPAD_LEFT:
+                return KeyboardShortcutsSemanticMeaning.GO_BACK;
+            case ALT | KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_FORWARD:
+            case KeyEvent.KEYCODE_BUTTON_START:
+                return KeyboardShortcutsSemanticMeaning.GO_FORWARD;
+
+                // 3-dot menu controls.
+            case ALT | KeyEvent.KEYCODE_E:
+            case ALT | KeyEvent.KEYCODE_F:
+            case KeyEvent.KEYCODE_F10:
+            case KeyEvent.KEYCODE_BUTTON_Y:
+                return KeyboardShortcutsSemanticMeaning.OPEN_MENU;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_SLASH: // i.e. Ctrl+?
+                return KeyboardShortcutsSemanticMeaning.OPEN_HELP;
+            case CTRL | KeyEvent.KEYCODE_F:
+            case CTRL | KeyEvent.KEYCODE_G:
+            case CTRL | SHIFT | KeyEvent.KEYCODE_G:
+            case KeyEvent.KEYCODE_F3:
+            case SHIFT | KeyEvent.KEYCODE_F3:
+                return KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_B:
+                return KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS;
+            case KeyEvent.KEYCODE_BOOKMARK:
+            case CTRL | KeyEvent.KEYCODE_D:
+                return KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE;
+            case CTRL | KeyEvent.KEYCODE_H:
+                return KeyboardShortcutsSemanticMeaning.OPEN_HISTORY;
+            case CTRL | KeyEvent.KEYCODE_S:
+                return KeyboardShortcutsSemanticMeaning.SAVE_PAGE;
+            case CTRL | KeyEvent.KEYCODE_P:
+                return KeyboardShortcutsSemanticMeaning.PRINT;
+
+                // Zoom controls.
+            case CTRL | KeyEvent.KEYCODE_PLUS:
+            case CTRL | KeyEvent.KEYCODE_EQUALS:
+            case CTRL | SHIFT | KeyEvent.KEYCODE_PLUS:
+            case CTRL | SHIFT | KeyEvent.KEYCODE_EQUALS:
+            case KeyEvent.KEYCODE_ZOOM_IN:
+                return KeyboardShortcutsSemanticMeaning.ZOOM_IN;
+            case CTRL | KeyEvent.KEYCODE_MINUS:
+            case KeyEvent.KEYCODE_ZOOM_OUT:
+                return KeyboardShortcutsSemanticMeaning.ZOOM_OUT;
+            case CTRL | KeyEvent.KEYCODE_0:
+                return KeyboardShortcutsSemanticMeaning.ZOOM_RESET;
+        }
+
+        return KeyboardShortcutsSemanticMeaning.UNKNOWN;
+    }
 
     private static int getMetaState(KeyEvent event) {
         return (event.isCtrlPressed() ? CTRL : 0)
@@ -304,7 +492,8 @@ public class KeyboardShortcuts {
                 && keyCode != KeyEvent.KEYCODE_F3
                 && keyCode != KeyEvent.KEYCODE_F5
                 && keyCode != KeyEvent.KEYCODE_F10
-                && keyCode != KeyEvent.KEYCODE_FORWARD) {
+                && keyCode != KeyEvent.KEYCODE_FORWARD
+                && keyCode != KeyEvent.KEYCODE_REFRESH) {
             return false;
         }
 
@@ -315,20 +504,29 @@ public class KeyboardShortcuts {
         int tabCount = currentTabModel.getCount();
         int metaState = getMetaState(event);
         int keyCodeAndMeta = keyCode | metaState;
+        @KeyboardShortcutsSemanticMeaning
+        int semanticMeaning = getKeyboardSemanticMeaning(keyCodeAndMeta);
 
-        switch (keyCodeAndMeta) {
-            case CTRL | SHIFT | KeyEvent.KEYCODE_T:
+        RecordHistogram.recordEnumeratedHistogram(
+                AccessibilityState.isScreenReaderEnabled()
+                        ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning"
+                        : "Accessibility.Android.KeyboardShortcut.NoScreenReader",
+                semanticMeaning,
+                KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE);
+
+        switch (semanticMeaning) {
+            case KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(
                         R.id.open_recently_closed_tab, false);
                 return true;
-            case CTRL | KeyEvent.KEYCODE_T:
+            case KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(
                         currentTabModel.isIncognito()
                                 ? R.id.new_incognito_tab_menu_id
                                 : R.id.new_tab_menu_id,
                         false);
                 return true;
-            case CTRL | KeyEvent.KEYCODE_N:
+            case KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW:
                 if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.new_window_menu_id, false);
@@ -336,110 +534,85 @@ public class KeyboardShortcuts {
                 } else {
                     break;
                 }
-            case CTRL | KeyEvent.KEYCODE_S:
+            case KeyboardShortcutsSemanticMeaning.SAVE_PAGE:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.offline_page_id, false);
                 return true;
-            case CTRL | SHIFT | KeyEvent.KEYCODE_N:
+            case KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(
                         R.id.new_incognito_tab_menu_id, false);
                 return true;
                 // Alt+E represents a special character ´ (latin code: &#180) in Android.
                 // If an EditText or ContentView has focus, Alt+E will be swallowed by
                 // the default dispatchKeyEvent and cannot open the menu.
-            case ALT | KeyEvent.KEYCODE_E:
-            case ALT | KeyEvent.KEYCODE_F:
-            case KeyEvent.KEYCODE_F10:
-            case KeyEvent.KEYCODE_BUTTON_Y:
+            case KeyboardShortcutsSemanticMeaning.OPEN_MENU:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.show_menu, false);
                 return true;
         }
 
         if (isCurrentTabVisible) {
-            if (tabSwitchingEnabled && (metaState == CTRL || metaState == ALT)) {
-                int numCode = keyCode - KeyEvent.KEYCODE_0;
-                if (numCode > 0 && numCode <= Math.min(tabCount, 8)) {
-                    // Ctrl+1 to Ctrl+8: select tab by index
-                    TabModelUtils.setIndex(currentTabModel, numCode - 1, false);
-                    return true;
-                } else if (numCode == 9 && tabCount != 0) {
-                    // Ctrl+9: select last tab
-                    TabModelUtils.setIndex(currentTabModel, tabCount - 1, false);
-                    return true;
-                }
-            }
-
-            switch (keyCodeAndMeta) {
-                case CTRL | KeyEvent.KEYCODE_TAB:
-                case CTRL | KeyEvent.KEYCODE_PAGE_DOWN:
-                case KeyEvent.KEYCODE_BUTTON_R1:
-                    if (tabSwitchingEnabled && tabCount > 1) {
-                        TabModelUtils.setIndex(
-                                currentTabModel, (currentTabModel.index() + 1) % tabCount, false);
+            switch (semanticMeaning) {
+                case KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB:
+                    if (tabSwitchingEnabled) {
+                        int numCode = keyCode - KeyEvent.KEYCODE_0;
+                        if (numCode > 0 && numCode <= Math.min(tabCount, 8)) {
+                            TabModelUtils.setIndex(currentTabModel, numCode - 1);
+                        }
                     }
                     return true;
-                case CTRL | SHIFT | KeyEvent.KEYCODE_TAB:
-                case CTRL | KeyEvent.KEYCODE_PAGE_UP:
-                case KeyEvent.KEYCODE_BUTTON_L1:
+                case KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB:
+                    if (tabSwitchingEnabled && tabCount != 0) {
+                        TabModelUtils.setIndex(currentTabModel, tabCount - 1);
+                    }
+                    return true;
+                case KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT:
+                    if (tabSwitchingEnabled && tabCount > 1) {
+                        TabModelUtils.setIndex(
+                                currentTabModel, (currentTabModel.index() + 1) % tabCount);
+                    }
+                    return true;
+                case KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT:
                     if (tabSwitchingEnabled && tabCount > 1) {
                         TabModelUtils.setIndex(
                                 currentTabModel,
-                                (currentTabModel.index() + tabCount - 1) % tabCount,
-                                false);
+                                (currentTabModel.index() + tabCount - 1) % tabCount);
                     }
                     return true;
-                case CTRL | KeyEvent.KEYCODE_W:
-                case CTRL | KeyEvent.KEYCODE_F4:
-                case KeyEvent.KEYCODE_BUTTON_B:
+                case KeyboardShortcutsSemanticMeaning.CLOSE_TAB:
                     TabModelUtils.closeCurrentTab(currentTabModel);
                     return true;
-                case CTRL | KeyEvent.KEYCODE_F:
-                case CTRL | KeyEvent.KEYCODE_G:
-                case CTRL | SHIFT | KeyEvent.KEYCODE_G:
-                case KeyEvent.KEYCODE_F3:
-                case SHIFT | KeyEvent.KEYCODE_F3:
+                case KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.find_in_page_id, false);
                     return true;
-                case CTRL | KeyEvent.KEYCODE_L:
-                case ALT | KeyEvent.KEYCODE_D:
-                case KeyEvent.KEYCODE_BUTTON_X:
+                case KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.focus_url_bar, false);
                     return true;
-                case CTRL | SHIFT | KeyEvent.KEYCODE_B:
+                case KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.all_bookmarks_menu_id, false);
                     return true;
-                case KeyEvent.KEYCODE_BOOKMARK:
-                case CTRL | KeyEvent.KEYCODE_D:
+                case KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.bookmark_this_page_id, false);
                     return true;
-                case CTRL | KeyEvent.KEYCODE_H:
+                case KeyboardShortcutsSemanticMeaning.OPEN_HISTORY:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.open_history_menu_id, false);
                     return true;
-                case CTRL | KeyEvent.KEYCODE_P:
+                case KeyboardShortcutsSemanticMeaning.PRINT:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.print_id, false);
                     return true;
-                case CTRL | KeyEvent.KEYCODE_PLUS:
-                case CTRL | KeyEvent.KEYCODE_EQUALS:
-                case CTRL | SHIFT | KeyEvent.KEYCODE_PLUS:
-                case CTRL | SHIFT | KeyEvent.KEYCODE_EQUALS:
-                case KeyEvent.KEYCODE_ZOOM_IN:
+                case KeyboardShortcutsSemanticMeaning.ZOOM_IN:
                     ZoomController.zoomIn(currentWebContents);
                     return true;
-                case CTRL | KeyEvent.KEYCODE_MINUS:
-                case KeyEvent.KEYCODE_ZOOM_OUT:
+                case KeyboardShortcutsSemanticMeaning.ZOOM_OUT:
                     ZoomController.zoomOut(currentWebContents);
                     return true;
-                case CTRL | KeyEvent.KEYCODE_0:
+                case KeyboardShortcutsSemanticMeaning.ZOOM_RESET:
                     ZoomController.zoomReset(currentWebContents);
                     return true;
-                case SHIFT | CTRL | KeyEvent.KEYCODE_R:
-                case CTRL | KeyEvent.KEYCODE_R:
-                case SHIFT | KeyEvent.KEYCODE_F5:
-                case KeyEvent.KEYCODE_F5:
+                case KeyboardShortcutsSemanticMeaning.RELOAD_TAB:
                     if (currentTab != null) {
                         if ((keyCodeAndMeta & SHIFT) == SHIFT) {
                             currentTab.reloadIgnoringCache();
@@ -456,15 +629,13 @@ public class KeyboardShortcuts {
                         }
                     }
                     return true;
-                case ALT | KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyboardShortcutsSemanticMeaning.GO_BACK:
                     if (currentTab != null && currentTab.canGoBack()) currentTab.goBack();
                     return true;
-                case ALT | KeyEvent.KEYCODE_DPAD_RIGHT:
-                case KeyEvent.KEYCODE_FORWARD:
-                case KeyEvent.KEYCODE_BUTTON_START:
+                case KeyboardShortcutsSemanticMeaning.GO_FORWARD:
                     if (currentTab != null && currentTab.canGoForward()) currentTab.goForward();
                     return true;
-                case CTRL | SHIFT | KeyEvent.KEYCODE_SLASH: // i.e. Ctrl+?
+                case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;
             }

@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -33,11 +35,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Tests to ensure that it is impossible to launch two browser processes within
- * the same application. Chromium is not designed for that, and attempting to do that
- * can cause data files corruption.
+ * Tests to ensure that it is impossible to launch two browser processes within the same
+ * application. Chromium is not designed for that, and attempting to do that can cause data files
+ * corruption.
  */
 @RunWith(Parameterized.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AwSecondBrowserProcessTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;

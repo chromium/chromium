@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_
 #define CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_
 
+#include <string_view>
+
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -88,7 +89,7 @@ class CustomThemeSupplier
  protected:
   ~CustomThemeSupplier() override;
 
-  void set_extension_id(base::StringPiece id) {
+  void set_extension_id(std::string_view id) {
     DCHECK_EQ(get_theme_type(), ThemeType::kExtension);
     extension_id_ = id;
   }

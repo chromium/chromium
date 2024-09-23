@@ -160,9 +160,6 @@ bool SwapGoogleUpdate(UpdaterScope scope,
         if (IsSystemInstall(scope)) {
           uninstall_if_unused_command.AppendSwitch(kSystemSwitch);
         }
-        uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);
-        uninstall_if_unused_command.AppendSwitchASCII(
-            kLoggingModuleSwitch, kLoggingModuleSwitchValue);
         return uninstall_if_unused_command.GetCommandLineString();
       }(),
       true);
@@ -242,7 +239,8 @@ scoped_refptr<AppServerWin> GetAppServerWinInstance() {
 
 AppServerWin::AppServerWin() = default;
 AppServerWin::~AppServerWin() {
-  NOTREACHED();  // The instance of this class is a leaky singleton.
+  NOTREACHED_IN_MIGRATION();  // The instance of this class is a leaky
+                              // singleton.
 }
 
 void AppServerWin::PostRpcTask(base::OnceClosure task) {

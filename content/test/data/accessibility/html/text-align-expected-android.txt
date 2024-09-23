@@ -1,0 +1,12 @@
+android.webkit.WebView focusable focused
+++android.widget.TextView name='Left-aligned text'
+++android.widget.TextView name='Right-aligned text'
+++android.widget.TextView name='Centered text'
+++android.widget.TextView name='Justified text'
+++android.widget.TextView name='Webkit left-aligned text'
+++android.widget.TextView name='Webkit right-aligned text'
+++android.widget.TextView name='Webkit centered text'
+++android.widget.TextView name='Start-aligned text'
+++android.widget.TextView name='End-aligned text'
+++android.widget.TextView name='No text alignment specified'
+++android.widget.TextView name='Invalid text alignment'

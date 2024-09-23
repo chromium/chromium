@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">האתר הזה לא יכול לבקש ממך הרשאה</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />קבלת עזרה<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">‏<ph name="BEGIN_LINK" />יש להפעיל את Bluetooth<ph name="END_LINK" /> כדי לאפשר התאמה</translation>
+<translation id="3878792656892132392">צריך לתת לאפליקציה <ph name="APP_NAME" /> הרשאה כדי לעקוב אחרי תנועות הידיים.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />קבלת עזרה<ph name="END_LINK" /> בזמן חיפוש מכשירים…</translation>
 <translation id="4925793601605263825">ל-<ph name="APP_NAME" /> נדרשת הרשאת גישה למיקרופון בשביל האתר הזה.</translation>
 <translation id="5230560987958996918">‏<ph name="SITE" /> מבקש לבצע סריקה כדי לאתר מכשירי Bluetooth בקרבת מקום. המכשירים הבאים נמצאו:</translation>

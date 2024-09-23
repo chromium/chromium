@@ -148,6 +148,31 @@ class BrowsingTopicsPageLoadDataTrackerTest
   base::ScopedTempDir temp_dir_;
 };
 
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest, IniializeWithRedirectStatus) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
+  BrowsingTopicsPageLoadDataTracker::CreateForPage(
+      web_contents()->GetPrimaryMainFrame()->GetPage(),
+      /*redirect_count=*/10,
+      /*redirect_with_topics_invoked_count=*/5, source_id);
+
+  auto* tracker = GetBrowsingTopicsPageLoadDataTracker();
+
+  EXPECT_EQ(tracker->redirect_count(), 10);
+  EXPECT_EQ(tracker->redirect_with_topics_invoked_count(), 5);
+  EXPECT_EQ(tracker->source_id_before_redirects(), source_id);
+  EXPECT_FALSE(tracker->topics_invoked());
+
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/false);
+
+  EXPECT_TRUE(tracker->topics_invoked());
+}
+
 TEST_F(BrowsingTopicsPageLoadDataTrackerTest, OneUsage) {
   GURL url("https://foo.com");
   NavigateToPage(url, /*publicly_routable=*/true,
@@ -159,7 +184,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, OneUsage) {
       content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).empty());
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_TRUE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
 
@@ -171,6 +196,26 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, OneUsage) {
   EXPECT_EQ(api_usage_contexts[0].hashed_context_domain, HashedDomain(123));
 }
 
+TEST_F(BrowsingTopicsPageLoadDataTrackerTest, OneUsage_DoesNotObserve) {
+  GURL url("https://foo.com");
+  NavigateToPage(url, /*publicly_routable=*/true,
+                 /*browsing_topics_permissions_policy_allowed=*/true,
+                 /*interest_cohort_permissions_policy_allowed=*/true);
+
+  EXPECT_FALSE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
+  EXPECT_TRUE(
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager()).empty());
+
+  GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/false);
+
+  EXPECT_FALSE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
+
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 0u);
+}
+
 TEST_F(BrowsingTopicsPageLoadDataTrackerTest, TwoUsages) {
   GURL url("https://foo.com");
   NavigateToPage(url, /*publicly_routable=*/true,
@@ -178,9 +223,9 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, TwoUsages) {
                  /*interest_cohort_permissions_policy_allowed=*/true);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(456), "buzz.com", history_service_.get());
+      HashedDomain(456), "buzz.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_TRUE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
 
@@ -203,7 +248,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, OneUsage_PageLoadUkm) {
                  /*interest_cohort_permissions_policy_allowed=*/true);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   NavigateToPage(GURL(url::kAboutBlankURL), /*publicly_routable=*/true,
                  /*browsing_topics_permissions_policy_allowed=*/true,
@@ -230,7 +275,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, OneThousandUsages_PageLoadUkm) {
 
   for (int i = 0; i < 1000; ++i) {
     GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-        HashedDomain(i), "i.com", history_service_.get());
+        HashedDomain(i), "i.com", history_service_.get(), /*observe=*/true);
   }
 
   NavigateToPage(GURL(url::kAboutBlankURL), /*publicly_routable=*/true,
@@ -258,7 +303,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, TwoThousandUsages_PageLoadUkm) {
 
   for (int i = 0; i < 2000; ++i) {
     GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-        HashedDomain(i), "i.com", history_service_.get());
+        HashedDomain(i), "i.com", history_service_.get(), /*observe=*/true);
   }
 
   NavigateToPage(GURL(url::kAboutBlankURL), /*publicly_routable=*/true,
@@ -285,11 +330,11 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, DuplicateDomains) {
                  /*interest_cohort_permissions_policy_allowed=*/true);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(456), "buzz.com", history_service_.get());
+      HashedDomain(456), "buzz.com", history_service_.get(), /*observe=*/true);
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_TRUE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
 
@@ -317,7 +362,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, NumberOfDomainsExceedsLimit) {
 
   for (int i = 0; i < 31; ++i) {
     GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-        HashedDomain(i), "i.com", history_service_.get());
+        HashedDomain(i), "i.com", history_service_.get(), /*observe=*/true);
   }
 
   EXPECT_TRUE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
@@ -341,7 +386,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, NotPubliclyRoutable) {
                  /*interest_cohort_permissions_policy_allowed=*/true);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_FALSE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
   EXPECT_TRUE(
@@ -356,7 +401,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
                  /*interest_cohort_permissions_policy_allowed=*/true);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_FALSE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
   EXPECT_TRUE(
@@ -371,7 +416,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
                  /*interest_cohort_permissions_policy_allowed=*/false);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_FALSE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
   EXPECT_TRUE(
@@ -388,7 +433,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
                  /*has_user_gesture=*/true);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_TRUE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
 
@@ -409,7 +454,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, RendererInitiatedNoUserGesture) {
                  /*has_user_gesture=*/false);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_FALSE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
   EXPECT_TRUE(
@@ -427,7 +472,7 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
                  /*add_same_document_nav=*/true);
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(
-      HashedDomain(123), "bar.com", history_service_.get());
+      HashedDomain(123), "bar.com", history_service_.get(), /*observe=*/true);
 
   EXPECT_TRUE(BrowsingTopicsEligibleForURLVisit(history_service_.get(), url));
 

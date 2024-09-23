@@ -60,6 +60,10 @@ static constexpr auto kStandardizedAttributes =
         {"transaction-currency", HtmlFieldType::kTransactionCurrency},
     });
 
+// If an autocomplete attribute length is larger than this cap, there is no need
+// to bother checking if the developer made an honest mistake.
+static constexpr int kMaxAutocompleteLengthToCheckForWellIntendedUsage = 70;
+
 static constexpr std::string_view kWellIntendedAutocompleteValuesKeywords[] = {
     "street", "password", "address", "bday",     "cc-",         "family",
     "name",   "country",  "tel",     "phone",    "transaction", "code",
@@ -106,7 +110,7 @@ bool ContactTypeHintMatchesFieldType(const std::string& token,
 // `value` matches any of them.
 std::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
     std::string_view value) {
-  auto* it = kStandardizedAttributes.find(value);
+  auto it = kStandardizedAttributes.find(value);
   return it != kStandardizedAttributes.end()
              ? std::optional<HtmlFieldType>(it->second)
              : std::nullopt;
@@ -120,11 +124,11 @@ std::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
       base::MakeFixedFlatMap<std::string_view, HtmlFieldType>({
           {"address", HtmlFieldType::kStreetAddress},
           {"coupon-code", HtmlFieldType::kMerchantPromoCode},
-          // TODO(crbug.com/1351760): Investigate if this mapping makes sense.
+          // TODO(crbug.com/40234618): Investigate if this mapping makes sense.
           {"username", HtmlFieldType::kEmail},
       });
 
-  auto* it = proposed_attributes.find(value);
+  auto it = proposed_attributes.find(value);
   return it != proposed_attributes.end()
              ? std::optional<HtmlFieldType>(it->second)
              : std::nullopt;
@@ -146,11 +150,9 @@ std::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
           {"promotion-code", HtmlFieldType::kMerchantPromoCode},
           {"region", HtmlFieldType::kAddressLevel1},
           {"tel-ext", HtmlFieldType::kTelExtension},
-          {"upi", HtmlFieldType::kUpiVpa},
-          {"upi-vpa", HtmlFieldType::kUpiVpa},
       });
 
-  auto* it = non_standardized_attributes.find(value);
+  auto it = non_standardized_attributes.find(value);
   return it != non_standardized_attributes.end()
              ? std::optional<HtmlFieldType>(it->second)
              : std::nullopt;
@@ -265,6 +267,10 @@ std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
 bool IsAutocompleteTypeWrongButWellIntended(
     std::string_view autocomplete_attribute) {
+  if (autocomplete_attribute.size() >=
+      kMaxAutocompleteLengthToCheckForWellIntendedUsage) {
+    return false;
+  }
   std::vector<std::string> tokens =
       LowercaseAndTokenizeAttributeString(autocomplete_attribute);
 
@@ -299,12 +305,11 @@ bool IsAutocompleteTypeWrongButWellIntended(
   auto contains_field_type_token = [&](std::string_view s) {
     return std::string_view(field_type_token).find(s) != std::string::npos;
   };
-  bool token_is_wrong_but_has_well_intended_usage_keyword =
-      base::ranges::any_of(kWellIntendedAutocompleteValuesKeywords,
-                           contains_field_type_token);
+  bool token_is_wrong_but_has_well_intended_usage_keyword = std::ranges::any_of(
+      kWellIntendedAutocompleteValuesKeywords, contains_field_type_token);
   bool developer_likely_tried_to_disable_autofill =
-      base::ranges::any_of(kNegativeMatchWellIntendedAutocompleteValuesKeywords,
-                           contains_field_type_token);
+      std::ranges::any_of(kNegativeMatchWellIntendedAutocompleteValuesKeywords,
+                          contains_field_type_token);
   return token_is_wrong_but_has_well_intended_usage_keyword &&
          !developer_likely_tried_to_disable_autofill;
 }

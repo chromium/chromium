@@ -73,7 +73,8 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_secure_channel_client_ =
         std::make_unique<secure_channel::FakeSecureChannelClient>();
-    fake_tether_host_fetcher_ = std::make_unique<FakeTetherHostFetcher>();
+    fake_tether_host_fetcher_ =
+        std::make_unique<FakeTetherHostFetcher>(/*tether_host=*/std::nullopt);
 
     test_pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();

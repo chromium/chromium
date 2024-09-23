@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = error: Action set_rph_registration_mode not implemented
-[NOTRUN] registerProtocolHandler() and a handler with %s in the query
-Harness: the test ran to completion.

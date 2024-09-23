@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='box' class='green box blurry'",
+      "name": "LayoutBlockFlow DIV id='box' class='green box blurry'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

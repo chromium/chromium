@@ -8,6 +8,12 @@
       "invalidations": [
         [408, 108, 20, 20]
       ]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [593, 8],
+      "bounds": [15, 185],
+      "contentsOpaque": true
     }
   ]
 }

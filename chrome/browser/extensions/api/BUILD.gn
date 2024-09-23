@@ -23,21 +23,65 @@ group("api") {
 
 # The collection of API implementations.
 group("api_implementations") {
-  # TODO(crbug.com/1381603): Add more API implementations here.
+  # TODO(crbug.com/40245282): Add more API implementations here.
   public_deps = [
+    "//chrome/browser/extensions/api/activity_log_private",
+    "//chrome/browser/extensions/api/autofill_private",
     "//chrome/browser/extensions/api/command_line_private",
+    "//chrome/browser/extensions/api/context_menus",
+    "//chrome/browser/extensions/api/cookies",
+    "//chrome/browser/extensions/api/desktop_capture",
+    "//chrome/browser/extensions/api/downloads_internal",
+    "//chrome/browser/extensions/api/enterprise_hardware_platform",
+    "//chrome/browser/extensions/api/experimental_ai_data",
+    "//chrome/browser/extensions/api/font_settings",
+    "//chrome/browser/extensions/api/mdns",
     "//chrome/browser/extensions/api/module",
+    "//chrome/browser/extensions/api/networking_private",
+    "//chrome/browser/extensions/api/omnibox",
     "//chrome/browser/extensions/api/page_capture",
+    "//chrome/browser/extensions/api/permissions",
+    "//chrome/browser/extensions/api/preference",
+    "//chrome/browser/extensions/api/processes",
+    "//chrome/browser/extensions/api/proxy",
+    "//chrome/browser/extensions/api/resources_private",
+    "//chrome/browser/extensions/api/safe_browsing_private",
     "//chrome/browser/extensions/api/scripting",
+    "//chrome/browser/extensions/api/search",
+    "//chrome/browser/extensions/api/tab_capture",
+    "//chrome/browser/extensions/api/tab_groups",
+    "//chrome/browser/extensions/api/webrtc_audio_private",
+    "//chrome/browser/extensions/api/webrtc_desktop_capture_private",
+    "//chrome/browser/extensions/api/webrtc_logging_private",
   ]
 
   if (enable_pdf) {
     public_deps += [ "//chrome/browser/extensions/api/pdf_viewer_private" ]
   }
 
+  if (enable_service_discovery) {
+    public_deps += [ "//chrome/browser/extensions/api/mdns" ]
+  }
+
   if (is_chromeos) {
-    public_deps +=
-        [ "//chrome/browser/chromeos/extensions/smart_card_provider_private" ]
+    public_deps += [
+      "//chrome/browser/chromeos/extensions/smart_card_provider_private",
+      "//chrome/browser/extensions/api/document_scan",
+      "//chrome/browser/extensions/api/enterprise_device_attributes",
+      "//chrome/browser/extensions/api/enterprise_kiosk_input",
+      "//chrome/browser/extensions/api/enterprise_networking_attributes",
+      "//chrome/browser/extensions/api/enterprise_platform_keys",
+      "//chrome/browser/extensions/api/platform_keys",
+      "//chrome/browser/extensions/api/shared_storage",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    public_deps += [
+      "//chrome/browser/extensions/api/crash_report_private",
+      "//chrome/browser/extensions/api/enterprise_platform_keys_private",
+      "//chrome/browser/extensions/api/input_ime",
+    ]
   }
 }
 
@@ -80,8 +124,46 @@ function_registration("api_registration") {
     "//third_party/metrics_proto",
     "//ui/accessibility:ax_enums_mojo",
   ]
+
+  # TODO: We should pull these out into a separate build and function generation
+  # step so that //chrome/browser/extensions has fewer dependencies on
+  # //chrome/browser/chromeos.
   if (is_chromeos) {
-    deps += [ "//chrome/browser/chromeos/extensions:constants" ]
+    deps += [
+      "//chrome/browser/chromeos/extensions:constants",
+      "//chrome/browser/chromeos/extensions/accessibility_service_private",
+      "//chrome/browser/chromeos/extensions/info_private",
+      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage",
+      "//chrome/browser/chromeos/extensions/system_log",
+      "//chrome/browser/chromeos/extensions/wallpaper",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//chrome/browser/ash/extensions/autotest_private",
+      "//chrome/browser/ash/extensions/file_manager",
+    ]
+  }
+}
+
+# KeyedService factories initialization.
+source_set("keyed_service_factories") {
+  sources = [
+    "api_browser_context_keyed_service_factories.cc",
+    "api_browser_context_keyed_service_factories.h",
+  ]
+
+  deps = [
+    ":api_implementations",
+    "//chrome/browser/extensions",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/chromeos/extensions/login_screen/login_state",
+      "//chrome/browser/chromeos/extensions/wm",
+    ]
   }
 }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database_index_on_disk.h"
 
 #include <unordered_set>
@@ -198,7 +203,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
       pending.pop_back();
 
       if (!visited_trackers.insert(tracker_id).second) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
 
@@ -377,7 +382,7 @@ void MetadataDatabaseIndexOnDisk::RemoveFileMetadata(
 void MetadataDatabaseIndexOnDisk::RemoveFileTracker(int64_t tracker_id) {
   FileTracker tracker;
   if (!GetFileTracker(tracker_id, &tracker)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -897,7 +902,7 @@ void MetadataDatabaseIndexOnDisk::AddToPathIndexes(
       if (!base::StringToInt64(id_str, &tracker_id))
         continue;
       if (tracker_id == new_tracker.tracker_id()) {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         continue;
       }
 

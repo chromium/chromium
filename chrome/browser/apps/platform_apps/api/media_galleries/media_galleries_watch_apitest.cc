@@ -21,8 +21,11 @@
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
@@ -113,7 +116,8 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
                                const std::string& ok_message) {
     ExtensionTestMessageListener listener(ok_message);
     background_main_frame_->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16(js_command), base::NullCallback());
+        base::ASCIIToUTF16(js_command), base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
 
@@ -183,7 +187,7 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
   raw_ptr<content::RenderFrameHost> background_main_frame_ = nullptr;
 };
 
-// TODO(crbug.com/1177103): Re-enable. Flaky on Linux and Windows.
+// TODO(crbug.com/40748275): Re-enable. Flaky on Linux and Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_BasicGalleryWatch DISABLED_BasicGalleryWatch
 #else
@@ -214,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
     ExecuteCmdAndCheckReply(kRemoveGalleryWatchCmd, kRemoveGalleryWatchOK);
 }
 
-// TODO(crbug.com/1047645): Flaky on Linux and Windows.
+// TODO(crbug.com/40671492): Flaky on Linux and Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CorrectResponseOnModifyingWatchedGallery \
   DISABLED_CorrectResponseOnModifyingWatchedGallery
@@ -239,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest,
 }
 
 // Test is flaky on windows and linux: crbug.com/1150017.
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_RemoveListenerAndModifyGallery \

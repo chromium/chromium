@@ -8,7 +8,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "cc/metrics/frame_sequence_tracker.h"
-#include "cc/trees/ukm_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

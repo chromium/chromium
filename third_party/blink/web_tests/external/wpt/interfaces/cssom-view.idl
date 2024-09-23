@@ -84,8 +84,12 @@ interface Screen {
 partial interface Document {
   Element? elementFromPoint(double x, double y);
   sequence<Element> elementsFromPoint(double x, double y);
-  CaretPosition? caretPositionFromPoint(double x, double y);
+  CaretPosition? caretPositionFromPoint(double x, double y, optional CaretPositionFromPointOptions options = {});
   readonly attribute Element? scrollingElement;
+};
+
+dictionary CaretPositionFromPointOptions {
+  sequence<ShadowRoot> shadowRoots = [];
 };
 
 [Exposed=Window]
@@ -130,6 +134,7 @@ partial interface Element {
   readonly attribute long clientLeft;
   readonly attribute long clientWidth;
   readonly attribute long clientHeight;
+  readonly attribute double currentCSSZoom;
 };
 
 partial interface HTMLElement {

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+  <button id="keyboard-lock">
+    Get keyboard lock
+  </button>
+  <button id="pointer-lock">
+    Get pointer lock
+  </button>
+  <button id="keyboard-and-pointer-lock">
+    Get both keyboard lock and pointer lock
+  </button>
+  <script>
+    document.querySelector("#keyboard-lock").addEventListener("click",
+      () => {
+        navigator.keyboard.lock();
+      });
+    document.querySelector("#pointer-lock").addEventListener("click",
+      () => {
+        document.documentElement.requestPointerLock();
+      });
+    document.querySelector("#keyboard-and-pointer-lock").addEventListener(
+      "click",
+      () => {
+        navigator.keyboard.lock();
+        document.documentElement.requestPointerLock();
+      });
+
+    function click(element) {
+      element.click();
+    }
+  </script>
+</body>
+
+</html>

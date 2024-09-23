@@ -7,17 +7,17 @@
 
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/unique_ptr_adapters.h"
-#include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -25,19 +25,15 @@
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
-#include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
-#include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "media/capture/video/chromeos/token_manager.h"
-#include "media/capture/video/video_capture_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
 namespace base {
 
@@ -62,10 +58,6 @@ class CAPTURE_EXPORT CameraClientObserver {
   virtual ~CameraClientObserver();
   virtual void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) = 0;
-
-  // This is only for vcd unittests to make sure CameraHalDelegate get the
-  // camera module. It should not be invoked in the production code.
-  virtual bool WaitForCameraModuleReadyForTesting();
 
   cros::mojom::CameraClientType GetType() { return type_; }
   const base::UnguessableToken GetAuthToken() { return auth_token_; }
@@ -116,18 +108,16 @@ class CAPTURE_EXPORT CameraEffectObserver : public base::CheckedObserver {
       const cros::mojom::EffectsConfigPtr& new_effects) {}
 };
 
-// The CameraHalDispatcherImpl hosts and waits on the unix domain socket
-// /var/run/camera3.sock.  CameraHalServer and CameraHalClients connect to the
-// unix domain socket to create the initial Mojo connections with the
-// CameraHalDisptcherImpl, and CameraHalDispatcherImpl then creates and
-// dispatches the Mojo channels between CameraHalServer and CameraHalClients to
-// establish direct Mojo connections between the CameraHalServer and the
-// CameraHalClients.
+// CameraHalDispatcherImpl hosts the CameraHalDispatcher service for Plug-in VM
+// host or camera tests to request the camera service.
 //
-// CameraHalDispatcherImpl owns two threads. blocking_io_thread_ is for
-// communicating with a socket file to listen for Mojo connection buildup
-// request. proxy_thread_ is the thread where the Mojo channel is bound and all
-// communication through Mojo will happen.
+// CameraHalClients connect to the CameraHalDisptcherImpl first, and
+// CameraHalDispatcherImpl then creates and dispatches the Mojo channels between
+// CameraHalServer and CameraHalClients to establish direct Mojo connections
+// between the CameraHalServer and the CameraHalClients.
+//
+// CameraHalDispatcherImpl owns |proxy_thread_| which is the thread where the
+// Mojo channel is bound and all communication through Mojo will happen.
 //
 // For general documentation about the CameraHalDispatcher Mojo interface see
 // the comments in mojo/cros_camera_service.mojom.
@@ -183,11 +173,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void RemoveCameraPrivacySwitchObserver(CameraPrivacySwitchObserver* observer);
 
   // Adds an observer that watches for camera effect configuration change.
-  // Observer would be immediately notified of the current camera effect
-  // configuration changes.
-  void AddCameraEffectObserver(
-      CameraEffectObserver* observer,
-      CameraEffectObserverCallback camera_effect_observer_callback);
+  void AddCameraEffectObserver(CameraEffectObserver* observer);
 
   // Removes the observer. A previously-added observer must be removed before
   // being destroyed.
@@ -208,7 +194,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void UnregisterPluginVmToken(const base::UnguessableToken& token);
 
   // Called by CameraHalDispatcher.
-  void AddCameraIdToDeviceIdEntry(int camera_id, const std::string& device_id);
+  void AddCameraIdToDeviceIdEntry(int32_t camera_id,
+                                  const std::string& device_id);
 
   // CameraHalDispatcher implementations.
   void RegisterClientWithToken(
@@ -228,6 +215,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       cros::mojom::CameraPrivacySwitchState state) final;
 
   void CameraEffectChange(cros::mojom::EffectsConfigPtr config) final;
+  void AutoFramingStateChange(cros::mojom::CameraAutoFramingState state) final;
 
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);
@@ -246,28 +234,16 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   // `CameraEffectsController` instead.
   void SetCameraEffects(cros::mojom::EffectsConfigPtr config);
 
-  // This function is only for VCD Unittests. It will return true immediately
-  // when CameraModule is ready for CameraHalDelegate or return false after 10
-  // seconds. Don't call this function on the main thread.
-  bool WaitForServiceReadyForTesting();
-
  private:
   friend struct base::DefaultSingletonTraits<CameraHalDispatcherImpl>;
   // Allow the test to construct the class directly.
   friend class CameraHalDispatcherImplTest;
+  class VCDInfoObserverImpl;
 
   CameraHalDispatcherImpl();
   ~CameraHalDispatcherImpl() final;
 
   bool StartThreads();
-
-  // Creates the unix domain socket for the camera client processes and the
-  // camera HALv3 adapter process to connect.
-  void CreateSocket(base::WaitableEvent* started);
-
-  // Waits for incoming connections (from HAL process or from client processes).
-  // Runs on |blocking_io_thread_|.
-  void StartServiceLoop(base::ScopedFD socket_fd, base::WaitableEvent* started);
 
   void GetCameraSWPrivacySwitchStateOnProxyThread(
       cros::mojom::CrosCameraService::GetCameraSWPrivacySwitchStateCallback
@@ -283,7 +259,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   void EstablishMojoChannel(CameraClientObserver* client_observer);
 
-  // Handler for incoming Mojo connection on the unix domain socket.
+  // Handler for incoming Mojo connection requesting CameraHalDispatcher
+  // service.
   void OnPeerConnected(mojo::ScopedMessagePipeHandle message_pipe);
 
   // Mojo connection error handlers.
@@ -325,10 +302,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       bool is_from_register,
       cros::mojom::SetEffectResult result);
 
-  // Called when new camera effects observer is added.
-  void OnCameraEffectsObserverAddOnProxyThread(
-      CameraEffectObserverCallback camera_effect_observer_callback);
-
   void BindCameraServiceOnProxyThread(
       mojo::PendingRemote<cros::mojom::CrosCameraService> camera_service);
 
@@ -342,30 +315,13 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   TokenManager* GetTokenManagerForTesting();
 
-  // This function is only for VCD Unittests.
-  void GetChromeClientObserverForTesting(
-      base::WaitableEvent* got_chrome_client,
-      CameraClientObserver** client_observer);
-
-  // Functions to get/set the status of the service loop.
-  bool IsServiceLoopRunning();
-  void SetServiceLoopStatus(bool is_running);
-
   // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
   void Request(
       chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
       mojo::ScopedMessagePipeHandle receiver) override;
 
-  base::Lock service_loop_status_lock_;
-  bool is_service_loop_running_ GUARDED_BY(service_loop_status_lock_);
-
-  base::ScopedFD proxy_fd_;
-  base::ScopedFD cancel_pipe_;
-
   base::Thread proxy_thread_;
-  base::Thread blocking_io_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> blocking_io_task_runner_;
 
   mojo::ReceiverSet<cros::mojom::CameraHalDispatcher> receiver_set_;
 
@@ -427,9 +383,28 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   std::unique_ptr<MojoServiceManagerObserver> mojo_service_manager_observer_;
 
+  std::unique_ptr<VCDInfoObserverImpl> vcd_info_observer_impl_;
+
   base::WeakPtrFactory<CameraHalDispatcherImpl> weak_factory_{this};
 };
 
 }  // namespace media
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<media::CameraHalDispatcherImpl,
+                               media::CameraEffectObserver> {
+  static void AddObserver(media::CameraHalDispatcherImpl* source,
+                          media::CameraEffectObserver* observer) {
+    source->AddCameraEffectObserver(observer);
+  }
+  static void RemoveObserver(media::CameraHalDispatcherImpl* source,
+                             media::CameraEffectObserver* observer) {
+    source->RemoveCameraEffectObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_HAL_DISPATCHER_IMPL_H_

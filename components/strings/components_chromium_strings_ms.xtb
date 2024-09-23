@@ -31,6 +31,8 @@
           dan pastikan konfigurasi anda ditetapkan kepada "tiada proksi" atau "terus".</translation>
 <translation id="6549378540556750549">Chromium juga berjaya dilaksanakan oleh <ph name="BEGIN_LINK_OSS" />perisian sumber terbuka<ph name="END_LINK_OSS" /> yang lain.</translation>
 <translation id="6613594504749178791">Perubahan anda akan dilaksanakan apabila anda melancarkan semula Chromium pada masa hadapan.</translation>
+<translation id="691026815377248078">Chromium memerlukan akses Bluetooth untuk meneruskan 
+ penggandingan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="7681937895330411637">Chromium berjaya dilaksanakan oleh projek sumber terbuka <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="7861509383340276692">Pergi ke
           menu Chromium &gt;

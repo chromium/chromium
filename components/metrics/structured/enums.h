@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_ENUMS_H_
 #define COMPONENTS_METRICS_STRUCTURED_ENUMS_H_
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 
 // Specifies the type of identifier attached to an event.
 enum class IdType {
@@ -25,7 +24,6 @@ enum class IdScope {
   kPerDevice = 1,
 };
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_ENUMS_H_

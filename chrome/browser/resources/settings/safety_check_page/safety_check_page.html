@@ -3,7 +3,7 @@
          min-height: var(--cr-section-two-line-min-height);
       }
 
-      iron-icon {
+      cr-icon {
         display: flex;
         flex-shrink: 0;
         padding-inline-end: var(--cr-icon-button-margin-start);
@@ -11,8 +11,8 @@
       }
     </style>
     <div id="safetyCheckParent" class="cr-row first two-line">
-      <iron-icon icon="settings20:safety-check" aria-hidden="true">
-      </iron-icon>
+      <cr-icon icon="settings20:safety-check" aria-hidden="true">
+      </cr-icon>
       <div class="flex cr-padded-text" no-search>
         [[parentDisplayString_]]
       </div>
@@ -33,7 +33,7 @@
         </cr-icon-button>
       </template>
     </div>
-    <iron-collapse id="safetyCheckCollapse"
+    <cr-collapse id="safetyCheckCollapse"
         opened="[[shouldShowChildren_(parentStatus_)]]">
       <settings-safety-check-updates-child>
       </settings-safety-check-updates-child>
@@ -46,7 +46,7 @@
         <settings-safety-check-extensions-child>
         </settings-safety-check-extensions-child>
       </template>
-    </iron-collapse>
+    </cr-collapse>
     <template is="dom-if" if="[[shouldShowSafetyCheckExtensionsReview_(
           safetyCheckNumberOfExtensionsThatNeedReview_)]]" restamp>
       <safety-check-extensions>
@@ -61,7 +61,7 @@
     </template>
     <template is="dom-if"
         if="[[shouldShowNotificationPermissions_(
-          notificationPermissionSites_, safetyCheckNotificationPermissionsEnabled_)]]"
+          notificationPermissionSites_)]]"
         restamp>
       <settings-safety-check-notification-permissions>
       </settings-safety-check-notification-permissions>

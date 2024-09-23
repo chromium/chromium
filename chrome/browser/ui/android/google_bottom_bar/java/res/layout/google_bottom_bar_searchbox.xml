@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--TODO:  Replace with actual layout"-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/google_bottom_bar_searchbox"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bottom_bar_searchbox_background" >
+
+  <ImageButton
+      android:id="@+id/google_bottom_bar_searchbox_super_g_button"
+      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_height="@dimen/google_bottom_bar_button_size"
+      android:gravity="center_vertical"
+      android:layout_gravity="center_vertical"
+      android:src="@drawable/bottom_bar_searchbox_superg_icon"
+      android:background="@android:color/transparent"
+      android:contentDescription="@string/google_bottom_bar_searchbox_super_g_button_description"/>
+
+  <TextView
+      android:id="@+id/google_bottom_bar_searchbox_hint_text_view"
+      android:layout_height="@dimen/google_bottom_bar_button_size"
+      android:text="@string/google_bottom_bar_searchbox_text"
+      android:gravity="center_vertical"
+      android:layout_gravity="center_vertical"
+      android:layout_width="0dp"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      android:background="@android:color/transparent"
+      android:layout_weight="1"/>
+
+  <ImageButton
+      android:id="@+id/google_bottom_bar_searchbox_mic_button"
+      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_height="@dimen/google_bottom_bar_button_size"
+      android:src="@drawable/bottom_bar_searchbox_mic_icon"
+      android:gravity="center_vertical"
+      android:layout_gravity="center_vertical"
+      android:background="@android:color/transparent"
+      android:contentDescription="@string/google_bottom_bar_searchbox_mic_button_description"/>
+
+  <ImageButton
+      android:id="@+id/google_bottom_bar_searchbox_lens_button"
+      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_height="@dimen/google_bottom_bar_button_size"
+      android:src="@drawable/bottom_bar_searchbox_lens_icon"
+      android:gravity="center_vertical"
+      android:layout_gravity="center_vertical"
+      android:background="@android:color/transparent"
+      android:contentDescription="@string/google_bottom_bar_searchbox_lens_button_description"/>
+
+</LinearLayout>

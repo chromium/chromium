@@ -19,7 +19,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -77,13 +76,13 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.minidump_uploader.CrashFileManager;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -192,7 +191,7 @@ public class CrashesListFragmentTest {
     }
 
     private CallbackHelper getCrashListLoadedListener() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final CallbackHelper helper = new CallbackHelper();
                     CrashesListFragment.setCrashInfoLoadedListenerForTesting(helper::notifyCalled);
@@ -472,18 +471,18 @@ public class CrashesListFragmentTest {
                 .atPosition(1)
                 .onChildView(withId(R.id.crash_report_button))
                 .perform(click());
+
+        Intent expectedIntent = new CrashBugUrlFactory(crashInfo).getReportIntent();
+        ActivityResult intentResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        // Stub out the intent we expect to receive.
+        intending(IntentMatchers.filterEquals(expectedIntent)).respondWith(intentResult);
+
         // button1 is the AlertDialog positive button id.
         onView(withId(android.R.id.button1))
                 .check(matches(withText("Provide more info")))
                 .perform(click());
         onView(withText(CrashesListFragment.CRASH_BUG_DIALOG_MESSAGE)).check(doesNotExist());
-        Intent expectedIntent = new CrashBugUrlFactory(crashInfo).getReportIntent();
-        // TODO(hazems): use IntentMatchers.filterEquals() after pulling the new version of
-        // espresso-intents
-        intended(
-                allOf(
-                        IntentMatchers.hasAction(expectedIntent.getAction()),
-                        IntentMatchers.hasData(expectedIntent.getData())));
+        intended(IntentMatchers.filterEquals(expectedIntent));
     }
 
     @Test

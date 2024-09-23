@@ -10,8 +10,6 @@ option java_outer_classname = 'ChromeSearchboxStatsProto';
 
 package omnibox.metrics;
 
-import "action_info.proto";
-
 // Chrome-specific version of searchbox_stats.proto containing a strict subset
 // of the fields in searchbox_stats.proto.
 //
@@ -31,7 +29,7 @@ message ChromeSearchboxStats {
     optional int32 index = 1 [default = -1];
     optional uint32 type = 2;
     repeated uint32 subtypes = 3;
-    optional int32 action_index = 7;
+    optional int32 action_index = 7 [default = -1];
     repeated ActionInfo action_info = 8;
   }
   optional SuggestionInfo assisted_query_info = 5;
@@ -51,4 +49,29 @@ message ChromeSearchboxStats {
     optional uint32 why_this_result_reason = 3;
   }
   repeated GroupInfo group_infos = 103;
+}
+
+message ActionInfo {
+  // Entity Suggestion Action type received in the server response and
+  // echoed back as part of the searchboxstats. The values are not used in
+  // Chrome in any way and thus do not need names or comments that describe
+  enum ActionType {
+    UNKNOWN_ACTION_TYPE = 0;
+    ACTION_PHONE_CALL = 1;
+    ACTION_TEXT = 2;
+    ACTION_EMAIL = 3;
+    ACTION_CALL = 4;
+    ACTION_CHAT = 5;
+    ACTION_VIDEO_CALL = 6;
+    ACTION_NAVIGATE = 7;
+    ACTION_SEARCH = 8;
+    ACTION_WEBPAGE = 9;
+    ACTION_OSRP = 10;
+    ACTION_SM = 11;
+    ACTION_AOG = 12;
+  }
+  optional ActionType logs_action_type = 1;
+  optional string package_id = 2;
+  optional string action_uri = 4;
+  optional uint32 action_type = 6;
 }

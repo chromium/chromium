@@ -47,16 +47,23 @@ DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleToChunkBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieDecodingTimeToSampleBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleSizeBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleChunkOffsetBoxWriter);
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieVisualSampleEntryBoxWriter,
-                             mp4::writable_boxes::VisualSampleEntry);
-DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAVCDecoderConfigurationBoxWriter,
-                             mp4::writable_boxes::AVCDecoderConfiguration);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAudioSampleEntryBoxWriter,
                              mp4::writable_boxes::AudioSampleEntry);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieVisualSampleEntryBoxWriter,
+                             mp4::writable_boxes::VisualSampleEntry);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieOpusSpecificBoxWriter,
+                             mp4::writable_boxes::OpusSpecificBox);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieVPCodecConfigurationBoxWriter,
+                             mp4::writable_boxes::VPCodecConfiguration);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAV1CodecConfigurationBoxWriter,
+                             mp4::writable_boxes::AV1CodecConfiguration);
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieAVCDecoderConfigurationBoxWriter,
+                             mp4::writable_boxes::AVCDecoderConfiguration);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieElementaryStreamDescriptorBoxWriter,
                              mp4::writable_boxes::ElementaryStreamDescriptor);
 #endif
+
 DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MoviePixelAspectRatioBoxBoxWriter);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieBitRateBoxWriter,
                              mp4::writable_boxes::BitRate);

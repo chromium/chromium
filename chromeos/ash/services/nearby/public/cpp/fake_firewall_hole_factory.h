@@ -10,9 +10,9 @@
 namespace ash {
 namespace nearby {
 
-// A simple implementation of sharing::mojom::FirewallHoleFactory used for
+// A simple implementation of ::sharing::mojom::FirewallHoleFactory used for
 // testing.
-class FakeFirewallHoleFactory : public sharing::mojom::FirewallHoleFactory {
+class FakeFirewallHoleFactory : public ::sharing::mojom::FirewallHoleFactory {
  public:
   FakeFirewallHoleFactory();
   ~FakeFirewallHoleFactory() override;

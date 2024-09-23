@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -55,15 +56,6 @@ const char kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[] =
 const char kPageLoadPrerenderActivatedPageLoaderStatus[] =
     "PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus";
 
-// This metric is used for debugging https://crbug.com/1379491.
-// Intentionally this metric doesn't record observer events per trigger type
-// (e.g., SpeculationRules) because some functions can be called before
-// `PrerenderPageLoadMetricsObserver::trigger_type_` is set (e.g., when
-// `OnComplete()` called from the destructor of PageLoadTracker before
-// prerender activation).
-const char kPageLoadPrerenderObserverEvent[] =
-    "PageLoad.Internal.Prerender2.ObserverEvent";
-
 }  // namespace internal
 
 PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
@@ -81,7 +73,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  // TODO(https://crbug.com/1335481): Prerendering pages embedding FencedFrames
+  // TODO(crbug.com/40228553): Prerendering pages embedding FencedFrames
   // are not supported. So, this class doesn't need forwarding.
   DCHECK(!navigation_handle->IsInPrerenderedMainFrame());
   return STOP_OBSERVING;
@@ -91,11 +83,7 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  base::UmaHistogramEnumeration(
-      internal::kPageLoadPrerenderObserverEvent,
-      internal::PageLoadPrerenderObserverEvent::kOnPrerenderStart);
-
-  // TODO(https://crbug.com/1335481): Prerendering pages embedding FencedFrames
+  // TODO(crbug.com/40228553): Prerendering pages embedding FencedFrames
   // are not supported.
   DCHECK(navigation_handle->GetNavigatingFrameType() !=
          content::FrameType::kFencedFrameRoot);
@@ -104,10 +92,6 @@ PrerenderPageLoadMetricsObserver::OnPrerenderStart(
 
 void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
-  base::UmaHistogramEnumeration(
-      internal::kPageLoadPrerenderObserverEvent,
-      internal::PageLoadPrerenderObserverEvent::kDidActivatePrerenderedPage);
-
   // Copy the trigger type and histogram suffix for an embedder. These data will
   // be lost after NavigationRequest is destroyed.
   DCHECK(!trigger_type_.has_value());
@@ -137,19 +121,26 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
         main_frame_resource_has_no_store_.value() ? 1 : 0);
   }
 
+  auto prerender_trigger_type =
+      page_load_metrics::NavigationHandleUserData::InitiatorLocation::kOther;
+  auto* navigation_userdata =
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  if (navigation_userdata) {
+    prerender_trigger_type = navigation_userdata->navigation_type();
+  }
+
   builder.SetWasPrerendered(true)
       .SetTiming_NavigationToActivation(
           navigation_to_activation.InMilliseconds())
-      .SetNavigation_PageTransition(navigation_handle->GetPageTransition());
+      .SetNavigation_PageTransition(navigation_handle->GetPageTransition())
+      .SetNavigation_InitiatorLocation(
+          static_cast<int>(prerender_trigger_type));
   builder.Record(ukm::UkmRecorder::Get());
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  base::UmaHistogramEnumeration(
-      internal::kPageLoadPrerenderObserverEvent,
-      internal::PageLoadPrerenderObserverEvent::kOnFirstPaintInPage);
-
   if (!WasActivatedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_paint, GetDelegate())) {
     return;
@@ -164,10 +155,6 @@ void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(
 
 void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  base::UmaHistogramEnumeration(
-      internal::kPageLoadPrerenderObserverEvent,
-      internal::PageLoadPrerenderObserverEvent::kOnFirstContentfulPaintInPage);
-
   if (!WasActivatedInForegroundOptionalEventInForeground(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
     return;
@@ -187,10 +174,6 @@ void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
 
 void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  base::UmaHistogramEnumeration(
-      internal::kPageLoadPrerenderObserverEvent,
-      internal::PageLoadPrerenderObserverEvent::kOnFirstInputInPage);
-
   if (!WasActivatedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {
     return;
@@ -208,9 +191,6 @@ void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
 
 void PrerenderPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  base::UmaHistogramEnumeration(
-      internal::kPageLoadPrerenderObserverEvent,
-      internal::PageLoadPrerenderObserverEvent::kOnComplete);
   RecordSessionEndHistograms(timing);
 }
 
@@ -245,18 +225,12 @@ void PrerenderPageLoadMetricsObserver::MaybeRecordMainResourceLoadStatus() {
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrerenderPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  base::UmaHistogramEnumeration(internal::kPageLoadPrerenderObserverEvent,
-                                internal::PageLoadPrerenderObserverEvent::
-                                    kFlushMetricsOnAppEnterBackground);
   RecordSessionEndHistograms(timing);
   return STOP_OBSERVING;
 }
 
 void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
     const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
-  base::UmaHistogramEnumeration(
-      internal::kPageLoadPrerenderObserverEvent,
-      internal::PageLoadPrerenderObserverEvent::kRecordSessionEndHistograms);
   MaybeRecordMainResourceLoadStatus();
 
   if (!GetDelegate().WasPrerenderedThenActivatedInForeground() ||
@@ -288,7 +262,7 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
   }
 
   // Record metrics only when a prerendered page is successfully activated.
-  // TODO(crbug.com/1364013): add tests to make sure that CLS and INP metrics
+  // TODO(crbug.com/40238929): add tests to make sure that CLS and INP metrics
   // are not recorded when prerendering is canceled.
   if (GetDelegate().GetPrerenderingState() ==
       page_load_metrics::PrerenderingState::kActivated) {
@@ -299,10 +273,6 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
 
 void PrerenderPageLoadMetricsObserver::RecordLayoutShiftScoreMetrics(
     const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
-  base::UmaHistogramEnumeration(
-      internal::kPageLoadPrerenderObserverEvent,
-      internal::PageLoadPrerenderObserverEvent::kRecordLayoutShiftScoreMetrics);
-
   DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
   DCHECK(main_frame_timing.activation_start);
 
@@ -337,10 +307,6 @@ void PrerenderPageLoadMetricsObserver::RecordLayoutShiftScoreMetrics(
 }
 
 void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
-  base::UmaHistogramEnumeration(internal::kPageLoadPrerenderObserverEvent,
-                                internal::PageLoadPrerenderObserverEvent::
-                                    kRecordNormalizedResponsivenessMetrics);
-
   DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
 
   const page_load_metrics::ResponsivenessMetricsNormalization&
@@ -404,5 +370,5 @@ std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
       DCHECK(!embedder_histogram_suffix_.empty());
       return histogram_name + ".Embedder_" + embedder_histogram_suffix_;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }

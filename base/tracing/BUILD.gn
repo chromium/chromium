@@ -27,6 +27,10 @@ if (enable_base_tracing) {
         "$root_gen_dir/base/tracing/protos/chrome_track_event.descriptor"
     _rebased_chrome_track_event_descriptor =
         rebase_path(_chrome_track_event_descriptor, root_build_dir)
+    _winscope_extensions_descriptor =
+        "$_protos_path/perfetto/trace/android/winscope.descriptor"
+    _rebased_winscope_extensions_descriptor =
+        rebase_path(_winscope_extensions_descriptor, root_build_dir)
 
     _perfetto_script =
         rebase_path("//third_party/perfetto/tools/diff_test_trace_processor.py",
@@ -54,6 +58,8 @@ if (enable_base_tracing) {
       "@WrappedPath($_rebased_all_chrome_metrics_descriptor)",
       "--chrome-track-event-descriptor",
       "@WrappedPath($_rebased_chrome_track_event_descriptor)",
+      "--winscope-extensions-descriptor",
+      "@WrappedPath($_rebased_winscope_extensions_descriptor)",
       "--script",
       "@WrappedPath($_perfetto_script)",
     ]

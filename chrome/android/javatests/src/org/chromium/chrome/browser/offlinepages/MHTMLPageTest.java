@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UrlUtils;
@@ -28,7 +29,6 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.PageTransition;
@@ -100,7 +100,7 @@ public class MHTMLPageTest implements CustomMainActivityStart {
         final Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         final Semaphore semaphore = new Semaphore(0);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OfflineContentAggregatorFactory.get()
                             .addObserver(new TestNewDownloadBackendObserver(semaphore));
@@ -120,7 +120,7 @@ public class MHTMLPageTest implements CustomMainActivityStart {
         final Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         final Semaphore semaphore = new Semaphore(0);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     OfflineContentAggregatorFactory.get()
                             .addObserver(new TestNewDownloadBackendObserver(semaphore));

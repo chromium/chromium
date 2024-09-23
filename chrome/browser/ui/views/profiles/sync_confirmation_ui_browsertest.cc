@@ -4,24 +4,38 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 
+#include "base/functional/bind_internal.h"
+#include "base/functional/callback_forward.h"
+#include "base/scoped_environment_variable_override.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "components/consent_auditor/consent_auditor.h"
+#include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -29,7 +43,7 @@
 #error Platform not supported
 #endif
 
-// TODO(crbug.com/1374702): Move this file next to sync_confirmation_ui.cc.
+// TODO(crbug.com/40242558): Move this file next to sync_confirmation_ui.cc.
 // Render the page in a browser instead of a profile_picker_view to be able to
 // do so.
 
@@ -37,47 +51,31 @@
 // in the webui directory because they manipulate views.
 namespace {
 
+using testing::AllOf;
+using testing::Contains;
+using testing::ElementsAre;
+
 // Configures the state of ::switches::kMinorModeRestrictionsForHistorySyncOptIn
 // that relies on can_show_history_sync_opt_ins_without_minor_mode_restrictions
 // capability.
 struct MinorModeRestrictions {
-  // Enable or disable the Feature
-  bool enable_feature = false;
   // Related capability value
   signin::Tribool capability = signin::Tribool::kTrue;
 };
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithUnrestrictedUser{
-    .enable_feature = true,
     .capability = signin::Tribool::kTrue};
 constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithRestrictedUser{
-    .enable_feature = true,
     .capability = signin::Tribool::kFalse};
 #endif
-
-void ConfigureMinorModeRestrictionFeature(
-    MinorModeRestrictions minor_mode_restrictions,
-    base::test::ScopedFeatureList& feature_flag_) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  if (minor_mode_restrictions.enable_feature) {
-    feature_flag_.InitAndEnableFeature(
-        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  } else {
-    feature_flag_.InitAndDisableFeature(
-        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  }
-#else
-  CHECK(!minor_mode_restrictions.enable_feature)
-      << "This feature can be only enabled for selected platforms.";
-#endif
-}
 
 struct SyncConfirmationTestParam {
   PixelTestParam pixel_test_param;
   AccountManagementStatus account_management_status =
       AccountManagementStatus::kNonManaged;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
+  bool is_sync_promo = false;
   MinorModeRestrictions minor_mode_restrictions;
 };
 
@@ -99,8 +97,6 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
                           .use_small_window = true}},
     {.pixel_test_param = {.test_suffix = "ManagedAccount"},
      .account_management_status = AccountManagementStatus::kManaged},
-    {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_chrome_refresh_2023_style = true}},
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Restricted mode is only implemented for these platforms.
@@ -120,18 +116,19 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
 // The sign-in intercept feature isn't enabled on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "SigninInterceptStyle"},
-     .sync_style = SyncConfirmationStyle::kSigninInterceptModal},
+     .sync_style = SyncConfirmationStyle::kSigninInterceptModal,
+     .is_sync_promo = true},
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
     {.pixel_test_param = {.test_suffix = "Rtl",
                           .use_right_to_left_language = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
+    {.pixel_test_param = {.test_suffix = "Promo"},
+     .sync_style = SyncConfirmationStyle::kDefaultModal,
+     .is_sync_promo = true},
     {.pixel_test_param = {.test_suffix = "ManagedAccount"},
      .account_management_status = AccountManagementStatus::kManaged,
-     .sync_style = SyncConfirmationStyle::kDefaultModal},
-    {.pixel_test_param = {.test_suffix = "CR2023",
-                          .use_chrome_refresh_2023_style = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -151,7 +148,8 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
 GURL BuildSyncConfirmationWindowURL() {
   std::string url_string = chrome::kChromeUISyncConfirmationURL;
   return AppendSyncConfirmationQueryParams(GURL(url_string),
-                                           SyncConfirmationStyle::kWindow);
+                                           SyncConfirmationStyle::kWindow,
+                                           /*is_sync_promo=*/true);
 }
 
 // Creates a step to represent the sync-confirmation.
@@ -175,7 +173,7 @@ class SyncConfirmationStepControllerForTest
             weak_ptr_factory_.GetWeakPtr(), std::move(step_shown_callback)));
   }
 
-  void OnNavigateBackRequested() override { NOTREACHED_NORETURN(); }
+  void OnNavigateBackRequested() override { NOTREACHED(); }
 
   void OnSyncConfirmationLoaded(
       StepSwitchFinishedCallback step_shown_callback) {
@@ -203,9 +201,6 @@ class SyncConfirmationUIWindowPixelTest
   SyncConfirmationUIWindowPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style == SyncConfirmationStyle::kWindow);
-
-    ConfigureMinorModeRestrictionFeature(GetParam().minor_mode_restrictions,
-                                         scoped_feature_list);
   }
 
   void ShowUi(const std::string& name) override {
@@ -274,9 +269,6 @@ class SyncConfirmationUIDialogPixelTest
   SyncConfirmationUIDialogPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style != SyncConfirmationStyle::kWindow);
-
-    ConfigureMinorModeRestrictionFeature(GetParam().minor_mode_restrictions,
-                                         scoped_feature_list);
   }
 
   ~SyncConfirmationUIDialogPixelTest() override = default;
@@ -289,9 +281,8 @@ class SyncConfirmationUIDialogPixelTest
                       signin::ConsentLevel::kSignin,
                       GetParam().minor_mode_restrictions.capability);
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
-    if (GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
-      url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style);
-    }
+    url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style,
+                                            GetParam().is_sync_promo);
     content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
 
@@ -304,7 +295,8 @@ class SyncConfirmationUIDialogPixelTest
 
     auto* controller = browser()->signin_view_controller();
     controller->ShowModalSyncConfirmationDialog(
-        GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal);
+        GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal,
+        GetParam().is_sync_promo);
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
@@ -321,3 +313,164 @@ INSTANTIATE_TEST_SUITE_P(,
                          SyncConfirmationUIDialogPixelTest,
                          testing::ValuesIn(kDialogTestParams),
                          &ParamToTestSuffix);
+
+enum class SyncConfirmationUIAction { kTurnSyncOn, kGoToSettings };
+
+class SyncConfirmationUITest
+    : public SigninBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<bool, SyncConfirmationUIAction, std::string>>,
+      public LoginUIService::Observer {
+ public:
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    CHECK(GetProfile());
+    // The test should close the sync confirmation dialog once the observer
+    // method is called to simulate the real behavior more closely.
+    login_ui_service_observation_.Observe(
+        LoginUIServiceFactory::GetForProfile(GetProfile()));
+  }
+
+  void TearDownOnMainThread() override {
+    // Stop observing the LoginUIService before destroying the profile.
+    login_ui_service_observation_.Reset();
+    SigninBrowserTestBase::TearDownOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SigninBrowserTestBase::SetUpCommandLine(command_line);
+
+    if (GetLanguage().empty()) {
+      return;
+    }
+    command_line->AppendSwitchASCII(switches::kLang, GetLanguage());
+
+    // On Linux & Lacros the command line switch has no effect, we need to use
+    // environment variables to change the language.
+    scoped_env_override_ =
+        std::make_unique<base::ScopedEnvironmentVariableOverride>(
+            "LANGUAGE", GetLanguage());
+  }
+
+  // LoginUIService::Observer:
+  void OnSyncConfirmationUIClosed(
+      LoginUIService::SyncConfirmationUIClosedResult result) override {
+    browser()->signin_view_controller()->CloseModalSignin();
+  }
+
+  [[nodiscard]] AccountInfo FillAccountInfoWithEscapedHtmlCharacters(
+      const AccountInfo& account_info) {
+    AccountInfo new_account_info = account_info;
+    // The account name contains characters that are escaped in HTML.
+    new_account_info.full_name = "The name's <>&\"', James\u00a0<>&\"'";
+    new_account_info.given_name = new_account_info.full_name;
+    //  Fill all required fields to make `AccountInfo` valid.
+    new_account_info.hosted_domain = kNoHostedDomainFound;
+    new_account_info.picture_url = "https://example.org/avatar";
+    CHECK(new_account_info.IsValid());
+    return new_account_info;
+  }
+
+  bool IsSigninIntercept() { return std::get<0>(GetParam()); }
+
+  SyncConfirmationUIAction GetAction() { return std::get<1>(GetParam()); }
+
+  std::string GetLanguage() { return std::get<2>(GetParam()); }
+
+  consent_auditor::FakeConsentAuditor* consent_auditor() {
+    return static_cast<consent_auditor::FakeConsentAuditor*>(
+        ConsentAuditorFactory::GetForProfile(GetProfile()));
+  }
+
+  int GetActionButtonLabelId() {
+    switch (GetAction()) {
+      case SyncConfirmationUIAction::kTurnSyncOn:
+        return IsSigninIntercept()
+                   ? IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL
+                   : IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
+      case SyncConfirmationUIAction::kGoToSettings:
+        return IDS_SYNC_CONFIRMATION_SETTINGS_BUTTON_LABEL;
+    }
+  }
+
+  int GetTitleId() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    return IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
+#else
+    return IsSigninIntercept()
+               ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2
+               : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+
+  int GetDescriptionId() {
+    return IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
+  }
+
+ protected:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+    ConsentAuditorFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildFakeConsentAuditor));
+  }
+
+ private:
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      login_ui_service_observation_{this};
+  std::unique_ptr<base::ScopedEnvironmentVariableOverride> scoped_env_override_;
+};
+
+// Regression test for https://crbug.com/325749258.
+IN_PROC_BROWSER_TEST_P(SyncConfirmationUITest,
+                       RecordConsentWithEscapedHtmlCharacters) {
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "test@gmail.com", signin::ConsentLevel::kSignin);
+  account_info = FillAccountInfoWithEscapedHtmlCharacters(account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  browser()->signin_view_controller()->ShowModalSyncConfirmationDialog(
+      IsSigninIntercept(), /*is_sync_promo=*/true);
+  switch (GetAction()) {
+    case SyncConfirmationUIAction::kTurnSyncOn:
+      EXPECT_TRUE(
+          login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
+      break;
+    case SyncConfirmationUIAction::kGoToSettings:
+      EXPECT_TRUE(
+          login_ui_test_utils::GoToSettingsSyncConfirmationDialog(browser()));
+      break;
+  }
+
+  EXPECT_THAT(consent_auditor()->recorded_confirmation_ids(),
+              ElementsAre(GetActionButtonLabelId()));
+  EXPECT_THAT(
+      consent_auditor()->recorded_id_vectors(),
+      ElementsAre(AllOf(Contains(GetTitleId()), Contains(GetDescriptionId()))));
+  EXPECT_THAT(consent_auditor()->recorded_features(),
+              ElementsAre(consent_auditor::Feature::CHROME_SYNC));
+}
+
+std::string SyncConfirmationUITestParamToTestSuffix(
+    const testing::TestParamInfo<SyncConfirmationUITest::ParamType>& info) {
+  auto [is_signin_intercept, action, language] = info.param;
+  return base::StrCat({language, is_signin_intercept ? "Intercept" : "",
+                       action == SyncConfirmationUIAction::kTurnSyncOn
+                           ? "Accept"
+                           : "GoToSettings"});
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SyncConfirmationUITest,
+    testing::Combine(
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        // Sign-in intercept is not supported on Lacros.
+        testing::Values(false),
+#else
+        testing::Bool(),
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+        testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
+                        SyncConfirmationUIAction::kGoToSettings),
+        testing::Values("", "pl")),
+    &SyncConfirmationUITestParamToTestSuffix);

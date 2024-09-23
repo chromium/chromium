@@ -5,16 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_DIAGNOSTICS_DIAGNOSTICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_DIAGNOSTICS_DIAGNOSTICS_SERVICE_H_
 
-#include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_diagnostics.mojom.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash::cfm {
 
 // Implementation of the MeetDevicesDiagnostics Service.
 class DiagnosticsService : public CfmObserver,
-                           public ServiceAdaptor::Delegate,
+                           public chromeos::cfm::ServiceAdaptor::Delegate,
                            public chromeos::cfm::mojom::MeetDevicesDiagnostics {
  public:
   DiagnosticsService(const DiagnosticsService&) = delete;
@@ -37,17 +37,17 @@ class DiagnosticsService : public CfmObserver,
   // Forward |CfmObserver| implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
-  // Disconnect handler for |mojom::CfmServiceAdaptor|
+  // Disconnect handler for |chromeos::cfm::mojom::CfmServiceAdaptor|
   void OnAdaptorDisconnect() override;
 
-  // Forward |ServiceAdaptorDelegate| implementation
+  // Forward |chromeos::cfm::ServiceAdaptor::Delegate| implementation
   void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
 
  private:
   DiagnosticsService();
   ~DiagnosticsService() override;
 
-  ServiceAdaptor service_adaptor_;
+  chromeos::cfm::ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<chromeos::cfm::mojom::MeetDevicesDiagnostics> receivers_;
 };
 

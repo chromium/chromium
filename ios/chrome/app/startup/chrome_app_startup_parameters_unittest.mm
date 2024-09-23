@@ -561,31 +561,9 @@ TEST_F(AppStartupParametersTest, ParseSearchPasswordsWidgetKit) {
       password_manager::ManagePasswordsReferrer::kSearchPasswordsWidget, 1);
 }
 
-// Tests that the external action scheme is not handled when the flag is
-// disabled.
-TEST_F(AppStartupParametersTest, ExternalActionSchemeHandlingDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{}, /*disabled=*/{kIOSExternalActionURLs});
-
-  base::HistogramTester histogram_tester;
-  NSURL* url = [NSURL
-      URLWithString:@"googlechromes://ChromeExternalAction/OpenNTP?test=1"];
-  ChromeAppStartupParameters* params =
-      [ChromeAppStartupParameters startupParametersWithURL:url
-                                         sourceApplication:nil];
-
-  EXPECT_NE(params, nil);
-  histogram_tester.ExpectBucketCount("IOS.LaunchSource",
-                                     AppLaunchSource::EXTERNAL_ACTION, 0);
-}
-
 // Tests that the external action scheme is handled correctly with the "OpenNTP"
 // action.
 TEST_F(AppStartupParametersTest, ExternalActionSchemeOpenNTP) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
   ClearDefaultBrowserPromoData();
 
   base::HistogramTester histogram_tester;
@@ -605,9 +583,6 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeOpenNTP) {
 // Tests that the external action scheme is handled correctly with the
 // "DefaultBrowserSettings" action.
 TEST_F(AppStartupParametersTest, ExternalActionSchemeDefaultBrowserSettings) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
   ClearDefaultBrowserPromoData();
 
   base::HistogramTester histogram_tester;
@@ -630,9 +605,6 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeDefaultBrowserSettings) {
 // "DefaultBrowserSettings" action, but Chrome is already default browser.
 TEST_F(AppStartupParametersTest,
        ExternalActionSchemeDefaultBrowserSettingsChromeAlreadyDefaultBrowser) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
   LogOpenHTTPURLFromExternalURL();
 
   base::HistogramTester histogram_tester;
@@ -654,9 +626,6 @@ TEST_F(AppStartupParametersTest,
 // Tests that the external action scheme is handled with a Chromium-flavored
 // URL.
 TEST_F(AppStartupParametersTest, ExternalActionSchemeChromiumURLHandled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
   ClearDefaultBrowserPromoData();
 
   base::HistogramTester histogram_tester;
@@ -676,10 +645,6 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeChromiumURLHandled) {
 // Tests that the external action scheme does nothing when passed an invalid
 // action.
 TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidAction) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
-
   base::HistogramTester histogram_tester;
   NSURL* url = [NSURL
       URLWithString:@"googlechromes://ChromeExternalAction/invalid?test=5"];
@@ -697,10 +662,6 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidAction) {
 // Tests that the external action scheme does nothing when passed an invalid
 // action (long path).
 TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionLongPath) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
-
   base::HistogramTester histogram_tester;
   NSURL* url =
       [NSURL URLWithString:
@@ -719,10 +680,6 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionLongPath) {
 // Tests that the external action scheme does nothing when passed an invalid
 // action (no action passed).
 TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionNoAction) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
-
   base::HistogramTester histogram_tester;
   NSURL* url = [NSURL URLWithString:@"googlechromes://ChromeExternalAction/"];
   ChromeAppStartupParameters* params =
@@ -739,10 +696,6 @@ TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionNoAction) {
 // Tests that the external action scheme does nothing when passed an invalid
 // action (no path passed).
 TEST_F(AppStartupParametersTest, ExternalActionSchemeInvalidActionNoPath) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled=*/{kIOSExternalActionURLs}, /*disabled=*/{});
-
   base::HistogramTester histogram_tester;
   NSURL* url = [NSURL URLWithString:@"googlechrome://ChromeExternalAction"];
   ChromeAppStartupParameters* params =

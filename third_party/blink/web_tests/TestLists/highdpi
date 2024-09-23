@@ -17,7 +17,6 @@ animations/responsive/interpolation/transform-responsive.html
 animations/responsive/responsive-neutral-keyframes.html
 animations/responsive/stacked-visibility-animations-responsive.html
 animations/responsive/zoom-responsive-transform-animation-001.html
-animations/skew-notsequential-compositor.html
 animations/stability/font-builder-crash.html
 animations/state-at-end-event.html
 animations/svg-attribute-composition/svg-amplitude-composition.html
@@ -213,7 +212,6 @@ css3/blending/svg-blend-overlapping-elements.html
 css3/calc/css3-radial-gradients.html
 css3/calc/gradient-color-stops.html
 css3/filters/add-filter-rendering.html
-css3/filters/backdrop-filter-basic-blur.html
 css3/filters/backdrop-filter-border-radius.html
 css3/filters/backdrop-filter-clip-rect-zoom.html
 css3/filters/composited-layer-promotion-after-outset-overlap-change-using-composited-shadow.html
@@ -578,6 +576,7 @@ external/wpt/css/cssom-view/pt-to-px-width.html
 external/wpt/css/cssom-view/table-border-collapse-client-width-height.html
 external/wpt/css/cssom/style-sheet-interfaces-002.html
 external/wpt/css/filter-effects/animation/backdrop-filter-interpolation-004.html
+external/wpt/css/filter-effects/backdrop-filter-basic-blur.html
 external/wpt/css/filter-effects/filter-function/filter-function-007.html
 external/wpt/css/filter-effects/parsing/backdrop-filter-parsing-valid.html
 external/wpt/css/filter-effects/svg-shorthand-drop-shadow-001.html
@@ -704,7 +703,6 @@ external/wpt/html/canvas/element/manual/the-canvas-state/2d.zero.size.canvas.htm
 external/wpt/html/canvas/element/path-objects/2d.path.arc.angle.2.html
 external/wpt/html/canvas/element/pixel-manipulation/2d.imageData.get.range.html
 external/wpt/html/canvas/element/reset/2d.reset.basic.html
-external/wpt/html/canvas/element/scroll/2d.scrollPathIntoView.basic.html
 external/wpt/html/canvas/element/shadows/2d.shadow.image.scale.html
 external/wpt/html/canvas/element/text-styles/2d.text.draw.space.collapse.end.html
 external/wpt/html/canvas/element/the-canvas-state/2d.state.saverestore.strokeStyle.html
@@ -937,7 +935,7 @@ external/wpt/largest-contentful-paint/animated/observe-non-animated-image.tentat
 external/wpt/largest-contentful-paint/observe-svg-background-image.html
 external/wpt/layout-instability/transform-above-filter-dynamic.html
 external/wpt/lifecycle/freeze.html
-external/wpt/loading/preloader-css-import-no-semicolon.tentative.html
+external/wpt/loading/preloader-css-import-no-semicolon.html
 external/wpt/longtask-timing/longtask-in-childiframe.html
 external/wpt/longtask-timing/shared-renderer/longtask-in-new-window.html
 external/wpt/magnetometer/Magnetometer-enabled-by-feature-policy-attribute-redirect-on-load.https.html
@@ -1018,7 +1016,6 @@ external/wpt/scroll-animations/css/progress-based-animation-timeline.html
 external/wpt/scroll-animations/scroll-timelines/setting-playback-rate.html
 external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html
 external/wpt/secure-contexts/shared-worker-insecure-first.https.html
-external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html
 external/wpt/selection/addRange-40.html
 external/wpt/selection/anonymous/details-ancestor.html
 external/wpt/selection/bidi/modify.tentative.html
@@ -1318,9 +1315,6 @@ http/tests/csspaint/transform-with-page-zoom-002.html
 http/tests/csspaint/transform-with-page-zoom-003.html
 http/tests/document-policy/document-policy-in-xsl.php
 http/tests/document-policy/document-policy-report-only-in-xsl.php
-http/tests/images/document-policy-oversized-images-forced-layout.php
-http/tests/images/document-policy-oversized-images-responsive-image.php
-http/tests/images/document-policy-oversized-images-styles.php
 http/tests/images/jpeg-partial-load.html
 http/tests/images/png-animated-partial-load.html
 http/tests/images/png-partial-load-as-document.html
@@ -1562,10 +1556,10 @@ virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/old-content-with-overflow-zoomed.html
-virtual/view-transition/external/wpt/css/css-view-transitions/
-virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/
-virtual/fenced-frame-mparch/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html
-virtual/fenced-frame-mparch/wpt_internal/fenced_frame/opaque-ad-sizes.https.html
+virtual/threaded/external/wpt/css/css-view-transitions/
+virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/
+virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/nested-opaque-ad-sizes.https.html
+virtual/fenced-frame-mparch-internal/wpt_internal/fenced_frame/opaque-ad-sizes.https.html
 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-03.html
 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-10.html
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/backplate/forced-colors-mode-backplate-11.html

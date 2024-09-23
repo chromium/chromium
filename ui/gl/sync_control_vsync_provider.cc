@@ -49,13 +49,14 @@ bool SyncControlVSyncProvider::GetVSyncParametersIfAvailable(
     base::TimeDelta* interval_out) {
   TRACE_EVENT0("gpu", "SyncControlVSyncProvider::GetVSyncParameters");
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // The actual clock used for the system time returned by glXGetSyncValuesOML
-  // is unspecified. In practice, the clock used is likely to be either
-  // CLOCK_REALTIME or CLOCK_MONOTONIC, so we compare the returned time to the
-  // current time according to both clocks, and assume that the returned time
-  // was produced by the clock whose current time is closest to it, subject
-  // to the restriction that the returned time must not be in the future
-  // (since it is the time of a vblank that has already occurred).
+  // The actual clock used for the system time returned by
+  // eglGetSyncValuesCHROMIUM is unspecified. In practice, the clock used is
+  // likely to be either CLOCK_REALTIME or CLOCK_MONOTONIC, so we compare the
+  // returned time to the current time according to both clocks, and assume
+  // that the returned time was produced by the clock whose current time is
+  // closest to it, subject to the restriction that the returned time must not
+  // be in the future (since it is the time of a vblank that has already
+  // occurred).
   int64_t system_time;
   int64_t media_stream_counter;
   int64_t swap_buffer_counter;

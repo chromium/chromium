@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 
+#include "third_party/blink/renderer/core/animation/length_property_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
@@ -81,11 +83,65 @@ InterpolableLength* InterpolableLength::MaybeConvertCSSValue(
   return MakeGarbageCollected<InterpolableLength>(*expression_node);
 }
 
+CSSValueID InterpolableLength::LengthTypeToCSSValueID(Length::Type lt) {
+  switch (lt) {
+    case Length::Type::kAuto:
+      return CSSValueID::kAuto;
+    case Length::Type::kMinContent:
+      return CSSValueID::kMinContent;
+    case Length::Type::kMaxContent:
+      return CSSValueID::kMaxContent;
+    case Length::Type::kFitContent:
+      return CSSValueID::kFitContent;
+    case Length::Type::kFillAvailable:
+      return CSSValueID::kWebkitFillAvailable;
+    case Length::Type::kContent:  // only valid for flex-basis.
+      return CSSValueID::kContent;
+    default:
+      return CSSValueID::kInvalid;
+  }
+}
+
+Length::Type InterpolableLength::CSSValueIDToLengthType(CSSValueID id) {
+  switch (id) {
+    case CSSValueID::kAuto:
+      return Length::Type::kAuto;
+    case CSSValueID::kMinContent:
+    case CSSValueID::kWebkitMinContent:
+      return Length::Type::kMinContent;
+    case CSSValueID::kMaxContent:
+    case CSSValueID::kWebkitMaxContent:
+      return Length::Type::kMaxContent;
+    case CSSValueID::kFitContent:
+    case CSSValueID::kWebkitFitContent:
+      return Length::Type::kFitContent;
+    case CSSValueID::kWebkitFillAvailable:
+      return Length::Type::kFillAvailable;
+    case CSSValueID::kContent:  // only valid for flex-basis.
+      return Length::Type::kContent;
+    default:
+      NOTREACHED_IN_MIGRATION();
+      return Length::Type::kFixed;
+  }
+}
+
 // static
-InterpolableLength* InterpolableLength::MaybeConvertLength(const Length& length,
-                                                           float zoom) {
-  if (!length.IsSpecified())
-    return nullptr;
+InterpolableLength* InterpolableLength::MaybeConvertLength(
+    const Length& length,
+    const CSSProperty& property,
+    float zoom,
+    std::optional<EInterpolateSize> interpolate_size) {
+  if (!length.IsSpecified()) {
+    if (!RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
+      return nullptr;
+    }
+    CSSValueID keyword = LengthTypeToCSSValueID(length.GetType());
+    if (keyword == CSSValueID::kInvalid ||
+        !LengthPropertyFunctions::CanAnimateKeyword(property, keyword)) {
+      return nullptr;
+    }
+    return MakeGarbageCollected<InterpolableLength>(keyword, interpolate_size);
+  }
 
   if (length.IsCalculated() && length.GetCalculationValue().IsExpression()) {
     auto unzoomed_calc = length.GetCalculationValue().Zoom(1.0 / zoom);
@@ -99,17 +155,112 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(const Length& length,
   length_array.values[CSSPrimitiveValue::kUnitTypePixels] =
       pixels_and_percent.pixels / zoom;
   length_array.type_flags[CSSPrimitiveValue::kUnitTypePixels] =
-      pixels_and_percent.pixels != 0;
+      pixels_and_percent.has_explicit_pixels;
 
   length_array.values[CSSPrimitiveValue::kUnitTypePercentage] =
       pixels_and_percent.percent;
   length_array.type_flags[CSSPrimitiveValue::kUnitTypePercentage] =
-      length.IsPercentOrCalc();
+      pixels_and_percent.has_explicit_percent;
   return MakeGarbageCollected<InterpolableLength>(std::move(length_array));
 }
 
+bool InterpolableLength::IsCalcSize() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  const auto* operation =
+      DynamicTo<CSSMathExpressionOperation>(expression_.Get());
+  return operation && operation->IsCalcSize();
+}
+
+namespace {
+
+const CSSMathExpressionNode& ExtractCalcSizeBasis(
+    const CSSMathExpressionNode* node) {
+  const auto* operation = DynamicTo<CSSMathExpressionOperation>(node);
+  if (!operation || !operation->IsCalcSize()) {
+    return *node;
+  }
+
+  return ExtractCalcSizeBasis(operation->GetOperands()[0]);
+}
+
+}  // namespace
+
 // static
-PairwiseInterpolationValue InterpolableLength::MergeSingles(
+bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
+                                        const InterpolableValue* end) {
+  const auto& start_length = To<InterpolableLength>(*start);
+  const auto& end_length = To<InterpolableLength>(*end);
+
+  // Implement the rules in
+  // https://drafts.csswg.org/css-values-5/#interp-calc-size, but
+  // without actually writing the implicit conversion of the "other"
+  // value to a calc-size().  This means that if one value is a
+  // calc-size(), the other value converts to:
+  // * for intrinsic size keywords, a calc-size(value, size)
+  // * for other values, a calc-size(any, value)
+
+  // Only animate to or from width keywords if the other endpoint of the
+  // animation is a calc-size() expression.  And only animate between
+  // calc-size() expressions or between a keyword and a calc-size() expression
+  // if they have compatible basis.
+
+  const bool start_is_keyword = start_length.IsKeyword();
+  const bool end_is_keyword = end_length.IsKeyword();
+  if (start_is_keyword || end_is_keyword) {
+    // Only animate to or from width keywords if the other endpoint of the
+    // animation is a calc-size() expression.
+    const InterpolableLength* keyword;
+    const InterpolableLength* non_keyword;
+    if (start_is_keyword) {
+      if (end_is_keyword) {
+        return false;
+      }
+      keyword = &start_length;
+      non_keyword = &end_length;
+    } else {
+      non_keyword = &start_length;
+      keyword = &end_length;
+    }
+
+    if (!non_keyword->IsCalcSize()) {
+      // Check the 'interpolate-size' value stored with the keyword.
+      return keyword->IsKeywordFullyInterpolable();
+    }
+    const CSSMathExpressionNode& basis =
+        ExtractCalcSizeBasis(non_keyword->expression_);
+
+    if (const auto* basis_literal =
+            DynamicTo<CSSMathExpressionKeywordLiteral>(basis)) {
+      return basis_literal->GetValue() == keyword->keyword_ ||
+             basis_literal->GetValue() == CSSValueID::kAny;
+    }
+
+    return false;
+  }
+
+  // Only animate between calc-size() expressions if they have compatible
+  // basis.  This includes checking the type of the keyword, but it also
+  // includes broad compatibility for 'any', and for animating between
+  // different <calc-sum> values.  There are also some cases where we
+  // need to check that we don't exceed the expansion limit for
+  // substituting to handle nested calc-size() expressions.
+  //
+  // CreateArithmeticOperationAndSimplifyCalcSize knows how to determine
+  // this.
+  if (start_length.IsCalcSize() && end_length.IsCalcSize()) {
+    return CSSMathExpressionOperation::
+               CreateArithmeticOperationAndSimplifyCalcSize(
+                   start_length.expression_, end_length.expression_,
+                   CSSMathOperator::kAdd) != nullptr;
+  }
+
+  return true;
+}
+
+// static
+PairwiseInterpolationValue InterpolableLength::MaybeMergeSingles(
     InterpolableValue* start,
     InterpolableValue* end) {
   // TODO(crbug.com/991672): We currently have a lot of "fast paths" that do not
@@ -117,6 +268,11 @@ PairwiseInterpolationValue InterpolableLength::MergeSingles(
   // lengths. We should stop doing that.
   auto& start_length = To<InterpolableLength>(*start);
   auto& end_length = To<InterpolableLength>(*end);
+
+  if (!CanMergeValues(start, end)) {
+    return nullptr;
+  }
+
   if (start_length.HasPercentage() || end_length.HasPercentage()) {
     start_length.SetHasPercentage();
     end_length.SetHasPercentage();
@@ -149,16 +305,74 @@ void InterpolableLength::SetExpression(
   expression_ = &expression;
 }
 
+InterpolableLength::InterpolableLength(
+    CSSValueID keyword,
+    std::optional<EInterpolateSize> interpolate_size) {
+  SetKeyword(keyword, interpolate_size);
+}
+
+void InterpolableLength::SetKeyword(
+    CSSValueID keyword,
+    std::optional<EInterpolateSize> interpolate_size) {
+  if (interpolate_size) {
+    switch (*interpolate_size) {
+      case EInterpolateSize::kNumericOnly:
+        type_ = Type::kRestrictedKeyword;
+        break;
+      case EInterpolateSize::kAllowKeywords:
+        type_ = Type::kFullyInterpolableKeyword;
+        break;
+      default:
+        NOTREACHED();
+    }
+  } else {
+    type_ = Type::kUnknownKeyword;
+  }
+  keyword_ = keyword;
+  expression_.Clear();
+}
+
+void InterpolableLength::SetInterpolateSize(EInterpolateSize interpolate_size) {
+  if (!IsKeyword()) {
+    return;
+  }
+
+  // We can't make useful assertions about this not changing an
+  // already-set type because, for CSS transitions, we do exactly that,
+  // for the length that comes from the before-change style (in the case
+  // where it comes from an underlying value), so that it uses the
+  // interpolate-size value from the after-change style.
+
+  switch (interpolate_size) {
+    case EInterpolateSize::kNumericOnly:
+      type_ = Type::kRestrictedKeyword;
+      break;
+    case EInterpolateSize::kAllowKeywords:
+      type_ = Type::kFullyInterpolableKeyword;
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 InterpolableLength* InterpolableLength::RawClone() const {
   return MakeGarbageCollected<InterpolableLength>(*this);
 }
 
 bool InterpolableLength::HasPercentage() const {
-  if (IsLengthArray()) {
-    return length_array_.type_flags.test(
-        CSSPrimitiveValue::kUnitTypePercentage);
+  switch (type_) {
+    case Type::kRestrictedKeyword:
+    case Type::kFullyInterpolableKeyword:
+    case Type::kUnknownKeyword:
+      return false;
+    case Type::kLengthArray:
+      return length_array_.type_flags.test(
+          CSSPrimitiveValue::kUnitTypePercentage);
+    case Type::kExpression:
+      return expression_->HasPercentage();
   }
-  return expression_->HasPercentage();
+  NOTREACHED_IN_MIGRATION();
+  return false;
 }
 
 void InterpolableLength::SetHasPercentage() {
@@ -170,10 +384,15 @@ void InterpolableLength::SetHasPercentage() {
     return;
   }
 
+  if (IsKeyword()) {
+    SetExpression(AsExpression());
+  }
+
   DEFINE_STATIC_LOCAL(Persistent<CSSMathExpressionNode>, zero_percent,
                       {PercentageNode(0)});
-  SetExpression(*CSSMathExpressionOperation::CreateArithmeticOperation(
-      expression_, zero_percent, CSSMathOperator::kAdd));
+  SetExpression(
+      *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
+          expression_, zero_percent, CSSMathOperator::kAdd));
 }
 
 void InterpolableLength::SubtractFromOneHundredPercent() {
@@ -185,10 +404,14 @@ void InterpolableLength::SubtractFromOneHundredPercent() {
     return;
   }
 
+  if (IsKeyword()) {
+    SetExpression(AsExpression());
+  }
+
   DEFINE_STATIC_LOCAL(Persistent<CSSMathExpressionNode>, hundred_percent,
                       {PercentageNode(100)});
   SetExpression(
-      *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           hundred_percent, expression_, CSSMathOperator::kSubtract));
 }
 
@@ -222,6 +445,10 @@ Length InterpolableLength::CreateLength(
     // create a degenerate value when animating 'background-position', while we
     // know it may cause some minor animation glitches for the other properties.
     return Length(expression_->ToCalcValue(conversion_data, range, true));
+  }
+
+  if (IsKeyword()) {
+    return Length(CSSValueIDToLengthType(keyword_));
   }
 
   DCHECK(IsLengthArray());
@@ -264,9 +491,10 @@ Length InterpolableLength::CreateLength(
 
 const CSSPrimitiveValue* InterpolableLength::CreateCSSValue(
     Length::ValueRange range) const {
-  if (IsExpression()) {
+  if (!IsLengthArray()) {
     return CSSMathFunctionValue::Create(
-        expression_, CSSPrimitiveValue::ValueRangeForLengthValueRange(range));
+        &AsExpression(),
+        CSSPrimitiveValue::ValueRangeForLengthValueRange(range));
   }
 
   DCHECK(IsLengthArray());
@@ -274,8 +502,7 @@ const CSSPrimitiveValue* InterpolableLength::CreateCSSValue(
     const CSSMathExpressionNode& expression = AsExpression();
     if (!expression.IsNumericLiteral()) {
       return CSSMathFunctionValue::Create(
-          &AsExpression(),
-          CSSPrimitiveValue::ValueRangeForLengthValueRange(range));
+          &expression, CSSPrimitiveValue::ValueRangeForLengthValueRange(range));
     }
 
     // This creates a temporary CSSMathExpressionNode. Eliminate it if this
@@ -299,6 +526,15 @@ const CSSPrimitiveValue* InterpolableLength::CreateCSSValue(
 const CSSMathExpressionNode& InterpolableLength::AsExpression() const {
   if (IsExpression())
     return *expression_;
+
+  if (IsKeyword()) {
+    const auto* basis = CSSMathExpressionKeywordLiteral::Create(
+        keyword_, CSSMathExpressionKeywordLiteral::Context::kCalcSize);
+    const auto* calculation = CSSMathExpressionKeywordLiteral::Create(
+        CSSValueID::kSize, CSSMathExpressionKeywordLiteral::Context::kCalcSize);
+    return *CSSMathExpressionOperation::CreateCalcSizeOperation(basis,
+                                                                calculation);
+  }
 
   DCHECK(IsLengthArray());
   bool has_percentage = HasPercentage();
@@ -335,9 +571,13 @@ void InterpolableLength::Scale(double scale) {
     return;
   }
 
+  if (IsKeyword()) {
+    SetExpression(AsExpression());
+  }
+
   DCHECK(IsExpression());
   SetExpression(
-      *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           expression_, NumberNode(scale), CSSMathOperator::kMultiply));
 }
 
@@ -353,8 +593,10 @@ void InterpolableLength::Add(const InterpolableValue& other) {
   }
 
   CSSMathExpressionNode* result =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), &other_length.AsExpression(), CSSMathOperator::kAdd);
+  CHECK(result)
+      << "should not attempt to interpolate when result would be IACVT";
   SetExpression(*result);
 }
 
@@ -371,11 +613,13 @@ void InterpolableLength::ScaleAndAdd(double scale,
   }
 
   CSSMathExpressionNode* scaled =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), NumberNode(scale), CSSMathOperator::kMultiply);
   CSSMathExpressionNode* result =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           scaled, &other_length.AsExpression(), CSSMathOperator::kAdd);
+  CHECK(result)
+      << "should not attempt to interpolate when result would be IACVT";
   SetExpression(*result);
 }
 
@@ -411,20 +655,19 @@ void InterpolableLength::Interpolate(const InterpolableValue& to,
   }
 
   CSSMathExpressionNode* blended_from =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), NumberNode(1 - progress),
           CSSMathOperator::kMultiply);
   CSSMathExpressionNode* blended_to =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &to_length.AsExpression(), NumberNode(progress),
           CSSMathOperator::kMultiply);
   CSSMathExpressionNode* result_expression =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           blended_from, blended_to, CSSMathOperator::kAdd);
+  CHECK(result_expression)
+      << "should not attempt to interpolate when result would be IACVT";
   result_length.SetExpression(*result_expression);
-
-  DCHECK_EQ(result_length.HasPercentage(),
-            HasPercentage() || to_length.HasPercentage());
 }
 
 void InterpolableLength::Trace(Visitor* v) const {

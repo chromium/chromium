@@ -47,6 +47,7 @@ class SubmitInputType final : public BaseButtonInputType {
   String DefaultLabel() const override;
   bool IsTextButton() const override;
   void ValueAttributeChanged() override;
+  void AdjustStyle(ComputedStyleBuilder&) override;
 };
 
 template <>

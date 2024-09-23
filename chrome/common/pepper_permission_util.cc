@@ -22,8 +22,7 @@ using extensions::SharedModuleInfo;
 namespace {
 
 std::string HashHost(const std::string& host) {
-  return base::HexEncode(
-      base::SHA1HashSpan(base::as_bytes(base::make_span(host))));
+  return base::HexEncode(base::SHA1Hash(base::as_byte_span(host)));
 }
 
 bool HostIsInSet(const std::string& host, const std::set<std::string>& set) {

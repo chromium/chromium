@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/management_disclosure_client.h"
 #include "base/functional/callback_forward.h"
 #include "ui/views/widget/widget.h"
 
@@ -80,6 +81,10 @@ class ASH_PUBLIC_EXPORT LoginScreen {
   // Get login screen widget. Currently used to set proper accessibility
   // navigation.
   virtual views::Widget* GetLoginWindowWidget() = 0;
+
+  // Called by ManagementDisclosureClientImpl.
+  virtual void SetManagementDisclosureClient(
+      ManagementDisclosureClient* client) = 0;
 
  protected:
   LoginScreen();

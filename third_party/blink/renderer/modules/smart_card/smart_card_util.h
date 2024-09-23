@@ -11,7 +11,7 @@
 namespace blink {
 
 class AbortSignal;
-class ScriptPromiseResolver;
+class ScriptPromiseResolverBase;
 class V8SmartCardAccessMode;
 class V8SmartCardProtocol;
 
@@ -21,7 +21,7 @@ device::mojom::blink::SmartCardShareMode ToMojoSmartCardShareMode(
 device::mojom::blink::SmartCardProtocolsPtr ToMojoSmartCardProtocols(
     const Vector<V8SmartCardProtocol>& preferred_protocols);
 
-void RejectWithAbortionReason(ScriptPromiseResolver* resolver,
+void RejectWithAbortionReason(ScriptPromiseResolverBase* resolver,
                               AbortSignal* signal);
 
 }  // namespace blink

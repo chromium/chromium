@@ -20,7 +20,6 @@ const char* MemoryDumpTypeToString(const MemoryDumpType& dump_type) {
       return "summary_only";
   }
   NOTREACHED();
-  return "unknown";
 }
 
 MemoryDumpType StringToMemoryDumpType(const std::string& str) {
@@ -32,7 +31,6 @@ MemoryDumpType StringToMemoryDumpType(const std::string& str) {
   if (str == "summary_only")
     return MemoryDumpType::kSummaryOnly;
   NOTREACHED();
-  return MemoryDumpType::kLast;
 }
 
 const char* MemoryDumpLevelOfDetailToString(
@@ -46,7 +44,6 @@ const char* MemoryDumpLevelOfDetailToString(
       return "detailed";
   }
   NOTREACHED();
-  return "unknown";
 }
 
 MemoryDumpLevelOfDetail StringToMemoryDumpLevelOfDetail(
@@ -58,7 +55,6 @@ MemoryDumpLevelOfDetail StringToMemoryDumpLevelOfDetail(
   if (str == "detailed")
     return MemoryDumpLevelOfDetail::kDetailed;
   NOTREACHED();
-  return MemoryDumpLevelOfDetail::kLast;
 }
 
 }  // namespace trace_event

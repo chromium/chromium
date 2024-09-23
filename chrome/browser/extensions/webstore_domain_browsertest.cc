@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -71,8 +73,12 @@ class WebstoreDomainBrowserTest : public ExtensionApiTest,
   }
 };
 
-// Tests that webstorePrivate and management are exposed to the webstore domain,
-// but not to a non-webstore domain.
+// Tests that webstorePrivate, management and runtime are exposed to the
+// webstore domain, but not to a non-webstore domain.
+// Note: Although we don't explicitly provide runtime to the webstore domain in
+// the case of it being a "web page" context, it is granted implicitly by the
+// NativeExtensionBindingsSystem due to other extension APIs (webstorePrivate
+// and management) being exposed to the web page.
 IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
   const GURL webstore_url = GetParam().Resolve("/webstore/mock_store.html");
   const GURL not_webstore_url = GURL(kNonWebstoreURL1).Resolve("/empty.html");
@@ -91,12 +97,14 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
             webstore_url);
   EXPECT_TRUE(is_api_available("webstorePrivate"));
   EXPECT_TRUE(is_api_available("management"));
+  EXPECT_TRUE(is_api_available("runtime"));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), not_webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             not_webstore_url);
   EXPECT_FALSE(is_api_available("management"));
   EXPECT_FALSE(is_api_available("webstorePrivate"));
+  EXPECT_FALSE(is_api_available("runtime"));
 }
 
 // Test that the webstore can register and receive management events. Normally

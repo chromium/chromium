@@ -42,18 +42,18 @@ int g_next_buffer_id = 0;
 
 scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
     const gfx::Size& frame_size) {
-  uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-                                gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  gpu::SharedImageUsageSet shared_image_usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
+      gpu::SHARED_IMAGE_USAGE_SCANOUT;
   return aura::Env::GetInstance()
       ->context_factory()
       ->SharedMainThreadRasterContextProvider()
       ->SharedImageInterface()
-      ->CreateSharedImage(viz::SinglePlaneFormat::kBGRA_8888, frame_size,
-                          gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-                          kPremul_SkAlphaType, shared_image_usage,
-                          "FakeCameraDevice", gpu::kNullSurfaceHandle,
-                          gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+      ->CreateSharedImage(
+          {viz::SinglePlaneFormat::kBGRA_8888, frame_size, gfx::ColorSpace(),
+           shared_image_usage, "FakeCameraDevice"},
+          gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 }
 
 SkRect GetCircleRect(const gfx::Point& center, int radius) {
@@ -206,7 +206,6 @@ class FakeCameraDevice::Buffer {
                        std::make_unique<GpuMemoryBufferStrategy>(frame_size)));
       default:
         NOTREACHED();
-        return nullptr;
     }
   }
 
@@ -417,8 +416,8 @@ void FakeCameraDevice::CreatePushSubscription(
       requested_settings);
 }
 
-void FakeCameraDevice::RegisterVideoEffectsManager(
-    mojo::PendingRemote<::video_capture::mojom::VideoEffectsManager> remote) {}
+void FakeCameraDevice::RegisterVideoEffectsProcessor(
+    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote) {}
 
 void FakeCameraDevice::OnFinishedConsumingBuffer(int32_t buffer_id) {
   auto iter = buffer_pool_.find(buffer_id);

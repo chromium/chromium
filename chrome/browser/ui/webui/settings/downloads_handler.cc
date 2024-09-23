@@ -112,8 +112,7 @@ void DownloadsHandler::HandleSelectDownloadLocation(
 }
 
 void DownloadsHandler::FileSelected(const ui::SelectedFileInfo& file,
-                                    int index,
-                                    void* params) {
+                                    int index) {
   select_folder_dialog_ = nullptr;
 
   base::RecordAction(UserMetricsAction("Options_SetDownloadDirectory"));
@@ -122,7 +121,7 @@ void DownloadsHandler::FileSelected(const ui::SelectedFileInfo& file,
   pref_service->SetFilePath(prefs::kSaveFileDefaultDirectory, file.path());
 }
 
-void DownloadsHandler::FileSelectionCanceled(void* params) {
+void DownloadsHandler::FileSelectionCanceled() {
   select_folder_dialog_ = nullptr;
 }
 

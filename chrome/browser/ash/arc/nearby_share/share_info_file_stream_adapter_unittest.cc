@@ -177,9 +177,7 @@ TEST_F(ShareInfoFileStreamAdapterTest, ReadMidStreamAndWriteFile) {
 
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(test_file_path_, &contents));
-  EXPECT_EQ(std::string(test_data_.begin() + kOffset,
-                        test_data_.begin() + kOffset + kSize),
-            contents);
+  EXPECT_EQ(test_data_.substr(kOffset, kSize), contents);
 }
 
 }  // namespace arc

@@ -80,7 +80,7 @@ class AccessibilityController {
   v8::Persistent<v8::Function> notification_callback_;
 
   blink::WebView* web_view() const;
-  raw_ptr<WebFrameTestProxy, ExperimentalRenderer> web_frame_test_proxy_;
+  raw_ptr<WebFrameTestProxy> web_frame_test_proxy_;
 
   std::unique_ptr<blink::WebAXContext> ax_context_;
 

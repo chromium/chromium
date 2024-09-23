@@ -46,23 +46,6 @@ class WebContentSettingsClient {
   // Blocks until done.
   virtual bool AllowStorageAccessSync(StorageType storage_type) { return true; }
 
-  // Controls whether images are allowed for this frame.
-  virtual bool AllowImage(bool enabled_per_settings, const WebURL& image_url) {
-    return enabled_per_settings;
-  }
-
-  // Controls whether scripts are allowed to execute for this frame.
-  virtual bool AllowScript(bool enabled_per_settings) {
-    return enabled_per_settings;
-  }
-
-  // Controls whether scripts loaded from the given URL are allowed to execute
-  // for this frame.
-  virtual bool AllowScriptFromSource(bool enabled_per_settings,
-                                     const WebURL& script_url) {
-    return enabled_per_settings;
-  }
-
   // Controls whether insecure scripts are allowed to execute for this frame.
   virtual bool AllowRunningInsecureContent(bool enabled_per_settings,
                                            const WebURL&) {
@@ -105,10 +88,6 @@ class WebContentSettingsClient {
   // Controls whether mixed content autoupgrades should be allowed in this
   // frame.
   virtual bool ShouldAutoupgradeMixedContent() { return true; }
-
-  // Controls whether the ViewTransition callback needs to be larger than
-  // default.
-  virtual bool IncreaseViewTransitionCallbackTimeout() const { return false; }
 
   virtual ~WebContentSettingsClient() = default;
 };

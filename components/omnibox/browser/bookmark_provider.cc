@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
-#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
@@ -37,10 +35,7 @@ using bookmarks::TitledUrlMatch;
 BookmarkProvider::BookmarkProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_BOOKMARK),
       client_(client),
-      local_or_syncable_bookmark_model_(
-          client ? client_->GetLocalOrSyncableBookmarkModel() : nullptr),
-      account_bookmark_model_(client ? client_->GetAccountBookmarkModel()
-                                     : nullptr) {}
+      bookmark_model_(client ? client_->GetBookmarkModel() : nullptr) {}
 
 void BookmarkProvider::Start(const AutocompleteInput& input,
                              bool minimal_changes) {
@@ -58,14 +53,13 @@ BookmarkProvider::~BookmarkProvider() = default;
 
 void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // We may not have a bookmark model for some unit tests.
-  // TODO(https://crbug.com/1424825): Add support for account bookmarks.
-  if (!local_or_syncable_bookmark_model_) {
+  if (!bookmark_model_) {
     return;
   }
 
   // Retrieve enough bookmarks so that we have a reasonable probability of
   // suggesting the one that the user desires.
-  const size_t kMaxBookmarkMatchesPerModel = 50;
+  const size_t kMaxBookmarkMatches = 50;
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
@@ -93,18 +87,8 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // Please refer to the code for TitledUrlIndex::GetResultsMatching for
   // complete details of how searches are performed against the user's
   // bookmarks.
-  std::vector<TitledUrlMatch> matches =
-      local_or_syncable_bookmark_model_->GetBookmarksMatching(
-          adjusted_input.text(), kMaxBookmarkMatchesPerModel,
-          matching_algorithm);
-
-  // If the account bookmark model exists, append the corresponding matches. The
-  // initial order isn't relevant because matches are sorted later below.
-  if (account_bookmark_model_) {
-    base::Extend(matches, account_bookmark_model_->GetBookmarksMatching(
-                              adjusted_input.text(),
-                              kMaxBookmarkMatchesPerModel, matching_algorithm));
-  }
+  std::vector<TitledUrlMatch> matches = bookmark_model_->GetBookmarksMatching(
+      adjusted_input.text(), kMaxBookmarkMatches, matching_algorithm);
 
   if (matches.empty())
     return;  // There were no matches.
@@ -253,32 +237,13 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
     return {relevance, /*bookmark_count=*/-1};
   }
 
-  // Boost the score if the bookmark's URL is referenced by other bookmarks. If
-  // two bookmark models are involved (i.e.
-  // `AutocompleteProviderClient::GetAccountBookmarkModel()` returns non-null),
-  // the boosting takes effect across models.
-  const int kURLCountBoost[4] = {0, 75, 125, 150};
+  // Boost the score if the bookmark's URL is referenced by other bookmarks.
+  constexpr std::array<int, 4> kURLCountBoost = {0, 75, 125, 150};
 
-  size_t url_node_count = 0;
-
-  {
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
-        local_or_syncable_bookmark_model_->GetNodesByURL(url);
-    url_node_count += nodes.size();
-  }
-
-  // If the account bookmark model exists, also count the nodes in there and
-  // take the maximum. This appears more robust against edge cases where a user
-  // may have many or all bookmarks duplicated between the two models.
-  if (account_bookmark_model_) {
-    std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes =
-        account_bookmark_model_->GetNodesByURL(url);
-    url_node_count = std::max(url_node_count, nodes.size());
-  }
-
+  const size_t url_node_count = bookmark_model_->GetNodesByURL(url).size();
   DCHECK_GE(std::min(std::size(kURLCountBoost), url_node_count), 1U);
   relevance +=
-      kURLCountBoost[std::min(std::size(kURLCountBoost), url_node_count) - 1];
+      kURLCountBoost[std::min(kURLCountBoost.size(), url_node_count) - 1];
   relevance = std::min(kMaxBookmarkScore, relevance);
   return {relevance, url_node_count};
 }

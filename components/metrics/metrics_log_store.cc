@@ -4,6 +4,8 @@
 
 #include "components/metrics/metrics_log_store.h"
 
+#include <string_view>
+
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
@@ -210,7 +212,7 @@ void MetricsLogStore::StageNextLog() {
     ongoing_log_queue_.StageNextLog();
 }
 
-void MetricsLogStore::DiscardStagedLog(base::StringPiece reason) {
+void MetricsLogStore::DiscardStagedLog(std::string_view reason) {
   DCHECK(has_staged_log());
   if (initial_log_queue_.has_staged_log())
     initial_log_queue_.DiscardStagedLog(reason);

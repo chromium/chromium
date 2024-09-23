@@ -15,7 +15,8 @@ import {createDOMError} from '../../common/js/dom_utils.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
-import {FileSystemType, FileSystemTypeVolumeNameLengthLimit} from '../../common/js/volume_manager_types.js';
+import type {FileSystemType} from '../../common/js/volume_manager_types.js';
+import {FileSystemTypeVolumeNameLengthLimit} from '../../common/js/volume_manager_types.js';
 
 /**
  * Verifies name for file, folder, or removable root to be created or renamed.

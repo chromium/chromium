@@ -7,10 +7,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/webui/projector_app/projector_app_client.h"
-#include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 #include "chrome/browser/ui/ash/projector/screencast_manager.h"
@@ -54,21 +51,12 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
       const std::string& video_file_id,
       const std::optional<std::string>& resource_key,
       ash::ProjectorAppClient::OnGetVideoCallback callback) const override;
-  void SetAnnotatorPageHandler(
-      ash::UntrustedAnnotatorPageHandlerImpl* handler) override;
-  void ResetAnnotatorPageHandler(
-      ash::UntrustedAnnotatorPageHandlerImpl* handler) override;
-  void SetTool(const ash::AnnotatorTool& tool) override;
-  void Clear() override;
   void NotifyAppUIActive(bool active) override;
   void ToggleFileSyncingNotificationForPaths(
       const std::vector<base::FilePath>& screencast_paths,
       bool suppress) override;
   void HandleAccountReauth(const std::string& email) override;
 
-  ash::UntrustedAnnotatorPageHandlerImpl* get_annotator_handler_for_test() {
-    return annotator_handler_;
-  }
   PendingScreencastManager* get_pending_screencast_manager_for_test() {
     return &pending_screencast_manager_;
   }
@@ -83,8 +71,6 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   PendingScreencastManager pending_screencast_manager_;
 
   ash::ScreencastManager screencast_manager_;
-
-  raw_ptr<ash::UntrustedAnnotatorPageHandlerImpl> annotator_handler_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_

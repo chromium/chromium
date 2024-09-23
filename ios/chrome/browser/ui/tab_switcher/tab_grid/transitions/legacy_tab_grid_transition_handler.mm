@@ -14,6 +14,7 @@ namespace {
 const CGFloat kBrowserToGridDuration = 0.3;
 const CGFloat kGridToBrowserDuration = 0.5;
 const CGFloat kReducedMotionDuration = 0.25;
+const CGFloat kToTabGroupAnimationDuration = 0.25;
 }  // namespace
 
 @interface LegacyTabGridTransitionHandler ()
@@ -38,21 +39,23 @@ const CGFloat kReducedMotionDuration = 0.25;
 
 - (void)transitionFromBrowser:(UIViewController*)browser
                     toTabGrid:(UIViewController*)tabGrid
+                   toTabGroup:(BOOL)toTabGroup
                    activePage:(TabGridPage)activePage
                withCompletion:(void (^)(void))completion {
   [browser willMoveToParentViewController:nil];
 
   if (UIAccessibilityIsReduceMotionEnabled()) {
-    [self transitionWithReducedAnimationsForTab:browser.view
-                                 beingPresented:NO
-                                 withCompletion:^{
-                                   [browser.view removeFromSuperview];
-                                   [browser removeFromParentViewController];
-                                   [tabGrid setNeedsStatusBarAppearanceUpdate];
-                                   if (completion) {
-                                     completion();
-                                   }
-                                 }];
+    __weak __typeof(self) weakSelf = self;
+    [self transitionWithFadeForTab:browser.view
+                        toTabGroup:toTabGroup
+                    beingPresented:NO
+                    withCompletion:^{
+                      [weakSelf
+                          reducedAnimationTransitionCompleteFromBrowser:browser
+                                                              toTabGrid:tabGrid
+                                                         withCompletion:
+                                                             completion];
+                    }];
     return;
   }
 
@@ -60,10 +63,12 @@ const CGFloat kReducedMotionDuration = 0.25;
   CGFloat duration = self.animationDisabled ? 0 : kBrowserToGridDuration;
 
   self.animation = [[LegacyGridTransitionAnimation alloc]
-      initWithLayout:[self transitionLayoutForTabInViewController:browser
-                                                       activePage:activePage]
-            duration:duration
-           direction:direction];
+          initWithLayout:[self
+                             transitionLayoutForTabInViewController:browser
+                                                         activePage:activePage]
+      gridContainerFrame:[self.layoutProvider gridContainerFrame]
+                duration:duration
+               direction:direction];
 
   UIView* animationContainer = [self.layoutProvider animationViewsContainer];
   UIView* bottomViewForAnimations =
@@ -100,7 +105,7 @@ const CGFloat kReducedMotionDuration = 0.25;
     }
   }];
 
-  // TODO(crbug.com/850507): Have the tab view animate itself out alongside
+  // TODO(crbug.com/41393272): Have the tab view animate itself out alongside
   // this transition instead of just zeroing the alpha here.
   browser.view.alpha = 0;
 
@@ -140,18 +145,19 @@ const CGFloat kReducedMotionDuration = 0.25;
 
   browser.view.alpha = 0;
 
+  __weak __typeof(self) weakSelf = self;
   if (UIAccessibilityIsReduceMotionEnabled() ||
       !self.layoutProvider.selectedCellVisible) {
-    [self transitionWithReducedAnimationsForTab:browser.view
-                                 beingPresented:YES
-                                 withCompletion:^{
-                                   [browser
-                                       didMoveToParentViewController:tabGrid];
-                                   [tabGrid setNeedsStatusBarAppearanceUpdate];
-                                   if (completion) {
-                                     completion();
-                                   }
-                                 }];
+    [self transitionWithFadeForTab:browser.view
+                        toTabGroup:NO
+                    beingPresented:YES
+                    withCompletion:^{
+                      [weakSelf
+                          reducedAnimationTransitionCompleteFromTabGrid:tabGrid
+                                                              toBrowser:browser
+                                                         withCompletion:
+                                                             completion];
+                    }];
     return;
   }
 
@@ -159,10 +165,12 @@ const CGFloat kReducedMotionDuration = 0.25;
   CGFloat duration = self.animationDisabled ? 0 : kGridToBrowserDuration;
 
   self.animation = [[LegacyGridTransitionAnimation alloc]
-      initWithLayout:[self transitionLayoutForTabInViewController:browser
-                                                       activePage:activePage]
-            duration:duration
-           direction:direction];
+          initWithLayout:[self
+                             transitionLayoutForTabInViewController:browser
+                                                         activePage:activePage]
+      gridContainerFrame:[self.layoutProvider gridContainerFrame]
+                duration:duration
+               direction:direction];
 
   UIView* animationContainer = [self.layoutProvider animationViewsContainer];
   UIView* bottomViewForAnimations =
@@ -221,7 +229,7 @@ const CGFloat kReducedMotionDuration = 0.25;
   // the view controller that contains the BVC. Unfortunatley, the layout guide
   // needed here is attached to the BVC's view, which is the first (and only)
   // subview of the BVCContainerViewController's view.
-  // TODO(crbug.com/860234) Clean up this arrangement.
+  // TODO(crbug.com/40583629) Clean up this arrangement.
   UIView* tabContentView = viewControllerForTab.view.subviews[0];
 
   CGRect contentArea = [NamedGuide guideWithName:kContentAreaGuide
@@ -238,10 +246,11 @@ const CGFloat kReducedMotionDuration = 0.25;
 }
 
 // Animates the transition for the `tab`, whether it is `beingPresented` or not,
-// with reduced animations.
-- (void)transitionWithReducedAnimationsForTab:(UIView*)tab
-                               beingPresented:(BOOL)beingPresented
-                               withCompletion:(void (^)(void))completion {
+// with a fade in/out.
+- (void)transitionWithFadeForTab:(UIView*)tab
+                      toTabGroup:(BOOL)toTabGroup
+                  beingPresented:(BOOL)beingPresented
+                  withCompletion:(void (^)(void))completion {
   // The animation here creates a simple quick zoom effect -- the tab view
   // fades in/out as it expands/contracts. The zoom is not large (75% to 100%)
   // and is centered on the view's final center position, so it's not directly
@@ -272,7 +281,9 @@ const CGFloat kReducedMotionDuration = 0.25;
   BOOL oldClipsToBounds = tab.clipsToBounds;
   tab.clipsToBounds = YES;
 
-  CGFloat duration = self.animationDisabled ? 0 : kReducedMotionDuration;
+  CGFloat duration =
+      toTabGroup ? kToTabGroupAnimationDuration : kReducedMotionDuration;
+  duration = self.animationDisabled ? 0 : duration;
   [UIView animateWithDuration:duration
       delay:0.0
       options:UIViewAnimationOptionCurveEaseOut
@@ -290,6 +301,33 @@ const CGFloat kReducedMotionDuration = 0.25;
           completion();
         }
       }];
+}
+
+// Called when the transition with reduced animations from the `tabGrid` to the
+// `browser` is complete.
+- (void)reducedAnimationTransitionCompleteFromTabGrid:(UIViewController*)tabGrid
+                                            toBrowser:(UIViewController*)browser
+                                       withCompletion:
+                                           (void (^)(void))completion {
+  [browser didMoveToParentViewController:tabGrid];
+  [tabGrid setNeedsStatusBarAppearanceUpdate];
+  if (completion) {
+    completion();
+  }
+}
+
+// Called when the transition with reduced animations from the `browser` to the
+// `tabGrid` is complete.
+- (void)reducedAnimationTransitionCompleteFromBrowser:(UIViewController*)browser
+                                            toTabGrid:(UIViewController*)tabGrid
+                                       withCompletion:
+                                           (void (^)(void))completion {
+  [browser.view removeFromSuperview];
+  [browser removeFromParentViewController];
+  [tabGrid setNeedsStatusBarAppearanceUpdate];
+  if (completion) {
+    completion();
+  }
 }
 
 @end

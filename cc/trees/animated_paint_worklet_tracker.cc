@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/cxx20_erase.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/picture_layer_impl.h"
 
 namespace cc {
@@ -19,7 +19,7 @@ AnimatedPaintWorkletTracker::~AnimatedPaintWorkletTracker() = default;
 
 AnimatedPaintWorkletTracker::PropertyState::PropertyState(
     PaintWorkletInput::PropertyValue value,
-    base::flat_set<PictureLayerImpl*> layers)
+    base::flat_set<raw_ptr<PictureLayerImpl, CtnExperimental>> layers)
     : animation_value(value), associated_layers(std::move(layers)) {}
 
 AnimatedPaintWorkletTracker::PropertyState::PropertyState() = default;
@@ -57,7 +57,7 @@ bool AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree() {
     if (it == input_properties_.end()) {
       continue;
     }
-    for (auto* layer : it->second.associated_layers) {
+    for (PictureLayerImpl* layer : it->second.associated_layers) {
       layer->InvalidatePaintWorklets(
           prop_key, input_properties_.find(prop_key)->second.animation_value,
           input_properties_.find(prop_key)->second.last_animation_value);

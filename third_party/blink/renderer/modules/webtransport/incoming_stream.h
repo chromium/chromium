@@ -97,9 +97,8 @@ class MODULES_EXPORT IncomingStream final
   // Responds current BYOB request or copies a sequence of bytes into an
   // ArrayBuffer and enqueues it if there is no BYOB request. Returns the size
   // of bytes responded or copied.
-  uint32_t RespondBYOBRequestOrEnqueueBytes(const void* source,
-                                            uint32_t byte_length,
-                                            ExceptionState&);
+  size_t RespondBYOBRequestOrEnqueueBytes(base::span<const uint8_t> source,
+                                          ExceptionState&);
 
   // Closes |readable_|, and resets |data_pipe_|.
   void CloseAbortAndReset(ExceptionState&);

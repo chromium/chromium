@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace printing {
@@ -37,10 +38,6 @@ class PrintCompositeClient
   PrintCompositeClient(const PrintCompositeClient&) = delete;
   PrintCompositeClient& operator=(const PrintCompositeClient&) = delete;
   ~PrintCompositeClient() override;
-
-  // Determine the document format type to be generated when compositing full
-  // document.
-  static mojom::PrintCompositor::DocumentType GetDocumentType();
 
   // content::WebContentsObserver
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -89,6 +86,7 @@ class PrintCompositeClient
       content::RenderFrameHost* render_frame_host,
       const mojom::DidPrintContentParams& content,
       const ui::AXTreeUpdate& accessibility_tree,
+      mojom::GenerateDocumentOutline generate_document_outline,
       mojom::PrintCompositor::DocumentType document_type,
       mojom::PrintCompositor::CompositeDocumentCallback callback);
 
@@ -137,7 +135,8 @@ class PrintCompositeClient
   // Returns the created composite request.
   mojom::PrintCompositor* CreateCompositeRequest(
       int cookie,
-      content::RenderFrameHost* initiator_frame);
+      content::RenderFrameHost* initiator_frame,
+      mojom::PrintCompositor::DocumentType document_type);
 
   // Remove the existing composite request.
   void RemoveCompositeRequest(int cookie);
@@ -171,10 +170,12 @@ class PrintCompositeClient
   raw_ptr<content::RenderFrameHost> initiator_frame_ = nullptr;
 
   // Stores the pending subframes for the composited document.
-  base::flat_set<content::RenderFrameHost*> pending_subframes_;
+  base::flat_set<raw_ptr<content::RenderFrameHost, CtnExperimental>>
+      pending_subframes_;
 
   // Stores the printed subframes for the composited document.
-  base::flat_set<content::RenderFrameHost*> printed_subframes_;
+  base::flat_set<raw_ptr<content::RenderFrameHost, CtnExperimental>>
+      printed_subframes_;
 
   struct RequestedSubFrame {
     RequestedSubFrame(content::GlobalRenderFrameHostId rfh_id,

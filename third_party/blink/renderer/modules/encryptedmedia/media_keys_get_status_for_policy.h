@@ -13,15 +13,17 @@ namespace blink {
 class MediaKeys;
 class MediaKeysPolicy;
 class ScriptState;
+class V8MediaKeyStatus;
 
 class MediaKeysGetStatusForPolicy {
   STATIC_ONLY(MediaKeysGetStatusForPolicy);
 
  public:
-  static ScriptPromise getStatusForPolicy(ScriptState*,
-                                          MediaKeys&,
-                                          const MediaKeysPolicy*,
-                                          ExceptionState&);
+  static ScriptPromise<V8MediaKeyStatus> getStatusForPolicy(
+      ScriptState*,
+      MediaKeys&,
+      const MediaKeysPolicy*,
+      ExceptionState&);
 };
 
 }  // namespace blink

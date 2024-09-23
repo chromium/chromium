@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "ui/base/ui_base_features.h"
@@ -19,11 +18,6 @@
 void ConfigureInkDropForRefresh2023(views::View* const view,
                                     const ChromeColorIds hover_color_id,
                                     const ChromeColorIds ripple_color_id) {
-  // TODO(crbug.com/1450984): Figure out if one of these are redundant.
-  CHECK(features::CustomizeChromeSupportsChromeRefresh2023() &&
-        (features::IsChromeRefresh2023() ||
-         OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ||
-         base::FeatureList::IsEnabled(omnibox::kExpandedStateColors)));
 
   views::InkDrop::Get(view)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(view)->SetLayerRegion(views::LayerRegion::kAbove);

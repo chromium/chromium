@@ -29,6 +29,8 @@ class CORE_EXPORT V8ObjectBuilder final {
   V8ObjectBuilder& AddNull(const StringView& name);
   V8ObjectBuilder& AddBoolean(const StringView& name, bool value);
   V8ObjectBuilder& AddNumber(const StringView& name, double value);
+  V8ObjectBuilder& AddNumberOrNull(const StringView& name,
+                                   std::optional<double> value);
   V8ObjectBuilder& AddInteger(const StringView& name, uint64_t value);
   V8ObjectBuilder& AddString(const StringView& name, const StringView& value);
   V8ObjectBuilder& AddStringOrNull(const StringView& name,

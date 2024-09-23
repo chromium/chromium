@@ -10,7 +10,7 @@
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
-#include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
+#include "chrome/browser/apps/browser_instance/web_contents_instance_id_utils.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -125,8 +127,10 @@ void WebsiteMetrics::ActiveTabWebContentsObserver::WebContentsDestroyed() {
 }
 
 void WebsiteMetrics::ActiveTabWebContentsObserver::
-    OnInstallableWebAppStatusUpdated() {
-  owner_->OnInstallableWebAppStatusUpdated(web_contents());
+    OnInstallableWebAppStatusUpdated(
+        webapps::InstallableWebAppCheckResult result,
+        const std::optional<webapps::WebAppBannerData>& data) {
+  owner_->OnInstallableWebAppStatusUpdated(web_contents(), result, data);
 }
 
 WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
@@ -232,8 +236,9 @@ void WebsiteMetrics::OnWindowActivated(ActivationReason reason,
   SetWindowActivated(gained_active);
 }
 
-void WebsiteMetrics::OnURLsDeleted(history::HistoryService* history_service,
-                                   const history::DeletionInfo& deletion_info) {
+void WebsiteMetrics::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
   if (deletion_info.is_from_expiration()) {
     // This is an auto-expiration of history that happens after 90 days. Any
     // data recorded here must be newer than this threshold, so ignore the
@@ -416,7 +421,15 @@ void WebsiteMetrics::OnActiveTabChanged(aura::Window* window,
       auto it = webcontents_to_observer_map_.find(new_contents);
       if (it != webcontents_to_observer_map_.end()) {
         it->second->OnPrimaryPageChanged();
-        it->second->OnInstallableWebAppStatusUpdated();
+
+        auto* app_banner_manager =
+            webapps::AppBannerManager::FromWebContents(new_contents);
+        // In some test cases, AppBannerManager might be null.
+        if (app_banner_manager) {
+          it->second->OnInstallableWebAppStatusUpdated(
+              app_banner_manager->GetInstallableWebAppCheckResult(),
+              app_banner_manager->GetCurrentWebAppBannerData());
+        }
       }
       return;
     }
@@ -508,29 +521,21 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
 }
 
 void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    webapps::InstallableWebAppCheckResult result,
+    const std::optional<webapps::WebAppBannerData>& data) {
   auto it = webcontents_to_ukm_key_.find(web_contents);
   if (it == webcontents_to_ukm_key_.end()) {
     // If the `web_contents` has been removed or replaced, we don't need to set
     // the url.
     return;
   }
-
   // WebContents in app windows are filtered out in OnBrowserAdded. Installed
   // web apps opened in tabs are filtered out too. So every WebContents here
-  // must be a website not installed. Check the manifest to get the scope or the
-  // start url if there is a manifest.
-  auto* app_banner_manager =
-      webapps::AppBannerManager::FromWebContents(web_contents);
-
-  // In some test cases, AppBannerManager might be null.
-  if (!app_banner_manager ||
-      blink::IsEmptyManifest(app_banner_manager->manifest()) ||
-      app_banner_manager->manifest().scope.is_empty()) {
-    return;
+  // must be a website not installed.
+  if (result == webapps::InstallableWebAppCheckResult::kYes_Promotable) {
+    UpdateUrlInfo(it->second, /*promotable=*/true);
   }
-
-  UpdateUrlInfo(it->second, /*promotable=*/true);
 }
 
 void WebsiteMetrics::AddUrlInfo(const GURL& url,

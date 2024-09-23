@@ -9,17 +9,17 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/echo/echo_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/extensions/api/echo_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -31,6 +31,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -181,31 +182,21 @@ EchoPrivateGetOobeTimestampFunction::~EchoPrivateGetOobeTimestampFunction() {
 }
 
 ExtensionFunction::ResponseAction EchoPrivateGetOobeTimestampFunction::Run() {
-  auto callback = base::BindOnce(
-      &EchoPrivateGetOobeTimestampFunction::RespondWithResult, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->echo_private_ash()
-      ->GetOobeTimestamp(std::move(callback));
-#else
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::EchoPrivate>() &&
-      static_cast<uint32_t>(
-          lacros_service->GetInterfaceVersion<crosapi::mojom::EchoPrivate>()) >=
-          crosapi::mojom::EchoPrivate::kGetOobeTimestampMinVersion) {
-    lacros_service->GetRemote<crosapi::mojom::EchoPrivate>()->GetOobeTimestamp(
-        std::move(callback));
-  } else {
-    return RespondNow(Error("EchoPrivate unavailable."));
-  }
-#endif
+  chromeos::echo_util::GetOobeTimestamp(base::BindOnce(
+      &EchoPrivateGetOobeTimestampFunction::RespondWithResult, this));
   return RespondLater();
 }
 
 void EchoPrivateGetOobeTimestampFunction::RespondWithResult(
-    const std::string& timestamp) {
-  Respond(WithArguments(timestamp));
+    std::optional<base::Time> timestamp) {
+  if (!timestamp.has_value()) {
+    // Returns an empty string on error.
+    Respond(WithArguments(std::string()));
+    return;
+  }
+  std::string result = base::UnlocalizedTimeFormatWithPattern(
+      timestamp.value(), "y-M-d", icu::TimeZone::getGMT());
+  Respond(WithArguments(std::move(result)));
 }
 
 EchoPrivateGetUserConsentFunction::EchoPrivateGetUserConsentFunction() =

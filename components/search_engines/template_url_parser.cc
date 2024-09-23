@@ -378,7 +378,7 @@ void SafeTemplateURLParser::ParseAliases(
 }
 
 std::unique_ptr<TemplateURL> SafeTemplateURLParser::FinalizeTemplateURL() {
-  // TODO(https://crbug.com/18107): Support engines that use POST.
+  // TODO(crbug.com/40304654): Support engines that use POST.
   if (method_ == POST || !IsHTTPRef(data_.url()) ||
       !IsHTTPRef(data_.suggestions_url)) {
     DLOG(ERROR) << "POST URLs are not supported";

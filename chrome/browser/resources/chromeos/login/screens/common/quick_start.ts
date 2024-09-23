@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/quick_start_pin.js';
 
 import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {flush, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
+import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import {QrCodeCanvas} from '../../components/qr_code_canvas.js';
-import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {loadTimeData} from '../../i18n_setup.js';
 
 import {getTemplate} from './quick_start.html.js';
@@ -42,12 +41,7 @@ enum UserActions {
 }
 
 const QuickStartScreenBase =
-    mixinBehaviors([LoginScreenBehavior, MultiStepBehavior, OobeI18nBehavior],
-      PolymerElement) as { new (): PolymerElement
-        & LoginScreenBehaviorInterface
-        & MultiStepBehaviorInterface
-        & OobeI18nBehaviorInterface,
-    };
+    LoginScreenMixin(MultiStepMixin(OobeI18nMixin(PolymerElement)));
 
 export class QuickStartScreen extends QuickStartScreenBase {
   static get is() {
@@ -60,10 +54,6 @@ export class QuickStartScreen extends QuickStartScreenBase {
 
   static get properties(): PolymerElementProperties {
     return {
-      discoverableName: {
-        type: String,
-        value: '',
-      },
       pin: {
         type: String,
         value: '0000',
@@ -90,17 +80,32 @@ export class QuickStartScreen extends QuickStartScreenBase {
         type: Boolean,
         value: true,
       },
+      willRequestWiFi: {
+        type: Boolean,
+        value: true,
+      },
+      didTransferWiFi: {
+        type: Boolean,
+        value: false,
+      },
+      // Set once a QR code is set. Until then, a placeholder is shown.
+      qrCodeAvailable: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
-  private discoverableName: string;
   private pin: string;
   private usePinInsteadOfQrForVerification: boolean;
   private userEmail: string;
   private userFullName: string;
   private userAvatarUrl: string;
   private canCancelSignin: boolean;
+  private willRequestWiFi: boolean;
+  private qrCodeAvailable: boolean;
   private qrCodeCanvas: QrCodeCanvas|null;
+  private didTransferWiFi: boolean;
 
   constructor() {
     super();
@@ -115,7 +120,6 @@ export class QuickStartScreen extends QuickStartScreenBase {
       'showBluetoothDialog',
       'showConnectingToPhoneStep',
       'showConnectingToWifi',
-      'setDiscoverableName',
       'showConfirmGoogleAccount',
       'showSigningInStep',
       'showCreatingAccountStep',
@@ -123,26 +127,41 @@ export class QuickStartScreen extends QuickStartScreenBase {
       'setUserEmail',
       'setUserFullName',
       'setUserAvatarUrl',
+      'setWillRequestWiFi',
     ];
   }
 
-  private getVerificationSubtitle(_title: string): string {
-    return this.i18nAdvanced('quickStartSetupSubtitle', {
-      substitutions:
-          [loadTimeData.getString('deviceType'), this.discoverableName],
-    });
+  private getVerificationSubtitle(_title: string): TrustedHTML {
+    if (this.willRequestWiFi) {
+      return this.i18nAdvanced('quickStartSetupSubtitle', {
+        substitutions: [loadTimeData.getString('deviceType')],
+      });
+    } else {
+      return this.i18nAdvanced('quickStartSetupSubtitleAccountOnly', {
+        substitutions: [loadTimeData.getString('deviceType')],
+      });
+    }
   }
 
-  private getSetupCompleteTitle(locale: string): string {
+  private getSetupCompleteTitle(locale: string): TrustedHTML {
     return this.i18nAdvancedDynamic(locale, 'quickStartSetupCompleteTitle', {
       substitutions: [loadTimeData.getString('deviceType')],
     });
   }
 
-  private getSetupCompleteSubtitle(locale: string, _email: string): string {
-    return this.i18nAdvancedDynamic(locale, 'quickStartSetupCompleteSubtitle', {
-      substitutions: [this.userEmail],
-    });
+  private getSetupCompleteSubtitle(
+      locale: string, _email: string, _didTransferWiFi: boolean): TrustedHTML {
+    if (this.didTransferWiFi) {
+      return this.i18nAdvancedDynamic(
+          locale, 'quickStartSetupCompleteSubtitleBoth', {
+            substitutions: [this.userEmail],
+          });
+    } else {
+      return this.i18nAdvancedDynamic(
+          locale, 'quickStartSetupCompleteSubtitleSignedIn', {
+            substitutions: [this.userEmail],
+          });
+    }
   }
 
   private getCanvas(): HTMLCanvasElement {
@@ -152,8 +171,7 @@ export class QuickStartScreen extends QuickStartScreenBase {
   }
 
   private getQuickStartBluetoothDialog(): OobeModalDialog {
-    const dialog = this.shadowRoot?.
-      querySelector('#quickStartBluetoothDialog');
+    const dialog = this.shadowRoot?.querySelector('#quickStartBluetoothDialog');
     assert(dialog instanceof OobeModalDialog);
     return dialog;
   }
@@ -172,7 +190,8 @@ export class QuickStartScreen extends QuickStartScreenBase {
     this.qrCodeCanvas = new QrCodeCanvas(this.getCanvas());
   }
 
-  onBeforeHide(): void {
+  override onBeforeHide(): void {
+    super.onBeforeHide();
     this.getSpinnerAnimation().playing = false;
   }
 
@@ -199,13 +218,16 @@ export class QuickStartScreen extends QuickStartScreenBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  setQRCode(qrCode: boolean[]): void {
+  setQRCode(qrCodeData: boolean[], qrCodeURL: string): void {
     this.getQuickStartBluetoothDialog().hideDialog();
     this.usePinInsteadOfQrForVerification = false;
     this.setUIStep(QuickStartUiState.VERIFICATION);
     flush();
 
-    this.qrCodeCanvas?.setData(qrCode);
+    this.qrCodeCanvas?.setData(qrCodeData);
+    this.shadowRoot?.querySelector('#qrCodeCanvas')
+        ?.setAttribute('qr-code-url', qrCodeURL);
+    this.qrCodeAvailable = true;
   }
 
   setPin(pin: string): void {
@@ -213,10 +235,6 @@ export class QuickStartScreen extends QuickStartScreenBase {
     this.setUIStep(QuickStartUiState.VERIFICATION);
     assert(pin.length === 4);
     this.pin = pin;
-  }
-
-  setDiscoverableName(discoverableName: string): void {
-    this.discoverableName = discoverableName;
   }
 
   showConfirmGoogleAccount(): void {
@@ -234,7 +252,8 @@ export class QuickStartScreen extends QuickStartScreenBase {
     this.canCancelSignin = false;
   }
 
-  showSetupCompleteStep(): void {
+  showSetupCompleteStep(didTransferWiFi: boolean): void {
+    this.didTransferWiFi = didTransferWiFi;
     this.setUIStep(QuickStartUiState.SETUP_COMPLETE);
   }
 
@@ -248,6 +267,10 @@ export class QuickStartScreen extends QuickStartScreenBase {
 
   setUserAvatarUrl(userAvatarUrl: string): void {
     this.userAvatarUrl = userAvatarUrl;
+  }
+
+  setWillRequestWiFi(willRequestWiFi: boolean): void {
+    this.willRequestWiFi = willRequestWiFi;
   }
 
   showBluetoothDialog() {

@@ -68,8 +68,8 @@ TEST(BatteryLevelProviderTest, MultipleBatteriesWithExternalPower) {
                        .full_charged_capacity = 100})});
   EXPECT_EQ(2, state.battery_count);
   EXPECT_TRUE(state.is_external_power_connected);
-  EXPECT_EQ(absl::nullopt, state.current_capacity);
-  EXPECT_EQ(absl::nullopt, state.full_charged_capacity);
+  EXPECT_EQ(std::nullopt, state.current_capacity);
+  EXPECT_EQ(std::nullopt, state.full_charged_capacity);
   EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 
@@ -83,8 +83,8 @@ TEST(BatteryLevelProviderTest, MultipleBatteriesDischarging) {
                        .full_charged_capacity = 100})});
   EXPECT_EQ(2, state.battery_count);
   EXPECT_FALSE(state.is_external_power_connected);
-  EXPECT_EQ(absl::nullopt, state.current_capacity);
-  EXPECT_EQ(absl::nullopt, state.full_charged_capacity);
+  EXPECT_EQ(std::nullopt, state.current_capacity);
+  EXPECT_EQ(std::nullopt, state.full_charged_capacity);
   EXPECT_NE(base::TimeTicks(), state.capture_time);
 }
 

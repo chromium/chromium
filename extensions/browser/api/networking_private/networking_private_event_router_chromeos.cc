@@ -43,8 +43,6 @@ api::networking_private::CaptivePortalStatus GetCaptivePortalStatus(
     case NetworkState::PortalState::kPortal:
     case NetworkState::PortalState::kNoInternet:
       return api::networking_private::CaptivePortalStatus::kPortal;
-    case NetworkState::PortalState::kProxyAuthRequired:
-      return api::networking_private::CaptivePortalStatus::kProxyAuthRequired;
   }
 }
 

@@ -30,7 +30,6 @@ class InlinePaintContext;
 class LayoutBlockFlow;
 class LayoutInline;
 class LayoutObject;
-class LayoutUnit;
 class Node;
 class PhysicalBoxFragment;
 class ShapeResultView;
@@ -627,6 +626,10 @@ class CORE_EXPORT InlineCursor {
   // Used for |MoveToVisualLastForSameLayoutObject| and
   // |MoveToVisualFirstForSameLayoutObject|.
   void MoveToVisualFirstOrLastForCulledInline(bool last);
+
+  // Returns text_offset for the last position of caret in current line
+  // including the case of empty line.
+  wtf_size_t GetTextOffsetForEndOfLine(InlineCursor& cursor) const;
 
   // A helper class to enumerate |LayoutObject|s that contribute to a culled
   // inline.

@@ -130,8 +130,8 @@ int StaleHostResolver::RequestImpl::Start(
   cache_parameters.source = net::HostResolverSource::LOCAL_ONLY;
   cache_request_ = resolver_->inner_resolver_->CreateRequest(
       host_, network_anonymization_key_, net_log_, cache_parameters);
-  int error =
-      cache_request_->Start(base::BindOnce([](int error) { NOTREACHED(); }));
+  int error = cache_request_->Start(
+      base::BindOnce([](int error) { NOTREACHED_IN_MIGRATION(); }));
   DCHECK_NE(net::ERR_IO_PENDING, error);
   cache_error_ = cache_request_->GetResolveErrorInfo().error;
   DCHECK_NE(net::ERR_IO_PENDING, cache_error_);
@@ -345,7 +345,7 @@ StaleHostResolver::CreateRequest(
     net::NetworkAnonymizationKey network_anonymization_key,
     net::NetLogWithSource net_log,
     std::optional<ResolveHostParameters> optional_parameters) {
-  // TODO(crbug.com/1206799): Propagate scheme.
+  // TODO(crbug.com/40181080): Propagate scheme.
   return CreateRequest(net::HostPortPair::FromSchemeHostPort(host),
                        network_anonymization_key, net_log, optional_parameters);
 }
@@ -360,6 +360,18 @@ StaleHostResolver::CreateRequest(
   return std::make_unique<RequestImpl>(
       weak_ptr_factory_.GetWeakPtr(), host, network_anonymization_key, net_log,
       optional_parameters.value_or(ResolveHostParameters()), tick_clock_);
+}
+
+std::unique_ptr<net::HostResolver::ServiceEndpointRequest>
+StaleHostResolver::CreateServiceEndpointRequest(
+    Host host,
+    net::NetworkAnonymizationKey network_anonymization_key,
+    net::NetLogWithSource net_log,
+    ResolveHostParameters parameters) {
+  // TODO(crbug.com/335119455): Figure out a plan to support the
+  // ServiceEndpointRequest API.
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 net::HostCache* StaleHostResolver::GetHostCache() {

@@ -176,8 +176,8 @@ NavigateParams NavigateParamsForShareTarget(
     }
   }
 #else
-  // TODO(crbug.com/1153194): Support Web Share Target on Windows.
-  // TODO(crbug.com/1153195): Support Web Share Target on Mac.
+  // TODO(crbug.com/40158988): Support Web Share Target on Windows.
+  // TODO(crbug.com/40734106): Support Web Share Target on Mac.
   NOTIMPLEMENTED();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

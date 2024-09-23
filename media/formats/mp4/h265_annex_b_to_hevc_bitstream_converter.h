@@ -15,8 +15,8 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/hevc.h"
 #include "media/formats/mp4/mp4_status.h"
-#include "media/video/h265_nalu_parser.h"
-#include "media/video/h265_parser.h"
+#include "media/parsers/h265_nalu_parser.h"
+#include "media/parsers/h265_parser.h"
 
 namespace media {
 

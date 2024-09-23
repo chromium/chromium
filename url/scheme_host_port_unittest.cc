@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "url/scheme_host_port.h"
 
 #include <stddef.h>
@@ -62,6 +67,9 @@ TEST_F(SchemeHostPortTest, Invalid) {
       "about:blank", "about:blank#ref", "about:blank?query=123", "about:srcdoc",
       "about:srcdoc#ref", "about:srcdoc?query=123", "data:text/html,Hello!",
       "javascript:alert(1)",
+
+      // Non-special URLs which don't have an opaque path.
+      "git:/", "git://", "git:///", "git://host/", "git://host/path",
 
       // GURLs where GURL::is_valid returns false translate into an invalid
       // SchemeHostPort.
@@ -131,6 +139,8 @@ TEST_F(SchemeHostPortTest, InvalidConstruction) {
                {"filesystem", "", 0},
                {"http", "", 80},
                {"data", "example.com", 80},
+               {"git", "", 0},
+               {"git", "example.com", 80},
                {"http", "☃.net", 80},
                {"http\nmore", "example.com", 80},
                {"http\rmore", "example.com", 80},

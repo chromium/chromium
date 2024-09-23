@@ -7,65 +7,65 @@ import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import './nav_menu.js';
-import '../demo.css.js';
 
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './nav_menu_demo.html.js';
+import {getCss} from './nav_menu_demo.css.js';
+import {getHtml} from './nav_menu_demo.html.js';
 
-interface NavMenuDemoElement {
+export interface NavMenuDemoElement {
   $: {
     drawer: CrDrawerElement,
   };
 }
 
-class NavMenuDemoElement extends PolymerElement {
+export class NavMenuDemoElement extends CrLitElement {
   static get is() {
     return 'nav-menu-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      isDrawerOpen_: {
-        type: Boolean,
-        value: false,
-      },
-
-      selectedIndex_: Number,
-
-      showIcons_: {
-        type: Boolean,
-        value: true,
-      },
-
-      showRipples_: {
-        type: Boolean,
-        value: true,
-      },
+      isDrawerOpen_: {type: Boolean},
+      selectedIndex_: {type: Number},
+      showIcons_: {type: Boolean},
+      showRipples_: {type: Boolean},
     };
   }
 
-  private isDrawerOpen_: boolean;
-  private selectedIndex_: number;
-  private showIcons_: boolean;
-  private showRipples_: boolean;
+  protected isDrawerOpen_: boolean = false;
+  protected selectedIndex_?: number;
+  protected showIcons_: boolean = true;
+  protected showRipples_: boolean = true;
 
-  private showDrawerMenu_() {
+  protected showDrawerMenu_() {
     this.$.drawer.openDrawer();
     this.isDrawerOpen_ = this.$.drawer.open;
   }
 
-  private onDrawerClose_() {
+  protected onDrawerClose_() {
     this.isDrawerOpen_ = this.$.drawer.open;
   }
 
-  private onSelectedIndexChanged_(e: CustomEvent<{value: number}>) {
+  protected onSelectedIndexChanged_(e: CustomEvent<{value: number}>) {
     this.selectedIndex_ = e.detail.value;
+  }
+
+  protected onShowIconsChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showIcons_ = e.detail.value;
+  }
+
+  protected onShowRipplesChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showRipples_ = e.detail.value;
   }
 }
 

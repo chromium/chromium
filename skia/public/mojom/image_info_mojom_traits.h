@@ -5,9 +5,9 @@
 #ifndef SKIA_PUBLIC_MOJOM_IMAGE_INFO_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_IMAGE_INFO_MOJOM_TRAITS_H_
 
+#include <optional>
 #include <vector>
 
-#include <optional>
 #include "base/component_export.h"
 #include "skia/public/mojom/image_info.mojom-shared.h"
 #include "third_party/skia/include/core/SkImageInfo.h"

@@ -123,6 +123,29 @@ InstalledApplications::InstalledApplications(
   static constexpr wchar_t kUninstallKeyPath[] =
       L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall";
 
+  // Retrieve the current user's Security Identifier. If it fails, |user_sid|
+  // will stay empty.
+  std::wstring user_sid;
+  base::win::GetUserSidString(&user_sid);
+
+  for (const auto& combination : GenRegistryKeyCombinations()) {
+    for (base::win::RegistryKeyIterator i(combination.first, kUninstallKeyPath,
+                                          combination.second);
+         i.Valid(); ++i) {
+      CheckRegistryKeyForInstalledApplication(
+          combination.first, kUninstallKeyPath, combination.second, i.Name(),
+          *msi_util, user_sid);
+    }
+  }
+
+  // The vectors are sorted so that binary searching can be used. No additional
+  // entries will be added anyways.
+  SortByFilePaths(&installed_files_);
+  SortByFilePaths(&install_directories_);
+}
+
+std::vector<std::pair<HKEY, REGSAM>>
+InstalledApplications::GenRegistryKeyCombinations() const {
   std::vector<std::pair<HKEY, REGSAM>> registry_key_combinations;
   if (base::win::OSInfo::GetArchitecture() ==
       base::win::OSInfo::X86_ARCHITECTURE) {
@@ -138,26 +161,7 @@ InstalledApplications::InstalledApplications(
     registry_key_combinations.emplace_back(HKEY_LOCAL_MACHINE, KEY_WOW64_32KEY);
     registry_key_combinations.emplace_back(HKEY_LOCAL_MACHINE, KEY_WOW64_64KEY);
   }
-
-  // Retrieve the current user's Security Identifier. If it fails, |user_sid|
-  // will stay empty.
-  std::wstring user_sid;
-  base::win::GetUserSidString(&user_sid);
-
-  for (const auto& combination : registry_key_combinations) {
-    for (base::win::RegistryKeyIterator i(combination.first, kUninstallKeyPath,
-                                          combination.second);
-         i.Valid(); ++i) {
-      CheckRegistryKeyForInstalledApplication(
-          combination.first, kUninstallKeyPath, combination.second, i.Name(),
-          *msi_util, user_sid);
-    }
-  }
-
-  // The vectors are sorted so that binary searching can be used. No additional
-  // entries will be added anyways.
-  SortByFilePaths(&installed_files_);
-  SortByFilePaths(&install_directories_);
+  return registry_key_combinations;
 }
 
 void InstalledApplications::CheckRegistryKeyForInstalledApplication(

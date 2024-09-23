@@ -38,7 +38,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -155,7 +155,7 @@ class PendingProfileCreation : public Profile::Delegate {
     profile_ = nullptr;
 
     delegate->OnProfileCreationFinished(
-        profile, Profile::CREATE_MODE_ASYNCHRONOUS, success, is_new_profile_);
+        profile, Profile::CreateMode::kAsynchronous, success, is_new_profile_);
     return true;
   }
 
@@ -209,11 +209,12 @@ class UnittestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
     pending_profile_creation_.Set(path, delegate);
 
-    auto new_profile =
-        std::make_unique<TestingProfile>(path, &pending_profile_creation_);
+    auto new_profile = std::make_unique<TestingProfile>(
+        path, &pending_profile_creation_, create_mode);
 
     // Build accompaning incognito profile, to ensure it has the same path
     // as the original profile.

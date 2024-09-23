@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/atomic_ref_count.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/memory/scoped_refptr.h"
 
 namespace partition_alloc::internal::base {
@@ -28,12 +28,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   explicit constexpr RefCountedThreadSafeBase(StartRefCountFromZeroTag) {}
   explicit constexpr RefCountedThreadSafeBase(StartRefCountFromOneTag)
       : ref_count_(1) {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     needs_adopt_ref_ = true;
 #endif
   }
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   ~RefCountedThreadSafeBase();
 #else
   ~RefCountedThreadSafeBase() = default;
@@ -42,7 +42,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
 // Release and AddRef are suitable for inlining on X86 because they generate
 // very small code sequences. On other platforms (ARM), it causes a size
 // regression and is probably not worth it.
-#if defined(ARCH_CPU_X86_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
   // Returns true if the object should self-delete.
   bool Release() const { return ReleaseImpl(); }
   void AddRef() const { AddRefImpl(); }
@@ -59,14 +59,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   friend scoped_refptr<U> AdoptRef(U*);
 
   void Adopted() const {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     PA_BASE_DCHECK(needs_adopt_ref_);
     needs_adopt_ref_ = false;
 #endif
   }
 
   PA_ALWAYS_INLINE void AddRefImpl() const {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     PA_BASE_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
@@ -77,7 +77,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   }
 
   PA_ALWAYS_INLINE void AddRefWithCheckImpl() const {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     PA_BASE_DCHECK(!in_dtor_);
     // This RefCounted object is created with non-zero reference count.
     // The first reference to such a object has to be made by AdoptRef or
@@ -88,12 +88,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   }
 
   PA_ALWAYS_INLINE bool ReleaseImpl() const {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     PA_BASE_DCHECK(!in_dtor_);
     PA_BASE_DCHECK(!ref_count_.IsZero());
 #endif
     if (!ref_count_.Decrement()) {
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
       in_dtor_ = true;
 #endif
       return true;
@@ -102,7 +102,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
   }
 
   mutable AtomicRefCount ref_count_{0};
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   mutable bool needs_adopt_ref_ = false;
   mutable bool in_dtor_ = false;
 #endif
@@ -184,4 +184,4 @@ class RefCountedThreadSafe : public subtle::RefCountedThreadSafeBase {
 
 }  // namespace partition_alloc::internal::base
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_MEMORY_REF_COUNTED_H_

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -424,7 +424,11 @@ class PaymentResponseFunction : public ScriptFunction::Callable {
   }
 
  private:
-  const raw_ptr<ScriptValue, ExperimentalRenderer> value_;
+  // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (GC'ed type), so
+  // there is no benefit to using a raw_ptr, only cost.
+  // TODO(crbug.com/348793154): Remove once clang plugin no longer enforces
+  // those.
+  RAW_PTR_EXCLUSION ScriptValue* const value_;
 };
 
 // If the merchant requests shipping information, the resolved show() promise
@@ -450,8 +454,7 @@ TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -485,8 +488,7 @@ TEST(OnPaymentResponseTest, CanRequestName) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -519,8 +521,7 @@ TEST(OnPaymentResponseTest, CanRequestEmail) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -553,8 +554,7 @@ TEST(OnPaymentResponseTest, CanRequestPhone) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -584,8 +584,7 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -619,8 +618,7 @@ TEST(OnPaymentResponseTest, PhoneNotRequired) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -653,8 +651,7 @@ TEST(OnPaymentResponseTest, NameNotRequired) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -687,8 +684,7 @@ TEST(OnPaymentResponseTest, EmailNotRequired) {
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(MakeGarbageCollected<ScriptFunction>(
                 scope.GetScriptState(),
-                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
-                ->V8Function(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value)),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)

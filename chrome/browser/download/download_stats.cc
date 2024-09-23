@@ -19,7 +19,8 @@ void RecordDownloadSource(ChromeDownloadSource source) {
 }
 
 void MaybeRecordDangerousDownloadWarningShown(DownloadUIModel& model) {
-  if (!model.IsDangerous()) {
+  if (!model.IsDangerous() ||
+      model.GetState() == download::DownloadItem::DownloadState::CANCELLED) {
     return;
   }
   if (model.WasUIWarningShown()) {
@@ -165,7 +166,9 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::LEARN_MORE_DOWNLOAD_BLOCKED:
     case DownloadCommands::Command::OPEN_SAFE_BROWSING_SETTING:
     case DownloadCommands::Command::BYPASS_DEEP_SCANNING:
-      NOTREACHED();
+    case DownloadCommands::Command::OPEN_WITH_MEDIA_APP:
+    case DownloadCommands::Command::EDIT_WITH_MEDIA_APP:
+      NOTREACHED_IN_MIGRATION();
       return DownloadShelfContextMenuAction::kNotReached;
   }
 }

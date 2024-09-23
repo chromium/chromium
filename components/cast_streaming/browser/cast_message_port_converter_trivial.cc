@@ -11,7 +11,7 @@ namespace cast_streaming {
 std::unique_ptr<CastMessagePortConverter> CastMessagePortConverter::Create(
     ReceiverSession::MessagePortProvider message_port_provider,
     base::OnceClosure on_close) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

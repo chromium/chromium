@@ -137,9 +137,8 @@ class MojoAndroidOverlayTest : public ::testing::Test {
     surface_texture_ = gl::SurfaceTexture::Create(0);
     surface_ = gl::ScopedJavaSurface(surface_texture_.get());
     surface_key_ = gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
-        gpu::GpuSurfaceTracker::SurfaceRecord(
-            surface_.CopyRetainOwnership(),
-            false /* can_be_used_with_surface_control */));
+        gpu::SurfaceRecord(surface_.CopyRetainOwnership(),
+                           false /* can_be_used_with_surface_control */));
 
     mock_provider_.client_->OnSurfaceReady(surface_key_);
     base::RunLoop().RunUntilIdle();
@@ -181,7 +180,7 @@ class MojoAndroidOverlayTest : public ::testing::Test {
   gl::ScopedJavaSurface surface_;
   int surface_key_ = 0;
 
-  // Inital config for |CreateOverlay|.
+  // Initial config for |CreateOverlay|.
   // Set to sane values, but feel free to modify before CreateOverlay().
   AndroidOverlayConfig config_;
   MockClientCallbacks callbacks_;

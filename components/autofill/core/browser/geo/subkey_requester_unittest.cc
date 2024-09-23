@@ -19,7 +19,6 @@
 #include "third_party/libaddressinput/src/cpp/test/testdata_source.h"
 
 namespace autofill {
-
 namespace {
 
 using ::i18n::addressinput::NullStorage;
@@ -83,8 +82,6 @@ class TestSubKeyRequester : public SubKeyRequester {
  private:
   bool should_load_rules_;
 };
-
-}  // namespace
 
 class SubKeyRequesterTest : public testing::Test {
  public:
@@ -190,4 +187,5 @@ TEST_F(SubKeyRequesterTest, StartRequest_RulesNotLoaded_WillLoad) {
   EXPECT_EQ(subkey_receiver_->subkeys_size(), kExpectedSubkeySize);
 }
 
+}  // namespace
 }  // namespace autofill

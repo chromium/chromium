@@ -38,7 +38,7 @@ FileEntryPicker::FileEntryPicker(
 
   select_file_dialog_->SelectFile(
       picker_type, std::u16string(), suggested_name, &file_type_info, 0,
-      base::FilePath::StringType(), owning_window, /*params=*/nullptr, caller);
+      base::FilePath::StringType(), owning_window, caller);
 }
 
 FileEntryPicker::~FileEntryPicker() {
@@ -46,14 +46,12 @@ FileEntryPicker::~FileEntryPicker() {
 }
 
 void FileEntryPicker::FileSelected(const ui::SelectedFileInfo& file,
-                                   int index,
-                                   void* params) {
-  MultiFilesSelected({file}, params);
+                                   int index) {
+  MultiFilesSelected({file});
 }
 
 void FileEntryPicker::MultiFilesSelected(
-    const std::vector<ui::SelectedFileInfo>& files,
-    void* params) {
+    const std::vector<ui::SelectedFileInfo>& files) {
   std::vector<base::FilePath> paths;
   for (const auto& file : files) {
     // Normally, `file.local_path` is used because it is a native path to the
@@ -70,7 +68,7 @@ void FileEntryPicker::MultiFilesSelected(
   delete this;
 }
 
-void FileEntryPicker::FileSelectionCanceled(void* params) {
+void FileEntryPicker::FileSelectionCanceled() {
   std::move(file_selection_canceled_callback_).Run();
   delete this;
 }

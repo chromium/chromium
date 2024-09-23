@@ -1,0 +1,75 @@
+This is a testharness.js-based test.
+[FAIL] Property corners value 'round'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'angle'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round angle'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round angle round'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round angle round angle'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '2%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% 1em'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% 1em 4%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px / 2px'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '2% / 2px'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% / 2px'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% 1em / 2px'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% 1em 4% / 2px'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px / 2px 4%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px / 2px 4% 1em'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px / 2px 4% 1em 2%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% / 2px 4%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% 1em / 2px 4% 1em'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% 1em 4% / 2px 4% 1em 2%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px round'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px angle'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px round angle'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px round angle round'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px round angle round angle'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% round'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px 2% / 2px round'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px / 2px 4% round'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value '4px / 2px 4% round angle'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round 4px'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round 4px 2%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round 4px 2% / 2px'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round 4px / 2px 4%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round angle 4px / 2px 4%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property corners value 'round angle round angle 4px 2% 1em 4% / 2px 4% 1em 2%'
+  assert_true: corners doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

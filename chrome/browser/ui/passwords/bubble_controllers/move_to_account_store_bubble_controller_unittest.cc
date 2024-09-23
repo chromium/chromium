@@ -114,7 +114,8 @@ TEST_F(MoveToAccountStoreBubbleControllerTest, RejectMoveForSelectedPassword) {
 TEST_F(MoveToAccountStoreBubbleControllerTest, ProvidesTitle) {
   PasswordBubbleControllerBase* controller_ptr = controller();
   EXPECT_EQ(controller_ptr->GetTitle(),
-            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MOVE_TITLE));
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_SAVE_IN_ACCOUNT_BUBBLE_TITLE));
 }
 
 TEST_F(MoveToAccountStoreBubbleControllerTest, ProvidesProfileIcon) {

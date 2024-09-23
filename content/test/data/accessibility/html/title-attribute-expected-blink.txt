@@ -1,0 +1,15 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group name='Names a group' nameFrom=title
+++++++++staticText name='abc'
+++++++++++inlineTextBox name='abc'
+++++++group description='Moved to description' name='Has a name' descriptionFrom=title
+++++++++staticText name='def'
+++++++++++inlineTextBox name='def'
+++++++group
+++++++++staticText name='Redundant'
+++++++++++inlineTextBox name='Redundant'
+++++++genericContainer description='Description' descriptionFrom=title
+++++++++staticText name='Names are prohibited on generic'
+++++++++++inlineTextBox name='Names are prohibited on generic'

@@ -40,7 +40,7 @@ ToProtoEnum(ProcessSingleton::RemoteProcessInteractionResult result) {
 #endif
     CASE(USER_REFUSED_TERMINATION);
     case ProcessSingleton::REMOTE_PROCESS_INTERACTION_RESULT_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return perfetto::protos::pbzero::ProcessSingleton::
           INTERACTION_RESULT_UNSPECIFIED;
   }
@@ -58,7 +58,7 @@ ToProtoEnum(ProcessSingleton::RemoteHungProcessTerminateReason reason) {
     CASE(SOCKET_READ_FAILED);
 #endif
     case ProcessSingleton::REMOTE_HUNG_PROCESS_TERMINATE_REASON_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return perfetto::protos::pbzero::ProcessSingleton::
           TERMINATE_REASON_UNSPECIFIED;
   }

@@ -5,7 +5,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 
 namespace vr {
 
@@ -13,7 +12,7 @@ namespace vr {
 // are no runtimes available.
 IN_PROC_BROWSER_TEST_F(WebXrVrRuntimelessBrowserTest,
                        TestInlineIdentityAlwaysAvailable) {
-  browser()->tab_strip_model()->GetActiveWebContents()->Focus();
+  GetCurrentWebContents()->Focus();
   LoadFileAndAwaitInitialization("test_inline_viewer_available");
   WaitOnJavaScriptStep();
   EndTest();

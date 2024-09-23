@@ -32,6 +32,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -121,10 +123,13 @@ std::unique_ptr<DragImage> DragImage::Create(
   return base::WrapUnique(new DragImage(bm, interpolation_quality));
 }
 
-static Font DeriveDragLabelFont(int size,
-                                FontSelectionValue font_weight,
-                                const FontDescription& system_font) {
-  FontDescription description = system_font;
+static Font DeriveDragLabelFont(int size, FontSelectionValue font_weight) {
+  const AtomicString& family =
+      LayoutThemeFontProvider::SystemFontFamily(CSSValueID::kNone);
+
+  FontDescription description;
+  description.SetFamily(
+      FontFamily(family, FontFamily::InferredTypeFor(family)));
   description.SetWeight(font_weight);
   description.SetSpecifiedSize(size);
   description.SetComputedSize(size);
@@ -135,14 +140,13 @@ static Font DeriveDragLabelFont(int size,
 // static
 std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
                                              const String& in_label,
-                                             const FontDescription& system_font,
                                              float device_scale_factor) {
-  const Font label_font = DeriveDragLabelFont(kDragLinkLabelFontSize,
-                                              kBoldWeightValue, system_font);
+  const Font label_font =
+      DeriveDragLabelFont(kDragLinkLabelFontSize, kBoldWeightValue);
   const SimpleFontData* label_font_data = label_font.PrimaryFont();
   DCHECK(label_font_data);
-  const Font url_font = DeriveDragLabelFont(kDragLinkUrlFontSize,
-                                            kNormalWeightValue, system_font);
+  const Font url_font =
+      DeriveDragLabelFont(kDragLinkUrlFontSize, kNormalWeightValue);
   const SimpleFontData* url_font_data = url_font.PrimaryFont();
   DCHECK(url_font_data);
 

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test that FedCM accounts autogrant storage access.
+  assert_true: requestStorageAccess doesn't require a gesture since the FedCM account is already connected. expected true got false
+Harness: the test ran to completion.
+

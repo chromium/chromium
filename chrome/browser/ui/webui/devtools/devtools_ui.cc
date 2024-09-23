@@ -62,7 +62,7 @@ bool DevToolsUI::IsFrontendResourceURL(const GURL& url) {
 
 DevToolsUI::DevToolsUI(content::WebUI* web_ui)
     : WebUIController(web_ui), bindings_(web_ui->GetWebContents()) {
-  web_ui->SetBindings(content::BINDINGS_POLICY_NONE);
+  web_ui->SetBindings(content::BindingsPolicySet());
   auto factory = web_ui->GetWebContents()
                      ->GetBrowserContext()
                      ->GetDefaultStoragePartition()

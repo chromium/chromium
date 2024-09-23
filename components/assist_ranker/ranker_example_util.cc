@@ -114,13 +114,13 @@ bool FeatureToInt64(const Feature& feature,
         value = StringToIntBits(feature.string_list().string_value(index));
       } else {
         DVLOG(3) << "Invalid index for string list: " << index;
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return false;
       }
       break;
     default:
       DVLOG(3) << "Feature type is supported for logging: " << type;
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
   *res = PairInt(type, value, index);

@@ -17,6 +17,7 @@ class Widget;
 
 namespace ash {
 
+class MessageViewContainer;
 class NotificationCenterController;
 class NotificationCenterTray;
 class NotificationCenterView;
@@ -50,6 +51,12 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
   // Returns the view cached in `notification_center_controller_` when enabled.
   NotificationCenterView* GetNotificationCenterView();
 
+  // Forwards call to `NotificationCenterController`. This currently only
+  // searches for ongoing process notifications.
+  // TODO(b/322835713): Have the controller manage other notification views.
+  const MessageViewContainer* GetOngoingProcessMessageViewContainerById(
+      const std::string& id);
+
  private:
   friend class NotificationCenterTestApi;
 
@@ -57,7 +64,7 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
   void UpdateBubbleBounds();
 
   // ScreenLayoutObserver:
-  void OnDisplayConfigurationChanged() override;
+  void OnDidApplyDisplayChanges() override;
 
   // The owner of this class.
   const raw_ptr<NotificationCenterTray> notification_center_tray_;

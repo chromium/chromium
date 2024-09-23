@@ -5,8 +5,8 @@
 #include "components/zucchini/ensemble_matcher.h"
 
 #include <limits>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 
@@ -30,7 +30,7 @@ void EnsembleMatcher::Trim() {
   auto num_dex = base::ranges::count_if(matches_, is_match_dex);
   if (num_dex > 1) {
     LOG(WARNING) << "Found " << num_dex << " DEX: Ignoring all.";
-    base::EraseIf(matches_, is_match_dex);
+    std::erase_if(matches_, is_match_dex);
   }
 }
 

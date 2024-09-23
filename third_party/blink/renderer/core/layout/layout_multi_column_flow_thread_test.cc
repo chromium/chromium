@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -1155,13 +1154,13 @@ TEST_F(MultiColumnRenderingTest, Continuation) {
   // 1. Continuations should be in anonymous block in LayoutNG.
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutInline SPAN
   |  |  |  +--LayoutText #text "x"
-  |  |  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  |  |  +--LayoutNGBlockFlow DIV id="inner"
+  |  |  |  +--LayoutBlockFlow (anonymous)
+  |  |  |  |  +--LayoutBlockFlow DIV id="inner"
   |  |  |  +--LayoutText #text "y"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
@@ -1170,9 +1169,9 @@ LayoutNGBlockFlow DIV id="mc"
   // 2. Remove #inner to avoid continuation.
   GetElementById("inner")->remove();
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutInline SPAN
   |  |  |  +--LayoutText #text "x"
   |  |  |  +--LayoutText #text "y"
@@ -1185,9 +1184,9 @@ LayoutNGBlockFlow DIV id="mc"
   multicol.normalize();
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutInline SPAN
   |  |  |  +--LayoutText #text "xy"
   +--LayoutMultiColumnSet (anonymous)
@@ -1207,7 +1206,7 @@ TEST_F(MultiColumnRenderingTest, InsertBlock) {
       << "We have flow thread even if container has no children.";
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
 )DUMP",
             ToSimpleLayoutTree(container));
@@ -1217,9 +1216,9 @@ LayoutNGBlockFlow DIV id="mc"
   RunDocumentLifecycle();
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutText #text "x"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
@@ -1231,7 +1230,7 @@ LayoutNGBlockFlow DIV id="mc"
 
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
 )DUMP",
             ToSimpleLayoutTree(container));
@@ -1244,9 +1243,9 @@ LayoutNGBlockFlow DIV id="mc"
 
   EXPECT_EQ(
       R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow DIV
+  |  +--LayoutBlockFlow DIV
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
       ToSimpleLayoutTree(container));
@@ -1264,7 +1263,7 @@ TEST_F(MultiColumnRenderingTest, InsertInline) {
       << "We have flow thread even if container has no children.";
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
 )DUMP",
             ToSimpleLayoutTree(container));
@@ -1274,9 +1273,9 @@ LayoutNGBlockFlow DIV id="mc"
   RunDocumentLifecycle();
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutText #text "x"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
@@ -1288,7 +1287,7 @@ LayoutNGBlockFlow DIV id="mc"
 
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
 )DUMP",
             ToSimpleLayoutTree(container));
@@ -1299,9 +1298,9 @@ LayoutNGBlockFlow DIV id="mc"
   RunDocumentLifecycle();
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutInline SPAN
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
@@ -1339,7 +1338,7 @@ TEST_F(MultiColumnRenderingTest, SplitInline) {
       << "We have flow thread even if container has no children.";
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
 )DUMP",
             ToSimpleLayoutTree(container));
@@ -1350,9 +1349,9 @@ LayoutNGBlockFlow DIV id="mc"
 
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutText #text "x"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
@@ -1363,7 +1362,7 @@ LayoutNGBlockFlow DIV id="mc"
   RunDocumentLifecycle();
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
 )DUMP",
             ToSimpleLayoutTree(container));
@@ -1373,9 +1372,9 @@ LayoutNGBlockFlow DIV id="mc"
   RunDocumentLifecycle();
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutText #text "x"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
@@ -1386,9 +1385,9 @@ LayoutNGBlockFlow DIV id="mc"
   RunDocumentLifecycle();
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutText #text "x"
   |  |  +--LayoutText #text "y"
   +--LayoutMultiColumnSet (anonymous)
@@ -1401,12 +1400,12 @@ LayoutNGBlockFlow DIV id="mc"
   RunDocumentLifecycle();
   EXPECT_FALSE(flow_thread.ChildrenInline());
   EXPECT_EQ(R"DUMP(
-LayoutNGBlockFlow DIV id="mc"
+LayoutBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutText #text "x"
-  |  +--LayoutNGBlockFlow DIV
-  |  +--LayoutNGBlockFlow (anonymous)
+  |  +--LayoutBlockFlow DIV
+  |  +--LayoutBlockFlow (anonymous)
   |  |  +--LayoutText #text "y"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",

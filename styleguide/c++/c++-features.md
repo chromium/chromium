@@ -574,35 +574,6 @@ Overlaps with utilities in `base/strings/string_number_conversions.h`, which are
 easier to use correctly.
 ***
 
-### std::hardware_{con,de}structive_interference_size <sup>[banned]</sup>
-
-```c++
-struct SharedData {
-  ReadOnlyFrequentlyUsed data;
-  alignas(std::hardware_destructive_interference_size) std::atomic<size_t> counter;
-};
-```
-
-**Description:** The `std::hardware_destructive_interference_size` constant is
-useful to avoid false sharing (destructive interference) between variables that
-would otherwise occupy the same cacheline. In contrast,
-`std::hardware_constructive_interference_size` is helpful to promote true
-sharing (constructive interference), e.g. to support better locality for
-non-contended data.
-
-**Documentation:**
-[`std::hardware_destructive_interference_size`](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size),
-[`std::hardware_constructive_interference_size`](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size)
-
-**Notes:**
-*** promo
-Banned for now since these are
-[not supported yet](https://github.com/llvm/llvm-project/issues/60174). Allow
-once supported.
-
-[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/cwktrFxxUY4)
-***
-
 ### std::in_place{_type,_index}[_t] <sup>[banned]</sup>
 
 ```c++
@@ -847,7 +818,7 @@ to be written out-of-line in the .cc file. Feel free to write `= default`
 directly in the header, as this is much simpler to write.
 
 - [Migration bug](https://crbug.com/1414530)
-- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0)
+- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/h4lVi2jHU-0/m/X0q_Bh2IAAAJ)
 
 ***
 
@@ -966,6 +937,25 @@ implementation of a particular language feature.
 None
 ***
 
+### [[likely]], [[unlikely]] <sup>[allowed]</sup>
+
+```c++
+if (n > 0) [[likely]] {
+  return 1;
+}
+```
+
+**Description:** Tells the optimizer that a particular codepath is more or less
+likely than an alternative.
+
+**Documentation:**
+[C++ attribute: `likely`, `unlikely`](https://en.cppreference.com/w/cpp/language/attributes/likely)
+
+**Notes:**
+*** promo
+- [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/bk9YC5qSDF8)
+***
+
 ### Range-for statements with initializer <sup>[allowed]</sup>
 
 ```c++
@@ -1065,6 +1055,54 @@ machinery in `<type_traits>`.
 None
 ***
 
+### Range algorithms <sup>[allowed]</sup>
+
+```c++
+constexpr int kArr[] = {2, 4, 6, 8, 10, 12};
+constexpr auto is_even = [] (auto x) { return x % 2 == 0; };
+static_assert(std::ranges::all_of(kArr, is_even));
+```
+
+**Description:** Provides versions of most algorithms that accept either an
+iterator-sentinel pair or a single range argument.
+
+**Documentation:**
+[Ranges algorithms](https://en.cppreference.com/w/cpp/algorithm/ranges)
+
+**Notes:**
+*** promo
+Supersedes `//base`'s backports in `//base/ranges/algorithm.h`.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
+***
+
+### Range access, range primitives, dangling iterator handling, and range concepts <sup>[allowed]</sup>
+
+```c++
+// Range access:
+constexpr int kArr[] = {2, 4, 6, 8, 10, 12};
+static_assert(std::ranges::size(kArr) == 6);
+
+// Range primitives:
+static_assert(
+    std::same_as<std::ranges::iterator_t<decltype(kArr)>, const int*>);
+
+// Range concepts:
+static_assert(std::ranges::contiguous_range<decltype(kArr)>);
+```
+
+**Description:** Various helper functions and types for working with ranges.
+
+**Documentation:**
+[Ranges library](https://en.cppreference.com/w/cpp/ranges)
+
+**Notes:**
+*** promo
+Supersedes `//base`'s backports in `//base//ranges/ranges.h`.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
+***
+
 ### Library feature-test macros and &lt;version&gt; <sup>[allowed]</sup>
 
 ```c++
@@ -1137,6 +1175,31 @@ avoiding the need to use the `erase(remove(...` paradigm.
 **Notes:**
 *** promo
 [Migration bug](https://crbug.com/1414639)
+***
+
+### std::hardware_{con,de}structive_interference_size <sup>[allowed]</sup>
+
+```c++
+struct SharedData {
+  ReadOnlyFrequentlyUsed data;
+  alignas(std::hardware_destructive_interference_size) std::atomic<size_t> counter;
+};
+```
+
+**Description:** The `std::hardware_destructive_interference_size` constant is
+useful to avoid false sharing (destructive interference) between variables that
+would otherwise occupy the same cacheline. In contrast,
+`std::hardware_constructive_interference_size` is helpful to promote true
+sharing (constructive interference), e.g. to support better locality for
+non-contended data.
+
+**Documentation:**
+[`std::hardware_destructive_interference_size`](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size),
+[`std::hardware_constructive_interference_size`](https://en.cppreference.com/w/cpp/thread/hardware_destructive_interference_size)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/cwktrFxxUY4)
 ***
 
 ### std::is_[un]bounded_array <sup>[allowed]</sup>
@@ -1278,25 +1341,6 @@ character or string.
 **Notes:**
 *** promo
 [Migration bug](https://crbug.com/1414647)
-***
-
-### std::to_address <sup>[allowed]</sup>
-
-```c++
-std::vector<int> numbers;
-int* i = std::to_address(numbers.begin());
-```
-
-**Description:** Converts a pointer-like object to a pointer, even if the
-pointer does not refer to a constructed object (in which case an expression like
-`&*p` is UB).
-
-**Documentation:**
-[`std::to_address`](https://en.cppreference.com/w/cpp/memory/to_address)
-
-**Notes:**
-*** promo
-None
 ***
 
 ## C++20 Banned Language Features {#core-blocklist-20}
@@ -1468,6 +1512,54 @@ encoded using the current C locale.
 Chromium functionality should not vary with the C locale.
 ***
 
+### Views, range factories, and range adaptors <sup>[banned]</sup>
+
+```c++
+constexpr int kArr[] = {6, 2, 8, 4, 4, 2};
+constexpr auto plus_one = std::views::transform([](int n){ return n + 1; });
+static_assert(std::ranges::equal(kArr | plus_one, {7, 3, 9, 5, 5, 3}));
+
+// Prints 1, 2, 3, 4, 5, 6.
+for (auto i : std::ranges::iota_view(1, 7)) {
+  std::cout << i << '\n';
+}
+```
+
+**Description:** Lightweight objects that represent iterable sequences.
+Provides facilities for lazy operations on ranges, along with composition into
+pipelines.
+
+**Documentation:**
+[Ranges library](https://en.cppreference.com/w/cpp/ranges)
+
+**Notes:**
+*** promo
+Banned in Chrome due to questions about the design, impact on build time, and
+runtime performance.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/ZnIbkfJ0Glw)
+***
+
+### std::to_address <sup>[banned]</sup>
+
+```c++
+std::vector<int> numbers;
+int* i = std::to_address(numbers.begin());
+```
+
+**Description:** Converts a pointer-like object to a pointer, even if the
+pointer does not refer to a constructed object (in which case an expression like
+`&*p` is UB).
+
+**Documentation:**
+[`std::to_address`](https://en.cppreference.com/w/cpp/memory/to_address)
+
+**Notes:**
+*** promo
+Banned because it is not guaranteed to be SFINAE-compatible. Use
+base::to_address, which does guarantee this.
+***
+
 ### &lt;syncstream&gt; <sup>[banned]</sup>
 
 ```c++
@@ -1537,25 +1629,6 @@ Requires significant support code and planning around API and migration.
 [Prototyping bug](https://crbug.com/1403840)
 ***
 
-### [[likely]], [[unlikely]] <sup>[tbd]</sup>
-
-```c++
-if (n > 0) [[likely]] {
-  return 1;
-}
-```
-
-**Description:** Tells the optimizer that a particular codepath is more or less
-likely than an alternative.
-
-**Documentation:**
-[C++ attribute: `likely`, `unlikely`](https://en.cppreference.com/w/cpp/language/attributes/likely)
-
-**Notes:**
-*** promo
-[Will be allowed soon](https://crbug.com/1414620); for now, use `[UN]LIKELY`.
-***
-
 ## C++20 TBD Library Features {#library-review-20}
 
 The following C++20 library features are not allowed in the Chromium codebase.
@@ -1593,28 +1666,6 @@ std::cout << std::format("Hello {}!\n", "world");
 *** promo
 Has both pros and cons compared to `absl::StrFormat` (which we don't yet use).
 Migration would be nontrivial.
-***
-
-### &lt;ranges&gt; <sup>[tbd]</sup>
-
-```c++
-constexpr int arr[] = {6, 2, 8, 4, 4, 2};
-constexpr auto plus_one = std::views::transform([](int n){ return n + 1; });
-static_assert(std::ranges::equal(arr | plus_one, {7, 3, 9, 5, 5, 3}));
-```
-
-**Description:** Generalizes algorithms using range views, which are lightweight
-objects that represent iterable sequences. Provides facilities for eager and
-lazy operations on ranges, along with composition into pipelines.
-
-**Documentation:**
-[Ranges library](https://en.cppreference.com/w/cpp/ranges)
-
-**Notes:**
-*** promo
-Significant concerns expressed internally. We should consider whether there are
-clearly-safe pieces to allow (e.g. to replace `base/ranges/algorithm.h`) and
-engage with the internal library team.
 ***
 
 ### &lt;source_location&gt; <sup>[tbd]</sup>
@@ -1692,13 +1743,36 @@ Banned since workaround for lack of RTTI
 `std::any`.
 ***
 
+### Attributes <sup>[banned]</sup>
+
+```c++
+T* data() ABSL_ATTRIBUTE_LIFETIME_BOUND { return data_; }
+ABSL_ATTRIBUTE_NO_TAIL_CALL ReturnType Loop();
+struct S { bool b; int32_t i; } ABSL_ATTRIBUTE_PACKED;
+```
+
+**Description:** Cross-platform macros to expose compiler-specific
+functionality.
+
+**Documentation:** [attributes.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/attributes.h)
+
+**Notes:**
+*** promo
+Long names discourage use. Use standardized attributes over macros where
+possible, and otherwise prefer shorter alternatives in
+`base/compiler_specific.h`.
+
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/lVQOJTng1RU)
+***
+
 ### bind_front <sup>[banned]</sup>
 
 ```c++
 absl::bind_front
 ```
 
-**Description:** Binds the first N arguments of an invocable object and stores them by value.
+**Description:** Binds the first N arguments of an invocable object and stores
+them by value.
 
 **Documentation:**
 *   [bind_front.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/functional/bind_front.h)
@@ -1797,11 +1871,28 @@ invocable type.
   conversion will trigger a `static_assert` requesting additional feedback for
   use cases where this conversion would be valuable.
 - *Important:* `base::FunctionRef` must not outlive the function call. Like
-  `base::StringPiece`, `base::FunctionRef` is a *non-owning* reference. Using a
+  `std::string_view`, `base::FunctionRef` is a *non-owning* reference. Using a
   `base::FunctionRef` as a return value or class field is dangerous and likely
   to result in lifetime bugs.
 
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/JVN4E4IIYA0)
+***
+
+### Optional <sup>[banned]</sup>
+
+```c++
+absl::optional<int> Func(bool b) {
+  return b ? absl::make_optional(1) : abl::nullopt;
+}
+```
+
+**Description:** Early adaptation of C++17 `std::optional`.
+
+**Documentation:** [std::optional](https://en.cppreference.com/w/cpp/utility/optional)
+
+**Notes:**
+*** promo
+Superseded by `std::optional`. Use `std::optional` instead.
 ***
 
 ### Random <sup>[banned]</sup>
@@ -1854,24 +1945,6 @@ explaining why such a value is not present.
 Overlaps with `base::expected`.
 ***
 
-### String Formatting <sup>[banned]</sup>
-
-```c++
-absl::StrFormat
-```
-
-**Description:** A typesafe replacement for the family of printf() string
-formatting routines.
-
-**Documentation:**
-[String Formatting](https://abseil.io/docs/cpp/guides/format)
-
-**Notes:**
-*** promo
-Overlaps with `base::StringPrintf()`. See
-[migration bug](https://bugs.chromium.org/p/chromium/issues/detail?id=1371963).
-***
-
 ### string_view <sup>[banned]</sup>
 
 ```c++
@@ -1912,7 +1985,8 @@ Overlaps with `base/strings`. We
 [should re-evalute](https://bugs.chromium.org/p/chromium/issues/detail?id=1371966)
 when we've
 [migrated](https://bugs.chromium.org/p/chromium/issues/detail?id=691162) from
-`base::StringPiece` to `std::string_view`.
+`base::StringPiece` to `std::string_view`. Also note that `absl::StrFormat()` is
+not considered part of this group, and is explicitly allowed.
 ***
 
 ### Synchronization <sup>[banned]</sup>

@@ -198,10 +198,31 @@ export function blobToImage(blob: Blob): Promise<HTMLImageElement> {
 }
 
 /**
- * Gets default facing according to device mode.
+ * Gets the facing preference according to device mode and lid state. The lower
+ * the index, the more preferred.
  */
-export function getDefaultFacing(): Facing {
-  return state.get(state.State.TABLET) ? Facing.ENVIRONMENT : Facing.USER;
+export function getFacingPreference(): Facing[] {
+  if (isLidClosed()) {
+    return [Facing.EXTERNAL, Facing.ENVIRONMENT, Facing.USER];
+  }
+  if (state.get(state.State.TABLET)) {
+    return [Facing.ENVIRONMENT, Facing.USER, Facing.EXTERNAL];
+  }
+  return [Facing.USER, Facing.ENVIRONMENT, Facing.EXTERNAL];
+}
+
+/**
+ * Checks if the lid is closed or not.
+ */
+export function isLidClosed(): boolean {
+  return state.get(state.State.LID_CLOSED);
+}
+
+/**
+ * Checks if the sw privacy switch is on.
+ */
+export function isSWPrivacySwitchOn(): boolean {
+  return state.get(state.State.SW_PRIVACY_SWITCH_ON);
 }
 
 /**

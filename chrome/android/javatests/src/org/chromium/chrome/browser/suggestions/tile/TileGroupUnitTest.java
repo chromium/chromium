@@ -31,23 +31,23 @@ import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -71,8 +71,6 @@ public class TileGroupUnitTest {
     private static final int MAX_TILES_TO_FETCH = 4;
     private static final int TILE_TITLE_LINES = 1;
     private static final String[] URLS = {"https://www.google.com/", "https://tellmedadjokes.com/"};
-
-    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Mock private TileGroup.Observer mTileGroupObserver;
     @Mock private TileGroup.Delegate mTileGroupDelegate;
@@ -108,6 +106,14 @@ public class TileGroupUnitTest {
                         })
                 .when(mTileGroupDelegate)
                 .setMostVisitedSitesObserver(any(MostVisitedSites.Observer.class), anyInt());
+
+        FeatureList.TestValues testValues = new TestValues();
+        // testValues is set to avoid the FeatureListJni assertion check in tests.
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2,
+                "prerender_new_tab_page_on_touch_trigger",
+                "0");
+        FeatureList.setTestValues(testValues);
     }
 
     @Test
@@ -333,7 +339,7 @@ public class TileGroupUnitTest {
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
-        MostVisitedTilesGridLayout layout = setupView();
+        MostVisitedTilesLayout layout = setupView();
 
         // Initialise the internal list of tiles
         mMostVisitedSites.setTileSuggestions(URLS);
@@ -361,7 +367,7 @@ public class TileGroupUnitTest {
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
-        MostVisitedTilesGridLayout layout = setupView();
+        MostVisitedTilesLayout layout = setupView();
 
         // Initialise the internal list of tiles
         mMostVisitedSites.setTileSuggestions(URLS[0], URLS[1], URLS[0]);
@@ -389,7 +395,7 @@ public class TileGroupUnitTest {
         mMostVisitedSites.setTileSuggestions(URLS);
 
         // Initialise the layout with views whose URLs don't match the ones of the new tiles.
-        MostVisitedTilesGridLayout layout = setupView();
+        MostVisitedTilesLayout layout = setupView();
         SuggestionsTileView view1 = mSuggestionsTileView1;
         layout.addView(view1);
 
@@ -420,7 +426,7 @@ public class TileGroupUnitTest {
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
         // Initialise the layout with views whose URLs match the ones of the new tiles.
-        MostVisitedTilesGridLayout layout = new MostVisitedTilesGridLayout(mContext, null);
+        MostVisitedTilesLayout layout = new MostVisitedTilesLayout(mContext, null);
         SuggestionsTileView view1 = mSuggestionsTileView1;
         when(view1.getData()).thenReturn(sites.get(0));
         layout.addView(view1);
@@ -535,12 +541,12 @@ public class TileGroupUnitTest {
         verify(mTileGroupDelegate).onLoadingComplete(any());
     }
 
-    private MostVisitedTilesGridLayout setupView() {
-        return new MostVisitedTilesGridLayout(mContext, null);
+    private MostVisitedTilesLayout setupView() {
+        return new MostVisitedTilesLayout(mContext, null);
     }
 
     private void refreshData(TileGroup tileGroup) {
-        MostVisitedTilesGridLayout layout = setupView();
+        MostVisitedTilesLayout layout = setupView();
         refreshData(tileGroup, layout);
     }
 

@@ -1,147 +1,143 @@
-// Copyright 2014 The Chromium Authors
+// Copyright (c) 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class Popup {
-  constructor() {
-    /** @type {string} */
-    this.site;
+var site;
+var key1;
+var key2;
 
-    /** @type {string} */
-    this.key1;
-
-    /** @type {string} */
-    this.key2;
-
-    this.init();
-  }
-
-  /** @param {number} value */
-  setSchemeRadio(value) {
-    const radios = document.querySelectorAll('input[name="scheme"]');
-    for (let i = 0; i < radios.length; i++) {
-      radios[i].checked = (radios[i].value == value);
-      radios[i].disabled = !Storage.enabled;
-    }
-  }
-
-  update() {
-    document.body.className = Storage.enabled ? '' : 'disabled';
-
-    if (Storage.enabled) {
-      $('title').innerText = chrome.i18n.getMessage('highcontrast_enabled');
-      $('toggle').innerHTML = '<b>' +
-          chrome.i18n.getMessage('highcontrast_disable') + '</b><br>' +
-          '<span class="kb">(' + this.key1 + ')</span>';
-      $('subcontrols').style.display = 'block';
-    } else {
-      $('title').innerText = chrome.i18n.getMessage('highcontrast_disabled');
-      $('toggle').innerHTML = '<b>' +
-          chrome.i18n.getMessage('highcontrast_enable') + '</b><br>' +
-          '<span class="kb">(' + this.key1 + ')</span>';
-      $('subcontrols').style.display = 'none';
-    }
-
-    if (this.site) {
-      const scheme = Storage.getSiteScheme(this.site);
-      this.setSchemeRadio(scheme);
-      $('make_default').disabled = (scheme == Storage.scheme);
-    } else {
-      this.setSchemeRadio(Storage.scheme);
-    }
-    if (Storage.enabled) {
-      document.documentElement.setAttribute(
-          'hc',
-          this.site ? 'a' + Storage.getSiteScheme(this.site) :
-                      'a' + Storage.scheme);
-    } else {
-      document.documentElement.setAttribute('hc', 'a0');
-    }
-    chrome.runtime.sendMessage({updateTabs: true});
-  }
-
-  /** @param {number} value */
-  onSchemeChange(value) {
-    if (this.site) {
-      Storage.setSiteScheme(this.site, value);
-    } else {
-      Storage.scheme = value;
-    }
-  }
-
-  onToggle() {
-    Storage.enabled = !Storage.enabled;
-    this.update();
-  }
-
-  onForget() {
-    Storage.resetSiteSchemes();
-    this.update();
-  }
-
-  onMakeDefault() {
-    Storage.scheme = Storage.getSiteScheme(this.site);
-    this.update();
-  }
-
-  addRadioListeners() {
-    const radios = document.querySelectorAll('input[name="scheme"]');
-    for (let i = 0; i < radios.length; i++) {
-      radios[i].addEventListener('change', (event) => {
-        this.onSchemeChange(Number(event.target.value));
-      }, false);
-      radios[i].addEventListener('click', (event) => {
-        this.onSchemeChange(Number(event.target.value));
-      }, false);
-    }
-  }
-
-  init() {
-    const i18nElements = document.querySelectorAll('*[i18n-content]');
-    for (let i = 0; i < i18nElements.length; i++) {
-      const elem = i18nElements[i];
-      const msg = elem.getAttribute('i18n-content');
-      elem.innerHTML = chrome.i18n.getMessage(msg);
-    }
-
-    this.addRadioListeners();
-    $('toggle').addEventListener('click', this.onToggle.bind(this), false);
-    $('make_default')
-        .addEventListener('click', this.onMakeDefault.bind(this), false);
-    $('forget').addEventListener('click', this.onForget.bind(this), false);
-    if (navigator.appVersion.indexOf('Mac') != -1) {
-      this.key1 = '&#x2318;+Shift+F11';
-      this.key2 = '&#x2318;+Shift+F12';
-    } else {
-      this.key1 = 'Shift+F11';
-      this.key2 = 'Shift+F12';
-    }
-
-    chrome.windows.getLastFocused({'populate': true}, (window) => {
-      for (let i = 0; i < window.tabs.length; i++) {
-        const tab = window.tabs[i];
-        if (tab.active) {
-          if (isDisallowedUrl(tab.url)) {
-            $('scheme_title').innerText =
-                chrome.i18n.getMessage('highcontrast_default');
-            $('make_default').style.display = 'none';
-          } else {
-            this.site = siteFromUrl(tab.url);
-            $('scheme_title').innerHTML = chrome.i18n.getMessage(
-                'highcontrast_',
-                '<b>' + this.site + '</b>:<br>' +
-                    '<span class="kb">(' + this.key2 + ')</span>');
-            $('make_default').style.display = 'block';
-          }
-          this.update();
-          return;
-        }
-      }
-      this.site = 'unknown site';
-      this.update();
-    });
+function setRadio(name, value) {
+  var radios = document.querySelectorAll('input[name="' + name + '"]');
+  for (var i = 0; i < radios.length; i++) {
+    radios[i].checked = (radios[i].value == value);
+    radios[i].disabled = !getEnabled();
   }
 }
 
-window.addEventListener('load', () => new Popup(), false);
-Storage.initialize();
+function update() {
+  document.body.className = getEnabled() ? '' : 'disabled';
+
+  if (getEnabled()) {
+    $('title').innerText = chrome.i18n.getMessage('highcontrast_enabled');
+    $('toggle').innerHTML =
+        '<b>' + chrome.i18n.getMessage('highcontrast_disable') + '</b><br>' +
+        '<span class="kb">(' + key1 + ')</span>';
+    $('subcontrols').style.display = 'block';
+  } else {
+    $('title').innerText = chrome.i18n.getMessage('highcontrast_disabled');
+    $('toggle').innerHTML =
+        '<b>' + chrome.i18n.getMessage('highcontrast_enable') + '</b><br>' +
+        '<span class="kb">(' + key1 + ')</span>';
+    $('subcontrols').style.display = 'none';
+  }
+
+  setRadio('keyaction', getKeyAction());
+  if (site) {
+    setRadio('scheme', getSiteScheme(site));
+    $('make_default').disabled = (getSiteScheme(site) == getDefaultScheme());
+  } else {
+    setRadio('scheme', getDefaultScheme());
+  }
+  if (getEnabled()) {
+    document.documentElement.setAttribute(
+        'hc',
+        site ? 'a' + getSiteScheme(site) : 'a' + getDefaultScheme());
+  } else {
+    document.documentElement.setAttribute('hc', 'a0');
+  }
+}
+
+function onToggle() {
+  setEnabled(!getEnabled());
+  update();
+}
+
+function onForget() {
+  resetSiteSchemes();
+  update();
+}
+
+function onRadioChange(name, value) {
+  switch (name) {
+    case 'keyaction':
+      setKeyAction(value);
+      break;
+    case 'apply':
+      setApply(value);
+      break;
+    case 'scheme':
+      if (site) {
+        setSiteScheme(site, value);
+      } else {
+        setDefaultScheme(value);
+      }
+      break;
+  }
+  update();
+}
+
+function onMakeDefault() {
+  setDefaultScheme(getSiteScheme(site));
+  update();
+}
+
+function addRadioListeners(name) {
+  var radios = document.querySelectorAll('input[name="' + name + '"]');
+  for (var i = 0; i < radios.length; i++) {
+    radios[i].addEventListener('change', function(evt) {
+      onRadioChange(evt.target.name, evt.target.value);
+    }, false);
+    radios[i].addEventListener('click', function(evt) {
+      onRadioChange(evt.target.name, evt.target.value);
+    }, false);
+  }
+}
+
+function init() {
+  var i18nElements = document.querySelectorAll('*[i18n-content]');
+  for (var i = 0; i < i18nElements.length; i++) {
+    var elem = i18nElements[i];
+    var msg = elem.getAttribute('i18n-content');
+    elem.innerHTML = chrome.i18n.getMessage(msg);
+  }
+
+  addRadioListeners('keyaction');
+  addRadioListeners('apply');
+  addRadioListeners('scheme');
+  $('toggle').addEventListener('click', onToggle, false);
+  $('make_default').addEventListener('click', onMakeDefault, false);
+  $('forget').addEventListener('click', onForget, false);
+  if (navigator.appVersion.indexOf('Mac') != -1) {
+    key1 = '&#x2318;+Shift+F11';
+    key2 = '&#x2318;+Shift+F12';
+  } else {
+    key1 = 'Shift+F11';
+    key2 = 'Shift+F12';
+  }
+
+  chrome.windows.getLastFocused({'populate': true}, function(window) {
+    for (var i = 0; i < window.tabs.length; i++) {
+      var tab = window.tabs[i];
+      if (tab.active) {
+        if (isDisallowedUrl(tab.url)) {
+          $('scheme_title').innerText =
+              chrome.i18n.getMessage('highcontrast_default');
+          $('make_default').style.display = 'none';
+        } else {
+          site = siteFromUrl(tab.url);
+          $('scheme_title').innerHTML =
+              chrome.i18n.getMessage('highcontrast_',
+                  '<b>' + site + '</b>:<br>' +
+                  '<span class="kb">(' + key2 + ')</span>');
+          $('make_default').style.display = 'block';
+        }
+        update();
+        return;
+      }
+    }
+    site = 'unknown site';
+    update();
+  });
+}
+
+window.addEventListener('load', init, false);

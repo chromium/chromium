@@ -119,6 +119,9 @@ CONSOLE: service-workers/service-worker/resources/clients-get-other-origin.html
 CONSOLE: webrtc/tools/*
 CONSOLE: webaudio/resources/audit.js:41
 
+# Intentional use of console.*
+CONSOLE: infrastructure/webdriver/bidi/subscription.html
+
 # use of console in a public library - annotation-model ensures
 # it is not actually used
 CONSOLE: annotation-model/scripts/ajv.min.js
@@ -162,6 +165,9 @@ SET TIMEOUT: custom-elements/scoped-registry/scoped-registry-define-upgrade-crit
 SET TIMEOUT: encrypted-media/polyfill/chrome-polyfill.js
 SET TIMEOUT: encrypted-media/polyfill/clearkey-polyfill.js
 SET TIMEOUT: encrypted-media/scripts/playback-temporary-events.js
+SET TIMEOUT: fedcm/support/fedcm-iframe.html
+SET TIMEOUT: fedcm/support/fedcm/disconnect-iframe.html
+SET TIMEOUT: fetch/fetch-later/resources/fetch-later-helper.js
 SET TIMEOUT: fetch/metadata/resources/helper.sub.js
 SET TIMEOUT: fetch/metadata/resources/message-opener.html
 SET TIMEOUT: fenced-frame/resources/history-length-fenced-navigations-replace-do-not-contribute-to-joint-inner.html
@@ -276,7 +282,6 @@ SET TIMEOUT: shadow-dom/scroll-to-the-fragment-in-shadow-tree.html
 SET TIMEOUT: shadow-dom/slotchange-event.html
 SET TIMEOUT: trusted-types/block-string-assignment-to-DOMWindowTimers-setTimeout-setInterval.html
 SET TIMEOUT: trusted-types/DOMWindowTimers-setTimeout-setInterval.html
-SET TIMEOUT: pending-beacon/resources/pending_beacon-helper.js
 SET TIMEOUT: user-timing/*
 SET TIMEOUT: web-animations/crashtests/reparent-animating-element-002.html
 SET TIMEOUT: web-animations/timing-model/animations/*
@@ -294,8 +299,6 @@ SET TIMEOUT: workers/*
 SET TIMEOUT: xhr/resources/init.htm
 SET TIMEOUT: xhr/resources/xmlhttprequest-timeout.js
 SET TIMEOUT: fenced-frame/resolve-to-config-promise.https.html
-SET TIMEOUT: credential-management/support/fedcm-iframe.html
-SET TIMEOUT: credential-management/support/fedcm/disconnect-iframe.html
 
 # generate_tests implementation and sample usage
 GENERATE_TESTS: resources/test/tests/functional/generate-callback.html
@@ -378,6 +381,7 @@ SET TIMEOUT: css/css-fonts/font-display/font-display-change-ref.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-feature-policy-01.tentative.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-feature-policy-02.tentative.html
 SET TIMEOUT: css/css-fonts/font-display/font-display-preload.html
+SET TIMEOUT: css/css-view-transitions/no-painting-while-render-blocked.html
 SET TIMEOUT: document-policy/font-display/override-to-optional.tentative.html
 SET TIMEOUT: feature-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
 SET TIMEOUT: permissions-policy/experimental-features/resources/focus-without-user-activation-iframe-tentative.html
@@ -388,7 +392,6 @@ SET TIMEOUT: html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.ht
 SET TIMEOUT: html/dom/documents/dom-tree-accessors/Document.currentScript.html
 SET TIMEOUT: html/webappapis/dynamic-markup-insertion/opening-the-input-stream/crbug-583445-regression.window.js
 SET TIMEOUT: html/webappapis/timers/*
-SET TIMEOUT: orientation-event/resources/orientation-event-helpers.js
 SET TIMEOUT: portals/history/resources/portal-harness.js
 SET TIMEOUT: requestidlecallback/deadline-after-expired-timer.html
 SET TIMEOUT: resources/*
@@ -405,7 +408,7 @@ SET TIMEOUT: speculation-rules/prerender/resources/media-autoplay-attribute.html
 SET TIMEOUT: speculation-rules/prerender/resources/media-play.html
 SET TIMEOUT: html/browsers/browsing-the-web/back-forward-cache/timers.html
 SET TIMEOUT: dom/abort/crashtests/timeout-close.html
-SET TIMEOUT: storage-access-api/storage-access-beyond-cookies.locks.tentative.sub.https.window.js
+SET TIMEOUT: storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.js
 
 # setTimeout use in reftests
 SET TIMEOUT: acid/acid3/test.html
@@ -580,6 +583,8 @@ MISSING-LINK: css/cssom-view/scrollTop-display-change.html
 
 # TODO https://github.com/web-platform-tests/wpt/issues/5770
 MISSING-LINK: css/css-highlight-api/idlharness.window.js
+MISSING-LINK: css/css-highlight-api/historical.window.js
+MISSING-LINK: css/cssom/cssstyledeclaration-csstext-setter.window.js
 MISSING-LINK: css/geometry/*.worker.js
 MISSING-LINK: css/geometry/*.any.js
 MISSING-LINK: css/filter-effects/*.any.js
@@ -587,7 +592,6 @@ MISSING-LINK: css/filter-effects/*.any.js
 # Tests that use WebKit/Blink testing APIs
 LAYOUTTESTS APIS: import-maps/data-driven/resources/test-helper-iframe.js
 LAYOUTTESTS APIS: resources/chromium/enable-hyperlink-auditing.js
-LAYOUTTESTS APIS: resources/chromium/generic_sensor_mocks.js
 LAYOUTTESTS APIS: resources/chromium/webxr-test.js
 LAYOUTTESTS APIS: webxr/resources/webxr_util.js
 
@@ -607,17 +611,15 @@ WEB-PLATFORM.TEST:web-bundle/subresource-loading/resources/*.js
 # https://github.com/web-platform-tests/wpt/issues/16455
 # Please consult with ecosystem-infra@chromium.org before adding more.
 MISSING DEPENDENCY: credential-management/support/otpcredential-helper.js
-MISSING DEPENDENCY: credential-management/support/fedcm-mock.js
+MISSING DEPENDENCY: fedcm/support/fedcm-mock.js
 MISSING DEPENDENCY: resources/chromium/content-index-helpers.js
 MISSING DEPENDENCY: resources/chromium/contacts_manager_mock.js
 MISSING DEPENDENCY: resources/chromium/web-bluetooth-test.js
 MISSING DEPENDENCY: resources/chromium/webusb-test.js
 MISSING DEPENDENCY: resources/chromium/fake-serial.js
 MISSING DEPENDENCY: resources/chromium/fake-hid.js
-MISSING DEPENDENCY: resources/chromium/generic_sensor_mocks.js
 MISSING DEPENDENCY: resources/chromium/mock-battery-monitor.js
 MISSING DEPENDENCY: resources/chromium/mock-barcodedetection.js
-MISSING DEPENDENCY: resources/chromium/mock-direct-sockets.js
 MISSING DEPENDENCY: resources/chromium/mock-facedetection.js
 MISSING DEPENDENCY: resources/chromium/mock-idle-detection.js
 MISSING DEPENDENCY: resources/chromium/mock-imagecapture.js
@@ -701,6 +703,17 @@ TESTHARNESS-IN-OTHER-TYPE: svg/svg-in-svg/svg-in-svg-circular-filter-reference-c
 # Adding the testharnessreport.js script causes the test to never complete.
 MISSING-TESTHARNESSREPORT: accessibility/crashtests/computed-node-checked.html
 
+# Existing manual tests with references
+REFERENCE-IN-OTHER-TYPE: css/CSS2/backgrounds/background-root-012a.xht
+REFERENCE-IN-OTHER-TYPE: css/CSS2/backgrounds/background-root-013a.xht
+REFERENCE-IN-OTHER-TYPE: css/CSS2/backgrounds/background-root-014a.xht
+REFERENCE-IN-OTHER-TYPE: css/CSS2/cascade/html-precedence-004.xht
+REFERENCE-IN-OTHER-TYPE: css/css-flexbox/css-flexbox-height-animation-stretch.html
+REFERENCE-IN-OTHER-TYPE: css/css-transforms/css-transform-scale-001-manual.html
+
+# Needs control of page size
+REFERENCE-IN-OTHER-TYPE: css/css-multicol/moz-multicol3-column-balancing-break-inside-avoid-1.html
+
 PRINT STATEMENT: webdriver/tests/bidi/browsing_context/print/*
 PRINT STATEMENT: webdriver/tests/classic/print/*
 PRINT STATEMENT: webdriver/tests/support/fixtures_bidi.py
@@ -732,6 +745,7 @@ SET TIMEOUT: editing/crashtests/make-editable-div-inline-and-set-contenteditable
 SET TIMEOUT: editing/crashtests/outdent-across-svg-boundary.html
 SET TIMEOUT: editing/crashtests/textarea-will-be-blurred-by-focus-event-listener.html
 SET TIMEOUT: mathml/crashtests/mozilla/*
+SET TIMEOUT: selection/crashtests/selection-modify-line-boundary-around-empty-details.html
 PARSE-FAILED: mathml/crashtests/mozilla/289180-1.xml
 
 # Invalid HTML syntax /> on non-void elements
@@ -746,5 +760,61 @@ HTML INVALID SYNTAX: domparsing/DOMParser-parseFromString-xml-parsererror.html
 HTML INVALID SYNTAX: domparsing/XMLSerializer-serializeToString.html
 HTML INVALID SYNTAX: html/canvas/element/manual/unclosed-canvas-4.htm
 HTML INVALID SYNTAX: html/syntax/parsing/unclosed-svg-script.html
+HTML INVALID SYNTAX: mathml/crashtests/mozilla/411603-1.html
 HTML INVALID SYNTAX: quirks/percentage-height-calculation.html
 HTML INVALID SYNTAX: trusted-types/TrustedTypePolicyFactory-getAttributeType-namespace.html
+
+# Tests which include testdriver.js but aren't testharness.js tests
+TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-grid/grid-model/grid-layout-stale-001.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-grid/grid-model/grid-layout-stale-002.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-scroll-anchoring/fullscreen-crash.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-shadow-parts/interaction-with-nested-pseudo-class.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-text-decor/invalidation/text-decoration-thickness.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-view-transitions/hit-test-unpainted-element.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: css/css-view-transitions/hit-test-unrelated-element.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: css/selectors/remove-hovered-element.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-IndexedDB-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-getUniqueId-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-isSameEntry-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-postMessage-BroadcastChannel-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-postMessage-Error-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-postMessage-MessagePort-frames-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-postMessage-MessagePort-windows-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-postMessage-MessagePort-workers-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-postMessage-frames-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-postMessage-windows-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-postMessage-workers-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemBaseHandle-remove-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemDirectoryHandle-getDirectoryHandle-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemDirectoryHandle-getFileHandle-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemDirectoryHandle-iteration-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemDirectoryHandle-move-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemDirectoryHandle-partitioned-manual.https.tentative.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemDirectoryHandle-removeEntry-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemDirectoryHandle-resolve-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemFileHandle-create-sync-access-handle-manual.https.tentative.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemFileHandle-getFile-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemFileHandle-move-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemFileHandle-partitioned-manual.https.tentative.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemWritableFileStream-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemWritableFileStream-piped-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemWritableFileStream-write-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showDirectoryPicker-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showOpenFilePicker-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showSaveFilePicker-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/crashtests/chrome-1312699.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/crashtests/content-visibility-crash.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/rendering/backdrop-iframe.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/rendering/backdrop-inherit.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/rendering/backdrop-object.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/rendering/fullscreen-root-fills-page.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/crashtests/fieldset-middleclick.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/testdriver/click_child_crossorigin.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/testdriver/click_child_testdriver.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: mediacapture-streams/MediaStreamTrack-end-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-payment-method-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-address-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/change-shipping-option-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/payment-request-event-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: payment-handler/supports-shipping-contact-delegation-manual.https.html
+TESTDRIVER-IN-UNSUPPORTED-TYPE: shadow-dom/crashtests/move-to-new-tree-1343016.html

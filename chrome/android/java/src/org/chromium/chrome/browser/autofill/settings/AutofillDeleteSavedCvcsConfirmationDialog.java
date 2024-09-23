@@ -35,7 +35,7 @@ public class AutofillDeleteSavedCvcsConfirmationDialog {
                 new SimpleModalDialogController(
                         mModalDialogManager,
                         result -> {
-                            // TODO(crbug.com/1497807): Add a metric when user deletes saved CVCs.
+                            // TODO(crbug.com/40287181): Add a metric when user deletes saved CVCs.
                             mResultHandler.onResult(
                                     result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                         });

@@ -1,14 +1,13 @@
+
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
-<!-- This file is generated using google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py. Do not modify it manually. -->
+<!-- This file is generated using
+http://go/chrome-search-engines-marketing-snippets-script.
+Do not modify it manually. -->
 <translationbundle lang="no">
-  <translation id="IDS_BING_SEARCH_DESCRIPTION">Raske, nøyaktige og private søk fra Microsoft</translation>
-  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Vi sporer deg ikke. Personvern gjort enkelt.</translation>
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Finn det du leter etter, med verdens mest brukte søkemotor.</translation>
-  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Raskt og enkelt søk</translation>
-  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Sjølvstendig søkjemotor, heilt utan sporing</translation>
-  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Hjelp til med å stanse plastikkforurensningen i havet med OceanHero.</translation>
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Drevet av ChatGPTs GPT-4</translation>
+  <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Plant trær mens du søker på nettet. Over 200 millioner plantede trær.</translation>
+  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Finn det du trenger med Google</translation>
+  <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Søkene dine renser havene og strender for plast.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">En søkemotor som beskytter ditt personvern.</translation>
-  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Rask og sikker søking etter nettsteder, bilder og videoer</translation>
-  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Nettsøkemotor som tar sikte på å dele annonseinntekter med skaperne.</translation>
 </translationbundle>

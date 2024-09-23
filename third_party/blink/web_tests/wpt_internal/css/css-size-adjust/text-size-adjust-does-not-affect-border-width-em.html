@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0" name="viewport">
+<meta name="assert" content="text-size-adjust should not affect border-width specified in em.">
+<link rel="help" href="https://drafts.csswg.org/css-size-adjust/#propdef-text-size-adjust">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script>
+  function runTest() {
+    // This should not be needed but is required to work around a bug in
+    // Chrome's old autosizer due to computed style being updated during layout.
+    // TODO(pdr): Remove this when b/340389272 launches.
+    const forceLayout = document.body.offsetHeight;
+
+    test(() => {
+      // 1em = 16px font-size
+      assert_equals(getComputedStyle(b_1_with_lh_16)['border-left-width'], '16px');
+    }, 'Resolved 1em border-left-width with specified 16px line-height and text-size-adjust: 150%');
+
+    test(() => {
+      const width = (b_1_with_lh_16.getBoundingClientRect().width - b_1_with_lh_16_child.getBoundingClientRect().width) / 2;
+      assert_equals(width, 16);
+    }, 'Actual 1em border-left-width with specified 16px line-height and text-size-adjust: 150%');
+
+    test(() => {
+      // 0.75em = 12px font-size
+      assert_equals(getComputedStyle(b_075_with_lh_16)['border-left-width'], '12px');
+    }, 'Resolved 0.75em border-left-width with specified 16px line-height and text-size-adjust: 150%');
+
+    test(() => {
+      const width = (b_075_with_lh_16.getBoundingClientRect().width - b_075_with_lh_16_child.getBoundingClientRect().width) / 2;
+      assert_equals(width, 12);
+    }, 'Actual 0.75em border-left-width with specified 16px line-height and text-size-adjust: 150%');
+
+    test(() => {
+      // 1em = 16px font-size
+      assert_equals(getComputedStyle(b_1_with_fs_16)['border-left-width'], '16px');
+    }, 'Resolved 1em border-left-width with specified 16px font-size and text-size-adjust: 150%');
+
+    test(() => {
+      const width = (b_1_with_fs_16.getBoundingClientRect().width - b_1_with_fs_16_child.getBoundingClientRect().width) / 2;
+      assert_equals(width, 16);
+    }, 'Actual 1em border-left-width with specified 16px font-size and text-size-adjust: 150%');
+
+    test(() => {
+      // 0.75em = 12px font-size
+      assert_equals(getComputedStyle(b_075_with_fs_16)['border-left-width'], '12px');
+    }, 'Resolved 0.75em border-left-width with specified 16px font-size and text-size-adjust: 150%');
+
+    test(() => {
+      const width = (b_075_with_fs_16.getBoundingClientRect().width - b_075_with_fs_16_child.getBoundingClientRect().width) / 2;
+      assert_equals(width, 12);
+    }, 'Actual 0.75em border-left-width with specified 16px font-size and text-size-adjust: 150%');
+  }
+</script>
+<body onload="runTest()">
+  <div id="b_1_with_lh_16" style="border: 1em solid black; line-height: 16px; text-size-adjust: 150%;">
+    <div id="b_1_with_lh_16_child">test</div>
+  </div>
+  <div id="b_075_with_lh_16" style="border: 0.75em solid black; line-height: 16px; text-size-adjust: 150%;">
+    <div id="b_075_with_lh_16_child">test</div>
+  </div>
+  <div id="b_1_with_fs_16" style="border: 1em solid black; font-size: 16px; text-size-adjust: 150%;">
+    <div id="b_1_with_fs_16_child">test</div>
+  </div>
+  <div id="b_075_with_fs_16" style="border: 0.75em solid black; font-size: 16px; text-size-adjust: 150%;">
+    <div id="b_075_with_fs_16_child">test</div>
+  </div>
+</body>

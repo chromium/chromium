@@ -46,7 +46,8 @@ struct WebFileHandlers : public Extension::ManifestData {
   // Return an enum type instead of the idl string type. This value is currently
   // set to `single-client` if it or nothing is provided, set to
   // `multiple-clients` if that's provided, or errors in any other case.
-  // TODO(crbug/1448893): Store enum instead of the string on manifest parse.
+  // TODO(crbug.com/40269541): Store enum instead of the string on manifest
+  // parse.
   static WebFileHandler::LaunchType GetLaunchType(
       const std::optional<std::string>& launch_type);
 
@@ -55,7 +56,7 @@ struct WebFileHandlers : public Extension::ManifestData {
 
   // Support for web file handlers, introduced in MV3 based on the web API named
   // `File Handling Explainer`.
-  // TODO(crbug/1179530): Remove after MV2 deprecation.
+  // TODO(crbug.com/40169582): Remove after MV2 deprecation.
   static bool SupportsWebFileHandlers(const Extension& extension);
 
   // Determine if this extension can bypass the permission dialog, e.g.

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 
-#include "chrome/browser/extensions/api/commands/command_service.h"
+#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"

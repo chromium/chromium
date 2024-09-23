@@ -32,7 +32,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -43,10 +46,11 @@ class CORE_EXPORT DOMWindowCSS : public ScriptWrappable {
 
  public:
   static bool supports(const ExecutionContext*,
-                       const String& property,
-                       const String& value);
-  static bool supports(const ExecutionContext*, const String& condition_text);
-  static String escape(const String& ident);
+                       const WTF::String& property,
+                       const WTF::String& value);
+  static bool supports(const ExecutionContext*,
+                       const WTF::String& condition_text);
+  static WTF::String escape(const WTF::String& ident);
 
  private:
   DOMWindowCSS() = default;

@@ -270,7 +270,7 @@ void LogPasswordProtectionVerdict(
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -393,7 +393,7 @@ void LogWarningAction(WarningUIType ui_type,
       }
       break;
     case WarningUIType::NOT_USED:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

@@ -17,7 +17,6 @@
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace base {
@@ -70,7 +69,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
     friend class RTCEncodedAudioStreamTransformer;
 
     base::Lock transformer_lock_;
-    raw_ptr<RTCEncodedAudioStreamTransformer, ExperimentalRenderer> transformer_
+    raw_ptr<RTCEncodedAudioStreamTransformer> transformer_
         GUARDED_BY(transformer_lock_);
   };
 

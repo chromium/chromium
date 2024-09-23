@@ -13,6 +13,8 @@
 #include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -32,14 +34,14 @@ DisplayChangeDialog::DisplayChangeDialog(
       on_accept_callback_(std::move(on_accept_callback)),
       on_cancel_callback_(std::move(on_cancel_callback)) {
   SetTitle(window_title);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_ASH_CONFIRM_BUTTON));
 
   SetAcceptCallback(base::BindOnce(&DisplayChangeDialog::OnConfirmButtonClicked,
                                    base::Unretained(this)));
   SetCancelCallback(base::BindOnce(&DisplayChangeDialog::OnCancelButtonClicked,
                                    base::Unretained(this)));
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBorder(views::CreateEmptyBorder(
@@ -48,6 +50,7 @@ DisplayChangeDialog::DisplayChangeDialog(
   label_ =
       AddChildView(std::make_unique<views::Label>(GetRevertTimeoutString()));
   label_->SetMultiLine(true);
+  label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   views::Widget* widget = CreateDialogWidget(
       this, nullptr,
@@ -72,7 +75,8 @@ void DisplayChangeDialog::OnCancelButtonClicked() {
   std::move(on_cancel_callback_).Run(/*display_was_removed=*/false);
 }
 
-gfx::Size DisplayChangeDialog::CalculatePreferredSize() const {
+gfx::Size DisplayChangeDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(350, 100);
 }
 

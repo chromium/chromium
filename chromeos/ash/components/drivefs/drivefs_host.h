@@ -44,6 +44,7 @@ class SyncingStatus;
 }  // namespace mojom
 
 class DriveFsBootstrapListener;
+class DriveFsSearchQuery;
 
 enum class SyncStatus {
   kNotFound,
@@ -106,6 +107,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
         mojom::DriveFsDelegate::ConnectToExtensionCallback callback) = 0;
     virtual const std::string GetMachineRootID() = 0;
     virtual void PersistMachineRootID(const std::string& id) = 0;
+    virtual void PersistNotification(
+        mojom::DriveFsNotificationPtr notification) = 0;
+    virtual void PersistSyncErrors(
+        mojom::MirrorSyncErrorListPtr error_list) = 0;
   };
 
   DriveFsHost(const base::FilePath& profile_path,
@@ -168,6 +173,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
 
   mojom::DriveFs* GetDriveFsInterface() const;
 
+  // Creates a `DriveFsSearchQuery` for the given query.
+  // Returns nullptr if DriveFS is not mounted.
+  std::unique_ptr<DriveFsSearchQuery> CreateSearchQuery(
+      mojom::QueryParametersPtr query);
   // Starts DriveFs search query and returns whether it will be
   // performed localy or remotely. Assumes DriveFS to be mounted.
   mojom::QueryParameters::QuerySource PerformSearch(

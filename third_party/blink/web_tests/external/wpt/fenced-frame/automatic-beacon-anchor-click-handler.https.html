@@ -16,7 +16,7 @@
 promise_test(async(t) => {
   const actions = new test_driver.Actions();
   const fencedframe = await attachFencedFrameContext(
-    {generator_api: 'fledge', automatic_beacon: true,
+    {generator_api: 'fledge', register_beacon: true,
      origin: get_host_info().HTTPS_REMOTE_ORIGIN});
   const new_url = new URL("resources/dummy.html", location.href);
   let beacon_event = {
@@ -52,7 +52,8 @@ promise_test(async(t) => {
                .pointerUp()
                .send();
 
-  await verifyBeaconData(beacon_event.eventType, beacon_event.eventData);
+  await verifyBeaconData(beacon_event.eventType, beacon_event.eventData,
+      get_host_info().HTTPS_REMOTE_ORIGIN);
 
   // Leaving this fenced frame around for subsequent tests can lead to
   // flakiness.

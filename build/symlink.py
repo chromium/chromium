@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 description = """
-Make a symlink and optionally touch a file (to handle dependencies).
+Make a symlink.
 """
 usage = "%prog [options] source[ source ...] linkname"
 epilog = """\
@@ -19,7 +19,7 @@ have the old contents.
 
 import errno
 import optparse
-import os.path
+import os
 import shutil
 import subprocess
 import sys
@@ -29,7 +29,6 @@ def Main(argv):
   parser = optparse.OptionParser(usage=usage, description=description,
                                  epilog=epilog)
   parser.add_option('-f', '--force', action='store_true')
-  parser.add_option('--touch')
 
   options, args = parser.parse_args(argv[1:])
   if len(args) < 2:
@@ -80,12 +79,6 @@ def Main(argv):
         subprocess.check_output(e.cmd, stderr=subprocess.STDOUT)
       else:
         raise
-
-
-  if options.touch:
-    os.makedirs(os.path.dirname(options.touch), exist_ok=True)
-    with open(options.touch, 'w'):
-      pass
 
 
 if __name__ == '__main__':

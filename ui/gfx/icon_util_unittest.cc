@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/gfx/icon_util.h"
 
 #include <stddef.h>
@@ -139,10 +144,9 @@ void IconUtilTest::CheckAllIconSizes(const base::FilePath& icon_filename,
     // Convert the PNG entry data back to a SkBitmap to ensure it's valid.
     ASSERT_GE(icon_data.length(),
               png_entry->dwImageOffset + png_entry->dwBytesInRes);
-    const unsigned char* png_bytes = reinterpret_cast<const unsigned char*>(
-        icon_data.data() + png_entry->dwImageOffset);
-    gfx::Image image = gfx::Image::CreateFrom1xPNGBytes(
-        png_bytes, png_entry->dwBytesInRes);
+    gfx::Image image =
+        gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(icon_data).subspan(
+            png_entry->dwImageOffset, png_entry->dwBytesInRes));
     SkBitmap bitmap = image.AsBitmap();
     EXPECT_EQ(256, bitmap.width());
     EXPECT_EQ(256, bitmap.height());

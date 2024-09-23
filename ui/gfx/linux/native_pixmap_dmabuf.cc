@@ -61,7 +61,7 @@ size_t NativePixmapDmaBuf::GetNumberOfPlanes() const {
 }
 
 bool NativePixmapDmaBuf::SupportsZeroCopyWebGPUImport() const {
-  // TODO(crbug.com/1258986): Figure out how to import multi-planar pixmap into
+  // TODO(crbug.com/40201271): Figure out how to import multi-planar pixmap into
   // WebGPU without copy.
   return false;
 }
@@ -82,7 +82,7 @@ bool NativePixmapDmaBuf::ScheduleOverlayPlane(
   return false;
 }
 
-gfx::NativePixmapHandle NativePixmapDmaBuf::ExportHandle() {
+gfx::NativePixmapHandle NativePixmapDmaBuf::ExportHandle() const {
   return gfx::CloneHandleForIPC(handle_);
 }
 

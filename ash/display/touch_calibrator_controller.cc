@@ -12,15 +12,19 @@
 #include "ash/shell.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/display/manager/touch_device_manager.h"
+#include "ui/display/display.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -31,8 +35,9 @@ void InitInternalTouchDeviceIds(std::set<int>& internal_touch_device_ids) {
   const std::vector<ui::TouchscreenDevice>& device_list =
       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices();
   for (const auto& touchscreen_device : device_list) {
-    if (touchscreen_device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
+    if (touchscreen_device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
       internal_touch_device_ids.insert(touchscreen_device.id);
+    }
   }
 }
 
@@ -57,8 +62,9 @@ gfx::Transform CalculateEventTransformer(int touch_device_id) {
   // If the touch device is not associated with any display. This may happen in
   // tests when the test does not setup the |ui::TouchDeviceTransform| before
   // generating a touch event.
-  if (previous_display_id == display::kInvalidDisplayId)
+  if (previous_display_id == display::kInvalidDisplayId) {
     return gfx::Transform();
+  }
 
   // Undo the event transformations that the previous display applied on the
   // event location. We want to store the raw event location information.
@@ -83,23 +89,37 @@ TouchCalibratorController::TouchCalibratorController()
 
 TouchCalibratorController::~TouchCalibratorController() {
   touch_calibrator_widgets_.clear();
+  already_mapped_display_ids_.clear();
   StopCalibrationAndResetParams();
 }
 
-void TouchCalibratorController::OnDisplayConfigurationChanged() {
+void TouchCalibratorController::OnDidApplyDisplayChanges() {
   touch_calibrator_widgets_.clear();
   StopCalibrationAndResetParams();
+
+  // Native touchscreen mapping state is not updated by
+  // |StopCalibrationAndResetParam| since it would generally move on to the next
+  // display afterwards. State must be reset in this case since display
+  // configuration has changed and the current mapping instantiation is no
+  // longer valid.
+  if (state_ == CalibrationState::kNativeCalibrationTouchscreenMapping) {
+    already_mapped_display_ids_.clear();
+    state_ = CalibrationState::kInactive;
+  }
 }
 
 void TouchCalibratorController::StartCalibration(
     const display::Display& target_display,
     bool is_custom_calibration,
     TouchCalibrationCallback opt_callback) {
-  state_ = is_custom_calibration ? CalibrationState::kCustomCalibration
-                                 : CalibrationState::kNativeCalibration;
+  if (state_ != CalibrationState::kNativeCalibrationTouchscreenMapping) {
+    state_ = is_custom_calibration ? CalibrationState::kCustomCalibration
+                                   : CalibrationState::kNativeCalibration;
+  }
 
-  if (opt_callback)
+  if (opt_callback) {
     opt_callback_ = std::move(opt_callback);
+  }
 
   target_display_ = target_display;
 
@@ -115,8 +135,9 @@ void TouchCalibratorController::StartCalibration(
   InitInternalTouchDeviceIds(internal_touch_device_ids_);
 
   // If this is a native touch calibration, then initialize the UX for it.
-  if (state_ == CalibrationState::kNativeCalibration) {
-    Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  if (state_ == CalibrationState::kNativeCalibration ||
+      state_ == CalibrationState::kNativeCalibrationTouchscreenMapping) {
+    Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 
     // Reset the calibration data.
     touch_point_quad_.fill(std::make_pair(gfx::Point(0, 0), gfx::Point(0, 0)));
@@ -126,8 +147,9 @@ void TouchCalibratorController::StartCalibration(
 
     for (const display::Display& display : displays) {
       bool is_primary_view = display.id() == target_display_.id();
-      touch_calibrator_widgets_[display.id()] =
-          TouchCalibratorView::Create(display, is_primary_view);
+      touch_calibrator_widgets_[display.id()] = TouchCalibratorView::Create(
+          display, is_primary_view,
+          state_ == CalibrationState::kNativeCalibrationTouchscreenMapping);
     }
   }
 
@@ -137,10 +159,56 @@ void TouchCalibratorController::StartCalibration(
   Shell::Get()->AddPreTargetHandler(this);
 }
 
-void TouchCalibratorController::StopCalibrationAndResetParams() {
-  if (!IsCalibrating())
+void TouchCalibratorController::StartNativeTouchscreenMappingExperience(
+    TouchCalibrationCallback opt_callback) {
+  state_ = CalibrationState::kNativeCalibrationTouchscreenMapping;
+  already_mapped_display_ids_.clear();
+  CalibrateNextDisplay();
+  opt_callback_all_displays_ = std::move(opt_callback);
+}
+
+void TouchCalibratorController::CalibrateNextDisplay() {
+  CHECK(state_ == CalibrationState::kNativeCalibrationTouchscreenMapping);
+
+  // Find the next external display to calibrate that we did not already handle.
+  const auto& active_displays =
+      Shell::Get()->display_manager()->active_display_list();
+  const display::Display* next_display_to_map = nullptr;
+  for (const auto& display : active_displays) {
+    if (display.IsInternal() ||
+        base::Contains(already_mapped_display_ids_, display.id())) {
+      continue;
+    }
+
+    next_display_to_map = &display;
+    break;
+  }
+
+  if (!next_display_to_map) {
+    state_ = CalibrationState::kInactive;
+    already_mapped_display_ids_.clear();
+    if (opt_callback_all_displays_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(opt_callback_all_displays_),
+                                    /*success=*/true));
+    }
+
+    for (const auto& it : touch_calibrator_widgets_) {
+      if (auto* touch_calibrator_view = views::AsViewClass<TouchCalibratorView>(
+              it.second->GetContentsView())) {
+        touch_calibrator_view->SkipToFinalState();
+      }
+    }
     return;
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  }
+
+  already_mapped_display_ids_.emplace(next_display_to_map->id());
+  StartCalibration(*next_display_to_map, /*is_custom_calibration=*/false,
+                   base::DoNothing());
+}
+
+void TouchCalibratorController::StopCalibrationAndResetParams() {
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
 
   Shell::Get()->touch_transformer_controller()->SetForCalibration(false);
 
@@ -149,13 +217,19 @@ void TouchCalibratorController::StopCalibrationAndResetParams() {
 
   // Transition all touch calibrator views to their final state for a graceful
   // exit if this is touch calibration with native UX.
-  if (state_ == CalibrationState::kNativeCalibration) {
-    for (const auto& it : touch_calibrator_widgets_)
-      static_cast<TouchCalibratorView*>(it.second->GetContentsView())
-          ->SkipToFinalState();
+  if (state_ == CalibrationState::kNativeCalibration ||
+      state_ == CalibrationState::kNativeCalibrationTouchscreenMapping) {
+    for (const auto& it : touch_calibrator_widgets_) {
+      if (auto* touch_calibrator_view = views::AsViewClass<TouchCalibratorView>(
+              it.second->GetContentsView())) {
+        touch_calibrator_view->SkipToFinalState();
+      }
+    }
   }
 
-  state_ = CalibrationState::kInactive;
+  if (state_ != CalibrationState::kNativeCalibrationTouchscreenMapping) {
+    state_ = CalibrationState::kInactive;
+  }
 
   if (opt_callback_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -193,8 +267,15 @@ void TouchCalibratorController::CompleteCalibration(
     opt_callback_.Reset();
   }
   StopCalibrationAndResetParams();
+
+  const bool in_native_touchscreen_mapping =
+      state_ == CalibrationState::kNativeCalibrationTouchscreenMapping;
   Shell::Get()->display_manager()->SetTouchCalibrationData(
-      target_display_.id(), pairs, display_size, target_device);
+      target_display_.id(), pairs, display_size, target_device,
+      /*apply_spatial_calibration=*/!in_native_touchscreen_mapping);
+  if (in_native_touchscreen_mapping) {
+    CalibrateNextDisplay();
+  }
 }
 
 bool TouchCalibratorController::IsCalibrating() const {
@@ -203,11 +284,18 @@ bool TouchCalibratorController::IsCalibrating() const {
 
 // ui::EventHandler:
 void TouchCalibratorController::OnKeyEvent(ui::KeyEvent* key) {
-  if (state_ != CalibrationState::kNativeCalibration)
+  if (state_ != CalibrationState::kNativeCalibration &&
+      state_ != CalibrationState::kNativeCalibrationTouchscreenMapping) {
     return;
+  }
   // Detect ESC key press.
-  if (key->type() == ui::ET_KEY_PRESSED && key->key_code() == ui::VKEY_ESCAPE)
+  if (key->type() == ui::EventType::kKeyPressed &&
+      key->key_code() == ui::VKEY_ESCAPE) {
     StopCalibrationAndResetParams();
+    if (state_ == CalibrationState::kNativeCalibrationTouchscreenMapping) {
+      CalibrateNextDisplay();
+    }
+  }
 
   key->StopPropagation();
 }
@@ -215,16 +303,18 @@ void TouchCalibratorController::OnKeyEvent(ui::KeyEvent* key) {
 void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
   if (!IsCalibrating())
     return;
-  if (touch->type() != ui::ET_TOUCH_RELEASED)
+  if (touch->type() != ui::EventType::kTouchReleased) {
     return;
+  }
   if (base::Time::Now() - last_touch_timestamp_ < kTouchIntervalThreshold)
     return;
   last_touch_timestamp_ = base::Time::Now();
 
   // If the touch event originated from a touch device that is associated with
   // the internal display, then ignore it.
-  if (internal_touch_device_ids_.count(touch->source_device_id()))
+  if (internal_touch_device_ids_.count(touch->source_device_id())) {
     return;
+  }
 
   if (touch_device_id_ == ui::InputDevice::kInvalidId) {
     touch_device_id_ = touch->source_device_id();
@@ -233,18 +323,22 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
 
   // If this is a custom touch calibration, then everything else is managed
   // by the application responsible for the custom calibration UX.
-  if (state_ == CalibrationState::kCustomCalibration)
+  if (state_ == CalibrationState::kCustomCalibration) {
     return;
+  }
   touch->StopPropagation();
 
   TouchCalibratorView* target_screen_calibration_view =
-      static_cast<TouchCalibratorView*>(
+      views::AsViewClass<TouchCalibratorView>(
           touch_calibrator_widgets_[target_display_.id()]->GetContentsView());
+  CHECK(target_screen_calibration_view);
 
   // If this is the final state, then store all calibration data and stop
   // calibration.
-  if (target_screen_calibration_view->state() ==
-      TouchCalibratorView::CALIBRATION_COMPLETE) {
+  if (state_ ==
+          TouchCalibratorController::CalibrationState::kNativeCalibration &&
+      target_screen_calibration_view->state() ==
+          TouchCalibratorView::CALIBRATION_COMPLETE) {
     gfx::RectF calibration_bounds =
         Shell::Get()
             ->window_tree_host_manager()
@@ -343,6 +437,25 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
     // TODO(malaykeshav): Display some kind of error for the user.
     NOTREACHED() << "Touch calibration failed. Could not retrieve location for"
                     " display point. Retry calibration.";
+  }
+
+  // For calibrating all displays, skip the final state of showing a
+  // "Calibration complete" screen.
+  if (state_ == TouchCalibratorController::CalibrationState::
+                    kNativeCalibrationTouchscreenMapping &&
+      target_screen_calibration_view->state() ==
+          TouchCalibratorView::DISPLAY_POINT_4) {
+    gfx::RectF calibration_bounds =
+        Shell::Get()
+            ->window_tree_host_manager()
+            ->GetAshWindowTreeHostForDisplayId(target_display_.id())
+            ->AsWindowTreeHost()
+            ->GetRootTransform()
+            .MapRect(
+                gfx::RectF(target_screen_calibration_view->GetLocalBounds()));
+    CompleteCalibration(touch_point_quad_,
+                        gfx::ToRoundedSize(calibration_bounds.size()));
+    return;
   }
 
   target_screen_calibration_view->AdvanceToNextState();

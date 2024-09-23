@@ -82,9 +82,9 @@ def _ReceiveFDs(sock):
       # The newest one: ash-chrome returns three FDs, the mojo connection of
       # old bootstrap procedure, the second for the start up data FD, and
       # the third for another mojo connection of new bootstrap procedure.
-      # TODO(crbug.com/1156033): Clean up the code to drop the support of
+      # TODO(crbug.com/40735724): Clean up the code to drop the support of
       # oldest one after M91.
-      # TODO(crbug.com/1180712): Clean up the mojo procedure support of the
+      # TODO(crbug.com/40170079): Clean up the mojo procedure support of the
       # the middle one after M92.
       cmsg_len_candidates = [(i + 1) * fds.itemsize
                              for i in range(_NUM_FDS_MAX)]

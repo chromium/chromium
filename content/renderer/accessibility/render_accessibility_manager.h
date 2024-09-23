@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/mojom/ax_updates_and_events.mojom.h"
 
 namespace content {
 
@@ -77,7 +78,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
 
   // Communication with the browser process.
   void HandleAccessibilityEvents(
-      blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
+      ui::AXUpdatesAndEvents& updates_and_events,
       uint32_t reset_token,
       blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback);
 
@@ -90,7 +91,7 @@ class CONTENT_EXPORT RenderAccessibilityManager
   GetOrCreateRemoteRenderAccessibilityHost();
 
   // The RenderFrameImpl that owns us.
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
 
   // Valid only while an accessibility mode including kWebContents is set.
   std::unique_ptr<RenderAccessibilityImpl> render_accessibility_;

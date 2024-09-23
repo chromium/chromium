@@ -48,8 +48,9 @@ class AshNotificationDragController
 
   // Lists notification drag end states.
   // NOTE: used by metrics. Therefore, current values should not be renumbered
-  // or removed. This should be kept in sync with the enum in
-  // tools/metrics/histograms/enums.xml.
+  // or removed. This should be kept in sync with the enum
+  // `NotificationImageDragEndState` in
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class DragEndState {
     // Interrupted by a new drag session before the current one finishes.
     kInterruptedByNewDrag = 0,

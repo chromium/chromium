@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/storage/policy_value_store.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -31,6 +32,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -187,15 +189,12 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemasOnFileTaskRunner(
       continue;
     }
     // The extension should have been validated, so assume the schema exists
-    // and is valid.
-    std::string error;
-    policy::Schema schema =
-        StorageSchemaManifestHandler::GetSchema(extension.get(), &error);
-    // If the schema is invalid then proceed with an empty schema. The extension
-    // will be listed in chrome://policy but won't be able to load any policies.
-    if (!schema.valid())
-      schema = policy::Schema();
-    (*components)[extension->id()] = schema;
+    // and is valid. If the schema is invalid then proceed with an empty schema.
+    // The extension will be listed in chrome://policy but won't be able to load
+    // any policies.
+    (*components)[extension->id()] =
+        StorageSchemaManifestHandler::GetSchema(extension.get())
+            .value_or(policy::Schema());
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -284,7 +283,7 @@ void ManagedValueStoreCache::RunWithValueStoreForExtension(
 }
 
 void ManagedValueStoreCache::DeleteStorageSoon(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
   // It's possible that the store exists, but hasn't been loaded yet
   // (because the extension is unloaded, for example). Open the database to
@@ -361,7 +360,7 @@ policy::PolicyDomain ManagedValueStoreCache::GetPolicyDomain(
 }
 
 void ManagedValueStoreCache::UpdatePolicyOnBackend(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const policy::PolicyMap& new_policy) {
   if (!HasStore(extension_id) && new_policy.empty()) {
     // Don't create the store now if there are no policies configured for this
@@ -374,7 +373,7 @@ void ManagedValueStoreCache::UpdatePolicyOnBackend(
 }
 
 PolicyValueStore& ManagedValueStoreCache::GetOrCreateStore(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   const auto& it = store_map_.find(extension_id);
   if (it != store_map_.end())
     return *it->second;
@@ -392,7 +391,7 @@ PolicyValueStore& ManagedValueStoreCache::GetOrCreateStore(
   return *raw_store;
 }
 
-bool ManagedValueStoreCache::HasStore(const std::string& extension_id) const {
+bool ManagedValueStoreCache::HasStore(const ExtensionId& extension_id) const {
   // Note: Currently only manage extensions (not apps).
   return value_store_util::HasValueStore(settings_namespace::MANAGED,
                                          kManagedModelType, extension_id,

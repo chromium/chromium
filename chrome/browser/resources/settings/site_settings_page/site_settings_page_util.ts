@@ -21,6 +21,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsAutoPictureInPictureMidSentence';
     case ContentSettingsTypes.AUTOMATIC_DOWNLOADS:
       return 'siteSettingsAutomaticDownloadsMidSentence';
+    case ContentSettingsTypes.AUTOMATIC_FULLSCREEN:
+      return 'siteSettingsAutomaticFullscreenMidSentence';
     case ContentSettingsTypes.BACKGROUND_SYNC:
       return 'siteSettingsBackgroundSyncMidSentence';
     case ContentSettingsTypes.BLUETOOTH_DEVICES:
@@ -29,6 +31,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsBluetoothScanningMidSentence';
     case ContentSettingsTypes.CAMERA:
       return 'siteSettingsCameraMidSentence';
+    case ContentSettingsTypes.CAPTURED_SURFACE_CONTROL:
+      return 'siteSettingsCapturedSurfaceControlMidSentence';
     case ContentSettingsTypes.CLIPBOARD:
       return 'siteSettingsClipboardMidSentence';
     case ContentSettingsTypes.COOKIES:
@@ -39,6 +43,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsFileSystemWriteMidSentence';
     case ContentSettingsTypes.GEOLOCATION:
       return 'siteSettingsLocationMidSentence';
+    case ContentSettingsTypes.HAND_TRACKING:
+      return 'siteSettingsHandTrackingMidSentence';
     case ContentSettingsTypes.HID_DEVICES:
       return 'siteSettingsHidDevicesMidSentence';
     case ContentSettingsTypes.IDLE_DETECTION:
@@ -47,6 +53,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsImagesMidSentence';
     case ContentSettingsTypes.JAVASCRIPT:
       return 'siteSettingsJavascriptMidSentence';
+    case ContentSettingsTypes.KEYBOARD_LOCK:
+      return 'siteSettingsKeyboardLockMidSentence';
     case ContentSettingsTypes.LOCAL_FONTS:
       return 'siteSettingsFontAccessMidSentence';
     case ContentSettingsTypes.MIC:
@@ -59,6 +67,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsNotificationsMidSentence';
     case ContentSettingsTypes.PAYMENT_HANDLER:
       return 'siteSettingsPaymentHandlerMidSentence';
+    case ContentSettingsTypes.POINTER_LOCK:
+      return 'siteSettingsPointerLockMidSentence';
     case ContentSettingsTypes.POPUPS:
       return 'siteSettingsPopupsMidSentence';
     case ContentSettingsTypes.PROTECTED_CONTENT:
@@ -75,6 +85,8 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsStorageAccessMidSentence';
     case ContentSettingsTypes.USB_DEVICES:
       return 'siteSettingsUsbDevicesMidSentence';
+    case ContentSettingsTypes.WEB_APP_INSTALLATION:
+      return 'siteSettingsWebAppInstallationMidSentence';
     case ContentSettingsTypes.WEB_PRINTING:
       return 'siteSettingsWebPrintingMidSentence';
     case ContentSettingsTypes.VR:
@@ -85,11 +97,14 @@ export function getLocalizationStringForContentType(
       return 'siteSettingsZoomLevelsMidSentence';
     // The following members do not have a mid-sentence localization.
     case ContentSettingsTypes.ANTI_ABUSE:
-    case ContentSettingsTypes.JAVASCRIPT_JIT:
+    case ContentSettingsTypes.JAVASCRIPT_OPTIMIZER:
     case ContentSettingsTypes.PDF_DOCUMENTS:
     case ContentSettingsTypes.PERFORMANCE:
     case ContentSettingsTypes.PRIVATE_NETWORK_DEVICES:
     case ContentSettingsTypes.SITE_DATA:
+    case ContentSettingsTypes.TRACKING_PROTECTION:
+    case ContentSettingsTypes.OFFER_WRITING_HELP:
+    case ContentSettingsTypes.SMART_CARD_READERS:
       return null;
     default:
       assertNotReached();

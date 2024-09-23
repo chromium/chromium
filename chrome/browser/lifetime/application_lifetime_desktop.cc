@@ -35,17 +35,16 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/browser_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -73,14 +72,15 @@ using IgnoreUnloadHandlers =
 
 void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // TODO(beng): Can this use ProfileManager::GetLoadedProfiles instead?
-  // TODO(crbug.com/1205798): Unset SaveSessionState if the restart fails.
+  // TODO(crbug.com/40180622): Unset SaveSessionState if the restart fails.
   for (Browser* browser : *BrowserList::GetInstance()) {
     browser->profile()->SaveSessionState();
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
     auto* session_data_service =
         SessionDataServiceFactory::GetForProfile(browser->profile());
-    if (session_data_service)
+    if (session_data_service) {
       session_data_service->SetForceKeepSessionState();
+    }
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
   }
 
@@ -125,16 +125,18 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
   // Set the flag to restore state after the restart.
   pref_service->SetBoolean(prefs::kRestartLastSessionOnShutdown, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (ignore_unload_handlers)
+  if (ignore_unload_handlers) {
     ExitIgnoreUnloadHandlers();
-  else
+  } else {
     AttemptExit();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ShutdownIfNoBrowsers() {
-  if (GetTotalBrowserCount() > 0)
+  if (GetTotalBrowserCount() > 0) {
     return;
+  }
 
   // Tell everyone that we are shutting down.
   browser_shutdown::SetTryingToQuit(true);
@@ -197,8 +199,7 @@ void SessionEnding() {
   static bool already_ended = false;
   // We may get called in the middle of shutdown, e.g. https://crbug.com/70852
   // and https://crbug.com/1187418.  In this case, do nothing.
-  if (already_ended || !content::NotificationService::current() ||
-      !g_browser_process) {
+  if (already_ended || !g_browser_process) {
     return;
   }
   already_ended = true;
@@ -213,8 +214,9 @@ void SessionEnding() {
   std::optional<ShutdownWatcherHelper> shutdown_watcher;
   std::optional<base::WatchHangsInScope> watch_hangs_scope;
   if (base::HangWatcher::IsCrashReportingEnabled()) {
-    // TODO(crbug.com/1327000): Migrate away from ShutdownWatcher and its old
+    // TODO(crbug.com/40840897): Migrate away from ShutdownWatcher and its old
     // timing.
+    base::HangWatcher::SetShuttingDown();
     constexpr base::TimeDelta kShutdownHangDelay{base::Seconds(30)};
     watch_hangs_scope.emplace(kShutdownHangDelay);
   } else {
@@ -257,16 +259,18 @@ void SessionEnding() {
 }
 
 void ShutdownIfNeeded() {
-  if (browser_shutdown::IsTryingToQuit())
+  if (browser_shutdown::IsTryingToQuit()) {
     return;
+  }
 
   ShutdownIfNoBrowsers();
 }
 
 void OnAppExiting() {
   static bool notified = false;
-  if (notified)
+  if (notified) {
     return;
+  }
   notified = true;
   HandleAppExitingForPlatform();
 }
@@ -308,8 +312,9 @@ void MarkAsCleanShutdown() {
 }
 
 bool AreAllBrowsersCloseable() {
-  if (BrowserList::GetInstance()->empty())
+  if (BrowserList::GetInstance()->empty()) {
     return true;
+  }
 
   // If there are any downloads active, all browsers are not closeable.
   // However, this does not block for malicious downloads.
@@ -319,8 +324,9 @@ bool AreAllBrowsersCloseable() {
 
   // Check TabsNeedBeforeUnloadFired().
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->TabsNeedBeforeUnloadFired())
+    if (browser->TabsNeedBeforeUnloadFired()) {
       return false;
+    }
   }
   return true;
 }

@@ -8,7 +8,6 @@
 // Icon, text, and background colors that should be used for different types
 // of Chip.
 enum class OmniboxChipTheme {
-  kNormalVisibility,
   kLowVisibility,
   // Shows the chip with no background, and an icon color matching other icons
   // in the omnibox. Suitable for collapsing the chip down to a less prominent

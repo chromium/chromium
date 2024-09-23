@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/numerics/angle_conversions.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
@@ -24,7 +25,6 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_entry.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "ui/gfx/geometry/angle_conversions.h"
 
 namespace blink {
 
@@ -171,11 +171,11 @@ TEST_F(DeviceMotionEventPumpTest, AllSensorsAreActive) {
   EXPECT_EQ(6, received_data->GetAcceleration()->z().value());
 
   EXPECT_TRUE(received_data->GetRotationRate()->HasRotationData());
-  EXPECT_EQ(gfx::RadToDeg(7.0),
+  EXPECT_EQ(base::RadToDeg(7.0),
             received_data->GetRotationRate()->alpha().value());
-  EXPECT_EQ(gfx::RadToDeg(8.0),
+  EXPECT_EQ(base::RadToDeg(8.0),
             received_data->GetRotationRate()->beta().value());
-  EXPECT_EQ(gfx::RadToDeg(9.0),
+  EXPECT_EQ(base::RadToDeg(9.0),
             received_data->GetRotationRate()->gamma().value());
 
   controller()->UnregisterWithDispatcher();
@@ -213,11 +213,11 @@ TEST_F(DeviceMotionEventPumpTest, TwoSensorsAreActive) {
   EXPECT_FALSE(received_data->GetAcceleration()->z().has_value());
 
   EXPECT_TRUE(received_data->GetRotationRate()->HasRotationData());
-  EXPECT_EQ(gfx::RadToDeg(7.0),
+  EXPECT_EQ(base::RadToDeg(7.0),
             received_data->GetRotationRate()->alpha().value());
-  EXPECT_EQ(gfx::RadToDeg(8.0),
+  EXPECT_EQ(base::RadToDeg(8.0),
             received_data->GetRotationRate()->beta().value());
-  EXPECT_EQ(gfx::RadToDeg(9.0),
+  EXPECT_EQ(base::RadToDeg(9.0),
             received_data->GetRotationRate()->gamma().value());
 
   controller()->UnregisterWithDispatcher();
@@ -253,9 +253,9 @@ TEST_F(DeviceMotionEventPumpTest, SomeSensorDataFieldsNotAvailable) {
   EXPECT_EQ(6, received_data->GetAcceleration()->z().value());
 
   EXPECT_TRUE(received_data->GetAcceleration()->HasAccelerationData());
-  EXPECT_EQ(gfx::RadToDeg(7.0),
+  EXPECT_EQ(base::RadToDeg(7.0),
             received_data->GetRotationRate()->alpha().value());
-  EXPECT_EQ(gfx::RadToDeg(8.0),
+  EXPECT_EQ(base::RadToDeg(8.0),
             received_data->GetRotationRate()->beta().value());
   EXPECT_FALSE(received_data->GetRotationRate()->gamma().has_value());
 

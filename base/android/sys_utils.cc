@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/android/build_info.h"
-#include "base/base_jni/SysUtils_jni.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/base_tracing.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/sys_utils_jni/SysUtils_jni.h"
 
 namespace base {
 namespace android {

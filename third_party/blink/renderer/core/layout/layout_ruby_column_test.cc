@@ -13,6 +13,9 @@ class LayoutRubyColumnTest : public RenderingTest {};
 
 // crbug.com/1461993
 TEST_F(LayoutRubyColumnTest, StylePropagation) {
+  if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    return;
+  }
   SetBodyInnerHTML(R"HTML(<ruby id="target">Hello<rt>hola</rt></ruby>)HTML");
   auto* run_box = To<LayoutRubyColumn>(
       GetLayoutObjectByElementId("target")->SlowFirstChild());

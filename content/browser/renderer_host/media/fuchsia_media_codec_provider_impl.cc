@@ -45,7 +45,7 @@ std::optional<std::string> GetMimeTypeForVideoCodec(media::VideoCodec codec) {
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 media::VideoCodecProfile ConvertToVideoCodecProfile(

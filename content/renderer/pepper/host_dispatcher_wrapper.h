@@ -60,7 +60,7 @@ class HostDispatcherWrapper {
   ppapi::proxy::HostDispatcher* dispatcher() { return dispatcher_.get(); }
 
  private:
-  raw_ptr<PluginModule, ExperimentalRenderer> module_;
+  raw_ptr<PluginModule> module_;
 
   base::ProcessId peer_pid_;
 

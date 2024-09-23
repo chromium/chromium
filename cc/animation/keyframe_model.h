@@ -28,6 +28,8 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
 
   static KeyframeModel* ToCcKeyframeModel(gfx::KeyframeModel* keyframe_model);
 
+  static const int kInvalidGroup = -1;
+
   // Bundles a property id with its name and native type.
   class CC_ANIMATION_EXPORT TargetPropertyId {
    public:
@@ -80,6 +82,7 @@ class CC_ANIMATION_EXPORT KeyframeModel : public gfx::KeyframeModel {
   KeyframeModel& operator=(const KeyframeModel&) = delete;
 
   int group() const { return group_; }
+  void ungroup() { group_ = kInvalidGroup; }
 
   int TargetProperty() const override;
 

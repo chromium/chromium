@@ -29,7 +29,7 @@ void SendSearchFeedbackHandler::RegisterMessages() {
 void SendSearchFeedbackHandler::OpenFeedbackDialogWrapper(
     const std::string& description_template) {
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  chrome::OpenFeedbackDialog(browser, chrome::kFeedbackSourceOsSettingsSearch,
+  chrome::OpenFeedbackDialog(browser, feedback::kFeedbackSourceOsSettingsSearch,
                              description_template);
 }
 

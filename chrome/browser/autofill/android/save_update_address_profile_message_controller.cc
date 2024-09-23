@@ -73,6 +73,7 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
   message_->SetDescription(GetDescription());
   message_->SetDescriptionMaxLines(kDescriptionMaxLines);
   message_->SetPrimaryButtonText(GetPrimaryButtonText());
+  message_->SetPrimaryButtonTextMaxLines(1);
   message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
       is_migration_to_account ? IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS
                               : IDR_ANDROID_AUTOFILL_ADDRESS));
@@ -102,18 +103,17 @@ void SaveUpdateAddressProfileMessageController::OnMessageDismissed(
     case messages::DismissReason::GESTURE:
       // User explicitly dismissed the message.
       RunSaveAddressProfileCallback(
-          AutofillClient::SaveAddressProfileOfferUserDecision::
-              kMessageDeclined);
+          AutofillClient::AddressPromptUserDecision::kMessageDeclined);
       break;
     case messages::DismissReason::TIMER:
       // The message was auto-dismissed after a timeout.
       RunSaveAddressProfileCallback(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout);
+          AutofillClient::AddressPromptUserDecision::kMessageTimeout);
       break;
     default:
       // Dismissal for any other reason.
       RunSaveAddressProfileCallback(
-          AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored);
+          AutofillClient::AddressPromptUserDecision::kIgnored);
       break;
   }
 
@@ -138,7 +138,7 @@ void SaveUpdateAddressProfileMessageController::DismissMessage() {
 }
 
 void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+    AutofillClient::AddressPromptUserDecision decision) {
   std::move(save_address_profile_callback_).Run(decision, std::nullopt);
   primary_action_callback_.Reset();
 }
@@ -164,9 +164,8 @@ std::u16string SaveUpdateAddressProfileMessageController::GetDescription() {
                                  /*include_address_and_contacts=*/true);
   }
 
-  if (is_migration_to_account_ ||
-      profile_->source() == AutofillProfile::Source::kAccount) {
-    return GetSourceNotice();
+  if (is_migration_to_account_ || profile_->IsAccountProfile()) {
+    return GetRecordTypeNotice();
   }
 
   // Address profile won't be saved to Google Account when user is not logged
@@ -176,7 +175,8 @@ std::u16string SaveUpdateAddressProfileMessageController::GetDescription() {
                                /*include_address_and_contacts=*/true);
 }
 
-std::u16string SaveUpdateAddressProfileMessageController::GetSourceNotice() {
+std::u16string
+SaveUpdateAddressProfileMessageController::GetRecordTypeNotice() {
   std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
       web_contents_->GetBrowserContext());
   if (!account) {
@@ -185,9 +185,9 @@ std::u16string SaveUpdateAddressProfileMessageController::GetSourceNotice() {
 
   return is_migration_to_account_
              ? l10n_util::GetStringUTF16(
-                   IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE)
+                   IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_RECORD_TYPE_NOTICE)
              : l10n_util::GetStringFUTF16(
-                   IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_SOURCE_NOTICE,
+                   IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_RECORD_TYPE_NOTICE,
                    base::UTF8ToUTF16(account->email));
 }
 

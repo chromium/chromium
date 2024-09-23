@@ -8,8 +8,10 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_LEFT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_TOP;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_RIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_WIDTH;
 
@@ -48,12 +50,20 @@ public class TestViewStructure extends ViewStructure {
     private int mSelectionStart;
     private int mSelectionEnd;
 
+    private boolean mIncludeScreenSizeDependentAttributes;
+    private int mLeft;
+    private int mTop;
+    private int mScrollX;
+    private int mScrollY;
+    private int mWidth;
+    private int mHeight;
+
     public TestViewStructure() {}
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        recursiveDumpToString(builder, 0);
+        recursiveDumpToString(builder, 0, mIncludeScreenSizeDependentAttributes);
         return builder.toString().trim();
     }
 
@@ -77,7 +87,8 @@ public class TestViewStructure extends ViewStructure {
         return mStyle;
     }
 
-    private static String bundleToString(Bundle extras) {
+    private static String bundleToString(
+            Bundle extras, boolean includeScreenSizeDependentAttributes) {
         // Sort keys to ensure consistent output of tests.
         List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
         Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
@@ -88,16 +99,23 @@ public class TestViewStructure extends ViewStructure {
         for (String key : sortedKeySet) {
             // Bundle extras related to bounding boxes should be ignored so the tests can safely
             // run on varying devices and not be screen-dependent.
-            if (key.equals(EXTRAS_KEY_UNCLIPPED_LEFT)
-                    || key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
-                    || key.equals(EXTRAS_KEY_UNCLIPPED_WIDTH)
-                    || key.equals(EXTRAS_KEY_UNCLIPPED_HEIGHT)
-                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_LEFT)
-                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_TOP)
-                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH)
-                    || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_HEIGHT)
-                    || key.equals("root_scroll_y")
-                    || key.equals("url")) {
+            if (!includeScreenSizeDependentAttributes
+                    && (key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_LEFT)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_RIGHT)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_WIDTH)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_HEIGHT)
+                            || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_LEFT)
+                            || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_TOP)
+                            || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH)
+                            || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_HEIGHT)
+                            || key.equals("root_scroll_y"))) {
+                continue;
+            }
+
+            // The url refers to local filename and can also be excluded.
+            if (key.equals("url")) {
                 continue;
             }
 
@@ -115,12 +133,15 @@ public class TestViewStructure extends ViewStructure {
         return ret.equals("[]") ? "" : ret;
     }
 
-    private void recursiveDumpToString(StringBuilder builder, int indent) {
+    private void recursiveDumpToString(
+            StringBuilder builder, int indent, boolean includeScreenSizeDependentAttributes) {
         // We do not want to print the root node, start at the WebView.
         if (mClassName == null) {
             assert indent == 0;
             assert mChildCount == 1;
-            mChildren.get(0).recursiveDumpToString(builder, indent);
+            mChildren
+                    .get(0)
+                    .recursiveDumpToString(builder, indent, includeScreenSizeDependentAttributes);
             return;
         }
 
@@ -159,7 +180,7 @@ public class TestViewStructure extends ViewStructure {
 
         // Print Bundle extras and htmlInfo attributes.
         if (mBundle != null) {
-            String bundleString = bundleToString(mBundle);
+            String bundleString = bundleToString(mBundle, includeScreenSizeDependentAttributes);
             if (!bundleString.isEmpty()) {
                 builder.append(" bundle:").append(bundleString);
             }
@@ -178,10 +199,22 @@ public class TestViewStructure extends ViewStructure {
             builder.append(TextUtils.join(", ", attrStrings)).append("]");
         }
 
+        if (includeScreenSizeDependentAttributes) {
+            builder.append(" bounds:[")
+                    .append(mLeft)
+                    .append(", ")
+                    .append(mTop)
+                    .append(" - ")
+                    .append(mWidth)
+                    .append("x")
+                    .append(mHeight)
+                    .append("]");
+        }
+
         builder.append("\n");
 
         for (TestViewStructure child : mChildren) {
-            child.recursiveDumpToString(builder, indent + 1);
+            child.recursiveDumpToString(builder, indent + 1, includeScreenSizeDependentAttributes);
         }
     }
 
@@ -191,6 +224,10 @@ public class TestViewStructure extends ViewStructure {
             totalChildren += getChild(i).getTotalDescendantCount();
         }
         return totalChildren;
+    }
+
+    public void setShouldIncludeScreenSizeDependentAttributes(boolean newValue) {
+        mIncludeScreenSizeDependentAttributes = newValue;
     }
 
     @Override
@@ -317,7 +354,14 @@ public class TestViewStructure extends ViewStructure {
     public void setId(int id, String packageName, String typeName, String entryName) {}
 
     @Override
-    public void setDimens(int left, int top, int scrollX, int scrollY, int width, int height) {}
+    public void setDimens(int left, int top, int scrollX, int scrollY, int width, int height) {
+        mLeft = left;
+        mTop = top;
+        mScrollX = scrollX;
+        mScrollY = scrollY;
+        mWidth = width;
+        mHeight = height;
+    }
 
     @Override
     public void setElevation(float elevation) {}

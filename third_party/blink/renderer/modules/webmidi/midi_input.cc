@@ -95,8 +95,9 @@ void MIDIInput::DidReceiveMIDIData(unsigned port_index,
   // the current process has an explicit permission to handle sysex message.
   if (data[0] == 0xf0 && !midiAccess()->sysexEnabled())
     return;
-  DOMUint8Array* array =
-      DOMUint8Array::Create(data, base::checked_cast<unsigned>(length));
+  DOMUint8Array* array = DOMUint8Array::Create(
+      UNSAFE_TODO(base::span(data, base::checked_cast<unsigned>(length))));
+
   DispatchEvent(*MakeGarbageCollected<MIDIMessageEvent>(time_stamp, array));
 
   UseCounter::Count(GetExecutionContext(), WebFeature::kMIDIMessageEvent);

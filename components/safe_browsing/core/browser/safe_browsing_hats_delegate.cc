@@ -32,13 +32,13 @@ bool MatchFound(const std::string& report_value,
 // concerned with report types that HaTS will target.
 std::string ThreatTypeToReportType(SBThreatType threat_type) {
   switch (threat_type) {
-    case SB_THREAT_TYPE_URL_PHISHING:
+    case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
       return "URL_PHISHING";
-    case SB_THREAT_TYPE_URL_MALWARE:
+    case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
       return "URL_MALWARE";
-    case SB_THREAT_TYPE_URL_UNWANTED:
+    case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
       return "URL_UNWANTED";
-    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
       return "URL_CLIENT_SIDE_PHISHING";
     default:
       return "UNSUPPORTED_THREAT_TYPE";

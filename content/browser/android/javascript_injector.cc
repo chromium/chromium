@@ -7,6 +7,11 @@
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/JavascriptInjectorImpl_jni.h"
 
 using base::android::AttachCurrentThread;
@@ -50,6 +55,19 @@ void JavascriptInjector::AddInterface(
     const JavaParamRef<jstring>& name,
     const JavaParamRef<jclass>& safe_annotation_clazz) {
   DCHECK(java_bridge_dispatcher_host_);
+
+  // If a new js object is added or removed when a page is in BFCache or
+  // prerendered, the change won't apply after activating the page. To avoid
+  // this behavior difference when these features are involved vs not,
+  // evict all BFCached and prerendered pages so that we won't activate any
+  // pages that don't have this object modified.
+  // Same for RemoveInterface below.
+  GetWebContents().GetController().GetBackForwardCache().Flush(
+      content::BackForwardCache::NotRestoredReason::
+          kWebViewJavaScriptObjectChanged);
+  GetWebContentsImpl().GetPrerenderHostRegistry()->CancelAllHosts(
+      PrerenderFinalStatus::kJavaScriptInterfaceAdded);
+
   java_bridge_dispatcher_host_->AddNamedObject(
       ConvertJavaStringToUTF8(env, name), object, safe_annotation_clazz);
 }
@@ -58,8 +76,19 @@ void JavascriptInjector::RemoveInterface(JNIEnv* env,
                                          const JavaParamRef<jobject>& /* obj */,
                                          const JavaParamRef<jstring>& name) {
   DCHECK(java_bridge_dispatcher_host_);
+
+  GetWebContents().GetController().GetBackForwardCache().Flush(
+      content::BackForwardCache::NotRestoredReason::
+          kWebViewJavaScriptObjectChanged);
+  GetWebContentsImpl().GetPrerenderHostRegistry()->CancelAllHosts(
+      PrerenderFinalStatus::kJavaScriptInterfaceRemoved);
+
   java_bridge_dispatcher_host_->RemoveNamedObject(
       ConvertJavaStringToUTF8(env, name));
+}
+
+WebContentsImpl& JavascriptInjector::GetWebContentsImpl() {
+  return static_cast<WebContentsImpl&>(GetWebContents());
 }
 
 jlong JNI_JavascriptInjectorImpl_Init(

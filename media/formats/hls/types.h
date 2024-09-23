@@ -9,15 +9,224 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
+#include "base/time/time.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/variable_dictionary.h"
 
 namespace media::hls::types {
 
+namespace {
+
+template <size_t count, typename impl, typename... types>
+struct repeat_t {
+  using type = repeat_t<count - 1, impl, impl, types...>::type;
+};
+
+template <typename impl, typename... types>
+struct repeat_t<0, impl, types...> {
+  using type = std::tuple<types...>;
+};
+
+}  // namespace
+
 // A `DecimalInteger` is an unsigned integer value.
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#:~:text=of%20the%20following%3A%0A%0A%20%20%20o-,decimal%2Dinteger,-%3A%20an%20unquoted%20string
 using DecimalInteger = uint64_t;
+
+namespace parsing {
+
+// A substituting parser functions as a super-struct parser which provides the
+// entry points for raw SourceStrings to either be consumed raw or resolved by
+// the sub-struct's Parse method. It is specialized with:
+// Subtype: The substruct implementation, which provides the method
+//          `static T Parse(ResolvedSourceString, ParseArgs...)`
+// T: The type that should result from successful parsing.
+// ParseArgs...: Additional arguments that might be passed to the Parse
+//               function declared on `Subtype`. For example, some quoted
+//               strings are required to be non-empty, so the quoted string
+//               parser should have an optional bool parameter to require it.
+template <typename Subtype, typename T, typename... ParseArgs>
+struct MEDIA_EXPORT SubstitutingParser {
+  using ParseInto = T;
+
+  static ParseStatus::Or<ParseInto> ParseWithSubstitution(
+      SourceString str,
+      const VariableDictionary& variable_dict,
+      VariableDictionary::SubstitutionBuffer& sub_buffer,
+      ParseArgs&&... args) {
+    return variable_dict.Resolve(str, sub_buffer)
+        .MapValue([... args = std::forward<ParseArgs>(args)](
+                      ResolvedSourceString str) {
+          return Subtype::Parse(str, std::forward<ParseArgs>(args)...);
+        });
+  }
+
+  static ParseStatus::Or<ParseInto> ParseWithoutSubstitution(
+      SourceString str,
+      ParseArgs&&... args) {
+    return Subtype::Parse(str.SkipVariableSubstitution(),
+                          std::forward<ParseArgs>(args)...);
+  }
+};
+
+// A wrapping parser that will parse some other type T which is contained
+// withing quotation marks. Quoted<RawStr>::ParseWithoutSubstitution will ensure
+// that the SourceString starts and ends with quotation marks, and will return
+// a ResolvedSourceString representing the content inside those quotes.
+template <typename T>
+struct MEDIA_EXPORT Quoted
+    : public SubstitutingParser<Quoted<T>, typename T::ParseInto> {
+  static ParseStatus::Or<typename T::ParseInto> Parse(
+      ResolvedSourceString str,
+      bool allow_empty = false) {
+    if (str.Size() < 2) {
+      return ParseStatusCode::kFailedToParseQuotedString;
+    }
+    if (*str.Str().begin() != '"') {
+      return ParseStatusCode::kFailedToParseQuotedString;
+    }
+    if (*str.Str().rbegin() != '"') {
+      return ParseStatusCode::kFailedToParseQuotedString;
+    }
+
+    ResolvedSourceString unquoted = str.Substr(1, str.Size() - 2);
+    if (!allow_empty && unquoted.Empty()) {
+      return ParseStatusCode::kFailedToParseQuotedString;
+    }
+
+    return T::Parse(unquoted);
+  }
+};
+
+// Parser struct for a plain ResolvedSourceString. This is usually used
+// for things like URIs.
+struct MEDIA_EXPORT RawStr : SubstitutingParser<RawStr, ResolvedSourceString> {
+  static ParseStatus::Or<ResolvedSourceString> Parse(ResolvedSourceString str);
+};
+
+struct MEDIA_EXPORT YesOrNo : SubstitutingParser<YesOrNo, bool> {
+  static ParseStatus::Or<bool> Parse(ResolvedSourceString str);
+};
+
+// Parser struct for floating point representations of TimeDelta instances.
+struct MEDIA_EXPORT TimeDelta : SubstitutingParser<TimeDelta, base::TimeDelta> {
+  static ParseStatus::Or<base::TimeDelta> Parse(ResolvedSourceString str);
+};
+
+// A `ByteRangeExpression` represents the 'length[@offset]' syntax that appears
+// in tags describing byte ranges of a resource.
+// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.2
+struct MEDIA_EXPORT ByteRangeExpression
+    : public SubstitutingParser<ByteRangeExpression, ByteRangeExpression> {
+  static ParseStatus::Or<ByteRangeExpression> Parse(
+      ResolvedSourceString source_str);
+
+  // The length of the sub-range, in bytes.
+  types::DecimalInteger length;
+
+  // If present, the offset in bytes from the beginning of the resource.
+  // If not present, the sub-range begins at the next byte following that of the
+  // previous segment. The previous segment must be a subrange of the same
+  // resource.
+  std::optional<types::DecimalInteger> offset;
+};
+
+// Calculate chunk sizes for the hex parser. This needs to be separated so that
+// the SubstitutingParser template can be specialized on the proper return type
+// of HexRepr::Parse.
+template <int64_t bits>
+struct HexPackInfo {
+  // Must be a multiple of 8!
+  static_assert((bits % 0x8) == 0);
+
+  // The pack size should be whatever is the largest integer type with a size
+  // that is a factor of `bits`. Since there is no builtin integer type larger
+  // than uint64_t, this number is also capped.
+  static constexpr int64_t UnitSize = std::min<int64_t>(64, bits & -bits);
+
+  // Select repeating unit.
+  using Unit = std::conditional_t<
+      (UnitSize == 64),
+      uint64_t,
+      std::conditional_t<
+          (UnitSize == 32),
+          uint32_t,
+          std::conditional_t<(UnitSize == 16), uint16_t, uint8_t>>>;
+
+  // A tuple of repeating `Unit`s
+  using Container = repeat_t<bits / UnitSize, Unit>::type;
+};
+
+// Represents a hexadecimal string in the form 0xXXXXXX...
+// where this might require more than sizeof(size_t) bytes.
+// HexRepr<X>::Container can be used to get the tuple format for the
+// underlying container that HexRepr<X>::Parse should return.
+template <int64_t bits>
+struct MEDIA_EXPORT HexRepr
+    : public SubstitutingParser<HexRepr<bits>,
+                                typename HexPackInfo<bits>::Container> {
+  using Container = HexPackInfo<bits>::Container;
+  using Unit = HexPackInfo<bits>::Unit;
+  static constexpr int64_t UnitSize = HexPackInfo<bits>::UnitSize;
+
+  template <size_t reps>
+  struct ParserImpl {
+    static ParseStatus::Or<typename repeat_t<reps, Unit>::type> Parse(
+        ResolvedSourceString str,
+        bool extrapolate_leading_zeros) {
+      if constexpr (reps == 0) {
+        if (str.Size() != 0) {
+          return ParseStatusCode::kFailedToParseHexadecimalString;
+        }
+        return std::make_tuple();
+      } else {
+        Unit chunk = 0;
+        for (size_t i = 0; i < sizeof(Unit) * 2; i++) {
+          if (!extrapolate_leading_zeros && !str.Size()) {
+            return ParseStatusCode::kFailedToParseHexadecimalString;
+          }
+          if (str.Size()) {
+            auto bits4 = str.Str()[str.Size() - 1];
+            Unit num4 = 0;
+            if (bits4 >= '0' && bits4 <= '9') {
+              num4 = bits4 - '0';
+            } else if (bits4 >= 'A' && bits4 <= 'F') {
+              num4 = bits4 - 'A' + 10;
+            } else if (bits4 >= 'a' && bits4 <= 'f') {
+              num4 = bits4 - 'a' + 10;
+            } else {
+              return ParseStatusCode::kFailedToParseHexadecimalString;
+            }
+            chunk += (num4 << (4 * i));
+            str = str.Substr(0, str.Size() - 1);
+          }
+        }
+        auto rest = ParserImpl<reps - 1>::Parse(str, extrapolate_leading_zeros);
+        if (!rest.has_value()) {
+          return std::move(rest).error();
+        }
+        return std::tuple_cat(std::move(rest).value(), std::make_tuple(chunk));
+      }
+    }
+  };
+
+  static ParseStatus::Or<Container> Parse(
+      ResolvedSourceString str,
+      bool extrapolate_leading_zeros = false,
+      bool has_prefix = true) {
+    if (has_prefix && str.Consume(2).Str() != "0x") {
+      return ParseStatusCode::kFailedToParseHexadecimalString;
+    }
+    if (!str.Size()) {
+      return ParseStatusCode::kFailedToParseHexadecimalString;
+    }
+    return ParserImpl<bits / UnitSize>::Parse(str, extrapolate_leading_zeros);
+  }
+};
+
+}  // namespace parsing
 
 MEDIA_EXPORT ParseStatus::Or<DecimalInteger> ParseDecimalInteger(
     ResolvedSourceString source_str);
@@ -47,23 +256,6 @@ struct MEDIA_EXPORT DecimalResolution {
   types::DecimalInteger height;
 
   types::DecimalInteger Area() const { return width * height; }
-};
-
-// A `ByteRangeExpression` represents the 'length[@offset]' syntax that appears
-// in tags describing byte ranges of a resource.
-// https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.2
-struct MEDIA_EXPORT ByteRangeExpression {
-  static ParseStatus::Or<ByteRangeExpression> Parse(
-      ResolvedSourceString source_str);
-
-  // The length of the sub-range, in bytes.
-  types::DecimalInteger length;
-
-  // If present, the offset in bytes from the beginning of the resource.
-  // If not present, the sub-range begins at the next byte following that of the
-  // previous segment. The previous segment must be a subrange of the same
-  // resource.
-  std::optional<types::DecimalInteger> offset;
 };
 
 // This is similar to `ByteRangeExpression`, but with a stronger contract:
@@ -136,7 +328,7 @@ struct MEDIA_EXPORT AttributeListIterator {
 // This is essentially a `base::fixed_flat_map`, with the advantage of erasing
 // the size of the map from its type.
 struct MEDIA_EXPORT AttributeMap {
-  using Item = std::pair<base::StringPiece, std::optional<SourceString>>;
+  using Item = std::pair<std::string_view, std::optional<SourceString>>;
 
   // Constructs an AttributeMap using the given span to store the keys and
   // values. The keys present must be unique and sorted in alphabetical order.
@@ -166,8 +358,10 @@ struct MEDIA_EXPORT AttributeMap {
     return {{{keys, std::nullopt}...}};
   }
 
+  ~AttributeMap();
+
  private:
-  base::span<Item> items_;
+  base::raw_span<Item> items_;
 };
 
 // Represents a string that is guaranteed to be a non-empty, and consisting only
@@ -177,12 +371,12 @@ class MEDIA_EXPORT VariableName {
  public:
   static ParseStatus::Or<VariableName> Parse(SourceString source_str);
 
-  base::StringPiece GetName() const { return name_; }
+  std::string_view GetName() const { return name_; }
 
  private:
-  explicit VariableName(base::StringPiece name) : name_(name) {}
+  explicit VariableName(std::string_view name) : name_(name) {}
 
-  base::StringPiece name_;
+  std::string_view name_;
 };
 
 // Represents a string that is guaranteed to be non-empty, and consisting only
@@ -192,7 +386,7 @@ class MEDIA_EXPORT VariableName {
 class MEDIA_EXPORT StableId {
  public:
   static ParseStatus::Or<StableId> Parse(ResolvedSourceString str);
-  static StableId CreateForTesting(base::StringPiece str) {
+  static StableId CreateForTesting(std::string_view str) {
     return Parse(ResolvedSourceString::CreateForTesting(str)).value();
   }
 

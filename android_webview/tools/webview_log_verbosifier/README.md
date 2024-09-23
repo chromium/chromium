@@ -12,9 +12,9 @@ but will be compatible with all OS levels (including Android R). The log format
 is identical, so you can [search logcat](#Searching-logcat) as before.
 ***
 
-WebView Log Verbosifier is an empty dummy app (in fact, it cannot be launched).
+WebView Log Verbosifier is an empty app (in fact, it cannot be launched).
 However, if this app is installed, WebView will log the active field trials and
-CommandLine flags, for debugging/QA purposes. A dummy app is used because it can
+CommandLine flags, for debugging/QA purposes. An empty app is used because it can
 be installed on any device (including user builds, where field trials are still
 relevant).
 

@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -25,6 +24,9 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
 
 namespace feed {
 namespace {
@@ -119,7 +121,7 @@ static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
     case static_cast<jint>(ContentOrder::kUnspecified):
       break;
   }
-  NOTREACHED() << "Invalid content order: " << content_order;
+  NOTREACHED_IN_MIGRATION() << "Invalid content order: " << content_order;
 }
 
 static jboolean JNI_FeedServiceBridge_IsSignedIn(JNIEnv* env) {
@@ -143,12 +145,6 @@ DisplayMetrics FeedServiceBridge::GetDisplayMetrics() {
   result.width_pixels = numbers[1];
   result.height_pixels = numbers[2];
   return result;
-}
-
-TabGroupEnabledState FeedServiceBridge::GetTabGroupEnabledState() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return static_cast<TabGroupEnabledState>(
-      Java_FeedServiceBridge_getTabGroupEnabledState(env));
 }
 
 void FeedServiceBridge::ClearAll() {

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_UTIL_H_
 #define IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_UTIL_H_
 
-class ChromeBrowserState;
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 @class OpenNewTabCommand;
 
 namespace feature_engagement {

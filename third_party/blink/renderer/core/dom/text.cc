@@ -33,8 +33,10 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -85,17 +87,20 @@ Node* Text::MergeNextSiblingNodesIfPossible() {
     String next_text_data = next_text->data();
     String old_text_data = data();
     SetDataWithoutUpdate(data() + next_text_data);
-    UpdateTextLayoutObject(old_text_data.length(), 0);
+    UpdateTextLayoutObject(
+        TextDiffRange::Insert(old_text_data.length(), next_text_data.length()));
 
     GetDocument().DidMergeTextNodes(*this, *next_text, offset);
 
     // Empty nextText for layout update.
     next_text->SetDataWithoutUpdate(g_empty_string);
-    next_text->UpdateTextLayoutObject(0, next_text_data.length());
+    next_text->UpdateTextLayoutObject(
+        TextDiffRange::Delete(0, next_text_data.length()));
 
     // Restore nextText for mutation event.
     next_text->SetDataWithoutUpdate(next_text_data);
-    next_text->UpdateTextLayoutObject(0, 0);
+    next_text->UpdateTextLayoutObject(
+        TextDiffRange::Insert(0, next_text_data.length()));
 
     GetDocument().IncDOMTreeVersion();
     DidModifyData(old_text_data, CharacterData::kUpdateFromNonParser);
@@ -129,11 +134,22 @@ Text* Text::splitText(unsigned offset, ExceptionState& exception_state) {
   if (exception_state.HadException())
     return nullptr;
 
-  if (GetLayoutObject()) {
-    GetLayoutObject()->SetTextWithOffset(data(), 0, old_str.length());
-    if (ContainsOnlyWhitespaceOrEmpty()) {
+  if (LayoutText* layout_text = GetLayoutObject()) {
+    if (RuntimeEnabledFeatures::TextDiffSplitFixEnabled()) {
       // To avoid |LayoutText| has empty text, we rebuild layout tree.
-      SetForceReattachLayoutTree();
+      if (ContainsOnlyWhitespaceOrEmpty()) {
+        SetForceReattachLayoutTree();
+      } else {
+        layout_text->SetTextWithOffset(
+            data(), TextDiffRange::Delete(offset, old_str.length() - offset));
+      }
+    } else {
+      layout_text->SetTextWithOffset(
+          data(), TextDiffRange::Delete(0, old_str.length()));
+      if (ContainsOnlyWhitespaceOrEmpty()) {
+        // To avoid |LayoutText| has empty text, we rebuild layout tree.
+        SetForceReattachLayoutTree();
+      }
     }
   }
 
@@ -254,11 +270,6 @@ static inline bool CanHaveWhitespaceChildren(
     const ComputedStyle& style,
     const Text::AttachContext& context) {
   const LayoutObject& parent = *context.parent;
-  // <button> should allow whitespace even though LayoutFlexibleBox doesn't.
-  if (parent.IsButton()) {
-    return true;
-  }
-
   if (parent.IsTable() || parent.IsTableRow() || parent.IsTableSection() ||
       parent.IsLayoutTableCol() || parent.IsFrameSet() ||
       parent.IsFlexibleBox() || parent.IsLayoutGrid() || parent.IsSVGRoot() ||
@@ -454,11 +465,20 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   // editing with the combination of -webkit-text-security in author styles on
   // other elements in combination with ::first-letter.
   // See crbug.com/1240988
-  if (text_layout_object->IsSecure())
+  if (text_layout_object->IsSecure()) {
     return false;
+  }
+  FirstLetterPseudoElement::Punctuation punctuation1 =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  FirstLetterPseudoElement::Punctuation punctuation2 =
+      FirstLetterPseudoElement::Punctuation::kNotSeen;
+  bool preserve_breaks = ShouldPreserveBreaks(
+      text_layout_object->StyleRef().GetWhiteSpaceCollapse());
   if (!FirstLetterPseudoElement::FirstLetterLength(
-          text_layout_object->TransformedText()) &&
-      FirstLetterPseudoElement::FirstLetterLength(text_node.data())) {
+          text_layout_object->TransformedText(), preserve_breaks,
+          punctuation1) &&
+      FirstLetterPseudoElement::FirstLetterLength(
+          text_node.data(), preserve_breaks, punctuation2)) {
     // We did not previously apply ::first-letter styles to this |text_node|,
     // and if there was no first formatted letter, but now is, we may need to
     // reattach.
@@ -467,18 +487,15 @@ static bool ShouldUpdateLayoutByReattaching(const Text& text_node,
   return false;
 }
 
-void Text::UpdateTextLayoutObject(unsigned offset_of_replaced_data,
-                                  unsigned length_of_replaced_data) {
+void Text::UpdateTextLayoutObject(const TextDiffRange& diff) {
   if (!InActiveDocument())
     return;
   LayoutText* text_layout_object = GetLayoutObject();
   if (ShouldUpdateLayoutByReattaching(*this, text_layout_object)) {
     SetForceReattachLayoutTree();
-    return;
+  } else {
+    text_layout_object->SetTextWithOffset(data(), diff);
   }
-
-  text_layout_object->SetTextWithOffset(data(), offset_of_replaced_data,
-                                        length_of_replaced_data);
 }
 
 CharacterData* Text::CloneWithData(Document& factory,

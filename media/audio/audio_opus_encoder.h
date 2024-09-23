@@ -87,6 +87,17 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // Encoder()
   EncoderStatusCB current_done_cb_;
 
+  // Recommended value for opus_encode_float(), according to documentation in
+  // third_party/opus/src/include/opus.h, so that the Opus encoder does not
+  // degrade the audio due to memory constraints, and is independent of the
+  // duration of the encoded buffer.
+  static inline constexpr int kOpusMaxDataBytes = 4000;
+
+  // Fixed size buffer that all frames are encoded too. Most encoded data is
+  // generally only a few hundred bytes, so we copy out from this buffer when
+  // vending encoded packets.
+  std::array<uint8_t, kOpusMaxDataBytes> encoding_buffer_;
+
   // True if the next output needs to have extra_data in it, only happens once.
   bool need_to_emit_extra_data_ = true;
 };

@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.net.SecureDnsManagementMode;
 import org.chromium.net.SecureDnsMode;
 
@@ -36,19 +35,6 @@ class SecureDnsBridge {
         public String toString() {
             return name;
         }
-    }
-
-    /**
-     * @return Whether the DoH UI field trial is active on this instance.
-     */
-    static boolean isUiEnabled() {
-        // Must match features::kDnsOverHttpsShowUiParam.
-        final String showUiParam = "ShowUi";
-        // Must match the default value for this param.
-        final boolean showUiParamDefault = true;
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.DNS_OVER_HTTPS, showUiParam, showUiParamDefault);
     }
 
     /**

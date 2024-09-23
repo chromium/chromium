@@ -10,9 +10,10 @@
 #import "components/supervised_user/core/browser/family_link_user_log_record.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 
@@ -20,16 +21,15 @@ IOSFamilyLinkUserMetricsProvider::IOSFamilyLinkUserMetricsProvider() = default;
 IOSFamilyLinkUserMetricsProvider::~IOSFamilyLinkUserMetricsProvider() = default;
 
 bool IOSFamilyLinkUserMetricsProvider::ProvideHistograms() {
-  std::vector<ChromeBrowserState*> browser_state_list =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
   std::vector<supervised_user::FamilyLinkUserLogRecord> records;
-  for (ChromeBrowserState* browser_state : browser_state_list) {
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     supervised_user::SupervisedUserService* service =
-        SupervisedUserServiceFactory::GetForBrowserState(browser_state);
+        SupervisedUserServiceFactory::GetForProfile(browser_state);
     records.push_back(supervised_user::FamilyLinkUserLogRecord::Create(
-        IdentityManagerFactory::GetForBrowserState(browser_state),
+        IdentityManagerFactory::GetForProfile(browser_state),
+        *browser_state->GetPrefs(),
+        *ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
         service ? service->GetURLFilter() : nullptr));
   }
   return supervised_user::EmitLogRecordHistograms(records);

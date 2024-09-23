@@ -205,8 +205,9 @@ class ArcTermsOfServiceDefaultNegotiatorTest
 
   // BrowserWithTestWindowTest:
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{ConsentAuditorFactory::GetInstance(),
-             base::BindRepeating(&BuildFakeConsentAuditor)}};
+    return {TestingProfile::TestingFactory{
+        ConsentAuditorFactory::GetInstance(),
+        base::BindRepeating(&BuildFakeConsentAuditor)}};
   }
 
  protected:
@@ -296,7 +297,7 @@ std::ostream& operator<<(std::ostream& os, Status status) {
       return os << "CANCELLED";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return os;
 }
 
@@ -422,6 +423,8 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
     profile()->GetTestingPrefService()->SetBoolean(
         prefs::kArcInitialLocationSettingSyncRequired, true);
+    profile()->GetTestingPrefService()->SetBoolean(
+        ash::prefs::kUserGeolocationAccuracyEnabled, true);
     profile()->GetTestingPrefService()->SetInteger(
         ash::prefs::kUserGeolocationAccessLevel,
         static_cast<int>(ash::GeolocationAccessLevel::kAllowed));
@@ -456,6 +459,8 @@ TEST_F(ArcTermsOfServiceDefaultNegotiatorTest, AcceptWithLocationDisabled) {
   if (base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub)) {
     EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
         prefs::kArcInitialLocationSettingSyncRequired));
+    EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+        ash::prefs::kUserGeolocationAccuracyEnabled));
     EXPECT_EQ(ash::GeolocationAccessLevel::kDisallowed,
               static_cast<ash::GeolocationAccessLevel>(
                   profile()->GetPrefs()->GetInteger(

@@ -12,7 +12,6 @@
 #include <wchar.h>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 

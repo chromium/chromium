@@ -40,13 +40,17 @@ void UpdateBookmarksForSubscriptionsResult(
     uint64_t cluster_id,
     bool success) {
   if (success) {
-    std::vector<const bookmarks::BookmarkNode*> results;
     power_bookmarks::PowerBookmarkQueryFields query;
     query.type = power_bookmarks::PowerBookmarkType::SHOPPING;
-    power_bookmarks::GetBookmarksMatchingProperties(model.get(), query, -1,
-                                                    &results);
+    std::vector<const bookmarks::BookmarkNode*> results =
+        power_bookmarks::GetBookmarksMatchingProperties(model.get(), query, -1);
 
-    for (const auto* node : results) {
+    for (const bookmarks::BookmarkNode* node : results) {
+      CHECK(node);
+      if (model->IsLocalOnlyNode(*node)) {
+        continue;
+      }
+
       std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
           power_bookmarks::GetNodePowerBookmarkMeta(model.get(), node);
 
@@ -129,15 +133,21 @@ void SetPriceTrackingStateForClusterId(
     const uint64_t cluster_id,
     bool enabled,
     base::OnceCallback<void(bool)> callback) {
-  if (!service || !model)
+  if (!service || !model) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
+  }
 
   std::vector<const bookmarks::BookmarkNode*> product_bookmarks =
       GetBookmarksWithClusterId(model, cluster_id, 1);
-  if (product_bookmarks.size() > 0) {
+  if (product_bookmarks.empty()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
     SetPriceTrackingStateForBookmark(service, model, product_bookmarks[0],
                                      enabled, std::move(callback));
-  }
 }
 
 void SetPriceTrackingStateForBookmark(
@@ -147,8 +157,11 @@ void SetPriceTrackingStateForBookmark(
     bool enabled,
     base::OnceCallback<void(bool)> callback,
     bool was_bookmark_created_by_price_tracking) {
-  if (!service || !model || !node)
+  if (!service || !model || !node || model->IsLocalOnlyNode(*node)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
+  }
 
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       power_bookmarks::GetNodePowerBookmarkMeta(model, node);
@@ -162,8 +175,11 @@ void SetPriceTrackingStateForBookmark(
         service->GetAvailableProductInfoForUrl(node->url());
 
     // If still no information, do nothing.
-    if (!info.has_value())
+    if (!info.has_value()) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), false));
       return;
+    }
 
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> newMeta =
         std::make_unique<power_bookmarks::PowerBookmarkMeta>();
@@ -180,8 +196,11 @@ void SetPriceTrackingStateForBookmark(
   power_bookmarks::ShoppingSpecifics* specifics =
       meta->mutable_shopping_specifics();
 
-  if (!specifics || !specifics->has_product_cluster_id())
+  if (!specifics || !specifics->has_product_cluster_id()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
+  }
 
   std::unique_ptr<std::vector<CommerceSubscription>> subs =
       std::make_unique<std::vector<CommerceSubscription>>();
@@ -190,7 +209,7 @@ void SetPriceTrackingStateForBookmark(
   if (enabled) {
     user_seen_offer.emplace(base::NumberToString(specifics->offer_id()),
                             specifics->current_price().amount_micros(),
-                            specifics->country_code());
+                            specifics->country_code(), specifics->locale());
   }
   CommerceSubscription sub(
       SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
@@ -252,9 +271,10 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithClusterId(
 
 void GetAllPriceTrackedBookmarks(
     ShoppingService* shopping_service,
+    bookmarks::BookmarkModel* bookmark_model,
     base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
         callback) {
-  if (!shopping_service) {
+  if (!shopping_service || !bookmark_model) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -266,9 +286,13 @@ void GetAllPriceTrackedBookmarks(
       SubscriptionType::kPriceTrack,
       base::BindOnce(
           [](base::WeakPtr<ShoppingService> service,
+             base::WeakPtr<bookmarks::BookmarkModel> model,
              base::OnceCallback<void(
                  std::vector<const bookmarks::BookmarkNode*>)> callback,
              std::vector<CommerceSubscription> subscriptions) {
+            std::vector<const bookmarks::BookmarkNode*> shopping_bookmarks =
+                GetAllShoppingBookmarks(model.get());
+
             // Get all cluster IDs in a map for easier lookup.
             std::unordered_set<uint64_t> cluster_set;
             for (auto sub : subscriptions) {
@@ -280,14 +304,10 @@ void GetAllPriceTrackedBookmarks(
               }
             }
 
-            bookmarks::BookmarkModel* model =
-                service->GetBookmarkModelUsedForSync();
-            std::vector<const bookmarks::BookmarkNode*> shopping_bookmarks =
-                GetAllShoppingBookmarks(model);
             std::vector<const bookmarks::BookmarkNode*> tracked_bookmarks;
             for (const bookmarks::BookmarkNode* node : shopping_bookmarks) {
               std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-                  power_bookmarks::GetNodePowerBookmarkMeta(model, node);
+                  power_bookmarks::GetNodePowerBookmarkMeta(model.get(), node);
 
               if (!meta || !meta->has_shopping_specifics()) {
                 continue;
@@ -304,19 +324,25 @@ void GetAllPriceTrackedBookmarks(
             }
             std::move(callback).Run(std::move(tracked_bookmarks));
           },
-          shopping_service->AsWeakPtr(), std::move(callback)));
+          shopping_service->AsWeakPtr(), bookmark_model->AsWeakPtr(),
+          std::move(callback)));
 }
 
 std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(
     bookmarks::BookmarkModel* model) {
   CHECK(model);
 
-  std::vector<const bookmarks::BookmarkNode*> results;
   power_bookmarks::PowerBookmarkQueryFields query;
   query.type = power_bookmarks::PowerBookmarkType::SHOPPING;
-  power_bookmarks::GetBookmarksMatchingProperties(model, query, -1, &results);
 
-  return results;
+  std::vector<const bookmarks::BookmarkNode*> nodes =
+      power_bookmarks::GetBookmarksMatchingProperties(model, query, -1);
+
+  std::erase_if(nodes, [model](const bookmarks::BookmarkNode* node) {
+    return model->IsLocalOnlyNode(*node);
+  });
+
+  return nodes;
 }
 
 bool PopulateOrUpdateBookmarkMetaIfNeeded(
@@ -428,8 +454,10 @@ std::optional<std::u16string> GetBookmarkParentName(
     const GURL& url) {
   const bookmarks::BookmarkNode* node =
       model->GetMostRecentlyAddedUserNodeForURL(url);
-  return node ? std::optional<std::u16string>(node->parent()->GetTitle())
-              : std::nullopt;
+  if (!node || model->IsLocalOnlyNode(*node)) {
+    return std::nullopt;
+  }
+  return std::optional<std::u16string>(node->parent()->GetTitle());
 }
 
 const bookmarks::BookmarkNode* GetShoppingCollectionBookmarkFolder(
@@ -479,7 +507,7 @@ std::optional<uint64_t> GetProductClusterIdFromBookmark(
   const bookmarks::BookmarkNode* node =
       model->GetMostRecentlyAddedUserNodeForURL(url);
 
-  if (!node) {
+  if (!node || model->IsLocalOnlyNode(*node)) {
     return std::nullopt;
   }
 

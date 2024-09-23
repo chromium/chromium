@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -29,8 +30,11 @@ public class TabSwitcherPaneDrawableCoordinator {
     public TabSwitcherPaneDrawableCoordinator(
             @NonNull Context context, @NonNull TabModelSelector tabModelSelector) {
         @BrandedColorScheme int brandedColorScheme = BrandedColorScheme.APP_DEFAULT;
+        @TabSwitcherDrawableLocation
+        int tabSwitcherDrawableLocation = TabSwitcherDrawableLocation.HUB_TOOLBAR;
         mTabSwitcherDrawable =
-                TabSwitcherDrawable.createTabSwitcherDrawable(context, brandedColorScheme);
+                TabSwitcherDrawable.createTabSwitcherDrawable(
+                        context, brandedColorScheme, tabSwitcherDrawableLocation);
         PropertyModel model =
                 new PropertyModel.Builder(TabSwitcherPaneDrawableProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(

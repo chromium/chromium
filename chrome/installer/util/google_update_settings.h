@@ -85,12 +85,12 @@ class GoogleUpdateSettings {
   // synchronously on first run, startup, etc.).
   static base::SequencedTaskRunner* CollectStatsConsentTaskRunner();
 
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX)
   // Returns whether the user has given consent to collect UMA data and send
   // crash dumps to Google. This method reads the information from a custom
   // directory.
   static bool GetCollectStatsConsentFromDir(const base::FilePath& consent_dir);
-#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX)
 
   // Returns whether the user has given consent to collect UMA data and send
   // crash dumps to Google. This information is collected by the web server

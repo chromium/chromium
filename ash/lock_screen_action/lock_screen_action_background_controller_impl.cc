@@ -99,6 +99,7 @@ views::Widget* LockScreenActionBackgroundControllerImpl::CreateWidget() {
   contents_view_ = new LockScreenActionBackgroundView();
 
   views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = kLockScreenActionBackgroundWidgetName;

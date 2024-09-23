@@ -2,18 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
 
 using InstallResult =
@@ -26,11 +32,11 @@ class SubAppsPermissionsPolicyBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
   base::ScopedTempDir scoped_temp_dir_;
   base::FilePath bundle_path_;
-  web_package::WebBundleSigner::KeyPair key_pair_ =
-      web_package::WebBundleSigner::KeyPair::CreateRandom();
+  web_package::test::Ed25519KeyPair key_pair_ =
+      web_package::test::Ed25519KeyPair::CreateRandom();
 
   TestSignedWebBundle CreateBundle() const {
-    constexpr base::StringPiece manifest =
+    constexpr std::string_view manifest =
         R"({
           "name": "Sub apps test app",
           "id": "/",
@@ -43,7 +49,7 @@ class SubAppsPermissionsPolicyBrowserTest
           "theme_color": "#000077",
           "icons": [
             {
-              "src": "256x256-green.png",
+              "src": "/256x256-green.png",
               "sizes": "256x256",
               "type": "image/png"
             }
@@ -94,12 +100,13 @@ class SubAppsPermissionsPolicyBrowserTest
   }
 
   void InstallIwaApp() {
-    auto source_location =
-        IsolatedWebAppLocation(DevModeBundle{.path = bundle_path_});
+    auto install_source = IsolatedWebAppInstallSource::FromGraphicalInstaller(
+        IwaSourceBundleProdModeWithFileOp(bundle_path_,
+                                          IwaSourceBundleProdFileOp::kCopy));
 
     IsolatedWebAppUrlInfo url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-            web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+            web_package::SignedWebBundleId::CreateForPublicKey(
                 key_pair_.public_key));
 
     parent_app_id_ = url_info.app_id();
@@ -107,8 +114,9 @@ class SubAppsPermissionsPolicyBrowserTest
     base::test::TestFuture<InstallResult> future;
     auto installed_version = base::Version("1.0.0");
 
+    SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
     provider().scheduler().InstallIsolatedWebApp(
-        url_info, source_location, installed_version,
+        url_info, install_source, installed_version,
         /*optional_keep_alive*/ nullptr,
         /*optional_profile_keep_alive*/ nullptr, future.GetCallback());
 

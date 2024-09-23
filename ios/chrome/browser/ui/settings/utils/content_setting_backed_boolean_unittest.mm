@@ -9,7 +9,7 @@
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/fake_observable_boolean.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +23,7 @@ class ContentSettingBackedBooleanTest : public PlatformTest {
  public:
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_ = std::move(test_cbs_builder).Build();
     observable_boolean_ = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:SettingsMap()
                              settingID:kTestContentSettingID

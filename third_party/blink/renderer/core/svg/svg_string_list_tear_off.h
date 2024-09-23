@@ -51,14 +51,14 @@ class SVGStringListTearOff final : public SVGPropertyTearOffBase {
   void clear(ExceptionState& exception_state) {
     DCHECK(!IsImmutable());
     list_->Clear();
-    CommitChange();
+    CommitChange(SVGPropertyCommitReason::kListCleared);
   }
 
   String initialize(const String& item, ExceptionState& exception_state) {
     DCHECK(!IsImmutable());
     list_->Clear();
     list_->Append(item);
-    CommitChange();
+    CommitChange(SVGPropertyCommitReason::kUpdated);
     return item;
   }
 
@@ -82,7 +82,7 @@ class SVGStringListTearOff final : public SVGPropertyTearOffBase {
     // item is number 0. If the index is equal to 0, then the new item is
     // inserted at the front of the list.
     list_->Insert(index, item);
-    CommitChange();
+    CommitChange(SVGPropertyCommitReason::kUpdated);
     return item;
   }
 
@@ -95,7 +95,7 @@ class SVGStringListTearOff final : public SVGPropertyTearOffBase {
       return String();
     }
     list_->Replace(index, item);
-    CommitChange();
+    CommitChange(SVGPropertyCommitReason::kUpdated);
     return item;
   }
 
@@ -115,14 +115,15 @@ class SVGStringListTearOff final : public SVGPropertyTearOffBase {
     }
     String removed_item = list_->Values()[index];
     list_->Remove(index);
-    CommitChange();
+    CommitChange(list_->length() == 0 ? SVGPropertyCommitReason::kListCleared
+                                      : SVGPropertyCommitReason::kUpdated);
     return removed_item;
   }
 
   String appendItem(const String& item, ExceptionState& exception_state) {
     DCHECK(!IsImmutable());
     list_->Append(item);
-    CommitChange();
+    CommitChange(SVGPropertyCommitReason::kUpdated);
     return item;
   }
 

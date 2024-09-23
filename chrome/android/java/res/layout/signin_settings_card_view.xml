@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/PreferenceLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+        style="@style/MaterialCardStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/signin_settings_card">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:gravity="top|start"
+                android:orientation="horizontal">
+
+                <!-- a correct contentDescription should be set from Java -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@null"
+                    android:id="@+id/signin_settings_card_icon"
+                    android:scaleType="fitCenter"/>
+
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:id="@+id/signin_settings_card_description"
+                    android:includeFontPadding="false"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                    app:leading="@dimen/text_size_medium_leading"/>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <org.chromium.ui.widget.ButtonCompat
+                    style="@style/FilledButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:ellipsize="end"
+                    android:id="@+id/signin_settings_card_button"
+                    android:singleLine="true"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+
+</FrameLayout>
+

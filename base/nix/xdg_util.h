@@ -8,14 +8,19 @@
 // XDG refers to http://en.wikipedia.org/wiki/Freedesktop.org .
 // This file contains utilities found across free desktop environments.
 
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 
 namespace base {
 
+class CommandLine;
 class Environment;
 class FilePath;
+struct LaunchOptions;
 
 namespace nix {
 
@@ -52,6 +57,12 @@ enum class SessionType {
   kMir = 6,
 };
 
+using XdgActivationTokenCallback = base::OnceCallback<void(std::string token)>;
+using XdgActivationTokenCreator =
+    base::RepeatingCallback<void(XdgActivationTokenCallback callback)>;
+using XdgActivationLaunchOptionsCallback =
+    base::OnceCallback<void(LaunchOptions)>;
+
 // The default XDG config directory name.
 BASE_EXPORT extern const char kDotConfigDir[];
 
@@ -64,12 +75,20 @@ BASE_EXPORT extern const char kXdgCurrentDesktopEnvVar[];
 // The XDG session type environment variable.
 BASE_EXPORT extern const char kXdgSessionTypeEnvVar[];
 
+// The XDG activation token environment variable.
+BASE_EXPORT extern const char kXdgActivationTokenEnvVar[];
+
+// Internally used to communicate the activation token between a newly launched
+// process and an existing browser process.
+BASE_EXPORT extern const char kXdgActivationTokenSwitch[];
+
 // Utility function for getting XDG directories.
 // |env_name| is the name of an environment variable that we want to use to get
 // a directory path. |fallback_dir| is the directory relative to $HOME that we
 // use if |env_name| cannot be found or is empty. |fallback_dir| may be NULL.
 // Examples of |env_name| are XDG_CONFIG_HOME and XDG_DATA_HOME.
-BASE_EXPORT FilePath GetXDGDirectory(Environment* env, const char* env_name,
+BASE_EXPORT FilePath GetXDGDirectory(Environment* env,
+                                     const char* env_name,
                                      const char* fallback_dir);
 
 // Wrapper around xdg_user_dir_lookup() from src/base/third_party/xdg-user-dirs
@@ -104,6 +123,35 @@ BASE_EXPORT const char* GetDesktopEnvironmentName(Environment* env);
 // Return an entry from the SessionType enum with a best guess
 // of which session type we're using.
 BASE_EXPORT SessionType GetSessionType(Environment& env);
+
+// Sets the global activation token from the environment and returns it if it
+// exists, and removes it from the environment to prevent it from leaking into
+// child processes.
+BASE_EXPORT std::optional<std::string> ExtractXdgActivationTokenFromEnv(
+    Environment& env);
+
+// Sets the global activation token from the command line if it exists and
+// removes it from the command line.
+BASE_EXPORT void ExtractXdgActivationTokenFromCmdLine(
+    base::CommandLine& cmd_line);
+
+// Transfers ownership of the currently set global activation token if set.
+BASE_EXPORT std::optional<std::string> TakeXdgActivationToken();
+
+// Sets the global token creator.
+BASE_EXPORT void SetXdgActivationTokenCreator(
+    XdgActivationTokenCreator token_creator);
+
+// Tries to create an xdg-activation token and invokes the `callback` with
+// `LaunchOptions` containing the token if available, or empty `LaunchOptions`.
+BASE_EXPORT void CreateLaunchOptionsWithXdgActivation(
+    XdgActivationLaunchOptionsCallback callback);
+
+// Returns a request path as specified in v0.9 of xdg-desktop-portal:
+// https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Request.html
+BASE_EXPORT
+std::string XdgDesktopPortalRequestPath(const std::string& sender,
+                                        const std::string& token);
 
 }  // namespace nix
 }  // namespace base

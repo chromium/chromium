@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stdint.h>
 
 #include <memory>
@@ -15,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -54,14 +60,21 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #endif
 
 using blink::NotificationResources;
@@ -354,66 +367,50 @@ TEST_F(PlatformNotificationServiceTest, NextPersistentNotificationId) {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-TEST_F(PlatformNotificationServiceTest, IncomingCallWebApp) {
-  // If there is no WebAppProvider, IsActivelyInstalledWebAppScope should return
-  // false.
-  const GURL web_app_url{"https://example.org/"};
-  EXPECT_FALSE(service()->IsActivelyInstalledWebAppScope(web_app_url));
-
-  // If there is no web app installed for the provided url,
-  // IsActivelyInstalledWebAppScope should return false.
-  web_app::FakeWebAppProvider* provider =
-      web_app::FakeWebAppProvider::Get(profile_.get());
-  provider->Start();
-  EXPECT_FALSE(service()->IsActivelyInstalledWebAppScope(web_app_url));
-
-  // IsActivelyInstalledWebAppScope should return true only if there is an
-  // installed web app for the provided URL.
-  std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp();
-  const GURL installed_web_app_url = web_app->start_url();
-  const webapps::AppId app_id = web_app->app_id();
-  web_app->SetName("Web App Title");
-
-  provider->GetRegistrarMutable().registry().emplace(app_id,
-                                                     std::move(web_app));
-
-  EXPECT_TRUE(service()->IsActivelyInstalledWebAppScope(installed_web_app_url));
-
-  // If the app is not installed anymore, IsActivelyInstalledWebAppScope should
-  // return false.
-  raw_ptr<web_app::WebApp> installed_web_app =
-      provider->GetRegistrarMutable().GetAppByIdMutable(app_id);
-  installed_web_app->SetIsUninstalling(true);
-  EXPECT_FALSE(
-      service()->IsActivelyInstalledWebAppScope(installed_web_app_url));
-}
-
 class PlatformNotificationServiceTest_WebApps
     : public PlatformNotificationServiceTest {
  public:
   void SetUp() override {
     PlatformNotificationServiceTest::SetUp();
 
-    web_app::FakeWebAppProvider* provider =
-        web_app::FakeWebAppProvider::Get(profile_.get());
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
 
-    std::unique_ptr<web_app::WebApp> web_app =
-        web_app::test::CreateWebApp(kWebAppStartUrl);
-    installed_app_id = web_app->app_id();
-    provider->GetRegistrarMutable().registry().emplace(installed_app_id,
-                                                       std::move(web_app));
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForTest(profile_.get());
 
-    web_app = web_app::test::CreateWebApp(kInstalledNestedWebAppStartUrl);
-    nested_installed_app_id = web_app->app_id();
-    provider->GetRegistrarMutable().registry().emplace(nested_installed_app_id,
-                                                       std::move(web_app));
+    std::unique_ptr<web_app::WebAppInstallInfo> web_app =
+        web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            kWebAppStartUrl);
+    web_app->title = u"Test app 1";
+    installed_app_id =
+        web_app::test::InstallWebApp(profile_.get(), std::move(web_app));
 
-    web_app = web_app::test::CreateWebApp(kNotInstalledNestedWebAppStartUrl);
-    web_app->SetIsLocallyInstalled(false);
-    not_installed_app_id = web_app->app_id();
-    provider->GetRegistrarMutable().registry().emplace(not_installed_app_id,
-                                                       std::move(web_app));
-    provider->Start();
+    web_app = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+        kInstalledNestedWebAppStartUrl);
+    web_app->title = u"Test app 2";
+    nested_installed_app_id =
+        web_app::test::InstallWebApp(profile_.get(), std::move(web_app));
+
+    web_app = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+        kNotInstalledNestedWebAppStartUrl);
+    web_app->title = u"Test app 3";
+    web_app::WebAppInstallParams params;
+    params.install_state =
+        web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE;
+    // OS Hooks must be disabled for non-locally installed app.
+    params.add_to_applications_menu = false;
+    params.add_to_desktop = false;
+    params.add_to_quick_launch_bar = false;
+
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        future;
+    provider->scheduler().InstallFromInfoWithParams(
+        std::move(web_app), /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        future.GetCallback(), params);
+    ASSERT_TRUE(future.Wait());
+    EXPECT_EQ(future.Get<webapps::InstallResultCode>(),
+              webapps::InstallResultCode::kSuccessNewInstall);
   }
 
  protected:
@@ -437,8 +434,38 @@ class PlatformNotificationServiceTest_WebApps
 
   webapps::AppId installed_app_id;
   webapps::AppId nested_installed_app_id;
-  webapps::AppId not_installed_app_id;
+
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration fake_os_integration_;
 };
+
+TEST_F(PlatformNotificationServiceTest_WebApps, IncomingCallWebApp) {
+  EXPECT_FALSE(service()->IsActivelyInstalledWebAppScope(
+      kNotInstalledNestedWebAppStartUrl));
+  EXPECT_TRUE(service()->IsActivelyInstalledWebAppScope(kWebAppStartUrl));
+
+  web_app::test::UninstallAllWebApps(profile_.get());
+  EXPECT_FALSE(service()->IsActivelyInstalledWebAppScope(kWebAppStartUrl));
+}
+
+TEST_F(PlatformNotificationServiceTest_WebApps, CreateNotificationFromData) {
+  PlatformNotificationData notification_data;
+  notification_data.title = u"My Notification";
+  notification_data.body = u"Hello, world!";
+
+  GURL origin = url::Origin::Create(kWebAppStartUrl).GetURL();
+
+  Notification notification = service()->CreateNotificationFromData(
+      origin, "id", notification_data, NotificationResources(),
+      /*web_app_hint_url=*/kWebAppStartUrl);
+  EXPECT_EQ(notification.notifier_id().web_app_id, installed_app_id);
+
+  Notification nested_notification = service()->CreateNotificationFromData(
+      origin, "id", notification_data, NotificationResources(),
+      /*web_app_hint_url=*/kInstalledNestedWebAppStartUrl);
+  EXPECT_EQ(nested_notification.notifier_id().web_app_id,
+            nested_installed_app_id);
+}
 
 TEST_F(PlatformNotificationServiceTest_WebApps, PopulateWebAppId_MatchesScope) {
   service()->DisplayNotification(kNotificationId, kWebAppOrigin,

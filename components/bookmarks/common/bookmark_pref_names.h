@@ -30,6 +30,12 @@ inline constexpr char kManagedBookmarksFolderName[] =
 // bar.
 inline constexpr char kShowAppsShortcutInBookmarkBar[] =
     "bookmark_bar.show_apps_shortcut";
+
+// Boolean which specifies whether the saved tab groups are visible on the
+// bookmark bar.
+inline constexpr char kShowTabGroupsInBookmarkBar[] =
+    "bookmark_bar.show_tab_groups";
+
 // Boolean which specifies whether the Managed Bookmarks folder is visible on
 // the bookmark bar.
 inline constexpr char kShowManagedBookmarksInBookmarkBar[] =

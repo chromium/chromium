@@ -51,9 +51,6 @@ public class TrackExitReasonsOfInterest {
     public static final String UMA_COUNTS = "Android.WebView.HistoricalApplicationExitInfo.Counts";
     private static long sTestTime;
     private static int sPid;
-    private static int sMockedSystemExitReason;
-    private static int sTestCount;
-    private static boolean sUseMockedSystemExitReason;
 
     @VisibleForTesting public static final Map<Integer, String> sUmaSuffixMap = createMap();
 
@@ -76,13 +73,10 @@ public class TrackExitReasonsOfInterest {
     private static Supplier<Integer> sAppStateSupplier;
     private static @AppState int sLastStateWritten;
 
-    /**
-     *
-     * Posts the exit reason tracker work in task runner queue.
-     */
+    /** Posts the exit reason tracker work in task runner queue. */
     public static void init(Supplier<Integer> stateSupplier) {
         sAppStateSupplier = stateSupplier;
-        sSequencedTaskRunner.postTask(
+        sSequencedTaskRunner.execute(
                 () -> {
                     run();
                 });
@@ -226,7 +220,7 @@ public class TrackExitReasonsOfInterest {
     @VisibleForTesting
     public static void writeLastWebViewState(final Callback<Boolean> callbackResult) {
         int pid = sPid != 0 ? sPid : Process.myPid();
-        sSequencedTaskRunner.postTask(
+        sSequencedTaskRunner.execute(
                 () -> {
                     @AppState int currentState = sAppStateSupplier.get();
                     if (sLastStateWritten != currentState) {

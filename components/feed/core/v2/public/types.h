@@ -8,9 +8,9 @@
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "base/version.h"
@@ -38,8 +38,8 @@ std::ostream& operator<<(std::ostream& os, const AccountInfo& o);
 
 enum class RefreshTaskId {
   kRefreshForYouFeed,
-  // TODO(1152592): Refresh is not currently used for the Web Feed. Remove
-  // this code if we don't need it.
+  // TODO(crbug.com/40158714): Refresh is not currently used for the Web Feed.
+  // Remove this code if we don't need it.
   kRefreshWebFeed,
 };
 
@@ -58,7 +58,6 @@ enum class AccountTokenFetchStatus {
 struct ChromeInfo {
   version_info::Channel channel{};
   base::Version version;
-  bool start_surface = false;
   bool is_new_tab_search_engine_url_android_enabled = false;
 };
 // Device display metrics.
@@ -75,9 +74,11 @@ using ImageFetchId = base::IdTypeU32<class ImageFetchIdClass>;
 
 struct NetworkResponseInfo {
   NetworkResponseInfo();
-  ~NetworkResponseInfo();
   NetworkResponseInfo(const NetworkResponseInfo&);
+  NetworkResponseInfo(NetworkResponseInfo&&);
   NetworkResponseInfo& operator=(const NetworkResponseInfo&);
+  NetworkResponseInfo& operator=(NetworkResponseInfo&&);
+  ~NetworkResponseInfo();
 
   // A union of net::Error (if the request failed) and the http
   // status code(if the request succeeded in reaching the server).
@@ -131,7 +132,7 @@ struct DebugStreamData {
 
 std::string SerializeDebugStreamData(const DebugStreamData& data);
 std::optional<DebugStreamData> DeserializeDebugStreamData(
-    base::StringPiece base64_encoded);
+    std::string_view base64_encoded);
 
 // Information about a web page which may be used to determine an associated
 // web feed.

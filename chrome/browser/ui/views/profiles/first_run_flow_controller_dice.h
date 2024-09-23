@@ -52,28 +52,20 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
       Profile* signed_in_profile,
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
-  base::queue<ProfileManagementFlowController::Step> RegisterPostIdentitySteps()
-      override;
+  base::queue<ProfileManagementFlowController::Step> RegisterPostIdentitySteps(
+      PostHostClearedCallback post_host_cleared_callback) override;
 
  private:
   void HandleIntroSigninChoice(IntroChoice choice);
 
-  // To be called when the sign-in and/or sync steps of the flow are completed
-  // (or skipped), to proceed with additional steps or finish the flow.
-  //
-  // When `is_continue_callback` is true, the flow should finishing up
-  // immediately so that `post_host_cleared_callback` can be executed, without
-  // showing other steps.
-  void HandleIdentityStepsCompleted(
-      PostHostClearedCallback post_host_cleared_callback,
-      bool is_continue_callback = false);
+  // Run the `finish_flow_callback_` if it's not empty.
+  void RunFinishFlowCallback();
 
   const raw_ptr<Profile> profile_;
   ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
 
-  // Callback that will be run when the whole flow is completed, after the
-  // host is cleared.
-  PostHostClearedCallback post_host_cleared_callback_;
+  // The callback that will finish the flow and open the browser.
+  base::OnceClosure finish_flow_callback_;
 
   base::WeakPtrFactory<FirstRunFlowControllerDice> weak_ptr_factory_{this};
 };

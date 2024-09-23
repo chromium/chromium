@@ -63,7 +63,7 @@ void LogTabStripOrganizationUKM(
                            : 0)
         .SetIsActiveTab(tab_index == tab_strip_model->active_index())
         .SetMinutesSinceLastActive(ukm::GetExponentialBucketMin(
-            (base::TimeTicks::Now() - contents->GetLastActiveTime())
+            (base::TimeTicks::Now() - contents->GetLastActiveTimeTicks())
                 .InMinutes(),
             /*bucket_spacing=*/1.3))
         .SetSuggestedTabStripOrganizationReason(

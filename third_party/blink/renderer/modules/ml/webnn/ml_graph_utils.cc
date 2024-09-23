@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <numeric>
-
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 
+#include <numeric>
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
@@ -55,7 +58,7 @@ HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
       // operators are visited or not.
       bool skip_visit = false;
       for (const auto& operand : current_operator->Inputs()) {
-        if (operand->Kind() == MLOperand::OperandKind::kOutput) {
+        if (operand->Kind() == webnn::mojom::blink::Operand::Kind::kOutput) {
           const auto* dependent_operator = operand->Operator();
           CHECK(dependent_operator);
           if (!visited_operators.Contains(dependent_operator)) {
@@ -88,9 +91,13 @@ std::optional<ArrayBufferViewInfo> TransferArrayBufferView(
     v8::Isolate* isolate,
     NotShared<DOMArrayBufferView> source_view,
     ExceptionState& exception_state) {
-  // A detached ArrayBufferView should be caught by
-  // `ValidateNamedArrayBufferViews()` called in `MLGraph::ComputeAsync()`.
-  CHECK(!source_view->IsDetached());
+  // Need to check whether each `ArrayBufferView` of `NamedArrayBufferViews` is
+  // detached because transferring an `ArrayBuffer` would impact all
+  // `ArrayBufferView`s sharing the same `ArrayBuffer`.
+  if (source_view->IsDetached()) {
+    exception_state.ThrowTypeError("The ArrayBuffer is detached.");
+    return std::nullopt;
+  }
 
   // Avoid transferring a non-detachable ArrayBuffer.
   // `DOMArrayBuffer::Transfer()` would make a copy if the ArrayBuffer is not
@@ -98,8 +105,7 @@ std::optional<ArrayBufferViewInfo> TransferArrayBufferView(
   // ArrayBuffer of WebIDL spec:
   // https://webidl.spec.whatwg.org/#arraybuffer-transfer
   if (!source_view->buffer()->IsDetachable(isolate)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The ArrayBuffer is not detachable.");
+    exception_state.ThrowTypeError("The ArrayBuffer is not detachable.");
     return std::nullopt;
   }
 
@@ -171,7 +177,7 @@ DOMArrayBufferView* CreateArrayBufferView(ArrayBufferViewInfo view_info) {
     default:
       // Other ArrayBufferView types should not pass the
       // `ValidateNamedArrayBufferViews()` and reach here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return target_view;
 }
@@ -204,16 +210,28 @@ MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
   return target_views;
 }
 
-webnn::AutoPad BlinkAutoPadToComponent(blink::V8MLAutoPad::Enum type) {
-  switch (type) {
-    case blink::V8MLAutoPad::Enum::kExplicit:
-      return webnn::AutoPad::kExplicit;
-    case blink::V8MLAutoPad::Enum::kSameUpper:
-      return webnn::AutoPad::kSameUpper;
-    case blink::V8MLAutoPad::Enum::kSameLower:
-      return webnn::AutoPad::kSameLower;
+DOMArrayBufferView::ViewType GetArrayBufferViewType(
+    webnn::OperandDataType data_type) {
+  switch (data_type) {
+    case webnn::OperandDataType::kFloat32:
+      return DOMArrayBufferView::ViewType::kTypeFloat32;
+    case webnn::OperandDataType::kFloat16:
+      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
+      // https://github.com/webmachinelearning/webnn/issues/127
+      return DOMArrayBufferView::ViewType::kTypeUint16;
+    case webnn::OperandDataType::kInt32:
+      return DOMArrayBufferView::ViewType::kTypeInt32;
+    case webnn::OperandDataType::kUint32:
+      return DOMArrayBufferView::ViewType::kTypeUint32;
+    case webnn::OperandDataType::kInt64:
+      return DOMArrayBufferView::ViewType::kTypeBigInt64;
+    case webnn::OperandDataType::kUint64:
+      return DOMArrayBufferView::ViewType::kTypeBigUint64;
+    case webnn::OperandDataType::kInt8:
+      return DOMArrayBufferView::ViewType::kTypeInt8;
+    case webnn::OperandDataType::kUint8:
+      return DOMArrayBufferView::ViewType::kTypeUint8;
   }
-  NOTREACHED_NORETURN();
 }
 
 Vector<uint32_t> CreateDefaultPermutation(const wtf_size_t rank) {
@@ -237,12 +255,6 @@ Vector<uint32_t> CreateLayerNormalizationDefaultAxes(const wtf_size_t rank) {
     std::iota(default_axes.begin(), default_axes.end(), 1);
   }
   return default_axes;
-}
-
-bool IsDepthwiseConv2d(uint32_t input_channels,
-                       uint32_t output_channels,
-                       uint32_t groups) {
-  return groups == input_channels && groups == output_channels && groups != 1;
 }
 
 base::expected<void, String> ValidateFilterLayout(
@@ -278,89 +290,6 @@ base::expected<void, String> ValidateFilterLayout(
   return base::ok();
 }
 
-base::expected<void, String> ValidateGemmOptions(const MLGemmOptions* options,
-                                                 uint32_t output_channels) {
-  CHECK(options);
-  if (options->hasC()) {
-    // Both XNNPACK and TFLite fully connected operator only supports 1-D bias
-    // tensor (operand c of WebNN gemm operator) with [output_channels]
-    // dimensions.
-    const auto* bias = options->c();
-    if (bias->Dimensions().size() != 1u ||
-        bias->Dimensions()[0] != output_channels) {
-      // TODO(crbug.com/1273291): Support the bias with other dimensions by
-      // element-wise addition operator.
-      return base::unexpected(String::Format(
-          "The dimensions of bias must be [%u].", output_channels));
-    }
-  }
-  if (options->alpha() != 1.0f) {
-    // TODO(crbug.com/1273291): Support alpha by using element-wise
-    // multiplication operator.
-    return base::unexpected("gemm doesn't support alpha option.");
-  }
-  if (options->beta() != 1.0f) {
-    // TODO(crbug.com/1273291): Support beta by using element-wise
-    // multiplication operator.
-    return base::unexpected("gemm doesn't support beta option.");
-  }
-  if (options->aTranspose()) {
-    // TODO(crbug.com/1273291): Support aTranspose by using transpose operator.
-    return base::unexpected("gemm doesn't support aTranspose option.");
-  }
-
-  return base::ok();
-}
-
-webnn::Padding2d CalculateConvTransposePadding2D(
-    const blink::MLConvTranspose2dOptions* options,
-    uint32_t input_height,
-    uint32_t input_width,
-    uint32_t filter_height,
-    uint32_t filter_width,
-    uint32_t stride_height,
-    uint32_t stride_width,
-    uint32_t dilation_height,
-    uint32_t dilation_width,
-    uint32_t output_padding_height,
-    uint32_t output_padding_width) {
-  webnn::Padding2d padding;
-  switch (options->autoPad().AsEnum()) {
-    case V8MLAutoPad::Enum::kExplicit: {
-      // Set the padding from WebNN explicit padding that is in
-      // [beginning_height, ending_height, beginning_width, ending_width],
-      // default to 0.
-      auto ml_padding = options->getPaddingOr({0, 0, 0, 0});
-      CHECK_EQ(ml_padding.size(), 4u);
-      padding.beginning.height = ml_padding[0];
-      padding.ending.height = ml_padding[1];
-      padding.beginning.width = ml_padding[2];
-      padding.ending.width = ml_padding[3];
-      break;
-    }
-    case V8MLAutoPad::Enum::kSameUpper:
-    case V8MLAutoPad::Enum::kSameLower: {
-      webnn::AutoPad auto_pad =
-          BlinkAutoPadToComponent(options->autoPad().AsEnum());
-      // Calculate padding based on WebNN auto padding mode and sizes.
-      auto padding_sizes_height = webnn::CalculateConvTranspose2dPadding(
-          auto_pad, input_height, filter_height, stride_height, dilation_height,
-          output_padding_height);
-      CHECK(padding_sizes_height);
-      padding.beginning.height = padding_sizes_height.value().begin;
-      padding.ending.height = padding_sizes_height.value().end;
-      auto padding_sizes_width = webnn::CalculateConvTranspose2dPadding(
-          auto_pad, input_width, filter_width, stride_width, dilation_width,
-          output_padding_width);
-      CHECK(padding_sizes_width);
-      padding.beginning.width = padding_sizes_width.value().begin;
-      padding.ending.width = padding_sizes_width.value().end;
-      break;
-    }
-  }
-  return padding;
-}
-
 webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
     const blink::MLConvTranspose2dOptions* options,
     uint32_t input_height,
@@ -373,10 +302,16 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
     uint32_t dilation_width,
     uint32_t output_padding_height,
     uint32_t output_padding_width) {
-  const auto padding = CalculateConvTransposePadding2D(
-      options, input_height, input_width, filter_height, filter_width,
-      stride_height, stride_width, dilation_height, dilation_width,
-      output_padding_height, output_padding_width);
+  // Set the padding from WebNN explicit padding that is in
+  // [beginning_height, ending_height, beginning_width, ending_width],
+  // default to 0.
+  auto ml_padding = options->getPaddingOr({0, 0, 0, 0});
+  CHECK_EQ(ml_padding.size(), 4u);
+  const webnn::Padding2d padding{
+      .beginning = webnn::Size2d<uint32_t>{.height = ml_padding[0],
+                                           .width = ml_padding[2]},
+      .ending = webnn::Size2d<uint32_t>{.height = ml_padding[1],
+                                        .width = ml_padding[3]}};
   const auto output_height = webnn::CalculateConvTranspose2dOutputSize(
       input_height, filter_height, padding.beginning.height,
       padding.ending.height, stride_height, dilation_height,
@@ -390,6 +325,105 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
 
   return webnn::Size2d<uint32_t>{.height = output_height.value(),
                                  .width = output_width.value()};
+}
+
+V8MLOperandDataType ToBlinkDataType(webnn::OperandDataType data_type) {
+  switch (data_type) {
+    case webnn::OperandDataType::kFloat32:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kFloat32);
+    case webnn::OperandDataType::kFloat16:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kFloat16);
+    case webnn::OperandDataType::kInt32:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt32);
+    case webnn::OperandDataType::kUint32:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint32);
+    case webnn::OperandDataType::kInt64:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt64);
+    case webnn::OperandDataType::kUint64:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint64);
+    case webnn::OperandDataType::kInt8:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt8);
+    case webnn::OperandDataType::kUint8:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint8);
+  }
+}
+
+webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type) {
+  switch (data_type) {
+    case V8MLOperandDataType::Enum::kFloat32:
+      return webnn::OperandDataType::kFloat32;
+    case V8MLOperandDataType::Enum::kFloat16:
+      return webnn::OperandDataType::kFloat16;
+    case V8MLOperandDataType::Enum::kInt32:
+      return webnn::OperandDataType::kInt32;
+    case V8MLOperandDataType::Enum::kUint32:
+      return webnn::OperandDataType::kUint32;
+    case V8MLOperandDataType::Enum::kInt64:
+      return webnn::OperandDataType::kInt64;
+    case V8MLOperandDataType::Enum::kUint64:
+      return webnn::OperandDataType::kUint64;
+    case V8MLOperandDataType::Enum::kInt8:
+      return webnn::OperandDataType::kInt8;
+    case V8MLOperandDataType::Enum::kUint8:
+      return webnn::OperandDataType::kUint8;
+  }
+}
+
+bool IsLogicalBinaryOperator(
+    webnn::mojom::blink::ElementWiseBinary::Kind kind) {
+  switch (kind) {
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kAdd:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kSub:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMul:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kDiv:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMax:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kMin:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kPow:
+      return false;
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreater:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
+      return true;
+  }
+}
+
+// Allows a tensor's shape to be specified through either the
+// `MLOperandDescriptor`'s `shape` or `dimensions` fields. This code exists for
+// now to give callers the opportunity to migrate their code to use `shape`.
+//
+// TODO(crbug.com/365813262): Remove this function after about a milestone.
+base::expected<Vector<uint32_t>, std::string> GetShapeFromDescriptor(
+    ScriptState* script_state,
+    const MLOperandDescriptor& desc) {
+  if (!desc.hasDimensions()) {
+    return desc.shape();
+  }
+
+  if (desc.shape() != desc.dimensions()) {
+    if (!desc.shape().empty()) {
+      return base::unexpected(
+          "Invalid operand descriptor: shape and dimensions do not match.");
+    } else {
+      LogConsoleWarning(
+          script_state,
+          "WARNING: MLOperandDescriptor.dimensions is deprecated. "
+          "Use MLOperandDescriptor.shape instead.");
+    }
+  }
+
+  return desc.dimensions();
+}
+
+void LogConsoleWarning(ScriptState* script_state, const String& message) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (!execution_context) {
+    return;
+  }
+  execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning, message));
 }
 
 }  // namespace blink

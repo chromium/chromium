@@ -7,12 +7,17 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+class File;
 class FileSystemCreateWritableOptions;
 class FileSystemCreateSyncAccessHandleOptions;
+class FileSystemSyncAccessHandle;
+class FileSystemWritableFileStream;
 
 class FileSystemFileHandle final : public FileSystemHandle {
   DEFINE_WRAPPERTYPEINFO();
@@ -25,15 +30,18 @@ class FileSystemFileHandle final : public FileSystemHandle {
 
   bool isFile() const override { return true; }
 
-  ScriptPromise createWritable(ScriptState*,
-                               const FileSystemCreateWritableOptions* options,
-                               ExceptionState&);
-  ScriptPromise getFile(ScriptState*, ExceptionState&);
+  ScriptPromise<FileSystemWritableFileStream> createWritable(
+      ScriptState*,
+      const FileSystemCreateWritableOptions* options,
+      ExceptionState&);
+  ScriptPromise<File> getFile(ScriptState*, ExceptionState&);
 
   // TODO(fivedots): Define if this method should be generally exposed or only
   // on files backed by the Origin Private File System.
-  ScriptPromise createSyncAccessHandle(ScriptState*, ExceptionState&);
-  ScriptPromise createSyncAccessHandle(
+  ScriptPromise<FileSystemSyncAccessHandle> createSyncAccessHandle(
+      ScriptState*,
+      ExceptionState&);
+  ScriptPromise<FileSystemSyncAccessHandle> createSyncAccessHandle(
       ScriptState*,
       const FileSystemCreateSyncAccessHandleOptions* options,
       ExceptionState&);
@@ -76,7 +84,28 @@ class FileSystemFileHandle final : public FileSystemHandle {
           mojom::blink::FileSystemAccessErrorPtr,
           Vector<mojom::blink::FileSystemAccessCloudIdentifierPtr>)>) override;
 
+  void CreateSyncAccessHandleImpl(
+      const FileSystemCreateSyncAccessHandleOptions* options,
+      ScriptPromiseResolver<FileSystemSyncAccessHandle>* resolver);
+
+  // Callback for StorageManagerFileSystemAccess::CheckGetDirectoryIsAllowed.
+  void OnGotFileSystemStorageAccessStatus(
+      ScriptPromiseResolver<FileSystemSyncAccessHandle>* resolver,
+      base::OnceClosure on_allowed_callback,
+      mojom::blink::FileSystemAccessErrorPtr result);
+
   HeapMojoRemote<mojom::blink::FileSystemAccessFileHandle> mojo_ptr_;
+  std::optional<std::tuple</*status=*/mojom::blink::FileSystemAccessStatus,
+                           /*file_error=*/::base::File::Error,
+                           /*message=*/WTF::String>>
+      storage_access_status_;
+};
+
+template <>
+struct DowncastTraits<FileSystemFileHandle> {
+  static bool AllowFrom(const FileSystemHandle& handle) {
+    return handle.isFile();
+  }
 };
 
 }  // namespace blink

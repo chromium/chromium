@@ -21,6 +21,7 @@
 #include "components/safe_browsing/core/browser/user_population.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/sync/service/sync_service.h"
+#include "components/webdata/common/web_database_service.h"
 
 namespace safe_browsing {
 
@@ -123,8 +124,10 @@ ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
     static const base::NoDestructor<std::vector<const base::Feature*>>
         kCookieTheftExperiments{{
 #if BUILDFLAG(IS_WIN)
-            &features::kLockProfileCookieDatabase
+            &features::kLockProfileCookieDatabase,
+            &features::kUseAppBoundEncryptionProviderForEncryption,
 #endif
+            &features::kUseNewEncryptionKeyForWebData,
         }};
 
     GetExperimentStatus(*kCookieTheftExperiments, &population);

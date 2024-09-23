@@ -29,7 +29,7 @@ void HistoryAwareSiteEngagementService::Shutdown() {
   history_service_observation_.Reset();
 }
 
-void HistoryAwareSiteEngagementService::OnURLsDeleted(
+void HistoryAwareSiteEngagementService::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   std::multiset<GURL> origins;
@@ -93,8 +93,9 @@ void HistoryAwareSiteEngagementService::UpdateEngagementScores(
     // engagement is next accessed, it will decay back to the proportionally
     // reduced value rather than being decayed once here, and then once again
     // when it is next accessed.
-    // TODO(703848): Move the proportional decay logic into SiteEngagementScore,
-    // so it can decay raw_score_ directly, without the double-decay issue.
+    // TODO(crbug.com/41308686): Move the proportional decay logic into
+    // SiteEngagementScore, so it can decay raw_score_ directly, without the
+    // double-decay issue.
     SiteEngagementScore engagement_score = CreateEngagementScore(origin);
 
     double new_score = proportion_remaining * engagement_score.GetTotalScore();

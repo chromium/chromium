@@ -38,6 +38,9 @@ class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
 
   ~OnlineWallpaperVariantInfoFetcher();
 
+  // Owned by `WallpaperController`.
+  static OnlineWallpaperVariantInfoFetcher* GetInstance();
+
   void SetClient(WallpaperControllerClient* client);
 
   // Callback for Fetch* methods which populates the |unit_id| and |variants|

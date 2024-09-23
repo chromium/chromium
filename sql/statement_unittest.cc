@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "sql/statement.h"
+
+#include <cstdint>
 #include <limits>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "sql/database.h"
-#include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -319,12 +320,23 @@ TEST_F(StatementTest, BindString) {
     insert.Reset(/*clear_bound_vars=*/true);
   }
 
-  Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
-  for (const std::string& value : values) {
-    ASSERT_TRUE(select.Step());
-    EXPECT_EQ(value, select.ColumnString(0));
+  {
+    Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
+    for (const std::string& value : values) {
+      ASSERT_TRUE(select.Step());
+      EXPECT_EQ(value, select.ColumnString(0));
+    }
+    EXPECT_FALSE(select.Step());
   }
-  EXPECT_FALSE(select.Step());
+
+  {
+    Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));
+    for (const std::string& value : values) {
+      ASSERT_TRUE(select.Step());
+      EXPECT_EQ(value, select.ColumnStringView(0));
+    }
+    EXPECT_FALSE(select.Step());
+  }
 }
 
 TEST_F(StatementTest, BindString_NullData) {
@@ -334,7 +346,7 @@ TEST_F(StatementTest, BindString_NullData) {
       "CREATE TABLE texts(id INTEGER PRIMARY KEY NOT NULL, t TEXT NOT NULL)"));
 
   Statement insert(db_.GetUniqueStatement("INSERT INTO texts(t) VALUES(?)"));
-  insert.BindString(0, base::StringPiece(nullptr, 0));
+  insert.BindString(0, std::string_view(nullptr, 0));
   ASSERT_TRUE(insert.Run());
 
   Statement select(db_.GetUniqueStatement("SELECT t FROM texts ORDER BY id"));

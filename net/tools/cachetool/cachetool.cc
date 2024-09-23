@@ -2,12 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <iostream>
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
 #include "base/hash/md5.h"
@@ -15,7 +22,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -209,7 +215,8 @@ class ProgramArgumentCommandMarshal final : public CommandMarshal {
   // Implements CommandMarshal.
   void ReturnBuffer(net::GrowableIOBuffer* buffer) override {
     DCHECK(!has_failed());
-    std::cout.write(buffer->StartOfBuffer(), buffer->offset());
+    auto span = base::as_chars(buffer->span_before_offset());
+    std::cout.write(span.data(), span.size());
   }
 
   // Implements CommandMarshal.
@@ -294,7 +301,8 @@ class StreamCommandMarshal final : public CommandMarshal {
   // Implements CommandMarshal.
   void ReturnBuffer(net::GrowableIOBuffer* buffer) override {
     ReturnInt(buffer->offset());
-    std::cout.write(buffer->StartOfBuffer(), buffer->offset());
+    auto span = base::as_chars(buffer->span_before_offset());
+    std::cout.write(span.data(), span.size());
   }
 
   // Implements CommandMarshal.
@@ -358,8 +366,8 @@ bool GetResponseInfoForEntry(disk_cache::Entry* entry,
 
     if (rv == 0) {
       bool truncated_response_info = false;
-      if (!net::HttpCache::ParseResponseInfo(
-              buffer->data(), size, response_info, &truncated_response_info)) {
+      if (!net::HttpCache::ParseResponseInfo(buffer->span(), response_info,
+                                             &truncated_response_info)) {
         return false;
       }
       return !truncated_response_info;
@@ -368,7 +376,7 @@ bool GetResponseInfoForEntry(disk_cache::Entry* entry,
     bytes_read += rv;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -401,10 +409,10 @@ std::string GetMD5ForResponseBody(disk_cache::Entry* entry) {
     }
 
     bytes_read += rv;
-    base::MD5Update(&ctx, base::StringPiece(buffer->data(), rv));
+    base::MD5Update(&ctx, std::string_view(buffer->data(), rv));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -567,8 +575,8 @@ void GetStreamForKey(CommandMarshal* command_marshal) {
   if (index == kResponseInfoIndex) {
     net::HttpResponseInfo response_info;
     bool truncated_response_info = false;
-    if (!net::HttpCache::ParseResponseInfo(buffer->StartOfBuffer(),
-                                           buffer->offset(), &response_info,
+    if (!net::HttpCache::ParseResponseInfo(buffer->span_before_offset(),
+                                           &response_info,
                                            &truncated_response_info)) {
       // This can happen when reading data stored by content::CacheStorage.
       std::cerr << "WARNING: Returning empty response info for key: " << key
@@ -600,7 +608,7 @@ void UpdateRawResponseHeaders(CommandMarshal* command_marshal) {
     return;
   net::HttpResponseInfo response_info;
   bool truncated_response_info = false;
-  net::HttpCache::ParseResponseInfo(buffer->StartOfBuffer(), buffer->offset(),
+  net::HttpCache::ParseResponseInfo(buffer->span_before_offset(),
                                     &response_info, &truncated_response_info);
   if (truncated_response_info)
     std::cerr << "WARNING: Truncated HTTP response." << std::endl;
@@ -627,8 +635,8 @@ void SetHeader(CommandMarshal* command_marshal) {
   // Read the entry into |response_info|.
   net::HttpResponseInfo response_info;
   bool truncated_response_info = false;
-  if (!net::HttpCache::ParseResponseInfo(buffer->StartOfBuffer(),
-                                         buffer->offset(), &response_info,
+  if (!net::HttpCache::ParseResponseInfo(buffer->span_before_offset(),
+                                         &response_info,
                                          &truncated_response_info)) {
     command_marshal->ReturnFailure("Couldn't read response info");
     return;

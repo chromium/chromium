@@ -67,7 +67,8 @@ class BookmarkModelView {
   void RemoveObserver(bookmarks::BookmarkModelObserver* observer);
   void BeginExtensiveChanges();
   void EndExtensiveChanges();
-  void Remove(const bookmarks::BookmarkNode* node);
+  void Remove(const bookmarks::BookmarkNode* node,
+              const base::Location& location);
   void Move(const bookmarks::BookmarkNode* node,
             const bookmarks::BookmarkNode* new_parent,
             size_t index);

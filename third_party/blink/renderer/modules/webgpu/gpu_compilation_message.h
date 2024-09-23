@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_COMPILATION_MESSAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_COMPILATION_MESSAGE_H_
 
-#include <dawn/webgpu.h>
-
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -18,7 +17,7 @@ class GPUCompilationMessage : public ScriptWrappable {
  public:
   explicit GPUCompilationMessage(
       String message,
-      WGPUCompilationMessageType type = WGPUCompilationMessageType_Error,
+      wgpu::CompilationMessageType type = wgpu::CompilationMessageType::Error,
       uint64_t line_num = 0,
       uint64_t line_pos = 0,
       uint64_t offset = 0,

@@ -885,6 +885,118 @@ Microsoft (R) COFF/PE Dumper Version 14.31.31106.2
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 
+Dump of file bcrypt.dll
+
+File Type: DLL
+
+  Section contains the following exports for bcrypt.dll
+
+    00000000 characteristics
+    559F3035 time date stamp Thu Jul  9 19:38:45 2015
+        0.00 version
+           1 ordinal base
+          58 number of functions
+          58 number of names
+
+    ordinal hint RVA      name
+
+          1    0 000183C0 BCryptAddContextFunction
+          2    1 00018590 BCryptAddContextFunctionProvider
+          3    2 00003810 BCryptCloseAlgorithmProvider
+          4    3 00018780 BCryptConfigureContext
+          5    4 00018920 BCryptConfigureContextFunction
+          6    5 00018AE0 BCryptCreateContext
+          7    6 00003F60 BCryptCreateHash
+          8    7 00011B00 BCryptCreateMultiHash
+          9    8 00006070 BCryptDecrypt
+         10    9 00018C80 BCryptDeleteContext
+         11    A 00006A70 BCryptDeriveKey
+         12    B 00002B00 BCryptDeriveKeyCapi
+         13    C 000031B0 BCryptDeriveKeyPBKDF2
+         14    D 00004780 BCryptDestroyHash
+         15    E 00006560 BCryptDestroyKey
+         16    F 00006990 BCryptDestroySecret
+         17   10 00001A60 BCryptDuplicateHash
+         18   11 00001010 BCryptDuplicateKey
+         19   12 00006D30 BCryptEncrypt
+         20   13 00011D60 BCryptEnumAlgorithms
+         21   14 0000AC90 BCryptEnumContextFunctionProviders
+         22   15 0000AAB0 BCryptEnumContextFunctions
+         23   16 00018E10 BCryptEnumContexts
+         24   17 00012190 BCryptEnumProviders
+         25   18 00018F70 BCryptEnumRegisteredProviders
+         26   19 00002550 BCryptExportKey
+         27   1A 000068F0 BCryptFinalizeKeyPair
+         28   1B 00004860 BCryptFinishHash
+         29   1C 00005ED0 BCryptFreeBuffer
+         30   1D 00003620 BCryptGenRandom
+         31   1E 00002220 BCryptGenerateKeyPair
+         32   1F 000038B0 BCryptGenerateSymmetricKey
+         33   20 00006270 BCryptGetFipsAlgorithmMode
+         34   21 00004270 BCryptGetProperty
+         35   22 00012530 BCryptHash
+         36   23 000046E0 BCryptHashData
+         37   24 00001FA0 BCryptImportKey
+         38   25 00002F00 BCryptImportKeyPair
+         39   26 000066E0 BCryptKeyDerivation
+         40   27 00004A00 BCryptOpenAlgorithmProvider
+         41   28 000125D0 BCryptProcessMultiOperations
+         42   29 00019040 BCryptQueryContextConfiguration
+         43   2A 00019220 BCryptQueryContextFunctionConfiguration
+         44   2B 00019460 BCryptQueryContextFunctionProperty
+         45   2C 0000AED0 BCryptQueryProviderRegistration
+         46   2D 0000B420 BCryptRegisterConfigChangeNotify
+         47   2E 000196C0 BCryptRegisterProvider
+         48   2F 000198C0 BCryptRemoveContextFunction
+         49   30 00019A80 BCryptRemoveContextFunctionProvider
+         50   31 00005520 BCryptResolveProviders
+         51   32 000067D0 BCryptSecretAgreement
+         52   33 0000B600 BCryptSetAuditingInterface
+         53   34 00019C50 BCryptSetContextFunctionProperty
+         54   35 00003700 BCryptSetProperty
+         55   36 0000B6E0 BCryptSignHash
+         56   37 00019E60 BCryptUnregisterConfigChangeNotify
+         57   38 00019F60 BCryptUnregisterProvider
+         58   39 00005F20 BCryptVerifySignature
+
+Dump of file bcryptprimitives.dll
+
+File Type: DLL
+
+  Section contains the following exports for bcryptPrimitives.dll
+
+    00000000 characteristics
+    559F301F time date stamp Thu Jul  9 19:38:23 2015
+        0.00 version
+           1 ordinal base
+           9 number of functions
+           9 number of names
+
+    ordinal hint RVA      name
+
+          1    0 00020780 GetAsymmetricEncryptionInterface
+          2    1 00016D20 GetCipherInterface
+          3    2 00020B90 GetHashInterface
+          4    3 00001F30 GetKeyDerivationInterface
+          5    4 00021940 GetRngInterface
+          6    5 000219C0 GetSecretAgreementInterface
+          7    6 00001E60 GetSignatureInterface
+          8    7 0001B980 ProcessPrng
+          9    8 00036400 ProcessPrngGuid
+
+  Summary
+
+        2000 .data
+        5000 .pdata
+       18000 .rdata
+        2000 .reloc
+        2000 .rsrc
+       6E000 .text
+
+Microsoft (R) COFF/PE Dumper Version 14.31.31106.2
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
 Dump of file cfgmgr32.dll
 
 File Type: DLL

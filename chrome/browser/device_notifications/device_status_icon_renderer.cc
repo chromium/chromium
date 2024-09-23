@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/device_notifications/device_status_icon_renderer.h"
+
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -14,6 +15,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_registry.h"
@@ -47,7 +50,7 @@ std::u16string GetOriginConnectionCountLabel(Profile* profile,
         connection_count, base::UTF8ToUTF16(name));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -197,7 +200,9 @@ void DeviceStatusIconRenderer::RefreshIcon() {
 
   if (!status_icon_) {
     status_icon_ = status_tray->CreateStatusIcon(
-        StatusTray::OTHER_ICON, device_system_tray_icon_->GetIcon(),
+        StatusTray::OTHER_ICON,
+        gfx::CreateVectorIcon(device_system_tray_icon_->GetIcon(),
+                              gfx::kGoogleGrey300),
         title_label);
   } else {
     status_icon_->SetToolTip(title_label);
@@ -213,7 +218,7 @@ void DeviceStatusIconRenderer::AddItem(StatusIconMenuModel* menu,
   if (index > IDC_DEVICE_SYSTEM_TRAY_ICON_LAST) {
     // This case should be fairly rare, but if we have more items than
     // pre-defined command ids, we don't put those in the status icon menu.
-    // TODO(crbug.com/1433378): Add a metric to capture this.
+    // TODO(crbug.com/40264386): Add a metric to capture this.
     return;
   }
   menu->AddItem(index, label);

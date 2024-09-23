@@ -56,7 +56,8 @@ from pylib.utils import test_filter
 
 from py_utils import contextlib_ext
 
-from lib.results import result_sink  # pylint: disable=import-error
+from lib.proto import exception_recorder
+from lib.results import result_sink
 
 _DEVIL_STATIC_CONFIG_FILE = os.path.abspath(os.path.join(
     host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'devil_config.json'))
@@ -265,18 +266,14 @@ def AddCommonOptions(parser):
       dest='run_disabled', action='store_true',
       help='Also run disabled tests if applicable.')
 
-  # This is currently only implemented for gtests tests.
-  parser.add_argument('--gtest_also_run_pre_tests',
-                      '--gtest-also-run-pre-tests',
-                      dest='run_pre_tests',
-                      action='store_true',
-                      help='Also run PRE_ tests if applicable.')
-
   # These are currently only implemented for gtests.
   parser.add_argument('--isolated-script-test-output',
                       help='If present, store test results on this path.')
   parser.add_argument('--isolated-script-test-perf-output',
                       help='If present, store chartjson results on this path.')
+  parser.add_argument('--timeout-scale',
+                      type=float,
+                      help='Factor by which timeouts should be scaled.')
 
   AddTestLauncherOptions(parser)
 
@@ -326,22 +323,19 @@ def AddDeviceOptions(parser):
       '--enable-device-cache',
       action='store_true',
       help='Cache device state to disk between runs')
-  parser.add_argument(
-      '--skip-clear-data',
-      action='store_true',
-      help='Do not wipe app data between tests. Use this to '
-           'speed up local development and never on bots '
-                     '(increases flakiness)')
+  parser.add_argument('--list-data',
+                      action='store_true',
+                      help='List files pushed to device and exit.')
+  parser.add_argument('--skip-clear-data',
+                      action='store_true',
+                      help='Do not wipe app data between tests. Use this to '
+                      'speed up local development and never on bots '
+                      '(increases flakiness)')
   parser.add_argument(
       '--recover-devices',
       action='store_true',
       help='Attempt to recover devices prior to the final retry. Warning: '
-           'this will cause all devices to reboot.')
-  parser.add_argument(
-      '--tool',
-      dest='tool',
-      help='Run the test under a tool '
-           '(use --tool help to list them)')
+      'this will cause all devices to reboot.')
 
   parser.add_argument(
       '--upload-logcats-file',
@@ -404,6 +398,12 @@ def AddGTestOptions(parser):
 
   parser = parser.add_argument_group('gtest arguments')
 
+  parser.add_argument(
+      '--additional-apk',
+      action='append', dest='additional_apks', default=[],
+      type=_RealPath,
+      help='Additional apk that must be installed on '
+           'the device when the tests are run.')
   parser.add_argument(
       '--app-data-file',
       action='append', dest='app_data_files',
@@ -476,6 +476,12 @@ def AddGTestOptions(parser):
       help='Do not push new files to the device, instead using existing APK '
       'and test data. Only use when running the same test for multiple '
       'iterations.')
+  # This is currently only implemented for gtests tests.
+  parser.add_argument('--gtest_also_run_pre_tests',
+                      '--gtest-also-run-pre-tests',
+                      dest='run_pre_tests',
+                      action='store_true',
+                      help='Also run PRE_ tests if applicable.')
 
 
 def AddInstrumentationTestOptions(parser):
@@ -598,6 +604,11 @@ def AddInstrumentationTestOptions(parser):
       action='append',
       help="Specifies command line arguments to add to WebView's flag file")
   parser.add_argument(
+      '--webview-process-mode',
+      choices=['single', 'multiple'],
+      help='Run WebView instrumentation tests only in the specified process '
+      'mode. If not set, both single and multiple process modes will execute.')
+  parser.add_argument(
       '--run-setup-command',
       default=[],
       action='append',
@@ -645,10 +656,6 @@ def AddInstrumentationTestOptions(parser):
       help=('Not actually used for instrumentation tests, but can be used as '
             'a proxy for determining if the current run is a retry without '
             'patch.'))
-  parser.add_argument(
-      '--timeout-scale',
-      type=float,
-      help='Factor by which timeouts should be scaled.')
   parser.add_argument(
       '--is-unit-test',
       action='store_true',
@@ -850,6 +857,8 @@ def AddJUnitTestOptions(parser):
       '--resource-apk',
       required=True,
       help='Path to .ap_ containing binary resources for Robolectric.')
+  parser.add_argument('--shadows-allowlist',
+                      help='Path to Allowlist file for Shadows.')
 
 
 def AddLinkerTestOptions(parser):
@@ -968,7 +977,7 @@ def RunTestsCommand(args, result_sink_client=None):
   command = args.command
 
   ProcessCommonOptions(args)
-  logging.info('command: %s', ' '.join(sys.argv))
+  logging.info('command: %s', shlex.join(sys.argv))
   if args.enable_platform_mode or command in _DEFAULT_PLATFORM_MODE_TESTS:
     return RunTestsInPlatformMode(args, result_sink_client)
 
@@ -1152,6 +1161,42 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
   save_detailed_results = (args.local_output or not local_utils.IsOnSwarming()
                            ) and not args.isolated_script_test_output
 
+  @contextlib.contextmanager
+  def exceptions_uploader():
+
+    def _upload_exceptions():
+      if not result_sink_client or not exception_recorder.size():
+        return
+
+      try_count = 0
+      try_count_max = 2
+      while try_count < try_count_max:
+        try_count += 1
+        logging.info('Uploading exception records to RDB. (TRY %d/%d)',
+                     try_count, try_count_max)
+        try:
+          record_dict = exception_recorder.to_dict()
+          exception_recorder.clear()
+          result_sink_client.UpdateInvocationExtendedProperties(
+              {exception_recorder.EXCEPTION_OCCURRENCES_KEY: record_dict})
+          break
+        except Exception as e:  # pylint: disable=W0703
+          logging.error("Got error %s when uploading exception records:\n%r", e,
+                        record_dict)
+          if try_count < try_count_max:
+            # Upload can fail due to record size being too big. In this case,
+            # report just the upload failure.
+            exception_recorder.register(e)
+          else:
+            # Swallow the exception if the upload fails again and hit the max
+            # try so that it won't fail the test task (and it shouldn't).
+            logging.error("Hit max retry. Skip uploading exception records.")
+
+    try:
+      yield
+    finally:
+      _upload_exceptions()
+
   ### Set up test objects.
 
   out_manager = output_manager_factory.CreateOutputManager(args)
@@ -1176,12 +1221,22 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
           args.command))
       return 1
 
+  if getattr(args, 'list_data', False):
+    with out_manager, env, test_instance, test_run:
+      data_deps = test_run.GetDataDepsForListing()
+
+    print('There are {} data files:'.format(len(data_deps)))
+    for d in data_deps:
+      print(d)
+    return 0
+
   ### Run.
   with out_manager, json_finalizer():
     # |raw_logs_fh| is only used by Robolectric tests.
     raw_logs_fh = io.StringIO() if save_detailed_results else None
 
-    with json_writer(), logcats_uploader, env, test_instance, test_run:
+    with json_writer(), exceptions_uploader(), logcats_uploader, \
+         env, test_instance, test_run:
 
       repetitions = (range(args.repeat +
                            1) if args.repeat >= 0 else itertools.count())
@@ -1419,40 +1474,34 @@ def main():
   AddPythonTestOptions(subp)
 
   args, unknown_args = parser.parse_known_args()
+
   if unknown_args:
-    if hasattr(args, 'allow_unknown') and args.allow_unknown:
+    if getattr(args, 'allow_unknown', None):
       args.command_line_flags = unknown_args
     else:
       parser.error('unrecognized arguments: %s' % ' '.join(unknown_args))
 
-  # --replace-system-package/--remove-system-package has the potential to cause
-  # issues if --enable-concurrent-adb is set, so disallow that combination.
-  concurrent_adb_enabled = (hasattr(args, 'enable_concurrent_adb')
-                            and args.enable_concurrent_adb)
-  replacing_system_packages = (hasattr(args, 'replace_system_package')
-                               and args.replace_system_package)
-  removing_system_packages = (hasattr(args, 'system_packages_to_remove')
-                              and args.system_packages_to_remove)
-  if (concurrent_adb_enabled
-      and (replacing_system_packages or removing_system_packages)):
-    parser.error('--enable-concurrent-adb cannot be used with either '
-                 '--replace-system-package or --remove-system-package')
-
-  # --use-webview-provider has the potential to cause issues if
-  # --enable-concurrent-adb is set, so disallow that combination
-  if (hasattr(args, 'use_webview_provider') and
-      hasattr(args, 'enable_concurrent_adb') and args.use_webview_provider and
-      args.enable_concurrent_adb):
-    parser.error('--use-webview-provider and --enable-concurrent-adb cannot '
-                 'be used together')
+  # --enable-concurrent-adb does not handle device reboots gracefully.
+  if getattr(args, 'enable_concurrent_adb', None):
+    if getattr(args, 'replace_system_package', None):
+      logging.warning(
+          'Ignoring --enable-concurrent-adb due to --replace-system-package')
+      args.enable_concurrent_adb = False
+    elif getattr(args, 'system_packages_to_remove', None):
+      logging.warning(
+          'Ignoring --enable-concurrent-adb due to --remove-system-package')
+      args.enable_concurrent_adb = False
+    elif getattr(args, 'use_webview_provider', None):
+      logging.warning(
+          'Ignoring --enable-concurrent-adb due to --use-webview-provider')
+      args.enable_concurrent_adb = False
 
   if (getattr(args, 'coverage_on_the_fly', False)
       and not getattr(args, 'coverage_dir', '')):
     parser.error('--coverage-on-the-fly requires --coverage-dir')
 
-  if (hasattr(args, 'debug_socket') or
-      (hasattr(args, 'wait_for_java_debugger') and
-      args.wait_for_java_debugger)):
+  if (getattr(args, 'debug_socket', None)
+      or getattr(args, 'wait_for_java_debugger', None)):
     args.num_retries = 0
 
   # Result-sink may not exist in the environment if rdb stream is not enabled.
@@ -1465,10 +1514,22 @@ def main():
     if e.is_infra_error:
       return constants.INFRA_EXIT_CODE
     return constants.ERROR_EXIT_CODE
-  except: # pylint: disable=W0702
+  except Exception:  # pylint: disable=W0703
     logging.exception('Unrecognized error occurred.')
     return constants.ERROR_EXIT_CODE
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+  exit_code = main()
+  if exit_code == constants.INFRA_EXIT_CODE:
+    # This exit code is returned in case of missing, unreachable,
+    # or otherwise not fit for purpose test devices.
+    # When this happens, the graceful cleanup triggered by sys.exit()
+    # hangs indefinitely (on swarming - until it hits 20min timeout).
+    # Skip cleanup (other than flushing output streams) and exit forcefully
+    # to avoid the hang.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(exit_code)  # pylint: disable=protected-access
+  else:
+    sys.exit(exit_code)

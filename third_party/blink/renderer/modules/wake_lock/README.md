@@ -64,14 +64,14 @@ This section describes how the classes described above interact when the followi
 const lock = await navigator.wakeLock.request("screen");
 ```
 
-1. `WakeLock::request()` performs all the validation steps described in [the spec](https://w3c.github.io/screen-wake-lock/#the-request-method). If all checks have passed, it creates a `ScriptPromiseResolver` and calls `WakeLock::DoRequest()`.
-1. `WakeLock::DoRequest()` simply forwards its arguments to `WakeLock::ObtainPermission()`. It exists as a separate method just to make writing unit tests easier, as we'd otherwise be unable to use our own `ScriptPromiseResolver`s in tests.
+1. `WakeLock::request()` performs all the validation steps described in [the spec](https://w3c.github.io/screen-wake-lock/#the-request-method). If all checks have passed, it creates a `ScriptPromiseResolverBase` and calls `WakeLock::DoRequest()`.
+1. `WakeLock::DoRequest()` simply forwards its arguments to `WakeLock::ObtainPermission()`. It exists as a separate method just to make writing unit tests easier, as we'd otherwise be unable to use our own `ScriptPromiseResolverBase`s in tests.
 1. `WakeLock::ObtainPermission()` connects to the [permission service](../../../public/mojom/permissions/permission.mojom) and asynchronously requests permission for a screen wake lock.
 1. In the browser process, the permission request bubbles up through `//content` and reaches [`WakeLockPermissionContext`](/components/permissions/contexts/wake_lock_permission_context.cc), where `WakeLockPermissionContext::GetPermissionStatusInternal()` always grants `CONTENT_SETTINGS_TYPE_WAKE_LOCK_SCREEN` permission requests.
-1. Back in Blink, the permission request callback in this case is `WakeLock::DidReceivePermissionResponse()`. It performs some sanity checks such as verifying if the page visibility changed while waiting for the permission request to be processed. If any of the checks fail, or if the permission request was denied, the `ScriptPromiseResolver` instance created earlier by `WakeLock::request()` is rejected and we stop here. If everything went well, `WakeLockManager::AcquireWakeLock()` is called.
+1. Back in Blink, the permission request callback in this case is `WakeLock::DidReceivePermissionResponse()`. It performs some sanity checks such as verifying if the page visibility changed while waiting for the permission request to be processed. If any of the checks fail, or if the permission request was denied, the `ScriptPromiseResolverBase` instance created earlier by `WakeLock::request()` is rejected and we stop here. If everything went well, `WakeLockManager::AcquireWakeLock()` is called.
 1. If there are no existing screen wake locks, `WakeLockManager::AcquireWakeLock()` will connect to the `WakeLockService` Mojo interface, invoke its `GetWakeLock()` method to obtain a `device::mojom::blink::WakeLock` and call its `RequestWakeLock()` method.
 1. `WakeLockManager::AcquireWakeLock()` creates a new `WakeLockSentinel` instance, passing `this` as the `WakeLockSentinel`'s `WakeLockManager`. This new `WakeLockSentinel` is added to its set of [active locks].
-1. The `ScriptPromiseResolver` created by `WakeLock::request()` is resolved with the new `WakeLockSentinel` object.
+1. The `ScriptPromiseResolverBase` created by `WakeLock::request()` is resolved with the new `WakeLockSentinel` object.
 
 [active locks]: https://w3c.github.io/screen-wake-lock/#dfn-activelocks
 

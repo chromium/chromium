@@ -14,13 +14,14 @@ export const MOVE_THRESHOLD_PX: number = 5;
  * interaction. Besides just clicking the element, its state can be changed by
  * dragging (pointerdown+pointermove) the element towards the desired direction.
  */
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrRippleMixin} from '../cr_ripple/cr_ripple_mixin.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from '//resources/js/assert.js';
-import '../cr_shared_vars.css.js';
-import {getTemplate} from './cr_toggle.html.js';
+import {getCss} from './cr_toggle.css.js';
+import {getHtml} from './cr_toggle.html.js';
 
-const CrToggleElementBase = PaperRippleMixin(PolymerElement);
+const CrToggleElementBase = CrRippleMixin(CrLitElement);
 
 export interface CrToggleElement {
   $: {
@@ -33,38 +34,31 @@ export class CrToggleElement extends CrToggleElementBase {
     return 'cr-toggle';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       checked: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'checkedChanged_',
+        reflect: true,
         notify: true,
-      },
-
-      dark: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
       },
 
       disabled: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'disabledChanged_',
+        reflect: true,
       },
     };
   }
 
-  checked: boolean;
-  dark: boolean;
-  disabled: boolean;
+  checked: boolean = false;
+  disabled: boolean = false;
 
   private boundPointerMove_: ((e: PointerEvent) => void)|null = null;
   /**
@@ -74,11 +68,7 @@ export class CrToggleElement extends CrToggleElementBase {
   private handledInPointerMove_: boolean = false;
   private pointerDownX_: number = 0;
 
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _rippleContainer: Element;
-
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'button');
     }
@@ -87,11 +77,6 @@ export class CrToggleElement extends CrToggleElementBase {
     }
     this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-
-    if (!document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.addEventListener('blur', this.hideRipple_.bind(this));
-      this.addEventListener('focus', this.onFocus_.bind(this));
-    }
 
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
@@ -125,17 +110,17 @@ export class CrToggleElement extends CrToggleElementBase {
     };
   }
 
-  private checkedChanged_() {
-    this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
-  }
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
 
-  private disabledChanged_() {
-    this.setAttribute('tabindex', this.disabled ? '-1' : '0');
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-  }
+    if (changedProperties.has('checked')) {
+      this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
+    }
 
-  private onFocus_() {
-    this.getRipple().showAndHoldDown();
+    if (changedProperties.has('disabled')) {
+      this.setAttribute('tabindex', this.disabled ? '-1' : '0');
+      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+    }
   }
 
   private hideRipple_() {
@@ -180,7 +165,7 @@ export class CrToggleElement extends CrToggleElementBase {
     this.toggleState_(/* fromKeyboard= */ false);
   }
 
-  private toggleState_(fromKeyboard: boolean) {
+  private async toggleState_(fromKeyboard: boolean) {
     // Ignore cases where the 'click' or 'keypress' handlers are triggered while
     // disabled.
     if (this.disabled) {
@@ -192,6 +177,12 @@ export class CrToggleElement extends CrToggleElementBase {
     }
 
     this.checked = !this.checked;
+
+    // Yield, so that 'checked-changed' (originating from `notify: 'true'`) fire
+    // before the 'change' event below, which guarantees that any Polymer parent
+    // with 2-way bindings on the `checked` attribute are updated first.
+    await this.updateComplete;
+
     this.dispatchEvent(new CustomEvent(
         'change', {bubbles: true, composed: true, detail: this.checked}));
   }
@@ -225,14 +216,12 @@ export class CrToggleElement extends CrToggleElementBase {
     }
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.$.knob;
-    const ripple = super._createRipple();
-    ripple.id = 'ink';
+  // Overridden from CrRippleMixin
+  override createRipple() {
+    this.rippleContainer = this.$.knob;
+    const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle', 'toggle-ink');
+    ripple.classList.add('circle');
     return ripple;
   }
 }

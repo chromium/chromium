@@ -5,17 +5,18 @@
 <title>Verify that promise tasks can be properly tracked.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
 </head>
 <body>
 <script>
 
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     await new Promise(r => setTimeout(r, 0));
     queueMicrotask(() => {
       try {
-          assert_equals(scheduler.isAncestor(initialId), "ancestor");
+          assert_equals(scheduler.taskId, initialId);
           resolve();
         } catch {
           reject("Queued microtask is not a descendant");
@@ -26,7 +27,7 @@ promise_test(() => {
 
 promise_test(() => {
   return new Promise((resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     fetch("/resources/blank.html")
     .then(response => response.text())
     .then(body => {
@@ -36,7 +37,7 @@ promise_test(() => {
     })
     .then(() => {
       try {
-        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        assert_equals(scheduler.taskId, initialId);
         resolve();
       } catch {
         reject();
@@ -48,7 +49,7 @@ promise_test(() => {
 
 promise_test(() => {
   return new Promise((resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     fetch("/resources/blank.html")
     .then(response => response.text())
     .then(body => {
@@ -61,7 +62,7 @@ promise_test(() => {
     })
     .then(() => {
       try {
-        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        assert_equals(scheduler.taskId, initialId);
         resolve();
       } catch {
         reject();
@@ -73,11 +74,11 @@ promise_test(() => {
 
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     const response = await fetch("/resources/blank.html");
     const body = await response.text();
     try {
-      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      assert_equals(scheduler.taskId, initialId);
       resolve();
     } catch {
       reject();
@@ -88,7 +89,7 @@ promise_test(() => {
 
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     let promiseId;
     await new Promise(r => setTimeout(r, 10));
     try {
@@ -101,12 +102,12 @@ promise_test(() => {
       // get to you.
     }
     try {
-      assert_equals(scheduler.isAncestor(initialId), "ancestor");
+      assert_equals(scheduler.taskId, initialId);
     } catch {
       reject("InitialId is not an ancestor");
     }
     try {
-      assert_equals(scheduler.isAncestor(promiseId), "ancestor");
+      assert_equals(scheduler.taskId, promiseId);
       resolve();
     } catch {
       reject("PromiseId is not an ancestor");

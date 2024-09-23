@@ -43,7 +43,7 @@
 <translation id="134645005685694099">Thiết bị của bạn không có đủ không gian lưu trữ để tiếp tục bật tính năng đồng bộ hoá tệp. Các tệp mới sẽ không tự động đồng bộ hoá nữa.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Không thể sử dụng được tệp hoặc thư mục.</translation>
-<translation id="1363028406613469049">Số theo dõi</translation>
+<translation id="1363028406613469049">Theo dõi</translation>
 <translation id="1378727793141957596">Chào mừng bạn đến với Google Drive!</translation>
 <translation id="1379911846207762492">Bạn có thể chọn xem các tệp ở chế độ ngoại tuyến khi không có mạng.</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
@@ -72,7 +72,7 @@
 <translation id="1577977504532381335">Xem kỹ chính sách của quản trị viên</translation>
 <translation id="158849752021629804">Cần mạng gia đình</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
-<translation id="1620510694547887537">Máy ảnh</translation>
+<translation id="1620510694547887537">Camera</translation>
 <translation id="162175252992296058">Tiếng Bồ Đào Nha bằng bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="1629521517399325891">Không có chứng chỉ người dùng để xác thực mạng.</translation>
 <translation id="1641780993263690097">Tiếng Trung (bính âm)</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Máy chủ SOCKS</translation>
 <translation id="3104793765551262433">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên đã chặn, Thông tin chi tiết</translation>
-<translation id="3113153474486991170">Không thể mở "<ph name="PATH" />" từ vị trí này. Vui lòng sao chép vào "Tệp của tôi" để mở.</translation>
 <translation id="3113592018909187986">Bạn còn 1 lần nhập. Bạn sẽ không thể dùng mạng này cho đến khi thiết lập một mã PIN mới.</translation>
 <translation id="3124404833828281817">Người mơ mộng</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Hủy <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="3691184985318546178">Tiếng Sinhala</translation>
+<translation id="3702842351052426940">Thẻ SIM hoặc hồ sơ eSIM của bạn có thể bị huỷ kích hoạt. Hãy thử thay thẻ SIM hoặc chuyển đổi hồ sơ eSIM.</translation>
 <translation id="3722341589402358578">Đã xảy ra lỗi. Một số mục có thể chưa bị xoá.</translation>
 <translation id="3726463242007121105">Thiết bị này không thể mở được vì hệ thống tệp của thiết bị không được hỗ trợ.</translation>
 <translation id="3727148787322499904">Việc thay đổi cài đặt này sẽ ảnh hưởng đến tất cả các mạng chia sẻ</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Proxy này được quản trị viên của bạn thực thi</translation>
 <translation id="3830674330436234648">Không thể phát lại</translation>
 <translation id="383652340667548381">Tiếng Serbia</translation>
+<translation id="3839045880592694915">Nhà mạng không cho phép kết nối modem của bạn. Hãy liên hệ với nhà mạng để biết thêm chi tiết.</translation>
 <translation id="385051799172605136">Quay lại</translation>
-<translation id="3851491607336266896">Đã kết nối, khả năng kết nối bị hạn chế</translation>
 <translation id="3855472144336161447">Neo 2 tiếng Đức</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3866249974567520381">Mô tả</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Các tệp Microsoft mới mở gần đây đã được chuyển sang OneDrive</translation>
 <translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4017788180641807848">Tiếng Anh (Mỹ) bằng bàn phím Workman</translation>
-<translation id="4019998208269143058">Ghim vào tệp nhanh</translation>
 <translation id="4040753847560036377">Mã PUK không chính xác</translation>
 <translation id="4057991113334098539">Đang kích hoạt...</translation>
 <translation id="4092890906744441904">Tiếng Ireland</translation>
+<translation id="4101601646343868113">Đăng nhập vào mạng di động và xác nhận rằng gói dữ liệu di động của bạn đang hoạt động</translation>
 <translation id="4124731372776320263">Đang đồng bộ hoá 1 tệp trên Drive</translation>
 <translation id="4124935795427217608">Kỳ lân</translation>
 <translation id="4131235941541910880">Chuyển các mục bạn không cần vào thùng rác</translation>
@@ -431,7 +431,7 @@
 <translation id="4439427728133035643">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
 <translation id="4442424173763614572">Tìm kiếm DNS không thành công</translation>
 <translation id="4445896958353114391">Đang đồng bộ hoá tệp</translation>
-<translation id="4462159676511157176">Máy chủ có tên tùy chỉnh</translation>
+<translation id="4462159676511157176">Máy chủ định danh tuỳ chỉnh</translation>
 <translation id="4465725236958772856">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Do quản trị viên của bạn quản lý, Kết nối</translation>
 <translation id="4470564870223067757">Hangul 2 bộ</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
@@ -457,7 +457,7 @@
 <translation id="4646813851450205600">Tiếng Séc bằng bàn phím Qwerty</translation>
 <translation id="4656777537938206294">Dùng tệp khi không có mạng</translation>
 <translation id="4658782175094886150">Người trong tuyết</translation>
-<translation id="4669606053856530811">Thành viên của '<ph name="SOURCE_NAME" />' sẽ mất quyền truy cập trừ khi bạn chia sẻ các mục này với họ.</translation>
+<translation id="4669606053856530811">Thành viên của '<ph name="SOURCE_NAME" />' sẽ mất quyền truy cập trừ phi bạn chia sẻ các mục này với họ.</translation>
 <translation id="467809019005607715">Google Trang trình bày</translation>
 <translation id="4690246192099372265">Tiếng Thuỵ Điển</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tiếng Tamil bằng bàn phím Tamil99</translation>
 <translation id="5633226425545095130">Khi bạn di chuyển mục này, mục này sẽ được chia sẻ với những người có thể xem thư mục dùng chung "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Nghe</translation>
+<translation id="5650895901941743674">Hãy kiểm tra cấu hình APN của bạn</translation>
 <translation id="5669691691057771421">Nhập mã PIN mới</translation>
 <translation id="5678784840044122290">Ứng dụng Linux sẽ có trong Thiết bị của bạn và cũng có thể hiển thị một biểu tượng trong Trình chạy.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Không thể ngắt kết nối khỏi vùng lưu trữ hoặc ổ đĩa ảo<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
 <translation id="6269630227984243955">Tiếng Malay</translation>
 <translation id="6271903698064569429">Bạn không thể tải tệp lên vì "<ph name="SHARED_DRIVE_NAME" />" không có đủ bộ nhớ.</translation>
+<translation id="6279140785485544797">Gói dữ liệu di động của bạn có thể đã hết hạn. Hãy liên hệ với nhà mạng để được hỗ trợ.</translation>
 <translation id="6287852322318138013">Chọn một ứng dụng để mở tệp này</translation>
 <translation id="6295542640242147836">Khoá SIM</translation>
 <translation id="6296410173147755564">Mã PUK không hợp lệ</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423">Lưu trữ <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Vẫy tay</translation>
 <translation id="6327785803543103246">Tự động phát hiện proxy web</translation>
-<translation id="6337014272874260727">Bỏ ghim khỏi tệp nhanh</translation>
 <translation id="6339145975392024142">Bàn phím quốc tế Hoa Kỳ (PC)</translation>
 <translation id="6356685157277930264">Cửa sổ phản hồi về tệp</translation>
 <translation id="6358884629796491903">Rồng</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Thư mục hiện tại</translation>
 <translation id="6751256176799620176">Đã chọn 1 thư mục</translation>
 <translation id="6755827872271341378">Thiết bị ChromeOS Flex</translation>
+<translation id="6777029074498310250">Hãy truy cập <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> để biết thêm thông tin</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6794539005637808366">Khôi phục hoặc kéo mục này vào một thư mục mới bên ngoài thùng rác</translation>
 <translation id="6795884519221689054">Gấu trúc</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tiếng Tamil bằng bàn phím InScript</translation>
 <translation id="7088615885725309056">Cũ hơn</translation>
 <translation id="7103992300314999525">Tiếng Macedonia</translation>
+<translation id="7104338189998813914">Đã xảy ra sự cố khi truy cập tài khoản OneDrive của bạn</translation>
 <translation id="7106346894903675391">Mua thêm dung lượng lưu trữ...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;tìm kiếm trong Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Tiếng Kannada (phiên âm)</translation>
@@ -837,7 +840,7 @@
 <translation id="7486315294984620427">Để thả tệp vào Parallels Desktop, bạn phải sao chép tệp đó vào thư mục tệp Windows.</translation>
 <translation id="749452993132003881">Hiragana</translation>
 <translation id="7495372004724182530">Tiếng Malayalam (phiên âm)</translation>
-<translation id="7505167922889582512">Hiển thị các tệp ẩn</translation>
+<translation id="7505167922889582512">Hiện các tệp bị ẩn</translation>
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="751507702149411736">Tiếng Bê-la-rút</translation>
 <translation id="7521790570754130607">Bạn cần nhập mã PIN để dùng dữ liệu di động</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Xin đợi một chút</translation>
 <translation id="7600126690270271294">Tiếng Serbia</translation>
 <translation id="7603724359189955920">Lưới</translation>
+<translation id="7624010287655004652">Một nhà cung cấp mạng di động khác đã khoá lại.</translation>
 <translation id="7627790789328695202">Rất tiếc, <ph name="FILE_NAME" /> đã tồn tại. Hãy đổi tên tệp và thử lại.</translation>
 <translation id="7628656427739290098">Đã hoàn tất <ph name="PERCENT" />%.</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Danh sách tệp đã thay đổi thành chế độ xem hình thu nhỏ.</translation>
 <translation id="8601932370724196034">Tệp hình ảnh Crostini</translation>
 <translation id="8609695766746872526">Tiếng Iceland</translation>
+<translation id="8630384863424041081">Nhập mã PIN của thẻ SIM hoặc mã PIN mặc định do nhà mạng cung cấp. Liên hệ với nhà mạng của bạn để được hỗ trợ.</translation>
 <translation id="863903787380594467">Mã PIN không chính xác. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – Cổng</translation>
 <translation id="8656407365183407932">Hệ thống buộc phải xoá các tệp ngoại tuyến của bạn</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Tệp này được bảo mật và phải tuân thủ các hạn chế theo chính sách dành cho quản trị viên.</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8713112442029511308">Tiếng Malta</translation>
-<translation id="8714138378966541668">Bị khoá bởi nhà cung cấp</translation>
 <translation id="8714406895390098252">Xe đạp</translation>
 <translation id="8719721339511222681">Đã chọn <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Tiếng Croatia</translation>

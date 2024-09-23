@@ -14,9 +14,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 // static
 std::string ActiveHost::StatusToString(const ActiveHostStatus& status) {
@@ -131,10 +129,44 @@ void ActiveHost::GetActiveHost(ActiveHostCallback active_host_callback) {
   std::string active_host_device_id = GetActiveHostDeviceId();
   DCHECK(!active_host_device_id.empty());
 
-  tether_host_fetcher_->FetchTetherHost(
-      active_host_device_id, base::BindOnce(&ActiveHost::OnTetherHostFetched,
-                                            weak_ptr_factory_.GetWeakPtr(),
-                                            std::move(active_host_callback)));
+  std::optional<multidevice::RemoteDeviceRef> active_host =
+      tether_host_fetcher_->GetTetherHost();
+  if (GetActiveHostDeviceId().empty() || !active_host) {
+    DCHECK(GetActiveHostStatus() == ActiveHostStatus::DISCONNECTED);
+    DCHECK(GetTetherNetworkGuid().empty());
+    DCHECK(GetWifiNetworkGuid().empty());
+
+    // If the active host became disconnected while the tether host was being
+    // fetched, forward this information to the callback.
+    std::move(active_host_callback)
+        .Run(ActiveHostStatus::DISCONNECTED, std::nullopt /* active_host */,
+             "" /* wifi_network_guid */, "" /* tether_network_guid */);
+    return;
+  }
+
+  if (GetActiveHostDeviceId() != active_host->GetDeviceId()) {
+    // If the active host has changed while the tether host was being fetched,
+    // perform the fetch again.
+    GetActiveHost(std::move(active_host_callback));
+    return;
+  }
+
+  if (GetActiveHostStatus() == ActiveHostStatus::CONNECTING) {
+    DCHECK(!GetTetherNetworkGuid().empty());
+    DCHECK(GetWifiNetworkGuid().empty());
+    std::move(active_host_callback)
+        .Run(ActiveHostStatus::CONNECTING, active_host,
+             GetTetherNetworkGuid() /* tether_network_guid */,
+             "" /* wifi_network_guid */);
+    return;
+  }
+
+  DCHECK(GetActiveHostStatus() == ActiveHostStatus::CONNECTED);
+  DCHECK(!GetTetherNetworkGuid().empty());
+  DCHECK(!GetWifiNetworkGuid().empty());
+  std::move(active_host_callback)
+      .Run(ActiveHostStatus::CONNECTED, active_host, GetTetherNetworkGuid(),
+           GetWifiNetworkGuid());
 }
 
 ActiveHost::ActiveHostStatus ActiveHost::GetActiveHostStatus() const {
@@ -194,47 +226,6 @@ void ActiveHost::SetActiveHost(ActiveHostStatus active_host_status,
                                old_wifi_network_guid));
 }
 
-void ActiveHost::OnTetherHostFetched(
-    ActiveHostCallback active_host_callback,
-    std::optional<multidevice::RemoteDeviceRef> active_host) {
-  if (GetActiveHostDeviceId().empty() || !active_host) {
-    DCHECK(GetActiveHostStatus() == ActiveHostStatus::DISCONNECTED);
-    DCHECK(GetTetherNetworkGuid().empty());
-    DCHECK(GetWifiNetworkGuid().empty());
-
-    // If the active host became disconnected while the tether host was being
-    // fetched, forward this information to the callback.
-    std::move(active_host_callback)
-        .Run(ActiveHostStatus::DISCONNECTED, std::nullopt /* active_host */,
-             "" /* wifi_network_guid */, "" /* tether_network_guid */);
-    return;
-  }
-
-  if (GetActiveHostDeviceId() != active_host->GetDeviceId()) {
-    // If the active host has changed while the tether host was being fetched,
-    // perform the fetch again.
-    GetActiveHost(std::move(active_host_callback));
-    return;
-  }
-
-  if (GetActiveHostStatus() == ActiveHostStatus::CONNECTING) {
-    DCHECK(!GetTetherNetworkGuid().empty());
-    DCHECK(GetWifiNetworkGuid().empty());
-    std::move(active_host_callback)
-        .Run(ActiveHostStatus::CONNECTING, active_host,
-             GetTetherNetworkGuid() /* tether_network_guid */,
-             "" /* wifi_network_guid */);
-    return;
-  }
-
-  DCHECK(GetActiveHostStatus() == ActiveHostStatus::CONNECTED);
-  DCHECK(!GetTetherNetworkGuid().empty());
-  DCHECK(!GetWifiNetworkGuid().empty());
-  std::move(active_host_callback)
-      .Run(ActiveHostStatus::CONNECTED, active_host, GetTetherNetworkGuid(),
-           GetWifiNetworkGuid());
-}
-
 void ActiveHost::SendActiveHostChangedUpdate(
     ActiveHostStatus old_status,
     const std::string& old_active_host_id,
@@ -244,6 +235,8 @@ void ActiveHost::SendActiveHostChangedUpdate(
     std::optional<multidevice::RemoteDeviceRef> new_active_host,
     const std::string& new_tether_network_guid,
     const std::string& new_wifi_network_guid) {
+  PA_LOG(INFO) << "Active host changed from " << static_cast<int>(old_status)
+               << " to " << static_cast<int>(new_status);
   ActiveHostChangeInfo info;
   info.new_status = new_status;
   info.old_status = old_status;
@@ -255,10 +248,9 @@ void ActiveHost::SendActiveHostChangedUpdate(
   info.old_wifi_network_guid = old_wifi_network_guid;
 
   for (auto& observer : observer_list_) {
+    PA_LOG(INFO) << "Notifying observer of active host change";
     observer.OnActiveHostChanged(info);
   }
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

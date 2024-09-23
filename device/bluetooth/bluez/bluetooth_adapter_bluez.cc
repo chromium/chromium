@@ -392,16 +392,6 @@ void BluetoothAdapterBlueZ::Init() {
           base::BindOnce(&BluetoothAdapterBlueZ::OnSetDevCoredumpError,
                          weak_ptr_factory_.GetWeakPtr()));
 #endif // BUILDFLAG(IS_CHROMEOS)
-
-  bluez::BluezDBusManager::Get()
-      ->GetBluetoothDebugManagerClient()
-      ->SetLLPrivacy(
-          base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy),
-          base::BindOnce(&BluetoothAdapterBlueZ::OnSetLLPrivacySuccess,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&BluetoothAdapterBlueZ::OnSetLLPrivacyError,
-                         weak_ptr_factory_.GetWeakPtr()));
-
   std::move(init_callback_).Run();
 }
 
@@ -672,8 +662,25 @@ void BluetoothAdapterBlueZ::RegisterAdvertisement(
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool BluetoothAdapterBlueZ::IsExtendedAdvertisementsAvailable() const {
-  // TODO(b/310269227): wires this to BlueZ extension.
-  return false;
+  if (!IsPresent()) {
+    return false;
+  }
+
+  BluetoothLEAdvertisingManagerClient::Properties* properties =
+      bluez::BluezDBusManager::Get()
+          ->GetBluetoothLEAdvertisingManagerClient()
+          ->GetProperties(object_path_);
+
+  if (!properties) {
+    return false;
+  }
+
+  // Based on the implementation of kernel bluez, if the controller supports Ext
+  // Advertisement, it must support HardwareOffload.
+  // (net/bluetooth/mgmt.c:get_supported_adv_flags)
+  return base::Contains(
+      properties->supported_features.value(),
+      bluetooth_advertising_manager::kSupportedFeaturesHardwareOffload);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -745,6 +752,15 @@ device::BluetoothLocalGattService* BluetoothAdapterBlueZ::GetGattService(
   const auto& service = owned_gatt_services_.find(dbus::ObjectPath(identifier));
   return service == owned_gatt_services_.end() ? nullptr
                                                : service->second.get();
+}
+
+base::WeakPtr<device::BluetoothLocalGattService>
+BluetoothAdapterBlueZ::CreateLocalGattService(
+    const device::BluetoothUUID& uuid,
+    bool is_primary,
+    device::BluetoothLocalGattService::Delegate* delegate) {
+  return bluez::BluetoothLocalGattServiceBlueZ::Create(this, uuid, is_primary,
+                                                       delegate);
 }
 
 void BluetoothAdapterBlueZ::RemovePairingDelegateInternal(
@@ -1368,17 +1384,7 @@ void BluetoothAdapterBlueZ::RemoveAdapter() {
   // sessions currently.
   DiscoveringChanged(false);
 
-  // Move all elements of the original devices list to a new list here,
-  // leaving the original list empty so that when we send DeviceRemoved(),
-  // GetDevices() returns no devices.
-  DevicesMap devices_swapped;
-  devices_swapped.swap(devices_);
-
-  for (auto& iter : devices_swapped) {
-    for (auto& observer : observers_)
-      observer.DeviceRemoved(this, iter.second.get());
-  }
-
+  ClearAllDevices();
   PresentChanged(false);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1864,7 +1870,7 @@ base::WeakPtr<BluetoothAdapter> BluetoothAdapterBlueZ::GetWeakPtr() {
 
 // BluetoothAdapterBlueZ should override SetPowered() instead.
 bool BluetoothAdapterBlueZ::SetPoweredImpl(bool powered) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

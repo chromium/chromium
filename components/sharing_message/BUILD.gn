@@ -1,0 +1,167 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//components/sharing_message/buildflags.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "ENABLE_DISCOVERY=$enable_discovery",
+    "ENABLE_CLICK_TO_CALL=$enable_click_to_call",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("sharing_send_message_result_generated_enum") {
+    sources = [ "sharing_send_message_result.h" ]
+  }
+  java_cpp_enum("sharing_dialog_type_generated_enum") {
+    sources = [ "sharing_metrics.h" ]
+  }
+}
+
+source_set("sharing_message") {
+  sources = [
+    "ack_message_handler.cc",
+    "ack_message_handler.h",
+    "features.cc",
+    "features.h",
+    "ping_message_handler.cc",
+    "ping_message_handler.h",
+    "pref_names.h",
+    "sharing_app.cc",
+    "sharing_app.h",
+    "sharing_constants.cc",
+    "sharing_constants.h",
+    "sharing_device_registration.h",
+    "sharing_device_registration_result.h",
+    "sharing_device_source.cc",
+    "sharing_device_source.h",
+    "sharing_device_source_sync.cc",
+    "sharing_device_source_sync.h",
+    "sharing_dialog.h",
+    "sharing_dialog_data.cc",
+    "sharing_dialog_data.h",
+    "sharing_fcm_handler.cc",
+    "sharing_fcm_handler.h",
+    "sharing_fcm_sender.cc",
+    "sharing_fcm_sender.h",
+    "sharing_handler_registry.h",
+    "sharing_message_bridge.h",
+    "sharing_message_bridge_impl.cc",
+    "sharing_message_bridge_impl.h",
+    "sharing_message_data_type_controller.cc",
+    "sharing_message_data_type_controller.h",
+    "sharing_message_handler.h",
+    "sharing_message_sender.cc",
+    "sharing_message_sender.h",
+    "sharing_metrics.cc",
+    "sharing_metrics.h",
+    "sharing_send_message_result.h",
+    "sharing_service.cc",
+    "sharing_service.h",
+    "sharing_sync_preference.cc",
+    "sharing_sync_preference.h",
+    "sharing_target_device_info.cc",
+    "sharing_target_device_info.h",
+    "sharing_utils.cc",
+    "sharing_utils.h",
+    "vapid_key_manager.cc",
+    "vapid_key_manager.h",
+  ]
+  deps = [
+    ":buildflags",
+    "//base",
+    "//components/favicon/core",
+    "//components/favicon_base",
+    "//components/gcm_driver",
+    "//components/gcm_driver/crypto",
+    "//components/gcm_driver/instance_id",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core:features",
+    "//components/send_tab_to_self",
+    "//components/sharing_message/proto",
+    "//components/sharing_message/shared_clipboard",
+    "//components/sharing_message/web_push",
+    "//components/strings",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/sync/service",
+    "//components/sync_device_info",
+    "//components/sync_preferences",
+    "//components/version_info",
+    "//net",
+    "//third_party/re2",
+    "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  sources = [
+    "fake_device_info.cc",
+    "fake_device_info.h",
+    "fake_sharing_handler_registry.cc",
+    "fake_sharing_handler_registry.h",
+  ]
+  deps = [
+    ":sharing_message",
+    "//base",
+    "//components/sharing_message/proto",
+    "//components/sync/protocol",
+    "//components/sync_device_info",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ack_message_handler_unittest.cc",
+    "mock_sharing_device_source.cc",
+    "mock_sharing_device_source.h",
+    "mock_sharing_message_handler.cc",
+    "mock_sharing_message_handler.h",
+    "mock_sharing_message_sender.cc",
+    "mock_sharing_message_sender.h",
+    "mock_sharing_service.cc",
+    "mock_sharing_service.h",
+    "sharing_device_source_sync_unittest.cc",
+    "sharing_device_source_unittest.cc",
+    "sharing_fcm_handler_unittest.cc",
+    "sharing_fcm_sender_unittest.cc",
+    "sharing_message_bridge_impl_unittest.cc",
+    "sharing_message_sender_unittest.cc",
+    "sharing_service_unittest.cc",
+    "sharing_sync_preference_unittest.cc",
+    "sharing_utils_unittest.cc",
+    "vapid_key_manager_unittest.cc",
+  ]
+  deps = [
+    ":sharing_message",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/favicon/core/test:test_support",
+    "//components/gcm_driver:test_support",
+    "//components/send_tab_to_self",
+    "//components/send_tab_to_self:test_support",
+    "//components/sharing_message/ios_push",
+    "//components/sharing_message/proto",
+    "//components/sharing_message/web_push",
+    "//components/strings",
+    "//components/sync:test_support",
+    "//components/sync/model",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
+    "//google_apis/gcm",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

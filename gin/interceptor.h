@@ -27,6 +27,7 @@ class GIN_EXPORT NamedPropertyInterceptor {
   NamedPropertyInterceptor& operator=(const NamedPropertyInterceptor&) = delete;
   virtual ~NamedPropertyInterceptor();
 
+  // Return non-empty handle if the get was interecepted.
   virtual v8::Local<v8::Value> GetNamedProperty(v8::Isolate* isolate,
                                                 const std::string& property);
   // Return true if the set was interecepted.
@@ -51,6 +52,7 @@ class GIN_EXPORT IndexedPropertyInterceptor {
       delete;
   virtual ~IndexedPropertyInterceptor();
 
+  // Return non-empty handle if the get was interecepted.
   virtual v8::Local<v8::Value> GetIndexedProperty(v8::Isolate* isolate,
                                                   uint32_t index);
   // Return true if the set was interecepted.

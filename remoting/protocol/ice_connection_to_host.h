@@ -56,6 +56,7 @@ class IceConnectionToHost : public ConnectionToHost,
                scoped_refptr<TransportContext> transport_context,
                HostEventCallback* event_callback) override;
   void Disconnect(ErrorCode error) override;
+  void ApplyNetworkSettings(const NetworkSettings& settings) override;
   const SessionConfig& config() override;
   ClipboardStub* clipboard_forwarder() override;
   HostStub* host_stub() override;
@@ -107,7 +108,7 @@ class IceConnectionToHost : public ConnectionToHost,
 
   // Internal state of the connection.
   State state_ = INITIALIZING;
-  ErrorCode error_ = OK;
+  ErrorCode error_ = ErrorCode::OK;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

@@ -1,0 +1,59 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("off_hours") {
+  sources = [
+    "device_off_hours_controller.cc",
+    "device_off_hours_controller.h",
+    "off_hours_policy_applier.cc",
+    "off_hours_policy_applier.h",
+    "off_hours_proto_parser.cc",
+    "off_hours_proto_parser.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/login/users",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/ash/components/policy/weekly_time",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/user_manager",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_off_hours_controller_unittest.cc",
+    "off_hours_policy_applier_unittest.cc",
+    "off_hours_proto_parser_unittest.cc",
+  ]
+
+  deps = [
+    ":off_hours",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/settings:test_support",
+    "//chromeos/ash/components/dbus/system_clock",
+    "//chromeos/ash/components/policy/weekly_time",
+    "//components/policy/proto",
+    "//components/user_manager",
+    "//testing/gtest",
+  ]
+}

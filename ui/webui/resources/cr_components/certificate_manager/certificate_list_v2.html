@@ -1,0 +1,61 @@
+<style include="cr-shared-style certificate-manager-style-v2">
+
+  .header-buttons {
+    margin-left: auto;
+  }
+
+  .no-certs {
+    border-top: none;
+  }
+
+  /* Used when list is embedded in a subpage; added in .ts code */
+  .subpage-padding {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .list-title {
+    display: flex;
+    align-items: center;
+  }
+</style>
+<div hidden$="[[hideEverything_]]">
+  <div id="listHeader" class="section-title list-title first"
+      hidden$="[[hideHeader]]">
+    [[headerText]]
+    <div class="header-buttons">
+      <cr-button hidden$="[[!showImport]]" id="importCert"
+          on-click="onImportCertClick_">
+        <!-- TODO(crbug.com/40928765): localize -->
+        Import
+      </cr-button>
+      <cr-button hidden$="[[!showImportAndBind]]" id="importAndBindCert"
+          on-click="onImportAndBindCertClick_">
+        <!-- TODO(crbug.com/40928765): localize -->
+        Import and bind
+      </cr-button>
+      <cr-button hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
+          aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"
+          id="exportCerts" on-click="onExportCertsClick_">
+        [[i18n("certificateManagerV2ExportButtonLabel")]]
+      </cr-button>
+    </div>
+    <cr-expand-button id="expandButton" expanded="{{expanded_}}" no-hover
+        hidden$="[[hideCollapseButton_(noCollapse, hasCerts_)]]">
+    </cr-expand-button>
+  </div>
+
+  <cr-collapse id="certs" opened="[[expanded_]]">
+    <template is="dom-repeat" items="[[certificates_]]">
+      <certificate-entry-v2
+          cert-source="[[certSource]]"
+          display-name="[[item.displayName]]"
+          sha256hash-hex="[[item.sha256hashHex]]"
+          is-deletable="[[item.isDeletable]]"
+          on-delete-result="onDeleteResult_">
+      </certificate-entry-v2>
+    </template>
+    <div id="noCertsRow" class="cr-row no-certs" hidden="[[hasCerts_]]">
+      [[i18n("certificateManagerV2NoCertificatesRow")]]
+    </div>
+  </cr-collapse>
+</div>

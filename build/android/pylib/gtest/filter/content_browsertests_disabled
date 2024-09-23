@@ -29,9 +29,6 @@ RendererAccessibilityTest.HideAccessibilityObject
 RendererAccessibilityTest.ShowAccessibilityObject
 RendererAccessibilityTest.TextSelectionShouldSendRoot
 
-# http://crbug.com/386227
-IndexedDBBrowserTest.VersionChangeCrashResilience
-
 # http://crbug.com/233118
 IndexedDBBrowserTest.NullKeyPathPersistence
 

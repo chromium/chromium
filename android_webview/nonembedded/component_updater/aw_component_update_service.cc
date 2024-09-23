@@ -11,7 +11,6 @@
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 #include "android_webview/nonembedded/component_updater/registration.h"
-#include "android_webview/nonembedded/nonembedded_jni_headers/AwComponentUpdateService_jni.h"
 #include "android_webview/nonembedded/webview_apk_process.h"
 #include "base/android/callback_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -27,6 +26,9 @@
 #include "components/component_updater/component_updater_utils.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/nonembedded/nonembedded_jni_headers/AwComponentUpdateService_jni.h"
 
 namespace android_webview {
 
@@ -78,7 +80,7 @@ bool AwComponentUpdateService::RegisterComponent(
     const component_updater::ComponentRegistration& component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // TODO(crbug.com/40750393): Add the histograms being logged in
   // CrxUpdateService once we support logging metrics from nonembedded WebView.
 
   if (component.app_id.empty() || !component.version.IsValid() ||
@@ -102,7 +104,7 @@ void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished,
                                                bool on_demand_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // TODO(crbug.com/40750393): Add the histograms being logged in
   // CrxUpdateService once we support logging metrics from nonembedded WebView.
 
   std::vector<std::string> secure_ids;    // Require HTTPS for update checks.
@@ -163,7 +165,7 @@ void AwComponentUpdateService::OnUpdateComplete(
     const base::TimeTicks& start_time,
     update_client::Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1180595): Add the histograms being logged in
+  // TODO(crbug.com/40750393): Add the histograms being logged in
   // CrxUpdateService once we support logging metrics from nonembedded WebView.
 
   if (!callback.is_null()) {

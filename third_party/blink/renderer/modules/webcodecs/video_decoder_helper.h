@@ -65,12 +65,16 @@ class MODULES_EXPORT VideoDecoderHelper {
   //     Pointer to buffer containing NAL units in MP4 format.
   //   input_size
   //     Size of the buffer in bytes.
+  //   is_first_chunk
+  //     True if this chunk is the first in the stream (follows a configure() or
+  //     a flush()).
   // Returns
   //   Required buffer size for the output NAL unit buffer when converted to
   //   bytestream format, or 0 if could not determine the size of the output
   //   buffer from the data in |input|.
   uint32_t CalculateNeededOutputBufferSize(const uint8_t* input,
-                                           uint32_t input_size) const;
+                                           uint32_t input_size,
+                                           bool is_first_chunk) const;
 
   // ConvertNalUnitStreamToByteStream converts the NAL unit from MP4 format
   // to bytestream format. Client is responsible for making sure the output
@@ -87,6 +91,9 @@ class MODULES_EXPORT VideoDecoderHelper {
   //   output_size (i/o)
   //     Pointer to the size of the output buffer. Will contain the number of
   //     bytes written to output after successful call.
+  //   is_first_chunk
+  //     True if this chunk is the first in the stream (follows a configure() or
+  //     a flush()).
   //
   // Returns
   //    kSucceed  if successful conversion
@@ -95,7 +102,8 @@ class MODULES_EXPORT VideoDecoderHelper {
   Status ConvertNalUnitStreamToByteStream(const uint8_t* input,
                                           uint32_t input_size,
                                           uint8_t* output,
-                                          uint32_t* output_size);
+                                          uint32_t* output_size,
+                                          bool is_first_chunk);
 
  private:
   Status Initialize(const uint8_t* configuration_record,

@@ -14,7 +14,7 @@ class OsTrialScreen;
 
 // Interface for dependency injection between OsTrialScreen and its
 // WebUI representation.
-class OsTrialScreenView : public base::SupportsWeakPtr<OsTrialScreenView> {
+class OsTrialScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"os-trial",
                                                        "OsTrialScreen"};
@@ -23,10 +23,12 @@ class OsTrialScreenView : public base::SupportsWeakPtr<OsTrialScreenView> {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<OsTrialScreenView> AsWeakPtr() = 0;
 };
 
-class OsTrialScreenHandler : public BaseScreenHandler,
-                             public OsTrialScreenView {
+class OsTrialScreenHandler final : public BaseScreenHandler,
+                                   public OsTrialScreenView {
  public:
   using TView = OsTrialScreenView;
 
@@ -42,6 +44,9 @@ class OsTrialScreenHandler : public BaseScreenHandler,
 
   // OsTrialScreenView:
   void Show() override;
+  base::WeakPtr<OsTrialScreenView> AsWeakPtr() override;
+
+  base::WeakPtrFactory<OsTrialScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

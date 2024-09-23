@@ -1,6 +1,8 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
+ * Copyright (C) 2002-2017 Németh László
+ *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -84,8 +81,8 @@
 
 #ifdef HUNSPELL_CHROME_CLIENT
 #include <map>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "third_party/hunspell/google/bdict_reader.h"
 #endif
 
@@ -95,7 +92,7 @@ class HashMgr {
 #ifdef HUNSPELL_CHROME_CLIENT
   // Not owned by this class, owned by the Hunspell object.
   hunspell::BDictReader* bdict_reader;
-  std::map<base::StringPiece, int> custom_word_to_affix_id_map_;
+  std::map<std::string_view, int> custom_word_to_affix_id_map_;
   std::vector<std::string*> pointer_to_strings_;
 #endif
   int tablesize;
@@ -154,6 +151,7 @@ class HashMgr {
 
  private:
   int get_clen_and_captype(const std::string& word, int* captype);
+  int get_clen_and_captype(const std::string& word, int* captype, std::vector<w_char> &workbuf);
   int load_tables(const char* tpath, const char* key);
   int add_word(const std::string& word,
                int wcl,

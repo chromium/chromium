@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
-
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/arc_test_window.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "components/exo/test/exo_test_base.h"
@@ -41,6 +41,7 @@ class DisplayOverlayControllerAlphaTest : public exo::test::ExoTestBase {
 
  private:
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(ash::features::kGameDashboard);
     ui::ResourceBundle::SetLottieParsingFunctions(
         &lottie::ParseLottieAsStillImage,
         &lottie::ParseLottieAsThemedStillImage);
@@ -64,6 +65,8 @@ class DisplayOverlayControllerAlphaTest : public exo::test::ExoTestBase {
     arc_test_window_.reset();
     exo::test::ExoTestBase::TearDown();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DisplayOverlayControllerAlphaTest, TestWindowBoundsChange) {
@@ -87,7 +90,7 @@ TEST_F(DisplayOverlayControllerAlphaTest, TestEducationNudgeDismissesOnClick) {
   EXPECT_TRUE(ShowingNudge());
   auto center = injector_->window()->bounds().CenterPoint();
   auto mouse_pressed = ui::MouseEvent(
-      ui::ET_MOUSE_PRESSED, center, center, ui::EventTimeForNow(),
+      ui::EventType::kMousePressed, center, center, ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   controller_->OnMouseEvent(&mouse_pressed);
   EXPECT_FALSE(ShowingNudge());

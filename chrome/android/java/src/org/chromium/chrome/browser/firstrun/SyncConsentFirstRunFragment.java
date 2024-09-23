@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentDelegate;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
@@ -30,7 +31,7 @@ import java.util.List;
 public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
         implements FirstRunFragment {
     // Per-page parameters:
-    // TODO(crbug/1168516): Remove IS_CHILD_ACCOUNT
+    // TODO(crbug.com/40165044): Remove IS_CHILD_ACCOUNT
     public static final String IS_CHILD_ACCOUNT = "IsChildAccount";
 
     private final SyncConsentDelegate mSyncConsentDelegate;
@@ -40,19 +41,20 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
     public SyncConsentFirstRunFragment() {
         mSyncConsentDelegate =
                 new SyncConsentDelegate() {
-                    @NonNull
+                    @Nullable
                     @Override
                     public WindowAndroid getWindowAndroid() {
-                        return getPageDelegate().getWindowAndroid();
+                        FirstRunPageDelegate delegate = getPageDelegate();
+                        if (delegate == null) return null;
+                        return delegate.getWindowAndroid();
                     }
 
-                    @NonNull
+                    @Nullable
                     @Override
                     public Profile getProfile() {
-                        return getPageDelegate()
-                                .getProfileProviderSupplier()
-                                .get()
-                                .getOriginalProfile();
+                        FirstRunPageDelegate delegate = getPageDelegate();
+                        if (delegate == null) return null;
+                        return delegate.getProfileProviderSupplier().get().getOriginalProfile();
                     }
                 };
     }
@@ -72,7 +74,7 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
         final @Nullable String accountEmail =
                 defaultAccount == null ? null : defaultAccount.getEmail();
         boolean isChild = getPageDelegate().getProperties().getBoolean(IS_CHILD_ACCOUNT, false);
-        // TODO(crbug.com/1491387): Avoid sending `accountEmail` to create arguments. This class
+        // TODO(crbug.com/40285057): Avoid sending `accountEmail` to create arguments. This class
         // uses the primary account from IdentityManager.
         setArguments(createArguments(SigninAccessPoint.START_PAGE, accountEmail, isChild));
     }
@@ -85,8 +87,10 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
     }
 
     @Override
-    protected void onSyncAccepted(String accountName, boolean settingsClicked, Runnable callback) {
-        // TODO(crbug.com/1302635): Once ENABLE_SYNC_IMMEDIATELY_IN_FRE launches, move these metrics
+    protected void onSyncAccepted(
+            String accountName, boolean settingsClicked, SigninManager.SignInCallback callback) {
+        // TODO(crbug.com/40217047): Once ENABLE_SYNC_IMMEDIATELY_IN_FRE launches, move these
+        // metrics
         // elsewhere, so onSyncAccepted() is replaced with signinAndEnableSync() (common code).
         getPageDelegate().recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_ACCEPTED);
         if (settingsClicked) {
@@ -127,7 +131,7 @@ public class SyncConsentFirstRunFragment extends SyncConsentFragmentBase
 
                             // SigninChecker enabled sync already. Just open settings if needed.
                             closeAndMaybeOpenSyncSettings(settingsClicked);
-                            callback.run();
+                            callback.onSignInComplete();
                         });
     }
 

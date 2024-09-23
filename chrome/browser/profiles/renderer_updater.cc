@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/renderer_updater.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
@@ -49,9 +49,6 @@ RendererUpdater::RendererUpdater(Profile* profile)
           BoundSessionCookieRefreshServiceFactory::GetForProfile(profile))
 #endif
 {
-  identity_manager_observation_.Observe(
-      IdentityManagerFactory::GetForProfile(original_profile_));
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   oauth2_login_manager_ =
       ash::OAuth2LoginManagerFactory::GetForProfile(original_profile_);
@@ -112,7 +109,6 @@ void RendererUpdater::Shutdown() {
   oauth2_login_manager_->RemoveObserver(this);
   oauth2_login_manager_ = nullptr;
 #endif
-  identity_manager_observation_.Reset();
 }
 
 void RendererUpdater::InitializeRenderer(
@@ -135,7 +131,7 @@ void RendererUpdater::InitializeRenderer(
   content_settings::ContentSettingsManagerImpl::Create(
       render_process_host,
       content_settings_manager.InitWithNewPipeAndPassReceiver(),
-      std::make_unique<chrome::ContentSettingsManagerDelegate>());
+      std::make_unique<ContentSettingsManagerDelegate>());
   mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
       bound_session_request_throttled_handler;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -203,23 +199,14 @@ void RendererUpdater::OnSessionRestoreStateChanged(
 }
 #endif
 
-void RendererUpdater::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
-      signin::PrimaryAccountChangeEvent::Type::kNone) {
-    return;
-  }
-  UpdateAllRenderers();
-}
-
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-chrome::mojom::BoundSessionThrottlerParamsPtr
+std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
 RendererUpdater::GetBoundSessionThrottlerParams() const {
   if (bound_session_cookie_refresh_service_) {
     return bound_session_cookie_refresh_service_
         ->GetBoundSessionThrottlerParams();
   }
-  return chrome::mojom::BoundSessionThrottlerParamsPtr();
+  return {};
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 

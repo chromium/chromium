@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include "base/logging.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -52,9 +53,9 @@ constexpr char kWifiIPConfigV6Path[] = "/ipconfig/stub_wifi-ipv6";
 namespace crosapi {
 
 namespace {
-void EvaluateGetNetworkDetailsResult(base::OnceClosure closure,
-                                     mojom::GetNetworkDetailsResultPtr expected,
-                                     mojom::GetNetworkDetailsResultPtr found) {
+void EvaluateGetNetworkDetailsResult(
+    mojom::GetNetworkDetailsResultPtr found,
+    mojom::GetNetworkDetailsResultPtr expected) {
   ASSERT_EQ(expected->which(), found->which());
   if (expected->which() == mojom::GetNetworkDetailsResult::Tag::kErrorMessage) {
     ASSERT_EQ(expected->get_error_message(), found->get_error_message());
@@ -66,7 +67,6 @@ void EvaluateGetNetworkDetailsResult(base::OnceClosure closure,
     ASSERT_EQ(expected->get_network_details()->ipv6_address,
               found->get_network_details()->ipv6_address);
   }
-  std::move(closure).Run();
 }
 
 void ShillErrorCallbackFunction(const std::string& error_name,
@@ -153,22 +153,22 @@ class NetworkingAttributesAshTest : public testing::Test {
                   kWifiServicePath, shill::kStateProperty),
               shill::kStateOnline);
 
-    base::RunLoop device_client_mac_address_run_loop;
+    base::test::TestFuture<void> device_client_mac_address_waiter;
     ash::ShillDeviceClient* shill_device_client = ash::ShillDeviceClient::Get();
     shill_device_client->SetProperty(
         dbus::ObjectPath(kWifiDevicePath), shill::kAddressProperty,
         base::Value(kFormattedMacAddress),
-        device_client_mac_address_run_loop.QuitClosure(),
+        device_client_mac_address_waiter.GetCallback(),
         base::BindOnce(&ShillErrorCallbackFunction));
-    device_client_mac_address_run_loop.Run();
+    EXPECT_TRUE(device_client_mac_address_waiter.Wait());
 
-    base::RunLoop device_client_ip_config_run_loop;
+    base::test::TestFuture<void> device_client_ip_config_waiter;
     shill_device_client->SetProperty(
         dbus::ObjectPath(kWifiDevicePath), shill::kIPConfigsProperty,
         base::Value(std::move(ip_configs)),
-        device_client_ip_config_run_loop.QuitClosure(),
+        device_client_ip_config_waiter.GetCallback(),
         base::BindOnce(&ShillErrorCallbackFunction));
-    device_client_ip_config_run_loop.Run();
+    EXPECT_TRUE(device_client_ip_config_waiter.Wait());
 
     testing::StrictMock<MockPropertyChangeObserver> observer;
     ash::ShillServiceClient* shill_service_client =
@@ -176,17 +176,17 @@ class NetworkingAttributesAshTest : public testing::Test {
     shill_service_client->AddPropertyChangedObserver(
         dbus::ObjectPath(kWifiServicePath), &observer);
 
-    base::RunLoop service_client_run_loop;
     base::Value kConnectable(true);
     EXPECT_CALL(observer,
                 OnPropertyChanged(shill::kConnectableProperty,
                                   testing::Eq(testing::ByRef(kConnectable))))
         .Times(1);
+    base::test::TestFuture<void> service_client_waiter;
     shill_service_client->SetProperty(
         dbus::ObjectPath(kWifiServicePath), shill::kConnectableProperty,
-        kConnectable, service_client_run_loop.QuitClosure(),
+        kConnectable, service_client_waiter.GetCallback(),
         base::BindOnce(&ShillErrorCallbackFunction));
-    service_client_run_loop.Run();
+    EXPECT_TRUE(service_client_waiter.Wait());
     testing::Mock::VerifyAndClearExpectations(&observer);
 
     const ash::DeviceState* device_state =
@@ -213,28 +213,23 @@ class NetworkingAttributesAshTest : public testing::Test {
 TEST_F(NetworkingAttributesAshTest, GetNetworkDetailsUserNotAffiliated) {
   AddUser(/*is_affiliated=*/false);
 
-  mojom::GetNetworkDetailsResultPtr expected_result_ptr =
-      mojom::GetNetworkDetailsResult::NewErrorMessage(kErrorUserNotAffiliated);
+  base::test::TestFuture<mojom::GetNetworkDetailsResultPtr> future;
+  networking_attributes_remote_->GetNetworkDetails(future.GetCallback());
 
-  base::RunLoop run_loop;
-  networking_attributes_remote_->GetNetworkDetails(
-      base::BindOnce(&EvaluateGetNetworkDetailsResult, run_loop.QuitClosure(),
-                     std::move(expected_result_ptr)));
-  run_loop.Run();
+  EvaluateGetNetworkDetailsResult(
+      future.Take(),
+      mojom::GetNetworkDetailsResult::NewErrorMessage(kErrorUserNotAffiliated));
 }
 
 TEST_F(NetworkingAttributesAshTest, GetNetworkDetailsNetworkNotConnected) {
   AddUser();
 
-  mojom::GetNetworkDetailsResultPtr expected_result_ptr =
-      mojom::GetNetworkDetailsResult::NewErrorMessage(
-          kErrorNetworkNotConnected);
+  base::test::TestFuture<mojom::GetNetworkDetailsResultPtr> future;
+  networking_attributes_remote_->GetNetworkDetails(future.GetCallback());
 
-  base::RunLoop run_loop;
-  networking_attributes_remote_->GetNetworkDetails(
-      base::BindOnce(&EvaluateGetNetworkDetailsResult, run_loop.QuitClosure(),
-                     std::move(expected_result_ptr)));
-  run_loop.Run();
+  EvaluateGetNetworkDetailsResult(
+      future.Take(), mojom::GetNetworkDetailsResult::NewErrorMessage(
+                         kErrorNetworkNotConnected));
 }
 
 TEST_F(NetworkingAttributesAshTest, GetNetworkDetailsSuccess) {
@@ -251,15 +246,13 @@ TEST_F(NetworkingAttributesAshTest, GetNetworkDetailsSuccess) {
   expected_network_details->mac_address = kFormattedMacAddress;
   expected_network_details->ipv4_address = ipv4_expected;
   expected_network_details->ipv6_address = ipv6_expected;
-  mojom::GetNetworkDetailsResultPtr expected_result_ptr =
-      mojom::GetNetworkDetailsResult::NewNetworkDetails(
-          std::move(expected_network_details));
 
-  base::RunLoop run_loop;
-  networking_attributes_remote_->GetNetworkDetails(
-      base::BindOnce(&EvaluateGetNetworkDetailsResult, run_loop.QuitClosure(),
-                     std::move(expected_result_ptr)));
-  run_loop.Run();
+  base::test::TestFuture<mojom::GetNetworkDetailsResultPtr> future;
+  networking_attributes_remote_->GetNetworkDetails(future.GetCallback());
+
+  EvaluateGetNetworkDetailsResult(
+      future.Take(), mojom::GetNetworkDetailsResult::NewNetworkDetails(
+                         std::move(expected_network_details)));
 }
 
 }  // namespace crosapi

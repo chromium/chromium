@@ -11,14 +11,18 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "chrome/browser/extensions/cws_info_service.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
-#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/cws_info_service.h"
+#include "chrome/browser/ui/safety_hub/password_status_check_service.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 struct MenuNotificationEntry {
   int command = 0;
@@ -69,8 +73,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
       PrefService* pref_service,
       UnusedSitePermissionsService* unused_site_permissions_service,
       NotificationPermissionsReviewService* notification_permissions_service,
-      extensions::CWSInfoService* extension_info_service,
+#if !BUILDFLAG(IS_ANDROID)
       PasswordStatusCheckService* password_check_service,
+#endif  // BUILDFLAG(IS_ANDROID)
       Profile* profile);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
       delete;
@@ -91,9 +96,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
   void DismissActiveNotificationOfModule(
       safety_hub::SafetyHubModuleType module);
 
-  // Returns the |service_info_map_|. For testing purposes only.
-  SafetyHubMenuNotification* GetNotificationForTesting(
-      safety_hub::SafetyHubModuleType service_type);
+  // Returns the module of the notification that was last displayed to the user.
+  std::optional<safety_hub::SafetyHubModuleType>
+  GetLastShownNotificationModule() const;
 
   void UpdateResultGetterForTesting(
       safety_hub::SafetyHubModuleType type,
@@ -132,16 +137,11 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Called when the pref for Safe Browsing has been updated.
   void OnSafeBrowsingPrefUpdate();
 
-  const std::map<safety_hub::SafetyHubModuleType, const char*>
-      pref_dict_key_map_ = {
-          {safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
-           "unused-site-permissions"},
-          {safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
-           "notification-permissions"},
-          {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe-browsing"},
-          {safety_hub::SafetyHubModuleType::EXTENSIONS, "extensions"},
-          {safety_hub::SafetyHubModuleType::PASSWORDS, "passwords"},
-      };
+  // Returns if any safety hub notification is shown in the menu so far.
+  bool HasAnyNotificationBeenShown() const;
+
+  // Holds the mapping from module type to pref name.
+  std::map<safety_hub::SafetyHubModuleType, const char*> pref_dict_key_map_;
 
   // Preference service that persists the notifications.
   raw_ptr<PrefService> pref_service_;
@@ -154,6 +154,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
 
   // Registrar to record the pref changes to Safe Browsing.
   PrefChangeRegistrar registrar_;
+
+  // The module of the last notification that has been shown.
+  std::optional<safety_hub::SafetyHubModuleType> last_shown_module_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_SERVICE_H_

@@ -28,6 +28,6 @@ public @interface LayoutType {
     int TAB_SWITCHER = 2;
     int TOOLBAR_SWIPE = 4;
     int SIMPLE_ANIMATION = 8;
-    int START_SURFACE = 16;
+    @Deprecated int START_SURFACE = 16;
     // Next layout type should be 32.
 }

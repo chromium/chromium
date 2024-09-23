@@ -458,7 +458,8 @@ TEST_F(ConnectTest, ConnectWithGloballyUniqueId) {
   base::RunLoop wait_for_error_loop;
   base::RunLoop wait_for_connect_loop;
   proxy.reset();
-  target->CallOnNextBindInterface(base::BindOnce([] { NOTREACHED(); }));
+  target->CallOnNextBindInterface(
+      base::BindOnce([] { NOTREACHED_IN_MIGRATION(); }));
   connector()->Connect(
       specific_identity, proxy.BindNewPipeAndPassReceiver(),
       base::BindLambdaForTesting([&](mojom::ConnectResult result,

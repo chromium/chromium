@@ -44,7 +44,7 @@ using ::tflite::support::TfLiteSupportStatus;
 using ::tflite::task::core::FindTensorByName;
 
 namespace {
-constexpr char kScoreTensorName[] = "probability";
+constexpr const char* kValidScoreTensorNames[] = { "probability", "score" };
 
 absl::Status SanityCheckOptions(const BertNLClassifierOptions& options) {
   if (!options.has_base_options()) {
@@ -72,12 +72,20 @@ StatusOr<std::vector<core::Category>> BertNLClassifier::Postprocess(
                         output_tensors.size()),
         TfLiteSupportStatus::kInvalidNumOutputTensorsError);
   }
-  const TfLiteTensor* scores = FindTensorByName(
+  for (const auto& name : kValidScoreTensorNames) {
+    const TfLiteTensor* scores = FindTensorByName(
       output_tensors, GetMetadataExtractor()->GetOutputTensorMetadata(),
-      kScoreTensorName);
-
-  // optional labels extracted from metadata
-  return BuildResults(scores, /*labels=*/nullptr);
+      name);
+    if (scores) {
+      // optional labels extracted from metadata
+      return BuildResults(scores, /*labels=*/nullptr);
+    }
+  }
+  return CreateStatusWithPayload(
+      absl::StatusCode::kInvalidArgument,
+      absl::StrFormat("BertNLClassifier models are expected to have an output "
+                      "tensor by the name: 'score' or 'probability'"),
+      TfLiteSupportStatus::kOutputTensorNotFoundError);
 }
 
 StatusOr<std::unique_ptr<BertNLClassifier>> BertNLClassifier::CreateFromOptions(

@@ -7,19 +7,29 @@
 
 #import <UIKit/UIKit.h>
 
+namespace commerce {
+class ShoppingService;
+}
+
 namespace segmentation_platform {
 class SegmentationPlatformService;
 }
 
-@protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMetricsRecorder;
 enum class ContentSuggestionsModuleType;
+@protocol HomeStartDataSource;
+@class MagicStackModule;
+@protocol MagicStackRankingModelDelegate;
 class PrefService;
 
 // Manages the Magic Stack module ranking fetch and returns the
 @interface MagicStackRankingModel : NSObject
 
-@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
+// Delegate for this model.
+@property(nonatomic, weak) id<MagicStackRankingModelDelegate> delegate;
+
+// Data Source for the Home Start state.
+@property(nonatomic, weak) id<HomeStartDataSource> homeStartDataSource;
 
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)
@@ -27,21 +37,27 @@ class PrefService;
 
 // Default initializer with the module mediators passed in through
 // `moduleMediators`.
-- (instancetype)initWithSegmentationService:
-                    (segmentation_platform::SegmentationPlatformService*)
-                        segmentationService
-                                prefService:(PrefService*)prefService
-                                 localState:(PrefService*)localState
-                            moduleMediators:(NSArray*)moduleMediators
+- (instancetype)
+    initWithSegmentationService:
+        (segmentation_platform::SegmentationPlatformService*)segmentationService
+                shoppingService:(commerce::ShoppingService*)shoppingService
+                    prefService:(PrefService*)prefService
+                     localState:(PrefService*)localState
+                moduleMediators:(NSArray*)moduleMediators
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+- (void)disconnect;
 
 // Fetches the latest module ranking.
 - (void)fetchLatestMagicStackRanking;
 
 // Logs engagement with a module of `type`.
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
+
+// Returns the index rank of `moduleType` or NSNotFound if not found.
+- (NSUInteger)indexForMagicStackModule:(ContentSuggestionsModuleType)moduleType;
 
 @end
 

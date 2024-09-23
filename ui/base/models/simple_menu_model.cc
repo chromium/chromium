@@ -364,7 +364,8 @@ void SimpleMenuModel::SetVisibleAt(size_t index, bool visible) {
   MenuItemsChanged();
 }
 
-void SimpleMenuModel::SetIsNewFeatureAt(size_t index, bool is_new_feature) {
+void SimpleMenuModel::SetIsNewFeatureAt(size_t index,
+                                        IsNewFeatureAtValue is_new_feature) {
   items_[ValidateItemIndex(index)].is_new_feature = is_new_feature;
 }
 
@@ -405,6 +406,10 @@ std::optional<size_t> SimpleMenuModel::GetIndexOfCommandId(
 
 ////////////////////////////////////////////////////////////////////////////////
 // SimpleMenuModel, MenuModel implementation:
+
+base::WeakPtr<ui::MenuModel> SimpleMenuModel::AsWeakPtr() {
+  return method_factory_.GetWeakPtr();
+}
 
 size_t SimpleMenuModel::GetItemCount() const {
   return items_.size();

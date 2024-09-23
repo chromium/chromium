@@ -5,11 +5,11 @@
 #include "components/metrics/serialization/metric_sample.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 
@@ -99,7 +99,7 @@ std::unique_ptr<MetricSample> MetricSample::CrashSample(
 // static
 std::unique_ptr<MetricSample> MetricSample::ParseCrash(
     const std::string& serialized) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       serialized, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (parts.size() != 1 && parts.size() != 2) {
@@ -133,7 +133,7 @@ std::unique_ptr<MetricSample> MetricSample::HistogramSample(
 // static
 std::unique_ptr<MetricSample> MetricSample::ParseHistogram(
     const std::string& serialized_histogram) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       serialized_histogram, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (parts.size() != 5 && parts.size() != 6) {
@@ -169,7 +169,7 @@ std::unique_ptr<MetricSample> MetricSample::SparseHistogramSample(
 // static
 std::unique_ptr<MetricSample> MetricSample::ParseSparseHistogram(
     const std::string& serialized_histogram) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       serialized_histogram, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2 && parts.size() != 3) {
     return nullptr;
@@ -201,7 +201,7 @@ std::unique_ptr<MetricSample> MetricSample::LinearHistogramSample(
 // static
 std::unique_ptr<MetricSample> MetricSample::ParseLinearHistogram(
     const std::string& serialized_histogram) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       serialized_histogram, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   int sample, max;
   if (parts.size() != 3 && parts.size() != 4) {
@@ -233,7 +233,7 @@ std::unique_ptr<MetricSample> MetricSample::UserActionSample(
 // static
 std::unique_ptr<MetricSample> MetricSample::ParseUserAction(
     const std::string& serialized) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       serialized, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (parts.size() != 1 && parts.size() != 2) {

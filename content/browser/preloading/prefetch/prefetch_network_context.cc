@@ -4,8 +4,6 @@
 
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 
-#include <optional>
-
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
@@ -37,10 +35,18 @@ namespace content {
 PrefetchNetworkContext::PrefetchNetworkContext(
     bool use_isolated_network_context,
     const PrefetchType& prefetch_type,
-    const GlobalRenderFrameHostId& referring_render_frame_host_id)
+    const GlobalRenderFrameHostId& referring_render_frame_host_id,
+    const url::Origin& referring_origin)
     : use_isolated_network_context_(use_isolated_network_context),
       prefetch_type_(prefetch_type),
-      referring_render_frame_host_id_(referring_render_frame_host_id) {}
+      referring_render_frame_host_id_(referring_render_frame_host_id),
+      referring_origin_(referring_origin) {
+  if (prefetch_type_.IsRendererInitiated()) {
+    CHECK(referring_render_frame_host_id);
+  } else {
+    CHECK(!referring_render_frame_host_id);
+  }
+}
 
 PrefetchNetworkContext::~PrefetchNetworkContext() = default;
 
@@ -104,7 +110,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
   // when additional parameters can cause validations to fail, this will cause
   // problems.
   //
-  // TODO(crbug.com/1477317): figure out how to get this verifier in sync with
+  // TODO(crbug.com/40928765): figure out how to get this verifier in sync with
   // the profile verifier.
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
@@ -168,18 +174,34 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
     network::mojom::NetworkContext* network_context) {
   CHECK(network_context);
 
-  // Prerender should not trigger any prefetch. This assumption is needed to
-  // call GetPageUkmSourceId.
   RenderFrameHost* referring_render_frame_host =
       RenderFrameHost::FromID(referring_render_frame_host_id_);
-  CHECK(!referring_render_frame_host->IsInLifecycleState(
-      RenderFrameHost::LifecycleState::kPrerendering));
+  int referring_render_process_id;
+  ukm::SourceIdObj ukm_source_id;
+
+  if (prefetch_type_.IsRendererInitiated()) {
+    CHECK(referring_render_frame_host);
+
+    // Prerender should not trigger any prefetch. This assumption is needed to
+    // call GetPageUkmSourceId.
+    CHECK(!referring_render_frame_host->IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
+
+    referring_render_process_id =
+        referring_render_frame_host->GetProcess()->GetID();
+    ukm_source_id = ukm::SourceIdObj::FromInt64(
+        referring_render_frame_host->GetPageUkmSourceId());
+  } else {
+    CHECK(!referring_render_frame_host);
+    referring_render_process_id = content::ChildProcessHost::kInvalidUniqueID;
+    ukm_source_id = ukm::kInvalidSourceIdObj;
+  }
 
   bool bypass_redirect_checks = false;
   auto factory_params = network::mojom::URLLoaderFactoryParams::New();
   factory_params->process_id = network::mojom::kBrowserProcessId;
   factory_params->is_trusted = true;
-  factory_params->is_corb_enabled = false;
+  factory_params->is_orb_enabled = false;
   return url_loader_factory::Create(
       ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
       url_loader_factory::TerminalParams::ForNetworkContext(
@@ -187,11 +209,8 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
           url_loader_factory::HeaderClientOption::kAllow),
       url_loader_factory::ContentClientParams(
           browser_context, referring_render_frame_host,
-          referring_render_frame_host->GetProcess()->GetID(),
-          referring_render_frame_host->GetLastCommittedOrigin(),
-          ukm::SourceIdObj::FromInt64(
-              referring_render_frame_host->GetPageUkmSourceId()),
-          &bypass_redirect_checks));
+          referring_render_process_id, referring_origin_, net::IsolationInfo(),
+          ukm_source_id, &bypass_redirect_checks));
 }
 
 }  // namespace content

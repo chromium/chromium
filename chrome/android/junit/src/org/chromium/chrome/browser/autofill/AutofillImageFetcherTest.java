@@ -14,17 +14,15 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.url.GURL;
 
@@ -37,8 +35,6 @@ import java.util.Map;
 public class AutofillImageFetcherTest {
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private AutofillImageFetcher mImageFetcher;
 
@@ -58,9 +54,9 @@ public class AutofillImageFetcherTest {
         GURL validUrl1 = new GURL("https://www.google.com/valid-image-url-1");
         GURL validUrl2 = new GURL("https://www.google.com/valid-image-url-2");
         CardIconSpecs cardIconSpecsSmall =
-                CardIconSpecs.create(ContextUtils.getApplicationContext(), CardIconSize.SMALL);
+                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.SMALL);
         CardIconSpecs cardIconSpecsLarge =
-                CardIconSpecs.create(ContextUtils.getApplicationContext(), CardIconSize.LARGE);
+                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.LARGE);
         GURL cachedValidUrlSmall1 =
                 AutofillUiUtils.getCreditCardIconUrlWithParams(
                         validUrl1, cardIconSpecsSmall.getWidth(), cardIconSpecsSmall.getHeight());
@@ -80,7 +76,8 @@ public class AutofillImageFetcherTest {
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_CARD_ART_IMAGE, cardIconSpecsLarge, true);
 
-        mImageFetcher.prefetchImages(new GURL[] {validUrl1, validUrl2});
+        mImageFetcher.prefetchImages(
+                new GURL[] {validUrl1, validUrl2}, new int[] {ImageSize.SMALL, ImageSize.LARGE});
         Map<String, Bitmap> cachedImages = mImageFetcher.getCachedImagesForTesting();
 
         // Each card art image is cached at 2 resolutions: 32x20 for the Keyboard Accessory, and
@@ -98,7 +95,7 @@ public class AutofillImageFetcherTest {
         mImageFetcher = new AutofillImageFetcher(new TestImageFetcher(null));
         GURL validUrl = new GURL("https://www.google.com/valid-image-url");
 
-        mImageFetcher.prefetchImages(new GURL[] {validUrl});
+        mImageFetcher.prefetchImages(new GURL[] {validUrl}, new int[] {ImageSize.SMALL});
 
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
     }
@@ -109,7 +106,8 @@ public class AutofillImageFetcherTest {
         GURL invalidUrl = new GURL("invalid-image-url");
         GURL emptyUrl = new GURL("");
 
-        mImageFetcher.prefetchImages(new GURL[] {invalidUrl, emptyUrl});
+        mImageFetcher.prefetchImages(
+                new GURL[] {invalidUrl, emptyUrl}, new int[] {ImageSize.SMALL});
 
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
     }
@@ -119,7 +117,7 @@ public class AutofillImageFetcherTest {
     public void testGetImagesIfAvailable() {
         GURL cardArtUrl = new GURL("https://www.google.com/card-art-url");
         CardIconSpecs cardIconSpecs =
-                CardIconSpecs.create(ContextUtils.getApplicationContext(), CardIconSize.LARGE);
+                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.LARGE);
         Bitmap treatedImage =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_CARD_ART_IMAGE, cardIconSpecs, true);

@@ -20,10 +20,41 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kAssistantDialogPlateElementId);
 
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kBluetoothDetailedViewPairNewDeviceElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kBluetoothDetailedViewToggleElementId);
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kBluetoothFeatureTileToggleElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kBluetoothFeatureTileDrillInArrowElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kCalendarViewElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularManagedSimLockNotificationElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularHotspotAutoDisableNotificationElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularHotspotInternalErrorNotificationElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularHotspotWifiEnabledNotificationElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kCellularHotspotProhibitedByPolicyNotificationElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEmojiPickerElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEnterpriseManagedView);
 
@@ -33,12 +64,49 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEnterpriseManagedView);
 // associated element.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kExploreAppElementId);
 
+// Uniquely identifies an element corresponding to the Files app.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kFilesAppElementId);
+
 // Uniquely identifies the `HoldingSpaceTray`.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kHoldingSpaceTrayElementId);
 
 // Uniquely identifies the home (launcher) button.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kHomeButtonElementId);
+
+// Uniquely identifies the toggle of the hotspot detailed view.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kHotspotDetailedViewToggleElementId);
+
+// Uniquely identifies the drill in button in the hotspot tile.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kHotspotFeatureTileDrillInArrowElementId);
+
+// Uniquely identifies the `LoginUserView`.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kLoginUserViewElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kNetworkAddEsimElementId);
+
+// Uniquely identifies the Mobile data toggle element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkDetailedViewMobileDataToggleElementId);
+
+// Uniquely identifies the WiFi network list element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkDetailedViewWifiNetworkListElementId);
+
+// Uniquely identifies the WiFi toggle element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkDetailedViewWifiToggleElementId);
+
+// Uniquely identifies the drill-in arrow of the network feature tile.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkFeatureTileDrillInArrowElementId);
 
 // Uniquely identifies the `LoginUserView`.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kLoginUserViewElementId);
@@ -49,6 +117,63 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
     kOverviewDeskBarNewDeskButtonElementId);
+
+//
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkFeatureTileDrillInArrowElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kOverviewDeskBarElementId);
+
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kOverviewDeskBarNewDeskButtonElementId);
+
+// Identifies the overall Picker window UI.
+// See go/palette-next for more information about Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerElementId);
+
+// Identifies the emoji bar of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerEmojiBarElementId);
+
+// Identifies an emoji result in the emoji bar of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kPickerEmojiItemElementId);
+
+// Identifies the 'GIF' button in the emoji bar of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerGifElementId);
+
+// Identifies the 'more emojis' button in the emoji bar of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kPickerMoreEmojisElementId);
+
+// Identifies the preview bubble of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kPickerPreviewBubbleElementId);
+
+// Identifies the textfield that implements the Picker search field.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kPickerSearchFieldTextfieldElementId);
+
+// Identifies the search results page of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kPickerSearchResultsPageElementId);
+
+// Identifies a list result in the search results page of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kPickerSearchResultsListItemElementId);
+
+// Identifies an image result in the search results page of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kPickerSearchResultsImageItemElementId);
+
+// Identifies a row of image results in Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kPickerSearchResultsImageRowElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
@@ -81,6 +206,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
 // Uniquely identifies the `WelcomeTourDialog` for user education.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kWelcomeTourDialogElementId);
+
+// Dialog shown by `DisableBluetoothDialogControllerImpl`.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kWarnBeforeDisconnectingBluetoothDialogElementId);
 
 // Element Names ---------------------------------------------------------------
 // Please keep this list alphabetized.

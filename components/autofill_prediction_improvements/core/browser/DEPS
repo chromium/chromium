@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/autofill/core",
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
+  "+components/user_annotations",
+  "+components/strings/grit",
+  "+ui/base",
+]

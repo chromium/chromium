@@ -34,19 +34,17 @@ namespace blink {
 class PLATFORM_EXPORT MatrixTransformOperation final
     : public TransformOperation {
  public:
-  static scoped_refptr<MatrixTransformOperation> Create(double a,
-                                                        double b,
-                                                        double c,
-                                                        double d,
-                                                        double e,
-                                                        double f) {
-    return base::AdoptRef(new MatrixTransformOperation(a, b, c, d, e, f));
+  explicit MatrixTransformOperation(const gfx::Transform& t) : matrix_(t) {
+    DCHECK(t.Is2dTransform());
   }
 
-  static scoped_refptr<MatrixTransformOperation> Create(
-      const gfx::Transform& t) {
-    return base::AdoptRef(new MatrixTransformOperation(t));
-  }
+  MatrixTransformOperation(double a,
+                           double b,
+                           double c,
+                           double d,
+                           double e,
+                           double f)
+      : matrix_(gfx::Transform::Affine(a, b, c, d, e, f)) {}
 
   const gfx::Transform& Matrix() const { return matrix_; }
 
@@ -66,32 +64,18 @@ class PLATFORM_EXPORT MatrixTransformOperation final
     transform.PreConcat(Matrix());
   }
 
-  scoped_refptr<TransformOperation> Accumulate(
-      const TransformOperation&) override;
+  TransformOperation* Accumulate(const TransformOperation&) override;
 
-  scoped_refptr<TransformOperation> Blend(
-      const TransformOperation* from,
-      double progress,
-      bool blend_to_identity = false) override;
-  scoped_refptr<TransformOperation> Zoom(double factor) final;
+  TransformOperation* Blend(const TransformOperation* from,
+                            double progress,
+                            bool blend_to_identity = false) override;
+  TransformOperation* Zoom(double factor) final;
 
   bool PreservesAxisAlignment() const final {
     return Matrix().Preserves2dAxisAlignment();
   }
   bool IsIdentityOrTranslation() const final {
     return Matrix().IsIdentityOr2dTranslation();
-  }
-
-  MatrixTransformOperation(double a,
-                           double b,
-                           double c,
-                           double d,
-                           double e,
-                           double f)
-      : matrix_(gfx::Transform::Affine(a, b, c, d, e, f)) {}
-
-  explicit MatrixTransformOperation(const gfx::Transform& t) : matrix_(t) {
-    DCHECK(t.Is2dTransform());
   }
 
   // TODO(wangxianzhu): Use AffineTransform when we have Decompose2dTransform()

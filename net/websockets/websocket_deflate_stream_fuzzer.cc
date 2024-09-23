@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "net/websockets/websocket_deflate_stream.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #include <string>
 #include <vector>
@@ -14,14 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_with_source.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_deflate_predictor.h"
 #include "net/websockets/websocket_deflate_predictor_impl.h"
-#include "net/websockets/websocket_deflate_stream.h"
 #include "net/websockets/websocket_extension.h"
 #include "net/websockets/websocket_frame.h"
 #include "net/websockets/websocket_stream.h"

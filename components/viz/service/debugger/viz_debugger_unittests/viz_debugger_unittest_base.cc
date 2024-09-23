@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -217,8 +218,8 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
       // without extra metadata about the image.
       constexpr const char* kDataUriPrefix = "data:image/png;base64,";
       EXPECT_TRUE(image_data_uri.starts_with(kDataUriPrefix));
-      base::StringPiece image_base64_encoded =
-          base::StringPiece(image_data_uri).substr(strlen(kDataUriPrefix));
+      std::string_view image_base64_encoded =
+          std::string_view(image_data_uri).substr(strlen(kDataUriPrefix));
       const std::optional<std::vector<uint8_t>> image_bytes =
           base::Base64Decode(image_base64_encoded);
       EXPECT_TRUE(image_bytes.has_value());

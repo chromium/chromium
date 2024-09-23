@@ -122,11 +122,10 @@ class PhishingDOMFeatureExtractor {
   // description of which features are computed.
   void InsertFeatures();
 
-  raw_ptr<const base::TickClock, ExperimentalRenderer> clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // The output parameters from the most recent call to ExtractFeatures().
-  raw_ptr<FeatureMap, ExperimentalRenderer>
-      features_;  // The caller keeps ownership of this.
+  raw_ptr<FeatureMap> features_;  // The caller keeps ownership of this.
   DoneCallback done_callback_;
 
   // The current (sub-)document that we are processing.  May be a null document

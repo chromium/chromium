@@ -586,7 +586,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
 // Note: The following tests are disabled since they do not apply for Lacros
 // build. TtsPlatformImpl is not supported for Lacros when lacros tts support
 // feature is disabled.
-// TODO(crbug.com/1227543): Add new tests for lacros with tts support feature
+// TODO(crbug.com/40189267): Add new tests for lacros with tts support feature
 // being enabled.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(TtsControllerTest, TestTtsControllerShutdown) {

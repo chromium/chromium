@@ -64,6 +64,16 @@ void ArcVmWorkingSetTrimExecutor::Trim(content::BrowserContext* context,
     return;
   }
 
+  if (base::FeatureList::IsEnabled(arc::kSkipDropCaches)) {
+    // If the feature to skip dropping caches is enabled, continue without
+    // dropping them.
+    VLOG(1) << "ARC skip drop caches feature enabled. Proceeding without "
+               "forced cache drop.";
+    OnDropArcVmCaches(context, std::move(callback), reclaim_type, page_limit,
+                      /*result=*/true);
+    return;
+  }
+
   bridge->DropCaches(
       base::BindOnce(&ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches, context,
                      std::move(callback), reclaim_type, page_limit));
@@ -88,12 +98,13 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
     return;
   }
 
-  // Do the actual VM trimming regardless of the |result|. When "ArcGuestZram"
-  // feature is enabled, guest memory is locked and should be reclaimed from
-  // guest through ArcMemoryBridge's reclaim API (if "guest_reclaim_enabled"
-  // param is enabled). Otherwise the memory should be reclaimed from host
-  // through ArcSessionManager's TrimVmMemory if requested.
-  if (base::FeatureList::IsEnabled(arc::kGuestZram) &&
+  // Do the actual VM trimming regardless of the |result|. When ARCVM swap
+  // is enabled and not locked, try to reclaim from the guest first to avoid
+  // swap shuffle, where a page owned by the guest is swapped out from the host
+  // and then swapped in to be swapped out on the guest. Otherwise the memory
+  // should be reclaimed from host only, through ArcSessionManager's
+  // TrimVmMemory if requested.
+  if (base::FeatureList::IsEnabled(arc::kGuestSwap) &&
       arc::kGuestReclaimEnabled.Get()) {
     if (!context) {
       LogErrorAndInvokeCallback(BROWSER_CONTEXT_ERROR_MSG, std::move(callback));
@@ -111,11 +122,18 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
     auto reclaim_request = arc::mojom::ReclaimRequest::New(
         arc::kGuestReclaimOnlyAnonymous.Get() ? arc::mojom::ReclaimType::ANON
                                               : arc::mojom::ReclaimType::ALL);
+
+    const bool should_reclaim_from_host =
+        reclaim_type == ArcVmReclaimType::kReclaimAll &&
+        arc::kVirtualSwapEnabled.Get() &&
+        !base::FeatureList::IsEnabled(arc::kLockGuestMemory);
+
     bridge->Reclaim(
         std::move(reclaim_request),
         base::BindOnce(&ArcVmWorkingSetTrimExecutor::OnArcVmMemoryGuestReclaim,
                        std::make_unique<base::ElapsedTimer>(),
-                       std::move(callback)));
+                       std::move(callback), should_reclaim_from_host,
+                       page_limit));
   } else if (reclaim_type == ArcVmReclaimType::kReclaimAll) {
     arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
     if (!arc_session_manager) {
@@ -123,7 +141,6 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
                                 std::move(callback));
       return;
     }
-
     arc_session_manager->TrimVmMemory(std::move(callback), page_limit);
   } else {
     std::move(callback).Run(true, "");
@@ -133,14 +150,20 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
 void ArcVmWorkingSetTrimExecutor::OnArcVmMemoryGuestReclaim(
     std::unique_ptr<base::ElapsedTimer> elapsed_timer,
     ResultCallback callback,
+    bool should_reclaim_from_host,
+    int host_reclaim_page_limit,
     arc::mojom::ReclaimResultPtr result) {
   VLOG(2) << "Finished trimming memory from guest. " << result->reclaimed
           << " processes were reclaimed successfully. " << result->unreclaimed
           << " processes were not reclaimed.";
   base::UmaHistogramBoolean("Arc.GuestZram.SuccessfulReclaim",
                             (result->reclaimed > 0));
-  if (result->reclaimed == 0) {
-    std::move(callback).Run(false, "No guest process was reclaimed");
+
+  constexpr const char kGuestReclaimErrorMessage[] =
+      "No guest process was reclaimed";
+  bool guest_reclaim_succedded = result->reclaimed > 0;
+  if (!guest_reclaim_succedded) {
+    LOG(WARNING) << kGuestReclaimErrorMessage;
   } else {
     base::UmaHistogramCounts1000("Arc.GuestZram.ReclaimedProcess",
                                  result->reclaimed);
@@ -148,8 +171,23 @@ void ArcVmWorkingSetTrimExecutor::OnArcVmMemoryGuestReclaim(
                                  result->unreclaimed);
     base::UmaHistogramMediumTimes("Arc.GuestZram.TotalReclaimTime",
                                   elapsed_timer->Elapsed());
-    std::move(callback).Run(true, "");
   }
+
+  if (!should_reclaim_from_host) {
+    std::move(callback).Run(
+        guest_reclaim_succedded,
+        guest_reclaim_succedded ? "" : kGuestReclaimErrorMessage);
+    return;
+  }
+
+  arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
+  if (!arc_session_manager) {
+    LogErrorAndInvokeCallback("ArcSessionManager unavailable",
+                              std::move(callback));
+    return;
+  }
+  arc_session_manager->TrimVmMemory(std::move(callback),
+                                    host_reclaim_page_limit);
 }
 
 void ArcVmWorkingSetTrimExecutor::LogErrorAndInvokeCallback(

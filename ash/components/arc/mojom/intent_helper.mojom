@@ -263,6 +263,8 @@ enum AndroidSetting {
   kGeoLocation,           // Deprecated, replaced with specific scenarios.
   kGeoLocationAtBoot,
   kGeoLocationUserTriggered,
+  // We don't need atBoot for accuracy as the value is in sync with GeoLocation
+  kGeoLocationAccuracyUserTriggered,
 };
 
 // The type of shadow used for Chrome captions.

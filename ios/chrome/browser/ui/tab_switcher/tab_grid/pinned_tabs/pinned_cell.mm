@@ -13,16 +13,19 @@
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/ios/uikit_util.h"
 
 namespace {
-// TODO(crbug.com/1412115): Refactor this method.
+// TODO(crbug.com/40890700): Refactor this method.
 // Frame-based layout utilities for GridTransitionCell.
 // Scales the size of `view`'s frame by `factor` in both height and width. This
 // scaling is done by changing the frame size without changing its origin,
@@ -37,7 +40,7 @@ void ScaleView(UIView* view, CGFloat factor) {
   view.frame = frame;
 }
 
-// TODO(crbug.com/1412115): Refactor this method.
+// TODO(crbug.com/40890700): Refactor this method.
 // Positions `view` by setting its frame's origin to `point`.
 void PositionView(UIView* view, CGPoint point) {
   if (!view) {
@@ -146,6 +149,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   self.icon = nil;
   self.title = nil;
   self.snapshot = nil;
+  self.pinnedItemIdentifier = web::WebStateID();
 }
 
 #pragma mark - Public
@@ -204,6 +208,17 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   [_activityIndicator stopAnimating];
   [_activityIndicator setHidden:YES];
   [_faviconContainerView setHidden:NO];
+}
+
+- (void)setPinnedItemIdentifier:(web::WebStateID)pinnedItemIdentifier {
+  _pinnedItemIdentifier = pinnedItemIdentifier;
+  if (pinnedItemIdentifier.valid()) {
+    TabSwitcherItem* item =
+        [[TabSwitcherItem alloc] initWithIdentifier:pinnedItemIdentifier];
+    self.itemIdentifier = [[GridItemIdentifier alloc] initWithTabItem:item];
+  } else {
+    self.itemIdentifier = nil;
+  }
 }
 
 #pragma mark - UIAccessibility
@@ -511,7 +526,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 @end
 
-// TODO(crbug.com/1412115): Refacor PinnedTransitionCell.
+// TODO(crbug.com/40890700): Refacor PinnedTransitionCell.
 @implementation PinnedTransitionCell {
   // Previous tab view width, used to scale the tab views.
   CGFloat _previousTabViewWidth;
@@ -536,7 +551,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 - (void)setTopCellView:(UIView*)topCellView {
   // The top cell view is `topBar` and can't be changed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (UIView*)topCellView {
@@ -553,7 +568,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 
 - (void)setMainCellView:(UIView*)mainCellView {
   // The main cell view is the snapshot view and can't be changed.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 - (UIView*)mainCellView {

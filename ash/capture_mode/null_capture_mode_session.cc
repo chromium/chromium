@@ -16,7 +16,7 @@ NullCaptureModeSession::NullCaptureModeSession(
 views::Widget* NullCaptureModeSession::GetCaptureModeBarWidget() {
   // The null session will never have a bar widget, so this function should
   // never be called.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 aura::Window* NullCaptureModeSession::GetSelectedWindow() const {
@@ -29,6 +29,11 @@ aura::Window* NullCaptureModeSession::GetSelectedWindow() const {
 void NullCaptureModeSession::SetPreSelectedWindow(
     aura::Window* pre_selected_window) {
   selected_window_tracker_.Add(pre_selected_window);
+
+  // A pre-selected window has just been set, which means the selfie camera (if
+  // one is selected) can now be shown, and its parenting should be updated such
+  // that it can be made a child of the pre-selected window.
+  MaybeUpdateSelfieCamInSessionVisibility();
 }
 
 void NullCaptureModeSession::OnCaptureSourceChanged(
@@ -97,7 +102,8 @@ void NullCaptureModeSession::OnCameraPreviewDestroyed() {}
 
 void NullCaptureModeSession::MaybeDismissUserNudgeForever() {}
 
-void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
+void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
+                                             bool root_window_will_shutdown) {
   DCHECK(new_root->IsRootWindow());
   current_root_ = new_root;
 }
@@ -106,6 +112,9 @@ std::set<aura::Window*>
 NullCaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return std::set<aura::Window*>();
 }
+
+void NullCaptureModeSession::ShowSearchResultsPanel(
+    const gfx::ImageSkia& image) {}
 
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");

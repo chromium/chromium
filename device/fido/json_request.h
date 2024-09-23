@@ -38,4 +38,4 @@ class COMPONENT_EXPORT(DEVICE_FIDO) JSONRequest
 
 }  // namespace device
 
-#endif
+#endif  // DEVICE_FIDO_JSON_REQUEST_H_

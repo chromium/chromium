@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 
 #include "base/strings/stringprintf.h"
@@ -39,10 +44,11 @@ TEST(HistoryClustersDBTasksTest, BeginTimeCalculation) {
       },
   };
 
-  for (size_t i = 0; i < std::size(test_data); ++i) {
-    SCOPED_TRACE(base::StringPrintf("Testing case i=%d", int(i)));
+  int i = 0;
+  for (const auto& test_item : test_data) {
+    SCOPED_TRACE(base::StringPrintf("Testing case i=%d", i++));
 
-    auto& test_case = test_data[i];
+    auto& test_case = test_item;
 
     ASSERT_TRUE(test_case.end_time_exploded.HasValidValues());
     base::Time end_time;

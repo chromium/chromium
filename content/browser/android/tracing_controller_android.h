@@ -16,7 +16,7 @@ namespace content {
 // This class implements the native methods of TracingControllerAndroid.java
 class TracingControllerAndroid {
  public:
-  TracingControllerAndroid(JNIEnv* env, jobject obj);
+  TracingControllerAndroid(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj);
 
   TracingControllerAndroid(const TracingControllerAndroid&) = delete;
   TracingControllerAndroid& operator=(const TracingControllerAndroid&) = delete;

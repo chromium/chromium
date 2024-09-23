@@ -5,6 +5,9 @@
 #ifndef TOOLS_BLINK_GC_PLUGIN_JSON_WRITER_H_
 #define TOOLS_BLINK_GC_PLUGIN_JSON_WRITER_H_
 
+#include <memory>
+#include <stack>
+
 #include "llvm/Support/raw_ostream.h"
 
 // Helper to write information for the points-to graph.

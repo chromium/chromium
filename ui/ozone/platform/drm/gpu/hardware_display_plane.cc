@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 
 #include <drm_fourcc.h>
@@ -40,6 +45,20 @@ void ParseSupportedFormatsAndModifiers(
 
   for (uint32_t k = 0; k < header->count_modifiers; k++)
     supported_format_modifiers->push_back(modifiers[k]);
+}
+
+std::vector<gfx::Size> ParseSupportedCursorSizes(drmModePropertyBlobPtr blob) {
+  auto* data = static_cast<const uint8_t*>(blob->data);
+  auto* size_hints_ptr = reinterpret_cast<const drm_plane_size_hint*>(data);
+
+  int num_of_size_hints = blob->length / sizeof(drm_plane_size_hint);
+
+  std::vector<gfx::Size> supported_cursor_sizes;
+  for (int i = 0; i < num_of_size_hints; i++) {
+    supported_cursor_sizes.push_back(
+        gfx::Size(size_hints_ptr[i].width, size_hints_ptr[i].height));
+  }
+  return supported_cursor_sizes;
 }
 
 std::string IdSetToString(const base::flat_set<uint32_t>& ids) {
@@ -83,7 +102,7 @@ void HardwareDisplayPlane::WriteIntoTrace(perfetto::TracedValue context) const {
       std::move(type).WriteString("DRM_PLANE_TYPE_CURSOR");
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -115,15 +134,27 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
   if (properties_.plane_color_encoding.id) {
     color_encoding_bt601_ = GetEnumValueForName(
         *drm, properties_.plane_color_encoding.id, "ITU-R BT.601 YCbCr");
+    color_encoding_bt709_ = GetEnumValueForName(
+        *drm, properties_.plane_color_encoding.id, "ITU-R BT.709 YCbCr");
     color_range_limited_ = GetEnumValueForName(
         *drm, properties_.plane_color_range.id, "YCbCr limited range");
+  }
+
+  // The SIZE_HINTS is only meaningful for cursor planes.
+  if (type_ == DRM_PLANE_TYPE_CURSOR && properties_.size_hints.id) {
+    ScopedDrmPropertyBlobPtr size_hints_blob(
+        drm->GetPropertyBlob(properties_.size_hints.value));
+    if (size_hints_blob) {
+      supported_cursor_sizes_ =
+          ParseSupportedCursorSizes(size_hints_blob.get());
+    }
   }
 
   VLOG(3) << "Initialized plane=" << id_
           << " possible_crtc_ids=" << IdSetToString(possible_crtc_ids_)
           << " supported_formats_count=" << supported_formats_.size()
-          << " supported_modifiers_count="
-          << supported_format_modifiers_.size();
+          << " supported_modifiers_count=" << supported_format_modifiers_.size()
+          << " supported_cursor_sizes_count=" << supported_cursor_sizes_.size();
   return true;
 }
 
@@ -147,6 +178,11 @@ bool HardwareDisplayPlane::IsSupportedFormat(uint32_t format) {
 
 const std::vector<uint32_t>& HardwareDisplayPlane::supported_formats() const {
   return supported_formats_;
+}
+
+const std::vector<gfx::Size>& HardwareDisplayPlane::supported_cursor_sizes()
+    const {
+  return supported_cursor_sizes_;
 }
 
 std::vector<uint64_t> HardwareDisplayPlane::ModifiersForFormat(
@@ -201,6 +237,8 @@ void HardwareDisplayPlane::InitializeProperties(DrmDevice* drm) {
     GetDrmPropertyForName(drm, props.get(), "FB_DAMAGE_CLIPS",
                           &properties_.plane_fb_damage_clips);
   }
+  GetDrmPropertyForName(drm, props.get(), "SIZE_HINTS",
+                        &properties_.size_hints);
 }
 
 }  // namespace ui

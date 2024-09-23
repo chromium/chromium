@@ -216,8 +216,7 @@ class MojomProcessor(object):
             for_blink=args.for_blink,
             export_attribute=args.export_attribute,
             export_header=args.export_header,
-            generate_non_variant_code=args.generate_non_variant_code,
-            support_lazy_serialization=args.support_lazy_serialization)
+            generate_non_variant_code=args.generate_non_variant_code)
         filtered_args = []
         if hasattr(generator_module, 'GENERATOR_PREFIX'):
           prefix = '--' + generator_module.GENERATOR_PREFIX + '_'
@@ -366,10 +365,6 @@ def main():
       "a salt for generating scrambled message IDs. If this switch is specified"
       "more than once, the contents of all salt files are concatenated to form"
       "the salt value.", default=[], action="append")
-  generate_parser.add_argument(
-      "--support_lazy_serialization",
-      help="If set, generated bindings will serialize lazily when possible.",
-      action="store_true")
   generate_parser.set_defaults(func=_Generate)
 
   precompile_parser = subparsers.add_parser("precompile",

@@ -51,8 +51,8 @@
                                      title:(NSString*)title
                                        URL:(const GURL&)URL
                                    handler:(id<QRGenerationCommands>)handler {
-  if (self = [super initWithBaseViewController:viewController
-                                       browser:browser]) {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
     _title = title;
     _URL = URL;
     _handler = handler;

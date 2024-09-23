@@ -5,39 +5,60 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 
 #include <algorithm>
+#include <array>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/v2_constants.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
-#include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device_authenticator.h"
 #include "extensions/browser/extension_registry.h"
@@ -56,12 +77,27 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/test/base/testing_profile.h"
 #include "device/fido/mac/authenticator_config.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
-static constexpr char kRelyingPartyID[] = "example.com";
+static constexpr char kCredentialId1[] = "credential_id_1";
+static constexpr char kCredentialId2[] = "credential_id_2";
+static constexpr char kUserId[] = "hmiku-userid";
+static constexpr char kUserName1[] = "hmiku";
+static constexpr char kUserDisplayName1[] = "Hatsune Miku";
+static constexpr char kUserName2[] = "reimu";
+static constexpr char kUserDisplayName2[] = "Reimu Hakurei";
+static constexpr char kRpId[] = "example.com";
+
+using TransportAvailabilityInfo =
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+
+std::vector<uint8_t> ToByteVector(std::string_view string) {
+  return std::vector<uint8_t>(string.begin(), string.end());
+}
 
 class Observer : public testing::NiceMock<
                      ChromeAuthenticatorRequestDelegate::TestObserver> {
@@ -77,7 +113,7 @@ class Observer : public testing::NiceMock<
   MOCK_METHOD(void,
               OnTransportAvailabilityEnumerated,
               (ChromeAuthenticatorRequestDelegate * delegate,
-               device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai),
+               TransportAvailabilityInfo* tai),
               (override));
   MOCK_METHOD(void,
               UIShown,
@@ -116,8 +152,7 @@ class ChromeAuthenticatorRequestDelegateTest
  public:
   ChromeAuthenticatorRequestDelegateTest() {
     scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials, syncer::kSyncWebauthnCredentials,
-         device::kWebAuthnNewPasskeyUI},
+        {syncer::kSyncWebauthnCredentials, syncer::kSyncWebauthnCredentials},
         /*disabled_features=*/{});
   }
 
@@ -148,18 +183,18 @@ class TestAuthenticatorModelObserver final
   explicit TestAuthenticatorModelObserver(
       AuthenticatorRequestDialogModel* model)
       : model_(model) {
-    last_step_ = model_->current_step();
+    last_step_ = model_->step();
   }
   ~TestAuthenticatorModelObserver() override {
     if (model_) {
-      model_->RemoveObserver(this);
+      model_->observers.RemoveObserver(this);
     }
   }
 
   AuthenticatorRequestDialogModel::Step last_step() { return last_step_; }
 
   // AuthenticatorRequestDialogModel::Observer:
-  void OnStepTransition() override { last_step_ = model_->current_step(); }
+  void OnStepTransition() override { last_step_ = model_->step(); }
 
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override {
     model_ = nullptr;
@@ -374,9 +409,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
   };
 
   for (const WinHybridExpectation windows_has_hybrid : {
-         kNoWinHybrid,
+           kNoWinHybrid,
 #if BUILDFLAG(IS_WIN)
-             kWinHybridPasskeySyncing, kWinHybridNoPasskeySyncing,
+           kWinHybridPasskeySyncing,
+           kWinHybridNoPasskeySyncing,
 #endif
        }) {
     unsigned test_case = 0;
@@ -407,7 +443,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           content::AuthenticatorRequestClientDelegate::RequestSource::
               kWebAuthentication,
           test.request_type, test.resident_key_requirement,
-          device::UserVerificationRequirement::kRequired, test.extensions,
+          device::UserVerificationRequirement::kRequired,
+          /*user_name=*/std::nullopt, test.extensions,
           /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
       switch (windows_has_hybrid == kWinHybridNoPasskeySyncing
@@ -423,7 +460,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           EXPECT_FALSE(discovery_factory.qr_key.has_value());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
+          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
                     AuthenticatorRequestDialogModel::CableUIType::CABLE_V1);
           break;
 
@@ -431,7 +468,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           EXPECT_TRUE(discovery_factory.qr_key.has_value());
           EXPECT_FALSE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
+          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
                     AuthenticatorRequestDialogModel::CableUIType::
                         CABLE_V2_SERVER_LINK);
           break;
@@ -440,7 +477,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           EXPECT_TRUE(discovery_factory.qr_key.has_value());
           EXPECT_TRUE(discovery_factory.cable_data.empty());
           EXPECT_TRUE(discovery_factory.aoa_configured);
-          EXPECT_EQ(delegate.dialog_model()->cable_ui_type(),
+          EXPECT_EQ(delegate.dialog_model()->cable_ui_type,
                     AuthenticatorRequestDialogModel::CableUIType::
                         CABLE_V2_2ND_FACTOR);
           break;
@@ -469,7 +506,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
             kWebAuthentication,
         device::FidoRequestType::kMakeCredential,
         device::ResidentKeyRequirement::kPreferred,
-        device::UserVerificationRequirement::kRequired, {},
+        device::UserVerificationRequirement::kRequired,
+        /*user_name=*/std::nullopt, {},
         /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
     EXPECT_EQ(discovery_factory.qr_key.has_value(), !disable_ui);
@@ -497,11 +535,12 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
     AuthenticatorRequestDialogModel* model = delegate.dialog_model();
     TestAuthenticatorModelObserver observer(model);
-    model->AddObserver(&observer);
+    model->observers.AddObserver(&observer);
     EXPECT_EQ(observer.last_step(),
               AuthenticatorRequestDialogModel::Step::kNotStarted);
-    delegate.OnTransportAvailabilityEnumerated(
-        AuthenticatorRequestDialogModel::TransportAvailabilityInfo());
+    TransportAvailabilityInfo transports_info;
+    transports_info.request_type = device::FidoRequestType::kGetAssertion;
+    delegate.OnTransportAvailabilityEnumerated(std::move(transports_info));
     EXPECT_EQ(observer.last_step() ==
                   AuthenticatorRequestDialogModel::Step::kConditionalMediation,
               conditional_ui);
@@ -619,7 +658,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder("Extension name")
             .SetID(kExtensionId)
-            .AddPermission(test.pattern)
+            .AddHostPermission(test.pattern)
             .Build();
     extensions::ExtensionRegistry::Get(browser_context())
         ->AddEnabled(extension);
@@ -641,7 +680,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder("Extension name")
             .SetID(kExtensionId)
-            .AddPermission(test.pattern)
+            .AddHostPermission(test.pattern)
             .Build();
     extensions::ExtensionRegistry::Get(browser_context())
         ->AddEnabled(extension);
@@ -694,22 +733,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
   }
 }
 
-// Tests that attestation is returned if the virtual environment is enabled and
-// the UI is disabled.
-// Regression test for crbug.com/1342458
-TEST_F(ChromeAuthenticatorRequestDelegateTest, VirtualEnvironmentAttestation) {
-  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-  delegate.DisableUI();
-  delegate.SetVirtualEnvironment(true);
-  device::VirtualFidoDeviceAuthenticator authenticator(
-      std::make_unique<device::VirtualCtap2Device>());
-  device::test::ValueCallbackReceiver<bool> cb;
-  delegate.ShouldReturnAttestation(kRelyingPartyID, &authenticator,
-                                   /*is_enterprise_attestation=*/false,
-                                   cb.callback());
-  EXPECT_TRUE(cb.value());
-}
-
 // Tests that synced GPM passkeys are injected in the transport availability
 // info.
 TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
@@ -740,6 +763,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       device::UserVerificationRequirement::kRequired,
+      /*user_name=*/std::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
       /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
@@ -750,10 +774,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   sync_pb::WebauthnCredentialSpecifics passkey;
   passkey.set_sync_id(std::string(16, 'a'));
   passkey.set_credential_id(std::string(16, 'b'));
-  passkey.set_rp_id("example.com");
+  passkey.set_rp_id(kRpId);
   passkey.set_user_id(std::string({5, 6, 7, 8}));
-  passkey.set_user_name("hmiku");
-  passkey.set_user_display_name("Hatsune Miku");
+  passkey.set_user_name(kUserName1);
+  passkey.set_user_display_name(kUserDisplayName1);
 
   sync_pb::WebauthnCredentialSpecifics passkey_other_rp_id = passkey;
   passkey_other_rp_id.set_rp_id("othersite.com");
@@ -761,7 +785,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
   passkey_model->AddNewPasskeyForTesting(std::move(passkey_other_rp_id));
 
-  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  TransportAvailabilityInfo tai;
+  tai.request_type = device::FidoRequestType::kGetAssertion;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -774,35 +799,35 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   const device::DiscoverableCredentialMetadata credential =
       tai.recognized_credentials.at(0);
   EXPECT_EQ(credential.cred_id, std::vector<uint8_t>(16, 'b'));
-  EXPECT_EQ(credential.rp_id, "example.com");
+  EXPECT_EQ(credential.rp_id, kRpId);
   EXPECT_EQ(credential.source, device::AuthenticatorType::kPhone);
-  EXPECT_EQ(credential.user.display_name, "Hatsune Miku");
-  EXPECT_EQ(credential.user.name, "hmiku");
+  EXPECT_EQ(credential.user.display_name, kUserDisplayName1);
+  EXPECT_EQ(credential.user.name, kUserName1);
   EXPECT_EQ(credential.user.id, std::vector<uint8_t>({5, 6, 7, 8}));
 }
 
 // Tests that synced GPM passkeys are not discovered if there are no sync paired
 // phones.
 TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
-  std::string relying_party = "example.com";
   GURL url("https://example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
       web_contents());
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
-  delegate.SetRelyingPartyId(relying_party);
+  delegate.SetRelyingPartyId(kRpId);
 
   // Return an empty list of synced devices.
   EXPECT_CALL(observer_, GetCablePairingsFromSyncedDevices);
   MockCableDiscoveryFactory discovery_factory;
   delegate.ConfigureDiscoveries(
-      url::Origin::Create(url), relying_party,
+      url::Origin::Create(url), kRpId,
       content::AuthenticatorRequestClientDelegate::RequestSource::
           kWebAuthentication,
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       device::UserVerificationRequirement::kRequired,
+      /*user_name=*/std::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
       /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
@@ -813,11 +838,12 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
   sync_pb::WebauthnCredentialSpecifics passkey;
   passkey.set_sync_id(std::string(16, 'a'));
   passkey.set_credential_id(std::string(16, 'b'));
-  passkey.set_rp_id(relying_party);
+  passkey.set_rp_id(kRpId);
   passkey.set_user_id(std::string({5, 6, 7, 8}));
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
 
-  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  TransportAvailabilityInfo tai;
+  tai.request_type = device::FidoRequestType::kGetAssertion;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -830,14 +856,13 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
 
 // Tests that shadowed GPM passkeys are not discovered.
 TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
-  std::string relying_party = "example.com";
   GURL url("https://example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
       web_contents());
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
   delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
-  delegate.SetRelyingPartyId(relying_party);
+  delegate.SetRelyingPartyId(kRpId);
 
   // Set up a paired phone from sync.
   auto phone = std::make_unique<device::cablev2::Pairing>();
@@ -851,12 +876,13 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
       .WillOnce(testing::Return(testing::ByMove(std::move(phones))));
   MockCableDiscoveryFactory discovery_factory;
   delegate.ConfigureDiscoveries(
-      url::Origin::Create(url), relying_party,
+      url::Origin::Create(url), kRpId,
       content::AuthenticatorRequestClientDelegate::RequestSource::
           kWebAuthentication,
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
       device::UserVerificationRequirement::kRequired,
+      /*user_name=*/std::nullopt,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
       /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
@@ -867,10 +893,10 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   sync_pb::WebauthnCredentialSpecifics passkey;
   passkey.set_sync_id(std::string(16, 'a'));
   passkey.set_credential_id(std::string(16, 'b'));
-  passkey.set_rp_id(relying_party);
+  passkey.set_rp_id(kRpId);
   passkey.set_user_id(std::string({5, 6, 7, 8}));
-  passkey.set_user_name("hmiku");
-  passkey.set_user_display_name("Hatsune Miku");
+  passkey.set_user_name(kUserName1);
+  passkey.set_user_display_name(kUserDisplayName1);
 
   sync_pb::WebauthnCredentialSpecifics shadowed_passkey = passkey;
   shadowed_passkey.set_credential_id(std::string(16, 'c'));
@@ -879,7 +905,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   passkey_model->AddNewPasskeyForTesting(std::move(passkey));
   passkey_model->AddNewPasskeyForTesting(std::move(shadowed_passkey));
 
-  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  TransportAvailabilityInfo tai;
+  tai.request_type = device::FidoRequestType::kGetAssertion;
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
       .WillOnce([&tai](const auto* _, const auto* new_tai) {
         tai = std::move(*new_tai);
@@ -892,16 +919,14 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
   const device::DiscoverableCredentialMetadata credential =
       tai.recognized_credentials.at(0);
   EXPECT_EQ(credential.cred_id, std::vector<uint8_t>(16, 'b'));
-  EXPECT_EQ(credential.rp_id, relying_party);
+  EXPECT_EQ(credential.rp_id, kRpId);
   EXPECT_EQ(credential.source, device::AuthenticatorType::kPhone);
-  EXPECT_EQ(credential.user.display_name, "Hatsune Miku");
-  EXPECT_EQ(credential.user.name, "hmiku");
+  EXPECT_EQ(credential.user.display_name, kUserDisplayName1);
+  EXPECT_EQ(credential.user.name, kUserName1);
   EXPECT_EQ(credential.user.id, std::vector<uint8_t>({5, 6, 7, 8}));
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnFilterGooglePasskeys};
   auto HasCreds = device::FidoRequestHandlerBase::RecognizedCredential::
       kHasRecognizedCredential;
   auto NoCreds = device::FidoRequestHandlerBase::RecognizedCredential::
@@ -938,8 +963,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     SCOPED_TRACE(::testing::Message() << "rp_id=" << test.rp_id);
     SCOPED_TRACE(::testing::Message()
                  << "creds=" << base::JoinString(test.user_ids, ","));
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo data;
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo result;
+    TransportAvailabilityInfo data;
+    data.request_type = device::FidoRequestType::kGetAssertion;
+    TransportAvailabilityInfo result;
     EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
         .WillOnce([&result](const auto* _, const auto* new_tai) {
           result = std::move(*new_tai);
@@ -964,6 +990,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
 
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     delegate.SetRelyingPartyId(test.rp_id);
+    delegate.RegisterActionCallbacks(base::DoNothing(), base::DoNothing(),
+                                     base::DoNothing(), base::DoNothing(),
+                                     base::DoNothing(), base::DoNothing());
     delegate.OnTransportAvailabilityEnumerated(std::move(data));
 
     EXPECT_EQ(result.has_platform_authenticator_credential,
@@ -983,6 +1012,222 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, FilterGoogleComPasskeys) {
     testing::Mock::VerifyAndClearExpectations(&observer_);
   }
 }
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, DeletePasskey) {
+  ChromeWebAuthenticationDelegate delegate;
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_credential_id(kCredentialId1);
+  passkey.set_rp_id(kRpId);
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_TRUE(passkey_model);
+  passkey_model->AddNewPasskeyForTesting(std::move(passkey));
+  {
+    // Attempt removing an unknown credential.
+    base::HistogramTester histogram_tester;
+    delegate.DeletePasskey(web_contents(), ToByteVector(kCredentialId2), kRpId);
+    EXPECT_TRUE(passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1));
+    histogram_tester.ExpectUniqueSample(
+        "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
+        ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
+            kPasskeyNotFound,
+        1);
+  }
+  {
+    // Remove a known credential.
+    base::HistogramTester histogram_tester;
+    delegate.DeletePasskey(web_contents(), ToByteVector(kCredentialId1), kRpId);
+    EXPECT_FALSE(
+        passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1));
+    histogram_tester.ExpectBucketCount(
+        "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
+        ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
+            kPasskeyRemoved,
+        1);
+  }
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, DeleteUnacceptedPasskey) {
+  ChromeWebAuthenticationDelegate delegate;
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_credential_id(kCredentialId1);
+  passkey.set_rp_id(kRpId);
+  passkey.set_user_id(kUserId);
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_TRUE(passkey_model);
+  passkey_model->AddNewPasskeyForTesting(std::move(passkey));
+  {
+    // Pass a known credential. It should not be removed.
+    base::HistogramTester histogram_tester;
+    delegate.DeleteUnacceptedPasskeys(web_contents(), kRpId,
+                                      ToByteVector(kUserId),
+                                      {ToByteVector(kCredentialId1)});
+    EXPECT_TRUE(passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1));
+    histogram_tester.ExpectUniqueSample(
+        "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
+        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
+            kNoPasskeyRemoved,
+        1);
+  }
+  {
+    // Do not pass the known credential. The known credential should be removed.
+    base::HistogramTester histogram_tester;
+    delegate.DeleteUnacceptedPasskeys(web_contents(), kRpId,
+                                      ToByteVector(kUserId),
+                                      {ToByteVector(kCredentialId2)});
+    EXPECT_FALSE(
+        passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1));
+    histogram_tester.ExpectUniqueSample(
+        "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
+        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
+            kPasskeyRemoved,
+        1);
+  }
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateTest, UpdatePasskey) {
+  const auto test_origin = url::Origin::Create(GURL("https://example.com"));
+  std::vector<uint8_t> user_id = ToByteVector(kUserId);
+  ChromeWebAuthenticationDelegate delegate;
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_TRUE(passkey_model);
+  {
+    sync_pb::WebauthnCredentialSpecifics passkey;
+    passkey.set_credential_id(kCredentialId1);
+    passkey.set_rp_id(kRpId);
+    passkey.set_user_id(kUserId);
+    passkey.set_user_name(kUserName1);
+    passkey.set_user_display_name(kUserDisplayName1);
+    passkey_model->AddNewPasskeyForTesting(std::move(passkey));
+  }
+  {
+    // Setting the same username/display name should not result in an update.
+    base::HistogramTester histogram_tester;
+    delegate.UpdateUserPasskeys(web_contents(), test_origin, kRpId, user_id,
+                                kUserName1, kUserDisplayName1);
+    histogram_tester.ExpectUniqueSample(
+        "WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey",
+        ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult::
+            kPasskeyNotUpdated,
+        1);
+  }
+  {
+    // Setting a different username/display name should result in an update.
+    base::HistogramTester histogram_tester;
+    delegate.UpdateUserPasskeys(web_contents(), test_origin, kRpId, user_id,
+                                kUserName2, kUserDisplayName2);
+    histogram_tester.ExpectUniqueSample(
+        "WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey",
+        ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult::
+            kPasskeyUpdated,
+        1);
+    sync_pb::WebauthnCredentialSpecifics passkey =
+        *passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1);
+    EXPECT_EQ(kUserName2, passkey.user_name());
+    EXPECT_EQ(kUserDisplayName2, passkey.user_display_name());
+  }
+  {
+    // Exceed the quota and try updating a passkey.
+    for (int i = 0; i < webauthn::PasskeyChangeQuotaTracker::kMaxTokensPerRP;
+         ++i) {
+      delegate.UpdateUserPasskeys(web_contents(), test_origin, kRpId, user_id,
+                                  base::RandBytesAsString(8),
+                                  base::RandBytesAsString(8));
+    }
+    base::HistogramTester histogram_tester;
+    delegate.UpdateUserPasskeys(web_contents(), test_origin, kRpId, user_id,
+                                kUserName1, kUserDisplayName1);
+    sync_pb::WebauthnCredentialSpecifics passkey =
+        *passkey_model->GetPasskeyByCredentialId(kRpId, kCredentialId1);
+    EXPECT_NE(kUserName1, passkey.user_name());
+    EXPECT_NE(kUserDisplayName1, passkey.user_display_name());
+    histogram_tester.ExpectUniqueSample(
+        "WebAuthentication.SignalCurrentUserDetailsUpdatedGPMPasskey",
+        ChromeWebAuthenticationDelegate::SignalCurrentUserDetailsResult::
+            kQuotaExceeded,
+        1);
+  }
+}
+
+class EnclaveAuthenticatorRequestDelegateTest
+    : public ChromeAuthenticatorRequestDelegateTest {
+ public:
+  void SetUp() override {
+    ChromeAuthenticatorRequestDelegateTest::SetUp();
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        browser_context(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<syncer::TestSyncService>();
+        }));
+  }
+};
+
+// ChromeOS delegates this logic to a ChromeOS-specific service.
+
+#if !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(EnclaveAuthenticatorRequestDelegateTest,
+       BrowserProvidedPasskeysAvailable) {
+  struct {
+    bool is_flag_enabled;
+    bool has_consented_account;
+    bool is_syncing_passwords;
+    bool has_unexportable_keys;
+    bool expected_passkeys_available;
+  } kTestCases[] = {
+      // flag acc   sync  unexp result   flag   acc   sync  unexp result
+      {true, true, true, true, true},   {false, true, true, true, false},
+      {true, false, true, true, false}, {true, true, false, true, false},
+      {true, true, true, false, false},
+  };
+  for (const auto& test : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "is_flag_enabled=" << test.is_flag_enabled);
+    SCOPED_TRACE(testing::Message()
+                 << "has_consented_account=" << test.has_consented_account);
+    SCOPED_TRACE(testing::Message()
+                 << "is_syncing_passwords=" << test.is_syncing_passwords);
+    SCOPED_TRACE(testing::Message()
+                 << "has_unexportable_keys=" << test.has_unexportable_keys);
+    ChromeWebAuthenticationDelegate delegate;
+    base::test::ScopedFeatureList scoped_feature_list_;
+    scoped_feature_list_.InitWithFeatureState(
+        device::kWebAuthnEnclaveAuthenticator, test.is_flag_enabled);
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile());
+    if (test.has_consented_account) {
+      signin::MakePrimaryAccountAvailable(identity_manager,
+                                          "hikari@example.com",
+                                          signin::ConsentLevel::kSignin);
+    }
+
+    auto* test_sync_service = static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetInstance()->GetForProfile(profile()));
+    test_sync_service->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPasswords, test.is_syncing_passwords);
+
+    absl::variant<crypto::ScopedNullUnexportableKeyProvider,
+                  crypto::ScopedMockUnexportableKeyProvider>
+        unexportable_key_provider;
+    if (test.has_unexportable_keys) {
+      unexportable_key_provider
+          .emplace<crypto::ScopedMockUnexportableKeyProvider>();
+    }
+
+    base::test::TestFuture<bool> future;
+    delegate.BrowserProvidedPasskeysAvailable(browser_context(),
+                                              future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    EXPECT_EQ(future.Get(), test.expected_passkeys_available);
+    signin::ClearPrimaryAccount(identity_manager);
+  }
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,
@@ -1022,32 +1267,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 }
 
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_WIN)
-
-// Tests that ShouldReturnAttestation() returns with true if |authenticator|
-// is the Windows native WebAuthn API with WEBAUTHN_API_VERSION_2 or higher,
-// where Windows prompts for attestation in its own native UI.
-//
-// Ideally, this would also test the inverse case, i.e. that with
-// WEBAUTHN_API_VERSION_1 Chrome's own attestation prompt is shown. However,
-// there seems to be no good way to test AuthenticatorRequestDialogModel UI.
-TEST_F(ChromeAuthenticatorRequestDelegateTest, ShouldPromptForAttestationWin) {
-  ::device::FakeWinWebAuthnApi win_webauthn_api;
-  win_webauthn_api.set_version(WEBAUTHN_API_VERSION_2);
-  ::device::WinWebAuthnApiAuthenticator authenticator(
-      /*current_window=*/nullptr, &win_webauthn_api);
-
-  ::device::test::ValueCallbackReceiver<bool> cb;
-  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-  delegate.ShouldReturnAttestation(kRelyingPartyID, &authenticator,
-                                   /*is_enterprise_attestation=*/false,
-                                   cb.callback());
-  cb.WaitForCallback();
-  EXPECT_EQ(cb.value(), true);
-}
-
-#endif  // BUILDFLAG(IS_WIN)
 
 class OriginMayUseRemoteDesktopClientOverrideTest
     : public ChromeAuthenticatorRequestDelegateTest {
@@ -1151,8 +1370,6 @@ class ChromeAuthenticatorRequestDelegatePrivateTest : public testing::Test {
   // A `BrowserTaskEnvironment` needs to be in-scope in order to create a
   // `TestingProfile`.
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnICloudKeychain};
 };
 
 TEST_F(ChromeAuthenticatorRequestDelegatePrivateTest, DaysSinceDate) {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 
 #include <stddef.h>
@@ -100,7 +105,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   scoped_refptr<Extension> CreateProtectedApp() {
 #if BUILDFLAG(IS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\foo"));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
     base::FilePath path(FILE_PATH_LITERAL("/foo"));
 #endif
     base::Value::Dict manifest;
@@ -123,7 +128,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   scoped_refptr<Extension> CreateUnlimitedApp() {
 #if BUILDFLAG(IS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\bar"));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
     base::FilePath path(FILE_PATH_LITERAL("/bar"));
 #endif
     base::Value::Dict manifest;
@@ -149,7 +154,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   scoped_refptr<Extension> CreateRegularApp() {
 #if BUILDFLAG(IS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\app"));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
     base::FilePath path(FILE_PATH_LITERAL("/app"));
 #endif
     base::Value::Dict manifest;

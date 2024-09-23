@@ -6,7 +6,6 @@
 
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
@@ -40,9 +39,6 @@ ChromeNavigationUIData::ChromeNavigationUIData(
           web_contents);
   if (no_state_prefetch_contents) {
     is_no_state_prefetching_ = true;
-    prerender_histogram_prefix_ =
-        prerender::PrerenderHistograms::GetHistogramPrefix(
-            no_state_prefetch_contents->origin());
   }
 }
 
@@ -54,13 +50,12 @@ ChromeNavigationUIData::CreateForMainFrameNavigation(
     content::WebContents* web_contents,
     WindowOpenDisposition disposition,
     bool is_using_https_as_default_scheme,
-    bool url_is_typed_with_http_scheme) {
+    bool force_no_https_upgrade) {
   auto navigation_ui_data = std::make_unique<ChromeNavigationUIData>();
   navigation_ui_data->disposition_ = disposition;
   navigation_ui_data->is_using_https_as_default_scheme_ =
       is_using_https_as_default_scheme;
-  navigation_ui_data->url_is_typed_with_http_scheme_ =
-      url_is_typed_with_http_scheme;
+  navigation_ui_data->force_no_https_upgrade_ = force_no_https_upgrade;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   int tab_id = extension_misc::kUnknownTabId;
@@ -84,7 +79,7 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
 
   copy->disposition_ = disposition_;
   copy->is_using_https_as_default_scheme_ = is_using_https_as_default_scheme_;
-  copy->url_is_typed_with_http_scheme_ = url_is_typed_with_http_scheme_;
+  copy->force_no_https_upgrade_ = force_no_https_upgrade_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (extension_data_)
@@ -97,7 +92,6 @@ std::unique_ptr<content::NavigationUIData> ChromeNavigationUIData::Clone() {
 #endif
 
   copy->is_no_state_prefetching_ = is_no_state_prefetching_;
-  copy->prerender_histogram_prefix_ = prerender_histogram_prefix_;
   copy->bookmark_id_ = bookmark_id_;
 
   return std::move(copy);

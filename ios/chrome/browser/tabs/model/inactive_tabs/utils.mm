@@ -6,9 +6,9 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/ranges/algorithm.h"
-#import "ios/chrome/browser/main/model/browser_util.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
@@ -37,7 +37,7 @@ bool IsInactive(base::TimeDelta threshold, web::WebState* web_state) {
     return time_since_last_activation.InDays() > threshold.InDays();
   } else {
     // This is the demo mode. Compare the times with no one-day padding.
-    // TODO(crbug.com/1412108): Remove this once the experimental flag is
+    // TODO(crbug.com/40890696): Remove this once the experimental flag is
     // removed.
     return time_since_last_activation > threshold;
   }
@@ -112,13 +112,18 @@ void MoveTabsAccordingToPolicy(Browser* source_browser,
       continue;
     }
 
-    // Don't consider tabs presenting the NTP nor pinned tabs as inactive.
+    // Don't consider tabs presenting the NTP, pinned tabs or tabs in a group as
+    // inactive.
     if (move_policy.policy == MovePolicy::kInactiveOnly) {
       if (IsVisibleURLNewTabPage(web_state)) {
         continue;
       }
 
       if (index < source_list->pinned_tabs_count()) {
+        continue;
+      }
+
+      if (source_list->GetGroupOfWebStateAt(index)) {
         continue;
       }
     }

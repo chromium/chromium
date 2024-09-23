@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // All available icons for security states.
-enum LocationBarSecurityIconType {
+enum class LocationBarSecurityIconType {
   // Don't display an icon.
   NONE = 0,
   // Show "Info" icon.

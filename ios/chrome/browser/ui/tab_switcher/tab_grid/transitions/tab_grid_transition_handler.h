@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_direction.h"
 
 @protocol TabGridTransitionLayoutProviding;
@@ -37,7 +36,7 @@ enum class TabGridTransitionType {
                      (UIViewController<TabGridTransitionLayoutProviding>*)
                          tabGridViewController
             bvcContainerViewController:
-                (BVCContainerViewController*)bvcContainerViewController
+                (UIViewController*)bvcContainerViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

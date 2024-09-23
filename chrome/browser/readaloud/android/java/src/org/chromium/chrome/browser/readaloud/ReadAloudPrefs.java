@@ -51,7 +51,6 @@ public class ReadAloudPrefs {
         if (language == null || language.isEmpty() || voiceId == null || voiceId.isEmpty()) {
             return;
         }
-        ReadAloudMetrics.recordVoiceChanged(voiceId);
         ReadAloudPrefsJni.get().setVoice(prefs, language, voiceId);
     }
 
@@ -106,10 +105,23 @@ public class ReadAloudPrefs {
         }
     }
 
+    /**
+     * Return the client ID for reliability logging.
+     *
+     * @param prefs PrefService where the random salt used to generate the ID is stored.
+     */
+    public static long getReliabilityLoggingId(PrefService prefs) {
+        if (prefs == null) return 0L;
+        return ReadAloudPrefsJni.get()
+                .getReliabilityLoggingId(prefs, ReadAloudFeatures.getMetricsId());
+    }
+
     @NativeMethods
     public interface Natives {
         void getVoices(PrefService prefService, Map<String, String> output);
 
         void setVoice(PrefService prefService, String language, String voiceId);
+
+        long getReliabilityLoggingId(PrefService prefService, String metricsId);
     }
 }

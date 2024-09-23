@@ -7,6 +7,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,7 +34,8 @@ class FakeSnapperProvider : public manta::SnapperProvider {
         fake_status_(fake_status),
         fake_response_(fake_response) {}
 
-  void Call(const manta::proto::Request& request,
+  void Call(manta::proto::Request& request,
+            net::NetworkTrafficAnnotationTag traffic_annotation,
             manta::MantaProtoResponseCallback done_callback) override {
     std::move(done_callback)
         .Run(std::make_unique<manta::proto::Response>(fake_response_),

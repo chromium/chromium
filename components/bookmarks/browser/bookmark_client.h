@@ -6,6 +6,7 @@
 #define COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_CLIENT_H_
 
 #include <cstdint>
+#include <map>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -43,6 +44,14 @@ class BookmarkClient {
   // Called during initialization of BookmarkModel.
   virtual void Init(BookmarkModel* model);
 
+  // Called when loading from disk triggered some recovery, meaning that IDs or
+  // UUIDs could have been reassigned. If IDs were reassigned, which is not
+  // always the case, `local_or_syncable_reassigned_ids_per_old_id` contains
+  // the mapping from old IDs (before reassignment) to new ones.
+  virtual void RequiredRecoveryToLoad(
+      const std::multimap<int64_t, int64_t>&
+          local_or_syncable_reassigned_ids_per_old_id);
+
   // Gets a bookmark folder that the provided URL can be saved to. If nullptr is
   // returned, the bookmark is saved to the default location (usually this is
   // the last modified folder). This affords features the option to override the
@@ -72,11 +81,10 @@ class BookmarkClient {
   // will be invoked in the Profile's IO task runner.
   virtual LoadManagedNodeCallback GetLoadManagedNodeCallback() = 0;
 
-  // Returns the current storage state to be added as suffix to metrics.
-  // TODO(b/41493391): Revisit this function as the notion of storage
-  // type is no longer an attribute of BookmarkModel or BookmarkClient and may
-  // need to be BookmarkNode-specific.
-  virtual metrics::StorageStateForUma GetStorageStateForUma() = 0;
+  // Returns whether sync-the-feature is currently on, for the purpose of
+  // logging metrics and influence predicates such
+  // `BookmarkModel::IsLocalOnlyNode()`.
+  virtual bool IsSyncFeatureEnabledIncludingBookmarks() = 0;
 
   // Returns true if the `permanent_node` can have its title updated.
   virtual bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) = 0;
@@ -107,7 +115,6 @@ class BookmarkClient {
   // Similar to BookmarkModelObserver::BookmarkNodeRemoved(), but transfers
   // ownership of BookmarkNode, which allows undoing the operation.
   virtual void OnBookmarkNodeRemovedUndoable(
-      BookmarkModel* model,
       const BookmarkNode* parent,
       size_t index,
       std::unique_ptr<BookmarkNode> node) = 0;

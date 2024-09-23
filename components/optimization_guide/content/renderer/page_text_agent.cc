@@ -49,7 +49,7 @@ void PageTextAgent::Bind(
   receivers_.Add(this, std::move(receiver));
 }
 
-base::OnceCallback<void(const std::u16string&)>
+base::OnceCallback<void(scoped_refptr<const base::RefCountedString16>)>
 PageTextAgent::MaybeRequestTextDumpOnLayoutEvent(
     blink::WebMeaningfulLayout event,
     uint32_t* max_size) {
@@ -85,20 +85,22 @@ PageTextAgent::MaybeRequestTextDumpOnLayoutEvent(
 
 void PageTextAgent::OnPageTextDump(
     mojo::PendingRemote<mojom::PageTextConsumer> pending_consumer,
-    const std::u16string& content) {
+    scoped_refptr<const base::RefCountedString16> content) {
   mojo::Remote<mojom::PageTextConsumer> consumer;
   consumer.Bind(std::move(pending_consumer));
 
-  for (size_t i = 0; i < content.size(); i += kChunkSize) {
-    // Take a substring of length |kChunkSize|, or whatever is left in
-    // |content|, whichever is less.
-    size_t chunk_size = std::min(kChunkSize, content.size() - i);
+  if (content) {
+    for (size_t i = 0; i < content->as_string().size(); i += kChunkSize) {
+      // Take a substring of length |kChunkSize|, or whatever is left in
+      // |content|, whichever is less.
+      size_t chunk_size = std::min(kChunkSize, content->as_string().size() - i);
 
-    // Either mojo will end up making a copy of the string (if passed a const
-    // ref), or we will. Might as well just do it now to make this less complex,
-    // but std::move it.
-    std::u16string chunk = content.substr(i, chunk_size);
-    consumer->OnTextDumpChunk(std::move(chunk));
+      // Either mojo will end up making a copy of the string (if passed a const
+      // ref), or we will. Might as well just do it now to make this less
+      // complex, but std::move it.
+      std::u16string chunk = content->as_string().substr(i, chunk_size);
+      consumer->OnTextDumpChunk(std::move(chunk));
+    }
   }
   consumer->OnChunksEnd();
 }
@@ -129,10 +131,11 @@ void PageTextAgent::DidFinishLoad() {
   uint32_t max_size = requests_iter->second.first->max_size;
   requests_by_event_.erase(mojom::TextDumpEvent::kFinishedLoad);
 
-  std::u16string content = blink::WebFrameContentDumper::DumpFrameTreeAsText(
-                               render_frame()->GetWebFrame(), max_size)
-                               .Utf16();
-  OnPageTextDump(std::move(pending_consumer), content);
+  auto content = base::MakeRefCounted<const base::RefCountedString16>(
+      blink::WebFrameContentDumper::DumpFrameTreeAsText(
+          render_frame()->GetWebFrame(), max_size)
+          .Utf16());
+  OnPageTextDump(std::move(pending_consumer), std::move(content));
 }
 
 void PageTextAgent::DidStartNavigation(

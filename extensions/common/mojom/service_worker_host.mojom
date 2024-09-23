@@ -11,6 +11,7 @@ import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/frame.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "extensions/common/mojom/message_port.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/url.mojom";
 
 // An interface for an extension service worker context. Implemented in the
@@ -22,13 +23,14 @@ interface ServiceWorkerHost {
       string extension_id,
       int64 service_worker_version_id,
       int32 worker_thread_id,
+      blink.mojom.ServiceWorkerToken service_worker_token,
       pending_associated_remote<EventDispatcher> event_dispatcher);
 
   // Tells the browser that an extension service worker context has started and
   // finished executing its top-level JavaScript.
   // Start corresponds to EmbeddedWorkerInstance::OnStarted notification.
   //
-  // TODO(crbug.com/1422440): This is a workaround: ideally this IPC should be
+  // TODO(crbug.com/40259636): This is a workaround: ideally this IPC should be
   // redundant because it directly corresponds to
   // EmbeddedWorkerInstance::OnStarted message. However, because OnStarted
   // message is on different mojo IPC pipe, and most extension IPCs are on

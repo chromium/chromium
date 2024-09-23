@@ -149,17 +149,14 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
     return 0;
   }
 
-  // TODO(crbug.com/1302630): This is not correct for shadow hosts. Style recalc
-  // traversal happens in flat tree order while query containers are found among
-  // shadow-including ancestors. A slotted shadow host child queries its shadow
-  // host for style() queries without a container name.
   Flags result = flags_ & ~kRecalcStyleContainerChildren;
 
   // Note that kSuppressRecalc is used on the root container for the
   // interleaved style recalc.
   if ((result & (kRecalcSizeContainerFlags | kSuppressRecalc)) ==
       kRecalcSizeContainer) {
-    if (IsShadowHost(element)) {
+    if (!RuntimeEnabledFeatures::CSSFlatTreeContainerEnabled() &&
+        IsShadowHost(element)) {
       // Since the nearest container is found in shadow-including ancestors and
       // not in flat tree ancestors, and style recalc traversal happens in flat
       // tree order, we need to invalidate inside flat tree descendant

@@ -5,23 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_UNDO_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_UNDO_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BookmarkUndoService;
-class ChromeBrowserState;
 
 namespace ios {
 // Singleton that owns all FaviconServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static BookmarkUndoService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static BookmarkUndoService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static BookmarkUndoService* GetForProfile(ProfileIOS* profile);
+  static BookmarkUndoService* GetForProfileIfExists(ProfileIOS* profile);
   static BookmarkUndoServiceFactory* GetInstance();
 
   BookmarkUndoServiceFactory(const BookmarkUndoServiceFactory&) = delete;

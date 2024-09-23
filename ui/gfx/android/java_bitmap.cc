@@ -13,12 +13,36 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/geometry/size.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gfx/gfx_jni_headers/BitmapHelper_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using jni_zero::AttachCurrentThread;
+
+namespace jni_zero {
+
+// Converts |bitmap| to an SkBitmap of the same size and format.
+// Note: |j_bitmap| is assumed to be non-null, non-empty and of format
+// RGBA_8888.
+template <>
+SkBitmap FromJniType<SkBitmap>(JNIEnv* env, const JavaRef<jobject>& j_bitmap) {
+  return gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(j_bitmap));
+}
+
+// Converts |skbitmap| to a Java-backed bitmap (android.graphics.Bitmap).
+// Note: return nullptr jobject if |skbitmap| is null or empty.
+template <>
+ScopedJavaLocalRef<jobject> ToJniType<SkBitmap>(JNIEnv* env,
+                                                const SkBitmap& skbitmap) {
+  if (skbitmap.drawsNothing()) {
+    return {};
+  }
+  return gfx::ConvertToJavaBitmap(skbitmap, gfx::OomBehavior::kCrashOnOom);
+}
+}  // namespace jni_zero
 
 namespace gfx {
 namespace {
@@ -81,10 +105,9 @@ ASSERT_ENUM_EQ(BITMAP_FORMAT_ARGB_4444, ANDROID_BITMAP_FORMAT_RGBA_4444);
 ASSERT_ENUM_EQ(BITMAP_FORMAT_ARGB_8888, ANDROID_BITMAP_FORMAT_RGBA_8888);
 ASSERT_ENUM_EQ(BITMAP_FORMAT_RGB_565, ANDROID_BITMAP_FORMAT_RGB_565);
 
-JavaBitmap::JavaBitmap(const JavaRef<jobject>& bitmap)
-    : bitmap_(bitmap), pixels_(NULL) {
-  int err =
-      AndroidBitmap_lockPixels(AttachCurrentThread(), bitmap_.obj(), &pixels_);
+JavaBitmap::JavaBitmap(const JavaRef<jobject>& bitmap) : bitmap_(bitmap) {
+  int err = AndroidBitmap_lockPixels(AttachCurrentThread(), bitmap_.obj(),
+                                     &pixels_.AsEphemeralRawAddr());
   DCHECK(!err);
   DCHECK(pixels_);
 

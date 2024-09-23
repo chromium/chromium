@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
@@ -51,72 +52,6 @@ namespace {
 constexpr int kChangedButtonFlagMask =
     EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON |
     EF_BACK_MOUSE_BUTTON | EF_FORWARD_MOUSE_BUTTON;
-
-SourceEventType EventTypeToLatencySourceEventType(EventType type) {
-  switch (type) {
-    case ET_UNKNOWN:
-    // SourceEventType for GestureEvents can be either TOUCH or WHEEL. The
-    // proper value is assigned in the constructors.
-    case ET_GESTURE_SCROLL_BEGIN:
-    case ET_GESTURE_SCROLL_END:
-    case ET_GESTURE_SCROLL_UPDATE:
-    case ET_GESTURE_TAP:
-    case ET_GESTURE_TAP_DOWN:
-    case ET_GESTURE_TAP_CANCEL:
-    case ET_GESTURE_TAP_UNCONFIRMED:
-    case ET_GESTURE_DOUBLE_TAP:
-    case ET_GESTURE_BEGIN:
-    case ET_GESTURE_END:
-    case ET_GESTURE_TWO_FINGER_TAP:
-    case ET_GESTURE_PINCH_BEGIN:
-    case ET_GESTURE_PINCH_END:
-    case ET_GESTURE_PINCH_UPDATE:
-    case ET_GESTURE_SHORT_PRESS:
-    case ET_GESTURE_LONG_PRESS:
-    case ET_GESTURE_LONG_TAP:
-    case ET_GESTURE_SWIPE:
-    case ET_GESTURE_SHOW_PRESS:
-    // Flings can be GestureEvents too.
-    case ET_SCROLL_FLING_START:
-    case ET_SCROLL_FLING_CANCEL:
-      return SourceEventType::UNKNOWN;
-
-    case ET_KEY_PRESSED:
-      return SourceEventType::KEY_PRESS;
-
-    case ET_MOUSE_PRESSED:
-    case ET_MOUSE_DRAGGED:
-    case ET_MOUSE_RELEASED:
-    case ET_MOUSE_MOVED:
-    case ET_MOUSE_ENTERED:
-    case ET_MOUSE_EXITED:
-    // We measure latency for key presses, not key releases. Most behavior is
-    // keyed off of presses, and release latency is higher than press latency as
-    // it's impacted by event handling of the press event.
-    case ET_KEY_RELEASED:
-    case ET_MOUSE_CAPTURE_CHANGED:
-    case ET_DROP_TARGET_EVENT:
-    case ET_CANCEL_MODE:
-    case ET_UMA_DATA:
-      return SourceEventType::OTHER;
-
-    case ET_TOUCH_RELEASED:
-    case ET_TOUCH_PRESSED:
-    case ET_TOUCH_MOVED:
-    case ET_TOUCH_CANCELLED:
-      return SourceEventType::TOUCH;
-
-    case ET_MOUSEWHEEL:
-    case ET_SCROLL:
-      return SourceEventType::WHEEL;
-
-    case ET_LAST:
-      NOTREACHED();
-      return SourceEventType::UNKNOWN;
-  }
-  NOTREACHED();
-  return SourceEventType::UNKNOWN;
-}
 
 std::string MomentumPhaseToString(EventMomentumPhase phase) {
   switch (phase) {
@@ -316,8 +251,6 @@ Event::Event(EventType type, base::TimeTicks time_stamp, int flags)
       time_stamp_(time_stamp.is_null() ? EventTimeForNow() : time_stamp),
       flags_(flags),
       native_event_(CreateInvalidPlatformEvent()) {
-  if (type_ < ET_LAST)
-    latency()->set_source_event_type(EventTypeToLatencySourceEventType(type));
 }
 
 Event::Event(const PlatformEvent& native_event, EventType type, int flags)
@@ -327,8 +260,6 @@ Event::Event(const PlatformEvent& native_event, EventType type, int flags)
       // Note that the construction of an Event directly from a PlatformEvent
       // is the only time that ShouldCopyPlatformEvents() is not consulted.
       native_event_(native_event) {
-  if (type_ < ET_LAST)
-    latency()->set_source_event_type(EventTypeToLatencySourceEventType(type));
   ComputeEventLatencyOS(native_event);
 
 #if BUILDFLAG(IS_OZONE)
@@ -367,21 +298,18 @@ Event& Event::operator=(const Event& rhs) {
     else
       properties_.reset();
   }
-  latency_.set_source_event_type(SourceEventType::OTHER);
   return *this;
 }
 
 void Event::SetType(EventType type) {
   type_ = type;
-  if (type_ < ET_LAST)
-    latency()->set_source_event_type(EventTypeToLatencySourceEventType(type));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // CancelModeEvent
 
 CancelModeEvent::CancelModeEvent()
-    : Event(ET_CANCEL_MODE, base::TimeTicks(), 0) {
+    : Event(EventType::kCancelMode, base::TimeTicks(), 0) {
   set_cancelable(false);
 }
 
@@ -442,7 +370,6 @@ MouseEvent::MouseEvent(const PlatformEvent& native_event)
       movement_(GetMouseMovementFromNative(native_event)),
 #endif
       pointer_details_(GetMousePointerDetailsFromNative(native_event)) {
-  latency()->set_source_event_type(SourceEventType::MOUSE);
   latency()->AddLatencyNumberWithTimestamp(
       INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, time_stamp());
   latency()->AddLatencyNumber(INPUT_EVENT_LATENCY_UI_COMPONENT);
@@ -459,13 +386,13 @@ MouseEvent::MouseEvent(EventType type,
     : LocatedEvent(type, location, root_location, time_stamp, flags),
       changed_button_flags_(changed_button_flags),
       pointer_details_(pointer_details) {
-  DCHECK_NE(ET_MOUSEWHEEL, type);
+  DCHECK_NE(EventType::kMousewheel, type);
   DCHECK_EQ(changed_button_flags_,
             changed_button_flags_ & kChangedButtonFlagMask);
-  latency()->set_source_event_type(SourceEventType::MOUSE);
   latency()->AddLatencyNumber(INPUT_EVENT_LATENCY_UI_COMPONENT);
-  if (this->type() == ET_MOUSE_MOVED && IsAnyButton())
-    SetType(ET_MOUSE_DRAGGED);
+  if (this->type() == EventType::kMouseMoved && IsAnyButton()) {
+    SetType(EventType::kMouseDragged);
+  }
 }
 
 MouseEvent::MouseEvent(EventType type,
@@ -488,7 +415,8 @@ MouseEvent::MouseEvent(const MouseEvent& other) = default;
 MouseEvent::~MouseEvent() = default;
 
 void MouseEvent::InitializeNative() {
-  if (type() == ET_MOUSE_PRESSED || type() == ET_MOUSE_RELEASED) {
+  if (type() == EventType::kMousePressed ||
+      type() == EventType::kMouseReleased) {
     SetClickCount(GetRepeatCount(*this));
   }
 }
@@ -500,8 +428,10 @@ bool MouseEvent::IsRepeatedClickEvent(const MouseEvent& event1,
   static const int kDoubleClickWidth = 4;
   static const int kDoubleClickHeight = 4;
 
-  if (event1.type() != ET_MOUSE_PRESSED || event2.type() != ET_MOUSE_PRESSED)
+  if (event1.type() != EventType::kMousePressed ||
+      event2.type() != EventType::kMousePressed) {
     return false;
+  }
 
   // Compare flags, but ignore EF_IS_DOUBLE_CLICK to allow triple clicks.
   if ((event1.flags() & ~EF_IS_DOUBLE_CLICK) !=
@@ -525,7 +455,7 @@ bool MouseEvent::IsRepeatedClickEvent(const MouseEvent& event1,
 int MouseEvent::GetRepeatCount(const MouseEvent& event) {
   int click_count = 1;
   if (last_click_event_) {
-    if (event.type() == ET_MOUSE_RELEASED) {
+    if (event.type() == EventType::kMouseReleased) {
       if (event.changed_button_flags() ==
           last_click_event_->changed_button_flags()) {
         return last_click_event_->GetClickCount();
@@ -561,8 +491,10 @@ void MouseEvent::ResetLastClickForTest() {
 MouseEvent* MouseEvent::last_click_event_ = nullptr;
 
 int MouseEvent::GetClickCount() const {
-  if (type() != ET_MOUSE_PRESSED && type() != ET_MOUSE_RELEASED)
+  if (type() != EventType::kMousePressed &&
+      type() != EventType::kMouseReleased) {
     return 0;
+  }
 
   if (flags() & EF_IS_TRIPLE_CLICK)
     return 3;
@@ -573,8 +505,10 @@ int MouseEvent::GetClickCount() const {
 }
 
 void MouseEvent::SetClickCount(int click_count) {
-  if (type() != ET_MOUSE_PRESSED && type() != ET_MOUSE_RELEASED)
+  if (type() != EventType::kMousePressed &&
+      type() != EventType::kMouseReleased) {
     return;
+  }
 
   DCHECK_LT(0, click_count);
   DCHECK_GE(3, click_count);
@@ -622,21 +556,21 @@ MouseWheelEvent::MouseWheelEvent(const ScrollEvent& scroll_event)
     : MouseEvent(scroll_event),
       offset_(base::ClampRound(scroll_event.x_offset()),
               base::ClampRound(scroll_event.y_offset())) {
-  SetType(ET_MOUSEWHEEL);
+  SetType(EventType::kMousewheel);
 }
 
 MouseWheelEvent::MouseWheelEvent(const MouseEvent& mouse_event,
                                  int x_offset,
                                  int y_offset)
     : MouseEvent(mouse_event), offset_(x_offset, y_offset) {
-  SetType(ET_MOUSEWHEEL);
+  SetType(EventType::kMousewheel);
 }
 
 MouseWheelEvent::MouseWheelEvent(const MouseWheelEvent& mouse_wheel_event)
     : MouseEvent(mouse_wheel_event),
       offset_(mouse_wheel_event.offset()),
       tick_120ths_(mouse_wheel_event.tick_120ths()) {
-  DCHECK_EQ(ET_MOUSEWHEEL, type());
+  DCHECK_EQ(EventType::kMousewheel, type());
 }
 
 MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
@@ -646,17 +580,17 @@ MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
                                  int flags,
                                  int changed_button_flags,
                                  const std::optional<gfx::Vector2d> tick_120ths)
-    : MouseEvent(ET_UNKNOWN,
+    : MouseEvent(EventType::kUnknown,
                  location,
                  root_location,
                  time_stamp,
                  flags,
                  changed_button_flags),
       offset_(offset) {
-  // Set event type to ET_UNKNOWN initially in MouseEvent() to pass the
+  // Set event type to EventType::kUnknown initially in MouseEvent() to pass the
   // DCHECK for type to enforce that we use MouseWheelEvent() to create
   // a MouseWheelEvent.
-  SetType(ET_MOUSEWHEEL);
+  SetType(EventType::kMousewheel);
 
   if (!tick_120ths) {
     // Since no wheel ticks have been specified, assume that scrolling is linear
@@ -934,7 +868,7 @@ KeyEvent KeyEvent::FromCharacter(char16_t character,
                                  DomCode code,
                                  int flags,
                                  base::TimeTicks time_stamp) {
-  return KeyEvent(ET_KEY_PRESSED, key_code, code, flags,
+  return KeyEvent(EventType::kKeyPressed, key_code, code, flags,
                   DomKey::FromCharacter(character), time_stamp, true);
 }
 
@@ -993,8 +927,8 @@ void KeyEvent::ApplyLayout() const {
   // so this is a synthetic or native keystroke event.
   // Therefore, perform only the fallback action.
   if (IsPlatformEventValid(native_event())) {
-    DCHECK(EventTypeFromNative(native_event()) == ET_KEY_PRESSED ||
-           EventTypeFromNative(native_event()) == ET_KEY_RELEASED);
+    DCHECK(EventTypeFromNative(native_event()) == EventType::kKeyPressed ||
+           EventTypeFromNative(native_event()) == EventType::kKeyReleased);
   }
 #endif
 
@@ -1011,13 +945,13 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
 
   if (is_char())
     return false;
-  if (type() == ET_KEY_RELEASED) {
+  if (type() == EventType::kKeyReleased) {
     delete *last_key_event;
     *last_key_event = nullptr;
     return false;
   }
 
-  CHECK_EQ(ET_KEY_PRESSED, type());
+  CHECK_EQ(EventType::kKeyPressed, type());
   KeyEvent* last = *last_key_event;
 
   if (!last) {
@@ -1081,7 +1015,10 @@ DomKey KeyEvent::GetDomKey() const {
 }
 
 void KeyEvent::OnFlagsUpdated() {
+  // TODO(https://crbug.com/324462727): this is problematic on windows.
+#if BUILDFLAG(IS_CHROMEOS)
   key_ = DomKey::NONE;
+#endif
 }
 
 char16_t KeyEvent::GetCharacter() const {
@@ -1161,10 +1098,11 @@ void KeyEvent::NormalizeFlags() {
     default:
       return;
   }
-  if (type() == ET_KEY_PRESSED)
+  if (type() == EventType::kKeyPressed) {
     SetFlags(flags() | mask);
-  else
+  } else {
     SetFlags(flags() & ~mask);
+  }
 }
 
 std::string KeyEvent::ToString() const {
@@ -1221,21 +1159,18 @@ ScrollEvent::ScrollEvent(const PlatformEvent& native_event)
       scroll_event_phase_(ScrollEventPhase::kNone) {
   // TODO(bokan): This should be populating the |scroll_event_phase_| member but
   // currently isn't.
-  if (type() == ET_SCROLL) {
+  if (type() == EventType::kScroll) {
     GetScrollOffsets(native_event, &x_offset_, &y_offset_, &x_offset_ordinal_,
                      &y_offset_ordinal_, &finger_count_, &momentum_phase_);
-  } else if (type() == ET_SCROLL_FLING_START ||
-             type() == ET_SCROLL_FLING_CANCEL) {
+  } else if (type() == EventType::kScrollFlingStart ||
+             type() == EventType::kScrollFlingCancel) {
     GetFlingData(native_event, &x_offset_, &y_offset_, &x_offset_ordinal_,
                  &y_offset_ordinal_, nullptr);
   } else {
-    NOTREACHED() << "Unexpected event type " << type()
-                 << " when constructing a ScrollEvent.";
+    NOTREACHED_IN_MIGRATION()
+        << "Unexpected event type " << base::to_underlying(type())
+        << " when constructing a ScrollEvent.";
   }
-  if (IsScrollEvent())
-    latency()->set_source_event_type(SourceEventType::WHEEL);
-  else
-    latency()->set_source_event_type(SourceEventType::TOUCH);
 }
 
 ScrollEvent::ScrollEvent(EventType type,
@@ -1259,7 +1194,6 @@ ScrollEvent::ScrollEvent(EventType type,
       momentum_phase_(momentum_phase),
       scroll_event_phase_(scroll_event_phase) {
   CHECK(IsScrollEvent());
-  latency()->set_source_event_type(SourceEventType::WHEEL);
 }
 
 ScrollEvent::ScrollEvent(EventType type,
@@ -1330,12 +1264,6 @@ GestureEvent::GestureEvent(float x,
                    flags | EF_FROM_TOUCH),
       details_(details),
       unique_touch_event_id_(unique_touch_event_id) {
-  latency()->set_source_event_type(SourceEventType::TOUCH);
-  // TODO(crbug.com/868056) Other touchpad gesture should report as TOUCHPAD.
-  if (IsPinchEvent() &&
-      details.device_type() == GestureDeviceType::DEVICE_TOUCHPAD) {
-    latency()->set_source_event_type(SourceEventType::TOUCHPAD);
-  }
 }
 
 GestureEvent::GestureEvent(const GestureEvent& other) = default;

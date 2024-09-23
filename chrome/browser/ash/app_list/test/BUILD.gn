@@ -1,0 +1,45 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "app_list_syncable_service_test_base.cc",
+    "app_list_syncable_service_test_base.h",
+    "chrome_app_list_test_support.cc",
+    "chrome_app_list_test_support.h",
+    "fake_app_list_model_updater.cc",
+    "fake_app_list_model_updater.h",
+    "test_app_list_controller.cc",
+    "test_app_list_controller.h",
+    "test_app_list_controller_delegate.cc",
+    "test_app_list_controller_delegate.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/app_list:test_support",
+    "//chrome/browser/ui",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/extensions",
+    "//chrome/test:test_support",
+    "//components/crx_file",
+    "//extensions/common",
+    "//skia:skia_core_public_headers",
+    "//ui/display/types",
+    "//ui/gfx",
+  ]
+}

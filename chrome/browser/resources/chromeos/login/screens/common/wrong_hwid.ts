@@ -6,10 +6,6 @@
  * @fileoverview wrong HWID screen implementation.
  */
 
-// Some of the properties and class names doesn't follow naming convention.
-// Disable naming-convention checks.
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
@@ -17,22 +13,19 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
-import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeUiState} from '../../components/display_manager_types.js';
+import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
+import {OobeDialogHostMixin} from '../../components/mixins/oobe_dialog_host_mixin.js';
+import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
+
 import {getTemplate} from './wrong_hwid.html.js';
 
-const WrongHWIDBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
-    PolymerElement) as { new (): PolymerElement
-      & OobeI18nBehaviorInterface
-      & OobeDialogHostBehaviorInterface
-      & LoginScreenBehaviorInterface, };
+const WrongHwIdBase =
+    OobeDialogHostMixin(LoginScreenMixin(OobeI18nMixin(PolymerElement)));
 
-export class WrongHWID extends WrongHWIDBase {
+export class WrongHwId extends WrongHwIdBase {
   static get is() {
     return 'wrong-hwid-element' as const;
   }
@@ -51,19 +44,20 @@ export class WrongHWID extends WrongHWIDBase {
   }
 
   /** Initial UI State for screen */
-  override getOobeUIInitialState() {
-    return OOBE_UI_STATE.WRONG_HWID_WARNING;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override getOobeUIInitialState(): OobeUiState {
+    return OobeUiState.WRONG_HWID_WARNING;
   }
 
-  onSkip_() {
+  onSkip() {
     this.userActed('skip-screen');
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    [WrongHWID.is]: WrongHWID;
+    [WrongHwId.is]: WrongHwId;
   }
 }
 
-customElements.define(WrongHWID.is, WrongHWID);
+customElements.define(WrongHwId.is, WrongHwId);

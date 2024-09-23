@@ -3,17 +3,120 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash)
 
-source_set("user_activity_ukm_logger_helpers") {
+static_library("ml") {
+  sources = [
+    "adaptive_screen_brightness_manager.cc",
+    "adaptive_screen_brightness_manager.h",
+    "adaptive_screen_brightness_ukm_logger.h",
+    "adaptive_screen_brightness_ukm_logger_impl.cc",
+    "adaptive_screen_brightness_ukm_logger_impl.h",
+    "boot_clock.cc",
+    "boot_clock.h",
+    "idle_event_notifier.cc",
+    "idle_event_notifier.h",
+    "recent_events_counter.cc",
+    "recent_events_counter.h",
+    "user_activity_controller.cc",
+    "user_activity_controller.h",
+    "user_activity_manager.cc",
+    "user_activity_manager.h",
+    "user_activity_ukm_logger.h",
+    "user_activity_ukm_logger_impl.cc",
+    "user_activity_ukm_logger_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":screen_brightness_event_proto",
+    ":user_activity_event_proto",
+    ":user_activity_ukm_logger_helpers",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/power",
+    "//chrome/browser/ash/power/ml/smart_dim",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/constants",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/services/machine_learning/public/cpp:stub",
+    "//chromeos/ui/base",
+    "//components/prefs",
+    "//components/session_manager:base",
+    "//components/site_engagement/content",
+    "//components/viz/host",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/aura",
+    "//ui/compositor",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "adaptive_screen_brightness_manager_unittest.cc",
+    "adaptive_screen_brightness_ukm_logger_impl_unittest.cc",
+    "boot_clock_unittest.cc",
+    "idle_event_notifier_unittest.cc",
+    "recent_events_counter_unittest.cc",
+    "user_activity_manager_unittest.cc",
+    "user_activity_ukm_logger_helpers_unittest.cc",
+    "user_activity_ukm_logger_unittest.cc",
+  ]
+
+  deps = [
+    ":ml",
+    ":screen_brightness_event_proto",
+    ":user_activity_event_proto",
+    ":user_activity_ukm_logger_helpers",
+    "//base/test:test_support",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/power/ml/smart_dim",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//chromeos/services/machine_learning/public/cpp:stub",
+    "//components/site_engagement/content",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/events",
+    "//ui/gfx",
+  ]
+}
+
+static_library("user_activity_ukm_logger_helpers") {
   public = [ "user_activity_ukm_logger_helpers.h" ]
 
   sources = [ "user_activity_ukm_logger_helpers.cc" ]
 
   deps = [
+    ":user_activity_event_proto",
     "//base",
-    "//chrome/browser/ash:user_activity_event_proto",
     "//ui/base",
   ]
+}
+
+proto_library("screen_brightness_event_proto") {
+  sources = [ "screen_brightness_event.proto" ]
+}
+
+proto_library("user_activity_event_proto") {
+  sources = [ "user_activity_event.proto" ]
 }

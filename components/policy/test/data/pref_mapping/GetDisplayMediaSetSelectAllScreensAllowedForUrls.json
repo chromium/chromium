@@ -1,8 +1,7 @@
 [
   {
     "os": [
-      "chromeos_ash",
-      "linux"
+      "chromeos_ash"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -12,7 +11,11 @@
           ]
         },
         "prefs": {
-          "profile.managed_access_to_get_all_screens_media_allowed_for_urls": {}
+          "profile.managed_access_to_get_all_screens_media_allowed_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
         }
       },
       {

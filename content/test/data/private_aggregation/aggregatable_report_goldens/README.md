@@ -25,19 +25,30 @@ report format matches the format produced by the current implementation
 The history of report versions is listed below, with links to past commits of
 documentation.
 
-TODO: Replace past explainer links with draft spec when available.
-
-| Version string | Explainer | Payload encryption details | Changes |
+| Version string | Spec | Payload encryption details | Changes |
 | --- | --- | --- | --- |
-| "" (empty string) | [link](https://github.com/patcg-individual-drafts/private-aggregation-api) | n/a | Placeholder legacy version. TODO: remove directory and explainer row when first version bump occurs. |
-| "`0.1`" | [link](https://github.com/patcg-individual-drafts/private-aggregation-api) | [link](https://chromium.googlesource.com/chromium/src/+/57a65e032513965829e3ed1c1cd20b39d63d2224/content/browser/aggregation_service/payload_encryption.md) | n/a (initial release).
+| "`0.1`" | [link](https://patcg-individual-drafts.github.io/private-aggregation-api/pr-preview/refs/pull/128/merge/index.html) | [link](https://chromium.googlesource.com/chromium/src/+/57a65e032513965829e3ed1c1cd20b39d63d2224/content/browser/aggregation_service/payload_encryption.md) | n/a (initial release).
+| "`1.0`" | [link](https://github.com/patcg-individual-drafts/private-aggregation-api) | [link](https://chromium.googlesource.com/chromium/src/+/main/content/browser/aggregation_service/payload_encryption.md) | Adds [filtering IDs](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/flexible_filtering.md)
+
 
 ## Golden Report Descriptions
 
-1. Debug report, 1 contribution, Protected Audience API.
-2. Non-debug report, 1 contribution, Protected Audience API.
-3. Debug report, 2 contributions, Shared Storage API.
-4. Non-debug report, 2 contributions, Shared Storage API.
-5. Debug report, key with extreme value, Protected Audience API.
-6. Non-debug report, key with extreme value, Protected Audience API.
-7. Non-debug report, null report, Shared Storage API
+| ID | API                | Num Contributions | Max Contributions | Null? | Debug? | Extreme key? | Filtering ID | Max bytes |
+|---:|--------------------|------------------:|------------------:|-------|--------|--------------|-------------:|----------:|
+|  1 | Protected Audience |                 1 |                20 |       | Yes    |              |              |           |
+|  2 | Protected Audience |                 1 |                20 |       |        |              |              |           |
+|  3 | Shared Storage     |                 2 |                20 |       | Yes    |              |              |           |
+|  4 | Shared Storage     |                 2 |                20 |       |        |              |              |           |
+|  5 | Protected Audience |                 1 |                20 |       | Yes    | Yes          |              |           |
+|  6 | Protected Audience |                 1 |                20 |       |        | Yes          |              |           |
+|  7 | Shared Storage     |                 1 |                20 | Yes   |        |              |              |           |
+|  8 | Protected Audience |                 1 |                20 |       | Yes    |              |            3 |           |
+|  9 | Protected Audience |                 1 |                20 |       |        |              |            3 |           |
+| 10 | Protected Audience |                 1 |                20 |       | Yes    |              |     2^64 - 1 |         8 |
+| 11 | Protected Audience |                 1 |               100 |       | Yes    |              |              |           |
+| 12 | Protected Audience |                 1 |               100 |       |        |              |              |           |
+| 13 | Protected Audience |                99 |               100 |       | Yes    |              |              |           |
+| 14 | Protected Audience |               100 |               100 |       | Yes    |              |              |           |
+| 15 | Protected Audience |               100 |               100 |       | Yes    |              |            3 |           |
+| 16 | Protected Audience |               100 |               100 |       | Yes    |              |     2^64 - 1 |         8 |
+| 17 | Protected Audience |                 1 |               100 |       | Yes    |              |     2^64 - 1 |         8 |

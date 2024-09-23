@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "components/webapps/common/web_app_id.h"
 #include "extensions/common/extension_id.h"
+#include "url/origin.h"
 
 namespace content {
 class BrowserContext;
@@ -40,6 +41,8 @@ class DiagnosticsAppProfileHelperDelegate {
   virtual const web_app::WebApp* GetWebAppById(
       const webapps::AppId& app_id,
       content::BrowserContext* browser_context);
+
+  static const std::optional<url::Origin>& GetInstalledDiagnosticsAppOrigin();
 };
 
 // Implements ShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContext.

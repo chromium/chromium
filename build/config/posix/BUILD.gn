@@ -33,12 +33,8 @@ config("runtime_library") {
       # when turning the sysroot on or off. (defines are passed via the command
       # line, and build system rebuilds things when their commandline
       # changes). Nothing should ever read this define.
-      sysroot_key =
-          exec_script("//build/linux/sysroot_scripts/install-sysroot.py",
-                      [ "--print-key=$current_cpu" ],
-                      "trim string",
-                      [ "//build/linux/sysroot_scripts/sysroots.json" ])
-      defines += [ "CR_SYSROOT_KEY=$sysroot_key" ]
+      import("//build/linux/sysroot_scripts/sysroot.gni")
+      defines += [ "CR_SYSROOT_KEY=$cr_sysroot_key" ]
     }
     asmflags += sysroot_flags
     ldflags += sysroot_flags

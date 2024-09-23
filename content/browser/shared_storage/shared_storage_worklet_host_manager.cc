@@ -63,6 +63,7 @@ void SharedStorageWorkletHostManager::ExpireWorkletHostForDocumentService(
 void SharedStorageWorkletHostManager::CreateWorkletHost(
     SharedStorageDocumentServiceImpl* document_service,
     const url::Origin& frame_origin,
+    const url::Origin& data_origin,
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
@@ -73,9 +74,9 @@ void SharedStorageWorkletHostManager::CreateWorkletHost(
   auto worklet_hosts_it =
       attached_shared_storage_worklet_hosts_.find(document_service);
 
-  // A document can only create multiple worklets with `kSharedStorageAPIM123`
+  // A document can only create multiple worklets with `kSharedStorageAPIM125`
   // enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM125)) {
     CHECK(worklet_hosts_it == attached_shared_storage_worklet_hosts_.end());
   }
 
@@ -86,9 +87,9 @@ void SharedStorageWorkletHostManager::CreateWorkletHost(
 
   std::unique_ptr<SharedStorageWorkletHost> worklet_host =
       CreateWorkletHostHelper(
-          *document_service, frame_origin, script_source_url, credentials_mode,
-          origin_trial_features, std::move(worklet_host_receiver),
-          std::move(callback));
+          *document_service, frame_origin, data_origin, script_source_url,
+          credentials_mode, origin_trial_features,
+          std::move(worklet_host_receiver), std::move(callback));
 
   SharedStorageWorkletHost* raw_worklet_host = worklet_host.get();
 
@@ -107,7 +108,7 @@ void SharedStorageWorkletHostManager::RemoveSharedStorageObserver(
 
 void SharedStorageWorkletHostManager::NotifySharedStorageAccessed(
     SharedStorageObserverInterface::AccessType type,
-    const std::string& main_frame_id,
+    FrameTreeNodeId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   // Don't bother getting the time if there are no observers.
@@ -124,6 +125,7 @@ std::unique_ptr<SharedStorageWorkletHost>
 SharedStorageWorkletHostManager::CreateWorkletHostHelper(
     SharedStorageDocumentServiceImpl& document_service,
     const url::Origin& frame_origin,
+    const url::Origin& data_origin,
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
@@ -132,8 +134,9 @@ SharedStorageWorkletHostManager::CreateWorkletHostHelper(
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
         callback) {
   return std::make_unique<SharedStorageWorkletHost>(
-      document_service, frame_origin, script_source_url, credentials_mode,
-      origin_trial_features, std::move(worklet_host), std::move(callback));
+      document_service, frame_origin, data_origin, script_source_url,
+      credentials_mode, origin_trial_features, std::move(worklet_host),
+      std::move(callback));
 }
 
 void SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished(

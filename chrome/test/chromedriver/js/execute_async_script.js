@@ -14,23 +14,6 @@ var StatusCode = {
 };
 
 /**
- * Dictionary key for asynchronous script info.
- * @const
- */
-var ASYNC_INFO_KEY = '$chrome_asyncScriptInfo';
-
-/**
-* Return the information of asynchronous script execution.
-*
-* @return {Object<?>} Information of asynchronous script execution.
-*/
-function getAsyncScriptInfo() {
-  if (!(ASYNC_INFO_KEY in document))
-    document[ASYNC_INFO_KEY] = {'id': 0};
-  return document[ASYNC_INFO_KEY];
-}
-
-/**
 * Execute the given script and save its asynchronous result.
 *
 * If script1 finishes after script2 is executed, then script1's result will be
@@ -45,62 +28,53 @@ function getAsyncScriptInfo() {
 *     If not, UnknownError will be used instead of JavaScriptError if an
 *     exception occurs during the script, and an additional error callback will
 *     be supplied to the script.
+* @param {boolean} timeout The duration in ms to keep the returned promise from
+* being garbage collected.
 */
-function executeAsyncScript(script, args, isUserSupplied) {
-  let resolveHandle;
-  let rejectHandle;
+async function executeAsyncScript(script, args, isUserSupplied, timeout) {
   const Promise = window.cdc_adoQpoasnfa76pfcZLmcfl_Promise || window.Promise;
-  var promise = new Promise((resolve, reject) => {
-    resolveHandle = resolve;
-    rejectHandle = reject;
-  });
-  const info = getAsyncScriptInfo();
-  info.id++;
-  delete info.result;
-  const id = info.id;
-
   function isThenable(value) {
     return typeof value === 'object' && typeof value.then === 'function';
   }
-  function report(status, value) {
-    if (id != info.id)
-      return;
-    info.id++;
-    // Undefined value is skipped when the object is converted to JSON.
-    // Replace it with null so we don't lose the value.
-    if (value === undefined)
-      value = null;
-    info.result = {status: status, value: value};
-  }
   function reportValue(value) {
-    report(StatusCode.OK, value);
+    return {status: StatusCode.OK, value: value};
   }
-  function reportScriptError(error) {
+  function reportError(error) {
     var code = isUserSupplied ? StatusCode.JAVASCRIPT_ERROR :
                                 (error.code || StatusCode.UNKNOWN_ERROR);
     var message = error.message;
     if (error.stack) {
       message += "\nJavaScript stack:\n" + error.stack;
     }
-    report(code, message);
+    return {status: code, value: message};
   }
-  promise.then(reportValue).catch(reportScriptError);
-  args.push(resolveHandle);
-  if (!isUserSupplied)
-    args.push(rejectHandle);
-  try {
-    const scriptResult = new Function(script).apply(null, args);
-    // The return value is only considered if it is a promise.
-    if (isThenable(scriptResult)) {
-      const resolvedPromise = Promise.resolve(scriptResult);
-      resolvedPromise.then((value) => {
-        // Must be thenable if user-supplied.
-        if (!isUserSupplied || isThenable(value))
-          resolveHandle(value);
-      })
-      .catch(rejectHandle);
+  var promise = new Promise((resolve, reject) => {
+    args.push(resolve);
+    if (!isUserSupplied) {
+      args.push(reject);
     }
-  } catch (error) {
-    rejectHandle(error);
+    try {
+      let scriptResult = new Function(script).apply(null, args);
+      if (isThenable(scriptResult)) {
+        const resolvedPromise = Promise.resolve(scriptResult);
+        resolvedPromise.then((value) => {
+          // Must be thenable if user-supplied.
+          if (!isUserSupplied || isThenable(value))
+            resolve(value);
+        })
+        .catch(reject);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+  if (typeof timeout !== 'undefined') {
+    setTimeout(() => {return promise;}, timeout);
   }
+  return await promise.then((result) => {
+    return reportValue(result);
+  }).catch((error) => {
+    return reportError(error);
+  });
 }

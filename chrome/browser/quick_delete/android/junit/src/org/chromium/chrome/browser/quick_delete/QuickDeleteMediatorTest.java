@@ -47,7 +47,9 @@ public class QuickDeleteMediatorTest {
     @Mock private Profile mProfileMock;
     @Mock private QuickDeleteBridge mQuickDeleteBridgeMock;
     @Mock private QuickDeleteTabsFilter mQuickDeleteTabsFilterMock;
+    @Mock private QuickDeleteTabsFilter mQuickDeleteArchivedTabsFilterMock;
     @Mock private List<Tab> mTabsListMock;
+    @Mock private List<Tab> mArchivedTabsListMock;
 
     private PropertyModel mPropertyModel;
     private QuickDeleteMediator mQuickDeleteMediator;
@@ -83,11 +85,49 @@ public class QuickDeleteMediatorTest {
                         mPropertyModel,
                         mProfileMock,
                         mQuickDeleteBridgeMock,
-                        mQuickDeleteTabsFilterMock);
+                        mQuickDeleteTabsFilterMock,
+                        null);
         mQuickDeleteMediator.onTimePeriodChanged(TimePeriod.LAST_15_MINUTES);
 
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_SIGNED_IN));
         assertEquals(1, mPropertyModel.get(QuickDeleteProperties.CLOSED_TABS_COUNT));
+        assertEquals(
+                TimePeriod.LAST_15_MINUTES, mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD));
+        assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
+        assertFalse(mPropertyModel.get(QuickDeleteProperties.IS_SYNCING_HISTORY));
+        verify(mQuickDeleteBridgeMock)
+                .getLastVisitedDomainAndUniqueDomainCount(eq(TimePeriod.LAST_15_MINUTES), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testQuickDeleteMediatorInit_InvokesChanges_NonNullArchivedTabs() {
+        setSignedInStatus(true);
+
+        when(mTabsListMock.size()).thenReturn(1);
+        doNothing()
+                .when(mQuickDeleteTabsFilterMock)
+                .prepareListOfTabsToBeClosed(eq(TimePeriod.LAST_15_MINUTES));
+        when(mQuickDeleteTabsFilterMock.getListOfTabsFilteredToBeClosed())
+                .thenReturn(mTabsListMock);
+
+        when(mArchivedTabsListMock.size()).thenReturn(2);
+        doNothing()
+                .when(mQuickDeleteArchivedTabsFilterMock)
+                .prepareListOfTabsToBeClosed(eq(TimePeriod.LAST_15_MINUTES));
+        when(mQuickDeleteArchivedTabsFilterMock.getListOfTabsFilteredToBeClosed())
+                .thenReturn(mArchivedTabsListMock);
+        mQuickDeleteMediator =
+                new QuickDeleteMediator(
+                        mPropertyModel,
+                        mProfileMock,
+                        mQuickDeleteBridgeMock,
+                        mQuickDeleteTabsFilterMock,
+                        mQuickDeleteArchivedTabsFilterMock);
+        mQuickDeleteMediator.onTimePeriodChanged(TimePeriod.LAST_15_MINUTES);
+
+        assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_SIGNED_IN));
+        assertEquals(3, mPropertyModel.get(QuickDeleteProperties.CLOSED_TABS_COUNT));
         assertEquals(
                 TimePeriod.LAST_15_MINUTES, mPropertyModel.get(QuickDeleteProperties.TIME_PERIOD));
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));

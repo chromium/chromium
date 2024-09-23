@@ -11,11 +11,13 @@
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/android/content_jni_headers/MediaSessionImpl_jni.h"
 #include "content/public/browser/media_session.h"
 #include "services/media_session/public/cpp/media_image.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/MediaSessionImpl_jni.h"
 
 namespace content {
 
@@ -68,10 +70,11 @@ ScopedJavaLocalRef<jobject> JNI_MediaSessionImpl_GetMediaSessionFromWebContents(
   if (!contents)
     return ScopedJavaLocalRef<jobject>();
 
-  MediaSessionImpl* session = MediaSessionImpl::Get(contents);
-  DCHECK(session);
-  return MediaSessionAndroid::JavaObjectGetter::GetJavaObject(
-      session->GetMediaSessionAndroid());
+  MediaSessionImpl* session =
+      static_cast<MediaSessionImpl*>(MediaSessionImpl::GetIfExists(contents));
+  return session ? MediaSessionAndroid::JavaObjectGetter::GetJavaObject(
+                       session->GetMediaSessionAndroid())
+                 : nullptr;
 }
 
 void MediaSessionAndroid::MediaSessionInfoChanged(

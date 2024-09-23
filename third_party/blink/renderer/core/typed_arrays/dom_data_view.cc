@@ -27,6 +27,8 @@ const WrapperTypeInfo DOMDataView::wrapper_type_info_body_{
     nullptr,
     "DataView",
     nullptr,
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,

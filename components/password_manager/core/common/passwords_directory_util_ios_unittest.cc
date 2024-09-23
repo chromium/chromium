@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
 
 #include "base/files/file_path.h"
@@ -16,7 +21,7 @@ TEST(PasswordsDirectoryUtilTest, Deletion) {
   ASSERT_TRUE(password_manager::GetPasswordsDirectory(&dir));
   ASSERT_TRUE(CreateDirectory(dir));
   base::FilePath file = dir.Append(FILE_PATH_LITERAL("TestPasswords.csv"));
-  EXPECT_EQ(0, WriteFile(file, "", 0));
+  EXPECT_TRUE(WriteFile(file, ""));
 
   // Verify that the file was created in the passwords directory.
   ASSERT_TRUE(base::PathExists(file));

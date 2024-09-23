@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/audio/pulse/pulse_input.h"
 
 #include <stdint.h>
@@ -53,7 +58,7 @@ PulseAudioInputStream::PulseAudioInputStream(
   CHECK(params_.IsValid());
   SendLogMessage("%s({device_id=%s}, {params=[%s]})", __func__,
                  source_name.c_str(), params.AsHumanReadableString().c_str());
-  // TODO(crbug.com/1480216): PulseLoopbackAudioStream gives
+  // TODO(crbug.com/40281249): PulseLoopbackAudioStream gives
   // PulseAudioInputStream a nullptr for `audio_manager`, which is risky.
   // Refactor such that this is not the case, or separate the
   // AudioManager-independent logic into a "PulseUnmanagedAudioInputStream".
@@ -380,12 +385,6 @@ void PulseAudioInputStream::ReadData() {
 
     callback_->OnData(audio_bus, capture_time, normalized_volume, {});
 
-    // Sleep 5ms to wait until render consumes the data in order to avoid
-    // back to back OnData() method.
-    // TODO(dalecurtis): Delete all this. It shouldn't be necessary now that we
-    // have a ring buffer and FIFO on the actual shared memory.,
-    if (fifo_.available_blocks())
-      base::PlatformThread::Sleep(base::Milliseconds(5));
   }
 
   pa_threaded_mainloop_signal(pa_mainloop_, 0);

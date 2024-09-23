@@ -254,8 +254,9 @@ void FileBrowserHandlerExecutorFlow::GrantAccessToFilesAndLaunch(
 }
 
 void FileBrowserHandlerExecutorFlow::Finish(bool success) {
-  if (done_)
+  if (done_) {
     std::move(done_).Run(success);
+  }
 
   delete this;
 }

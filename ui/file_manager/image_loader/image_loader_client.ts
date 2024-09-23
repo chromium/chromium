@@ -41,7 +41,7 @@ export class ImageLoaderClient {
    */
   private static sendMessage_(
       request: LoadImageRequest, callback?: (r: LoadImageResponse) => void) {
-    chrome.runtime.sendMessage(EXTENSION_ID, request, callback);
+    chrome.runtime.sendMessage(EXTENSION_ID, request, {}, callback);
   }
 
   /**

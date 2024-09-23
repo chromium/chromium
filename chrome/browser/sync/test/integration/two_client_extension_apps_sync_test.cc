@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_TRUE(AppsMatchChecker().Wait());
 }
 
-// TODO(https://crbug.com/1265969): Change back to E2E_ENABLED when flakiness is
+// TODO(crbug.com/40203939): Change back to E2E_ENABLED when flakiness is
 // fixed.
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ONLY(Merge)) {
   ResetSyncForPrimaryAccount();
@@ -422,9 +422,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
     options.only_use_app_info_factory = true;
     options.app_info_factory = base::BindRepeating(
         [](GURL start_url) {
-          auto info = std::make_unique<web_app::WebAppInstallInfo>();
+          auto info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+              start_url);
           info->title = u"Test app";
-          info->start_url = start_url;
           return info;
         },
         kStartUrl);

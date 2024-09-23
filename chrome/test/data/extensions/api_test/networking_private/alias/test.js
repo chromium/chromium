@@ -56,6 +56,7 @@ chrome.test.runTests([
               GUID: 'stub_cellular1_guid',
               IPAddressConfigType: chrome.networking.onc.IPConfigType.DHCP,
               Metered: true,
+              TrafficCounterResetTime: 0.0,
               Name: 'cellular1',
               NameServersConfigType: chrome.networking.onc.IPConfigType.DHCP,
               Source: 'User',

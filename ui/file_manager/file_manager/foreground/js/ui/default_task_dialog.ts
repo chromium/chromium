@@ -8,8 +8,10 @@ import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import type {DropdownItem} from '../task_controller.js';
 
 import {FileManagerDialogBase} from './file_manager_dialog_base.js';
-import {createList, List} from './list.js';
-import {createListItem, ListItem} from './list_item.js';
+import type {List} from './list.js';
+import {createList} from './list.js';
+import type {ListItem} from './list_item.js';
+import {createListItem} from './list_item.js';
 import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 

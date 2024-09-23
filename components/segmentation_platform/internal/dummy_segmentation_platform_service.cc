@@ -57,6 +57,13 @@ void DummySegmentationPlatformService::CollectTrainingData(
     const TrainingLabels& param,
     SuccessCallback callback) {}
 
+void DummySegmentationPlatformService::CollectTrainingData(
+    proto::SegmentId segment_id,
+    TrainingRequestId request_id,
+    ukm::SourceId ukm_source_id,
+    const TrainingLabels& param,
+    SuccessCallback callback) {}
+
 void DummySegmentationPlatformService::EnableMetrics(
     bool signal_collection_allowed) {}
 

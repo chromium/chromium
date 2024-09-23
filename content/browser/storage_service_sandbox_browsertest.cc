@@ -63,12 +63,6 @@ class StorageServiceSandboxBrowserTest : public ContentBrowserTest {
     loop.Run();
   }
 
-  void FlushLocalStorage() {
-    base::RunLoop loop;
-    dom_storage()->GetLocalStorageControl()->Flush(loop.QuitClosure());
-    loop.Run();
-  }
-
   mojo::Remote<storage::mojom::TestApi>& GetTestApi() {
     if (!test_api_) {
       StoragePartitionImpl::GetStorageServiceForTesting()->BindTestApi(
@@ -93,7 +87,6 @@ IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, PRE_DomStorage) {
   std::ignore =
       EvalJs(shell()->web_contents(), R"(window.localStorage.yeet = 42)");
   WaitForAnyLocalStorageData();
-  FlushLocalStorage();
 }
 
 IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, DomStorage) {
@@ -105,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, DomStorage) {
             EvalJs(shell()->web_contents(), R"(window.localStorage.yeet)"));
 }
 
-// TODO(https://crbug.com/1318225): Fix and enable the test on Fuchsia.
+// TODO(crbug.com/40835229): Fix and enable the test on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_CompactDatabase DISABLED_CompactDatabase
 #else

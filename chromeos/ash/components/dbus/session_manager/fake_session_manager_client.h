@@ -99,6 +99,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       const cryptohome::AccountIdentifier& cryptohome_id) override;
   void StartSessionEx(const cryptohome::AccountIdentifier& cryptohome_id,
                       bool chrome_side_key_generation) override;
+  void EmitStartedUserSession(
+      const cryptohome::AccountIdentifier& cryptohome_id) override;
   void StopSession(login_manager::SessionStopReason reason) override;
   void LoadShillProfile(
       const cryptohome::AccountIdentifier& cryptohome_id) override;
@@ -123,20 +125,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   bool BlockingRequestBrowserDataBackwardMigration(
       const cryptohome::AccountIdentifier& cryptohome_id) override;
   void RetrieveActiveSessions(ActiveSessionsCallback callback) override;
-  void RetrieveDevicePolicy(RetrievePolicyCallback callback) override;
-  RetrievePolicyResponseType BlockingRetrieveDevicePolicy(
-      std::string* policy_out) override;
-  void RetrievePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
-                             RetrievePolicyCallback callback) override;
-  RetrievePolicyResponseType BlockingRetrievePolicyForUser(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      std::string* policy_out) override;
-  void RetrieveDeviceLocalAccountPolicy(
-      const std::string& account_id,
-      RetrievePolicyCallback callback) override;
-  RetrievePolicyResponseType BlockingRetrieveDeviceLocalAccountPolicy(
-      const std::string& account_id,
-      std::string* policy_out) override;
   void RetrievePolicy(const login_manager::PolicyDescriptor& descriptor,
                       RetrievePolicyCallback callback) override;
   RetrievePolicyResponseType BlockingRetrievePolicy(
@@ -397,7 +385,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // Callback that will be run, if set, when StopSession() is called.
   base::OnceClosure stop_session_callback_;
 
-  base::ObserverList<Observer>::Unchecked observers_{
+  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_{
       SessionManagerClient::kObserverListPolicy};
   SessionManagerClient::ActiveSessionsMap user_sessions_;
   base::expected<std::vector<std::string>, StateKeyErrorType>

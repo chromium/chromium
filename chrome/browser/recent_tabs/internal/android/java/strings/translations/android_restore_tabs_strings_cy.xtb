@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Mae dyfeisiau sydd wedi'u cysoni ar gyfer adfer tab ar gael i'w newid wrth gyffwrdd. Llywiwch i adolygu neu adfer y tabiau a ddewisir ar gyfer y ddyfais bresennol ar gyffwrdd. Mae'r bysellfwrdd wedi'i guddio.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Agor <ph name="TABS_COUNT_ONE" /> tab}zero{Agor <ph name="TABS_COUNT_MANY" /> tab}two{Agor <ph name="TABS_COUNT_MANY" /> dab}few{Agor <ph name="TABS_COUNT_MANY" /> thab}many{Agor <ph name="TABS_COUNT_MANY" /> thab}other{Agor <ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="4509609396389120020">Cael tabiau o ddyfeisiau eraill</translation>
+<translation id="4619615317237390068">Tabiau o ddyfeisiau eraill</translation>
 <translation id="4811934403802581334">Bydd yr holl dabiau a ddewisir o'r ddyfais a ddewisir ar hyn o bryd yn cael eu hadfer.</translation>
 <translation id="5336031759968328813">Adolygu'r holl dabiau</translation>
 <translation id="5494920125229734069">Dewis pob un</translation>

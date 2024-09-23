@@ -8,7 +8,6 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {queryRequiredElement} from '../../common/js/dom_utils.js';
-import {isNonModifiable} from '../../common/js/entry_utils.js';
 import {isCrosComponentsEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
@@ -18,13 +17,13 @@ import {getStore, type Store} from '../../state/store.js';
 import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 
 import {ICON_TYPES} from './constants.js';
-import type {DirectoryChangeEvent} from './directory_model.js';
-import {DirectoryModel} from './directory_model.js';
-import {EventType, FileSelectionHandler} from './file_selection.js';
+import type {DirectoryChangeEvent, DirectoryModel} from './directory_model.js';
+import type {FileSelectionHandler} from './file_selection.js';
+import {EventType} from './file_selection.js';
 import type {A11yAnnounce} from './ui/a11y_announce.js';
 import {Command} from './ui/command.js';
-import {FileListSelectionModel} from './ui/file_list_selection_model.js';
-import {ListContainer} from './ui/list_container.js';
+import type {FileListSelectionModel} from './ui/file_list_selection_model.js';
+import type {ListContainer} from './ui/list_container.js';
 
 // Helper function that extract common pattern for getting commands associated
 // with the toolbar and also deals with lack of return type information in
@@ -252,11 +251,7 @@ export class ToolbarController {
 
     // Update visibility of the delete and move to trash buttons.
     this.deleteButton_.hidden =
-        (selection.totalCount === 0 ||
-         !this.directoryModel_.canDeleteEntries() ||
-         selection.hasReadOnlyEntry() ||
-         selection.entries.some(
-             entry => isNonModifiable(this.volumeManager_, entry)));
+        (selection.totalCount === 0 || selection.hasReadOnlyEntry());
     // Show 'Move to Trash' rather than 'Delete' if possible. The
     // `moveToTrashCommand` needs to be set to hidden to ensure the
     // `canExecuteChange` invokes the `hiddenChange` event in the case where

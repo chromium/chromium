@@ -3,21 +3,14 @@
     "os": [
       "chromeos_ash"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DeviceAttributesAllowedForOrigins": [
-            "https://www.google.com"
-          ]
-        },
-        "prefs": {
-          "policy.device_attributes_allowed_for_origins": {
-            "value": [
-              "https://www.google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.device_attributes_allowed_for_origins",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://www.google.com"
+        ]
+      ]
+    }
   }
 ]

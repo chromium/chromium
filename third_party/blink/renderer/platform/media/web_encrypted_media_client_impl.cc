@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 
 namespace blink {
+
 namespace {
 
 // Used to name UMAs in Reporter.
@@ -33,18 +34,18 @@ const char kKeySystemSupportUMAPrefix[] =
 // to convert WebContentDecryptionModuleResult to a callback.
 void CompleteWebContentDecryptionModuleResult(
     std::unique_ptr<WebContentDecryptionModuleResult> result,
-    WebContentDecryptionModule* cdm,
-    const std::string& error_message) {
+    std::unique_ptr<WebContentDecryptionModule> cdm,
+    media::CreateCdmStatus status) {
   DCHECK(result);
 
   if (!cdm) {
     result->CompleteWithError(
         kWebContentDecryptionModuleExceptionNotSupportedError, 0,
-        WebString::FromUTF8(error_message));
+        WebString::FromASCII(base::ToString(status)));
     return;
   }
 
-  result->CompleteWithContentDecryptionModule(cdm);
+  result->CompleteWithContentDecryptionModule(std::move(cdm));
 }
 
 }  // namespace
@@ -176,12 +177,13 @@ class WebEncryptedMediaClientImpl::Reporter {
 };
 
 WebEncryptedMediaClientImpl::WebEncryptedMediaClientImpl(
+    media::KeySystems* key_systems,
     media::CdmFactory* cdm_factory,
     media::MediaPermission* media_permission,
     std::unique_ptr<KeySystemConfigSelector::WebLocalFrameDelegate>
         web_frame_delegate)
-    : cdm_factory_(cdm_factory),
-      key_systems_(media::KeySystems::GetInstance()),
+    : key_systems_(key_systems),
+      cdm_factory_(cdm_factory),
       key_system_config_selector_(key_systems_,
                                   media_permission,
                                   std::move(web_frame_delegate)) {
@@ -207,7 +209,7 @@ void WebEncryptedMediaClientImpl::CreateCdm(
     const media::CdmConfig& cdm_config,
     std::unique_ptr<WebContentDecryptionModuleResult> result) {
   WebContentDecryptionModuleImpl::Create(
-      cdm_factory_, security_origin, cdm_config,
+      cdm_factory_, key_systems_, security_origin, cdm_config,
       base::BindOnce(&CompleteWebContentDecryptionModuleResult,
                      std::move(result)));
 }

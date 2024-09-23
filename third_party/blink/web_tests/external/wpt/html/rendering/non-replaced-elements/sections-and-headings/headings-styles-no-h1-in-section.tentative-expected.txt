@@ -1,0 +1,148 @@
+This is a testharness.js-based test.
+Found 72 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] <h1> (in <article>) - margin-top
+  assert_equals: expected "21.44px" but got "19.92px"
+[FAIL] <h1> (in <article>) - margin-bottom
+  assert_equals: expected "21.44px" but got "19.92px"
+[FAIL] <h1> (in <article>) - font-size
+  assert_equals: expected "32px" but got "24px"
+[FAIL] <h1> (in <article><article>) - margin-top
+  assert_equals: expected "21.44px" but got "18.72px"
+[FAIL] <h1> (in <article><article>) - margin-bottom
+  assert_equals: expected "21.44px" but got "18.72px"
+[FAIL] <h1> (in <article><article>) - font-size
+  assert_equals: expected "32px" but got "18.72px"
+[FAIL] <h1> (in <article><article><article>) - margin-top
+  assert_equals: expected "21.44px" but got "21.28px"
+[FAIL] <h1> (in <article><article><article>) - margin-bottom
+  assert_equals: expected "21.44px" but got "21.28px"
+[FAIL] <h1> (in <article><article><article>) - font-size
+  assert_equals: expected "32px" but got "16px"
+[FAIL] <h1> (in <article><article><article><article>) - margin-top
+  assert_equals: expected "21.44px" but got "22.1776px"
+[FAIL] <h1> (in <article><article><article><article>) - margin-bottom
+  assert_equals: expected "21.44px" but got "22.1776px"
+[FAIL] <h1> (in <article><article><article><article>) - font-size
+  assert_equals: expected "32px" but got "13.28px"
+[FAIL] <h1> (in <article><article><article><article><article>) - margin-top
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <article><article><article><article><article>) - margin-bottom
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <article><article><article><article><article>) - font-size
+  assert_equals: expected "32px" but got "10.72px"
+[FAIL] <h1> (in <article><article><article><article><article><hgroup>) - margin-top
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <article><article><article><article><article><hgroup>) - margin-bottom
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <article><article><article><article><article><hgroup>) - font-size
+  assert_equals: expected "32px" but got "10.72px"
+[FAIL] <h1> (in <aside>) - margin-top
+  assert_equals: expected "21.44px" but got "19.92px"
+[FAIL] <h1> (in <aside>) - margin-bottom
+  assert_equals: expected "21.44px" but got "19.92px"
+[FAIL] <h1> (in <aside>) - font-size
+  assert_equals: expected "32px" but got "24px"
+[FAIL] <h1> (in <aside><aside>) - margin-top
+  assert_equals: expected "21.44px" but got "18.72px"
+[FAIL] <h1> (in <aside><aside>) - margin-bottom
+  assert_equals: expected "21.44px" but got "18.72px"
+[FAIL] <h1> (in <aside><aside>) - font-size
+  assert_equals: expected "32px" but got "18.72px"
+[FAIL] <h1> (in <aside><aside><aside>) - margin-top
+  assert_equals: expected "21.44px" but got "21.28px"
+[FAIL] <h1> (in <aside><aside><aside>) - margin-bottom
+  assert_equals: expected "21.44px" but got "21.28px"
+[FAIL] <h1> (in <aside><aside><aside>) - font-size
+  assert_equals: expected "32px" but got "16px"
+[FAIL] <h1> (in <aside><aside><aside><aside>) - margin-top
+  assert_equals: expected "21.44px" but got "22.1776px"
+[FAIL] <h1> (in <aside><aside><aside><aside>) - margin-bottom
+  assert_equals: expected "21.44px" but got "22.1776px"
+[FAIL] <h1> (in <aside><aside><aside><aside>) - font-size
+  assert_equals: expected "32px" but got "13.28px"
+[FAIL] <h1> (in <aside><aside><aside><aside><aside>) - margin-top
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <aside><aside><aside><aside><aside>) - margin-bottom
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <aside><aside><aside><aside><aside>) - font-size
+  assert_equals: expected "32px" but got "10.72px"
+[FAIL] <h1> (in <aside><aside><aside><aside><aside><hgroup>) - margin-top
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <aside><aside><aside><aside><aside><hgroup>) - margin-bottom
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <aside><aside><aside><aside><aside><hgroup>) - font-size
+  assert_equals: expected "32px" but got "10.72px"
+[FAIL] <h1> (in <nav>) - margin-top
+  assert_equals: expected "21.44px" but got "19.92px"
+[FAIL] <h1> (in <nav>) - margin-bottom
+  assert_equals: expected "21.44px" but got "19.92px"
+[FAIL] <h1> (in <nav>) - font-size
+  assert_equals: expected "32px" but got "24px"
+[FAIL] <h1> (in <nav><nav>) - margin-top
+  assert_equals: expected "21.44px" but got "18.72px"
+[FAIL] <h1> (in <nav><nav>) - margin-bottom
+  assert_equals: expected "21.44px" but got "18.72px"
+[FAIL] <h1> (in <nav><nav>) - font-size
+  assert_equals: expected "32px" but got "18.72px"
+[FAIL] <h1> (in <nav><nav><nav>) - margin-top
+  assert_equals: expected "21.44px" but got "21.28px"
+[FAIL] <h1> (in <nav><nav><nav>) - margin-bottom
+  assert_equals: expected "21.44px" but got "21.28px"
+[FAIL] <h1> (in <nav><nav><nav>) - font-size
+  assert_equals: expected "32px" but got "16px"
+[FAIL] <h1> (in <nav><nav><nav><nav>) - margin-top
+  assert_equals: expected "21.44px" but got "22.1776px"
+[FAIL] <h1> (in <nav><nav><nav><nav>) - margin-bottom
+  assert_equals: expected "21.44px" but got "22.1776px"
+[FAIL] <h1> (in <nav><nav><nav><nav>) - font-size
+  assert_equals: expected "32px" but got "13.28px"
+[FAIL] <h1> (in <nav><nav><nav><nav><nav>) - margin-top
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <nav><nav><nav><nav><nav>) - margin-bottom
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <nav><nav><nav><nav><nav>) - font-size
+  assert_equals: expected "32px" but got "10.72px"
+[FAIL] <h1> (in <nav><nav><nav><nav><nav><hgroup>) - margin-top
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <nav><nav><nav><nav><nav><hgroup>) - margin-bottom
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <nav><nav><nav><nav><nav><hgroup>) - font-size
+  assert_equals: expected "32px" but got "10.72px"
+[FAIL] <h1> (in <section>) - margin-top
+  assert_equals: expected "21.44px" but got "19.92px"
+[FAIL] <h1> (in <section>) - margin-bottom
+  assert_equals: expected "21.44px" but got "19.92px"
+[FAIL] <h1> (in <section>) - font-size
+  assert_equals: expected "32px" but got "24px"
+[FAIL] <h1> (in <section><section>) - margin-top
+  assert_equals: expected "21.44px" but got "18.72px"
+[FAIL] <h1> (in <section><section>) - margin-bottom
+  assert_equals: expected "21.44px" but got "18.72px"
+[FAIL] <h1> (in <section><section>) - font-size
+  assert_equals: expected "32px" but got "18.72px"
+[FAIL] <h1> (in <section><section><section>) - margin-top
+  assert_equals: expected "21.44px" but got "21.28px"
+[FAIL] <h1> (in <section><section><section>) - margin-bottom
+  assert_equals: expected "21.44px" but got "21.28px"
+[FAIL] <h1> (in <section><section><section>) - font-size
+  assert_equals: expected "32px" but got "16px"
+[FAIL] <h1> (in <section><section><section><section>) - margin-top
+  assert_equals: expected "21.44px" but got "22.1776px"
+[FAIL] <h1> (in <section><section><section><section>) - margin-bottom
+  assert_equals: expected "21.44px" but got "22.1776px"
+[FAIL] <h1> (in <section><section><section><section>) - font-size
+  assert_equals: expected "32px" but got "13.28px"
+[FAIL] <h1> (in <section><section><section><section><section>) - margin-top
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <section><section><section><section><section>) - margin-bottom
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <section><section><section><section><section>) - font-size
+  assert_equals: expected "32px" but got "10.72px"
+[FAIL] <h1> (in <section><section><section><section><section><hgroup>) - margin-top
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <section><section><section><section><section><hgroup>) - margin-bottom
+  assert_equals: expected "21.44px" but got "24.9776px"
+[FAIL] <h1> (in <section><section><section><section><section><hgroup>) - font-size
+  assert_equals: expected "32px" but got "10.72px"
+Harness: the test ran to completion.
+

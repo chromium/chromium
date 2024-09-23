@@ -28,6 +28,8 @@ component("session_manager") {
   sources = [
     "fake_session_manager_client.cc",
     "fake_session_manager_client.h",
+    "policy_descriptor.cc",
+    "policy_descriptor.h",
     "session_manager_client.cc",
     "session_manager_client.h",
   ]
@@ -40,4 +42,17 @@ proto_library("login_manager_proto") {
   ]
 
   proto_out_dir = "chromeos/ash/components/dbus/login_manager"
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "policy_descriptor_unittest.cc" ]
+
+  deps = [
+    ":login_manager_proto",
+    ":session_manager",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }

@@ -1,13 +1,13 @@
-# TODO(crbug.com/1416986): remove lines as more tests are supported on the platform.
+# TODO(crbug.com/40257118): remove lines as more tests are supported on the platform.
 
-# TODO(crbug.com/1501671): The report is not coming during the test.
+# TODO(crbug.com/40941975): The report is not coming during the test.
 -AnimationThroughputReporterTest.ExplicitAnimation
 -AnimationThroughputReporterTest.ImplicitAnimation
 -AnimationThroughputReporterTest.ImplicitAnimationLateAttach
 -AnimationThroughputReporterTest.PersistedAnimation
 -AnimationThroughputReporterTest.ReportForAnimateToNewTarget
 
-# TODO(crbug.com/1501675): Timeouts happens during the tests.
+# TODO(crbug.com/40941979): Timeouts happens during the tests.
 -LayerWithRealCompositorTest.Delegate
 -LayerWithRealCompositorTest.Draw
 -LayerWithRealCompositorTest.DrawTree
@@ -78,14 +78,14 @@
 -LayerWithRealCompositorTest.SwitchCCLayerTrilinearFiltering
 -LayerWithRealCompositorTest.TreeMutationDuringScaleFactorChange
 
-# TODO(crbug.com/1501680): Timeouts happens during the tests.
+# TODO(crbug.com/40941985): Timeouts happens during the tests.
 -PresentationTimeRecorderTest.DelayedHistogram
 -PresentationTimeRecorderTest.Histogram
 
-# TODO(crbug.com/1501685): The report is not coming during the test.
+# TODO(crbug.com/40941988): The report is not coming during the test.
 -ThroughputReporterTest.ThreadCheck
 
-# TODO(crbug.com/1501685): Timeouts happens during the tests.
+# TODO(crbug.com/40941988): Timeouts happens during the tests.
 -TotalAnimationThroughputReporterTest.MultipleAnimationsOnSingleLayer
 -TotalAnimationThroughputReporterTest.OnceReporter
 -TotalAnimationThroughputReporterTest.OnceReporterShouldDelete

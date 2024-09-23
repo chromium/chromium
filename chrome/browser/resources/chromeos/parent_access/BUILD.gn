@@ -48,6 +48,7 @@ build_webui("build") {
   ts_definitions = [
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
@@ -60,4 +61,6 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
+  webui_context_type = "trusted"
 }

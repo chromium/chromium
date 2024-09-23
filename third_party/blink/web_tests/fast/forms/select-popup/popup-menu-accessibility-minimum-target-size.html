@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>Test the minimum size of the option element within the select dropdown</title>
+<link rel=help href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">
+<link rel=help href="https://github.com/openui/open-ui/issues/1026">
+<script src="../resources/picker-common.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<select>
+  <option>A</option>
+</select>
+
+<script>
+function test(dimension, expectedValue, message) {
+  promise_test(() => {
+    const menu = document.querySelector("select");
+    return openPicker(menu)
+    .then(() => {
+      let optionRect = internals.pagePopupWindow.global.picker.selectElement_.options[0].getBoundingClientRect();
+      assert_greater_than_equal(optionRect[dimension], expectedValue, message);
+    });
+  }, message);
+}
+
+test("height", 24, "The minimum height of the option element in the popup menu should be 24 CSS pixels.");
+test("width", 24, "The minimum width of the option element in the popup menu should be 24 CSS pixels.");
+</script>

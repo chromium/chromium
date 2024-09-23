@@ -1,0 +1,110 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("web_app") {
+  sources = [
+    "web_kiosk_app_data.cc",
+    "web_kiosk_app_data.h",
+    "web_kiosk_app_manager.cc",
+    "web_kiosk_app_manager.h",
+    "web_kiosk_app_service_launcher.cc",
+    "web_kiosk_app_service_launcher.h",
+    "web_kiosk_app_update_observer.cc",
+    "web_kiosk_app_update_observer.h",
+    "web_kiosk_browser_controller_ash.cc",
+    "web_kiosk_browser_controller_ash.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/crosapi/mojom:mojom_shared",
+    "//chromeos/crosapi/mojom:mojom_shared_cpp_sources",
+    "//components/account_id",
+    "//components/webapps/common",
+    "//ui/gfx",
+    "//url",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/remote_commands/crd",
+    "//chrome/browser/chromeos/app_mode",
+    "//chrome/browser/image_decoder",
+    "//chromeos/ash/components/settings",
+    "//components/prefs",
+    "//components/services/app_service/public/cpp:app_types",
+    "//content/public/browser",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//skia",
+  ]
+  allow_circular_includes_from =
+      [ "//chrome/browser/ash/policy/remote_commands/crd" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "web_kiosk_app_manager_unittest.cc",
+    "web_kiosk_app_service_launcher_unittest.cc",
+  ]
+  deps = [
+    ":web_app",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/login/login_state",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:instance_update",
+    "//components/webapps/browser",
+    "//components/webapps/browser:constants",
+    "//components/webapps/common",
+    "//components/webapps/common:mojo_bindings",
+    "//content/public/browser",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "web_kiosk_app_data_browsertest.cc" ]
+  deps = [
+    ":web_app",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_mode",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/content_settings/core/browser/content_settings_registry.h"
+
 #include <string>
 
 #include "base/values.h"
@@ -9,7 +11,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
-#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -148,17 +149,37 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
       ContentSettingsType::LEGACY_COOKIE_ACCESS,
       ContentSettingsType::INSECURE_PRIVATE_NETWORK,
       ContentSettingsType::REQUEST_DESKTOP_SITE,
+      ContentSettingsType::KEYBOARD_LOCK,
+      ContentSettingsType::POINTER_LOCK,
   };
 
   for (const ContentSettingsInfo* info : *registry()) {
     SCOPED_TRACE("Content setting: " + info->website_settings_info()->name());
-    // TODO(crbug.com/781756): Check IsSettingValid() because "protocol-handler"
-    // and "mixed-script" don't have a proper initial default value.
+    // TODO(crbug.com/41353652): Check IsSettingValid() because
+    // "protocol-handler" and "mixed-script" don't have a proper initial default
+    // value.
 
+    // ALLOW-by-default settings are not affected by incognito_behavior, so
+    // they should be marked as INHERIT_IN_INCOGNITO.
     if (info->IsSettingValid(CONTENT_SETTING_ALLOW) &&
         info->GetInitialDefaultSetting() == CONTENT_SETTING_ALLOW) {
-      // ALLOW-by-default settings are not affected by incognito_behavior, so
-      // they should be marked as INHERIT_IN_INCOGNITO.
+      // Top-level 3pcd origin trial content settings are a special case that
+      // should not be inherited in incognito, despite being ALLOW-by-default.
+      if (info->website_settings_info()->type() ==
+          ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL) {
+        EXPECT_EQ(info->incognito_behavior(),
+                  ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+        continue;
+      }
+
+      EXPECT_EQ(info->incognito_behavior(),
+                ContentSettingsInfo::INHERIT_IN_INCOGNITO);
+      continue;
+    }
+    // Tracking protection content setting should be inherited in incognito.
+    if (info->website_settings_info()->type() ==
+            ContentSettingsType::TRACKING_PROTECTION &&
+        info->GetInitialDefaultSetting() == CONTENT_SETTING_BLOCK) {
       EXPECT_EQ(info->incognito_behavior(),
                 ContentSettingsInfo::INHERIT_IN_INCOGNITO);
       continue;

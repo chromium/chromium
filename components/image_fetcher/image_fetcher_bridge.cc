@@ -22,10 +22,12 @@
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/image_fetcher_service_provider.h"
-#include "components/image_fetcher/jni_headers/ImageFetcherBridge_jni.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/image_fetcher/jni_headers/ImageFetcherBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

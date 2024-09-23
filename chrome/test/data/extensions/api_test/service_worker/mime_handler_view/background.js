@@ -21,7 +21,7 @@ navigator.serviceWorker.register('sw.js').then(function() {
   return navigator.serviceWorker.ready;
 }).then(function() {
   chrome.tabs.create({
-    url: chrome.extension.getURL('page_with_embed.html'),
+    url: chrome.runtime.getURL('page_with_embed.html'),
   });
 }).catch(function(e) {
   chrome.test.fail('Unexpected error: ' + e);

@@ -23,7 +23,7 @@ class SaveUpdateAddressProfileFlowManagerBrowserTest
     : public AndroidBrowserTest {
  public:
   // Explicitly avoiding the migration logic because the user must be logged in.
-  // TODO(crbug.com/1421056): figure out if the user can be logged in from an
+  // TODO(crbug.com/40259080): figure out if the user can be logged in from an
   // Android browser test.
   static constexpr bool kNotMigrationToAccount = false;
 
@@ -76,10 +76,9 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       another_save_callback;
   AutofillProfile another_profile = test::GetFullProfile2();
-  EXPECT_CALL(
-      another_save_callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(another_save_callback,
+              Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
+                  Property(&profile_ref::has_value, false)));
   flow_manager_->OfferSave(GetWebContents(), another_profile,
                            /*original_profile=*/nullptr, kNotMigrationToAccount,
                            another_save_callback.Get());
@@ -100,10 +99,9 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       another_save_callback;
   AutofillProfile another_profile = test::GetFullProfile2();
-  EXPECT_CALL(
-      another_save_callback,
-      Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-          Property(&profile_ref::has_value, false)));
+  EXPECT_CALL(another_save_callback,
+              Run(AutofillClient::AddressPromptUserDecision::kAutoDeclined,
+                  Property(&profile_ref::has_value, false)));
   flow_manager_->OfferSave(GetWebContents(), another_profile,
                            /*original_profile=*/nullptr, kNotMigrationToAccount,
                            another_save_callback.Get());

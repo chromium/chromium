@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("u2f") {
+  sources = [
+    "u2f_notification.cc",
+    "u2f_notification.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/notifications",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/settings",
+    "//components/policy/proto",
+    "//components/strings:components_strings_grit",
+    "//ui/base",
+    "//ui/message_center/public/cpp",
+  ]
+}

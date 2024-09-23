@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/web/web_disallow_transition_scope.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #if DCHECK_IS_ON()
 
@@ -20,6 +21,7 @@ class WebDisallowTransitionScopeTest : public testing::Test {
   Document* TopDocument() const;
   WebDocument TopWebDocument() const;
 
+  test::TaskEnvironment task_environment_;
   WebViewHelper web_view_helper_;
 };
 

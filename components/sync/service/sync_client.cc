@@ -4,18 +4,19 @@
 
 #include "components/sync/service/sync_client.h"
 
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 
 namespace syncer {
 
 void SyncClient::GetLocalDataDescriptions(
-    ModelTypeSet types,
-    base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+    DataTypeSet types,
+    base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
         callback) {
   NOTIMPLEMENTED() << "SyncClient implementations should implement this.";
 }
 
-void SyncClient::TriggerLocalDataMigration(ModelTypeSet types) {
+void SyncClient::TriggerLocalDataMigration(DataTypeSet types) {
   NOTIMPLEMENTED() << "SyncClient implementations should implement this.";
 }
 }  // namespace syncer

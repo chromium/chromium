@@ -36,7 +36,7 @@ class BrowsingDataCounterUtilsBrowserTest : public SyncTest {
   ~BrowsingDataCounterUtilsBrowserTest() override = default;
 };
 
-// TODO(https://crbug.com/1491584): Test is flaky on ChromeOS.
+// TODO(crbug.com/40935822): Test is flaky on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShouldShowCookieException DISABLED_ShouldShowCookieException
 #else

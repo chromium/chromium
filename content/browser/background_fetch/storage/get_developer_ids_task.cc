@@ -42,7 +42,7 @@ void GetDeveloperIdsTask::DidGetServiceWorkerRegistration(
     return;
   }
 
-  // TODO(crbug.com/1199077): Move this check into the SW context.
+  // TODO(crbug.com/40177656): Move this check into the SW context.
   if (registration->key() != storage_key_) {
     SetStorageErrorAndFinish(
         BackgroundFetchStorageError::kServiceWorkerStorageError);

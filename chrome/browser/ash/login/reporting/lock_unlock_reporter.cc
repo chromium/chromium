@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -88,12 +89,15 @@ void LockUnlockReporter::MaybeReportEvent(LockUnlockRecord record) {
   }
   const std::string& user_email =
       user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail();
-  if (!helper_->ShouldReportUser(user_email)) {
-    return;
+  if (helper_->ShouldReportUser(user_email)) {
+    record.mutable_affiliated_user()->set_user_email(user_email);
+  } else {
+    // This is an unaffiliated user. We can't report any personal information
+    // about them, so we report a device-unique user id instead.
+    record.mutable_unaffiliated_user()->set_user_id(
+        helper_->GetUniqueUserIdForThisDevice(user_email));
   }
-
   record.set_event_timestamp_sec(clock_->Now().ToTimeT());
-  record.mutable_affiliated_user()->set_user_email(user_email);
 
   helper_->ReportEvent(std::make_unique<LockUnlockRecord>(std::move(record)),
                        ::reporting::Priority::SECURITY);

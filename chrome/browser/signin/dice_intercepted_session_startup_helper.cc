@@ -107,7 +107,7 @@ void DiceInterceptedSessionStartupHelper::OnStateChanged(
     return;
   }
 
-  // TODO(https://crbug.com/1051864): remove this when the cookie updates are
+  // TODO(crbug.com/40673982): remove this when the cookie updates are
   // correctly sent after reconciliation.
   if (state == signin_metrics::AccountReconcilorState::kOk) {
     signin::IdentityManager* identity_manager =
@@ -140,7 +140,7 @@ void DiceInterceptedSessionStartupHelper::StartupMultilogin(
 
 void DiceInterceptedSessionStartupHelper::StartupReconcilor(
     signin::IdentityManager* identity_manager) {
-  // TODO(https://crbug.com/1051864): cookie notifications are not triggered
+  // TODO(crbug.com/40673982): cookie notifications are not triggered
   // when the account is added by the reconcilor. Observe the reconcilor and
   // re-trigger the cookie update when it completes.
   reconcilor_observer_.Observe(

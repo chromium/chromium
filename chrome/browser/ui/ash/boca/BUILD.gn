@@ -1,0 +1,68 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("boca") {
+  sources = [
+    "chrome_tab_strip_delegate.cc",
+    "chrome_tab_strip_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/favicon",
+    "//components/app_constants",
+    "//components/app_restore",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "chrome_tab_strip_delegate_unittest.cc" ]
+
+  deps = [
+    ":boca",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ui/base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "chrome_tab_strip_delegate_browsertest.cc" ]
+
+  deps = [
+    ":boca",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

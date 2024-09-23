@@ -1,0 +1,12 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("cpp") {
+  sources = [ "bucket_client_info.h" ]
+
+  public_deps = [
+    "//base",
+    "//third_party/blink/public/common/tokens:tokens_headers",
+  ]
+}

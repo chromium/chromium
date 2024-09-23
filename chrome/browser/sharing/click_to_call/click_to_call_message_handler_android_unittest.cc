@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/sharing/proto/click_to_call_message.pb.h"
-#include "chrome/browser/sharing/proto/sharing_message.pb.h"
+#include "components/sharing_message/proto/click_to_call_message.pb.h"
+#include "components/sharing_message/proto/sharing_message.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -37,7 +37,7 @@ class TestClickToCallMessageHandler : public ClickToCallMessageHandler {
 
 TEST(ClickToCallMessageHandlerTest, HandlesValidPhoneNumber) {
   TestClickToCallMessageHandler handler;
-  chrome_browser_sharing::SharingMessage message;
+  components_sharing_message::SharingMessage message;
 
   message.mutable_click_to_call_message()->set_phone_number("12345678");
   handler.OnMessage(std::move(message), base::DoNothing());
@@ -46,7 +46,7 @@ TEST(ClickToCallMessageHandlerTest, HandlesValidPhoneNumber) {
 
 TEST(ClickToCallMessageHandlerTest, IgnoresInvalidPhoneNumbers) {
   TestClickToCallMessageHandler handler;
-  chrome_browser_sharing::SharingMessage message;
+  components_sharing_message::SharingMessage message;
 
   message.mutable_click_to_call_message()->set_phone_number("*#06#");
   handler.OnMessage(std::move(message), base::DoNothing());

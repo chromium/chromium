@@ -16,7 +16,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,15 +37,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Utilities for use in power bookmarks. */
-// TODO(1351830): We should add a JNI layer for the native version of these utilities in
+// TODO(crbug.com/40234642): We should add a JNI layer for the native version of these utilities in
 //                price_tracking_utils and use those instead.
 public class PowerBookmarkUtils {
     private static Boolean sPriceTrackingEligibleForTesting;
     private static PowerBookmarkMeta sPowerBookmarkMetaForTesting;
 
     /** Returns whether the given meta is a shopping list item. */
-    public static boolean isShoppingListItem(PowerBookmarkMeta meta) {
-        return ShoppingFeatures.isShoppingListEligible()
+    public static boolean isShoppingListItem(
+            ShoppingService shoppingService, PowerBookmarkMeta meta) {
+        return shoppingService.isShoppingListEligible()
                 && meta != null
                 && meta.hasShoppingSpecifics();
     }
@@ -97,7 +97,8 @@ public class PowerBookmarkUtils {
                 new UserSeenOffer(
                         UnsignedLongs.toString(shoppingSpecifics.getOfferId()),
                         shoppingSpecifics.getCurrentPrice().getAmountMicros(),
-                        shoppingSpecifics.getCountryCode());
+                        shoppingSpecifics.getCountryCode(),
+                        shoppingSpecifics.getLocale());
         return new CommerceSubscription(
                 SubscriptionType.PRICE_TRACK,
                 IdentifierType.PRODUCT_CLUSTER_ID,
@@ -176,10 +177,10 @@ public class PowerBookmarkUtils {
                     callback.onResult(success);
                 };
         // Make sure the notification channel is initialized when the user tracks a product.
-        // TODO(crbug.com/1382191): Add a SubscriptionsObserver in the PriceDropNotificationManager
+        // TODO(crbug.com/40245507): Add a SubscriptionsObserver in the PriceDropNotificationManager
         // and initialize the channel there.
         if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            PriceDropNotificationManagerFactory.create().createNotificationChannel();
+            PriceDropNotificationManagerFactory.create(profile).createNotificationChannel();
         }
         PriceTrackingUtils.setPriceTrackingStateForBookmark(
                 profile, bookmarkId.getId(), enabled, wrapperCallback);

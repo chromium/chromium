@@ -1,0 +1,57 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --button-position-offset: 24px;
+  bottom: 0;
+  left: 0;
+  padding: 48px 0;
+  position: fixed;
+  right: auto;
+  user-select: none;
+  z-index: 3;
+}
+
+:host-context([dir='rtl']) {
+  left: auto;
+  right: 0;
+}
+
+#zoom-buttons {
+  left: var(--button-position-offset);
+  opacity: 1;
+  position: relative;
+  right: auto;
+  transition: opacity 250ms;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+:host-context([dir='rtl']) #zoom-buttons {
+  left: auto;
+  right: var(--button-position-offset);
+}
+
+:host(:not([visible_])) #zoom-buttons {
+  opacity: 0;
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+
+viewer-zoom-button {
+  display: block;
+}
+
+/* A larger gap between the fit button and the bottom two zoom buttons. */
+#zoom-in-button {
+  margin-top: 24px;
+}
+
+/* A small gap between the zoom in/zoom out buttons. */
+#zoom-out-button {
+  margin-top: 10px;
+}
+

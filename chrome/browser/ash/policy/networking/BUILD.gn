@@ -1,0 +1,131 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("networking") {
+  sources = [
+    "euicc_status_uploader.cc",
+    "euicc_status_uploader.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/network",
+    "//components/onc",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "euicc_status_uploader_unittest.cc" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/policy/networking",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/components/onc",
+    "//components/policy/core/common:test_support",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "network_policy_application_browsertest.cc",
+    "policy_certs_browsertest.cc",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/login:browser_tests",
+    "//chrome/browser/ash/policy/login:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/policy:onc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/network",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos:test_utils",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/system",
+    "//chromeos/ash/services/network_config",
+    "//chromeos/components/onc:test_support",
+    "//chromeos/dbus/power",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/account_id",
+    "//components/onc",
+    "//components/policy:cloud_policy_proto_generated_compile",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/user_manager:common",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//crypto",
+    "//crypto:test_support",
+    "//dbus",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//net",
+    "//net:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//url",
+  ]
+}

@@ -1,0 +1,13 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+bundle_data("resources") {
+  sources = [
+    "enhanced_safe_browsing_promo.json",
+    "enhanced_safe_browsing_promo_darkmode.json",
+    "lens_promo.json",
+    "lens_promo_darkmode.json",
+  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+}

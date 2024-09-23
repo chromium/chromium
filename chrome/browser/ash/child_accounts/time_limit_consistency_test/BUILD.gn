@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+# Test binary for the ChromeOS usage time limit processor tests.
+test("usage_time_limit_unittests") {
+  testonly = true
+
+  sources = [
+    "consistency_golden_converter.cc",
+    "consistency_golden_converter.h",
+    "consistency_golden_converter_unittest.cc",
+    "consistency_golden_loader.cc",
+    "consistency_golden_loader.h",
+    "consistency_golden_loader_unittest.cc",
+    "consistency_test.cc",
+    "consistency_test_utils.cc",
+    "consistency_test_utils.h",
+    "proto_matcher.h",
+    "run_all_unittests.cc",
+  ]
+
+  deps = [
+    ":consistency_golden_proto",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/child_accounts",
+    "//chrome/browser/ash/child_accounts:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/exo/wayland:test_controller_stub",
+    "//components/exo/wayland:ui_controls_protocol_stub",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/icu",
+    "//third_party/protobuf:protobuf_full",
+  ]
+
+  data = [
+    "goldens/",
+    "test_goldens/",
+  ]
+}
+
+proto_library("consistency_golden_proto") {
+  visibility = [ ":usage_time_limit_unittests" ]
+  sources = [ "goldens/consistency_golden.proto" ]
+  generate_python = false
+}

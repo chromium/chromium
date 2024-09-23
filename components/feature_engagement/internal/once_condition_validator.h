@@ -59,6 +59,7 @@ class OnceConditionValidator : public ConditionValidator {
       const std::optional<std::string>& feature) override;
   std::optional<std::string> GetPendingPriorityNotification() override;
   void AllowMultipleFeaturesForTesting(bool allow_multiple_features);
+  void ResetSession() override;
 
  private:
   // Contains all features that have met conditions within the current session.

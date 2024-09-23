@@ -163,7 +163,7 @@ TEST(ListInterpolationFunctionsTest, EqualMergeSinglesSameLengths) {
   auto pairwise = ListInterpolationFunctions::MaybeMergeSingles(
       std::move(list1), std::move(list2),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(MaybeMergeSingles));
+      MaybeMergeSingles);
 
   EXPECT_TRUE(pairwise);
 }
@@ -176,7 +176,7 @@ TEST(ListInterpolationFunctionsTest, EqualMergeSinglesDifferentLengths) {
   auto pairwise = ListInterpolationFunctions::MaybeMergeSingles(
       std::move(list1), std::move(list2),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(MaybeMergeSingles));
+      MaybeMergeSingles);
 
   EXPECT_FALSE(pairwise);
 }
@@ -189,7 +189,7 @@ TEST(ListInterpolationFunctionsTest, EqualMergeSinglesIncompatibleValues) {
   auto pairwise = ListInterpolationFunctions::MaybeMergeSingles(
       std::move(list1), std::move(list2),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(MaybeMergeSingles));
+      MaybeMergeSingles);
 
   EXPECT_FALSE(pairwise);
 }
@@ -202,7 +202,7 @@ TEST(ListInterpolationFunctionsTest, EqualMergeSinglesIncompatibleNullptrs) {
   auto pairwise = ListInterpolationFunctions::MaybeMergeSingles(
       std::move(list1), std::move(list2),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(MaybeMergeSingles));
+      MaybeMergeSingles);
 
   EXPECT_FALSE(pairwise);
 }
@@ -220,17 +220,16 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeSameLengths) {
   ListInterpolationFunctions::Composite(
       owner, 1.0, interpolation_type, list2,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(
-          ListInterpolationFunctions::InterpolableValuesKnownCompatible),
-      WTF::BindRepeating(NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(Composite));
+      ListInterpolationFunctions::InterpolableValuesKnownCompatible,
+      NonInterpolableValuesAreCompatible, Composite);
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
+  CSSToLengthConversionData length_resolver;
   ASSERT_EQ(result.length(), 3u);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(), 2.0);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(), 4.0);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(2))->Value(), 6.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 2.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 4.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(2))->Value(length_resolver), 6.0);
 }
 
 // Two lists of different lengths are not interpolable, so we expect the
@@ -248,16 +247,15 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeDifferentLengths) {
   ListInterpolationFunctions::Composite(
       owner, 1.0, interpolation_type, list2,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(
-          ListInterpolationFunctions::InterpolableValuesKnownCompatible),
-      WTF::BindRepeating(NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(Composite));
+      ListInterpolationFunctions::InterpolableValuesKnownCompatible,
+      NonInterpolableValuesAreCompatible, Composite);
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
+  CSSToLengthConversionData length_resolver;
   ASSERT_EQ(result.length(), 2u);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(), 4.0);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(), 5.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);
 }
 
 // If one (or more) of the element pairs are incompatible, the list as a whole
@@ -278,17 +276,19 @@ TEST(ListInterpolationFunctionsTest,
   ListInterpolationFunctions::Composite(
       owner, 1.0, interpolation_type, list2,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(&InterpolableValuesCompatibilityHelper::AreCompatible,
-                         WTF::Unretained(&compatibility_helper)),
-      WTF::BindRepeating(NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(Composite));
+      [&compatibility_helper](const InterpolableValue* a,
+                              const InterpolableValue* b) {
+        return compatibility_helper.AreCompatible(a, b);
+      },
+      NonInterpolableValuesAreCompatible, Composite);
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
+  CSSToLengthConversionData length_resolver;
   ASSERT_EQ(result.length(), 3u);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(), 4.0);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(), 5.0);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(2))->Value(), 6.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(2))->Value(length_resolver), 6.0);
 }
 
 // If one (or more) of the element pairs are incompatible, the list as a whole
@@ -306,17 +306,16 @@ TEST(ListInterpolationFunctionsTest,
   ListInterpolationFunctions::Composite(
       owner, 1.0, interpolation_type, list2,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(
-          ListInterpolationFunctions::InterpolableValuesKnownCompatible),
-      WTF::BindRepeating(NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(Composite));
+      ListInterpolationFunctions::InterpolableValuesKnownCompatible,
+      NonInterpolableValuesAreCompatible, Composite);
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
+  CSSToLengthConversionData length_resolver;
   ASSERT_EQ(result.length(), 3u);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(), 4.0);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(), 5.0);
-  EXPECT_EQ(To<InterpolableNumber>(result.Get(2))->Value(), 6.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(0))->Value(length_resolver), 4.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(1))->Value(length_resolver), 5.0);
+  EXPECT_EQ(To<InterpolableNumber>(result.Get(2))->Value(length_resolver), 6.0);
 }
 
 TEST(ListInterpolationFunctionsTest, BuilderNoModify) {

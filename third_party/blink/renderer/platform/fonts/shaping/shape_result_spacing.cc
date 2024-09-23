@@ -13,13 +13,14 @@ namespace blink {
 template <typename TextContainerType>
 bool ShapeResultSpacing<TextContainerType>::SetSpacing(
     const FontDescription& font_description) {
-  return SetSpacing(font_description.LetterSpacing(),
-                    font_description.WordSpacing());
+  return SetSpacing(TextRunLayoutUnit(font_description.LetterSpacing()),
+                    TextRunLayoutUnit(font_description.WordSpacing()));
 }
 
 template <typename TextContainerType>
-bool ShapeResultSpacing<TextContainerType>::SetSpacing(float letter_spacing,
-                                                       float word_spacing) {
+bool ShapeResultSpacing<TextContainerType>::SetSpacing(
+    TextRunLayoutUnit letter_spacing,
+    TextRunLayoutUnit word_spacing) {
   if (!letter_spacing && !word_spacing) {
     has_spacing_ = false;
     return false;
@@ -35,11 +36,11 @@ bool ShapeResultSpacing<TextContainerType>::SetSpacing(float letter_spacing,
 
 template <typename TextContainerType>
 void ShapeResultSpacing<TextContainerType>::SetExpansion(
-    float expansion,
+    InlineLayoutUnit expansion,
     TextDirection direction,
     bool allows_leading_expansion,
     bool allows_trailing_expansion) {
-  DCHECK_GT(expansion, 0);
+  DCHECK_GT(expansion, InlineLayoutUnit());
   expansion_ = expansion;
   ComputeExpansion(allows_leading_expansion, allows_trailing_expansion,
                    direction);
@@ -50,15 +51,15 @@ template <typename TextContainerType>
 void ShapeResultSpacing<TextContainerType>::SetSpacingAndExpansion(
     const FontDescription& font_description) {
   // Available only for TextRun since it has expansion data.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 template <>
 void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
     const FontDescription& font_description) {
-  letter_spacing_ = font_description.LetterSpacing();
-  word_spacing_ = font_description.WordSpacing();
-  expansion_ = 0;
+  letter_spacing_ = TextRunLayoutUnit(font_description.LetterSpacing());
+  word_spacing_ = TextRunLayoutUnit(font_description.WordSpacing());
+  expansion_ = InlineLayoutUnit();
   has_spacing_ = letter_spacing_ || word_spacing_;
   if (!has_spacing_)
     return;
@@ -72,7 +73,7 @@ void ShapeResultSpacing<TextContainerType>::ComputeExpansion(
     bool allows_leading_expansion,
     bool allows_trailing_expansion,
     TextDirection direction) {
-  DCHECK_GT(expansion_, 0);
+  DCHECK_GT(expansion_, InlineLayoutUnit());
 
   is_after_expansion_ = !allows_leading_expansion;
   bool is_after_expansion = is_after_expansion_;
@@ -83,36 +84,38 @@ void ShapeResultSpacing<TextContainerType>::ComputeExpansion(
     expansion_opportunity_count_ = Character::ExpansionOpportunityCount(
         text_.Span16(), direction, is_after_expansion);
   }
-  if (is_after_expansion && !allows_trailing_expansion) {
-    DCHECK_GT(expansion_opportunity_count_, 0u);
+  if (is_after_expansion && !allows_trailing_expansion &&
+      expansion_opportunity_count_ > 0) {
     --expansion_opportunity_count_;
   }
 
-  if (expansion_opportunity_count_)
-    expansion_per_opportunity_ = expansion_ / expansion_opportunity_count_;
+  if (expansion_opportunity_count_) {
+    expansion_per_opportunity_ =
+        (expansion_ / expansion_opportunity_count_).To<TextRunLayoutUnit>();
+  }
 }
 
 template <typename TextContainerType>
-float ShapeResultSpacing<TextContainerType>::NextExpansion() {
+TextRunLayoutUnit ShapeResultSpacing<TextContainerType>::NextExpansion() {
   if (!expansion_opportunity_count_) {
-    NOTREACHED();
-    return 0;
+    NOTREACHED_IN_MIGRATION();
+    return TextRunLayoutUnit();
   }
 
   is_after_expansion_ = true;
 
-  if (!--expansion_opportunity_count_) {
-    float remaining = expansion_;
-    expansion_ = 0;
+  if (!--expansion_opportunity_count_) [[unlikely]] {
+    const TextRunLayoutUnit remaining = expansion_.To<TextRunLayoutUnit>();
+    expansion_ = InlineLayoutUnit();
     return remaining;
   }
 
-  expansion_ -= expansion_per_opportunity_;
+  expansion_ -= expansion_per_opportunity_.To<InlineLayoutUnit>();
   return expansion_per_opportunity_;
 }
 
 template <typename TextContainerType>
-float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
+TextRunLayoutUnit ShapeResultSpacing<TextContainerType>::ComputeSpacing(
     const ComputeSpacingParameters& parameters,
     float& offset) {
   DCHECK(has_spacing_);
@@ -126,7 +129,7 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
   if (treat_as_space && character != kNoBreakSpaceCharacter)
     character = kSpaceCharacter;
 
-  float spacing = 0;
+  TextRunLayoutUnit spacing;
 
   bool has_letter_spacing = letter_spacing_;
   if (has_letter_spacing && !Character::TreatAsZeroWidthSpace(character))
@@ -152,15 +155,17 @@ float ShapeResultSpacing<TextContainerType>::ComputeSpacing(
       U16_IS_TRAIL(text_[index + 1]))
     character = U16_GET_SUPPLEMENTARY(character, text_[index + 1]);
   if (!Character::IsCJKIdeographOrSymbol(character)) {
-    is_after_expansion_ = false;
+    if (!Character::IsDefaultIgnorable(character)) {
+      is_after_expansion_ = false;
+    }
     return spacing;
   }
 
   if (!is_after_expansion_) {
     // Take the expansion opportunity before this ideograph.
-    float expand_before = NextExpansion();
+    TextRunLayoutUnit expand_before = NextExpansion();
     if (expand_before) {
-      offset += expand_before;
+      offset += expand_before.ToFloat();
       spacing += expand_before;
     }
     if (!HasExpansion())

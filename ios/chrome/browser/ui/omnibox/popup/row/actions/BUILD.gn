@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("actions") {
+  sources = [
+    "actions_view.h",
+    "actions_view.mm",
+    "omnibox_popup_actions_row_content_configuration.h",
+    "omnibox_popup_actions_row_content_configuration.mm",
+    "omnibox_popup_actions_row_content_view.h",
+    "omnibox_popup_actions_row_content_view.mm",
+    "omnibox_popup_actions_row_delegate.h",
+    "suggest_action.h",
+    "suggest_action.mm",
+  ]
+  deps = [
+    "//components/omnibox/browser",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
+    "//ios/chrome/browser/ui/omnibox:omnibox_util",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_icon",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_ui_protocols",
+    "//ios/chrome/browser/ui/omnibox/popup/row",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "actions_in_suggest_egtest.mm" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/omnibox/common",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
+    "//ios/chrome/browser/ui/omnibox:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

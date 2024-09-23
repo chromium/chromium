@@ -13,12 +13,16 @@
 #include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "base/i18n/time_formatting.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash::personalization_app {
 
@@ -35,9 +39,7 @@ PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
-  if (chromeos::features::IsJellyEnabled()) {
-    color_palette_controller_ = Shell::Get()->color_palette_controller();
-  }
+  color_palette_controller_ = Shell::Get()->color_palette_controller();
 }
 
 PersonalizationAppThemeProviderImpl::~PersonalizationAppThemeProviderImpl() =
@@ -86,29 +88,36 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   // Call once to get the initial status.
   NotifyGeolocationPermissionChanged();
 
-  if (chromeos::features::IsJellyEnabled()) {
-    OnStaticColorChanged();
-    OnColorSchemeChanged();
-    if (!pref_change_registrar_.IsObserved(
-            ash::prefs::kDynamicColorColorScheme)) {
-      pref_change_registrar_.Add(
-          ash::prefs::kDynamicColorColorScheme,
-          base::BindRepeating(
-              &PersonalizationAppThemeProviderImpl::OnColorSchemeChanged,
-              base::Unretained(this)));
-    }
-    if (!pref_change_registrar_.IsObserved(
-            ash::prefs::kDynamicColorSeedColor)) {
-      pref_change_registrar_.Add(
-          ash::prefs::kDynamicColorSeedColor,
-          base::BindRepeating(
-              &PersonalizationAppThemeProviderImpl::OnStaticColorChanged,
-              base::Unretained(this)));
-    }
-    ui::ColorProviderSourceObserver::Observe(
-        ash::ColorUtil::GetColorProviderSourceForWindow(
-            ash::Shell::GetPrimaryRootWindow()));
+  system::TimezoneSettings* tz_settings =
+      ash::system::TimezoneSettings::GetInstance();
+  CHECK(tz_settings);
+  // This provides the initial timezone.
+  TimezoneChanged(tz_settings->GetTimezone());
+  if (!timezone_settings_observer_.IsObserving()) {
+    // Listen to timezone changes to update the daylight time.
+    timezone_settings_observer_.Observe(tz_settings);
   }
+
+  OnStaticColorChanged();
+  OnColorSchemeChanged();
+  if (!pref_change_registrar_.IsObserved(
+          ash::prefs::kDynamicColorColorScheme)) {
+    pref_change_registrar_.Add(
+        ash::prefs::kDynamicColorColorScheme,
+        base::BindRepeating(
+            &PersonalizationAppThemeProviderImpl::OnColorSchemeChanged,
+            base::Unretained(this)));
+  }
+  if (!pref_change_registrar_.IsObserved(ash::prefs::kDynamicColorSeedColor)) {
+    pref_change_registrar_.Add(
+        ash::prefs::kDynamicColorSeedColor,
+        base::BindRepeating(
+            &PersonalizationAppThemeProviderImpl::OnStaticColorChanged,
+            base::Unretained(this)));
+  }
+  ui::ColorProviderSourceObserver::Observe(
+      ash::ColorUtil::GetColorProviderSourceForWindow(
+          ash::Shell::GetPrimaryRootWindow()));
 }
 
 void PersonalizationAppThemeProviderImpl::SetColorModePref(
@@ -148,6 +157,11 @@ void PersonalizationAppThemeProviderImpl::IsColorModeAutoScheduleEnabled(
 void PersonalizationAppThemeProviderImpl::IsGeolocationEnabledForSystemServices(
     IsGeolocationEnabledForSystemServicesCallback callback) {
   std::move(callback).Run(IsGeolocationEnabledForSystemServices());
+}
+
+void PersonalizationAppThemeProviderImpl::IsGeolocationUserModifiable(
+    IsGeolocationUserModifiableCallback callback) {
+  std::move(callback).Run(IsGeolocationUserModifiable());
 }
 
 void PersonalizationAppThemeProviderImpl::EnableGeolocationForSystemServices() {
@@ -211,51 +225,38 @@ bool PersonalizationAppThemeProviderImpl::
   }
 }
 
+bool PersonalizationAppThemeProviderImpl::IsGeolocationUserModifiable() {
+  PrefService* pref_service = profile_->GetPrefs();
+  CHECK(pref_service);
+  return pref_service->IsUserModifiablePreference(
+      prefs::kUserGeolocationAccessLevel);
+}
+
 void PersonalizationAppThemeProviderImpl::NotifyGeolocationPermissionChanged() {
   CHECK(theme_observer_remote_.is_bound());
   theme_observer_remote_->OnGeolocationPermissionForSystemServicesChanged(
-      IsGeolocationEnabledForSystemServices());
+      IsGeolocationEnabledForSystemServices(), IsGeolocationUserModifiable());
 }
 
 void PersonalizationAppThemeProviderImpl::GetColorScheme(
     GetColorSchemeCallback callback) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call GetColorScheme without Jelly enabled.");
-    return;
-  }
   std::move(callback).Run(
       color_palette_controller_->GetColorScheme(GetAccountId(profile_)));
 }
 
 void PersonalizationAppThemeProviderImpl::SetColorScheme(
     ash::style::mojom::ColorScheme color_scheme) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call SetColorScheme without Jelly enabled.");
-    return;
-  }
   color_palette_controller_->SetColorScheme(
       color_scheme, GetAccountId(profile_), base::DoNothing());
 }
 
 void PersonalizationAppThemeProviderImpl::GetStaticColor(
     GetStaticColorCallback callback) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call GetStaticColor without Jelly enabled.");
-    return;
-  }
   std::move(callback).Run(
       color_palette_controller_->GetStaticColor(GetAccountId(profile_)));
 }
 
 void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    theme_receiver_.ReportBadMessage(
-        "Cannot call SetStaticColor without Jelly enabled.");
-    return;
-  }
   AccountId account_id = GetAccountId(profile_);
   color_palette_controller_->SetStaticColor(static_color, account_id,
                                             base::DoNothing());
@@ -271,5 +272,15 @@ void PersonalizationAppThemeProviderImpl::OnColorProviderChanged() {
   GenerateSampleColorSchemes(base::BindOnce(
       &PersonalizationAppThemeProviderImpl::OnSampleColorSchemesChanged,
       weak_factory_.GetWeakPtr()));
+}
+
+void PersonalizationAppThemeProviderImpl::TimezoneChanged(
+    const icu::TimeZone& timezone) {
+  CHECK(theme_observer_remote_.is_bound());
+  auto [sunrise_time, sunset_time] =
+      ash::privacy_hub_util::SunriseSunsetSchedule();
+  theme_observer_remote_->OnDaylightTimeChanged(
+      base::TimeFormatTimeOfDay(sunrise_time),
+      base::TimeFormatTimeOfDay(sunset_time));
 }
 }  // namespace ash::personalization_app

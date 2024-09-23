@@ -6,18 +6,22 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_CONNECTION_H_
 
 #include <time.h>
+
 #include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/event.h"
+#include "ui/gl/gl_display.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -53,7 +57,6 @@ class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
 class WaylandZAuraShell;
-class WaylandZAuraOutputManager;
 class WaylandZAuraOutputManagerV2;
 class WaylandZcrColorManager;
 class WaylandZcrCursorShapes;
@@ -116,17 +119,6 @@ class WaylandConnection {
   // is the Ash Chrome version.
   base::Version GetServerVersion() const;
 
-  // A correct display must be chosen when creating objects or calling
-  // roundrips.  That is, all the methods that deal with polling, pulling event
-  // queues, etc, must use original display. All the other methods that create
-  // various wayland objects must use |display_wrapper_| so that the new objects
-  // are associated with the correct event queue. Otherwise, they will use a
-  // default event queue, which we do not use. See the comment below about the
-  // |event_queue_|.
-  wl_display* display() const { return display_.get(); }
-  wl_display* display_wrapper() const {
-    return reinterpret_cast<wl_display*>(wrapped_display_.get());
-  }
   wl_compositor* compositor() const { return compositor_.get(); }
   // The server version of the compositor interface (might be higher than the
   // version binded).
@@ -155,6 +147,9 @@ class WaylandConnection {
   zcr_text_input_extension_v1* text_input_extension_v1() const {
     return text_input_extension_v1_.get();
   }
+  zwp_text_input_manager_v3* text_input_manager_v3() const {
+    return text_input_manager_v3_.get();
+  }
   zwp_linux_explicit_synchronization_v1* linux_explicit_synchronization_v1()
       const {
     return linux_explicit_synchronization_.get();
@@ -165,6 +160,9 @@ class WaylandConnection {
   zcr_extended_drag_v1* extended_drag_v1() const {
     return extended_drag_v1_.get();
   }
+  xdg_toplevel_drag_manager_v1* toplevel_drag_manager_v1() const {
+    return xdg_toplevel_drag_manager_v1_.get();
+  }
 
   zxdg_output_manager_v1* xdg_output_manager_v1() const {
     return xdg_output_manager_.get();
@@ -172,6 +170,10 @@ class WaylandConnection {
 
   wp_fractional_scale_manager_v1* fractional_scale_manager_v1() const {
     return fractional_scale_manager_v1_.get();
+  }
+
+  xdg_toplevel_icon_manager_v1* toplevel_icon_manager_v1() const {
+    return toplevel_icon_manager_v1_.get();
   }
 
   void SetPlatformCursor(wl_cursor* cursor_data, int buffer_scale);
@@ -199,10 +201,6 @@ class WaylandConnection {
 
   WaylandBufferManagerHost* buffer_manager_host() const {
     return buffer_manager_host_.get();
-  }
-
-  WaylandZAuraOutputManager* zaura_output_manager() const {
-    return zaura_output_manager_.get();
   }
 
   WaylandZAuraOutputManagerV2* zaura_output_manager_v2() const {
@@ -331,17 +329,14 @@ class WaylandConnection {
     supports_viewporter_surface_scaling_ = enabled;
   }
 
-  bool UseViewporterSurfaceScaling() {
+  bool UseViewporterSurfaceScaling() const {
     return supports_viewporter_surface_scaling_ &&
            !surface_submission_in_pixel_coordinates_;
   }
 
-  bool overlay_delegation_disabled() const {
-    return overlay_delegation_disabled_;
-  }
-
-  void set_overlay_delegation_disabled(bool disabled) {
-    overlay_delegation_disabled_ = disabled;
+  bool UsePerSurfaceScaling() const {
+    return base::FeatureList::IsEnabled(features::kWaylandPerSurfaceScale) &&
+           UseViewporterSurfaceScaling();
   }
 
   bool ShouldUseOverlayDelegation() const;
@@ -372,6 +367,14 @@ class WaylandConnection {
            WaylandBufferManagerHost::SupportsImplicitSyncInterop();
   }
 
+  // Returns a sync callback, which is invoked when the server has processed all
+  // pending events prior to this sync point.
+  struct wl_callback* GetSyncCallback();
+
+  gl::EGLDisplayPlatform GetNativeDisplay();
+
+  struct wl_registry* GetRegistry();
+
  private:
   friend class WaylandConnectionTestApi;
 
@@ -388,10 +391,10 @@ class WaylandConnection {
   friend class OverlayPrioritizer;
   friend class SinglePixelBuffer;
   friend class SurfaceAugmenter;
+  friend class ToplevelIconManager;
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
   friend class WaylandSeat;
-  friend class WaylandZAuraOutputManager;
   friend class WaylandZAuraOutputManagerV2;
   friend class WaylandZAuraShell;
   friend class WaylandZcrTouchpadHaptics;
@@ -405,6 +408,17 @@ class WaylandConnection {
   friend class XdgForeignWrapper;
   friend class ZwpIdleInhibitManager;
   friend class ZwpPrimarySelectionDeviceManager;
+
+  // A correct display must be chosen when creating objects or calling
+  // roundtrips. That is, all the methods that deal with polling, pulling event
+  // queues, etc, must use original display. All the other methods that create
+  // various wayland objects must use |display_wrapper_| so that the new objects
+  // are associated with the correct event queue. See the comment below about
+  // the |event_queue_|.
+  wl_display* display() const { return display_.get(); }
+  wl_display* display_wrapper() const {
+    return reinterpret_cast<wl_display*>(wrapped_display_.get());
+  }
 
   void RegisterGlobalObjectFactory(const char* interface_name,
                                    wl::GlobalObjectFactory factory);
@@ -420,7 +434,7 @@ class WaylandConnection {
   // support such, so the devices are derived from the connected interfaces.
   // Also, currently, Wayland doesn't expose InputDeviceType so marked as
   // UNKNOWN.
-  // TODO(crbug.com/1409793): We need further investigation and proper design
+  // TODO(crbug.com/40254071): We need further investigation and proper design
   // how to model these input devices.
   void UpdateInputDevices();
   std::vector<InputDevice> CreateMouseDevices() const;
@@ -459,8 +473,17 @@ class WaylandConnection {
 
   uint32_t compositor_version_ = 0;
   wl::Object<wl_display> display_;
-  wl::Object<wl_proxy> wrapped_display_;
+  // `event_queue_` must be declared before `wrapped_display_`, so that the
+  // latter is destroyed first. This prevents libwayland warnings about the
+  // queue being destroyed while the proxy is still attached.
   wl::Object<wl_event_queue> event_queue_;
+  // A non-default display that Ozone/Wayland uses for event dispatching
+  // (a non-default `event_queue_` is created using this display). This is
+  // necessary to avoid any possible deadlocks (in case of API's misuse. See
+  // https://crrev.com/c/2844573 for more context) or to avoid cases when other
+  // clients' events are consumed (such as GTK and others) if both Ozone/Wayland
+  // and those clients use the default display returned by |wl_display_connect|.
+  wl::Object<wl_proxy> wrapped_display_;
   wl::Object<wl_registry> registry_;
   wl::Object<wl_compositor> compositor_;
   wl::Object<wl_subcompositor> subcompositor_;
@@ -474,13 +497,16 @@ class WaylandConnection {
       keyboard_shortcuts_inhibit_manager_v1_;
   wl::Object<zcr_stylus_v2> zcr_stylus_v2_;
   wl::Object<zwp_text_input_manager_v1> text_input_manager_v1_;
+  wl::Object<zwp_text_input_manager_v3> text_input_manager_v3_;
   wl::Object<zcr_text_input_extension_v1> text_input_extension_v1_;
   wl::Object<zwp_linux_explicit_synchronization_v1>
       linux_explicit_synchronization_;
   wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
   wl::Object<zcr_extended_drag_v1> extended_drag_v1_;
+  wl::Object<::xdg_toplevel_drag_manager_v1> xdg_toplevel_drag_manager_v1_;
   wl::Object<zxdg_output_manager_v1> xdg_output_manager_;
   wl::Object<wp_fractional_scale_manager_v1> fractional_scale_manager_v1_;
+  wl::Object<xdg_toplevel_icon_manager_v1> toplevel_icon_manager_v1_;
 
   // Manages Wayland windows.
   WaylandWindowManager window_manager_{this};
@@ -497,7 +523,6 @@ class WaylandConnection {
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
   std::unique_ptr<WaylandOutputManager> output_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
-  std::unique_ptr<WaylandZAuraOutputManager> zaura_output_manager_;
   std::unique_ptr<WaylandZAuraOutputManagerV2> zaura_output_manager_v2_;
   std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
@@ -557,9 +582,6 @@ class WaylandConnection {
   // This is set if wp_viewporter may be used to instruct the compositor to
   // properly scale fractional scaled surfaces.
   bool supports_viewporter_surface_scaling_ = false;
-
-  // This is set if delegated composition should not be used.
-  bool overlay_delegation_disabled_ = false;
 
   wl::SerialTracker serial_tracker_;
 

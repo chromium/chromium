@@ -28,6 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 
 #include <algorithm>
@@ -221,7 +226,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   // create a std::string to set the ExceptionState's |property_name| argument,
   // while we can use CSSProperty::GetPropertyName() here (see bug 829408).
   ExceptionState exception_state(
-      script_state->GetIsolate(), ExceptionContextType::kAttributeSet,
+      script_state->GetIsolate(), v8::ExceptionContext::kAttributeSet,
       "CSSStyleDeclaration",
       CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
           .GetPropertyName());
@@ -231,7 +236,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   if (value->IsNumber()) {
     double double_value = NativeValueTraits<IDLUnrestrictedDouble>::NativeValue(
         script_state->GetIsolate(), value, exception_state);
-    if (UNLIKELY(exception_state.HadException())) {
+    if (exception_state.HadException()) [[unlikely]] {
       return NamedPropertySetterResult::kIntercepted;
     }
     if (FastPathSetProperty(unresolved_property, double_value)) {
@@ -269,7 +274,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   auto&& string_value =
       NativeValueTraits<IDLStringLegacyNullToEmptyString>::NativeValue(
           script_state->GetIsolate(), value, exception_state);
-  if (UNLIKELY(exception_state.HadException())) {
+  if (exception_state.HadException()) [[unlikely]] {
     return NamedPropertySetterResult::kIntercepted;
   }
   SetPropertyInternal(unresolved_property, String(), string_value, false,

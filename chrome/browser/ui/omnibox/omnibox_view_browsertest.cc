@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
+#include "components/omnibox/browser/omnibox_view.h"
+
 #include <stddef.h>
 #include <stdio.h>
 
@@ -15,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -48,12 +56,11 @@
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
-#include "components/search_engines/site_search_policy_handler.h"
+#include "components/search_engines/enterprise/site_search_policy_handler.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -80,6 +87,7 @@ namespace {
 const char16_t kSearchKeyword[] = u"foo";
 const char16_t kSearchKeyword2[] = u"footest.com";
 const char16_t kSiteSearchPolicyKeyword[] = u"work";
+const char16_t kSiteSearchPolicyKeywordWithAtPrefix[] = u"@work";
 const ui::KeyboardCode kSearchKeywordKeys[] = {ui::VKEY_F, ui::VKEY_O,
                                                ui::VKEY_O, ui::VKEY_UNKNOWN};
 const ui::KeyboardCode kSiteSearchPolicyKeywordKeys[] = {
@@ -524,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
   ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
 }
 
-// TODO(https://crbug.com/1030551): This test flakily times out.
+// TODO(crbug.com/40661918): This test flakily times out.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLD) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
@@ -543,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLD) {
       NavigateExpectUrl(GURL("http://www.bar.com/"), ui::EF_CONTROL_DOWN));
 }
 
-// TODO(https://crbug.com/1030551): Test times out on Win and Linux.
+// TODO(crbug.com/40661918): Test times out on Win and Linux.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLDWithTemporaryText) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
@@ -620,14 +628,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AltEnter) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  omnibox_view->SetUserText(ASCIIToUTF16(chrome::kChromeUIHistoryURL));
+  omnibox_view->SetUserText(chrome::kChromeUIHistoryURL16);
   int tab_count = browser()->tab_strip_model()->count();
   // alt-Enter opens a new tab.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_RETURN, ui::EF_ALT_DOWN));
   ASSERT_NO_FATAL_FAILURE(WaitForTabOpenOrClose(tab_count + 1));
 }
 
-// TODO(https://crbug.com/1030551): This test flakily times out.
+// TODO(crbug.com/40661918): This test flakily times out.
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_EnterToSearch) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
@@ -1443,19 +1451,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
 class SiteSearchPolicyOmniboxViewTest : public OmniboxViewTest {
  public:
   SiteSearchPolicyOmniboxViewTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        omnibox::kSiteSearchSettingsPolicy);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::kSiteSearchSettingsPolicy,
+                              omnibox::kShowFeaturedEnterpriseSiteSearch},
+        /*disabled_features=*/{});
   }
   ~SiteSearchPolicyOmniboxViewTest() override = default;
 
-  base::Value CreateSiteSearchPolicyValue() {
+  base::Value CreateSiteSearchPolicyValue(bool featured) {
     base::Value::List policy_value;
     policy_value.Append(
         base::Value::Dict()
             .Set(policy::SiteSearchPolicyHandler::kShortcut,
                  kSiteSearchPolicyKeyword)
             .Set(policy::SiteSearchPolicyHandler::kName, kSiteSearchPolicyName)
-            .Set(policy::SiteSearchPolicyHandler::kUrl, kSiteSearchPolicyURL));
+            .Set(policy::SiteSearchPolicyHandler::kUrl, kSiteSearchPolicyURL)
+            .Set(policy::SiteSearchPolicyHandler::kFeatured, featured));
     return base::Value(std::move(policy_value));
   }
 
@@ -1468,7 +1479,7 @@ IN_PROC_BROWSER_TEST_F(SiteSearchPolicyOmniboxViewTest, NonFeatured) {
   policy::PolicyMap policies;
   policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               CreateSiteSearchPolicyValue(), nullptr);
+               CreateSiteSearchPolicyValue(/*featured=*/false), nullptr);
   policy_provider()->UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
@@ -1495,6 +1506,98 @@ IN_PROC_BROWSER_TEST_F(SiteSearchPolicyOmniboxViewTest, NonFeatured) {
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
   ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
   ASSERT_EQ(kSiteSearchPolicyKeyword, omnibox_view->model()->keyword());
+
+  // Input something as search text and perform a search.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+
+  EXPECT_EQ(kSiteSearchPolicyTextURL, omnibox_view->controller()
+                                          ->autocomplete_controller()
+                                          ->result()
+                                          .default_match()
+                                          ->destination_url.spec());
+}
+
+// Verifies that keyword search works when `SiteSearchSettings` policy defines
+// a featured search engine.
+IN_PROC_BROWSER_TEST_F(SiteSearchPolicyOmniboxViewTest, Featured) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               CreateSiteSearchPolicyValue(/*featured=*/true), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+
+  // Check that new entries have been added to TemplateURLService.
+  const TemplateURL* turl =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+          ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->created_by_policy(),
+            TemplateURLData::CreatedByPolicy::kSiteSearch);
+  EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
+  EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
+  EXPECT_TRUE(turl->featured_by_policy());
+
+  // Trigger keyword hint mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSiteSearchPolicyKeywordKeys));
+  ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
+
+  // Trigger keyword mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
+  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
+
+  // Input something as search text and perform a search.
+  ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
+  ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
+  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+
+  EXPECT_EQ(kSiteSearchPolicyTextURL, omnibox_view->controller()
+                                          ->autocomplete_controller()
+                                          ->result()
+                                          .default_match()
+                                          ->destination_url.spec());
+}
+
+// Verifies that featured search engine is shown with starter pack on "@" state
+// and that the underlying search works.
+IN_PROC_BROWSER_TEST_F(SiteSearchPolicyOmniboxViewTest, FeaturedOnArrowDown) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               CreateSiteSearchPolicyValue(/*featured=*/true), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
+  base::RunLoop().RunUntilIdle();
+
+  OmniboxView* omnibox_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
+
+  // Check that new entries have been added to TemplateURLService.
+  const TemplateURL* turl =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile())
+          ->GetTemplateURLForKeyword(kSiteSearchPolicyKeywordWithAtPrefix);
+  ASSERT_TRUE(turl);
+  EXPECT_EQ(turl->created_by_policy(),
+            TemplateURLData::CreatedByPolicy::kSiteSearch);
+  EXPECT_EQ(turl->short_name(), kSiteSearchPolicyName);
+  EXPECT_EQ(turl->url(), kSiteSearchPolicyURL);
+  EXPECT_TRUE(turl->featured_by_policy());
+
+  // Trigger keyword mode.
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_2, ui::EF_SHIFT_DOWN));
+  ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, /*modifiers=*/0));
+  ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSiteSearchPolicyKeywordWithAtPrefix,
+            omnibox_view->model()->keyword());
 
   // Input something as search text and perform a search.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));

@@ -5,10 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_FACTORY_H_
 #define IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 namespace feature_engagement {
 class Tracker;
@@ -16,15 +15,14 @@ class Tracker;
 // TrackerFactory is the main class for interacting with the
 // feature_engagement component. It uses the KeyedService API to
 // expose functions to associate and retrieve a feature_engagement::Tracker
-// object with a given ChromeBrowserState object.
+// object with a given profile.
 class TrackerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // Returns the TrackerFactory singleton object.
-  static TrackerFactory* GetInstance();
-
-  // Retrieves the Tracker object associated with a given
-  // browser state. It is created if it does not already exist.
+  // TODO(crbug.com/358301380): remove this method.
   static Tracker* GetForBrowserState(ChromeBrowserState* browser_state);
+
+  static Tracker* GetForProfile(ProfileIOS* profile);
+  static TrackerFactory* GetInstance();
 
   TrackerFactory(const TrackerFactory&) = delete;
   TrackerFactory& operator=(const TrackerFactory&) = delete;

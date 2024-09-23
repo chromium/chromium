@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+
+assert(is_linux || is_chromeos)
+
+group("proxy") {
+  deps = [ ":mojo_proxy" ]
+}
+
+executable("mojo_proxy") {
+  sources = [
+    "main.cc",
+    "node_proxy.cc",
+    "node_proxy.h",
+    "portal_proxy.cc",
+    "portal_proxy.h",
+  ]
+  deps = [
+    ":switches",
+    "//base",
+    "//mojo/core/embedder",
+    "//mojo/public/c/system",
+    "//mojo/public/cpp/system",
+  ]
+}
+
+source_set("switches") {
+  sources = [
+    "switches.cc",
+    "switches.h",
+  ]
+}
+
+mojom("test_mojom") {
+  testonly = true
+  sources = [ "mojo_proxy_test.test-mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+source_set("tests") {
+  testonly = true
+  sources = [ "mojo_proxy_test.cc" ]
+  deps = [
+    ":switches",
+    ":test_mojom",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+    "//mojo/core/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//testing/gtest",
+  ]
+  data_deps = [ ":mojo_proxy" ]
+}

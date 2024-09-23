@@ -2,15 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/speech/chunked_byte_buffer.h"
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
-#include "base/big_endian.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/lazy_instance.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace {
 
@@ -87,7 +94,7 @@ void ChunkedByteBuffer::Append(const uint8_t* start, size_t length) {
   total_bytes_stored_ += length;
 }
 
-void ChunkedByteBuffer::Append(base::StringPiece string) {
+void ChunkedByteBuffer::Append(std::string_view string) {
   Append(reinterpret_cast<const uint8_t*>(string.data()), string.size());
 }
 
@@ -119,9 +126,7 @@ ChunkedByteBuffer::Chunk::~Chunk() {}
 
 size_t ChunkedByteBuffer::Chunk::ExpectedContentLength() const {
   DCHECK_EQ(header.size(), kHeaderLength);
-  uint32_t content_length = 0;
-  base::ReadBigEndian(&header[0], &content_length);
-  return static_cast<size_t>(content_length);
+  return base::U32FromBigEndian(base::span(header).first<4>());
 }
 
 }  // namespace speech

@@ -13,13 +13,12 @@ struct PictureInPictureWindowOptions {
   // sized to.
   uint64 height;
 
-  // The requested aspect ratio for the picture-in-picture window to be
-  // initially sized to. This won't be used when |width| and |height| are
-  // specified as those are higher priority. It also will not be used when
-  // it is less than or equal to 0.
-  double initial_aspect_ratio;
+  // When true, hints to the user agent that a button for returning to
+  // the opener does not make sense for the given document picture-in-picture
+  // experience.
+  bool disallow_return_to_opener;
 
-  // True if the picture-in-picture window should be locked to the initial
-  // aspect ratio.
-  bool lock_aspect_ratio;
+  // When true, don't try to re-use the previous window bounds from the
+  // bounds cache.  Instead, just use the default position and size.
+  bool prefer_initial_window_placement;
 };

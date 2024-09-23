@@ -10,10 +10,14 @@ source_set("almanac_api_client") {
   sources = [
     "almanac_api_util.cc",
     "almanac_api_util.h",
+    "almanac_app_icon_loader.cc",
+    "almanac_app_icon_loader.h",
     "almanac_icon_cache.cc",
     "almanac_icon_cache.h",
     "device_info_manager.cc",
     "device_info_manager.h",
+    "device_info_manager_factory.cc",
+    "device_info_manager_factory.h",
     "proto_file_manager.cc",
     "proto_file_manager.h",
   ]
@@ -24,6 +28,9 @@ source_set("almanac_api_client") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/borealis",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -34,7 +41,9 @@ source_set("almanac_api_client") {
     "//components/language/core/browser",
     "//components/prefs",
     "//components/version_info",
+    "//content/public/browser",
     "//google_apis",
+    "//google_apis/common:request_util",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
@@ -67,13 +76,29 @@ source_set("unit_tests") {
     ":almanac_api_client",
     "//base",
     "//chrome/browser/apps/almanac_api_client/proto",
-    "//chrome/browser/apps/app_deduplication_service/proto",
+    "//chrome/browser/apps/almanac_api_client/proto:test_proto",
     "//chrome/common:channel_info",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/system",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/language/core/browser",
     "//components/prefs",
     "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "almanac_app_icon_loader_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":almanac_api_client",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
   ]
 }

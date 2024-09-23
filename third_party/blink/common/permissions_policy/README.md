@@ -118,5 +118,4 @@ Please add new tests to `third_party/blink/web_tests/external/wpt/document-polic
 #### Contacts
 For more questions, please feel free to reach out to:
 iclelland@chromium.org
-chenleihu@google.com
 (Emerita: loonybear@)

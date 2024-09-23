@@ -7,11 +7,12 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/pending_task.h"
-#include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/base_tracing.h"
 
@@ -135,7 +136,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::ScopedSetIpcHash {
   uint32_t GetIpcHash() const { return ipc_hash_; }
   const char* GetIpcInterfaceName() const { return ipc_interface_name_; }
 
-  static uint32_t MD5HashMetricName(base::StringPiece name);
+  static uint32_t MD5HashMetricName(std::string_view name);
 
  private:
   ScopedSetIpcHash(uint32_t ipc_hash, const char* ipc_interface_name);

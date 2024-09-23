@@ -45,7 +45,7 @@ std::vector<const BucketRanges*> RangesManager::GetBucketRanges() const {
 }
 
 void RangesManager::ReleaseBucketRanges() {
-  for (auto* range : GetRanges()) {
+  for (const BucketRanges* range : GetRanges()) {
     delete range;
   }
   GetRanges().clear();

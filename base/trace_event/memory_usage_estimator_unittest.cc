@@ -92,14 +92,22 @@ TEST(EstimateMemoryUsageTest, Arrays) {
     EXPECT_EQ(170u, EstimateMemoryUsage(array));
   }
 
-  // C array
+  // HeapArray
   {
     struct Item {
       char payload[10];
     };
-    Item* array = new Item[7];
-    EXPECT_EQ(70u, EstimateMemoryUsage(array, 7));
-    delete[] array;
+    auto array = base::HeapArray<Item>::WithSize(7u);
+    EXPECT_EQ(70u, EstimateMemoryUsage(array));
+  }
+
+  // Owning span
+  {
+    struct Item {
+      char payload[10];
+    };
+    auto array = base::HeapArray<Item>::WithSize(7u);
+    EXPECT_EQ(70u, EstimateMemoryUsage(array.as_span()));
   }
 }
 
@@ -120,15 +128,6 @@ TEST(EstimateMemoryUsageTest, UniquePtr) {
   {
     std::unique_ptr<Data*> ptr(new Data*());
     EXPECT_EQ(sizeof(void*), EstimateMemoryUsage(ptr));
-  }
-
-  // With an array
-  {
-    struct Item {
-      uint32_t payload[10];
-    };
-    std::unique_ptr<Item[]> ptr(new Item[7]);
-    EXPECT_EQ(280u, EstimateMemoryUsage(ptr, 7));
   }
 }
 

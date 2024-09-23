@@ -68,9 +68,9 @@ void InputDeviceInfo::SetAudioInputCapabilities(
                                             audio_input_capabilities->channels};
 
     platform_capabilities_.sample_rate = {
-        std::min(media::kAudioProcessingSampleRateHz,
+        std::min(media::WebRtcAudioProcessingSampleRateHz(),
                  audio_input_capabilities->sample_rate),
-        std::max(media::kAudioProcessingSampleRateHz,
+        std::max(media::WebRtcAudioProcessingSampleRateHz(),
                  audio_input_capabilities->sample_rate)};
     double fallback_latency = kFallbackAudioLatencyMs / 1000;
     platform_capabilities_.latency = {

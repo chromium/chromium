@@ -3,6 +3,7 @@ include_rules = [
   # subdirectories to facilitate reuse of this component on WebLayer, which
   # doesn't use signin or sync.
   "+components/content_settings/core/browser",
+  "+components/enterprise/connectors",
   "+components/grit/components_resources.h",
   "+components/history/core/browser",
   "+components/keyed_service/core",

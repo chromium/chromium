@@ -1,0 +1,16 @@
+{
+  metadata: {
+    namespace: "preference_values",
+    export: "CORE_EXPORT",
+  },
+
+  data: [
+    "custom",
+    "dark",
+    "less",
+    "light",
+    "more",
+    "no-preference",
+    "reduce",
+  ],
+}

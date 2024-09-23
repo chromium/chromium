@@ -10,9 +10,19 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/download_item_utils.h"
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#endif
 
 namespace safe_browsing {
 
@@ -98,6 +108,28 @@ void SelectWildcardEntryAtFront(
   }
 }
 
+SafeBrowsingNavigationObserverManager* GetNavigationObserverManager(
+    content::WebContents* web_contents) {
+  return SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+      web_contents->GetBrowserContext());
+}
+
+void AddEventUrlToReferrerChain(const download::DownloadItem& item,
+                                content::RenderFrameHost* render_frame_host,
+                                ReferrerChain* out_referrer_chain) {
+  ReferrerChainEntry* event_url_entry = out_referrer_chain->Add();
+  event_url_entry->set_url(item.GetURL().spec());
+  event_url_entry->set_type(ReferrerChainEntry::EVENT_URL);
+  event_url_entry->set_referrer_url(
+      render_frame_host->GetLastCommittedURL().spec());
+  event_url_entry->set_is_retargeting(false);
+  event_url_entry->set_navigation_time_msec(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+  for (const GURL& url : item.GetUrlChain()) {
+    event_url_entry->add_server_redirect_chain()->set_url(url.spec());
+  }
+}
+
 }  // namespace
 
 void GetCertificateAllowlistStrings(
@@ -147,8 +179,8 @@ void GetCertificateAllowlistStrings(
     paths_to_check.insert(ou_tokens[i]);
   }
 
-  std::string issuer_fp = base::HexEncode(base::SHA1HashSpan(
-      net::x509_util::CryptoBufferAsSpan(issuer.cert_buffer())));
+  std::string issuer_fp = base::HexEncode(
+      base::SHA1Hash(net::x509_util::CryptoBufferAsSpan(issuer.cert_buffer())));
   for (auto it = paths_to_check.begin(); it != paths_to_check.end(); ++it) {
     allowlist_strings->push_back("cert/" + issuer_fp + *it);
   }
@@ -235,10 +267,156 @@ SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
 
 void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanEvent3", event);
-  if (DownloadItemWarningData::IsEncryptedArchive(item)) {
+  if (DownloadItemWarningData::IsTopLevelEncryptedArchive(item)) {
     base::UmaHistogramEnumeration(
         "SBClientDownload.PasswordProtectedDeepScanEvent3", event);
   }
 }
+
+void LogLocalDecryptionEvent(DeepScanEvent event) {
+  base::UmaHistogramEnumeration("SBClientDownload.LocalDecryptionEvent", event);
+}
+
+std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
+    const download::DownloadItem& item,
+    int user_gesture_limit) {
+  std::unique_ptr<ReferrerChain> referrer_chain =
+      std::make_unique<ReferrerChain>();
+  content::WebContents* web_contents =
+      content::DownloadItemUtils::GetWebContents(
+          const_cast<download::DownloadItem*>(&item));
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  content::RenderFrameHost* render_frame_host =
+      content::DownloadItemUtils::GetRenderFrameHost(&item);
+  content::RenderFrameHost* outermost_render_frame_host =
+      render_frame_host ? render_frame_host->GetOutermostMainFrame() : nullptr;
+  content::GlobalRenderFrameHostId frame_id =
+      outermost_render_frame_host ? outermost_render_frame_host->GetGlobalId()
+                                  : content::GlobalRenderFrameHostId();
+
+  SessionID download_tab_id =
+      sessions::SessionTabHelper::IdForTab(web_contents);
+  // We look for the referrer chain that leads to the download url first.
+  SafeBrowsingNavigationObserverManager::AttributionResult result =
+      GetNavigationObserverManager(web_contents)
+          ->IdentifyReferrerChainByEventURL(item.GetURL(), download_tab_id,
+                                            frame_id, user_gesture_limit,
+                                            referrer_chain.get());
+
+  // If no navigation event is found, this download is not triggered by regular
+  // navigation (e.g. html5 file apis, etc). We look for the referrer chain
+  // based on relevant RenderFrameHost instead.
+  if (result ==
+          SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND &&
+      web_contents && outermost_render_frame_host &&
+      outermost_render_frame_host->GetLastCommittedURL().is_valid()) {
+    AddEventUrlToReferrerChain(item, outermost_render_frame_host,
+                               referrer_chain.get());
+    result = GetNavigationObserverManager(web_contents)
+                 ->IdentifyReferrerChainByRenderFrameHost(
+                     outermost_render_frame_host, user_gesture_limit,
+                     referrer_chain.get());
+  }
+
+  size_t referrer_chain_length = referrer_chain->size();
+
+  // Determines how many recent navigation events to append to referrer chain
+  // if any.
+  auto* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  size_t recent_navigations_to_collect =
+      web_contents ? SafeBrowsingNavigationObserverManager::
+                         CountOfRecentNavigationsToAppend(
+                             profile, profile->GetPrefs(), result)
+                   : 0u;
+  GetNavigationObserverManager(web_contents)
+      ->AppendRecentNavigations(recent_navigations_to_collect,
+                                referrer_chain.get());
+
+  return std::make_unique<ReferrerChainData>(result, std::move(referrer_chain),
+                                             referrer_chain_length,
+                                             recent_navigations_to_collect);
+}
+
+std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
+    const content::FileSystemAccessWriteItem& item,
+    int user_gesture_limit) {
+  // If web_contents is null, return immediately. This can happen when the
+  // file system API is called in PerformAfterWriteChecks.
+  if (!item.web_contents) {
+    return nullptr;
+  }
+
+  std::unique_ptr<ReferrerChain> referrer_chain =
+      std::make_unique<ReferrerChain>();
+
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(item.web_contents);
+
+  GURL tab_url = item.web_contents->GetVisibleURL();
+
+  SafeBrowsingNavigationObserverManager::AttributionResult result =
+      GetNavigationObserverManager(item.web_contents)
+          ->IdentifyReferrerChainByHostingPage(
+              item.frame_url, tab_url, item.outermost_main_frame_id, tab_id,
+              item.has_user_gesture, user_gesture_limit, referrer_chain.get());
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "SafeBrowsing.ReferrerAttributionResult.NativeFileSystemWriteAttribution",
+      result,
+      SafeBrowsingNavigationObserverManager::ATTRIBUTION_FAILURE_TYPE_MAX);
+
+  size_t referrer_chain_length = referrer_chain->size();
+
+  // Determines how many recent navigation events to append to referrer chain
+  // if any.
+  auto* profile = Profile::FromBrowserContext(item.browser_context);
+  size_t recent_navigations_to_collect =
+      item.browser_context ? SafeBrowsingNavigationObserverManager::
+                                 CountOfRecentNavigationsToAppend(
+                                     profile, profile->GetPrefs(), result)
+                           : 0u;
+  GetNavigationObserverManager(item.web_contents)
+      ->AppendRecentNavigations(recent_navigations_to_collect,
+                                referrer_chain.get());
+
+  return std::make_unique<ReferrerChainData>(result, std::move(referrer_chain),
+                                             referrer_chain_length,
+                                             recent_navigations_to_collect);
+}
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+bool ShouldSendDangerousDownloadReport(download::DownloadItem* item) {
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(item);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+
+  // When users are in incognito mode, no report will be sent and no
+  // |onDangerousDownloadOpened| extension API will be called.
+  if (browser_context->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Only report downloads that are known to be dangerous or was dangerous but
+  // was validated by the user.
+  if (!item->IsDangerous() &&
+      item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+    return false;
+  }
+
+  std::string token = DownloadProtectionService::GetDownloadPingToken(item);
+  // Only dangerous downloads have token stored.
+  if (token.empty()) {
+    return false;
+  }
+
+  return true;
+}
+#endif
 
 }  // namespace safe_browsing

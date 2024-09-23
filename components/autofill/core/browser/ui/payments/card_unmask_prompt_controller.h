@@ -8,7 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace base {
 class TimeDelta;
@@ -38,9 +38,10 @@ class CardUnmaskPromptController {
   virtual std::u16string GetOkButtonLabel() const = 0;
   virtual int GetCvcImageRid() const = 0;
   virtual bool ShouldRequestExpirationDate() const = 0;
-  // TODO(b/303715882): Should consider removing these detailed information
-  // accessors and instead return the credit card object directly. Only exposing
-  // necessary information is good but this list is growing larger.
+  // TODO(crbug.com/303715882): Should consider removing these detailed
+  // information accessors and instead return the credit card object directly.
+  // Only exposing necessary information is good but this list is growing
+  // larger.
 #if BUILDFLAG(IS_ANDROID)
   virtual Suggestion::Icon GetCardIcon() const = 0;
   virtual std::u16string GetCardName() const = 0;
@@ -53,7 +54,8 @@ class CardUnmaskPromptController {
   virtual std::u16string GetCvcImageAnnouncement() const = 0;
 #endif
   virtual base::TimeDelta GetSuccessMessageDuration() const = 0;
-  virtual AutofillClient::PaymentsRpcResult GetVerificationResult() const = 0;
+  virtual payments::PaymentsAutofillClient::PaymentsRpcResult
+  GetVerificationResult() const = 0;
   virtual bool IsVirtualCard() const = 0;
   virtual const CreditCard& GetCreditCard() const = 0;
 #if !BUILDFLAG(IS_IOS)

@@ -92,18 +92,14 @@ void ConfigureInkDropForToolbar(
       kToolbarInkDropHighlightVisibleAlpha / float{SK_AlphaOPAQUE});
   views::InkDrop::Get(host)->SetBaseColorCallback(
       base::BindRepeating(&GetToolbarInkDropBaseColor, host));
-
-  if (features::IsChromeRefresh2023()) {
-    ConfigureToolbarInkdropForRefresh2023(host, kColorToolbarInkDropHover,
-                                          kColorToolbarInkDropRipple);
-  }
+  ConfigureToolbarInkdropForRefresh2023(host, kColorToolbarInkDropHover,
+                                        kColorToolbarInkDropRipple);
 }
 
 void ConfigureToolbarInkdropForRefresh2023(
     views::View* const host,
     const ChromeColorIds hover_color_id,
     const ChromeColorIds ripple_color_id) {
-  CHECK(features::IsChromeRefresh2023());
   views::InkDrop::Get(host)->SetLayerRegion(views::LayerRegion::kAbove);
   CreateToolbarInkdropCallbacks(host, hover_color_id, ripple_color_id);
 }

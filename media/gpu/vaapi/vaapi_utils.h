@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/thread_annotations.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,40 +28,35 @@ struct Vp8FrameHeader;
 // not null, this class must operate under |lock_| acquired.
 class ScopedVABufferMapping {
  public:
-  // |release_callback| will be called if the mapping of the buffer failed.
-  ScopedVABufferMapping(const base::Lock* lock,
-                        VADisplay va_display,
-                        VABufferID buffer_id,
-                        base::OnceCallback<void(VABufferID)> release_callback =
-                            base::NullCallback());
-
+  // Creates a ScopedVABufferMapping. Calls |release_callback| and returns
+  // nullptr if the mapping of the buffer fails.
+  static std::unique_ptr<ScopedVABufferMapping> Create(const base::Lock* lock,
+                                                       VADisplay va_display,
+                                                       VABufferID buffer_id);
   ScopedVABufferMapping(const ScopedVABufferMapping&) = delete;
   ScopedVABufferMapping& operator=(const ScopedVABufferMapping&) = delete;
 
   ~ScopedVABufferMapping();
-  bool IsValid() const {
-    CHECK(sequence_checker_.CalledOnValidSequence());
-    return !!va_buffer_data_;
-  }
+
   void* data() const {
-    DCHECK(IsValid());
     CHECK(sequence_checker_.CalledOnValidSequence());
+    CHECK(va_buffer_data_);
     return va_buffer_data_;
   }
-  // Explicit destruction method, to retrieve the success/error result. It is
-  // safe to call this method several times.
-  VAStatus Unmap();
 
  private:
+  // |release_callback| will be called if the mapping of the buffer failed.
+  ScopedVABufferMapping(const base::Lock* lock,
+                        VADisplay va_display,
+                        VABufferID buffer_id,
+                        void* va_buffer_data);
   raw_ptr<const base::Lock> lock_;  // Only for AssertAcquired() calls.
   const VADisplay va_display_;
   const VABufferID buffer_id_;
 
   base::SequenceCheckerImpl sequence_checker_;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION void* va_buffer_data_ = nullptr;
+  const raw_ptr<void> va_buffer_data_ = nullptr;
 };
 
 // This class tracks the VABuffer life cycle from vaCreateBuffer() to
@@ -122,33 +116,34 @@ class ScopedVABuffer {
 // acquired for destruction purposes.
 class ScopedVAImage {
  public:
-  ScopedVAImage(base::Lock* lock,
-                VADisplay va_display,
-                VASurfaceID va_surface_id,
-                VAImageFormat* format /* Needs to be a pointer for libva */,
-                const gfx::Size& size);
-
+  // Creates a ScopedVAImage. Returns nullptr if creating a VA image fails.
+  static std::unique_ptr<ScopedVAImage> Create(base::Lock* lock,
+                                               VADisplay va_display,
+                                               VASurfaceID va_surface_id,
+                                               const VAImageFormat& format,
+                                               const gfx::Size& size);
   ScopedVAImage(const ScopedVAImage&) = delete;
   ScopedVAImage& operator=(const ScopedVAImage&) = delete;
 
   ~ScopedVAImage();
 
-  bool IsValid() const { return va_buffer_ && va_buffer_->IsValid(); }
-
   const VAImage* image() const {
     CHECK(sequence_checker_.CalledOnValidSequence());
-    return image_.get();
+    return &image_;
   }
   const ScopedVABufferMapping* va_buffer() const {
-    DCHECK(IsValid());
     CHECK(sequence_checker_.CalledOnValidSequence());
     return va_buffer_.get();
   }
 
  private:
+  ScopedVAImage(base::Lock* lock,
+                VADisplay va_display,
+                const VAImage& image,
+                std::unique_ptr<ScopedVABufferMapping> va_buffer);
   raw_ptr<base::Lock> lock_;
   const VADisplay va_display_ GUARDED_BY(lock_);
-  std::unique_ptr<VAImage> image_;
+  VAImage image_;
   std::unique_ptr<ScopedVABufferMapping> va_buffer_;
 
   base::SequenceCheckerImpl sequence_checker_;
@@ -165,7 +160,6 @@ class ScopedVASurface {
 
   ScopedVASurface(const ScopedVASurface&) = delete;
   ScopedVASurface& operator=(const ScopedVASurface&) = delete;
-
   ~ScopedVASurface();
 
   bool IsValid() const;
@@ -208,6 +202,9 @@ class ScopedID {
   const T id_;
   ReleaseCB release_cb_;
 };
+
+// Shortcut for a VASurfaceID with tracked lifetime.
+using VASurfaceHandle = ScopedID<VASurfaceID>;
 
 // Adapts |frame_header| to the Vaapi data types.
 void FillVP8DataStructures(const Vp8FrameHeader& frame_header,

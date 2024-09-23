@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_CACHING_WORD_SHAPER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -58,9 +57,8 @@ class PLATFORM_EXPORT CachingWordShaper final {
 
   void FillResultBuffer(const TextRunPaintInfo&, ShapeResultBuffer*);
   CharacterRange GetCharacterRange(const TextRun&, unsigned from, unsigned to);
-  Vector<double> IndividualCharacterAdvances(const TextRun&);
 
-  Vector<ShapeResult::RunFontData> GetRunFontData(const TextRun&) const;
+  HeapVector<ShapeResult::RunFontData> GetRunFontData(const TextRun&) const;
 
   GlyphData EmphasisMarkGlyphData(const TextRun&) const;
 

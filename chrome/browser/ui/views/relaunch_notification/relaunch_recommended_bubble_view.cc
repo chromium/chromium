@@ -24,6 +24,7 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -133,14 +134,14 @@ RelaunchRecommendedBubbleView::RelaunchRecommendedBubbleView(
     views::Button* anchor_button,
     base::Time detection_time,
     base::RepeatingClosure on_accept)
-    : LocationBarBubbleDelegateView(anchor_button, nullptr),
+    : LocationBarBubbleDelegateView(anchor_button, nullptr, /*autosize=*/true),
       on_accept_(std::move(on_accept)),
       relaunch_recommended_timer_(
           detection_time,
           base::BindRepeating(&RelaunchRecommendedBubbleView::UpdateWindowTitle,
                               base::Unretained(this))) {
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(IDS_RELAUNCH_ACCEPT_BUTTON));
   SetShowIcon(true);
 
@@ -156,8 +157,6 @@ RelaunchRecommendedBubbleView::RelaunchRecommendedBubbleView(
 }
 
 void RelaunchRecommendedBubbleView::UpdateWindowTitle() {
+  // `UpdateWindowTitle` will `InvalidateLayout` when necessary.
   GetWidget()->UpdateWindowTitle();
-  // This might update the length of the window title (for N days). Resize the
-  // bubble to match the new preferred size.
-  SizeToContents();
 }

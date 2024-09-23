@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <vector>
+
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
@@ -53,7 +54,9 @@ class CompositeMatcher {
   using MatcherList = std::vector<std::unique_ptr<RulesetMatcher>>;
 
   // Each RulesetMatcher should have a distinct RulesetID.
-  CompositeMatcher(MatcherList matchers, HostPermissionsAlwaysRequired mode);
+  CompositeMatcher(MatcherList matchers,
+                   const ExtensionId& extension_id,
+                   HostPermissionsAlwaysRequired mode);
 
   CompositeMatcher(const CompositeMatcher&) = delete;
   CompositeMatcher& operator=(const CompositeMatcher&) = delete;
@@ -85,15 +88,16 @@ class CompositeMatcher {
 
   // Returns a RequestAction for the network request specified by |params|, or
   // std::nullopt if there is no matching rule.
-  ActionInfo GetBeforeRequestAction(
-      const RequestParams& params,
-      PermissionsData::PageAccess page_access) const;
+  ActionInfo GetAction(const RequestParams& params,
+                       RulesetMatchingStage stage,
+                       PermissionsData::PageAccess page_access) const;
 
   // Returns all matching RequestActions for the request corresponding to
   // modifyHeaders rules matched from this extension, sorted in descending order
   // by rule priority.
   std::vector<RequestAction> GetModifyHeadersActions(
-      const RequestParams& params) const;
+      const RequestParams& params,
+      RulesetMatchingStage stage) const;
 
   // Returns whether this modifies "extraHeaders".
   bool HasAnyExtraHeadersMatcher() const;
@@ -101,6 +105,10 @@ class CompositeMatcher {
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
   void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
+
+  // Returns if this extension has any rulesets with rules that are matched in
+  // the corresponding matching `stage`.
+  bool HasRulesets(RulesetMatchingStage stage) const;
 
  private:
   // This must be called whenever |matchers_| are modified.
@@ -114,6 +122,9 @@ class CompositeMatcher {
   // Denotes the cached return value for |HasAnyExtraHeadersMatcher|. Care must
   // be taken to reset this as this object is modified.
   mutable std::optional<bool> has_any_extra_headers_matcher_;
+
+  // The id of the extension associated with this matcher.
+  const ExtensionId extension_id_;
 
   const HostPermissionsAlwaysRequired host_permissions_always_required_;
 };

@@ -32,72 +32,77 @@ enum class PageLoadTrackerPageType;
 
 // Used to track the status of PageLoadTimings received from the render process.
 //
+// These values are recorded in histograms. Entries should not be renumbered
+// and numeric values should never be reused.
+//
 // If you add elements to this enum, make sure you update the enum value in
 // histograms.xml. Only add elements to the end to prevent inconsistencies
 // between versions.
+// LINT.IfChange(PageLoadTimingStatus)
 enum PageLoadTimingStatus {
   // The PageLoadTiming is valid (all data within the PageLoadTiming is
   // consistent with expectations).
-  VALID,
+  VALID = 0,
 
   // All remaining status codes are for invalid PageLoadTimings.
 
   // The PageLoadTiming was empty.
-  INVALID_EMPTY_TIMING,
+  INVALID_EMPTY_TIMING = 1,
 
   // The PageLoadTiming had a null navigation_start.
-  INVALID_NULL_NAVIGATION_START,
+  INVALID_NULL_NAVIGATION_START = 2,
 
   // Script load or execution durations in the PageLoadTiming were too long.
-  INVALID_SCRIPT_LOAD_LONGER_THAN_PARSE,
-  INVALID_SCRIPT_EXEC_LONGER_THAN_PARSE,
-  INVALID_SCRIPT_LOAD_DOC_WRITE_LONGER_THAN_SCRIPT_LOAD,
-  INVALID_SCRIPT_EXEC_DOC_WRITE_LONGER_THAN_SCRIPT_EXEC,
+  INVALID_SCRIPT_LOAD_LONGER_THAN_PARSE = 3,
+  INVALID_SCRIPT_EXEC_LONGER_THAN_PARSE = 4,
+  INVALID_SCRIPT_LOAD_DOC_WRITE_LONGER_THAN_SCRIPT_LOAD = 5,
+  INVALID_SCRIPT_EXEC_DOC_WRITE_LONGER_THAN_SCRIPT_EXEC = 6,
 
   // The order of two events in the PageLoadTiming was invalid. Either the first
   // wasn't present when the second was present, or the second was reported as
   // happening before the first.
-  INVALID_ORDER_RESPONSE_START_PARSE_START,
-  INVALID_ORDER_PARSE_START_PARSE_STOP,
-  INVALID_ORDER_PARSE_STOP_DOM_CONTENT_LOADED,
-  INVALID_ORDER_DOM_CONTENT_LOADED_LOAD,
-  INVALID_ORDER_PARSE_START_FIRST_PAINT,
+  INVALID_ORDER_RESPONSE_START_PARSE_START = 7,
+  INVALID_ORDER_PARSE_START_PARSE_STOP = 8,
+  INVALID_ORDER_PARSE_STOP_DOM_CONTENT_LOADED = 9,
+  INVALID_ORDER_DOM_CONTENT_LOADED_LOAD = 10,
+  INVALID_ORDER_PARSE_START_FIRST_PAINT = 11,
   // Deprecated but not removing because it would affect histogram enumeration.
-  INVALID_ORDER_FIRST_PAINT_FIRST_TEXT_PAINT,
-  INVALID_ORDER_FIRST_PAINT_FIRST_IMAGE_PAINT,
-  INVALID_ORDER_FIRST_PAINT_FIRST_CONTENTFUL_PAINT,
-  INVALID_ORDER_FIRST_PAINT_FIRST_MEANINGFUL_PAINT,
+  INVALID_ORDER_FIRST_PAINT_FIRST_TEXT_PAINT = 12,
+  INVALID_ORDER_FIRST_PAINT_FIRST_IMAGE_PAINT = 13,
+  INVALID_ORDER_FIRST_PAINT_FIRST_CONTENTFUL_PAINT = 14,
+  INVALID_ORDER_FIRST_PAINT_FIRST_MEANINGFUL_PAINT = 15,
   // Deprecated but not removing because it would affect histogram enumeration.
-  INVALID_ORDER_FIRST_MEANINGFUL_PAINT_PAGE_INTERACTIVE,
+  INVALID_ORDER_FIRST_MEANINGFUL_PAINT_PAGE_INTERACTIVE = 16,
 
   // We received a first input delay without a first input timestamp.
-  INVALID_NULL_FIRST_INPUT_TIMESTAMP,
+  INVALID_NULL_FIRST_INPUT_TIMESTAMP = 17,
   // We received a first input timestamp without a first input delay.
-  INVALID_NULL_FIRST_INPUT_DELAY,
+  INVALID_NULL_FIRST_INPUT_DELAY = 18,
 
   // We received a longest input delay without a longest input timestamp.
-  INVALID_NULL_LONGEST_INPUT_TIMESTAMP,
+  INVALID_NULL_LONGEST_INPUT_TIMESTAMP = 19,
   // We received a longest input timestamp without a longest input delay.
-  INVALID_NULL_LONGEST_INPUT_DELAY,
+  INVALID_NULL_LONGEST_INPUT_DELAY = 20,
 
   // We received a first scroll delay without a first scroll timestamp.
-  INVALID_NULL_FIRST_SCROLL_TIMESTAMP,
+  INVALID_NULL_FIRST_SCROLL_TIMESTAMP = 21,
   // We received a first scroll timestamp without a first scroll delay.
-  INVALID_NULL_FIRST_SCROLL_DELAY,
+  INVALID_NULL_FIRST_SCROLL_DELAY = 22,
 
   // Longest input delay cannot happen before first input delay.
-  INVALID_LONGEST_INPUT_TIMESTAMP_LESS_THAN_FIRST_INPUT_TIMESTAMP,
+  INVALID_LONGEST_INPUT_TIMESTAMP_LESS_THAN_FIRST_INPUT_TIMESTAMP = 23,
 
   // Longest input delay cannot be less than first input delay.
-  INVALID_LONGEST_INPUT_DELAY_LESS_THAN_FIRST_INPUT_DELAY,
+  INVALID_LONGEST_INPUT_DELAY_LESS_THAN_FIRST_INPUT_DELAY = 24,
 
   // Deprecated but not removing because it would affect histogram enumeration.
-  INVALID_ORDER_PARSE_START_ACTIVATION_START,
-  INVALID_ORDER_ACTIVATION_START_FIRST_PAINT,
+  INVALID_ORDER_PARSE_START_ACTIVATION_START = 25,
+  INVALID_ORDER_ACTIVATION_START_FIRST_PAINT = 26,
 
   // New values should be added before this final entry.
   LAST_PAGE_LOAD_TIMING_STATUS,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageLoadTimingStatus)
 
 extern const char kPageLoadTimingStatus[];
 
@@ -196,7 +201,7 @@ class PageLoadMetricsUpdateDispatcher {
   void DidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);
 
-  void OnSubFrameDeleted(int frame_tree_node_id);
+  void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id);
 
   void ShutDown();
 
@@ -268,8 +273,6 @@ class PageLoadMetricsUpdateDispatcher {
   void FlushPendingTimingUpdates();
 
  private:
-  using FrameTreeNodeId = int;
-
   void UpdateMainFrameTiming(mojom::PageLoadTimingPtr new_timing,
                              internal::PageLoadTrackerPageType page_type);
   void UpdateSubFrameTiming(content::RenderFrameHost* render_frame_host,
@@ -340,7 +343,7 @@ class PageLoadMetricsUpdateDispatcher {
   mojom::PageLoadTimingPtr current_merged_page_timing_;
   mojom::PageLoadTimingPtr pending_merged_page_timing_;
 
-  // TODO(crbug/1058393): Replace aggregate frame metadata with a separate
+  // TODO(crbug.com/40677945): Replace aggregate frame metadata with a separate
   // struct instead of using mojo.
   mojom::FrameMetadataPtr main_frame_metadata_;
   mojom::FrameMetadataPtr subframe_metadata_;
@@ -374,7 +377,7 @@ class PageLoadMetricsUpdateDispatcher {
 
   // The last main frame intersection rects dispatched to page load metrics
   // observers.
-  std::map<FrameTreeNodeId, gfx::Rect> main_frame_intersection_rects_;
+  std::map<content::FrameTreeNodeId, gfx::Rect> main_frame_intersection_rects_;
 
   // The last main frame viewport rect dispatched to page load metrics
   // observers.
@@ -390,7 +393,8 @@ class PageLoadMetricsUpdateDispatcher {
 
   // Navigation start offsets for the most recently committed document in each
   // frame.
-  std::map<FrameTreeNodeId, base::TimeDelta> subframe_navigation_start_offset_;
+  std::map<content::FrameTreeNodeId, base::TimeDelta>
+      subframe_navigation_start_offset_;
 
   // Whether we have seen an input or scroll event in any frame. This comes to
   // us via PaintTimingDetector::OnInputOrScroll, which triggers on user scrolls

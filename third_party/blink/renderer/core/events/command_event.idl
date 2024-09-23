@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    RuntimeEnabled=HTMLInvokeTargetAttribute,
+    Exposed=Window
+] interface CommandEvent : Event {
+    constructor(DOMString type, optional CommandEventInit eventInitDict = {});
+    readonly attribute Element? invoker;
+    readonly attribute DOMString command;
+};
+
+dictionary CommandEventInit : EventInit {
+    Element? invoker = null;
+    DOMString command = "";
+};

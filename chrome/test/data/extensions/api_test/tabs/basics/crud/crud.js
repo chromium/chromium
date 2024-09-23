@@ -8,10 +8,27 @@ var lastWindowId;
 const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
+function getSelectedAdapter(winId, callback) {
+  const manifest = chrome.runtime.getManifest();
+  if (manifest.manifest_version < 3) {
+    chrome.tabs.getSelected(winId, callback);
+    return;
+  }
+
+  chrome.test.assertEq(3, manifest.manifest_version);
+  chrome.tabs.query({windowId:winId, active:true}, tabs => {
+    if (tabs.length == 0) {
+      callback(undefined);
+    } else {
+      callback(tabs[0]);
+    }
+  });
+}
+
 loadScript.then(async function() {
 chrome.test.runTests([
   function getSelected() {
-    chrome.tabs.getSelected(null, pass(function(tab) {
+    getSelectedAdapter(null, pass(function(tab) {
       assertEq('about:blank', tab.url);
       assertEq('about:blank', tab.title);
       firstWindowId = tab.windowId;
@@ -74,7 +91,7 @@ chrome.test.runTests([
     chrome.tabs.create({"windowId" : firstWindowId, "active" : true},
                        pass(function(tab) {
       assertTrue(tab.active && tab.selected);
-      chrome.tabs.getSelected(firstWindowId, pass(function(selectedTab) {
+      getSelectedAdapter(firstWindowId, pass(function(selectedTab) {
         assertEq(tab.id, selectedTab.id);
       }));
     }));

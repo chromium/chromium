@@ -60,7 +60,7 @@ TEST_F(FidlEventHandlerTest, FidlErrorEventLogger) {
 
   constexpr char kLogMessage[] =
       "base.testfidl.TestInterface was disconnected with ZX_ERR_PEER_CLOSED";
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener_.RunUntilMessageReceived(kLogMessage);
 
   ASSERT_TRUE(logged_message.has_value());
@@ -78,7 +78,7 @@ TEST_F(FidlEventHandlerTest, FidlErrorEventLogger_CustomProtocolName) {
 
   constexpr char kLogMessage[] =
       "test_protocol_name was disconnected with ZX_ERR_PEER_CLOSED";
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener_.RunUntilMessageReceived(kLogMessage);
 
   ASSERT_TRUE(logged_message.has_value());
@@ -105,7 +105,7 @@ TEST_F(FidlEventHandlerTest, FidlErrorEventLogger_LogsOnServiceClosure) {
 
   constexpr char kLogMessage[] =
       "base.testfidl.TestInterface was disconnected with ZX_ERR_PEER_CLOSED";
-  absl::optional<fuchsia_logger::LogMessage> logged_message =
+  std::optional<fuchsia_logger::LogMessage> logged_message =
       listener_.RunUntilMessageReceived(kLogMessage);
 
   ASSERT_TRUE(logged_message.has_value());

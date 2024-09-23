@@ -26,7 +26,7 @@ SettingsImageDetailTextCell* PrivacyGuideExplanationCell(
     UITableView* table_view,
     int text_id,
     NSString* symbol_name) {
-  // TODO(crbug.com/1519511): Remove the default insets in the
+  // TODO(crbug.com/41492491): Remove the default insets in the
   // SettingsImageDetailTextCell.
   SettingsImageDetailTextCell* cell =
       DequeueTableViewCell<SettingsImageDetailTextCell>(table_view);

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/dns/address_info.h"
 
 #include <stdint.h>
@@ -11,10 +16,10 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
@@ -65,17 +70,17 @@ class MockAddrInfoGetter : public AddrInfoGetter {
   template <size_t N>
   static std::unique_ptr<addrinfo, FreeAddrInfoFunc> MakeAddrInfoList(
       const IpAndPort (&ipp)[N],
-      base::StringPiece canonical_name);
+      std::string_view canonical_name);
 
   static std::unique_ptr<addrinfo, FreeAddrInfoFunc> MakeAddrInfo(
       IpAndPort ipp,
-      base::StringPiece canonical_name);
+      std::string_view canonical_name);
 };
 
 template <size_t N>
 std::unique_ptr<addrinfo, FreeAddrInfoFunc>
 MockAddrInfoGetter::MakeAddrInfoList(const IpAndPort (&ipp)[N],
-                                     base::StringPiece canonical_name) {
+                                     std::string_view canonical_name) {
   struct Buffer {
     addrinfo ai[N];
     sockaddr_in addr[N];
@@ -103,7 +108,7 @@ MockAddrInfoGetter::MakeAddrInfoList(const IpAndPort (&ipp)[N],
 
 std::unique_ptr<addrinfo, FreeAddrInfoFunc> MockAddrInfoGetter::MakeAddrInfo(
     IpAndPort ipp,
-    base::StringPiece canonical_name) {
+    std::string_view canonical_name) {
   return MakeAddrInfoList({ipp}, canonical_name);
 }
 

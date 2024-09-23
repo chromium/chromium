@@ -36,6 +36,11 @@ class ProxyManagerTest : public testing::Test {
                     ::printing::kBootstrapMojoConnectionChannelToken)),
             std::make_unique<MyFakeCupsProxyServiceDelegate>())) {}
 
+  void TearDown() override {
+    // Wait for the remaining tasks to complete.
+    task_environment_.RunUntilIdle();
+  }
+
   // Proxy a dummy request and add the response code to count_.
   void ProxyRequest() {
     manager_->ProxyRequest({}, {}, {}, {}, {},

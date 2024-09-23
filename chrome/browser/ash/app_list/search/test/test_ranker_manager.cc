@@ -23,10 +23,22 @@ void TestRankerManager::SetCategoryRanks(
   category_ranks_ = category_ranks;
 }
 
+void TestRankerManager::SetBestMatchString(
+    const std::u16string& best_match_string) {
+  best_match_string_ = best_match_string;
+}
+
 // Ranker:
 void TestRankerManager::UpdateResultRanks(ResultsMap& results,
                                           ProviderType provider) {
-  // Noop.
+  if (best_match_string_.empty()) {
+    return;
+  }
+  for (auto& result : results[provider]) {
+    if (result->title().find(best_match_string_) != std::u16string::npos) {
+      result->SetBestMatch(true);
+    }
+  }
 }
 
 // Ranker:

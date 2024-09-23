@@ -18,7 +18,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,7 +26,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
@@ -54,7 +52,6 @@ public class TabFaviconTest {
     }
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private TabFavicon.Natives mTabFaviconJni;
     @Mock private TabImpl mTab;
@@ -95,7 +92,11 @@ public class TabFaviconTest {
     }
 
     private void onFaviconAvailable(Bitmap bitmap) {
-        mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.EXAMPLE_URL);
+        // Mimic the behavior of the native call, where `TabFavicon#shouldUpdateFaviconForBrowserUI`
+        // is checked first before sending the bitmap into Java layer.
+        if (mTabFavicon.shouldUpdateFaviconForBrowserUI(bitmap.getWidth(), bitmap.getHeight())) {
+            mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.EXAMPLE_URL);
+        }
     }
 
     @Test

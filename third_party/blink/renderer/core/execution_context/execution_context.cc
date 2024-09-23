@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/execution_context_csp_delegate.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -123,6 +124,13 @@ CodeCacheHost* ExecutionContext::GetCodeCacheHostFromContext(
   }
 
   DCHECK(execution_context->IsWorkletGlobalScope());
+
+  if (execution_context->IsSharedStorageWorkletGlobalScope()) {
+    auto* global_scope =
+        DynamicTo<WorkerOrWorkletGlobalScope>(execution_context);
+    return global_scope->GetCodeCacheHost();
+  }
+
   return nullptr;
 }
 
@@ -173,7 +181,7 @@ void ExecutionContext::CountDeprecation(WebFeature feature) {
   Deprecation::CountDeprecation(this, feature);
 }
 
-HeapObserverSet<ContextLifecycleObserver>&
+HeapObserverList<ContextLifecycleObserver>&
 ExecutionContext::ContextLifecycleObserverSet() {
   return ContextLifecycleNotifier::observers();
 }
@@ -354,7 +362,7 @@ ExecutionContext::GetContentSecurityPolicyDelegate() {
   return *csp_delegate_;
 }
 
-scoped_refptr<const DOMWrapperWorld> ExecutionContext::GetCurrentWorld() const {
+const DOMWrapperWorld* ExecutionContext::GetCurrentWorld() const {
   v8::Isolate* isolate = GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
@@ -368,7 +376,7 @@ scoped_refptr<const DOMWrapperWorld> ExecutionContext::GetCurrentWorld() const {
 
 ContentSecurityPolicy*
 ExecutionContext::GetContentSecurityPolicyForCurrentWorld() {
-  return GetContentSecurityPolicyForWorld(GetCurrentWorld().get());
+  return GetContentSecurityPolicyForWorld(GetCurrentWorld());
 }
 
 ContentSecurityPolicy* ExecutionContext::GetContentSecurityPolicyForWorld(
@@ -464,7 +472,7 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
     policy_is_valid = (SecurityPolicy::ReferrerPolicyFromString(
         policy, kSupportReferrerPolicyLegacyKeywords, &referrer_policy));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -658,7 +666,7 @@ ContextType GetContextType(const ExecutionContext& execution_context) {
 
 using WorldType = ExecutionContext::Proto::WorldType;
 WorldType GetWorldType(const ExecutionContext& execution_context) {
-  auto current_world = execution_context.GetCurrentWorld();
+  auto* current_world = execution_context.GetCurrentWorld();
   if (current_world == nullptr) {
     return WorldType::WORLD_UNKNOWN;
   }
@@ -695,6 +703,22 @@ void ExecutionContext::WriteIntoTrace(
 bool ExecutionContext::CrossOriginIsolatedCapabilityOrDisabledWebSecurity()
     const {
   return Agent::IsWebSecurityDisabled() || CrossOriginIsolatedCapability();
+}
+
+bool ExecutionContext::IsInjectionMitigatedContext() const {
+  // Isolated Contexts have multiple layers of defense against injection, which
+  // allows them to have a CSP that doesn't exactly match the way we need to
+  // defend against injection on the broader web. We'll consider those contexts
+  // to sufficiently mitigate injection attacks, and check the page's policy for
+  // all other cases.
+  if (IsIsolatedContext())
+    return true;
+
+  if (!GetContentSecurityPolicy()) {
+    return false;
+  }
+  return GetContentSecurityPolicy()->IsStrictPolicyEnforced() &&
+         GetContentSecurityPolicy()->RequiresTrustedTypes();
 }
 
 }  // namespace blink

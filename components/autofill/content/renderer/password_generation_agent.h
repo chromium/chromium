@@ -80,6 +80,11 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // being called.
   void DidEndTextFieldEditing(const blink::WebInputElement& element);
 
+  // Event forwarded by AutofillAgent from WebAutofillClient, informing that the
+  // text field was cleared. For password fields this means that they are no
+  // longer generated and should be masked.
+  void TextFieldCleared(const blink::WebInputElement& element);
+
   // Called right before PasswordAutofillAgent filled |password_element|.
   void OnFieldAutofilled(const blink::WebInputElement& password_element);
 
@@ -100,10 +105,8 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // Previews the generation suggestion for the current generation element.
   void PreviewGenerationSuggestion(const std::u16string& password);
 
-  // Returns true if a generation suggestion was found and cleared successfully
-  // on |control_element|.
-  bool DidClearGenerationSuggestion(
-      const blink::WebFormControlElement& control_element);
+  // Clears the previewed field if it was previously previewed.
+  void ClearPreviewedForm();
 
  private:
   class DeferringPasswordGenerationDriver;
@@ -163,7 +166,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // Creates a FormData to presave a generated password. It copies behavior
   // of CreateFromDataFromWebForm/FromUnownedInputElements. If a form
   // creating is failed, returns an empty unique_ptr.
-  std::unique_ptr<FormData> CreateFormDataToPresave();
+  std::optional<FormData> CreateFormDataToPresave();
 
   // Contains the current element where generation is offered at the moment. It
   // can be either automatic or manual password generation.

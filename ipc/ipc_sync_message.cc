@@ -92,7 +92,7 @@ bool SyncMessage::ReadSyncHeader(const Message& msg, SyncHeader* header) {
   base::PickleIterator iter(msg);
   bool result = iter.ReadInt(&header->message_id);
   if (!result) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 

@@ -13,6 +13,9 @@ namespace optimization_guide {
 // least a length of `min_chars`.
 bool HasRepeatingSuffix(int min_chars, int num_repeats, std::string_view text);
 
+// As above, but get min_chars and num_repeats from Feature flags.
+bool HasRepeatingSuffix(std::string_view text);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_REPETITION_CHECKER_H_

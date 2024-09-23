@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
@@ -28,8 +29,7 @@ constexpr gfx::Size k360p{640, 360};
 constexpr size_t kChunkSize = 1234;
 media::VideoEncoderOutput DefaultEncoderOutput() {
   media::VideoEncoderOutput output;
-  output.data = std::make_unique<uint8_t[]>(kChunkSize);
-  output.size = kChunkSize;
+  output.data = base::HeapArray<uint8_t>::Uninit(kChunkSize);
   output.key_frame = true;
   return output;
 }
@@ -96,7 +96,7 @@ class MockVideoEncoderWrapper : public media::VideoEncoder {
   void ChangeOptions(const Options& options,
                      OutputCB output_cb,
                      EncoderStatusCB done_cb) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void Flush(EncoderStatusCB done_cb) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -104,7 +104,7 @@ class MockVideoEncoderWrapper : public media::VideoEncoder {
   }
 
  private:
-  const raw_ptr<media::MockVideoEncoder, ExperimentalRenderer> mock_encoder_;
+  const raw_ptr<media::MockVideoEncoder> mock_encoder_;
   base::OnceClosure dtor_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -563,8 +563,7 @@ TEST_P(MediaRecorderEncoderWrapperTest, InitializesAndEncodesOneAlphaFrame) {
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kChunkSize);
-            output.size = kChunkSize;
+            output.data = base::HeapArray<uint8_t>::Uninit(kChunkSize);
             output.key_frame = true;
             yuv_output_cb_ptr->Run(std::move(output), std::nullopt);
           }));
@@ -574,8 +573,7 @@ TEST_P(MediaRecorderEncoderWrapperTest, InitializesAndEncodesOneAlphaFrame) {
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kAlphaChunkSize);
-            output.size = kAlphaChunkSize;
+            output.data = base::HeapArray<uint8_t>::Uninit(kAlphaChunkSize);
             output.key_frame = true;
             alpha_output_cb_ptr->Run(std::move(output), std::nullopt);
           }));
@@ -617,8 +615,7 @@ TEST_P(MediaRecorderEncoderWrapperTest,
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kChunkSize);
-            output.size = kChunkSize;
+            output.data = base::HeapArray<uint8_t>::Uninit(kChunkSize);
             output.key_frame = true;
             yuv_output_cb_ptr->Run(std::move(output), std::nullopt);
           }));
@@ -660,8 +657,7 @@ TEST_P(MediaRecorderEncoderWrapperTest,
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kChunkSize);
-            output.size = kChunkSize;
+            output.data = base::HeapArray<uint8_t>::Uninit(kChunkSize);
             output.key_frame = true;
             yuv_output_cb_ptr->Run(std::move(output), std::nullopt);
           }));
@@ -671,8 +667,7 @@ TEST_P(MediaRecorderEncoderWrapperTest,
                           media::VideoEncoder::EncoderStatusCB encode_done_cb) {
             std::move(encode_done_cb).Run(media::EncoderStatus::Codes::kOk);
             media::VideoEncoderOutput output;
-            output.data = std::make_unique<uint8_t[]>(kAlphaChunkSize);
-            output.size = kAlphaChunkSize;
+            output.data = base::HeapArray<uint8_t>::Uninit(kAlphaChunkSize);
             output.key_frame = true;
             alpha_output_cb_ptr->Run(std::move(output), std::nullopt);
           }));

@@ -38,7 +38,7 @@ class ASH_EXPORT BootingAnimationController
 
  private:
   // display::DisplayConfigurator::Observer:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& displays) override;
   void OnDisplaySnapshotsInvalidated() override;
 

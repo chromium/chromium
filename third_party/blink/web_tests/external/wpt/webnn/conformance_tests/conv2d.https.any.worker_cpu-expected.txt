@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nhwc'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout oihw is not supported."
+[FAIL] conv2d float32 4D input and filter tensors options.filterLayout='hwio'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout hwio is not supported."
+[FAIL] conv2d float32 4D input and filter tensors options.filterLayout='ohwi'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout ohwi is not supported."
+[FAIL] conv2d float32 4D input and filter tensors options.filterLayout='ihwo'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout ihwo is not supported."
+[FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='oihw'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout oihw is not supported."
+[FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='hwio'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout hwio is not supported."
+[FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nhwc' and options.filterLayout='ihwo'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout ihwo is not supported."
+[FAIL] conv2d float32 4D input and filter tensors all options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout hwio is not supported."
+[FAIL] conv2d float32 4D input and filter tensors, both negative input tensor and options.bias
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Failed to build graph: The filter layout hwio is not supported."
+Harness: the test ran to completion.
+

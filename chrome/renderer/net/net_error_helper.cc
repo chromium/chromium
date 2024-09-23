@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -23,7 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_resource_request_blocked_reason.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/renderer/chrome_render_thread_observer.h"
+#include "chrome/renderer/process_state.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/error_page/common/net_error_info.h"
@@ -39,7 +40,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "net/base/net_errors.h"
-#include "base/feature_list.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -52,7 +52,6 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
-#include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
@@ -250,7 +249,7 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         error.reason(), error.domain(), error.url(), is_failed_post,
         error.resolve_error_info().is_secure_network_error,
         error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-        ChromeRenderThreadObserver::is_incognito_process(),
+        chrome::IsIncognitoProcess(),
         IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
         IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
         IsExtensionExtendedErrorCode(error.extended_reason()),
@@ -259,16 +258,14 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
   std::string extracted_string =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id);
-  base::StringPiece template_html(extracted_string.data(),
-                                  extracted_string.size());
+  std::string_view template_html(extracted_string.data(),
+                                 extracted_string.size());
   DCHECK(!template_html.empty()) << "unable to load template.";
   *error_html = webui::GetLocalizedHtml(template_html, page_state.strings);
   return page_state;
 }
 
 void NetErrorHelper::EnablePageHelperFunctions() {
-  security_interstitials::SecurityInterstitialPageController::Install(
-      render_frame());
   NetErrorPageController::Install(
       render_frame(), weak_controller_delegate_factory_.GetWeakPtr());
 }
@@ -281,9 +278,9 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       error.reason(), error.domain(), error.url(), is_failed_post,
       error.resolve_error_info().is_secure_network_error,
       error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-      ChromeRenderThreadObserver::is_incognito_process(),
-      IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
-      IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
+      chrome::IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
+      IsAutoFetchFeatureEnabled(), IsRunningInForcedAppMode(),
+      RenderThread::Get()->GetLocale(),
       IsExtensionExtendedErrorCode(error.extended_reason()),
       &error_page_params_);
 
@@ -296,7 +293,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
   if (base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
     render_frame()->ExecuteJavaScript(js16);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   return page_state;
 }
@@ -308,7 +305,7 @@ void NetErrorHelper::InitializeErrorPageEasterEggHighScore(int high_score) {
       high_score);
   std::u16string js16;
   if (!base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 

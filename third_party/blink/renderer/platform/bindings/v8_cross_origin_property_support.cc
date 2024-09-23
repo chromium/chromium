@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -14,11 +15,14 @@ namespace bindings {
 
 v8::MaybeLocal<v8::Function> GetCrossOriginFunction(
     v8::Isolate* isolate,
+    const StringView& func_name,
     v8::FunctionCallback callback,
     int func_length,
-    const WrapperTypeInfo* wrapper_type_info) {
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::ExceptionContext exception_context,
+    const char* interface_name) {
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-  ScriptState* script_state = ScriptState::From(current_context);
+  ScriptState* script_state = ScriptState::From(isolate, current_context);
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   const void* callback_key = reinterpret_cast<const void*>(callback);
 
@@ -35,22 +39,34 @@ v8::MaybeLocal<v8::Function> GetCrossOriginFunction(
     function_template = v8::FunctionTemplate::New(
         isolate, callback, v8::Local<v8::Value>(), signature, func_length,
         v8::ConstructorBehavior::kThrow, v8::SideEffectType::kHasSideEffect);
+    v8::Local<v8::String> class_string = V8AtomicString(isolate, func_name);
+    function_template->SetClassName(class_string);
+    function_template->SetInterfaceName(V8String(isolate, interface_name));
+    function_template->SetExceptionContext(exception_context);
     per_isolate_data->AddV8Template(script_state->World(), callback_key,
                                     function_template);
   }
   return function_template->GetFunction(current_context);
 }
 
-v8::MaybeLocal<v8::Value> GetCrossOriginFunctionOrUndefined(
+v8::MaybeLocal<v8::Value> GetCrossOriginGetterSetter(
     v8::Isolate* isolate,
+    const StringView& func_name,
     v8::FunctionCallback callback,
     int func_length,
-    const WrapperTypeInfo* wrapper_type_info) {
+    const WrapperTypeInfo* wrapper_type_info,
+    v8::ExceptionContext exception_context,
+    const char* interface_name) {
   if (!callback) {
     return v8::Undefined(isolate);
   }
+  WTF::StringBuilder builder;
+  builder.Append(func_length > 0 ? "set " : "get ");
+  builder.Append(func_name);
   v8::Local<v8::Function> function;
-  if (GetCrossOriginFunction(isolate, callback, func_length, wrapper_type_info)
+  if (GetCrossOriginFunction(isolate, builder, callback, func_length,
+                             wrapper_type_info, exception_context,
+                             interface_name)
           .ToLocal(&function)) {
     return function;
   }

@@ -30,7 +30,6 @@ class WorkerPerformanceTest : public testing::Test {
   std::unique_ptr<MockWorkerReportingProxy> reporting_proxy_;
 };
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 // The trace_analyzer does not work on platforms on which the migration of
 // tracing into Perfetto has not completed.
 TEST_F(WorkerPerformanceTest, Mark) {
@@ -60,6 +59,5 @@ TEST_F(WorkerPerformanceTest, Mark) {
   std::string* navigation_id = arg_dict.FindString("navigationId");
   ASSERT_FALSE(navigation_id);
 }
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace blink

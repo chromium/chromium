@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram.h"
+#include "base/trace_event/trace_event.h"
 
 namespace ui {
 
@@ -36,19 +38,16 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
   PresentationTimeRecorderInternal& operator=(
       const PresentationTimeRecorderInternal&) = delete;
 
-  ~PresentationTimeRecorderInternal() override {
-    const int average_latency_ms =
-        present_count_ ? total_latency_ms_ / present_count_ : 0;
-    VLOG(1) << "Finished Recording FrameTime: average latency="
-            << average_latency_ms << "ms, max latency=" << max_latency_ms_
-            << "ms";
-    if (compositor_)
-      compositor_->RemoveObserver(this);
-  }
-
   // Start recording next frame. It skips requesting next frame and returns
   // false if the previous frame has not been committed yet.
   bool RequestNext();
+
+  std::optional<base::TimeDelta> GetAverageLatency() const {
+    if (present_count_) {
+      return base::Milliseconds(total_latency_ms_ / present_count_);
+    }
+    return std::nullopt;
+  }
 
   // ui::CompositorObserver:
   void OnCompositingDidCommit(ui::Compositor* compositor) override {
@@ -62,20 +61,36 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
     compositor_->RemoveObserver(this);
     compositor_ = nullptr;
     if (!recording_)
-      delete this;
+      SelfDestruct();
   }
 
   // Mark the recorder to be deleted when the last presentation feedback
   // is reported.
   void EndRecording() {
     recording_ = false;
-    if (state_ == PRESENTED)
-      delete this;
+    const bool has_compositing_shut_down = !compositor_;
+    // If compositing has shut down and the frame hasn't been presented yet,
+    // it won't happen at this point. This class must self destruct in this case
+    // otherwise it will leak.
+    if (state_ == PRESENTED || has_compositing_shut_down) {
+      SelfDestruct();
+    }
   }
 
  protected:
   int max_latency_ms() const { return max_latency_ms_; }
   int present_count() const { return present_count_; }
+
+  ~PresentationTimeRecorderInternal() override {
+    DCHECK(!recording_);
+    const std::optional<base::TimeDelta> average_latency = GetAverageLatency();
+    VLOG(1) << "Finished Recording FrameTime: average latency="
+            << (average_latency ? average_latency->InMilliseconds() : 0)
+            << "ms, max latency=" << max_latency_ms_ << "ms";
+    if (compositor_) {
+      compositor_->RemoveObserver(this);
+    }
+  }
 
  private:
   friend class TestApi;
@@ -89,13 +104,29 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
     COMMITTED,
   };
 
+  class Deleter {
+   public:
+    explicit Deleter(PresentationTimeRecorderInternal* recorder_internal)
+        : recorder_internal_(recorder_internal) {}
+
+    Deleter(const Deleter&) = delete;
+    Deleter& operator=(const Deleter&) = delete;
+
+    ~Deleter() { recorder_internal_.ExtractAsDangling()->SelfDestruct(); }
+
+   private:
+    raw_ptr<PresentationTimeRecorderInternal> recorder_internal_ = nullptr;
+  };
+
   // |delta| is the duration between the successful request time and
   // presentation time.
   virtual void ReportTime(base::TimeDelta delta) = 0;
 
   void OnPresented(int count,
                    base::TimeTicks requested_time,
-                   base::TimeTicks presentation_timestamp);
+                   const viz::FrameTimingDetails& frame_timing_details);
+
+  void SelfDestruct();
 
   State state_ = PRESENTED;
 
@@ -126,7 +157,9 @@ bool PresentationTimeRecorder::PresentationTimeRecorderInternal::RequestNext() {
 
   if (report_immediately_for_test) {
     state_ = COMMITTED;
-    OnPresented(request_count_++, now, now);
+    viz::FrameTimingDetails details;
+    details.presentation_feedback.timestamp = now;
+    OnPresented(request_count_++, now, details);
     return true;
   }
 
@@ -139,10 +172,12 @@ bool PresentationTimeRecorder::PresentationTimeRecorderInternal::RequestNext() {
 void PresentationTimeRecorder::PresentationTimeRecorderInternal::OnPresented(
     int count,
     base::TimeTicks requested_time,
-    base::TimeTicks presentation_timestamp) {
-  std::unique_ptr<PresentationTimeRecorderInternal> deleter;
+    const viz::FrameTimingDetails& frame_timing_details) {
+  base::TimeTicks presentation_timestamp =
+      frame_timing_details.presentation_feedback.timestamp;
+  std::optional<Deleter> deleter;
   if (!recording_ && (count == (request_count_ - 1)))
-    deleter = base::WrapUnique(this);
+    deleter.emplace(this);
 
   if (state_ == COMMITTED)
     state_ = PRESENTED;
@@ -170,20 +205,29 @@ void PresentationTimeRecorder::PresentationTimeRecorderInternal::OnPresented(
   VLOG(1) << "OnPresented (" << count << "):" << delta.InMilliseconds();
 }
 
+void PresentationTimeRecorder::PresentationTimeRecorderInternal::
+    SelfDestruct() {
+  delete this;
+}
+
 // PresentationTimeRecorder ---------------------------------------------------
 
 PresentationTimeRecorder::PresentationTimeRecorder(
-    std::unique_ptr<PresentationTimeRecorderInternal> internal)
+    raw_ptr<PresentationTimeRecorderInternal> internal)
     : recorder_internal_(std::move(internal)) {}
 
 PresentationTimeRecorder::~PresentationTimeRecorder() {
-  auto* recorder_internal = recorder_internal_.release();
   // The internal recorder self destruct when finished its job.
-  recorder_internal->EndRecording();
+  recorder_internal_.ExtractAsDangling()->EndRecording();
 }
 
 bool PresentationTimeRecorder::RequestNext() {
   return recorder_internal_->RequestNext();
+}
+
+std::optional<base::TimeDelta> PresentationTimeRecorder::GetAverageLatency()
+    const {
+  return recorder_internal_->GetAverageLatency();
 }
 
 // static
@@ -194,10 +238,12 @@ void PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
 
 namespace {
 
-base::HistogramBase* CreateTimesHistogram(const char* name,
-                                          base::TimeDelta maximum) {
+base::HistogramBase* CreateTimesHistogram(
+    const char* name,
+    const PresentationTimeRecorder::BucketParams& bucket_params) {
   return base::Histogram::FactoryTimeGet(
-      name, base::Milliseconds(1), maximum, 50,
+      name, bucket_params.min_latency, bucket_params.max_latency,
+      bucket_params.num_buckets,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
@@ -214,49 +260,95 @@ class PresentationTimeHistogramRecorder
       ui::Compositor* compositor,
       const char* presentation_time_histogram_name,
       const char* max_latency_histogram_name,
-      base::TimeDelta maximum)
+      const PresentationTimeRecorder::BucketParams& bucket_params,
+      bool emit_trace_event)
       : PresentationTimeRecorderInternal(compositor),
         presentation_time_histogram_(
-            CreateTimesHistogram(presentation_time_histogram_name, maximum)),
+            CreateTimesHistogram(presentation_time_histogram_name,
+                                 bucket_params)),
         max_latency_histogram_name_(max_latency_histogram_name),
-        maximum_(maximum) {}
+        bucket_params_(bucket_params),
+        presentation_time_histogram_name_(
+            emit_trace_event ? presentation_time_histogram_name : nullptr) {
+    if (presentation_time_histogram_name_) {
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", presentation_time_histogram_name_,
+                                        this);
+    }
+  }
 
   PresentationTimeHistogramRecorder(const PresentationTimeHistogramRecorder&) =
       delete;
   PresentationTimeHistogramRecorder& operator=(
       const PresentationTimeHistogramRecorder&) = delete;
 
+  // PresentationTimeRecorderInternal:
+  void ReportTime(base::TimeDelta delta) override {
+    if (presentation_time_histogram_name_) {
+      TRACE_EVENT_NESTABLE_ASYNC_END0("ui", presentation_time_histogram_name_,
+                                      this);
+    }
+    presentation_time_histogram_->AddTimeMillisecondsGranularity(delta);
+  }
+
+ private:
   ~PresentationTimeHistogramRecorder() override {
     if (present_count() > 0 && !max_latency_histogram_name_.empty()) {
-      CreateTimesHistogram(max_latency_histogram_name_.c_str(), maximum_)
+      CreateTimesHistogram(max_latency_histogram_name_.c_str(), bucket_params_)
           ->AddTimeMillisecondsGranularity(
               base::Milliseconds(max_latency_ms()));
     }
   }
 
-  // PresentationTimeRecorderInternal:
-  void ReportTime(base::TimeDelta delta) override {
-    presentation_time_histogram_->AddTimeMillisecondsGranularity(delta);
-  }
-
- private:
   raw_ptr<base::HistogramBase> presentation_time_histogram_;
   std::string max_latency_histogram_name_;
-  base::TimeDelta maximum_;
+  const PresentationTimeRecorder::BucketParams bucket_params_;
+  // Only set if `emit_trace_event_` is true since that's its only use.
+  const char* const presentation_time_histogram_name_ = nullptr;
 };
 
 }  // namespace
+
+// BucketParams ------------------------------------------
+
+PresentationTimeRecorder::BucketParams::BucketParams() = default;
+
+PresentationTimeRecorder::BucketParams::BucketParams(
+    base::TimeDelta min_latency,
+    base::TimeDelta max_latency,
+    int num_buckets)
+    : min_latency(min_latency),
+      max_latency(max_latency),
+      num_buckets(num_buckets) {}
+
+PresentationTimeRecorder::BucketParams::BucketParams(const BucketParams&) =
+    default;
+
+PresentationTimeRecorder::BucketParams&
+PresentationTimeRecorder::BucketParams::operator=(const BucketParams&) =
+    default;
+
+PresentationTimeRecorder::BucketParams::~BucketParams() = default;
+
+// static
+PresentationTimeRecorder::BucketParams
+PresentationTimeRecorder::BucketParams::CreateWithMaximum(
+    base::TimeDelta max_latency) {
+  BucketParams params;
+  params.max_latency = max_latency;
+  return params;
+}
 
 std::unique_ptr<PresentationTimeRecorder>
 CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
     const char* max_latency_histogram_name,
-    base::TimeDelta maximum) {
+    PresentationTimeRecorder::BucketParams bucket_params,
+    bool emit_trace_event) {
   return std::make_unique<PresentationTimeRecorder>(
-      std::make_unique<PresentationTimeHistogramRecorder>(
+      new PresentationTimeHistogramRecorder(
           compositor, presentation_time_histogram_name,
-          max_latency_histogram_name, maximum));
+          max_latency_histogram_name, bucket_params, emit_trace_event));
 }
 
 // TestApi --------------------------------------------------------------------
@@ -272,9 +364,9 @@ void PresentationTimeRecorder::TestApi::OnCompositingDidCommit(
 void PresentationTimeRecorder::TestApi::OnPresented(
     int count,
     base::TimeTicks requested_time,
-    base::TimeTicks presentation_timestamp) {
+    const viz::FrameTimingDetails& frame_timing_details) {
   recorder_->recorder_internal_->OnPresented(count, requested_time,
-                                             presentation_timestamp);
+                                             frame_timing_details);
 }
 
 }  // namespace ui

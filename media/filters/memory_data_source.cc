@@ -39,7 +39,7 @@ void MemoryDataSource::Read(int64_t position,
 
   if (clamped_size > 0) {
     DCHECK(data);
-    memcpy(data, data_ + position, clamped_size);
+    memcpy(data, data_ + base::checked_cast<size_t>(position), clamped_size);
   }
 
   std::move(read_cb).Run(clamped_size);

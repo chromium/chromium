@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -17,7 +18,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/test/to_vector.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -53,16 +54,21 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -71,6 +77,21 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
+
+namespace {
+
+// Gets all URLs from the list of targets, with the ports removed.
+std::vector<std::string> GetTargetUrlsWithoutPorts(
+    const base::Value::List& targets) {
+  return base::ToVector(targets, [](const base::Value& value) {
+    GURL::Replacements remove_port;
+    remove_port.ClearPort();
+    const std::string* url = value.GetDict().FindString("url");
+    return url ? GURL(*url).ReplaceComponents(remove_port).spec()
+               : "<missing field>";
+  });
+}
+}  // namespace
 
 using testing::Eq;
 
@@ -120,6 +141,10 @@ void DebuggerApiTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void DebuggerApiTest::SetUpOnMainThread() {
   ExtensionApiTest::SetUpOnMainThread();
+
+  host_resolver()->AddRule("*", "127.0.0.1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
   test_extension_dir_.WriteManifest(
       R"({
          "name": "debugger",
@@ -148,8 +173,9 @@ testing::AssertionResult DebuggerApiTest::RunAttachFunction(
   std::string debugee_by_tab = base::StringPrintf("{\"tabId\": %d}", tab_id);
   testing::AssertionResult result =
       RunAttachFunctionOnTarget(debugee_by_tab, expected_error);
-  if (!result)
+  if (!result) {
     return result;
+  }
 
   // Attach by targetId.
   scoped_refptr<DebuggerGetTargetsFunction> get_targets_function =
@@ -283,6 +309,59 @@ class TestInterstitialPage
         GURL(), report_details, nullptr);
   }
 };
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       DebuggerNotAllowedOnRestrictedBlobUrls) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(web_contents, GURL("chrome://settings")));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    var blob = new Blob([JSON.stringify({foo: 'bar'})], {
+      type: "application/json",
+    });
+    var burl = URL.createObjectURL(blob, 'application/json');
+    window.open(burl);
+  )"));
+  content::WebContents* blob_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(blob_web_contents, web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(blob_web_contents));
+  EXPECT_EQ("{\"foo\":\"bar\"}",
+            content::EvalJs(blob_web_contents, "document.body.innerText"));
+  EXPECT_TRUE(
+      RunAttachFunction(blob_web_contents, "Cannot access a chrome:// URL"));
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       DebuggerNotAllowedOnPolicyRestrictedBlobUrls) {
+  GURL url(embedded_test_server()->GetURL("a.com", "/simple.html"));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(web_contents, url));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    var blob = new Blob([JSON.stringify({foo: 'bar'})], {
+      type: "application/json",
+    });
+    window.open(URL.createObjectURL(blob, 'application/json'));
+  )"));
+  content::WebContents* blob_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(blob_web_contents, web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(blob_web_contents));
+  EXPECT_EQ("{\"foo\":\"bar\"}",
+            content::EvalJs(blob_web_contents, "document.body.innerText"));
+  base::RunLoop run_loop;
+  URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_HTTP, "http://a.com/*"));
+  PermissionsData::SetDefaultPolicyHostRestrictions(
+      util::GetBrowserContextId(profile()), default_blocked_hosts,
+      URLPatternSet());
+  EXPECT_TRUE(
+      RunAttachFunction(blob_web_contents, "Cannot attach to this target."));
+}
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        DebuggerNotAllowedOnSecirutyInterstitials) {
@@ -479,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       infobars::ContentInfoBarManager::FromWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_test_server()->Started());
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/simple.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -572,7 +651,6 @@ class CrossProfileDebuggerApiTest : public DebuggerApiTest {
 
  private:
   void SetUpOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -626,14 +704,7 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, GetTargets) {
 
     ASSERT_TRUE(value.is_list());
     const base::Value::List targets = std::move(value).TakeList();
-    std::vector<std::string> urls =
-        base::test::ToVector(targets, [](const base::Value& value) {
-          GURL::Replacements remove_port;
-          remove_port.ClearPort();
-          const std::string* url = value.GetDict().FindString("url");
-          return url ? GURL(*url).ReplaceComponents(remove_port).spec()
-                     : "<missing field>";
-        });
+    std::vector<std::string> urls = GetTargetUrlsWithoutPorts(targets);
     EXPECT_THAT(urls, testing::UnorderedElementsAre(
                           "about:blank",
                           "http://127.0.0.1/simple.html?off_the_record"));
@@ -737,14 +808,17 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 // Tests that policy blocked hosts supersede the `debugger`
 // permission. Regression test for crbug.com/1139156.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url("https://example.com");
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url("https://example.com/test");
   EXPECT_TRUE(RunAttachFunction(url, std::string()));
-  policy::MockConfigurationPolicyProvider policy_provider;
-  ExtensionManagementPolicyUpdater pref(&policy_provider);
-  pref.AddPolicyBlockedHost("*", url.spec());
-  EXPECT_FALSE(
-      RunAttachFunction(url, manifest_errors::kCannotAccessExtensionUrl));
+  URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_HTTPS, "https://example.com/*"));
+  PermissionsData::SetDefaultPolicyHostRestrictions(
+      util::GetBrowserContextId(profile()), default_blocked_hosts,
+      URLPatternSet());
+
+  EXPECT_TRUE(RunAttachFunction(url, "Cannot attach to this target."));
 }
 
 class DebuggerExtensionApiTest : public ExtensionApiTest {
@@ -797,24 +871,71 @@ class DebuggerExtensionApiPdfTest : public base::test::WithFeatureOverride,
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 };
 
+// Test that the debuggers can attach to the PDF embedder frame.
 IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest, AttachToPdf) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (IsParamFeatureEnabled()) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_pdf")) << message_;
 }
 
-// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DebuggerExtensionApiPdfTest);
+
+class DebuggerExtensionApiOopifPdfTest : public DebuggerExtensionApiTest {
+ public:
+  DebuggerExtensionApiOopifPdfTest() {
+    feature_list_.InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+  }
+
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
+    return factory_.GetTestPdfViewerStreamManager(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  pdf::TestPdfViewerStreamManagerFactory factory_;
+};
+
+// Test that the inner PDF frames, i.e. the PDF extension frame and the PDF
+// content frame, aren't visible targets, while the PDF embedder frame is.
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiOopifPdfTest, GetTargets) {
+  GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
+
+  // Load a full-page PDF.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // Get targets.
+  auto get_targets_function =
+      base::MakeRefCounted<DebuggerGetTargetsFunction>();
+  base::Value get_targets_result =
+      std::move(*api_test_utils::RunFunctionAndReturnSingleResult(
+          get_targets_function.get(), "[]", profile()));
+  ASSERT_TRUE(get_targets_result.is_list());
+
+  // Verify that the inner PDF frames aren't targets in the list. Only the PDF
+  // embedder frame (the main frame) should be a target.
+  const base::Value::List targets = std::move(get_targets_result).TakeList();
+  ASSERT_THAT(targets, testing::SizeIs(1));
+
+  // Verify that the target is the PDF embedder frame.
+  std::vector<std::string> urls = GetTargetUrlsWithoutPorts(targets);
+  ASSERT_THAT(urls, testing::SizeIs(1));
+  EXPECT_EQ(urls[0], "http://127.0.0.1/pdf/test.pdf");
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToBlob) {
+  ASSERT_TRUE(RunExtensionTest("debugger_attach_to_blob_urls")) << message_;
+}
 
 // Tests that navigation to a forbidden URL is properly denied and
 // does not cause a crash.
 // This is a regression test for https://crbug.com/1188889.
-// TODO(crbug.com/1517512): Re-enable this test.
+// TODO(crbug.com/41490490): Re-enable this test.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_NavigateToForbiddenUrl DISABLED_NavigateToForbiddenUrl
 #else
@@ -902,6 +1023,17 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
       "a.com",
       "/extensions/api_test/debugger_auto_attach_permissions/page.html"));
   ASSERT_TRUE(RunExtensionTest("debugger_auto_attach_permissions",
+                               {.custom_arg = url.spec().c_str()}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       AutoAttachFlatModePermissions) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com",
+      "/extensions/api_test/debugger_auto_attach_flat_mode_permissions/"
+      "page.html"));
+  ASSERT_TRUE(RunExtensionTest("debugger_auto_attach_flat_mode_permissions",
                                {.custom_arg = url.spec().c_str()}))
       << message_;
 }

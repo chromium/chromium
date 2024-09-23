@@ -14,6 +14,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_store.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -41,15 +42,24 @@ ProfileCloudPolicyManager::ProfileCloudPolicyManager(
     const base::FilePath& component_policy_cache_path,
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-    network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
-    : CloudPolicyManager(dm_protocol::kChromeMachineLevelUserCloudPolicyType,
-                         /*settings_entity_id=*/std::string(),
-                         std::move(profile_store),
-                         task_runner,
-                         std::move(network_connection_tracker_getter)),
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
+    bool is_dasherless)
+    : CloudPolicyManager(
+          is_dasherless ? dm_protocol::kChromeUserPolicyType
+                        : dm_protocol::kChromeMachineLevelUserCloudPolicyType,
+          /*settings_entity_id=*/std::string(),
+          std::move(profile_store),
+          task_runner,
+          std::move(network_connection_tracker_getter)),
       profile_store_(static_cast<ProfileCloudPolicyStore*>(store())),
       external_data_manager_(std::move(external_data_manager)),
-      component_policy_cache_path_(component_policy_cache_path) {}
+      component_policy_cache_path_(component_policy_cache_path),
+      is_dasherless_(is_dasherless) {
+  if (is_dasherless_) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "ProfileCloudPolicyManager created for Dasherless profile.";
+  }
+}
 
 ProfileCloudPolicyManager::~ProfileCloudPolicyManager() = default;
 
@@ -59,10 +69,11 @@ std::unique_ptr<ProfileCloudPolicyManager> ProfileCloudPolicyManager::Create(
     SchemaRegistry* schema_registry,
     bool force_immediate_load,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
-    network::NetworkConnectionTrackerGetter network_connection_tracker_getter) {
+    network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
+    bool is_dasherless) {
   std::unique_ptr<policy::ProfileCloudPolicyStore> store =
-      policy::ProfileCloudPolicyStore::Create(profile_path,
-                                              background_task_runner);
+      policy::ProfileCloudPolicyStore::Create(
+          profile_path, background_task_runner, is_dasherless);
   if (force_immediate_load) {
     store->LoadImmediately();
   }
@@ -74,7 +85,7 @@ std::unique_ptr<ProfileCloudPolicyManager> ProfileCloudPolicyManager::Create(
       std::move(store), component_policy_cache_dir,
       std::unique_ptr<CloudExternalDataManager>(),
       base::SequencedTaskRunner::GetCurrentDefault(),
-      network_connection_tracker_getter);
+      network_connection_tracker_getter, is_dasherless);
   manager->Init(schema_registry);
   return manager;
 }
@@ -88,7 +99,8 @@ void ProfileCloudPolicyManager::Connect(
       client->GetURLLoaderFactory();
 
   CreateComponentCloudPolicyService(
-      dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
+      is_dasherless_ ? dm_protocol::kChromeExtensionPolicyType
+                     : dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
       component_policy_cache_path_, client.get(), schema_registry());
   core()->Connect(std::move(client));
   core()->StartRefreshScheduler();
@@ -100,6 +112,15 @@ void ProfileCloudPolicyManager::Connect(
 }
 
 void ProfileCloudPolicyManager::DisconnectAndRemovePolicy() {
+  if (is_dasherless_) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Disconnecting policy manager and removing policies for Dasherless "
+           "profile.";
+  } else {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Disconnecting policy manager and removing profile-level policies.";
+  }
+
   if (external_data_manager_) {
     external_data_manager_->Disconnect();
   }

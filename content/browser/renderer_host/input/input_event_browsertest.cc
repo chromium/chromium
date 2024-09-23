@@ -81,7 +81,6 @@ class InputEventBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 
@@ -148,7 +147,7 @@ class InputEventBrowserTest : public ContentBrowserTest {
   void SimulateSyntheticKeyDown(base::TimeTicks event_time) {
     DCHECK(URLLoaded());
 
-    content::NativeWebKeyboardEvent event(
+    input::NativeWebKeyboardEvent event(
         blink::WebKeyboardEvent::Type::kRawKeyDown,
         blink::WebInputEvent::kNoModifiers, event_time);
     event.windows_key_code = ui::VKEY_DOWN;
@@ -253,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(InputEventBrowserTest, KeyDownEventTimeStamp) {
   EXPECT_NEAR(event_time_ms, monotonic_time, 1);
 }
 
-// TODO(crbug.com/1516021): Flaky on LaCros.
+// TODO(crbug.com/41489011): Flaky on LaCros.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TouchStartEventTimeStamp DISABLED_TouchStartEventTimeStamp
 #else

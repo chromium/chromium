@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/shelf/drag_window_from_shelf_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 
@@ -14,7 +13,6 @@
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
-#include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
@@ -39,12 +37,14 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
@@ -52,6 +52,7 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/scoped_animation_disabler.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -176,7 +177,7 @@ class DragWindowFromShelfController::WindowsHider
   void RestoreWindowsVisibility() {
     for (aura::Window* window : hidden_windows_) {
       window->RemoveObserver(this);
-      ScopedAnimationDisabler disabler(window);
+      wm::ScopedAnimationDisabler disabler(window);
       window->Show();
       window->ClearProperty(kHideDuringWindowDragging);
     }
@@ -288,18 +289,19 @@ void DragWindowFromShelfController::Drag(const gfx::PointF& location_in_screen,
   presentation_time_recorder_->RequestNext();
   UpdateDraggedWindow(location_in_screen);
 
-  // Open overview if the window has been dragged far enough and the scroll
-  // delta has decreased to kOpenOverviewThreshold. Wait until all windows are
-  // minimized or they will not show up in overview.
   DCHECK(windows_hider_);
   OverviewController* overview_controller = Shell::Get()->overview_controller();
   if (std::abs(scroll_y) <= kOpenOverviewThreshold &&
-      !overview_controller->InOverviewSession() &&
       windows_hider_->WindowsMinimized()) {
-    overview_controller->StartOverview(
-        OverviewStartAction::kDragWindowFromShelf,
-        OverviewEnterExitType::kImmediateEnter);
-    OnWindowDragStartedInOverview();
+    // Open overview if the window has been dragged far enough and the scroll
+    // delta has decreased to `kOpenOverviewThreshold`. Wait until all windows
+    // are minimized or they will not show up in overview.
+    if (!overview_controller->InOverviewSession() &&
+        overview_controller->StartOverview(
+            OverviewStartAction::kDragWindowFromShelf,
+            OverviewEnterExitType::kImmediateEnter)) {
+      OnWindowDragStartedInOverview();
+    }
   }
 
   // If overview is active, update its splitview indicator during dragging if

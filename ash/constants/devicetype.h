@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "chromeos/constants/devicetype.h"
 
 namespace ash {
 
@@ -16,6 +17,10 @@ namespace ash {
 // e.g., "Chromebook_1A2B", "Chromebox_F9E8'.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 std::string GetDeviceBluetoothName(const std::string& bluetooth_address);
+
+// Returns the name of the provided Chrome device type.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+std::string DeviceTypeToString(chromeos::DeviceType device_type);
 
 // Returns true if the device is Google branded.
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGoogleBrandedDevice();

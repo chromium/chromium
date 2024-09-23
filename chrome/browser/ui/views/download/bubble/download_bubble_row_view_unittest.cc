@@ -185,8 +185,8 @@ TEST_F(DownloadBubbleRowViewTest, InputProtectorDeniesClicks) {
       DownloadCommands::OPEN_WHEN_COMPLETE));
 
   EXPECT_CALL(*download_item(), OpenDownload()).Times(0);
-  ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                       base::TimeTicks::Now(), 0, 0);
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::PointF(),
+                       gfx::PointF(), base::TimeTicks::Now(), 0, 0);
   row_view()
       ->GetQuickActionButtonForTesting(DownloadCommands::OPEN_WHEN_COMPLETE)
       ->OnMousePressed(event);

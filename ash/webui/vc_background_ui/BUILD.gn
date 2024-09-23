@@ -21,6 +21,8 @@ static_library("vc_background_ui") {
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/system_apps/public:system_web_app_type",
+    "//chromeos/crosapi/cpp:cpp",
+    "//chromeos/strings",
     "//components/manta",
     "//content/public/browser",
     "//ui/webui",

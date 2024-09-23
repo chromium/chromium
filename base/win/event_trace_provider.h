@@ -1,7 +1,12 @@
 // Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // Declaration of a Windows event trace provider class, to allow using
 // Windows Event Tracing for logging transport and control.
 #ifndef BASE_WIN_EVENT_TRACE_PROVIDER_H_

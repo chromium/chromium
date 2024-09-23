@@ -17,9 +17,6 @@ namespace features {
 // Enables configuring the on-device clustering backend.
 BASE_DECLARE_FEATURE(kOnDeviceClustering);
 
-// Enables merging clusters based on their content.
-BASE_DECLARE_FEATURE(kOnDeviceClusteringContentClustering);
-
 // Uses an in-memory cache that stores engagement score.
 BASE_DECLARE_FEATURE(kUseEngagementScoreCache);
 

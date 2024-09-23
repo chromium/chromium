@@ -4,6 +4,7 @@
 import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//ui/gl/features.gni")
 
 import("//cc/cc.gni")
@@ -38,6 +39,7 @@ cc_component("cc") {
     "input/browser_controls_offset_manager.cc",
     "input/browser_controls_offset_manager.h",
     "input/browser_controls_offset_manager_client.h",
+    "input/browser_controls_offset_tags_info.h",
     "input/browser_controls_state.h",
     "input/compositor_input_interfaces.h",
     "input/hit_test_opaqueness.cc",
@@ -106,10 +108,10 @@ cc_component("cc") {
     "layers/nine_patch_layer.h",
     "layers/nine_patch_layer_impl.cc",
     "layers/nine_patch_layer_impl.h",
-    "layers/painted_overlay_scrollbar_layer.cc",
-    "layers/painted_overlay_scrollbar_layer.h",
-    "layers/painted_overlay_scrollbar_layer_impl.cc",
-    "layers/painted_overlay_scrollbar_layer_impl.h",
+    "layers/nine_patch_thumb_scrollbar_layer.cc",
+    "layers/nine_patch_thumb_scrollbar_layer.h",
+    "layers/nine_patch_thumb_scrollbar_layer_impl.cc",
+    "layers/nine_patch_thumb_scrollbar_layer_impl.h",
     "layers/painted_scrollbar_layer.cc",
     "layers/painted_scrollbar_layer.h",
     "layers/painted_scrollbar_layer_impl.cc",
@@ -122,6 +124,7 @@ cc_component("cc") {
     "layers/recording_source.h",
     "layers/render_surface_impl.cc",
     "layers/render_surface_impl.h",
+    "layers/scroll_hit_test_rect.h",
     "layers/scrollbar_layer_base.cc",
     "layers/scrollbar_layer_base.h",
     "layers/scrollbar_layer_impl_base.cc",
@@ -143,6 +146,8 @@ cc_component("cc") {
     "layers/texture_layer_client.h",
     "layers/texture_layer_impl.cc",
     "layers/texture_layer_impl.h",
+    "layers/tile_display_layer_impl.cc",
+    "layers/tile_display_layer_impl.h",
     "layers/tile_size_calculator.cc",
     "layers/tile_size_calculator.h",
     "layers/touch_action_region.cc",
@@ -209,14 +214,15 @@ cc_component("cc") {
     "metrics/scroll_jank_ukm_reporter.cc",
     "metrics/scroll_jank_ukm_reporter.h",
     "metrics/shared_metrics_buffer.h",
+    "metrics/submit_info.h",
     "metrics/total_frame_counter.cc",
     "metrics/total_frame_counter.h",
+    "metrics/ukm_manager.cc",
+    "metrics/ukm_manager.h",
     "metrics/ukm_smoothness_data.cc",
     "metrics/ukm_smoothness_data.h",
     "metrics/video_playback_roughness_reporter.cc",
     "metrics/video_playback_roughness_reporter.h",
-    "metrics/web_vital_metrics.cc",
-    "metrics/web_vital_metrics.h",
     "raster/bitmap_raster_buffer_provider.cc",
     "raster/bitmap_raster_buffer_provider.h",
     "raster/categorized_worker_pool.cc",
@@ -323,6 +329,7 @@ cc_component("cc") {
     "tiles/tile.h",
     "tiles/tile_draw_info.cc",
     "tiles/tile_draw_info.h",
+    "tiles/tile_index.h",
     "tiles/tile_manager.cc",
     "tiles/tile_manager.h",
     "tiles/tile_manager_settings.h",
@@ -332,6 +339,9 @@ cc_component("cc") {
     "tiles/tile_task_manager.h",
     "tiles/tiles_with_resource_iterator.cc",
     "tiles/tiles_with_resource_iterator.h",
+    "tiles/tiling_coverage_iterator.h",
+    "tiles/tiling_internal.h",
+    "tiles/tiling_set_coverage_iterator.h",
     "tiles/tiling_set_eviction_queue.cc",
     "tiles/tiling_set_eviction_queue.h",
     "tiles/tiling_set_raster_queue_all.cc",
@@ -342,6 +352,7 @@ cc_component("cc") {
     "trees/animated_paint_worklet_tracker.h",
     "trees/animation_effect_timings.h",
     "trees/animation_options.h",
+    "trees/begin_main_frame_trace_id.h",
     "trees/browser_controls_params.cc",
     "trees/browser_controls_params.h",
     "trees/clip_node.cc",
@@ -351,6 +362,7 @@ cc_component("cc") {
     "trees/compositor_commit_data.cc",
     "trees/compositor_commit_data.h",
     "trees/compositor_mode.h",
+    "trees/damage_reason.h",
     "trees/damage_tracker.cc",
     "trees/damage_tracker.h",
     "trees/debug_rect_history.cc",
@@ -368,12 +380,12 @@ cc_component("cc") {
     "trees/latency_info_swap_promise_monitor.cc",
     "trees/latency_info_swap_promise_monitor.h",
     "trees/layer_context.h",
-    "trees/layer_context_client.h",
     "trees/layer_tree_frame_sink.cc",
     "trees/layer_tree_frame_sink.h",
     "trees/layer_tree_frame_sink_client.h",
     "trees/layer_tree_host.cc",
     "trees/layer_tree_host.h",
+    "trees/layer_tree_host_client.cc",
     "trees/layer_tree_host_client.h",
     "trees/layer_tree_host_impl.cc",
     "trees/layer_tree_host_impl.h",
@@ -384,8 +396,6 @@ cc_component("cc") {
     "trees/layer_tree_mutator.h",
     "trees/layer_tree_settings.cc",
     "trees/layer_tree_settings.h",
-    "trees/local_layer_context.cc",
-    "trees/local_layer_context.h",
     "trees/managed_memory_policy.cc",
     "trees/managed_memory_policy.h",
     "trees/mobile_optimized_viewport_util.cc",
@@ -438,30 +448,28 @@ cc_component("cc") {
     "trees/task_runner_provider.h",
     "trees/throttle_decider.cc",
     "trees/throttle_decider.h",
+    "trees/trace_utils.cc",
+    "trees/trace_utils.h",
     "trees/transform_node.cc",
     "trees/transform_node.h",
     "trees/tree_synchronizer.cc",
     "trees/tree_synchronizer.h",
-    "trees/ukm_manager.cc",
-    "trees/ukm_manager.h",
     "trees/viewport_layers.cc",
     "trees/viewport_layers.h",
     "trees/viewport_property_ids.h",
-    "view_transition/view_transition_element_id.cc",
-    "view_transition/view_transition_element_id.h",
     "view_transition/view_transition_request.cc",
     "view_transition/view_transition_request.h",
   ]
 
   public_deps = [
     "//cc/base",
+    "//cc/mojom:layer_type",
     "//cc/paint",
     "//components/viz/common",
     "//skia",
   ]
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//components/miracle_parameter/common",
     "//components/viz/client",
@@ -478,6 +486,7 @@ cc_component("cc") {
     "//services/metrics/public/mojom",
     "//services/tracing/public/cpp:cpp",
     "//skia:skcms",
+    "//third_party/blink/public/common/tokens:tokens_headers",
     "//ui/base:features",
     "//ui/events:events_base",
     "//ui/gfx",
@@ -486,6 +495,15 @@ cc_component("cc") {
     "//ui/gl",
     "//ui/latency",
   ]
+
+  if (is_android) {
+    sources += [
+      "input/android/offset_tag_android.cc",
+      "input/android/offset_tag_android.h",
+    ]
+
+    deps += [ ":cc_jni_headers" ]
+  }
 
   defines = [ "CC_IMPLEMENTATION=1" ]
 }
@@ -522,8 +540,6 @@ cc_test_static_library("test_support") {
     "test/fake_output_surface_client.h",
     "test/fake_paint_image_generator.cc",
     "test/fake_paint_image_generator.h",
-    "test/fake_painted_scrollbar_layer.cc",
-    "test/fake_painted_scrollbar_layer.h",
     "test/fake_picture_layer.cc",
     "test/fake_picture_layer.h",
     "test/fake_picture_layer_impl.cc",
@@ -544,6 +560,7 @@ cc_test_static_library("test_support") {
     "test/fake_scoped_ui_resource.h",
     "test/fake_scrollbar.cc",
     "test/fake_scrollbar.h",
+    "test/fake_scrollbar_layer.h",
     "test/fake_tile_manager.cc",
     "test/fake_tile_manager.h",
     "test/fake_tile_manager_client.cc",
@@ -572,8 +589,8 @@ cc_test_static_library("test_support") {
     "test/mock_latency_info_swap_promise_monitor.h",
     "test/mock_layer_tree_mutator.cc",
     "test/mock_layer_tree_mutator.h",
-    "test/mock_occlusion_tracker.h",
     "test/paint_image_matchers.h",
+    "test/paint_op_helper.cc",
     "test/paint_op_helper.h",
     "test/paint_op_matchers.h",
     "test/pixel_comparator.cc",
@@ -602,6 +619,7 @@ cc_test_static_library("test_support") {
     "test/solid_color_content_layer_client.h",
     "test/stub_decode_cache.cc",
     "test/stub_decode_cache.h",
+    "test/stub_input_handler_client.cc",
     "test/stub_input_handler_client.h",
     "test/stub_layer_tree_host_client.cc",
     "test/stub_layer_tree_host_client.h",
@@ -647,7 +665,6 @@ cc_test_static_library("test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//cc/paint",
     "//components/ukm",
     "//components/ukm:test_support",
@@ -678,7 +695,7 @@ cc_test_static_library("test_support") {
     deps += [ "//gpu/vulkan/init" ]
   }
   if (!is_android) {
-    data_deps = [ "//third_party/mesa_headers" ]
+    data_deps = [ "//third_party/angle:includes" ]
   }
   if (skia_use_dawn) {
     deps += [
@@ -737,7 +754,7 @@ cc_test("cc_unittests") {
     "layers/nine_patch_generator_unittest.cc",
     "layers/nine_patch_layer_impl_unittest.cc",
     "layers/nine_patch_layer_unittest.cc",
-    "layers/painted_overlay_scrollbar_layer_unittest.cc",
+    "layers/nine_patch_thumb_scrollbar_layer_unittest.cc",
     "layers/painted_scrollbar_layer_impl_unittest.cc",
     "layers/painted_scrollbar_layer_unittest.cc",
     "layers/picture_layer_impl_unittest.cc",
@@ -774,6 +791,7 @@ cc_test("cc_unittests") {
     "metrics/scroll_jank_dropped_frame_tracker_unittest.cc",
     "metrics/scroll_jank_ukm_reporter_unittest.cc",
     "metrics/total_frame_counter_unittest.cc",
+    "metrics/ukm_manager_unittest.cc",
     "metrics/video_playback_roughness_reporter_unittest.cc",
     "mojo_embedder/async_layer_tree_frame_sink_unittest.cc",
     "paint/clear_for_opaque_raster_unittest.cc",
@@ -864,7 +882,6 @@ cc_test("cc_unittests") {
     "trees/swap_promise_manager_unittest.cc",
     "trees/throttle_decider_unittest.cc",
     "trees/tree_synchronizer_unittest.cc",
-    "trees/ukm_manager_unittest.cc",
     "view_transition/view_transition_request_unittest.cc",
 
     # Animation test files.
@@ -936,7 +953,7 @@ cc_test("cc_unittests") {
   data = [ "//components/test/data/viz/" ]
   data_deps = [
     "//testing/buildbot/filters:cc_unittests_filters",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   if (is_android && enable_chrome_android_internal) {
@@ -948,14 +965,14 @@ cc_test("cc_unittests") {
   }
 
   if (is_fuchsia) {
-    # TODO(https://crbug.com/1022542): Some of these tests use SwiftShader,
+    # TODO(crbug.com/42050042): Some of these tests use SwiftShader,
     # which requires ambient VMEX.
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
 
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/fonts.shard.test-cml",
 
-      # TODO(https://crbug.com/1185811): Investigate removing the requirement
+      # TODO(crbug.com/40055105): Investigate removing the requirement
       # for VmexResource.
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
@@ -1043,10 +1060,31 @@ if (is_android) {
     sources = [ "//cc/input/browser_controls_state.h" ]
   }
 
+  generate_jni("cc_jni_headers") {
+    sources = [
+      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTagsInfo.java",
+      "input/android/java/src/org/chromium/cc/input/OffsetTag.java",
+    ]
+  }
+
   android_library("cc_java") {
     # Right now, this only includes the Java switches. But if we need more Java
     # files, they should be added here as necessary.
-    srcjar_deps = [ ":cc_android_java_enums_srcjar" ]
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    srcjar_deps = [
+      ":cc_android_java_enums_srcjar",
+      ":cc_jni_headers",
+    ]
+
+    sources = [
+      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTagsInfo.java",
+      "input/android/java/src/org/chromium/cc/input/OffsetTag.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
   }
 }

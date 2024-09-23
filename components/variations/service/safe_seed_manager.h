@@ -33,7 +33,7 @@ class VariationsSeedStore;
 // consecutive crashes are ones with very few users, plus Canary. It's probably
 // not realistic to avoid false positives for these less-stable configurations.
 constexpr int kCrashStreakSafeSeedThreshold = 3;
-constexpr int kCrashStreakNullSeedThreshold = 6;
+constexpr int kCrashStreakNullSeedThreshold = 4;
 
 // The primary class that encapsulates state for managing the safe seed.
 class SafeSeedManager : public SafeSeedManagerBase {

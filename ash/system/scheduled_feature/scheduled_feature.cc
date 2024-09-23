@@ -165,7 +165,6 @@ void ScheduledFeature::SetScheduleType(ScheduleType type) {
   if (type == ScheduleType::kCustom && (prefs_path_custom_start_time_.empty() ||
                                         prefs_path_custom_end_time_.empty())) {
     NOTREACHED();
-    return;
   }
 
   active_user_pref_service_->SetInteger(prefs_path_schedule_type_,

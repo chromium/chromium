@@ -4,53 +4,48 @@
 
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// Singleton that owns all DeviceAuthenticatorProxy and associates them with
-// ChromeBrowserState.
-class DeviceAuthenticatorProxyFactory : public BrowserStateKeyedServiceFactory {
- public:
-  static DeviceAuthenticatorProxyFactory* GetInstance() {
-    static base::NoDestructor<DeviceAuthenticatorProxyFactory> instance;
-    return instance.get();
-  }
+// static
+DeviceAuthenticatorProxyFactory*
+DeviceAuthenticatorProxyFactory::GetInstance() {
+  static base::NoDestructor<DeviceAuthenticatorProxyFactory> instance;
+  return instance.get();
+}
 
-  static DeviceAuthenticatorProxy* GetForBrowserState(
-      ChromeBrowserState* browser_state) {
-    return static_cast<DeviceAuthenticatorProxy*>(
-        GetInstance()->GetServiceForBrowserState(browser_state, true));
-  }
+// static
+DeviceAuthenticatorProxy* DeviceAuthenticatorProxyFactory::GetForBrowserState(
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
 
-  DeviceAuthenticatorProxyFactory(const DeviceAuthenticatorProxyFactory&) =
-      delete;
-  DeviceAuthenticatorProxyFactory& operator=(
-      const DeviceAuthenticatorProxyFactory&) = delete;
+// static
+DeviceAuthenticatorProxy* DeviceAuthenticatorProxyFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return static_cast<DeviceAuthenticatorProxy*>(
+      GetInstance()->GetServiceForBrowserState(profile, true));
+}
 
- private:
-  friend class base::NoDestructor<DeviceAuthenticatorProxyFactory>;
+DeviceAuthenticatorProxyFactory::DeviceAuthenticatorProxyFactory()
+    : BrowserStateKeyedServiceFactory(
+          "DeviceAuthenticatorProxy",
+          BrowserStateDependencyManager::GetInstance()) {}
 
-  DeviceAuthenticatorProxyFactory()
-      : BrowserStateKeyedServiceFactory(
-            "DeviceAuthenticatorProxy",
-            BrowserStateDependencyManager::GetInstance()) {}
-  ~DeviceAuthenticatorProxyFactory() override = default;
+DeviceAuthenticatorProxyFactory::~DeviceAuthenticatorProxyFactory() = default;
 
-  // BrowserStateKeyedServiceFactory:
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override {
-    return std::make_unique<DeviceAuthenticatorProxy>();
-  }
+std::unique_ptr<KeyedService>
+DeviceAuthenticatorProxyFactory::BuildServiceInstanceFor(
+    web::BrowserState* context) const {
+  return std::make_unique<DeviceAuthenticatorProxy>();
+}
 
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override {
-    return GetBrowserStateRedirectedInIncognito(context);
-  }
-};
+web::BrowserState* DeviceAuthenticatorProxyFactory::GetBrowserStateToUse(
+    web::BrowserState* context) const {
+  return GetBrowserStateRedirectedInIncognito(context);
+}
 
 std::unique_ptr<IOSDeviceAuthenticator> CreateIOSDeviceAuthenticator(
     id<ReauthenticationProtocol> reauth_module,

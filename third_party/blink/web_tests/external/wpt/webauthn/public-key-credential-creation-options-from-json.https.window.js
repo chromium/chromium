@@ -53,7 +53,10 @@ test(() => {
   assert_true(bytesEqual(actual.challenge, expected.challenge));
   assertJsonEquals(actual.pubKeyCredParams, expected.pubKeyCredParams, "pk");
   assert_equals(actual.attestation, expected.attestation);
-  assertJsonEquals(actual.hints, expected.hints);
+  if (actual.hasOwnProperty('hints')) {
+    // Not all implementations support hints yet.
+    assertJsonEquals(actual.hints, expected.hints);
+  }
 }, "parseCreationOptionsFromJSON()");
 
 test(() => {
@@ -98,21 +101,17 @@ test(() => {
       },
     ],
     extensions: {
-      appid: "app id",
-      appidExclude: "app id exclude",
-      hamcCreateSecret: true,
-      uvm: true,
-      credentialProtectionPolicy: "cred protect",
+      appidExclude: "https://example.com/appid",
+      hmacCreateSecret: true,
+      credentialProtectionPolicy: "userVerificationRequired",
       enforceCredentialProtectionPolicy: true,
       minPinLength: true,
       credProps: true,
       largeBlob: {
-        support: "large blob support",
-        read: true,
+        support: "required",
         write: test_b64,
       },
       credBlob: test_b64,
-      getCredBlob: true,
       supplementalPubKeys: {
         scopes: ["spk scope"],
         attestation: "directest",
@@ -150,21 +149,17 @@ test(() => {
       },
     ],
     extensions: {
-      appid: "app id",
-      appidExclude: "app id exclude",
-      hamcCreateSecret: true,
-      uvm: true,
-      credentialProtectionPolicy: "cred protect",
+      appidExclude: "https://example.com/appid",
+      hmacCreateSecret: true,
+      credentialProtectionPolicy: "userVerificationRequired",
       enforceCredentialProtectionPolicy: true,
       minPinLength: true,
       credProps: true,
       largeBlob: {
-        support: "large blob support",
-        read: true,
+        support: "required",
         write: test_bytes,
       },
       credBlob: test_bytes,
-      getCredBlob: true,
       supplementalPubKeys: {
         scopes: ["spk scope"],
         attestation: "directest",
@@ -182,32 +177,65 @@ test(() => {
           },
         },
       },
-      // The spec defaults the following fields:
-      attestation: "none",
-      hints: [],
     },
   };
 
-  assert_equals(actual.extensions.appid, expected.extensions.appid);
-  assert_equals(actual.extensions.appidExclude, expected.extensions.appidExclude);
-  assert_equals(actual.extensions.hmacCreateSecret, expected.extensions.hmacCreateSecret);
-  assert_equals(actual.extensions.uvm, expected.extensions.uvm);
-  assert_equals(actual.extensions.credentialProtectionPolicy, expected.extensions.credentialProtectionPolicy);
-  assert_equals(actual.extensions.enforceCredentialProtectionPolicy, expected.extensions.enforceCredentialProtectionPolicy);
-  assert_equals(actual.extensions.minPinLength, expected.extensions.minPinLength);
-  assert_equals(actual.extensions.credProps, expected.extensions.credProps);
-  assert_equals(actual.extensions.largeBlob.support, expected.extensions.largeBlob.support, "X");
-  assert_equals(actual.extensions.largeBlob.read, expected.extensions.largeBlob.read);
-
-  assert_true(bytesEqual(actual.extensions.largeBlob.write, expected.extensions.largeBlob.write), "XX");
-
-  assert_true(bytesEqual(actual.extensions.credBlob, expected.extensions.credBlob), "XXX");
-
-  assert_equals(actual.extensions.getCredBlob, expected.extensions.getCredBlob);
-  assertJsonEquals(actual.extensions.supplementalPubKeys, expected.extensions.supplementalPubKeys);
-  let prfValuesEquals = (a, b) => {
-    return bytesEqual(a.first, b.first) && bytesEqual(a.second, b.second);
-  };
-  assert_true(prfValuesEquals(actual.extensions.prf.eval, expected.extensions.prf.eval), "prf eval");
-  assert_true(prfValuesEquals(actual.extensions.prf.evalByCredential["test cred"], expected.extensions.prf.evalByCredential["test cred"]), "prf ebc");
+  // Some implementations do not support all of these extensions.
+  if (actual.extensions.hasOwnProperty('appidExclude')) {
+    assert_equals(
+        actual.extensions.appidExclude, expected.extensions.appidExclude);
+  }
+  if (actual.extensions.hasOwnProperty('hmacCreateSecret')) {
+    assert_equals(
+        actual.extensions.hmacCreateSecret,
+        expected.extensions.hmacCreateSecret);
+  }
+  if (actual.extensions.hasOwnProperty('credentialProtectionPolicy')) {
+    assert_equals(
+        actual.extensions.credentialProtectionPolicy,
+        expected.extensions.credentialProtectionPolicy);
+  }
+  if (actual.extensions.hasOwnProperty('enforceCredentialProtectionPolicy')) {
+    assert_equals(
+        actual.extensions.enforceCredentialProtectionPolicy,
+        expected.extensions.enforceCredentialProtectionPolicy);
+  }
+  if (actual.extensions.hasOwnProperty('minPinLength')) {
+    assert_equals(
+        actual.extensions.minPinLength, expected.extensions.minPinLength);
+  }
+  if (actual.extensions.hasOwnProperty('credProps')) {
+    assert_equals(actual.extensions.credProps, expected.extensions.credProps);
+  }
+  if (actual.extensions.hasOwnProperty('largeBlob')) {
+    assert_equals(
+        actual.extensions.largeBlob.support,
+        expected.extensions.largeBlob.support);
+    assert_true(bytesEqual(
+        actual.extensions.largeBlob.write,
+        expected.extensions.largeBlob.write));
+  }
+  if (actual.extensions.hasOwnProperty('credBlob')) {
+    assert_true(
+        bytesEqual(actual.extensions.credBlob, expected.extensions.credBlob));
+  }
+  if (actual.extensions.hasOwnProperty('supplementalPubKeys')) {
+    assertJsonEquals(
+        actual.extensions.supplementalPubKeys,
+        expected.extensions.supplementalPubKeys);
+  }
+  if (actual.extensions.hasOwnProperty('prf')) {
+    let prfValuesEquals = (a, b) => {
+      return bytesEqual(a.first, b.first) && bytesEqual(a.second, b.second);
+    };
+    assert_true(
+        prfValuesEquals(
+            actual.extensions.prf.eval, expected.extensions.prf.eval),
+        'prf eval');
+    assert_true(
+        prfValuesEquals(
+            actual.extensions.prf.evalByCredential['test cred'],
+            expected.extensions.prf.evalByCredential['test cred']),
+        'prf ebc');
+  }
 }, "parseCreationOptionsFromJSON() with extensions");

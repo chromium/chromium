@@ -23,8 +23,6 @@
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/supervised_user/core/browser/proto/get_discover_feed_response.pb.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
@@ -113,13 +111,6 @@ std::optional<feedstore::DataOperation> TranslateDataOperation(
   return ::feed::TranslateDataOperation(base::Time(), std::move(operation));
 }
 
-RefreshResponseData TranslateWireResponse(
-    supervised_user::GetDiscoverFeedResponse response) {
-  return TranslateWireResponse(response,
-                               StreamModelUpdateRequest::Source::kNetworkUpdate,
-                               TestAccountInfo(), kCurrentTime);
-}
-
 }  // namespace
 
 class ProtocolTranslatorTest : public testing::Test {
@@ -128,10 +119,6 @@ class ProtocolTranslatorTest : public testing::Test {
   ProtocolTranslatorTest(ProtocolTranslatorTest&) = delete;
   ProtocolTranslatorTest& operator=(const ProtocolTranslatorTest&) = delete;
   ~ProtocolTranslatorTest() override = default;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(kFeedExperimentIDTagging);
-  }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -234,7 +221,7 @@ TEST_F(ProtocolTranslatorTest, PrivacyNoticeFulfilled) {
 
 TEST_F(ProtocolTranslatorTest, ExperimentsAreTranslated) {
   Experiments expected;
-  std::vector<std::string> group_list{"Group1"};
+  std::vector<ExperimentGroup> group_list{{"Group1", 123}};
   expected["Trial1"] = group_list;
 
   feedwire::Response response = EmptyWireResponse();
@@ -244,65 +231,7 @@ TEST_F(ProtocolTranslatorTest, ExperimentsAreTranslated) {
                   ->add_experiments();
   exp->set_trial_name("Trial1");
   exp->set_group_name("Group1");
-
-  RefreshResponseData refresh = TranslateWireResponse(response);
-  ASSERT_TRUE(refresh.experiments.has_value());
-
-  EXPECT_EQ(refresh.experiments.value(), expected);
-}
-
-TEST_F(ProtocolTranslatorTest, ExperimentsAreTranslatedIDTaggingEnabled) {
-  Experiments expected;
-  std::vector<std::string> group_list1{"ID1"};
-  std::vector<std::string> group_list2{"ID2"};
-  expected[kDiscoverFeedExperiments] = group_list1;
-  expected["Trial1"] = group_list2;
-
-  feedwire::Response response = EmptyWireResponse();
-  auto* exp1 = response.mutable_feed_response()
-                   ->mutable_feed_response_metadata()
-                   ->mutable_chrome_feed_response_metadata()
-                   ->add_experiments();
-  exp1->set_experiment_id("ID1");
-  auto* exp2 = response.mutable_feed_response()
-                   ->mutable_feed_response_metadata()
-                   ->mutable_chrome_feed_response_metadata()
-                   ->add_experiments();
-  exp2->set_trial_name("Trial1");
-  exp2->set_experiment_id("ID2");
-
-  RefreshResponseData refresh = TranslateWireResponse(response);
-  ASSERT_TRUE(refresh.experiments.has_value());
-
-  EXPECT_EQ(refresh.experiments.value(), expected);
-}
-
-TEST_F(ProtocolTranslatorTest, ExperimentsAreTranslatedIDTaggingDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kFeedExperimentIDTagging);
-  Experiments expected;
-  std::vector<std::string> group_list{"Group1"};
-  expected["Trial1"] = group_list;
-
-  feedwire::Response response = EmptyWireResponse();
-  auto* exp1 = response.mutable_feed_response()
-                   ->mutable_feed_response_metadata()
-                   ->mutable_chrome_feed_response_metadata()
-                   ->add_experiments();
-  exp1->set_trial_name("Trial1");
-  exp1->set_group_name("Group1");
-
-  auto* exp2 = response.mutable_feed_response()
-                   ->mutable_feed_response_metadata()
-                   ->mutable_chrome_feed_response_metadata()
-                   ->add_experiments();
-  exp2->set_experiment_id("EXP_ID_NOT_TRANSLATED");
-  auto* exp3 = response.mutable_feed_response()
-                   ->mutable_feed_response_metadata()
-                   ->mutable_chrome_feed_response_metadata()
-                   ->add_experiments();
-  exp3->set_trial_name("Trial_NOT_TRANSLATED");
-  exp3->set_experiment_id("EXP_ID_NOT_TRANSLATED");
+  exp->set_experiment_id("123");
 
   RefreshResponseData refresh = TranslateWireResponse(response);
   ASSERT_TRUE(refresh.experiments.has_value());
@@ -900,75 +829,6 @@ TEST_F(ProtocolTranslatorTest, TranslateDismissData) {
 }
 )",
             ToTextProto(result[1]));
-}
-
-TEST_F(ProtocolTranslatorTest, TranslateEmptyDiscoverFeedResponse) {
-  supervised_user::GetDiscoverFeedResponse response;
-  EXPECT_TRUE(TranslateWireResponse(response).model_update_request);
-}
-
-TEST_F(ProtocolTranslatorTest, TranslateDiscoverFeedResponse) {
-  supervised_user::GetDiscoverFeedResponse response;
-  supervised_user::RenderedResult rendered_result1;
-  rendered_result1.set_elements_output("content 1");
-  *response.mutable_discover_feed()->add_rendered_result() = rendered_result1;
-
-  supervised_user::RenderedResult rendered_result2;
-  rendered_result2.set_elements_output("content 2");
-  *response.mutable_discover_feed()->add_rendered_result() = rendered_result2;
-
-  RefreshResponseData translated = TranslateWireResponse(response);
-  std::stringstream ss;
-  ss << *translated.model_update_request;
-  EXPECT_EQ(R"(source: 0
-stream_data: {
-}
-content: {
-  content_id {
-    type: 4
-    id: 2
-  }
-  frame: "content 1"
-}
-content: {
-  content_id {
-    type: 4
-    id: 3
-  }
-  frame: "content 2"
-}
-stream_structure: {
-  operation: 2
-  content_id {
-    id: 1
-  }
-  type: 1
-}
-stream_structure: {
-  operation: 2
-  content_id {
-    type: 4
-    id: 2
-  }
-  parent_id {
-    id: 1
-  }
-  type: 3
-}
-stream_structure: {
-  operation: 2
-  content_id {
-    type: 4
-    id: 3
-  }
-  parent_id {
-    id: 1
-  }
-  type: 3
-}
-max_structure_sequence_number: 0
-)",
-            ss.str());
 }
 
 }  // namespace feed

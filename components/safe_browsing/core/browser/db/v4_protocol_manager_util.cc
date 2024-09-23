@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
@@ -100,7 +102,8 @@ std::string GetReportUrl(const V4ProtocolConfig& config,
                         base::EscapeQueryParamValue(api_key, true).c_str());
   }
   if (reporting_level)
-    url.append(base::StringPrintf("&ext=%d", *reporting_level));
+    url.append(
+        base::StringPrintf("&ext=%d", static_cast<int>(*reporting_level)));
   if (is_enhanced_protection)
     url.append(base::StringPrintf("&enh=%d", is_enhanced_protection));
   return url;
@@ -133,10 +136,6 @@ ListIdentifier GetChromeExtMalwareId() {
 
 ListIdentifier GetChromeUrlApiId() {
   return ListIdentifier(GetCurrentPlatformType(), URL, API_ABUSE);
-}
-
-ListIdentifier GetChromeUrlClientIncidentId() {
-  return ListIdentifier(CHROME_PLATFORM, URL, CLIENT_INCIDENT);
 }
 
 ListIdentifier GetUrlBillingId() {
@@ -210,11 +209,11 @@ size_t StoreAndHashPrefix::hash() const {
 bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set) {
   for (SBThreatType type : set) {
     switch (type) {
-      case SB_THREAT_TYPE_URL_PHISHING:
-      case SB_THREAT_TYPE_URL_MALWARE:
-      case SB_THREAT_TYPE_URL_UNWANTED:
-      case SB_THREAT_TYPE_SUSPICIOUS_SITE:
-      case SB_THREAT_TYPE_BILLING:
+      case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
+      case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
+      case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
+      case SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+      case SBThreatType::SB_THREAT_TYPE_BILLING:
         break;
 
       default:
@@ -455,17 +454,15 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 
   // 2. Do URL unescaping until no more hex encoded characters exist.
   std::string url_unescaped_str(Unescape(url_without_fragment.spec()));
-  url::Parsed parsed;
-  url::ParseStandardURL(url_unescaped_str.data(), url_unescaped_str.length(),
-                        &parsed);
+  std::string_view url_unescaped_str_view(url_unescaped_str);
+  url::Parsed parsed = url::ParseStandardURL(url_unescaped_str);
 
   // 3. In hostname, remove all leading and trailing dots.
-  base::StringPiece host;
+  std::string_view host;
   if (parsed.host.is_nonempty())
-    host = base::StringPiece(url_unescaped_str.data() + parsed.host.begin,
-                             parsed.host.len);
+    host = url_unescaped_str_view.substr(parsed.host.begin, parsed.host.len);
 
-  base::StringPiece host_without_end_dots =
+  std::string_view host_without_end_dots =
       base::TrimString(host, ".", base::TrimPositions::TRIM_ALL);
 
   // 4. In hostname, replace consecutive dots with a single dot.
@@ -473,10 +470,9 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
       RemoveConsecutiveChars(host_without_end_dots, '.'));
 
   // 5. In path, replace runs of consecutive slashes with a single slash.
-  base::StringPiece path;
+  std::string_view path;
   if (parsed.path.is_nonempty())
-    path = base::StringPiece(url_unescaped_str.data() + parsed.path.begin,
-                             parsed.path.len);
+    path = url_unescaped_str_view.substr(parsed.path.begin, parsed.path.len);
   std::string path_without_consecutive_slash(RemoveConsecutiveChars(path, '/'));
 
   url::Replacements<char> hp_replacements;
@@ -501,9 +497,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   // 7. After performing all above steps, percent-escape all chars in url which
   // are <= ASCII 32, >= 127, #, %. Escapes must be uppercase hex characters.
   std::string escaped_canon_url_str(Escape(url_unescaped_with_can_hostpath));
-  url::Parsed final_parsed;
-  url::ParseStandardURL(escaped_canon_url_str.data(),
-                        escaped_canon_url_str.length(), &final_parsed);
+  url::Parsed final_parsed = url::ParseStandardURL(escaped_canon_url_str);
 
   if (canonicalized_hostname && final_parsed.host.is_nonempty()) {
     *canonicalized_hostname = escaped_canon_url_str.substr(
@@ -520,7 +514,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
 }
 
 // static
-std::string V4ProtocolManagerUtil::RemoveConsecutiveChars(base::StringPiece str,
+std::string V4ProtocolManagerUtil::RemoveConsecutiveChars(std::string_view str,
                                                           const char c) {
   std::string output;
   // Output is at most the length of the original string.

@@ -10,19 +10,21 @@
 #import "components/sessions/core/tab_restore_service.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_configuration_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+#import "ios/web/public/web_state.h"
 
-// TODO(crbug.com/1457146): Needed for `TabPresentationDelegate`, should be
+// TODO(crbug.com/40273478): Needed for `TabPresentationDelegate`, should be
 // refactored.
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 
@@ -36,38 +38,53 @@
 
 #pragma mark - GridCommands
 
-// TODO(crbug.com/1457146): Refactor the grid commands to have the same function
-// name to close all.
+- (void)closeItemWithID:(web::WebStateID)itemID {
+  // Record when a regular tab is closed.
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCloseRegularTab"));
+  [super closeItemWithID:itemID];
+}
+
+// TODO(crbug.com/40273478): Refactor the grid commands to have the same
+// function name to close all.
 - (void)closeAllItems {
-  NOTREACHED_NORETURN() << "Regular tabs should be saved before close all.";
+  NOTREACHED() << "Regular tabs should be saved before close all.";
 }
 
 - (void)saveAndCloseAllItems {
+  [self.inactiveTabsGridCommands saveAndCloseAllItems];
   if (![self canCloseTabs]) {
     return;
   }
-
-  const int closed_tabs = _tabsCloser->CloseTabs();
-  RecordTabGridCloseTabsCount(closed_tabs);
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
+
+  const int tabGroupCount = self.webStateList->GetGroups().size();
+
+  const int closedTabs = _tabsCloser->CloseTabs();
+  RecordTabGridCloseTabsCount(closedTabs);
+
+  [self showTabGroupSnackbarOrIPH:tabGroupCount];
 }
 
 - (void)undoCloseAllItems {
+  [self.inactiveTabsGridCommands undoCloseAllItems];
   if (![self canUndoCloseTabs]) {
     return;
   }
 
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridUndoCloseAllRegularTabs"));
+
   _tabsCloser->UndoCloseTabs();
 }
 
 - (void)discardSavedClosedItems {
+  [self.inactiveTabsGridCommands discardSavedClosedItems];
   if (![self canUndoCloseTabs]) {
     return;
   }
   _tabsCloser->ConfirmDeletion();
+  [self configureToolbarsButtons];
 }
 
 #pragma mark - TabGridPageMutator
@@ -81,35 +98,27 @@
 
     [self configureToolbarsButtons];
   }
-  // TODO(crbug.com/1457146): Implement.
+}
+
+- (void)setPageAsActive {
+  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  // TODO(crbug.com/1457146): Clean this in order to have "Close All" and "Undo"
-  // separated actions.
-  // This was saved as a stack: first save the inactive tabs, then the active
-  // tabs. So undo in the reverse order: first undo the active tabs, then the
-  // inactive tabs.
+  // TODO(crbug.com/40273478): Clean this in order to have "Close All" and
+  // "Undo" separated actions. This was saved as a stack: first save the
+  // inactive tabs, then the active tabs. So undo in the reverse order: first
+  // undo the active tabs, then the inactive tabs.
   if ([self canUndoCloseRegularOrInactiveTabs]) {
-    if ([self.consumer respondsToSelector:@selector(willUndoCloseAll)]) {
-      [self.consumer willUndoCloseAll];
-    }
+    [self.consumer willUndoCloseAll];
     [self undoCloseAllItems];
-    [self.inactiveTabsGridCommands undoCloseAllItems];
-    if ([self.consumer respondsToSelector:@selector(didUndoCloseAll)]) {
-      [self.consumer didUndoCloseAll];
-    }
+    [self.consumer didUndoCloseAll];
   } else {
-    if ([self.consumer respondsToSelector:@selector(willCloseAll)]) {
-      [self.consumer willCloseAll];
-    }
-    [self.inactiveTabsGridCommands saveAndCloseAllItems];
+    [self.consumer willCloseAll];
     [self saveAndCloseAllItems];
-    if ([self.consumer respondsToSelector:@selector(didCloseAll)]) {
-      [self.consumer didCloseAll];
-    }
+    [self.consumer didCloseAll];
   }
   // This is needed because configure button is called (web state list observer
   // in base grid mediator) when regular tabs are modified but not when inactive
@@ -127,14 +136,13 @@
     return;
   }
 
-  [self.gridConsumer setPageIdleStatus:NO];
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
   base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   [self.gridConsumer prepareForDismissal];
   // Shows the tab only if has been created.
   if ([self addNewItem]) {
-    [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
-    [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
-                                         focusOmnibox:NO];
+    [self displayActiveTab];
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridCreateRegularTab"));
   } else {
@@ -169,9 +177,8 @@
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc]
           initWithPage:TabGridPageRegularTabs];
-  toolbarsConfiguration.mode = self.currentMode;
 
-  if (self.currentMode == TabGridModeSelection) {
+  if (self.modeHolder.mode == TabGridMode::kSelection) {
     [self configureButtonsInSelectionMode:toolbarsConfiguration];
   } else {
     toolbarsConfiguration.closeAllButton = [self canCloseRegularOrInactiveTabs];
@@ -183,6 +190,18 @@
   }
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
+}
+
+- (void)displayActiveTab {
+  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
+  [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
+                                       focusOmnibox:NO];
+}
+
+- (void)updateForTabInserted {
+  if (!self.webStateList->empty()) {
+    [self discardSavedClosedItems];
+  }
 }
 
 #pragma mark - Private

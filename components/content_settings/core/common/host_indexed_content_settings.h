@@ -6,12 +6,17 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_HOST_INDEXED_CONTENT_SETTINGS_H_
 
 #include <iterator>
-#include <string>
+#include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_rules.h"
 #include "url/gurl.h"
+
+namespace base {
+class Clock;
+}
 
 namespace content_settings {
 
@@ -24,21 +29,27 @@ class HostIndexedContentSettings {
   typedef std::map<std::string, Rules, ContentSettingsPattern::CompareDomains>
       HostToContentSettings;
 
-  HostIndexedContentSettings();
-
   // Returns a vector of indices where each index contains entries from a
   // different |source|. This keeps the order of precedence of
-  // ContentSettingsProviders. Returns at least one index.
+  // ContentSettingsProviders.
   static std::vector<HostIndexedContentSettings> Create(
       const ContentSettingsForOneType& settings);
 
-  ~HostIndexedContentSettings();
+  HostIndexedContentSettings();
+
+  explicit HostIndexedContentSettings(const base::Clock* clock);
+
+  // Creates an index with additional metadata about the content settings
+  // provider that the settings came from.
+  HostIndexedContentSettings(ProviderType source, bool off_the_record);
+
   HostIndexedContentSettings(const HostIndexedContentSettings& other) = delete;
   HostIndexedContentSettings& operator=(const HostIndexedContentSettings&) =
       delete;
-
   HostIndexedContentSettings(HostIndexedContentSettings&& other);
   HostIndexedContentSettings& operator=(HostIndexedContentSettings&&);
+
+  ~HostIndexedContentSettings();
 
   struct Iterator {
     using iterator_category = std::input_iterator_tag;
@@ -47,33 +58,26 @@ class HostIndexedContentSettings {
     using pointer = const RuleEntry*;
     using reference = const RuleEntry&;
 
-    explicit Iterator(const HostIndexedContentSettings& index, bool begin);
+    Iterator(const HostIndexedContentSettings& index, bool begin);
     ~Iterator();
 
-    Iterator(Iterator&&) = delete;
+    Iterator(Iterator&&);
     Iterator& operator=(Iterator&&) = delete;
-    Iterator(const Iterator& other)
-        : index_(other.index_),
-          stage_(other.stage_),
-          next_map_iterator_(other.next_map_iterator_),
-          next_map_end_(other.next_map_end_),
-          current_iterator_(other.current_iterator_),
-          current_end_(other.current_end_) {
-      index_->iterating_++;
-    }
+    Iterator(const Iterator& other);
     Iterator& operator=(const Iterator&) = delete;
 
     reference operator*() const { return *current_iterator_; }
     pointer operator->() { return &*current_iterator_; }
 
     Iterator& operator++();
+    Iterator operator++(int);
 
     friend bool operator==(const Iterator& a, const Iterator& b) {
       return a.current_iterator_ == b.current_iterator_;
     }
 
     friend bool operator!=(const Iterator& a, const Iterator& b) {
-      return a.current_iterator_ != b.current_iterator_;
+      return !(a == b);
     }
 
    private:
@@ -100,6 +104,12 @@ class HostIndexedContentSettings {
   Iterator end() const;
 
   size_t size() const;
+  bool empty() const;
+
+  // Returns the source of the entries within this index.
+  const ProviderType& source() const { return source_; }
+  // Returns whether the index contains off the record entries.
+  const std::optional<bool>& off_the_record() const { return off_the_record_; }
 
   // Finds the RuleEntry with highest precedence that matches both the primary
   // and secondary urls or returns nullptr if no match is found. The pointer is
@@ -123,25 +133,17 @@ class HostIndexedContentSettings {
   // Clears the object information.
   void Clear();
 
-  // Compares the output of the previous lookup algorithm on a flat vector with
-  // the optimized indexed lookup algorithm.
-  void DcheckSameResultAsLinearLookup(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      const ContentSettingsForOneType& linear_settings) const;
+  void SetClockForTesting(const base::Clock* clock);
 
  private:
   HostToContentSettings primary_host_indexed_;
   HostToContentSettings secondary_host_indexed_;
   Rules wildcard_settings_;
+  ProviderType source_ = ProviderType::kNone;
+  std::optional<bool> off_the_record_;
+  raw_ptr<const base::Clock> clock_;
   mutable int iterating_ = 0;
 };
-
-// Finds the first (in precedence order) content setting in `settings`.
-const ContentSettingPatternSource* FindContentSetting(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    std::reference_wrapper<const ContentSettingsForOneType> settings);
 
 }  // namespace content_settings
 

@@ -1,8 +1,15 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++button
-++++++button
+++++++button collapsed name='popover1' nameFrom=contents
+++++++++staticText name='popover1' nameFrom=contents
+++++++++++inlineTextBox name='popover1' nameFrom=contents
+++++++button collapsed name='popover2' nameFrom=contents
+++++++++staticText name='popover2' nameFrom=contents
+++++++++++inlineTextBox name='popover2' nameFrom=contents
+++++++button collapsed name='popover3' nameFrom=contents
+++++++++staticText name='popover3' nameFrom=contents
+++++++++++inlineTextBox name='popover3' nameFrom=contents
 ++++++table ignored invisible
 ++++++++rowGroup ignored invisible
 ++++++++++row ignored invisible
@@ -11,6 +18,16 @@ rootWebArea
 ++++++++++row ignored invisible
 ++++++++++++cell ignored invisible
 ++++++++++++cell ignored invisible
-++++++button
-++++++button
-++++++button name='the title' nameFrom=title
+++++++genericContainer ignored invisible
+++++++button collapsed name='popover4' nameFrom=contents
+++++++++staticText name='popover4' nameFrom=contents
+++++++++++inlineTextBox name='popover4' nameFrom=contents
+++++++button collapsed description='the title' name='popover5' nameFrom=contents descriptionFrom=title
+++++++++staticText name='popover5' nameFrom=contents
+++++++++++inlineTextBox name='popover5' nameFrom=contents
+++++++group ispopup=hint
+++++++++staticText name='Test popover, open' nameFrom=contents
+++++++++++inlineTextBox name='Test popover, open' nameFrom=contents
+++++++button expanded description='Test popover, open' name='popover6' nameFrom=contents descriptionFrom=popoverAttribute detailsIds=group
+++++++++staticText name='popover6' nameFrom=contents
+++++++++++inlineTextBox name='popover6' nameFrom=contents

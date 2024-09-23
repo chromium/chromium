@@ -4,7 +4,6 @@
 
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
 
-#include <optional>
 #include <string>
 #include <vector>
 

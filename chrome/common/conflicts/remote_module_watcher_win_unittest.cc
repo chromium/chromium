@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/common/conflicts/module_event_sink_win.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -90,7 +91,13 @@ class RemoteModuleWatcherTest : public testing::Test,
 
 }  // namespace
 
-TEST_F(RemoteModuleWatcherTest, ModuleEvents) {
+// TODO: crbug.com/347201817 - Fix ODR violation.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ModuleEvents DISABLED_ModuleEvents
+#else
+#define MAYBE_ModuleEvents ModuleEvents
+#endif
+TEST_F(RemoteModuleWatcherTest, MAYBE_ModuleEvents) {
   auto remote_module_watcher = RemoteModuleWatcher::Create(
       base::SingleThreadTaskRunner::GetCurrentDefault(), Bind());
 

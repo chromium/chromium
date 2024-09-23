@@ -83,7 +83,9 @@ class MockAccessCodeCastPrefUpdater : public AccessCodeCastPrefUpdater {
   void ClearDevicesDict(base::OnceClosure on_cleared_callback) override;
   void ClearDeviceAddedTimeDict(base::OnceClosure on_cleared_callback) override;
 
-  MOCK_METHOD(void, UpdateDevicesDictForTest, (const MediaSinkInternal& sink));
+  MOCK_METHOD(void,
+              UpdateDevicesDictForTesting,
+              (const MediaSinkInternal& sink));
 
   void set_devices_dict(base::Value::Dict dict);
   void set_device_added_time_dict(base::Value::Dict dict);

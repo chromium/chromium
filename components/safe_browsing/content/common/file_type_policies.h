@@ -34,6 +34,7 @@ class FileTypePolicies {
  public:
   FileTypePolicies(const FileTypePolicies&) = delete;
   FileTypePolicies& operator=(const FileTypePolicies&) = delete;
+
   virtual ~FileTypePolicies();
 
   static FileTypePolicies* GetInstance();  // Singleton
@@ -164,6 +165,8 @@ class FileTypePolicies {
                            NoInspectionTypeReturnsDefault);
   FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest,
                            ChecksInspectionTypeNotDefault);
+  FRIEND_TEST_ALL_PREFIXES(FileTypePoliciesTest,
+                           NotDangerousOverrideShouldOnlyOverrideDangerType);
 
   friend struct FileTypePoliciesSingletonTrait;
   friend class FileTypePoliciesTestOverlay;

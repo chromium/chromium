@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 
 #include <algorithm>
@@ -163,7 +168,7 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
       suspended_tracks_.EraseAt(it);
   }
 
-  for (auto* it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
+  for (auto it = pending_tracks_.begin(); it != pending_tracks_.end(); ++it) {
     if (it->track == video_track) {
       pending_tracks_.erase(it);
       break;
@@ -328,7 +333,7 @@ void MediaStreamVideoSource::Restart(
 
 void MediaStreamVideoSource::RestartSourceImpl(
     const media::VideoCaptureFormat& new_format) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MediaStreamVideoSource::OnRestartDone(bool did_restart) {
@@ -570,23 +575,6 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void MediaStreamVideoSource::SendWheel(
-    double relative_x,
-    double relative_y,
-    int wheel_delta_x,
-    int wheel_delta_y,
-    base::OnceCallback<void(DOMException*)> callback) {
-  std::move(callback).Run(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Unsupported."));
-}
-
-void MediaStreamVideoSource::SetZoomLevel(
-    int zoom_level,
-    base::OnceCallback<void(DOMException*)> callback) {
-  std::move(callback).Run(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Unsupported."));
-}
-
 void MediaStreamVideoSource::ApplySubCaptureTarget(
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,

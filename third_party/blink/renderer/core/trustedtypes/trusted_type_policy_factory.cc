@@ -209,6 +209,12 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kTrustedTypesCreatePolicy);
 
+  // Count policy creation with empty names.
+  if (policy_name.empty()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kTrustedTypesCreatePolicyWithEmptyName);
+  }
+
   // TT requires two validity checks: One against the CSP, and one for the
   // default policy. Use |disallowed| (and |violation_details|) to aggregate
   // these, so we can have unified error handling.
@@ -289,40 +295,22 @@ TrustedTypePolicyFactory::TrustedTypePolicyFactory(ExecutionContext* context)
       empty_html_(MakeGarbageCollected<TrustedHTML>("")),
       empty_script_(MakeGarbageCollected<TrustedScript>("")) {}
 
-const WrapperTypeInfo*
-TrustedTypePolicyFactory::GetWrapperTypeInfoFromScriptValue(
-    ScriptState* script_state,
-    const ScriptValue& script_value) {
-  v8::Local<v8::Value> value = script_value.V8Value();
-  if (value.IsEmpty() || !value->IsObject() ||
-      !V8DOMWrapper::IsWrapper(script_state->GetIsolate(), value))
-    return nullptr;
-  v8::Local<v8::Object> object = value.As<v8::Object>();
-  return ToWrapperTypeInfo(object);
-}
-
 bool TrustedTypePolicyFactory::isHTML(ScriptState* script_state,
                                       const ScriptValue& script_value) {
-  const WrapperTypeInfo* wrapper_type_info =
-      GetWrapperTypeInfoFromScriptValue(script_state, script_value);
-  return wrapper_type_info &&
-         wrapper_type_info->Equals(V8TrustedHTML::GetWrapperTypeInfo());
+  return V8TrustedHTML::HasInstance(script_state->GetIsolate(),
+                                    script_value.V8Value());
 }
 
 bool TrustedTypePolicyFactory::isScript(ScriptState* script_state,
                                         const ScriptValue& script_value) {
-  const WrapperTypeInfo* wrapper_type_info =
-      GetWrapperTypeInfoFromScriptValue(script_state, script_value);
-  return wrapper_type_info &&
-         wrapper_type_info->Equals(V8TrustedScript::GetWrapperTypeInfo());
+  return V8TrustedScript::HasInstance(script_state->GetIsolate(),
+                                      script_value.V8Value());
 }
 
 bool TrustedTypePolicyFactory::isScriptURL(ScriptState* script_state,
                                            const ScriptValue& script_value) {
-  const WrapperTypeInfo* wrapper_type_info =
-      GetWrapperTypeInfoFromScriptValue(script_state, script_value);
-  return wrapper_type_info &&
-         wrapper_type_info->Equals(V8TrustedScriptURL::GetWrapperTypeInfo());
+  return V8TrustedScriptURL::HasInstance(script_state->GetIsolate(),
+                                         script_value.V8Value());
 }
 
 TrustedHTML* TrustedTypePolicyFactory::emptyHTML() const {

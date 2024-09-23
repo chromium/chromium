@@ -9,6 +9,10 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 // Exposes methods to enable and control Virtual Time mode for associated
@@ -86,7 +90,7 @@ class VirtualTimeController {
   // the WebScopedVirtualTimePauser returned by this method is initially
   // unpaused.
   virtual WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const String& name,
+      const WTF::String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration) = 0;
 };
 

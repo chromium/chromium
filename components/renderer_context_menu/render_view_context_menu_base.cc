@@ -113,7 +113,7 @@ void AddCustomItemsToMenu(
         break;
       case blink::mojom::CustomContextMenuItemType::kGroup:
         // TODO(viettrungluu): I don't know what this is supposed to do.
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       case blink::mojom::CustomContextMenuItemType::kSeparator:
         menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -130,7 +130,7 @@ void AddCustomItemsToMenu(
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -461,7 +461,8 @@ void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
       url, referring_url, initiator, disposition, transition, extra_headers,
       started_from_context_menu);
 
-  source_web_contents_->OpenURL(open_url_params);
+  source_web_contents_->OpenURL(open_url_params,
+                                /*navigation_handle_callback=*/{});
 }
 
 content::OpenURLParams

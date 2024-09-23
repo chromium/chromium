@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -78,7 +79,7 @@ std::unique_ptr<IDBKey> IDBKey::Clone(const IDBKey* rkey) {
     case mojom::IDBKeyType::Min:
       break;  // Not used, NOTREACHED.
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
@@ -107,10 +108,10 @@ IDBKey::IDBKey(const String& value)
       size_estimate_(kIDBKeyOverheadSize + (string_.length() * sizeof(UChar))) {
 }
 
-IDBKey::IDBKey(scoped_refptr<SharedBuffer> value)
+IDBKey::IDBKey(scoped_refptr<base::RefCountedData<Vector<char>>> value)
     : type_(mojom::IDBKeyType::Binary),
       binary_(std::move(value)),
-      size_estimate_(kIDBKeyOverheadSize + binary_.get()->size()) {}
+      size_estimate_(kIDBKeyOverheadSize + binary_->data.size()) {}
 
 IDBKey::IDBKey(KeyArray key_array)
     : type_(mojom::IDBKeyType::Array),
@@ -157,11 +158,12 @@ int IDBKey::Compare(const IDBKey* other) const {
       }
       return CompareNumbers(array_.size(), other->array_.size());
     case mojom::IDBKeyType::Binary:
-      if (int result =
-              memcmp(binary_->Data(), other->binary_->Data(),
-                     std::min(binary_->size(), other->binary_->size())))
+      if (int result = memcmp(
+              binary_->data.data(), other->binary_->data.data(),
+              std::min(binary_->data.size(), other->binary_->data.size()))) {
         return result < 0 ? -1 : 1;
-      return CompareNumbers(binary_->size(), other->binary_->size());
+      }
+      return CompareNumbers(binary_->data.size(), other->binary_->data.size());
     case mojom::IDBKeyType::String:
       return CodeUnitCompare(string_, other->string_);
     case mojom::IDBKeyType::Date:
@@ -172,11 +174,11 @@ int IDBKey::Compare(const IDBKey* other) const {
     case mojom::IDBKeyType::Invalid:
     case mojom::IDBKeyType::None:
     case mojom::IDBKeyType::Min:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return 0;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -186,7 +188,7 @@ v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
   switch (type_) {
     case mojom::IDBKeyType::Invalid:
     case mojom::IDBKeyType::Min:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return v8::Local<v8::Value>();
     case mojom::IDBKeyType::None:
       return v8::Null(isolate);
@@ -196,8 +198,9 @@ v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
       return V8String(isolate, GetString());
     case mojom::IDBKeyType::Binary:
       // https://w3c.github.io/IndexedDB/#convert-a-value-to-a-key
-      return ToV8Traits<DOMArrayBuffer>::ToV8(script_state,
-                                              DOMArrayBuffer::Create(Binary()));
+      return ToV8Traits<DOMArrayBuffer>::ToV8(
+          script_state,
+          DOMArrayBuffer::Create(base::as_byte_span(Binary()->data)));
     case mojom::IDBKeyType::Date:
       return v8::Date::New(context, Date()).ToLocalChecked();
     case mojom::IDBKeyType::Array: {
@@ -218,7 +221,7 @@ v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
     }
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return v8::Local<v8::Value>();
 }
 
@@ -252,7 +255,7 @@ Vector<std::unique_ptr<IDBKey>> IDBKey::ToMultiEntryArray(
       [](const std::unique_ptr<IDBKey>& a, const std::unique_ptr<IDBKey>& b) {
         return (a)->IsLessThan(b.get());
       });
-  std::unique_ptr<IDBKey>* end = std::unique(result.begin(), result.end());
+  auto end = std::unique(result.begin(), result.end());
   DCHECK_LE(static_cast<wtf_size_t>(end - result.begin()), result.size());
   result.resize(static_cast<wtf_size_t>(end - result.begin()));
 

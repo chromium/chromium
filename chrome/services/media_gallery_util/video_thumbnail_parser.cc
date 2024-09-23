@@ -13,17 +13,31 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/media_gallery_util/ipc_data_source.h"
+#include "media/base/media_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_thumbnail_decoder.h"
 #include "media/filters/android/video_frame_extractor.h"
-#include "media/filters/vpx_video_decoder.h"
 #include "media/media_buildflags.h"
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+#include "media/filters/ffmpeg_video_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_LIBVPX)
+#include "media/filters/vpx_video_decoder.h"
+#endif
+
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+#include "media/filters/dav1d_video_decoder.h"
+#endif
 
 namespace {
 
 // Return the video frame back to browser process. A valid |config| is
 // needed for deserialization.
 void OnSoftwareVideoFrameDecoded(
+    std::unique_ptr<media::MediaLog>,
     std::unique_ptr<media::VideoThumbnailDecoder>,
     MediaParser::ExtractVideoFrameCallback video_frame_callback,
     const media::VideoDecoderConfig& config,
@@ -52,34 +66,65 @@ void OnEncodedVideoFrameExtracted(
     return;
   }
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && \
-    !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  // H264 currently needs to be decoded in GPU process when no software decoder
-  // is provided.
-  if (config.codec() == media::VideoCodec::kH264) {
+  std::unique_ptr<media::MediaLog> log;
+  std::unique_ptr<media::VideoDecoder> software_decoder;
+  if (media::IsBuiltInVideoCodec(config.codec())) {
+    switch (config.codec()) {
+      case media::VideoCodec::kH264:
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+        log = std::make_unique<media::NullMediaLog>();
+        software_decoder =
+            std::make_unique<media::FFmpegVideoDecoder>(log.get());
+        break;
+#else
+        // IsBuiltInVideoCodec(H264) should never return true if
+        // ENABLE_FFMPEG_VIDEO_DECODERS is false.
+        NOTREACHED();
+#endif
+      case media::VideoCodec::kVP8:
+      case media::VideoCodec::kVP9:
+#if BUILDFLAG(ENABLE_LIBVPX)
+        software_decoder = std::make_unique<media::VpxVideoDecoder>();
+        break;
+#else
+        // IsBuiltInVideoCodec(VP8|VP9) should never return true if
+        // ENABLE_FFMPEG_VIDEO_DECODERS is false.
+        NOTREACHED();
+#endif
+      case media::VideoCodec::kAV1:
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+        software_decoder = std::make_unique<media::Dav1dVideoDecoder>(
+            std::make_unique<media::NullMediaLog>());
+        break;
+#else
+        // IsBuiltInVideoCodec(AV1) should never return true if
+        // ENABLE_FFMPEG_VIDEO_DECODERS is false.
+        NOTREACHED();
+#endif
+
+      default:
+        std::move(video_frame_callback).Run(nullptr);
+        return;
+    }
+  } else if (config.codec() == media::VideoCodec::kH264 ||
+             config.codec() == media::VideoCodec::kHEVC) {
     std::move(video_frame_callback)
         .Run(chrome::mojom::ExtractVideoFrameResult::New(
-
             chrome::mojom::VideoFrameData::NewEncodedData(std::move(data)),
             config));
     return;
-  }
-#endif
-
-  if (config.codec() != media::VideoCodec::kVP8 &&
-      config.codec() != media::VideoCodec::kVP9) {
+  } else {
     std::move(video_frame_callback).Run(nullptr);
     return;
   }
 
-  // Decode with libvpx for vp8, vp9.
   auto thumbnail_decoder = std::make_unique<media::VideoThumbnailDecoder>(
-      std::make_unique<media::VpxVideoDecoder>(), config, std::move(data));
+      std::move(software_decoder), config, std::move(data));
 
   auto* const thumbnail_decoder_ptr = thumbnail_decoder.get();
-  thumbnail_decoder_ptr->Start(
-      base::BindOnce(&OnSoftwareVideoFrameDecoded, std::move(thumbnail_decoder),
-                     std::move(video_frame_callback), config));
+  thumbnail_decoder_ptr->Start(base::BindOnce(
+      &OnSoftwareVideoFrameDecoded, std::move(log),
+      std::move(thumbnail_decoder), std::move(video_frame_callback), config));
 }
 
 void ExtractVideoFrameOnMediaThread(

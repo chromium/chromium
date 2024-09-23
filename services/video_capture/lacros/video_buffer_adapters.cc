@@ -37,7 +37,7 @@ gfx::GpuMemoryBufferHandle ToGfxGpuMemoryBufferHandle(
       gfx_buffer_handle.native_pixmap_handle =
           std::move(gfx_native_pixmap_handle);
     } else {
-      NOTREACHED() << "Unexpected new buffer type";
+      NOTREACHED_IN_MIGRATION() << "Unexpected new buffer type";
     }
   }
   return gfx_buffer_handle;
@@ -62,7 +62,7 @@ std::unique_ptr<media::ScopedFrameDoneHelper> GetAccessPermissionHelper(
 media::mojom::VideoBufferHandlePtr ConvertToMediaVideoBuffer(
     crosapi::mojom::VideoBufferHandlePtr buffer_handle) {
   if (buffer_handle->is_shared_buffer_handle()) {
-    // TODO(https://crbug.com/1307959): The LaCrOS interface should be migrated
+    // TODO(crbug.com/40218955): The LaCrOS interface should be migrated
     // to use base::UnsafeSharedMemoryRegion as well.
     return media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
         base::UnsafeSharedMemoryRegion::Deserialize(
@@ -76,7 +76,7 @@ media::mojom::VideoBufferHandlePtr ConvertToMediaVideoBuffer(
     return media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
         std::move(buffer_handle->get_read_only_shmem_region()));
   } else {
-    NOTREACHED() << "Unexpected new buffer type";
+    NOTREACHED_IN_MIGRATION() << "Unexpected new buffer type";
   }
 
   return nullptr;

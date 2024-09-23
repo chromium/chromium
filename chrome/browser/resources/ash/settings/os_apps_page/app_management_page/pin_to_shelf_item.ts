@@ -11,6 +11,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../../assert_extras.js';
 import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './pin_to_shelf_item.html.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
@@ -71,7 +72,7 @@ export class AppManagementPinToShelfItemElement extends PolymerElement {
         this.app.id,
         newState,
     );
-    recordSettingChange();
+    recordSettingChange(Setting.kAppPinToShelfOnOff, {boolValue: newState});
     const userAction = newState ?
         AppManagementUserAction.PIN_TO_SHELF_TURNED_ON :
         AppManagementUserAction.PIN_TO_SHELF_TURNED_OFF;

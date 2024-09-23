@@ -6,23 +6,15 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
 
-TestLocalCardMigrationManager::TestLocalCardMigrationManager(
-    AutofillDriver* driver,
-    AutofillClient* client,
-    TestPersonalDataManager* personal_data_manager)
-    : LocalCardMigrationManager(client,
-                                "en-US",
-                                personal_data_manager),
-      personal_data_manager_(personal_data_manager) {}
-
 TestLocalCardMigrationManager::~TestLocalCardMigrationManager() = default;
 
 bool TestLocalCardMigrationManager::IsCreditCardMigrationEnabled() {
-  return payments::GetBillingCustomerId(personal_data_manager_) != 0;
+  return payments::GetBillingCustomerId(&payments_data_manager()) != 0;
 }
 
 bool TestLocalCardMigrationManager::LocalCardMigrationWasTriggered() {
@@ -50,16 +42,17 @@ void TestLocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(
 }
 
 void TestLocalCardMigrationManager::EnablePaymentsWalletSyncInTransportMode() {
-  personal_data_manager_->SetIsPaymentsWalletSyncTransportEnabled(true);
+  static_cast<TestPaymentsDataManager&>(payments_data_manager())
+      .SetIsPaymentsWalletSyncTransportEnabled(true);
 }
 
 void TestLocalCardMigrationManager::OnDidGetUploadDetails(
     bool is_from_settings_page,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message,
     std::vector<std::pair<int, int>> supported_bin_ranges) {
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     local_card_migration_was_triggered_ = true;
   }
   LocalCardMigrationManager::OnDidGetUploadDetails(

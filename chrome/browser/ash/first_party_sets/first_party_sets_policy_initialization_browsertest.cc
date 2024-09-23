@@ -85,8 +85,9 @@ class FirstPartySetsPolicyInitializationTest : public LoginManagerTest {
 // Verifies that policy defaults are used when not specified.
 IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest, PolicyDefaults) {
   base::RunLoop loop;
-  BrowserContextKeyedServiceFactory::TestingFactory factory =
-      base::BindLambdaForTesting([&](content::BrowserContext* context) {
+  ::first_party_sets::FirstPartySetsPolicyServiceFactory::GlobalTestingFactory
+      factory = base::BindLambdaForTesting([&](content::BrowserContext*
+                                                   context) {
         Profile* profile = Profile::FromBrowserContext(context);
         EXPECT_TRUE(profile->GetPrefs()
                         ->FindPreference(
@@ -113,8 +114,9 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest, PolicyDefaults) {
 IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
                        EnabledPolicySetAndUsed) {
   base::RunLoop loop;
-  BrowserContextKeyedServiceFactory::TestingFactory factory =
-      base::BindLambdaForTesting([&](content::BrowserContext* context) {
+  ::first_party_sets::FirstPartySetsPolicyServiceFactory::GlobalTestingFactory
+      factory = base::BindLambdaForTesting([&](content::BrowserContext*
+                                                   context) {
         Profile* profile = Profile::FromBrowserContext(context);
         // Only the FirstPartySetsEnabled pref was set.
         EXPECT_FALSE(profile->GetPrefs()
@@ -155,8 +157,9 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
               }
             )")
                                        .value();
-  BrowserContextKeyedServiceFactory::TestingFactory factory =
-      base::BindLambdaForTesting([&](content::BrowserContext* context) {
+  ::first_party_sets::FirstPartySetsPolicyServiceFactory::GlobalTestingFactory
+      factory = base::BindLambdaForTesting([&](content::BrowserContext*
+                                                   context) {
         Profile* profile = Profile::FromBrowserContext(context);
         // Both prefs were set.
         EXPECT_FALSE(profile->GetPrefs()

@@ -11,7 +11,8 @@
 
 namespace blink::bindings {
 
-// Common implementation of Run{Next,Fulfill,Reject}StepsCallable.
+// Common implementation of
+// Run{Next,Fulfill,Reject,Return,ReturnFulfill}StepsCallable.
 class AsyncIterationSourceBase::CallableCommon
     : public ScriptFunction::Callable {
  public:
@@ -36,7 +37,9 @@ class AsyncIterationSourceBase::RunNextStepsCallable final
       : AsyncIterationSourceBase::CallableCommon(iteration_source) {}
 
   ScriptValue Call(ScriptState* script_state, ScriptValue) override {
-    return iteration_source_->RunNextSteps(script_state).AsScriptValue();
+    return ScriptValue(
+        script_state->GetIsolate(),
+        iteration_source_->RunNextSteps(script_state).V8Promise());
   }
 };
 
@@ -62,6 +65,51 @@ class AsyncIterationSourceBase::RunRejectStepsCallable final
   ScriptValue Call(ScriptState* script_state, ScriptValue reason) override {
     return iteration_source_->RunRejectSteps(script_state, reason);
   }
+};
+
+class AsyncIterationSourceBase::RunReturnStepsCallable final
+    : public AsyncIterationSourceBase::CallableCommon {
+ public:
+  explicit RunReturnStepsCallable(AsyncIterationSourceBase* iteration_source,
+                                  ScriptValue value)
+      : AsyncIterationSourceBase::CallableCommon(iteration_source),
+        value_(std::move(value)) {}
+
+  ScriptValue Call(ScriptState* script_state, ScriptValue) override {
+    return ScriptValue(
+        script_state->GetIsolate(),
+        iteration_source_->RunReturnSteps(script_state, value_).V8Promise());
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(value_);
+    AsyncIterationSourceBase::CallableCommon::Trace(visitor);
+  }
+
+ private:
+  const ScriptValue value_;
+};
+
+class AsyncIterationSourceBase::RunReturnFulfillStepsCallable final
+    : public AsyncIterationSourceBase::CallableCommon {
+ public:
+  explicit RunReturnFulfillStepsCallable(
+      AsyncIterationSourceBase* iteration_source,
+      ScriptValue value)
+      : AsyncIterationSourceBase::CallableCommon(iteration_source),
+        value_(std::move(value)) {}
+
+  ScriptValue Call(ScriptState* script_state, ScriptValue) override {
+    return iteration_source_->RunReturnFulfillSteps(script_state, value_);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(value_);
+    AsyncIterationSourceBase::CallableCommon::Trace(visitor);
+  }
+
+ private:
+  const ScriptValue value_;
 };
 
 AsyncIterationSourceBase::AsyncIterationSourceBase(ScriptState* script_state,
@@ -103,8 +151,35 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
     ScriptState* script_state,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  NOTIMPLEMENTED();
-  return {};
+  ScriptPromiseUntyped return_steps_promise;
+  if (!ongoing_promise_.IsEmpty()) {
+    // step 10. If ongoingPromise is not null, then:
+    // step 10.2. Let onSettled be CreateBuiltinFunction(returnSteps, << >>).
+    ScriptFunction* on_settled = MakeGarbageCollected<ScriptFunction>(
+        script_state,
+        MakeGarbageCollected<RunReturnStepsCallable>(
+            this, ScriptValue(script_state->GetIsolate(), value)));
+    // step 10.3. Perform PerformPromiseThen(ongoingPromise, onSettled,
+    //     onSettled, afterOngoingPromiseCapability).
+    // step 11.4. Set object's ongoing promise to
+    //     afterOngoingPromiseCapability.[[Promise]].
+    ongoing_promise_ = ongoing_promise_.Then(on_settled, on_settled);
+  } else {
+    // step 11. Otherwise:
+    // step 11.1. Set object's ongoing promise to the result of
+    //     running returnSteps.
+    ongoing_promise_ = RunReturnSteps(
+        script_state, ScriptValue(script_state->GetIsolate(), value));
+  }
+  // step 13. Let onFulfilled be CreateBuiltinFunction(fulfillSteps, << >>).
+  ScriptFunction* on_fulfilled = MakeGarbageCollected<ScriptFunction>(
+      script_state, MakeGarbageCollected<RunReturnFulfillStepsCallable>(
+                        this, ScriptValue(script_state->GetIsolate(), value)));
+  // step 14. Perform PerformPromiseThen(object's ongoing promise, onFulfilled,
+  //     undefined, returnPromiseCapability).
+  return_steps_promise = ongoing_promise_.Then(on_fulfilled, nullptr);
+  // step 15. Return returnPromiseCapability.[[Promise]].
+  return return_steps_promise.V8Promise();
 }
 
 void AsyncIterationSourceBase::Trace(Visitor* visitor) const {
@@ -124,7 +199,7 @@ v8::Local<v8::Value> AsyncIterationSourceBase::MakeEndOfIteration() const {
 }
 
 // step 8. Let nextSteps be the following steps:
-ScriptPromise AsyncIterationSourceBase::RunNextSteps(
+ScriptPromise<IDLAny> AsyncIterationSourceBase::RunNextSteps(
     ScriptState* script_state) {
   if (is_finished_) {
     // step 8.2. If object's is finished is true, then:
@@ -132,7 +207,7 @@ ScriptPromise AsyncIterationSourceBase::RunNextSteps(
     // step 8.2.2. Perform ! Call(nextPromiseCapability.[[Resolve]], undefined,
     //     << result >>).
     // step 8.2.3. Return nextPromiseCapability.[[Promise]].
-    return ScriptPromise::Cast(
+    return ToResolvedPromise<IDLAny>(
         script_state,
         ESCreateIterResultObject(script_state, true,
                                  v8::Undefined(script_state->GetIsolate())));
@@ -145,9 +220,8 @@ ScriptPromise AsyncIterationSourceBase::RunNextSteps(
   // step 8.10. Return nextPromiseCapability.[[Promise]].
   DCHECK(!pending_promise_resolver_);
   pending_promise_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  pending_promise_resolver_->KeepAliveWhilePending();
-  ScriptPromise promise = pending_promise_resolver_->Promise();
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  auto promise = pending_promise_resolver_->Promise();
   GetNextIterationResult();
   return promise.Then(on_fulfilled_function_, on_rejected_function_);
 }
@@ -200,6 +274,44 @@ ScriptValue AsyncIterationSourceBase::RunRejectSteps(ScriptState* script_state,
   V8ThrowException::ThrowException(script_state->GetIsolate(),
                                    reason.V8Value());
   return {};
+}
+
+// step 8. Let returnSteps be the following steps:
+ScriptPromise<IDLAny> AsyncIterationSourceBase::RunReturnSteps(
+    ScriptState* script_state,
+    ScriptValue value) {
+  if (is_finished_) {
+    // step 8.2. If object's is finished is true, then:
+    // step 8.2.1. Let result be CreateIterResultObject(value, true).
+    // step 8.2.2. Perform ! Call(returnPromiseCapability.[[Resolve]],
+    //     undefined, << result >>).
+    // step 8.2.3. Return returnPromiseCapability.[[Promise]].
+    return ToResolvedPromise<IDLAny>(
+        script_state,
+        ESCreateIterResultObject(script_state, true, value.V8Value()));
+  }
+
+  // step 8.3. Set object's is finished to true.
+  is_finished_ = true;
+
+  // step 8.4. Return the result of running the asynchronous iterator return
+  //     algorithm for interface, given object's target, object, and value.
+  DCHECK(!pending_promise_resolver_);
+  pending_promise_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+  auto promise = pending_promise_resolver_->Promise();
+  AsyncIteratorReturn(value);
+  return promise;
+}
+
+// step 13. Let fulfillSteps be the following steps:
+ScriptValue AsyncIterationSourceBase::RunReturnFulfillSteps(
+    ScriptState* script_state,
+    ScriptValue value) {
+  // step 13.1. Return CreateIterResultObject(value, true).
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ESCreateIterResultObject(script_state, true, value.V8Value()));
 }
 
 }  // namespace blink::bindings

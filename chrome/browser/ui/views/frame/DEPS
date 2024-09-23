@@ -7,6 +7,10 @@ specific_include_rules = {
     "+ash",
     "+components/app_restore",
   ],
+  # Parts of this class use Ash, but only when run in classic Ash mode.
+  "browser_view\.cc": [
+    "+ash/wm/window_properties.h",
+  ],
   "dbus_appmenu\.*": [
     "+dbus",
   ],

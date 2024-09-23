@@ -21,7 +21,7 @@ void ShowCertificateViewer(content::WebContents* web_contents,
 
 // Opens a certificate viewer for client authentication under |parent| to
 // display |cert|.
-// TODO(https://crbug.com/1336065): remove this and use the internal cert
+// TODO(crbug.com/40847472): remove this and use the internal cert
 // viewer for client auth as well.
 void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
                                         gfx::NativeWindow parent,

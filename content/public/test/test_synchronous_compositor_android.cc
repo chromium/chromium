@@ -56,6 +56,10 @@ bool TestSynchronousCompositor::DemandDrawSw(SkCanvas* canvas,
   return true;
 }
 
+float TestSynchronousCompositor::GetVelocityInPixelsPerSecond() {
+  return 0.f;
+}
+
 void TestSynchronousCompositor::SetHardwareFrame(
     uint32_t layer_tree_frame_sink_id,
     std::unique_ptr<viz::CompositorFrame> frame) {

@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -18,16 +19,6 @@ class Size;
 
 namespace chrome_pdf {
 namespace draw_utils {
-
-// Struct for sending the sizes of the insets applied to the page to accommodate
-// for shadows/separators. I.e. the left component corresponds to the amount a
-// page was inset on the left side.
-struct PageInsetSizes {
-  int left;
-  int top;
-  int right;
-  int bottom;
-};
 
 // Struct for sending a page's gfx::Rect object along with its corresponding
 // index in the PDF document.
@@ -74,11 +65,10 @@ int GetMostVisiblePage(const std::vector<IndexedPage>& visible_pages,
 // Given `page_index`, and `num_of_pages`, return the configuration of
 // `single_view_insets` and `horizontal_separator` for the current page in
 // two-up view.
-PageInsetSizes GetPageInsetsForTwoUpView(
-    size_t page_index,
-    size_t num_of_pages,
-    const PageInsetSizes& single_view_insets,
-    int horizontal_separator);
+gfx::Insets GetPageInsetsForTwoUpView(size_t page_index,
+                                      size_t num_of_pages,
+                                      const gfx::Insets& single_view_insets,
+                                      int horizontal_separator);
 
 // Given `rect_size` and `document_size` create a horizontally centered
 // gfx::Rect placed at the bottom of the current document.
@@ -94,38 +84,37 @@ gfx::Rect GetScreenRect(const gfx::Rect& rect,
                         const gfx::Point& position,
                         double zoom);
 
-// Given `page_y`, `page_height`, `inset_sizes`, `doc_width`, and
-// `bottom_separator` all in the same coordinate space, return the page and its
-// surrounding border areas and `bottom_separator`. This includes the sides if
-// the page is narrower than the document.
+// Given `page_y`, `page_height`, `insets`, `doc_width`, and `bottom_separator`
+// all in the same coordinate space, return the page and its surrounding border
+// areas and `bottom_separator`. This includes the sides if the page is narrower
+// than the document.
 gfx::Rect GetSurroundingRect(int page_y,
                              int page_height,
-                             const PageInsetSizes& inset_sizes,
+                             const gfx::Insets& insets,
                              int doc_width,
                              int bottom_separator);
 
-// Given `page_rect` in document coordinates, `inset_sizes`, and
-// `bottom_separator`, return a gfx::Rect object representing the gap on the
-// left side of the page created by insetting the page. I.e. the difference,
-// on the left side, between the initial `page_rect` and the `page_rect` inset
-// with `inset_sizes` (current value of `page_rect`).
-// The x coordinate of `page_rect` must be greater than or equal to
-// `inset_sizes.left`.
+// Given `page_rect` in document coordinates, `insets`, and `bottom_separator`,
+// return a gfx::Rect object representing the gap on the left side of the page
+// created by insetting the page. I.e. the difference, on the left side, between
+// the initial `page_rect` and the `page_rect` inset with `insets` (current
+// value of `page_rect`). The x coordinate of `page_rect` must be greater than
+// or equal to `insets.left`.
 gfx::Rect GetLeftFillRect(const gfx::Rect& page_rect,
-                          const PageInsetSizes& inset_sizes,
+                          const gfx::Insets& insets,
                           int bottom_separator);
 
 // Same as GetLeftFillRect(), but for the right side of `page_rect` and also
 // depends on the `doc_width`. Additionally, `doc_width` must be greater than or
-// equal to the sum of `page_rect.right` and `inset_sizes.right`.
+// equal to the sum of `page_rect.right` and `insets.right`.
 gfx::Rect GetRightFillRect(const gfx::Rect& page_rect,
-                           const PageInsetSizes& inset_sizes,
+                           const gfx::Insets& insets,
                            int doc_width,
                            int bottom_separator);
 
 // Same as GetLeftFillRect(), but for the bottom side of `page_rect`.
 gfx::Rect GetBottomFillRect(const gfx::Rect& page_rect,
-                            const PageInsetSizes& inset_sizes,
+                            const gfx::Insets& insets,
                             int bottom_separator);
 
 // Given `rect_size`, create a gfx::Rect where the top-right corner lies at

@@ -12,22 +12,30 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
     "java/src/org/chromium/chrome/browser/webauthn/ChromeAuthenticatorConfirmationFactory.java",
     "java/src/org/chromium/chrome/browser/webauthn/ChromeAuthenticatorFactory.java",
+    "java/src/org/chromium/chrome/browser/webauthn/CredManUiRecommenderImpl.java",
     "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
   ]
+
+  jar_excluded_patterns = [ "*/CredManUiRecommenderImpl*.class" ]
+
   deps = [
     ":java_resources",
-    ":jni_headers",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/cablev2_authenticator/public:java",
+    "//chrome/browser/autofill/android:java",
     "//chrome/browser/enterprise/util:java",
     "//chrome/browser/notifications:java",
+    "//chrome/browser/profiles/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/settings/android:java",
     "//components/externalauth/android:java",
     "//components/module_installer/android:module_installer_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
     "//components/webauthn/android:java",
     "//content/public/android:content_java",
     "//content/public/android:content_main_dex_java",
@@ -50,6 +58,11 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
     "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
   ]
+}
+
+android_library("recommender_public_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/webauthn/CredManUiRecommenderImpl.java" ]
+  deps = [ "//components/webauthn/android:java" ]
 }
 
 android_resources("java_resources") {

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] visualViewport.scale default value.
+  assert_equals: expected 1 but got 0.36734694242477417
+Harness: the test ran to completion.

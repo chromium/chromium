@@ -146,7 +146,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // Channel requests that we have already sent to the plugin process, but
   // haven't heard back about yet.
-  base::queue<Client*> sent_requests_;
+  base::queue<raw_ptr<Client, CtnExperimental>> sent_requests_;
 
   // Path to the plugin library.
   base::FilePath plugin_path_;

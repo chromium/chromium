@@ -107,17 +107,20 @@ using ImageType = ContentSettingImageModel::ImageType;
 
 class ContentSettingBubbleDialogTest
     : public DialogBrowserTest,
-      public testing::WithParamInterface<HostContentSettingsMap::ProviderType> {
+      public testing::WithParamInterface<content_settings::ProviderType> {
  public:
   ContentSettingBubbleDialogTest()
       : resetter_(&ChromeContentBrowserClient::
                       GetPopupNavigationDelegateFactoryForTesting(),
                   &CreateTestPopupNavigationDelegate) {
     scoped_feature_list_.InitWithFeatures(
-        {features::kQuietNotificationPrompts,
-         permissions::features::kPermissionStorageAccessAPI},
+        {features::kQuietNotificationPrompts},
         // Cookies icon intentionally does not show when 3PC are blocked.
-        {content_settings::features::kTrackingProtection3pcd});
+        {content_settings::features::kTrackingProtection3pcd,
+         // `kLeftHandSideActivityIndicators` should be disabled as it changes
+         // the UI of the camera/mic activity indicator. The new UI will be
+         // tested separately.
+         content_settings::features::kLeftHandSideActivityIndicators});
   }
 
   ContentSettingBubbleDialogTest(const ContentSettingBubbleDialogTest&) =
@@ -206,7 +209,7 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
       break;
     }
     case ContentSettingsType::PROTOCOL_HANDLERS:
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents)
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents)
           ->set_pending_protocol_handler(
               custom_handlers::ProtocolHandler::CreateProtocolHandler(
                   "mailto", GURL("https://example.com/")));
@@ -321,7 +324,7 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
       reason = QuietUiReason::kServicePredictedVeryUnlikelyGrant;
     }
     TriggerQuietNotificationPermissionRequest(reason);
-    ShowDialogBubble(ImageType::NOTIFICATIONS_QUIET_PROMPT);
+    ShowDialogBubble(ImageType::NOTIFICATIONS);
     return;
   }
 
@@ -422,5 +425,5 @@ IN_PROC_BROWSER_TEST_P(ContentSettingBubbleDialogTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     ContentSettingBubbleDialogTest,
-    testing::Values(HostContentSettingsMap::SUPERVISED_PROVIDER,
-                    HostContentSettingsMap::DEFAULT_PROVIDER));
+    testing::Values(content_settings::ProviderType::kSupervisedProvider,
+                    content_settings::ProviderType::kDefaultProvider));

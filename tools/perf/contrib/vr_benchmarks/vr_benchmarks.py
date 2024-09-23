@@ -29,38 +29,38 @@ class _BaseVRBenchmark(perf_benchmark.PerfBenchmark):
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_option(
+    parser.add_argument(
         '--disable-screen-reset',
         action='store_true',
         default=False,
-        help='Disables turning screen off and on after each story. '
-        'This is useful for local testing when turning off the '
-        'screen leads to locking the phone, which makes Telemetry '
-        'not produce valid results.')
-    parser.add_option(
+        help=('Disables turning screen off and on after each story. '
+              'This is useful for local testing when turning off the '
+              'screen leads to locking the phone, which makes Telemetry '
+              'not produce valid results.'))
+    parser.add_argument(
         '--recording-wpr',
         action='store_true',
         default=False,
-        help='Modifies benchmark behavior slightly while recording WPR files '
-             'for it. This largely boils down to adding waits/sleeps in order '
-             'to ensure that enough streaming data is recorded for the '
-             'benchmark to run without issues.')
-    parser.add_option(
+        help=('Modifies benchmark behavior slightly while recording WPR files '
+              'for it. This largely boils down to adding waits/sleeps in order '
+              'to ensure that enough streaming data is recorded for the '
+              'benchmark to run without issues.'))
+    parser.add_argument(
         '--desktop-runtime',
         default='openxr',
         choices=list(vr_state.WindowsSharedVrPageState.DESKTOP_RUNTIMES.keys()),
-        help='Which VR runtime to use on Windows. Defaults to %default')
-    parser.add_option(
+        help='Which VR runtime to use on Windows. Defaults to %(default)s')
+    parser.add_argument(
         '--use-real-runtime',
         action='store_true',
         default=False,
-        help='Use the real runtime instead of a mock implementation. This '
-             'requires the runtime to be installed on the system.')
-    parser.add_option(
+        help=('Use the real runtime instead of a mock implementation. This '
+              'requires the runtime to be installed on the system.'))
+    parser.add_argument(
         '--mock-runtime-directory',
-        help='The directory containing the mock runtime implementation to be '
-             'used. Defaults to the "mock_vr_clients" subdirectory of the '
-             'output directory.')
+        help=('The directory containing the mock runtime implementation to be '
+              'used. Defaults to the "mock_vr_clients" subdirectory of the '
+              'output directory.'))
 
 
 class _BaseWebVRWebXRBenchmark(_BaseVRBenchmark):

@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_MODEL_CONSTANTS_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #import "base/values.h"
 
 namespace promos_manager {
@@ -34,31 +34,23 @@ enum class Promo {
       4,  // Post Restore Sign-In (fullscreen, FRE-like promo)
   PostRestoreSignInAlert = 5,  // Post Restore Sign-In (native iOS alert)
   WhatsNew = 6,                // What's New Promo
+  // Choice = 7,               // Obsolete. Offer a choice.
   PostRestoreDefaultBrowserAlert =
       8,  // Post Restore Default Browser (native iOS alert)
   DefaultBrowserRemindMeLater = 9,  // Remind me later for default browser.
-  OmniboxPosition = 10,             // Choose between top and bottom omnibox.
-  DockingPromo = 11,                // Docking Promo.
-  DockingPromoRemindMeLater = 12,   // Docking Promo (Remind Me Later version).
-  AllTabsDefaultBrowser = 13,       // "All Tabs" default browser promo.
-  MadeForIOSDefaultBrowser = 14,    // "Made For iOS" default browser promo.
-  StaySafeDefaultBrowser = 15,      // "Stay Safe" default browser promo.
-  PostDefaultAbandonment = 16,      // Post-default browser abandonment alert.
+  // OmniboxPosition = 10,          // Obsolete. Choose between top and bottom
+  // omnibox.
+  DockingPromo = 11,               // Docking Promo.
+  DockingPromoRemindMeLater = 12,  // Docking Promo (Remind Me Later version).
+  AllTabsDefaultBrowser = 13,      // "All Tabs" default browser promo.
+  MadeForIOSDefaultBrowser = 14,   // "Made For iOS" default browser promo.
+  StaySafeDefaultBrowser = 15,     // "Stay Safe" default browser promo.
+  PostDefaultAbandonment = 16,     // Post-default browser abandonment alert.
   kMaxValue = PostDefaultAbandonment,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.cc)
 // Also update IOSPromosManagerPromo in
 // (/tools/metrics/histograms/metadata/ios/enums.xml).
-
-// Enum for IOS.PromosManager.Promo.ImpressionLimitEvaluation histogram.
-// Entries should not be renumbered and numeric values should never be reused.
-enum class IOSPromosManagerPromoImpressionLimitEvaluationType {
-  kValid = 0,
-  kInvalidPromoSpecificImpressionLimitTriggered = 1,
-  kInvalidPromoAgnosticImpressionLimitTriggered = 2,
-  kInvalidGlobalImpressionLimitTriggered = 3,
-  kMaxValue = kInvalidGlobalImpressionLimitTriggered,
-};
 
 // Enum for IOS.PromosManager.Promo.Type histogram.
 // Entries should not be renumbered and numeric values should never be reused.
@@ -88,10 +80,10 @@ struct Impression {
 std::string NameForPromo(Promo promo);
 
 // Returns a string representation of the short name for the provided `promo`.
-base::StringPiece ShortNameForPromo(Promo promo);
+std::string_view ShortNameForPromo(Promo promo);
 
 // Returns promos_manager::Promo for string `promo`.
-std::optional<Promo> PromoForName(base::StringPiece promo);
+std::optional<Promo> PromoForName(std::string_view promo);
 
 std::optional<Impression> ImpressionFromDict(const base::Value::Dict& dict);
 

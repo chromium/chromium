@@ -5,5 +5,8 @@
 module media.mojom;
 
 // Native struct media::AudioParameters;
-[Native]
+// Marked as Stable because it's referenced by the Stable
+// SpeechRecognitionContext interface which is used across the LaCrOS/Ash
+// boundary.
+[Native, Stable]
 struct AudioParameters;

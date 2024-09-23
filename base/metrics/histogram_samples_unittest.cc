@@ -93,4 +93,32 @@ TEST(SingleSampleTest, Overflow) {
   EXPECT_EQ(std::numeric_limits<uint16_t>::max(), sample.Extract().count);
 }
 
+TEST(HistogramSamplesTest, WriteAsciiBucketGraph) {
+  constexpr int kLineLength = 72;
+  constexpr size_t kOutputSize = kLineLength + 1;
+
+  std::string output;
+
+  HistogramSamples::WriteAsciiBucketGraph(0.0, kLineLength, &output);
+  ASSERT_EQ(output.size(), kOutputSize);
+  output.clear();
+
+  HistogramSamples::WriteAsciiBucketGraph(-1.0, kLineLength, &output);
+  ASSERT_EQ(output.size(), kOutputSize);
+  output.clear();
+
+  HistogramSamples::WriteAsciiBucketGraph(kLineLength - 1, kLineLength,
+                                          &output);
+  ASSERT_EQ(output.size(), kOutputSize);
+  output.clear();
+
+  HistogramSamples::WriteAsciiBucketGraph(kLineLength, kLineLength, &output);
+  ASSERT_EQ(output.size(), kOutputSize);
+  output.clear();
+
+  HistogramSamples::WriteAsciiBucketGraph(kLineLength + 1, kLineLength,
+                                          &output);
+  ASSERT_EQ(output.size(), kOutputSize + 1);
+}
+
 }  // namespace base

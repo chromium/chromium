@@ -9,9 +9,12 @@
 
 #include "base/barrier_closure.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
+#include "extensions/browser/ruleset_parse_result.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -21,22 +24,48 @@ namespace extensions::declarative_net_request {
 namespace {
 namespace dnr_api = api::declarative_net_request;
 
+// A boolean that indicates if a ruleset should be ignored.
+constexpr char kDNRIgnoreRulesetKey[] = "ignore_ruleset";
+
+// Key corresponding to which we store a ruleset's checksum for the Declarative
+// Net Request API.
+constexpr char kDNRChecksumKey[] = "checksum";
+
+// Converts a single ruleset result into a Dict.
+base::Value::Dict ConvertRulesetToDict(bool ignored,
+                                       std::optional<int> checksum) {
+  base::Value::Dict result;
+  result.Set(kDNRIgnoreRulesetKey, ignored);
+  if (checksum) {
+    result.Set(kDNRChecksumKey, *checksum);
+  }
+
+  return result;
+}
+
+void SetRulesetDict(base::Value::Dict& dict,
+                    RulesetID id,
+                    base::Value::Dict ruleset) {
+  std::string key = base::NumberToString(id.value());
+  DCHECK(!dict.Find(key));
+  dict.Set(key, std::move(ruleset));
+}
+
 // Combines indexing results from multiple FileBackedRulesetSources into a
 // single InstallIndexHelper::Result.
-InstallIndexHelper::Result CombineResults(
+RulesetParseResult CombineResults(
     std::vector<std::pair<const FileBackedRulesetSource*,
                           IndexAndPersistJSONRulesetResult>> results,
     bool log_histograms) {
   using IndexStatus = IndexAndPersistJSONRulesetResult::Status;
 
-  InstallIndexHelper::Result total_result;
-  total_result.ruleset_install_prefs.reserve(results.size());
+  RulesetParseResult total_result;
   bool any_ruleset_indexed_successfully = false;
   size_t enabled_rules_count = 0;
   size_t enabled_regex_rules_count = 0;
   base::TimeDelta total_index_and_persist_time;
 
-  // TODO(crbug.com/754526): Limit the number of install warnings across all
+  // TODO(crbug.com/40534665): Limit the number of install warnings across all
   // rulesets.
 
   // Note |results| may be empty.
@@ -63,9 +92,9 @@ InstallIndexHelper::Result CombineResults(
       // If the ruleset was ignored and not indexed, there should be install
       // warnings associated.
       DCHECK(!index_result.warnings.empty());
-      total_result.ruleset_install_prefs.emplace_back(
-          source->id(), std::nullopt /* ruleset_checksum */,
-          true /* ignored */);
+      SetRulesetDict(total_result.ruleset_install_prefs, source->id(),
+                     ConvertRulesetToDict(/*ignored=*/true,
+                                          /*checksum=*/std::nullopt));
       continue;
     }
 
@@ -74,9 +103,10 @@ InstallIndexHelper::Result CombineResults(
     if (index_result.status == IndexStatus::kSuccess) {
       any_ruleset_indexed_successfully = true;
 
-      total_result.ruleset_install_prefs.emplace_back(
-          source->id(), std::move(index_result.ruleset_checksum),
-          false /* ignored */);
+      SetRulesetDict(
+          total_result.ruleset_install_prefs, source->id(),
+          ConvertRulesetToDict(/*ignored=*/false,
+                               std::move(index_result.ruleset_checksum)));
 
       total_index_and_persist_time += index_result.index_and_persist_time;
 
@@ -111,12 +141,6 @@ InstallIndexHelper::Result CombineResults(
 
 }  // namespace
 
-InstallIndexHelper::Result::Result() = default;
-InstallIndexHelper::Result::~Result() = default;
-InstallIndexHelper::Result::Result(Result&&) = default;
-InstallIndexHelper::Result& InstallIndexHelper::Result::operator=(Result&&) =
-    default;
-
 // static
 void InstallIndexHelper::IndexStaticRulesets(
     const Extension& extension,
@@ -136,7 +160,35 @@ void InstallIndexHelper::IndexStaticRulesets(
 }
 
 // static
-InstallIndexHelper::Result InstallIndexHelper::IndexStaticRulesetsUnsafe(
+base::expected<base::Value::Dict, std::string>
+InstallIndexHelper::IndexAndPersistRulesOnInstall(Extension& extension) {
+  // Index all static rulesets and therefore parse all static rules at
+  // installation time for unpacked extensions. Throw an error for invalid rules
+  // where possible so that the extension developer is immediately notified.
+  auto ruleset_filter = declarative_net_request::FileBackedRulesetSource::
+      RulesetFilter::kIncludeAll;
+  auto parse_flags =
+      declarative_net_request::RulesetSource::kRaiseErrorOnInvalidRules |
+      declarative_net_request::RulesetSource::kRaiseWarningOnLargeRegexRules;
+
+  // TODO(crbug.com/40538050): IndexStaticRulesetsUnsafe will read and parse
+  // JSON synchronously. Change this so that we don't need to parse JSON in the
+  // browser process.
+  RulesetParseResult result =
+      IndexStaticRulesetsUnsafe(extension, ruleset_filter, parse_flags);
+  if (result.error) {
+    return base::unexpected(std::move(*result.error));
+  }
+
+  if (!result.warnings.empty()) {
+    extension.AddInstallWarnings(std::move(result.warnings));
+  }
+
+  return std::move(result.ruleset_install_prefs);
+}
+
+// static
+RulesetParseResult InstallIndexHelper::IndexStaticRulesetsUnsafe(
     const Extension& extension,
     FileBackedRulesetSource::RulesetFilter ruleset_filter,
     uint8_t parse_flags) {

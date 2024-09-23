@@ -116,7 +116,7 @@ void AnimateView(views::View* view,
 void FadeInView(views::View* view,
                 base::TimeDelta duration,
                 base::TimeDelta delay) {
-  if (!view->GetVisible()) {
+  if (!view || !view->GetVisible()) {
     return;
   }
 
@@ -230,7 +230,7 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view) {
         // make sure the button's text will be updated correctly while going
         // back to zero state.
         bar_view->UpdateDeskButtonsVisibility();
-        bar_view->DeprecatedLayoutImmediately();
+        bar_view->InvalidateLayout();
         if (OverviewController* overview_controller =
                 Shell::Get()->overview_controller()) {
           if (overview_controller->InOverviewSession()) {
@@ -316,10 +316,8 @@ void AnimateDeskIconButtonScale(DeskIconButton* button,
 
 }  // namespace
 
-void PerformAddDeskMiniViewAnimation(std::vector<DeskMiniView*> new_mini_views,
-                                     int shift_x) {
-  gfx::Transform mini_views_left_begin_transform;
-  mini_views_left_begin_transform.Translate(shift_x, 0);
+void PerformAddDeskMiniViewAnimation(
+    std::vector<DeskMiniView*> new_mini_views) {
   for (auto* mini_view : new_mini_views) {
     if (!mini_view->desk()->is_desk_being_removed()) {
       ScaleUpAndFadeInView(mini_view);
@@ -594,7 +592,7 @@ void PerformDeskBarSlideAnimation(std::unique_ptr<views::Widget> desks_widget,
   TRACE_EVENT0("ui", "PerformDeskBarSlideAnimation");
 
   // The desks widget should no longer process events at this point.
-  PrepareWidgetForOverviewShutdown(desks_widget.get());
+  PrepareWidgetForShutdownAnimation(desks_widget.get());
 
   gfx::Transform transform;
   transform.Translate(0, -desks_widget->GetWindowBoundsInScreen().height());

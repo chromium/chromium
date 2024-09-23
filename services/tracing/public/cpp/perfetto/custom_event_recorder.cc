@@ -69,19 +69,13 @@ struct InternedHistogramName
 
 CustomEventRecorder::CustomEventRecorder() {
   DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::TrackEvent::AddSessionObserver(this);
-#endif
 }
 
 CustomEventRecorder::~CustomEventRecorder()
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 {
   base::TrackEvent::RemoveSessionObserver(this);
 }
-#else
-    = default;
-#endif
 
 // static
 CustomEventRecorder* CustomEventRecorder::GetInstance() {
@@ -208,12 +202,10 @@ void CustomEventRecorder::OnTracingStopped(
   // Write metadata events etc.
   LogHistograms();
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   // We have to flush explicitly because we're using the asynchronous stop
   // mechanism.
   base::TrackEvent::Flush();
   std::move(stop_complete_callback).Run();
-#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Clean up callbacks if no tracing sessions are recording samples.
   bool enabled;

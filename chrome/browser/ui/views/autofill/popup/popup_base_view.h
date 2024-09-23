@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -44,7 +43,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   static constexpr int kElementBorderPadding = 1;
 
   // Default list of the preferred popup sides adjacent to the target element.
-  // The sides are tried one-by-one until a side with enough space is found.
   static constexpr std::array<views::BubbleArrowSide, 4>
       kDefaultPreferredPopupSides = {
           views::BubbleArrowSide::kTop, views::BubbleArrowSide::kBottom,
@@ -54,11 +52,9 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   PopupBaseView& operator=(const PopupBaseView&) = delete;
 
   static int GetCornerRadius();
-  // Returns the horizontal margin between elements and the edge of the view.
-  static int GetHorizontalMargin();
-  // Returns the horizontal space between elements in the view (e.g. icon and
-  // text).
-  static int GetHorizontalPadding();
+  // Returns the horizontal margin between the arrow and the edge of the view.
+  // Used to align child elements to the popup arrow.
+  static int ArrowHorizontalMargin();
 
   // Notify accessibility that an item has been selected.
   void NotifyAXSelection(views::View& view) override;
@@ -69,8 +65,8 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
  protected:
   PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
                 views::Widget* parent_widget,
-                base::span<const views::BubbleArrowSide> preferred_popup_sides =
-                    kDefaultPreferredPopupSides,
+                views::Widget::InitParams::Activatable new_widget_activatable =
+                    views::Widget::InitParams::Activatable::kDefault,
                 bool show_arrow_pointer = true);
   ~PopupBaseView() override;
 
@@ -96,21 +92,20 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // testing).
   virtual bool DoUpdateBoundsAndRedrawPopup();
 
-  // Returns the optimal bounds to place the popup with |preferred_size| and
-  // places an arrow on the popup border to point towards |element_bounds|
-  // within |max_bounds_for_popup|.
-  gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
+  // Returns the optimal bounds to place the popup with `preferred_size` and
+  // places an arrow on the popup border to point towards `element_bounds`
+  // within `max_bounds_for_popup`. The `preferred_popup_sides` are tried
+  // one-by-one until a side with enough space is found.
+  virtual gfx::Rect GetOptimalPositionAndPlaceArrowOnPopup(
       const gfx::Rect& element_bounds,
       const gfx::Rect& max_bounds_for_popup,
-      const gfx::Size& preferred_size);
+      const gfx::Size& preferred_size,
+      base::span<const views::BubbleArrowSide> preferred_popup_sides);
 
  private:
   friend class PopupBaseViewBrowsertest;
 
   class Widget;
-
-  // views::Views implementation.
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::WidgetFocusChangeListener implementation.
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
@@ -125,16 +120,10 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   // Hide the controller of this view. This assumes that doing so will
   // eventually hide this view in the process.
-  void HideController(PopupHidingReason reason);
+  void HideController(SuggestionHidingReason reason);
 
   // Return the web contents related to this.
   content::WebContents* GetWebContents() const;
-
-  // The native view that |this|'s related widget should sit in.
-  gfx::NativeView GetParentNativeView() const;
-
-  // Must return the container view for this popup.
-  gfx::NativeView container_view();
 
   // Scoped observation for focus events.
   base::ScopedObservation<views::WidgetFocusManager,
@@ -147,7 +136,8 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // The widget of the window that triggered this popup. Weak reference.
   raw_ptr<views::Widget> parent_widget_ = nullptr;
 
-  const std::vector<views::BubbleArrowSide> preferred_popup_sides_;
+  // The corresponding parameter for newly created widget (in `DoShow()`).
+  const views::Widget::InitParams::Activatable new_widget_activatable_;
 
   const bool show_arrow_pointer_;
 

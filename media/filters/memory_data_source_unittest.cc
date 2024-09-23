@@ -26,10 +26,10 @@ class MemoryDataSourceTest : public ::testing::Test {
 
  protected:
   void Initialize(size_t size) {
-    data_.assign(size, 0);
-    base::RandBytes(data_.data(), size);
+    data_.assign(size, 0u);
+    base::RandBytes(data_);
     memory_data_source_ =
-        std::make_unique<MemoryDataSource>(data_.data(), size);
+        std::make_unique<MemoryDataSource>(data_.data(), data_.size());
     EXPECT_EQ(size, GetSize());
   }
 

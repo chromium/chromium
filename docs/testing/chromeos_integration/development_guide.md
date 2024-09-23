@@ -1,4 +1,4 @@
-# Development Guide
+# Crosier Development Guide
 
 This doc assumes you're already familiar with ChromeOS on-device development.
 If not, please follow
@@ -17,20 +17,23 @@ run on DUT.
 ## How to run Ash test
 Please see: [go/crosier-run](http://go/crosier-run)
 
-## How to run Lacros test
-See the [demo test](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/base/chromeos/crosier/demo_integration_test.cc;l=19)
-for instructions
+## Test metadata
+
+Each Crosier test being added should include test metadata in `yaml` format.
+
+See [Crosier metadata guide](https://source.chromium.org/chromium/chromium/src/+/main:docs/testing/chromeos_integration/crosier_metadata.md)
+for more information on how to add it.
+
+## Debugging Crosier tests
+
+Debugging a Crosier test is like debugging any Chrome test on device. Following
+developer library resources are available:
+
+https://www.chromium.org/chromium-os/developer-library/guides/#debugging
 
 ## Continuous builders
-Currently the test binary runs against both Ash and Lacros on CI only.
-
-Ash:
 
 https://ci.chromium.org/ui/p/chromium/builders/ci/chromeos-amd64-generic-rel
-
-Lacros:
-
-https://ci.chromium.org/ui/p/chromium/builders/ci/lacros-amd64-generic-rel
 
 Target name is 'chromeos_integration_tests'.
 

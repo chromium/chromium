@@ -216,7 +216,7 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   custom_data[u"text/uri-list"] = u"data";
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(custom_data, &pickle);
-  data->SetCustomData(ui::ClipboardFormatType::WebCustomDataType(),
+  data->SetCustomData(ui::ClipboardFormatType::DataTransferCustomType(),
                       std::string(pickle.data_as_char(), pickle.size()));
   clipboard()->WriteClipboardData(std::move(data));
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
@@ -449,7 +449,7 @@ TEST_F(ClipboardNonBackedMockTimeTest,
             /*url=*/std::make_unique<std::string>().get());
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadCustomData(
+        clipboard->ReadDataTransferCustomData(
             ClipboardBuffer::kCopyPaste,
             /*type=*/std::u16string(), /*data_dst=*/nullptr,
             /*result=*/std::make_unique<std::u16string>().get());

@@ -6,6 +6,7 @@
                     bugprone-assert-side-effect,
                     bugprone-bool-pointer-implicit-conversion,
                     bugprone-dangling-handle,
+                    bugprone-forward-declaration-namespace,
                     bugprone-inaccurate-erase,
                     bugprone-string-constructor,
                     bugprone-string-integer-assignment,
@@ -57,4 +58,17 @@
     # https://groups.google.com/a/chromium.org/g/cxx/c/noMMTNYiM0w .
     - key:          modernize-use-emplace.IgnoreImplicitConstructors
       value:        1
+    # Use of `std::ranges::reverse_view` is inconsistent with
+    # Chromium style. Recommend `base::Reversed` instead.
+    - key:          modernize-loop-convert.MakeReverseRangeFunction
+      value:        base::Reversed
+    - key:          modernize-loop-convert.MakeReverseRangeHeader
+      value:        base/containers/adapters.h
+    # Exclude some third_party headers from modification as file paths are not
+    # starting from repository root in replacement suggestion.
+    # 'build/linux/debian' excludes system headers as they don't have
+    # appropriate IWYU pragmas.
+    # https://clang.llvm.org/extra/clang-tidy/checks/misc/include-cleaner.html
+    - key: misc-include-cleaner.IgnoreHeaders
+      value:        (gmock/gmock|gtest/gtest|third_party|build/linux/debian).*
 ...

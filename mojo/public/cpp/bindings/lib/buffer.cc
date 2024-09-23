@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 
 #include <cstring>
@@ -57,7 +62,6 @@ size_t Buffer::Allocate(size_t num_bytes) {
   if (new_cursor < cursor_ || (new_cursor > size_ && !message_.is_valid())) {
     // Either we've overflowed or exceeded a fixed capacity.
     NOTREACHED();
-    return 0;
   }
 
   if (new_cursor > size_) {

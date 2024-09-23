@@ -4,8 +4,13 @@
 
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 
+#include <sstream>
+
 #include "base/functional/callback.h"
+#include "base/notreached.h"
+#include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -138,6 +143,29 @@ std::ostream& operator<<(
     }
     os << "  filter_builder: " << std::endl;
     os << "    mode: " << mode_string << std::endl;
+
+    auto* filter_builder =
+        static_cast<BrowsingDataFilterBuilderImpl*>(p.filter_builder_.get());
+
+    std::string origin_mode_string;
+    switch (filter_builder->GetOriginModeForTesting()) {
+      case BrowsingDataFilterBuilder::OriginMatchingMode::kThirdPartiesIncluded:
+        origin_mode_string = "kThirdPartiesIncluded";
+        break;
+      case BrowsingDataFilterBuilder::OriginMatchingMode::kOriginInAllContexts:
+        origin_mode_string = "kOriginInAllContexts";
+        break;
+      default:
+        NOTREACHED();
+    }
+    os << "    origin mode: " << origin_mode_string << "\n";
+
+    os << "    cookie partition keys: "
+       << testing::PrintToString(
+              filter_builder->GetCookiePartitionKeyCollectionForTesting())
+       << "\n";
+    os << "    partitioned cookies only: "
+       << (filter_builder->PartitionedCookiesOnly() ? "true\n" : "false\n");
 
     auto config = p.filter_builder_->GetStoragePartitionConfig();
     os << "    StoragePartition: ";

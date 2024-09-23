@@ -36,7 +36,6 @@ NSProcessInfoThermalStateToDeviceThermalState(
       return base::PowerThermalObserver::DeviceThermalState::kCritical;
   }
   NOTREACHED();
-  return base::PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 }
 
@@ -110,7 +109,7 @@ ThermalStateObserverMac::GetCurrentThermalState() {
   return NSProcessInfoThermalStateToDeviceThermalState(nsinfo_state);
 }
 
-int ThermalStateObserverMac::GetCurrentSpeedLimit() {
+int ThermalStateObserverMac::GetCurrentSpeedLimit() const {
   apple::ScopedCFTypeRef<CFDictionaryRef> dictionary;
   IOReturn result = IOPMCopyCPUPowerStatus(dictionary.InitializeInto());
   if (result != kIOReturnSuccess) {

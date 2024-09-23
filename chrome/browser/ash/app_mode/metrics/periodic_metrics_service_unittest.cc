@@ -45,7 +45,6 @@ class BasePeriodicMetricsServiceTest {
             TestingBrowserProcess::GetGlobal())),
         network_handler_test_helper_(
             std::make_unique<NetworkHandlerTestHelper>()),
-        user_activity_detector_(std::make_unique<ui::UserActivityDetector>()),
         periodic_metrics_service_(local_state()),
         histogram_tester_(std::make_unique<base::HistogramTester>()) {}
 
@@ -92,7 +91,6 @@ class BasePeriodicMetricsServiceTest {
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
   PeriodicMetricsService periodic_metrics_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
@@ -217,8 +215,8 @@ class UserActivityPeriodicMetricsServiceTest
 
   void SetDeviceIdleTime(base::TimeDelta idle_time,
                          base::TimeTicks from_time = base::TimeTicks::Now()) {
-    user_activity_detector_->set_last_activity_time_for_test(from_time -
-                                                             idle_time);
+    ui::UserActivityDetector::Get()->set_last_activity_time_for_test(from_time -
+                                                                     idle_time);
   }
 };
 

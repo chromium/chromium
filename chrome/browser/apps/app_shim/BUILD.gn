@@ -16,8 +16,8 @@ source_set("app_shim") {
     "app_shim_manager_mac.h",
     "app_shim_termination_manager.cc",
     "app_shim_termination_manager.h",
-    "code_signature_mac.h",
     "code_signature_mac.cc",
+    "code_signature_mac.h",
     "mach_bootstrap_acceptor.cc",
     "mach_bootstrap_acceptor.h",
     "web_app_shim_manager_delegate_mac.cc",
@@ -26,12 +26,18 @@ source_set("app_shim") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//apps",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/web_applications:web_applications",
     "//chrome/common",
     "//chrome/common:app_mode_app_support",
@@ -39,6 +45,7 @@ source_set("app_shim") {
     "//chrome/common:mojo_bindings",
     "//chrome/common:non_code_constants",
     "//components/crx_file",
+    "//components/metrics:content",
     "//components/remote_cocoa/browser",
     "//components/version_info",
     "//components/webapps/common",

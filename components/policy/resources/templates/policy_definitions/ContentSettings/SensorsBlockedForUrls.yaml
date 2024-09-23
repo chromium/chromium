@@ -6,7 +6,7 @@ desc: |-
 
         If the same URL pattern exists in both this policy and the <ph name="SENSORS_ALLOWED_FOR_URLS_POLICY_NAME">SensorsAllowedForUrls</ph> policy, this policy is prioritized and access to motion or light sensors will be blocked.
 
-        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 example_value:
 - https://www.example.com
 - '[*.]example.edu'

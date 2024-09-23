@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API continue_on bundle origin trial tests.</title>
+<link rel="help" href="https://fedidcg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<!--
+Token generated with:
+generate_token.py https://web-platform.test:8444/ FedCmContinueOnBundle --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial"
+  content="A2t+kt2KUe7JyS8aAQ+nvuycueGWpr3uiVHtyG3WfvF8ppFyOopY5Xrd8Ag8mh1LKBolZQmhwpGmcEUJNWn8bg0AAABmeyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiRmVkQ21Db250aW51ZU9uQnVuZGxlIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9">
+
+<body>
+
+<script type="module">
+import {fedcm_test,
+        alt_request_options_with_mediation_required,
+        select_manifest,
+        fedcm_get_and_select_first_account} from '/fedcm/support/fedcm-helper.sub.js';
+
+promise_test(async t => {
+  assert_true("resolve" in IdentityProvider);
+}, "Test that functions exist where we expect them.");
+
+fedcm_test(async t => {
+  const options = alt_request_options_with_mediation_required('../../../wpt_internal/fedcm/resources/manifest_with_continue_on.json');
+  await select_manifest(t, options);
+  const cred = await fedcm_get_and_select_first_account(t, options);
+  assert_equals(cred.token, "account=1234");
+}, "Test that continue_on works as expected");
+</script>
+

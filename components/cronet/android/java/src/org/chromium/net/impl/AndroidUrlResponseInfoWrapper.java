@@ -33,17 +33,34 @@ class AndroidUrlResponseInfoWrapper extends org.chromium.net.UrlResponseInfo {
     // See mProxyServerCompat's Javadoc.
     public static AndroidUrlResponseInfoWrapper createForUrlRequest(
             android.net.http.UrlResponseInfo backend) {
-        // From //components/cronet/cronet_url_request.cc's GetProxy.
-        return new AndroidUrlResponseInfoWrapper(backend, ":0");
+        return isResponseInfoNull(backend)
+                ? null
+                : new AndroidUrlResponseInfoWrapper(
+                        backend, ":0" /* See cronet_url_request.cc's GetProxy. */);
     }
 
     // See mProxyServerCompat's Javadoc.
     public static AndroidUrlResponseInfoWrapper createForBidirectionalStream(
             android.net.http.UrlResponseInfo backend) {
-        // From
-        // //components/cronet/android/java/src/org/chromium/net/impl/CronetBidirectionalStream.java
-        // prepareResponseInfoOnNetworkThread.
-        return new AndroidUrlResponseInfoWrapper(backend, null);
+        return isResponseInfoNull(backend)
+                ? null
+                : new AndroidUrlResponseInfoWrapper(
+                        backend,
+                        null /* See CronetBidirectionalStream.java's prepareResponseInfoOnNetworkThread. */);
+    }
+
+    private static boolean isResponseInfoNull(android.net.http.UrlResponseInfo backend) {
+        if (backend == null) {
+            return true;
+        }
+        // Some versions of HttpEngine wrap the UrlResponseInfo without considering nullability. To
+        // preserve compat, check for null by triggering an NPE. See b/343183512
+        try {
+            backend.getUrl();
+        } catch (NullPointerException e) {
+            return true;
+        }
+        return false;
     }
 
     @Override

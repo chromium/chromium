@@ -35,6 +35,7 @@ import time
 
 from blinkpy.common.system import path
 from blinkpy.common.system.profiler import ProfilerFactory
+from blinkpy.web_tests.models.testharness_results import is_all_pass_test_result
 
 _log = logging.getLogger(__name__)
 
@@ -167,190 +168,11 @@ class DeviceFailure(Exception):
     pass
 
 
-class Driver(object):
-    """object for running test(s) using content_shell or other driver."""
+class TestURIMapper:
 
-    def __init__(self, port, worker_number, no_timeout=False):
-        """Initialize a Driver to subsequently run tests.
-
-        Typically this routine will spawn content_shell in a config
-        ready for subsequent input.
-
-        port - reference back to the port object.
-        worker_number - identifier for a particular worker/driver instance
-        """
+    def __init__(self, port):
         self.WPT_DIRS = port.WPT_DIRS
         self._port = port
-        self._worker_number = worker_number
-        self._no_timeout = no_timeout
-
-        self._driver_tempdir = None
-        # content_shell can report back subprocess crashes by printing
-        # "#CRASHED - PROCESSNAME".  Since those can happen at any time
-        # and ServerProcess won't be aware of them (since the actual tool
-        # didn't crash, just a subprocess) we record the crashed subprocess name here.
-        self._crashed_process_name = None
-        self._crashed_pid = None
-
-        # content_shell can report back subprocesses that became unresponsive
-        # This could mean they crashed.
-        self._subprocess_was_unresponsive = False
-
-        # content_shell can report back subprocess DOM-object leaks by printing
-        # "#LEAK". This leak detection is enabled only when the flag
-        # --enable-leak-detection is passed to content_shell.
-        self._leaked = False
-        self._leak_log = None
-
-        # stderr reading is scoped on a per-test (not per-block) basis, so we store the accumulated
-        # stderr output, as well as if we've seen #EOF on this driver instance.
-        # FIXME: We should probably remove _read_first_block and _read_optional_image_block and
-        # instead scope these locally in run_test.
-        self.error_from_test = bytearray()
-        self.err_seen_eof = False
-        self._server_process = None
-        self._current_cmd_line = None
-
-        self._measurements = {}
-        if self._port.get_option('profile'):
-            profiler_name = self._port.get_option('profiler')
-            self._profiler = ProfilerFactory.create_profiler(
-                self._port.host, self._port.path_to_driver(),
-                self._port.artifacts_directory(), profiler_name)
-        else:
-            self._profiler = None
-
-    def __del__(self):
-        self.stop()
-
-    def run_test(self, driver_input):
-        """Run a single test and return the results.
-
-        Note that it is okay if a test times out or crashes. content_shell
-        will be stopped when the test ends, and then restarted for the next
-        test when this function is invoked again. As part of the restart, the
-        state of Driver will be reset.
-
-        Returns a DriverOutput object.
-        """
-        start_time = time.time()
-        stdin_deadline = start_time + int(driver_input.timeout) / 2000.0
-        ok, startup_output = self.start(driver_input.args, stdin_deadline)
-        if not ok:
-            return startup_output
-
-        return self._run_one_input(driver_input, start_time)
-
-    def _run_one_input(self, driver_input, start_time):
-        test_begin_time = time.time()
-        self.error_from_test = bytearray()
-        self.err_seen_eof = False
-
-        test_command = self._command_from_driver_input(driver_input)
-        server_process_command = self._server_process.cmd()
-
-        deadline = test_begin_time + int(driver_input.timeout) / 1000.0
-        self._server_process.write(test_command.encode('utf8', 'replace'))
-        # First block is either text or audio
-        text, audio = self._read_first_block(deadline)
-        # The second (optional) block is image data.
-        image, actual_image_hash = self._read_optional_image_block(deadline)
-
-        crashed = self.has_crashed()
-        timed_out = self._server_process.timed_out
-        pid = self._server_process.pid()
-        leaked = self._leaked
-
-        if not crashed:
-            sanitizer = self._port.output_contains_sanitizer_messages(
-                self.error_from_test)
-            if sanitizer:
-                self.error_from_test = b'OUTPUT CONTAINS "sanitizer",' + \
-                    b' so we are treating this test as if it crashed, even though it did not.\n\n' + \
-                    self.error_from_test
-                crashed = True
-                self._crashed_process_name = 'unknown process name'
-                self._crashed_pid = 0
-
-        if crashed or timed_out or leaked:
-            # We call stop() even if we crashed or timed out in order to get any remaining stdout/stderr output.
-            # In the timeout case, we kill the hung process as well.
-            # Add a delay to allow process to finish post-run hooks, such as dumping code coverage data.
-            out, err = self._server_process.stop(
-                self._port.get_option('driver_kill_timeout_secs'))
-            if out:
-                text += out
-            if err:
-                self.error_from_test += err
-            self._server_process = None
-
-        crash_log = None
-        crash_site = None
-        if crashed:
-            self.error_from_test, crash_log, crash_site = self._get_crash_log(
-                text, self.error_from_test, newer_than=start_time)
-
-            # If we don't find a crash log use a placeholder error message instead.
-            if not crash_log:
-                pid_str = str(
-                    self._crashed_pid) if self._crashed_pid else 'unknown pid'
-                crash_log = 'No crash log found for %s:%s.\n' % (
-                    self._crashed_process_name, pid_str)
-                # If we were unresponsive append a message informing there may not have been a crash.
-                if self._subprocess_was_unresponsive:
-                    crash_log += 'Process failed to become responsive before timing out.\n'
-
-                # Print stdout and stderr to the placeholder crash log; we want as much context as possible.
-                if self.error_from_test:
-                    crash_log += '\nstdout:\n%s\nstderr:\n%s\n' % (
-                        text, self.error_from_test)
-        command = ("%s %s" %
-                   (" ".join(server_process_command), test_command)).encode(
-                       'ascii', 'replace')
-        if actual_image_hash:
-            actual_image_hash = actual_image_hash.decode('utf8', 'replace')
-        startup_trace_file = driver_input.startup_trace_file
-        if (startup_trace_file
-                and not self._port.host.filesystem.isabs(startup_trace_file)):
-            startup_trace_file = self._port.host.filesystem.join(
-                self._port.host.filesystem.getcwd(), startup_trace_file)
-        if startup_trace_file:
-            # The startup trace file won't get flushed to disk until the server
-            # process stops. In practice, the existence of startup_trace_file
-            # means that the server process is restarted after every test
-            # anyway, so this just accelerates the inevitable.
-            out, err = self._server_process.stop(
-                self._port.get_option('driver_kill_timeout_secs'))
-            if out:
-                text += out
-            if err:
-                self.error_from_test += err
-            self._server_process = None
-        return DriverOutput(text,
-                            image,
-                            actual_image_hash,
-                            audio,
-                            crash=crashed,
-                            test_time=time.time() - test_begin_time,
-                            measurements=self._measurements,
-                            timeout=timed_out,
-                            error=self.error_from_test,
-                            crashed_process_name=self._crashed_process_name,
-                            crashed_pid=self._crashed_pid,
-                            crash_log=crash_log,
-                            crash_site=crash_site,
-                            leak=leaked,
-                            leak_log=self._leak_log,
-                            trace_file=driver_input.trace_file,
-                            startup_trace_file=startup_trace_file,
-                            pid=pid,
-                            command=command)
-
-    def _get_crash_log(self, stdout, stderr, newer_than):
-        # pylint: disable=protected-access
-        return self._port._get_crash_log(self._crashed_process_name,
-                                         self._crashed_pid, stdout, stderr,
-                                         newer_than)
 
     # The *_HOST_AND_PORTS tuples are (hostname, insecure_port, secure_port),
     # i.e. the information needed to create HTTP and HTTPS URLs.
@@ -447,6 +269,193 @@ class Driver(object):
                         return wpt_path + '/' + url_path[len(url_prefix):]
         raise NotImplementedError('unknown url type: %s' % uri)
 
+
+class Driver(TestURIMapper):
+    """object for running test(s) using content_shell or other driver."""
+
+    def __init__(self, port, worker_number, no_timeout=False):
+        """Initialize a Driver to subsequently run tests.
+
+        Typically this routine will spawn content_shell in a config
+        ready for subsequent input.
+
+        port - reference back to the port object.
+        worker_number - identifier for a particular worker/driver instance
+        """
+        super().__init__(port)
+        self._worker_number = worker_number
+        self._no_timeout = no_timeout
+
+        self._driver_tempdir = None
+        # content_shell can report back subprocess crashes by printing
+        # "#CRASHED - PROCESSNAME".  Since those can happen at any time
+        # and ServerProcess won't be aware of them (since the actual tool
+        # didn't crash, just a subprocess) we record the crashed subprocess name here.
+        self._crashed_process_name = None
+        self._crashed_pid = None
+
+        # content_shell can report back subprocesses that became unresponsive
+        # This could mean they crashed.
+        self._subprocess_was_unresponsive = False
+
+        # content_shell can report back subprocess DOM-object leaks by printing
+        # "#LEAK". This leak detection is enabled only when the flag
+        # --enable-leak-detection is passed to content_shell.
+        self._leaked = False
+        self._leak_log = None
+
+        # stderr reading is scoped on a per-test (not per-block) basis, so we store the accumulated
+        # stderr output, as well as if we've seen #EOF on this driver instance.
+        # FIXME: We should probably remove _read_first_block and _read_optional_image_block and
+        # instead scope these locally in run_test.
+        self.error_from_test = bytearray()
+        self.err_seen_eof = False
+        self._server_process = None
+        self._current_cmd_line = None
+
+        self._measurements = {}
+        if self._port.get_option('profile'):
+            profiler_name = self._port.get_option('profiler')
+            self._profiler = ProfilerFactory.create_profiler(
+                self._port.host, self._port.path_to_driver(),
+                self._port.artifacts_directory(), profiler_name)
+        else:
+            self._profiler = None
+
+    def __del__(self):
+        self.stop()
+
+    def run_test(self, driver_input):
+        """Run a single test and return the results.
+
+        Note that it is okay if a test times out or crashes. content_shell
+        will be stopped when the test ends, and then restarted for the next
+        test when this function is invoked again. As part of the restart, the
+        state of Driver will be reset.
+
+        Returns a DriverOutput object.
+        """
+        start_time = time.time()
+        stdin_deadline = start_time + int(driver_input.timeout) / 2000.0
+        ok, startup_output = self.start(driver_input.args, stdin_deadline)
+        if not ok:
+            return startup_output
+
+        return self._run_one_input(driver_input, start_time)
+
+    def _run_one_input(self, driver_input, start_time):
+        test_begin_time = time.time()
+        self.error_from_test = bytearray()
+        self.err_seen_eof = False
+
+        test_command = self._command_from_driver_input(driver_input)
+        server_process_command = self._server_process.cmd()
+
+        deadline = test_begin_time + int(driver_input.timeout) / 1000.0
+        self._server_process.write(test_command.encode('utf8', 'replace'))
+        # First block is either text or audio
+        text, audio = self._read_first_block(deadline)
+        # The second (optional) block is image data.
+        image, actual_image_hash = self._read_optional_image_block(deadline)
+
+        crashed = self.has_crashed()
+        timed_out = self._server_process.timed_out
+        pid = self._server_process.pid()
+        leaked = self._leaked
+
+        if not crashed:
+            sanitizer = self._port.output_contains_sanitizer_messages(
+                self.error_from_test)
+            if sanitizer:
+                self.error_from_test = b'OUTPUT CONTAINS "sanitizer",' + \
+                    b' so we are treating this test as if it crashed, even though it did not.\n\n' + \
+                    self.error_from_test
+                crashed = True
+                self._crashed_process_name = 'unknown process name'
+                self._crashed_pid = 0
+
+        if crashed or timed_out or leaked:
+            # We call stop() even if we crashed or timed out in order to get any remaining stdout/stderr output.
+            # In the timeout case, we kill the hung process as well.
+            # Add a delay to allow process to finish post-run hooks, such as dumping code coverage data.
+            out, err = self._server_process.stop(
+                timeout_secs=self._port.get_option('driver_kill_timeout_secs'),
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
+            if out:
+                text += out
+            if err:
+                self.error_from_test += err
+            self._server_process = None
+
+        crash_log = None
+        crash_site = None
+        if crashed:
+            self.error_from_test, crash_log, crash_site = self._get_crash_log(
+                text, self.error_from_test, newer_than=start_time)
+
+            # If we don't find a crash log use a placeholder error message instead.
+            if not crash_log:
+                pid_str = str(
+                    self._crashed_pid) if self._crashed_pid else 'unknown pid'
+                crash_log = 'No crash log found for %s:%s.\n' % (
+                    self._crashed_process_name, pid_str)
+                # If we were unresponsive append a message informing there may not have been a crash.
+                if self._subprocess_was_unresponsive:
+                    crash_log += 'Process failed to become responsive before timing out.\n'
+
+                # Print stdout and stderr to the placeholder crash log; we want as much context as possible.
+                if self.error_from_test:
+                    crash_log += '\nstdout:\n%s\nstderr:\n%s\n' % (
+                        text, self.error_from_test)
+        command = ("%s %s" %
+                   (" ".join(server_process_command), test_command)).encode(
+                       'ascii', 'replace')
+        if actual_image_hash:
+            actual_image_hash = actual_image_hash.decode('utf8', 'replace')
+        startup_trace_file = driver_input.startup_trace_file
+        if (startup_trace_file
+                and not self._port.host.filesystem.isabs(startup_trace_file)):
+            startup_trace_file = self._port.host.filesystem.join(
+                self._port.host.filesystem.getcwd(), startup_trace_file)
+        if startup_trace_file:
+            # The startup trace file won't get flushed to disk until the server
+            # process stops. In practice, the existence of startup_trace_file
+            # means that the server process is restarted after every test
+            # anyway, so this just accelerates the inevitable.
+            out, err = self._server_process.stop(
+                timeout_secs=self._port.get_option('driver_kill_timeout_secs'),
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
+            if out:
+                text += out
+            if err:
+                self.error_from_test += err
+            self._server_process = None
+        return DriverOutput(text,
+                            image,
+                            actual_image_hash,
+                            audio,
+                            crash=crashed,
+                            test_time=time.time() - test_begin_time,
+                            measurements=self._measurements,
+                            timeout=timed_out,
+                            error=self.error_from_test,
+                            crashed_process_name=self._crashed_process_name,
+                            crashed_pid=self._crashed_pid,
+                            crash_log=crash_log,
+                            crash_site=crash_site,
+                            leak=leaked,
+                            leak_log=self._leak_log,
+                            trace_file=driver_input.trace_file,
+                            startup_trace_file=startup_trace_file,
+                            pid=pid,
+                            command=command)
+
+    def _get_crash_log(self, stdout, stderr, newer_than):
+        # pylint: disable=protected-access
+        return self._port._get_crash_log(self._crashed_process_name,
+                                         self._crashed_pid, stdout, stderr,
+                                         newer_than)
+
     def has_crashed(self):
         if self._server_process is None:
             return False
@@ -522,6 +531,10 @@ class Driver(object):
         # startup to be slower (if the workaround is triggered via the
         # --initialize-webgpu-adapter-at-startup flag, right above in the
         # code in _start()).
+        #
+        # TODO(crbug.com/329003665): See if `wpt_internal/webgpu/` is runnable
+        # with wptrunner + chromedriver + chrome, which would obviate the need
+        # for `000_run_me_first.https.html`.
         init_timeout = self._port.get_option(
             'initialize_webgpu_adapter_at_startup_timeout_ms')
         startup_input = DriverInput(
@@ -533,7 +546,8 @@ class Driver(object):
             startup_trace_file=None,
             args=per_test_args)
         output = self._run_one_input(startup_input, start_time=time.time())
-        if output.text and b'PASS 000_run_me_first' in output.text:
+        if output.text and is_all_pass_test_result(
+                output.text.decode(errors='replace')):
             return True, None
 
         output.text = (b'Failed to initialize WebGPU adapter at startup via '
@@ -573,12 +587,17 @@ class Driver(object):
         return self._server_process.pid()
 
     def stop(self, timeout_secs=None):
-        if timeout_secs is None:
-            # Add a delay to allow process to finish post-run hooks, such as dumping code coverage data.
-            timeout_secs = self._port.get_option('driver_kill_timeout_secs')
+        # Add a delay to allow process to finish post-run hooks, such as dumping
+        # code coverage data; but allow for 0 timeout if explicitly requested.
+        if timeout_secs != 0:
+            timeout_secs = max(
+                timeout_secs or 0,
+                self._port.get_option('driver_kill_timeout_secs', 0))
 
         if self._server_process:
-            self._server_process.stop(timeout_secs)
+            self._server_process.stop(
+                timeout_secs=timeout_secs,
+                send_sigterm=self._port.get_option('kill_driver_with_sigterm'))
             self._server_process = None
             if self._profiler:
                 self._profiler.profile_after_exit()
@@ -590,7 +609,13 @@ class Driver(object):
         self._current_cmd_line = None
 
     def _base_cmd_line(self):
-        return [self._port.path_to_driver()]
+        return [
+            self._port.path_to_driver(),
+            '--run-web-tests',
+            # To take effect, `--ignore-certificate-errors-spki-list` requires
+            # an embedder-defined `--user-data-dir`.
+            '--user-data-dir',
+        ]
 
     def cmd_line(self, per_test_args):
         cmd = list(self._port.get_option('wrapper', []))
@@ -600,6 +625,8 @@ class Driver(object):
         cmd.extend(self._port.additional_driver_flags())
         if self._port.get_option('enable_leak_detection'):
             cmd.append('--enable-leak-detection')
+        if self._port.get_option('nocheck_sys_deps', False):
+            cmd.append('--disable-system-font-check')
         cmd.extend(per_test_args)
         cmd = coalesce_repeated_switches(cmd)
         cmd.append('-')

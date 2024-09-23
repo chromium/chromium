@@ -12,6 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_database.h"
+#include "net/cert/internal/platform_trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
@@ -20,7 +21,7 @@ namespace net {
 // TrustStoreAndroid is an implementation of bssl::TrustStore which uses the
 // Android cert systems to find user-added trust anchors for path building. It
 // ignores the Android builtin trust anchors.
-class NET_EXPORT TrustStoreAndroid : public bssl::TrustStore,
+class NET_EXPORT TrustStoreAndroid : public PlatformTrustStore,
                                      public CertDatabase::Observer {
  public:
   TrustStoreAndroid();
@@ -35,6 +36,10 @@ class NET_EXPORT TrustStoreAndroid : public bssl::TrustStore,
   void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                         bssl::ParsedCertificateList* issuers) override;
   bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) override;
+
+  // net::PlatformTrustStore implementation:
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      override;
 
   // CertDatabase::Observer:
   void OnTrustStoreChanged() override;
@@ -51,7 +56,9 @@ class NET_EXPORT TrustStoreAndroid : public bssl::TrustStore,
   // returns scoped_refptr<Impl>.
   scoped_refptr<Impl> MaybeInitializeAndGetImpl();
 
-  bool is_observing_certdb_changes_ = false;
+  bool is_observing_certdb_changes_
+      GUARDED_BY_CONTEXT(certdb_observer_sequence_checker_) = false;
+  SEQUENCE_CHECKER(certdb_observer_sequence_checker_);
 
   base::Lock init_lock_;
   scoped_refptr<Impl> impl_ GUARDED_BY(init_lock_);

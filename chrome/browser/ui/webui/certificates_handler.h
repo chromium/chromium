@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/certificate_manager_model.h"
+#include "components/file_access/scoped_file_access.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cert/nss_cert_database.h"
 #include "ui/gfx/native_widget_types.h"
@@ -72,10 +73,8 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   void CertificatesRefreshed() override;
 
   // SelectFileDialog::Listener implementation.
-  void FileSelected(const ui::SelectedFileInfo& file,
-                    int index,
-                    void* params) override;
-  void FileSelectionCanceled(void* params) override;
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Register profile preferences.
@@ -83,6 +82,13 @@ class CertificatesHandler : public content::WebUIMessageHandler,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
+  enum PendingOperation {
+    EXPORT_PERSONAL_FILE,
+    IMPORT_PERSONAL_FILE,
+    IMPORT_SERVER_FILE,
+    IMPORT_CA_FILE,
+  };
+
   // View certificate.
   void HandleViewCertificate(const base::Value::List& args);
 
@@ -112,8 +118,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   void ExportPersonalFileSelected(const base::FilePath& path);
   void HandleExportPersonalPasswordSelected(const base::Value::List& args);
   void ExportPersonalSlotsUnlocked();
-  void ExportPersonalFileWritten(const int* write_errno,
-                                 const int* bytes_written);
+  void ExportPersonalFileWritten(const int* write_errno);
 
   // Import from PKCS #12 or cert file.  The sequence goes like:
   //  1. user click on import button -> HandleImportPersonal ->
@@ -131,10 +136,12 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   //  6b. if import fails -> show error, ImportExportCleanup
   //  TODO(mattm): allow retrying with different password
   void HandleImportPersonal(const base::Value::List& args);
-  void ImportPersonalFileSelected(const base::FilePath& path);
+  void ImportPersonalFileSelected(const base::FilePath& path,
+                                  file_access::ScopedFileAccess file_access);
   void ImportPersonalFileRead(const int* read_errno, const std::string* data);
   void HandleImportPersonalPasswordSelected(const base::Value::List& args);
   void ImportPersonalSlotUnlocked();
+  void ImportPersonalResultReceived(int net_result);
 
   // Import Server certificates from file.  Sequence goes like:
   //  1. user clicks on import button -> HandleImportServer -> launches file
@@ -144,7 +151,8 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   //  4a. if import succeeds -> ImportExportCleanup
   //  4b. if import fails -> show error, ImportExportCleanup
   void HandleImportServer(const base::Value::List& args);
-  void ImportServerFileSelected(const base::FilePath& path);
+  void ImportServerFileSelected(const base::FilePath& path,
+                                file_access::ScopedFileAccess file_access);
   void ImportServerFileRead(const int* read_errno, const std::string* data);
 
   // Import Certificate Authorities from file.  Sequence goes like:
@@ -157,7 +165,8 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   //  5a. if import succeeds -> ImportExportCleanup
   //  5b. if import fails -> show error, ImportExportCleanup
   void HandleImportCA(const base::Value::List& args);
-  void ImportCAFileSelected(const base::FilePath& path);
+  void ImportCAFileSelected(const base::FilePath& path,
+                            file_access::ScopedFileAccess file_access);
   void ImportCAFileRead(const int* read_errno, const std::string* data);
   void HandleImportCATrustSelected(const base::Value::List& args);
 
@@ -247,6 +256,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   std::string file_data_;
   net::ScopedCERTCertificateList selected_cert_list_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  std::optional<PendingOperation> pending_operation_;
   crypto::ScopedPK11Slot slot_;
 
   // Used in reading and writing certificate files.

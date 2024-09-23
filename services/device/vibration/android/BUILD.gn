@@ -8,14 +8,14 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("vibration_jni_headers") {
   sources =
-      [ "java/src/org/chromium/device/vibration/VibrationManagerImpl.java" ]
+      [ "java/src/org/chromium/device/vibration/VibrationManagerAndroid.java" ]
 }
 
 android_library("vibration_manager_java") {
   visibility = [ "//services/device:*" ]
 
   sources =
-      [ "java/src/org/chromium/device/vibration/VibrationManagerImpl.java" ]
+      [ "java/src/org/chromium/device/vibration/VibrationManagerAndroid.java" ]
 
   deps = [
     "//base:base_java",

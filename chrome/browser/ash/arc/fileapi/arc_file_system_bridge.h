@@ -14,12 +14,14 @@
 
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "ash/components/arc/session/connection_observer.h"
+#include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_handler.h"
 #include "chrome/browser/ash/arc/fileapi/file_stream_forwarder.h"
+#include "chrome/browser/ash/fusebox/fusebox_moniker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/watcher_manager.h"
@@ -122,6 +124,11 @@ class ArcFileSystemBridge
       GetFileSelectorElementsCallback callback) override;
   void OnMediaStoreUriAdded(const GURL& uri,
                             mojom::MediaStoreMetadataPtr metadata) override;
+  void CreateMoniker(const GURL& content_uri,
+                     bool read_only,
+                     CreateMonikerCallback callback) override;
+  void DestroyMoniker(const fusebox::Moniker& moniker,
+                      DestroyMonikerCallback callback) override;
 
   // ConnectionObserver<mojom::FileSystemInstance> overrides:
   void OnConnectionClosed() override;
@@ -131,6 +138,7 @@ class ArcFileSystemBridge
                            GetLinuxVFSPathFromExternalFileURL);
   FRIEND_TEST_ALL_PREFIXES(ArcFileSystemBridgeTest,
                            GetLinuxVFSPathForPathOnFileSystemType);
+  FRIEND_TEST_ALL_PREFIXES(ArcFileSystemBridgeTest, MaxNumberOfSharedMonikers);
 
   using GenerateVirtualFileIdCallback =
       base::OnceCallback<void(const std::optional<std::string>& id)>;
@@ -169,6 +177,14 @@ class ArcFileSystemBridge
                       const std::string& id,
                       base::ScopedFD fd);
 
+  // Called from CreateMoniker() after sharing the new Moniker's path with
+  // ARCVM.
+  void OnShareMonikerPath(CreateMonikerCallback callback,
+                          const fusebox::Moniker& moniker,
+                          const base::FilePath& path,
+                          bool success,
+                          const std::string& failure_reason);
+
   // Used to implement OpenFileToRead(), needs to be testable.
   //
   // Decode a percent-encoded externalfile: URL to an absolute path on
@@ -196,6 +212,8 @@ class ArcFileSystemBridge
                               const std::string& file_system_id,
                               bool result);
 
+  void SetMaxNumberOfSharedMonikersForTesting(size_t value);
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<ArcBridgeService>
       bridge_service_;  // Owned by ArcServiceManager
@@ -203,6 +221,12 @@ class ArcFileSystemBridge
 
   // Map from file descriptor IDs to requested URLs.
   std::map<std::string, GURL> id_to_url_;
+
+  // Set of Fusebox Monikers currently shared with ARC, associated with distinct
+  // indices that indicate the order of creation (smaller is older).
+  std::map<fusebox::Moniker, int> shared_monikers_;
+  std::map<int, fusebox::Moniker> moniker_indices_;
+  size_t max_number_of_shared_monikers_;
 
   std::list<FileStreamForwarderPtr> file_stream_forwarders_;
 

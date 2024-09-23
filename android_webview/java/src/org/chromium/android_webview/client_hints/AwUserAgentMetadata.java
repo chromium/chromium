@@ -35,7 +35,7 @@ public class AwUserAgentMetadata {
     private boolean mMobile;
     private int mBitness;
     private boolean mWow64;
-    private @FormFactors String[] mFormFactor;
+    private @FormFactors String[] mFormFactors;
 
     /** Key for the user-agent metadata properties. */
     @StringDef({
@@ -48,7 +48,7 @@ public class AwUserAgentMetadata {
         MetadataKeys.MOBILE,
         MetadataKeys.BITNESS,
         MetadataKeys.WOW64,
-        MetadataKeys.FORM_FACTOR
+        MetadataKeys.FORM_FACTORS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface MetadataKeys {
@@ -61,7 +61,7 @@ public class AwUserAgentMetadata {
         String MOBILE = "MOBILE";
         String BITNESS = "BITNESS";
         String WOW64 = "WOW64";
-        String FORM_FACTOR = "FORM_FACTOR";
+        String FORM_FACTORS = "FORM_FACTORS";
     };
 
     public static final int BITNESS_DEFAULT = 0;
@@ -70,8 +70,8 @@ public class AwUserAgentMetadata {
     public static final int BRAND_VERSION_LENGTH = 3;
 
     /**
-     * Values for the Sec-CH-UA-Form-Factor header.
-     * https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factor
+     * Values for the Sec-CH-UA-Form-Factors header.
+     * https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
      */
     // LINT.IfChange
     @StringDef({
@@ -110,7 +110,7 @@ public class AwUserAgentMetadata {
         copy.mMobile = mMobile;
         copy.mBitness = mBitness;
         copy.mWow64 = mWow64;
-        copy.mFormFactor = mFormFactor;
+        copy.mFormFactors = mFormFactors;
         return copy;
     }
 
@@ -182,11 +182,13 @@ public class AwUserAgentMetadata {
     }
 
     @CalledByNative
-    private @FormFactors String[] getFormFactor() {
-        return mFormFactor;
+    private @FormFactors String[] getFormFactors() {
+        return mFormFactors;
     }
 
-    /** Construct a AwUserAgentMetadata instance, and low-entropy client hints should not be null. */
+    /**
+     * Construct a AwUserAgentMetadata instance, and low-entropy client hints should not be null.
+     */
     @CalledByNative
     private static AwUserAgentMetadata create(
             @NonNull String[][] brandVersionList,
@@ -199,7 +201,7 @@ public class AwUserAgentMetadata {
             boolean mobile,
             String bitness,
             boolean wow64,
-            @FormFactors String[] formFactor) {
+            @FormFactors String[] formFactors) {
         AwUserAgentMetadata result = new AwUserAgentMetadata();
         result.mBrandVersionList = new String[brandVersionList.length][BRAND_VERSION_LENGTH];
         for (int i = 0; i < brandVersionList.length; i++) {
@@ -217,7 +219,7 @@ public class AwUserAgentMetadata {
         result.mMobile = mobile;
         result.mBitness = getIntBitnessFromString(bitness);
         result.mWow64 = wow64;
-        result.mFormFactor = formFactor;
+        result.mFormFactors = formFactors;
         return result;
     }
 
@@ -323,17 +325,17 @@ public class AwUserAgentMetadata {
             }
         }
 
-        Object formFactorValue = uaMetadataMap.get(MetadataKeys.FORM_FACTOR);
-        @FormFactors String[] formFactor = defaultData.mFormFactor;
-        if (formFactorValue != null) {
-            if (!(formFactorValue instanceof String[])) {
+        Object formFactorsValue = uaMetadataMap.get(MetadataKeys.FORM_FACTORS);
+        @FormFactors String[] formFactors = defaultData.mFormFactors;
+        if (formFactorsValue != null) {
+            if (!(formFactorsValue instanceof String[])) {
                 throw new IllegalArgumentException(
                         "AwUserAgentMetadata map does not have "
                                 + "right type of value for key: "
-                                + MetadataKeys.FORM_FACTOR);
+                                + MetadataKeys.FORM_FACTORS);
             }
-            @FormFactors String[] asArray = (String[]) formFactorValue;
-            formFactor = Arrays.copyOf(asArray, asArray.length);
+            @FormFactors String[] asArray = (String[]) formFactorsValue;
+            formFactors = Arrays.copyOf(asArray, asArray.length);
         }
 
         AwUserAgentMetadata result = new AwUserAgentMetadata();
@@ -353,7 +355,7 @@ public class AwUserAgentMetadata {
         result.mMobile = getValueAsBoolean(uaMetadataMap, MetadataKeys.MOBILE, defaultData.mMobile);
         result.mBitness = getValueAsInt(uaMetadataMap, MetadataKeys.BITNESS, defaultData.mBitness);
         result.mWow64 = getValueAsBoolean(uaMetadataMap, MetadataKeys.WOW64, defaultData.mWow64);
-        result.mFormFactor = formFactor;
+        result.mFormFactors = formFactors;
         return result;
     }
 
@@ -368,7 +370,7 @@ public class AwUserAgentMetadata {
         item.put(MetadataKeys.MOBILE, mMobile);
         item.put(MetadataKeys.BITNESS, mBitness);
         item.put(MetadataKeys.WOW64, mWow64);
-        item.put(MetadataKeys.FORM_FACTOR, mFormFactor);
+        item.put(MetadataKeys.FORM_FACTORS, mFormFactors);
         return item;
     }
 
@@ -390,7 +392,7 @@ public class AwUserAgentMetadata {
                 && Objects.equals(mPlatformVersion, that.mPlatformVersion)
                 && Objects.equals(mArchitecture, that.mArchitecture)
                 && Objects.equals(mModel, that.mModel)
-                && Arrays.deepEquals(mFormFactor, that.mFormFactor);
+                && Arrays.deepEquals(mFormFactors, that.mFormFactors);
     }
 
     @Override
@@ -405,6 +407,6 @@ public class AwUserAgentMetadata {
                 mMobile,
                 mBitness,
                 mWow64,
-                Arrays.deepHashCode(mFormFactor));
+                Arrays.deepHashCode(mFormFactors));
     }
 }

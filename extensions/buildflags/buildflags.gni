@@ -3,7 +3,51 @@
 # found in the LICENSE file.
 
 import("//build/config/cast.gni")
+import("//build/config/chrome_build.gni")
 
 declare_args() {
+  # `enable_extensions` controls whether the full and stable extensions platform
+  # is compiled.
   enable_extensions = !is_android && !is_ios && !is_castos && !is_fuchsia
+
+  # `enable_desktop_android_extensions` is an experimental flag used in
+  # prototypes of desktop-focused android-powered builds. This is very much
+  # in-development, non-stable, and likely to crash at any given moment.
+  #
+  # Introducing a separate flag like this has the unfortunate effect of leading
+  # to a lot of `if BUILDFLAG(ENABLE_EXTENSIONS)` checks in extensions code
+  # itself, since those checks are instead the equivalent of
+  # `if BUILDFLAG(ENABLE_FULL_EXTENSIONS_SYSTEM)`. However, we don't want to
+  # change the stable, production-utilized `enable_extensions` flag for this
+  # experimental build.
+  #
+  # As the experimental build progresses, there should be fewer of those
+  # checks littered around the extensions codebase, since more and more of
+  # the extensions code will be included in the desktop android variant.
+  #
+  # TODO(https://crbug.com/356905053): Continue expanding the scope of
+  # enable_desktop_android_extensions.
+  enable_desktop_android_extensions = is_desktop_android
+}
+
+# Note: GN forbids relying on args from the same declare_args() block, so we
+# need this separate from the block above.
+declare_args() {
+  # A separate control for whether GuestView (and corresponding elements
+  # such as WebView, ExtensionOptionsView, etc) are enabled.
+  enable_guest_view = enable_extensions
+
+  # A control for whether support for platform apps should be compiled into the
+  # browser.
+  # TODO(https://crbug.com/41407868): This doesn't belong here; extensions code
+  # shouldn't rely on platform apps at all. But at least this lets it be
+  # toggled / if-def'd.
+  enable_platform_apps = enable_extensions
+
+  # Whether the core extensions system is enabled. This prevents many callsites
+  # from needing blocks for
+  # `if (enable_extensions || enable_desktop_android_extensions)`, since the
+  # core handling in each of these implementations is similar.
+  enable_extensions_core =
+      enable_extensions || enable_desktop_android_extensions
 }

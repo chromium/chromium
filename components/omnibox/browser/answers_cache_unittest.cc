@@ -14,7 +14,8 @@ TEST(AnswersCacheTest, CacheStartsEmpty) {
 
 TEST(AnswersCacheTest, UpdatePopulatesCache) {
   AnswersCache cache(1);
-  cache.UpdateRecentAnswers(u"weather los angeles", 2334);
+  cache.UpdateRecentAnswers(u"weather los angeles",
+                            omnibox::ANSWER_TYPE_WEATHER);
   EXPECT_FALSE(cache.empty());
 }
 
@@ -22,7 +23,7 @@ TEST(AnswersCacheTest, GetWillRetrieveMatchingInfo) {
   AnswersCache cache(1);
 
   std::u16string full_query_text = u"weather los angeles";
-  int query_type = 2334;
+  omnibox::AnswerType query_type = omnibox::ANSWER_TYPE_WEATHER;
   cache.UpdateRecentAnswers(full_query_text, query_type);
 
   // Partial prefixes retrieve info.
@@ -33,7 +34,7 @@ TEST(AnswersCacheTest, GetWillRetrieveMatchingInfo) {
   // Mismatched prefix retrieves empty data.
   data = cache.GetTopAnswerEntry(full_query_text.substr(1, 8));
   EXPECT_TRUE(data.full_query_text.empty());
-  EXPECT_EQ(-1, data.query_type);
+  EXPECT_EQ(omnibox::ANSWER_TYPE_UNSPECIFIED, data.query_type);
 
   // Full match retrieves info.
   data = cache.GetTopAnswerEntry(full_query_text);
@@ -46,7 +47,7 @@ TEST(AnswersCacheTest, MatchMostRecent) {
 
   std::u16string query_weather_la = u"weather los angeles";
   std::u16string query_weather_lv = u"weather las vegas";
-  int query_type = 2334;
+  omnibox::AnswerType query_type = omnibox::ANSWER_TYPE_WEATHER;
 
   cache.UpdateRecentAnswers(query_weather_lv, query_type);
   cache.UpdateRecentAnswers(query_weather_la, query_type);
@@ -69,7 +70,7 @@ TEST(AnswersCacheTest, LeastRecentItemIsEvicted) {
   std::u16string query_weather_la = u"weather los angeles";
   std::u16string query_weather_lv = u"weather las vegas";
   std::u16string query_weather_lb = u"weather long beach";
-  int query_type = 2334;
+  omnibox::AnswerType query_type = omnibox::ANSWER_TYPE_WEATHER;
 
   cache.UpdateRecentAnswers(query_weather_lb, query_type);
   cache.UpdateRecentAnswers(query_weather_lv, query_type);
@@ -95,7 +96,7 @@ TEST(AnswersCacheTest, DuplicateEntries) {
   std::u16string query_weather_lv = u"weather las vegas";
   std::u16string query_weather_lb = u"weather long beach";
   std::u16string query_weather_l = u"weather l";
-  int query_type = 2334;
+  omnibox::AnswerType query_type = omnibox::ANSWER_TYPE_WEATHER;
 
   cache.UpdateRecentAnswers(query_weather_lb, query_type);
   cache.UpdateRecentAnswers(query_weather_lv, query_type);

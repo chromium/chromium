@@ -30,7 +30,8 @@ class AutoEnrollmentStateMessageProcessor {
   // Returns a message processor for Initial enrollment.
   static std::unique_ptr<AutoEnrollmentStateMessageProcessor>
   CreateForInitialEnrollment(const std::string& device_serial_number,
-                             const std::string& device_brand_code);
+                             const std::string& device_brand_code,
+                             std::optional<std::string> flex_enrollment_token);
 
   virtual ~AutoEnrollmentStateMessageProcessor();
 

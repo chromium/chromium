@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 
-#include "ash/constants/app_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,6 +16,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -45,8 +46,7 @@ std::unique_ptr<aura::Window> CreateLacrosWindow(
   auto window =
       std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
 
-  window->SetProperty(aura::client::kAppType,
-                      static_cast<int>(ash::AppType::LACROS));
+  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::LACROS);
   window->SetProperty(app_restore::kLacrosWindowId,
                       std::string(lacros_window_id));
 

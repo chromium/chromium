@@ -21,25 +21,23 @@ class CSSTimingData {
   USING_FAST_MALLOC(CSSTimingData);
 
  public:
+  using DelayVector = Vector<Timing::Delay, 1>;
+  using DurationVector = Vector<std::optional<double>, 1>;
+  using TimingFunctionVector = Vector<scoped_refptr<TimingFunction>, 1>;
+
   ~CSSTimingData() = default;
 
-  const Vector<Timing::Delay>& DelayStartList() const {
-    return delay_start_list_;
-  }
-  const Vector<Timing::Delay>& DelayEndList() const { return delay_end_list_; }
-  const Vector<std::optional<double>>& DurationList() const {
-    return duration_list_;
-  }
-  const Vector<scoped_refptr<TimingFunction>>& TimingFunctionList() const {
+  const DelayVector& DelayStartList() const { return delay_start_list_; }
+  const DelayVector& DelayEndList() const { return delay_end_list_; }
+  const DurationVector& DurationList() const { return duration_list_; }
+  const TimingFunctionVector& TimingFunctionList() const {
     return timing_function_list_;
   }
 
-  Vector<Timing::Delay>& DelayStartList() { return delay_start_list_; }
-  Vector<Timing::Delay>& DelayEndList() { return delay_end_list_; }
-  Vector<std::optional<double>>& DurationList() { return duration_list_; }
-  Vector<scoped_refptr<TimingFunction>>& TimingFunctionList() {
-    return timing_function_list_;
-  }
+  DelayVector& DelayStartList() { return delay_start_list_; }
+  DelayVector& DelayEndList() { return delay_end_list_; }
+  DurationVector& DurationList() { return duration_list_; }
+  TimingFunctionVector& TimingFunctionList() { return timing_function_list_; }
 
   bool HasSingleInitialDelayStart() const {
     return delay_start_list_.size() == 1u &&
@@ -58,8 +56,8 @@ class CSSTimingData {
         CubicBezierTimingFunction::EaseType::EASE);
   }
 
-  template <class T>
-  static const T& GetRepeated(const Vector<T>& v, size_t index) {
+  template <class T, wtf_size_t C>
+  static const T& GetRepeated(const Vector<T, C>& v, size_t index) {
     return v[index % v.size()];
   }
 
@@ -71,10 +69,10 @@ class CSSTimingData {
   bool TimingMatchForStyleRecalc(const CSSTimingData&) const;
 
  private:
-  Vector<Timing::Delay> delay_start_list_;
-  Vector<Timing::Delay> delay_end_list_;
-  Vector<std::optional<double>> duration_list_;
-  Vector<scoped_refptr<TimingFunction>> timing_function_list_;
+  DelayVector delay_start_list_;
+  DelayVector delay_end_list_;
+  DurationVector duration_list_;
+  TimingFunctionVector timing_function_list_;
 };
 
 }  // namespace blink

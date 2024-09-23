@@ -11,6 +11,8 @@ struct NativeMessageResultMojo {
 interface TestUIHandlerMojo {
   SetClientPage(pending_remote<TestPage> page);
   HandleJsMessage(string message);
+  HandleJsMessageWithCallback(string message) =>
+      (NativeMessageResultMojo result);
 };
 
 interface TestPage {

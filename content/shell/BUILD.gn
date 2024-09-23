@@ -15,6 +15,7 @@ import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
@@ -32,7 +33,9 @@ if (is_android) {
   import("//third_party/fuchsia-gn-sdk/src/component.gni")
   import("//third_party/fuchsia-gn-sdk/src/package.gni")
 } else if (is_ios) {
+  import("//build/config/apple/swift_source_set.gni")
   import("//build/config/ios/config.gni")
+  import("//content/shell/app/ios/extensions.gni")
 }
 
 # TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
@@ -130,9 +133,40 @@ static_library("content_shell_app") {
   ]
 }
 
+inspector_protocol_generate("protocol_sources") {
+  visibility = [ ":content_shell_lib" ]
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+  _blink_protocol_path = rebase_path(
+          "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
+          root_build_dir)
+
+  inspector_protocol_dir = "//third_party/inspector_protocol"
+  out_dir = "$target_gen_dir/browser"
+  config_file = "browser/protocol_config.json"
+  config_values = [ "protocol.path=$_blink_protocol_path" ]
+  use_embedder_types = true
+
+  inputs = [
+    "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
+    config_file,
+  ]
+
+  # These are relative to $target_gen_dir.
+  outputs = [
+    "protocol/browser.cc",
+    "protocol/browser.h",
+    "protocol/protocol.h",
+  ]
+}
+
 static_library("content_shell_lib") {
   testonly = true
   sources = [
+    "browser/protocol/browser_handler.cc",
+    "browser/protocol/browser_handler.h",
+    "browser/protocol/domain_handler.h",
+    "browser/protocol/shell_devtools_session.cc",
+    "browser/protocol/shell_devtools_session.h",
     "browser/shell.cc",
     "browser/shell.h",
     "browser/shell_browser_context.cc",
@@ -151,8 +185,6 @@ static_library("content_shell_lib") {
     "browser/shell_devtools_manager_delegate.h",
     "browser/shell_download_manager_delegate.cc",
     "browser/shell_download_manager_delegate.h",
-    "browser/shell_federated_permission_context.cc",
-    "browser/shell_federated_permission_context.h",
     "browser/shell_javascript_dialog.h",
     "browser/shell_javascript_dialog_manager.cc",
     "browser/shell_javascript_dialog_manager.h",
@@ -189,6 +221,8 @@ static_library("content_shell_lib") {
     "utility/shell_content_utility_client.cc",
     "utility/shell_content_utility_client.h",
   ]
+
+  sources += get_target_outputs(":protocol_sources")
 
   if (is_android) {
     sources += [
@@ -272,16 +306,17 @@ static_library("content_shell_lib") {
   ]
   deps = [
     ":content_browsertests_mojom",
+    ":protocol_sources",
     ":resources",
     ":shell_controller_mojom",
     "//base",
     "//base:base_static",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/base",
     "//components/cdm/renderer",
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
+    "//components/input",
     "//components/keyed_service/content",
     "//components/metrics",
     "//components/metrics:net",
@@ -319,13 +354,14 @@ static_library("content_shell_lib") {
     "//third_party/blink/public:image_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public/strings",
-    "//third_party/blink/public/strings:accessibility_strings",
+    "//third_party/inspector_protocol:crdtp",
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/ime/init",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/platform_window",
+    "//ui/strings:auto_image_annotation_strings",
     "//url",
     "//v8",
   ]
@@ -502,11 +538,11 @@ repack("pak") {
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_accessibility_strings_en-US.pak",
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/auto_image_annotation_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
@@ -526,7 +562,6 @@ repack("pak") {
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
     "//third_party/blink/public/strings",
-    "//third_party/blink/public/strings:accessibility_strings",
     "//ui/resources",
     "//ui/strings",
   ]
@@ -616,27 +651,61 @@ if (is_android) {
     # Path to an entitlements file used in ios_content_shell. Can be overridden
     # to provide an alternative.
     ios_content_shell_entitlements_path =
-        "//build/config/ios/entitlements.plist"
+        "//content/app/ios/appex/app.entitlements"
   }
 
   ios_app_bundle("content_shell") {
-    info_plist = "app/ios-Info.plist"
+    info_plist = "app/ios/ios-app.plist"
     testonly = true
 
-    sources = [ "app/shell_main.cc" ]
+    sources = [ "app/ios/shell_main_trampoline.cc" ]
 
     deps = [
-      ":content_shell_app",
-      ":content_shell_lib",
-      "//base",
-      "//content/public/app",
+      ":content_process_bundle",
+      ":content_shell_framework+link",
+      ":gpu_process_bundle",
+      ":network_process_bundle",
     ]
     bundle_deps = [
+      ":content_shell_framework+bundle",
       ":content_shell_framework_resources",
       "app/ios/resources",
     ]
     entitlements_path = ios_content_shell_entitlements_path
     bundle_identifier = ios_content_shell_bundle_identifier
+  }
+
+  ios_framework_bundle("content_shell_framework") {
+    testonly = true
+    transparent = true
+
+    output_name = "content_shell_framework"
+    sources = [ "app/shell_main.cc" ]
+
+    deps = [
+      ":content_shell_app",
+      ":content_shell_lib",
+      "//content/app/ios/appex:child_process_bridge",
+      "//content/public/app",
+      "//content/public/common",
+      "//third_party/icu:icudata",
+    ]
+    info_plist = "app/ios/ios-app.plist"
+  }
+
+  browserkit_extension("gpu_process") {
+    testonly = true
+    bundle_identifier = "$shared_bundle_id_for_test_apps.GPUProcess"
+  }
+
+  browserkit_extension("network_process") {
+    testonly = true
+    bundle_identifier = "$shared_bundle_id_for_test_apps.NetworkProcess"
+  }
+
+  browserkit_extension("content_process") {
+    testonly = true
+    bundle_identifier = "$shared_bundle_id_for_test_apps.ContentProcess"
   }
 } else {
   executable("content_shell") {
@@ -745,7 +814,8 @@ if (is_apple) {
       if (use_v8_context_snapshot) {
         sources += [ "$root_out_dir/$v8_context_snapshot_filename" ]
         public_deps += [ "//tools/v8_context_snapshot" ]
-      } else {
+      }
+      if (!use_v8_context_snapshot || include_both_v8_snapshots) {
         sources += [ "$root_out_dir/snapshot_blob.bin" ]
       }
     }
@@ -820,7 +890,7 @@ if (is_mac) {
     ]
 
     deps = [
-      ":content_shell_angle_library",
+      ":content_shell_angle_binaries",
       ":content_shell_app",
       "//content/public/app",
       "//content/public/common",
@@ -830,7 +900,7 @@ if (is_mac) {
     bundle_deps = [
       ":content_shell_framework_helpers",
       ":content_shell_framework_resources",
-      ":content_shell_swiftshader_library",
+      ":content_shell_swiftshader_binaries",
     ]
 
     if (enable_ppapi) {
@@ -949,38 +1019,24 @@ if (is_mac) {
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 
-  if (use_egl) {
-    # Add the ANGLE .dylibs in the Libraries directory of the Framework.
-    bundle_data("content_shell_angle_binaries") {
-      sources = [
-        "$root_out_dir/egl_intermediates/libEGL.dylib",
-        "$root_out_dir/egl_intermediates/libGLESv2.dylib",
-      ]
-      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [ "//ui/gl:angle_library_copy" ]
-    }
-
-    # Add the SwiftShader .dylibs in the Libraries directory of the Framework.
-    bundle_data("content_shell_swiftshader_binaries") {
-      sources = [
-        "$root_out_dir/vk_intermediates/libvk_swiftshader.dylib",
-        "$root_out_dir/vk_intermediates/vk_swiftshader_icd.json",
-      ]
-      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
-      public_deps = [ "//ui/gl:swiftshader_vk_library_copy" ]
-    }
+  # Add the ANGLE .dylibs in the Libraries directory of the Framework.
+  bundle_data("content_shell_angle_binaries") {
+    sources = [
+      "$root_out_dir/egl_intermediates/libEGL.dylib",
+      "$root_out_dir/egl_intermediates/libGLESv2.dylib",
+    ]
+    outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+    public_deps = [ "//ui/gl:angle_library_copy" ]
   }
 
-  group("content_shell_angle_library") {
-    if (use_egl) {
-      deps = [ ":content_shell_angle_binaries" ]
-    }
-  }
-
-  group("content_shell_swiftshader_library") {
-    if (use_egl) {
-      deps = [ ":content_shell_swiftshader_binaries" ]
-    }
+  # Add the SwiftShader .dylibs in the Libraries directory of the Framework.
+  bundle_data("content_shell_swiftshader_binaries") {
+    sources = [
+      "$root_out_dir/vk_intermediates/libvk_swiftshader.dylib",
+      "$root_out_dir/vk_intermediates/vk_swiftshader_icd.json",
+    ]
+    outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+    public_deps = [ "//ui/gl:swiftshader_vk_library_copy" ]
   }
 }
 
@@ -991,6 +1047,7 @@ mojom("content_browsertests_mojom") {
     "common/render_frame_test_helper.mojom",
   ]
   public_deps = [
+    "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//third_party/blink/public/mojom/tokens",
   ]
@@ -1001,7 +1058,7 @@ group("content_shell_crash_test") {
   data_deps = [
     ":content_shell",
     "//testing:test_scripts_shared",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
   data = [
     "//content/shell/tools/breakpad_integration_test.py",

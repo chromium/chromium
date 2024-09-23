@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/openscreen_platform/tls_client_connection.h"
 
 #include <cstring>
@@ -76,9 +81,8 @@ class FakeSocketStreams {
 
   // Writes data into the inbound data pipe, which should ultimately result in a
   // TlsClientConnection::Client's OnRead() method being called.
-  void SimulateSocketReceive(const void* data, uint32_t num_bytes) {
-    const MojoResult result = inbound_stream_->WriteData(
-        data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+  void SimulateSocketReceive(base::span<const uint8_t> data) {
+    const MojoResult result = inbound_stream_->WriteAllData(data);
     ASSERT_EQ(result, MOJO_RESULT_OK);
   }
 
@@ -104,14 +108,15 @@ class FakeSocketStreams {
     }
     ASSERT_EQ(result, MOJO_RESULT_OK);
 
-    uint32_t num_bytes = 0;
-    result = outbound_stream_->ReadData(nullptr, &num_bytes,
-                                        MOJO_READ_DATA_FLAG_QUERY);
+    size_t num_bytes = 0;
+    result = outbound_stream_->ReadData(MOJO_READ_DATA_FLAG_QUERY,
+                                        base::span<uint8_t>(), num_bytes);
     ASSERT_EQ(result, MOJO_RESULT_OK);
-    auto old_end_index = outbound_data_.size();
+    size_t old_end_index = outbound_data_.size();
     outbound_data_.resize(old_end_index + num_bytes);
-    result = outbound_stream_->ReadData(outbound_data_.data() + old_end_index,
-                                        &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    result = outbound_stream_->ReadData(
+        MOJO_READ_DATA_FLAG_NONE,
+        base::span(outbound_data_).subspan(old_end_index), num_bytes);
     ASSERT_EQ(result, MOJO_RESULT_OK);
     outbound_data_.resize(old_end_index + num_bytes);
 
@@ -130,7 +135,7 @@ class FakeSocketStreams {
 
 class MockTlsConnectionClient : public TlsConnection::Client {
  public:
-  MOCK_METHOD(void, OnError, (TlsConnection*, Error), (override));
+  MOCK_METHOD(void, OnError, (TlsConnection*, const Error&), (override));
   MOCK_METHOD(void, OnRead, (TlsConnection*, std::vector<uint8_t>), (override));
 };
 
@@ -184,8 +189,7 @@ TEST_F(TlsClientConnectionTest, CallsClientOnReadForInboundData) {
       byte ^= i;
     }
     EXPECT_CALL(*client(), OnRead(connection(), expected_data)).Times(1);
-    socket_streams()->SimulateSocketReceive(expected_data.data(),
-                                            expected_data.size());
+    socket_streams()->SimulateSocketReceive(expected_data);
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(client());
   }
@@ -211,13 +215,13 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
   }
 
   // Send one message whose size is half the pipe's capacity.
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
+  EXPECT_TRUE(connection()->Send(message));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(message, socket_streams()->TakeAccumulatedOutboundData());
 
   // Send two messages whose sizes are half the pipe's capacity.
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
+  EXPECT_TRUE(connection()->Send(message));
+  EXPECT_TRUE(connection()->Send(message));
   base::RunLoop().RunUntilIdle();
   std::vector<uint8_t> accumulated_data =
       socket_streams()->TakeAccumulatedOutboundData();
@@ -227,9 +231,9 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
                       message.size()));
 
   // Attempt to send three messages, but expect the third to fail.
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
-  EXPECT_FALSE(connection()->Send(message.data(), message.size()));
+  EXPECT_TRUE(connection()->Send(message));
+  EXPECT_TRUE(connection()->Send(message));
+  EXPECT_FALSE(connection()->Send(message));
   base::RunLoop().RunUntilIdle();
   accumulated_data = socket_streams()->TakeAccumulatedOutboundData();
   ASSERT_EQ(message.size() * 2, accumulated_data.size());
@@ -238,7 +242,7 @@ TEST_F(TlsClientConnectionTest, SendsUntilBlocked) {
                       message.size()));
 
   // Sending should resume when there is capacity available again.
-  EXPECT_TRUE(connection()->Send(message.data(), message.size()));
+  EXPECT_TRUE(connection()->Send(message));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(message, socket_streams()->TakeAccumulatedOutboundData());
 }
@@ -249,7 +253,7 @@ TEST_F(TlsClientConnectionTest,
   connection()->SetClient(client());
 
   // Send a message and immediately close the outbound stream.
-  EXPECT_TRUE(connection()->Send(kTestMessage, sizeof(kTestMessage)));
+  EXPECT_TRUE(connection()->Send(kTestMessage));
   socket_streams()->SimulateOutboundClose();
   base::RunLoop().RunUntilIdle();
 
@@ -258,7 +262,7 @@ TEST_F(TlsClientConnectionTest,
 
   // Now, call Send() again and this should trigger a fatal error.
   EXPECT_CALL(*client(), OnError(connection(), _)).Times(1);
-  EXPECT_FALSE(connection()->Send(kTestMessage, sizeof(kTestMessage)));
+  EXPECT_FALSE(connection()->Send(kTestMessage));
 }
 
 TEST_F(TlsClientConnectionTest, CanRetrieveAddresses) {

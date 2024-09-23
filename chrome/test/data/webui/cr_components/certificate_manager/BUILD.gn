@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//chrome/test/data/webui/build_webui_tests.gni")
+import("//crypto/features.gni")
+
+assert(!is_android && !is_ios)
+assert(use_nss_certs || chrome_root_store_cert_management_ui)
+
+build_webui_tests("build") {
+  files = []
+
+  if (use_nss_certs) {
+    files += [ "certificate_manager_test.ts" ]
+    if (is_chromeos) {
+      files += [ "certificate_manager_provisioning_test.ts" ]
+    }
+  }
+
+  if (chrome_root_store_cert_management_ui) {
+    files += [
+      "certificate_entry_v2_test.ts",
+      "certificate_list_v2_test.ts",
+      "certificate_manager_v2_focus_test.ts",
+      "certificate_manager_v2_test.ts",
+      "certificate_manager_v2_test_support.ts",
+      "certificate_password_dialog_test.ts",
+      "certificate_subpage_v2_test.ts",
+      "navigation_v2_test.ts",
+      "local_certs_section_v2_test.ts",
+    ]
+  }
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/certificate_manager:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+}

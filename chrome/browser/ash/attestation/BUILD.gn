@@ -1,0 +1,181 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash)
+
+static_library("attestation") {
+  sources = [
+    "attestation_ca_client.cc",
+    "attestation_ca_client.h",
+    "certificate_util.cc",
+    "certificate_util.h",
+    "enrollment_certificate_uploader.h",
+    "enrollment_certificate_uploader_impl.cc",
+    "enrollment_certificate_uploader_impl.h",
+    "enrollment_id_upload_manager.cc",
+    "enrollment_id_upload_manager.h",
+    "machine_certificate_uploader.h",
+    "machine_certificate_uploader_impl.cc",
+    "machine_certificate_uploader_impl.h",
+    "platform_verification_flow.cc",
+    "platform_verification_flow.h",
+    "soft_bind_attestation_flow.h",
+    "soft_bind_attestation_flow_impl.cc",
+    "soft_bind_attestation_flow_impl.h",
+    "tpm_challenge_key.cc",
+    "tpm_challenge_key.h",
+    "tpm_challenge_key_result.cc",
+    "tpm_challenge_key_result.h",
+    "tpm_challenge_key_subtle.cc",
+    "tpm_challenge_key_subtle.h",
+    "tpm_challenge_key_with_timeout.cc",
+    "tpm_challenge_key_with_timeout.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":attestation_proto",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/rsu",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/profiles",
+    "//chrome/common:constants",
+    "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/settings",
+    "//chromeos/components/kiosk",
+    "//chromeos/dbus/common",
+    "//chromeos/dbus/tpm_manager",
+    "//chromeos/dbus/tpm_manager:tpm_manager_proto",
+    "//components/policy/core/common",
+    "//components/pref_registry",
+    "//content/public/browser",
+    "//third_party/securemessage/proto",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/rsu",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_soft_bind_attestation_flow.cc",
+    "fake_soft_bind_attestation_flow.h",
+    "mock_enrollment_certificate_uploader.cc",
+    "mock_enrollment_certificate_uploader.h",
+    "mock_machine_certificate_uploader.cc",
+    "mock_machine_certificate_uploader.h",
+    "mock_tpm_challenge_key.cc",
+    "mock_tpm_challenge_key.h",
+    "mock_tpm_challenge_key_subtle.cc",
+    "mock_tpm_challenge_key_subtle.h",
+  ]
+
+  deps = [
+    ":attestation",
+    "//base",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/constants",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "attestation_ca_client_unittest.cc",
+    "attestation_policy_unittest.cc",
+    "certificate_util_unittest.cc",
+    "enrollment_certificate_uploader_impl_unittest.cc",
+    "enrollment_id_upload_manager_unittest.cc",
+    "machine_certificate_uploader_impl_unittest.cc",
+    "platform_verification_flow_unittest.cc",
+    "tpm_challenge_key_result_unittest.cc",
+    "tpm_challenge_key_subtle_unittest.cc",
+    "tpm_challenge_key_unittest.cc",
+  ]
+
+  deps = [
+    ":attestation",
+    ":attestation_proto",
+    ":test_support",
+    ":test_with_shadow_variables",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/platform_keys/key_permissions",
+    "//chrome/browser/ash/platform_keys/key_permissions:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/attestation",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
+    "//chromeos/ash/components/dbus/constants",
+    "//chromeos/ash/components/dbus/cryptohome:attestation_proto",
+    "//chromeos/ash/components/settings",
+    "//chromeos/components/kiosk:test_support",
+    "//chromeos/dbus/constants",
+    "//chromeos/dbus/tpm_manager",
+    "//components/policy/core/common:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//services/network:test_support",
+  ]
+}
+
+config("allow_shadow_variables") {
+  cflags = [ "-Wno-shadow" ]
+}
+
+# TODO(b/247823913): Merge this target back into the unit_tests target above
+# when third_party/securemessage code stops generating -Wshadow warnings. Also
+# remove the allow_shadow_variables config then.
+source_set("test_with_shadow_variables") {
+  testonly = true
+
+  configs += [ ":allow_shadow_variables" ]
+
+  sources = [ "soft_bind_attestation_flow_impl_unittest.cc" ]
+
+  deps = [
+    ":attestation",
+    "//base",
+    "//chrome/browser/ash/settings:test_support",
+    "//chromeos/ash/components/attestation:test_support",
+    "//chromeos/ash/components/settings",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//third_party/securemessage",
+    "//third_party/securemessage:securemessage_cpp_protobuf",
+  ]
+}
+
+proto_library("attestation_proto") {
+  sources = [ "attestation_key_payload.proto" ]
+}

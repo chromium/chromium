@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -99,7 +99,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   ChromeBrowserState* browserState = _browser->GetBrowserState();
   syncer::SyncService* service =
       SyncServiceFactory::GetForBrowserState(browserState);
-  // TODO(crbug.com/1208307): The reason this is an if and not a DCHECK is
+  // TODO(crbug.com/40765960): The reason this is an if and not a DCHECK is
   // because SyncCreatePassphraseTableViewController inherits from this class.
   // This should be changed, i.e. either extract the minimum common logic
   // between the 2 to a new base class, or not share code at all.
@@ -125,7 +125,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 
   _identityManagerObserver =
       std::make_unique<signin::IdentityManagerObserverBridge>(
-          IdentityManagerFactory::GetForBrowserState(browserState), self);
+          IdentityManagerFactory::GetForProfile(browserState), self);
   return self;
 }
 
@@ -158,9 +158,12 @@ const CGFloat kSpinnerButtonPadding = 18;
   [super viewDidLoad];
   [self loadModel];
   [self setRightNavBarItem];
+  [self setLeftNavBarItem];
 
   SceneState* sceneState = self.browser->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
+  self.view.accessibilityIdentifier =
+      kSyncEncryptionPassphraseTableViewAccessibilityIdentifier;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -336,6 +339,13 @@ const CGFloat kSpinnerButtonPadding = 18;
   [self reloadData];
 }
 
+- (void)cancelPressed {
+  CHECK(self.presentModally);
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+}
+
 // Sets up the navigation bar's right button. The button will be enabled iff
 // `-areAllFieldsFilled` returns YES.
 - (void)setRightNavBarItem {
@@ -352,6 +362,17 @@ const CGFloat kSpinnerButtonPadding = 18;
   // Only setting the enabled state doesn't make the item redraw. As a
   // workaround, set it again.
   self.navigationItem.rightBarButtonItem = submitButtonItem;
+}
+
+- (void)setLeftNavBarItem {
+  if (!self.presentModally) {
+    return;
+  }
+  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelPressed)];
+  self.navigationItem.leftBarButtonItem = cancelButton;
 }
 
 - (BOOL)areAllFieldsFilled {
@@ -500,7 +521,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     // change when the user is in the Advanced Settings (e.g., if the user
     // confirms a Sync passphrase). Because these navigation controllers are
     // not directly related to Settings, we check the type before dismissal.
-    // TODO(crbug.com/1151287): Revisit with Advanced Sync Settings changes.
+    // TODO(crbug.com/40158230): Revisit with Advanced Sync Settings changes.
     if (settingsNavigationController) {
       [settingsNavigationController
           popViewControllerOrCloseSettingsAnimated:YES];

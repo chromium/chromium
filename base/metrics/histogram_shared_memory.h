@@ -5,6 +5,7 @@
 #ifndef BASE_METRICS_HISTOGRAM_SHARED_MEMORY_H_
 #define BASE_METRICS_HISTOGRAM_SHARED_MEMORY_H_
 
+#include <optional>
 #include <string_view>
 
 #include "base/base_export.h"
@@ -14,7 +15,6 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 #include "base/files/platform_file.h"
@@ -76,8 +76,8 @@ struct BASE_EXPORT HistogramSharedMemory {
   // |process_id| based on |config|. On success, returns true and updates
   // the values of |memory_region| and |allocator|. On failure, returns false
   // and |memory_region| and |allocator| are unchanged.
-  static absl::optional<SharedMemory> Create(int process_id,
-                                             const Config& config);
+  static std::optional<SharedMemory> Create(int process_id,
+                                            const Config& config);
 
 #if BUILDFLAG(IS_APPLE)
   // Exposed for testing.

@@ -1,0 +1,173 @@
+<style include="cr-icons searchbox-shared-style">
+  :host {
+    --cr-searchbox-height: 52px;
+    --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+    --cr-searchbox-min-width: min(calc(100%), 768px);
+  }
+
+  .results-pane {
+    border: none;
+     /* Viewport height minus the searchbox height and margin. */
+    height: calc(100vh - 76px);
+    inset-inline-start: 0;
+     /*
+      * We need to offset by the searchbox height and margin since we are in a
+      * fixed position.
+      */
+    inset-block-start: 76px;
+    position: fixed;
+    width: 100%;
+    /*
+     * This z-index allows us to hide the results and loading image without
+     * changing their visiblity. Changing their visiblity can result in ghost
+     * frames.
+     */
+    z-index: 1;
+  }
+
+  :host([dark-mode]) .results-pane {
+    background-color: #1F1F1F;
+  }
+
+  /* Set z-index to hide results to prevent ghost frames when reshowing. */
+  :host([is-loading-results]) #results {
+    z-index: 0;
+  }
+
+  #ghostLoader {
+    background-color: white;
+    max-width: 796px;
+  }
+
+  :host([dark-mode]) #ghostLoader {
+    background-color: #1F1F1F;
+  }
+
+  :host(:not([is-loading-results])) #ghostLoader,
+  :host([is-error-page-visible]) #ghostLoader {
+    visibility: hidden;
+    z-index: 0;
+  }
+
+  :host([is-back-arrow-visible]) #ghostLoader {
+    max-width: 832px;
+  }
+
+  #networkErrorBottomLine {
+    color: #70757A;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  #networkErrorIcon {
+    height: 48px;
+    margin: 156px auto 0px;
+    width: 40px;
+  }
+
+  #networkErrorPage {
+    background-color: white;
+    display: none;
+    inset: 0;
+    position: fixed;
+  }
+
+  #networkErrorTopLine {
+    color: #202124;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    margin-top: 44px;
+    text-align: center;
+  }
+
+  :host([is-error-page-visible]) #networkErrorPage {
+    display: block;
+    z-index: 2;
+  }
+
+  :host([dark-mode]) #networkErrorBottomLine {
+    color: #9AA0A6;
+  }
+
+  :host([dark-mode]) #networkErrorPage {
+    background-color: #202124;
+  }
+
+  :host([dark-mode]) #networkErrorTopLine {
+    color: #E8EAED;
+  }
+
+  #searchbox {
+    margin-block-start: 16px;
+    margin-inline-end: 14px;
+    margin-block-end: 8px;
+    margin-inline-start: 14px;
+  }
+
+  :host([is-back-arrow-visible]) #searchbox {
+    margin-inline-start: 0px;
+  }
+
+  #searchboxContainer {
+    position: fixed;
+    width: 100%;
+    --color-searchbox-results-background: #ffffffff;
+  }
+
+  :host([dark-mode]) #searchboxContainer {
+    background-color: #1F1F1F;
+    --color-searchbox-results-background: #3c3c3cff;
+  }
+
+  cr-icon-button.icon-arrow-back {
+    margin-block-start: 26px;
+    margin-inline-start: 8px;
+    margin-inline-end: 8px;
+  }
+
+  :host([dark-mode]) cr-icon-button.icon-arrow-back {
+    color: #70757A;
+  }
+</style>
+<div id="searchboxContainer">
+  <template is="dom-if" if="[[isBackArrowVisible]]">
+    <cr-icon-button id="backButton" class="action-icon icon-arrow-back"
+        on-click="onBackArrowClick" aria-label="$i18n{backButton}">
+    </cr-icon-button>
+  </template>
+  <cr-searchbox id="searchbox"></cr-searchbox>
+</div>
+
+<!-- Network error UI that is initially hidden -->
+<div id="networkErrorPage">
+  <div id="networkErrorIcon">
+    <picture>
+      <source srcset="generic-error-icon-dark.png"
+        media$="[[darkMode]]">
+      <img src="generic-error-icon.png">
+    </picture>
+  </div>
+  <div id="networkErrorTopLine">
+    $i18n{networkErrorPageTopLine}
+  </div>
+  <div id="networkErrorBottomLine">
+    $i18n{networkErrorPageBottomLine}
+  </div>
+</div>
+
+<side-panel-ghost-loader id="ghostLoader"
+    class="results-pane"></side-panel-ghost-loader>
+
+<iframe name="results" id="results" class="results-pane"
+    allow="cross-origin-isolated; display-capture; geolocation; microphone;"
+    frameBorder="0">
+</iframe>

@@ -9,18 +9,18 @@ namespace debug {
 
 StackTrace::StackTrace() = default;
 StackTrace::StackTrace(size_t count) : StackTrace() {}
-StackTrace::StackTrace(const void* const* trace, size_t count) : StackTrace() {}
+StackTrace::StackTrace(span<const void* const> trace) : StackTrace() {}
 
 void StackTrace::Print() const {}
 
 void StackTrace::OutputToStream(std::ostream* os) const {}
 
 std::string StackTrace::ToString() const {
-  return "";
+  return {};
 }
 
-std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
-  return "";
+std::string StackTrace::ToStringWithPrefix(cstring_view prefix_string) const {
+  return {};
 }
 
 std::ostream& operator<<(std::ostream& os, const StackTrace& s) {

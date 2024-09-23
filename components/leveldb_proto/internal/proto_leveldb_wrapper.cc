@@ -25,7 +25,6 @@ Enums::InitStatus InitFromTaskRunner(LevelDB* database,
                                      const std::string& client_id) {
   // TODO(cjhopman): Histogram for database size.
   auto status = database->Init(database_dir, options, destroy_on_corruption);
-  ProtoLevelDBWrapperMetrics::RecordInit(client_id, status);
 
   if (status.ok())
     return Enums::InitStatus::kOK;
@@ -38,22 +37,14 @@ Enums::InitStatus InitFromTaskRunner(LevelDB* database,
 
 bool DestroyFromTaskRunner(LevelDB* database, const std::string& client_id) {
   auto status = database->Destroy();
-  bool success = status.ok();
-  ProtoLevelDBWrapperMetrics::RecordDestroy(client_id, success);
-
-  return success;
+  return status.ok();
 }
 
 bool DestroyWithDirectoryFromTaskRunner(const base::FilePath& db_dir,
                                         const std::string& client_id) {
   leveldb::Status result = leveldb::DestroyDB(
       db_dir.AsUTF8Unsafe(), leveldb_proto::CreateSimpleOptions());
-  bool success = result.ok();
-
-  if (!client_id.empty())
-    ProtoLevelDBWrapperMetrics::RecordDestroy(client_id, success);
-
-  return success;
+  return result.ok();
 }
 
 void LoadKeysFromTaskRunner(
@@ -64,7 +55,6 @@ void LoadKeysFromTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   auto keys = std::make_unique<KeyVector>();
   bool success = database->LoadKeys(target_prefix, keys.get());
-  ProtoLevelDBWrapperMetrics::RecordLoadKeys(client_id, success);
   callback_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), success, std::move(keys)));
 }
@@ -144,8 +134,6 @@ void LoadKeysAndEntriesFromTaskRunner(LevelDB* database,
 
   *success = database->LoadKeysAndEntriesWhile(keys_entries, options, start_key,
                                                controller);
-
-  ProtoLevelDBWrapperMetrics::RecordLoadKeysAndEntries(client_id, success);
 }
 
 void LoadEntriesFromTaskRunner(LevelDB* database,
@@ -168,8 +156,6 @@ void GetEntryFromTaskRunner(LevelDB* database,
                             std::string* entry) {
   leveldb::Status status;
   *success = database->Get(key, found, entry, &status);
-
-  ProtoLevelDBWrapperMetrics::RecordGet(client_id, *success, *found, status);
 }
 }  // namespace
 

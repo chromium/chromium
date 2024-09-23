@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -27,7 +28,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
@@ -111,7 +111,7 @@ public class MostVisitedSitesMetadataUtilsTest {
         Runnable task2 = () -> mMostVisitedSitesMetadataUtils.saveSuggestionListsToFile(task2Tiles);
 
         // If current task is not null, all saving tasks should be set as pending task.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     task1.run();
                     task2.run();
@@ -133,7 +133,7 @@ public class MostVisitedSitesMetadataUtilsTest {
 
         // Set and run current task.
         assertNull(mMostVisitedSitesMetadataUtils.getCurrentTaskForTesting());
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mMostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
                                 createFakeSiteSuggestionTiles1()));

@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/settings/performance_handler.h"
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/performance_manager/public/features.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
@@ -30,18 +33,8 @@ void PerformanceHandler::RegisterMessages() {
       base::BindRepeating(&PerformanceHandler::HandleGetDeviceHasBattery,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "openBatterySaverFeedbackDialog",
-      base::BindRepeating(
-          &PerformanceHandler::HandleOpenBatterySaverFeedbackDialog,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openMemorySaverFeedbackDialog",
-      base::BindRepeating(
-          &PerformanceHandler::HandleOpenMemorySaverFeedbackDialog,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openSpeedFeedbackDialog",
-      base::BindRepeating(&PerformanceHandler::HandleOpenSpeedFeedbackDialog,
+      "openPerformanceFeedbackDialog",
+      base::BindRepeating(&PerformanceHandler::HandleOpenFeedbackDialog,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "validateTabDiscardExceptionRule",
@@ -86,7 +79,7 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
       const GURL url = web_contents->GetLastCommittedURL();
       if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
         last_active_time_host_pairs.insert(
-            std::make_pair(web_contents->GetLastActiveTime(), url.host()));
+            std::make_pair(web_contents->GetLastActiveTimeTicks(), url.host()));
       }
     }
   }
@@ -122,28 +115,16 @@ void PerformanceHandler::HandleGetDeviceHasBattery(
                                        ->DeviceHasBattery()));
 }
 
-void PerformanceHandler::HandleOpenBatterySaverFeedbackDialog(
-    const base::Value::List& args) {
-  HandleOpenFeedbackDialog("performance_battery");
-}
-
-void PerformanceHandler::HandleOpenMemorySaverFeedbackDialog(
-    const base::Value::List& args) {
-  HandleOpenFeedbackDialog("performance_tabs");
-}
-
-void PerformanceHandler::HandleOpenSpeedFeedbackDialog(
-    const base::Value::List& args) {
-  HandleOpenFeedbackDialog("performance_speed");
-}
-
 void PerformanceHandler::HandleOpenFeedbackDialog(
-    const std::string category_tag) {
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string category_tag = args[0].GetString();
+
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   DCHECK(browser);
   std::string unused;
   chrome::ShowFeedbackPage(browser,
-                           chrome::kFeedbackSourceSettingsPerformancePage,
+                           feedback::kFeedbackSourceSettingsPerformancePage,
                            unused, unused, category_tag, unused);
 }
 

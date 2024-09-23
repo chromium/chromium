@@ -37,6 +37,7 @@ blink_modules_sources("shared_storage") {
 
   deps = [
     "//components/aggregation_service",
+    "//services/network/public/cpp",
     "//third_party/blink/renderer/modules/crypto:crypto",
   ]
 

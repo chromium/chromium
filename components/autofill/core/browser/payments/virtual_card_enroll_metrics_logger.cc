@@ -61,9 +61,9 @@ VirtualCardEnrollmentBubbleSource ConvertToVirtualCardEnrollmentBubbleSource(
     case VirtualCardEnrollmentSource::kNone:
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
-        NOTREACHED_NORETURN();
-      } else {
         NOTREACHED();
+      } else {
+        NOTREACHED_IN_MIGRATION();
         return VirtualCardEnrollmentBubbleSource::
             VIRTUAL_CARD_ENROLLMENT_UNKNOWN_SOURCE;
       }

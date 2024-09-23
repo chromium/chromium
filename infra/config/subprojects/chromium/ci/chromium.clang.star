@@ -6,11 +6,12 @@
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
+load("//lib/builders.star", "builders", "cpu", "gardener_rotations", "os", "siso")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/html.star", "linkify_builder")
 load("//lib/xcode.star", "xcode")
 
 ci.defaults.set(
@@ -20,8 +21,8 @@ ci.defaults.set(
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM_CLANG,
-    # Because these run ToT Clang, goma is not used.
+    gardener_rotations = gardener_rotations.CHROMIUM_CLANG,
+    # Because these run ToT Clang, reclient is not used.
     # Naturally the runtime will be ~4-8h on average, depending on config.
     # CFI builds will take even longer - around 11h.
     execution_timeout = 14 * time.hour,
@@ -38,6 +39,8 @@ ci.defaults.set(
     },
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_TRUSTED,
 )
 
 consoles.console_view(
@@ -80,6 +83,8 @@ consoles.console_view(
 )]
 
 def clang_mac_builder(*, name, cores = 12, **kwargs):
+    if "gn_args" in kwargs:
+        kwargs["gn_args"].configs.append("mac")
     return ci.builder(
         name = name,
         cores = cores,
@@ -97,6 +102,8 @@ def clang_mac_builder(*, name, cores = 12, **kwargs):
     )
 
 def clang_tot_linux_builder(short_name, category = "ToT Linux", **kwargs):
+    if "gn_args" in kwargs:
+        kwargs["gn_args"].configs.append("linux")
     ci.builder(
         console_view_entry = consoles.console_view_entry(
             category = category,
@@ -137,7 +144,9 @@ ci.builder(
             "cfi_recover",
             "thin_lto",
             "release_builder",
-            "reclient",
+            "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -146,8 +155,7 @@ ci.builder(
     ),
     contact_team_email = "lexan@google.com",
     notifies = ["CFI Linux"],
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = reclient.jobs.DEFAULT,
+    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 ci.builder(
@@ -175,6 +183,8 @@ ci.builder(
             "thin_lto",
             "release_builder",
             "dcheck_always_on",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -209,6 +219,8 @@ ci.builder(
             "release_builder",
             "v8_heap",
             "minimal_symbols",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -243,6 +255,8 @@ ci.builder(
             "release",
             "v8_heap",
             "minimal_symbols",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -281,6 +295,7 @@ ci.builder(
             "minimal_symbols",
             "strip_debug_info",
             "clang_tot",
+            "arm",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -317,6 +332,7 @@ ci.builder(
             "clang_tot",
             "shared",
             "debug",
+            "arm",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -505,6 +521,7 @@ ci.builder(
             "asan",
             "debug_builder",
             "strip_debug_info",
+            "arm",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -520,6 +537,7 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                "checkout_pgo_profiles",
                 "clang_tot",
                 "android",
             ],
@@ -577,6 +595,7 @@ ci.builder(
             "release",
             "also_build_ash_chrome",
             "clang_tot",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -611,6 +630,7 @@ ci.builder(
             "debug",
             "also_build_ash_chrome",
             "clang_tot",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -646,17 +666,13 @@ ci.builder(
             "fuchsia",
             "release_builder",
             "clang_tot",
+            "cast_receiver_size_optimized",
+            "x64",
         ],
     ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "ToT Fuchsia",
-            short_name = "x64",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.selector.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fyi|clang",
             short_name = "x64",
         ),
     ],
@@ -694,18 +710,13 @@ ci.builder(
             "clang_tot",
             "static",
             "arm64_host",
+            "cast_receiver_size_optimized",
         ],
     ),
     console_view_entry = [
         consoles.console_view_entry(
             category = "ToT Fuchsia",
             short_name = "off",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.selector.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fyi|clang",
-            short_name = "arm64-off",
         ),
     ],
     contact_team_email = "lexan@google.com",
@@ -736,6 +747,7 @@ clang_tot_linux_builder(
             "full_symbols",
             "shared",
             "release",
+            "x64",
         ],
     ),
     short_name = "rel",
@@ -763,6 +775,7 @@ clang_tot_linux_builder(
             "clang_tot",
             "shared",
             "debug",
+            "x64",
         ],
     ),
     short_name = "dbg",
@@ -791,6 +804,7 @@ clang_tot_linux_builder(
             "asan",
             "lsan",
             "release_builder",
+            "x64",
         ],
     ),
     short_name = "asn",
@@ -824,6 +838,7 @@ clang_tot_linux_builder(
             "pdf_xfa",
             "optimize_for_fuzzing",
             "mojo_fuzzer",
+            "x64",
         ],
     ),
     # Requires a large disk, so has a machine specifically devoted to it
@@ -840,6 +855,7 @@ clang_tot_linux_builder(
             "use_clang_coverage",
             "minimal_symbols",
             "release",
+            "x64",
         ],
     ),
     category = "ToT Code Coverage",
@@ -868,6 +884,7 @@ clang_tot_linux_builder(
             "clang_tot",
             "msan",
             "release",
+            "x64",
         ],
     ),
     os = os.LINUX_FOCAL,
@@ -897,6 +914,7 @@ clang_tot_linux_builder(
             "official_optimize",
             "no_symbols",
             "pgo_phase_1",
+            "x64",
         ],
     ),
     short_name = "pgo",
@@ -924,6 +942,7 @@ clang_tot_linux_builder(
             "clang_tot",
             "tsan",
             "release",
+            "x64",
         ],
     ),
     short_name = "tsn",
@@ -951,6 +970,7 @@ clang_tot_linux_builder(
             "clang_tot",
             "ubsan_vptr_no_recover_hack",
             "release_builder",
+            "x64",
         ],
     ),
     short_name = "usn",
@@ -978,6 +998,7 @@ ci.builder(
             "minimal_symbols",
             "release_builder",
             "x86",
+            "win",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -1011,6 +1032,7 @@ ci.builder(
             "shared",
             "debug",
             "x86",
+            "win",
         ],
     ),
     builderless = False,
@@ -1046,6 +1068,7 @@ ci.builder(
             "release",
             "x86",
             "dcheck_always_on",
+            "win",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -1077,6 +1100,8 @@ ci.builder(
             "clang_tot",
             "minimal_symbols",
             "release_builder",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -1108,6 +1133,8 @@ ci.builder(
             "clang_tot",
             "shared",
             "debug",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -1141,6 +1168,8 @@ ci.builder(
             "shared",
             "release",
             "dcheck_always_on",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -1177,6 +1206,8 @@ ci.builder(
             "chrome_with_codecs",
             "pdf_xfa",
             "minimal_symbols",
+            "win",
+            "x64",
         ],
     ),
     builderless = False,
@@ -1216,10 +1247,11 @@ ci.builder(
             "no_symbols",
             "pgo_phase_1",
             "arm64",
+            "win",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
-    sheriff_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
         short_name = "pgo-arm",
@@ -1236,6 +1268,8 @@ ci.builder(
             "use_clang_coverage",
             "minimal_symbols",
             "release",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -1268,6 +1302,8 @@ ci.builder(
             "official_optimize",
             "no_symbols",
             "pgo_phase_1",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_DEFAULT,
@@ -1279,7 +1315,11 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-win_cross-rel",
+    name = "linux-win-cross-clang-tot-rel",
+    description_html = "Linux to Windows cross compile with Clang ToT. " +
+                       "Previously at {}.".format(
+                           linkify_builder("ci", "linux-win_cross-rel"),
+                       ),
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1305,6 +1345,7 @@ ci.builder(
             "shared",
             "release",
             "dcheck_always_on",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1346,6 +1387,7 @@ ci.builder(
     builderless = False,
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|public",
@@ -1387,6 +1429,7 @@ ci.builder(
     builderless = False,
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|public",
@@ -1401,7 +1444,12 @@ clang_mac_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["clang_tot"],
+            apply_configs = [
+                "clang_tot",
+                # This is necessary due to this builder running the
+                # telemetry_perf_unittests suite.
+                "chromium_with_telemetry_dependencies",
+            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "clang_tot_mac",
@@ -1418,8 +1466,11 @@ clang_mac_builder(
             "minimal_symbols",
             "shared",
             "release",
+            "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "rel",
@@ -1448,8 +1499,11 @@ clang_mac_builder(
             "clang_tot",
             "shared",
             "debug",
+            "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "dbg",
@@ -1479,8 +1533,11 @@ clang_mac_builder(
             "clang_tot",
             "minimal_symbols",
             "release_builder",
+            "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Mac",
         short_name = "asn",
@@ -1547,8 +1604,11 @@ clang_mac_builder(
             "use_clang_coverage",
             "minimal_symbols",
             "release",
+            "x64",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "mac",

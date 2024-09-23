@@ -26,8 +26,8 @@ class TrustStore;
 
 namespace cast_channel {
 
-using ::cast::channel::AuthResponse;
-using ::cast::channel::CastMessage;
+using ::openscreen::cast::proto::AuthResponse;
+using ::openscreen::cast::proto::CastMessage;
 
 BASE_DECLARE_FEATURE(kEnforceNonceChecking);
 BASE_DECLARE_FEATURE(kEnforceSHA256Checking);
@@ -140,7 +140,6 @@ AuthResult VerifyCredentialsForTest(
     const AuthResponse& response,
     const std::string& signature_input,
     const cast_certificate::CRLPolicy& crl_policy,
-    bssl::TrustStore* cast_trust_store,
     bssl::TrustStore* crl_trust_store,
     const base::Time& verification_time);
 

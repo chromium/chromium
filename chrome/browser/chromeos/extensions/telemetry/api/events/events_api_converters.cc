@@ -262,7 +262,7 @@ cx_events::AudioJackEvent Convert(
     case crosapi::TelemetryAudioJackEventInfo_State::kRemove:
       return cx_events::AudioJackEvent::kDisconnected;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::AudioJackDeviceType Convert(
@@ -275,7 +275,7 @@ cx_events::AudioJackDeviceType Convert(
     case crosapi::TelemetryAudioJackEventInfo_DeviceType::kMicrophone:
       return cx_events::AudioJackDeviceType::kMicrophone;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::KeyboardConnectionType Convert(
@@ -292,7 +292,7 @@ cx_events::KeyboardConnectionType Convert(
     case crosapi::TelemetryKeyboardConnectionType::kUnknown:
       return cx_events::KeyboardConnectionType::kUnknown;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::PhysicalKeyboardLayout Convert(
@@ -305,7 +305,7 @@ cx_events::PhysicalKeyboardLayout Convert(
     case crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS:
       return cx_events::PhysicalKeyboardLayout::kChromeOs;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::MechanicalKeyboardLayout Convert(
@@ -322,7 +322,7 @@ cx_events::MechanicalKeyboardLayout Convert(
     case crosapi::TelemetryKeyboardMechanicalLayout::kJis:
       return cx_events::MechanicalKeyboardLayout::kJis;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::KeyboardNumberPadPresence Convert(
@@ -337,7 +337,7 @@ cx_events::KeyboardNumberPadPresence Convert(
     case crosapi::TelemetryKeyboardNumberPadPresence::kNotPresent:
       return cx_events::KeyboardNumberPadPresence::kNotPresent;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::KeyboardTopRowKey Convert(
@@ -392,7 +392,7 @@ cx_events::KeyboardTopRowKey Convert(
     case crosapi::TelemetryKeyboardTopRowKey::kDelete:
       return cx_events::KeyboardTopRowKey::kDelete;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::KeyboardTopRightKey Convert(
@@ -409,7 +409,7 @@ cx_events::KeyboardTopRightKey Convert(
     case crosapi::TelemetryKeyboardTopRightKey::kControlPanel:
       return cx_events::KeyboardTopRightKey::kControlPanel;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::LidEvent Convert(crosapi::TelemetryLidEventInfo::State state) {
@@ -421,7 +421,7 @@ cx_events::LidEvent Convert(crosapi::TelemetryLidEventInfo::State state) {
     case crosapi::TelemetryLidEventInfo_State::kOpened:
       return cx_events::LidEvent::kOpened;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::UsbEvent Convert(crosapi::TelemetryUsbEventInfo::State state) {
@@ -433,7 +433,7 @@ cx_events::UsbEvent Convert(crosapi::TelemetryUsbEventInfo::State state) {
     case crosapi::TelemetryUsbEventInfo_State::kRemove:
       return cx_events::UsbEvent::kDisconnected;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::ExternalDisplayEvent Convert(
@@ -446,7 +446,7 @@ cx_events::ExternalDisplayEvent Convert(
     case crosapi::TelemetryExternalDisplayEventInfo_State::kRemove:
       return cx_events::ExternalDisplayEvent::kDisconnected;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::SdCardEvent Convert(crosapi::TelemetrySdCardEventInfo::State state) {
@@ -458,7 +458,7 @@ cx_events::SdCardEvent Convert(crosapi::TelemetrySdCardEventInfo::State state) {
     case crosapi::TelemetrySdCardEventInfo_State::kRemove:
       return cx_events::SdCardEvent::kDisconnected;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::PowerEvent Convert(crosapi::TelemetryPowerEventInfo::State state) {
@@ -474,7 +474,7 @@ cx_events::PowerEvent Convert(crosapi::TelemetryPowerEventInfo::State state) {
     case crosapi::TelemetryPowerEventInfo_State::kOsResume:
       return cx_events::PowerEvent::kOsResume;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::StylusGarageEvent Convert(
@@ -487,7 +487,7 @@ cx_events::StylusGarageEvent Convert(
     case crosapi::TelemetryStylusGarageEventInfo_State::kRemoved:
       return cx_events::StylusGarageEvent::kRemoved;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::InputTouchButton Convert(crosapi::TelemetryInputTouchButton button) {
@@ -501,7 +501,7 @@ cx_events::InputTouchButton Convert(crosapi::TelemetryInputTouchButton button) {
     case crosapi::TelemetryInputTouchButton::kRight:
       return cx_events::InputTouchButton::kRight;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
@@ -539,7 +539,7 @@ crosapi::TelemetryEventCategoryEnum Convert(cx_events::EventCategory input) {
     case cx_events::EventCategory::kStylusConnected:
       return crosapi::TelemetryEventCategoryEnum::kStylusConnected;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::InputTouchButtonState Convert(
@@ -552,7 +552,7 @@ cx_events::InputTouchButtonState Convert(
     case crosapi::TelemetryTouchpadButtonEventInfo_State::kReleased:
       return cx_events::InputTouchButtonState::kReleased;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 cx_events::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
@@ -564,7 +564,7 @@ cx_events::DisplayInputType Convert(crosapi::ProbeDisplayInputType input) {
     case crosapi::ProbeDisplayInputType::kAnalog:
       return cx_events::DisplayInputType::kAnalog;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int Convert(uint32_t input) {

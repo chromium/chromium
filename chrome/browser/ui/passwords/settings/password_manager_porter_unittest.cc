@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
@@ -72,10 +72,9 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override {
-    listener_->FileSelected(ui::SelectedFileInfo(forced_path_), file_type_index,
-                            params);
+    listener_->FileSelected(ui::SelectedFileInfo(forced_path_),
+                            file_type_index);
   }
   bool IsRunning(gfx::NativeWindow owning_window) const override {
     return false;
@@ -86,14 +85,6 @@ class TestSelectFileDialog : public ui::SelectFileDialog {
  private:
   // The path that will be selected by this dialog.
   base::FilePath forced_path_;
-};
-
-class TestSelectFilePolicy : public ui::SelectFilePolicy {
- public:
-  TestSelectFilePolicy& operator=(const TestSelectFilePolicy&) = delete;
-
-  bool CanOpenSelectFileDialog() override { return true; }
-  void SelectFileDenied() override {}
 };
 
 class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
@@ -107,8 +98,7 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new TestSelectFileDialog(
-        listener, std::make_unique<TestSelectFilePolicy>(), forced_path_);
+    return new TestSelectFileDialog(listener, nullptr, forced_path_);
   }
 
  private:
@@ -137,9 +127,8 @@ class FakeCancellingSelectFileDialog : public ui::SelectFileDialog {
                       int file_type_index,
                       const base::FilePath::StringType& default_extension,
                       gfx::NativeWindow owning_window,
-                      void* params,
                       const GURL* caller) override {
-    listener_->FileSelectionCanceled(params);
+    listener_->FileSelectionCanceled();
   }
 
   bool IsRunning(gfx::NativeWindow owning_window) const override {
@@ -163,8 +152,7 @@ class FakeCancellingSelectFileDialogFactory
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
-    return new FakeCancellingSelectFileDialog(
-        listener, std::make_unique<TestSelectFilePolicy>());
+    return new FakeCancellingSelectFileDialog(listener, nullptr);
   }
 };
 
@@ -198,8 +186,9 @@ class FakePasswordParserService
     password_manager::CSVPasswordSequence seq(raw_json);
     if (seq.result() == password_manager::CSVPassword::Status::kOK) {
       result = password_manager::mojom::CSVPasswordSequence::New();
-      for (const auto& pwd : seq)
+      for (const auto& pwd : seq) {
         result->csv_passwords.push_back(pwd);
+      }
     }
     std::move(callback).Run(std::move(result));
   }
@@ -279,7 +268,7 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<PasswordManagerPorter> porter_;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
-  password_manager::FakeAffiliationService affiliation_service_;
+  affiliations::FakeAffiliationService affiliation_service_;
   password_manager::SavedPasswordsPresenter presenter_{
       &affiliation_service_, store_,
       /*account_store=*/nullptr};
@@ -465,7 +454,7 @@ struct FormDescription {
 };
 
 struct TestCase {
-  base::StringPiece csv;
+  std::string_view csv;
   std::vector<FormDescription> descriptions;
 };
 

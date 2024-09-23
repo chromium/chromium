@@ -7,6 +7,10 @@
 namespace safe_browsing {
 namespace switches {
 
+// List of comma-separated URLs to show the social engineering red interstitial
+// for.
+const char kMarkAsPhishing[] = "mark_as_phishing";
+
 // List of comma-separated sha256 hashes of executable files which the
 // download-protection service should treat as "dangerous."  For a file to
 // show a warning, it also must be considered a dangerous filetype and not

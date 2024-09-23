@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
+
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_embedded_frame_sink_provider.h"
+#include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
@@ -73,6 +75,11 @@ class OffscreenCanvasTest : public ::testing::Test,
 
   Document& GetDocument() const { return *GetWindow()->document(); }
 
+  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+  shared_image_interface_provider() {
+    return test_web_shared_image_interface_provider_->GetWeakPtr();
+  }
+
  private:
   test::TaskEnvironment task_environment_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
@@ -82,6 +89,8 @@ class OffscreenCanvasTest : public ::testing::Test,
   std::unique_ptr<
       ScopedTestingPlatformSupport<AcceleratedCompositingTestPlatform>>
       accelerated_compositing_scope_;
+  std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
+      test_web_shared_image_interface_provider_;
 };
 
 OffscreenCanvasTest::OffscreenCanvasTest() = default;
@@ -122,10 +131,13 @@ void OffscreenCanvasTest::SetUp() {
   context_ = static_cast<OffscreenCanvasRenderingContext2D*>(
       offscreen_canvas_->GetCanvasRenderingContext(GetWindow(), String("2d"),
                                                    attrs));
+
+  test_web_shared_image_interface_provider_ =
+      TestWebGraphicsSharedImageInterfaceProvider::Create();
 }
 
 void OffscreenCanvasTest::TearDown() {
-  SharedGpuContext::ResetForTesting();
+  SharedGpuContext::Reset();
   // destruction order matters due to nested TestPlatformSupport instance.
   accelerated_compositing_scope_ = nullptr;
   web_view_helper_ = nullptr;
@@ -169,7 +181,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
       SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
                                  offscreen_canvas().Size().height()),
-      nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
+      /*provider=*/nullptr, shared_image_interface_provider(),
+      cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
@@ -195,7 +208,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   auto canvas_resource2 = CanvasResourceSharedBitmap::Create(
       SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
                                  offscreen_canvas().Size().height()),
-      nullptr /* provider */, cc::PaintFlags::FilterQuality::kLow);
+      /*provider=*/nullptr, shared_image_interface_provider(),
+      cc::PaintFlags::FilterQuality::kLow);
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrameSync_(_))
       .WillOnce(::testing::WithArg<0>(

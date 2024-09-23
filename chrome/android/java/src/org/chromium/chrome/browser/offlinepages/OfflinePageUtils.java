@@ -511,7 +511,8 @@ public class OfflinePageUtils {
                             return uri;
                         }
 
-                        // TODO(985699): Investigate why we sometimes aren't able to generate URIs
+                        // TODO(crbug.com/40636789): Investigate why we sometimes aren't able to
+                        // generate URIs
                         // for files in external storage.
                         Uri generatedUri;
                         try {
@@ -529,7 +530,8 @@ public class OfflinePageUtils {
                                 new ShareParams.Builder(window, pageTitle, pageUrl);
                         // Only try to share the offline page if we have a content URI making the
                         // actual file available.
-                        // TODO(985699): Sharing the page's online URL is a temporary fix for
+                        // TODO(crbug.com/40636789): Sharing the page's online URL is a temporary
+                        // fix for
                         // crashes when sharing the archive's content URI. Once the root cause is
                         // addressed, the offline URI should always be set.
                         if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
@@ -705,7 +707,7 @@ public class OfflinePageUtils {
 
         OfflinePageItem offlinePage = getOfflinePage(webContents);
         if (OfflinePageUtils.isShowingTrustedOfflinePage(webContents) || offlinePage == null) {
-            // TODO(crbug.com/1033178): dedupe the
+            // TODO(crbug.com/40663204): dedupe the
             // DomDistillerUrlUtils#getOriginalUrlFromDistillerUrl() calls.
             String distilledUrl =
                     DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(webContents.getVisibleUrl())
@@ -739,7 +741,7 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+        public void willCloseTab(Tab tab, boolean didCloseAlone) {
             Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;

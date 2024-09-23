@@ -51,6 +51,11 @@ void ScopedAutofillManagersObservation::Reset() {
   autofill_manager_observations_.RemoveAllObservations();
 }
 
+content::WebContents* ScopedAutofillManagersObservation::web_contents() {
+  ContentAutofillDriverFactory* factory = factory_observation_.GetSource();
+  return factory ? factory->web_contents() : nullptr;
+}
+
 void ScopedAutofillManagersObservation::OnContentAutofillDriverFactoryDestroyed(
     ContentAutofillDriverFactory& factory) {
   Reset();
@@ -62,11 +67,28 @@ void ScopedAutofillManagersObservation::OnContentAutofillDriverCreated(
   autofill_manager_observations_.AddObservation(&driver.GetAutofillManager());
 }
 
-void ScopedAutofillManagersObservation::OnContentAutofillDriverWillBeDeleted(
+void ScopedAutofillManagersObservation::OnContentAutofillDriverStateChanged(
     ContentAutofillDriverFactory& factory,
-    ContentAutofillDriver& driver) {
-  autofill_manager_observations_.RemoveObservation(
-      &driver.GetAutofillManager());
+    ContentAutofillDriver& driver,
+    AutofillDriver::LifecycleState old_state,
+    AutofillDriver::LifecycleState new_state) {
+  switch (new_state) {
+    case AutofillDriver::LifecycleState::kInactive:
+    case AutofillDriver::LifecycleState::kActive:
+    case AutofillDriver::LifecycleState::kPendingReset:
+      break;
+    case AutofillDriver::LifecycleState::kPendingDeletion:
+      // `AutofillDriverFactory::SetLifecycleStateAndNotifyObservers` first
+      // calls this method to remove the `AutofillManager` observer. Since
+      // `SetLifecycleStateAndNotifyObservers` would only then notify the
+      // `AutofillManager` about the state change, the observer needs to be
+      // notified now, before its removal.
+      autofill_manager_observations_.observer()->OnAutofillManagerStateChanged(
+          driver.GetAutofillManager(), old_state, new_state);
+      autofill_manager_observations_.RemoveObservation(
+          &driver.GetAutofillManager());
+      break;
+  }
 }
 
 }  // namespace autofill

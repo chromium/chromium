@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+
+assert(is_chromeos_ash)
+assert(!is_official_build)
+assert(!use_real_dbus_clients)
+
+static_library("emulator") {
+  sources = [
+    "device_emulator_message_handler.cc",
+    "device_emulator_message_handler.h",
+    "device_emulator_ui.cc",
+    "device_emulator_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/system",
+    "//chrome/common",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//content/public/browser",
+    "//content/public/common",
+    "//device/bluetooth",
+  ]
+
+  deps = [
+    "//ash/webui/common:trusted_types_util",
+    "//chrome/browser:resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/bluetooth",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/audio",
+    "//chromeos/dbus/power",
+  ]
+}

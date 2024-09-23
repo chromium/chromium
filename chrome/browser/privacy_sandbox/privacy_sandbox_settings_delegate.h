@@ -33,6 +33,7 @@ class PrivacySandboxSettingsDelegate
   ~PrivacySandboxSettingsDelegate() override;
 
   // PrivacySandboxSettings::Delegate:
+  bool IsRestrictedNoticeEnabled() const override;
   bool IsPrivacySandboxRestricted() const override;
   bool IsPrivacySandboxCurrentlyUnrestricted() const override;
   bool IsIncognitoProfile() const override;

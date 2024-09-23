@@ -1,0 +1,47 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@keyframes fade-up {
+  from { opacity: 0; }
+}
+
+@keyframes fade-down {
+  to { opacity: 0; }
+}
+
+@keyframes slide-from-right {
+  from { transform: translateX(33%); }
+}
+
+@keyframes slide-to-left {
+  to { transform: translateX(-33%); }
+}
+
+@keyframes slide-to-right {
+  to { transform: translateX(33%); }
+}
+
+@keyframes slide-from-left {
+  from { transform: translateX(-33%); }
+}
+
+::view-transition-old(root) {
+  animation:
+    250ms cubic-bezier(0.05, 0.7, 0.1, 1.0) both slide-to-left,
+    50ms cubic-bezier(0.0, 0.0, 1.0, 1.0) both fade-down;
+}
+
+::view-transition-new(root) {
+  animation:
+    250ms cubic-bezier(0.05, 0.7, 0.1, 1) both slide-from-right,
+    250ms cubic-bezier(0.0, 0.0, 1.0, 1.0) 50ms both fade-up;
+}
+
+.back-transition::view-transition-old(root) {
+  animation-name: slide-to-right, fade-down;
+}
+
+.back-transition::view-transition-new(root) {
+  animation-name: slide-from-left, fade-up;
+}

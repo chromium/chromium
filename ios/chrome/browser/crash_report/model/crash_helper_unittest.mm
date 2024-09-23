@@ -61,7 +61,6 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
   crash_keys::SetMemoryWarningCount(2);
   crash_keys::SetMemoryWarningInProgress(true);
   crash_keys::SetCurrentFreeMemoryInKB(1234);
-  crash_keys::SetCurrentFreeDiskInKB(12345);
   crash_keys::SetCurrentTabIsPDF(true);
   crash_keys::SetCurrentOrientation(3, 7);
   crash_keys::SetCurrentHorizontalSizeClass(2);
@@ -103,7 +102,6 @@ TEST_F(CrashHelperTest, CrashReportUserApplicationStateAllKeys) {
               @"\"fgScenes\":999,\"inactiveTabs\":999,\"orient\":37,\"pdf\":1,"
               @"\"regTabs\":999,\"scenes\":999,\"signIn\":1,\"sizeclass\":2,"
               @"\"user_interface_style\":2,\"voiceOver\":1}");
-  EXPECT_NSEQ(reportParameters[@"free_disk_in_kb"], @"12345");
   EXPECT_NSEQ(reportParameters[@"memory_warning_in_progress"], @"yes");
 }
 

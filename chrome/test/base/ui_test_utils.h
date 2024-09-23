@@ -10,15 +10,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "components/history/core/browser/history_service.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -26,6 +24,10 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view_observer.h"
 #include "url/gurl.h"
+
+#if defined(TOOLKIT_VIEWS)
+#include "ui/views/test/widget_test_api.h"
+#endif
 
 class Browser;
 class FullscreenController;
@@ -201,6 +203,24 @@ void WaitForAutocompleteDone(Browser* browser);
 // Returns success or not.
 bool WaitForMinimized(Browser* browser);
 
+// Waits until the window gets maximized.
+// Returns success or not.
+bool WaitForMaximized(Browser* browser);
+
+// See comment on views::AsyncWidgetRequestWaiter.
+[[nodiscard]] views::AsyncWidgetRequestWaiter CreateAsyncWidgetRequestWaiter(
+    Browser& browser);
+
+// SetAndWaitForBounds sets the given `bounds` on `browser` and waits until the
+// bounds update will be observable from all parts of the client (on Wayland).
+// This does not verify the resulting bounds.
+void SetAndWaitForBounds(Browser& browser, const gfx::Rect& bounds);
+
+// Maximizes the browser window and wait until the window is maximized and all
+// related visible UI effects are applied and observable from chrome.
+// Returns true if succeeded.
+bool MaximizeAndWaitUntilUIUpdateDone(Browser& browser);
+
 // Waits for fullscreen state to be updated.
 // There're two variation of fullscreen concepts, browser fullscreen and
 // tab fullscreen. Due to fullscreen implementation, fullscreen state may
@@ -251,14 +271,89 @@ class FullscreenWaiter : public FullscreenObserver {
   const raw_ptr<FullscreenController> controller_;
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       observation_{this};
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 
   // Caches if the condition is satisfied even once.
   bool satisfied_;
 };
 
+// This waiter waits for the specified |browser| becoming the last active
+// browser in BrowserList. In Lacros, BrowserList::SetLastActive is triggered by
+// OnWidgetActivationChanged when wayland notify the UI change asynchronously.
+// Many testing code needs to wait until the expected browser to be set as
+// the last active browser, and some testing code needs to wait until
+// BrowserList::OnSetLastActive() is observed.
+class BrowserSetLastActiveWaiter : public BrowserListObserver {
+ public:
+  // By default, the waiting will be satisfied if the expected |browser| is the
+  // last active browser in BrowserList. In most cases, the testing code
+  // depending on chrome::FindLastActive() should be good.
+  // In some cases, for example, when there is only one browser in the
+  // BrowserList, |browser| can be returned as the last active browser even if
+  // the asynchronous Wayland UI event has not arrived yet (i.e.
+  // BrowserList::SetLastActive() is not triggered and the code observing
+  // BrowserList::OnSetLastActive() will not be called). If the test case
+  // depends on the code observing BrowserList::OnSetLastActive() being executed
+  // first, we can configure the waiter to be satisfied upon
+  // OnBrowserSetLastActive is observed by passing
+  // |wait_for_set_last_active_observed| being true.
+  explicit BrowserSetLastActiveWaiter(
+      Browser* browser,
+      bool wait_for_set_last_active_observed = false);
+  BrowserSetLastActiveWaiter(const BrowserSetLastActiveWaiter&) = delete;
+  BrowserSetLastActiveWaiter& operator=(const BrowserSetLastActiveWaiter&) =
+      delete;
+
+  ~BrowserSetLastActiveWaiter() override;
+
+  // Runs a loop until |browser_| becomes the last active browser.
+  void Wait();
+
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override;
+
+ private:
+  const raw_ptr<Browser> browser_;  // not_owned
+  bool satisfied_ = false;
+  bool wait_for_set_last_active_observed_ = false;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
+};
+
 // Toggles browser fullscreen mode, then wait for its completion.
 void ToggleFullscreenModeAndWait(Browser* browser);
+
+// Waits until |browser| becomes active.
+void WaitUntilBrowserBecomeActive(Browser* browser);
+
+// Returns true if |browser| is active.
+bool IsBrowserActive(Browser* browser);
+
+// Opens a new browser window with chrome::NewEmptyWindow() and wait until it
+// becomes active.
+// Returns newly created browser.
+Browser* OpenNewEmptyWindowAndWaitUntilActivated(
+    Profile* profile,
+    bool should_trigger_session_restore = false);
+
+// Waits for |browser| becomes the last active browser.
+// By default, the waiting will be satisfied if the expected |browser| is the
+// last active browser in BrowserList. In most cases, this is enough for the
+// testing code depending on chrome::FindLastActive(). In some cases, for
+// example, when there is only one browser in the BrowserList, |browser| can be
+// returned as the last active browser even if the asynchronous Wayland UI event
+// has not arrived yet (i.e. BrowserList::SetLastActive() is not triggered and
+// the code observing BrowserList::OnSetLastActive() will not be called). If the
+// test case depends on the code observing BrowserList::OnSetLastActive() being
+// executed first, we can configure the waiter to be satisfied upon
+// OnBrowserSetLastActive is observed by passing
+// |wait_for_set_last_active_observed| being true.
+// Note: The last active browser is not necessarily the current active browser.
+// A browser could be de-activated and still the last active browser. In many
+// tests, BrowserList::GetLastActive() is incorrectly used to verify the
+// expected browser being the active browser, see b/345848530.
+void WaitForBrowserSetLastActive(
+    Browser* browser,
+    bool wait_for_set_last_active_observed = false);
 
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(
@@ -373,18 +468,12 @@ class AllTabsObserver : public TabStripModelObserver,
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// Notification observer which waits for navigation events and blocks until
-// a specific URL is loaded. The URL must be an exact match.
+// Observer which waits for navigation events and blocks until a specific URL is
+// loaded. The URL must be an exact match.
 class UrlLoadObserver : public AllTabsObserver {
  public:
   // `url` is the URL to look for.
   explicit UrlLoadObserver(const GURL& url);
-
-  // Temporary constructor while callsites are updated.  `unused_source` must be
-  // `AllSources()`.  Do not use this for new code -- use the one-argument
-  // constructor instead.
-  UrlLoadObserver(const GURL& url,
-                  const content::NotificationSource& unused_source);
   ~UrlLoadObserver() override;
 
   // Returns the WebContents which navigated to `url`.
@@ -437,7 +526,7 @@ class TabAddedWaiter : public TabStripModelObserver {
       const TabStripSelectionChange& selection) override;
 
  private:
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
       nullptr;
 };
@@ -464,7 +553,7 @@ class AllBrowserTabAddedWaiter : public TabStripModelObserver,
   void OnBrowserAdded(Browser* browser) override;
 
  private:
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 
   // The last tab that was added.
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
@@ -510,7 +599,7 @@ class BrowserChangeObserver : public BrowserListObserver {
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
   ChangeType type_;
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 // Encapsulates waiting for the browser window to change state. This is
@@ -554,7 +643,7 @@ class ViewBoundsWaiter : public views::ViewObserver {
   void OnViewBoundsChanged(views::View* observed_view) override;
 
   const raw_ptr<views::View> observed_view_;
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 }  // namespace ui_test_utils

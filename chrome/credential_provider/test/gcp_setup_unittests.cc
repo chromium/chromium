@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/win/atl.h"
+#include <unknwn.h>
 
-#include <atlcomcli.h>
 #include <datetimeapi.h>
 #include <lmerr.h>
-#include <unknwn.h>
 #include <wrl/client.h>
 
 #include <memory>
@@ -29,6 +27,7 @@
 #include "base/syslog_logging.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
@@ -445,7 +444,13 @@ class GcpInstallOverOldInstallTest : public GcpSetupTest,
   }
 };
 
-TEST_P(GcpInstallOverOldInstallTest, DoInstallOverOldInstall) {
+// TODO: crbug.com/347201817 - Fix ODR violation.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DoInstallOverOldInstall DISABLED_DoInstallOverOldInstall
+#else
+#define MAYBE_DoInstallOverOldInstall DoInstallOverOldInstall
+#endif
+TEST_P(GcpInstallOverOldInstallTest, MAYBE_DoInstallOverOldInstall) {
   logging::ResetEventSourceForTesting();
 
   // Set installer data argument to indicate the installation source.
@@ -504,7 +509,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          GcpInstallOverOldInstallTest,
                          ::testing::Values(0, 1));
 
-TEST_F(GcpSetupTest, DoInstallOverOldLockedInstall) {
+// TODO: crbug.com/347201817 - Fix ODR violation.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DoInstallOverOldLockedInstall \
+  DISABLED_DoInstallOverOldLockedInstall
+#else
+#define MAYBE_DoInstallOverOldLockedInstall DoInstallOverOldLockedInstall
+#endif
+TEST_F(GcpSetupTest, MAYBE_DoInstallOverOldLockedInstall) {
   logging::ResetEventSourceForTesting();
 
   // Install using some old version.
@@ -537,7 +549,13 @@ TEST_F(GcpSetupTest, DoInstallOverOldLockedInstall) {
   }
 }
 
-TEST_F(GcpSetupTest, LaunchGcpAfterInstall) {
+// TODO: crbug.com/347201817 - Fix ODR violation.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_LaunchGcpAfterInstall DISABLED_LaunchGcpAfterInstall
+#else
+#define MAYBE_LaunchGcpAfterInstall LaunchGcpAfterInstall
+#endif
+TEST_F(GcpSetupTest, MAYBE_LaunchGcpAfterInstall) {
   logging::ResetEventSourceForTesting();
 
   // Install using some old version.
@@ -589,7 +607,13 @@ TEST_F(GcpSetupTest, LaunchGcpAfterInstall) {
 class GcpInstallerTest : public GcpSetupTest,
                          public ::testing::WithParamInterface<int> {};
 
-TEST_P(GcpInstallerTest, DoUninstall) {
+// TODO: crbug.com/347201817 - Fix ODR violation.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DoUninstall DISABLED_DoUninstall
+#else
+#define MAYBE_DoUninstall DoUninstall
+#endif
+TEST_P(GcpInstallerTest, MAYBE_DoUninstall) {
   int standalone_installer = GetParam();
 
   logging::ResetEventSourceForTesting();
@@ -640,7 +664,13 @@ TEST_P(GcpInstallerTest, DoUninstall) {
 
 INSTANTIATE_TEST_SUITE_P(All, GcpInstallerTest, ::testing::Values(0, 1));
 
-TEST_F(GcpSetupTest, DoUninstallWithExtension) {
+// TODO: crbug.com/347201817 - Fix ODR violation.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DoUninstallWithExtension DISABLED_DoUninstallWithExtension
+#else
+#define MAYBE_DoUninstallWithExtension DoUninstallWithExtension
+#endif
+TEST_F(GcpSetupTest, MAYBE_DoUninstallWithExtension) {
   logging::ResetEventSourceForTesting();
 
   base::win::RegKey key;

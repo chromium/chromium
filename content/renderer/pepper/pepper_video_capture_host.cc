@@ -148,9 +148,9 @@ void PepperVideoCaptureHost::OnFrameReady(
         return;
       }
       uint8_t* dst = reinterpret_cast<uint8_t*>(buffers_[i].data.get());
-      static_assert(media::VideoFrame::kYPlane == 0, "y plane should be 0");
-      static_assert(media::VideoFrame::kUPlane == 1, "u plane should be 1");
-      static_assert(media::VideoFrame::kVPlane == 2, "v plane should be 2");
+      static_assert(media::VideoFrame::Plane::kY == 0, "y plane should be 0");
+      static_assert(media::VideoFrame::Plane::kU == 1, "u plane should be 1");
+      static_assert(media::VideoFrame::Plane::kV == 2, "v plane should be 2");
 
       if (frame->storage_type() ==
           media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {

@@ -1,510 +1,126 @@
-<style include="cr-shared-style">
-  :host {
-    --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
-    --ntp-theme-text-shadow: none;
-    --ntp-one-google-bar-height: 56px;
-    --ntp-search-box-width: 337px;
-    --ntp-menu-shadow:
-        var(--color-new-tab-page-menu-inner-shadow) 0 1px 2px 0,
-        var(--color-new-tab-page-menu-outer-shadow) 0 2px 6px 2px;
-    --ntp-module-width: var(--ntp-search-box-width);
-    --ntp-module-layout-width: var(--ntp-search-box-width);
-    --ntp-module-border-radius: 5px;
-    --ntp-protected-icon-background-color: transparent;
-    --ntp-protected-icon-background-color-hovered: rgba(255, 255, 255, .1);
-  }
-
-  @media (min-width: 560px) {
-    :host {
-      --ntp-search-box-width: 449px;
-    }
-  }
-
-  @media (min-width: 672px) {
-    :host {
-      --ntp-search-box-width: 561px;
-    }
-  }
-
-  /*A module width of 768px with 18px gaps on each side. */
-  @media (min-width: 804px) {
-    :host([wide-modules-enabled_]) {
-      --ntp-module-layout-width: 768px;
-      --ntp-module-width: 768px;
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) cr-most-visited {
-    --add-shortcut-background-color:
-        var(--color-new-tab-page-add-shortcut-background);
-    --add-shortcut-foreground-color:
-        var(--color-new-tab-page-add-shortcut-foreground);
-  }
-
-  :host([modules-redesigned-enabled_]) {
-    --ntp-module-border-radius: 16px;
-    --ntp-module-item-border-radius: 12px;
-    --ntp-module-layout-width: 360px;
-    --ntp-module-width: 360px;
-  }
-
-  :host([show-background-image_]) {
-    --ntp-theme-text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.5),
-        0px 0px 2px rgba(0, 0, 0, 0.2), 0px 0px 10px rgba(0, 0, 0, 0.1);
-    --ntp-protected-icon-background-color: rgba(0, 0, 0, .6);
-    --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .7);
-  }
-
-  #oneGoogleBarScrim {
-    background: linear-gradient(rgba(0,0,0,0.25) 0%,
-                                rgba(0,0,0,0.12) 45%,
-                                rgba(0,0,0,0.05) 65%,
-                                transparent 100%);
-    height: 80px;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
-  #oneGoogleBarScrim[fixed] {
-    /* Prevent scrim from bouncing when overscrolling. */
-    position: fixed;
-  }
-
-  #oneGoogleBar {
-    height: 100%;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
-  #content {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    height: calc(100vh - var(--ntp-one-google-bar-height));
-    min-width: fit-content;  /* Prevents OneGoogleBar cutoff at 500% zoom. */
-    padding-top: var(--ntp-one-google-bar-height);
-    position: relative;
-    z-index: 1;
-  }
-
-  #logo {
-    margin-bottom: 38px;
-    z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
-  }
-
-  #realboxContainer {
-    display: inherit;
-    margin-bottom: 16px;
-    position: relative;
-  }
-
-  ntp-modules {
-    flex-shrink: 0;
-    width: var(--ntp-module-layout-width);
-  }
-
-  #modules:not([hidden]) {
-    /* We use animation instead of transition to allow a fade-in out of
-       display: none. */
-    animation: 300ms ease-in-out fade-in-animation;
-  }
-
-  @keyframes fade-in-animation {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  ntp-middle-slot-promo {
-    max-width: var(--ntp-search-box-width);
-  }
-
-  ntp-realbox {
-    visibility: hidden;
-  }
-
-  ntp-realbox[shown] {
-    visibility: visible;
-  }
-
-  cr-most-visited {
-    --cr-menu-shadow: var(--ntp-menu-shadow);
-    --most-visited-focus-shadow: var(--ntp-focus-shadow);
-    --most-visited-text-color:
-        var(--color-new-tab-page-most-visited-foreground);
-    --most-visited-text-shadow: var(--ntp-theme-text-shadow);
-  }
-
-  /* ~ because the dom-if results in a template between the middle-slot-promo
-     and ntp-modules. */
-  ntp-middle-slot-promo:not([hidden]) ~ #modules {
-    margin-top: 16px;
-  }
-
-  #customizeButtonContainer {
-    background-color: var(--color-new-tab-page-button-background);
-    border-radius: calc(.5 * var(--cr-button-height));
-    bottom: 16px;
-    position: fixed;
-  }
-
-  #customizeButtonContainer:has(help-bubble) {
-    /* help-bubble parent needs z-index to overlay ntp-iframe */
-    z-index: 1001;
-  }
-
-  :host-context([dir='ltr']) #customizeButtonContainer {
-    right: 16px;
-  }
-
-  :host-context([dir='rtl']) #customizeButtonContainer {
-    left: 16px;
-  }
-
-  :host([show-background-image_]) #customizeButtonContainer {
-    background-color: var(--ntp-protected-icon-background-color);
-  }
-
-  :host([show-background-image_]) #customizeButtonContainer:hover {
-    background-color: var(--ntp-protected-icon-background-color-hovered);
-  }
-
-  #customizeButton {
-    --hover-bg-color: var(--color-new-tab-page-button-background-hovered);
-    --text-color: var(--color-new-tab-page-button-foreground);
-    border: none;
-    border-radius: calc(.5 * var(--cr-button-height));
-    box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
-    font-weight: 400;
-    min-width: 32px;
-    padding-inline-start: 16px;
-    padding-inline-end: 16px;
-  }
-
-  :host([show-background-image_]) #customizeButton {
-    box-shadow: none;
-    padding: 0;
-  }
-
-  :host-context([chrome-refresh-2023]):host([show-background-image_])
-      #customizeButton {
-    padding-inline-start: 8px;
-  }
-
-  :host-context(.focus-outline-visible) #customizeButton:focus {
-    box-shadow: var(--ntp-focus-shadow);
-  }
-
-  #customizeIcon {
-    -webkit-mask-image: url(icons/icon_pencil.svg);
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 100%;
-    background-color: var(--text-color);
-    height: 16px;
-    width: 16px;
-  }
-
-  @media (forced-colors: active) {
-    #customizeIcon {
-      background-color: ButtonText;
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) #customizeButton {
-    --cr-button-height: 32px;
-  }
-
-  @media (forced-colors: none) {
-    :host([show-background-image_]) #customizeIcon {
-      background-color: white;
-    }
-  }
-
-  :host([show-background-image_]) #customizeIcon {
-    margin: 0;
-  }
-
-  @media (max-width: 550px) {
-    :host-context([chrome-refresh-2023]) #customizeButton {
-      padding-inline-start: 8px;
-    }
-
-    #customizeButton {
-      padding-inline-start: 0;
-      padding-inline-end: 0;
-    }
-
-    #customizeText {
-      display: none;
-    }
-  }
-
-  @media (max-width: 1110px) {
-    :host-context([chrome-refresh-2023]):host([modules-redesigned-enabled_][modules-shown-to-user])
-        #customizeButton {
-      padding-inline-start: 8px;
-    }
-
-    :host([modules-redesigned-enabled_][modules-shown-to-user]) #customizeText {
-      display: none;
-    }
-
-    :host([modules-redesigned-enabled_][modules-shown-to-user])
-        #customizeButton {
-      padding-inline-start: 0;
-      padding-inline-end: 0;
-    }
-  }
-
-  @media (max-width: 970px) {
-    :host-context([chrome-refresh-2023]):host([modules-shown-to-user])
-        #customizeButton {
-      padding-inline-start: 8px;
-    }
-
-    :host([modules-shown-to-user]) #customizeButton {
-      padding-inline-start: 0;
-      padding-inline-end: 0;
-    }
-
-    :host([modules-shown-to-user]) #customizeText {
-      display: none;
-    }
-  }
-
-  @media (max-width: 1020px) {
-    :host-context([chrome-refresh-2023]):host([modules-fre-shown])
-        #customizeButton {
-      padding-inline-start: 8px;
-    }
-
-    :host([modules-fre-shown]) #customizeButton {
-      padding-inline-start: 0;
-      padding-inline-end: 0;
-    }
-
-    :host([modules-fre-shown]) #customizeText {
-      display: none;
-    }
-  }
-
-  #themeAttribution {
-    align-self: flex-start;
-    bottom: 16px;
-    color: var(--color-new-tab-page-secondary-foreground);
-    margin-inline-start: 16px;
-    position: fixed;
-  }
-
-  #backgroundImageAttribution {
-    border-radius: 8px;
-    bottom: 16px;
-    color: var(--color-new-tab-page-attribution-foreground);
-    line-height: 20px;
-    max-width: 50vw;
-    padding: 8px;
-    position: fixed;
-    z-index: -1;
-    background-color: var(--ntp-protected-icon-background-color);
-    text-shadow: none;
-  }
-
-  #backgroundImageAttribution:hover {
-    background-color: var(--ntp-protected-icon-background-color-hovered);
-    background: rgba(var(--google-grey-900-rgb), .1);
-  }
-
-  :host-context([dir='ltr']) #backgroundImageAttribution {
-    left: 16px;
-  }
-
-  :host-context([dir='rtl']) #backgroundImageAttribution {
-    right: 16px;
-  }
-
-  #backgroundImageAttribution1Container {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-  }
-
-  #linkIcon {
-    -webkit-mask-image: url(icons/link.svg);
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 100%;
-    background-color: var(--color-new-tab-page-attribution-foreground);
-    height: 16px;
-    margin-inline-end: 8px;
-    width: 16px;
-  }
-
-  #backgroundImageAttribution1,
-  #backgroundImageAttribution2 {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  #backgroundImageAttribution1 {
-    font-size: .875rem;
-  }
-
-  #backgroundImageAttribution2 {
-    font-size: .75rem;
-  }
-
-  #contentBottomSpacer {
-    flex-shrink: 0;
-    height: 32px;
-    width: 1px;
-  }
-
-  svg {
-    position: fixed;
-  }
-
-  ntp-lens-upload-dialog {
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: 101;
-  }
-
-  #webstoreToast {
-    padding: 16px;
-  }
-</style>
-<div id="content" style="
-        --color-new-tab-page-attribution-foreground: [[rgbaOrInherit_(theme_.textColor)]];
-        --color-new-tab-page-most-visited-foreground: [[rgbaOrInherit_(theme_.textColor)]];
-        --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
-  <template is="dom-if" if="[[lazyRender_]]">
-    <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
-      <div id="oneGoogleBarScrim" hidden$="[[!showBackgroundImage_]]"
-          fixed$="[[scrolledToTop_]]"></div>
-      <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
-          hidden$="[[!oneGoogleBarLoaded_]]"
-          allow="camera [[oneGoogleBarIframeOrigin_]]; display-capture [[oneGoogleBarIframeOrigin_]]"> <!-- presubmit: ignore-long-line -->
-      </ntp-iframe>
-    </template>
-  </template>
-  <!-- TODO(crbug.com/1168361): Instead of hidden$="[[!logoEnabled_]]" it would
-       be nicer to use a dom-if. However, that breaks
+<div id="content">
+  ${this.lazyRender_ && this.oneGoogleBarEnabled_ ? html`
+    <div id="oneGoogleBarScrim" ?hidden="${!this.showBackgroundImage_}"
+        ?fixed="${this.scrolledToTop_}"></div>
+    <ntp-iframe id="oneGoogleBar" src="${this.oneGoogleBarIframePath_}"
+        ?hidden="${!this.oneGoogleBarLoaded_}"
+        allow="camera ${this.oneGoogleBarIframeOrigin_}; display-capture ${this.oneGoogleBarIframeOrigin_}"> <!-- presubmit: ignore-long-line -->
+    </ntp-iframe>
+  ` : ''}
+  <!-- TODO(crbug.com/40743294): Instead of ?hidden="${!this.logoEnabled_}" it would
+       be nicer to use Lit's conditional rendering. However, that breaks
        StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
        the msan builder. See crbug.com/1169070. -->
-  <ntp-logo id="logo" single-colored$="[[singleColoredLogo_]]"
-      dark="[[theme_.isDark]]" background-color="[[backgroundColor_]]"
-      hidden$="[[!logoEnabled_]]">
+  <ntp-logo id="logo" ?single-colored="${this.singleColoredLogo_}"
+      .dark="${this.isThemeDark_()}" .backgroundColor="${this.backgroundColor_}"
+      ?hidden="${!this.logoEnabled_}">
   </ntp-logo>
-  <div id="realboxContainer">
-    <ntp-realbox id="realbox" is-dark="[[theme_.isDark]]"
-        color-source-is-baseline="[[colorSourceIsBaseline]]"
-        on-open-lens-search="onOpenLensSearch_"
-        on-open-voice-search="onOpenVoiceSearch_" shown$="[[realboxShown_]]">
-    </ntp-realbox>
-    <template is="dom-if" if="[[showLensUploadDialog_]]" restamp>
+  <div id="searchboxContainer">
+    <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
+        ?color-source-is-baseline="${this.colorSourceIsBaseline}"
+        @open-lens-search="${this.onOpenLensSearch_}"
+        @open-voice-search="${this.onOpenVoiceSearch_}" ?shown="${this.realboxShown_}"
+        ?had-secondary-side="${this.realboxHadSecondarySide}"
+        @had-secondary-side-changed="${this.onRealboxHadSecondarySideChanged_}"
+        ?can-show-secondary-side="${this.realboxCanShowSecondarySide}">
+    </cr-searchbox>
+    ${this.showLensUploadDialog_ ? html`
       <ntp-lens-upload-dialog id="lensUploadDialog"
-          on-close-lens-search="onCloseLensSearch_">
+          @close-lens-search="${this.onCloseLensSearch_}">
       </ntp-lens-upload-dialog>
-    </template>
+    ` : ''}
   </div>
-  <template is="dom-if" if="[[lazyRender_]]" >
+  ${this.lazyRender_ ? html`
     <cr-toast id="webstoreToast" duration="10000" hidden>
       <div>$i18n{webstoreThemesToastMessage}</div>
-      <cr-button on-click="onWebstoreToastButtonClick_">
+      <cr-button @click="${this.onWebstoreToastButtonClick_}">
         $i18n{webstoreThemesToastButtonText}
       </cr-button>
     </cr-toast>
-  </template>
-  <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
-    <template>
-      <template is="dom-if" if="[[shortcutsEnabled_]]">
-        <cr-most-visited id="mostVisited" theme="[[theme_.mostVisited]]"
-            single-row="[[singleRowShortcutsEnabled_]]"
-            reflow-on-overflow="[[mostVisitedReflowOnOverflowEnabled_]]">
-        </cr-most-visited>
-      </template>
-      <template is="dom-if" if="[[middleSlotPromoEnabled_]]">
-        <ntp-middle-slot-promo
-            on-ntp-middle-slot-promo-loaded="onMiddleSlotPromoLoaded_"
-            hidden="[[!promoAndModulesLoaded_]]">
-        </ntp-middle-slot-promo>
-      </template>
-      <template is="dom-if" if="[[modulesEnabled_]]">
-        <template is="dom-if" if="[[!modulesRedesignedEnabled_]]">
-          <ntp-modules id="modules"
-              modules-fre-shown="{{modulesFreShown}}"
-              modules-shown-to-user="{{modulesShownToUser}}"
-              on-customize-module="onCustomizeModule_"
-              on-modules-loaded="onModulesLoaded_"
-              hidden="[[!promoAndModulesLoaded_]]">
-          </ntp-modules>
-        </template>
-        <template is="dom-if" if="[[modulesRedesignedEnabled_]]">
-          <ntp-modules-v2 id="modules"
-              modules-shown-to-user="{{modulesShownToUser}}"
-              on-customize-module="onCustomizeModule_"
-              on-modules-loaded="onModulesLoaded_"
-              hidden="[[!promoAndModulesLoaded_]]">
-          </ntp-modules-v2>
-        </template>
-      </template>
-      <a id="backgroundImageAttribution"
-          href="[[backgroundImageAttributionUrl_]]"
-          hidden="[[!backgroundImageAttribution1_]]">
-        <div id="backgroundImageAttribution1Container">
-          <div id="linkIcon" hidden="[[!backgroundImageAttributionUrl_]]"></div>
-          <div id="backgroundImageAttribution1">
-            [[backgroundImageAttribution1_]]
-          </div>
+  ` : ''}
+  ${this.lazyRender_ ? html`
+    ${this.shortcutsEnabled_ ? html`
+      <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
+          ?single-row="${this.singleRowShortcutsEnabled_}" reflow-on-overflow>
+      </cr-most-visited>
+    ` : ''}
+    ${this.middleSlotPromoEnabled_ ? html`
+      <ntp-middle-slot-promo
+          @ntp-middle-slot-promo-loaded="${this.onMiddleSlotPromoLoaded_}"
+          ?hidden="${!this.promoAndModulesLoaded_}">
+      </ntp-middle-slot-promo>
+    ` : ''}
+    ${this.modulesEnabled_ ? html`
+      ${!this.modulesRedesignedEnabled_ ? html`
+        <ntp-modules id="modules"
+            ?modules-shown-to-user="${this.modulesShownToUser}"
+            @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
+            @customize-module="${this.onCustomizeModule_}"
+            @modules-loaded="${this.onModulesLoaded_}"
+            ?hidden="${!this.promoAndModulesLoaded_}">
+        </ntp-modules>
+      ` : html`
+        <ntp-modules-v2 id="modules"
+            ?modules-shown-to-user="${this.modulesShownToUser}"
+            @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
+            @customize-module="${this.onCustomizeModule_}"
+            @modules-loaded="${this.onModulesLoaded_}"
+            ?hidden="${!this.promoAndModulesLoaded_}">
+        </ntp-modules-v2>
+      `}
+    ` : ''}
+    <a id="backgroundImageAttribution"
+        href="${this.backgroundImageAttributionUrl_}"
+        ?hidden="${!this.backgroundImageAttribution1_}">
+      <div id="backgroundImageAttribution1Container">
+        <div id="linkIcon" ?hidden="${!this.backgroundImageAttributionUrl_}"></div>
+        <div id="backgroundImageAttribution1">
+          ${this.backgroundImageAttribution1_}
         </div>
-        <div id="backgroundImageAttribution2"
-            hidden="[[!backgroundImageAttribution2_]]">
-          [[backgroundImageAttribution2_]]
-        </div>
-      </a>
-      <!-- cr-button has a transparent background. This leads to incorrect
-           results when a custom background is set. Therefore, wrap customize
-           button in container to enforce solid background color. -->
-      <div id="customizeButtonContainer">
-        <cr-button id="customizeButton" on-click="onCustomizeClick_"
-            title="$i18n{customizeThisPage}" aria-pressed="[[showCustomize_]]">
-          <div id="customizeIcon" slot="prefix-icon"></div>
-          <div id="customizeText" hidden$="[[showBackgroundImage_]]">
-            $i18n{customizeButton}
+      </div>
+      <div id="backgroundImageAttribution2"
+          ?hidden="${!this.backgroundImageAttribution2_}">
+        ${this.backgroundImageAttribution2_}
+      </div>
+    </a>
+    <div id="customizeButtons">
+      ${this.wallpaperSearchButtonEnabled_ ? html`
+        <cr-button id="wallpaperSearchButton"
+            class="customize-button" @click="${this.onWallpaperSearchClick_}"
+            title="$i18n{customizeThisPageWallpaperSearch}"
+            aria-pressed="${this.showWallpaperSearch_}">
+          <div id="wallpaperSearchIcon"
+              class="customize-icon cr-icon" slot="prefix-icon"></div>
+          <div id="wallpaperSearchText" class="customize-text"
+              ?hidden="${this.showWallpaperSearch_}">
+            $i18n{wallpaperSearchButton}
           </div>
         </cr-button>
-      </div>
-      <div id="themeAttribution"
-          hidden$="[[!theme_.backgroundImage.attributionUrl]]">
+      ` : ''}
+      <cr-button id="customizeButton" class="customize-button"
+          @click="${this.onCustomizeClick_}" title="$i18n{customizeThisPage}"
+          aria-pressed="${this.showCustomize_}">
+        <div id="customizeIcon"
+            class="customize-icon cr-icon" slot="prefix-icon"></div>
+        <div id="customizeText" class="customize-text"
+            ?hidden="${!this.showCustomizeChromeText_}">
+          $i18n{customizeButton}
+        </div>
+      </cr-button>
+    </div>
+    ${this.showThemeAttribution_() ? html`
+      <div id="themeAttribution">
         <div>$i18n{themeCreatedBy}</div>
-        <img src="[[theme_.backgroundImage.attributionUrl.url]]"><img>
+        <img src="${this.theme_!.backgroundImage!.attributionUrl!.url}">
       </div>
-    </template>
-  </dom-if>
+    ` : ''}
+  ` : ''}
   <div id="contentBottomSpacer"></div>
 </div>
-<dom-if if="[[showVoiceSearchOverlay_]]" restamp>
-  <template>
-    <ntp-voice-search-overlay on-close="onVoiceSearchOverlayClose_">
-    </ntp-voice-search-overlay>
-  </template>
-</dom-if>
-<template id="customizeDialogIf" is="dom-if" if="[[showCustomizeDialog_]]"
-    restamp>
-  <ntp-customize-dialog
-      on-close="onCustomizeDialogClose_"
-      theme="[[theme_]]"
-      background-selection="{{backgroundSelection_}}"
-      selected-page="[[selectedCustomizeDialogPage_]]">
-  </ntp-customize-dialog>
-</template>
+${this.showVoiceSearchOverlay_ ? html`
+  <ntp-voice-search-overlay @close="${this.onVoiceSearchOverlayClose_}">
+  </ntp-voice-search-overlay>
+` : ''}
 <svg>
   <defs>
     <clipPath id="oneGoogleBarClipPath">

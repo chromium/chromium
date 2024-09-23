@@ -25,24 +25,36 @@ namespace blink {
 
 using testing::Test;
 
-class CanvasHibernationHandlerTest : public Test {
+class CanvasHibernationHandlerTest
+    : public testing::TestWithParam<
+          CanvasHibernationHandler::CompressionAlgorithm> {
  public:
-  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(
-      const gfx::Size& size,
-      RasterModeHint raster_mode,
-      OpacityMode opacity_mode,
-      std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
-    std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>();
-    if (custom_host) {
-      host_ = std::move(custom_host);
+  CanvasHibernationHandlerTest() {
+    // This only enabled the feature, not necessarily compression using this
+    // algorithm, since the current platform may not support it. This is the
+    // correct thing to do though, as we care about code behaving well with the
+    // two feature states, even on platforms that don't support ZSTD.
+    CanvasHibernationHandler::CompressionAlgorithm algorithm = GetParam();
+    switch (algorithm) {
+      case CanvasHibernationHandler::CompressionAlgorithm::kZlib:
+        scoped_feature_list_.InitWithFeatures({},
+                                              {kCanvasHibernationSnapshotZstd});
+        break;
+      case blink::CanvasHibernationHandler::CompressionAlgorithm::kZstd:
+        scoped_feature_list_.InitWithFeatures({kCanvasHibernationSnapshotZstd},
+                                              {});
+        break;
     }
-    if (!host_) {
-      host_ = std::make_unique<FakeCanvasResourceHost>(size);
-    }
+  }
+
+  std::unique_ptr<Canvas2DLayerBridge> MakeBridge(const gfx::Size& size,
+                                                  RasterModeHint raster_mode,
+                                                  OpacityMode opacity_mode) {
+    host_ = std::make_unique<FakeCanvasResourceHost>(size);
     host_->SetPreferred2DRasterMode(raster_mode);
     host_->SetOpacityMode(opacity_mode);
-    bridge->SetCanvasResourceHost(host_.get());
+    std::unique_ptr<Canvas2DLayerBridge> bridge =
+        std::make_unique<Canvas2DLayerBridge>(host_.get());
     return bridge;
   }
 
@@ -54,7 +66,7 @@ class CanvasHibernationHandlerTest : public Test {
   virtual bool NeedsMockGL() { return false; }
 
   void TearDown() override {
-    SharedGpuContext::ResetForTesting();
+    SharedGpuContext::Reset();
     test_context_provider_.reset();
   }
 
@@ -67,6 +79,7 @@ class CanvasHibernationHandlerTest : public Test {
   test::TaskEnvironment task_environment_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   std::unique_ptr<FakeCanvasResourceHost> host_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 namespace {
@@ -126,7 +139,10 @@ class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
                                   base::TimeDelta delay) override {
     return false;
   }
-  bool RunsTasksInCurrentSequence() const override { return false; }
+
+  // Since this is mocking a SingleThreadTaskRunner, tasks will always be run
+  // in the same sequence they are posted from.
+  bool RunsTasksInCurrentSequence() const override { return true; }
 
   static size_t RunAll(std::list<base::OnceClosure>& tasks) {
     size_t count = 0;
@@ -157,7 +173,13 @@ class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
 
 }  // namespace
 
-TEST_F(CanvasHibernationHandlerTest, SimpleTest) {
+INSTANTIATE_TEST_SUITE_P(
+    CompressionAlgorithm,
+    CanvasHibernationHandlerTest,
+    ::testing::Values(CanvasHibernationHandler::CompressionAlgorithm::kZlib,
+                      CanvasHibernationHandler::CompressionAlgorithm::kZstd));
+
+TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
   base::HistogramTester histogram_tester;
@@ -195,6 +217,8 @@ TEST_F(CanvasHibernationHandlerTest, SimpleTest) {
 
   histogram_tester.ExpectTotalCount(
       "Blink.Canvas.2DLayerBridge.Compression.Ratio", 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.Canvas.2DLayerBridge.Compression.ThreadTime", 1);
   histogram_tester.ExpectUniqueSample(
       "Blink.Canvas.2DLayerBridge.Compression.SnapshotSizeKb",
       uncompressed_size / 1024, 1);
@@ -211,7 +235,7 @@ TEST_F(CanvasHibernationHandlerTest, SimpleTest) {
   EXPECT_TRUE(Host()->IsResourceValid());
 }
 
-TEST_F(CanvasHibernationHandlerTest, ForegroundTooEarly) {
+TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -237,7 +261,7 @@ TEST_F(CanvasHibernationHandlerTest, ForegroundTooEarly) {
   EXPECT_FALSE(handler.is_encoded());
 }
 
-TEST_F(CanvasHibernationHandlerTest, BackgroundForeground) {
+TEST_P(CanvasHibernationHandlerTest, BackgroundForeground) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -262,7 +286,7 @@ TEST_F(CanvasHibernationHandlerTest, BackgroundForeground) {
   EXPECT_TRUE(handler.is_encoded());
 }
 
-TEST_F(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
+TEST_P(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -290,7 +314,7 @@ TEST_F(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
   EXPECT_FALSE(bridge->IsHibernating());
 }
 
-TEST_F(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
+TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -328,7 +352,7 @@ TEST_F(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
   EXPECT_TRUE(bridge->IsHibernating());
 }
 
-TEST_F(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
+TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -359,7 +383,7 @@ TEST_F(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
   EXPECT_TRUE(bridge->IsHibernating());
 }
 
-TEST_F(CanvasHibernationHandlerTest, CanvasSnapshottedInBackground) {
+TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -376,41 +400,16 @@ TEST_F(CanvasHibernationHandlerTest, CanvasSnapshottedInBackground) {
   // Wait for the canvas to be encoded.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
   EXPECT_EQ(2u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
-  EXPECT_TRUE(handler.is_encoded());
-
   EXPECT_TRUE(bridge->IsHibernating());
-  auto image = bridge->NewImageSnapshot(FlushReason::kTesting);
-  EXPECT_TRUE(bridge->IsHibernating());
-  // Do not discard the encoded representation.
-  EXPECT_TRUE(handler.is_encoded());
-}
-
-TEST_F(CanvasHibernationHandlerTest, CanvasWriteInBackground) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
-  auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
-
-  auto& handler = bridge->GetHibernationHandlerForTesting();
-  handler.SetTaskRunnersForTesting(task_runner, task_runner);
-
-  SetPageVisible(Host(), bridge.get(), platform, false);
-  // Wait for the canvas to be encoded.
-  EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
-  EXPECT_EQ(2u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
   EXPECT_TRUE(handler.is_encoded());
 
-  bridge->WritePixels(SkImageInfo::MakeN32Premul(10, 10), nullptr, 10, 0, 0);
+  handler.Clear();
 
   EXPECT_FALSE(bridge->IsHibernating());
   EXPECT_FALSE(handler.is_encoded());
 }
 
-TEST_F(CanvasHibernationHandlerTest, CanvasWriteWhileCompressing) {
+TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 
@@ -423,21 +422,31 @@ TEST_F(CanvasHibernationHandlerTest, CanvasWriteWhileCompressing) {
   auto& handler = bridge->GetHibernationHandlerForTesting();
   handler.SetTaskRunnersForTesting(task_runner, task_runner);
 
+  // Set the page to hidden to kick off hibernation.
   SetPageVisible(Host(), bridge.get(), platform, false);
-  // Wait for the canvas to be encoded.
+  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.is_encoded());
+
+  // Run the task that kicks off compression, then run the compression task
+  // itself, but *don't* run the callback for compression completing.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
-  // Run the compression task, not the callback.
   EXPECT_TRUE(TestSingleThreadTaskRunner::RunOne(task_runner->immediate()));
+  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.is_encoded());
 
-  bridge->WritePixels(SkImageInfo::MakeN32Premul(10, 10), nullptr, 10, 0, 0);
+  // A clear while compression is in progress should end hibernation.
+  handler.Clear();
+  EXPECT_FALSE(bridge->IsHibernating());
+  EXPECT_FALSE(handler.is_encoded());
+
+  // Compression finishing should then be a no-op because the canvas is no
+  // longer in hibernation.
   EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
-
-  // No hibernation, read happened in-between.
   EXPECT_FALSE(bridge->IsHibernating());
   EXPECT_FALSE(handler.is_encoded());
 }
 
-TEST_F(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
+TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
 

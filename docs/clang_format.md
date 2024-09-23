@@ -11,10 +11,9 @@ for updates.
 ## Easiest usage, from the command line
 
 To automatically format a pending patch according to
-[Chromium style](https://www.chromium.org/developers/coding-style), run:
-``` git cl format ``` from the command line. This should work on all platforms
-without any extra set up: the tool is integrated with depot_tools and the
-Chromium checkout.
+[Chromium style](/styleguide/c++/c++.md), run: `git cl format` from the command
+line. This should work on all platforms without any extra set up: the tool is
+integrated with depot_tools and the Chromium checkout.
 
 Like other `git-cl` commands, this operates on a diff relative to the upstream
 branch. Only the lines that changed in a CL will be reformatted. To see what

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/files/file_proxy.h"
 
 #include <stddef.h>
@@ -127,7 +132,7 @@ TEST_F(FileProxyTest, CreateOrOpen_Create) {
 
 TEST_F(FileProxyTest, CreateOrOpen_Open) {
   // Creates a file.
-  base::WriteFile(TestPath(), base::StringPiece());
+  base::WriteFile(TestPath(), std::string_view());
   ASSERT_TRUE(PathExists(TestPath()));
 
   // Opens the created file.
@@ -299,7 +304,7 @@ TEST_F(FileProxyTest, GetInfo) {
 
 TEST_F(FileProxyTest, Read) {
   // Setup.
-  constexpr base::StringPiece expected_data = "bleh";
+  constexpr std::string_view expected_data = "bleh";
   ASSERT_TRUE(base::WriteFile(TestPath(), expected_data));
 
   // Run.
@@ -314,7 +319,7 @@ TEST_F(FileProxyTest, Read) {
 
   // Verify.
   EXPECT_EQ(File::FILE_OK, error_);
-  EXPECT_EQ(expected_data, base::StringPiece(buffer_.data(), buffer_.size()));
+  EXPECT_EQ(expected_data, std::string_view(buffer_.data(), buffer_.size()));
 }
 
 TEST_F(FileProxyTest, WriteAndFlush) {

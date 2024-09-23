@@ -10,6 +10,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/feedback/feedback_common.h"
+#include "components/feedback/feedback_constants.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api_unittest_base_chromeos.h"
 #include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
@@ -88,8 +89,9 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
 
     std::optional<base::Value> result_value =
         RunFunctionAndReturnValue(function.get(), ParamsToJSON(params));
-    if (!result_value)
+    if (!result_value) {
       return testing::AssertionFailure() << "No result";
+    }
 
     auto result = ReadLogSourceResult::FromValue(*result_value);
     if (!result) {
@@ -755,7 +757,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackInfoAiFlow) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto chromeos_ai_metadata = base::Value::Dict();
-  chromeos_ai_metadata.Set("from_chromeos", "true");
+  chromeos_ai_metadata.Set(feedback::kSeaPenMetadataKey, "true");
   feedback_info = api->CreateFeedbackInfo(
       /*description_template=*/unused, /*description_placeholder_text=*/unused,
       /*category_tag=*/unused, /*extra_diagnostics=*/unused,

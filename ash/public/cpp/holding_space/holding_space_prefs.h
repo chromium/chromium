@@ -42,6 +42,11 @@ ASH_PUBLIC_EXPORT void AddTimeOfFirstAddChangedCallback(
     PrefChangeRegistrar* registrar,
     base::RepeatingClosure callback);
 
+// Adds `callback` to `registrar` to be invoked on changes to time of first pin.
+ASH_PUBLIC_EXPORT void AddTimeOfFirstPinChangedCallback(
+    PrefChangeRegistrar* registrar,
+    base::RepeatingClosure callback);
+
 // Returns whether previews are enabled.
 ASH_PUBLIC_EXPORT bool IsPreviewsEnabled(PrefService* prefs);
 

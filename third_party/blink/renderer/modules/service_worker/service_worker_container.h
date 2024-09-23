@@ -59,6 +59,7 @@ class ExecutionContext;
 class ExceptionState;
 class LocalDOMWindow;
 class ServiceWorkerErrorForUpdate;
+class ServiceWorkerRegistration;
 
 class MODULES_EXPORT ServiceWorkerContainer final
     : public EventTarget,
@@ -85,14 +86,17 @@ class MODULES_EXPORT ServiceWorkerContainer final
   void Trace(Visitor*) const override;
 
   ServiceWorker* controller() { return controller_.Get(); }
-  ScriptPromiseTyped<ServiceWorkerRegistration> ready(ScriptState*,
-                                                      ExceptionState&);
+  ScriptPromise<ServiceWorkerRegistration> ready(ScriptState*, ExceptionState&);
 
-  ScriptPromise registerServiceWorker(ScriptState*,
-                                      const String& pattern,
-                                      const RegistrationOptions*);
-  ScriptPromise getRegistration(ScriptState*, const String& document_url);
-  ScriptPromise getRegistrations(ScriptState*);
+  ScriptPromise<ServiceWorkerRegistration> registerServiceWorker(
+      ScriptState*,
+      const String& pattern,
+      const RegistrationOptions*);
+  ScriptPromise<ServiceWorkerRegistration> getRegistration(
+      ScriptState*,
+      const String& document_url);
+  ScriptPromise<IDLSequence<ServiceWorkerRegistration>> getRegistrations(
+      ScriptState*);
 
   void startMessages();
 

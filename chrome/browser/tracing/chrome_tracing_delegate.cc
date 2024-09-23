@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -23,7 +22,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tracing/background_tracing_field_trial.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -104,7 +102,9 @@ class DevicePolicyObserver {
 
 }  // namespace
 
-ChromeTracingDelegate::ChromeTracingDelegate() {
+ChromeTracingDelegate::ChromeTracingDelegate()
+    : state_manager_(tracing::BackgroundTracingStateManager::CreateInstance(
+          g_browser_process->local_state())) {
   // Ensure that this code is called on the UI thread, except for
   // tests where a UI thread might not have been initialized at this point.
   DCHECK(
@@ -182,19 +182,8 @@ bool ChromeTracingDelegate::IsActionAllowed(
 
 bool ChromeTracingDelegate::OnBackgroundTracingActive(
     bool requires_anonymized_data) {
-  // We call Initialize() only when a tracing scenario tries to start, and
-  // unless this happens we never save state. In particular, if the background
-  // tracing experiment is disabled, Initialize() will never be called, and we
-  // will thus not save state. This means that when we save the background
-  // tracing session state for one session, and then later read the state in a
-  // future session, there might have been sessions between these two where
-  // tracing was disabled. Therefore, when IsActionAllowed records
-  // TracingFinalizationDisallowedReason::kLastTracingSessionDidNotEnd, it
-  // might not be the directly preceding session, but instead it is the
-  // previous session where tracing was enabled.
   BackgroundTracingStateManager& state =
       BackgroundTracingStateManager::GetInstance();
-  state.Initialize(g_browser_process->local_state());
 
   if (!IsActionAllowed(BackgroundScenarioAction::kStartTracing,
                        requires_anonymized_data)) {
@@ -240,10 +229,4 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 #else
   return false;
 #endif
-}
-
-std::optional<base::Value::Dict> ChromeTracingDelegate::GenerateMetadataDict() {
-  base::Value::Dict metadata_dict;
-  metadata_dict.Set("revision", version_info::GetLastChange());
-  return metadata_dict;
 }

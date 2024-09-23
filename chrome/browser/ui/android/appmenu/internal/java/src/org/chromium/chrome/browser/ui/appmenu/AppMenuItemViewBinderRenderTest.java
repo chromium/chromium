@@ -22,6 +22,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -97,7 +97,7 @@ public class AppMenuItemViewBinderRenderTest {
     public void setUpTest() throws Exception {
         sActivityTestRule.launchActivity(null);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = sActivityTestRule.getActivity();
                     mMenuList = new ModelListAdapter.ModelList();
@@ -133,7 +133,7 @@ public class AppMenuItemViewBinderRenderTest {
 
     @After
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMenuList.clear();
                 });
@@ -276,7 +276,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testStandardMenuItem() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     createStandardMenuItem(MENU_ID1, TITLE_1, mMenuItemEnabled, null);
                 });
@@ -288,7 +288,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testStandardMenuItem_Icon() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Drawable icon =
                             AppCompatResources.getDrawable(
@@ -305,7 +305,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTitleButtonMenuItem_Icon() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Drawable buttonIcon =
                             AppCompatResources.getDrawable(
@@ -333,7 +333,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTitleButtonMenuItem_Checkbox_Checked() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     createTitleMenuItem(
                             MENU_ID1,
@@ -356,7 +356,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTitleButtonMenuItem_Checkbox_Unchecked() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     createTitleMenuItem(
                             MENU_ID1,
@@ -379,7 +379,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTitleButtonMenuItem_Checkbox_Unchecked_IconBeforeItem() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Drawable icon =
                             AppCompatResources.getDrawable(
@@ -407,7 +407,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testIconRow_ThreeIcons() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Drawable icon1 =
                             AppCompatResources.getDrawable(
@@ -451,7 +451,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testIconRow_FourIcons() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Drawable icon1 =
                             AppCompatResources.getDrawable(
@@ -500,7 +500,7 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testIconRow_FiveIcons() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Drawable icon1 =
                             AppCompatResources.getDrawable(

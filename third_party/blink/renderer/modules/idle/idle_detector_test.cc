@@ -83,8 +83,8 @@ TEST(IdleDetectorTest, Start) {
   })));
 
   auto* options = IdleOptions::Create();
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();
@@ -118,8 +118,8 @@ TEST(IdleDetectorTest, StartIdleWithLongThreshold) {
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();
@@ -145,8 +145,8 @@ TEST(IdleDetectorTest, LockScreen) {
 
   auto* detector = IdleDetector::Create(scope.GetScriptState());
   auto* options = IdleOptions::Create();
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();
@@ -175,8 +175,8 @@ TEST(IdleDetectorTest, BecomeIdle) {
 
   auto* detector = IdleDetector::Create(scope.GetScriptState());
   auto* options = IdleOptions::Create();
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();
@@ -206,8 +206,8 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreen) {
 
   auto* detector = IdleDetector::Create(scope.GetScriptState());
   auto* options = IdleOptions::Create();
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();
@@ -241,8 +241,8 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreenWithLongThreshold) {
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();
@@ -284,8 +284,8 @@ TEST(IdleDetectorTest, BecomeIdleAndLockAfterWithLongThreshold) {
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();
@@ -340,8 +340,8 @@ TEST(IdleDetectorTest, BecomeIdleThenActiveBeforeThreshold) {
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();
@@ -382,8 +382,8 @@ TEST(IdleDetectorTest, SetAndClearOverrides) {
 
   auto* options = IdleOptions::Create();
   options->setThreshold(90000);
-  ScriptPromise start_promise = detector->start(scope.GetScriptState(), options,
-                                                scope.GetExceptionState());
+  ScriptPromiseUntyped start_promise = detector->start(
+      scope.GetScriptState(), options, scope.GetExceptionState());
 
   ScriptPromiseTester start_tester(scope.GetScriptState(), start_promise);
   start_tester.WaitUntilSettled();

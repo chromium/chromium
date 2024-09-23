@@ -7,7 +7,7 @@
  * 'site-details-permission-device-entry' shows a single device for a given
  * chooser exception.
  */
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '../settings_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';

@@ -27,7 +27,7 @@ struct SerializedUserAgentOverride;
 namespace chrome {
 
 // Add a tab with its session history restored from the SessionRestore and
-// TabRestoreService systems. If select is true, the tab is selected.
+// TabRestoreService systems. If `select` is true, the tab is selected.
 // |tab_index| gives the index to insert the tab at. |selected_navigation| is
 // the index of the SerializedNavigationEntry in |navigations| to select. If
 // |extension_app_id| is non-empty the tab is an app tab and |extension_app_id|
@@ -39,7 +39,9 @@ namespace chrome {
 // |from_session_restore| is true, the restored tab is created by session
 // restore. |last_active_time| is the value to use to indicate the last time the
 // WebContents was made active, if this is left default initialized then the
-// creation time will be used. Returns the WebContents of the restored tab.
+// creation time will be used. If `is_active_browser` is set, it indicates
+// whether `browser` is (or will be) the active browser.
+// Returns the WebContents of the restored tab.
 content::WebContents* AddRestoredTab(
     Browser* browser,
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
@@ -49,25 +51,13 @@ content::WebContents* AddRestoredTab(
     std::optional<tab_groups::TabGroupId> group,
     bool select,
     bool pin,
-    base::TimeTicks last_active_time,
+    base::TimeTicks last_active_time_ticks,
+    base::Time last_active_time,
     content::SessionStorageNamespace* storage_namespace,
     const sessions::SerializedUserAgentOverride& user_agent_override,
     const std::map<std::string, std::string>& extra_data,
-    bool from_session_restore);
-
-// Same functionality as AddRestoreTab, except that the |web_contents| is
-// passed as it was never deleted. Used when restoring entry from
-// ClosedTabCache. Note that ClosedTabCache is an experimental desktop feature
-// to instantly restore recently closed tabs.
-content::WebContents* AddRestoredTabFromCache(
-    std::unique_ptr<content::WebContents> web_contents,
-    Browser* browser,
-    int tab_index,
-    std::optional<tab_groups::TabGroupId> group,
-    bool select,
-    bool pin,
-    const sessions::SerializedUserAgentOverride& user_agent_override,
-    const std::map<std::string, std::string>& extra_data);
+    bool from_session_restore,
+    std::optional<bool> is_active_browser);
 
 // Replaces the state of the currently selected tab with the session
 // history restored from the SessionRestore and TabRestoreService systems.

@@ -70,6 +70,7 @@ public final class OfflineItemBridge {
             boolean isOffTheRecord,
             String otrProfileId,
             GURL referrerUrl,
+            boolean hasUserGesture,
             @OfflineItemState int state,
             @FailState int failState,
             @PendingState int pendingState,
@@ -107,6 +108,7 @@ public final class OfflineItemBridge {
         item.isOffTheRecord = isOffTheRecord;
         item.otrProfileId = otrProfileId;
         item.referrerUrl = referrerUrl;
+        item.hasUserGesture = hasUserGesture;
         item.state = state;
         item.failState = failState;
         item.pendingState = pendingState;

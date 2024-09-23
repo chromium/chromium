@@ -7,8 +7,8 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -32,12 +32,12 @@ class AcceptLanguagesService : public KeyedService {
   // Returns true if |language| is available as Accept-Languages for the given
   // |display_locale|. |language| will be converted if it has the synonym of
   // accept language.
-  static bool CanBeAcceptLanguage(const base::StringPiece& language);
+  static bool CanBeAcceptLanguage(std::string_view language);
 
   // Returns true if the passed language has been configured by the user as an
   // accept language. |language| will be converted if it has the synonym of
   // accept languages.
-  bool IsAcceptLanguage(const base::StringPiece& language) const;
+  bool IsAcceptLanguage(std::string_view language) const;
 
  private:
   // Initializes the |accept_languages_| language table based on the associated

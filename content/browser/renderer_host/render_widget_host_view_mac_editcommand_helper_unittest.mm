@@ -12,10 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "content/browser/compositor/test/test_image_transport_factory.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
+#include "content/browser/renderer_host/render_widget_host_factory.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/site_instance_group.h"
@@ -23,6 +23,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_image_transport_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -154,13 +155,12 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
   @autoreleasepool {
     int32_t routing_id = process_host->GetNextRoutingID();
     std::unique_ptr<RenderWidgetHostImpl> render_widget =
-        RenderWidgetHostImpl::Create(
+        RenderWidgetHostFactory::Create(
             /*frame_tree=*/nullptr, &delegate,
             RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group,
                                                      routing_id),
             site_instance_group->GetSafeRef(), routing_id,
-            /*hidden=*/false, /*renderer_initiated_creation=*/false,
-            std::make_unique<FrameTokenMessageQueue>());
+            /*hidden=*/false, /*renderer_initiated_creation=*/false);
 
     ui::WindowResizeHelperMac::Get()->Init(
         base::SingleThreadTaskRunner::GetCurrentDefault());

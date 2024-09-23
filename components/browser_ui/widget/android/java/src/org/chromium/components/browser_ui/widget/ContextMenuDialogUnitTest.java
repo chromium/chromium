@@ -40,15 +40,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 import org.chromium.ui.widget.UiWidgetFactory;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /** Unit test for {@link ContextMenuDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -96,10 +91,6 @@ public class ContextMenuDialogUnitTest {
         Mockito.when(mockContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
         Mockito.when(mockContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
         Mockito.doReturn(mockContentView).when(mSpyPopupWindow).getContentView();
-
-        Map<String, Boolean> featureMap = new HashMap<>();
-        featureMap.put(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK, false);
-        FeatureList.setTestFeatures(featureMap);
     }
 
     @After
@@ -141,6 +132,23 @@ public class ContextMenuDialogUnitTest {
         mDialog.show();
 
         // Only checks the flag is unset to make sure the setup for |shouldRemoveScrim| is not ran.
+        ShadowPhoneWindow window = (ShadowPhoneWindow) Shadows.shadowOf(mDialog.getWindow());
+        Assert.assertFalse(
+                "FLAG_NOT_TOUCH_MODAL is in window flags.",
+                window.getFlag(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL));
+    }
+
+    @Test
+    public void testCreateDialog_dontMatchSysUi() {
+        mDialog =
+                createContextMenuDialog(
+                        /* isPopup= */ false,
+                        /* shouldRemoveScrim= */ false,
+                        /* shouldSysUiMatchActivity */ false);
+        mDialog.show();
+
+        // Only checks the flag is unset to make sure the setup for |shouldSysUiMatchActivity| is
+        // not ran.
         ShadowPhoneWindow window = (ShadowPhoneWindow) Shadows.shadowOf(mDialog.getWindow());
         Assert.assertFalse(
                 "FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS is in window flags.",
@@ -282,6 +290,11 @@ public class ContextMenuDialogUnitTest {
     }
 
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
+        return createContextMenuDialog(isPopup, shouldRemoveScrim, true);
+    }
+
+    private ContextMenuDialog createContextMenuDialog(
+            boolean isPopup, boolean shouldRemoveScrim, boolean shouldSysUiMatchActivity) {
         return new ContextMenuDialog(
                 mActivity,
                 0,
@@ -291,6 +304,7 @@ public class ContextMenuDialogUnitTest {
                 mMenuContentView,
                 isPopup,
                 shouldRemoveScrim,
+                shouldSysUiMatchActivity,
                 0,
                 0,
                 mSpyDragDispatchingDestinationView,

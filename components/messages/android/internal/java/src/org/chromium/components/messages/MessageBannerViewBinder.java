@@ -19,6 +19,7 @@ import static org.chromium.components.messages.MessageBannerProperties.ON_SECOND
 import static org.chromium.components.messages.MessageBannerProperties.ON_TOUCH_RUNNABLE;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_TEXT;
+import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_TEXT_MAX_LINES;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_WIDGET_APPEARANCE;
 import static org.chromium.components.messages.MessageBannerProperties.RESIZE_DESCRIPTION_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT;
@@ -51,6 +52,8 @@ public class MessageBannerViewBinder {
             view.setPrimaryWidgetAppearance(model.get(PRIMARY_WIDGET_APPEARANCE));
         } else if (propertyKey == PRIMARY_BUTTON_TEXT) {
             view.setPrimaryButtonText(model.get(PRIMARY_BUTTON_TEXT));
+        } else if (propertyKey == PRIMARY_BUTTON_TEXT_MAX_LINES) {
+            view.setPrimaryButtonTextMaxLines(model.get(PRIMARY_BUTTON_TEXT_MAX_LINES));
         } else if (propertyKey == PRIMARY_BUTTON_CLICK_LISTENER) {
             view.setPrimaryButtonClickListener(model.get(PRIMARY_BUTTON_CLICK_LISTENER));
         } else if (propertyKey == TITLE) {

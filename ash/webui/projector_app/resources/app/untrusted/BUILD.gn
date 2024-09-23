@@ -19,6 +19,8 @@ js_library("untrusted_app") {
     "//ash/webui/projector_app/public/mojom:projector_mojo_bindings_webui_js",
     "//ash/webui/projector_app/resources/common:message_types",
   ]
+  extra_deps =
+      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   externs_list = [
     "../../common/projector_app.externs.js",
     "//ash/webui/web_applications/externs/file_handling.externs.js",

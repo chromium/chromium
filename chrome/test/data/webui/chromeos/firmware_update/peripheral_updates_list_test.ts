@@ -25,7 +25,6 @@ suite('PeripheralUpdatesListTest', () => {
     provider = new FakeUpdateProvider();
     setUpdateProviderForTesting(provider);
 
-    // @ts-ignore
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 

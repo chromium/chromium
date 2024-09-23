@@ -18,10 +18,10 @@ EnumTraits<ClientToAuthenticatorProtocol, device::ProtocolVersion>::ToMojom(
     case ::device::ProtocolVersion::kCtap2:
       return ClientToAuthenticatorProtocol::CTAP2;
     case ::device::ProtocolVersion::kUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return ClientToAuthenticatorProtocol::U2F;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ClientToAuthenticatorProtocol::U2F;
 }
 
@@ -37,7 +37,7 @@ bool EnumTraits<ClientToAuthenticatorProtocol, device::ProtocolVersion>::
       *output = ::device::ProtocolVersion::kCtap2;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -50,7 +50,7 @@ Ctap2Version EnumTraits<Ctap2Version, device::Ctap2Version>::ToMojom(
     case ::device::Ctap2Version::kCtap2_1:
       return Ctap2Version::CTAP2_1;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return Ctap2Version::CTAP2_0;
 }
 
@@ -66,7 +66,7 @@ bool EnumTraits<Ctap2Version, device::Ctap2Version>::FromMojom(
       *output = ::device::Ctap2Version::kCtap2_1;
       return true;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

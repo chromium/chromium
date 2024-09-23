@@ -177,7 +177,7 @@ export class OsSettingsSyncEncryptionOptionsElement extends PolymerElement {
     SyncBrowserProxyImpl.getInstance()
         .setEncryptionPassphrase(this.passphrase_)
         .then(successfullySet => {
-          // TODO(crbug.com/1139060): Rename the event, there is no change if
+          // TODO(crbug.com/40725814): Rename the event, there is no change if
           // |successfullySet| is false. It should also mention 'encryption
           // passphrase' in its name.
           this.dispatchEvent(new CustomEvent('passphrase-changed', {

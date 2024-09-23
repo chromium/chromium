@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "net/base/io_buffer.h"
 
 namespace ui {

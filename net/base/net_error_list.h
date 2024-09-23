@@ -18,7 +18,7 @@
 //   300-399 HTTP errors
 //   400-499 Cache errors
 //   500-599 ?
-//   600-699 FTP errors
+//   600-699 <Obsolete: FTP errors>
 //   700-799 Certificate manager errors
 //   800-899 DNS resolver errors
 
@@ -126,6 +126,10 @@ NET_ERROR(H2_OR_QUIC_REQUIRED, -31)
 
 // The request was blocked by CORB or ORB.
 NET_ERROR(BLOCKED_BY_ORB, -32)
+
+// The request was blocked because it originated from a frame that has disabled
+// network access.
+NET_ERROR(NETWORK_ACCESS_REVOKED, -33)
 
 // A connection was closed (corresponding to a TCP FIN).
 NET_ERROR(CONNECTION_CLOSED, -100)
@@ -263,7 +267,7 @@ NET_ERROR(TEMPORARILY_THROTTLED, -139)
 // received a 302 (temporary redirect) response.  The response body might
 // include a description of why the request failed.
 //
-// TODO(https://crbug.com/928551): This is deprecated and should not be used by
+// TODO(crbug.com/40093955): This is deprecated and should not be used by
 // new code.
 NET_ERROR(HTTPS_PROXY_TUNNEL_RESPONSE_REDIRECT, -140)
 
@@ -823,6 +827,12 @@ NET_ERROR(BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS, -385)
 // Content decoding failed due to the zstd window size being too big (over 8MB).
 NET_ERROR(ZSTD_WINDOW_SIZE_TOO_BIG, -386)
 
+// The compression dictionary cannot be loaded.
+NET_ERROR(DICTIONARY_LOAD_FAILED, -387)
+
+// The header of dictionary compressed stream does not match the expected value.
+NET_ERROR(UNEXPECTED_CONTENT_DICTIONARY_HEADER, -388)
+
 // The cache does not have the requested entry.
 NET_ERROR(CACHE_MISS, -400)
 
@@ -904,37 +914,13 @@ NET_ERROR(TRUST_TOKEN_OPERATION_FAILED, -506)
 NET_ERROR(TRUST_TOKEN_OPERATION_SUCCESS_WITHOUT_SENDING_REQUEST, -507)
 
 // *** Code -600 is reserved (was FTP_PASV_COMMAND_FAILED). ***
-
-// A generic error for failed FTP control connection command.
-// If possible, please use or add a more specific error code.
-NET_ERROR(FTP_FAILED, -601)
-
-// The server cannot fulfill the request at this point. This is a temporary
-// error.
-// FTP response code 421.
-NET_ERROR(FTP_SERVICE_UNAVAILABLE, -602)
-
-// The server has aborted the transfer.
-// FTP response code 426.
-NET_ERROR(FTP_TRANSFER_ABORTED, -603)
-
-// The file is busy, or some other temporary error condition on opening
-// the file.
-// FTP response code 450.
-NET_ERROR(FTP_FILE_BUSY, -604)
-
-// Server rejected our command because of syntax errors.
-// FTP response codes 500, 501.
-NET_ERROR(FTP_SYNTAX_ERROR, -605)
-
-// Server does not support the command we issued.
-// FTP response codes 502, 504.
-NET_ERROR(FTP_COMMAND_NOT_SUPPORTED, -606)
-
-// Server rejected our command because we didn't issue the commands in right
-// order.
-// FTP response code 503.
-NET_ERROR(FTP_BAD_COMMAND_SEQUENCE, -607)
+// *** Code -601 is reserved (was FTP_FAILED). ***
+// *** Code -602 is reserved (was FTP_SERVICE_UNAVAILABLE). ***
+// *** Code -603 is reserved (was FTP_TRANSFER_ABORTED). ***
+// *** Code -604 is reserved (was FTP_FILE_BUSY). ***
+// *** Code -605 is reserved (was FTP_SYNTAX_ERROR). ***
+// *** Code -606 is reserved (was FTP_COMMAND_NOT_SUPPORTED). ***
+// *** Code -607 is reserved (was FTP_BAD_COMMAND_SEQUENCE). ***
 
 // PKCS #12 import failed due to incorrect password.
 NET_ERROR(PKCS12_IMPORT_BAD_PASSWORD, -701)
@@ -1035,7 +1021,12 @@ NET_ERROR(DNS_REQUEST_CANCELLED, -810)
 // alpn values of supported protocols, but did not.
 NET_ERROR(DNS_NO_MATCHING_SUPPORTED_ALPN, -811)
 
-// The compression dictionary cannot be loaded.
-NET_ERROR(DICTIONARY_LOAD_FAILED, -812)
+// Error -812 was removed
+// Error -813 was removed
 
-// Error -813 was removed (DICTIONARY_ORIGIN_CHECK_FAILED)
+// When checking whether secure DNS can be used, the response returned for the
+// requested probe record either had no answer or was invalid.
+NET_ERROR(DNS_SECURE_PROBE_RECORD_INVALID, -814)
+
+// CAUTION: Before adding errors here, please check the ranges of errors written
+// in the top of this file.

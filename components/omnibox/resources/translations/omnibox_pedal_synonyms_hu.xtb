@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
-<translation id="101606685846791463">böngésző gyorsítótárának törlése, előzmények törlése, cookie-k törlése, böngészési előzmények törlése</translation>
 <translation id="132297926492792130">google fiók vezérlése, google fiók kijavítása, google fiók kezelése, google fiókom kezelése</translation>
 <translation id="1455865776268085776">belépés inkognitó módba, új inkognitó ablak, inkognitó lap megnyitása</translation>
 <translation id="1545931455576308147">oldal megosztása, lap megosztása</translation>
@@ -28,6 +27,7 @@
 <translation id="7153639895359139570">cím hozzáadása, szállítási cím módosítása, címek szerkesztése, címek kezelése</translation>
 <translation id="7242693601647412075">biztonsági beállítások kezelése</translation>
 <translation id="7441773108452086364">gmail jelszó módosítása, gmail jelszavam módosítása, google jelszó módosítása, gmail fiók jelszó visszaállítása</translation>
+<translation id="7469628627013714019">böngésző gyorsítótárának törlése, előzmények törlése, cookie-k törlése, böngészési előzmények törlése</translation>
 <translation id="7660956169713698963">chrome kisegítő lehetőségek testreszabása, kisegítő lehetőségek kezelése</translation>
 <translation id="7700496593710078083">chrome előzmények megtekintése, böngészési előzmények megtekintése</translation>
 <translation id="7739523284295786564">chrome letöltések kezelése, letöltések megtekintése</translation>

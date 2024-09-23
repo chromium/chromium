@@ -25,7 +25,6 @@ class TestParser : public ScriptableDocumentParser {
   }
 
   void ExecuteScriptsWaitingForResources() override {}
-  void NotifyNoRemainingAsyncScripts() override {}
   bool IsWaitingForScripts() const override { return false; }
   void DidAddPendingParserBlockingStylesheet() override {}
   void DidLoadAllPendingParserBlockingStylesheets() override {}

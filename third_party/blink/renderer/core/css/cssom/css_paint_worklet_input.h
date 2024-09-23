@@ -53,6 +53,8 @@ class CORE_EXPORT CSSPaintWorkletInput : public PaintWorkletInput {
     return PaintWorkletInputType::kCSS;
   }
 
+  bool NeedsLayer() const override { return true; }
+
  private:
   const String name_;
   const float effective_zoom_;

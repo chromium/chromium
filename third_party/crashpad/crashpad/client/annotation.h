@@ -15,18 +15,19 @@
 #ifndef CRASHPAD_CLIENT_ANNOTATION_H_
 #define CRASHPAD_CLIENT_ANNOTATION_H_
 
-#include <algorithm>
-#include <atomic>
-#include <optional>
-#include <ostream>
-
 #include <stdint.h>
 #include <string.h>
 #include <sys/types.h>
 
+#include <algorithm>
+#include <atomic>
+#include <optional>
+#include <ostream>
+#include <string_view>
+
 #include "base/check.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
+
 #include "build/build_config.h"
 #include "util/synchronization/scoped_spin_guard.h"
 
@@ -329,19 +330,19 @@ class StringAnnotation : public Annotation {
   //! \brief Sets the Annotation's string value.
   //!
   //! \param[in] string The string value.
-  void Set(base::StringPiece string) {
+  void Set(std::string_view string) {
     Annotation::ValueSizeType size =
         std::min(MaxSize, base::saturated_cast<ValueSizeType>(string.size()));
     string = string.substr(0, size);
     std::copy(string.begin(), string.end(), value_);
     // Check for no embedded `NUL` characters.
-    DCHECK(string.find('\0', /*pos=*/0) == base::StringPiece::npos)
+    DCHECK(string.find('\0', /*pos=*/0) == std::string_view::npos)
         << "embedded NUL";
     SetSize(size);
   }
 
-  const base::StringPiece value() const {
-    return base::StringPiece(value_, size());
+  const std::string_view value() const {
+    return std::string_view(value_, size());
   }
 
  private:

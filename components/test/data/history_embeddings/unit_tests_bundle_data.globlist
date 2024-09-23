@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# See build/ios/update_bundle_filelist.py for details on how .globlist
+# files are used to update their .filelist counterparts.
+
+//components/test/data/history_embeddings/**
+-//components/test/data/history_embeddings/*.filelist
+-//components/test/data/history_embeddings/*.globlist
+-//components/test/data/history_embeddings/OWNERS

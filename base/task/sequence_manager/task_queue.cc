@@ -4,6 +4,7 @@
 
 #include "base/task/sequence_manager/task_queue.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "base/threading/thread_checker_impl.h"
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::sequence_manager {
 

@@ -18,6 +18,7 @@
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -144,9 +145,6 @@ class SimulatedAvatarButton : public SimulatedToolbarElement {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override { return "SimulatedAvatarButton"; }
-
   View* icon() { return children()[0]; }
   const View* icon() const { return children()[0]; }
   View* label() { return children()[1]; }
@@ -296,11 +294,6 @@ class SimulatedExtensionsContainer : public SimulatedToolbarElement {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override {
-    return "SimulatedExtensionsContainer";
-  }
-
   const View* main_button() const { return children()[children().size() - 1]; }
 
   std::set<raw_ptr<const View, SetExperimental>> visible_views_;
@@ -382,9 +375,6 @@ class SimulatedToolbar : public View {
   }
 
  private:
-  // views::View:
-  const char* GetClassName() const override { return "SimulatedToolbar"; }
-
   raw_ptr<SimulatedExtensionsContainer> extensions_;
   raw_ptr<SimulatedAvatarButton> avatar_;
 };
@@ -439,13 +429,13 @@ class CompositeLayoutTest : public testing::Test {
       avatar_test_api_->IncrementTime(delta);
     if (extensions()->layout()->is_animating())
       extensions_test_api_->IncrementTime(delta);
-    toolbar_->DeprecatedLayoutImmediately();
+    views::test::RunScheduledLayout(toolbar());
   }
 
   void ResetAnimation() {
     avatar()->layout()->ResetLayout();
     extensions()->layout()->ResetLayout();
-    toolbar()->DeprecatedLayoutImmediately();
+    views::test::RunScheduledLayout(toolbar());
   }
 
   bool IsAnimating() const {
@@ -882,7 +872,7 @@ TEST_F(CompositeLayoutTest, ExtensionsNotShownWhenSpaceConstrained) {
 
 TEST_F(CompositeLayoutTest, SomeExtensionsNotShownWhenSpaceConstrained) {
   // Provide room for one of two icons.
-  SetWidth(toolbar()->GetPreferredSize().width() + kIconDimension);
+  SetWidth(toolbar()->GetPreferredSize({}).width() + kIconDimension);
   extensions()->AddIcons({true, true});
   FinishAnimations();
   EnsureLayout(1);
@@ -901,7 +891,7 @@ TEST_F(CompositeLayoutTest, SomeExtensionsNotShownWhenSpaceConstrained) {
 
 TEST_F(CompositeLayoutTest, ExtensionsShownSnapsWhenSpaceShrinks) {
   // Provide room for both icons.
-  SetWidth(toolbar()->GetPreferredSize().width() + 2 * kIconDimension);
+  SetWidth(toolbar()->GetPreferredSize({}).width() + 2 * kIconDimension);
   extensions()->AddIcons({true, true});
   FinishAnimations();
   EnsureLayout(2);
@@ -918,7 +908,7 @@ TEST_F(CompositeLayoutTest, ExtensionsShownSnapsWhenSpaceShrinks) {
 TEST_F(CompositeLayoutTest,
        ExtensionsShowingAnimationRedirectsDueToSmallerAvailableSpace) {
   // Provide room for both icons.
-  SetWidth(toolbar()->GetPreferredSize().width() + 2 * kIconDimension);
+  SetWidth(toolbar()->GetPreferredSize({}).width() + 2 * kIconDimension);
   extensions()->AddIcons({true, true});
   AdvanceAnimations(400);
 
@@ -933,7 +923,7 @@ TEST_F(CompositeLayoutTest,
 TEST_F(CompositeLayoutTest,
        ExtensionsShowingAnimationCancelsDueToSmallerAvailableSpace) {
   // Provide room for both icons.
-  SetWidth(toolbar()->GetPreferredSize().width() + 2 * kIconDimension);
+  SetWidth(toolbar()->GetPreferredSize({}).width() + 2 * kIconDimension);
   extensions()->AddIcons({true, true});
   AdvanceAnimations(800);
 
@@ -947,7 +937,7 @@ TEST_F(CompositeLayoutTest,
 TEST_F(CompositeLayoutTest,
        ExtensionsShowingAnimationRedirectsDueToLargerAvailableSpace) {
   // Provide room for one of two icons.
-  SetWidth(toolbar()->GetPreferredSize().width() + kIconDimension);
+  SetWidth(toolbar()->GetPreferredSize({}).width() + kIconDimension);
   extensions()->AddIcons({true, true});
   AdvanceAnimations(400);
 

@@ -10,9 +10,9 @@
 #include <lib/fidl/cpp/interface_request.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/fuchsia/fidl_event_handler.h"
-#include "base/strings/string_piece.h"
 #include "fuchsia_web/runners/cast/cast_component.h"
 
 namespace base {
@@ -44,13 +44,13 @@ class PendingCastComponent {
       std::unique_ptr<base::StartupContext> startup_context,
       fidl::InterfaceRequest<fuchsia::component::runner::ComponentController>
           controller_request,
-      base::StringPiece app_id);
+      std::string_view app_id);
   ~PendingCastComponent();
 
   PendingCastComponent(const PendingCastComponent&) = delete;
   PendingCastComponent& operator=(const PendingCastComponent&) = delete;
 
-  const base::StringPiece app_id() const { return app_id_; }
+  const std::string_view app_id() const { return app_id_; }
 
  private:
   void RequestCorsExemptHeaders();

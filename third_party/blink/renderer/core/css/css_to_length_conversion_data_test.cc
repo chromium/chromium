@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -14,9 +15,43 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+namespace {
+
+// Evaluates any query to `result`.
+class TestAnchorEvaluator : public AnchorEvaluator {
+  STACK_ALLOCATED();
+
+ public:
+  explicit TestAnchorEvaluator(std::optional<LayoutUnit> result)
+      : result_(result) {}
+
+  std::optional<LayoutUnit> Evaluate(
+      const AnchorQuery&,
+      const ScopedCSSName* position_anchor,
+      const std::optional<PositionAreaOffsets>&) override {
+    return result_;
+  }
+  std::optional<PositionAreaOffsets> ComputePositionAreaOffsetsForLayout(
+      const ScopedCSSName*,
+      PositionArea) override {
+    return PositionAreaOffsets();
+  }
+  std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
+      const ComputedStyleBuilder&) override {
+    return std::nullopt;
+  }
+
+ private:
+  std::optional<LayoutUnit> result_;
+};
+
+}  // namespace
 
 class CSSToLengthConversionDataTest : public PageTestBase {
  public:
@@ -25,20 +60,26 @@ class CSSToLengthConversionDataTest : public PageTestBase {
     LoadAhem();
   }
 
+  struct DataOptions {
+    // The zoom to apply to :root.
+    std::optional<float> css_zoom;
+    // The zoom to pass to the CSSToLengthConversionData constructor.
+    std::optional<float> data_zoom;
+    // Used to evaluate anchor() and anchor-size() queries.
+    AnchorEvaluator* anchor_evaluator = nullptr;
+    // Any flags set by conversion is stored here.
+    // See CSSToLengthConversionData::Flag.
+    CSSToLengthConversionData::Flags* flags = nullptr;
+  };
+
   // Set up a page with "Ahem 10px" as :root, and "Ahem 20px" at some <div>,
   // then return a CSSToLengthConversionData constructed from that.
-  //
-  // css_zoom - The zoom to apply to :root.
-  // data_zoom - The zoom to pass to the CSSToLengthConversionData constructor.
-  CSSToLengthConversionData ConversionData(
-      std::optional<float> css_zoom,
-      std::optional<float> data_zoom,
-      CSSToLengthConversionData::Flags& flags) {
+  CSSToLengthConversionData ConversionData(DataOptions options) {
     Element* root = GetDocument().documentElement();
     DCHECK(root);
-    if (css_zoom.has_value()) {
+    if (options.css_zoom.has_value()) {
       root->SetInlineStyleProperty(CSSPropertyID::kZoom,
-                                   String::Format("%f", *css_zoom));
+                                   String::Format("%f", *options.css_zoom));
     }
     root->SetInlineStyleProperty(CSSPropertyID::kFontSize, "10px");
     root->SetInlineStyleProperty(CSSPropertyID::kFontFamily, "Ahem");
@@ -56,31 +97,49 @@ class CSSToLengthConversionDataTest : public PageTestBase {
         GetDocument().documentElement()->GetComputedStyle(),
         CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(),
-        data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()), flags);
+        CSSToLengthConversionData::AnchorData(
+            options.anchor_evaluator,
+            /* position_anchor */ nullptr,
+            /* position_area_offsets */ std::nullopt),
+        options.data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()),
+        options.flags ? *options.flags : ignored_flags_);
   }
 
-  CSSToLengthConversionData ConversionData(
-      std::optional<float> css_zoom = std::nullopt,
-      std::optional<float> data_zoom = std::nullopt) {
-    return ConversionData(css_zoom, data_zoom, ignored_flags_);
+  CSSToLengthConversionData ConversionData() {
+    return ConversionData(DataOptions{});
   }
 
-  CSSToLengthConversionData ConversionData(
-      CSSToLengthConversionData::Flags& flags) {
-    return ConversionData(std::nullopt, std::nullopt, flags);
-  }
+  // Parses the given string a <length>, and converts the result to a Length.
+  //
+  // A property may be specified to invoke the parsing behavior of that
+  // specific property.
+  Length ConvertLength(const CSSToLengthConversionData& data,
+                       String value,
+                       CSSPropertyID property_id = CSSPropertyID::kLeft) {
+    const CSSValue* result = css_test_helpers::ParseLonghand(
+        GetDocument(), CSSProperty::Get(property_id), value);
+    CHECK(result);
+    // Any tree-scoped references within `result` need to be populated with
+    // their TreeScope. This is normally done by StyleCascade before length
+    // conversion, and we're simulating that here.
+    result = &result->EnsureScopedValue(&GetDocument());
 
-  float Convert(const CSSToLengthConversionData& data, String value) {
-    auto* primitive_value = DynamicTo<CSSPrimitiveValue>(
-        css_test_helpers::ParseValue(GetDocument(), "<length>", value));
+    auto* primitive_value = DynamicTo<CSSPrimitiveValue>(result);
     DCHECK(primitive_value);
-    return primitive_value->ConvertToLength(data).Pixels();
+
+    return primitive_value->ConvertToLength(data);
+  }
+
+  float ConvertPx(const CSSToLengthConversionData& data,
+                  String value,
+                  CSSPropertyID property_id = CSSPropertyID::kLeft) {
+    return ConvertLength(data, value, property_id).Pixels();
   }
 
   CSSToLengthConversionData::Flags ConversionFlags(String value) {
     CSSToLengthConversionData::Flags flags = 0;
-    CSSToLengthConversionData data = ConversionData(flags);
-    Convert(data, value);
+    CSSToLengthConversionData data = ConversionData({.flags = &flags});
+    ConvertPx(data, value);
     return flags;
   }
 
@@ -96,94 +155,96 @@ class CSSToLengthConversionDataTest : public PageTestBase {
 
 TEST_F(CSSToLengthConversionDataTest, Normal) {
   CSSToLengthConversionData data = ConversionData();
-  EXPECT_FLOAT_EQ(1.0f, Convert(data, "1px"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1em"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1ex"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ch"));
-  EXPECT_FLOAT_EQ(10.0f, Convert(data, "1rem"));
-  EXPECT_FLOAT_EQ(8.0f, Convert(data, "1rex"));
-  EXPECT_FLOAT_EQ(10.0f, Convert(data, "1rch"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ic"));
-  EXPECT_FLOAT_EQ(10.0f, Convert(data, "1ric"));
-  EXPECT_FLOAT_EQ(36.0f, Convert(data, "calc(1em + 1ex)"));
-  EXPECT_FLOAT_EQ(100.0f, Convert(data, "1lh"));
-  EXPECT_FLOAT_EQ(50.0f, Convert(data, "1rlh"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1cap"));
-  EXPECT_FLOAT_EQ(8.0f, Convert(data, "1rcap"));
+  EXPECT_FLOAT_EQ(1.0f, ConvertPx(data, "1px"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1em"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1ex"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1ch"));
+  EXPECT_FLOAT_EQ(10.0f, ConvertPx(data, "1rem"));
+  EXPECT_FLOAT_EQ(8.0f, ConvertPx(data, "1rex"));
+  EXPECT_FLOAT_EQ(10.0f, ConvertPx(data, "1rch"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1ic"));
+  EXPECT_FLOAT_EQ(10.0f, ConvertPx(data, "1ric"));
+  EXPECT_FLOAT_EQ(36.0f, ConvertPx(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(100.0f, ConvertPx(data, "1lh"));
+  EXPECT_FLOAT_EQ(50.0f, ConvertPx(data, "1rlh"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1cap"));
+  EXPECT_FLOAT_EQ(8.0f, ConvertPx(data, "1rcap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, Zoomed) {
-  CSSToLengthConversionData data = ConversionData(2.0f);
-  EXPECT_FLOAT_EQ(2.0f, Convert(data, "1px"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1em"));
-  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1ex"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ch"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rem"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1rex"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rch"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ic"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ric"));
-  EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
-  EXPECT_FLOAT_EQ(200.0f, Convert(data, "1lh"));
-  EXPECT_FLOAT_EQ(100.0f, Convert(data, "1rlh"));
-  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1cap"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1rcap"));
+  CSSToLengthConversionData data = ConversionData({.css_zoom = 2.0f});
+  EXPECT_FLOAT_EQ(2.0f, ConvertPx(data, "1px"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1em"));
+  EXPECT_FLOAT_EQ(32.0f, ConvertPx(data, "1ex"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1ch"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1rem"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1rex"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1rch"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1ic"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1ric"));
+  EXPECT_FLOAT_EQ(72.0f, ConvertPx(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(200.0f, ConvertPx(data, "1lh"));
+  EXPECT_FLOAT_EQ(100.0f, ConvertPx(data, "1rlh"));
+  EXPECT_FLOAT_EQ(32.0f, ConvertPx(data, "1cap"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1rcap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, AdjustedZoom) {
   CSSToLengthConversionData data = ConversionData().CopyWithAdjustedZoom(2.0f);
-  EXPECT_FLOAT_EQ(2.0f, Convert(data, "1px"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1em"));
-  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1ex"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ch"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rem"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1rex"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rch"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ic"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ric"));
-  EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
-  EXPECT_FLOAT_EQ(200.0f, Convert(data, "1lh"));
-  EXPECT_FLOAT_EQ(100.0f, Convert(data, "1rlh"));
-  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1cap"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1rcap"));
+  EXPECT_FLOAT_EQ(2.0f, ConvertPx(data, "1px"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1em"));
+  EXPECT_FLOAT_EQ(32.0f, ConvertPx(data, "1ex"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1ch"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1rem"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1rex"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1rch"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1ic"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1ric"));
+  EXPECT_FLOAT_EQ(72.0f, ConvertPx(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(200.0f, ConvertPx(data, "1lh"));
+  EXPECT_FLOAT_EQ(100.0f, ConvertPx(data, "1rlh"));
+  EXPECT_FLOAT_EQ(32.0f, ConvertPx(data, "1cap"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1rcap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, DifferentZoom) {
   // The zoom used to calculate fonts is different from the requested
   // zoom in the CSSToLengthConversionData constructor.
-  CSSToLengthConversionData data = ConversionData(1.0f, 2.0f);
-  EXPECT_FLOAT_EQ(2.0f, Convert(data, "1px"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1em"));
-  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1ex"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ch"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rem"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1rex"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1rch"));
-  EXPECT_FLOAT_EQ(40.0f, Convert(data, "1ic"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ric"));
-  EXPECT_FLOAT_EQ(72.0f, Convert(data, "calc(1em + 1ex)"));
-  EXPECT_FLOAT_EQ(200.0f, Convert(data, "1lh"));
-  EXPECT_FLOAT_EQ(100.0f, Convert(data, "1rlh"));
-  EXPECT_FLOAT_EQ(32.0f, Convert(data, "1cap"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1rcap"));
+  CSSToLengthConversionData data =
+      ConversionData({.css_zoom = 1.0f, .data_zoom = 2.0f});
+  EXPECT_FLOAT_EQ(2.0f, ConvertPx(data, "1px"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1em"));
+  EXPECT_FLOAT_EQ(32.0f, ConvertPx(data, "1ex"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1ch"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1rem"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1rex"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1rch"));
+  EXPECT_FLOAT_EQ(40.0f, ConvertPx(data, "1ic"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1ric"));
+  EXPECT_FLOAT_EQ(72.0f, ConvertPx(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(200.0f, ConvertPx(data, "1lh"));
+  EXPECT_FLOAT_EQ(100.0f, ConvertPx(data, "1rlh"));
+  EXPECT_FLOAT_EQ(32.0f, ConvertPx(data, "1cap"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1rcap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
-  CSSToLengthConversionData data = ConversionData(2.0f).Unzoomed();
-  EXPECT_FLOAT_EQ(1.0f, Convert(data, "1px"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1em"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1ex"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ch"));
-  EXPECT_FLOAT_EQ(10.0f, Convert(data, "1rem"));
-  EXPECT_FLOAT_EQ(8.0f, Convert(data, "1rex"));
-  EXPECT_FLOAT_EQ(10.0f, Convert(data, "1rch"));
-  EXPECT_FLOAT_EQ(20.0f, Convert(data, "1ic"));
-  EXPECT_FLOAT_EQ(10.0f, Convert(data, "1ric"));
-  EXPECT_FLOAT_EQ(36.0f, Convert(data, "calc(1em + 1ex)"));
-  EXPECT_FLOAT_EQ(100.0f, Convert(data, "1lh"));
-  EXPECT_FLOAT_EQ(50.0f, Convert(data, "1rlh"));
-  EXPECT_FLOAT_EQ(16.0f, Convert(data, "1cap"));
-  EXPECT_FLOAT_EQ(8.0f, Convert(data, "1rcap"));
+  CSSToLengthConversionData data =
+      ConversionData({.css_zoom = 2.0f}).Unzoomed();
+  EXPECT_FLOAT_EQ(1.0f, ConvertPx(data, "1px"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1em"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1ex"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1ch"));
+  EXPECT_FLOAT_EQ(10.0f, ConvertPx(data, "1rem"));
+  EXPECT_FLOAT_EQ(8.0f, ConvertPx(data, "1rex"));
+  EXPECT_FLOAT_EQ(10.0f, ConvertPx(data, "1rch"));
+  EXPECT_FLOAT_EQ(20.0f, ConvertPx(data, "1ic"));
+  EXPECT_FLOAT_EQ(10.0f, ConvertPx(data, "1ric"));
+  EXPECT_FLOAT_EQ(36.0f, ConvertPx(data, "calc(1em + 1ex)"));
+  EXPECT_FLOAT_EQ(100.0f, ConvertPx(data, "1lh"));
+  EXPECT_FLOAT_EQ(50.0f, ConvertPx(data, "1rlh"));
+  EXPECT_FLOAT_EQ(16.0f, ConvertPx(data, "1cap"));
+  EXPECT_FLOAT_EQ(8.0f, ConvertPx(data, "1rcap"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, StyleLessContainerUnitConversion) {
@@ -191,17 +252,17 @@ TEST_F(CSSToLengthConversionDataTest, StyleLessContainerUnitConversion) {
   CSSToLengthConversionData data;
 
   // Don't crash:
-  Convert(data, "1cqw");
-  Convert(data, "1cqh");
+  ConvertPx(data, "1cqw");
+  ConvertPx(data, "1cqh");
 }
 
 TEST_F(CSSToLengthConversionDataTest, SetLineHeightSize) {
   CSSToLengthConversionData data = ConversionData();
-  EXPECT_FLOAT_EQ(100.0f, Convert(data, "1lh"));
+  EXPECT_FLOAT_EQ(100.0f, ConvertPx(data, "1lh"));
   Element* div = GetDocument().getElementById(AtomicString("div"));
   ASSERT_TRUE(div);
   SetLineHeightSize(*div, data);
-  EXPECT_FLOAT_EQ(200.0f, Convert(data, "1lh"));
+  EXPECT_FLOAT_EQ(200.0f, ConvertPx(data, "1lh"));
 }
 
 TEST_F(CSSToLengthConversionDataTest, Flags) {
@@ -296,16 +357,191 @@ TEST_F(CSSToLengthConversionDataTest, ConversionWithoutPrimaryFont) {
   data.SetLineHeightSize(line_height_size);
 
   // Don't crash:
-  Convert(data, "1em");
-  Convert(data, "1rem");
-  Convert(data, "1ex");
-  Convert(data, "1rex");
-  Convert(data, "1ch");
-  Convert(data, "1rch");
-  Convert(data, "1ic");
-  Convert(data, "1ric");
-  Convert(data, "1lh");
-  Convert(data, "1rlh");
+  ConvertPx(data, "1em");
+  ConvertPx(data, "1rem");
+  ConvertPx(data, "1ex");
+  ConvertPx(data, "1rex");
+  ConvertPx(data, "1ch");
+  ConvertPx(data, "1rch");
+  ConvertPx(data, "1ic");
+  ConvertPx(data, "1ric");
+  ConvertPx(data, "1lh");
+  ConvertPx(data, "1rlh");
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorFunction) {
+  TestAnchorEvaluator anchor_evaluator(/* result */ LayoutUnit(60.0));
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  EXPECT_FLOAT_EQ(60.0f, ConvertPx(data, "anchor(--a left)", right));
+  EXPECT_FLOAT_EQ(2.0f, ConvertPx(data, "calc(anchor(--a left) / 30)", right));
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorFunctionFallback) {
+  TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  EXPECT_FLOAT_EQ(42.0f, ConvertPx(data, "anchor(--a left, 42px)", right));
+  EXPECT_FLOAT_EQ(
+      52.0f, ConvertPx(data, "anchor(--a left, calc(42px + 10px))", right));
+  EXPECT_FLOAT_EQ(10.0f,
+                  ConvertPx(data, "anchor(--a left, min(42px, 10px))", right));
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunction) {
+  TestAnchorEvaluator anchor_evaluator(/* result */ LayoutUnit(60.0));
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID width = CSSPropertyID::kWidth;
+
+  EXPECT_FLOAT_EQ(60.0f, ConvertPx(data, "anchor-size(width)", width));
+  EXPECT_FLOAT_EQ(60.0f, ConvertPx(data, "anchor-size(--a width)", width));
+  EXPECT_FLOAT_EQ(2.0f,
+                  ConvertPx(data, "calc(anchor-size(--a width) / 30)", width));
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorSizeFunctionFallback) {
+  TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID width = CSSPropertyID::kWidth;
+
+  EXPECT_FLOAT_EQ(42.0f,
+                  ConvertPx(data, "anchor-size(--a width, 42px)", width));
+  EXPECT_FLOAT_EQ(
+      52.0f,
+      ConvertPx(data, "anchor-size(--a width, calc(42px + 10px))", width));
+  EXPECT_FLOAT_EQ(
+      10.0f, ConvertPx(data, "anchor-size(--a width, min(42px, 10px))", width));
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorWithinOtherFunction) {
+  TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  EXPECT_FLOAT_EQ(
+      42.0f, ConvertPx(data, "calc(anchor(--a left, 10px) + 32px)", right));
+  EXPECT_EQ(ConvertLength(data, "calc(10px + 42%)", right),
+            ConvertLength(data, "calc(anchor(--a left, 10px) + 42%)", right));
+  EXPECT_EQ(ConvertLength(data, "calc(0px + 42%)", right),
+            ConvertLength(data, "calc(anchor(--a left, 0px) + 42%)", right));
+  EXPECT_EQ(ConvertLength(data, "min(10px, 42%)", right),
+            ConvertLength(data, "min(anchor(--a left, 10px), 42%)", right));
+  EXPECT_EQ(ConvertLength(data, "min(10px, 42%)", right),
+            ConvertLength(data, "min(anchor(--a left, 10px), 42%)", right));
+  EXPECT_FLOAT_EQ(
+      10.0f,
+      ConvertLength(data, "min(anchor(--a left, 10px), 42px)", right).Pixels());
+  // TODO(crbug.com/326088870): This result is to be expected from the current
+  // implementation, but it's not consistent with what you get if you specify
+  // min(10%, 42%) directly (52%).
+  EXPECT_EQ("min(10%, 42%)",
+            CSSPrimitiveValue::CreateFromLength(
+                ConvertLength(data, "min(anchor(--a left, 10%), 42%)", right),
+                /* zoom */ 1.0f)
+                ->CssText());
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorFunctionPercentageFallback) {
+  TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  EXPECT_EQ("42%", CSSPrimitiveValue::CreateFromLength(
+                       ConvertLength(data, "anchor(--a left, 42%)", right),
+                       /* zoom */ 1.0f)
+                       ->CssText());
+  EXPECT_EQ("52%",
+            CSSPrimitiveValue::CreateFromLength(
+                ConvertLength(data, "anchor(--a left, calc(42% + 10%))", right),
+                /* zoom */ 1.0f)
+                ->CssText());
+  EXPECT_EQ("10%",
+            CSSPrimitiveValue::CreateFromLength(
+                ConvertLength(data, "anchor(--a left, min(42%, 10%))", right),
+                /* zoom */ 1.0f)
+                ->CssText());
+}
+
+TEST_F(CSSToLengthConversionDataTest,
+       AnchorFunctionPercentageFallbackNotTaken) {
+  TestAnchorEvaluator anchor_evaluator(/* result */ LayoutUnit(60.0));
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  // TODO(crbug.com/326088870): This result is probably not what we want.
+  EXPECT_EQ("calc(60px)",
+            CSSPrimitiveValue::CreateFromLength(
+                ConvertLength(data, "anchor(--a left, 42%)", right),
+                /* zoom */ 1.0f)
+                ->CssText());
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorFunctionFallbackNullEvaluator) {
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = nullptr});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  EXPECT_FLOAT_EQ(42.0f, ConvertPx(data, "anchor(--a right, 42px)", right));
+}
+
+TEST_F(CSSToLengthConversionDataTest, AnchorFunctionLengthPercentageFallback) {
+  TestAnchorEvaluator anchor_evaluator(/* result */ std::nullopt);
+  CSSToLengthConversionData data =
+      ConversionData({.anchor_evaluator = &anchor_evaluator});
+
+  CSSPropertyID right = CSSPropertyID::kRight;
+
+  EXPECT_EQ(ConvertLength(data, "calc(10px + 42%)", right),
+            ConvertLength(data, "anchor(--a left, calc(10px + 42%))", right));
+  EXPECT_EQ(ConvertLength(data, "min(10px, 42%)", right),
+            ConvertLength(data, "anchor(--a left, min(10px, 42%))", right));
+}
+
+TEST_F(CSSToLengthConversionDataTest, ContainerUnitsWithContainerName) {
+  auto* container = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "322px");
+  container->SetInlineStyleProperty(CSSPropertyID::kHeight, "228px");
+  container->SetInlineStyleProperty(CSSPropertyID::kContainerName,
+                                    "root_container");
+  container->SetInlineStyleProperty(CSSPropertyID::kContainerType, "size");
+  auto* child = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->AppendChild(container);
+  container->AppendChild(child);
+  UpdateAllLifecyclePhasesForTest();
+
+  CSSToLengthConversionData::Flags flags = 0;
+  CSSToLengthConversionData length_resolver(
+      child->ComputedStyleRef(), GetDocument().body()->GetComputedStyle(),
+      GetDocument().documentElement()->GetComputedStyle(),
+      CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
+      CSSToLengthConversionData::ContainerSizes(child),
+      CSSToLengthConversionData::AnchorData(
+          nullptr,
+          /* position_anchor */ nullptr,
+          /* position_area_offsets */ std::nullopt),
+      child->GetComputedStyle()->EffectiveZoom(), flags);
+
+  ScopedCSSName* name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("root_container"), nullptr);
+  EXPECT_EQ(length_resolver.ContainerWidth(*name), 322);
+  EXPECT_EQ(length_resolver.ContainerHeight(*name), 228);
 }
 
 }  // namespace blink

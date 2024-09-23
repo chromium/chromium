@@ -36,6 +36,7 @@
 #include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
 #include "url/url_constants.h"
 
@@ -161,6 +162,13 @@ class MetricsWebContentsObserverTest
             std::string(), mojom::LargestContentfulPaintTiming::New()));
   }
 
+  void SimulateCustomUserTimingUpdate(
+      const mojom::CustomUserTimingMark& custom_timing,
+      content::RenderFrameHost* render_frame_host) {
+    observer()->OnCustomUserTimingUpdated(render_frame_host,
+                                          custom_timing.Clone());
+  }
+
   virtual std::unique_ptr<TestMetricsWebContentsObserverEmbedder>
   CreateEmbedder() {
     return std::make_unique<TestMetricsWebContentsObserverEmbedder>();
@@ -218,6 +226,10 @@ class MetricsWebContentsObserverTest
       const {
     return embedder_interface_->updated_subframe_timings();
   }
+  const std::vector<mojom::CustomUserTimingMarkPtr>&
+  updated_custom_user_timings() const {
+    return embedder_interface_->updated_custom_user_timings();
+  }
   int CountCompleteTimingReported() { return complete_timings().size(); }
   int CountUpdatedTimingReported() { return updated_timings().size(); }
   int CountUpdatedCpuTimingReported() { return updated_cpu_timings().size(); }
@@ -226,6 +238,9 @@ class MetricsWebContentsObserverTest
   }
   int CountOnBackForwardCacheEntered() const {
     return embedder_interface_->count_on_enter_back_forward_cache();
+  }
+  int CountUpdatedCustomUserTimingReported() {
+    return embedder_interface_->updated_custom_user_timings().size();
   }
 
   const std::vector<GURL>& observed_committed_urls_from_on_start() const {
@@ -453,7 +468,7 @@ TEST_F(MetricsWebContentsObserverTest, DontLogIrrelevantNavigation) {
 TEST_F(MetricsWebContentsObserverTest, EmptyTimingError) {
   // Page load timing errors are not being reported when the error occurs for a
   // page that gets preserved in the back/forward cache.
-  // TODO(https://crbug.com/1294103): Fix this.
+  // TODO(crbug.com/40213776): Fix this.
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   mojom::PageLoadTiming timing;
@@ -481,7 +496,7 @@ TEST_F(MetricsWebContentsObserverTest, EmptyTimingError) {
 TEST_F(MetricsWebContentsObserverTest, NullNavigationStartError) {
   // Page load timing errors are not being reported when the error occurs for a
   // page that gets preserved in the back/forward cache.
-  // TODO(https://crbug.com/1294103): Fix this.
+  // TODO(crbug.com/40213776): Fix this.
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   mojom::PageLoadTiming timing;
@@ -510,7 +525,7 @@ TEST_F(MetricsWebContentsObserverTest, NullNavigationStartError) {
 TEST_F(MetricsWebContentsObserverTest, TimingOrderError) {
   // Page load timing errors are not being reported when the error occurs for a
   // page that gets preserved in the back/forward cache.
-  // TODO(https://crbug.com/1294103): Fix this.
+  // TODO(crbug.com/40213776): Fix this.
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
   mojom::PageLoadTiming timing;
@@ -1126,6 +1141,21 @@ TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsageNoObserver) {
                    blink::mojom::WebFeature::kFormAttribute});
 }
 
+TEST_F(MetricsWebContentsObserverTest, CustomUserTiming) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL(kDefaultTestUrl));
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+
+  mojom::CustomUserTimingMark custom_timing;
+  custom_timing.mark_name = "fake_custom_mark";
+  custom_timing.start_time = base::Milliseconds(1000);
+
+  SimulateCustomUserTimingUpdate(custom_timing, rfh);
+  ASSERT_EQ(1, CountUpdatedCustomUserTimingReported());
+  EXPECT_TRUE(custom_timing.Equals(*updated_custom_user_timings().back()));
+  CheckNoErrorEvents();
+}
+
 class MetricsWebContentsObserverBackForwardCacheTest
     : public MetricsWebContentsObserverTest,
       public content::WebContentsDelegate {
@@ -1167,7 +1197,10 @@ class MetricsWebContentsObserverBackForwardCacheTest
   }
 
   // content::WebContentsDelegate:
-  bool IsBackForwardCacheSupported() override { return true; }
+  bool IsBackForwardCacheSupported(
+      content::WebContents& web_contents) override {
+    return true;
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;

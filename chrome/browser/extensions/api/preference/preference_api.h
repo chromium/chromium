@@ -28,6 +28,7 @@
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/common/extension_id.h"
 #endif
 
 class PrefService;
@@ -125,7 +126,7 @@ class PreferenceAPI : public BrowserContextKeyedAPI,
   friend class BrowserContextKeyedAPIFactory<PreferenceAPI>;
 
   // ContentSettingsStore::Observer implementation.
-  void OnContentSettingChanged(const std::string& extension_id,
+  void OnContentSettingChanged(const ExtensionId& extension_id,
                                bool incognito) override;
 
   // Clears incognito session-only content settings for all extensions.

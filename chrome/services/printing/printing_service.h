@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_PRINTING_PRINTING_SERVICE_H_
 #define CHROME_SERVICES_PRINTING_PRINTING_SERVICE_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
@@ -12,11 +13,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 namespace discardable_memory {
 class ClientDiscardableSharedMemoryManager;
 }
-#endif
 
 namespace printing {
 
@@ -42,19 +41,13 @@ class PrintingService : public mojom::PrintingService {
   void BindPdfFlattener(
       mojo::PendingReceiver<mojom::PdfFlattener> receiver) override;
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void BindPdfThumbnailer(
-      mojo::PendingReceiver<mojom::PdfThumbnailer> receiver) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_WIN)
   void BindPdfToEmfConverterFactory(
       mojo::PendingReceiver<mojom::PdfToEmfConverterFactory> receiver) override;
-#endif  // BUILDFLAG(IS_WIN)
+#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
   mojo::Receiver<mojom::PrintingService> receiver_;
 };
 

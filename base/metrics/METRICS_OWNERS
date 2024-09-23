@@ -1,0 +1,17 @@
+# These are fallback owners for approving changes to metrics infrastructure,
+# as well as fallback metrics reviewers.
+#
+# Prefer to send reviews to chromium-metrics-reviews@google.com over sending
+# anything directly to owners listed here.
+#
+# Reference this file instead of base/metrics/OWNERS for metrics declaration
+# files, which should also "set noparent" to require a metrics review (and
+# provide more specific owners to prefer).
+asvitkine@chromium.org #{LAST_RESORT_SUGGESTION}
+caitlinfischer@google.com #{LAST_RESORT_SUGGESTION}
+holte@chromium.org #{LAST_RESORT_SUGGESTION}
+isherman@chromium.org #{LAST_RESORT_SUGGESTION}
+lucnguyen@google.com #{LAST_RESORT_SUGGESTION}
+mpearson@chromium.org #{LAST_RESORT_SUGGESTION}
+rkaplow@chromium.org #{LAST_RESORT_SUGGESTION}
+rogerm@chromium.org #{LAST_RESORT_SUGGESTION}

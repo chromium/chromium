@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <map>
-#include <optional>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/unguessable_token.h"
@@ -170,7 +170,7 @@ class ServiceWorkerDevToolsManager {
 
   // Clients may retain agent host for the terminated shared worker,
   // and we reconnect them when shared worker is restarted.
-  base::flat_set<ServiceWorkerDevToolsAgentHost*> stopped_hosts_;
+  base::flat_set<raw_ptr<ServiceWorkerDevToolsAgentHost>> stopped_hosts_;
 };
 
 }  // namespace content

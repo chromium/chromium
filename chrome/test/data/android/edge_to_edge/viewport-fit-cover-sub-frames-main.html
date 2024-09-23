@@ -1,0 +1,94 @@
+<html><head>
+  <meta charset="utf-8">
+  <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>safe area</title>
+  <style>
+    :not(:root):fullscreen::backdrop {
+        background: rgba(0, 0, 50, 0.5);
+    }
+    iframe {
+  position: absolute;
+  top: 8px;
+  z-index: 1;
+}
+#dvh {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100dvw;
+  height: 100dvh;
+  align-content: center;
+  text-align: center;
+  font-size: 48px;
+}
+
+#safe-left {
+  height: env(safe-area-inset-left, 0);
+}
+
+#safe-bottom {
+  height: env(safe-area-inset-bottom, 0);
+}
+
+body {
+  height: 300vh;
+}
+
+body::backdrop {
+    background: white;
+}
+
+#positioned-bottom {
+  position: fixed;
+  bottom: env(safe-area-inset-bottom, 0);
+  border: 2px solid blue;
+  left: 8px;
+}
+
+#positioned-left {
+  position: fixed;
+  left: env(safe-area-inset-left, 0);
+  border: 2px solid red;
+  top: 200px;
+}
+  </style>
+</head>
+<body>
+  <div id="dvh">
+    <div id="info">dvh = 1454px<br>safe = 0px<br></div>
+    <button id="fullscreen-main" onclick="requestFullscreen()">Fullscreen</button>
+  </div>
+  <iframe allow="fullscreen" src="./viewport-fit-cover-sub-frames-inner.html"></iframe>
+  <div id="safe-left"></div>
+  <div id="safe-bottom"></div>
+  <div id="positioned-left">Avoids SAI left</div>
+  <div id="positioned-bottom">Avoids SAI bottom</div>
+
+<script>
+const sources = ['dvh', 'safe-left', 'safe-bottom'].map(id => document.getElementById(id));
+
+function update() {
+  requestAnimationFrame(update);
+  let result = '';
+  for (const source of sources) {
+    result += `${source.id} = ${source.clientHeight}px<br>`;
+  }
+  document.getElementById('info').innerHTML = result;
+}
+requestAnimationFrame(update);
+
+function requestFullscreen() {
+
+    // Get the element that we want to take into fullscreen mode
+    var elem = document.body;
+
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+      elem.msRequestFullscreen();
+    }
+}
+</script>
+</body></html>

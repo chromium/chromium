@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/preload_check_group.h"
+
 #include <memory>
 #include <vector>
 
-#include "base/test/task_environment.h"
-#include "extensions/browser/preload_check_group.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/preload_check_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +52,7 @@ class PreloadCheckGroupTest : public testing::Test {
 
  private:
   // Required for the asynchronous tests.
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 // Tests multiple succeeding checks.
@@ -100,9 +101,12 @@ TEST_F(PreloadCheckGroupTest, FailFast) {
   runner_.Run(check_group_.get());
 
   // After the first check fails, the remaining checks should not be started.
-  EXPECT_TRUE(runner_.called());
   EXPECT_TRUE(checks_[0]->started());
   EXPECT_FALSE(checks_[1]->started());
+
+  // The callback of PreloadCheckGroup is called aynchronously.
+  runner_.WaitForComplete();
+  EXPECT_TRUE(runner_.called());
   EXPECT_THAT(runner_.errors(),
               testing::UnorderedElementsAre(kDummyError1, kDummyError2));
 }

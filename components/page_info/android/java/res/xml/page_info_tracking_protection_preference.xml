@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="cookie_summary"
+        android:layout="@layout/page_info_summary" />
+
+    <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
+        android:key="storage_in_use" />
+
+    <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
+        android:key="rws_in_use"
+        app:allowDividerBelow="true" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="tpc_title"
+        android:layout="@layout/page_info_title"
+        app:allowDividerAbove="true" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="tpc_summary"
+        android:layout="@layout/page_info_summary"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="tp_switch"
+        android:persistent="false"
+        android:title="@string/page_info_cookies_third_party_cookies_label"
+        app:allowDividerAbove="false" />
+
+</PreferenceScreen>

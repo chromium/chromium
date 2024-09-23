@@ -13,8 +13,6 @@ include_rules = [
   "+ui/base/ui_base_features.h",
   "+ui/ios",
   "+ui/linux",
-
-  "-testing/gmock",
 ]
 
 specific_include_rules = {

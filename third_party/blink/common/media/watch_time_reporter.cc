@@ -5,8 +5,8 @@
 #include "third_party/blink/public/common/media/watch_time_reporter.h"
 
 #include <numeric>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,9 +21,12 @@ namespace blink {
 constexpr gfx::Size kMinimumVideoSize = gfx::Size(200, 140);
 
 static bool IsOnBatteryPower() {
-  if (base::PowerMonitor::IsInitialized())
-    return base::PowerMonitor::IsOnBatteryPower();
-  return false;
+  auto* power_monitor = base::PowerMonitor::GetInstance();
+  if (!power_monitor->IsInitialized()) {
+    return false;
+  }
+  return power_monitor->GetBatteryPowerStatus() ==
+         base::PowerStateObserver::BatteryPowerStatus::kBatteryPower;
 }
 
 // Helper function for managing property changes. If the watch time timer is
@@ -96,7 +99,7 @@ WatchTimeReporter::WatchTimeReporter(
   if (is_muted_)
     DCHECK_EQ(volume_, 1.0);
 
-  base::PowerMonitor::AddPowerStateObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerStateObserver(this);
 
   provider->AcquireWatchTimeRecorder(properties_->Clone(),
                                      recorder_.BindNewPipeAndPassReceiver());
@@ -146,7 +149,7 @@ WatchTimeReporter::~WatchTimeReporter() {
   // This is our last chance, so finalize now if there's anything remaining.
   in_shutdown_ = true;
   MaybeFinalizeWatchTime(FinalizeTime::IMMEDIATELY);
-  base::PowerMonitor::RemovePowerStateObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
 }
 
 void WatchTimeReporter::OnPlaying() {
@@ -345,8 +348,12 @@ void WatchTimeReporter::OnDurationChanged(base::TimeDelta duration) {
     muted_reporter_->OnDurationChanged(duration);
 }
 
-void WatchTimeReporter::OnPowerStateChange(bool on_battery_power) {
-  if (HandlePropertyChange<bool>(on_battery_power, reporting_timer_.IsRunning(),
+void WatchTimeReporter::OnBatteryPowerStatusChange(
+    base::PowerStateObserver::BatteryPowerStatus battery_power_status) {
+  bool battery_power =
+      (battery_power_status ==
+       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
+  if (HandlePropertyChange<bool>(battery_power, reporting_timer_.IsRunning(),
                                  power_component_.get()) ==
       PropertyAction::kFinalizeRequired) {
     RestartTimerForHysteresis();
@@ -494,7 +501,7 @@ void WatchTimeReporter::RecordWatchTime() {
       }
     }
 
-    base::EraseIf(pending_underflow_events_, [](const UnderflowEvent& ufe) {
+    std::erase_if(pending_underflow_events_, [](const UnderflowEvent& ufe) {
       return ufe.reported && ufe.duration != media::kNoTimestamp;
     });
 

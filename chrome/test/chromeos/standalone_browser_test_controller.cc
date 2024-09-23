@@ -8,18 +8,25 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/values_test_util.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/ui/webui/print_preview/extension_printer_service_provider_lacros.h"
+#include "chrome/browser/ui/webui/print_preview/printer_handler.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -82,7 +89,7 @@ void IsolatedWebAppInstallationDone(
 }
 
 void OnIsolatedWebAppUrlInfoCreated(
-    const web_app::IsolatedWebAppLocation& iwa_location,
+    const web_app::IsolatedWebAppInstallSource& install_source,
     StandaloneBrowserTestController::InstallIsolatedWebAppCallback callback,
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string>
         iwa_url_info_expected) {
@@ -92,14 +99,79 @@ void OnIsolatedWebAppUrlInfoCreated(
             crosapi::mojom::InstallWebAppResult::NewErrorMessage(error));
       });
 
+  if (!install_source.source().dev_mode()) {
+    web_app::AddTrustedWebBundleIdForTesting(iwa_url_info.web_bundle_id());
+  }
+
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   provider->scheduler().InstallIsolatedWebApp(
-      iwa_url_info, iwa_location, /*expected_version=*/std::nullopt,
+      iwa_url_info, install_source, /*expected_version=*/std::nullopt,
       /*optional_keep_alive=*/nullptr, /*optional_profile_keep_alive=*/nullptr,
       base::BindOnce(&IsolatedWebAppInstallationDone, iwa_url_info.app_id(),
                      std::move(callback)));
 }
+
+class FakeExtensionPrinterHandler : public printing::PrinterHandler {
+ public:
+  FakeExtensionPrinterHandler() = default;
+  FakeExtensionPrinterHandler(const FakeExtensionPrinterHandler&) = delete;
+  FakeExtensionPrinterHandler& operator=(const FakeExtensionPrinterHandler&) =
+      delete;
+  ~FakeExtensionPrinterHandler() override = default;
+
+  void Reset() override {}
+
+  void StartGetPrinters(AddedPrintersCallback added_printers_callback,
+                        GetPrintersDoneCallback done_callback) override {
+    added_printers_callback.Run(base::test::ParseJsonList(R"(
+      [ {
+        "description": "A virtual printer for testing",
+        "extensionId": "jbljdigmdjodgkcllikhggoepmmffbam",
+        "extensionName": "Test Printer Provider",
+        "id": "jbljdigmdjodgkcllikhggoepmmffbam:test-printer-01",
+        "name": "Test Printer 01"
+      }, {
+        "description": "A virtual printer for testing",
+        "extensionId": "jbljdigmdjodgkcllikhggoepmmffbam",
+        "extensionName": "Test Printer Provider",
+        "id": "jbljdigmdjodgkcllikhggoepmmffbam:test-printer-02",
+        "name": "Test Printer 02"
+      } ]
+    )"));
+    std::move(done_callback).Run();
+  }
+
+  void StartGetCapability(const std::string& destination_id,
+                          GetCapabilityCallback callback) override {
+    std::move(callback).Run(base::test::ParseJsonDict(R"(
+    {
+      "version": "1.0",
+      "printer": {
+        "supported_content_type": [
+          {"content_type": "application/pdf"}
+        ]
+      }
+    })"));
+  }
+
+  void StartGrantPrinterAccess(const std::string& printer_id,
+                               GetPrinterInfoCallback callback) override {
+    base::Value::Dict printer_info;
+    printer_info.Set("printerId", printer_id);
+    printer_info.Set("name", "Test Printer 01");
+
+    std::move(callback).Run(std::move(printer_info));
+  }
+
+  void StartPrint(const std::u16string& job_title,
+                  base::Value::Dict settings,
+                  scoped_refptr<base::RefCountedMemory> print_data,
+                  PrintCallback callback) override {
+    // Simulate a successful print job. "OK" means successful.
+    std::move(callback).Run(base::Value("OK"));
+  }
+};
 
 }  // namespace
 
@@ -133,8 +205,9 @@ class StandaloneBrowserTestController::LacrosUtteranceEventDelegate
     client_->OnTtsEvent(tts_crosapi_util::ToMojo(event_type), char_index,
                         char_length, error_message);
 
-    if (utterance->IsFinished())
+    if (utterance->IsFinished()) {
       controller_->OnUtteranceFinished(utterance->GetId());
+    }
     // Note: |this| is deleted if utterance->IsFinished().
   }
 
@@ -158,14 +231,14 @@ void StandaloneBrowserTestController::InstallWebApp(
     const std::string& start_url,
     apps::WindowMode window_mode,
     InstallWebAppCallback callback) {
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
+  auto info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(start_url));
   info->title = u"Test Web App";
-  info->start_url = GURL(start_url);
   info->display_mode = WindowModeToDisplayMode(window_mode);
   info->user_display_mode = WindowModeToUserDisplayMode(window_mode);
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  provider->scheduler().InstallFromInfo(
+  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::SYNC,
@@ -217,6 +290,18 @@ void StandaloneBrowserTestController::OnDomMessageQueueReady() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void StandaloneBrowserTestController::InstallComponentExtension(
+    const std::string& path,
+    const std::string& extension_id,
+    InstallComponentExtensionCallback callback) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  extensions::ExtensionService* service =
+      extensions::ExtensionSystem::Get(profile)->extension_service();
+  service->component_loader()->AddComponentFromDirWithManifestFilename(
+      base::FilePath(path), extension_id, extensions::kManifestFilename,
+      extensions::kManifestFilename, std::move(callback));
+}
+
 void StandaloneBrowserTestController::RemoveComponentExtension(
     const std::string& extension_id,
     RemoveComponentExtensionCallback callback) {
@@ -255,8 +340,9 @@ void StandaloneBrowserTestController::GetTtsVoices(
       ProfileManager::GetActiveUserProfile(), GURL(), &voices);
 
   std::vector<crosapi::mojom::TtsVoicePtr> mojo_voices;
-  for (const auto& voice : voices)
+  for (const auto& voice : voices) {
     mojo_voices.push_back(tts_crosapi_util::ToMojo(voice));
+  }
 
   std::move(callback).Run(std::move(mojo_voices));
 }
@@ -283,15 +369,16 @@ void StandaloneBrowserTestController::InstallSubApp(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     parent_app_id}));
 
-  auto info = std::make_unique<web_app::WebAppInstallInfo>();
-  info->start_url = parent_app_url.Resolve(sub_app_path);
+  GURL start_url = parent_app_url.Resolve(sub_app_path);
+  auto info =
+      web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
   info->parent_app_id = parent_app_id;
   info->parent_app_manifest_id = parent_app_url;
   info->title = u"Sub App";
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  provider->scheduler().InstallFromInfo(
+  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
       std::move(info),
       /*overwrite_existing_manifest_fields=*/false,
       webapps::WebappInstallSource::SUB_APP,
@@ -303,23 +390,29 @@ void StandaloneBrowserTestController::InstallIsolatedWebApp(
     crosapi::mojom::IsolatedWebAppLocationPtr location,
     bool dev_mode,
     InstallIsolatedWebAppCallback callback) {
-  web_app::IsolatedWebAppLocation iwa_location_location;
-  if (dev_mode) {
-    if (location->is_bundle_path()) {
-      iwa_location_location = web_app::DevModeBundle{
-          .path = base::FilePath(location->get_bundle_path())};
+  web_app::IsolatedWebAppInstallSource install_source = ([&]() {
+    if (dev_mode) {
+      if (location->is_bundle_path()) {
+        return web_app::IsolatedWebAppInstallSource::FromDevUi(
+            web_app::IwaSourceBundleDevModeWithFileOp(
+                base::FilePath(location->get_bundle_path()),
+                web_app::IwaSourceBundleDevFileOp::kCopy));
+      } else {
+        return web_app::IsolatedWebAppInstallSource::FromDevUi(
+            web_app::IwaSourceProxy(
+                url::Origin::Create(location->get_proxy_origin())));
+      }
     } else {
-      iwa_location_location = web_app::DevModeProxy{
-          .proxy_url = url::Origin::Create(location->get_proxy_origin())};
+      return web_app::IsolatedWebAppInstallSource::FromGraphicalInstaller(
+          web_app::IwaSourceBundleProdModeWithFileOp(
+              base::FilePath(location->get_bundle_path()),
+              web_app::IwaSourceBundleProdFileOp::kCopy));
     }
-  } else {
-    iwa_location_location = web_app::InstalledBundle{
-        .path = base::FilePath(location->get_bundle_path())};
-  }
+  })();
 
-  web_app::IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
-      iwa_location_location,
-      base::BindOnce(&OnIsolatedWebAppUrlInfoCreated, iwa_location_location,
+  web_app::IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
+      install_source.source(),
+      base::BindOnce(&OnIsolatedWebAppUrlInfoCreated, install_source,
                      std::move(callback)));
 }
 
@@ -367,6 +460,17 @@ void StandaloneBrowserTestController::SetWebAppInstallForceListPref(
   std::move(callback).Run(/*success=*/true);
 }
 
+// Uses a fake extension printer handler to process printing requests from ash
+// browser tests.
+void StandaloneBrowserTestController::SetFakeExtensionPrinterHandler(
+    SetFakeExtensionPrinterHandlerCallback callback) {
+  printing::ExtensionPrinterServiceProviderLacros::GetForBrowserContext(
+      ProfileManager::GetPrimaryUserProfile())
+      ->SetPrinterHandlerForTesting(
+          std::make_unique<FakeExtensionPrinterHandler>());
+  std::move(callback).Run();
+}
+
 void StandaloneBrowserTestController::OnUtteranceFinished(int utterance_id) {
   // Delete the utterace event delegate object when the utterance is finished.
   lacros_utterance_event_delegates_.erase(utterance_id);
@@ -388,11 +492,13 @@ void StandaloneBrowserTestController::GetExtensionKeeplist(
         std::string(id));
   }
 
-  for (const auto& id : extensions::GetExtensionsRunInOSOnly())
+  for (const auto& id : extensions::GetExtensionsRunInOSOnly()) {
     mojo_keeplist->extensions_run_in_os_only.push_back(std::string(id));
+  }
 
-  for (const auto& id : extensions::GetExtensionAppsRunInOSOnly())
+  for (const auto& id : extensions::GetExtensionAppsRunInOSOnly()) {
     mojo_keeplist->extension_apps_run_in_os_only.push_back(std::string(id));
+  }
 
   std::move(callback).Run(std::move(mojo_keeplist));
 }

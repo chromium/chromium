@@ -6,28 +6,27 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CONSTANTS_H_
 
 namespace autofill {
-//TODO(crbug.com/1500345) replace char[] with std::string_view
 
 // Contains constants specific to the payments Autofill used in the browser
 // process.
 
 // Credit card issuer ids. These are server-generated values that must be
 // consistent between server and client.
-inline constexpr char kAmexCardIssuerId[] = "amex";
-inline constexpr char kAnzCardIssuerId[] = "anz";
-inline constexpr char kCapitalOneCardIssuerId[] = "capitalone";
-inline constexpr char kChaseCardIssuerId[] = "chase";
-inline constexpr char kCitiCardIssuerId[] = "citi";
-inline constexpr char kDiscoverCardIssuerId[] = "discover";
-inline constexpr char kLloydsCardIssuerId[] = "lloyds";
-inline constexpr char kMarqetaCardIssuerId[] = "marqeta";
-inline constexpr char kNabCardIssuerId[] = "nab";
-inline constexpr char kNatwestCardIssuerId[] = "natwest";
+inline constexpr std::string_view kAmexCardIssuerId = "amex";
+inline constexpr std::string_view kAnzCardIssuerId = "anz";
+inline constexpr std::string_view kCapitalOneCardIssuerId = "capitalone";
+inline constexpr std::string_view kChaseCardIssuerId = "chase";
+inline constexpr std::string_view kCitiCardIssuerId = "citi";
+inline constexpr std::string_view kDiscoverCardIssuerId = "discover";
+inline constexpr std::string_view kLloydsCardIssuerId = "lloyds";
+inline constexpr std::string_view kMarqetaCardIssuerId = "marqeta";
+inline constexpr std::string_view kNabCardIssuerId = "nab";
+inline constexpr std::string_view kNatwestCardIssuerId = "natwest";
 
 // The urls to the static card art images used by Capital One cards.
-inline constexpr char kCapitalOneCardArtUrl[] =
+inline constexpr std::string_view kCapitalOneCardArtUrl =
     "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png";
-inline constexpr char kCapitalOneLargeCardArtUrl[] =
+inline constexpr std::string_view kCapitalOneLargeCardArtUrl =
     "https://www.gstatic.com/autofill/virtualcard/icon/capitalone_40_24.png";
 
 }  // namespace autofill

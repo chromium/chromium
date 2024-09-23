@@ -212,7 +212,7 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
 
 // Checks that dragging a regular tab and dropping it in the pinned view moves
 // it in the pinned view.
-// TODO(crbug.com/1493679): Test is flaky on simluator. Re-enable the test.
+// TODO(crbug.com/40285917): Test is flaky on simluator. Re-enable the test.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testDragRegularTabInPinnedView \
   FLAKY_testDragRegularTabInPinnedView
@@ -265,7 +265,7 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
   }
-  // TODO(crbug.com/1464519): Failing on iOS17, and iOS15.5 for
+  // TODO(crbug.com/40923015): Failing on iOS17, and iOS15.5 for
   // ios-simulator-noncq.
   XCTSkip(@"Failing on iOS17 and iOS15.5");
 

@@ -43,7 +43,7 @@ aura::Window* TestKeyboardUIFactory::TestKeyboardUI::LoadKeyboardWindow(
   // Set a default size for the keyboard.
   display::Screen* screen = display::Screen::GetScreen();
   window_->SetBounds(
-      KeyboardBoundsFromRootBounds(screen->GetPrimaryDisplay().bounds()));
+      test::KeyboardBoundsFromRootBounds(screen->GetPrimaryDisplay().bounds()));
 
   // Simulate an asynchronous load.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,

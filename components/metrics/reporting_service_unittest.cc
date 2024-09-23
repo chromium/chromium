@@ -9,6 +9,7 @@
 #include <deque>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
@@ -72,7 +73,7 @@ class TestLogStore : public LogStore {
       staged_log_hash_ = base::SHA1HashString(logs_.front().log);
     }
   }
-  void DiscardStagedLog(base::StringPiece reason) override {
+  void DiscardStagedLog(std::string_view reason) override {
     if (!has_staged_log())
       return;
     logs_.pop_front();
@@ -110,7 +111,7 @@ class TestReportingService : public ReportingService {
   LogStore* log_store() override { return &log_store_; }
   GURL GetUploadUrl() const override { return GURL(kTestUploadUrl); }
   GURL GetInsecureUploadUrl() const override { return GURL(kTestUploadUrl); }
-  base::StringPiece upload_mime_type() const override { return kTestMimeType; }
+  std::string_view upload_mime_type() const override { return kTestMimeType; }
   MetricsLogUploader::MetricServiceType service_type() const override {
     return MetricsLogUploader::MetricServiceType::UMA;
   }

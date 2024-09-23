@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/common/signatures.h"
+
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -12,23 +14,23 @@ namespace autofill {
 
 TEST(SignaturesTest, StripDigits) {
   FormData actual_form;
-  actual_form.url = GURL("http://foo.com");
-  actual_form.name = u"form_name_12345";
+  actual_form.set_url(GURL("http://foo.com"));
+  actual_form.set_name(u"form_name_12345");
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
-  field1.name = u"field_name_12345";
-  actual_form.fields.push_back(field1);
+  field1.set_form_control_type(FormControlType::kInputText);
+  field1.set_name(u"field_name_12345");
+  test_api(actual_form).Append(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
-  field2.name = u"field_name_1234";
-  actual_form.fields.push_back(field2);
+  field2.set_form_control_type(FormControlType::kInputText);
+  field2.set_name(u"field_name_1234");
+  test_api(actual_form).Append(field2);
 
   // Sequences of 5 digits or longer should be stripped.
   FormData expected_form(actual_form);
-  expected_form.name = u"form_name_";
-  expected_form.fields[0].name = u"field_name_";
+  expected_form.set_name(u"form_name_");
+  test_api(expected_form).field(0).set_name(u"field_name_");
 
   EXPECT_EQ(CalculateFormSignature(expected_form).value(),
             CalculateFormSignature(actual_form).value());
@@ -39,23 +41,23 @@ TEST(SignaturesTest, StripDigits) {
 
 TEST(SignaturesTest, AlternativeFormSignatureLarge) {
   FormData large_form;
-  large_form.url = GURL("http://foo.com/login?q=a#ref");
+  large_form.set_url(GURL("http://foo.com/login?q=a#ref"));
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
-  large_form.fields.push_back(field1);
+  field1.set_form_control_type(FormControlType::kInputText);
+  test_api(large_form).Append(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
-  large_form.fields.push_back(field2);
+  field2.set_form_control_type(FormControlType::kInputText);
+  test_api(large_form).Append(field2);
 
   FormFieldData field3;
-  field3.form_control_type = FormControlType::kInputEmail;
-  large_form.fields.push_back(field3);
+  field3.set_form_control_type(FormControlType::kInputEmail);
+  test_api(large_form).Append(field3);
 
   FormFieldData field4;
-  field4.form_control_type = FormControlType::kInputTelephone;
-  large_form.fields.push_back(field4);
+  field4.set_form_control_type(FormControlType::kInputTelephone);
+  test_api(large_form).Append(field4);
 
   // Alternative form signature string of a form with more than two fields
   // should only concatenate scheme, host, and field types.
@@ -65,15 +67,15 @@ TEST(SignaturesTest, AlternativeFormSignatureLarge) {
 
 TEST(SignaturesTest, AlternativeFormSignatureSmallPath) {
   FormData small_form_path;
-  small_form_path.url = GURL("http://foo.com/login?q=a#ref");
+  small_form_path.set_url(GURL("http://foo.com/login?q=a#ref"));
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
-  small_form_path.fields.push_back(field1);
+  field1.set_form_control_type(FormControlType::kInputText);
+  test_api(small_form_path).Append(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
-  small_form_path.fields.push_back(field2);
+  field2.set_form_control_type(FormControlType::kInputText);
+  test_api(small_form_path).Append(field2);
 
   // Alternative form signature string of a form with 2 fields or less should
   // concatenate scheme, host, field types, and path if it is non-empty.
@@ -83,15 +85,15 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallPath) {
 
 TEST(SignaturesTest, AlternativeFormSignatureSmallRef) {
   FormData small_form_ref;
-  small_form_ref.url = GURL("http://foo.com?q=a#ref");
+  small_form_ref.set_url(GURL("http://foo.com?q=a#ref"));
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
-  small_form_ref.fields.push_back(field1);
+  field1.set_form_control_type(FormControlType::kInputText);
+  test_api(small_form_ref).Append(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
-  small_form_ref.fields.push_back(field2);
+  field2.set_form_control_type(FormControlType::kInputText);
+  test_api(small_form_ref).Append(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
   // without a path should concatenate scheme, host, field types, and reference
@@ -102,15 +104,15 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallRef) {
 
 TEST(SignaturesTest, AlternativeFormSignatureSmallQuery) {
   FormData small_form_query;
-  small_form_query.url = GURL("http://foo.com?q=a");
+  small_form_query.set_url(GURL("http://foo.com?q=a"));
 
   FormFieldData field1;
-  field1.form_control_type = FormControlType::kInputText;
-  small_form_query.fields.push_back(field1);
+  field1.set_form_control_type(FormControlType::kInputText);
+  test_api(small_form_query).Append(field1);
 
   FormFieldData field2;
-  field2.form_control_type = FormControlType::kInputText;
-  small_form_query.fields.push_back(field2);
+  field2.set_form_control_type(FormControlType::kInputText);
+  test_api(small_form_query).Append(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
   // without a path or reference should concatenate scheme, host, field types,

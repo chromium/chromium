@@ -5,11 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_V8_CANVAS_STYLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_V8_CANVAS_STYLE_H_
 
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-value.h"
+
+namespace v8 {
+class Isolate;
+}  // namespace v8
 
 namespace blink {
 

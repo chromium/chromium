@@ -11,8 +11,10 @@
 #include "base/values.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -24,6 +26,7 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
@@ -286,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
   auto extension = CreateDummyExtension();
   extensions::AppWindow::CreateParams params;
   params.frame = extensions::AppWindow::FRAME_NONE;
-  params.state = ui::SHOW_STATE_MAXIMIZED;
+  params.state = ui::mojom::WindowShowState::kMaximized;
   extensions::AppWindow* app_window =
       CreateAppWindowFromParams(browser()->profile(), extension.get(), params);
 
@@ -312,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
   auto extension = CreateDummyExtension();
   extensions::AppWindow::CreateParams params;
   params.frame = extensions::AppWindow::FRAME_NONE;
-  params.state = ui::SHOW_STATE_MAXIMIZED;
+  params.state = ui::mojom::WindowShowState::kMaximized;
   extensions::AppWindow* app_window =
       CreateAppWindowFromParams(browser()->profile(), extension.get(), params);
 

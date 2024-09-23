@@ -9,7 +9,7 @@
 
 // The agent that kicks off the migration of passwords created in the credential
 // provider to the password manager.
-@interface CredentialProviderAppAgent : SceneObservingAppAgent
+@interface CredentialProviderMigratorAppAgent : SceneObservingAppAgent
 @end
 
 #endif  // IOS_CHROME_APP_CREDENTIAL_PROVIDER_MIGRATOR_APP_AGENT_H_

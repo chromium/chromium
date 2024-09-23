@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Point} from './constants.js';
+import {FormFieldFocusType} from './constants.js';
 import type {PinchEventDetail} from './gesture_detector.js';
 import {GestureDetector} from './gesture_detector.js';
 import type {SwipeDirection} from './swipe_detector.js';
 import {SwipeDetector} from './swipe_detector.js';
-import type {ViewportInterface} from './viewport_scroller.js';
-import {ViewportScroller} from './viewport_scroller.js';
 
 interface InProcessPdfPluginElement extends HTMLEmbedElement {
   postMessage(message: any): void;
@@ -26,37 +24,18 @@ if (parentOrigin === 'chrome-untrusted://print') {
   parentOrigin = 'chrome://print';
 }
 
-/**
- * {@link Viewport}-compatible wrapper around the window's scroll position
- * operations.
- */
-class SimulatedViewport implements ViewportInterface {
-  get position(): Point {
-    return {x: window.scrollX, y: window.scrollY};
-  }
-
-  setPosition(point: Point): void {
-    window.scrollTo(point.x, point.y);
-  }
-}
-const viewportScroller =
-    new ViewportScroller(new SimulatedViewport(), plugin, window);
-
 // Plugin-to-parent message handlers. All messages are passed through, but some
 // messages may affect this frame, too.
-let isFormFieldFocused = false;
+let isFormFieldFocused: boolean = false;
 plugin.addEventListener('message', e => {
   const message = (e as MessageEvent).data;
   switch (message.type) {
     case 'formFocusChange':
-      // TODO(crbug.com/1279516): Ideally, the plugin would just consume
+      // TODO(crbug.com/40810904): Ideally, the plugin would just consume
       // interesting keyboard events first.
-      isFormFieldFocused = (message as {focused: boolean}).focused;
-      break;
-
-    case 'setIsSelecting':
-      viewportScroller.setEnableScrolling(
-          (message as {isSelecting: boolean}).isSelecting);
+      isFormFieldFocused =
+          (message as {focused: FormFieldFocusType}).focused !==
+          FormFieldFocusType.NONE;
       break;
   }
 
@@ -93,7 +72,7 @@ channel.port1.onmessage = e => {
       break;
 
     case 'syncScrollToRemote':
-      // TODO(crbug.com/1306236): Implement smooth scrolling correctly.
+      // TODO(crbug.com/40218278): Implement smooth scrolling correctly.
       window.scrollTo({
         left: e.data.x,
         top: e.data.y,
@@ -113,7 +92,7 @@ channel.port1.onmessage = e => {
     case 'viewport':
       // Snoop on "viewport" message to support real RTL scrolling in Print
       // Preview.
-      // TODO(crbug.com/1158670): Support real RTL scrolling in the PDF viewer.
+      // TODO(crbug.com/40737077): Support real RTL scrolling in the PDF viewer.
       if (parentOrigin === 'chrome://print' && e.data.layoutOptions) {
         switch (e.data.layoutOptions.direction) {
           case 1:
@@ -253,7 +232,7 @@ document.addEventListener('keydown', e => {
 });
 
 // Suppress extra scroll by preventing the default "keypress" handler for Space.
-// TODO(crbug.com/1279429): Ideally would prevent "keydown" instead, but this
+// TODO(crbug.com/40208546): Ideally would prevent "keydown" instead, but this
 // doesn't work when a plugin element has focus.
 document.addEventListener('keypress', e => {
   switch (e.key) {
@@ -266,7 +245,7 @@ document.addEventListener('keypress', e => {
   }
 });
 
-// TODO(crbug.com/1252096): Load from pdf_viewer_utils.js instead.
+// TODO(crbug.com/40792950): Load from pdf_viewer_utils.js instead.
 function hasCtrlModifier(e: KeyboardEvent): boolean {
   let hasModifier = e.ctrlKey;
   // <if expr="is_macosx">
@@ -275,7 +254,7 @@ function hasCtrlModifier(e: KeyboardEvent): boolean {
   return hasModifier;
 }
 
-// TODO(crbug.com/1252096): Load from pdf_viewer_utils.js instead.
+// TODO(crbug.com/40792950): Load from pdf_viewer_utils.js instead.
 function hasCtrlModifierOnly(e: KeyboardEvent): boolean {
   let metaModifier = e.metaKey;
   // <if expr="is_macosx">
@@ -284,7 +263,7 @@ function hasCtrlModifierOnly(e: KeyboardEvent): boolean {
   return hasCtrlModifier(e) && !e.shiftKey && !e.altKey && !metaModifier;
 }
 
-// TODO(crbug.com/1252096): Load from chrome://resources/js/util.js instead.
+// TODO(crbug.com/40792950): Load from chrome://resources/js/util.js instead.
 function hasKeyModifiers(e: KeyboardEvent): boolean {
   return !!(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey);
 }

@@ -4,6 +4,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -16,6 +17,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -221,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                                        image_url_without_host_permissions));
 
   // Disallowed due to COEP: require-corp.
-  // TODO(crbug.com/1246109): Should host permissions override behavior here?
+  // TODO(crbug.com/40789023): Should host permissions override behavior here?
   EXPECT_EQ("Load failed",
             test_image_load(coep_strict_background_render_frame_host,
                             image_url_with_host_permissions));
@@ -371,9 +373,10 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
   }
 
   // Finally make some extension API calls to ensure both cross-origin-isolated
-  // and non-cross-origin-isolated extension contexts are considered "blessed".
+  // and non-cross-origin-isolated extension contexts are considered
+  // "privileged".
   {
-    auto verify_is_blessed_context = [](content::RenderFrameHost* host) {
+    auto verify_is_privileged_context = [](content::RenderFrameHost* host) {
       const char* kScript = R"(
         new Promise(resolve => {
           chrome.browserAction.getTitle({}, title => {
@@ -385,12 +388,14 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, WebAccessibleFrame) {
     };
 
     {
-      SCOPED_TRACE("Verifying coi extension background is a blessed context.");
-      verify_is_blessed_context(coi_background_render_frame_host);
+      SCOPED_TRACE(
+          "Verifying coi extension background is a privileged context.");
+      verify_is_privileged_context(coi_background_render_frame_host);
     }
     {
-      SCOPED_TRACE("Verifying non-coi extension iframe is a blessed context.");
-      verify_is_blessed_context(extension_iframe);
+      SCOPED_TRACE(
+          "Verifying non-coi extension iframe is a privileged context.");
+      verify_is_privileged_context(extension_iframe);
     }
   }
 }
@@ -704,8 +709,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
-  // Load an extension which has one resource that is web accessible and one
-  // that is not.
+  // Load an extension that has one web accessible resource.
   TestExtensionDir extension_dir;
   static constexpr char kManifestStub[] = R"({
     "name": "Test",
@@ -713,15 +717,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
     "manifest_version": 3,
     "web_accessible_resources": [
       {
-        "resources": [ "web_accessible_resource.html" ],
+        "resources": [ "accessible_resource.html" ],
         "matches": [ "<all_urls>" ]
       }
     ]
   })";
   extension_dir.WriteManifest(kManifestStub);
-  extension_dir.WriteFile(FILE_PATH_LITERAL("web_accessible_resource.html"),
-                          "");
-  extension_dir.WriteFile(FILE_PATH_LITERAL("extension_resource.html"), "");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("accessible_resource.html"), "");
+  extension_dir.WriteFile(FILE_PATH_LITERAL("inaccessible_resource.html"), "");
   const Extension* extension = LoadExtension(extension_dir.UnpackedPath());
   EXPECT_TRUE(extension);
 
@@ -739,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
 
     // Navigate the iframe with a renderer initiated navigation to a web
     // accessible resource. This should succeed.
-    GURL target = extension->GetResourceURL("web_accessible_resource.html");
+    GURL target = extension->GetResourceURL("accessible_resource.html");
     content::TestNavigationObserver nav_observer(web_contents);
     EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test", target));
     nav_observer.Wait();
@@ -751,6 +754,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
 
   // Prevent navigation from a web frame to a non-web accessible resource.
   {
+    GURL invalid_request_url = GURL(kExtensionInvalidRequestURL);
+    net::Error err_blocked_by_client = net::ERR_BLOCKED_BY_CLIENT;
+
     // Navigate the main frame with a renderer initiated navigation to a blank
     // web page. This should succeed.
     const GURL gurl = embedded_test_server()->GetURL("/iframe_blank.html");
@@ -760,17 +766,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
     content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
     content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);
     EXPECT_TRUE(iframe);
-    GURL target = extension->GetResourceURL("extension_resource.html");
 
     // Navigate the iframe with a renderer initiated navigation to an extension
     // resource that isn't a web accessible resource. This should be blocked.
+    GURL target = extension->GetResourceURL("inaccessible_resource.html");
     content::TestNavigationObserver nav_observer(web_contents);
     EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test", target));
     nav_observer.Wait();
     EXPECT_FALSE(nav_observer.last_navigation_succeeded());
-    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
-    EXPECT_EQ(GURL("chrome-extension://invalid/"),
-              iframe->GetLastCommittedURL());
+    EXPECT_EQ(err_blocked_by_client, nav_observer.last_net_error_code());
+    EXPECT_EQ(invalid_request_url, iframe->GetLastCommittedURL());
 
     // Navigate the iframe with a browser initiated navigation to an extension
     // resource. This should be blocked because the origin is not opaque, as
@@ -778,12 +783,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
     content::TestNavigationObserver reload_observer(web_contents);
     EXPECT_TRUE(iframe->Reload());
     reload_observer.Wait();
-    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
-              reload_observer.last_net_error_code());
+    EXPECT_EQ(err_blocked_by_client, reload_observer.last_net_error_code());
     iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
-    EXPECT_EQ(GURL("chrome-extension://invalid/"),
-              iframe->GetLastCommittedURL());
+    EXPECT_EQ(invalid_request_url, iframe->GetLastCommittedURL());
 
     // Verify iframe browser initiated navigation (to test real UI behavior).
     iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
@@ -795,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
     browser_initiated_observer.WatchExistingWebContents();
     ui_test_utils::NavigateToURL(&params);
     browser_initiated_observer.Wait();
-    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+    EXPECT_EQ(err_blocked_by_client,
               browser_initiated_observer.last_net_error_code());
     EXPECT_FALSE(browser_initiated_observer.last_navigation_succeeded());
     iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);

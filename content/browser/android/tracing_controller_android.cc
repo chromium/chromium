@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
-#include "content/public/android/content_main_dex_jni/TracingControllerAndroidImpl_jni.h"
 #include "content/public/browser/tracing_controller.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
@@ -22,6 +21,9 @@
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/common/trace_stats.gen.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_main_dex_jni/TracingControllerAndroidImpl_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -74,7 +76,9 @@ static jlong JNI_TracingControllerAndroidImpl_Init(
   return reinterpret_cast<intptr_t>(profiler);
 }
 
-TracingControllerAndroid::TracingControllerAndroid(JNIEnv* env, jobject obj)
+TracingControllerAndroid::TracingControllerAndroid(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj)
     : weak_java_object_(env, obj) {}
 
 TracingControllerAndroid::~TracingControllerAndroid() {}
@@ -203,7 +207,8 @@ void TracingControllerAndroid::OnKnownCategoriesReceived(
                           &received_category_list);
 
   // This log is required by adb_profile_chrome.py.
-  // TODO(crbug.com/898816): Replace (users of) this with DevTools' Tracing API.
+  // TODO(crbug.com/40092856): Replace (users of) this with DevTools' Tracing
+  // API.
   LOG(WARNING) << "{\"traceCategoriesList\": " << received_category_list << "}";
 
   JNIEnv* env = base::android::AttachCurrentThread();

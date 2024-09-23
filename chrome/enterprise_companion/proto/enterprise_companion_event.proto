@@ -1,0 +1,49 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package enterprise_companion.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Canonical view of statuses used across the application. Statuses are defined
+// by spaces and codes, which are defined by the EnterpriseCompanionStatus type
+// in the app. Space zero indicates success.
+message Status {
+  // Indicates the status space for the code. Status spaces are defined in
+  // chromium-src in enterprise_companion_status.h. Any non-zero value indicates
+  // an error space.
+  int32 space = 1;
+  // Indicates the type of status, any non-zero value indicates an error.
+  int32 code = 2;
+}
+
+message BrowserEnrollmentEvent {}
+
+message PolicyFetchEvent {}
+
+message PolicyFreshnessEvent {
+  // The age of each policy residing in the on-disk cache as measured by the
+  // system's clock.
+  repeated int64 policy_age_ms = 1;
+}
+
+message EnterpriseCompanionEvent {
+  // The outcome of the operation.
+  Status status = 1;
+  // The duration of the operation in milliseconds.
+  int64 duration_ms = 2;
+
+  oneof event {
+    BrowserEnrollmentEvent browser_enrollment_event = 3;
+    PolicyFetchEvent policy_fetch_event = 4;
+    PolicyFreshnessEvent policy_freshness_event = 5;
+  }
+}
+
+// The message to serialize and include in the log request.
+message ChromeEnterpriseCompanionAppExtension {
+  repeated EnterpriseCompanionEvent event = 1;
+}

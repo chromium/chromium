@@ -220,10 +220,13 @@ CaptureModeSettingsView::CaptureModeSettingsView(
         contents()->AddChildView(std::make_unique<views::Separator>());
     separator_3_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
 
+    const bool custom_folder_managed_by_policy =
+        controller->IsCustomFolderManagedByPolicy();
     save_to_menu_group_ =
         contents()->AddChildView(std::make_unique<CaptureModeMenuGroup>(
             this, kCaptureModeFolderIcon,
-            l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO)));
+            l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO),
+            /*managed=*/custom_folder_managed_by_policy));
     save_to_menu_group_->AddOption(
         /*option_icon=*/nullptr,
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DOWNLOADS),
@@ -232,8 +235,8 @@ CaptureModeSettingsView::CaptureModeSettingsView(
         base::BindRepeating(
             &CaptureModeSettingsView::OnSelectFolderMenuItemPressed,
             base::Unretained(this)),
-        l10n_util::GetStringUTF16(
-            IDS_ASH_SCREEN_CAPTURE_SAVE_TO_SELECT_FOLDER));
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_SELECT_FOLDER),
+        /*enabled=*/!custom_folder_managed_by_policy);
   }
 
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
@@ -292,6 +295,9 @@ void CaptureModeSettingsView::OnCaptureFolderMayHaveChanged() {
   } else if (controller->IsLinuxFilesPath(custom_path)) {
     folder_name =
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_LINUX_FILES);
+  } else if (controller->IsRootOneDriveFilesPath(custom_path)) {
+    folder_name =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_ONE_DRIVE);
   }
 
   save_to_menu_group_->AddOrUpdateExistingOption(
@@ -357,14 +363,14 @@ void CaptureModeSettingsView::OnOptionSelected(int option_id) const {
       controller->SetUsesDefaultCaptureFolder(false);
       break;
     case kCameraOff:
-      camera_controller->SetSelectedCamera(CameraId());
+      camera_controller->SetSelectedCamera(CameraId(), /*by_user=*/true);
       break;
     default:
       DCHECK(!camera_controller->IsCameraDisabledByPolicy());
       DCHECK_GE(option_id, kCameraDevicesBegin);
       const CameraId* camera_id = FindCameraIdByOptionId(option_id);
       DCHECK(camera_id);
-      camera_controller->SetSelectedCamera(*camera_id);
+      camera_controller->SetSelectedCamera(*camera_id, /*by_user=*/true);
       break;
   }
 }
@@ -374,6 +380,10 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
   auto* camera_controller = controller->camera_controller();
   const auto effective_audio_mode =
       controller->GetEffectiveAudioRecordingMode();
+  const bool is_custom_folder =
+      !GetCurrentCaptureFolder().is_default_downloads_folder &&
+      (controller->IsCustomFolderManagedByPolicy() ||
+       is_custom_folder_available_.value_or(false));
   switch (option_id) {
     case kAudioOff:
       return effective_audio_mode == AudioRecordingMode::kOff;
@@ -384,11 +394,9 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
     case kAudioSystemAndMicrophone:
       return effective_audio_mode == AudioRecordingMode::kSystemAndMicrophone;
     case kDownloadsFolder:
-      return GetCurrentCaptureFolder().is_default_downloads_folder ||
-             !is_custom_folder_available_.value_or(false);
+      return !is_custom_folder;
     case kCustomFolder:
-      return !GetCurrentCaptureFolder().is_default_downloads_folder &&
-             is_custom_folder_available_.value_or(false);
+      return is_custom_folder;
     case kCameraOff:
       return !camera_controller->selected_camera().is_valid();
     default:
@@ -401,8 +409,9 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
 }
 
 bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
+  auto* controller = CaptureModeController::Get();
   const bool audio_capture_managed_by_policy =
-      CaptureModeController::Get()->IsAudioCaptureDisabledByPolicy();
+      controller->IsAudioCaptureDisabledByPolicy();
   switch (option_id) {
     case kAudioOff:
       return !audio_capture_managed_by_policy &&
@@ -413,14 +422,15 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
     case kAudioSystemAndMicrophone:
       return !audio_capture_managed_by_policy;
     case kCustomFolder:
-      return is_custom_folder_available_.value_or(false);
+      return is_custom_folder_available_.value_or(false) ||
+             controller->IsCustomFolderManagedByPolicy();
     case kCameraOff: {
-      auto* camera_controller =
-          CaptureModeController::Get()->camera_controller();
+      auto* camera_controller = controller->camera_controller();
       DCHECK(camera_controller);
       return !camera_controller->IsCameraDisabledByPolicy();
     }
     case kDownloadsFolder:
+      return !controller->IsCustomFolderManagedByPolicy();
     default:
       return true;
   }

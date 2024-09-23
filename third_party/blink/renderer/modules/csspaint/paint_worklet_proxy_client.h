@@ -36,7 +36,6 @@ class MODULES_EXPORT PaintWorkletProxyClient
     : public GarbageCollected<PaintWorkletProxyClient>,
       public Supplement<WorkerClients>,
       public PaintWorkletPainter {
-
  public:
   // blink::Supplement hook to retrieve the PaintWorkletProxyClient for a given
   // WorkerClients.
@@ -124,6 +123,7 @@ class MODULES_EXPORT PaintWorkletProxyClient
   //
   // PaintWorkletPaintDispatcher is only accessed on the compositor, so we store
   // a base::SingleThreadTaskRunner to post to it.
+  // Both are null during tests
   base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue_;
 

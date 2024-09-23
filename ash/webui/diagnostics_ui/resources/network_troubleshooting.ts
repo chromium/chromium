@@ -16,8 +16,8 @@ const NetworkTroubleshootingElementBase = I18nMixin(PolymerElement);
 
 export class NetworkTroubleshootingElement extends
     NetworkTroubleshootingElementBase {
-  static get is(): string {
-    return 'network-troubleshooting';
+  static get is(): 'network-troubleshooting' {
+    return 'network-troubleshooting' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -26,10 +26,7 @@ export class NetworkTroubleshootingElement extends
 
   static get properties(): PolymerElementProperties {
     return {
-      isLoggedIn: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('isLoggedIn'),
-      },
+      isLoggedIn: {type: Boolean},
 
       troubleshootingInfo: {
         type: Object,
@@ -38,7 +35,7 @@ export class NetworkTroubleshootingElement extends
   }
 
   troubleshootingInfo: TroubleshootingInfo;
-  protected isLoggedIn: boolean;
+  protected isLoggedIn: boolean = loadTimeData.getBoolean('isLoggedIn');
 
   protected onLinkTextClicked(): void {
     window.open(this.troubleshootingInfo.url);
@@ -47,7 +44,7 @@ export class NetworkTroubleshootingElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'network-troubleshooting': NetworkTroubleshootingElement;
+    [NetworkTroubleshootingElement.is]: NetworkTroubleshootingElement;
   }
 }
 

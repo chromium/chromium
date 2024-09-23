@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -68,8 +69,13 @@ base::OnceClosure GpuMemoryBufferImplNativePixmap::AllocateForTesting(
                ->CreateNativePixmap(gfx::kNullAcceleratedWidget, nullptr, size,
                                     format, usage);
   if (!pixmap) {
-    // TODO(j.isorce): use gbm_bo_create / gbm_bo_get_fd from system libgbm.
-    NOTIMPLEMENTED();
+    // https://crrev.com/c/5348599
+    // In some format + usage combination the pixmap may be null. For example,
+    // YUV_420_BIPLANAR + SCANOUT_CAMERA_READ_WRITE may fail to allocate because
+    // only some of platform supports that.
+    LOG(WARNING) << "Failed to allocate pixmap "
+                 << gfx::BufferFormatToString(format) << " + "
+                 << gfx::BufferUsageToString(usage);
   } else {
     handle->native_pixmap_handle = pixmap->ExportHandle();
     handle->type = gfx::NATIVE_PIXMAP;
@@ -85,8 +91,15 @@ bool GpuMemoryBufferImplNativePixmap::Map() {
   if (map_count_++)
     return true;
 
-  DCHECK_EQ(gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()),
-            pixmap_->GetNumberOfPlanes());
+  if (gfx::NumberOfPlanesForLinearBufferFormat(GetFormat()) !=
+      pixmap_->GetNumberOfPlanes()) {
+    // RGBX8888 and BGR_565 allocates 2 planes while the gfx function returns 1
+    LOG(WARNING) << "Mismatched plane count "
+                 << gfx::BufferFormatToString(GetFormat()) << " expected "
+                 << gfx::NumberOfPlanesForLinearBufferFormat(GetFormat())
+                 << " value " << pixmap_->GetNumberOfPlanes();
+  }
+
   if (!pixmap_->Map()) {
     --map_count_;
     return false;

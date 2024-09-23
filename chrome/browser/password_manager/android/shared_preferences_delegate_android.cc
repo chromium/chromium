@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/shared_preferences_delegate_android.h"
-#include "base/android/shared_preferences/shared_preferences_manager.h"
 
+#include "base/android/shared_preferences/shared_preferences_manager.h"
 #include "chrome/browser/preferences/android/chrome_shared_preferences.h"
 
 namespace {

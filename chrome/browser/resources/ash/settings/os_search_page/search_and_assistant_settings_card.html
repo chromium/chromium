@@ -3,6 +3,15 @@
     --cr-icon-button-margin-end: 16px;
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
+
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  #magic-boost-banner {
+    margin-inline-end: 20px;
+    margin-inline-start: 12px;
+  }
 </style>
 
 <settings-card header-text="$i18n{osSearchPageTitle}">
@@ -45,4 +54,51 @@
         learn-more-url="$i18n{suggestedContentLearnMoreURL}">
     </settings-toggle-button>
   </template>
+
+  <!--TODO(b:337868408) learn more link for magicboost-->
+  <template is="dom-if" if="[[isMagicBoostFeatureEnabled_]]">
+    <settings-toggle-button id="magicBoostToggle"
+        class="hr"
+        icon="[[rowIcons_.magicBoost]]"
+        pref="{{prefs.settings.magic_boost_enabled}}"
+        label="$i18n{enableMagicBoost}"
+        sub-label="$i18n{enableMagicBoostDesc}"
+        deep-link-focus-id$="[[Setting.kMagicBoostOnOff]]"
+        >
+    </settings-toggle-button>
+    <template is="dom-if" if="[[isMagicBoostNoticeBannerVisible_]]">
+      <div class="sub-item" id="magic-boost-banner">
+        <magic-boost-review-terms-banner
+          description="$i18n{magicBoostReviewTermsBannerDescription}"
+          button-label="$i18n{magicBoostReviewTermsButtonLabel}">
+        </magic-boost-review-terms-banner>
+      </div>
+    </template>
+    <iron-collapse opened="[[prefs.settings.magic_boost_enabled.value]]"
+        id="magicBoostCollapse">
+      <div class="sub-item">
+        <settings-toggle-button id="helpMeReadToggle"
+            class="hr"
+            icon="[[rowIcons_.helpMeRead]]"
+            pref="{{prefs.settings.mahi_enabled}}"
+            label="$i18n{enableHelpMeRead}"
+            sub-label="$i18n{enableHelpMeReadDesc}"
+            deep-link-focus-id$="[[Setting.kMahiOnOff]]"
+            learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
+        </settings-toggle-button>
+      </div>
+      <div class="sub-item">
+        <settings-toggle-button id="helpMeWriteToggle"
+            class="hr"
+            icon="[[rowIcons_.helpMeWrite]]"
+            pref="{{prefs.assistive_input.orca_enabled}}"
+            label="$i18n{enableHelpMeWrite}"
+            sub-label="$i18n{enableHelpMeWriteDesc}"
+            deep-link-focus-id$="[[Setting.kShowOrca]]"
+            learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
+        </settings-toggle-button>
+      </div>
+    </iron-collapse>
+  </template>
+
 </settings-card>

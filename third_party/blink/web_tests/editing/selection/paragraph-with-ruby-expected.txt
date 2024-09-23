@@ -1,6 +1,6 @@
 This is the paragraph before.
 
-This paragraph contains an annotatedannotation word.
+This paragraph contains an annotated annotation word.
 
 This is the paragraph after.
 

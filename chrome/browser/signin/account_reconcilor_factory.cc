@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/user_manager.h"
@@ -77,7 +77,7 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
         // 60 seconds is enough to cover about 99% of all reconcile cases.
         return base::Seconds(60);
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         return MirrorAccountReconcilorDelegate::GetReconcileTimeout();
     }
   }
@@ -121,7 +121,7 @@ AccountReconcilorFactory::AccountReconcilorFactory()
           "AccountReconcilor",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
@@ -170,6 +170,7 @@ void AccountReconcilorFactory::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kForceLogoutUnauthenticatedUserEnabled,
                                 false);
 #endif
+  AccountReconcilor::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -219,11 +220,11 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
           IdentityManagerFactory::GetForProfile(profile),
           ChromeSigninClientFactory::GetForProfile(profile));
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nullptr;
 #endif
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }

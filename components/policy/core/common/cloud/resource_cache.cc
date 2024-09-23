@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/policy/core/common/cloud/resource_cache.h"
 
 #include "base/base64url.h"
@@ -25,7 +30,7 @@ bool Base64UrlEncode(const std::set<std::string>& input,
   output->clear();
   for (const auto& plain : input) {
     if (plain.empty()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       output->clear();
       return false;
     }
@@ -224,7 +229,7 @@ bool ResourceCache::VerifyKeyPath(const std::string& key,
                                   bool allow_create,
                                   base::FilePath* path) {
   if (key.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -242,7 +247,7 @@ bool ResourceCache::VerifyKeyPathAndGetSubkeyPath(const std::string& key,
                                                   const std::string& subkey,
                                                   base::FilePath* path) {
   if (subkey.empty()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -267,12 +272,20 @@ bool ResourceCache::WriteCacheFile(const base::FilePath& path,
                                    const std::string& data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(cache_dir_.IsParent(path));
-  bool success = DeleteCacheFile(path, false);
-  int size = base::checked_cast<int>(data.size());
-  int bytes_written = base::WriteFile(path, data.data(), size);
-  if (max_cache_size_.has_value())
-    current_cache_size_ += bytes_written;
-  return success && bytes_written == size;
+  bool success = DeleteCacheFile(path, /*recursive=*/false);
+  if (!success) {
+    return false;
+  }
+  if (base::WriteFile(path, data)) {
+    if (max_cache_size_.has_value()) {
+      current_cache_size_ += data.size();
+    }
+    return true;
+  } else {
+    // If we didn't write the entire file remove it.
+    DeleteCacheFile(path, /*recursive=*/false);
+  }
+  return false;
 }
 
 bool ResourceCache::DeleteCacheFile(const base::FilePath& path,

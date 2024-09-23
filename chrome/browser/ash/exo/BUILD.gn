@@ -1,0 +1,70 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("exo") {
+  sources = [
+    "chrome_data_exchange_delegate.cc",
+    "chrome_data_exchange_delegate.h",
+    "chrome_security_delegate.cc",
+    "chrome_security_delegate.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/borealis",
+    "//components/exo",
+    "//content/public/common",
+    "//ui/aura",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "chrome_data_exchange_delegate_unittest.cc",
+    "chrome_security_delegate_unittest.cc",
+  ]
+
+  deps = [
+    ":exo",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/bruschetta",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/plugin_vm",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ui/base",
+    "//components/exo",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/gfx",
+  ]
+}

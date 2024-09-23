@@ -46,7 +46,7 @@ void TraceEventAnalyzerTest::OnTraceDataCollected(
     base::WaitableEvent* flush_complete_event,
     const scoped_refptr<base::RefCountedString>& json_events_str,
     bool has_more_events) {
-  buffer_.AddFragment(json_events_str->data());
+  buffer_.AddFragment(json_events_str->as_string());
   if (!has_more_events)
     flush_complete_event->Signal();
 }
@@ -406,55 +406,6 @@ TEST_F(TraceEventAnalyzerTest, StringPattern) {
   EXPECT_STREQ("no match", found[0]->name.c_str());
 }
 
-// Test that duration queries work. (BEGIN/END events aren't emitted by
-// Perfetto.)
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-TEST_F(TraceEventAnalyzerTest, BeginEndDuration) {
-  ManualSetUp();
-
-  const base::TimeDelta kSleepTime = base::Milliseconds(200);
-  // We will search for events that have a duration of greater than 90% of the
-  // sleep time, so that there is no flakiness.
-  int64_t duration_cutoff_us = (kSleepTime.InMicroseconds() * 9) / 10;
-
-  BeginTracing();
-  {
-    TRACE_EVENT_BEGIN0("cat1", "name1"); // found by duration query
-    TRACE_EVENT_BEGIN0("noise", "name2"); // not searched for, just noise
-    {
-      TRACE_EVENT_BEGIN0("cat2", "name3"); // found by duration query
-      // next event not searched for, just noise
-      TRACE_EVENT_INSTANT0("noise", "name4", TRACE_EVENT_SCOPE_THREAD);
-      base::PlatformThread::Sleep(kSleepTime);
-      TRACE_EVENT_BEGIN0("cat2", "name5"); // not found (duration too short)
-      TRACE_EVENT_END0("cat2", "name5"); // not found (duration too short)
-      TRACE_EVENT_END0("cat2", "name3"); // found by duration query
-    }
-    TRACE_EVENT_END0("noise", "name2"); // not searched for, just noise
-    TRACE_EVENT_END0("cat1", "name1"); // found by duration query
-  }
-  EndTracing();
-
-  std::unique_ptr<TraceAnalyzer> analyzer(
-      TraceAnalyzer::Create(output_.json_output));
-  ASSERT_TRUE(analyzer.get());
-  analyzer->AssociateBeginEndEvents();
-
-  TraceEventVector found;
-  analyzer->FindEvents(
-      Query::MatchBeginWithEnd() &&
-      Query::EventDuration() >
-          Query::Int(static_cast<int>(duration_cutoff_us)) &&
-      (Query::EventCategory() == Query::String("cat1") ||
-       Query::EventCategory() == Query::String("cat2") ||
-       Query::EventCategory() == Query::String("cat3")),
-      &found);
-  ASSERT_EQ(2u, found.size());
-  EXPECT_STREQ("name1", found[0]->name.c_str());
-  EXPECT_STREQ("name3", found[1]->name.c_str());
-}
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
 // Test that duration queries work.
 TEST_F(TraceEventAnalyzerTest, CompleteDuration) {
   ManualSetUp();
@@ -495,63 +446,6 @@ TEST_F(TraceEventAnalyzerTest, CompleteDuration) {
   EXPECT_STREQ("name1", found[0]->name.c_str());
   EXPECT_STREQ("name3", found[1]->name.c_str());
 }
-
-// Test AssociateBeginEndEvents. (BEGIN/END events aren't emitted by Perfetto.)
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-TEST_F(TraceEventAnalyzerTest, BeginEndAssocations) {
-  ManualSetUp();
-
-  BeginTracing();
-  {
-    TRACE_EVENT_END0("cat1", "name1"); // does not match out of order begin
-    TRACE_EVENT_BEGIN0("cat1", "name2");
-    TRACE_EVENT_INSTANT0("cat1", "name3", TRACE_EVENT_SCOPE_THREAD);
-    TRACE_EVENT_BEGIN0("cat1", "name1");
-    TRACE_EVENT_END0("cat1", "name2");
-  }
-  EndTracing();
-
-  std::unique_ptr<TraceAnalyzer> analyzer(
-      TraceAnalyzer::Create(output_.json_output));
-  ASSERT_TRUE(analyzer.get());
-  analyzer->AssociateBeginEndEvents();
-
-  TraceEventVector found;
-  analyzer->FindEvents(Query::MatchBeginWithEnd(), &found);
-  ASSERT_EQ(1u, found.size());
-  EXPECT_STREQ("name2", found[0]->name.c_str());
-}
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
-// Test MergeAssociatedEventArgs. (BEGIN/END events aren't emitted by Perfetto.)
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-TEST_F(TraceEventAnalyzerTest, MergeAssociatedEventArgs) {
-  ManualSetUp();
-
-  const char arg_string[] = "arg_string";
-  BeginTracing();
-  {
-    TRACE_EVENT_BEGIN0("cat1", "name1");
-    TRACE_EVENT_END1("cat1", "name1", "arg", arg_string);
-  }
-  EndTracing();
-
-  std::unique_ptr<TraceAnalyzer> analyzer(
-      TraceAnalyzer::Create(output_.json_output));
-  ASSERT_TRUE(analyzer.get());
-  analyzer->AssociateBeginEndEvents();
-
-  TraceEventVector found;
-  analyzer->FindEvents(Query::MatchBeginName("name1"), &found);
-  ASSERT_EQ(1u, found.size());
-  std::string arg_actual;
-  EXPECT_FALSE(found[0]->GetArgAsString("arg", &arg_actual));
-
-  analyzer->MergeAssociatedEventArgs();
-  EXPECT_TRUE(found[0]->GetArgAsString("arg", &arg_actual));
-  EXPECT_STREQ(arg_string, arg_actual.c_str());
-}
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // Test AssociateAsyncBeginEndEvents
 TEST_F(TraceEventAnalyzerTest, AsyncBeginEndAssocations) {
@@ -955,7 +849,7 @@ TEST_F(TraceEventAnalyzerTest, ComplexArgument) {
 
   ASSERT_TRUE(events[0]->HasDictArg("arg"));
   base::Value::Dict arg = events[0]->GetKnownArgAsDict("arg");
-  EXPECT_EQ(absl::optional<std::string>("value"),
+  EXPECT_EQ(std::optional<std::string>("value"),
             base::OptionalFromPtr(arg.FindString("property")));
 }
 

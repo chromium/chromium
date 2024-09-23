@@ -17,14 +17,14 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_run_on_os_login.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -85,7 +85,8 @@ void RunOnOsLoginSubManager::Configure(
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_run_on_os_login());
 
-  if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id)) {
+  if (provider_->registrar_unsafe().GetInstallState(app_id) !=
+      proto::INSTALLED_WITH_OS_INTEGRATION) {
     std::move(configure_done).Run();
     return;
   }
@@ -127,6 +128,8 @@ void RunOnOsLoginSubManager::Execute(
     return;
   }
 
+  CHECK_OS_INTEGRATION_ALLOWED();
+
   StartUnregistration(
       app_id, current_state, desired_state,
       base::BindOnce(&RunOnOsLoginSubManager::CreateShortcutInfoWithFavicons,
@@ -164,14 +167,6 @@ void RunOnOsLoginSubManager::StartUnregistration(
   if (!current_state.has_run_on_os_login()) {
     std::move(registration_callback).Run();
     return;
-  }
-
-  // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
-  //  OsIntegrationManager::Synchronize() is running fine.
-  if (!desired_state.has_run_on_os_login()) {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
-        RunOnOsLoginMode::kNotRun);
   }
 
   ResultCallback continue_to_registration =
@@ -218,13 +213,6 @@ void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
     base::OnceClosure execute_done,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
   DCHECK(ShouldTriggerRunOnOsLoginRegistration(desired_state));
-  // TODO(crbug.com/1401125): Remove once sub managers have been implemented and
-  //  OsIntegrationManager::Synchronize() is running fine.
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
-        RunOnOsLoginMode::kWindowed);
-  }
 
   ResultCallback record_metric_and_complete =
       base::BindOnce([](Result result) {
@@ -232,8 +220,7 @@ void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
                                   (result == Result::kOk));
       }).Then(std::move(execute_done));
 
-  ScheduleRegisterRunOnOsLogin(&provider_->sync_bridge_unsafe(),
-                               std::move(shortcut_info),
+  ScheduleRegisterRunOnOsLogin(std::move(shortcut_info),
                                std::move(record_metric_and_complete));
 }
 

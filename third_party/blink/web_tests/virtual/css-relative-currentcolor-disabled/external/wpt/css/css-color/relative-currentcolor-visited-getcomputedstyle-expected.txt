@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Property background-color value 'rgb(from currentcolor r g b)' should not leak :visited for computed style
+  assert_true: 'rgb(from currentcolor r g b)' is a supported value for background-color. expected true got false
+Harness: the test ran to completion.
+

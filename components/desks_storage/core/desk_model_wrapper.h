@@ -26,7 +26,7 @@ namespace desks_storage {
 // The DeskModelWrapper handles storage operations for chrome sync
 // desk templates and local storage save and recall desks backends.
 //
-// TODO(crbug.com/1323946): Add unittests for this class.
+// TODO(crbug.com/40224854): Add unittests for this class.
 class DeskModelWrapper : public DeskModel {
  public:
   DeskModelWrapper(desks_storage::DeskModel* save_and_recall_desks_model);

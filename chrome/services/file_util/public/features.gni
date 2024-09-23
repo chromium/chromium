@@ -9,7 +9,4 @@ declare_args() {
   # Currently only used by imageWriterPrivate extension API, so only enabled
   # when Extensions are enabled.
   enable_extractors = enable_extensions
-
-  # Enables analysis of Office documents for malicious macros
-  enable_maldoca = is_linux || is_win
 }

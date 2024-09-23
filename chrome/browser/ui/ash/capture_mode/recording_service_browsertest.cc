@@ -34,6 +34,7 @@
 #include "media/base/stream_parser.h"
 #include "media/formats/webm/webm_stream_parser.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -114,8 +115,7 @@ class WebmVerifier {
   // Parses the given |webm_file_content| and returns true on success.
   bool Verify(const std::string& webm_file_content) {
     if (!webm_parser_.AppendToParseBuffer(
-            reinterpret_cast<const uint8_t*>(webm_file_content.data()),
-            webm_file_content.size())) {
+            base::as_byte_span(webm_file_content))) {
       return false;
     }
 

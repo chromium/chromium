@@ -86,6 +86,17 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearDeviceManagementURL() {
   return *this;
 }
 
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetAppLogoURL(
+    const std::string& url) {
+  overrides_.Set(kDevOverrideKeyAppLogoUrl, url);
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearAppLogoURL() {
+  overrides_.Remove(kDevOverrideKeyAppLogoUrl);
+  return *this;
+}
+
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetUseCUP(bool use_cup) {
   overrides_.Set(kDevOverrideKeyUseCUP, use_cup);
   return *this;
@@ -226,6 +237,9 @@ bool ExternalConstantsBuilder::Modify() {
   if (!overrides_.contains(kDevOverrideKeyDeviceManagementUrl)) {
     SetDeviceManagementURL(
         verifier->DeviceManagementURL().possibly_invalid_spec());
+  }
+  if (!overrides_.contains(kDevOverrideKeyAppLogoUrl)) {
+    SetAppLogoURL(verifier->AppLogoURL().possibly_invalid_spec());
   }
   if (!overrides_.contains(kDevOverrideKeyUseCUP)) {
     SetUseCUP(verifier->UseCUP());

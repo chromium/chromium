@@ -54,23 +54,14 @@ void OAuthHttpFetcher::StartRequest(const GURL& url,
                                     FetchCompleteCallback callback) {
   CD_LOG(VERBOSE, Feature::FP) << __func__ << ": executing request to: " << url;
 
-  if (has_call_started_) {
-    CD_LOG(ERROR, Feature::FP)
-        << __func__
-        << ": Attempted to make an API call, but there is already a "
-           "request in progress.";
-    NOTREACHED();
-    return;
-  }
+  CHECK(!has_call_started_)
+      << __func__
+      << ": Attempted to make an API call, but there is already a "
+         "request in progress.";
 
-  signin::IdentityManager* identity_manager =
+  signin::IdentityManager* const identity_manager =
       QuickPairBrowserDelegate::Get()->GetIdentityManager();
-  if (!identity_manager) {
-    CD_LOG(ERROR, Feature::FP)
-        << __func__ << ": IdentityManager is not available.";
-    NOTREACHED();
-    return;
-  }
+  CHECK(identity_manager) << __func__ << ": IdentityManager is not available.";
 
   has_call_started_ = true;
   url_ = url;

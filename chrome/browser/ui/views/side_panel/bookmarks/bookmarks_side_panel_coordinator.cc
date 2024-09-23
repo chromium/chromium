@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -41,11 +40,6 @@ void BookmarksSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kBookmarks,
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE),
-      ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                         ? kBookmarksSidePanelRefreshIcon
-                                         : omnibox::kStarIcon,
-                                     ui::kColorIcon),
       base::BindRepeating(
           &BookmarksSidePanelCoordinator::CreateBookmarksWebView,
           base::Unretained(this))));
@@ -59,7 +53,6 @@ BookmarksSidePanelCoordinator::CreateBookmarksWebView() {
           std::make_unique<WebUIContentsWrapperT<BookmarksSidePanelUI>>(
               GURL(chrome::kChromeUIBookmarksSidePanelURL),
               GetBrowser().profile(), IDS_BOOKMARK_MANAGER_TITLE,
-              /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false));
   bookmarks_web_view->SetProperty(views::kElementIdentifierKey,
                                   kBookmarkSidePanelWebViewElementId);

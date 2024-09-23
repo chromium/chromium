@@ -25,7 +25,7 @@
           new TestRunner.Session(testRunner, event.params.sessionId);
       if (params.targetInfo.type === 'auction_worklet') {
         ++attachedWorklets;
-        if (attachedWorklets == 3)
+        if (attachedWorklets == 4)
           resolveWaitForThirdWorkletPromise();
         testRunner.log('  Bidder instrumentation breakpoint set attempted');
         targetSession.protocol.Debugger.enable();

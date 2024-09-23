@@ -11,10 +11,6 @@
   }
 
   a {
-    color: var(--cr-link-color);
-  }
-
-  :host-context([chrome-refresh-2023]) a {
     color: var(--color-compose-dialog-link);
   }
 
@@ -54,31 +50,17 @@
     min-width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: linear-gradient(
-        136deg,  rgb(211, 227, 253) 1.59%, rgb(231, 248, 237) 100%);
-    color: rgb(4, 30, 73);
+    background: linear-gradient(136deg,
+        var(--color-sys-gradient-primary) 1.59%,
+        var(--color-sys-gradient-tertiary) 100%);
+    color: var(--color-compose-dialog-logo);
     display: flex;
     justify-content: center;
     align-items: center;
     transform-origin: top left;
   }
 
-  @media (prefers-color-scheme: dark) {
-    #firstRunIconContainer {
-      background: linear-gradient(
-          136deg,  rgb(8, 66, 160) 1.59%, rgb(15, 82, 35) 100%);
-      color: rgb(194, 231, 255);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) #firstRunIconContainer {
-    background: linear-gradient(136deg,
-        var(--color-sys-gradient-primary) 1.59%,
-        var(--color-sys-gradient-tertiary) 100%);
-    color: var(--color-compose-dialog-logo);
-  }
-
-  #firstRunHeading iron-icon {
+  #firstRunHeading cr-icon {
     --iron-icon-width: 20px;
     --iron-icon-height: 20px;
   }
@@ -104,40 +86,6 @@
     padding: 0 20px;
   }
 
-  #savedStateDialog {
-    display: flex;
-    align-items: center;
-    min-width: 180px;
-    padding: 10px var(--padding_);
-  }
-
-  #savedStateIconContainer {
-    color: var(--cr-secondary-text-color);
-    margin-inline-end: var(--gap-between-sections_);
-    min-width: 22px;
-    height: 22px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform-origin: top left;
-  }
-
-  #savedStateIconContainer iron-icon {
-    --iron-icon-width: 20px;
-    --iron-icon-height: 20px;
-  }
-
-  #savedStateTextContainer {
-    color: var(--cr-primary-text-color);
-    font: inherit;
-    font-size: 15px;
-    line-height: 22px;
-  }
-
-  #savedStateLabel {
-    color: var(--cr-secondary-text-color);
-  }
-
   #heading {
     display: flex;
     height: 24px;
@@ -146,30 +94,18 @@
   }
 
   h1 {
-    color: var(--cr-primary-text-color);
+    color: var(--color-compose-dialog-title);
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
     margin: 0;
     margin-inline-end: auto;
-    padding-inline-end: 36px; /* From --cr-icon-button-size */
-  }
-
-  :host-context([chrome-refresh-2023]) h1 {
-    color: var(--color-compose-dialog-title);
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
-    padding-inline-end: 32px; /* From --cr-icon-button-size */
+    padding-inline-end: 32px; /* From --cr-icon-button-size. */
   }
 
   cr-icon-button {
-    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
-    margin: 0;
-  }
-
-  :host-context([chrome-refresh-2023]) cr-icon-button {
     --cr-icon-button-fill-color: var(--color-compose-dialog-foreground-subtle);
+    margin: 0;
   }
 
   #bodyAndFooter {
@@ -181,25 +117,14 @@
   }
 
   #body {
-    --results-background_: rgb(234, 240, 249);
-    --scrollbar-width_: 4px;
+    --results-background_: var(--color-compose-dialog-result-background);
     box-sizing: border-box;
     grid-area: body;
     display: grid;
     grid-template-areas: "textarea" "bodyContent";
     grid-auto-columns: 100%;
-    gap: 8px;
     max-height: 220px;
-    overflow: auto;
     padding: 0 20px;
-    padding-inline-end: calc(20px - var(--scrollbar-width_));
-    scrollbar-gutter: stable;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #body {
-      --results-background_: rgb(60, 64, 67);
-    }
   }
 
   :host(:not([submitted_])) #body {
@@ -207,58 +132,36 @@
     grid-template-areas: "textarea";
   }
 
-  :host-context([chrome-refresh-2023]) #body {
-    --results-background_: var(--color-compose-dialog-result-background);
+  /* Set scroll-related styles for the result text container. */
+  #resultTextContainer {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px 0;
+    overflow-y: auto;
   }
 
-  #body.is-scrolled {
-    border-top: var(--cr-hairline);
+  #resultTextContainer.can-scroll:not(.scrolled-to-top) {
+    border-top-color: var(--scrollable-border-color);
   }
 
-  :host-context([chrome-refresh-2023]) #body.is-scrolled {
-    border-top: solid 1px var(--color-compose-dialog-divider);
-  }
-
-  #body.can-scroll:not(.scrolled-to-bottom) {
-    border-bottom: var(--cr-hairline);
-  }
-
-  :host-context([chrome-refresh-2023])
-      #body.can-scroll:not(.scrolled-to-bottom) {
-    border-bottom: solid 1px var(--color-compose-dialog-divider);
-  }
-
-  #body::-webkit-scrollbar {
+  #resultTextContainer::-webkit-scrollbar {
     background: transparent;
     width: var(--scrollbar-width_);
   }
 
   #body::-webkit-scrollbar-thumb {
-    background: var(--google-grey-300);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #body::-webkit-scrollbar-thumb {
-      background: var(--google-grey-500);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) #body::-webkit-scrollbar-thumb {
     background: var(--color-compose-dialog-scrollbar-thumb);
+  }
+
+  #resultTextContainer::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: var(--color-compose-dialog-result-container-scrollbar-thumb);
   }
 
   :host([loading-indicator-shown_]) #bodyAndFooter {
     /* There is no footer in the loading screen. */
     grid-template-areas: "body";
     height: var(--compose-loading-body-and-footer-height);
-  }
-
-  :host([loading-indicator-shown_]) #body {
-    /* When loading, the heights of contents within #body are in flux due to
-     * animations. Force the entire #body to be visible to prevent scrollbars
-     * from flickering, and remove scrollbar width from padding. */
-    overflow: visible;
-    padding-inline-end: 20px;
   }
 
   #textarea {
@@ -268,6 +171,7 @@
   #loading,
   .result-container {
     grid-area: bodyContent;
+    margin-top: 8px;
   }
 
   #loading {
@@ -280,22 +184,20 @@
   }
 
   .result-container {
-    --compose-result-text-color-while-loading: var(--cr-primary-text-color);
-    --compose-result-text-color: var(--cr-primary-text-color);
+    --compose-result-text-color-while-loading: var(
+        --color-compose-dialog-result-foreground-while-loading);
+    --compose-result-text-color: var(--color-compose-dialog-result-foreground);
     border-radius: 8px;
     display: flex;
     box-sizing: border-box;
     background: var(--results-background_);
     color: var(--cr-primary-text-color);
     font-size: 12px;
-    line-height: 20px;
+    line-height: 16px;
   }
 
-  :host-context([chrome-refresh-2023]) .result-container {
-    --compose-result-text-color-while-loading: var(
-        --color-compose-dialog-result-foreground-while-loading);
-    --compose-result-text-color: var(--color-compose-dialog-result-foreground);
-    line-height: 16px;
+  :host([is-editing-result-text_]) .result-container {
+    outline: solid 2px var(--cr-focus-outline-color);
   }
 
   #resultContainerInner {
@@ -303,14 +205,31 @@
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
-    padding: 16px;
+    padding-top: 16px;
+  }
+
+  #resultTextContainer {
+    max-height: 112px;
+    overflow: auto;
+    /* Incorporates width of righthand scrollbar. */
+    padding-inline-start: 16px;
+    margin-inline-end: 4px;
+
+    --scrollbar-width_: 4px;
+    padding-inline-end: calc(12px - var(--scrollbar-width_));
+    scrollbar-gutter: stable;
+  }
+
+  /* Border separating result container text and actions bar. */
+  #resultOptionsContainer {
+    border-top: 1px solid var(--color-compose-dialog-divider);
   }
 
   #resultOptions {
     display: flex;
     align-items: flex-end;
     gap: 8px;
-    margin-block-start: 16px;
+    padding: 8px 12px;
   }
 
   #resultFooter[inert], #resultOptions[inert] {
@@ -325,8 +244,44 @@
     width: auto;
   }
 
-  :host-context(html:not([chrome-refresh-2023])) #resultOptions .md-select {
-    border: solid 1px var(--google-grey-400);
+  select option {
+    --md-select-option-bg-color: var(--results-background_);
+    color: var(--compose-result-text-color);
+  }
+
+  select option:disabled {
+    color: var(--color-compose-dialog-select-option-disabled);
+  }
+
+  #resultOptions .md-select {
+    min-height: 24px;
+    min-width: 60px;
+    line-height: 16px;
+    border: 0;
+    border-radius: 100px;
+    font-family: Roboto, "Noto Sans", Arial, sans-serif;
+    font-weight: 500;
+    color: var(--cr-secondary-text-color);
+
+    /* Custom drop-down arrow. */
+    background: url(//resources/images/chevron_down.svg)
+      calc(100% - var(--md-select-side-padding) + var(--md-arrow-width))
+      center no-repeat;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #resultOptions .md-select {
+      /* Separate svg required for dark mode as color is hard-coded into
+      * file. */
+      background-image: url(//resources/images/dark/chevron_down.svg)
+    }
+  }
+
+  /* Re-define hover style for md-select, as replacing the background overwrites
+  the default style. */
+  #resultOptions .md-select:hover {
+    background-color: var(--color-comboxbox-ink-drop-hovered,
+      var(--cr-hover-on-subtle-background-color));
   }
 
   .icon-buttons-row {
@@ -340,14 +295,59 @@
     margin-inline-start: auto;
   }
 
+  .icon-buttons-row {
+    grid-auto-columns: auto;
+    grid-auto-rows: auto;
+    gap: 10px;
+  }
+
   .icon-buttons-row cr-icon-button {
-    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    --cr-icon-button-fill-color: var(--color-compose-dialog-result-icon);
     --cr-icon-button-icon-size: var(--cr-icon-size);
     margin: 0;
   }
 
-  :host-context([chrome-refresh-2023]) .icon-buttons-row cr-icon-button {
-    --cr-icon-button-fill-color: var(--color-compose-dialog-result-icon);
+  /* cr-button is only used when UI refinements is enabled. */
+  .icon-buttons-row cr-button {
+    --cr-button-text-color: var(--color-compose-dialog-result-icon);
+    --cr-icon-size: 16px;
+    margin: 0;
+    padding-inline-start: 8px;
+    padding-inline-end: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    min-height: 24px;
+    height: auto;
+    border: 0;
+    gap: 4px;
+  }
+
+  .icon-buttons-row cr-button div {
+    margin-top: 2px;
+    line-height: 14px;
+    font-size: 11px;
+  }
+
+  .icon-buttons-row cr-button cr-icon {
+    width: var(--cr-icon-size);
+    height: var(--cr-icon-size);
+  }
+
+  .icon-buttons-row
+      .button-container:last-child {
+    padding-left: 10px;
+    position: relative
+  }
+
+  /* Vertical divider between undo and redo buttons. */
+  .icon-buttons-row > div:last-child:before {
+    content: "";
+    background: var(--color-compose-dialog-divider);
+    position: absolute;
+    top: 25%;
+    left: 0px;
+    height: 50%;
+    width: 1px;
   }
 
   .footer {
@@ -371,13 +371,8 @@
     align-items: start;
     gap: 8px;
     margin-inline-end: auto;
-    color: var(--cr-secondary-text-color);
-    font-size: 11px;
-    line-height: 16px;
-  }
-
-  :host-context([chrome-refresh-2023]) .footer-text {
     color: var(--color-compose-dialog-foreground-subtle);
+    font-size: 11px;
     line-height: 16px;
   }
 
@@ -391,7 +386,13 @@
   }
 
   #errorFooter {
+    flex-direction: column;
     user-select: text;
+  }
+
+  #errorGoBackButton {
+    margin-top: 20px;
+    align-self: end;
   }
 
   :host-context([is-editing-submitted-input_]) #body,
@@ -407,8 +408,7 @@
     min-height: 153px;
   }
 
-  :host-context([chrome-refresh-2023], [is-editing-submitted-input_])
-      #bodyAndFooter {
+  :host-context([is-editing-submitted-input_]) #bodyAndFooter {
     min-height: 141px;
   }
 
@@ -441,8 +441,9 @@
   .dialog[hidden],
   .footer[hidden],
   .result-container[hidden],
+  .md-select[hidden],
+  .icon-buttons-row cr-icon-button[hidden],
   #loading[hidden],
-  #savedStateDialog[hidden],
   #editContainer[hidden] {
     display: none;
   }
@@ -451,7 +452,7 @@
 <div id="firstRunDialog" class="dialog" hidden="[[!showFirstRunDialog_]]">
   <div id="firstRunHeading">
     <div id="firstRunIconContainer">
-      <iron-icon icon="compose:compose"></iron-icon>
+      <cr-icon icon="compose:compose"></cr-icon>
     </div>
     <h1>$i18n{firstRunTitle}</h1>
     <cr-icon-button id="firstRunCloseButton" class="close-button"
@@ -508,7 +509,7 @@
   </div>
 
   <div id="bodyAndFooter">
-    <div id="body" scrollable>
+    <div id="body">
       <compose-textarea id="textarea" value="{{input_}}"
         readonly="[[submitted_]]" allow-exiting-readonly-mode="[[!loading_]]"
         on-edit-click="onEditClick_" input-params="[[inputParams_]]">
@@ -527,42 +528,52 @@
         </cr-loading-gradient>
       </div>
       <div id="resultContainer" class="result-container"
-          hidden="[[!hasOutput_]]">
+          hidden="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
         <div id="resultContainerInner">
-          <compose-result-text id="resultText" text-input="[[responseText_]]"
+          <div id="resultTextContainer">
+            <compose-result-text id="resultText" text-input="[[responseText_]]"
               is-output-complete="{{outputComplete_}}"
               has-output="{{hasOutput_}}"
-              has-partial-output="{{hasPartialOutput_}}">
-          </compose-result-text>
-          <div id="resultOptions"
-              inert$="[[!outputComplete_]]">
-            <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
-                aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
-              <template is="dom-repeat" items="[[lengthOptions_]]">
-                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
-                    selected$="[[item.isDefault]]">
-                  [[item.label]]
-                </option>
-              </template>
-            </select>
-            <select class="md-select" id="toneMenu" value="[[selectedTone_]]"
-                aria-label="$i18n{toneMenuTitle}" on-change="onToneChanged_">
-              <template is="dom-repeat" items="[[toneOptions_]]">
-                <option value="[[item.value]]" disabled$="[[item.isDefault]]"
-                    selected$="[[item.isDefault]]">
-                  [[item.label]]
-                </option>
-              </template>
-            </select>
-
-            <div class="icon-buttons-row">
-              <cr-icon-button id="undoButton" iron-icon="compose:undo"
-                title="$i18n{undo}"  disabled="[[!undoEnabled_]]"
-                on-click="onUndoClick_">
-              </cr-icon-button>
-              <cr-icon-button id="refreshButton" iron-icon="compose:refresh"
-                title="$i18n{resubmit}" on-click="onRefresh_">
-              </cr-icon-button>
+              has-partial-output="{{hasPartialOutput_}}"
+              on-result-edit="onResultEdit_"
+              on-set-result-focus="onSetResultFocus_">
+            </compose-result-text>
+          </div>
+          <div id="resultOptionsContainer">
+            <div id="resultOptions"
+                inert$="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
+              <select class="md-select" id="modifierMenu"
+                  value="[[selectedModifier_]]"
+                  aria-label="$i18n{modifierMenuLabel}"
+                  on-change="onModifierChanged_"
+                  on-keydown="openModifierMenuOnKeyDown_">
+                <template is="dom-repeat" items="[[modifierOptions_]]">
+                  <option value="[[item.value]]" disabled$="[[item.isDefault]]"
+                      selected$="[[item.isDefault]]">
+                    [[item.label]]
+                  </option>
+                </template>
+              </select>
+              <div class="icon-buttons-row">
+                <div class="button-container">
+                  <cr-button id="undoButton" title="$i18n{undo}"
+                    disabled="[[!undoEnabled_]]" on-click="onUndoClick_">
+                    <div aria-hidden="true"> $i18n{undoButtonText} </div>
+                    <cr-icon aria-hidden="true" slot="suffix-icon"
+                      icon="compose:undo">
+                    </cr-icon>
+                  </cr-button>
+                </div>
+                <div class="button-container">
+                  <cr-button id="redoButton" title="$i18n{redo}"
+                    disabled="[[!redoEnabled_]]" on-click="onRedoClick_">
+                    <div aria-hidden="true"> $i18n{redoButtonText} </div>
+                    <cr-icon aria-hidden="true" slot="suffix-icon"
+                      icon="compose:redo">
+                    </cr-icon>
+                  </cr-button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -577,21 +588,27 @@
       </div>
       <cr-button id="submitButton" class="action-button" on-click="onSubmit_"
         disabled="[[!isSubmitEnabled_]]">
-        <iron-icon slot="prefix-icon" icon="compose:compose"></iron-icon>
+        <cr-icon slot="prefix-icon" icon="compose:compose"></cr-icon>
         $i18n{submitButton}
       </cr-button>
     </div>
 
     <div id="resultFooter" class="footer"
-        hidden$="[[!outputComplete_]]"
+        hidden$="[[hideResults_(hasOutput_, feedbackEnabled_)]]"
         inert$="[[hasPartialOutput_]]">
       <div class="footer-text">
         <div on-click="onFooterClick_">
           <b id="onDeviceUsedFooter"
               hidden$="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{onDeviceUsedFooter}
-
           </b>
+          <!-- <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{dogfoodFooter}</span>
+          <span hidden="[[!showDefaultResultFooter_(response_, enableUiRefinements)]]"
+              >$i18nRaw{resultFooter}</span>
+          <span
+            hidden="[[!showRefinementsResultFooter_(response_, enableUiRefinements)]]"
+            >$i18nRaw{refinementsResultFooter}</span> -->
           <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{dogfoodFooter}</span>
           <span hidden="[[showOnDeviceDogfoodFooter_(response_)]]"
@@ -599,7 +616,8 @@
         </div>
         <cr-feedback-buttons id="feedbackButtons"
             on-selected-option-changed="onFeedbackSelectedOptionChanged_"
-            selected-option="[[feedbackState_]]">
+            selected-option="[[feedbackState_]]"
+            disabled$="[[!feedbackEnabled_]]">
         </cr-feedback-buttons>
       </div>
       <cr-button id="acceptButton" class="action-button" on-click="onAccept_">
@@ -617,6 +635,15 @@
         <span hidden="[[!hasPermissionDeniedResponse_(response_)]]"
           >$i18nRaw{errorPermissionDenied}</span>
       </div>
+      <cr-button id="errorGoBackButton" class="action-button"
+        on-click="onErrorGoBackButton_"
+        hidden="[[!isBackFromErrorAvailable_(response_)]]">
+        <cr-icon aria-hidden="true" slot="prefix-icon" icon="compose:undo">
+        </cr-icon>
+        <div aria-hidden="true">
+          $i18nRaw{errorFilteredGoBackButton}
+        </div>
+      </cr-button>
     </div>
 
     <div id="editContainer" hidden$="[[!isEditingSubmittedInput_]]">
@@ -643,17 +670,5 @@
         </if>
       </div>
     </div>
-  </div>
-</div>
-
-
-<div id="savedStateDialog" hidden="[[!showSavedStateDialog_]]"
-  on-click="onSavedStateDialogClick_">
-  <div id="savedStateIconContainer">
-    <iron-icon icon="compose:compose"></iron-icon>
-  </div>
-  <div id="savedStateTextContainer">
-    <div id="savedStateText">$i18n{savedText}</div>
-    <div id="savedStateLabel">$i18n{savedLabel}</div>
   </div>
 </div>

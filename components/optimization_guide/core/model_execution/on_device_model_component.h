@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -25,6 +26,8 @@ inline constexpr std::string_view kOnDeviceModelCrxId =
     "fklghjjljmnfjoepjmlobpekiapffcja";
 
 class OnDeviceModelComponentState;
+
+enum class ModelBasedCapabilityKey;
 
 // Wraps the specification needed to determine compatibility of the
 // on-device base model with any feature specific code.
@@ -83,12 +86,16 @@ class OnDeviceModelComponentStateManager
       PrefService* local_state,
       std::unique_ptr<Delegate> delegate);
 
+  // Returns whether the component installation is valid.
+  static bool VerifyInstallation(const base::FilePath& install_dir,
+                                 const base::Value::Dict& manifest);
+
   // Called at startup. Triggers install or uninstall of the component if
   // necessary.
   void OnStartup();
 
   // Should be called whenever an on-device eligible feature was used.
-  void OnDeviceEligibleFeatureUsed();
+  void OnDeviceEligibleFeatureUsed(ModelBasedCapabilityKey feature);
 
   // Should be called whenever the device performance class changes.
   void DevicePerformanceClassChanged(
@@ -96,9 +103,6 @@ class OnDeviceModelComponentStateManager
 
   // Returns the current state. Null if the component is not available.
   const OnDeviceModelComponentState* GetState();
-
-  // Returns the last cached BaseModelSpec.
-  const std::optional<OnDeviceBaseModelSpec> GetCachedBaseModelSpec();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -108,10 +112,6 @@ class OnDeviceModelComponentStateManager
   // Called when the on-device component has been uninstalled.
   void UninstallComplete();
 
-  // Returns whether the component installation is valid.
-  bool VerifyInstallation(const base::FilePath& install_dir,
-                          const base::Value::Dict& manifest);
-
   // Creates the on-device component state, only called after VerifyInstallation
   // returns true.
   void SetReady(const base::Version& version,
@@ -120,6 +120,9 @@ class OnDeviceModelComponentStateManager
 
   // Called after the installer is successfully registered.
   void InstallerRegistered();
+
+  // Returns the current OnDeviceModelStatus.
+  OnDeviceModelStatus GetOnDeviceModelStatus();
 
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -155,18 +158,21 @@ class OnDeviceModelComponentStateManager
 
   void NotifyStateChanged();
 
-  // Should be called whenever the BaseModelSpec changes.
-  void UpdateOnDeviceBaseModelSpecCache();
+  raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool component_installer_registered_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
-  raw_ptr<PrefService> local_state_;
-  std::unique_ptr<Delegate> delegate_;
-  base::ObserverList<Observer> observers_;
-  bool component_installer_registered_ = false;
-
-  bool is_model_allowed_ = false;
-  std::unique_ptr<OnDeviceModelComponentState> state_;
+  bool is_model_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  std::unique_ptr<OnDeviceModelComponentState> state_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   // Null until first registration attempt.
-  std::unique_ptr<RegistrationCriteria> registration_criteria_;
+  std::unique_ptr<RegistrationCriteria> registration_criteria_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<OnDeviceModelComponentStateManager> weak_ptr_factory_{
       this};
 };
@@ -180,18 +186,19 @@ class OnDeviceModelComponentState {
   const base::Version& GetComponentVersion() const {
     return component_version_;
   }
-  const std::optional<OnDeviceBaseModelSpec>& GetBaseModelSpec() const {
-    return model_spec_;
-  }
+  const OnDeviceBaseModelSpec& GetBaseModelSpec() const { return model_spec_; }
 
  private:
+  friend class OnDeviceModelAdaptationLoaderTest;
+
   OnDeviceModelComponentState();
   friend class OnDeviceModelComponentStateManager;
 
   base::FilePath install_dir_;
   base::Version component_version_;
-  std::optional<OnDeviceBaseModelSpec> model_spec_;
+  OnDeviceBaseModelSpec model_spec_;
 };
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_COMPONENT_H_

@@ -9,33 +9,36 @@
 
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './sp_footer.html.js';
+import {getCss} from './sp_footer.css.js';
+import {getHtml} from './sp_footer.html.js';
 
-export class SpFooterElement extends PolymerElement {
+export class SpFooterElement extends CrLitElement {
   static get is() {
     return 'sp-footer';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       pinned: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
     };
   }
 
-  pinned: boolean;
+  pinned: boolean = false;
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.setAttribute('role', 'toolbar');
   }
 }

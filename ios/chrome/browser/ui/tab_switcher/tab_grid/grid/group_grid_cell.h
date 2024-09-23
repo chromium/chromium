@@ -27,8 +27,9 @@
 // The look of the cell.
 @property(nonatomic, assign) GridTheme theme;
 // Settable UI elements of the group cell.
-@property(nonatomic, copy) NSString* groupColorName;
+@property(nonatomic, copy) UIColor* groupColor;
 @property(nonatomic, copy) NSString* title;
+@property(nonatomic, assign) NSInteger tabsCount;
 @property(nonatomic, assign) BOOL titleHidden;
 // Sets to update and keep cell alpha in sync.
 @property(nonatomic, assign) CGFloat opacity;
@@ -39,6 +40,10 @@
 // passes the total tabs count to the bottomTrailingView.
 - (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
                     totalTabsCount:(NSInteger)totalTabsCount;
+
+// Returns all tab views that compose this tab group view in the order they're
+// presented.
+- (NSArray<UIView*>*)allGroupTabViews;
 
 @end
 

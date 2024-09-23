@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,9 +14,9 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
@@ -100,16 +101,16 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
       return crtc_controller.get();
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 void ParamsToTracedValue(
     perfetto::TracedValue context,
-    const ScreenManager::ControllerConfigsList& controllers_params,
-    uint32_t modeset_flag) {
+    const std::vector<ControllerConfigParams>& controllers_params,
+    display::ModesetFlags modeset_flags) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("modeset_flag", modeset_flag);
+  dict.Add("modeset_flags", modeset_flags.ToEnumBitmask());
 
   auto array = dict.AddArray("param");
   for (const auto& param : controllers_params) {
@@ -138,7 +139,7 @@ void ParamsToTracedValue(
 // `controllers_params`. Note that this function assumes that all controllers in
 // `controllers_params` are a part of the same DRM device.
 std::string GenerateConfigurationLogForController(
-    const ScreenManager::ControllerConfigsList& controllers_params) {
+    const std::vector<ControllerConfigParams>& controllers_params) {
   DCHECK(!controllers_params.empty());
 
   base::flat_map<uint64_t, std::string> base_connectors_to_keys;
@@ -162,7 +163,7 @@ std::string GenerateConfigurationLogForController(
     if (param.mode) {
       const std::string size = ModeSize(*(param.mode.get())).ToString();
       const std::string refresh_rate =
-          base::NumberToString(param.mode->vrefresh);
+          base::NumberToString(ModeRefreshRate(*param.mode));
       mode = base::StrCat({size, "@", refresh_rate});
     } else {
       mode = "Disabled";
@@ -192,6 +193,55 @@ std::string GenerateConfigurationLogForController(
   return drm_config_log;
 }
 
+bool ControllerContainsCrtcConnectorPair(
+    const HardwareDisplayController& controller,
+    const DrmDisplay::CrtcConnectorPair& crtc_connector_pair) {
+  for (const auto& crtc_controller : controller.crtc_controllers()) {
+    const std::optional<TileProperty>& tile_property =
+        crtc_controller->tile_property();
+    std::optional<gfx::Point> tile_location;
+    if (tile_property.has_value()) {
+      tile_location = tile_property->location;
+    }
+
+    if (crtc_controller->crtc() == crtc_connector_pair.crtc_id &&
+        crtc_controller->connector() ==
+            crtc_connector_pair.connector->connector_id &&
+        tile_location == crtc_connector_pair.tile_location) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void AddNonPrimaryTileControllers(const DrmDisplay& display,
+                                  HardwareDisplayController& controller) {
+  TRACE_EVENT1("drm", "ScreenManager::AddNonPrimaryTileControllers",
+               "display_id", display.display_id());
+
+  TileProperty nonprimary_tile_prop = *display.GetTileProperty();
+  for (const auto& crtc_connector_pair : display.crtc_connector_pairs()) {
+    // Skip adding primary tile controller.
+    if (crtc_connector_pair.crtc_id == display.GetPrimaryCrtcId() &&
+        crtc_connector_pair.connector->connector_id ==
+            display.GetPrimaryConnectorId()) {
+      continue;
+    }
+
+    // If |controller| already contains an equivalent CrtcController for
+    // |crtc_connector_pair|, do not add again.
+    if (ControllerContainsCrtcConnectorPair(controller, crtc_connector_pair)) {
+      continue;
+    }
+
+    nonprimary_tile_prop.location = *crtc_connector_pair.tile_location;
+    controller.AddCrtc(std::make_unique<CrtcController>(
+        display.drm(), crtc_connector_pair.crtc_id,
+        crtc_connector_pair.connector->connector_id, nonprimary_tile_prop));
+  }
+}
+
 }  // namespace
 
 ScreenManager::ScreenManager() = default;
@@ -200,60 +250,11 @@ ScreenManager::~ScreenManager() {
   DCHECK(window_map_.empty());
 }
 
-ScreenManager::ControllerConfigParams::ControllerConfigParams(
-    int64_t display_id,
-    scoped_refptr<DrmDevice> drm,
+void ScreenManager::AddDisplayController(
+    const scoped_refptr<DrmDevice>& drm,
     uint32_t crtc,
     uint32_t connector,
-    gfx::Point origin,
-    std::unique_ptr<drmModeModeInfo> pmode,
-    bool enable_vrr,
-    uint64_t base_connector)
-    : display_id(display_id),
-      drm(drm),
-      crtc(crtc),
-      connector(connector),
-      base_connector_id(base_connector ? base_connector
-                                       : static_cast<uint64_t>(connector)),
-      origin(origin),
-      mode(std::move(pmode)),
-      enable_vrr(enable_vrr) {}
-
-ScreenManager::ControllerConfigParams::ControllerConfigParams(
-    const ControllerConfigParams& other)
-    : display_id(other.display_id),
-      drm(other.drm),
-      crtc(other.crtc),
-      connector(other.connector),
-      base_connector_id(other.base_connector_id),
-      origin(other.origin),
-      enable_vrr(other.enable_vrr) {
-  if (other.mode) {
-    drmModeModeInfo mode_obj = *other.mode.get();
-    mode = std::make_unique<drmModeModeInfo>(mode_obj);
-  }
-}
-
-ScreenManager::ControllerConfigParams::ControllerConfigParams(
-    ControllerConfigParams&& other)
-    : display_id(other.display_id),
-      drm(other.drm),
-      crtc(other.crtc),
-      connector(other.connector),
-      base_connector_id(other.base_connector_id),
-      origin(other.origin),
-      enable_vrr(other.enable_vrr) {
-  if (other.mode) {
-    drmModeModeInfo mode_obj = *other.mode.get();
-    mode = std::make_unique<drmModeModeInfo>(mode_obj);
-  }
-}
-
-ScreenManager::ControllerConfigParams::~ControllerConfigParams() = default;
-
-void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
-                                         uint32_t crtc,
-                                         uint32_t connector) {
+    std::optional<TileProperty> tile_property) {
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
   // TODO(dnicoara): Turn this into a DCHECK when async display configuration is
   // properly supported. (When there can't be a race between forcing initial
@@ -265,8 +266,22 @@ void ScreenManager::AddDisplayController(const scoped_refptr<DrmDevice>& drm,
   }
 
   controllers_.push_back(std::make_unique<HardwareDisplayController>(
-      std::make_unique<CrtcController>(drm, crtc, connector), gfx::Point(),
-      drm_modifiers_filter_.get()));
+      std::make_unique<CrtcController>(drm, crtc, connector, tile_property),
+      gfx::Point(), drm_modifiers_filter_.get()));
+}
+
+void ScreenManager::AddDisplayControllersForDisplay(const DrmDisplay& display) {
+  const std::optional<TileProperty> tile_property = display.GetTileProperty();
+  AddDisplayController(display.drm(), display.GetPrimaryCrtcId(),
+                       display.GetPrimaryConnectorId(), tile_property);
+
+  if (!tile_property.has_value()) {
+    return;
+  }
+
+  HardwareDisplayController& controller =
+      **FindDisplayController(display.drm(), display.GetPrimaryCrtcId());
+  AddNonPrimaryTileControllers(display, controller);
 }
 
 void ScreenManager::RemoveDisplayControllers(
@@ -323,43 +338,48 @@ void ScreenManager::RemoveDisplayControllers(
 }
 
 bool ScreenManager::ConfigureDisplayControllers(
-    const ControllerConfigsList& controllers_params,
-    uint32_t modeset_flag) {
+    const std::vector<ControllerConfigParams>& controllers_params,
+    display::ModesetFlags modeset_flags) {
   TRACE_EVENT_BEGIN2(
       "drm", "ScreenManager::ConfigureDisplayControllers", "params",
-      ([modeset_flag,
+      ([modeset_flags,
         &controllers_params](perfetto::TracedValue context) -> void {
         ParamsToTracedValue(std::move(context), controllers_params,
-                            modeset_flag);
+                            modeset_flags);
       }),
       "before", this);
 
   // At least one of these flags must be set.
-  DCHECK(modeset_flag & (display::kCommitModeset | display::kTestModeset));
+  DCHECK(modeset_flags.HasAny({display::ModesetFlag::kCommitModeset,
+                               display::ModesetFlag::kTestModeset}));
 
   // Split them to different lists unique to each DRM Device.
-  base::flat_map<scoped_refptr<DrmDevice>, ControllerConfigsList>
+  base::flat_map<scoped_refptr<DrmDevice>, std::vector<ControllerConfigParams>>
       displays_for_drm_devices;
 
   for (auto& params : controllers_params) {
     auto it = displays_for_drm_devices.find(params.drm);
     if (it == displays_for_drm_devices.end()) {
       displays_for_drm_devices.insert(
-          std::make_pair(params.drm, ControllerConfigsList()));
+          std::make_pair(params.drm, std::vector<ControllerConfigParams>()));
     }
     displays_for_drm_devices[params.drm].emplace_back(params);
   }
 
-  const bool commit_modeset = modeset_flag & display::kCommitModeset;
-  const bool is_seamless_modeset = modeset_flag & display::kSeamlessModeset;
+  const bool commit_modeset =
+      modeset_flags.Has(display::ModesetFlag::kCommitModeset);
+  const bool is_seamless_modeset =
+      modeset_flags.Has(display::ModesetFlag::kSeamlessModeset);
   bool config_success = true;
   // Perform display configurations together for the same DRM only.
   for (const auto& configs_on_drm : displays_for_drm_devices) {
-    const ControllerConfigsList& drm_controllers_params = configs_on_drm.second;
-    VLOG(1) << "DRM " << (commit_modeset ? "configuring: " : "testing: ")
+    const std::vector<ControllerConfigParams>& drm_controllers_params =
+        configs_on_drm.second;
+    VLOG(1) << "DRM " << (is_seamless_modeset ? "seamlessly " : "")
+            << (commit_modeset ? "configuring: " : "testing: ")
             << GenerateConfigurationLogForController(drm_controllers_params);
 
-    if (modeset_flag & display::kTestModeset) {
+    if (modeset_flags.Has(display::ModesetFlag::kTestModeset)) {
       bool test_modeset =
           TestAndSetPreferredModifiers(drm_controllers_params,
                                        is_seamless_modeset) ||
@@ -394,7 +414,7 @@ bool ScreenManager::ConfigureDisplayControllers(
 }
 
 bool ScreenManager::TestAndSetPreferredModifiers(
-    const ControllerConfigsList& controllers_params,
+    const std::vector<ControllerConfigParams>& controllers_params,
     bool is_seamless_modeset) {
   TRACE_EVENT1("drm", "ScreenManager::TestAndSetPreferredModifiers",
                "display_count", controllers_params.size());
@@ -405,7 +425,7 @@ bool ScreenManager::TestAndSetPreferredModifiers(
 
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    DCHECK(controllers_.end() != it);
+    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
     HardwareDisplayController* controller = it->get();
 
     if (params.mode) {
@@ -446,7 +466,7 @@ bool ScreenManager::TestAndSetPreferredModifiers(
 }
 
 bool ScreenManager::TestAndSetLinearModifier(
-    const ControllerConfigsList& controllers_params,
+    const std::vector<ControllerConfigParams>& controllers_params,
     bool is_seamless_modeset) {
   TRACE_EVENT1("drm", "ScreenManager::TestAndSetLinearModifier",
                "display_count", controllers_params.size());
@@ -457,7 +477,7 @@ bool ScreenManager::TestAndSetLinearModifier(
 
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    DCHECK(controllers_.end() != it);
+    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
     HardwareDisplayController* controller = it->get();
 
     uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
@@ -501,7 +521,7 @@ bool ScreenManager::TestAndSetLinearModifier(
 }
 
 void ScreenManager::SetPreferredModifiers(
-    const ControllerConfigsList& controllers_params,
+    const std::vector<ControllerConfigParams>& controllers_params,
     const CrtcPreferredModifierMap& crtcs_preferred_modifier) {
   for (const auto& params : controllers_params) {
     if (params.mode) {
@@ -523,7 +543,7 @@ void ScreenManager::SetPreferredModifiers(
 }
 
 bool ScreenManager::TestModesetWithOverlays(
-    const ControllerConfigsList& controllers_params,
+    const std::vector<ControllerConfigParams>& controllers_params,
     bool is_seamless_modeset) {
   TRACE_EVENT1("drm", "ScreenManager::TestModesetWithOverlays", "display_count",
                controllers_params.size());
@@ -534,7 +554,7 @@ bool ScreenManager::TestModesetWithOverlays(
   auto drm = controllers_params[0].drm;
   for (const auto& params : controllers_params) {
     auto it = FindDisplayController(params.drm, params.crtc);
-    DCHECK(controllers_.end() != it);
+    CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
     HardwareDisplayController* controller = it->get();
 
     if (params.mode) {
@@ -567,9 +587,10 @@ bool ScreenManager::TestModesetWithOverlays(
   return drm->plane_manager()->Commit(std::move(commit_request), flags);
 }
 
-bool ScreenManager::Modeset(const ControllerConfigsList& controllers_params,
-                            bool can_modeset_with_overlays,
-                            bool is_seamless_modeset) {
+bool ScreenManager::Modeset(
+    const std::vector<ControllerConfigParams>& controllers_params,
+    bool can_modeset_with_overlays,
+    bool is_seamless_modeset) {
   TRACE_EVENT2("drm", "ScreenManager::Modeset", "display_count",
                controllers_params.size(), "modeset_with_overlays",
                can_modeset_with_overlays);
@@ -580,7 +601,7 @@ bool ScreenManager::Modeset(const ControllerConfigsList& controllers_params,
   for (const auto& params : controllers_params) {
     if (params.mode) {
       auto it = FindDisplayController(params.drm, params.crtc);
-      DCHECK(controllers_.end() != it);
+      CHECK(controllers_.end() != it, base::NotFatalUntil::M130);
       HardwareDisplayController* controller = it->get();
 
       uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
@@ -588,7 +609,13 @@ bool ScreenManager::Modeset(const ControllerConfigsList& controllers_params,
       std::vector<uint64_t> modifiers =
           controller->GetSupportedModifiers(fourcc_format, /*is_modeset=*/true);
 
-      gfx::Rect bounds = gfx::Rect(params.origin, ModeSize(*params.mode));
+      gfx::Size mode_size = ModeSize(*params.mode);
+      std::optional<TileProperty> tile_property = (*it)->GetTileProperty();
+      if (tile_property.has_value() && IsTileMode(mode_size, *tile_property)) {
+        mode_size = GetTotalTileDisplaySize(*tile_property);
+      }
+
+      gfx::Rect bounds = gfx::Rect(params.origin, mode_size);
       DrmOverlayPlaneList modeset_planes =
           GetModesetPlanes(controller, bounds, modifiers,
                            can_modeset_with_overlays, /*is_testing=*/false);
@@ -623,7 +650,7 @@ void ScreenManager::SetDisplayControllerForEnableAndGetProps(
     const DrmOverlayPlaneList& modeset_planes,
     bool enable_vrr) {
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
-  DCHECK(controllers_.end() != it)
+  CHECK(controllers_.end() != it, base::NotFatalUntil::M130)
       << "Display controller (crtc=" << crtc << ") doesn't exist.";
 
   HardwareDisplayController* controller = it->get();
@@ -731,6 +758,17 @@ HardwareDisplayController* ScreenManager::GetDisplayController(
       FindActiveDisplayControllerByLocation(bounds);
   if (it != controllers_.end())
     return it->get();
+
+  return nullptr;
+}
+
+HardwareDisplayController* ScreenManager::GetDisplayController(
+    const scoped_refptr<DrmDevice>& drm,
+    int32_t crtc_id) {
+  HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc_id);
+  if (it != controllers_.end()) {
+    return it->get();
+  }
 
   return nullptr;
 }
@@ -969,6 +1007,57 @@ void ScreenManager::SetDrmModifiersFilter(
     std::unique_ptr<DrmModifiersFilter> filter) {
   DCHECK(controllers_.empty());
   drm_modifiers_filter_ = std::move(filter);
+}
+
+bool ScreenManager::ReplaceDisplayControllersCrtcs(
+    const scoped_refptr<DrmDevice>& drm,
+    const ConnectorCrtcMap& current_pairings,
+    const ConnectorCrtcMap& new_pairings) {
+  std::vector<std::pair<uint32_t /*connector_id*/, HardwareDisplayController*>>
+      connector_to_controllers;
+  for (const auto& [connector_id, crtc_id] : current_pairings) {
+    if (!new_pairings.contains(connector_id)) {
+      LOG(DFATAL) << __func__
+                  << " new_pairings must contain all connectors "
+                     "from current_pairings. Connector: "
+                  << connector_id << "not found.";
+      return false;
+    }
+
+    auto hdc_it = FindDisplayController(drm, crtc_id);
+    if (hdc_it == controllers_.end()) {
+      LOG(DFATAL) << __func__
+                  << " controller not found for connector ID: " << connector_id
+                  << " crtc ID: " << crtc_id;
+      return false;
+    }
+    connector_to_controllers.push_back({connector_id, hdc_it->get()});
+  }
+
+  // TileProperty stored in HardwareDisplayController does not have the correct
+  // |location| for the connector, so each TileProperty must be copied from the
+  // old CrtcController.
+  base::flat_map<uint32_t /*connector_id*/, std::optional<TileProperty>>
+      connector_tile_properties;
+  // First, remove the CRTC.
+  for (auto& [connector_id, hdc] : connector_to_controllers) {
+    auto crtc_controller =
+        hdc->RemoveCrtc(drm, current_pairings.at(connector_id));
+    connector_tile_properties[connector_id] = crtc_controller->tile_property();
+  }
+
+  // Now, add the new ones back in separately to avoid a state where multiple
+  // HDCs share a CRTC.
+  for (auto& [connector_id, hdc] : connector_to_controllers) {
+    hdc->AddCrtc(std::make_unique<CrtcController>(
+        drm, new_pairings.at(connector_id), connector_id,
+        connector_tile_properties[connector_id]));
+  }
+
+  // No need to UpdateControllerToWindowMapping() since the underlying
+  // HardwareDisplayController remained intact - just changed their CRTCs.
+
+  return true;
 }
 
 }  // namespace ui

@@ -43,8 +43,6 @@ std::string ResultTypeToString(ResultType result_type) {
   switch (result_type) {
     case ResultType::kNoResult:
       return "NoResult";
-    case ResultType::kKnowledgePanelEntityResult:
-      return "KnowledgePanelEntity";
     case ResultType::kDefinitionResult:
       return "Definition";
     case ResultType::kTranslationResult:
@@ -52,7 +50,7 @@ std::string ResultTypeToString(ResultType result_type) {
     case ResultType::kUnitConversionResult:
       return "UnitConversion";
     default:
-      NOTREACHED() << "Invalid ResultType.";
+      NOTREACHED_IN_MIGRATION() << "Invalid ResultType.";
       return ".Unknown";
   }
 }

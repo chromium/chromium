@@ -12,21 +12,26 @@ include_rules = [
 
 specific_include_rules = {
   "authenticator_qr_sheet_view\.*": [
-    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
-    "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+    "+components/qr_code_generator/bitmap_generator.h",
   ],
   "browser_user_education_service.cc": [
     "+ash/user_education/views/help_bubble_factory_views_ash.h",
   ],
-  "chrome_views_delegate_chromeos\.cc": [
+  "chrome_web_dialog_view\.cc": [
+    "+ash/utility/wm_util.h",
+  ],
+  "chrome_views_delegate_ash\.cc": [
     "+ash/shell.h",
   ],
   "isolated_web_app_installer_view_browsertest\.cc": [
     "+ash/shell.h",
   ],
   "qrcode_generator\.*": [
-    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
-    "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+    "+components/qr_code_generator/bitmap_generator.h",
+  ],
+  "mv2_disabled_dialog_controller_interactive_uitest\.cc": [
+    "+ash/constants/ash_pref_names.h",
+    "+ash/wm/window_restore/window_restore_util.h",
   ],
   "save_card_bubble_views_browsertest\.cc": [
     "+chromeos/ash/services/multidevice_setup/public/cpp/prefs.h",
@@ -47,6 +52,8 @@ specific_include_rules = {
    "+ash/components/arc/test",
    "+ash/constants",
    "+ash/public",
+   "+ash/system/mahi/fake_mahi_manager.h",
+   "+ash/system/mahi/test/mock_mahi_media_app_events_proxy.h",
    "+ash/webui/system_apps/public/system_web_app_type.h",
   ],
   "web_app_frame_toolbar_browsertest\.cc": [

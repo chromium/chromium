@@ -175,9 +175,7 @@ class Job : public base::RefCountedThreadSafe<Job> {
   }
 
   // Mark the job as having been cancelled.
-  void Cancel() {
-    was_cancelled_ = true;
-  }
+  virtual void Cancel() { was_cancelled_ = true; }
 
   // Returns true if Cancel() has been called.
   bool was_cancelled() const { return was_cancelled_; }
@@ -207,7 +205,7 @@ class Job : public base::RefCountedThreadSafe<Job> {
   virtual ~Job() = default;
 
  private:
-  raw_ptr<Executor, DanglingUntriaged> executor_ = nullptr;
+  raw_ptr<Executor> executor_ = nullptr;
   bool was_cancelled_ = false;
 };
 
@@ -249,6 +247,15 @@ class CreateResolverJob : public Job {
  protected:
   ~CreateResolverJob() override = default;
 
+  void Cancel() override {
+    // Needed to prevent warnings danging warnings about `factory_`. The
+    // executor ensures that the thread has joined, but there may still be a
+    // pending RequestComplete() that still owns a reference to `this` after the
+    // factory and executor have been destroyed.
+    factory_ = nullptr;
+    Job::Cancel();
+  }
+
  private:
   // Runs the completion callback on the origin thread.
   void RequestComplete(int result_code) {
@@ -261,7 +268,7 @@ class CreateResolverJob : public Job {
   }
 
   const scoped_refptr<PacFileData> script_data_;
-  raw_ptr<ProxyResolverFactory, AcrossTasksDanglingUntriaged> factory_;
+  raw_ptr<ProxyResolverFactory> factory_;
   std::unique_ptr<ProxyResolver> resolver_;
 };
 
@@ -316,6 +323,15 @@ class MultiThreadedProxyResolver::GetProxyForURLJob : public Job {
         FROM_HERE, base::BindOnce(&GetProxyForURLJob::QueryComplete, this, rv));
   }
 
+  void Cancel() override {
+    // Needed to prevent warnings danging warnings about `results_`. The
+    // executor ensures that the thread has joined, but there may still be a
+    // pending QueryComplete() that still owns a reference to `this` after the
+    // factory and executor have been destroyed.
+    results_ = nullptr;
+    Job::Cancel();
+  }
+
  protected:
   ~GetProxyForURLJob() override = default;
 
@@ -335,7 +351,7 @@ class MultiThreadedProxyResolver::GetProxyForURLJob : public Job {
   CompletionOnceCallback callback_;
 
   // Must only be used on the "origin" thread.
-  raw_ptr<ProxyInfo, DanglingUntriaged> results_;
+  raw_ptr<ProxyInfo> results_;
 
   // Can be used on either "origin" or worker thread.
   NetLogWithSource net_log_;
@@ -548,6 +564,7 @@ class MultiThreadedProxyResolverFactory::Job
     executor_->Destroy();
     executor_ = nullptr;
     factory_ = nullptr;
+    resolver_out_ = nullptr;
   }
 
  private:
@@ -566,9 +583,8 @@ class MultiThreadedProxyResolverFactory::Job
     std::move(callback_).Run(error);
   }
 
-  raw_ptr<MultiThreadedProxyResolverFactory, DanglingUntriaged> factory_;
-  const raw_ptr<std::unique_ptr<ProxyResolver>, DanglingUntriaged>
-      resolver_out_;
+  raw_ptr<MultiThreadedProxyResolverFactory> factory_;
+  raw_ptr<std::unique_ptr<ProxyResolver>> resolver_out_;
   std::unique_ptr<ProxyResolverFactory> resolver_factory_;
   const size_t max_num_threads_;
   scoped_refptr<PacFileData> script_data_;

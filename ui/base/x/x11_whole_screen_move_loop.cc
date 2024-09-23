@@ -58,7 +58,6 @@ const char* GrabStatusToString(x11::GrabStatus grab_status) {
       return "Frozen";
   }
   NOTREACHED();
-  return "";
 }
 
 }  // namespace
@@ -93,8 +92,8 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
   }
 
   switch (event->type()) {
-    case ui::ET_MOUSE_MOVED:
-    case ui::ET_MOUSE_DRAGGED: {
+    case ui::EventType::kMouseMoved:
+    case ui::EventType::kMouseDragged: {
       auto& current_xevent = *x11::Connection::Get()->dispatching_event();
       x11::Event last_xevent;
       std::unique_ptr<ui::Event> last_motion;
@@ -110,7 +109,7 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
                                  mouse_event->time_stamp());
       return ui::POST_DISPATCH_NONE;
     }
-    case ui::ET_MOUSE_RELEASED: {
+    case ui::EventType::kMouseReleased: {
       if (event->AsMouseEvent()->IsLeftMouseButton()) {
         // Assume that drags are being done with the left mouse button. Only
         // break the drag if the left mouse button was released.
@@ -125,7 +124,7 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
       }
       return ui::POST_DISPATCH_NONE;
     }
-    case ui::ET_KEY_PRESSED:
+    case ui::EventType::kKeyPressed:
       if (event->AsKeyEvent()->key_code() == ui::VKEY_ESCAPE) {
         canceled_ = true;
         EndMoveLoop();
@@ -141,7 +140,8 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
 bool X11WholeScreenMoveLoop::RunMoveLoop(
     bool can_grab_pointer,
     scoped_refptr<ui::X11Cursor> old_cursor,
-    scoped_refptr<ui::X11Cursor> new_cursor) {
+    scoped_refptr<ui::X11Cursor> new_cursor,
+    base::OnceClosure started_callback) {
   DCHECK(!in_move_loop_);  // Can only handle one nested loop at a time.
 
   // Query the mouse cursor prior to the move loop starting so that it can be
@@ -174,6 +174,8 @@ bool X11WholeScreenMoveLoop::RunMoveLoop(
       std::move(nested_dispatcher_);
   nested_dispatcher_ =
       ui::PlatformEventSource::GetInstance()->OverrideDispatcher(this);
+
+  std::move(started_callback).Run();
 
   base::WeakPtr<X11WholeScreenMoveLoop> alive(weak_factory_.GetWeakPtr());
 

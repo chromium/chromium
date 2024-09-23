@@ -29,9 +29,9 @@ class RenderAccessibilityHostInterceptor
     : public blink::mojom::RenderAccessibilityHostInterceptorForTesting {
  public:
   explicit RenderAccessibilityHostInterceptor(
-      blink::BrowserInterfaceBrokerProxy* broker) {
-    broker->GetInterface(local_frame_host_remote_.BindNewPipeAndPassReceiver());
-    broker->SetBinderForTesting(
+      const blink::BrowserInterfaceBrokerProxy& broker) {
+    broker.GetInterface(local_frame_host_remote_.BindNewPipeAndPassReceiver());
+    broker.SetBinderForTesting(
         blink::mojom::RenderAccessibilityHost::Name_,
         base::BindRepeating(&RenderAccessibilityHostInterceptor::
                                 BindRenderAccessibilityHostReceiver,
@@ -55,12 +55,12 @@ class RenderAccessibilityHostInterceptor
         base::Unretained(&receiver_)));
   }
 
-  void HandleAXEvents(blink::mojom::AXUpdatesAndEventsPtr updates_and_events,
+  void HandleAXEvents(ui::AXUpdatesAndEvents& updates_and_events,
                       uint32_t reset_token,
                       HandleAXEventsCallback callback) override {
     handled_updates_.insert(handled_updates_.end(),
-                            updates_and_events->updates.begin(),
-                            updates_and_events->updates.end());
+                            updates_and_events.updates.begin(),
+                            updates_and_events.updates.end());
     std::move(callback).Run();
   }
 
@@ -122,13 +122,16 @@ class RenderAccessibilityTestRenderFrame : public TestRenderFrame {
     return render_accessibility_host_->location_changes();
   }
 
+  void InstallAccessibilityHost() {
+    render_accessibility_host_ =
+        std::make_unique<RenderAccessibilityHostInterceptor>(
+            GetBrowserInterfaceBroker());
+  }
+
  private:
   explicit RenderAccessibilityTestRenderFrame(
       RenderFrameImpl::CreateParams params)
-      : TestRenderFrame(std::move(params)),
-        render_accessibility_host_(
-            std::make_unique<RenderAccessibilityHostInterceptor>(
-                GetBrowserInterfaceBroker())) {}
+      : TestRenderFrame(std::move(params)) {}
 
   std::unique_ptr<RenderAccessibilityHostInterceptor>
       render_accessibility_host_;
@@ -177,9 +180,10 @@ void RenderAccessibilityImplTest::SetUp() {
   blink::WebTestingSupport::SaveRuntimeFeatures();
   blink::WebRuntimeFeatures::EnableExperimentalFeatures(false);
   blink::WebRuntimeFeatures::EnableTestOnlyFeatures(false);
-  blink::WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(true);
 
   RenderViewTest::SetUp();
+  static_cast<RenderAccessibilityTestRenderFrame*>(frame())
+      ->InstallAccessibilityHost();
 
   // Ensure that a valid RenderAccessibilityImpl object is created and
   // associated to the RenderFrame, so that calls from tests to methods of

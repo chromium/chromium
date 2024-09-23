@@ -1,138 +1,151 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
-<translation id="1046370274005147998">Търсене с глас в Chromium.</translation>
+<translation id="1000436330784933699">Можете да отворите Обектив оттук.</translation>
+<translation id="1042296835509784301">Отваря Мениджър на пароли в Chromium.</translation>
 <translation id="1047130070405668746">Изберете Chromium.</translation>
 <translation id="1091252999271033193">Това означава, че всеки път Chromium ще заявява мобилната версия на сайта.</translation>
 <translation id="1115463765356382667">Изпълнете предложените действия по-долу, за да се възползвате максимално от Chromium.</translation>
-<translation id="1141230343006904201">1. Отворете настройките на Chromium.</translation>
-<translation id="1171824629317156389">Отворете настройките на Chromium на устройство с iOS, след което докоснете „Стандартно приложение за браузър“ и изберете Chromium.</translation>
+<translation id="1140315115515116765">Използвайте Chromium по подразбиране, така че лесно да получавате статистика за цените</translation>
 <translation id="1185134272377778587">Всичко за Chromium</translation>
 <translation id="1257458525759135959">За да запазвате изображения, докоснете Settings и разрешете на Chromium да добавя снимки</translation>
+<translation id="1260702988262336471">Отваряне на менюто на Chromium</translation>
 <translation id="12739128458173458">За да изпратите този раздел до друго устройство, влезте в профила си в Chromium и на двете устройства.</translation>
-<translation id="1289216811211435351">Превключване към Chromium</translation>
 <translation id="1361748954329991663">Chromium не е актуален. Ако не виждате налични актуализации в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, е възможно устройството ви да не поддържа новите версии на Chromium.</translation>
 <translation id="1423007117030725713">Започнете търсене в нов раздел в Chromium.</translation>
 <translation id="1431818719585918472">Позволете на Chromium да заключва разделите в режим „инкогнито“.</translation>
+<translation id="146407871188825689">Използване на Chromium на iPad по подразбиране</translation>
+<translation id="1471084500615228555">Изтриване на данните за сърфирането в Chromium</translation>
 <translation id="1472013873724362412">Профилът ви не е съвместим с Chromium. Моля, свържете се с администратора на домейна си или влезте с обикновен профил в Google.</translation>
-<translation id="1507010443238049608">Помощ за подобряването на функциите и ефективността на Chromium</translation>
-<translation id="1513122820609681462">Задаване на Chromium като браузър по подразбиране</translation>
+<translation id="1501302548410882220">Използвайте Chromium навсякъде</translation>
+<translation id="1503199973012840174">Chromium не е актуален. Актуализирайте браузъра с цел безопасност.</translation>
+<translation id="1515748263297244785">Използване на Chromium за iPad по подразбиране</translation>
 <translation id="1531155317299575425">Показва подкани за влизане в Chromium.</translation>
+<translation id="1553657876656159572">Персонализирана емисия, създадена за вас. Тя включва новини, спорт и времето.</translation>
 <translation id="1561849081734670621">За да деактивирате режима на заключване в Chromium, изключете го на своя iPhone.</translation>
+<translation id="1569258826720962327">Използване на „Действия от Chromium“ под iOS</translation>
 <translation id="159029779861043703">Chromium защитава чувствителните ви данни с помощта на Face ID.</translation>
 <translation id="1591119736686995611">Отваря мрежата с раздели в Chromium.</translation>
+<translation id="16001233025397167">Функцията „Проверка на безопасността“ ви защитава от нарушения на сигурността на данните, опасни уебсайтове и др. Получавайте сигнали за всички проблеми с поверителността и сигурността, които Chromium открие.</translation>
 <translation id="1611584326765829247">Разрешете на Chromium да ви помага да проследявате пратките си</translation>
 <translation id="1617663976202781617">Данни от синхронизирането в Chromium</translation>
-<translation id="1647558790457890304">Настройки на Chromium</translation>
 <translation id="164952285225495380">Тази пратка вече е проследявана в Chromium.</translation>
 <translation id="1707458603865303524">Използвайте Chromium всеки път, когато докоснете връзки в съобщения или други приложения.</translation>
 <translation id="1722370509450468186">Паролата ви ще бъде запазена в профила ви (<ph name="EMAIL" />).</translation>
-<translation id="1736662517232558588">Данните в Chromium са изчистени</translation>
-<translation id="1791845338122684020">Отваря страницата с историята ви в Chromium.</translation>
+<translation id="1811860791247653035">За да се възползвате от персонализиране и други функции, включете Chromium в „<ph name="FEATURE_NAME_1" />“ и <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium потвърди, че сертификатът на този уебсайт е издаден от <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium разполага с функции, които ви помагат да управлявате данните си в интернет и бързината на зареждане на уеб страници.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Карти в Chromium</translation>
-<translation id="186734497270163706">Докоснете Chromium и изберете „Стандартно приложение за браузър“.</translation>
 <translation id="1867772173333403444">4. Изберете Chromium.</translation>
 <translation id="2006345422933397527">Chromium не можа да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="2042889939382983733">Преглед на историята ви в Chromium</translation>
 <translation id="2052320862053429062">Chromium периодично проверява паролите ви спрямо списъци, които са били публикувани онлайн. Когато го прави, паролите и потребителските ви имена са шифровани, така че да не могат да бъдат прочетени от никого, включително от Google.</translation>
-<translation id="2054703085270098503">Сърфирайте безопасно с Chromium</translation>
-<translation id="2098023844024447022">Отваряне на последния ми раздел в Chromium.</translation>
-<translation id="2109439615198500433">Съвет за Chromium</translation>
+<translation id="2059365270911640413">Завършете настройването на Chromium</translation>
 <translation id="2147210759439165826">Получавайте актуално съдържание и полезни съвети за Chromium.</translation>
 <translation id="2168108852149185974">Някои добавки водят до срив на Chromium. Моля, деинсталирайте:</translation>
+<translation id="2168593389981132306">Подобряване на Chromium</translation>
 <translation id="2178608107313874732">В момента Chromium не може да използва камерата ви</translation>
 <translation id="2195025571279539885">Искате ли следващия път Chromium да предложи да преведе от <ph name="LANGUAGE_NAME" /> страниците от този сайт?</translation>
-<translation id="2216344354848599203">Натиснете и задръжте иконата на Chromium и кликнете върху „Редактиране на началния екран“</translation>
-<translation id="2218146227246548550">Организацията ви изисква да влезете в профила си, за да използвате Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Понастоящем този адрес е запазен в Chromium. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Това означава, че всеки път Chromium ще заявява настолната версия на сайта.</translation>
 <translation id="2313870531055795960">Проверка на URL адресите в съхраняван в Chromium списък с опасни сайтове. Ако сайт се опита да открадне паролата ви или изтеглите опасен файл от сайт, Chromium може също така да изпрати до „Безопасно сърфиране“ URL адресите и част от съдържанието на страницата.</translation>
+<translation id="231828342043114302">За да получавате персонализирано съдържание въз основа на интересите си, влезте в Chromium.</translation>
+<translation id="2326738825692478496">Някои от данните ви в Chromium още не са запазени в профила ви в Google.
+
+Изчакайте няколко минути, преди да излезете от браузъра. Ако излезете сега, тези данни ще бъдат изтрити.</translation>
+<translation id="2337722506862731008">Споделяне на Chromium</translation>
+<translation id="2340423701577464731">Добавяне на елемент към списъка за четене в Chromium</translation>
 <translation id="2374627437126809292">Chromium използва Google Карти, за да ви предоставя упътвания и местна информация за откритите адреси.</translation>
 <translation id="2386292341327187942">В полето за търсене на приспособления въведете Chromium.</translation>
 <translation id="2426113998523353159">Организацията ви изисква да влезете в профила си, за да използвате Chromium.</translation>
 <translation id="2450140762465183767">Вече можете да използвате Chromium всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
+<translation id="2459183986985456602">Отваряне на последния ми раздел в Chromium.</translation>
+<translation id="2476409803017965813">Можете да актуализирате избора си по всяко време от настройките на Chromium.</translation>
 <translation id="2478931088402984578">Изберете <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
-<translation id="252374538254180121">Задаване на Chromium като браузър по подразбиране</translation>
-<translation id="2574528844022712255">Преглед на отметките в Chromium</translation>
-<translation id="2590893390871230428">Синхронизиране на данните ви в Chromium</translation>
+<translation id="2512597191798760956">Натиснете и задръжте иконата на Chromium и кликнете върху „Редактиране на началния екран“</translation>
+<translation id="2517624234762908348">Синхронизиране на данните ви в Chromium</translation>
 <translation id="2592940277904433508">Продължаване на използването на Chromium</translation>
-<translation id="2618596336309823556">От настройките на устройството си отворете „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изберете Chromium</translation>
+<translation id="2607609479243848905">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium ще помогне за проследяването на тази пратка в нов раздел.}other{Chromium ще помогне за проследяването на тези пратки в нов раздел.}}</translation>
 <translation id="2650312721222849884">Включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
 <translation id="2684230048001240293">Задайте Chromium като браузър по подразбиране, така че разделите, паролите и данните ви за плащане да се синхронизират на всичките ви устройства</translation>
 <translation id="2730884209570016437">Chromium не може да използва камерата ви, защото е заета от друго приложение</translation>
-<translation id="2784449251446768092">Управление на настройките на Chromium</translation>
 <translation id="2798503587425057129">Отваря списъка за четене в Chromium.</translation>
 <translation id="28276745681323897">Можете <ph name="BEGIN_LINK" />да управлявате какви данни в Chromium да се запазват<ph name="END_LINK" /> в профила ви в Google.
 
 За още настройки, които използват данни с цел подобряване на практическата ви работа с Chromium, отворете <ph name="BEGIN_LINK" />услугите на Google<ph name="END_LINK" />.</translation>
+<translation id="2832168932648876507">Търсене с глас в Chromium.</translation>
 <translation id="2843571538056574338">Използване на Chromium за автоматично попълване</translation>
 <translation id="2918709798697875261">Организацията ви изисква да не влизате в профила си в Chromium.</translation>
+<translation id="2930158679684712936">Съвети за Chromium</translation>
 <translation id="2942241131342758843">Използвайте Chromium по подразбиране за отваряне на връзки, търсене от приспособления и автоматично попълване на пароли в други приложения</translation>
 <translation id="2977470724722393594">Chromium е актуален</translation>
+<translation id="3044857325852340337">Данните в Chromium бяха изтрити</translation>
+<translation id="3054480780637153380">Отворете настройките на Chromium на устройство с iOS, след което докоснете „Стандартно приложение за браузър“ и изберете Chromium.</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium може да ви помогне да проследявате тази пратка в нов раздел.}other{Chromium може да ви помогне да проследявате тези пратки в нов раздел.}}</translation>
 <translation id="3102849287235003384">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>
-<translation id="3219277919172823720">Търсене с глас в Chromium</translation>
-<translation id="3228349498066165585">Някои от данните ви в Chromium още не са запазени в профила ви в Google.
-        Изчакайте няколко минути, преди да излезете от профила си. Ако излезете сега, тези данни ще бъдат изтрити.</translation>
-<translation id="3256316712990552818">Копирано в Chromium</translation>
+<translation id="3115956258722352278">Искате ли да направите Chromium своя браузър по подразбиране?</translation>
+<translation id="3242612358525156339">От настройките на устройството си отворете „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изберете Chromium</translation>
 <translation id="328933489847748230">{count,plural, =1{Показва се 1 прозорец на Chromium}other{Показват се {count} прозореца на Chromium}}</translation>
 <translation id="3344973607274501920">Chromium не успя да провери паролите ви. Проверете връзката си с интернет.</translation>
 <translation id="3366305173356742781">Данни в Chromium в профила ви</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Това се случва, когато Chromium не се използва в продължение на {THRESHOLD} минута, и може да включва историята и автоматичното попълване.}other{Това се случва, когато Chromium не се използва в продължение на {THRESHOLD} минути, и може да включва историята и автоматичното попълване.}}</translation>
+<translation id="3410395242749598859">Някои от данните ви в Chromium още не са запазени в(ъв) <ph name="EMAIL" />.
+Изчакайте няколко минути, преди да превключите профила. Ако преминете към друг профил сега, тези данни ще бъдат изтрити.</translation>
 <translation id="3472200483164753384">Не се поддържа от Chromium Canary</translation>
 <translation id="347967311580159871">За още настройки, които използват данни с цел подобряване на практическата ви работа с Chromium, отворете <ph name="BEGIN_LINK" />услугите на Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Паролата ви не бе споделена. Проверете връзката си с интернет и се уверете, че сте влезли в профила си в Chromium. След това опитайте отново.</translation>
-<translation id="3554027294407525061">Изчистване на данните за сърфирането в Chromium.</translation>
+<translation id="3529798650269984835">Включете опцията „Заключване на разделите в режим „инкогнито“ при затваряне на Chromium“.</translation>
 <translation id="3567399274263440288">За да се възползвате максимално от Chromium, влезте в браузъра с профила си в Google.</translation>
+<translation id="3581385059720151202">Търсене на визуални елементи в Chromium</translation>
+<translation id="3594315078412605236">Управление на начините на плащане в Chromium</translation>
 <translation id="3634039384458740619">Отваряне на настройките на Chromium</translation>
 <translation id="3639997914391704523">Chromium може да проверява паролите ви, когато влизате с профила си в Google.</translation>
-<translation id="3650632991272923014"><ph name="USER_EMAIL1" /> използва Chromium и запази на това устройство отметки, пароли и други настройки.</translation>
-<translation id="3688710892786762883">Chromium ще открива проследяващите номера на сайтовете, които посещавате, и ще ви показва актуална информация за съответните пратки в нов раздел. Данните ви ще се споделят с Google с цел предоставяне на тази функция и подобряване на Пазаруване за всички.</translation>
 <translation id="372658070733623520">Потвърдете, че сте вие, за да използвате и запазвате данните от Chromium в профила си в Google.</translation>
+<translation id="3728124580182886854">Свързване на Chromium и други услуги на Google с цел персонализиране и др.</translation>
+<translation id="377649297473651452">Разгънат изглед на автоматичното попълване в Chromium</translation>
 <translation id="3780779443901618967">Предупреждава ви за опасни сайтове, включително такива, които не са били известни на Google, като анализира повече данни от сайтовете в сравнение със стандартната защита. Можете да пропуснете предупрежденията от Chromium.</translation>
-<translation id="3784369638459513223">Отваря нов раздел в Chromium в режим „инкогнито“.</translation>
 <translation id="3805899903892079518">Chromium няма достъп до снимките или видеоклиповете ви. Активирайте го от „Settings“ &gt; „Privacy“ &gt; „Photos“ в iOS.</translation>
 <translation id="3827545470516145620">Разполагате със стандартно ниво на защита на това устройство</translation>
 <translation id="3833326979834193417">Chromium автоматично изпълнява проверка на безопасността всеки ден, за да ви защитава от нарушения на сигурността на данните, опасни уебсайтове и др. Можете да намерите повече информация за това в настройките.</translation>
 <translation id="3855938650519180865">Новите неща в Chromium</translation>
 <translation id="3886689467633467988">Влезте в профила си в този сайт и в Chromium, за да получите отметките си и още много други неща на всичките си устройства.</translation>
-<translation id="3904484643286601695">Можете да актуализирате избора си по всяко време от настройките на Chromium.</translation>
-<translation id="394413318816989199">Шифроването с пропуск не включва начините на плащане и адресите.
-
-За да промените тази настройка, <ph name="BEGIN_LINK" />изчистете данните от Chromium в профила си<ph name="END_LINK" />.</translation>
-<translation id="3955621079070267756">Отваряне на Chromium от което и да е приложение</translation>
+<translation id="3983291422281996849">Задайте Chromium като браузър по подразбиране, за да проследявате лесно цени и да получавате статистика за цените на нещата, които искате да купите.</translation>
 <translation id="4005283307739974863">Отваря и стартира проверка на безопасността в Chromium.</translation>
 <translation id="4043291146360695975">Паролите се запазват в мениджъра на паролите само на това устройство.</translation>
-<translation id="4076589763479456892">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изчистете данните от Chromium в профила си<ph name="END_LINK" />.</translation>
+<translation id="4066426933127344530">Използване на Chromium по подразбиране</translation>
+<translation id="4087314024407094071">Отваря настройките в Chromium.</translation>
 <translation id="4099085513035183040">Не се поддържа от Chromium бета</translation>
 <translation id="4106512142782407609">Влезли сте като <ph name="EMAIL" />.
 
 Данните ви са шифровани с пропуска ви. Въведете го, за да използвате и запазвате данните от Chromium в профила си в Google.</translation>
 <translation id="4118287192800900567">Съвет за Chromium: Влезте в профила си в Chromium</translation>
 <translation id="4195557071150719219">Преглед на скорошните раздели в Chromium</translation>
-<translation id="4200712796753248893">Използване на „Действия от Chromium“ под iOS</translation>
 <translation id="420541179527342563">За да деактивирате режима на заключване в Chromium, изключете го на своя iPad.</translation>
+<translation id="4272892696084633551">Помощ за подобряването на функциите и ефективността на Chromium</translation>
+<translation id="4302397443352897529">Настройки на Chromium</translation>
 <translation id="4408912345039114853">Стартиране на проверка на безопасността в Chromium</translation>
 <translation id="4432744876818348753">Влезте в профила си, за да се възползвате максимално от Chromium.</translation>
 <translation id="4445228361214254027">Организацията ви изключи възможността за използване и запазване на данните от Chromium в профила ви в Google. Новите отметки, пароли и др. ще се запазват само на това устройство.</translation>
 <translation id="4498832288620833153">Добавя въведените URL адреси към списъка ви за четене в Chromium.</translation>
 <translation id="452436063477828504">Уверете се, че винаги можете да използвате данните в Chromium в профила си в Google</translation>
+<translation id="4527452566931097835">Искате ли да зададете Chromium като браузър по подразбиране?</translation>
 <translation id="4555020257205549924">Когато тази функция е включена, Chromium ще предлага да преведе страниците, написани на други езици, посредством Google Преводач. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="4576283463017113841">Отваря страницата с настройки за начините на плащане в Chromium.</translation>
-<translation id="4585809515399340748">Вече можете да използвате Chromium всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
-<translation id="459080529287102949">Търсене на визуални елементи в Chromium</translation>
+<translation id="4572441104543926904">Шифроването с пропуск не включва начините на плащане и адресите.
+
+За да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chromium в профила си<ph name="END_LINK" />.</translation>
+<translation id="4578500311756617174">Съвет за Chromium: Задайте Chromium като браузър по подразбиране</translation>
+<translation id="458786853569524949">Вече можете да използвате Chromium всеки път, когато докоснете връзки в имейли, документи и други приложения.</translation>
 <translation id="4633738821577273991">Възползвайте се от подобрена защита от Безопасно сърфиране и за този потребителски профил в Chromium</translation>
-<translation id="4638625642619341392">Изтеглете Chromium оттук.</translation>
 <translation id="4654936625574199632">С цел подобряване на приложението Chromium изпраща до Google данни за употребата и сривовете. <ph name="BEGIN_LINK" />Управление<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Включване на скенера в Chromium</translation>
+<translation id="4685611756167369067">Отваряне на раздел в режим „инкогнито“ в Chromium</translation>
 <translation id="4736424910885271643">Тъй като профилът ви се управлява от <ph name="HOSTED_DOMAIN" />, данните ви в Chromium ще бъдат изчистени от това устройство</translation>
-<translation id="4773487571745795781">Изключихте функцията за вход в Chromium.</translation>
 <translation id="4790638144988730920">Продължете да използвате данните от Chromium в профила си в Google.</translation>
 <translation id="4828317641996116749">Chromium не успя да провери всички пароли. Опитайте отново по-късно.</translation>
+<translation id="4856138222358683580">Действия от Chromium</translation>
+<translation id="4904452304169763785">Сигнали за всички проблеми с поверителността и сигурността, които Chromium открие.</translation>
 <translation id="4962295957157529683">Довършете действията си в другия отворен прозорец на Chromium.</translation>
 <translation id="4985291216379576555">Офлайн сте, Chromium не може да провери за актуализации</translation>
 <translation id="4996471330284142407">Вършете повече неща с опростения, сигурен и по-бърз от всякога браузър Chromium.</translation>
@@ -140,31 +153,32 @@
 <translation id="5042011327527167688">Докоснете „Преглед в Google Карти в Chromium“.</translation>
 <translation id="5044871537677053278">Chromium открива адреси и използва Google Карти, за да ви предоставя упътвания и местна информация.</translation>
 <translation id="5048795749726991615">За да получавате лесно запазените си пароли в други приложения, използвайте Chromium с цел автоматично попълване</translation>
-<translation id="5076601183701536878">Изчистване на данните за сърфирането в Chromium</translation>
+<translation id="5053429694249468757">Данните в Chromium се изтриват…</translation>
+<translation id="5071749685031362629">Chromium за iOS</translation>
 <translation id="5124429847818367226">Вече можете да използвате Chromium всеки път, когато преглеждате съобщения, документи и други приложения или докоснете връзки в тях.</translation>
 <translation id="5131565040785979529">Организацията ви (<ph name="DOMAIN" />) управлява профила, в който сте влезли, и начина на използване на Chromium.</translation>
-<translation id="5146749061471423558">Добавяне на отметки към Chromium</translation>
-<translation id="5171868502429358653">Вход в Chromium</translation>
-<translation id="5213683223491576284">Отваря Мениджър на пароли в Chromium.</translation>
 <translation id="5224391634244552924">Няма запазени пароли. Chromium може да проверява паролите ви, когато ги запазите.</translation>
-<translation id="5242782538551259282">Някои от данните ви в Chromium още не са запазени в профила ви в Google.
-
-        Изчакайте няколко минути, преди да излезете от профила си. Ако излезете сега, тези данни ще бъдат изтрити.</translation>
+<translation id="5259423875997548710">Търсене на визуални елементи в Chromium.</translation>
 <translation id="5308226104666789935">Chromium не може да провери за актуализации</translation>
 <translation id="5311557153294205270">Добавя въведените URL адреси към отметките ви в Chromium.</translation>
-<translation id="5396916991083608703">Искате ли да зададете Chromium като браузъра по подразбиране?</translation>
+<translation id="538767207339317086">Разрешаване на влизането в Chromium</translation>
+<translation id="5389058611415066188">Сърфирайте безопасно с Chromium</translation>
+<translation id="5415273218238091735">Съвет за Chromium</translation>
+<translation id="5427571867875391349">Задаване на Chromium като браузър по подразбиране</translation>
 <translation id="5434562575369834882">Отваряне в режим „инкогнито“ на Chromium</translation>
 <translation id="5453478652154926037">Chromium не може да провери паролите ви.</translation>
+<translation id="5479292367402350143">За да зададете Chromium като браузър по подразбиране:
+1. Отворете настройките.
+2. Докоснете „Стандартно приложение за браузър“.
+3. Изберете Chromium.</translation>
 <translation id="5521125884468363740">Влезте в профила си и включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
 <translation id="5522297504975449419">Някои функции на Chromium вече няма да са налице.</translation>
 <translation id="5534584691915394889">Това ще даде възможност за създаване на събития в Apple Calendar чрез съдържание от Chromium и Google Обектив.</translation>
 <translation id="5571094606370987472">Отваря скорошните раздели в Chromium.</translation>
-<translation id="5623083843656850677">Заключване на разделите в режим „инкогнито“, когато излезете от Chromium или превключите към друго приложение.</translation>
-<translation id="5671188105328420281">Съвети за Chromium</translation>
+<translation id="5603085937604338780">chromium</translation>
+<translation id="5664395081284292058">Отваряне на последния ми раздел в Chromium</translation>
 <translation id="5688047395118852662">Тази карта ви показва предложения как да се възползвате максимално от Chromium.</translation>
 <translation id="5700709190537129682">Chromium не може да провери паролите ви</translation>
-<translation id="5777187867430702742">Страница на Chromium</translation>
-<translation id="584239279770005676">Съвет за Chromium: Задайте Chromium като браузър по подразбиране</translation>
 <translation id="584550191241316896">Влязохте в профила си в Chromium</translation>
 <translation id="5889847953983052353">Когато настройката е включена:
 <ph name="BEGIN_INDENT" /> • помагате за подобряването на Chromium за хората, които използват браузъра по същия начин като вас.<ph name="END_INDENT" />
@@ -175,146 +189,126 @@
   • Ако Chromium претърпи срив, подробностите за срива може да включват лична информация.
 
   • Ако синхронизирате историята си с профила си в Google, показателите може да включват и информация за посещаваните от вас URL адреси.<ph name="END_INDENT" /></translation>
+<translation id="5932787118589620366">Изтриване на данните за сърфирането в Chromium.</translation>
+<translation id="593808800391107017">Получавайте сигнали за всички проблеми с поверителността и сигурността, които Chromium открие автоматично.</translation>
 <translation id="5945387852661427312">Влизате с профил, управляван от <ph name="DOMAIN" />, и предоставяте на администратора му контрол над данните си в Chromium. Те ще се свържат за постоянно с този профил. При излизане от браузъра информацията ви ще се изтрие от устройството, но ще продължи да се съхранява в профила ви в Google.</translation>
 <translation id="5951593919357934226">Възползвайте се максимално от Chromium.</translation>
-<translation id="5983312940147103417">Подобряване на Chromium</translation>
-<translation id="5985102273857091344">Изберете Chromium.</translation>
 <translation id="5985254578475526217">За да получавате известия от Chromium, включете ги от настройките на iOS.</translation>
-<translation id="6062449165341879460">Организацията ви <ph name="DOMAIN" /> ще има достъп до данните, отметките, историята, паролите и другите настройки в Chromium, които съхранявате в този профил. Когато излезете от профила си, данните ви ще бъдат изчистени от това устройство.  Те обаче ще продължат да се съхраняват във вашия управляван профил в Google и ще са налице за организацията ви. Организацията ви може също да задава правила за потребители конкретно за този профил, които могат да променят поведението на Chromium.</translation>
-<translation id="6093744543579359059">Управление на паролите в Chromium</translation>
 <translation id="6104024151682120539">Отваряне в Chromium</translation>
 <translation id="61109258320235597">Въведете пропуска си, за да използвате и запазвате данните от Chromium в профила си в Google.</translation>
-<translation id="6119647025869519954">За да зададете Chromium като браузъра си по подразбиране:
-1. Отворете настройките.
-2. Докоснете „Стандартно прилож. за браузър“.
-3. Изберете Chromium.</translation>
 <translation id="6132149203299792222">Влезте с профила си в Google, за да синхронизирате паролите, отметките си и др.</translation>
+<translation id="6148377327556085395">Добавяне на отметки към Chromium</translation>
 <translation id="6154098560469640583">Използвайте Chromium всеки път, когато докоснете връзки в съобщения, документи и други приложения.</translation>
 <translation id="6170619162539716595">Разрешете на Chromium да използва Google Карти, за да ви предоставя упътвания и местна информация за откритите адреси.</translation>
-<translation id="6175967839221456271">Споделяне на Chromium</translation>
 <translation id="6197255575340902638">Ако скриете „<ph name="MODULE_NAME" />“, Chromium повече няма да проследява автоматично бъдещите ви пратки и ще изтрие всички данни за проследяването на минали пратки.</translation>
 <translation id="6247557882553405851">Google Мениджър на паролите</translation>
 <translation id="6268381023930128611">Искате ли да излезете от Chromium?</translation>
 <translation id="6324041800010509197">Отваряне на мрежата с раздели в Chromium</translation>
 <translation id="6325378625795868881">Използвайте Chromium всеки път, когато докоснете връзки в съобщения и други приложения.</translation>
-<translation id="632825460376924298">Разрешаване на влизането в Chromium</translation>
 <translation id="6337530241089703714">Изберете дали данните ви в Chromium да бъдат изчистени от това устройство, или запазени</translation>
-<translation id="6348483005826990855">3. Изберете Chromium.</translation>
-<translation id="6383607155624074112">Осъществявайте по-бърз достъп до Chromium от лентата Dock на началния екран</translation>
-<translation id="6407399265324739055">Начините на плащане и адресите няма да се шифроват. Историята на сърфиране от Chromium няма да се синхронизира.
-
-Само човек, който разполага с пропуска ви, може да чете шифрованите ви данни. Пропускът не се изпраща до Google, нито се съхранява от нас. Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изчистете данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium току-що се подобри! Налице е нова версия.</translation>
 <translation id="6433172051771630690">Съвети, с чиято помощ да се възползвате максимално от Chromium.</translation>
-<translation id="6502321914804101924">Излезли сте от Chromium</translation>
+<translation id="65045991564554105">Преглед на отметките в Chromium</translation>
+<translation id="6538713818758208754">Отваря страницата с настройки за начините на плащане в Chromium.</translation>
+<translation id="6540186279384079894">Отваряне на нов раздел в Chromium</translation>
 <translation id="6563921047760808519">Научете повече за това <ph name="BEGIN_LINK" />как Chromium се грижи за поверителността на данните ви<ph name="END_LINK" /></translation>
-<translation id="6625409903340039086">Chromium вече поддържа правила за потребители за управляваните ви профили</translation>
-<translation id="6728350288669261079">Отваря настройките в Chromium.</translation>
+<translation id="6574750762636192517">Управление на паролите в Chromium</translation>
+<translation id="6590232959690355435">Отваря страницата с историята ви в Chromium.</translation>
+<translation id="6674470628873622334">Отваря нов раздел в режим „инкогнито“ в Chromium.</translation>
 <translation id="6752854822223394465">Организацията ви настройва Chromium...</translation>
 <translation id="6794054469102824109">Отваря играта с динозавъра в Chromium.</translation>
 <translation id="6820823224820483452">Chromium не успя да провери всички пароли. Опитайте отново утре.</translation>
+<translation id="6852419005633611413">Осъществявайте по-бърз достъп до Chromium от лентата Dock на началния екран</translation>
 <translation id="6852799557929001644">Осъществявайте достъп до паролите и другите си данни в Chromium от други приложения на това устройство.</translation>
 <translation id="6887138405044152640">За да изпратите този раздел до друго устройство, влезте в профила си в Chromium там.</translation>
 <translation id="6911341667534646387">Продължете да използвате данните в Chromium в профила си в Google</translation>
 <translation id="7006920032187763988">Можете да използвате паролите, които сте запазили в мениджъра на паролите, в други приложения на вашия iPad.</translation>
 <translation id="7018284295775193585">Chromium не може да се актуализира</translation>
-<translation id="7045244423563602563">Персонализирайте Chromium според вкуса си</translation>
 <translation id="7055269218854630176">Организацията ви <ph name="DOMAIN" /> управлява профила, в който влизате, и начина на използване на Chromium. Администраторът ви може да настройва или ограничава определени функции.</translation>
 <translation id="7099326575020694068">Chromium не може да използва камерата ви в режим на разделен изглед</translation>
-<translation id="7163483974919055112">Търсене на визуални елементи в Chromium.</translation>
+<translation id="7129379408282555630">Възползвайте се от мощта на Chromium Shopping</translation>
 <translation id="7165402419892018581">Избиране на Chromium с цел автоматично попълване</translation>
 <translation id="7175400662502680481">Паролата ви бе разкрита при нарушение на сигурността на данните. Мениджърът на паролите ви препоръчва да я промените сега.</translation>
+<translation id="7185731475720473450">Начините на плащане и адресите няма да се шифроват. Историята на сърфиране от Chromium няма да се синхронизира.
+
+Само човек, който разполага с пропуска ви, може да чете шифрованите ви данни. Пропускът не се изпраща до Google, нито се съхранява от нас. Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Понастоящем известията в Chromium са изключени от настройките на устройството ви.</translation>
-<translation id="7198580735512160509">За да персонализирате емисията си в Discover и Chromium, включете синхронизирането.</translation>
+<translation id="7219205286115692265">Осъществявайте по-бърз достъп до Chromium от лентата Dock на началния екран на своя iPad.</translation>
 <translation id="7222001353246886083">Търсене на ${searchPhrase} в Chromium</translation>
+<translation id="7228180817326917122">Съвет за Chromium: Изберете позицията на адресната си лента</translation>
 <translation id="725427773388857052">Chromium може да ви защити от нарушения на сигурността на данните, опасни уебсайтове и др.</translation>
 <translation id="7269362888766543920">Някои добавки причиняват срив на Chromium. Моля, опитайте да ги деинсталирате.</translation>
 <translation id="7285031092584344905">Направете паролите и другите си данни в Chromium достъпни в други приложения.</translation>
-<translation id="7313655110045230863">За да направите Chromium браузъра си по подразбиране, отворете „Настройки“, докоснете „Стандартно приложение за браузър“ и изберете Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Избраните данни са премахнати от Chromium и синхронизираните устройства. Възможно е в профила ви в Google да има други видове история на сърфиране, съхранявани на адрес history.google.com – например търсения и активност от други наши услуги.</translation>
-<translation id="7387082980875012885">Отваряне на нов раздел в Chromium</translation>
 <translation id="7395825497086981028">Паролата ви ще бъде запазена в мениджъра на паролите за <ph name="EMAIL" />.</translation>
-<translation id="7400689562045506105">Използвайте Chromium навсякъде</translation>
-<translation id="7523464085759699266">Включете опцията „Заключване на разделите в режим „инкогнито“ при затваряне на Chromium“.</translation>
-<translation id="7601597633134889942">Посетете сайт и кликнете върху „Следване“ в менюто на Chromium</translation>
+<translation id="7531461704633548377">От Chromium</translation>
+<translation id="7554983317097061001">Съвет за Chromium: Преместете Chromium в лентата Dock</translation>
+<translation id="7576863740961052505">Управление на настройките на Chromium</translation>
 <translation id="7674213385180944843">Отворете „Settings“ &gt; „Privacy“ &gt; „Camera“ &gt; „Chromium“ и включете камерата.</translation>
-<translation id="7710137812207066069">Отваря нов раздел в Chromium.</translation>
+<translation id="7733418656985455268">Съвет за Chromium: Търсене с Обектив</translation>
 <translation id="7747820849741499258">Търсене в Chromium</translation>
+<translation id="7762622637388462191">Заключване на разделите в режим „инкогнито“, когато излезете от Chromium или превключите към друго приложение.</translation>
 <translation id="7763454117143368771">Използвайте Chromium като браузър по подразбиране. Той ще ви предпазва от опасни сайтове и ще се грижи за сигурността на паролите ви</translation>
+<translation id="7784950022329154821">Заключване на разделите в режим „инкогнито“ при затваряне на Chromium</translation>
 <translation id="78025249032851484">Chromium не е актуален.</translation>
 <translation id="7859018312476869945">Когато пишете в адресната лента или полето за търсене, Chromium изпраща въведеното от вас до основната ви търсеща машина с цел получаване на по-добри предложения. Тази функция е изключена в режим „инкогнито“.</translation>
-<translation id="786327964234957808">Заменяте настоящия профил за синхронизиране (<ph name="USER_EMAIL1" />) с друг (<ph name="USER_EMAIL2" />). Съществуващите ви данни в Chromium се управляват от <ph name="DOMAIN" />. Те ще се изтрият от това устройство, но ще останат в профила <ph name="USER_EMAIL1" />.</translation>
-<translation id="7865408467687426957">Когато сте влезли в Chromium, паролите, които запазвате, ще се съхраняват в профила ви в Google. За да изключите тази функция, <ph name="BEGIN_LINK" />отворете настройките<ph name="END_LINK" />.</translation>
+<translation id="7859432380288435856">Chromium ще открива номерата за проследяване в сайтовете, които посещавате, и ще ви показва актуална информация за съответните пратки в нов раздел. Данните ви ще се споделят с Google с цел предоставяне на тази функция и подобряване на Пазаруване за всички.</translation>
 <translation id="7890287942691234100">Използване на скенера в Chromium</translation>
 <translation id="7905064834449738336">Когато използвате парола, Chromium ще ви предупреди, ако е публикувана онлайн. Когато го прави, паролите и потребителските ви имена са шифровани, така че да не могат да бъдат прочетени от никого, включително от Google.</translation>
-<translation id="7911732829884437264">Използване на Chromium по подразбиране</translation>
-<translation id="7917424453593305610">Използвайте Chromium в други приложения.</translation>
 <translation id="7928628054454574139">Отваряне на Chromium при всяко докосване на връзки в други приложения</translation>
-<translation id="7931842119211730154">Заключване на разделите в режим „инкогнито“ при затваряне на Chromium</translation>
 <translation id="7934404985878918282">Преглед на списъка за четене в Chromium</translation>
-<translation id="7971753607796745700">Добавяне на елемент към списъка за четене в Chromium</translation>
+<translation id="7951793218148208717">Отваря нов раздел в Chromium.</translation>
 <translation id="7980860476903281594">Chromium споделя местоположението ви с разрешените от вас сайтове.</translation>
-<translation id="7990085102929105708">Начините на плащане и адресите от Google Pay няма да бъдат шифровани. Историята на сърфиране от Chromium няма да се синхронизира.
-
-Само човек, който разполага с пропуска ви, може да чете шифрованите ви данни. Пропускът не се изпраща до Google, нито се съхранява от нас. Ако забравите пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изчистете данните от Chromium в профила си<ph name="END_LINK" />.</translation>
 <translation id="7994322153108931467">За да получавате полезни съвети за Chromium, включете известията от настройките на iOS.</translation>
-<translation id="7995166854192397899">Предложенията са въз основа на активността ви при сърфиране на другите ви устройства. За да получавате предложения, влезте в профила си в Chromium на всичките си устройства.</translation>
+<translation id="7997159823054171568">Задаване на Chromium като браузър по подразбиране</translation>
 <translation id="800195749539500647">Възползвайте се максимално от Chromium</translation>
+<translation id="800380310260616129">Изтеглете Chromium оттук.</translation>
 <translation id="8013573822802650211">Влезте в профила си на всичките си устройства, за да виждате разделите си навсякъде, където използвате Chromium</translation>
-<translation id="8071041515667087705">Към настройките на Chromium</translation>
-<translation id="8073677936375100957">Искате ли данните ви в Chromium да бъдат изчистени от устройството?</translation>
-<translation id="8115308261377517697">Задаване на Chromium като браузър по подразбиране</translation>
+<translation id="8014091604604659473">Излезли сте от Chromium</translation>
+<translation id="8104697640054703121">Предпазвайте се от опасни сайтове с най-високото ниво на сигурност на Chromium</translation>
+<translation id="8119542592987737574">Осъществявайте по-бърз достъп до Chromium от лентата Dock на началния екран на своя iPhone.</translation>
+<translation id="8164086860209325020">Към настройките на Chromium</translation>
 <translation id="8197822717502700527">Вече ще се възползвате максимално от Chromium на устройството си.</translation>
-<translation id="8234150821523419638">Отваряне на менюто на Chromium</translation>
-<translation id="8235427517854598594">Искате ли да направите Chromium браузър по подразбиране?</translation>
 <translation id="8240981428553046115">Chromium не можа да провери за актуализации. Опитайте отново по-късно.</translation>
 <translation id="8254729934443216898">Разгледайте новите функции, с чиято помощ да се възползвате максимално от Chromium.</translation>
-<translation id="8303579360494576778">Управление на начините на плащане в Chromium</translation>
+<translation id="829047622686389424">Персонализирана емисия, създадена за вас.</translation>
 <translation id="830951810931292870">Въведените URL адреси се отварят в режим „инкогнито“ на Chromium.</translation>
-<translation id="8386869251364507178">Действия от Chromium</translation>
 <translation id="8409374867500149834">Разполагате с най-надеждната защита на Chromium срещу опасни уебсайтове</translation>
-<translation id="8458950033462118672">Връзките могат да се отварят автоматично в Chromium, като го направите стандартното си приложение за браузър.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Това се случва, когато Chromium не се използва в продължение на {THRESHOLD} минута. Данните, запазени само на това устройство, докато сте били в профила си, ще бъдат изтрити. Те може да включват история и пароли.}other{Това се случва, когато Chromium не се използва в продължение на {THRESHOLD} минути. Данните, запазени само на това устройство, докато сте били в профила си, ще бъдат изтрити. Те може да включват история и пароли.}}</translation>
 <translation id="858114650497379505">Можете да използвате паролите, които сте запазили в мениджъра на паролите, в други приложения на вашия iPhone.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> Авторите на Chromium. Всички права запазени.</translation>
-<translation id="8618440443578628179">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay.
-
-За да промените тази настройка, <ph name="BEGIN_LINK" />изчистете данните от Chromium в профила си<ph name="END_LINK" />.</translation>
+<translation id="8602103377623855616">Страница на Chromium</translation>
 <translation id="865600487977764604">Осигурява безопасността ви в Chromium и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="8663480472502753423">Поддържане на браузъра Chromium актуален</translation>
 <translation id="8685813584220679697">Влезте в профила си в този сайт и в Chromium.</translation>
 <translation id="8730503818204408000">Отваря настройката за задаване на Chromium като браузър по подразбиране.</translation>
-<translation id="8742300022028858275">Отваряне на последния ми раздел в Chromium</translation>
-<translation id="8747378496147986285">Когато настройката е включена:
-<ph name="BEGIN_INDENT" />  • помагате за подобряването на Chromium за хората, които използват браузъра по същия начин като вас.<ph name="END_INDENT" />
-
-Неща, които да имате предвид:
-<ph name="BEGIN_INDENT" />  • До Google се изпраща информация за използването на Chromium от ваша страна, но тя не е свързана с вас.
-
-  • Ако Chromium претърпи срив, подробностите за срива може да включват лична информация.
-
-  • В случай че активирате синхронизирането, показателите може да включват и информация за посещаваните от вас URL адреси.<ph name="END_INDENT" /></translation>
+<translation id="8754966941001340678">Chromium препоръчва подобрената защита</translation>
 <translation id="8759037115129007407">Понастоящем членът на семейството ви не може да получава пароли. Помолете го да актуализира Chromium и да синхронизира паролите си. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Този профил и всички незапазени данни ще бъдат премахнати от Chromium.</translation>
+<translation id="8805148242934787134">Задаване на Chromium като браузър по подразбиране</translation>
+<translation id="8826789549860004832">Възползвайте се максимално от Chromium, като продължите с настройването на браузъра си.</translation>
 <translation id="88376265765385899">Отваря отметките в Chromium.</translation>
 <translation id="8860548555286245440">Отваряне на URL адресите в режим „инкогнито“ на Chromium</translation>
 <translation id="8866191443434488382">Chromium ще открива проследяващите номера на сайтовете, които посещавате, и ще ви показва актуална информация за съответните пратки в нов раздел. Номерът за проследяване на пратката и името на уебсайта ще бъдат изпратени до Chromium с цел предоставяне на тази функция и подобряване на функциите за пазаруване за всички. Можете да актуализирате това по всяко време от <ph name="BEGIN_LINK" />настройките за проследяване на пратки<ph name="END_LINK" />.</translation>
-<translation id="8909995017390087892">Chromium за iOS</translation>
-<translation id="8924617840944134898">Отваряне на раздел в Chromium в режим „инкогнито“</translation>
+<translation id="8880024619507699923">Организацията ви изисква да влезете в профила си, за да използвате Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Получете най-високото ниво на сигурност на Chromium</translation>
 <translation id="894437814105052438">Когато излезете от профила си, Chromium няма да синхронизира новите данни с профила ви в Google. Синхронизираните по-рано данни продължават да се съхраняват в профила ви.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Това се случва, когато Chromium не се използва в продължение на {THRESHOLD} минута}other{Това се случва, когато Chromium не се използва в продължение на {THRESHOLD} минути}}</translation>
 <translation id="8963279154877372067">Разрешаване в известията от Chromium да се показват сигнали за понижения на цените</translation>
+<translation id="8975812008711371178">Търсене с глас в Chromium</translation>
 <translation id="900560297598578021">Влезли сте като <ph name="EMAIL" />.
 
 На <ph name="TIME" /> данните ви бяха шифровани с пропуска ви. Въведете го, за да използвате и запазвате данните от Chromium в профила си в Google.</translation>
 <translation id="9022552996538154597">Вход в Chromium</translation>
+<translation id="9031260906956926157">Някои от данните ви в Chromium още не са запазени в профила ви в Google.
+Изчакайте няколко минути, преди да излезете от браузъра. Ако излезете сега, тези данни ще бъдат изтрити.</translation>
 <translation id="9050790730841755540">Използвайте Chromium всеки път, когато докоснете връзки в други приложения.</translation>
 <translation id="9059693977935746710">Няма да е нужно да помните тази парола. Тя ще бъде запазена в мениджъра на паролите за <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium не е актуален</translation>
-<translation id="9110075932708282655">Използване на Chromium по подразбиране</translation>
-<translation id="9137114218472648150">Chromium не е актуален. За да го защитите, актуализирайте браузъра до най-новата версия.</translation>
+<translation id="9152995302810511799">Съвет за Chromium: Получете най-високото ниво на сигурност на Chromium</translation>
 <translation id="921174536258924340">Chromium не успя да провери всички пароли. Опитайте отново утре или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
-<translation id="971488683725792095">Автоматично използване на Chromium, когато докоснете връзки в съобщения, документи и други приложения.</translation>
+<translation id="924957577793602335">Персонализирайте Chromium според вкуса си</translation>
 <translation id="981812233959540767">Стартиране на играта с динозавъра в Chromium</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
 </translationbundle>

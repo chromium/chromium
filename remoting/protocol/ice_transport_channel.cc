@@ -20,6 +20,7 @@
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
 #include "third_party/webrtc/p2p/base/port.h"
+#include "third_party/webrtc/rtc_base/crypto_random.h"
 
 namespace remoting::protocol {
 
@@ -30,26 +31,27 @@ const int kIceUfragLength = 16;
 // Utility function to map a cricket::Candidate string type to a
 // TransportRoute::RouteType enum value.
 TransportRoute::RouteType CandidateTypeToTransportRouteType(
-    const std::string& candidate_type) {
-  if (candidate_type == "local") {
+    const cricket::Candidate& c) {
+  if (c.is_local()) {
     return TransportRoute::DIRECT;
-  } else if (candidate_type == "stun" || candidate_type == "prflx") {
+  } else if (c.is_stun() || c.is_prflx()) {
     return TransportRoute::STUN;
-  } else if (candidate_type == "relay") {
+  } else if (c.is_relay()) {
     return TransportRoute::RELAY;
   } else {
-    LOG(FATAL) << "Unknown candidate type: " << candidate_type;
+    LOG(FATAL) << "Unknown candidate type: " << c.type_name();
   }
 }
 
 }  // namespace
 
 IceTransportChannel::IceTransportChannel(
-    scoped_refptr<TransportContext> transport_context)
+    scoped_refptr<TransportContext> transport_context,
+    const NetworkSettings& network_settings)
     : transport_context_(transport_context),
       ice_username_fragment_(rtc::CreateRandomString(kIceUfragLength)),
-      connect_attempts_left_(
-          transport_context->network_settings().ice_reconnect_attempts) {
+      connect_attempts_left_(network_settings.ice_reconnect_attempts),
+      network_settings_(network_settings) {
   DCHECK(!ice_username_fragment_.empty());
 }
 
@@ -81,9 +83,12 @@ void IceTransportChannel::Connect(const std::string& name,
   delegate_ = delegate;
   callback_ = std::move(callback);
 
-  port_allocator_ =
+  auto create_port_allocator_result =
       transport_context_->port_allocator_factory()->CreatePortAllocator(
           transport_context_, nullptr);
+  port_allocator_ = std::move(create_port_allocator_result.allocator);
+  std::move(create_port_allocator_result.apply_network_settings)
+      .Run(network_settings_);
 
   // Create P2PTransportChannel, attach signal handlers and connect it.
   // TODO(sergeyu): Specify correct component ID for the channel.
@@ -102,8 +107,8 @@ void IceTransportChannel::Connect(const std::string& name,
                                       &IceTransportChannel::OnRouteChange);
   channel_->SignalWritableState.connect(this,
                                         &IceTransportChannel::OnWritableState);
-  channel_->set_incoming_only(!(transport_context_->network_settings().flags &
-                                NetworkSettings::NAT_TRAVERSAL_OUTGOING));
+  channel_->set_incoming_only(
+      !(network_settings_.flags & NetworkSettings::NAT_TRAVERSAL_OUTGOING));
 
   channel_->Connect();
   channel_->MaybeStartGathering();
@@ -122,9 +127,8 @@ void IceTransportChannel::Connect(const std::string& name,
   --connect_attempts_left_;
 
   // Start reconnection timer.
-  reconnect_timer_.Start(FROM_HERE,
-                         transport_context_->network_settings().ice_timeout,
-                         this, &IceTransportChannel::TryReconnect);
+  reconnect_timer_.Start(FROM_HERE, network_settings_.ice_timeout, this,
+                         &IceTransportChannel::TryReconnect);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&IceTransportChannel::NotifyConnected,
@@ -158,9 +162,9 @@ void IceTransportChannel::AddRemoteCandidate(
 
   // To enforce the no-relay setting, it's not enough to not produce relay
   // candidates. It's also necessary to discard remote relay candidates.
-  bool relay_allowed = (transport_context_->network_settings().flags &
-                        NetworkSettings::NAT_TRAVERSAL_RELAY) != 0;
-  if (!relay_allowed && candidate.type() == cricket::RELAY_PORT_TYPE) {
+  bool relay_allowed =
+      (network_settings_.flags & NetworkSettings::NAT_TRAVERSAL_RELAY) != 0;
+  if (!relay_allowed && candidate.is_relay()) {
     return;
   }
 
@@ -203,8 +207,7 @@ void IceTransportChannel::OnWritableState(
             static_cast<rtc::PacketTransportInternal*>(channel_.get()));
 
   if (transport->writable()) {
-    connect_attempts_left_ =
-        transport_context_->network_settings().ice_reconnect_attempts;
+    connect_attempts_left_ = network_settings_.ice_reconnect_attempts;
     reconnect_timer_.Stop();
 
     // Route change notifications are ignored when the |channel_| is not
@@ -237,8 +240,8 @@ void IceTransportChannel::NotifyRouteChanged() {
                     TransportRoute::STUN < TransportRoute::RELAY,
                 "Route type enum values are ordered by 'indirectness'");
   route.type = std::max(
-      CandidateTypeToTransportRouteType(connection->local_candidate().type()),
-      CandidateTypeToTransportRouteType(connection->remote_candidate().type()));
+      CandidateTypeToTransportRouteType(connection->local_candidate()),
+      CandidateTypeToTransportRouteType(connection->remote_candidate()));
 
   if (!webrtc::SocketAddressToIPEndPoint(
           connection->remote_candidate().address(), &route.remote_address)) {

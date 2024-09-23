@@ -6,15 +6,16 @@
 
 #include <memory>
 #include <queue>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/platform/api/task_runner.h"
 #include "third_party/openscreen/src/platform/api/tls_connection.h"
 #include "third_party/openscreen/src/platform/base/ip_address.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 
 using ::testing::_;
 using ::testing::Mock;
@@ -28,9 +29,9 @@ class MockMessagePort : public cast_api_bindings::MessagePort {
  public:
   ~MockMessagePort() override = default;
 
-  MOCK_METHOD1(PostMessage, bool(base::StringPiece));
+  MOCK_METHOD1(PostMessage, bool(std::string_view));
   MOCK_METHOD2(PostMessageWithTransferables,
-               bool(base::StringPiece,
+               bool(std::string_view,
                     std::vector<std::unique_ptr<MessagePort>>));
   MOCK_METHOD1(SetReceiver, void(cast_api_bindings::MessagePort::Receiver*));
   MOCK_METHOD0(Close, void());
@@ -42,7 +43,8 @@ class MockTlsConnectionClient : public openscreen::TlsConnection::Client {
   ~MockTlsConnectionClient() override = default;
 
   MOCK_METHOD2(OnRead, void(openscreen::TlsConnection*, std::vector<uint8_t>));
-  MOCK_METHOD2(OnError, void(openscreen::TlsConnection*, openscreen::Error));
+  MOCK_METHOD2(OnError,
+               void(openscreen::TlsConnection*, const openscreen::Error&));
 };
 
 class MockTaskRunner : public openscreen::TaskRunner {
@@ -97,7 +99,7 @@ class MessagePortTlsConnectionTest : public testing::Test {
 };
 
 TEST_F(MessagePortTlsConnectionTest, OnMessage) {
-  base::StringPiece message = "foo";
+  std::string_view message = "foo";
 
   // No operation done when no client is set.
   connection_as_receiver_->OnMessage(message, {});
@@ -161,11 +163,12 @@ TEST_F(MessagePortTlsConnectionTest, OnPipeError) {
 }
 
 TEST_F(MessagePortTlsConnectionTest, Send) {
-  const base::StringPiece message = "foobar";
+  const std::string_view message = "foobar";
 
   // Set data is always forwarded to the underlying MessagePort's Send().
   EXPECT_CALL(*message_port_, PostMessage(message));
-  connection_->Send(message.data(), message.length());
+  connection_->Send(openscreen::ByteView(
+      reinterpret_cast<const uint8_t*>(message.data()), message.size()));
 }
 
 }  // namespace openscreen_platform

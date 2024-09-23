@@ -791,20 +791,8 @@ the `SensorInfoLinux` to know which sensor data to read and how to parse it.
 
 #### macOS
 
-`PlatformSensorProviderMac` implements `PlatformSensorProvider` and is
-responsible for creating one of the two classes implementing sensor support on
-Mac:
-
-*   [`PlatformSensorAccelerometerMac`](platform_sensor_accelerometer_mac.h)
-    exposes accelerometer data and can be in sensor fusion (e.g.
-    [`RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometer`](relative_orientation_euler_angles_fusion_algorithm_using_accelerometer.h)).
-    It is backed by the
-    [`SuddenMotionSensor`](/third_party/sudden_motion_sensor/sudden_motion_sensor_mac.h)
-    code in third_party and thus relies on being able to read from the
-    SMCMotionSensor.
-*   [`PlatformSensorAmbientLightMac`](platform_sensor_ambient_light_mac.h)
-    exposed ambient light data from laptop models that support and expose it.
-
-As evidenced above, macOS provides limited support for reading sensor data, and
-it is mostly restricted to older laptop models. In the future, it might be
-possible to remove all the Mac code from `//services/device/generic_sensor`.
+All the code to get sensor information on Mac devices stopped working because it
+was taking advantage of undocumented hardware features of Mac laptops that
+stopped being included in modern Mac laptops. Perhaps in the future there could
+be new hardware or new APIs that can be added, but for now, alas, there is no
+macOS support.

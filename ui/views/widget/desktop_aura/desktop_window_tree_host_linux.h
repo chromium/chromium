@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/views/views_export.h"
@@ -58,11 +59,15 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // Disables event listening to make |dialog| modal.
   base::OnceClosure DisableEventListening();
 
+  // Sets hints for the WM/compositor that reflect the extents of the
+  // client-drawn shadow.
+  virtual void UpdateFrameHints();
+
  protected:
   // Overridden from DesktopWindowTreeHost:
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
-  void InitModalType(ui::ModalType modal_type) override;
+  void InitModalType(ui::mojom::ModalType modal_type) override;
   Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,
@@ -71,6 +76,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // PlatformWindowDelegate:
   void DispatchEvent(ui::Event* event) override;
   void OnClosed() override;
+  void OnBoundsChanged(const BoundsChange& change) override;
 
   ui::X11Extension* GetX11Extension();
   const ui::X11Extension* GetX11Extension() const;

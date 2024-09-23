@@ -5,16 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_VOICE_TEXT_TO_SPEECH_PLAYER_SUBCLASSING_H_
 #define IOS_CHROME_BROWSER_UI_VOICE_TEXT_TO_SPEECH_PLAYER_SUBCLASSING_H_
 
-#import "ios/chrome/browser/ui/voice/text_to_speech_player.h"
-
-@class AVAudioPlayer;
-
-// Category exposing the AVAudioPlayer to subclasses.
-@interface TextToSpeechPlayer (Subclassing)
-
-// The AVAudioPlayer that is used to play TTS audio data.
-@property(nonatomic, readonly) AVAudioPlayer* player;
-
-@end
+// Temporary import for downstream compatibility.
+#import "ios/chrome/browser/voice/ui_bundled/text_to_speech_player+subclassing.h"
 
 #endif  // IOS_CHROME_BROWSER_UI_VOICE_TEXT_TO_SPEECH_PLAYER_SUBCLASSING_H_

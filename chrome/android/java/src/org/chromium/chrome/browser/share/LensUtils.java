@@ -10,11 +10,11 @@ import android.os.Build;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.gsa.GSAState;
+import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 /** This class provides utilities for intenting into Google Lens. */
-// TODO(crbug/1157496): Consolidate param-checks into a single function.
+// TODO(crbug.com/40160855): Consolidate param-checks into a single function.
 public class LensUtils {
     private static final String MIN_AGSA_VERSION_FEATURE_PARAM_NAME = "minAgsaVersionName";
     private static final String LOG_UKM_PARAM_NAME = "logUkm";
@@ -54,7 +54,7 @@ public class LensUtils {
             if (context == null) {
                 return "";
             }
-            String agsaVersion = GSAState.getInstance().getAgsaVersionName();
+            String agsaVersion = GSAUtils.getAgsaVersionName();
             if (agsaVersion == null) {
                 return "";
             } else {

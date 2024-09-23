@@ -21,9 +21,6 @@ std::string FullscreenRequestTypeToDebugString(FullscreenRequestType req) {
     result << "|ForXrOverlay";
   if (req & FullscreenRequestType::kForXrArWithCamera)
     result << "|ForXrArWithCamera";
-  if (req & FullscreenRequestType::kForWindowOpen) {
-    result << "|ForWindowOpen";
-  }
   return result.str();
 }
 #endif

@@ -45,7 +45,8 @@ std::string ToDatabaseKey(SchedulerClientType type) {
     case SchedulerClientType::kTest3:
       return "Test3";
     case SchedulerClientType::kUnknown:
-      NOTREACHED();
+    case SchedulerClientType::kDeprecatedFeatureGuide:
+      NOTREACHED_IN_MIGRATION();
       return std::string();
     case SchedulerClientType::kWebUI:
       return "WebUI";
@@ -55,8 +56,6 @@ std::string ToDatabaseKey(SchedulerClientType type) {
       return "Prefetch";
     case SchedulerClientType::kReadingList:
       return "ReadingList";
-    case SchedulerClientType::kFeatureGuide:
-      return "FeatureGuide";
   }
 }
 
@@ -322,7 +321,7 @@ void ImpressionHistoryTrackerImpl::GenerateImpressionResult(
         impression->impression = ImpressionResult::kNegative;
         break;
       case UserFeedback::kNoFeedback:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -344,7 +343,7 @@ void ImpressionHistoryTrackerImpl::UpdateThrottling(ClientState* client_state,
     case ImpressionResult::kNeutral:
       break;
     case ImpressionResult::kInvalid:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

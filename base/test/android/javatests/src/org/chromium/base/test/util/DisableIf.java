@@ -55,6 +55,8 @@ public class DisableIf {
 
         int sdk_is_less_than() default Integer.MAX_VALUE;
 
+        int sdk_equals() default 0;
+
         String supported_abis_includes() default "";
 
         String hardware_is() default "";

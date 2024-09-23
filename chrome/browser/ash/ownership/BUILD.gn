@@ -1,0 +1,91 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("ownership") {
+  sources = [
+    "fake_owner_settings_service.cc",
+    "fake_owner_settings_service.h",
+    "owner_key_loader.cc",
+    "owner_key_loader.h",
+    "owner_settings_service_ash.cc",
+    "owner_settings_service_ash.h",
+    "owner_settings_service_ash_factory.cc",
+    "owner_settings_service_ash_factory.h",
+    "ownership_histograms.cc",
+    "ownership_histograms.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/tpm",
+    "//chromeos/dbus/constants",
+    "//components/keyed_service/core",
+    "//components/ownership",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/user_manager",
+    "//components/version_info",
+    "//content/public/browser",
+    "//content/public/common",
+    "//crypto",
+    "//net",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/enrollment",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/ash/settings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "owner_key_loader_unittest.cc",
+    "owner_settings_service_ash_unittest.cc",
+  ]
+
+  deps = [
+    ":ownership",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/settings",
+    "//components/ownership",
+    "//components/prefs:test_support",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//crypto",
+    "//testing/gtest",
+  ]
+}

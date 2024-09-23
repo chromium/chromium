@@ -1,13 +1,5 @@
 This is a testharness.js-based test.
-Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, normal salt, SHA-256, with empty info
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] Derived key of type name: AES-GCM length: 192  using empty derivedKey, normal salt, SHA-256, with empty info
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, normal salt, SHA-256, with empty info
-  assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, normal salt, SHA-256, with empty info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
+Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty derivedKey, empty salt, SHA-384, with normal info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, empty salt, SHA-384, with normal info
@@ -16,8 +8,6 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, empty salt, SHA-384, with normal info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, empty salt, SHA-384, with normal info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty derivedKey, empty salt, SHA-384, with empty info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, empty salt, SHA-384, with empty info
@@ -26,8 +16,6 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, empty salt, SHA-384, with empty info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, empty salt, SHA-384, with empty info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty derivedKey, empty salt, SHA-512, with normal info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, empty salt, SHA-512, with normal info
@@ -36,8 +24,6 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, empty salt, SHA-512, with normal info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, empty salt, SHA-512, with normal info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty derivedKey, empty salt, SHA-512, with empty info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, empty salt, SHA-512, with empty info
@@ -46,8 +32,6 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, empty salt, SHA-512, with empty info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, empty salt, SHA-512, with empty info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty derivedKey, empty salt, SHA-1, with normal info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, empty salt, SHA-1, with normal info
@@ -56,8 +40,6 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, empty salt, SHA-1, with normal info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, empty salt, SHA-1, with normal info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty derivedKey, empty salt, SHA-1, with empty info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, empty salt, SHA-1, with empty info
@@ -66,8 +48,6 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, empty salt, SHA-1, with empty info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, empty salt, SHA-1, with empty info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty derivedKey, empty salt, SHA-256, with normal info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, empty salt, SHA-256, with normal info
@@ -76,8 +56,6 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, empty salt, SHA-256, with normal info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, empty salt, SHA-256, with normal info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty derivedKey, empty salt, SHA-256, with empty info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty derivedKey, empty salt, SHA-256, with empty info
@@ -86,7 +64,5 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty derivedKey, empty salt, SHA-256, with empty info
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty derivedKey, empty salt, SHA-256, with empty info with null length
-  assert_unreached: null length should have thrown an OperationError Reached unreachable code
 Harness: the test ran to completion.
 

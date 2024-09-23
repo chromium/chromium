@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -24,7 +25,7 @@
 namespace extensions {
 namespace {
 
-const std::string kSubscribePageAction = "subscribe_page_action/src";
+const std::string kSubscribePageAction = "subscribe_page_action_v2/src";
 const std::string kFeedPage = "/feeds/feed.html";
 const std::string kNoFeedPage = "/feeds/no_feed.html";
 
@@ -51,7 +52,7 @@ INSTANTIATE_TEST_SUITE_P(PersistentBackground,
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          PageActionBrowserTest,
-                         ::testing::Values(ContextType::kServiceWorker));
+                         ::testing::Values(ContextType::kServiceWorkerMV2));
 
 IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionCrash25562) {
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -60,7 +60,7 @@ FailedCommitResponseData BuildFailedCommitResponseData(
 }  // namespace
 
 CommitContributionImpl::CommitContributionImpl(
-    ModelType type,
+    DataType type,
     const sync_pb::DataTypeContext& context,
     CommitRequestDataList commit_requests,
     base::OnceCallback<void(const CommitResponseDataList&,
@@ -129,20 +129,22 @@ void CommitContributionImpl::AddToCommitMessage(
           !sync_entity->specifics().password().has_unencrypted_metadata());
 
     // Record the size of the sync entity being committed.
-    syncer::SyncRecordModelTypeEntitySizeHistogram(
-        type_, sync_entity->specifics().ByteSizeLong());
+    syncer::SyncRecordDataTypeEntitySizeHistogram(
+        type_, commit_request->entity->is_deleted(),
+        sync_entity->specifics().ByteSizeLong(), sync_entity->ByteSizeLong());
 
     if (commit_request->entity->is_deleted()) {
-      RecordEntityChangeMetrics(type_, ModelTypeEntityChange::kLocalDeletion);
+      RecordEntityChangeMetrics(type_, DataTypeEntityChange::kLocalDeletion);
     } else if (commit_request->base_version <= 0) {
-      RecordEntityChangeMetrics(type_, ModelTypeEntityChange::kLocalCreation);
+      RecordEntityChangeMetrics(type_, DataTypeEntityChange::kLocalCreation);
     } else {
-      RecordEntityChangeMetrics(type_, ModelTypeEntityChange::kLocalUpdate);
+      RecordEntityChangeMetrics(type_, DataTypeEntityChange::kLocalUpdate);
     }
   }
 
-  if (!context_.context().empty())
+  if (!context_.context().empty()) {
     commit_message->add_client_contexts()->CopyFrom(context_);
+  }
 }
 
 SyncerError CommitContributionImpl::ProcessCommitResponse(
@@ -228,7 +230,7 @@ size_t CommitContributionImpl::GetNumEntries() const {
 
 // static
 void CommitContributionImpl::PopulateCommitProto(
-    ModelType type,
+    DataType type,
     const CommitRequestData& commit_entity,
     sync_pb::SyncEntity* commit_proto) {
   const EntityData& entity_data = *commit_entity.entity;
@@ -252,8 +254,16 @@ void CommitContributionImpl::PopulateCommitProto(
   commit_proto->set_deleted(entity_data.is_deleted());
   commit_proto->set_name(entity_data.name);
   commit_proto->set_mtime(TimeToProtoTime(entity_data.modification_time));
+  if (!entity_data.collaboration_id.empty()) {
+    commit_proto->mutable_collaboration()->set_collaboration_id(
+        entity_data.collaboration_id);
+  }
 
-  if (!entity_data.is_deleted()) {
+  if (entity_data.is_deleted()) {
+    if (entity_data.deletion_origin.has_value()) {
+      *commit_proto->mutable_deletion_origin() = *entity_data.deletion_origin;
+    }
+  } else {
     // Handle bookmarks separately.
     if (type == BOOKMARKS) {
       // Populate SyncEntity.folder for backward-compatibility.

@@ -10,10 +10,10 @@ rootWebArea
 ++++++++++inlineTextBox name='Radio1 '
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio2' setSize=3 posInSet=3 checkedState=false
-++++++++++staticText ignored name='Radio2'
+++++++++++staticText ignored
 ++++++menu setSize=0
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio3' setSize=3 posInSet=1 checkedState=false
-++++++++++staticText ignored name='Radio3'
+++++++++++staticText ignored
 ++++++++radioButton inputType='radio' setSize=3 posInSet=2 checkedState=false
 ++++++++radioButton inputType='radio' setSize=3 posInSet=3 checkedState=true

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] neg float32 positive 0D scalar
+  assert_true: assert_array_approx_equals_ulp: test neg float32 actual -94.1875 should be close enough to expected -94.23045349121094 by the acceptable 0 ULP distance, but they have 5630 ULP distance expected true got false
+[FAIL] neg float32 negative 0D scalar
+  assert_true: assert_array_approx_equals_ulp: test neg float32 actual 58.3125 should be close enough to expected 58.334503173828125 by the acceptable 0 ULP distance, but they have 5768 ULP distance expected true got false
+[FAIL] neg float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test neg float32 actual 58.3125 should be close enough to expected 58.334503173828125 by the acceptable 0 ULP distance, but they have 5768 ULP distance expected true got false
+[FAIL] neg float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test neg float32 actual 58.3125 should be close enough to expected 58.334503173828125 by the acceptable 0 ULP distance, but they have 5768 ULP distance expected true got false
+[FAIL] neg float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test neg float32 actual 58.3125 should be close enough to expected 58.334503173828125 by the acceptable 0 ULP distance, but they have 5768 ULP distance expected true got false
+[FAIL] neg float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test neg float32 actual 58.3125 should be close enough to expected 58.334503173828125 by the acceptable 0 ULP distance, but they have 5768 ULP distance expected true got false
+[FAIL] neg float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test neg float32 actual 58.3125 should be close enough to expected 58.334503173828125 by the acceptable 0 ULP distance, but they have 5768 ULP distance expected true got false
+[FAIL] neg float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test neg float32 actual 58.3125 should be close enough to expected 58.334503173828125 by the acceptable 0 ULP distance, but they have 5768 ULP distance expected true got false
+Harness: the test ran to completion.
+

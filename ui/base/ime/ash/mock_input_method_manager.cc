@@ -164,6 +164,9 @@ void MockInputMethodManager::ActivateInputMethodMenuItem(
 void MockInputMethodManager::ConnectInputEngineManager(
     mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) {}
 
+void MockInputMethodManager::BindInputMethodUserDataService(
+    mojo::PendingReceiver<ime::mojom::InputMethodUserDataService> receiver) {}
+
 bool MockInputMethodManager::IsISOLevel5ShiftUsedByCurrentInputMethod() const {
   return false;
 }
@@ -228,10 +231,11 @@ void MockInputMethodManager::OverrideKeyboardKeyset(ImeKeyset keyset) {}
 
 void MockInputMethodManager::SetImeMenuFeatureEnabled(ImeMenuFeature feature,
                                                       bool enabled) {
-  if (enabled)
+  if (enabled) {
     features_enabled_state_ |= feature;
-  else
+  } else {
     features_enabled_state_ &= ~feature;
+  }
 }
 
 bool MockInputMethodManager::GetImeMenuFeatureEnabled(

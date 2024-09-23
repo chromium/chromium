@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"
-    expires_after="2024-09-01">
+    expires_after="2025-03-09">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
   <owner>temao@chromium.org</owner>
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.CreateToPresentationTime" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-03-09">
   <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.CreateToVisibleTime" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-03-09">
   <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.TimeVisible" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-03-09">
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.ColorProviderCacheSize" units="entries"
-    expires_after="2024-06-30">
+    expires_after="2025-03-09">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -104,8 +104,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Views.InvalidatesDuringLayout" units="count"
+    expires_after="2025-03-02">
+  <owner>dpranke@chromium.org</owner>
+  <owner>elainechien@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <summary>
+    Records the number of times a view's InvalidateLayout() method is called
+    during a Layout() call. Calling InvalidateLayout() during a layout call
+    should never be necessary.
+  </summary>
+</histogram>
+
+<histogram name="Views.LayoutCallDepth" units="count"
+    expires_after="2025-03-02">
+  <owner>dpranke@chromium.org</owner>
+  <owner>elainechien@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <summary>
+    The maximum reentrant call depth seen during a view's layout. Normally this
+    value will be one (Layout() was not reentered). But, we know Layout() is
+    reentered sometimes in some views (where the value will be two), and want to
+    measure how often that is. We also want to know if Layout() is ever
+    reentered more than two deep.
+  </summary>
+</histogram>
+
 <histogram name="Views.UnnecessaryLayouts" units="count"
-    expires_after="2024-12-31">
+    expires_after="2025-03-02">
   <owner>elainechien@chromium.org</owner>
   <owner>kylixrd@chromium.org</owner>
   <owner>pkasting@chromium.org</owner>
@@ -121,7 +147,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Views.{Process}.NumColorProvidersInitializedDuringOnNativeThemeUpdated"
-    units="providers" expires_after="2024-06-16">
+    units="providers" expires_after="2025-02-23">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -138,7 +164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentInitializingColorProvider" units="ms"
-    expires_after="2024-06-16">
+    expires_after="2025-02-23">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -155,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Views.{Process}.TimeSpentProcessingOnNativeThemeUpdatedEvent"
-    units="ms" expires_after="2024-06-16">
+    units="ms" expires_after="2025-02-23">
   <owner>pkasting@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>skau@chromium.org</owner>

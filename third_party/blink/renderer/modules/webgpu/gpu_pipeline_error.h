@@ -22,7 +22,7 @@ class MODULES_EXPORT GPUPipelineError : public DOMException {
                                   const GPUPipelineErrorInit* options);
 
   // For creating a GPUPipelineError from C++. Typically this will be
-  // immediately passed to ScriptPromiseResolver::Reject.
+  // immediately passed to ScriptPromiseResolverBase::Reject.
   static v8::Local<v8::Value> Create(v8::Isolate*,
                                      const String& message,
                                      V8GPUPipelineErrorReason::Enum reason);

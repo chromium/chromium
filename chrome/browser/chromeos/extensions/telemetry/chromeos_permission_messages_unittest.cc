@@ -11,7 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/permissions_test_util.h"
+#include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "chrome/test/base/testing_profile.h"
@@ -50,6 +50,9 @@ const std::u16string kAttachedDeviceInfo =
 const std::u16string kBluetoothPeripheralsInfo =
     u"Read Bluetooth peripherals information and data";
 const std::u16string kManagementAudio = u"Manage ChromeOS audio settings";
+const std::u16string kDiagnosticsNetworkInfoForMlab =
+    u"Collect IP address and network measurement results for Measurement Lab, "
+    u"according to their privacy policy (measurementlab.net/privacy)";
 }  // namespace
 
 // Tests that ChromePermissionMessageProvider provides not only correct, but
@@ -186,6 +189,26 @@ TEST_F(ChromeOSPermissionMessageUnittest, OsDiagnosticsMessage) {
   EXPECT_EQ(kDiagnosticsPermissionMessage, required_permissions()[0]);
   ASSERT_EQ(1U, active_permissions().size());
   EXPECT_EQ(kDiagnosticsPermissionMessage, active_permissions()[0]);
+}
+
+TEST_F(ChromeOSPermissionMessageUnittest, OsDiagnosticsNetworkInfoForMlab) {
+  CreateAndInstallExtensionWithPermissions(
+      base::Value::List(),
+      base::Value::List().Append("os.diagnostics.network_info_mlab"));
+
+  ASSERT_EQ(1U, optional_permissions().size());
+  EXPECT_EQ(kDiagnosticsNetworkInfoForMlab, optional_permissions()[0]);
+  ASSERT_EQ(1U, GetInactiveOptionalPermissionMessages().size());
+  EXPECT_EQ(kDiagnosticsNetworkInfoForMlab,
+            GetInactiveOptionalPermissionMessages()[0]);
+  EXPECT_EQ(0U, required_permissions().size());
+  EXPECT_EQ(0U, active_permissions().size());
+
+  GrantOptionalPermissions();
+
+  EXPECT_EQ(0U, GetInactiveOptionalPermissionMessages().size());
+  ASSERT_EQ(1U, active_permissions().size());
+  EXPECT_EQ(kDiagnosticsNetworkInfoForMlab, active_permissions()[0]);
 }
 
 TEST_F(ChromeOSPermissionMessageUnittest, OsTelemetryMessage) {

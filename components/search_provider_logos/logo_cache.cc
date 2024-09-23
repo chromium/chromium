@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -83,7 +84,7 @@ void SetTimeValue(base::Value::Dict& dict,
   dict.Set(key, base::NumberToString(internal_time_value));
 }
 
-LogoType LogoTypeFromString(base::StringPiece type) {
+LogoType LogoTypeFromString(std::string_view type) {
   if (type == kSimpleType) {
     return LogoType::SIMPLE;
   }
@@ -106,7 +107,7 @@ std::string LogoTypeToString(LogoType type) {
     case LogoType::INTERACTIVE:
       return kInteractiveType;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
@@ -170,7 +171,7 @@ std::unique_ptr<EncodedLogo> LogoCache::GetCachedLogo() {
   if (logo_num_bytes_ != 0) {
     encoded_image = new base::RefCountedString();
 
-    if (!base::ReadFileToString(logo_path, &encoded_image->data())) {
+    if (!base::ReadFileToString(logo_path, &encoded_image->as_string())) {
       UpdateMetadata(nullptr);
       return nullptr;
     }
@@ -187,7 +188,8 @@ std::unique_ptr<EncodedLogo> LogoCache::GetCachedLogo() {
   if (dark_logo_num_bytes_ != 0) {
     dark_encoded_image = new base::RefCountedString();
 
-    if (!base::ReadFileToString(dark_logo_path, &dark_encoded_image->data())) {
+    if (!base::ReadFileToString(dark_logo_path,
+                                &dark_encoded_image->as_string())) {
       UpdateMetadata(nullptr);
       return nullptr;
     }

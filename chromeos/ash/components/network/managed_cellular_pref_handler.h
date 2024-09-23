@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
    public:
     ~Observer() override = default;
 
-    // Invoked when a ICCID - SMDP address is added or removed.
+    // Invoked when metadata of a managed eSIM profile is added or removed.
     virtual void OnManagedCellularPrefChanged() = 0;
   };
 
@@ -42,17 +42,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   void Init(NetworkStateHandler* network_state_handler);
   void SetDevicePrefs(PrefService* device_prefs);
 
-  // Add a new ICCID and SMDP+ address pair to device pref for a managed
-  // cellular network. If |sync_stub_networks| is set true,
-  // NetworkStateHandler::SyncStubCellularNetworks() will be called.
-  void AddIccidSmdpPair(const std::string& iccid,
-                        const std::string& smdp_address,
-                        bool sync_stub_networks = true);
-
-  // Remove the ICCID and SMDP+ address pair from the device pref with given
-  // |iccid|.
-  void RemovePairWithIccid(const std::string& iccid);
-
   // Persistes the eSIM metadata for a managed cellular network to device prefs.
   // If |sync_stub_networks| is set true,
   // NetworkStateHandler::SyncStubCellularNetworks() will be called.
@@ -65,8 +54,22 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
   // it exists, otherwise returns |nullptr|.
   const base::Value::Dict* GetESimMetadata(const std::string& iccid);
 
-  // Removes the persisted eSIM metadata that corresponds to ICCID |iccid|.
+  // Removes the persisted eSIM metadata that corresponds to ICCID |iccid|. This
+  // should only be done when the eSIM profile is removed from the device.
   void RemoveESimMetadata(const std::string& iccid);
+
+  // Returns whether there is persisted eSIM metadata that corresponds to ICCID
+  // |iccid|, and whether this metadata indicates that the eSIM is actively
+  // managed. If the eSIM was installed by policy, but the policy was
+  // subsequently removed, the metadata will still exist but will indicate that
+  // the profile is not actively managed.
+  bool IsESimManaged(const std::string& iccid);
+
+  // Updates the eSIM metadata that corresponds to ICCID |iccid|, if it exists,
+  // to reflect that there is no longer an active policy for the relevant eSIM.
+  // This allows the eSIM metadata for eSIM profiles that were installed by
+  // policy to be persisted even after the policy is removed.
+  void SetPolicyMissing(const std::string& iccid);
 
   // Marks cellular network with iccid |iccid| as migrated to the APN revamp
   // feature. See (b/162365553).
@@ -74,10 +77,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedCellularPrefHandler {
 
   // Return true if the |iccid| has been migrated to the APN Revamp feature.
   virtual bool ContainsApnMigratedIccid(const std::string& iccid) const;
-
-  // Returns the corresponding SMDP+ address for the given |iccid|. Returns
-  // nullptr if no such |iccid| is found.
-  const std::string* GetSmdpAddressFromIccid(const std::string& iccid) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

@@ -30,8 +30,8 @@ type ResultsType = RoutineGroup[]|ResultStatusItem[];
  */
 
 export class RoutineResultListElement extends PolymerElement {
-  static get is(): string {
-    return 'routine-result-list';
+  static get is(): 'routine-result-list' {
+    return 'routine-result-list' as const;
   }
 
   static get template(): HTMLTemplateElement {
@@ -187,7 +187,7 @@ export class RoutineResultListElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'routine-result-list': RoutineResultListElement;
+    [RoutineResultListElement.is]: RoutineResultListElement;
   }
 }
 

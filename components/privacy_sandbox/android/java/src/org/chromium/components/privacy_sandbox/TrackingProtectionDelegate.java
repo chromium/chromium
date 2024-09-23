@@ -23,7 +23,35 @@ public interface TrackingProtectionDelegate {
     /** Set the value of the Do Not Track Pref. */
     void setDoNotTrack(boolean enabled);
 
-    /** @return the browser context associated with the settings page. */
+    /**
+     * @return whether the IP protection preference should be shown.
+     */
+    boolean shouldDisplayIpProtection();
+
+    /**
+     * @return whether the IP protection is enabled.
+     */
+    boolean isIpProtectionEnabled();
+
+    /** Set the value of the IP protection state. */
+    void setIpProtection(boolean enabled);
+
+    /**
+     * @return whether the fingerprinting protection preference should be shown.
+     */
+    boolean shouldDisplayFingerprintingProtection();
+
+    /**
+     * @return whether the fingerprinting protection is enabled.
+     */
+    boolean isFingerprintingProtectionEnabled();
+
+    /** Set the value of the fingerprinting protection state. */
+    void setFingerprintingProtection(boolean enabled);
+
+    /**
+     * @return the browser context associated with the settings page.
+     */
     BrowserContextHandle getBrowserContext();
 
     /** @return the site settings delegate object. */

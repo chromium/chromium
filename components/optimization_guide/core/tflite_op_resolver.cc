@@ -4,7 +4,7 @@
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
@@ -76,7 +76,7 @@ TFLiteOpResolver::TFLiteOpResolver() {
   AddBuiltin(tflite::BuiltinOperator_FULLY_CONNECTED,
              tflite::ops::builtin::Register_FULLY_CONNECTED(),
              /* min_version = */ 1,
-             /* max_version = */ 9);
+             /* max_version = */ 12);
   AddBuiltin(tflite::BuiltinOperator_LSH_PROJECTION,
              tflite::ops::builtin::Register_LSH_PROJECTION());
   AddBuiltin(tflite::BuiltinOperator_HASHTABLE_LOOKUP,
@@ -390,7 +390,7 @@ TFLiteOpResolver::TFLiteOpResolver() {
   if (features::TFLiteXNNPACKDelegateEnabled()) {
     delegate_creators_.push_back([](TfLiteContext* context) {
       return tflite::MaybeCreateXNNPACKDelegate(
-          context, tflite::XNNPackQS8Options::disabled);
+          context, tflite::XNNPackQS8Options::default_value);
     });
   }
 #endif

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -34,15 +35,20 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
+#include "url/origin.h"
 
 using blink::MessagePortChannel;
 
 namespace content {
 
 namespace {
+
+using ::testing::ElementsAre;
+
 const ukm::SourceId kClientUkmSourceId = 1;
 
 void ConnectToSharedWorker(
@@ -455,9 +461,7 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
 
   // Only a single worker instance in process 0.
   EXPECT_EQ(1u, renderer_host0->GetWorkerRefCount());
-  EXPECT_EQ(0u, renderer_host0->GetKeepAliveRefCount());
   EXPECT_EQ(0u, renderer_host1->GetWorkerRefCount());
-  EXPECT_EQ(0u, renderer_host1->GetKeepAliveRefCount());
 
   worker_host->OnConnected(connection_request_id1);
 
@@ -1241,8 +1245,10 @@ class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
   // SharedWorkerService::Observer:
   void OnWorkerCreated(const blink::SharedWorkerToken& shared_worker_token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        const base::UnguessableToken& dev_tools_token) override {
     EXPECT_TRUE(shared_workers_.insert({shared_worker_token, {}}).second);
+    shared_worker_origins_.insert(security_origin);
   }
   void OnBeforeWorkerDestroyed(
       const blink::SharedWorkerToken& shared_worker_token) override {
@@ -1280,9 +1286,14 @@ class TestSharedWorkerServiceObserver : public SharedWorkerService::Observer {
     return client_count;
   }
 
+  const base::flat_set<url::Origin>& GetWorkerOrigins() const {
+    return shared_worker_origins_;
+  }
+
  private:
   base::flat_map<blink::SharedWorkerToken, std::set<GlobalRenderFrameHostId>>
       shared_workers_;
+  base::flat_set<url::Origin> shared_worker_origins_;
 };
 
 TEST_F(SharedWorkerServiceImplTest, Observer) {
@@ -1331,6 +1342,8 @@ TEST_F(SharedWorkerServiceImplTest, Observer) {
 
   EXPECT_EQ(1u, observer.GetWorkerCount());
   EXPECT_EQ(1u, observer.GetClientCount());
+  EXPECT_THAT(observer.GetWorkerOrigins(),
+              ElementsAre(url::Origin::Create(kUrl)));
 
   // Tear down the worker host.
   worker_host->OnContextClosed();
@@ -1382,6 +1395,8 @@ TEST_F(SharedWorkerServiceImplTest, EnumerateSharedWorkers) {
       ->EnumerateSharedWorkers(&observer);
 
   EXPECT_EQ(1u, observer.GetWorkerCount());
+  EXPECT_THAT(observer.GetWorkerOrigins(),
+              ElementsAre(url::Origin::Create(kUrl)));
 
   // Cleanup.
   worker_host->OnContextClosed();

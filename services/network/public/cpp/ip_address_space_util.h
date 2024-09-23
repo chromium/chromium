@@ -10,7 +10,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 
@@ -81,15 +82,15 @@ bool COMPONENT_EXPORT(NETWORK_CPP)
 // them nor make copy of them. Parameters must outlive this struct. For example,
 // passing net::IPEndPoint() as `remote_endpoint` is invalid.
 struct COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpaceParams {
-  CalculateClientAddressSpaceParams(
-      const std::vector<GURL>& url_list_via_service_worker,
-      const mojom::ParsedHeadersPtr& parsed_headers,
-      const net::IPEndPoint& remote_endpoint);
+  STACK_ALLOCATED();
+
+ public:
   ~CalculateClientAddressSpaceParams();
 
-  const raw_ref<const std::vector<GURL>> url_list_via_service_worker;
-  const raw_ref<const mojom::ParsedHeadersPtr> parsed_headers;
-  const raw_ref<const net::IPEndPoint> remote_endpoint;
+  const std::optional<mojom::IPAddressSpace>
+      client_address_space_inherited_from_service_worker;
+  const raw_ptr<const mojom::ParsedHeadersPtr> parsed_headers;
+  const raw_ptr<const net::IPEndPoint> remote_endpoint;
 };
 
 // Given a request URL and `params`, this function calculates the

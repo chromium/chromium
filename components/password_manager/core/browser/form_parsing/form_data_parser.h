@@ -11,11 +11,13 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "url/gurl.h"
 
 namespace autofill {
-struct FormData;
+class FormData;
 }  // namespace autofill
 
 namespace password_manager {
@@ -45,6 +47,19 @@ enum class Interactability {
   kCertain = 2,
 };
 
+// This needs to be in sync with the histogram enumeration
+// UsernameDetectionMethod, because the values are reported in the
+// "PasswordManager.UsernameDetectionMethod" histogram. Don't remove or shift
+// existing values in the enum, only append and mark as obsolete as needed.
+enum class UsernameDetectionMethod {
+  kNoUsernameDetected = 0,
+  kBaseHeuristic = 1,
+  kHtmlBasedClassifier = 2,
+  kAutocompleteAttribute = 3,
+  kServerSidePrediction = 4,
+  kMaxValue = kServerSidePrediction,
+};
+
 // A wrapper around FormFieldData, carrying some additional data used during
 // parsing.
 struct ProcessedField {
@@ -55,27 +70,56 @@ struct ProcessedField {
   AutocompleteFlag autocomplete_flag = AutocompleteFlag::kNone;
 
   // True if field->form_control_type ==
-  // autofill::FormControlType::kInputPassword.
+  // autofill::FormControlType::kInputPassword (this is also true for fields
+  // that have been password field at some point of time).
   bool is_password = false;
 
   // True if field is predicted to be a password.
   bool is_predicted_as_password = false;
 
-  // True if the server predicts that this field is a credit card field (e.g.
-  // CVC field).
-  bool server_hints_credit_card_field = false;
-
-  // True if the server predicts that this field is not a password field (credit
-  // cards fields don't set this field).
-  bool server_hints_not_password = false;
-
-  // True if the server predicts that this field is not a username field.
-  bool server_hints_not_username = false;
+  // True if the server predicts that this field is a non-credential field
+  // (either credit card related field or `NOT_PASSWORD`, `NOT_USERNAME`
+  // override).
+  bool server_hints_non_credential_field = false;
 
   // True if the field accepts WebAuthn credentials, false otherwise.
   bool accepts_webauthn_credentials = false;
 
   Interactability interactability = Interactability::kUnlikely;
+};
+
+// Wrapper around the parsing result.
+struct FormParsingResult {
+  FormParsingResult();
+  FormParsingResult(
+      std::unique_ptr<PasswordForm> password_form,
+      UsernameDetectionMethod username_detection_method,
+      bool is_new_password_reliable,
+      std::vector<autofill::FieldRendererId> suggestion_banned_fields,
+      const autofill::FormFieldData* manual_generation_enabled_field);
+  FormParsingResult(FormParsingResult&& other);
+  ~FormParsingResult();
+
+  // Holistic representation of the password form.
+  std::unique_ptr<PasswordForm> password_form = nullptr;
+
+  // How the username in the password form was found. Used for comparison
+  // between in-form and out of form (Username First Flow) username detection.
+  UsernameDetectionMethod username_detection_method =
+      UsernameDetectionMethod::kNoUsernameDetected;
+
+  // True iff the new password field was found with server hints or autocomplete
+  // attributes.
+  // Only set on form parsing for filling. Used as signal for
+  // password generation eligibility.
+  bool is_new_password_reliable = false;
+
+  // List of fields that should have no Password Manager filling suggestions.
+  std::vector<autofill::FieldRendererId> suggestion_banned_fields;
+
+  // If the parsed form has new password server prediction on the text field,
+  // the field will be stored here.
+  autofill::FieldRendererId manual_generation_enabled_field;
 };
 
 // This class takes care of parsing FormData into PasswordForm and managing
@@ -85,19 +129,6 @@ class FormDataParser {
   // Denotes the intended use of the result (for filling forms vs. saving
   // captured credentials). This influences whether empty fields are ignored.
   enum class Mode { kFilling, kSaving };
-
-  // This needs to be in sync with the histogram enumeration
-  // UsernameDetectionMethod, because the values are reported in the
-  // "PasswordManager.UsernameDetectionMethod" histogram. Don't remove or shift
-  // existing values in the enum, only append and mark as obsolete as needed.
-  enum class UsernameDetectionMethod {
-    kNoUsernameDetected = 0,
-    kBaseHeuristic = 1,
-    kHtmlBasedClassifier = 2,
-    kAutocompleteAttribute = 3,
-    kServerSidePrediction = 4,
-    kMaxValue = kServerSidePrediction,
-  };
 
   // Records whether password fields with a "readonly" attribute were ignored
   // during form parsing.
@@ -144,18 +175,17 @@ class FormDataParser {
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
   // Parse DOM information |form_data| into Password Manager's form
-  // representation `PasswordForm` and how the username was found. Return
-  // {nullptr, UsernameDetectionMethod::kNoUsernameDetected} when parsing is
-  // unsuccessful.
-  std::tuple<std::unique_ptr<PasswordForm>, UsernameDetectionMethod>
-  ParseAndReturnUsernameDetection(
+  // representation `PasswordForm` and parsing related information. Return
+  // {nullptr, UsernameDetectionMethod::kNoUsernameDetected, false} when parsing
+  // is unsuccessful.
+  FormParsingResult ParseAndReturnParsingResult(
       const autofill::FormData& form_data,
       Mode mode,
       const base::flat_set<std::u16string>& stored_usernames);
 
   // Parse DOM information `form_data` into Password Manager's form
   // representation `PasswordForm`. Return nullptr when parsing is unsuccessful.
-  // Wrapper around `ParseAndReturnUsernameDetection()`.
+  // Wrapper around `ParseAndReturnParsingResult()`.
   std::unique_ptr<PasswordForm> Parse(
       const autofill::FormData& form_data,
       Mode mode,

@@ -38,7 +38,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       function sniff(e) {
         if (e.data && regex.test(e.data.messageText)) {
           resolve(e.data);
-          SDK.consoleModel.removeEventListener(SDK.ConsoleModel.Events.MessageAdded, sniff);
+          const consoleModel = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ConsoleModel.ConsoleModel);
+          consoleModel.removeEventListener(SDK.ConsoleModel.Events.MessageAdded, sniff);
         }
       }
     });

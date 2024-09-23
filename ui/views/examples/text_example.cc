@@ -15,6 +15,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -116,7 +117,7 @@ class TextExample::TextExampleView : public View {
   gfx::ElideBehavior elide_ = gfx::NO_ELIDE;
 };
 
-BEGIN_METADATA(TextExample, TextExampleView, View)
+BEGIN_METADATA(TextExample, TextExampleView)
 END_METADATA
 
 TextExample::TextExample()
@@ -132,16 +133,15 @@ Checkbox* TextExample::AddCheckbox(View* parent, const char* name) {
 
 Combobox* TextExample::AddCombobox(View* parent,
                                    std::u16string name,
-                                   const char* const* strings,
-                                   int count,
+                                   base::span<const char* const> items,
                                    void (TextExample::*combobox_callback)()) {
   parent->AddChildView(std::make_unique<Label>(name));
   auto* combobox = parent->AddChildView(std::make_unique<Combobox>(
-      std::make_unique<ExampleComboboxModel>(strings, count)));
+      std::make_unique<ExampleComboboxModel>(items)));
   combobox->SetProperty(kTableColAndRowSpanKey, gfx::Size(kNumColumns - 1, 1));
   combobox->SetCallback(
       base::BindRepeating(combobox_callback, base::Unretained(this)));
-  combobox->SetAccessibleName(name);
+  combobox->GetViewAccessibility().SetName(name);
   return combobox;
 }
 
@@ -159,46 +159,49 @@ void TextExample::CreateExampleView(View* container) {
   }
   layout->AddRows(6, TableLayout::kFixedSize);
 
-  constexpr const char* kHorizontalAligments[] = {
+  constexpr auto kHorizontalAligments = std::to_array<const char* const>({
       "Default",
       "Left",
       "Center",
       "Right",
-  };
+  });
   h_align_cb_ = AddCombobox(table_container, u"H-Align", kHorizontalAligments,
-                            std::size(kHorizontalAligments),
                             &TextExample::AlignComboboxChanged);
 
-  constexpr const char* kElideBehaviors[] = {"Elide", "No Elide"};
+  constexpr auto kElideBehaviors =
+      std::to_array<const char* const>({"Elide", "No Elide"});
   eliding_cb_ = AddCombobox(table_container, u"Eliding", kElideBehaviors,
-                            std::size(kElideBehaviors),
                             &TextExample::ElideComboboxChanged);
 
-  constexpr const char* kPrefixOptions[] = {
+  constexpr auto kPrefixOptions = std::to_array<const char* const>({
       "Default",
       "Show",
       "Hide",
-  };
+  });
   prefix_cb_ = AddCombobox(table_container, u"Prefix", kPrefixOptions,
-                           std::size(kPrefixOptions),
                            &TextExample::PrefixComboboxChanged);
 
-  constexpr const char* kTextExamples[] = {
+  constexpr auto kTextExamples = std::to_array<const char* const>({
       "Short",
       "Long",
       "Ampersands",
       "RTL Hebrew",
-  };
-  text_cb_ =
-      AddCombobox(table_container, u"Example Text", kTextExamples,
-                  std::size(kTextExamples), &TextExample::TextComboboxChanged);
+  });
+  text_cb_ = AddCombobox(table_container, u"Example Text", kTextExamples,
+                         &TextExample::TextComboboxChanged);
 
-  constexpr const char* kWeightLabels[] = {
-      "Thin",     "Extra Light", "Light",      "Normal", "Medium",
-      "Semibold", "Bold",        "Extra Bold", "Black",
-  };
+  constexpr auto kWeightLabels = std::to_array<const char* const>({
+      "Thin",
+      "Extra Light",
+      "Light",
+      "Normal",
+      "Medium",
+      "Semibold",
+      "Bold",
+      "Extra Bold",
+      "Black",
+  });
   weight_cb_ = AddCombobox(table_container, u"Font Weight", kWeightLabels,
-                           std::size(kWeightLabels),
                            &TextExample::WeightComboboxChanged);
   weight_cb_->SelectValue(u"Normal");
 
@@ -314,13 +317,17 @@ void TextExample::PrefixComboboxChanged() {
 }
 
 void TextExample::WeightComboboxChanged() {
-  constexpr gfx::Font::Weight kFontWeights[]{
-      gfx::Font::Weight::THIN,   gfx::Font::Weight::EXTRA_LIGHT,
-      gfx::Font::Weight::LIGHT,  gfx::Font::Weight::NORMAL,
-      gfx::Font::Weight::MEDIUM, gfx::Font::Weight::SEMIBOLD,
-      gfx::Font::Weight::BOLD,   gfx::Font::Weight::EXTRA_BOLD,
+  constexpr auto kFontWeights = std::to_array<gfx::Font::Weight>({
+      gfx::Font::Weight::THIN,
+      gfx::Font::Weight::EXTRA_LIGHT,
+      gfx::Font::Weight::LIGHT,
+      gfx::Font::Weight::NORMAL,
+      gfx::Font::Weight::MEDIUM,
+      gfx::Font::Weight::SEMIBOLD,
+      gfx::Font::Weight::BOLD,
+      gfx::Font::Weight::EXTRA_BOLD,
       gfx::Font::Weight::BLACK,
-  };
+  });
   text_view_->SetWeight(kFontWeights[weight_cb_->GetSelectedIndex().value()]);
 }
 

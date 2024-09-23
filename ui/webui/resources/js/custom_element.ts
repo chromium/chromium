@@ -29,16 +29,25 @@ export class CustomElement extends HTMLElement {
     this.shadowRoot!.appendChild(template.content.cloneNode(true));
   }
 
-  $<E extends Element = Element>(query: string): E|null {
-    return this.shadowRoot!.querySelector<E>(query);
+  $<K extends keyof HTMLElementTagNameMap>(query: K):
+      HTMLElementTagNameMap[K]|null;
+  $<E extends HTMLElement = HTMLElement>(query: string): E|null;
+  $(query: string) {
+    return this.shadowRoot!.querySelector(query);
   }
 
-  $all<E extends Element = Element>(query: string): NodeListOf<E> {
-    return this.shadowRoot!.querySelectorAll<E>(query);
+  $all<K extends keyof HTMLElementTagNameMap>(selectors: K):
+      NodeListOf<HTMLElementTagNameMap[K]>;
+  $all<E extends Element = Element>(selectors: string): NodeListOf<E>;
+  $all(query: string) {
+    return this.shadowRoot!.querySelectorAll(query);
   }
 
-  getRequiredElement<T extends HTMLElement = HTMLElement>(query: string): T {
-    const el = this.shadowRoot!.querySelector<T>(query);
+  getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
+      HTMLElementTagNameMap[K];
+  getRequiredElement<E extends HTMLElement = HTMLElement>(query: string): E;
+  getRequiredElement(query: string) {
+    const el = this.shadowRoot!.querySelector(query);
     assert(el);
     assert(el instanceof HTMLElement);
     return el;

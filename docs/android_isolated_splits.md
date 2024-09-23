@@ -100,7 +100,7 @@ happens whenever Chrome is updated rather than when the user launches Chrome.
 [preemptively run]: https://source.chromium.org/search?q=symbol:DexFixer.needsDexCompile&ss=chromium
 [PackageReplacedBroadcastReceiver]: https://source.chromium.org/search?q=symbol:PackageReplacedBroadcastReceiver&ss=chromium
 
-### Conflicting ClassLoaders
+### Conflicting ClassLoaders #1
 
 Tracked by [b/172602571], sometimes a split's parent ClassLoader is different
 from the Application's ClassLoader. This manifests as odd-looking
@@ -124,6 +124,19 @@ corrected for `ContextImpl` instances, which we do via
 [AppComponentFactory]: https://developer.android.com/reference/android/app/AppComponentFactory
 [detect and fix]: https://source.chromium.org/search?q=f:splitcompatappcomponentfactory&ss=chromium
 [ChromeBaseAppCompatActivity.attachBaseContext()]: https://source.chromium.org/search?q=BundleUtils\.checkContextClassLoader&ss=chromium
+
+### Conflicting ClassLoaders #2
+
+Tracked by [b/172602571], when a new split language split or feature split is
+installed, the ClassLoaders for non-base splits are recreated. Any reference to
+a class from the previous ClassLoader (e.g. due to native code holding
+references to them) will result in `ClassCastExceptions` where
+`"TypeA cannot be cast to TypeA"`.
+
+**Work-around:**
+
+There is no work-around. This is a source of crashes. We could potentially
+mitigate by restarting chrome when a split is installed.
 
 ### System.loadLibrary() Broken for Libraries in Splits
 
@@ -198,7 +211,9 @@ split's classloader upon subsequent app launches.
 
 **Work-around:**
 
-In progress: https://bugs.chromium.org/p/chromium/issues/detail?id=1066842#c34
+ * Always add `<uses-library>` to the base split.
+
+[b/265589431]: https://issuetracker.google.com/265589431
 
 ## Other Quirks & Subtleties
 

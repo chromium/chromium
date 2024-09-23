@@ -15,6 +15,8 @@ import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/widget/visual_properties.mojom";
 import "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom";
 import "ui/base/ime/mojom/text_input_state.mojom";
+import "services/viz/public/mojom/hit_test/input_target_client.mojom";
+import "ui/base/mojom/ui_base_types.mojom";
 
 // This interface is bound on the compositor thread.
 interface WidgetCompositor {
@@ -90,13 +92,6 @@ interface Widget {
   // surface etc.).
   ForceRedraw() => ();
 
-  // Setup the input channel for this widget. If the widget is a frame,
-  // then it can also obtain a FrameWidgetInputHandler from the
-  // WidgetInputHandler interface.
-  GetWidgetInputHandler(
-    pending_receiver<blink.mojom.WidgetInputHandler> request,
-    pending_remote<blink.mojom.WidgetInputHandlerHost> host);
-
   // Update the visual properties of the widget.
   UpdateVisualProperties(VisualProperties visual_properties);
 
@@ -126,5 +121,30 @@ interface Widget {
   // WasShown or RequestSuccessfulPresentationTimeForNextFrame. If there are
   // none this will do nothing.
   CancelSuccessfulPresentationTimeRequest();
+
+  // Setup the RenderInputRouter mojo connections.
+  // `viz_client` is only set when `InputOnViz` flag is enabled.
+  SetupRenderInputRouterConnections(
+    pending_receiver<blink.mojom.RenderInputRouterClient> browser_client,
+    pending_receiver<blink.mojom.RenderInputRouterClient>? viz_client);
 };
 
+// Implemented in Blink, this interface defines input-specific methods that will
+// be invoked from the BrowserMain thread. In future, VizCompositor thread will
+// also setup this interface.
+interface RenderInputRouterClient {
+  // Setup the input channel for this widget. If the widget is a frame, then it
+  // can also obtain a FrameWidgetInputHandler from the WidgetInputHandler
+  // interface.
+  GetWidgetInputHandler(
+      pending_receiver<blink.mojom.WidgetInputHandler> request,
+      pending_remote<blink.mojom.WidgetInputHandlerHost> host);
+
+  // Sent to inform the renderer to invoke a context menu.
+  // The parameter specifies the location in the render widget's coordinates.
+  ShowContextMenu(
+      ui.mojom.MenuSourceType source_type, gfx.mojom.Point location);
+
+  // Binds an InputTargetClient interface.
+  BindInputTargetClient(pending_receiver<viz.mojom.InputTargetClient> host);
+};

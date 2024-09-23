@@ -85,15 +85,6 @@ public class ImeUtils {
             }
         } else {
             switch (inputMode) {
-                default:
-                case WebTextInputMode.DEFAULT:
-                case WebTextInputMode.TEXT:
-                case WebTextInputMode.SEARCH:
-                    outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
-                    if ((inputFlags & WebTextInputFlags.AUTOCORRECT_OFF) == 0) {
-                        outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT;
-                    }
-                    break;
                 case WebTextInputMode.TEL:
                     outAttrs.inputType = InputType.TYPE_CLASS_PHONE;
                     break;
@@ -116,6 +107,15 @@ public class ImeUtils {
                 case WebTextInputMode.DECIMAL:
                     outAttrs.inputType =
                             InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
+                    break;
+                case WebTextInputMode.DEFAULT:
+                case WebTextInputMode.TEXT:
+                case WebTextInputMode.SEARCH:
+                default:
+                    outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+                    if ((inputFlags & WebTextInputFlags.AUTOCORRECT_OFF) == 0) {
+                        outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT;
+                    }
                     break;
             }
         }
@@ -142,8 +142,16 @@ public class ImeUtils {
 
         if ((inputFlags & WebTextInputFlags.HAS_BEEN_PASSWORD_FIELD) != 0
                 && (outAttrs.inputType & InputType.TYPE_NUMBER_VARIATION_PASSWORD) == 0) {
-            outAttrs.inputType =
-                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
+            // When input password is visible to user, Blink will send inputType as
+            // TextInputType.TEXT, When it is changed back to non-visible password,
+            // inputType is TextInputType.PASSWORD.
+            if (inputType == TextInputType.TEXT) {
+                outAttrs.inputType =
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+            } else if (inputType == TextInputType.PASSWORD) {
+                outAttrs.inputType =
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
+            }
         }
 
         outAttrs.initialSelStart = initialSelStart;

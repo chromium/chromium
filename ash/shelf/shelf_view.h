@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
+#include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -32,7 +32,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/throughput_tracker.h"
-#include "ui/display/display_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/bounds_animator_observer.h"
@@ -85,9 +84,7 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                              public ShelfObserver,
                              public views::ContextMenuController,
                              public views::BoundsAnimatorObserver,
-                             public ApplicationDragAndDropHost,
-                             public ShelfTooltipDelegate,
-                             public display::DisplayObserver {
+                             public ShelfTooltipDelegate {
   METADATA_HEADER(ShelfView, views::AccessiblePaneView)
 
  public:
@@ -163,7 +160,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   gfx::Rect GetVisibleItemsBoundsInScreen();
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -173,7 +171,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   bool CanDrop(const OSExchangeData& data) override;
@@ -207,9 +204,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override;
 
-  // display::DisplayObserver:
-  void OnDisplayTabletStateChanged(display::TabletState state) override;
-
   // Called from ScrollableShelfView when shelf config is updated.
   void OnShelfConfigUpdated();
 
@@ -218,16 +212,14 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // drop should be shown or not.
   bool ShouldEventActivateButton(views::View* view, const ui::Event& event);
 
-  // ApplicationDragAndDropHost:
   bool ShouldHandleDrag(const std::string& app_id,
-                        const gfx::Point& location_in_screen) const override;
+                        const gfx::Point& location_in_screen) const;
   bool StartDrag(const std::string& app_id,
                  const gfx::Point& location_in_screen,
-                 const gfx::Rect& drag_icon_bounds_in_screen) override;
+                 const gfx::Rect& drag_icon_bounds_in_screen);
   bool Drag(const gfx::Point& location_in_screen,
-            const gfx::Rect& drag_icon_bounds_in_screen) override;
-  void EndDrag(bool cancel,
-               std::unique_ptr<AppDragIconProxy> icon_proxy) override;
+            const gfx::Rect& drag_icon_bounds_in_screen);
+  void EndDrag(bool cancel);
 
   // Swaps the given button with the next one if |with_next| is true, or with
   // the previous one if |with_next| is false.
@@ -650,8 +642,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The indices of the views in |view_model_| that are visible.
   std::vector<size_t> visible_views_indices_;
 
-  std::unique_ptr<views::BoundsAnimator> bounds_animator_;
-
   // Pointer device that initiated the current drag operation. If there is no
   // current dragging operation, this is NONE.
   Pointer drag_pointer_ = NONE;
@@ -795,6 +785,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The index in the shelf app icons where the |current_ghost_view_| will show.
   std::optional<size_t> current_ghost_view_index_ = std::nullopt;
 
+  std::unique_ptr<views::BoundsAnimator> bounds_animator_;
+
   // When the scrollable shelf is enabled, |shelf_button_delegate_| should
   // be ScrollableShelfView.
   raw_ptr<ShelfButtonDelegate> shelf_button_delegate_ = nullptr;
@@ -820,8 +812,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // Set of promise app items with pending removal. Maps the promise app ID to
   // the promise app icon image.
   PendingPromiseAppsMap pending_promise_apps_removals_;
-
-  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<ShelfView> weak_factory_{this};
 };

@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -22,8 +22,8 @@ namespace net {
 namespace {
 
 void NetLogInvalidHeader(const NetLogWithSource& net_log,
-                         base::StringPiece header_name,
-                         base::StringPiece header_value,
+                         std::string_view header_name,
+                         std::string_view header_value,
                          const char* error_message) {
   net_log.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_INVALID_HEADER,
                    [&](NetLogCaptureMode capture_mode) {
@@ -37,7 +37,7 @@ void NetLogInvalidHeader(const NetLogWithSource& net_log,
                    });
 }
 
-bool ContainsUppercaseAscii(base::StringPiece str) {
+bool ContainsUppercaseAscii(std::string_view str) {
   return base::ranges::any_of(str, base::IsAsciiUpper<char>);
 }
 
@@ -47,7 +47,7 @@ HeaderCoalescer::HeaderCoalescer(uint32_t max_header_list_size,
                                  const NetLogWithSource& net_log)
     : max_header_list_size_(max_header_list_size), net_log_(net_log) {}
 
-void HeaderCoalescer::OnHeader(std::string_view key, absl::string_view value) {
+void HeaderCoalescer::OnHeader(std::string_view key, std::string_view value) {
   if (error_seen_)
     return;
   if (!AddHeader(key, value)) {
@@ -55,20 +55,19 @@ void HeaderCoalescer::OnHeader(std::string_view key, absl::string_view value) {
   }
 }
 
-spdy::Http2HeaderBlock HeaderCoalescer::release_headers() {
+quiche::HttpHeaderBlock HeaderCoalescer::release_headers() {
   DCHECK(headers_valid_);
   headers_valid_ = false;
   return std::move(headers_);
 }
 
-bool HeaderCoalescer::AddHeader(base::StringPiece key,
-                                base::StringPiece value) {
+bool HeaderCoalescer::AddHeader(std::string_view key, std::string_view value) {
   if (key.empty()) {
     NetLogInvalidHeader(net_log_, key, value, "Header name must not be empty.");
     return false;
   }
 
-  base::StringPiece key_name = key;
+  std::string_view key_name = key;
   if (key[0] == ':') {
     if (regular_header_seen_) {
       NetLogInvalidHeader(net_log_, key, value,
@@ -123,6 +122,5 @@ bool HeaderCoalescer::AddHeader(base::StringPiece key,
   headers_.AppendValueOrAddHeader(key, value);
   return true;
 }
-
 
 }  // namespace net

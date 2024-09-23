@@ -5,10 +5,10 @@
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/base/schemeful_site.h"
@@ -33,7 +33,7 @@ namespace {
 
 void SetComponentSets(FirstPartySetsLoader& loader,
                       base::Version version,
-                      base::StringPiece content) {
+                      std::string_view content) {
   base::ScopedTempDir temp_dir;
   CHECK(temp_dir.CreateUniqueTempDir());
   base::FilePath path =

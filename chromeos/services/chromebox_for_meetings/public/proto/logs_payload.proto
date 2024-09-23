@@ -1,0 +1,73 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package ash.cfm.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+
+message LogPayload {
+  // Required. Sets of log entries with a common source. Currently, we only
+  // support one of these per request.
+  repeated LogSet log_sets = 1;
+}
+
+// A set of log entries with a common source.
+message LogSet {
+  repeated LogEntry entries = 1;
+
+  // Required. The bucket for logs in log_lines.
+  // Typically a filename from which the logs were derived. Must be less than
+  // 512 characters in length and can only include: upper and lower case
+  // alphanumeric characters, forward-slash, underscore, hyphen, and period.
+  optional string log_source = 2;
+
+  // A map of key, value pairs that provides additional information about the
+  // log entries.
+  map<string, string> labels = 3;
+}
+
+// The representation of a log line, largely mapping to
+// google3/google/logging/v2/log_entry.proto
+message LogEntry {
+  reserved 1, 2, 4;
+  // Required. The string payload (minus the timestamp)
+  optional string text_payload = 3;
+
+  // Required. The timestamp of the log entry.
+  optional uint64 timestamp_micros = 5;
+
+  // Optional. A unique identifier for the log entry. May be used to avoid
+  // duplication of log entries by overwriting prior inserts.
+  optional string insert_id = 6;
+
+  // Optional. The severity of the logline.
+  optional LogSeverity severity = 7;
+}
+
+// The severity of the logline, mapping to
+// google3/google/logging/type/log_severity.proto
+enum LogSeverity {
+  // (0) The log entry has no assigned severity level.
+  LOG_SEVERITY_DEFAULT = 0;
+  // (100) Debug or trace information.
+  LOG_SEVERITY_DEBUG = 100;
+  // (200) Routine information, such as ongoing status or performance.
+  LOG_SEVERITY_INFO = 200;
+  // (300) Normal but significant events, such as start up, shut down, or
+  // a configuration change.
+  LOG_SEVERITY_NOTICE = 300;
+  // (400) Warning events might cause problems.
+  LOG_SEVERITY_WARNING = 400;
+  // (500) Error events are likely to cause problems.
+  LOG_SEVERITY_ERROR = 500;
+  // (600) Critical events cause more severe problems or outages.
+  LOG_SEVERITY_CRITICAL = 600;
+  // (700) A person must take an action immediately.
+  LOG_SEVERITY_ALERT = 700;
+  // (800) One or more systems are unusable.
+  LOG_SEVERITY_EMERGENCY = 800;
+}

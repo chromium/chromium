@@ -26,6 +26,10 @@ class AXPlatformForTest : public AXPlatform::Delegate {
   // AXPlatform::Delegate:
   AXMode GetProcessMode() override;
   void SetProcessMode(AXMode new_mode) override;
+  void OnAccessibilityApiUsage() override;
+#if BUILDFLAG(IS_WIN)
+  AXPlatform::ProductStrings GetProductStrings() override;
+#endif
 
  private:
   friend class ScopedAXModeSetter;

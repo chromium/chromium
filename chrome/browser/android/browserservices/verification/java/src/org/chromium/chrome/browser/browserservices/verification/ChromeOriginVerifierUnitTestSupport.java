@@ -21,7 +21,8 @@ public class ChromeOriginVerifierUnitTestSupport {
         // A more thorough way to override test verification would be to mock out
         // ChromeOriginVerifier.Natives. This would mean that most of the logic inside
         // ChromeOriginVerifier would also be tested. Unfortunately ChromeOriginVerifier relies on
-        // native being loaded (it uses Profile.getLastUsedRegularProfile()), so even with the
+        // native being loaded (it uses ProfileManager.getLastUsedRegularProfile()), so even with
+        // the
         // natives mocked out, it would fail to run.
 
         ChromeVerificationResultStore.getInstance()

@@ -4,6 +4,8 @@
 
 #include "ui/events/scoped_target_handler.h"
 
+#include <string_view>
+
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_target.h"
@@ -38,7 +40,7 @@ void ScopedTargetHandler::OnEvent(Event* event) {
   new_handler_->OnEvent(event);
 }
 
-base::StringPiece ScopedTargetHandler::GetLogContext() const {
+std::string_view ScopedTargetHandler::GetLogContext() const {
   return "ScopedTargetHandler";
 }
 

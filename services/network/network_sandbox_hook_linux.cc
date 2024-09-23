@@ -117,7 +117,7 @@ bool NetworkPreSandboxHook(std::vector<std::string> network_context_parent_dirs,
   instance->StartBrokerProcess(
       GetNetworkBrokerCommandSet(),
       GetNetworkFilePermissions(std::move(network_context_parent_dirs)),
-      sandbox::policy::SandboxLinux::PreSandboxHook(), options);
+      options);
 
   return true;
 }

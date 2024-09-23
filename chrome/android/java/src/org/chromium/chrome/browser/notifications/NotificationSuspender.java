@@ -15,12 +15,15 @@ import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -39,17 +42,17 @@ import java.util.stream.Collectors;
 public class NotificationSuspender {
     private final Profile mProfile;
     private final Context mContext;
-    private final NotificationManagerProxy mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
 
     public NotificationSuspender(Profile profile) {
         this(
                 profile,
                 ContextUtils.getApplicationContext(),
-                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()));
+                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()));
     }
 
     public NotificationSuspender(
-            Profile profile, Context context, NotificationManagerProxy notificationManager) {
+            Profile profile, Context context, BaseNotificationManagerProxy notificationManager) {
         mProfile = profile;
         mContext = context;
         mNotificationManager = notificationManager;
@@ -58,16 +61,17 @@ public class NotificationSuspender {
     /**
      * Suspends notifications from the given domains.
      *
-     * Suspending means storing the notification resources and canceling the Android notifications
-     * themselves, so that they can be re-displayed later.
+     * <p>Suspending means storing the notification resources and canceling the Android
+     * notifications themselves, so that they can be re-displayed later.
      *
      * @param fqdns The list of domain strings to suspend notifications from.
      */
     public void suspendNotificationsFromDomains(List<String> fqdns) {
-        List<String> storedNotificationIds =
-                storeNotificationResources(
-                        getActiveNotificationsForOrigins(getOriginsForDomains(fqdns)));
-        cancelNotificationsWithIds(storedNotificationIds);
+        getActiveNotificationsForOrigins(
+                getOriginsForDomains(fqdns),
+                (activeNotifications) -> {
+                    cancelNotificationsWithIds(storeNotificationResources(activeNotifications));
+                });
     }
 
     /**
@@ -77,10 +81,14 @@ public class NotificationSuspender {
      * <p>This allows re-displaying these notification later.
      *
      * @param notifications The origins for which all notification resources to store.
-     * @return The list of notificationIds for which resources were stored.
+     * @param callback The origins for which all notification resources to store.
      */
-    public List<String> storeNotificationResourcesFromOrigins(List<Uri> origins) {
-        return storeNotificationResources(getActiveNotificationsForOrigins(origins));
+    public void storeNotificationResourcesFromOrigins(
+            List<Uri> origins, Callback<List<String>> callback) {
+        getActiveNotificationsForOrigins(
+                origins,
+                (activeNotifications) ->
+                        callback.onResult(storeNotificationResources(activeNotifications)));
     }
 
     /**
@@ -139,8 +147,7 @@ public class NotificationSuspender {
                         mProfile,
                         origins.stream()
                                 .map((origin) -> origin.toString())
-                                .collect(Collectors.toList())
-                                .toArray(new String[0]));
+                                .collect(Collectors.toList()));
     }
 
     /**
@@ -179,28 +186,36 @@ public class NotificationSuspender {
         return origins;
     }
 
-    private List<NotificationWrapper> getActiveNotificationsForOrigins(List<Uri> origins) {
+    public void getActiveNotificationsForOrigins(
+            List<Uri> origins, Callback<List<NotificationWrapper>> callback) {
         List<NotificationWrapper> notifications = new ArrayList<>();
 
         if (origins.isEmpty()) {
-            return notifications;
+            callback.onResult(notifications);
+            return;
         }
 
-        for (NotificationManagerProxy.StatusBarNotificationProxy notification :
-                mNotificationManager.getActiveNotifications()) {
-            if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) continue;
-            String tag = notification.getTag();
-            String origin = NotificationPlatformBridge.getOriginFromNotificationTag(tag);
-            if (origin == null || !origins.contains(Uri.parse(origin))) continue;
-            NotificationMetadata metadata =
-                    new NotificationMetadata(
-                            NotificationUmaTracker.SystemNotificationType.SITES,
-                            tag,
-                            NotificationPlatformBridge.PLATFORM_ID);
-            notifications.add(new NotificationWrapper(notification.getNotification(), metadata));
-        }
-
-        return notifications;
+        mNotificationManager.getActiveNotifications(
+                (activeNotifications) -> {
+                    for (NotificationManagerProxy.StatusBarNotificationProxy notification :
+                            activeNotifications) {
+                        if (notification.getId() != NotificationPlatformBridge.PLATFORM_ID) {
+                            continue;
+                        }
+                        String tag = notification.getTag();
+                        String origin =
+                                NotificationPlatformBridge.getOriginFromNotificationTag(tag);
+                        if (origin == null || !origins.contains(Uri.parse(origin))) continue;
+                        NotificationMetadata metadata =
+                                new NotificationMetadata(
+                                        NotificationUmaTracker.SystemNotificationType.SITES,
+                                        tag,
+                                        NotificationPlatformBridge.PLATFORM_ID);
+                        notifications.add(
+                                new NotificationWrapper(notification.getNotification(), metadata));
+                    }
+                    callback.onResult(notifications);
+                });
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
@@ -228,9 +243,14 @@ public class NotificationSuspender {
         // |notificationIds|. If a notification does not have a particular resource, pass null
         // instead. |origins| must be the same size as |notificationIds|.
         void storeNotificationResources(
-                Profile profile, String[] notificationIds, String[] origins, Bitmap[] resources);
+                @JniType("Profile*") Profile profile,
+                String[] notificationIds,
+                String[] origins,
+                Bitmap[] resources);
 
         // Displays all suspended notifications for the given |origins|.
-        void reDisplayNotifications(Profile profile, String[] origins);
+        void reDisplayNotifications(
+                @JniType("Profile*") Profile profile,
+                @JniType("std::vector<std::string>") List<String> origins);
     }
 }

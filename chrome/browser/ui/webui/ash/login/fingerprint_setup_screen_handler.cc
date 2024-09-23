@@ -76,4 +76,9 @@ void FingerprintSetupScreenHandler::EnableAddAnotherFinger(bool enable) {
   CallExternalAPI("enableAddAnotherFinger", enable);
 }
 
+base::WeakPtr<FingerprintSetupScreenView>
+FingerprintSetupScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

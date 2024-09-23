@@ -6,7 +6,8 @@
 #define UI_EVENTS_DEVICES_INPUT_DEVICE_H_
 
 #include <stdint.h>
-#include <ostream>
+
+#include <iosfwd>
 #include <string>
 
 #include "base/files/file_path.h"

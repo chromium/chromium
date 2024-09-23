@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/not_fatal_until.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -50,26 +51,28 @@ class FakeSerialPort : public mojom::SerialPort {
 
   void Flush(device::mojom::SerialPortFlushMode mode,
              FlushCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  void Drain(DrainCallback callback) override { NOTREACHED(); }
+  void Drain(DrainCallback callback) override { NOTREACHED_IN_MIGRATION(); }
 
   void GetControlSignals(GetControlSignalsCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SetControlSignals(mojom::SerialHostControlSignalsPtr signals,
                          SetControlSignalsCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void ConfigurePort(mojom::SerialConnectionOptionsPtr options,
                      ConfigurePortCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  void GetPortInfo(GetPortInfoCallback callback) override { NOTREACHED(); }
+  void GetPortInfo(GetPortInfoCallback callback) override {
+    NOTREACHED_IN_MIGRATION();
+  }
 
   void Close(bool flush, CloseCallback callback) override {
     std::move(callback).Run();
@@ -106,9 +109,10 @@ void FakeSerialPortManager::AddPort(mojom::SerialPortInfoPtr port) {
 
 void FakeSerialPortManager::RemovePort(base::UnguessableToken token) {
   auto it = ports_.find(token);
-  DCHECK(it != ports_.end());
+  CHECK(it != ports_.end(), base::NotFatalUntil::M130);
   mojom::SerialPortInfoPtr info = std::move(it->second);
   ports_.erase(it);
+  info->connected = false;
 
   for (auto& client : clients_)
     client->OnPortRemoved(info.Clone());

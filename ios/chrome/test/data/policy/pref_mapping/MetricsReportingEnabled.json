@@ -10,7 +10,8 @@
         },
         "prefs": {
           "user_experience_metrics.reporting_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }

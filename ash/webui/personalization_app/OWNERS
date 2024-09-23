@@ -1,4 +1,7 @@
-cowmoo@chromium.org
-jasontt@chromium.org
+# Please use this reviewer queue instead of specifying an individual reviewer
+# unless there is a specific reason for it.
+assistive-code-review@google.com
 
-file://chromeos/ash/components/assistant/OWNERS
+cowmoo@google.com #{LAST_RESORT_SUGGESTION}
+jasontt@chromium.org #{LAST_RESORT_SUGGESTION}
+xiaohuic@chromium.org #{LAST_RESORT_SUGGESTION}

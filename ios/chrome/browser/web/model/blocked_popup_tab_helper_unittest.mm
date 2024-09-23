@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/infobars/model/confirm_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -27,15 +27,15 @@ class BlockedPopupTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
     web_state_->SetDelegate(&web_state_delegate_);
 
-    BlockedPopupTabHelper::CreateForWebState(web_state());
+    BlockedPopupTabHelper::GetOrCreateForWebState(web_state());
     InfoBarManagerImpl::CreateForWebState(web_state());
   }
 
@@ -46,7 +46,7 @@ class BlockedPopupTabHelperTest : public PlatformTest {
 
   // Returns BlockedPopupTabHelper that is being tested.
   BlockedPopupTabHelper* GetBlockedPopupTabHelper() {
-    return BlockedPopupTabHelper::FromWebState(web_state());
+    return BlockedPopupTabHelper::GetOrCreateForWebState(web_state());
   }
 
   // Returns InfoBarManager attached to `web_state()`.
@@ -57,7 +57,7 @@ class BlockedPopupTabHelperTest : public PlatformTest {
   web::WebState* web_state() { return web_state_.get(); }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   web::FakeWebStateDelegate web_state_delegate_;
 };
@@ -71,8 +71,7 @@ TEST_F(BlockedPopupTabHelperTest, ShouldBlockPopup) {
 
   // Allow popups for `source_url1`.
   scoped_refptr<HostContentSettingsMap> settings_map(
-      ios::HostContentSettingsMapFactory::GetForBrowserState(
-          browser_state_.get()));
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get()));
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(source_url1),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,

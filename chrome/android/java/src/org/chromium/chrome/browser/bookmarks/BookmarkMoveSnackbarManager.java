@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.util.Pair;
 
@@ -39,6 +38,7 @@ import java.util.List;
  * <p>Note: This class can be used for multiple launches of BookmarkFolderPickerActivity.
  */
 public class BookmarkMoveSnackbarManager implements ActivityStateListener {
+    static final int FOLDER_CHARACTER_LIMIT = 32;
     private final BookmarkModelObserver mBookmarkModelObserver =
             new BookmarkModelObserver() {
                 @Override
@@ -51,11 +51,11 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
                         return;
                     }
 
-                    // TODO(crbug.com/1523319): Consider handling the edge cases here where one or
-                    // multiple
-                    // bookmarks fail to move. For now, just roll with any of the bookmarks being
-                    // moved.
+                    // TODO(crbug.com/41496270): Consider handling the edge cases here where one or
+                    // multiple bookmarks fail to move. For now, just roll with any of the bookmarks
+                    // being moved.
                     String message;
+                    String folderTitle = getShortenedFolderTitle(newParent);
                     Resources res = mContext.getResources();
                     if (newParent.isAccountBookmark()) {
                         String accountEmail =
@@ -66,14 +66,14 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
                                 res.getQuantityString(
                                         R.plurals.account_bookmark_move_snackbar_message,
                                         mBookmarkIds.size(),
-                                        newParent.getTitle(),
+                                        folderTitle,
                                         accountEmail);
                     } else {
                         message =
                                 res.getQuantityString(
                                         R.plurals.local_bookmark_move_snackbar_message,
                                         mBookmarkIds.size(),
-                                        newParent.getTitle());
+                                        folderTitle);
                     }
 
                     mPendingSnackbar =
@@ -126,15 +126,11 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
      */
     public void startFolderPickerAndObserveResult(BookmarkId... bookmarkIds) {
         // Snackbars will only be shown when the feature is enabled.
-        mIsObserving = BookmarkFeatures.isBookmarksAccountStorageEnabled();
+        mIsObserving = mBookmarkModel.areAccountBookmarkFoldersActive();
         mBookmarkIds = Arrays.asList(bookmarkIds);
 
         // TODO(crbug.com/1465757): Record user action.
-        Intent intent = new Intent(mContext, BookmarkFolderPickerActivity.class);
-        intent.putStringArrayListExtra(
-                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
-                BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
-        mContext.startActivity(intent);
+        BookmarkUtils.startFolderPickerActivity(mContext, bookmarkIds);
     }
 
     // ActivityStateListener implementation.
@@ -154,6 +150,16 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
             mSnackbarManager.showSnackbar(mPendingSnackbar);
             mPendingSnackbar = null;
         }
+    }
+
+    /** Truncates folder titles that are too long so they fit into the snackbar. */
+    String getShortenedFolderTitle(BookmarkItem item) {
+        String title = item.getTitle();
+        if (title.length() > FOLDER_CHARACTER_LIMIT) {
+            title = title.substring(0, FOLDER_CHARACTER_LIMIT);
+            title += "...";
+        }
+        return title;
     }
 
     // Testing-specific methods.

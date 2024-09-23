@@ -34,6 +34,8 @@ extern const base::FeatureParam<PrefetchSubresourceType>
 
 BASE_DECLARE_FEATURE(kLoadingPredictorInflightPredictiveActions);
 
+BASE_DECLARE_FEATURE(kLoadingPredictorPrefetchUseReadAndDiscardBody);
+
 // Returns whether local predictions should be used to make preconnect
 // predictions.
 bool ShouldUseLocalPredictions();
@@ -53,6 +55,10 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions();
 // Returns the maximum number of prefetches that can be inflight at any given
 // time.
 size_t GetMaxInflightPrefetches();
+
+BASE_DECLARE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup);
+
+BASE_DECLARE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount);
 
 }  // namespace features
 

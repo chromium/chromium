@@ -15,6 +15,8 @@
                 "metadata.json",
                 "nacl_helper",
                 "nacl_irt_x86_64.nexe",
+                "PrivacySandboxAttestationsPreloaded/manifest.json",
+                "PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat",
                 "resources.pak",
                 "snapshot_blob.bin"
             ],

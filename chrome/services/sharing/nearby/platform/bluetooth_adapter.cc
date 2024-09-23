@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/services/sharing/nearby/common/nearby_features.h"
+#include "components/cross_device/nearby/nearby_features.h"
 
 namespace nearby {
 namespace chrome {
@@ -68,11 +68,11 @@ std::string BluetoothAdapter::GetName() const {
   return success ? info->name : std::string();
 }
 
-bool BluetoothAdapter::SetName(absl::string_view name) {
+bool BluetoothAdapter::SetName(std::string_view name) {
   return SetName(name, /*persist=*/true);
 }
 
-bool BluetoothAdapter::SetName(absl::string_view name, bool persist) {
+bool BluetoothAdapter::SetName(std::string_view name, bool persist) {
   // The `persist` parameter is ignored by ChromeOS; we always persist the
   // requested adapter name change. The `persist` argument only exists to
   // support Windows. See b/234135746 for more context."

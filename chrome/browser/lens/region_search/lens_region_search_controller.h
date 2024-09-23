@@ -36,6 +36,7 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // to true, the whole screen will automatically be captured.
   void Start(content::WebContents* web_contents,
              bool use_fullscreen_capture,
+             bool force_open_in_new_tab,
              bool is_google_default_search_provider,
              lens::AmbientSearchEntryPoint entry_point);
 
@@ -92,6 +93,10 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // Variable for tracking whether the region search request originated from the
   // companion.
   lens::AmbientSearchEntryPoint entry_point_;
+
+  // Variable for tracking whether or not to force the region search to open
+  // results in a new tab, instead of the side panel.
+  bool force_open_in_new_tab_ = false;
 
   bool in_capture_mode_ = false;
 

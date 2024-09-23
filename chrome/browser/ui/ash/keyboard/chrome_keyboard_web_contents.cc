@@ -57,9 +57,14 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
   // content::WebContentsDelegate:
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
-      const content::OpenURLParams& params) override {
-    source->GetController().LoadURLWithParams(
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    auto navigation_handle = source->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(params));
+    if (navigation_handle_callback && navigation_handle) {
+      std::move(navigation_handle_callback).Run(*navigation_handle);
+    }
     Observe(source);
     return source;
   }
@@ -229,7 +234,7 @@ void ChromeKeyboardWebContents::RenderFrameCreated(
 }
 
 void ChromeKeyboardWebContents::DidStopLoading() {
-  // TODO(https://crbug.com/845780): Change this to a DCHECK when we change
+  // TODO(crbug.com/40577582): Change this to a DCHECK when we change
   // ReloadKeyboardIfNeeded to also have a callback.
   if (!load_callback_.is_null())
     std::move(load_callback_).Run();
@@ -266,7 +271,7 @@ void ChromeKeyboardWebContents::LoadContents(const GURL& url) {
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::SINGLETON_TAB,
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
-  web_contents_->OpenURL(params);
+  web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void ChromeKeyboardWebContents::OnWindowBoundsChanged(

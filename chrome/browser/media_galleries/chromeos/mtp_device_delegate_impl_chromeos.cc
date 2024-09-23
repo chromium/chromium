@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -1082,13 +1083,8 @@ void MTPDeviceDelegateImplLinux::MoveFileLocalInternal(
     const base::File::Info& source_file_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (source_file_info.is_directory) {
-    std::move(error_callback).Run(base::File::FILE_ERROR_NOT_A_FILE);
-    return;
-  }
-
   if (source_file_path.DirName() == device_file_path.DirName()) {
-    // If a file is moved in a same directory, rename the file.
+    // If a file or directory is moved in a same directory, rename it.
     std::optional<uint32_t> file_id = CachedPathToId(source_file_path);
     if (file_id) {
       MTPDeviceTaskHelper::RenameObjectSuccessCallback
@@ -1109,8 +1105,16 @@ void MTPDeviceDelegateImplLinux::MoveFileLocalInternal(
                                            content::BrowserThread::UI,
                                            FROM_HERE, std::move(closure)));
     } else {
-      std::move(error_callback).Run(base::File::FILE_ERROR_NOT_FOUND);
+      std::move(error_callback)
+          .Run(source_file_info.is_directory
+                   ? base::File::FILE_ERROR_NOT_A_FILE
+                   : base::File::FILE_ERROR_NOT_FOUND);
     }
+    return;
+  }
+
+  if (source_file_info.is_directory) {
+    std::move(error_callback).Run(base::File::FILE_ERROR_NOT_A_FILE);
     return;
   }
 
@@ -1402,7 +1406,7 @@ void MTPDeviceDelegateImplLinux::RunTask(PendingTaskInfo task_info) {
                                                    std::move(task_info.task));
       break;
     case content::BrowserThread::ID_COUNT:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -1655,7 +1659,7 @@ void MTPDeviceDelegateImplLinux::OnDidReadDirectory(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   FileIdToMTPFileNodeMap::iterator it = file_id_to_node_map_.find(dir_id);
-  DCHECK(it != file_id_to_node_map_.end());
+  CHECK(it != file_id_to_node_map_.end(), base::NotFatalUntil::M130);
   MTPFileNode* dir_node = it->second;
 
   // Traverse the MTPFileNode tree to reconstuct the full path for |dir_id|.

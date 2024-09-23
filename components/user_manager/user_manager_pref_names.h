@@ -18,6 +18,18 @@ namespace user_manager::prefs {
 inline constexpr char kCachedMultiProfileUserBehavior[] =
     "CachedMultiProfileUserBehavior";
 
+// Gets set when a device local account is removed but a user is currently
+// logged into that account, requiring the account's data to be removed
+// after logout.
+inline constexpr char kDeviceLocalAccountPendingDataRemoval[] =
+    "PublicAccountPendingDataRemoval";
+
+// A list pref of the device local accounts defined on this device. Note that
+// this is separate from kAccountsPrefDeviceLocalAccounts because it reflects
+// the accounts that existed on the last run of Chrome and therefore have saved
+// data.
+inline constexpr char kDeviceLocalAccountsWithSavedData[] = "PublicAccounts";
+
 // A string pref containing the ID of the last active user.
 // In case of browser crash, this pref will be used to set active user after
 // session restore.

@@ -7,6 +7,8 @@ package org.chromium.net;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.net.impl.CronetLogger;
 
 import java.lang.reflect.Constructor;
@@ -120,10 +122,6 @@ public abstract class CronetProvider {
                 + "]";
     }
 
-    /** Name of the HttpEngine Native {@link CronetProvider} class. */
-    private static final String HTTPENGINE_NATIVE_PROVIDER_CLASS =
-            "org.chromium.net.impl.HttpEngineNativeProvider";
-
     /** Name of the Java {@link CronetProvider} class. */
     private static final String JAVA_CRONET_PROVIDER_CLASS =
             "org.chromium.net.impl.JavaCronetProvider";
@@ -146,6 +144,20 @@ public abstract class CronetProvider {
     static final class ProviderInfo {
         public CronetProvider provider;
         public CronetLogger.CronetSource logSource;
+
+        // Delegate ProviderInfo comparisons to `provider`. This actually matters in some cases such
+        // as PLAY_SERVICES vs GMS_CORE, see b/329440572.
+
+        @Override
+        public int hashCode() {
+            return provider.hashCode();
+        }
+
+        @Override
+        public boolean equals(@Nullable Object other) {
+            return other instanceof ProviderInfo
+                    && provider.equals(((ProviderInfo) other).provider);
+        }
     }
 
     /**
@@ -154,6 +166,19 @@ public abstract class CronetProvider {
      * and should be enabled by the invoker. See {@link CronetProvider#isEnabled()}.
      *
      * @return the list of available providers.
+     */
+    public static List<CronetProvider> getAllProviders(Context context) {
+        var providers = new ArrayList<CronetProvider>();
+        for (var providerInfo : getAllProviderInfos(context)) {
+            providers.add(providerInfo.provider);
+        }
+        return Collections.unmodifiableList(providers);
+    }
+
+    /**
+     * Same as {@link #getAllProviders}, but returning the providerInfos directly.
+     *
+     * @return the list of available providerInfos.
      */
     static List<ProviderInfo> getAllProviderInfos(Context context) {
         // Use LinkedHashSet to preserve the order and eliminate duplicate providers.
@@ -180,31 +205,11 @@ public abstract class CronetProvider {
                 false);
         addCronetProviderImplByClassName(
                 context,
-                HTTPENGINE_NATIVE_PROVIDER_CLASS,
-                CronetLogger.CronetSource.CRONET_SOURCE_PLATFORM,
-                providers,
-                false);
-        addCronetProviderImplByClassName(
-                context,
                 JAVA_CRONET_PROVIDER_CLASS,
                 CronetLogger.CronetSource.CRONET_SOURCE_FALLBACK,
                 providers,
                 false);
         return Collections.unmodifiableList(new ArrayList<>(providers));
-    }
-
-    /**
-     * Same as {@link #getAllProviderInfos}, but returning the providers directly.
-     *
-     * @deprecated This is only provided to preserve Cronet API backwards compatibility. Use {@link
-     *     #getAllProviderInfos} instead.
-     */
-    public static List<CronetProvider> getAllProviders(Context context) {
-        var providers = new ArrayList<CronetProvider>();
-        for (var providerInfo : getAllProviderInfos(context)) {
-            providers.add(providerInfo.provider);
-        }
-        return Collections.unmodifiableList(providers);
     }
 
     /**

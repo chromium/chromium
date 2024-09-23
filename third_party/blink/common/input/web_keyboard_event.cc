@@ -17,7 +17,7 @@ bool WebKeyboardEvent::CanCoalesce(const WebInputEvent& event) const {
 }
 
 void WebKeyboardEvent::Coalesce(const WebInputEvent& event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace blink

@@ -18,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -40,9 +41,8 @@ class FormfillPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
  public:
   class TestAutofillManager : public autofill::BrowserAutofillManager {
    public:
-    TestAutofillManager(autofill::ContentAutofillDriver* driver,
-                        autofill::AutofillClient* client)
-        : BrowserAutofillManager(driver, client, "en-US") {}
+    explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
+        : BrowserAutofillManager(driver, "en-US") {}
 
     autofill::TestAutofillManagerWaiter& waiter() { return waiter_; }
 
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
       blink::mojom::WebFeature::kUserDataFieldFilledPreviously, 0);
 }
 
-// TODO(crbug.com/1373542): test is flaky across platforms.
+// TODO(crbug.com/40242092): test is flaky across platforms.
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        DISABLED_UserDataFieldFilledPreviouslyUseCounter) {
   base::HistogramTester histogram_tester;
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
                        MAYBE_ClearBrowsingData) {
-  // TODO(https://crbug.com/1487593): Re-enable this test on bfcache bot.
+  // TODO(crbug.com/40283328): Re-enable this test on bfcache bot.
   if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
     return;
   }

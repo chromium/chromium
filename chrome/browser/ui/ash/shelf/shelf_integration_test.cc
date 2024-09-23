@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
   ShelfViewTestAPI test_api(shelf_view);
 
   // The shelf starts with at least the browser and Files apps pinned. Some
-  // builds also have the Discover app, but not all.
+  // builds also have the Discover and Mall apps, but not all.
   ASSERT_GE(test_api.GetButtonCount(), 2u);
   auto* shelf_model = ShelfModel::Get();
   ASSERT_TRUE(shelf_model->IsAppPinned(app_constants::kChromeAppId));
@@ -73,7 +73,11 @@ IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
 
   ShelfAppButton* chrome_button = test_api.GetButton(0);
   ASSERT_TRUE(chrome_button);
-  ShelfAppButton* files_app_button = test_api.GetButton(1);
+
+  int files_button_index =
+      shelf_model->ItemIndexByAppID(file_manager::kFileManagerSwaAppId);
+  ASSERT_GT(files_button_index, 0);
+  ShelfAppButton* files_app_button = test_api.GetButton(files_button_index);
   ASSERT_TRUE(files_app_button);
 
   aura::Env* env = aura::Env::GetInstance();
@@ -107,7 +111,6 @@ IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
       WaitForState(kFilesAppTitleObserver, true),
 
       // Wait for files app to move to foreground.
-      FlushEvents(),
 
       Log("Clicking the chrome shelf button again"),
       MoveMouseTo(chrome_button->GetBoundsInScreen().CenterPoint()),
@@ -138,7 +141,6 @@ IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
       Log("Closing Chrome via right-click menu"),
       MoveMouseTo(chrome_button->GetBoundsInScreen().CenterPoint()),
       ClickMouse(ui_controls::RIGHT), SelectMenuItem(kShelfCloseMenuItem),
-      FlushEvents(),
 
       Log("Verifying the browser window is gone"), Check([&]() {
         return !aura::test::FindWindowWithTitle(env, kBrowserWindowTitle);
@@ -147,7 +149,6 @@ IN_PROC_BROWSER_TEST_F(ShelfIntegrationTest, OpenCloseSwitchApps) {
       Log("Closing files app via right-click menu"),
       MoveMouseTo(files_app_button->GetBoundsInScreen().CenterPoint()),
       ClickMouse(ui_controls::RIGHT), SelectMenuItem(kShelfCloseMenuItem),
-      FlushEvents(),
 
       Log("Verifying the files app window is gone"),
       Check([&]() { return !aura::test::FindWindowWithTitle(env, u"Files"); }),

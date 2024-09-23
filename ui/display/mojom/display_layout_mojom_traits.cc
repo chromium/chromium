@@ -19,7 +19,7 @@ EnumTraits<display::mojom::Position, display::DisplayPlacement::Position>::
     case display::DisplayPlacement::LEFT:
       return display::mojom::Position::LEFT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::mojom::Position::TOP;
 }
 
@@ -53,7 +53,7 @@ EnumTraits<display::mojom::OffsetReference,
     case display::DisplayPlacement::BOTTOM_RIGHT:
       return display::mojom::OffsetReference::BOTTOM_RIGHT;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return display::mojom::OffsetReference::TOP_LEFT;
 }
 

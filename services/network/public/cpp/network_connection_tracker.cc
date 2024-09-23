@@ -116,7 +116,7 @@ bool NetworkConnectionTracker::IsConnectionCellular(
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected connection type " << type;
+  NOTREACHED() << "Unexpected connection type " << type;
 }
 
 void NetworkConnectionTracker::AddNetworkConnectionObserver(

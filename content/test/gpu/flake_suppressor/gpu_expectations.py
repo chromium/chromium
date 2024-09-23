@@ -54,11 +54,8 @@ class GpuExpectationProcessor(expectations_module.ExpectationProcessor):
 
   def GetExpectationFileForSuite(self, suite: str,
                                  typ_tags: ct.TagTupleType) -> str:
+    del typ_tags  # unused
     truncated_suite = suite.replace('_integration_test', '')
-    if truncated_suite == 'webgl_conformance':
-      if 'webgl-version-2' in typ_tags:
-        truncated_suite = 'webgl2_conformance'
-
     expectation_file = EXPECTATION_FILE_OVERRIDE.get(truncated_suite,
                                                      truncated_suite)
     expectation_file += '_expectations.txt'

@@ -329,3 +329,13 @@ IN_PROC_BROWSER_TEST_F(FooDialogBrowserTest, MyTest) {
       /*skip_test_loader=*/true));
 }
 ```
+
+### Common errors
+
+Tests that rely on focus, blur, or other input-related events need to be added
+to the interactive_ui_tests build target rather than the browser_tests target.
+browser_tests are run in parallel, and the window running the test will
+gain/lose activation at unpredictable times.
+
+Tests that touch production logic that depends on onFocus, onBlur or similar
+events also needs to be added to interactive_ui_tests

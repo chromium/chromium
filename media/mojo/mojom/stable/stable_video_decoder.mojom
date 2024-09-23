@@ -69,8 +69,8 @@ interface CdmContextEventCallback {
 };
 
 // Maps to the media::CdmContext interface for remoting it to another process.
-// Next MinVersion: 4
-// Next min method ID: 6
+// Next MinVersion: 5
+// Next min method ID: 7
 [Stable, Uuid="33c7a00e-2970-41b3-8c7b-f1074a539740"]
 interface StableCdmContext {
   // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwKeyData.
@@ -103,6 +103,13 @@ interface StableCdmContext {
   ParseEncryptedSliceHeader@5(uint64 secure_handle, uint32 offset,
                               array<uint8> stream_data)
       => (bool success, array<uint8> slice_header);
+
+  // Proxies to
+  // media::CdmContext::GetDecryptor()->Decrypt for video data.
+  [MinVersion=4]
+  DecryptVideoBuffer@6(DecoderBuffer buffer, array<uint8> bytes)
+      => (DecryptStatus status, DecoderBuffer? decoder_buffer,
+          array<uint8> bytes);
 };
 
 // Based on |media.mojom.VideoDecoder|.
@@ -115,6 +122,7 @@ interface StableVideoDecoder {
   // for any config that does not match an entry in this list.
   //
   // May be called before Construct().
+  [Sync]
   GetSupportedConfigs@0() =>
       (array<SupportedVideoDecoderConfig> supported_configs,
        VideoDecoderType decoder_type);
@@ -219,12 +227,8 @@ interface StableVideoDecoderFactory {
 EnableIf=is_linux_or_chromeos_ash]
 interface StableVideoDecoderFactoryProcess {
   // Initializes a StableVideoDecoderFactory using |gpu_feature_info| to
-  // restrict the supported video decode configurations. If
-  // |enable_direct_video_decoder| is true, the StableVideoDecoderFactory shall
-  // create video decoders backed by the direct video decoder stack. Otherwise,
-  // it will use the legacy VDA implementations.
+  // restrict the supported video decode configurations.
   InitializeStableVideoDecoderFactory(
       gpu.mojom.GpuFeatureInfo gpu_feature_info,
-      bool enable_direct_video_decoder,
       pending_receiver<StableVideoDecoderFactory> receiver);
 };

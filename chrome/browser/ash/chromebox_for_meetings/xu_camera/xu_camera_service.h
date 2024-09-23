@@ -16,10 +16,10 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/chromebox_for_meetings/service_adaptor.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_observer.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
+#include "chromeos/services/chromebox_for_meetings/public/cpp/service_adaptor.h"
+#include "chromeos/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
@@ -34,7 +34,7 @@ namespace ash::cfm {
 // Implementation of the XuCamera Service
 // Allows CfM to control non-standard camera functionality.
 class XuCameraService : public CfmObserver,
-                        public ServiceAdaptor::Delegate,
+                        public chromeos::cfm::ServiceAdaptor::Delegate,
                         public mojom::XuCamera {
  public:
   // Delegate interface to handle file-related operations.
@@ -79,7 +79,7 @@ class XuCameraService : public CfmObserver,
   // CfmObserver implementation
   bool ServiceRequestReceived(const std::string& interface_name) override;
 
-  // ServiceAdaptorDelegate implementation
+  // chromeos::cfm::ServiceAdaptor::Delegate implementation
   void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
   void OnAdaptorDisconnect() override;
 
@@ -155,7 +155,7 @@ class XuCameraService : public CfmObserver,
                     GetUnitIdCallback callback,
                     std::vector<device::mojom::UsbDeviceInfoPtr> devices);
   raw_ptr<Delegate> delegate_;
-  ServiceAdaptor service_adaptor_;
+  chromeos::cfm::ServiceAdaptor service_adaptor_;
   mojo::ReceiverSet<XuCamera, content::GlobalRenderFrameHostId> receivers_;
   mojo::Remote<device::mojom::UsbDeviceManager> usb_manager_;
   std::map<std::vector<uint8_t>, uint8_t> guid_unitid_map_ = {};

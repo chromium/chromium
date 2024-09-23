@@ -21,16 +21,14 @@
  *
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 
 namespace blink {
-
-UTF16TextIterator::UTF16TextIterator(const UChar* characters, int length)
-    : characters_(characters),
-      characters_end_(characters + length),
-      offset_(0),
-      length_(length),
-      current_glyph_length_(0) {}
 
 bool UTF16TextIterator::IsValidSurrogatePair(UChar32& character) {
   // If we have a surrogate pair, make sure it starts with the high part.

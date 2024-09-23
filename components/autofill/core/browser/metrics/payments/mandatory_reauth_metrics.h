@@ -15,6 +15,8 @@ namespace payments {
 enum class MandatoryReauthAuthenticationMethod;
 }
 
+enum class NonInteractivePaymentMethodType;
+
 namespace autofill_metrics {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -166,10 +168,10 @@ void LogMandatoryReauthSettingsPageDeleteCardEvent(
     MandatoryReauthAuthenticationFlowEvent event);
 
 // Logs the status of a mandatory reauth occurrence during checkout flow, such
-// as flow started/succeeded/failed, break down by `card_type` and
-// `authentication_method`.
+// as flow started/succeeded/failed, broken down by
+// `non_interactive_payment_method_type` and `authentication_method`.
 void LogMandatoryReauthCheckoutFlowUsageEvent(
-    CreditCard::RecordType card_type,
+    NonInteractivePaymentMethodType non_interactive_payment_method_type,
     payments::MandatoryReauthAuthenticationMethod authentication_method,
     MandatoryReauthAuthenticationFlowEvent event);
 

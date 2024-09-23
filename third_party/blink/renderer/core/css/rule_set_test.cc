@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -316,6 +317,20 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
   RuleSet& rule_set = sheet.GetRuleSet();
   const base::span<const RuleData> rules = rule_set.PartPseudoRules();
   ASSERT_EQ(2u, rules.size());
+}
+
+TEST(RuleSetTest, findBestRuleSetAndAdd_ShadowPseudoAfterPart) {
+  ScopedCSSCascadeCorrectScopeForTest scoped_feature(true);
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules("::part(p)::file-selector-button { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const base::span<const RuleData> rules = rule_set.UAShadowPseudoElementRules(
+      shadow_element_names::kPseudoFileUploadButton);
+  ASSERT_EQ(1u, rules.size());
+  const base::span<const RuleData> part_rules = rule_set.PartPseudoRules();
+  ASSERT_EQ(0u, part_rules.size());
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_IsSingleArg) {

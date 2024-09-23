@@ -183,7 +183,7 @@ bool ClearSiteDataHandler::HandleHeaderAndOutputConsoleMessages() {
   bool deferred = Run();
 
   // If the redirect is deferred, wait until it is resumed.
-  // TODO(crbug.com/876931): Delay output until next frame for navigations.
+  // TODO(crbug.com/41409604): Delay output until next frame for navigations.
   if (!deferred) {
     OutputConsoleMessages();
     RunCallbackNotDeferred();
@@ -322,7 +322,7 @@ bool ClearSiteDataHandler::ParseHeader(
     output_types += input_type;
   }
 
-  if (clear_site_data_types->Empty() && storage_buckets_to_remove->empty()) {
+  if (clear_site_data_types->empty() && storage_buckets_to_remove->empty()) {
     delegate->AddMessage(current_url, "No recognized types specified.",
                          blink::mojom::ConsoleMessageLevel::kError);
     LogEvent(CLEAR_SITE_DATA_NO_RECOGNIZABLE_TYPES);
@@ -343,7 +343,7 @@ bool ClearSiteDataHandler::ParseHeader(
   }
 
   // Pretty-print which types are to be cleared.
-  // TODO(crbug.com/798760): Remove the disclaimer about cookies.
+  // TODO(crbug.com/41363015): Remove the disclaimer about cookies.
   std::string console_output =
       base::StringPrintf(kConsoleMessageCleared, output_types.c_str());
   if (clear_site_data_types->Has(ClearSiteDataType::kCookies)) {
@@ -381,7 +381,7 @@ void ClearSiteDataHandler::TaskFinished(
     base::OnceClosure callback) {
   DCHECK(!clearing_started.is_null());
 
-  // TODO(crbug.com/876931): Delay output until next frame for navigations.
+  // TODO(crbug.com/41409604): Delay output until next frame for navigations.
   delegate->OutputMessages(web_contents);
 
   std::move(callback).Run();

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 
 @class TabGridPageControl;
@@ -17,13 +17,15 @@
 // size, current TabGrid page and mode:
 //
 // Horizontal-compact and vertical-regular screen size:
-//   Normal mode:    [               PageControl      Select]
-//   Remote page:    [               PageControl            ]
-//   Selection mode: [SelectAll    SelectedTabsCount    Done]
+//   Normal mode:     [               PageControl      Select]
+//   Tab Groups page: [               PageControl            ]
+//   Remote page:     [               PageControl            ]
+//   Selection mode:  [SelectAll    SelectedTabsCount    Done]
 // Other screen size:
-//   Normal mode:    [CloseAll           PageControl      Select Done]
-//   Remote page:    [                   PageControl             Done]
-//   Selection mode: [SelectAll        SelectedTabsCount         Done]
+//   Normal mode:     [CloseAll           PageControl      Select Done]
+//   Tab Groups page: [                   PageControl             Done]
+//   Remote page:     [                   PageControl             Done]
+//   Selection mode:  [SelectAll        SelectedTabsCount         Done]
 @interface TabGridTopToolbar : UIToolbar <KeyCommandActions>
 
 // These components are publicly available to allow the user to set their
@@ -43,26 +45,31 @@
 
 // Sets the delegate for the searchbar.
 - (void)setSearchBarDelegate:(id<UISearchBarDelegate>)delegate;
-// Set `enabled` on the search button.
+// Sets `enabled` on the search button.
 - (void)setSearchButtonEnabled:(BOOL)enabled;
-// Set `enabled` on the select all button.
+// Sets `enabled` on the select all button.
 - (void)setSelectAllButtonEnabled:(BOOL)enabled;
-// Set `enabled` on the done button.
+// Sets `enabled` on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
-// Set `enabled` on the close all button.
+// Sets `enabled` on the close all button.
 - (void)setCloseAllButtonEnabled:(BOOL)enabled;
-// use undo or closeAll text on the close all button based on `useUndo` value.
+// Uses undo or closeAll text on the close all button based on `useUndo` value.
 - (void)useUndoCloseAll:(BOOL)useUndo;
 
 // Sets the `menu` displayed on tapping the Edit button.
 - (void)setEditButtonMenu:(UIMenu*)menu;
-// Set `enabled` on the Edit button.
+// Sets `enabled` on the Edit button.
 - (void)setEditButtonEnabled:(BOOL)enabled;
 
 // Sets the title of the Select All button to "Deselect All".
 - (void)configureDeselectAllButtonTitle;
 // Sets the title of the Select All button to "Select All".
 - (void)configureSelectAllButtonTitle;
+
+// Highlights (put a blue background) the last element of the page control.
+- (void)highlightLastPageControl;
+// Removes the highlight on the last page control, if there is one.
+- (void)resetLastPageControlHighlight;
 
 // Hides components and uses a black background color for tab grid transition
 // animation.
@@ -74,6 +81,9 @@
 - (void)setScrollViewScrolledToEdge:(BOOL)scrolledToEdge;
 // Adds the receiver in the chain before the original next responder.
 - (void)respondBeforeResponder:(UIResponder*)nextResponder;
+// Relinquishs the searchBar status as first responder.
+- (void)unfocusSearchBar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TOOLBARS_TAB_GRID_TOP_TOOLBAR_H_

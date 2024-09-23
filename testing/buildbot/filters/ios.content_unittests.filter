@@ -1,4 +1,4 @@
-# TODO(crbug.com/1508346): Flakily fails a check.
+# TODO(crbug.com/40949065): Flakily fails a check.
 -IndexedDBQuotaClientTest.DeleteBucketMixedParty/0
 -IndexedDBQuotaClientTest.DeleteBucketMixedParty/1
 -IndexedDBQuotaClientTest.DeleteBucketCustom/0

@@ -116,6 +116,8 @@ class StartBorealisVm : public BorealisTask {
   void RunInternal(BorealisContext* context) override;
 
  private:
+  void OnConciergeAvailable(BorealisContext* context,
+                            bool service_is_available);
   void StartBorealisWithExternalDisk(BorealisContext* context,
                                      std::optional<base::File> external_disk);
   void OnStartBorealisVm(

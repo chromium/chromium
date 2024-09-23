@@ -21,8 +21,9 @@
 #include <string>
 #include <utility>
 
-#include "base/rand_util.h"
+#include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/rand_util.h"
 #include "gtest/gtest.h"
 #include "third_party/zlib/zlib_crashpad.h"
 #include "util/misc/zlib.h"
@@ -54,17 +55,16 @@ void GzipInflate(const std::string& compressed,
   decompressed->clear();
 
   // There’s got to be at least a small buffer.
-  buf_size = std::max(buf_size, static_cast<size_t>(1));
-
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[buf_size]);
+  auto buf = base::HeapArray<uint8_t>::Uninit(
+      std::max(buf_size, static_cast<size_t>(1)));
   z_stream zlib = {};
   zlib.zalloc = Z_NULL;
   zlib.zfree = Z_NULL;
   zlib.opaque = Z_NULL;
   zlib.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(&compressed[0]));
   zlib.avail_in = base::checked_cast<uInt>(compressed.size());
-  zlib.next_out = buf.get();
-  zlib.avail_out = base::checked_cast<uInt>(buf_size);
+  zlib.next_out = buf.data();
+  zlib.avail_out = base::checked_cast<uInt>(buf.size());
 
   int zr = inflateInit2(&zlib, ZlibWindowBitsWithGzipWrapper(0));
   ASSERT_EQ(zr, Z_OK) << "inflateInit2: " << ZlibErrorString(zr);
@@ -73,9 +73,9 @@ void GzipInflate(const std::string& compressed,
   zr = inflate(&zlib, Z_FINISH);
   ASSERT_EQ(zr, Z_STREAM_END) << "inflate: " << ZlibErrorString(zr);
 
-  ASSERT_LE(zlib.avail_out, buf_size);
-  decompressed->assign(reinterpret_cast<char*>(buf.get()),
-                       buf_size - zlib.avail_out);
+  ASSERT_LE(zlib.avail_out, buf.size());
+  decompressed->assign(reinterpret_cast<char*>(buf.data()),
+                       buf.size() - zlib.avail_out);
 }
 
 void TestGzipDeflateInflate(const std::string& string) {
@@ -94,17 +94,17 @@ void TestGzipDeflateInflate(const std::string& string) {
   size_t buf_size =
       string.size() + kGzipHeaderSize +
       (string.empty() ? 2 : (((string.size() + 16383) / 16384) * 5));
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[buf_size]);
+  auto buf = base::HeapArray<uint8_t>::Uninit(buf_size);
   FileOperationResult compressed_bytes =
-      gzip_stream.GetBytesBuffer(buf.get(), buf_size);
+      gzip_stream.GetBytesBuffer(buf.data(), buf.size());
   ASSERT_NE(compressed_bytes, -1);
-  ASSERT_LE(static_cast<size_t>(compressed_bytes), buf_size);
+  ASSERT_LE(static_cast<size_t>(compressed_bytes), buf.size());
 
   // Make sure that the stream is really at EOF.
   uint8_t eof_buf[16];
   ASSERT_EQ(gzip_stream.GetBytesBuffer(eof_buf, sizeof(eof_buf)), 0);
 
-  std::string compressed(reinterpret_cast<char*>(buf.get()), compressed_bytes);
+  std::string compressed(reinterpret_cast<char*>(buf.data()), compressed_bytes);
 
   ASSERT_GE(compressed.size(), kGzipHeaderSize);
   EXPECT_EQ(compressed[0], '\37');

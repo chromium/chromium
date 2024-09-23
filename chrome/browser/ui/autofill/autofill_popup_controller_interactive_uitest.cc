@@ -8,8 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -82,14 +84,15 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
   }
 
   ContentAutofillDriver& autofill_driver() {
-    return *ContentAutofillDriverFactory::FromWebContents(web_contents())
-                ->DriverForFrame(main_rfh());
+    return *ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
   }
 
   BrowserAutofillManager& autofill_manager() {
     return static_cast<BrowserAutofillManager&>(
         autofill_driver().GetAutofillManager());
   }
+
+  Profile* profile() { return browser()->profile(); }
 
   TestAutofillExternalDelegate& autofill_external_delegate() {
     return static_cast<TestAutofillExternalDelegate&>(
@@ -103,9 +106,8 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowMove) {
-  GenerateTestAutofillPopup(autofill_driver());
-
-  EXPECT_FALSE(autofill_external_delegate().popup_hidden());
+  EXPECT_TRUE(GenerateTestAutofillPopup(autofill_driver(), profile(),
+                                        /*expect_popup_to_be_shown=*/true));
 
   // Move the window, which should close the popup.
   gfx::Rect new_bounds = browser()->window()->GetBounds() - gfx::Vector2d(1, 1);
@@ -117,9 +119,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowResize) {
-  GenerateTestAutofillPopup(autofill_driver());
-
-  EXPECT_FALSE(autofill_external_delegate().popup_hidden());
+  EXPECT_TRUE(GenerateTestAutofillPopup(autofill_driver(), profile(),
+                                        /*expect_popup_to_be_shown=*/true));
 
   // Resize the window, which should cause the popup to hide.
   gfx::Rect new_bounds = browser()->window()->GetBounds();
@@ -139,19 +140,19 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   gfx::Rect window_bounds = browser()->window()->GetBounds();
   // Position the popup in the lower right corner so that there is not enough
   // space to display it.
-  GenerateTestAutofillPopup(
-      autofill_driver(), /*element_bounds=*/gfx::RectF(
-          window_bounds.x() - kSize, window_bounds.y() - kSize, kSize, kSize));
-  EXPECT_TRUE(autofill_external_delegate().popup_hidden());
+  EXPECT_TRUE(GenerateTestAutofillPopup(
+      autofill_driver(), profile(),
+      /*expect_popup_to_be_shown=*/false, /*element_bounds=*/
+      gfx::RectF(window_bounds.x() - kSize, window_bounds.y() - kSize, kSize,
+                 kSize)));
 }
 
 // Tests that entering fullscreen hides the popup and, in particular, does not
 // crash (crbug.com/1267047).
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        HidePopupOnWindowEnterFullscreen) {
-  GenerateTestAutofillPopup(autofill_driver());
-
-  EXPECT_FALSE(autofill_external_delegate().popup_hidden());
+  EXPECT_TRUE(GenerateTestAutofillPopup(autofill_driver(), profile(),
+                                        /*expect_popup_to_be_shown=*/true));
 
   // Enter fullscreen, which should cause the popup to hide.
   ASSERT_FALSE(browser()->window()->IsFullscreen());
@@ -170,9 +171,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
   content::WebContentsDelegate* wcd = browser();
   wcd->EnterFullscreenModeForTab(main_rfh(), {});
 
-  GenerateTestAutofillPopup(autofill_driver());
-
-  EXPECT_FALSE(autofill_external_delegate().popup_hidden());
+  EXPECT_TRUE(GenerateTestAutofillPopup(autofill_driver(), profile(),
+                                        /*expect_popup_to_be_shown=*/true));
 
   // Exit fullscreen, which should cause the popup to hide.
   ASSERT_TRUE(browser()->window()->IsFullscreen());
@@ -187,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 // before the popup is hidden.
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
                        DeleteDelegateBeforePopupHidden) {
-  GenerateTestAutofillPopup(autofill_driver());
+  EXPECT_TRUE(GenerateTestAutofillPopup(autofill_driver(), profile(),
+                                        /*expect_popup_to_be_shown=*/true));
 
   // Delete the external delegate here so that is gets deleted before popup is
   // hidden. This can happen if the web_contents are destroyed before the popup
@@ -200,12 +201,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 // crbug.com/965025
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
-  GenerateTestAutofillPopup(autofill_driver());
+  EXPECT_TRUE(GenerateTestAutofillPopup(autofill_driver(), profile(),
+                                        /*expect_popup_to_be_shown=*/true));
 
   auto* client =
       autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents());
-  AutofillPopupController* controller =
-      client->popup_controller_for_testing().get();
+  base::WeakPtr<AutofillSuggestionController> controller =
+      client->suggestion_controller_for_testing();
   ASSERT_TRUE(controller);
 
   // Push some suggestions and select the line #3.
@@ -213,17 +215,17 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
                                     {u"suggestion2", u"suggestion2"},
                                     {u"suggestion3", u"suggestion3"},
                                     {u"suggestion4", u"suggestion4"}};
-  client->UpdateAutofillPopupDataListValues(rows);
+  client->UpdateAutofillDataListValues(rows);
   int original_suggestions_count = controller->GetLineCount();
-  controller->SelectSuggestion(3);
+  static_cast<AutofillPopupController&>(*controller).SelectSuggestion(3);
 
   // Replace the list with the smaller one.
   rows = {{u"suggestion1", u"suggestion1"}};
-  client->UpdateAutofillPopupDataListValues(rows);
+  client->UpdateAutofillDataListValues(rows);
   // Make sure that previously selected line #3 doesn't exist.
   ASSERT_LT(controller->GetLineCount(), original_suggestions_count);
   // Selecting a new line should not crash.
-  controller->SelectSuggestion(0);
+  static_cast<AutofillPopupController&>(*controller).SelectSuggestion(0);
 }
 
 }  // namespace autofill

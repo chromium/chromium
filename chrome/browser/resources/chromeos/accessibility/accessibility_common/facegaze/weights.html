@@ -1,0 +1,45 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>FaceGaze Weights</title>
+  </head>
+  <body>
+    <div>
+    <p>Tracking landmarks (refer to <a href="https://storage.googleapis.com/mediapipe-assets/documentation/mediapipe_face_landmark_fullsize.png">reference image</a>)</p>
+    <label>
+      Weight of forehead (8)
+      <input type="range" value="5" id="foreheadWeight">
+    </label>
+    <div>
+    <label>
+      Weight of forehead top (10)
+      <input type="range" value="50" id="foreheadTopWeight">
+    </label>
+    <div>
+    <label>
+      Weight of nose tip (4)
+      <input type="range" value="50" id="noseTipWeight">
+    </label>
+    <div>
+    <label>
+      Weight of left brow (356)
+      <input type="range" value="5" id="leftTempleWeight">
+    </label>
+    <div>
+    <label>
+      Weight of right brow (127)
+      <input type="range" value="5" id="rightTempleWeight">
+    </label>
+    <div>
+    <label>
+      Weight of facial rotation matrix (face orientation)
+      <input type="range" value="50" id="rotationWeight">
+    </label>
+    <div>
+    <script type="module" src="weights.js"></script>
+  </body>
+</html>

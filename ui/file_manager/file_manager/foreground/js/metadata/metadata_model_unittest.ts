@@ -6,10 +6,11 @@ import {assertEquals, assertThrows} from 'chrome://webui-test/chromeos/chai_asse
 
 import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 
-import {MetadataItem, type MetadataKey} from './metadata_item.js';
+import type {MetadataItem} from './metadata_item.js';
+import {type MetadataKey} from './metadata_item.js';
 import {MetadataModel} from './metadata_model.js';
 import {MetadataProvider} from './metadata_provider.js';
-import {MetadataRequest} from './metadata_request.js';
+import type {MetadataRequest} from './metadata_request.js';
 
 class TestMetadataProvider extends MetadataProvider {
   requestCount = 0;

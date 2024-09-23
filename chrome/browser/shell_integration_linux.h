@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_SHELL_INTEGRATION_LINUX_H_
 #define CHROME_BROWSER_SHELL_INTEGRATION_LINUX_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
@@ -47,8 +49,15 @@ bool GetExistingShortcutContents(base::Environment* env,
                                  const base::FilePath& desktop_filename,
                                  std::string* output);
 
-// Returns filename for .desktop file based on |url|, sanitized for security.
-base::FilePath GetWebShortcutFilename(const GURL& url);
+// Returns the base name for .desktop file based on |name|, sanitized for
+// security with no whitespace, and ensures it will be a unique file in the
+// directory at base::DIR_USER_DESKTOP. This call is not thread-safe - multiple
+// callers from different threads with the same argument may get the same base
+// name.
+// Returns a std::nullopt if base::DIR_USER_DESKTOP is not defined or a unique
+// name could not be found.
+std::optional<base::SafeBaseName> GetUniqueWebShortcutFilename(
+    const std::string& name);
 
 // Returns a list of filenames for all existing .desktop files corresponding to
 // on |profile_path| in a given |directory|.
@@ -85,6 +94,17 @@ std::string GetDesktopFileContentsForCommand(
     const std::string& mime_type,
     bool no_display,
     std::set<web_app::DesktopActionInfo> action_info);
+
+// Returns contents for a .desktop file that launches chrome at the given url
+// using the given profile, referencing the given icon. The file has the given
+// title & icon.
+// This will CHECK-fail if the url is not valid, the profile path is empty, or
+// the icon path is empty.
+std::string GetDesktopFileContentsForUrlShortcut(
+    const std::string& title,
+    const GURL& url,
+    const base::FilePath& icon_path,
+    const base::FilePath& profile_path);
 
 // Returns contents for .directory file named |title| with icon |icon_name|. If
 // |icon_name| is empty, will use the Chrome icon.

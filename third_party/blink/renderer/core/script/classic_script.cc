@@ -96,10 +96,10 @@ ClassicScript* ClassicScript::CreateFromResource(
     ScriptResource* resource,
     const ScriptFetchOptions& fetch_options) {
   // Check if we can use the script streamer.
-  ResourceScriptStreamer* streamer;
+  ScriptStreamer* streamer;
   ScriptStreamer::NotStreamingReason not_streamed_reason;
-  std::tie(streamer, not_streamed_reason) = ResourceScriptStreamer::TakeFrom(
-      resource, mojom::blink::ScriptType::kClassic);
+  std::tie(streamer, not_streamed_reason) =
+      ScriptStreamer::TakeFrom(resource, mojom::blink::ScriptType::kClassic);
   DCHECK_EQ(!streamer, not_streamed_reason !=
                            ScriptStreamer::NotStreamingReason::kInvalid);
 
@@ -200,8 +200,7 @@ v8::ScriptOrigin ClassicScript::CreateScriptOrigin(v8::Isolate* isolate) const {
   // start at 1 only for historic reasons now. I guess we could change it, but
   // there's not much benefit doing so.
   return v8::ScriptOrigin(
-      isolate, V8String(isolate, SourceUrl()),
-      StartPosition().line_.ZeroBasedInt(),
+      V8String(isolate, SourceUrl()), StartPosition().line_.ZeroBasedInt(),
       StartPosition().column_.ZeroBasedInt(),
       GetSanitizeScriptErrors() == SanitizeScriptErrors::kDoNotSanitize, -1,
       source_map_url_or_null,

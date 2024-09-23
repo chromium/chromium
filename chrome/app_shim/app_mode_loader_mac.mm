@@ -63,7 +63,7 @@ int LoadFrameworkAndStart(int argc, char** argv) {
     } else {
       // Otherwise, search for a Chrome bundle to use.
       if (!app_mode::FindChromeBundle(cr_bundle_id, &cr_bundle_path)) {
-        // TODO(https://crbug.com/944312): Display UI to inform the user of the
+        // TODO(crbug.com/41448206): Display UI to inform the user of the
         // reason for failure.
         NSLog(@"Failed to locate browser bundle");
         return kErrorReturnValue;

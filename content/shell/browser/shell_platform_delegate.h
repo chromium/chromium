@@ -18,7 +18,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "content/public/common/input/native_web_keyboard_event.h"
+#include "components/input/native_web_keyboard_event.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -137,7 +137,7 @@ class ShellPlatformDelegate {
 
   virtual bool HandleKeyboardEvent(Shell* shell,
                                    WebContents* source,
-                                   const NativeWebKeyboardEvent& event);
+                                   const input::NativeWebKeyboardEvent& event);
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

@@ -17,7 +17,8 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_confirm_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_prompt_dialog_overlay.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 namespace {
@@ -57,7 +58,7 @@ void BreadcrumbManagerBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 void BreadcrumbManagerBrowserAgent::PlatformLogEvent(const std::string& event) {
   BreadcrumbManagerKeyedServiceFactory::GetInstance()
-      ->GetForBrowserState(browser_->GetBrowserState())
+      ->GetForProfile(browser_->GetProfile())
       ->AddEvent(event);
 }
 
@@ -92,14 +93,14 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
       LogTabClosedAt(GetTabId(detach_change.detached_web_state()),
-                     status.index);
+                     detach_change.detached_from_index());
       break;
     }
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& move_change =
           change.As<WebStateListChangeMove>();
       LogTabMoved(GetTabId(move_change.moved_web_state()),
-                  move_change.moved_from_index(), status.index);
+                  move_change.moved_from_index(), move_change.moved_to_index());
       break;
     }
     case WebStateListChange::Type::kReplace: {
@@ -107,7 +108,7 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
           change.As<WebStateListChangeReplace>();
       LogTabReplaced(GetTabId(replace_change.replaced_web_state()),
                      GetTabId(replace_change.inserted_web_state()),
-                     status.index);
+                     replace_change.index());
       break;
     }
     case WebStateListChange::Type::kInsert: {
@@ -118,9 +119,36 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
       LogTabInsertedAt(GetTabId(insert_change.inserted_web_state()),
-                       status.index, status.active_web_state_change());
+                       insert_change.index(), status.active_web_state_change());
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // TODO(crbug.com/330155206): Log tab group creation in breadcrumbs.
+      break;
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // TODO(crbug.com/330155206): Log tab group's visual data update in
+      // breadcrumbs.
+      break;
+    case WebStateListChange::Type::kGroupMove: {
+      // TODO(crbug.com/330155206): Should we just record a group move instead
+      // of N tab moves?
+      const WebStateListChangeGroupMove& group_move_change =
+          change.As<WebStateListChangeGroupMove>();
+      const TabGroupRange from_range = group_move_change.moved_from_range();
+      const TabGroupRange to_range = group_move_change.moved_to_range();
+      CHECK_EQ(from_range.count(), to_range.count());
+      const int count = from_range.count();
+      for (int offset = 0; offset < count; ++offset) {
+        const int from_index = from_range.range_begin() + offset;
+        const int to_index = to_range.range_begin() + offset;
+        LogTabMoved(GetTabId(web_state_list->GetWebStateAt(to_index)),
+                    from_index, to_index);
+      }
+      break;
+    }
+    case WebStateListChange::Type::kGroupDelete:
+      // TODO(crbug.com/330155206): Log tab group deletion in breadcrumbs.
+      break;
   }
 }
 
@@ -160,7 +188,7 @@ void BreadcrumbManagerBrowserAgent::WillShowOverlay(OverlayPresenter* presenter,
   } else if (request->GetConfig<alert_overlays::AlertRequest>()) {
     event.push_back(kBreadcrumbOverlayAlert);
   } else {
-    NOTREACHED();  // Missing breadcrumbs for the dialog.
+    NOTREACHED_IN_MIGRATION();  // Missing breadcrumbs for the dialog.
   }
 
   if (!initial_presentation) {

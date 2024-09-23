@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/events/event_utils.h"
@@ -17,13 +18,11 @@ namespace ui {
 
 namespace {
 
-UserActivityDetector* g_instance = nullptr;
-
 // Returns a string describing |event|.
 std::string GetEventDebugString(const ui::Event* event) {
   std::string details = base::StringPrintf(
-      "type=%d name=%s flags=%d time=%" PRId64, event->type(), event->GetName(),
-      event->flags(),
+      "type=%d name=%s flags=%d time=%" PRId64,
+      base::to_underlying(event->type()), event->GetName(), event->flags(),
       (event->time_stamp() - base::TimeTicks()).InMilliseconds());
 
   if (event->IsKeyEvent()) {
@@ -48,27 +47,10 @@ const int UserActivityDetector::kNotifyIntervalMs = 200;
 // and we'll ignore legitimate activity.
 const int UserActivityDetector::kDisplayPowerChangeIgnoreMouseMs = 1000;
 
-UserActivityDetector::UserActivityDetector() {
-  CHECK(!g_instance);
-  g_instance = this;
-
-  PlatformEventSource* platform_event_source =
-      PlatformEventSource::GetInstance();
-  if (platform_event_source)
-    platform_event_source->AddPlatformEventObserver(this);
-}
-
-UserActivityDetector::~UserActivityDetector() {
-  PlatformEventSource* platform_event_source =
-      PlatformEventSource::GetInstance();
-  if (platform_event_source)
-    platform_event_source->RemovePlatformEventObserver(this);
-  g_instance = nullptr;
-}
-
 // static
 UserActivityDetector* UserActivityDetector::Get() {
-  return g_instance;
+  static base::NoDestructor<UserActivityDetector> user_activity_detector;
+  return user_activity_detector.get();
 }
 
 bool UserActivityDetector::HasObserver(
@@ -99,6 +81,38 @@ void UserActivityDetector::DidProcessEvent(
   ProcessReceivedEvent(event.get());
 }
 
+void UserActivityDetector::PlatformEventSourceDestroying() {
+  PlatformEventSource* platform_event_source =
+      PlatformEventSource::GetInstance();
+  CHECK(platform_event_source);
+  platform_event_source->RemovePlatformEventObserver(this);
+}
+
+void UserActivityDetector::ResetStateForTesting() {
+  last_activity_name_.clear();
+  last_activity_time_ = base::TimeTicks();
+  last_observer_notification_time_ = base::TimeTicks();
+  now_for_test_ = base::TimeTicks();
+  honor_mouse_events_time_ = base::TimeTicks();
+}
+
+void UserActivityDetector::InitPlatformEventSourceObservationForTesting() {
+  InitPlatformEventSourceObservation();
+}
+
+UserActivityDetector::UserActivityDetector() {
+  InitPlatformEventSourceObservation();
+}
+
+UserActivityDetector::~UserActivityDetector() = default;
+
+void UserActivityDetector::InitPlatformEventSourceObservation() {
+  PlatformEventSource* platform_event_source =
+      PlatformEventSource::GetInstance();
+  CHECK(platform_event_source);
+  platform_event_source->AddPlatformEventObserver(this);
+}
+
 base::TimeTicks UserActivityDetector::GetCurrentTime() const {
   return !now_for_test_.is_null() ? now_for_test_ : base::TimeTicks::Now();
 }
@@ -127,8 +141,7 @@ void UserActivityDetector::HandleActivity(const ui::Event* event) {
       kNotifyIntervalMs) {
     if (VLOG_IS_ON(1) && event)
       VLOG(1) << "Reporting user activity: " << GetEventDebugString(event);
-    for (UserActivityObserver& observer : observers_)
-      observer.OnUserActivity(event);
+    observers_.Notify(&UserActivityObserver::OnUserActivity, event);
     last_observer_notification_time_ = now;
   }
 }

@@ -45,8 +45,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
   ~ExtensionServiceTestWithInstall() override;
 
  protected:
-  void InitializeExtensionService(
-      const ExtensionServiceInitParams& params) override;
+  void InitializeExtensionService(ExtensionServiceInitParams params) override;
 
   static std::vector<std::u16string> GetErrors();
 

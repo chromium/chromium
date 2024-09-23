@@ -19,7 +19,7 @@ std::optional<::mojom::LifecycleUnitDiscardReason> GetDiscardReason(
     content::WebContents* contents);
 
 // Returns how much memory was saved through discarding `contents`
-uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents);
+int64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents);
 
 }  // namespace memory_saver
 

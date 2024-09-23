@@ -6,13 +6,13 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -68,7 +68,7 @@ void RecordUserAction(const std::string& action_id) {
       return;
     }
   }
-  NOTREACHED() << "Unexpected action id: " << action_id;
+  NOTREACHED_IN_MIGRATION() << "Unexpected action id: " << action_id;
 }
 
 // The max number of fingerprints that can be stored.
@@ -88,7 +88,7 @@ std::string GetDefaultFingerprintName(int enrolled_finger_count) {
       return l10n_util::GetStringUTF8(
           IDS_OOBE_FINGERPINT_SETUP_SCREEN_NEW_FINGERPRINT_DEFAULT_NAME_3);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return std::string();
 }
@@ -97,6 +97,7 @@ std::string GetDefaultFingerprintName(int enrolled_finger_count) {
 
 // static
 std::string FingerprintSetupScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::DONE:
       return "Done";
@@ -105,6 +106,7 @@ std::string FingerprintSetupScreen::GetResultString(Result result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 FingerprintSetupScreen::FingerprintSetupScreen(

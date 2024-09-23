@@ -6,13 +6,15 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/url_formatter/android/jni_headers/UrlFormatter_jni.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/url_formatter/android/jni_headers/UrlFormatter_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -100,10 +102,10 @@ static ScopedJavaLocalRef<jstring> JNI_UrlFormatter_FormatUrlForSecurityDisplay(
     const JavaParamRef<jobject>& j_gurl,
     jint scheme_display) {
   DCHECK(j_gurl);
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
-               *gurl, static_cast<SchemeDisplay>(scheme_display)));
+               gurl, static_cast<SchemeDisplay>(scheme_display)));
 }
 
 static ScopedJavaLocalRef<jstring>
@@ -136,10 +138,10 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_gurl) {
   DCHECK(j_gurl);
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-               *gurl));
+               gurl));
 }
 
 }  // namespace android

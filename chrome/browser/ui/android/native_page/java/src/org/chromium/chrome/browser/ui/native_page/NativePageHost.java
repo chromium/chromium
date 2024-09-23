@@ -18,16 +18,24 @@ public interface NativePageHost {
     Context getContext();
 
     /**
-     * Load a non-native URL in an active tab. This should be used to either navigate away from
-     * the current native page or load external content in a content area (i.e. a tab or web
-     * contents).
+     * Load a non-native URL in an active tab. This should be used to either navigate away from the
+     * current native page or load external content in a content area (i.e. a tab or web contents).
+     *
      * @param urlParams The params describing the URL to be loaded.
      * @param incognito Whether the URL should be loaded in incognito mode.
      */
     void loadUrl(LoadUrlParams urlParams, boolean incognito);
 
     /**
+     * Load a non-native URL in a new tab. This should be used to open hyperlink in a new tab.
+     *
+     * @param urlParams The params describing the URL to be loaded.
+     */
+    void openNewTab(LoadUrlParams urlParams);
+
+    /**
      * If the host is a tab, get the ID of its parent.
+     *
      * @return The ID of the parent tab or INVALID_TAB_ID.
      */
     int getParentId();

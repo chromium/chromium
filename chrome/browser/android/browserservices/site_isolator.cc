@@ -4,21 +4,24 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/android/chrome_jni_headers/SiteIsolator_jni.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SiteIsolator_jni.h"
+
 using base::android::JavaParamRef;
 
 void JNI_SiteIsolator_StartIsolatingSite(JNIEnv* env,
-                                         const JavaParamRef<jobject>& j_profile,
+                                         Profile* profile,
                                          const JavaParamRef<jobject>& j_gurl) {
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   content::SiteInstance::StartIsolatingSite(
-      content::BrowserContextFromJavaHandle(j_profile), *gurl,
+      profile, gurl,
       content::ChildProcessSecurityPolicy::IsolatedOriginSource::
           USER_TRIGGERED);
 }

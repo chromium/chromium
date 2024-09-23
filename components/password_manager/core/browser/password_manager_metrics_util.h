@@ -12,17 +12,16 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-
-namespace password_manager {
-struct PasswordForm;
-}
 
 namespace password_manager::metrics_util {
 
@@ -52,6 +51,13 @@ enum UIDisplayDisposition {
   MANUAL_ADD_USERNAME_BUBBLE = 18,
   AUTOMATIC_RELAUNCH_CHROME_BUBBLE = 19,
   AUTOMATIC_DEFAULT_STORE_CHANGED_BUBBLE = 20,
+  AUTOMATIC_PASSKEY_SAVED_CONFIRMATION = 21,
+  AUTOMATIC_PASSKEY_DELETED_CONFIRMATION = 22,
+  MANUAL_PASSKEY_DELETED_CONFIRMATION = 23,
+  AUTOMATIC_PASSKEY_UPDATED_CONFIRMATION = 24,
+  MANUAL_PASSKEY_UPDATED_CONFIRMATION = 25,
+  AUTOMATIC_PASSKEY_NOT_ACCEPTED_BUBBLE = 26,
+  MANUAL_PASSKEY_NOT_ACCEPTED_BUBBLE = 27,
   NUM_DISPLAY_DISPOSITIONS,
 };
 
@@ -74,6 +80,8 @@ enum UIDismissalReason {
   AUTO_SIGNIN_TOAST_CLICKED_OBSOLETE = 10,  // obsolete.
   CLICKED_BRAND_NAME_OBSOLETE = 11,         // obsolete.
   CLICKED_PASSWORDS_DASHBOARD = 12,
+  CLICKED_MANAGE_PASSWORD = 13,
+  CLICKED_GOT_IT = 14,
   NUM_UI_RESPONSES,
 };
 
@@ -418,6 +426,18 @@ enum class PasswordCheckInteraction {
   kMaxValue = kChangePasswordAutomatically,
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Should be kept in sync with SaveFlowStep in enums.xml.
+enum class SaveFlowStep {
+  // The form was submitted. Does not strictly require a successful submission.
+  kFormSubmitted = 0,
+  kSavePromptShown = 1,
+  kMaxValue = kSavePromptShown,
+};
+#endif
+
 // Represents different user interactions related to adding credential from the
 // setting. These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused. Always keep this enum in sync with
@@ -579,7 +599,8 @@ enum class PasswordManagementBubbleInteractions {
   kNotePartiallyCopied = 15,
   kNoteFullyCopied = 16,
   kMovePasswordLinkClicked = 17,
-  kMaxValue = kMovePasswordLinkClicked,
+  kManagePasswordButtonClicked = 18,
+  kMaxValue = kManagePasswordButtonClicked,
 };
 
 // Represents different causes for showing the password migration warning.
@@ -668,6 +689,17 @@ enum class ProcessIncomingPasswordSharingInvitationResult {
 };
 
 #if BUILDFLAG(IS_ANDROID)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with `
+// `LocalPwdMigrationProgressState` in the passwords' enums.xml.
+enum class LocalPwdMigrationProgressState {
+  kScheduled = 0,
+  kStarted = 1,
+  // Finished is recorded irrespective of success status.
+  kFinished = 2,
+  kMaxValue = kFinished,
+};
+
 // Enum that describes different outcomes on the attempt of triggering the
 // Touch-To-Fill bottom sheet for password generation.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -681,6 +713,19 @@ enum class TouchToFillPasswordGenerationTriggerOutcome {
   kMaxValue = kFailedToDisplay
 };
 #endif
+
+// Enum to track the reasons of password loss.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PasswordManagerCredentialRemovalReason {
+  // TODO(crbug.com/342519805): Add reasons.
+  kSettings = 0,                        // Stored as (1<<0) in the bit vector.
+  kClearBrowsingData = 1,               // Stored as (1<<1) in the bit vector.
+  kSync = 2,                            // Stored as (1<<2) in the bit vector.
+  kDeletingUndecryptablePasswords = 3,  // Stored as (1<<3) in the bit vector.
+  kMaxValue = kDeletingUndecryptablePasswords,
+};
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     password_manager::features_util::PasswordAccountStorageUsageLevel
@@ -728,12 +773,15 @@ class LeakDialogMetricsRecorder {
 // bubbles.
 void LogGeneralUIDismissalReason(UIDismissalReason reason);
 
-// Log the |reason| a user dismissed the save password bubble. If
-// |user_state| is set, the |reason| is also logged to a separate
+// Log the `reason` a user dismissed the save password bubble. If
+// `user_state` is set, the `reason` is also logged to a separate
 // user-state-specific histogram.
+// If `log_adoption_metric` is true, additional histogram is recorded to
+// measure adoption among new users of password manager.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
-    std::optional<features_util::PasswordAccountStorageUserState> user_state);
+    std::optional<features_util::PasswordAccountStorageUserState> user_state,
+    bool log_adoption_metric);
 
 // Log the |reason| a user dismissed the update password bubble.
 void LogUpdateUIDismissalReason(UIDismissalReason reason);
@@ -776,7 +824,8 @@ void LogPasswordReuse(int saved_passwords,
                       PasswordType reused_password_type);
 
 // Log the type of the password dropdown when it's shown.
-void LogPasswordDropdownShown(PasswordDropdownState state);
+void LogPasswordDropdownShown(
+    const std::vector<autofill::Suggestion>& suggestions);
 
 // Log the type of the password dropdown suggestion when chosen.
 void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
@@ -866,9 +915,12 @@ void LogUserInteractionsInSharedPasswordsNotificationBubble(
 void LogProcessIncomingPasswordSharingInvitationResult(
     ProcessIncomingPasswordSharingInvitationResult result);
 
-// Logs GroupedPasswordFetchResult.
-void LogGroupedPasswordsResults(
-    const std::vector<password_manager::PasswordForm>& logins);
+#if BUILDFLAG(IS_ANDROID)
+// Records the scheduling state of the local passwords migration to the
+// Android backend.
+void LogLocalPwdMigrationProgressState(
+    LocalPwdMigrationProgressState scheduling_state);
+#endif
 
 // Wraps |callback| into another callback that measures the elapsed time between
 // construction and actual execution of the callback. Records the result to
@@ -886,66 +938,46 @@ base::OnceCallback<R(Args...)> TimeCallback(
       histogram, base::ElapsedTimer(), std::move(callback));
 }
 
+// Wraps |callback| into another callback that measures the elapsed time between
+// construction and actual execution of the callback. Records the result to
+// |histogram|, which is expected to be a char literal.
+// For time intervals between 1ms and 3 minutes (50 buckets).
+template <typename R, typename... Args>
+base::OnceCallback<R(Args...)> TimeCallbackMediumTimes(
+    base::OnceCallback<R(Args...)> callback,
+    const char* histogram) {
+  return base::BindOnce(
+      [](const char* histogram, const base::ElapsedTimer& timer,
+         base::OnceCallback<R(Args...)> callback, Args... args) {
+        base::UmaHistogramMediumTimes(histogram, timer.Elapsed());
+        return std::move(callback).Run(std::forward<Args>(args)...);
+      },
+      histogram, base::ElapsedTimer(), std::move(callback));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome);
+void LogFormSubmissionsVsSavePromptsHistogram(SaveFlowStep save_flow_step);
 #endif
 
-#if BUILDFLAG(IS_IOS)
-// This enum indicates migration status from Keychain to OSCrypt for passwords
-// on iOS in the version 39.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Needs to stay in sync with MigrationToOSCryptEnum in enums.xml.
-enum class MigrationToOSCrypt {
-  kStarted = 0,
-  kFailedToCopyPasswordColumn = 1,
-  kFailedToDecryptFromKeychain = 2,
-  kFailedToEncrypt = 3,
-  kFailedToUpdate = 4,
-  kSuccess = 5,
-  kFailedToDelete = 6,
-  kMaxValue = kFailedToDelete,
-};
+// Record that password deletion from Chrome settings happened.
+// This will be used in case of suspecting a possible password loss.
+void AddPasswordRemovalReason(
+    PrefService* prefs,
+    IsAccountStore is_account_store,
+    PasswordManagerCredentialRemovalReason removal_reason);
 
-// Records the latency of the passwords migration to OSCrypt of the login db on
-// iOS separated by password store type and whether the migration was successful
-// or not.
-void RecordMigrationToOSCryptLatency(bool success,
-                                     base::TimeDelta latency,
-                                     base::StringPiece store_infix);
+// Emits histograms for the number of password and webauthn credentials in the
+// passwords popup / dropdown. Also emits a user action for the displayed
+// dropdown.
+void MaybeLogMetricsForPasswordAndWebauthnCounts(
+    const std::vector<autofill::Suggestion>& suggestions,
+    bool is_for_webauthn_request);
 
-// Records the status of the passwords migration to OSCrypt of the login db on
-// iOS separated by password store type.
-void RecordMigrationToOSCryptStatus(base::TimeTicks migration_start_time,
-                                    bool is_account_store,
-                                    MigrationToOSCrypt status);
+// Emits a user action that the dropdown was hidden.
+void LogPasswordDropdownHidden();
 
-// This enum indicates migration status from Keychain to OSCrypt for password
-// notes on iOS in the version 40.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// Needs to stay in sync with PasswordNotesMigrationToOSCryptEnum in enums.xml.
-enum class PasswordNotesMigrationToOSCrypt {
-  kStarted = 0,
-  kFailedToDecryptFromKeychain = 1,
-  kFailedToEncrypt = 2,
-  kFailedToUpdate = 3,
-  kSuccess = 4,
-  kFailedToDelete = 5,
-  kMaxValue = kFailedToDelete,
-};
-
-// Records the status of the password notes migration to OSCrypt of the login db
-// on iOS separated by password store type.
-void RecordPasswordNotesMigrationToOSCryptStatus(
-    bool is_account_store,
-    PasswordNotesMigrationToOSCrypt status);
-#endif
 }  // namespace password_manager::metrics_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_METRICS_UTIL_H_

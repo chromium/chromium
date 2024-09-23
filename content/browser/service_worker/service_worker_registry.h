@@ -44,19 +44,6 @@ class ServiceWorkerVersion;
 class ServiceWorkerRegistryTest;
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kServiceWorkerMergeFindRegistrationForClientUrl);
-
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerRegistrationCache);
-
-CONTENT_EXPORT extern const base::FeatureParam<int>
-    kServiceWorkerRegistrationCacheSize;
-
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerScopeCacheLimit);
-
-CONTENT_EXPORT extern const base::FeatureParam<int>
-    kServiceWorkerScopeCacheLimitSize;
-
 // Manages in-memory representation of service worker registrations
 // (i.e., ServiceWorkerRegistration) including installing and uninstalling
 // registrations. Owned by ServiceWorkerContextCore and has the same lifetime of
@@ -525,7 +512,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   bool is_storage_disabled_ = false;
 
-  // TODO(crbug.com/1016065): Consider moving QuotaManagerProxy to
+  // TODO(crbug.com/40103974): Consider moving QuotaManagerProxy to
   // ServiceWorkerStorage once QuotaManager gets mojofied.
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;

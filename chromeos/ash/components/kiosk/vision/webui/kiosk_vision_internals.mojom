@@ -1,0 +1,72 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.kiosk_vision.mojom;
+
+// Responsible for initializing a connection between the TS side and the WebUI
+// controller in C++.
+//
+// Implemented on the C++ side, called from the TS side (Renderer -> Browser).
+interface PageConnector {
+  // The TS side calls this method to send its remote to the C++ side.
+  BindPage(pending_remote<Page> page);
+};
+
+// Implemented on the TS side, called from the C++ side (Browser -> Renderer).
+interface Page {
+  // Signals the TS side to update the page contents with the latest `state`.
+  //
+  // Prior to this method being called, the Page assumes an initial State with
+  // Status `kUnknown` and an empty array of boxes.
+  Display(State state);
+};
+
+// State contains the information the page needs to display itself.
+struct State {
+  Status status;
+  array<Label> labels;
+  array<Box> boxes;
+  array<Face> faces;
+};
+
+// The status of the feature as reported from the C++ side.
+enum Status {
+  // Initial value used until one of the statuses below is set.
+  kUnknown = 0,
+  // The feature is disabled in prefs, the page can't display anything useful.
+  kFeatureDisabled = 1,
+  // The feature is enabled but not yet initialized.
+  kFeatureNotInitialized = 2,
+  // The feature is enabled and operational.
+  kRunning = 3,
+  // The feature is enabled but some error happened.
+  kError = 4,
+};
+
+// The label to be displayed above a `Box`. Useful to identify the box visually
+// over time.
+struct Label {
+  int32 id;
+  int32 x;
+  int32 y;
+};
+
+// A Box represents a rectangular area that should be highlighted in the camera
+// feed on the page.
+struct Box {
+  int32 x;
+  int32 y;
+  int32 width;
+  int32 height;
+};
+
+// A face includes the angles used to display the face direction arrows, and
+// the face bounding box.
+struct Face {
+  // `roll`, `pan`, and `tilt` are the face pose angles.
+  float roll;
+  float pan;
+  float tilt;
+  Box box;
+};

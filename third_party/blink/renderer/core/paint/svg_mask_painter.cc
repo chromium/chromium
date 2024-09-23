@@ -44,8 +44,11 @@ AffineTransform MaskToContentTransform(const LayoutSVGResourceMasker& masker,
   return content_transformation;
 }
 
-LayoutSVGResourceMasker* ResolveElementReference(SVGResource* mask_resource,
-                                                 SVGResourceClient* client) {
+LayoutSVGResourceMasker* ResolveElementReference(
+    const StyleMaskSourceImage& mask_source,
+    const ImageResourceObserver& observer) {
+  SVGResource* mask_resource = mask_source.GetSVGResource();
+  SVGResourceClient* client = mask_source.GetSVGResourceClient(observer);
   // The client should only be null if the resource is null.
   if (!client) {
     CHECK(!mask_resource);
@@ -62,40 +65,6 @@ LayoutSVGResourceMasker* ResolveElementReference(SVGResource* mask_resource,
   SECURITY_CHECK(!masker->SelfNeedsFullLayout());
   masker->ClearInvalidationMask();
   return masker;
-}
-
-LayoutSVGResourceMasker* ResolveElementReference(
-    const StyleMaskSourceImage& mask_source,
-    const ImageResourceObserver& observer) {
-  return ResolveElementReference(mask_source.GetSVGResource(),
-                                 mask_source.GetSVGResourceClient(observer));
-}
-
-void PaintSVGMask(LayoutSVGResourceMasker* masker,
-                  const gfx::RectF& reference_box,
-                  float zoom,
-                  GraphicsContext& context,
-                  SkBlendMode composite_op,
-                  bool apply_mask_type) {
-  const AffineTransform content_transformation =
-      MaskToContentTransform(*masker, reference_box, zoom);
-  SubtreeContentTransformScope content_transform_scope(content_transformation);
-  PaintRecord record = masker->CreatePaintRecord();
-
-  bool has_layer = false;
-  if (apply_mask_type &&
-      masker->StyleRef().MaskType() == EMaskType::kLuminance) {
-    context.BeginLayer(cc::ColorFilter::MakeLuma(), &composite_op);
-    has_layer = true;
-  } else if (composite_op != SkBlendMode::kSrcOver) {
-    context.BeginLayer(composite_op);
-    has_layer = true;
-  }
-  context.ConcatCTM(content_transformation);
-  context.DrawRecord(std::move(record));
-  if (has_layer) {
-    context.EndLayer();
-  }
 }
 
 class ScopedMaskLuminanceLayer {
@@ -251,30 +220,14 @@ void PaintMaskLayer(const FillLayer& layer,
                          paint_timing_info, composite_op, respect_orientation);
 }
 
-void PaintMaskLayers(GraphicsContext& context, const LayoutObject& object) {
-  Vector<const FillLayer*, 8> layer_list;
-  for (const FillLayer* layer = &object.StyleRef().MaskLayers(); layer;
-       layer = layer->Next()) {
-    layer_list.push_back(layer);
-  }
-  const SVGBackgroundPaintContext bg_paint_context(object);
-  for (const auto* layer : base::Reversed(layer_list)) {
-    PaintMaskLayer(*layer, object, bg_paint_context, context);
-  }
-}
-
 }  // namespace
 
 void SVGMaskPainter::Paint(GraphicsContext& context,
                            const LayoutObject& layout_object,
                            const DisplayItemClient& display_item_client) {
   const auto* properties = layout_object.FirstFragment().PaintProperties();
-  // TODO(crbug.com/814815): This condition should be a DCHECK, but for now
-  // we may paint the object for filters during PrePaint before the
-  // properties are ready.
-  if (!properties || !properties->Mask())
-    return;
-
+  DCHECK(properties);
+  DCHECK(properties->Mask());
   DCHECK(properties->MaskClip());
   PropertyTreeStateOrAlias property_tree_state(
       properties->Mask()->LocalTransformSpace(), *properties->MaskClip(),
@@ -292,31 +245,15 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   DrawingRecorder recorder(context, display_item_client, DisplayItem::kSVGMask,
                            gfx::ToEnclosingRect(visual_rect));
 
-  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
-    PaintMaskLayers(context, layout_object);
-    return;
+  Vector<const FillLayer*, 8> layer_list;
+  for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
+       layer = layer->Next()) {
+    layer_list.push_back(layer);
   }
-
-  SVGResourceClient* client = SVGResources::GetClient(layout_object);
-  const ComputedStyle& style = layout_object.StyleRef();
-  auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
-      *client, style.MaskerResource());
-  DCHECK(masker);
-  if (DisplayLockUtilities::LockedAncestorPreventingLayout(*masker))
-    return;
-  SECURITY_DCHECK(!masker->SelfNeedsFullLayout());
-  masker->ClearInvalidationMask();
-
-  const gfx::RectF reference_box = SVGResources::ReferenceBoxForEffects(
-      layout_object, GeometryBox::kFillBox,
-      SVGResources::ForeignObjectQuirk::kDisabled);
-  const float zoom =
-      layout_object.IsSVGForeignObject() ? style.EffectiveZoom() : 1;
-
-  context.Save();
-  PaintSVGMask(masker, reference_box, zoom, context, SkBlendMode::kSrcOver,
-               /*apply_mask_type=*/true);
-  context.Restore();
+  const SVGBackgroundPaintContext bg_paint_context(layout_object);
+  for (const auto* layer : base::Reversed(layer_list)) {
+    PaintMaskLayer(*layer, layout_object, bg_paint_context, context);
+  }
 }
 
 void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
@@ -331,9 +268,27 @@ void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,
   if (!masker) {
     return;
   }
+  const AffineTransform content_transformation =
+      MaskToContentTransform(*masker, reference_box, zoom);
+  SubtreeContentTransformScope content_transform_scope(content_transformation);
+  PaintRecord record = masker->CreatePaintRecord();
+
   context.Clip(masker->ResourceBoundingBox(reference_box, zoom));
-  PaintSVGMask(masker, reference_box, zoom, context, composite_op,
-               apply_mask_type);
+
+  bool has_layer = false;
+  if (apply_mask_type &&
+      masker->StyleRef().MaskType() == EMaskType::kLuminance) {
+    context.BeginLayer(cc::ColorFilter::MakeLuma(), &composite_op);
+    has_layer = true;
+  } else if (composite_op != SkBlendMode::kSrcOver) {
+    context.BeginLayer(composite_op);
+    has_layer = true;
+  }
+  context.ConcatCTM(content_transformation);
+  context.DrawRecord(std::move(record));
+  if (has_layer) {
+    context.EndLayer();
+  }
 }
 
 bool SVGMaskPainter::MaskIsValid(const StyleMaskSourceImage& mask_source,

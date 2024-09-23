@@ -3,6 +3,7 @@ include_rules = [
   # library.
   "-mojo",
   "+mojo/buildflags.h",
+  "+mojo/core/embedder/features.h",
   "+mojo/public/c/system",
   "+mojo/public/cpp/platform",
   "+net/base",

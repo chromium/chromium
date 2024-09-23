@@ -10,11 +10,11 @@
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/net/referrer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -96,7 +96,7 @@ bool SadTab::ShouldShow(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_MAX_ENUM:
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -116,7 +116,7 @@ int SadTab::GetTitle() {
     case SAD_TAB_KIND_KILLED:
       return IDS_SAD_TAB_RELOAD_TITLE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -140,7 +140,7 @@ int SadTab::GetInfoMessage() {
       return is_repeatedly_crashing_ ? IDS_SAD_TAB_RELOAD_TRY
                                      : IDS_SAD_TAB_MESSAGE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
@@ -186,7 +186,7 @@ std::vector<int> SadTab::GetSubMessages() {
 #endif
       return message_ids;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::vector<int>();
 }
 
@@ -208,9 +208,9 @@ void SadTab::PerformAction(SadTab::Action action) {
       RecordEvent(show_feedback_button_,
                   ui_metrics::SadTabEvent::BUTTON_CLICKED);
       if (show_feedback_button_) {
-        ShowFeedbackPage(
+        chrome::ShowFeedbackPage(
             chrome::FindBrowserWithTab(web_contents_),
-            chrome::kFeedbackSourceSadTabPage,
+            feedback::kFeedbackSourceSadTabPage,
             std::string() /* description_template */,
             l10n_util::GetStringUTF8(kind_ == SAD_TAB_KIND_CRASHED
                                          ? IDS_CRASHED_TAB_FEEDBACK_MESSAGE
@@ -227,7 +227,7 @@ void SadTab::PerformAction(SadTab::Action action) {
       content::OpenURLParams params(GURL(GetHelpLinkURL()), content::Referrer(),
                                     WindowOpenDisposition::CURRENT_TAB,
                                     ui::PAGE_TRANSITION_LINK, false);
-      web_contents_->OpenURL(params);
+      web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
       break;
   }
 }

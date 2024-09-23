@@ -17,9 +17,11 @@
   <link rel="stylesheet" href="interstitial_insecureform.css">
   <link rel="stylesheet" href="interstitial_lookalikeurl.css">
   <link rel="stylesheet" href="interstitial_safebrowsing.css">
+  <link rel="stylesheet" href="interstitial_safebrowsing_shared.css">
   <link rel="stylesheet" href="interstitial_ssl.css">
   <link rel="stylesheet" href="interstitial_enterpriseblock.css">
   <link rel="stylesheet" href="interstitial_enterprisewarn.css">
+  <link rel="stylesheet" href="interstitial_superviseduserverify.css">
   <script src="%ROOT_GEN_DIR%/components/security_interstitials/core/browser/resources/interstitial_large/interstitial_large.rollup.js"></script>
 </head>
 <body id="body" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
@@ -36,6 +38,10 @@
       </div>
       <div id="recurrent-error-message">
         $i18nRaw{recurrentErrorParagraph}
+      </div>
+      <div id="blocked-site-message" class="hidden">
+        <p id="blocked-site-message-header"></p>
+        <p id="blocked-site-message-reason"></p>
       </div>
       <div id="extended-reporting-opt-in" class="hidden">
         <label>

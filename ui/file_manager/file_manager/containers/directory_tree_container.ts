@@ -2,29 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {isRTL} from 'chrome://resources/ash/common/util.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
-import type {VolumeManager} from '../background/js/volume_manager.js';
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
-import {isDriveRootEntryList, isEntryInsideDrive, isEntryScannable, isGrandRootEntryInDrives, isMyFilesEntry, isOneDrive, isOneDriveId, isTrashEntry, isVolumeEntry, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
-import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
+import {canHaveSubDirectories, isGrandRootEntryInDrive, isInsideDrive, isMyFilesFileData, isOneDrive, isOneDriveId, isRecentFileData, isTrashFileData, isVolumeFileData, shouldSupportDriveSpecificIcons} from '../common/js/entry_utils.js';
 import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {RootTypesForUMA, VolumeType} from '../common/js/volume_manager_types.js';
 import {ICON_TYPES} from '../foreground/js/constants.js';
-import {DirectoryModel} from '../foreground/js/directory_model.js';
-import {Command} from '../foreground/js/ui/command.js';
+import type {DirectoryModel} from '../foreground/js/directory_model.js';
+import type {Command} from '../foreground/js/ui/command.js';
 import {contextMenuHandler} from '../foreground/js/ui/context_menu_handler.js';
-import {Menu} from '../foreground/js/ui/menu.js';
+import type {Menu} from '../foreground/js/ui/menu.js';
 import {convertEntryToFileData, readSubDirectories, readSubDirectoriesToCheckDirectoryChildren, shouldDelayLoadingChildren, traverseAndExpandPathEntries, updateFileData} from '../state/ducks/all_entries.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import {refreshNavigationRoots} from '../state/ducks/navigation.js';
 import {clearSearch} from '../state/ducks/search.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
 import {type AndroidApp, type CurrentDirectory, type FileData, type FileKey, type NavigationKey, type NavigationRoot, NavigationType, PropStatus, SearchLocation, type State} from '../state/state.js';
-import {getEntry, getFileData, getStore, getVolume, type Store} from '../state/store.js';
+import {getFileData, getStore, getVolume, type Store} from '../state/store.js';
 import {type TreeSelectedChangedEvent, XfTree} from '../widgets/xf_tree.js';
 import {type TreeItemCollapsedEvent, type TreeItemExpandedEvent, XfTreeItem} from '../widgets/xf_tree_item.js';
 
@@ -66,27 +64,28 @@ export class DirectoryTreeContainer {
   contextMenuForDisabledItems: Menu|null = null;
 
   /**
-   * Mark the tree item with a specific entry key as to be renamed. When rename
+   * Mark the tree item with a specific file key as to be renamed. When rename
    * is triggered from outside and the item to be renamed is yet to be rendered
-   * (e.g. "New folder" command), we store the entry key here in order to attach
+   * (e.g. "New folder" command), we store the file key here in order to attach
    * the rename input to the tree item when it's rendered.
    */
-  private entryKeyToRename_: FileKey|null = null;
+  private fileKeyToRename_: FileKey|null = null;
 
   /**
-   * Mark the tree item with a specific entry key as to be focused. When we need
+   * Mark the tree item with a specific file key as to be focused. When we need
    * to change the focus to a tree item which is yet to be rendered (e.g. an
    * item is just renamed and the newly renamed item is not rendered yet), we
-   * store the entry key here in order to focus the tree item when it's
+   * store the file key here in order to focus the tree item when it's
    * rendered.
    */
-  private entryKeyToFocus_: FileKey|null = null;
+  private fileKeyToFocus_: FileKey|null = null;
 
   /**
-   * Deletion of the currently selected item can trigger the selection change
-   * from outside, if the deleted item is also the currently focused item, we
-   * need to wait for the next selected item to render and focus on that. This
-   * boolean value is used to control that.
+   * Sometimes the selected item can be changed from outside (e.g. currently
+   * selected directory item gets deleted, or operations from other place which
+   * triggers the active directory change), if the selected item is also focused
+   * before the change, we need to shift the focus to the newly selected item
+   * after it's rendered. This flag is used to control that.
    */
   private shouldFocusOnNextSelectedItem_: boolean = false;
 
@@ -98,7 +97,7 @@ export class DirectoryTreeContainer {
    * or other operations), we need this variable to see if we need to trigger
    * another read-sub-directories call or not.
    */
-  private entryKeyToSelect_: FileKey|null = null;
+  private fileKeyToSelect_: FileKey|null = null;
 
   private store_: Store;
 
@@ -129,10 +128,9 @@ export class DirectoryTreeContainer {
   private uiEntries_: State['uiEntries']|null = null;
   /** Android apps data from the store. */
   private androidApps_: State['androidApps']|null = null;
+  private materializedViews_: State['materializedViews'] = [];
 
-  constructor(
-      container: HTMLElement, private directoryModel_: DirectoryModel,
-      private volumeManager_: VolumeManager) {
+  constructor(container: HTMLElement, private directoryModel_: DirectoryModel) {
     this.tree.id = 'directory-tree';
     container.appendChild(this.tree);
 
@@ -219,12 +217,12 @@ export class DirectoryTreeContainer {
     }
   }
 
-  renameItemWithKeyWhenRendered(entryKey: FileKey) {
-    this.entryKeyToRename_ = entryKey;
+  renameItemWithKeyWhenRendered(fileKey: FileKey) {
+    this.fileKeyToRename_ = fileKey;
   }
 
-  focusItemWithKeyWhenRendered(entryKey: FileKey) {
-    this.entryKeyToFocus_ = entryKey;
+  focusItemWithKeyWhenRendered(fileKey: FileKey) {
+    this.fileKeyToFocus_ = fileKey;
   }
 
   private renderRoots_(newRoots: NavigationRoot[]) {
@@ -264,8 +262,9 @@ export class DirectoryTreeContainer {
       // it here and restore it later if needed.
       const isFocused = document.activeElement === navigationRootItem;
       const isRenaming = navigationRootItem.renaming;
-      if (fileData && isVolumeEntry(fileData.entry)) {
-        const isOneDriveRoot = isOneDrive(fileData.entry.volumeInfo);
+      if (fileData && isVolumeFileData(fileData)) {
+        const volume = getVolume(state, fileData);
+        const isOneDriveRoot = volume && isOneDrive(volume);
         if (isOneDriveRoot) {
           navigationRootItem.toggleAttribute('one-drive', true);
         }
@@ -275,34 +274,36 @@ export class DirectoryTreeContainer {
           navigationRoot.key, isAndroidApp ? androidAppData : fileData,
           navigationRoot);
 
-      // Always call insertBefore here even if the element already exists,
-      // because the index can change. Calling insertBefore with existing
-      // child element will move it to the correct position.
-      this.tree.insertBefore(
-          // Use `children` here because `items` is asynchronous.
-          navigationRootItem, this.tree.children[index] || null);
-
+      // Skip `insertBefore` for the tree item if it's an existing item in
+      // renaming state, otherwise it will interrupt user's input (via
+      // triggering `blur` event). Even we try to re-attach the rename input
+      // after `insertBefore`, it still interrupts user's input.
+      if (!isRenaming) {
+        // Always call insertBefore here even if the element already exists,
+        // because the index can change. Calling insertBefore with existing
+        // child element will move it to the correct position.
+        this.tree.insertBefore(
+            // Use `children` here because `items` is asynchronous.
+            navigationRootItem, this.tree.children[index] || null);
+      }
       // For existing items, `insertBefore` call above might make the element
-      // lose some status (e.g. focus/rename), check if we need to restore
+      // lose some status (e.g. focus), check if we need to restore
       // them or not.
       if (exists) {
-        if (isFocused) {
+        if (isFocused && !fileData?.disabled) {
           this.restoreFocus_(navigationRootItem, /* isExisting= */ true);
-        }
-        if (isRenaming) {
-          this.attachRename_(navigationRootItem);
         }
         continue;
       }
       // For newly rendered items, check if they are the next item to
       // focus.
-      if (this.entryKeyToFocus_ === navigationRoot.key) {
-        // Item with entry to focus is rendered for the first time (e.g. right
-        // after rename finishes), focus on it.
-        this.entryKeyToFocus_ = null;
+      if (this.fileKeyToFocus_ === navigationRoot.key && !fileData?.disabled) {
+        // Item with file key to focus is rendered for the first time (e.g.
+        // right after rename finishes), focus on it.
+        this.fileKeyToFocus_ = null;
         this.restoreFocus_(navigationRootItem, /* isExisting= */ false);
       }
-      // No need to handle `entryKeyToRename_` here, because it's not allowed to
+      // No need to handle `fileKeyToRename_` here, because it's not allowed to
       // create a new folder in the directory tree root.
 
       if (!isAndroidApp) {
@@ -350,7 +351,7 @@ export class DirectoryTreeContainer {
       return;
     }
 
-    // Handle navigation items backed up by a file entry.
+    // Handle navigation items backed up by a file data.
     if (navigationData.fileData === newData) {
       // Nothing changes, this render might be triggered by its parent.
       return;
@@ -359,11 +360,6 @@ export class DirectoryTreeContainer {
     if (window.IN_TEST) {
       this.addAttributesForTesting_(element, fileData, navigationRoot);
     }
-
-    // TODO(b/228139439): The current menu/command implementation requires a
-    // valid `.entry` existed on the tree item. We should remove this `.entry`
-    // when refactoring the command part.
-    (element as any).entry = fileData.entry;
 
     element.expanded = fileData.expanded;
     element.mayHaveChildren =
@@ -385,7 +381,7 @@ export class DirectoryTreeContainer {
     // inside, but we always render children for Drive even it's collapsed.
     // TODO(b/308504417): remove the special case for Drive.
     const shouldRenderChildren = !fileData.disabled &&
-        (fileData.expanded || isDriveRootEntryList(fileData.entry));
+        (fileData.expanded || fileData.key === driveRootEntryListKey);
     if (shouldRenderChildren) {
       const newChildren = fileData.children || [];
       // Remove non-exist navigation items.
@@ -421,40 +417,42 @@ export class DirectoryTreeContainer {
 
         this.renderItem_(childKey, childFileData);
 
-        // Always call insertBefore here even if the element already exists,
-        // because the index can change. Calling insertBefore with existing
-        // child element will move it to the correct position.
-        element.insertBefore(
-            navigationItem,
-            // Use `.children` instead of `.items` here because `items` is
-            // asynchronous.
-            element.children[index] || null,
-        );
-
+        // Skip `insertBefore` for the tree item if it's an existing item in
+        // renaming state, otherwise it will interrupt user's input (via
+        // triggering `blur` event). Even we try to re-attach the rename input
+        // after `insertBefore`, it still interrupts user's input.
+        if (!isRenaming) {
+          // Always call insertBefore here even if the element already exists,
+          // because the index can change. Calling insertBefore with existing
+          // child element will move it to the correct position.
+          element.insertBefore(
+              navigationItem,
+              // Use `.children` instead of `.items` here because `items` is
+              // asynchronous.
+              element.children[index] || null,
+          );
+        }
         // For existing items, `insertBefore` call above might make the element
-        // lose some status (e.g. focus/rename), check if we need to restore
+        // lose some status (e.g. focus), check if we need to restore
         // them or not.
         if (exists) {
-          if (isFocused) {
+          if (isFocused && !childFileData?.disabled) {
             this.restoreFocus_(navigationItem, /* isExisting= */ true);
-          }
-          if (isRenaming) {
-            this.attachRename_(navigationItem);
           }
           continue;
         }
         // For newly rendered items, check if they are the next item to
         // rename/focus.
-        if (this.entryKeyToFocus_ === childKey) {
-          // Item with entry to focus is rendered for the first time (e.g. right
-          // after rename finishes), focus on it.
-          this.entryKeyToFocus_ = null;
+        if (this.fileKeyToFocus_ === childKey && !childFileData?.disabled) {
+          // Item with file key to focus is rendered for the first time (e.g.
+          // right after rename finishes), focus on it.
+          this.fileKeyToFocus_ = null;
           this.restoreFocus_(navigationItem, /* isExisting= */ false);
         }
-        if (this.entryKeyToRename_ === childKey) {
-          // Item with entry to rename is rendered for the first time (e.g. "New
-          // folder" case), attach the rename input here.
-          this.entryKeyToRename_ = null;
+        if (this.fileKeyToRename_ === childKey) {
+          // Item with file key to rename is rendered for the first time (e.g.
+          // "New folder" case), attach the rename input here.
+          this.fileKeyToRename_ = null;
           this.attachRename_(navigationItem);
         }
 
@@ -475,8 +473,7 @@ export class DirectoryTreeContainer {
   }
 
   /**
-   * Update navigation item icon based on the navigation data and the entry
-   * data.
+   * Update navigation item icon based on the navigation data and the file data.
    */
   private setItemIcon_(
       element: XfTreeItem, fileData: FileData,
@@ -512,9 +509,9 @@ export class DirectoryTreeContainer {
       navigationRoot?: NavigationRoot) {
     // Add full-path for all non-root items.
     if (!navigationRoot) {
-      element.setAttribute('full-path-for-testing', fileData.entry.fullPath);
+      element.setAttribute('full-path-for-testing', fileData.fullPath);
     }
-    if (!isVolumeEntry(fileData.entry)) {
+    if (!isVolumeFileData(fileData)) {
       return;
     }
     // Add volume-type for the root volume items.
@@ -599,8 +596,7 @@ export class DirectoryTreeContainer {
     // Set context menu for the item.
     this.setContextMenu_(element, fileData, navigationRoot);
     // Expand MyFiles by default.
-    const entry = fileData.entry;
-    if (isMyFilesEntry(entry)) {
+    if (isMyFilesFileData(this.store_.getState(), fileData)) {
       element.expanded = true;
       return;
     }
@@ -619,7 +615,8 @@ export class DirectoryTreeContainer {
       shouldCheckDirectoryChildren = !!(element.parentItem?.expanded);
     }
     if (shouldCheckDirectoryChildren) {
-      this.store_.dispatch(readSubDirectoriesToCheckDirectoryChildren(entry));
+      this.store_.dispatch(
+          readSubDirectoriesToCheckDirectoryChildren(fileData.key));
     }
   }
 
@@ -716,7 +713,7 @@ export class DirectoryTreeContainer {
 
     // Read child entries.
     this.store_.dispatch(
-        readSubDirectories(fileData.entry, /* recursive= */ true, metricName));
+        readSubDirectories(fileData.key, /* recursive= */ true, metricName));
   }
 
   /** Handler for navigation item collapsed. */
@@ -739,7 +736,7 @@ export class DirectoryTreeContainer {
     }
 
     this.recordUmaForItemExpandedOrCollapsed_(fileData);
-    if (shouldDelayLoadingChildren(fileData.entry)) {
+    if (shouldDelayLoadingChildren(fileData, this.store_.getState())) {
       // For file systems where it is performance intensive
       // to update recursively when items expand, this proactively
       // collapses all children to avoid having to traverse large
@@ -804,7 +801,7 @@ export class DirectoryTreeContainer {
 
   /** Handler for file filter changed event. */
   private onFileFilterChanged_() {
-    // We don't know which entry is being impacted, we need to refresh all
+    // We don't know which file key is being impacted, we need to refresh all
     // entries we have in the map.
     this.store_.beginBatchUpdate();
     for (const navigationRoot of this.navigationRoots_) {
@@ -815,14 +812,15 @@ export class DirectoryTreeContainer {
       if (!fileData) {
         continue;
       }
-      if (!isEntryScannable(fileData.entry)) {
+      if (!canHaveSubDirectories(fileData)) {
         continue;
       }
-      if (shouldDelayLoadingChildren(fileData.entry) && !fileData.expanded) {
+      if (shouldDelayLoadingChildren(fileData, this.store_.getState()) &&
+          !fileData.expanded) {
         continue;
       }
       this.store_.dispatch(
-          readSubDirectories(fileData.entry, /* recursive= */ true));
+          readSubDirectories(fileData.key, /* recursive= */ true));
     }
     this.store_.endBatchUpdate();
   }
@@ -910,72 +908,60 @@ export class DirectoryTreeContainer {
       return;
     }
 
-    if (fileData) {
-      const entry = fileData.entry;
-
-      if (isRoot) {
-        const navigationRootData = this.navigationRoots_.find(
-            navigationRoot => navigationRoot.key === fileData.entry.toURL());
-        // TODO(b/308504417): remove the special case for Drive.
-        if (navigationRootData?.type === NavigationType.DRIVE) {
-          if (fileData.children.length === 0) {
-            // Drive volume is not mounted, we can only change directory to the
-            // fake drive root.
-            this.store_.dispatch(changeDirectory({toKey: entry.toURL()}));
-          } else {
-            // If Drive fake root is selected and it has Drive volume inside, we
-            // expand it and go to the My Drive (1st child) directly.
-            element.expanded = true;
-            const myDriveKey = fileData.children[0]!;
-            const isMyDriveActive = this.isCurrentDirectoryActive_(myDriveKey);
-            // If My Drive is already active, dispatching the changeDirectory
-            // below with STARTED status won't trigger a SUCCESS status in
-            // DirectoryModel because toKey is the same with the current
-            // directory key in the store. As we rely on the SUCCESS status to
-            // decide which tree item to select, we need to dispatch a SUCCESS
-            // status changeDirectory action in this case.
-            this.store_.dispatch(changeDirectory({
-              toKey: myDriveKey,
-              status: isMyDriveActive ? PropStatus.SUCCESS : PropStatus.STARTED,
-            }));
-          }
-          return;
-        }
-
-        if (navigationRootData?.type === NavigationType.SHORTCUT) {
-          const onEntryResolved = (resolvedEntry: Entry) => {
-            recordUserAction('FolderShortcut.Navigate');
-            this.store_.dispatch(
-                changeDirectory({toKey: resolvedEntry.toURL()}));
-          };
-          // For shortcuts we already have an Entry, but it has to be resolved
-          // again in case, it points to a non-existing directory.
-          if (entry) {
-            (window as any)
-                .webkitResolveLocalFileSystemURL(
-                    entry.toURL(), onEntryResolved,
-                    () => {
-                        // Error, the entry can't be re-resolved. It may
-                        // happen
-                        // for shortcuts whose targets got removed after
-                        // resolving the Entry during initialization.
-                        // TODO: what to do here?
-                    });
-          }
-          return;
-        }
-      }
-
-      // For delayed loading navigation items, read children when it's
-      // selected.
-      if (shouldDelayLoadingChildren(fileData.entry) &&
-          fileData.children.length === 0) {
-        this.store_.dispatch(
-            readSubDirectoriesToCheckDirectoryChildren(fileData.entry));
-      }
-
-      this.store_.dispatch(changeDirectory({toKey: entry.toURL()}));
+    if (!fileData) {
+      return;
     }
+
+    const fileKey = fileData.key;
+
+    const navigationRootData = isRoot ?
+        this.navigationRoots_.find(
+            navigationRoot => navigationRoot.key === fileKey) :
+        undefined;
+    // TODO(b/308504417): Remove the special case for Drive.
+    if (navigationRootData?.type === NavigationType.DRIVE) {
+      if (fileData.children.length === 0) {
+        // Drive volume isn't not mounted, we can only change directory to the
+        // fake drive root.
+        this.store_.dispatch(changeDirectory({toKey: fileKey}));
+      } else {
+        // If Drive fake root is selected and it has Drive volume inside, we
+        // expand it and go to the My Drive (1st child) directly.
+        element.expanded = true;
+        // If "Google Drive" item is the currently focused item, we also need to
+        // set `shouldFocusOnNextSelectedItem_` flag to make sure the focus
+        // shifts to My Drive when it's rendered after expanding.
+        if (document.activeElement === element) {
+          this.shouldFocusOnNextSelectedItem_ = true;
+        }
+        const myDriveKey = fileData.children[0]!;
+        const isMyDriveActive = this.isCurrentDirectoryActive_(myDriveKey);
+        // If My Drive is already active, dispatching the changeDirectory below
+        // with STARTED status won't trigger a SUCCESS status in DirectoryModel
+        // because toKey is the same with the current directory key in the
+        // store. As we rely on the SUCCESS status to decide which tree item to
+        // select, we need to dispatch a SUCCESS status changeDirectory action
+        // in this case.
+        this.store_.dispatch(changeDirectory({
+          toKey: myDriveKey,
+          status: isMyDriveActive ? PropStatus.SUCCESS : PropStatus.STARTED,
+        }));
+      }
+      return;
+    }
+
+    if (navigationRootData?.type === NavigationType.SHORTCUT) {
+      recordUserAction('FolderShortcut.Navigate');
+    }
+
+    // For delayed loading navigation items, read children when it's selected.
+    if (shouldDelayLoadingChildren(fileData, this.store_.getState()) &&
+        fileData.children.length === 0) {
+      this.store_.dispatch(
+          readSubDirectoriesToCheckDirectoryChildren(fileData.key));
+    }
+
+    this.store_.dispatch(changeDirectory({toKey: fileKey}));
   }
 
   private maybeShowToolTip_(event: MouseEvent) {
@@ -1010,16 +996,13 @@ export class DirectoryTreeContainer {
           const fileData = convertEntryToFileData(entry);
           // If entry exists.
           // e.g. /a/b is deleted while watching /a.
-          if (isEntryInsideDrive(fileData) && isGrandRootEntryInDrives(entry)) {
+          if (isInsideDrive(fileData) && isGrandRootEntryInDrive(entry)) {
             // For grand root related changes, we need to re-read child
             // entries from the fake drive root level, because the grand root
             // might be show/hide based on if they have children or not.
-            const driveRootEntry =
-                getEntry(this.store_.getState(), driveRootEntryListKey)! as
-                EntryList;
-            this.store_.dispatch(readSubDirectories(driveRootEntry));
+            this.store_.dispatch(readSubDirectories(driveRootEntryListKey));
           } else {
-            this.store_.dispatch(readSubDirectories(entry));
+            this.store_.dispatch(readSubDirectories(entry.toURL()));
           }
         },
         () => {
@@ -1028,29 +1011,23 @@ export class DirectoryTreeContainer {
           // in this case.
           entry.getParent(
               (parentEntry) => {
-                this.store_.dispatch(readSubDirectories(parentEntry));
+                this.store_.dispatch(readSubDirectories(parentEntry.toURL()));
               },
               () => {
                 // If it fails to get parent, update the subtree by volume.
                 // e.g. /a/b is deleted while watching /a/b/c. getParent of
                 // /a/b/c fails in this case. We falls back to volume update.
-                //
-                // TODO(yawano): Try to get parent path also in this case by
-                // manipulating path string.
-
-                const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
-                if (!volumeInfo) {
+                const state = this.store_.getState();
+                const fileData = getFileData(state, entry.toURL());
+                const volumeId = fileData?.volumeId;
+                if (!volumeId) {
                   return;
                 }
                 for (const root of this.navigationRoots_) {
-                  if (root.type !== NavigationType.VOLUME) {
-                    continue;
-                  }
                   const {fileData} = this.navigationRootMap_.get(root.key)!;
-                  if (fileData && fileData.entry instanceof VolumeEntry &&
-                      fileData.entry.volumeInfo === volumeInfo) {
+                  if (fileData?.volumeId === volumeId) {
                     this.store_.dispatch(readSubDirectories(
-                        fileData.entry, /* recursive= */ true));
+                        fileData.key, /* recursive= */ true));
                   }
                 }
               });
@@ -1065,11 +1042,13 @@ export class DirectoryTreeContainer {
     const {volumes, folderShortcuts, uiEntries, androidApps} = state;
     if (this.volumes_ !== volumes ||
         this.folderShortcuts_ !== folderShortcuts ||
-        this.uiEntries_ !== uiEntries || this.androidApps_ !== androidApps) {
+        this.uiEntries_ !== uiEntries || this.androidApps_ !== androidApps ||
+        this.materializedViews_ !== state.materializedViews) {
       this.volumes_ = volumes;
       this.folderShortcuts_ = folderShortcuts;
       this.uiEntries_ = uiEntries;
       this.androidApps_ = androidApps;
+      this.materializedViews_ = state.materializedViews;
       return true;
     }
 
@@ -1081,14 +1060,15 @@ export class DirectoryTreeContainer {
       element: XfTreeItem, fileData: FileData,
       navigationRoot?: NavigationRoot) {
     // Trash is FakeEntry, but we still want to return menus for sub items.
-    if (isTrashEntry(fileData.entry)) {
+    if (isTrashFileData(fileData)) {
       if (this.contextMenuForSubitems) {
         contextMenuHandler.setContextMenu(element, this.contextMenuForSubitems);
       }
       return;
     }
-    // Disable menus for disabled items and FakeEntry items.
-    if (element.disabled || fileData.entry instanceof FakeEntryImpl) {
+    // Disable menus for disabled items and RECENT items.
+    // NOTE: Drive shared with me and offline are marked as RECENT.
+    if (element.disabled || isRecentFileData(fileData)) {
       if (this.contextMenuForDisabledItems) {
         contextMenuHandler.setContextMenu(
             element, this.contextMenuForDisabledItems);
@@ -1097,7 +1077,7 @@ export class DirectoryTreeContainer {
     }
     if (navigationRoot) {
       // For MyFiles, show normal file operations menu.
-      if (isMyFilesEntry(fileData.entry)) {
+      if (isMyFilesFileData(this.store_.getState(), fileData)) {
         if (this.contextMenuForSubitems) {
           contextMenuHandler.setContextMenu(
               element, this.contextMenuForSubitems);
@@ -1144,8 +1124,8 @@ export class DirectoryTreeContainer {
   }
 
   /**
-   * Given a NavigationKey, check if the entry it represents is the current
-   * directory in the store or not.
+   * Given a NavigationKey, check if the key is the current directory in the
+   * store or not.
    */
   private isCurrentDirectoryActive_(navigationKey: NavigationKey) {
     const {currentDirectory} = this.store_.getState();
@@ -1160,10 +1140,14 @@ export class DirectoryTreeContainer {
     if (navigationData) {
       const element = navigationData.element;
       if (element && !element.selected) {
-        // Reset entryKeyToSelect_ because we already find the element which
+        // Reset fileKeyToSelect_ because we already find the element which
         // represents current directory.
-        this.entryKeyToSelect_ = null;
+        this.fileKeyToSelect_ = null;
         element.selected = true;
+        // We only focus the element if shouldFocusOnNextSelectedItem_ is true.
+        // This is because current directory change can't be triggered from
+        // other parts of Files UI, e.g. "Go to file location" in Recents, where
+        // we shouldn't steal the focus from others.
         if (this.shouldFocusOnNextSelectedItem_) {
           this.shouldFocusOnNextSelectedItem_ = false;
           // Wait for the selected change finishes (e.g. expand all its parents)
@@ -1178,7 +1162,7 @@ export class DirectoryTreeContainer {
     // tree, we need to read sub directory from the root recursively until we
     // find the targeted current directory.
 
-    if (this.entryKeyToSelect_ === currentDirectoryKey) {
+    if (this.fileKeyToSelect_ === currentDirectoryKey) {
       // Do nothing because we already started a reading call to find this exact
       // same "current directory" (see logic below.)
       return;
@@ -1190,10 +1174,10 @@ export class DirectoryTreeContainer {
     // should be selected in the tree.
     this.tree.selectedItem = null;
 
-    this.entryKeyToSelect_ = currentDirectoryKey;
-    const pathEntryKeys =
+    this.fileKeyToSelect_ = currentDirectoryKey;
+    const pathKeys =
         currentDirectory.pathComponents.map(pathComponent => pathComponent.key);
-    this.store_.dispatch(traverseAndExpandPathEntries(pathEntryKeys));
+    this.store_.dispatch(traverseAndExpandPathEntries(pathKeys));
   }
 
   /**
@@ -1205,15 +1189,18 @@ export class DirectoryTreeContainer {
     const state = this.store_.getState();
     const {search, currentDirectory} = state;
     const isSearchActive = search?.status !== undefined && !!(search?.query);
-    let isCurrentDIrectoryInsideDrive = false;
+    let isCurrentDirectoryInsideDrive = false;
     if (currentDirectory?.key) {
-      const currentDirectoryEntry = getFileData(state, currentDirectory.key)!;
-      isCurrentDIrectoryInsideDrive = isEntryInsideDrive(currentDirectoryEntry);
+      const currentDirectoryData = getFileData(state, currentDirectory.key);
+      // The current directory might not exist if it unmounts.
+      if (currentDirectoryData) {
+        isCurrentDirectoryInsideDrive = isInsideDrive(currentDirectoryData);
+      }
     }
     const isSearchInCurrentFolder =
         // When searching in Drive, the search location option will only include
         // ROOT_FOLDER ("Google Drive"), not include THIS_FOLDER.
-        (isCurrentDIrectoryInsideDrive &&
+        (isCurrentDirectoryInsideDrive &&
          search?.options?.location === SearchLocation.ROOT_FOLDER) ||
         search?.options?.location === SearchLocation.THIS_FOLDER;
     return isSearchActive && !isSearchInCurrentFolder;

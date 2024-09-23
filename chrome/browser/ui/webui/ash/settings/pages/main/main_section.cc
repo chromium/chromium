@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/main/main_section.h"
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -66,6 +68,8 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
   // Used to link to personalization app search results.
   html_source->AddString("personalizationAppUrl",
                          personalization_app::kChromeUIPersonalizationAppURL);
+  html_source->AddString("ambientSubpageRelativeUrl",
+                         personalization_app::kAmbientSubpageRelativeUrl);
 }
 
 void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
@@ -88,8 +92,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
       int days_remaining = days.value() ? days.value() : 1;
       std::u16string domain_name =
           base::UTF8ToUTF16(connector->GetEnterpriseDomainManager());
-      std::u16string link_url =
-          base::UTF8ToUTF16(chrome::kChromeUIManagementURL);
+      std::u16string link_url = chrome::kChromeUIManagementURL16;
       if (days_remaining == 7) {
         eol_return_banner_text = l10n_util::GetStringFUTF16(
             IDS_SETTINGS_UPDATE_REQUIRED_EOL_BANNER_ONE_WEEK, domain_name,
@@ -102,7 +105,7 @@ void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
                 days_remaining,
                 base::UTF8ToUTF16(connector->GetEnterpriseDomainManager()),
                 ui::GetChromeOSDeviceName(),
-                base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
+                std::u16string(chrome::kChromeUIManagementURL16));
       }
     }
   }
@@ -264,8 +267,7 @@ void MainSection::AddChromeOSUserStrings(
   std::string primary_user_email = primary_user->GetDisplayEmail();
 
   html_source->AddString("primaryUserEmail", primary_user_email);
-  html_source->AddBoolean("isActiveDirectoryUser",
-                          user && user->IsActiveDirectoryUser());
+
   html_source->AddBoolean(
       "isSecondaryUser",
       user && user->GetAccountId() != primary_user->GetAccountId());

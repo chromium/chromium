@@ -1,0 +1,4 @@
+# ChromeOS > Software > System Services > Peripherals > Firmware Updates
+buganizer {
+  component_id: 1150862
+}

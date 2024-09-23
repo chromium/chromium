@@ -11,12 +11,13 @@
 #include "base/values.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -150,8 +151,8 @@ void ScopedCrosSettingsTestHelper::Initialize(bool create_settings_service) {
     CHECK(!DeviceSettingsService::IsInitialized());
     test_device_settings_service_ =
         std::make_unique<ScopedTestDeviceSettingsService>();
-    test_cros_settings_ = std::make_unique<ScopedTestCrosSettings>(
-        g_browser_process->local_state());
+    cros_settings_holder_ = std::make_unique<CrosSettingsHolder>(
+        ash::DeviceSettingsService::Get(), g_browser_process->local_state());
   }
 }
 

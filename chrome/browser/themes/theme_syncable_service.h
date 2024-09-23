@@ -14,10 +14,12 @@
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/themes/theme_service_observer.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
 
+class PrefService;
 class Profile;
 class ThemeService;
 class ThemeSyncableServiceTest;
@@ -25,6 +27,18 @@ class ThemeSyncableServiceTest;
 namespace sync_pb {
 class ThemeSpecifics;
 }
+
+enum class ThemePrefInMigration {
+  kBrowserColorScheme,
+  kUserColor,
+  kBrowserColorVariant,
+  kGrayscaleThemeEnabled,
+  kNtpCustomBackgroundDict,
+  kLastEntry = kNtpCustomBackgroundDict
+};
+
+std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref);
+void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs);
 
 class ThemeSyncableService final : public syncer::SyncableService,
                                    public ThemeServiceObserver {
@@ -59,7 +73,7 @@ class ThemeSyncableService final : public syncer::SyncableService,
 
   ~ThemeSyncableService() override;
 
-  static syncer::ModelType model_type() { return syncer::THEMES; }
+  static syncer::DataType data_type() { return syncer::THEMES; }
 
   // ThemeServiceObserver implementation.
   void OnThemeChanged() override;
@@ -74,11 +88,11 @@ class ThemeSyncableService final : public syncer::SyncableService,
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
+  void StopSyncing(syncer::DataType type) override;
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
@@ -89,7 +103,9 @@ class ThemeSyncableService final : public syncer::SyncableService,
   static const char kSyncEntityTitle[];
 
  private:
-  static bool AreThemeSpecificsEqual(
+  class PrefServiceSyncableObserver;
+
+  static bool AreThemeSpecificsEquivalent(
       const sync_pb::ThemeSpecifics& a,
       const sync_pb::ThemeSpecifics& b,
       bool is_system_theme_distinct_from_default_theme);
@@ -132,9 +148,23 @@ class ThemeSyncableService final : public syncer::SyncableService,
 
   base::ThreadChecker thread_checker_;
 
+  PrefChangeRegistrar pref_change_registrar_;
+
+  std::unique_ptr<PrefServiceSyncableObserver> pref_service_syncable_observer_;
+
   base::WeakPtrFactory<ThemeSyncableService> weak_ptr_factory_{this};
 
-  FRIEND_TEST_ALL_PREFIXES(ThemeSyncableServiceTest, AreThemeSpecificsEqual);
+  FRIEND_TEST_ALL_PREFIXES(ThemeSyncableServiceTest,
+                           AreThemeSpecificsEquivalent);
+  FRIEND_TEST_ALL_PREFIXES(
+      ThemeSyncableServiceWithMigrationFlagEnabledTest,
+      ShouldPrioritizeExtensionThemeInAreThemeSpecificsEquivalent);
+  FRIEND_TEST_ALL_PREFIXES(
+      ThemeSyncableServiceWithMigrationFlagEnabledTest,
+      ShouldConsiderBrowserColorSchemeInAreThemeSpecificsEquivalent);
+  FRIEND_TEST_ALL_PREFIXES(
+      ThemeSyncableServiceWithMigrationFlagEnabledTest,
+      ShouldConsiderNtpBackgroundInAreThemeSpecificsEquivalent);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_SYNCABLE_SERVICE_H_

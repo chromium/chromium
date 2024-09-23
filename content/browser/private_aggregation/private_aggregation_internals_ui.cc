@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
 
 #include <memory>
@@ -24,7 +29,7 @@ PrivateAggregationInternalsUI::PrivateAggregationInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   // Initialize the UI with no bindings. Mojo bindings will be separately
   // granted to frames within this WebContents.
-  web_ui->SetBindings(BINDINGS_POLICY_NONE);
+  web_ui->SetBindings(BindingsPolicySet());
   WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIPrivateAggregationInternalsHost);

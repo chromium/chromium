@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "sandbox/win/src/sandbox_nt_util.h"
 
-#include <ntstatus.h>
 #include <windows.h>
+
+#include <ntstatus.h>
 #include <winternl.h>
 
 #include <memory>

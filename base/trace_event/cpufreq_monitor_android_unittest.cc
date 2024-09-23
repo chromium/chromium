@@ -32,7 +32,6 @@ class TestTaskRunner final : public SingleThreadTaskRunner {
                                   OnceClosure task,
                                   base::TimeDelta delay) override {
     NOTREACHED();
-    return false;
   }
 
   bool RunsTasksInCurrentSequence() const override { return true; }

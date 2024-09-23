@@ -77,22 +77,6 @@ class RenderViewHostTest : public RenderViewHostImplTestHarness {
   raw_ptr<ContentBrowserClient> old_browser_client_;
 };
 
-// Ensure we do not grant bindings to a process shared with unprivileged views.
-TEST_F(RenderViewHostTest, DontGrantBindingsToSharedProcess) {
-  // This test does not make sense when AllowBindings checks for WebUIs is
-  // enabled as it explicitly violates what the check is supposed to prevent.
-  if (base::FeatureList::IsEnabled(
-          features::kEnsureAllowBindingsIsAlwaysForWebUI)) {
-    GTEST_SKIP();
-  }
-  // Create another view in the same process.
-  std::unique_ptr<TestWebContents> new_web_contents(TestWebContents::Create(
-      browser_context(), main_rfh()->GetSiteInstance()));
-
-  main_rfh()->AllowBindings(BINDINGS_POLICY_WEB_UI);
-  EXPECT_FALSE(main_rfh()->GetEnabledBindings() & BINDINGS_POLICY_WEB_UI);
-}
-
 class MockDraggingRenderViewHostDelegateView
     : public RenderViewHostDelegateView {
  public:

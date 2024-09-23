@@ -5,12 +5,12 @@
 #ifndef CHROME_ELEVATION_SERVICE_ELEVATOR_H_
 #define CHROME_ELEVATION_SERVICE_ELEVATOR_H_
 
-#include <string>
-
 #include <windows.h>
 
 #include <wrl/implements.h>
 #include <wrl/module.h>
+
+#include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/win/windows_types.h"
@@ -53,6 +53,12 @@ class Elevator
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA006);
   static constexpr HRESULT kValidationDidNotPass =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA007);
+  static constexpr HRESULT kErrorCouldNotObtainPath =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA008);
+  static constexpr HRESULT kErrorUnsupportedFilePath =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA009);
+  static constexpr HRESULT kErrorUnsupportedProtectionLevel =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA00A);
 
   Elevator() = default;
 

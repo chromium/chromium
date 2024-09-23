@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -51,18 +52,17 @@ class BrowserContext;
 namespace printing {
 
 class PrintPreviewHandler;
+class PrintPreviewUI;
 
-class PrintPreviewUIConfig : public content::WebUIConfig {
+class PrintPreviewUIConfig
+    : public content::DefaultWebUIConfig<PrintPreviewUI> {
  public:
   PrintPreviewUIConfig();
   ~PrintPreviewUIConfig() override;
 
-  // content::WebUIConfig:
+  // content::DefaultWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
   bool ShouldHandleURL(const GURL& url) override;
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 // PrintPreviewUI lives on the UI thread.
@@ -184,7 +184,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
     // Notifies that the document to print from preview is ready.  This occurs
     // after any possible N-up processing.
-    virtual void PreviewDocumentReady(content::WebContents* preview_dialog) {}
+    virtual void PreviewDocumentReady(content::WebContents* preview_dialog,
+                                      base::span<const uint8_t> data) {}
 
    protected:
     virtual ~TestDelegate() = default;

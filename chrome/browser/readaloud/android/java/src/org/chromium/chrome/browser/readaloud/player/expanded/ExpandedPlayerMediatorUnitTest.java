@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Unit tests for {@link ExpandedPlayerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -80,13 +81,15 @@ public class ExpandedPlayerMediatorUnitTest {
         reset(mModel);
         mMediator.dismiss();
         assertEquals(VisibilityState.HIDING, mMediator.getVisibility());
-        verify(mModel, never()).set(any(), any());
+        verify(mModel, never()).set(eq(PlayerProperties.EXPANDED_PLAYER_VISIBILITY), anyInt());
+        verify(mModel, never()).set(any(WritableObjectPropertyKey.class), any());
 
         mModel.set(PlayerProperties.EXPANDED_PLAYER_VISIBILITY, VisibilityState.GONE);
         reset(mModel);
         mMediator.dismiss();
         assertEquals(VisibilityState.GONE, mMediator.getVisibility());
-        verify(mModel, never()).set(any(), any());
+        verify(mModel, never()).set(eq(PlayerProperties.EXPANDED_PLAYER_VISIBILITY), anyInt());
+        verify(mModel, never()).set(any(WritableObjectPropertyKey.class), any());
     }
 
     @Test

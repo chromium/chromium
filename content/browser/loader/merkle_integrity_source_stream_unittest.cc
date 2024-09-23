@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/loader/merkle_integrity_source_stream.h"
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
@@ -60,8 +65,9 @@ class MerkleIntegritySourceStreamTest
     output_buffer_ =
         base::MakeRefCounted<net::IOBufferWithSize>(output_buffer_size_);
     std::unique_ptr<net::MockSourceStream> source(new net::MockSourceStream());
-    if (GetParam().read_result_type == ReadResultType::ONE_BYTE_AT_A_TIME)
+    if (GetParam().read_result_type == ReadResultType::ONE_BYTE_AT_A_TIME) {
       source->set_read_one_byte_at_a_time(true);
+    }
     source_ = source.get();
     stream_ = std::make_unique<MerkleIntegritySourceStream>(mi_header_value,
                                                             std::move(source));
@@ -99,12 +105,15 @@ class MerkleIntegritySourceStreamTest
       net::TestCompletionCallback callback;
       int rv = stream_->Read(output_buffer(), output_buffer_size(),
                              callback.callback());
-      if (rv == net::ERR_IO_PENDING)
+      if (rv == net::ERR_IO_PENDING) {
         rv = CompleteReadsIfAsync(rv, &callback, source());
-      if (rv == net::OK)
+      }
+      if (rv == net::OK) {
         break;
-      if (rv < net::OK)
+      }
+      if (rv < net::OK) {
         return rv;
+      }
       EXPECT_GT(rv, net::OK);
       bytes_read += rv;
       output->append(output_data(), rv);

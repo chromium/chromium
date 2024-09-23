@@ -6,6 +6,8 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.fail;
+
 import android.os.ConditionVariable;
 
 import java.nio.ByteBuffer;
@@ -459,6 +461,73 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     private void checkOnValidThread() {
         if (!mUseDirectExecutor) {
             assertThat(Thread.currentThread()).isEqualTo(mExecutorThread);
+        }
+    }
+
+    /**
+     * A simple callback for a succeeding stream. Fails when other callbacks that should not be
+     * executed are called.
+     */
+    public static class SimpleSucceedingCallback extends BidirectionalStream.Callback {
+        public final ConditionVariable done = new ConditionVariable();
+        private final ExecutorService mExecutor;
+
+        public SimpleSucceedingCallback() {
+            mExecutor = Executors.newSingleThreadExecutor();
+        }
+
+        @Override
+        public void onStreamReady(BidirectionalStream stream) {}
+
+        @Override
+        public void onResponseHeadersReceived(BidirectionalStream stream, UrlResponseInfo info) {
+            stream.read(ByteBuffer.allocateDirect(32 * 1024));
+        }
+
+        @Override
+        public void onReadCompleted(
+                BidirectionalStream stream,
+                UrlResponseInfo info,
+                ByteBuffer byteBuffer,
+                boolean endOfStream) {
+            byteBuffer.clear(); // we don't care about the data
+            if (!endOfStream) {
+                stream.read(byteBuffer);
+            }
+        }
+
+        @Override
+        public void onWriteCompleted(
+                BidirectionalStream bidirectionalStream,
+                UrlResponseInfo urlResponseInfo,
+                ByteBuffer byteBuffer,
+                boolean endOfStream) {
+            fail();
+        }
+
+        @Override
+        public void onResponseTrailersReceived(
+                BidirectionalStream bidirectionalStream,
+                UrlResponseInfo urlResponseInfo,
+                UrlResponseInfo.HeaderBlock headerBlock) {
+            fail();
+        }
+
+        @Override
+        public void onSucceeded(BidirectionalStream stream, UrlResponseInfo info) {
+            done.open();
+        }
+
+        @Override
+        public void onFailed(
+                BidirectionalStream bidirectionalStream,
+                UrlResponseInfo urlResponseInfo,
+                CronetException e) {
+            fail(e.getMessage());
+        }
+
+        public ExecutorService getExecutor() {
+            return mExecutor;
         }
     }
 }

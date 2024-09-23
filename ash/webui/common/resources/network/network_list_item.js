@@ -19,13 +19,14 @@ import './network_icon.js';
 import {assert} from '//resources/ash/common/assert.js';
 import {CellularSetupPageName} from '//resources/ash/common/cellular_setup/cellular_types.js';
 import {getESimProfileProperties} from '//resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {CrPolicyIndicatorType} from '//resources/ash/common/cr_policy_indicator_behavior.js';
 import {FocusRowBehavior} from '//resources/ash/common/focus_row_behavior.js';
 import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
+import {ActivationStateType, CrosNetworkConfigInterface, GlobalPolicy, SecurityType, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ConnectionStateType, NetworkType, OncSource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {ActivationStateType, CrosNetworkConfigInterface, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
@@ -53,7 +54,9 @@ Polymer({
       reflectToAttribute: true,
       observer: 'disabledChanged_',
       computed: 'computeDisabled_(deviceState, deviceState.inhibitReason,' +
-          'disableItem, isUserLoggedIn_, isPSimPendingActivationNetwork_)',
+          'disableItem, isUserLoggedIn_, isPSimPendingActivationNetwork_,' +
+          'isBuiltInVpnManagementBlocked, networkState,' +
+          'networkState.typeState.vpn, networkState.typeState.vpn.type)',
     },
 
     /**
@@ -61,6 +64,11 @@ Polymer({
      * @type {boolean}
      */
     disableItem: Boolean,
+
+    isBuiltInVpnManagementBlocked: {
+      type: Boolean,
+      value: false,
+    },
 
     /** @type {!NetworkList.NetworkListItemType|undefined} */
     item: {
@@ -135,9 +143,6 @@ Polymer({
      */
     deviceState: Object,
 
-    /** @private {?ManagedProperties|undefined} */
-    managedProperties_: Object,
-
     /** @type {!GlobalPolicy|undefined} */
     globalPolicy: Object,
 
@@ -172,7 +177,7 @@ Polymer({
       type: Boolean,
       reflectToAttribute: true,
       value: false,
-      computed: 'computeIsPSimPendingActivationNetwork_(managedProperties_)',
+      computed: 'computeIsPSimPendingActivationNetwork_(networkState.*)',
     },
 
     /**
@@ -184,7 +189,7 @@ Polymer({
       type: Boolean,
       reflectToAttribute: true,
       value: false,
-      computed: 'computeIsPSimUnavailableNetwork_(managedProperties_)',
+      computed: 'computeIsPSimUnavailableNetwork_(networkState.*)',
     },
 
     /**
@@ -226,7 +231,7 @@ Polymer({
     isESimUnactivatedProfile_: {
       type: Boolean,
       value: false,
-      computed: 'computeIsESimUnactivatedProfile_(managedProperties_)',
+      computed: 'computeIsESimUnactivatedProfile_(networkState.*)',
     },
 
     /**
@@ -252,14 +257,6 @@ Polymer({
       value() {
         return loadTimeData.valueExists('isUserLoggedIn') &&
             loadTimeData.getBoolean('isUserLoggedIn');
-      },
-    },
-
-    isCellularCarrierLockEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('isCellularCarrierLockEnabled') &&
-            loadTimeData.getBoolean('isCellularCarrierLockEnabled');
       },
     },
   },
@@ -290,8 +287,34 @@ Polymer({
   isESimNetwork_() {
     return !!this.networkState &&
         this.networkState.type === NetworkType.kCellular &&
+        !!this.networkState.typeState.cellular &&
         !!this.networkState.typeState.cellular.eid &&
         !!this.networkState.typeState.cellular.iccid;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isPSimNetwork_() {
+    return !!this.networkState &&
+        this.networkState.type === NetworkType.kCellular &&
+        !!this.networkState.typeState.cellular &&
+        !this.networkState.typeState.cellular.eid &&
+        !!this.networkState.typeState.cellular.iccid;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isBuiltInVpn_() {
+    if (!this.networkState || this.networkState.type !== NetworkType.kVPN) {
+      return false;
+    }
+
+    const vpnType = this.networkState.typeState.vpn.type;
+    return vpnType === VpnType.kL2TPIPsec || vpnType === VpnType.kOpenVPN;
   },
 
   /** @private */
@@ -351,20 +374,7 @@ Polymer({
   /** @private */
   networkStateChanged_() {
     if (!this.networkState) {
-      this.managedProperties_ = undefined;
       return;
-    }
-
-    // network-list-item supports dummy networkStates that may have an empty
-    // guid, such as those set by network-select. Only fetch managedProperties_
-    // if the network's guid is defined.
-    if (this.networkState.guid) {
-      this.networkConfig_.getManagedProperties(this.networkState.guid)
-          .then((response) => {
-            this.managedProperties_ = response.result;
-          });
-    } else {
-      this.managedProperties_ = undefined;
     }
 
     const connectionState = this.networkState.connectionState;
@@ -423,6 +433,9 @@ Polymer({
    */
   computeDisabled_() {
     if (this.disableItem) {
+      return true;
+    }
+    if (this.isBuiltInVpn_() && this.isBuiltInVpnManagementBlocked) {
       return true;
     }
     if (!this.deviceState) {
@@ -688,9 +701,8 @@ Polymer({
       // For carrier lock, display string is different from regular
       // pin lock
       if (this.networkState.typeState.cellular.simLocked) {
-        if (this.isCellularCarrierLockEnabled_ &&
-            this.networkState.typeState.cellular.simLockType ===
-                'network-pin') {
+        if (this.networkState.typeState.cellular.simLockType ===
+            'network-pin') {
           return this.i18n(
               'networkListItemUpdatedCellularSimCardCarrierLocked');
         }
@@ -707,10 +719,10 @@ Polymer({
     const connectionState = this.networkState.connectionState;
     if (OncMojo.connectionStateIsConnected(connectionState)) {
       if (this.isPortalState_(this.networkState.portalState)) {
+        if (this.networkState.type === NetworkType.kCellular) {
+          return this.i18n('networkListItemCellularSignIn');
+        }
         return this.i18n('networkListItemSignIn');
-      }
-      if (this.networkState.portalState === PortalState.kPortalSuspected) {
-        return this.i18n('networkListItemConnectedLimited');
       }
       if (this.networkState.portalState === PortalState.kNoInternet) {
         return this.i18n('networkListItemConnectedNoConnectivity');
@@ -785,6 +797,9 @@ Polymer({
       return false;
     }
     if (this.isPSimPendingActivationNetwork_ || this.isPSimActivatingNetwork_) {
+      return true;
+    }
+    if (this.isBuiltInVpn_() && this.isBuiltInVpnManagementBlocked) {
       return true;
     }
     return !!networkState && !disabled_ && !this.shouldShowUnlockButton_();
@@ -948,65 +963,47 @@ Polymer({
   },
 
   /**
-   * @param {?ManagedProperties|undefined} managedProperties
    * @return {boolean}
    * @private
    */
-  computeIsESimUnactivatedProfile_(managedProperties) {
-    if (!managedProperties) {
+  computeIsESimUnactivatedProfile_() {
+    if (!this.isESimNetwork_()) {
       return false;
     }
-
-    const cellularProperties = managedProperties.typeProperties.cellular;
-    if (!cellularProperties || !cellularProperties.eid) {
-      return false;
-    }
-    return cellularProperties.activationState ===
+    return this.networkState.typeState.cellular.activationState ===
         ActivationStateType.kNotActivated;
   },
 
   /**
-   * @param {?ManagedCellularProperties|undefined}
-   *     cellularProperties
    * @return {boolean}
    * @private
    */
-  isUnactivatedPSimNetwork_(cellularProperties) {
-    if (!cellularProperties || cellularProperties.eid) {
+  isUnactivatedPSimNetwork_() {
+    if (!this.isPSimNetwork_()) {
       return false;
     }
-    return cellularProperties.activationState ===
+    return this.networkState.typeState.cellular.activationState ===
         ActivationStateType.kNotActivated;
   },
 
   /**
-   * @param {?ManagedCellularProperties|undefined}
-   *     cellularProperties
    * @return {boolean}
    * @private
    */
-  hasPaymentPortalInfo_(cellularProperties) {
-    if (!cellularProperties) {
+  hasPaymentPortalInfo_() {
+    if (!this.networkState || !this.networkState.typeState.cellular) {
       return false;
     }
-    return !!(
-        cellularProperties.paymentPortal &&
-        cellularProperties.paymentPortal.url);
+    return !!this.networkState.typeState.cellular.paymentPortal &&
+        !!this.networkState.typeState.cellular.paymentPortal.url;
   },
 
   /**
-   * @param {?ManagedProperties|undefined}
-   *     managedProperties
    * @return {boolean}
    * @private
    */
-  computeIsPSimPendingActivationNetwork_(managedProperties) {
-    if (!managedProperties) {
-      return false;
-    }
-    const cellularProperties = managedProperties.typeProperties.cellular;
-    return this.isUnactivatedPSimNetwork_(cellularProperties) &&
-        this.hasPaymentPortalInfo_(cellularProperties);
+  computeIsPSimPendingActivationNetwork_() {
+    return this.isUnactivatedPSimNetwork_() && this.hasPaymentPortalInfo_();
   },
 
   /**
@@ -1044,18 +1041,11 @@ Polymer({
   },
 
   /**
-   * @param {?ManagedProperties|undefined}
-   *     managedProperties
    * @return {boolean}
    * @private
    */
-  computeIsPSimUnavailableNetwork_(managedProperties) {
-    if (!managedProperties) {
-      return false;
-    }
-    const cellularProperties = managedProperties.typeProperties.cellular;
-    return this.isUnactivatedPSimNetwork_(cellularProperties) &&
-        !this.hasPaymentPortalInfo_(cellularProperties);
+  computeIsPSimUnavailableNetwork_() {
+    return this.isUnactivatedPSimNetwork_() && !this.hasPaymentPortalInfo_();
   },
 
   /**
@@ -1063,8 +1053,7 @@ Polymer({
    * @private
    */
   computeIsPSimActivatingNetwork_() {
-    if (!this.networkState || !this.networkState.typeState.cellular ||
-        this.networkState.typeState.cellular.eid) {
+    if (!this.isPSimNetwork_()) {
       return false;
     }
     return this.networkState.typeState.cellular.activationState ===
@@ -1132,6 +1121,29 @@ Polymer({
    * @return {boolean}
    * @private
    */
+  shouldShowPolicyIcon_() {
+    if (this.isBuiltInVpn_() && this.isBuiltInVpnManagementBlocked) {
+      return true;
+    }
+
+    return !!this.networkState && this.isPolicySource(this.networkState.source);
+  },
+
+  /**
+   * @return {!CrPolicyIndicatorType}
+   */
+  getPolicyIcon_() {
+    if (this.isBuiltInVpn_() && this.isBuiltInVpnManagementBlocked) {
+      return CrPolicyIndicatorType.USER_POLICY;
+    }
+
+    return this.getIndicatorTypeForSource(this.networkState.source);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
   isCellularNetworkScanning_() {
     if (!this.deviceState || !this.deviceState.scanning) {
       return false;
@@ -1165,8 +1177,7 @@ Polymer({
     if (!this.networkState || !this.networkState.typeState.cellular) {
       return false;
     }
-    if (this.isCellularCarrierLockEnabled_ &&
-        this.networkState.typeState.cellular.simLocked &&
+    if (this.networkState.typeState.cellular.simLocked &&
         this.networkState.typeState.cellular.simLockType === 'network-pin') {
       return false;
     }
@@ -1218,14 +1229,13 @@ Polymer({
   },
 
   /**
-   * Return true if portalState is either kPortal or kProxyAuthRequired.
    * @param {!PortalState} portalState
    * @return {boolean}
    * @private
    */
   isPortalState_(portalState) {
     return portalState === PortalState.kPortal ||
-        portalState === PortalState.kProxyAuthRequired;
+        portalState === PortalState.kPortalSuspected;
   },
 
   /**

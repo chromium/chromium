@@ -108,25 +108,21 @@ BASE_FEATURE(kThreadedScrollPreventRenderingStarvation,
              "ThreadedScrollPreventRenderingStarvation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+base::TimeDelta GetThreadedScrollRenderingStarvationThreshold() {
+  static const base::FeatureParam<int>
+      kThreadedScrollRenderingStarvationThreshold{
+          &kThreadedScrollPreventRenderingStarvation, "threshold_ms", 100};
+  if (base::FeatureList::IsEnabled(kThreadedScrollPreventRenderingStarvation)) {
+    return base::Milliseconds(
+        kThreadedScrollRenderingStarvationThreshold.Get());
+  }
+  return base::TimeDelta::Max();
+}
+
 BASE_FEATURE(kPrioritizeCompositingAfterDelayTrials,
              "PrioritizeCompositingAfterDelayTrials",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<CompositorTQPolicyDuringThreadedScroll>::Option
-    kCompositorTQPolicyDuringThreadedScrollOptions[] = {
-        {CompositorTQPolicyDuringThreadedScroll::kLowPriorityWithAntiStarvation,
-         "low-priority-with-anti-starvation"},
-        {CompositorTQPolicyDuringThreadedScroll::
-             kNormalPriorityWithAntiStarvation,
-         "normal-priority-with-anti-starvation"},
-        {CompositorTQPolicyDuringThreadedScroll::kVeryHighPriorityAlways,
-         "very-high-priority-always"}};
-
-const base::FeatureParam<CompositorTQPolicyDuringThreadedScroll>
-    kCompositorTQPolicyDuringThreadedScroll{
-        &kThreadedScrollPreventRenderingStarvation, "policy",
-        CompositorTQPolicyDuringThreadedScroll::kLowPriorityWithAntiStarvation,
-        &kCompositorTQPolicyDuringThreadedScrollOptions};
 
 }  // namespace scheduler
 }  // namespace blink

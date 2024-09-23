@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2024 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/min_touch_target_size"
+    android:layout_height="@dimen/min_touch_target_size"
+    android:background="@drawable/color_picker_border"
+    android:layout_gravity="center"
+    android:padding="6dp" >
+
+    <View
+        android:id="@+id/color_picker_suggestion_color_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent" />
+
+</FrameLayout>

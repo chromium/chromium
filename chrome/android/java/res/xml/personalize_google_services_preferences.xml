@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="personalize_google_services_summary"
+        android:summary="@string/personalized_google_services_summary"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="web_and_app_activity"
+        android:title="@string/personalized_google_services_waa_title"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="linked_google_services"
+        android:title="@string/personalized_google_services_linked_services_title"
+        android:summary="@string/personalized_google_services_linked_services_summary"/>
+
+</PreferenceScreen>

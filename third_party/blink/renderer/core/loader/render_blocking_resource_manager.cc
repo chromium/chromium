@@ -9,8 +9,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
@@ -163,7 +166,8 @@ void RenderBlockingResourceManager::AddPendingParsingElementLink(
 }
 
 void RenderBlockingResourceManager::RemovePendingParsingElement(
-    const AtomicString& id) {
+    const AtomicString& id,
+    Element* element) {
   if (!RuntimeEnabledFeatures::DocumentRenderBlockingEnabled()) {
     return;
   }
@@ -172,7 +176,17 @@ void RenderBlockingResourceManager::RemovePendingParsingElement(
     return;
   }
 
+  // <link rel=expect> matches elements found using "select the indicated part"
+  // https://html.spec.whatwg.org/multipage/browsing-the-web.html#select-the-indicated-part
+  // which only matches elements in the document tree (as in, not in a shadow
+  // tree)
+  if (element->IsInShadowTree() || !element->isConnected()) {
+    return;
+  }
+
   element_render_blocking_links_.erase(id);
+  element_render_blocking_links_.erase(
+      AtomicString(EncodeWithURLEscapeSequences(id)));
   if (element_render_blocking_links_.empty()) {
     document_->SetHasRenderBlockingExpectLinkElements(false);
     RenderBlockingResourceUnblocked();
@@ -214,6 +228,18 @@ void RenderBlockingResourceManager::ClearPendingParsingElements() {
 
   if (element_render_blocking_links_.empty()) {
     return;
+  }
+
+  for (const auto& links : element_render_blocking_links_) {
+    for (const auto& link : *(links.value)) {
+      document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          String("Did not find element expected to be parsed from: <link "
+                 "rel=expect "
+                 "href=\"") +
+              link->FastGetAttribute(html_names::kHrefAttr) + "\">"));
+    }
   }
 
   document_->SetHasRenderBlockingExpectLinkElements(false);

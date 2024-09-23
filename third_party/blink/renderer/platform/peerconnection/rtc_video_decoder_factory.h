@@ -18,7 +18,6 @@ class VideoDecoder;
 }  // namespace webrtc
 
 namespace media {
-class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 }  // namespace media
 
@@ -27,18 +26,8 @@ namespace blink {
 class PLATFORM_EXPORT RTCVideoDecoderFactory
     : public webrtc::VideoDecoderFactory {
  public:
-  // The `decoder_factory` and `media_task_runner` are only needed if the
-  // experiment `media::kUseDecoderStreamForWebRTC` is enabled. If the
-  // RTCVideoDecoderFactory instance is only used to query supported codec
-  // configurations (i.e., by calling GetSupportedFormats() and
-  // QueryCodecSupport()), it may be created with `decoder_factory` and
-  // `media_task_runner` being null pointers. See https://crbug.com/1349423.
-  // TODO(crbug.com/1157227): Delete `decoder_factory` and `media_task_runner`
-  // arguments if the RTCVideoDecoderStreamAdapter is deleted.
   explicit RTCVideoDecoderFactory(
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      base::WeakPtr<media::DecoderFactory> decoder_factory,
-      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       const gfx::ColorSpace& render_color_space);
   RTCVideoDecoderFactory(const RTCVideoDecoderFactory&) = delete;
   RTCVideoDecoderFactory& operator=(const RTCVideoDecoderFactory&) = delete;
@@ -46,7 +35,8 @@ class PLATFORM_EXPORT RTCVideoDecoderFactory
 
   // Runs on Chrome_libJingle_WorkerThread. The child thread is blocked while
   // this runs.
-  std::unique_ptr<webrtc::VideoDecoder> CreateVideoDecoder(
+  std::unique_ptr<webrtc::VideoDecoder> Create(
+      const webrtc::Environment& env,
       const webrtc::SdpVideoFormat& format) override;
 
   std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
@@ -57,11 +47,8 @@ class PLATFORM_EXPORT RTCVideoDecoderFactory
 
  private:
   void CheckAndWaitDecoderSupportStatusIfNeeded() const;
-  raw_ptr<media::GpuVideoAcceleratorFactories, ExperimentalRenderer>
-      gpu_factories_;
-  base::WeakPtr<media::DecoderFactory> decoder_factory_;
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 
-  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   gfx::ColorSpace render_color_space_;
 
   std::unique_ptr<GpuCodecSupportWaiter> gpu_codec_support_waiter_;

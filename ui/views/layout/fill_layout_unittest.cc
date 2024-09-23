@@ -233,7 +233,7 @@ TEST_F(FillLayoutTest, MinimumSizeDisabled) {
   child_1->set_minimum_size({1, 3});
   child_2->set_minimum_size({3, 1});
   child_3->set_minimum_size({2, 2});
-  EXPECT_EQ(host_->GetPreferredSize(), host_->GetMinimumSize());
+  EXPECT_EQ(host_->GetPreferredSize({}), host_->GetMinimumSize());
 }
 
 TEST_F(FillLayoutTest, MinimumSizeEnabled) {

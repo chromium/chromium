@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
-
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "ios/web/public/test/web_task_environment.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
@@ -50,9 +51,12 @@ class CWVAutofillDataManagerTest : public PlatformTest {
         std::make_unique<autofill::TestPersonalDataManager>();
 
     // Set to stub out behavior inside PersonalDataManager.
-    personal_data_manager_->SetAutofillProfileEnabled(true);
-    personal_data_manager_->SetAutofillPaymentMethodsEnabled(true);
-    personal_data_manager_->SetAutofillWalletImportEnabled(true);
+    personal_data_manager_->test_address_data_manager()
+        .SetAutofillProfileEnabled(true);
+    personal_data_manager_->test_payments_data_manager()
+        .SetAutofillPaymentMethodsEnabled(true);
+    personal_data_manager_->test_payments_data_manager()
+        .SetAutofillWalletImportEnabled(true);
 
     password_store_ = new password_manager::TestPasswordStore(
         password_manager::IsAccountStore(true));
@@ -146,12 +150,14 @@ TEST_F(CWVAutofillDataManagerTest, DidChangeCallback) {
 
     [autofill_data_manager_ addObserver:observer];
     [[observer expect] autofillDataManagerDataDidChange:autofill_data_manager_];
-    personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
+    personal_data_manager_->address_data_manager().AddProfile(
+        autofill::test::GetFullProfile());
     [observer verify];
 
     [autofill_data_manager_ removeObserver:observer];
     [[observer reject] autofillDataManagerDataDidChange:autofill_data_manager_];
-    personal_data_manager_->AddProfile(autofill::test::GetFullProfile2());
+    personal_data_manager_->address_data_manager().AddProfile(
+        autofill::test::GetFullProfile2());
     [observer verify];
   }
 }
@@ -159,7 +165,7 @@ TEST_F(CWVAutofillDataManagerTest, DidChangeCallback) {
 // Tests CWVAutofillDataManager properly returns profiles.
 TEST_F(CWVAutofillDataManagerTest, ReturnProfile) {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
-  personal_data_manager_->AddProfile(profile);
+  personal_data_manager_->address_data_manager().AddProfile(profile);
 
   EXPECT_TRUE(FetchProfiles(^(NSArray<CWVAutofillProfile*>* profiles) {
     EXPECT_EQ(1ul, profiles.count);
@@ -171,7 +177,8 @@ TEST_F(CWVAutofillDataManagerTest, ReturnProfile) {
 
 // Tests CWVAutofillDataManager properly deletes profiles.
 TEST_F(CWVAutofillDataManagerTest, DeleteProfile) {
-  personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
+  personal_data_manager_->address_data_manager().AddProfile(
+      autofill::test::GetFullProfile());
 
   EXPECT_TRUE(FetchProfiles(^(NSArray<CWVAutofillProfile*>* profiles) {
     for (CWVAutofillProfile* cwv_profile in profiles) {
@@ -185,7 +192,8 @@ TEST_F(CWVAutofillDataManagerTest, DeleteProfile) {
 
 // Tests CWVAutofillDataManager properly updates profiles.
 TEST_F(CWVAutofillDataManagerTest, UpdateProfile) {
-  personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
+  personal_data_manager_->address_data_manager().AddProfile(
+      autofill::test::GetFullProfile());
 
   EXPECT_TRUE(FetchProfiles(^(NSArray<CWVAutofillProfile*>* profiles) {
     CWVAutofillProfile* cwv_profile = profiles.firstObject;
@@ -201,7 +209,7 @@ TEST_F(CWVAutofillDataManagerTest, UpdateProfile) {
 // Tests CWVAutofillDataManager properly returns credit cards.
 TEST_F(CWVAutofillDataManagerTest, ReturnCreditCard) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
-  personal_data_manager_->AddCreditCard(credit_card);
+  personal_data_manager_->payments_data_manager().AddCreditCard(credit_card);
 
   EXPECT_TRUE(FetchCreditCards(^(NSArray<CWVCreditCard*>* credit_cards) {
     EXPECT_EQ(1ul, credit_cards.count);

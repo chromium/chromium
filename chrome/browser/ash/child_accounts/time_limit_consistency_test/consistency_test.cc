@@ -8,6 +8,7 @@
 
 #include <memory.h>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_converter.h"
@@ -55,7 +56,7 @@ TEST_P(TimeLimitConsistencyTest, OutputMatchesGolden) {
 static std::string GetTestCaseName(
     testing::TestParamInfo<GoldenParam> param_info) {
   return param_info.param.suite_name + "_" +
-         std::to_string(param_info.param.index);
+         base::NumberToString(param_info.param.index);
 }
 
 // Instantiate the test suite, creating one test case for each golden case

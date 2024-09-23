@@ -37,16 +37,22 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_io_callback.h"
+#include "third_party/blink/renderer/platform/audio/media_multi_channel_resampler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+
+namespace media {
+struct AudioGlitchInfo;
+}
 
 namespace blink {
 
@@ -97,6 +103,8 @@ class PLATFORM_EXPORT AudioDestination final
              const media::AudioGlitchInfo& glitch_info,
              media::AudioBus* dest) override;
 
+  // Although it implements AudioRendererSink::RenderCallback, this method
+  // only gets executed from the main thread.
   void OnRenderError() override;
 
   void Start();
@@ -114,7 +122,7 @@ class PLATFORM_EXPORT AudioDestination final
 
   bool IsPlaying();
 
-  // This is the context sample rate, not the hardware one.
+  // This is the context sample rate, not the device one.
   double SampleRate() const;
 
   uint32_t CallbackBufferSize() const;
@@ -123,19 +131,20 @@ class PLATFORM_EXPORT AudioDestination final
   // hardware.
   int FramesPerBuffer() const;
 
+  // Returns the audio buffer duration used by the underlying sink.
+  base::TimeDelta GetPlatformBufferDuration() const;
+
   // The maximum channel count of the current audio sink device.
-  uint32_t MaxChannelCount();
+  uint32_t MaxChannelCount() const;
 
   // Sets the detect silence flag for `web_audio_device_`.
   void SetDetectSilence(bool detect_silence);
 
-  unsigned RenderQuantumFrames() const;
-
-  // Creates a new sink and return its device status. If the status is OK,
-  // replace the existing sink with the new one. This function is called in
+  // Creates a new sink if one hasn't been created yet, and returns the sink
+  // status.  This function is called in
   // RealtimeAudioDestinationHandler::SetSinkDescriptor, which can be invoked
   // from the constructor of AudioContext and AudioContext.setSinkId() method.
-  media::OutputDeviceStatus CreateSinkAndGetDeviceStatus();
+  media::OutputDeviceStatus MaybeCreateSinkAndGetStatus();
 
  private:
   explicit AudioDestination(AudioIOCallback&,
@@ -152,15 +161,25 @@ class PLATFORM_EXPORT AudioDestination final
   // AudioWorkletThread (dual-thread rendering).
   void RequestRenderWait(size_t frames_requested,
                          size_t frames_to_render,
-                         double delay,
-                         double delay_timestamp);
+                         base::TimeDelta delay,
+                         base::TimeTicks delay_timestamp,
+                         const media::AudioGlitchInfo& glitch_info);
   void RequestRender(size_t frames_requested,
                      size_t frames_to_render,
-                     double delay,
-                     double delay_timestamp);
+                     base::TimeDelta delay,
+                     base::TimeTicks delay_timestamp,
+                     const media::AudioGlitchInfo& glitch_info);
 
+  // Provide input to the resampler (if used).
+  void ProvideResamplerInput(int resampler_frame_delay, AudioBus* dest);
 
-  void SendLogMessage(const String& message) const;
+  // Pulls audio from `callback_` and delivers the latest glitch and delay info
+  // into it.
+  void PullFromCallback(AudioBus* destination_bus, base::TimeDelta delay);
+
+  // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
+  void SendLogMessage(const char* const function_name,
+                      const String& message) const;
 
   // Accessed by the main thread.
   std::unique_ptr<WebAudioDevice> web_audio_device_;
@@ -170,6 +189,9 @@ class PLATFORM_EXPORT AudioDestination final
   const unsigned number_of_output_channels_;
 
   const unsigned render_quantum_frames_;
+
+  // The sample rate used for rendering the Web Audio graph.
+  const float context_sample_rate_;
 
   // Can be accessed by both threads: resolves the buffer size mismatch between
   // the WebAudio engine and the callback function from the actual audio device.
@@ -184,13 +206,24 @@ class PLATFORM_EXPORT AudioDestination final
 
   // Accessed by rendering thread: the render callback function of WebAudio
   // engine. (i.e. DestinationNode)
-  const raw_ref<AudioIOCallback, ExperimentalRenderer> callback_;
+  const raw_ref<AudioIOCallback> callback_;
 
   // Accessed by rendering thread.
   size_t frames_elapsed_ = 0;
 
+  // Used for resampling if the Web Audio sample rate differs from the platform
+  // one.
+  std::unique_ptr<MediaMultiChannelResampler> resampler_;
+  std::unique_ptr<media::AudioBus> resampler_bus_;
+
   // Required for RequestRender and also in the resampling callback (if used).
   AudioIOPosition output_position_;
+
+  // Recent gltich information to be reported to `callback_`.
+  media::AudioGlitchInfo::Accumulator glitch_info_to_report_;
+
+  // Recent delay information to be reported to `callback_`.
+  base::TimeDelta delay_to_report_;
 
   // The task runner for AudioWorklet operation. This is only valid when
   // the AudioWorklet is activated.

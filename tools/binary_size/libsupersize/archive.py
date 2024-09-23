@@ -655,7 +655,7 @@ def _MakeNativeSpec(json_config, **kwargs):
         basename)
 
   if not native_spec.map_path:
-    # TODO(crbug.com/1193507): Implement string literal tracking without map
+    # TODO(crbug.com/40757867): Implement string literal tracking without map
     #     files. nm emits some string literal symbols, but most are missing.
     native_spec.track_string_literals = False
     return native_spec
@@ -732,7 +732,7 @@ def _CreateNativeSpecs(*, tentative_output_dir, symbols_dir, apk_infolist,
         cur_elf_path = elf_path
         elf_path = None
       elif tentative_output_dir:
-        # TODO(crbug.com/1337134): Remove handling the legacy library prefix
+        # TODO(crbug.com/40229168): Remove handling the legacy library prefix
         # 'crazy.' when there is no longer interest in size comparisons for
         # these pre-N APKs.
         cur_elf_path = os.path.join(
@@ -890,7 +890,8 @@ def _CreateContainerSpecs(apk_file_manager,
   if apk_spec:
     apk_infolist = apk_file_manager.InfoList(apk_path)
     apk_pak_paths = [
-        f.filename for f in apk_infolist if f.filename.endswith('.pak')
+        f.filename for f in apk_infolist
+        if archive_util.RemoveAssetSuffix(f.filename).endswith('.pak')
     ]
   if not top_args.no_output_directory and (apk_pak_paths or sub_args.pak_files):
     pak_spec = PakSpec(pak_paths=sub_args.pak_files,

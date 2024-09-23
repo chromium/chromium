@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<title>Digital Identity Credential tests.</title>
+<link rel="help" href="https://wicg.github.io/digital-identities/">
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<script type="module">
+import { buildValidNavigatorIdentityRequest, buildValidNavigatorIdentityRequestWithRequestObject, requestIdentityWithActivation } from '/wpt_internal/digital-credentials/support/helper.js';
+
+
+// Internal test because the spec currently does not require transient user activation.
+promise_test(async t=>{
+  assert_false(navigator.userActivation.isActive);
+  let request = buildValidNavigatorIdentityRequest();
+  await promise_rejects_dom(t, "NetworkError", navigator.identity.get(request));
+}, "navigator.identity.get() fails if the page doesn't have user activation");
+
+// Tests for success are here because the tests rely on the
+// --use-fake-ui-for-digital-identity command line flag. Moving the tests to
+// /external requires a WebDriver testing API.
+
+promise_test(async t => {
+  let request = buildValidNavigatorIdentityRequest();
+  let credential = await requestIdentityWithActivation(test_driver, request);
+  assert_equals("openid4vp", credential.protocol);
+  assert_equals("fake_test_token", credential.data);
+}, "navigator.identity.get() API works in toplevel frame.");
+
+promise_test(async t => {
+  const request = buildValidNavigatorIdentityRequestWithRequestObject();
+  let credential = await requestIdentityWithActivation(test_driver, request);
+  assert_equals("openid4vp", credential.protocol);
+  assert_equals("fake_test_token", credential.data);
+}, "navigator.identity.get() API succeeds when IdentityRequestProvider#request is an object instead of stringified JSON object");
+
+promise_test(async t=> {
+  let abortController = new AbortController();
+  let request = buildValidNavigatorIdentityRequest();
+  request.signal = abortController.signal;
+  let requestPromise = requestIdentityWithActivation(test_driver, request);
+  abortController.abort();
+  await promise_rejects_dom(t, "AbortError", requestPromise);
+}, "navigator.identity.get() promise is rejected when the page aborts the request.");
+
+// Internal test because the spec does not have a 1 provider limit.
+promise_test(async t => {
+  let request = buildValidNavigatorIdentityRequest();
+  let providerCopy = structuredClone(request.digital.providers[0]);
+  request.digital.providers.push(providerCopy);
+  await promise_rejects_js(t, TypeError, requestIdentityWithActivation(test_driver, request));
+}, "navigator.identity.get() API fails if there is more than one provider.");
+</script>

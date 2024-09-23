@@ -101,7 +101,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
       case OperationType::kNone:
         break;
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 
@@ -363,6 +363,11 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
  public:
   explicit DropShadowFilterOperation(const ShadowData& shadow)
       : FilterOperation(OperationType::kDropShadow), shadow_(shadow) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(shadow_);
+    FilterOperation::Trace(visitor);
+  }
 
   const ShadowData& Shadow() const { return shadow_; }
 

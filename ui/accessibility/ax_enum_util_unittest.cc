@@ -249,8 +249,4 @@ TEST(AXEnumUtilTest, ImageAnnotationStatus) {
   TestEnumStringConversion<ax::mojom::ImageAnnotationStatus>();
 }
 
-TEST(AXEnumUtilTest, Dropeffect) {
-  TestEnumStringConversion<ax::mojom::Dropeffect>();
-}
-
 }  // namespace ui

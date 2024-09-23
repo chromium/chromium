@@ -5,7 +5,6 @@
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -85,7 +84,7 @@ void BackgroundFetchServiceImpl::CreateForFrame(
     // The renderer should have checked and disallowed the request for fenced
     // frames and throw exception in blink::BackgroundFetchManager. Ignore the
     // request and mark it as bad if it didn't happen for some reason.
-    // TODO(crbug.com/1271051) Follow-up on this line depending on the
+    // TODO(crbug.com/40205566) Follow-up on this line depending on the
     // conclusion at
     // https://groups.google.com/a/chromium.org/g/navigation-dev/c/BZLlGsL2-64
     bad_message::ReceivedBadMessage(

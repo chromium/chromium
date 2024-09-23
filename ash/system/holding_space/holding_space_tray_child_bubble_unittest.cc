@@ -47,7 +47,8 @@ class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
     // NOTE: The `widget_` is needed so that the `child_bubble_` added to it
     // below will receive prod-like `OnThemeChanged()` events when attached.
     widget_ = std::make_unique<views::Widget>();
-    widget_->Init(views::Widget::InitParams{});
+    widget_->Init(views::Widget::InitParams{
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET});
 
     // View delegate.
     view_delegate_ = std::make_unique<HoldingSpaceViewDelegate>(
@@ -78,6 +79,40 @@ class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
   raw_ptr<HoldingSpaceTrayChildBubble, DanglingUntriaged> child_bubble_ =
       nullptr;
 };
+
+// Tests -----------------------------------------------------------------------
+
+using HoldingSpaceTrayChildBubbleTest = HoldingSpaceTrayChildBubbleTestBase;
+
+TEST_F(HoldingSpaceTrayChildBubbleTest, HasExpectedBubbleTreatment) {
+  // Child bubbles should mask child layers to bounds so as not to paint over
+  // other child bubbles in the event of overflow.
+  auto* layer = child_bubble()->layer();
+  ASSERT_TRUE(layer);
+  EXPECT_TRUE(layer->GetMasksToBounds());
+
+  // Background.
+  auto* background = child_bubble()->GetBackground();
+  ASSERT_TRUE(background);
+  if (chromeos::features::IsJellyEnabled()) {
+    EXPECT_EQ(background->get_color(),
+              child_bubble()->GetColorProvider()->GetColor(
+                  cros_tokens::kCrosSysSystemBaseElevated));
+  } else {
+    EXPECT_EQ(
+        background->get_color(),
+        child_bubble()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
+  }
+  EXPECT_EQ(layer->background_blur(), ColorProvider::kBackgroundBlurSigma);
+
+  // Border.
+  EXPECT_TRUE(child_bubble()->GetBorder());
+
+  // Corner radius.
+  EXPECT_TRUE(layer->is_fast_rounded_corner());
+  EXPECT_EQ(layer->rounded_corner_radii(),
+            gfx::RoundedCornersF(GetBubbleCornerRadius()));
+}
 
 // HoldingSpaceTrayChildBubblePlaceholderTest ----------------------------------
 
@@ -153,6 +188,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceTrayChildBubblePlaceholderTest,
                          /*has_placeholder=*/testing::Bool());
 
+// Tests -----------------------------------------------------------------------
+
 TEST_P(HoldingSpaceTrayChildBubblePlaceholderTest,
        MaybeShowsPlaceholderWhenEmpty) {
   {
@@ -180,68 +217,6 @@ TEST_P(HoldingSpaceTrayChildBubblePlaceholderTest,
   {
     SCOPED_TRACE(testing::Message() << "Empty state.");
     ExpectPlaceholderOrGone();
-  }
-}
-
-// HoldingSpaceTrayChildBubbleRefreshTest --------------------------------------
-
-class HoldingSpaceTrayChildBubbleRefreshTest
-    : public HoldingSpaceTrayChildBubbleTestBase,
-      public testing::WithParamInterface</*refresh_enabled=*/bool> {
- public:
-  HoldingSpaceTrayChildBubbleRefreshTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRefresh,
-                                              GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTrayChildBubbleRefreshTest,
-                         /*refresh_enabled=*/testing::Bool());
-
-TEST_P(HoldingSpaceTrayChildBubbleRefreshTest, HasExpectedBubbleTreatment) {
-  // Child bubbles should mask child layers to bounds so as not to paint over
-  // other child bubbles in the event of overflow.
-  auto* layer = child_bubble()->layer();
-  ASSERT_TRUE(layer);
-  EXPECT_TRUE(layer->GetMasksToBounds());
-
-  if (features::IsHoldingSpaceRefreshEnabled()) {
-    // Background.
-    EXPECT_FALSE(child_bubble()->GetBackground());
-    EXPECT_EQ(layer->background_blur(), 0.f);
-
-    // Border.
-    EXPECT_FALSE(child_bubble()->GetBorder());
-
-    // Corner radius.
-    EXPECT_FALSE(layer->is_fast_rounded_corner());
-    EXPECT_EQ(layer->rounded_corner_radii(), gfx::RoundedCornersF(0.f));
-  } else {
-    // Background.
-    auto* background = child_bubble()->GetBackground();
-    ASSERT_TRUE(background);
-    if (chromeos::features::IsJellyEnabled()) {
-      EXPECT_EQ(background->get_color(),
-                child_bubble()->GetColorProvider()->GetColor(
-                    cros_tokens::kCrosSysSystemBaseElevated));
-    } else {
-      EXPECT_EQ(background->get_color(),
-                child_bubble()->GetColorProvider()->GetColor(
-                    kColorAshShieldAndBase80));
-    }
-    EXPECT_EQ(layer->background_blur(), ColorProvider::kBackgroundBlurSigma);
-
-    // Border.
-    EXPECT_TRUE(child_bubble()->GetBorder());
-
-    // Corner radius.
-    EXPECT_TRUE(layer->is_fast_rounded_corner());
-    EXPECT_EQ(layer->rounded_corner_radii(),
-              gfx::RoundedCornersF(kBubbleCornerRadius));
   }
 }
 

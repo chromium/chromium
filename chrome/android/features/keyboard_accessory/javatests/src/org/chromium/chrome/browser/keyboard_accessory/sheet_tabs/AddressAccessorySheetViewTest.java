@@ -28,13 +28,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
@@ -42,7 +45,6 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -61,7 +63,7 @@ public class AddressAccessorySheetViewTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = new AccessorySheetTabItemsModel();
 
@@ -86,7 +88,12 @@ public class AddressAccessorySheetViewTest {
                                                 AccessorySheetTabViewBinder.initializeView(
                                                         mView.get(), null);
                                                 AddressAccessorySheetViewBinder.initializeView(
-                                                        mView.get(), mModel);
+                                                        mView.get(),
+                                                        mModel,
+                                                        FaviconHelper.create(
+                                                                view.getContext(),
+                                                                mActivityTestRule.getProfile(
+                                                                        false)));
                                             }
 
                                             @Override
@@ -114,7 +121,7 @@ public class AddressAccessorySheetViewTest {
     public void testAddingCaptionsToTheModelRendersThem() {
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -134,7 +141,7 @@ public class AddressAccessorySheetViewTest {
         final AtomicBoolean clicked = new AtomicBoolean();
         assertThat(mView.get().getChildCount(), is(0));
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -179,10 +186,41 @@ public class AddressAccessorySheetViewTest {
         assertThat(findChipView(R.id.company_name).isShown(), is(false));
 
         // Chips are clickable:
-        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.name_full)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.name_full)::performClick);
         assertThat(clicked.get(), is(true));
         clicked.set(false);
-        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.email_address)::performClick);
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.email_address)::performClick);
+        assertThat(clicked.get(), is(true));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddingPlusAddressInfoToTheModelRendersClickableActions()
+            throws ExecutionException {
+        final AtomicBoolean clicked = new AtomicBoolean();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.add(
+                            new AccessorySheetDataPiece(
+                                    new PlusAddressInfo(
+                                            /* origin= */ "google.com",
+                                            new UserInfoField.Builder()
+                                                    .setDisplayText("example@gmail.com")
+                                                    .setTextToFill("example@gmail.com")
+                                                    .setIsObfuscated(false)
+                                                    .setCallback(unused -> clicked.set(true))
+                                                    .build()),
+                                    AccessorySheetDataPiece.Type.PLUS_ADDRESS_SECTION));
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mView.get().getChildCount(), greaterThan(0)));
+
+        assertThat(getChipText(R.id.plus_address), is("example@gmail.com"));
+
+        // Plus address chip is clickable:
+        ThreadUtils.runOnUiThreadBlocking(findChipView(R.id.plus_address)::performClick);
         assertThat(clicked.get(), is(true));
     }
 

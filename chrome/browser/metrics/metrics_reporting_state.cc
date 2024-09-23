@@ -109,7 +109,7 @@ void ChangeMetricsReportingStateWithReply(
   // Chrome OS manages metrics settings externally and changes to reporting
   // should be propagated to metrics service regardless if the policy is managed
   // or not.
-  // TODO(crbug/1346321): Possibly change |is_chrome_os| to use
+  // TODO(crbug.com/40232452): Possibly change |is_chrome_os| to use
   // BUILDFLAG(IS_CHROMEOS_ASH).
   bool is_chrome_os =
       (called_from ==

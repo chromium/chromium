@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A collection of SDK based helper functions for retrieving supported profiles
@@ -49,6 +50,10 @@ class VideoAcceleratorUtil {
         MediaCodecUtil.MimeTypes.VIDEO_DV,
     };
 
+    // Encoders known to support temporal layers.
+    private static final Set<String> TEMPORAL_SVC_SUPPORTING_ENCODERS =
+            Set.of("c2.qti.avc.encoder", "c2.exynos.h264.encoder");
+
     private static class SupportedProfileAdapter {
         public int profile;
         public int level;
@@ -64,6 +69,7 @@ class VideoAcceleratorUtil {
         public boolean isSoftwareCodec;
         public boolean supportsSecurePlayback;
         public boolean requiresSecurePlayback;
+        public int maxNumberOfTemporalLayers;
 
         @CalledByNative("SupportedProfileAdapter")
         public int getProfile() {
@@ -134,6 +140,11 @@ class VideoAcceleratorUtil {
         public boolean requiresSecurePlayback() {
             return this.requiresSecurePlayback;
         }
+
+        @CalledByNative("SupportedProfileAdapter")
+        public int getMaxNumberOfTemporalLayers() {
+            return this.maxNumberOfTemporalLayers;
+        }
     }
 
     // Currently our encoder only supports NV12.
@@ -168,6 +179,17 @@ class VideoAcceleratorUtil {
         var lowerName = name.toLowerCase(Locale.ROOT);
         // This is usually a hw decoder provided by the OEM vendors.
         return lowerName.endsWith(".low_latency");
+    }
+
+    private static int getNumberOfTemporalLayers(String name) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return 1;
+        }
+
+        if (TEMPORAL_SVC_SUPPORTING_ENCODERS.contains(name)) {
+            return 3;
+        }
+        return 1;
     }
 
     /**
@@ -225,6 +247,21 @@ class VideoAcceleratorUtil {
                 Range<Integer> supportedWidths = videoCapabilities.getSupportedWidths();
                 Range<Integer> supportedHeights =
                         videoCapabilities.getSupportedHeightsFor(supportedWidths.getUpper());
+
+                // Some devices don't have their max supported level configured correctly, so they
+                // can return max resolutions like 7680x1714 which prevents both 4K and 8K content
+                // from being hardware decoded.
+                //
+                // In cases where supported area is > 4k, but width, height are less than standard
+                // and the standard resolution is supported, use the standard one instead so that at
+                // least 4k support works. See https://crbug.com/41481822.
+                if ((supportedWidths.getUpper() < 3840 || supportedHeights.getUpper() < 2160)
+                        && supportedWidths.getUpper() * supportedHeights.getUpper() >= 3840 * 2160
+                        && videoCapabilities.isSizeSupported(3840, 2160)) {
+                    supportedWidths = new Range<Integer>(supportedWidths.getLower(), 3840);
+                    supportedHeights = new Range<Integer>(supportedHeights.getLower(), 2160);
+                }
+
                 boolean needsPortraitEntry =
                         !supportedHeights.getUpper().equals(supportedWidths.getUpper())
                                 && videoCapabilities.isSizeSupported(
@@ -250,6 +287,8 @@ class VideoAcceleratorUtil {
                     }
                 }
 
+                int maxNumberOfTemporalLayers =
+                        getNumberOfTemporalLayers(info.getName().toLowerCase(Locale.getDefault()));
                 ArrayList<SupportedProfileAdapter> profiles =
                         info.isHardwareAccelerated() ? hardwareProfiles : softwareProfiles;
                 for (int mediaProfile : supportedProfiles) {
@@ -266,6 +305,7 @@ class VideoAcceleratorUtil {
                     profile.supportsVbr = supportsVbr;
                     profile.name = info.getName();
                     profile.isSoftwareCodec = info.isSoftwareOnly();
+                    profile.maxNumberOfTemporalLayers = maxNumberOfTemporalLayers;
                     profiles.add(profile);
 
                     // Invert min/max height/width for a portrait mode entry if needed.
@@ -347,6 +387,21 @@ class VideoAcceleratorUtil {
                 Range<Integer> supportedWidths = videoCapabilities.getSupportedWidths();
                 Range<Integer> supportedHeights =
                         videoCapabilities.getSupportedHeightsFor(supportedWidths.getUpper());
+
+                // Some devices don't have their max supported level configured correctly, so they
+                // can return max resolutions like 7680x1714 which prevents both 4K and 8K content
+                // from being hardware decoded.
+                //
+                // In cases where supported area is > 4k, but width, height are less than standard
+                // and the standard resolution is supported, use the standard one instead so that at
+                // least 4k support works. See https://crbug.com/41481822.
+                if ((supportedWidths.getUpper() < 3840 || supportedHeights.getUpper() < 2160)
+                        && supportedWidths.getUpper() * supportedHeights.getUpper() >= 3840 * 2160
+                        && videoCapabilities.isSizeSupported(3840, 2160)) {
+                    supportedWidths = new Range<Integer>(supportedWidths.getLower(), 3840);
+                    supportedHeights = new Range<Integer>(supportedHeights.getLower(), 2160);
+                }
+
                 boolean needsPortraitEntry =
                         !supportedHeights.getUpper().equals(supportedWidths.getUpper())
                                 && videoCapabilities.isSizeSupported(
@@ -401,7 +456,7 @@ class VideoAcceleratorUtil {
                 }
 
                 // Not all platforms seem to have a populated `profileLevels`, e.g., the
-                // x86 emulator. In these cases, populate whats required by Android:
+                // x86 emulator. In these cases, populate what's required by Android:
                 // https://developer.android.com/guide/topics/media/media-formats
                 //
                 // The decoder selection will choose the decoder if the supported level is

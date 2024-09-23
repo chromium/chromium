@@ -9,7 +9,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-fyi-x64-dbg",
+              "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
               "project": "chromium"
             },
             "builder_spec": {
@@ -30,41 +30,7 @@
                   "fuchsia_x64"
                 ],
                 "config": "chromium"
-              },
-              "run_tests_serially": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
-              "builder_group": "chromium.fuchsia.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Debug",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "fuchsia"
-              },
-              "legacy_gclient_config": {
-                "apply_configs": [
-                  "fuchsia_x64"
-                ],
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "fuchsia-fyi-x64-dbg",
-                "project": "chromium"
-              },
-              "run_tests_serially": true
+              }
             }
           }
         ]
@@ -72,24 +38,27 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-fyi-x64-dbg",
-          "project": "chromium"
-        }
-      ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
           "builder": "fuchsia-fyi-x64-dbg-persistent-emulator",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/fuchsia-fyi-x64-dbg-persistent-emulator/targets"
     }
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
-    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

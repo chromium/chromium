@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/extensions/extension_context_menu_model.h"
-#include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "ui/base/models/image_model.h"
@@ -107,9 +107,13 @@ class ToolbarActionViewController {
   virtual ui::ImageModel GetIcon(content::WebContents* web_contents,
                                  const gfx::Size& size) = 0;
 
-  // Returns the name of the action, which can be separate from the accessible
-  // name or name for the tooltip.
+  // Returns the name of the action.
   virtual std::u16string GetActionName() const = 0;
+
+  // Returns the title of the action on the given `web_contents`, which may be
+  // different than the action's name.
+  virtual std::u16string GetActionTitle(
+      content::WebContents* web_contents) const = 0;
 
   // Returns the accessible name to use for the given |web_contents|.
   // May be passed null, or a |web_contents| that returns -1 for
@@ -130,11 +134,6 @@ class ToolbarActionViewController {
 
   // Returns whether there is currently a popup visible.
   virtual bool IsShowingPopup() const = 0;
-
-  // Returns whether the action should show site access requests in the toolbar
-  // for `web_contents`;
-  virtual bool ShouldShowSiteAccessRequestInToolbar(
-      content::WebContents* web_contents) const = 0;
 
   // Hides the current popup, if one is visible.
   virtual void HidePopup() = 0;

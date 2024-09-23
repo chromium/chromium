@@ -114,14 +114,14 @@ VulkanImplementationX11::GetOptionalDeviceExtensions() {
 }
 
 VkFence VulkanImplementationX11::CreateVkFenceForGpuFence(VkDevice vk_device) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return VK_NULL_HANDLE;
 }
 
 std::unique_ptr<gfx::GpuFence> VulkanImplementationX11::ExportVkFenceToGpuFence(
     VkDevice vk_device,
     VkFence vk_fence) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

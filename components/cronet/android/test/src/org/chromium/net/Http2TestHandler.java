@@ -45,6 +45,7 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
     public static final String ECHO_STREAM_PATH = "/echostream";
     public static final String ECHO_TRAILERS_PATH = "/echotrailers";
     public static final String SERVE_SIMPLE_BROTLI_RESPONSE = "/simplebrotli";
+    public static final String SERVE_SHARED_BROTLI_RESPONSE = "/sharedbrotli";
     public static final String REPORTING_COLLECTOR_PATH = "/reporting-collector";
     public static final String SUCCESS_WITH_NEL_HEADERS_PATH = "/success-with-nel";
     public static final String COMBINED_HEADERS_PATH = "/combinedheaders";
@@ -320,6 +321,111 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
         }
     }
 
+    // A RequestResponder that serves a shared Brotli-encoded response.
+    private class ServeSharedBrotliResponder extends RequestResponder {
+        @Override
+        void onHeadersRead(
+                ChannelHandlerContext ctx,
+                int streamId,
+                boolean endOfStream,
+                Http2Headers headers) {
+            Http2Headers responseHeaders = new DefaultHttp2Headers().status(OK.codeAsText());
+            // Contents of a "Dictionary-Compressed Brotli" stream when:
+            // * Dictionary = "A dictionary"
+            // * Payload = "This is compressed test data using a test dictionary"
+            // Accordingly to draft-ietf-httpbis-compression-dictionary-08 the stream is composed
+            // by: a header (magic number "ff:44:43:42" & SHA-256 of Dictionary) and the compressed
+            // payload.
+            // The compressed payload can be obtained via //third-party/brotli:brotli by passing:
+            // --dictionary=Dictionary --input=Payload (make sure to be consistent with the presence
+            // of EOL in the Java strings and what //third-party/brotli:brotli receives).
+            byte[] sharedBrotliCompressed = {
+                (byte) 0xff,
+                (byte) 0x44,
+                (byte) 0x43,
+                (byte) 0x42,
+                (byte) 0x0a,
+                (byte) 0xa3,
+                (byte) 0x69,
+                (byte) 0x01,
+                (byte) 0x4f,
+                (byte) 0x7f,
+                (byte) 0xab,
+                (byte) 0x37,
+                (byte) 0x0b,
+                (byte) 0xe9,
+                (byte) 0x40,
+                (byte) 0x74,
+                (byte) 0x69,
+                (byte) 0x85,
+                (byte) 0x45,
+                (byte) 0xc7,
+                (byte) 0xbb,
+                (byte) 0x93,
+                (byte) 0x2e,
+                (byte) 0xc4,
+                (byte) 0x61,
+                (byte) 0x25,
+                (byte) 0x27,
+                (byte) 0x8f,
+                (byte) 0x37,
+                (byte) 0xbf,
+                (byte) 0x34,
+                (byte) 0xab,
+                (byte) 0x02,
+                (byte) 0xa3,
+                (byte) 0x5a,
+                (byte) 0xec,
+                (byte) 0xa1,
+                (byte) 0x98,
+                (byte) 0x01,
+                (byte) 0x80,
+                (byte) 0x22,
+                (byte) 0xe0,
+                (byte) 0x26,
+                (byte) 0x4b,
+                (byte) 0x95,
+                (byte) 0x5c,
+                (byte) 0x19,
+                (byte) 0x18,
+                (byte) 0x9d,
+                (byte) 0xc1,
+                (byte) 0xc3,
+                (byte) 0x44,
+                (byte) 0x0e,
+                (byte) 0x5c,
+                (byte) 0x6a,
+                (byte) 0x09,
+                (byte) 0x9d,
+                (byte) 0xf0,
+                (byte) 0xb0,
+                (byte) 0x01,
+                (byte) 0x47,
+                (byte) 0x14,
+                (byte) 0x87,
+                (byte) 0x14,
+                (byte) 0x6d,
+                (byte) 0xfb,
+                (byte) 0x60,
+                (byte) 0x96,
+                (byte) 0xdb,
+                (byte) 0xae,
+                (byte) 0x9e,
+                (byte) 0x79,
+                (byte) 0x54,
+                (byte) 0xe3,
+                (byte) 0x69,
+                (byte) 0x03,
+                (byte) 0x29
+            };
+            ByteBuf content = copiedBuffer(sharedBrotliCompressed);
+            responseHeaders.add("content-encoding", "dcb");
+            encoder().writeHeaders(ctx, streamId, responseHeaders, 0, false, ctx.newPromise());
+            encoder().writeData(ctx, streamId, content, 0, true, ctx.newPromise());
+            ctx.flush();
+        }
+    }
+
     // A RequestResponder that implements a Reporting collector.
     private class ReportingCollectorResponder extends RequestResponder {
         private ByteArrayOutputStream mPartialPayload = new ByteArrayOutputStream();
@@ -477,6 +583,8 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
             responder = new EchoMethodResponder();
         } else if (path.startsWith(SERVE_SIMPLE_BROTLI_RESPONSE)) {
             responder = new ServeSimpleBrotliResponder();
+        } else if (path.startsWith(SERVE_SHARED_BROTLI_RESPONSE)) {
+            responder = new ServeSharedBrotliResponder();
         } else if (path.startsWith(REPORTING_COLLECTOR_PATH)) {
             responder = new ReportingCollectorResponder();
         } else if (path.startsWith(SUCCESS_WITH_NEL_HEADERS_PATH)) {

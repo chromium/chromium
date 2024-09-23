@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Rausvai ruda spalva</translation>
 <translation id="249330843868392562">Atidaryti teksto į kalbą nustatymus</translation>
 <translation id="2497706219848005458">Žalsvai geltona spalva</translation>
+<translation id="2512979179176933762">rodyti langus</translation>
 <translation id="2523609930580546572">„ChromeVox“ mokymo programa</translation>
 <translation id="2525706221823668172">„Chromebook“ spartieji klavišai</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{dar #}one{dar #}few{dar #}many{dar #}other{dar #}}</translation>
 <translation id="2792200646155001340">Be to, galite perbraukti vienu pirštu iš dešinės į kairę, kad pereitumėte prie ankstesnio elemento. Išbandykite dabar.</translation>
 <translation id="280499067616661124">„ChromeVox“ radimas puslapyje</translation>
-<translation id="2811019999044652585">Jei norite pereiti į kitas ekrano dalis, pvz., įrankių juostas ar sistemos juostelę, paspauskite „Control“ ir „Forward“. „Chromebook“ klavišas „Forward“ yra iškart virš skaičiaus 2 klavišo.</translation>
 <translation id="2811204574343810641">Eilutė</translation>
 <translation id="2816868829355607410">Praktinių užduočių sritis: perėjimo komandos</translation>
 <translation id="2841013758207633010">Laikas</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Pilkai melsva spalva</translation>
 <translation id="4253168017788158739">Pastaba</translation>
 <translation id="4254798249533888099">Medis</translation>
+<translation id="4259220820964911921">Įgalinti veido valdiklį?</translation>
 <translation id="4271220233568730077">Kitas matematinis raktas</translation>
 <translation id="4275397969489577657">Įgalinti įvykių srauto įrašymą į žurnalą</translation>
 <translation id="4278486392851938658">Nėra ankstesnės nuorodos, kuria lankytasi</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Sodriai raudona spalva</translation>
 <translation id="4432896207833262240">Pažymėtas turinys</translation>
 <translation id="4437615272777527928">Įveskite, jei norite ieškoti meniu. Naršykite rezultatus rodyklėmis aukštyn ir žemyn. Reguliuokite teksto žymeklį ir judėkite tarp meniu rodyklėmis dešinėn ir kairėn.</translation>
+<translation id="4453530046591759283">Jei norite pereiti į kitas ekrano dalis, pvz., įrankių juostas ar sistemos juostelę, paspauskite „Control“ + F1. F1 yra pirmasis klavišas dešinėje nuo klavišo „Escape“.</translation>
 <translation id="4457472090507035117">Pasirinkti dabartinį balsą:</translation>
 <translation id="4476183483923481720">nauja eilutė</translation>
 <translation id="4479068155583208887">Plytų raudonumo spalva</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Priedas</translation>
 <translation id="5761219715606611783">Puikiai padirbėta! Sužinojote „ChromeVox“ lietimo funkcijos pagrindus. Galite vėl peržiūrėti mokymo programą arba išeiti iš šios mokymo programos naudodami toliau pateiktus mygtukus.</translation>
 <translation id="5776001898637896684">„Google“ patobulinto tinklo teksto į kalbą plėtinys</translation>
+<translation id="5783252477644995371">Valdymas pagal veidą suteikia galimybę valdyti žymeklį nukreipiant veidą ir atlikti veiksmus, pvz., spustelėti kairiuoju klavišu veido gestais, pvz., šypsena</translation>
 <translation id="5805940204952508776">Palieskite dviem pirštais</translation>
 <translation id="5819072574982403430">Medžio elementas</translation>
 <translation id="5822819874379903994">Tamsi turkio spalva</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Pieno spalva</translation>
 <translation id="7095834689119144465">Redaguoti tik skaitinį tekstą</translation>
 <translation id="7096001299300236431">Ankstesnis medijų raktas</translation>
+<translation id="7096668131290451939">Norėdami išeiti iš mokymosi režimo, dar kartą paspauskite klavišą „Escape“</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">žodžio aidas</translation>
 <translation id="7137397390322864165">Rausvai oranžinė spalva</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Nėra kito žymimojo laukelio</translation>
 <translation id="8473540203671727883">Įvesti sakomą tekstą ties pelės žymekliu</translation>
 <translation id="8476408756881832830">Pristabdyti atkūrimą, kai kalba „ChromeVox“</translation>
-<translation id="8476508772960940536">lango apžvalga</translation>
 <translation id="8480873377842220259">Dabar sužinosite kelis pagrindinius naršymo veiksmus. Laikydami paspaudę paieškos klavišą ir spausdami rodyklių klavišus galite judėti ekrane. Jei norite tęsti, paspauskite paieškos ir rodyklės dešinėn klavišus.</translation>
 <translation id="8503360654911991865">Sumažinti naršymo detalumą</translation>
 <translation id="8520472399088452386">Sukimo mygtukas</translation>

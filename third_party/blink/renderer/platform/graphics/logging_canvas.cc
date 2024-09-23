@@ -28,12 +28,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 
 #include <unicode/unistr.h>
 
 #include "base/logging.h"
-#include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
@@ -81,7 +85,7 @@ String PointModeName(SkCanvas::PointMode mode) {
     case SkCanvas::kPolygon_PointMode:
       return "Polygon";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "?";
   };
 }
@@ -125,7 +129,7 @@ String RrectTypeName(SkRRect::Type type) {
     case SkRRect::kComplex_Type:
       return "Complex";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "?";
   };
 }
@@ -141,7 +145,7 @@ String RadiusName(SkRRect::Corner corner) {
     case SkRRect::kLowerLeft_Corner:
       return "lowerLeftRadius";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "?";
   }
 }
@@ -170,7 +174,7 @@ String FillTypeName(SkPathFillType type) {
     case SkPathFillType::kInverseEvenOdd:
       return "InverseEvenOdd";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "?";
   };
 }
@@ -192,7 +196,7 @@ VerbParams SegmentParams(SkPath::Verb verb) {
     case SkPath::kDone_Verb:
       return VerbParams("Done", 0, 0);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return VerbParams("?", 0, 0);
   };
 }
@@ -278,7 +282,7 @@ String StrokeCapName(SkPaint::Cap cap) {
     case SkPaint::kSquare_Cap:
       return "Square";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "?";
   };
 }
@@ -292,7 +296,7 @@ String StrokeJoinName(SkPaint::Join join) {
     case SkPaint::kBevel_Join:
       return "Bevel";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "?";
   };
 }
@@ -304,7 +308,7 @@ String StyleName(SkPaint::Style style) {
     case SkPaint::kStroke_Style:
       return "Stroke";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "?";
   };
 }

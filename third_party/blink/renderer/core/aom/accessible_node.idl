@@ -17,6 +17,7 @@
     attribute DOMString? checked;
     attribute long? colCount;
     attribute unsigned long? colIndex;
+    [RuntimeEnabled=AriaRowColIndexText] attribute DOMString? colIndexText;
     attribute unsigned long? colSpan;
     attribute AccessibleNodeList? controls;
     attribute DOMString? current;
@@ -49,6 +50,7 @@
     attribute DOMString? roleDescription;
     attribute long? rowCount;
     attribute unsigned long? rowIndex;
+    [RuntimeEnabled=AriaRowColIndexText] attribute DOMString? rowIndexText;
     attribute unsigned long? rowSpan;
     attribute boolean? selected;
     attribute long? setSize;

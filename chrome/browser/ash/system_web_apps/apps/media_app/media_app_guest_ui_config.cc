@@ -8,16 +8,22 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "base/version.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/mahi/media_app/mahi_media_app_handler_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/version_info/channel.h"
@@ -54,9 +60,26 @@ bool PhotosIntegrationSupported(const apps::AppUpdate& update) {
   return photos_version >= base::Version(kMinPhotosVersion);
 }
 
+bool IsLensInGalleryEnabled(Profile* profile, PrefService* pref_service) {
+  if (!pref_service->GetBoolean(prefs::kMediaAppLensEnabled)) {
+    return false;
+  }
+
+  const TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  const TemplateURL* default_url = service->GetDefaultSearchProvider();
+  return default_url &&
+         default_url->url_ref().HasGoogleBaseURLs(service->search_terms_data());
+}
+
 }  // namespace
 
 ChromeMediaAppGuestUIDelegate::ChromeMediaAppGuestUIDelegate() = default;
+
+void ChromeMediaAppGuestUIDelegate::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kMediaAppLensEnabled, true);
+}
 
 void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
     content::WebUI* web_ui,
@@ -74,28 +97,50 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
       });
 
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
+  source->AddBoolean("lensInGallery",
+                     IsLensInGalleryEnabled(profile, pref_service));
   source->AddBoolean("pdfReadonly",
                      !pref_service->GetBoolean(prefs::kPdfAnnotationsEnabled));
   version_info::Channel channel = chrome::GetChannel();
   source->AddBoolean("colorThemes", true);
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
-  source->AddBoolean("pdfA11yOcr", base::FeatureList::IsEnabled(
-                                       ash::features::kMediaAppPdfA11yOcr));
+
+  // TODO(b:356518781): rename the boolean to e.g. pdfContextMenu.
+  // If true, show a context menu on right click on PDF surface. And if Mahi
+  // message pipe is connected (see `CreateAndBindMahiHandler` below), also show
+  // the Mahi card for the user to use HelpMeRead feature for the PDF.
+  source->AddBoolean(
+      "pdfMahi", base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi));
+
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
 }
 
-std::unique_ptr<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
-ChromeMediaAppGuestUIDelegate::CreateAndBindOcrHandler(
+void ChromeMediaAppGuestUIDelegate::CreateAndBindOcrHandler(
     content::BrowserContext& context,
+    gfx::NativeWindow native_window,
     mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page) {
-  return ash::AXMediaAppHandlerFactory::GetInstance()
-      ->CreateAXMediaAppUntrustedHandler(context, std::move(receiver),
-                                         std::move(page));
+  ash::AXMediaAppHandlerFactory::GetInstance()
+      ->CreateAXMediaAppUntrustedHandler(context, native_window,
+                                         std::move(receiver), std::move(page));
+}
+
+void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiHandler(
+    mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
+        receiver,
+    mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
+    const std::string& file_name,
+    aura::Window* window) {
+  if (chromeos::MahiManager::Get() &&
+      chromeos::MahiManager::Get()->IsEnabled()) {
+    ash::MahiMediaAppHandlerFactory::GetInstance()
+        ->CreateMahiMediaAppUntrustedHandler(
+            std::move(receiver), std::move(page), file_name, window);
+  }
 }
 
 MediaAppGuestUIConfig::MediaAppGuestUIConfig()

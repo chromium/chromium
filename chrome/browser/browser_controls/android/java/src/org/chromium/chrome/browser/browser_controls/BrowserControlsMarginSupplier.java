@@ -36,7 +36,8 @@ public class BrowserControlsMarginSupplier extends ObservableSupplierImpl<Rect>
             int topControlsMinHeightOffset,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate) {
+            boolean needsAnimate,
+            boolean isVisibilityForced) {
         updateMargins();
     }
 

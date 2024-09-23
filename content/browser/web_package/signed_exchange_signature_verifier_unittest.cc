@@ -24,7 +24,7 @@ const uint64_t kSignatureHeaderExpires = 1517895941;
 
 // See content/test/data/sxg/README on how to generate these data.
 // clang-format off
-constexpr char kSignatureHeaderECDSAP256[] = R"(label;cert-sha256=*4gNFIZRsc0QyiaUY/ekUZU6h3q/1mtQafd53/yaF5Ms=*;cert-url="https://example.com/cert.msg";date=1517892341;expires=1517895941;integrity="digest/mi-sha256-03";sig=*MEYCIQDLap5Ns9tI0JmCr1nc58GTHqzyfWJmTiZ+AIPt0OBE6gIhAJ8uHk3RyxX0/pnMmmKKdr63T0XHqyz00aaxuECJ4Ez/*;validity-url="https://test.example.org/resource.validity.msg")";
+constexpr char kSignatureHeaderECDSAP256[] = R"(label;cert-sha256=*Pk1v56luvimpV9pI8xUFDtIh5jJb5T7LEmCnwvC5p2U=*;cert-url="https://example.com/cert.msg";date=1517892341;expires=1517895941;integrity="digest/mi-sha256-03";sig=*MEQCID7HTBrxbUl1n0dVg0S7DtF2DatBiYBzKQCAjHgrmL2YAiBjTLJbkQ0HQBexcpkDxhhCJZN8qgZUS2CDcHO7r48DMQ==*;validity-url="https://test.example.org/resource.validity.msg")";
 constexpr uint8_t kCborHeadersECDSAP256[] = {
   0xa4, 0x46, 0x64, 0x69, 0x67, 0x65, 0x73, 0x74, 0x58, 0x39, 0x6d, 0x69,
   0x2d, 0x73, 0x68, 0x61, 0x32, 0x35, 0x36, 0x2d, 0x30, 0x33, 0x3d, 0x77,
@@ -40,7 +40,7 @@ constexpr uint8_t kCborHeadersECDSAP256[] = {
   0x69, 0x6e, 0x67, 0x4c, 0x6d, 0x69, 0x2d, 0x73, 0x68, 0x61, 0x32, 0x35,
   0x36, 0x2d, 0x30, 0x33
 };
-constexpr char kSignatureHeaderECDSAP384[] = R"(label;cert-sha256=*KrfLZg1xcHbdKYZ1nb8cnUjp/6iaEo6LeQrRSV6StKw=*;cert-url="https://example.com/cert.msg";date=1517892341;expires=1517895941;integrity="digest/mi-sha256-03";sig=*MGUCMBTSH0TpKGv5JSspWU+7hYeSDwaoRzYDzxxQaDQ2kV/IQS+3bQd4SFm0dPvsPzJH7AIxAPT1MXZoEiDhu45Ssr+ubU8n68QZZ92eI7TvtsEF1LEAXtx2YYC2UARu6ok9UxtrZQ==*;validity-url="https://test.example.org/resource.validity.msg")";
+constexpr char kSignatureHeaderECDSAP384[] = R"(label;cert-sha256=*zXJfOCr77C3XNWxrPrhWNh8nsLK4jhW5neDBRIzario=*;cert-url="https://example.com/cert.msg";date=1517892341;expires=1517895941;integrity="digest/mi-sha256-03";sig=*MGQCMDLDn/k5ToXnmxOOcL80NAU6JrLUNfXvE05BdTN0N67z9fFeoZiCID+5x9oapey7SgIwOYhaIX2Lbm0i0wCY6+WSbGgsgp9HWu+utJhXJYLR4cFkCxLEpMCmARyeDaGQvWzU*;validity-url="https://test.example.org/resource.validity.msg")";
 // clang-format on
 
 // |expires| (1518497142) is more than 7 days (604800 seconds) after |date|

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
@@ -10,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -21,26 +23,28 @@
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/process_manager.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/test/result_catcher.h"
 #include "google_apis/common/test_util.h"
@@ -132,8 +136,8 @@ class JSTestStarter : public content::TestNavigationObserver {
 };
 
 bool TouchFile(const base::FilePath& path,
-               base::StringPiece mtime_string,
-               base::StringPiece atime_string) {
+               std::string_view mtime_string,
+               std::string_view atime_string) {
   base::Time mtime, atime;
   auto result =
       base::Time::FromString(std::string(mtime_string).c_str(), &mtime) &&
@@ -421,9 +425,8 @@ class DriveFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
-        profile->GetPath() ==
-            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
+    if (ash::IsSigninBrowserContext(profile) ||
+        ash::IsLockScreenAppBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -471,8 +474,9 @@ class MultiProfileDriveFileSystemExtensionApiTest
                                        kSecondProfileGiaId),
         kSecondProfileHash, false);
     // Set up the secondary profile.
-    base::FilePath profile_dir = user_data_directory.Append(
-        ash::ProfileHelper::GetUserProfileDir(kSecondProfileHash).BaseName());
+    base::FilePath profile_dir = user_data_directory.AppendASCII(
+        ash::BrowserContextHelper::GetUserBrowserContextDirName(
+            kSecondProfileHash));
     second_profile_ =
         g_browser_process->profile_manager()->GetProfile(profile_dir);
 
@@ -502,9 +506,8 @@ class MultiProfileDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
-        profile->GetPath() ==
-            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
+    if (ash::IsSigninBrowserContext(profile) ||
+        ash::IsLockScreenAppBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -516,7 +519,7 @@ class MultiProfileDriveFileSystemExtensionApiTest
     base::CreateTemporaryDirInDir(tmp_dir_.GetPath(),
                                   base::FilePath::StringType(), &drivefs_dir);
     auto profile_name_storage = profile->GetBaseName().value();
-    base::StringPiece profile_name = profile_name_storage;
+    std::string_view profile_name = profile_name_storage;
     if (base::StartsWith(profile_name, "u-")) {
       profile_name = profile_name.substr(2);
     }
@@ -588,9 +591,8 @@ class LocalAndDriveFileSystemExtensionApiTest
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
-        profile->GetPath() ==
-            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
+    if (ash::IsSigninBrowserContext(profile) ||
+        ash::IsLockScreenAppBrowserContext(profile)) {
       return nullptr;
     }
 

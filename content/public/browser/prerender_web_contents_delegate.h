@@ -19,14 +19,17 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
 
   // WebContentsDelegate overrides.
   WebContents* OpenURLFromTab(WebContents* source,
-                              const OpenURLParams& params) override;
-  void AddNewContents(WebContents* source,
-                      std::unique_ptr<WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
+                              const OpenURLParams& params,
+                              base::OnceCallback<void(NavigationHandle&)>
+                                  navigation_handle_callback) override;
+  WebContents* AddNewContents(
+      WebContents* source,
+      std::unique_ptr<WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override;
   void ActivateContents(WebContents* contents) override;
   void LoadingStateChanged(WebContents* source,
                            bool should_show_loading_ui) override;
@@ -40,9 +43,7 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
                           const std::string& frame_name,
                           const GURL& target_url,
                           WebContents* new_contents) override;
-  bool CanEnterFullscreenModeForTab(
-      RenderFrameHost* requesting_frame,
-      const blink::mojom::FullscreenOptions& options) override;
+  bool CanEnterFullscreenModeForTab(RenderFrameHost* requesting_frame) override;
   void EnterFullscreenModeForTab(
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;
@@ -62,10 +63,6 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
                                          const GURL& resource_url) override;
   PreloadingEligibility IsPrerender2Supported(
       WebContents& web_contents) override;
-  void UpdateInspectedWebContentsIfNecessary(
-      WebContents* old_contents,
-      WebContents* new_contents,
-      base::OnceCallback<void()> callback) override;
 };
 
 }  // namespace content

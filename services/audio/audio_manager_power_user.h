@@ -16,7 +16,7 @@ class AudioManager;
 namespace audio {
 
 // Helper class to get access to the protected AudioManager API.
-// TODO(https://crbug.com/834674): Replace this class with a public API
+// TODO(crbug.com/40572543): Replace this class with a public API
 // once the audio manager is inaccessible from outside the audio service.
 class AudioManagerPowerUser {
  public:
@@ -33,9 +33,12 @@ class AudioManagerPowerUser {
 
   media::AudioParameters GetOutputStreamParameters(
       const std::string& device_id) {
-    return media::AudioDeviceDescription::IsDefaultDevice(device_id)
-               ? audio_manager_->GetDefaultOutputStreamParameters()
-               : audio_manager_->GetOutputStreamParameters(device_id);
+    std::string effective_device_id =
+        media::AudioDeviceDescription::IsDefaultDevice(device_id)
+            ? audio_manager_->GetDefaultOutputDeviceID()
+            : device_id;
+
+    return audio_manager_->GetOutputStreamParameters(effective_device_id);
   }
 
   media::AudioParameters GetInputStreamParameters(

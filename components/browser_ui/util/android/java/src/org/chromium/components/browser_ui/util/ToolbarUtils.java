@@ -41,11 +41,11 @@ public class ToolbarUtils {
     }
 
     /**
-     * Finds the menu view in the action bar. Then, finds the overflow button in the menu view.
-     * If either is unable to be found, returns null. Otherwise, returns the overflow menu button.
-     * TODO(https://crbug.com/1250824): Rework how we do this by adding an id to the overflow menu
-     * button. This would allow us to findViewById().
-     *.
+     * Finds the menu view in the action bar. Then, finds the overflow button in the menu view. If
+     * either is unable to be found, returns null. Otherwise, returns the overflow menu button.
+     * TODO(crbug.com/40198147): Rework how we do this by adding an id to the overflow menu button.
+     * This would allow us to findViewById(). .
+     *
      * @param toolbar The toolbar that may contain the overflow menu item.
      * @return The overflow menu button if found, null otherwise (e.g. no menu exists).
      */

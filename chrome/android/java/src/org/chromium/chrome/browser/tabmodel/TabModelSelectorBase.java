@@ -16,11 +16,11 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
@@ -172,7 +172,8 @@ public abstract class TabModelSelectorBase
 
     @Override
     public Tab getCurrentTab() {
-        // TODO(crbug/1499464): Migrate this to use mCurrentTabSupplier.get(). Presently, a large
+        // TODO(crbug.com/40287823): Migrate this to use mCurrentTabSupplier.get(). Presently, a
+        // large
         // number of tests depend on using this from a non-UI thread.
         return TabModelUtils.getCurrentTab(getCurrentModel());
     }
@@ -187,7 +188,7 @@ public abstract class TabModelSelectorBase
     public TabModel getModelForTabId(int id) {
         for (int i = 0; i < mTabModels.size(); i++) {
             TabModel model = mTabModels.get(i);
-            if (TabModelUtils.getTabById(model, id) != null || model.isClosurePending(id)) {
+            if (model.getTabById(id) != null || model.isClosurePending(id)) {
                 return model;
             }
         }
@@ -241,6 +242,18 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
+    public boolean isIncognitoBrandedModelSelected() {
+        if (mTabModels.size() == 0) return mStartIncognito;
+        return getCurrentModel().isIncognitoBranded();
+    }
+
+    @Override
+    public boolean isOffTheRecordModelSelected() {
+        if (mTabModels.size() == 0) return mStartIncognito;
+        return getCurrentModel().isOffTheRecord();
+    }
+
+    @Override
     public List<TabModel> getModels() {
         return mTabModels;
     }
@@ -255,15 +268,25 @@ public abstract class TabModelSelectorBase
 
     @Override
     public boolean closeTab(Tab tab) {
+        boolean isClosing = tab.isClosing() && !tab.isDestroyed();
         for (int i = 0; i < getModels().size(); i++) {
             TabModel model = mTabModels.get(i);
-            if (model.indexOf(tab) >= 0) {
-                return model.closeTab(tab);
+            if (isClosing) {
+                // If the tab is closing and not destroyed it should be in the comprehensive model
+                // of one of the tab models. Find its model and commit the tab closure.
+                TabList comprehensiveModel = model.getComprehensiveModel();
+                if (comprehensiveModel.indexOf(tab) > TabList.INVALID_TAB_INDEX) {
+                    model.commitTabClosure(tab.getId());
+                    return true;
+                }
+            } else if (model.indexOf(tab) > TabList.INVALID_TAB_INDEX) {
+                return model.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
             }
         }
 
         if (getModels().isEmpty()) {
-            tab.destroy();
+            // Tab may be destroyed here via Tab#destroy(). It is skipped for now
+            // to examine its potential side effect on crbug.com/325558929.
             return true;
         } else {
             assert false
@@ -297,7 +320,7 @@ public abstract class TabModelSelectorBase
     @Override
     public Tab getTabById(int id) {
         for (int i = 0; i < getModels().size(); i++) {
-            Tab tab = TabModelUtils.getTabById(mTabModels.get(i), id);
+            Tab tab = mTabModels.get(i).getTabById(id);
             if (tab != null) return tab;
         }
         return null;
@@ -310,8 +333,9 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void closeAllTabs(boolean uponExit) {
+        TabClosureParams params = TabClosureParams.closeAllTabs().uponExit(uponExit).build();
         for (int i = 0; i < getModels().size(); i++) {
-            mTabModels.get(i).closeAllTabs(uponExit);
+            mTabModels.get(i).closeTabs(params);
         }
     }
 
@@ -348,6 +372,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void destroy() {
+        for (TabModelSelectorObserver listener : mObservers) listener.onDestroyed();
         mTabModelSupplier.removeObserver(mIncognitoReauthDialogDelegateCallback);
         mTabModelFilterProvider.destroy();
 

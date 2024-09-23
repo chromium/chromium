@@ -5,14 +5,14 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorSource, AcceleratorSubcategory, LayoutInfo, LayoutStyle, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorSource, AcceleratorSubcategory, LayoutInfo, LayoutStyle, MetaKey, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
 import {getAcceleratorId, getSourceAndActionFromAcceleratorId, isStandardAcceleratorInfo, isTextAcceleratorInfo} from './shortcut_utils.js';
 
 // Convert from Mojo types to the app types.
 function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
     StandardAcceleratorInfo {
   assert(isStandardAcceleratorInfo(info));
-  const {locked, state, type, layoutProperties} = info;
+  const {acceleratorLocked, locked, state, type, layoutProperties} = info;
   const sanitizedAccelerator: Accelerator = {
     keyCode: layoutProperties.standardAccelerator.accelerator.keyCode,
     modifiers: layoutProperties.standardAccelerator.accelerator.modifiers,
@@ -30,6 +30,7 @@ function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
   }
 
   return {
+    acceleratorLocked,
     locked,
     state,
     type,
@@ -95,9 +96,9 @@ export class AcceleratorLookupManager {
    */
   private reverseAcceleratorLookup: ReverseAcceleratorLookupMap = new Map();
 
-  // Determine whether the keyboard has a launcher button or a search button. It
-  // is used to display the 'meta' key with correct icon.
-  private hasLauncherButton: boolean = false;
+  // An enum including Search, Launcher and LauncherRefresh to display the
+  // keyboard 'meta' key with correct icon.
+  private metaKey: MetaKey = MetaKey.kSearch;
 
   // Determine if a search result row is currently focused. This ensures the
   // focused row stays highlighted as the search result, despite mouse hover
@@ -210,12 +211,12 @@ export class AcceleratorLookupManager {
     this.layoutInfoProvider.initializeLayoutInfo(layoutInfoList);
   }
 
-  setHasLauncherButton(hasLauncherButton: boolean): void {
-    this.hasLauncherButton = hasLauncherButton;
+  setMetaKeyToDisplay(metaKey: MetaKey): void {
+    this.metaKey = metaKey;
   }
 
-  getHasLauncherButton(): boolean {
-    return this.hasLauncherButton;
+  getMetaKeyToDisplay(): MetaKey {
+    return this.metaKey;
   }
 
   setSearchResultRowFocused(searchResultRowFocused: boolean): void {

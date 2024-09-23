@@ -5,8 +5,10 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -19,8 +21,9 @@ namespace first_party_sets {
 
 namespace {
 
-BrowserContextKeyedServiceFactory::TestingFactory* GetTestingFactory() {
-  static base::NoDestructor<BrowserContextKeyedServiceFactory::TestingFactory>
+FirstPartySetsPolicyServiceFactory::GlobalTestingFactory* GetTestingFactory() {
+  static base::NoDestructor<
+      FirstPartySetsPolicyServiceFactory::GlobalTestingFactory>
       instance;
   return instance.get();
 }
@@ -44,7 +47,7 @@ FirstPartySetsPolicyServiceFactory::GetInstance() {
 }
 
 void FirstPartySetsPolicyServiceFactory::SetTestingFactoryForTesting(
-    TestingFactory test_factory) {
+    GlobalTestingFactory test_factory) {
   *GetTestingFactory() = std::move(test_factory);
 }
 
@@ -53,12 +56,15 @@ FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
           "FirstPartySetsPolicyService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  // TODO(https://crbug.com/1464637): explicitly declare a dependency on
-  // HostContentSettingsMapFactory.
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
+  DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 

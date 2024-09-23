@@ -74,35 +74,47 @@ class MockClient : public VideoCaptureDevice::Client {
                               bool flip_y,
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
+                              std::optional<base::TimeTicks> capture_begin_time,
                               int frame_feedback_id) override {}
 
-  void OnIncomingCapturedGfxBuffer(gfx::GpuMemoryBuffer* buffer,
-                                   const VideoCaptureFormat& frame_format,
-                                   int clockwise_rotation,
-                                   base::TimeTicks reference_time,
-                                   base::TimeDelta timestamp,
-                                   int frame_feedback_id) override {}
+  void OnIncomingCapturedGfxBuffer(
+      gfx::GpuMemoryBuffer* buffer,
+      const VideoCaptureFormat& frame_format,
+      int clockwise_rotation,
+      base::TimeTicks reference_time,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time,
+      int frame_feedback_id) override {}
 
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time,
       const gfx::Rect& visible_rect) override {}
 
-  MOCK_METHOD4(ReserveOutputBuffer,
-               ReserveResult(const gfx::Size&, VideoPixelFormat, int, Buffer*));
+  MOCK_METHOD6(ReserveOutputBuffer,
+               ReserveResult(const gfx::Size&,
+                             VideoPixelFormat,
+                             int,
+                             Buffer*,
+                             int*,
+                             int*));
 
-  void OnIncomingCapturedBuffer(Buffer buffer,
-                                const VideoCaptureFormat& format,
-                                base::TimeTicks reference_,
-                                base::TimeDelta timestamp) override {}
+  void OnIncomingCapturedBuffer(
+      Buffer buffer,
+      const VideoCaptureFormat& format,
+      base::TimeTicks reference_,
+      base::TimeDelta timestamp,
+      std::optional<base::TimeTicks> capture_begin_time) override {}
 
-  MOCK_METHOD7(OnIncomingCapturedBufferExt,
+  MOCK_METHOD8(OnIncomingCapturedBufferExt,
                void(Buffer,
                     const VideoCaptureFormat&,
                     const gfx::ColorSpace&,
                     base::TimeTicks,
                     base::TimeDelta,
+                    std::optional<base::TimeTicks>,
                     gfx::Rect,
                     const VideoFrameMetadata&));
 
@@ -191,7 +203,7 @@ class MockAMCameraControl final : public MockInterface<IAMCameraControl> {
         *flags = CameraControl_Flags_Auto;
         return S_OK;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   IFACEMETHODIMP GetRange(long property,
@@ -215,7 +227,7 @@ class MockAMCameraControl final : public MockInterface<IAMCameraControl> {
         *caps_flags = CameraControl_Flags_Auto | CameraControl_Flags_Manual;
         return S_OK;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   IFACEMETHODIMP Set(long property, long value, long flags) override {
@@ -244,7 +256,7 @@ class MockAMVideoProcAmp final : public MockInterface<IAMVideoProcAmp> {
         *flags = VideoProcAmp_Flags_Auto;
         return S_OK;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   IFACEMETHODIMP GetRange(long property,
@@ -271,7 +283,7 @@ class MockAMVideoProcAmp final : public MockInterface<IAMVideoProcAmp> {
         *caps_flags = VideoProcAmp_Flags_Auto | VideoProcAmp_Flags_Manual;
         return S_OK;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   IFACEMETHODIMP Set(long property, long value, long flags) override {
@@ -2195,9 +2207,10 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
   // Verify that an output capture buffer is reserved from the client
   EXPECT_CALL(*client_, ReserveOutputBuffer)
       .WillOnce(Invoke(
-          [expected_size](const gfx::Size& size, VideoPixelFormat format,
-                          int feedback_id,
-                          VideoCaptureDevice::Client::Buffer* capture_buffer) {
+          [expected_size](
+              const gfx::Size& size, VideoPixelFormat format, int feedback_id,
+              VideoCaptureDevice::Client::Buffer* capture_buffer,
+              int* require_new_buffer_id, int* retire_old_buffer_id) {
             EXPECT_EQ(size.width(), expected_size.width());
             EXPECT_EQ(size.height(), expected_size.height());
             EXPECT_EQ(format, PIXEL_FORMAT_NV12);
@@ -2251,7 +2264,8 @@ TEST_F(VideoCaptureDeviceMFWinTestWithDXGI, DeliverGMBCaptureBuffers) {
   EXPECT_CALL(*client_, OnIncomingCapturedBufferExt)
       .WillOnce(Invoke([](VideoCaptureDevice::Client::Buffer buffer,
                           const VideoCaptureFormat&, const gfx::ColorSpace&,
-                          base::TimeTicks, base::TimeDelta, gfx::Rect,
+                          base::TimeTicks, base::TimeDelta,
+                          std::optional<base::TimeTicks>, gfx::Rect,
                           const VideoFrameMetadata&) {
         gfx::GpuMemoryBufferHandle gmb_handle =
             buffer.handle_provider->GetGpuMemoryBufferHandle();

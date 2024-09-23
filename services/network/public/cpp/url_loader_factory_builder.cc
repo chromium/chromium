@@ -44,7 +44,7 @@ bool URLLoaderFactoryBuilder::IsEmpty() const {
 // because theoretically the `URLLoaderFactoryBuilder` interface can't ensure
 // that `terminal_factory` is fuseable.
 //
-// TODO(crbug.com/1506871): Consider removing the `Clone()` calls for
+// TODO(crbug.com/40947547): Consider removing the `Clone()` calls for
 // performance. Probably the `terminal_factory` is actually fusable for the
 // actual `URLLoaderFactoryBuilder` callers reaching here (e.g.
 // `non_network_factories` in `RenderFrameHostImpl::CommitNavigation()` and
@@ -75,6 +75,36 @@ void URLLoaderFactoryBuilder::ConnectTerminal(
     network::mojom::URLLoaderFactoryParamsPtr factory_param) {
   terminal_context->CreateURLLoaderFactory(std::move(pending_receiver),
                                            std::move(factory_param));
+}
+
+template <>
+scoped_refptr<SharedURLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
+    mojo::PendingRemote<mojom::URLLoaderFactory> in) {
+  return base::MakeRefCounted<WrapperSharedURLLoaderFactory>(std::move(in));
+}
+
+template <>
+mojo::PendingRemote<mojom::URLLoaderFactory> URLLoaderFactoryBuilder::WrapAs(
+    scoped_refptr<SharedURLLoaderFactory> in) {
+  mojo::PendingRemote<mojom::URLLoaderFactory> remote;
+  in->Clone(remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
+PendingSharedURLLoaderFactoryWithBuilder::
+    PendingSharedURLLoaderFactoryWithBuilder(
+        URLLoaderFactoryBuilder factory_builder,
+        std::unique_ptr<PendingSharedURLLoaderFactory> terminal_pending_factory)
+    : factory_builder_(std::move(factory_builder)),
+      terminal_pending_factory_(std::move(terminal_pending_factory)) {}
+PendingSharedURLLoaderFactoryWithBuilder::
+    ~PendingSharedURLLoaderFactoryWithBuilder() = default;
+
+scoped_refptr<SharedURLLoaderFactory>
+PendingSharedURLLoaderFactoryWithBuilder::CreateFactory() {
+  return std::move(factory_builder_)
+      .Finish(
+          SharedURLLoaderFactory::Create(std::move(terminal_pending_factory_)));
 }
 
 }  // namespace network

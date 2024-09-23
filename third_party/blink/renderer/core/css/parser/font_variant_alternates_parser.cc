@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/parser/font_variant_alternates_parser.h"
+
+#include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
@@ -14,20 +16,20 @@ FontVariantAlternatesParser::FontVariantAlternatesParser() = default;
 
 FontVariantAlternatesParser::ParseResult
 FontVariantAlternatesParser::ConsumeAlternates(
-    CSSParserTokenRange& range,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
-  // Handled in longhand parsing implementation.
-  DCHECK(range.Peek().Id() != CSSValueID::kNormal);
-  if (!ConsumeHistoricalForms(range) && !ConsumeAlternate(range, context)) {
+  // Handled in longhand parsing imstream.
+  DCHECK(stream.Peek().Id() != CSSValueID::kNormal);
+  if (!ConsumeHistoricalForms(stream) && !ConsumeAlternate(stream, context)) {
     return ParseResult::kUnknownValue;
   }
   return ParseResult::kConsumedValue;
 }
 
 bool FontVariantAlternatesParser::ConsumeAlternate(
-    CSSParserTokenRange& range,
+    CSSParserTokenStream& stream,
     const CSSParserContext& context) {
-  auto peek = range.Peek().FunctionId();
+  auto peek = stream.Peek().FunctionId();
   cssvalue::CSSAlternateValue** value_to_set = nullptr;
   switch (peek) {
     case CSSValueID::kStylistic:
@@ -71,31 +73,36 @@ bool FontVariantAlternatesParser::ConsumeAlternate(
       peek == CSSValueID::kStyleset || peek == CSSValueID::kCharacterVariant;
   CSSFunctionValue* function_value =
       MakeGarbageCollected<CSSFunctionValue>(peek);
-  CSSParserTokenRange range_copy = range;
-  CSSParserTokenRange inner = css_parsing_utils::ConsumeFunction(range_copy);
-  CSSValueList* aliases =
-      ConsumeCommaSeparatedList(ConsumeCustomIdent, inner, context);
-  // At least one argument is required:
-  // https://drafts.csswg.org/css-fonts-4/#font-variant-alternates-prop
-  if (!aliases || !inner.AtEnd()) {
-    return false;
+  CSSValueList* aliases;
+  {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    aliases = ConsumeCommaSeparatedList<CSSCustomIdentValue*(
+        CSSParserTokenStream&, const CSSParserContext&)>(ConsumeCustomIdent,
+                                                         stream, context);
+    // At least one argument is required:
+    // https://drafts.csswg.org/css-fonts-4/#font-variant-alternates-prop
+    if (!aliases || !stream.AtEnd()) {
+      return false;
+    }
+    if (aliases->length() > 1 && !multiple_idents_allowed) {
+      return false;
+    }
+    guard.Release();
   }
-  if (aliases->length() > 1 && !multiple_idents_allowed) {
-    return false;
-  }
-  range = range_copy;
+  stream.ConsumeWhitespace();
   *value_to_set = MakeGarbageCollected<cssvalue::CSSAlternateValue>(
       *function_value, *aliases);
   return true;
 }
 
 bool FontVariantAlternatesParser::ConsumeHistoricalForms(
-    CSSParserTokenRange& range) {
-  if (range.Peek().Id() != CSSValueID::kHistoricalForms) {
+    CSSParserTokenStream& stream) {
+  if (stream.Peek().Id() != CSSValueID::kHistoricalForms) {
     return false;
   }
   historical_forms_ =
-      css_parsing_utils::ConsumeIdent<CSSValueID::kHistoricalForms>(range);
+      css_parsing_utils::ConsumeIdent<CSSValueID::kHistoricalForms>(stream);
   return true;
 }
 

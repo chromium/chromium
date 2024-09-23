@@ -66,21 +66,23 @@ WebPrintingManager::WebPrintingManager(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       printing_service_(navigator.GetExecutionContext()) {}
 
-ScriptPromise WebPrintingManager::getPrinters(ScriptState* script_state,
-                                              ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<WebPrinter>> WebPrintingManager::getPrinters(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!CheckContextAndPermissions(script_state, exception_state)) {
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<WebPrinter>>();
   }
 
   auto* service = GetPrintingService();
   if (!service) {
     exception_state.ThrowSecurityError(
         "WebPrinting API is not accessible in this configuration.");
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<WebPrinter>>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<WebPrinter>>>(
+          script_state, exception_state.GetContext());
   service->GetPrinters(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
       &WebPrintingManager::OnPrintersRetrieved, WrapPersistent(this))));
   return resolver->Promise();
@@ -107,7 +109,7 @@ mojom::blink::WebPrintingService* WebPrintingManager::GetPrintingService() {
 }
 
 void WebPrintingManager::OnPrintersRetrieved(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<IDLSequence<WebPrinter>>* resolver,
     mojom::blink::GetPrintersResultPtr result) {
   if (result->is_error()) {
     switch (result->get_error()) {

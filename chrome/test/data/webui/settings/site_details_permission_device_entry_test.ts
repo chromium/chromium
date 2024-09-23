@@ -78,16 +78,6 @@ suite('SiteDetailsPermissionDeviceEntry', function() {
     const policyIndicator =
         testElement.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assertTrue(!!policyIndicator);
-
-    // Check mouse over the indicator should fire show-tooltip event.
-    const icon = policyIndicator.shadowRoot!.querySelector('cr-tooltip-icon');
-    assertTrue(!!icon);
-    const paperTooltip = icon.shadowRoot!.querySelector('paper-tooltip');
-    assertTrue(!!paperTooltip);
-    assertFalse(paperTooltip._showing);
-    icon.$.indicator.dispatchEvent(
-        new MouseEvent('mouseenter', {bubbles: true, composed: true}));
-    assertTrue(paperTooltip._showing);
   }
 
   test('User granted chooser exception', async function() {

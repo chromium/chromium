@@ -32,7 +32,7 @@ class DragDropTrackerTest : public AshTestBase {
   static aura::Window* GetTarget(const gfx::Point& location) {
     std::unique_ptr<DragDropTracker> tracker(new DragDropTracker(
         Shell::GetPrimaryRootWindow(), base::BindLambdaForTesting([&]() {})));
-    ui::MouseEvent e(ui::ET_MOUSE_DRAGGED, location, location,
+    ui::MouseEvent e(ui::EventType::kMouseDragged, location, location,
                      ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
     aura::Window* target = tracker->GetTarget(e);
     return target;
@@ -125,7 +125,7 @@ TEST_F(DragDropTrackerTest, ConvertEvent) {
 
   // Start tracking from the RootWindow0 and converts the mouse event into
   // |window0|'s coodinates.
-  ui::MouseEvent original00(ui::ET_MOUSE_DRAGGED, gfx::Point(50, 50),
+  ui::MouseEvent original00(ui::EventType::kMouseDragged, gfx::Point(50, 50),
                             gfx::Point(50, 50), ui::EventTimeForNow(),
                             ui::EF_NONE, ui::EF_NONE);
   std::unique_ptr<ui::LocatedEvent> converted00(
@@ -137,7 +137,7 @@ TEST_F(DragDropTrackerTest, ConvertEvent) {
 
   // Start tracking from the RootWindow0 and converts the mouse event into
   // |window1|'s coodinates.
-  ui::MouseEvent original01(ui::ET_MOUSE_DRAGGED, gfx::Point(350, 150),
+  ui::MouseEvent original01(ui::EventType::kMouseDragged, gfx::Point(350, 150),
                             gfx::Point(350, 150), ui::EventTimeForNow(),
                             ui::EF_NONE, ui::EF_NONE);
   std::unique_ptr<ui::LocatedEvent> converted01(
@@ -152,7 +152,7 @@ TEST_F(DragDropTrackerTest, ConvertEvent) {
 
   // Start tracking from the RootWindow1 and converts the mouse event into
   // |window0|'s coodinates.
-  ui::MouseEvent original10(ui::ET_MOUSE_DRAGGED, gfx::Point(-150, 50),
+  ui::MouseEvent original10(ui::EventType::kMouseDragged, gfx::Point(-150, 50),
                             gfx::Point(-150, 50), ui::EventTimeForNow(),
                             ui::EF_NONE, ui::EF_NONE);
   std::unique_ptr<ui::LocatedEvent> converted10(
@@ -164,7 +164,7 @@ TEST_F(DragDropTrackerTest, ConvertEvent) {
 
   // Start tracking from the RootWindow1 and converts the mouse event into
   // |window1|'s coodinates.
-  ui::MouseEvent original11(ui::ET_MOUSE_DRAGGED, gfx::Point(150, 150),
+  ui::MouseEvent original11(ui::EventType::kMouseDragged, gfx::Point(150, 150),
                             gfx::Point(150, 150), ui::EventTimeForNow(),
                             ui::EF_NONE, ui::EF_NONE);
   std::unique_ptr<ui::LocatedEvent> converted11(

@@ -97,7 +97,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   }
 
   // Redact query parameters & fragment. Also the username and password.
-  // TODO(https://crbug.com/1121816) Improve redaction.
+  // TODO(crbug.com/40146362) Improve redaction.
   GURL url(source_id);
   if (!url.is_valid()) {
     DVLOG(3) << "Message not reported, invalid URL";
@@ -165,7 +165,7 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
   web_ui_->GetController()->WebUIReadyToCommitNavigation(
       web_ui_->GetRenderFrameHost());
 
-// TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
+// TODO(crbug.com/40149439) This is currently disabled due to Windows DLL
 // thunking issues. Fix & re-enable.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   MaybeEnableWebUIJavaScriptErrorReporting(navigation_handle);

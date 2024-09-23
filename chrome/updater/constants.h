@@ -12,26 +12,49 @@
 namespace updater {
 
 // Key for storing the installer version in the install settings dictionary.
-extern const char kInstallerVersion[];
+inline constexpr char kInstallerVersion[] = "installer_version";
 
-// The updater specific app ID.
+// The updater specific app ID. Defined in the .cc file so that the updater
+// branding constants don't leak in this public header.
 extern const char kUpdaterAppId[];
 
-// The app ID used to qualify the updater.
+// The app ID used to qualify the updater. Defined in the .cc file so that the
+// updater branding constants don't leak in this public header.
 extern const char kQualificationAppId[];
 
-// The name of the updater program image, typically, "updater.exe" or "updater".
-extern const char kExecutableName[];
+// The name of the updater program image.
+#if BUILDFLAG(IS_WIN)
+inline constexpr char kExecutableName[] = "updater.exe";
+#else
+inline constexpr char kExecutableName[] = "updater";
+#endif
+
+// The name of the enterprise companion program image.
+#if BUILDFLAG(IS_WIN)
+inline constexpr char kCompanionAppExecutableName[] =
+    "enterprise_companion.exe";
+#else
+inline constexpr char kCompanionAppExecutableName[] = "enterprise_companion";
+#endif
+
+// Uninstall switch for the enterprise companion app.
+inline constexpr char kUninstallCompanionAppSwitch[] = "uninstall";
 
 // A suffix appended to the updater executable name before any file extension.
 extern const char kExecutableSuffix[];
 
 // "0.0.0.0". Historically, a null version has been used to indicate a
 // new install.
-extern const char kNullVersion[];
+inline constexpr char kNullVersion[] = "0.0.0.0";
 
 // Command line switches.
 //
+// If a command line switch is marked as `backward-compatibility`, it
+// means the switch name cannot be changed, and the parser must be able to
+// handle command line in the DOS style '/<switch> <optional_value>'. This is to
+// make sure the new updater understands the hand-off requests from the legacy
+// updaters.
+
 // This switch starts the COM server. This switch is invoked by the COM runtime
 // when CoCreate is called on one of several CLSIDs that the server supports.
 // We expect to use the COM server for the following scenarios:
@@ -48,19 +71,20 @@ extern const char kNullVersion[];
 //   from Privileged Services that can offer full functionality for a particular
 //   set of interfaces, to Medium Integrity processes that can offer limited
 //   (say, read-only) functionality for that same set of interfaces.
-extern const char kServerSwitch[];
+inline constexpr char kServerSwitch[] = "server";
 
 // This switch specifies the XPC service the server registers to listen to.
-extern const char kServerServiceSwitch[];
+inline constexpr char kServerServiceSwitch[] = "service";
 
 // Valid values for the kServerServiceSwitch.
-extern const char kServerUpdateServiceInternalSwitchValue[];
-extern const char kServerUpdateServiceSwitchValue[];
+inline constexpr char kServerUpdateServiceInternalSwitchValue[] =
+    "update-internal";
+inline constexpr char kServerUpdateServiceSwitchValue[] = "update";
 
 // This switch starts the Windows service. This switch is invoked by the SCM
 // either as a part of system startup (`SERVICE_AUTO_START`) or when `CoCreate`
 // is called on one of several CLSIDs that the server supports.
-extern const char kWindowsServiceSwitch[];
+inline constexpr char kWindowsServiceSwitch[] = "windows-service";
 
 // This switch indicates that the Windows service is in the COM server mode.
 // This switch is passed to `ServiceMain` by the SCM when CoCreate is called on
@@ -69,143 +93,158 @@ extern const char kWindowsServiceSwitch[];
 // * The Server for the UI when installing Machine applications.
 // * The On-Demand COM Server for Machine applications.
 // * COM Server for launching processes at System Integrity, i.e., an Elevator.
-extern const char kComServiceSwitch[];
+inline constexpr char kComServiceSwitch[] = "com-service";
 
 // Crash the program for testing purposes.
-extern const char kCrashMeSwitch[];
+inline constexpr char kCrashMeSwitch[] = "crash-me";
 
 // Runs as the Crashpad handler.
-extern const char kCrashHandlerSwitch[];
+inline constexpr char kCrashHandlerSwitch[] = "crash-handler";
 
 // Updates the updater.
-extern const char kUpdateSwitch[];
+inline constexpr char kUpdateSwitch[] = "update";
 
-// Installs the updater.
-extern const char kInstallSwitch[];
-extern const char kRuntimeSwitch[];
+// Run as a network worker.
+inline constexpr char kNetWorkerSwitch[] = "net-worker";
 
-// Contains the meta installer tag. The tag is a string of arguments, separated
-// by a delimiter (in this case, the delimiter is =). The tag is typically
-// embedded in the program image of the metainstaller, but for testing purposes,
-// the tag could be passed directly as a command line argument. The tag is
-// currently encoded as a ASCII string.
-extern const char kTagSwitch[];
+// Installs the updater. Takes an optional argument for the meta installer tag.
+// The tag is a string of arguments, separated by a delimiter (in this case, the
+// delimiter is `&`). The tag is typically embedded in the program image of the
+// metainstaller, but for testing purposes, the tag could be passed directly as
+// a command line argument. The tag is currently encoded as an ASCII string.
+inline constexpr char kInstallSwitch[] = "install";
+
+inline constexpr char kEulaRequiredSwitch[] = "eularequired";
+
+// Specifies that this is an OEM install in audit mode.
+inline constexpr char kOemSwitch[] = "oem";
 
 // The --installerdata=file.dat switch is passed to an installer if an
 // installdataindex is specified in the tag or if installerdata is passed in via
 // --appargs. The corresponding installerdata is written to file.dat with an
 // UTF8 encoding as well as a UTF8 BOM.
-extern const char kInstallerDataSwitch[];
+inline constexpr char kInstallerDataSwitch[] = "installerdata";
 
 // Uninstalls the updater.
-extern const char kUninstallSwitch[];
+inline constexpr char kUninstallSwitch[] = "uninstall";
 
 // Uninstalls this version of the updater.
-extern const char kUninstallSelfSwitch[];
+inline constexpr char kUninstallSelfSwitch[] = "uninstall-self";
 
 // Uninstalls the updater if no apps are managed by it.
-extern const char kUninstallIfUnusedSwitch[];
+inline constexpr char kUninstallIfUnusedSwitch[] = "uninstall-if-unused";
 
 // Kicks off the update service. This switch is typically used for by a
 // scheduled to invoke the updater periodically.
-extern const char kWakeSwitch[];
+inline constexpr char kWakeSwitch[] = "wake";
 
 // Kicks off the update service for all versions.
-extern const char kWakeAllSwitch[];
+inline constexpr char kWakeAllSwitch[] = "wake-all";
 
 // The updater needs to operate in the system context.
-extern const char kSystemSwitch[];
+inline constexpr char kSystemSwitch[] = "system";
 
 // Runs in test mode. Currently, it exits right away.
-extern const char kTestSwitch[];
+inline constexpr char kTestSwitch[] = "test";
 
 // Run in recovery mode.
-extern const char kRecoverSwitch[];
+inline constexpr char kRecoverSwitch[] = "recover";
 
 // The version of the program triggering recovery.
-extern const char kBrowserVersionSwitch[];
+inline constexpr char kBrowserVersionSwitch[] = "browser-version";
 
 // The session ID of the Omaha session triggering recovery.
-extern const char kSessionIdSwitch[];
+inline constexpr char kSessionIdSwitch[] =
+    "sessionid";  // backward-compatibility.
 
 // The app ID of the program triggering recovery.
-extern const char kAppGuidSwitch[];
+inline constexpr char kAppGuidSwitch[] = "appguid";
 
-// Disables throttling for the crash reported until the following bug is fixed:
-// https://bugs.chromium.org/p/crashpad/issues/detail?id=23
-extern const char kNoRateLimitSwitch[];
+// Causes crashpad handler to start a second instance to monitor the first
+// instance for exceptions.
+inline constexpr char kMonitorSelfSwitch[] = "monitor-self";
+
+// Additional arguments passed to the --monitor-self instance.
+inline constexpr char kMonitorSelfSwitchArgument[] = "monitor-self-argument";
 
 // The handle of an event to signal when the initialization of the main process
 // is complete.
-extern const char kInitDoneNotifierSwitch[];
+inline constexpr char kInitDoneNotifierSwitch[] = "init-done-notifier";
 
 // Enables logging.
-extern const char kEnableLoggingSwitch[];
+inline constexpr char kEnableLoggingSwitch[] = "enable-logging";
 
 // Specifies the logging module filter and its value. Note that some call sites
 // may still use different values for the logging module filter.
-extern const char kLoggingModuleSwitch[];
-extern const char kLoggingModuleSwitchValue[];
+inline constexpr char kLoggingModuleSwitch[] = "vmodule";
+inline constexpr char kLoggingModuleSwitchValue[] =
+#if BUILDFLAG(IS_WIN)
+    "*/components/winhttp/*=1,"
+#endif
+    "*/components/update_client/*=2,*/chrome/updater/*=2";
 
 // Specifies the application that the Updater needs to install.
-extern const char kAppIdSwitch[];
+inline constexpr char kAppIdSwitch[] = "app-id";
 
 // Specifies the version of the application that the updater needs to register.
-extern const char kAppVersionSwitch[];
+inline constexpr char kAppVersionSwitch[] = "app-version";
 
 // Specifies that the Updater should perform some minimal checks to verify that
 // it is operational/healthy. This is for backward compatibility with Omaha 3.
 // Omaha 3 runs "GoogleUpdate.exe /healthcheck" and expects an exit code of
 // HRESULT SUCCESS, i.e., S_OK, in which case it will hand off the installation
 // to Omaha 4.
-extern const char kHealthCheckSwitch[];
+inline constexpr char kHealthCheckSwitch[] = "healthcheck";
 
 // Specifies the enterprise request argument. On Windows, the request may
 // be from legacy updaters which pass the argument in the format of
 // `/enterprise`. Manual argument parsing is needed for that scenario.
-extern const char kEnterpriseSwitch[];
+inline constexpr char kEnterpriseSwitch[] =
+    "enterprise";  // backward-compatibility.
 
 // Specifies that no UI should be shown.
-extern const char kSilentSwitch[];
+inline constexpr char kSilentSwitch[] = "silent";  // backward-compatibility.
 
 // The "alwayslaunchcmd" switch specifies that launch commands are to be run
 // unconditionally, even for silent modes.
-extern const char kAlwaysLaunchCmdSwitch[];
+inline constexpr char kAlwaysLaunchCmdSwitch[] = "alwayslaunchcmd";
 
 // Specifies the handoff request argument. On Windows, the request may
 // be from legacy updaters which pass the argument in the format of
 // `/handoff <install-args-details>`. Manual argument parsing is needed for that
 // scenario.
-extern const char kHandoffSwitch[];
+inline constexpr char kHandoffSwitch[] = "handoff";  // backward-compatibility.
 
 // Specifies the full path to the offline install resources. The folder
 // contains offline installer and the manifest file.
-extern const char kOfflineDirSwitch[];
+inline constexpr char kOfflineDirSwitch[] =
+    "offlinedir";  // backward-compatibility.
 
 // Specifies extra app args. The switch must be in the following format:
 //     --appargs="appguid=<appid>&installerdata=<URL-encoded-installer-data>"
 // On Windows, the request may be from legacy updaters which pass the argument
 // in the format of `/appargs <value>`. Manual argument parsing is needed for
 // that scenario.
-extern const char kAppArgsSwitch[];
+inline constexpr char kAppArgsSwitch[] = "appargs";  // backward-compatibility.
 
 // The "expect-elevated" switch indicates that updater setup should be running
 // elevated (at high integrity). This switch is needed to avoid running into a
 // loop trying (but failing repeatedly) to elevate updater setup when attempting
 // to install on a standard user account with UAC disabled.
-extern const char kCmdLineExpectElevated[];
+inline constexpr char kCmdLineExpectElevated[] = "expect-elevated";
 
 // The "expect-de-elevated" switch indicates that updater setup should be
 // running de-elevated (at medium integrity). This switch is needed to avoid
 // running into a loop trying (but failing repeatedly) to de-elevate updater
 // setup when attempting to install as a standard user account with UAC enabled.
-extern const char kCmdLineExpectDeElevated[];
+inline constexpr char kCmdLineExpectDeElevated[] = "expect-de-elevated";
 
 // The "prefers-user" switch indicates that updater setup could not elevate, and
 // is now trying to install the app per-user.
-extern const char kCmdLinePrefersUser[];
+inline constexpr char kCmdLinePrefersUser[] = "prefers-user";
 
-// Environment variables.
+// Environment variables. Defined in the .cc file so that the updater branding
+// constants don't leak in this public header.
 extern const char kUsageStatsEnabled[];
 extern const char kUsageStatsEnabledValueEnabled[];
 
@@ -214,24 +253,31 @@ extern const char kUsageStatsEnabledValueEnabled[];
 // The directory name where CRX apps get installed. This is provided for demo
 // purposes, since products installed by this updater will be installed in
 // their specific locations.
-extern const char kAppsDir[];
+inline constexpr char kAppsDir[] = "apps";
 
 // The name of the uninstall script which is invoked by the --uninstall switch.
-extern const char kUninstallScript[];
+inline constexpr char kUninstallScript[] = "uninstall.cmd";
 
 // Developer override keys.
-extern const char kDevOverrideKeyUrl[];
-extern const char kDevOverrideKeyCrashUploadUrl[];
-extern const char kDevOverrideKeyDeviceManagementUrl[];
-extern const char kDevOverrideKeyUseCUP[];
-extern const char kDevOverrideKeyInitialDelay[];
-extern const char kDevOverrideKeyServerKeepAliveSeconds[];
-extern const char kDevOverrideKeyCrxVerifierFormat[];
-extern const char kDevOverrideKeyGroupPolicies[];
-extern const char kDevOverrideKeyOverinstallTimeout[];
-extern const char kDevOverrideKeyIdleCheckPeriodSeconds[];
-extern const char kDevOverrideKeyManagedDevice[];
-extern const char kDevOverrideKeyEnableDiffUpdates[];
+inline constexpr char kDevOverrideKeyUrl[] = "url";
+inline constexpr char kDevOverrideKeyCrashUploadUrl[] = "crash_upload_url";
+inline constexpr char kDevOverrideKeyDeviceManagementUrl[] =
+    "device_management_url";
+inline constexpr char kDevOverrideKeyAppLogoUrl[] = "app_logo_url";
+inline constexpr char kDevOverrideKeyUseCUP[] = "use_cup";
+inline constexpr char kDevOverrideKeyInitialDelay[] = "initial_delay";
+inline constexpr char kDevOverrideKeyServerKeepAliveSeconds[] =
+    "server_keep_alive";
+inline constexpr char kDevOverrideKeyCrxVerifierFormat[] =
+    "crx_verifier_format";
+inline constexpr char kDevOverrideKeyGroupPolicies[] = "group_policies";
+inline constexpr char kDevOverrideKeyOverinstallTimeout[] =
+    "overinstall_timeout";
+inline constexpr char kDevOverrideKeyIdleCheckPeriodSeconds[] =
+    "idle_check_period";
+inline constexpr char kDevOverrideKeyManagedDevice[] = "managed_device";
+inline constexpr char kDevOverrideKeyEnableDiffUpdates[] =
+    "enable_diff_updates";
 
 // Timing constants.
 // How long to wait for an application installer (such as chrome_installer.exe)
@@ -256,17 +302,24 @@ inline constexpr int kWaitForLaunchctlUpdateSec = 5;
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_MAC)
-// The user defaults suite name.
+// The user defaults suite name. Defined in the .cc file so that the updater
+// branding constants don't leak in this public header.
 extern const char kUserDefaultsSuiteName[];
 #endif  // BUILDFLAG(IS_MAC)
 
 // Install Errors.
 //
-// Specific install errors for the updater are reported in such a way that
-// their range does not conflict with the range of generic errors defined by
-// the |update_client| module.
+// Specific errors for the updater that are passed through `update_client` are
+// reported in such a way that their range does not conflict with the range of
+// generic errors defined by the metainstaller, the `update_client` module, or
+// Windows.
+#if BUILDFLAG(IS_WIN)
+inline constexpr int kCustomInstallErrorBase =
+    static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE) + 74000;
+#else
 inline constexpr int kCustomInstallErrorBase =
     static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE);
+#endif
 
 // Running the application installer failed.
 inline constexpr int kErrorApplicationInstallerFailed =
@@ -283,13 +336,28 @@ inline constexpr int kErrorApplicationInstallerFailed =
 // arguments.
 inline constexpr int kErrorMissingInstallParams = kCustomInstallErrorBase + 1;
 
-// The file specified by the manifest |run| attribute could not be found
-// inside the CRX.
-inline constexpr int kErrorMissingRunableFile = kCustomInstallErrorBase + 2;
-
 // The file extension for the installer is not supported. For instance, on
 // Windows, only `.exe` and `.msi` extensions are supported.
 inline constexpr int kErrorInvalidFileExtension = kCustomInstallErrorBase + 4;
+
+// The app command failed to launch. This code is reported in the `extra_code1`
+// in the ping, along with the actual error code that caused that launch failure
+// in `error`.
+inline constexpr int kErrorAppCommandLaunchFailed = kCustomInstallErrorBase + 5;
+
+// The app command timed out. This code is reported in the `extra_code1` in the
+// ping, along with the error code `HRESULT_FROM_WIN32(ERROR_TIMEOUT)` in
+// `error`.
+inline constexpr int kErrorAppCommandTimedOut = kCustomInstallErrorBase + 6;
+
+// Specific error codes for the updater are reported in such a way that their
+// range does not conflict with the range of generic errors defined by the
+// metainstaller, the `update_client` module, or Windows.
+#if BUILDFLAG(IS_WIN)
+inline constexpr int kUpdaterErrorBase = 75000;
+#else
+inline constexpr int kUpdaterErrorBase = 0;
+#endif
 
 // Error codes.
 //
@@ -297,135 +365,172 @@ inline constexpr int kErrorInvalidFileExtension = kCustomInstallErrorBase + 4;
 inline constexpr int kErrorOk = 0;
 
 // The server could not acquire the lock needed to run.
-inline constexpr int kErrorFailedToLockPrefsMutex = 1;
+inline constexpr int kErrorFailedToLockPrefsMutex = kUpdaterErrorBase + 1;
 
 // The server candidate failed to promote itself to active.
-inline constexpr int kErrorFailedToSwap = 2;
+inline constexpr int kErrorFailedToSwap = kUpdaterErrorBase + 2;
 
-inline constexpr int kErrorRegistrationFailed = 3;
-inline constexpr int kErrorPermissionDenied = 4;
-inline constexpr int kErrorWaitFailedUninstall = 5;
-inline constexpr int kErrorWaitFailedInstall = 6;
-inline constexpr int kErrorPathServiceFailed = 7;
-inline constexpr int kErrorComInitializationFailed = 8;
-inline constexpr int kErrorUnknownCommandLine = 9;
-inline constexpr int kErrorNoVersionedDirectory = 11;
-inline constexpr int kErrorNoBaseDirectory = 12;
-inline constexpr int kErrorPathTooLong = 13;
-inline constexpr int kErrorProcessLaunchFailed = 14;
+inline constexpr int kErrorRegistrationFailed = kUpdaterErrorBase + 3;
+inline constexpr int kErrorPermissionDenied = kUpdaterErrorBase + 4;
+inline constexpr int kErrorWaitFailedUninstall = kUpdaterErrorBase + 5;
+inline constexpr int kErrorWaitFailedInstall = kUpdaterErrorBase + 6;
+inline constexpr int kErrorPathServiceFailed = kUpdaterErrorBase + 7;
+inline constexpr int kErrorComInitializationFailed = kUpdaterErrorBase + 8;
+inline constexpr int kErrorUnknownCommandLine = kUpdaterErrorBase + 9;
+inline constexpr int kErrorNoVersionedDirectory = kUpdaterErrorBase + 11;
+inline constexpr int kErrorNoBaseDirectory = kUpdaterErrorBase + 12;
+inline constexpr int kErrorPathTooLong = kUpdaterErrorBase + 13;
+inline constexpr int kErrorProcessLaunchFailed = kUpdaterErrorBase + 14;
 
 // Failed to copy the updater's bundle.
-inline constexpr int kErrorFailedToCopyBundle = 15;
+inline constexpr int kErrorFailedToCopyBundle = kUpdaterErrorBase + 15;
 
 // Failed to delete the updater's install folder.
-inline constexpr int kErrorFailedToDeleteFolder = 16;
+inline constexpr int kErrorFailedToDeleteFolder = kUpdaterErrorBase + 16;
 
 // Failed to delete the updater's data folder.
-inline constexpr int kErrorFailedToDeleteDataFolder = 17;
+inline constexpr int kErrorFailedToDeleteDataFolder = kUpdaterErrorBase + 17;
 
 // Failed to get versioned updater folder path.
-inline constexpr int kErrorFailedToGetVersionedInstallDirectory = 18;
+inline constexpr int kErrorFailedToGetVersionedInstallDirectory =
+    kUpdaterErrorBase + 18;
 
 // Failed to get the install directory.
-inline constexpr int kErrorFailedToGetInstallDir = 19;
+inline constexpr int kErrorFailedToGetInstallDir = kUpdaterErrorBase + 19;
 
 // Failed to remove the active(unversioned) update service job from Launchd.
-inline constexpr int kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd = 20;
+inline constexpr int kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd =
+    kUpdaterErrorBase + 20;
 
 // Failed to remove versioned update service job from Launchd.
 inline constexpr int kErrorFailedToRemoveCandidateUpdateServiceJobFromLaunchd =
-    21;
+    kUpdaterErrorBase + 21;
 
 // Failed to remove versioned update service internal job from Launchd.
 inline constexpr int kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd =
-    22;
+    kUpdaterErrorBase + 22;
 
 // Failed to remove versioned wake job from Launchd.
-inline constexpr int kErrorFailedToRemoveWakeJobFromLaunchd = 23;
+inline constexpr int kErrorFailedToRemoveWakeJobFromLaunchd =
+    kUpdaterErrorBase + 23;
 
 // Failed to create the active(unversioned) update service Launchd plist.
-inline constexpr int kErrorFailedToCreateUpdateServiceLaunchdJobPlist = 24;
+inline constexpr int kErrorFailedToCreateUpdateServiceLaunchdJobPlist =
+    kUpdaterErrorBase + 24;
 
 // Failed to create the versioned update service Launchd plist.
 inline constexpr int kErrorFailedToCreateVersionedUpdateServiceLaunchdJobPlist =
-    25;
+    kUpdaterErrorBase + 25;
 
 // Failed to create the versioned update service internal Launchd plist.
 inline constexpr int kErrorFailedToCreateUpdateServiceInternalLaunchdJobPlist =
-    26;
+    kUpdaterErrorBase + 26;
 
 // Failed to create the versioned wake Launchd plist.
-inline constexpr int kErrorFailedToCreateWakeLaunchdJobPlist = 27;
+inline constexpr int kErrorFailedToCreateWakeLaunchdJobPlist =
+    kUpdaterErrorBase + 27;
 
 // Failed to start the active(unversioned) update service job.
-inline constexpr int kErrorFailedToStartLaunchdActiveServiceJob = 28;
+inline constexpr int kErrorFailedToStartLaunchdActiveServiceJob =
+    kUpdaterErrorBase + 28;
 
 // Failed to start the versioned update service job.
-inline constexpr int kErrorFailedToStartLaunchdVersionedServiceJob = 29;
+inline constexpr int kErrorFailedToStartLaunchdVersionedServiceJob =
+    kUpdaterErrorBase + 29;
 
 // Failed to start the update service internal job.
-inline constexpr int kErrorFailedToStartLaunchdUpdateServiceInternalJob = 30;
+inline constexpr int kErrorFailedToStartLaunchdUpdateServiceInternalJob =
+    kUpdaterErrorBase + 30;
 
 // Failed to start the wake job.
-inline constexpr int kErrorFailedToStartLaunchdWakeJob = 31;
+inline constexpr int kErrorFailedToStartLaunchdWakeJob = kUpdaterErrorBase + 31;
 
 // Timed out while awaiting launchctl to become aware of the update service
 // internal job.
-inline constexpr int kErrorFailedAwaitingLaunchdUpdateServiceInternalJob = 32;
+inline constexpr int kErrorFailedAwaitingLaunchdUpdateServiceInternalJob =
+    kUpdaterErrorBase + 32;
 
 // DM registration failure with mandatory enrollment.
-inline constexpr int kErrorDMRegistrationFailed = 33;
+inline constexpr int kErrorDMRegistrationFailed = kUpdaterErrorBase + 33;
 
-inline constexpr int kErrorFailedToInstallLegacyUpdater = 34;
+inline constexpr int kErrorFailedToInstallLegacyUpdater =
+    kUpdaterErrorBase + 34;
 
 // A Mojo remote was unexpectedly disconnected.
-inline constexpr int kErrorIpcDisconnect = 35;
+inline constexpr int kErrorIpcDisconnect = kUpdaterErrorBase + 35;
 
 // Failed to copy the updater binary.
-inline constexpr int kErrorFailedToCopyBinary = 36;
+inline constexpr int kErrorFailedToCopyBinary = kUpdaterErrorBase + 36;
 
 // Failed to delete a socket file.
-inline constexpr int kErrorFailedToDeleteSocket = 37;
+inline constexpr int kErrorFailedToDeleteSocket = kUpdaterErrorBase + 37;
 
 // Failed to create a symlink to the current version.
-inline constexpr int kErrorFailedToLinkCurrent = 38;
+inline constexpr int kErrorFailedToLinkCurrent = kUpdaterErrorBase + 38;
 
 // Failed to rename the current symlink during activation.
-inline constexpr int kErrorFailedToRenameCurrent = 39;
+inline constexpr int kErrorFailedToRenameCurrent = kUpdaterErrorBase + 39;
 
 // Failed to install one or more Systemd units.
-inline constexpr int kErrorFailedToInstallSystemdUnit = 40;
+inline constexpr int kErrorFailedToInstallSystemdUnit = kUpdaterErrorBase + 40;
 
 // Failed to remove one or more Systemd units during uninstallation.
-inline constexpr int kErrorFailedToRemoveSystemdUnit = 41;
+inline constexpr int kErrorFailedToRemoveSystemdUnit = kUpdaterErrorBase + 41;
 
 // Running as the wrong user for the provided UpdaterScope.
-inline constexpr int kErrorWrongUser = 42;
+inline constexpr int kErrorWrongUser = kUpdaterErrorBase + 42;
 
 // Failed to get the setup files.
-inline constexpr int kErrorFailedToGetSetupFiles = 43;
+inline constexpr int kErrorFailedToGetSetupFiles = kUpdaterErrorBase + 43;
 
 // Failed to run install list.
-inline constexpr int kErrorFailedToRunInstallList = 44;
+inline constexpr int kErrorFailedToRunInstallList = kUpdaterErrorBase + 44;
 
 // The server was running but had no tasks to do.
-inline constexpr int kErrorIdle = 45;
+inline constexpr int kErrorIdle = kUpdaterErrorBase + 45;
 
-inline constexpr int kErrorTagParsing = 50;
+// The call was rejected because the user needs to accept the EULA / Terms of
+// service.
+inline constexpr int kErrorEulaRequired = kUpdaterErrorBase + 46;
+
+// The current operating system is not supported.
+inline constexpr int kErrorUnsupportedOperatingSystem = kUpdaterErrorBase + 47;
+
+inline constexpr int kErrorTagParsing = kUpdaterErrorBase + 50;
 
 // Metainstaller errors.
-inline constexpr int kErrorCreatingTempDir = 60;
-inline constexpr int kErrorUnpackingResource = 61;
-inline constexpr int kErrorInitializingBackupDir = 62;
+inline constexpr int kErrorCreatingTempDir = kUpdaterErrorBase + 60;
+inline constexpr int kErrorUnpackingResource = kUpdaterErrorBase + 61;
+inline constexpr int kErrorInitializingBackupDir = kUpdaterErrorBase + 62;
 
 // Launcher errors.
-constexpr int kErrorGettingUpdaterPath = 71;
-constexpr int kErrorStattingPath = 72;
-constexpr int kErrorLaunchingProcess = 73;
-constexpr int kErrorPathOwnershipMismatch = 74;
+inline constexpr int kErrorGettingUpdaterPath = kUpdaterErrorBase + 71;
+inline constexpr int kErrorStattingPath = kUpdaterErrorBase + 72;
+inline constexpr int kErrorLaunchingProcess = kUpdaterErrorBase + 73;
+inline constexpr int kErrorPathOwnershipMismatch = kUpdaterErrorBase + 74;
 
 // A setup process could not acquire the lock needed to run.
-inline constexpr int kErrorFailedToLockSetupMutex = 75;
+inline constexpr int kErrorFailedToLockSetupMutex = kUpdaterErrorBase + 75;
+
+// Cannot establish a Mojo connection.
+inline constexpr int kErrorMojoConnectionFailure = kUpdaterErrorBase + 76;
+
+// Mojo server rejected the request.
+inline constexpr int kErrorMojoRequestRejected = kUpdaterErrorBase + 77;
+
+// Cannot find the console user, for example when the user is not logged on.
+inline constexpr int kErrorNoConsoleUser = kUpdaterErrorBase + 78;
+
+// Failed to fetch enterprise policies.
+inline constexpr int kErrorPolicyFetchFailed = kUpdaterErrorBase + 79;
+
+// Failed to uninstall the enterprise companion app.
+inline constexpr int kErrorFailedToUninstallCompanionApp =
+    kUpdaterErrorBase + 80;
+
+// Failed to uninstall the other versions of updater.
+inline constexpr int kErrorFailedToUninstallOtherVersion =
+    kUpdaterErrorBase + 81;
 
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
@@ -434,17 +539,17 @@ inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;
 // The maximum value allowed for policy UpdatesSuppressedDurationMin.
 inline constexpr int kMaxUpdatesSuppressedDurationMinutes = 960;
 
-extern const char kProxyModeDirect[];
-extern const char kProxyModeAutoDetect[];
-extern const char kProxyModePacScript[];
-extern const char kProxyModeFixedServers[];
-extern const char kProxyModeSystem[];
+inline constexpr char kProxyModeDirect[] = "direct";
+inline constexpr char kProxyModeAutoDetect[] = "auto_detect";
+inline constexpr char kProxyModePacScript[] = "pac_script";
+inline constexpr char kProxyModeFixedServers[] = "fixed_servers";
+inline constexpr char kProxyModeSystem[] = "system";
 
-extern const char kDownloadPreferenceCacheable[];
+inline constexpr char kDownloadPreferenceCacheable[] = "cacheable";
 
 // UTF8 byte order mark (BOM) used to prefix the contents of the installerdata
 // file.
-extern const char kUTF8BOM[];
+inline constexpr char kUTF8BOM[] = "\xEF\xBB\xBF";
 
 inline constexpr int kPolicyNotSet = -1;
 inline constexpr int kPolicyDisabled = 0;
@@ -459,13 +564,15 @@ inline constexpr bool kInstallPolicyDefault = kPolicyEnabled;
 inline constexpr bool kUpdatePolicyDefault = kPolicyEnabled;
 
 // Policy manager `source()` constants.
-extern const char kSourceGroupPolicyManager[];
-extern const char kSourceDMPolicyManager[];
-extern const char kSourceManagedPreferencePolicyManager[];
-extern const char kSourceDefaultValuesPolicyManager[];
-extern const char kSourceDictValuesPolicyManager[];
+inline constexpr char kSourceGroupPolicyManager[] = "Group Policy";
+inline constexpr char kSourceDMPolicyManager[] = "Device Management";
+inline constexpr char kSourceManagedPreferencePolicyManager[] =
+    "Managed Preferences";
+inline constexpr char kSourceDefaultValuesPolicyManager[] = "Default";
+inline constexpr char kSourceDictValuesPolicyManager[] = "DictValuePolicy";
 
-// Serializes updater installs.
+// Serializes updater installs. Defined in the .cc file so that the updater
+// branding constants don't leak in this public header.
 extern const char kSetupMutex[];
 
 inline constexpr int kUninstallPingReasonUninstalled = 0;
@@ -475,6 +582,9 @@ inline constexpr int kUninstallPingReasonNeverHadApps = 3;
 
 // The file downloaded to a temporary location could not be moved.
 inline constexpr int kErrorFailedToMoveDownloadedFile = 5;
+
+// Error occurred during file writing.
+inline constexpr int kErrorFailedToWriteFile = 6;
 
 inline constexpr base::TimeDelta kInitialDelay = base::Minutes(1);
 inline constexpr base::TimeDelta kServerKeepAliveTime = base::Seconds(10);
@@ -503,6 +613,12 @@ inline constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED_START = 0x80040901;
 inline constexpr int GOOPDATEINSTALL_E_INSTALLER_FAILED = 0x80040902;
 inline constexpr int GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT = 0x80040904;
 inline constexpr int GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING = 0x80040907;
+
+// Install Sources.
+inline constexpr char kInstallSourceTaggedMetainstaller[] = "taggedmi";
+inline constexpr char kInstallSourceOffline[] = "offline";
+inline constexpr char kInstallSourcePolicy[] = "policy";
+inline constexpr char kInstallSourceOnDemand[] = "ondemand";
 
 }  // namespace updater
 

@@ -39,6 +39,7 @@
     Dynamically created frames:
     <div id="dynamically-created-frames">
     </div>
+    <script src="/resources/prevent-bfcache.js"></script>
     <script>
       if (window.testRunner) {
           testRunner.dumpAsText();
@@ -56,7 +57,10 @@
           } else if (window.testRunner) {
               // Navigate in a timeout to make sure we generate a history entry
               // that we can go back to.
-              setTimeout(function() { location.href = 'resources/back.html'; }, 0);
+              setTimeout(async function() {
+                await preventBFCache();
+                location.href = 'resources/back.html';
+              }, 0);
               sessionStorage.didNav = true;
           }
       };

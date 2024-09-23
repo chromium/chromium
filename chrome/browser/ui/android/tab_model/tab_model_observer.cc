@@ -14,12 +14,13 @@ TabModelObserver::~TabModelObserver() {}
 void TabModelObserver::DidSelectTab(TabAndroid* tab,
                                     TabModel::TabSelectionType type) {}
 
-void TabModelObserver::WillCloseTab(TabAndroid* tab, bool animate) {}
+void TabModelObserver::WillCloseTab(TabAndroid* tab) {}
 
 void TabModelObserver::OnFinishingTabClosure(int tab_id, bool incognito) {}
 
 void TabModelObserver::OnFinishingMultipleTabClosure(
-    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs) {}
+    const std::vector<raw_ptr<TabAndroid, VectorExperimental>>& tabs,
+    bool canRestore) {}
 
 void TabModelObserver::WillAddTab(TabAndroid* tab,
                                   TabModel::TabLaunchType type) {}

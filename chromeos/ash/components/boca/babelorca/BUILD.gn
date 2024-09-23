@@ -1,0 +1,108 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+static_library("babelorca") {
+  sources = [
+    "babel_orca_manager.cc",
+    "babel_orca_manager.h",
+    "oauth_token_fetcher.cc",
+    "oauth_token_fetcher.h",
+    "request_data_wrapper.cc",
+    "request_data_wrapper.h",
+    "tachyon_authed_client.h",
+    "tachyon_authed_client_impl.cc",
+    "tachyon_authed_client_impl.h",
+    "tachyon_client.h",
+    "tachyon_client_impl.cc",
+    "tachyon_client_impl.h",
+    "tachyon_constants.h",
+    "tachyon_registrar.cc",
+    "tachyon_registrar.h",
+    "tachyon_request_data_provider.h",
+    "tachyon_request_error.h",
+    "tachyon_utils.cc",
+    "tachyon_utils.h",
+    "token_data_wrapper.h",
+    "token_fetcher.h",
+    "token_manager.h",
+    "token_manager_impl.cc",
+    "token_manager_impl.h",
+    "transcript_sender.cc",
+    "transcript_sender.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/babelorca/proto",
+    "//chromeos/ash/components/boca/proto",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//media/mojo/mojom:speech_recognition",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fakes/fake_tachyon_authed_client.cc",
+    "fakes/fake_tachyon_authed_client.h",
+    "fakes/fake_tachyon_client.cc",
+    "fakes/fake_tachyon_client.h",
+    "fakes/fake_tachyon_request_data_provider.cc",
+    "fakes/fake_tachyon_request_data_provider.h",
+    "fakes/fake_token_fetcher.cc",
+    "fakes/fake_token_fetcher.h",
+    "fakes/fake_token_manager.cc",
+    "fakes/fake_token_manager.h",
+  ]
+
+  deps = [
+    ":babelorca",
+    "//base",
+    "//net/traffic_annotation",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "oauth_token_fetcher_unittest.cc",
+    "tachyon_authed_client_impl_unittest.cc",
+    "tachyon_client_impl_unittest.cc",
+    "tachyon_registrar_unittest.cc",
+    "token_manager_impl_unittest.cc",
+    "transcript_sender_unittest.cc",
+  ]
+
+  deps = [
+    ":babelorca",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca/babelorca/proto",
+    "//chromeos/ash/components/boca/babelorca/proto:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//google_apis",
+    "//media/mojo/mojom:speech_recognition",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

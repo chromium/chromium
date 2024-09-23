@@ -65,8 +65,8 @@ void CreateWallpaperDirectory(const base::FilePath& wallpaper_dir,
 
   *success = CreateDirectoryAndGetError(wallpaper_dir, nullptr);
   if (!*success) {
-    NOTREACHED() << "Failed to create directory '" << wallpaper_dir.value()
-                 << "'";
+    NOTREACHED_IN_MIGRATION()
+        << "Failed to create directory '" << wallpaper_dir.value() << "'";
   }
 }
 

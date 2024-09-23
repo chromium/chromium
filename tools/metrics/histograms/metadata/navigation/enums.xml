@@ -26,6 +26,27 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="AnimationAbortReason">
+  <int value="0" label="Render Widget Host Destroyed"/>
+  <int value="1" label="Main Commit On Subframe Transition"/>
+  <int value="2" label="New Commit In Primary Main Frame"/>
+  <int value="3" label="Cross Origin Redirect"/>
+  <int value="4" label="New Commit While Displaying Invoke Animation"/>
+  <int value="5" label="New Commit While Displaying Canceled Animation"/>
+  <int value="6" label="New Commit While Waiting For New Renderer To Draw"/>
+  <int value="7"
+      label="New Commit While Waiting For Content For Navigation Entry Shown"/>
+  <int value="8" label="New Commit While Displaying Cross Fade Animation"/>
+  <int value="9" label="New Commit While Waiting For Before Unload Response"/>
+  <int value="10" label="Multiple Navigation Requests Created"/>
+  <int value="11" label="Navigation Entry Deleted Before Commit"/>
+  <int value="12" label="Post Navigation First Frame Timeout"/>
+  <int value="13" label="Chained Back"/>
+  <int value="14" label="Detached From Window"/>
+  <int value="15" label="Root Window Visibility Changed"/>
+  <int value="16" label="Compositor Detached"/>
+</enum>
+
 <enum name="AutomaticBeaconOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="No transient user activation"/>
@@ -103,6 +124,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Restored"/>
   <int value="1" label="Not restored"/>
 </enum>
+
+<!-- LINT.IfChange(BackForwardCacheNotRestoredReason) -->
 
 <enum name="BackForwardCacheNotRestoredReason">
   <int value="0" label="Not main frame (should not be happening)"/>
@@ -183,7 +206,15 @@ chromium-metrics-reviews@google.com.
   <int value="61"
       label="Same-origin HTTP authentication is required from another tab"/>
   <int value="62" label="Cookie is flushed"/>
+  <int value="63" label="BroadcastChannel in bfcache received a message"/>
+  <int value="64" label="WebView settings changed"/>
+  <int value="65" label="WebView injected javascript object changed"/>
+  <int value="66" label="WebView injected message listener"/>
+  <int value="67" label="WebView safe browsing allowlist changed"/>
+  <int value="68" label="WebView added document start javascript"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/public/browser/back_forward_cache.h:NotRestoredReason) -->
 
 <enum name="BackForwardCachePageWithFormStorable">
   <int value="0" label="PageSeen"/>
@@ -203,6 +234,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Http(s) scheme"/>
 </enum>
 
+<!-- LINT.IfChange(DeferSpeculativeRFHAction) -->
+
+<enum name="DeferSpeculativeRFHAction">
+  <int value="0" label="NotDeferred"/>
+  <int value="1" label="DeferredWithRenderProcessWarmUp"/>
+  <int value="2" label="DeferredWithoutRenderProcessWarmUp"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/render_frame_host_manager.h:DeferSpeculativeRFHAction) -->
+
 <enum name="EarlyRFHSwapType">
   <int value="0" label="No early swap"/>
   <int value="1" label="Early swap for the initial non-live RenderFrameHost"/>
@@ -220,6 +261,16 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Begin"/>
   <int value="1" label="Commit"/>
 </enum>
+
+<!-- LINT.IfChange(HistoryNavigationDirection) -->
+
+<enum name="HistoryNavigationDirection">
+  <int value="0" label="Back"/>
+  <int value="1" label="Forward"/>
+  <int value="2" label="Same entry (e.g. session restore)"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/back_forward_cache_metrics.h:HistoryNavigationDirection) -->
 
 <enum name="HistoryNavType">
   <int value="0" label="kMainFrame"/>
@@ -349,6 +400,39 @@ chromium-metrics-reviews@google.com.
              against an engaged site."/>
 </enum>
 
+<!-- LINT.IfChange(NavigationThrottleEvent) -->
+
+<enum name="NavigationThrottleEvent">
+  <int value="0" label="No Event"/>
+  <int value="1" label="WillStartRequest"/>
+  <int value="2" label="WillRedirectRequest"/>
+  <int value="3" label="WillFailRequest"/>
+  <int value="4" label="WillProcessResponse"/>
+  <int value="5" label="WillCommitWithoutUrlLoader"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_throttle_runner.h:Event)-->
+
+<enum name="NavigationTransitionCacheHitOrMissReason">
+  <int value="0" label="Cache Hit"/>
+  <int value="1" label="Sent Screenshot Request"/>
+  <int value="2" label="Captured Empty Bitmap"/>
+  <int value="3" label="Cache Miss Subframe"/>
+  <int value="4" label="Cache Miss Evicted"/>
+  <int value="5" label="Cache Miss Purged Memory Pressure"/>
+  <int value="6" label="Cache Miss Cold Start"/>
+  <int value="7" label="Cache Miss Cloned Navigation Entry"/>
+  <int value="8" label="Cache Miss Embedded Pages"/>
+  <int value="9" label="Cache Miss CCNS"/>
+  <int value="10" label="Cache Miss Invisible"/>
+  <int value="11" label="Cache Miss Prefers Reduced Motion"/>
+  <int value="12" label="Cache Miss Screenshot Orientation"/>
+  <int value="13" label="Navigate away from a crashed page"/>
+  <int value="14" label="Navigate away from a crashed page (no early swap)"/>
+  <int value="15" label="Window or compositor is detached"/>
+  <int value="16" label="Browser not embedding a valid LocalSurfaceID"/>
+</enum>
+
 <enum name="NavigationWasServedFromCache">
   <int value="0" label="Navigation wasn't served from cache"/>
   <int value="1" label="Navigation was served from cache"/>
@@ -378,6 +462,19 @@ chromium-metrics-reviews@google.com.
       label="Not explicitly requested and origin-keyed (with
              OriginAgentCluster-by-default)"/>
 </enum>
+
+<!-- LINT.IfChange(PolicyBlocklistRequestThrottleAction) -->
+
+<enum name="PolicyBlocklistRequestThrottleAction">
+  <int value="0" label="No request call"/>
+  <int value="1" label="Proceed w/o defer"/>
+  <int value="2" label="Block w/o defer"/>
+  <int value="3" label="Defer"/>
+  <int value="4" label="Defer and proceed"/>
+  <int value="5" label="Defer and block"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/policy/content/policy_blocklist_navigation_throttle.h:RequestThrottleAction) -->
 
 <enum name="PrerenderActivationHeaderMismatchType">
   <int value="-2073835455"
@@ -1512,6 +1609,8 @@ chromium-metrics-reviews@google.com.
   <int value="2145736075" label="pragma: value mismatch"/>
 </enum>
 
+<!-- LINT.IfChange(PrerenderActivationNavigationParamsMatch) -->
+
 <enum name="PrerenderActivationNavigationParamsMatch">
   <int value="0" label="kOk"/>
   <int value="1" label="kInitiatorFrameToken"/>
@@ -1540,6 +1639,8 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="kRequestDestination"/>
 </enum>
 
+<!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:ActivationNavigationParamsMatch) -->
+
 <enum name="PrerenderActivationTransitionMismatchType">
   <int value="0" label="Link"/>
   <int value="1" label="Typed"/>
@@ -1563,6 +1664,10 @@ chromium-metrics-reviews@google.com.
   <int value="33554440" label="From address bar | Reload"/>
   <int value="33554441" label="From address bar | Keyword"/>
   <int value="33554442" label="From address bar | Keyword generated"/>
+  <int value="67108864" label="Home page"/>
+  <int value="67108866" label="Home page | Auto bookmark"/>
+  <int value="134217728" label="From API"/>
+  <int value="134217729" label="From API | Typed"/>
 </enum>
 
 <enum name="PrerenderCancelledInterface">
@@ -1595,7 +1700,8 @@ chromium-metrics-reviews@google.com.
   <int value="191605727" label="content.mojom.PepperHost"/>
   <int value="828689080" label="blink.mojom.BlobURLStore (Obsolete)"/>
   <int value="1054828948" label="extensions.mojom.GuestView"/>
-  <int value="1515506006" label="extensions.mojom.RendererHost"/>
+  <int value="1515506006"
+      label="extensions.mojom.RendererHost (Obsolete in M123)"/>
   <int value="1984681860"
       label="chrome.mojom.OpenSearchDescriptionDocumentHandler (Obsolete)"/>
 </enum>
@@ -1683,19 +1789,28 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="LINK REL NEXT NOT ALLOWED"/>
 </enum>
 
-<enum name="PrerenderPredictionResult">
-  <int value="0" label="Prerendered and navigated (True Positive)"/>
-  <int value="1" label="Prerendered but not navigated (False Positive)"/>
-  <int value="2" label="Not prerendered but navigated (False Negative)"/>
-  <int value="3" label="Not prerendered and not navigated (True Negative)"/>
-</enum>
-
 <enum name="PrerenderPredictionStatus">
   <int value="0" label="Prerender not started"/>
   <int value="1" label="Prerender cancelled"/>
   <int value="2" label="Prerender unused"/>
   <int value="3" label="Prerender hit finished"/>
 </enum>
+
+<!-- LINT.IfChange(PrerenderWaitingForHeadersFinishedReason) -->
+
+<enum name="PrerenderWaitingForHeadersFinishedReason">
+  <int value="0" label="NoVarySearchHeaderReceived (deprecated)"/>
+  <int value="1" label="NoVarySearchHeaderNotReceived"/>
+  <int value="2" label="NoVarySearchHeaderParseFailed"/>
+  <int value="3" label="HostDestroyed"/>
+  <int value="4" label="TimeoutElapsed"/>
+  <int value="5" label="MaybeNavigationCancelled"/>
+  <int value="6" label="NoVarySearchHeaderReceivedAndMatched"/>
+  <int value="7" label="NoVarySearchHeaderReceivedButNotMatched"/>
+  <int value="8" label="NoVarySearchHeaderReceivedButDefaultValue"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:WaitingForHeadersFinishedReason) -->
 
 <enum name="RelatedActiveContentsSyncAccessInfo">
   <int value="0" label="kNoSyncAccess"/>
@@ -1718,6 +1833,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Third-party cookie blocking disabled for site"/>
 </enum>
 
+<enum name="TpcdMetadataCohort">
+  <int value="0" label="DEFAULT"/>
+  <int value="1" label="GRACE_PERIOD_FORCED_OFF"/>
+  <int value="2" label="GRACE_PERIOD_FORCED_ON"/>
+</enum>
+
 <enum name="TpcdMetadataInstallationResult">
   <int value="0" label="kSuccessful"/>
   <int value="1" label="kMissingMetadataFile"/>
@@ -1725,6 +1846,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kParsingToProtoFailed"/>
   <int value="4" label="kErroneousSpec"/>
   <int value="5" label="kErroneousSource"/>
+  <int value="6" label="kErroneousDtrp"/>
+  <int value="7" label="kIllicitDtrp"/>
 </enum>
 
 <enum name="UserAgentStringType">

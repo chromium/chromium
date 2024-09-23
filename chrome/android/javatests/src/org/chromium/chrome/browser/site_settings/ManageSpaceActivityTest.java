@@ -26,16 +26,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+
+import java.util.concurrent.TimeoutException;
 
 /** Tests for ManageSpaceActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -48,9 +53,6 @@ public class ManageSpaceActivityTest {
 
     @Before
     public void setUp() throws Exception {
-        if (!mActivityTestRule.getName().equals("testClearUnimporantWithoutChromeStart")) {
-            mActivityTestRule.startMainActivityOnBlankPage();
-        }
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         ApplicationProvider.getApplicationContext());
@@ -94,13 +96,29 @@ public class ManageSpaceActivityTest {
     @Test
     @SmallTest
     public void testLaunchActivity() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         startManageSpaceActivity().finish();
     }
 
     @Test
     @MediumTest
     @Feature({"SiteEngagement"})
-    public void testClearUnimportantOnly() throws Exception {
+    @EnableFeatures(ChromeFeatureList.BROWSING_DATA_MODEL)
+    public void testClearUnimportantOnlyWithBDM() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        shouldClearUnimportantDomainDataOnly();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"SiteEngagement"})
+    @DisableFeatures(ChromeFeatureList.BROWSING_DATA_MODEL)
+    public void testClearUnimportantOnlyWithoutBDM() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        shouldClearUnimportantDomainDataOnly();
+    }
+
+    private void shouldClearUnimportantDomainDataOnly() throws TimeoutException {
         final String cookiesUrl =
                 mTestServer.getURL("/chrome/test/data/android/storage_persistance.html");
         final String serverOrigin = mTestServer.getURL("/");
@@ -114,7 +132,7 @@ public class ManageSpaceActivityTest {
         mActivityTestRule.loadUrl("about:blank");
 
         // Now we set the origin as important, and check that we don't clear it.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowsingDataBridge.getForProfile(mActivityTestRule.getProfile(false))
                             .markOriginAsImportantForTesting(serverOrigin);
@@ -123,10 +141,10 @@ public class ManageSpaceActivityTest {
         ManageSpaceActivity manageSpaceActivity = startManageSpaceActivity();
         // Click 'clear' in the CBD screen.
         waitForClearButtonEnabled(manageSpaceActivity);
-        TestThreadUtils.runOnUiThreadBlocking(getClickClearRunnable(manageSpaceActivity));
+        ThreadUtils.runOnUiThreadBlocking(getClickClearRunnable(manageSpaceActivity));
         // Press 'clear' in our dialog.
         waitForDialogShowing(manageSpaceActivity);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 getPressClearRunnable(manageSpaceActivity.getUnimportantConfirmDialog()));
         waitForClearButtonEnabled(manageSpaceActivity);
         manageSpaceActivity.finish();
@@ -143,10 +161,10 @@ public class ManageSpaceActivityTest {
         ManageSpaceActivity manageSpaceActivity = startManageSpaceActivity();
         // Click 'clear' in the CBD screen.
         waitForClearButtonEnabled(manageSpaceActivity);
-        TestThreadUtils.runOnUiThreadBlocking(getClickClearRunnable(manageSpaceActivity));
+        ThreadUtils.runOnUiThreadBlocking(getClickClearRunnable(manageSpaceActivity));
         // Press 'clear' in our dialog.
         waitForDialogShowing(manageSpaceActivity);
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 getPressClearRunnable(manageSpaceActivity.getUnimportantConfirmDialog()));
         waitForClearButtonEnabled(manageSpaceActivity);
         manageSpaceActivity.finish();
@@ -156,6 +174,7 @@ public class ManageSpaceActivityTest {
     @MediumTest
     @Feature({"SiteEngagement"})
     public void testManageSiteStorage() {
+        mActivityTestRule.startMainActivityOnBlankPage();
         ManageSpaceActivity manageSpaceActivity = startManageSpaceActivity();
         waitForClearButtonEnabled(manageSpaceActivity);
         onView(withId(R.id.manage_site_data_storage)).perform(click());

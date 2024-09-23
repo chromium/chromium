@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -48,7 +49,8 @@ int32_t FoldCaseMapper(UChar* dest, int32_t dest_capacity,
 
 // Provides similar functionality as UnicodeString::caseMap but on
 // std::u16string.
-std::u16string CaseMap(StringPiece16 string, CaseMapperFunction case_mapper) {
+std::u16string CaseMap(std::u16string_view string,
+                       CaseMapperFunction case_mapper) {
   std::u16string dest;
   if (string.empty())
     return dest;
@@ -75,15 +77,15 @@ std::u16string CaseMap(StringPiece16 string, CaseMapperFunction case_mapper) {
 
 }  // namespace
 
-std::u16string ToLower(StringPiece16 string) {
+std::u16string ToLower(std::u16string_view string) {
   return CaseMap(string, &ToLowerMapper);
 }
 
-std::u16string ToUpper(StringPiece16 string) {
+std::u16string ToUpper(std::u16string_view string) {
   return CaseMap(string, &ToUpperMapper);
 }
 
-std::u16string FoldCase(StringPiece16 string) {
+std::u16string FoldCase(std::u16string_view string) {
   return CaseMap(string, &FoldCaseMapper);
 }
 

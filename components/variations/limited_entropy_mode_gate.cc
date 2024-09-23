@@ -21,9 +21,8 @@ bool IsLimitedEntropyModeEnabled(version_info::Channel channel) {
   if (g_forced_state_for_testing != ForcedState::UNSET) {
     return g_forced_state_for_testing == ForcedState::ENABLED;
   }
-  // TODO(crbug.com/1511779): Enable limited entropy mode in more channels.
-  return channel == version_info::Channel::CANARY ||
-         channel == version_info::Channel::UNKNOWN;
+  // Limited entropy mode is enabled in all channels.
+  return true;
 }
 
 void EnableLimitedEntropyModeForTesting() {

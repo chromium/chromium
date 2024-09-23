@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string>
+
 @protocol OmniboxConsumer<NSObject>
 
 // Notifies the consumer to update the autocomplete icon for the currently
@@ -22,12 +24,19 @@
 // changes. (This is usually when the default search engine changes).
 - (void)updateLensImageSupported:(BOOL)lensImageSupported;
 
+/// Sets the name of the search provider.
+- (void)setSearchProviderName:(std::u16string)searchProviderName;
+
 // Notifies the consumer to set the following image as an image
 // in an omnibox with empty text
 - (void)setEmptyTextLeadingImage:(UIImage*)icon;
 
 // Notifies the consumer to update the text immediately.
 - (void)updateText:(NSAttributedString*)text;
+
+// Notifies the consumer to update the additional text. Pass `nil` to
+// remove additional text.
+- (void)updateAdditionalText:(NSAttributedString*)additionalText;
 
 @end
 

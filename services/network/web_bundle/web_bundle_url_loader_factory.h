@@ -13,8 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -126,7 +126,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   std::optional<SubresourceWebBundleLoadResult> load_result_;
   bool data_completed_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
-  corb::PerFactoryState corb_state_;
+  orb::PerFactoryState orb_state_;
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_ptr_factory_{this};
 };
 

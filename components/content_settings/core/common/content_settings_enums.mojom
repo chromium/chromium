@@ -1,0 +1,79 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[JavaPackage="org.chromium.components.content_settings"]
+module content_settings.mojom;
+
+// TODO(http://b/324406007): The enum is currently specific to the TPCD (Third
+// Party Cookies Deprecation) Metadata Source and is expected to be cleaned up
+// with the mitigation cleanup.
+enum TpcdMetadataRuleSource {
+  SOURCE_UNSPECIFIED = 0,
+  SOURCE_TEST,
+  SOURCE_1P_DT,
+  SOURCE_3P_DT,
+  SOURCE_DOGFOOD,
+  SOURCE_CRITICAL_SECTOR,
+  SOURCE_CUJ,
+  SOURCE_GOV_EDU_TLD,
+};
+
+// TODO(http://b/324406007): The enum is currently specific to the TPCD (Third
+// Party Cookies Deprecation) Metadata DTRP (Deprecation Trial Rollout
+// Percentage) and is expected to be cleaned up with the mitigation cleanup.
+enum TpcdMetadataCohort {
+  // Attributed to any entry not participating in any staged control of the TPCD
+  // Metadata.
+  DEFAULT = 0,
+  // Attributed to any entry participating in the staged rollback of the
+  // deprecation trial grace period that should consider the deprecation trial
+  // token over the TPCD Metadata equivalent entry.
+  GRACE_PERIOD_FORCED_OFF,
+  // Attributed to any entry participating in the staged rollback of the
+  // deprecation trial grace period that should not consider the deprecation
+  // trial token over the TPCD Metadata equivalent entry.
+  GRACE_PERIOD_FORCED_ON,
+};
+
+// Options to restrict the scope of a content setting. These specify the
+// lifetime model of a given setting and how it may become invalidated or
+// expired.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: SessionModel
+enum SessionModel {
+  // Settings persist forever and are bounded only by an expiry date, if set.
+  DURABLE = 0,
+  // Settings will persist no longer than the user session regardless of expiry
+  // date, if set.
+  USER_SESSION,
+  // Same as UserSession, except this session-based setting will be reset when
+  // the user session ends regardless the restore setting. These settings will
+  // not be restored e.g. when the user selected "continue where you left off"
+  // or after a crash or update related restart.
+  NON_RESTORABLE_USER_SESSION,
+  // Settings will persist for the current "tab session", meaning until the last
+  // tab from the origin is closed.
+  ONE_TIME,
+};
+
+// Identifies the content settings provider of a content setting.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ProviderType
+ enum ProviderType {
+    kWebuiAllowlistProvider = 0,
+    kPolicyProvider,
+    kSupervisedProvider,
+    kCustomExtensionProvider,
+    kInstalledWebappProvider,
+    kNotificationAndroidProvider,
+    kOneTimePermissionProvider,
+    kPrefProvider,
+    kDefaultProvider,
+    kNone,
+
+    // The following providers are for tests only.
+    kProviderForTests,
+    kOtherProviderForTests,
+  };

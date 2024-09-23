@@ -41,6 +41,6 @@ class SensorErrorEvent : public Event {
   Member<DOMException> error_;
 };
 
-}  // namepsace blink
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_SENSOR_SENSOR_ERROR_EVENT_H_

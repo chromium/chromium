@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_REPORTING_ENCRYPTION_ENCRYPTION_MODULE_H_
 #define COMPONENTS_REPORTING_ENCRYPTION_ENCRYPTION_MODULE_H_
 
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/encryption/encryption_module_interface.h"

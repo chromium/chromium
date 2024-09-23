@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Test origin header http://www1.web-platform.test:8001/beacon/resources/ - without body
+  assert_equals: Correct origin header result expected "null" but got "http://web-platform.test:8001"
+[FAIL] Test origin header http://www1.web-platform.test:8001/beacon/resources/ - with body
+  assert_equals: Correct origin header result expected "null" but got "http://web-platform.test:8001"
+Harness: the test ran to completion.
+

@@ -22,12 +22,12 @@ builder2 : timeout count: 5, slow count: 32, slow ratio: 1.00, avg duration: 5.2
 """
 
 import argparse
+import logging
 import re
 import urllib.parse
 
-from blinkpy.common.host import Host
-from blinkpy.common.net.luci_auth import LuciAuth
-from blinkpy.w3c.monorail import MonorailAPI
+from blinkpy.common.system.log_utils import configure_logging
+from blinkpy.w3c.buganizer import BuganizerClient
 from blinkpy.web_tests.web_test_analyzers import analyzer
 from blinkpy.web_tests.web_test_analyzers import data_types
 from blinkpy.web_tests.web_test_analyzers import queries
@@ -36,6 +36,8 @@ from blinkpy.web_tests.web_test_analyzers import results
 
 DASHBOARD_BASE_URL = 'go/slow_test_dashboard'
 RESULT_TITLE = 'Slow Test Analyzer result:'
+
+_log = logging.getLogger(__name__)
 
 
 def ParseArgs() -> argparse.Namespace:
@@ -85,6 +87,7 @@ def ParseArgs() -> argparse.Namespace:
 
 
 def main() -> int:
+    configure_logging(logging_level=logging.INFO, include_time=True)
     args = ParseArgs()
 
     querier_instance = queries.Querier(args.sample_period, args.project)
@@ -98,13 +101,11 @@ def main() -> int:
                 for test_id in bug['test_ids']
             ]
             if bug['bug_id']:
-                # Only check for monorail for now.
-                bug_id = bug['bug_id'].partition('chromium/')[2]
-                if bug_id:
-                    bugs[bug_id] = test_path_list
+                bugs[bug['bug_id']] = test_path_list
+                _log.info('Adding bug to check: %s', bug['bug_id'])
         if args.attach_analysis_result:
-            token = LuciAuth(Host()).get_access_token()
-            monorail_api = MonorailAPI(access_token=token)
+            buganizer_api = BuganizerClient()
+        _log.info('total bugs: %d', len(bugs))
     else:
         bugs = {'': [args.test_path]}
 
@@ -127,15 +128,15 @@ def main() -> int:
         if bug_id and args.attach_analysis_result and bug_result_string:
             bug_result_string = RESULT_TITLE + bug_result_string
             if RESULT_TITLE not in str(
-                    monorail_api.get_comment_list('chromium', bug_id)):
-                monorail_api.insert_comment('chromium', bug_id,
-                                            bug_result_string)
+                    buganizer_api.GetIssueComments(int(bug_id))):
+                buganizer_api.NewComment(int(bug_id), bug_result_string)
                 bug_ids.append(bug_id)
+                _log.info('Successfully attach result to bug: %s', bug_id)
 
     # Insert bug attachment results to database.
     if bug_ids:
         querier_instance.insert_web_test_analyzer_result(
-            data_types.SLOW_TEST_ANALYZER, data_types.MONORAIL, bug_ids)
+            data_types.SLOW_TEST_ANALYZER, data_types.BUGANIZER, bug_ids)
 
     return 0
 

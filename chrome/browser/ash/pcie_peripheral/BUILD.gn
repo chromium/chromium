@@ -1,0 +1,41 @@
+# Copyright 20224The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("pcie_peripheral") {
+  sources = [
+    "ash_usb_detector.cc",
+    "ash_usb_detector.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/components/dbus/fwupd",
+    "//chromeos/ash/components/fwupd",
+    "//chromeos/ash/components/peripheral_notification",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "ash_usb_detector_unittest.cc" ]
+
+  deps = [
+    ":pcie_peripheral",
+    "//base",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/peripheral_notification",
+    "//services/device/public/cpp:test_support",
+    "//testing/gtest",
+  ]
+}

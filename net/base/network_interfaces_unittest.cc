@@ -16,10 +16,12 @@
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include <net/if.h>
 #elif BUILDFLAG(IS_WIN)
+#include <objbase.h>
+
 #include <windows.h>
 
 #include <iphlpapi.h>
-#include <objbase.h>
+
 #include "base/strings/string_util.h"
 #include "base/win/win_util.h"
 #endif
@@ -54,10 +56,6 @@ TEST(NetworkInterfacesTest, GetNetworkList) {
               ConvertInterfaceLuidToGuid(&luid, &guid));
     auto name = base::win::WStringFromGUID(guid);
     EXPECT_EQ(base::UTF8ToWide(it->name), name);
-
-    if (it->type == NetworkChangeNotifier::CONNECTION_WIFI) {
-      EXPECT_NE(WIFI_PHY_LAYER_PROTOCOL_NONE, GetWifiPHYLayerProtocol());
-    }
 #elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
     char name[IF_NAMESIZE];
     EXPECT_TRUE(if_indextoname(it->interface_index, name));

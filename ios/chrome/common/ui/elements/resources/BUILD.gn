@@ -2,22 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/rules.gni")
 
-imageset("mf_arrow_down") {
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
   sources = [
-    "mf_arrow_down.imageset/Contents.json",
-    "mf_arrow_down.imageset/mf_arrow_down.png",
-    "mf_arrow_down.imageset/mf_arrow_down@2x.png",
-    "mf_arrow_down.imageset/mf_arrow_down@3x.png",
-  ]
-}
-
-imageset("mf_arrow_up") {
-  sources = [
-    "mf_arrow_up.imageset/Contents.json",
-    "mf_arrow_up.imageset/mf_arrow_up.png",
-    "mf_arrow_up.imageset/mf_arrow_up@2x.png",
-    "mf_arrow_up.imageset/mf_arrow_up@3x.png",
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/mf_arrow_down.imageset/Contents.json",
+    "Assets.xcassets/mf_arrow_down.imageset/mf_arrow_down.png",
+    "Assets.xcassets/mf_arrow_down.imageset/mf_arrow_down@2x.png",
+    "Assets.xcassets/mf_arrow_down.imageset/mf_arrow_down@3x.png",
+    "Assets.xcassets/mf_arrow_up.imageset/Contents.json",
+    "Assets.xcassets/mf_arrow_up.imageset/mf_arrow_up.png",
+    "Assets.xcassets/mf_arrow_up.imageset/mf_arrow_up@2x.png",
+    "Assets.xcassets/mf_arrow_up.imageset/mf_arrow_up@3x.png",
   ]
 }

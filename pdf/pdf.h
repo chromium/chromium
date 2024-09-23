@@ -11,6 +11,8 @@
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "pdf/document_metadata.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "pdf/flatten_pdf_result.h"
@@ -20,6 +22,14 @@
 #include <windows.h>
 #endif
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include <memory>
+
+#include "base/functional/callback_forward.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
 namespace gfx {
 class Rect;
 class Size;
@@ -27,6 +37,10 @@ class SizeF;
 }  // namespace gfx
 
 namespace chrome_pdf {
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+class PdfProgressiveSearchifier;
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void SetUseSkiaRendererPolicy(bool use_skia);
 
@@ -104,6 +118,11 @@ void SetPDFUsePrintMode(int mode);
 bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                    int* page_count,
                    float* max_page_width);
+
+// Gets the PDF document metadata (see section 14.3.3 "Document Information
+// Dictionary" of the ISO 32000-1:2008 spec).
+std::optional<DocumentMetadata> GetPDFDocMetadata(
+    base::span<const uint8_t> pdf_buffer);
 
 // Whether the PDF is Tagged (see ISO 32000-1:2008 14.8 "Tagged PDF").
 // Returns true if it's a tagged (accessible) PDF, false if it's a valid
@@ -205,6 +224,27 @@ std::vector<uint8_t> ConvertPdfDocumentToNupPdf(
     size_t pages_per_sheet,
     const gfx::Size& page_size,
     const gfx::Rect& printable_area);
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+// Converts an inaccessible PDF to a searchable PDF.
+// `pdf_buffer` is the buffer of the inaccessible PDF.
+// `perform_ocr_callback` is the callback that takes an image and outputs
+//     the OCR result. It may be called multiple times.
+//
+// The conversion is done by performing OCR on each image in the PDF and adding
+// a layer of invisible text to the PDF to make text on images accessible. Each
+// execution should take place in an isolated process, and each process should
+// be terminated upon completion of the conversion. An empty vector is returned
+// on failure.
+std::vector<uint8_t> Searchify(
+    base::span<const uint8_t> pdf_buffer,
+    base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
+        const SkBitmap& bitmap)> perform_ocr_callback);
+
+// Creates a PDF searchifier for future operations, such as adding and deleting
+// pages, and saving PDFs. Crashes if failed to create.
+std::unique_ptr<PdfProgressiveSearchifier> CreateProgressiveSearchifier();
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf
 

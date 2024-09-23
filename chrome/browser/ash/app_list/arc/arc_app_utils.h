@@ -24,29 +24,34 @@ class BrowserContext;
 
 namespace arc {
 
-extern const char kPlayStoreActivity[];
-extern const char kPlayStorePackage[];
+inline constexpr char kPlayStoreActivity[] =
+    "com.android.vending.AssetBrowserActivity";
+inline constexpr char kPlayStorePackage[] = "com.android.vending";
 
-extern const char kAndroidContactsAppId[];
-extern const char kCameraMigrationAppId[];
-extern const char kGmailAppId[];
-extern const char kGoogleCalendarAppId[];
-extern const char kGoogleDuoAppId[];
-extern const char kGoogleMapsAppId[];
-extern const char kGooglePhotosAppId[];
-extern const char kGoogleTVAppId[];
-extern const char kInfinitePainterAppId[];
-extern const char kLightRoomAppId[];
-extern const char kPackageInstallerAppId[];
-extern const char kPlayBooksAppId[];
-extern const char kPlayGamesAppId[];
-extern const char kPlayMoviesAppId[];
-extern const char kPlayMusicAppId[];
-extern const char kPlayStoreAppId[];
-extern const char kSettingsAppId[];
-extern const char kYoutubeAppId[];
-extern const char kYoutubeMusicAppId[];
-extern const char kYoutubeMusicWebApkAppId[];
+inline constexpr char kAndroidContactsAppId[] =
+    "kipfkokfekalckplgaikemhghlbkgpfl";
+inline constexpr char kGmailAppId[] = "hhkfkjpmacfncmbapfohfocpjpdnobjg";
+inline constexpr char kGoogleCalendarAppId[] =
+    "decaoeahkmjpajbmlbpogjjkjbjokeed";
+inline constexpr char kGoogleDuoAppId[] = "djkcbcmkefiiphjkonbeknmcgiheajce";
+inline constexpr char kGoogleMapsAppId[] = "gmhipfhgnoelkiiofcnimehjnpaejiel";
+inline constexpr char kGooglePhotosAppId[] = "fdbkkojdbojonckghlanfaopfakedeca";
+inline constexpr char kGoogleTVAppId[] = "kadljooblnjdohjelobhphgeimdbcpbo";
+inline constexpr char kInfinitePainterAppId[] =
+    "afihfgfghkmdmggakhkgnfhlikhdpima";
+inline constexpr char kLightRoomAppId[] = "fpegfnbgomakooccabncdaelhfppceni";
+inline constexpr char kPackageInstallerAppId[] =
+    "jegcgkleafemmaabigncnldhlhnddfkf";
+inline constexpr char kPlayBooksAppId[] = "cafegjnmmjpfibnlddppihpnkbkgicbg";
+inline constexpr char kPlayGamesAppId[] = "nplnnjkbeijcggmpdcecpabgbjgeiedc";
+inline constexpr char kPlayMoviesAppId[] = "dbbihmicnlldbflflckpafphlekmjfnm";
+inline constexpr char kPlayMusicAppId[] = "ophbaopahelaolbjliokocojjbgfadfn";
+inline constexpr char kPlayStoreAppId[] = "cnbgggchhmkkdmeppjobngjoejnihlei";
+inline constexpr char kSettingsAppId[] = "mconboelelhjpkbdhhiijkgcimoangdj";
+inline constexpr char kYoutubeAppId[] = "aniolghapcdkoolpkffememnhpphmjkl";
+inline constexpr char kYoutubeMusicAppId[] = "hpdkdmlckojaocbedhffglopeafcgggc";
+inline constexpr char kYoutubeMusicWebApkAppId[] =
+    "jcmmigapnpnikbmnjknhcoageaeinihi";
 
 // Observes ARC app launches.
 class AppLaunchObserver : public base::CheckedObserver {

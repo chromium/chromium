@@ -12,10 +12,12 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/switches.h"
@@ -68,19 +70,20 @@ class UnknownError : public Error {
   ~UnknownError() override = default;
 
   std::string ToString() const override {
-    std::stringstream ss;
-    ss << "UnknownError{";
-    // Errors are always a fixed 32 bytes.
-    for (size_t i = 0; i < 32; i++) {
-      char buf[3];
-      sprintf(buf, "%02x", error_bytes_->data()[i]);
-      ss << "0x" << buf;
-      if (i != 31) {
-        ss << ", ";
+    std::string out = "UnknownError{";
+    // xcb promises that there are at least kMinimumErrorSize bytes in any
+    // error, so it's safe to construct a span of at least that much memory
+    // here.
+    UNSAFE_BUFFERS(base::span<const uint8_t> bytes(error_bytes_->bytes(),
+                                                   kMinimumErrorSize));
+    for (size_t i = 0; i < bytes.size(); ++i) {
+      if (i > 0) {
+        out += ", ";
       }
+      base::AppendHexEncodedByte(bytes[i], out, false);
     }
-    ss << "}";
-    return ss.str();
+    out += "}";
+    return out;
   }
 
  private:
@@ -131,9 +134,12 @@ Connection::Connection(const std::string& address)
       window_event_manager_(this) {
   CHECK(connection_);
   if (Ready()) {
-    auto buf = ReadBuffer(base::MakeRefCounted<UnretainedRefCountedMemory>(
-                              xcb_get_setup(XcbConnection())),
-                          true);
+    auto buf = ReadBuffer(
+        base::MakeRefCounted<UnretainedRefCountedMemory>(
+            // ReadBuffer doesn't use write access but we don't have a const
+            // UnsizedRefCountedMemory type for ReadBuffer to use.
+            const_cast<xcb_setup_t*>(xcb_get_setup(XcbConnection()))),
+        true);
     setup_ = Read<Setup>(&buf);
     default_screen_ = &setup_.roots[DefaultScreenId()];
     InitRootDepthAndVisual();
@@ -150,8 +156,13 @@ Connection::Connection(const std::string& address)
   ExtensionManager::Init(this);
   InitializeExtensions();
 
-  const Format* formats[256];
-  memset(formats, 0, sizeof(formats));
+  // We build an array mapping bit depths back to the last pixmap format that
+  // supports that depth; we make room in the array for any depth that could be
+  // expressed by Format::depth. If Format::depth gets wider at some point in
+  // the future this array might get too big and we'll need to switch to a
+  // sparse map.
+  std::array<const Format*, std::numeric_limits<decltype(Format::depth)>::max()>
+      formats{};
   for (const auto& format : setup_.pixmap_formats) {
     formats[format.depth] = &format;
   }
@@ -325,12 +336,8 @@ std::string Connection::GetWmName() const {
 
 bool Connection::WmSupportsHint(Atom atom) const {
   if (WmSupportsEwmh()) {
-    size_t size;
-    if (const Atom* supported =
-            root_props_->GetAs<Atom>(GetAtom("_NET_SUPPORTED"), &size)) {
-      const Atom* end = supported + size;
-      return std::find(supported, end, atom) != end;
-    }
+    auto supported = root_props_->GetAsSpan<Atom>(GetAtom("_NET_SUPPORTED"));
+    return base::Contains(supported, atom);
   }
   return false;
 }
@@ -575,7 +582,7 @@ void Connection::InitRootDepthAndVisual() {
       }
     }
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void Connection::InitializeExtensions() {
@@ -658,6 +665,21 @@ void Connection::ProcessNextResponse() {
   }
 }
 
+Future<void> Connection::SetArrayPropertyImpl(
+    Window window,
+    Atom name,
+    Atom type,
+    uint8_t format,
+    base::span<const uint8_t> values) {
+  return ChangeProperty(ChangePropertyRequest{
+      .window = static_cast<Window>(window),
+      .property = name,
+      .type = type,
+      .format = format,
+      .data_len = static_cast<uint32_t>(values.size()) / (format / 8u),
+      .data = base::MakeRefCounted<base::RefCountedBytes>(values)});
+}
+
 std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
     WriteBuffer* buf,
     const char* request_name_for_tracing,
@@ -682,10 +704,9 @@ std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
   };
   static_assert(sizeof(ExtendedRequestHeader) == 8, "");
 
-  auto& first_buffer = buf->GetBuffers()[0];
-  CHECK_GE(first_buffer->size(), sizeof(RequestHeader));
-  auto* old_header = reinterpret_cast<RequestHeader*>(
-      const_cast<uint8_t*>(first_buffer->data()));
+  base::span<uint8_t> first_buffer = buf->GetBuffers()[0];
+  CHECK_GE(first_buffer.size(), sizeof(RequestHeader));
+  auto* old_header = reinterpret_cast<RequestHeader*>(first_buffer.data());
   ExtendedRequestHeader new_header{*old_header, 0};
 
   // Requests are always a multiple of 4 bytes on the wire.  Because of this,
@@ -704,16 +725,14 @@ std::unique_ptr<FutureImpl> Connection::SendRequestImpl(
     new_header.long_length = size32 + 1;
 
     io.push_back({&new_header, sizeof(ExtendedRequestHeader)});
-    first_buffer = base::MakeRefCounted<OffsetRefCountedMemory>(
-        first_buffer, sizeof(RequestHeader),
-        first_buffer->size() - sizeof(RequestHeader));
+    buf->OffsetFirstBuffer(sizeof(RequestHeader));
   } else {
     LOG(ERROR) << "Cannot send request of length " << buf->offset();
     return nullptr;
   }
 
-  for (auto& buffer : buf->GetBuffers()) {
-    io.push_back({const_cast<uint8_t*>(buffer->data()), buffer->size()});
+  for (base::span<uint8_t> buffer : buf->GetBuffers()) {
+    io.push_back({buffer.data(), buffer.size()});
   }
   xpr.count = io.size() - 2;
 
@@ -898,7 +917,7 @@ std::unique_ptr<Error> Connection::ParseError(RawError error_bytes) {
     uint8_t error_code;
     uint16_t sequence;
   };
-  auto error_code = error_bytes->front_as<ErrorHeader>()->error_code;
+  auto error_code = error_bytes->cast_to<ErrorHeader>()->error_code;
   if (auto parser = error_parsers_[error_code]) {
     return parser(error_bytes);
   }
@@ -949,6 +968,16 @@ void Connection::AttemptSyncWithWm() {
 
 void Connection::OnWmSynced() {
   synced_with_wm_ = true;
+}
+
+ScopedXGrabServer::ScopedXGrabServer(x11::Connection* connection)
+    : connection_(connection) {
+  connection_->GrabServer();
+}
+
+ScopedXGrabServer::~ScopedXGrabServer() {
+  connection_->UngrabServer();
+  connection_->Flush();
 }
 
 }  // namespace x11

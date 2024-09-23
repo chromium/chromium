@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 
 #include <algorithm>
@@ -9,9 +14,8 @@
 #include <utility>
 
 #include "base/allocator/dispatcher/tls.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -24,6 +28,8 @@
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
@@ -111,7 +117,7 @@ const char* UpdateAndGetThreadName(const char* name) {
 // Checks whether unwinding from this function works.
 [[maybe_unused]] StackUnwinder CheckForDefaultUnwindTables() {
   const void* stack[kMaxStackEntries];
-  size_t frame_count = base::debug::CollectStackTrace(stack, kMaxStackEntries);
+  size_t frame_count = base::debug::CollectStackTrace(stack);
   // First frame is the current function and can be found without unwind tables.
   return frame_count > 1 ? StackUnwinder::kDefault
                          : StackUnwinder::kUnavailable;
@@ -161,18 +167,9 @@ uint32_t SamplingHeapProfiler::Start() {
   }
   unwinder_.store(unwinder);
 
-  auto* poisson_allocation_sampler = PoissonAllocationSampler::Get();
-
-  // Sampling interval is in bytes. Record it in KB since the extra precision
-  // isn't needed for metrics and HeapProfilerController can set the interval to
-  // center around 10M bytes, which would overflow the buckets.
-  base::UmaHistogramCounts10M(
-      "HeapProfiling.SamplingIntervalKB",
-      static_cast<int>(poisson_allocation_sampler->SamplingInterval() / 1024));
-
   AutoLock lock(start_stop_mutex_);
   if (!running_sessions_++)
-    poisson_allocation_sampler->AddSamplesObserver(this);
+    PoissonAllocationSampler::Get()->AddSamplesObserver(this);
   return last_sample_ordinal_;
 }
 
@@ -203,35 +200,28 @@ const char* SamplingHeapProfiler::CachedThreadName() {
   return UpdateAndGetThreadName(nullptr);
 }
 
-const void** SamplingHeapProfiler::CaptureStackTrace(const void** frames,
-                                                     size_t max_entries,
-                                                     size_t* count) {
-  // Skip top frames as they correspond to the profiler itself.
-  size_t skip_frames = 3;
+span<const void*> SamplingHeapProfiler::CaptureStackTrace(
+    span<const void*> frames) {
+  size_t skip_frames = 0;
   size_t frame_count = 0;
   switch (unwinder_) {
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
     case StackUnwinder::kFramePointers:
-      frame_count = base::debug::TraceStackFramePointers(
-          const_cast<const void**>(frames), max_entries, skip_frames);
-      skip_frames = 0;
-      break;
+      frame_count = base::debug::TraceStackFramePointers(frames, skip_frames);
+      return frames.first(frame_count);
 #endif
     case StackUnwinder::kDefault:
       // Fall-back to capturing the stack with base::debug::CollectStackTrace,
       // which is likely slower, but more reliable.
-      frame_count = base::debug::CollectStackTrace(frames, max_entries);
-      break;
+      frame_count = base::debug::CollectStackTrace(frames);
+      // Skip top frames as they correspond to the profiler itself.
+      skip_frames = std::min(frame_count, size_t{3});
+      return frames.first(frame_count).subspan(skip_frames);
     default:
       // Profiler should not be started if ChooseStackUnwinder() returns
       // anything else.
       NOTREACHED();
-      break;
   }
-
-  skip_frames = std::min(skip_frames, frame_count);
-  *count = frame_count - skip_frames;
-  return frames + skip_frames;
 }
 
 void SamplingHeapProfiler::SampleAdded(void* address,
@@ -241,19 +231,20 @@ void SamplingHeapProfiler::SampleAdded(void* address,
                                        const char* context) {
   // CaptureStack and allocation context tracking may use TLS.
   // Bail out if it has been destroyed.
-  if (UNLIKELY(base::ThreadLocalStorage::HasBeenDestroyed()))
+  if (base::ThreadLocalStorage::HasBeenDestroyed()) [[unlikely]] {
     return;
+  }
   DCHECK(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
   Sample sample(size, total, ++last_sample_ordinal_);
   sample.allocator = type;
   CaptureNativeStack(context, &sample);
   AutoLock lock(mutex_);
-  if (UNLIKELY(PoissonAllocationSampler::AreHookedSamplesMuted() &&
-               type != AllocationSubsystem::kManualForTesting)) {
+  if (PoissonAllocationSampler::AreHookedSamplesMuted() &&
+      type != AllocationSubsystem::kManualForTesting) [[unlikely]] {
     // Throw away any non-test samples that were being collected before
     // ScopedMuteHookedSamplesForTesting was enabled. This is done inside the
     // lock to catch any samples that were being collected while
-    // ClearSamplesForTesting is running.
+    // MuteHookedSamplesForTesting is running.
     return;
   }
   RecordString(sample.context);
@@ -268,12 +259,10 @@ void SamplingHeapProfiler::SampleAdded(void* address,
 void SamplingHeapProfiler::CaptureNativeStack(const char* context,
                                               Sample* sample) {
   const void* stack[kMaxStackEntries];
-  size_t frame_count;
-  // One frame is reserved for the thread name.
-  const void** first_frame =
-      CaptureStackTrace(stack, kMaxStackEntries - 1, &frame_count);
-  DCHECK_LT(frame_count, kMaxStackEntries);
-  sample->stack.assign(first_frame, first_frame + frame_count);
+  span<const void*> frames = CaptureStackTrace(
+      // One frame is reserved for the thread name.
+      base::span(stack).first(kMaxStackEntries - 1));
+  sample->stack = ToVector(frames);
 
   if (record_thread_names_)
     sample->thread_name = CachedThreadName();
@@ -336,14 +325,20 @@ void SamplingHeapProfiler::OnThreadNameChanged(const char* name) {
   UpdateAndGetThreadName(name);
 }
 
-void SamplingHeapProfiler::ClearSamplesForTesting() {
-  DCHECK(PoissonAllocationSampler::AreHookedSamplesMuted());
+PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting
+SamplingHeapProfiler::MuteHookedSamplesForTesting() {
+  // Only one ScopedMuteHookedSamplesForTesting can exist at a time.
+  CHECK(!PoissonAllocationSampler::AreHookedSamplesMuted());
+  PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting
+      mute_hooked_samples;
+
   base::AutoLock lock(mutex_);
   samples_.clear();
   // Since hooked samples are muted, any samples that are waiting to take the
   // lock in SampleAdded will be discarded. Tests can now call
   // PoissonAllocationSampler::RecordAlloc with allocator type kManualForTesting
   // to add samples cleanly.
+  return mute_hooked_samples;
 }
 
 }  // namespace base

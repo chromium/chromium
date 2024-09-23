@@ -90,7 +90,7 @@ def _CheckAlertDialogBuilder(input_api, output_api):
       BROWSER_ROOT + 'init/LaunchFailedActivity.java',
       BROWSER_ROOT + 'password_manager/AccountChooserDialog.java',
       BROWSER_ROOT + 'password_manager/AutoSigninFirstRunDialog.java',
-      # TODO(https://crbug.com/1505284): Tentatively suppressed.
+      # TODO(crbug.com/40945893): Tentatively suppressed.
       (BROWSER_ROOT +
        'password_manager/settings/ExportErrorDialogFragment.java'),
       (BROWSER_ROOT +

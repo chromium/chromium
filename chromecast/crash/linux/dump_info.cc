@@ -40,6 +40,14 @@ const char kExecNameKey[] = "exec_name";
 const char kSignatureKey[] = "signature";
 const char kExtraInfoKey[] = "extra_info";
 
+// CastLite specific data
+const char kComments[] = "comments";
+const char kJsEngine[] = "js_engine";
+const char kJsBuildLabel[] = "js_build_label";
+const char kJsExceptionCategory[] = "js_exception_category";
+const char kJsExceptionDetails[] = "js_exception_details";
+const char kJsExceptionSignature[] = "js_exception_signature";
+
 // Convenience wrapper around Value::Dict::FindString(), for easier use in if
 // statements. If `key` is a string in `dict`, writes it to `out` and returns
 // true. Leaves `out` alone and returns false otherwise.
@@ -102,6 +110,12 @@ base::Value DumpInfo::GetAsValue() const {
   result.Set(kSignatureKey, params_.signature);
   result.Set(kExtraInfoKey, params_.extra_info);
   result.Set(kCrashProductNameKey, params_.crash_product_name);
+  result.Set(kComments, params_.comments);
+  result.Set(kJsEngine, params_.js_engine);
+  result.Set(kJsBuildLabel, params_.js_build_label);
+  result.Set(kJsExceptionCategory, params_.js_exception_category);
+  result.Set(kJsExceptionDetails, params_.js_exception_details);
+  result.Set(kJsExceptionSignature, params_.js_exception_signature);
 
   return base::Value(std::move(result));
 }
@@ -174,6 +188,25 @@ bool DumpInfo::ParseEntry(const base::Value* entry) {
     ++num_params;
   if (FindString(*dict, kCrashProductNameKey, params_.crash_product_name))
     ++num_params;
+  if (FindString(*dict, kComments, params_.comments)) {
+    ++num_params;
+  }
+  if (FindString(*dict, kJsEngine, params_.js_engine)) {
+    ++num_params;
+  }
+  if (FindString(*dict, kJsBuildLabel, params_.js_build_label)) {
+    ++num_params;
+  }
+  if (FindString(*dict, kJsExceptionCategory, params_.js_exception_category)) {
+    ++num_params;
+  }
+  if (FindString(*dict, kJsExceptionDetails, params_.js_exception_details)) {
+    ++num_params;
+  }
+  if (FindString(*dict, kJsExceptionSignature,
+                 params_.js_exception_signature)) {
+    ++num_params;
+  }
 
   // Disallow extraneous params
   if (dict->size() != num_params)

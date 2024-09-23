@@ -54,6 +54,10 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   bool ShouldChangeDefaultPasswordStore() const override;
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+  bool ShouldUpdateGmsCore() override;
+#endif  // BUILDFLAG(IS_ANDROID)
+
  private:
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<PrefService> local_state_;

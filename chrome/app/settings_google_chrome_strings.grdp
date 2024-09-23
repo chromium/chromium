@@ -54,9 +54,6 @@
   </if>
 
   <!-- Autofill Page -->
-  <message name="IDS_SETTINGS_GOOGLE_PAYMENTS_CACHED" desc="Label that will be used to show that a credit card comes from Google Pay and is saved locally. This should follow the casing of the 'Google Pay' and 'Chrome' brands. 'Copied to Chrome' is short for 'The credit card is copied to Chrome'. 'Google Pay' should not be translated as it is the product name.">
-    Google Pay (copied to Chrome)
-  </message>
   <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_OFFLINE" desc="Error message when the password check can't be completed because the user is offline.">
     Chrome can't check your passwords. Try checking your internet connection.
   </message>
@@ -142,6 +139,24 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_PDFS_BLOCKED" desc="Label for the disabled option of the pdfs content setting.">
     Open PDFs in Chrome
   </message>
+  <message name="IDS_SETTINGS_SITE_SITE_DETAILS_CAMERA_BLOCKED_BY_OS" desc="The description for the camera permission with a link to system settings.">
+      To use your camera, give Chrome access in <ph name="BEGIN_LINK">&lt;a href="#" id="openSystemSettingsLink" &gt;</ph>system settings<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SITE_SITE_DETAILS_MICROPHONE_BLOCKED_BY_OS" desc="The description for the microphone permission with a link to system settings.">
+      To use your microphone, give Chrome access in <ph name="BEGIN_LINK">&lt;a href="#" id="openSystemSettingsLink" &gt;</ph>system settings<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SITE_SITE_DETAILS_LOCATION_BLOCKED_BY_OS" desc="The description for the location permission with a link to system settings.">
+      To use your location, give Chrome access in <ph name="BEGIN_LINK">&lt;a href="#" id="openSystemSettingsLink" &gt;</ph>system settings<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_BLOCKED_BY_OS" desc="Warning for camera content setting when the camera is disabled on OS level." translateable="false">
+    To use your camera on these sites, give Chrome access in <ph name="BEGIN_LINK">&lt;a href="#" id="openSystemSettingsLink" &gt;</ph>system settings<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_BLOCKED_BY_OS" desc="Warning for location content setting when the camera is disabled on OS level." translateable="false">
+    To use your location on these sites, give Chrome access in <ph name="BEGIN_LINK">&lt;a href="#" id="openSystemSettingsLink" &gt;</ph>system settings<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_BLOCKED_BY_OS" desc="Warning for microphone content setting when the camera is disabled on OS level." translateable="false">
+    To use your microphone on these sites, give Chrome access in <ph name="BEGIN_LINK">&lt;a href="#" id="openSystemSettingsLink" &gt;</ph>system settings<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+  </message>
 
   <!-- Site Settings - Site Data Page-->
   <message name="IDS_SETTINGS_SITE_DATA_PAGE_CLEAR_ON_EXIT_RADIO_SUBLABEL" desc="A description of the benefit/cost of choosing 'Sites can save content on your device. In short, a site will remember your preferences, shopping cart content, etc. during this browser session. But once you close all open windows, and then visit the site again, it's as if you're coming to the site for the first time.">
@@ -175,15 +190,6 @@
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'make searches and browsing better' in the 'Privacy Guide'.">
     If you also share Chrome usage reports, those reports include the URLs you visit
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of 'search suggestions' in the 'Privacy Guide'.">
-    As you type, Chrome sends the content of the address bar or search box to your default search engine
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'search suggestions' in the 'Privacy Guide'.">
-    Depending on your settings, Chrome may also send cookies and your current URL
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION3" desc="A part of the privacy description of 'search suggestions' in the 'Privacy Guide'.">
-    When off, you'll still see suggestions that Chrome provides locally
   </message>
 
   <!-- Privacy Sandbox -->
@@ -270,7 +276,7 @@
     Warns you about dangerous sites, even ones Google didn't know about before, by analyzing more data from sites than standard protection. You can choose to skip Chrome warnings.
   </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_LEARN_MORE_LABEL" desc="The text for a link to a help center article that gives more information about Safe Browsing.">
-    Learn more about <ph name="BEGIN_LINK">&lt;a href="$1" target=&quot;_blank&quot;&gt;<ex>&lt;a href="$1" target=&quot;_blank&quot;&gt;</ex></ph>how Chrome keeps your data private<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    Learn more about <ph name="BEGIN_LINK">&lt;a href="#" id="enhancedProtectionLearnMoreLink" on-click="onEnhancedProtectionLearnMoreClick_"&gt;</ph>how Chrome keeps your data private<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
     Make it harder for people with access to your internet traffic to see which sites you visit. Chrome uses a secure connection to look up a site's IP address in the DNS (Domain Name System).
@@ -302,6 +308,12 @@
     You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome browser, Play Store, Gmail, and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> instead. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
 </if>
+  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_TITLE" desc="Title of the settings that controls whether a user gets signed in to Chrome when signing in to Google Services.">
+    Sign in to Chrome when you sign in to other Google services
+  </message>
+  <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTIONS_DESC" desc="Description of the settings that controls whether a user gets signed in to Chrome when signing in to Google Services.">
+    When signing into Google services like Gmail or Youtube with <ph name="USER_EMAIL">$1<ex>foo@example.com</ex></ph>, you can automatically sign in to Chrome with the same account
+  </message>
 
   <!-- Sync Page -->
   <message name="IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT" desc="Text alerting the user that synced data is encrypted.">
@@ -319,6 +331,15 @@
   <message name="IDS_SETTINGS_SYNC_SIGN_IN_PROMPT_WITH_NO_ACCOUNT" desc="The text displayed to prompt users to sign in to Chrome.">
     Sign in to sync and personalize Chrome across your devices
   </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_DESC" desc="This is the subtitle of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. This subtitle appears in Chrome's Advanced Sync settings, after the 'Control how browsing history is used with your other data across Google services' string. The 'Web &#38; App Activity' text should match the branded term in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=77d3b75.">
+    To get personalization, include Chrome in Web &#38; App Activity
+  </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_DESC_WITH_LINKED_SERVICES" desc="This is the subtitle of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. This subtitle appears in Chrome's Advanced Sync settings, after the 'Control how browsing history is used with your other data across Google services' string. The 'Web &#38; App Activity' text should match the branded term in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=77d3b75. The 'linked Google services' text should match the branded term in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&#38;tsid=517bace2.">
+    To get personalization and other features, include Chrome in Web &#38; App Activity and linked Google services
+  </message>
+  <message name="IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_LINKED_SERVICES_DESC" desc="This is the subtitle of a setting that links to 'Linked Google services' in the Google Account's Data &#38; privacy settings. This subtitle appears in Chrome's Advanced Sync settings and is after the 'Linked Google services' string.">
+    Link Chrome and other Google services for personalization and other purposes
+  </message>
 
   <!-- Page content -->
   <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
@@ -327,22 +348,22 @@
 
   <!-- Performance Page -->
   <message name="IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION" desc="Description for the memory saver mode setting">
-    When on, Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them.
+    Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them.
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION" desc="Description for the energy saver mode setting">
-    When on, Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.
+    Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY" desc="Summary for the preload pages setting">
-    When on, Chrome preloads pages which makes browsing and searching faster.
+    Chrome preloads pages which makes browsing and searching faster.
   </message>
 
   <!-- Languages Page -->
   <if expr="is_win">
     <message name="IDS_SETTINGS_LANGUAGES_IS_DISPLAYED_IN_THIS_LANGUAGE" desc="The label for a language that is currently used as the UI display language.">
-      This language is used to display the Google Chrome UI
+      This language is used to display menus, settings, alerts, and other text in Chrome
     </message>
     <message name="IDS_SETTINGS_LANGUAGES_DISPLAY_IN_THIS_LANGUAGE" desc="The label used for a button that changes the UI language.">
-      Display Google Chrome in this language
+      Display Chrome in this language
     </message>
   </if>
 
@@ -409,13 +430,31 @@
     </message>
   </if>
   <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_NAVIGATION_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This string is for the accesibility label for the card to call out where to navigation will happen (chrome://settings/help) if the card is clicked.">
-    Go to Chrome version settings
+    Go to About Chrome page
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_RELAUNCH_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This string is for the accesibility label for the card to call out the click on card will result restarting the browser.">
     Relaunch Chrome
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_REMOVED_ONE_PERMISSION_LABEL" desc="'Revoked Permissions' shows the revoked permissions of unused websites. This text describes which permission was removed from an unused site and is shown if there is exactly one permission.">
+    You haven't visited recently. Chrome removed <ph name="PERMISSION">$1<ex>location</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_REMOVED_TWO_PERMISSIONS_LABEL" desc="'Revoked Permissions' shows the revoked permissions of unused websites. This text describes which permissions were removed from an unused site and is shown if there are exactly two permissions.">
+    You haven't visited recently. Chrome removed <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_REMOVED_THREE_PERMISSIONS_LABEL" desc="'Revoked Permissions' shows the revoked permissions of unused websites. This text describes which permissions were removed from an unused site and is shown if there are exactly three permissions.">
+    You haven't visited recently. Chrome removed <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>, <ph name="PERMISSION_3">$3<ex>camera</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_REMOVED_FOUR_OR_MORE_PERMISSIONS_LABEL" desc="'Revoked Permissions' shows the revoked permissions of unused websites. This text describes which permissions were removed from an unused site and is shown if there are four or more permissions. The number indicates the count of permisions that are not shown explicitly. The number is always two or larger.">
+    You haven't visited recently. Chrome removed <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>, and <ph name="COUNT">$3<ex>2</ex></ph> more
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SETTING_SUBLABEL" desc="'Revoked Permissions' module shows the revoked permissions of websites. This text describes that abusive notification permissions were removed.">
+    Dangerous site. Chrome removed notifications.
+  </message>
 
-    <!-- HTTPS-First Mode -->
+  <!-- Secure connections -->
+  <message name="IDS_SETTINGS_SECURE_CONNECTIONS_SECTION_DESCRIPTION" desc="Description for the Secure Connections section in Security settings, explaining the baseline behavior of the browser even if the 'Always use secure connections' toggle is disabled.">
+    Chrome upgrades insecure connections to HTTPS automatically when possible
+  </message>
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_SUBTITLE" desc="Subtitle for HTTPS-First Mode section in Security settings">
     Chrome will try to upgrade navigations to HTTPS
   </message>

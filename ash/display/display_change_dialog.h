@@ -37,7 +37,8 @@ class ASH_EXPORT DisplayChangeDialog : public views::DialogDelegateView {
   DisplayChangeDialog& operator=(const DisplayChangeDialog&) = delete;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   base::WeakPtr<DisplayChangeDialog> GetWeakPtr();
 

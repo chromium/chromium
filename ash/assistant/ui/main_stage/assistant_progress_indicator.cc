@@ -78,17 +78,11 @@ AssistantProgressIndicator::AssistantProgressIndicator() {
 
 AssistantProgressIndicator::~AssistantProgressIndicator() = default;
 
-const char* AssistantProgressIndicator::GetClassName() const {
-  return "AssistantProgressIndicator";
-}
-
-gfx::Size AssistantProgressIndicator::CalculatePreferredSize() const {
-  const int preferred_width = views::View::CalculatePreferredSize().width();
-  return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
-}
-
-int AssistantProgressIndicator::GetHeightForWidth(int width) const {
-  return kPreferredHeightDip;
+gfx::Size AssistantProgressIndicator::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int preferred_width =
+      views::View::CalculatePreferredSize(available_size).width();
+  return gfx::Size(preferred_width, kPreferredHeightDip);
 }
 
 void AssistantProgressIndicator::AddedToWidget() {

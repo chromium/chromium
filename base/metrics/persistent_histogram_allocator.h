@@ -8,7 +8,9 @@
 #include <atomic>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -17,10 +19,8 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/ranges_manager.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -86,7 +86,7 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
   // |sample_map_records| has seen all its records.
   std::vector<PersistentMemoryAllocator::Reference> LoadRecords(
       PersistentSampleMapRecords* sample_map_records,
-      absl::optional<HistogramBase::Sample> until_value);
+      std::optional<HistogramBase::Sample> until_value);
 
   // Weak-pointer to the allocator used by the sparse histograms.
   raw_ptr<PersistentMemoryAllocator> allocator_;
@@ -134,7 +134,7 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // vector is returned, which definitely means that |this| has seen all its
   // records.
   std::vector<PersistentMemoryAllocator::Reference> GetNextRecords(
-      absl::optional<HistogramBase::Sample> until_value);
+      std::optional<HistogramBase::Sample> until_value);
 
   // Creates a new persistent sample-map record for sample |value| and returns
   // a reference to it.
@@ -287,9 +287,8 @@ class BASE_EXPORT PersistentHistogramAllocator {
   //
   // IMPORTANT: tools/metrics/histograms/metadata/uma/histograms.xml must
   // be updated with the following histograms for each |name| param:
-  //    UMA.PersistentAllocator.name.Errors
   //    UMA.PersistentAllocator.name.UsedPct
-  void CreateTrackingHistograms(StringPiece name);
+  void CreateTrackingHistograms(std::string_view name);
   void UpdateTrackingHistograms();
 
   // Sets the internal |ranges_manager_|, which will be used by the allocator to
@@ -371,11 +370,13 @@ class BASE_EXPORT GlobalHistogramAllocator
                                          size_t size,
                                          size_t page_size,
                                          uint64_t id,
-                                         StringPiece name);
+                                         std::string_view name);
 
   // Create a global allocator using an internal block of memory of the
   // specified |size| taken from the heap.
-  static void CreateWithLocalMemory(size_t size, uint64_t id, StringPiece name);
+  static void CreateWithLocalMemory(size_t size,
+                                    uint64_t id,
+                                    std::string_view name);
 
 #if !BUILDFLAG(IS_NACL)
   // Create a global allocator by memory-mapping a |file|. If the file does
@@ -387,7 +388,7 @@ class BASE_EXPORT GlobalHistogramAllocator
   static bool CreateWithFile(const FilePath& file_path,
                              size_t size,
                              uint64_t id,
-                             StringPiece name,
+                             std::string_view name,
                              bool exclusive_write = false);
 
   // Creates a new file at |active_path|. If it already exists, it will first be
@@ -400,7 +401,7 @@ class BASE_EXPORT GlobalHistogramAllocator
                                    const FilePath& spare_path,
                                    size_t size,
                                    uint64_t id,
-                                   StringPiece name);
+                                   std::string_view name);
 
   // Uses ConstructBaseActivePairFilePaths() to build a pair of file names which
   // are then used for CreateWithActiveFile(). |name| is used for both the
@@ -409,24 +410,24 @@ class BASE_EXPORT GlobalHistogramAllocator
   static bool CreateWithActiveFileInDir(const FilePath& dir,
                                         size_t size,
                                         uint64_t id,
-                                        StringPiece name);
+                                        std::string_view name);
 
   // Constructs a filename using a name.
-  static FilePath ConstructFilePath(const FilePath& dir, StringPiece name);
+  static FilePath ConstructFilePath(const FilePath& dir, std::string_view name);
 
   // Constructs a filename using a name for an "active" file.
   static FilePath ConstructFilePathForActiveFile(const FilePath& dir,
-                                                 StringPiece name);
+                                                 std::string_view name);
 
   // Like above but with timestamp and pid for use in upload directories.
   static FilePath ConstructFilePathForUploadDir(const FilePath& dir,
-                                                StringPiece name,
+                                                std::string_view name,
                                                 base::Time stamp,
                                                 ProcessId pid);
 
   // Override that uses the current time stamp and current process id.
   static FilePath ConstructFilePathForUploadDir(const FilePath& dir,
-                                                StringPiece name);
+                                                std::string_view name);
 
   // Parses a filename to extract name, timestamp, and pid.
   static bool ParseFilePath(const FilePath& path,
@@ -508,7 +509,8 @@ class BASE_EXPORT GlobalHistogramAllocator
   void ImportHistogramsToStatisticsRecorder();
 
   // Builds a FilePath for a metrics file.
-  static FilePath MakeMetricsFilePath(const FilePath& dir, StringPiece name);
+  static FilePath MakeMetricsFilePath(const FilePath& dir,
+                                      std::string_view name);
 
   // Import always continues from where it left off, making use of a single
   // iterator to continue the work.
@@ -520,4 +522,4 @@ class BASE_EXPORT GlobalHistogramAllocator
 
 }  // namespace base
 
-#endif  // BASE_METRICS_PERSISTENT_HISTOGRAM_ALLOCATOR_H__
+#endif  // BASE_METRICS_PERSISTENT_HISTOGRAM_ALLOCATOR_H_

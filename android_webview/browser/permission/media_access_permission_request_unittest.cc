@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/common/aw_features.h"
 #include "base/functional/bind.h"
@@ -32,6 +33,15 @@ class TestMediaAccessPermissionRequest : public MediaAccessPermissionRequest {
                                      can_cache_file_url_permissions_) {
     audio_test_devices_ = audio_devices;
     video_test_devices_ = video_devices;
+  }
+};
+
+class MockContextPermissionDelegate : public AwContextPermissionsDelegate {
+ public:
+  MockContextPermissionDelegate() = default;
+  PermissionStatus GetGeolocationPermission(
+      const GURL& requesting_origin) const override {
+    return PermissionStatus::ASK;
   }
 };
 
@@ -70,7 +80,8 @@ class MediaAccessPermissionRequestTest : public testing::Test {
         blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
         false /* disable_local_echo */,
-        false /* request_pan_tilt_zoom_permission */);
+        false /* request_pan_tilt_zoom_permission */,
+        false /* captured_surface_control_active */);
 
     std::unique_ptr<TestMediaAccessPermissionRequest> permission_request;
     permission_request = std::make_unique<TestMediaAccessPermissionRequest>(
@@ -87,7 +98,8 @@ class MediaAccessPermissionRequestTest : public testing::Test {
   std::string first_video_device_id_;
   blink::MediaStreamDevices devices_;
   blink::mojom::MediaStreamRequestResult result_;
-  AwPermissionManager aw_permission_manager_;
+  MockContextPermissionDelegate mock_permission_delegate_;
+  AwPermissionManager aw_permission_manager_{mock_permission_delegate_};
   base::test::ScopedFeatureList feature_list_;
 
  private:

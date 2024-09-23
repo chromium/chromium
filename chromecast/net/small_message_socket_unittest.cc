@@ -33,14 +33,14 @@ net::IPAddress IpLiteralToIpAddress(const std::string& ip_literal) {
   return ip_address;
 }
 
-void SetData(char* buffer, int size) {
-  for (int i = 0; i < size; ++i) {
+void SetData(base::span<char> buffer) {
+  for (size_t i = 0u; i < buffer.size(); ++i) {
     buffer[i] = static_cast<char>(i);
   }
 }
 
-void CheckData(char* buffer, int size) {
-  for (int i = 0; i < size; ++i) {
+void CheckData(base::span<const char> buffer) {
+  for (size_t i = 0u; i < buffer.size(); ++i) {
     EXPECT_EQ(buffer[i], static_cast<char>(i));
   }
 }
@@ -71,9 +71,12 @@ class TestSocket : public SmallMessageSocket::Delegate {
     size_t data_offset = SmallMessageSocket::SizeDataBytes(size);
     auto buffer =
         base::MakeRefCounted<net::IOBufferWithSize>(data_offset + size);
-    SmallMessageSocket::WriteSizeData(buffer->data(), size);
-    SetData(buffer->data() + data_offset, size);
-    SendBuffer(std::move(buffer), size + data_offset);
+    ASSERT_EQ(buffer->span().size(), size + data_offset);
+    size_t written = SmallMessageSocket::WriteSizeData(
+        base::as_writable_bytes(buffer->span()), size);
+    ASSERT_EQ(written, data_offset);
+    SetData(base::as_writable_chars(buffer->span().subspan(data_offset)));
+    SendBuffer(std::move(buffer), data_offset + size);
   }
 
   void ReceiveMessages() { socket_.ReceiveMessages(); }
@@ -95,7 +98,9 @@ class TestSocket : public SmallMessageSocket::Delegate {
 
   bool OnMessage(char* data, size_t size) override {
     message_history_.push_back(size);
-    CheckData(data, size);
+    CheckData(
+        // TODO(crbug.com/40284755): OnMessage() should receive a span.
+        UNSAFE_TODO(base::span(data, size)));
     if (swap_pool_use_) {
       UseBufferPool();
     }
@@ -106,11 +111,16 @@ class TestSocket : public SmallMessageSocket::Delegate {
                        size_t size) override {
     size_t data_offset;
     size_t message_size;
-    CHECK(SmallMessageSocket::ReadSize(buffer->data(), size, data_offset,
-                                       message_size));
-    DCHECK_EQ(message_size, size - data_offset);
+    bool read_ok = SmallMessageSocket::ReadSize(buffer->data(), size,
+                                                data_offset, message_size);
+    EXPECT_TRUE(read_ok);
+    if (!read_ok) {
+      return false;
+    }
+    EXPECT_EQ(message_size, size - data_offset);
     message_history_.push_back(message_size);
-    CheckData(buffer->data() + data_offset, message_size);
+    CheckData(
+        base::as_chars(buffer->span().subspan(data_offset, message_size)));
     if (swap_pool_use_) {
       socket_.RemoveBufferPool();
       buffer_pool_ = nullptr;
@@ -145,6 +155,11 @@ class SmallMessageSocketTest : public ::testing::Test {
   ~SmallMessageSocketTest() override = default;
 
  protected:
+  static scoped_refptr<SmallMessageSocket::BufferWrapper>
+  CreateBufferWrapper() {
+    return base::MakeRefCounted<SmallMessageSocket::BufferWrapper>();
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<TestSocket> socket_1_;
@@ -177,7 +192,9 @@ TEST_F(SmallMessageSocketTest, SendAndReceiveLarge) {
 TEST_F(SmallMessageSocketTest, PrepareSendAndReceive) {
   char* buffer =
       static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize));
-  SetData(buffer, kDefaultMessageSize);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize)));
   socket_2_->ReceiveMessages();
   socket_1_->Send();
   task_environment_.RunUntilIdle();
@@ -186,18 +203,25 @@ TEST_F(SmallMessageSocketTest, PrepareSendAndReceive) {
 
 TEST_F(SmallMessageSocketTest, MultipleMessages) {
   char* buffer = static_cast<char*>(socket_1_->PrepareSend(kLargeMessageSize));
-  SetData(buffer, kLargeMessageSize);
+
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kLargeMessageSize)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer =
       static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize * 2 + 1));
-  SetData(buffer, kDefaultMessageSize * 2 + 1);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize * 2 + 1)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize - 5));
-  SetData(buffer, kDefaultMessageSize - 5);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize - 5)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
@@ -225,7 +249,9 @@ TEST_F(SmallMessageSocketTest, SendLargerThanPoolBufferSize) {
   socket_1_->UseBufferPool();
   socket_2_->UseBufferPool();
   char* buffer = static_cast<char*>(socket_1_->PrepareSend(kLargeMessageSize));
-  SetData(buffer, kLargeMessageSize);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kLargeMessageSize)));
   socket_2_->ReceiveMessages();
   socket_1_->Send();
   task_environment_.RunUntilIdle();
@@ -237,22 +263,30 @@ TEST_F(SmallMessageSocketTest, BufferMultipleMessages) {
   socket_2_->UseBufferPool();
   char* buffer =
       static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize - 1));
-  SetData(buffer, kDefaultMessageSize - 1);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize - 1)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kLargeMessageSize));
-  SetData(buffer, kLargeMessageSize);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kLargeMessageSize)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize - 5));
-  SetData(buffer, kDefaultMessageSize - 5);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize - 5)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize));
-  SetData(buffer, kDefaultMessageSize);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
@@ -270,17 +304,23 @@ TEST_F(SmallMessageSocketTest, SwapPoolUse) {
   socket_2_->SwapPoolUse(true);
   char* buffer =
       static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize * 2 + 1));
-  SetData(buffer, kDefaultMessageSize * 2 + 1);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize * 2 + 1)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize - 5));
-  SetData(buffer, kDefaultMessageSize - 5);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize - 5)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
   buffer = static_cast<char*>(socket_1_->PrepareSend(kDefaultMessageSize));
-  SetData(buffer, kDefaultMessageSize);
+  SetData(
+      // TODO(crbug.com/40284755): PrepareSend() should return a span.
+      UNSAFE_TODO(base::span(buffer, kDefaultMessageSize)));
   socket_1_->Send();
   task_environment_.RunUntilIdle();
 
@@ -291,6 +331,25 @@ TEST_F(SmallMessageSocketTest, SwapPoolUse) {
   EXPECT_EQ(socket_2_->message_history()[0], kDefaultMessageSize * 2 + 1);
   EXPECT_EQ(socket_2_->message_history()[1], kDefaultMessageSize - 5);
   EXPECT_EQ(socket_2_->message_history()[2], kDefaultMessageSize);
+}
+
+TEST_F(SmallMessageSocketTest, BufferWrapper) {
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  base::span<const char> buffer_data = base::as_chars(buffer->span());
+  auto wrapper = CreateBufferWrapper();
+  wrapper->SetUnderlyingBuffer(std::move(buffer), 9);
+  EXPECT_EQ(wrapper->data(), &buffer_data[0u]);
+  EXPECT_EQ(wrapper->size(), 9);
+  EXPECT_EQ(wrapper->capacity(), 9u);
+  EXPECT_EQ(wrapper->used(), 0u);
+  EXPECT_EQ(wrapper->StartOfBuffer(), &buffer_data[0u]);
+
+  wrapper->DidConsume(3);
+  EXPECT_EQ(wrapper->data(), &buffer_data[3u]);
+  EXPECT_EQ(wrapper->size(), 6);
+  EXPECT_EQ(wrapper->capacity(), 9u);
+  EXPECT_EQ(wrapper->used(), 3u);
+  EXPECT_EQ(wrapper->StartOfBuffer(), &buffer_data[0u]);
 }
 
 }  // namespace chromecast

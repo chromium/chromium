@@ -40,6 +40,11 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   // function is invoked.
   void RecordChromeMainEntryTime(base::TimeTicks ticks);
 
+  // Call this with the time immediately before/after base::PreReadFile() is
+  // called on the main DLL on startup.
+  void RecordPreReadTime(base::TimeTicks start_ticks,
+                         base::TimeTicks end_ticks);
+
   // Returns the TimeTicks corresponding to main entry as recorded by
   // |RecordMainEntryPointTime|. Returns a null TimeTicks if a value has not
   // been recorded yet. This method is expected to be called from the UI
@@ -79,11 +84,35 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   // as a unique id.
   void AssertFirstCallInSession(base::Location from_here);
 
+  // Common helper to report "startup" category trace events as well as a
+  // histogram of the same name. Example call:
+  //     EmitHistogramWithTraceEvent(
+  //         &base::UmaHistogramLongTimes,
+  //         "Startup.LoadTime.ApplicationStartToChromeMain",
+  //         GetCommon().application_start_ticks_,
+  //         GetCommon().chrome_main_entry_ticks_);
+  using HistogramTimeFunction = void(const char* name, base::TimeDelta);
+  void EmitHistogramWithTraceEvent(HistogramTimeFunction* histogram_function,
+                                   const char* name,
+                                   base::TimeTicks begin_ticks,
+                                   base::TimeTicks end_ticks);
+
+  // Emit a "startup" category event.
+  void EmitTraceEvent(const char* name,
+                      base::TimeTicks begin_ticks,
+                      base::TimeTicks end_ticks);
+
+  // Emit info to the "startup" category in the form of an instant event.
+  void EmitInstantEvent(const char* name);
+
   base::TimeTicks process_creation_ticks_;
 
   base::TimeTicks application_start_ticks_;
 
   base::TimeTicks chrome_main_entry_ticks_;
+
+  base::TimeTicks preread_begin_ticks_;
+  base::TimeTicks preread_end_ticks_;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)

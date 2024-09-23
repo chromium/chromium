@@ -45,7 +45,7 @@ uint8_t AdjustGroup(uint8_t group, uint8_t group_info) {
       return out_of_range_group < n_groups ? out_of_range_group : 0;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 

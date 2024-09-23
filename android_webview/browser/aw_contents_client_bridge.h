@@ -98,6 +98,7 @@ class AwContentsClientBridge {
                                 bool has_user_gesture,
                                 bool is_redirect,
                                 bool is_outermost_main_frame,
+                                const net::HttpRequestHeaders& request_headers,
                                 bool* ignore_navigation);
 
   bool SendBrowseIntent(const std::u16string& url);

@@ -65,6 +65,10 @@ BackForwardMenuModel::BackForwardMenuModel(Browser* browser,
 
 BackForwardMenuModel::~BackForwardMenuModel() = default;
 
+base::WeakPtr<ui::MenuModel> BackForwardMenuModel::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 size_t BackForwardMenuModel::GetItemCount() const {
   size_t items = GetHistoryItemCount();
   if (items == 0)
@@ -148,13 +152,9 @@ ui::ImageModel BackForwardMenuModel::GetIconAt(size_t index) const {
 
   // Return icon of "Show Full History" for the last item of the menu.
   if (ShouldShowFullHistoryBeVisible() && index == GetItemCount() - 1) {
-    return features::IsChromeRefresh2023()
-               ? ui::ImageModel::FromVectorIcon(
-                     kHistoryIcon, ui::kColorMenuIcon,
-                     ui::SimpleMenuModel::kDefaultIconSize)
-               : ui::ImageModel::FromImage(
-                     ui::ResourceBundle::GetSharedInstance()
-                         .GetNativeImageNamed(IDR_HISTORY_FAVICON));
+    return ui::ImageModel::FromVectorIcon(
+        kHistoryIcon, ui::kColorMenuIcon,
+        ui::SimpleMenuModel::kDefaultIconSize);
   }
   NavigationEntry* entry = GetNavigationEntry(index);
   content::FaviconStatus fav_icon = entry->GetFavicon();

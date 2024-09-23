@@ -322,3 +322,14 @@ export interface FocusRowDelegate {
   getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null;
 }
 
+export class VirtualFocusRow extends FocusRow {
+  constructor(root: HTMLElement, delegate: FocusRowDelegate) {
+    super(root, /* boundary */ null, delegate);
+  }
+
+  override getCustomEquivalent(sampleElement: HTMLElement) {
+    const equivalent =
+        this.delegate ? this.delegate.getCustomEquivalent(sampleElement) : null;
+    return equivalent || super.getCustomEquivalent(sampleElement);
+  }
+}

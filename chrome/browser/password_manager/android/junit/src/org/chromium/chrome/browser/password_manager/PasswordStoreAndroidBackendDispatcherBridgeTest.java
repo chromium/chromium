@@ -21,9 +21,7 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -33,7 +31,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
@@ -50,7 +47,6 @@ import java.util.Optional;
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordStoreAndroidBackendDispatcherBridgeTest {
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final PasswordSpecificsData.Builder sTestProfile =
             PasswordSpecificsData.newBuilder()

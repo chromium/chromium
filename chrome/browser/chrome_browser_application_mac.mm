@@ -17,13 +17,13 @@
 #import "chrome/browser/app_controller_mac.h"
 #import "chrome/browser/mac/exception_processor.h"
 #include "chrome/browser/ui/cocoa/l10n_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/objc_zombie.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/native_event_processor_mac.h"
 #include "content/public/browser/native_event_processor_observer_mac.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 
 namespace chrome_browser_application_mac {
@@ -130,7 +130,6 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 }  // namespace
 
 @interface BrowserCrApplication () <NativeEventProcessor> {
-  __strong NSString* _voiceOverKVOKeyPath;
   // A counter for enhanced user interface enable (+1) and disable (-1)
   // requests.
   int _AXEnhancedUserInterfaceRequests;
@@ -149,11 +148,10 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 }
 
 + (void)initialize {
-  // Turn all deallocated Objective-C objects into zombies, keeping
-  // the most recent 10,000 of them on the treadmill.
-  ObjcEvilDoers::ZombieEnable(true, 10000);
-
-  chrome::InstallObjcExceptionPreprocessor();
+  if (self != [BrowserCrApplication class]) {
+    return;
+  }
+  InstallObjcExceptionPreprocessor();
 
   cocoa_l10n_util::ApplyForcedRTL();
 }
@@ -192,26 +190,19 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       base::mac::MacOSVersion() >= 14'00'00 &&
       base::FeatureList::IsEnabled(
           features::kSonomaAccessibilityActivationRefinements);
-
-  if (!_sonomaAccessibilityRefinementsAreActive) {
-    return;
-  }
-
-  // Use Key-Value observing to watch for VoiceOver status changes. Also
-  // notify with the initial state.
-  _voiceOverKVOKeyPath = @"voiceOverEnabled";
-  [[NSWorkspace sharedWorkspace] addObserver:self
-                                  forKeyPath:_voiceOverKVOKeyPath
-                                     options:(NSKeyValueObservingOptionInitial |
-                                              NSKeyValueObservingOptionNew)
-                                     context:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  if ([keyPath isEqualToString:_voiceOverKVOKeyPath]) {
+  // KVO of the system's VoiceOver state gets set up during initialization of
+  // BrowserAccessibilityStateImplMac. The context is the browser's
+  // global accessibility object, which we must check to ensure we're acting
+  // on a notification we set up (vs. NSApplication, say).
+  if (_sonomaAccessibilityRefinementsAreActive &&
+      [keyPath isEqualToString:@"voiceOverEnabled"] &&
+      context == content::BrowserAccessibilityState::GetInstance()) {
     NSNumber* newValueNumber = [change objectForKey:NSKeyValueChangeNewKey];
 
     // In the if statement below, we check newValueNumber's class before
@@ -222,12 +213,42 @@ std::string DescriptionForNSEvent(NSEvent* event) {
     if ([newValueNumber isKindOfClass:[NSNumber class]]) {
       [self voiceOverStateChanged:[newValueNumber boolValue]];
     }
-  } else {
-    [super observeValueForKeyPath:keyPath
-                         ofObject:object
-                           change:change
-                          context:context];
+
+    return;
   }
+
+  [super observeValueForKeyPath:keyPath
+                       ofObject:object
+                         change:change
+                        context:context];
+}
+
+// AppKit menu customization overriding
+
+- (void)_customizeFileMenuIfNeeded {
+  // Whenever the main menu is set or modified, AppKit modifies it before using
+  // it. AppKit calls -[NSApplication _customizeMainMenu], which calls out to a
+  // number of customization methods, including -[NSApplication
+  // _customizeFileMenuIfNeeded].
+  //
+  // -_customizeFileMenuIfNeeded does three things:
+  //   1. it adds the "Close All" menu item as an alternate for "Close Window",
+  //   2. for new-style document apps, it turns "Save" and "Save As..." into
+  //      "Save..." and "Duplicate" respectively,
+  //   3. depending on the "Close windows when quitting an application" system
+  //      setting, it adds either "Quit and Keep Windows" or "Quit and Close All
+  //      Windows" as an alternate for "Quit Chromium".
+  //
+  // While #1 is a nice-to-have, and #2 is irrelevant because Chromium isn't a
+  // new-style document app, #3 is a problem. Chromium has its own session
+  // management, and the menu item alternates that AppKit adds are making
+  // promises that Chromium can't fulfill.
+  //
+  // Therefore, override this method to prevent AppKit from doing these menu
+  // shenanigans. For #1, "Close All" is explicitly added to the File menu in
+  // main_menu_builder.mm, and there is nothing lost by preventing the other
+  // two.
+  return;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -540,7 +561,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   if (_sonomaAccessibilityRefinementsAreActive) {
     if (!_voiceOverEnabled) {
       chrome_browser_application_mac::AddAccessibilityModeFlagsIfAbsent(
-          accessibility_state, ui::kAXModeBasic);
+          accessibility_state, ui::AXMode::kNativeAPIs);
     }
   } else {
     if (!accessibility_state->GetAccessibilityMode().has_mode(

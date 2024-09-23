@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 class GURL;
 class Profile;
@@ -22,7 +22,7 @@ class Uri;
 }  // namespace chromeos
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 namespace ash::printing::oauth2 {
@@ -82,11 +82,11 @@ class AuthorizationZonesManager : public KeyedService {
       Profile* profile,
       CreateAuthZoneCallback auth_zone_creator,
       std::unique_ptr<ClientIdsDatabase> client_ids_database,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory store_factory);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      syncer::OnceDataTypeStoreFactory store_factory);
 
   ~AuthorizationZonesManager() override;
-  virtual syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() = 0;
+  virtual syncer::DataTypeSyncBridge* GetDataTypeSyncBridge() = 0;
 
   // Marks `auth_server` as trusted.
   virtual StatusCode SaveAuthorizationServerAsTrusted(

@@ -24,6 +24,7 @@
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_delegate.h"
 #include "net/reporting/reporting_endpoint.h"
+#include "net/reporting/reporting_target_type.h"
 
 namespace net {
 
@@ -82,7 +83,9 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
     return false;
 
   GURL endpoint_url;
-  if (!ProcessEndpointURLString(*endpoint_url_string, group_key.origin,
+  // V0 endpoints should have an origin.
+  DCHECK(group_key.origin.has_value());
+  if (!ProcessEndpointURLString(*endpoint_url_string, group_key.origin.value(),
                                 endpoint_url)) {
     return false;
   }
@@ -108,7 +111,8 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
     return false;
   endpoint_info_out->weight = weight;
 
-  return delegate->CanSetClient(group_key.origin, endpoint_info_out->url);
+  return delegate->CanSetClient(group_key.origin.value(),
+                                endpoint_info_out->url);
 }
 
 // Processes a single endpoint group tuple received in a Report-To header.
@@ -135,8 +139,11 @@ bool ProcessEndpointGroup(
       return false;
     group_name = maybe_group_name->GetString();
   }
+  // The target_type is set to kDeveloper because enterprise endpoints are
+  // created on a different path.
   ReportingEndpointGroupKey group_key(network_anonymization_key, origin,
-                                      group_name);
+                                      group_name,
+                                      ReportingTargetType::kDeveloper);
   parsed_endpoint_group_out->group_key = group_key;
 
   int ttl_sec = dict->FindInt(kMaxAgeKey).value_or(-1);
@@ -199,7 +206,9 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
     return false;
 
   GURL endpoint_url;
-  if (!ProcessEndpointURLString(endpoint_url_string, group_key.origin,
+  // Document endpoints should have an origin.
+  DCHECK(group_key.origin.has_value());
+  if (!ProcessEndpointURLString(endpoint_url_string, group_key.origin.value(),
                                 endpoint_url)) {
     return false;
   }
@@ -210,7 +219,8 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
       ReportingEndpoint::EndpointInfo::kDefaultPriority;
   endpoint_info_out.weight = ReportingEndpoint::EndpointInfo::kDefaultWeight;
 
-  return delegate->CanSetClient(group_key.origin, endpoint_info_out.url);
+  return delegate->CanSetClient(group_key.origin.value(),
+                                endpoint_info_out.url);
 }
 
 // Process a single endpoint received in a Reporting-Endpoints header.
@@ -223,8 +233,11 @@ bool ProcessV1Endpoint(ReportingDelegate* delegate,
                        const std::string& endpoint_url_string,
                        ReportingEndpoint& parsed_endpoint_out) {
   DCHECK(!reporting_source.is_empty());
+  // The target_type is set to kDeveloper because enterprise endpoints are
+  // created on a different path.
   ReportingEndpointGroupKey group_key(network_anonymization_key,
-                                      reporting_source, origin, endpoint_name);
+                                      reporting_source, origin, endpoint_name,
+                                      ReportingTargetType::kDeveloper);
   parsed_endpoint_out.group_key = group_key;
 
   ReportingEndpoint::EndpointInfo parsed_endpoint;

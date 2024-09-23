@@ -24,7 +24,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_constants.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest_delegate.h"
-#include "extensions/browser/guest_view/guest_view_feature_util.h"
 #include "extensions/common/api/extension_options_internal.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -39,6 +38,9 @@ namespace extensions {
 
 // static
 const char ExtensionOptionsGuest::Type[] = "extensionoptions";
+const guest_view::GuestViewHistogramValue
+    ExtensionOptionsGuest::HistogramValue =
+        guest_view::GuestViewHistogramValue::kExtensionOptions;
 
 ExtensionOptionsGuest::ExtensionOptionsGuest(
     content::RenderFrameHost* owner_rfh)
@@ -112,10 +114,8 @@ void ExtensionOptionsGuest::DidInitialize(
 
 void ExtensionOptionsGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
-  if (AreWebviewMPArchBehaviorsEnabled(browser_context())) {
-    // This situation is not possible for ExtensionOptions.
-    NOTREACHED();
-  }
+  // This situation is not possible for ExtensionOptions.
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ExtensionOptionsGuest::GuestViewDidStopLoading() {
@@ -146,7 +146,7 @@ void ExtensionOptionsGuest::OnPreferredSizeChanged(const gfx::Size& pref_size) {
       options.ToValue()));
 }
 
-void ExtensionOptionsGuest::AddNewContents(
+WebContents* ExtensionOptionsGuest::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
@@ -159,19 +159,24 @@ void ExtensionOptionsGuest::AddNewContents(
   // called is WebContentsImpl::ViewSource - which generates a non-guest
   // WebContents.
   DCHECK(!ExtensionOptionsGuest::FromWebContents(new_contents.get()));
-  if (!attached() || !embedder_web_contents()->GetDelegate())
-    return;
+  if (!attached() || !embedder_web_contents()->GetDelegate()) {
+    return nullptr;
+  }
 
   embedder_web_contents()->GetDelegate()->AddNewContents(
       source, std::move(new_contents), target_url, disposition, window_features,
       user_gesture, was_blocked);
+  return nullptr;
 }
 
 WebContents* ExtensionOptionsGuest::OpenURLFromTab(
     WebContents* source,
-    const content::OpenURLParams& params) {
-  if (!extension_options_guest_delegate_)
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  if (!extension_options_guest_delegate_) {
     return nullptr;
+  }
 
   // Don't allow external URLs with the CURRENT_TAB disposition be opened in
   // this guest view, change the disposition to NEW_FOREGROUND_TAB.
@@ -179,12 +184,14 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
        params.url.host() != options_page_.host()) &&
       params.disposition == WindowOpenDisposition::CURRENT_TAB) {
     return extension_options_guest_delegate_->OpenURLInNewTab(
-        content::OpenURLParams(
-            params.url, params.referrer, params.frame_tree_node_id,
-            WindowOpenDisposition::NEW_FOREGROUND_TAB, params.transition,
-            params.is_renderer_initiated));
+        content::OpenURLParams(params.url, params.referrer,
+                               params.frame_tree_node_id,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               params.transition, params.is_renderer_initiated),
+        std::move(navigation_handle_callback));
   }
-  return extension_options_guest_delegate_->OpenURLInNewTab(params);
+  return extension_options_guest_delegate_->OpenURLInNewTab(
+      params, std::move(navigation_handle_callback));
 }
 
 void ExtensionOptionsGuest::CloseContents(WebContents* source) {
@@ -196,8 +203,9 @@ void ExtensionOptionsGuest::CloseContents(WebContents* source) {
 bool ExtensionOptionsGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  if (!extension_options_guest_delegate_)
+  if (!extension_options_guest_delegate_) {
     return false;
+  }
 
   return extension_options_guest_delegate_->HandleContextMenu(render_frame_host,
                                                               params);
@@ -205,7 +213,7 @@ bool ExtensionOptionsGuest::HandleContextMenu(
 
 bool ExtensionOptionsGuest::ShouldResumeRequestsForCreatedWindow() {
   // Not reached due to the use of `CreateCustomWebContents`.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return true;
 }
 
@@ -238,7 +246,8 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
     extension_options_guest_delegate_->OpenURLInNewTab(
         content::OpenURLParams(target_url, content::Referrer(),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK, false));
+                               ui::PAGE_TRANSITION_LINK, false),
+        /*navigation_handle_callback=*/{});
   }
 
   // Returning nullptr here ensures that the guest-view can never get a
@@ -249,7 +258,7 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
 
 void ExtensionOptionsGuest::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/1261928): Due to the use of inner WebContents, an
+  // TODO(crbug.com/40202416): Due to the use of inner WebContents, an
   // ExtensionOptionsGuest's main frame is considered primary. This will no
   // longer be the case once we migrate guest views to MPArch.
   if (!navigation_handle->IsInPrimaryMainFrame() ||

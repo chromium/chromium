@@ -6,18 +6,11 @@ RAROptions::RAROptions()
 }
 
 
-RAROptions::~RAROptions()
-{
-  // It is important for security reasons, so we do not have the unnecessary
-  // password data left in memory.
-  memset(this,0,sizeof(RAROptions));
-}
-
-
 void RAROptions::Init()
 {
   memset(this,0,sizeof(RAROptions));
   WinSize=0x2000000;
+  WinSizeLimit=0x100000000;
   Overwrite=OVERWRITE_DEFAULT;
   Method=3;
   MsgStream=MSG_STDOUT;

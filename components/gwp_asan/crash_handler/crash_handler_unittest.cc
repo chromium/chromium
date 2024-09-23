@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/gwp_asan/crash_handler/crash_handler.h"
 
 #include <map>
@@ -22,6 +27,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
+#include "components/gwp_asan/client/gwp_asan.h"
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/lightweight_detector_state.h"
@@ -111,8 +117,14 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   }
 
   base::NoDestructor<GuardedPageAllocator> gpa;
-  gpa->Init(AllocatorState::kMaxMetadata, AllocatorState::kMaxMetadata,
-            kTotalPages, base::DoNothing(), allocator == "partitionalloc");
+  gpa->Init(
+      AllocatorSettings{
+          .max_allocated_pages = AllocatorState::kMaxMetadata,
+          .num_metadata = AllocatorState::kMaxMetadata,
+          .total_pages = kTotalPages,
+          .sampling_frequency = 0u,
+      },
+      base::DoNothing(), allocator == "partitionalloc");
 
   static crashpad::StringAnnotation<24> gpa_annotation(annotation_name);
   gpa_annotation.Set(gpa->GetCrashKey());
@@ -340,7 +352,7 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
     EXPECT_NE(exit_code, kSuccess);
     return (exit_code != kSuccess);
 #else
-    // TODO(https://crbug.com/976063): Android's implementation of
+    // TODO(crbug.com/40632533): Android's implementation of
     // WaitForMultiprocessTestChildExit can't detect child process crashes, this
     // can be fixed after minSdkVersion >= Q.
     for (int i = 0; i < TestTimeouts::action_max_timeout().InSeconds(); i++) {
@@ -389,9 +401,13 @@ class BaseCrashHandlerTest : public base::MultiProcessTest,
     }
   }
 
-  void checkProto(Crash_ErrorType error_type,
+  void checkProto(Crash_Mode mode,
+                  Crash_ErrorType error_type,
                   HasAllocation has_allocation,
                   HasDeallocation has_deallocation) {
+    EXPECT_TRUE(proto_.has_mode());
+    EXPECT_EQ(proto_.mode(), mode);
+
     EXPECT_TRUE(proto_.has_error_type());
     EXPECT_EQ(proto_.error_type(), error_type);
 
@@ -463,32 +479,32 @@ class CrashHandlerTest : public BaseCrashHandlerTest {};
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(UseAfterFree)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_USE_AFTER_FREE, HasAllocation::kYes,
-             HasDeallocation::kYes);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_USE_AFTER_FREE,
+             HasAllocation::kYes, HasDeallocation::kYes);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(DoubleFree)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_DOUBLE_FREE, HasAllocation::kYes,
-             HasDeallocation::kYes);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_DOUBLE_FREE,
+             HasAllocation::kYes, HasDeallocation::kYes);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(Underflow)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_BUFFER_UNDERFLOW, HasAllocation::kYes,
-             HasDeallocation::kNo);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_UNDERFLOW,
+             HasAllocation::kYes, HasDeallocation::kNo);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(Overflow)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_BUFFER_OVERFLOW, HasAllocation::kYes,
-             HasDeallocation::kNo);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_BUFFER_OVERFLOW,
+             HasAllocation::kYes, HasDeallocation::kNo);
 }
 
 TEST_P(CrashHandlerTest, MAYBE_DISABLED(FreeInvalidAddress)) {
   ASSERT_TRUE(gwp_asan_found_);
-  checkProto(Crash_ErrorType_FREE_INVALID_ADDRESS, HasAllocation::kYes,
-             HasDeallocation::kNo);
+  checkProto(Crash_Mode_CLASSIC, Crash_ErrorType_FREE_INVALID_ADDRESS,
+             HasAllocation::kYes, HasDeallocation::kNo);
   EXPECT_TRUE(proto_.has_free_invalid_address());
 }
 
@@ -536,7 +552,8 @@ class LightweightDetectorCrashHandlerTest : public BaseCrashHandlerTest {};
 TEST_P(LightweightDetectorCrashHandlerTest, LightweightDetectorUseAfterFree) {
   ASSERT_TRUE(gwp_asan_found_);
 
-  checkProto(Crash_ErrorType_LIGHTWEIGHT_USE_AFTER_FREE, HasAllocation::kNo,
+  checkProto(Crash_Mode_LIGHTWEIGHT_DETECTOR_BRP,
+             Crash_ErrorType_USE_AFTER_FREE, HasAllocation::kNo,
              HasDeallocation::kYes);
 }
 

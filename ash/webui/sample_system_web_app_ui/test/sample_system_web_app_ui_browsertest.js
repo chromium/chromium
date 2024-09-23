@@ -36,13 +36,15 @@ GEN('#define MAYBE_HasChromeSchemeURL DISABLED_HasChromeSchemeURL');
 GEN('#else');
 GEN('#define MAYBE_HasChromeSchemeURL HasChromeSchemeURL');
 GEN('#endif');
-TEST_F('SampleSystemWebAppUIBrowserTest', 'MAYBE_HasChromeSchemeURL', () => {
-  const header = document.querySelector('header');
+TEST_F(
+    'SampleSystemWebAppUIBrowserTest', 'MAYBE_HasChromeSchemeURL', async () => {
+      const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
+      const header = document.querySelector('header');
 
-  assertEquals(header.innerText, 'Sample System Web App');
-  assertEquals(document.location.origin, HOST_ORIGIN);
-  testDone();
-});
+      assertEquals(header.innerText, 'Sample System Web App');
+      assertEquals(document.location.origin, HOST_ORIGIN);
+      testDone();
+    });
 
 // Test the ability to get information from the page handler.
 // TODO(b/280457934): Skip as shared workers crash for JS coverage builds.
@@ -53,6 +55,8 @@ GEN('#define MAYBE_FetchPreferences FetchPreferences');
 GEN('#endif');
 TEST_F(
     'SampleSystemWebAppUIBrowserTest', 'MAYBE_FetchPreferences', async () => {
+      const {assertDeepEquals} =
+          await import('chrome://webui-test/chai_assert.js');
       const {preferences} = await window.pageHandler.getPreferences();
       assertDeepEquals(
           {background: '#ffffff', foreground: '#000000'}, preferences);
@@ -67,6 +71,7 @@ GEN('#else');
 GEN('#define MAYBE_DoSomething DoSomething');
 GEN('#endif');
 TEST_F('SampleSystemWebAppUIBrowserTest', 'MAYBE_DoSomething', async () => {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   const pageHandler = window.pageHandler;
   const callbackRouter = window.callbackRouter;
 
@@ -107,7 +112,8 @@ var SampleSystemWebAppUIUntrustedBrowserTest = class extends testing.Test {
 // embeds a chrome-untrusted:// iframe.
 TEST_F(
     'SampleSystemWebAppUIUntrustedBrowserTest', 'HasChromeUntrustedIframe',
-    () => {
+    async () => {
+      const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
       const iframe = document.querySelector('iframe');
       window.onmessage = (event) => {
         if (event.data.id === 'post-message') {
@@ -122,20 +128,23 @@ TEST_F(
 // Tests that chrome://sample-system-web-app/inter_frame_communication.html
 // can communicate with its embedded chrome-untrusted:// iframe via Mojo
 // method calls.
-TEST_F('SampleSystemWebAppUIUntrustedBrowserTest', 'MojoMethodCall', () => {
-  window.onmessage = (event) => {
-    if (event.data.id === 'mojo-method-call-resp') {
-      assertEquals(event.data.resp, 'Task done');
-      testDone();
-    }
-  };
+TEST_F(
+    'SampleSystemWebAppUIUntrustedBrowserTest', 'MojoMethodCall', async () => {
+      const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
+      window.onmessage = (event) => {
+        if (event.data.id === 'mojo-method-call-resp') {
+          assertEquals(event.data.resp, 'Task done');
+          testDone();
+        }
+      };
 
-  const iframe = document.querySelector('iframe');
-  iframe.contentWindow.postMessage(
-      {id: 'test-mojo-method-call'}, UNTRUSTED_HOST_ORIGIN);
-});
+      const iframe = document.querySelector('iframe');
+      iframe.contentWindow.postMessage(
+          {id: 'test-mojo-method-call'}, UNTRUSTED_HOST_ORIGIN);
+    });
 
-TEST_F('SampleSystemWebAppUIUntrustedBrowserTest', 'MojoMessage', () => {
+TEST_F('SampleSystemWebAppUIUntrustedBrowserTest', 'MojoMessage', async () => {
+  const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
   window.onmessage = (event) => {
     if (event.data.id === 'mojo-did-receive-task') {
       assertEquals(event.data.task, 'Hello from chrome://');

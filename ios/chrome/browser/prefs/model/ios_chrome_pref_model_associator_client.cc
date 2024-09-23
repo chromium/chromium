@@ -13,7 +13,7 @@ IOSChromePrefModelAssociatorClient::IOSChromePrefModelAssociatorClient() {}
 IOSChromePrefModelAssociatorClient::~IOSChromePrefModelAssociatorClient() {}
 
 base::Value IOSChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
-    const std::string& pref_name,
+    std::string_view pref_name,
     const base::Value& local_value,
     const base::Value& server_value) const {
   return base::Value();

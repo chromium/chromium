@@ -14,22 +14,21 @@ namespace autofill {
 
 // Handles getting the current time for the Autofill feature. Can be injected
 // with a customizable clock to facilitate testing.
+// TODO crbug.com/40100455 - Remove this class.
 class AutofillClock {
  public:
+  AutofillClock() = delete;
+  ~AutofillClock() = delete;
+
   // Returns the current time based last set clock.
+  // This is thread-safe in production code.
+  // In test code, there may be races among SetTestClock() and Now().
   static base::Time Now();
 
  private:
   friend class TestAutofillClock;
 
-  // Resets a normal clock.
-  static void SetClock();
-
-  // Sets the clock to be used for tests.
-  static void SetTestClock(const base::Clock* clock);
-
-  AutofillClock() = delete;
-  ~AutofillClock() = delete;
+  static const base::Clock* test_clock_;
 };
 
 }  // namespace autofill

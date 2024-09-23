@@ -20,6 +20,7 @@ source_set("tests") {
     "constant_unittest.cc",
     "container_test_util.cc",
     "container_test_util.h",
+    "containers_of_nullable_types_unittest.cc",
     "data_view_unittest.cc",
     "default_construct_unittest.cc",
     "direct_receiver_unittest.cc",
@@ -33,7 +34,6 @@ source_set("tests") {
     "hash_unittest.cc",
     "idle_tracking_unittest.cc",
     "interface_unittest.cc",
-    "lazy_serialization_unittest.cc",
     "map_unittest.cc",
     "message_queue.cc",
     "message_queue.h",
@@ -84,6 +84,7 @@ source_set("tests") {
     "//mojo/public/interfaces/bindings/tests:test_export_component2",
     "//mojo/public/interfaces/bindings/tests:test_exported_import",
     "//mojo/public/interfaces/bindings/tests:test_interfaces",
+    "//mojo/public/interfaces/bindings/tests:test_interfaces_for_containers_of_optionals",
     "//mojo/public/interfaces/bindings/tests:test_struct_traits_interfaces",
     "//testing/gtest",
     "//third_party/ipcz/src:ipcz_test_support_chromium",
@@ -168,6 +169,7 @@ mojom("test_extra_cpp_template_mojom") {
 mojom("test_mojom") {
   testonly = true
   sources = [
+    "associated_interface_unittest.test-mojom",
     "binder_map_unittest.test-mojom",
     "connection_group_unittest.test-mojom",
     "default_construct_unittest.test-mojom",
@@ -194,8 +196,6 @@ mojom("test_mojom") {
     ":generated_test_mojom",
     "//mojo/public/mojom/base",
   ]
-
-  support_lazy_serialization = true
 
   cpp_typemaps = [
     {

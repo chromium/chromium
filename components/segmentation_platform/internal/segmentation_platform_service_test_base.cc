@@ -4,6 +4,8 @@
 
 #include "components/segmentation_platform/internal/segmentation_platform_service_test_base.h"
 
+#include <string_view>
+
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -27,10 +29,9 @@ using syncer::DeviceInfoTracker;
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
   MOCK_METHOD2(RegisterFieldTrial,
-               void(base::StringPiece trial_name,
-                    base::StringPiece group_name));
+               void(std::string_view trial_name, std::string_view group_name));
   MOCK_METHOD3(RegisterSubsegmentFieldTrialIfNeeded,
-               void(base::StringPiece trial_name,
+               void(std::string_view trial_name,
                     proto::SegmentId segment_id,
                     int subsegment_rank));
 };
@@ -127,7 +128,7 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
       std::move(segment_db), std::move(signal_db),
       std::move(segment_storage_config_db), task_runner_, &test_clock_,
       ukm_data_manager, std::move(configs), model_provider_factory.get(),
-      &pref_service_, base::DoNothing());
+      &pref_service_, "profile_id", base::DoNothing());
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->profile_id = kTestProfileId;

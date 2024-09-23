@@ -22,8 +22,8 @@ AX_EXPORT bool AXTreeUpdatesCanBeMerged(const AXTreeUpdate& u1,
 //
 // Merging tree updates helps minimize the overhead of calling
 // Unserialize multiple times.
-AX_EXPORT bool MergeAXTreeUpdates(const std::vector<ui::AXTreeUpdate>& src,
-                                  std::vector<ui::AXTreeUpdate>* dst);
+AX_EXPORT bool MergeAXTreeUpdates(const std::vector<AXTreeUpdate>& src,
+                                  std::vector<AXTreeUpdate>* dst);
 
 }  // namespace ui
 

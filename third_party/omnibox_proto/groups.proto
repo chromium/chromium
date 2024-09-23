@@ -71,6 +71,7 @@ enum GroupId {
   GROUP_TRENDS_ENTITY_CHIPS = 10003;
   GROUP_RELATED_QUERIES = 10004;
   GROUP_VISITED_DOC_RELATED = 10005;
+  GROUP_MULTIMODAL = 10006;
   GROUP_POLARIS_RESERVED_MAX = 19999;
 
   // Mobile-specific auxiliary suggestions.
@@ -78,6 +79,8 @@ enum GroupId {
   GROUP_MOBILE_MOST_VISITED = 30001;
   GROUP_MOBILE_CLIPBOARD = 30002;
   GROUP_MOBILE_QUERY_TILES = 30003;  // E.g. "News", "Films", "Sports", ...
+  GROUP_MOBILE_RICH_ANSWER = 30004;  // Visually rich answer suggestion.
+  GROUP_MOBILE_OPEN_TABS = 30005;    // Tabs which are currently open.
 
   // Reserved for personalized zero-prefix suggestions.
   // Produced by LocalHistoryZeroSuggestProvider and maybe ZeroSuggestProvider.
@@ -90,6 +93,10 @@ enum GroupId {
   GROUP_OTHER_NAVS = 50002;  // E.g., bookmarks, history, etc.
   GROUP_DOCUMENT = 50003;    // E.g., Drive docs, slides, sheets, etc.
   GROUP_HISTORY_CLUSTER = 50004;
+
+  // IPH suggestions that appear in zero-prefix.  These suggestions are
+  // informational only and do not trigger a search or navigation.
+  GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP = 60000;
 }
 
 // Suggestion group sections determine the order in which suggestion groups
@@ -139,6 +146,12 @@ enum GroupSection {
 
   // Query tiles - a carousel with high-level query recommendations.
   SECTION_MOBILE_QUERY_TILES = 15;
+  // Visually rich answer suggestion presented as a standalone card.
+  SECTION_MOBILE_RICH_ANSWER = 16;
+
+  // IPH suggestions that appear in zero-prefix.  These suggestions are
+  // informational only and do not trigger a search or navigation.
+  SECTION_ZERO_SUGGEST_IN_PRODUCT_HELP = 17;
 
   // Cross platform suggestions with vanilla visual representation (i.e.
   // vertical, primary column, and no header), but useful for sorting.

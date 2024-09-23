@@ -2,14 +2,14 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++grid
-++++++++row
-++++++++++cell name='Cell'
+++++++++row name='Cell Cell'
+++++++++++gridCell name='Cell'
 ++++++++++++staticText name='Cell'
 ++++++++++++++inlineTextBox name='Cell'
-++++++++++cell name='Cell'
+++++++++++gridCell name='Cell'
 ++++++++++++staticText name='Cell'
 ++++++++++++++inlineTextBox name='Cell'
-++++++table name='Real data table'
+++++++table name='Real data table' nameFrom=caption
 ++++++++caption
 ++++++++++staticText name='Real data table'
 ++++++++++++inlineTextBox name='Real '

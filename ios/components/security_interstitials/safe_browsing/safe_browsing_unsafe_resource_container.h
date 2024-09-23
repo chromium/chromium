@@ -11,10 +11,6 @@
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
-namespace web {
-class NavigationItem;
-}
-
 // Helper object that holds pending UnsafeResources for a WebState.
 // UnsafeResources are copied and added when a navigation are detected to be
 // unsafe, then fetched to populate the error page shown to the user after a
@@ -33,19 +29,11 @@ class SafeBrowsingUnsafeResourceContainer
   // be pending for `resource` before it is added to the container.
   void StoreMainFrameUnsafeResource(
       const security_interstitials::UnsafeResource& resource);
-  void StoreSubFrameUnsafeResource(
-      const security_interstitials::UnsafeResource& resource,
-      web::NavigationItem* main_frame_item);
 
   // Returns the pending main frame UnsafeResource, or null if one has not been
   // stored.
   const security_interstitials::UnsafeResource* GetMainFrameUnsafeResource()
       const;
-
-  // Returns the pending sub frame UnsafeResource for `item`, or null if one has
-  // not been stored.  `item` must be non-null.
-  const security_interstitials::UnsafeResource* GetSubFrameUnsafeResource(
-      web::NavigationItem* item) const;
 
  private:
   explicit SafeBrowsingUnsafeResourceContainer(web::WebState* web_state);

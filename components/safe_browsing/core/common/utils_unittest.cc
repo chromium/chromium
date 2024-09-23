@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -22,10 +23,9 @@ TEST(SafeBrowsingUtilsTest, TestSetAccessTokenAndClearCookieInResourceRequest) {
 
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token);
-    std::string token_in_header;
-    EXPECT_TRUE(resource_request->headers.GetHeader(
-        net::HttpRequestHeaders::kAuthorization, &token_in_header));
-    EXPECT_EQ(token_in_header, "Bearer 123");
+    EXPECT_THAT(resource_request->headers.GetHeader(
+                    net::HttpRequestHeaders::kAuthorization),
+                testing::Optional(std::string("Bearer 123")));
     // Cookies are attached when the feature is disabled.
     EXPECT_EQ(resource_request->credentials_mode,
               network::mojom::CredentialsMode::kInclude);
@@ -39,10 +39,9 @@ TEST(SafeBrowsingUtilsTest, TestSetAccessTokenAndClearCookieInResourceRequest) {
 
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token);
-    std::string token_in_header;
-    EXPECT_TRUE(resource_request->headers.GetHeader(
-        net::HttpRequestHeaders::kAuthorization, &token_in_header));
-    EXPECT_EQ(token_in_header, "Bearer 123");
+    EXPECT_THAT(resource_request->headers.GetHeader(
+                    net::HttpRequestHeaders::kAuthorization),
+                testing::Optional(std::string("Bearer 123")));
     // Cookies are removed when the feature is enabled.
     EXPECT_EQ(resource_request->credentials_mode,
               network::mojom::CredentialsMode::kOmit);
@@ -56,10 +55,9 @@ TEST(SafeBrowsingUtilsTest, TestSetAccessTokenAndClearCookieInResourceRequest) {
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
                                                   access_token);
-    std::string token_in_header;
-    EXPECT_TRUE(resource_request->headers.GetHeader(
-        net::HttpRequestHeaders::kAuthorization, &token_in_header));
-    EXPECT_EQ(token_in_header, "Bearer 123");
+    EXPECT_THAT(resource_request->headers.GetHeader(
+                    net::HttpRequestHeaders::kAuthorization),
+                testing::Optional(std::string("Bearer 123")));
     // The request should keep omitting cookies.
     EXPECT_EQ(resource_request->credentials_mode,
               network::mojom::CredentialsMode::kOmit);

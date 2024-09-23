@@ -13,14 +13,14 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/consent_auditor/consent_auditor_impl.h"
 #include "components/consent_auditor/consent_sync_bridge.h"
 #include "components/consent_auditor/consent_sync_bridge_impl.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_store_service.h"
 
 // static
 ConsentAuditorFactory* ConsentAuditorFactory::GetInstance() {
@@ -45,11 +45,14 @@ ConsentAuditorFactory::ConsentAuditorFactory()
           "ConsentAuditor",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 ConsentAuditorFactory::~ConsentAuditorFactory() = default;
@@ -60,11 +63,11 @@ ConsentAuditorFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = static_cast<Profile*>(context);
 
   std::unique_ptr<consent_auditor::ConsentSyncBridge> consent_sync_bridge;
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::USER_CONSENTS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));

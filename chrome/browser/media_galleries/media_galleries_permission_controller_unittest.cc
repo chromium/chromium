@@ -218,7 +218,7 @@ void MediaGalleriesPermissionControllerTest::TestForgottenType(
   StartDialog();
   ui::SelectedFileInfo file(MakeMediaGalleriesTestingPath("forgotten1"),
                             MakeMediaGalleriesTestingPath("forgotten1"));
-  controller()->FileSelected(file, 0, nullptr);
+  controller()->FileSelected(file, 0);
   controller()->DialogFinished(true);
   EXPECT_EQ(2U, gallery_prefs()->GalleriesForExtension(*extension()).size());
   MediaGalleryPrefInfo retrieved_info;

@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-// TODO(crbug.com/1213474): Remove this include:
+// TODO(crbug.com/40768780): Remove this include:
 #include "components/feed/core/v2/public/ios/prefs.h"
 
 class PrefService;

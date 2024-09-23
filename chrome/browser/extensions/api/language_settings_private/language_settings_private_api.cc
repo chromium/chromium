@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,14 +16,12 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate.h"
 #include "chrome/browser/extensions/api/language_settings_private/language_settings_private_delegate_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -43,6 +42,7 @@
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
@@ -136,7 +136,7 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
   std::vector<std::string> ime_list;
   std::string preferred_languages =
       prefs->GetString(language::prefs::kPreferredLanguages);
-  std::vector<base::StringPiece> enabled_languages =
+  std::vector<std::string_view> enabled_languages =
       base::SplitStringPiece(preferred_languages, ",", base::TRIM_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
 
@@ -148,10 +148,10 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
   ime_state->GetInputMethodExtensions(&descriptors);
 
   // Filter out the IMEs not in |third_party_ime_set|.
-      base::EraseIf(descriptors,
-          [&third_party_ime_set](const InputMethodDescriptor& descriptor) {
-            return !third_party_ime_set.contains(descriptor.id());
-          });
+  std::erase_if(descriptors, [&third_party_ime_set](
+                                 const InputMethodDescriptor& descriptor) {
+    return !third_party_ime_set.contains(descriptor.id());
+  });
 
   // A set of the elements of |ime_list|.
   std::set<std::string> ime_set;
@@ -182,7 +182,8 @@ std::vector<std::string> GetSortedThirdPartyIMEs(
 std::vector<std::string> GetInputMethodTags(
     language_settings_private::InputMethod* input_method) {
   std::vector<std::string> tags = {input_method->display_name};
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   for (const auto& language_code : input_method->language_codes) {
     tags.push_back(base::UTF16ToUTF8(l10n_util::GetDisplayNameForLocale(
         language_code, app_locale, /*is_for_ui=*/true)));
@@ -210,7 +211,8 @@ LanguageSettingsPrivateGetLanguageListFunction::
 ExtensionFunction::ResponseAction
 LanguageSettingsPrivateGetLanguageListFunction::Run() {
   // Collect the language codes from the supported accept-languages.
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   const std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       CreateTranslatePrefsForBrowserContext(browser_context());
 
@@ -429,12 +431,22 @@ LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction::Run() {
   const auto params = language_settings_private::
       SetLanguageAlwaysTranslateState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-
   const std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       CreateTranslatePrefsForBrowserContext(browser_context());
 
-  translate_prefs->SetLanguageAlwaysTranslateState(params->language_code,
-                                                   params->always_translate);
+  if (params->always_translate) {
+    language::LanguageModel* language_model =
+        LanguageModelManagerFactory::GetForBrowserContext(browser_context())
+            ->GetPrimaryModel();
+    std::string target_language = TranslateService::GetTargetLanguage(
+        Profile::FromBrowserContext(browser_context())->GetPrefs(),
+        language_model);
+    translate_prefs->AddLanguagePairToAlwaysTranslateList(params->language_code,
+                                                          target_language);
+  } else {
+    translate_prefs->RemoveLanguagePairFromAlwaysTranslateList(
+        params->language_code);
+  }
 
   return RespondNow(NoArguments());
 }
@@ -472,7 +484,8 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
       language_settings_private::MoveLanguage::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
+  const std::string app_locale =
+      ExtensionsBrowserClient::Get()->GetApplicationLocale();
   std::vector<std::string> supported_language_codes;
   l10n_util::GetAcceptLanguagesForLocale(app_locale, &supported_language_codes);
 
@@ -499,7 +512,7 @@ LanguageSettingsPrivateMoveLanguageFunction::Run() {
 
     case language_settings_private::MoveType::kNone:
     case language_settings_private::MoveType::kMaxValue:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   // On Desktop we can only move languages by one position.
@@ -559,9 +572,9 @@ void LanguageSettingsPrivateGetSpellcheckWordsFunction::
 void LanguageSettingsPrivateGetSpellcheckWordsFunction::
     OnCustomDictionaryChanged(
         const SpellcheckCustomDictionary::Change& dictionary_change) {
-  NOTREACHED() << "SpellcheckCustomDictionary::Observer: "
-                  "OnCustomDictionaryChanged() called before "
-                  "OnCustomDictionaryLoaded()";
+  NOTREACHED_IN_MIGRATION() << "SpellcheckCustomDictionary::Observer: "
+                               "OnCustomDictionaryChanged() called before "
+                               "OnCustomDictionaryLoaded()";
 }
 
 base::Value::List

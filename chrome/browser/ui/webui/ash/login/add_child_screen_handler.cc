@@ -42,4 +42,8 @@ void AddChildScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<AddChildScreenView> AddChildScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

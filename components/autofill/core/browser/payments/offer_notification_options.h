@@ -12,7 +12,7 @@ namespace autofill {
 struct OfferNotificationOptions {
   // Indicates whether this notification has been shown since profile start-up.
   // This is only used in Android.
-  // TODO(crbug.com/1483010): Revisit if we can consolidate
+  // TODO(crbug.com/40931835): Revisit if we can consolidate
   // notification_has_been_shown and show_notification_automatically.
   bool notification_has_been_shown = false;
   // Indicates whether the notification will automatically expand upon being

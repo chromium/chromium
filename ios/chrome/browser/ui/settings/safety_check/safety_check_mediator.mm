@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+Testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -30,6 +29,8 @@
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/passwords/model/password_store_observer_bridge.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -44,6 +45,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_consumer.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator+Testing.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_navigation_commands.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_utils.h"
@@ -82,6 +84,8 @@ typedef NS_ENUM(NSInteger, SafteyCheckItemType) {
   // CheckStart section.
   CheckStartItemType,
   TimestampFooterItem,
+  // Notifications opt-in section.
+  NotificationsOptInItemType,
 };
 
 // The minimum time each of the three checks should show a running state. This
@@ -213,6 +217,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 // Current state of the start safety check row button.
 @property(nonatomic, assign) CheckStartStates checkStartState;
 
+// Row button to opt-in to Safety Check notifications.
+@property(nonatomic, strong) TableViewTextItem* notificationsOptInItem;
+
 // Whether or not a safety check just ran.
 @property(nonatomic, assign) BOOL checkDidRun;
 
@@ -242,6 +249,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
                 syncService:(syncer::SyncService*)syncService
                    referrer:(password_manager::PasswordCheckReferrer)referrer {
   self = [super init];
+
   if (self) {
     DCHECK(userPrefService);
     DCHECK(localPrefService);
@@ -346,7 +354,28 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     _checkStartItem.text = GetNSString(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON);
     _checkStartItem.textColor = [UIColor colorNamed:kBlueColor];
     _checkStartItem.accessibilityTraits |= UIAccessibilityTraitButton;
+
+    if (IsSafetyCheckNotificationsEnabled()) {
+      TableViewTextItem* notificationsOptInItem =
+          [[TableViewTextItem alloc] initWithType:NotificationsOptInItemType];
+
+      notificationsOptInItem.accessibilityIdentifier =
+          kSafetyCheckNotificationsOptInButtonAccessibilityID;
+      notificationsOptInItem.text =
+          push_notification_settings::
+                  GetMobileNotificationPermissionStatusForClient(
+                      PushNotificationClientId::kSafetyCheck, "")
+              ? GetNSString(
+                    IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS)
+              : GetNSString(
+                    IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS);
+      notificationsOptInItem.textColor = [UIColor colorNamed:kBlueColor];
+      notificationsOptInItem.accessibilityTraits |= UIAccessibilityTraitButton;
+
+      self.notificationsOptInItem = notificationsOptInItem;
+    }
   }
+
   return self;
 }
 
@@ -360,6 +389,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   [_consumer setCheckItems:checkItems];
   [_consumer setSafetyCheckHeaderItem:self.headerItem];
   [_consumer setCheckStartItem:self.checkStartItem];
+  [_consumer setNotificationsOptInItem:self.notificationsOptInItem];
 
   // Need to reconfigure the safety check items if there are remaining issues
   // from the last check ran.
@@ -375,6 +405,21 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     return;
   }
   [self startCheck];
+}
+
+- (void)reconfigureNotificationsSection:(BOOL)enabled {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  // If notifications are `enabled`, the button should prompt users to disable
+  // them.
+  self.notificationsOptInItem.text =
+      enabled
+          ? GetNSString(
+                IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_OFF_NOTIFICATIONS_ELLIPSIS)
+          : GetNSString(
+                IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_TURN_ON_NOTIFICATIONS_ELLIPSIS);
+
+  [self reconfigureCellForItem:self.notificationsOptInItem];
 }
 
 #pragma mark - PasswordCheckObserver
@@ -399,6 +444,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       [self computePasswordCheckRowState:self.currentPasswordCheckState];
   // Push update to the display.
   [self reconfigurePasswordCheckItem];
+}
+
+- (void)passwordCheckManagerWillShutdown {
+  _passwordCheckObserver.reset();
 }
 
 #pragma mark - SafetyCheckServiceDelegate
@@ -480,6 +529,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       [self checkStartOrCancel];
       break;
     }
+    case NotificationsOptInItemType: {
+      [self.delegate toggleSafetyCheckNotifications];
+      break;
+    }
     case HeaderItem:
     case TimestampFooterItem:
       break;
@@ -502,12 +555,14 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     case HeaderItem:
     case TimestampFooterItem:
       return NO;
+    case NotificationsOptInItemType:
+      return YES;
   }
 }
 
 - (BOOL)isItemWithErrorInfo:(TableViewItem*)item {
   SafteyCheckItemType type = static_cast<SafteyCheckItemType>(item.type);
-  return (type != CheckStartItemType);
+  return (type != CheckStartItemType && type != NotificationsOptInItemType);
 }
 
 - (void)infoButtonWasTapped:(UIButton*)buttonView
@@ -562,6 +617,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     case HeaderItem:
     case SafeBrowsingItemType:
     case TimestampFooterItem:
+    case NotificationsOptInItemType:
       return nil;
   }
 }
@@ -1305,7 +1361,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       return GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return nil;
   }
 }
@@ -1330,7 +1386,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
 // Updates the timestamp of when the safety check was most recently run.
 //
-// TODO(crbug.com/1481230): Remove this method once Settings Safety Check is
+// TODO(crbug.com/40930653): Remove this method once Settings Safety Check is
 // refactored to use the new Safety Check Manager.
 - (void)updateTimestampOfLastRun {
   _localPrefService->SetTime(prefs::kIosSettingsSafetyCheckLastRunTime,
@@ -1359,15 +1415,14 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
   base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;
 
-  std::u16string timestamp;
   // If check found issues less than 1 minuete ago.
   if (elapsedTime < base::Minutes(1)) {
-    timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);
-  } else {
-    timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
-        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
-        elapsedTime, true);
+    return l10n_util::GetNSString(IDS_IOS_CHECK_FINISHED_JUST_NOW);
   }
+
+  std::u16string timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
+      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG, elapsedTime,
+      true);
 
   return l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_SAFETY_CHECK_ISSUES_FOUND_TIME, timestamp);

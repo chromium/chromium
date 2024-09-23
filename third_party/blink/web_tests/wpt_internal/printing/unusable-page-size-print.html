@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://www.w3.org/TR/css-page-3/#at-page-rule">
+<link rel="match" href="unusable-page-size-print-ref.html">
+<!-- The margins of the first page, combined with the specified page size, would
+     result in a 0x0 page area size. We don't allow this.
+     See https://github.com/w3c/csswg-drafts/issues/8335 -->
+<style>
+  @page {
+    size: 6in;
+    margin: 1in;
+    border: 20px solid;
+    padding: 30px;
+  }
+  @page :first {
+    border-color: red;
+    margin: 3in;
+  }
+  body {
+    margin: 0
+  }
+</style>
+This page should have default page settings (size / margins), and no
+border/padding.
+<div style="break-before:page;">
+  This page should be 6 by 6 inches large, with a 1 inch margin on every side,
+  and also, if @page properties are fully supported, a black border, and some
+  padding.
+</div>

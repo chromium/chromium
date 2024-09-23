@@ -53,6 +53,14 @@ RequestValue RequestValue::CreateForReadFileSuccess(
   return result;
 }
 
+RequestValue RequestValue::CreateForOpenFileSuccess(
+    extensions::api::file_system_provider_internal::OpenFileRequestedSuccess::
+        Params params) {
+  RequestValue result;
+  result.data_.emplace<decltype(params)>(std::move(params));
+  return result;
+}
+
 RequestValue RequestValue::CreateForOperationSuccess(
     extensions::api::file_system_provider_internal::OperationRequestedSuccess::
         Params params) {

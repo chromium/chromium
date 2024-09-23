@@ -47,9 +47,9 @@ const int kInitialAnimationDurationMS = 200;
 
 WorkspaceController::WorkspaceController(aura::Window* viewport)
     : viewport_(viewport),
-      event_handler_(std::make_unique<WorkspaceEventHandler>(viewport)),
-      layout_manager_(viewport_->SetLayoutManager(
-          std::make_unique<WorkspaceLayoutManager>(viewport))) {
+      event_handler_(std::make_unique<WorkspaceEventHandler>(viewport)) {
+  viewport_->SetLayoutManager(
+      std::make_unique<WorkspaceLayoutManager>(viewport));
   viewport_->AddObserver(this);
   ::wm::SetWindowVisibilityAnimationTransition(viewport_, ::wm::ANIMATE_NONE);
 }
@@ -60,6 +60,10 @@ WorkspaceController::~WorkspaceController() {
 
   viewport_->RemoveObserver(this);
   viewport_->SetLayoutManager(nullptr);
+}
+
+WorkspaceLayoutManager* WorkspaceController::layout_manager() {
+  return static_cast<WorkspaceLayoutManager*>(viewport_->layout_manager());
 }
 
 WorkspaceWindowState WorkspaceController::GetWindowState() const {
@@ -129,7 +133,6 @@ void WorkspaceController::OnWindowDestroying(aura::Window* window) {
   viewport_ = nullptr;
   // Destroy |event_handler_| too as it depends upon |window|.
   event_handler_.reset();
-  layout_manager_ = nullptr;
 }
 
 void SetWorkspaceController(

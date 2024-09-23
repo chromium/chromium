@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("dns_over_https") {
+  sources = [
+    "templates_uri_resolver.h",
+    "templates_uri_resolver_impl.cc",
+    "templates_uri_resolver_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/common",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/system",
+    "//components/prefs",
+    "//components/user_manager",
+    "//crypto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "templates_uri_resolver_impl_unittest.cc" ]
+
+  deps = [
+    ":dns_over_https",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/policy/core",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/system",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -295,7 +295,7 @@ void CaretDisplayItemClient::PaintCaret(
   // When caret is in text-combine box with scaling, |context| is already
   // associated to drawing record to apply affine transform.
   std::optional<DrawingRecorder> recorder;
-  if (LIKELY(!context.InDrawingRecorder())) {
+  if (!context.InDrawingRecorder()) [[likely]] {
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, *this,
                                                     display_item_type))
       return;

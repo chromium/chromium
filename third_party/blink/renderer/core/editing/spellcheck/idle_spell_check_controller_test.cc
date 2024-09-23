@@ -45,7 +45,7 @@ class IdleSpellCheckControllerTest : public SpellCheckTestBase {
         break;
       case State::kInHotModeInvocation:
       case State::kInColdModeInvocation:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
     }
   }
 };

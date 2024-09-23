@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +40,10 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementFileHandlingHeader",
        IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER},
       {"appManagementNotificationsLabel", IDS_APP_MANAGEMENT_NOTIFICATIONS},
+#if BUILDFLAG(IS_MAC)
+      {"appManagementNotificationsDescription",
+       IDS_APP_MANAGEMENT_NOTIFICATIONS_DESCRIPTION},
+#endif
       {"appManagementPermissionsLabel", IDS_APP_MANAGEMENT_PERMISSIONS},
       {"appManagementLocationPermissionLabel", IDS_APP_MANAGEMENT_LOCATION},
       {"appManagementMicrophonePermissionLabel", IDS_APP_MANAGEMENT_MICROPHONE},

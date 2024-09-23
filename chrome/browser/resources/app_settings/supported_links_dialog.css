@@ -1,0 +1,25 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=./app_management_shared_style.css.js
+ * #include=app-management-shared-style
+ * #css_wrapper_metadata_end */
+
+#dialogBody {
+  display: flex;
+  flex-direction: column;
+  height: 350px;
+  overflow-y: auto;
+}
+
+.list-item {
+  border-bottom: var(--cr-separator-line);
+  align-items: center;
+  display: flex;
+  min-height: 36px;
+  padding: 0;
+}

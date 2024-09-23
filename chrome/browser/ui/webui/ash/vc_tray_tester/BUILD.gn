@@ -1,0 +1,24 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("vc_tray_tester") {
+  sources = [
+    "vc_tray_tester_ui.cc",
+    "vc_tray_tester_ui.h",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/vc_tray_tester:resources",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+}

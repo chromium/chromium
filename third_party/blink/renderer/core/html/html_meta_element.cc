@@ -20,8 +20,15 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
+#include "base/metrics/histogram_macros.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -42,10 +49,10 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
-#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -165,13 +172,9 @@ float HTMLMetaElement::ParsePositiveNumber(Document* document,
                                            const String& value_string,
                                            bool* ok) {
   size_t parsed_length;
-  float value;
-  if (value_string.Is8Bit())
-    value = CharactersToFloat(value_string.Characters8(), value_string.length(),
-                              parsed_length);
-  else
-    value = CharactersToFloat(value_string.Characters16(),
-                              value_string.length(), parsed_length);
+  float value = WTF::VisitCharacters(value_string, [&](auto chars) {
+    return CharactersToFloat(chars, parsed_length);
+  });
   if (!parsed_length) {
     if (report_warnings)
       ReportViewportWarning(document, kUnrecognizedViewportArgumentValueError,
@@ -425,7 +428,7 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
                             WebFeature::kInteractiveWidgetResizesVisual);
         } break;
         case ui::mojom::blink::VirtualKeyboardMode::kUnset: {
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
         } break;
       }
     } else {
@@ -468,7 +471,7 @@ static mojom::ConsoleMessageLevel ViewportErrorMessageLevel(
       return mojom::ConsoleMessageLevel::kWarning;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return mojom::ConsoleMessageLevel::kError;
 }
 
@@ -528,6 +531,17 @@ void HTMLMetaElement::ProcessViewportContentAttribute(
           GetDocument().GetSettings()->GetViewportMetaZeroValuesQuirk());
 
   viewport_data.SetViewportDescription(description_from_legacy_tag);
+
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "ParseMetaViewport",
+      "data", [&](perfetto::TracedValue context) {
+        auto dict = std::move(context).WriteDictionary();
+        if (GetDocument().GetFrame()) {
+          dict.Add("frame", GetDocument().GetFrame()->GetFrameIdForTracing());
+        }
+        dict.Add("node_id", GetDomNodeId());
+        dict.Add("content", content);
+      });
 }
 
 void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
@@ -539,14 +553,10 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
       GetDocument().GetFrame()) {
     GetDocument().GetFrame()->DidChangeThemeColor(
         /*update_theme_color_cache=*/true);
-  } else if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
+  } else if (EqualIgnoringASCIICase(name_value, keywords::kColorScheme)) {
     GetDocument().ColorSchemeMetaChanged();
   } else if (EqualIgnoringASCIICase(name_value, "supports-reduced-motion")) {
     GetDocument().SupportsReducedMotionMetaChanged();
-  } else if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled() &&
-             EqualIgnoringASCIICase(name_value, "view-transition")) {
-    ViewTransitionSupplement::From(GetDocument())
-        ->OnMetaTagChanged(g_null_atom);
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
              EqualIgnoringASCIICase(name_value, "app-title")) {
     GetDocument().UpdateAppTitle();
@@ -670,7 +680,7 @@ void HTMLMetaElement::ProcessContent() {
         /*update_theme_color_cache=*/true);
     return;
   }
-  if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
+  if (EqualIgnoringASCIICase(name_value, keywords::kColorScheme)) {
     GetDocument().ColorSchemeMetaChanged();
     return;
   }
@@ -723,12 +733,9 @@ void HTMLMetaElement::ProcessContent() {
       UseCounter::Count(&GetDocument(),
                         WebFeature::kHTMLMetaElementMonetization);
     }
-  } else if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled() &&
-             EqualIgnoringASCIICase(name_value, "view-transition")) {
-    ViewTransitionSupplement::From(GetDocument())
-        ->OnMetaTagChanged(content_value);
   } else if (RuntimeEnabledFeatures::AppTitleEnabled(GetExecutionContext()) &&
              EqualIgnoringASCIICase(name_value, "app-title")) {
+    UseCounter::Count(&GetDocument(), WebFeature::kWebAppTitle);
     GetDocument().UpdateAppTitle();
   }
 }
@@ -780,9 +787,7 @@ void HTMLMetaElement::ProcessMetaCH(Document& document,
     return;
   }
 
-  if (!FrameFetchContext::AllowScriptFromSourceWithoutNotifying(
-          document.Url(), frame->GetContentSettingsClient(),
-          frame->GetSettings())) {
+  if (!frame->ScriptEnabled()) {
     // Do not allow configuring client hints if JavaScript is disabled.
     return;
   }

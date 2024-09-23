@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/account_id",
+  "+ios/chrome/browser/enterprise/model/idle",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/ui/scoped_ui_blocker",
+  "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
+  "+ios/chrome/browser/ui/authentication/authentication_ui_util.h",
+]

@@ -43,13 +43,8 @@ void RationalizePhoneNumberFields(
   // of a phone number or a whole number). The |found_*| pointers will be set to
   // that set of fields when iteration finishes.
   for (AutofillField* field : fields_in_section) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUseParameterizedSectioning)) {
-      if (!field->is_visible)
-        continue;
-    } else {
-      if (!field->is_focusable)
-        continue;
+    if (!field->is_visible()) {
+      continue;
     }
     FieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
@@ -143,9 +138,7 @@ void RationalizePhoneNumberFields(
   // For all above cases, in the update pass, if one field is phone
   // number related but not one of the found fields from first pass, set their
   // |only_fill_when_focused| field to true.
-  for (auto it = fields_in_section.begin(); it != fields_in_section.end();
-       ++it) {
-    AutofillField* field = *it;
+  for (AutofillField* field : fields_in_section) {
     FieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:

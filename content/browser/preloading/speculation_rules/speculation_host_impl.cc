@@ -29,12 +29,23 @@ bool CandidatesAreValid(
       return false;
     }
 
-    // `target_browsing_context_name_hint` on non-prerender actions should be
-    // filtered out in Blink.
+    // Only "prerender" action supports `target_browsing_context_name_hint`.
+    // Invalid Speculation Rules are ignored and invalid candidates are not
+    // produced in Blink.
     if (candidate->action != blink::mojom::SpeculationAction::kPrerender &&
         candidate->target_browsing_context_name_hint !=
             blink::mojom::SpeculationTargetHint::kNoHint) {
       mojo::ReportBadMessage("SH_TARGET_HINT_ON_PREFETCH");
+      return false;
+    }
+
+    // Only "prefetch" action supports the requirement
+    // "anonymous-client-ip-when-cross-origin". Invalid Speculation Rules are
+    // ignored and invalid candidates are not produced in Blink.
+    if (candidate->action != blink::mojom::SpeculationAction::kPrefetch &&
+        candidate->requires_anonymous_client_ip_when_cross_origin) {
+      mojo::ReportBadMessage(
+          "SH_INVALID_REQUIRES_ANONYMOUS_CLIENT_IP_WHEN_CROSS_ORIGIN");
       return false;
     }
   }
@@ -76,12 +87,11 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
   preloading_decider->UpdateSpeculationCandidates(candidates);
 }
 
-void SpeculationHostImpl::EnableNoVarySearchSupport() {
-  auto* prefetch_document_manager =
-      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-          &render_frame_host());
-  CHECK(prefetch_document_manager);
-  prefetch_document_manager->EnableNoVarySearchSupportFromOriginTrial();
+void SpeculationHostImpl::OnLCPPredicted() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
+  preloading_decider->OnLCPPredicted();
 }
 
 void SpeculationHostImpl::InitiatePreview(const GURL& url) {
@@ -89,6 +99,12 @@ void SpeculationHostImpl::InitiatePreview(const GURL& url) {
     mojo::ReportBadMessage("SH_PREVIEW");
     return;
   }
+
+  // Link Preview is not allowed in a frame with untrusted network disabled.
+  if (render_frame_host().IsUntrustedNetworkDisabled()) {
+    return;
+  }
+
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   CHECK(web_contents);

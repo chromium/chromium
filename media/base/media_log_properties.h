@@ -50,7 +50,7 @@ enum class MediaLogProperty {
 
   // Represents whether the media source supports range requests. A truthful
   // value here means that range requests aren't supported and seeking probably
-  // wont be supported.
+  // won't be supported.
   kIsStreaming,
 
   // The url and title of the frame containing the document that this media

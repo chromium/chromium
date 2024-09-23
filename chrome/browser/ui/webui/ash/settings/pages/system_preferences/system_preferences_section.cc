@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/system_preferences_section.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/languages/languages_section.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/search/search_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/storage_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -24,6 +26,20 @@ using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
+
+namespace {
+const std::vector<SearchConcept>& GetSystemPreferencesSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_SYSTEM_PREFERENCES,
+       mojom::kSystemPreferencesSectionPath,
+       mojom::SearchResultIcon::kSystemPreferences,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSection,
+       {.section = mojom::Section::kSystemPreferences}},
+  });
+  return *tags;
+}
+}  // namespace
 
 SystemPreferencesSection::SystemPreferencesSection(
     Profile* profile,
@@ -42,6 +58,9 @@ SystemPreferencesSection::SystemPreferencesSection(
   CHECK(profile);
   CHECK(search_tag_registry);
   CHECK(pref_service);
+
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.AddSearchTags(GetSystemPreferencesSearchConcepts());
 }
 
 SystemPreferencesSection::~SystemPreferencesSection() = default;

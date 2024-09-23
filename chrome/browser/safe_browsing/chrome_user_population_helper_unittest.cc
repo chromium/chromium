@@ -19,7 +19,7 @@
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/version_info/version_info.h"
@@ -95,45 +95,32 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
           &profile, base::BindRepeating(&CreateTestSyncService)));
 
   {
-    sync_service->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
-    sync_service->SetLocalSyncEnabled(false);
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true,
-        /*types=*/syncer::UserSelectableTypeSet::All());
-
+    ASSERT_TRUE(sync_service->GetActiveDataTypes().Has(
+        syncer::HISTORY_DELETE_DIRECTIVES));
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_TRUE(population.is_history_sync_enabled());
   }
 
   {
-    sync_service->SetTransportState(
-        syncer::SyncService::TransportState::DISABLED);
-    sync_service->SetLocalSyncEnabled(false);
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true,
-        /*types=*/syncer::UserSelectableTypeSet::All());
+    sync_service->SetSignedOut();
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
   }
 
   {
-    sync_service->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
+    // Enabling local sync reports the sync service as signed-out, so this is
+    // consistent with the SetSignedOut() call above.
+    // TODO(crbug.com/350494796): TestSyncService should honor that.
     sync_service->SetLocalSyncEnabled(true);
-    sync_service->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/true,
-        /*types=*/syncer::UserSelectableTypeSet::All());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
   }
 
   {
-    sync_service->SetTransportState(
-        syncer::SyncService::TransportState::ACTIVE);
     sync_service->SetLocalSyncEnabled(false);
+    sync_service->SetSignedIn(signin::ConsentLevel::kSync);
     sync_service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false,
         /*types=*/syncer::UserSelectableTypeSet());

@@ -156,7 +156,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url2, _, _, _))
       .Times(1);
   std::vector<GURL> urls = {fake_url1, fake_url2};
-  autofill_image_fetcher()->FetchImagesForURLs(urls, base::DoNothing());
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span({AutofillImageFetcherBase::ImageSize::kSmall}),
+      base::DoNothing());
 
   // Advance the time to make the latency values more realistic.
   task_environment().FastForwardBy(base::Milliseconds(200));
@@ -189,7 +191,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtURL) {
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(override_url, _, _, _))
       .Times(1);
   std::vector<GURL> urls = {fake_url1};
-  autofill_image_fetcher()->FetchImagesForURLs(urls, base::DoNothing());
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span({AutofillImageFetcherBase::ImageSize::kSmall}),
+      base::DoNothing());
 }
 
 TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtImage) {
@@ -247,7 +251,9 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   // Expect to be called once.
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(1);
   std::vector<GURL> urls = {fake_url1};
-  autofill_image_fetcher()->FetchImagesForURLs(urls, base::DoNothing());
+  autofill_image_fetcher()->FetchImagesForURLs(
+      urls, base::span({AutofillImageFetcherBase::ImageSize::kSmall}),
+      base::DoNothing());
 
   task_environment().FastForwardBy(base::Milliseconds(200));
   // Simulate failed image fetching (for image with URL) -> expect the

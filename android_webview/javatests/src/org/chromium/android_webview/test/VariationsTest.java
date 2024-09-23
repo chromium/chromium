@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import androidx.test.filters.MediumTest;
 
@@ -20,6 +20,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.android_webview.variations.VariationsSeedLoader;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.variations.StudyOuterClass.Study;
@@ -28,7 +29,6 @@ import org.chromium.components.variations.StudyOuterClass.Study.Experiment.Featu
 import org.chromium.components.variations.VariationsSeedOuterClass.VariationsSeed;
 import org.chromium.components.variations.VariationsSwitches;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -37,7 +37,7 @@ import java.util.Date;
 /** Tests that seeds saved to disk get loaded correctly on WebView startup. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class VariationsTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -79,7 +79,7 @@ public class VariationsTest extends AwParameterizedTest {
         VariationsUtils.writeSeed(out, seedInfo);
 
         // Because our tests bypass WebView's glue layer, we need to load the seed manually.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     VariationsSeedLoader loader = new VariationsSeedLoader();
                     loader.startVariationsInit();
@@ -91,7 +91,7 @@ public class VariationsTest extends AwParameterizedTest {
     @MediumTest
     // This flag forces the variations service to load the seed file from disk rather than using
     // fieldtrial_testing_config.json.
-    // TODO(crbug.com/1098037): Reference this via a Java VariationsSwitches class.
+    // TODO(crbug.com/40701727): Reference this via a Java VariationsSwitches class.
     @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testFeatureEnabled() throws Exception {
         try {
@@ -104,7 +104,7 @@ public class VariationsTest extends AwParameterizedTest {
             // The seed should be loaded during browser process startup.
             mActivityTestRule.startBrowserProcess();
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         Assert.assertTrue(
                                 "TEST_FEATURE_NAME should be enabled",
@@ -119,7 +119,7 @@ public class VariationsTest extends AwParameterizedTest {
     @MediumTest
     // This flag forces the variations service to load the seed file from disk rather than using
     // fieldtrial_testing_config.json.
-    // TODO(crbug.com/1098037): Reference this via a Java VariationsSwitches class.
+    // TODO(crbug.com/40701727): Reference this via a Java VariationsSwitches class.
     @CommandLineFlags.Add(VariationsSwitches.DISABLE_FIELD_TRIAL_TESTING_CONFIG)
     public void testSeedFreshnessHistogramWritten() throws Exception {
         String seedFreshnessHistogramName = "Variations.SeedFreshness";

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 
+#include <tuple>
+
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -14,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -28,6 +31,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,16 +42,6 @@
 namespace {
 
 const char16_t kProfileTestName[] = u"profile_test_name";
-
-struct CookieTestParam {
-  bool enable_third_party_management_feature;
-  bool setup_cookies_to_move;
-};
-
-const CookieTestParam kTestCases[] = {{true, true},
-                                      {true, false},
-                                      {false, false},
-                                      {false, true}};
 
 void CreateCookies(
     Profile* profile,
@@ -68,7 +63,7 @@ void CreateCookies(
             url.path(), base::Time::Now(), base::Time::Max(), base::Time::Now(),
             url.SchemeIsCryptographic(), false,
             net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-            std::nullopt);
+            std::nullopt, /*status=*/nullptr);
     cookie_manager->SetCanonicalCookie(
         *cookie, url, net::CookieOptions::MakeAllInclusive(),
         base::BindLambdaForTesting(
@@ -78,11 +73,14 @@ void CreateCookies(
   run_loop.Run();
 }
 
-std::unique_ptr<TestingProfile> BuildTestingProfile(const base::FilePath& path,
-                                                    Profile::Delegate* delegate,
-                                                    bool tokens_loaded) {
+std::unique_ptr<TestingProfile> BuildTestingProfile(
+    const base::FilePath& path,
+    Profile::Delegate* delegate,
+    Profile::CreateMode create_mode,
+    bool tokens_loaded) {
   TestingProfile::Builder profile_builder;
   profile_builder.SetDelegate(delegate);
+  profile_builder.SetCreateMode(create_mode);
   profile_builder.SetPath(path);
   std::unique_ptr<TestingProfile> profile =
       IdentityTestEnvironmentProfileAdaptor::
@@ -106,8 +104,10 @@ class UnittestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Profile::Delegate* delegate) override {
-    return ::BuildTestingProfile(path, delegate, tokens_loaded_at_creation_);
+      Profile::Delegate* delegate,
+      Profile::CreateMode create_mode) override {
+    return ::BuildTestingProfile(path, delegate, create_mode,
+                                 tokens_loaded_at_creation_);
   }
 
   bool tokens_loaded_at_creation_ = true;
@@ -115,31 +115,60 @@ class UnittestProfileManager : public FakeProfileManager {
 
 }  // namespace
 
+// Testing params:
+// - bool enable_third_party_management_feature
+// - bool setup_cookies_to_move
+// - bool explicit_browser_signin_enabled
 class DiceSignedInProfileCreatorTest
     : public testing::Test,
-      public testing::WithParamInterface<CookieTestParam>,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>>,
       public ProfileManagerObserver {
  public:
   DiceSignedInProfileCreatorTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {
-#if !BUILDFLAG(IS_FUCHSIA)
-    scoped_feature_list_.InitWithFeatureState(
-        profile_management::features::kThirdPartyProfileManagement,
-        GetParam().enable_third_party_management_feature);
-#endif
+    InitFeatures();
     auto profile_manager_unique = std::make_unique<UnittestProfileManager>(
         base::CreateUniqueTempDirectoryScopedToTest());
     profile_manager_ = profile_manager_unique.get();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::move(profile_manager_unique));
     profile_ = BuildTestingProfile(base::FilePath(), /*delegate=*/nullptr,
+                                   Profile::CreateMode::kSynchronous,
                                    /*tokens_loaded=*/true);
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     profile_manager()->AddObserver(this);
   }
 
+  void InitFeatures() {
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+    if (enable_third_party_management_feature()) {
+      enabled.push_back(
+          profile_management::features::kThirdPartyProfileManagement);
+    } else {
+      disabled.push_back(
+          profile_management::features::kThirdPartyProfileManagement);
+    }
+
+    if (explicit_browser_signin_enabled()) {
+      enabled.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
+    } else {
+      disabled.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled, disabled);
+  }
+
   ~DiceSignedInProfileCreatorTest() override { DeleteProfiles(); }
+
+  bool enable_third_party_management_feature() {
+    return std::get<0>(GetParam());
+  }
+
+  bool setup_cookies_to_move() { return std::get<1>(GetParam()); }
+
+  bool explicit_browser_signin_enabled() { return std::get<2>(GetParam()); }
 
   UnittestProfileManager* profile_manager() { return profile_manager_; }
 
@@ -194,7 +223,7 @@ class DiceSignedInProfileCreatorTest
   }
 
   void SetupCookiesToMove() {
-    if (!GetParam().setup_cookies_to_move) {
+    if (!setup_cookies_to_move()) {
       return;
     }
     // Add some cookies
@@ -210,7 +239,7 @@ class DiceSignedInProfileCreatorTest
   }
 
   void VerifyCookiesMoved() {
-    if (!GetParam().setup_cookies_to_move) {
+    if (!setup_cookies_to_move()) {
       return;
     }
     GURL url("https://www.google.com/");
@@ -241,15 +270,15 @@ class DiceSignedInProfileCreatorTest
       loop.Run();
     }
 
-    if (!GetParam().enable_third_party_management_feature) {
+    if (!enable_third_party_management_feature()) {
       EXPECT_EQ(6u, cookies_source_profile.size());
       EXPECT_TRUE(cookies_new_profile.empty());
       return;
     }
-    // Third party management feature not enabled on fuchsia.
-#if !BUILDFLAG(IS_FUCHSIA)
+
+    // I don't know why this test looks like this, but I am only removing
+    // !BUILDFLAG(IS_FUCHSIA).
     return;
-#endif
 
     EXPECT_EQ(3u, cookies_source_profile.size());
     EXPECT_EQ(3u, cookies_new_profile.size());
@@ -297,11 +326,15 @@ TEST_P(DiceSignedInProfileCreatorTest, CreateWithTokensLoaded) {
   EXPECT_EQ(signed_in_profile(), added_profile());
   EXPECT_FALSE(IdentityManagerFactory::GetForProfile(profile())
                    ->HasAccountWithRefreshToken(account_info.account_id));
-  EXPECT_EQ(1u, IdentityManagerFactory::GetForProfile(signed_in_profile())
-                    ->GetAccountsWithRefreshTokens()
-                    .size());
+  signin::IdentityManager* new_identity_manager =
+      IdentityManagerFactory::GetForProfile(signed_in_profile());
+  EXPECT_EQ(1u, new_identity_manager->GetAccountsWithRefreshTokens().size());
   EXPECT_TRUE(IdentityManagerFactory::GetForProfile(signed_in_profile())
                   ->HasAccountWithRefreshToken(account_info.account_id));
+  if (explicit_browser_signin_enabled()) {
+    EXPECT_TRUE(
+        new_identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
 
   // Check profile type
   ASSERT_FALSE(signed_in_profile()->IsGuestSession());
@@ -408,4 +441,6 @@ TEST_P(DiceSignedInProfileCreatorTest, DeleteProfile) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DiceSignedInProfileCreatorTest,
-                         ::testing::ValuesIn(kTestCases));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));

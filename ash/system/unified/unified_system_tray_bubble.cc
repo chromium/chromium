@@ -96,6 +96,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Remove child views synchronously to ensure they don't try to access
   // `controller_` after `this` goes out of scope.
   if (bubble_view_) {
+    controller_->ShutDownDetailedViewController();
     bubble_view_->RemoveAllChildViews();
     quick_settings_view_ = nullptr;
     bubble_view_->ResetDelegate();
@@ -208,7 +209,7 @@ int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
   return quick_settings_view_->GetCurrentHeight();
 }
 
-void UnifiedSystemTrayBubble::OnDisplayConfigurationChanged() {
+void UnifiedSystemTrayBubble::OnDidApplyDisplayChanges() {
   UpdateBubbleBounds();
 }
 
@@ -217,6 +218,7 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
 
+  controller_->ShutDownDetailedViewController();
   bubble_view_->RemoveAllChildViews();
   quick_settings_view_ = nullptr;
   bubble_view_->ResetDelegate();

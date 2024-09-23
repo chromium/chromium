@@ -36,7 +36,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -52,6 +51,7 @@
 #include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
+#include "components/download/public/common/download_item_rename_handler.h"
 #include "components/download/public/common/download_job_factory.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_task_runner.h"
@@ -132,7 +132,7 @@ std::string GetDownloadCreationTypeNames(
     case DownloadItem::TYPE_SAVE_PAGE_AS:
       return "SAVE_PAGE_AS";
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "INVALID_TYPE";
   }
 }
@@ -159,10 +159,34 @@ std::string GetDownloadDangerNames(DownloadDangerType type) {
       return "POTENTIALLY_UNWANTED";
     case DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
       return "ALLOWLISTED_BY_POLICY";
+    case DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+      return "ASYNC_SCANNING";
+    case DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+      return "BLOCKED_PASSWORD_PROTECTED";
+    case DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+      return "BLOCKED_TOO_LARGE";
+    case DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+      return "SENSITIVE_CONTENT_WARNING";
+    case DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+      return "SENSITIVE_CONTENT_BLOCK";
+    case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+      return "DEEP_SCANNED_SAFE";
+    case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+      return "DEEP_SCANNED_OPENED_DANGEROUS";
+    case DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+      return "PROMPT_FOR_SCANNING";
     case DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return "DANGEROUS_ACCOUNT_COMPROMISE";
-    default:
-      NOTREACHED();
+    case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
+      return "DEEP_SCANNED_FAILED";
+    case DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+      return "PROMPT_FOR_LOCAL_PASSWORD_SCANNING";
+    case DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
+      return "ASYNC_LOCAL_PASSWORD_SCANNING";
+    case DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+      return "BLOCKED_SCAN_FAILED";
+    case DOWNLOAD_DANGER_TYPE_MAX:
+      NOTREACHED_IN_MIGRATION();
       return "UNKNOWN_DANGER_TYPE";
   }
 }
@@ -564,26 +588,12 @@ void DownloadItemImpl::ValidateInsecureDownload() {
   MaybeCompleteDownload();
 }
 
-void DownloadItemImpl::StealDangerousDownload(bool delete_file_afterward,
-                                              AcquireFileCallback callback) {
+void DownloadItemImpl::CopyDownload(AcquireFileCallback callback) {
   DVLOG(20) << __func__ << "() download = " << DebugString(true);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(IsDangerous());
   DCHECK(AllDataSaved());
 
-  if (delete_file_afterward) {
-    if (download_file_) {
-      GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&DownloadFileDetach, std::move(download_file_)),
-          std::move(callback));
-    } else {
-      std::move(callback).Run(GetFullPath());
-    }
-    destination_info_.current_path.clear();
-    Remove();
-    // Download item has now been deleted.
-  } else if (download_file_) {
+  if (download_file_) {
     GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&MakeCopyOfDownloadFile, download_file_.get()),
@@ -623,7 +633,7 @@ void DownloadItemImpl::Pause() {
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
     case TARGET_RESOLVED_INTERNAL:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -668,7 +678,7 @@ void DownloadItemImpl::Resume(bool user_resume) {
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
     case TARGET_RESOLVED_INTERNAL:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -847,7 +857,7 @@ bool DownloadItemImpl::CanResume() const {
     }
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 }
@@ -1020,6 +1030,10 @@ DownloadFile* DownloadItemImpl::GetDownloadFile() {
   return download_file_.get();
 }
 
+DownloadItemRenameHandler* DownloadItemImpl::GetRenameHandler() {
+  return rename_handler_.get();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 bool DownloadItemImpl::IsFromExternalApp() {
   return is_from_external_app_;
@@ -1044,9 +1058,9 @@ bool DownloadItemImpl::IsDangerous() const {
     case DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-    case DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
     case DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+    case DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return true;
     case DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
@@ -1058,7 +1072,7 @@ bool DownloadItemImpl::IsDangerous() const {
     case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return false;
     case DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -1120,6 +1134,10 @@ int64_t DownloadItemImpl::GetReceivedBytes() const {
 const std::vector<DownloadItem::ReceivedSlice>&
 DownloadItemImpl::GetReceivedSlices() const {
   return received_slices_;
+}
+
+int64_t DownloadItemImpl::GetUploadedBytes() const {
+  return destination_info_.uploaded_bytes;
 }
 
 base::Time DownloadItemImpl::GetStartTime() const {
@@ -1649,7 +1667,7 @@ void DownloadItemImpl::Start(
       RecordParallelizableDownloadCount(NEW_DOWNLOAD_COUNT,
                                         IsParallelDownloadEnabled());
     }
-    RecordDownloadMimeType(mime_type_);
+    RecordDownloadMimeType(mime_type_, transient_);
     DownloadContent file_type = DownloadContentFromMimeType(mime_type_, false);
     DownloadConnectionSecurity state = CheckDownloadConnectionSecurity(
         new_create_info.url(), new_create_info.url_chain);
@@ -1659,7 +1677,7 @@ void DownloadItemImpl::Start(
     if (!delegate_->IsOffTheRecord()) {
       RecordDownloadCountWithSource(NEW_DOWNLOAD_COUNT_NORMAL_PROFILE,
                                     download_source_);
-      RecordDownloadMimeTypeForNormalProfile(mime_type_);
+      RecordDownloadMimeTypeForNormalProfile(mime_type_, transient_);
     }
   }
 
@@ -1686,6 +1704,8 @@ void DownloadItemImpl::Start(
               base::BindRepeating(&DownloadItemImpl::OnDownloadFileInitialized,
                                   weak_ptr_factory_.GetWeakPtr()),
               GetReceivedSlices());
+
+  rename_handler_ = delegate_->GetRenameHandlerForDownload(this);
 }
 
 void DownloadItemImpl::OnDownloadFileInitialized(DownloadInterruptReason result,
@@ -1757,6 +1777,7 @@ void DownloadItemImpl::OnDownloadTargetDetermined(
   if (state_ == TARGET_PENDING_INTERNAL &&
       target_info.interrupt_reason != DOWNLOAD_INTERRUPT_REASON_NONE) {
     deferred_interrupt_reason_ = target_info.interrupt_reason;
+    insecure_download_status_ = target_info.insecure_download_status;
     TransitionTo(INTERRUPTED_TARGET_PENDING_INTERNAL);
     OnTargetResolved();
     return;
@@ -1922,7 +1943,7 @@ void DownloadItemImpl::OnDownloadCompleting() {
   // Unilaterally rename; even if it already has the right name,
   // we need the annotation.
   DownloadFile::RenameCompletionCallback rename_callback =
-      base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToFinalName,
+      base::BindOnce(&DownloadItemImpl::OnRenameAndAnnotateDone,
                      weak_ptr_factory_.GetWeakPtr());
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1944,13 +1965,33 @@ void DownloadItemImpl::OnDownloadCompleting() {
 
   GetDownloadTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&DownloadFile::RenameAndAnnotate,
-                     base::Unretained(download_file_.get()),
-                     GetTargetFilePath(),
-                     delegate_->GetApplicationClientIdForFileScanning(),
-                     delegate_->IsOffTheRecord() ? GURL() : GetURL(),
-                     delegate_->IsOffTheRecord() ? GURL() : GetReferrerUrl(),
-                     std::move(quarantine), std::move(rename_callback)));
+      base::BindOnce(
+          &DownloadFile::RenameAndAnnotate,
+          base::Unretained(download_file_.get()), GetTargetFilePath(),
+          delegate_->GetApplicationClientIdForFileScanning(),
+          delegate_->IsOffTheRecord() ? GURL() : GetURL(),
+          delegate_->IsOffTheRecord() ? GURL() : GetReferrerUrl(),
+          delegate_->IsOffTheRecord() ? std::nullopt : GetRequestInitiator(),
+          std::move(quarantine), std::move(rename_callback)));
+}
+
+void DownloadItemImpl::OnRenameAndAnnotateDone(
+    DownloadInterruptReason reason,
+    const base::FilePath& full_path) {
+  DownloadFile::RenameCompletionCallback rename_callback =
+      base::BindOnce(&DownloadItemImpl::OnDownloadRenamedToFinalName,
+                     weak_ptr_factory_.GetWeakPtr());
+  if (rename_handler_) {
+    renaming_ = true;
+
+    rename_handler_->Start(
+        base::BindRepeating(&DownloadItemImpl::UpdateRenameProgress,
+                            weak_ptr_factory_.GetWeakPtr()),
+        std::move(rename_callback));
+    return;
+  }
+
+  OnDownloadRenamedToFinalName(reason, full_path);
 }
 
 void DownloadItemImpl::OnDownloadRenamedToFinalName(
@@ -1958,6 +1999,8 @@ void DownloadItemImpl::OnDownloadRenamedToFinalName(
     const base::FilePath& full_path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!IsSavePackageDownload());
+
+  renaming_ = false;
 
   // If a cancel or interrupt hit, we'll cancel the DownloadFile, which
   // will result in deleting the file on the file thread.  So we don't
@@ -2110,7 +2153,7 @@ void DownloadItemImpl::InterruptWithPartialState(
 
     case INITIAL_INTERNAL:
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
 
     case TARGET_PENDING_INTERNAL:
@@ -2342,7 +2385,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
 
   switch (state_) {
     case INITIAL_INTERNAL:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
 
     case TARGET_PENDING_INTERNAL:
@@ -2411,7 +2454,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
       break;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -2647,7 +2690,7 @@ DownloadItem::DownloadState DownloadItemImpl::InternalToExternalState(
     case MAX_DOWNLOAD_INTERNAL_STATE:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return MAX_DOWNLOAD_STATE;
 }
 
@@ -2664,7 +2707,7 @@ DownloadItemImpl::ExternalToInternalState(DownloadState external_state) {
     case INTERRUPTED:
       return INTERRUPTED_INTERNAL;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return MAX_DOWNLOAD_INTERNAL_STATE;
 }
@@ -2691,7 +2734,7 @@ bool DownloadItemImpl::IsValidSavePackageStateTransition(
              to == INTERRUPTED_INTERNAL;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 #else
@@ -2741,7 +2784,7 @@ bool DownloadItemImpl::IsValidStateTransition(DownloadInternalState from,
       return false;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return false;
 #else
@@ -2775,7 +2818,7 @@ const char* DownloadItemImpl::DebugDownloadStateString(
     case MAX_DOWNLOAD_INTERNAL_STATE:
       break;
   }
-  NOTREACHED() << "Unknown download state " << state;
+  NOTREACHED_IN_MIGRATION() << "Unknown download state " << state;
   return "unknown";
 }
 
@@ -2792,13 +2835,23 @@ const char* DownloadItemImpl::DebugResumeModeString(ResumeMode mode) {
     case ResumeMode::USER_RESTART:
       return "USER_RESTART";
   }
-  NOTREACHED() << "Unknown resume mode " << static_cast<int>(mode);
+  NOTREACHED_IN_MIGRATION() << "Unknown resume mode " << static_cast<int>(mode);
   return "unknown";
 }
 
 std::pair<int64_t, int64_t> DownloadItemImpl::GetRangeRequestOffset() const {
   return std::make_pair(request_info_.range_request_from,
                         request_info_.range_request_to);
+}
+
+void DownloadItemImpl::UpdateRenameProgress(int64_t bytes_so_far,
+                                            int64_t bytes_per_sec) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(renaming_);
+
+  destination_info_.uploaded_bytes = bytes_so_far;
+
+  UpdateObservers();
 }
 
 }  // namespace download

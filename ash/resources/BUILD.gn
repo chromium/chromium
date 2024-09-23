@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ash/ambient/resources/resources.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//tools/grit/repack.gni")
@@ -16,8 +17,14 @@ repack("ash_test_resources_unscaled") {
   output = "$root_build_dir/ash_test_resources_unscaled.pak"
   sources = [
     "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
+    "$root_gen_dir/ash/system/mahi/resources/mahi_resources.pak",
+    "$root_gen_dir/ash/system/video_conference/resources/vc_resources.pak",
   ]
-  deps = [ "//ash/public/cpp/resources:ash_public_unscaled_resources" ]
+  deps = [
+    "//ash/public/cpp/resources:ash_public_unscaled_resources",
+    "//ash/system/mahi/resources:mahi_resources",
+    "//ash/system/video_conference/resources:vc_resources",
+  ]
 
   if (include_ash_ambient_animation_resources) {
     sources += [
@@ -68,6 +75,12 @@ template("ash_test_resources") {
 
     if (defined(invoker.deps)) {
       deps += invoker.deps
+    }
+
+    if (is_chrome_branded) {
+      sources += [ "$root_gen_dir/chromeos/ash/resources/internal/ash_internal_resources_${percent}_percent.pak" ]
+      deps +=
+          [ "//chromeos/ash/resources/internal:ash_internal_scaled_resources" ]
     }
 
     if (percent == "100") {

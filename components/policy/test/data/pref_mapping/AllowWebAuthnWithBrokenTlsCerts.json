@@ -9,35 +9,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "webauthn.allow_with_broken_certs": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "AllowWebAuthnWithBrokenTlsCerts": true
-        },
-        "prefs": {
-          "webauthn.allow_with_broken_certs": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "AllowWebAuthnWithBrokenTlsCerts": false
-        },
-        "prefs": {
-          "webauthn.allow_with_broken_certs": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webauthn.allow_with_broken_certs",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

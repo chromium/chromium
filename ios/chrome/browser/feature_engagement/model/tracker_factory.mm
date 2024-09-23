@@ -8,9 +8,8 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory_util.h"
-#import "ios/chrome/browser/promos_manager/model/promos_manager_event_exporter_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace feature_engagement {
 
@@ -22,17 +21,21 @@ TrackerFactory* TrackerFactory::GetInstance() {
 
 // static
 feature_engagement::Tracker* TrackerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
+}
+
+// static
+feature_engagement::Tracker* TrackerFactory::GetForProfile(
+    ProfileIOS* profile) {
   return static_cast<feature_engagement::Tracker*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+      GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
 TrackerFactory::TrackerFactory()
     : BrowserStateKeyedServiceFactory(
           "feature_engagement::Tracker",
-          BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(PromosManagerEventExporterFactory::GetInstance());
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
 TrackerFactory::~TrackerFactory() = default;
 

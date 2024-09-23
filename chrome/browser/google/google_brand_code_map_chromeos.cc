@@ -4,7 +4,7 @@
 
 #include "chrome/browser/google/google_brand_code_map_chromeos.h"
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -12,17 +12,18 @@
 namespace google_brand {
 namespace chromeos {
 
-std::string GetRlzBrandCode(
-    const std::string& static_brand_code,
+std::string_view GetRlzBrandCode(
+    std::string_view static_brand_code,
     std::optional<policy::MarketSegment> market_segment) {
   struct BrandCodeValueEntry {
-    const char* unenrolled_brand_code;
-    const char* education_enrolled_brand_code;
-    const char* enterprise_enrolled_brand_code;
+    std::string_view unenrolled_brand_code;
+    std::string_view education_enrolled_brand_code;
+    std::string_view enterprise_enrolled_brand_code;
   };
-  static const base::NoDestructor<
-      base::flat_map<std::string, BrandCodeValueEntry>>
-      kBrandCodeMap({{"ACAC", {"CFZM", "BEUH", "GUTN"}},
+  static constexpr auto kBrandCodeMap =
+      base::MakeFixedFlatMap<std::string_view, BrandCodeValueEntry>(
+          // clang-format off
+                    {{"ACAC", {"CFZM", "BEUH", "GUTN"}},
                      {"ACAG", {"KSOU", "MUHR", "YYJR"}},
                      {"ACAH", {"KEFG", "RYNH", "HHAZ"}},
                      {"ACAI", {"BKWQ", "CMVE", "VNFQ"}},
@@ -52,6 +53,7 @@ std::string GetRlzBrandCode(
                      {"AGVY", {"RNNC", "KYLA", "NJOS"}},
                      {"AHBI", {"TSVD", "PIAU", "ZRSX"}},
                      {"AJIM", {"XQAQ", "WFLV", "AMBR"}},
+                     {"AJPW", {"QWKC", "DJAH", "IRZI"}},
                      {"ALRH", {"XDKE", "TDIH", "VLER"}},
                      {"ANAE", {"IWTJ", "CISE", "SLJZ"}},
                      {"ANLW", {"MTZL", "LFDW", "IHRZ"}},
@@ -88,6 +90,7 @@ std::string GetRlzBrandCode(
                      {"BDIW", {"UDUG", "TRYQ", "PWFV"}},
                      {"BDXJ", {"EWPX", "PXLS", "LPDD"}},
                      {"BKLL", {"DJXO", "KLUN", "DJNO"}},
+                     {"BKQW", {"PGZL", "EJCE", "GQZS"}},
                      {"BLXA", {"VLID", "JNUQ", "IKRB"}},
                      {"BMAD", {"HGZG", "AOPW", "RIVV"}},
                      {"BMNE", {"HLSA", "WXJQ", "TULR"}},
@@ -95,14 +98,17 @@ std::string GetRlzBrandCode(
                      {"BVSW", {"ACGA", "XCIC", "WCHV"}},
                      {"BWYB", {"YMAG", "QICL", "XNBX"}},
                      {"BYEW", {"CNTW", "ZJBY", "PEUU"}},
+                     {"BZDY", {"NJQN", "BLMU", "DPTE"}},
                      {"CBUY", {"POUW", "GHJY", "USXU"}},
                      {"CDYS", {"CJRA", "BIRA", "NFVP"}},
+                     {"CDYY", {"INYB", "ZWGK", "CKUW"}},
                      {"CFGF", {"SKZQ", "CFPE", "KTXQ"}},
                      {"CFUL", {"GIFL", "EDYW", "GOJE"}},
                      {"CIDF", {"MTJH", "UTVR", "YIGI"}},
                      {"CKJN", {"KUGL", "XRVY", "AQPP"}},
                      {"CLQY", {"BBGR", "ULEA", "YDVH"}},
                      {"CLSF", {"OWOB", "RLJX", "OZWK"}},
+                     {"CMMK", {"XPGY", "YGSO", "LHGH"}},
                      {"CNOR", {"TEUF", "QHOY", "NQZD"}},
                      {"CNZH", {"VJJU", "YXEU", "BRCV"}},
                      {"CPOG", {"UNJV", "ZFSN", "DVWN"}},
@@ -130,21 +136,27 @@ std::string GetRlzBrandCode(
                      {"DGSC", {"YDED", "SBBD", "LJJT"}},
                      {"DHAS", {"KEDN", "LUZR", "MHFN"}},
                      {"DHMM", {"SBQZ", "UCTV", "ALYT"}},
+                     {"DHUL", {"SJRJ", "VNLH", "HOWS"}},
                      {"DISZ", {"PPAR", "VCPW", "NJKK"}},
                      {"DJBB", {"ZLXN", "WQCE", "ASCQ"}},
                      {"DKJM", {"VRGL", "PZYF", "VBTW"}},
                      {"DNHE", {"TXQH", "NAJK", "CRYX"}},
                      {"DQEL", {"BNUX", "HTDN", "ITXJ"}},
+                     {"DRLC", {"VUQV", "YXKT", "HKQR"}},
                      {"DRYI", {"LWTQ", "OLEY", "NWUA"}},
                      {"DSCL", {"OSET", "BPKO", "KRIN"}},
                      {"DSQH", {"MXFW", "HTPC", "YIUL"}},
                      {"DUKI", {"FRGD", "SACE", "AAMW"}},
+                     {"DUSQ", {"SCAG", "PXPE", "ABVO"}},
+                     {"DUYG", {"TXYR", "CTVK", "MOYF"}},
                      {"DVUG", {"HJHV", "KPAH", "DCQS"}},
                      {"DWCY", {"ZJQH", "JLCB", "QOAI"}},
+                     {"DWSH", {"MGOR", "DWKX", "FBNY"}},
                      {"DXVL", {"EBBY", "NMQL", "GTHA"}},
                      {"DXZT", {"WNSK", "WNDA", "DZWQ"}},
                      {"DYHT", {"YPAH", "NUKA", "EULJ"}},
                      {"DZJX", {"QBEZ", "CUYH", "HKHD"}},
+                     {"EBZW", {"KMOE", "SBGY", "OARH"}},
                      {"EDFZ", {"VUMJ", "OMDW", "LCDF"}},
                      {"EDHM", {"NLAE", "JYDL", "BTWJ"}},
                      {"EGSC", {"DWAW", "FZRC", "PKWJ"}},
@@ -178,6 +190,7 @@ std::string GetRlzBrandCode(
                      {"FXMG", {"RCBT", "LGEZ", "DJDI"}},
                      {"FYEL", {"WSGO", "YYQV", "OWPY"}},
                      {"FYSO", {"HFDH", "WNPK", "ZTIK"}},
+                     {"GBAV", {"FGCQ", "ENQH", "YLYR"}},
                      {"GBWE", {"DKLE", "OUDI", "VWJC"}},
                      {"GBXM", {"ONLL", "YBJS", "SOVT"}},
                      {"GFMQ", {"DRLH", "HVWY", "OYYM"}},
@@ -190,13 +203,16 @@ std::string GetRlzBrandCode(
                      {"GNDV", {"UCEU", "GXKO", "HWDL"}},
                      {"GNLB", {"FFNO", "GKLL", "EELI"}},
                      {"GOKU", {"PRAG", "PQVF", "PIDI"}},
+                     {"GPPJ", {"BMOU", "WCKO", "CYIO"}},
                      {"GRHN", {"XECM", "MGKM", "RXUC"}},
                      {"GSKT", {"MVLZ", "LUXS", "UIOA"}},
                      {"GTCE", {"VZBW", "OPRV", "DVUH"}},
                      {"GURF", {"LJBU", "NBCU", "SYMX"}},
+                     {"GVBA", {"BFBJ", "USMG", "PCFJ"}},
                      {"GVLR", {"HCKU", "VUNU", "FIRF"}},
                      {"GWBB", {"RAZC", "LCUV", "TGLN"}},
                      {"GWDK", {"MQJZ", "WTMH", "ZOYJ"}},
+                     {"GWLN", {"KTNP", "TEPF", "MVFN"}},
                      {"GXSC", {"MQSO", "FZZK", "QOBC"}},
                      {"GXYK", {"MLCI", "HWQK", "ERBL"}},
                      {"HANW", {"HHCO", "SQGU", "UNQX"}},
@@ -241,7 +257,9 @@ std::string GetRlzBrandCode(
                      {"HYMD", {"LPEG", "UDVW", "KUBO"}},
                      {"HYPG", {"FSVQ", "PSWK", "RXGC"}},
                      {"HYZI", {"YBVF", "EUST", "WJVV"}},
+                     {"HZJP", {"NWKF", "TACX", "BMJF"}},
                      {"ICHZ", {"GGSN", "QSFP", "GDTQ"}},
+                     {"IEIH", {"RESV", "BSXZ", "YTPA"}},
                      {"IGDX", {"YSMS", "MWLQ", "AQQG"}},
                      {"IGRW", {"FORO", "KHEK", "BREP"}},
                      {"IHOS", {"SSNJ", "WIBC", "EVPF"}},
@@ -255,10 +273,12 @@ std::string GetRlzBrandCode(
                      {"IULQ", {"ICMQ", "ZABS", "XMOU"}},
                      {"IXMM", {"DIJU", "LAUW", "XHLQ"}},
                      {"JBPA", {"VUZL", "XYPI", "XOWE"}},
+                     {"JDWQ", {"DQSN", "EAYC", "ICHH"}},
                      {"JFLH", {"EAJS", "RYGT", "SAZF"}},
                      {"JFZB", {"PFDC", "XJDX", "CPXX"}},
                      {"JGVE", {"DBVB", "YATF", "XFBR"}},
                      {"JICX", {"GUZK", "TIZA", "HTUW"}},
+                     {"JJEX", {"OYNP", "TJDC", "PHNS"}},
                      {"JLGJ", {"HAZJ", "KSWW", "QCYN"}},
                      {"JLOF", {"IWFR", "CJHY", "DOPK"}},
                      {"JLRH", {"SAMJ", "GLJZ", "SKTN"}},
@@ -418,6 +438,7 @@ std::string GetRlzBrandCode(
                      {"NHZQ", {"AQMX", "ASMZ", "DRLQ"}},
                      {"NISD", {"MISA", "YDPG", "NCLQ"}},
                      {"NKMK", {"XGYN", "APDH", "LCGN"}},
+                     {"NLZQ", {"LWED", "JEMC", "SYAS"}},
                      {"NMOG", {"UYQU", "ZWTV", "TQFQ"}},
                      {"NOMD", {"GZLV", "UNZR", "FVOP"}},
                      {"NPEC", {"BMGD", "YETH", "XAWJ"}},
@@ -426,6 +447,7 @@ std::string GetRlzBrandCode(
                      {"NTBE", {"ARRB", "AELU", "HGEA"}},
                      {"NZRH", {"NOUG", "UDYG", "ZGAU"}},
                      {"ODVK", {"VIOP", "MIHJ", "VXFY"}},
+                     {"OEER", {"TQAV", "TGPB", "AYYR"}},
                      {"OFPE", {"YFOO", "UIGY", "PFGZ"}},
                      {"OFPO", {"TSWQ", "EBUR", "JASZ"}},
                      {"OFRL", {"WFXP", "RTOK", "YKGH"}},
@@ -437,9 +459,11 @@ std::string GetRlzBrandCode(
                      {"ONJP", {"XIEX", "UAAR", "UMMB"}},
                      {"OPNA", {"JDSG", "BCNO", "THKI"}},
                      {"OPUT", {"GXWE", "AYTE", "AWFR"}},
+                     {"OXAV", {"EMDD", "ODMX", "HRFR"}},
                      {"OYZI", {"WDBC", "NKZT", "QJZD"}},
                      {"PAZD", {"VARX", "KZSU", "WPLH"}},
                      {"PEVA", {"RBMX", "IBPY", "ALNV"}},
+                     {"PGMD", {"FKWZ", "MIJD", "KCZB"}},
                      {"PGQF", {"USPJ", "SFKO", "KNBH"}},
                      {"PGRU", {"UNWU", "PZNF", "XXZB"}},
                      {"PHYB", {"EGXD", "KHYC", "QUPU"}},
@@ -447,11 +471,13 @@ std::string GetRlzBrandCode(
                      {"PKSA", {"RZEK", "JANU", "JMRA"}},
                      {"PKZD", {"LVUZ", "XEKM", "YTDF"}},
                      {"PLKQ", {"EXXM", "LBZT", "SPDN"}},
+                     {"PNYR", {"NFJG", "INHI", "EPWN"}},
                      {"POKY", {"HPKI", "GYCL", "ODAM"}},
                      {"PORH", {"MYTI", "ILNP", "OKLK"}},
                      {"PRYU", {"QFZV", "TZXL", "EPRT"}},
                      {"PSHU", {"DWTK", "RTTW", "PGXM"}},
                      {"PSNQ", {"USSZ", "KNLW", "UGQI"}},
+                     {"PSRL", {"UQCJ", "IUAA", "CTWP"}},
                      {"PTUY", {"IVGZ", "CNVR", "YCUX"}},
                      {"PULG", {"OXHS", "IBTI", "EKUW"}},
                      {"PVHI", {"FUBQ", "URIF", "UATZ"}},
@@ -473,27 +499,37 @@ std::string GetRlzBrandCode(
                      {"QNDA", {"VFMY", "KTBL", "UOJY"}},
                      {"QQFU", {"ZUKV", "QBAU", "SIID"}},
                      {"QRII", {"NHZV", "AUJW", "NSZF"}},
+                     {"QRQB", {"IXPL", "NBMV", "KVTR"}},
                      {"QSAX", {"IGTA", "AMBN", "ASDW"}},
                      {"QSHQ", {"JNSW", "UILC", "UHMT"}},
                      {"QSIM", {"ZCML", "LEPJ", "QQEM"}},
                      {"QTMI", {"YMOW", "FZIR", "YKGT"}},
                      {"QVKE", {"FIQU", "CVOM", "LPVD"}},
                      {"QVOV", {"HWPL", "ICLO", "LTVI"}},
+                     {"QVWM", {"WCAF", "OQVH", "JEZD"}},
+                     {"QXTI", {"MYEK", "QTWY", "JHBO"}},
                      {"QYFB", {"MTEH", "KNUI", "DCFC"}},
                      {"QYGU", {"FYBR", "QLFJ", "OLRV"}},
                      {"QZPR", {"SLSU", "LFCQ", "TKBG"}},
                      {"QZUX", {"HNBM", "BUJY", "FFDE"}},
                      {"RAKQ", {"LDHH", "NAML", "LKFR"}},
+                     {"RBSH", {"RMSE", "LNRV", "TWLO"}},
+                     {"RCKB", {"EATF", "TCWS", "PSDM"}},
                      {"REAV", {"JVGQ", "DWCU", "NZSZ"}},
                      {"RGDH", {"YWKM", "ZBAR", "RMQQ"}},
                      {"RGNF", {"SDGJ", "KEWA", "GITE"}},
                      {"RHDN", {"MGVK", "EQPB", "UAHY"}},
+                     {"RIJZ", {"RDXU", "DXNZ", "KHPZ"}},
                      {"RIKG", {"VRBT", "LEPX", "VWIV"}},
+                     {"RKFM", {"OXUN", "TAFT", "VIDA"}},
+                     {"RKMZ", {"ZMHF", "VZAB", "OPZH"}},
                      {"RKRB", {"OPOY", "QMZZ", "FAGR"}},
                      {"RLGE", {"NTKV", "LOTA", "MJVG"}},
                      {"RNPH", {"TSIF", "ESCP", "GISR"}},
                      {"RPOG", {"DFCF", "QCSW", "HVUW"}},
                      {"RRAJ", {"GOMU", "UHWV", "NSSL"}},
+                     {"RTKU", {"SHAX", "UWMZ", "ZTDZ"}},
+                     {"RTRY", {"SCHR", "SIKT", "MLFE"}},
                      {"RUIL", {"BSMS", "GIWR", "XIOX"}},
                      {"RVAR", {"NLFF", "YJIJ", "UHJG"}},
                      {"RVKU", {"EVWH", "THXH", "GROS"}},
@@ -503,11 +539,13 @@ std::string GetRlzBrandCode(
                      {"RYMB", {"ZITN", "TMGX", "HVCV"}},
                      {"SBBR", {"IMRL", "LZCR", "WJQV"}},
                      {"SBGV", {"ZNIN", "ZVZV", "BPJY"}},
+                     {"SEOI", {"ZLQU", "QODO", "CQWC"}},
                      {"SFGV", {"TSMJ", "SVHE", "WNOP"}},
                      {"SGGB", {"HSKN", "BECX", "NFTY"}},
                      {"SHAN", {"OERN", "XNHK", "GVYX"}},
                      {"SHIW", {"WIIA", "NSEZ", "JNNE"}},
                      {"SKIW", {"CLPF", "OTYY", "ZJVP"}},
+                     {"SKZO", {"XAEJ", "LVTG", "NZEQ"}},
                      {"SMAC", {"FDEX", "ZFXY", "DJMW"}},
                      {"SMAD", {"AADC", "URZK", "UBVE"}},
                      {"SMAE", {"SUUV", "QXWL", "LYKX"}},
@@ -518,17 +556,20 @@ std::string GetRlzBrandCode(
                      {"SMAJ", {"PVCB", "UCIK", "XVBK"}},
                      {"SMAK", {"WOMZ", "OHAX", "JSTF"}},
                      {"SMAL", {"OWLX", "YXSA", "TXJR"}},
+                     {"SNEN", {"JYXH", "XOHX", "VRMO"}},
                      {"SOCA", {"AJGR", "IYZW", "NPDX"}},
                      {"SSLV", {"IUFZ", "NTYF", "TWGJ"}},
                      {"SSVR", {"NZKV", "NGLW", "LDCH"}},
                      {"STMU", {"HKNS", "OFBT", "RWDO"}},
                      {"SUCA", {"JSZT", "IBUF", "HMEZ"}},
                      {"SVGZ", {"WWDD", "EJWL", "TJFT"}},
+                     {"SVXK", {"DFUT", "ZLXW", "CSRL"}},
                      {"SWLP", {"GLDC", "WZKJ", "GTXT"}},
                      {"SYDL", {"CGGV", "VDEY", "UZDR"}},
                      {"TAAB", {"ZBMY", "NYDT", "CXYZ"}},
                      {"TAAC", {"YBVP", "RXXN", "HMDY"}},
                      {"TBKT", {"IBUN", "QLQQ", "CRBQ"}},
+                     {"TEDS", {"MOWU", "GIMQ", "BOVR"}},
                      {"TFIY", {"RVUF", "DHKE", "GFPK"}},
                      {"TGCY", {"MNOD", "MNFT", "OFVP"}},
                      {"THMZ", {"BDLY", "XKXS", "RFDS"}},
@@ -546,10 +587,12 @@ std::string GetRlzBrandCode(
                      {"TSNX", {"NLLF", "DJAG", "FBBO"}},
                      {"TVCI", {"KZZQ", "XTHC", "WSBP"}},
                      {"TVRZ", {"XWBR", "VSOG", "WGJH"}},
+                     {"TWWQ", {"ADPY", "NQDD", "PQKR"}},
                      {"TXMN", {"WTVY", "GJTZ", "KMRI"}},
                      {"TYOO", {"EGWA", "BJJJ", "GOKE"}},
                      {"TZIV", {"XWTU", "JFLV", "JLEU"}},
                      {"TZNR", {"MHIP", "YJBK", "VDZV"}},
+                     {"TZXN", {"VQDQ", "NKBA", "NNUN"}},
                      {"UBKE", {"CPTX", "EGAC", "MRXT"}},
                      {"UCLD", {"XHWD", "CBQT", "UUFI"}},
                      {"UERT", {"XSDZ", "GOMR", "THXS"}},
@@ -558,7 +601,9 @@ std::string GetRlzBrandCode(
                      {"UGCB", {"OFRA", "PZBT", "HYKB"}},
                      {"UGDD", {"SCMD", "LRWA", "NTRL"}},
                      {"UIST", {"PONZ", "WCLO", "LRCQ"}},
+                     {"UIUB", {"TQTC", "XTMH", "YYPG"}},
                      {"ULCL", {"RSMW", "BZPJ", "TJHA"}},
+                     {"ULTK", {"PFYD", "GJSB", "AXWT"}},
                      {"UMAU", {"FKAK", "JCTZ", "GDUU"}},
                      {"UPPG", {"HYSS", "KHZT", "QQZJ"}},
                      {"UPWS", {"ORJS", "ODPG", "KEZI"}},
@@ -592,6 +637,7 @@ std::string GetRlzBrandCode(
                      {"VZZF", {"GFCC", "ZTGC", "HSGK"}},
                      {"WBZQ", {"LAYK", "LQDM", "QBFV"}},
                      {"WCLL", {"DALK", "WPRA", "TPTP"}},
+                     {"WFCT", {"XXPZ", "TUNP", "CBBQ"}},
                      {"WFIQ", {"KKHX", "UTHS", "HDSP"}},
                      {"WFVB", {"UQPS", "NZRZ", "GJNX"}},
                      {"WGMJ", {"YZJO", "WYNU", "SFPB"}},
@@ -603,12 +649,14 @@ std::string GetRlzBrandCode(
                      {"WPBT", {"VUKV", "DLTH", "CQBD"}},
                      {"WPFB", {"JOSR", "MHKH", "OHJH"}},
                      {"WPKT", {"NAPI", "TQRX", "DBBS"}},
+                     {"WTXQ", {"NPCP", "DIOS", "DSTX"}},
                      {"WVRW", {"GJGN", "QQFA", "AGVP"}},
                      {"WWTI", {"GZHX", "JHGD", "ZDGL"}},
                      {"WXZG", {"IUGR", "JOEE", "PTHY"}},
                      {"WYQT", {"KHZI", "YASG", "XZMI"}},
                      {"WZJD", {"UBVX", "BTEG", "CRSZ"}},
                      {"XAJY", {"UWFH", "BVFB", "OLQX"}},
+                     {"XBAV", {"KILG", "GEKS", "JKRH"}},
                      {"XBWL", {"IQEI", "JEGU", "QSKW"}},
                      {"XFAY", {"PVOG", "BLSS", "MEEN"}},
                      {"XFUX", {"UHAM", "NEHU", "SHMG"}},
@@ -620,10 +668,13 @@ std::string GetRlzBrandCode(
                      {"XLUK", {"ARRX", "SCBM", "TIWT"}},
                      {"XOGA", {"BIWO", "JPWZ", "YYDG"}},
                      {"XOKS", {"DEVR", "YKLR", "QYBF"}},
+                     {"XQOC", {"AENH", "AQRJ", "MMYS"}},
+                     {"XVLV", {"QUHD", "SXRE", "XIEA"}},
                      {"XVTK", {"TMUU", "BTWW", "THQH"}},
                      {"XVYQ", {"UAVB", "OEMI", "VQVK"}},
                      {"XWJE", {"KDZI", "IYPJ", "ERIM"}},
                      {"XXAQ", {"STGW", "LJCO", "KUDA"}},
+                     {"XXLS", {"ZEQH", "IWCV", "YUHV"}},
                      {"XYBG", {"XFGP", "JKZJ", "JUEP"}},
                      {"YAVR", {"DHAY", "KBWN", "BBPJ"}},
                      {"YAZN", {"QIGR", "SHZH", "DKXN"}},
@@ -648,11 +699,13 @@ std::string GetRlzBrandCode(
                      {"YVJB", {"CICB", "GHBD", "KOKF"}},
                      {"YVMT", {"BUBS", "BAWP", "HJJV"}},
                      {"YVRQ", {"LBMS", "AKKB", "UFNF"}},
+                     {"YVYF", {"LDTK", "XTCU", "OIKX"}},
                      {"YXBK", {"VKAU", "HUNQ", "AFRP"}},
                      {"YXED", {"KDUD", "MTUI", "WLHI"}},
                      {"YXMK", {"ZUSE", "TZFU", "DVKA"}},
                      {"ZBCF", {"BDTW", "MIQF", "VUNL"}},
                      {"ZBCZ", {"DUPJ", "ESKI", "KECI"}},
+                     {"ZBXY", {"VANG", "IFEU", "MYIU"}},
                      {"ZDKS", {"UBRP", "AWQF", "GOVG"}},
                      {"ZDTQ", {"XNZY", "YYWR", "XLUU"}},
                      {"ZDYJ", {"JNGY", "SDRU", "YIEW"}},
@@ -680,14 +733,17 @@ std::string GetRlzBrandCode(
                      {"ZZAD", {"KSTH", "CBJY", "TSID"}},
                      {"ZZAF", {"OTWH", "RRNB", "VNXA"}},
                      {"ZZTB", {"MXQT", "JUUX", "FMFR"}}});
+  // clang-format on
 
-  const auto it = kBrandCodeMap->find(static_brand_code);
-  if (it == kBrandCodeMap->end())
+  const auto it = kBrandCodeMap.find(static_brand_code);
+  if (it == kBrandCodeMap.end()) {
     return static_brand_code;
+  }
   const auto& entry = it->second;
   // An empty value indicates the device is not enrolled.
-  if (!market_segment.has_value())
+  if (!market_segment.has_value()) {
     return entry.unenrolled_brand_code;
+  }
 
   switch (market_segment.value()) {
     case policy::MarketSegment::EDUCATION:
@@ -698,7 +754,7 @@ std::string GetRlzBrandCode(
       // treat it as enterprise enrolled.
       return entry.enterprise_enrolled_brand_code;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return static_brand_code;
 }
 

@@ -26,13 +26,15 @@ UIImage* ImageForPage(TabGridPage page) {
     case TabGridPageRemoteTabs:
       // No-op. Empty page.
       break;
+    case TabGridPageTabGroups:
+      return [UIImage imageNamed:@"tab_grid_tab_groups_empty"];
   }
   return nil;
 }
 
 // Returns the title to display for the given grid `page` and `mode`.
 NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
-  if (mode == TabGridModeSearch) {
+  if (mode == TabGridMode::kSearch) {
     return l10n_util::GetNSString(IDS_IOS_TAB_GRID_SEARCH_RESULTS_EMPTY_TITLE);
   }
 
@@ -45,6 +47,8 @@ NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
     case TabGridPageRemoteTabs:
       // No-op. Empty page.
       break;
+    case TabGridPageTabGroups:
+      return l10n_util::GetNSString(IDS_IOS_TAB_GRID_TAB_GROUPS_EMPTY_TITLE);
   }
 
   return nil;
@@ -52,7 +56,7 @@ NSString* TitleForPageAndMode(TabGridPage page, TabGridMode mode) {
 
 // Returns the message to display for the given grid `page` and `mode`.
 NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
-  if (mode == TabGridModeSearch) {
+  if (mode == TabGridMode::kSearch) {
     return nil;
   }
 
@@ -66,6 +70,8 @@ NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
     case TabGridPageRemoteTabs:
       // No-op. Empty page.
       break;
+    case TabGridPageTabGroups:
+      return l10n_util::GetNSString(IDS_IOS_TAB_GRID_TAB_GROUPS_EMPTY_MESSAGE);
   }
 
   return nil;
@@ -89,9 +95,9 @@ NSString* BodyTextForPageAndMode(TabGridPage page, TabGridMode mode) {
 @synthesize tabGridMode = _tabGridMode;
 
 - (instancetype)initWithPage:(TabGridPage)page {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _activePage = page;
-    _tabGridMode = TabGridModeNormal;
+    _tabGridMode = TabGridMode::kNormal;
   }
   return self;
 }

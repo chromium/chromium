@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_LIST_H_
 
@@ -25,7 +30,7 @@ class PLATFORM_EXPORT DisplayItemList {
 
  public:
   DisplayItemList() = default;
-  ~DisplayItemList();
+  ~DisplayItemList() { clear(); }
 
   DisplayItemList(const DisplayItemList&) = delete;
   DisplayItemList& operator=(const DisplayItemList&) = delete;
@@ -35,6 +40,8 @@ class PLATFORM_EXPORT DisplayItemList {
   void ReserveCapacity(wtf_size_t initial_capacity) {
     items_.reserve(initial_capacity);
   }
+
+  void clear();
 
   // This private section is before the public APIs because some inline public
   // methods depend on the private definitions.
@@ -214,22 +221,22 @@ class PLATFORM_EXPORT DisplayItemList {
   }
 
 #if DCHECK_IS_ON()
-  enum JsonOptions {
-    kDefault = 0,
-    kClientKnownToBeAlive = 1,
+  enum JsonOption {
+    kDefault,
     // Only show a compact representation of the display item list. This flag
     // cannot be used with kShowPaintRecords.
-    kCompact = 1 << 1,
-    kShowPaintRecords = 1 << 2,
+    kCompact,
+    kShowPaintRecords,
   };
-  typedef unsigned JsonFlags;
 
   static std::unique_ptr<JSONArray> DisplayItemsAsJSON(
       const PaintArtifact&,
       wtf_size_t first_item_index,
       const Range<const_iterator>& display_items,
-      JsonFlags);
-#endif  // DCHECK_IS_ON()
+      JsonOption);
+#else  // DCHECK_IS_ON()
+  enum JsonOption { kDefault };
+#endif
 
  private:
   static_assert(std::is_trivially_copyable<value_type>::value,

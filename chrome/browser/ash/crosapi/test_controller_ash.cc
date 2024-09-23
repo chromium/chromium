@@ -31,7 +31,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/version.h"
@@ -57,10 +59,13 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -74,10 +79,13 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/user_activity/user_activity_detector.h"
+#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_source.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/button.h"
@@ -113,6 +121,9 @@ namespace crosapi {
 
 namespace {
 
+constexpr int kSimulatedDisplayXResolution = 640;
+constexpr int kSimulatedDisplayYResolution = 480;
+
 // Returns whether the dispatcher or target was destroyed.
 bool Dispatch(aura::WindowTreeHost* host, ui::Event* event) {
   ui::EventDispatchDetails dispatch_details =
@@ -141,7 +152,24 @@ void SetTabletModeEnabled(bool enabled) {
   waiter.Wait();
 }
 
+std::string GetMachineStatisticKeyString(mojom::MachineStatisticKeyType key) {
+  if (key == mojom::MachineStatisticKeyType::kOemDeviceRequisitionKey) {
+    return ash::system::kOemDeviceRequisitionKey;
+  }
+  if (key == mojom::MachineStatisticKeyType::kHardwareClassKey) {
+    return ash::system::kHardwareClassKey;
+  }
+  if (key == mojom::MachineStatisticKeyType::kCustomizationIdKey) {
+    return ash::system::kCustomizationIdKey;
+  }
+
+  // Return empty string for unknown key.
+  return "";
+}
+
 const base::TimeDelta kWindowWaitTimeout = base::Seconds(10);
+
+TestControllerAsh* g_instance = nullptr;
 
 }  // namespace
 
@@ -257,11 +285,20 @@ class TestControllerAsh::SelfOwnedAshBrowserWindowOpenWaiter
   base::OneShotTimer timer_;
 };
 
-TestControllerAsh::TestControllerAsh() {
-  CHECK_IS_TEST();
+TestControllerAsh* TestControllerAsh::Get() {
+  return g_instance;
 }
 
-TestControllerAsh::~TestControllerAsh() = default;
+TestControllerAsh::TestControllerAsh() {
+  CHECK_IS_TEST();
+  CHECK(!g_instance);
+  g_instance = this;
+}
+
+TestControllerAsh::~TestControllerAsh() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void TestControllerAsh::BindReceiver(
     mojo::PendingReceiver<mojom::TestController> receiver) {
@@ -312,9 +349,10 @@ void TestControllerAsh::ClickWindow(const std::string& window_id) {
   if (!window)
     return;
   const gfx::Point center = window->bounds().CenterPoint();
-  bool destroyed = DispatchMouseEvent(window, ui::ET_MOUSE_PRESSED, center);
+  bool destroyed =
+      DispatchMouseEvent(window, ui::EventType::kMousePressed, center);
   if (!destroyed) {
-    DispatchMouseEvent(window, ui::ET_MOUSE_RELEASED, center);
+    DispatchMouseEvent(window, ui::EventType::kMouseReleased, center);
   }
 }
 
@@ -456,7 +494,8 @@ void TestControllerAsh::GetWindowPositionInScreen(
 
 void TestControllerAsh::LaunchAppFromAppList(const std::string& app_id) {
   ash::Shell::Get()->app_list_controller()->ActivateItem(
-      app_id, /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromGrid);
+      app_id, /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromGrid,
+      /*is_above_the_fold=*/false);
 }
 
 void TestControllerAsh::AreDesksBeingModified(
@@ -500,8 +539,9 @@ void TestControllerAsh::SelectItemInShelf(const std::string& item_id,
   }
 
   auto mouse_event = std::make_unique<ui::MouseEvent>(
-      ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(), ui::EventTimeForNow(),
-      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+      ui::EventType::kMousePressed, gfx::PointF(), gfx::PointF(),
+      ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+      ui::EF_LEFT_MOUSE_BUTTON);
   delegate->ItemSelected(std::move(mouse_event), display::kInvalidDisplayId,
                          ash::LAUNCH_FROM_SHELF,
                          /*callback=*/base::DoNothing(),
@@ -544,19 +584,19 @@ void TestControllerAsh::SendTouchEvent(const std::string& window_id,
   switch (type) {
     case mojom::TouchEventType::kUnknown:
       // |type| is not optional, so kUnknown is never expected.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
     case mojom::TouchEventType::kPressed:
-      event_type = ui::ET_TOUCH_PRESSED;
+      event_type = ui::EventType::kTouchPressed;
       break;
     case mojom::TouchEventType::kMoved:
-      event_type = ui::ET_TOUCH_MOVED;
+      event_type = ui::EventType::kTouchMoved;
       break;
     case mojom::TouchEventType::kReleased:
-      event_type = ui::ET_TOUCH_RELEASED;
+      event_type = ui::EventType::kTouchReleased;
       break;
     case mojom::TouchEventType::kCancelled:
-      event_type = ui::ET_TOUCH_CANCELLED;
+      event_type = ui::EventType::kTouchCancelled;
       break;
   }
   // Compute location relative to display root window.
@@ -574,7 +614,7 @@ void TestControllerAsh::SendTouchEvent(const std::string& window_id,
 void TestControllerAsh::RegisterStandaloneBrowserTestController(
     mojo::PendingRemote<mojom::StandaloneBrowserTestController> controller) {
   // At the moment only a single controller is supported.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   if (standalone_browser_test_controller_.is_bound()) {
     return;
   }
@@ -991,6 +1031,71 @@ void TestControllerAsh::SnapWindow(const std::string& window_id,
 
 void TestControllerAsh::IsShelfVisible(IsShelfVisibleCallback callback) {
   std::move(callback).Run(ash::ShelfTestApi().IsVisible());
+}
+
+void TestControllerAsh::SetAppInstallDialogAutoAccept(
+    bool auto_accept,
+    SetAppInstallDialogAutoAcceptCallback callback) {
+  ash::app_install::AppInstallPageHandler::SetAutoAcceptForTesting(auto_accept);
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::UpdateDisplay(int number_of_displays,
+                                      UpdateDisplayCallback callback) {
+  CHECK(number_of_displays > 0 && number_of_displays <= 8);
+  display::test::DisplayManagerTestApi display_manager(
+      ash::Shell::Get()->display_manager());
+  const auto current_display_info =
+      display_manager.GetInternalManagedDisplayInfo(
+          display_manager.SetFirstDisplayAsInternalDisplay());
+  std::vector<display::ManagedDisplayInfo> display_infos;
+  display_infos.push_back(current_display_info);
+  for (int i = 1; i < number_of_displays; i++) {
+    // This simulates a series of screens that are aligned next to each other on
+    // the x-axis.
+    display_infos.push_back(display::ManagedDisplayInfo::CreateFromSpecWithID(
+        base::StrCat({base::ToString(i * kSimulatedDisplayXResolution), "+0-",
+                      base::ToString(kSimulatedDisplayXResolution), "x",
+                      base::ToString(kSimulatedDisplayYResolution)}),
+        current_display_info.id() + i));
+  }
+  display_manager.UpdateDisplayWithDisplayInfoList(display_infos);
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::EnableStatisticsProviderForTesting(
+    bool enable,
+    EnableStatisticsProviderForTestingCallback callback) {
+  ash::system::StatisticsProvider::SetTestProvider(
+      enable ? &fake_statistics_provider_ : nullptr);
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::ClearAllMachineStatistics(
+    ClearAllMachineStatisticsCallback callback) {
+  fake_statistics_provider_.ClearAllMachineStatistics();
+  std::move(callback).Run();
+}
+
+void TestControllerAsh::SetMachineStatistic(
+    mojom::MachineStatisticKeyType key,
+    const std::string& value,
+    SetMachineStatisticCallback callback) {
+  std::string key_string = GetMachineStatisticKeyString(key);
+  if (!key_string.empty()) {
+    fake_statistics_provider_.SetMachineStatistic(key_string, value);
+    std::move(callback).Run(true);
+  } else {
+    LOG(WARNING) << "Unknown key for setting machine statistic";
+    std::move(callback).Run(false);
+  }
+}
+
+void TestControllerAsh::SetMinFlingVelocity(
+    float velocity,
+    SetMinFlingVelocityCallback callback) {
+  ui::GestureConfiguration::GetInstance()->set_min_fling_velocity(velocity);
+  std::move(callback).Run();
 }
 
 // This class waits for overview mode to either enter or exit and fires a

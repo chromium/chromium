@@ -182,7 +182,7 @@ public class ExperimentalOptionsTranslationTest {
     public void testExperimentalOptions_allSet_viaExperimentalEngine() throws Exception {
         MockCronetBuilderImpl mockBuilderImpl = MockCronetBuilderImpl.withoutNativeSetterSupport();
         testExperimentalOptionsAllSetImpl(
-                new CronetEngine.Builder(mockBuilderImpl), mockBuilderImpl);
+                new ExperimentalCronetEngine.Builder(mockBuilderImpl), mockBuilderImpl);
     }
 
     @Test

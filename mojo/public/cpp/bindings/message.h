@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -34,6 +35,9 @@ class AssociatedGroupController;
 
 using ReportBadMessageCallback =
     base::OnceCallback<void(std::string_view error)>;
+
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+BASE_DECLARE_FEATURE(kMojoMessageAlwaysUseLatestVersion);
 
 // Message is a holder for the data and handles to be sent over a MessagePipe.
 // Message owns its data and handles, but a consumer of Message is free to
@@ -68,19 +72,35 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // Note that |payload_size| is only the initially known size of the message
   // payload, if any. The payload can be expanded after construction using the
   // interface returned by |payload_buffer()|.
+  //
+  // |estimated_payload_size| will be used to preallocate an appropriate amount
+  // of memory for the message buffer, based on the history of previous
+  // allocations for this message's |name|.
   Message(uint32_t name,
           uint32_t flags,
           size_t payload_size,
           size_t payload_interface_id_count,
           MojoCreateMessageFlags create_message_flags,
-          std::vector<ScopedHandle>* handles);
+          std::vector<ScopedHandle>* handles,
+          size_t estimated_payload_size = 0);
 
   // Same as above, but the with default MojoCreateMessageFlags.
   Message(uint32_t name,
           uint32_t flags,
           size_t payload_size,
           size_t payload_interface_id_count,
-          std::vector<ScopedHandle>* handles);
+          std::vector<ScopedHandle>* handles,
+          size_t estimated_payload_size = 0);
+
+  // Constructor for the common case of unknown `payload_size`, unspecified
+  // `payload_interface_id_count`, and no `handles` vector.
+  Message(uint32_t name,
+          uint32_t flags,
+          MojoCreateMessageFlags create_message_flags,
+          size_t estimated_payload_size);
+
+  // Same as above, but the with default MojoCreateMessageFlags.
+  Message(uint32_t name, uint32_t flags, size_t estimated_payload_size);
 
   // Constructs a new Message object from an existing message handle. Used
   // exclusively for serializing an existing unserialized message.
@@ -170,6 +190,15 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
     return reinterpret_cast<internal::MessageHeaderV2*>(mutable_data());
   }
 
+  const internal::MessageHeaderV3* header_v3() const {
+    DCHECK_GE(version(), 3u);
+    return reinterpret_cast<const internal::MessageHeaderV3*>(data());
+  }
+  internal::MessageHeaderV3* header_v3() {
+    DCHECK_GE(version(), 3u);
+    return reinterpret_cast<internal::MessageHeaderV3*>(mutable_data());
+  }
+
   uint32_t version() const { return header()->version; }
 
   uint32_t interface_id() const { return header()->interface_id; }
@@ -241,6 +270,14 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   bool DeserializeAssociatedEndpointHandles(
       AssociatedGroupController* group_controller);
 
+  // If this message contains serialized associated interface endponits but is
+  // going to be destroyed without being sent across a pipe, this notifies any
+  // relevant local peer endpoints about peer closure. Must be called on any
+  // unsent Message that is going to be destroyed after calling
+  // SerializeHandles().
+  void NotifyPeerClosureForSerializedHandles(
+      AssociatedGroupController* group_controller);
+
   // If this Message has an unserialized message context attached, force it to
   // be serialized immediately. Otherwise this does nothing.
   void SerializeIfNecessary();
@@ -281,6 +318,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   const char* method_name() const { return method_name_; }
   void set_method_name(const char* method_name) { method_name_ = method_name; }
 #endif
+
+  int64_t creation_timeticks_us() const;
 
  private:
   // Internal constructor used by |CreateFromMessageHandle()| when either there

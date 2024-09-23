@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS ホスト</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
-<translation id="3113153474486991170">この場所から「<ph name="PATH" />」を開くことができません。[マイファイル] にコピーして開いてください。</translation>
 <translation id="3113592018909187986">入力できるのはあと 1 回です。新しい PIN を設定するまでこのネットワークは使用できません。</translation>
 <translation id="3124404833828281817">空想にふけっている人</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> をキャンセルします。</translation>
 <translation id="3690128548376345212">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、<ph name="CONNECTION_STATUS" />、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3691184985318546178">シンハラ語</translation>
+<translation id="3702842351052426940">SIM カードまたは eSIM プロファイルが無効になっている可能性があります。SIM カードを交換するか、eSIM プロファイルを切り替えてみてください。</translation>
 <translation id="3722341589402358578">エラーが発生しました。一部のアイテムはゴミ箱に移されていない可能性があります。</translation>
 <translation id="3726463242007121105">ファイルシステムがサポートされていないため、このデバイスを開くことはできません。</translation>
 <translation id="3727148787322499904">この設定を変更すると、共有しているすべてのネットワークに影響します</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">このプロキシは管理者によって制御されています</translation>
 <translation id="3830674330436234648">再生機能はご利用いただけません</translation>
 <translation id="383652340667548381">セルビア語</translation>
+<translation id="3839045880592694915">携帯通信会社がモデムの接続を許可していません。詳細については、携帯通信会社にお問い合わせください。</translation>
 <translation id="385051799172605136">戻る</translation>
-<translation id="3851491607336266896">接続済み、制限付きの接続</translation>
 <translation id="3855472144336161447">ドイツ語（Neo 2）</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3866249974567520381">説明</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">最近開いた Microsoft のファイルを OneDrive に移動しました</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4017788180641807848">英語（アメリカ）（Workman）キーボード</translation>
-<translation id="4019998208269143058">クイック ファイルに固定</translation>
 <translation id="4040753847560036377">PUK が正しくありません</translation>
 <translation id="4057991113334098539">有効にしています...</translation>
 <translation id="4092890906744441904">アイルランド語</translation>
+<translation id="4101601646343868113">モバイル ネットワークにログインしてモバイルデータ プランが有効になっていることを確認する</translation>
 <translation id="4124731372776320263">1 個のドライブ ファイルを同期しています</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
 <translation id="4131235941541910880">不要なアイテムはゴミ箱に移動してください</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">タミル語（Tamil99）キーボード</translation>
 <translation id="5633226425545095130">このアイテムを移動すると、アイテムは共有フォルダ「<ph name="DESTINATION_NAME" />」を閲覧できるすべてのユーザーと共有されます。</translation>
 <translation id="5649768706273821470">聴く</translation>
+<translation id="5650895901941743674">APN 設定を確認してください</translation>
 <translation id="5669691691057771421">新しい PIN を入力</translation>
 <translation id="5678784840044122290">Linux アプリケーションはお使いのデバイスでご利用いただけるようになります。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />アーカイブまたは仮想ディスクから切断できません<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、接続</translation>
 <translation id="6269630227984243955">マレー語</translation>
 <translation id="6271903698064569429">「<ph name="SHARED_DRIVE_NAME" />」に十分な空き容量がないため、ファイルをアップロードできません。</translation>
+<translation id="6279140785485544797">モバイルデータ プランの有効期限が切れている可能性があります。サポートが必要な場合は、携帯通信会社にお問い合わせください。</translation>
 <translation id="6287852322318138013">このファイルを開くアプリを選択してください</translation>
 <translation id="6295542640242147836">SIM をロックする</translation>
 <translation id="6296410173147755564">無効な PUK です</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> アーカイブ</translation>
 <translation id="6321303798550928047">手を振る</translation>
 <translation id="6327785803543103246">ウェブプロキシ自動検出</translation>
-<translation id="6337014272874260727">クイック ファイルへの固定を解除</translation>
 <translation id="6339145975392024142">US インターナショナル（PC）</translation>
 <translation id="6356685157277930264">ファイルのフィードバック ウィンドウ</translation>
 <translation id="6358884629796491903">ドラゴン</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">現在のディレクトリ</translation>
 <translation id="6751256176799620176">1 個のフォルダを選択しました</translation>
 <translation id="6755827872271341378">ChromeOS Flex デバイス</translation>
+<translation id="6777029074498310250">詳しくは、<ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> をご覧ください</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6794539005637808366">アイテムを復元するか、ゴミ箱から新しいフォルダにドラッグしてください</translation>
 <translation id="6795884519221689054">パンダ</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">タミル語（字母）キーボード</translation>
 <translation id="7088615885725309056">古い</translation>
 <translation id="7103992300314999525">マケドニア語</translation>
+<translation id="7104338189998813914">OneDrive アカウントへのアクセスで問題が発生しています</translation>
 <translation id="7106346894903675391">追加容量を購入...</translation>
 <translation id="7126604456862387217">「&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;」 - &lt;em&gt;&lt;/em&gt;ドライブを検索</translation>
 <translation id="7135561821015524160">カンナダ語（表音）</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">少々お待ちください</translation>
 <translation id="7600126690270271294">セルビア語</translation>
 <translation id="7603724359189955920">グリッド</translation>
+<translation id="7624010287655004652">別の携帯通信会社によってロックされています</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> は既に存在しています。名前を変更してもう一度お試しください。</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% 完了しました。</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">ファイルの一覧がサムネイル表示に切り替わりました。</translation>
 <translation id="8601932370724196034">Crostini イメージ ファイル</translation>
 <translation id="8609695766746872526">アイスランド語</translation>
+<translation id="8630384863424041081">SIM カードの PIN または携帯通信会社から提供されたデフォルトの PIN を入力してください。サポートが必要な場合は、携帯通信会社にお問い合わせください。</translation>
 <translation id="863903787380594467">PIN が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ポート</translation>
 <translation id="8656407365183407932">オフライン ファイルを削除する必要があります</translation>
@@ -1016,9 +1021,8 @@
 <translation id="8688591111840995413">不正なパスワード</translation>
 <translation id="8698464937041809063">Google 図形描画</translation>
 <translation id="8698877009525468705">このファイルは機密情報であり、管理者ポリシーによる制限が適用されます。</translation>
-<translation id="8712637175834984815">OK</translation>
+<translation id="8712637175834984815">理解した</translation>
 <translation id="8713112442029511308">マルタ語</translation>
-<translation id="8714138378966541668">プロバイダによってロックされています</translation>
 <translation id="8714406895390098252">自転車</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> を選択しました。</translation>
 <translation id="872537912056138402">クロアチア語</translation>

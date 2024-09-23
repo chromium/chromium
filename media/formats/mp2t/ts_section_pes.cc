@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/mp2t/ts_section_pes.h"
 
 #include <memory>
@@ -52,8 +57,7 @@ TsSectionPes::~TsSectionPes() {
 }
 
 bool TsSectionPes::Parse(bool payload_unit_start_indicator,
-                         const uint8_t* buf,
-                         int size) {
+                         base::span<const uint8_t> buf) {
   // Ignore partial PES.
   if (wait_for_pusi_ && !payload_unit_start_indicator)
     return true;
@@ -77,8 +81,8 @@ bool TsSectionPes::Parse(bool payload_unit_start_indicator,
   }
 
   // Add the data to the parser state.
-  if (size > 0) {
-    RCHECK(pes_byte_queue_.Push(buf, size));  // Can fail if allocation fails.
+  if (!buf.empty()) {
+    RCHECK(pes_byte_queue_.Push(buf));
   }
 
   // Try emitting the current PES packet.

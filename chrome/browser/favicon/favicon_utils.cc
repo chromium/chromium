@@ -57,11 +57,9 @@ SkColor ComputeBackgroundColorForUrl(const GURL& icon_url) {
   if (!icon_url.is_valid())
     return SK_ColorGRAY;
 
-  unsigned char hash[20];
-  const std::string origin = icon_url.DeprecatedGetOriginAsURL().spec();
-  base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(origin.c_str()),
-                      origin.size(), hash);
-  return SkColorSetRGB(hash[0], hash[1], hash[2]);
+  base::SHA1Digest hash = base::SHA1Hash(
+      base::as_byte_span(icon_url.DeprecatedGetOriginAsURL().spec()));
+  return SkColorSetRGB(hash[0u], hash[1u], hash[2u]);
 }
 
 // Gets the appropriate light or dark rasterized default favicon.
@@ -111,7 +109,7 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
 
   favicon::FaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(contents);
-  // TODO(crbug.com/1231506): Investigate why some WebContents do not have
+  // TODO(crbug.com/40190724): Investigate why some WebContents do not have
   // an attached ContentFaviconDriver.
   if (!favicon_driver) {
     return gfx::Image();

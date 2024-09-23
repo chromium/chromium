@@ -5,21 +5,19 @@
 #import "ios/chrome/test/app/signin_test_util.h"
 
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/test/ios/wait_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -124,6 +122,8 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
     browser_state->GetPrefs()->ClearPref(
         prefs::kGoogleServicesLastSyncingGaiaId);
     browser_state->GetPrefs()->ClearPref(
+        prefs::kGoogleServicesLastSignedInUsername);
+    browser_state->GetPrefs()->ClearPref(
         prefs::kGoogleServicesLastSyncingUsername);
 
     // `SignOutAndClearIdentities()` is called during shutdown. Commit all pref
@@ -167,9 +167,8 @@ void SignInWithoutSync(id<SystemIdentity> identity) {
                initWithBrowser:browser
                       identity:identity
                    accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN
-              postSignInAction:PostSignInAction::kNone
+             postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
       presentingViewController:viewController];
-  authenticationFlow.dispatcher = (id<BrowsingDataCommands>)GetMainController();
   [authenticationFlow startSignInWithCompletion:^(BOOL success) {
     authenticationFlow = nil;
   }];

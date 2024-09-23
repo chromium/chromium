@@ -1,0 +1,80 @@
+<style include="cr-shared-style md-select cros-color-overrides">
+  cr-dialog {
+    --cr-dialog-width: 416px;
+  }
+
+  /* Override the styling used for the focused item */
+  [scrollable] iron-list > :not(.no-outline):focus {
+    background-color: transparent !important;
+  }
+
+  #container {
+    margin-bottom: 32px;
+    margin-top: 20px;
+  }
+
+  .visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+</style>
+<cr-dialog id="apnSelectionDialog" show-on-attach>
+  <div id="apnSelectionDialogTitle" slot="title" aria-live="polite">
+    [[i18n('apnSelectionDialogTitle')]]
+  </div>
+  <div slot="body">
+    <template is="dom-if" if="[[!shouldOmitLinks]]" restamp>
+      <localized-link
+          localized-string="[[i18nAdvanced('apnSelectionDialogDescriptionWithLink')]]">
+      </localized-link>
+    </template>
+    <template is="dom-if" if="[[shouldOmitLinks]]" restamp>
+      <div id="apnSelectionDialogDescription" aria-live="polite">
+        [[i18n('apnSelectionDialogDescription')]]
+      </div>
+    </template>
+    <div id="container" class="layout vertical flex" scrollable>
+      <iron-list items="[[apnList]]"
+          selection-enabled
+          selected-item="{{selectedApn_}}"
+          preserve-focus
+          role="listbox">
+        <template>
+          <apn-selection-dialog-list-item apn="[[item]]"
+              selected="[[isApnSelected_(item, selectedApn_)]]"
+              tabindex="0"
+              role="option"
+              aria-selected="[[isApnSelected_(item, selectedApn_)]]"
+              aria-live="assertive">
+          </apn-selection-dialog-list-item>
+        </template>
+      </iron-list>
+    </div>
+  </div>
+  <div slot="button-container">
+      <cr-button id="apnSelectionCancelBtn"
+          class="cancel-button"
+          on-click="onCancelClicked_">
+        [[i18n('apnDetailDialogCancel')]]
+      </cr-button>
+      <cr-button id="apnSelectionActionBtn"
+          disabled="[[!selectedApn_]]"
+          class="action-button"
+          on-click="onActionButtonClicked_">
+        [[i18n('apnSelectionDialogUseApn')]]
+      </cr-button>
+      <template is="dom-if" if="[[shouldAnnounceA11yActionButtonState_]]"
+          restamp>
+        <span id="actionButtonEnabledA11yText"
+            class="visually-hidden" role="alert">
+          [[actionButtonEnabledA11yText_]]
+        </span>
+      </template>
+    </template>
+  </div>
+</cr-dialog>

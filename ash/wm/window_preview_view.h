@@ -39,7 +39,8 @@ class ASH_EXPORT WindowPreviewView
   void RecreatePreviews();
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
   // aura::client::TransientWindowClientObserver:
@@ -73,7 +74,8 @@ class ASH_EXPORT WindowPreviewView
   // actually parented; i.e. `OnTransientChildWindowAdded()` is called before
   // `transient_child->parent()` is set. We track those here so that we can add
   // them to the view once they're parented.
-  base::flat_set<aura::Window*> unparented_transient_children_;
+  base::flat_set<raw_ptr<aura::Window, CtnExperimental>>
+      unparented_transient_children_;
 };
 
 }  // namespace ash

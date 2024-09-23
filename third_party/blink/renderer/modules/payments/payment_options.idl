@@ -10,7 +10,7 @@ enum PaymentShippingType {
     "pickup"
 };
 
-dictionary PaymentOptions {
+[ConvertibleToObject] dictionary PaymentOptions {
     boolean requestPayerName = false;
     boolean requestPayerEmail = false;
     boolean requestPayerPhone = false;

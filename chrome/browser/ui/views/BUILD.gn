@@ -25,6 +25,8 @@ component("views") {
 
   defines = [ "CHROME_VIEWS_IMPLEMENTATION" ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//build:branding_buildflags",
@@ -34,20 +36,25 @@ component("views") {
     "//components/keep_alive_registry",
     "//components/lens",
     "//components/lens:buildflags",
-    "//components/services/screen_ai/buildflags",
     "//components/vector_icons",
     "//content/public/browser",
     "//printing/buildflags",
+    "//services/screen_ai/buildflags",
     "//skia",
     "//ui/base",
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/views",
     "//url",
   ]
 
   if (is_chromeos_ash) {
-    deps += [ "//ash" ]
+    deps += [
+      "//ash",
+      "//ash/components/arc",
+      "//components/arc",
+    ]
   }
 }
 
@@ -59,6 +66,7 @@ source_set("test_support") {
     ":views",
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support_ui",
     "//components/global_media_controls:global_media_controls",
     "//components/media_message_center:media_message_center",

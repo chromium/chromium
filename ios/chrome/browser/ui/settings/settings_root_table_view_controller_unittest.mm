@@ -6,7 +6,7 @@
 
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +52,7 @@ class SettingsRootTableViewControllerTest : public PlatformTest {
   SettingsNavigationController* NavigationController() {
     if (!browser_) {
       TestChromeBrowserState::Builder test_cbs_builder;
-      chrome_browser_state_ = test_cbs_builder.Build();
+      chrome_browser_state_ = std::move(test_cbs_builder).Build();
       browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     }
     return [[SettingsNavigationController alloc]

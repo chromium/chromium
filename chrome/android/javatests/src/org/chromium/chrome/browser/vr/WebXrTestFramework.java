@@ -9,10 +9,10 @@ import android.os.SystemClock;
 import org.junit.Assert;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeoutException;
@@ -101,7 +101,7 @@ public abstract class WebXrTestFramework extends XrTestFramework {
             if (canvasClicked) break;
 
             PropertyModel dialog =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                    ThreadUtils.runOnUiThreadBlocking(
                             () ->
                                     getRule()
                                             .getActivity()

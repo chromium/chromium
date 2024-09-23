@@ -37,6 +37,10 @@ static_library("session") {
     "arc_vm_client_adapter.h",
     "file_system_status.cc",
     "file_system_status.h",
+    "mojo_init_data.cc",
+    "mojo_init_data.h",
+    "mojo_invitation_manager.cc",
+    "mojo_invitation_manager.h",
     "serial_number_util.cc",
     "serial_number_util.h",
   ]
@@ -54,21 +58,32 @@ static_library("session") {
     "//ash/public/cpp/external_arc:external_arc",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/dbus/patchpanel:patchpanel",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/spaced:spaced",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/memory:memory",
+    "//chromeos/ash/components/mojo_service_manager",
     "//chromeos/ash/components/system",
     "//chromeos/system",
     "//components/prefs:prefs",
     "//components/user_manager",
     "//components/version_info",
+    "//mojo/proxy:switches",
     "//services/accessibility/android/public/mojom",
     "//ui/display/manager",
   ]
+
+  data_deps = [ ":mojo_service_manager_policy" ]
+}
+
+copy("mojo_service_manager_policy") {
+  sources = [ "arc_bridge_policy.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }
 
 source_set("connection_holder") {
@@ -123,6 +138,8 @@ source_set("unit_tests") {
     "connection_holder_unittest.cc",
     "connection_notifier_unittest.cc",
     "file_system_status_unittest.cc",
+    "mojo_init_data_unittest.cc",
+    "mojo_invitation_manager_unittest.cc",
     "serial_number_util_unittest.cc",
   ]
 
@@ -139,6 +156,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/patchpanel:patchpanel",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/system",

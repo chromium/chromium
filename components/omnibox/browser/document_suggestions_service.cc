@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -138,9 +139,8 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
   std::move(creation_callback).Run(request.get());
 
   // Create and fetch an OAuth2 token.
-  std::string scope = "https://www.googleapis.com/auth/cloud_search.query";
   signin::ScopeSet scopes;
-  scopes.insert(scope);
+  scopes.insert(GaiaConstants::kCloudSearchQueryOAuth2Scope);
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "document_suggestions_service", identity_manager_, scopes,
       base::BindOnce(&DocumentSuggestionsService::AccessTokenAvailable,
@@ -148,7 +148,7 @@ void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
                      std::move(request_body), traffic_annotation,
                      std::move(start_callback), std::move(completion_callback)),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-      signin::ConsentLevel::kSync);
+      signin::ConsentLevel::kSignin);
 }
 
 void DocumentSuggestionsService::StopCreatingDocumentSuggestionsRequest() {

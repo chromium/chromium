@@ -4,6 +4,8 @@
 
 #include "components/feed/core/v2/stream/privacy_notice_card_tracker.h"
 
+#include <string_view>
+
 #include "base/time/time.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
@@ -24,7 +26,7 @@ bool IsPrivacyNoticeCard(const feedwire::ContentId& id) {
   // the server to continue serving the notice card with this domain (and not
   // serving other types of cards with this domain). See the bug for the
   // suggested improvement.
-  constexpr base::StringPiece kNoticeCardDomain = "privacynoticecard.f";
+  constexpr std::string_view kNoticeCardDomain = "privacynoticecard.f";
   return id.content_domain() == kNoticeCardDomain;
 }
 

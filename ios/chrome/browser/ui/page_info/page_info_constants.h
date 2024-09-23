@@ -27,8 +27,14 @@ extern NSString* const
 // The left edge insect for cell separators of page info.
 extern const CGFloat kPageInfoTableViewSeparatorInset;
 
+// The left edge insect for cell separators of page info with an icon.
+extern const CGFloat kPageInfoTableViewSeparatorInsetWithIcon;
+
 // The vertical padding between the navigation bar and the first section header
 // of page info.
 extern const CGFloat kPageInfoPaddingFirstSectionHeader;
+
+// The size of icons in the left hand side of page info.
+extern const CGFloat kPageInfoSymbolPointSize;
 
 #endif  // IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_CONSTANTS_H_

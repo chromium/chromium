@@ -12,6 +12,12 @@
 #include "base/files/file_path.h"
 #include "chrome/test/base/ash/mojo_web_ui_browser_test.h"
 
+namespace content {
+
+struct EvalJsResult;
+
+}  // namespace content
+
 // A base class that can be extended by SWA browser test to inject scripts.
 class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
  public:

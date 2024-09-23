@@ -26,7 +26,7 @@
 
 - (instancetype)initWithModel:(FullscreenModel*)model
                      mediator:(FullscreenMediator*)mediator {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _model = model;
     DCHECK(_model);
     _mediator = mediator;

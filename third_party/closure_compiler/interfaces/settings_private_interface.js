@@ -39,7 +39,7 @@ SettingsPrivate.prototype = {
 
   /**
    * Gets the default page zoom factor. Possible values are currently between
-   * 0.25 and 5. For a full list, see zoom::kPresetZoomFactors.
+   * 0.25 and 5. For a full list, see zoom::kPresetBrowserZoomFactors.
    * @param {function(number):void} callback
    * @see https://developer.chrome.com/extensions/settingsPrivate#method-getDefaultZoom
    */
@@ -47,7 +47,7 @@ SettingsPrivate.prototype = {
 
   /**
    * Sets the page zoom factor. Must be less than 0.001 different than a value
-   * in zoom::kPresetZoomFactors.
+   * in zoom::kPresetBrowserZoomFactors.
    * @param {number} zoom
    * @param {function(boolean):void=} callback
    * @see https://developer.chrome.com/extensions/settingsPrivate#method-setDefaultZoom

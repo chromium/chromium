@@ -11,50 +11,88 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 @implementation SigninEarlGreyImpl
 
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
-  [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity];
+  [self addFakeIdentity:fakeIdentity withUnknownCapabilities:NO];
+}
+
+- (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
+    withUnknownCapabilities:(BOOL)usingUnknownCapabilities {
+  [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity
+                      withUnknownCapabilities:usingUnknownCapabilities];
+}
+
+- (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
+       withCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities {
+  [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity
+                             withCapabilities:capabilities];
 }
 
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
     (FakeSystemIdentity*)fakeIdentity {
+  [self addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity
+                        withUnknownCapabilities:NO];
+}
+
+- (void)addFakeIdentityForSSOAuthAddAccountFlow:
+            (FakeSystemIdentity*)fakeIdentity
+                        withUnknownCapabilities:(BOOL)usingUnknownCapabilities {
   [SigninEarlGreyAppInterface
-      addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
-}
-
-- (void)setIsSubjectToParentalControls:(BOOL)value
-                           forIdentity:(FakeSystemIdentity*)fakeIdentity {
-  [SigninEarlGreyAppInterface setIsSubjectToParentalControls:value
-                                                 forIdentity:fakeIdentity];
-}
-
-- (void)setCanHaveEmailAddressDisplayed:(BOOL)value
-                            forIdentity:(FakeSystemIdentity*)fakeIdentity {
-  [SigninEarlGreyAppInterface setCanHaveEmailAddressDisplayed:value
-                                                  forIdentity:fakeIdentity];
-}
-
-- (void)setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:(BOOL)value
-                                                    forIdentity:
-                                                        (FakeSystemIdentity*)
-                                                            fakeIdentity {
-  [SigninEarlGreyAppInterface
-      setCanShowHistorySyncOptInsWithoutMinorModeRestrictions:value
-                                                  forIdentity:fakeIdentity];
+      addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity
+                      withUnknownCapabilities:usingUnknownCapabilities];
 }
 
 - (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
   [SigninEarlGreyAppInterface forgetFakeIdentity:fakeIdentity];
 }
 
+- (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity {
+  return [SigninEarlGreyAppInterface isIdentityAdded:fakeIdentity];
+}
+
+- (NSString*)primaryAccountGaiaID {
+  return [SigninEarlGreyAppInterface primaryAccountGaiaID];
+}
+
+- (BOOL)isSignedOut {
+  return [SigninEarlGreyAppInterface isSignedOut];
+}
+
 - (void)signOut {
   [SigninEarlGreyAppInterface signOut];
   [self verifySignedOut];
+}
+
+- (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface signinWithFakeIdentity:identity];
+  [self verifySignedInWithFakeIdentity:identity];
+}
+
+- (void)signinAndEnableLegacySyncFeature:(FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface signinAndEnableLegacySyncFeature:identity];
+  [self verifyPrimaryAccountWithEmail:identity.userEmail
+                              consent:signin::ConsentLevel::kSync];
+}
+
+- (void)signInWithoutHistorySyncWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface
+      signInWithoutHistorySyncWithFakeIdentity:identity];
+}
+
+- (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
+  [SigninEarlGreyAppInterface triggerReauthDialogWithFakeIdentity:identity];
+}
+
+- (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url {
+  [SigninEarlGreyAppInterface
+      triggerConsistencyPromoSigninDialogWithURL:net::NSURLWithGURL(url)];
 }
 
 - (void)verifySignedInWithFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
@@ -153,6 +191,14 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [[EarlGrey
       selectElementWithMatcher:getSettingsGoogleSyncAndServicesCellMatcher]
       assertWithMatcher:grey_nil()];
+}
+
+- (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {
+  [SigninEarlGreyAppInterface setSelectedType:type enabled:enabled];
+}
+
+- (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type {
+  return [SigninEarlGreyAppInterface isSelectedTypeEnabled:type];
 }
 
 @end

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -13,9 +14,11 @@
 #include "content/browser/interest_group/interest_group_permissions_cache.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -82,9 +85,11 @@ class InterestGroupPermissionsCheckerTestBase {
   const url::Origin kGroupOrigin =
       url::Origin::Create(GURL("https://group.test"));
 
+  const net::SchemefulSite kFrameSite = net::SchemefulSite(kFrameOrigin);
+
   // NetworkIsolationKey used in most tests.
   const net::NetworkIsolationKey kNetworkIsolationKey =
-      net::NetworkIsolationKey(kFrameOrigin, kFrameOrigin);
+      net::NetworkIsolationKey(kFrameSite, kFrameSite);
 
   // .well-known URL when using `kFrameOrigin` and `kGroupOrigin`.
   const GURL validation_url_ = GURL(
@@ -149,9 +154,8 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, RequestParameters) {
   EXPECT_EQ(network::mojom::RequestMode::kCors, request.mode);
   EXPECT_EQ(kFrameOrigin, request.request_initiator);
 
-  std::string accept;
-  ASSERT_TRUE(request.headers.GetHeader("Accept", &accept));
-  EXPECT_EQ(accept, "application/json");
+  EXPECT_THAT(request.headers.GetHeader("Accept"),
+              testing::Optional(std::string("application/json")));
 }
 
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, HttpError) {
@@ -312,12 +316,14 @@ TEST_F(InterestGroupPermissionsCheckerTest,
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentFrameOrigin) {
   // The only way two permissions checks from different frame origins can share
   // a NetworkIsolationKey is if they are same-site. So use an origin that's
-  // same-site to kFrameOrigin, and DCHECK that they have the same
+  // same-site to kFrameOrigin, and check that they have the same
   // NetworkIsolationKey.
   const url::Origin kOtherFrameOrigin =
       url::Origin::Create(GURL("https://other.frame.test"));
-  DCHECK(net::NetworkIsolationKey(kOtherFrameOrigin, kOtherFrameOrigin) ==
-         kNetworkIsolationKey);
+  const net::SchemefulSite kOtherFrameSite =
+      net::SchemefulSite(GURL("https://other.frame.test"));
+  ASSERT_EQ(net::NetworkIsolationKey(kOtherFrameSite, kOtherFrameSite),
+            kNetworkIsolationKey);
   const GURL kOtherValidationUrl(
       "https://group.test/.well-known/interest-group/permissions/"
       "?origin=https%3A%2F%2Fother.frame.test");
@@ -404,7 +410,7 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, DifferentOwner) {
 TEST_P(InterestGroupPermissionsCheckerParamaterizedTest,
        DifferentNetworkIsolationKey) {
   const net::NetworkIsolationKey kOtherNetworkIsolationKey(
-      url::Origin::Create(GURL("https://top-frame.test")), kFrameOrigin);
+      net::SchemefulSite(GURL("https://top-frame.test")), kFrameSite);
 
   interest_group_permissions_checker_.CheckPermissions(
       GetOperation(), kFrameOrigin, kGroupOrigin, kNetworkIsolationKey,
@@ -435,10 +441,8 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest,
     mojo::ScopedDataPipeConsumerHandle body;
     ASSERT_EQ(mojo::CreateDataPipe(response_body.size(), producer_handle, body),
               MOJO_RESULT_OK);
-    uint32_t bytes_written = response_body.size();
     ASSERT_EQ(MOJO_RESULT_OK,
-              producer_handle->WriteData(response_body.data(), &bytes_written,
-                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+              producer_handle->WriteAllData(base::as_byte_span(response_body)));
 
     pending_request.client->OnReceiveResponse(std::move(head), std::move(body),
                                               std::nullopt);
@@ -522,7 +526,7 @@ TEST_P(InterestGroupPermissionsCheckerParamaterizedTest, NonDefaultPorts) {
 
   interest_group_permissions_checker_.CheckPermissions(
       GetOperation(), kFrameOrigin, kGroupOrigin,
-      net::NetworkIsolationKey(kFrameOrigin, kFrameOrigin), url_loader_factory_,
+      net::NetworkIsolationKey(kFrameSite, kFrameSite), url_loader_factory_,
       bool_callback_.callback());
   EXPECT_FALSE(bool_callback_.GetResult());
   EXPECT_EQ(1u, url_loader_factory_.total_requests());

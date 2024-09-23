@@ -22,7 +22,6 @@ fuzzer_test("vaapi_jpeg_decoder_fuzzertest") {
     "//media/gpu/chromeos",
     "//media/gpu/vaapi",
     "//media/gpu/vaapi:common",
-    "//media/parsers",
     "//third_party/libprotobuf-mutator",
     "//ui/gfx/geometry",
   ]

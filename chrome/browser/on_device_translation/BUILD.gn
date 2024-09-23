@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [
+    ":language_pack_util",
+    "//components/prefs",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/component_updater:component_updater_paths",
+  ]
+}
+
+source_set("language_pack_util") {
+  sources = [
+    "language_pack_util.cc",
+    "language_pack_util.h",
+  ]
+
+  deps = [ "//base" ]
+}

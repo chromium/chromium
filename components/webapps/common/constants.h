@@ -13,7 +13,7 @@ namespace webapps {
 extern const size_t kMaxMetaTagAttributeLength;
 
 // Pref key that refers to list of all apps that have been migrated to web apps.
-// TODO(https://crbug.com/1266574):
+// TODO(crbug.com/40802205):
 // Remove this after preinstalled apps are migrated.
 extern const char kWebAppsMigratedPreinstalledApps[];
 

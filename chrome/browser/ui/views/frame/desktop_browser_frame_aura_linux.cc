@@ -32,7 +32,8 @@ DesktopBrowserFrameAuraLinux::DesktopBrowserFrameAuraLinux(
 DesktopBrowserFrameAuraLinux::~DesktopBrowserFrameAuraLinux() = default;
 
 views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.native_widget = this;
 
   // Set up a custom WM_CLASS for some sorts of window types. This allows
@@ -60,7 +61,7 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
     params.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
         browser.app_name(), browser.profile()->GetPath());
   } else {
-    params.wayland_app_id = params.wm_class_name;
+    params.wayland_app_id = params.wm_class_class;
   }
 
   return params;

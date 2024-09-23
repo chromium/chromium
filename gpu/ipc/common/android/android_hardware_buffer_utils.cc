@@ -39,7 +39,7 @@ AHardwareBuffer_Desc GetBufferDescription(const gfx::Size& size,
       desc.format = AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   switch (usage) {
@@ -52,7 +52,7 @@ AHardwareBuffer_Desc GetBufferDescription(const gfx::Size& size,
       }
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return desc;
 }

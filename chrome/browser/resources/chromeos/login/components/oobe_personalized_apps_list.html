@@ -1,0 +1,154 @@
+<!-- Copyright 2024 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+
+<!--
+  OOBE polymer element which is used to show a list of apps
+  that would be displayed in the new Recommended Apps Screen.
+  It has all styling for the app_item element and can display
+  for each apps : Icon and a title and subtitle.
+-->
+
+<style include="oobe-dialog-host-styles cros-color-overrides">
+  :host-context(body.jelly-enabled) cr-checkbox {
+    --cr-checkbox-checked-box-color: var(--cros-sys-secondary);
+    --cr-checkbox-unchecked-box-color: var(--cros-sys-secondary);
+  }
+
+  #appsList {
+    column-gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+  }
+
+  .category-title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-title-1-font);
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+
+  .category-title:first-child {
+    margin-top: 0;
+  }
+
+  .category-title:last-child {
+    margin-bottom: 0;
+  }
+
+  .app-title {
+    color: var(--cros-sys-on_surface);
+    font: var(--cros-button-2-font);
+  }
+
+  .app-subtitle {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-annotation-1-font);
+  }
+
+  .app-item {
+    background-color: var(--cros-sys-on_primary)  !important;
+    border-radius: 16px;
+    border-width: 0;
+    box-shadow: none;
+    gap: 16px;
+    display: flex;
+    height: 88px;
+    margin-bottom: 8px;
+    margin-inline-end: 4px;
+    margin-inline-start: 4px;
+    margin-top: 8px;
+    align-items: center;
+  }
+
+  .text-container {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .app-item:focus {
+    border: 2px solid var(--cros-sys-focus_ring);
+  }
+
+  .logo-container {
+    border-radius: 8px;
+    overflow: hidden;
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Styles of icons in screen cards */
+  .app-icon  {
+    align-items: center;
+    align-self: center;
+    display: flex;
+    height: 40px;
+    width: 40px;
+    pointer-events: none;
+  }
+
+  .content {
+    align-items: center;
+    align-self: center;
+    column-gap: 20px;
+    padding: 16px;
+  }
+
+  #personalizedApps {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  </style>
+<div id="personalizedApps">
+    <template is="dom-repeat"
+        items="{{categoriesItemRendered}}" as="category">
+      <div class="category-title"
+          tabindex="0"
+          role="heading" aria-level="2"
+          hidden="[[shouldShowCategoriesTitle(categoriesMapApps)]]">
+        {{category.id}}
+      </div>
+      <div id="appsList">
+          <template is="dom-repeat"
+                rendered-item-count="{{category.count::dom-change}}"
+                items="{{getApps(category.id)}}">
+            <div class="app-item"
+                role="checkbox"
+                aria-checked="[[item.selected]]">
+              <div class="content flex horizontal layout">
+                <div class="logo-container">
+                  <!-- TODO(b/343402671): Migrate from WebView to cr-auto-img. -->
+                  <webview
+                      id="[[getWebViewId(item.appId)]]"
+                      role="img"
+                      class="app-icon"
+                      src="[[getIconUrl(item.icon)]]"
+                      aria-hidden="true"
+                      tabindex="-1"
+                      on-contentload="[[onIconLoaded()]]"
+                    >
+                  </webview>
+                </div>
+                <div class="text-container" aria-hidden="true">
+                  <div class="app-title"> [[item.name]]</div>
+                  <div class="app-subtitle">[[item.subname]]</div>
+                </div>
+                  <cr-checkbox class="app-checkbox no-label"
+                      id="[[getAppId(item.appId)]]""
+                      checked="{{item.selected}}"
+                      aria-label$="[[item.name]]"
+                      aria-description$="[[item.subname]]"
+                      on-change="updateCount"></cr-checkbox>
+              </div>
+          </div>
+          </template>
+        </div>
+    </template>
+</div>

@@ -34,7 +34,7 @@ class ShellExtensionsAPIClient : public ExtensionsAPIClient {
       content::BrowserContext* browser_context) const override;
   std::unique_ptr<DisplayInfoProvider> CreateDisplayInfoProvider()
       const override;
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   FileSystemDelegate* GetFileSystemDelegate() override;
@@ -43,7 +43,7 @@ class ShellExtensionsAPIClient : public ExtensionsAPIClient {
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() override;
 
  private:
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<FileSystemDelegate> file_system_delegate_;

@@ -1,0 +1,279 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//pdf/features.gni")
+
+# Contained Lens dependencies are currently for desktop platforms only
+assert(!is_android, "Lens Overlay is for desktop platforms only")
+
+source_set("lens") {
+  # The public interface is intentionally minimal. There should be a small
+  # number of entry points and publicly used headers.
+  public = [
+    "lens_overlay_controller.h",
+    "lens_overlay_entry_point_controller.h",
+    "lens_overlay_invocation_source.h",
+    "lens_overlay_side_panel_navigation_throttle.h",
+    "lens_overlay_untrusted_ui.h",
+    "lens_side_panel_untrusted_ui.h",
+    "search_bubble_ui.h",
+  ]
+  friend = [ ":*" ]
+  sources = [
+    "lens_overlay_blur_layer_delegate.cc",
+    "lens_overlay_blur_layer_delegate.h",
+    "lens_overlay_colors.h",
+    "lens_overlay_controller.cc",
+    "lens_overlay_controller_glue.cc",
+    "lens_overlay_controller_glue.h",
+    "lens_overlay_dismissal_source.h",
+    "lens_overlay_entry_point_controller.cc",
+    "lens_overlay_event_handler.cc",
+    "lens_overlay_event_handler.h",
+    "lens_overlay_image_helper.cc",
+    "lens_overlay_image_helper.h",
+    "lens_overlay_proto_converter.cc",
+    "lens_overlay_proto_converter.h",
+    "lens_overlay_query_controller.cc",
+    "lens_overlay_query_controller.h",
+    "lens_overlay_request_id_generator.cc",
+    "lens_overlay_request_id_generator.h",
+    "lens_overlay_side_panel_coordinator.cc",
+    "lens_overlay_side_panel_coordinator.h",
+    "lens_overlay_side_panel_navigation_throttle.cc",
+    "lens_overlay_side_panel_web_view.cc",
+    "lens_overlay_side_panel_web_view.h",
+    "lens_overlay_theme_utils.cc",
+    "lens_overlay_theme_utils.h",
+    "lens_overlay_untrusted_ui.cc",
+    "lens_overlay_url_builder.cc",
+    "lens_overlay_url_builder.h",
+    "lens_permission_bubble_controller.cc",
+    "lens_permission_bubble_controller.h",
+    "lens_preselection_bubble.cc",
+    "lens_preselection_bubble.h",
+    "lens_search_bubble_controller.cc",
+    "lens_search_bubble_controller.h",
+    "lens_side_panel_untrusted_ui.cc",
+    "ref_counted_lens_overlay_client_logs.h",
+    "search_bubble_page_handler.cc",
+    "search_bubble_page_handler.h",
+    "search_bubble_ui.cc",
+  ]
+
+  public_deps = [
+    "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/find_in_page",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/theme:theme_resources_grit",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/content_extraction",
+    "//chrome/browser/feedback",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles",
+    "//chrome/browser/resources/lens/overlay:resources",
+    "//chrome/browser/resources/lens/overlay:resources_grit",
+    "//chrome/browser/resources/lens/overlay/search_bubble:resources",
+    "//chrome/browser/resources/lens/overlay/search_bubble:resources_grit",
+    "//chrome/browser/resources/lens/shared:resources",
+    "//chrome/browser/resources/lens/shared:resources_grit",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines:search_engines",
+    "//chrome/browser/task_manager",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/searchbox",
+    "//chrome/browser/ui/webui/util",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//components/base32",
+    "//components/constrained_window",
+    "//components/endpoint_fetcher",
+    "//components/input",
+    "//components/language/core/common",
+    "//components/lens:enterprise_policy",
+    "//components/lens:features",
+    "//components/lens/proto/server:proto",
+    "//components/metrics_services_manager:metrics_services_manager",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings_grit",
+    "//components/sync/service",
+    "//components/sync_preferences",
+    "//components/unified_consent",
+    "//components/variations",
+    "//components/variations:variations_mojom",
+    "//components/version_info:channel",
+    "//components/web_modal:web_modal",
+    "//components/zoom",
+    "//google_apis",
+    "//google_apis/common:common",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//net/traffic_annotation",
+    "//pdf:buildflags",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
+    "//skia",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+    "//third_party/omnibox_proto",
+    "//third_party/zlib/google:compression_utils",
+    "//ui/base:types",
+    "//ui/gfx:gfx",
+    "//ui/gfx/codec:codec",
+    "//ui/gfx/geometry:geometry",
+    "//ui/views",
+    "//ui/webui",
+    "//url",
+  ]
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "lens_overlay_controller_browsertest.cc",
+    "lens_overlay_live_test.cc",
+  ]
+  deps = [
+    ":lens",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin/e2e_tests:test_support",
+    "//chrome/browser/sync",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/lens:enterprise_policy",
+    "//components/lens:features",
+    "//components/lens/proto/server:proto",
+    "//components/permissions:test_support",
+    "//components/prefs",
+    "//components/renderer_context_menu",
+    "//components/ukm:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//pdf:features",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/compositor",
+    "//ui/events:events_base",
+    "//ui/views",
+    "//ui/views:test_support",
+    "//ui/views/controls/webview",
+    "//url",
+  ]
+  if (enable_pdf) {
+    deps += [ "//chrome/browser/pdf" ]
+  }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "lens_overlay_controller_interactive_uitest.cc",
+    "lens_permission_bubble_controller_interactive_uitest.cc",
+    "lens_preselection_bubble_interactive_uitest.cc",
+  ]
+  deps = [
+    ":lens",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sync",
+    "//chrome/browser/themes",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/feature_engagement/public",
+    "//components/lens:enterprise_policy",
+    "//components/lens:features",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/user_education/views",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "lens_overlay_image_helper_unittest.cc",
+    "lens_overlay_proto_converter_unittest.cc",
+    "lens_overlay_query_controller_unittest.cc",
+    "lens_overlay_request_id_generator_unittest.cc",
+    "lens_overlay_side_panel_navigation_throttle_unittest.cc",
+    "lens_overlay_url_builder_unittest.cc",
+  ]
+  deps = [
+    ":lens",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/themes",
+    "//chrome/test:test_support",
+    "//components/base32",
+    "//components/endpoint_fetcher",
+    "//components/lens:features",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//google_apis/common",
+    "//net",
+    "//net/traffic_annotation",
+    "//testing/gtest",
+    "//third_party/icu:icui18n",
+    "//third_party/icu:icuuc_public",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+    "//third_party/omnibox_proto",
+    "//third_party/zlib/google:compression_utils",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}

@@ -104,7 +104,7 @@ void SupportHostObserverProxy::OnHostStateError(int64_t error) {
 
   CRD_VLOG(3) << __func__
               << " with error code: " << ErrorCodeToString(error_code) << "("
-              << error_code << ")";
+              << error << ")";
 
   ReportHostStopped(ToExtendedStartCrdSessionResultCode(error_code),
                     "host state error");

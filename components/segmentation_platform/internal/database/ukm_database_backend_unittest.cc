@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"
 #include "components/segmentation_platform/internal/database/ukm_metrics_table.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/database/ukm_url_table.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -77,6 +78,13 @@ ukm::mojom::UkmEntryPtr GetSampleUkmEntry(ukm::SourceId source_id = 10) {
   return entry;
 }
 
+UmaMetricEntry GetSampleMetricsRow() {
+  return UmaMetricEntry{.type = proto::SignalType::HISTOGRAM_VALUE,
+                        .name_hash = 10,
+                        .time = base::Time::Now(),
+                        .value = 100};
+}
+
 }  // namespace
 
 class UkmDatabaseBackendTest : public testing::Test {
@@ -116,7 +124,7 @@ class UkmDatabaseBackendTest : public testing::Test {
                          bool expect_success,
                          const processing::IndexedTensors& expected_values) {
     base::RunLoop wait_for_query3;
-    backend_->RunReadonlyQueries(
+    backend_->RunReadOnlyQueries(
         std::move(queries),
         base::BindOnce(
             [](base::OnceClosure quit, bool expect_success,
@@ -490,6 +498,8 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
   ukm::mojom::UkmEntryPtr entry3 = GetSampleUkmEntry(kSourceId3);
   ukm::mojom::UkmEntryPtr entry4 = GetSampleUkmEntry(kSourceId4);
 
+  UmaMetricEntry uma1 = GetSampleMetricsRow();
+
   backend_->UpdateUrlForUkmSource(kSourceId1, kUrl1, true, /*profile_id*/ "");
   backend_->UpdateUrlForUkmSource(kSourceId2, kUrl2, true, /*profile_id*/ "");
   backend_->UpdateUrlForUkmSource(kSourceId3, kUrl3, true, /*profile_id*/ "");
@@ -499,6 +509,9 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
   backend_->StoreUkmEntry(std::move(entry2));
   backend_->StoreUkmEntry(std::move(entry3));
   backend_->StoreUkmEntry(std::move(entry4));
+  backend_->AddUmaMetric("1", uma1);
+  backend_->AddUmaMetric("2", uma1);
+  backend_->AddUmaMetric("3", uma1);
 
   test_util::AssertUrlsInTable(backend_->db(),
                                {
@@ -507,11 +520,40 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
                                    UrlMatcher{.url_id = kUrlId3, .url = kUrl3},
                                    UrlMatcher{.url_id = kUrlId4, .url = kUrl4},
                                });
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
 
   backend_->DeleteEntriesOlderThan(base::Time::Max());
+
   test_util::AssertUrlsInTable(backend_->db(), {});
+  // UMA metrics are not deleted.
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
 
   EXPECT_TRUE(backend_->has_transaction_for_testing());
+}
+
+TEST_F(UkmDatabaseBackendTest, CleanupItems) {
+  auto uma = GetSampleMetricsRow();
+  uma.name_hash = 10;
+  backend_->AddUmaMetric("1", uma);
+  uma.name_hash = 20;
+  backend_->AddUmaMetric("1", uma);
+  uma.name_hash = 30;
+  backend_->AddUmaMetric("1", uma);
+
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
+
+  base::Time now = base::Time::Now();
+  std::vector<CleanupItem> cleanup{
+      CleanupItem(10, 0, uma.type, now),
+      CleanupItem(15, 0, uma.type, now),
+      CleanupItem(20, 0, uma.type, now),
+  };
+  // Wrong profile id.
+  backend_->CleanupItems("2", cleanup);
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
+
+  backend_->CleanupItems("1", cleanup);
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 1u);
 }
 
 TEST_F(UkmDatabaseBackendTest, ReadOnlyQueries) {
@@ -639,6 +681,7 @@ class FailedUkmDatabaseTest : public UkmDatabaseBackendTest {
 };
 
 TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
+  // Check queries do not crash.
   const GURL kUrl1("https://www.url1.com");
   backend_->OnUrlValidated(kUrl1, /*profile_id*/ "");
   backend_->StoreUkmEntry(GetSampleUkmEntry());
@@ -646,6 +689,10 @@ TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/false);
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/true);
   backend_->DeleteEntriesOlderThan(base::Time() - base::Seconds(10));
+  backend_->AddUmaMetric("1", GetSampleMetricsRow());
+  backend_->CleanupItems("",
+                         {CleanupItem(1, 2, proto::SignalType::HISTOGRAM_ENUM,
+                                      base::Time() - base::Seconds(10))});
 
   UkmDatabase::QueryList queries;
   queries.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));

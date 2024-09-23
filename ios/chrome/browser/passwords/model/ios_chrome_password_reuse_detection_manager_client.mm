@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/features.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -81,8 +81,7 @@ bool IOSChromePasswordReuseDetectionManagerClient::IsHistorySyncAccountEmail(
     return false;
   }
   return password_manager::sync_util::IsSyncAccountEmail(
-      username,
-      IdentityManagerFactory::GetForBrowserState(bridge_.browserState),
+      username, IdentityManagerFactory::GetForProfile(bridge_.browserState),
       signin::ConsentLevel::kSignin);
 }
 

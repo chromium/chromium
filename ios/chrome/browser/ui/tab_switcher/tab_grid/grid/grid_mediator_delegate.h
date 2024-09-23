@@ -15,20 +15,17 @@ class WebStateID;
 
 // Delegate protocol for an object that can handle the action sheet that asks
 // for confirmation from the tab grid.
-// TODO(crbug.com/1457146): This delegate should be completely refactor.
+// TODO(crbug.com/40273478): This delegate should be completely refactor.
 @protocol GridMediatorDelegate <NSObject>
 
-// Displays an action sheet at `anchor` confirming that selected `items` are
-// going to be closed.
-- (void)
-    showCloseItemsConfirmationActionSheetWithBaseGridMediator:
-        (BaseGridMediator*)baseGridMediator
-                                                      itemIDs:
-                                                          (const std::set<
-                                                              web::WebStateID>&)
-                                                              itemIDs
-                                                       anchor:(UIBarButtonItem*)
-                                                                  buttonAnchor;
+// Displays an action sheet at `anchor` confirming that selected `tabIDs` and
+// `groupIDs` are going to be closed.
+- (void)baseGridMediator:(BaseGridMediator*)baseGridMediator
+    showCloseConfirmationWithTabIDs:(const std::set<web::WebStateID>&)tabIDs
+                           groupIDs:
+                               (const std::set<tab_groups::TabGroupId>&)groupIDs
+                           tabCount:(int)tabCount
+                             anchor:(UIBarButtonItem*)buttonAnchor;
 
 // Displays a share menu for `items` at `anchor`.
 - (void)baseGridMediator:(BaseGridMediator*)baseGridMediator
@@ -37,11 +34,6 @@ class WebStateID;
 
 // Dismisses presented popovers, if any.
 - (void)dismissPopovers;
-
-// Display the tab group creation menu for the given identifiers.
-- (void)showTabGroupCreationWithWithIdentifiers:
-            (const std::set<web::WebStateID>&)identifiers
-                                      incognito:(BOOL)incognito;
 
 @end
 

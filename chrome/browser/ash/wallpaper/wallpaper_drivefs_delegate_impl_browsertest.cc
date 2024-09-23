@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
 
 #include <memory>
@@ -47,7 +52,7 @@ namespace {
 scoped_refptr<base::RefCountedBytes> EncodeImage(const gfx::ImageSkia& image) {
   auto output = base::MakeRefCounted<base::RefCountedBytes>();
   SkBitmap bitmap = *(image.bitmap());
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, &(output)->data());
+  gfx::JPEGCodec::Encode(bitmap, /*quality=*/90, &(output)->as_vector());
   return output;
 }
 

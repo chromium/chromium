@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <algorithm>
 #include <tuple>
 
@@ -62,10 +67,10 @@ class YUVReadbackTest : public testing::Test {
       std::string* output,
       const scoped_refptr<base::RefCountedString>& json_events_str,
       bool has_more_events) {
-    if (output->size() > 1 && !json_events_str->data().empty()) {
+    if (output->size() > 1 && !json_events_str->as_string().empty()) {
       output->append(",");
     }
-    output->append(json_events_str->data());
+    output->append(json_events_str->as_string());
     if (!has_more_events) {
       std::move(quit_closure).Run();
     }
@@ -363,12 +368,12 @@ class YUVReadbackTest : public testing::Test {
     };
     yuv_reader->ReadbackYUV(
         src_texture, gfx::Size(xsize, ysize), gfx::Rect(0, 0, xsize, ysize),
-        output_frame->stride(media::VideoFrame::kYPlane),
-        output_frame->writable_data(media::VideoFrame::kYPlane),
-        output_frame->stride(media::VideoFrame::kUPlane),
-        output_frame->writable_data(media::VideoFrame::kUPlane),
-        output_frame->stride(media::VideoFrame::kVPlane),
-        output_frame->writable_data(media::VideoFrame::kVPlane),
+        output_frame->stride(media::VideoFrame::Plane::kY),
+        output_frame->writable_data(media::VideoFrame::Plane::kY),
+        output_frame->stride(media::VideoFrame::Plane::kU),
+        output_frame->writable_data(media::VideoFrame::Plane::kU),
+        output_frame->stride(media::VideoFrame::Plane::kV),
+        output_frame->writable_data(media::VideoFrame::Plane::kV),
         gfx::Point(xmargin, ymargin),
         base::BindOnce(run_quit_closure, run_loop.QuitClosure()));
 
@@ -382,14 +387,14 @@ class YUVReadbackTest : public testing::Test {
     }
 
     unsigned char* Y =
-        truth_frame->GetWritableVisibleData(media::VideoFrame::kYPlane);
+        truth_frame->GetWritableVisibleData(media::VideoFrame::Plane::kY);
     unsigned char* U =
-        truth_frame->GetWritableVisibleData(media::VideoFrame::kUPlane);
+        truth_frame->GetWritableVisibleData(media::VideoFrame::Plane::kU);
     unsigned char* V =
-        truth_frame->GetWritableVisibleData(media::VideoFrame::kVPlane);
-    int32_t y_stride = truth_frame->stride(media::VideoFrame::kYPlane);
-    int32_t u_stride = truth_frame->stride(media::VideoFrame::kUPlane);
-    int32_t v_stride = truth_frame->stride(media::VideoFrame::kVPlane);
+        truth_frame->GetWritableVisibleData(media::VideoFrame::Plane::kV);
+    int32_t y_stride = truth_frame->stride(media::VideoFrame::Plane::kY);
+    int32_t u_stride = truth_frame->stride(media::VideoFrame::Plane::kU);
+    int32_t v_stride = truth_frame->stride(media::VideoFrame::Plane::kV);
     memset(Y, 0x00, y_stride * output_ysize);
     memset(U, 0x80, u_stride * output_ysize / 2);
     memset(V, 0x80, v_stride * output_ysize / 2);
@@ -430,16 +435,16 @@ class YUVReadbackTest : public testing::Test {
     }
 
     ComparePlane(
-        Y, y_stride, output_frame->visible_data(media::VideoFrame::kYPlane),
-        output_frame->stride(media::VideoFrame::kYPlane), 2, output_xsize,
+        Y, y_stride, output_frame->visible_data(media::VideoFrame::Plane::kY),
+        output_frame->stride(media::VideoFrame::Plane::kY), 2, output_xsize,
         output_ysize, &input_pixels, message + " Y plane");
     ComparePlane(
-        U, u_stride, output_frame->visible_data(media::VideoFrame::kUPlane),
-        output_frame->stride(media::VideoFrame::kUPlane), 2, output_xsize / 2,
+        U, u_stride, output_frame->visible_data(media::VideoFrame::Plane::kU),
+        output_frame->stride(media::VideoFrame::Plane::kU), 2, output_xsize / 2,
         output_ysize / 2, &input_pixels, message + " U plane");
     ComparePlane(
-        V, v_stride, output_frame->visible_data(media::VideoFrame::kVPlane),
-        output_frame->stride(media::VideoFrame::kVPlane), 2, output_xsize / 2,
+        V, v_stride, output_frame->visible_data(media::VideoFrame::Plane::kV),
+        output_frame->stride(media::VideoFrame::Plane::kV), 2, output_xsize / 2,
         output_ysize / 2, &input_pixels, message + " V plane");
 
     gl_->DeleteTextures(1, &src_texture);

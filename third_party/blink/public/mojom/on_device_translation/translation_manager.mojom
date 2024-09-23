@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/on_device_translation/translator.mojom";
+
+// The manager for on-device translation.
+interface TranslationManager {
+  // Returns if it is supported to create a translator that could translate
+  // texts from `source_lang` to `target_lang`.
+  CanCreateTranslator(
+    string source_lang, string target_lang
+  ) => (bool can_create);
+  // Creates a translator that could translate texts from `source_lang`
+  // to `target_lang`. The translator will be bound to the `receiver`, and the
+  // result will be passed to the callback.
+  CreateTranslator(
+    string source_lang, string target_lang,
+    pending_receiver<blink.mojom.Translator> receiver
+  ) => (bool success);
+};

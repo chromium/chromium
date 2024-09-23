@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] elu float32 positive 0D scalar default options
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
+[FAIL] elu float32 negative 0D scalar default options
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual -0.97900390625 should be close enough to expected -0.9790657162666321 by the acceptable 18 ULP distance, but they have 1037 ULP distance expected true got false
+[FAIL] elu float32 1D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
+[FAIL] elu float32 1D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
+[FAIL] elu float32 2D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
+[FAIL] elu float32 3D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
+[FAIL] elu float32 4D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
+[FAIL] elu float32 5D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
+[FAIL] elu float32 4D tensor positive options.alpha
+  assert_true: assert_array_approx_equals_ulp: test elu float32 actual 4.71875 should be close enough to expected 4.721739768981934 by the acceptable 18 ULP distance, but they have 6270 ULP distance expected true got false
+[FAIL] elu float32 4D tensor negative options.alpha
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'elu' on 'MLGraphBuilder': The value of alpha must be greater than 0."
+Harness: the test ran to completion.
+

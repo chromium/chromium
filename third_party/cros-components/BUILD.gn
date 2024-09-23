@@ -9,22 +9,31 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 _cros_components_ts_files = [
+  "accordion/accordion.ts",
+  "accordion/accordion_item.ts",
   "async_helpers/async_helpers.ts",
+  "badge/badge.ts",
   "button/button.ts",
   "card/card.ts",
   "checkbox/checkbox.ts",
+  "chip/chip.ts",
   "dropdown/dropdown.ts",
   "dropdown/dropdown_option.ts",
   "helpers/helpers.ts",
   "icon_button/icon-button.ts",
+  "icon_dropdown/icon-dropdown.ts",
+  "icon_dropdown/icon-dropdown-option.ts",
   "lottie_renderer/event_binders.ts",
   "lottie_renderer/lottie-renderer.ts",
   "lottie_renderer/worker.ts",
+  "lottie_renderer/lottie_processing_helpers.ts",
   "menu/menu.ts",
   "menu/menu_item.ts",
   "menu/menu_separator.ts",
   "menu/menu_util.ts",
   "menu/sub_menu_item.ts",
+  "orca_feedback/maybe_safe_html.ts",
+  "orca_feedback/orca-feedback.ts",
   "radio/radio.ts",
   "sidenav/sidenav.ts",
   "sidenav/sidenav_item.ts",
@@ -41,6 +50,7 @@ _cros_components_ts_files = [
   "tabs/tabs.ts",
   "tag/tag.ts",
   "textfield/textfield.ts",
+  "tooltip/tooltip.ts",
 ]
 
 ts_library("cros_components__ts_library") {
@@ -55,8 +65,13 @@ ts_library("cros_components__ts_library") {
   in_files = _cros_components_ts_files
 
   root_src_dir = rebase_path("//", target_gen_dir)
+  resources_dir =
+      rebase_path("$root_gen_dir/ui/webui/resources/tsc", target_gen_dir)
 
-  path_mappings = [ "@material/*|$root_src_dir/third_party/material_web_components/components-chromium/node_modules/@material/*" ]
+  path_mappings = [
+    "chrome://resources/cr_components/color_change_listener/*|$resources_dir/cr_components/color_change_listener/*",
+    "@material/*|$root_src_dir/third_party/material_web_components/components-chromium/node_modules/@material/*",
+  ]
 
   foreach(_mwc_mapping, mwc_path_mappings) {
     path_mappings +=
@@ -96,6 +111,8 @@ rewrite_imports("cros_components_ts") {
 
   import_mappings = [
     "lit|//resources/mwc/lit/index.js",
+    "@lit/task|//resources/mwc/lit/index.js",
+
     "@material/|chrome://resources/mwc/@material/",
 
     # Add js prefix's to any internal imports so they work at runtime.

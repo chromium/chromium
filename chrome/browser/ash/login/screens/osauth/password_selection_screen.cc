@@ -4,9 +4,19 @@
 
 #include "chrome/browser/ash/login/screens/osauth/password_selection_screen.h"
 
+#include <string>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
+#include "base/check_is_test.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/base_osauth_setup_screen.h"
@@ -16,12 +26,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
-#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
-#include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
-#include "chromeos/ash/services/auth_factor_config/password_factor_editor.h"
 
 namespace ash {
 
@@ -42,6 +49,7 @@ bool IsUserEnterpriseManaged() {
 
 // static
 std::string PasswordSelectionScreen::GetResultString(Result result) {
+  // LINT.IfChange(UsageMetrics)
   switch (result) {
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
@@ -58,6 +66,7 @@ std::string PasswordSelectionScreen::GetResultString(Result result) {
     case Result::GAIA_PASSWORD_ENTERPRISE:
       return "GaiaPasswordEnterprise";
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
 PasswordSelectionScreen::PasswordSelectionScreen(
@@ -71,6 +80,7 @@ PasswordSelectionScreen::PasswordSelectionScreen(
 PasswordSelectionScreen::~PasswordSelectionScreen() = default;
 
 void PasswordSelectionScreen::ShowImpl() {
+  is_shown_ = true;
   if (!view_) {
     return;
   }
@@ -80,6 +90,11 @@ void PasswordSelectionScreen::ShowImpl() {
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PasswordSelectionScreen::ProcessOptions,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PasswordSelectionScreen::HideImpl() {
+  BaseOSAuthSetupScreen::HideImpl();
+  is_shown_ = false;
 }
 
 void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
@@ -103,6 +118,13 @@ void PasswordSelectionScreen::OnUserAction(const base::Value::List& args) {
 }
 
 bool PasswordSelectionScreen::MaybeSkip(WizardContext& wizard_context) {
+  if (wizard_context.skip_post_login_screens_for_tests && is_shown_) {
+    CHECK_IS_TEST();
+    // WizardController::SkipPostLoginScreensForTesting() can be triggered
+    // after screen is shown.
+    exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+    return true;
+  }
   return false;
 }
 
@@ -111,6 +133,11 @@ void PasswordSelectionScreen::InspectContext(UserContext* user_context) {
     LOG(ERROR) << "Session expired while waiting for user's decision";
     // TODO(b/291808449): This should be an error.
     exit_callback_.Run(Result::NOT_APPLICABLE);
+    return;
+  }
+  // In reauthentication flow we don't always request AuthFactorsConfiguration.
+  if (context()->knowledge_factor_setup.auth_setup_flow ==
+      WizardContext::AuthChangeFlow::kReauthentication) {
     return;
   }
   CHECK(user_context->HasAuthFactorsConfiguration());
@@ -134,17 +161,30 @@ void PasswordSelectionScreen::ProcessOptions() {
       exit_callback_.Run(Result::NOT_APPLICABLE);
       return;
     case WizardContext::AuthChangeFlow::kRecovery:
-      CHECK(auth_factors_config_.HasConfiguredFactor(
-          cryptohome::AuthFactorType::kPassword))
-          << "User need to have a password that should be updated";
-      if (auth::IsLocalPassword(*auth_factors_config_.FindFactorByType(
-              cryptohome::AuthFactorType::kPassword))) {
+      if (!auth_factors_config_.HasConfiguredFactor(
+              cryptohome::AuthFactorType::kPassword)) {
+        // Here if the user does not have any password configured then we can
+        // let them set their password according to the same condition as OOBE.
+        // What is to note here is that after recovery, we already know the GAIA
+        // password so both GAIA and local password factor are possible.
+        LOG(ERROR) << "User does not have password configured when "
+                      "performing recovery unexpectedly.";
+        base::debug::DumpWithoutCrashing();
+        break;
+      } else if (auth::IsLocalPassword(*auth_factors_config_.FindFactorByType(
+                     cryptohome::AuthFactorType::kPassword))) {
         exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
         return;
       } else {
         CHECK(auth::IsGaiaPassword(*auth_factors_config_.FindFactorByType(
             cryptohome::AuthFactorType::kPassword)));
-        exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+        if (!has_online_password_) {
+          LOG(WARNING)
+              << "User does not have online password, forcing local password";
+          exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
+        } else {
+          exit_callback_.Run(Result::GAIA_PASSWORD_FALLBACK);
+        }
         return;
       }
     case WizardContext::AuthChangeFlow::kInitialSetup:
@@ -182,7 +222,6 @@ void PasswordSelectionScreen::ProcessOptions() {
     exit_callback_.Run(Result::GAIA_PASSWORD_ENTERPRISE);
     return;
   }
-
   if (!has_online_password_) {
     LOG(WARNING)
         << "User does not have online password, forcing local password";
@@ -190,6 +229,7 @@ void PasswordSelectionScreen::ProcessOptions() {
     exit_callback_.Run(Result::LOCAL_PASSWORD_FORCED);
     return;
   }
+
   EstablishKnowledgeFactorGuard(
       base::BindOnce(&PasswordSelectionScreen::ShowPasswordChoice,
                      weak_ptr_factory_.GetWeakPtr()));

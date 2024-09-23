@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/raster_scale/raster_scale_layer_observer.h"
+#include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -50,9 +51,6 @@ class ASH_EXPORT ScopedOverviewTransformWindow
                             int top_view_inset,
                             int title_height);
 
-  static OverviewGridWindowFillMode GetWindowDimensionsType(
-      const gfx::Size& size);
-
   ScopedOverviewTransformWindow(OverviewItem* overview_item,
                                 aura::Window* window);
   ScopedOverviewTransformWindow(const ScopedOverviewTransformWindow&) = delete;
@@ -62,7 +60,9 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   aura::Window* window() const { return window_; }
 
-  OverviewGridWindowFillMode type() const { return type_; }
+  bool is_restoring() const { return is_restoring_; }
+
+  OverviewItemFillMode fill_mode() const { return fill_mode_; }
 
   // Starts an animation sequence which will use animation settings specified by
   // |animation_type|. The |animation_settings| container is populated with
@@ -131,9 +131,10 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   // Called via OverviewItem from OverviewGrid when |window_|'s bounds
   // change. Must be called before PositionWindows in OverviewGrid.
-  void UpdateWindowDimensionsType();
+  void UpdateOverviewItemFillMode();
 
-  // Updates the rounded corners on |window_|.
+  // Updates the rounded corners on `window_` and its transient hierarchy (if
+  // needed).
   void UpdateRoundedCorners(bool show);
 
   // aura::client::TransientWindowClientObserver:
@@ -156,7 +157,6 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   static void SetImmediateCloseForTests(bool immediate);
 
  private:
-  friend class OverviewFocusCyclerTest;
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(OverviewSessionTest, CloseAnimationShadow);
   class LayerCachingAndFilteringObserver;
@@ -178,11 +178,17 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // A weak pointer to the real window in the overview.
   raw_ptr<aura::Window> window_;
 
+  // True during the process of `RestoreWindow()`. This prevents redundant
+  // cyclic calls to `OverviewItem::SetBounds()`, which may happen when
+  // `ScopedOverviewTransformWindow::OnWindowBoundsChanged()` is triggered
+  // during the restore see http://b/311255082 for an example.
+  bool is_restoring_ = false;
+
   // The original opacity of the window before entering overview mode.
   float original_opacity_;
 
   // Specifies how the window is laid out in the grid.
-  OverviewGridWindowFillMode type_ = OverviewGridWindowFillMode::kNormal;
+  OverviewItemFillMode fill_mode_ = OverviewItemFillMode::kNormal;
 
   // The observers associated with the layers we requested caching render
   // surface and trilinear filtering. The requests will be removed in dtor if
@@ -209,6 +215,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
+
+  std::unique_ptr<ScopedWindowTreeSynchronizer> window_tree_synchronizer_;
 
   // While the transform window exists, apply dynamic raster scale to the
   // underlying window.

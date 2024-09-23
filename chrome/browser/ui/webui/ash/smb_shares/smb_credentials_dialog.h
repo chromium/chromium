@@ -8,12 +8,15 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace color_change_listener::mojom {
+class PageHandler;
+}  // namespace color_change_listener::mojom
 
 namespace ui {
 class ColorChangeHandler;

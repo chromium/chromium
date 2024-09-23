@@ -1,0 +1,6 @@
+monorail: {
+  component: "Internals>AttributionReporting"
+}
+buganizer_public: {
+  component_id: 1456103
+}

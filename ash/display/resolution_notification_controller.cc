@@ -66,11 +66,11 @@ ResolutionNotificationController::ResolutionChangeInfo::
     ~ResolutionChangeInfo() = default;
 
 ResolutionNotificationController::ResolutionNotificationController() {
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
 }
 
 ResolutionNotificationController::~ResolutionNotificationController() {
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
 }
 
 bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
@@ -155,9 +155,6 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
 
   std::u16string timeout_message_with_placeholder;
   if (display::features::IsListAllDisplayModesEnabled()) {
-    dialog_title = l10n_util::GetStringUTF16(
-        IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE);
-
     const std::u16string actual_refresh_rate = ConvertRefreshRateToString16(
         change_info_->current_resolution.refresh_rate());
     const std::u16string requested_refresh_rate = ConvertRefreshRateToString16(
@@ -166,16 +163,23 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
     const bool no_fallback = actual_display_size == requested_display_size &&
                              actual_refresh_rate == requested_refresh_rate;
 
+    dialog_title =
+        no_fallback
+            ? l10n_util::GetStringUTF16(
+                  IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_SUCCESS)
+            : l10n_util::GetStringUTF16(
+                  IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_FALLBACK);
+
     timeout_message_with_placeholder =
         no_fallback ? l10n_util::GetStringFUTF16(
-                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED,
+                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED_NEW,
                           display_name, actual_display_size,
                           actual_refresh_rate, kTimeoutPlaceHolder)
                     : l10n_util::GetStringFUTF16(
-                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK,
-                          {display_name, requested_display_size,
-                           requested_refresh_rate, actual_display_size,
-                           actual_refresh_rate, kTimeoutPlaceHolder},
+                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW,
+                          {display_name, actual_display_size,
+                           actual_refresh_rate, requested_display_size,
+                           requested_refresh_rate, kTimeoutPlaceHolder},
                           /*offsets=*/nullptr);
 
   } else {
@@ -230,20 +234,23 @@ void ResolutionNotificationController::RevertResolutionChange(
   }
 }
 
-void ResolutionNotificationController::OnDisplayRemoved(
-    const display::Display& old_display) {
-  if (change_info_ && change_info_->display_id == old_display.id()) {
-    if (confirmation_dialog_) {
-      // Use CloseWithReason rather than CloseNow to make sure the screen
-      // doesn't stay dimmed after the widget is closed. b/288485093.
-      confirmation_dialog_->GetWidget()->CloseWithReason(
-          views::Widget::ClosedReason::kLostFocus);
+void ResolutionNotificationController::OnDisplaysRemoved(
+    const display::Displays& removed_displays) {
+  for (const auto& display : removed_displays) {
+    if (change_info_ && change_info_->display_id == display.id()) {
+      if (confirmation_dialog_) {
+        // Use CloseWithReason rather than CloseNow to make sure the screen
+        // doesn't stay dimmed after the widget is closed. b/288485093.
+        confirmation_dialog_->GetWidget()->CloseWithReason(
+            views::Widget::ClosedReason::kLostFocus);
+      }
+      RevertResolutionChange(/*display_was_removed=*/true);
+      break;
     }
-    RevertResolutionChange(/*display_was_removed=*/true);
   }
 }
 
-void ResolutionNotificationController::OnDisplayConfigurationChanged() {
+void ResolutionNotificationController::OnDidApplyDisplayChanges() {
   if (!change_info_) {
     return;
   }
@@ -256,6 +263,5 @@ void ResolutionNotificationController::OnDisplayConfigurationChanged() {
 
   CreateOrReplaceModalDialog();
 }
-
 
 }  // namespace ash

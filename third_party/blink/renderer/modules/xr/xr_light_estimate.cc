@@ -16,10 +16,10 @@ XRLightEstimate::XRLightEstimate(
       *light_probe.spherical_harmonics;
   DCHECK_EQ(spherical_harmonics.coefficients.size(), 9u);
 
-  sh_coefficients_ = DOMFloat32Array::Create(
-      spherical_harmonics.coefficients.data()->components,
-      spherical_harmonics.coefficients.size() *
-          device::RgbTupleF32::kNumComponents);
+  sh_coefficients_ = DOMFloat32Array::Create(UNSAFE_TODO(
+      base::span(spherical_harmonics.coefficients.data()->components,
+                 spherical_harmonics.coefficients.size() *
+                     device::RgbTupleF32::kNumComponents)));
 
   primary_light_direction_ =
       DOMPointReadOnly::Create(light_probe.main_light_direction.x(),

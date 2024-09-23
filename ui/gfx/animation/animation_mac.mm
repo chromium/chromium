@@ -34,7 +34,8 @@ bool Animation::ScrollAnimationsEnabledBySystem() {
 // static
 void Animation::UpdatePrefersReducedMotion() {
   // prefers_reduced_motion_ should only be modified on the UI thread.
-  // TODO(crbug.com/927163): DCHECK this assertion once tests are well-behaved.
+  // TODO(crbug.com/40611878): DCHECK this assertion once tests are
+  // well-behaved.
 
   prefers_reduced_motion_ =
       NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion;

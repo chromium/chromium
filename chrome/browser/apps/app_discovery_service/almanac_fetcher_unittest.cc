@@ -18,7 +18,7 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
-#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
+#include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_endpoint.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -41,6 +41,7 @@ constexpr char kOneApp[] =
     R"pb(app_groups: {
            uuid: "cf2890ac-486f-11ee-be56-0242ac120002"
            name: "app_name"
+           badge_text: "GeForce NOW"
            action_link: "https://game-deeplink.com/cf2be56486f11ee"
            icons: {
              url: "http://icon/"
@@ -52,6 +53,7 @@ constexpr char kTwoValidApps[] =
     R"pb(app_groups: {
            uuid: "e42c6c70-7732-437f-b2e7-0d17036b8cc1"
            name: "app_name1"
+           badge_text: "GeForce NOW"
            action_link: "https://game-deeplink.com/jrioj324j2095245234320o"
            icons: {
              url: "http://icon1/"
@@ -62,6 +64,7 @@ constexpr char kTwoValidApps[] =
          app_groups: {
            uuid: "d8eb7470-9d43-472c-aa49-125f5c3111d4"
            name: "app_name2"
+           badge_text: "Play"
            action_link: "https://game-deeplink.com/reijarowaiore131983u12jkljs893"
            icons: {
              url: "http://icon2/"
@@ -108,7 +111,7 @@ void SetServerResponse(network::TestURLLoaderFactory& url_loader_factory,
   std::string serialized_message;
   proto_loader->ParseFromText(text_proto, serialized_message);
   url_loader_factory.AddResponse(
-      LauncherAppAlmanacConnector::GetServerUrl().spec(), serialized_message,
+      launcher_app_almanac_endpoint::GetServerUrl().spec(), serialized_message,
       status);
 }
 
@@ -120,8 +123,8 @@ gfx::Image& GetTestImage(int resource_id) {
 class AlmanacFetcherTest : public testing::Test {
  public:
   AlmanacFetcherTest() {
-    feature_list_.InitWithFeatures(
-        {kAlmanacGameMigration, chromeos::features::kCloudGamingDevice}, {});
+    feature_list_.InitWithFeatures({chromeos::features::kCloudGamingDevice},
+                                   {});
     launcher_app_descriptor_ = GetTestDataRoot().Append(FILE_PATH_LITERAL(
         "chrome/browser/apps/app_discovery_service/almanac_api/"
         "launcher_app.descriptor"));
@@ -191,7 +194,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesTwoApps) {
   EXPECT_TRUE(results[1].GetSourceExtras());
   game_extras = results[1].GetSourceExtras()->AsGameExtras();
   ASSERT_TRUE(game_extras);
-  EXPECT_EQ(game_extras->GetSource(), u"GeForce NOW");
+  EXPECT_EQ(game_extras->GetSource(), u"Play");
   EXPECT_EQ(game_extras->GetDeeplinkUrl(),
             GURL("https://game-deeplink.com/"
                  "reijarowaiore131983u12jkljs893"));
@@ -203,7 +206,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesNoApps) {
   base::Time before_download = almanac_fetcher()->GetLastAppsUpdateTime();
   proto::LauncherAppResponse proto;
   url_loader_factory_.AddResponse(
-      LauncherAppAlmanacConnector::GetServerUrl().spec(),
+      launcher_app_almanac_endpoint::GetServerUrl().spec(),
       proto.SerializeAsString());
   base::test::TestFuture<const std::vector<Result>&> waiter;
   base::CallbackListSubscription subscription =
@@ -310,7 +313,7 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
         EXPECT_TRUE(results[1].GetSourceExtras());
         game_extras = results[1].GetSourceExtras()->AsGameExtras();
         ASSERT_TRUE(game_extras);
-        EXPECT_EQ(game_extras->GetSource(), u"GeForce NOW");
+        EXPECT_EQ(game_extras->GetSource(), u"Play");
         EXPECT_EQ(game_extras->GetDeeplinkUrl(),
                   GURL("https://game-deeplink.com/"
                        "reijarowaiore131983u12jkljs893"));

@@ -10,5 +10,5 @@ void WaitForNetworkCallbackHelper::DisableNetworkCallsDelayedForTesting(
     bool disable) {
   // Subclasses that want to use this function for testing should override this
   // method.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

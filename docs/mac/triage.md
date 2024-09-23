@@ -4,51 +4,67 @@ This document outlines how the Chrome Mac Team triages bugs. Triage is the
 process of converting raw bug reports filed by developers or users into
 actionable, prioritized tasks assigned to engineers.
 
-*** promo
-If you are not on the Chrome Mac Team and want to send a bug to them for triage,
-please mark bugs as Untriaged with label `Mac` (not the OS label "Mac") and
-allow the Mac triage rotation to assign them.
+*** promo If you are not on the Chrome Mac Team and want to send a bug to them
+for triage, please add the [Mac-TriageQueue
+hotlist](https://issues.chromium.org/hotlists/5648764) and allow the Mac triage
+rotation to assign them.
 ***
 
 The Mac bug triage process is split into two phases. First-phase triage is done
 daily in week-long shifts by a single person. Second-phase triage is done in a
 standing meeting on Mondays by the Mac team as a group.
 
-A key tool of the triage process is the "Mac" label (*not* the same as the Mac
-OS tag), which makes bugs visible to the triaging step of the process. This
-process deliberately doesn't look at bugs with OS=Mac status:Untriaged, because
-maintaining the list of components that can be ignored during that triage step
-is untenable.
-
 ## Quick Reference
+*** promo All necessary hotlists and saved searches are bundled into the [Mac
+triage bookmark group](https://issues.chromium.org/bookmark-groups/861056).
+***
 
-1. During the week, turn [OS=Mac status:Unconfirmed][unconfirmed] bugs into
-   [label:Mac status:Untriaged][untriaged-m] bugs.
-2. During the triage meeting, turn [label:Mac status:Untriaged][untriaged-m]
-   and [unlabelled Mac bugs][untriaged-c] into any of:
-    * [label:Mac status:Available][available]
-    * [label:Mac status:Assigned][assigned]
-    * Untriaged in any component that does triage, without the Mac label
-    * Assigned
+1. During the week, the primary works from the ["Mac triage candidates" saved
+search](https://issues.chromium.org/savedsearches/6676543). The primary has
+two main goals:
+
+    - To ensure that each bug is looked at.
+
+    - To add bugs that should be seen by the whole team to the [Mac-TriageQueue
+      hotlist](https://issues.chromium.org/hotlists/5648764)
+ > As of March 2024, the candidates saved search is greatly inflated by bugs
+ > that became unassigned as a part of the Buganizer transition. Due to this,
+ > it's not expected that the primary gets through the whole search. Instead,
+ > the primary should focus on bugs filed or updated within the past one or two
+ > weeks. We expect that we will shrink the queue to a reasonable size within
+ > the next few months
+2. During the triage meeting, the team as a whole looks at the triage queue. At
+the end of the triage meeting, it's expected that every bug in the queue will be
+in one of the following states:
+
+    - [Awaiting feedback](https://issues.chromium.org/hotlists/5433459)
+    - Assigned
+    - Closed
+    - Passed to another team
+    - [Bypassed](https://issues.chromium.org/hotlists/5432664)
+
 
 ## First-phase triage
 
-First-phase triage is the step which ensures the symptoms and reproduction steps
-of a bug are well-understood. This phase operates on [OS=Mac
-status:Unconfirmed][unconfirmed] bugs, and moves these bugs to:
+First-phase triage is, first and foremost, a filter.  Not every bug that is
+filed on a Mac, or even exclusively occurs on the Mac is best handled by the Mac
+team. If the bug is obviously very domain-specific (eg: "this advanced CSS
+feature is behaving strangely", or "my printer is printing everything upside
+down"), feel free to skip this iteration step and send the bug straight to the
+involved team's component. Our triage filter is coarse enough that this isn't
+always sufficient to get the bug out of our queue; in these cases the bug should
+also be [bypassed](https://issues.chromium.org/hotlists/5432664)
 
-* Needs-Feedback, if awaiting a response from the user
-* Untriaged bugs with the Mac label, if they are valid bug reports with working
-  repro steps or a crash stack
-* WontFix, if they are invalid bug reports or working as intended
-* Duplicate, if they are identical to an existing bug
+If the primary determines that the Mac team is responsible for this bug (or it
+isn't immediately apparent), the next step is to ensure the symptoms and
+reproduction steps of the bug are well-understood.
+> If the bug is clearly of interest to the wider team, or seems like it could
+> use input from domain experts, it makes sense to put it directly into the
+> triage queue at this point.
 
 The main work of this phase is iterating with the bug reporter to get crash IDs,
-repro steps, traces, and other data we might need to nail down the bug. If the
-bugs is obviously very domain-specific (eg: "this advanced CSS feature is
-behaving strangely", or "my printer is printing everything upside down"), feel
-free to skip this iteration step and send the bug straight to the involved team
-or people. Useful tags at this step are:
+repro steps, traces, and other data we might need to nail down the bug.  Useful
+hotlists at this step are:
 
 * Needs-Feedback, which marks the bug as waiting for a response from the
   reporter
@@ -57,9 +73,19 @@ or people. Useful tags at this step are:
 * Needs-Bisect, which requests that Test Engineering bisect the bug down to a
   first bad release
 
-The latter two tags work much better when there are reliable repro steps for a
-bug, so endeavour to get those first - TE time is precious and we should make
+The latter two hotlists work much better when there are reliable repro steps for
+a bug, so endeavour to get those first - TE time is precious and we should make
 good use of it.
+
+Once the bug is sufficiently understood, it should end up in one of the
+following states:
+
+* In the [Mac team triage queue](https://issues.chromium.org/hotlists/5648764)
+* WontFix, if they are invalid bug reports or working as intended
+* Duplicate, if they are identical to an existing bug
+* Assigned to an obvious assignee
+* Moved to another team's component
+* [Bypassed](https://issues.chromium.org/hotlists/5432664)
 
 We wait **28 days** for user feedback on Needs-Feedback bugs; after 28 days
 without a response to a question we move bugs to WontFix.
@@ -83,81 +109,20 @@ Some useful debugging questions here:
 
 ## Second-phase triage
 
-Second-phase triage is the step which either moves a bug to another team's
-triage queue, or assigns a priority, component, and (possibly) owner to a bug.
-This phase operates on [label:Mac status:Untriaged][untriaged-m] and [untagged
-status:Untriaged][untriaged-c] bugs. The first part of this phase is deciding
-whether a bug should be worked on by the Mac team. If so, the bug moves to one
-of:
+Second-phase triage is for "complicated" bugs that benefit from the full team's
+perspective. In principle, anything with clear and unambiguous next steps should
+not make it to the triage queue.
 
-* Pri=2,3 in label:Mac, Assigned with an owner if one is obvious, Available
-  otherwise
-* Pri=0,1 in label:Mac, Assigned with an owner
+The primary "drives" by presenting the triage queue in Chromium's issue tracker,
+and the team goes through each bug one by one, taking action by consensus. If
+the queue is exhausted, the team proceeds to look at the triage candidate queue.
 
-Otherwise, the bug loses label:Mac and moves to one of:
-
-* Untriaged in a different component
-* Assigned with an owner
-* WontFix
-* Duplicate
-
-Since our component filter is not comprehensive, sometimes an Untriaged bug
-that is being investigated by the appropriate team remains in the Mac queue.
-In those cases, labeling the bug `Hotlist-MacTriageBypass` will remove it from
-the queue.
-
-Here are some rules of thumb for how to move bugs from label:Mac
-status:Untriaged to another component:
-
-* Is the bug Mac-only, or does it affect other platforms? If it affects other
-  platforms as well, it's probably out of scope for us and should go into
-  another component.
-* Is the bug probably in Blink? If so, it should be handled by the Blink
-  team's Mac folks; move to component `Blink`.
-* Is the bug localized to a specific feature, like the omnibox or the autofill
-  system? If so, it should be handled by that team; tag it with their component
-  for triage.
-* Is the bug a Views bug, even if it's Mac-specific? If so, it should be handled
-  by the Views team; mark it as `Internals>Views`.
-
-If the bug is Mac-specific and in scope for the Mac team, try to:
-
-* Assign it to a sublabel of `Mac`
-    * `Mac-Accessibility`
-    * `Mac-Enterprise`
-    * `Mac-Graphics`
-    * `Mac-Infra`
-    * `Mac-Performance`
-    * `Mac-PlatformIntegration`
-    * `Mac-Polish`
-    * `Mac-TechDebt`
-    * `Mac-UI`
-* Assign it a priority:
-    * Pri=0 means "this is an emergency, work on it immediately"
-    * Pri=1 means "we should not ship a stable release with this bug if we can
-      help it"
-    * Pri=2 means "we should probably fix this" - this is the default bug
-      priority
-    * Pri=3 means "it would be nice if we fixed this some day"
-* Maybe assign it an owner if needed - Pri=0 or 1 need one, Pri=2 or 3 can have
-  one if the owner is obvious but don't need one
-
-These are the other components we put bugs into that we assume have their own
-triage processes:
-* Admin
-* Blink
-* Infra
-* Internals>Cast, GPU, Headless, Network, Plugins, Printing, Skia, Views
-* IO>Bluetooth, USB
-* Platform
-* Services>Chromoting
-* Test>Telemetry
-* UI>Accessibility
-* UI>Browser>WebAppInstalls
-* UI>Browser>WebUI
-
-[unconfirmed]: https://bugs.chromium.org/p/chromium/issues/list?q=OS%3DMac%20status%3AUnconfirmed%20-component%3ABlink%2CEnterprise%2CInternals%3ENetwork%2CPlatform%3EDevtools%2CServices%3ESyncs%2CUI%3EBrowser%3EPasswords%20-label%3AMac-TriageBypass%20-label%3AHotlist-MacTriageBypass&can=2
-[untriaged-m]: https://bugs.chromium.org/p/chromium/issues/list?q=has%3AMac%20status%3AUntriaged%20-label%3AMac-TriageBypass%20-label%3AHotlist-MacTriageBypass&can=2
-[untriaged-c]: https://bugs.chromium.org/p/chromium/issues/list?q=OS%3DMac%20-OS%3DWindows%2CLinux%2CChrome%2CAndroid%2CiOS%20status%3AUntriaged%20-component%3AAdmin%2CBlink%2CInfra%2CInternals%3ECast%2CInternals%3EHeadless%2CInternals%3ENetwork%2CInternals%3EPlugins%3EPDF%2CInternals%3EPrinting%2CInternals%3ESkia%2CInternals%3EUpdater%2CInternals%3EViews%2CIO%3EBluetooth%2CIO%3EUSB%2CPlatform%2CServices%3EChromoting%2CTest%3ETelemetry%2CUI%3EBrowser%3EWebAppInstalls%2CPlatform%3EWebAppProvider%2CUI%3EBrowser%3EWebUI%2CInternals%3EGPU%2CEnterprise%2CUI%3EBrowser%3ESharing%2CUI%3EAccessibility%2CInternals%3EGPU%20-label%3AMac-TriageBypass%20-label%3AHotlist-MacTriageBypass&can=2
-[available]: https://bugs.chromium.org/p/chromium/issues/list?q=has%3AMac%20status%3AAvailable&can=2
-[assigned]: https://bugs.chromium.org/p/chromium/issues/list?q=has%3AMac%20status%3AAssigned&can=2
+Some bugs require more feedback from either the reporter, or cc'ed members of
+other teams; in that case we may choose to keep it in the queue for a week or
+two for monitoring. Otherwise, the set of outcomes is similar to first-phase
+triage:
+* WontFix, if they are invalid bug reports or working as intended
+* Duplicate, if they are identical to an existing bug
+* Assigned to an obvious assignee
+* Moved to another team's component
+* [Bypassed](https://issues.chromium.org/hotlists/5432664)

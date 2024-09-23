@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/filling_product.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -16,10 +17,16 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/plus_addresses/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_suggestion_view.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -39,6 +46,7 @@ using autofill::FormRendererId;
 @interface TestSuggestionProvider : NSObject<FormSuggestionProvider>
 
 @property(weak, nonatomic, readonly) FormSuggestion* suggestion;
+@property(nonatomic, assign) NSInteger index;
 @property(weak, nonatomic, readonly) NSString* formName;
 @property(weak, nonatomic, readonly) NSString* fieldIdentifier;
 @property(weak, nonatomic, readonly) NSString* frameID;
@@ -58,9 +66,9 @@ using autofill::FormRendererId;
 @implementation TestSuggestionProvider {
   NSArray* _suggestions;
   NSString* _formName;
-  FormRendererId _uniqueFormID;
+  FormRendererId _formRendererID;
   NSString* _fieldIdentifier;
-  FieldRendererId _uniqueFieldID;
+  FieldRendererId _fieldRendererID;
   NSString* _frameID;
   FormSuggestion* _suggestion;
 }
@@ -75,13 +83,13 @@ using autofill::FormRendererId;
         suggestionWithValue:@"foo"
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                       type:autofill::SuggestionType::kAutocompleteEntry
           backendIdentifier:nil
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
-                            popupItemId:autofill::PopupItemId::kAddressEntry
+                                   type:autofill::SuggestionType::kAddressEntry
                       backendIdentifier:nil
                          requiresReauth:NO]
   ];
@@ -131,18 +139,20 @@ using autofill::FormRendererId;
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
                        form:(NSString*)formName
-               uniqueFormID:(FormRendererId)uniqueFormID
+             formRendererID:(FormRendererId)formRendererID
             fieldIdentifier:(NSString*)fieldIdentifier
-              uniqueFieldID:(FieldRendererId)uniqueFieldID
+            fieldRendererID:(FieldRendererId)fieldRendererID
                     frameID:(NSString*)frameID
           completionHandler:(SuggestionHandledCompletion)completion {
   self.selected = YES;
   _suggestion = suggestion;
+  _index = index;
   _formName = [formName copy];
-  _uniqueFormID = uniqueFormID;
+  _formRendererID = formRendererID;
   _fieldIdentifier = [fieldIdentifier copy];
-  _uniqueFieldID = uniqueFieldID;
+  _fieldRendererID = fieldRendererID;
   _frameID = [frameID copy];
   completion();
 }
@@ -211,11 +221,23 @@ class FormSuggestionControllerTest : public PlatformTest {
                                         profilePasswordStore:nullptr
                                         accountPasswordStore:nullptr
                                         securityAlertHandler:nil
-                                      reauthenticationModule:nil];
+                                      reauthenticationModule:nil
+                                           engagementTracker:nil];
 
     [accessory_mediator_ injectWebState:&fake_web_state_];
     [accessory_mediator_ injectProvider:suggestion_controller_];
   }
+
+  // The scoped feature list to enable/disable features. This needs to be placed
+  // before task_environment_, as per
+  // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;l=37-41;drc=fe05104cfedb627fa99f218d7d1af6862871566c.
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // The associated test Web Threads.
+  web::WebTaskEnvironment task_environment_;
+
+  // Installs the local state in ApplicationContext.
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   // The FormSuggestionController under test.
   FormSuggestionController* suggestion_controller_;
@@ -228,14 +250,6 @@ class FormSuggestionControllerTest : public PlatformTest {
 
   // Accessory view controller.
   FormInputAccessoryMediator* accessory_mediator_;
-
-  // The scoped feature list to enable/disable features. This needs to be placed
-  // before task_environment_, as per
-  // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;l=37-41;drc=fe05104cfedb627fa99f218d7d1af6862871566c.
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  // The associated test Web Threads.
-  web::WebTaskEnvironment task_environment_;
 
   // The fake WebState to simulate navigation and JavaScript events.
   web::FakeWebState fake_web_state_;
@@ -384,13 +398,13 @@ TEST_F(FormSuggestionControllerTest,
         suggestionWithValue:@"foo"
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                       type:autofill::SuggestionType::kAutocompleteEntry
           backendIdentifier:nil
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
-                            popupItemId:autofill::PopupItemId::kAddressEntry
+                                   type:autofill::SuggestionType::kAddressEntry
                       backendIdentifier:nil
                          requiresReauth:NO]
   ];
@@ -437,7 +451,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
         suggestionWithValue:@"foo"
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                       type:autofill::SuggestionType::kAutocompleteEntry
           backendIdentifier:nil
              requiresReauth:NO],
   ];
@@ -460,7 +474,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
                                                         params);
 
   // Selecting a suggestion should notify the delegate.
-  [suggestion_controller_ didSelectSuggestion:suggestions[0]];
+  [suggestion_controller_ didSelectSuggestion:suggestions[0] atIndex:0];
   EXPECT_TRUE([provider selected]);
   EXPECT_NSEQ(@"form", [provider formName]);
   EXPECT_NSEQ(@"field_id", [provider fieldIdentifier]);
@@ -475,23 +489,85 @@ TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
       suggestionWithValue:@"foo"
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::PopupItemId::kAutocompleteEntry
+                     type:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
-  suggestion.featureForIPH = @"YES";
+  suggestion.featureForIPH =
+      SuggestionFeatureForIPH::kAutofillExternalAccountProfile;
   NSArray* suggestions = @[ suggestion ];
   TestSuggestionProvider* provider =
       [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
+  provider.type = SuggestionProviderTypeAutofill;
   SetUpController(@[ provider ]);
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
   autofill::FormActivityParams params;
 
-  OCMExpect([mock_handler_ showAutofillSuggestionIPHIfNeeded]);
+  OCMExpect([mock_handler_
+      showAutofillSuggestionIPHIfNeededFor:suggestion.featureForIPH]);
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
                                                         params);
   [mock_handler_ verify];
+}
+
+// Tests that password generation suggestions always have an icon.
+TEST_F(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
+  base::test::ScopedFeatureList feature_list(kIOSKeyboardAccessoryUpgrade);
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    return;
+  }
+
+  SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
+
+  NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@""
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kGeneratePasswordEntry
+        backendIdentifier:nil
+           requiresReauth:NO];
+  [suggestions addObject:suggestion];
+
+  NSArray<FormSuggestion*>* adjusted_suggestions =
+      [suggestion_controller_ copyAndAdjustSuggestions:suggestions];
+  EXPECT_TRUE(adjusted_suggestions.count);
+  EXPECT_TRUE(adjusted_suggestions[0].icon);
+}
+
+// Tests that plus address suggestions always have an icon when the features are
+// enabled.
+TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
+  base::test::ScopedFeatureList feature_list{
+      plus_addresses::features::kPlusAddressesEnabled};
+
+  SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
+
+  NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
+  FormSuggestion* suggestion = [FormSuggestion
+      suggestionWithValue:@""
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kCreateNewPlusAddress
+        backendIdentifier:nil
+           requiresReauth:NO];
+  [suggestions addObject:suggestion];
+
+  suggestion = [FormSuggestion
+      suggestionWithValue:@""
+       displayDescription:nil
+                     icon:nil
+                     type:autofill::SuggestionType::kFillExistingPlusAddress
+        backendIdentifier:nil
+           requiresReauth:NO];
+  [suggestions addObject:suggestion];
+
+  NSArray<FormSuggestion*>* adjusted_suggestions =
+      [suggestion_controller_ copyAndAdjustSuggestions:suggestions];
+  EXPECT_EQ(adjusted_suggestions.count, suggestions.count);
+  EXPECT_TRUE(adjusted_suggestions[0].icon);
+  EXPECT_TRUE(adjusted_suggestions[1].icon);
 }
 
 }  // namespace

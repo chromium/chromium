@@ -20,13 +20,14 @@
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
 
 namespace device {
-class GeolocationManager;
+class GeolocationSystemPermissionManager;
 }
 
 // The SystemGeolocationSource is responsible for listening to geolocation
-// permissions from the operation system and allows the GeolocationManager to
-// access it in a platform agnostic manner. This concrete implementation is to
-// be used within lacros browser. It listens to permission changes in ash.
+// permissions from the operation system and allows the
+// GeolocationSystemPermissionManager to access it in a platform agnostic
+// manner. This concrete implementation is to be used within lacros browser. It
+// listens to permission changes in ash.
 //
 // Note on sequencing:
 // There is a race condition as OnPrefChanged is called asynchronously from the
@@ -51,8 +52,8 @@ class SystemGeolocationSourceLacros : public device::SystemGeolocationSource,
   SystemGeolocationSourceLacros();
   ~SystemGeolocationSourceLacros() override;
 
-  static std::unique_ptr<device::GeolocationManager>
-  CreateGeolocationManagerOnLacros();
+  static std::unique_ptr<device::GeolocationSystemPermissionManager>
+  CreateGeolocationSystemPermissionManagerOnLacros();
 
   // device::SystemGeolocationSource
   void RegisterPermissionUpdateCallback(

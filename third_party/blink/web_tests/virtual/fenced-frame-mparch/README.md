@@ -1,7 +1,6 @@
-# Fenced Frames + MPArch
+# Fenced Frames
 
-This directory contains `wpt_internal/fenced_frame/` test expectations that are
-specific to the MPArch implementation of fenced frames. The tests are run with
+This directory contains fenced frame test expectations. The tests are run with
 the flags:
 ```
 --enable-features=

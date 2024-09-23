@@ -9,9 +9,8 @@
 #include <zircon/types.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
-
-#include "base/strings/string_piece.h"
 
 namespace base {
 class CommandLine;
@@ -27,11 +26,11 @@ enum class ContextFeatureFlags : uint64_t;
 // all of its clients to provide the required services (until a better solution
 // is available - see crbug.com/1275224). This should only be called once per
 // process, and the calling thread must have an async_dispatcher.
-void RegisterWebInstanceProductData(base::StringPiece absolute_component_url);
+void RegisterWebInstanceProductData(std::string_view absolute_component_url);
 
 // File names must not contain directory separators, nor match the special
 // current- nor parent-directory filenames.
-bool IsValidContentDirectoryName(base::StringPiece file_name);
+bool IsValidContentDirectoryName(std::string_view file_name);
 
 // Appends switches and values to `launch_args` based on the contents of
 // `params`. Members of `params` not supported by the build will be cleared if

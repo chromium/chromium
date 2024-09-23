@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_FEATURES_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_FEATURES_H_
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 
 namespace unexportable_keys {
@@ -12,6 +13,7 @@ namespace unexportable_keys {
 // If enabled, DBSC-related code will switch `UnexportableKeyProvider` to a mock
 // software-backed implementation.
 // This feature flag is expected to never be shipped to end users.
+COMPONENT_EXPORT(UNEXPORTABLE_KEYS)
 BASE_DECLARE_FEATURE(
     kEnableBoundSessionCredentialsSoftwareKeysForManualTesting);
 

@@ -22,10 +22,6 @@ SSLContextConfig& SSLContextConfig::operator=(const SSLContextConfig&) =
 SSLContextConfig& SSLContextConfig::operator=(SSLContextConfig&&) = default;
 bool SSLContextConfig::operator==(const SSLContextConfig&) const = default;
 
-bool SSLContextConfig::InsecureHashesInTLSHandshakesEnabled() const {
-  return insecure_hash_override.value_or(false);
-}
-
 bool SSLContextConfig::PostQuantumKeyAgreementEnabled() const {
   return post_quantum_override.value_or(
       base::FeatureList::IsEnabled(features::kPostQuantumKyber));

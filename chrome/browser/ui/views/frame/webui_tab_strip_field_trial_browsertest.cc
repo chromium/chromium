@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/frame/webui_tab_strip_field_trial.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -45,7 +45,7 @@ void RegisterFakeFieldTrialWithState(base::FeatureList* feature_list,
       features::kWebUITabStrip.name));
 }
 
-bool IsInGroup(base::StringPiece group_name) {
+bool IsInGroup(std::string_view group_name) {
   variations::ActiveGroupId id =
       variations::MakeActiveGroupId("WebUITabStripOnTablets", group_name);
 

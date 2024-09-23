@@ -7,12 +7,12 @@
 #include <string>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/utility/wm_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/extension.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -29,6 +29,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -63,10 +64,10 @@ void CreateAndShowWidget(views::WidgetDelegateView* delegate,
   gfx::Size view_size = delegate->GetPreferredSize();
   gfx::Rect bounds((display_size.width() - view_size.width()) / 2,
                    -view_size.height(), view_size.width(), view_size.height());
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.accept_events = false;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.delegate = delegate;
@@ -128,7 +129,8 @@ class IdleAppNameNotificationDelegateView
                       base::Milliseconds(message_visibility_time_in_ms), this,
                       &IdleAppNameNotificationDelegateView::RemoveMessage);
 
-    SetAccessibilityProperties(ax::mojom::Role::kAlert, app_name);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+    GetViewAccessibility().SetName(app_name);
   }
 
   IdleAppNameNotificationDelegateView(
@@ -235,7 +237,7 @@ bool IdleAppNameNotificationView::IsVisible() {
 std::u16string IdleAppNameNotificationView::GetShownTextForTest() {
   ui::AXNodeData node_data;
   DCHECK(view_);
-  view_->GetAccessibleNodeData(&node_data);
+  view_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   return node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
 }
 

@@ -9,11 +9,12 @@
 #include <stdint.h>
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace sync_pb {
@@ -30,14 +31,14 @@ namespace syncer {
 
 // A mock server used to test of happy-path update and commit logic.
 //
-// This object supports only one ModelType, which must be specified at
+// This object supports only one DataType, which must be specified at
 // initialization time.  It does not support GetUpdates messages.  It does not
 // support simulated errors.
 //
 // This class is useful for testing UpdateHandlers and CommitContributors.
 class SingleTypeMockServer {
  public:
-  explicit SingleTypeMockServer(ModelType type);
+  explicit SingleTypeMockServer(DataType type);
 
   SingleTypeMockServer(const SingleTypeMockServer&) = delete;
   SingleTypeMockServer& operator=(const SingleTypeMockServer&) = delete;
@@ -56,6 +57,14 @@ class SingleTypeMockServer {
       int64_t version_offset,
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics);
+
+  // Generates a SyncEntity representing a server-delivered update for a shared
+  // type.
+  sync_pb::SyncEntity UpdateFromServer(
+      int64_t version_offset,
+      const ClientTagHash& tag_hash,
+      const sync_pb::EntitySpecifics& specifics,
+      const std::string& collaboration_id);
 
   // Generates a SyncEntity representing a server-delivered update to delete
   // an item.
@@ -93,7 +102,11 @@ class SingleTypeMockServer {
   void SetProgressMarkerToken(const std::string& token);
 
   // Sets whether to return GC directive as part of GetProgress().
-  void SetReturnGcDirective(bool return_gc_directive);
+  void SetReturnGcDirectiveVersionWatermark(bool return_gc_directive);
+
+  // Update active collaborations.
+  void AddCollaboration(const std::string& collaboration_id);
+  void RemoveCollaboration(const std::string& collaboration_id);
 
  private:
   static std::string GenerateId(const ClientTagHash& tag_hash);
@@ -102,7 +115,7 @@ class SingleTypeMockServer {
   int64_t GetServerVersion(const ClientTagHash& tag_hash) const;
   void SetServerVersion(const ClientTagHash& tag_hash, int64_t version);
 
-  const ModelType type_;
+  const DataType type_;
   const std::string type_root_id_;
 
   // Server version state maps.
@@ -117,8 +130,12 @@ class SingleTypeMockServer {
   // The token that is used to generate the current progress marker.
   std::string progress_marker_token_;
 
-  // Whether to return GC directive in GetProgress().
-  bool return_gc_directive_ = false;
+  // Whether to return version watermark GC directive in GetProgress().
+  bool return_gc_directive_version_watermark_ = false;
+
+  // List of active collaborations for the current type. Used for shared types
+  // only.
+  std::set<std::string> active_collaborations_;
 };
 
 }  // namespace syncer

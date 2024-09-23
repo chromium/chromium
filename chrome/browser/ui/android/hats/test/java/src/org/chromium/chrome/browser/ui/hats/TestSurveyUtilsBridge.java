@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.ui.hats;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import java.util.concurrent.ExecutionException;
-
 /**
  * Helper class that C++ can setup the survey testing environment. Java tests should instead use the
  * {@link TestSurveyUtils.TestSurveyComponentRule}.
@@ -16,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 @JNINamespace("hats")
 public class TestSurveyUtilsBridge {
     @CalledByNative
-    private static void setupTestSurveyFactory() throws ExecutionException {
+    private static void setupTestSurveyFactory() {
         TestSurveyUtils.forceShowSurveyForTesting(true);
         TestSurveyUtils.setUpTestSurveyFactory();
     }

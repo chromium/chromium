@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/service/display/bsp_tree.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -10,8 +12,8 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
@@ -22,7 +24,6 @@
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/transform_node.h"
-#include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/draw_polygon.h"
 #include "components/viz/test/paths.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -80,7 +81,8 @@ class BspTreePerfTest : public cc::LayerTreeTest {
     cc::LayerTreeImpl* active_tree = host_impl->active_tree();
     // First build the tree and then we'll start running tests on layersorter
     // itself
-    host_impl->active_tree()->UpdateDrawProperties();
+    host_impl->active_tree()->UpdateDrawProperties(
+        /*update_tiles=*/true, /*update_image_animation_controller=*/true);
 
     cc::LayerImplList base_list;
     BuildLayerImplList(active_tree->root_layer(), &base_list);
@@ -129,7 +131,8 @@ class BspTreePerfTest : public cc::LayerTreeTest {
   base::LapTimer timer_;
   std::string story_;
   std::string json_;
-  cc::LayerImplList base_list_;
+  // RAW_PTR_EXCLUSION: visible in stack samples when Renderer BRP is enabled.
+  RAW_PTR_EXCLUSION cc::LayerImplList base_list_;
   int num_duplicates_ = 1;
 };
 

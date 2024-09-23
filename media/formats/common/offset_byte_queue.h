@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "media/base/byte_queue.h"
 #include "media/base/media_export.h"
 
@@ -27,7 +28,7 @@ class MEDIA_EXPORT OffsetByteQueue {
 
   // These work like their underlying ByteQueue counterparts.
   void Reset();
-  [[nodiscard]] bool Push(const uint8_t* buf, int size);
+  [[nodiscard]] bool Push(base::span<const uint8_t> buf);
   void Peek(const uint8_t** buf, int* size);
   void Pop(int count);
 

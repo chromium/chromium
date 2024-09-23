@@ -7,6 +7,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/attribution-reporting/resources/helpers.js"></script>
 <title>Script to wait for instructions from RemoteContext.</title>
 
 <body>
@@ -20,6 +21,13 @@ window.addEventListener("load", async () => {
   while (window.innerWidth == 0) {
     await new Promise(resolve => requestAnimationFrame(resolve));
   }
+
+  // Exempt the remote context dispatch server from network revocation,
+  // so that you can continue to control fenced frames after network is
+  // disabled.
+  const remote_context_dispatcher_url = dispatcher_url + `?uuid=${uuid}`;
+  await window.internals.exemptUrlFromNetworkRevocation(
+      remote_context_dispatcher_url);
 
   // Create a RemoteContext Executor, which will wait in the background
   // for scripts to execute.

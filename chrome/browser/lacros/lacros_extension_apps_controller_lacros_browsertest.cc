@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"

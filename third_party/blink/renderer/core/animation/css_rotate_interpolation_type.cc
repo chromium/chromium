@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
@@ -200,20 +201,30 @@ InterpolationValue CSSRotateInterpolationType::MaybeConvertInherit(
     ConversionCheckers& conversion_checkers) const {
   OptionalRotation inherited_rotation = GetRotation(*state.ParentStyle());
   conversion_checkers.push_back(
-      std::make_unique<InheritedRotationChecker>(inherited_rotation));
+      MakeGarbageCollected<InheritedRotationChecker>(inherited_rotation));
   return ConvertRotation(inherited_rotation);
 }
 
 InterpolationValue CSSRotateInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState* state,
     ConversionCheckers&) const {
   if (!value.IsBaseValueList()) {
     return ConvertRotation(OptionalRotation());
   }
 
+  if (auto* primitive = DynamicTo<CSSPrimitiveValue>(value)) {
+    if (!primitive->IsComputationallyIndependent()) {
+      return nullptr;
+    }
+  }
+
+  // TODO(crbug.com/328182246): we should not use the resolved angle
+  // here, but doing it for now, since proper fix would require
+  // rewriting Quaternion and Rotation to have unresolved versions.
   return ConvertRotation(
-      OptionalRotation(StyleBuilderConverter::ConvertRotation(value)));
+      OptionalRotation(StyleBuilderConverter::ConvertRotation(
+          CSSToLengthConversionData(), value)));
 }
 
 InterpolationValue
@@ -272,7 +283,7 @@ void CSSRotateInterpolationType::ApplyStandardPropertyValue(
     state.StyleBuilder().SetRotate(nullptr);
     return;
   }
-  state.StyleBuilder().SetRotate(RotateTransformOperation::Create(
+  state.StyleBuilder().SetRotate(MakeGarbageCollected<RotateTransformOperation>(
       rotation.GetRotation(), TransformOperation::kRotate3D));
 }
 

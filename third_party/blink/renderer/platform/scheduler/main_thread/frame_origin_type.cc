@@ -31,7 +31,7 @@ const char* FrameOriginTypeToString(FrameOriginType origin) {
     case FrameOriginType::kCrossOriginToMainFrame:
       return "cross-origin-to-main-frame";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

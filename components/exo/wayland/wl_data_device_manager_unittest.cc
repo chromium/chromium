@@ -42,7 +42,7 @@ class InputListenerImpl : public test::InputListener {
 
 }  // namespace
 
-// TODO(crbug.com/1521845): enable the flaky test.
+// TODO(crbug.com/41494812): enable the flaky test.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_Mouse DISABLED_Mouse
 #else
@@ -142,7 +142,7 @@ TEST_F(DataDeviceManagerTest, MAYBE_Mouse) {
   }
 }
 
-// TODO(crbug.com/1521845): enable the flaky test.
+// TODO(crbug.com/41494812): enable the flaky test.
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_Touch DISABLED_Touch
 #else

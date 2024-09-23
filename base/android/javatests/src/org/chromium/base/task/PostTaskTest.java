@@ -6,65 +6,41 @@ package org.chromium.base.task;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertNotNull;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.task.SchedulerTestHelpers;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Test class for {@link PostTask}.
  *
- * Note due to layering concerns we can't test post native functionality in a
- * base javatest. Instead see:
- * content/public/android/javatests/src/org/chromium/content/browser/scheduler/
+ * <p>Note due to layering concerns we can't test post native functionality in a base javatest.
+ * Instead see: content/public/android/javatests/src/org/chromium/content/browser/scheduler/
  * NativePostTaskTest.java
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class PostTaskTest {
     @Test
     @SmallTest
-    public void testPreNativePostTask() {
+    public void testPreNativePostTask() throws TimeoutException {
         // This test should not timeout.
-        final Object lock = new Object();
-        final AtomicBoolean taskExecuted = new AtomicBoolean();
-        PostTask.postTask(
-                TaskTraits.USER_BLOCKING,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (lock) {
-                            taskExecuted.set(true);
-                            lock.notify();
-                        }
-                    }
-                });
-        synchronized (lock) {
-            try {
-                while (!taskExecuted.get()) {
-                    lock.wait();
-                }
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
-            }
-        }
-    }
-
-    @Test
-    @SmallTest
-    public void testCreateSingleThreadTaskRunner() {
-        TaskRunner taskQueue = PostTask.createSingleThreadTaskRunner(TaskTraits.USER_BLOCKING);
-        // A SingleThreadTaskRunner with default traits will run in the native thread pool
-        // and tasks posted won't run until after the native library has loaded.
-        assertNotNull(taskQueue);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        PostTask.postTask(TaskTraits.USER_BLOCKING, callbackHelper::notifyCalled);
+        callbackHelper.waitForOnly();
     }
 
     @Test
@@ -87,5 +63,52 @@ public class PostTaskTest {
 
         // This should not timeout.
         SchedulerTestHelpers.postTaskAndBlockUntilRun(taskQueue);
+    }
+
+    @Test
+    @SmallTest
+    public void testSyncException() {
+        RuntimeException ex =
+                Assert.assertThrows(
+                        RuntimeException.class,
+                        () -> {
+                            PostTask.runSynchronously(
+                                    TaskTraits.USER_BLOCKING,
+                                    () -> {
+                                        throw new Error("Error");
+                                    });
+                        });
+        Assert.assertEquals("Error", ex.getCause().getMessage());
+        // Ensure no TaskOriginException.
+        Assert.assertNull("Was " + Log.getStackTraceString(ex), ex.getCause().getCause());
+    }
+
+    @Test
+    @SmallTest
+    public void testAsyncException() throws TimeoutException {
+        AtomicReference<Throwable> uncaught = new AtomicReference<>();
+        CallbackHelper callbackHelper = new CallbackHelper();
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING,
+                () -> {
+                    Thread.currentThread()
+                            .setUncaughtExceptionHandler(
+                                    (thread, throwable) -> {
+                                        uncaught.set(throwable);
+                                        callbackHelper.notifyCalled();
+                                    });
+                    throw new Error("Error");
+                });
+
+        callbackHelper.waitForOnly();
+        Throwable ex = uncaught.get();
+        Assert.assertEquals("Error", ex.getMessage());
+        Throwable actualTaskOrigin = ex.getCause();
+        String assertMsg = "Was: " + Log.getStackTraceString(ex);
+        if (PostTask.ENABLE_TASK_ORIGINS) {
+            Assert.assertTrue(assertMsg, actualTaskOrigin instanceof TaskOriginException);
+        } else {
+            Assert.assertNull(assertMsg, actualTaskOrigin);
+        }
     }
 }

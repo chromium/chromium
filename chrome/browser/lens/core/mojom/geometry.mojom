@@ -1,0 +1,37 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+import "chrome/browser/lens/core/mojom/polygon.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+struct CenterRotatedBox {
+  // The box with x and y positions at the center.
+  gfx.mojom.RectF box;
+
+  // The angle of rotation around the center of the rect in radians. The
+  // rotation angle is computer before normalizing the coordinates.
+  float rotation;
+
+  // Specifies the coordinate system used for this box.
+  enum CoordinateType {
+    kUnspecified = 0,
+    // Normalized coordinates.
+    kNormalized = 1,
+    // Image pixel coordinates.
+    kImage = 2,
+  };
+
+  // Specifies the coordinate type of center and size.
+  CoordinateType coordinate_type;
+};
+
+// Geometric shape(s) used for tracking.
+struct Geometry {
+  // Specifies the bounding box for this geometry.
+  CenterRotatedBox bounding_box;
+
+  array<Polygon> segmentation_polygon;
+};

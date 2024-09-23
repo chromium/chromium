@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
@@ -99,7 +100,7 @@ SyncStatusLabels GetSyncStatusLabelsImpl(
   // Check if Sync is disabled by policy.
   if (service->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    // TODO(crbug.com/911153): Is SyncStatusMessageType::kSynced correct for
+    // TODO(crbug.com/41429548): Is SyncStatusMessageType::kSynced correct for
     // this case?
     return {SyncStatusMessageType::kSynced,
             IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,
@@ -248,11 +249,18 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   }
 
   if (!service->HasSyncConsent()) {
-    // Only trusted vault errors can be shown if the account isn't a consented
-    // primary account.
+    // Only some errors can be shown if the account isn't a consented primary
+    // account.
     // Note the condition checked is not IsInitialSyncFeatureSetupComplete(),
     // because the setup incomplete case is treated separately below. See the
     // comment in ShouldRequestSyncConfirmation() about dashboard resets.
+
+    if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
+        service->GetUserSettings()
+            ->IsPassphraseRequiredForPreferredDataTypes()) {
+      return AvatarSyncErrorType::kPassphraseError;
+    }
+
     return GetTrustedVaultError(service);
   }
 
@@ -312,11 +320,18 @@ std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
         kTrustedVaultRecoverabilityDegradedForEverythingError:
       return l10n_util::GetStringUTF16(
           IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE);
+    case AvatarSyncErrorType::kPassphraseError:
+      if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+        return l10n_util::GetStringUTF16(
+            is_sync_feature_enabled
+                ? IDS_SYNC_STATUS_NEEDS_PASSWORD
+                : IDS_SYNC_ERROR_PASSPHRASE_USER_MENU_TITLE_SIGNED_IN_ONLY);
+      }
+      [[fallthrough]];
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
     case AvatarSyncErrorType::kManagedUserUnrecoverableError:
     case AvatarSyncErrorType::kUnrecoverableError:
     case AvatarSyncErrorType::kUpgradeClientError:
-    case AvatarSyncErrorType::kPassphraseError:
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
   }

@@ -336,52 +336,52 @@ void ProducerClient::UnregisterTraceWriter(uint32_t writer_id) {
 }
 
 perfetto::SharedMemory* ProducerClient::shared_memory() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 void ProducerClient::NotifyFlushComplete(perfetto::FlushRequestID id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::RegisterDataSource(const perfetto::DataSourceDescriptor&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::UpdateDataSource(const perfetto::DataSourceDescriptor&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::UnregisterDataSource(const std::string& name) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::NotifyDataSourceStopped(
     perfetto::DataSourceInstanceID id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::NotifyDataSourceStarted(
     perfetto::DataSourceInstanceID id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::ActivateTriggers(const std::vector<std::string>&) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 size_t ProducerClient::shared_buffer_page_size_kb() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return 0;
 }
 
 bool ProducerClient::IsShmemProvidedByProducer() const {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
 void ProducerClient::Sync(std::function<void()>) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ProducerClient::BindClientAndHostPipesForTesting(
@@ -413,8 +413,8 @@ bool ProducerClient::InitSharedMemoryIfNeeded() {
   shared_memory_ =
       std::make_unique<ChromeBaseSharedMemory>(GetPreferredSmbSizeBytes());
 
-  // TODO(crbug/1057614): We see shared memory region creation fail on windows
-  // in the field. Investigate why this can happen. Gather statistics on
+  // TODO(crbug.com/40677516): We see shared memory region creation fail on
+  // windows in the field. Investigate why this can happen. Gather statistics on
   // failure rates.
   bool valid = shared_memory_->region().IsValid();
   base::UmaHistogramBoolean(kSharedBufferIsValidMetricName, valid);

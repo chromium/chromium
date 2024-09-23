@@ -16,7 +16,6 @@
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom.h"
-#include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -74,10 +73,9 @@ class TestDecoderState : public mojom::ConnectionFactory {
       ConnectToInputMethodCallback callback) override {
     std::move(callback).Run(/*bound=*/false);
   }
-  void ConnectToJapaneseDecoder(
-      mojo::PendingAssociatedReceiver<ime::mojom::JapaneseDecoder>
-          japanese_decoder,
-      ConnectToJapaneseDecoderCallback callback) override {
+  void Unused(
+      mojo::PendingAssociatedReceiver<ime::mojom::JpUnused> japanese_decoder,
+      UnusedCallback callback) override {
     std::move(callback).Run(/*bound=*/false);
   }
 

@@ -85,10 +85,12 @@ void WorkerModuleScriptFetcher::Fetch(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
+  constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
                         this, global_scope_->GetIsolate(),
                         ScriptResource::kNoStreaming, kNoCompileHintsProducer,
-                        kNoCompileHintsConsumer);
+                        kNoCompileHintsConsumer,
+                        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
 }
 
 void WorkerModuleScriptFetcher::Trace(Visitor* visitor) const {
@@ -199,18 +201,20 @@ void WorkerModuleScriptFetcher::NotifyClient(
       cache_handler, response_referrer_policy));
 }
 
-void WorkerModuleScriptFetcher::DidReceiveData(base::span<const char> span) {
+void WorkerModuleScriptFetcher::DidReceiveDataWorkerMainScript(
+    base::span<const char> span) {
   if (!decoder_) {
     decoder_ = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kPlainTextContent,
         worker_main_script_loader_->GetScriptEncoding()));
   }
-  if (!span.size())
+  if (!span.size()) {
     return;
-  source_text_.Append(decoder_->Decode(span.data(), span.size()));
+  }
+  source_text_.Append(decoder_->Decode(span));
 }
 
-void WorkerModuleScriptFetcher::OnStartLoadingBody(
+void WorkerModuleScriptFetcher::OnStartLoadingBodyWorkerMainScript(
     const ResourceResponse& resource_response) {
   if (!MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
           resource_response.HttpContentType())) {

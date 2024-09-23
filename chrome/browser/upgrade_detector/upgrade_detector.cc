@@ -129,7 +129,7 @@ void UpgradeDetector::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
   pref_change_task_pending_ = false;
   idle_check_timer_.Stop();
-  pref_change_registrar_.RemoveAll();
+  pref_change_registrar_.Reset();
 }
 
 void UpgradeDetector::OverrideRelaunchNotificationToRequired(bool overridden) {
@@ -162,6 +162,10 @@ void UpgradeDetector::NotifyOutdatedInstallNoAutoUpdate() {
 
   for (auto& observer : observer_list_)
     observer.OnOutdatedInstallNoAutoUpdate();
+}
+
+void UpgradeDetector::NotifyUpgradeForTesting() {
+  NotifyUpgrade();
 }
 
 UpgradeDetector::UpgradeDetector(const base::Clock* clock,

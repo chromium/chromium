@@ -8,8 +8,6 @@
 
 #include <iterator>
 
-#include "base/trace_event/common/trace_event_common.h"
-
 namespace chromecast {
 namespace tracing {
 namespace {
@@ -17,12 +15,6 @@ namespace {
 const char kSocketPath[] = "/dev/socket/tracing/tracing";
 
 }  // namespace
-
-const char* const kCategories[] = {
-    "gfx",   "input", TRACE_DISABLED_BY_DEFAULT("irq"),
-    "power", "sched", "workq"};
-
-const size_t kCategoryCount = std::size(kCategories);
 
 sockaddr_un GetSystemTracingSocketAddress() {
   struct sockaddr_un addr;

@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "net/http/structured_headers.h"
 
@@ -121,6 +122,48 @@ bool StructTraits<network::mojom::StructuredHeadersParameterizedMemberDataView,
     return false;
   }
 
+  return true;
+}
+
+// static
+bool StructTraits<network::mojom::StructuredHeadersDictionaryMemberDataView,
+                  net::structured_headers::DictionaryMember>::
+    Read(network::mojom::StructuredHeadersDictionaryMemberDataView data,
+         net::structured_headers::DictionaryMember* out) {
+  std::string key;
+  if (!data.ReadKey(&key)) {
+    return false;
+  }
+
+  net::structured_headers::ParameterizedMember value;
+  if (!data.ReadValue(&value)) {
+    return false;
+  }
+
+  *out = std::make_pair(std::move(key), std::move(value));
+  return true;
+}
+
+// static
+std::vector<net::structured_headers::DictionaryMember>
+StructTraits<network::mojom::StructuredHeadersDictionaryDataView,
+             net::structured_headers::Dictionary>::
+    members(const net::structured_headers::Dictionary& in) {
+  return std::vector<net::structured_headers::DictionaryMember>(in.begin(),
+                                                                in.end());
+}
+
+// static
+bool StructTraits<network::mojom::StructuredHeadersDictionaryDataView,
+                  net::structured_headers::Dictionary>::
+    Read(network::mojom::StructuredHeadersDictionaryDataView data,
+         net::structured_headers::Dictionary* out) {
+  std::vector<net::structured_headers::DictionaryMember> members;
+  if (!data.ReadMembers(&members)) {
+    return false;
+  }
+
+  *out = net::structured_headers::Dictionary(std::move(members));
   return true;
 }
 

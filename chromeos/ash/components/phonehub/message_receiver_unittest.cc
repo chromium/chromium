@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/phonehub/message_receiver_impl.h"
-
 #include <netinet/in.h>
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "chromeos/ash/components/phonehub/message_receiver_impl.h"
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::phonehub {
@@ -192,14 +194,15 @@ class MessageReceiverImplTest : public testing::Test {
  protected:
   MessageReceiverImplTest()
       : fake_connection_manager_(
-            std::make_unique<secure_channel::FakeConnectionManager>()),
-        phone_hub_structured_metrics_logger_(
-            std::make_unique<PhoneHubStructuredMetricsLogger>()) {}
+            std::make_unique<secure_channel::FakeConnectionManager>()) {}
   MessageReceiverImplTest(const MessageReceiverImplTest&) = delete;
   MessageReceiverImplTest& operator=(const MessageReceiverImplTest&) = delete;
   ~MessageReceiverImplTest() override = default;
 
   void SetUp() override {
+    PhoneHubStructuredMetricsLogger::RegisterPrefs(pref_service_.registry());
+    phone_hub_structured_metrics_logger_ =
+        std::make_unique<PhoneHubStructuredMetricsLogger>(&pref_service_);
     message_receiver_ = std::make_unique<MessageReceiverImpl>(
         fake_connection_manager_.get(),
         phone_hub_structured_metrics_logger_.get());
@@ -280,6 +283,8 @@ class MessageReceiverImplTest : public testing::Test {
     return fake_observer_.last_app_list_incremental_update();
   }
 
+  base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   FakeObserver fake_observer_;
   std::unique_ptr<secure_channel::FakeConnectionManager>
       fake_connection_manager_;

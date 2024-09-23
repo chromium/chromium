@@ -9,7 +9,9 @@
           "LargeCursorEnabled": true
         },
         "prefs": {
-          "settings.a11y.large_cursor_enabled": {}
+          "settings.a11y.large_cursor_enabled": {
+            "value": true
+          }
         }
       }
     ]

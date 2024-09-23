@@ -90,7 +90,6 @@ class ASH_EXPORT LoginExpandedPublicAccountView : public NonAccessibleView {
   static gfx::Size GetPreferredSizePortrait();
 
   // views::View:
-  int GetHeightForWidth(int width) const override;
   void Layout(PassKey) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 

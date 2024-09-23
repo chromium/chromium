@@ -19,6 +19,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -37,11 +38,7 @@
 namespace arc {
 
 void ResizeConfirmationDialogView::TestApi::SelectDoNotAskCheckbox() {
-  if (chromeos::features::IsJellyEnabled()) {
-    view_->do_not_ask_checkbox_jelly_->SetSelected(true);
-  } else {
-    view_->do_not_ask_checkbox_->SetChecked(true);
-  }
+  view_->do_not_ask_checkbox_jelly_->SetSelected(true);
 }
 
 ResizeConfirmationDialogView::ResizeConfirmationDialogView(
@@ -50,7 +47,7 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
     : callback_(std::move(callback)) {
   // Setup delegate.
   SetArrow(views::BubbleBorder::Arrow::FLOAT);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(parent->GetNativeWindow());
   set_title_margins(gfx::Insets());
   SetTitle(
@@ -66,14 +63,8 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
-  layout->set_inside_border_insets(chromeos::features::IsJellyEnabled()
-                                       ? gfx::Insets::TLBR(32, 32, 28, 32)
-                                       : gfx::Insets::TLBR(24, 24, 20, 24));
-  layout->set_between_child_spacing(
-      chromeos::features::IsJellyEnabled()
-          ? 16
-          : views::LayoutProvider::Get()->GetDistanceMetric(
-                views::DISTANCE_RELATED_CONTROL_VERTICAL));
+  layout->set_inside_border_insets(gfx::Insets::TLBR(32, 32, 28, 32));
+  layout->set_between_child_spacing(16);
 
   const raw_ptr<views::Label> title = AddChildView(
       views::Builder<views::Label>()
@@ -89,11 +80,9 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
                            views::style::TextStyle::STYLE_PRIMARY)
                   .DeriveWithWeight(gfx::Font::Weight::MEDIUM))
           .Build());
-  if (chromeos::features::IsJellyEnabled()) {
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosDisplay7, *title);
-    title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  }
+  ash::TypographyProvider::Get()->StyleLabel(
+      ash::TypographyToken::kCrosDisplay7, *title);
+  title->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
   AddChildView(MakeContentsView());
   AddChildView(MakeButtonsView());
@@ -101,24 +90,25 @@ ResizeConfirmationDialogView::ResizeConfirmationDialogView(
 
 ResizeConfirmationDialogView::~ResizeConfirmationDialogView() = default;
 
-gfx::Size ResizeConfirmationDialogView::CalculatePreferredSize() const {
+gfx::Size ResizeConfirmationDialogView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   int width = provider->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
 
-  const int kHorizontalMarginDp =
-      chromeos::features::IsJellyEnabled() ? 36 : 32;
+  const int kHorizontalMarginDp = 36;
   const auto* widget = GetWidget();
   if (widget && widget->parent()) {
     width =
         std::min(width, widget->parent()->GetWindowBoundsInScreen().width() -
                             kHorizontalMarginDp * 2);
   }
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 void ResizeConfirmationDialogView::AddedToWidget() {
-  const int kCornerRadius = chromeos::features::IsJellyEnabled() ? 20 : 12;
+  const int kCornerRadius = 20;
   auto* const frame = GetBubbleFrameView();
   if (frame) {
     frame->SetCornerRadius(kCornerRadius);
@@ -129,13 +119,6 @@ void ResizeConfirmationDialogView::AddedToWidget() {
 
 void ResizeConfirmationDialogView::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
-
-  if (!chromeos::features::IsJellyEnabled()) {
-    set_color(
-        GetColorProvider()->GetColor(ash::kColorAshDialogBackgroundColor));
-    do_not_ask_checkbox_->SetEnabledTextColors(
-        GetColorProvider()->GetColor(ui::kColorDialogForeground));
-  }
 }
 
 void ResizeConfirmationDialogView::OnWidgetClosing(views::Widget* widget) {
@@ -149,8 +132,7 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
   auto contents_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetBetweenChildSpacing(chromeos::features::IsJellyEnabled() ? 16
-                                                                       : 19)
+          .SetBetweenChildSpacing(16)
           .Build();
 
   const raw_ptr<views::Label> body = contents_view->AddChildView(
@@ -162,33 +144,20 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeContentsView() {
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetMultiLine(true)
           .Build());
-  if (chromeos::features::IsJellyEnabled()) {
-    ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody1,
-                                               *body);
-    body->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody1,
+                                             *body);
+  body->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
 
-    const raw_ptr<ash::CheckboxGroup> checkbox_group =
-        contents_view->AddChildView(std::make_unique<ash::CheckboxGroup>(
-            bounds().width() - 32 * 2, gfx::Insets::TLBR(0, 0, 8, 0), 0,
-            gfx::Insets(), ash::Checkbox::kImageLabelSpacingDP));
-    do_not_ask_checkbox_jelly_ = checkbox_group->AddButton(
-        ash::OptionButtonBase::PressedCallback(),
-        l10n_util::GetStringUTF16(
-            IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME));
-    do_not_ask_checkbox_jelly_->SetLabelStyle(
-        ash::TypographyToken::kCrosButton2);
-    do_not_ask_checkbox_jelly_->SetLabelColorId(cros_tokens::kCrosSysOnSurface);
-  } else {
-    contents_view->SetProperty(views::kMarginsKey,
-                               gfx::Insets::TLBR(0, 0, 23, 0));
-
-    contents_view->AddChildView(
-        views::Builder<views::Checkbox>()
-            .CopyAddressTo(&do_not_ask_checkbox_)
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME))
-            .Build());
-  }
+  const raw_ptr<ash::CheckboxGroup> checkbox_group =
+      contents_view->AddChildView(std::make_unique<ash::CheckboxGroup>(
+          bounds().width() - 32 * 2, gfx::Insets::TLBR(0, 0, 8, 0), 0,
+          gfx::Insets(), ash::Checkbox::kImageLabelSpacingDP));
+  do_not_ask_checkbox_jelly_ = checkbox_group->AddButton(
+      ash::OptionButtonBase::PressedCallback(),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME));
+  do_not_ask_checkbox_jelly_->SetLabelStyle(ash::TypographyToken::kCrosButton2);
+  do_not_ask_checkbox_jelly_->SetLabelColorId(cros_tokens::kCrosSysOnSurface);
   return contents_view;
 }
 
@@ -201,49 +170,26 @@ std::unique_ptr<views::View> ResizeConfirmationDialogView::MakeButtonsView() {
           .SetBetweenChildSpacing(provider->GetDistanceMetric(
               views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL));
 
-  if (chromeos::features::IsJellyEnabled()) {
-    builder.AddChildren(
-        views::Builder<ash::PillButton>()  // Cancel button.
-            .CopyAddressTo(&cancel_button_)
-            .SetCallback(base::BindRepeating(
-                &ResizeConfirmationDialogView::OnButtonClicked,
-                base::Unretained(this), false,
-                views::Widget::ClosedReason::kCancelButtonClicked))
-            .SetText(l10n_util::GetStringUTF16(IDS_APP_CANCEL))
-            .SetIsDefault(false)
-            .SetPillButtonType(ash::PillButton::kSecondaryLargeWithoutIcon),
-        views::Builder<ash::PillButton>()  // Accept button.
-            .CopyAddressTo(&accept_button_)
-            .SetCallback(base::BindRepeating(
-                &ResizeConfirmationDialogView::OnButtonClicked,
-                base::Unretained(this), true,
-                views::Widget::ClosedReason::kCancelButtonClicked))
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT))
-            .SetIsDefault(true)
-            .SetPillButtonType(ash::PillButton::kPrimaryLargeWithoutIcon));
-  } else {
-    builder.AddChildren(
-        views::Builder<views::MdTextButton>()  // Cancel button.
-            .CopyAddressTo(&cancel_button_)
-            .SetCallback(base::BindRepeating(
-                &ResizeConfirmationDialogView::OnButtonClicked,
-                base::Unretained(this), false,
-                views::Widget::ClosedReason::kAcceptButtonClicked))
-            .SetText(l10n_util::GetStringUTF16(IDS_APP_CANCEL))
-            .SetStyle(ui::ButtonStyle::kDefault)
-            .SetIsDefault(false),
-        views::Builder<views::MdTextButton>()  // Accept button.
-            .CopyAddressTo(&accept_button_)
-            .SetCallback(base::BindRepeating(
-                &ResizeConfirmationDialogView::OnButtonClicked,
-                base::Unretained(this), true,
-                views::Widget::ClosedReason::kAcceptButtonClicked))
-            .SetText(l10n_util::GetStringUTF16(
-                IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT))
-            .SetStyle(ui::ButtonStyle::kProminent)
-            .SetIsDefault(true));
-  }
+  builder.AddChildren(
+      views::Builder<ash::PillButton>()  // Cancel button.
+          .CopyAddressTo(&cancel_button_)
+          .SetCallback(base::BindRepeating(
+              &ResizeConfirmationDialogView::OnButtonClicked,
+              base::Unretained(this), false,
+              views::Widget::ClosedReason::kCancelButtonClicked))
+          .SetText(l10n_util::GetStringUTF16(IDS_APP_CANCEL))
+          .SetIsDefault(false)
+          .SetPillButtonType(ash::PillButton::kSecondaryLargeWithoutIcon),
+      views::Builder<ash::PillButton>()  // Accept button.
+          .CopyAddressTo(&accept_button_)
+          .SetCallback(base::BindRepeating(
+              &ResizeConfirmationDialogView::OnButtonClicked,
+              base::Unretained(this), true,
+              views::Widget::ClosedReason::kCancelButtonClicked))
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT))
+          .SetIsDefault(true)
+          .SetPillButtonType(ash::PillButton::kPrimaryLargeWithoutIcon));
   return std::move(builder).Build();
 }
 
@@ -252,9 +198,7 @@ void ResizeConfirmationDialogView::OnButtonClicked(
     views::Widget::ClosedReason close_reason) {
   if (!callback_)
     return;
-  std::move(callback_).Run(accept, chromeos::features::IsJellyEnabled()
-                                       ? do_not_ask_checkbox_jelly_->selected()
-                                       : do_not_ask_checkbox_->GetChecked());
+  std::move(callback_).Run(accept, do_not_ask_checkbox_jelly_->selected());
 
   auto* const widget = GetWidget();
   if (widget) {

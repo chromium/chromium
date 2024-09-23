@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// These Mojo structs are converted from
+// third_party/lens_server_proto/lens_overlay_overlay_object.proto.
+module lens.mojom;
+
+import "chrome/browser/lens/core/mojom/geometry.mojom";
+
+struct OverlayObject {
+  // Required. The id.
+  string id;
+
+  // Required. The object geometry.
+  Geometry geometry;
+};

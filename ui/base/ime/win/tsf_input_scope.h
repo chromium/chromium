@@ -6,10 +6,10 @@
 #define UI_BASE_IME_WIN_TSF_INPUT_SCOPE_H_
 
 #include <InputScope.h>
-#include <Windows.h>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/win/windows_types.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -33,6 +33,10 @@ COMPONENT_EXPORT(UI_BASE_IME_WIN)
 ITfInputScope* CreateInputScope(TextInputType text_input_type,
                                 TextInputMode text_input_mode,
                                 bool should_do_learning);
+
+// A wrapper of the SetInputScope API exported by msctf.dll.
+COMPONENT_EXPORT(UI_BASE_IME_WIN)
+void SetInputScope(HWND window_handle, InputScope input_scope);
 
 }  // namespace tsf_inputscope
 }  // namespace ui

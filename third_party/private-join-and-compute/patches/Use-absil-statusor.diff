@@ -228,12 +228,8 @@ diff --git a/src/util/status_macros.h b/src/util/status_macros.h
 index 7c0f1628aa2bb..33063549552e4 100644
 --- a/src/util/status_macros.h
 +++ b/src/util/status_macros.h
-@@ -32,10 +32,10 @@
- // Internal helper.
- #define PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
-   auto statusor = (rexpr);                                            \
--  if (UNLIKELY(!statusor.ok())) {                           \
-+  if (UNLIKELY(!statusor.ok())) {                                     \
+@@ -35,7 +35,7 @@
+   if (!statusor.ok()) [[unlikely]] {                                  \
      return std::move(statusor).status();                              \
    }                                                                   \
 -  lhs = std::move(statusor).ValueOrDie()

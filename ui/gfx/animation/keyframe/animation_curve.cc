@@ -21,24 +21,30 @@ base::TimeDelta AnimationCurve::TickInterval() const {
   return base::TimeDelta();
 }
 
-#define DEFINE_ANIMATION_CURVE(Name, CurveType)                                \
-  void Name##AnimationCurve::Tick(base::TimeDelta t, int property_id,          \
-                                  KeyframeModel* keyframe_model) const {       \
-    if (target_) {                                                             \
-      target_->On##Name##Animated(GetValue(t), property_id, keyframe_model);   \
-    }                                                                          \
-  }                                                                            \
-  int Name##AnimationCurve::Type() const { return AnimationCurve::CurveType; } \
-  const char* Name##AnimationCurve::TypeName() const { return #Name; }         \
-  const Name##AnimationCurve* Name##AnimationCurve::To##Name##AnimationCurve(  \
-      const AnimationCurve* c) {                                               \
-    DCHECK_EQ(AnimationCurve::CurveType, c->Type());                           \
-    return static_cast<const Name##AnimationCurve*>(c);                        \
-  }                                                                            \
-  Name##AnimationCurve* Name##AnimationCurve::To##Name##AnimationCurve(        \
-      AnimationCurve* c) {                                                     \
-    DCHECK_EQ(AnimationCurve::CurveType, c->Type());                           \
-    return static_cast<Name##AnimationCurve*>(c);                              \
+#define DEFINE_ANIMATION_CURVE(Name, CurveType)                               \
+  void Name##AnimationCurve::Tick(                                            \
+      base::TimeDelta t, int property_id, KeyframeModel* keyframe_model,      \
+      gfx::TimingFunction::LimitDirection limit_direction) const {            \
+    if (target_) {                                                            \
+      target_->On##Name##Animated(GetTransformedValue(t, limit_direction),    \
+                                  property_id, keyframe_model);               \
+    }                                                                         \
+  }                                                                           \
+  int Name##AnimationCurve::Type() const {                                    \
+    return AnimationCurve::CurveType;                                         \
+  }                                                                           \
+  const char* Name##AnimationCurve::TypeName() const {                        \
+    return #Name;                                                             \
+  }                                                                           \
+  const Name##AnimationCurve* Name##AnimationCurve::To##Name##AnimationCurve( \
+      const AnimationCurve* c) {                                              \
+    DCHECK_EQ(AnimationCurve::CurveType, c->Type());                          \
+    return static_cast<const Name##AnimationCurve*>(c);                       \
+  }                                                                           \
+  Name##AnimationCurve* Name##AnimationCurve::To##Name##AnimationCurve(       \
+      AnimationCurve* c) {                                                    \
+    DCHECK_EQ(AnimationCurve::CurveType, c->Type());                          \
+    return static_cast<Name##AnimationCurve*>(c);                             \
   }
 
 DEFINE_ANIMATION_CURVE(Transform, TRANSFORM)

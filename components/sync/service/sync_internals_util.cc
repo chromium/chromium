@@ -22,6 +22,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_token_status.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/sync/service/trusted_vault_synthetic_field_trial.h"
 #include "components/version_info/version_info.h"
 #include "url/gurl.h"
 
@@ -143,7 +144,7 @@ class SectionList {
 
 std::string GetDisableReasonsString(
     SyncService::DisableReasonSet disable_reasons) {
-  if (disable_reasons.Empty()) {
+  if (disable_reasons.empty()) {
     return "None";
   }
   std::vector<std::string> reason_strings;
@@ -176,7 +177,7 @@ std::string GetTransportStateString(syncer::SyncService::TransportState state) {
     case syncer::SyncService::TransportState::ACTIVE:
       return "Active";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -199,11 +200,9 @@ std::string GetUserActionableErrorString(
     case SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return "Trusted vault recoverability degraded for everything";
-    case SyncService::UserActionableError::kGenericUnrecoverableError:
-      return "Generic unrecoverable error";
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -289,7 +288,7 @@ std::string GetConnectionStatus(const SyncTokenStatus& status) {
           "server error since %s",
           GetTimeStr(status.connection_status_update_time).c_str());
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -391,6 +390,8 @@ base::Value::Dict ConstructAboutInformation(
       section_encryption->AddStringStat("Trusted Vault Migration Time");
   Stat<int>* trusted_vault_key_version =
       section_encryption->AddIntStat("Trusted Vault Version/Epoch");
+  Stat<std::string>* trusted_vault_auto_upgrade_experiment_group =
+      section_encryption->AddStringStat("Trusted Vault Auto Upgrade Group");
 
   Section* section_last_session = section_list.AddSection(
       "Status from Last Completed Session", /*is_sensitive=*/false);
@@ -540,8 +541,7 @@ base::Value::Dict ConstructAboutInformation(
   if (is_status_valid) {
     cryptographer_can_encrypt->Set(full_status.cryptographer_can_encrypt);
     has_pending_keys->Set(full_status.crypto_has_pending_keys);
-    encrypted_types->Set(
-        ModelTypeSetToDebugString(full_status.encrypted_types));
+    encrypted_types->Set(DataTypeSetToDebugString(full_status.encrypted_types));
     has_keystore_key->Set(full_status.has_keystore_key);
     keystore_migration_time->Set(
         GetTimeStr(full_status.keystore_migration_time, "Not Migrated"));
@@ -553,6 +553,16 @@ base::Value::Dict ConstructAboutInformation(
           full_status.trusted_vault_debug_info.migration_time()));
       trusted_vault_key_version->Set(
           full_status.trusted_vault_debug_info.key_version());
+    }
+
+    if (full_status.trusted_vault_debug_info
+            .has_auto_upgrade_experiment_group()) {
+      const TrustedVaultAutoUpgradeSyntheticFieldTrialGroup group =
+          TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::FromProto(
+              full_status.trusted_vault_debug_info
+                  .auto_upgrade_experiment_group());
+      trusted_vault_auto_upgrade_experiment_group->Set(
+          group.is_valid() ? group.name() : std::string("Invalid"));
     }
   }
 

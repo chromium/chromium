@@ -73,7 +73,7 @@
 <translation id="1376703628032300005">পরের অক্ষরে সরান</translation>
 <translation id="1377925789329510816">এটিই সর্বশেষ শিরোনাম। প্রথম শিরোনামে ফিরে যেতে সার্চ+H টিপুন, অথবা এই পৃষ্ঠার দ্বিতীয় শিরোনামে যেতে সার্চ+Shift+H টিপুন।</translation>
 <translation id="138218114945450791">হালকা নীল</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">খুঁজুন</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">হালকা সবুজ</translation>
 <translation id="1411043317877497323">অনুশীলন ক্ষেত্র</translation>
@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">লালচে বাদামি</translation>
 <translation id="249330843868392562">টেক্সট টু স্পিচ সেটিংস খুলুন</translation>
 <translation id="2497706219848005458">সবুজাভ হলুদ</translation>
+<translation id="2512979179176933762">উইন্ডো দেখুন</translation>
 <translation id="2523609930580546572">ChromeVox টিউটোরিয়াল</translation>
 <translation id="2525706221823668172">Chromebook এর কীবোর্ড শর্টকাটগুলি</translation>
 <translation id="2553108862507765288">ব্যাকরণগত ভুল</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{আরও #টি}one{আরও #টি}other{আরও #টি}}</translation>
 <translation id="2792200646155001340">এছাড়াও আপনি আগের আইটেমে ফিরে যেতে এক আঙুল দিয়ে ডানদিক থেকে বাঁদিকে সোয়াইপ করতে পারেন। এখনই করে দেখুন।</translation>
 <translation id="280499067616661124">ChromeVox পৃষ্ঠাতে খুঁজুন</translation>
-<translation id="2811019999044652585">স্ক্রিনের অন্যান্য অংশে যেমন টুল দণ্ড বা সিস্টেম ট্রেতে যাওয়ার জন্য কন্ট্রোল + ফরোয়ার্ড টিপুন। Chromebook-এ ফরোয়ার্ড কী 'সংখ্যা কী ২'-এর ঠিক উপরে।</translation>
 <translation id="2811204574343810641">সারি</translation>
 <translation id="2816868829355607410">অনুশীলন ক্ষেত্র: জাম্প কমান্ড</translation>
 <translation id="2841013758207633010">সময়</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">ইস্পাত নীল</translation>
 <translation id="4253168017788158739">টিকা</translation>
 <translation id="4254798249533888099">ট্রী</translation>
+<translation id="4259220820964911921">ফেস কন্ট্রোল চালু করতে চান?</translation>
 <translation id="4271220233568730077">পরবর্তী গাণিতিক</translation>
 <translation id="4275397969489577657">ইভেন্ট স্ট্রিম লগ-ইন চালু করুন</translation>
 <translation id="4278486392851938658">কোনও পূর্ববর্তী ঘুরে দেখা লিঙ্ক নেই</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">ভারতীয় লাল</translation>
 <translation id="4432896207833262240">চিহ্নিত করা কন্টেন্ট</translation>
 <translation id="4437615272777527928">মেনু সার্চ করতে টাইপ করুন। ফলাফলের মধ্যে অদল বদল করে দেখতে উপরের এবং নিচের তীরচিহ্নে প্রেস করুন। টেক্সটের কার্সার অ্যাডজাস্ট করতে এবং এক মেনু থেকে অন্য মেনুতে যেতে উপরের এবং নিচের তীরচিহ্নে প্রেস করুন।</translation>
+<translation id="4453530046591759283">টুলবার অথবা সিস্টেম ট্রের মতো, সরাসরি স্ক্রিনের অন্যান্য অংশে যেতে Control+F1 প্রেস করুন। F1 হল Escape কী-এর ডানদিকে থাকা প্রথম কী।</translation>
 <translation id="4457472090507035117">এখনকার ভয়েসটি বেছে নিন:</translation>
 <translation id="4476183483923481720">নতুন লাইন</translation>
 <translation id="4479068155583208887">ইঁট লাল</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">পরিশিষ্ট</translation>
 <translation id="5761219715606611783">দারুণ! আপনি ChromeVox-এর 'টাচ' ফিচারের প্রাথমিক ধারণা অর্জন করেছেন। আপনি আবার টিউটোরিয়ালটি দেখতে পারেন বা নিচের বোতামে ক্লিক করে এই টিউটোরিয়াল থেকে বেরিয়ে আসতে পারেন।</translation>
 <translation id="5776001898637896684">Google Enhanced Network-এর টেক্সট-টু-স্পিচ এক্সটেনশন</translation>
+<translation id="5783252477644995371">ফেস কন্ট্রোল আপনাকে ফেস পয়েন্টিংয়ের সাথে কার্সর কন্ট্রোল দেয় এবং কিছু কাজ করার সুবিধা দেয়, যেমন হাসির মতো ফেসিয়াল জেসচারের মাধ্যমে বাঁদিকে ক্লিক করা</translation>
 <translation id="5805940204952508776">দুটি আঙ্গুল দিয়ে ট্যাপ করুন</translation>
 <translation id="5819072574982403430">ট্রি আইটেম</translation>
 <translation id="5822819874379903994">গাঢ় ফিরোজা</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">নাভাহো সাদা</translation>
 <translation id="7095834689119144465">কেবল পাঠ্য সংখ্যা সম্পাদনা করুন</translation>
 <translation id="7096001299300236431">পূর্ববর্তী মিডিয়া</translation>
+<translation id="7096668131290451939">শেখার মোড থেকে বেরিয়ে আসতে আবার Escape প্রেস করুন</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">শব্দ ইকো</translation>
 <translation id="7137397390322864165">স্যালমন</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">কোনও পরবর্তী চেকবক্স নেই</translation>
 <translation id="8473540203671727883">মাউস কার্সারের নিচে থাকা টেক্সট পড়ুন</translation>
 <translation id="8476408756881832830">ChromeVox কথা বলতে থাকলে প্লেব্যাক সাময়িকভাবে থামান</translation>
-<translation id="8476508772960940536">এক নজরে উইন্ডো</translation>
 <translation id="8480873377842220259">এবার আপনি বেসিক নেভিগেশন সম্পর্কে আরও জানতে পারবেন। স্ক্রিনের চারদিকে নেভিগেট করতে, আপনি Search কী ধরে রেখে Arrow কীগুলি প্রেস করতে পারেন। চালিয়ে যেতে, Search + Right Arrow কী প্রেস করুন।</translation>
 <translation id="8503360654911991865">নেভিগেশন কণিকাভাবটি কমান</translation>
 <translation id="8520472399088452386">ঘূর্ণন বোতাম</translation>

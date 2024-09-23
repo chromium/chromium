@@ -44,7 +44,7 @@ class PromoService : public KeyedService {
     // or with invalid data. Any previously cached response should be cleared.
     FATAL_ERROR,
     // There's a valid promo coming back from the promo server, but it's been
-    // locally blocked by the user client-side. TODO(crbug.com/1003508): send
+    // locally blocked by the user client-side. TODO(crbug.com/40098612): send
     // blocked promo IDs to the server so this doesn't happen / they can do a
     // better job ranking?
     OK_BUT_BLOCKED,

@@ -4,4 +4,5 @@ include_rules = [
     "+components/device_reauth",
     "+components/password_manager/core/browser",
     "+components/browser_ui/device_lock/android",
+    "+components/browser_ui/test/android",
 ]

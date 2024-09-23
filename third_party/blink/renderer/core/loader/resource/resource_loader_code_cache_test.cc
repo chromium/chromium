@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
@@ -85,9 +90,11 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
         kNoCompileHintsProducer = nullptr;
     constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         kNoCompileHintsConsumer = nullptr;
+    constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
     resource_ = ScriptResource::Fetch(
         params, fetcher, nullptr, isolate, ScriptResource::kNoStreaming,
-        kNoCompileHintsProducer, kNoCompileHintsConsumer);
+        kNoCompileHintsProducer, kNoCompileHintsConsumer,
+        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
     loader_ = resource_->Loader();
 
     response_ = ResourceResponse(url);
@@ -281,6 +288,58 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckFailure) {
   // The metadata has been cleared.
   EXPECT_FALSE(resource_->CodeCacheSize());
   EXPECT_FALSE(resource_->CacheHandler()->GetCachedMetadata(0));
+}
+
+class MockTestingPlatformForCodeCache : public TestingPlatformSupport {
+ public:
+  MockTestingPlatformForCodeCache() = default;
+  ~MockTestingPlatformForCodeCache() override = default;
+
+  // TestingPlatformSupport:
+  bool ShouldUseCodeCacheWithHashing(const WebURL& request_url) const override {
+    return should_use_code_cache_with_hashing_;
+  }
+
+  void set_should_use_code_cache_with_hashing(
+      bool should_use_code_cache_with_hashing) {
+    should_use_code_cache_with_hashing_ = should_use_code_cache_with_hashing;
+  }
+
+ private:
+  bool should_use_code_cache_with_hashing_ = true;
+};
+
+TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCachePlatformOverride) {
+  ScopedTestingPlatformSupport<MockTestingPlatformForCodeCache> platform;
+  std::vector<uint8_t> cache_data{2, 3, 4, 5, 6};
+
+  {
+    platform->set_should_use_code_cache_with_hashing(true);
+    V8TestingScope scope;
+    CommonSetup(scope.GetIsolate());
+    loader_->DidReceiveResponse(
+        WrappedResourceResponse(response_),
+        /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+        mojo_base::BigBuffer(MakeSerializedCodeCacheDataWithHash(cache_data)));
+
+    // Code cache data was present.
+    EXPECT_EQ(resource_->CodeCacheSize(),
+              cache_data.size() + sizeof(CachedMetadataHeader));
+  }
+
+  {
+    platform->set_should_use_code_cache_with_hashing(false);
+    V8TestingScope scope;
+    CommonSetup(scope.GetIsolate());
+    loader_->DidReceiveResponse(
+        WrappedResourceResponse(response_),
+        /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+        mojo_base::BigBuffer(MakeSerializedCodeCacheDataWithHash(cache_data)));
+
+    // Code cache data was absent.
+    EXPECT_FALSE(resource_->CodeCacheSize());
+    EXPECT_FALSE(resource_->CacheHandler());
+  }
 }
 
 }  // namespace

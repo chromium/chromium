@@ -12,6 +12,7 @@
 #include <zircon/errors.h>
 
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/trace_event/base_tracing.h"
@@ -23,8 +24,8 @@ MessagePumpFuchsia::ZxHandleWatchController::ZxHandleWatchController(
     : async_wait_t({}), created_from_location_(from_here) {}
 
 MessagePumpFuchsia::ZxHandleWatchController::~ZxHandleWatchController() {
-  if (!StopWatchingZxHandle())
-    NOTREACHED();
+  const bool success = StopWatchingZxHandle();
+  CHECK(success);
 }
 
 bool MessagePumpFuchsia::ZxHandleWatchController::WaitBegin() {
@@ -156,8 +157,8 @@ MessagePumpFuchsia::FdWatchController::FdWatchController(
       ZxHandleWatchController(from_here) {}
 
 MessagePumpFuchsia::FdWatchController::~FdWatchController() {
-  if (!StopWatchingFileDescriptor())
-    NOTREACHED();
+  const bool success = StopWatchingFileDescriptor();
+  CHECK(success);
 }
 
 bool MessagePumpFuchsia::FdWatchController::WaitBegin() {
@@ -197,8 +198,8 @@ bool MessagePumpFuchsia::WatchFileDescriptor(int fd,
   DCHECK(controller);
   DCHECK(delegate);
 
-  if (!controller->StopWatchingFileDescriptor())
-    NOTREACHED();
+  const bool success = controller->StopWatchingFileDescriptor();
+  CHECK(success);
 
   controller->fd_ = fd;
   controller->watcher_ = delegate;
@@ -222,7 +223,6 @@ bool MessagePumpFuchsia::WatchFileDescriptor(int fd,
       break;
     default:
       NOTREACHED() << "unexpected mode: " << mode;
-      return false;
   }
 
   // Pass dummy |handle| and |signals| values to WatchZxHandle(). The real
@@ -246,8 +246,8 @@ bool MessagePumpFuchsia::WatchZxHandle(zx_handle_t handle,
   DCHECK(handle == ZX_HANDLE_INVALID || !controller->is_active() ||
          handle == controller->async_wait_t::object);
 
-  if (!controller->StopWatchingZxHandle())
-    NOTREACHED();
+  const bool success = controller->StopWatchingZxHandle();
+  CHECK(success);
 
   controller->async_wait_t::object = handle;
   controller->persistent_ = persistent;
@@ -300,13 +300,10 @@ void MessagePumpFuchsia::Run(Delegate* delegate) {
     if (attempt_more_work)
       continue;
 
-    attempt_more_work = delegate->DoIdleWork();
+    delegate->DoIdleWork();
     if (run_state.should_quit) {
       break;
     }
-
-    if (attempt_more_work)
-      continue;
 
     delegate->BeforeWait();
 
@@ -333,7 +330,7 @@ void MessagePumpFuchsia::ScheduleDelayedWork(
   // Since this is always called from the same thread as Run(), there is nothing
   // to do as the loop is already running. It will wait in Run() with the
   // correct timeout when it's out of immediate tasks.
-  // TODO(https://crbug.com/885371): Consider removing ScheduleDelayedWork()
+  // TODO(crbug.com/40594269): Consider removing ScheduleDelayedWork()
   // when all pumps function this way (bit.ly/merge-message-pump-do-work).
 }
 

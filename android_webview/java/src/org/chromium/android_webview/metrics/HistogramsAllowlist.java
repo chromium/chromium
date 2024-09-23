@@ -16,7 +16,14 @@ import java.io.InputStreamReader;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/** Keeps a list of which histograms to upload if histograms filtering is applied. */
+/**
+ * Keeps a list of which histograms to upload if histograms filtering is applied.
+ *
+ * <p>histograms_allowlist.txt contains histograms that will be sampled at 100%. This is not done
+ * for all histograms in order to preserve network usage and storage. See
+ * go/clank-webview-uma#histograms-allowlist-guidance for reasons to add your histogram to it and
+ * how to do it safely.
+ */
 public class HistogramsAllowlist {
     private final Set<Long> mHistogramNameHashes;
 

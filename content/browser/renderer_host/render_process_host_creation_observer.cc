@@ -16,4 +16,8 @@ RenderProcessHostCreationObserver::~RenderProcessHostCreationObserver() {
   RenderProcessHostImpl::UnregisterCreationObserver(this);
 }
 
+void RenderProcessHostCreationObserver::OnRenderProcessHostCreationFailed(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {}
+
 }  // namespace content

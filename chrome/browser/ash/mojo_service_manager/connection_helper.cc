@@ -13,8 +13,8 @@
 
 #if !BUILDFLAG(USE_REAL_CHROMEOS_SERVICES)
 #include "base/system/sys_info.h"
-#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
+#include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"  // nogncheck
+#include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"  // nogncheck
 #endif
 
 namespace {
@@ -68,7 +68,7 @@ base::ScopedClosureRunner CreateConnectionAndPassCloser() {
 #if BUILDFLAG(USE_REAL_CHROMEOS_SERVICES)
   return CreateRealConnectionAndPassCloser();
 #else
-  // TODO(crbug.com/952745): Always use fakes after adding
+  // TODO(crbug.com/41452889): Always use fakes after adding
   // use_real_chromeos_services=true to where needed.
   if (base::SysInfo::IsRunningOnChromeOS()) {
     return CreateRealConnectionAndPassCloser();

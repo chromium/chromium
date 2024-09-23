@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottom_sheet"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+    <!-- TODO(crbug.com/360328000): Migrate the sheet dimensions from migration warning to the simple notice sheet. -->
+
+    <ImageView
+        android:id="@+id/drag_handlebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginHorizontal="@dimen/pwd_migration_warning_margin"
+        android:layout_marginVertical="6dp"
+        android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/drag_handlebar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:layout_below="@id/drag_handlebar"
+        android:id="@+id/scroll_view">
+
+        <LinearLayout
+            android:id="@+id/sheet_item_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/pwd_migration_warning_margin"
+            android:layout_marginBottom="24dp"
+            android:clipToPadding="false"
+            android:divider="@null"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/sheet_header_image"
+                android:layout_width="@dimen/pwd_migration_warning_icon_size"
+                android:layout_height="@dimen/pwd_migration_warning_icon_size"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginVertical="16dp"
+                android:importantForAccessibility="no"/>
+
+            <androidx.appcompat.widget.DialogTitle
+                android:id="@+id/sheet_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
+
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/sheet_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:layout_marginBottom="@dimen/pwd_migration_warning_margin"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:descendantFocusability="blocksDescendants"
+                android:id="@+id/confirmation_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:minHeight="@dimen/pwd_migration_warning_button_height"
+                android:ellipsize="end"
+                android:singleLine="true"
+                style="@style/FilledButton"/>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

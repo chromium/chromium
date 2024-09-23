@@ -59,9 +59,8 @@ bool RichAutocompletionEitherNonPrefixEnabled() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Return true if the given match uses a vector icon with a background.
 bool HasVectorIconBackground(const AutocompleteMatch& match) {
-  return OmniboxFieldTrial::IsActionsUISimplificationEnabled() &&
-         (match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
-          match.type == AutocompleteMatchType::PEDAL);
+  return match.type == AutocompleteMatchType::HISTORY_CLUSTER ||
+         match.type == AutocompleteMatchType::PEDAL;
 }
 #endif
 
@@ -196,13 +195,13 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     bool dark_mode) const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // This is used on desktop only.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return ui::ImageModel();
 #else
 
   if (model()->ShouldShowCurrentPageIcon()) {
     return ui::ImageModel::FromVectorIcon(
-        GetLocationBarModel()->GetVectorIcon(), color_current_page_icon,
+        controller_->client()->GetVectorIcon(), color_current_page_icon,
         dip_size);
   }
 
@@ -212,7 +211,6 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     // For search queries, display default search engine's favicon. If the
     // default search engine is google return the icon instead of favicon for
     // search queries with the chrome refresh feature.
-    if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
       if (search::DefaultSearchProviderIsGoogle(
               controller_->client()->GetTemplateURLService())) {
         // For non chrome builds this would return an empty image model. In
@@ -222,7 +220,6 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
           return icon;
         }
       }
-    }
 
     favicon = controller_->client()->GetFaviconForDefaultSearchProvider(
         std::move(on_icon_fetched));
@@ -370,10 +367,6 @@ OmniboxView::OmniboxView(std::unique_ptr<OmniboxClient> client)
     : controller_(std::make_unique<OmniboxController>(
           /*view=*/this,
           std::move(client))) {}
-
-const LocationBarModel* OmniboxView::GetLocationBarModel() const {
-  return controller_->client()->GetLocationBarModel();
-}
 
 OmniboxEditModel* OmniboxView::model() {
   return const_cast<OmniboxEditModel*>(

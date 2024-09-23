@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] Resolved line-height with specified 1em line-height and text-size-adjust: 150%
+  assert_equals: expected "24px" but got "16px"
+[FAIL] Actual line-height with specified 1em line-height and text-size-adjust: 150%
+  assert_equals: expected 24 but got 16
+[FAIL] Resolved line-height with specified 0.75em line-height and text-size-adjust: 150%
+  assert_equals: expected "18px" but got "12px"
+[FAIL] Actual line-height with specified 0.75em line-height and text-size-adjust: 150%
+  assert_equals: expected 18 but got 12
+[FAIL] Resolved line-height with specified 1em line-height, 16px font-size, and text-size-adjust: 150%
+  assert_equals: expected "24px" but got "16px"
+[FAIL] Actual line-height with specified 1em line-height, 16px font-size, and text-size-adjust: 150%
+  assert_equals: expected 24 but got 16
+[FAIL] Resolved line-height with specified 0.75em line-height, 16px font-size, and text-size-adjust: 150%
+  assert_equals: expected "18px" but got "12px"
+[FAIL] Actual line-height with specified 0.75em line-height, 16px font-size, and text-size-adjust: 150%
+  assert_equals: expected 18 but got 12
+[FAIL] Resolved line-height with specified 1em line-height, 8px font-size, and text-size-adjust: 150%
+  assert_equals: expected "12px" but got "8px"
+[FAIL] Actual line-height with specified 1em line-height, 8px font-size, and text-size-adjust: 150%
+  assert_equals: expected 12 but got 8
+[FAIL] Resolved line-height with specified 0.75em line-height, 8px font-size, and text-size-adjust: 150%
+  assert_equals: expected "9px" but got "6px"
+[FAIL] Actual line-height with specified 0.75em line-height, 8px font-size, and text-size-adjust: 150%
+  assert_equals: expected 9 but got 6
+Harness: the test ran to completion.
+

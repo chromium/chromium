@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // SampleVector implements HistogramSamples interface. It is used by all
 // Histogram based classes to store samples.
 
@@ -14,6 +19,7 @@
 #include <atomic>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -49,6 +55,8 @@ class BASE_EXPORT SampleVectorBase : public HistogramSamples {
 
   // Access the bucket ranges held externally.
   const BucketRanges* bucket_ranges() const { return bucket_ranges_; }
+
+  AtomicSingleSample* SingleSampleForTesting() { return &single_sample(); }
 
  protected:
   SampleVectorBase(uint64_t id,
@@ -165,7 +173,7 @@ class BASE_EXPORT SampleVector : public SampleVectorBase {
 
   // HistogramSamples:
   std::string GetAsciiBody() const override;
-  std::string GetAsciiHeader(StringPiece histogram_name,
+  std::string GetAsciiHeader(std::string_view histogram_name,
                              int32_t flags) const override;
 
   // SampleVectorBase:

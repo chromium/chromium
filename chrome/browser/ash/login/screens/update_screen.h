@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/version_updater/version_updater.h"
@@ -29,6 +28,7 @@ class TickClock;
 
 namespace ash {
 
+struct AccessibilityStatusEventDetails;
 class ErrorScreensHistogramHelper;
 class UpdateView;
 
@@ -196,6 +196,10 @@ class UpdateScreen : public BaseScreen,
   // Determines if we should show additional info during update or right after
   // check for update is done.
   bool is_opt_out_enabled_ = false;
+
+  // Whether Quick Start was notified of an update. True for users who
+  // previously started Quick Start and will install an update.
+  bool did_prepare_quick_start_for_update_ = false;
 
   // EU country list.
   inline static constexpr auto kEUCountriesSet =

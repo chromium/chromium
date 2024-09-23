@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocket : public mojom::P2PSocket {
       net::NetLog* net_log,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory,
       P2PMessageThrottler* throttler,
-      absl::optional<base::UnguessableToken> devtools_token);
+      std::optional<base::UnguessableToken> devtools_token);
 
   P2PSocket(const P2PSocket&) = delete;
   P2PSocket& operator=(const P2PSocket&) = delete;

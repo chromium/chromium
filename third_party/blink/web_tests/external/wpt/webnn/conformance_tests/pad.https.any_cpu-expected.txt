@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] pad float32 4D tensor options.mode='edge'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK only supports constant padding mode."
+[FAIL] pad float32 4D tensor options.mode='reflection'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK only supports constant padding mode."
+[FAIL] pad float32 4D tensor options.mode='symmetric'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': XNNPACK only supports constant padding mode."
+Harness: the test ran to completion.
+

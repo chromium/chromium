@@ -1,0 +1,74 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("rollback_network_config") {
+  sources = [
+    "rollback_network_config.cc",
+    "rollback_network_config.h",
+    "rollback_network_config_service.cc",
+    "rollback_network_config_service.h",
+    "rollback_onc_util.cc",
+    "rollback_onc_util.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/settings",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/services/rollback_network_config/public/mojom",
+    "//components/onc",
+    "//dbus",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_rollback_network_config.cc",
+    "fake_rollback_network_config.h",
+  ]
+
+  deps = [
+    ":rollback_network_config",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "rollback_network_config_unittest.cc" ]
+
+  deps = [
+    ":rollback_network_config",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/login/login_state",
+    "//components/onc",
+    "//components/ownership",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

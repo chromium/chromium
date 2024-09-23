@@ -39,8 +39,9 @@ ExtensionFunction::ResponseAction DocumentScanScanFunction::Run() {
   auto params = api::document_scan::Scan::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (!user_gesture())
+  if (!user_gesture()) {
     return RespondNow(Error(kUserGestureRequiredError));
+  }
 
   std::vector<std::string> mime_types;
   if (params->options.mime_types) {
@@ -83,7 +84,7 @@ ExtensionFunction::ResponseAction DocumentScanGetScannerListFunction::Run() {
   DocumentScanAPIHandler::Get(browser_context())
       ->GetScannerList(
           ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
-          extension_, std::move(params->filter),
+          extension_, user_gesture(), std::move(params->filter),
           base::BindOnce(
               &DocumentScanGetScannerListFunction::OnScannerListReceived,
               this));

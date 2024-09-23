@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/test/video_encoder/video_encoder_client.h"
 
 #include <algorithm>
@@ -443,7 +448,7 @@ void VideoEncoderClient::BitstreamBufferReady(
     }
   }
 
-  if (metadata.end_of_picture) {
+  if (metadata.end_of_picture()) {
     frame_index_++;
     CHECK_EQ(source_timestamps_.erase(metadata.timestamp), 1u);
   }
@@ -501,14 +506,13 @@ void VideoEncoderClient::CreateEncoderTask(const RawVideo* video,
   VideoEncodeAccelerator::Config config(
       video_->PixelFormat(), encoder_client_config_.output_resolution,
       encoder_client_config_.output_profile,
-      encoder_client_config_.bitrate_allocation.GetSumBitrate());
+      encoder_client_config_.bitrate_allocation.GetSumBitrate(),
+      encoder_client_config_.framerate,
+      encoder_client_config_.input_storage_type,
+      encoder_client_config_.content_type);
 
-  config.initial_framerate = encoder_client_config_.framerate;
-  config.storage_type = encoder_client_config_.input_storage_type;
-  config.content_type = encoder_client_config_.content_type;
   config.drop_frame_thresh_percentage =
       encoder_client_config_.drop_frame_thresh;
-
   config.spatial_layers = encoder_client_config_.spatial_layers;
   config.inter_layer_pred = encoder_client_config_.inter_layer_pred_mode;
 

@@ -34,23 +34,20 @@ from pylib.constants import host_paths
 _AAPT_PATH = lazy.WeakConstant(lambda: build_tools.GetPath('aapt'))
 _ANDROID_UTILS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'build',
                                    'android', 'gyp')
-_BUILD_UTILS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'build', 'util')
 _READOBJ_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party',
                              'llvm-build', 'Release+Asserts', 'bin',
                              'llvm-readobj')
 
-with host_paths.SysPath(host_paths.BUILD_COMMON_PATH):
-  import perf_tests_results_helper  # pylint: disable=import-error
+with host_paths.SysPath(host_paths.BUILD_UTIL_PATH):
+  from lib.common import perf_tests_results_helper
+  from lib.results import result_sink
+  from lib.results import result_types
 
 with host_paths.SysPath(host_paths.TRACING_PATH):
   from tracing.value import convert_chart_json  # pylint: disable=import-error
 
 with host_paths.SysPath(_ANDROID_UTILS_PATH, 0):
   from util import build_utils  # pylint: disable=import-error
-
-with host_paths.SysPath(_BUILD_UTILS_PATH, 0):
-  from lib.results import result_sink  # pylint: disable=import-error
-  from lib.results import result_types  # pylint: disable=import-error
 
 # Captures an entire config from aapt output.
 _AAPT_CONFIG_PATTERN = r'config %s:(.*?)config [a-zA-Z-]+:'
@@ -212,15 +209,17 @@ def _ParseManifestAttributes(apk_path):
   output = cmd_helper.GetCmdOutput([
       _AAPT_PATH.read(), 'd', 'xmltree', apk_path, 'AndroidManifest.xml'])
 
-  def parse_attr(namespace, name):
+  def parse_attr(namespace, name, default=None):
     # android:extractNativeLibs(0x010104ea)=(type 0x12)0x0
     # android:extractNativeLibs(0x010104ea)=(type 0x12)0xffffffff
     # dist:onDemand=(type 0x12)0xffffffff
     m = re.search(
         f'(?:{namespace}:)?{name}' + r'(?:\(.*?\))?=\(type .*?\)(\w+)', output)
-    return m and int(m.group(1), 16)
+    if m is None:
+      return default
+    return int(m.group(1), 16)
 
-  skip_extract_lib = bool(parse_attr('android', 'extractNativeLibs'))
+  skip_extract_lib = not parse_attr('android', 'extractNativeLibs', default=1)
   sdk_version = parse_attr('android', 'minSdkVersion')
   is_feature_split = parse_attr('android', 'isFeatureSplit')
   # Can use <dist:on-demand>, or <module dist:onDemand="true">.
@@ -371,9 +370,10 @@ def _AnalyzeInternal(apk_path,
   res_directory = make_group('Non-compiled Android resources')
   arsc = make_group('Compiled Android resources')
   metadata = make_group('Package metadata')
-  unknown = make_group('Unknown files')
   notices = make_group('licenses.notice file')
   unwind_cfi = make_group('unwind_cfi (dev and canary only)')
+  assets = make_group('Other Android Assets')
+  unknown = make_group('Unknown files')
 
   with zipfile.ZipFile(apk_path, 'r') as apk:
     apk_contents = apk.infolist()
@@ -424,6 +424,12 @@ def _AnalyzeInternal(apk_path,
   total_apk_size = os.path.getsize(apk_path)
   for member in apk_contents:
     filename = member.filename
+    # Undo asset path suffixing. https://crbug.com/357131361
+    if filename.endswith('+'):
+      suffix_idx = filename.rfind('+', 0, len(filename) - 1)
+      if suffix_idx != -1:
+        filename = filename[:suffix_idx]
+
     if filename.endswith('/'):
       continue
     if filename.endswith('.so'):
@@ -468,6 +474,8 @@ def _AnalyzeInternal(apk_path,
       notices.AddZipInfo(member)
     elif filename.startswith('assets/unwind_cfi'):
       unwind_cfi.AddZipInfo(member)
+    elif filename.startswith('assets/'):
+      assets.AddZipInfo(member)
     else:
       unknown.AddZipInfo(member)
 
@@ -638,7 +646,7 @@ def _AnalyzeInternal(apk_path,
   # end result is going to be uploaded to the perf dashboard in the HistogramSet
   # format due to mixed units (bytes vs. zip entries) causing malformed
   # summaries to be generated.
-  # TODO(https://crbug.com/903970): Remove this workaround if unit mixing is
+  # TODO(crbug.com/41425646): Remove this workaround if unit mixing is
   # ever supported.
   report_func('FileCount', 'file count', len(apk_contents), 'zip entries')
 
@@ -865,7 +873,10 @@ def main():
       '--isolated-script-test-perf-output',
       type=os.path.realpath,
       help=argparse.SUPPRESS)
-
+  argparser.add_argument('--isolated-script-test-repeat',
+                         help=argparse.SUPPRESS)
+  argparser.add_argument('--isolated-script-test-launcher-retry-limit',
+                         help=argparse.SUPPRESS)
   output_group = argparser.add_mutually_exclusive_group()
 
   output_group.add_argument(

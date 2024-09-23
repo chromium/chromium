@@ -7,24 +7,20 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry, isFakeEntry, isInteractiveVolume, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashRootType} from '../../common/js/entry_utils.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {State} from '../../state/state.js';
 import {getFileData} from '../../state/store.js';
-import {XfTree} from '../../widgets/xf_tree.js';
-import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {isTreeItem} from '../../widgets/xf_tree_util.js';
 
 import type {CommandHandlerDeps} from './command_handler.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {FileSelection} from './file_selection.js';
 import type {MetadataKey} from './metadata/metadata_item.js';
-import type {Command} from './ui/command.js';
-import type {DirectoryItem} from './ui/directory_tree.js';
+import type {CanExecuteEvent, Command, CommandEvent} from './ui/command.js';
 import {List} from './ui/list.js';
 import type {Menu} from './ui/menu.js';
 import type {MenuItem} from './ui/menu_item.js';
-import {Tree, type TreeItem} from './ui/tree.js';
 
 /**
  * The IDs of elements that can trigger share action.
@@ -32,13 +28,6 @@ import {Tree, type TreeItem} from './ui/tree.js';
 enum SharingActionElementId {
   CONTEXT_MENU = 'file-list',
   SHARE_SHEET = 'sharesheet-button',
-}
-
-function isDirectoryItem(element: EventTarget|null): element is DirectoryItem {
-  if (element && 'entry' in element) {
-    return true;
-  }
-  return false;
 }
 
 function isList(element: EventTarget|null): element is List {
@@ -63,19 +52,6 @@ function isMenuItem(element: EventTarget|null): element is MenuItem {
   return false;
 }
 
-function isTreeItem(element: XfTree|Tree|XfTreeItem|DirectoryItem|TreeItem|
-                    undefined|null): element is XfTreeItem|DirectoryItem|
-    TreeItem|undefined|null {
-  if (element instanceof XfTree || element instanceof Tree) {
-    return false;
-  }
-  return true;
-}
-
-interface CommandEvent extends Event {
-  canExecute: boolean;
-  command: Command;
-}
 
 /**
  * Helper function that for the given event returns the launch source of the
@@ -112,34 +88,29 @@ export function getCommandEntry(
 export function getCommandEntries(
     fileManager: CommandHandlerDeps,
     element: EventTarget|null): Array<Entry|FilesAppEntry> {
-  // DirectoryItem has "entry" attribute.
-  if (isDirectoryItem(element)) {
-    return [element.entry!];
+  if (isTreeItem(element)) {
+    const entry = getTreeItemEntry(element);
+    if (entry) {
+      return [entry];
+    }
   }
 
   // DirectoryTree has the focused item.
   const focusedItem = getFocusedTreeItem(element);
-  if (focusedItem && 'entry' in focusedItem) {
-    return [focusedItem.entry!];
+  const entry = getTreeItemEntry(focusedItem);
+  if (entry) {
+    return [entry];
   }
 
   const htmlElement = element as HTMLElement;
-  // The event target could still be a descendant of a DirectoryItem element
+  // The event target could still be a descendant of a legacy TreeItem element
   // (e.g. the eject button).
-  if (isNewDirectoryTreeEnabled()) {
-    // Handle eject button in the new directory tree.
-    if (htmlElement.classList.contains('root-eject')) {
-      const treeItem = htmlElement.closest('xf-tree-item');
-      if (treeItem && 'entry' in treeItem) {
-        return [treeItem.entry as DirectoryEntry | FilesAppDirEntry];
-      }
-    }
-  } else {
-    if (fileManager.ui.directoryTree?.contains(htmlElement)) {
-      const treeItem = htmlElement.closest('.tree-item');
-      if (treeItem && 'entry' in treeItem) {
-        return [treeItem.entry as DirectoryEntry | FilesAppDirEntry];
-      }
+  // Handle eject button in the new directory tree.
+  if (htmlElement.classList.contains('root-eject')) {
+    const treeItem = htmlElement.closest('xf-tree-item');
+    const entry = treeItem && getTreeItemEntry(treeItem);
+    if (entry) {
+      return [entry];
     }
   }
 
@@ -186,14 +157,6 @@ export function getParentEntry(
     return getTreeItemEntry(parentItem);
   }
 
-  const directoryTreeItem = element as DirectoryItem;
-  const directoryTreeParentItem = directoryTreeItem?.parentItem;
-  if (isTreeItem(directoryTreeParentItem) &&
-      getTreeItemEntry(directoryTreeParentItem)) {
-    // DirectoryItem has parentItem.
-    return getTreeItemEntry(directoryTreeParentItem);
-  }
-
   if (element instanceof List) {
     return directoryModel ? directoryModel.getCurrentDirEntry() : null;
   }
@@ -223,7 +186,7 @@ export function getElementVolumeInfo(
  * on any visible volume.
  */
 export function canExecuteVisibleOnDriveInNormalAppModeOnly(
-    event: CommandEvent, fileManager: CommandHandlerDeps) {
+    event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
   const enabled = fileManager.directoryModel.isOnDrive() &&
       !isModal(fileManager.dialogType);
   event.canExecute = enabled;
@@ -236,7 +199,7 @@ export function canExecuteVisibleOnDriveInNormalAppModeOnly(
  * of original keyboard event and the command. WebKit would handle it
  * differently in some cases.
  */
-export function forceDefaultHandler(node: Node, commandId: string) {
+export function forceDefaultHandler(node: HTMLElement, commandId: string) {
   const doc = node.ownerDocument!;
   const command =
       doc.body.querySelector<Command>('command[id="' + commandId + '"]')!;
@@ -245,16 +208,16 @@ export function forceDefaultHandler(node: Node, commandId: string) {
       e.stopPropagation();
     }
   });
-  node.addEventListener('command', ((event: CommandEvent) => {
-                                     if (event.command.id !== commandId) {
-                                       return;
-                                     }
-                                     document.execCommand(event.command.id);
-                                     event.cancelBubble = true;
-                                   }) as EventListener);
+  node.addEventListener('command', (event: CommandEvent) => {
+    if (event.detail.command.id !== commandId) {
+      return;
+    }
+    document.execCommand(event.detail.command.id);
+    event.cancelBubble = true;
+  });
   node.addEventListener(
       'canExecute',
-      ((event: CommandEvent) => {
+      ((event: CanExecuteEvent) => {
         if (event.command.id !== commandId || event.target !== node) {
           return;
         }
@@ -370,7 +333,7 @@ export function hasCapability(
   // if we create a new file in offline mode), or if there is a problem with the
   // cache and we don't have data yet. For this reason, we need to allow the
   // functionality even if it's not set.
-  // TODO(crbug.com/849999): Store restrictions instead of capabilities.
+  // TODO(crbug.com/41392991): Store restrictions instead of capabilities.
   const metadata = fileManager.metadataModel.getCache(entries, [capability]);
   return metadata.length === entries.length &&
       metadata.every(item => item[capability] !== false);

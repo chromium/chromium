@@ -30,6 +30,10 @@ void WebTestFedCmManager::GetDialogType(
   std::string type_string;
   switch (auth_request->GetDialogType()) {
     case FederatedAuthRequestImpl::kNone:
+    // We do not expose these three types to browser automation currently.
+    case FederatedAuthRequestImpl::kLoginToIdpPopup:
+    case FederatedAuthRequestImpl::kContinueOnPopup:
+    case FederatedAuthRequestImpl::kErrorUrlPopup:
       std::move(callback).Run(std::nullopt);
       return;
     case FederatedAuthRequestImpl::kSelectAccount:
@@ -73,25 +77,20 @@ void WebTestFedCmManager::SelectFedCmAccount(
     std::move(callback).Run(false);
     return;
   }
-  const std::vector<IdentityProviderData>& idp_data =
-      auth_request->GetSortedIdpData();
-  if (idp_data.empty()) {
+  const std::vector<IdentityRequestAccountPtr>& accounts =
+      auth_request->GetAccounts();
+  if (accounts.empty()) {
     std::move(callback).Run(false);
     return;
   }
-  uint32_t current = 0;
-  for (const auto& data : idp_data) {
-    for (const IdentityRequestAccount& account : data.accounts) {
-      if (current == account_index) {
-        auth_request->AcceptAccountsDialogForDevtools(
-            data.idp_metadata.config_url, account);
-        std::move(callback).Run(true);
-        return;
-      }
-      ++current;
-    }
+  if (account_index >= accounts.size()) {
+    std::move(callback).Run(false);
+    return;
   }
-  std::move(callback).Run(false);
+  const IdentityRequestAccount& account = *accounts[account_index];
+  auth_request->AcceptAccountsDialogForDevtools(
+      account.identity_provider->idp_metadata.config_url, account);
+  std::move(callback).Run(true);
 }
 
 void WebTestFedCmManager::DismissFedCmDialog(
@@ -103,6 +102,10 @@ void WebTestFedCmManager::DismissFedCmDialog(
   }
   switch (auth_request->GetDialogType()) {
     case FederatedAuthRequestImpl::kNone:
+    // We do not expose these three types to browser automation currently.
+    case FederatedAuthRequestImpl::kLoginToIdpPopup:
+    case FederatedAuthRequestImpl::kContinueOnPopup:
+    case FederatedAuthRequestImpl::kErrorUrlPopup:
       std::move(callback).Run(false);
       return;
     case FederatedAuthRequestImpl::kSelectAccount:
@@ -131,14 +134,25 @@ void WebTestFedCmManager::ClickFedCmDialogButton(
   }
   switch (button) {
     case blink::test::mojom::DialogButton::kConfirmIdpLoginContinue:
-      if (auth_request->GetDialogType() !=
-          FederatedAuthRequestImpl::kConfirmIdpLogin) {
-        std::move(callback).Run(false);
-        return;
-      }
-      auth_request->AcceptConfirmIdpLoginDialogForDevtools();
-      std::move(callback).Run(true);
-      return;
+      switch (auth_request->GetDialogType()) {
+        case FederatedAuthRequestImpl::kConfirmIdpLogin:
+          auth_request->AcceptConfirmIdpLoginDialogForDevtools();
+          std::move(callback).Run(true);
+          return;
+        case FederatedAuthRequestImpl::kSelectAccount: {
+          const auto& data = auth_request->GetSortedIdpData();
+          if (data.size() != 1) {
+            std::move(callback).Run(false);
+            return;
+          }
+          std::move(callback).Run(
+              auth_request->UseAnotherAccountForDevtools(*data[0]));
+          return;
+        }
+        default:
+          std::move(callback).Run(false);
+          return;
+      };
     case blink::test::mojom::DialogButton::kErrorGotIt:
       if (auth_request->GetDialogType() != FederatedAuthRequestImpl::kError) {
         std::move(callback).Run(false);

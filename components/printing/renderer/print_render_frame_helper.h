@@ -79,8 +79,8 @@ class FrameReference {
   blink::WebView* view();
 
  private:
-  raw_ptr<blink::WebView, ExperimentalRenderer> view_;
-  raw_ptr<blink::WebLocalFrame, ExperimentalRenderer> frame_;
+  raw_ptr<blink::WebView> view_;
+  raw_ptr<blink::WebLocalFrame> frame_;
 };
 
 // Helper to ensure that quit closures for Mojo response are called.
@@ -149,6 +149,12 @@ class PrintRenderFrameHelper
   void PrintNode(const blink::WebNode& node);
 
   const mojo::AssociatedRemote<mojom::PrintManagerHost>& GetPrintManagerHost();
+
+  using PreviewDocumentTestCallback =
+      base::OnceCallback<void(const blink::WebDocument&)>;
+
+  void SetWebDocumentCollectionCallbackForTest(
+      PreviewDocumentTestCallback callback);
 
  private:
   friend class PrintRenderFrameHelperPreviewTest;
@@ -618,7 +624,8 @@ class PrintRenderFrameHelper
     int count_ = 0;
   };
 
-  void WaitForLoad(PrintPreviewRequestType type);
+  void SetupOnStopLoadingTimeout();
+  void PrintRequestedPagesInternal(bool already_notified_frame);
 
   ScriptingThrottler scripting_throttler_;
 
@@ -655,6 +662,10 @@ class PrintRenderFrameHelper
   bool do_deferred_print_for_system_dialog_ = false;
 
   mojo::AssociatedRemote<mojom::PrintManagerHost> print_manager_host_;
+
+  // Stores a test-only callback for verifying the WebDocument values of the
+  // preview document.
+  PreviewDocumentTestCallback preview_document_test_callback_;
 
   base::WeakPtrFactory<PrintRenderFrameHelper> weak_ptr_factory_{this};
 };

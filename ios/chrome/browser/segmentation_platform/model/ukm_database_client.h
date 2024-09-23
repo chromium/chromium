@@ -12,7 +12,7 @@
 #import "base/thread_annotations.h"
 #import "components/segmentation_platform/internal/signals/ukm_observer.h"
 #import "components/segmentation_platform/internal/ukm_data_manager.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ukm {
 class UkmRecorderImpl;

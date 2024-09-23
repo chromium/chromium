@@ -62,11 +62,10 @@ bool Dictionary::HasProperty(const StringView& key,
   if (dictionary_object_.IsEmpty())
     return false;
 
-  v8::TryCatch try_catch(isolate_);
+  TryRethrowScope rethrow_scope(isolate_, exception_state);
   bool has_key = false;
   if (!dictionary_object_->Has(V8Context(), V8String(isolate_, key))
            .To(&has_key)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return false;
   }
 
@@ -114,23 +113,21 @@ bool Dictionary::GetInternal(const v8::Local<v8::Value>& key,
   if (dictionary_object_.IsEmpty())
     return false;
 
-  v8::TryCatch try_catch(GetIsolate());
+  TryRethrowScope rethrow_scope(GetIsolate(), exception_state);
   bool has_key = false;
   if (!dictionary_object_->Has(V8Context(), key).To(&has_key)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
+    DCHECK(rethrow_scope.HasCaught());
     return false;
   }
-  DCHECK(!try_catch.HasCaught());
+  DCHECK(!rethrow_scope.HasCaught());
   if (!has_key)
     return false;
 
   if (!dictionary_object_->Get(V8Context(), key).ToLocal(&result)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
+    DCHECK(rethrow_scope.HasCaught());
     return false;
   }
-  DCHECK(!try_catch.HasCaught());
+  DCHECK(!rethrow_scope.HasCaught());
   return true;
 }
 
@@ -149,11 +146,10 @@ HashMap<String, String> Dictionary::GetOwnPropertiesAsStringHashMap(
   if (dictionary_object_.IsEmpty())
     return HashMap<String, String>();
 
-  v8::TryCatch try_catch(GetIsolate());
+  TryRethrowScope rethrow_scope(GetIsolate(), exception_state);
   v8::Local<v8::Array> property_names;
   if (!dictionary_object_->GetOwnPropertyNames(V8Context())
            .ToLocal(&property_names)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return HashMap<String, String>();
   }
 
@@ -161,7 +157,6 @@ HashMap<String, String> Dictionary::GetOwnPropertiesAsStringHashMap(
   for (uint32_t i = 0; i < property_names->Length(); ++i) {
     v8::Local<v8::String> key;
     if (!GetStringValueInArray(V8Context(), property_names, i).ToLocal(&key)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return HashMap<String, String>();
     }
     V8StringResource<> string_key(GetIsolate(), key);
@@ -171,7 +166,6 @@ HashMap<String, String> Dictionary::GetOwnPropertiesAsStringHashMap(
 
     v8::Local<v8::Value> value;
     if (!dictionary_object_->Get(V8Context(), key).ToLocal(&value)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return HashMap<String, String>();
     }
     V8StringResource<> string_value(GetIsolate(), value);
@@ -191,11 +185,10 @@ Vector<String> Dictionary::GetPropertyNames(
   if (dictionary_object_.IsEmpty())
     return Vector<String>();
 
-  v8::TryCatch try_catch(GetIsolate());
+  TryRethrowScope rethrow_scope(GetIsolate(), exception_state);
   v8::Local<v8::Array> property_names;
   if (!dictionary_object_->GetPropertyNames(V8Context())
            .ToLocal(&property_names)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return Vector<String>();
   }
 
@@ -203,7 +196,6 @@ Vector<String> Dictionary::GetPropertyNames(
   for (uint32_t i = 0; i < property_names->Length(); ++i) {
     v8::Local<v8::String> key;
     if (!GetStringValueInArray(V8Context(), property_names, i).ToLocal(&key)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return Vector<String>();
     }
     V8StringResource<> string_key(GetIsolate(), key);

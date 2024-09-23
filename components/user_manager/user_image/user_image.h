@@ -30,6 +30,19 @@ class USER_MANAGER_EXPORT UserImage {
     FORMAT_WEBP,
   };
 
+  // TODO(jasontt): Explore adding a new value for image taken from camera.
+  // These special values are used instead of actual default image indices.
+  struct Type {
+    static inline constexpr int kInvalid{-3};
+
+    // Returned as |image_index| when user profile image is used as user image.
+    static inline constexpr int kProfile{-2};
+
+    // Returned as |image_index| when user-selected file or photo is used as
+    // user image.
+    static inline constexpr int kExternal{-1};
+  };
+
   // Encodes the given bitmap to bytes representation in |image_format| for
   // WebUI. Returns nullptr on failure.
   static scoped_refptr<base::RefCountedBytes> Encode(const SkBitmap& bitmap,

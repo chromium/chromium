@@ -1,0 +1,62 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.screens_oobe.mojom;
+
+// Renderer uses this to invoke methods that are implemented in the browser
+// process.
+interface ConsumerUpdatePageHandler {
+  // User declined usage of the cellular network to apply an update.
+  OnDeclineCellularClicked();
+
+  // User accepted usage of the cellular network to apply an update.
+  OnAcceptCellularClicked();
+
+  // Emits a skip button click.
+  OnSkipClicked();
+
+  // Emits a back button click.
+  OnBackClicked();
+};
+
+// Browser uses this to invoke methods that are implemented in the renderer
+// process.
+interface ConsumerUpdatePage {
+  // Describes the consumer update screen step.
+  enum ConsumerUpdateStep {
+    kCheckingForUpdate,
+    kUpdateInProgress,
+    kRestartInProgress,
+    kManualReboot,
+    kCellularPermission,
+  };
+
+  // Shows the button, that allows users to skip an update in progress.
+  ShowSkipButton();
+
+  // Updates the visibility of the low battery warning message.
+  SetLowBatteryWarningVisible(bool visible);
+
+  // Changes the step of the consumer update screen.
+  SetScreenStep(ConsumerUpdateStep step);
+
+  // Sets the update progress message.
+  SetUpdateStatusMessage(
+      int64 percent, string percent_message, string time_left_message);
+
+  // Sets whether the auto transition between informational slides during the
+  // update is enabled.
+  SetAutoTransition(bool enabled);
+};
+
+// Interface for the packaged license  screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface PackagedLicensePageHandler {
+  // Emits to handler Don't Enroll button clicked.
+  OnDontEnrollClicked();
+
+  // Emits to handler Enroll button clicked.
+  OnEnrollClicked();
+};

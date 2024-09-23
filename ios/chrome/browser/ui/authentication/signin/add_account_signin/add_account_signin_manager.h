@@ -11,6 +11,11 @@
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_enums.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
+namespace signin {
+class IdentityManager;
+}
+
+class PrefService;
 @protocol SystemIdentityInteractionManager;
 @protocol SystemIdentity;
 
@@ -39,14 +44,17 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 // Default initialiser.
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                identityInteractionManager:
-                    (id<SystemIdentityInteractionManager>)
-                        identityInteractionManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)baseViewController
+                   prefService:(PrefService*)prefService
+               identityManager:(signin::IdentityManager*)identityManager
+    identityInteractionManager:
+        (id<SystemIdentityInteractionManager>)identityInteractionManager
+    NS_DESIGNATED_INITIALIZER;
 
 // Displays the add account sign-in flow.
-// `defaultUserEmail`: preset in the add account dialog. This can be nil.
-- (void)showSigninWithDefaultUserEmail:(NSString*)defaultUserEmail;
+// `signinIntent`: intent for the add account sign-in flow.
+- (void)showSigninWithIntent:(AddAccountSigninIntent)signinIntent;
 
 // Interrupts the add account view.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action

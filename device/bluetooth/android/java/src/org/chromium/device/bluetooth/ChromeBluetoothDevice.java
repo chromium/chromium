@@ -197,7 +197,7 @@ final class ChromeBluetoothDevice {
                     return;
                 }
 
-                // TODO(crbug.com/576906): Update or replace existing GATT objects if they change
+                // TODO(crbug.com/40452041): Update or replace existing GATT objects if they change
                 // after initial discovery.
                 for (Wrappers.BluetoothGattServiceWrapper service : mBluetoothGatt.getServices()) {
                     // Create an adapter unique service ID. getInstanceId only differs between

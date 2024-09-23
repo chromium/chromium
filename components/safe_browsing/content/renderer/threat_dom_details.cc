@@ -13,7 +13,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/renderer/render_frame.h"
@@ -203,7 +202,7 @@ bool ShouldHandleElement(
     const blink::WebElement& element,
     const std::vector<TagAndAttributesItem>& tag_and_attributes_list) {
   // Fenced frames are always handled.
-  // TODO(https://crbug.com/1428788): Update this to support getting the URL of
+  // TODO(crbug.com/40900693): Update this to support getting the URL of
   // fenced frames loaded with a config.
   if (element.HasHTMLTagName("fencedframe")) {
     return true;

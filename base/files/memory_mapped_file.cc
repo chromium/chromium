@@ -45,7 +45,6 @@ bool MemoryMappedFile::Initialize(const FilePath& file_name, Access access) {
     case READ_WRITE_EXTEND:
       // Can't open with "extend" because no maximum size is known.
       NOTREACHED();
-      break;
 #if BUILDFLAG(IS_WIN)
     case READ_CODE_IMAGE:
       flags |= File::FLAG_OPEN | File::FLAG_READ |
@@ -99,9 +98,7 @@ bool MemoryMappedFile::Initialize(File file,
       break;
 #if BUILDFLAG(IS_WIN)
     case READ_CODE_IMAGE:
-      // Can't open with "READ_CODE_IMAGE", not supported outside Windows
-      // or with a |region|.
-      NOTREACHED();
+      DCHECK(Region::kWholeFile == region);
       break;
 #endif
   }
@@ -123,7 +120,7 @@ bool MemoryMappedFile::Initialize(File file,
 }
 
 bool MemoryMappedFile::IsValid() const {
-  return data_ != nullptr;
+  return !bytes_.empty();
 }
 
 // static
@@ -137,7 +134,7 @@ void MemoryMappedFile::CalculateVMAlignedBoundaries(int64_t start,
   CHECK(IsValueInRangeForNumericType<int32_t>(mask));
   *offset = static_cast<int32_t>(static_cast<uint64_t>(start) & mask);
   *aligned_start = static_cast<int64_t>(static_cast<uint64_t>(start) & ~mask);
-  // The DCHECK above means bit 31 is not set in `mask`, which in turn means
+  // The CHECK above means bit 31 is not set in `mask`, which in turn means
   // *offset is positive.  Therefore casting it to a size_t is safe.
   *aligned_size =
       (size + static_cast<size_t>(*offset) + static_cast<size_t>(mask)) & ~mask;

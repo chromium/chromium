@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "net/spdy/spdy_http_utils.h"
 
 #include <stdint.h>
@@ -16,10 +21,10 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_headers_test_util.h"
 #include "net/http/http_response_info.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
+#include "net/third_party/quiche/src/quiche/http2/test_tools/spdy_test_utils.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
-#include "net/third_party/quiche/src/quiche/spdy/test_tools/spdy_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -46,6 +51,23 @@ class SpdyHttpUtilsTestParam : public testing::TestWithParam<bool> {
 };
 
 INSTANTIATE_TEST_SUITE_P(All, SpdyHttpUtilsTestParam, Values(true, false));
+
+// Check that the headers are ordered correctly, with pseudo-headers
+// preceding HTTP headers per
+// https://datatracker.ietf.org/doc/html/rfc9114#section-4.3
+void CheckOrdering(const quiche::HttpHeaderBlock& headers) {
+  bool seen_http_header = false;
+
+  for (auto& header : headers) {
+    const bool is_pseudo = header.first.starts_with(':');
+    if (is_pseudo) {
+      ASSERT_FALSE(seen_http_header) << "Header order is incorrect:\n"
+                                     << headers.DebugString();
+    } else {
+      seen_http_header = true;
+    }
+  }
+}
 
 TEST(SpdyHttpUtilsTest, ConvertRequestPriorityToSpdy3Priority) {
   EXPECT_EQ(0, ConvertRequestPriorityToSpdyPriority(HIGHEST));
@@ -77,9 +99,10 @@ TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersFromHttpRequestHTTP2) {
   request.url = url;
   request.priority_incremental = true;
   request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(request, RequestPriority::HIGHEST,
                                    request.extra_headers, &headers);
+  CheckOrdering(headers);
   EXPECT_EQ("GET", headers[":method"]);
   EXPECT_EQ("https", headers[":scheme"]);
   EXPECT_EQ("www.google.com", headers[":authority"]);
@@ -93,6 +116,52 @@ TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersFromHttpRequestHTTP2) {
   EXPECT_EQ("Chrome/1.1", headers["user-agent"]);
 }
 
+TEST_P(SpdyHttpUtilsTestParam,
+       CreateSpdyHeadersFromHttpRequestForExtendedConnect) {
+  GURL url("https://www.google.com/index.html");
+  HttpRequestInfo request;
+  request.method = "CONNECT";
+  request.url = url;
+  request.priority_incremental = true;
+  request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
+  quiche::HttpHeaderBlock headers;
+  CreateSpdyHeadersFromHttpRequestForExtendedConnect(
+      request, RequestPriority::HIGHEST, "connect-ftp", request.extra_headers,
+      &headers);
+  CheckOrdering(headers);
+  EXPECT_EQ("CONNECT", headers[":method"]);
+  EXPECT_EQ("https", headers[":scheme"]);
+  EXPECT_EQ("www.google.com", headers[":authority"]);
+  EXPECT_EQ("connect-ftp", headers[":protocol"]);
+  EXPECT_EQ("/index.html", headers[":path"]);
+  if (base::FeatureList::IsEnabled(net::features::kPriorityHeader)) {
+    EXPECT_EQ("u=0, i", headers[net::kHttp2PriorityHeader]);
+  } else {
+    EXPECT_EQ(headers.end(), headers.find(net::kHttp2PriorityHeader));
+  }
+  EXPECT_EQ("Chrome/1.1", headers["user-agent"]);
+}
+
+TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersWithDefaultPriority) {
+  GURL url("https://www.google.com/index.html");
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = url;
+  request.priority_incremental = false;
+  request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
+  quiche::HttpHeaderBlock headers;
+  CreateSpdyHeadersFromHttpRequest(request, RequestPriority::DEFAULT_PRIORITY,
+                                   request.extra_headers, &headers);
+  CheckOrdering(headers);
+  EXPECT_EQ("GET", headers[":method"]);
+  EXPECT_EQ("https", headers[":scheme"]);
+  EXPECT_EQ("www.google.com", headers[":authority"]);
+  EXPECT_EQ("/index.html", headers[":path"]);
+  EXPECT_FALSE(headers.contains(net::kHttp2PriorityHeader));
+  EXPECT_FALSE(headers.contains(":version"));
+  EXPECT_EQ("Chrome/1.1", headers["user-agent"]);
+}
+
 TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersWithExistingPriority) {
   GURL url("https://www.google.com/index.html");
   HttpRequestInfo request;
@@ -102,9 +171,10 @@ TEST_P(SpdyHttpUtilsTestParam, CreateSpdyHeadersWithExistingPriority) {
   request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
   request.extra_headers.SetHeader(net::kHttp2PriorityHeader,
                                   "explicit-priority");
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(request, RequestPriority::HIGHEST,
                                    request.extra_headers, &headers);
+  CheckOrdering(headers);
   EXPECT_EQ("GET", headers[":method"]);
   EXPECT_EQ("https", headers[":scheme"]);
   EXPECT_EQ("www.google.com", headers[":authority"]);
@@ -120,9 +190,10 @@ TEST(SpdyHttpUtilsTest, CreateSpdyHeadersFromHttpRequestConnectHTTP2) {
   request.method = "CONNECT";
   request.url = url;
   request.extra_headers.SetHeader(HttpRequestHeaders::kUserAgent, "Chrome/1.1");
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(request, RequestPriority::DEFAULT_PRIORITY,
                                    request.extra_headers, &headers);
+  CheckOrdering(headers);
   EXPECT_EQ("CONNECT", headers[":method"]);
   EXPECT_TRUE(headers.end() == headers.find(":scheme"));
   EXPECT_EQ("www.google.com:443", headers[":authority"]);
@@ -180,7 +251,7 @@ TEST_P(SpdyHeadersToHttpResponseTest, SpdyHeadersToHttpResponse) {
       "cache-control: no-cache, no-store\n"
       "set-cookie: test_cookie=1234567890; Max-Age=3600; Secure; HttpOnly\n"
       "set-cookie: session_id=abcdefghijklmnopqrstuvwxyz; Path=/; HttpOnly\n";
-  spdy::Http2HeaderBlock input;
+  quiche::HttpHeaderBlock input;
   input[spdy::kHttp2StatusHeader] = "200";
   input["content-type"] = "text/html";
   input["cache-control"] = "no-cache, no-store";
@@ -216,27 +287,27 @@ INSTANTIATE_TEST_SUITE_P(
 
 using SpdyHeadersToHttpResponseHeadersFunctionPtrType =
     base::expected<scoped_refptr<HttpResponseHeaders>, int> (*)(
-        const spdy::Http2HeaderBlock&);
+        const quiche::HttpHeaderBlock&);
 
 class SpdyHeadersToHttpResponseHeadersTest
     : public testing::TestWithParam<
           SpdyHeadersToHttpResponseHeadersFunctionPtrType> {
  public:
   base::expected<scoped_refptr<HttpResponseHeaders>, int> PerformConversion(
-      const spdy::Http2HeaderBlock& headers) {
+      const quiche::HttpHeaderBlock& headers) {
     return GetParam()(headers);
   }
 };
 
 TEST_P(SpdyHeadersToHttpResponseHeadersTest, NoStatus) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   EXPECT_THAT(PerformConversion(headers),
               base::test::ErrorIs(ERR_INCOMPLETE_HTTP2_HEADERS));
 }
 
 TEST_P(SpdyHeadersToHttpResponseHeadersTest, EmptyStatus) {
   constexpr char kRawHeaders[] = "HTTP/1.1 200\n";
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[":status"] = "";
   ASSERT_OK_AND_ASSIGN(const auto output, PerformConversion(headers));
   EXPECT_EQ(kRawHeaders, ToSimpleString(output));
@@ -245,14 +316,14 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest, EmptyStatus) {
 TEST_P(SpdyHeadersToHttpResponseHeadersTest, Plain200) {
   // ":status" does not appear as a header in the output.
   constexpr char kRawHeaders[] = "HTTP/1.1 200\n";
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "200";
   ASSERT_OK_AND_ASSIGN(const auto output, PerformConversion(headers));
   EXPECT_EQ(kRawHeaders, ToSimpleString(output));
 }
 
 TEST_P(SpdyHeadersToHttpResponseHeadersTest, MultipleLocation) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "304";
   headers["Location"] = "https://example.com/1";
   headers.AppendValueOrAddHeader("location", "https://example.com/2");
@@ -264,7 +335,7 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest, SpacesAmongValues) {
   constexpr char kRawHeaders[] =
       "HTTP/1.1 200\n"
       "spaces: foo  ,   bar\n";
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "200";
   headers["spaces"] = "foo  ,   bar";
   ASSERT_OK_AND_ASSIGN(const auto output, PerformConversion(headers));
@@ -276,7 +347,7 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest, RepeatedHeader) {
       "HTTP/1.1 200\n"
       "name: value1\n"
       "name: value2\n";
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "200";
   headers.AppendValueOrAddHeader("name", "value1");
   headers.AppendValueOrAddHeader("name", "value2");
@@ -288,7 +359,7 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest, EmptyValue) {
   constexpr char kRawHeaders[] =
       "HTTP/1.1 200\n"
       "empty: \n";
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "200";
   headers.AppendValueOrAddHeader("empty", "");
   ASSERT_OK_AND_ASSIGN(const auto output, PerformConversion(headers));
@@ -299,7 +370,7 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest, PseudoHeadersAreDropped) {
   constexpr char kRawHeaders[] =
       "HTTP/1.1 200\n"
       "Content-Length: 5\n";
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "200";
   headers[spdy::kHttp2MethodHeader] = "GET";
   headers["Content-Length"] = "5";
@@ -313,7 +384,7 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest, DoubleEmptyLocationHeader) {
       "HTTP/1.1 200\n"
       "location: \n"
       "location: \n";
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "200";
   headers.AppendValueOrAddHeader("location", "");
   headers.AppendValueOrAddHeader("location", "");
@@ -323,7 +394,7 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest, DoubleEmptyLocationHeader) {
 
 TEST_P(SpdyHeadersToHttpResponseHeadersTest,
        DifferentLocationHeaderTriggersError) {
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "200";
   headers.AppendValueOrAddHeader("location", "https://same/");
   headers.AppendValueOrAddHeader("location", "https://same/");
@@ -340,7 +411,7 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest,
       "HTTP/1.1 200\n"
       "location: https://same/\n"
       "location: https://same/\n";
-  spdy::Http2HeaderBlock headers;
+  quiche::HttpHeaderBlock headers;
   headers[spdy::kHttp2StatusHeader] = "200";
   headers.AppendValueOrAddHeader("location", " https://same/");
   headers.AppendValueOrAddHeader("location", "https://same/ ");

@@ -17,12 +17,13 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // cras_util.h defines custom min/max macros which break compilation, so ensure
 // it's not included until last.  #if avoids presubmit errors.
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
 #include "media/audio/cras/cras_unified.h"
 #endif
 

@@ -22,6 +22,8 @@ void PasswordSelectionScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->AddF("passwordSelectionTitle", IDS_PASSWORD_SELECTION_TITLE,
                 ui::GetChromeOSDeviceName());
+  builder->AddF("passwordSelectionSubtitile", IDS_PASSWORD_SELECTION_SUBTITLE,
+                ui::GetChromeOSDeviceName());
   builder->AddF("localPasswordSelectionLabel",
                 IDS_PASSWORD_SELECTION_LOCAL_PASSWORD_LABEL,
                 ui::GetChromeOSDeviceName());
@@ -39,6 +41,11 @@ void PasswordSelectionScreenHandler::ShowProgress() {
 
 void PasswordSelectionScreenHandler::ShowPasswordChoice() {
   CallExternalAPI("showPasswordChoice");
+}
+
+base::WeakPtr<PasswordSelectionScreenView>
+PasswordSelectionScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash

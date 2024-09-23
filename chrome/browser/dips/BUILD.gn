@@ -9,10 +9,12 @@ source_set("unit_tests") {
     "dips_bounce_detector_unittest.cc",
     "dips_browser_signin_detector_unittest.cc",
     "dips_cleanup_service_unittest.cc",
+    "dips_database_migrator_unittest.cc",
     "dips_database_unittest.cc",
     "dips_service_unittest.cc",
     "dips_storage_unittest.cc",
     "dips_utils_unittest.cc",
+    "persistent_repeating_timer_unittest.cc",
   ]
 
   deps = [
@@ -22,6 +24,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/browsing_data:constants",
     "//chrome/test:test_support",
+    "//components/site_engagement/content",
     "//components/ukm:test_support",
     "//content/test:test_support",
     "//sql:test_support",
@@ -40,6 +43,7 @@ bundle_data("golden_dbs_bundle_data") {
     "//chrome/test/data/dips/v2.sql",
     "//chrome/test/data/dips/v3.sql",
     "//chrome/test/data/dips/v4.sql",
+    "//chrome/test/data/dips/v5.sql",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
@@ -50,6 +54,7 @@ source_set("browser_tests") {
   sources = [
     "dips_bounce_detector_browsertest.cc",
     "dips_helper_browsertest.cc",
+    "dips_navigation_flow_detector_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -60,10 +65,12 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs",
     "//chrome/test:test_support",
     "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/privacy_sandbox/privacy_sandbox_attestations",
     "//components/site_engagement/content:content",
+    "//components/subresource_filter/core/common:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",
     "//device/fido:test_support",

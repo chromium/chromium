@@ -23,10 +23,8 @@ class GraphFeaturesTest : public ::testing::Test {
 TEST_F(GraphFeaturesTest, ConfigureGraph) {
   GraphFeatures features;
 
-  EXPECT_FALSE(features.flags().execution_context_registry);
   EXPECT_FALSE(features.flags().v8_context_tracker);
   features.EnableV8ContextTracker();
-  EXPECT_TRUE(features.flags().execution_context_registry);
   EXPECT_TRUE(features.flags().v8_context_tracker);
 
   TestGraphImpl graph;
@@ -44,34 +42,28 @@ TEST_F(GraphFeaturesTest, EnableDefault) {
   TestGraphImpl graph;
   graph.SetUp();
 
-  EXPECT_EQ(0u, graph.GraphOwnedCountForTesting());
-  EXPECT_EQ(0u, graph.GraphRegisteredCountForTesting());
-  EXPECT_EQ(0u, graph.NodeDataDescriberCountForTesting());
-  EXPECT_FALSE(
+  // The ExecutionContextRegistry is a permanent graph-registered object.
+  EXPECT_TRUE(
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
+
+  EXPECT_EQ(1u, graph.GraphRegisteredCountForTesting());
+  EXPECT_EQ(0u, graph.GraphOwnedCountForTesting());
+  EXPECT_EQ(0u, graph.NodeDataDescriberCountForTesting());
   EXPECT_FALSE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
 
   // An empty config should install nothing.
   features.ConfigureGraph(&graph);
+  EXPECT_EQ(1u, graph.GraphRegisteredCountForTesting());
   EXPECT_EQ(0u, graph.GraphOwnedCountForTesting());
-  EXPECT_EQ(0u, graph.GraphRegisteredCountForTesting());
   EXPECT_EQ(0u, graph.NodeDataDescriberCountForTesting());
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));
   EXPECT_FALSE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
-
-  size_t graph_owned_count = 16;
-#if !BUILDFLAG(IS_ANDROID)
-  // The SiteDataRecorder is not available on Android.
-  graph_owned_count++;
-#endif
 
   // Validate that the default configuration works as expected.
   features.EnableDefault();
   features.ConfigureGraph(&graph);
-  EXPECT_EQ(graph_owned_count, graph.GraphOwnedCountForTesting());
-  EXPECT_EQ(6u, graph.GraphRegisteredCountForTesting());
-  EXPECT_EQ(9u, graph.NodeDataDescriberCountForTesting());
+
   // Ensure the GraphRegistered objects can be queried directly.
   EXPECT_TRUE(
       execution_context::ExecutionContextRegistry::GetFromGraph(&graph));

@@ -52,7 +52,7 @@ class ColorProvider;
 @property(readonly, nonatomic) Profile* lastProfileIfLoaded;
 
 // DEPRECATED: use lastProfileIfLoaded instead.
-// TODO(https://crbug.com/1176734): May be blocking, migrate all callers to
+// TODO(crbug.com/40054768): May be blocking, migrate all callers to
 // |-lastProfileIfLoaded|.
 @property(readonly, nonatomic) Profile* lastProfile;
 
@@ -122,10 +122,6 @@ class ColorProvider;
 - (HistoryMenuBridge*)historyMenuBridge;
 - (TabMenuBridge*)tabMenuBridge;
 
-// Initializes the AppShimMenuController. This enables changing the menu bar for
-// apps.
-- (void)initAppShimMenuController;
-
 // Called when the user has changed browser windows, meaning the backing profile
 // may have changed. This can cause a rebuild of the user-data menus. This is a
 // no-op if the new profile is the same as the current one. This can be either
@@ -151,8 +147,13 @@ class ColorProvider;
 - (BOOL)windowHasBrowserTabs:(NSWindow*)window;
 
 // Testing API.
-- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem;
-- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setCmdWMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setShiftCmdWMenuItemForTesting:(NSMenuItem*)menuItem;
+
+// As of macOS Ventura, the browser test harness can no longer make Chrome the
+// active app. This can cause mainWindow and related to return nil. For cases
+// where having the correct mainWindow is important, set it here.
+- (void)setMainWindowForTesting:(NSWindow*)window;
 - (void)setLastProfileForTesting:(Profile*)profile;
 
 @end
@@ -217,7 +218,7 @@ class TabRestorer : public sessions::TabRestoreServiceObserver {
   static void RestoreMostRecent(Profile* profile);
 
   // Restore a specific tab in |profile|, e.g. for a History menu item.
-  // |session_id| can be a |TabRestoreService::Entry::id|, or a
+  // |session_id| can be a |tab_restore::Entry::id|, or a
   // |TabRestoreEntryService::Entry::original_id|.
   static void RestoreByID(Profile* profile, SessionID session_id);
 

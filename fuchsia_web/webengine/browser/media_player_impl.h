@@ -6,9 +6,10 @@
 #define FUCHSIA_WEB_WEBENGINE_BROWSER_MEDIA_PLAYER_IMPL_H_
 
 #include <fidl/fuchsia.media.sessions2/cpp/fidl.h>
-#include <string>
 
 #include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"

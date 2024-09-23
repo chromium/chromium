@@ -11,36 +11,40 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
+import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -75,6 +79,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<Toolbar> mToolbarSupplier;
     private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
 
     private NativePageFactory mNativePageFactory;
 
@@ -102,7 +108,9 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier) {
+            @NonNull ObservableSupplier<Integer> tabStripHeightSupplier,
+            @NonNull OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -127,6 +135,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mTabStripHeightSupplier = tabStripHeightSupplier;
+        mModuleRegistrySupplier = moduleRegistrySupplier;
+        mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
     }
 
     @Override
@@ -159,7 +169,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                         mEphemeralTabCoordinatorSupplier,
                         mContextMenuCopyLinkObserver,
                         mSnackbarManagerSupplier,
-                        () -> mBottomSheetController),
+                        () -> mBottomSheetController,
+                        mModalDialogManagerSupplier),
                 mShareDelegateSupplier,
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
                 ExternalAuthUtils.getInstance());
@@ -173,7 +184,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     }
 
     @Override
-    public NativePage createNativePage(String url, NativePage candidatePage, Tab tab) {
+    public NativePage createNativePage(
+            String url, NativePage candidatePage, Tab tab, PdfInfo pdfInfo) {
         if (mNativePageFactory == null) {
             mNativePageFactory =
                     new NativePageFactory(
@@ -190,9 +202,11 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mToolbarSupplier,
                             mHomeSurfaceTracker,
                             mTabContentManagerSupplier,
-                            mTabStripHeightSupplier);
+                            mTabStripHeightSupplier,
+                            mModuleRegistrySupplier,
+                            mEdgeToEdgeControllerSupplier);
         }
-        return mNativePageFactory.createNativePage(url, candidatePage, tab);
+        return mNativePageFactory.createNativePage(url, candidatePage, tab, pdfInfo);
     }
 
     /** Destroy and unhook objects at destruction. */

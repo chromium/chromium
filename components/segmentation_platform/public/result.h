@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "components/segmentation_platform/public/proto/prediction_result.pb.h"
 #include "components/segmentation_platform/public/trigger.h"
 
@@ -64,7 +64,7 @@ struct AnnotatedNumericResult {
 
   // Returns the result for the given label. Null if the result failed to fetch
   // or if the label is not available in the output config.
-  std::optional<float> GetResultForLabel(base::StringPiece label) const;
+  std::optional<float> GetResultForLabel(std::string_view label) const;
 
   // Various error codes such as model failed or insufficient data collection.
   PredictionStatus status;

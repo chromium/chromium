@@ -17,7 +17,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 <histograms>
 
 <histogram name="PrivacyBudget.Identifiability.FinchConfigValidationResult"
-    enum="BooleanSuccess" expires_after="2024-04-28">
+    enum="BooleanSuccess" expires_after="2024-10-28">
   <owner>antoniosartori@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <summary>
@@ -27,7 +27,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.Identifiability.RecordedSample"
-    enum="PrivacyBudgetRecordedSample" expires_after="2024-05-17">
+    enum="PrivacyBudgetRecordedSample" expires_after="2024-11-17">
   <owner>antoniosartori@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <summary>

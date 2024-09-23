@@ -1,0 +1,293 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/policy_namespace.mojom";
+import "mojo/public/mojom/base/big_string.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "url/mojom/url.mojom";
+
+// Indicates whether a browser window is created successfully or not.
+// kUnknown and kSuccess have the obvious meaning. The rest are failures.
+//
+// Next MinVersion: 3
+// Next ID: 8
+//
+[Stable, Extensible]
+enum CreationResult {
+  kUnknown = 0,
+  kSuccess = 1,
+  kUnsupported = 2,
+  kBrowserNotRunning = 3,
+  kServiceDisconnected = 4,
+  [MinVersion=1] kProfileNotExist = 5,
+  [MinVersion=1] kBrowserWindowUnavailable = 6,
+  // Operation aborted due to Lacros shutting down.
+  [MinVersion=2] kBrowserShutdown = 7,
+};
+
+// Represents the source of this OpenUrl request.
+[Stable, Extensible]
+enum OpenUrlFrom {
+  // From is not specified or unknown.
+  [Default] kUnspecified = 0,
+
+  // ARC app made a request of this OpenUrl.
+  kArc = 1,
+};
+
+// Parameters to specify OpenUrl behavior.
+// Next version: 3
+// Next id: 3
+[Stable]
+struct OpenUrlParams {
+  // Decides the disposition of the opening page.
+  [Stable, Extensible]
+  enum WindowOpenDisposition {
+    // DEPRECATED. Equivalent to kNewForegroundTab since M111.
+    [Default] kLegacyAutoDetection = 0,
+
+    // Opens the given URL in a new tab.
+    kNewForegroundTab = 1,
+
+    // If there's an existing tab showing the given URL, activate it.
+    // If not, if the tab is NTP and does not have history, navigate it
+    // to the given URL. Otherwise, opens a new tab and navigate it to
+    // the given URL.
+    kSwitchToTab = 2,
+
+    // Opens the given URL in a new window.
+    [MinVersion=1] kNewWindow = 3,
+
+    // Opens the given URL in an incognito window.
+    [MinVersion=2] kOffTheRecord = 4,
+  };
+  WindowOpenDisposition disposition@0;
+
+  [MinVersion=1] OpenUrlFrom from@1;
+
+  // Decides how the URL's path is to be considered when WindowOpenDisposition
+  // is kSwitchToTab, i.e. a search is performed for an existing tab that
+  // matches a given URL.
+  [Stable, Extensible]
+  enum SwitchToTabPathBehavior {
+    // If the two paths are different, the URLs do not match.
+    [Default] kRespect = 0,
+
+    // Path is ignored when testing two URLs for a match.
+    kIgnore = 1,
+  };
+  [MinVersion=2] SwitchToTabPathBehavior path_behavior@2;
+};
+
+// BrowserService defines the APIs that live in a browser (such as
+// lacros-chrome) and are accessed from ash-chrome.
+// IMPORTANT NOTE: If you are exposing a new capability from Lacros to Ash,
+// create a new mojom file. See automation.mojom for an example. This interface
+// has accidentally become a kitchen sink for different features. This was not
+// intentional.
+//
+// Next MinVersion: 78.
+// Next ID: 24
+//
+[Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
+ RenamedFrom="crosapi.mojom.LacrosChromeService"]
+interface BrowserService {
+  // Removed method. No longer used.
+  REMOVED_0@0();
+  REMOVED_2@2();
+
+  // Opens a new window in the browser with the profile that matches
+  // `profile_id`. In case of no matching profile, the profile picker will be
+  // shown.
+  // The callback is called on the command execution.
+  // If `should_trigger_session_restore` is true, a new window opening should be
+  // treated like the start of a new session (with potential session restore,
+  // startup URLs, etc). Otherwise, don't restore the session and instead open a
+  // new window with the default blank tab.
+  NewWindow@1(
+    [MinVersion=10] bool incognito,
+    [MinVersion=61] bool should_trigger_session_restore,
+    [MinVersion=72] int64 target_display_id,
+    [MinVersion=75] uint64? profile_id)
+        => ([MinVersion=73] CreationResult result);
+
+  // Opens a new fullscreen window in the browser with, currently, the main
+  // profile. The only tab will be navigated to the given `url` once the window
+  // is launched. The callback is called on the command execution. NOTE: This
+  // method is used by Chrome OS web Kiosk session only. The behavior may change
+  // and it shouldn't be used by anybody else.
+  // Added in M96.
+  [MinVersion=11]
+  NewFullscreenWindow@9(
+    url.mojom.Url url,
+    [MinVersion=72] int64 target_display_id) => (CreationResult result);
+
+  // Transfers the given tab (or group) to a new window with the same profile.
+
+  // NOTE: This method is used by Chrome OS WebUI in tablet mode as a response
+  // to a drag'n drop operation from the user.
+  [MinVersion=13]
+  NewWindowForDetachingTab@11(
+      mojo_base.mojom.String16 tab_id, mojo_base.mojom.String16 group_id)
+          => (CreationResult result, string app_id);
+
+  // Opens a new window in the browser with the Guest profile if the Guest mode
+  // is enabled.
+  // Added in M100.
+  [MinVersion=63]
+  NewGuestWindow@14([MinVersion=72] int64 target_display_id)
+      => ([MinVersion=73] CreationResult result);
+
+  // Opens a new tab in the browser with the profile that matches `profile_id`.
+  // This may open a new window, if there's no window. If a new browser is
+  // opened and `should_trigger_session_restore` is set, the new browser will
+  // open with the profile's session startup pref. If this is not set the
+  // browser will open without considering the user's session startup pref.
+  // Please see also the Chrome's NewTab command for details.
+  // The callback is called on the command execution.
+  // This is designed to be equivalent of CTRL+T behavior. By default, this
+  // opens a new-tab-page, but extensions may override the behavior.
+  // Added in M91.
+  [MinVersion=71]
+  NewTab@20([MinVersion=76] uint64? profile_id)
+      => ([MinVersion=73] CreationResult result);
+  // The `should_trigger_session_restore` parameter was deprecated in M108 and
+  // is no longer supported. See Launch for something similar.
+  [MinVersion=10]
+  REMOVED_7@7([MinVersion=68] bool should_trigger_session_restore) => ();
+
+  // Opens the specified URL in the browser with, currently, the main profile.
+  // This opens a new tab and loads the page at specified URL.
+  // This is designed to handle opening URL requests from other OS parts,
+  // such as web-page opening request from ash features, or Crostini/ARC apps.
+  // Added in M96.
+  [MinVersion=12]
+  OpenUrl@10(url.mojom.Url url,
+             [MinVersion=62] OpenUrlParams? params)
+      => ([MinVersion=73] CreationResult result);
+
+  // Restores a tab (or a window) recently closed in the browser with,
+  // currently, main profile. Please see also RestoreTab command for details.
+  // The callback is called on the command execution.
+  // Added in M91.
+  [MinVersion=10]
+  RestoreTab@8() => ([MinVersion=73] CreationResult result);
+
+  // Signals Lacros that a multi-finger horizontal swipe has occurred in Ash.
+  // The browser usually responds by switching tabs
+  //
+  // `x_offset` is in DIP coordinates.
+  // `is_fling_scroll_event` is set to true if the event which triggers
+  // HandleTabScrubbing is fling scroll event.
+  //
+  // TODO(crbug.com/40207972): This should be handled on wayland, not crosapi.
+  // Deprecate this API when wayland become capable of handling the tab
+  // scrubbing.
+  [MinVersion=15]
+  HandleTabScrubbing@13(float x_offset,
+                        [MinVersion=103] bool is_fling_scroll_event);
+
+  // Returns the browser's feedback data used for generating feedback report in
+  // a dictionary object, each entry representing a log entry in the feedback
+  // report, for example, "Lacros crash_report_ids: xxx",
+  // "Lacros extensions: xxx", "Lacros mem_usage: xxx", etc.
+  [MinVersion=6]
+  GetFeedbackData@3() => (mojo_base.mojom.DictionaryValue feedback_info);
+
+  // Returns the browser histograms used for generating feedback report.
+  // The histograms returned is zip compressed and is typically around 100KB.
+  [MinVersion=7]
+  GetHistograms@4() => (mojo_base.mojom.BigString compressed_histograms);
+
+  // Returns Url of the active tab from the browser if there is any.
+  [MinVersion=8]
+  GetActiveTabUrl@5() => (url.mojom.Url? url);
+
+  // Notifies Lacros to update the policy data from the device account with the
+  // new data from input. The data is serialized blob of PolicyFetchResponse
+  // object.
+  [MinVersion=9]
+  UpdateDeviceAccountPolicy@6(array<uint8> policy);
+
+  // Notifies Lacros about an attempt to update device account policy.
+  [MinVersion=66]
+  NotifyPolicyFetchAttempt@17();
+
+  // Updates keep-alive instance to maintain the browser lifetime.
+  // Note: there is always timing issue. If the browser is in the process of
+  // termination, this may not work. To fully implement keep-alive, ash-chrome
+  // may need to relaunch Lacros soon after the termination.
+  // Introduced in M97.
+  [MinVersion=14]
+  UpdateKeepAlive@12(bool enabled);
+
+  // Opens lacros with a full restore (all previously open windows from the
+  // previous lacros session). This must be called before a browser has been
+  // created as this will update the state of the main profile.
+  // If `skip_crash_restore` is true full restore will restore the previous
+  // session, bypassing the typical crash restore flow (i.e. the crash restore
+  // bubble anchored to the browser's app menu button).
+  [MinVersion=64]
+  OpenForFullRestore@15([MinVersion=69] bool skip_crash_restore);
+
+  // The old UpdateComponentPolicy method.
+  [MinVersion=67]
+  REMOVED_16@16(map<crosapi.mojom.PolicyNamespace, array<uint8>> policy);
+
+  // Notifies Lacros to update the component policy data. The values of the map
+  // are JSON policy data downloaded by Ash. The `component_policy` argument
+  // maps `PolicyNamespace` representing an extension to the JSON policy value
+  // for that extension.
+  [MinVersion=67]
+  UpdateComponentPolicy@18(map<crosapi.mojom.PolicyNamespace, mojo_base.mojom.Value> component_policy);
+
+  // Opens a new tab in the browser with the profile that matches `profile_id`.
+  // In case of no matching profile, the profile picker will be shown.
+  // If a new window needs to be created, it will open with the profile's
+  // session startup pref and no new tab will be added.
+  // Added in M108.
+  [MinVersion=70]
+  Launch@19([MinVersion=72] int64 target_display_id,
+            [MinVersion=75] uint64? profile_id)
+      => ([MinVersion=73] CreationResult result);
+
+  // Opens the Lacros profile manger window.
+  [MinVersion=74]
+  OpenProfileManager@21();
+
+  // Opens the specified URL in a browser popup window using the captive portal
+  // signin profile.
+  [MinVersion=77]
+  OpenCaptivePortalSignin@23(url.mojom.Url url) => (CreationResult result);
+};
+
+// TODO(crbug.com/40170079): move to its own file. Currently due to circular
+// dependency BrowserServiceHost -> BrowserService -> Crosapi, we cannot
+// split files.
+// This interface is used to register BrowserService provided by a
+// crosapi client.
+//
+// Next MinVersion: 2.
+// Next ID: 2
+//
+[Stable, Uuid="7864a7d6-c74d-4e5f-8589-8cdb99d0c92e"]
+interface BrowserServiceHost {
+  // Registers the remote as a BrowserService. Crosapi host (ash-chrome)
+  // can make requests to control the registered browser.
+  AddBrowserService@0(pending_remote<BrowserService> browser);
+
+  // Requests to relaunch the browser again, soon after its shutdown.
+  // The browser is expected to be terminated sometime soon by itself,
+  // i.e., Crosapi host (ash-chrome) will not forcibly kill the process.
+  // It is important to terminate soon, because otherwise the users may be
+  // surprised of unexpected relaunching on later termination.
+  // If there's multiple requests before termination, they'll be degenerated
+  // into one relaunching.
+  // Added in M93.
+  [MinVersion=1]
+  RequestRelaunch@1();
+};

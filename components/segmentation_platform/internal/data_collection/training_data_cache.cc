@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/data_collection/training_data_cache.h"
 
+#include "base/rand_util.h"
 #include "base/time/time.h"
 
 namespace segmentation_platform {
@@ -24,9 +25,9 @@ void TrainingDataCache::StoreInputs(SegmentId segment_id,
     segment_info_database_->SaveTrainingData(
         segment_id, model_source, std::move(data), base::DoNothing());
   } else {
-    cache[std::make_pair(segment_id, model_source)]
-         [TrainingRequestId::FromUnsafeValue(data.request_id())] =
-             std::move(data);
+    cache_[std::make_pair(segment_id, model_source)]
+          [TrainingRequestId::FromUnsafeValue(data.request_id())] =
+              std::move(data);
   }
 }
 
@@ -35,11 +36,12 @@ void TrainingDataCache::GetInputsAndDelete(SegmentId segment_id,
                                            TrainingRequestId request_id,
                                            TrainingDataCallback callback) {
   std::optional<TrainingData> result;
-  if (cache.contains(std::make_pair(segment_id, model_source)) &&
-      cache[std::make_pair(segment_id, model_source)].contains(request_id)) {
+  if (cache_.contains(std::make_pair(segment_id, model_source)) &&
+      cache_[std::make_pair(segment_id, model_source)].contains(request_id)) {
     // TrainingRequestId found from cache, return and delete the cache entry.
-    auto& segment_data = cache[std::make_pair(segment_id, model_source)];
+    auto& segment_data = cache_[std::make_pair(segment_id, model_source)];
     auto it = segment_data.find(request_id);
+    CHECK(it != segment_data.end());
     result = std::move(it->second);
     segment_data.erase(it);
     std::move(callback).Run(result);
@@ -56,15 +58,15 @@ std::optional<TrainingRequestId> TrainingDataCache::GetRequestId(
   // TODO(haileywang): Add a metric to record how many request at a given time
   // every time this function is triggered.
   std::optional<TrainingRequestId> request_id;
-  auto it = cache.find(std::make_pair(segment_id, model_source));
-  if (it == cache.end() or it->second.size() == 0) {
+  auto it = cache_.find(std::make_pair(segment_id, model_source));
+  if (it == cache_.end() or it->second.size() == 0) {
     return request_id;
   }
   return it->second.begin()->first;
 }
 
 TrainingRequestId TrainingDataCache::GenerateNextId() {
-  return request_id_generator.GenerateNextId();
+  return TrainingRequestId::FromUnsafeValue(base::RandUint64());
 }
 
 }  // namespace segmentation_platform

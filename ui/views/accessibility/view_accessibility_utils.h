@@ -26,35 +26,18 @@ class VIEWS_EXPORT ViewAccessibilityUtils {
   // should be handled separately.
   static bool IsFocusedChildWidget(Widget* widget, const View* focused_view);
 
+  // Copies the accessible attributes from `source` to `destination`. If
+  // attributes are set in both, the ones in source takes precedence.
   static void Merge(const ui::AXNodeData& source, ui::AXNodeData& destination);
+
+  // Iterates through the attributes set in `a` and validates they are not in
+  // `b`. This function acts as a guardrail to prevent Views authors from
+  // setting attributes both in the cache before it gets fully initialized and
+  // during the initialization step, through the
+  // `View::OnAccessibilityInitializing` function.
+  static void ValidateAttributesNotSet(const ui::AXNodeData& new_data,
+                                       const ui::AXNodeData& existing_data);
 };
-
-#if DCHECK_IS_ON()
-// This is a class intended to keep track of the attributes that have already
-// been migrated from the old system of computing AXNodeData for Views (pull),
-// to the new system (push). This will help ensure that new Views don't use the
-// old system for attributes that have already been migrated, since the
-// migration will take some time. Once the migration is complete, this class
-// will be removed.
-// TODO(accessibility): Remove once migration is complete.
-class VIEWS_EXPORT ViewsAXCompletedAttributes {
- public:
-  ViewsAXCompletedAttributes() = delete;
-  ~ViewsAXCompletedAttributes() = delete;
-
-  // Makes sure that there are no attributes in the sets that have already been
-  // set in `data_to_validate`.
-  static void Validate(const ui::AXNodeData& data_to_validate);
-
- private:
-  static std::unordered_set<ax::mojom::IntAttribute>& int_attr_set();
-  static std::unordered_set<ax::mojom::StringAttribute>& string_attr_set();
-  static std::unordered_set<ax::mojom::BoolAttribute>& bool_attr_set();
-  static std::unordered_set<ax::mojom::IntListAttribute>& int_list_attr_set();
-  static std::unordered_set<ax::mojom::StringListAttribute>&
-  string_list_attr_set();
-};
-#endif  // DCHECK_IS_ON()
 
 }  // namespace views
 

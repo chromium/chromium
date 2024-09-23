@@ -5,6 +5,8 @@
 module media.mojom;
 
 import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/exported_shared_image.mojom";
+import "gpu/ipc/common/sync_token.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
@@ -38,18 +40,20 @@ struct ReadyBuffer {
   VideoFrameInfo info;
 };
 
-struct MailboxBufferHandleSet {
-  // Size must be kept in sync with media::VideoFrame::kMaxPlanes.
-  array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
+// Represents an ExportedSharedImage when used with GpuMemoryBufferHandle as
+// part of VideoBufferHandle.
+struct SharedImageBufferHandleSet {
+  gpu.mojom.ExportedSharedImage shared_image;
+  gpu.mojom.SyncToken sync_token;
 };
 
 union VideoBufferHandle {
-  // TODO(https://crbug.com/1316808): It is extremely confusing that this union
+  // TODO(crbug.com/40222341): It is extremely confusing that this union
   // has both an unsafe and a read-only shmem region subtype. This is probably
   // a sign that this union needs better documentation or to be split apart
   // into more distinct types.
   mojo_base.mojom.UnsafeSharedMemoryRegion unsafe_shmem_region;
   mojo_base.mojom.ReadOnlySharedMemoryRegion read_only_shmem_region;
-  MailboxBufferHandleSet mailbox_handles;
+  SharedImageBufferHandleSet shared_image_handle;
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
 };

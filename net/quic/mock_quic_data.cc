@@ -78,6 +78,14 @@ bool MockQuicData::AllWriteDataConsumed() {
   return socket_data_->AllWriteDataConsumed();
 }
 
+void MockQuicData::ExpectAllReadDataConsumed() {
+  socket_data_->ExpectAllReadDataConsumed();
+}
+
+void MockQuicData::ExpectAllWriteDataConsumed() {
+  socket_data_->ExpectAllWriteDataConsumed();
+}
+
 void MockQuicData::Resume() {
   socket_data_->Resume();
 }

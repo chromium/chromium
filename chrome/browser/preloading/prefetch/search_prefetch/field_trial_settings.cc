@@ -10,16 +10,16 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 
+namespace {
+size_t g_cache_size_for_testing = 0;
+}  // namespace
+
 BASE_FEATURE(kSearchPrefetchServicePrefetching,
              "SearchPrefetchServicePrefetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
              "SearchPrefetchBlockBeforeHeaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSearchPrefetchSkipsCancel,
-             "SearchPrefetchSkipsCancel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
@@ -54,8 +54,15 @@ base::TimeDelta SearchPrefetchErrorBackoffDuration() {
 }
 
 size_t SearchPrefetchMaxCacheEntries() {
+  if (g_cache_size_for_testing > 0) {
+    return g_cache_size_for_testing;
+  }
   return base::GetFieldTrialParamByFeatureAsInt(
       kSearchPrefetchServicePrefetching, "cache_size", 10);
+}
+
+void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_size) {
+  g_cache_size_for_testing = cache_size;
 }
 
 base::TimeDelta SearchPrefetchBlockHeadStart() {
@@ -75,10 +82,6 @@ const base::FeatureParam<std::string> kNavigationPrefetchParam{
 
 bool IsSearchNavigationPrefetchEnabled() {
   return base::FeatureList::IsEnabled(kSearchNavigationPrefetch);
-}
-
-bool SearchPrefetchSkipsCancel() {
-  return base::FeatureList::IsEnabled(kSearchPrefetchSkipsCancel);
 }
 
 bool IsUpOrDownArrowPrefetchEnabled() {
@@ -114,3 +117,27 @@ bool OnlyAllowDefaultMatchPreloading() {
   return base::FeatureList::IsEnabled(
       kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 }
+
+BASE_FEATURE(kAutocompleteDictionaryPreload,
+             "AutocompleteDictionaryPreload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta>
+    kAutocompletePreloadedDictionaryTimeout{
+        &kAutocompleteDictionaryPreload,
+        "autocomplete_preloaded_dictionary_timeout", base::Milliseconds(60000)};
+
+BASE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork,
+             "SuppressesSearchPrefetchOnSlowNetwork",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Regarding how this number was chosen, see the design doc linked from
+// crbug.com/350519234.
+const base::FeatureParam<base::TimeDelta>
+    kSuppressesSearchPrefetchOnSlowNetworkThreshold{
+        &kSuppressesSearchPrefetchOnSlowNetwork,
+        "slow_network_threshold_for_search_prefetch", base::Milliseconds(208)};
+
+BASE_FEATURE(kEnsureSearchPrefetchServiceOnInterceptor,
+             "EnsureSearchprefetchServiceOnInterceptor",
+             base::FEATURE_ENABLED_BY_DEFAULT);

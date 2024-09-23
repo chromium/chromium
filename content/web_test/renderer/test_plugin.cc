@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/web_test/renderer/test_plugin.h"
 
 #include <stddef.h>
@@ -31,6 +36,9 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -80,13 +88,12 @@ const char* PointState(blink::WebTouchPoint::State state) {
 
 void PrintTouchList(TestRunner* test_runner,
                     WebFrameTestProxy& frame_proxy,
-                    const blink::WebTouchPoint* points,
-                    int length) {
-  for (int i = 0; i < length; ++i) {
+                    base::span<const blink::WebTouchPoint> points) {
+  for (const blink::WebTouchPoint& point : points) {
     test_runner->PrintMessage(
-        base::StringPrintf(
-            "* %.2f, %.2f: %s\n", points[i].PositionInWidget().x(),
-            points[i].PositionInWidget().y(), PointState(points[i].state)),
+        base::StringPrintf("* %.2f, %.2f: %s\n", point.PositionInWidget().x(),
+                           point.PositionInWidget().y(),
+                           PointState(point.state)),
         frame_proxy);
   }
 }
@@ -97,8 +104,8 @@ void PrintEventDetails(TestRunner* test_runner,
   if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
     const blink::WebTouchEvent& touch =
         static_cast<const blink::WebTouchEvent&>(event);
-    PrintTouchList(test_runner, frame_proxy, touch.touches,
-                   touch.touches_length);
+    PrintTouchList(test_runner, frame_proxy,
+                   base::span(touch.touches).first(touch.touches_length));
   } else if (blink::WebInputEvent::IsMouseEventType(event.GetType()) ||
              event.GetType() == blink::WebInputEvent::Type::kMouseWheel) {
     const blink::WebMouseEvent& mouse =
@@ -216,12 +223,21 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
   std::unique_ptr<blink::WebGraphicsContext3DProvider> context_provider =
       blink::Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
           attrs, url, &gl_info);
-  if (context_provider && !context_provider->BindToCurrentSequence())
+  if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
+  }
+
   if (context_provider) {
-    gl_ = context_provider ? context_provider->ContextGL() : nullptr;
+    gl_ = context_provider->ContextGL();
     context_provider_ =
         base::MakeRefCounted<ContextProviderRef>(std::move(context_provider));
+  } else if (blink::features::IsCanvasSharedBitmapConversionEnabled()) {
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel =
+        blink::Platform::Current()->EstablishGpuChannelSync();
+    DCHECK(gpu_channel);
+
+    shared_image_interface_ = gpu_channel->CreateClientSharedImageInterface();
+    DCHECK(shared_image_interface_);
   }
 
   if (!InitScene())
@@ -279,9 +295,8 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   rect_ = clip_rect;
 
   if (shared_image_) {
-    DCHECK(context_provider_);
-    auto* sii = context_provider_->data->SharedImageInterface();
-    sii->DestroySharedImage(sync_token_, std::exchange(shared_image_, nullptr));
+    shared_image_->UpdateDestructionSyncToken(sync_token_);
+    shared_image_ = nullptr;
     sync_token_ = gpu::SyncToken();
   }
 
@@ -293,11 +308,11 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
     // We will draw to the SI via GL directly below and then send it off to the
     // display compositor later.
     shared_image_ = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
-        "TestLabel", gpu::kNullSurfaceHandle);
+        {viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+         "TestLabel"},
+        gpu::kNullSurfaceHandle);
     CHECK(shared_image_);
     gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -320,25 +335,34 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
 
     shared_bitmap_ = nullptr;
   } else {
-    viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
-    base::MappedReadOnlyRegion shm =
-        viz::bitmap_allocation::AllocateSharedBitmap(
-            gfx::Rect(rect_).size(), viz::SinglePlaneFormat::kRGBA_8888);
-    shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
-        id, std::move(shm), gfx::Rect(rect_).size(),
-        viz::SinglePlaneFormat::kRGBA_8888);
-    // The |shared_bitmap_|'s id will be registered when being given to the
-    // compositor.
+    if (shared_image_interface_) {
+      const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
+      auto shared_image_mapping = shared_image_interface_->CreateSharedImage(
+          {format, rect_.size(), gfx::ColorSpace(),
+           gpu::SHARED_IMAGE_USAGE_CPU_WRITE, "TestPluginSharedBitmap"});
+      shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
+          viz::SharedBitmapId(), base::ReadOnlySharedMemoryRegion(),
+          std::move(shared_image_mapping.mapping), gfx::Rect(rect_).size(),
+          format);
+      shared_image_ = std::move(shared_image_mapping.shared_image);
+      sync_token_ = shared_image_interface_->GenVerifiedSyncToken();
+    } else {
+      viz::SharedBitmapId id = viz::SharedBitmap::GenerateId();
+      base::MappedReadOnlyRegion shm =
+          viz::bitmap_allocation::AllocateSharedBitmap(
+              gfx::Rect(rect_).size(), viz::SinglePlaneFormat::kRGBA_8888);
+      shared_bitmap_ = base::MakeRefCounted<cc::CrossThreadSharedBitmap>(
+          id, std::move(shm.region), std::move(shm.mapping),
+          gfx::Rect(rect_).size(), viz::SinglePlaneFormat::kRGBA_8888);
 
+      // The |shared_bitmap_|'s id will be registered when being given to the
+      // compositor.
+    }
     DrawSceneSoftware(shared_bitmap_->memory());
   }
 
   content_changed_ = true;
   layer_->SetNeedsDisplay();
-}
-
-bool TestPlugin::IsPlaceholder() {
-  return false;
 }
 
 v8::Local<v8::Object> TestPlugin::V8ScriptableObject(v8::Isolate* isolate) {
@@ -357,12 +381,11 @@ void TestPlugin::ReleaseSharedMemory(
 
 // static
 void TestPlugin::ReleaseSharedImage(
-    scoped_refptr<ContextProviderRef> context_provider,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     bool lost) {
-  auto* sii = context_provider->data->SharedImageInterface();
-  sii->DestroySharedImage(sync_token, std::exchange(shared_image, nullptr));
+  shared_image->UpdateDestructionSyncToken(sync_token);
+  shared_image = nullptr;
 }
 
 bool TestPlugin::PrepareTransferableResource(
@@ -372,22 +395,31 @@ bool TestPlugin::PrepareTransferableResource(
   if (!content_changed_)
     return false;
   gfx::Size size(rect_.size());
-  if (shared_image_) {
+
+  if (shared_image_ && shared_bitmap_) {
+    *resource = viz::TransferableResource::MakeSoftwareSharedImage(
+        shared_image_, sync_token_, shared_image_->size(),
+        viz::SinglePlaneFormat::kBGRA_8888,
+        viz::TransferableResource::ResourceSource::kCanvas);
+    *release_callback =
+        base::BindOnce(&ReleaseSharedImage, std::move(shared_image_));
+    sync_token_ = gpu::SyncToken();
+  } else if (shared_image_) {
     *resource = viz::TransferableResource::MakeGpu(
         shared_image_, GL_TEXTURE_2D, sync_token_, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
     // We pass ownership of the shared image to the callback.
-    *release_callback = base::BindOnce(&ReleaseSharedImage, context_provider_,
+    *release_callback = base::BindOnce(&ReleaseSharedImage,
                                        std::exchange(shared_image_, nullptr));
     sync_token_ = gpu::SyncToken();
   } else if (shared_bitmap_) {
-    // The |bitmap_data_| is only used for a single compositor frame, so we know
-    // the SharedBitmapId in it was not registered yet.
+    // The |bitmap_data_| is only used for a single compositor frame, so we
+    // know the SharedBitmapId in it was not registered yet.
     cc::SharedBitmapIdRegistration registration =
         bitmap_registrar->RegisterSharedBitmapId(shared_bitmap_->id(),
                                                  shared_bitmap_);
 
-    *resource = viz::TransferableResource::MakeSoftware(
+    *resource = viz::TransferableResource::MakeSoftwareSharedBitmap(
         shared_bitmap_->id(), gpu::SyncToken(), shared_bitmap_->size(),
         viz::SinglePlaneFormat::kRGBA_8888);
     *release_callback =
@@ -411,7 +443,7 @@ TestPlugin::Primitive TestPlugin::ParsePrimitive(
   else if (string == *kPrimitiveTriangle)
     primitive = PrimitiveTriangle;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   return primitive;
 }
 
@@ -429,7 +461,7 @@ void TestPlugin::ParseColor(const blink::WebString& string, uint8_t color[3]) {
   else if (string == "blue")
     color[2] = 255;
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
 }
 
 float TestPlugin::ParseOpacity(const blink::WebString& string) {
@@ -515,9 +547,9 @@ void TestPlugin::DestroyScene() {
   }
 
   if (shared_image_) {
-    DCHECK(context_provider_);
-    auto* sii = context_provider_->data->SharedImageInterface();
-    sii->DestroySharedImage(sync_token_, std::exchange(shared_image_, nullptr));
+    shared_image_->UpdateDestructionSyncToken(sync_token_);
+    shared_image_ = nullptr;
+    sync_token_ = gpu::SyncToken();
   }
 }
 
@@ -679,7 +711,7 @@ bool TestPlugin::HandleDragStatusUpdate(blink::WebDragStatus drag_status,
       drag_status_name = "DragDrop";
       break;
     case blink::kWebDragStatusUnknown:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   test_runner_->PrintMessage(
       std::string("Plugin received event: ") + drag_status_name + "\n",

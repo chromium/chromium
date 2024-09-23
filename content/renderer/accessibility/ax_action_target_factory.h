@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "content/common/content_export.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 
 namespace blink {
@@ -19,17 +20,19 @@ class AXActionTarget;
 }
 
 namespace content {
-
-class PluginAXTreeSource;
+class PluginAXTreeActionTargetAdapter;
 
 class CONTENT_EXPORT AXActionTargetFactory {
  public:
-  // Given a node id, obtain a node from the appropriate tree source and wrap
-  // it in an abstraction for dispatching accessibility actions.
-  static std::unique_ptr<ui::AXActionTarget> CreateFromNodeId(
+  // Given a node id or an accessibility role, obtain a node from the
+  // appropriate tree source and wrap it in an abstraction for dispatching
+  // accessibility actions. In the case of a role, find the first node with the
+  // given role.
+  static std::unique_ptr<ui::AXActionTarget> CreateFromNodeIdOrRole(
       const blink::WebDocument& document,
-      content::PluginAXTreeSource* plugin_tree_source,
-      ui::AXNodeID node_id);
+      content::PluginAXTreeActionTargetAdapter* plugin_tree_adapter,
+      ui::AXNodeID node_id,
+      ax::mojom::Role role = ax::mojom::Role::kUnknown);
 };
 
 }  // namespace content

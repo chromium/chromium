@@ -28,7 +28,7 @@ template("ios_test_runner_xcuitest") {
                              "data_deps",
                            ])
 
-    # TODO(crbug.com/1056328) Because we change the target name, the subnodes
+    # TODO(crbug.com/40120290) Because we change the target name, the subnodes
     # are going to append with the _test in the naming, which won't be backwards
     # compatible during migration from iOS recipe to Chromium.
     output_name = "${_target_name}"

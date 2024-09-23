@@ -1,0 +1,38 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+import "skia/public/mojom/skcolor.mojom";
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface SearchBubblePageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<SearchBubblePage> page,
+                    pending_receiver<SearchBubblePageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface SearchBubblePageHandler {
+  // Notify the backend that the UI is ready to be shown.
+  ShowUI();
+  // Notify the backend that the bubble should be closed.
+  CloseUI();
+};
+
+// A simplified theme.
+struct SearchboxTheme {
+  skia.mojom.SkColor text_color;
+  skia.mojom.SkColor background_color;
+  // Color of Google logo. If not set show the logo multi-colored.
+  skia.mojom.SkColor? logo_color;
+  // True if the theme is dark (e.g. background color is dark).
+  bool is_dark;
+};
+
+// WebUI-side handler for requests from the browser.
+interface SearchBubblePage {
+  // Sets the current theme.
+  SetTheme(SearchboxTheme theme);
+};

@@ -22,6 +22,14 @@ FillLayout& FillLayout::SetMinimumSizeEnabled(bool minimum_size_enabled) {
   return *this;
 }
 
+FillLayout& FillLayout::SetIncludeInsets(bool include_insets) {
+  if (include_insets != include_insets_) {
+    include_insets_ = include_insets;
+    InvalidateHost(true);
+  }
+  return *this;
+}
+
 ProposedLayout FillLayout::CalculateProposedLayout(
     const SizeBounds& size_bounds) const {
   // Because we explicitly override GetPreferredSize and
@@ -59,7 +67,34 @@ gfx::Size FillLayout::GetPreferredSize(const View* host) const {
 
   // For backwards compatibility, do not include insets if there are no
   // children.
-  if (has_child) {
+  if (has_child && include_insets_) {
+    const gfx::Insets insets = host->GetInsets();
+    result.Enlarge(insets.width(), insets.height());
+  }
+
+  return result;
+}
+
+gfx::Size FillLayout::GetPreferredSize(const View* host,
+                                       const SizeBounds& available_size) const {
+  DCHECK_EQ(host_view(), host);
+
+  gfx::Size result;
+
+  bool has_child = false;
+  const SizeBounds new_available_size =
+      include_insets_ ? available_size.Inset(host->GetInsets())
+                      : available_size;
+  for (const View* child : host->children()) {
+    if (!child->GetProperty(kViewIgnoredByLayoutKey)) {
+      has_child = true;
+      result.SetToMax(child->GetPreferredSize(new_available_size));
+    }
+  }
+
+  // For backwards compatibility, do not include insets if there are no
+  // children.
+  if (has_child && include_insets_) {
     const gfx::Insets insets = host->GetInsets();
     result.Enlarge(insets.width(), insets.height());
   }
@@ -86,7 +121,7 @@ gfx::Size FillLayout::GetMinimumSize(const View* host) const {
 
   // For backwards compatibility, do not include insets if there are no
   // children.
-  if (has_child) {
+  if (has_child && include_insets_) {
     const gfx::Insets insets = host->GetInsets();
     result.Enlarge(insets.width(), insets.height());
   }

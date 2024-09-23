@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -49,13 +54,13 @@ class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
   int Connect(const net::IPEndPoint& remote_addr,
               mojom::UDPSocketOptionsPtr options,
               net::IPEndPoint* local_addr_out) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int Bind(const net::IPEndPoint& local_addr,
            mojom::UDPSocketOptionsPtr options,
            net::IPEndPoint* local_addr_out) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int SendTo(
@@ -64,27 +69,27 @@ class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
       const net::IPEndPoint& dest_addr,
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int SetBroadcast(bool broadcast) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int SetSendBufferSize(int send_buffer_size) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int SetReceiveBufferSize(int receive_buffer_size) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int JoinGroup(const net::IPAddress& group_address) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int LeaveGroup(const net::IPAddress& group_address) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int Write(
@@ -92,14 +97,14 @@ class SocketWrapperTestImpl : public UDPSocket::SocketWrapper {
       int buf_len,
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
   int RecvFrom(net::IOBuffer* buf,
                int buf_len,
                net::IPEndPoint* address,
                net::CompletionOnceCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return net::ERR_NOT_IMPLEMENTED;
   }
 };
@@ -288,7 +293,7 @@ TEST_F(UDPSocketTest, TestSendToWithConnect) {
   EXPECT_EQ(net::ERR_UNEXPECTED, result);
 }
 
-// TODO(crbug.com/1014916): These two tests are very flaky on Fuchsia.
+// TODO(crbug.com/40653437): These two tests are very flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_TestReadSendTo DISABLED_TestReadSendTo
 #define MAYBE_TestUnexpectedSequences DISABLED_TestUnexpectedSequences
@@ -631,7 +636,7 @@ TEST_F(UDPSocketTest, TestSendToInvalidAddress) {
 
   std::vector<uint8_t> test_msg{1};
   std::vector<uint8_t> invalid_ip_addr{127, 0, 0, 0, 1};
-  net::IPAddress ip_address(invalid_ip_addr.data(), invalid_ip_addr.size());
+  net::IPAddress ip_address(invalid_ip_addr);
   EXPECT_FALSE(ip_address.IsValid());
   net::IPEndPoint invalid_addr(ip_address, 53);
   server_socket->SendTo(

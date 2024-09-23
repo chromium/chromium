@@ -38,10 +38,8 @@ class FilterFactoryTest : public testing::Test {
     return FilterFactory::GetFilterTypeFromName(filter_name);
   }
 
-  std::unique_ptr<ui::InputFilter> CreateFilter(
-      const input_prediction::FilterType filter_type,
-      const input_prediction::PredictorType predictor_type) {
-    return factory_->CreateFilter(filter_type, predictor_type);
+  std::unique_ptr<ui::InputFilter> CreateFilter() {
+    return factory_->CreateFilter();
   }
 
   void CreateNewFactory(const base::Feature& feature,
@@ -68,17 +66,21 @@ TEST_F(FilterFactoryTest, TestGetFilterType) {
 }
 
 TEST_F(FilterFactoryTest, TestCreateFilter) {
-  EXPECT_STREQ(
-      ::features::kFilterNameEmpty,
-      CreateFilter(input_prediction::FilterType::kEmpty,
-                   input_prediction::PredictorType::kScrollPredictorTypeEmpty)
-          ->GetName());
+  CreateNewFactory(blink::features::kFilteringScrollPrediction,
+                   input_prediction::PredictorType::kScrollPredictorTypeEmpty,
+                   input_prediction::FilterType::kEmpty);
+  EXPECT_STREQ(::features::kFilterNameEmpty, CreateFilter()->GetName());
 
-  EXPECT_STREQ(
-      ::features::kFilterNameOneEuro,
-      CreateFilter(input_prediction::FilterType::kOneEuro,
-                   input_prediction::PredictorType::kScrollPredictorTypeEmpty)
-          ->GetName());
+  // Create filter again and get the same filter name.
+  EXPECT_STREQ(::features::kFilterNameEmpty, CreateFilter()->GetName());
+
+  CreateNewFactory(blink::features::kFilteringScrollPrediction,
+                   input_prediction::PredictorType::kScrollPredictorTypeEmpty,
+                   input_prediction::FilterType::kOneEuro);
+  EXPECT_STREQ(::features::kFilterNameOneEuro, CreateFilter()->GetName());
+
+  // Create filter again and get the same filter name.
+  EXPECT_STREQ(::features::kFilterNameOneEuro, CreateFilter()->GetName());
 }
 
 // Test there is no params available for OneEuro filter
@@ -121,18 +123,6 @@ TEST_F(FilterFactoryTest, TestOneEuroParams) {
                   &filter_params);
 
   EXPECT_TRUE(filter_params.empty());
-}
-
-TEST_F(FilterFactoryTest, TestGetFilter) {
-  EXPECT_STREQ(
-      ::features::kFilterNameEmpty,
-      CreateFilter(FilterType::kEmpty, PredictorType::kScrollPredictorTypeEmpty)
-          ->GetName());
-
-  EXPECT_STREQ(::features::kFilterNameOneEuro,
-               CreateFilter(FilterType::kOneEuro,
-                            PredictorType::kScrollPredictorTypeEmpty)
-                   ->GetName());
 }
 
 }  // namespace test

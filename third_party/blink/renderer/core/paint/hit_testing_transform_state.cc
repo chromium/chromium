@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/paint/hit_testing_transform_state.h"
 
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 
 namespace blink {

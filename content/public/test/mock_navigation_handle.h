@@ -39,7 +39,7 @@ class MockNavigationHandle : public NavigationHandle {
   ~MockNavigationHandle() override;
 
   // NavigationHandle implementation:
-  int64_t GetNavigationId() override { return navigation_id_; }
+  int64_t GetNavigationId() const override { return navigation_id_; }
   ukm::SourceId GetNextPageUkmSourceId() override {
     return ukm::ConvertToSourceId(navigation_id_,
                                   ukm::SourceIdObj::Type::NAVIGATION_ID);
@@ -83,7 +83,7 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsInOutermostMainFrame() override {
     return !GetParentFrameOrOuterDocument();
   }
-  MOCK_METHOD0(GetFrameTreeNodeId, int());
+  MOCK_METHOD0(GetFrameTreeNodeId, FrameTreeNodeId());
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   MOCK_METHOD(int, GetExpectedRenderProcessHostId, ());
   bool IsServedFromBackForwardCache() override {
@@ -116,6 +116,7 @@ class MockNavigationHandle : public NavigationHandle {
   }
   const GURL& GetBaseURLForDataURL() override { return base_url_for_data_url_; }
   MOCK_METHOD0(IsPost, bool());
+  MOCK_METHOD0(GetRequestMethod, std::string());
   const blink::mojom::Referrer& GetReferrer() override { return referrer_; }
   void SetReferrer(blink::mojom::ReferrerPtr referrer) override {
     referrer_ = *referrer;
@@ -129,6 +130,10 @@ class MockNavigationHandle : public NavigationHandle {
     return render_frame_host_;
   }
   bool IsSameDocument() const override { return is_same_document_; }
+  bool IsHistory() const override {
+    NOTIMPLEMENTED();
+    return false;
+  }
   MOCK_METHOD0(WasServerRedirect, bool());
   const std::vector<GURL>& GetRedirectChain() override {
     return redirect_chain_;
@@ -210,6 +215,7 @@ class MockNavigationHandle : public NavigationHandle {
               (const std::vector<std::string>& trials));
   MOCK_METHOD(void, SetIsOverridingUserAgent, (bool));
   MOCK_METHOD(void, SetSilentlyIgnoreErrors, ());
+  MOCK_METHOD(void, SetVisitedLinkSalt, (uint64_t));
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsInitiator, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsInherited, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsToCommit, ());
@@ -218,10 +224,14 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(bool, IsPdf, ());
   void WriteIntoTrace(perfetto::TracedProto<TraceProto>) const override {}
   MOCK_METHOD(bool, SetNavigationTimeout, (base::TimeDelta));
+  MOCK_METHOD(void, CancelNavigationTimeout, ());
   MOCK_METHOD(PreloadingTriggerType, GetPrerenderTriggerType, ());
   MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());
   MOCK_METHOD(void, SetAllowCookiesFromBrowser, (bool));
   MOCK_METHOD(void, GetResponseBody, (ResponseBodyCallback));
+  MOCK_METHOD(std::optional<NavigationDiscardReason>,
+              GetNavigationDiscardReason,
+              ());
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(const base::android::JavaRef<jobject>&,
@@ -250,6 +260,7 @@ class MockNavigationHandle : public NavigationHandle {
       override {
     return runtime_feature_state_context_;
   }
+  MOCK_METHOD(std::optional<url::Origin>, GetOriginToCommit, ());
   // End of NavigationHandle implementation.
 
   void set_url(const GURL& url) { url_ = url; }

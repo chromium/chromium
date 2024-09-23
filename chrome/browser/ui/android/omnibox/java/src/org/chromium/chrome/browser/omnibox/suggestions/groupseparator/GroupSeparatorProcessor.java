@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.groupseparator;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownItemProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -14,7 +16,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * A class that handles model and view creation for the suggestion group separator.
- * TODO(crbug/1518967): Move functionality to HeaderView and remove this component.
+ * TODO(crbug.com/41491951): Move functionality to HeaderView and remove this component.
  */
 public class GroupSeparatorProcessor implements DropdownItemProcessor {
     private final int mMinimumHeight;
@@ -41,7 +43,7 @@ public class GroupSeparatorProcessor implements DropdownItemProcessor {
     }
 
     @Override
-    public PropertyModel createModel() {
+    public @NonNull PropertyModel createModel() {
         return new PropertyModel(SuggestionCommonProperties.ALL_KEYS);
     }
 }

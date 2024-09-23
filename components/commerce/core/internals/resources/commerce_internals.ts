@@ -10,11 +10,20 @@ import {CommerceInternalsApiProxy} from './commerce_internals_api_proxy.js';
 
 const SUBSCRIPTION_ROWS =
     ['Cluster ID', 'Domain', 'Price', 'Previous Price', 'Product'];
+const PRODUCT_SPECIFICATIONS_ROWS =
+    ['ID', 'Creation Time', 'Update Time', 'Name', 'Title', 'URLs'];
 const CLUSTER_ID_COLUMN_IDX = 0;
 const DOMAIN_COLUMN_IDX = 1;
 const CURRENT_PRICE_COLUMN_IDX = 2;
 const PREVIOUS_PRICE_COLUMN_IDX = 3;
 const PRODUCT_COLUMN_IDX = 4;
+
+const UUID_IDX = 0;
+const CREATION_TIME_IDX = 1;
+const UPDATE_TIME_IDX = 2;
+const NAME_IDX = 3;
+const TITLE_IDX = 4;
+const URLS_IDX = 5;
 
 function getProxy(): CommerceInternalsApiProxy {
   return CommerceInternalsApiProxy.getInstance();
@@ -76,6 +85,16 @@ function initialize() {
         getProxy().resetPriceTrackingEmailPref();
       });
 
+  const resetMessage =
+      'All your product specification sets will be removed. Are you sure?';
+  getRequiredElement('reset_product_specifications_button')
+      .addEventListener('click', () => {
+        if (confirm(resetMessage)) {
+          getProxy().resetProductSpecifications();
+          location.reload();
+        }
+      });
+
   getProxy().getCallbackRouter().onShoppingListEligibilityChanged.addListener(
       (eligible: boolean) => {
         updateShoppingListEligibleStatus(eligible);
@@ -85,6 +104,7 @@ function initialize() {
     updateShoppingListEligibleStatus(eligible);
     if (eligible) {
       renderSubscriptions();
+      renderProductSpecifications();
     }
   });
 }
@@ -164,6 +184,72 @@ function renderSubscriptions() {
       }
     }
   });
+}
+
+function renderProductSpecifications() {
+  getProxy().getProductSpecificationsDetails().then(
+      ({productSpecificationsSet}) => {
+        if (!productSpecificationsSet || productSpecificationsSet.length == 0) {
+          return;
+        }
+
+        const productSpecificationsElement =
+            document.getElementById('product_specifications');
+        if (!productSpecificationsElement) {
+          return;
+        }
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tr = document.createElement('tr');
+
+        for (const colName of PRODUCT_SPECIFICATIONS_ROWS) {
+          const th = document.createElement('th');
+          th.innerText = colName;
+          th.setAttribute('align', 'left');
+          tr.appendChild(th);
+        }
+        thead.appendChild(tr);
+        table.appendChild(thead);
+
+        for (let i = 0; i < productSpecificationsSet.length; i++) {
+          const row = createProductSpecificationsRow();
+          const columns = row.getElementsByTagName('td');
+          columns[UUID_IDX]!.textContent = productSpecificationsSet[i]!.uuid;
+          columns[CREATION_TIME_IDX]!.textContent =
+              productSpecificationsSet[i]!.creationTime;
+          columns[UPDATE_TIME_IDX]!.textContent =
+              productSpecificationsSet[i]!.updateTime;
+          columns[NAME_IDX]!.textContent = productSpecificationsSet[i]!.name;
+          for (const urlInfo of productSpecificationsSet[i]!.urlInfos) {
+            const divTitle = document.createElement('div');
+            divTitle.textContent = urlInfo.title;
+            divTitle.classList.add('product-specs-title');
+            columns[TITLE_IDX]!.appendChild(divTitle);
+            const divUrl = document.createElement('div');
+            divUrl.textContent = urlInfo.url.url;
+            columns[URLS_IDX]!.appendChild(divUrl);
+          }
+          table.appendChild(row);
+        }
+        productSpecificationsElement.appendChild(table);
+      });
+}
+
+function createProductSpecificationsRow() {
+  const uuidCell = document.createElement('td');
+  const creationTimeCell = document.createElement('td');
+  const updateTimeCell = document.createElement('td');
+  const nameCell = document.createElement('td');
+  const titleCell = document.createElement('td');
+  const urlsCell = document.createElement('td');
+  const row = document.createElement('tr');
+  for (const cell
+           of [uuidCell, creationTimeCell, updateTimeCell, nameCell, titleCell,
+               urlsCell]) {
+    cell.vAlign = 'top';
+    row.appendChild(cell);
+  }
+  return row;
 }
 
 function createRow() {

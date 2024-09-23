@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -30,16 +31,17 @@ namespace {
 const CGFloat kTrailingButtonPointSize = 17.0f;
 /// Maximum number of lines displayed for search suggestions.
 const NSInteger kWrappingSuggestNumberOfLines = 2;
-/// Offset to align the suggestions with the omnibox leading image.
-const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 
 }  // namespace
+
+NSString* const OmniboxPopupRowCellReuseIdentifier = @"OmniboxPopupRowCell";
+const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
 /// Redefines "Content View interface" as readwrite.
 @interface OmniboxPopupRowContentConfiguration ()
 
 // Background.
-@property(nonatomic, assign, readwrite) BOOL showSelectedBackgroundView;
+@property(nonatomic, assign, readwrite) BOOL isBackgroundHighlighted;
 
 // Leading Icon.
 @property(nonatomic, strong, readwrite) id<OmniboxIcon> leadingIcon;
@@ -73,6 +75,19 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
 /// Layout this cell with the given data before displaying.
 + (instancetype)cellConfiguration {
   return [[OmniboxPopupRowContentConfiguration alloc] init];
+}
+
++ (NSAttributedString*)highlightedAttributedStringWithString:
+    (NSAttributedString*)string {
+  if (!string.length) {
+    return nil;
+  }
+  NSMutableAttributedString* mutableString =
+      [[NSMutableAttributedString alloc] initWithAttributedString:string];
+  [mutableString addAttribute:NSForegroundColorAttributeName
+                        value:[UIColor whiteColor]
+                        range:NSMakeRange(0, string.length)];
+  return mutableString;
 }
 
 - (void)setSuggestion:(id<AutocompleteSuggestion>)suggestion {
@@ -116,11 +131,9 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
   }
 
   if (_trailingIcon) {
-    // Starting from iOS 16 `imageWithHorizontallyFlippedOrientation` is
-    // flipping the icon automatically when the UI is RTL/LTR.
-    if (@available(iOS 16, *)) {
-      _trailingIcon = [_trailingIcon imageWithHorizontallyFlippedOrientation];
-    }
+    // `imageWithHorizontallyFlippedOrientation` is flipping the icon
+    // automatically when the UI is RTL/LTR.
+    _trailingIcon = [_trailingIcon imageWithHorizontallyFlippedOrientation];
     _trailingIcon = [_trailingIcon
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   }
@@ -146,14 +159,13 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
   configuration.indexPath = self.indexPath;
   configuration.showSeparator = self.showSeparator;
   configuration.semanticContentAttribute = self.semanticContentAttribute;
-  configuration.omniboxLayoutGuide = self.omniboxLayoutGuide;
   configuration.faviconRetriever = self.faviconRetriever;
   configuration.imageRetriever = self.imageRetriever;
 
   // Setting `suggestion` already sets some properties in "Content View
   // interface". Update the properties that can change with
   // `updatedConfigurationForState`.
-  configuration.showSelectedBackgroundView = self.showSelectedBackgroundView;
+  configuration.isBackgroundHighlighted = self.isBackgroundHighlighted;
   configuration.leadingIconHighlighted = self.leadingIconHighlighted;
   configuration.primaryText = self.primaryText;
   configuration.secondaryText = self.secondaryText;
@@ -178,68 +190,30 @@ const CGFloat kOmniboxLayoutGuideLeadingOffset = -10.0f;
   UIViewConfigurationState* viewState = state;
   // Highlight.
   const BOOL allowHighlight = viewState.highlighted || viewState.selected;
-  configuration.showSelectedBackgroundView = allowHighlight;
+  configuration.isBackgroundHighlighted = allowHighlight;
   configuration.leadingIconHighlighted = allowHighlight;
   configuration.primaryText =
       allowHighlight
-          ? [self highlightedAttributedStringWithString:_suggestion.text]
+          ? [self.class highlightedAttributedStringWithString:_suggestion.text]
           : _suggestion.text;
   configuration.secondaryText =
       allowHighlight
-          ? [self highlightedAttributedStringWithString:_suggestion.detailText]
+          ? [self.class highlightedAttributedStringWithString:_suggestion
+                                                                  .detailText]
           : _suggestion.detailText;
   configuration.trailingIconTintColor =
       allowHighlight ? UIColor.whiteColor : [UIColor colorNamed:kBlueColor];
 
-  // Constraint to omnibox layout guide.
-  if (_omniboxLayoutGuide && CanUseOmniboxLayoutGuide()) {
-    if (!ShouldApplyOmniboxLayoutGuide(state.traitCollection)) {
-      configuration.directionalLayoutMargin = NSDirectionalEdgeInsetsZero;
-    } else {
-      CGRect omniboxFrame = _omniboxLayoutGuide.layoutFrame;
-      CGRect popupFrame = _omniboxLayoutGuide.owningView.bounds;
-      UIEdgeInsets safeAreaInsets =
-          _omniboxLayoutGuide.owningView.safeAreaInsets;
-      CGFloat leftSpace = CGRectGetMinX(omniboxFrame) -
-                          CGRectGetMinX(popupFrame) - safeAreaInsets.left;
-      CGFloat rightSpace = CGRectGetMaxX(popupFrame) -
-                           CGRectGetMaxX(omniboxFrame) - safeAreaInsets.right;
-      BOOL omniboxIsRTL =
-          [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
-                      _semanticContentAttribute] ==
-          UIUserInterfaceLayoutDirectionRightToLeft;
-      CGFloat spacing = omniboxIsRTL ? rightSpace : leftSpace;
-      CGFloat leadingMargin = spacing + kOmniboxLayoutGuideLeadingOffset;
-      configuration.directionalLayoutMargin =
-          NSDirectionalEdgeInsetsMake(0, leadingMargin, 0, 0);
-    }
-  }
-
   // Update margins for popout omnibox. Popout omnibox is only available on
   // regular size class.
   configuration.isPopoutOmnibox =
-      IsIpadPopoutOmniboxEnabled() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       IsRegularXRegularSizeClass(state.traitCollection);
 
   return configuration;
 }
 
 #pragma mark - Private
-
-/// Returns the input string but painted white when the blue and white
-/// highlighting is enabled in pedals. Returns the original string otherwise.
-- (NSAttributedString*)highlightedAttributedStringWithString:
-    (NSAttributedString*)string {
-  if (!string.length) {
-    return nil;
-  }
-  NSMutableAttributedString* mutableString =
-      [[NSMutableAttributedString alloc] initWithAttributedString:string];
-  [mutableString addAttribute:NSForegroundColorAttributeName
-                        value:[UIColor whiteColor]
-                        range:NSMakeRange(0, string.length)];
-  return mutableString;
-}
 
 /// Handles tap on the trailing button.
 - (void)trailingButtonTapped {

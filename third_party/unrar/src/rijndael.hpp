@@ -2,11 +2,7 @@
 #define _RIJNDAEL_H_
 
 /**************************************************************************
- * This code is based on Szymon Stefanek AES implementation:              *
- * http://www.esat.kuleuven.ac.be/~rijmen/rijndael/rijndael-cpplib.tar.gz *
- *                                                                        *
- * Dynamic tables generation is based on the Brian Gladman's work:        *
- * http://fp.gladman.plus.com/cryptography_technology/rijndael            *
+ * This code is based on Szymon Stefanek public domain AES implementation *
  **************************************************************************/
 
 #define _MAX_KEY_COLUMNS (256/32)
@@ -16,12 +12,31 @@
 class Rijndael
 { 
   private:
+
 #ifdef USE_SSE
+#ifdef __GNUC__
+    __attribute__((target("aes")))
+#endif
     void blockEncryptSSE(const byte *input,size_t numBlocks,byte *outBuffer);
+#ifdef __GNUC__
+    __attribute__((target("aes")))
+#endif
     void blockDecryptSSE(const byte *input, size_t numBlocks, byte *outBuffer);
 
     bool AES_NI;
 #endif
+
+#ifdef USE_NEON_AES
+    // In Android we must specify -march=armv8-a+crypto compiler switch
+    // to support Neon AES commands, "crypto" attribute seems to be optional.
+    __attribute__((target("+crypto")))
+    void blockEncryptNeon(const byte *input,size_t numBlocks,byte *outBuffer);
+    __attribute__((target("+crypto")))
+    void blockDecryptNeon(const byte *input, size_t numBlocks, byte *outBuffer);
+
+    bool AES_Neon;
+#endif
+
     void keySched(byte key[_MAX_KEY_COLUMNS][4]);
     void keyEncToDec();
     void GenerateTables();

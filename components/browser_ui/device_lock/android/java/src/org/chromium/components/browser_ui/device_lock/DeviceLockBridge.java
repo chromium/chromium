@@ -41,7 +41,8 @@ public class DeviceLockBridge {
      * Launches DeviceLockActivity (explainer dialog and PIN/password setup flow) before allowing
      * users to continue if the user's device is not secure (ex: no PIN or password set).
      *
-     * TODO(crbug/1474036): Handle edge case where Chrome is killed when switching to OS PIN flow.
+     * <p>TODO(crbug.com/40927226): Handle edge case where Chrome is killed when switching to OS PIN
+     * flow.
      */
     @CalledByNative
     private void launchDeviceLockUiBeforeRunningCallback(@NonNull WindowAndroid windowAndroid) {

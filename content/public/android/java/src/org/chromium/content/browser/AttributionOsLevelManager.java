@@ -12,8 +12,10 @@ import android.os.Process;
 import android.view.MotionEvent;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.OptIn;
 import androidx.privacysandbox.ads.adservices.java.measurement.MeasurementManagerFutures;
 import androidx.privacysandbox.ads.adservices.measurement.DeletionRequest;
+import androidx.privacysandbox.ads.adservices.measurement.SourceRegistrationRequest;
 import androidx.privacysandbox.ads.adservices.measurement.WebSourceParams;
 import androidx.privacysandbox.ads.adservices.measurement.WebSourceRegistrationRequest;
 import androidx.privacysandbox.ads.adservices.measurement.WebTriggerParams;
@@ -26,6 +28,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -38,11 +41,12 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
 
@@ -96,6 +100,16 @@ public class AttributionOsLevelManager {
         OperationResult.ERROR_BACKGROUND_CALLER,
         OperationResult.ERROR_VERSION_UNSUPPORTED,
         OperationResult.ERROR_PERMISSION_UNGRANTED,
+        OperationResult.ERROR_SERVICE_UNAVAILABLE,
+        OperationResult.ERROR_API_RATE_LIMIT_EXCEEDED,
+        OperationResult.ERROR_SERVER_RATE_LIMIT_EXCEEDED,
+        OperationResult.ERROR_CALLER_NOT_ALLOWED_TO_CROSS_USER_BOUNDARIES,
+        OperationResult.ERROR_CALLER_NOT_ALLOWED_ON_BEHALF,
+        OperationResult.ERROR_PERMISSION_NOT_REQUESTED,
+        OperationResult.ERROR_CALLER_NOT_ALLOWED,
+        OperationResult.ERROR_ENCRYPTION_FAILURE,
+        OperationResult.ERROR_SERVICE_NOT_FOUND,
+        OperationResult.ERROR_INVALID_OBJECT,
         OperationResult.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -112,26 +126,72 @@ public class AttributionOsLevelManager {
         int ERROR_BACKGROUND_CALLER = 9;
         int ERROR_VERSION_UNSUPPORTED = 10;
         int ERROR_PERMISSION_UNGRANTED = 11;
-        int COUNT = 12;
+        int ERROR_SERVICE_UNAVAILABLE = 12;
+        int ERROR_API_RATE_LIMIT_EXCEEDED = 13;
+        int ERROR_SERVER_RATE_LIMIT_EXCEEDED = 14;
+        int ERROR_CALLER_NOT_ALLOWED_TO_CROSS_USER_BOUNDARIES = 15;
+        int ERROR_CALLER_NOT_ALLOWED_ON_BEHALF = 16;
+        int ERROR_PERMISSION_NOT_REQUESTED = 17;
+        int ERROR_CALLER_NOT_ALLOWED = 18;
+        int ERROR_ENCRYPTION_FAILURE = 19;
+        int ERROR_SERVICE_NOT_FOUND = 20;
+        int ERROR_INVALID_OBJECT = 21;
+        int COUNT = 22;
     }
 
     private static boolean supportsAttribution() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
     }
 
+    private static @OperationResult int getOperationResultFromMessage(String message) {
+        if (message == null) {
+            return OperationResult.ERROR_UNKNOWN;
+        } else {
+            String lowerMessage = message.toLowerCase(Locale.US);
+            if (lowerMessage.contains("background")) {
+                return OperationResult.ERROR_BACKGROUND_CALLER;
+            } else if (lowerMessage.contains("unable to find the service")) {
+                return OperationResult.ERROR_SERVICE_NOT_FOUND;
+            } else if (lowerMessage.contains("service is not available")) {
+                return OperationResult.ERROR_SERVICE_UNAVAILABLE;
+            } else if (lowerMessage.contains("api rate limit exceeded")) {
+                return OperationResult.ERROR_API_RATE_LIMIT_EXCEEDED;
+            } else if (lowerMessage.contains("server rate limit exceeded")) {
+                return OperationResult.ERROR_SERVER_RATE_LIMIT_EXCEEDED;
+            } else if (lowerMessage.contains(
+                    "caller is not authorized to access information from another user")) {
+                return OperationResult.ERROR_CALLER_NOT_ALLOWED_TO_CROSS_USER_BOUNDARIES;
+            } else if (lowerMessage.contains(
+                    "caller is not allowed to perform this operation on behalf of the given"
+                            + " package")) {
+                return OperationResult.ERROR_CALLER_NOT_ALLOWED_ON_BEHALF;
+            } else if (lowerMessage.contains("permission was not requested")) {
+                return OperationResult.ERROR_PERMISSION_NOT_REQUESTED;
+            } else if (lowerMessage.contains("caller is not allowed")) {
+                return OperationResult.ERROR_CALLER_NOT_ALLOWED;
+            } else if (lowerMessage.contains("api time out")) {
+                return OperationResult.ERROR_TIMEOUT;
+            } else if (lowerMessage.contains("failed to encrypt responses")) {
+                return OperationResult.ERROR_ENCRYPTION_FAILURE;
+            } else if (lowerMessage.contains(
+                    "service received an invalid object from the server")) {
+                return OperationResult.ERROR_INVALID_OBJECT;
+            } else {
+                return OperationResult.ERROR_UNKNOWN;
+            }
+        }
+    }
+
     private static @OperationResult int convertToOperationResult(Throwable thrown) {
-        if (thrown instanceof IllegalArgumentException) {
+        @OperationResult int result = getOperationResultFromMessage(thrown.getMessage());
+        if (result != OperationResult.ERROR_UNKNOWN) {
+            return result;
+        } else if (thrown instanceof IllegalArgumentException) {
             return OperationResult.ERROR_ILLEGAL_ARGUMENT;
         } else if (thrown instanceof IOException) {
             return OperationResult.ERROR_IO;
         } else if (thrown instanceof IllegalStateException) {
-            // The Android API doesn't break out this error as a separate exception so we
-            // are forced to inspect the message for now.
-            if (thrown.getMessage().toLowerCase(Locale.US).contains("background")) {
-                return OperationResult.ERROR_BACKGROUND_CALLER;
-            } else {
-                return OperationResult.ERROR_ILLEGAL_STATE;
-            }
+            return OperationResult.ERROR_ILLEGAL_STATE;
         } else if (thrown instanceof SecurityException) {
             return OperationResult.ERROR_SECURITY;
         } else if (thrown instanceof TimeoutException) {
@@ -139,6 +199,8 @@ public class AttributionOsLevelManager {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
                 && thrown instanceof LimitExceededException) {
             return OperationResult.ERROR_LIMIT_EXCEEDED;
+        } else if (thrown instanceof InvalidObjectException) {
+            return OperationResult.ERROR_INVALID_OBJECT;
         } else {
             return OperationResult.ERROR_UNKNOWN;
         }
@@ -171,7 +233,7 @@ public class AttributionOsLevelManager {
         assert suffix.length() > 0;
 
         RecordHistogram.recordEnumeratedHistogram(
-                "Conversions.AndroidOperationResult." + suffix, result, OperationResult.COUNT);
+                "Conversions.AndroidOperationResult2." + suffix, result, OperationResult.COUNT);
     }
 
     @CalledByNative
@@ -231,17 +293,30 @@ public class AttributionOsLevelManager {
                 ContextUtils.getApplicationContext().getMainExecutor());
     }
 
+    @CalledByNative
+    private static List<WebSourceParams> createWebSourceParamsList(int size) {
+        if (!supportsAttribution()) {
+            return null;
+        }
+        return new ArrayList<WebSourceParams>(size);
+    }
+
+    @CalledByNative
+    private static void addWebSourceParams(
+            List<WebSourceParams> list, GURL registrationUrl, boolean isDebugKeyAllowed) {
+        if (!supportsAttribution()) {
+            return;
+        }
+        list.add(new WebSourceParams(Uri.parse(registrationUrl.getSpec()), isDebugKeyAllowed));
+    }
+
     /**
      * Registers a web attribution source with native, see `registerWebSourceAsync()`:
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
      */
     @CalledByNative
     private void registerWebAttributionSource(
-            int requestId,
-            GURL registrationUrl,
-            GURL topLevelOrigin,
-            boolean isDebugKeyAllowed,
-            MotionEvent event) {
+            int requestId, List<WebSourceParams> sources, GURL topLevelOrigin, MotionEvent event) {
         if (!supportsAttribution()) {
             onRegistrationCompleted(
                     requestId,
@@ -258,10 +333,7 @@ public class AttributionOsLevelManager {
         ListenableFuture<?> future =
                 mm.registerWebSourceAsync(
                         new WebSourceRegistrationRequest(
-                                Arrays.asList(
-                                        new WebSourceParams(
-                                                Uri.parse(registrationUrl.getSpec()),
-                                                isDebugKeyAllowed)),
+                                sources,
                                 Uri.parse(topLevelOrigin.getSpec()),
                                 /* inputEvent= */ event,
                                 /* appDestination= */ null,
@@ -274,8 +346,13 @@ public class AttributionOsLevelManager {
      * Registers an attribution source with native, see `registerSourceAsync()`:
      * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
      */
+    @OptIn(
+            markerClass =
+                    androidx.privacysandbox.ads.adservices.common.ExperimentalFeatures
+                            .RegisterSourceOptIn.class)
     @CalledByNative
-    private void registerAttributionSource(int requestId, GURL registrationUrl, MotionEvent event) {
+    private void registerAttributionSource(
+            int requestId, @JniType("std::vector") GURL[] registrationUrls, MotionEvent event) {
         if (!supportsAttribution()) {
             onRegistrationCompleted(
                     requestId,
@@ -289,9 +366,31 @@ public class AttributionOsLevelManager {
                     requestId, OperationType.REGISTER_SOURCE, OperationResult.ERROR_INTERNAL);
             return;
         }
+
+        ArrayList<Uri> registrationUris = new ArrayList<Uri>(registrationUrls.length);
+        for (GURL registrationUrl : registrationUrls) {
+            registrationUris.add(Uri.parse(registrationUrl.getSpec()));
+        }
         ListenableFuture<?> future =
-                mm.registerSourceAsync(Uri.parse(registrationUrl.getSpec()), event);
+                mm.registerSourceAsync(new SourceRegistrationRequest(registrationUris, event));
         addRegistrationFutureCallback(requestId, OperationType.REGISTER_SOURCE, future);
+    }
+
+    @CalledByNative
+    private static List<WebTriggerParams> createWebTriggerParamsList(int size) {
+        if (!supportsAttribution()) {
+            return null;
+        }
+        return new ArrayList<WebTriggerParams>(size);
+    }
+
+    @CalledByNative
+    private static void addWebTriggerParams(
+            List<WebTriggerParams> list, GURL registrationUrl, boolean isDebugKeyAllowed) {
+        if (!supportsAttribution()) {
+            return;
+        }
+        list.add(new WebTriggerParams(Uri.parse(registrationUrl.getSpec()), isDebugKeyAllowed));
     }
 
     /**
@@ -300,7 +399,7 @@ public class AttributionOsLevelManager {
      */
     @CalledByNative
     private void registerWebAttributionTrigger(
-            int requestId, GURL registrationUrl, GURL topLevelOrigin, boolean isDebugKeyAllowed) {
+            int requestId, List<WebTriggerParams> triggers, GURL topLevelOrigin) {
         if (!supportsAttribution()) {
             onRegistrationCompleted(
                     requestId,
@@ -318,11 +417,7 @@ public class AttributionOsLevelManager {
         ListenableFuture<?> future =
                 mm.registerWebTriggerAsync(
                         new WebTriggerRegistrationRequest(
-                                Arrays.asList(
-                                        new WebTriggerParams(
-                                                Uri.parse(registrationUrl.getSpec()),
-                                                isDebugKeyAllowed)),
-                                Uri.parse(topLevelOrigin.getSpec())));
+                                triggers, Uri.parse(topLevelOrigin.getSpec())));
         addRegistrationFutureCallback(requestId, OperationType.REGISTER_WEB_TRIGGER, future);
     }
 
@@ -365,8 +460,8 @@ public class AttributionOsLevelManager {
             int requestId,
             long startMs,
             long endMs,
-            GURL[] origins,
-            String[] domains,
+            @JniType("std::vector") GURL[] origins,
+            @JniType("std::vector<std::string>") String[] domains,
             int deletionMode,
             int matchBehavior) {
         if (!supportsAttribution()) {

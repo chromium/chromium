@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_RECORDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -46,6 +47,10 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   ~MemoryManagedPaintRecorder();
 
   void SetClient(Client* client);
+
+  // See comments around `RecordPaintCanvas::maybe_draw_lines_as_paths_` for
+  // details.
+  void DisableLineDrawingAsPaths();
 
   // Releases the main recording, leaving the side recording untouched.
   // This effectively flushes the part of the recording that can be flushed,
@@ -68,8 +73,8 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   void RestartRecording();
 
   bool HasRecordedDrawOps() const {
-    return main_canvas_.HasRecordedDrawOps() +
-           (side_canvas_ ? side_canvas_->HasRecordedDrawOps() : 0);
+    return main_canvas_.HasRecordedDrawOps() ||
+           (side_canvas_ && side_canvas_->HasRecordedDrawOps());
   }
   bool HasReleasableDrawOps() const {
     return main_canvas_.HasRecordedDrawOps();
@@ -117,7 +122,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
  private:
   // Pointer to the client interested in events from this
   // `MemoryManagedPaintRecorder`. If `nullptr`, notifications are disabled.
-  raw_ptr<Client, ExperimentalRenderer> client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   const gfx::Size size_;
 
@@ -133,8 +138,8 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
 
   // Points to the current canvas we are recording into, either `main_canvas_`
   // or `side_canvas_`.
-  raw_ptr<MemoryManagedPaintCanvas, ExperimentalRenderer> current_canvas_ =
-      &main_canvas_;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
+  RAW_PTR_EXCLUSION MemoryManagedPaintCanvas* current_canvas_ = &main_canvas_;
 };
 
 }  // namespace blink

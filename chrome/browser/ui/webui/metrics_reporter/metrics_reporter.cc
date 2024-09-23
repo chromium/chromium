@@ -62,13 +62,12 @@ void MetricsReporter::HasMark(const std::string& name,
     return;
   }
 
-  page_->OnGetMark(
-      name,
-      base::BindOnce(
-          [](HasMarkCallback callback, std::optional<base::TimeDelta> time) {
-            std::move(callback).Run(time.has_value() ? true : false);
-          },
-          std::move(callback)));
+  page_->OnGetMark(name, base::BindOnce(
+                             [](HasMarkCallback callback,
+                                std::optional<base::TimeDelta> time) {
+                               std::move(callback).Run(time.has_value());
+                             },
+                             std::move(callback)));
 }
 
 bool MetricsReporter::HasLocalMark(const std::string& name) {

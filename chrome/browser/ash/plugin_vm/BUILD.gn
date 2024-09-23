@@ -1,0 +1,185 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("plugin_vm") {
+  sources = [
+    "plugin_vm_diagnostics.cc",
+    "plugin_vm_diagnostics.h",
+    "plugin_vm_drive_image_download_service.cc",
+    "plugin_vm_drive_image_download_service.h",
+    "plugin_vm_engagement_metrics_service.cc",
+    "plugin_vm_engagement_metrics_service.h",
+    "plugin_vm_features.cc",
+    "plugin_vm_features.h",
+    "plugin_vm_files.cc",
+    "plugin_vm_files.h",
+    "plugin_vm_image_download_client.cc",
+    "plugin_vm_image_download_client.h",
+    "plugin_vm_installer.cc",
+    "plugin_vm_installer.h",
+    "plugin_vm_installer_factory.cc",
+    "plugin_vm_installer_factory.h",
+    "plugin_vm_license_checker.cc",
+    "plugin_vm_license_checker.h",
+    "plugin_vm_manager.h",
+    "plugin_vm_manager_factory.cc",
+    "plugin_vm_manager_factory.h",
+    "plugin_vm_manager_impl.cc",
+    "plugin_vm_manager_impl.h",
+    "plugin_vm_metrics_util.cc",
+    "plugin_vm_metrics_util.h",
+    "plugin_vm_pref_names.cc",
+    "plugin_vm_pref_names.h",
+    "plugin_vm_uninstaller_notification.cc",
+    "plugin_vm_uninstaller_notification.h",
+    "plugin_vm_util.cc",
+    "plugin_vm_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/guest_os:guest_os_diagnostics_mojom",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/dbus/vm_plugin_dispatcher",
+    "//chromeos/ash/components/dbus/vm_plugin_dispatcher:proto",
+    "//chromeos/ash/components/settings",
+    "//components/download/public/background_service:public",
+    "//components/guest_os",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//crypto",
+    "//google_apis",
+    "//google_apis/common",
+    "//google_apis/drive",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation",
+    "//services/device/public/mojom",
+    "//services/network/public/cpp",
+    "//ui/message_center/public/cpp",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/guest_os/virtual_machines",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles",
+    "//chrome/common:chrome_features",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/constants",
+    "//components/drive",
+    "//components/exo",
+    "//components/guest_os:prefs",
+    "//components/keyed_service/content",
+    "//components/signin/public/base",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//net",
+    "//services/network/public/mojom:url_loader_base",
+    "//third_party/protobuf:protobuf_lite",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
+    "//url",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/file_manager" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_plugin_vm_features.cc",
+    "fake_plugin_vm_features.h",
+    "mock_plugin_vm_manager.cc",
+    "mock_plugin_vm_manager.h",
+    "plugin_vm_test_helper.cc",
+    "plugin_vm_test_helper.h",
+  ]
+
+  public_deps = [
+    ":plugin_vm",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus:vm_applications_apps_proto",
+    "//chromeos/ash/components/dbus/concierge",
+    "//components/user_manager",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/account_id",
+    "//components/prefs",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "plugin_vm_features_unittest.cc",
+    "plugin_vm_files_unittest.cc",
+    "plugin_vm_installer_unittest.cc",
+    "plugin_vm_manager_impl_unittest.cc",
+    "plugin_vm_util_unittest.cc",
+  ]
+
+  deps = [
+    ":plugin_vm",
+    ":test_support",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/chunneld",
+    "//chromeos/ash/components/dbus/cicerone",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ash/components/dbus/spaced",
+    "//chromeos/ash/components/dbus/vm_plugin_dispatcher",
+    "//components/download/public/background_service/test:test_support",
+    "//components/drive:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

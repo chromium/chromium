@@ -289,7 +289,7 @@ void BackgroundFetchContext::DidGetMatchingRequests(
   if (error != blink::mojom::BackgroundFetchError::NONE)
     DCHECK(settled_fetches.empty());
 
-  // TODO(crbug.com/850512): We don't need to call this for requests that're
+  // TODO(crbug.com/40579759): We don't need to call this for requests that're
   // complete.
   // AddObservedUrl() is a no-op in those cases, but we can skip calling it.
   for (const auto& fetch : settled_fetches)

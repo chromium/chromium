@@ -132,7 +132,7 @@ void AutofillProfileSyncPerfTest::UpdateProfiles(int profile) {
     guids.push_back(autofill_profile->guid());
   }
   for (const std::string& guid : guids) {
-    UpdateProfile(profile, guid, autofill::AutofillType(autofill::NAME_FIRST),
+    UpdateProfile(profile, guid, autofill::NAME_FIRST,
                   base::UTF8ToUTF16(NextName()));
   }
 }

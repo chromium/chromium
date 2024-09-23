@@ -30,6 +30,7 @@
 #include "net/reporting/reporting_delegate.h"
 #include "net/reporting/reporting_endpoint_manager.h"
 #include "net/reporting/reporting_report.h"
+#include "net/reporting/reporting_target_type.h"
 #include "net/reporting/reporting_uploader.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -96,12 +97,14 @@ class Delivery {
            const NetworkAnonymizationKey& network_anonymization_key,
            const url::Origin& origin,
            const GURL& endpoint_url,
-           const std::optional<base::UnguessableToken> reporting_source)
+           const std::optional<base::UnguessableToken> reporting_source,
+           ReportingTargetType target_type)
         : isolation_info(isolation_info),
           network_anonymization_key(network_anonymization_key),
           origin(origin),
           endpoint_url(endpoint_url),
-          reporting_source(reporting_source) {
+          reporting_source(reporting_source),
+          target_type(target_type) {
       DCHECK(network_anonymization_key.IsEmpty() ||
              network_anonymization_key ==
                  isolation_info.network_anonymization_key());
@@ -114,9 +117,10 @@ class Delivery {
       // should not need this (but it doesn't hurt). We can remove that as a
       // comparison key when V0 reporting endpoints are removed.
       return std::tie(network_anonymization_key, origin, endpoint_url,
-                      reporting_source) <
+                      reporting_source, target_type) <
              std::tie(other.network_anonymization_key, other.origin,
-                      other.endpoint_url, other.reporting_source);
+                      other.endpoint_url, other.reporting_source,
+                      other.target_type);
     }
 
     IsolationInfo isolation_info;
@@ -124,32 +128,62 @@ class Delivery {
     url::Origin origin;
     GURL endpoint_url;
     std::optional<base::UnguessableToken> reporting_source;
+    ReportingTargetType target_type;
   };
 
   explicit Delivery(const Target& target) : target_(target) {}
 
   ~Delivery() = default;
 
-  // Add the reports in [reports_begin, reports_end) into this delivery.
-  // Modify the report counter for the |endpoint| to which this delivery is
-  // destined.
-  void AddReports(const ReportingEndpoint& endpoint,
-                  const ReportList::const_iterator reports_begin,
-                  const ReportList::const_iterator reports_end) {
+  // Add the developer reports in [reports_begin, reports_end) into this
+  // delivery. Modify the report counter for the |endpoint| to which this
+  // delivery is destined.
+  void AddDeveloperReports(const ReportingEndpoint& endpoint,
+                           const ReportList::const_iterator reports_begin,
+                           const ReportList::const_iterator reports_end) {
     DCHECK(reports_begin != reports_end);
     DCHECK(endpoint.group_key.network_anonymization_key ==
            network_anonymization_key());
-    DCHECK(IsSubdomainOf(target_.origin.host() /* subdomain */,
-                         endpoint.group_key.origin.host() /* superdomain */));
-    for (auto it = reports_begin; it != reports_end; ++it) {
-      DCHECK_EQ((*reports_begin)->GetGroupKey(), (*it)->GetGroupKey());
-      DCHECK((*it)->network_anonymization_key == network_anonymization_key());
-      DCHECK_EQ(url::Origin::Create((*it)->url), target_.origin);
-      DCHECK_EQ((*it)->group, endpoint.group_key.group_name);
+    DCHECK(endpoint.group_key.origin.has_value());
+    DCHECK(IsSubdomainOf(
+        target_.origin.host() /* subdomain */,
+        endpoint.group_key.origin.value().host() /* superdomain */));
+    DCHECK_EQ(ReportingTargetType::kDeveloper, target_.target_type);
+    DCHECK_EQ(endpoint.group_key.target_type, target_.target_type);
+    for (auto report_it = reports_begin; report_it != reports_end;
+         ++report_it) {
+      DCHECK_EQ((*reports_begin)->GetGroupKey(), (*report_it)->GetGroupKey());
+      DCHECK((*report_it)->network_anonymization_key ==
+             network_anonymization_key());
+      DCHECK_EQ(url::Origin::Create((*report_it)->url), target_.origin);
+      DCHECK_EQ((*report_it)->group, endpoint.group_key.group_name);
       // Report origin is equal to, or a subdomain of, the endpoint
       // configuration's origin.
-      DCHECK(IsSubdomainOf((*it)->url.host_piece() /* subdomain */,
-                           endpoint.group_key.origin.host() /* superdomain */));
+      DCHECK(IsSubdomainOf(
+          (*report_it)->url.host_piece() /* subdomain */,
+          endpoint.group_key.origin.value().host() /* superdomain */));
+      DCHECK_EQ((*report_it)->target_type, target_.target_type);
+    }
+
+    reports_per_group_[endpoint.group_key] +=
+        std::distance(reports_begin, reports_end);
+    reports_.insert(reports_.end(), reports_begin, reports_end);
+  }
+
+  // Add the enterprise reports in [reports_begin, reports_end) into this
+  // delivery. Modify the report counter for the |endpoint| to which this
+  // delivery is destined.
+  void AddEnterpriseReports(const ReportingEndpoint& endpoint,
+                            const ReportList::const_iterator reports_begin,
+                            const ReportList::const_iterator reports_end) {
+    DCHECK(reports_begin != reports_end);
+    DCHECK_EQ(ReportingTargetType::kEnterprise, target_.target_type);
+    DCHECK_EQ(endpoint.group_key.target_type, target_.target_type);
+    for (auto report_it = reports_begin; report_it != reports_end;
+         ++report_it) {
+      DCHECK_EQ((*reports_begin)->GetGroupKey(), (*report_it)->GetGroupKey());
+      DCHECK_EQ((*report_it)->group, endpoint.group_key.group_name);
+      DCHECK_EQ((*report_it)->target_type, target_.target_type);
     }
 
     reports_per_group_[endpoint.group_key] +=
@@ -271,6 +305,8 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
     DoSendReports(std::move(reports));
   }
 
+  void SendReportsForTesting() override { SendReports(); }
+
   void DoSendReports(ReportList reports) {
     // First determine which origins we're allowed to upload reports about.
     std::set<url::Origin> report_origins;
@@ -301,8 +337,14 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
       // Skip this group if we don't have origin permissions for this origin.
       const ReportingEndpointGroupKey& report_group_key =
           (*bucket_start)->GetGroupKey();
-      if (!base::Contains(allowed_report_origins, report_group_key.origin))
+      // If the origin is nullopt, this should be an enterprise target.
+      if (!report_group_key.origin.has_value()) {
+        DCHECK_EQ(ReportingTargetType::kEnterprise,
+                  report_group_key.target_type);
+      } else if (!base::Contains(allowed_report_origins,
+                                 report_group_key.origin.value())) {
         continue;
+      }
 
       // Skip this group if there is already a pending upload for it.
       // We don't allow multiple concurrent uploads for the same group.
@@ -323,10 +365,12 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
           cache()->GetIsolationInfoForEndpoint(endpoint);
 
       // Add the reports to the appropriate delivery.
-      Delivery::Target target(isolation_info,
-                              report_group_key.network_anonymization_key,
-                              report_group_key.origin, endpoint.info.url,
-                              endpoint.group_key.reporting_source);
+      Delivery::Target target(
+          isolation_info, report_group_key.network_anonymization_key,
+          (report_group_key.origin.has_value() ? report_group_key.origin.value()
+                                               : url::Origin()),
+          endpoint.info.url, endpoint.group_key.reporting_source,
+          endpoint.group_key.target_type);
       auto delivery_it = deliveries.find(target);
       if (delivery_it == deliveries.end()) {
         bool inserted;
@@ -335,7 +379,16 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
             deliveries.emplace(std::move(target), std::move(new_delivery));
         DCHECK(inserted);
       }
-      delivery_it->second->AddReports(endpoint, bucket_start, bucket_it);
+      switch (target.target_type) {
+        case ReportingTargetType::kDeveloper:
+          delivery_it->second->AddDeveloperReports(endpoint, bucket_start,
+                                                   bucket_it);
+          break;
+        case ReportingTargetType::kEnterprise:
+          delivery_it->second->AddEnterpriseReports(endpoint, bucket_start,
+                                                    bucket_it);
+          break;
+      }
     }
 
     // Keep track of which of these reports we don't queue for delivery; we'll

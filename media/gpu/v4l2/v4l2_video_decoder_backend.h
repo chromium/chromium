@@ -12,6 +12,7 @@
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/frame_resource.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -31,7 +32,7 @@ using V4L2ReadableBufferRef = scoped_refptr<V4L2ReadableBuffer>;
 // |OutputBufferDequeued| is automatically called from the decoder.
 //
 // The backend can call into some of the decoder methods, notably OutputFrame()
-// to send a |VideoFrame| to the decoder's client, and Error() to signal that
+// to send a |FrameResource| to the decoder's client, and Error() to signal that
 // an unrecoverable error has occurred.
 //
 // This class must run entirely inside the decoder thread. All overridden
@@ -61,7 +62,7 @@ class V4L2VideoDecoderBackend {
                                   size_t num_codec_reference_frames,
                                   uint8_t bit_depth) = 0;
     // Convert the frame and call the output callback.
-    virtual void OutputFrame(scoped_refptr<VideoFrame> frame,
+    virtual void OutputFrame(scoped_refptr<FrameResource> frame,
                              const gfx::Rect& visible_rect,
                              const VideoColorSpace& color_space,
                              base::TimeDelta timestamp) = 0;

@@ -20,7 +20,7 @@ HEADER = headers.header(
             name = "Chromium Branches",
             branch_selector = branches.selector.ALL_BRANCHES,
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-branch-sheriff",
-        ) if any([s.sheriff_rotation == "chrome_browser_release" for s in settings.platforms.values()]) else None,
+        ) if any([s.gardener_rotation == "chrome_browser_release" for s in settings.platforms.values()]) else None,
         headers.oncall(
             name = "Android",
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-android-sheriff",
@@ -44,14 +44,6 @@ HEADER = headers.header(
         headers.oncall(
             name = "ANGLE",
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:angle-wrangler",
-        ),
-        headers.oncall(
-            name = "Perf",
-            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chromium-perf-regression-sheriff",
-        ),
-        headers.oncall(
-            name = "Perfbot",
-            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chromium-perf-bot-sheriff",
         ),
         headers.oncall(
             name = "Trooper",
@@ -187,6 +179,11 @@ HEADER = headers.header(
                     ],
                     url = "/p/{}/g/chromium.dawn".format(settings.project),
                     alt = "Chromium Dawn console",
+                ),
+                headers.link(
+                    text = "enterprise companion",
+                    url = "/p/{}/g/chromium.enterprise_companion".format(settings.project),
+                    alt = "Chromium Enterprise Companion App console",
                 ),
                 headers.link(
                     text = "flakiness",
@@ -454,4 +451,5 @@ HEADER = headers.header(
         ),
     ],
     tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
+    tree_name = "chromium" if settings.is_main else None,
 )

@@ -7,6 +7,8 @@
 
 namespace media {
 
+DataSourceInfo::~DataSourceInfo() = default;
+
 DataSource::DataSource() = default;
 
 DataSource::~DataSource() = default;

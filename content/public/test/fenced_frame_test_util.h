@@ -5,20 +5,29 @@
 #ifndef CONTENT_PUBLIC_TEST_FENCED_FRAME_TEST_UTIL_H_
 #define CONTENT_PUBLIC_TEST_FENCED_FRAME_TEST_UTIL_H_
 
+#include <vector>
+
 #include "base/compiler_specific.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 
 class GURL;
+
+namespace gfx {
+class PointF;
+}
 
 namespace content {
 
 class RenderFrameHost;
 class FencedFrameURLMapping;
 class FencedFrameReporter;
+class ToRenderFrameHost;
 
 namespace test {
 
@@ -59,7 +68,7 @@ class FencedFrameTestHelper {
   // (which may be different from the one that navigation started in), and
   // `nullptr` otherwise. It takes an `expected_error_code` in case the
   // navigation to `url` fails, which can be detected on a per-error-code basis.
-  // TODO(crbug.com/1294189): Directly use TestFrameNavigationObserver instead
+  // TODO(crbug.com/40820418): Directly use TestFrameNavigationObserver instead
   // of relying on this method.
   RenderFrameHost* NavigateFrameInFencedFrameTree(
       RenderFrameHost* rfh,
@@ -102,6 +111,34 @@ GURL AddAndVerifyFencedFrameURL(
     FencedFrameURLMapping* fenced_frame_url_mapping,
     const GURL& https_url,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
+
+// Exempt the `urls` from fenced frame untrusted network revocation.
+void ExemptUrlsFromFencedFrameNetworkRevocation(RenderFrameHost* rfh,
+                                                const std::vector<GURL>& urls);
+
+// Simulate a mouse click at the `point` inside fenced frame tree.
+//
+// Note: if the click is inside a nested iframe which is same-site with the
+// root fenced frame, the coordinates of `point` need to be offset by the
+// top-left coordinates of the nested iframe relative to the fenced frame. See
+// `GetTopLeftCoordinatesOfElementWithId`. This is because the same-site nested
+// iframe does not have a `RenderWidgetHost`. The mouse event is forwarded to
+// the `RenderWidgetHost` of the fenced frame even if the nested iframe
+// `RenderFrameHost` is passed in.
+//
+// However, a cross-site nested iframe becomes an OOPIF in fenced frame tree and
+// gets its own `RenderWidgetHost`. There is no need to offset the coordinates.
+//
+// Note: If the simulation does not take place inside a fenced frame tree,
+// use `SimulateMouseClickAt` in `content/public/test/browser_test_utils.h`.
+void SimulateClickInFencedFrameTree(const ToRenderFrameHost& adapter,
+                                    blink::WebMouseEvent::Button button,
+                                    const gfx::PointF& point);
+
+// Get the top left coordinates of the element with `id`, relative to `adapter`.
+gfx::PointF GetTopLeftCoordinatesOfElementWithId(
+    const ToRenderFrameHost& adapter,
+    std::string_view id);
 
 }  // namespace test
 

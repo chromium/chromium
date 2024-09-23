@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -26,10 +25,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -43,10 +38,8 @@ import java.util.List;
 /** Tests for {@link DropdownItemViewInfoListManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
 public class DropdownItemViewInfoListManagerUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
 
     private @Spy SuggestionProcessor mBasicSuggestionProcessor;
     private @Spy SuggestionProcessor mEditUrlSuggestionProcessor;
@@ -64,7 +57,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
         when(mEditUrlSuggestionProcessor.getViewTypeId())
                 .thenReturn(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION);
         when(mHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
-        ChromeFeatureList.sOmniboxModernizeVisualUpdate.setForTesting(true);
 
         mSuggestionModels = new ModelList();
         mSuggestionModels.addObserver(mListObserver);
@@ -72,8 +64,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mContext = ContextUtils.getApplicationContext();
         mManager = new DropdownItemViewInfoListManager(mSuggestionModels, mContext);
         mManager.onNativeInitialized();
-
-        Assert.assertTrue(OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext));
     }
 
     /**
@@ -197,73 +187,5 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mManager.setSourceViewInfoList(list);
         verifyModelEquals(list);
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO);
-    }
-
-    @Test
-    public void suggestionsListRoundedCorners() {
-        List<DropdownItemViewInfo> list =
-                Arrays.asList(
-                        new DropdownItemViewInfo(
-                                mBasicSuggestionProcessor,
-                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                SECTION_1_NO_HEADER),
-                        new DropdownItemViewInfo(
-                                mHeaderProcessor,
-                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(
-                                mBasicSuggestionProcessor,
-                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(
-                                mBasicSuggestionProcessor,
-                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                SECTION_2_WITH_HEADER));
-
-        mManager.setSourceViewInfoList(list);
-        verifyModelEquals(list);
-
-        //
-        // ******************** <--- rounded corner
-        // * basic suggestion *
-        // ******************** <--- rounded corner
-        //                      <--- no corner
-        //  header suggestion
-        //                      <--- no corner
-        // ******************** <--- rounded corner
-        // * basic suggestion *
-        // ******************** <--- sharped corner
-        // ******************** <--- sharped corner
-        // * basic suggestion *
-        // ******************** <--- rounded corner
-        //
-        Assert.assertTrue(
-                mSuggestionModels.get(0).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertTrue(
-                mSuggestionModels
-                        .get(0)
-                        .model
-                        .get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
-        Assert.assertFalse(
-                mSuggestionModels.get(1).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertFalse(
-                mSuggestionModels
-                        .get(1)
-                        .model
-                        .get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
-        Assert.assertTrue(
-                mSuggestionModels.get(2).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertFalse(
-                mSuggestionModels
-                        .get(2)
-                        .model
-                        .get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
-        Assert.assertFalse(
-                mSuggestionModels.get(3).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertTrue(
-                mSuggestionModels
-                        .get(3)
-                        .model
-                        .get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
     }
 }

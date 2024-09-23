@@ -31,8 +31,10 @@ suite('SitePermissionsEditUrlDialog', function() {
     assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
+    await input.updateComplete;
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
+    await input.updateComplete;
     assertFalse(input.invalid);
 
     const submit = element.$.submit;
@@ -44,7 +46,7 @@ suite('SitePermissionsEditUrlDialog', function() {
     assertDeepEquals(['http://www.example.com'], hosts);
   });
 
-  test('invalid input', function() {
+  test('invalid input', async () => {
     // Initially the action button should be disabled, but the error warning
     // should not be shown for an empty input.
     const input = element.shadowRoot!.querySelector('cr-input');
@@ -56,22 +58,28 @@ suite('SitePermissionsEditUrlDialog', function() {
     // Simulate user input of invalid text.
     const invalidSite = 'foobar';
     input.value = invalidSite;
+    await input.updateComplete;
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
+    await input.updateComplete;
     assertTrue(input.invalid);
     assertTrue(submit.disabled);
 
     // Entering valid text should clear the error and enable the submit button.
     input.value = 'http://www.example.com';
+    await input.updateComplete;
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
+    await input.updateComplete;
     assertFalse(input.invalid);
     assertFalse(submit.disabled);
 
     // Wildcard scheme is considered invalid input.
     input.value = '*://www.example.com';
+    await input.updateComplete;
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
+    await input.updateComplete;
     assertTrue(input.invalid);
     assertTrue(submit.disabled);
   });
@@ -84,8 +92,10 @@ suite('SitePermissionsEditUrlDialog', function() {
     const input = element.shadowRoot!.querySelector('cr-input');
     assertTrue(!!input);
     input.value = newSite;
+    await input.updateComplete;
     input.dispatchEvent(
         new CustomEvent('input', {bubbles: true, composed: true}));
+    await input.updateComplete;
     assertFalse(input.invalid);
 
     const whenClosed = eventToPromise('close', element);

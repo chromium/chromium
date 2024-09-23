@@ -106,6 +106,7 @@ def check_args(**kwargs):
 
 def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs):
     browser_kwargs = {"binary": kwargs["binary"],
+                      "package_name": None,
                       "webdriver_binary": kwargs["webdriver_binary"],
                       "webdriver_args": kwargs["webdriver_args"].copy(),
                       "prefs_root": kwargs["prefs_root"],
@@ -131,6 +132,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, subsuite, **kwargs)
                       "headless": kwargs["headless"],
                       "preload_browser": kwargs["preload_browser"] and not kwargs["pause_after_test"] and not kwargs["num_test_groups"] == 1,
                       "specialpowers_path": kwargs["specialpowers_path"],
+                      "allow_list_paths": kwargs["allow_list_paths"],
                       "debug_test": kwargs["debug_test"]}
     if test_type == "wdspec" and kwargs["binary"]:
         browser_kwargs["webdriver_args"].extend(["--binary", kwargs["binary"]])
@@ -642,8 +644,9 @@ class GeckodriverOutputHandler(FirefoxOutputHandler):
 
 class ProfileCreator:
     def __init__(self, logger, prefs_root, config, test_type, extra_prefs,
-                 disable_fission, debug_test, browser_channel, binary, certutil_binary,
-                 ca_certificate_path):
+                 disable_fission, debug_test, browser_channel, binary,
+                 package_name, certutil_binary, ca_certificate_path,
+                 allow_list_paths):
         self.logger = logger
         self.prefs_root = prefs_root
         self.config = config
@@ -654,8 +657,10 @@ class ProfileCreator:
         self.browser_channel = browser_channel
         self.ca_certificate_path = ca_certificate_path
         self.binary = binary
+        self.package_name = package_name
         self.certutil_binary = certutil_binary
         self.ca_certificate_path = ca_certificate_path
+        self.allow_list_paths = allow_list_paths
 
     def create(self, **kwargs):
         """Create a Firefox profile and return the mozprofile Profile object pointing at that
@@ -667,6 +672,7 @@ class ProfileCreator:
 
         profile = FirefoxProfile(preferences=preferences,
                                  restore=False,
+                                 allowlistpaths=self.allow_list_paths,
                                  **kwargs)
         self._set_required_prefs(profile)
         if self.ca_certificate_path is not None:
@@ -748,7 +754,7 @@ class ProfileCreator:
         certutil_dir = os.path.dirname(self.binary or self.certutil_binary)
         if mozinfo.isMac:
             env_var = "DYLD_LIBRARY_PATH"
-        elif mozinfo.isUnix:
+        elif mozinfo.isLinux:
             env_var = "LD_LIBRARY_PATH"
         else:
             env_var = "PATH"
@@ -786,13 +792,14 @@ class ProfileCreator:
 class FirefoxBrowser(Browser):
     init_timeout = 70
 
-    def __init__(self, logger, binary, prefs_root, test_type, extra_prefs=None, debug_info=None,
+    def __init__(self, logger, binary, package_name, prefs_root, test_type,
+                 extra_prefs=None, debug_info=None,
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
                  ca_certificate_path=None, e10s=False, disable_fission=False,
                  stackfix_dir=None, binary_args=None, timeout_multiplier=None, leak_check=False,
                  asan=False, chaos_mode_flags=None, config=None,
                  browser_channel="nightly", headless=None, preload_browser=False,
-                 specialpowers_path=None, debug_test=False, **kwargs):
+                 specialpowers_path=None, debug_test=False, allow_list_paths=None, **kwargs):
         Browser.__init__(self, logger)
 
         self.logger = logger
@@ -821,8 +828,10 @@ class FirefoxBrowser(Browser):
                                          debug_test,
                                          browser_channel,
                                          binary,
+                                         package_name,
                                          certutil_binary,
-                                         ca_certificate_path)
+                                         ca_certificate_path,
+                                         allow_list_paths)
 
         if preload_browser:
             instance_manager_cls = PreloadInstanceManager
@@ -860,6 +869,7 @@ class FirefoxBrowser(Browser):
         self.instance_manager.stop_current(force)
         self.logger.debug("stopped")
 
+    @property
     def pid(self):
         return self.instance.pid()
 
@@ -888,15 +898,17 @@ class FirefoxBrowser(Browser):
 
 
 class FirefoxWdSpecBrowser(WebDriverBrowser):
-    def __init__(self, logger, binary, prefs_root, webdriver_binary, webdriver_args,
+    def __init__(self, logger, binary, package_name, prefs_root, webdriver_binary, webdriver_args,
                  extra_prefs=None, debug_info=None, symbols_path=None, stackwalk_binary=None,
                  certutil_binary=None, ca_certificate_path=None, e10s=False,
                  disable_fission=False, stackfix_dir=None, leak_check=False,
-                 asan=False, chaos_mode_flags=None, config=None,
-                 browser_channel="nightly", headless=None, debug_test=False, **kwargs):
+                 asan=False, chaos_mode_flags=None, config=None, browser_channel="nightly",
+                 headless=None, debug_test=False, profile_creator_cls=ProfileCreator,
+                 allow_list_paths=None, **kwargs):
 
         super().__init__(logger, binary, webdriver_binary, webdriver_args)
         self.binary = binary
+        self.package_name = package_name
         self.webdriver_binary = webdriver_binary
 
         self.stackfix_dir = stackfix_dir
@@ -909,17 +921,19 @@ class FirefoxWdSpecBrowser(WebDriverBrowser):
 
         self.env = self.get_env(binary, debug_info, headless, chaos_mode_flags, e10s)
 
-        profile_creator = ProfileCreator(logger,
-                                         prefs_root,
-                                         config,
-                                         "wdspec",
-                                         extra_prefs,
-                                         disable_fission,
-                                         debug_test,
-                                         browser_channel,
-                                         binary,
-                                         certutil_binary,
-                                         ca_certificate_path)
+        profile_creator = profile_creator_cls(logger,
+                                              prefs_root,
+                                              config,
+                                              "wdspec",
+                                              extra_prefs,
+                                              disable_fission,
+                                              debug_test,
+                                              browser_channel,
+                                              binary,
+                                              package_name,
+                                              certutil_binary,
+                                              ca_certificate_path,
+                                              allow_list_paths)
 
         self.profile = profile_creator.create()
         self.marionette_port = None

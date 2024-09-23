@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_MOCK_USER_ACTION_SIGNAL_HANDLER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SIGNALS_MOCK_USER_ACTION_SIGNAL_HANDLER_H_
 
-#include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
+#include <set>
 
+#include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

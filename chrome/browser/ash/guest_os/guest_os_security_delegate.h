@@ -10,6 +10,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/exo/chrome_security_delegate.h"
 #include "components/exo/security_delegate.h"
 
 namespace exo {
@@ -19,9 +20,9 @@ class WaylandServerHandle;
 namespace guest_os {
 
 // This is a safer wrapper
-class GuestOsSecurityDelegate : public exo::SecurityDelegate {
+class GuestOsSecurityDelegate : public ash::ChromeSecurityDelegate {
  public:
-  GuestOsSecurityDelegate();
+  explicit GuestOsSecurityDelegate(std::string vm_name);
 
   ~GuestOsSecurityDelegate() override;
 
@@ -35,7 +36,12 @@ class GuestOsSecurityDelegate : public exo::SecurityDelegate {
                               std::unique_ptr<exo::WaylandServerHandle>)>
           callback);
 
+  // ash::ChromeSecurityDelegate:
+  std::string GetVmName(ui::EndpointType target) const override;
+
  private:
+  std::string vm_name_;
+
   base::WeakPtrFactory<GuestOsSecurityDelegate> weak_factory_;
 };
 

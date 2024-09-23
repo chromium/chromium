@@ -59,6 +59,10 @@ public final class QuicTestServer {
         return QuicTestServerJni.get().getServerPort();
     }
 
+    public static String getConnectionClosePath() {
+        return QuicTestServerJni.get().getConnectionClosePath();
+    }
+
     public static void delayResponse(String path, int delayInSeconds) {
         QuicTestServerJni.get().delayResponse(path, delayInSeconds);
     }
@@ -101,5 +105,13 @@ public final class QuicTestServer {
          * the way down to QUICHE though.
          */
         void delayResponse(String path, int delayInSeconds);
+
+        /*
+         * The server will send a CONNECTION_CLOSE packet to the client upon receiving a connection
+         * on the specified path.
+         *
+         * The expected error code is QUIC_NO_ERROR.
+         */
+        String getConnectionClosePath();
     }
 }

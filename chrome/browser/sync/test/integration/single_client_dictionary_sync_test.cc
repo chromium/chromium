@@ -15,22 +15,13 @@ namespace {
 using testing::ElementsAre;
 using testing::IsEmpty;
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1296569): Re-enable when spell check dictionary issues are
-// addressed.
-#define MAYBE_SingleClientDictionarySyncTest \
-  DISABLED_SingleClientDictionarySyncTest
-#else
-#define MAYBE_SingleClientDictionarySyncTest SingleClientDictionarySyncTest
-#endif
-
-class MAYBE_SingleClientDictionarySyncTest : public SyncTest {
+class SingleClientDictionarySyncTest : public SyncTest {
  public:
-  MAYBE_SingleClientDictionarySyncTest() : SyncTest(SINGLE_CLIENT) {}
-  ~MAYBE_SingleClientDictionarySyncTest() override = default;
+  SingleClientDictionarySyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientDictionarySyncTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_SingleClientDictionarySyncTest, Sanity) {
+IN_PROC_BROWSER_TEST_F(SingleClientDictionarySyncTest, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   dictionary_helper::LoadDictionaries();
   EXPECT_THAT(dictionary_helper::GetDictionaryWords(0), IsEmpty());

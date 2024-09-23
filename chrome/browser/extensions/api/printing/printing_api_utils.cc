@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -47,22 +48,38 @@ bool DoesPrinterMatchDefaultPrinterRules(
           RE2::FullMatch(printer.name, rules->name_pattern));
 }
 
-// Return true if the given item is in the allow list, else return false.
-bool ValidateVendorItem(const cloud_devices::printer::VendorItem& vendor_item) {
+// Validate a vendor ticket item from a print job ticket.  Items are validated
+// against an allow-list of values in addition to the advanced capabilities of
+// the printer.  Return true if the given item is allowed, false if not.
+bool ValidateVendorItem(const std::string& name,
+                        const std::string& value,
+                        const printing::AdvancedCapabilities& capabilities) {
   // A map containing the allowed vendor items.  The key is an IPP attribute,
   // and the value is a set of allowable values for that attribute.
   static const base::NoDestructor<
-      base::flat_map<base::StringPiece, base::flat_set<base::StringPiece>>>
+      base::flat_map<std::string_view, base::flat_set<std::string_view>>>
       kVendorItemAllowList({
           {"finishings", {"none", "trim"}},
       });
 
-  const auto& item = kVendorItemAllowList->find(vendor_item.id);
-  if (item == kVendorItemAllowList->end()) {
-    return false;
+  // Check the explicit allow list.  If the value does not match, this IPP
+  // attribute is then checked against the list of printer capabilities.
+  const auto& item = kVendorItemAllowList->find(name);
+  if (item != kVendorItemAllowList->end() && item->second.contains(value)) {
+    return true;
   }
 
-  return item->second.contains(vendor_item.value);
+  // Check other allowed attributes against the printer capabilities.
+  for (const printing::AdvancedCapability& capability : capabilities) {
+    if (capability.name != name) {
+      continue;
+    }
+
+    return base::Contains(capability.values, value,
+                          &printing::AdvancedCapabilityValue::name);
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -176,7 +193,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -196,7 +213,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       settings->set_duplex_mode(printing::mojom::DuplexMode::kShortEdge);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -213,7 +230,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
       settings->SetOrientation(/*landscape=*/false);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -253,16 +270,10 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   }
   settings->set_collate(collate.value());
 
-  // These items are optional - don't fail if they don't exist.  However, if
-  // they do exist, this will fail if they are not an allowed vendor item.
+  // These items are optional - don't fail if they don't exist.
   cloud_devices::printer::VendorTicketItems vendor_items;
   if (vendor_items.LoadFrom(description)) {
     for (const auto& item : vendor_items) {
-      if (!ValidateVendorItem(item)) {
-        LOG(ERROR) << "Invalid vendor item/value: " << item.id << "/"
-                   << item.value << ".";
-        return nullptr;
-      }
       settings->advanced_settings().emplace(item.id, item.value);
     }
   }
@@ -298,6 +309,21 @@ bool CheckSettingsAndCapabilitiesCompatibility(
 
   if (!base::Contains(capabilities.dpis, settings.dpi_size()))
     return false;
+
+  for (const auto& [name, value] : settings.advanced_settings()) {
+    if (!value.is_string()) {
+      LOG(ERROR) << "Advanced setting '" << name
+                 << "' expects a string value, got: "
+                 << base::Value::GetTypeName(value.type());
+      return false;
+    }
+    if (!ValidateVendorItem(name, value.GetString(),
+                            capabilities.advanced_capabilities)) {
+      LOG(ERROR) << "Advanced setting '" << name << ":" << value.GetString()
+                 << "' is not compatible with printer capabilities";
+      return false;
+    }
+  }
 
   const printing::PrintSettings::RequestedMedia& requested_media =
       settings.requested_media();

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Implements a custom word iterator used for our spellchecker.
 
 #include "components/spellcheck/renderer/spellcheck_worditerator.h"
@@ -351,7 +356,7 @@ bool SpellcheckWordIterator::Initialize(
     // Since we're not passing in any text, the only reason this could fail
     // is if we fail to parse the rules. Since the rules are hardcoded,
     // that would be a bug in this class.
-    NOTREACHED() << "failed to open iterator (broken rules)";
+    NOTREACHED_IN_MIGRATION() << "failed to open iterator (broken rules)";
     return false;
   }
   iterator_ = std::move(iterator);
@@ -418,7 +423,7 @@ SpellcheckWordIterator::WordIteratorStatus SpellcheckWordIterator::GetNextWord(
       // |iterator_| is RULE_BASED so the break status should never be
       // IS_LINE_OR_CHAR_BREAK.
       case base::i18n::BreakIterator::IS_LINE_OR_CHAR_BREAK: {
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
       }
     }

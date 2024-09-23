@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_endpoint.h"
+#include "net/reporting/reporting_target_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -31,7 +32,8 @@ ReportingData GetReportingData() {
       url::Origin::Create(GURL("https://example.test/"));
   const char kGroupName[] = "groupname";
   const ReportingEndpointGroupKey kGroupKey(NetworkAnonymizationKey(), kOrigin,
-                                            kGroupName);
+                                            kGroupName,
+                                            ReportingTargetType::kDeveloper);
   const ReportingEndpoint kEndpoint(kGroupKey,
                                     {GURL("https://endpoint.test/reports")});
   const CachedReportingEndpointGroup kGroup(

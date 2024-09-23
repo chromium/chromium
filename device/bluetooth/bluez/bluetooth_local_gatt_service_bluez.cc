@@ -82,6 +82,15 @@ BluetoothLocalGattServiceBlueZ::GetCharacteristic(
   return service == characteristics_.end() ? nullptr : service->second.get();
 }
 
+base::WeakPtr<device::BluetoothLocalGattCharacteristic>
+BluetoothLocalGattServiceBlueZ::CreateCharacteristic(
+    const device::BluetoothUUID& uuid,
+    device::BluetoothGattCharacteristic::Properties properties,
+    device::BluetoothGattCharacteristic::Permissions permissions) {
+  return bluez::BluetoothLocalGattCharacteristicBlueZ::Create(
+      uuid, properties, permissions, /*service=*/this);
+}
+
 const std::map<dbus::ObjectPath,
                std::unique_ptr<BluetoothLocalGattCharacteristicBlueZ>>&
 BluetoothLocalGattServiceBlueZ::GetCharacteristics() const {

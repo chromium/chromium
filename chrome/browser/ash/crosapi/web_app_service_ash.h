@@ -61,7 +61,7 @@ class WebAppServiceAsh : public crosapi::mojom::WebAppService {
 
   // Remote lacros-chrome web app bridge to send commands to.
   // At the moment only a single connection is supported.
-  // TODO(crbug.com/1174246): Support SxS lacros.
+  // TODO(crbug.com/40167449): Support SxS lacros.
   mojo::Remote<mojom::WebAppProviderBridge> web_app_provider_bridge_;
 
   base::ObserverList<Observer> observers_;

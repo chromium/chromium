@@ -32,7 +32,6 @@
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../common_styles/oobe_common_styles.css.js';
 import '../oobe_vars/oobe_custom_vars.css.js';
 

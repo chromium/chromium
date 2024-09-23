@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 
-#include <tuple>
-
-#include "base/task/thread_pool.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/on_device_internals/on_device_internals_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/on_device_internals_resources.h"
 #include "chrome/grit/on_device_internals_resources_map.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
-#include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "services/on_device_model/public/cpp/model_assets.h"
 
 OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui) {
@@ -34,62 +36,24 @@ OnDeviceInternalsUI::~OnDeviceInternalsUI() = default;
 WEB_UI_CONTROLLER_TYPE_IMPL(OnDeviceInternalsUI)
 
 void OnDeviceInternalsUI::BindInterface(
-    mojo::PendingReceiver<mojom::OnDeviceInternalsPage> receiver) {
-  page_receivers_.Add(this, std::move(receiver));
+    mojo::PendingReceiver<mojom::OnDeviceInternalsPageHandlerFactory>
+        receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void OnDeviceInternalsUI::LoadModel(
-    const base::FilePath& model_path,
-    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
-    LoadModelCallback callback) {
-  // Warm the service while assets load in the background.
-  std::ignore = GetService();
+void OnDeviceInternalsUI::CreatePageHandler(
+    mojo::PendingRemote<mojom::OnDeviceInternalsPage> page,
+    mojo::PendingReceiver<mojom::OnDeviceInternalsPageHandler> receiver) {
+  CHECK(page);
 
-  // This WebUI currently provides no way to dynamically configure the expected
-  // output dimension of the TS model. Since the model is in flux and its output
-  // dimension can change, it would be easy to accidentally load an incompatible
-  // model and crash the service. Hence we omit TS model assets for now.
-  on_device_model::ModelAssetPaths model_paths;
-  model_paths.sp_model = model_path.Append(optimization_guide::kSpModelFile);
-  model_paths.model = model_path.Append(optimization_guide::kModelFile);
-  model_paths.weights = model_path.Append(optimization_guide::kWeightsFile);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&on_device_model::LoadModelAssets, model_paths),
-      base::BindOnce(&OnDeviceInternalsUI::OnModelAssetsLoaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(model),
-                     std::move(callback)));
-}
-
-on_device_model::mojom::OnDeviceModelService&
-OnDeviceInternalsUI::GetService() {
-  if (!service_) {
-    content::ServiceProcessHost::Launch<
-        on_device_model::mojom::OnDeviceModelService>(
-        service_.BindNewPipeAndPassReceiver(),
-        content::ServiceProcessHost::Options()
-            .WithDisplayName("On-Device Model Service")
-            .Pass());
-    service_.reset_on_disconnect();
+  Profile* profile = Profile::FromWebUI(web_ui());
+  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return;
   }
-  return *service_.get();
-}
-
-void OnDeviceInternalsUI::GetEstimatedPerformanceClass(
-    GetEstimatedPerformanceClassCallback callback) {
-  GetService().GetEstimatedPerformanceClass(
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(callback),
-          on_device_model::mojom::PerformanceClass::kError));
-}
-
-void OnDeviceInternalsUI::OnModelAssetsLoaded(
-    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
-    LoadModelCallback callback,
-    on_device_model::ModelAssets assets) {
-  auto params = on_device_model::mojom::LoadModelParams::New();
-  params->assets = std::move(assets);
-  params->max_tokens = 4096;
-  GetService().LoadModel(std::move(params), std::move(model),
-                         std::move(callback));
+  OptimizationGuideLogger* optimization_guide_logger =
+      service->GetOptimizationGuideLogger();
+  page_handler_ = std::make_unique<OnDeviceInternalsPageHandler>(
+      std::move(receiver), std::move(page), optimization_guide_logger);
 }

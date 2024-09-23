@@ -9,6 +9,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -29,7 +30,7 @@ class CancelCastingDialog : public views::DialogDelegateView {
     SetTitle(l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_TITLE));
     SetShowCloseButton(false);
     SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(IDS_DESKTOP_CASTING_ACTIVE_CONTINUE));
     SetAcceptCallback(base::BindOnce(&CancelCastingDialog::OnDialogAccepted,
                                      base::Unretained(this)));

@@ -71,6 +71,7 @@ ImageDecoderWrapper::ImageDecoderWrapper(
     SegmentReader* data,
     const SkPixmap& pixmap,
     ColorBehavior decoder_color_behavior,
+    cc::AuxImage aux_image,
     wtf_size_t index,
     bool all_data_received,
     cc::PaintImage::GeneratorClientId client_id)
@@ -78,6 +79,7 @@ ImageDecoderWrapper::ImageDecoderWrapper(
       data_(data),
       pixmap_(pixmap),
       decoder_color_behavior_(decoder_color_behavior),
+      aux_image_(aux_image),
       frame_index_(index),
       all_data_received_(all_data_received),
       client_id_(client_id) {}
@@ -309,7 +311,7 @@ std::unique_ptr<ImageDecoder> ImageDecoderWrapper::CreateDecoderWithData(
   // The newly created decoder just grabbed the data.  No need to reset it.
   return ImageDecoder::Create(
       data_, all_data_received_, PixmapAlphaOption(pixmap_),
-      high_bit_depth_decoding_option, decoder_color_behavior_,
+      high_bit_depth_decoding_option, decoder_color_behavior_, aux_image_,
       Platform::GetMaxDecodedImageBytes(), pixmap_.dimensions());
 }
 

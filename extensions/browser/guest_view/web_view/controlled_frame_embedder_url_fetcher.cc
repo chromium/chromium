@@ -43,6 +43,7 @@ void ControlledFrameEmbedderURLFetcher::Start() {
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
       extensions::ExtensionsBrowserClient::Get()
           ->GetControlledFrameEmbedderURLLoader(
+              render_frame_host->GetLastCommittedOrigin(),
               render_frame_host->GetFrameTreeNodeId(),
               render_frame_host->GetBrowserContext()));
 

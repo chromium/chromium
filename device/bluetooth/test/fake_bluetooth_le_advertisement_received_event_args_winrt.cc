@@ -4,9 +4,9 @@
 
 #include "device/bluetooth/test/fake_bluetooth_le_advertisement_received_event_args_winrt.h"
 
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "device/bluetooth/test/fake_bluetooth_adapter_winrt.h"
 
 namespace device {

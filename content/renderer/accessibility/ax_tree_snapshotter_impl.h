@@ -34,7 +34,7 @@ class AXTreeSnapshotterImpl : public AXTreeSnapshotter {
                                ui::AXTreeUpdate* response);
   bool SerializeTree(ui::AXTreeUpdate* response);
 
-  raw_ptr<RenderFrameImpl, ExperimentalRenderer> render_frame_;
+  raw_ptr<RenderFrameImpl> render_frame_;
   std::unique_ptr<blink::WebAXContext> context_;
 
   AXTreeSnapshotterImpl(const AXTreeSnapshotterImpl&) = delete;

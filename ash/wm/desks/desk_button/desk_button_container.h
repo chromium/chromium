@@ -41,7 +41,7 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
 
   static bool ShouldShowDeskProfilesUi();
 
-  static int GetMaxLength(bool horizontal_shelf, bool zero_state);
+  static int GetMaxLength(bool zero_state);
 
   bool zero_state() const { return zero_state_; }
   void set_zero_state(bool zero_state) { zero_state_ = zero_state; }
@@ -68,7 +68,8 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
   void OnFirstSessionStarted() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
   // Invoked after the shelf alignment change. It's used to update the container
@@ -80,11 +81,11 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
   // shelf. It's used by the widget to layout contents properly.
   int GetPreferredLength() const;
 
+  // Returns true if the desk button UI is visible and the given
+  // `screen_location` intersects with the UI.
+  bool IntersectsWithDeskButtonUi(const gfx::Point& screen_location) const;
+
   std::u16string GetTitleForView(const views::View* view) const;
-
-  bool IsHorizontalShelf() const;
-
-  bool IsForcedZeroState() const;
 
   // Initializes the view. Must be called before any meaningful UIs can be laid
   // out.
@@ -127,4 +128,4 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(VIEWS_EXPORT, ash::DeskButtonContainer)
 
-#endif
+#endif  // ASH_WM_DESKS_DESK_BUTTON_DESK_BUTTON_CONTAINER_H_

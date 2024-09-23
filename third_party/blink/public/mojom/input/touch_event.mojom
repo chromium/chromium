@@ -12,7 +12,6 @@ enum TouchState {
   kStateMoved,
   kStateStationary,
   kStateCancelled,
-  kStateMax = kStateCancelled
 };
 
 // Describes which touch event consumers are present in the renderer, for use in

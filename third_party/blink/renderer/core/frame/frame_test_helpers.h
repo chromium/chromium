@@ -33,6 +33,7 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
 #include <memory>
 #include <string>
 
@@ -61,7 +62,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
-#include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"  // IWYU pragma: export
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -213,10 +214,16 @@ class TestWebFrameWidgetHost : public mojom::blink::WidgetHost,
   void BindWidgetHost(
       mojo::PendingAssociatedReceiver<mojom::blink::WidgetHost>,
       mojo::PendingAssociatedReceiver<mojom::blink::FrameWidgetHost>);
+  void BindRenderInputRouterInterfaces(
+      mojo::PendingRemote<mojom::blink::RenderInputRouterClient> remote);
+  void GetWidgetInputHandler(
+      mojo::PendingReceiver<mojom::blink::WidgetInputHandler> request,
+      mojo::PendingRemote<mojom::blink::WidgetInputHandlerHost> host);
 
  private:
   size_t cursor_set_count_ = 0;
   size_t virtual_keyboard_request_count_ = 0;
+  mojo::Remote<mojom::blink::RenderInputRouterClient> client_remote_;
   mojo::AssociatedReceiver<mojom::blink::WidgetHost> receiver_{this};
   mojo::AssociatedReceiver<mojom::blink::FrameWidgetHost> frame_receiver_{this};
 };
@@ -336,7 +343,8 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       WebViewClient* = nullptr,
       void (*update_settings_func)(WebSettings*) = nullptr,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-          fenced_frame_mode = std::nullopt);
+          fenced_frame_mode = std::nullopt,
+      bool is_prerendering = false);
 
   // Same as InitializeWithOpener(), but always sets the opener to null.
   WebViewImpl* Initialize(TestWebFrameClient* = nullptr,
@@ -473,7 +481,8 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       WebViewClient*,
       class WebView* opener,
       std::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-          fenced_frame_mode);
+          fenced_frame_mode,
+      bool is_prerendering);
   void CheckFrameIsAssociatedWithWebView(WebFrame* frame);
 
   bool viewport_enabled_ = false;
@@ -562,6 +571,8 @@ class TestWebFrameClient : public WebLocalFrameClient {
 
   void DestroyChildViews();
 
+  void SetFrameDetachedCallback(base::OnceClosure callback);
+
  private:
   void CommitNavigation(std::unique_ptr<WebNavigationInfo>);
 
@@ -586,6 +597,9 @@ class TestWebFrameClient : public WebLocalFrameClient {
   // The sandbox flags to use when committing navigations.
   network::mojom::WebSandboxFlags sandbox_flags_ =
       network::mojom::WebSandboxFlags::kNone;
+
+  // Callback to run when |FrameDetached| is called.
+  base::OnceClosure frame_detached_callback_ = base::DoNothing();
 
   WTF::Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
   base::WeakPtrFactory<TestWebFrameClient> weak_factory_{this};

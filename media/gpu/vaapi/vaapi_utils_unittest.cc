@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/vaapi_utils.h"
 
 #include <va/va.h>
@@ -45,7 +50,8 @@ class VaapiUtilsTest : public testing::Test {
                              EncryptionScheme::kUnencrypted,
                              base::BindRepeating([](VaapiFunctions function) {
                                LOG(FATAL) << "Oh noes! Decoder failed";
-                             }));
+                             }))
+            .value_or(nullptr);
     ASSERT_TRUE(vaapi_wrapper_);
   }
 
@@ -87,18 +93,19 @@ TEST_F(VaapiUtilsTest, ScopedVAImage) {
 
   std::unique_ptr<ScopedVAImage> scoped_image;
   {
+    VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(vaapi_wrapper_->sequence_checker_);
     // On Stoney-Ridge devices the output image format is dependent on the
     // surface format. However when context has not been executed the output
     // image format seems to default to I420. https://crbug.com/828119
     VAImageFormat va_image_format = kImageFormatI420;
     base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
-    scoped_image = std::make_unique<ScopedVAImage>(
+    scoped_image = ScopedVAImage::Create(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, va_surfaces[0],
-        &va_image_format, coded_size);
+        va_image_format, coded_size);
 
+    ASSERT_TRUE(scoped_image);
     EXPECT_TRUE(scoped_image->image());
-    ASSERT_TRUE(scoped_image->IsValid());
-    EXPECT_TRUE(scoped_image->va_buffer()->IsValid());
+    ASSERT_TRUE(scoped_image->va_buffer());
     EXPECT_TRUE(scoped_image->va_buffer()->data());
   }
   vaapi_wrapper_->DestroyContextAndSurfaces(va_surfaces);
@@ -115,36 +122,37 @@ TEST_F(VaapiUtilsTest, BadScopedVAImage) {
 
   std::unique_ptr<ScopedVAImage> scoped_image;
   {
+    VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(vaapi_wrapper_->sequence_checker_);
     VAImageFormat va_image_format = kImageFormatI420;
     base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
-    scoped_image = std::make_unique<ScopedVAImage>(
+    EXPECT_DCHECK_DEATH(ScopedVAImage::Create(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, va_surfaces[0],
-        &va_image_format, coded_size);
+        va_image_format, coded_size));
 
-    EXPECT_TRUE(scoped_image->image());
-    EXPECT_FALSE(scoped_image->IsValid());
-#if DCHECK_IS_ON()
-    EXPECT_DCHECK_DEATH(scoped_image->va_buffer());
-#else
-    EXPECT_FALSE(scoped_image->va_buffer());
-#endif
+    // This should not hit any DCHECK() but will create an invalid
+    // ScopedVAImage.
+    scoped_image = ScopedVAImage::Create(
+        vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_,
+        va_surfaces[0] - 1, va_image_format, coded_size);
+    EXPECT_FALSE(scoped_image);
   }
 }
 
 // This test exercises creation of a ScopedVABufferMapping with bad VABufferIDs.
 TEST_F(VaapiUtilsTest, BadScopedVABufferMapping) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
+  VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(vaapi_wrapper_->sequence_checker_);
   base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_.get());
 
   // A ScopedVABufferMapping with a VA_INVALID_ID VABufferID is DCHECK()ed.
-  EXPECT_DCHECK_DEATH(std::make_unique<ScopedVABufferMapping>(
+  EXPECT_DCHECK_DEATH(ScopedVABufferMapping::Create(
       vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, VA_INVALID_ID));
 
   // This should not hit any DCHECK() but will create an invalid
   // ScopedVABufferMapping.
-  auto scoped_buffer = std::make_unique<ScopedVABufferMapping>(
+  auto scoped_buffer = ScopedVABufferMapping::Create(
       vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, VA_INVALID_ID - 1);
-  EXPECT_FALSE(scoped_buffer->IsValid());
+  EXPECT_FALSE(scoped_buffer);
 }
 
 // This test exercises the creation of a valid ScopedVASurface.

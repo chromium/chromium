@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "components/metrics/metrics_log.h"
 
 namespace metrics {
@@ -56,7 +56,7 @@ class LogStore {
 
   // Discards the staged log. |reason| is the reason why the log was discarded
   // (used for debugging through chrome://metrics-internals).
-  virtual void DiscardStagedLog(base::StringPiece reason = "") = 0;
+  virtual void DiscardStagedLog(std::string_view reason = "") = 0;
 
   // Marks the staged log as sent, DiscardStagedLog() shall still be called if
   // the staged log needs discarded.
@@ -66,7 +66,7 @@ class LogStore {
   // |overwrite_in_memory_store| is false, we will still not persist logs that
   // should be trimmed away, but they will still be available in memory
   // (allowing them to still be eligible for upload this session).
-  // TODO(crbug/1171830): Revisit call sites and determine what value of
+  // TODO(crbug.com/40745324): Revisit call sites and determine what value of
   // |overwrite_in_memory_store| they should use.
   virtual void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) = 0;
 

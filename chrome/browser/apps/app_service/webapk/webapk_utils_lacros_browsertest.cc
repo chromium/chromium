@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
-
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "components/webapk/webapk.pb.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace apps {
 
-using WebApkUtilsBrowserTest = web_app::WebAppControllerBrowserTest;
+using WebApkUtilsBrowserTest = web_app::WebAppBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(WebApkUtilsBrowserTest, GetWebApk) {
   const GURL start_url =

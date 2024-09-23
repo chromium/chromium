@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/fed_cm.h"
@@ -16,8 +17,13 @@ namespace content {
 class FederatedAuthRequestImpl;
 class FederatedAuthRequestPageData;
 class FederatedIdentityApiPermissionContextDelegate;
-struct IdentityProviderData;
+class IdentityProviderData;
+class IdentityRequestAccount;
 }  // namespace content
+
+using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
+using IdentityRequestAccountPtr =
+    scoped_refptr<content::IdentityRequestAccount>;
 
 namespace content::protocol {
 
@@ -71,11 +77,13 @@ class FedCmHandler : public DevToolsDomainHandler, public FedCm::Backend {
 
   FederatedAuthRequestPageData* GetPageData();
   FederatedAuthRequestImpl* GetFederatedAuthRequest();
-  const std::vector<IdentityProviderData>* GetIdentityProviderData(
+  const std::vector<IdentityProviderDataPtr>* GetIdentityProviderData(
+      FederatedAuthRequestImpl* auth_request);
+  const std::vector<IdentityRequestAccountPtr>* GetAccounts(
       FederatedAuthRequestImpl* auth_request);
   FederatedIdentityApiPermissionContextDelegate* GetApiPermissionContext();
 
-  RenderFrameHostImpl* frame_host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
   std::unique_ptr<FedCm::Frontend> frontend_;
   std::string dialog_id_;
   bool enabled_ = false;

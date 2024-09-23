@@ -12,5 +12,7 @@ enum BlockedByResponseReason {
   kCoopSandboxedIFrameCannotNavigateToCoopPage,
   kCorpNotSameOrigin,
   kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
+  kCorpNotSameOriginAfterDefaultedToSameOriginByDip,
+  kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip,
   kCorpNotSameSite,
 };

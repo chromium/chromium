@@ -7,6 +7,7 @@ package org.chromium.content_public.browser;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.TerminationStatus;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
@@ -32,27 +33,23 @@ public abstract class WebContentsObserver {
     }
 
     /**
-     * Called when a RenderFrame for renderFrameHost is created in the
-     * renderer process.
-     * To avoid creating a RenderFrameHost object without necessity, only its id is passed. Call
+     * Called when a RenderFrame for renderFrameHost is created in the renderer process. To avoid
+     * creating a RenderFrameHost object without necessity, only its id is passed. Call
      * WebContents#getRenderFrameHostFromId() to get the RenderFrameHost object if needed.
      */
     public void renderFrameCreated(GlobalRenderFrameHostId id) {}
 
-    /**
-     * Called when a RenderFrame for renderFrameHost is deleted in the
-     * renderer process.
-     */
+    /** Called when a RenderFrame for renderFrameHost is deleted in the renderer process. */
     public void renderFrameDeleted(GlobalRenderFrameHostId id) {}
 
-    public void renderProcessGone() {}
+    public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {}
 
     /**
      * Called when the browser process starts a navigation in the primary main frame.
-     * @param navigationHandle
-     *        NavigationHandle are provided to several WebContentsObserver methods to allow
-     *        observers to track specific navigations. Observers should clear any references to a
-     *        NavigationHandle at didFinishNavigationInPrimaryMainFrame();
+     *
+     * @param navigationHandle NavigationHandle are provided to several WebContentsObserver methods
+     *     to allow observers to track specific navigations. Observers should clear any references
+     *     to a NavigationHandle at didFinishNavigationInPrimaryMainFrame();
      */
     public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {}
 
@@ -170,8 +167,11 @@ public abstract class WebContentsObserver {
     /** Called when the theme color was changed. */
     public void didChangeThemeColor() {}
 
+    /** Called when the background color was changed. */
+    public void onBackgroundColorChanged() {}
+
     /**
-     * Called when media started playing.  Unlike the native version, this does not identify which
+     * Called when media started playing. Unlike the native version, this does not identify which
      * player because we don't have a type for it, but nothing currently needs it anyway.
      */
     public void mediaStartedPlaying() {}
@@ -228,6 +228,9 @@ public abstract class WebContentsObserver {
 
     /** Called when the top level WindowAndroid changes. */
     public void onTopLevelNativeWindowChanged(@Nullable WindowAndroid windowAndroid) {}
+
+    /** Called when a MediaSession is created for the WebContents. */
+    public void mediaSessionCreated(MediaSession mediaSession) {}
 
     /** Stop observing the web contents and clean up associated references. */
     public void destroy() {

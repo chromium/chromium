@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.IconType;
@@ -32,7 +33,7 @@ public class WebFeedFaviconFetcher {
     private ImageFetcher mImageFetcher;
 
     public static WebFeedFaviconFetcher createDefault() {
-        Profile profile = Profile.getLastUsedRegularProfile();
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
         return new WebFeedFaviconFetcher(
                 new LargeIconBridge(profile),
                 ImageFetcherFactory.createImageFetcher(
@@ -118,7 +119,7 @@ public class WebFeedFaviconFetcher {
                 boolean isColorDefault,
                 @IconType int iconType) {
             if (icon == null) {
-                // TODO(crbug/1152592): Update monogram according to specs.
+                // TODO(crbug.com/40158714): Update monogram according to specs.
                 RoundedIconGenerator iconGenerator =
                         WebFeedFaviconFetcher.createRoundedIconGenerator(
                                 fallbackColor, iconSizePx, textSizePx);

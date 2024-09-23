@@ -3,8 +3,7 @@
 
 static MESSAGE_TYPE MsgStream=MSG_STDOUT;
 static RAR_CHARSET RedirectCharset=RCH_DEFAULT;
-
-const int MaxMsgSize=2*NM+2048;
+static bool ProhibitInput=false;
 
 static bool StdoutRedirected=false,StderrRedirected=false,StdinRedirected=false;
 
@@ -61,47 +60,51 @@ void SetConsoleRedirectCharset(RAR_CHARSET RedirectCharset)
 }
 
 
+void ProhibitConsoleInput()
+{
+  ProhibitInput=true;
+}
+
+
 #ifndef SILENT
 static void cvt_wprintf(FILE *dest,const wchar *fmt,va_list arglist)
 {
-  // This buffer is for format string only, not for entire output,
-  // so it can be short enough.
-  wchar fmtw[1024];
-  PrintfPrepareFmt(fmt,fmtw,ASIZE(fmtw));
+  // No need for PrintfPrepareFmt here, vwstrprintf calls it.
+  std::wstring s=vwstrprintf(fmt,arglist);
+
+  ReplaceEsc(s);
+
 #ifdef _WIN_ALL
-  safebuf wchar Msg[MaxMsgSize];
   if (dest==stdout && StdoutRedirected || dest==stderr && StderrRedirected)
   {
     HANDLE hOut=GetStdHandle(dest==stdout ? STD_OUTPUT_HANDLE:STD_ERROR_HANDLE);
-    vswprintf(Msg,ASIZE(Msg),fmtw,arglist);
     DWORD Written;
     if (RedirectCharset==RCH_UNICODE)
-      WriteFile(hOut,Msg,(DWORD)wcslen(Msg)*sizeof(*Msg),&Written,NULL);
+      WriteFile(hOut,s.data(),(DWORD)s.size()*sizeof(s[0]),&Written,NULL);
     else
     {
       // Avoid Unicode for redirect in Windows, it does not work with pipes.
-      safebuf char MsgA[MaxMsgSize];
+      std::string MsgA;
       if (RedirectCharset==RCH_UTF8)
-        WideToUtf(Msg,MsgA,ASIZE(MsgA));
+        WideToUtf(s,MsgA);
       else
-        WideToChar(Msg,MsgA,ASIZE(MsgA));
+        WideToChar(s,MsgA);
       if (RedirectCharset==RCH_DEFAULT || RedirectCharset==RCH_OEM)
-        CharToOemA(MsgA,MsgA); // Console tools like 'more' expect OEM encoding.
+        CharToOemA(&MsgA[0],&MsgA[0]); // Console tools like 'more' expect OEM encoding.
 
       // We already converted \n to \r\n above, so we use WriteFile instead
       // of C library to avoid unnecessary additional conversion.
-      WriteFile(hOut,MsgA,(DWORD)strlen(MsgA),&Written,NULL);
+      WriteFile(hOut,MsgA.data(),(DWORD)MsgA.size(),&Written,NULL);
     }
     return;
   }
   // MSVC2008 vfwprintf writes every character to console separately
   // and it is too slow. We use direct WriteConsole call instead.
-  vswprintf(Msg,ASIZE(Msg),fmtw,arglist);
   HANDLE hOut=GetStdHandle(dest==stderr ? STD_ERROR_HANDLE:STD_OUTPUT_HANDLE);
   DWORD Written;
-  WriteConsole(hOut,Msg,(DWORD)wcslen(Msg),&Written,NULL);
+  WriteConsole(hOut,s.data(),(DWORD)s.size(),&Written,NULL);
 #else
-  vfwprintf(dest,fmtw,arglist);
+  fputws(s.c_str(),dest);
   // We do not use setbuf(NULL) in Unix (see comments in InitConsole).
   fflush(dest);
 #endif
@@ -141,81 +144,109 @@ void eprintf(const wchar *fmt,...)
 
 
 #ifndef SILENT
-static void GetPasswordText(wchar *Str,uint MaxLength)
+static void QuitIfInputProhibited()
 {
-  if (MaxLength==0)
-    return;
+  // We cannot handle user prompts if -si is used to read file or archive data
+  // from stdin.
+  if (ProhibitInput)
+  {
+    mprintf(St(MStdinNoInput));
+    ErrHandler.Exit(RARX_FATAL);
+  }
+}
+
+
+static void GetPasswordText(std::wstring &Str)
+{
+  QuitIfInputProhibited();
   if (StdinRedirected)
-    getwstr(Str,MaxLength); // Read from pipe or redirected file.
+    getwstr(Str); // Read from pipe or redirected file.
   else
   {
 #ifdef _WIN_ALL
     HANDLE hConIn=GetStdHandle(STD_INPUT_HANDLE);
-    HANDLE hConOut=GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD ConInMode,ConOutMode;
-    DWORD Read=0;
+    DWORD ConInMode;
     GetConsoleMode(hConIn,&ConInMode);
-    GetConsoleMode(hConOut,&ConOutMode);
-    SetConsoleMode(hConIn,ENABLE_LINE_INPUT);
-    SetConsoleMode(hConOut,ENABLE_PROCESSED_OUTPUT|ENABLE_WRAP_AT_EOL_OUTPUT);
+    SetConsoleMode(hConIn,ENABLE_LINE_INPUT); // Remove ENABLE_ECHO_INPUT.
 
-    ReadConsole(hConIn,Str,MaxLength-1,&Read,NULL);
-    Str[Read]=0;
+    std::vector<wchar> Buf(MAXPASSWORD);
+    
+    // We prefer ReadConsole to ReadFile, so we can read Unicode input.
+    DWORD Read=0;
+    ReadConsole(hConIn,Buf.data(),(DWORD)Buf.size()-1,&Read,NULL);
+    Buf[Read]=0;
+    Str=Buf.data();
+    cleandata(Buf.data(),Buf.size()*sizeof(Buf[0]));
+
     SetConsoleMode(hConIn,ConInMode);
-    SetConsoleMode(hConOut,ConOutMode);
+
+    // 2023.03.12: Previously we checked for presence of "\n" in entered
+    // passwords, supposing that truncated strings do not include it.
+    // We did it to read the rest of excessively long string, so it is not
+    // read later as the second password for -p switch. But this "\n" check
+    // doesn't seem to work in Windows 10 anymore and "\r" is present even
+    // in truncated strings. Also we increased MAXPASSWORD, so it is larger
+    // than MAXPASSWORD_RAR. Thus we removed this check as not working
+    // and not that necessary. Low level FlushConsoleInputBuffer doesn't help
+    // for high level ReadConsole, which in line input mode seems to store
+    // the rest of string in its own internal buffer.
 #else
-    char StrA[MAXPASSWORD*4]; // "*4" for multibyte UTF-8 characters.
-#if defined(_EMX) || defined (__VMS)
-    fgets(StrA,ASIZE(StrA)-1,stdin);
+    std::vector<char> StrA(MAXPASSWORD*4); // "*4" for multibyte UTF-8 characters.
+#ifdef __VMS
+    fgets(StrA.data(),StrA.size()-1,stdin);
 #elif defined(__sun)
-    strncpyz(StrA,getpassphrase(""),ASIZE(StrA));
+    strncpyz(StrA.data(),getpassphrase(""),StrA.size());
 #else
-    strncpyz(StrA,getpass(""),ASIZE(StrA));
+    strncpyz(StrA.data(),getpass(""),StrA.size());
 #endif
-    CharToWide(StrA,Str,MaxLength);
-    cleandata(StrA,sizeof(StrA));
+    CharToWide(StrA.data(),Str);
+    cleandata(StrA.data(),StrA.size()*sizeof(StrA[0]));
 #endif
   }
-  Str[MaxLength-1]=0;
   RemoveLF(Str);
 }
 #endif
 
 
 #ifndef SILENT
-bool GetConsolePassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *Password)
+bool GetConsolePassword(UIPASSWORD_TYPE Type,const std::wstring &FileName,SecPassword *Password)
 {
   if (!StdinRedirected)
     uiAlarm(UIALARM_QUESTION);
   
   while (true)
   {
-    if (!StdinRedirected)
+//    if (!StdinRedirected)
       if (Type==UIPASSWORD_GLOBAL)
         eprintf(L"\n%s: ",St(MAskPsw));
       else
-        eprintf(St(MAskPswFor),FileName);
+        eprintf(St(MAskPswFor),FileName.c_str());
 
-    wchar PlainPsw[MAXPASSWORD];
-    GetPasswordText(PlainPsw,ASIZE(PlainPsw));
-    if (*PlainPsw==0 && Type==UIPASSWORD_GLOBAL)
+    std::wstring PlainPsw;
+    GetPasswordText(PlainPsw);
+    if (PlainPsw.empty() && Type==UIPASSWORD_GLOBAL)
       return false;
+    if (PlainPsw.size()>=MAXPASSWORD)
+    {
+      PlainPsw.erase(MAXPASSWORD-1);
+      uiMsg(UIERROR_TRUNCPSW,MAXPASSWORD-1);
+    }
     if (!StdinRedirected && Type==UIPASSWORD_GLOBAL)
     {
       eprintf(St(MReAskPsw));
-      wchar CmpStr[MAXPASSWORD];
-      GetPasswordText(CmpStr,ASIZE(CmpStr));
-      if (*CmpStr==0 || wcscmp(PlainPsw,CmpStr)!=0)
+      std::wstring CmpStr;
+      GetPasswordText(CmpStr);
+      if (CmpStr.empty() || PlainPsw!=CmpStr)
       {
         eprintf(St(MNotMatchPsw));
-        cleandata(PlainPsw,sizeof(PlainPsw));
-        cleandata(CmpStr,sizeof(CmpStr));
+        cleandata(&PlainPsw[0],PlainPsw.size()*sizeof(PlainPsw[0]));
+        cleandata(&CmpStr[0],CmpStr.size()*sizeof(CmpStr[0]));
         continue;
       }
-      cleandata(CmpStr,sizeof(CmpStr));
+      cleandata(&CmpStr[0],CmpStr.size()*sizeof(CmpStr[0]));
     }
-    Password->Set(PlainPsw);
-    cleandata(PlainPsw,sizeof(PlainPsw));
+    Password->Set(PlainPsw.c_str());
+    cleandata(&PlainPsw[0],PlainPsw.size()*sizeof(PlainPsw[0]));
     break;
   }
   return true;
@@ -224,12 +255,17 @@ bool GetConsolePassword(UIPASSWORD_TYPE Type,const wchar *FileName,SecPassword *
 
 
 #ifndef SILENT
-bool getwstr(wchar *str,size_t n)
+bool getwstr(std::wstring &str)
 {
   // Print buffered prompt title function before waiting for input.
   fflush(stderr);
 
-  *str=0;
+  QuitIfInputProhibited();
+
+  str.clear();
+
+  const size_t MaxRead=MAXPATHSIZE; // Large enough to read a file name.
+
 #if defined(_WIN_ALL)
   // fgetws does not work well with non-English text in Windows,
   // so we do not use it.
@@ -237,10 +273,11 @@ bool getwstr(wchar *str,size_t n)
   {
     // fgets does not work well with pipes in Windows in our test.
     // Let's use files.
-    Array<char> StrA(n*4); // Up to 4 UTF-8 characters per wchar_t.
+    std::vector<char> StrA(MaxRead*4);  // Up to 4 UTF-8 characters per wchar_t.
     File SrcFile;
     SrcFile.SetHandleType(FILE_HANDLESTD);
-    int ReadSize=SrcFile.Read(&StrA[0],StrA.Size()-1);
+    SrcFile.SetLineInputMode(true);
+    int ReadSize=SrcFile.Read(&StrA[0],StrA.size()-1);
     if (ReadSize<=0)
     {
       // Looks like stdin is a null device. We can enter to infinite loop
@@ -254,19 +291,23 @@ bool getwstr(wchar *str,size_t n)
     // use "chcp" in console. But we avoid OEM to ANSI conversion,
     // because we also want to handle ANSI files redirection correctly,
     // like "rar ... < ansifile.txt".
-    CharToWide(&StrA[0],str,n);
-    cleandata(&StrA[0],StrA.Size()); // We can use this function to enter passwords.
+    CharToWide(&StrA[0],str);
+    cleandata(&StrA[0],StrA.size()); // We can use this function to enter passwords.
   }
   else
   {
+    std::vector<wchar> Buf(MaxRead);  // Up to 4 UTF-8 characters per wchar_t.
     DWORD ReadSize=0;
-    if (ReadConsole(GetStdHandle(STD_INPUT_HANDLE),str,DWORD(n-1),&ReadSize,NULL)==0)
+    if (ReadConsole(GetStdHandle(STD_INPUT_HANDLE),&Buf[0],(DWORD)Buf.size()-1,&ReadSize,NULL)==0)
       return false;
-    str[ReadSize]=0;
+    Buf[ReadSize]=0;
+    str=Buf.data();
   }
 #else
-  if (fgetws(str,n,stdin)==NULL)
+  std::vector<wchar> Buf(MaxRead);  // Up to 4 UTF-8 characters per wchar_t.
+  if (fgetws(&Buf[0],Buf.size(),stdin)==NULL)
     ErrHandler.Exit(RARX_USERBREAK); // Avoid infinite Ask() loop.
+  str=Buf.data();
 #endif
   RemoveLF(str);
   return true;
@@ -318,8 +359,8 @@ int Ask(const wchar *AskStr)
     eprintf(L"[%c]%ls",Item[I][KeyPos],&Item[I][KeyPos+1]);
   }
   eprintf(L" ");
-  wchar Str[50];
-  getwstr(Str,ASIZE(Str));
+  std::wstring Str;
+  getwstr(Str);
   wchar Ch=toupperw(Str[0]);
   for (int I=0;I<NumItems;I++)
     if (Ch==Item[I][ItemKeyPos[I]])
@@ -329,11 +370,11 @@ int Ask(const wchar *AskStr)
 #endif
 
 
-static bool IsCommentUnsafe(const wchar *Data,size_t Size)
+static bool IsCommentUnsafe(const std::wstring &Data)
 {
-  for (size_t I=0;I<Size;I++)
+  for (size_t I=0;I<Data.size();I++)
     if (Data[I]==27 && Data[I+1]=='[')
-      for (size_t J=I+2;J<Size;J++)
+      for (size_t J=I+2;J<Data.size();J++)
       {
         // Return true for <ESC>[{key};"{string}"p used to redefine
         // a keyboard key on some terminals.
@@ -346,18 +387,16 @@ static bool IsCommentUnsafe(const wchar *Data,size_t Size)
 }
 
 
-void OutComment(const wchar *Comment,size_t Size)
+void OutComment(const std::wstring &Comment)
 {
-  if (IsCommentUnsafe(Comment,Size))
+  if (IsCommentUnsafe(Comment))
     return;
   const size_t MaxOutSize=0x400;
-  for (size_t I=0;I<Size;I+=MaxOutSize)
+  for (size_t I=0;I<Comment.size();I+=MaxOutSize)
   {
-    wchar Msg[MaxOutSize+1];
-    size_t CopySize=Min(MaxOutSize,Size-I);
-    wcsncpy(Msg,Comment+I,CopySize);
-    Msg[CopySize]=0;
-    mprintf(L"%s",Msg);
+    size_t CopySize=Min(MaxOutSize,Comment.size()-I);
+    mprintf(L"%s",Comment.substr(I,CopySize).c_str());
   }
   mprintf(L"\n");
 }
+

@@ -96,7 +96,7 @@ void AbstractInlineTextBox::WillDestroy(const InlineCursor& cursor) {
   if (cursor.CurrentItem()) {
     return AbstractInlineTextBoxCache::WillDestroy(cursor);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 AbstractInlineTextBox::AbstractInlineTextBox(const InlineCursor& cursor)
@@ -253,15 +253,13 @@ unsigned AbstractInlineTextBox::TextOffsetInFormattingContext(
   return cursor.Current().TextStartOffset() + offset;
 }
 
-AbstractInlineTextBox::Direction AbstractInlineTextBox::GetDirection() const {
+PhysicalDirection AbstractInlineTextBox::GetDirection() const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
-    return kLeftToRight;
-  const TextDirection text_direction = cursor.Current().ResolvedDirection();
-  if (GetLayoutText()->Style()->IsHorizontalWritingMode()) {
-    return IsLtr(text_direction) ? kLeftToRight : kRightToLeft;
-  }
-  return IsLtr(text_direction) ? kTopToBottom : kBottomToTop;
+    return PhysicalDirection::kRight;
+  return WritingDirectionMode(GetLayoutText()->Style()->GetWritingMode(),
+                              cursor.Current().ResolvedDirection())
+      .InlineEnd();
 }
 
 Node* AbstractInlineTextBox::GetNode() const {

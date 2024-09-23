@@ -412,7 +412,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   webrtc::VideoFrame input_frame =
       webrtc::VideoFrame::Builder()
           .set_video_frame_buffer(buffer)
-          .set_timestamp_rtp(kRtpTimestamp)
+          .set_rtp_timestamp(kRtpTimestamp)
           .set_ntp_time_ms(kCaptureTimeNtp.ms())
           .set_packet_infos(webrtc::RtpPacketInfos(packet_infos))
           .build();

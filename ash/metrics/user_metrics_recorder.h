@@ -20,6 +20,7 @@ enum class DictationToggleSource;
 class PointerMetricsRecorder;
 class TouchUsageMetricsRecorder;
 class StylusMetricsRecorder;
+class WMFeatureMetricsRecorder;
 
 // User Metrics Recorder provides a repeating callback (RecordPeriodicMetrics)
 // on a timer to allow recording of state data over time to the UMA records.
@@ -106,6 +107,9 @@ class ASH_EXPORT UserMetricsRecorder {
 
   // Metric recorder to track app use in demo sessions.
   std::unique_ptr<DemoSessionMetricsRecorder> demo_session_metrics_recorder_;
+
+  // Metrics recorder to track window management related usage.
+  std::unique_ptr<WMFeatureMetricsRecorder> wm_feature_metrics_recorder_;
 };
 
 }  // namespace ash

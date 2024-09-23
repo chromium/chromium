@@ -31,7 +31,7 @@ export async function measureAppMemoryUsage(): Promise<CCAMemoryMeasurement> {
 
 const MEASUREMENT_INTERVAL_MS = 30000;
 
-enum SessionBehavior {
+export enum SessionBehavior {
   TAKE_NORMAL_PHOTO = 1 << 0,
   TAKE_PORTRAIT_PHOTO = 1 << 1,
   SCAN_BARCODE = 1 << 2,
@@ -79,7 +79,7 @@ class MemoryMeasurementHelper {
       if (state.get(Mode.SCAN)) {
         if (state.get(state.State.ENABLE_SCAN_BARCODE)) {
           this.measureWithSessionBehavior(SessionBehavior.SCAN_BARCODE);
-        } else {
+        } else if (state.get(state.State.ENABLE_SCAN_DOCUMENT)) {
           this.measureWithSessionBehavior(SessionBehavior.SCAN_DOCUMENT);
         }
       }
@@ -87,6 +87,7 @@ class MemoryMeasurementHelper {
 
     state.addEnabledStateObserver(Mode.SCAN, observeScanBehavior);
     state.addObserver(state.State.ENABLE_SCAN_BARCODE, observeScanBehavior);
+    state.addObserver(state.State.ENABLE_SCAN_DOCUMENT, observeScanBehavior);
 
     state.addEnabledStateObserver(state.State.RECORDING, () => {
       if (state.get(state.State.RECORD_TYPE_NORMAL)) {

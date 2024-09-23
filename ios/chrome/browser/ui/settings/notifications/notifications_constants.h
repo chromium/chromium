@@ -7,9 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-// The accessibility identifier of the Notifications setting table view.
-extern NSString* const kNotificationsTableViewId;
-
 // The accessibility identifier of the Notifications price tracking cell.
 extern NSString* const kSettingsNotificationsPriceTrackingCellId;
 
@@ -19,5 +16,8 @@ extern NSString* const kSettingsNotificationsContentCellId;
 // The reference to the newspaper SF Symbol from the default SF Symbol library.
 // (SF Symbols are Apple's system symbols that can be used as text or logos).
 extern NSString* const kNewspaperSFSymbol;
+
+// The accessibility identifier of the updated Notifications setting table view.
+extern NSString* const kNotificationsBannerTableViewId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_NOTIFICATIONS_CONSTANTS_H_

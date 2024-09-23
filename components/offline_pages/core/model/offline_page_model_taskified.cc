@@ -73,7 +73,7 @@ SavePageResult ArchiverResultToSavePageResult(ArchiverResult archiver_result) {
     case ArchiverResult::ERROR_DIGEST_CALCULATION_FAILED:
       return SavePageResult::DIGEST_CALCULATION_FAILED;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SavePageResult::CONTENT_UNAVAILABLE;
 }
 
@@ -86,7 +86,7 @@ SavePageResult AddPageResultToSavePageResult(AddPageResult add_page_result) {
     case AddPageResult::STORE_FAILURE:
       return SavePageResult::STORE_FAILURE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return SavePageResult::STORE_FAILURE;
 }
 
@@ -179,7 +179,7 @@ void OfflinePageModelTaskified::SavePage(
 
   // Save directly to public location if on-the-fly enabled.
   //
-  // TODO(crbug.com/999247): We would like to skip renaming the file if
+  // TODO(crbug.com/40642718): We would like to skip renaming the file if
   // streaming the file directly to it's end location. Knowing the file path or
   // name before calling the archiver would make this possible.
   base::FilePath save_file_dir =
@@ -576,7 +576,7 @@ void OfflinePageModelTaskified::RunMaintenanceTasks(base::Time now,
         store_.get(), OfflineTimeNow(), base::DoNothing()));
   }
 
-  // TODO(https://crbug.com/834902) This might need a better execution plan.
+  // TODO(crbug.com/40572659) This might need a better execution plan.
   task_queue_.AddTask(std::make_unique<PersistentPageConsistencyCheckTask>(
       store_.get(), archive_manager_.get(), now,
       base::BindOnce(

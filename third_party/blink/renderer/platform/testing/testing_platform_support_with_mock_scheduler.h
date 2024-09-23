@@ -29,6 +29,8 @@ namespace scheduler {
 class MainThreadSchedulerImpl;
 }
 
+// NOTE: This class is deprecated. Please use TestingPlatformSupport for
+// platform support along with blink::TaskEnvironment for scheduler support.
 // This class adds scheduler and threading support to TestingPlatformSupport.
 // See also ScopedTestingPlatformSupport to use this class correctly.
 class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
@@ -81,9 +83,9 @@ class TestingPlatformSupportWithMockScheduler : public TestingPlatformSupport {
   bool auto_advance_ = true;
 
   std::unique_ptr<scheduler::MainThreadSchedulerImpl> scheduler_;
-  raw_ptr<base::sequence_manager::SequenceManager, DanglingUntriaged>
-      sequence_manager_;  // Owned by scheduler_.
   std::unique_ptr<ScopedMainThreadOverrider> main_thread_overrider_;
+  raw_ptr<base::sequence_manager::SequenceManager>
+      sequence_manager_;  // Owned by scheduler_.
 };
 
 }  // namespace blink

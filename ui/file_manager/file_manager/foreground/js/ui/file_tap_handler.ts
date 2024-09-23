@@ -249,8 +249,24 @@ const LONG_PRESS_THRESHOLD_MILLISECONDS = 500;
 const MAX_TRACKING_FOR_TAP_ = 8;
 
 export enum TapEvent {
+  /**
+  The touch started and ended quickly, aka, both events have triggered:
+  touchstart and touchend.
+  */
   TAP = 'tap',
+
+  /**
+  The touch started and took more than the threshold, it hasn't triggered
+  the touchend yet, but the LONG_PRESS is processed.
+  */
   LONG_PRESS = 'longpress',
+
+  /**
+  The touchstart and the touchend have triggered and took more than the
+  threshold between the two.
+  */
   LONG_TAP = 'longtap',
+
+  /** Similart to TAP but with exactly 2 fingers. */
   TWO_FINGER_TAP = 'twofingertap',
 }

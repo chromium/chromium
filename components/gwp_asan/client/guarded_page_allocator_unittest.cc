@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 
 #include <algorithm>
 #include <array>
-#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -20,6 +24,7 @@
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
+#include "components/gwp_asan/client/gwp_asan.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gwp_asan {
@@ -34,10 +39,16 @@ class BaseGpaTest : public testing::Test {
               size_t max_metadata,
               size_t max_slots,
               bool is_partition_alloc) {
-    gpa_.Init(max_allocated_pages, max_metadata, max_slots,
-              base::BindLambdaForTesting(
-                  [&](size_t allocations) { allocator_oom_ = true; }),
-              is_partition_alloc);
+    gpa_.Init(
+        AllocatorSettings{
+            .max_allocated_pages = max_allocated_pages,
+            .num_metadata = max_metadata,
+            .total_pages = max_slots,
+            .sampling_frequency = 0u,
+        },
+        base::BindLambdaForTesting(
+            [&](size_t allocations) { allocator_oom_ = true; }),
+        is_partition_alloc);
   }
 
   GuardedPageAllocator gpa_;

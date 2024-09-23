@@ -9,13 +9,13 @@ source_set("model") {
   ]
   deps = [
     "//components/browser_sync",
-    "//components/keyed_service/ios",
     "//components/metrics",
     "//components/sync",
     "//components/sync_preferences",
     "//components/unified_consent",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
   ]

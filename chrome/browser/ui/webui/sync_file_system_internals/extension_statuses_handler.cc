@@ -29,7 +29,7 @@ namespace syncfs_internals {
 
 namespace {
 
-// TODO(crbug.com/989631): Break this and GetExtensionStatusesAsDictionary
+// TODO(crbug.com/40638409): Break this and GetExtensionStatusesAsDictionary
 // into a separate library, so the callbacks can use weak pointers to the
 // calling instances. This will also break the dependency between
 // ExtensionStatusesHandler and FileMetadataHandler.

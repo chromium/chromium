@@ -73,7 +73,7 @@ void FocusAllPluginVmWindows() {
   if (!item_controller) {
     return;
   }
-  for (auto* app_window : item_controller->windows()) {
+  for (AppWindowBase* app_window : item_controller->windows()) {
     app_window->Activate();
   }
 }

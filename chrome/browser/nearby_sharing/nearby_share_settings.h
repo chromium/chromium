@@ -46,6 +46,7 @@ class PrefService;
 class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
                             public NearbyShareLocalDeviceDataManager::Observer {
  public:
+  using DataUsage = nearby_share::mojom::DataUsage;
   NearbyShareSettings(
       PrefService* pref_service_,
       NearbyShareLocalDeviceDataManager* local_device_data_manager);

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+// This test suite verifies that the following use counter work correctly:
+// - kMaximumHTMLParserDOMTreeDepthHit
+
+// from third_party/blink/renderer/core/html/parser/html_construction_site.h
+const kMaximumHTMLParserDOMTreeDepth = 512;
+const HTML_OVER_LIMIT = '<div>'.repeat(kMaximumHTMLParserDOMTreeDepth + 10) + 'hello';
+const HTML_BELOW_LIMIT = '<div>'.repeat(kMaximumHTMLParserDOMTreeDepth - 1) + 'hello';
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit);
+    assert_false(internals.isUseCounted(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+    document.createElement("div").innerHTML = HTML_OVER_LIMIT;
+
+    assert_true(internals.isUseCounted(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+}, 'Super deeply nested DOM nodes are use counted (via innerHTML)');
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit);
+    assert_false(internals.isUseCounted(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+    const doc = new DOMParser().parseFromString(HTML_OVER_LIMIT, 'text/html');
+
+    assert_true(internals.isUseCounted(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+}, 'Super deeply nested DOM nodes are use counted (via DOMParser)');
+
+promise_test(async () => {
+    const iframe = document.createElement("iframe");
+    iframe.srcdoc = HTML_OVER_LIMIT;
+    document.body.append(iframe);
+
+    await new Promise(r => iframe.addEventListener('load', r, {once:true}));
+
+    assert_true(internals.isUseCounted(iframe.contentDocument, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+}, 'Super deeply nested DOM nodes are use counted (via iframe)');
+
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit);
+    assert_false(internals.isUseCounted(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+    document.createElement("div").innerHTML = HTML_BELOW_LIMIT;
+
+    assert_false(internals.isUseCounted(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+}, 'Deeply nested DOM nodes under the limit are NOT use counted (via innerHTML)');
+
+test(() => {
+    internals.clearUseCounter(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit);
+    assert_false(internals.isUseCounted(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+    const doc = new DOMParser().parseFromString(HTML_BELOW_LIMIT, 'text/html');
+
+    assert_false(internals.isUseCounted(document, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+}, 'Deeply nested DOM nodes under the limit are NOT use counted (via DOMParser)');
+
+promise_test(async () => {
+    const iframe = document.createElement("iframe");
+    iframe.srcdoc = HTML_BELOW_LIMIT;
+    document.body.append(iframe);
+
+    await new Promise(r => iframe.addEventListener('load', r, {once:true}));
+
+    assert_false(internals.isUseCounted(iframe.contentDocument, WebFeature.kMaximumHTMLParserDOMTreeDepthHit));
+
+}, 'Deeply nested DOM nodes under the limit are NOT use counted (via iframe)');
+
+
+</script>

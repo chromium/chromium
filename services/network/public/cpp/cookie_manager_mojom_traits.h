@@ -25,6 +25,13 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<network::mojom::CookieSourceType, net::CookieSourceType> {
+  static network::mojom::CookieSourceType ToMojom(net::CookieSourceType input);
+  static bool FromMojom(network::mojom::CookieSourceType input,
+                        net::CookieSourceType* output);
+};
+
+template <>
 struct EnumTraits<network::mojom::CookiePriority, net::CookiePriority> {
   static network::mojom::CookiePriority ToMojom(net::CookiePriority input);
   static bool FromMojom(network::mojom::CookiePriority input,
@@ -199,6 +206,13 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
 };
 
 template <>
+struct EnumTraits<network::mojom::AncestorChainBit,
+                  net::CookiePartitionKey::AncestorChainBit> {
+  static network::mojom::AncestorChainBit ToMojom(bool input);
+  static bool FromMojom(network::mojom::AncestorChainBit input);
+};
+
+template <>
 struct StructTraits<network::mojom::CookiePartitionKeyDataView,
                     net::CookiePartitionKey> {
   static const net::SchemefulSite& site(const net::CookiePartitionKey& cpk) {
@@ -211,6 +225,13 @@ struct StructTraits<network::mojom::CookiePartitionKeyDataView,
   static const std::optional<base::UnguessableToken>& nonce(
       const net::CookiePartitionKey& cpk) {
     return cpk.nonce();
+  }
+
+  static network::mojom::AncestorChainBit ancestor_chain_bit(
+      const net::CookiePartitionKey& cpk) {
+    return EnumTraits<
+        network::mojom::AncestorChainBit,
+        net::CookiePartitionKey::AncestorChainBit>::ToMojom(cpk.IsThirdParty());
   }
 
   static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,
@@ -278,6 +299,9 @@ struct StructTraits<network::mojom::CanonicalCookieDataView,
   }
   static int source_port(const net::CanonicalCookie& c) {
     return c.SourcePort();
+  }
+  static net::CookieSourceType source_type(const net::CanonicalCookie& c) {
+    return c.SourceType();
   }
 
   static bool Read(network::mojom::CanonicalCookieDataView cookie,

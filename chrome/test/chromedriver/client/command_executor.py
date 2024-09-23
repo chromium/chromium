@@ -118,6 +118,10 @@ class Command(object):
       _Method.POST, '/session/:sessionId/window/minimize')
   FULLSCREEN_WINDOW = (
       _Method.POST, '/session/:sessionId/window/fullscreen')
+  SET_DEVICE_POSTURE = (
+      _Method.POST, '/session/:sessionId/deviceposture')
+  CLEAR_DEVICE_POSTURE = (
+      _Method.DELETE, '/session/:sessionId/deviceposture')
   CLOSE = (_Method.DELETE, '/session/:sessionId/window')
   DRAG_ELEMENT = (_Method.POST, '/session/:sessionId/element/:id/drag')
   GET_ELEMENT_VALUE_OF_CSS_PROPERTY = (
@@ -210,6 +214,10 @@ class Command(object):
   SET_USER_VERIFIED = (
       _Method.POST,
       '/session/:sessionId/webauthn/authenticator/:authenticatorId/uv')
+  SET_CREDENTIAL_PROPERTIES = (
+      _Method.POST,
+      '/session/:sessionId/webauthn/authenticator/:authenticatorId/credentials/'
+      ':credentialId/props')
   SET_SPC_TRANSACTION_MODE = (
       _Method.POST,
       '/session/:sessionId/secure-payment-confirmation/set-mode')
@@ -253,6 +261,15 @@ class Command(object):
   RESET_COOLDOWN = (
       _Method.POST,
       '/session/:sessionId/fedcm/resetcooldown')
+  RUN_BOUNCE_TRACKING_MITIGATIONS = (
+        _Method.DELETE,
+        '/session/:sessionId/storage/run_bounce_tracking_mitigations')
+  CREATE_VIRTUAL_PRESSURE_SOURCE = (
+      _Method.POST, '/session/:sessionId/pressuresource')
+  UPDATE_VIRTUAL_PRESSURE_SOURCE = (
+      _Method.POST, '/session/:sessionId/pressuresource/:type')
+  REMOVE_VIRTUAL_PRESSURE_SOURCE = (
+      _Method.DELETE, '/session/:sessionId/pressuresource/:type')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')
@@ -264,7 +281,7 @@ class CommandExecutor(object):
     self._http_timeout = 10
     # see https://crbug.com/1045241: short timeout seems to introduce flakiness
     if util.IsMac() or util.IsWindows():
-      self._http_timeout = 30
+      self._http_timeout = 60
     if http_timeout is not None:
       self._http_timeout = http_timeout
     self._http_client = http.client.HTTPConnection(

@@ -10,14 +10,16 @@ import android.content.res.Resources;
 import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
 import org.chromium.chrome.browser.language.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.ui.util.TokenHolder;
 
 /**
  * Helper class to manage the preferences UI when selecting an app language from LanguageSettings.
- * This helper is responsible for starting the language split download, showing a Snackbar when
- * the download completes, and updating the summary text on the {@link LanguageItemPikerPreference}
+ * This helper is responsible for starting the language split download, showing a Snackbar when the
+ * download completes, and updating the summary text on the {@link LanguageItemPikerPreference}
  * representing the overridden app language.
  */
 public class AppLanguagePreferenceDelegate {
@@ -26,6 +28,7 @@ public class AppLanguagePreferenceDelegate {
         void restart();
     }
 
+    private int mSnackbarToken = TokenHolder.INVALID_TOKEN;
     private SnackbarManager mSnackbarManager;
     private Snackbar mSnackbar;
     private SnackbarController mSnackbarController;
@@ -33,10 +36,12 @@ public class AppLanguagePreferenceDelegate {
     private LanguageItemPickerPreference mPreference;
     // Activity representing the {@link LanguageSettings} preferences.
     private Activity mActivity;
+    private Profile mProfile;
 
     /**
      * Set the restart action. This action handler is passed in from {@link SettingsActivity} when
      * the {@link LanguageSettings} fragment is created.
+     *
      * @param action RestartAction handler to restart Chrome from the Snackbar.
      */
     public void setRestartAction(RestartAction action) {
@@ -46,20 +51,30 @@ public class AppLanguagePreferenceDelegate {
     /**
      * Set the LanguageSettings PreferenceFragment that is currently active and the preference for
      * the app language. Creates a {@link SnackbarManager} using the fragments activity.
+     *
      * @param fragment LanguageSettings PreferenceFragment.
      * @param preference LanguageItemPickerPreference for the app language.
+     * @param profile The Profile for the current session.
      */
-    public void setup(LanguageSettings fragment, LanguageItemPickerPreference preference) {
+    public void setup(
+            LanguageSettings fragment, LanguageItemPickerPreference preference, Profile profile) {
         mActivity = fragment.getActivity();
         mPreference = preference;
         mSnackbarManager =
                 new SnackbarManager(mActivity, mActivity.findViewById(android.R.id.content), null);
+        mProfile = profile;
     }
 
     /** Show the {@link Snackbar} if one can be shown and there is a saved Snackbar to show. */
     public void maybeShowSnackbar() {
         if (mSnackbar != null && mSnackbarManager.canShowSnackbar()) {
-            mSnackbarManager.setParentView(mActivity.findViewById(android.R.id.content));
+            if (mSnackbarToken == TokenHolder.INVALID_TOKEN) {
+                // SnackbarManager is created/owned by this class, so the override doesn't need to
+                // be popped.
+                mSnackbarToken =
+                        mSnackbarManager.pushParentViewToOverrideStack(
+                                mActivity.findViewById(android.R.id.content));
+            }
             mSnackbarManager.showSnackbar(mSnackbar);
             mSnackbar = null;
         }
@@ -76,7 +91,7 @@ public class AppLanguagePreferenceDelegate {
         assert mActivity != null : "mActivity must be set to start language split download";
         assert mPreference != null : "mPreference must be set to start language split download";
         // Set language text and initial downloading summary.
-        mPreference.setLanguageItem(code);
+        mPreference.setLanguageItem(mProfile, code);
         CharSequence nativeName = mPreference.getLanguageItem().getNativeDisplayName();
         CharSequence summary =
                 mActivity

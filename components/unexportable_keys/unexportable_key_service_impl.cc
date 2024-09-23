@@ -4,8 +4,6 @@
 
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 
-#include <optional>
-
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -115,8 +113,10 @@ UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
 UnexportableKeyServiceImpl::~UnexportableKeyServiceImpl() = default;
 
 // static
-bool UnexportableKeyServiceImpl::IsUnexportableKeyProviderSupported() {
-  return UnexportableKeyTaskManager::GetUnexportableKeyProvider() != nullptr;
+bool UnexportableKeyServiceImpl::IsUnexportableKeyProviderSupported(
+    crypto::UnexportableKeyProvider::Config config) {
+  return UnexportableKeyTaskManager::GetUnexportableKeyProvider(
+             std::move(config)) != nullptr;
 }
 
 void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(

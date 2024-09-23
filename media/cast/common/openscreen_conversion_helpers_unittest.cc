@@ -5,12 +5,11 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 
 #include "media/cast/cast_config.h"
-#include "media/cast/cast_sender.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 #include "third_party/openscreen/src/cast/streaming/rtp_time.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
 #include "third_party/openscreen/src/platform/api/time.h"
 
 namespace media::cast {

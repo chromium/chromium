@@ -295,7 +295,7 @@ if existing code uses the old one.
 * Function names: `` `FooFunction()` ``. The trailing parens disambiguate
   against class names, and occasionally, English words.
 * Variable names: `` `foo_var` ``.
-* Tracking comments for future improvements: `// TODO(crbug.com/12345): ...`,
+* Tracking comments for future improvements: `// TODO(crbug.com/40781525): ...`,
   or, less optimally, `// TODO(knowledgeable_username): ...`.  Tracking bugs
   provide space to give background context and current status; a username might
   at least provide a starting point for asking about an issue.
@@ -303,14 +303,17 @@ if existing code uses the old one.
 ```cpp
 // `FooImpl` implements the `FooBase` class.
 // `FooFunction()` modifies `foo_member_`.
-// TODO(crbug.com/1): Rename things to something more descriptive than "foo".
+// TODO(crbug.com/40097047): Rename things to something more descriptive than "foo".
 ```
 
 ## Named namespaces
 
-Named namespaces are discouraged in top-level embedders (e.g., `chrome/`). See
-[this thread](https://groups.google.com/a/chromium.org/d/msg/chromium-dev/8ROncnL1t4k/J7uJMCQ8BwAJ)
-for background and discussion.
+Most code should be in a namespace, with the exception of code under
+`//chrome`, which may be in the global namespace (do not use the `chrome::`
+namespace). Minimize use of nested namespaces, as they do not actually
+improve encapsulation; if a nested namespace is needed, do not reuse the
+name of any top-level namespace. For more detailed guidance and rationale,
+see https://abseil.io/tips/130.
 
 ## Guarding with DCHECK_IS_ON()
 

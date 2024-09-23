@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -23,6 +25,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener {
     public static final String TOGGLE_PREFERENCE = "ad_measurement_toggle";
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     static boolean isAdMeasurementPrefEnabled(Profile profile) {
         PrefService prefService = UserPrefs.get(profile);
@@ -42,13 +46,18 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
-        getActivity().setTitle(R.string.settings_ad_measurement_page_title);
+        mPageTitle.set(getString(R.string.settings_ad_measurement_page_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_measurement_preference);
 
         ChromeSwitchPreference adMeasurementToggle = findPreference(TOGGLE_PREFERENCE);
         adMeasurementToggle.setChecked(isAdMeasurementPrefEnabled(getProfile()));
         adMeasurementToggle.setOnPreferenceChangeListener(this);
         adMeasurementToggle.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     @Override

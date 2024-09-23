@@ -23,17 +23,19 @@ NearbySchedulerFactory::CreateExpirationScheduler(
     const std::string& pref_name,
     PrefService* pref_service,
     NearbyScheduler::OnRequestCallback on_request_callback,
+    Feature logging_feature,
     const base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreateExpirationSchedulerInstance(
         std::move(expiration_time_functor), retry_failures,
         require_connectivity, pref_name, pref_service,
-        std::move(on_request_callback), clock);
+        std::move(on_request_callback), logging_feature, clock);
   }
 
   return std::make_unique<NearbyExpirationScheduler>(
       std::move(expiration_time_functor), retry_failures, require_connectivity,
-      pref_name, pref_service, std::move(on_request_callback), clock);
+      pref_name, pref_service, std::move(on_request_callback), logging_feature,
+      clock);
 }
 
 // static
@@ -44,16 +46,17 @@ NearbySchedulerFactory::CreateOnDemandScheduler(
     const std::string& pref_name,
     PrefService* pref_service,
     NearbyScheduler::OnRequestCallback callback,
+    Feature logging_feature,
     const base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreateOnDemandSchedulerInstance(
         retry_failures, require_connectivity, pref_name, pref_service,
-        std::move(callback), clock);
+        std::move(callback), logging_feature, clock);
   }
 
   return std::make_unique<NearbyOnDemandScheduler>(
       retry_failures, require_connectivity, pref_name, pref_service,
-      std::move(callback), clock);
+      std::move(callback), logging_feature, clock);
 }
 
 // static
@@ -65,16 +68,17 @@ NearbySchedulerFactory::CreatePeriodicScheduler(
     const std::string& pref_name,
     PrefService* pref_service,
     NearbyScheduler::OnRequestCallback callback,
+    Feature logging_feature,
     const base::Clock* clock) {
   if (test_factory_) {
     return test_factory_->CreatePeriodicSchedulerInstance(
         request_period, retry_failures, require_connectivity, pref_name,
-        pref_service, std::move(callback), clock);
+        pref_service, std::move(callback), logging_feature, clock);
   }
 
   return std::make_unique<NearbyPeriodicScheduler>(
       request_period, retry_failures, require_connectivity, pref_name,
-      pref_service, std::move(callback), clock);
+      pref_service, std::move(callback), logging_feature, clock);
 }
 
 // static

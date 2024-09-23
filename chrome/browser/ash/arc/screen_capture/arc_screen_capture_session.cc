@@ -221,22 +221,17 @@ void ArcScreenCaptureSession::SetOutputBuffer(
       stride * kBytesPerPixel, 0, stride * kBytesPerPixel * size_.height(),
       std::move(platform_file));
 
-  viz::SharedImageFormat si_format =
-      viz::GetSinglePlaneSharedImageFormat(buffer_format);
-  CHECK(!si_format.IsLegacyMultiplanar());
+  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(buffer_format);
 
   auto client_shared_image = sii->CreateSharedImage(
-      si_format, size_, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType,
-      // NOTE: This SI will be used as the destination of a copy of the desktop
-      // texture via the raster interface. Hence, it needs RASTER_WRITE usage as
-      // well as GLES2_WRITE usage for the case where the raster interface is
-      // going over GLES2.
-      // TODO(crbug.com/1508447): Remove GLES2_WRITE usage once the browser main
-      // thread using the RasterDecoder implementation has definitively landed.
-      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-          gpu::SHARED_IMAGE_USAGE_GLES2_WRITE,
-      "ArcScreenCapture", std::move(handle));
+      {si_format, size_, gfx::ColorSpace(),
+       // NOTE: This SI will be used as the destination of a copy of the desktop
+       // texture via the raster interface. Hence, it needs RASTER_WRITE usage.
+       // Note that as the browser process raster interface uses
+       // RasterImplementation (and not RasterImplementationGLES) as its
+       // implementation, GLES2_WRITE usage is not needed.
+       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE, "ArcScreenCapture"},
+      std::move(handle));
   CHECK(client_shared_image);
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -288,11 +283,20 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
     std::unique_ptr<viz::CopyOutputResult> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (result->IsEmpty() || result->size() != size_) {
+  if (result->IsEmpty() || result->size().width() < size_.width() - 1 ||
+      result->size().width() > size_.width() + 1 ||
+      result->size().height() < size_.height() - 1 ||
+      result->size().height() > size_.height() + 1) {
     // If the display size changed after the CopyOutputRequest was issued the
     // scale ratio might not produce the right sized output. Drop this result
     // since it's not usable. The next CopyOutputRequest to be issued will know
     // the new display size and have the correct scale ratio.
+    // Note that result->size() is computed, and so may be a +/- one pixel from
+    // the expected size_ value due to rounding and truncation of floating
+    // point values. See b/322075216.
+    LOG(WARNING)
+        << "Ignoring screen capture result due to size mismatch. Expected "
+        << size_.ToString() << " but received " << result->size().ToString();
     return;
   }
 
@@ -307,16 +311,15 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
   }
   // Get the source texture - RGBA format is guaranteed to have 1 valid texture
   // if the CopyOutputRequest succeeded:
-  gpu::MailboxHolder mailbox_holder =
-      result->GetTextureResult()->mailbox_holders[0];
-  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+  gpu::Mailbox result_mailbox = result->GetTextureResult()->mailbox;
+  CHECK(!result_mailbox.IsZero());
 
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
   CHECK_EQ(1u, release_callbacks.size());
 
   std::unique_ptr<DesktopTexture> desktop_texture =
-      std::make_unique<DesktopTexture>(mailbox_holder.mailbox,
+      std::make_unique<DesktopTexture>(result_mailbox,
                                        std::move(release_callbacks[0]));
   if (buffer_queue_.empty()) {
     // We don't have a GPU buffer to render to, so put this in a queue to use
@@ -393,12 +396,19 @@ void ArcScreenCaptureSession::OnAnimationStep(base::TimeTicks timestamp) {
   // Clip the requested area to the desktop area. See b/118675936.
   gfx::Size desktop_size = display_root_window_->bounds().size();
   request->set_area(gfx::Rect(desktop_size));
-  if (desktop_size != size_) {
-    // Perform scaling to desired size when copying output.
-    request->SetScaleRatio(
-        gfx::Vector2d(desktop_size.width(), desktop_size.height()),
-        gfx::Vector2d(size_.width(), size_.height()));
-  }
+
+  // Unconditionally set the scaling ratio, even if the two sizes are identical.
+  // What may be identical here may not be identical further down when the scale
+  // is transformed for the surface. Note that desktop_size is is not in
+  // physical pixels, and a scale factor is applied to adjust to them.
+  request->SetScaleRatio(
+      gfx::Vector2d(desktop_size.width(), desktop_size.height()),
+      gfx::Vector2d(size_.width(), size_.height()));
+
+  // Ensure we get the result size we want, and not +/- one pixel due to
+  // clamping or rounding.
+  request->set_result_selection(gfx::Rect(size_));
+
   layer->RequestCopyOfOutput(std::move(request));
 }
 

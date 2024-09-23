@@ -60,7 +60,11 @@ chrome.test.runTests([
     }
     assertEq('chrome.runtime API Test', manifest.name);
     assertEq('1', manifest.version);
-    assertEq(2, manifest.manifest_version);
+    if (isServiceWorker) {
+      assertEq(3, manifest.manifest_version);
+    } else {
+      assertEq(2, manifest.manifest_version);
+    }
     if (manifest.background.scripts) {
       assertEq(['test.js'], manifest.background.scripts);
     } else {

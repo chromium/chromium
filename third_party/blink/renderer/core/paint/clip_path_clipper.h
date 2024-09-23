@@ -22,6 +22,9 @@ class CORE_EXPORT ClipPathClipper {
   STATIC_ONLY(ClipPathClipper);
 
  public:
+  static void ResolveClipPathStatus(const LayoutObject& layout_object,
+                                    bool is_in_block_fragmentation);
+
   static void PaintClipPathAsMaskImage(GraphicsContext&,
                                        const LayoutObject&,
                                        const DisplayItemClient&);
@@ -40,9 +43,7 @@ class CORE_EXPORT ClipPathClipper {
   // same as the layout object getting clipped, but in the case of nested
   // clip-path, it could be one of the SVG clip path in the chain.
   // Returns the path if the clip-path can use path-based clip.
-  static std::optional<Path> PathBasedClip(
-      const LayoutObject& clip_path_owner,
-      const bool is_in_block_fragmentation);
+  static std::optional<Path> PathBasedClip(const LayoutObject& clip_path_owner);
 
   // Returns true if `location` intersects the `clip_path_owner`'s clip-path.
   // `reference_box`, which should be calculated from `reference_box_object`, is

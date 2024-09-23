@@ -44,7 +44,6 @@ class Size;
 namespace ui {
 class InputMethod;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class UserActivityDetector;
 class UserActivityPowerManagerNotifier;
 #endif
 }  // namespace ui
@@ -96,7 +95,7 @@ class ShellDesktopControllerAura
   void PowerButtonEventReceived(bool down, base::TimeTicks timestamp) override;
 
   // display::DisplayConfigurator::Observer:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const display::DisplayConfigurator::DisplayStateList& displays) override;
 #endif
 
@@ -170,14 +169,13 @@ class ShellDesktopControllerAura
   std::unique_ptr<wm::CursorManager> cursor_manager_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
   std::unique_ptr<ui::UserActivityPowerManagerNotifier> user_activity_notifier_;
 #endif
 
   std::unique_ptr<AppWindowClient> app_window_client_;
 
   // NativeAppWindow::Close() deletes the AppWindow.
-  std::list<AppWindow*> app_windows_;
+  std::list<raw_ptr<AppWindow, CtnExperimental>> app_windows_;
 
   // Non-null between WillRunMainMessageLoop() and MaybeQuit().
   base::OnceClosure quit_when_idle_closure_;

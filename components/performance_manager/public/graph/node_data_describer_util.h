@@ -7,8 +7,8 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
@@ -42,7 +42,7 @@ base::Value TimeSinceEpochToValue(base::TimeTicks time_ticks);
 
 // Converts a string to a base::Value, where null strings go to a null value
 // instead of an empty string.
-base::Value MaybeNullStringToValue(base::StringPiece str);
+base::Value MaybeNullStringToValue(std::string_view str);
 
 base::Value PriorityAndReasonToValue(
     const execution_context_priority::PriorityAndReason& priority_and_reason);

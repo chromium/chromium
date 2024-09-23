@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_DATE_TIME_CHOOSER_DATE_TIME_CHOOSER_H_
 #define CONTENT_BROWSER_DATE_TIME_CHOOSER_DATE_TIME_CHOOSER_H_
 
+#include <string_view>
+
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -44,7 +46,7 @@ class CONTENT_EXPORT DateTimeChooser
   // Closes the platform specific dialog opened by the method above.
   virtual void ClosePlatformDialog() {}
 
-  void ReportBadMessage(base::StringPiece error);
+  void ReportBadMessage(std::string_view error);
 
   OpenDateTimeDialogCallback open_date_time_response_callback_;
 

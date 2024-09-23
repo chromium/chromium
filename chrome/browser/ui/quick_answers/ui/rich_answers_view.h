@@ -11,12 +11,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
-#include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -26,23 +24,17 @@ class ImageButton;
 class ImageView;
 }  // namespace views
 
-namespace chromeos::editor_menu {
-class FocusSearch;
-}  // namespace chromeos::editor_menu
-
 class QuickAnswersUiController;
 
 namespace quick_answers {
 struct QuickAnswer;
-
-class RichAnswersPreTargetHandler;
 
 // A bubble style view to show RichAnswer.
 //
 // `RichAnswersView` implements the common logic and UI between result-type
 // specific cards, e.g. settings button (both UI and on-click handling).
 // Subclasses are responsible for populating their UI on `GetContentsView()`.
-class RichAnswersView : public views::View {
+class RichAnswersView : public views::View, public views::WidgetObserver {
   METADATA_HEADER(RichAnswersView, views::View)
 
  public:
@@ -60,10 +52,13 @@ class RichAnswersView : public views::View {
       const StructuredResult& result);
 
   // views::View:
-  void OnFocus() override;
+  void AddedToWidget() override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnThemeChanged() override;
-  views::FocusTraversable* GetPaneFocusTraversable() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   ui::ImageModel GetIconImageModelForTesting();
 
@@ -76,9 +71,6 @@ class RichAnswersView : public views::View {
 
   void AddHeaderViewsTo(views::View* container_view,
                         const std::string& header_text);
-
-  // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
-  std::vector<views::View*> GetFocusableViews();
 
   // Used by subclasses to populate ResultType-specific contents.
   // This will never return nullptr after `RichAnswerView` constructor call.
@@ -107,8 +99,8 @@ class RichAnswersView : public views::View {
   raw_ptr<views::ImageView> vector_icon_ = nullptr;
   raw_ptr<views::Link> search_link_label_ = nullptr;
 
-  std::unique_ptr<RichAnswersPreTargetHandler> rich_answers_view_handler_;
-  std::unique_ptr<chromeos::editor_menu::FocusSearch> focus_search_;
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
   base::WeakPtrFactory<RichAnswersView> weak_factory_{this};
 };
 

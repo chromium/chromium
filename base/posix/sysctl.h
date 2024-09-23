@@ -6,11 +6,11 @@
 #define BASE_POSIX_SYSCTL_H_
 
 #include <initializer_list>
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // NB: While a BSD utility file, this lives in /base/posix/ for simplicity as
 // there is no /base/bsd/.
@@ -18,13 +18,13 @@
 namespace base {
 
 // Returns the value returned by `sysctl` as a std::string, or nullopt on error.
-BASE_EXPORT absl::optional<std::string> StringSysctl(
+BASE_EXPORT std::optional<std::string> StringSysctl(
     const std::initializer_list<int>& mib);
 
 #if !BUILDFLAG(IS_OPENBSD)
 // Returns the value returned by `sysctlbyname` as a std::string, or nullopt
 // on error.
-BASE_EXPORT absl::optional<std::string> StringSysctlByName(const char* name);
+BASE_EXPORT std::optional<std::string> StringSysctlByName(const char* name);
 #endif
 
 }  // namespace base

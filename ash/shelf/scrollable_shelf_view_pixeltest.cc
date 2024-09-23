@@ -8,7 +8,6 @@
 #include "ash/shelf/test/shelf_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -19,13 +18,9 @@ class ScrollableShelfViewPixelRTLTestBase : public ShelfTestBase {
  public:
   // ScrollableShelfTestBase:
   void SetUp() override {
-    scoped_features_.InitAndEnableFeature(chromeos::features::kJelly);
     ShelfTestBase::SetUp();
     AddAppShortcutsUntilOverflow(/*use_alternative_color=*/true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 class ScrollableShelfViewPixelRTLTest
@@ -84,21 +79,15 @@ class ScrollableShelfViewWithGuestModePixelTest
   }
 
   void SetUp() override {
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kJelly,
-                              features::kDeskButton},
-        /*disabled_features=*/{});
     set_start_session(false);
 
     ShelfTestBase::SetUp();
-    if (GetParam())
+    if (GetParam()) {
       SimulateGuestLogin();
-    else
+    } else {
       SimulateUserLogin("user@gmail.com");
+    }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(EnableGuestMode,
@@ -116,7 +105,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "shelf_context_menu",
-      /*revision_number=*/17,
+      /*revision_number=*/19,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()

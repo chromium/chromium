@@ -55,6 +55,8 @@ used when committed.
 
 ## Document Index
 
+**Note**: this is not an exhaustive list of all documents.
+
 ### Checking Out and Building
 *   [Linux Build Instructions](linux/build_instructions.md) - Linux
 *   [Mac Build Instructions](mac_build_instructions.md) - MacOS
@@ -163,13 +165,14 @@ used when committed.
     Docs for the subsystem that allows one to sync data across devices.
 *   [Ozone Overview](ozone_overview.md) - Ozone is an abstraction layer between
     the window system and low level input and graphics.
-*   [Optimizing Chrome Web UIs](optimizing_web_uis.md) - Notes on making webuis
-    more performant*   [Guidelines for considering branch dates in project planning](release_branch_guidance.md) -
+*   [Guidelines for considering branch dates in project planning](release_branch_guidance.md) -
     What to do (and not to do) around branch dates when scheduling your project
     work.
 *   [WebUI Explainer](webui_explainer.md) - An explanation of C++ and JavaScript
     infrastructural code for Chrome UIs implemented with web technologies (i.e.
     chrome:// URLs).
+*   [Optimizing Chrome Web UIs](optimizing_web_uis.md) - Notes on making webuis
+    more performant
 *   [Watchlists](infra/watchlists.md) - Use watchlists to get notified of CLs
     you are interested in.
 *   [Shutdown](shutdown.md) - Explains the steps of Chrome shutdown, to make it
@@ -336,10 +339,13 @@ used when committed.
 *   [What is Lacros](lacros.md)
 
 ### Misc WebUI-Specific Docs
-*   [Creating WebUI Interfaces in components/](webui_in_components.md) How to
+*   [Creating WebUI Interfaces in components/](webui_in_components.md) - How to
     create a new WebUI component in the `components/` directory.
-*   [Trusted Types on WebUI](trusted_types_on_webui.md) Tips for coding in WebUI
-    with Trusted Types in mind.
+*   [Trusted Types on WebUI](trusted_types_on_webui.md) - Tips for coding in
+    WebUI with Trusted Types in mind.
+*   [chrome-untrusted:// FAQ](chrome_untrusted.md) - Explainer on the usage of
+    the `chrome-untrusted://` scheme for hosting WebUIs that handle
+    untrustworthy content.
 
 ### Media
 *   [Audio Focus Handling](media/audio_focus.md) - How multiple MediaSession
@@ -380,6 +386,7 @@ used when committed.
 
 ### Memory
 *   [Memory Overview](memory/README.md)
+*   [Heap Profiling with External Tools](memory/heap_profiling_external.md)
 
 ### Memory Infrastructure Timeline Profiling (MemoryInfra)
 *   [Overview](memory-infra/README.md)
@@ -430,6 +437,10 @@ used when committed.
     from Mojo and IPC reviewers
 *   [D-Bus Mojo Connection Service](dbus_mojo_connection_service.md) - A service
     in Chrome to bootstrap CrOS services' Mojo connection.
+
+### Security
+*   [The Rule Of 2](security/rule-of-2.md) - An imoportant security rule when
+    handling untrustworthy contents (like anything downloaded from the web).
 
 ### Speed
 *   [Chrome Speed](speed/README.md) - Documentation for performance measurements and regressions in Chrome.

@@ -4,6 +4,8 @@
 
 #include "fuchsia_web/webengine/browser/web_engine_config.h"
 
+#include <string_view>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -17,6 +19,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -33,7 +36,7 @@ namespace {
 // Returns true if protected memory is supported. Currently we assume that it is
 // supported on ARM64, but not on x64.
 //
-// TODO(crbug.com/1013412): Detect if protected memory is supported.
+// TODO(crbug.com/42050020): Detect if protected memory is supported.
 bool IsProtectedMemorySupported() {
 #if defined(ARCH_CPU_ARM64)
   return true;
@@ -46,8 +49,8 @@ bool IsProtectedMemorySupported() {
 // The switch is assumed to consist of comma-separated values. If `switch_name`
 // is already set in `command_line` then a comma will be appended, followed by
 // `value`, otherwise the switch will be set to `value`.
-void AppendToSwitch(base::StringPiece switch_name,
-                    base::StringPiece value,
+void AppendToSwitch(std::string_view switch_name,
+                    std::string_view value,
                     base::CommandLine* command_line) {
   if (!command_line->HasSwitch(switch_name)) {
     command_line->AppendSwitchNative(switch_name, value);
@@ -67,7 +70,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
     return true;
   }
 
-  static const base::StringPiece kAllowedArgs[] = {
+  static const std::string_view kAllowedArgs[] = {
       blink::switches::kSharedArrayBufferAllowedOrigins,
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,
@@ -79,8 +82,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
       switches::kDisableGpuWatchdog,
       switches::kDisableQuic,
       switches::kDisableMipmapGeneration,
-      switches::kDisableWebRtcHWDecoding,
-      // TODO(crbug.com/1082821): Remove this switch from the allow-list.
+      // TODO(crbug.com/40131115): Remove this switch from the allow-list.
       switches::kEnableCastStreamingReceiver,
       switches::kEnableFeatures,
       switches::kEnableLowEndDeviceMode,
@@ -105,7 +107,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
 
   for (const auto arg : *args) {
     if (!base::Contains(kAllowedArgs, arg.first)) {
-      // TODO(https://crbug.com/1032439): Increase severity and return false
+      // TODO(crbug.com/40662865): Increase severity and return false
       // once we have a mechanism for soft transitions of supported arguments.
       LOG(WARNING) << "Unknown command-line arg: '" << arg.first
                    << "'. Config file and WebEngine version may not match.";
@@ -141,6 +143,12 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
     LOG(ERROR) << "Config command-line arg must be a string: " << arg.first;
     return false;
   }
+
+  // Disable kWebRtcHWDecoding by default until config-data are updated.
+  // TODO(b/326282208): Remove once config-data are updated to use the new
+  // feature.
+  AppendToSwitch(switches::kDisableFeatures, features::kWebRtcHWDecoding.name,
+                 command_line);
 
   return true;
 }
@@ -181,7 +189,7 @@ bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
     command_line->AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
   }
 
-  // TODO(crbug.com/1449048): Remove this switch once fixed.
+  // TODO(crbug.com/40269624): Remove this switch once fixed.
   command_line->AppendSwitchASCII(switches::kEnableHardwareOverlays,
                                   "underlay");
 

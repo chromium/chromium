@@ -14,11 +14,16 @@
 
 namespace feed {
 
-// A map of trial names (key) and list of group names/IDs (value)
-// sent from the server.
-typedef std::map<std::string, std::vector<std::string>> Experiments;
+struct ExperimentGroup {
+  std::string name;
+  int experiment_id;
 
-constexpr const char kDiscoverFeedExperiments[] = "DiscoverFeedExperiments";
+  bool operator==(const ExperimentGroup& rhs) const;
+};
+
+// A map of trial names (key) and list of groups.
+// sent from the server.
+typedef std::map<std::string, std::vector<ExperimentGroup>> Experiments;
 
 std::optional<Experiments> TranslateExperiments(
     const google::protobuf::RepeatedPtrField<feedwire::Experiment>&

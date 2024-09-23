@@ -35,7 +35,9 @@ class NotificationCenterTray;
 class OverviewButtonTray;
 class PaletteTray;
 class PhoneHubTray;
-class ProjectorAnnotationTray;
+class PodsOverflowTray;
+class AnnotationTray;
+class MouseKeysTray;
 class SelectToSpeakTray;
 class Shelf;
 class StatusAreaAnimationController;
@@ -114,6 +116,7 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   StatusAreaWidgetDelegate* status_area_widget_delegate() {
     return status_area_widget_delegate_;
   }
+  PodsOverflowTray* pods_overflow_tray() { return pods_overflow_tray_; }
   UnifiedSystemTray* unified_system_tray() { return unified_system_tray_; }
   NotificationCenterTray* notification_center_tray() {
     return notification_center_tray_;
@@ -135,14 +138,13 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
     return stop_recording_button_tray_;
   }
   FocusModeTray* focus_mode_tray() { return focus_mode_tray_; }
-  ProjectorAnnotationTray* projector_annotation_tray() {
-    return projector_annotation_tray_;
-  }
+  AnnotationTray* annotation_tray() { return annotation_tray_; }
   ImeMenuTray* ime_menu_tray() { return ime_menu_tray_; }
   HoldingSpaceTray* holding_space_tray() { return holding_space_tray_; }
   PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
   EcheTray* eche_tray() { return eche_tray_; }
 
+  MouseKeysTray* mouse_keys_tray() { return mouse_keys_tray_; }
   SelectToSpeakTray* select_to_speak_tray() { return select_to_speak_tray_; }
   WmModeButtonTray* wm_mode_button_tray() { return wm_mode_button_tray_; }
 
@@ -290,17 +292,19 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   raw_ptr<LogoutButtonTray, DanglingUntriaged> logout_button_tray_ = nullptr;
   raw_ptr<PaletteTray, DanglingUntriaged> palette_tray_ = nullptr;
   raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ = nullptr;
+  raw_ptr<PodsOverflowTray> pods_overflow_tray_ = nullptr;
   raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
   raw_ptr<VideoConferenceTray, DanglingUntriaged> video_conference_tray_ =
       nullptr;
   raw_ptr<StopRecordingButtonTray, DanglingUntriaged>
       stop_recording_button_tray_ = nullptr;
   raw_ptr<FocusModeTray, DanglingUntriaged> focus_mode_tray_ = nullptr;
-  raw_ptr<ProjectorAnnotationTray, DanglingUntriaged>
-      projector_annotation_tray_ = nullptr;
+  raw_ptr<AnnotationTray, DanglingUntriaged> annotation_tray_ = nullptr;
   raw_ptr<VirtualKeyboardTray, DanglingUntriaged> virtual_keyboard_tray_ =
       nullptr;
   raw_ptr<ImeMenuTray, DanglingUntriaged> ime_menu_tray_ = nullptr;
+  raw_ptr<MouseKeysTray, DisableDanglingPtrDetection> mouse_keys_tray_ =
+      nullptr;
   raw_ptr<SelectToSpeakTray, DanglingUntriaged> select_to_speak_tray_ = nullptr;
   raw_ptr<HoldingSpaceTray, DanglingUntriaged> holding_space_tray_ = nullptr;
   raw_ptr<WmModeButtonTray, DanglingUntriaged> wm_mode_button_tray_ = nullptr;

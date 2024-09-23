@@ -11,8 +11,16 @@
 #   targets using an out-of-process runner.
 # - fuzztest, a way of building new fuzzing targets using simpler macros.
 
+import("//build/config/android/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
+
+# Retain full optimization level for the engine parts independent of the
+# optimizations set for the fuzz target.
+fuzztest_remove_configs = fuzzing_engine_remove_configs +
+                          [ "//build/config/compiler:default_optimization" ]
+fuzztest_add_configs =
+    fuzzing_engine_add_configs + [ "//build/config/compiler:optimize" ]
 
 config("fuzztest_internal_config") {
   cflags = [
@@ -24,6 +32,9 @@ config("fuzztest_internal_config") {
     "-Wno-unused-const-variable",
     "-Wno-unused-function",
     "-Wno-inconsistent-missing-override",
+    "-Wno-unused-lambda-capture",
+    "-Wno-c++98-compat-extra-semi",
+    "-Wno-deprecated-declarations",
   ]
 
   # int_utils.h depends on an SSE 4.2 intrinsic.
@@ -45,23 +56,24 @@ config("fuzztest_internal_config") {
 
 if (use_centipede) {
   source_set("centipede_common") {
+    testonly = true
     sources = [
       "src/centipede/binary_info.cc",
       "src/centipede/binary_info.h",
       "src/centipede/byte_array_mutator.cc",
       "src/centipede/byte_array_mutator.h",
-      "src/centipede/defs.h",
+      "src/centipede/command.cc",
+      "src/centipede/control_flow.cc",
+      "src/centipede/early_exit.cc",
+      "src/centipede/early_exit.h",
       "src/centipede/execution_metadata.cc",
       "src/centipede/execution_metadata.h",
       "src/centipede/feature.cc",
       "src/centipede/feature.h",
       "src/centipede/knobs.cc",
       "src/centipede/knobs.h",
-      "src/centipede/logging.h",
       "src/centipede/pc_info.cc",
       "src/centipede/pc_info.h",
-      "src/centipede/remote_file.cc",
-      "src/centipede/remote_file.h",
       "src/centipede/reverse_pc_table.h",
       "src/centipede/runner_cmp_trace.h",
       "src/centipede/runner_request.cc",
@@ -70,18 +82,18 @@ if (use_centipede) {
       "src/centipede/runner_result.h",
       "src/centipede/shared_memory_blob_sequence.cc",
       "src/centipede/shared_memory_blob_sequence.h",
+      "src/centipede/symbol_table.cc",
+      "src/centipede/util.cc",
     ]
-    deps = [
-      "//third_party/abseil-cpp:absl",
-      "//third_party/abseil-cpp/absl/log:check",
-      "//third_party/abseil-cpp/absl/log:log",
-    ]
+    deps = [ "//third_party/abseil-cpp:absl_full" ]
+    public_deps = [ ":common" ]
     configs += [ ":fuzztest_internal_config" ]
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
   }
 
   source_set("centipede_runner_no_main") {
+    testonly = true
     sources = [
       "src/centipede/runner.cc",
       "src/centipede/runner.h",
@@ -99,12 +111,15 @@ if (use_centipede) {
 
     deps = [
       ":centipede_common",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/abseil-cpp/absl/log:log",
+      "//third_party/abseil-cpp:absl_full",
     ]
     configs += [ ":fuzztest_internal_config" ]
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
+
+    # Ensure that the centipede driver executable is also built
+    # whenever we build any centipede-based fuzzer
+    data_deps = [ ":centipede" ]
 
     # sancov symbols need to be exported for centipede to work correctly with
     # multi-dso.
@@ -113,6 +128,7 @@ if (use_centipede) {
   }
 
   source_set("centipede_runner_main") {
+    testonly = true
     deps = [
       ":centipede_runner_no_main",
       "//third_party/abseil-cpp:absl",
@@ -126,82 +142,60 @@ if (use_centipede) {
   # depend on an external runner
   source_set("centipede_executable_engine") {
     configs += [ ":fuzztest_internal_config" ]
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
     include_dirs = [ "src" ]
     testonly = true
     public_deps = [ ":centipede_common" ]
+    libs = [ "atomic" ]
     deps = [
       ":fuzztest_internal",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/abseil-cpp/absl/container:node_hash_set",
-      "//third_party/abseil-cpp/absl/flags:config",
-      "//third_party/abseil-cpp/absl/flags:flag",
-      "//third_party/abseil-cpp/absl/flags:parse",
-      "//third_party/abseil-cpp/absl/flags:reflection",
-      "//third_party/abseil-cpp/absl/log",
-      "//third_party/abseil-cpp/absl/log:check",
-      "//third_party/abseil-cpp/absl/log:globals",
-      "//third_party/abseil-cpp/absl/log:initialize",
+      "//third_party/abseil-cpp:absl_full",
       "//third_party/boringssl",
     ]
     sources = [
       "src/centipede/analyze_corpora.cc",
-      "src/centipede/blob_file.cc",
       "src/centipede/call_graph.cc",
       "src/centipede/centipede.cc",
       "src/centipede/centipede_callbacks.cc",
       "src/centipede/centipede_default_callbacks.cc",
       "src/centipede/centipede_interface.cc",
-      "src/centipede/command.cc",
       "src/centipede/config_file.cc",
       "src/centipede/config_init.cc",
       "src/centipede/config_util.cc",
-      "src/centipede/control_flow.cc",
       "src/centipede/corpus.cc",
+      "src/centipede/corpus_io.cc",
       "src/centipede/coverage.cc",
       "src/centipede/distill.cc",
       "src/centipede/distill.h",
-      "src/centipede/early_exit.cc",
-      "src/centipede/early_exit.h",
       "src/centipede/environment.cc",
       "src/centipede/feature_set.cc",
       "src/centipede/feature_set.h",
       "src/centipede/fuzztest_mutator.cc",
       "src/centipede/fuzztest_mutator.h",
-      "src/centipede/hash.cc",
       "src/centipede/minimize_crash.cc",
+      "src/centipede/periodic_action.cc",
+      "src/centipede/periodic_action.h",
+      "src/centipede/resource_pool.cc",
       "src/centipede/rusage_profiler.cc",
       "src/centipede/rusage_stats.cc",
-      "src/centipede/shard_reader.cc",
+      "src/centipede/seed_corpus_maker_lib.cc",
+      "src/centipede/seed_corpus_maker_lib.h",
       "src/centipede/stats.cc",
-      "src/centipede/symbol_table.cc",
-      "src/centipede/util.cc",
       "src/centipede/workdir.cc",
       "src/centipede/workdir.h",
     ]
-
-    if (build_with_chromium) {
-      deps += [
-        # Depend on fuzzing_engine so that we are automatically built in builds
-        # destined for ClusterFuzz.
-        "//testing/libfuzzer:fuzzing_engine",
-      ]
-    }
   }
 
   # The centipede out-of-process runner executable.
   executable("centipede") {
     testonly = true
     configs += [ ":fuzztest_internal_config" ]
-    configs -= fuzzing_engine_remove_configs
-    configs += fuzzing_engine_add_configs
+    configs -= fuzztest_remove_configs
+    configs += fuzztest_add_configs
     deps = [
       ":centipede_executable_engine",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/abseil-cpp/absl/flags:flag",
-      "//third_party/abseil-cpp/absl/log:check",
-      "//third_party/abseil-cpp/absl/log:log",
+      "//third_party/abseil-cpp:absl_full",
     ]
     sources = [
       "src/centipede/centipede_main.cc",
@@ -217,18 +211,28 @@ if (use_centipede || enable_fuzztest_fuzz) {
   }
 }
 
+# Parts of fuzztest internals which are safe to include in all sorts
+# of test-related code, including other fuzzers.
 source_set("fuzztest_internal") {
+  if (defined(android_ndk_major_version) && android_ndk_major_version < 28) {
+    # Android API level 28+ has posix_spawnp
+    defines = [ "FUZZTEST_DISABLE_SUBPROCESS" ]
+  }
+
   sources = [
     "src/fuzztest/domain.h",
     "src/fuzztest/domain_core.h",
     "src/fuzztest/fuzztest.h",
+    "src/fuzztest/fuzztest_macros.cc",
+    "src/fuzztest/fuzztest_macros.h",
     "src/fuzztest/googletest_fixture_adapter.h",
     "src/fuzztest/internal/any.h",
     "src/fuzztest/internal/centipede_adaptor.h",
-    "src/fuzztest/internal/compatibility_mode.cc",
     "src/fuzztest/internal/compatibility_mode.h",
     "src/fuzztest/internal/configuration.cc",
     "src/fuzztest/internal/configuration.h",
+    "src/fuzztest/internal/corpus_database.cc",
+    "src/fuzztest/internal/corpus_database.h",
     "src/fuzztest/internal/coverage.cc",
     "src/fuzztest/internal/coverage.h",
     "src/fuzztest/internal/domains/absl_helpers.h",
@@ -288,30 +292,53 @@ source_set("fuzztest_internal") {
 
   deps = [
     "//testing/gtest",
-    "//third_party/abseil-cpp/absl/flags:flag",
-    "//third_party/abseil-cpp/absl/random:bit_gen_ref",
+    "//third_party/abseil-cpp:absl_full",
   ]
 
-  if (build_with_chromium) {
-    deps += [
-      # Depends transitively on fuzzing_engine so that we are automatically
-      # built in builds destined for ClusterFuzz.
-      "//testing/libfuzzer:fuzzing_engine",
-    ]
+  # TODO(https://crbug.com/337736622): Remove this after M129 when V8 moves
+  # protobuf back to //third_party/protobuf.
+  if (!defined(protobuf_target_prefix)) {
+    protobuf_target_prefix = "//third_party/protobuf"
   }
 
   public_deps = [
+    ":common",
     "//third_party/abseil-cpp:absl",
 
     # For RE2 mutators. It's questionable whether we want to pull this library
     # into every fuzztest target, but this is the approach used in other
     # fuzztest contexts so we'll do the same
     "//third_party/re2",
+
+    # For protobuf mutators
+    "$protobuf_target_prefix:protobuf_lite",
   ]
 
   public_configs = [ ":fuzztest_internal_config" ]
-  configs -= fuzzing_engine_remove_configs
-  configs += fuzzing_engine_add_configs
+  configs -= fuzztest_remove_configs
+  configs += fuzztest_add_configs
+}
+
+source_set("common") {
+  sources = [
+    "src/common/blob_file.cc",
+    "src/common/blob_file.h",
+    "src/common/defs.h",
+    "src/common/hash.cc",
+    "src/common/hash.h",
+    "src/common/logging.h",
+    "src/common/remote_file.cc",
+    "src/common/remote_file.h",
+    "src/common/remote_file_oss.cc",
+  ]
+
+  deps = [
+    "//third_party/abseil-cpp:absl_full",
+    "//third_party/boringssl",
+  ]
+  public_configs = [ ":fuzztest_internal_config" ]
+  configs -= fuzztest_remove_configs
+  configs += fuzztest_add_configs
 }
 
 # Fuzztest support. This allows regular test executables to contain
@@ -326,32 +353,50 @@ source_set("fuzztest_internal") {
 #  centipede --binary=./mytest  # Allows the binary to be run using centipede
 #                               # out of process execution environment.
 #                               # Requires use_centipede gn argument.
+# Nothing in this target depends upon //testing/libfuzzer:is_a_fuzz_target,
+# so dependent binaries won't directly be built by the fuzzing build job.
+# However, any uses of the test("...") template which declare that they
+# have fuzztests will cause wrapper executables to be built (because they
+# will depend upon :is_a_fuzz_target). Such executables will have a data_dep
+# on the underlying fuzztest executable, so it will get built.
 source_set("fuzztest") {
-  sources = [
-    "src/fuzztest/init_fuzztest.cc",
-    "src/fuzztest/init_fuzztest.h",
-  ]
   deps = [
     "//testing/gtest",
-    "//third_party/abseil-cpp/absl/flags:flag",
-    "//third_party/abseil-cpp/absl/log:log",
+    "//third_party/abseil-cpp:absl_full",
   ]
   if (use_centipede) {
     # If we are building for centipede, we want to make fuzztest executables
     # which can be used as centipede fuzzers.
-    sources += [ "src/fuzztest/internal/centipede_adaptor.cc" ]
+    sources = [ "src/fuzztest/internal/centipede_adaptor.cc" ]
     deps += [
       ":centipede_executable_engine",
       ":centipede_runner_no_main",
     ]
   } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
     # Typically, libfuzzer.
-    deps += [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
+    sources = [ "src/fuzztest/internal/compatibility_mode.cc" ]
+    deps += [ "//testing/libfuzzer:fuzzing_engine_no_main_core" ]
   }
   public_deps = [ ":fuzztest_internal" ]
-  public_configs = [ ":fuzztest_internal_config" ]
-  configs -= fuzzing_engine_remove_configs
-  configs += fuzzing_engine_add_configs
+  configs -= fuzztest_remove_configs
+  configs += fuzztest_add_configs + [ ":fuzztest_internal_config" ]
+  testonly = true
+}
+
+# Depend on this if you're a test runner executable (or similar)
+# with its own main() but you need to call InitFuzzTest.
+source_set("init_fuzztest") {
+  sources = [
+    "src/fuzztest/init_fuzztest.cc",
+    "src/fuzztest/init_fuzztest.h",
+  ]
+  deps = [
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl_full",
+  ]
+  public_deps = [ ":fuzztest_internal" ]
+  configs -= fuzztest_remove_configs
+  configs += fuzztest_add_configs + [ ":fuzztest_internal_config" ]
   testonly = true
 }
 
@@ -359,13 +404,15 @@ source_set("fuzztest") {
 source_set("fuzztest_gtest_main") {
   deps = [
     "//testing/gtest",
-    "//third_party/abseil-cpp/absl/flags:flag",
-    "//third_party/abseil-cpp/absl/flags:parse",
+    "//third_party/abseil-cpp:absl_full",
   ]
   sources = [ "src/fuzztest/fuzztest_gtest_main.cc" ]
   public_deps = [
-    ":fuzztest",
+    ":init_fuzztest",
     "//testing/gtest",
   ]
+  if (use_centipede) {
+    data_deps = [ ":centipede" ]
+  }
   testonly = true
 }

@@ -4,21 +4,20 @@
 
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/page_info/core/about_this_site_service.h"
 #import "components/page_info/core/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-page_info::AboutThisSiteService*
-AboutThisSiteServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<page_info::AboutThisSiteService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+page_info::AboutThisSiteService* AboutThisSiteServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<page_info::AboutThisSiteService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -28,9 +27,8 @@ AboutThisSiteServiceFactory* AboutThisSiteServiceFactory::GetInstance() {
 }
 
 AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AboutThisSiteServiceFactory",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AboutThisSiteServiceFactory",
+                                    ServiceCreation::kCreateWithProfile) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
@@ -40,16 +38,33 @@ AboutThisSiteServiceFactory::~AboutThisSiteServiceFactory() = default;
 std::unique_ptr<KeyedService>
 AboutThisSiteServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!page_info::IsAboutThisSiteFeatureEnabled(
-          GetApplicationContext()->GetApplicationLocale())) {
+  const bool is_about_this_site_language_supported =
+      page_info::IsAboutThisSiteFeatureEnabled(
+          GetApplicationContext()->GetApplicationLocale());
+
+  base::UmaHistogramBoolean("Security.PageInfo.AboutThisSiteLanguageSupported",
+                            is_about_this_site_language_supported);
+
+  if (!is_about_this_site_language_supported) {
     return nullptr;
   }
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+
+  auto* optimization_guide =
+      OptimizationGuideServiceFactory::GetForProfile(profile);
+  if (!optimization_guide) {
+    return nullptr;
+  }
+
+  auto* template_service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
+  // TemplateURLService may be null during testing.
+  if (!template_service) {
+    return nullptr;
+  }
 
   return std::make_unique<page_info::AboutThisSiteService>(
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state),
-      browser_state->IsOffTheRecord(), browser_state->GetPrefs(),
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state));
+      optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs(),
+      template_service);
 }

@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 
+#include <string_view>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
@@ -13,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
+#include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
@@ -44,7 +52,7 @@ void ExtractArchive(ExtractionProperties properties) {
   } else if (XzExtractor::IsXzFile(properties.image_path)) {
     XzExtractor::Extract(std::move(properties));
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -299,7 +307,7 @@ void Operation::MD5Chunk(
 
   CHECK_LE(bytes_processed, bytes_total);
 
-  std::unique_ptr<char[]> buffer(new char[kMD5BufferSize]);
+  auto buffer = base::HeapArray<char>::Uninit(kMD5BufferSize);
   int read_size = std::min(bytes_total - bytes_processed,
                            static_cast<int64_t>(kMD5BufferSize));
 
@@ -309,11 +317,11 @@ void Operation::MD5Chunk(
     base::MD5Final(&digest, &md5_context_);
     std::move(callback).Run(base::MD5DigestToBase16(digest));
   } else {
-    int len = file.Read(bytes_processed, buffer.get(), read_size);
+    int len = file.Read(bytes_processed, buffer.data(), read_size);
 
     if (len == read_size) {
       // Process data.
-      base::MD5Update(&md5_context_, base::StringPiece(buffer.get(), len));
+      base::MD5Update(&md5_context_, std::string_view(buffer.data(), len));
       int percent_curr =
           ((bytes_processed + len) * progress_scale) / bytes_total +
           progress_offset;

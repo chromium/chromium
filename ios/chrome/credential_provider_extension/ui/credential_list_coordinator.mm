@@ -10,6 +10,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_consumer.h"
@@ -42,6 +43,11 @@
 // The service identifiers to prioritize in a match is found.
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
+
+// Information about a passkey credential request.
+@property(nonatomic, strong)
+    ASPasskeyCredentialRequestParameters* requestParameters API_AVAILABLE(
+        ios(17.0));
 
 // Coordinator that shows a view for the user to create a new password.
 @property(nonatomic, strong) NewPasswordCoordinator* createPasswordCoordinator;
@@ -126,10 +132,22 @@
   [self reauthenticateIfNeededWithCompletionHandler:^(
             ReauthenticationResult result) {
     if (result != ReauthenticationResult::kFailure) {
-      ASPasswordCredential* ASCredential =
-          [ASPasswordCredential credentialWithUser:credential.user
-                                          password:credential.password];
-      [self.credentialResponseHandler userSelectedCredential:ASCredential];
+      if (!credential.isPasskey) {
+        ASPasswordCredential* passwordCredential =
+            [ASPasswordCredential credentialWithUser:credential.username
+                                            password:credential.password];
+        [self.credentialResponseHandler
+            userSelectedPassword:passwordCredential];
+      } else if (@available(iOS 17.0, *)) {
+        // TODO(crbug.com/330355124): Handle
+        // self.requestParameters.userVerificationPreference.
+
+        [self.credentialResponseHandler
+            userSelectedPasskey:credential
+                 clientDataHash:self.requestParameters.clientDataHash
+             allowedCredentials:self.allowedCredentials
+                     allowRetry:YES];
+      }
     }
   }];
 }
@@ -151,6 +169,22 @@
        credentialResponseHandler:self.credentialResponseHandler];
   self.createPasswordCoordinator.delegate = self;
   [self.createPasswordCoordinator start];
+}
+
+- (NSArray<NSData*>*)allowedCredentials {
+  if (@available(iOS 17.0, *)) {
+    return self.requestParameters.allowedCredentials;
+  } else {
+    return nil;
+  }
+}
+
+- (BOOL)isRequestingPasskey {
+  if (@available(iOS 17.0, *)) {
+    return self.requestParameters != nil;
+  } else {
+    return NO;
+  }
 }
 
 #pragma mark - CredentialDetailsConsumerDelegate

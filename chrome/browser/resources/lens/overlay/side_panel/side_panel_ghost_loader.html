@@ -1,0 +1,153 @@
+<style>
+  .container {
+    display: flex;
+    /* Enable flexbox layout */
+    flex-wrap: wrap;
+    /* Maximum width constraint */
+    gap: 8px;
+    /* Space between squares */
+    margin: 8px 6px 8px 14px;
+  }
+
+  /* Individual animation delays for each square */
+  .square:nth-child(1) {
+    --square-animation-delay: 1;
+  }
+
+  .square:nth-child(2) {
+    --square-animation-delay: 2;
+  }
+
+  .square:nth-child(3) {
+    --square-animation-delay: 3;
+  }
+
+  .square:nth-child(4) {
+    --square-animation-delay: 4;
+  }
+
+  .square:nth-child(5) {
+    --square-animation-delay: 5;
+  }
+
+  .square:nth-child(6) {
+    --square-animation-delay: 6;
+  }
+
+  .square:nth-child(7) {
+    --square-animation-delay: 7;
+  }
+
+  .square:nth-child(8) {
+    --square-animation-delay: 8;
+  }
+
+  .square:nth-child(9) {
+    --square-animation-delay: 9;
+  }
+
+  .square:nth-child(10) {
+    --square-animation-delay: 10;
+  }
+
+  .square:nth-child(11) {
+    --square-animation-delay: 11;
+  }
+
+  .square:nth-child(12) {
+    --square-animation-delay: 12;
+  }
+
+  .square {
+    animation: 2s fadeInOut calc(0.1s * var(--square-animation-delay)) infinite;
+    background-color: #e0e0e0;
+    border-radius: 16px;
+    height: 220px;
+    max-width: 300px;
+    width: 180px;
+  }
+
+  /* Media query for adjustments below 588px */
+  @media (max-width: 588px) {
+    .square {
+      /* 2 squares per row with gaps */
+      width: calc(50% - 8px);
+    }
+  }
+
+  @media (min-width: 589px) and (max-width: 763px) {
+    .square {
+      /* 3 squares per row with gaps */
+      width: calc(33% - 8px);
+    }
+  }
+
+  @media (min-width: 764px) {
+    .square {
+      /* 4 squares per row with gaps */
+      width: calc(25% - 8px);
+    }
+  }
+
+  :host([dark-mode]) .square {
+    background-color: #9e9e9e;
+  }
+
+  .title {
+    animation: fadeInOut 2s infinite;
+    background-color: #e0e0e0;
+    border-radius: 16px;
+    height: 24px;
+    margin: 24px 14px;
+    width: 180px;
+  }
+
+  :host([dark-mode]) .title {
+    background-color: #9e9e9e;
+  }
+
+  /* Keyframes for the animation */
+  @keyframes fadeInOut {
+    0% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.25;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+</style>
+
+<div class="title"></div>
+<div class="container">
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+</div>
+<div class="container">
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+  <div class="square"></div>
+</div>

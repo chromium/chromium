@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
 
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/log_message.h"
 
-// TODO(1151236): Need to update the description, because logging for PA
-// standalone library was minimized.
+// TODO(crbug.com/40158212): Need to update the description, because logging for
+// PA standalone library was minimized.
 //
 // Optional message capabilities
 // -----------------------------
@@ -207,7 +207,7 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) int GetVlogVerbosity();
 #define PA_COMPACT_GOOGLE_LOG_DFATAL PA_COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
 #define PA_COMPACT_GOOGLE_LOG_DCHECK PA_COMPACT_GOOGLE_LOG_EX_DCHECK(LogMessage)
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 // wingdi.h defines ERROR to be 0. When we call PA_LOG(ERROR), it gets
 // substituted with 0, and it expands to PA_COMPACT_GOOGLE_LOG_0. To allow us
 // to keep using this syntax, we define this macro to do the same thing
@@ -270,13 +270,13 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
   PA_LAZY_STREAM(PA_VLOG_STREAM(verbose_level), \
                  PA_VLOG_IS_ON(verbose_level) && (condition))
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #define PA_VPLOG_STREAM(verbose_level)                                \
   ::partition_alloc::internal::logging::Win32ErrorLogMessage(         \
       __FILE__, __LINE__, -(verbose_level),                           \
       ::partition_alloc::internal::logging::GetLastSystemErrorCode()) \
       .stream()
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #define PA_VPLOG_STREAM(verbose_level)                                \
   ::partition_alloc::internal::logging::ErrnoLogMessage(              \
       __FILE__, __LINE__, -(verbose_level),                           \
@@ -297,13 +297,13 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
   PA_LOG_IF(FATAL, !(PA_ANALYZER_ASSUME_TRUE(condition))) \
       << "Assert failed: " #condition ". "
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #define PA_PLOG_STREAM(severity)                                      \
   PA_COMPACT_GOOGLE_PLOG_EX_##severity(                               \
       Win32ErrorLogMessage,                                           \
       ::partition_alloc::internal::logging::GetLastSystemErrorCode()) \
       .stream()
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #define PA_PLOG_STREAM(severity)                                      \
   PA_COMPACT_GOOGLE_PLOG_EX_##severity(                               \
       ErrnoLogMessage,                                                \
@@ -337,7 +337,7 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 
 // Definitions for DLOG et al.
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #define PA_DLOG_IS_ON(severity) PA_LOG_IS_ON(severity)
 #define PA_DLOG_IF(severity, condition) PA_LOG_IF(severity, condition)
@@ -347,11 +347,11 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 #define PA_DVPLOG_IF(verboselevel, condition) \
   PA_VPLOG_IF(verboselevel, condition)
 
-#else  // BUILDFLAG(PA_DCHECK_IS_ON)
+#else  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
-// If !BUILDFLAG(PA_DCHECK_IS_ON), we want to avoid emitting any references to
-// |condition| (which may reference a variable defined only if
-// BUILDFLAG(PA_DCHECK_IS_ON)). Contrast this with DCHECK et al., which has
+// If !PA_BUILDFLAG(DCHECKS_ARE_ON), we want to avoid emitting any references
+// to |condition| (which may reference a variable defined only if
+// PA_BUILDFLAG(DCHECKS_ARE_ON)). Contrast this with DCHECK et al., which has
 // different behavior.
 
 #define PA_DLOG_IS_ON(severity) false
@@ -361,7 +361,7 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 #define PA_DVLOG_IF(verboselevel, condition) PA_EAT_STREAM_PARAMETERS
 #define PA_DVPLOG_IF(verboselevel, condition) PA_EAT_STREAM_PARAMETERS
 
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #define PA_DLOG(severity) \
   PA_LAZY_STREAM(PA_LOG_STREAM(severity), PA_DLOG_IS_ON(severity))
@@ -375,11 +375,11 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
 
 // Definitions for DCHECK et al.
 
-#if BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
+#if PA_BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) extern LogSeverity LOGGING_DCHECK;
 #else
 constexpr LogSeverity LOGGING_DCHECK = LOGGING_FATAL;
-#endif  // BUILDFLAG(PA_DCHECK_IS_CONFIGURABLE)
+#endif  // PA_BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 // Redefine the standard assert to use our nice log files
 #undef assert
@@ -395,4 +395,4 @@ void RawLog(int level, const char* message);
 
 }  // namespace partition_alloc::internal::logging
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_LOGGING_H_

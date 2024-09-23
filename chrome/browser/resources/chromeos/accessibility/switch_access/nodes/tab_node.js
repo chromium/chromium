@@ -36,7 +36,7 @@ export class TabNode extends BasicNode {
 
   /** @override */
   get actions() {
-    return [MenuAction.SELECT];
+    return [MenuAction.DRILL_DOWN];
   }
 
   // ================= General methods =================
@@ -53,7 +53,7 @@ export class TabNode extends BasicNode {
 
   /** @override */
   performAction(action) {
-    if (action !== MenuAction.SELECT) {
+    if (action !== MenuAction.DRILL_DOWN) {
       return ActionResponse.NO_ACTION_TAKEN;
     }
     Navigator.byItem.enterGroup();

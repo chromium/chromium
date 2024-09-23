@@ -94,9 +94,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
 
   mojo::Receiver<media::mojom::VideoCaptureObserver> receiver_{this};
 
-  // TODO(crbug.com/843117): Store the base::ReadOnlySharedMemoryRegion instead
-  // after migrating the media::VideoCaptureDeviceClient to the new shared
-  // memory API.
+  // TODO(crbug.com/40576409): Store the base::ReadOnlySharedMemoryRegion
+  // instead after migrating the media::VideoCaptureDeviceClient to the new
+  // shared memory API.
   using ClientBufferMap =
       base::flat_map<int32_t, media::mojom::VideoBufferHandlePtr>;
   // Stores the buffer handler on OnBufferCreated(). |buffer_id| is the key.

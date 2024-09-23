@@ -75,6 +75,9 @@ void AudioTimestampValidator::CheckForTimestampGap(
     return;
   }
 
+  // If we have `audio_output_ts_helper_` we must have a base timestamp.
+  DCHECK(audio_output_ts_helper_->base_timestamp());
+
   base::TimeDelta expected_ts = audio_output_ts_helper_->GetTimestamp();
   base::TimeDelta ts_delta = buffer.timestamp() - expected_ts;
 
@@ -89,9 +92,9 @@ void AudioTimestampValidator::CheckForTimestampGap(
       reached_stable_state_ = true;
       DVLOG(3) << __func__ << " stabilized! tries:" << num_unstable_audio_tries_
                << " offset:"
-               << audio_output_ts_helper_->base_timestamp().InMicroseconds();
+               << audio_output_ts_helper_->base_timestamp()->InMicroseconds();
     } else {
-      base::TimeDelta orig_offset = audio_output_ts_helper_->base_timestamp();
+      base::TimeDelta orig_offset = *audio_output_ts_helper_->base_timestamp();
 
       // Save since this gets reset when we set new base time.
       int64_t decoded_frame_count = audio_output_ts_helper_->frame_count();
@@ -101,7 +104,7 @@ void AudioTimestampValidator::CheckForTimestampGap(
       DVLOG(3) << __func__
                << " NOT stabilized. tries:" << num_unstable_audio_tries_
                << " offset was:" << orig_offset.InMicroseconds() << " now:"
-               << audio_output_ts_helper_->base_timestamp().InMicroseconds();
+               << audio_output_ts_helper_->base_timestamp()->InMicroseconds();
       num_unstable_audio_tries_++;
 
       // Let developers know if their files timestamps are way off from
@@ -129,7 +132,7 @@ void AudioTimestampValidator::CheckForTimestampGap(
            << " expected_ts:" << expected_ts.InMicroseconds()
            << " actual_ts:" << buffer.timestamp().InMicroseconds()
            << " audio_ts_offset:"
-           << audio_output_ts_helper_->base_timestamp().InMicroseconds();
+           << audio_output_ts_helper_->base_timestamp()->InMicroseconds();
 }
 
 void AudioTimestampValidator::RecordOutputDuration(

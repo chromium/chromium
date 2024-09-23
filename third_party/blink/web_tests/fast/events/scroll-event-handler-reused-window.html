@@ -1,25 +1,31 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
 <script>
-description('Test tracking event handlers with a reused DOMWindow.');
-
-if (window.testRunner) {
-    testRunner.setPopupBlockingEnabled(false);
-    testRunner.waitUntilDone();
-}
-
-// |window.open| returns a DOMWindow synchronously without waiting for the
-// network load to finish. Once the load completes, we transition the existing
-// window object to the document instead of creating a new one like we normally
-// would. The purpose of this test is to ensure event handlers added on the
-// window are still present after the window is reused with the new document.
-// See DocumentLoader.cpp for details.
-var newWindow = window.open('resources/conclude-test-in-parent.html');
-newWindow.onscroll = function() {};
+let finishTestPromiseResolver = null;
+const finishTestPromise = new Promise(resolve => finishTestPromiseResolver = resolve);
 
 function concludeTest() {
-    shouldBe('internals.scrollEventHandlerCount(newWindow.document)', '1');
-    testRunner.notifyDone();
+  finishTestPromiseResolver();
 }
+
+promise_test(async () => {
+  if (window.testRunner) {
+    testRunner.setPopupBlockingEnabled(false);
+    testRunner.waitUntilDone();
+  }
+
+  // |window.open| returns a DOMWindow synchronously without waiting for the
+  // network load to finish. Once the load completes, we transition the existing
+  // window object to the document instead of creating a new one like we normally
+  // would. The purpose of this test is to ensure event handlers added on the
+  // window are still present after the window is reused with the new document.
+  // See DocumentLoader.cpp for details.
+  const newWindow = window.open('resources/conclude-test-in-parent.html');
+  newWindow.onscroll = function() {};
+
+  await finishTestPromise;
+  assert_equals(internals.scrollEventHandlerCount(newWindow.document), 1);
+}, 'Test tracking event handlers with a reused DOMWindow.');
 </script>
-</body>

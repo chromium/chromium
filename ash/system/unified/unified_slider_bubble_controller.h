@@ -106,7 +106,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
 
   raw_ptr<TrayBubbleView> bubble_view_ = nullptr;
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
-  raw_ptr<UnifiedSliderView, DanglingUntriaged> slider_view_ = nullptr;
+  raw_ptr<UnifiedSliderView> slider_view_ = nullptr;
 
   // Type of the currently shown slider.
   SliderType slider_type_ = SLIDER_TYPE_VOLUME;

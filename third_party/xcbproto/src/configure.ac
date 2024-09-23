@@ -3,7 +3,7 @@
 
 AC_PREREQ(2.57)
 AC_INIT([XCB Proto],
-        1.15.2,
+        1.17.0,
         [xcb@lists.freedesktop.org])
 AC_CONFIG_SRCDIR([xcb-proto.pc.in])
 AM_INIT_AUTOMAKE([foreign dist-xz])

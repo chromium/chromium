@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capture/video/apple/video_capture_device_apple.h"
 
 #include <stddef.h>
@@ -225,6 +230,7 @@ void VideoCaptureDeviceApple::ReceiveFrame(
     int aspect_numerator,
     int aspect_denominator,
     base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_time,
     int rotation) {
   if (capture_format_.frame_size != frame_format.frame_size) {
     ReceiveError(VideoCaptureError::kMacReceivedFrameWithUnexpectedResolution,
@@ -237,12 +243,13 @@ void VideoCaptureDeviceApple::ReceiveFrame(
   client_->OnIncomingCapturedData(
       video_frame, video_frame_length, frame_format, color_space,
       rotation /* clockwise_rotation */, false /* flip_y */,
-      base::TimeTicks::Now(), timestamp);
+      base::TimeTicks::Now(), timestamp, capture_begin_time);
 }
 
 void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
     CapturedExternalVideoBuffer frame,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    std::optional<base::TimeTicks> capture_begin_time) {
   if (capture_format_.frame_size != frame.format.frame_size) {
     ReceiveError(VideoCaptureError::kMacReceivedFrameWithUnexpectedResolution,
                  FROM_HERE,
@@ -251,7 +258,7 @@ void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
     return;
   }
   client_->OnIncomingCapturedExternalBuffer(
-      std::move(frame), base::TimeTicks::Now(), timestamp,
+      std::move(frame), base::TimeTicks::Now(), timestamp, capture_begin_time,
       gfx::Rect(capture_format_.frame_size));
 }
 
@@ -296,6 +303,12 @@ void VideoCaptureDeviceApple::ReceiveCaptureConfigurationChanged() {
       FROM_HERE,
       base::BindOnce(&VideoCaptureDeviceApple::OnCaptureConfigurationChanged,
                      weak_factory_.GetWeakPtr()));
+}
+
+void VideoCaptureDeviceApple::OnLog(const std::string& message) {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&VideoCaptureDeviceApple::LogMessage,
+                                        weak_factory_.GetWeakPtr(), message));
 }
 
 void VideoCaptureDeviceApple::OnCaptureConfigurationChanged() {

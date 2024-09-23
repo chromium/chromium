@@ -32,7 +32,7 @@ class FakeMemoryPressureMonitor
 
  private:
   MemoryPressureLevel memory_pressure_level_{
-    MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE};
+      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE};
 };
 
 }  // namespace test

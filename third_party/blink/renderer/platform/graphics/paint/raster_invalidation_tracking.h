@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -62,10 +62,11 @@ struct RasterUnderInvalidation {
   SkColor new_pixel;
 };
 
-class PLATFORM_EXPORT RasterInvalidationTracking {
-  USING_FAST_MALLOC(RasterInvalidationTracking);
-
+class PLATFORM_EXPORT RasterInvalidationTracking
+    : public GarbageCollected<RasterInvalidationTracking> {
  public:
+  void Trace(Visitor*) const {}
+
   // When RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled() and
   // SimulateRasterUnderInvalidation(true) is called, all changed pixels will
   // be reported as raster under-invalidations. Used to visually test raster

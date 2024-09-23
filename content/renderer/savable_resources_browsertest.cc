@@ -32,10 +32,6 @@ class SavableResourcesTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kSingleProcess);
-#if BUILDFLAG(IS_WIN)
-    // Don't want to try to create a GPU process.
-    command_line->AppendSwitch(switches::kDisableGpu);
-#endif
   }
 
   // Test function GetAllSavableResourceLinksForCurrentPage with a web page.
@@ -149,8 +145,8 @@ IN_PROC_BROWSER_TEST_F(SavableResourcesTest,
 
 // Test function GetAllSavableResourceLinksForCurrentPage with a web page
 // which does not have valid savable resource links.
-// Flaky on Linux MSan. See crbug.com/1423060.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// Flaky on Linux MSan and Windows ASan. See crbug.com/1423060.
+#if (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
 #define MAYBE_GetSavableResourceLinksWithPageHasInvalidLinks \
   DISABLED_GetSavableResourceLinksWithPageHasInvalidLinks
 #else

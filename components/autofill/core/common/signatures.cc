@@ -4,11 +4,12 @@
 
 #include "components/autofill/core/common/signatures.h"
 
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -16,8 +17,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "url/gurl.h"
-
-using base::UTF16ToUTF8;
 
 namespace autofill {
 
@@ -40,9 +39,9 @@ std::string StripDigitsIfRequired(std::string_view input) {
 
     // If `input[i]` is a digit, find the range of consecutive digits starting
     // at `i`. If this range is shorter than 5 characters append it to `result`.
-    auto* end_it = base::ranges::find_if_not(input.substr(i), IsDigit);
+    auto end_it = base::ranges::find_if_not(input.substr(i), IsDigit);
     std::string_view digits = base::MakeStringPiece(input.begin() + i, end_it);
-    DCHECK(base::ranges::all_of(digits, IsDigit));
+    DCHECK(std::ranges::all_of(digits, IsDigit));
     if (digits.size() < 5)
       base::StrAppend(&result, {digits});
     i += digits.size();
@@ -77,8 +76,8 @@ std::string GetDOMFormName(const std::string& form_name) {
 }
 
 FormSignature CalculateFormSignature(const FormData& form_data) {
-  const GURL& target_url = form_data.action;
-  const GURL& source_url = form_data.url;
+  const GURL& target_url = form_data.action();
+  const GURL& source_url = form_data.url();
   std::string_view scheme = target_url.scheme_piece();
   std::string_view host = target_url.host_piece();
 
@@ -91,43 +90,45 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
 
   std::string form_signature_field_names;
 
-  for (const FormFieldData& field : form_data.fields) {
-    if (!IsCheckable(field.check_status)) {
+  for (const FormFieldData& field : form_data.fields()) {
+    if (!IsCheckable(field.check_status())) {
       // Add all supported form fields (including with empty names) to the
       // signature.  This is a requirement for Autofill servers.
-      base::StrAppend(&form_signature_field_names,
-                      {"&", StripDigitsIfRequired(UTF16ToUTF8(field.name))});
+      base::StrAppend(
+          &form_signature_field_names,
+          {"&", StripDigitsIfRequired(base::UTF16ToUTF8(field.name()))});
     }
   }
 
-  std::string form_name =
-      StripDigitsIfRequired(GetDOMFormName(UTF16ToUTF8(form_data.name)));
+  std::string form_name = StripDigitsIfRequired(
+      GetDOMFormName(base::UTF16ToUTF8(form_data.name())));
   std::string form_string = base::StrCat(
       {scheme, "://", host, "&", form_name, form_signature_field_names});
   return FormSignature(StrToHash64Bit(form_string));
 }
 
 FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
-  std::string_view scheme = form_data.action.scheme_piece();
-  std::string_view host = form_data.action.host_piece();
+  std::string_view scheme = form_data.action().scheme_piece();
+  std::string_view host = form_data.action().host_piece();
 
   // If target host or scheme is empty, set scheme and host of source url.
   // This is done to match the Toolbar's behavior.
   if (scheme.empty() || host.empty()) {
-    scheme = form_data.url.scheme_piece();
-    host = form_data.url.host_piece();
+    scheme = form_data.url().scheme_piece();
+    host = form_data.url().host_piece();
   }
 
   std::string form_signature_field_types;
-  for (const FormFieldData& field : form_data.fields) {
-    if (!IsCheckable(field.check_status)) {
+  for (const FormFieldData& field : form_data.fields()) {
+    if (!IsCheckable(field.check_status())) {
       // Add all supported form fields' form control types to the signature.
       // We use the string representation of the FormControlType because
       // changing the signature algorithm is non-trivial. If and when the
       // sectioning algorithm, we could use the raw FormControlType enum
       // instead.
-      base::StrAppend(&form_signature_field_types,
-                      {"&", FormControlTypeToString(field.form_control_type)});
+      base::StrAppend(
+          &form_signature_field_types,
+          {"&", FormControlTypeToString(field.form_control_type())});
     }
   }
 
@@ -137,15 +138,15 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
   // Add more non-empty elements (one of path, reference, or query ordered by
   // preference) for small forms with 1-2 fields in order to prevent signature
   // collisions.
-  if (form_data.fields.size() <= 2) {
+  if (form_data.fields().size() <= 2) {
     // Path piece includes the slash "/", so a non-empty path must have length
     // longer than 1.
-    if (form_data.url.path_piece().length() > 1) {
-      base::StrAppend(&form_string, {form_data.url.path_piece()});
-    } else if (form_data.url.has_ref()) {
-      base::StrAppend(&form_string, {"#", form_data.url.ref_piece()});
-    } else if (form_data.url.has_query()) {
-      base::StrAppend(&form_string, {"?", form_data.url.query_piece()});
+    if (form_data.url().path_piece().length() > 1) {
+      base::StrAppend(&form_string, {form_data.url().path_piece()});
+    } else if (form_data.url().has_ref()) {
+      base::StrAppend(&form_string, {"#", form_data.url().ref_piece()});
+    } else if (form_data.url().has_query()) {
+      base::StrAppend(&form_string, {"?", form_data.url().query_piece()});
     }
   }
 
@@ -153,27 +154,28 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
 }
 
 FieldSignature CalculateFieldSignatureByNameAndType(
-    base::StringPiece16 field_name,
+    std::u16string_view field_name,
     FormControlType field_type) {
-  return FieldSignature(StrToHash32Bit(base::StrCat(
-      {UTF16ToUTF8(field_name), "&", FormControlTypeToString(field_type)})));
+  return FieldSignature(
+      StrToHash32Bit(base::StrCat({base::UTF16ToUTF8(field_name), "&",
+                                   FormControlTypeToString(field_type)})));
 }
 
 FieldSignature CalculateFieldSignatureForField(
     const FormFieldData& field_data) {
-  return CalculateFieldSignatureByNameAndType(field_data.name,
-                                              field_data.form_control_type);
+  return CalculateFieldSignatureByNameAndType(field_data.name(),
+                                              field_data.form_control_type());
 }
 
 uint64_t StrToHash64Bit(std::string_view str) {
   auto bytes = base::as_bytes(base::make_span(str));
-  const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
+  const base::SHA1Digest digest = base::SHA1Hash(bytes);
   return PackBytes(base::make_span(digest).subspan<0, 8>());
 }
 
 uint32_t StrToHash32Bit(std::string_view str) {
   auto bytes = base::as_bytes(base::make_span(str));
-  const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
+  const base::SHA1Digest digest = base::SHA1Hash(bytes);
   return PackBytes(base::make_span(digest).subspan<0, 4>());
 }
 

@@ -1,0 +1,252 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("arc") {
+  sources = [
+    "arc_app_dialog.h",
+    "arc_app_icon.cc",
+    "arc_app_icon.h",
+    "arc_app_icon_descriptor.cc",
+    "arc_app_icon_descriptor.h",
+    "arc_app_icon_factory.cc",
+    "arc_app_icon_factory.h",
+    "arc_app_launcher.cc",
+    "arc_app_launcher.h",
+    "arc_app_list_prefs.cc",
+    "arc_app_list_prefs.h",
+    "arc_app_list_prefs_factory.cc",
+    "arc_app_list_prefs_factory.h",
+    "arc_app_metrics_data.cc",
+    "arc_app_metrics_data.h",
+    "arc_app_metrics_util.cc",
+    "arc_app_metrics_util.h",
+    "arc_app_scoped_pref_update.cc",
+    "arc_app_scoped_pref_update.h",
+    "arc_app_sync_metrics_helper.cc",
+    "arc_app_sync_metrics_helper.h",
+    "arc_app_utils.cc",
+    "arc_app_utils.h",
+    "arc_data_removal_dialog.h",
+    "arc_default_app_list.cc",
+    "arc_default_app_list.h",
+    "arc_fast_app_reinstall_starter.cc",
+    "arc_fast_app_reinstall_starter.h",
+    "arc_package_install_priority_handler.cc",
+    "arc_package_install_priority_handler.h",
+    "arc_package_sync_data_type_controller.cc",
+    "arc_package_sync_data_type_controller.h",
+    "arc_package_syncable_service.cc",
+    "arc_package_syncable_service.h",
+    "arc_package_syncable_service_factory.cc",
+    "arc_package_syncable_service_factory.h",
+    "arc_pai_starter.cc",
+    "arc_pai_starter.h",
+    "arc_usb_host_permission_manager.cc",
+    "arc_usb_host_permission_manager.h",
+    "arc_usb_host_permission_manager_factory.cc",
+    "arc_usb_host_permission_manager_factory.h",
+    "arc_vpn_provider_manager.cc",
+    "arc_vpn_provider_manager.h",
+    "arc_vpn_provider_manager_factory.cc",
+    "arc_vpn_provider_manager_factory.h",
+    "intent.cc",
+    "intent.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/components/arc/session:connection_holder",
+    "//ash/constants",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search/ranking",
+    "//chrome/browser/ash/arc/boot_phase_monitor",
+    "//chrome/browser/image_decoder",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources:component_extension_resources",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/app_restore",
+    "//components/arc/common:arc_intent_helper_constants",
+    "//components/crx_file",
+    "//components/keyed_service/core",
+    "//components/language/core/browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/sync/service",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//extensions:extensions_resources",
+    "//extensions/browser",
+    "//services/data_decoder/public/cpp",
+    "//skia",
+    "//third_party/icu:icuuc_public",
+    "//ui/base",
+    "//ui/display",
+    "//ui/events:event_constants",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "arc_app_metrics_data_unittest.cc",
+    "arc_app_metrics_util_unittest.cc",
+    "arc_app_sync_metrics_helper_unittest.cc",
+    "arc_app_unittest.cc",
+    "arc_app_utils_unittest.cc",
+    "arc_default_app_list_unittest.cc",
+    "arc_package_install_priority_handler_unittest.cc",
+    "arc_vpn_provider_unittest.cc",
+    "intent_unittest.cc",
+  ]
+
+  deps = [
+    ":arc",
+    ":test_support",
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:arc_features",
+    "//ash/components/arc:arc_metrics_constants",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc:prefs",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list:test_support",
+    "//chrome/browser/ash/app_list/app_service",
+    "//chrome/browser/ash/app_list/test:test_support",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync:factories",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/shelf",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//components/arc",
+    "//components/arc:arc_test_support",
+    "//components/services/app_service/public/cpp:test_support",
+    "//components/session_manager/core",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//components/sync/service",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/display:test_support",
+    "//ui/display/types",
+    "//ui/events:event_constants",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/gfx/codec",
+    "//ui/gfx/geometry:geometry_skia",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "arc_usb_host_permission_browsertest.cc" ]
+
+  deps = [
+    ":arc",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//components/user_manager",
+    "//content/test:test_support",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "arc_app_test.cc",
+    "arc_app_test.h",
+    "mock_arc_app_list_prefs_observer.cc",
+    "mock_arc_app_list_prefs_observer.h",
+  ]
+
+  public_deps = [
+    ":arc",
+    "//ash/components/arc/mojom",
+    "//base",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//ash/components/arc:arc_base_utils",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc:notification_test_support",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/constants",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/dbus/concierge",
+    "//components/arc",
+    "//components/arc:arc_test_support",
+    "//testing/gtest",
+  ]
+}

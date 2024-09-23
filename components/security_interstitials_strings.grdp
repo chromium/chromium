@@ -104,7 +104,7 @@
     The site ahead is blocked by your organization
   </message>
   <message name="IDS_ENTERPRISE_BLOCK_PRIMARY_PARAGRAPH" desc="Main paragraph of an error message. Context: the error page that's shown when the requested URL doesn't pass the filtering rules set by the admin.">
-    Your organization has blocked <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DOMAIN">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> because it violates a policy. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link" aria-label="$2"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    Your organization has blocked <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DOMAIN">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> because it violates a policy. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link" aria-label="$2"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_ENTERPRISE_BLOCK_PRIMARY_PARAGRAPH_CUSTOM_MESSAGE" desc="Main paragraph of an error message with custom message provided by admin. Context: the error page that's shown when the requested URL doesn't pass the filtering rules set by the admin.">
   Your administrator says: "<ph name="CUSTOM_MESSAGE">$1<ex>This site has been blocked because it violates a policy.</ex></ph>"
@@ -121,7 +121,7 @@
     The site ahead is flagged by your organization
   </message>
   <message name="IDS_ENTERPRISE_WARN_PRIMARY_PARAGRAPH" desc="Main paragraph of an error message. Context: the error page that's shown when the requested URL doesn't pass the filtering rules set by the admin.">
-    Your organization has identified  <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DOMAIN">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> as a site that might violate a policy. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link" aria-label="$2"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    Your organization has identified  <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="DOMAIN">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> as a site that might violate a policy. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link" aria-label="$2"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_ENTERPRISE_WARN_PRIMARY_PARAGRAPH_CUSTOM_MESSAGE" desc="Main paragraph of an error message with custom message provided by admin. Context: the error page that's shown when the requested URL doesn't pass the filtering rules set by the admin.">
     Your administrator says: "<ph name="CUSTOM_MESSAGE">$1<ex>This site might violate a policy.</ex></ph>"
@@ -186,7 +186,7 @@
     Your connection is not private
   </message>
   <message name="IDS_SSL_V2_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the SSL interstitial.">
-    Attackers might be trying to steal your information from <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> (for example, passwords, messages, or credit cards). <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    Attackers might be trying to steal your information from <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>google.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> (for example, passwords, messages, or credit cards). <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SSL_V2_RECURRENT_ERROR_PARAGRAPH" desc="A paragraph for an SSL interstitial that the user has seen multiple times in a browsing session.">
     Warnings may be common while websites update their security. This should improve soon.
@@ -246,143 +246,48 @@
   <message name="IDS_SAFEBROWSING_OVERRIDABLE_SAFETY_BUTTON" desc="The text for the button that takes the user back to the previous page.">
     Back to safety
   </message>
-  <message name="IDS_HEADING_NEW" desc="The large heading at the top of the interstitial.">
+  <message name="IDS_SAFEBROWSING_HEADING" desc="The large heading at the top of the interstitial.">
     Dangerous site
   </message>
 
   <!-- Malware interstitial -->
-  <if expr="is_android">
-    <message name="IDS_MALWARE_V3_HEADING" desc="The large heading at the top of the malware interstitial.">
-      The site ahead contains dangerous apps
-    </message>
-  </if>
-  <if expr="not is_android">
-    <message name="IDS_MALWARE_V3_HEADING" desc="The large heading at the top of the malware interstitial.">
-      The site ahead contains malware
-    </message>
-  </if>
-
-  <if expr="is_android">
-    <message name="IDS_MALWARE_V3_PRIMARY_PARAGRAPH" desc="Mobile: The primary explanatory paragraph for the malware interstitial.">
-      Attackers currently on <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> could install dangerous apps that damage your device, add hidden charges to your mobile bill, or steal your personal information. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
-    </message>
-  </if>
-  <if expr="is_macosx">
-    <message name="IDS_MALWARE_V3_PRIMARY_PARAGRAPH" desc="Mac: The primary explanatory paragraph for the malware interstitial.">
-      Attackers currently on <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> might attempt to install dangerous programs on your Mac that steal or delete your information (for example, photos, passwords, messages, and credit cards). <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
-    </message>
-  </if>
-  <if expr="not is_android and not is_macosx">
-    <message name="IDS_MALWARE_V3_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the malware interstitial.">
-      Attackers currently on <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> might attempt to install dangerous programs on your computer that steal or delete your information (for example, photos, passwords, messages, and credit cards). <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
-    </message>
-  </if>
+  <message name="IDS_MALWARE_V3_PRIMARY_PARAGRAPH" desc="Mac: The primary explanatory paragraph for the malware interstitial.">
+    Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages, or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_MALWARE_V3_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page.">
-    Google Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>detected malware<ph name="END_LINK">&lt;/a&gt;</ph> on <ph name="SITE">$1<ex>example.com</ex></ph>. Websites that are normally safe are sometimes infected with malware.
-  </message>
-  <message name="IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE" desc="The explanation of why Safe Browsing has blocked the page.">
-    Google Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>detected malware<ph name="END_LINK">&lt;/a&gt;</ph> on <ph name="SITE">$1<ex>example.com</ex></ph>. Websites that are normally safe are sometimes infected with malware. The malicious content comes from <ph name="SUBRESOURCE_HOST">$2<ex>evil.com</ex></ph>, a known malware distributor.
-  </message>
-  <message name="IDS_MALWARE_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
-    If you understand the risks to your security, you may <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>visit this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> before the dangerous programs have been removed.
-  </message>
-  <message name="IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW" desc="Mac: The primary explanatory paragraph for the malware interstitial.">
-    Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages, or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
     Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found malware<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit.
   </message>
-  <message name="IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
-    Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found malware on <ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>, which is embedded in the site you're trying to visit.
-  </message>
-  <message name="IDS_MALWARE_V3_PROCEED_PARAGRAPH_NEW" desc="The paragraph that lets the user skip the warning.">
+  <message name="IDS_MALWARE_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
     Even sites that are normally safe are sometimes compromised by attackers. Only visit <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> if you're sure you understand the risks.
   </message>
   <message name="IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE" desc="SafeBrowsing Scout label next to checkbox">
     Help improve security on the web for everyone by sending <ph name="BEGIN_WHITEPAPER_LINK">&lt;a href="#" id="whitepaper-link"&gt;</ph>URLs of some pages you visit, limited system information, and some page content<ph name="END_WHITEPAPER_LINK">&lt;/a&gt;</ph> to Google. <ph name="BEGIN_PRIVACY_PAGE_LINK">&lt;a id="privacy-link" href="#"&gt;</ph>Privacy policy<ph name="END_PRIVACY_PAGE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE" desc="SafeBrowsing enhanced protection promo message">
-    To get Chrome’s highest level of security, <ph name="BEGIN_ENHANCED_PROTECTION_LINK">&lt;a href="#" id="enhanced-protection-link"&gt;</ph>turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE_NEW" desc="SafeBrowsing enhanced protection promo message">
     <ph name="BEGIN_ENHANCED_PROTECTION_LINK">&lt;a href="#" id="enhanced-protection-link"&gt;</ph>Turn on enhanced protection<ph name="END_ENHANCED_PROTECTION_LINK">&lt;/a&gt;</ph> to get Chrome's highest level of security
   </message>
 
   <!-- Harmful download interstitial -->
-  <if expr="is_android">
-    <message name="IDS_HARMFUL_V3_HEADING" desc="The large heading at the top of the unwanted software interstitial.">
-      The site ahead contains harmful apps
-    </message>
-
-    <message name="IDS_HARMFUL_V3_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the unwanted software interstitial.">
-      Attackers on <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> could install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
-    </message>
-
-    <message name="IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page.">
-      Google Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found harmful apps<ph name="END_LINK">&lt;/a&gt;</ph> on <ph name="SITE">$1<ex>example.com</ex></ph>.
-    </message>
-
-    <message name="IDS_HARMFUL_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
-      If you understand the risks to your security, you may <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>visit this site<ph name="END_LINK">&lt;/a&gt;</ph> before the harmful apps have been removed.
-    </message>
-  </if>
-  <if expr="not is_android">
-    <message name="IDS_HARMFUL_V3_HEADING" desc="The large heading at the top of the unwanted software interstitial.">
-      The site ahead contains harmful programs
-    </message>
-
-    <message name="IDS_HARMFUL_V3_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the unwanted software interstitial.">
-      Attackers on <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> might attempt to trick you into installing programs that harm your browsing experience (for example, by changing your homepage or showing extra ads on sites you visit). <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
-    </message>
-
-    <message name="IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page.">
-      Google Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found harmful programs<ph name="END_LINK">&lt;/a&gt;</ph> on <ph name="SITE">$1<ex>example.com</ex></ph>.
-    </message>
-
-    <message name="IDS_HARMFUL_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
-      If you understand the risks to your security, you may <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>visit this site<ph name="END_LINK">&lt;/a&gt;</ph> before the harmful programs have been removed.
-    </message>
-  </if>
-
-  <message name="IDS_HARMFUL_V3_PRIMARY_PARAGRAPH_NEW" desc="The primary explanatory paragraph for the unwanted software interstitial.">
-    Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit. Chrome strongly recommends going back to safety to avoid harm. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  <message name="IDS_HARMFUL_V3_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the unwanted software interstitial.">
+    Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit. Chrome strongly recommends going back to safety to avoid harm. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
 
-  <message name="IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
+  <message name="IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page.">
     Chrome has built-in safety features to protect you while you browse —  like Google Safe Browsing, which recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found harmful software<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit.
   </message>
 
-  <message name="IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
-    Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found harmful software on <ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>, which is embedded in the site if you're trying to visit.
-  </message>
-
-  <message name="IDS_HARMFUL_V3_PROCEED_PARAGRAPH_NEW" desc="The paragraph that lets the user skip the warning.">
+  <message name="IDS_HARMFUL_V3_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
     Even sites that are normally safe are sometimes compromised by attackers. Only visit <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> if you're sure you understand the risks.
   </message>
 
   <!-- Phishing interstitial -->
-  <message name="IDS_PHISHING_V4_HEADING" desc="The large heading at the top of the phishing interstitial.">
-    Deceptive site ahead
-  </message>
   <message name="IDS_PHISHING_V4_PRIMARY_PARAGRAPH" desc="The primary explanatory paragraph for the phishing interstitial.">
-    Attackers on <ph name="BEGIN_BOLD">&lt;strong&gt;</ph><ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_BOLD">&lt;/strong&gt;</ph> may trick you into doing something dangerous like installing software or revealing your personal information (for example, passwords, phone numbers, or credit cards). <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone, or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_PHISHING_V4_EXPLANATION_PARAGRAPH" desc="The explanation of why Safe Browsing has blocked the page.">
-  Google Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>detected phishing<ph name="END_LINK">&lt;/a&gt;</ph> on <ph name="SITE">$1<ex>example.com</ex></ph>. Phishing sites pretend to be other websites to trick you.
-  </message>
-  <message name="IDS_PHISHING_V4_PROCEED_AND_REPORT_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
-    You can <ph name="BEGIN_ERROR_LINK">&lt;a href="#" id="report-error-link"&gt;</ph>report a detection problem<ph name="END_ERROR_LINK">&lt;/a&gt;</ph> or, if you understand the risks to your security, <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>visit this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW" desc="The primary explanatory paragraph for the phishing interstitial.">
-    Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone, or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
-  </message>
-  <message name="IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
     Chrome has built-in safety features to protect you while you browse — like Google Safe Browsing, which <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>recently found phishing<ph name="END_LINK">&lt;/a&gt;</ph> on the site you're trying to visit. Phishing sites pretend to be other sites to trick you.<ph name="NEW_LINE">&lt;br/&gt;&lt;br/&gt;</ph>Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK">&lt;a href="#" id="report-error-link"&gt;</ph>Let us know<ph name="END_ERROR_LINK">&lt;/a&gt;</ph> if you think there's been a mistake and that this site doesn't pose a danger.
   </message>
-  <message name="IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE_NEW" desc="The explanation of why Safe Browsing has blocked the page.">
-    Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing recently <ph name="BEGIN_LINK">&lt;a href="#" id="diagnostic-link"&gt;</ph>found phishing on <ph name="SITE">$1<ex>example.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>, which is embedded in the site you're trying to visit.<ph name="NEW_LINE">&lt;br/&gt;&lt;br/&gt;</ph>Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK">&lt;a href="#" id="report-error-link"&gt;</ph>Let us know<ph name="END_ERROR_LINK">&lt;/a&gt;</ph> if you think there's been a mistake and that this site doesn't pose a danger.
-  </message>
-  <message name="IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW" desc="The paragraph that lets the user skip the warning.">
+  <message name="IDS_PHISHING_V4_PROCEED_PARAGRAPH" desc="The paragraph that lets the user skip the warning.">
     Only visit <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>this unsafe site<ph name="END_LINK">&lt;/a&gt;</ph> if you're sure you understand the risks.
   </message>
 
@@ -410,6 +315,14 @@
   </message>
   <message name="IDS_BILLING_WEBVIEW_EXPLANATION_PARAGRAPH" desc="Body of a security warning. Shown when the user wants to visit a site that may trick them into signing up for a recurring charge to their mobile phone plan. 'charges' refers to financial charges to user's mobile phone plan. 'not obvious' means the site may, for example, include a pricing disclosure in hard-to-see text.">
     These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK">&lt;a href="#" id="proceed-link"&gt;</ph>Show anyway<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+
+  <!-- WebView Restricted Content interstitials -->
+  <message name="IDS_SUPERVISED_USER_URL_BLOCKED_MESSAGE" desc="Message in error page to inform the user that the content is blocked">
+    This content is blocked.
+  </message>
+  <message name="IDS_SUPERVISED_USER_LEARN_MORE" desc="Clickable link in the error page to guide the user to learn why the content was blocked">
+    Learn more
   </message>
 
   <message name="IDS_CONNECTION_HELP_SHOW_MORE" desc="The button label to expand sections for the chrome://connection-help site. Paired with IDS_CONNECTION_HELP_SHOW_LESS">
@@ -583,16 +496,32 @@
     The connection to <ph name="SITE">$1<ex>example.com</ex></ph> is not secure
   </message>
   <message name="IDS_HTTPS_ONLY_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
-    You are seeing this warning because this site does not support HTTPS. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    You are seeing this warning because this site does not support HTTPS. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
+
+  <message name="IDS_HTTPS_ONLY_BALANCED_MODE_HEADING" desc="Large heading of the warning shown when an http only site is loaded with https-only balanced mode active">
+    <ph name="SITE">$1<ex>example.com</ex></ph> doesn’t support a secure connection
+  </message>
+  <message name="IDS_HTTPS_ONLY_BALANCED_MODE_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Balanced Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS.">
+    <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+      <ph name="LIST_ITEM">&lt;li&gt;</ph><ph name="BEGIN_STRONG">&lt;strong&gt;</ph>Attackers can see and change<ph name="END_STRONG">&lt;/strong&gt;</ph> information you send or receive from the site.
+      <ph name="LIST_ITEM">&lt;li&gt;</ph><ph name="BEGIN_STRONG">&lt;strong&gt;</ph>It's safest to visit this site later<ph name="END_STRONG">&lt;/strong&gt;</ph> if you're using a public network. There is less risk from a trusted network, like your home or work Wi-Fi.
+    <ph name="END_LIST">&lt;/ul&gt;</ph>
+
+    You might also contact the site owner and suggest they upgrade to HTTPS. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+
   <message name="IDS_HTTPS_ONLY_MODE_WITH_ADVANCED_PROTECTION_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user also has Advanced Protection enabled.">
-    You are seeing this warning because this site does not support HTTPS and you are under Google's Advanced Protection Program. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    You are seeing this warning because this site does not support HTTPS and you are under Google's Advanced Protection Program. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_HTTPS_ONLY_MODE_WITH_SITE_ENGAGEMENT_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they typically visit HTTPS URLs.">
-    You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_HTTPS_ONLY_MODE_FOR_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH" desc="Main paragraph of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user has previously engaged with the HTTPS version of the site.">
-    You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+    You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HTTPS_ONLY_MODE_FOR_INCOGNITO_PRIMARY_PARAGRAPH" desc="Main paragrpah of the HTTPS-Only Mode warning. This warning is shown when the browser tries to upgrade a navigation to a site to HTTPS but the site does not support HTTPS. The user is seeing this warning because they are browsing in Incognito mode.">
+    You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="BEGIN_LEARN_MORE_LINK">&lt;a href="#" id="learn-more-link"&gt;</ph>Learn more about this warning<ph name="END_LEARN_MORE_LINK">&lt;/a&gt;</ph>
   </message>
 
   <message name="IDS_HTTPS_ONLY_MODE_BACK_BUTTON" desc="Text for the button in the HTTPS-only mode warning that takes the user back to the previous page">

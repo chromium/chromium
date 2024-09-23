@@ -37,7 +37,7 @@ class CORE_EXPORT MultipartParser final
     // The method is called whenever some data of a part is parsed which
     // can happen zero or more times per each part. It always holds that
     // |size| > 0.
-    virtual void PartDataInMultipartReceived(const char* bytes, size_t) = 0;
+    virtual void PartDataInMultipartReceived(base::span<const char> bytes) = 0;
     // The method is called whenever all data of a complete part is parsed.
     virtual void PartDataInMultipartFullyReceived() = 0;
     void Trace(Visitor* visitor) const override {}
@@ -46,7 +46,7 @@ class CORE_EXPORT MultipartParser final
   MultipartParser(Vector<char> boundary, Client*);
   MultipartParser(const MultipartParser&) = delete;
   MultipartParser& operator=(const MultipartParser&) = delete;
-  bool AppendData(const char* bytes, size_t);
+  bool AppendData(base::span<const char> bytes);
   void Cancel();
   bool Finish();
 
@@ -60,39 +60,40 @@ class CORE_EXPORT MultipartParser final
 
    public:
     Matcher();
-    Matcher(const char* data, size_t num_matched_bytes, size_t);
+    Matcher(base::span<const char> match_data, size_t num_matched_bytes);
 
     bool Match(char value) {
-      DCHECK_LT(num_matched_bytes_, size_);
-      if (value != data_[num_matched_bytes_])
+      if (value != match_data_[num_matched_bytes_]) {
         return false;
+      }
       ++num_matched_bytes_;
       return true;
     }
-    bool Match(const char* first, const char* last);
-    bool IsMatchComplete() const { return num_matched_bytes_ == size_; }
+    bool Match(base::span<const char> data);
+    bool IsMatchComplete() const {
+      return num_matched_bytes_ == match_data_.size();
+    }
     size_t NumMatchedBytes() const { return num_matched_bytes_; }
     void SetNumMatchedBytes(size_t);
 
-    const char* Data() const { return data_; }
+    base::span<const char> MatchedData() const {
+      return match_data_.first(num_matched_bytes_);
+    }
 
    private:
-    const char* data_ = nullptr;
+    base::span<const char> match_data_;
     size_t num_matched_bytes_ = 0u;
-    size_t size_ = 0u;
   };
 
   Matcher CloseDelimiterSuffixMatcher() const;
   Matcher DelimiterMatcher(size_t num_already_matched_bytes = 0u) const;
   Matcher DelimiterSuffixMatcher() const;
 
-  void ParseDataAndDelimiter(const char** bytes_pointer, const char* bytes_end);
-  void ParseDelimiter(const char** bytes_pointer, const char* bytes_end);
-  bool ParseHeaderFields(const char** bytes_pointer,
-                         const char* bytes_end,
+  void ParseDataAndDelimiter(base::span<const char>& bytes);
+  void ParseDelimiter(base::span<const char>& bytes);
+  bool ParseHeaderFields(base::span<const char>& bytes,
                          HTTPHeaderMap* header_fields);
-  void ParseTransportPadding(const char** bytes_pointer,
-                             const char* bytes_end) const;
+  void ParseTransportPadding(base::span<const char>& bytes) const;
 
   Matcher matcher_;
   Vector<char> buffered_header_bytes_;

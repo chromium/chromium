@@ -9,6 +9,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.DestroyableObservableSupplier;
@@ -125,16 +126,18 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
         TabViewProvider currentTabViewProvider = mTabViewProviders.peek();
         if (currentTabViewProvider != previousTabViewProvider) {
             View view = null;
+            @ColorInt Integer backgroundColor = null;
             if (currentTabViewProvider != null) {
                 view = currentTabViewProvider.getView();
                 assert view != null;
                 view.setFocusable(true);
                 view.setFocusableInTouchMode(true);
+                backgroundColor = currentTabViewProvider.getBackgroundColor(view.getContext());
             }
             mCurrentView = view;
             initMarginSupplier();
             updateViewMargins();
-            mTab.setCustomView(mCurrentView);
+            mTab.setCustomView(mCurrentView, backgroundColor);
             if (previousTabViewProvider != null) previousTabViewProvider.onHidden();
             if (currentTabViewProvider != null) currentTabViewProvider.onShown();
         }
@@ -173,7 +176,7 @@ class TabViewManagerImpl implements TabViewManager, Comparator<TabViewProvider> 
     }
 
     void destroy() {
-        mTab.setCustomView(null);
+        mTab.setCustomView(null, null);
         TabViewProvider currentTabViewProvider = mTabViewProviders.peek();
         if (currentTabViewProvider != null) currentTabViewProvider.onHidden();
         mTabViewProviders.clear();

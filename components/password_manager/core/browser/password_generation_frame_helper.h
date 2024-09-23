@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -60,6 +62,14 @@ class PasswordGenerationFrameHelper {
   // Virtual for testing
   virtual bool IsGenerationEnabled(bool log_debug_data) const;
 
+  // Returns true if `field_renderer_id` is in `generation_enabled_fields_` set.
+  virtual bool IsManualGenerationEnabledField(
+      autofill::FieldRendererId field_renderer_id) const;
+
+  // Adds `field_renderer_id` to `generation_enabled_fields_` set.
+  virtual void AddManualGenerationEnabledField(
+      autofill::FieldRendererId field_renderer_id);
+
   // Returns a randomly generated password that should (but is not guaranteed
   // to) match the requirements of the site.
   // `last_committed_url` refers to the main frame URL and may impact the
@@ -71,9 +81,10 @@ class PasswordGenerationFrameHelper {
   //
   // Virtual for testing
   //
-  // TODO(crbug.com/855595): Add a stub for this class to facilitate testing.
+  // TODO(crbug.com/41396292): Add a stub for this class to facilitate testing.
   virtual std::u16string GeneratePassword(
       const GURL& last_committed_url,
+      autofill::password_generation::PasswordGenerationType generation_type,
       autofill::FormSignature form_signature,
       autofill::FieldSignature field_signature,
       uint64_t max_length);
@@ -88,6 +99,10 @@ class PasswordGenerationFrameHelper {
   // The PasswordManagerDriver instance associated with this instance. Must
   // outlive this instance.
   const raw_ptr<PasswordManagerDriver> driver_;
+
+  // The fields that have manual generation enabled. This includes fields that
+  // have type="text".
+  base::flat_set<autofill::FieldRendererId> generation_enabled_fields_;
 };
 
 }  // namespace password_manager

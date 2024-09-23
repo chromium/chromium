@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_DATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -13,8 +14,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
+#include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
 #include "components/account_id/account_id.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -119,9 +122,12 @@ class KioskAppData : public KioskAppDataBase,
 
   // extensions::WebstoreDataFetcherDelegate overrides:
   void OnWebstoreRequestFailure(const std::string& extension_id) override;
-  void OnWebstoreResponseParseSuccess(
+  void OnWebstoreItemJSONAPIResponseParseSuccess(
       const std::string& extension_id,
       const base::Value::Dict& webstore_data) override;
+  void OnFetchItemSnippetParseSuccess(
+      const std::string& extension_id,
+      extensions::FetchItemSnippetResponse item_snippet) override;
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
 

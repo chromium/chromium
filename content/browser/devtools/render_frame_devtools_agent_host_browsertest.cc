@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+
+#include <string_view>
 
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -51,8 +58,9 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
     // Return a false in case that the url is a fenced frame test url to detach
     // the attached client in order to test that a fenced frame calls
     // OnNavigationRequestWillBeSent through the outer document.
-    if (url.path_piece().find(kFencedFramePath) != base::StringPiece::npos)
+    if (url.path_piece().find(kFencedFramePath) != std::string_view::npos) {
       return false;
+    }
     return true;
   }
 };
@@ -63,14 +71,9 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 // is tracking while a cross-site navigation is canceled after having reached
 // the ReadyToCommit stage.
 // See https://crbug.com/695203.
-// TODO(crbug.com/1452098): Re-enable this test
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40916125): Re-enable this test
 #define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
   DISABLED_CancelCrossOriginNavigationAfterReadyToCommit
-#else
-#define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
-  CancelCrossOriginNavigationAfterReadyToCommit
-#endif
 IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
                        MAYBE_CancelCrossOriginNavigationAfterReadyToCommit) {
   net::test_server::ControllableHttpResponse response_b(embedded_test_server(),
@@ -100,8 +103,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
   GURL url_b(embedded_test_server()->GetURL("b.com", "/response_b"));
   TestNavigationManager observer_b(shell()->web_contents(), url_b);
   shell()->LoadURL(url_b);
-  EXPECT_TRUE(observer_b.WaitForRequestStart());
-
+  observer_b.WaitForSpeculativeRenderFrameHostCreation();
   RenderFrameHostImpl* current_rfh =
       root->render_manager()->current_frame_host();
   RenderFrameHostImpl* speculative_rfh_b =
@@ -111,7 +113,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameDevToolsAgentHostBrowserTest,
   EXPECT_EQ(current_rfh, rfh_devtools_agent->GetFrameHostForTesting());
 
   // 3.b) Navigation: ReadyToCommit.
-  observer_b.ResumeNavigation();  // Send the request.
   response_b.WaitForRequest();
   response_b.Send(
       "HTTP/1.1 200 OK\r\n"

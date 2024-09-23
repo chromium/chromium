@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -35,6 +34,7 @@
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace download {
 namespace {
@@ -77,7 +77,7 @@ Client::FailureReason FailureReasonFromCompletionType(CompletionType type) {
     case CompletionType::CANCEL:
       return Client::FailureReason::CANCELLED;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   return Client::FailureReason::UNKNOWN;
@@ -448,7 +448,7 @@ void ControllerImpl::HandleTaskFinished(DownloadTaskType task_type,
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -699,8 +699,9 @@ void ControllerImpl::AttemptToFinalizeSetup() {
          controller_state_ == State::RECOVERING);
 
   // Always notify the LogSink no matter what path this function takes.
-  base::ScopedClosureRunner state_notifier(base::BindOnce(
-      &LogSink::OnServiceStatusChanged, base::Unretained(log_sink_)));
+  absl::Cleanup state_notifier = [this] {
+    log_sink_->OnServiceStatusChanged();
+  };
 
   if (!startup_status_.Complete())
     return;
@@ -887,13 +888,13 @@ void ControllerImpl::ResolveInitialRequestStates() {
             new_state = Entry::State::COMPLETE;
             break;
           default:
-            NOTREACHED();
+            NOTREACHED_IN_MIGRATION();
             break;
         }
         break;
       }
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
 
@@ -937,7 +938,7 @@ void ControllerImpl::ResolveInitialRequestStates() {
         }
         break;
       case Entry::State::COUNT:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }

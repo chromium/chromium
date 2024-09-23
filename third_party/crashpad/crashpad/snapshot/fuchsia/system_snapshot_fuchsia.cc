@@ -109,7 +109,6 @@ uint32_t SystemSnapshotFuchsia::CPUX86Signature() const {
   return cpuid_.Signature();
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 
@@ -119,7 +118,6 @@ uint64_t SystemSnapshotFuchsia::CPUX86Features() const {
   return cpuid_.Features();
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 
@@ -129,7 +127,6 @@ uint64_t SystemSnapshotFuchsia::CPUX86ExtendedFeatures() const {
   return cpuid_.ExtendedFeatures();
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 
@@ -138,7 +135,6 @@ uint32_t SystemSnapshotFuchsia::CPUX86Leaf7Features() const {
   return cpuid_.Leaf7Features();
 #else
   NOTREACHED();
-  return 0;
 #endif
 }
 
@@ -148,7 +144,6 @@ bool SystemSnapshotFuchsia::CPUX86SupportsDAZ() const {
   return cpuid_.SupportsDAZ();
 #else
   NOTREACHED();
-  return false;
 #endif
 }
 

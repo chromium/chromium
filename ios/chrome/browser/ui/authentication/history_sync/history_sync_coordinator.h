@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_HISTORY_SYNC_HISTORY_SYNC_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
+#import "ios/chrome/browser/first_run/ui_bundled/interruptible_chrome_coordinator.h"
 
 class AuthenticationService;
 @class HistorySyncCoordinator;

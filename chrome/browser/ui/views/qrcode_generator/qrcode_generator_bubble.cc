@@ -5,13 +5,15 @@
 #include "chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.h"
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharing/features.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -23,8 +25,8 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_util.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
-#include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
+#include "components/qr_code_generator/bitmap_generator.h"
+#include "components/sharing_message/features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
@@ -33,6 +35,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/events/event.h"
@@ -67,10 +70,6 @@ constexpr gfx::Size GetQRCodeImageSize() {
   return gfx::Size(kQRImageSizePx, kQRImageSizePx);
 }
 
-constexpr bool IsSquare(gfx::Size size) {
-  return size.width() == size.height();
-}
-
 gfx::ImageSkia CreateBackgroundImageSkia(const gfx::Size& size, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size.width(), size.height());
@@ -95,25 +94,38 @@ QRCodeGeneratorBubble::QRCodeGeneratorBubble(
       web_contents_(web_contents) {
   DCHECK(on_closing_);
 
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetTitle(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TITLE);
 
   base::RecordAction(base::UserMetricsAction("SharingQRCode.DialogLaunched"));
 }
 
-QRCodeGeneratorBubble::~QRCodeGeneratorBubble() = default;
+QRCodeGeneratorBubble::~QRCodeGeneratorBubble() {
+  if (qrcode_action_item_) {
+    qrcode_action_item_->SetIsShowingBubble(false);
+  }
+}
 
 void QRCodeGeneratorBubble::Show() {
   textfield_url_->SetText(base::UTF8ToUTF16(url_.possibly_invalid_spec()));
   textfield_url_->SelectAll(false);
   UpdateQRContent();
   ShowForReason(USER_GESTURE);
+  Browser* browser = chrome::FindLastActive();
+  if (browser && base::FeatureList::IsEnabled(features::kToolbarPinning)) {
+    qrcode_action_item_ = actions::ActionManager::Get().FindAction(
+        kActionQrCodeGenerator, browser->browser_actions()->root_action_item());
+    qrcode_action_item_->SetIsShowingBubble(true);
+  }
 }
 
 void QRCodeGeneratorBubble::Hide() {
   if (on_closing_)
     std::move(on_closing_).Run();
   CloseBubble();
+  if (qrcode_action_item_) {
+    qrcode_action_item_->SetIsShowingBubble(false);
+  }
 }
 
 void QRCodeGeneratorBubble::OnThemeChanged() {
@@ -136,37 +148,26 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
     return;
   }
 
-  mojom::GenerateQRCodeRequestPtr request = mojom::GenerateQRCodeRequest::New();
-  request->data = base::UTF16ToUTF8(textfield_url_->GetText());
-  request->center_image = mojom::CenterImage::CHROME_DINO;
-  request->render_module_style = mojom::ModuleStyle::CIRCLES;
-  request->render_locator_style = mojom::LocatorStyle::ROUNDED;
+  std::string input = base::UTF16ToUTF8(textfield_url_->GetText());
 
-  // Rationale for Unretained(): Closing dialog destroys `qrcode_service_` and
-  // `qrcode_service_override_` - the callback will not run (see also the doc
-  // comment of `QRImageGenerator::GenerateQRCode`).
-  auto callback = base::BindOnce(
-      &QRCodeGeneratorBubble::OnCodeGeneratorResponse, base::Unretained(this));
+  base::expected<gfx::ImageSkia, qr_code_generator::Error> qr_code;
   if (qrcode_error_override_.has_value()) {
-    auto response = qrcode_generator::mojom::GenerateQRCodeResponse::New();
-    response->error_code = qrcode_error_override_.value();
-    std::move(callback).Run(std::move(response));
-    return;
+    qr_code = base::unexpected(qrcode_error_override_.value());
+  } else {
+    qr_code = qr_code_generator::GenerateImage(
+        base::as_byte_span(input), qr_code_generator::ModuleStyle::kCircles,
+        qr_code_generator::LocatorStyle::kRounded,
+        qr_code_generator::CenterImage::kDino,
+        qr_code_generator::QuietZone::kIncluded);
   }
-  qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
-}
 
-void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
-    const mojom::GenerateQRCodeResponsePtr response) {
-  if (response->error_code != mojom::QRCodeGeneratorError::NONE) {
-    DisplayError(response->error_code);
+  if (!qr_code.has_value()) {
+    DisplayError(qr_code.error());
     return;
   }
 
   HideErrors(true);
-  UpdateQRImage(AddQRCodeQuietZone(
-      gfx::ImageSkia::CreateFrom1xBitmap(response->bitmap), response->data_size,
-      GetColorProvider()->GetColor(kColorQrCodeBackground)));
+  UpdateQRImage(qr_code.value());
 }
 
 void QRCodeGeneratorBubble::UpdateQRImage(gfx::ImageSkia qr_image) {
@@ -183,27 +184,31 @@ void QRCodeGeneratorBubble::DisplayPlaceholderImage() {
       CreateBackgroundImageSkia(GetQRCodeImageSize(), SK_ColorTRANSPARENT));
 }
 
-void QRCodeGeneratorBubble::DisplayError(mojom::QRCodeGeneratorError error) {
+void QRCodeGeneratorBubble::DisplayError(qr_code_generator::Error error) {
   copy_button_->SetEnabled(false);
   download_button_->SetEnabled(false);
-  if (error == mojom::QRCodeGeneratorError::INPUT_TOO_LONG) {
-    ShrinkAndHideDisplay(center_error_label_);
-    DisplayPlaceholderImage();
-    bottom_error_label_->SetVisible(true);
-    bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(false);
-    return;
+
+  switch (error) {
+    case qr_code_generator::Error::kInputTooLong:
+      ShrinkAndHideDisplay(center_error_label_);
+      DisplayPlaceholderImage();
+      bottom_error_label_->SetVisible(true);
+      bottom_error_label_->GetViewAccessibility().SetIsIgnored(false);
+      break;
+    case qr_code_generator::Error::kUnknownError:
+      ShrinkAndHideDisplay(qr_code_image_);
+      bottom_error_label_->SetVisible(false);
+      bottom_error_label_->GetViewAccessibility().SetIsIgnored(true);
+      center_error_label_->SetPreferredSize(GetQRCodeImageSize());
+      center_error_label_->SetVisible(true);
+      break;
   }
-  ShrinkAndHideDisplay(qr_code_image_);
-  bottom_error_label_->SetVisible(false);
-  bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(true);
-  center_error_label_->SetPreferredSize(GetQRCodeImageSize());
-  center_error_label_->SetVisible(true);
 }
 
 void QRCodeGeneratorBubble::HideErrors(bool enable_button) {
   ShrinkAndHideDisplay(center_error_label_);
   bottom_error_label_->SetVisible(false);
-  bottom_error_label_->GetViewAccessibility().OverrideIsIgnored(true);
+  bottom_error_label_->GetViewAccessibility().SetIsIgnored(true);
   copy_button_->SetEnabled(enable_button);
   download_button_->SetEnabled(enable_button);
 }
@@ -264,7 +269,7 @@ void QRCodeGeneratorBubble::Init() {
 
   // Text box to edit URL
   auto textfield_url = std::make_unique<views::Textfield>();
-  textfield_url->SetAccessibleName(l10n_util::GetStringUTF16(
+  textfield_url->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_BROWSER_SHARING_QR_CODE_DIALOG_URL_TEXTFIELD_ACCESSIBLE_NAME));
   textfield_url->SetText(base::UTF8ToUTF16(url_.spec()));
   textfield_url->set_controller(this);
@@ -281,10 +286,13 @@ void QRCodeGeneratorBubble::Init() {
   textfield_url_ = AddChildView(std::move(textfield_url));
 
   // Lower error message.
-  // User-facing limit rounded down to 2000 characters for readability
-  // (QR code version 40 with M-level error correction can encode binary
-  // inputs of up to 2331 bytes, and digit-only inputs of up to 5596 bytes).
-  // See https://www.qrcode.com/en/about/version.html.
+  // User-facing limit rounded down to 2000 characters for readability.
+  // (QR code version 40 with M-level error correction can encode binary inputs
+  // of up to 2331 bytes, and digit-only inputs of up to 5596 bytes - see
+  // https://www.qrcode.com/en/about/version.html.)
+  //
+  // See also `MAX_URL_LENGTH` in
+  // `.../chrome/browser/share/qrcode/share_tab/QrCodeShareMediator.java`.
   const int kMaxInputLength = 2000;
   auto bottom_error_label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16Int(
@@ -292,7 +300,7 @@ void QRCodeGeneratorBubble::Init() {
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   bottom_error_label->SetVisible(false);
-  bottom_error_label->GetViewAccessibility().OverrideIsIgnored(true);
+  bottom_error_label->GetViewAccessibility().SetIsIgnored(true);
   auto* bottom_error_container = AddChildView(std::make_unique<views::View>());
   bottom_error_container->SetUseDefaultFillLayout(true);
   bottom_error_label_ =
@@ -350,11 +358,6 @@ void QRCodeGeneratorBubble::Init() {
               IDS_BROWSER_SHARING_QR_CODE_DIALOG_DOWNLOAD_BUTTON_LABEL)));
   download_button_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   // End controls row
-
-  // Initialize Service
-  if (!qrcode_service_) {
-    qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
-  }
 }
 
 void QRCodeGeneratorBubble::AddedToWidget() {
@@ -406,35 +409,8 @@ const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
   return base::UTF8ToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
 }
 
-// Given a square |image| and a size in QR code tiles (*not* in pixels or
-// dips) |qr_size|, produce a new image that contains |image| with the
-// mandatory 4 tiles worth of white padding around the original image.
-// static
-gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
-    const gfx::ImageSkia& image,
-    const gfx::Size& qr_size,
-    SkColor background_color) {
-  const gfx::Size image_size(image.width(), image.height());
-
-  DCHECK(IsSquare(image_size));
-  DCHECK(IsSquare(qr_size));
-
-  // Set by the QR code specification. We need to leave this many tiles blank on
-  // *each side* of the image.
-  const int kQuietZoneSizeTiles = 4;
-  const int tile_size = image.width() / qr_size.width();
-  const gfx::Size background_size =
-      image_size + gfx::Size(kQuietZoneSizeTiles * tile_size * 2,
-                             kQuietZoneSizeTiles * tile_size * 2);
-
-  auto final_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
-      CreateBackgroundImageSkia(background_size, background_color), image);
-  DCHECK(IsSquare(gfx::Size(final_image.width(), final_image.height())));
-  return final_image;
-}
-
 void QRCodeGeneratorBubble::SetQRCodeErrorForTesting(
-    std::optional<qrcode_generator::mojom::QRCodeGeneratorError> error) {
+    std::optional<qr_code_generator::Error> error) {
   qrcode_error_override_ = error;
 }
 

@@ -140,17 +140,27 @@ bool GLOzoneEglCast::LoadGLES2Bindings(
     const gl::GLImplementationParts& implementation) {
   InitializeHardwareIfNeeded();
 
-  void* lib_egl = egl_platform_->GetEglLibrary();
-  void* lib_gles2 = egl_platform_->GetGles2Library();
   gl::GLGetProcAddressProc gl_proc = reinterpret_cast<gl::GLGetProcAddressProc>(
       egl_platform_->GetGLProcAddressProc());
-  if (!lib_egl || !lib_gles2 || !gl_proc) {
+
+  if (!gl_proc) {
     return false;
   }
 
-  gl::SetGLGetProcAddressProc(gl_proc);
+  // The starboard version does not use lib_egl or lib_gles2. Lookups are done
+  // via gl_proc.
+#ifndef IS_STARBOARD
+  void* lib_egl = egl_platform_->GetEglLibrary();
+  void* lib_gles2 = egl_platform_->GetGles2Library();
+
+  if (!lib_egl || !lib_gles2) {
+    return false;
+  }
   gl::AddGLNativeLibrary(lib_egl);
   gl::AddGLNativeLibrary(lib_gles2);
+#endif
+
+  gl::SetGLGetProcAddressProc(gl_proc);
   return true;
 }
 

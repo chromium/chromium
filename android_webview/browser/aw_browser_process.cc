@@ -9,7 +9,6 @@
 #include "android_webview/browser/component_updater/registration.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
-#include "android_webview/browser_jni_headers/AwBrowserProcess_jni.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -21,10 +20,14 @@
 #include "components/component_updater/android/component_loader_policy.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/process_visibility_util.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwBrowserProcess_jni.h"
 
 using content::BrowserThread;
 
@@ -69,6 +72,12 @@ AwBrowserProcess::AwBrowserProcess(
 
   origin_trials_settings_storage_ =
       std::make_unique<embedder_support::OriginTrialsSettingsStorage>();
+
+  // Initialize OSCryptAsync with no providers. This delegates all encryption
+  // operations to OSCrypt.
+  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
+      std::vector<
+          std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>());
 }
 
 AwBrowserProcess::~AwBrowserProcess() {
@@ -82,6 +91,9 @@ void AwBrowserProcess::PreMainMessageLoopRun() {
   pref_change_registrar_.Add(prefs::kAuthServerAllowlist, auth_pref_callback);
   pref_change_registrar_.Add(prefs::kAuthAndroidNegotiateAccountType,
                              auth_pref_callback);
+
+  // Trigger async initialization of OSCrypt key providers.
+  std::ignore = os_crypt_async_->GetInstance(base::DoNothing());
 
   InitSafeBrowsing();
 }
@@ -152,10 +164,7 @@ void AwBrowserProcess::CreateSafeBrowsingAllowlistManager() {
 
 safe_browsing::RemoteSafeBrowsingDatabaseManager*
 AwBrowserProcess::GetSafeBrowsingDBManager() {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!safe_browsing_db_manager_) {
     safe_browsing_db_manager_ =
@@ -165,8 +174,8 @@ AwBrowserProcess::GetSafeBrowsingDBManager() {
   if (!safe_browsing_db_manager_started_) {
     // V4ProtocolConfig is not used. Just create one with empty values..
     safe_browsing::V4ProtocolConfig config("", false, "", "");
-    safe_browsing_db_manager_->StartOnSBThread(
-        GetSafeBrowsingUIManager()->GetURLLoaderFactoryOnSBThread(), config);
+    safe_browsing_db_manager_->StartOnUIThread(
+        GetSafeBrowsingUIManager()->GetURLLoaderFactory(), config);
     safe_browsing_db_manager_started_ = true;
   }
 
@@ -194,6 +203,10 @@ AwBrowserProcess::GetSafeBrowsingAllowlistManager() const {
 
 AwSafeBrowsingUIManager* AwBrowserProcess::GetSafeBrowsingUIManager() const {
   return safe_browsing_ui_manager_.get();
+}
+
+os_crypt_async::OSCryptAsync* AwBrowserProcess::GetOSCryptAsync() const {
+  return os_crypt_async_.get();
 }
 
 // static

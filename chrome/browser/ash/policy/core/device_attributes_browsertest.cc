@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
-
-#include "base/run_loop.h"
-
 #include <optional>
 
+#include "base/run_loop.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -103,8 +101,8 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {
       ash::kDeviceHostnameTemplate, base::Value(kFakeHostname));
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kFakeSerialNumber);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kFakeSerialNumber);
 
   // Verify returned attributes correspond to what was set.
   EXPECT_EQ(kFakeDomain, attributes_.GetEnterpriseEnrollmentDomain());

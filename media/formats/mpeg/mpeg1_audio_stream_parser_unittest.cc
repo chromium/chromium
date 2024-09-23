@@ -92,34 +92,35 @@ TEST_F(MPEG1AudioStreamParserTest, UnalignedAppend512) {
 
 TEST_F(MPEG1AudioStreamParserTest, MetadataParsing) {
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("sfx.mp3");
-  const uint8_t* buffer_ptr = buffer->data();
+  int offset = 0;
 
   // The first 32 bytes of sfx.mp3 are an ID3 tag, so no segments should be
   // extracted after appending those bytes.
   const int kId3TagSize = 32;
-  EXPECT_EQ("", ParseData(buffer_ptr, kId3TagSize));
+  EXPECT_EQ("", ParseData(buffer->AsSpan().subspan(offset, kId3TagSize)));
   EXPECT_FALSE(last_audio_config().IsValidConfig());
-  buffer_ptr += kId3TagSize;
+  offset += kId3TagSize;
 
   // The next 417 bytes are a Xing frame; with the identifier 21 bytes into
   // the frame.  Appending less than 21 bytes, should result in no segments
   // nor an AudioDecoderConfig being created.
   const int kXingTagPosition = 21;
-  EXPECT_EQ("", ParseData(buffer_ptr, kXingTagPosition));
+  EXPECT_EQ("", ParseData(buffer->AsSpan().subspan(offset, kXingTagPosition)));
   EXPECT_FALSE(last_audio_config().IsValidConfig());
-  buffer_ptr += kXingTagPosition;
+  offset += kXingTagPosition;
 
   // Appending the rests of the Xing frame should result in no segments, but
   // should generate a valid AudioDecoderConfig.
   const int kXingRemainingSize = 417 - kXingTagPosition;
-  EXPECT_EQ("", ParseData(buffer_ptr, kXingRemainingSize));
+  EXPECT_EQ("",
+            ParseData(buffer->AsSpan().subspan(offset, kXingRemainingSize)));
   EXPECT_TRUE(last_audio_config().IsValidConfig());
-  buffer_ptr += kXingRemainingSize;
+  offset += kXingRemainingSize;
 
   // Append the first real frame and ensure we get a segment.
   const int kFirstRealFrameSize = 182;
   EXPECT_EQ("NewSegment{ 0K }EndOfSegment",
-            ParseData(buffer_ptr, kFirstRealFrameSize));
+            ParseData(buffer->AsSpan().subspan(offset, kFirstRealFrameSize)));
   EXPECT_TRUE(last_audio_config().IsValidConfig());
 }
 

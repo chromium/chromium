@@ -357,7 +357,7 @@ void ExtensionAllowlist::OnSafeBrowsingEnhancedChanged() {
 void ExtensionAllowlist::OnExtensionStateChanged(
     const ExtensionId& extension_id,
     bool is_now_enabled) {
-  // TODO(crbug.com/1192225): Can be removed when the bug is resolved. This
+  // TODO(crbug.com/40757123): Can be removed when the bug is resolved. This
   // check is needed because `OnExtensionStateChanged` is called for all loaded
   // extensions during startup. So on the first startup with the enforcement
   // enabled, all not allowlisted extensions would be

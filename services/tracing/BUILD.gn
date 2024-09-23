@@ -92,7 +92,6 @@ source_set("tests") {
     "perfetto/perfetto_integration_unittest.cc",
     "perfetto/privacy_filtering_check_unittest.cc",
     "public/cpp/perfetto/perfetto_config_unittest.cc",
-    "public/cpp/perfetto/trace_event_data_source_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
     "public/cpp/stack_sampling/tracing_sampler_profiler_unittest.cc",
@@ -130,7 +129,10 @@ source_set("tests") {
   }
 
   if (!is_android) {
-    sources += [ "tracing_service_unittest.cc" ]
+    sources += [
+      "public/cpp/trace_startup_config_unittest.cc",
+      "tracing_service_unittest.cc",
+    ]
   }
 
   if (is_fuchsia) {
@@ -145,13 +147,13 @@ source_set("tests") {
   }
 
   if (is_posix) {
-    # TODO(crbug.com/1184180): System perfetto tests are flaky on Mac.
+    # TODO(crbug.com/40171530): System perfetto tests are flaky on Mac.
     if (!is_apple) {
       sources += [ "perfetto/system_perfetto_unittest.cc" ]
     }
 
     if (!is_android && !is_ios) {
-      # TODO(crbug.com/1451751): Failed on iOS by '(errno: 63, File name too long)'.
+      # TODO(crbug.com/40270670): Failed on iOS by '(errno: 63, File name too long)'.
       sources += [ "public/cpp/system_tracing_service_unittest.cc" ]
     }
   }

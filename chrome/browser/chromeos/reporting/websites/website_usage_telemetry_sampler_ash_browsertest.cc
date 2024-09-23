@@ -43,10 +43,8 @@ using ::testing::StrEq;
 namespace reporting {
 namespace {
 
-using std::literals::string_view_literals::operator""sv;
-
-constexpr auto kTestDMToken = "token"sv;
-constexpr auto kTestUrl = "https://a.example.org/"sv;
+constexpr std::string_view kTestDMToken = "token";
+constexpr std::string_view kTestUrl = "https://a.example.org/";
 constexpr base::TimeDelta kWebsiteUsageCollectionInterval = base::Minutes(5);
 constexpr base::TimeDelta kWebsiteUsageDuration = base::Minutes(2);
 

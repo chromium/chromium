@@ -5,11 +5,11 @@
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -78,7 +78,7 @@ void SetupOriginTrialsCommandLineAndSettings(
   if (!command_line->HasSwitch(kOriginTrialDisabledFeatures)) {
     const base::Value::List& override_disabled_feature_list =
         local_state->GetList(prefs::kOriginTrialDisabledFeatures);
-    std::vector<base::StringPiece> disabled_features;
+    std::vector<std::string_view> disabled_features;
     for (const auto& item : override_disabled_feature_list) {
       if (item.is_string())
         disabled_features.push_back(item.GetString());
@@ -90,7 +90,7 @@ void SetupOriginTrialsCommandLineAndSettings(
                                       override_disabled_features);
     }
   }
-  // TODO(crbug.com/1216609): Should revisit if we want to continue allowing
+  // TODO(crbug.com/40770598): Should revisit if we want to continue allowing
   // users to override the disabled tokens list via a CLI flag or remove that
   // functionality and populate the settings only from the PrefService.
   if (!command_line->HasSwitch(kOriginTrialDisabledTokens)) {

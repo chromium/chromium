@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -13,6 +19,8 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/subsample_entry.h"
+#include "media/base/video_codecs.h"
+#include "media/base/video_color_space.h"
 #include "media/formats/mp2t/es_parser_adts.h"
 #include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -49,6 +57,8 @@ constexpr uint32_t kTotalSizeLength = 4u;
 constexpr uint32_t kFlagsAndVersionLength = 4u;
 constexpr uint32_t kEntryCountLength = 4u;
 constexpr uint32_t kSampleSizeAndCount = 8u;
+constexpr size_t kVideoIndex = 0;
+constexpr size_t kAudioIndex = 1;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 constexpr uint8_t kProfileIndicationNoChroma = 77;
@@ -90,7 +100,7 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
   void CreateContext(std::vector<uint8_t>& written_data) {
     auto tracker = std::make_unique<OutputPositionTracker>(base::BindRepeating(
         [&](base::OnceClosure run_loop_quit, std::vector<uint8_t>* written_data,
-            base::StringPiece mp4_data_string) {
+            std::string_view mp4_data_string) {
           // Callback is called per box output.
 
           std::copy(mp4_data_string.begin(), mp4_data_string.end(),
@@ -101,6 +111,60 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
 
     // Initialize.
     CreateContext(std::move(tracker));
+  }
+
+  void AddTrackWithSampleDescriptions(mp4::writable_boxes::Movie& movie_box) {
+    context_->SetVideoTrack({kVideoIndex, kVideoTimescale});
+    context_->SetAudioTrack({kAudioIndex, kAudioTimescale});
+
+    mp4::writable_boxes::Track video_track(kVideoIndex + 1, false);
+    movie_box.tracks.push_back(std::move(video_track));
+    mp4::writable_boxes::Track audio_track(kAudioIndex + 1, true);
+    movie_box.tracks.push_back(std::move(audio_track));
+    AddMediaInformations(movie_box);
+  }
+
+  void AddMediaInformations(mp4::writable_boxes::Movie& movie_box) {
+    AddVideoMediaInformation(movie_box.tracks[kVideoIndex].media.information);
+    AddAudioMediaInformation(movie_box.tracks[kAudioIndex].media.information);
+  }
+
+  void AddVideoMediaInformation(
+      mp4::writable_boxes::MediaInformation& media_information) {
+    AddVideoSampleTable(media_information.sample_table);
+  }
+
+  void AddAudioMediaInformation(
+      mp4::writable_boxes::MediaInformation& media_information) {
+    AddAudioSampleTable(media_information.sample_table);
+  }
+
+  void AddVideoSampleTable(mp4::writable_boxes::SampleTable& sample_table) {
+    mp4::writable_boxes::SampleDescription video_sample_description;
+    mp4::writable_boxes::VisualSampleEntry visual_sample_entry(
+        VideoCodec::kVP9);
+    visual_sample_entry.coded_size = gfx::Size(kWidth, kHeight);
+    visual_sample_entry.compressor_name = "VPC Coding";
+    mp4::writable_boxes::VPCodecConfiguration vp_config(
+        /*profile*/ VP9PROFILE_PROFILE0, /*level*/ 0,
+        /*color_space */ gfx::ColorSpace());
+    visual_sample_entry.vp_decoder_configuration = std::move(vp_config);
+    video_sample_description.video_sample_entry =
+        std::move(visual_sample_entry);
+    sample_table.sample_description = std::move(video_sample_description);
+  }
+
+  void AddAudioSampleTable(mp4::writable_boxes::SampleTable& sample_table) {
+    mp4::writable_boxes::SampleDescription audio_sample_description;
+    constexpr uint32_t kSampleRate = 48000u;
+    mp4::writable_boxes::AudioSampleEntry audio_sample_entry(AudioCodec::kOpus,
+                                                             kSampleRate, 2u);
+    mp4::writable_boxes::OpusSpecificBox opus_specific_box;
+    opus_specific_box.channel_count = 2u;
+    opus_specific_box.sample_rate = 48000u;
+    audio_sample_entry.opus_specific_box = std::move(opus_specific_box);
+    audio_sample_description.audio_sample_entry = std::move(audio_sample_entry);
+    sample_table.sample_description = std::move(audio_sample_description);
   }
 
   size_t FlushAndWait(Mp4BoxWriter* box_writer) {
@@ -185,11 +249,10 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
-  context_->SetVideoTrack({0, kVideoTimescale});
-  context_->SetAudioTrack({1, kAudioTimescale});
+  mp4::writable_boxes::Movie mp4_moov_box;
+  AddTrackWithSampleDescriptions(mp4_moov_box);
 
   // Populates the boxes during Mp4Muxer::OnEncodedVideo.
-  mp4::writable_boxes::Movie mp4_moov_box;
   {
     mp4::writable_boxes::TrackExtends video_extends;
     video_extends.track_id = 1u;
@@ -198,9 +261,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
     video_extends.default_sample_size = kDefaultSampleSize;
     video_extends.default_sample_flags = kVideoSampleFlags;
     mp4_moov_box.extends.track_extends.push_back(std::move(video_extends));
-
-    mp4::writable_boxes::Track video_track = {};
-    mp4_moov_box.tracks.push_back(std::move(video_track));
   }
 
   {
@@ -211,9 +271,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
     audio_extends.default_sample_size = kDefaultSampleSize;
     audio_extends.default_sample_flags = kAudioSampleFlags;
     mp4_moov_box.extends.track_extends.push_back(std::move(audio_extends));
-
-    mp4::writable_boxes::Track audio_track = {};
-    mp4_moov_box.tracks.push_back(std::move(audio_track));
   }
 
   // Flush at requested.
@@ -259,31 +316,25 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
   // Tests `tkhd/mdhd` box writer.
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
-
-  // Populates the boxes during Mp4Muxer::OnEncodedVideo.
-  constexpr size_t kVideoIndex = 0;
-  constexpr size_t kAudioIndex = 1;
-
   context_->SetVideoTrack({kVideoIndex, kVideoTimescale});
   context_->SetAudioTrack({kAudioIndex, kAudioTimescale});
 
   mp4::writable_boxes::Movie mp4_moov_box;
+  // Populates the boxes during Mp4Muxer::OnEncodedVideo.
   base::Time creation_time = base::Time::FromTimeT(0x1234567);
   base::Time modification_time = base::Time::FromTimeT(0x2345678);
   {
     mp4::writable_boxes::TrackExtends video_extends;
     mp4_moov_box.extends.track_extends.push_back(std::move(video_extends));
 
-    mp4::writable_boxes::Track video_track = {};
+    mp4::writable_boxes::Track video_track(kVideoIndex + 1, false);
     using T = std::underlying_type_t<mp4::writable_boxes::TrackHeaderFlags>;
     video_track.header.flags =
         (static_cast<T>(mp4::writable_boxes::TrackHeaderFlags::kTrackEnabled) |
          static_cast<T>(mp4::writable_boxes::TrackHeaderFlags::kTrackInMovie));
-    video_track.header.track_id = 1u;
     video_track.header.creation_time = creation_time;
     video_track.header.modification_time = modification_time;
     video_track.header.duration = base::Milliseconds(kDuration1);
-    video_track.header.is_audio = false;
     video_track.header.natural_size = gfx::Size(kWidth, kHeight);
 
     video_track.media.header.creation_time = creation_time;
@@ -291,8 +342,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
     video_track.media.header.duration = base::Milliseconds(kDuration1);
     video_track.media.header.timescale = kVideoTimescale;
     video_track.media.header.language = "und";
-
-    video_track.media.handler.handler_type = mp4::FOURCC_VIDE;
     video_track.media.handler.name = kVideoHandlerName;
 
     mp4_moov_box.tracks.push_back(std::move(video_track));
@@ -302,12 +351,10 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
     mp4::writable_boxes::TrackExtends audio_extends;
     mp4_moov_box.extends.track_extends.push_back(std::move(audio_extends));
 
-    mp4::writable_boxes::Track audio_track = {};
-    audio_track.header.track_id = 2u;
+    mp4::writable_boxes::Track audio_track(kAudioIndex + 1, true);
     audio_track.header.creation_time = creation_time;
     audio_track.header.modification_time = modification_time;
     audio_track.header.duration = base::Milliseconds(kDuration2);
-    audio_track.header.is_audio = true;
     audio_track.header.natural_size = gfx::Size(0, 0);
 
     audio_track.media.header.creation_time = creation_time;
@@ -315,12 +362,13 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
     audio_track.media.header.duration = base::Milliseconds(kDuration2);
     audio_track.media.header.timescale = kAudioTimescale;
     audio_track.media.header.language = "";
-
-    audio_track.media.handler.handler_type = mp4::FOURCC_SOUN;
     audio_track.media.handler.name = kAudioHandlerName;
 
     mp4_moov_box.tracks.push_back(std::move(audio_track));
   }
+
+  // Add `MediaInformation` under `media`.
+  AddMediaInformations(mp4_moov_box);
 
   // Flush at requested.
   Mp4MovieBoxWriter box_writer(*context(), mp4_moov_box);
@@ -412,6 +460,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieMediaDataInformation) {
   media_information.data_information.data_reference.entries.push_back(
       std::move(entry));
 
+  AddVideoMediaInformation(media_information);
+
   // Flush at requested.
   Mp4MovieMediaInformationBoxWriter box_writer(*context(), media_information);
   FlushAndWait(&box_writer);
@@ -482,6 +532,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieMediaMultipleSampleBoxes) {
   CreateContext(written_data);
 
   mp4::writable_boxes::SampleTable sample_table;
+  AddVideoSampleTable(sample_table);
 
   Mp4MovieSampleTableBoxWriter box_writer(*context(), sample_table);
   FlushAndWait(&box_writer);
@@ -540,7 +591,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
 
   mp4::writable_boxes::SampleDescription sample_description;
 
-  mp4::writable_boxes::VisualSampleEntry visual_sample_entry;
+  mp4::writable_boxes::VisualSampleEntry visual_sample_entry(VideoCodec::kH264);
   visual_sample_entry.coded_size = gfx::Size(kWidth, kHeight);
   visual_sample_entry.compressor_name = "Chromium AVC Coding";
 
@@ -559,7 +610,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVisualSampleEntry) {
 
   visual_sample_entry.avc_decoder_configuration = std::move(avc);
 
-  sample_description.visual_sample_entry = std::move(visual_sample_entry);
+  sample_description.video_sample_entry = std::move(visual_sample_entry);
 
   Mp4MovieSampleDescriptionBoxWriter box_writer(*context(), sample_description);
   FlushAndWait(&box_writer);
@@ -641,16 +692,16 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAVCDecoderConfigurationRecord) {
   EXPECT_EQ(0u, avc_config_reader.sps_ext_list.size());
 }
 
-TEST_F(Mp4MuxerBoxWriterTest, Mp4AudioSampleEntryAndESDS) {
-  // Tests `avc1` and its children box writer.
+TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
+  // Tests `aac` and its children box writer.
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
   mp4::writable_boxes::SampleDescription sample_description;
 
-  mp4::writable_boxes::AudioSampleEntry audio_sample_entry;
   constexpr uint32_t kSampleRate = 48000u;
-  audio_sample_entry.sample_rate = kSampleRate;
+  mp4::writable_boxes::AudioSampleEntry audio_sample_entry(AudioCodec::kAAC,
+                                                           kSampleRate, 2u);
 
   mp4::writable_boxes::ElementaryStreamDescriptor esds;
   constexpr uint32_t kBitRate = 341000u;
@@ -704,9 +755,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AudioSampleEntryAndESDS) {
   ChannelLayout channel_layout = aac.GetChannelLayout(false);
   EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, channel_layout);
 
-  std::vector<uint8_t> buffer;
   int adts_header_size;
-  EXPECT_TRUE(aac.ConvertEsdsToADTS(&buffer, &adts_header_size));
+  auto buffer = aac.CreateAdtsFromEsds({}, &adts_header_size);
+  EXPECT_FALSE(buffer.empty());
 
   ADTSStreamParser adts_parser;
 
@@ -724,6 +775,91 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AudioSampleEntryAndESDS) {
   EXPECT_FALSE(metadata_frame);
 }
 #endif
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieVPConfigurationRecord) {
+  // Tests `vpcC` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::VPCodecConfiguration vp_config(
+      VP9PROFILE_MIN, 0u,
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT470M,
+                      gfx::ColorSpace::TransferID::GAMMA28,
+                      gfx::ColorSpace::MatrixID::BT470BG,
+                      gfx::ColorSpace::RangeID::FULL));
+
+  Mp4MovieVPCodecConfigurationBoxWriter box_writer(*context(),
+                                                   std::move(vp_config));
+  FlushAndWait(&box_writer);
+
+  // MediaInformation will have multiple sample boxes even though they
+  // not added exclusively.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::VPCodecConfigurationRecord vp_config_record;
+  EXPECT_TRUE(box_reader->ReadChild(&vp_config_record));
+
+  EXPECT_EQ(VP9PROFILE_MIN, vp_config_record.profile);
+  EXPECT_EQ(0u, vp_config_record.level);
+
+  EXPECT_EQ(gfx::ColorSpace::RangeID::FULL, vp_config_record.color_space.range);
+  EXPECT_EQ(VideoColorSpace::PrimaryID::BT470M,
+            vp_config_record.color_space.primaries);
+  EXPECT_EQ(VideoColorSpace::TransferID::GAMMA28,
+            vp_config_record.color_space.transfer);
+  EXPECT_EQ(VideoColorSpace::MatrixID::BT470BG,
+            vp_config_record.color_space.matrix);
+}
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4OpusAudioSampleEntry) {
+  // Tests `opus` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::SampleDescription sample_description;
+
+  constexpr uint32_t kSampleRate = 48000u;
+  mp4::writable_boxes::AudioSampleEntry audio_sample_entry(AudioCodec::kOpus,
+                                                           kSampleRate, 2u);
+
+  mp4::writable_boxes::OpusSpecificBox opus_specific_box;
+  opus_specific_box.channel_count = 2u;
+  opus_specific_box.sample_rate = 48000u;
+  audio_sample_entry.opus_specific_box = std::move(opus_specific_box);
+
+  sample_description.audio_sample_entry = std::move(audio_sample_entry);
+
+  Mp4MovieSampleDescriptionBoxWriter box_writer(*context(), sample_description);
+  FlushAndWait(&box_writer);
+
+  // MediaInformation will have multiple sample boxes even though they
+  // not added exclusively.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  EXPECT_TRUE(box_reader->ScanChildren());
+
+  mp4::SampleDescription reader_sample_description;
+  reader_sample_description.type = mp4::kAudio;
+
+  EXPECT_TRUE(box_reader->ReadChild(&reader_sample_description));
+  EXPECT_EQ(1u, reader_sample_description.audio_entries.size());
+
+  const auto& audio_sample = reader_sample_description.audio_entries[0];
+  EXPECT_EQ(1, audio_sample.data_reference_index);
+  EXPECT_EQ(2, audio_sample.channelcount);
+  EXPECT_EQ(16, audio_sample.samplesize);
+  EXPECT_EQ(kSampleRate, audio_sample.samplerate);
+
+  const mp4::OpusSpecificBox& dops_box = audio_sample.dops;
+  EXPECT_EQ(2u, dops_box.channel_count);
+  EXPECT_EQ(48000u, dops_box.sample_rate);
+}
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   // Tests `mvex/trex` box writer.
@@ -752,9 +888,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   using R = std::underlying_type_t<mp4::writable_boxes::TrackFragmentRunFlags>;
   using S = std::underlying_type_t<mp4::writable_boxes::FragmentSampleFlags>;
 
-  mp4::writable_boxes::MovieFragment moof;
-
-  moof.header.sequence_number = 2u;
+  mp4::writable_boxes::MovieFragment moof(2);
 
   {  // `video`.
     mp4::writable_boxes::TrackFragment video_fragment;
@@ -998,10 +1132,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4FtypBox) {
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
-  mp4::writable_boxes::FileType mp4_file_type_box;
-
-  mp4_file_type_box.major_brand = mp4::FOURCC_MP41;
-  mp4_file_type_box.minor_version = 0;
+  mp4::writable_boxes::FileType mp4_file_type_box(mp4::FOURCC_MP41, 0);
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_MP4A);
   mp4_file_type_box.compatible_brands.emplace_back(mp4::FOURCC_AVC1);
 

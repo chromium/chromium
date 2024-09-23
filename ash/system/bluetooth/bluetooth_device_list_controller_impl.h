@@ -12,7 +12,6 @@
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace views {
@@ -63,21 +62,14 @@ class ASH_EXPORT BluetoothDeviceListControllerImpl
       base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
       size_t index);
 
-  const raw_ptr<BluetoothDetailedView, DanglingUntriaged>
-      bluetooth_detailed_view_;
+  const raw_ptr<BluetoothDetailedView> bluetooth_detailed_view_;
 
   bool is_bluetooth_enabled_ = false;
   base::flat_map<std::string, BluetoothDeviceListItemView*>
       device_id_to_view_map_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::View* connected_sub_header_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::View* no_device_connected_sub_header_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
-  RAW_PTR_EXCLUSION views::View* previously_connected_sub_header_ = nullptr;
+  raw_ptr<views::View> connected_sub_header_ = nullptr;
+  raw_ptr<views::View> no_device_connected_sub_header_ = nullptr;
+  raw_ptr<views::View> previously_connected_sub_header_ = nullptr;
 };
 
 }  // namespace ash

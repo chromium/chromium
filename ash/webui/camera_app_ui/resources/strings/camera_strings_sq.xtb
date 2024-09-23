@@ -32,20 +32,28 @@
 <translation id="2175927920773552910">Kodi QR</translation>
 <translation id="2244252133441425811">Aktivizo zgjedhësin e shpejtësisë FPS të videos</translation>
 <translation id="2271433936731426666">Aktivizo përmbledhjen e videos në madhësi të plotë</translation>
+<translation id="2281736597583450397">Merr detaje më të qarta me zmadhimin e përmirësuar</translation>
 <translation id="2320741269052147773">Zgjero majtas</translation>
+<translation id="2360840973209616515">Aplikacioni i kamerës menaxhohet nga administratori yt.
+        Për detaje, kontakto me administratorin.</translation>
+<translation id="2442754296994859145">Kopjo për të verifikuar përmbajtjen ose zgjero për të ndaluar skanimin.</translation>
+<translation id="2486151619109781620">Palos dialogun dhe nis skanimn</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2501853267655415902">Regjistrimi ndaloi</translation>
 <translation id="2517472476991765520">Skano</translation>
 <translation id="2549985041256363841">Nis regjistrimin</translation>
 <translation id="2577915835281444458">Regjistrimi do të ndalojë së shpejti. Shko te hapësira ruajtëse e pajisjes për të liruar hapësirën.</translation>
 <translation id="2599796128805996109">Kamera e pasme</translation>
+<translation id="2654491636277477479">Kopjo tekstin e zbuluar</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> sek.</translation>
 <translation id="2761536921376153655">Lloji i skanimit</translation>
 <translation id="28682968802727151">Pamja paraprake e pasqyrës</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> është lidhur.</translation>
 <translation id="3067436040345934772">Zgjero djathtas</translation>
 <translation id="3081586908890909590">Kalo te regjistrimi i videos</translation>
+<translation id="3091480460059548935">Zbulimi i tekstit në pamjen paraprake</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3157038259444425153">Tani mund ta kopjosh drejtpërdrejt tekstin në fotografinë tënde</translation>
 <translation id="3158534262962737808">Bashkohu në "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3240426699337459095">Lidhja u kopjua</translation>
@@ -65,9 +73,7 @@
 <translation id="4118525110028899586">Vendose në pauzë regjistrimin</translation>
 <translation id="4121305183798804752">U zbulua një dokument</translation>
 <translation id="414641094616694804">Kjo kamerë nuk mund ta ndryshojë rezolucionin</translation>
-<translation id="4176463684765177261">I çaktivizuar</translation>
 <translation id="428234092390943511">Miniatura e faqes</translation>
-<translation id="4349714250734879769">Shkallëzo kuadrot me Chrome</translation>
 <translation id="4383571725254449280">Evidencat për cilësinë e funksionimit të printimit</translation>
 <translation id="4445542136948522167">Ndalo nxjerrjen e fotografive</translation>
 <translation id="4570032796877367747">Kamera e përparme</translation>
@@ -80,7 +86,6 @@
 <translation id="4864143361253542638">Lista e faqeve të skanuara</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="4892746741161549733">Kopjo adresën e lidhjes <ph name="URL" /></translation>
-<translation id="491895758387112773">Regjistrim videoje me disa transmetime</translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Raporti i pamjes së fotografisë</translation>
@@ -93,6 +98,7 @@
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5320594929574852403">Po zhvendoset majtas</translation>
 <translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5634947914995388399">Zgjero dialogun dhe ndalo skanimin</translation>
 <translation id="5662366948659129155">Po skanohet faqja <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Katror</translation>
 <translation id="574392208103952083">Mesatar</translation>
@@ -106,6 +112,7 @@
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5976160379964388480">Të tjera</translation>
 <translation id="6073451960410192870">Ndalo regjistrimin</translation>
+<translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6197807149213783179">Ruaj metadatat</translation>
 <translation id="6233780560267770709">3 me 3</translation>
 <translation id="6243827288366940320">Raporti i artë</translation>
@@ -115,11 +122,14 @@
 Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngjit një fotografi ose video shembull dhe përshkruaj problemin. (Për shembull, fotografia është shumë e errët ose subjekti nuk është në fokus.)</translation>
 <translation id="6519884562954018934">Bashkohu në <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Ndaj</translation>
+<translation id="6586509689874700895">Në fillim shtyp <ph name="BUTTON_NAME" /> për të zmadhuar. Më pas, pasi të nxjerrësh një fotografi, do të shikosh detaje të përmirësuara.</translation>
+<translation id="659539649712855529">U kopjua: <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Shfaq të gjitha rezolucionet</translation>
 <translation id="6631515515009660915">Çaktivizo pasqyrën</translation>
 <translation id="6652737148136672975">Zhvendos pozicionin e këndit me tastet e shigjetave</translation>
 <translation id="667999046851023355">Dokument</translation>
 <translation id="6681668084120808868">Nxirr një fotografi</translation>
+<translation id="6692092766759105707">Kopjo për të verifikuar përmbajtjen</translation>
 <translation id="6778482348691154169">Fotografia nuk mund të nxirret</translation>
 <translation id="6888362557094394345">Po zhvendoset poshtë</translation>
 <translation id="695140971690006676">Rivendos të gjitha</translation>
@@ -132,8 +142,8 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="7337660886763914220">Gabimet e sistemit të skedarëve.</translation>
 <translation id="7450541714075000668">Teksti u kopjua</translation>
 <translation id="7488619942230388918">Regjistro video GIF</translation>
+<translation id="7527714402753141485">Shfaq tekstin dhe butonin për të kopjuar</translation>
 <translation id="7557677699350329807">Kalo te kamera tjetër</translation>
-<translation id="7562584071994185503">Kopjo tekstin "<ph name="TEXT" />"</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
 <translation id="7608223098072244877">4 me 4</translation>
 <translation id="761421184377987513">Po zhvendoset majtas për poshtë</translation>
@@ -153,12 +163,12 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8145038249676204903">Kalo te nxjerrja e fotografive</translation>
 <translation id="8167081290930651932">Ruaje si fotografi</translation>
 <translation id="8239780215768881278">Shkrep një pamje të çastit të videos</translation>
-<translation id="8346544573713510785">Shkallëzo kuadrot me shtresën HAL të kamerës</translation>
 <translation id="8425673304802773841">Ano për poshtë</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8609951387004618906">Hap <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktivizo/çaktivizo audion e mikrofonit. Opsioni i çaktivizimit të zërit është aktiv</translation>
+<translation id="8712637175834984815">E kuptova</translation>
 <translation id="8730621377337864115">U krye</translation>
 <translation id="8732462232047530626">Shiko paraprakisht metadatat</translation>
 <translation id="874854738381978209">U zbulua një rrjet Wi-Fi.</translation>

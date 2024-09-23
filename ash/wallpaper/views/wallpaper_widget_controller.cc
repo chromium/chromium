@@ -4,19 +4,19 @@
 
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 
-#include <utility>
-
-#include "ash/ash_export.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/style/color_util.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -25,7 +25,9 @@
 namespace ash {
 
 WallpaperWidgetController::WallpaperWidgetController(aura::Window* root_window)
-    : root_window_(root_window) {}
+    : root_window_(root_window) {
+  Observe(ColorUtil::GetColorProviderSourceForWindow(root_window_));
+}
 
 WallpaperWidgetController::~WallpaperWidgetController() {
   widget_->CloseNow();
@@ -34,6 +36,7 @@ WallpaperWidgetController::~WallpaperWidgetController() {
 void WallpaperWidgetController::Init(bool locked) {
   widget_ = CreateWallpaperWidget(root_window_, wallpaper_constants::kClear,
                                   locked, &wallpaper_view_);
+  CreateWallpaperUnderlayLayer();
 }
 
 views::Widget* WallpaperWidgetController::GetWidget() {
@@ -106,6 +109,60 @@ void WallpaperWidgetController::OnImplicitAnimationsCompleted() {
   RunAnimationEndCallbacks();
 }
 
+void WallpaperWidgetController::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t metrics) {
+  if (!wallpaper_underlay_layer_) {
+    return;
+  }
+
+  if (!(metrics &
+        (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
+         DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_WORK_AREA))) {
+    return;
+  }
+
+  if (root_window_ != Shell::GetRootWindowForDisplayId(display.id())) {
+    return;
+  }
+
+  // Bounds have to be in parent. Since these are set on the layer directly, and
+  // layer bounds are relative to the layer's parent.
+  wallpaper_underlay_layer_->SetBounds(root_window_->bounds());
+}
+
+void WallpaperWidgetController::OnColorProviderChanged() {
+  if (wallpaper_underlay_layer_) {
+    wallpaper_underlay_layer_->SetColor(
+        GetColorProviderSource()->GetColorProvider()->GetColor(
+            cros_tokens::kCrosSysSystemBase));
+  }
+}
+
+void WallpaperWidgetController::CreateWallpaperUnderlayLayer() {
+  if (!features::IsForestFeatureEnabled()) {
+    return;
+  }
+
+  wallpaper_underlay_layer_ =
+      std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+  wallpaper_underlay_layer_->SetName("WallpaperUnderlayLayer");
+  auto* wallpaper_view_layer = wallpaper_view_->layer();
+  auto* wallpaper_view_layer_parent = wallpaper_view_layer->parent();
+  wallpaper_view_layer_parent->Add(wallpaper_underlay_layer_.get());
+  wallpaper_view_layer_parent->StackBelow(wallpaper_underlay_layer_.get(),
+                                          wallpaper_view_layer);
+  wallpaper_underlay_layer_->SetBounds(root_window_->bounds());
+
+  OnColorProviderChanged();
+
+  // The `wallpaper_underlay_layer_` should be invisible by default. This
+  // prevents the compositor from unnecessarily considering it during occlusion
+  // calculations, potentially improving performance. The layer should only
+  // become visible when needed (i.e. when entering overview).
+  wallpaper_underlay_layer_->SetVisible(false);
+}
+
 void WallpaperWidgetController::RunAnimationEndCallbacks() {
   std::list<base::OnceClosure> callbacks;
   animation_end_callbacks_.swap(callbacks);
@@ -118,12 +175,16 @@ void WallpaperWidgetController::ApplyCrossFadeAnimation(
     base::TimeDelta duration) {
   DCHECK(wallpaper_view_);
 
-  old_layer_tree_owner_ = ::wm::RecreateLayers(wallpaper_view_);
+  old_layer_tree_owner_ = wm::RecreateLayers(wallpaper_view_);
 
   ui::Layer* old_layer = old_layer_tree_owner_->root();
+  auto* old_layer_parent = old_layer->parent();
   ui::Layer* new_layer = wallpaper_view_->layer();
-  DCHECK_EQ(old_layer->parent(), new_layer->parent());
-  old_layer->parent()->StackAbove(old_layer, new_layer);
+  DCHECK_EQ(old_layer_parent, new_layer->parent());
+  old_layer_parent->StackAbove(old_layer, new_layer);
+  if (wallpaper_underlay_layer_) {
+    old_layer_parent->StackBelow(wallpaper_underlay_layer_.get(), new_layer);
+  }
 
   old_layer->SetOpacity(1.f);
   new_layer->SetOpacity(1.f);

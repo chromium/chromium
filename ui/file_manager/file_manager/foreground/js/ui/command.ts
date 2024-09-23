@@ -257,6 +257,12 @@ class CommandManager {
 
     for (const command of target.ownerDocument.querySelectorAll<Command>(
              'command')) {
+      if (!command.matchesEvent) {
+        // Because Command uses injected methods the <command> in the DOM might
+        // not have been initialized yet.
+        continue;
+      }
+
       if (!command.matchesEvent(e)) {
         continue;
       }

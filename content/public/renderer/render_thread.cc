@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker_impl.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace content {
 
@@ -14,7 +13,7 @@ namespace {
 
 // Keep the global RenderThread in a TLS slot so it is impossible to access
 // incorrectly from the wrong thread.
-ABSL_CONST_INIT thread_local RenderThread* render_thread = nullptr;
+constinit thread_local RenderThread* render_thread = nullptr;
 
 static const base::ThreadCheckerImpl& GetThreadChecker() {
   static base::NoDestructor<base::ThreadCheckerImpl> checker;

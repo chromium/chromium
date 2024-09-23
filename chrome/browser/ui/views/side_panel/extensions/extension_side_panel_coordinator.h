@@ -35,7 +35,7 @@ class Extension;
 // ExtensionSidePanelCoordinator handles the creation and registration of
 // SidePanelEntries for the associated extension and creates the view to be
 // shown if this extension's SidePanelEntry is active.
-// TODO(crbug.com/1434219): Separate into different classes for global vs
+// TODO(crbug.com/40264634): Separate into different classes for global vs
 // contextual extension side panels given the difference in behavior betweeen
 // these two panel types.
 class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
@@ -46,7 +46,8 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
                                          Browser* browser,
                                          content::WebContents* web_contents,
                                          const Extension* extension,
-                                         SidePanelRegistry* registry);
+                                         SidePanelRegistry* registry,
+                                         bool for_tab);
   ExtensionSidePanelCoordinator(const ExtensionSidePanelCoordinator&) = delete;
   ExtensionSidePanelCoordinator& operator=(
       const ExtensionSidePanelCoordinator&) = delete;
@@ -54,6 +55,10 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // Returns the WebContents managed by `host_`.
   content::WebContents* GetHostWebContentsForTesting() const;
+
+  // Deregisters this extension's SidePanelEntry from `registry_`.
+  // To avoid re-entrancy this does not happen automatically in the destructor.
+  void DeregisterEntry();
 
  private:
   SidePanelEntry::Key GetEntryKey() const;
@@ -65,9 +70,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Returns if this extension's side panel is explicitly disabled for the given
   // `tab_id`.
   bool IsDisabledForTab(int tab_id) const;
-
-  // Deregisters this extension's SidePanelEntry from `registry_`.
-  void DeregisterEntry();
 
   // Deregisters this extension's SidePanelEntry from the global
   // SidePanelRegistry and caches the entry's view into `global_entry_view_`.
@@ -157,6 +159,9 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Cached view for global entry if it was disabled for a specific tab and may
   // be shown again on a different tab where it's enabled.
   std::unique_ptr<views::View> global_entry_view_;
+
+  // Whether this coordinator is tab-scoped or window-scoped.
+  const bool for_tab_;
 
   base::ScopedObservation<ExtensionViewViews, ExtensionViewViews::Observer>
       scoped_view_observation_{this};

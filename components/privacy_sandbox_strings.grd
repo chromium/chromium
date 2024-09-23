@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<grit latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="grit/privacy_sandbox_strings.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="privacy_sandbox_strings_af.pak" type="data_package" lang="af" />
+    <output filename="privacy_sandbox_strings_am.pak" type="data_package" lang="am" />
+    <output filename="privacy_sandbox_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="privacy_sandbox_strings_as.pak" type="data_package" lang="as" />
+    <output filename="privacy_sandbox_strings_az.pak" type="data_package" lang="az" />
+    <output filename="privacy_sandbox_strings_be.pak" type="data_package" lang="be" />
+    <output filename="privacy_sandbox_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="privacy_sandbox_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="privacy_sandbox_strings_bs.pak" type="data_package" lang="bs" />
+    <output filename="privacy_sandbox_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="privacy_sandbox_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="privacy_sandbox_strings_cy.pak" type="data_package" lang="cy" />
+    <output filename="privacy_sandbox_strings_da.pak" type="data_package" lang="da" />
+    <output filename="privacy_sandbox_strings_de.pak" type="data_package" lang="de" />
+    <output filename="privacy_sandbox_strings_el.pak" type="data_package" lang="el" />
+    <output filename="privacy_sandbox_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="privacy_sandbox_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="privacy_sandbox_strings_es.pak" type="data_package" lang="es" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="privacy_sandbox_strings_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="privacy_sandbox_strings_es-419.pak" type="data_package" lang="es-419" />
+    </if>
+    <output filename="privacy_sandbox_strings_et.pak" type="data_package" lang="et" />
+    <output filename="privacy_sandbox_strings_eu.pak" type="data_package" lang="eu" />
+    <output filename="privacy_sandbox_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="privacy_sandbox_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="privacy_sandbox_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="privacy_sandbox_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="privacy_sandbox_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="privacy_sandbox_strings_gl.pak" type="data_package" lang="gl" />
+    <output filename="privacy_sandbox_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="privacy_sandbox_strings_he.pak" type="data_package" lang="he" />
+    <output filename="privacy_sandbox_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="privacy_sandbox_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="privacy_sandbox_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="privacy_sandbox_strings_hy.pak" type="data_package" lang="hy" />
+    <output filename="privacy_sandbox_strings_id.pak" type="data_package" lang="id" />
+    <output filename="privacy_sandbox_strings_is.pak" type="data_package" lang="is" />
+    <output filename="privacy_sandbox_strings_it.pak" type="data_package" lang="it" />
+    <output filename="privacy_sandbox_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="privacy_sandbox_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="privacy_sandbox_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="privacy_sandbox_strings_km.pak" type="data_package" lang="km" />
+    <output filename="privacy_sandbox_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="privacy_sandbox_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="privacy_sandbox_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="privacy_sandbox_strings_lo.pak" type="data_package" lang="lo" />
+    <output filename="privacy_sandbox_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="privacy_sandbox_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="privacy_sandbox_strings_mk.pak" type="data_package" lang="mk" />
+    <output filename="privacy_sandbox_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="privacy_sandbox_strings_mn.pak" type="data_package" lang="mn" />
+    <output filename="privacy_sandbox_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="privacy_sandbox_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="privacy_sandbox_strings_my.pak" type="data_package" lang="my" />
+    <output filename="privacy_sandbox_strings_ne.pak" type="data_package" lang="ne" />
+    <output filename="privacy_sandbox_strings_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="privacy_sandbox_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="privacy_sandbox_strings_pa.pak" type="data_package" lang="pa" />
+    <output filename="privacy_sandbox_strings_pl.pak" type="data_package" lang="pl" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="privacy_sandbox_strings_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="privacy_sandbox_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <output filename="privacy_sandbox_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="privacy_sandbox_strings_or.pak" type="data_package" lang="or" />
+    <output filename="privacy_sandbox_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="privacy_sandbox_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="privacy_sandbox_strings_si.pak" type="data_package" lang="si" />
+    <output filename="privacy_sandbox_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="privacy_sandbox_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="privacy_sandbox_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="privacy_sandbox_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+    <output filename="privacy_sandbox_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="privacy_sandbox_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="privacy_sandbox_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="privacy_sandbox_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="privacy_sandbox_strings_te.pak" type="data_package" lang="te" />
+    <output filename="privacy_sandbox_strings_th.pak" type="data_package" lang="th" />
+    <output filename="privacy_sandbox_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="privacy_sandbox_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="privacy_sandbox_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="privacy_sandbox_strings_uz.pak" type="data_package" lang="uz" />
+    <output filename="privacy_sandbox_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="privacy_sandbox_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="privacy_sandbox_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+    <output filename="privacy_sandbox_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="privacy_sandbox_strings_zu.pak" type="data_package" lang="zu" />
+    <!-- Pseudolocales -->
+    <output filename="privacy_sandbox_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="privacy_sandbox_strings_en-XA.pak" type="data_package" lang="en-XA" />
+
+    <!-- On Android, output some strings into Android's xml string format.
+         These strings are tagged with formatter_data="android_java" -->
+    <if expr="is_android">
+      <output filename="java/res/values-af/privacy_sandbox_strings.xml" lang="af" type="android" context="android_java" />
+      <output filename="java/res/values-am/privacy_sandbox_strings.xml" lang="am" type="android" context="android_java" />
+      <output filename="java/res/values-ar/privacy_sandbox_strings.xml" lang="ar" type="android" context="android_java" />
+      <output filename="java/res/values-as/privacy_sandbox_strings.xml" lang="as" type="android" context="android_java" />
+      <output filename="java/res/values-az/privacy_sandbox_strings.xml" lang="az" type="android" context="android_java" />
+      <output filename="java/res/values-be/privacy_sandbox_strings.xml" lang="be" type="android" context="android_java" />
+      <output filename="java/res/values-bg/privacy_sandbox_strings.xml" lang="bg" type="android" context="android_java" />
+      <output filename="java/res/values-bn/privacy_sandbox_strings.xml" lang="bn" type="android" context="android_java" />
+      <output filename="java/res/values-bs/privacy_sandbox_strings.xml" lang="bs" type="android" context="android_java" />
+      <output filename="java/res/values-ca/privacy_sandbox_strings.xml" lang="ca" type="android" context="android_java" />
+      <output filename="java/res/values-cs/privacy_sandbox_strings.xml" lang="cs" type="android" context="android_java" />
+      <output filename="java/res/values-da/privacy_sandbox_strings.xml" lang="da" type="android" context="android_java" />
+      <output filename="java/res/values-de/privacy_sandbox_strings.xml" lang="de" type="android" context="android_java" />
+      <output filename="java/res/values-el/privacy_sandbox_strings.xml" lang="el" type="android" context="android_java" />
+      <output filename="java/res/values/privacy_sandbox_strings.xml" lang="en" type="android" context="android_java" />
+      <output filename="java/res/values-en-rGB/privacy_sandbox_strings.xml" lang="en-GB" type="android" context="android_java" />
+      <output filename="java/res/values-es/privacy_sandbox_strings.xml" lang="es" type="android" context="android_java" />
+      <output filename="java/res/values-es-rUS/privacy_sandbox_strings.xml" lang="es-419" type="android" context="android_java" />
+      <output filename="java/res/values-et/privacy_sandbox_strings.xml" lang="et" type="android" context="android_java" />
+      <output filename="java/res/values-eu/privacy_sandbox_strings.xml" lang="eu" type="android" context="android_java" />
+      <output filename="java/res/values-fa/privacy_sandbox_strings.xml" lang="fa" type="android" context="android_java" />
+      <output filename="java/res/values-fi/privacy_sandbox_strings.xml" lang="fi" type="android" context="android_java" />
+      <output filename="java/res/values-tl/privacy_sandbox_strings.xml" lang="fil" type="android" context="android_java" />
+      <output filename="java/res/values-fr/privacy_sandbox_strings.xml" lang="fr" type="android" context="android_java" />
+      <output filename="java/res/values-fr-rCA/privacy_sandbox_strings.xml" lang="fr-CA" type="android" context="android_java" />
+      <output filename="java/res/values-gl/privacy_sandbox_strings.xml" lang="gl" type="android" context="android_java" />
+      <output filename="java/res/values-gu/privacy_sandbox_strings.xml" lang="gu" type="android" context="android_java" />
+      <output filename="java/res/values-iw/privacy_sandbox_strings.xml" lang="he" type="android" context="android_java" />
+      <output filename="java/res/values-hi/privacy_sandbox_strings.xml" lang="hi" type="android" context="android_java" />
+      <output filename="java/res/values-hr/privacy_sandbox_strings.xml" lang="hr" type="android" context="android_java" />
+      <output filename="java/res/values-hu/privacy_sandbox_strings.xml" lang="hu" type="android" context="android_java" />
+      <output filename="java/res/values-hy/privacy_sandbox_strings.xml" lang="hy" type="android" context="android_java" />
+      <output filename="java/res/values-in/privacy_sandbox_strings.xml" lang="id" type="android" context="android_java" />
+      <output filename="java/res/values-is/privacy_sandbox_strings.xml" lang="is" type="android" context="android_java" />
+      <output filename="java/res/values-it/privacy_sandbox_strings.xml" lang="it" type="android" context="android_java" />
+      <output filename="java/res/values-ja/privacy_sandbox_strings.xml" lang="ja" type="android" context="android_java" />
+      <output filename="java/res/values-ka/privacy_sandbox_strings.xml" lang="ka" type="android" context="android_java" />
+      <output filename="java/res/values-kk/privacy_sandbox_strings.xml" lang="kk" type="android" context="android_java" />
+      <output filename="java/res/values-km/privacy_sandbox_strings.xml" lang="km" type="android" context="android_java" />
+      <output filename="java/res/values-kn/privacy_sandbox_strings.xml" lang="kn" type="android" context="android_java" />
+      <output filename="java/res/values-ko/privacy_sandbox_strings.xml" lang="ko" type="android" context="android_java" />
+      <output filename="java/res/values-ky/privacy_sandbox_strings.xml" lang="ky" type="android" context="android_java" />
+      <output filename="java/res/values-lo/privacy_sandbox_strings.xml" lang="lo" type="android" context="android_java" />
+      <output filename="java/res/values-lt/privacy_sandbox_strings.xml" lang="lt" type="android" context="android_java" />
+      <output filename="java/res/values-lv/privacy_sandbox_strings.xml" lang="lv" type="android" context="android_java" />
+      <output filename="java/res/values-mk/privacy_sandbox_strings.xml" lang="mk" type="android" context="android_java" />
+      <output filename="java/res/values-ml/privacy_sandbox_strings.xml" lang="ml" type="android" context="android_java" />
+      <output filename="java/res/values-mn/privacy_sandbox_strings.xml" lang="mn" type="android" context="android_java" />
+      <output filename="java/res/values-mr/privacy_sandbox_strings.xml" lang="mr" type="android" context="android_java" />
+      <output filename="java/res/values-ms/privacy_sandbox_strings.xml" lang="ms" type="android" context="android_java" />
+      <output filename="java/res/values-my/privacy_sandbox_strings.xml" lang="my" type="android" context="android_java" />
+      <output filename="java/res/values-ne/privacy_sandbox_strings.xml" lang="ne" type="android" context="android_java" />
+      <output filename="java/res/values-nl/privacy_sandbox_strings.xml" lang="nl" type="android" context="android_java" />
+      <output filename="java/res/values-nb/privacy_sandbox_strings.xml" lang="no" type="android" context="android_java" />
+      <output filename="java/res/values-or/privacy_sandbox_strings.xml" lang="or" type="android" context="android_java" />
+      <output filename="java/res/values-pa/privacy_sandbox_strings.xml" lang="pa" type="android" context="android_java" />
+      <output filename="java/res/values-pl/privacy_sandbox_strings.xml" lang="pl" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rBR/privacy_sandbox_strings.xml" lang="pt-BR" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rPT/privacy_sandbox_strings.xml" lang="pt-PT" type="android" context="android_java" />
+      <output filename="java/res/values-ro/privacy_sandbox_strings.xml" lang="ro" type="android" context="android_java" />
+      <output filename="java/res/values-ru/privacy_sandbox_strings.xml" lang="ru" type="android" context="android_java" />
+      <output filename="java/res/values-si/privacy_sandbox_strings.xml" lang="si" type="android" context="android_java" />
+      <output filename="java/res/values-sk/privacy_sandbox_strings.xml" lang="sk" type="android" context="android_java" />
+      <output filename="java/res/values-sl/privacy_sandbox_strings.xml" lang="sl" type="android" context="android_java" />
+      <output filename="java/res/values-sq/privacy_sandbox_strings.xml" lang="sq" type="android" context="android_java" />
+      <output filename="java/res/values-sr/privacy_sandbox_strings.xml" lang="sr" type="android" context="android_java" />
+      <output filename="java/res/values-b+sr+Latn/privacy_sandbox_strings.xml" lang="sr-Latn" type="android" context="android_java" />
+      <output filename="java/res/values-sv/privacy_sandbox_strings.xml" lang="sv" type="android" context="android_java" />
+      <output filename="java/res/values-sw/privacy_sandbox_strings.xml" lang="sw" type="android" context="android_java" />
+      <output filename="java/res/values-ta/privacy_sandbox_strings.xml" lang="ta" type="android" context="android_java" />
+      <output filename="java/res/values-te/privacy_sandbox_strings.xml" lang="te" type="android" context="android_java" />
+      <output filename="java/res/values-th/privacy_sandbox_strings.xml" lang="th" type="android" context="android_java" />
+      <output filename="java/res/values-tr/privacy_sandbox_strings.xml" lang="tr" type="android" context="android_java" />
+      <output filename="java/res/values-uk/privacy_sandbox_strings.xml" lang="uk" type="android" context="android_java" />
+      <output filename="java/res/values-ur/privacy_sandbox_strings.xml" lang="ur" type="android" context="android_java" />
+      <output filename="java/res/values-uz/privacy_sandbox_strings.xml" lang="uz" type="android" context="android_java" />
+      <output filename="java/res/values-vi/privacy_sandbox_strings.xml" lang="vi" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rCN/privacy_sandbox_strings.xml" lang="zh-CN" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rHK/privacy_sandbox_strings.xml" lang="zh-HK" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rTW/privacy_sandbox_strings.xml" lang="zh-TW" type="android" context="android_java" />
+      <output filename="java/res/values-zu/privacy_sandbox_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/privacy_sandbox_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/privacy_sandbox_strings.xml" lang="en-XA" type="android" context="android_java" />
+    </if>
+  </outputs>
+  <translations>
+    <file path="strings/privacy_sandbox_strings_af.xtb" lang="af" />
+    <file path="strings/privacy_sandbox_strings_am.xtb" lang="am" />
+    <file path="strings/privacy_sandbox_strings_ar.xtb" lang="ar" />
+    <file path="strings/privacy_sandbox_strings_as.xtb" lang="as" />
+    <file path="strings/privacy_sandbox_strings_az.xtb" lang="az" />
+    <file path="strings/privacy_sandbox_strings_be.xtb" lang="be" />
+    <file path="strings/privacy_sandbox_strings_bg.xtb" lang="bg" />
+    <file path="strings/privacy_sandbox_strings_bn.xtb" lang="bn" />
+    <file path="strings/privacy_sandbox_strings_bs.xtb" lang="bs" />
+    <file path="strings/privacy_sandbox_strings_ca.xtb" lang="ca" />
+    <file path="strings/privacy_sandbox_strings_cs.xtb" lang="cs" />
+    <file path="strings/privacy_sandbox_strings_cy.xtb" lang="cy" />
+    <file path="strings/privacy_sandbox_strings_da.xtb" lang="da" />
+    <file path="strings/privacy_sandbox_strings_de.xtb" lang="de" />
+    <file path="strings/privacy_sandbox_strings_el.xtb" lang="el" />
+    <file path="strings/privacy_sandbox_strings_en-GB.xtb" lang="en-GB" />
+    <file path="strings/privacy_sandbox_strings_es.xtb" lang="es" />
+    <file path="strings/privacy_sandbox_strings_es-419.xtb" lang="es-419" />
+    <file path="strings/privacy_sandbox_strings_et.xtb" lang="et" />
+    <file path="strings/privacy_sandbox_strings_eu.xtb" lang="eu" />
+    <file path="strings/privacy_sandbox_strings_fa.xtb" lang="fa" />
+    <file path="strings/privacy_sandbox_strings_fi.xtb" lang="fi" />
+    <file path="strings/privacy_sandbox_strings_fil.xtb" lang="fil" />
+    <file path="strings/privacy_sandbox_strings_fr.xtb" lang="fr" />
+    <file path="strings/privacy_sandbox_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="strings/privacy_sandbox_strings_gl.xtb" lang="gl" />
+    <file path="strings/privacy_sandbox_strings_gu.xtb" lang="gu" />
+    <file path="strings/privacy_sandbox_strings_hi.xtb" lang="hi" />
+    <file path="strings/privacy_sandbox_strings_hr.xtb" lang="hr" />
+    <file path="strings/privacy_sandbox_strings_hu.xtb" lang="hu" />
+    <file path="strings/privacy_sandbox_strings_hy.xtb" lang="hy" />
+    <file path="strings/privacy_sandbox_strings_id.xtb" lang="id" />
+    <file path="strings/privacy_sandbox_strings_is.xtb" lang="is" />
+    <file path="strings/privacy_sandbox_strings_it.xtb" lang="it" />
+    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
+    <file path="strings/privacy_sandbox_strings_iw.xtb" lang="he" />
+    <file path="strings/privacy_sandbox_strings_ja.xtb" lang="ja" />
+    <file path="strings/privacy_sandbox_strings_ka.xtb" lang="ka" />
+    <file path="strings/privacy_sandbox_strings_kk.xtb" lang="kk" />
+    <file path="strings/privacy_sandbox_strings_km.xtb" lang="km" />
+    <file path="strings/privacy_sandbox_strings_kn.xtb" lang="kn" />
+    <file path="strings/privacy_sandbox_strings_ko.xtb" lang="ko" />
+    <file path="strings/privacy_sandbox_strings_ky.xtb" lang="ky" />
+    <file path="strings/privacy_sandbox_strings_lo.xtb" lang="lo" />
+    <file path="strings/privacy_sandbox_strings_lt.xtb" lang="lt" />
+    <file path="strings/privacy_sandbox_strings_lv.xtb" lang="lv" />
+    <file path="strings/privacy_sandbox_strings_mk.xtb" lang="mk" />
+    <file path="strings/privacy_sandbox_strings_ml.xtb" lang="ml" />
+    <file path="strings/privacy_sandbox_strings_mn.xtb" lang="mn" />
+    <file path="strings/privacy_sandbox_strings_mr.xtb" lang="mr" />
+    <file path="strings/privacy_sandbox_strings_ms.xtb" lang="ms" />
+    <file path="strings/privacy_sandbox_strings_my.xtb" lang="my" />
+    <file path="strings/privacy_sandbox_strings_ne.xtb" lang="ne" />
+    <file path="strings/privacy_sandbox_strings_nl.xtb" lang="nl" />
+    <file path="strings/privacy_sandbox_strings_no.xtb" lang="no" />
+    <file path="strings/privacy_sandbox_strings_or.xtb" lang="or" />
+    <file path="strings/privacy_sandbox_strings_pa.xtb" lang="pa" />
+    <file path="strings/privacy_sandbox_strings_pl.xtb" lang="pl" />
+    <file path="strings/privacy_sandbox_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="strings/privacy_sandbox_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="strings/privacy_sandbox_strings_ro.xtb" lang="ro" />
+    <file path="strings/privacy_sandbox_strings_ru.xtb" lang="ru" />
+    <file path="strings/privacy_sandbox_strings_si.xtb" lang="si" />
+    <file path="strings/privacy_sandbox_strings_sk.xtb" lang="sk" />
+    <file path="strings/privacy_sandbox_strings_sl.xtb" lang="sl" />
+    <file path="strings/privacy_sandbox_strings_sq.xtb" lang="sq" />
+    <file path="strings/privacy_sandbox_strings_sr.xtb" lang="sr" />
+    <file path="strings/privacy_sandbox_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="strings/privacy_sandbox_strings_sv.xtb" lang="sv" />
+    <file path="strings/privacy_sandbox_strings_sw.xtb" lang="sw" />
+    <file path="strings/privacy_sandbox_strings_ta.xtb" lang="ta" />
+    <file path="strings/privacy_sandbox_strings_te.xtb" lang="te" />
+    <file path="strings/privacy_sandbox_strings_th.xtb" lang="th" />
+    <file path="strings/privacy_sandbox_strings_tr.xtb" lang="tr" />
+    <file path="strings/privacy_sandbox_strings_uk.xtb" lang="uk" />
+    <file path="strings/privacy_sandbox_strings_ur.xtb" lang="ur" />
+    <file path="strings/privacy_sandbox_strings_uz.xtb" lang="uz" />
+    <file path="strings/privacy_sandbox_strings_vi.xtb" lang="vi" />
+    <file path="strings/privacy_sandbox_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="strings/privacy_sandbox_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="strings/privacy_sandbox_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="strings/privacy_sandbox_strings_zu.xtb" lang="zu" />
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_CLANK" desc="Disclaimer of the new Ad topics setting. This text appears beneath the sublabel." formatter_data="android_java">
+        Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less personalized. Learn more about <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>managing your ad privacy<ph name="END_LINK_1">&lt;/link1&gt;</ph>.
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_ON" desc="" formatter_data="android_java" translateable="false">
+        Protections are on
+      </message>
+      <message name="IDS_PRIVATE_STATE_TOKENS_HEADING_LABEL" desc="Title of the page that contains information about Private State Tokens." translateable="false">
+        Private State Tokens
+      </message>
+      <message name="IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL" desc="Label that provides the user more details about what they can see on this page i.e. the tokens that have been issued and by whom and if and when they were redeemed." translateable="false">
+        See who has issued private state tokens on your device and how they are used.
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF" desc="" formatter_data="android_java" translateable="false">
+        {COUNT, plural,
+              =1 {Protections are off until tomorrow}
+              other {Protections are off for # days}}
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF_TODAY" desc="" formatter_data="android_java" translateable="false">
+        Protections are off until today
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF_PERMANENT" desc="" formatter_data="android_java" translateable="false">
+        Protections are off
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_MANAGED_TITLE" desc="" formatter_data="android_java" translateable="false">
+        Managed protections
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_ON" desc="" formatter_data="android_java" translateable="false">
+        You have extra protections on this site to limit tracking while you browse, but some features might not work.
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TOGGLE_OFF" desc="" formatter_data="android_java" translateable="false">
+        You temporarily allowed this site to use trackers, which means less browsing protection but site features are more likely to work as expected.
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_IP_PROTECTION_OFF" desc="" formatter_data="android_java" translateable="false">
+        IP address visible
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_IP_PROTECTION_ON" desc="" formatter_data="android_java" translateable="false">
+        IP address hidden
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_OFF" desc="" formatter_data="android_java" translateable="false">
+        Digital fingerprinting allowed
+      </message>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_ON" desc="" formatter_data="android_java" translateable="false">
+        Digital fingerprinting limited
+      </message>
+      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED" desc="" translateable="false">
+        Third-party cookies are limited
+      </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited." translateable="false">
+        Third-party cookies limited
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
+        App not working?
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
+        Change protections
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_TITLE" desc="Label for a toggle that controls the IP protection feature." formatter_data="android_java">
+        Hide your IP address
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUMMARY" desc="Summary for the IP protection toggle. Explains that some traffic may be sent through privacy servers when the feature is on." formatter_data="android_java">
+        When you're signed in to Chrome, this setting helps keep your IP address private. If Chrome suspects a site may be tracking you, some of your traffic may be sent through privacy servers.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_LEARN_MORE" desc="Learn more label for the IP protection feature. Provides a link to a help center article." formatter_data="android_java">
+        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how IP protection works<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TITLE" desc="" formatter_data="android_java" translateable="false">
+        Limit digital fingerprinting
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUMMARY" desc="" formatter_data="android_java" translateable="false">
+        Prevent sites from collecting settings from your browser and computer to create a unique digital fingerprint which can be used to track you.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_LEARN_MORE" desc="" formatter_data="android_java" translateable="false">
+        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how limiting digital fingerprinting works<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <!-- User Bypass -->
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed." translateable="false">
+        Allowed
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are blocked." translateable="false">
+        Blocked
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are limited (i.e. blocked with mitigations)." translateable="false">
+        Limited
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_BUBBLE_MANAGED_PROTECTIONS_LABEL" desc="The title label for the section in User Bypass containing managed Tracking Protection features." translateable="false">
+        Managed protections
+      </message>
+      <!-- Tracking Protection WebUI -->
+      <!-- General -->
+      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_PAGE_TITLE" desc="Updated title for the third-party cookie settings page (chrome://settings/cookies) for when the page has additional features related to preventing tracking." translateable="false">
+        Third-party cookies and known trackers
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_HEADER" desc="Header for text describing the default Tracking Protection settings state." translateable="false">
+        Default
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_TWO_DESCRIPTION" desc="Description of the second bullet for Tracking Protection settings. Explains that you can temporarily give a site access to third-party cookies if the site isn't working." translateable="false">
+        If a site isn’t working, you can try giving it temporary access to third-party cookies
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_HEADER" desc="Header for a section on the Tracking Protection settings page that contains settings for additional tracking tracking protections." translateable="false">
+        Additional protections
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_DESCRIPTION" desc="Text linking out to a help center article that details additional Tracking Protection settings." translateable="false">
+        Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>how these settings can help limit tracking<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection additional protections description." translateable="false">
+        Learn how these additional protection settings can help limit tracking
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_BLOCK_ALL_3PCS_SUB_LABEL" desc="Sub-label for the block all third-party cookies toggle. Explains that features on some sites may not work when the toggle is on and all third-party cookies are blocked." translateable="false">
+        Features on some sites may not work
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_TITLE" desc="Title of the section on the Tracking Protection settings page that lets users manage which sites have Tracking Protection turned off." translateable="false">
+        Sites with Tracking Protection turned off
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_DESCRIPTION" desc="Description of the section on the Tracking Protection settings page that lets users manage which sites have Tracking Protection turned off. Explains how to use a wildcard to create an exception for an entire domain." translateable="false">
+        Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that Tracking Protection will also be off for mail.google.com, because it’s part of google.com.
+      </message>
+      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_EXCEPTIONS_LIST_TITLE" desc="Title of the section on the third-party cookies and known trackers settings page that lets users manage which sites are allowed to use third-party cookies and known trackers." translateable="false">
+        Sites allowed to use third-party cookies and known trackers
+      </message>
+      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_EXCEPTIONS_LIST_DESCRIPTION" desc="Description of the section on the third-party cookies and known trackers settings page that lets users manage which sites are allowed to use third-party cookies and known trackers. Explains how to use a wildcard to create an exception for an entire domain." translateable="false">
+        Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that third-party cookies and known trackers can also be active for mail.google.com, because it’s part of google.com.
+      </message>
+      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL" desc="Label for an exception in the Tracking Protection exceptions list indicating that the exception only applies to third-party cookie blocking." translateable="false">
+        Only applies to third-party cookie blocking
+      </message>
+      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_LINK_ROW_LABEL" desc="Label for the third-party cookies and known trackers settings page entry point." translateable="false">
+        Third-party cookies and known trackers
+      </message>
+
+      <!-- ACT -->
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LABEL" desc="Label for a toggle that controls the IP protection feature.">
+        Hide your IP address
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the sub-label text of the IP protection toggle.">
+       Learn more about hiding your IP address
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_LABEL" desc="Label for a toggle that controls the fingerprinting protection feature." translateable="false">
+        Limit digital fingerprinting
+      </message>
+      <message name="IDS_SETTINGS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the fingerprinting protection toggle. Explains that the feature helps prevent sites from tracking users via identifiers related to their device or browser." translateable="false">
+        This setting makes it harder for sites to identify you using data about your device and browser, such as your device model or browser version
+      </message>
+
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some traffic may be sent through privacy servers when the feature is on. Provides a link to a help center article.">
+              When you're signed in to Chrome, this setting helps keep your IP address private. If Chrome suspects a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
+              Chrome limits the type of information sites can use to track you as you browse.<ph name="BR">&lt;br&gt;</ph>Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chrome<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection default description." translateable="false">
+              Learn about Tracking Protection on Chrome
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE" desc="The first bullet on the Tracking Protection settings page. Informs users that Chrome limits third-party cookies by default." translateable="false">
+              Chrome automatically limits third-party cookies
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some traffic may be sent through privacy servers when the feature is on. Provides a link to a help center article.">
+              When you're signed in to Chromium, this setting helps keep your IP address private. If Chromium suspects a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
+              Chromium limits the type of information sites can use to track you as you browse.<ph name="BR">&lt;br&gt;</ph>Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chromium<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection default description." translateable="false">
+              Learn about Tracking Protection on Chromium
+          </message>
+          <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE" desc="The first bullet on the Tracking Protection settings page. Informs users that Chromium limits third-party cookies by default." translateable="false">
+              Chromium automatically limits third-party cookies
+          </message>
+        </else>
+      </if>
+
+      <!-- Privacy Sandbox Ads Notice -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java" translateable="false">
+        Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." translateable="false">
+        Learn more about how Google protects your data in our <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
+      </message>
+
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION" desc="Screenreader text for the 'Privacy Policy' link." translateable="false">
+        Learn more about how Google protects your data in our Privacy Policy.
+      </message>
+
+      <!-- Privacy Guide -->
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_LABEL" desc="Text of the Tracking Protection label in the completion card of the 'Privacy Guide'." translateable="false">
+        Tracking Protection
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_SUB_LABEL" desc="Text of the Tracking Protection sub-label in the completion card of the 'Privacy Guide'." translateable="false">
+        Manage your tracking protections to make your experience more private on the web
+      </message>
+
+      <!--Privacy Guide - Ad Topics-->
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide.">
+        Review your ad topics setting
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_TOGGLE_LABEL" desc="Text for the Ad topics toggle button on the Ad Topics card of the Privacy Guide." formatter_data="android_java">
+        Ad topics
+      </message>
+      <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET1" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+        Ad topics older than 4 weeks are automatically deleted. Topics include things like Sports, Apparel, and more
+      </message>
+      <if expr="_google_chrome">
+        <then>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Chrome notes topics of interest based on your recent browsing history
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Sites you visit can ask Chrome for topics to show you relevant ads while protecting your browsing history and identity
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            You can see your ad topics in Chrome settings and block the ones you don't want shared with sites
+          </message>
+        </then>
+        <else>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET1" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Chromium notes topics of interest based on your recent browsing history
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_WHEN_ON_BULLET2" desc="A part of the feature description of Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            Sites you visit can ask Chromium for topics to show you relevant ads while protecting your browsing history and identity
+          </message>
+          <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_THINGS_TO_CONSIDER_BULLET2" desc="A part of the things to consider section of the Ad Topics card in the Privacy Guide." formatter_data="android_java">
+            You can see your ad topics in Chromium settings and block the ones you don't want shared with sites
+          </message>
+        </else>
+      </if>
+      <!--Privacy Sandbox Privacy Policy-->
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." translateable="false" formatter_data="android_java">
+        Google Privacy Policy
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." translateable="false" formatter_data="android_java">
+        Back
+      </message>
+
+      <!-- Auto-verify (Anti-abuse) Page -->
+      <!-- TODO(b:330892594): Make auto-verify string updates translatable -->
+      <message name="IDS_SETTINGS_AUTO_VERIFY_DESCRIPTION" desc="" translateable="false">
+        Sites you visit (and their fraud prevention partners) can help prevent fraud by sharing small amounts of info, for example to verify you aren't a bot or to validate transactions
+      </message>
+      <message name="IDS_SETTINGS_AUTO_VERIFY_WHEN_ON_SECTION_ONE" desc="" translateable="false">
+        As you keep browsing, sites can check with Chrome and verify with a previous site you visited that you're likely a real person
+      </message>
+      <message name="IDS_SETTINGS_AUTO_VERIFY_WHEN_ON_SECTION_TWO" desc="" translateable="false">
+        Browsing is faster because a site is less likely to ask you to verify you're a real person
+      </message>
+      <message name="IDS_SETTINGS_AUTO_VERIFY_THINGS_TO_CONSIDER" desc="" translateable="false">
+        This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification
+      </message>
+      <message name="IDS_SETTINGS_AUTO_VERIFY_THINGS_TO_CONSIDER_LEARN_MORE" desc="" translateable="false">
+        Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>how auto-verify works<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+      </message>
+      <!-- TODO(b:330892146): Update screenreader text after confirming with content team -->
+      <message name="IDS_SETTINGS_AUTO_VERIFY_THINGS_TO_CONSIDER_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the things to consider section of the auto-verify settings." translateable="false">
+        Learn more about how auto-verify works
+      </message>
+    </messages>
+  </release>
+</grit>

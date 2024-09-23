@@ -48,6 +48,13 @@ class BrowserThemeProviderDelegate {
   virtual bool ShouldUseCustomFrame() const = 0;
 };
 
+// A theme consists of a set of colors and images, including the NTP background
+// image. See CustomThemeSupplier for details. There are multiple sources for
+// themes, including extensions, NTP, the system theme, and policy.
+// TODO(https://crbug.com/341787825): When the NTP generates a custom background
+// image, the color is stored in ThemeService but the background image is stored
+// in NtpCustomBackgroundService. This divergence from other theme sources
+// introduces complexity and fragility.
 class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
  public:
   // This is stored as an integer in the profile prefs, so entries should not be

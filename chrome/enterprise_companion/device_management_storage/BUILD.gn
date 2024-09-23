@@ -1,0 +1,51 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Note that this library must be linked against //chrome/updater:constants_prod
+# or constants_test to get symbols for constants_header.
+static_library("device_management_storage") {
+  sources = [
+    "dm_storage.cc",
+    "dm_storage.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/updater:branding_header",
+    "//chrome/updater:constants_header",
+    "//chrome/updater:public_sources",
+    "//components/policy/proto",
+  ]
+  visibility = [
+    ":unit_tests",
+    "//chrome/enterprise_companion:*",
+    "//chrome/updater:*",
+    "//chrome/updater/tools:*",
+  ]
+
+  if (is_linux) {
+    sources += [ "dm_storage_linux.cc" ]
+  } else if (is_mac) {
+    sources += [ "dm_storage_mac.mm" ]
+  } else if (is_win) {
+    sources += [ "dm_storage_win.cc" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "dm_storage_unittest.cc" ]
+
+  deps = [
+    ":device_management_storage",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/updater:constants_test",
+    "//chrome/updater:public_sources",
+    "//components/policy/proto",
+    "//remoting/host/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

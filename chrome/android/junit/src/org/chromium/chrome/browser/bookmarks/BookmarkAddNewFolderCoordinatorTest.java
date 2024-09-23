@@ -19,7 +19,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -31,7 +30,6 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.ui.base.TestActivity;
@@ -47,7 +45,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class BookmarkAddNewFolderCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarios =

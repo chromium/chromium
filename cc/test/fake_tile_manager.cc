@@ -40,6 +40,7 @@ FakeTileManager::FakeTileManager(TileManagerClient* client,
                   base::SingleThreadTaskRunner::GetCurrentDefault().get(),
                   nullptr,
                   std::numeric_limits<size_t>::max(),
+                  false,
                   TileManagerSettings()),
       image_decode_cache_(
           kN32_SkColorType,

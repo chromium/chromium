@@ -9,8 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 class KeyedService;
 struct ProviderStateService;
 
@@ -21,11 +21,13 @@ class BrowserState;
 namespace ios {
 
 // Singleton that owns all ProviderStateServices and associates them with
-// ChromeBrowserState.
+// profiles.
 class ProviderStateServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static ProviderStateService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  // TODO(crbug.com/358301380): remove this method.
+  static ProviderStateService* GetForBrowserState(ProfileIOS* profile);
+
+  static ProviderStateService* GetForProfile(ProfileIOS* profile);
   static ProviderStateServiceFactory* GetInstance();
 
   ProviderStateServiceFactory(const ProviderStateServiceFactory&) = delete;

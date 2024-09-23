@@ -66,12 +66,16 @@ public class ClientHintsTest extends AwParameterizedTest {
         "sec-ch-ua-bitness",
         "sec-ch-ua-full-version-list",
         "sec-ch-ua-wow64",
-        "sec-ch-ua-form-factor"
+        "sec-ch-ua-form-factors"
     };
 
     private static final String ANDROID_WEBVIEW_BRAND_NAME = "Android WebView";
 
     private static final String CHROME_PRODUCT_PATTERN = "Chrome/(\\d+).(\\d+).(\\d+).(\\d+)";
+
+    private static final String WEBVIEW_REDUCED_UA_PATTERN =
+            "Mozilla/5\\.0 \\((.+)\\) AppleWebKit\\/537\\.36 \\(KHTML, like Gecko\\) Version/4\\.0"
+                    + " Chrome/(\\d+)\\.0\\.0\\.0( Mobile)? Safari/537\\.36";
 
     private static class ClientHintsTestResult {
         public Map<String, String> mHttpHeaderClientHints;
@@ -169,7 +173,7 @@ public class ClientHintsTest extends AwParameterizedTest {
             "sec-ch-ua-wow64",
             "save-data",
             "sec-ch-prefers-reduced-motion",
-            "sec-ch-ua-form-factor",
+            "sec-ch-ua-form-factors",
             "sec-ch-prefers-reduced-transparency",
             // Add client hints above. The final row should have a trailing comma for cleaner
             // diffs.
@@ -242,7 +246,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         Assert.assertEquals("HEADER_NOT_FOUND", clientHintsMap.get("save-data"));
         Assert.assertNotEquals(
                 "HEADER_NOT_FOUND", clientHintsMap.get("sec-ch-prefers-reduced-motion"));
-        Assert.assertEquals("HEADER_NOT_FOUND", clientHintsMap.get("sec-ch-ua-form-factor"));
+        Assert.assertNotEquals("HEADER_NOT_FOUND", clientHintsMap.get("sec-ch-ua-form-factors"));
         Assert.assertNotEquals(
                 "HEADER_NOT_FOUND", clientHintsMap.get("sec-ch-prefers-reduced-transparency"));
 
@@ -255,7 +259,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     public void testEnableUserAgentClientHintsNoCustom() throws Throwable {
@@ -276,7 +280,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     public void testEnableUserAgentClientHintsCustomOverride() throws Throwable {
@@ -296,7 +300,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     public void testEnableUserAgentClientHintsModifyDefaultUserAgent() throws Throwable {
@@ -343,7 +347,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     @SkipMutations(reason = "This test depends on AwSettings.setUserAgentString()")
@@ -355,7 +359,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     public void testEnableUserAgentClientHintsOverrideJavaScript() throws Throwable {
@@ -849,7 +853,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     public void testOverrideUserAgentMetadataFullWithoutUAOverrides() throws Throwable {
@@ -861,7 +865,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     public void testOverrideUserAgentMetadataFullWithCustomUa() throws Throwable {
@@ -874,7 +878,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     public void testOverrideUserAgentMetadataFullWithDefaultUA() throws Throwable {
@@ -887,7 +891,7 @@ public class ClientHintsTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     @CommandLineFlags.Add({
-        "enable-features=ClientHintsFormFactor",
+        "enable-features=ClientHintsFormFactors",
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
     })
     public void testOverrideUserAgentMetadataNullWithCustomUserAgent() throws Throwable {
@@ -952,6 +956,21 @@ public class ClientHintsTest extends AwParameterizedTest {
                         "%s.%s.%s", uaMatcher.group(2), uaMatcher.group(3), uaMatcher.group(4)));
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setUserAgentString()")
+    @CommandLineFlags.Add({
+        "enable-features=ReduceUserAgentMinorVersion,WebViewReduceUAAndroidVersionDeviceModel"
+    })
+    public void testDefaultUserAgentEnableAllReduction() throws Throwable {
+        String defaultUserAgent = getDefaultUserAgent();
+        // Verify user-agent is reduced.
+        Matcher uaMatcher = Pattern.compile(WEBVIEW_REDUCED_UA_PATTERN).matcher(defaultUserAgent);
+        Assert.assertTrue(uaMatcher.find());
+        Assert.assertEquals("Linux; Android 10; K; wv", uaMatcher.group(1));
+    }
+
     private void verifyOverrideUaAndOverrideUaMetadata(String overrideUserAgent) throws Throwable {
         ClientHintsTestResult clientHintsResult =
                 getClientHintsWithOverrides(
@@ -973,7 +992,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         Assert.assertEquals("\"128\"", clientHintsMap.get("sec-ch-ua-bitness"));
         Assert.assertEquals("?1", clientHintsMap.get("sec-ch-ua-wow64"));
         Assert.assertEquals(
-                "\"Automotive\", \"Tablet\"", clientHintsMap.get("sec-ch-ua-form-factor"));
+                "\"Automotive\", \"Tablet\"", clientHintsMap.get("sec-ch-ua-form-factors"));
 
         // Verify js client hints result.
         JSONObject jsClientHints = clientHintsResult.mJsClientHints;
@@ -993,7 +1012,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         Assert.assertTrue(jsClientHints.getBoolean("mobile"));
         Assert.assertEquals("128", jsClientHints.getString("bitness"));
         Assert.assertTrue(jsClientHints.getBoolean("wow64"));
-        Assert.assertEquals("[\"Automotive\",\"Tablet\"]", jsClientHints.getString("formFactor"));
+        Assert.assertEquals("[\"Automotive\",\"Tablet\"]", jsClientHints.getString("formFactors"));
     }
 
     private Map<String, Object> makeFakeMetadata() {
@@ -1010,7 +1029,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         settings.put(AwUserAgentMetadata.MetadataKeys.BITNESS, 128);
         settings.put(AwUserAgentMetadata.MetadataKeys.WOW64, true);
         settings.put(
-                AwUserAgentMetadata.MetadataKeys.FORM_FACTOR,
+                AwUserAgentMetadata.MetadataKeys.FORM_FACTORS,
                 new String[] {"Automotive", "Tablet"});
         return settings;
     }
@@ -1096,7 +1115,7 @@ public class ClientHintsTest extends AwParameterizedTest {
                 "navigator.userAgentData"
                         + ".getHighEntropyValues(['architecture', 'bitness', 'brands', "
                         + "'mobile', 'model', 'platform', 'platformVersion', 'uaFullVersion', "
-                        + "'fullVersionList', 'wow64', 'formFactor'])"
+                        + "'fullVersionList', 'wow64', 'formFactors'])"
                         + ".then(ua => { "
                         + "    injectedObject.setUserAgentClientHints(JSON.stringify(ua)); "
                         + "})");
@@ -1302,7 +1321,7 @@ public class ClientHintsTest extends AwParameterizedTest {
                     "navigator.userAgentData"
                             + ".getHighEntropyValues(['architecture', 'bitness', 'brands', "
                             + "'mobile', 'model', 'platform', 'platformVersion', 'uaFullVersion', "
-                            + "'fullVersionList', 'wow64', 'formFactor'])"
+                            + "'fullVersionList', 'wow64', 'formFactors'])"
                             + ".then(ua => { "
                             + "    injectedObject.setUserAgentClientHints(JSON.stringify(ua)); "
                             + "})");

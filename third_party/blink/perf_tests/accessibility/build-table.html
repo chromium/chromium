@@ -59,10 +59,14 @@ PerfTestRunner.startMeasureValuesAsync({
     iterationCount: 6,
     tracingCategories: 'accessibility',
     traceEventsToMeasure: [
-        'AXObjectCacheImpl::ChildrenChanged(LayoutObject)',
-        'BrowserAccessibilityManager::OnAccessibilityEvents',
+        'TotalAccessibilityCleanLayoutLifecycleStages',
+        'ProcessDeferredUpdatesLifecycleStage',
+    'FinalizingTreeLifecycleStage',
+        'SerializeLifecycleStage',
         'RenderAccessibilityImpl::SendPendingAccessibilityEvents',
-        'ProcessDeferredAccessibilityEvents'
+        'BrowserAccessibilityManager::OnAccessibilityEvents',
+        'SerializeLocationChanges',
+        "BrowserAccessibilityManager::OnLocationChanges"
     ]
 });
 </script>

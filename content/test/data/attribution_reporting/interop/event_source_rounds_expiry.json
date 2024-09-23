@@ -6,8 +6,7 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -32,13 +31,13 @@
         "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
             "url": "https://reporter.test/register-source",
             "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
                 "source_event_id": "456",
@@ -58,8 +57,7 @@
         "timestamp": "2000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -80,7 +78,6 @@
       {
         "timestamp": "86400000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -101,10 +98,19 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [
-      { "time": "1000", "type": "source" }
-    ],
     "reports": [
+      {
+        "payload": [ {
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://destination.test\",\"event_report_windows\":{\"end_times\":[43200,86400,108000]},\"expiry\":\"129599\",\"priority\":\"200\",\"source_event_id\":\"456\"}"
+           },
+           "type": "header-parsing-error"
+        } ],
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
       {
         "payload": {
           "attribution_destination": "https://destination.test",

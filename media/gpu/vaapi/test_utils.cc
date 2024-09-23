@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/test_utils.h"
 
 #include <memory>
@@ -264,7 +269,7 @@ class Tile4Mapping : public NativePixmapMapping {
 
       // We don't want to give the user the impression that this mapping is
       // bidirectional. We are performing a one-off detile operation to allow
-      // this Tile4 buffer to be read, but we have no way of propogating writes
+      // this Tile4 buffer to be read, but we have no way of propagating writes
       // from our temporary linear buffer to the underlying Tile4 buffer. So, we
       // mark these pages as read only.
       if (mprotect(dest, plane_sizes[plane_idx], PROT_READ)) {
@@ -434,7 +439,7 @@ bool CompareImages(const DecodedImage& reference_image,
           image_size.width(), image_size.height());
     } else {
       // |hw_fourcc| is YUY2 or YUYV, which are handled the same.
-      // TODO(crbug.com/868400): support other formats/planarities/pitches.
+      // TODO(crbug.com/40586948): support other formats/planarities/pitches.
       conversion_result = libyuv::YUY2ToI420(
           hw_decoded_image.planes[0].data, hw_decoded_image.planes[0].stride,
           temp_y.get(), image_size.width(), temp_u.get(),

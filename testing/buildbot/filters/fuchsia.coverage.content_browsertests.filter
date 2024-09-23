@@ -3,3 +3,5 @@
 # second.
 -All/SitePerProcessBrowserTest.AccessWindowProxyOfCrashedFrameAfterNavigation/0
 -All/SitePerProcessBrowserTest.AccessWindowProxyOfCrashedFrameAfterNavigation/1
+
+-InterestGroupBrowserTest.FeatureDetection

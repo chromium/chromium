@@ -10,7 +10,6 @@
 
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/metrics/structured/structured_metrics_client.h"
 
 namespace metrics::structured {
 
@@ -82,10 +81,6 @@ Event Event::Clone() const {
   clone.recorded_time_since_boot_ = recorded_time_since_boot_;
   clone.event_sequence_metadata_ = event_sequence_metadata_;
   return clone;
-}
-
-void Event::Record() {
-  StructuredMetricsClient::Get()->RecordEvent(std::move(*this));
 }
 
 const Event::EventSequenceMetadata& Event::event_sequence_metadata() const {

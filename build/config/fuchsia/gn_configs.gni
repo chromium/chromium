@@ -4,13 +4,11 @@
 
 assert(is_fuchsia)
 
+# TODO(crbug.com/359657446): Remove the duplicate arguments in favor of
+# using the ones in third_party/fuchsia-gn-sdk/. Some of them are needed
+# by repos like webrtc which may not update to use the
+# third_party/fuchsia-gn-sdk/src/gn_configs.gni.
 declare_args() {
-  # The target API level for this repository. Embedders should override this
-  # value to specify the API level the packages produced from this repository
-  # should be targeting, e.g. in their top-level //.gn file. A value of -1
-  # means that no API level will be passed to the tools that consumes it.
-  fuchsia_target_api_level = 16
-
   # Path to the fuchsia SDK. This is intended for use in other templates &
   # rules to reference the contents of the fuchsia SDK.
   fuchsia_sdk = "//third_party/fuchsia-sdk/sdk"
@@ -22,20 +20,15 @@ declare_args() {
   fuchsia_sdk_id = ""
 }
 
-declare_args() {
-  # The SDK manifest file. This is useful to include as a dependency
-  # for some targets in order to cause a rebuild when the version of the
-  # SDK is changed.
-  fuchsia_sdk_manifest_file = "$fuchsia_sdk/meta/manifest.json"
+# The SDK manifest file. This is useful to include as a dependency
+# for some targets in order to cause a rebuild when the version of the
+# SDK is changed.
+fuchsia_sdk_manifest_file = "${fuchsia_sdk}/meta/manifest.json"
 
-  # fuchsia_tool_dir is used to specify the directory in the SDK to locate
-  # tools for the host cpu architecture. If the host_cpu is not recognized,
-  # then tool dir defaults to x64.
-  fuchsia_tool_dir = "${fuchsia_sdk}/tools/x64"
-  if (host_cpu == "arm64") {
-    fuchsia_tool_dir = "${fuchsia_sdk}/tools/arm64"
-  }
-}
+# fuchsia_tool_dir is used to specify the directory in the SDK to locate
+# tools for the host cpu architecture. If the host_cpu is not recognized,
+# then tool dir defaults to x64.
+fuchsia_tool_dir = "${fuchsia_sdk}/tools/${host_cpu}"
 
 if (fuchsia_sdk_id == "") {
   # Note: If we need to expose more than just the id in the future,
@@ -55,3 +48,11 @@ declare_args() {
     fuchsia_sdk_readelf_exec = ""
   }
 }
+
+# Copy from third_party/fuchsia-gn-sdk/src/gn_configs.gni to avoid importing
+# files from //third_party/ in //build/.
+# Note, `current_cpu` should always exist in the //build/ tree, so the
+# `target_cpu` fallback has been removed.
+fuchsia_target_api_level = 22
+fuchsia_arch_root =
+    "${fuchsia_sdk}/obj/${target_cpu}-api-${fuchsia_target_api_level}"

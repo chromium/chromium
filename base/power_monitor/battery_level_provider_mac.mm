@@ -18,8 +18,8 @@ namespace {
 // Returns the value corresponding to |key| in the dictionary |description|.
 // Returns |default_value| if the dictionary does not contain |key|, the
 // corresponding value is nullptr or it could not be converted to SInt64.
-absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
-                                        CFStringRef key) {
+std::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
+                                       CFStringRef key) {
   CFNumberRef number_ref =
       base::apple::GetValueFromDictionary<CFNumberRef>(description, key);
 
@@ -27,15 +27,15 @@ absl::optional<SInt64> GetValueAsSInt64(CFDictionaryRef description,
   if (number_ref && CFNumberGetValue(number_ref, kCFNumberSInt64Type, &value))
     return value;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
-                                       CFStringRef key) {
+std::optional<bool> GetValueAsBoolean(CFDictionaryRef description,
+                                      CFStringRef key) {
   CFBooleanRef boolean =
       base::apple::GetValueFromDictionary<CFBooleanRef>(description, key);
   if (!boolean)
-    return absl::nullopt;
+    return std::nullopt;
   return CFBooleanGetValue(boolean);
 }
 
@@ -47,20 +47,20 @@ class BatteryLevelProviderMac : public BatteryLevelProvider {
   ~BatteryLevelProviderMac() override = default;
 
   void GetBatteryState(
-      base::OnceCallback<void(const absl::optional<BatteryState>&)> callback)
+      base::OnceCallback<void(const std::optional<BatteryState>&)> callback)
       override {
     std::move(callback).Run(GetBatteryStateImpl());
   }
 
  private:
-  absl::optional<BatteryState> GetBatteryStateImpl();
+  std::optional<BatteryState> GetBatteryStateImpl();
 };
 
 std::unique_ptr<BatteryLevelProvider> BatteryLevelProvider::Create() {
   return std::make_unique<BatteryLevelProviderMac>();
 }
 
-absl::optional<BatteryLevelProviderMac::BatteryState>
+std::optional<BatteryLevelProviderMac::BatteryState>
 BatteryLevelProviderMac::GetBatteryStateImpl() {
   const base::mac::ScopedIOObject<io_service_t> service(
       IOServiceGetMatchingService(kIOMasterPortDefault,
@@ -78,14 +78,14 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
 
   if (result != KERN_SUCCESS) {
     // Failing to retrieve the dictionary is unexpected.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<bool> battery_installed =
+  std::optional<bool> battery_installed =
       GetValueAsBoolean(dict.get(), CFSTR("BatteryInstalled"));
   if (!battery_installed.has_value()) {
     // Failing to access the BatteryInstalled property is unexpected.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!battery_installed.value()) {
@@ -93,29 +93,29 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
     return MakeBatteryState(/* battery_details=*/{});
   }
 
-  absl::optional<bool> external_connected =
+  std::optional<bool> external_connected =
       GetValueAsBoolean(dict.get(), CFSTR("ExternalConnected"));
   if (!external_connected.has_value()) {
     // Failing to access the ExternalConnected property is unexpected.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<SInt64> current_capacity =
+  std::optional<SInt64> current_capacity =
       GetValueAsSInt64(dict.get(), CFSTR("AppleRawCurrentCapacity"));
   if (!current_capacity.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<SInt64> max_capacity =
+  std::optional<SInt64> max_capacity =
       GetValueAsSInt64(dict.get(), CFSTR("AppleRawMaxCapacity"));
   if (!max_capacity.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<SInt64> voltage_mv =
+  std::optional<SInt64> voltage_mv =
       GetValueAsSInt64(dict.get(), CFSTR(kIOPSVoltageKey));
   if (!voltage_mv.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK_GE(*current_capacity, 0);

@@ -5,6 +5,7 @@
 #include "ui/message_center/message_center_impl.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -30,8 +31,6 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-
-#include "base/logging.h"
 
 using base::UTF8ToUTF16;
 

@@ -11,6 +11,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -170,9 +171,6 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
     history_service_ =
         std::make_unique<testing::StrictMock<MockHistoryService>>();
 
-    template_url_service_ = std::make_unique<TemplateURLService>(
-        kTemplateURLData, std::size(kTemplateURLData));
-
     optimization_guide_decider_ =
         std::make_unique<TestOptimizationGuideDecider>();
 
@@ -181,14 +179,14 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
 
     // Instantiate observer.
     observer_ = std::make_unique<ContextClustererHistoryServiceObserver>(
-        history_service_.get(), template_url_service_.get(),
+        history_service_.get(),
+        search_engines_test_environment_.template_url_service(),
         optimization_guide_decider_.get(), engagement_score_provider_.get());
     observer_->OverrideClockForTesting(task_environment_.GetMockClock());
 
     // TODO(b/276488340): Update this test when non context clusterer code gets
     //   cleaned up.
     Config config;
-    config.persist_clusters_in_history_db = false;
     config.use_navigation_context_clusters = false;
     SetConfigForTesting(config);
   }
@@ -203,7 +201,6 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
   // code path.
   void SetPersistenceExpectedConfig() {
     Config config;
-    config.persist_clusters_in_history_db = true;
     config.use_navigation_context_clusters = true;
     SetConfigForTesting(config);
   }
@@ -237,7 +234,7 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         urls.empty() ? history::DeletionInfo::ForAllHistory()
                      : history::DeletionInfo::ForUrls(CreateURLRows(urls),
                                                       /*favicon_urls=*/{});
-    observer_->OnURLsDeleted(history_service_.get(), deletion_info);
+    observer_->OnHistoryDeletions(history_service_.get(), deletion_info);
   }
 
   // Move clock forward by `time_delta`.
@@ -268,7 +265,8 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<TemplateURLService> template_url_service_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_{
+      {.template_url_service_initializer = kTemplateURLData}};
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
   std::unique_ptr<TestSiteEngagementScoreProvider> engagement_score_provider_;
   std::unique_ptr<ContextClustererHistoryServiceObserver> observer_;

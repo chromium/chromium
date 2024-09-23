@@ -183,8 +183,8 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   void SetTopSitesFromHistory(scoped_refptr<SitesAndQueriesRequest> request);
 
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(HistoryService* history_service,
-                     const DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(HistoryService* history_service,
+                          const DeletionInfo& deletion_info) override;
 
   // Ensures that non thread-safe methods are called on the correct thread.
   base::ThreadChecker thread_checker_;

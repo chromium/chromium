@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "components/payments/content/android/csp_checker_android.h"
-#include "components/payments/content/android/jni_headers/PaymentManifestDownloader_jni.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -19,6 +18,9 @@
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/payments/content/android/jni_headers/PaymentManifestDownloader_jni.h"
 
 namespace payments {
 namespace {
@@ -90,7 +92,7 @@ void PaymentManifestDownloaderAndroid::DownloadPaymentMethodManifest(
     const base::android::JavaParamRef<jobject>& jcallback) {
   downloader_.DownloadPaymentMethodManifest(
       url::Origin::FromJavaObject(jmerchant_origin),
-      *url::GURLAndroid::ToNativeGURL(env, jurl),
+      url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnPaymentMethodManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
 }
@@ -103,7 +105,7 @@ void PaymentManifestDownloaderAndroid::DownloadWebAppManifest(
     const base::android::JavaParamRef<jobject>& jcallback) {
   downloader_.DownloadWebAppManifest(
       url::Origin::FromJavaObject(jpayment_method_manifest_origin),
-      *url::GURLAndroid::ToNativeGURL(env, jurl),
+      url::GURLAndroid::ToNativeGURL(env, jurl),
       base::BindOnce(&DownloadCallback::OnWebAppManifestDownload,
                      std::make_unique<DownloadCallback>(jcallback)));
 }

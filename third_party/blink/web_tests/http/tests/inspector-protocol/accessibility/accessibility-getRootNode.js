@@ -1,18 +1,17 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  var {page, session, dp} = await testRunner.startHTML(`
-  <main>
-    <article>
-      <h1>Article</h1>
-      <p>First paragraph</p>
-    </article>
-    <iframe src="${testRunner.url('../resources/iframe-accessible-name.html')}"></iframe>
-  </main>
-  `, 'Tests Accessibility.getRootAXNode');
+  const {session, dp, page} = await testRunner.startBlank('Tests Accessibility.getRootAXNode');
+
   await dp.Accessibility.enable();
+
+  const complete = dp.Accessibility.onceLoadComplete();
+
+  await page.navigate(testRunner.url('../resources/page-with-iframe-accessible-name.html'));
 
   function logNode(axnode) {
     testRunner.log(axnode, null, ['nodeId', 'backendDOMNodeId', 'childIds', 'frameId', 'parentId', 'properties']);
   }
+
+  await complete;
 
   let {result} = await dp.Accessibility.getFullAXTree({depth: 2});
   let iframeNode;

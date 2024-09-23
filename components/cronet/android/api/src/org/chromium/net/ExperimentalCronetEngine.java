@@ -95,7 +95,7 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
          *
          * @param context Android {@link Context}, which is used by the Builder to retrieve the
          *     application context. A reference to only the application context will be kept, so as
-         * to avoid extending the lifetime of {@code context} unnecessarily.
+         *     to avoid extending the lifetime of {@code context} unnecessarily.
          */
         public Builder(Context context) {
             super(context);
@@ -120,7 +120,8 @@ public abstract class ExperimentalCronetEngine extends CronetEngine {
          * @return the builder to facilitate chaining.
          */
         public Builder setExperimentalOptions(String options) {
-            mBuilderDelegate.setExperimentalOptions(options);
+            mParsedExperimentalOptions =
+                    ExperimentalOptionsTranslator.toJsonExperimentalOptions(options);
             return this;
         }
 

@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,8 +28,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
@@ -41,13 +39,12 @@ import org.chromium.components.feature_engagement.Tracker;
 
 /** Test for the WebFeedFollowIntroView class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ChromeFeatureList.FEED_CONTAINMENT})
 public final class SectionHeaderViewTest {
     private SectionHeaderView mSectionHeaderView;
     private Activity mActivity;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock private Tracker mTracker;
     @Mock private UserEducationHelper mHelper;
@@ -75,7 +72,6 @@ public final class SectionHeaderViewTest {
 
     private void setFeatureOverridesForIPH() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.WEB_FEED, true);
         testValues.addFeatureFlagOverride(ChromeFeatureList.WEB_FEED_ONBOARDING, true);
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "IPH");
@@ -92,7 +88,6 @@ public final class SectionHeaderViewTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
     public void mainContentTopMarginTest() {
         mSectionHeaderView.onFinishInflate();
 

@@ -39,6 +39,10 @@ class SelectionPopupController : public RenderWidgetHostConnector {
       const base::android::JavaParamRef<jobject>& obj,
       jboolean hidden);
 
+  base::android::ScopedJavaLocalRef<jobjectArray> GetTouchHandleRects(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(
       RenderWidgetHostViewAndroid* old_rwhva,

@@ -8,5 +8,5 @@
     sequence<USVString> getInternalResponseURLList(Response response);
 
     // For documentation see IDL for Internals::getInitialResourcePriority.
-    [CallWith=ScriptState] Promise<unsigned long> getInitialResourcePriority(DOMString url, WorkerGlobalScope worker_global);
+    [CallWith=ScriptState] Promise<long> getInitialResourcePriority(DOMString url, WorkerGlobalScope worker_global);
 };

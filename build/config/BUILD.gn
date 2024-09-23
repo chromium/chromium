@@ -19,7 +19,6 @@ import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
-import("//build/toolchain/goma.gni")
 if (is_android) {
   import("//build/config/android/abi.gni")
 }
@@ -68,7 +67,7 @@ config("feature_flags") {
     # but they also build some targets with the Android toolchain. This ensures
     # that Android targets still build with USE_OZONE=0 in such cases.
     #
-    # TODO(crbug.com/837032): Maybe this can be cleaned up if we can avoid
+    # TODO(crbug.com/41385586): Maybe this can be cleaned up if we can avoid
     # setting use_ozone globally.
     defines += [ "USE_OZONE=1" ]
   }
@@ -90,7 +89,7 @@ config("feature_flags") {
   if (is_msan) {
     defines += [ "MEMORY_SANITIZER" ]
   }
-  if (is_ubsan || is_ubsan_vptr || is_ubsan_security) {
+  if (is_ubsan_any) {
     defines += [ "UNDEFINED_SANITIZER" ]
   }
   if (is_official_build) {
@@ -223,23 +222,23 @@ config("default_libs") {
   }
 }
 
-group("common_deps") {
-  visibility = [
-    ":executable_deps",
-    ":loadable_module_deps",
-    ":shared_library_deps",
-  ]
+_toolchain_marker_name =
+    "toolchain_marker_" + get_label_info(current_toolchain, "name")
+group(_toolchain_marker_name) {
+  # Can be used as an assert_no_deps target (assert_no_deps ignores toolchains).
+}
 
+group("common_deps_without_libcxx") {
   # WARNING: This group is a dependency of **every executable and shared
   # library**.  Please be careful adding new dependencies here.
-  public_deps = []
+  public_deps = [ ":$_toolchain_marker_name" ]
 
   if (using_sanitizer) {
     public_deps += [ "//build/config/sanitizers:deps" ]
   }
 
-  if (use_custom_libcxx) {
-    public_deps += [ "//buildtools/third_party/libc++" ]
+  if (use_libfuzzer) {
+    public_deps += [ "//build/config/sanitizers:dlclose_shim" ]
   }
 
   if (use_afl) {
@@ -259,10 +258,33 @@ group("common_deps") {
   }
 
   if (is_win) {
+    if (build_with_chromium && is_component_build) {
+      # To enable allocator_shim for the windows component built chrome,
+      # need to make all shared libraries and also executable(i.e.chrome.exe)
+      # depend on PartitionAlloc.
+      public_deps += [ "//base/allocator/partition_allocator/src/partition_alloc:win_component_build_adapter" ]
+    }
+
     # The CRT runtime is dynamically linked in component builds and needs to
     # be present on bots that run exes or load DLLs. This also includes
     # debugging DLLs in all builds.
     data_deps = [ "//build/win:runtime_libs" ]
+  }
+}
+
+group("common_deps") {
+  visibility = [
+    ":executable_deps",
+    ":loadable_module_deps",
+    ":shared_library_deps",
+  ]
+
+  # WARNING: This group is a dependency of **every executable and shared
+  # library**.  Please be careful adding new dependencies here.
+  public_deps = [ ":common_deps_without_libcxx" ]
+
+  if (use_custom_libcxx) {
+    public_deps += [ "//buildtools/third_party/libc++" ]
   }
 }
 
@@ -328,10 +350,10 @@ config("executable_config") {
   # If we're using the prebuilt instrumented libraries with the sanitizers, we
   # need to add ldflags to every binary to make sure they are picked up.
   if (prebuilt_instrumented_libraries_available) {
-    configs += [ "//third_party/instrumented_libraries:prebuilt_ldflags" ]
+    configs += [ "//third_party/instrumented_libs:prebuilt_ldflags" ]
   }
   if (use_locally_built_instrumented_libraries) {
-    configs += [ "//third_party/instrumented_libraries:locally_built_ldflags" ]
+    configs += [ "//third_party/instrumented_libs:locally_built_ldflags" ]
   }
 }
 
@@ -359,10 +381,10 @@ config("shared_library_config") {
   # If we're using the prebuilt instrumented libraries with the sanitizers, we
   # need to add ldflags to every binary to make sure they are picked up.
   if (prebuilt_instrumented_libraries_available) {
-    configs += [ "//third_party/instrumented_libraries:prebuilt_ldflags" ]
+    configs += [ "//third_party/instrumented_libs:prebuilt_ldflags" ]
   }
   if (use_locally_built_instrumented_libraries) {
-    configs += [ "//third_party/instrumented_libraries:locally_built_ldflags" ]
+    configs += [ "//third_party/instrumented_libs:locally_built_ldflags" ]
   }
 }
 

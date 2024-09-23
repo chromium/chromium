@@ -3,25 +3,22 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {navigateTo, navigateToNextStep, NavigationMixin, Routes} from 'chrome://welcome/navigation_mixin.js';
+import {NavigationMixin} from 'chrome://welcome/navigation_mixin.js';
+import {navigateTo, navigateToNextStep, Routes} from 'chrome://welcome/router.js';
 
-suite('NavigationBehaviorTest', function() {
-  class TestElement extends NavigationMixin
-  (PolymerElement) {
+suite('NavigationMixinTest', function() {
+  const TestElementBase = NavigationMixin(CrLitElement);
+  class TestElement extends TestElementBase {
     static get is() {
       return 'test-element';
     }
 
-    static get template() {
-      return html``;
-    }
-
-    static get properties() {
+    static override get properties() {
       return {
-        subtitle: String,
+        subtitle: {type: String},
       };
     }
 
@@ -30,8 +27,7 @@ suite('NavigationBehaviorTest', function() {
     changeCalled: boolean = false;
     exitCalled: boolean = false;
 
-    override ready() {
-      super.ready();
+    override firstUpdated() {
       this.reset();
     }
 

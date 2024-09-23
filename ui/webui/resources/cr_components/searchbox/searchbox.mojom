@@ -1,0 +1,192 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module searchbox.mojom;
+
+import "components/omnibox/browser/omnibox.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// See components/omnibox/browser/autocomplete_match.h.
+struct ACMatchClassification {
+  uint32 offset;
+  int32 style;
+};
+
+// See components/omnibox/browser/actions/omnibox_action.h
+struct Action {
+  mojo_base.mojom.String16 a11y_label;
+  mojo_base.mojom.String16 hint;
+  mojo_base.mojom.String16 suggestion_contents;
+  // The url for the action icon. This is a relative url pointing to a
+  // bundled resource and is used directly in CSS to show the icon.
+  string icon_url;
+};
+
+// See components/omnibox/browser/suggestion_answer.h
+struct SuggestionAnswer {
+  mojo_base.mojom.String16 first_line;
+  mojo_base.mojom.String16 second_line;
+};
+
+struct AutocompleteMatch {
+  mojo_base.mojom.String16 a11y_label;
+  bool allowed_to_be_default_match;
+  array<Action> actions;
+  SuggestionAnswer? answer;
+  mojo_base.mojom.String16 contents;
+  array<ACMatchClassification> contents_class;
+  mojo_base.mojom.String16 description;
+  array<ACMatchClassification> description_class;
+  url.mojom.Url destination_url;
+  mojo_base.mojom.String16 inline_autocompletion;
+  mojo_base.mojom.String16 fill_into_edit;
+  bool? is_weather_answer_suggestion;
+  // The url for the suggestion icon. This is a relative url pointing to a
+  // bundled resource and is used directly in CSS to show the icon.
+  string icon_url;
+  // Used to paint a placeholder while fetching |image_url|. These two fields
+  // are valid for entity suggestions only. Entity suggestions have a |type| of
+  // 'search-suggest-entity'.
+  string image_dominant_color;
+  // The image url for entity suggestions. |image_url| is an external url or
+  // a data URI.
+  string image_url;
+  // Used to determine if the match has an image, calculator answer or
+  // suggestion answer.
+  bool is_rich_suggestion;
+  bool is_search_type;  // Result of AutocompleteMatch::IsSearchType().
+  string type;  // Result of AutocompleteMatchType::ToString().
+  mojo_base.mojom.String16 remove_button_a11y_label;
+  bool swap_contents_and_description;
+  // ID of the group the suggestion belongs to. 0 if it does not belong to any.
+  int32 suggestion_group_id;
+  bool supports_deletion;
+  // Holds the common part of tail suggestion. Not every match has a tail
+  // suggestion prefix. For example, the tail suggestion prefix for "hobbit
+  // holes for sale in" is "hobbit holes for sale" and the match contents
+  // would be the text following "sale".
+  mojo_base.mojom.String16? tail_suggest_common_prefix;
+};
+
+// Indicates whether a suggestion group is in the primary or the secondary
+// column of suggestions. See //third_party/omnibox_proto/groups.proto.
+enum SideType {
+  kDefaultPrimary = 0,
+  kSecondary = 1,
+};
+
+// Indicates whether a suggestion group should be rendered vertically or
+// horizontally. See //third_party/omnibox_proto/groups.proto.
+enum RenderType {
+  kDefaultVertical = 0,
+  kHorizontal = 1,
+  kGrid = 2,
+};
+
+struct SuggestionGroup {
+  mojo_base.mojom.String16 header;  // Header for suggestion group.
+  mojo_base.mojom.String16 hide_group_a11y_label;
+  mojo_base.mojom.String16 show_group_a11y_label;
+  bool hidden;  // Whether suggestion group should be initially hidden.
+  RenderType render_type = RenderType.kDefaultVertical;
+  SideType side_type = SideType.kDefaultPrimary;
+};
+
+struct AutocompleteResult {
+  mojo_base.mojom.String16 input;
+  // Map of suggestion group IDs to their respective info.
+  map<int32, SuggestionGroup> suggestion_groups_map;
+  array<AutocompleteMatch> matches;
+};
+
+enum SelectionLineState {
+  kFocusedButtonHeader = 0,
+  kNormal = 1,
+  kKeywordMode = 2,
+  kFocusedButtonAction = 3,
+  kFocusedButtonRemoveSuggestion = 4,
+};
+
+// See components/omnibox/browser/omnibox_popup_selection.h
+struct OmniboxPopupSelection {
+  uint8 line;
+  SelectionLineState state;
+  uint8 action_index;
+};
+
+// Browser-side handler for requests from WebUI page. The web pages that embed
+// searchboxes which communicate with this interface are chrome://new-tab-page
+// and two chrome-untrusted://lens pages.
+interface PageHandler {
+  // The SearchboxBrowserProxy singleton calls this when it's first initialized.
+  SetPage(pending_remote<Page> page);
+  // Informs the handler and model about focus state changes.
+  OnFocusChanged(bool focused);
+  // Queries autocomplete matches from the browser.
+  QueryAutocomplete(mojo_base.mojom.String16 input,
+                    bool prevent_inline_autocomplete);
+  // Cancels the current autocomplete query. Clears the result set if
+  // |clear_result| is true.
+  StopAutocomplete(bool clear_result);
+  // Handles navigation to an autocomplete match (i.e. an item in the realbox's
+  // list of matches).
+  // Note: |url| is only used to confirm the match |line| selection.
+  // |mouse_button| indicates which mouse button was pressed on the match. See
+  // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
+  OpenAutocompleteMatch(uint8 line,
+                        url.mojom.Url url,
+                        bool are_matches_showing,
+                        uint8 mouse_button,
+                        bool alt_key,
+                        bool ctrl_key,
+                        bool meta_key,
+                        bool shift_key);
+  // Informs the browser that the user has changed the selected suggestion. The
+  // new suggestion is located at |line|. |navigation_predictor|
+  // indicates the event that indicated navigation was likely.
+  // |url| is only used to confirm the match |line| selection.
+  OnNavigationLikely(uint8 line,
+                     url.mojom.Url url,
+                     omnibox.mojom.NavigationPredictor navigation_predictor);
+  // Deletes the AutocompleteMatch in the current results by |line| number if
+  // it is deletable. |url| is used to confirm the match |line| selection.
+  DeleteAutocompleteMatch(uint8 line, url.mojom.Url url);
+  // Tells the browser to allow suggestions with the given suggestion group ID
+  // to appear in the results if they currently are not allowed to or to prevent
+  // them from appearing in the results if they are currently permitted to.
+  ToggleSuggestionGroupIdVisibility(int32 suggestion_group_id);
+  // Executes the Pedal Action. match_selection_timestamp is the number of
+  // microseconds since Jan. 1, 1970 (ECMAScript epoch).
+  // |url| is only used to confirm the match |line| selection.
+  ExecuteAction(uint8 line,
+                uint8 action_index,
+                url.mojom.Url url,
+                mojo_base.mojom.TimeTicks match_selection_timestamp,
+                uint8 mouse_button,
+                bool alt_key,
+                bool ctrl_key,
+                bool meta_key,
+                bool shift_key);
+  // Called when the popup results view element size is changed.
+  PopupElementSizeChanged(gfx.mojom.Size size);
+  // Notifies browser that thumbnail has been removed.
+  OnThumbnailRemoved();
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Updates the page with the autocomplete results.
+  AutocompleteResultChanged(AutocompleteResult result);
+  // Updates the UI's selected line and action based on the |selection| and
+  // |old_selection|.
+  UpdateSelection(OmniboxPopupSelection old_selection,
+                  OmniboxPopupSelection selection);
+  // Called to set searchbox input.
+  SetInputText(string input);
+  // Sets searchbox thumbnail.
+  SetThumbnail(string thumbnail_url);
+};

@@ -25,6 +25,12 @@ const char kProductSpecificationsName[] = "Product Specifications";
 const char kProductSpecificationsDescription[] =
     "Enable the Product Specifications feature.";
 
+const char kProductSpecificationsMultiSpecificsName[] =
+    "Product Specifications Multi Specifics";
+const char kProductSpecificationsMultiSpecificsDescription[] =
+    "Enable the Product Specifications backed by the sync multi specifics "
+    "representation.";
+
 const char kShoppingIconColorVariantName[] =
     "Enable color variant for shopping icons";
 const char kShoppingIconColorVariantDescription[] =
@@ -46,8 +52,36 @@ const char kParcelTrackingTestDataDescription[] =
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
 
+const char kDiscountOnNavigationName[] = "Discounts on navigation";
+const char kDiscountOnNavigationDescription[] =
+    "Enable to show available discounts on the page after navigation.";
+
+#if BUILDFLAG(IS_IOS)
+extern const char kPriceInsightsIosName[] = "Price Insights";
+extern const char kPriceInsightsIosDescription[] =
+    "When enabled, the user will be able to get price insights on product "
+    "pages.";
+
+extern const char kPriceInsightsHighPriceIosName[] =
+    "Price Insights with high price";
+extern const char kPriceInsightsHighPriceIosDescription[] =
+    "When enabled, price insight will report a high confidence when the price "
+    "is high.";
+#endif
+
 const char kShoppingPageTypesName[] = "Shopping Page Types";
 const char kShoppingPageTypesDescription[] =
     "Enable shopping page types experiment.";
+
+const char kTrackByDefaultOnMobileName[] =
+    "Product Tracking by Default on Mobile";
+const char kTrackByDefaultOnMobileDescription[] =
+    "Enable tracking a product by default when bookmarking on mobile devices.";
+
+const char kPriceTrackingSubscriptionServiceLocaleKeyName[] =
+    "Price Tracking Subscription Service Local Key";
+
+const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[] =
+    "Enable the locale key for price tracking subscription service";
 
 }  // namespace commerce::flag_descriptions

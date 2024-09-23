@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -117,10 +118,10 @@ class PLATFORM_EXPORT TaskQueueThrottler final
 
   void DisableThrottling();
 
-  base::sequence_manager::TaskQueue* const task_queue_;
+  const raw_ptr<base::sequence_manager::TaskQueue> task_queue_;
   size_t throttling_ref_count_ = 0;
   HashSet<BudgetPool*> budget_pools_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_;
 };
 
 }  // namespace scheduler

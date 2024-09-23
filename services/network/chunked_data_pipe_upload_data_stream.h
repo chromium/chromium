@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedDataPipeUploadDataStream
 
   void OnDataPipeGetterClosed();
 
-  void WriteToCacheIfNeeded(net::IOBuffer* buf, uint32_t num_bytes);
+  void WriteToCacheIfNeeded(net::IOBuffer* buf, size_t num_bytes);
   int ReadFromCacheIfNeeded(net::IOBuffer* buf, int buf_len);
 
   scoped_refptr<ResourceRequestBody> resource_request_body_;

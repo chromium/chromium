@@ -19,7 +19,6 @@
 <translation id="3115238746683532089">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_ID" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3144135466825225871">Замена crx датотеке није успела. Проверите да ли се датотека користи.</translation>
 <translation id="3163201441334626963">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_ID" /></translation>
-<translation id="3369521687965833290">Није могуће отпаковати додатак. Да бисте безбедно отпаковали додатак, мора да постоји путања до директоријума профила која почиње словом за ознаку јединице и не садржи спој, тачку повезивања или симболичку везу. За ваш профил не постоји таква путања.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> продавца <ph name="VENDOR_ID" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Улазна вредност приватног кључа мора бити важећа путања.</translation>
@@ -39,7 +38,6 @@
 <translation id="5972529113578162692">Администратор овог рачунара захтева да додатак <ph name="EXTENSION_NAME" /> буде инсталиран. Не можете да га деинсталирате.</translation>
 <translation id="6027032947578871493">Непознати производ <ph name="PRODUCT_ID" /> продавца <ph name="VENDOR_NAME" /> (серијски број <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> продавца <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Није могуће отпаковати додатак. Да бисте безбедно отпаковали додатак, мора да постоји путања до директоријума профила која не садржи симболичку везу. За ваш профил не постоји таква путања.</translation>
 <translation id="6322279351188361895">Читање приватног кључа није успело.</translation>
 <translation id="6391538222494443604">Улазни каталог мора да постоји.</translation>
 <translation id="641087317769093025">Није могуће распаковати додатак</translation>

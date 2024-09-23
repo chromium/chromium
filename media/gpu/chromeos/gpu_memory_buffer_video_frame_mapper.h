@@ -28,7 +28,7 @@ class MEDIA_GPU_EXPORT GpuMemoryBufferVideoFrameMapper
   // VideoFrameMapper implementation.
   scoped_refptr<VideoFrame> MapFrame(
       scoped_refptr<const FrameResource> video_frame,
-      int permissions) const override;
+      int permissions) override;
 
  private:
   explicit GpuMemoryBufferVideoFrameMapper(VideoPixelFormat format);

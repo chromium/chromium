@@ -1,0 +1,66 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/login/app_mode",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/app_mode/test",
+  "+chrome/browser/ash/accessibility",
+  "+chrome/browser/ash/app_mode",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/ownership",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/policy/remote_commands",
+  "+chrome/browser/ash/policy/test_support",
+  "+chrome/browser/ash/profiles/profile_helper.h",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/browser_process_platform_part_ash.h",
+  "+chrome/browser/chromeos/app_mode",
+  "+chrome/browser/device_identity",
+  "+chrome/browser/extensions/browsertest_util.h",
+  "+chrome/browser/extensions/extension_service.h",
+  "+chrome/browser/extensions/extension_service_test_base.h",
+  "+chrome/browser/extensions/forced_extensions",
+  "+chrome/browser/extensions/policy_handlers.h",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/policy",
+  "+chrome/browser/profiles",
+  "+chrome/browser/signin",
+  "+chrome/browser/speech/extension_api",
+  "+chrome/browser/ui/ash/keyboard",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/test",
+  "+chrome/browser/ui/views/frame",
+  "+chrome/browser/ui/webui/ash/login",
+  "+chrome/browser/web_applications/external_install_options.h",
+  "+chrome/browser/web_applications/externally_managed_app_manager.h",
+  "+chrome/browser/web_applications/mojom",
+  "+chrome/browser/web_applications/web_app_constants.h",
+  "+chrome/browser/web_applications/web_app_install_info.h",
+  "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/common/chrome_constants.h",
+  "+chrome/common/chrome_features.h",
+  "+chrome/common/chrome_paths.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/grit",
+  "+chrome/test/base",
+]

@@ -11,5 +11,6 @@ component("thread_linux") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//dbus",
   ]
 }

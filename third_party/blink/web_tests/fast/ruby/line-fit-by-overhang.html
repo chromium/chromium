@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+ruby {
+  color: blue;
+}
+rt {
+  color: orange;
+  font-size: 100%;
+}
+p {
+  /* Non-ruby width is 2em, and the annotation width is 6em.
+     We should see only a sigle line because of an overhang. */
+  width: 7.9em;
+  border: 1px solid red;
+  font-size: 30px;
+}
+</style>
+<p><span>〓〓</span><ruby>〓〓〓〓〓<rt>〓〓〓〓〓〓</ruby></p>
+<script>
+test(() => {
+  assert_equals(document.querySelector('span').getBoundingClientRect().bottom,
+      document.querySelector('ruby').getBoundingClientRect().bottom);
+}, 'The <p> should have a single line.');
+</script>

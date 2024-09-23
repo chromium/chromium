@@ -15,3 +15,6 @@ source_set("utility") {
   deps = [ ":utility_shim" ]
   public_configs = [ ":system_absl_utility" ]
 }
+
+source_set("if_constexpr_test") {
+}

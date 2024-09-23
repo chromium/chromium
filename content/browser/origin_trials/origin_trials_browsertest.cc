@@ -48,7 +48,6 @@ class OriginTrialsBrowserTest : public content::ContentBrowserTest {
   ~OriginTrialsBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
   }
 

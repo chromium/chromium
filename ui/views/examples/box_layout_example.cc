@@ -29,7 +29,18 @@ namespace views::examples {
 
 BoxLayoutExample::BoxLayoutExample() : LayoutExampleBase("Box Layout") {}
 
-BoxLayoutExample::~BoxLayoutExample() = default;
+BoxLayoutExample::~BoxLayoutExample() {
+  if (between_child_spacing_) {
+    between_child_spacing_->set_controller(nullptr);
+  }
+  if (default_flex_) {
+    default_flex_->set_controller(nullptr);
+  }
+  if (min_cross_axis_size_) {
+    min_cross_axis_size_->set_controller(nullptr);
+  }
+  border_insets_.ResetControllers();
+}
 
 void BoxLayoutExample::ContentsChanged(Textfield* textfield,
                                        const std::u16string& new_contents) {
@@ -53,24 +64,28 @@ void BoxLayoutExample::ContentsChanged(Textfield* textfield,
 }
 
 void BoxLayoutExample::CreateAdditionalControls() {
-  constexpr const char* kOrientationValues[2] = {"Horizontal", "Vertical"};
+  constexpr auto kOrientationValues =
+      std::to_array<const char* const>({"Horizontal", "Vertical"});
   orientation_ = CreateAndAddCombobox(
-      u"Orientation", kOrientationValues, std::size(kOrientationValues),
+      u"Orientation", kOrientationValues,
       base::BindRepeating(&LayoutExampleBase::RefreshLayoutPanel,
                           base::Unretained(this), true));
 
-  constexpr const char* kMainAxisValues[3] = {"Start", "Center", "End"};
+  constexpr auto kMainAxisValues =
+      std::to_array<const char* const>({"Start", "Center", "End"});
   main_axis_alignment_ = CreateAndAddCombobox(
-      u"Main axis", kMainAxisValues, std::size(kMainAxisValues),
+      u"Main axis", kMainAxisValues,
       base::BindRepeating(&BoxLayoutExample::MainAxisAlignmentChanged,
                           base::Unretained(this)));
 
-  constexpr const char* kCrossAxisValues[4] = {"Stretch", "Start", "Center",
-                                               "End"};
+  constexpr auto kCrossAxisValues =
+      std::to_array<const char* const>({"Start", "Center", "End", "Stretch"});
   cross_axis_alignment_ = CreateAndAddCombobox(
-      u"Cross axis", kCrossAxisValues, std::size(kCrossAxisValues),
+      u"Cross axis", kCrossAxisValues,
       base::BindRepeating(&BoxLayoutExample::CrossAxisAlignmentChanged,
                           base::Unretained(this)));
+  // Select Stretch as the default.
+  cross_axis_alignment_->SetSelectedIndex(3);
 
   between_child_spacing_ = CreateAndAddTextfield(u"Child spacing");
   default_flex_ = CreateAndAddTextfield(u"Default flex");
@@ -90,6 +105,7 @@ void BoxLayoutExample::UpdateLayoutManager() {
   View* const panel = layout_panel();
   int child_spacing;
   base::StringToInt(between_child_spacing_->GetText(), &child_spacing);
+  layout_ = nullptr;
   layout_ = panel->SetLayoutManager(std::make_unique<BoxLayout>(
       orientation_->GetSelectedIndex() == 0u
           ? BoxLayout::Orientation::kHorizontal

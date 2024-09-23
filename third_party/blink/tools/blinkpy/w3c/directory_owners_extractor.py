@@ -30,7 +30,6 @@ BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 class WPTDirMetadata(NamedTuple):
     team_email: Optional[str] = None
-    monorail_component: Optional[str] = None
     should_notify: bool = False
     buganizer_public_component: Optional[str] = None
 
@@ -92,7 +91,7 @@ class DirectoryOwnersExtractor:
         """Find the first enclosing file for a given path.
 
         Starting from the given path, walk up the directory tree until the first
-        file with the given name is found or web_tests/external is reached.
+        file with the given name is found or web_tests is reached.
 
         Args:
             start_path: A relative path from the root of the repository, or an
@@ -104,12 +103,11 @@ class DirectoryOwnersExtractor:
         """
         abs_start_path = (start_path if self.filesystem.isabs(start_path) else
                           self.finder.path_from_chromium_base(start_path))
-        directory = (abs_start_path if self.filesystem.isdir(abs_start_path)
-                     else self.filesystem.dirname(abs_start_path))
-        external_root = self.finder.path_from_web_tests('external')
-        if not directory.startswith(external_root):
+        directory = (self.filesystem.normpath(abs_start_path)
+                     if self.filesystem.isdir(abs_start_path) else
+                     self.filesystem.dirname(abs_start_path))
+        if not directory.startswith(self.finder.web_tests_dir()):
             return None
-        # Stop at web_tests, which is the parent of external_root.
         while directory != self.finder.web_tests_dir():
             maybe_file = self.filesystem.join(directory, filename)
             if self.filesystem.isfile(
@@ -146,16 +144,15 @@ class DirectoryOwnersExtractor:
 
         The output of `dirmd` in JSON format looks like:
             {
-                "dirs":{
-                    "tools/binary_size/libsupersize/testdata":{
-                        "monorail":{
-                            "project":"chromium",
-                            "component":"Blink>Internal"
+                "dirs": {
+                    "tools/binary_size/libsupersize/testdata": {
+                        "teamEmail": "team@chromium.org",
+                        "os": "LINUX",
+                        "wpt": {
+                            "notify": "YES"
                         },
-                        "teamEmail":"team@chromium.org",
-                        "os":"LINUX",
-                        "wpt":{
-                            "notify":"YES"
+                        "buganizerPublic": {
+                            "componentId": "12345"
                         }
                     }
                 }
@@ -191,6 +188,5 @@ class DirectoryOwnersExtractor:
         # 'NO'.
         return WPTDirMetadata(
             data.get('teamEmail'),
-            data.get('monorail', {}).get('component'),
             data.get('wpt', {}).get('notify') != 'NO',
             data.get('buganizerPublic', {}).get('componentId'))

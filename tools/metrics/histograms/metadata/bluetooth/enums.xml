@@ -60,6 +60,19 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Authentication canceled"/>
   <int value="9" label="Authentication rejected"/>
   <int value="10" label="Connection in progress"/>
+  <int value="11" label="Device not found"/>
+  <int value="12" label="Bluetooth disabled"/>
+  <int value="13" label="Device not ready"/>
+  <int value="14" label="Already connected"/>
+  <int value="15" label="Device already exists"/>
+  <int value="16" label="Invalid args"/>
+  <int value="17" label="Non-auth timeout"/>
+  <int value="18" label="No memory"/>
+  <int value="19" label="JNI environment error"/>
+  <int value="20" label="JNI thread attach error"/>
+  <int value="21" label="Wakelock error"/>
+  <int value="22" label="Unexpected state"/>
+  <int value="23" label="Socket error"/>
 </enum>
 
 <enum name="BluetoothConnectToServiceError">
@@ -84,6 +97,13 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Not Connected"/>
   <int value="12" label="Does Not Exist"/>
   <int value="13" label="Invalid Arguments"/>
+  <int value="14" label="Non-authorization Timeout"/>
+  <int value="15" label="No memory"/>
+  <int value="16" label="JNI environment error"/>
+  <int value="17" label="JNI thread attach error"/>
+  <int value="18" label="Wakelock error"/>
+  <int value="19" label="Unexpected state"/>
+  <int value="20" label="Socket error"/>
 </enum>
 
 <enum name="BluetoothDeviceConnectToServiceFailureReason">
@@ -258,7 +278,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Handshake started"/>
   <int value="1" label="GATT initialized successfully"/>
   <int value="2"
-      label="Recieved response bytes from Key-based pairing characteristic"/>
+      label="Received response bytes from Key-based pairing characteristic"/>
   <int value="3" label="Handshake completed successfully"/>
 </enum>
 
@@ -336,6 +356,7 @@ chromium-metrics-reviews@google.com.
       label="PocketLab 1; f000aa21-0451-4000-b000-000000000000"/>
   <int value="89070880" label="blood_pressure_measurement"/>
   <int value="102699400" label="cycling_power_feature"/>
+  <int value="107102441" label="Ozobot; 8903136c-5f13-4548-a885-c58779136703"/>
   <int value="107355463"
       label="konashi analogRead2; 229b300a-03fb-40da-98a7-b0def65c2d4b"/>
   <int value="107684477"
@@ -374,6 +395,8 @@ chromium-metrics-reviews@google.com.
   <int value="289588334" label="supported_unread_alert_category"/>
   <int value="294481931"
       label="Wahoo Kickr trainer; a026e005-0a7d-4ab3-97fa-f1500f9feb8b"/>
+  <int value="295368142"
+      label="MakeWonder; af230003-879d-6186-1f49-deca0e85d9c1"/>
   <int value="296670902" label="heart_rate_control_point"/>
   <int value="298186521" label="alert_category_id"/>
   <int value="305375377"
@@ -383,6 +406,8 @@ chromium-metrics-reviews@google.com.
   <int value="312578485" label="navigation"/>
   <int value="314022771"
       label="Remote Lego; 8d8ba32b-96be-4590-910b-c756c5222c9f"/>
+  <int value="317168450"
+      label="MakeWonder; af230005-879d-6186-1f49-deca0e85d9c1"/>
   <int value="318124766"
       label="Remote Lego; fa10e4de-259e-4d23-9f59-45a9c66802ca"/>
   <int value="333947401" label="temperature_measurement"/>
@@ -478,6 +503,8 @@ chromium-metrics-reviews@google.com.
   <int value="675543714" label="aerobic_threshold"/>
   <int value="682327952"
       label="Parrot Drone; 9a66fa0b-0800-9191-11e4-012d1540cb8e"/>
+  <int value="683999883"
+      label="MakeWonder; af230004-879d-6186-1f49-deca0e85d9c1"/>
   <int value="685669143"
       label="Parrot Drone; 9a66fa0c-0800-9191-11e4-012d1540cb8e"/>
   <int value="689682673" label="unread_alert_status"/>
@@ -561,9 +588,13 @@ chromium-metrics-reviews@google.com.
   <int value="1002619180" label="exact_time_256"/>
   <int value="1005198408"
       label="PocketLab 1; f000aa51-0451-4000-b000-000000000000"/>
+  <int value="1009067040"
+      label="MakeWonder; af230002-879d-6186-1f49-deca0e85d9c1"/>
   <int value="1018346218"
       label="PocketLab; f000aa03-0452-4000-b000-000000000000"/>
   <int value="1025676359" label="dst_offset"/>
+  <int value="1028251829"
+      label="Studuino:bit; d79868e2-d0e5-11e8-a8d5-f2801f1b9fd1"/>
   <int value="1049176129"
       label="PocketLab (from service 11);
              f000aa15-0452-4000-b000-000000000000"/>
@@ -625,12 +656,15 @@ chromium-metrics-reviews@google.com.
   <int value="1254514264"
       label="PocketLab; f000aa05-0452-4000-b000-000000000000"/>
   <int value="1254532025" label="user_control_point"/>
+  <int value="1263339895" label="iRobot; 0c228c94-2528-4493-add5-e06ec28eafc3"/>
   <int value="1266038031" label="1266038031 (Unknown; not a 16bit UUID)"/>
   <int value="1288236137" label="hid_control_point"/>
   <int value="1293962119"
       label="PocketLab 1; f000aa61-0451-4000-b000-000000000000"/>
   <int value="1307935876"
       label="Tacx trainer; 6e40fec3-b5a3-f393-e0a9-e50e24dcca9e"/>
+  <int value="1309724763"
+      label="Studuino:bit; d79868e1-d0e5-11e8-a8d5-f2801f1b9fd1"/>
   <int value="1320278204"
       label="Eddystone Config Radio Tx Power;
              a3c87504-8ed3-4bdf-8a39-a01bebede295"/>
@@ -642,6 +676,8 @@ chromium-metrics-reviews@google.com.
   <int value="1333242790" label="longitude"/>
   <int value="1334750659"
       label="konashi i2cWrite; 229b300d-03fb-40da-98a7-b0def65c2d4b"/>
+  <int value="1334977513"
+      label="MakeWonder; af230000-879d-6186-1f49-deca0e85d9c1"/>
   <int value="1345855767"
       label="PocketLab 1; f000aa24-0451-4000-b000-000000000000"/>
   <int value="1352512695" label="1352512695 (Unknown; not a 16bit UUID)"/>
@@ -656,6 +692,8 @@ chromium-metrics-reviews@google.com.
   <int value="1378697826"
       label="PocketLab; f000aa2f-0452-4000-b000-000000000000"/>
   <int value="1399905251" label="elevation"/>
+  <int value="1403032559"
+      label="MakeWonder; af230001-879d-6186-1f49-deca0e85d9c1"/>
   <int value="1403230035"
       label="konashi analogDrive; 229b3007-03fb-40da-98a7-b0def65c2d4b"/>
   <int value="1403795440" label="time_update_control_point"/>
@@ -686,6 +724,7 @@ chromium-metrics-reviews@google.com.
   <int value="1501299347"
       label="nRF candy machine; a6c31338-6c07-453e-961a-d8a8a41bf368"/>
   <int value="1502604093" label="serial_number_string"/>
+  <int value="1508496228" label="iRobot; 0c228c94-2528-4493-add5-e06ec28eafc2"/>
   <int value="1511396316" label="ln_control_point"/>
   <int value="1511953014"
       label="Eddystone Config Capabilities;
@@ -733,6 +772,9 @@ chromium-metrics-reviews@google.com.
       label="PocketLab 1; f000aa12-0451-4000-b000-000000000000"/>
   <int value="1719495127"
       label="PocketLab; f000aa00-0452-4000-b000-000000000000"/>
+  <int value="1719789856" label="Ozobot; 6ed3de6c-5f13-4548-a885-c58779136704"/>
+  <int value="1728023292"
+      label="MakeWonder; af230006-879d-6186-1f49-deca0e85d9c1"/>
   <int value="1732815395" label="alert_level"/>
   <int value="1735563923" label="rsc_feature"/>
   <int value="1748731133" label="intermediate_blood_pressure"/>
@@ -748,6 +790,7 @@ chromium-metrics-reviews@google.com.
   <int value="1813165113" label="fat_burn_heart_rate_lower_limit"/>
   <int value="1814120610"
       label="Elgato Avea Bulb; f815e811-456c-6761-746f-4d756e696368"/>
+  <int value="1822590115" label="Ozobot; 6ed3de6c-5f13-4548-a885-c58779136703"/>
   <int value="1822663159" label="altitude"/>
   <int value="1826219951" label="measurement_interval"/>
   <int value="1834634616"
@@ -786,6 +829,7 @@ chromium-metrics-reviews@google.com.
   <int value="1974805193"
       label="PocketLab; f000aa26-0452-4000-b000-000000000000"/>
   <int value="1981651466" label="wind_chill"/>
+  <int value="1982359387" label="Ozobot; 8903136c-5f13-4548-a885-c58779136802"/>
   <int value="1984759904" label="1984759904 (Unknown; not a 16bit UUID)"/>
   <int value="1995515788"
       label="PocketLab (from service 11);
@@ -886,6 +930,7 @@ chromium-metrics-reviews@google.com.
   <int value="87242598"
       label="PocketLab 1; f000aa40-0451-4000-b000-000000000000"/>
   <int value="91953454" label="fe7b"/>
+  <int value="92111289" label="Ozobot; 8903136c-5f13-4548-a885-c58779136701"/>
   <int value="107684477"
       label="PocketLab; f000aa2d-0452-4000-b000-000000000000"/>
   <int value="108999394"
@@ -912,6 +957,8 @@ chromium-metrics-reviews@google.com.
   <int value="217781951" label="human_interface_device"/>
   <int value="219286671" label="fe04"/>
   <int value="221983129" label="fe66"/>
+  <int value="224356673"
+      label="Studuino:bit; d79868e0-d0e5-11e8-a8d5-f2801f1b9fd1"/>
   <int value="228594985" label="fe21"/>
   <int value="229725863"
       label="Juggglow; 624e957f-cb42-4cd6-bacc-84aeb898f69b"/>
@@ -946,6 +993,7 @@ chromium-metrics-reviews@google.com.
       label="Dotti; MiP Robot; 0000fff0-0000-1000-8000-00805f9b34fb"/>
   <int value="336095190" label="fe1c"/>
   <int value="337129282" label="fe73"/>
+  <int value="340923904" label="Vex; 6faa6911-9200-49a0-a353-6152c5930ec5"/>
   <int value="347254994" label="feb6"/>
   <int value="350589357" label="fe8e"/>
   <int value="353919198" label="fe41"/>
@@ -976,6 +1024,7 @@ chromium-metrics-reviews@google.com.
   <int value="499379297" label="fe0c"/>
   <int value="501361244"
       label="PocketLab; f000aa21-0452-4000-b000-000000000000"/>
+  <int value="503103264" label="Vex; 0113de02-7a5e-11e8-adc0-fa7ae01bbebc"/>
   <int value="517314925" label="fe0e"/>
   <int value="525609715"
       label="PocketLab 1; f000aa10-0451-4000-b000-000000000000"/>
@@ -1005,6 +1054,7 @@ chromium-metrics-reviews@google.com.
   <int value="603143198" label="fef5"/>
   <int value="604112254" label="fee4"/>
   <int value="612248808" label="612248808 (Unknown; not a 16bit UUID)"/>
+  <int value="615946522" label="Vex; 6faaffc0-9200-49a0-a353-6152c5930ec5"/>
   <int value="617434027" label="fe59"/>
   <int value="621358948" label="fec7"/>
   <int value="626013607" label="FIDO authentication service (fffd)"/>
@@ -1049,6 +1099,8 @@ chromium-metrics-reviews@google.com.
   <int value="784175223"
       label="PocketLab; f000aa39-0452-4000-b000-000000000000"/>
   <int value="786171562" label="fe0a"/>
+  <int value="795739129"
+      label="MakeWonder; af237777-879d-6186-1f49-deca0e85d9c1"/>
   <int value="803680658" label="fea3"/>
   <int value="805645044" label="glucose"/>
   <int value="806223105"
@@ -1067,6 +1119,7 @@ chromium-metrics-reviews@google.com.
       label="LEGO Hub Service; 00001623-1212-efde-1623-785feabcd123"/>
   <int value="876407493" label="location_and_navigation"/>
   <int value="878416856" label="fe85"/>
+  <int value="878661544" label="fd02"/>
   <int value="879242624"
       label="nRF candy machine; a6c31337-6c07-453e-961a-d8a8a41bf368"/>
   <int value="882315332" label="fe55"/>
@@ -1074,6 +1127,8 @@ chromium-metrics-reviews@google.com.
   <int value="890629650" label="running_speed_and_cadence"/>
   <int value="901700952" label="fedd"/>
   <int value="902817086" label="fea2"/>
+  <int value="910172435"
+      label="MakeWonder; af237778-879d-6186-1f49-deca0e85d9c1"/>
   <int value="918911989" label="fed1"/>
   <int value="931929648" label="Mi Band; fee0"/>
   <int value="935427983" label="fed7"/>
@@ -1094,6 +1149,7 @@ chromium-metrics-reviews@google.com.
   <int value="993332700"
       label="micro:bit Temperature; e95d6100-251d-470a-a062-fa1922dfa9a8"/>
   <int value="1001310815" label="fe75"/>
+  <int value="1008776361" label="Vex; 6faa5911-9200-49a0-a353-6152c5930ec5"/>
   <int value="1018346218"
       label="PocketLab; f000aa03-0452-4000-b000-000000000000"/>
   <int value="1024550252" label="feda"/>
@@ -1129,6 +1185,7 @@ chromium-metrics-reviews@google.com.
   <int value="1134418737" label="fed9"/>
   <int value="1146291045" label="fe2e"/>
   <int value="1155522736" label="fea0"/>
+  <int value="1179359167" label="Ozobot; 6ed3de6c-5f13-4548-a885-c58779136701"/>
   <int value="1181418959" label="feca"/>
   <int value="1185484517" label="fe02"/>
   <int value="1188875912" label="phone_alert_status"/>
@@ -1324,6 +1381,7 @@ chromium-metrics-reviews@google.com.
   <int value="2021054861"
       label="Tacx trainer; 6e40fec1-b5a3-f393-e0a9-e50e24dcca9e"/>
   <int value="2022676622" label="fe35"/>
+  <int value="2031496953" label="Ozobot; 8903136c-5f13-4548-a885-c58779136801"/>
   <int value="2051635436" label="fe50"/>
   <int value="2055825405" label="fedc"/>
   <int value="2058080782" label="fecc"/>
@@ -1358,6 +1416,21 @@ chromium-metrics-reviews@google.com.
   <int value="2136716957" label="fe69"/>
 </enum>
 
+<enum name="HidWarningDialogDisabledBehavior">
+  <int value="0" label="Warning dialog shown"/>
+  <int value="1" label="Warning dialog not shown"/>
+</enum>
+
+<enum name="HidWarningDialogSource">
+  <int value="0" label="Warning dialog triggered from OS Settings"/>
+  <int value="1" label="Warning dialog triggered from Quick Settings"/>
+</enum>
+
+<enum name="HidWarningUserAction">
+  <int value="0" label="Keep Bluetooth on"/>
+  <int value="1" label="Turn off Bluetooth"/>
+</enum>
+
 <enum name="SetNicknameResult">
   <int value="0" label="Invalid nickname format"/>
   <int value="1" label="Device not found"/>
@@ -1382,6 +1455,13 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Not Connected"/>
   <int value="14" label="Does Not Exist"/>
   <int value="15" label="Invalid Arguments"/>
+  <int value="16" label="Non-auth Timeout"/>
+  <int value="17" label="No memory"/>
+  <int value="18" label="JNI environment error"/>
+  <int value="19" label="JNI thread attach error"/>
+  <int value="20" label="Wakelock error"/>
+  <int value="21" label="Unexpected state"/>
+  <int value="22" label="Socket error"/>
 </enum>
 
 <enum name="WebBluetoothGATTOperationOutcome">

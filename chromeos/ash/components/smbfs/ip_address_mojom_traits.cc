@@ -19,7 +19,7 @@ bool StructTraits<smbfs::mojom::IPAddressDataView, net::IPAddress>::Read(
     return false;
   }
 
-  *out = net::IPAddress(bytes.data(), bytes.size());
+  *out = net::IPAddress(bytes);
   return true;
 }
 

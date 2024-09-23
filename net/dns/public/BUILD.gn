@@ -37,6 +37,7 @@ source_set("public") {
     "resolve_error_info.cc",
     "resolve_error_info.h",
     "secure_dns_mode.h",
+    "secure_dns_policy.cc",
     "secure_dns_policy.h",
     "util.cc",
     "util.h",

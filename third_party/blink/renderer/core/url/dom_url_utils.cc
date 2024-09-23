@@ -60,10 +60,10 @@ void DOMURLUtils::setPassword(const String& value) {
 }
 
 void DOMURLUtils::setHost(const String& value) {
-  if (value.empty())
-    return;
-
   KURL kurl = Url();
+  if (value.empty() && !kurl.CanRemoveHost()) {
+    return;
+  }
   if (!kurl.CanSetHostOrPort())
     return;
 
@@ -73,17 +73,10 @@ void DOMURLUtils::setHost(const String& value) {
 }
 
 void DOMURLUtils::setHostname(const String& value) {
-  // TODO(crbug.com/40063064): Allow setting an empty host for some non-special
-  // URLs.
-  //
-  // For reference, a standard compliant behavior is:
-  // > const url = new URL("git://h/")
-  // > url.host = "";
-  // > assertEquals(url.href, "git:///");
-  if (value.empty())
-    return;
-
   KURL kurl = Url();
+  if (value.empty() && !kurl.CanRemoveHost()) {
+    return;
+  }
   if (!kurl.CanSetHostOrPort())
     return;
 
@@ -94,8 +87,9 @@ void DOMURLUtils::setHostname(const String& value) {
 
 void DOMURLUtils::setPort(const String& value) {
   KURL kurl = Url();
-  if (!kurl.CanSetHostOrPort())
+  if (!kurl.CanSetHostOrPort()) {
     return;
+  }
   if (!value.empty()) {
     kurl.SetPort(value);
   } else {

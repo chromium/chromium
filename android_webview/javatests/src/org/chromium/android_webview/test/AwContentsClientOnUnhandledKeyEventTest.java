@@ -17,9 +17,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -103,8 +103,7 @@ public class AwContentsClientOnUnhandledKeyEventTest extends AwParameterizedTest
     }
 
     private boolean dispatchKeyEvent(final KeyEvent event) throws Throwable {
-        return TestThreadUtils.runOnUiThreadBlocking(
-                () -> mTestContainerView.dispatchKeyEvent(event));
+        return ThreadUtils.runOnUiThreadBlocking(() -> mTestContainerView.dispatchKeyEvent(event));
     }
 
     private void dispatchDownAndUpKeyEvents(final int code) throws Throwable {

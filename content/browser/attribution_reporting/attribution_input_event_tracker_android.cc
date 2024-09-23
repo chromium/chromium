@@ -5,7 +5,9 @@
 #include "content/browser/attribution_reporting/attribution_input_event_tracker_android.h"
 
 #include <jni.h>
+#include <stdint.h>
 
+#include <optional>
 #include <tuple>
 
 #include "base/android/scoped_java_ref.h"
@@ -47,17 +49,20 @@ void AttributionInputEventTrackerAndroid::PushEvent(
     const ui::MotionEventAndroid& event) {
   most_recent_event_ =
       base::android::ScopedJavaGlobalRef<jobject>(event.GetJavaObject());
+  most_recent_event_id_ = event.GetUniqueEventId();
   most_recent_event_cache_time_ = base::TimeTicks::Now();
 }
 
-base::android::ScopedJavaGlobalRef<jobject>
+AttributionInputEventTrackerAndroid::InputEvent
 AttributionInputEventTrackerAndroid::GetMostRecentEvent() {
   if (most_recent_event_cache_time_.is_null() ||
       base::TimeTicks::Now() - most_recent_event_cache_time_ > kEventExpiry) {
     most_recent_event_.Reset();
+    most_recent_event_id_.reset();
   }
 
-  return most_recent_event_;
+  return AttributionInputEventTrackerAndroid::InputEvent(most_recent_event_id_,
+                                                         most_recent_event_);
 }
 
 void AttributionInputEventTrackerAndroid::RemoveObserverForTesting(
@@ -68,5 +73,12 @@ void AttributionInputEventTrackerAndroid::RemoveObserverForTesting(
   DCHECK(event_forwarder);
   event_forwarder->RemoveObserver(this);
 }
+
+AttributionInputEventTrackerAndroid::InputEvent::InputEvent(
+    std::optional<uint32_t> id,
+    base::android::ScopedJavaGlobalRef<jobject> event)
+    : id(id), event(std::move(event)) {}
+
+AttributionInputEventTrackerAndroid::InputEvent::~InputEvent() = default;
 
 }  // namespace content

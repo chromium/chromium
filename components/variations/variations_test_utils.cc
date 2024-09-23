@@ -7,13 +7,17 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/active_field_trials.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
+#include "components/variations/hashing.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/client_variations.pb.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -320,10 +324,12 @@ MockEntropyProviders::MockEntropyProviders(
     uint32_t low_entropy_domain)
     : EntropyProviders(results.high_entropy.has_value() ? "client_id" : "",
                        {0, low_entropy_domain},
-                       // Use a non-empty value for test coverage.
-                       "limited_entropy_randomization_source"),
+                       results.limited_entropy.has_value()
+                           ? "limited_entropy_randomization_source"
+                           : std::string_view()),
       low_provider_(results.low_entropy),
-      high_provider_(results.high_entropy.value_or(0)) {}
+      high_provider_(results.high_entropy.value_or(0)),
+      limited_provider_(results.limited_entropy.value_or(0)) {}
 
 MockEntropyProviders::~MockEntropyProviders() = default;
 
@@ -338,6 +344,44 @@ const base::FieldTrial::EntropyProvider& MockEntropyProviders::default_entropy()
     return high_provider_;
   }
   return low_provider_;
+}
+
+const base::FieldTrial::EntropyProvider& MockEntropyProviders::limited_entropy()
+    const {
+  CHECK(has_limited_entropy());
+  return limited_provider_;
+}
+
+std::string GZipAndB64EncodeToHexString(const VariationsSeed& seed) {
+  auto serialized = seed.SerializeAsString();
+  std::string compressed;
+  compression::GzipCompress(serialized, &compressed);
+  return base::Base64Encode(compressed);
+}
+
+bool ContainsTrialName(const std::vector<ActiveGroupId>& active_group_ids,
+                       std::string_view trial_name) {
+  auto hashed_name = HashName(trial_name);
+  for (const auto& trial : active_group_ids) {
+    if (trial.name == hashed_name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ContainsTrialAndGroupName(
+    const std::vector<ActiveGroupId>& active_group_ids,
+    std::string_view trial_name,
+    std::string_view group_name) {
+  auto hashed_trial_name = HashName(trial_name);
+  auto hashed_group_name = HashName(group_name);
+  for (const auto& trial : active_group_ids) {
+    if (trial.name == hashed_trial_name && trial.group == hashed_group_name) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace variations

@@ -17,11 +17,9 @@
 #include "base/time/time.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/net/cast_transport.h"
-#include "media/cast/net/rtcp/rtcp_defines.h"
 #include "media/cast/sender/frame_sender.h"
 #include "media/cast/sender/video_bitrate_suggester.h"
-#include "third_party/openscreen/src/cast/streaming/sender.h"
+#include "third_party/openscreen/src/cast/streaming/public/sender.h"
 
 namespace media::cast {
 
@@ -34,6 +32,14 @@ struct SenderEncodedFrame;
 //
 // For more information, see the Cast Streaming README.md located at:
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/openscreen/src/cast/streaming/README.md
+//
+// NOTE: This class mostly exists to wrap an openscreen::cast::Sender, implement
+// frame dropping logic, and support type translation between Chrome and Open
+// Screen.  See if it can be removed by migrating functionality into
+// openscreen::cast::Sender.
+//
+// TODO(issues.chromium.org/329781397): Remove unnecessary wrapper objects in
+// Chrome's implementation of the Cast sender.
 class OpenscreenFrameSender : public FrameSender,
                               openscreen::cast::Sender::Observer {
  public:
@@ -68,12 +74,6 @@ class OpenscreenFrameSender : public FrameSender,
   FrameId LastAckedFrameId() const override;
 
  private:
-  // TODO(https://crbug.com/1318499): these should be removed from the
-  // FrameSender API.
-  void OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) override;
-  void OnReceivedPli() override;
-  void OnMeasuredRoundTripTime(base::TimeDelta rtt) override;
-
   // openscreen::cast::Sender::Observer overrides.
   void OnFrameCanceled(openscreen::cast::FrameId frame_id) override;
   // NOTE: this is a no-op since the encoder checks if it should generate a key

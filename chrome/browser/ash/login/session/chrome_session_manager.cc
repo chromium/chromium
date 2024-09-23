@@ -12,43 +12,54 @@
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
-#include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
+#include "chrome/browser/ash/login/session/session_length_limiter.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/shimless_rma_dialog.h"
+#include "chrome/browser/ui/webui/ash/shimless_rma_dialog/shimless_rma_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/integrity/misconfigured_user_cleaner.h"
+#include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_service.h"
@@ -60,22 +71,37 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 
 namespace ash {
 
 namespace {
 
-// Starts kiosk app auto launch and shows the splash screen.
-void StartKioskSession() {
+// Starts kiosk app launch and shows the splash screen.
+void StartKioskSession(KioskAppId app, bool is_auto_launch = false) {
   // Kiosk app launcher starts with login state.
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
+  CHECK_DEREF(session_manager::SessionManager::Get())
+      .SetSessionState(session_manager::SessionState::LOGIN_PRIMARY);
 
-  ShowLoginWizard(AppLaunchSplashScreenView::kScreenId);
+  CHECK_DEREF(input_method::InputMethodManager::Get())
+      .GetActiveIMEState()
+      ->SetInputMethodLoginDefault();
+
+  // Manages its own lifetime. See ShutdownDisplayHost().
+  auto* display_host = new LoginDisplayHostWebUI();
+  display_host->StartKiosk(app, is_auto_launch);
 
   // Login screen is skipped but 'login-prompt-visible' signal is still needed.
   VLOG(1) << "Kiosk app auto launch >> login-prompt-visible";
   SessionManagerClient::Get()->EmitLoginPromptVisible();
+}
+
+void StartAutoLaunchKioskSession() {
+  auto app = KioskController::Get().GetAutoLaunchApp();
+  CHECK(app.has_value());
+
+  StartKioskSession(app.value().id(), /*is_auto_launch=*/true);
 }
 
 // Starts the login/oobe screen.
@@ -84,9 +110,7 @@ void StartLoginOobeSession() {
   ShowLoginWizard(OOBE_SCREEN_UNKNOWN);
 
   // Reset reboot after update flag when login screen is shown.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!connector->IsDeviceEnterpriseManaged()) {
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     PrefService* local_state = g_browser_process->local_state();
     local_state->ClearPref(prefs::kRebootAfterUpdate);
   }
@@ -144,20 +168,21 @@ void UpsertStubUserToAccountManager(Profile* user_profile,
 // 4. Chrome is started on dev machine i.e. not on Chrome OS device w/o
 //    login flow. In that case --login-user=[user_manager::kStubUserEmail] is
 //    added. See PreEarlyInitialization().
-void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
+void StartUserSession(user_manager::UserManager* user_manager,
+                      Profile* user_profile,
+                      const std::string& login_user_id) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
                          command_line->HasSwitch(::switches::kTestType);
 
   if (command_line->HasSwitch(switches::kLoginUser)) {
-    // TODO(https://crbug.com/977489): There's a lot of code duplication with
+    // TODO(crbug.com/41467249): There's a lot of code duplication with
     // UserSessionManager::FinalizePrepareProfile, which is (only!) run for
     // regular session starts. This needs to be refactored.
 
     // This is done in SessionManager::OnProfileCreated during normal login.
     UserSessionManager* user_session_mgr = UserSessionManager::GetInstance();
-    user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     const user_manager::User* user = user_manager->GetActiveUser();
     if (!user) {
       // This is possible if crash occured after profile removal
@@ -171,8 +196,8 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     // session resources have been loaded.
     if (demo_session && demo_session->started() && demo_session->components() &&
         !demo_session->components()->resources_component_loaded()) {
-      demo_session->EnsureResourcesLoaded(
-          base::BindOnce(&StartUserSession, user_profile, login_user_id));
+      demo_session->EnsureResourcesLoaded(base::BindOnce(
+          &StartUserSession, user_manager, user_profile, login_user_id));
       LOG(WARNING) << "Delay demo user session start until demo "
                    << "resources are loaded";
       return;
@@ -190,7 +215,7 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
               &UpsertStubUserToAccountManager, user_profile, user));
     }
 
-    user_session_mgr->NotifyUserProfileLoaded(user_profile, user);
+    user_session_mgr->OnUserProfileLoaded(user_profile, user);
 
     // This call will set session state to SESSION_STATE_ACTIVE (same one).
     session_manager::SessionManager::Get()->SessionStarted();
@@ -199,6 +224,11 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
     // First user has been already marked as logged in and active in
     // PreProfileInit(). Restore sessions for other users in the background.
     user_session_mgr->RestoreActiveSessions();
+
+    // Chrome restart with existing user sessions and the last active user
+    // profile is loaded. Notify ash to signal post login work done at this
+    // stage for chrome restart.
+    ash::Shell::Get()->login_unlock_throughput_recorder()->OnAshRestart();
   }
 
   if (!is_running_test) {
@@ -215,12 +245,18 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
   }
 
   if (base::FeatureList::IsEnabled(features::kEolWarningNotifications) &&
-      !user_profile->GetProfilePolicyConnector()->IsManaged())
+      !user_profile->GetProfilePolicyConnector()->IsManaged()) {
     UserSessionManager::GetInstance()->CheckEolInfo(user_profile);
+  }
 
   UserSessionManager::GetInstance()->ShowNotificationsIfNeeded(user_profile);
   UserSessionManager::GetInstance()->PerformPostBrowserLaunchOOBEActions(
       user_profile);
+
+  // If we have recently restarted in-session after a chrome crash, we need
+  // to initialize `AuthHub` in in-session mode.
+  // See documentation in `auth_hub.h` for more details.
+  AuthHub::Get()->InitializeForMode(AuthHubMode::kInSession);
 }
 
 void LaunchShimlessRma() {
@@ -272,11 +308,12 @@ void OnRmaIsRequiredResponse() {
   }
 }
 
-bool MaybeStartArcVmDataMigration(Profile* profile) {
+bool MaybeStartArcVmDataMigration(user_manager::UserManager* user_manager,
+                                  Profile* profile) {
   // Migration should be performed only when the session is restarted with the
   // primary user.
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && user_manager::UserManager::Get()->GetPrimaryUser() == user) {
+  if (user && user_manager->GetPrimaryUser() == user) {
     arc::ArcVmDataMigrationStatus data_migration_status =
         arc::GetArcVmDataMigrationStatus(profile->GetPrefs());
     if (data_migration_status == arc::ArcVmDataMigrationStatus::kConfirmed ||
@@ -286,6 +323,37 @@ bool MaybeStartArcVmDataMigration(Profile* profile) {
     }
   }
   return false;
+}
+
+// NOTE: This has to be called before profile is initialized - so it is set up
+// when extension are loaded during profile initialization.
+void InitFeaturesSessionType(const user_manager::User* user) {
+  // Kiosk session should be set as part of kiosk user session initialization
+  // in normal circumstances (to be able to properly determine whether kiosk
+  // was auto-launched); in case of user session restore, feature session
+  // type has be set before kiosk app controller takes over, as at that point
+  // kiosk app profile would already be initialized - feature session type
+  // should be set before that.
+  if (user->IsKioskType()) {
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kLoginUser)) {
+      // For kiosk session crash recovery, feature session type has be set
+      // before kiosk app controller takes over, as at that point iosk app
+      // profile would already be initialized - feature session type
+      // should be set before that.
+      bool auto_launched = base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAppAutoLaunched);
+      extensions::SetCurrentFeatureSessionType(
+          auto_launched
+              ? extensions::mojom::FeatureSessionType::kAutolaunchedKiosk
+              : extensions::mojom::FeatureSessionType::kKiosk);
+    }
+    return;
+  }
+
+  extensions::SetCurrentFeatureSessionType(
+      user->HasGaiaAccount() ? extensions::mojom::FeatureSessionType::kRegular
+                             : extensions::mojom::FeatureSessionType::kUnknown);
 }
 
 }  // namespace
@@ -300,14 +368,32 @@ ChromeSessionManager::~ChromeSessionManager() {
   RemoveObserver(user_session_initializer_.get());
 }
 
+// static
+void ChromeSessionManager::RegisterPrefs(PrefRegistrySimple* registry) {
+  SessionLengthLimiter::RegisterPrefs(registry);
+  enterprise_user_session_metrics::RegisterPrefs(registry);
+}
+
+void ChromeSessionManager::OnUserManagerCreated(
+    user_manager::UserManager* user_manager) {
+  user_manager_ = user_manager;
+  user_manager_observation_.Observe(user_manager_);
+
+  // Record the stored session length for enrolled device.
+  if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    enterprise_user_session_metrics::RecordStoredSessionLength();
+  }
+}
+
 void ChromeSessionManager::Initialize(
     const base::CommandLine& parsed_command_line,
     Profile* profile,
     bool is_running_test) {
+  auto& local_state = CHECK_DEREF(g_browser_process->local_state());
   // If a forced powerwash was triggered and no confirmation from the user is
   // necessary, we trigger the device wipe here before the user can log in again
   // and return immediately because there is no need to show the login screen.
-  if (g_browser_process->local_state()->GetBoolean(prefs::kForceFactoryReset)) {
+  if (local_state.GetBoolean(prefs::kForceFactoryReset)) {
     SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
     return;
   }
@@ -329,7 +415,7 @@ void ChromeSessionManager::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(arc::kEnableArcVmDataMigration) &&
-      MaybeStartArcVmDataMigration(profile)) {
+      MaybeStartArcVmDataMigration(user_manager_, profile)) {
     return;
   }
 
@@ -360,30 +446,45 @@ void ChromeSessionManager::Initialize(
 
   const user_manager::CryptohomeId cryptohome_id(
       parsed_command_line.GetSwitchValueASCII(switches::kLoginUser));
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   const AccountId login_account_id(
       known_user.GetAccountIdByCryptohomeId(cryptohome_id));
 
   KioskCryptohomeRemover::RemoveObsoleteCryptohomes();
 
-  if (ShouldAutoLaunchKioskApp(parsed_command_line,
-                               g_browser_process->local_state())) {
+  if (ShouldOneTimeAutoLaunchKioskApp(parsed_command_line, local_state)) {
+    VLOG(1) << "One time auto launching kiosk app";
+    KioskAppId app_id = ExtractOneTimeAutoLaunchKioskAppId(local_state);
+    StartKioskSession(app_id);
+  } else if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state)) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
-    StartKioskSession();
-    return;
-  }
-
-  if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
+    StartAutoLaunchKioskSession();
+  } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
-    if (is_running_test && !force_login_screen_in_test)
+    if (is_running_test && !force_login_screen_in_test) {
       return;
+    }
     VLOG(1) << "Starting Chrome with login/oobe screen.";
     StartLoginOobeSession();
-    return;
+  } else {
+    VLOG(1) << "Starting Chrome with a user session.";
+    StartUserSession(user_manager_, profile, login_account_id.GetUserEmail());
   }
+}
 
-  VLOG(1) << "Starting Chrome with a user session.";
-  StartUserSession(profile, login_account_id.GetUserEmail());
+void ChromeSessionManager::Shutdown() {
+  if (session_length_limiter_ &&
+      ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    // Store session length before tearing down `session_length_limiter_` for
+    // enrolled devices so that it can be reported on the next run.
+    const base::TimeDelta session_length =
+        session_length_limiter_->GetSessionDuration();
+    if (!session_length.is_zero()) {
+      enterprise_user_session_metrics::StoreSessionLength(
+          user_manager_->GetActiveUser()->GetType(), session_length);
+    }
+  }
+  session_length_limiter_.reset();
 }
 
 void ChromeSessionManager::SessionStarted() {
@@ -391,9 +492,7 @@ void ChromeSessionManager::SessionStarted() {
   SetSessionState(session_manager::SessionState::ACTIVE);
 
   // Notifies UserManager so that it can update login state.
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager)
-    user_manager->OnSessionStarted();
+  user_manager_->OnSessionStarted();
 }
 
 void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
@@ -404,7 +503,32 @@ void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,
   btl->AddLoginTimeMarker("UserLoggedIn-Start", false);
   session_manager::SessionManager::NotifyUserLoggedIn(
       user_account_id, user_id_hash, browser_restart, is_child);
+
+  if (user_manager_->GetLoggedInUsers().size() == 1) {
+    InitFeaturesSessionType(user_manager_->GetPrimaryUser());
+  }
+
+  // Initialize the session length limiter and start it only if
+  // session limit is defined by the policy.
+  session_length_limiter_ = std::make_unique<SessionLengthLimiter>(
+      /*delegate=*/nullptr, browser_restart);
+
   btl->AddLoginTimeMarker("UserLoggedIn-End", false);
+}
+
+void ChromeSessionManager::OnUsersSignInConstraintsChanged() {
+  const user_manager::UserList& logged_in_users =
+      user_manager_->GetLoggedInUsers();
+  for (user_manager::User* user : logged_in_users) {
+    if (user->IsDeviceLocalAccount()) {
+      continue;
+    }
+    if (!user_manager_->IsUserAllowed(*user)) {
+      SYSLOG(ERROR)
+          << "The current user is not allowed, terminating the session.";
+      chrome::AttemptUserExit();
+    }
+  }
 }
 
 }  // namespace ash

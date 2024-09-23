@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
@@ -30,48 +31,38 @@ enum class ParseResult {
   kMaxValue = kNotParsed
 };
 
-// Represents the intended state of features::kAutofillParsingPatternProvider.
-struct PatternProviderFeatureState {
-  // A list of all available configurations, depending on the build config.
-  static std::vector<PatternProviderFeatureState> All();
-
-  // Whether features::kAutofillParsingPatternProvider should be enabled.
-  bool enable = false;
-  // The desired value of features::kAutofillParsingPatternActiveSource.
-  const char* active_source = nullptr;
-};
-
 class FormFieldParserTestBase {
  public:
-  explicit FormFieldParserTestBase(
-      PatternProviderFeatureState pattern_provider_feature_state);
+  FormFieldParserTestBase();
   FormFieldParserTestBase(const FormFieldParserTestBase&) = delete;
   FormFieldParserTestBase& operator=(const FormFieldParserTestBase&) = delete;
   ~FormFieldParserTestBase();
 
  protected:
-  // Add a field with |control_type|, the |name|, the |label| the expected
-  // parsed type |expected_type|.
+  // Add a field with `control_type`, `name`, `label`, `placeholder`, and
+  // `max_length` that is expected to be of `expected_type`.
   void AddFormFieldData(FormControlType control_type,
-                        std::string name,
-                        std::string label,
+                        std::string_view name,
+                        std::string_view label,
+                        std::string_view placeholder,
+                        int max_length,
                         FieldType expected_type);
 
-  // Convenience wrapper for text control elements with a maximal length.
-  void AddFormFieldDataWithLength(FormControlType control_type,
-                                  std::string name,
-                                  std::string label,
-                                  int max_length,
-                                  FieldType expected_type);
+  // Add a field with `control_type`, `name`, and `label` that is expected to be
+  // of `expected_type`.
+  void AddFormFieldData(FormControlType control_type,
+                        std::string_view name,
+                        std::string_view label,
+                        FieldType expected_type);
 
   // Convenience wrapper for text control elements.
-  void AddTextFormFieldData(std::string name,
-                            std::string label,
+  void AddTextFormFieldData(std::string_view name,
+                            std::string_view label,
                             FieldType expected_type);
 
   // Convenience wrapper for 'select-one' elements.
-  void AddSelectOneFormFieldData(std::string name,
-                                 std::string label,
+  void AddSelectOneFormFieldData(std::string_view name,
+                                 std::string_view label,
                                  const std::vector<SelectOption>& options,
                                  FieldType expected_type);
 
@@ -84,7 +75,8 @@ class FormFieldParserTestBase {
   void ClassifyAndVerify(
       ParseResult parse_result = ParseResult::kParsed,
       const GeoIpCountryCode& client_country = GeoIpCountryCode(""),
-      const LanguageCode& page_language = LanguageCode(""));
+      const LanguageCode& page_language = LanguageCode(""),
+      PatternFile pattern_file = *GetActivePatternFile());
 
   // Runs multiple parsing attempts until the end of the form is reached and
   // verifies the expected types.
@@ -112,7 +104,6 @@ class FormFieldParserTestBase {
   std::map<FieldGlobalId, FieldType> expected_classifications_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   uint64_t id_counter_ = 0;
 };
 

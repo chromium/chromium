@@ -11,6 +11,10 @@ import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
 import("//build_overrides/build.gni")
 
+if (build_with_chromium) {
+  import("//base/allocator/partition_allocator/partition_alloc.gni")
+}
+
 if (enable_java_templates) {
   # Create or update the API versions cache if necessary by running a
   # functionally empty lint task. This prevents racy creation of the
@@ -19,12 +23,10 @@ if (enable_java_templates) {
     create_cache = true
   }
 
-  generate_build_config_srcjar("build_config_gen") {
-    use_final_fields = false
+  generate_build_config_srcjar("placeholder_build_config_srcjar") {
   }
 
-  generate_build_config_srcjar("build_config_for_testing_gen") {
-    use_final_fields = false
+  generate_build_config_srcjar("build_config_for_robolectric_srcjar") {
     testonly = true
   }
 
@@ -34,18 +36,23 @@ if (enable_java_templates) {
 
   java_library("build_java") {
     supports_android = true
+
+    # Required to prevent circular dependency from //tools/android/errorprone_plugin.
+    enable_errorprone = false
     srcjar_deps = [
-      ":build_config_gen",
       ":native_libraries_gen",
+      ":placeholder_build_config_srcjar",
     ]
     sources = [
       "java/src/org/chromium/build/annotations/AlwaysInline.java",
+      "java/src/org/chromium/build/annotations/AssumeNonNull.java",
       "java/src/org/chromium/build/annotations/CheckDiscard.java",
       "java/src/org/chromium/build/annotations/DoNotClassMerge.java",
       "java/src/org/chromium/build/annotations/DoNotInline.java",
       "java/src/org/chromium/build/annotations/DoNotStripLogs.java",
       "java/src/org/chromium/build/annotations/IdentifierNameString.java",
       "java/src/org/chromium/build/annotations/MockedInTests.java",
+      "java/src/org/chromium/build/annotations/ServiceImpl.java",
       "java/src/org/chromium/build/annotations/UsedByReflection.java",
     ]
 
@@ -88,6 +95,18 @@ if (enable_java_templates) {
   }
 }
 
+if (defined(sanitizer_arch)) {
+  action("generate_wrap_sh") {
+    script = "generate_wrap_sh.py"
+    outputs = [ "$target_gen_dir/$target_name/wrap.sh" ]
+    args = [
+      "--arch=$sanitizer_arch",
+      "--output",
+      rebase_path(outputs[0], root_build_dir),
+    ]
+  }
+}
+
 # TODO(go/turn-down-test-results): Remove once we turn down
 # test-results.appspot.com
 python_library("test_result_presentations_py") {
@@ -125,7 +144,8 @@ group("apk_installer_data") {
         "//tools/android/md5sum",
       ]
     }
-    data = [ "//third_party/android_build_tools/bundletool/bundletool.jar" ]
+    data =
+        [ "//third_party/android_build_tools/bundletool/cipd/bundletool.jar" ]
   }
 }
 
@@ -190,8 +210,8 @@ group("test_runner_device_support") {
     if (enable_chrome_android_internal) {
       data += [ "//clank/tools/android/avd/proto/" ]
     }
-    if (is_asan) {
-      data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
+    if (use_full_mte) {
+      data_deps += [ "//tools/android/mte:mte_device_setup" ]
     }
   }
 
@@ -222,7 +242,7 @@ python_library("resource_sizes_py") {
 # logcat.
 # Hidden behind build_with_chromium because some third party repos that use
 # //build don't pull in //third_party/android_platform.
-# TODO(crbug.com/1120190): Move stack script into //build/third_party
+# TODO(crbug.com/40145789): Move stack script into //build/third_party
 #     and enable unconditionally.
 group("stack_tools") {
   if (build_with_chromium) {

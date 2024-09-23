@@ -5,6 +5,6 @@ CREDIT_CARD_TYPE | card_cardType | Card Type |  | card_firstNameOnCard_1
 UNKNOWN_TYPE |  | Please select a card type |  | _2
 CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR | card_expirationMonth | Expiration Date* |  | card_firstNameOnCard_1
 UNKNOWN_TYPE |  | Month |  | _2
-UNKNOWN_TYPE | card_expirationYear | Expiration Date* |  | _2
+UNKNOWN_TYPE | card_expirationYear | Expiration Date* |  | -default
 UNKNOWN_TYPE |  | Year |  | _2
 CREDIT_CARD_VERIFICATION_CODE | card_cvNumber | Security Code* |  | card_firstNameOnCard_1

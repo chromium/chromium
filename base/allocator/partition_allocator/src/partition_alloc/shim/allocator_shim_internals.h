@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_INTERNALS_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_INTERNALS_H_
+#ifndef PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_INTERNALS_H_
+#define PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_INTERNALS_H_
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
 
 #if defined(__GNUC__)
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 #include <sys/cdefs.h>  // for __THROW
 #endif
 
@@ -43,11 +43,11 @@
 // impression that they can hook the allocator.
 #define SHIM_ALWAYS_EXPORT __attribute__((visibility("default"), noinline))
 
-#elif BUILDFLAG(IS_WIN)  // __GNUC__
+#elif PA_BUILDFLAG(IS_WIN)  // __GNUC__
 
 #define __THROW
 #define SHIM_ALWAYS_EXPORT __declspec(noinline)
 
 #endif  // __GNUC__
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_INTERNALS_H_
+#endif  // PARTITION_ALLOC_SHIM_ALLOCATOR_SHIM_INTERNALS_H_

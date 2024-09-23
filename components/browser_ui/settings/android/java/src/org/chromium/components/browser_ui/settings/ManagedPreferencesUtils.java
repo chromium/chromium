@@ -183,9 +183,9 @@ public class ManagedPreferencesUtils {
         // a {@link ChromeBasePreference} defines its own layout.
         // Highlighted managed disclaimers only apply to preferences managed by policy. For
         // preferences managed by a custodian, fallback to the legacy UI.
-        // TODO(crbug.com/1356748): Remove this fallback once all custom layouts for all affected
+        // TODO(crbug.com/40236420): Remove this fallback once all custom layouts for all affected
         //                          preferences include the managed disclaimer view.
-        // TODO(crbug.com/1378293): Apply highlighted managed disclaimer for preferences managed
+        // TODO(crbug.com/40243868): Apply highlighted managed disclaimer for preferences managed
         //                          by a custodian.
         if (view.findViewById(R.id.managed_disclaimer_text) != null
                 && delegate.isPreferenceControlledByPolicy(preference)) {

@@ -6,12 +6,15 @@
 #define CC_TREES_PROXY_COMMON_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/types/id_type.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/trees/begin_main_frame_trace_id.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
@@ -30,7 +33,7 @@ struct CC_EXPORT BeginMainFrameAndCommitState {
   // Bit encoding of the FrameSequenceTrackerType for active trackers
   ActiveFrameSequenceTrackers active_sequence_trackers = 0;
   bool evicted_ui_resources = false;
-  uint64_t trace_id = 0;
+  BeginMainFrameTraceId trace_id;
 };
 
 }  // namespace cc

@@ -20,7 +20,7 @@ constexpr float kFloatedWindowTabletHeightRatio = 0.8f;
 
 // The thickness of the divider when it is not being dragged.
 COMPONENT_EXPORT(CHROMEOS_UI_WM)
-constexpr int kSplitviewDividerShortSideLength = 8;
+constexpr int kSplitviewDividerShortSideLength = 6;
 
 // Extra padding for the browser window in tablet mode since the minimum size
 // returned by the browser makes the omnibox untappable in several cases.

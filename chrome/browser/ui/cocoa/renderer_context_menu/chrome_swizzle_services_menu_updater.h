@@ -17,4 +17,4 @@
 + (void)storeFilteredEntriesForTestingInArray:(NSMutableArray*)array;
 @end
 
-#endif
+#endif  // CHROME_BROWSER_UI_COCOA_RENDERER_CONTEXT_MENU_CHROME_SWIZZLE_SERVICES_MENU_UPDATER_H_

@@ -1,18 +1,4 @@
-function setup_tree(light_tree, shadow_tree) {
-  let body = document.body;
-  let old_length = body.childNodes.length;
-  body.insertAdjacentHTML("beforeend", light_tree.trim());
-  if (body.childNodes.length != old_length + 1) {
-    throw "unexpected markup";
-  }
-  let result = body.lastChild;
-  if (shadow_tree) {
-    let shadow = result.querySelector("#root").attachShadow({mode: "open"});
-    shadow.innerHTML = shadow_tree.trim();
-    return [result, shadow];
-  }
-  return result;
-}
+// META: script=dir-shadow-utils.js
 
 test(t => {
   let a = setup_tree(`
@@ -55,8 +41,7 @@ test(() => {
 }, "dir=auto changes for content insertion and removal, in and out of document");
 
 test(() => {
-  let tree, shadow;
-  [tree, shadow] = setup_tree(`
+  let [tree, shadow] = setup_tree(`
     <div>
       <div id="root">
         <span id="l">A</span>
@@ -88,8 +73,7 @@ test(() => {
 }, "dir=auto changes for slot reassignment");
 
 test(() => {
-  let tree, shadow;
-  [tree, shadow] = setup_tree(`
+  let [tree, shadow] = setup_tree(`
     <div dir=auto>
       <div id=root>
         <div id=text>A</div>
@@ -195,8 +179,7 @@ test(() => {
 }, "dynamic changes inside of non-HTML elements");
 
 test(() => {
-  let tree, shadow;
-  [tree, shadow] = setup_tree(`
+  let [tree, shadow] = setup_tree(`
     <div dir="auto">
       <div id="root">
         <element xmlns="namespace">A</element>
@@ -233,8 +216,7 @@ test(() => {
 }, "slotted non-HTML elements");
 
 test(() => {
-  let tree, shadow;
-  [tree, shadow] = setup_tree(`
+  let [tree, shadow] = setup_tree(`
     <div>
       <div id="root">
         <!-- element goes here -->
@@ -274,3 +256,190 @@ test(() => {
 
   tree.remove();
 }, "slotted non-HTML elements after dynamically assigning dir=auto, and dir attribute ignored on non-HTML elements");
+
+test(() => {
+  let e1 = setup_tree(`
+    <div dir=auto>
+      <div dir=ltr>
+        \u05D0
+      </div>
+    </div>
+  `);
+  let e2 = e1.firstElementChild;
+  assert_true(e1.matches(":dir(ltr)"), "parent is LTR before changes");
+  assert_true(e2.matches(":dir(ltr)"), "child is LTR before changes");
+  e2.removeAttribute("dir");
+  assert_false(e1.matches(":dir(ltr)"), "parent is RTL after removing dir from child");
+  assert_false(e2.matches(":dir(ltr)"), "child is RTL after removing dir from child");
+}, "dir=auto ancestor considers text in subtree after removing dir=ltr from it");
+
+test(() => {
+  let tree1, shadow1;
+  [tree1, shadow1] = setup_tree(`
+    <div>
+      <div id="root" dir="auto">
+        <div id="root2">
+          <span>A</span>
+        </div>
+      </div>
+    </div>
+  `,`
+    <slot dir="auto"></slot>
+  `);
+  let tree2 = tree1.querySelector("#root2");
+  let shadow2 = tree2.attachShadow({mode: 'open'});
+  shadow2.innerHTML = '<slot dir="auto"></slot>';
+
+  let slot1 = shadow1.querySelector("slot");
+  let slot2 = shadow2.querySelector("slot");
+  let span = tree1.querySelector("span");
+
+  // span slotted in slot2 hosted in root2 slotted in slot1
+  // span thus impacts auto-dir of two slots
+  assert_true(slot1.matches(":dir(ltr)", "outer slot initially ltr"));
+  assert_true(slot2.matches(":dir(ltr)", "inner slot initially ltr"));
+  span.innerHTML = "\u05D0";
+  assert_true(slot1.matches(":dir(rtl)", "outer slot changed to rtl"));
+  assert_true(slot2.matches(":dir(rtl)", "inner slot changed to rtl"));
+
+  tree1.remove();
+}, 'Slotted content affects multiple dir=auto slots');
+
+test(() => {
+  let [tree, shadow] = setup_tree(`
+    <div>
+      <div id="root">
+        <span>اختبر</span>
+      </div>
+    </div>
+  `, `
+    <slot dir="auto"></slot>
+  `);
+
+  let slot = shadow.querySelector("slot");
+  assert_equals(html_direction(slot), "rtl", "slot initially rtl");
+  let span = tree.querySelector("span");
+  span.remove();
+  assert_equals(html_direction(slot), "ltr", "slot is reset to ltr");
+  tree.remove();
+}, 'Removing slotted content resets direction on dir=auto slot');
+
+test(() => {
+  let [tree, shadow] = setup_tree(`
+    <div>
+      <div id=root>
+        <div>
+          <span>اختبر</span>
+        </div>
+      </div>
+    </div>
+  `,`
+    <slot dir=auto></slot>
+  `);
+
+  let slot = shadow.querySelector("slot");
+  assert_equals(html_direction(slot), "rtl", "slot initially rtl");
+  let span = tree.querySelector("span");
+  span.remove();
+  assert_equals(html_direction(slot), "ltr", "slot is reset to ltr");
+  tree.remove();
+}, 'Removing child of slotted content changes direction on dir=auto slot');
+
+test(() => {
+  let tree;
+  tree = setup_tree(`
+    <div>
+      <span>اختبر</span>
+      <p>Text</p>
+    </div>
+  `);
+  let p = tree.querySelector("p");
+  assert_true(p.matches(":dir(ltr)"), "child initially ltr");
+  tree.dir = "auto";
+  assert_true(p.matches(":dir(rtl)"), "child updated to rtl");
+  tree.remove();
+}, 'Child directionality gets updated when dir=auto is set on parent');
+
+test(() => {
+  let [tree, shadow] = setup_tree(`
+    <div>
+      <div id=root>
+        <input value="اختبر">
+      </div>
+    </div>
+  `,`
+    <slot dir=auto></slot>
+  `);
+  let slot = shadow.querySelector("slot");
+  assert_equals(html_direction(slot), "ltr");
+  tree.remove();
+}, 'dir=auto slot is not affected by text in value of input element children');
+
+test(() => {
+  let tree = setup_tree(`
+    <div>
+      <input dir="auto" value="اختبر">
+    </div>
+  `);
+  let inp = tree.querySelector("input");
+  assert_equals(html_direction(inp), "rtl");
+  inp.type = "month";
+  assert_equals(html_direction(inp), "ltr");
+  tree.remove();
+}, 'input direction changes if it stops being auto-directionality form-associated');
+
+test(() => {
+  let [tree, shadow] = setup_tree(`
+    <div>
+      <div id=root dir=ltr>
+        <span>اختبر</span>
+      </div>
+    </div>
+  `,`
+    <div dir=auto id=container>
+      <slot></slot>
+    </div>
+  `);
+  let div = shadow.querySelector("#container");
+  let host = tree.querySelector("#root");
+  assert_equals(html_direction(div), 'ltr', 'ltr inherited from host despite rtl content');
+  // set rtl on host directly, test it is propagated through slots
+  host.dir = "rtl";
+  assert_equals(html_direction(div), 'rtl', 'host dir change propagated via slot');
+  host.dir = "";
+  assert_equals(html_direction(host), 'ltr', 'host dir reset to ltr');
+  assert_equals(html_direction(div), 'ltr', 'host dir change propagated via slot');
+  // host inherits rtl from parent, test it is still propagated through slots
+  tree.dir = "rtl";
+  assert_equals(html_direction(host), 'rtl', 'host inherited rtl from parent');
+  assert_equals(html_direction(div), 'rtl', 'host dir change propagated via slot');
+  tree.remove();
+}, 'slot provides updated directionality from host to a dir=auto container');
+
+test(() => {
+  let input = setup_tree(`<input type="text">`);
+  assert_equals(html_direction(input), "ltr", "initial direction of input");
+  input.value = "\u05D0";
+  assert_equals(html_direction(input), "ltr", "direction of input with RTL contents");
+  input.dir = "auto";
+  assert_equals(html_direction(input), "rtl", "direction of input dir=auto with RTL contents");
+  input.value = "a";
+  assert_equals(html_direction(input), "ltr", "direction of input dir=auto with LTR contents");
+  input.dir = "rtl";
+  assert_equals(html_direction(input), "rtl", "direction of input dir=rtl with LTR contents");
+  input.value = "ab";
+  assert_equals(html_direction(input), "rtl", "direction of input dir=rtl with LTR contents (2)");
+  input.value = "\u05D0";
+  assert_equals(html_direction(input), "rtl", "direction of input dir=rtl with RTL contents");
+
+  let textarea = setup_tree(`<textarea dir="auto"></textarea>`);
+  assert_equals(html_direction(textarea), "ltr", "direction of textarea dir=auto with empty contents");
+  textarea.value = "a";
+  assert_equals(html_direction(textarea), "ltr", "direction of textarea dir=auto with LTR contents");
+  textarea.value = "\u05D0";
+  assert_equals(html_direction(textarea), "rtl", "direction of textarea dir=auto with RTL contents");
+  textarea.dir = "rtl";
+  assert_equals(html_direction(textarea), "rtl", "direction of textarea dir=rtl with RTL contents");
+  textarea.value = "a";
+  assert_equals(html_direction(textarea), "rtl", "direction of textarea dir=rtl with LTR contents");
+}, 'text input and textarea value changes should only be reflected in :dir() when dir=auto (value changes)');

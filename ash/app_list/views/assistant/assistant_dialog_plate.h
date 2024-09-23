@@ -58,7 +58,8 @@ class ASH_EXPORT AssistantDialogPlate
   ~AssistantDialogPlate() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void RequestFocus() override;
   void OnThemeChanged() override;
 

@@ -43,25 +43,25 @@ class FaviconDriverObserver {
 
   // Called when either:
   // 1) Chrome determines the best icon for the page for
-  //    |notification_icon_type|.
+  //    `notification_icon_type`.
   //    Not called if the site does not provide a custom icon and the best icon
   //    for the page is the default one provided by Chrome.
   // 2) The site changes its icon via Javascript.
-  // |icon_url_changed| is false if OnFaviconAvailable() was already called for
-  // |notification_icon_type| for the current page URL and |icon_url| is the
-  // same as for the previous notification for |notification_icon_type|.
+  // `icon_url_changed` is false if OnFaviconAvailable() was already called for
+  // `notification_icon_type` for the current page URL and `icon_url` is the
+  // same as for the previous notification for `notification_icon_type`.
   // Example:
   // Page: www.google.com
   // Icon: www.google.com/favicon.ico
   // Data for www.google.com/favicon.ico in the database has expired.
-  // i) OnFaviconUpdated() is called with |icon_url_changed| == true to notify
+  // i) OnFaviconUpdated() is called with `icon_url_changed` == true to notify
   //    that a favicon was found in the history database.
   // ii) As the history data has expired, the icon at www.google.com/favicon.ico
   //     is redownloaded and stored into the database. OnFaviconUpdated() is
-  //     called with |icon_url_changed| == false to notify that the icon in the
+  //     called with `icon_url_changed` == false to notify that the icon in the
   //     history database MAY have changed visually.
   //
-  // |icon_url| is empty for the cases where there is no actual icon (e.g. the
+  // `icon_url` is empty for the cases where there is no actual icon (e.g. the
   // page removed the favicon via Javascript).
   virtual void OnFaviconUpdated(FaviconDriver* favicon_driver,
                                 NotificationIconType notification_icon_type,

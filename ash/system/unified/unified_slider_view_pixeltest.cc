@@ -77,7 +77,7 @@ TEST_F(UnifiedSliderViewPixelTest, DefaultSlider) {
       /*revision_number=*/0, widget_.get()));
 }
 
-// TODO(crbug.com/1486954): Flaky.
+// TODO(crbug.com/40283113): Flaky.
 TEST_F(UnifiedSliderViewPixelTest, DISABLED_DefaultSliderMuted) {
   // Creates a `UnifiedVolumeView` that's on the main page. This slider is in
   // `QuickSettingsSlider::Style::kDefault` style.
@@ -104,7 +104,8 @@ TEST_F(UnifiedSliderViewPixelTest, RadioActiveSlider) {
   // the representative of the style `QuickSettingsSlider::Style::kRadioActive`.
   auto radio_active_slider = std::make_unique<UnifiedVolumeView>(
       unified_volume_slider_controller_.get(), kFakeDeviceId,
-      /*is_active_output_node=*/true);
+      /*is_active_output_node=*/true,
+      /*inside_padding=*/kRadioSliderViewPadding);
   widget_->SetContentsView(radio_active_slider.get());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "radio_active_slider",
@@ -122,7 +123,8 @@ TEST_F(UnifiedSliderViewPixelTest, DISABLED_RadioActiveSliderMuted) {
   // in the `QuickSettingsSlider::Style::kRadioActive` style.
   auto radio_active_slider = std::make_unique<UnifiedVolumeView>(
       unified_volume_slider_controller_.get(), kFakeDeviceId,
-      /*is_active_output_node=*/true);
+      /*is_active_output_node=*/true,
+      /*inside_padding=*/kRadioSliderViewPadding);
   widget_->SetContentsView(radio_active_slider.get());
   unified_volume_slider_controller_->SliderButtonPressed();
 
@@ -144,7 +146,8 @@ TEST_F(UnifiedSliderViewPixelTest, RadioInactiveSlider) {
   // `QuickSettingsSlider::Style::kRadioInactive`.
   auto radio_inactive_slider = std::make_unique<UnifiedVolumeView>(
       unified_volume_slider_controller_.get(), kFakeDeviceId,
-      /*is_active_output_node=*/false);
+      /*is_active_output_node=*/false,
+      /*inside_padding=*/kRadioSliderViewPadding);
   widget_->SetContentsView(radio_inactive_slider.get());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "radio_inactive_slider",

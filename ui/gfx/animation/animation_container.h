@@ -74,7 +74,8 @@ class ANIMATION_EXPORT AnimationContainer
   // frequently the cache locality of the vector is more important than the
   // costlier (but rarer) insertion. Profiling shows that flat_set continues to
   // perform best in these cases (up to 12x faster than std::set).
-  typedef base::flat_set<AnimationContainerElement*> Elements;
+  typedef base::flat_set<raw_ptr<AnimationContainerElement, CtnExperimental>>
+      Elements;
 
   ~AnimationContainer();
 

@@ -101,7 +101,7 @@ message ChromeCartContentProto {
   // from the database.
   bool is_removed = 7;
 
-  // TODO(crbug.com/1207197): Rename this to cart_discount.
+  // TODO(crbug.com/40181210): Rename this to cart_discount.
   // Information about current discount on the cart.
   ChromeCartDiscountProto discount_info = 8;
 

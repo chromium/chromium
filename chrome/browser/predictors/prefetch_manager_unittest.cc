@@ -112,7 +112,7 @@ PrefetchRequest CreateFontRequest(const GURL& url, const GURL& main_frame_url) {
 }  // namespace
 
 // A test fixture for the PrefetchManager.
-class PrefetchManagerTest : public testing::Test {
+class PrefetchManagerTest : public testing::TestWithParam<bool> {
  public:
   PrefetchManagerTest();
   ~PrefetchManagerTest() override = default;
@@ -123,6 +123,13 @@ class PrefetchManagerTest : public testing::Test {
  protected:
   size_t GetQueuedJobsCount() const {
     return prefetch_manager_->queued_jobs_.size();
+  }
+
+  void CheckHeaders(network::ResourceRequest& request) {
+    EXPECT_THAT(request.headers.GetHeader("Purpose"),
+                testing::Optional(std::string("prefetch")));
+    EXPECT_THAT(request.headers.GetHeader("Sec-Purpose"),
+                testing::Optional(std::string("prefetch")));
   }
 
   base::test::ScopedFeatureList features_;
@@ -142,13 +149,24 @@ PrefetchManagerTest::PrefetchManagerTest()
       prefetch_manager_(
           std::make_unique<PrefetchManager>(fake_delegate_->AsWeakPtr(),
                                             profile_.get())) {
-  features_.InitAndEnableFeature(features::kLoadingPredictorPrefetch);
+  if (GetParam()) {
+    features_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kLoadingPredictorPrefetch,
+         features::kLoadingPredictorPrefetchUseReadAndDiscardBody},
+        /*disabled_features=*/{});
+  } else {
+    features_.InitWithFeatures(
+        /*enabled_features=*/{features::kLoadingPredictorPrefetch},
+        /*disabled_features=*/{
+            features::kLoadingPredictorPrefetchUseReadAndDiscardBody});
+  }
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kLoadingPredictorAllowLocalRequestForTesting);
 }
 
 // Tests prefetching a single URL.
-TEST_F(PrefetchManagerTest, OneMainFrameUrlOnePrefetch) {
+TEST_P(PrefetchManagerTest, OneMainFrameUrlOnePrefetch) {
   GURL main_frame_url("https://abc.invalid");
   GURL subresource_url("https://xyz.invalid/script.js");
   PrefetchRequest request =
@@ -170,9 +188,7 @@ TEST_F(PrefetchManagerTest, OneMainFrameUrlOnePrefetch) {
 
         EXPECT_EQ(request.mode, network::mojom::RequestMode::kNoCors);
 
-        std::string purpose;
-        EXPECT_TRUE(request.headers.GetHeader("Purpose", &purpose));
-        EXPECT_EQ(purpose, "prefetch");
+        CheckHeaders(request);
 
         loop.Quit();
         return false;
@@ -187,7 +203,7 @@ TEST_F(PrefetchManagerTest, OneMainFrameUrlOnePrefetch) {
 }
 
 // Tests prefetching multiple URLs.
-TEST_F(PrefetchManagerTest, OneMainFrameUrlMultiplePrefetch) {
+TEST_P(PrefetchManagerTest, OneMainFrameUrlMultiplePrefetch) {
   net::test_server::EmbeddedTestServer test_server;
   std::vector<std::string> paths;
   std::vector<PrefetchRequest> requests;
@@ -258,7 +274,7 @@ TEST_F(PrefetchManagerTest, OneMainFrameUrlMultiplePrefetch) {
 }
 
 // Tests that metrics related to queueing of prefetch jobs are recorded.
-TEST_F(PrefetchManagerTest, QueueingMetricsRecorded) {
+TEST_P(PrefetchManagerTest, QueueingMetricsRecorded) {
   base::HistogramTester histogram_tester;
   net::test_server::EmbeddedTestServer test_server;
   std::vector<PrefetchRequest> requests;
@@ -291,7 +307,7 @@ TEST_F(PrefetchManagerTest, QueueingMetricsRecorded) {
 }
 
 // Tests prefetching multiple URLs for multiple main frames.
-TEST_F(PrefetchManagerTest, MultipleMainFrameUrlMultiplePrefetch) {
+TEST_P(PrefetchManagerTest, MultipleMainFrameUrlMultiplePrefetch) {
   net::test_server::EmbeddedTestServer test_server;
   std::vector<std::string> paths;
   std::vector<PrefetchRequest> requests;
@@ -382,7 +398,7 @@ TEST_F(PrefetchManagerTest, MultipleMainFrameUrlMultiplePrefetch) {
   fake_delegate_->WaitForPrefetchFinished(main_frame_url2);
 }
 
-TEST_F(PrefetchManagerTest, Stop) {
+TEST_P(PrefetchManagerTest, Stop) {
   net::test_server::EmbeddedTestServer test_server;
 
   // Set up prefetches (limit + 1 for URL1, and 1 for URL2)
@@ -470,13 +486,14 @@ TEST_F(PrefetchManagerTest, Stop) {
               UnorderedElementsAreArray({test_server.GetURL(path2)}));
 }
 
-// Flaky on Mac/Linux/CrOS only. http://crbug.com/1239235
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Flaky on Mac/Linux/CrOS/Android/Windows. http://crbug.com/1239235
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_StopAndStart DISABLED_StopAndStart
 #else
 #define MAYBE_StopAndStart StopAndStart
 #endif
-TEST_F(PrefetchManagerTest, MAYBE_StopAndStart) {
+TEST_P(PrefetchManagerTest, MAYBE_StopAndStart) {
   net::test_server::EmbeddedTestServer test_server;
 
   // Set up prefetches (limit + 1).
@@ -600,7 +617,7 @@ class ThrottlingContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
+      content::FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.emplace_back(std::make_unique<HeaderInjectingThrottle>());
@@ -609,7 +626,7 @@ class ThrottlingContentBrowserClient : public content::ContentBrowserClient {
 };
 
 // Test that prefetches go through URLLoaderThrottles.
-TEST_F(PrefetchManagerTest, Throttles) {
+TEST_P(PrefetchManagerTest, Throttles) {
   // Add a throttle which injects a header.
   ThrottlingContentBrowserClient content_browser_client;
   auto* old_content_browser_client =
@@ -639,7 +656,7 @@ TEST_F(PrefetchManagerTest, Throttles) {
 }
 
 // Tests prefetching a font URL.
-TEST_F(PrefetchManagerTest, Font) {
+TEST_P(PrefetchManagerTest, Font) {
   GURL main_frame_url("https://abc.invalid");
   GURL subresource_url("https://xyz.invalid/font.woff");
   PrefetchRequest request = CreateFontRequest(subresource_url, main_frame_url);
@@ -660,9 +677,7 @@ TEST_F(PrefetchManagerTest, Font) {
 
         EXPECT_EQ(request.mode, network::mojom::RequestMode::kNoCors);
 
-        std::string purpose;
-        EXPECT_TRUE(request.headers.GetHeader("Purpose", &purpose));
-        EXPECT_EQ(purpose, "prefetch");
+        CheckHeaders(request);
 
         loop.Quit();
         return false;
@@ -675,5 +690,10 @@ TEST_F(PrefetchManagerTest, Font) {
 
   fake_delegate_->WaitForPrefetchFinished(main_frame_url);
 }
+
+INSTANTIATE_TEST_SUITE_P(PrefetchManagerTest,
+                         PrefetchManagerTest,
+                         ::testing::Bool(),
+                         ::testing::PrintToStringParamName());
 
 }  // namespace predictors

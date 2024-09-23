@@ -122,7 +122,8 @@ def header(
         oncalls = None,
         link_groups = None,
         console_groups = None,
-        tree_status_host = None):
+        tree_status_host = None,
+        tree_name = None):
     """Define a console header.
 
     The returned object can be specified as the header when defining a console
@@ -135,15 +136,20 @@ def header(
         in the header.
       console_groups - Optional list of console groups returned from
         `console_group` to display in the header.
-      tree_status_host - Optional URL of the tree status host. If provided, the
-        current tree status is displayed at the top of the header, colored
-        according to the status of the tree.
+      tree_status_host - DEPRECATED: Use tree_name instead.
+        Optional URL of the tree status host.
+        If provided, the current tree status is displayed at the top of the header,
+        colored according to the status of the tree.
+      tree_name - Name of the tree in LUCI Tree Status app.
+        If provided, the current tree status is displayed at the top of the header,
+        colored according to the status of the tree.
     """
     return _remove_none_values(dict(
         oncalls = _remove_none(oncalls or []),
         links = _remove_none(link_groups or []),
         console_groups = _remove_none(console_groups or []),
         tree_status_host = tree_status_host,
+        tree_name = tree_name,
     ))
 
 headers = struct(

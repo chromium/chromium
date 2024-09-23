@@ -1,7 +1,5 @@
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
--All/HostedOrWebAppTest.CtrlClickLink/HostedApp
--All/HostedOrWebAppTest.CtrlClickLink/WebApp
 -CustomTabBarViewBrowserTest.BackToAppButtonIsNotVisibleInOutOfScopePopups
 
 # crbug.com/1473417:
@@ -78,12 +76,3 @@
 -ThirdPartyMetricsObserverBrowserTest.OpaqueOriginSubframe
 -ThirdPartyMetricsObserverBrowserTest.ThreeThirdPartyFrames_ThreeTimingsRecorded
 -VideoLCPTypeTest.DataURIType_Video
-
-# crbug.com/1489659
--PDFExtensionAccessibilityNavigationTest.LinkNavigation
--ProfileHelperTest.OpenNewWindowForProfile
--WebAppBrowserTest.WindowsOffsetForMultiWindowPWA
--WebAppTabStripBrowserTest.ActiveTabColorIsBackgroundColor
-
-# crbug.com/1370019
--All/BrowserNonClientFrameViewChromeOSTest.TopViewInset*

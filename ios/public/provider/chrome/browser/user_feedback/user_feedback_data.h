@@ -20,10 +20,9 @@
 // Stores whether the current active tab is in Incognito mode.
 @property(nonatomic, assign) BOOL currentPageIsIncognito;
 
-// Stores a formatted string representation of the URL that the user was
-// viewing. May be nil if the current active tab does show a valid page
-// (e.g. the user was viewing the tab switcher, ...).
-@property(nonatomic, strong) NSString* currentPageDisplayURL;
+// Stores the member role for a Family Link user, otherwise this
+// property is not populated.
+@property(nonatomic, strong) NSString* familyMemberRole;
 
 // Stores a screenshot of the application suitable for attaching to the
 // user generated report.

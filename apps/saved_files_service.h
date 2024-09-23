@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/api/file_system/saved_files_service_interface.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -49,21 +50,21 @@ class SavedFilesService : public extensions::SavedFilesServiceInterface,
   static SavedFilesService* Get(content::BrowserContext* context);
 
   // extensions::SavedFilesServiceInterface:
-  void RegisterFileEntry(const std::string& extension_id,
+  void RegisterFileEntry(const extensions::ExtensionId& extension_id,
                          const std::string& id,
                          const base::FilePath& file_path,
                          bool is_directory) override;
-  void EnqueueFileEntry(const std::string& extension_id,
+  void EnqueueFileEntry(const extensions::ExtensionId& extension_id,
                         const std::string& id) override;
-  bool IsRegistered(const std::string& extension_id,
+  bool IsRegistered(const extensions::ExtensionId& extension_id,
                     const std::string& id) override;
   const extensions::SavedFileEntry* GetFileEntry(
-      const std::string& extension_id,
+      const extensions::ExtensionId& extension_id,
       const std::string& id) override;
 
   // Returns all registered file entries.
   std::vector<extensions::SavedFileEntry> GetAllFileEntries(
-      const std::string& extension_id);
+      const extensions::ExtensionId& extension_id);
 
   // Clears all retained files if the app does not have the
   // fileSystem.retainEntries permission.
@@ -90,20 +91,20 @@ class SavedFilesService : public extensions::SavedFilesServiceInterface,
                                 extensions::ExtensionHost* host) override;
 
   // Returns the SavedFiles for |extension_id| or NULL if one does not exist.
-  SavedFiles* Get(const std::string& extension_id) const;
+  SavedFiles* Get(const extensions::ExtensionId& extension_id) const;
 
   // Returns the SavedFiles for |extension_id|, creating it if necessary.
-  SavedFiles* GetOrInsert(const std::string& extension_id);
+  SavedFiles* GetOrInsert(const extensions::ExtensionId& extension_id);
 
   // Clears the SavedFiles for |extension_id|.
-  void Clear(const std::string& extension_id);
+  void Clear(const extensions::ExtensionId& extension_id);
 
   static void SetMaxSequenceNumberForTest(int max_value);
   static void ClearMaxSequenceNumberForTest();
   static void SetLruSizeForTest(int size);
   static void ClearLruSizeForTest();
 
-  std::map<std::string, std::unique_ptr<SavedFiles>>
+  std::map<extensions::ExtensionId, std::unique_ptr<SavedFiles>>
       extension_id_to_saved_files_;
   raw_ptr<content::BrowserContext> context_;
 

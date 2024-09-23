@@ -9,13 +9,17 @@
 
 SystemEventProvider::SystemEventProvider(UsageScenarioDataStoreImpl* data_store)
     : data_store_(data_store) {
-  if (base::PowerMonitor::IsInitialized())
-    base::PowerMonitor::AddPowerSuspendObserver(this);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->AddPowerSuspendObserver(this);
+  }
 }
 
 SystemEventProvider::~SystemEventProvider() {
-  if (base::PowerMonitor::IsInitialized())
-    base::PowerMonitor::RemovePowerSuspendObserver(this);
+  if (auto* power_monitor = base::PowerMonitor::GetInstance();
+      power_monitor->IsInitialized()) {
+    power_monitor->RemovePowerSuspendObserver(this);
+  }
 }
 
 void SystemEventProvider::OnSuspend() {

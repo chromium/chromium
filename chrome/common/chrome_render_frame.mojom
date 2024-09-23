@@ -34,6 +34,26 @@ interface ChromeRenderFrame {
   // Requests the bitmap selected by the most recently opened context menu.
   RequestBitmapForContextNode() => (skia.mojom.BitmapN32? bitmap);
 
+  // Requests the bitmap and bounds of the image selected by the most recently
+  // opened context menu. Note that the bounds originate from the DOM layer, are
+  // in DIP and are relative to the local root's widget
+  // (see Element::BoundsInWidget()). No guarantee is made about their
+  // correlation with the bounds of the image as displayed in the presentation
+  // layer. The returned bounds are also not guaranteed to correspond to the
+  // result of returned image.
+  RequestBitmapForContextNodeWithBoundsHint()
+      => (skia.mojom.BitmapN32? bitmap, gfx.mojom.Rect bounds);
+
+  // Requests the bounds of all images found in the DOM of the render frame.
+  // Note that the bounds originate from the DOM layer, use window coordinates
+  // which are device scale independent, and have been adjusted to include
+  // any transformations, including page scale. No guarantee is made about
+  // their correlation with the bounds of the image as displayed in the
+  // presentation layer. The returned bounds are also not guaranteed to
+  // correspond to the result of calling RequestBitmapForContextNode() on each
+  // image.
+  RequestBoundsHintForAllImages() => (array<gfx.mojom.Rect> all_bounds);
+
   // Requests an encoded image selected by the most recently opened context
   // menu. The encoding format is specified as a parameter. If no image is
   // selected or there's an error capturing the image, |image_data| will be
@@ -49,9 +69,11 @@ interface ChromeRenderFrame {
                              gfx.mojom.Size image_max_size_pixels,
                              ImageFormat image_format,
                              int32 quality)
-      => (array<uint8> image_data, gfx.mojom.Size original_size,
-      gfx.mojom.Size downscaled_size, string encoded_extension,
-      array<lens.mojom.LatencyLog> log_data);
+      => (array<uint8> image_data,
+          gfx.mojom.Size original_size,
+          gfx.mojom.Size downscaled_size,
+          string encoded_extension,
+          array<lens.mojom.LatencyLog> log_data);
 
   // For WebUI testing, this message requests JavaScript to be executed at a
   // time which is late enough to not be thrown out, and early enough to be
@@ -71,5 +93,9 @@ interface ChromeRenderFrame {
 
   // Indicates that the frame should collect draggable regions set using the
   // app-region CSS property.
-  SetSupportsAppRegion(bool supports_app_region);
+  SetSupportsDraggableRegions(bool supports_draggable_regions);
+
+  // Sets whether the frame needs to defer media loading when it is in
+  // background.
+  SetShouldDeferMediaLoad(bool should_defer);
 };

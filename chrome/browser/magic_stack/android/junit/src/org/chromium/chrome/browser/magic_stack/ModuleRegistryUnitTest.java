@@ -4,13 +4,10 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -19,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -26,7 +25,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Unit tests for {@link ModuleRegistry}. */
@@ -45,12 +45,17 @@ public class ModuleRegistryUnitTest {
     @Mock private Callback<ModuleProvider> mOnModuleBuiltCallback;
     @Mock private SimpleRecyclerViewAdapter mAdapter;
     @Mock private ModuleRegistry.OnViewCreatedCallback mOnViewCreatedCallback;
+    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
+    @Mock private ActivityLifecycleDispatcherImpl mActivityLifecycleDispatcher;
+    @Captor private ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverArgumentCaptor;
 
     private ModuleRegistry mModuleRegistry;
 
     @Before
     public void setUp() {
-        mModuleRegistry = ModuleRegistry.getInstance();
+        mModuleRegistry =
+                new ModuleRegistry(mHomeModulesConfigManager, mActivityLifecycleDispatcher);
+        verify(mActivityLifecycleDispatcher).register(mLifecycleObserverArgumentCaptor.capture());
     }
 
     @After
@@ -84,17 +89,19 @@ public class ModuleRegistryUnitTest {
 
     @Test
     @SmallTest
-    public void testHasModuleCanBeCustomized() {
-        mModuleRegistry.registerModule(ModuleType.SINGLE_TAB, mModuleProviderBuilder1);
-        when(mModuleProviderBuilder1.isEligible()).thenReturn(true);
-        // Verifies that the ModuleType.SINGLE_TAB can't be customized.
-        assertFalse(mModuleRegistry.hasCustomizableModule());
+    public void testDestroy() {
+        mModuleRegistry.registerModule(REGISTERED_MODULE_TYPE, mModuleProviderBuilder1);
+        mModuleRegistry.destroy();
+        verify(mModuleProviderBuilder1).destroy();
+        verify(mActivityLifecycleDispatcher).unregister(mLifecycleObserverArgumentCaptor.capture());
+    }
 
-        mModuleRegistry.registerModule(ModuleType.PRICE_CHANGE, mModuleProviderBuilder2);
-        when(mModuleProviderBuilder2.isEligible()).thenReturn(false);
-        assertFalse(mModuleRegistry.hasCustomizableModule());
+    @Test
+    @SmallTest
+    public void testOnPauseWithNative() {
+        mModuleRegistry.registerModule(REGISTERED_MODULE_TYPE, mModuleProviderBuilder1);
 
-        when(mModuleProviderBuilder2.isEligible()).thenReturn(true);
-        assertTrue(mModuleRegistry.hasCustomizableModule());
+        mLifecycleObserverArgumentCaptor.getValue().onPauseWithNative();
+        verify(mModuleProviderBuilder1).onPauseWithNative();
     }
 }

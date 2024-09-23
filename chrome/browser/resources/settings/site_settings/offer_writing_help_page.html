@@ -1,0 +1,42 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  .cr-row {
+    border-top: none;
+  }
+
+  .list-frame {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  #disabledSitesList > div:not(:first-child) {
+    border-top: var(--cr-separator-line);
+  }
+</style>
+
+<settings-toggle-button
+    pref="{{prefs.compose.proactive_nudge_enabled}}"
+    label="$i18n{offerWritingHelpToggleLabel}"
+    sub-label="$i18n{offerWritingHelpToggleSublabel}">
+</settings-toggle-button>
+<div class="cr-row">
+  <div id="disabledSitesHeading" class="flex">
+    $i18n{offerWritingHelpDisabledSitesLabel}
+  </div>
+</div>
+<div id="noDisabledSitesLabel" class="list-frame"
+    hidden$="[[hasSites_(siteList_.*)]]">
+  <div class="list-item secondary">$i18n{offerWritingHelpNoDisabledSites}</div>
+</div>
+<div id="disabledSitesList" class="layout vertical list-frame" role="list">
+  <template is="dom-repeat" items="[[siteList_]]">
+    <div class="list-item" role="listitem">
+      <div class="start cr-padded-text">[[item]]</div>
+      <cr-icon-button
+          class="icon-delete-gray"
+          aria-label="[[i18n('offerWritingHelpRemoveDisabledSiteAriaLabel',
+                        item)]]"
+          on-click="onDeleteClick_"
+          title="$i18n{delete}">
+      </cr-icon-button>
+    </div>
+  </template>
+</div>

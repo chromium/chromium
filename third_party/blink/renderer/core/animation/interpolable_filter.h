@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class CSSProperty;
 class CSSValue;
 class StyleResolverState;
 
@@ -28,8 +29,16 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
     DCHECK(value_);
   }
 
-  static InterpolableFilter* MaybeCreate(const FilterOperation&, double zoom);
-  static InterpolableFilter* MaybeConvertCSSValue(const CSSValue&);
+  static InterpolableFilter* MaybeCreate(
+      const FilterOperation&,
+      const CSSProperty& property,
+      double zoom,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
+  static InterpolableFilter* MaybeConvertCSSValue(
+      const CSSValue&,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider);
 
   // Create an InterpolableFilter representing the 'initial value for
   // interpolation' for the given OperationType.
@@ -47,10 +56,10 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
                    InterpolableValue& result) const final;
   bool IsFilter() const final { return true; }
   bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
-  void Scale(double scale) final { NOTREACHED(); }
+  void Scale(double scale) final { NOTREACHED_IN_MIGRATION(); }
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 

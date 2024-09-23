@@ -10,13 +10,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "content/common/features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -62,7 +65,8 @@ const char kBaseBiddingJson[] = R"(
       "name1": {
         "priorityVector": {
           "foo": 1
-        }
+        },
+        "updateIfOlderThanMs": 3600000
       },
       "name2": {
         "priorityVector": {
@@ -79,6 +83,12 @@ const char kBaseBiddingJson[] = R"(
       },
       "name6\u2603": {
         "priorityVector": {"foo": 6}
+      },
+      "name7": {
+        "updateIfOlderThanMs": 7200000
+      },
+      "name8": {
+        "updateIfOlderThanMs": "10800000"
       }
     }
   }
@@ -154,6 +164,8 @@ class TrustedSignalsTest : public testing::Test {
  public:
   TrustedSignalsTest() {
     v8_helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+    feature_list_.InitAndEnableFeature(
+        features::kInterestGroupUpdateIfOlderThan);
   }
 
   ~TrustedSignalsTest() override { task_environment_.RunUntilIdle(); }
@@ -269,8 +281,9 @@ class TrustedSignalsTest : public testing::Test {
           v8::Local<v8::Value> value = signals->GetBiddingSignals(
               v8_helper_.get(), context, trusted_bidding_signals_keys);
 
-          if (v8_helper_->ExtractJson(context, value, &result) !=
-              AuctionV8Helper::ExtractJsonResult::kSuccess) {
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
+              AuctionV8Helper::Result::kSuccess) {
             result = "JSON extraction failed.";
           }
           run_loop.Quit();
@@ -301,8 +314,9 @@ class TrustedSignalsTest : public testing::Test {
           v8::Local<v8::Value> value = signals->GetScoringSignals(
               v8_helper_.get(), context, render_url, ad_component_render_urls);
 
-          if (v8_helper_->ExtractJson(context, value, &result) !=
-              AuctionV8Helper::ExtractJsonResult::kSuccess) {
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
+              AuctionV8Helper::Result::kSuccess) {
             result = "JSON extraction failed.";
           }
           run_loop.Quit();
@@ -345,6 +359,8 @@ class TrustedSignalsTest : public testing::Test {
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(TrustedSignalsTest, BiddingSignalsNetworkError) {
@@ -530,7 +546,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsExpectedEntriesNotPresent) {
           R"({"foo":4,"bar":5})", {"name1"}, {"key1"}, kHostname);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsExpectedEntriesNotPresent) {
@@ -580,10 +596,10 @@ TEST_F(TrustedSignalsTest, BiddingSignalsNestedEntriesNotObject) {
     EXPECT_EQ(R"({"length":null})",
               ExtractBiddingSignals(signals.get(), {"length"}));
 
-    EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+    EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
     // These are important to check for the list case.
-    EXPECT_EQ(nullptr, signals->GetPriorityVector("0"));
-    EXPECT_EQ(nullptr, signals->GetPriorityVector("length"));
+    EXPECT_EQ(nullptr, signals->GetPerGroupData("0"));
+    EXPECT_EQ(nullptr, signals->GetPerGroupData("length"));
   }
 }
 
@@ -603,9 +619,10 @@ TEST_F(TrustedSignalsTest, BiddingSignalsInvalidPriorityVectors) {
           {"name1", "name2", "name3"}, {"key1"}, kHostname);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name2"));
-  const auto* priority_vector = signals->GetPriorityVector("name3");
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name2"));
+  const auto priority_vector =
+      signals->GetPerGroupData("name3")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"baz", -1}}),
             *priority_vector);
@@ -636,12 +653,26 @@ TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissing) {
   scoped_refptr<TrustedSignals::Result> signals =
       FetchBiddingSignalsWithResponse(
           GURL("https://url.test/"
-               "?hostname=publisher&keys=key4&interestGroupNames=name4"),
-          kBaseBiddingJson, {"name4"}, {"key4"}, kHostname,
+               "?hostname=publisher&keys=key4&interestGroupNames=name4,name7,"
+               "name8"),
+          kBaseBiddingJson, {"name4", "name7", "name8"}, {"key4"}, kHostname,
           /*experiment_group_id=*/std::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key4":null})", ExtractBiddingSignals(signals.get(), {"key4"}));
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name4"));
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name4"));
+
+  const TrustedSignals::Result::PerGroupData* name7_per_group_data =
+      signals->GetPerGroupData("name7");
+  ASSERT_NE(name7_per_group_data, nullptr);
+  EXPECT_EQ(std::nullopt, name7_per_group_data->priority_vector);
+  EXPECT_EQ(base::Milliseconds(7200000),
+            name7_per_group_data->update_if_older_than);
+
+  const TrustedSignals::Result::PerGroupData* name8_per_group_data =
+      signals->GetPerGroupData("name8");
+  // Strings aren't valid values for updateIfOlderThanMs, and there's no
+  // priorityVector, so there's nothing to return.
+  ASSERT_EQ(name8_per_group_data, nullptr);
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissingNameInProto) {
@@ -656,7 +687,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsKeyMissingNameInProto) {
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"valueOf":null})",
             ExtractBiddingSignals(signals.get(), {"valueOf"}));
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name4"));
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name4"));
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsKeysMissing) {
@@ -690,10 +721,15 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
           /*experiment_group_id=*/std::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const TrustedSignals::Result::PerGroupData* name1_per_group_data =
+      signals->GetPerGroupData("name1");
+  ASSERT_NE(name1_per_group_data, nullptr);
+  auto priority_vector = name1_per_group_data->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
+  EXPECT_EQ(base::Milliseconds(3600000),
+            name1_per_group_data->update_if_older_than);
 
   // Wait until idle to ensure all requests have been observed within the
   // `auction_network_events_handler_`.
@@ -720,7 +756,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyOldHeaderName) {
                           /*experiment_group_id=*/std::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  auto priority_vector = signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -739,7 +775,8 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyHeaderName) {
                           /*experiment_group_id=*/std::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const auto priority_vector =
+      signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -759,7 +796,8 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyBothOldAndNewHeaderNames) {
                           /*experiment_group_id=*/std::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const auto priority_vector =
+      signals->GetPerGroupData("name1")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
@@ -813,20 +851,33 @@ TEST_F(TrustedSignalsTest, BiddingSignalsMultipleKeys) {
       R"({"key1":1,"key2":[2],"key3":null,"key5":"value5"})",
       ExtractBiddingSignals(signals.get(), {"key1", "key2", "key3", "key5"}));
 
-  const auto* priority_vector = signals->GetPriorityVector("name1");
+  const TrustedSignals::Result::PerGroupData* name1_per_group_data =
+      signals->GetPerGroupData("name1");
+  ASSERT_NE(name1_per_group_data, nullptr);
+  auto priority_vector = name1_per_group_data->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
             *priority_vector);
+  EXPECT_EQ(base::Milliseconds(3600000),
+            name1_per_group_data->update_if_older_than);
 
-  priority_vector = signals->GetPriorityVector("name2");
+  const TrustedSignals::Result::PerGroupData* name2_per_group_data =
+      signals->GetPerGroupData("name2");
+  ASSERT_NE(name2_per_group_data, nullptr);
+  priority_vector = name2_per_group_data->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{
                 {"foo", 2}, {"bar", 3}, {"baz", -3.5}}),
             *priority_vector);
+  EXPECT_EQ(std::nullopt, name2_per_group_data->update_if_older_than);
 
-  priority_vector = signals->GetPriorityVector("name3");
+  const TrustedSignals::Result::PerGroupData* name3_per_group_data =
+      signals->GetPerGroupData("name3");
+  ASSERT_NE(name3_per_group_data, nullptr);
+  priority_vector = name3_per_group_data->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ(TrustedSignals::Result::PriorityVector(), *priority_vector);
+  EXPECT_EQ(std::nullopt, name3_per_group_data->update_if_older_than);
 }
 
 TEST_F(TrustedSignalsTest, ScoringSignalsMultipleUrls) {
@@ -1016,12 +1067,13 @@ TEST_F(TrustedSignalsTest, BiddingSignalsEscapeQueryParams) {
   EXPECT_EQ(R"({"key=7":7})", ExtractBiddingSignals(signals.get(), {"key=7"}));
   EXPECT_EQ(R"({"key,8":8})", ExtractBiddingSignals(signals.get(), {"key,8"}));
 
-  const auto* priority_vector = signals->GetPriorityVector("name 5");
+  auto priority_vector = signals->GetPerGroupData("name 5")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 5}}),
             *priority_vector);
 
-  priority_vector = signals->GetPriorityVector("name6\xE2\x98\x83");
+  priority_vector =
+      signals->GetPerGroupData("name6\xE2\x98\x83")->priority_vector;
   ASSERT_TRUE(priority_vector);
   EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 6}}),
             *priority_vector);
@@ -1240,7 +1292,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1) {
       R"({"key1":1,"key2":[2],"key3":null,"key5":"value5"})",
       ExtractBiddingSignals(signals.get(), {"key1", "key2", "key3", "key5"}));
   // Format V1 doesn't support priority vectors.
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
 TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
@@ -1271,7 +1323,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1WithV1Header) {
       R"({"key1":1,"key2":[2],"key3":null,"key5":"value5"})",
       ExtractBiddingSignals(signals.get(), {"key1", "key2", "key3", "key5"}));
   // Format V1 doesn't support priority vectors.
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
 // A V2 header with a V1 body treats all values as null (since it can't find
@@ -1287,7 +1339,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV2HeaderV1Body) {
           /*format_version_string=*/"2");
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
 // A V1 header (i.e., no version header) with a V2 body treats all values as
@@ -1309,7 +1361,7 @@ TEST_F(TrustedSignalsTest, BiddingSignalsV1HeaderV2Body) {
             "signals format version 2");
   ASSERT_TRUE(signals);
   EXPECT_EQ(R"({"key1":null})", ExtractBiddingSignals(signals.get(), {"key1"}));
-  EXPECT_EQ(nullptr, signals->GetPriorityVector("name1"));
+  EXPECT_EQ(nullptr, signals->GetPerGroupData("name1"));
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View role_description='banner' name='This is a header element.'
 ++android.view.View role_description='complementary' name='This is an aside element.'
 ++android.view.View name='This is an address element.'

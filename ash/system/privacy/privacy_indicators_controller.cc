@@ -47,20 +47,16 @@ CreatePrivacyIndicatorsNotification(
   std::u16string message;
   const gfx::VectorIcon* app_icon;
   if (is_camera_used && is_microphone_used) {
-    title = l10n_util::GetStringUTF16(
-        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC);
-    message = l10n_util::GetStringFUTF16(
-        IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA_AND_MIC, app_name_str);
+    title = l10n_util::GetStringFUTF16(
+        IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC, app_name_str);
     app_icon = &kPrivacyIndicatorsIcon;
   } else if (is_camera_used) {
-    title = l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA);
-    message = l10n_util::GetStringFUTF16(
-        IDS_PRIVACY_NOTIFICATION_MESSAGE_CAMERA, app_name_str);
+    title = l10n_util::GetStringFUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
+                                       app_name_str);
     app_icon = &kPrivacyIndicatorsCameraIcon;
   } else {
-    title = l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC);
-    message = l10n_util::GetStringFUTF16(IDS_PRIVACY_NOTIFICATION_MESSAGE_MIC,
-                                         app_name_str);
+    title = l10n_util::GetStringFUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC,
+                                       app_name_str);
     app_icon = &kPrivacyIndicatorsMicrophoneIcon;
   }
 
@@ -71,19 +67,20 @@ CreatePrivacyIndicatorsNotification(
 
   optional_fields.parent_vector_small_image = &kPrivacyIndicatorsIcon;
 
-  if (delegate->launch_app_callback()) {
-    optional_fields.buttons.emplace_back(
-        l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_BUTTON_APP_LAUNCH));
-  }
-
   if (delegate->launch_settings_callback()) {
-    optional_fields.buttons.emplace_back(l10n_util::GetStringUTF16(
-        IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS));
+    optional_fields.buttons.emplace_back(
+        features::AreOngoingProcessesEnabled()
+            ? message_center::ButtonInfo(
+                  /*vector_icon=*/&kSettingsIcon,
+                  /*accessible_name=*/l10n_util::GetStringUTF16(
+                      IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS))
+            : message_center::ButtonInfo(l10n_util::GetStringUTF16(
+                  IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS)));
   }
 
   auto notification = CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
-      GetPrivacyIndicatorsNotificationId(app_id), title, message,
+      GetPrivacyIndicatorsNotificationId(app_id), title, std::u16string(),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -198,56 +195,31 @@ void UpdatePrivacyIndicatorsVisibility() {
 }  // namespace
 
 PrivacyIndicatorsNotificationDelegate::PrivacyIndicatorsNotificationDelegate(
-    std::optional<base::RepeatingClosure> launch_app_callback,
-    std::optional<base::RepeatingClosure> launch_settings_settings)
-    : launch_app_callback_(launch_app_callback),
-      launch_settings_callback_(launch_settings_settings) {
-  UpdateButtonIndices();
-}
+    std::optional<base::RepeatingClosure> launch_settings_callback)
+    : launch_settings_callback_(launch_settings_callback) {}
 
 PrivacyIndicatorsNotificationDelegate::
     ~PrivacyIndicatorsNotificationDelegate() = default;
 
-void PrivacyIndicatorsNotificationDelegate::SetLaunchAppCallback(
-    const base::RepeatingClosure& launch_app_callback) {
-  launch_app_callback_ = launch_app_callback;
-  UpdateButtonIndices();
-}
-
 void PrivacyIndicatorsNotificationDelegate::SetLaunchSettingsCallback(
-    const base::RepeatingClosure& launch_settings_settings) {
-  launch_settings_callback_ = launch_settings_settings;
-  UpdateButtonIndices();
+    const base::RepeatingClosure& launch_settings_callback) {
+  launch_settings_callback_ = launch_settings_callback;
 }
 
 void PrivacyIndicatorsNotificationDelegate::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
-  // Click on the notification body is no-op.
   if (!button_index) {
+    // Click on the notification body should launch app settings if possible.
+    if (launch_settings_callback_) {
+      launch_settings_callback_->Run();
+    }
     return;
   }
 
-  if (*button_index == launch_app_button_index_) {
-    DCHECK(launch_app_callback_);
-    launch_app_callback_->Run();
-    return;
-  }
-
-  if (*button_index == launch_settings_button_index_) {
-    DCHECK(launch_settings_callback_);
-    launch_settings_callback_->Run();
-  }
-}
-
-void PrivacyIndicatorsNotificationDelegate::UpdateButtonIndices() {
-  int current_index = 0;
-  if (launch_app_callback_) {
-    launch_app_button_index_ = current_index++;
-  }
-
+  CHECK(*button_index == 0);
   if (launch_settings_callback_) {
-    launch_settings_button_index_ = current_index;
+    launch_settings_callback_->Run();
   }
 }
 
@@ -305,12 +277,79 @@ void PrivacyIndicatorsController::UpdatePrivacyIndicators(
   is_microphone_used =
       is_microphone_used && !CrasAudioHandler::Get()->IsInputMuted();
 
+  if (!is_camera_used && !is_microphone_used) {
+    indicator_hiding_delay_timer_.Start(
+        FROM_HERE, CalculateIndicatorsDelayTime(),
+        base::BindOnce(&PrivacyIndicatorsController::TriggerPrivacyIndicators,
+                       base::Unretained(this), is_camera_used,
+                       is_microphone_used, is_new_app, was_camera_in_use,
+                       was_microphone_in_use, app_id, app_name, delegate));
+  } else {
+    if (!ShouldSkipShowPrivacyIndicators(is_camera_used, is_microphone_used,
+                                         is_new_app, was_camera_in_use)) {
+      privacy_indicator_time_ = base::TimeTicks::Now();
+      recent_active_state_ = {is_camera_used, is_microphone_used};
+      TriggerPrivacyIndicators(is_camera_used, is_microphone_used, is_new_app,
+                               was_camera_in_use, was_microphone_in_use, app_id,
+                               app_name, delegate);
+    }
+    indicator_hiding_delay_timer_.Stop();
+  }
+
+  base::UmaHistogramEnumeration("Ash.PrivacyIndicators.Source", source);
+}
+
+base::TimeDelta PrivacyIndicatorsController::CalculateIndicatorsDelayTime()
+    const {
+  base::TimeDelta delay;
+  const base::TimeDelta indicator_display_time =
+      base::TimeTicks::Now() - privacy_indicator_time_;
+  if (indicator_display_time < kPrivacyIndicatorsMinimumHoldDuration) {
+    delay =
+        std::max(kPrivacyIndicatorsMinimumHoldDuration - indicator_display_time,
+                 kPrivacyIndicatorsHoldAfterUseDuration);
+  } else {
+    delay = kPrivacyIndicatorsHoldAfterUseDuration;
+  }
+  return delay;
+}
+
+// Determines whether to skip showing privacy indicators for a new app.
+// This is necessary to prevent flickering in scenarios where:
+// 1. Another app is currently using the camera (`was_camera_in_use`).
+// 2. The new app (`is_new_app`) is attempting to access the
+// camera(`is_camera_used`).
+// 3. The camera/mic state matches the recent active state
+// (`recent_active_state_`).
+// 4. The indicator hiding timer is running, indicating a recent disconnection.
+//
+// In such conflicts, we avoid constantly canceling and restarting the hiding
+// delay timer for every retry attempt by the new app, ensuring a smoother user
+// experience.
+bool PrivacyIndicatorsController::ShouldSkipShowPrivacyIndicators(
+    bool is_camera_used,
+    bool is_microphone_used,
+    bool is_new_app,
+    bool was_camera_in_use) const {
+  return was_camera_in_use && is_new_app && is_camera_used &&
+         (recent_active_state_ ==
+          std::make_pair(is_camera_used, is_microphone_used)) &&
+         indicator_hiding_delay_timer_.IsRunning();
+}
+
+void PrivacyIndicatorsController::TriggerPrivacyIndicators(
+    bool is_camera_used,
+    bool is_microphone_used,
+    bool is_new_app,
+    bool was_camera_in_use,
+    bool was_microphone_in_use,
+    const std::string& app_id,
+    std::optional<std::u16string> app_name,
+    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate) {
   ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
                                       is_microphone_used, delegate);
   UpdatePrivacyIndicatorsView(is_camera_used, is_microphone_used, is_new_app,
                               was_camera_in_use, was_microphone_in_use);
-
-  base::UmaHistogramEnumeration("Ash.PrivacyIndicators.Source", source);
 }
 
 void PrivacyIndicatorsController::OnCameraHWPrivacySwitchStateChanged(

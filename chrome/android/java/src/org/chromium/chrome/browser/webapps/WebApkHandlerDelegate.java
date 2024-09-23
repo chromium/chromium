@@ -9,7 +9,10 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -25,17 +28,17 @@ public class WebApkHandlerDelegate {
     interface Natives {
         void onWebApkInfoRetrieved(
                 long nativeWebApkHandlerDelegate,
-                String name,
-                String shortName,
-                String packageName,
-                String id,
+                @JniType("std::string") String name,
+                @JniType("std::string") String shortName,
+                @JniType("std::string") String packageName,
+                @JniType("std::string") String id,
                 int shellApkVersion,
                 int versionCode,
-                String uri,
-                String scope,
-                String manifestUrl,
-                String manifestStartUrl,
-                String manifestId,
+                @JniType("std::string") String uri,
+                @JniType("std::string") String scope,
+                @JniType("std::string") String manifestUrl,
+                @JniType("std::string") String manifestStartUrl,
+                @Nullable String manifestId,
                 int displayMode,
                 int orientation,
                 long themeColor,
@@ -45,9 +48,9 @@ public class WebApkHandlerDelegate {
                 long lastUpdateCheckTimeMs,
                 long lastUpdateCompletionTimeMs,
                 boolean relaxUpdates,
-                String backingBrowserPackageName,
+                @Nullable String backingBrowserPackageName,
                 boolean isBackingBrowser,
-                String updateStatus);
+                @JniType("std::string") String updateStatus);
     }
 
     private WebApkHandlerDelegate(long nativePointer) {

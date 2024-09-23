@@ -10,7 +10,6 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 
-namespace chrome {
 namespace android {
 
 MockDownloadController::MockDownloadController()
@@ -42,4 +41,3 @@ void MockDownloadController::CreateAndroidDownload(
     const content::WebContents::Getter& wc_getter,
     const DownloadInfo& info) {}
 }  // namespace android
-}  // namespace chrome

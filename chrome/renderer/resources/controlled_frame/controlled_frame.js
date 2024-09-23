@@ -9,6 +9,8 @@ var forwardApiMethods = require('guestViewContainerElement').forwardApiMethods;
 var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var CONTROLLED_FRAME_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_API_METHODS;
+var CONTROLLED_FRAME_DELETED_API_METHODS =
+    require('controlledFrameApiMethods').CONTROLLED_FRAME_DELETED_API_METHODS;
 var CONTROLLED_FRAME_PROMISE_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_PROMISE_API_METHODS;
 var registerElement = require('guestViewContainerElement').registerElement;
@@ -33,6 +35,17 @@ class ControlledFrameElement extends WebViewElement {
 forwardApiMethods(
     ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
     CONTROLLED_FRAME_API_METHODS, CONTROLLED_FRAME_PROMISE_API_METHODS);
+
+// Delete GuestView methods that should not be part of the Controlled Frame API.
+(function() {
+  for (const methodName of CONTROLLED_FRAME_DELETED_API_METHODS) {
+    let clazz = ControlledFrameElement.prototype;
+    while ((methodName in clazz) && clazz.constructor.name !== 'HTMLElement') {
+      delete clazz[methodName];
+      clazz = $Object.getPrototypeOf(clazz);
+    }
+  }
+})();
 
 // Since |back| and |forward| are implemented in terms of |go|, we need to
 // keep a reference to the real |go| function, since user code may override

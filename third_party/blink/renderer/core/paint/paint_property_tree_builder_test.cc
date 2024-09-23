@@ -36,8 +36,7 @@ void PaintPropertyTreeBuilderTest::LoadTestData(const char* file_name) {
   full_path.Append(test::BlinkRootDir());
   full_path.Append("/renderer/core/paint/test_data/");
   full_path.Append(file_name);
-  const Vector<char> input_buffer =
-      test::ReadFromFile(full_path.ToString())->CopyAs<Vector<char>>();
+  const Vector<char> input_buffer = *test::ReadFromFile(full_path.ToString());
   SetBodyInnerHTML(String(input_buffer.data(), input_buffer.size()));
 }
 
@@ -137,7 +136,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PaintPropertyTreeBuilderTest,
                          ::testing::Values(0,
                                            kUnderInvalidationChecking,
-                                           kSparseObjectPaintProperties,
                                            kElementCapture));
 
 TEST_P(PaintPropertyTreeBuilderTest, FixedPosition) {
@@ -3609,8 +3607,11 @@ TEST_P(PaintPropertyTreeBuilderTest, ContainPaintOrStyleLayoutTreeState) {
 
     // Verify that we created isolation nodes.
     EXPECT_TRUE(clip_properties->TransformIsolationNode());
+    EXPECT_TRUE(clip_properties->HasTransformNode());
     EXPECT_TRUE(clip_properties->EffectIsolationNode());
+    EXPECT_TRUE(clip_properties->HasEffectNode());
     EXPECT_TRUE(clip_properties->ClipIsolationNode());
+    EXPECT_TRUE(clip_properties->HasClipNode());
 
     // Verify parenting:
 
@@ -3910,20 +3911,31 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowHiddenScrollProperties) {
 
   Element* overflow_hidden =
       GetDocument().getElementById(AtomicString("overflowHidden"));
-  overflow_hidden->setScrollTop(37);
-
-  UpdateAllLifecyclePhasesForTest();
 
   const ObjectPaintProperties* overflow_hidden_scroll_properties =
       overflow_hidden->GetLayoutObject()->FirstFragment().PaintProperties();
 
-  // Because the overflow hidden does not scroll and only has a static scroll
-  // offset, there should be a scroll translation node but no scroll node.
+  // No scroll translation when the scroll offset is zero.
+  EXPECT_EQ(nullptr, overflow_hidden_scroll_properties->ScrollTranslation());
+  EXPECT_EQ(nullptr, overflow_hidden_scroll_properties->Scroll());
+
+  // Both scroll translation and scroll nodes when the scroll offset is not
+  // zero.
+  overflow_hidden->setScrollTop(37);
+  UpdateAllLifecyclePhasesForTest();
   auto* scroll_translation =
       overflow_hidden_scroll_properties->ScrollTranslation();
+  ASSERT_NE(nullptr, scroll_translation);
   EXPECT_EQ(gfx::Vector2dF(0, -37), scroll_translation->Get2dTranslation());
-  EXPECT_EQ(nullptr, scroll_translation->ScrollNode());
-  EXPECT_EQ(nullptr, overflow_hidden_scroll_properties->Scroll());
+  auto* scroll = scroll_translation->ScrollNode();
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    ASSERT_NE(nullptr, scroll);
+    EXPECT_EQ(scroll, overflow_hidden_scroll_properties->Scroll());
+    EXPECT_FALSE(scroll->UserScrollableHorizontal());
+    EXPECT_FALSE(scroll->UserScrollableVertical());
+  } else {
+    EXPECT_EQ(nullptr, scroll);
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FrameOverflowHiddenScrollProperties) {
@@ -5461,7 +5473,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FrameClipWhenPrinting) {
 
   // When the main frame is printing, it should not have content clip.
   gfx::SizeF page_size(100, 100);
-  GetFrame().StartPrinting(page_size, 1);
+  GetFrame().StartPrinting(WebPrintParams(page_size));
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   EXPECT_EQ(nullptr, DocContentClip(main_frame_doc));
   EXPECT_CLIP_RECT(gfx::RectF(0, 0, 300, 150), DocContentClip(child_frame_doc));
@@ -5471,7 +5483,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FrameClipWhenPrinting) {
 
   // When only the child frame is printing, it should not have content clip but
   // the main frame still have (which doesn't matter though).
-  ChildFrame().StartPrinting(page_size, 1);
+  ChildFrame().StartPrinting(WebPrintParams(page_size));
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   ASSERT_NE(nullptr, DocContentClip(main_frame_doc));
   EXPECT_CLIP_RECT(gfx::RectF(0, 0, 800, 600), DocContentClip(main_frame_doc));
@@ -5838,7 +5850,7 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   EXPECT_EQ(1u, NumFragments(normal));
 
   gfx::SizeF page_size(300, 400);
-  GetFrame().StartPrinting(page_size, 1);
+  GetFrame().StartPrinting(WebPrintParams(page_size));
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   fixed = GetLayoutObjectByElementId("fixed");
   fixed_child = GetLayoutObjectByElementId("fixed-child");
@@ -5894,15 +5906,15 @@ TEST_P(PaintPropertyTreeBuilderTest,
   EXPECT_EQ(1u, NumFragments(fixed_child));
 
   gfx::SizeF page_size(300, 400);
-  GetFrame().StartPrinting(page_size, 1);
+  GetFrame().StartPrinting(WebPrintParams(page_size));
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   fixed = GetLayoutObjectByElementId("fixed");
   fixed_child = GetLayoutObjectByElementId("fixed-child");
 
   // "fixed" should create fragments to repeat in each printed page.
   EXPECT_EQ(3u, NumFragments(fixed));
-  for (int i = 0; i < 3; i++) {
-    const auto& fragment = FragmentAt(fixed, i);
+  for (wtf_size_t i = 0; i < 3; i++) {
+    const FragmentData& fragment = FragmentAt(fixed, i);
     EXPECT_EQ(PhysicalOffset(), fragment.PaintOffset());
     const auto* properties = fragment.PaintProperties();
     EXPECT_EQ(gfx::Vector2dF(20, 20 + i * 400),
@@ -5911,13 +5923,15 @@ TEST_P(PaintPropertyTreeBuilderTest,
               properties->Transform()->Get2dTranslation());
     EXPECT_EQ(properties->PaintOffsetTranslation(),
               properties->Transform()->Parent());
+    EXPECT_EQ(fragment.FragmentID(), i);
   }
 
-  for (int i = 0; i < 3; i++) {
-    const auto& fragment = FragmentAt(fixed_child, i);
+  for (wtf_size_t i = 0; i < 3; i++) {
+    const FragmentData& fragment = FragmentAt(fixed_child, i);
     EXPECT_EQ(PhysicalOffset(0, 10), fragment.PaintOffset());
     EXPECT_EQ(FragmentAt(fixed, i).PaintProperties()->Transform(),
               &fragment.LocalBorderBoxProperties().Transform());
+    EXPECT_EQ(fragment.FragmentID(), i);
   }
 
   GetFrame().EndPrinting();
@@ -6151,7 +6165,7 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyConstraintChain) {
 
 TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
   // This test verifies the property tree builder applies sticky offset
-  // correctly when the scroll container cannot be manually scrolled, and
+  // correctly when the scroll container doesn't have a scroll node, and
   // does not emit sticky constraints.
   SetBodyInnerHTML(R"HTML(
     <div id="scroller" style="overflow:hidden; width:300px; height:200px;">
@@ -6165,8 +6179,6 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
       <div style="height:1000px;"></div>
     </div>
   )HTML");
-  GetDocument().getElementById(AtomicString("scroller"))->setScrollTop(50);
-  UpdateAllLifecyclePhasesForTest();
 
   const auto* outer_properties = PaintPropertiesForElement("outer");
   ASSERT_TRUE(outer_properties && outer_properties->StickyTranslation());
@@ -6174,7 +6186,7 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
   // offset animation.
   EXPECT_TRUE(outer_properties->StickyTranslation()
                   ->RequiresCompositingForStickyPosition());
-  EXPECT_EQ(gfx::Vector2dF(0, 60),
+  EXPECT_EQ(gfx::Vector2dF(0, 10),
             outer_properties->StickyTranslation()->Get2dTranslation());
   EXPECT_EQ(nullptr,
             outer_properties->StickyTranslation()->GetStickyConstraint());
@@ -6196,6 +6208,49 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
             inner_properties->StickyTranslation()->Get2dTranslation());
   EXPECT_EQ(nullptr,
             inner_properties->StickyTranslation()->GetStickyConstraint());
+
+  // The overflow:hidden scroller will create a scroll node when the scroll
+  // offset is not zero.
+  GetDocument().getElementById(AtomicString("scroller"))->setScrollTop(50);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(outer_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 60),
+            outer_properties->StickyTranslation()->Get2dTranslation());
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    EXPECT_NE(nullptr,
+              outer_properties->StickyTranslation()->GetStickyConstraint());
+  } else {
+    EXPECT_EQ(nullptr,
+              outer_properties->StickyTranslation()->GetStickyConstraint());
+  }
+
+  ASSERT_TRUE(middle_properties && middle_properties->StickyTranslation());
+  EXPECT_TRUE(middle_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 15),
+            middle_properties->StickyTranslation()->Get2dTranslation());
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    EXPECT_NE(nullptr,
+              middle_properties->StickyTranslation()->GetStickyConstraint());
+  } else {
+    EXPECT_EQ(nullptr,
+              middle_properties->StickyTranslation()->GetStickyConstraint());
+  }
+
+  ASSERT_TRUE(inner_properties && inner_properties->StickyTranslation());
+  EXPECT_TRUE(inner_properties->StickyTranslation()
+                  ->RequiresCompositingForStickyPosition());
+  EXPECT_EQ(gfx::Vector2dF(0, 20),
+            inner_properties->StickyTranslation()->Get2dTranslation());
+  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
+    EXPECT_NE(nullptr,
+              inner_properties->StickyTranslation()->GetStickyConstraint());
+  } else {
+    EXPECT_EQ(nullptr,
+              inner_properties->StickyTranslation()->GetStickyConstraint());
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, StickyUnderScrollerWithoutOverflow) {
@@ -6352,19 +6407,53 @@ TEST_P(PaintPropertyTreeBuilderTest, MainFrameDoesntClipContent) {
       GetLayoutView().FirstFragment().PaintProperties()->OverflowClip());
 }
 
-TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPath) {
+TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPathSimple) {
   SetBodyInnerHTML(R"HTML(
-    <svg id='svg' style='clip-path: circle(); will-change: transform, opacity'></svg>
+    <svg id='svg' style='clip-path: circle(); will-change: opacity'></svg>
   )HTML");
 
   const auto* properties = PaintPropertiesForElement("svg");
 
-  ASSERT_NE(nullptr, properties->PaintOffsetTranslation());
-  const auto* transform = properties->Transform();
+  const auto* transform = properties->PaintOffsetTranslation();
   ASSERT_NE(nullptr, transform);
-  EXPECT_EQ(properties->PaintOffsetTranslation(), transform->Parent());
-  EXPECT_TRUE(transform->HasDirectCompositingReasons());
+  EXPECT_EQ(nullptr, properties->MaskClip());
 
+  const auto* clip_path_clip = properties->ClipPathClip();
+  ASSERT_NE(nullptr, clip_path_clip);
+  EXPECT_EQ(DocContentClip(), clip_path_clip->Parent());
+  EXPECT_CLIP_RECT(FloatRoundedRect(gfx::RectF(75, 0, 150, 150), 75),
+                   clip_path_clip);
+  EXPECT_EQ(transform, &clip_path_clip->LocalTransformSpace());
+  EXPECT_FALSE(clip_path_clip->ClipPath());
+
+  const auto* overflow_clip = properties->OverflowClip();
+  ASSERT_NE(nullptr, overflow_clip);
+  EXPECT_EQ(clip_path_clip, overflow_clip->Parent());
+  EXPECT_CLIP_RECT(gfx::RectF(0, 0, 300, 150), overflow_clip);
+  EXPECT_EQ(transform, &overflow_clip->LocalTransformSpace());
+
+  const auto* effect = properties->Effect();
+  ASSERT_NE(nullptr, effect);
+  EXPECT_EQ(&EffectPaintPropertyNode::Root(), effect->Parent());
+  EXPECT_EQ(transform, &effect->LocalTransformSpace());
+  EXPECT_EQ(clip_path_clip, effect->OutputClip());
+  EXPECT_EQ(SkBlendMode::kSrcOver, effect->BlendMode());
+
+  EXPECT_EQ(nullptr, properties->Mask());
+  EXPECT_EQ(nullptr, properties->ClipPathMask());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPathComplex) {
+  SetBodyInnerHTML(R"HTML(
+    <svg id='svg'
+         style='clip-path: polygon(75px 0, 225px 150px, 75px 150px, 75px 0);
+                will-change: opacity'></svg>
+  )HTML");
+
+  const auto* properties = PaintPropertiesForElement("svg");
+
+  const auto* transform = properties->PaintOffsetTranslation();
+  ASSERT_NE(nullptr, transform);
   EXPECT_EQ(nullptr, properties->MaskClip());
 
   const auto* clip_path_clip = properties->ClipPathClip();
@@ -6382,6 +6471,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPath) {
 
   const auto* effect = properties->Effect();
   ASSERT_NE(nullptr, effect);
+  EXPECT_TRUE(effect->HasDirectCompositingReasons());
   EXPECT_EQ(&EffectPaintPropertyNode::Root(), effect->Parent());
   EXPECT_EQ(transform, &effect->LocalTransformSpace());
   EXPECT_EQ(clip_path_clip, effect->OutputClip());

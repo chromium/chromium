@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_DISPATCHER_TAGGING_H_
-#define BASE_ALLOCATOR_DISPATCHER_TAGGING_H_
+#ifndef BASE_ALLOCATOR_DISPATCHER_MEMORY_TAGGING_H_
+#define BASE_ALLOCATOR_DISPATCHER_MEMORY_TAGGING_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
+#include "partition_alloc/tagging.h"
 
 namespace base::allocator::dispatcher {
 // The various modes of Arm's MTE extension. The enum values should match their
@@ -39,4 +39,4 @@ constexpr MTEMode ConvertToMTEMode(
 
 }  // namespace base::allocator::dispatcher
 
-#endif  // BASE_ALLOCATOR_DISPATCHER_TAGGING_H_
+#endif  // BASE_ALLOCATOR_DISPATCHER_MEMORY_TAGGING_H_

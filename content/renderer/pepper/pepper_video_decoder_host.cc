@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "content/common/pepper_file_util.h"
@@ -427,11 +428,13 @@ gpu::Mailbox PepperVideoDecoderHost::CreateSharedImage(gfx::Size size) {
   // These shared images have the contents of VideoFrames copied into them via
   // the raster interface and then are read and/or written by the plugin via GL.
   auto client_shared_image = sii->CreateSharedImage(
-      viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
-          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
-      "PepperVideoDecoder", gpu::SurfaceHandle());
+      {viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
+       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+       gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+           gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
+       "PepperVideoDecoder"},
+      gpu::SurfaceHandle());
   CHECK(client_shared_image);
   auto mailbox = client_shared_image->mailbox();
 
@@ -492,7 +495,7 @@ void PepperVideoDecoderHost::NotifyEndOfBitstreamBuffer(
     int32_t bitstream_buffer_id) {
   auto it = GetPendingDecodeById(bitstream_buffer_id);
   if (it == pending_decodes_.end()) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
   host()->SendReply(it->reply_context,
@@ -544,7 +547,7 @@ void PepperVideoDecoderHost::NotifyError(
 
 const uint8_t* PepperVideoDecoderHost::DecodeIdToAddress(uint32_t decode_id) {
   PendingDecodeList::const_iterator it = GetPendingDecodeById(decode_id);
-  DCHECK(it != pending_decodes_.end());
+  CHECK(it != pending_decodes_.end(), base::NotFatalUntil::M130);
   uint32_t shm_id = it->shm_id;
   return static_cast<uint8_t*>(shm_buffers_[shm_id].mapping.memory());
 }

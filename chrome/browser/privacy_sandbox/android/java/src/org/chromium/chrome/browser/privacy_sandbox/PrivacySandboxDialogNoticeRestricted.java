@@ -11,26 +11,28 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import androidx.annotation.NonNull;
-
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Dialog in the form of a notice shown for the Privacy Sandbox. */
 public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
         implements View.OnClickListener, DialogInterface.OnShowListener {
-    private SettingsLauncher mSettingsLauncher;
+    private final PrivacySandboxBridge mPrivacySandboxBridge;
     private View mContentView;
 
     private ButtonCompat mMoreButton;
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
+    private @SurfaceType int mSurfaceType;
 
     public PrivacySandboxDialogNoticeRestricted(
-            Context context, @NonNull SettingsLauncher settingsLauncher) {
+            Context context,
+            PrivacySandboxBridge privacySandboxBridge,
+            @SurfaceType int surfaceType) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
-        mSettingsLauncher = settingsLauncher;
+        mPrivacySandboxBridge = privacySandboxBridge;
+        mSurfaceType = surfaceType;
         mContentView =
                 LayoutInflater.from(context)
                         .inflate(R.layout.privacy_sandbox_notice_restricted, null);
@@ -66,7 +68,8 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
 
     @Override
     public void show() {
-        PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_SHOWN);
+        mPrivacySandboxBridge.promptActionOccurred(
+                PromptAction.RESTRICTED_NOTICE_SHOWN, mSurfaceType);
         super.show();
     }
 
@@ -75,15 +78,18 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE);
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE, mSurfaceType);
             dismiss();
         } else if (id == R.id.settings_button) {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS);
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS, mSurfaceType);
             dismiss();
-            mSettingsLauncher.launchSettingsActivity(getContext(), AdMeasurementFragment.class);
+            SettingsLauncherFactory.createSettingsLauncher()
+                    .launchSettingsActivity(getContext(), AdMeasurementFragment.class);
         } else if (id == R.id.more_button) {
-            PrivacySandboxBridge.promptActionOccurred(
-                    PromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED);
+            mPrivacySandboxBridge.promptActionOccurred(
+                    PromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED, mSurfaceType);
             if (mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN)) {
                 mScrollView.post(
                         () -> {

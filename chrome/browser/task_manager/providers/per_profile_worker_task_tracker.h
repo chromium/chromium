@@ -24,6 +24,10 @@ namespace content {
 class RenderProcessHost;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace task_manager {
 
 class WorkerTask;
@@ -49,6 +53,7 @@ class PerProfileWorkerTaskTracker
   // content::DedicatedWorkerService::Observer:
   void OnWorkerCreated(const blink::DedicatedWorkerToken& worker_token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        content::DedicatedWorkerCreator creator) override;
   void OnBeforeWorkerDestroyed(
       const blink::DedicatedWorkerToken& worker_token,
@@ -60,6 +65,7 @@ class PerProfileWorkerTaskTracker
   // content::SharedWorkerService::Observer:
   void OnWorkerCreated(const blink::SharedWorkerToken& shared_worker_token,
                        int worker_process_id,
+                       const url::Origin& security_origin,
                        const base::UnguessableToken& dev_tools_token) override;
   void OnBeforeWorkerDestroyed(
       const blink::SharedWorkerToken& shared_worker_token) override;

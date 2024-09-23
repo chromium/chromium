@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/http/http_security_headers.h"
+
 #include <stdint.h>
 
 #include <iterator>
 
 #include "base/base64.h"
 #include "base/stl_util.h"
-#include "base/strings/string_piece.h"
 #include "crypto/sha2.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/test_completion_callback.h"
-#include "net/http/http_security_headers.h"
 #include "net/http/http_util.h"
 #include "net/http/transport_security_state.h"
 #include "net/ssl/ssl_info.h"
@@ -36,6 +36,88 @@ class HttpSecurityHeadersTest : public testing::Test {
   }
 };
 
+TEST_F(HttpSecurityHeadersTest, LeadingTrailingSemicolons) {
+  base::TimeDelta max_age;
+  bool include_subdomains = false;
+
+  const char* test_cases[] = {
+      "max-age=123",       ";max-age=123",        ";;max-age=123",
+      ";;;;max-age=123",   "; ;max-age=123",      "; ; max-age=123",
+      ";max-age=123;",     ";;max-age=123;;",     ";;;;max-age=123;;;;",
+      "; ;max-age=123; ;", "; ; max-age=123; ; ", "max-age=123;",
+      "max-age=123;;",     "max-age=123;;;;",     "max-age=123; ;",
+      "max-age=123; ; ",
+  };
+  for (const char* value : test_cases) {
+    SCOPED_TRACE(value);
+    EXPECT_TRUE(ParseHSTSHeader(value, &max_age, &include_subdomains));
+    EXPECT_EQ(base::Seconds(123), max_age);
+    EXPECT_FALSE(include_subdomains);
+  }
+}
+
+TEST_F(HttpSecurityHeadersTest, InvalidDirectiveNames) {
+  base::TimeDelta max_age;
+  bool include_subdomains = false;
+
+  const char* test_cases[] = {
+      "'max-age'=1",
+      "\"max-age\"=1",
+      "max-age=1; max-age=2",
+      "max-age=1; MaX-AgE=2",
+      "max-age=1; includeSubDomains; iNcLUdEsUbDoMaInS",
+      "max-age=1; \"",
+      "max-age=1; \"includeSubdomains",
+      "max-age=1; in\"cludeSubdomains",
+      "max-age=1; includeSubdomains\"",
+      "max-age=1; \"includeSubdomains\"",
+      "max-age=1; includeSubdomains; non\"token",
+      "max-age=1; includeSubdomains; non@token",
+      "max-age=1; includeSubdomains; non,token",
+      "max-age=1; =2",
+      "max-age=1; =2; unknownDirective",
+  };
+
+  for (const char* value : test_cases) {
+    SCOPED_TRACE(value);
+    EXPECT_FALSE(ParseHSTSHeader(value, &max_age, &include_subdomains));
+  }
+}
+
+TEST_F(HttpSecurityHeadersTest, InvalidDirectiveValues) {
+  base::TimeDelta max_age;
+  bool include_subdomains = false;
+
+  const char* test_cases[] = {
+      "max-age=",
+      "max-age=@",
+      "max-age=1a;",
+      "max-age=1a2;",
+      "max-age=1##;",
+      "max-age=12\";",
+      "max-age=-1;",
+      "max-age=+1;",
+      "max-age='1';",
+      "max-age=1abc;",
+      "max-age=1 abc;",
+      "max-age=1.5;",
+      "max-age=1; includeSubDomains=true",
+      "max-age=1; includeSubDomains=false",
+      "max-age=1; includeSubDomains=\"\"",
+      "max-age=1; includeSubDomains=''",
+      "max-age=1; includeSubDomains=\"true\"",
+      "max-age=1; includeSubDomains=\"false\"",
+      "max-age=1; unknownDirective=non\"token",
+      "max-age=1; unknownDirective=non@token",
+      "max-age=1; unknownDirective=non,token",
+      "max-age=1; unknownDirective=",
+  };
+
+  for (const char* value : test_cases) {
+    SCOPED_TRACE(value);
+    EXPECT_FALSE(ParseHSTSHeader(value, &max_age, &include_subdomains));
+  }
+}
 
 TEST_F(HttpSecurityHeadersTest, BogusHeaders) {
   base::TimeDelta max_age;

@@ -36,6 +36,7 @@
 namespace safe_browsing {
 class WebUIInfoSingleton;
 class ReferrerChainProvider;
+class SafeBrowsingUIHandler;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 struct DeepScanDebugData {
@@ -47,10 +48,32 @@ struct DeepScanDebugData {
   std::optional<enterprise_connectors::ContentAnalysisRequest> request;
   bool per_profile_request;
   std::string access_token_truncated;
+  std::string upload_info;
+  std::string upload_url;
 
   base::Time response_time;
   std::string response_status;
   std::optional<enterprise_connectors::ContentAnalysisResponse> response;
+};
+
+// Local override of a download TailoredVerdict.
+struct TailoredVerdictOverrideData {
+  // Identifies the SafeBrowsingUIHandler it was set from, it is derived from
+  // a SafeBrowsingUIHandler* pointer but is only used in comparison and never
+  // dereferenced, to avoid dangling pointer.
+  using SourceId = std::uintptr_t;
+
+  TailoredVerdictOverrideData();
+  TailoredVerdictOverrideData(const TailoredVerdictOverrideData&) = delete;
+  ~TailoredVerdictOverrideData();
+
+  void Set(ClientDownloadResponse::TailoredVerdict new_value,
+           const SafeBrowsingUIHandler* new_source);
+  bool IsFromSource(const SafeBrowsingUIHandler* maybe_source) const;
+  void Clear();
+
+  std::optional<ClientDownloadResponse::TailoredVerdict> override_value;
+  SourceId source = 0u;
 };
 #endif
 
@@ -90,9 +113,25 @@ struct ClientPhishingRequestAndToken {
   std::string token;
 };
 
+// Provides access to local state preferences.
+class SafeBrowsingLocalStateDelegate {
+ public:
+  SafeBrowsingLocalStateDelegate() = default;
+  virtual ~SafeBrowsingLocalStateDelegate() = default;
+  SafeBrowsingLocalStateDelegate(const SafeBrowsingLocalStateDelegate&) =
+      delete;
+  SafeBrowsingLocalStateDelegate& operator=(
+      const SafeBrowsingLocalStateDelegate&) = delete;
+  explicit SafeBrowsingLocalStateDelegate(content::WebUI* web_ui) {}
+  // Returns the local state preference service.
+  virtual PrefService* GetLocalState() = 0;
+};
+
 class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
  public:
-  SafeBrowsingUIHandler(content::BrowserContext* context);
+  SafeBrowsingUIHandler(
+      content::BrowserContext* context,
+      std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate);
 
   SafeBrowsingUIHandler(const SafeBrowsingUIHandler&) = delete;
   SafeBrowsingUIHandler& operator=(const SafeBrowsingUIHandler&) = delete;
@@ -205,6 +244,16 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // currently open chrome://safe-browsing tab was opened.
   void GetDeepScans(const base::Value::List& args);
 
+  // Get the most recently set tailored verdict override, if its setting
+  // chrome://safe-browsing tab has not been closed.
+  void GetTailoredVerdictOverride(const base::Value::List& args);
+
+  // Sets the tailored verdict override from args.
+  void SetTailoredVerdictOverride(const base::Value::List& args);
+
+  // Clears the current tailored verdict override.
+  void ClearTailoredVerdictOverride(const base::Value::List& args);
+
   // Register callbacks for WebUI messages.
   void RegisterMessages() override;
 
@@ -304,6 +353,16 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
                                 const DeepScanDebugData& request);
 #endif
 
+  // Gets the tailored verdict override in a format for displaying.
+  base::Value::Dict GetFormattedTailoredVerdictOverride();
+
+  // Notifies the WebUI instance that a change in tailored verdict override
+  // occurred.
+  void NotifyTailoredVerdictOverrideJsListener();
+
+  // Sends formatted tailored verdict override information to the WebUI.
+  void ResolveTailoredVerdictOverrideCallback(const std::string& callback_id);
+
   // Callback when the CookieManager has returned the cookie.
   void OnGetCookie(const std::string& callback_id,
                    const std::vector<net::CanonicalCookie>& cookies);
@@ -315,13 +374,17 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   // List that keeps all the WebUI listener objects.
   static std::vector<SafeBrowsingUIHandler*> webui_list_;
 
+  // Returns PrefService for local state.
+  std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate_;
+
   base::WeakPtrFactory<SafeBrowsingUIHandler> weak_factory_{this};
 };
 
 // The WebUI for chrome://safe-browsing
 class SafeBrowsingUI : public content::WebUIController {
  public:
-  explicit SafeBrowsingUI(content::WebUI* web_ui);
+  SafeBrowsingUI(content::WebUI* web_ui,
+                 std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate);
 
   SafeBrowsingUI(const SafeBrowsingUI&) = delete;
   SafeBrowsingUI& operator=(const SafeBrowsingUI&) = delete;
@@ -476,6 +539,8 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   void AddToDeepScanRequests(
       bool per_profile_request,
       const std::string& access_token,
+      const std::string& upload_info,
+      const std::string& upload_url,
       const enterprise_connectors::ContentAnalysisRequest& request);
 
   // Add the new response to |deep_scan_requests_| and send it to all the open
@@ -487,7 +552,16 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
 
   // Clear the list of deep scan requests and responses.
   void ClearDeepScans();
+
+  // Overwrites any existing override.
+  void SetTailoredVerdictOverride(
+      ClientDownloadResponse::TailoredVerdict new_value,
+      const SafeBrowsingUIHandler* new_source);
+
+  // Clears any registered tailored verdict override.
+  void ClearTailoredVerdictOverride();
 #endif
+
   // Register the new WebUI listener object.
   void RegisterWebUIInstance(SafeBrowsingUIHandler* webui);
 
@@ -606,6 +680,11 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
       const {
     return deep_scan_requests_;
   }
+
+  // Gets the currently registered override data.
+  const TailoredVerdictOverrideData& tailored_verdict_override() const {
+    return tailored_verdict_override_;
+  }
 #endif
 
   const std::vector<std::pair<base::Time, std::string>>& log_messages() {
@@ -623,8 +702,7 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
       content::BrowserContext* browser_context);
 
 #if BUILDFLAG(IS_ANDROID)
-  LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
-      content::WebContents* web_contents);
+  ReferringAppInfo GetReferringAppInfo(content::WebContents* web_contents);
 #endif
 
   void set_safe_browsing_service(SafeBrowsingServiceInterface* sb_service) {
@@ -739,7 +817,10 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
   // chrome://safe-browsing tab was opened. Maps from the unique token per
   // request to the data about the request.
   base::flat_map<std::string, DeepScanDebugData> deep_scan_requests_;
-#endif
+
+  // Local override of download TailoredVerdict.
+  TailoredVerdictOverrideData tailored_verdict_override_;
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
   // The Safe Browsing service.
   raw_ptr<SafeBrowsingServiceInterface> sb_service_ = nullptr;

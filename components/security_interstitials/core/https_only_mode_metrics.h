@@ -126,7 +126,10 @@ enum class NavigationRequestSecurityLevel {
   // opposed to autocompleted) that included an explicit http scheme.
   kExplicitHttpScheme = 9,
 
-  kMaxValue = kExplicitHttpScheme,
+  // Request was for a captive portal login page.
+  kCaptivePortalLogin = 10,
+
+  kMaxValue = kCaptivePortalLogin,
 };
 
 // Recorded by the Site Engagement Heuristic logic, recording whether HFM should
@@ -150,9 +153,15 @@ enum class SiteEngagementHeuristicState {
 
 // Stores the parameters to decide whether to show an interstitial for the
 // current site.
+// TODO(crbug.com/40937027): Consider making this a variant used to track which
+// specific feature is being applied to simplify code reasoning elsewhere.
 struct HttpInterstitialState {
   // Whether HTTPS-First Mode is enabled using the global UI toggle.
   bool enabled_by_pref = false;
+
+  // Whether HTTPS-First Mode is enabled because the navigation is in Incognito
+  // (when HFM-in-Incognito is enabled).
+  bool enabled_by_incognito = false;
 
   // Whether HTTPS-First Mode is enabled for the current site due to the
   // site engagement heuristic.
@@ -165,6 +174,11 @@ struct HttpInterstitialState {
   // Whether HTTPS-First Mode is enabled because the user's browsing pattern
   // is typically secure, i.e. they mainly visit HTTPS sites.
   bool enabled_by_typically_secure_browsing = false;
+
+  // Whether HTTPS-First Mode is enabled in a balanced mode, which attempts to
+  // warn when HTTPS can be expected to succeed, but not when it will likely
+  // fail (e.g. to non-unique hostnames).
+  bool enabled_in_balanced_mode = false;
 };
 
 // Helper to record an HTTPS-First Mode navigation event.
@@ -195,8 +209,8 @@ void RecordSiteEngagementHeuristicEnforcementDuration(
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Values may be added to offer greater
-// specificity in the future. Keep in sync with SiteEngagementHeuristicState
-// in enums.xml.
+// specificity in the future. Keep in sync with HttpsFirstModeInterstitialReason
+// in security/enums.xml.
 enum class InterstitialReason {
   kUnknown = 0,
   // The interstitial was shown because the user enabled the UI pref.
@@ -207,9 +221,13 @@ enum class InterstitialReason {
   // The interstitial was shown because of the Site Engagement heuristic.
   kSiteEngagementHeuristic = 3,
   // The interstitial was shown because of the Typically Secure User heuristic.
-  kTypicallySecureUserHeuristic = 3,
+  kTypicallySecureUserHeuristic = 4,
+  // The interstitial was shown because of HTTPS-First Mode in Incognito.
+  kIncognito = 5,
+  // The interstitial was shown because of HTTPS-First Balance Mode.
+  kBalanced = 6,
 
-  kMaxValue = kTypicallySecureUserHeuristic,
+  kMaxValue = kBalanced,
 };
 
 void RecordInterstitialReason(const HttpInterstitialState& interstitial_state);

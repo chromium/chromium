@@ -312,7 +312,7 @@ AnimationSpeedControl::AnimationSpeedControl() {
   // Because the slider is focusable, it needs to have an accessible name so
   // that the screen reader knows what to announce. Indicating the slider is
   // labelled by the title will cause ViewAccessibility to set the name.
-  slider_->GetViewAccessibility().OverrideLabelledBy(title);
+  slider_->GetViewAccessibility().SetName(*title);
 }
 
 AnimationSpeedControl::~AnimationSpeedControl() = default;
@@ -340,7 +340,8 @@ void AnimationSpeedControl::Layout(PassKey) {
   gfx::Size max_size;
   // Make all labels equal size.
   for (const views::View* label : hints_container_->children()) {
-    max_size.SetToMax(label->GetPreferredSize());
+    max_size.SetToMax(
+        label->GetPreferredSize(views::SizeBounds(label->width(), {})));
   }
 
   for (views::View* label : hints_container_->children()) {
@@ -600,9 +601,9 @@ HUDSettingsView::HUDSettingsView(HUDDisplayView* hud_display) {
 
   AshTracingManager::Get().AddObserver(this);
   aura::Env* env = aura::Env::GetInstance();
-  env->AddEventObserver(
-      this, env,
-      std::set<ui::EventType>({ui::ET_MOUSE_DRAGGED, ui::ET_MOUSE_MOVED}));
+  env->AddEventObserver(this, env,
+                        std::set<ui::EventType>({ui::EventType::kMouseDragged,
+                                                 ui::EventType::kMouseMoved}));
 }
 
 HUDSettingsView::~HUDSettingsView() {

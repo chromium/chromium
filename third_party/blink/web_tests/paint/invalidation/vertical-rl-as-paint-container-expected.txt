@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow (children-inline) DIV id='target'",
+      "name": "LayoutBlockFlow (children-inline) DIV id='target'",
       "bounds": [600, 400],
       "backfaceVisibility": "hidden",
       "invalidations": [

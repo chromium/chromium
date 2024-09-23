@@ -1,0 +1,56 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module font_data_service.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+enum TypefaceSlant {
+  kRoman = 0,
+  kItalic = 1,
+  kOblique = 2,
+};
+
+struct TypefaceStyle {
+  uint16 weight;
+  uint8 width;
+  TypefaceSlant slant;
+};
+
+struct Coordinate {
+    uint32 axis;
+    float value;
+};
+
+struct VariationPosition {
+    array<Coordinate> coordinates;
+    uint16 coordinateCount;
+};
+
+struct MatchFamilyNameResult {
+  // The data used to recreate the typeface.
+  mojo_base.mojom.ReadOnlySharedMemoryRegion region;
+
+  // The index of the matching typeface, or zero if typeface is not a
+  // collection.
+  int32 ttc_index;
+
+  // Variable font properties.
+  VariationPosition? variation_position;
+};
+
+// Loads and resolves fonts from the renderer to the browser (embedder). Takes
+// requests by font family name and style and resolves it with the matching
+// typeface.
+//
+// Created on renderer process startup when constructing the font manager.
+interface FontDataService {
+
+  // Returns the best match for |family_name| and |style|.
+  // On error, returns null.
+  [Sync]
+  MatchFamilyName(string family_name, TypefaceStyle style) =>
+     (MatchFamilyNameResult? result);
+
+};

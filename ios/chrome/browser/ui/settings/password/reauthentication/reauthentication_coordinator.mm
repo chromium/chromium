@@ -37,7 +37,6 @@ bool IsPasscodeSettingsAvailable() {
   // Use both kill switch and auth on entry feature flag to control the
   // dispalying of the action.
   return password_manager::features::IsPasscodeSettingsEnabled() &&
-         password_manager::features::IsAuthOnEntryV2Enabled() &&
          ios::provider::SupportsPasscodeSettings();
 }
 
@@ -101,9 +100,7 @@ bool IsPasscodeSettingsAvailable() {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (password_manager::features::IsAuthOnEntryV2Enabled()) {
-    [self.browser->GetSceneState() addObserver:self];
-  }
+  [self.browser->GetSceneState() addObserver:self];
 
   if (_authOnStart) {
     [self pushReauthenticationViewControllerWithRequestAuth:YES];
@@ -127,7 +124,7 @@ bool IsPasscodeSettingsAvailable() {
 
 // Creates and displays an alert requesting the user to set a passcode.
 - (void)showSetUpPasscodeDialog {
-  // TODO(crbug.com/1462419): Open iOS Passcode Settings for phase 2 launch in
+  // TODO(crbug.com/40274927): Open iOS Passcode Settings for phase 2 launch in
   // M118. See i/p/p/c/b/password_auto_fill/password_auto_fill_api.h for
   // reference.
   NSString* title =
@@ -181,7 +178,9 @@ bool IsPasscodeSettingsAvailable() {
     [self popReauthenticationViewController];
 
     [_delegate successfulReauthenticationWithCoordinator:self];
-
+    // The user has been authenticated. No need to reauth until the scene goes
+    // back go the background.
+    _authOnForegroundActive = NO;
   } else {
     [self closeUI];
   }
@@ -214,37 +213,29 @@ bool IsPasscodeSettingsAvailable() {
   // backgrounded. Otherwise just pop the reauth view controller and unblock the
   // surface below.
   switch (level) {
+    case SceneActivationLevelBackground:
+      // Require auth next time the scene is foregrounded.
+      _authOnForegroundActive = YES;
+      [[fallthrough]];
     case SceneActivationLevelForegroundInactive:
       // Present reauth vc if not presented already.
-      // Do it while the scene is still in the foreground to prevent the top
-      // surface in the navigation stack from being visible in the app switcher.
+      // Ideally do it while the scene is still in the foreground to prevent the
+      // top surface in the navigation stack from being visible in the app
+      // switcher. This is not always possible as the app some times goes
+      // straight to `SceneActivationLevelBackground`. See crbug.com/40074678.
       if (!_reauthViewController) {
         [self pushReauthenticationViewControllerWithRequestAuth:NO];
       }
       break;
-    case SceneActivationLevelBackground:
-      // Require auth next time the scene is foregrounded.
-      _authOnForegroundActive = YES;
-      break;
+
     case SceneActivationLevelForegroundActive:
       // Either ask for reauth if the scene was fully backgrounded or just
       // remove the blocking view controller.
       if (_authOnForegroundActive) {
         _authOnForegroundActive = NO;
-
-        // Reauth vc should have been pushed on
-        // `SceneActivationLevelForegroundInactive` when the scene was moving to
-        // the background.
         if (!_reauthViewController) {
-          // TODO(crbug.com/1492017): Fix scenario where the scene is active but
-          // reauth vc wasn't pushed when inactive.
           base::debug::DumpWithoutCrashing();
-          // Gracefully handling this scenario by pushing the reauth vc and
-          // request auth.
-          [self pushReauthenticationViewControllerWithRequestAuth:YES];
-          return;
         }
-
         [_reauthViewController requestAuthentication];
       } else {
         [self popReauthenticationViewController];
@@ -309,7 +300,7 @@ bool IsPasscodeSettingsAvailable() {
 
 // Closes the UI and open the support page on setting up a passcode.
 - (void)openPasscodeHelpPage {
-  // TODO(crbug.com/1462419): Move to ReauthenticationCoordinatorDelegate.
+  // TODO(crbug.com/40274927): Move to ReauthenticationCoordinatorDelegate.
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kPasscodeArticleURL)];
   [_dispatcher closeSettingsUIAndOpenURL:command];

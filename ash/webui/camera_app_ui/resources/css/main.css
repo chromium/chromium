@@ -3,6 +3,8 @@
  * found in the LICENSE file. */
 
 :root {
+  color-scheme: only dark;
+
   --fast1-duration: 100ms;
   --fast2-duration: 200ms;
   --moderate1-duration: 250ms;
@@ -50,7 +52,12 @@ body {
   overflow: hidden;
   position: absolute;
   top: 0;
-  touch-action: none;
+  /*
+   * Disable pinch-to-zoom in CCA and allow the back gesture. Note that back
+   * gesture is an OS-level gesture and can only be disabled by setting
+   * `touch-action: none`.
+   */
+  touch-action: pan-left;
   width: 100%;
 }
 
@@ -104,7 +111,7 @@ input[type=checkbox] {
   width: 40px;
 }
 
-.menu-item > input.icon {
+.menu-item input.icon {
   outline-offset: -4px;
 }
 input[type=radio].icon {
@@ -565,6 +572,7 @@ body.doc-mode-reviewing #open-settings {
 #view-settings,
 #view-photo-aspect-ratio-settings,
 #view-photo-resolution-settings,
+#view-super-res-intro-dialog,
 #view-video-resolution-settings,
 #view-expert-settings,
 #view-warning,
@@ -592,6 +600,7 @@ body.view-low-storage-dialog #view-low-storage-dialog,
 body.view-settings #view-settings,
 body.view-photo-aspect-ratio-settings #view-photo-aspect-ratio-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
+body.view-super-res-intro-dialog #view-super-res-intro-dialog,
 body.view-video-resolution-settings #view-video-resolution-settings,
 body.view-expert-settings #view-expert-settings,
 body.view-warning #view-warning,
@@ -649,6 +658,7 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
 }
 
 #preview-viewport {
+  anchor-name: --preview-viewport;
   height: var(--preview-viewport-height);
   overflow: hidden;
   position: relative;
@@ -1062,7 +1072,7 @@ html[dir=rtl] .menu-header .icon {
 #view-warning #error-msg {
   font: var(--cros-body-0-font);
   text-align: center;
-  white-space: pre-wrap;
+  white-space: pre-line;
 }
 
 .dialog {
@@ -1281,6 +1291,66 @@ body:not(.video) #settings-video-resolution {
   width: 20px;
 }
 
+#view-super-res-intro-dialog {
+  --border-radius: 20px;
+
+  align-items: flex-start;
+  background: unset;
+}
+
+#view-super-res-intro-dialog .dialog-container {
+  background-color: var(--cros-sys-base_elevated);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  /* Align the dialog with the center of the camera preview */
+  transform: translateY(calc(0.5*var(--preview-viewport-height) - 50%));
+}
+
+#super-res-dialog-illustration {
+  background: var(--cros-sys-app_base);
+}
+
+#super-res-dialog-content {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 32px 32px 32px;
+  width: 416px;
+}
+
+#super-res-dialog-content .dialog-title {
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-display-7-font);
+}
+
+#super-res-dialog-content .dialog-description {
+  color: var(--cros-sys-secondary);
+  font: var(--cros-body-2-font);
+  margin-top: 16px;
+}
+
+#super-res-dialog-content .dialog-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+#super-res-dialog-content .ptz-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#open-ptz-panel:is(.notify-new-feature) #notify-super-res-indicator {
+  background: var(--cros-sys-primary);
+  border-radius: 50%;
+  height: 6px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 6px;
+}
+
 #view-settings {
   background: var(--cros-sys-scrim);
 }
@@ -1289,4 +1359,81 @@ body.hide-floating-ui-for-testing
   :is(#nudge, #toast, text-tooltip, .custom-toast, .no-document-toast) {
   /* TODO(b/289342383): Use CSS layering so we don't need to use !important. */
   display: none !important;
+}
+
+.snackbar {
+  align-items: center;
+  background: var(--cros-sys-inverse_surface);
+  border-radius: 12px;
+  /*
+   * TODO(pihsun): Move the snackbar to the position as the design after jelly
+   * is default on.
+   */
+  bottom: anchor(bottom);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  color: var(--cros-sys-inverse_on_surface);
+  display: flex;
+  font: var(--cros-body-2-font);
+  height: 48px;
+  left: anchor(left);
+  margin: 4px;
+  opacity: 0;
+  padding: 14px 16px;
+  pointer-events: none;
+  position: absolute;
+  position-anchor: --preview-viewport;
+  width: 256px;
+}
+
+.snackbar.animate {
+  animation: 3s show-snackbar linear;
+}
+
+@keyframes show-snackbar {
+  0% {
+    opacity: 0;
+  }
+  /* 100ms fade-in */
+  3.33% {
+    opacity: 1;
+  }
+  97.33% {
+    opacity: 1;
+  }
+  /* 80ms fade-out */
+  100% {
+    opacity: 0;
+  }
+}
+
+body:not(.photo) #settings-preview-ocr {
+  display: none;
+}
+
+#settings-preview-ocr-option {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-inline: auto 12px;
+  position: relative;
+}
+
+#settings-preview-ocr-option svg-wrapper {
+  color: transparent;
+  height: 0;
+  position: absolute;
+  transition: all var(--fast1-duration) ease-in;
+  width: 0;
+}
+
+/* Hide default check mark since it's using custom icon. */
+#settings-preview-ocr-option input::before {
+  background: transparent;
+}
+
+#settings-preview-ocr-option:has(input:checked) svg-wrapper {
+  color: var(--cros-sys-primary);
+  height: 14px;
+  width: 14px;
 }

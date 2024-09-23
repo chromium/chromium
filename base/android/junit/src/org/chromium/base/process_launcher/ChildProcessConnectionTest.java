@@ -173,7 +173,10 @@ public class ChildProcessConnectionTest {
                         })
                 .when(mIChildProcessService)
                 .setupConnection(
-                        or(isNull(), any(Bundle.class)), or(isNull(), any()), or(isNull(), any()));
+                        or(isNull(), any(Bundle.class)),
+                        or(isNull(), any()),
+                        or(isNull(), any()),
+                        or(isNull(), any()));
 
         mChildProcessServiceBinder = new Binder();
         mChildProcessServiceBinder.attachInterface(
@@ -377,6 +380,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
         verify(mConnectionCallback, never()).onConnected(any());
@@ -395,6 +399,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
         verify(mConnectionCallback, never()).onConnected(any());
@@ -416,6 +421,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
         verify(mConnectionCallback, never()).onConnected(any());
@@ -442,6 +448,7 @@ public class ChildProcessConnectionTest {
         connection1.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
@@ -465,6 +472,7 @@ public class ChildProcessConnectionTest {
         connection2.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
@@ -490,6 +498,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 mZygoteInfoCallback);
         verify(mConnectionCallback, never()).onConnected(any());
@@ -520,6 +529,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 mZygoteInfoCallback);
         verify(mConnectionCallback, never()).onConnected(any());
@@ -548,6 +558,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
         verify(mConnectionCallback, never()).onConnected(any());
@@ -566,6 +577,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
         verify(mConnectionCallback, never()).onConnected(any());
@@ -619,6 +631,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
         verify(mConnectionCallback, never()).onConnected(any());
@@ -669,6 +682,7 @@ public class ChildProcessConnectionTest {
         connection.setupConnection(
                 /* connectionBundle= */ null,
                 /* callback= */ null,
+                /* binderBox= */ null,
                 mConnectionCallback,
                 /* zygoteInfoCallback= */ null);
 

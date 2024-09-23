@@ -1,0 +1,74 @@
+This is a testharness.js-based test.
+Found 35 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] replaceWith('plain text';) on <script> should pass
+  Failed to execute 'replaceWith' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] after('plain text';) on <script> should pass
+  Failed to execute 'after' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] before('plain text';) on <script> should pass
+  Failed to execute 'before' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] append('plain text';) on <script> should pass
+  Failed to execute 'append' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] prepend('plain text';) on <script> should pass
+  Failed to execute 'prepend' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] replaceWith('plain text #1';,'plain text #2';) on <script> should pass
+  Failed to execute 'replaceWith' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] after('plain text #1';,'plain text #2';) on <script> should pass
+  Failed to execute 'after' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] before('plain text #1';,'plain text #2';) on <script> should pass
+  Failed to execute 'before' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] append('plain text #1';,'plain text #2';) on <script> should pass
+  Failed to execute 'append' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] prepend('plain text #1';,'plain text #2';) on <script> should pass
+  Failed to execute 'prepend' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] replaceWith([object Text]) on <script> should pass
+  Failed to execute 'replaceWith' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] after([object Text]) on <script> should pass
+  Failed to execute 'after' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] before([object Text]) on <script> should pass
+  Failed to execute 'before' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] append([object Text]) on <script> should pass
+  Failed to execute 'append' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] prepend([object Text]) on <script> should pass
+  Failed to execute 'prepend' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] replaceWith([object Text],[object Text]) on <script> should pass
+  Failed to execute 'replaceWith' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] after([object Text],[object Text]) on <script> should pass
+  Failed to execute 'after' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] before([object Text],[object Text]) on <script> should pass
+  Failed to execute 'before' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] append([object Text],[object Text]) on <script> should pass
+  Failed to execute 'append' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] prepend([object Text],[object Text]) on <script> should pass
+  Failed to execute 'prepend' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] replaceWith('mixed';,[object Text]) on <script> should pass
+  Failed to execute 'replaceWith' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] after('mixed';,[object Text]) on <script> should pass
+  Failed to execute 'after' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] before('mixed';,[object Text]) on <script> should pass
+  Failed to execute 'before' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] append('mixed';,[object Text]) on <script> should pass
+  Failed to execute 'append' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] prepend('mixed';,[object Text]) on <script> should pass
+  Failed to execute 'prepend' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] replaceWith('mixed';,'script';) on <script> should pass
+  Failed to execute 'replaceWith' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] after('mixed';,'script';) on <script> should pass
+  Failed to execute 'after' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] before('mixed';,'script';) on <script> should pass
+  Failed to execute 'before' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] append('mixed';,'script';) on <script> should pass
+  Failed to execute 'append' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] prepend('mixed';,'script';) on <script> should pass
+  Failed to execute 'prepend' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] replaceWith([object Text],'script';) on <script> should pass
+  Failed to execute 'replaceWith' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] after([object Text],'script';) on <script> should pass
+  Failed to execute 'after' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] before([object Text],'script';) on <script> should pass
+  Failed to execute 'before' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] append([object Text],'script';) on <script> should pass
+  Failed to execute 'append' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] prepend([object Text],'script';) on <script> should pass
+  Failed to execute 'prepend' on 'Element': This document requires 'TrustedScript' assignment.
+Harness: the test ran to completion.
+

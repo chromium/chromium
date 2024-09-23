@@ -60,7 +60,7 @@ class DistillabilityDriver
 
   // The most recently received result from the distillability service.
   //
-  // TODO(https://crbug.com/952042): Set this to nullopt when navigating to a
+  // TODO(crbug.com/40622813): Set this to nullopt when navigating to a
   // new page, accounting for same-document navigation.
   std::optional<DistillabilityResult> latest_result_;
 

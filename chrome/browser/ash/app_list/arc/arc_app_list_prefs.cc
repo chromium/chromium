@@ -21,7 +21,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -47,6 +46,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_pai_starter.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
+#include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -142,6 +142,8 @@ constexpr base::TimeDelta kDetectDefaultAppAvailabilityTimeout =
 constexpr const char kAppCountUmaPrefix[] = "Arc.AppCount.";
 // Do not increase. See base/metrics/histogram_functions.h.
 constexpr int kAppCountUmaExclusiveMax = 101;
+// A smaller bucket size for apps with a lower count.
+constexpr int kAppCountUmaExclusiveMaxLower = 20;
 
 // Accessor for deferred set notifications enabled requests in prefs.
 class NotificationsEnabledDeferred {
@@ -234,7 +236,7 @@ void DeleteAppFolderFromFileThread(const base::FilePath& path) {
   DCHECK(deleted);
 }
 
-// TODO(crbug.com/672829): Due to shutdown procedure dependency,
+// TODO(crbug.com/40497410): Due to shutdown procedure dependency,
 // ArcAppListPrefs may try to touch ArcSessionManager related stuff.
 // Specifically, this returns false on shutdown phase.
 // Remove this check after the shutdown behavior is fixed.
@@ -391,12 +393,6 @@ void MaybeRemoveDeprecatedPackagePrefs(arc::ArcAppScopedPrefUpdate&& update) {
   update.Get().Remove(kDeprecatePackagePrefsSystem);
 }
 
-ash::LoginUnlockThroughputRecorder* GetLoginRecorder() {
-  return ash::Shell::HasInstance()
-             ? ash::Shell::Get()->login_unlock_throughput_recorder()
-             : nullptr;
-}
-
 // Validate |locale_tag| based on IETF BCP 47 language tag.
 bool IsLocaleTagValid(const std::string& locale_tag) {
   UErrorCode error = U_ZERO_ERROR;
@@ -435,9 +431,10 @@ void OnArcAppListRefreshed(Profile* profile) {
   if (!arc::IsArcPlayStoreEnabledForProfile(profile))
     return;
 
-  ash::LoginUnlockThroughputRecorder* throughput_recorder = GetLoginRecorder();
-  if (!throughput_recorder || !throughput_recorder->NeedReportArcAppListReady())
+  if (!arc::ArcInitialOptInMetricsRecorder::GetForProfile(profile)
+           ->NeedReportArcAppListReady()) {
     return;
+  }
 
   DCHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile);
   auto* prefs = ArcAppListPrefs::Get(profile);
@@ -460,8 +457,10 @@ void OnArcAppListRefreshed(Profile* profile) {
       ++error;
     }
   }
-  if (ready + error >= launchable)
-    throughput_recorder->OnArcAppListReady();
+  if (ready + error >= launchable) {
+    arc::ArcInitialOptInMetricsRecorder::GetForProfile(profile)
+        ->OnArcAppListReady();
+  }
 }
 }  // namespace
 
@@ -578,12 +577,10 @@ ArcAppListPrefs::ArcAppListPrefs(
   if (resize_lock_manager)
     resize_lock_manager->SetPrefDelegate(this);
 
-  if (ash::features::IsPasspointARCSupportEnabled()) {
-    arc::ArcNetHostImpl* net_host =
-        arc::ArcNetHostImpl::GetForBrowserContext(profile_);
-    if (net_host) {
-      net_host->SetArcAppMetadataProvider(this);
-    }
+  arc::ArcNetHostImpl* net_host =
+      arc::ArcNetHostImpl::GetForBrowserContext(profile_);
+  if (net_host) {
+    net_host->SetArcAppMetadataProvider(this);
   }
 
   if (base::FeatureList::IsEnabled(arc::kSyncInstallPriority)) {
@@ -1154,7 +1151,7 @@ void ArcAppListPrefs::SetLaunchRequestTimeForTesting(const std::string& app_id,
 }
 void ArcAppListPrefs::SetLastLaunchTime(const std::string& app_id) {
   if (!IsRegistered(app_id)) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return;
   }
 
@@ -1183,7 +1180,6 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
         user_manager::UserManager::Get();
     if (arc::ArcSessionManager::Get()->skipped_terms_of_service_negotiation() &&
         !user_manager->IsLoggedInAsKioskApp() &&
-        !user_manager->IsLoggedInAsArcKioskApp() &&
         !ash::UserSessionManager::GetInstance()->ui_shown_time().is_null()) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Arc.FirstAppLaunchRequest.TimeDelta",
@@ -1191,6 +1187,15 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
           base::Seconds(1), base::Minutes(2), 20);
     }
   }
+}
+
+void ArcAppListPrefs::SetLastLaunchTimeForTesting(const std::string& app_id,
+                                                  base::Time timestamp) {
+  arc::ArcAppScopedPrefUpdate update(prefs_, app_id, arc::prefs::kArcApps);
+  base::Value::Dict& app_dict = update.Get();
+  const std::string string_value =
+      base::NumberToString(timestamp.ToInternalValue());
+  app_dict.Set(kLastLaunchTime, string_value);
 }
 
 void ArcAppListPrefs::DisableAllApps() {
@@ -1209,7 +1214,7 @@ void ArcAppListPrefs::NotifyRegisteredApps() {
   for (const auto& app_id : app_ids) {
     std::unique_ptr<AppInfo> app_info = GetApp(app_id);
     if (!app_info) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 
@@ -1323,6 +1328,8 @@ void ArcAppListPrefs::RecordAppIdsUma() {
   // "Installed" apps are the ones that the user has manually installed. This
   // includes apps installed by Chrome's app sync feature. 0 for opt-out users.
   size_t num_installed_apps = 0;
+  // Number of apps that is a vpn_provider.
+  size_t num_vpn_apps = 0;
 
   const std::vector<std::string> app_ids = GetAppIds();
   for (const auto& app_id : app_ids) {
@@ -1345,6 +1352,10 @@ void ArcAppListPrefs::RecordAppIdsUma() {
     } else {
       ++num_installed_apps;
     }
+    auto package = GetPackage(app_info->package_name);
+    if (package && package->vpn_provider) {
+      ++num_vpn_apps;
+    }
   }
 
   const bool has_installed_apps = num_installed_apps;
@@ -1361,6 +1372,8 @@ void ArcAppListPrefs::RecordAppIdsUma() {
   base::UmaHistogramExactLinear(
       base::StrCat({kAppCountUmaPrefix, "InstalledApp"}), num_installed_apps,
       kAppCountUmaExclusiveMax);
+  base::UmaHistogramExactLinear(base::StrCat({kAppCountUmaPrefix, "VpnApp"}),
+                                num_vpn_apps, kAppCountUmaExclusiveMaxLower);
   base::UmaHistogramBoolean(
       base::StrCat({kAppCountUmaPrefix, "HasInstalledOrUnknownApp"}),
       has_installed_apps);
@@ -2249,7 +2262,7 @@ std::unordered_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
       continue;
 
     if (!app.second.is_dict()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 
@@ -2377,7 +2390,7 @@ void ArcAppListPrefs::OnNotificationsEnabledChanged(
   const base::Value::Dict& apps = prefs_->GetDict(arc::prefs::kArcApps);
   for (const auto app : apps) {
     if (!app.second.is_dict()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
     const std::string* app_package_name =
@@ -2395,18 +2408,6 @@ void ArcAppListPrefs::OnNotificationsEnabledChanged(
   }
   for (auto& observer : observer_list_)
     observer.OnNotificationsEnabledChanged(package_name, enabled);
-}
-
-bool ArcAppListPrefs::IsUnknownPackage(const std::string& package_name) const {
-  if (GetPackage(package_name))
-    return false;
-  if (sync_service_ && sync_service_->IsPackageSyncing(package_name))
-    return false;
-  if (default_apps_->HasPackage(package_name))
-    return false;
-  if (apps_installations_.count(package_name))
-    return false;
-  return true;
 }
 
 bool ArcAppListPrefs::IsDefaultPackage(const std::string& package_name) const {
@@ -2495,7 +2496,7 @@ std::vector<std::string> ArcAppListPrefs::GetPackagesFromPrefs(
       prefs_->GetDict(arc::prefs::kArcPackages);
   for (const auto package : package_prefs) {
     if (!package.second.is_dict()) {
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       continue;
     }
 

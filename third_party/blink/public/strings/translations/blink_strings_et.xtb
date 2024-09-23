@@ -1,29 +1,20 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
-<translation id="1088086359088493902">Sekundid</translation>
-<translation id="1142001580032786438">Kuva nädala valija</translation>
+<translation id="1012241361789814178">Siluja on mõnel teisel vahekaardil peatatud, klõpsake sellele vahekaardile lülitumiseks.</translation>
 <translation id="1171774979989969504">Sisestage meiliaadress.</translation>
 <translation id="1178581264944972037">Peata</translation>
 <translation id="1306460908038601864">Väljas</translation>
 <translation id="1311894908970423688">Väärtus peab olema <ph name="VALUE_DATE_OR_TIME" />.</translation>
-<translation id="1480676835519562650">mitme valikuga, valitud on <ph name="SELECTED" /> <ph name="COUNT" />-st.</translation>
 <translation id="1588438908519853928">Tavaline</translation>
 <translation id="1591562245178063882">See kuu</translation>
 <translation id="1637811476055996098">Vali failid</translation>
-<translation id="1681022320378710418">praegune kellaaeg</translation>
-<translation id="1727839386348365796">Värvipipett</translation>
+<translation id="1680090928918677457">Kasuta kaamerat</translation>
 <translation id="1729654308190250600">Sisestage mittetühi e-posti aadress.</translation>
 <translation id="1758486001363313524">Muu ...</translation>
-<translation id="1787192514241997742">aeg kokku: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Luba kaamera</translation>
-<translation id="1822429046913737220">AM/PM</translation>
-<translation id="1832974991323546415">kaugseadmes esitamine</translation>
 <translation id="1921819250265091946">pp</translation>
 <translation id="1938124657309484470">Väärtus peab olema <ph name="MAXIMUM_DATE_OR_TIME" /> või varasem.</translation>
-<translation id="1946271899482435442">Kuupäevavalija kuvamine</translation>
 <translation id="1993104285338243655">Lülitatud peegeldamisele</translation>
-<translation id="2031987842108996681">Punane kanal</translation>
 <translation id="2060505056492490888">Tähist „<ph name="DOT" />” on aadressis „<ph name="INVALIDDOMAIN" />” valesti kasutatud.</translation>
 <translation id="2068711044993563745">Miinimumväärtus (<ph name="MINIMUM" />) peab olema väiksem kui maksimumväärtus (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Täna</translation>
@@ -31,29 +22,16 @@
 <translation id="2247351761944213033">Nädal <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. lugu</translation>
 <translation id="2353297238722298836">Kaamera ja mikrofon on lubatud</translation>
-<translation id="2393030564806080191">Värvi väärtus kuueteistkümnendsüsteemis</translation>
-<translation id="2398813069815436052">dialoog on avatud.</translation>
-<translation id="245932805758469625">video allesjäänud sekundite arv</translation>
-<translation id="248395913932153421">päev</translation>
 <translation id="2507943997699731163">Täitke see väli.</translation>
-<translation id="2530182415807757784">mitme valikuga, ühtegi pole valitud.</translation>
-<translation id="2561842179657104141">kuva rohkem meedia juhtnuppe</translation>
-<translation id="2572483411312390101">esitus</translation>
 <translation id="2613802280814924224">Sisestage kehtiv väärtus. Lähim kehtiv väärtus on <ph name="VALID_VALUE" />.</translation>
-<translation id="2634240155926812724">Roheline kanal</translation>
 <translation id="2653659639078652383">Esita</translation>
-<translation id="2723001399770238859">heli</translation>
 <translation id="2746543609216772311">Väärtus peab olema <ph name="MINIMUM_DATE_OR_TIME" /> või hilisem.</translation>
 <translation id="2761667185364618470">Märkige see ruut, kui soovite jätkata.</translation>
 <translation id="2908441821576996758">Sisestage meiliaadresside loend komadega eraldatult.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3053226512517284904">helikirjelduste menüü kuvamine</translation>
 <translation id="3075154866155599887">Sisestage kehtiv väärtus. Väli on täitmata või sisaldab sobimatut kuupäeva.</translation>
 <translation id="310520048233152454">Sisestage URL.</translation>
-<translation id="3220661731597678625">praegune toiming</translation>
 <translation id="3321030238473337787">Esituskiirus</translation>
-<translation id="3329013043687509092">Küllastus</translation>
-<translation id="3377518164566272702">Luba mikrofon ja kaamera</translation>
 <translation id="3450233048674729344">Väärtus peab olema väiksem või võrdne <ph name="MAXIMUM" />-ga.</translation>
 <translation id="3732799496749320381">kk</translation>
 <translation id="3754210790023674521">Välju režiimist Pilt pildis</translation>
@@ -62,132 +40,71 @@
 <translation id="383465348367842624">Märgile „<ph name="ATSIGN" />” eelnev osa ei tohi sisaldada sümbolit „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="3846214748874656680">Täisekraanilt väljumine</translation>
 <translation id="4031179711345676612">Mikrofon on lubatud</translation>
-<translation id="4103419683916926126">Millisekundid</translation>
-<translation id="4201051445878709314">Eelmise kuu kuvamine</translation>
 <translation id="4360991593054037559">Sisestage kehtiv väärtus. Kaks lähimat kehtivat väärtust on <ph name="VALID_VALUE_LOW" /> ja <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Üksikasjad</translation>
 <translation id="4663373278480897665">Kaamera on lubatud</translation>
 <translation id="4664250907885839816">Märgile „<ph name="ATSIGN" />” järgnev osa ei tohi sisaldada sümbolit „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="4718048029184481307">Režiimis Pilt pildis mängimine</translation>
-<translation id="4748357248530471599">ekraani väljalõike täisekraanrežiimi sisse-/väljalülitamine</translation>
-<translation id="4763480195061959176">video</translation>
 <translation id="4792862212177489858">Jaga asukohta</translation>
 <translation id="4812940957355064477">Sisestage arv.</translation>
-<translation id="4912200001568447310">praegune üksus</translation>
-<translation id="4915360478455618802">Kuva kellaaja valija</translation>
-<translation id="4924138096460353083">määramatu</translation>
-<translation id="4950364064308314478">Kuva kohaliku kuupäeva ja kellaaja valija</translation>
-<translation id="4971739861736909480">Valitud on <ph name="ACCNAME" /></translation>
+<translation id="49269513399674318">Kasuta mikrofoni</translation>
 <translation id="4975562563186953947">Valitud on <ph name="SELECTED_COUNT" /> üksust</translation>
 <translation id="4992066212339426712">Tühista vaigistus</translation>
 <translation id="49969490063480558">Sisestage märgile „<ph name="ATSIGN" />” järgnev osa. Aadress „<ph name="INVALIDADDRESS" />” pole täielik.</translation>
-<translation id="5037575921016181960">Tugev parool</translation>
-<translation id="5090250355906949916">video ajakursor</translation>
-<translation id="509897012892853729">Sinine kanal</translation>
-<translation id="5117590920725113268">Järgmise kuu kuvamine</translation>
 <translation id="5164977714490026579">Väärtus peab olema suurem või võrdne <ph name="MINIMUM" />-ga.</translation>
 <translation id="5196716972587102051">2</translation>
-<translation id="5199514351668672591">tagasi valikute juurde</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5272594226096532950">Pole märgitud. Grupis valik <ph name="INDEX" />/<ph name="COUNT" />.</translation>
 <translation id="5307600278924710095">Sisestage märgile „<ph name="ATSIGN" />” eelnev osa. Aadress „<ph name="INVALIDADDRESS" />” pole täielik.</translation>
 <translation id="5334352251556557839">Meediasisu ei saa esitada.</translation>
 <translation id="537648784377940524">Minimaalne kuupäev (<ph name="MIN_DATE_OR_TIME" />) peab olema enne maksimaalset kuupäeva (<ph name="MAX_DATE_OR_TIME" />).</translation>
-<translation id="5378437566635403538">laiendatud, dialoog on avatud.</translation>
-<translation id="5425179576310518467">praegune kuupäev</translation>
 <translation id="5466621249238537318">Valige üks või mitu faili.</translation>
-<translation id="5468998798572797635">täisekraanilt väljumine</translation>
 <translation id="5514612371225420585">Teie seadmes olev fail</translation>
 <translation id="5516235301412634559">0,75</translation>
 <translation id="5537725057119320332">Ülekanne</translation>
-<translation id="5546461542133609677">vaigistuse tühistamine</translation>
 <translation id="5630795885300617244">10 sekundi võrra kerimiseks topeltpuudutage vasakul või paremal</translation>
-<translation id="5677946354068040947">rohkem valikuid</translation>
 <translation id="57838592816432529">Vaigista</translation>
-<translation id="5786442179789148008">esituskiiruse menüü kuvamine</translation>
-<translation id="5787939484346677755">laiendatud, automaattäite valikud on saadaval.</translation>
-<translation id="5860033963881614850">Väljas</translation>
 <translation id="588258955323874662">Täisekraan</translation>
 <translation id="5888666972993069672">Nüüd kantakse üle seadmesse <ph name="DEVICE_FRIENDLY_NAME" /></translation>
-<translation id="5916664084637901428">Sees</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
 <translation id="5966707198760109579">Nädal</translation>
 <translation id="5985507339671257014">0,5</translation>
-<translation id="6011459053400940133">helitugevuse liugur</translation>
-<translation id="6015796118275082299">Aasta</translation>
-<translation id="6165053282446038410">laiendatud, saadaval on <ph name="COUNT" /> automaattäite valikut.</translation>
-<translation id="6212595056017402527">praegune leht</translation>
-<translation id="6281588256137006900">Heledus</translation>
 <translation id="6310801910862476708">Välju režiimist Pilt pildis</translation>
-<translation id="6398862346408813489">Kuu valikupaneeli kuvamine</translation>
-<translation id="6404546809543547843">heli ajamõõdik</translation>
-<translation id="6443871981718447451">kuva subtiitrite menüü</translation>
 <translation id="6484738902856791350">Paranda loetavust</translation>
 <translation id="6550675742724504774">Valikud</translation>
-<translation id="6572309429103589720">Grammatikavead</translation>
-<translation id="658823671542763450">kuvamine täisekraanil</translation>
-<translation id="6606094904835912297">Süsteemi värvid</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="668171684555832681">Muu...</translation>
 <translation id="6709093583001123835">Väärtus peab olema <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Kehv esituskvaliteet</translation>
-<translation id="6719914554879143100">Märgitud. Grupis valik <ph name="INDEX" />/<ph name="COUNT" />.</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6820355525329141109">Pistikprogrammi ei saanud laadida.</translation>
-<translation id="6831465880655513317">Värviratas küllastuse ja heleduse valimiseks kahedimensioonilise liuguriga</translation>
-<translation id="6843725295806269523">vaigista</translation>
 <translation id="6919891270253167948">1,5</translation>
-<translation id="6941933287844615239">laadi meedia alla</translation>
-<translation id="698788488269350478">laiendatud.</translation>
 <translation id="6989848892321993519">Pikendage teksti vähemalt <ph name="MIN_CHARACTERS" /> tähemärgini (kasutate praegu ühte tähemärki).</translation>
 <translation id="7080893216867146095">Asukoha jagamine on lubatud</translation>
 <translation id="709897737746224366">Vastendage nõutav vorming.</translation>
-<translation id="7102274145889307184">praegune asukoht</translation>
+<translation id="7134810312945846184">Kasuta mikrofoni ja kaamerat</translation>
 <translation id="7263440858009898357">Valige loendist element.</translation>
-<translation id="7320576522385648310">puhverdamine</translation>
-<translation id="7341556277900466204">Värviratas</translation>
 <translation id="7364796246159120393">Vali fail</translation>
 <translation id="739024184232394898">Muu ...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7514365320538308">Laadi alla</translation>
-<translation id="7673697353781729403">Tunnid</translation>
 <translation id="7750228210027921155">Pilt pildis</translation>
-<translation id="775297008183122718">Kehtetu kirje</translation>
 <translation id="7782515065589691344">1,25</translation>
-<translation id="7789962463072032349">peata</translation>
-<translation id="7852167693871241274">Värvitooni liugur</translation>
 <translation id="7888071071722539607">Lisage e-posti aadressile märk „<ph name="ATSIGN" />”. Aadressist „<ph name="INVALIDADDRESS" />” puudub märk „<ph name="ATSIGN" />”.</translation>
 <translation id="795667975304826397">Pole valitud</translation>
-<translation id="7962328325860248200">Üksus <ph name="ACCNAME" /> pole valitud</translation>
 <translation id="8117451130807776954">See nädal</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">aaaa</translation>
-<translation id="8261464734335370856">Õigekirjavead</translation>
 <translation id="8284326494547611709">Subtiitrid</translation>
 <translation id="835897206747267392">Kehtetu väärtus.</translation>
 <translation id="839593075537728968">Väärtus peab jääma vahemikku <ph name="MINIMUM_TIME" /> kuni <ph name="MAXIMUM_TIME" />.</translation>
-<translation id="8403857369060869934">möödunud aeg: <ph name="ELAPSED_TIME" /></translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> faili</translation>
 <translation id="8451268428117625855">Valige üks fail.</translation>
-<translation id="8534579021159131403">Minutid</translation>
-<translation id="8541249477527128034">meedia juhtimine</translation>
-<translation id="8613126697340063924">kaugesituse juhtimine</translation>
-<translation id="8634971699417195529">Kuva kuu valija</translation>
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Rea murdmine</translation>
 <translation id="8750798805984357768">Tehke üks nendest valikutest.</translation>
 <translation id="8845239796550121995">Kantakse nüüd üle telerisse</translation>
 <translation id="8875657656876809964">Video taasesituse viga</translation>
-<translation id="8889402386540077796">Värvitoon</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
-<translation id="894736920926684893">Vormingu vahetaja</translation>
-<translation id="8987927404178983737">kuu</translation>
-<translation id="901493112792887934">praegune aeg sekundites</translation>
-<translation id="9093215626363556771">välju režiimist Pilt pildis</translation>
 <translation id="9132465097189459683">Muu ...</translation>
-<translation id="9155987714137265666"><ph name="WEEK" /> alates kuupäevast <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Pilt pildis</translation>
-<translation id="918430632320614861">Luba mikrofon</translation>
-<translation id="945780513535800434">Osaliselt märgitud</translation>
-<translation id="954003015749068518">aktiveeri režiim Pilt pildis</translation>
 </translationbundle>

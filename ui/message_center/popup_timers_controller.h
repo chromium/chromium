@@ -20,12 +20,8 @@ namespace message_center {
 // A class that manages all the timers running for individual notification popup
 // windows.  It supports weak pointers in order to allow safe callbacks when
 // timers expire.
-// We can use SupportsWeakPtr<> because PopupTimer does not
-// access this class in its destructor so it is safe to invalidate weak pointers
-// after we destroy |popup_timers_|
 class MESSAGE_CENTER_EXPORT PopupTimersController
-    : public base::SupportsWeakPtr<PopupTimersController>,
-      public MessageCenterObserver,
+    : public MessageCenterObserver,
       public PopupTimer::Delegate {
  public:
   explicit PopupTimersController(MessageCenter* message_center);
@@ -76,6 +72,8 @@ class MESSAGE_CENTER_EXPORT PopupTimersController
   using PopupTimerCollection =
       std::map<std::string, std::unique_ptr<PopupTimer>>;
   PopupTimerCollection popup_timers_;
+
+  base::WeakPtrFactory<PopupTimersController> weak_ptr_factory_{this};
 };
 
 }  // namespace message_center

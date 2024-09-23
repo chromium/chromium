@@ -8,6 +8,8 @@ import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.move
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForTabs;
 
+import android.os.Build.VERSION_CODES;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -19,9 +21,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -37,8 +41,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Integration testing for Android's N+ MultiWindow. */
@@ -65,8 +69,7 @@ public class MultiWindowIntegrationTest {
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testIncognitoNtpHandledCorrectly() {
         try {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> FirstRunStatus.setFirstRunFlowComplete(true));
+            ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
             mActivityTestRule.newIncognitoTabFromMenu();
             Assert.assertTrue(mActivityTestRule.getActivity().getActivityTab().isIncognito());
@@ -86,7 +89,7 @@ public class MultiWindowIntegrationTest {
                                 Matchers.is(1));
                     });
 
-            TestThreadUtils.runOnUiThreadBlocking(
+            ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         Assert.assertEquals(
                                 1, TabWindowManagerSingleton.getInstance().getIncognitoTabCount());
@@ -95,13 +98,14 @@ public class MultiWindowIntegrationTest {
                         Assert.assertEquals(incognitoTabId, cta2.getActivityTab().getId());
                     });
         } finally {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> FirstRunStatus.setFirstRunFlowComplete(false));
+            ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
         }
     }
 
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338976206
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
     @Feature("MultiWindow")
     @CommandLineFlags.Add({
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
@@ -149,7 +153,7 @@ public class MultiWindowIntegrationTest {
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING,
         ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
     })
-    // TODO(1298242): Enable this test for tablet once the tab switcher is supported.
+    // TODO(crbug.com/40822813): Enable this test for tablet once the tab switcher is supported.
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testMovingLastTabKeepsActivityAlive() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();

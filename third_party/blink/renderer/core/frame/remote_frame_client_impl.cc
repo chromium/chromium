@@ -51,8 +51,8 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
     if (type == FrameDetachType::kRemove)
       WebFrame::ToCoreFrame(*web_frame_)->DetachFromParent();
   } else if (auto* view = web_frame_->View()) {
-    // This could be a RemoteFrame that doesn't have a parent (portals
-    // or fenced frames) but not actually the `view`'s main frame.
+    // This could be a RemoteFrame that doesn't have a parent (fenced frames)
+    // but not actually the `view`'s main frame.
     if (view->MainFrame() == web_frame_) {
       // If the RemoteFrame being detached is also the main frame in the
       // renderer process, we need to notify the webview to allow it to clean

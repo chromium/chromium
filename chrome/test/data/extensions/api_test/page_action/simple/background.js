@@ -9,8 +9,8 @@ chrome.pageAction.onClicked.addListener(function(tab) {
   chrome.test.sendMessage('clicked');
 });
 
-chrome.tabs.getSelected(null, function(tab) {
-  tabId = tab.id;
+chrome.tabs.query({active: true}, function(tabs) {
+  tabId = tabs[0].id;
   // Callbacks should be not be required:
   chrome.pageAction.hide(tabId);
   chrome.pageAction.show(tabId);

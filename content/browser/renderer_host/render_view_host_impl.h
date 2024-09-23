@@ -111,7 +111,7 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Checks whether any RenderViewHostImpl instance associated with a given
   // process is not currently in the back-forward cache.
-  // TODO(https://crbug.com/1125996): Remove once a well-behaved frozen
+  // TODO(crbug.com/40147948): Remove once a well-behaved frozen
   // RenderFrame never send IPCs messages, even if there are active pages in the
   // process.
   static bool HasNonBackForwardCachedInstancesForProcess(
@@ -171,9 +171,13 @@ class CONTENT_EXPORT RenderViewHostImpl
   void set_is_speculative(bool is_speculative) {
     is_speculative_ = is_speculative;
   }
+
+  bool is_registered_with_frame_tree() { return registered_with_frame_tree_; }
   void set_is_registered_with_frame_tree(bool is_registered) {
     registered_with_frame_tree_ = is_registered;
   }
+
+  bool renderer_view_created() const { return renderer_view_created_; }
 
   FrameTree::RenderViewHostMapId rvh_map_id() const {
     return render_view_host_map_id_;
@@ -185,6 +189,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // pending unload or unloaded), according to its main frame
   // RenderFrameHost.
   bool is_active() const { return main_frame_routing_id_ != MSG_ROUTING_NONE; }
+  int main_frame_routing_id() const { return main_frame_routing_id_; }
 
   // Returns true if the `blink::WebView` is active and has not crashed.
   bool IsRenderViewLive() const;
@@ -312,7 +317,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   // trigger an eviction of this page.
   void PrepareToLeaveBackForwardCache(base::OnceClosure done_cb);
 
-  // TODO(https://crbug.com/1179502): FrameTree and FrameTreeNode will not be
+  // TODO(crbug.com/40169570): FrameTree and FrameTreeNode will not be
   // const as with prerenderer activation the page needs to move between
   // FrameTreeNodes and FrameTrees. As it's hard to make sure that all places
   // handle this transition correctly, MPArch will remove references from this
@@ -347,7 +352,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   void RenderWidgetDidForwardMouseEvent(
       const blink::WebMouseEvent& mouse_event) override;
   bool MayRenderWidgetForwardKeyboardEvent(
-      const NativeWebKeyboardEvent& key_event) override;
+      const input::NativeWebKeyboardEvent& key_event) override;
   bool ShouldContributePriorityToProcess() override;
   void SetBackgroundOpaque(bool opaque) override;
   bool IsMainFrameActive() override;
@@ -394,7 +399,7 @@ class CONTENT_EXPORT RenderViewHostImpl
   FrameTree::RenderViewHostMapId render_view_host_map_id_;
 
   // The SiteInstanceGroup this RenderViewHostImpl belongs to.
-  // TODO(https://crbug.com/1420333) Turn this into base::SafeRef
+  // TODO(crbug.com/40258727) Turn this into base::SafeRef
   base::WeakPtr<SiteInstanceGroup> site_instance_group_;
 
   // Provides information for selecting the session storage namespace for this
@@ -445,7 +450,7 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Whether the RenderViewHost is a speculative RenderViewHost or not.
   // Currently this is never set, as the feature is not implemented yet.
-  // TODO(https://crbug.com/1336305): Actually set this value for speculative
+  // TODO(crbug.com/40228869): Actually set this value for speculative
   // RenderViewHosts.
   bool is_speculative_ = false;
 

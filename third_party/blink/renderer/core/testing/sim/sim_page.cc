@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/testing/sim/sim_page.h"
 
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 
@@ -33,6 +34,10 @@ void SimPage::SetActive(bool value) {
 
 bool SimPage::IsActive() const {
   return page_->GetFocusController().IsActive();
+}
+
+const VisualViewport& SimPage::GetVisualViewport() const {
+  return page_->GetVisualViewport();
 }
 
 }  // namespace blink

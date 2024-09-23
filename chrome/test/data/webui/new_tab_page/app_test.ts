@@ -13,12 +13,11 @@ import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_comma
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
@@ -74,15 +73,9 @@ suite('NewTabPageAppTest', () => {
 
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
-    await flushTasks();
   });
 
   suite('Misc', () => {
-    test('customize dialog closed on start', () => {
-      // Assert.
-      assertFalse(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
-    });
-
     test('logs height', async () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Height'));
@@ -100,8 +93,8 @@ suite('NewTabPageAppTest', () => {
 
     test('open voice search event opens voice search overlay', async () => {
       // Act.
-      $$(app, '#realbox')!.dispatchEvent(new Event('open-voice-search'));
-      await flushTasks();
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
+      await microtasksFinished();
 
       // Assert.
       assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
@@ -120,7 +113,7 @@ suite('NewTabPageAppTest', () => {
         shiftKey: true,
         code: 'Period',
       }));
-      await flushTasks();
+      await microtasksFinished();
 
       // Assert.
       assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
@@ -137,7 +130,7 @@ suite('NewTabPageAppTest', () => {
         shiftKey: true,
         code: 'Enter',
       }));
-      await flushTasks();
+      await microtasksFinished();
 
       // Assert.
       assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
@@ -151,7 +144,7 @@ suite('NewTabPageAppTest', () => {
           shiftKey: true,
           code: 'Period',
         }));
-        await flushTasks();
+        await microtasksFinished();
 
         // Assert.
         assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
@@ -213,6 +206,7 @@ suite('NewTabPageAppTest', () => {
         source: window,
         origin: window.origin,
       }));
+      await microtasksFinished();
 
       // Assert.
 
@@ -273,6 +267,7 @@ suite('NewTabPageAppTest', () => {
       // Act.
       callbackRouterRemote.setTheme(createTheme());
       await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
 
       // Assert.
       assertEquals(1, backgroundManager.getCallCount('setBackgroundColor'));
@@ -300,6 +295,7 @@ suite('NewTabPageAppTest', () => {
       // Act.
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
 
       assertNotStyle($$(app, '#themeAttribution')!, 'display', 'none');
       assertEquals(
@@ -419,6 +415,7 @@ suite('NewTabPageAppTest', () => {
               source: window,
               origin: window.origin,
             }));
+            await microtasksFinished();
 
             // Assert.
             assertEquals(1, windowProxy.getCallCount('postMessage'));
@@ -671,7 +668,7 @@ suite('NewTabPageAppTest', () => {
     ([
       ['#content', NtpElement.BACKGROUND],
       ['ntp-logo', NtpElement.LOGO],
-      ['ntp-realbox', NtpElement.REALBOX],
+      ['cr-searchbox', NtpElement.REALBOX],
       ['cr-most-visited', NtpElement.MOST_VISITED],
       ['ntp-middle-slot-promo', NtpElement.MIDDLE_SLOT_PROMO],
       ['#modules', NtpElement.MODULE],
@@ -727,6 +724,7 @@ suite('NewTabPageAppTest', () => {
 
       // Act.
       modules.dispatchEvent(new Event('modules-loaded'));
+      await microtasksFinished();
 
       // Assert.
       assertNotStyle(middleSlotPromo, 'display', 'none');
@@ -772,12 +770,13 @@ suite('NewTabPageAppTest', () => {
       document.body.setAttribute('style', `width:${sampleMaxWidthPx}px`);
       app = document.createElement('ntp-app');
       document.body.appendChild(app);
-      await flushTasks();
+      await microtasksFinished();
 
       const middleSlotPromo = $$(app, 'ntp-middle-slot-promo')!;
       middleSlotPromo.dispatchEvent(new Event('ntp-middle-slot-promo-loaded'));
       const modules = $$(app, 'ntp-modules')!;
       modules.dispatchEvent(new Event('modules-loaded'));
+      await microtasksFinished();
 
       assertStyle(modules, 'width', `${sampleMaxWidthPx}px`);
     });
@@ -864,7 +863,7 @@ suite('NewTabPageAppTest', () => {
         },
       ]);
       await counterfactualLoad();
-      await flushTasks();
+      await microtasksFinished();
 
       // Assert.
       assertTrue(moduleRegistry.getCallCount('initializeModules') > 0);
@@ -874,118 +873,7 @@ suite('NewTabPageAppTest', () => {
     });
   });
 
-  suite('CustomizeDialog', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        customizeChromeEnabled: false,
-      });
-    });
-
-    test('customize dialog closed on start', () => {
-      // Assert.
-      assertFalse(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
-    });
-
-    test('clicking customize button opens customize dialog', async () => {
-      // Act.
-      $$<HTMLElement>(app, '#customizeButton')!.click();
-      await flushTasks();
-
-      // Assert.
-      assertTrue(!!app.shadowRoot!.querySelector('ntp-customize-dialog'));
-      assertEquals(
-          'true',
-          $$<HTMLElement>(
-              app, '#customizeButton')!.getAttribute('aria-pressed'));
-      assertEquals(1, metrics.count('NewTabPage.Click'));
-      assertEquals(
-          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_BUTTON));
-
-      // Act.
-      $$<HTMLElement>(app, 'ntp-customize-dialog')!.click();
-
-      // Assert.
-      assertEquals(2, metrics.count('NewTabPage.Click'));
-      assertEquals(
-          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_DIALOG));
-    });
-
-    test('setting theme updates customize dialog', async () => {
-      // Arrange.
-      $$<HTMLElement>(app, '#customizeButton')!.click();
-      const theme = createTheme();
-
-      // TypeScript definitions for Mojo are not perfect, and the following
-      // fields are incorrectly marked as non-optional and non-nullable, when
-      // in reality they are optional and nullable.
-      // TODO(crbug.com/1002798): Remove ignore statements if/when proper Mojo
-      // TS support is added.
-      // @ts-ignore:next-line
-      theme.backgroundImage = null;
-      // @ts-ignore:next-line
-      theme.backgroundImageAttributionUrl = null;
-      // @ts-ignore:next-line
-      theme.logoColor = null;
-
-      // Act.
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-
-      // Assert.
-      assertDeepEquals(
-          theme, app.shadowRoot!.querySelector('ntp-customize-dialog')!.theme);
-      assertEquals(
-          'true',
-          $$<HTMLElement>(
-              app, '#customizeButton')!.getAttribute('aria-pressed'));
-    });
-
-    suite('modules', () => {
-      suiteSetup(() => {
-        loadTimeData.overrideValues({
-          modulesEnabled: true,
-        });
-      });
-      test('modules can open customize dialog', async () => {
-        // Act.
-        $$(app, '#modules')!.dispatchEvent(new Event('customize-module'));
-        app.$.customizeDialogIf.render();
-
-        // Assert.
-        assertTrue(!!$$(app, 'ntp-customize-dialog'));
-        assertEquals(
-            CustomizeDialogPage.MODULES,
-            $$(app, 'ntp-customize-dialog')!.selectedPage);
-      });
-    });
-
-    suite('customize URL', () => {
-      suiteSetup(() => {
-        // We inject the URL param in this suite setup so that the URL is
-        // updated before the app element gets created.
-        url.searchParams.append('customize', CustomizeDialogPage.THEMES);
-      });
-
-      test('URL opens customize dialog', () => {
-        // Act.
-        app.$.customizeDialogIf.render();
-
-        // Assert.
-        assertTrue(!!$$(app, 'ntp-customize-dialog'));
-        assertEquals(
-            CustomizeDialogPage.THEMES,
-            $$(app, 'ntp-customize-dialog')!.selectedPage);
-      });
-    });
-  });
-
   suite('CustomizeChromeSidePanel', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        customizeChromeEnabled: true,
-      });
-    });
-
     test('customize chrome in product help might show on startup'), () => {
       assertEquals(1, handler.getCallCount('maybeShowFeaturePromo'));
     };
@@ -1093,7 +981,7 @@ suite('NewTabPageAppTest', () => {
   suite('LensUploadDialog', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
-        realboxLensSearch: true,
+        searchboxLensSearch: true,
       });
     });
 
@@ -1108,20 +996,348 @@ suite('NewTabPageAppTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       // Act.
-      $$(app, '#realbox')!.dispatchEvent(new Event('open-lens-search'));
-      await flushTasks();
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-lens-search'));
+      await microtasksFinished();
 
       // Assert.
       const dialog = app.shadowRoot!.querySelector('ntp-lens-upload-dialog');
       assertTrue(!!dialog);
-      assertStyle($$(app, '#realbox')!, 'visibility', 'hidden');
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
 
       // Act.
       dialog.closeDialog();
-      await flushTasks();
+      await microtasksFinished();
 
       // Assert.
-      assertStyle($$(app, '#realbox')!, 'visibility', 'visible');
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');
+    });
+  });
+
+  suite('WallpaperSearch', () => {
+    suite('ButtonDisabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: false,
+        });
+      });
+
+      test('does not increment button shown count on startup'), () => {
+        assertEquals(
+            0,
+            handler.getCallCount('incrementWallpaperSearchButtonShownCount'));
+      };
+
+      test('wallpaper search button is not shown if it is disabled', () => {
+        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+        assertFalse(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+      });
+
+      test(
+          'setting background image styles customize chrome button',
+          async () => {
+            // Customize chrome button is expanded and its icon has a
+            // non-white color.
+            assertNotEquals(
+                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
+            assertNotStyle(
+                $$(app, '#customizeButton .customize-text')!, 'display',
+                'none');
+            assertNotStyle(
+                $$(app, '#customizeButton .customize-icon')!,
+                'background-color', 'rgb(255, 255, 255)');
+
+            const theme = createTheme(true);
+            theme.backgroundImage = createBackgroundImage('https://foo.com');
+            callbackRouterRemote.setTheme(theme);
+            await callbackRouterRemote.$.flushForTesting();
+
+            // Customize chrome button is collapsed and its icon is white.
+            assertEquals(
+                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
+            assertStyle(
+                $$(app, '#customizeButton .customize-icon')!,
+                'background-color', 'rgb(255, 255, 255)');
+            assertStyle(
+                $$(app, '#customizeButton .customize-text')!, 'display',
+                'none');
+          });
+    });
+
+    function assertButtonAnimated() {
+      assertNotStyle(
+          $$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
+      assertNotStyle(
+          $$(app, '#wallpaperSearchButton .customize-icon')!, 'animation-name',
+          'none');
+      assertStyle(
+          $$(app, '#wallpaperSearchButton .customize-text')!, 'animation-name',
+          'none');
+    }
+
+    function assertButtonNotAnimated() {
+      assertStyle($$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
+      assertStyle(
+          $$(app, '#wallpaperSearchButton .customize-icon')!, 'animation-name',
+          'none');
+      assertStyle(
+          $$(app, '#wallpaperSearchButton .customize-text')!, 'animation-name',
+          'none');
+    }
+
+    suite('ButtonEnabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
+          wallpaperSearchButtonAnimationEnabled: true,
+        });
+      });
+
+      test('increments button shown count on startup'), () => {
+        assertEquals(
+            1,
+            handler.getCallCount('incrementWallpaperSearchButtonShownCount'));
+      };
+
+      test('wallpaper search button shows if it is enabled', () => {
+        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+      });
+
+      test('button has animation', () => {
+        assertButtonAnimated();
+      });
+
+      [NtpBackgroundImageSource.kWallpaperSearch,
+       NtpBackgroundImageSource.kWallpaperSearchInspiration]
+          .forEach((imageSource) => {
+            test(
+                `having wallpaper search theme ${
+                    imageSource} disables animation`,
+                async () => {
+                  // Arrange.
+                  const theme = createTheme();
+                  theme.backgroundImage =
+                      createBackgroundImage('https://foo.com');
+                  theme.backgroundImage.imageSource = imageSource;
+                  assertButtonAnimated();
+
+                  // Act.
+                  callbackRouterRemote.setTheme(theme);
+                  await callbackRouterRemote.$.flushForTesting();
+
+                  // Assert.
+                  assertButtonNotAnimated();
+                });
+          });
+
+      ([
+        ['#customizeButton', NtpElement.CUSTOMIZE_BUTTON],
+        ['#wallpaperSearchButton', NtpElement.WALLPAPER_SEARCH_BUTTON],
+      ] as Array<[string, NtpElement]>)
+          .forEach(([selector, element]) => {
+            test(`clicking #wallpaperSearchButton records click`, () => {
+              $$<HTMLElement>(app, selector)!.click();
+
+              assertEquals(1, metrics.count('NewTabPage.Click'));
+              assertEquals(1, metrics.count('NewTabPage.Click', element));
+            });
+          });
+
+      test('clicking wallpaper search button opens side panel', () => {
+        $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
+
+        assertDeepEquals(
+            [true, CustomizeChromeSection.kWallpaperSearch],
+            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.CustomizeChromeOpened',
+                NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON));
+        assertEquals(
+            1, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
+      });
+
+      test(
+          'wallpaper search button can open wallpaper search ' +
+              'and hide side panel',
+          async () => {
+            // Open side panel to non-wallpaper search page.
+            callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
+            assertEquals(
+                0,
+                metrics.count(
+                    'NewTabPage.CustomizeChromeOpened',
+                    NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON));
+            await callbackRouterRemote.$.flushForTesting();
+
+            // Clicking the wallpaper search button should navigate the side
+            // panel to the wallpaper search page.
+            $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
+
+            assertDeepEquals(
+                [true, CustomizeChromeSection.kWallpaperSearch],
+                handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+
+            // Clicking the wallpaper search button, when the wallpaper search
+            // page is opened, should close the side panel.
+            $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
+
+            assertDeepEquals(
+                [false, CustomizeChromeSection.kUnspecified],
+                handler.getArgs('setCustomizeChromeSidePanelVisible')[1]);
+          });
+
+      test('wallpaper search button is accessible', async () => {
+        // Open side panel to non-wallpaper search page.
+        callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
+        await callbackRouterRemote.$.flushForTesting();
+
+        // Only customize chrome button should be labeled as pressed.
+        assertEquals(
+            'false',
+            $$<HTMLElement>(
+                app, '#wallpaperSearchButton')!.getAttribute('aria-pressed'));
+        assertEquals(
+            'true',
+            $$<HTMLElement>(
+                app, '#customizeButton')!.getAttribute('aria-pressed'));
+
+        // Open wallpaper search page.
+        $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
+        await microtasksFinished();
+
+        // Both buttons should be labeled as pressed.
+        assertEquals(
+            'true',
+            $$<HTMLElement>(
+                app, '#wallpaperSearchButton')!.getAttribute('aria-pressed'));
+        assertEquals(
+            'true',
+            $$<HTMLElement>(
+                app, '#customizeButton')!.getAttribute('aria-pressed'));
+
+        // Close the side panel.
+        callbackRouterRemote.setCustomizeChromeSidePanelVisibility(false);
+        await callbackRouterRemote.$.flushForTesting();
+
+        // Both buttons should not be labeled as pressed.
+        assertEquals(
+            'false',
+            $$<HTMLElement>(
+                app, '#wallpaperSearchButton')!.getAttribute('aria-pressed'));
+        assertEquals(
+            'false',
+            $$<HTMLElement>(
+                app, '#customizeButton')!.getAttribute('aria-pressed'));
+      });
+
+      test(
+          'clicking wallpaper search button collapses/expands it', async () => {
+            assertNotEquals(
+                32,
+                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
+            assertNotStyle(
+                $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
+                'none');
+
+            $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
+            await microtasksFinished();
+
+            assertEquals(
+                32,
+                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
+            assertStyle(
+                $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
+                'none');
+          });
+
+      test(
+          'setting background styles both customize chrome buttons',
+          async () => {
+            // Both buttons' icons should have a non-white color.
+            assertNotStyle(
+                $$<HTMLElement>(app, '#wallpaperSearchButton .customize-icon')!,
+                'background-color', 'rgb(255, 255, 255)');
+            assertNotStyle(
+                $$<HTMLElement>(app, '#customizeButton .customize-icon')!,
+                'background-color', 'rgb(255, 255, 255)');
+            // Only customize chrome button should be collapsed.
+            assertNotStyle(
+                $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
+                'none');
+            assertStyle(
+                $$(app, '#customizeButton .customize-text')!, 'display',
+                'none');
+            assertNotEquals(
+                32,
+                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
+            assertEquals(
+                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
+
+            // Create and set theme.
+            const theme = createTheme(true);
+            theme.backgroundImage = createBackgroundImage('https://foo.com');
+            callbackRouterRemote.setTheme(theme);
+            await callbackRouterRemote.$.flushForTesting();
+
+            // Both buttons' icons should be white.
+            assertStyle(
+                $$(app, '#wallpaperSearchButton .customize-icon')!,
+                'background-color', 'rgb(255, 255, 255)');
+            assertStyle(
+                $$(app, '#customizeButton .customize-icon')!,
+                'background-color', 'rgb(255, 255, 255)');
+            // Only customize chrome button should be collapsed.
+            assertNotStyle(
+                $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
+                'none');
+            assertStyle(
+                $$(app, '#customizeButton .customize-text')!, 'display',
+                'none');
+            assertNotEquals(
+                32,
+                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
+            assertEquals(
+                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
+          });
+
+      test(
+          'button hides in accordance with callback router', async () => {
+            // Both buttons shown.
+            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
+            assertNotStyle(
+                $$(app, '#wallpaperSearchButton')!, 'display', 'none');
+
+            callbackRouterRemote.setWallpaperSearchButtonVisibility(false);
+            await callbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+
+            // Wallpaper search button hides.
+            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
+            assertEquals(null, $$(app, '#wallpaperSearchButton'));
+
+            callbackRouterRemote.setWallpaperSearchButtonVisibility(true);
+            await callbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+
+            // Wallpaper search button remains hidden.
+            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
+            assertEquals(null, $$(app, '#wallpaperSearchButton'));
+          });
+    });
+
+    suite('AnimationDisabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
+          wallpaperSearchButtonAnimationEnabled: false,
+        });
+      });
+
+      test('button has no animation if the flag is disabled', () => {
+        assertButtonNotAnimated();
+      });
     });
   });
 });

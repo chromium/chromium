@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -47,16 +48,20 @@ public class SafeBrowsingPasswordReuseDialogBridge {
 
     @CalledByNative
     public void showDialog(
-            String dialogTitle,
-            String dialogDetails,
-            String primaryButtonText,
-            @Nullable String secondaryButtonText) {
+            @JniType("std::u16string") String dialogTitle,
+            @JniType("std::u16string") String dialogDetails,
+            @JniType("std::u16string") String primaryButtonText,
+            @JniType("std::u16string") String secondaryButtonText) {
         if (mWindowAndroid.getActivity().get() == null) return;
 
+        boolean hasSecondaryButtonText = !secondaryButtonText.isEmpty();
         PasswordManagerDialogContents contents =
                 createDialogContents(
-                        dialogTitle, dialogDetails, primaryButtonText, secondaryButtonText);
-        contents.setPrimaryButtonFilled(secondaryButtonText != null);
+                        dialogTitle,
+                        dialogDetails,
+                        primaryButtonText,
+                        hasSecondaryButtonText ? secondaryButtonText : null);
+        contents.setPrimaryButtonFilled(hasSecondaryButtonText);
 
         mDialogCoordinator.initialize(mWindowAndroid.getActivity().get(), contents);
         mDialogCoordinator.showDialog();

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
 #include <dawn/webgpu_cpp.h>
@@ -22,7 +27,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
@@ -32,6 +36,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/dawn_ahardwarebuffer_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/dawn_egl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_passthrough_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -89,13 +94,11 @@ class OverlayImage final : public base::RefCounted<OverlayImage> {
         base::ScopedFD available_fence_fd)
         : ScopedHardwareBufferFenceSync(std::move(handle),
                                         base::ScopedFD(),
-                                        std::move(available_fence_fd),
-                                        /*is_video=*/false),
+                                        std::move(available_fence_fd)),
           image_(std::move(image)) {}
     ~ScopedHardwareBufferFenceSyncImpl() override = default;
 
     void SetReadFence(base::ScopedFD fence_fd) override {
-      DCHECK(!image_->end_read_fence_.is_valid());
       DCHECK(!image_->previous_end_read_fence_.is_valid());
 
       image_->end_read_fence_ = std::move(fence_fd);
@@ -148,7 +151,7 @@ constexpr viz::SharedImageFormat kSupportedFormats[6]{
 // SHARED_IMAGE_USAGE_DISPLAY_READ implies AHB, so those restrictions apply, but
 // that's decided on the service side). For now getting supported format is a
 // static mechanism like this. We probably need something like
-// gpu::Capabilities.texture_target_exception_list.
+// gpu::SharedImageCapabilities.texture_target_exception_list.
 bool AHardwareBufferSupportedFormat(viz::SharedImageFormat format) {
   return base::Contains(kSupportedFormats, format);
 }
@@ -171,17 +174,19 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
     return AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
 }
 
-constexpr uint32_t kSupportedUsage =
+constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
     SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
-    SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_VIDEO_DECODE |
+    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+    SHARED_IMAGE_USAGE_VIDEO_DECODE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
@@ -200,7 +205,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
                               const gfx::ColorSpace& color_space,
                               GrSurfaceOrigin surface_origin,
                               SkAlphaType alpha_type,
-                              uint32_t usage,
+                              gpu::SharedImageUsageSet usage,
                               std::string debug_label,
                               base::android::ScopedHardwareBufferHandle handle,
                               size_t estimated_size,
@@ -282,7 +287,7 @@ class SkiaVkAHBImageRepresentation : public SkiaVkAndroidImageRepresentation {
     // if the vk_info stays the same on subsequent calls.
     promise_texture_ = GrPromiseImageTexture::Make(GrBackendTextures::MakeVk(
         size().width(), size().height(),
-        CreateGrVkImageInfo(vulkan_image_.get(), color_space())));
+        CreateGrVkImageInfo(vulkan_image_.get(), format(), color_space())));
     DCHECK(promise_texture_);
   }
 };
@@ -334,7 +339,7 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    gpu::SharedImageUsageSet usage,
     std::string debug_label,
     base::android::ScopedHardwareBufferHandle handle,
     size_t estimated_size,
@@ -461,8 +466,7 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   CHECK(context_state);
-  CHECK(context_state->graphite_context());
-  CHECK(context_state->gr_context_type() == GrContextType::kGraphiteDawn);
+  CHECK(context_state->IsGraphiteDawn());
 #if BUILDFLAG(SKIA_USE_DAWN)
   auto device = context_state->dawn_context_provider()->GetDevice();
   auto backend_type = context_state->dawn_context_provider()->backend_type();
@@ -482,7 +486,7 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 #endif
 }
@@ -498,7 +502,7 @@ AHardwareBufferImageBacking::ProduceSkiaGanesh(
   // Skia representation.
   if (context_state->GrContextIsVulkan()) {
     uint32_t queue_family = VK_QUEUE_FAMILY_EXTERNAL;
-    if (usage() & SHARED_IMAGE_USAGE_SCANOUT) {
+    if (usage().Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       // Any Android API that consume or produce buffers (e.g SurfaceControl)
       // requires a foreign queue.
       queue_family = VK_QUEUE_FAMILY_FOREIGN_EXT;
@@ -553,7 +557,25 @@ AHardwareBufferImageBacking::ProduceDawn(
   // backing.
   DCHECK(hardware_buffer_handle_.is_valid());
 
-  // Only Vulkan is supported on Android currently
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+  if (backend_type == wgpu::BackendType::OpenGLES) {
+    std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
+    if (use_passthrough_) {
+      gl_representation = ProduceGLTexturePassthrough(manager, tracker);
+    } else {
+      gl_representation = ProduceGLTexture(manager, tracker);
+    }
+
+    gl::ScopedEGLImage egl_image =
+        CreateEGLImageFromAHardwareBuffer(hardware_buffer_handle_.get());
+
+    auto result = std::make_unique<DawnEGLImageRepresentation>(
+        std::move(gl_representation), std::move(egl_image), manager, this,
+        tracker, device);
+    return result;
+  }
+#endif
+
   DCHECK_EQ(backend_type, wgpu::BackendType::Vulkan);
   wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
   if (webgpu_format == wgpu::TextureFormat::Undefined) {
@@ -602,8 +624,8 @@ void AHardwareBufferImageBacking::EndOverlayAccess() {
   DCHECK(is_overlay_accessing_);
   is_overlay_accessing_ = false;
 
+  auto fence_fd = overlay_image_->TakeEndFence();
   if (!allow_concurrent_read_write()) {
-    auto fence_fd = overlay_image_->TakeEndFence();
     read_sync_fd_ = gl::MergeFDs(std::move(read_sync_fd_), std::move(fence_fd));
   }
 }
@@ -700,7 +722,7 @@ AHardwareBufferImageBackingFactory::~AHardwareBufferImageBackingFactory() =
     default;
 
 bool AHardwareBufferImageBackingFactory::ValidateUsage(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     const gfx::Size& size,
     viz::SharedImageFormat format) const {
   if (!AHardwareBufferSupportedFormat(format)) {
@@ -732,7 +754,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
@@ -764,8 +786,9 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   // flags based on the usage params in the current function call.
   hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
                    AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
-  if (usage & SHARED_IMAGE_USAGE_SCANOUT)
+  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
     hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
+  }
 
   // Add WRITE usage as we'll it need to upload data
   if (!pixel_data.empty())
@@ -848,7 +871,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe) {
   return MakeBacking(mailbox, format, size, color_space, surface_origin,
@@ -864,11 +887,12 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
   return MakeBacking(mailbox, format, size, color_space, surface_origin,
-                     alpha_type, usage, std::move(debug_label), false,
+                     alpha_type, usage, std::move(debug_label), is_thread_safe,
                      pixel_data);
 }
 
@@ -878,7 +902,7 @@ bool AHardwareBufferImageBackingFactory::CanImportGpuMemoryBuffer(
 }
 
 bool AHardwareBufferImageBackingFactory::IsSupported(
-    uint32_t usage,
+    SharedImageUsageSet usage,
     viz::SharedImageFormat format,
     const gfx::Size& size,
     bool thread_safe,
@@ -899,10 +923,9 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
 
   const FormatInfo& format_info = GetFormatInfo(format);
 
-  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
-                      (usage & SHARED_IMAGE_USAGE_RASTER_WRITE) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  bool used_by_skia = usage.HasAny(
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   bool used_by_gl = (HasGLES2ReadOrWriteUsage(usage)) ||
                     (used_by_skia && gr_context_type == GrContextType::kGL);
 
@@ -933,7 +956,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
@@ -957,27 +980,8 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
   return backing;
 }
 
-std::unique_ptr<SharedImageBacking>
-AHardwareBufferImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat buffer_format,
-    gfx::BufferPlane plane,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    std::string debug_label) {
-  if (plane != gfx::BufferPlane::DEFAULT) {
-    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
-    return nullptr;
-  }
-
-  return CreateSharedImage(mailbox,
-                           viz::GetSinglePlaneSharedImageFormat(buffer_format),
-                           size, color_space, surface_origin, alpha_type, usage,
-                           std::move(debug_label), std::move(handle));
+SharedImageBackingType AHardwareBufferImageBackingFactory::GetBackingType() {
+  return SharedImageBackingType::kAHardwareBuffer;
 }
 
 }  // namespace gpu

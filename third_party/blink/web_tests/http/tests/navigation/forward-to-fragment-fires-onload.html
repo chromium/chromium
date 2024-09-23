@@ -2,6 +2,7 @@
 <html>
 <head>
   <script src="../../js-test-resources/js-test.js"></script>
+  <script src="/resources/prevent-bfcache.js"></script>
 </head>
 <body>
 <p id="description"></p>
@@ -15,8 +16,8 @@ trigger a new load on back navigation.
 <script>
 description('Tests that loading is not stopped by going forward to a fragment.');
 
-onload = function()
-{
+onload = async function() {
+    await preventBFCache();
     if (window.localStorage.stage == 'three') {
         console.log('3. Got back to start.  Going forward to page 2.');
         window.localStorage.stage = 'four';

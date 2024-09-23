@@ -129,6 +129,8 @@ class TouchInjector : public ui::EventRewriter {
   // Returns the active actions size. Default actions are marked deleted and
   // still in `actions_`.
   size_t GetActiveActionsSize();
+  // Returns true if there is only one user added action.
+  bool HasSingleUserAddedAction() const;
   // Add a new action of type `action_type` from UI without input binding and
   // with default position binding at the center.
   void AddNewAction(ActionType action_type, const gfx::Point& target_pos);
@@ -284,7 +286,6 @@ class TouchInjector : public ui::EventRewriter {
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
   gfx::PointF GetRewrittenRootLocationForTesting(ui::PointerId original_id);
-  int GetRewrittenTouchInfoSizeForTesting();
   DisplayOverlayController* GetControllerForTesting();
 
   // TouchInjector is created when targeted `window_` is created and is

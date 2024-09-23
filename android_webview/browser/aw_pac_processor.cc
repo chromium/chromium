@@ -13,7 +13,6 @@
 #include <memory>
 #include <string>
 
-#include "android_webview/browser_jni_headers/AwPacProcessor_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -30,6 +29,9 @@
 #include "net/base/network_isolation_key.h"
 #include "net/proxy_resolution/pac_file_data.h"
 #include "net/proxy_resolution/proxy_info.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwPacProcessor_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

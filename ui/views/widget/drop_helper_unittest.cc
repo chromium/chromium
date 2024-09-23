@@ -77,7 +77,7 @@ TEST_F(DropHelperTest, DropCoordinates) {
   Widget widget;
   Widget::InitParams init_params(
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS));
-  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   widget.Init(std::move(init_params));
 
   // Setup a widget with a view that isn't aligned with the corner. In screen

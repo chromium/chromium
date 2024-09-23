@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "url/gurl.h"
@@ -50,17 +51,15 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
 
   std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
-      const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-      int last_trusted_vault_key_version,
+      const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
-      std::optional<int> authentication_factor_type_hint,
       RegisterAuthenticationFactorCallback callback) override;
 
-  std::unique_ptr<Request> RegisterDeviceWithoutKeys(
+  std::unique_ptr<Request> RegisterLocalDeviceWithoutKeys(
       const CoreAccountInfo& account_info,
       const SecureBoxPublicKey& device_public_key,
-      RegisterDeviceWithoutKeysCallback callback) override;
+      RegisterAuthenticationFactorCallback callback) override;
 
   std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,
@@ -80,11 +79,9 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
  private:
   std::unique_ptr<Request> SendJoinSecurityDomainsRequest(
       const CoreAccountInfo& account_info,
-      const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-      int last_trusted_vault_key_version,
+      const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorType authentication_factor_type,
-      std::optional<int> authentication_factor_type_hint,
       JoinSecurityDomainsCallback callback);
 
   const SecurityDomainId security_domain_;

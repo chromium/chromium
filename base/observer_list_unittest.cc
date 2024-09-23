@@ -5,15 +5,15 @@
 #include "base/observer_list.h"
 
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -122,7 +122,7 @@ template <class ObserverListType>
 class ObserverListCreator : public DelegateSimpleThread::Delegate {
  public:
   std::unique_ptr<ObserverListType> Create(
-      absl::optional<base::ObserverListPolicy> policy = absl::nullopt) {
+      std::optional<base::ObserverListPolicy> policy = std::nullopt) {
     policy_ = policy;
     DelegateSimpleThread thread(this, "ListCreator");
     thread.Start();
@@ -140,7 +140,7 @@ class ObserverListCreator : public DelegateSimpleThread::Delegate {
   }
 
   std::unique_ptr<ObserverListType> observer_list_;
-  absl::optional<base::ObserverListPolicy> policy_;
+  std::optional<base::ObserverListPolicy> policy_;
 };
 
 }  // namespace
@@ -906,7 +906,7 @@ class MockLogAssertHandler {
  public:
   MOCK_METHOD4(
       HandleLogAssert,
-      void(const char*, int, const base::StringPiece, const base::StringPiece));
+      void(const char*, int, const std::string_view, const std::string_view));
 };
 
 #if DCHECK_IS_ON()
@@ -1062,6 +1062,68 @@ TEST_F(CheckedObserverListTest, MultiObserver) {
 
   for (const auto& count : counts)
     EXPECT_EQ(1, count);
+}
+
+TEST_F(CheckedObserverListTest, Notify) {
+  ObserverList<TestCheckedObserver> list;
+  int count1 = 0;
+  int count2 = 0;
+  TestCheckedObserver observer1(&count1);
+  TestCheckedObserver observer2(&count2);
+  list.AddObserver(&observer1);
+  list.AddObserver(&observer2);
+
+  list.Notify(&TestCheckedObserver::Observe);
+  EXPECT_EQ(1, count1);
+  EXPECT_EQ(1, count2);
+
+  list.RemoveObserver(&observer1);
+  list.Notify(&TestCheckedObserver::Observe);
+  EXPECT_EQ(1, count1);
+  EXPECT_EQ(2, count2);
+}
+
+struct TestObserverWithArgs : public CheckedObserver {
+  void Observe(int x, std::string_view str) {
+    sum += x;
+    if (!str.empty()) {
+      EXPECT_EQ("hello", str);
+      string_seen_ = true;
+    }
+  }
+
+  int sum = 0;
+  bool string_seen_ = false;
+};
+
+TEST_F(CheckedObserverListTest, NotifyWithArgs) {
+  ObserverList<TestObserverWithArgs> list;
+  TestObserverWithArgs observer1;
+  TestObserverWithArgs observer2;
+  list.AddObserver(&observer1);
+  list.AddObserver(&observer2);
+
+  list.Notify(&TestObserverWithArgs::Observe, 10, std::string_view());
+  EXPECT_EQ(10, observer1.sum);
+  EXPECT_EQ(10, observer2.sum);
+
+  list.RemoveObserver(&observer1);
+  list.Notify(&TestObserverWithArgs::Observe, 20, std::string_view("hello"));
+  EXPECT_EQ(10, observer1.sum);
+  EXPECT_EQ(30, observer2.sum);
+  EXPECT_FALSE(observer1.string_seen_);
+  EXPECT_TRUE(observer2.string_seen_);
+}
+
+TEST_F(CheckedObserverListTest, NotifyWithImplicitlyConvertibleArgs) {
+  ObserverList<TestObserverWithArgs> list;
+  TestObserverWithArgs observer;
+  list.AddObserver(&observer);
+
+  // Implicitly convertible argument types should compile.
+  list.Notify(&TestObserverWithArgs::Observe, 10.0f, "hello");
+  EXPECT_EQ(10, observer.sum);
+  EXPECT_TRUE(observer.string_seen_);
 }
 
 }  // namespace base

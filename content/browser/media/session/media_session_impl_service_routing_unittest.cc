@@ -75,6 +75,11 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
                void(int player_id, const std::string& raw_device_id));
   MOCK_METHOD2(OnSetMute, void(int player_id, bool mute));
   MOCK_METHOD(void, OnRequestMediaRemoting, (int player_id), (override));
+  MOCK_METHOD(void,
+              OnRequestVisibility,
+              (int player_id,
+               RequestVisibilityCallback request_visibility_callback),
+              (override));
 
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
@@ -90,6 +95,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     return false;
   }
 
+  bool HasSufficientlyVisibleVideo(int player_id) const override {
+    return false;
+  }
+
   bool HasAudio(int player_id) const override {
     return audio_video_state_ == MediaAudioVideoState::kAudioOnly ||
            audio_video_state_ == MediaAudioVideoState::kAudioVideo;
@@ -99,6 +108,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     return audio_video_state_ == MediaAudioVideoState::kVideoOnly ||
            audio_video_state_ == MediaAudioVideoState::kAudioVideo;
   }
+
+  bool IsPaused(int player_id) const override { return false; }
 
   std::string GetAudioOutputSinkId(int player_id) const override { return ""; }
 
@@ -138,6 +149,8 @@ class MediaSessionImplServiceRoutingTest
     actions_.insert(MediaSessionAction::kStop);
     actions_.insert(MediaSessionAction::kSeekTo);
     actions_.insert(MediaSessionAction::kScrubTo);
+    actions_.insert(MediaSessionAction::kSeekForward);
+    actions_.insert(MediaSessionAction::kSeekBackward);
   }
 
   ~MediaSessionImplServiceRoutingTest() override = default;
@@ -412,89 +425,6 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest,
-       NotifyMetadataAndActionsChangeWhenTurningControllable) {
-  media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = u"title";
-  expected_metadata.artist = u"artist";
-  expected_metadata.album = u"album";
-  expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
-
-  CreateServiceForFrame(sub_frame_);
-
-  {
-    blink::mojom::SpecMediaMetadataPtr spec_metadata(
-        blink::mojom::SpecMediaMetadata::New());
-    spec_metadata->title = u"title";
-    spec_metadata->artist = u"artist";
-    spec_metadata->album = u"album";
-
-    services_[sub_frame_]->SetMetadata(std::move(spec_metadata));
-  }
-
-  services_[sub_frame_]->EnableAction(MediaSessionAction::kSeekForward);
-
-  {
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *GetMediaSession());
-
-    observer.WaitForEmptyActions();
-    observer.WaitForExpectedMetadata(empty_metadata());
-  }
-
-  {
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *GetMediaSession());
-
-    StartPlayerForFrame(sub_frame_);
-
-    observer.WaitForExpectedMetadata(expected_metadata);
-    observer.WaitForExpectedActions(
-        GetDefaultActionsWithExtra(MediaSessionAction::kSeekForward));
-  }
-}
-
-TEST_F(MediaSessionImplServiceRoutingTest,
-       NotifyActionsAndMetadataChangeWhenTurningUncontrollable) {
-  media_session::MediaMetadata expected_metadata;
-  expected_metadata.title = u"title";
-  expected_metadata.artist = u"artist";
-  expected_metadata.album = u"album";
-  expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
-
-  CreateServiceForFrame(sub_frame_);
-
-  {
-    blink::mojom::SpecMediaMetadataPtr spec_metadata(
-        blink::mojom::SpecMediaMetadata::New());
-    spec_metadata->title = u"title";
-    spec_metadata->artist = u"artist";
-    spec_metadata->album = u"album";
-
-    services_[sub_frame_]->SetMetadata(std::move(spec_metadata));
-  }
-
-  StartPlayerForFrame(sub_frame_);
-
-  {
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *GetMediaSession());
-
-    observer.WaitForExpectedActions(default_actions());
-    observer.WaitForExpectedMetadata(expected_metadata);
-  }
-
-  {
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *GetMediaSession());
-
-    ClearPlayersForFrame(sub_frame_);
-
-    observer.WaitForEmptyActions();
-    observer.WaitForExpectedMetadata(empty_metadata());
-  }
-}
-
-TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyActionsAndMetadataChangeWhenUncontrollableForMainFrame) {
   // When no frames have playback and the main frame has a service, observers
   // should be notified of actions and metadata on the main frame's service.
@@ -525,6 +455,35 @@ TEST_F(MediaSessionImplServiceRoutingTest,
     observer.WaitForExpectedMetadata(expected_metadata);
     observer.WaitForExpectedActions({MediaSessionAction::kSeekForward});
   }
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       RoutesTopMostFrameWhenNoFrameIsHasPlayers) {
+  // When no services exist, we should not route any service.
+  EXPECT_EQ(nullptr, ComputeServiceForRouting());
+
+  // Create a service with no players.
+  CreateServiceForFrame(sub_frame_);
+
+  // Since we have no other service with players, we should route the subframe's
+  // service.
+  EXPECT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+
+  // Create another service with no players on the main frame.
+  CreateServiceForFrame(main_frame_);
+
+  // Since the main frame is above the subframe, we should route that one
+  // instead.
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  // If the subframe has players, then it should then become the routed frame
+  // since the main frame has no players.
+  StartPlayerForFrame(sub_frame_);
+  EXPECT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+
+  // If the main frame then has players, then that one should be used.
+  StartPlayerForFrame(main_frame_);
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
 }
 
 TEST_F(MediaSessionImplServiceRoutingTest,
@@ -573,8 +532,6 @@ TEST_F(MediaSessionImplServiceRoutingTest,
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        TestReceivingPauseActionWhenNoServiceRouted) {
-  CreateServiceForFrame(sub_frame_);
-
   EXPECT_EQ(nullptr, ComputeServiceForRouting());
 
   // This should not crash.
@@ -1340,6 +1297,77 @@ TEST_F(MediaSessionImplServiceRoutingTest, RouteAudioVideoState) {
       // We should fallback to the default state.
       observer.WaitForAudioVideoStates({});
     }
+  }
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest,
+       NotifyObserverWithChaptersWhenServicePresent) {
+  client_.SetShouldHideMetadata(false);
+  CreateServiceForFrame(main_frame_);
+  StartPlayerForFrame(main_frame_);
+
+  EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+
+  std::vector<media_session::ChapterInformation> expected_chapters;
+
+  media_session::MediaImage test_image_1;
+  test_image_1.src = GURL("https://www.google.com");
+  media_session::MediaImage test_image_2;
+  test_image_2.src = GURL("https://www.example.org");
+
+  media_session::ChapterInformation test_chapter_1(
+      /*title=*/u"chapter1", /*startTime=*/base::Seconds(10),
+      /*artwork=*/{test_image_1});
+
+  media_session::ChapterInformation test_chapter_2(
+      /*title=*/u"chapter2", /*startTime=*/base::Seconds(20),
+      /*artwork=*/{test_image_2});
+
+  expected_chapters.push_back(test_chapter_1);
+  expected_chapters.push_back(test_chapter_2);
+
+  media_session::MediaMetadata expected_metadata;
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
+  expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
+  expected_metadata.chapters = expected_chapters;
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+
+    observer.WaitForExpectedMetadata(empty_metadata());
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+
+    blink::mojom::SpecMediaMetadataPtr spec_metadata(
+        blink::mojom::SpecMediaMetadata::New());
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
+    spec_metadata->chapterInfo.push_back(test_chapter_1);
+    spec_metadata->chapterInfo.push_back(test_chapter_2);
+
+    services_[main_frame_]->SetMetadata(std::move(spec_metadata));
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+    ClearPlayersForFrame(main_frame_);
+
+    observer.WaitForExpectedMetadata(expected_metadata);
   }
 }
 

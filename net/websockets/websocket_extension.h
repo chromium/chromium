@@ -17,17 +17,18 @@ namespace net {
 class NET_EXPORT_PRIVATE WebSocketExtension {
  public:
   // Note that RFC6455 does not allow a parameter with an empty value.
-  class NET_EXPORT_PRIVATE Parameter {
+  class NET_EXPORT_PRIVATE Parameter final {
    public:
     // Construct a parameter which does not have a value.
     explicit Parameter(const std::string& name);
     // Construct a parameter with a non-empty value.
     Parameter(const std::string& name, const std::string& value);
 
+    bool operator==(const Parameter&) const;
+
     bool HasValue() const { return !value_.empty(); }
     const std::string& name() const { return name_; }
     const std::string& value() const { return value_; }
-    bool Equals(const Parameter& other) const;
 
     // The default copy constructor and the assignment operator are defined:
     // we need them.
@@ -44,7 +45,11 @@ class NET_EXPORT_PRIVATE WebSocketExtension {
   void Add(const Parameter& parameter) { parameters_.push_back(parameter); }
   const std::string& name() const { return name_; }
   const std::vector<Parameter>& parameters() const { return parameters_; }
-  bool Equals(const WebSocketExtension& other) const;
+
+  // Equivalent() returns true if `name_` and `parameters_` are the same, even
+  // if the order of keys in `parameters_` is different.
+  bool Equivalent(const WebSocketExtension& other) const;
+
   std::string ToString() const;
 
   // The default copy constructor and the assignment operator are defined:

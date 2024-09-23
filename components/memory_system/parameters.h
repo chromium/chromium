@@ -6,9 +6,9 @@
 #define COMPONENTS_MEMORY_SYSTEM_PARAMETERS_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
+#include "base/profiler/process_type.h"
 #include "components/version_info/channel.h"
 
 namespace memory_system {
@@ -21,7 +21,7 @@ namespace memory_system {
 // GWP-ASan specific parameters, please see
 // components/gwp_asan/client/gwp_asan.h for details.
 struct GwpAsanParameters {
-  GwpAsanParameters(bool boost_sampling, base::StringPiece process_type);
+  GwpAsanParameters(bool boost_sampling, std::string_view process_type);
 
   bool boost_sampling;
   std::string process_type;
@@ -30,12 +30,11 @@ struct GwpAsanParameters {
 // ProfilingClient specific parameters, please see
 // components/heap_profiling/in_process/heap_profiler_controller.h for details.
 struct ProfilingClientParameters {
-  ProfilingClientParameters(
-      version_info::Channel channel,
-      metrics::CallStackProfileParams::Process process_type);
+  ProfilingClientParameters(version_info::Channel channel,
+                            base::ProfilerProcessType process_type);
 
   version_info::Channel channel;
-  metrics::CallStackProfileParams::Process process_type;
+  base::ProfilerProcessType process_type;
 };
 
 // Dispatcher specific parameters, please see
@@ -53,7 +52,7 @@ struct DispatcherParameters {
     // PoissonAllocationSampler will become enabled in the course of the
     // runtime.
     //
-    // TODO(https://crbug.com/1411454): Clarify for which components we need to
+    // TODO(crbug.com/40062835): Clarify for which components we need to
     // enforce PoissonAllocationSampler.
     kEnforce,
   };
@@ -70,7 +69,7 @@ struct DispatcherParameters {
   explicit DispatcherParameters(
       PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion,
       AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion,
-      base::StringPiece process_type);
+      std::string_view process_type);
 
   PoissonAllocationSamplerInclusion poisson_allocation_sampler_inclusion;
   AllocationTraceRecorderInclusion allocation_trace_recorder_inclusion;

@@ -78,20 +78,20 @@ SyncStatusLabels SetUpDistinctCase(
     syncer::TestSyncService* service,
     signin::IdentityTestEnvironment* test_environment,
     DistinctState case_number) {
+  AccountInfo account = test_environment->MakePrimaryAccountAvailable(
+      kTestUser, signin::ConsentLevel::kSync);
+  service->SetSignedIn(signin::ConsentLevel::kSync, account);
+
   switch (case_number) {
     case STATUS_CASE_SETUP_IN_PROGRESS: {
       service->SetInitialSyncFeatureSetupComplete(false);
-      service->SetSetupInProgress(true);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
+      service->SetSetupInProgress();
       return {SyncStatusMessageType::kPreSynced, IDS_SYNC_SETUP_IN_PROGRESS,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
     case STATUS_CASE_SETUP_ERROR: {
       service->SetInitialSyncFeatureSetupComplete(false);
-      service->SetSetupInProgress(false);
-      service->SetDisableReasons(
-          {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
+      service->SetHasUnrecoverableError(true);
       return {
         SyncStatusMessageType::kSyncError,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -103,95 +103,50 @@ SyncStatusLabels SetUpDistinctCase(
       };
     }
     case STATUS_CASE_AUTH_ERROR: {
-      service->SetInitialSyncFeatureSetupComplete(true);
-      service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetPassphraseRequired(false);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
-
-      // Make sure to fail authentication with an error in this case.
-      CoreAccountId account_id =
-          test_environment->identity_manager()->GetPrimaryAccountId(
-              signin::ConsentLevel::kSync);
       test_environment->SetRefreshTokenForPrimaryAccount();
-      service->SetAccountInfo(
-          test_environment->identity_manager()->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync));
       test_environment->UpdatePersistentErrorOfRefreshTokenForAccount(
-          account_id,
+          account.account_id,
           GoogleServiceAuthError(GoogleServiceAuthError::State::SERVICE_ERROR));
-      service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
+      service->SetPersistentAuthError();
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_RELOGIN_ERROR,
               IDS_SYNC_RELOGIN_BUTTON, SyncStatusActionType::kReauthenticate};
     }
     case STATUS_CASE_PROTOCOL_ERROR: {
-      service->SetInitialSyncFeatureSetupComplete(true);
-      service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetPassphraseRequired(false);
-      syncer::SyncProtocolError protocol_error;
-      protocol_error.action = syncer::UPGRADE_CLIENT;
       syncer::SyncStatus status;
-      status.sync_protocol_error = protocol_error;
-      service->SetDetailedSyncStatus(false, status);
-      service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
+      status.sync_protocol_error = {.action = syncer::UPGRADE_CLIENT};
+      service->SetDetailedSyncStatus(/*engine_available=*/false, status);
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_UPGRADE_CLIENT,
               IDS_SYNC_UPGRADE_CLIENT_BUTTON,
               SyncStatusActionType::kUpgradeClient};
     }
     case STATUS_CASE_CONFIRM_SYNC_SETTINGS: {
       service->SetInitialSyncFeatureSetupComplete(false);
-      service->SetPassphraseRequired(false);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       return {SyncStatusMessageType::kSyncError,
               IDS_SYNC_SETTINGS_NOT_CONFIRMED,
               IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON,
               SyncStatusActionType::kConfirmSyncSettings};
     }
     case STATUS_CASE_PASSPHRASE_ERROR: {
-      service->SetInitialSyncFeatureSetupComplete(true);
-      service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
-      service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-      service->SetPassphraseRequired(true);
-      service->SetPassphraseRequiredForPreferredDataTypes(true);
+      service->SetPassphraseRequired();
       return {SyncStatusMessageType::kSyncError, IDS_SYNC_STATUS_NEEDS_PASSWORD,
               IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON,
               SyncStatusActionType::kEnterPassphrase};
     }
     case STATUS_CASE_TRUSTED_VAULT_KEYS_ERROR:
-      service->SetInitialSyncFeatureSetupComplete(true);
-      service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
-      service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-      service->SetPassphraseRequired(false);
-      service->SetTrustedVaultKeyRequiredForPreferredDataTypes(true);
+      service->SetTrustedVaultKeyRequired(true);
       return {SyncStatusMessageType::kPasswordsOnlySyncError,
               IDS_SETTINGS_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
     case STATUS_CASE_TRUSTED_VAULT_RECOVERABILITY_ERROR:
-      service->SetInitialSyncFeatureSetupComplete(true);
-      service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
-      service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-      service->SetPassphraseRequired(false);
       service->SetTrustedVaultRecoverabilityDegraded(true);
       return {SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     case STATUS_CASE_SYNCED: {
-      service->SetInitialSyncFeatureSetupComplete(true);
-      service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
-      service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
-      service->SetPassphraseRequired(false);
       return {SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
     case STATUS_CASE_SYNC_DISABLED_BY_POLICY: {
-      service->SetDisableReasons(
-          {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
-      service->SetInitialSyncFeatureSetupComplete(false);
-      service->SetTransportState(syncer::SyncService::TransportState::DISABLED);
-      service->SetPassphraseRequired(false);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
+      service->SetAllowedByEnterprisePolicy(false);
       return {SyncStatusMessageType::kSynced,
               IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
@@ -199,17 +154,13 @@ SyncStatusLabels SetUpDistinctCase(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case STATUS_CASE_SYNC_RESET_FROM_DASHBOARD: {
       service->GetUserSettings()->SetSyncFeatureDisabledViaDashboard(true);
-      service->SetInitialSyncFeatureSetupComplete(true);
-      service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-      service->SetPassphraseRequired(false);
-      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
       return {SyncStatusMessageType::kSyncError,
               IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
               IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case NUMBER_OF_STATUS_CASES:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return {SyncStatusMessageType::kPreSynced, IDS_SETTINGS_EMPTY_STRING,
           IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
@@ -221,12 +172,9 @@ TEST(SyncUIUtilTest, DistinctCasesReportProperMessages) {
   base::test::TaskEnvironment task_environment;
 
   for (int index = 0; index != NUMBER_OF_STATUS_CASES; index++) {
+    SCOPED_TRACE(testing::Message() << "Testing case " << index);
     syncer::TestSyncService service;
     signin::IdentityTestEnvironment environment;
-
-    // Need a primary account signed in before calling SetUpDistinctCase().
-    environment.MakePrimaryAccountAvailable(kTestUser,
-                                            signin::ConsentLevel::kSync);
 
     SyncStatusLabels expected_labels = SetUpDistinctCase(
         &service, &environment, static_cast<DistinctState>(index));
@@ -248,8 +196,7 @@ TEST(SyncUIUtilTest, UnrecoverableErrorWithActionableProtocolError) {
 
   environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetInitialSyncFeatureSetupComplete(true);
-  service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
+  service.SetHasUnrecoverableError(true);
 
   // First time action is not set. We should get unrecoverable error.
   service.SetDetailedSyncStatus(true, syncer::SyncStatus());
@@ -289,8 +236,7 @@ TEST(SyncUIUtilTest, ActionableProtocolErrorWithPassiveMessage) {
 
   environment.SetPrimaryAccount(kTestUser, signin::ConsentLevel::kSync);
   service.SetInitialSyncFeatureSetupComplete(true);
-  service.SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR});
+  service.SetHasUnrecoverableError(true);
 
   // Set action to SyncStatusActionType::kUpgradeClient.
   syncer::SyncStatus status;
@@ -334,8 +280,7 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
   const AccountInfo primary_account_info =
       environment.MakePrimaryAccountAvailable(kTestUser,
                                               signin::ConsentLevel::kSync);
-  service.SetAccountInfo(primary_account_info);
-  service.SetInitialSyncFeatureSetupComplete(true);
+  service.SetSignedIn(signin::ConsentLevel::kSync, primary_account_info);
 
   // Setup a secondary account.
   const AccountInfo secondary_account_info =
@@ -367,21 +312,20 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError) {
   syncer::TestSyncService service;
   service.SetInitialSyncFeatureSetupComplete(true);
-  service.SetPassphraseRequiredForPreferredDataTypes(true);
+  service.SetPassphraseRequired();
   EXPECT_TRUE(ShouldShowSyncPassphraseError(&service));
 }
 
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_SyncDisabled) {
   syncer::TestSyncService service;
   service.SetInitialSyncFeatureSetupComplete(false);
-  service.SetPassphraseRequiredForPreferredDataTypes(true);
+  service.SetPassphraseRequired();
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
 }
 
 TEST(SyncUIUtilTest, ShouldShowSyncPassphraseError_NotUsingPassphrase) {
   syncer::TestSyncService service;
   service.SetInitialSyncFeatureSetupComplete(true);
-  service.SetPassphraseRequiredForPreferredDataTypes(false);
   EXPECT_FALSE(ShouldShowSyncPassphraseError(&service));
 }
 

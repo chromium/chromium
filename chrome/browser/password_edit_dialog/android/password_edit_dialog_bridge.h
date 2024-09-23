@@ -108,8 +108,8 @@ class PasswordEditDialogBridge : public PasswordEditDialog {
   void OnDialogDismissed(JNIEnv* env, jboolean dialogAccepted);
 
   // Called from Java to identify whether the credential to be saved/updated
-  // will be saved/updated in the profile store.
-  jboolean IsUsingProfileStore(
+  // will be saved/updated in the account storage.
+  jboolean IsUsingAccountStorage(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& username);
 

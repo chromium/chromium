@@ -90,21 +90,23 @@ class MediaKeySession final
 
   String sessionId() const;
   double expiration() const { return expiration_; }
-  ScriptPromiseTyped<V8MediaKeySessionClosedReason> closed(ScriptState*);
+  ScriptPromise<V8MediaKeySessionClosedReason> closed(ScriptState*);
   MediaKeyStatusMap* keyStatuses();
   DEFINE_ATTRIBUTE_EVENT_LISTENER(keystatuseschange, kKeystatuseschange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(message, kMessage)
 
-  ScriptPromise generateRequest(ScriptState*,
-                                const String& init_data_type,
-                                const DOMArrayPiece& init_data,
-                                ExceptionState&);
-  ScriptPromise load(ScriptState*, const String& session_id, ExceptionState&);
-  ScriptPromise update(ScriptState*,
-                       const DOMArrayPiece& response,
-                       ExceptionState&);
-  ScriptPromise close(ScriptState*, ExceptionState&);
-  ScriptPromise remove(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> generateRequest(ScriptState*,
+                                              const String& init_data_type,
+                                              const DOMArrayPiece& init_data,
+                                              ExceptionState&);
+  ScriptPromise<IDLBoolean> load(ScriptState*,
+                                 const String& session_id,
+                                 ExceptionState&);
+  ScriptPromise<IDLUndefined> update(ScriptState*,
+                                     const DOMArrayPiece& response,
+                                     ExceptionState&);
+  ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> remove(ScriptState*, ExceptionState&);
 
   // EventTarget
   const AtomicString& InterfaceName() const override;

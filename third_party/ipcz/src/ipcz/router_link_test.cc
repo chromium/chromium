@@ -10,6 +10,7 @@
 
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_transport.h"
+#include "ipcz/features.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
@@ -17,7 +18,6 @@
 #include "ipcz/node.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_name.h"
-#include "ipcz/operation_context.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
 #include "ipcz/router_link_state.h"
@@ -53,12 +53,14 @@ class TestNodePair {
         NodeLinkMemory::AllocateMemory(kTestDriver);
     node_link_a_ = NodeLink::CreateInactive(
         node_a_, LinkSide::kA, kTestBrokerName, kTestNonBrokerName,
-        Node::Type::kNormal, 0, transports.first,
-        NodeLinkMemory::Create(node_a_, std::move(buffer.mapping)));
+        Node::Type::kNormal, 0, Features{}, transports.first,
+        NodeLinkMemory::Create(node_a_, LinkSide::kA, Features{},
+                               std::move(buffer.mapping)));
     node_link_b_ = NodeLink::CreateInactive(
         node_b_, LinkSide::kB, kTestNonBrokerName, kTestBrokerName,
-        Node::Type::kBroker, 0, transports.second,
-        NodeLinkMemory::Create(node_b_, buffer.memory.Map()));
+        Node::Type::kBroker, 0, Features{}, transports.second,
+        NodeLinkMemory::Create(node_b_, LinkSide::kB, Features{},
+                               buffer.memory.Map()));
     node_a_->AddConnection(kTestNonBrokerName, {.link = node_link_a_});
     node_b_->AddConnection(kTestBrokerName,
                            {.link = node_link_b_, .broker = node_link_b_});
@@ -86,17 +88,13 @@ class TestNodePair {
                                      FragmentRef<RouterLinkState> a_state,
                                      Ref<Router> b,
                                      FragmentRef<RouterLinkState> b_state) {
-    // The choice of OperationContext is arbitrary and irrelevant for this test.
-    const OperationContext context{OperationContext::kTransportNotification};
     const SublinkId sublink = node_link_a_->memory().AllocateSublinkIds(1);
-    Ref<RemoteRouterLink> a_link =
-        node_link_a_->AddRemoteRouterLink(context, sublink, std::move(a_state),
-                                          LinkType::kCentral, LinkSide::kA, a);
-    Ref<RemoteRouterLink> b_link =
-        node_link_b_->AddRemoteRouterLink(context, sublink, std::move(b_state),
-                                          LinkType::kCentral, LinkSide::kB, b);
-    a->SetOutwardLink(context, a_link);
-    b->SetOutwardLink(context, b_link);
+    Ref<RemoteRouterLink> a_link = node_link_a_->AddRemoteRouterLink(
+        sublink, std::move(a_state), LinkType::kCentral, LinkSide::kA, a);
+    Ref<RemoteRouterLink> b_link = node_link_b_->AddRemoteRouterLink(
+        sublink, std::move(b_state), LinkType::kCentral, LinkSide::kB, b);
+    a->SetOutwardLink(a_link);
+    b->SetOutwardLink(b_link);
     return {a_link, b_link};
   }
 
@@ -129,14 +127,12 @@ class RouterLinkTest : public testing::Test,
                        public testing::WithParamInterface<RouterLinkTestMode> {
  public:
   void SetUp() override {
-    // The choice of OperationContext is arbitrary and irrelevant for this test.
-    const OperationContext context{OperationContext::kTransportNotification};
     switch (GetParam()) {
       case RouterLinkTestMode::kLocal:
         std::tie(a_link_, b_link_) =
             LocalRouterLink::CreatePair(LinkType::kCentral, {a_, b_});
-        a_->SetOutwardLink(context, a_link_);
-        b_->SetOutwardLink(context, b_link_);
+        a_->SetOutwardLink(a_link_);
+        b_->SetOutwardLink(b_link_);
         break;
 
       case RouterLinkTestMode::kRemote: {
@@ -228,11 +224,9 @@ TEST_P(RouterLinkTest, FlushOtherSideIfWaiting) {
   link_state().status = RouterLinkState::kUnstable;
 
   // FlushOtherSideIfWaiting() does nothing if the other side is not, in fact,
-  // waiting for something. The choice of OperationContext is arbitrary and
-  // irrelevant for this test.
-  const OperationContext context{OperationContext::kTransportNotification};
-  EXPECT_FALSE(a_link().FlushOtherSideIfWaiting(context));
-  EXPECT_FALSE(b_link().FlushOtherSideIfWaiting(context));
+  // waiting for something.
+  EXPECT_FALSE(a_link().FlushOtherSideIfWaiting());
+  EXPECT_FALSE(b_link().FlushOtherSideIfWaiting());
   EXPECT_EQ(RouterLinkState::kUnstable, link_status());
 
   // Mark B stable and try to lock the link. Since A is not yet stable, this
@@ -247,7 +241,7 @@ TEST_P(RouterLinkTest, FlushOtherSideIfWaiting) {
   a_link().MarkSideStable();
   EXPECT_EQ(RouterLinkState::kStable | RouterLinkState::kSideBWaiting,
             link_status());
-  EXPECT_TRUE(a_link().FlushOtherSideIfWaiting(context));
+  EXPECT_TRUE(a_link().FlushOtherSideIfWaiting());
   EXPECT_EQ(RouterLinkState::kStable, link_status());
 }
 

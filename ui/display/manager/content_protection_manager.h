@@ -62,7 +62,8 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
     ~Observer() override = default;
 
     // Called after the secure state of a display has been changed.
-    virtual void OnDisplaySecurityChanged(int64_t display_id, bool secure) = 0;
+    virtual void OnDisplaySecurityMaybeChanged(int64_t display_id,
+                                               bool secure) = 0;
   };
 
   // Returns whether display configuration is disabled, in which case API calls
@@ -150,10 +151,11 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
                                   Task::Status status);
 
   // DisplayConfigurator::Observer overrides:
-  void OnDisplayModeChanged(
+  void OnDisplayConfigurationChanged(
       const DisplayConfigurator::DisplayStateList&) override;
-  void OnDisplayModeChangeFailed(const DisplayConfigurator::DisplayStateList&,
-                                 MultipleDisplayState) override;
+  void OnDisplayConfigurationChangeFailed(
+      const DisplayConfigurator::DisplayStateList&,
+      MultipleDisplayState) override;
 
   bool HasExternalDisplaysWithContentProtection() const;
 

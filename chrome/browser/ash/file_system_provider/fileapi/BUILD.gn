@@ -1,0 +1,64 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("fileapi") {
+  sources = [
+    "backend_delegate.cc",
+    "backend_delegate.h",
+    "buffering_file_stream_reader.cc",
+    "buffering_file_stream_reader.h",
+    "buffering_file_stream_writer.cc",
+    "buffering_file_stream_writer.h",
+    "file_stream_reader.cc",
+    "file_stream_reader.h",
+    "file_stream_writer.cc",
+    "file_stream_writer.h",
+    "provider_async_file_util.cc",
+    "provider_async_file_util.h",
+    "watcher_manager.cc",
+    "watcher_manager.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/fileapi",
+    "//content/public/browser",
+    "//net",
+    "//storage/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "buffering_file_stream_reader_unittest.cc",
+    "buffering_file_stream_writer_unittest.cc",
+    "file_stream_reader_unittest.cc",
+    "file_stream_writer_unittest.cc",
+    "provider_async_file_util_unittest.cc",
+  ]
+
+  deps = [
+    ":fileapi",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/file_system_provider:test_support",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//net",
+    "//storage/browser",
+    "//storage/browser:test_support",
+    "//testing/gtest",
+  ]
+}

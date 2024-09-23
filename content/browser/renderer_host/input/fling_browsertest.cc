@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/renderer_host/render_widget_host_input_event_router.h"
+#include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture.h"
 #include "content/public/test/browser_test.h"
@@ -385,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
       0, EvalJs(root->current_frame_host(), "window.scrollY").ExtractDouble());
 }
 
-// TODO(crbug.com/1352412): Re-enable on Linux MSAN once not flaky.
+// TODO(crbug.com/40857753): Re-enable on Linux MSAN once not flaky.
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
 #define MAYBE_TouchscreenFlingInOOPIF DISABLED_TouchscreenFlingInOOPIF
 #else
@@ -397,14 +397,14 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   SimulateTouchscreenFling(child_view_->host());
   WaitForFrameScroll(GetChildNode());
 }
-// TODO(crbug.com/1340285): flaky.
+// TODO(crbug.com/40230295): flaky.
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
                        DISABLED_TouchpadFlingInOOPIF) {
   LoadPageWithOOPIF();
   SimulateTouchpadFling(child_view_->host());
   WaitForFrameScroll(GetChildNode());
 }
-// TODO(crbug.com/1340285): flaky.
+// TODO(crbug.com/40230295): flaky.
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
                        DISABLED_TouchscreenInertialGSUsBubbleFromOOPIF) {
   LoadPageWithOOPIF();
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// TODO(crbug.com/1340285): flaky.
+// TODO(crbug.com/40230295): flaky.
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
                        DISABLED_InertialGSEGetsBubbledFromOOPIF) {
   LoadPageWithOOPIF();
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that the router has forced the last fling start target to stop
   // flinging.
-  RenderWidgetHostInputEventRouter* router =
+  input::RenderWidgetHostInputEventRouter* router =
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetInputEventRouter();
   EXPECT_TRUE(
@@ -555,8 +555,9 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   SimulateTouchscreenFling(GetWidgetHost());
 
   // As the view is destroyed, there shouldn't be any active fling.
-  EXPECT_FALSE(static_cast<InputRouterImpl*>(GetWidgetHost()->input_router())
-                   ->IsFlingActiveForTest());
+  EXPECT_FALSE(
+      static_cast<input::InputRouterImpl*>(GetWidgetHost()->input_router())
+          ->IsFlingActiveForTest());
 
   EXPECT_EQ(
       0, EvalJs(root->current_frame_host(), "window.scrollY").ExtractDouble());

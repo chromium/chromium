@@ -33,8 +33,6 @@ std::optional<net::HttpNoVarySearchData> ProcessHead(
     const network::mojom::URLResponseHead& head,
     const GURL& url,
     RenderFrameHost* rfh) {
-  CHECK(base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch));
-
   // No No-Vary-Search headers.
   if (!(head.parsed_headers &&
         head.parsed_headers->no_vary_search_with_parse_error)) {
@@ -51,7 +49,7 @@ std::optional<net::HttpNoVarySearchData> ProcessHead(
   // Parse error.
   const auto parse_error =
       head.parsed_headers->no_vary_search_with_parse_error->get_parse_error();
-  // TODO(crbug.com/1494916): Maybe `CHECK_NE(parse_error, kOk)`.
+  // TODO(crbug.com/40286370): Maybe `CHECK_NE(parse_error, kOk)`.
   if (parse_error == network::mojom::NoVarySearchParseError::kOk) {
     return std::nullopt;
   }

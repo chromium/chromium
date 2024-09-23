@@ -34,7 +34,7 @@ std::string GetProcessTypeNameInEnglish(int type) {
       return "Unknown";
   }
 
-  return content::GetContentClient()->GetProcessTypeNameInEnglish(type);
+  return GetContentClient()->GetProcessTypeNameInEnglish(type);
 }
 
 }  // namespace content

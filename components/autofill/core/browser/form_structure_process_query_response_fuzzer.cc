@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
@@ -25,10 +26,10 @@ void AddField(const std::string& label,
               FormControlType control_type,
               FormData* form_data) {
   FormFieldData field;
-  field.label = ASCIIToUTF16(label);
-  field.name = ASCIIToUTF16(name);
-  field.form_control_type = control_type;
-  form_data->fields.push_back(field);
+  field.set_label(ASCIIToUTF16(label));
+  field.set_name(ASCIIToUTF16(name));
+  field.set_form_control_type(control_type);
+  test_api(*form_data).Append(field);
 }
 
 // We run ProcessServerPredictionsQueryResponse twice with hardcoded forms

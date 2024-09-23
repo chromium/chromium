@@ -24,7 +24,7 @@ class SmartBubbleStatsStore {
   // Adds or replaces the statistics for the domain |stats.origin_domain|.
   virtual void AddSiteStats(const InteractionsStats& stats) = 0;
 
-  // TODO(crbug/1081389): replace GURL with Origin.
+  // TODO(crbug.com/40130501): replace GURL with Origin.
   // Removes the statistics for |origin_domain|.
   virtual void RemoveSiteStats(const GURL& origin_domain) = 0;
 

@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
-#include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -67,7 +66,7 @@ void ResizeObserverEntry::PopulateFromLayoutBox(
       PhysicalOffset(layout_box.PaddingLeft(), layout_box.PaddingTop()),
       layout_box.ContentSize());
   content_rect_ =
-      ResizeObserverUtilities::ZoomAdjustedLayoutRect(content_rect, style);
+      ResizeObserverUtilities::ZoomAdjustedPhysicalRect(content_rect, style);
 
   gfx::SizeF content_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
       ResizeObserverBoxOptions::kContentBox, layout_box, style);

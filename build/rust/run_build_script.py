@@ -62,7 +62,9 @@ def host_triple(rustc_path):
   return known_vars["host"]
 
 
-RUSTC_CFG_LINE = re.compile("cargo:rustc-cfg=(.*)")
+# Before 1.77, the format was `cargo:rustc-cfg=`. As of 1.77 the format is now
+# `cargo::rustc-cfg=`.
+RUSTC_CFG_LINE = re.compile("cargo::?rustc-cfg=(.*)")
 
 
 def main():
@@ -74,6 +76,7 @@ def main():
                       required=True,
                       help='where to write output rustc flags')
   parser.add_argument('--target', help='rust target triple')
+  parser.add_argument('--pointer-width', help='rust target pointer width')
   parser.add_argument('--features', help='features', nargs='+')
   parser.add_argument('--env', help='environment variable', nargs='+')
   parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
@@ -101,6 +104,7 @@ def main():
     env["OUT_DIR"] = tempdir
     env["CARGO_MANIFEST_DIR"] = os.path.abspath(args.src_dir)
     env["HOST"] = host_triple(rustc_path)
+    env["CARGO_CFG_TARGET_POINTER_WIDTH"] = args.pointer_width
     if args.target is None:
       env["TARGET"] = env["HOST"]
     else:
@@ -124,6 +128,18 @@ def main():
     else:
       print(f'Invalid TARGET {env["TARGET"]}')
       sys.exit(1)
+    # See https://crbug.com/325543500 for background.
+    # Cargo sets CARGO_CFG_TARGET_OS to "android" even when targeting
+    # *-androideabi.
+    if env["CARGO_CFG_TARGET_OS"].startswith("android"):
+      env["CARGO_CFG_TARGET_OS"] = "android"
+    elif env["CARGO_CFG_TARGET_OS"] == "darwin":
+      env["CARGO_CFG_TARGET_OS"] = "macos"
+    env["CARGO_CFG_TARGET_ENDIAN"] = "little"
+    if env["CARGO_CFG_TARGET_OS"] == "windows":
+      env["CARGO_CFG_TARGET_FAMILY"] = "windows"
+    else:
+      env["CARGO_CFG_TARGET_FAMILY"] = "unix"
     if args.features:
       for f in args.features:
         feature_name = f.upper().replace("-", "_")

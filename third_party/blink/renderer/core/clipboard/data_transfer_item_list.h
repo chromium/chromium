@@ -35,7 +35,10 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -56,8 +59,8 @@ class CORE_EXPORT DataTransferItemList final : public ScriptWrappable {
   DataTransferItem* item(uint32_t index);
   void deleteItem(uint32_t index, ExceptionState&);
   void clear();
-  DataTransferItem* add(const String& data,
-                        const String& type,
+  DataTransferItem* add(const WTF::String& data,
+                        const WTF::String& type,
                         ExceptionState&);
   DataTransferItem* add(File*);
 

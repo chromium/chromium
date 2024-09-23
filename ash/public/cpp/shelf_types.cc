@@ -19,6 +19,19 @@ constexpr char kDelimiter[] = "|";
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& out, ShelfAlignment alignment) {
+  switch (alignment) {
+    case ShelfAlignment::kBottom:
+      return out << "Bottom";
+    case ShelfAlignment::kLeft:
+      return out << "Left";
+    case ShelfAlignment::kRight:
+      return out << "Right";
+    case ShelfAlignment::kBottomLocked:
+      return out << "BottomLocked";
+  }
+}
+
 std::ostream& operator<<(std::ostream& out, ShelfAutoHideState state) {
   switch (state) {
     case SHELF_AUTO_HIDE_SHOWN:
@@ -74,7 +87,6 @@ bool IsPinnedShelfItemType(ShelfItemType type) {
       return false;
   }
   NOTREACHED();
-  return false;
 }
 
 bool SamePinState(ShelfItemType a, ShelfItemType b) {

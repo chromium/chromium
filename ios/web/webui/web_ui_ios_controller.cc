@@ -4,11 +4,13 @@
 
 #include "ios/web/public/webui/web_ui_ios_controller.h"
 
+#include <string_view>
+
 namespace web {
 
 bool WebUIIOSController::OverrideHandleWebUIIOSMessage(
     const GURL& source_url,
-    base::StringPiece message) {
+    std::string_view message) {
   return false;
 }
 

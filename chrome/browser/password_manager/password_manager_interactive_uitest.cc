@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -16,7 +17,7 @@
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -328,10 +329,25 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
   NavigateToFile("/password/password_form.html");
 
-  ContentPasswordManagerDriverFactory* factory =
-      ContentPasswordManagerDriverFactory::FromWebContents(WebContents());
+  autofill::ChromeAutofillClient* autofill_client =
+      autofill::ChromeAutofillClient::FromWebContentsForTesting(WebContents());
+  // The test page contains multiple password forms. All of them will be
+  // autofilled again every time the logins from the password store are changed.
+  // Updating every field takes time and triggers every time hiding the Autofill
+  // Popup with the reason `SuggestionHidingReason::kEndEditing` (because each
+  // field gains focus while it is autofilled). Therefore, we use
+  // `ChromeAutofillClient::SetKeepPopupOpenForTesting()` to keep the autofill
+  // popup open (and prevent the controller from being deleted).
+  // Note that `ChromeAutofillClient::SetKeepPopupOpenForTesting()` only ignores
+  // a specific very small set of hiding reasons, so the popup can still be
+  // hidden by almost all of the reasons (such as
+  // `SuggestionHidingReason::kStaleData`, which occurs only once when the test
+  // removes logins from the password store).
+  autofill_client->SetKeepPopupOpenForTesting(true);
+
   autofill::mojom::PasswordManagerDriver* driver =
-      factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
+      ContentPasswordManagerDriver::GetForRenderFrameHost(
+          WebContents()->GetPrimaryMainFrame());
 
   // Just fake a position of the <input> element within the content_area_bounds.
   // For this test it does not matter where the dropdown is rendered.
@@ -345,12 +361,13 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContentsForTesting(WebContents());
-  autofill::AutofillPopupController* controller =
-      autofill_client->popup_controller_for_testing().get();
-  ASSERT_TRUE(controller);
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
+  autofill::AutofillSuggestionController* controller = nullptr;
+  // Showing the Autofill Popup is an asynchronous task.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller =
+               autofill_client->suggestion_controller_for_testing().get();
+  })) << "Creating `AutofillPopupController` timed out.";
   // Two credentials, a separator line and "Manage passwords" should be
   // displayed.
   EXPECT_EQ(4, controller->GetLineCount());
@@ -361,39 +378,44 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForElementValue("username_field", "admin");
 
   // Delete one credential. It should not be in the dropdown.
-  password_store->RemoveLogin(admin_form);
+  password_store->RemoveLogin(FROM_HERE, admin_form);
   WaitForPasswordStore();
 
   // Wait for the refetch to finish.
-  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
   WaitForPasswordStore();
   // Reshow the dropdown.
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
-  controller = autofill_client->popup_controller_for_testing().get();
-  ASSERT_TRUE(controller);
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
+  // Showing the Autofill Popup is an asynchronous task.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return controller =
+               autofill_client->suggestion_controller_for_testing().get();
+  })) << "Creating `AutofillPopupController` timed out.";
   EXPECT_EQ(3, controller->GetLineCount());
-  EXPECT_EQ(u"user", controller->GetSuggestionMainTextAt(0));
-  EXPECT_NE(u"admin", controller->GetSuggestionMainTextAt(1));
+  EXPECT_EQ(u"user", controller->GetSuggestionAt(0).main_text.value);
+  EXPECT_NE(u"admin", controller->GetSuggestionAt(1).main_text.value);
 
   // The username_field should get re-filled with "user" instead of "admin".
   WaitForElementValue("username_field", "user");
 
   // Delete all the credentials.
-  password_store->RemoveLogin(user_form);
+  password_store->RemoveLogin(FROM_HERE, user_form);
   WaitForPasswordStore();
 
   // Wait for the refetch to finish.
-  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
   WaitForPasswordStore();
   // Reshow the dropdown won't work because there is nothing to suggest.
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
       kElementId, form,
       autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
-      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
-  EXPECT_FALSE(autofill_client->popup_controller_for_testing());
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), false, element_bounds));
+  // Showing the Autofill Popup is an asynchronous task.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(autofill_client->suggestion_controller_for_testing());
 
   WaitForElementValue("username_field", "");
 }
@@ -476,10 +498,11 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
               ";";
     ASSERT_TRUE(content::ExecJs(WebContents(), submit));
 
-    if (all_fields_cleared)
+    if (all_fields_cleared) {
       EXPECT_TRUE(prompt_observer->IsUpdatePromptShownAutomatically());
-    else
+    } else {
       EXPECT_FALSE(prompt_observer->IsUpdatePromptShownAutomatically());
+    }
 
     if (all_fields_cleared) {
       // We emulate that the user clicks "Update" button.
@@ -555,6 +578,45 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
           1);
     }
   }
+}
+
+// Tests that, when choosing the value for saving, user-typed values are
+// preferred to values coming from JS.
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
+                       UserTypedValuesAreSavedInsteadOfJsInputs) {
+  NavigateToFile("/password/simple_password.html");
+
+  // Simulate user typing username and password.
+  const std::string kRealUsername = "real-username";
+  FillElementWithValue("username_field", kRealUsername, kRealUsername);
+  const std::string kRealPassword = "real-password";
+  FillElementWithValue("password_field", kRealPassword, kRealPassword);
+
+  // Change input values with JS.
+  const std::string kFakeUsername = "it-is-a-trap-username";
+  const std::string kFakePassword = "it-is-a-trap-password";
+  ASSERT_TRUE(
+      content::ExecJs(WebContents(),
+                      R"(document.getElementById('username_field').focus();
+        document.getElementById('username_field').value = ')" +
+                          kFakeUsername + R"(';
+        document.getElementById('password_field').value = ')" +
+                          kFakePassword + "';"));
+  WaitForElementValue("username_field", kFakeUsername);
+  WaitForElementValue("password_field", kFakePassword);
+
+  // Submit the form and check that user typed inputs are saved.
+  PasswordsNavigationObserver navigation_observer(WebContents());
+  BubbleObserver prompt_observer(WebContents());
+  std::string submit =
+      "document.getElementById('input_submit_button').click();";
+  ASSERT_TRUE(content::ExecJs(WebContents(), submit));
+  ASSERT_TRUE(navigation_observer.Wait());
+  EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+  prompt_observer.AcceptSavePrompt();
+
+  WaitForPasswordStore();
+  CheckThatCredentialsStored(kRealUsername, kRealPassword);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

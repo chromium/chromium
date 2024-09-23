@@ -956,7 +956,7 @@ policies:
   955: WebHidAllowDevicesWithHidUsagesForUrls
   956: SecondaryGoogleAccountUsage
   957: DeviceEncryptedReportingPipelineEnabled
-  958: IsolatedAppsDeveloperModeAllowed
+  958: ''
   959: FloatingWorkspaceEnabled
   960: WindowPlacementAllowedForUrls
   961: WindowPlacementBlockedForUrls
@@ -1215,6 +1215,89 @@ policies:
   1214: GoogleLocationServicesEnabled
   1215: ProvisionManagedClientCertificateForUser
   1216: LocalUserFilesAllowed
+  1217: ''
+  1218: SubAppsAPIsAllowedWithoutGestureAndAuthorizationForOrigins
+  1219: DefaultWebPrintingSetting
+  1220: WebPrintingAllowedForUrls
+  1221: WebPrintingBlockedForUrls
+  1222: DocumentScanAPITrustedExtensions
+  1223: RemoteAccessHostAllowPinAuthentication
+  1224: DownloadManagerSaveToDriveSettings
+  1225: AutomaticFullscreenAllowedForUrls
+  1226: AutomaticFullscreenBlockedForUrls
+  1227: MutationEventsEnabled
+  1228: DevToolsGenAiSettings
+  1229: CACertificatesWithConstraints
+  1230: DefaultDirectSocketsSetting
+  1231: DirectSocketsAllowedForUrls
+  1232: DirectSocketsBlockedForUrls
+  1233: ''
+  1234: PrefixedVideoFullscreenApiAvailability
+  1235: PrivacySandboxIpProtectionEnabled
+  1236: OrcaEnabled
+  1237: EnterpriseLogoUrl
+  1238: EnterpriseCustomLabel
+  1239: ProfileLabel
+  1240: PrivacySandboxFingerprintingProtectionEnabled
+  1241: MultiScreenCaptureAllowedForUrls
+  1242: ''
+  1243: ''
+  1244: BoundSessionCredentialsEnabled
+  1245: UiAutomationProviderEnabled
+  1246: ApplicationBoundEncryptionEnabled
+  1247: DeviceAuthenticationFlowAutoReloadInterval
+  1248: ShowAiIntroScreenEnabled
+  1249: ''
+  1250: EnterpriseBadgingTemporarySetting
+  1251: GenAILocalFoundationalModelSettings
+  1252: DeviceExtensionsSystemLogEnabled
+  1253: ChromeDataRegionSetting
+  1254: ContextualGoogleIntegrationsEnabled
+  1255: ContextualGoogleIntegrationsConfiguration
+  1256: PdfViewerOutOfProcessIframeEnabled
+  1257: LockScreenAutoStartOnlineReauth
+  1258: KeyboardFocusableScrollersEnabled
+  1259: ExtensibleEnterpriseSSOEnabled
+  1260: CSSCustomStateDeprecatedSyntaxEnabled
+  1261: MemorySaverModeSavings
+  1262: KioskVisionTelemetryEnabled
+  1263: GenAIWallpaperSettings
+  1264: GenAIVcBackgroundSettings
+  1265: DynamicCodeSettings
+  1266: LensOverlaySettings
+  1267: ThirdPartyPasswordManagersAllowed
+  1268: DeviceAllowEnterpriseRemoteAccessConnections
+  1269: ''
+  1270: FocusModeSoundsEnabled
+  1271: ExtensionDeveloperModeSettings
+  1272: LocalUserFilesMigrationDestination
+  1273: KioskBrowserPermissionsAllowedForOrigins
+  1274: LensOnGalleryEnabled
+  1275: HistorySearchSettings
+  1276: DevicePostQuantumKeyAgreementEnabled
+  1277: DefaultJavaScriptOptimizerSetting
+  1278: JavaScriptOptimizerAllowedForSites
+  1279: JavaScriptOptimizerBlockedForSites
+  1280: PromotionsEnabled
+  1281: QRCodeGeneratorEnabled
+  1282: DnsOverHttpsExcludedDomains
+  1283: DnsOverHttpsIncludedDomains
+  1284: SystemShortcutBehavior
+  1285: DeletingUndecryptablePasswordsEnabled
+  1286: StandardizedBrowserZoomEnabled
+  1287: ReportingEndpoints
+  1288: PrintingLPACSandboxEnabled
+  1289: ShowGeminiIntroScreenEnabled
+  1290: DeviceRestrictionSchedule
+  1291: TabCompareSettings
+  1292: AdHocCodeSigningForPWAsEnabled
+  1293: KioskWebAppOfflineEnabled
+  1294: GraduationEnablementStatus
+  1295: HelpMeReadSettings
+  1296: GenAiDefaultSettings
+  1297: KioskActiveWiFiCredentialsScopeChangeEnabled
+  1298: DataURLWhitespacePreservationEnabled
+
 atomic_groups:
   1: Homepage
   2: RemoteAccess
@@ -1266,3 +1349,7 @@ atomic_groups:
   48: ''
   49: ProfileSeparation
   50: FloatingSso
+  51: WebPrintingSettings
+  52: DirectSocketsSettings
+  53: SkyVaultSettings
+  54: BrowserEventReporting

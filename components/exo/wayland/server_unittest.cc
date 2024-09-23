@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/exo/wayland/server.h"
 
 #include <stdlib.h>
@@ -20,7 +25,7 @@
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
 #include "components/exo/display.h"
-#include "components/exo/security_delegate.h"
+#include "components/exo/test/test_security_delegate.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/test/wayland_server_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,8 +68,8 @@ TEST_F(ServerTest, GetFileDescriptor) {
 }
 
 TEST_F(ServerTest, SecurityDelegateAssociation) {
-  std::unique_ptr<SecurityDelegate> security_delegate =
-      SecurityDelegate::GetDefaultSecurityDelegate();
+  auto security_delegate =
+      std::make_unique<::exo::test::TestSecurityDelegate>();
   SecurityDelegate* security_delegate_ptr = security_delegate.get();
 
   auto server = CreateServer(std::move(security_delegate));

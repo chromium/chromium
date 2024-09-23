@@ -63,7 +63,18 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   }
   bool IsFlex() const { return CSSPrimitiveValue::IsFlex(GetType()); }
 
-  bool IsZero() const { return !DoubleValue(); }
+  BoolStatus IsZero() const {
+    return !DoubleValue() ? BoolStatus::kTrue : BoolStatus::kFalse;
+  }
+  BoolStatus IsOne() const {
+    return DoubleValue() == 1.0 ? BoolStatus::kTrue : BoolStatus::kFalse;
+  }
+  BoolStatus IsHundred() const {
+    return DoubleValue() == 100.0 ? BoolStatus::kTrue : BoolStatus::kFalse;
+  }
+  BoolStatus IsNegative() const {
+    return DoubleValue() < 0.0 ? BoolStatus::kTrue : BoolStatus::kFalse;
+  }
 
   bool IsComputationallyIndependent() const;
 
@@ -72,6 +83,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   double ComputeDegrees() const;
   double ComputeDotsPerPixel() const;
   double ComputeInCanonicalUnit() const;
+  double ComputeInCanonicalUnit(const CSSLengthResolver&) const;
 
   int ComputeInteger() const;
   double ComputeNumber() const;

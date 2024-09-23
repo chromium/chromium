@@ -1,0 +1,58 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "followed_web_channel.h",
+    "followed_web_channel.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/follow/model:enums",
+    "//ios/chrome/browser/net/model:crurl",
+  ]
+}
+
+source_set("first_follow") {
+  sources = [
+    "first_follow_coordinator.h",
+    "first_follow_coordinator.mm",
+  ]
+  deps = [
+    ":first_follow_ui",
+    ":ui_bundled",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/follow/model:enums",
+    "//ios/chrome/browser/follow/model:service",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+  ]
+}
+
+source_set("first_follow_ui") {
+  sources = [
+    "first_follow_view_controller.h",
+    "first_follow_view_controller.mm",
+  ]
+  deps = [
+    ":ui_bundled",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

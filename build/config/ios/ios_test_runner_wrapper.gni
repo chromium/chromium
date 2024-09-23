@@ -148,6 +148,9 @@ template("ios_test_runner_wrapper") {
       # gRPC interface for iOS test plugin
       "//ios/testing/plugin",
 
+      # exception reporting protos
+      "//build/util/lib/proto",
+
       # Variations test utilities used by variations_runner script.
       "//testing/scripts/variations_seed_access_helper.py",
       "//testing/test_env.py",

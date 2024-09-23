@@ -103,7 +103,7 @@ void InkDropHostTest::MouseEventTriggersInkDropHelper(
     EXPECT_EQ(host_view_.last_created_inkdrop(), nullptr);
   }
 
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_ENTERED, gfx::Point(0, 0),
+  ui::MouseEvent mouse_event(ui::EventType::kMouseEntered, gfx::Point(0, 0),
                              gfx::Point(0, 0), ui::EventTimeForNow(),
                              ui::EF_IS_SYNTHESIZED, 0);
 
@@ -130,7 +130,7 @@ TEST_F(InkDropHostTest, GetInkDropCenterBasedOnLastEventForNullEvent) {
 TEST_F(InkDropHostTest, GetInkDropCenterBasedOnLastEventForLocatedEvent) {
   host_view_.SetSize(gfx::Size(20, 20));
 
-  ui::MouseEvent located_event(ui::ET_MOUSE_PRESSED, gfx::Point(5, 6),
+  ui::MouseEvent located_event(ui::EventType::kMousePressed, gfx::Point(5, 6),
                                gfx::Point(5, 6), ui::EventTimeForNow(),
                                ui::EF_LEFT_MOUSE_BUTTON, 0);
 
@@ -175,7 +175,7 @@ TEST_F(InkDropHostTest, GestureEventsDontTriggerInkDropsWhenHostIsDisabled) {
 
   ui::GestureEvent gesture_event(
       0.f, 0.f, 0, ui::EventTimeForNow(),
-      ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+      ui::GestureEventDetails(ui::EventType::kGestureTapDown));
 
   host_view_.GetTargetHandler()->OnEvent(&gesture_event);
 
@@ -193,7 +193,7 @@ TEST_F(InkDropHostTest,
     test_api_.SetInkDropMode(ink_drop_mode);
     ui::GestureEvent gesture_event(
         0.f, 0.f, 0, ui::EventTimeForNow(),
-        ui::GestureEventDetails(ui::ET_GESTURE_TAP_DOWN));
+        ui::GestureEventDetails(ui::EventType::kGestureTapDown));
 
     host_view_.GetTargetHandler()->OnEvent(&gesture_event);
 
@@ -218,7 +218,7 @@ TEST_F(InkDropHostTest, NoInkDropOnTouchOrGestureEvents) {
             InkDropState::HIDDEN);
 
   ui::TouchEvent touch_event(
-      ui::ET_TOUCH_PRESSED, gfx::Point(5, 6), ui::EventTimeForNow(),
+      ui::EventType::kTouchPressed, gfx::Point(5, 6), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 1));
 
   test_api_.AnimateToState(InkDropState::ACTION_PENDING, &touch_event);
@@ -230,8 +230,9 @@ TEST_F(InkDropHostTest, NoInkDropOnTouchOrGestureEvents) {
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
             InkDropState::HIDDEN);
 
-  ui::GestureEvent gesture_event(5.0f, 6.0f, 0, ui::EventTimeForNow(),
-                                 ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  ui::GestureEvent gesture_event(
+      5.0f, 6.0f, 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::EventType::kGestureTap));
 
   test_api_.AnimateToState(InkDropState::ACTION_PENDING, &gesture_event);
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
@@ -259,7 +260,7 @@ TEST_F(InkDropHostTest, DismissInkDropOnTouchOrGestureEvents) {
   EXPECT_EQ(test_api_.GetInkDrop()->GetTargetInkDropState(),
             InkDropState::HIDDEN);
 
-  ui::MouseEvent mouse_event(ui::ET_MOUSE_PRESSED, gfx::Point(5, 6),
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(5, 6),
                              gfx::Point(5, 6), ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON, 0);
 
@@ -268,7 +269,7 @@ TEST_F(InkDropHostTest, DismissInkDropOnTouchOrGestureEvents) {
             InkDropState::ACTION_PENDING);
 
   ui::TouchEvent touch_event(
-      ui::ET_TOUCH_PRESSED, gfx::Point(5, 6), ui::EventTimeForNow(),
+      ui::EventType::kTouchPressed, gfx::Point(5, 6), ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, 1));
 
   test_api_.AnimateToState(InkDropState::ACTION_TRIGGERED, &touch_event);
@@ -374,7 +375,7 @@ class InkDropInWidgetTest : public ViewsTestBase {
  protected:
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
     view_ =
         widget_->SetContentsView(std::make_unique<BasicTestViewWithInkDrop>());
   }
@@ -436,7 +437,7 @@ class InkDropHostAttentionTest : public ViewsTestBase {
     InkDrop::Install(host_view_.get(),
                      std::make_unique<InkDropHost>(host_view_.get()));
     ink_drop_host_ = InkDrop::Get(host_view_.get());
-    widget_ = CreateTestWidget();
+    widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
     ink_drop_host_test_api_ =
         std::make_unique<InkDropHostTestApi>(ink_drop_host_);
 

@@ -240,11 +240,13 @@ mojom::blink::FilePickerStartInOptionsUnionPtr ToMojomStartInOptions(
   }
 }
 
-ScriptPromise ShowFilePickerImpl(ScriptState* script_state,
-                                 LocalDOMWindow& window,
-                                 mojom::blink::FilePickerOptionsPtr options,
-                                 ExceptionState& exception_state,
-                                 bool return_as_sequence) {
+enum class ShowFilePickerType { kSequence, kHandle, kDirectory };
+
+void ShowFilePickerImpl(ScriptPromiseResolverBase* resolver,
+                        LocalDOMWindow& window,
+                        mojom::blink::FilePickerOptionsPtr options,
+                        ExceptionState& exception_state,
+                        ShowFilePickerType type) {
   bool multiple =
       options->type_specific_options->is_open_file_picker_options() &&
       options->type_specific_options->get_open_file_picker_options()
@@ -256,18 +258,14 @@ ScriptPromise ShowFilePickerImpl(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kAbortError,
         "Intercepted by Page.setInterceptFileChooserDialog().");
-    return ScriptPromise();
+    return;
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise resolver_result = resolver->Promise();
 
   FileSystemAccessManager::From(resolver->GetExecutionContext())
       ->ChooseEntries(
           std::move(options),
           WTF::BindOnce(
-              [](ScriptPromiseResolver* resolver, bool return_as_sequence,
+              [](ScriptPromiseResolverBase* resolver, ShowFilePickerType type,
                  LocalFrame* local_frame,
                  mojom::blink::FileSystemAccessErrorPtr file_operation_result,
                  Vector<mojom::blink::FileSystemAccessEntryPtr> entries) {
@@ -293,51 +291,59 @@ ScriptPromise ShowFilePickerImpl(ScriptState* script_state,
                     local_frame, mojom::blink::UserActivationNotificationType::
                                      kFileSystemAccess);
 
-                if (return_as_sequence) {
-                  HeapVector<Member<FileSystemHandle>> results;
+                if (type == ShowFilePickerType::kSequence) {
+                  HeapVector<Member<FileSystemFileHandle>> results;
                   results.ReserveInitialCapacity(entries.size());
                   for (auto& entry : entries) {
-                    results.push_back(FileSystemHandle::CreateFromMojoEntry(
-                        std::move(entry), context));
+                    auto* handle = FileSystemHandle::CreateFromMojoEntry(
+                        std::move(entry), context);
+                    results.push_back(To<FileSystemFileHandle>(handle));
                   }
-                  resolver->Resolve(results);
+                  resolver->DowncastTo<IDLSequence<FileSystemFileHandle>>()
+                      ->Resolve(results);
                 } else {
                   DCHECK_EQ(1u, entries.size());
-                  resolver->Resolve(FileSystemHandle::CreateFromMojoEntry(
-                      std::move(entries[0]), context));
+                  auto* handle = FileSystemHandle::CreateFromMojoEntry(
+                      std::move(entries[0]), context);
+                  if (type == ShowFilePickerType::kHandle) {
+                    resolver->DowncastTo<FileSystemFileHandle>()->Resolve(
+                        To<FileSystemFileHandle>(handle));
+                  } else {
+                    resolver->DowncastTo<FileSystemDirectoryHandle>()->Resolve(
+                        To<FileSystemDirectoryHandle>(handle));
+                  }
                 }
               },
-              WrapPersistent(resolver), return_as_sequence,
+              WrapPersistent(resolver), type,
               WrapPersistent(window.GetFrame())));
-  return resolver_result;
 }
 
 }  // namespace
 
 // static
-ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
-    ScriptState* script_state,
-    LocalDOMWindow& window,
-    const OpenFilePickerOptions* options,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLSequence<FileSystemFileHandle>>
+GlobalFileSystemAccess::showOpenFilePicker(ScriptState* script_state,
+                                           LocalDOMWindow& window,
+                                           const OpenFilePickerOptions* options,
+                                           ExceptionState& exception_state) {
   UseCounter::Count(window, WebFeature::kFileSystemPickerMethod);
 
   Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   if (options->hasTypes())
     accepts = ConvertAccepts(options->types(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<FileSystemFileHandle>>();
 
   if (accepts.empty() && options->excludeAcceptAllOption()) {
     exception_state.ThrowTypeError("Need at least one accepted type");
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<FileSystemFileHandle>>();
   }
 
   String starting_directory_id = kDefaultStartingDirectoryId;
   if (options->hasId()) {
     starting_directory_id = VerifyIsValidId(options->id(), exception_state);
     if (exception_state.HadException())
-      return ScriptPromise();
+      return ScriptPromise<IDLSequence<FileSystemFileHandle>>();
   }
 
   mojom::blink::FilePickerStartInOptionsUnionPtr start_in_options;
@@ -347,25 +353,29 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return ScriptPromise<IDLSequence<FileSystemFileHandle>>();
 
   auto open_file_picker_options = mojom::blink::OpenFilePickerOptions::New(
       mojom::blink::AcceptsTypesInfo::New(std::move(accepts),
                                           !options->excludeAcceptAllOption()),
       options->multiple());
 
-  return ShowFilePickerImpl(
-      script_state, window,
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLSequence<FileSystemFileHandle>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  ShowFilePickerImpl(
+      resolver, window,
       mojom::blink::FilePickerOptions::New(
           mojom::blink::TypeSpecificFilePickerOptionsUnion::
               NewOpenFilePickerOptions(std::move(open_file_picker_options)),
           std::move(starting_directory_id), std::move(start_in_options)),
-      exception_state,
-      /*return_as_sequence=*/true);
+      exception_state, ShowFilePickerType::kSequence);
+  return promise;
 }
 
 // static
-ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
+ScriptPromise<FileSystemFileHandle> GlobalFileSystemAccess::showSaveFilePicker(
     ScriptState* script_state,
     LocalDOMWindow& window,
     const SaveFilePickerOptions* options,
@@ -376,18 +386,18 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
   if (options->hasTypes())
     accepts = ConvertAccepts(options->types(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return EmptyPromise();
 
   if (accepts.empty() && options->excludeAcceptAllOption()) {
     exception_state.ThrowTypeError("Need at least one accepted type");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   String starting_directory_id = kDefaultStartingDirectoryId;
   if (options->hasId()) {
     starting_directory_id = VerifyIsValidId(options->id(), exception_state);
     if (exception_state.HadException())
-      return ScriptPromise();
+      return EmptyPromise();
   }
 
   mojom::blink::FilePickerStartInOptionsUnionPtr start_in_options;
@@ -397,7 +407,7 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return EmptyPromise();
 
   auto save_file_picker_options = mojom::blink::SaveFilePickerOptions::New(
       mojom::blink::AcceptsTypesInfo::New(std::move(accepts),
@@ -405,18 +415,23 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
       (options->hasSuggestedName() && !options->suggestedName().IsNull())
           ? options->suggestedName()
           : g_empty_string);
-  return ShowFilePickerImpl(
-      script_state, window,
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<FileSystemFileHandle>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  ShowFilePickerImpl(
+      resolver, window,
       mojom::blink::FilePickerOptions::New(
           mojom::blink::TypeSpecificFilePickerOptionsUnion::
               NewSaveFilePickerOptions(std::move(save_file_picker_options)),
           std::move(starting_directory_id), std::move(start_in_options)),
-      exception_state,
-      /*return_as_sequence=*/false);
+      exception_state, ShowFilePickerType::kHandle);
+  return promise;
 }
 
 // static
-ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
+ScriptPromise<FileSystemDirectoryHandle>
+GlobalFileSystemAccess::showDirectoryPicker(
     ScriptState* script_state,
     LocalDOMWindow& window,
     const DirectoryPickerOptions* options,
@@ -427,7 +442,7 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
   if (options->hasId()) {
     starting_directory_id = VerifyIsValidId(options->id(), exception_state);
     if (exception_state.HadException())
-      return ScriptPromise();
+      return EmptyPromise();
   }
 
   mojom::blink::FilePickerStartInOptionsUnionPtr start_in_options;
@@ -437,20 +452,24 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return EmptyPromise();
 
   bool request_writable =
       options->mode() == V8FileSystemPermissionMode::Enum::kReadwrite;
   auto directory_picker_options =
       mojom::blink::DirectoryPickerOptions::New(request_writable);
-  return ShowFilePickerImpl(
-      script_state, window,
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<FileSystemDirectoryHandle>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+  ShowFilePickerImpl(
+      resolver, window,
       mojom::blink::FilePickerOptions::New(
           mojom::blink::TypeSpecificFilePickerOptionsUnion::
               NewDirectoryPickerOptions(std::move(directory_picker_options)),
           std::move(starting_directory_id), std::move(start_in_options)),
-      exception_state,
-      /*return_as_sequence=*/false);
+      exception_state, ShowFilePickerType::kDirectory);
+  return promise;
 }
 
 }  // namespace blink

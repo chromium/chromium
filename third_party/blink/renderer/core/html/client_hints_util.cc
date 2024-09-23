@@ -83,8 +83,7 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
         allow_list.MatchesOpaqueSrc());
     container_policy.push_back(declaration);
   }
-  auto new_policy = PermissionsPolicy::CopyStateFrom(current_policy);
-  new_policy->OverwriteHeaderPolicyForClientHints(container_policy);
+  auto new_policy = current_policy->WithClientHints(container_policy);
 
   // Update third-party delegation permissions for each client hint.
   local_dom_window->GetSecurityContext().SetPermissionsPolicy(

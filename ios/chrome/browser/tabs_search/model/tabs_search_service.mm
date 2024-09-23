@@ -14,9 +14,11 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_sessions/session_sync_service.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/history/model/history_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
@@ -58,9 +60,10 @@ TabsSearchService::TabsSearchService(
 }
 
 TabsSearchService::TabsSearchBrowserResults::TabsSearchBrowserResults(
-    const Browser* browser,
-    const std::vector<web::WebState*> web_states)
-    : browser(browser), web_states(web_states) {}
+    Browser* browser,
+    const std::vector<web::WebState*> web_states,
+    const std::vector<const TabGroup*> tab_groups)
+    : browser(browser), web_states(web_states), tab_groups(tab_groups) {}
 
 TabsSearchService::TabsSearchBrowserResults::~TabsSearchBrowserResults() =
     default;
@@ -74,9 +77,10 @@ void TabsSearchService::Search(
     const std::u16string& term,
     base::OnceCallback<void(std::vector<TabsSearchBrowserResults>)>
         completion) {
-  std::set<Browser*> browsers = is_off_the_record_
-                                    ? browser_list_->AllIncognitoBrowsers()
-                                    : browser_list_->AllRegularBrowsers();
+  const BrowserList::BrowserType browser_types =
+      is_off_the_record_ ? BrowserList::BrowserType::kIncognito
+                         : BrowserList::BrowserType::kRegularAndInactive;
+  std::set<Browser*> browsers = browser_list_->BrowsersOfType(browser_types);
   SearchWithinBrowsers(browsers, term, std::move(completion));
 }
 
@@ -91,10 +95,10 @@ void TabsSearchService::SearchRecentlyClosed(
     DCHECK(entry);
 
     // Only TAB type is handled.
-    // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
-    DCHECK_EQ(sessions::TabRestoreService::TAB, entry->type);
-    const sessions::TabRestoreService::Tab* tab =
-        static_cast<const sessions::TabRestoreService::Tab*>(entry.get());
+    // TODO(crbug.com/40676931) : Support WINDOW restoration under multi-window.
+    DCHECK_EQ(sessions::tab_restore::Type::TAB, entry->type);
+    const sessions::tab_restore::Tab* tab =
+        static_cast<const sessions::tab_restore::Tab*>(entry.get());
     const sessions::SerializedNavigationEntry& navigationEntry =
         tab->navigations[tab->current_navigation_index];
 
@@ -218,8 +222,18 @@ void TabsSearchService::SearchWithinBrowsers(
       }
     }
 
-    if (!matching_web_states.empty()) {
-      TabsSearchBrowserResults browser_results(browser, matching_web_states);
+    std::vector<const TabGroup*> matching_tab_groups;
+    for (const TabGroup* group : webStateList->GetGroups()) {
+      std::u16string group_title = group->visual_data().title();
+      if (query_search.Search(group_title, /*match_index=*/nullptr,
+                              /*match_length=*/nullptr)) {
+        matching_tab_groups.push_back(group);
+      }
+    }
+
+    if (!matching_web_states.empty() || !matching_tab_groups.empty()) {
+      TabsSearchBrowserResults browser_results(browser, matching_web_states,
+                                               matching_tab_groups);
       results.push_back(browser_results);
     }
   }

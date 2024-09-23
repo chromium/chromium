@@ -4,6 +4,7 @@
 
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/numerics/safe_math.h"
@@ -39,7 +40,7 @@ template <typename ScriptId>
 void OnLoadScriptInjectorHost<ScriptId>::AddScript(
     ScriptId id,
     std::vector<url::Origin> origins_to_inject,
-    base::StringPiece script) {
+    std::string_view script) {
   // If there is no script with the identifier |id|, then create a place for
   // it at the end of the injection sequence.
   if (before_load_scripts_.find(id) == before_load_scripts_.end())
@@ -67,7 +68,7 @@ void OnLoadScriptInjectorHost<ScriptId>::AddScript(
 template <typename ScriptId>
 void OnLoadScriptInjectorHost<ScriptId>::AddScriptForAllOrigins(
     ScriptId id,
-    base::StringPiece script) {
+    std::string_view script) {
   AddScript(id, {kMatchAllOrigins}, script);
 }
 

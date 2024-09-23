@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/test/sessions_hierarchy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -36,18 +36,18 @@ class FakeServerVerifier {
   virtual ~FakeServerVerifier();
 
   // Returns a successful result if there are |expected_count| entities with the
-  // given |model_type|. A failure is returned if the count does not match or
+  // given |data_type|. A failure is returned if the count does not match or
   // verification can't take place.
   testing::AssertionResult VerifyEntityCountByType(
       size_t expected_count,
-      syncer::ModelType model_type) const;
+      syncer::DataType data_type) const;
 
   // Returns a successful result if there are |expected_count| entities with the
-  // given |model_type| and |name|. A failure is returned if the count does not
+  // given |data_type| and |name|. A failure is returned if the count does not
   // match or verification can't take place.
   testing::AssertionResult VerifyEntityCountByTypeAndName(
       size_t expected_count,
-      syncer::ModelType model_type,
+      syncer::DataType data_type,
       const std::string& name) const;
 
   // Returns a successful result if |expected_sessions| matches the sessions
@@ -56,7 +56,7 @@ class FakeServerVerifier {
       const SessionsHierarchy& expected_sessions);
 
   // Returns a successful result if |expected_urls| matches the URLs (within
-  // ModelType::HISTORY) on the server.
+  // DataType::HISTORY) on the server.
   testing::AssertionResult VerifyHistory(
       const std::multiset<GURL>& expected_urls);
 

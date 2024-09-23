@@ -64,7 +64,7 @@ void DOMAgentMac::OnNativeWidgetAdded(views::NativeWidgetMac* native_widget) {
 std::unique_ptr<protocol::DOM::Node> DOMAgentMac::BuildTreeForWindow(
     UIElement* window_element_root) {
   // Window elements aren't supported on Mac.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

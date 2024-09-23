@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/p2p/filtering_network_manager.h"
 
 #include <stddef.h>
@@ -61,11 +66,11 @@ class EmptyMdnsResponder : public webrtc::MdnsResponderInterface {
  public:
   void CreateNameForAddress(const rtc::IPAddress& addr,
                             NameCreatedCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   void RemoveNameForAddress(const rtc::IPAddress& addr,
                             NameRemovedCallback callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 };
 

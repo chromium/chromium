@@ -10,15 +10,17 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 
 namespace {
 
 const NSInteger kLabelNumLines = 2;
 const CGFloat kSpaceIconTitle = 10;
-const CGFloat kIconSize = 56;
 const CGFloat kMagicStackIconSize = 52;
 // Standard width of tiles.
 const CGFloat kPreferredMaxWidth = 74;
+// Image container corner radius.
+const CGFloat kCornerRadius = 8.0;
 
 }  // namespace
 
@@ -48,11 +50,15 @@ const CGFloat kPreferredMaxWidth = 74;
 
     _imageContainerView = [[UIView alloc] init];
     _imageContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    if (ios::provider::IsRaccoonEnabled()) {
+      if (@available(iOS 17.0, *)) {
+        _imageContainerView.hoverStyle = [UIHoverStyle
+            styleWithShape:[UIShape rectShapeWithCornerRadius:kCornerRadius]];
+      }
+    }
 
-    // Use original rounded-square background image for Shorcuts regardless of
-    // if it is in the Magic Stack.
-    if (!IsMagicStackEnabled() ||
-        type == ContentSuggestionsTileType::kShortcuts) {
+    // Use original rounded-square background image for Shorcuts
+    if (type == ContentSuggestionsTileType::kShortcuts) {
       [self addSubview:_titleLabel];
 
       // The squircle background view.
@@ -66,10 +72,9 @@ const CGFloat kPreferredMaxWidth = 74;
       [self addSubview:backgroundView];
       [self addSubview:_imageContainerView];
 
-      // Use smaller icon size when Shorcuts are put in Magic Stack.`
-      CGFloat width = IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
       [NSLayoutConstraint activateConstraints:@[
-        [backgroundView.widthAnchor constraintEqualToConstant:width],
+        [backgroundView.widthAnchor
+            constraintEqualToConstant:kMagicStackIconSize],
         [backgroundView.heightAnchor
             constraintEqualToAnchor:backgroundView.widthAnchor],
         [backgroundView.centerXAnchor
@@ -137,7 +142,7 @@ const CGFloat kPreferredMaxWidth = 74;
       [UIPointerHighlightEffect effectWithPreview:preview];
   UIPointerShape* shape =
       [UIPointerShape shapeWithRoundedRect:_imageContainerView.frame
-                              cornerRadius:8.0];
+                              cornerRadius:kCornerRadius];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
 
@@ -145,9 +150,8 @@ const CGFloat kPreferredMaxWidth = 74;
 // size if it is in the Magic Stack since the Magic Stack has a fixed height,
 // limiting the space available for multiple lines of text.
 - (void)updateTitleLabelNumberOfLines {
-  if (!IsMagicStackEnabled() ||
-      (_type == ContentSuggestionsTileType::kMostVisited &&
-       !ShouldPutMostVisitedSitesInMagicStack())) {
+  if (_type == ContentSuggestionsTileType::kMostVisited &&
+      !ShouldPutMostVisitedSitesInMagicStack()) {
     return;
   }
 

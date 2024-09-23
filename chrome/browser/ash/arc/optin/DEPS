@@ -1,0 +1,32 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/arc/optin",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/ownership",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/consent_auditor",
+  "+chrome/browser/extensions/api/settings_private",
+  "+chrome/browser/metrics",
+  "+chrome/browser/profiles",
+  "+chrome/browser/signin",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/webui/ash/login",
+  "+chrome/grit",
+  "+chrome/test/base",
+]

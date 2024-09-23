@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
@@ -18,20 +19,28 @@ namespace blink {
 
 namespace {
 
-void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
+void UpdateSVGLayoutIfNeeded(LayoutObject* child,
+                             const SVGLayoutInfo& layout_info) {
+  if (child->NeedsLayout()) {
+    child->UpdateSVGLayout(layout_info);
+  }
+}
+
+void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object,
+                                   const SVGLayoutInfo& layout_info) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
     return;
   const ComputedStyle& style = layout_object.StyleRef();
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerStartResource()))
-    marker->LayoutIfNeeded();
+    UpdateSVGLayoutIfNeeded(marker, layout_info);
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerMidResource()))
-    marker->LayoutIfNeeded();
+    UpdateSVGLayoutIfNeeded(marker, layout_info);
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerEndResource()))
-    marker->LayoutIfNeeded();
+    UpdateSVGLayoutIfNeeded(marker, layout_info);
 }
 
 // Update a bounding box taking into account the validity of the other bounding
@@ -95,7 +104,11 @@ bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
   return !child.IsSVGRoot();
 }
 
-void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
+SVGLayoutResult SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
+  SVGLayoutResult result;
+  result.bounds_changed =
+      std::exchange(bounds_dirty_from_removed_child_, false);
+
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
     bool force_child_layout = layout_info.force_layout;
@@ -135,28 +148,26 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
       }
     }
 
-    // Resource containers are nasty: they can invalidate clients outside the
-    // containers.
-    // Since they only care about viewport size changes (to resolve their
-    // relative lengths), we trigger their invalidation directly from
-    // SVGSVGElement::svgAttributeChange() or at the LayoutView. We do not mark
-    // them for resources here, because their ability to reference each other
-    // leads to circular layout.
-    // TODO(layout-dev): Do we still need this special treatment?
-    if (child->IsSVGResourceContainer()) {
-      child->LayoutIfNeeded();
-    } else {
-      DCHECK(!child->IsSVGRoot());
-      if (force_child_layout) {
-        child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
-                              kMarkOnlyThis);
-      }
-
-      // Lay out any referenced resources before the child.
-      LayoutMarkerResourcesIfNeeded(*child);
-      child->LayoutIfNeeded();
+    DCHECK(!child->IsSVGRoot());
+    if (force_child_layout) {
+      child->SetNeedsLayout(layout_invalidation_reason::kSvgChanged,
+                            kMarkOnlyThis);
     }
+
+    // Lay out any referenced resources before the child.
+    LayoutMarkerResourcesIfNeeded(*child, layout_info);
+
+    if (!child->NeedsLayout()) {
+      continue;
+    }
+    const SVGLayoutResult child_result = child->UpdateSVGLayout(layout_info);
+    result.bounds_changed |= child_result.bounds_changed;
   }
+
+  if (result.bounds_changed) {
+    result.bounds_changed = UpdateBoundingBoxes();
+  }
+  return result;
 }
 
 bool SVGContentContainer::HitTest(HitTestResult& result,
@@ -178,8 +189,8 @@ bool SVGContentContainer::HitTest(HitTestResult& result,
   return false;
 }
 
-bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
-  object_bounding_box_valid = false;
+bool SVGContentContainer::UpdateBoundingBoxes() {
+  object_bounding_box_valid_ = false;
 
   gfx::RectF object_bounding_box;
   gfx::RectF decorated_bounding_box;
@@ -190,7 +201,7 @@ bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
       continue;
     const AffineTransform& transform = current->LocalToSVGParentTransform();
     UpdateObjectBoundingBox(
-        object_bounding_box, object_bounding_box_valid,
+        object_bounding_box, object_bounding_box_valid_,
         transform.MapRect(ObjectBoundsForPropagation(*current)));
     decorated_bounding_box.Union(
         transform.MapRect(current->DecoratedBoundingBox()));

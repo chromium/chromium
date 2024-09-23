@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -36,7 +41,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/gl/gl_switches.h"
 
-// TODO(crbug.com/1215089): Enable this test suite on Lacros.
+// TODO(crbug.com/40184242): Enable this test suite on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -99,7 +104,7 @@ const char* ToString(Frame frame) {
     case Frame::kEmbeddedFrame:
       return "embedded";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const char* ToString(Track track) {
@@ -111,7 +116,7 @@ const char* ToString(Track track) {
     case Track::kSecond:
       return "second";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const char* ToString(SubCaptureTargetType type) {
@@ -121,7 +126,7 @@ const char* ToString(SubCaptureTargetType type) {
     case SubCaptureTargetType::kRestrictionTarget:
       return "restriction-target";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Conveniently pack together all relevant information about a tab and
@@ -300,11 +305,12 @@ class SubCaptureBrowserTestBase : public WebRtcTestBase {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    // TODO(https://crbug.com/1424557): Remove this after fixing feature
+    // MSan and GL do not get along so avoid using the GPU with MSan.
+    // TODO(crbug.com/40260482): Remove this after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
-    if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
-      command_line->AppendSwitch(switches::kUseGpuInTests);
-    }
+#if !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+    command_line->AppendSwitch(switches::kUseGpuInTests);
+#endif
     command_line_ = command_line;
   }
 
@@ -834,9 +840,9 @@ IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
 
 // Original track becomes unblocked for sub-capture after clone is GCed 1/3.
 //
-// TODO(crbug.com/1353349)  Re-enable for macOS and ChromeOS after flakes are
+// TODO(crbug.com/40858400)  Re-enable for macOS and ChromeOS after flakes are
 // resolved.
-// TODO(crbug.com/1459313): Also flakes on linux-bfcache-rel, so turning the
+// TODO(crbug.com/40919381): Also flakes on linux-bfcache-rel, so turning the
 // test off entirely.
 IN_PROC_BROWSER_TEST_P(
     SubCaptureClonesBrowserTest,
@@ -854,7 +860,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Original track becomes unblocked for sub-capture after clone is GCed 2/3.
 //
-// TODO(crbug.com/1353349) Re-enable after flakes are resolved.
+// TODO(crbug.com/40858400) Re-enable after flakes are resolved.
 IN_PROC_BROWSER_TEST_P(
     SubCaptureClonesBrowserTest,
     DISABLED_CanReapplySubCaptureOnOriginalTrackAfterCloneIsGarbageCollected) {
@@ -873,7 +879,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Original track becomes unblocked for sub-capture clone is GCed 3/3.
 //
-// TODO(crbug.com/1356788): Re-enable this test.
+// TODO(crbug.com/40860614): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(
     SubCaptureClonesBrowserTest,
     DISABLED_CanUndoSubCaptureOnOriginalTrackAfterCloneIsGarbageCollected) {
@@ -894,7 +900,7 @@ IN_PROC_BROWSER_TEST_P(
 //
 // The following test is disabled because of a loosely-related issue,
 // where an original track is kept alive if a clone exists, but not vice versa.
-// TODO(crbug.com/1333594): Uncomment after fixing the aforementioned issue.
+// TODO(crbug.com/40845775): Uncomment after fixing the aforementioned issue.
 IN_PROC_BROWSER_TEST_P(
     SubCaptureClonesBrowserTest,
     DISABLED_CanApplySubCaptureOnCloneAfterOriginalTrackIsGarbageCollected) {
@@ -913,7 +919,7 @@ IN_PROC_BROWSER_TEST_P(
 //
 // The following test is disabled because of a loosely-related issue,
 // where an original track is kept alive if a clone exists, but not vice versa.
-// TODO(crbug.com/1333594): Uncomment after fixing the aforementioned issue.
+// TODO(crbug.com/40845775): Uncomment after fixing the aforementioned issue.
 IN_PROC_BROWSER_TEST_P(
     SubCaptureClonesBrowserTest,
     DISABLED_CanReapplySubCaptureOnCloneAfterOriginalTrackIsGarbageCollected) {
@@ -934,7 +940,7 @@ IN_PROC_BROWSER_TEST_P(
 //
 // The following test is disabled because of a loosely-related issue,
 // where an original track is kept alive if a clone exists, but not vice versa.
-// TODO(crbug.com/1333594): Uncomment after fixing the aforementioned issue.
+// TODO(crbug.com/40845775): Uncomment after fixing the aforementioned issue.
 IN_PROC_BROWSER_TEST_P(
     SubCaptureClonesBrowserTest,
     DISABLED_CanUndoSubCaptureOnCloneAfterOriginalTrackIsGarbageCollected) {

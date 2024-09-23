@@ -8,7 +8,21 @@ import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
+// This defines a mojo transport format for media::SupportedAudioDecoderConfig.
+// See media/base/supported_audio_decoder_config.h for descriptions.
+struct SupportedAudioDecoderConfig {
+  AudioCodec codec;
+  AudioCodecProfile profile;
+};
+
 interface AudioDecoder {
+  // Returns a list of supported configs for the decoder which supports them.
+  //
+  // May be called before Construct().
+  [Sync]
+  GetSupportedConfigs()
+      => (array<SupportedAudioDecoderConfig> supported_configs);
+
   // Initialize the decoder. This must be called before any other method.
   //
   // TODO(sandersd): Rename to Initialize() if/when

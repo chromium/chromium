@@ -134,6 +134,9 @@ void FakeShillProfileClient::DeleteEntry(const dbus::ObjectPath& profile_path,
     case FakeShillSimulatedResult::kTimeout:
       // No callbacks get executed and the caller should eventually timeout.
       return;
+    case FakeShillSimulatedResult::kInProgress:
+      // No callbacks get executed in this case.
+      return;
   }
 
   ProfileProperties* profile = GetProfile(profile_path);

@@ -1,69 +1,40 @@
-<html>
-  <!--
-    This test ensures the traversal correctness of spatial navigation:
-    focusable elements accessible, including zero-margin content, should be
-    accessible.
-  -->
-  <head>
-    <style type="text/css">
-      body {
-        background:none repeat scroll 0 0 #FFFFFF;
-        color:black;
-        margin:0;
-      }
+<!DOCTYPE html>
+<style>
+body {
+  background:none repeat scroll 0 0 #FFFFFF;
+  color:black;
+  margin:0;
+}
+body, a, {
+  font-family:arial,sans-serif;
+  margin-right:2.5em;
+  font-size:13px;
+  text-decoration:underline;
+  color:#0000CC !important;
+}
+</style>
+<span>
+  <div>
+    <nobr>
+      <a href="#" id="start"> test1 </a>
+      <a href="#" id="end"> test2 </a>
+    </nobr>
+  </div>
+</span>
+<p>
+  This test ensures the traversal correctness of spatial navigation:<br>
+  focusable elements accessible, including zero-margin content, should be accessible.<br>
+</p>
 
-      body, a, {
-        font-family:arial,sans-serif;
-        margin-right:2.5em;
-        font-size:13px;
-        text-decoration:underline;
-        color:#0000CC !important;
-      }
-    </style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Right", "end"]
+  ];
 
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
-
-    var resultMap = [
-      ["Right", "end"],
-      ["DONE", "DONE"]
-    ];
-
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <span>
-      <div>
-        <nobr>
-          <a href="#" id="start"> test1 </a>
-          <a href="#" id="end"> test2 </a>
-        </nobr>
-      </div>
-    </span>
-    <div id="console"></div>
-  </body>
-</html>
+  // Start at a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap);
+</script>

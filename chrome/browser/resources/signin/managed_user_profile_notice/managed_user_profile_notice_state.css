@@ -1,0 +1,57 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=/tangible_sync_style_shared_lit.css.js
+ * #scheme=relative
+ * #include=tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  height: 100%;
+  display: flex;
+ }
+
+ main {
+  margin:auto;
+ }
+
+.icon-container {
+  text-align: center;
+}
+
+.text-container {
+  text-align: center;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 500;
+  line-height: 44px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 24px;
+  width: 564px;
+}
+.tangible-sync-style .title {
+  font-size: 36px;
+  line-height: 44px;
+}
+
+.tangible-sync-style .subtitle {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--google-grey-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  .tangible-sync-style .subtitle {
+    color: var(--google-grey-500);
+  }
+}

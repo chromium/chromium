@@ -7,6 +7,10 @@ import("//crypto/features.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+if (use_blink) {
+  import("//chrome/common/features.gni")
+}
+
 generate_grd("build_grd") {
   grd_prefix = "webui"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -50,13 +54,11 @@ generate_grd("build_grd") {
     public_deps += [
       "cr_components/app_management:build_grdp",
       "cr_components/customize_color_scheme_mode:build_grdp",
-      "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/localized_link:build_grdp",
       "cr_components/managed_dialog:build_grdp",
       "cr_components/managed_footnote:build_grdp",
       "cr_components/most_visited:build_grdp",
-      "cr_components/settings_prefs:build_grdp",
       "cr_components/theme_color_picker:build_grdp",
       "//third_party/d3:build_grdp",
       "//third_party/lit/v3_0:build_grdp",
@@ -69,44 +71,49 @@ generate_grd("build_grd") {
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/theme_color_picker/resources.grdp",
       "$target_gen_dir/cr_components/customize_color_scheme_mode/resources.grdp",
-      "$target_gen_dir/cr_components/customize_themes/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
       "$target_gen_dir/cr_components/localized_link/resources.grdp",
       "$target_gen_dir/cr_components/managed_dialog/resources.grdp",
       "$target_gen_dir/cr_components/managed_footnote/resources.grdp",
       "$target_gen_dir/cr_components/most_visited/resources.grdp",
-      "$target_gen_dir/cr_components/settings_prefs/resources.grdp",
     ]
 
-    if (use_nss_certs) {
-      public_deps += [ "cr_components/certificate_manager:build_grdp" ]
-      grdp_files +=
-          [ "$target_gen_dir/cr_components/certificate_manager/resources.grdp" ]
+    if (use_blink) {
+      if (use_nss_certs || chrome_root_store_cert_management_ui) {
+        public_deps += [ "cr_components/certificate_manager:build_grdp" ]
+        grdp_files += [
+          "$target_gen_dir/cr_components/certificate_manager/resources.grdp",
+        ]
+      }
     }
 
     if (!is_android) {
       public_deps += [
+        "cr_components/history:build_grdp",
         "cr_components/history_clusters:build_grdp",
-        "cr_components/omnibox:build_grdp",
-        "cr_components/omnibox/icons:build_grdp",
+        "cr_components/history_embeddings:build_grdp",
+        "cr_components/searchbox:build_grdp",
+        "cr_components/searchbox/icons:build_grdp",
       ]
       grdp_files += [
+        "$target_gen_dir/cr_components/history/resources.grdp",
         "$target_gen_dir/cr_components/history_clusters/resources.grdp",
-        "$target_gen_dir/cr_components/omnibox/resources.grdp",
-        "$target_gen_dir/cr_components/omnibox/icons/resources.grdp",
+        "$target_gen_dir/cr_components/history_embeddings/resources.grdp",
+        "$target_gen_dir/cr_components/searchbox/resources.grdp",
+        "$target_gen_dir/cr_components/searchbox/icons/resources.grdp",
       ]
 
       if (is_chrome_branded) {
         public_deps +=
-            [ "cr_components/omnibox/icons:chrome_branded_build_grdp" ]
-        grdp_files += [ "$target_gen_dir/cr_components/omnibox/icons/chrome_branded_resources.grdp" ]
+            [ "cr_components/searchbox/icons:chrome_branded_build_grdp" ]
+        grdp_files += [ "$target_gen_dir/cr_components/searchbox/icons/chrome_branded_resources.grdp" ]
       }
     }
   }
 
   if (is_chromeos_ash) {
     # NOTE: Do not add any new Ash-only grdp files below.
-    # TODO(crbug.com/1347740): Move remaining Ash-only shared resources to
+    # TODO(crbug.com/40233082): Move remaining Ash-only shared resources to
     # ash/webui/common/resources:build_grd
     public_deps += [ ":build_cros_styles_grdp" ]
     grdp_files += [ "$target_gen_dir/cros_styles_resources.grdp" ]

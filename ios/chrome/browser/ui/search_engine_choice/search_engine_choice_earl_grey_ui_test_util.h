@@ -12,6 +12,10 @@
 @class GREYElementInteraction;
 @protocol GREYMatcher;
 
+namespace TemplateURLPrepopulateData {
+struct PrepopulatedEngine;
+}  // namespace TemplateURLPrepopulateData
+
 // State of the fake omnibox illustration
 typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
   kHidden,
@@ -34,23 +38,32 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // Checks that the search engine choice screen is being displayed.
 + (void)verifySearchEngineChoiceScreenIsDisplayed;
 
+// Opens the search engine settings.
++ (void)openSearchEngineSettings;
+
 // Checks that the default search engine was correctly set.
 + (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName;
 
-// Checks the state of the fake omnibox illustration.
-+ (void)verifyFakeOmniboxIllustrationState:(FakeOmniboxState)state;
+// Returns GreyMatcher for the search engine for the settings table view.
++ (id<GREYMatcher>)settingsSearchEngineMatcherWithName:(NSString*)name;
 
-// Returns GreyMatcher for the custom search engine for the settings table view.
-// The custom search engine URL needs to be 127.0.0.1.
-+ (id<GREYMatcher>)settingsCustomSearchEngineAccessibilityLabelWithName:
-    (const char*)name;
+// Returns the GREYElementInteraction for the item in the search engine list
+// with the given `name`. It scrolls the settings table view in down direction
+// if necessary to ensure that the matched item is sufficiently visible, thus
+// interactable.
++ (GREYElementInteraction*)interactionForSettingsSearchEngineWithName:
+    (NSString*)name;
 
 // Returns the GREYElementInteraction* for the item in the search engine list
-// with the given `matcher`. It scrolls in `direction` if necessary to ensure
-// that the matched item is sufficiently visible, thus interactable.
-// The custom search engine URL needs to be 127.0.0.1.
-+ (GREYElementInteraction*)interactionForSettingsCustomSearchEngineWithName:
-    (const char*)name;
+// with the given `prepopulatedEngine`. It scrolls the settings table view in
+// down direction if necessary to ensure that the matched item is  sufficiently
+// visible, thus interactable.
++ (GREYElementInteraction*)interactionForSettingsWithPrepopulatedSearchEngine:
+    (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine;
+
+// Returns the search engine name for `prepopulatedEngine`.
++ (NSString*)searchEngineNameWithPrepopulatedEngine:
+    (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine;
 
 @end
 

@@ -53,7 +53,7 @@ TEST_F(SyncWebSocketImplTest, CreateDestroy) {
   SyncWebSocketImpl sock(context_getter_.get());
 }
 
-// TODO(crbug.com/1177142) Re-enable test
+// TODO(crbug.com/40168673) Re-enable test
 TEST_F(SyncWebSocketImplTest, DISABLED_Connect) {
   SyncWebSocketImpl sock(context_getter_.get());
   ASSERT_TRUE(sock.Connect(server_.web_socket_url()));

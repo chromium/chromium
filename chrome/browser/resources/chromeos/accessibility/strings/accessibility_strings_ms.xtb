@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Perang Mawar</translation>
 <translation id="249330843868392562">Buka tetapan teks kepada pertuturan</translation>
 <translation id="2497706219848005458">Kuning Hijau</translation>
+<translation id="2512979179176933762">tunjukkan tetingkap</translation>
 <translation id="2523609930580546572">Tutorial ChromeVox</translation>
 <translation id="2525706221823668172">Pintasan papan kekunci Chromebook</translation>
 <translation id="2553108862507765288">kesilapan tatabahasa</translation>
@@ -264,7 +265,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Anda juga boleh leret satu jari dari kanan ke kiri untuk beralih ke item sebelumnya. Cubalah sekarang.</translation>
 <translation id="280499067616661124">Cari dalam halaman Chromevox</translation>
-<translation id="2811019999044652585">Untuk melompat ke bahagian lain dalam skrin itu, misalnya bar alat atau dulang sistem, tekan Control + Forward. Pada Chromebook, kekunci Forward berada betul-betul di atas kekunci nombor 2.</translation>
 <translation id="2811204574343810641">Baris</translation>
 <translation id="2816868829355607410">Kawasan latihan: Perintah lompat</translation>
 <translation id="2841013758207633010">Masa</translation>
@@ -498,6 +498,7 @@
 <translation id="4246217262268234757">Biru Keluli</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4254798249533888099">Pohon</translation>
+<translation id="4259220820964911921">Dayakan kawalan wajah?</translation>
 <translation id="4271220233568730077">Matematik seterusnya</translation>
 <translation id="4275397969489577657">Dayakan pengelogan strim acara</translation>
 <translation id="4278486392851938658">Tiada pautan yang dilawati sebelumnya</translation>
@@ -520,6 +521,7 @@
 <translation id="4432457053224379116">Merah India</translation>
 <translation id="4432896207833262240">Kandungan bertanda</translation>
 <translation id="4437615272777527928">Taip untuk mencari dalam menu. Gunakan anak panah ke atas dan ke bawah untuk pergi ke setiap hasil carian. Gunakan anak panah ke kiri dan ke kanan untuk melaraskan karet teks dan bergerak daripada satu menu kepada menu yang lain.</translation>
+<translation id="4453530046591759283">Untuk melangkau kepada bahagian lain skrin, seperti bar alat atau dulang sistem, tekan Control+F1. F1 ialah kekunci pertama sebelah kanan kekunci escape.</translation>
 <translation id="4457472090507035117">Pilih suara semasa:</translation>
 <translation id="4476183483923481720">baris baharu</translation>
 <translation id="4479068155583208887">Merah Bata Api</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Lampiran</translation>
 <translation id="5761219715606611783">Syabas! Anda telah mempelajari perkara asas tentang sentuhan ChromeVox. Anda boleh melihat tutorial sekali lagi atau keluar daripada tutorial ini menggunakan butang di bawah.</translation>
 <translation id="5776001898637896684">Sambungan teks kepada pertuturan Google Enhanced Network</translation>
+<translation id="5783252477644995371">Kawalan wajah memberi anda kawalan kursor dengan penudingan wajah dan keupayaan untuk melakukan tindakan, seperti klik kiri dengan gerak isyarat wajah seperti senyum</translation>
 <translation id="5805940204952508776">Ketik dengan dua jari</translation>
 <translation id="5819072574982403430">Item pepohon</translation>
 <translation id="5822819874379903994">Firus Gelap</translation>
@@ -880,6 +883,7 @@
 <translation id="7091296112653361280">Putih Navajo</translation>
 <translation id="7095834689119144465">Edit teks angka sahaja</translation>
 <translation id="7096001299300236431">Media sebelumnya</translation>
+<translation id="7096668131290451939">Tekan kekunci escape sekali lagi untuk keluar daripada Mod Belajar</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">gema perkataan</translation>
 <translation id="7137397390322864165">Salmon</translation>
@@ -1072,7 +1076,6 @@
 <translation id="847040613207937740">Tiada kotak pilihan seterusnya</translation>
 <translation id="8473540203671727883">Sebutkan teks di bawah tetikus</translation>
 <translation id="8476408756881832830">Jedakan main balik semasa ChromeVox bertutur</translation>
-<translation id="8476508772960940536">ikhtisar tetingkap</translation>
 <translation id="8480873377842220259">Sekarang anda akan mempelajari beberapa navigasi asas. Anda boleh menahan Carian dan menekan kekunci anak panah untuk bergerak ke sana sini pada skrin. Untuk meneruskan, tekan Carian + Anak panah ke kanan.</translation>
 <translation id="8503360654911991865">Kurangkan kebutiran navigasi</translation>
 <translation id="8520472399088452386">Butang putar</translation>

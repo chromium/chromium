@@ -268,15 +268,16 @@ namespace certificateProvider {
     // |callback|: Is called when the dialog is resolved with the user input, or
     // when the dialog request finishes unsuccessfully (e.g. the dialog was
     // canceled by the user or was not allowed to be shown).
-    [supportsPromises] static void requestPin(RequestPinDetails details,
-                                              RequestPinCallback callback);
+    static void requestPin(
+        RequestPinDetails details,
+        RequestPinCallback callback);
 
     // Stops the pin request started by the $(ref:requestPin) function.
     // |details|: Contains the details about the reason for stopping the
     // request flow.
     // |callback|: To be used by Chrome to send to the extension the status from
     // their request to close PIN dialog for user.
-    [supportsPromises] static void stopPinRequest(
+    static void stopPinRequest(
         StopPinRequestDetails details,
         StopPinRequestCallback callback);
 
@@ -288,7 +289,7 @@ namespace certificateProvider {
     // received.</p>
     // |details|: The certificates to set. Invalid certificates will be ignored.
     // |callback|: Called upon completion.
-    [supportsPromises] static void setCertificates(
+    static void setCertificates(
         SetCertificatesDetails details,
         optional SetCertificatesCallback callback);
 
@@ -297,7 +298,7 @@ namespace certificateProvider {
     // $(ref:onSignatureRequested) event; the API implementation will stop
     // waiting for this call after some time and respond with a timeout
     // error when this function is called.</p>
-    [supportsPromises] static void reportSignature(
+    static void reportSignature(
         ReportSignatureDetails details,
         optional ReportSignatureCallback callback);
   };

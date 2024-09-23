@@ -5,17 +5,13 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/fake_search_data.h"
-#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom-test-utils.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search_concept_registry.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace ash::shortcut_ui {
 
@@ -58,6 +54,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
         /*type=*/ash::mojom::AcceleratorType::kDefault,
         /*state=*/ash::mojom::AcceleratorState::kEnabled,
         /*locked=*/true,
+        /*accelerator_locked=*/false,
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
             ash::mojom::StandardAcceleratorProperties::New(
@@ -80,6 +77,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
         /*type=*/ash::mojom::AcceleratorType::kDefault,
         /*state=*/ash::mojom::AcceleratorState::kEnabled,
         /*locked=*/true,
+        /*accelerator_locked=*/false,
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
             ash::mojom::StandardAcceleratorProperties::New(
@@ -102,6 +100,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
         /*type=*/ash::mojom::AcceleratorType::kDefault,
         /*state=*/ash::mojom::AcceleratorState::kEnabled,
         /*locked=*/true,
+        /*accelerator_locked=*/false,
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
             ash::mojom::StandardAcceleratorProperties::New(
@@ -113,6 +112,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
         /*type=*/ash::mojom::AcceleratorType::kDefault,
         /*state=*/ash::mojom::AcceleratorState::kEnabled,
         /*locked=*/true,
+        /*accelerator_locked=*/false,
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewStandardAccelerator(
             ash::mojom::StandardAcceleratorProperties::New(
@@ -147,6 +147,7 @@ std::vector<shortcut_ui::SearchConcept> GetTestSearchConcepts() {
         /*type=*/ash::mojom::AcceleratorType::kDefault,
         /*state=*/ash::mojom::AcceleratorState::kEnabled,
         /*locked=*/true,
+        /*accelerator_locked=*/false,
         /*layout_properties=*/
         ash::mojom::LayoutStyleProperties::NewTextAccelerator(
             ash::mojom::TextAcceleratorProperties::New(

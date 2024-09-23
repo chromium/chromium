@@ -46,7 +46,7 @@
 <translation id="1363028406613469049">ট্র্যাক</translation>
 <translation id="1378727793141957596">Google ড্রাইভে স্বাগতম!</translation>
 <translation id="1379911846207762492">ইন্টারনেট কানেকশন না থাকলে, ফাইল অফলাইনে অ্যাক্সেস করার জন্য উপলভ্য করতে পারেন।</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">খুঁজুন</translation>
 <translation id="1388045380422025115">সব ধরনের</translation>
 <translation id="1395262318152388157">স্লাইডার খুঁজুন</translation>
 <translation id="1399511500114202393">কোনও ব্যবহারকারীর সার্টিফিকেট নেই</translation>
@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">সক্স হোস্ট</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ব্লক করেছেন, বিবরণ</translation>
-<translation id="3113153474486991170">এই লোকেশন থেকে "<ph name="PATH" />" খোলা যায়নি। খুলতে "আমার ফাইল"-এ কপি করুন।</translation>
 <translation id="3113592018909187986">আপনি আর ১ বার চেষ্টা করতে পারেন। আপনি একটি নতুন পিন সেট আপ না করা পর্যন্ত এই নেটওয়ার্ক ব্যবহার করতে পারবেন না।</translation>
 <translation id="3124404833828281817">দিবাস্বপ্ন দেখছে এমন ব্যক্তির ছবি</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> বাতিল করুন।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, চালু করা হয়নি, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="3691184985318546178">সিংহলি</translation>
+<translation id="3702842351052426940">আপনার সিম কার্ড বা ই-সিম প্রোফাইল হয়ত বন্ধ রয়েছে। আপনার সিম পরিবর্তন বা ই-সিম প্রোফাইল পাল্টে দেখুন।</translation>
 <translation id="3722341589402358578">কোনও সমস্যা হয়েছে। কিছু আইটেম ট্র্যাশে নাও থাকতে পারে।</translation>
 <translation id="3726463242007121105">এই ডিভাইসটি ফাইল সিস্টেমটি সমর্থিত না হওয়ার কারণে খুলতে পারা যায়না৷</translation>
 <translation id="3727148787322499904">এই সেটিং পরিবর্তন করা হলে শেয়ার করা সব নেটওয়ার্ক প্রভাবিত হবে</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">এই প্রক্সী আপনার প্রশাসক দ্বারা কার্যকরী করা হয়েছে</translation>
 <translation id="3830674330436234648">কোনো প্লেব্যাক উপলব্ধ নেই</translation>
 <translation id="383652340667548381">সার্বিয়</translation>
+<translation id="3839045880592694915">আপনার পরিষেবা প্রদানকারী মডেম কানেক্ট করার অনুমতি দেয় না। আরও বিবরণের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="385051799172605136">ফিরুন</translation>
-<translation id="3851491607336266896">কানেক্ট করা হয়েছে, কানেক্টিভিটি সীমিত করা আছে</translation>
 <translation id="3855472144336161447">জার্মান নিও ২</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">সম্প্রতি খোলা হয়েছে এমন Microsoft ফাইল OneDrive-এ সরানো হয়েছে</translation>
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4017788180641807848">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ওয়ার্কম্যান কীবোর্ড</translation>
-<translation id="4019998208269143058">ঝটপট অ্যাক্সেসযোগ্য ফাইল থেকে পিন করুন</translation>
 <translation id="4040753847560036377">ভুল PUK দিয়েছেন</translation>
 <translation id="4057991113334098539">সক্রিয় করা হচ্ছে...</translation>
 <translation id="4092890906744441904">আইরিশ</translation>
+<translation id="4101601646343868113">নিজের মোবাইল নেটওয়ার্কে সাইন-ইন করুন এবং নিশ্চিত করুন যে মোবাইল ডেটা প্ল্যান চালু আছে</translation>
 <translation id="4124731372776320263">১টি Drive ফাইল সিঙ্ক করা হচ্ছে</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
 <translation id="4131235941541910880">অপ্রয়োজনীয় আইটেম ট্র্যাশে সরান</translation>
@@ -604,6 +604,7 @@
 <translation id="5625294776298156701">তামিল ভাষায় তামিল৯৯ (Tamil99) কীবোর্ড</translation>
 <translation id="5633226425545095130">এই আইটেম অন্য কোথাও সরিয়ে দিলে, এটি শেয়ার করা ফোল্ডার '<ph name="DESTINATION_NAME" />' দেখতে পাওয়া প্রতিটি ব্যক্তির সাথে শেয়ার হয়ে যাবে।</translation>
 <translation id="5649768706273821470">শুনুন</translation>
+<translation id="5650895901941743674">আপনার APN কনফিগারেশন চেক করুন</translation>
 <translation id="5669691691057771421">নতুন পিন লিখুন</translation>
 <translation id="5678784840044122290">Linux অ্যাপ্লিকেশনটি আপনার  টার্মিনালের মধ্যে পাওয়া যাবে এবং আপনার লঞ্চারে একটি আইকনও দেখাতে পারে।</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />একটি আর্কাইভ বা ভার্চুয়াল ডিস্ক থেকে ডিসকানেক্ট করা যাবে না<ph name="END_BOLD" />
@@ -683,6 +684,7 @@
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, কানেক্ট করুন</translation>
 <translation id="6269630227984243955">মালয়</translation>
 <translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />"-এ পর্যাপ্ত স্টোরেজ না থাকার জন্য ফাইল আপলোড করা যাচ্ছে না।</translation>
+<translation id="6279140785485544797">আপনার মোবাইল ডেটা প্ল্যানের মেয়াদ হয়ত শেষ হতে পারে। সহায়তার জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="6287852322318138013">এই ফাইলটি খোলার জন্য একটি অ্যাপ্লিকেশান বেছে নিন</translation>
 <translation id="6295542640242147836">সিম কার্ড লক করা</translation>
 <translation id="6296410173147755564">ভুল PUK দিয়েছেন</translation>
@@ -692,7 +694,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> আর্কাইভ</translation>
 <translation id="6321303798550928047">হাত নাড়ানো</translation>
 <translation id="6327785803543103246">ওয়েব প্রক্সী স্বতঃআবিষ্কার</translation>
-<translation id="6337014272874260727">ঝটপট অ্যাক্সেসযোগ্য ফাইল থেকে আনপিন করুন</translation>
 <translation id="6339145975392024142">US ইন্টারন্যাশনাল (PC)</translation>
 <translation id="6356685157277930264">ফাইল সম্পর্কে মতামত জানানোর উইন্ডো</translation>
 <translation id="6358884629796491903">ড্রাগন</translation>
@@ -738,6 +739,7 @@
 <translation id="6750737795876287924">বর্তমান ডিরেক্টরি</translation>
 <translation id="6751256176799620176">১টি ফোল্ডার নির্বাচন করা হয়েছে</translation>
 <translation id="6755827872271341378">ChromeOS Flex ডিভাইস</translation>
+<translation id="6777029074498310250">আরও তথ্য জানাতে, <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /> লিঙ্কে যান</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6794539005637808366">আইটেম ফিরিয়ে আনুন বা ট্র্যাশের বাইরে নতুন কোনও ফোল্ডারে এটি টেনে আনুন</translation>
 <translation id="6795884519221689054">পান্ডা</translation>
@@ -791,6 +793,7 @@
 <translation id="7086590977277044826">তামিল ভাষায় ইনস্ক্রিপ্ট কীবোর্ড</translation>
 <translation id="7088615885725309056">পূর্বতর</translation>
 <translation id="7103992300314999525">ম্যাসিডোনিয়ান</translation>
+<translation id="7104338189998813914">আপনার OneDrive অ্যাকাউন্ট অ্যাক্সেস করার সময় কোনও সমস্যা হয়েছে</translation>
 <translation id="7106346894903675391">আরও সঞ্চয়স্থান কিনুন...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ড্রাইভে খুঁজুন&lt;/em&gt;</translation>
 <translation id="7135561821015524160">কন্নড় ফোনেটিক</translation>
@@ -851,6 +854,7 @@
 <translation id="7589661784326793847">এক সেকেন্ড অপেক্ষা করুন</translation>
 <translation id="7600126690270271294">সার্বিয়ান</translation>
 <translation id="7603724359189955920">গ্রিড</translation>
+<translation id="7624010287655004652">অন্য কোনও মোবাইল পরিষেবা প্রদানকারী লক করেছে</translation>
 <translation id="7627790789328695202">ওহো, <ph name="FILE_NAME" /> ইতিমধ্যেই বিদ্যমান রয়েছে৷ এটির পুনঃনামকরণ করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% সম্পূর্ণ হয়েছে।</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
@@ -1008,6 +1012,7 @@
 <translation id="8600173386174225982">থাম্বনেল ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
 <translation id="8601932370724196034">Crostini ছবির ফাইল</translation>
 <translation id="8609695766746872526">আইসল্যান্ডিক</translation>
+<translation id="8630384863424041081">নিজের সিম কার্ডের পিন বা আপনার পরিষেবা প্রদানকারীর দেওয়া ডিফল্ট পিন লিখুন। সহায়তার জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>
 <translation id="863903787380594467">ভুল পিন দিয়েছেন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - পোর্ট</translation>
 <translation id="8656407365183407932">আপনার অফলাইন ফাইল সরিয়ে দিতে হয়েছে</translation>
@@ -1017,7 +1022,6 @@
 <translation id="8698877009525468705">এই ফাইলটি গোপনীয় এবং অ্যাডমিনিস্ট্রেটর নীতির মাধ্যমে প্রযোজ্য বিধিনিষেধ পালন করেই এটি শেয়ার করা হয়।</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8713112442029511308">মল্টিজ</translation>
-<translation id="8714138378966541668">পরিষেবা প্রদানকারী লক করে দিয়েছে</translation>
 <translation id="8714406895390098252">সাইকেল</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="872537912056138402">ক্রোয়েশিয়</translation>

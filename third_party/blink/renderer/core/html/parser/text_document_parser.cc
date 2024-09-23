@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 
 namespace blink {
 
@@ -37,13 +38,14 @@ TextDocumentParser::TextDocumentParser(HTMLDocument& document,
 
 TextDocumentParser::~TextDocumentParser() = default;
 
-void TextDocumentParser::AppendBytes(const char* data, size_t length) {
-  if (!length || IsStopped())
+void TextDocumentParser::AppendBytes(base::span<const uint8_t> data) {
+  if (data.empty() || IsStopped()) {
     return;
+  }
 
   if (!have_inserted_fake_pre_element_)
     InsertFakePreElement();
-  HTMLDocumentParser::AppendBytes(data, length);
+  HTMLDocumentParser::AppendBytes(data);
 }
 
 void TextDocumentParser::InsertFakePreElement() {
@@ -57,7 +59,7 @@ void TextDocumentParser::InsertFakePreElement() {
   // Allow the browser to display the text file in dark mode if it is set as
   // the preferred color scheme.
   attributes.push_back(
-      Attribute(html_names::kNameAttr, AtomicString("color-scheme")));
+      Attribute(html_names::kNameAttr, keywords::kColorScheme));
   attributes.push_back(
       Attribute(html_names::kContentAttr, AtomicString("light dark")));
   AtomicHTMLToken fake_meta(HTMLToken::kStartTag, html_names::HTMLTag::kMeta,

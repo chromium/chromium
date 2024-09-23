@@ -23,11 +23,12 @@ OF THIS SOFTWARE.
 -->
 
 <xcb header="present" extension-xname="Present" extension-name="Present"
-  major-version="1" minor-version="2">
+  major-version="1" minor-version="4">
   <import>xproto</import>
   <import>randr</import>
   <import>xfixes</import>
   <import>sync</import>
+  <import>dri3</import>
 
   <!-- Types -->
 
@@ -52,6 +53,7 @@ OF THIS SOFTWARE.
     <item name="Copy"><bit>1</bit></item>
     <item name="UST"><bit>2</bit></item>
     <item name="Suboptimal"><bit>3</bit></item>
+    <item name="AsyncMayTear"><bit>4</bit></item>
   </enum>
 
   <enum name="Capability">
@@ -59,6 +61,9 @@ OF THIS SOFTWARE.
     <item name="Async"><bit>0</bit></item>
     <item name="Fence"><bit>1</bit></item>
     <item name="UST"><bit>2</bit></item>
+    <item name="AsyncMayTear"><bit>3</bit></item>
+    <!-- PresentCapabilitySyncobj is new in version 1.4 -->
+    <item name="Syncobj"><bit>4</bit></item>
   </enum>
 
   <enum name="CompleteKind">
@@ -133,6 +138,29 @@ OF THIS SOFTWARE.
       <pad bytes="1" />
       <field type="CARD32" name="capabilities" />
     </reply>
+  </request>
+
+  <!-- PresentPixmapSynced is new in version 1.4 -->
+  <request name="PixmapSynced" opcode="5">
+    <required_start_align align="8" />
+    <field type="WINDOW" name="window" />
+    <field type="PIXMAP" name="pixmap" />
+    <field type="CARD32" name="serial" />
+    <field type="REGION" name="valid" />
+    <field type="REGION" name="update" />
+    <field type="INT16" name="x_off" />
+    <field type="INT16" name="y_off" />
+    <field type="CRTC" name="target_crtc" />
+    <field type="SYNCOBJ" name="acquire_syncobj" />
+    <field type="SYNCOBJ" name="release_syncobj" />
+    <field type="CARD64" name="acquire_point" />
+    <field type="CARD64" name="release_point" />
+    <field type="CARD32" name="options" />
+    <pad bytes="4"/>
+    <field type="CARD64" name="target_msc" />
+    <field type="CARD64" name="divisor" />
+    <field type="CARD64" name="remainder" />
+    <list type="Notify" name="notifies"/>
   </request>
 
   <!-- Events -->

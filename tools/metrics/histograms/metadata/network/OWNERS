@@ -1,12 +1,13 @@
 per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
-# Use either chromium-metrics-reviews@google.com or the below owners.
 chadduffin@chromium.org
 hsuregan@google.com
 jiajunz@google.com
 khorimoto@chromium.org
 matthewmwang@chromium.org
 nidhijaju@chromium.org
+nikhilcn@google.com
+tjohnsonkanu@google.com
 toyoshim@chromium.org
 
 # For Network.Wifi.Synced* histograms.

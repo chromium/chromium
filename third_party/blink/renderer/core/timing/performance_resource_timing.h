@@ -72,6 +72,8 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   virtual AtomicString renderBlockingStatus() const;
   virtual AtomicString contentType() const;
   DOMHighResTimeStamp workerStart() const;
+  DOMHighResTimeStamp workerRouterEvaluationStart() const;
+  DOMHighResTimeStamp workerCacheLookupStart() const;
   virtual DOMHighResTimeStamp redirectStart() const;
   virtual DOMHighResTimeStamp redirectEnd() const;
   virtual DOMHighResTimeStamp fetchStart() const;
@@ -89,6 +91,8 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   virtual uint64_t decodedBodySize() const;
   uint16_t responseStatus() const;
   const HeapVector<Member<PerformanceServerTiming>>& serverTiming() const;
+  AtomicString matchedSourceType() const;
+  AtomicString finalSourceType() const;
 
   void Trace(Visitor*) const override;
 

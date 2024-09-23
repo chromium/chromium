@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+
+<script>
+window.buttonInSelectId = 4771;
+window.datalistInSelectId = 4772;
+window.selectParserDroppedTag = 4844;
+window.inputInSelectId = 4968;
+</script>
+
+<button>button</button>
+<datalist>
+  <option>option</option>
+</datalist>
+<select>
+  <option>option</option>
+</select>
+
+<script>
+test(() => {
+  assert_false(internals.isUseCounted(document, buttonInSelectId), 'button in select');
+  assert_false(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+  assert_false(internals.isUseCounted(document, selectParserDroppedTag), 'select parser dropped tag');
+}, 'UseCounter is not counted in existing normal use case.');
+</script>
+
+<select>
+  <button>button</button>
+</select>
+
+<script>
+test(() => {
+  assert_true(internals.isUseCounted(document, buttonInSelectId), 'button in select');
+  assert_false(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+  assert_false(internals.isUseCounted(document, selectParserDroppedTag), 'select parser dropped tag');
+  internals.clearUseCounter(document, buttonInSelectId);
+}, 'UseCounter is counted when putting button in select.');
+</script>
+
+<select>
+  <datalist>datalist</datalist>
+</select>
+
+<script>
+test(() => {
+  assert_false(internals.isUseCounted(document, buttonInSelectId), 'button in select');
+  assert_true(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+  assert_false(internals.isUseCounted(document, selectParserDroppedTag), 'select parser dropped tag');
+  internals.clearUseCounter(document, datalistInSelectId);
+}, 'UseCounter is counted when putting datalist in select.');
+</script>
+
+<select>
+  <div>div</div>
+</select>
+
+<script>
+test(() => {
+  assert_true(internals.isUseCounted(document, selectParserDroppedTag), 'select parser dropped tag');
+}, 'UseCounter for <div> in <select>.');
+
+test(() => {
+  assert_false(internals.isUseCounted(document, inputInSelectId));
+}, 'UseCounter is not counted when not putting input in select.');
+</script>
+
+<select>
+  <input>
+</select>
+
+<script>
+test(() => {
+  assert_true(internals.isUseCounted(document, inputInSelectId));
+}, 'UseCounter is counted when putting input in select.');
+</script>

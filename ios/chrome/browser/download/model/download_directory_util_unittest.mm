@@ -25,7 +25,7 @@ TEST_F(DownloadDirectoryTest, Deletion) {
   EXPECT_TRUE(GetTempDownloadsDirectory(&dir));
   EXPECT_TRUE(CreateDirectory(dir));
   base::FilePath file = dir.Append("file.txt");
-  EXPECT_EQ(0, WriteFile(file, "", 0));
+  EXPECT_TRUE(base::WriteFile(file, ""));
   ASSERT_TRUE(base::PathExists(file));
 
   // Delete download directory.

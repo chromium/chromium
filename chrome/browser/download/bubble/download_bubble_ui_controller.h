@@ -11,7 +11,9 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
+#include "chrome/browser/download/download_warning_desktop_hats_utils.h"
 #include "chrome/browser/download/offline_item_model.h"
+#include "chrome/browser/metrics/browser_activity_watcher.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -75,6 +77,7 @@ class DownloadBubbleUIController {
   virtual std::vector<DownloadUIModel::DownloadUIModelPtr> GetPartialView();
 
   // Process button press on the bubble.
+  // May launch a HaTS survey if the action applies to a download warning.
   // TODO(chlily): `is_main_view` should be named `is_primary_view`. It
   // distinguishes the primary page from the (security) subpage, not the main vs
   // partial flavors of the primary view.
@@ -106,7 +109,7 @@ class DownloadBubbleUIController {
   // Records that a dangerous download was shown to the user. This only
   // records the fact that an interaction occurred, and should not be
   // used quantitatively to count the number of such interactions.
-  void RecordDangerousDownloadShownToUser();
+  void RecordDangerousDownloadShownToUser(download::DownloadItem* download);
 
   // Returns the DownloadDisplayController. Should always return a valid
   // controller.
@@ -119,6 +122,13 @@ class DownloadBubbleUIController {
   }
 
   DownloadBubbleUpdateService* update_service() { return update_service_; }
+
+  // See comment on member below. This may not be correct/meaningful, do not
+  // rely on this for anything important. This is not meaningful if the partial
+  // view is not enabled.
+  bool last_primary_view_was_partial() const {
+    return last_primary_view_was_partial_;
+  }
 
   base::WeakPtr<DownloadBubbleUIController> GetWeakPtr();
 
@@ -133,6 +143,13 @@ class DownloadBubbleUIController {
   // Kick off retrying an eligible interrupted download.
   void RetryDownload(DownloadUIModel* model, DownloadCommands::Command command);
 
+  // Stamps the PSD for HaTS surveys with the extra info specific to the
+  // download bubble triggers.
+  void CompleteHatsPsd(DownloadWarningHatsProductSpecificData& psd);
+
+  // Callback for `browser_activity_observer_`.
+  void OnBrowserActivity();
+
   raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<DownloadBubbleUpdateService, DanglingUntriaged> update_service_;
@@ -145,6 +162,24 @@ class DownloadBubbleUIController {
       display_controller_;
 
   std::optional<base::Time> last_partial_view_shown_time_ = std::nullopt;
+
+  // Tracks whether the last time we provided models was for a partial view
+  // (true) or a main view (false). This is an approximation for whether the
+  // last incarnation of the download bubble that the user saw or interacted
+  // with was a partial or main view. (It's only an approximation because there
+  // are controllers for other browsers that are not accounted for here.) In
+  // most cases, this should be correct and meaningful if queried immediately
+  // after the user interacted with / clicked on the bubble. This value might
+  // be bogus if the download bubble is shown on multiple browsers at the same
+  // time, or if the primary view is bypassed altogether (e.g. by clicking on
+  // a desktop notification on ChromeOS to go to the security view directly).
+  bool last_primary_view_was_partial_ = false;
+
+  // Used for showing HaTS surveys when download warnings are delayed.
+  // Nullptr when the user is not eligible for download bubble warning ignored
+  // surveys.
+  std::unique_ptr<DelayedDownloadWarningHatsLauncher> delayed_hats_launcher_;
+  std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;
 
   base::WeakPtrFactory<DownloadBubbleUIController> weak_factory_{this};
 };

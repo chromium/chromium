@@ -15,10 +15,10 @@
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/policy/core/common/policy_map.h"
 #import "components/policy/policy_constants.h"
-#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/policy/model/enterprise_policy_test_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -34,16 +34,15 @@ class PolicyTest : public PlatformTest {
     ASSERT_TRUE(state_directory_.CreateUniqueTempDir());
     enterprise_policy_helper_ = std::make_unique<EnterprisePolicyTestHelper>(
         state_directory_.GetPath());
-    ASSERT_TRUE(enterprise_policy_helper_->GetBrowserState());
+    ASSERT_TRUE(enterprise_policy_helper_->GetProfile());
 
     // Multiple tests use policy/pref_mapping, so compute its path
     // once.
     base::FilePath test_data_directory;
     ASSERT_TRUE(
         base::PathService::Get(ios::DIR_TEST_DATA, &test_data_directory));
-    policy_test_cases_path_ =
-        test_data_directory.Append(FILE_PATH_LITERAL("policy"))
-            .Append(FILE_PATH_LITERAL("pref_mapping"));
+    test_case_dir_ = test_data_directory.Append(FILE_PATH_LITERAL("policy"))
+                         .Append(FILE_PATH_LITERAL("pref_mapping"));
   }
 
  protected:
@@ -56,20 +55,20 @@ class PolicyTest : public PlatformTest {
   // Enterprise policy boilerplate configuration.
   std::unique_ptr<EnterprisePolicyTestHelper> enterprise_policy_helper_;
 
-  // The path to `policy_test_cases.json`.
-  base::FilePath policy_test_cases_path_;
+  // The path to components/policy/test/data/pref_mapping/.
+  base::FilePath test_case_dir_;
 };
 
 }  // namespace
 
 TEST_F(PolicyTest, AllPoliciesHaveATestCase) {
-  policy::VerifyAllPoliciesHaveATestCase(policy_test_cases_path_);
+  policy::VerifyAllPoliciesHaveATestCase(test_case_dir_);
 }
 
 TEST_F(PolicyTest, PolicyToPrefMappings) {
   policy::VerifyPolicyToPrefMappings(
-      policy_test_cases_path_, enterprise_policy_helper_->GetLocalState(),
-      enterprise_policy_helper_->GetBrowserState()->GetPrefs(),
+      test_case_dir_, enterprise_policy_helper_->GetLocalState(),
+      enterprise_policy_helper_->GetProfile()->GetPrefs(),
       /* signin_profile_prefs= */ nullptr,
       enterprise_policy_helper_->GetPolicyProvider());
 }

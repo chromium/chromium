@@ -38,7 +38,6 @@ class ExtensionSystemSharedFactory : public ProfileKeyedServiceFactory {
 };
 
 // BrowserContextKeyedServiceFactory for ExtensionSystemImpl.
-// TODO(yoz): Rename to ExtensionSystemImplFactory.
 class ExtensionSystemFactory : public ExtensionSystemProvider {
  public:
   ExtensionSystemFactory(const ExtensionSystemFactory&) = delete;

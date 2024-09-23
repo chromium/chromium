@@ -1,3 +1,4 @@
+PASS picker.selectElement_.selectedOptions[0].label is "option20"
 PASS picker.selectElement_.value is "1"
 PASS menuElement.value is "bar"
 PASS picker.selectElement_.value is "0"
@@ -23,7 +24,6 @@ PASS internals.selectMenuListText(menu) is "bar"
 PASS internals.pagePopupWindow is null
 PASS menu.value is "bar"
 PASS internals.selectMenuListText(menu) is "bar"
-PASS picker.selectElement_.selectedOptions[0].label is "option20"
 PASS successfullyParsed is true
 
 TEST COMPLETE

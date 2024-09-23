@@ -1,5 +1,5 @@
 The extension_signed_by_webstore.crx package must be a one signed by WebStore,
-in order for the extension to have the expected ID which is whitelisted in
+in order for the extension to have the expected ID which is allowlisted in
 Chrome - "ngjobkbdodapjbbncmagbccommkggmnj".
 
 This extension is primarily intended to be used for the manual testing of the

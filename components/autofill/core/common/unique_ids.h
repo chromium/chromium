@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/types/id_type.h"
+#include "base/types/strong_alias.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -36,7 +37,7 @@ class TokenType
 // LocalFrameToken and RemoteFrameToken identify AutofillDrivers and
 // AutofillAgents.
 //
-// TODO(crbug.com/1441921): Implement frame tokens as described below for iOS.
+// TODO(crbug.com/40266699): Implement frame tokens as described below for iOS.
 //
 // Every pair of associated AutofillAgent and AutofillDriver has a
 // LocalFrameToken, which uniquely identifies them and remains stable for their
@@ -104,7 +105,7 @@ using FieldRendererIdType = ::base::IdTypeU64<class FieldRendererIdMarker>;
 //
 // As a sentinel value, the FormRendererId of a synthetic form converts to
 // `false` (== is_null()). A synthetic form is the collection of form fields
-// outside of the scope of any <form> tag in a page.
+// outside of the scope of any <form> tag in a document.
 //
 // Since each page can trigger an overflow, security must not rely on their
 // uniqueness.
@@ -135,10 +136,10 @@ struct GlobalId {
     return static_cast<bool>(renderer_id);
   }
 
-  friend constexpr auto operator<=>(const GlobalId<RendererId>& lhs,
-                                    const GlobalId<RendererId>& rhs) = default;
-  friend constexpr bool operator==(const GlobalId<RendererId>& lhs,
-                                   const GlobalId<RendererId>& rhs) = default;
+  friend auto operator<=>(const GlobalId<RendererId>& lhs,
+                          const GlobalId<RendererId>& rhs) = default;
+  friend bool operator==(const GlobalId<RendererId>& lhs,
+                         const GlobalId<RendererId>& rhs) = default;
 };
 
 }  // namespace internal
@@ -156,7 +157,7 @@ struct GlobalId {
 // the one they originate from, Autofill does not send GlobalIds to any renderer
 // process.
 //
-// TODO(crbug/1207920) Move to core/browser.
+// TODO(crbug.com/40181498) Move to core/browser.
 using FormGlobalId = internal::GlobalId<FormRendererId>;
 using FieldGlobalId = internal::GlobalId<FieldRendererId>;
 

@@ -595,10 +595,10 @@ machine?
 
 * Do one of the following:
     * Option A) Run from the `chromium/src` folder:
-      `third_party/blink/tools/run_web_tests.py --additional-driver-flag='--remote-debugging-port=9222' --additional-driver-flag='--debug-devtools' --timeout-ms=6000000`
+      `third_party/blink/tools/run_web_tests.py --additional-driver-flag='--remote-debugging-port=9222' --additional-driver-flag='--remote-allow-origins=*' --additional-driver-flag='--debug-devtools' --timeout-ms=6000000`
     * Option B) If you need to debug an http/tests/inspector test, start httpd
       as described above. Then, run content_shell:
-      `out/Default/content_shell --remote-debugging-port=9222 --additional-driver-flag='--debug-devtools' --run-web-tests http://127.0.0.1:8000/path/to/test.html`
+      `out/Default/content_shell --remote-debugging-port=9222 --additional-driver-flag='--remote-allow-origins=*' --additional-driver-flag='--debug-devtools' --run-web-tests http://127.0.0.1:8000/path/to/test.html`
 * Open `http://localhost:9222` in a stable/beta/canary Chrome, click the single
   link to open the devtools with the test loaded.
 * In the loaded devtools, set any required breakpoints and execute `test()` in
@@ -612,6 +612,27 @@ NOTE: If the test is an html file, this means it's a legacy test so you need to 
   function test() {
     /* TEST CODE */
   }
+  ```
+
+### Reproducing flaky inspector protocol tests
+
+https://crrev.com/c/5318502 implemented logging for inspector-protocol tests.
+With this CL for each test in stderr you should see Chrome DevTools Protocol
+messages that the test and the browser exchanged.
+
+You can use this log to reproduce the failure or timeout locally.
+
+* Prepare a log file and ensure each line contains one protocol message
+in the JSON format. Strip any prefixes or non-protocol messages from the
+original log.
+* Make sure your local test file version matches the version that produced
+the log file.
+* Run the test using the log file:
+
+  ```sh
+  third_party/blink/tools/run_web_tests.py -t Release \
+   --additional-driver-flag="--inspector-protocol-log=/path/to/log.txt" \
+   http/tests/inspector-protocol/network/url-fragment.js
   ```
 
 ## Bisecting Regressions

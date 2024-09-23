@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/356058864): Add explainer link
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AISummarizationAPI
+]
+interface AISummarizerCapabilities {
+  readonly attribute AICapabilityAvailability available;
+
+  AICapabilityAvailability supportsType(AISummarizerType type);
+  AICapabilityAvailability supportsFormat(AISummarizerFormat format);
+  AICapabilityAvailability supportsLength(AISummarizerLength length);
+
+  AICapabilityAvailability supportsInputLanguage(DOMString languageTag);
+};
+
+enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
+enum AISummarizerFormat { "plain-text", "markdown" };
+enum AISummarizerLength { "short", "medium", "long" };
+
+dictionary AISummarizerCreateOptions {
+  AbortSignal signal;
+  DOMString sharedContext;
+  AISummarizerType type = "key-points";
+  AISummarizerFormat format = "markdown";
+  AISummarizerLength length = "medium";
+};
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AISummarizationAPI
+]
+interface AISummarizerFactory {
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AISummarizer> create(optional AISummarizerCreateOptions options = {});
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AISummarizerCapabilities> capabilities();
+};

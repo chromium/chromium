@@ -7,6 +7,7 @@ include_rules = [
   "+chrome/installer/launcher_support",
   "+chrome/services/mac_notifications",
   "+components/crash/core/app",
+  "+components/metrics",
   "+components/remote_cocoa",
   "+content/public/browser",
   "+mojo/core/embedder",

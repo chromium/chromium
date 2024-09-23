@@ -1,0 +1,30 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=vars
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+html {
+  --card-max-width: 960px;
+  --side-bar-width: 300px;
+  --toolbar-height: 56px;
+  /* Centered cards has a max-width of var(--cr-centered-card-max-width)
+   * and a width of a certain percentage. Therefore, to make room for the
+   * cards to be at their max width, the flex-basis of the content needs to be
+   * whatever value the percentage of would equal to the max width. */
+  --related-website-sets-main-basis: calc(var(--cr-centered-card-max-width) /
+      var(--cr-centered-card-width-percentage));
+  --control-label-spacing: 20px;
+  --section-min-height: 48px;
+  --error-color: var(--google-red-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --error-color: var(--google-red-300);
+  }
+}

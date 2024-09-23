@@ -90,6 +90,12 @@ function prefsTest(prefs) {
                                  }));
 }
 
+function runningOnLacrosTest(isLacros) {
+  chrome.chromeosInfoPrivate.isRunningOnLacros(pass(function(runningOnLacros) {
+    chrome.test.assertEq(!!isLacros, !!runningOnLacros);
+  }));
+}
+
 chrome.test.getConfig(function(config) {
   var tests = [];
   switch (config.customArg) {
@@ -99,10 +105,17 @@ chrome.test.getConfig(function(config) {
     case 'screenMagnifier':
       tests.push(() => prefsTest(['a11yScreenMagnifierEnabled']));
       break;
+    case 'isRunningOnLacros - False':
+      tests.push(() => runningOnLacrosTest(false));
+      break;
+    case 'isRunningOnLacros - True':
+      tests.push(() => runningOnLacrosTest(true));
+      break;
     default:
       // Generated chrome.chromeosInfoPrivate.get() tests.
       tests = generateTestsForKeys([
         'hwid',
+        'deviceRequisition',
         'isMeetDevice',
         'customizationId',
         'homeProvider',

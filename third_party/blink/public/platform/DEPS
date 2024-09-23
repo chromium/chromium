@@ -5,6 +5,7 @@ include_rules = [
     "+base/containers/flat_set.h",
     "+base/containers/flat_map.h",
     "+base/containers/span.h",
+    "+base/containers/span_or_size.h",
     "+base/files/file.h",
     "+base/location.h",
     "+base/logging.h",
@@ -47,13 +48,13 @@ include_rules = [
     "+net/cert",
     "+net/dns/public",
     "+net/http",
+    "+net/storage_access_api/status.h",
     "+net/traffic_annotation/network_traffic_annotation.h",
     "+net/url_request/redirect_info.h",
     "+services/network/public/cpp/cors/cors_error_status.h",
     "+services/network/public/cpp/cors/preflight_result.h",
     "+services/network/public/cpp/resource_request_body.h",
     "+services/network/public/cpp/shared_url_loader_factory.h",
-    "+services/network/public/cpp/trigger_verification.h",
 
     # Enforce to use mojom-shared.h in blink/public so that it can compile
     # inside and outside Blink.

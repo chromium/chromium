@@ -5,7 +5,6 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
 #define MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
 
-#include <d3d11.h>
 #include <list>
 #include <vector>
 
@@ -27,7 +26,6 @@
 #include "media/base/video_types.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/gpu/windows/d3d11_decoder_configurator.h"
 #include "media/gpu/windows/d3d11_h264_accelerator.h"
 #include "media/gpu/windows/d3d11_status.h"
@@ -36,6 +34,7 @@
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 #include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d11_vp9_accelerator.h"
+#include "media/gpu/windows/d3d_com_defs.h"
 
 namespace gpu {
 class CommandBufferStub;
@@ -56,8 +55,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   enum class D3DVersion { kD3D11, kD3D12 };
 
   // Callback to get a D3D11/12 device.
-  using GetD3DDeviceCB =
-      base::RepeatingCallback<Microsoft::WRL::ComPtr<IUnknown>(D3DVersion)>;
+  using GetD3DDeviceCB = base::RepeatingCallback<ComUnknown(D3DVersion)>;
 
   // List of configs that we'll check against when initializing.  This is only
   // needed since GpuMojoMediaClient merges our supported configs with the VDA
@@ -72,8 +70,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
       GetD3DDeviceCB get_d3d_device_cb,
-      SupportedConfigs supported_configs,
-      bool system_hdr_enabled);
+      SupportedConfigs supported_configs);
 
   D3D11VideoDecoder(const D3D11VideoDecoder&) = delete;
   D3D11VideoDecoder& operator=(const D3D11VideoDecoder&) = delete;
@@ -97,7 +94,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   void UpdateTimestamp(D3D11PictureBuffer* picture_buffer) override;
   bool OutputResult(const CodecPicture* picture,
                     D3D11PictureBuffer* picture_buffer) override;
-  void SetDecoderWrapperCB(const SetAcceleratorDecoderWrapperCB&) override;
+  D3DVideoDecoderWrapper* GetWrapper() override;
 
   bool ResetD3DVideoDecoder();
 
@@ -130,8 +127,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_helper_cb,
       GetD3DDeviceCB get_d3d_device_cb,
-      SupportedConfigs supported_configs,
-      bool system_hdr_enabled);
+      SupportedConfigs supported_configs);
 
   // Receive |buffer|, that is now unused by the client.
   void ReceivePictureBufferFromClient(scoped_refptr<D3D11PictureBuffer> buffer);
@@ -171,9 +167,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
 
   // Log the LUID of the adapter used for decoding.
   void LogDecoderAdapterLUID();
-
-  // Create a D3D11VideoDecoder, if possible, based on the current config.
-  D3D11Status::Or<ComD3D11VideoDecoder> CreateD3D11Decoder();
 
   // Create the D3DVideoDecoderWrapper according to the version level.
   std::unique_ptr<D3DVideoDecoderWrapper> CreateD3DVideoDecoderWrapper(
@@ -277,9 +270,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
 
   SupportedConfigs supported_configs_;
 
-  // Should we assume that we're outputting to an HDR display?
-  bool system_hdr_enabled_ = false;
-
   // Should we use shared handles for WebGPU interop or if using Graphite.
   bool use_shared_handle_ = false;
 
@@ -287,9 +277,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // texture with multiple array slices (false)?
   bool use_single_video_decoder_texture_ = false;
 
-  // Word-salad callback to set / update D3D11 Video callback to the
-  // accelerator.  Needed for config changes.
-  SetAcceleratorDecoderWrapperCB set_accelerator_decoder_wrapper_cb_;
+  std::unique_ptr<D3DVideoDecoderWrapper> d3d_video_decoder_wrapper_;
 
   // The currently configured bit depth for the decoder. When this changes we
   // need to recreate the decoder.

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Single tap whose touchstart is consumed should not cause a click
+  assert_equals: expected "[ { type: touchend, target: child } ]" but got "[ { type: touchend, target: child }, { type: mousemove, target: child, detail: 0, button: 0, buttons: 0 }, { type: mousedown, target: child, detail: 1, button: 0, buttons: 1 }, { type: mouseup, target: child, detail: 1, button: 0, buttons: 0 }, { type: click, target: child, detail: 1, button: 0, buttons: 0 } ]"
+Harness: the test ran to completion.
+

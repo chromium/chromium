@@ -1,0 +1,6 @@
+include_rules = [
+    "+base/containers/fixed_flat_map.h",
+    "+base/cpu.h",
+    "+ui/base/mojom/window_show_state.mojom-blink.h",
+    "+ui/base/mojom/window_show_state.mojom-blink-forward.h",
+]

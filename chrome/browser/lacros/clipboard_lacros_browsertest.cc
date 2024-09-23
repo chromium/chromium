@@ -55,7 +55,7 @@ class ClipboardLacrosBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests that accessing the text of the copy-paste clipboard succeeds.
-// TODO(https://crbug.com/1157314): This test is not safe to run in parallel
+// TODO(crbug.com/40160785): This test is not safe to run in parallel
 // with other clipboard tests since there's a single exo clipboard.
 IN_PROC_BROWSER_TEST_F(ClipboardLacrosBrowserTest, GetCopyPasteText) {
   auto* lacros_chrome_service = chromeos::LacrosService::Get();

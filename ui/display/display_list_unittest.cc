@@ -52,8 +52,10 @@ class DisplayObserverImpl : public DisplayObserver {
   void OnDisplayAdded(const Display& new_display) override {
     AddChange("Added id=" + base::NumberToString(new_display.id()));
   }
-  void OnDisplayRemoved(const Display& old_display) override {
-    AddChange("Removed id=" + base::NumberToString(old_display.id()));
+  void OnDisplaysRemoved(const Displays& removed_displays) override {
+    for (const auto& display : removed_displays) {
+      AddChange("Removed id=" + base::NumberToString(display.id()));
+    }
   }
   void OnDisplayMetricsChanged(const Display& display,
                                uint32_t changed_metrics) override {

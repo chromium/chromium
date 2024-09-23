@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelImpl.IncognitoTabModelDelegate;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
@@ -73,6 +73,7 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
                 mNextTabPolicySupplier,
                 mAsyncTabParamsManager,
                 mModelDelegate,
-                false);
+                /* supportUndo= */ false,
+                /* isArchivedTabModel= */ false);
     }
 }

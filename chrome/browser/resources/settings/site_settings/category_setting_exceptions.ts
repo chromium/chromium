@@ -17,7 +17,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {getTemplate} from './category_setting_exceptions.html.js';
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
+import {DefaultSettingSource} from './site_settings_prefs_browser_proxy.js';
 
 const CategorySettingExceptionsElementBase =
     SiteSettingsMixin(WebUiListenerMixin(PolymerElement));
@@ -115,7 +115,7 @@ export class CategorySettingExceptionsElement extends
    * content setting of that type.
    */
   private computeShowAllowSiteList_(): boolean {
-    // TODO(crbug.com/1011533): This function should return true when the
+    // TODO(crbug.com/40101962): This function should return true when the
     // feature flag for Persistent Permissions is removed.
     return this.category !== ContentSettingsTypes.FILE_SYSTEM_WRITE;
   }
@@ -130,8 +130,7 @@ export class CategorySettingExceptionsElement extends
 
     this.browserProxy.getDefaultValueForContentType(this.category)
         .then(update => {
-          this.defaultManaged_ =
-              update.source === ContentSettingProvider.POLICY;
+          this.defaultManaged_ = update.source === DefaultSettingSource.POLICY;
         });
   }
 

@@ -42,6 +42,12 @@ public abstract class GestureStateListener {
     /** Called when a scroll gesture has stopped. */
     public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {}
 
+    /** Called when a gesture begin event has been processed. */
+    public void onGestureBegin() {}
+
+    /** Called when a gesture end event has been processed. */
+    public void onGestureEnd() {}
+
     /** Called when the min or max scale factor may have been changed. */
     public void onScaleLimitsChanged(float minPageScaleFactor, float maxPageScaleFactor) {}
 
@@ -57,25 +63,8 @@ public abstract class GestureStateListener {
      */
     public void onSingleTap(boolean consumed) {}
 
-    /**
-     * Called after a single-tap gesture event was processed by the renderer,
-     * but was not handled.
-     */
-    public void onShowUnhandledTapUIIfNeeded(int x, int y) {}
-
     /** Called when the gesture source loses window focus. */
     public void onWindowFocusChanged(boolean hasWindowFocus) {}
-
-    /** Called when a long press gesture event was processed by the rendereer. */
-    public void onLongPress() {}
-
-    /**
-     * Called on overscroll. This happens when user tries to scroll beyond scroll bounds, or when
-     * a fling animation hits scroll bounds.
-     * @param accumulatedOverscrollX see `ui::DidOverscrollParams::accumulated_overscroll`.
-     * @param accumulatedOverscrollY see `ui::DidOverscrollParams::accumulated_overscroll`.
-     */
-    public void didOverscroll(float accumulatedOverscrollX, float accumulatedOverscrollY) {}
 
     /** Called when the scroll offsets or extents may have changed. */
     public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {}

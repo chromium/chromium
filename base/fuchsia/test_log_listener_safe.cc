@@ -8,15 +8,16 @@
 #include <lib/fidl/cpp/box.h>
 #include <lib/zx/clock.h>
 
+#include <optional>
+#include <string_view>
+
 #include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/callback_helpers.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -77,19 +78,19 @@ void SimpleTestLogListener::ListenToLog(
   }
 }
 
-absl::optional<fuchsia_logger::LogMessage>
+std::optional<fuchsia_logger::LogMessage>
 SimpleTestLogListener::RunUntilMessageReceived(
-    base::StringPiece expected_string) {
+    std::string_view expected_string) {
   while (!logged_messages_.empty()) {
     fuchsia_logger::LogMessage message = logged_messages_.front();
     logged_messages_.pop_front();
-    if (base::StringPiece(message.msg()).find(expected_string) !=
+    if (std::string_view(message.msg()).find(expected_string) !=
         std::string::npos) {
       return message;
     }
   }
 
-  absl::optional<fuchsia_logger::LogMessage> logged_message;
+  std::optional<fuchsia_logger::LogMessage> logged_message;
   base::RunLoop loop;
   on_log_message_ = base::BindLambdaForTesting(
       [ignore_before = ignore_before_, &logged_message,

@@ -15,8 +15,8 @@ class ManifestFeature : public SimpleFeature {
   ManifestFeature();
   ~ManifestFeature() override;
 
-  // TODO(crbug.com/1078984): This should also override IsAvailableToManifest so
-  // that a permission or manifest feature can declare dependency on other
+  // TODO(crbug.com/40689631): This should also override IsAvailableToManifest
+  // so that a permission or manifest feature can declare dependency on other
   // manifest features.
 
  protected:

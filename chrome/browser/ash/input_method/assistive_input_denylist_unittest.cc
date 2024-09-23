@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/input_method/assistive_input_denylist.h"
 
-#include "ash/constants/app_types.h"
 #include "chrome/browser/ash/input_method/field_trial.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

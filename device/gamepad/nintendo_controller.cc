@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/gamepad/nintendo_controller.h"
 
 #include <algorithm>
@@ -614,7 +619,7 @@ void UpdateButtonForLeftSide(const Gamepad& src_pad,
       case BUTTON_INDEX_LEFT_THUMBSTICK:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -670,7 +675,7 @@ void UpdateButtonForRightSide(const Gamepad& src_pad,
       case BUTTON_INDEX_RIGHT_TRIGGER:
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -703,7 +708,7 @@ void UpdateAxisForLeftSide(const Gamepad& src_pad,
         remapped_index = AXIS_INDEX_LEFT_STICK_X;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -736,7 +741,7 @@ void UpdateAxisForRightSide(const Gamepad& src_pad,
         remapped_index = AXIS_INDEX_LEFT_STICK_X;
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
   }
@@ -834,7 +839,6 @@ GamepadBusType BusTypeFromDeviceInfo(const mojom::HidDeviceInfo* device_info) {
     default:
       break;
   }
-  NOTREACHED();
   return GAMEPAD_BUS_UNKNOWN;
 }
 }  // namespace
@@ -846,16 +850,16 @@ NintendoController::SwitchImuData::SwitchImuData() = default;
 NintendoController::SwitchImuData::~SwitchImuData() = default;
 
 NintendoController::NintendoController(int source_id,
+                                       GamepadBusType bus_type,
                                        mojom::HidDeviceInfoPtr device_info,
                                        mojom::HidManager* hid_manager)
     : source_id_(source_id),
       is_composite_(false),
-      bus_type_(GAMEPAD_BUS_UNKNOWN),
+      bus_type_(bus_type),
       output_report_size_bytes_(0),
       device_info_(std::move(device_info)),
       hid_manager_(hid_manager) {
   if (device_info_) {
-    bus_type_ = BusTypeFromDeviceInfo(device_info_.get());
     output_report_size_bytes_ = device_info_->max_output_report_size;
     gamepad_id_ = GamepadIdList::Get().GetGamepadId(device_info_->product_name,
                                                     device_info_->vendor_id,
@@ -892,8 +896,16 @@ std::unique_ptr<NintendoController> NintendoController::Create(
     int source_id,
     mojom::HidDeviceInfoPtr device_info,
     mojom::HidManager* hid_manager) {
-  return std::make_unique<NintendoController>(source_id, std::move(device_info),
-                                              hid_manager);
+  // Ignore if BusTypeFromDeviceInfo could not determine the bus type.
+  GamepadBusType bus_type = device_info
+                                ? BusTypeFromDeviceInfo(device_info.get())
+                                : GAMEPAD_BUS_UNKNOWN;
+  if (bus_type == GAMEPAD_BUS_UNKNOWN) {
+    return nullptr;
+  }
+
+  return std::make_unique<NintendoController>(
+      source_id, bus_type, std::move(device_info), hid_manager);
 }
 
 // static
@@ -985,7 +997,7 @@ GamepadHand NintendoController::GetGamepadHand() const {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return GamepadHand::kNone;
 }
 
@@ -1006,7 +1018,7 @@ bool NintendoController::IsUsable() const {
     default:
       break;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -1104,7 +1116,7 @@ void NintendoController::UpdateGamepadState(Gamepad& pad) const {
         UpdateRightGamepadState(pad, false);
         break;
       default:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     pad.connected = pad_.connected;
@@ -1227,7 +1239,7 @@ void NintendoController::StartInitSequence() {
       MakeInitSequenceRequests(kPendingSetPlayerLights);
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }
@@ -1468,7 +1480,7 @@ void NintendoController::ContinueInitSequence(
       break;
     case kInitialized:
     case kUninitialized:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
     default:
       break;
@@ -1527,7 +1539,7 @@ void NintendoController::MakeInitSequenceRequests(InitializationState state) {
     case kInitialized:
     case kUninitialized:
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 }

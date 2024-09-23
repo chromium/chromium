@@ -5,10 +5,10 @@
 #include "extensions/browser/app_window/app_web_contents_helper.h"
 
 #include "base/strings/stringprintf.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/suggest_permission_util.h"
@@ -48,7 +48,9 @@ bool AppWebContentsHelper::ShouldSuppressGestureEvent(
 }
 
 content::WebContents* AppWebContentsHelper::OpenURLFromTab(
-    const content::OpenURLParams& params) const {
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) const {
   // Don't allow the current tab to be navigated. It would be nice to map all
   // anchor tags (even those without target="_blank") to new tabs, but right
   // now we can't distinguish between those and <meta> refreshes or window.href
@@ -70,7 +72,8 @@ content::WebContents* AppWebContentsHelper::OpenURLFromTab(
     return nullptr;
 
   content::WebContents* contents =
-      app_delegate_->OpenURLFromTab(browser_context_, web_contents_, params);
+      app_delegate_->OpenURLFromTab(browser_context_, web_contents_, params,
+                                    std::move(navigation_handle_callback));
   if (!contents) {
     web_contents_->GetPrimaryMainFrame()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,

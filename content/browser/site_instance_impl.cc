@@ -168,7 +168,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
   DCHECK(url_info.storage_partition_config.has_value());
 
   // This will create a new SiteInstance and BrowsingInstance.
-  // TODO(https://crbug.com/1221127): Verify that having different common COOP
+  // TODO(crbug.com/40186710): Verify that having different common COOP
   // origins does not hinder the ability of a ServiceWorker to share its page's
   // process.
   scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
@@ -195,13 +195,12 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
   // Attempt to reuse a renderer process if possible. Note that in the
   // <webview> case, process reuse isn't currently supported and a new
   // process will always be created (https://crbug.com/752667).
-  DCHECK(site_instance->process_reuse_policy() ==
-             SiteInstanceImpl::ProcessReusePolicy::DEFAULT ||
+  DCHECK(site_instance->process_reuse_policy() == ProcessReusePolicy::DEFAULT ||
          site_instance->process_reuse_policy() ==
-             SiteInstanceImpl::ProcessReusePolicy::PROCESS_PER_SITE);
+             ProcessReusePolicy::PROCESS_PER_SITE);
   if (can_reuse_process) {
     site_instance->set_process_reuse_policy(
-        SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+        ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_WORKER);
   }
   return site_instance;
 }
@@ -277,7 +276,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForFencedFrame(
     // we reuse the embedder's SiteInfo above. When the embedder is
     // a default SiteInstance, we explicitly create a SiteInfo through
     // CreateForGuest.
-    // TODO(crbug.com/1340662): When we support fenced frame process isolation
+    // TODO(crbug.com/40230422): When we support fenced frame process isolation
     // with partial or no site isolation modes, we will be able to reach this
     // code path and will need to also set is_fenced for the SiteInfo created
     // below.
@@ -307,7 +306,7 @@ SiteInstanceImpl::CreateReusableInstanceForTesting(
   auto site_instance = instance->GetSiteInstanceForURL(
       UrlInfo(UrlInfoInit(url)), /* allow_default_instance */ false);
   site_instance->set_process_reuse_policy(
-      SiteInstanceImpl::ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE);
+      ProcessReusePolicy::REUSE_PENDING_OR_COMMITTED_SITE_SUBFRAME);
   return site_instance;
 }
 
@@ -436,6 +435,10 @@ RenderProcessHost* SiteInstanceImpl::GetProcess() {
   return site_instance_group_->process();
 }
 
+SiteInstanceGroupId SiteInstanceImpl::GetSiteInstanceGroupId() {
+  return has_group() ? site_instance_group_->GetId() : SiteInstanceGroupId(0);
+}
+
 bool SiteInstanceImpl::ShouldUseProcessPerSite() const {
   BrowserContext* browser_context = browsing_instance_->GetBrowserContext();
   return has_site_ && site_info_.ShouldUseProcessPerSite(browser_context);
@@ -462,7 +465,7 @@ void SiteInstanceImpl::ReuseExistingProcessIfPossible(
     return;
   }
 
-  // TODO(crbug.com/1055779): Don't try to reuse process if either of the
+  // TODO(crbug.com/40676483): Don't try to reuse process if either of the
   // SiteInstances are cross-origin isolated (uses COOP/COEP).
   SetProcessInternal(existing_process);
 }
@@ -879,6 +882,15 @@ bool SiteInstanceImpl::RequiresOriginKeyedProcess() {
   return site_info_.requires_origin_keyed_process();
 }
 
+bool SiteInstanceImpl::IsSandboxed() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!has_site_) {
+    return false;
+  }
+
+  return site_info_.is_sandboxed();
+}
+
 void SiteInstanceImpl::IncrementRelatedActiveContentsCount() {
   browsing_instance_->IncrementActiveContentsCount();
 }
@@ -993,6 +1005,10 @@ bool SiteInstanceImpl::IsJitDisabled() {
   return site_info_.is_jit_disabled();
 }
 
+bool SiteInstanceImpl::AreV8OptimizationsDisabled() {
+  return site_info_.are_v8_optimizations_disabled();
+}
+
 bool SiteInstanceImpl::IsPdf() {
   return site_info_.is_pdf();
 }
@@ -1063,12 +1079,17 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   if (!SandboxConfigurationsMatch(GetSiteInfo(), dest_url_info))
     return false;
 
+  // Similarly, do not consider PDF and non-PDF documents to be same-site; they
+  // should never share a SiteInstance. See https://crbug.com/359345045.
+  if (IsPdf() != dest_url_info.is_pdf) {
+    return false;
+  }
+
   const GURL& dest_url = dest_url_info.url;
   BrowserContext* browser_context = GetBrowserContext();
 
   bool should_compare_effective_urls = ShouldCompareEffectiveURLs(
       browser_context, this, for_outermost_main_frame, dest_url);
-
   // If IsSuitableForUrlInfo finds a process type mismatch, return false
   // even if |dest_url| is same-site.  (The URL may have been installed as an
   // app since the last time we visited it.)
@@ -1077,6 +1098,14 @@ bool SiteInstanceImpl::IsNavigationSameSite(
   // app to non-hosted app, and vice versa, to keep them in the same process
   // due to scripting requirements. Otherwise, this would return false due to
   // a process privilege level mismatch.
+  //
+  // TODO(alexmos): Skipping this check is dangerous, since other bits in
+  // SiteInfo may disqualify the navigation from being same-site, even when a
+  // hosted app URL embeds a non-hosted-app same-site URL. Two of these cases,
+  // sandboxed frames and PDF, are currently handled explicitly above, and a
+  // couple more are handled in the callers of this function, but this should be
+  // refactored to more systematically check everything else in SiteInfo. See
+  // https://crbug.com/349777779.
   bool should_check_for_wrong_process =
       !IsNavigationAllowedToStayInSameProcessDueToEffectiveURLs(
           browser_context, for_outermost_main_frame, dest_url);
@@ -1191,8 +1220,13 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
 
   // If the destination url is just a blank page, we treat them as part of the
   // same site.
-  if (dest_url.IsAboutBlank())
+  if (dest_url.IsAboutBlank()) {
+    // TODO(crbug.com/40266169): It's actually possible for the
+    // about:blank page to inherit an origin that doesn't match `src_origin`. In
+    // that case we shouldn't treat it as same-site. Consider changing this
+    // behavior if all tests can pass.
     return true;
+  }
 
   // If the source and destination URLs are equal excluding the hash, they have
   // the same site.  This matters for file URLs, where SameDomainOrHost() would
@@ -1265,6 +1299,13 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
   // Similarly, the common_coop_origin in the UrlInfo and in this
   // SiteInstance's BrowsingInstance must be compatible.
   if (url_info.common_coop_origin != GetCommonCoopOrigin()) {
+    return false;
+  }
+
+  // Similarly, the CrossOriginIsolationKeys should match.
+  if (GetSiteInfo().agent_cluster_key() &&
+      GetSiteInfo().agent_cluster_key()->GetCrossOriginIsolationKey() !=
+          url_info.cross_origin_isolation_key) {
     return false;
   }
 
@@ -1452,7 +1493,13 @@ const WebExposedIsolationInfo& SiteInstanceImpl::GetWebExposedIsolationInfo()
 }
 
 bool SiteInstanceImpl::IsCrossOriginIsolated() const {
-  return GetWebExposedIsolationInfo().is_isolated();
+  return GetWebExposedIsolationInfo().is_isolated() ||
+         (site_info_.agent_cluster_key() &&
+          site_info_.agent_cluster_key()->GetCrossOriginIsolationKey() &&
+          site_info_.agent_cluster_key()
+                  ->GetCrossOriginIsolationKey()
+                  ->cross_origin_isolation_mode ==
+              CrossOriginIsolationMode::kConcrete);
 }
 
 const std::optional<url::Origin>& SiteInstanceImpl::GetCommonCoopOrigin()

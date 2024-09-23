@@ -10,7 +10,7 @@ import type {SiteEntryElement} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createOriginInfo, createSiteGroup} from './test_util.js';
@@ -69,7 +69,7 @@ suite('SiteEntry', function() {
     assertEquals(3, collapseChild.querySelectorAll('.origin-link').length);
   });
 
-  test('expands and closes to show more origins', function() {
+  test('expands and closes to show more origins', async () => {
     testElement.siteGroup = TEST_MULTIPLE_SITE_GROUP;
     assertFalse(testElement.$.expandIcon.hidden);
     assertEquals(
@@ -77,15 +77,16 @@ suite('SiteEntry', function() {
     assertEquals(
         'false', testElement.$.expandIcon.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
-    assertTrue(originList.classList.contains('iron-collapse-closed'));
+    assertTrue(originList.classList.contains('collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
 
     testElement.$.toggleButton.click();
+    await microtasksFinished();
     assertEquals(
         'true', testElement.$.toggleButton.getAttribute('aria-expanded'));
     assertEquals(
         'true', testElement.$.expandIcon.getAttribute('aria-expanded'));
-    assertTrue(originList.classList.contains('iron-collapse-opened'));
+    assertTrue(originList.classList.contains('collapse-opened'));
     assertEquals('false', originList.getAttribute('aria-hidden'));
   });
 
@@ -95,13 +96,13 @@ suite('SiteEntry', function() {
     assertEquals(
         'false', testElement.$.toggleButton.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
-    assertTrue(originList.classList.contains('iron-collapse-closed'));
+    assertTrue(originList.classList.contains('collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
 
     testElement.$.toggleButton.click();
     assertEquals(
         'false', testElement.$.toggleButton.getAttribute('aria-expanded'));
-    assertTrue(originList.classList.contains('iron-collapse-closed'));
+    assertTrue(originList.classList.contains('collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
     assertEquals(
         routes.SITE_SETTINGS_SITE_DETAILS.path,
@@ -441,6 +442,7 @@ suite('SiteEntry', function() {
     flush();
     const collapseChild = testElement.$.originList.get();
     testElement.$.toggleButton.click();
+    await microtasksFinished();
     flush();
 
     const originList = collapseChild.querySelectorAll('.hr');
@@ -507,98 +509,103 @@ suite('SiteEntry', function() {
         Router.getInstance().getCurrentRoute().path);
   });
 
-  test('first party set information showed when available', async function() {
-    // Set unowned site group.
-    testElement.siteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-    flush();
+  test(
+      'related website set information showed when available',
+      async function() {
+        // Set unowned site group.
+        testElement.siteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
+        flush();
 
-    const fpsMembershipLabel = testElement.$.fpsMembership;
-    // Assert first party set membership information when no fps owner is set.
-    assertTrue(fpsMembershipLabel.hidden);
+        const rwsMembershipLabel = testElement.$.rwsMembership;
+        // Assert related website set membership information when no rws owner
+        // is set.
+        assertTrue(rwsMembershipLabel.hidden);
 
-    // Update first party set information and set siteGroup
+        // Update related website set information and set siteGroup
+        const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
+        fooSiteGroup.rwsOwner = 'foo.com';
+        fooSiteGroup.rwsNumMembers = 1;
+        testElement.siteGroup = fooSiteGroup;
+        flush();
+
+        await browserProxy.whenCalled('getRwsMembershipLabel');
+        // Assert related website set membership information is set correctly.
+        assertFalse(rwsMembershipLabel.hidden);
+        assertEquals(
+            '· 1 site in foo.com\'s group',
+            rwsMembershipLabel.innerText.trim());
+      });
+
+  test('related website set policy shown when managed key is true', function() {
+    // Set site group with related website set information.
     const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-    fooSiteGroup.fpsOwner = 'foo.com';
-    fooSiteGroup.fpsNumMembers = 1;
+    fooSiteGroup.rwsOwner = 'foo.com';
+    fooSiteGroup.rwsNumMembers = 1;
+    fooSiteGroup.rwsEnterpriseManaged = true;
     testElement.siteGroup = fooSiteGroup;
     flush();
-
-    await browserProxy.whenCalled('getFpsMembershipLabel');
-    // Assert first party set membership information is set correctly.
-    assertFalse(fpsMembershipLabel.hidden);
-    assertEquals(
-        '· 1 site in foo.com\'s group', fpsMembershipLabel.innerText.trim());
-  });
-
-  test('first party set policy shown when managed key is true', function() {
-    // Set site group with first party set information.
-    const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-    fooSiteGroup.fpsOwner = 'foo.com';
-    fooSiteGroup.fpsNumMembers = 1;
-    fooSiteGroup.fpsEnterpriseManaged = true;
-    testElement.siteGroup = fooSiteGroup;
-    flush();
-    // Assert first party set policy is shown.
-    const fpsPolicy =
-        testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
-    assertFalse(fpsPolicy!.hidden);
+    // Assert related website set policy is shown.
+    const rwsPolicy =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#rwsPolicy');
+    assertFalse(rwsPolicy!.hidden);
   });
 
   test(
-      'first party set policy undefined when managed key is false', function() {
-        // Set site group with first party set information.
+      'related website set policy undefined when managed key is false',
+      function() {
+        // Set site group with related website set information.
         const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-        fooSiteGroup.fpsOwner = 'foo.com';
-        fooSiteGroup.fpsNumMembers = 1;
-        fooSiteGroup.fpsEnterpriseManaged = false;
+        fooSiteGroup.rwsOwner = 'foo.com';
+        fooSiteGroup.rwsNumMembers = 1;
+        fooSiteGroup.rwsEnterpriseManaged = false;
         testElement.siteGroup = fooSiteGroup;
         flush();
-        // Assert first party set policy is null.
-        const fpsPolicy =
-            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
-        assertEquals(null, fpsPolicy);
+        // Assert related website set policy is null.
+        const rwsPolicy =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#rwsPolicy');
+        assertEquals(null, rwsPolicy);
       });
 
-  test('first party set more actions aria-label set correctly', function() {
-    // Set site group with first party set information.
+  test('related website set more actions aria-label set correctly', function() {
+    // Set site group with related website set information.
     const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-    fooSiteGroup.fpsOwner = 'foo.com';
-    fooSiteGroup.fpsNumMembers = 1;
-    fooSiteGroup.fpsEnterpriseManaged = false;
+    fooSiteGroup.rwsOwner = 'foo.com';
+    fooSiteGroup.rwsNumMembers = 1;
+    fooSiteGroup.rwsEnterpriseManaged = false;
     testElement.siteGroup = fooSiteGroup;
     flush();
 
     // Assert aria-label is set correctly
     const moreActionsButton =
         testElement.shadowRoot!.querySelector<HTMLElement>(
-            '#fpsOverflowMenuButton');
+            '#rwsOverflowMenuButton');
     assertEquals('More actions for foo.com', moreActionsButton!.ariaLabel);
   });
 
   test(
-      'first party set more actions menu removed when filtered by fps owner',
+      'related website set more actions menu removed when filtered by rws owner',
       function() {
-        // Set site group with first party set information.
+        // Set site group with related website set information.
         const fooSiteGroup = structuredClone(TEST_SINGLE_SITE_GROUP);
-        fooSiteGroup.fpsOwner = 'foo.com';
-        fooSiteGroup.fpsNumMembers = 1;
-        fooSiteGroup.fpsEnterpriseManaged = false;
+        fooSiteGroup.rwsOwner = 'foo.com';
+        fooSiteGroup.rwsNumMembers = 1;
+        fooSiteGroup.rwsEnterpriseManaged = false;
         testElement.siteGroup = fooSiteGroup;
-        testElement.isFpsFiltered = false;
+        testElement.isRwsFiltered = false;
         flush();
 
         // Assert more actions button is visible and remove site button is
         // hidden at the beginning of the test when no filter is applied.
-        assertTrue(isChildVisible(testElement, '#fpsOverflowMenuButton'));
+        assertTrue(isChildVisible(testElement, '#rwsOverflowMenuButton'));
         assertFalse(isChildVisible(testElement, '#removeSiteButton'));
 
-        // Change `isFpsFiltered` state to true to test icon change.
-        testElement.isFpsFiltered = true;
+        // Change `isRwsFiltered` state to true to test icon change.
+        testElement.isRwsFiltered = true;
         flush();
 
         // Assert more actions button hidden and replaced with remove site
         // button.
-        assertFalse(isChildVisible(testElement, '#fpsOverflowMenuButton'));
+        assertFalse(isChildVisible(testElement, '#rwsOverflowMenuButton'));
         assertTrue(isChildVisible(testElement, '#removeSiteButton'));
       });
 

@@ -338,7 +338,9 @@ TEST_F(LegacyMetricsClientTest,
   }
 }
 
-TEST_F(LegacyMetricsClientTest, ReconnectDelayNeverExceedsMax) {
+// The test is flaky.
+// TODO: crbug.com/326659366 - Reenable the test.
+TEST_F(LegacyMetricsClientTest, DISABLED_ReconnectDelayNeverExceedsMax) {
   StartClientAndExpectConnection();
 
   // Find the theoretical maximum number of consecutive failed connections. Also

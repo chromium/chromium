@@ -136,7 +136,7 @@ void BrowsingDataQuotaHelperImpl::GotStorageKeyUsage(
       (*quota_info)[storage_key].syncable_usage += usage;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 

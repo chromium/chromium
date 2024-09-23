@@ -5,31 +5,32 @@
 #include "chrome/browser/android/preferences/cookie_controls_service_bridge.h"
 
 #include <memory>
-#include "chrome/android/chrome_jni_headers/CookieControlsServiceBridge_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/CookieControlsServiceBridge_jni.h"
 
 using base::android::JavaParamRef;
 
 CookieControlsServiceBridge::CookieControlsServiceBridge(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj)
-    : jobject_(obj) {}
+    const JavaParamRef<jobject>& obj,
+    Profile* profile)
+    : jobject_(obj), profile_(profile) {}
+
+CookieControlsServiceBridge::~CookieControlsServiceBridge() = default;
 
 void CookieControlsServiceBridge::UpdateServiceIfNecessary() {
-  // This class is only for the incognito NTP, so it is safe to always use the
-  // primary OTR profile.
-  Profile* profile = ProfileManager::GetLastUsedProfile()->GetPrimaryOTRProfile(
-      /*create_if_needed=*/true);
   CookieControlsService* new_service =
-      CookieControlsServiceFactory::GetForProfile(profile);
+      CookieControlsServiceFactory::GetForProfile(profile_);
   // Update the service only if it is for a new profile
   if (new_service != service_) {
+    cookie_controls_service_obs_.Reset();
     service_ = new_service;
-    service_->AddObserver(this);
+    cookie_controls_service_obs_.Observe(service_);
     SendCookieControlsUIChanges();
   }
 }
@@ -62,8 +63,6 @@ void CookieControlsServiceBridge::OnThirdPartyCookieBlockingPolicyChanged() {
   SendCookieControlsUIChanges();
 }
 
-CookieControlsServiceBridge::~CookieControlsServiceBridge() = default;
-
 void CookieControlsServiceBridge::Destroy(JNIEnv* env,
                                           const JavaParamRef<jobject>& obj) {
   delete this;
@@ -71,6 +70,8 @@ void CookieControlsServiceBridge::Destroy(JNIEnv* env,
 
 static jlong JNI_CookieControlsServiceBridge_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(new CookieControlsServiceBridge(env, obj));
+    const JavaParamRef<jobject>& obj,
+    Profile* profile) {
+  return reinterpret_cast<intptr_t>(
+      new CookieControlsServiceBridge(env, obj, profile));
 }

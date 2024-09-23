@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -595,7 +594,6 @@ TEST_F(ContentSecurityPolicyTest, DirectiveType) {
       {CSPDirectiveName::ImgSrc, "img-src"},
       {CSPDirectiveName::ManifestSrc, "manifest-src"},
       {CSPDirectiveName::MediaSrc, "media-src"},
-      {CSPDirectiveName::NavigateTo, "navigate-to"},
       {CSPDirectiveName::ObjectSrc, "object-src"},
       {CSPDirectiveName::ReportURI, "report-uri"},
       {CSPDirectiveName::Sandbox, "sandbox"},
@@ -1322,6 +1320,48 @@ TEST_F(ContentSecurityPolicyTest, SelfForDataMatchesNothing) {
                                  ReportingDisposition::kSuppressReporting));
 }
 
+TEST_F(ContentSecurityPolicyTest, IsStrictPolicyEnforced) {
+  // No policy, no strictness.
+  csp = MakeGarbageCollected<ContentSecurityPolicy>();
+  EXPECT_FALSE(csp->IsStrictPolicyEnforced());
+
+  // Strict policy, strictness.
+  const char* strict_policy =
+      "object-src 'none'; "
+      "script-src 'nonce-abc' 'unsafe-inline' 'unsafe-eval' 'strict-dynamic' "
+      "           https: http:;"
+      "base-uri 'none';";
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_policy, ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_TRUE(csp->IsStrictPolicyEnforced());
+
+  // Report-only strict policy, no strictness.
+  csp = MakeGarbageCollected<ContentSecurityPolicy>();
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_policy, ContentSecurityPolicyType::kReport,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_FALSE(csp->IsStrictPolicyEnforced());
+
+  // Composed strict policy, strictness.
+  const char* strict_object = "object-src 'none';";
+  const char* strict_script = "script-src 'none';";
+  const char* strict_base = "base-uri 'none';";
+  csp = MakeGarbageCollected<ContentSecurityPolicy>();
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_object, ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_FALSE(csp->IsStrictPolicyEnforced());
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_script, ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_FALSE(csp->IsStrictPolicyEnforced());
+  csp->AddPolicies(ParseContentSecurityPolicies(
+      strict_base, ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+  EXPECT_TRUE(csp->IsStrictPolicyEnforced());
+}
+
 TEST_F(ContentSecurityPolicyTest, ReasonableRestrictionMetrics) {
   struct TestCase {
     const char* header;
@@ -1459,6 +1499,37 @@ TEST_F(ContentSecurityPolicyTest, BetterThanReasonableRestrictionMetrics) {
     EXPECT_EQ(test.expected,
               dummy->GetDocument().IsUseCounted(
                   WebFeature::kCSPROWithBetterThanReasonableRestrictions));
+  }
+}
+
+TEST_F(ContentSecurityPolicyTest, AllowFencedFrameOpaqueURL) {
+  struct TestCase {
+    const char* header;
+    bool expected;
+  } cases[] = {
+      {"fenced-frame-src 'none'", false},
+      {"fenced-frame-src http://", false},
+      {"fenced-frame-src http://*:*", false},
+      {"fenced-frame-src http://*.domain", false},
+      {"fenced-frame-src https://*:80", false},
+      {"fenced-frame-src https://localhost:*", false},
+      {"fenced-frame-src https://localhost:80", false},
+      // "https://*" is not allowed as it could leak data about ports.
+      {"fenced-frame-src https://*", false},
+      {"fenced-frame-src *", true},
+      {"fenced-frame-src https:", true},
+      {"fenced-frame-src https://*:*", true},
+      {"fenced-frame-src https: wss:", true},
+      {"fenced-frame-src https:; fenced-frame-src wss:", true},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message() << "Header: `" << test.header << "`");
+    csp = MakeGarbageCollected<ContentSecurityPolicy>();
+    csp->AddPolicies(ParseContentSecurityPolicies(
+        test.header, ContentSecurityPolicyType::kEnforce,
+        ContentSecurityPolicySource::kHTTP, *secure_origin));
+    EXPECT_EQ(test.expected, csp->AllowFencedFrameOpaqueURL());
   }
 }
 

@@ -9,6 +9,8 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -96,6 +98,57 @@ TEST_F(WebAppLockManagerTest, AllAppsLock) {
   // Release the AllAppsLock, verify AppLock is granted.
   all_apps_future.Take().reset();
   ASSERT_TRUE(app_future2.Wait());
+}
+
+TEST_F(WebAppLockManagerTest, AllAppsLockBlocksUpgrade) {
+  WebAppProvider* provider = WebAppProvider::GetForTest(profile());
+  WebAppLockManager& lock_manager = provider->command_manager().lock_manager();
+
+  // - AppLock blocks AllAppsLock
+  // - AllAppsLock does not block NoopLock
+  // - AllAppsLock blocks AppLock
+
+  base::test::TestFuture<std::unique_ptr<AllAppsLock>> all_apps_lock;
+  lock_manager.AcquireLock(AllAppsLockDescription(),
+                           all_apps_lock.GetCallback(), FROM_HERE);
+
+  base::test::TestFuture<std::unique_ptr<NoopLock>> noop_lock;
+  lock_manager.AcquireLock(NoopLockDescription(), noop_lock.GetCallback(),
+                           FROM_HERE);
+
+  base::test::TestFuture<std::unique_ptr<SharedWebContentsLock>>
+      web_contents_lock;
+  lock_manager.AcquireLock(SharedWebContentsLockDescription(),
+                           web_contents_lock.GetCallback(), FROM_HERE);
+
+  // Wait for all locks to acquire.
+  ASSERT_TRUE(all_apps_lock.Wait());
+  EXPECT_NE(all_apps_lock.Get().get(), nullptr);
+  ASSERT_TRUE(noop_lock.Wait());
+  EXPECT_NE(noop_lock.Get().get(), nullptr);
+  ASSERT_TRUE(web_contents_lock.Wait());
+  EXPECT_NE(web_contents_lock.Get().get(), nullptr);
+
+  // Upgrade both locks.
+  base::test::TestFuture<std::unique_ptr<AppLock>> app_lock;
+  lock_manager.UpgradeAndAcquireLock(noop_lock.Take(), {"a"},
+                                     app_lock.GetCallback(), FROM_HERE);
+  base::test::TestFuture<std::unique_ptr<SharedWebContentsWithAppLock>>
+      web_contents_with_app_lock;
+  lock_manager.UpgradeAndAcquireLock(web_contents_lock.Take(), {"b"},
+                                     web_contents_with_app_lock.GetCallback(),
+                                     FROM_HERE);
+  // Verify upgrades are not granted.
+  FlushTaskRunner();
+  EXPECT_FALSE(app_lock.IsReady());
+  EXPECT_FALSE(web_contents_with_app_lock.IsReady());
+
+  // Release the all apps lock, verify the new locks are granted.
+  all_apps_lock.Take().reset();
+  EXPECT_TRUE(app_lock.Wait());
+  EXPECT_NE(app_lock.Get().get(), nullptr);
+  EXPECT_TRUE(web_contents_with_app_lock.Wait());
+  EXPECT_NE(web_contents_with_app_lock.Get().get(), nullptr);
 }
 
 }  // namespace web_app

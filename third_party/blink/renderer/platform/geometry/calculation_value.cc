@@ -45,7 +45,7 @@ CalculationValue::~CalculationValue() {
 }
 
 float CalculationValue::Evaluate(float max_value,
-                                 const Length::EvaluationInput& input) const {
+                                 const EvaluationInput& input) const {
   float value = ClampTo<float>(
       is_expression_ ? data_.expression->Evaluate(max_value, input)
                      : Pixels() + Percent() / 100 * max_value);
@@ -53,6 +53,10 @@ float CalculationValue::Evaluate(float max_value,
 }
 
 bool CalculationValue::operator==(const CalculationValue& other) const {
+  if (IsNonNegative() != other.IsNonNegative()) {
+    return false;
+  }
+
   if (IsExpression())
     return other.IsExpression() && *data_.expression == *other.data_.expression;
   return !other.IsExpression() && Pixels() == other.Pixels() &&
@@ -140,12 +144,61 @@ scoped_refptr<const CalculationValue> CalculationValue::Zoom(
   return CreateSimplified(data_.expression->Zoom(factor), GetValueRange());
 }
 
-bool CalculationValue::HasAnchorQueries() const {
-  return IsExpression() && data_.expression->HasAnchorQueries();
+bool CalculationValue::HasAuto() const {
+  return IsExpression() && data_.expression->HasAuto();
 }
 
 bool CalculationValue::HasContentOrIntrinsicSize() const {
   return IsExpression() && data_.expression->HasContentOrIntrinsicSize();
+}
+
+bool CalculationValue::HasAutoOrContentOrIntrinsicSize() const {
+  return IsExpression() && data_.expression->HasAutoOrContentOrIntrinsicSize();
+}
+
+bool CalculationValue::HasPercent() const {
+  if (!IsExpression()) {
+    return HasExplicitPercent();
+  }
+  return data_.expression->HasPercent();
+}
+
+bool CalculationValue::HasPercentOrStretch() const {
+  if (!IsExpression()) {
+    return HasExplicitPercent();
+  }
+  return data_.expression->HasPercentOrStretch();
+}
+
+bool CalculationValue::HasStretch() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  return data_.expression->HasStretch();
+}
+
+bool CalculationValue::HasMinContent() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  return data_.expression->HasContentOrIntrinsicSize() &&
+         data_.expression->HasMinContent();
+}
+
+bool CalculationValue::HasMaxContent() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  return data_.expression->HasContentOrIntrinsicSize() &&
+         data_.expression->HasMaxContent();
+}
+
+bool CalculationValue::HasFitContent() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  return data_.expression->HasContentOrIntrinsicSize() &&
+         data_.expression->HasFitContent();
 }
 
 }  // namespace blink

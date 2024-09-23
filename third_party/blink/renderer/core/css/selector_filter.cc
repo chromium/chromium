@@ -59,10 +59,8 @@ inline void CollectElementIdentifierHashes(const Element& element,
   }
 
   if (element.IsStyledElement() && element.HasClass()) {
-    const SpaceSplitString& class_names = element.ClassNames();
-    wtf_size_t count = class_names.size();
-    for (wtf_size_t i = 0; i < count; ++i) {
-      func(class_names[i].Hash() * kClassSalt);
+    for (const AtomicString& class_name : element.ClassNames()) {
+      func(class_name.Hash() * kClassSalt);
     }
   }
   AttributeCollection attributes = element.AttributesWithoutUpdate();
@@ -192,7 +190,7 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
       case CSSSelector::kRelativeChild:
       case CSSSelector::kRelativeDirectAdjacent:
       case CSSSelector::kRelativeIndirectAdjacent:
-        NOTREACHED();
+        NOTREACHED_IN_MIGRATION();
         break;
     }
     relation = current->Relation();

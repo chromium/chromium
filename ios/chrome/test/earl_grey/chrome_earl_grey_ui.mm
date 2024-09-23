@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -31,12 +32,14 @@
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
+using chrome_test_util::BrowsingDataButtonMatcher;
+using chrome_test_util::BrowsingDataConfirmButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ClearAutofillButton;
 using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataView;
 using chrome_test_util::ClearSavedPasswordsButton;
-using chrome_test_util::ConfirmClearBrowsingDataButton;
+using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::SettingsActionButton;
 using chrome_test_util::SettingsDestinationButton;
 using chrome_test_util::SettingsMenuBackButton;
@@ -98,15 +101,18 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 @implementation ChromeEarlGreyUIImpl
 
 - (void)openToolsMenu {
-  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_allOf(chrome_test_util::ToolsMenuButton(),
+                                 grey_sufficientlyVisible(), nil)];
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
       onElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
       performAction:grey_tap()];
-  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // TODO(crbug.com/41271101): Add webViewScrollView matcher so we don't have
   // to always find it.
 }
 
@@ -141,7 +147,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 - (void)openToolsMenuInWindowWithNumber:(int)windowNumber {
   [EarlGrey setRootMatcherForSubsequentInteractions:
                 chrome_test_util::WindowWithNumber(windowNumber)];
-  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
@@ -150,7 +156,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       onElementWithMatcher:chrome_test_util::
                                WebStateScrollViewMatcherInWindowWithNumber(
                                    windowNumber)] performAction:grey_tap()];
-  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // TODO(crbug.com/41271101): Add webViewScrollView matcher so we don't have
   // to always find it.
 }
 
@@ -173,7 +179,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)openNewTabMenu {
-  // TODO(crbug.com/639524): Add logic to ensure the app is in the correct
+  // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(chrome_test_util::NewTabButton(),
@@ -181,7 +187,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
       onElementWithMatcher:chrome_test_util::WebStateScrollViewMatcher()]
       performAction:grey_longPress()];
-  // TODO(crbug.com/639517): Add webViewScrollView matcher so we don't have
+  // TODO(crbug.com/41271101): Add webViewScrollView matcher so we don't have
   // to always find it.
 }
 
@@ -194,6 +200,10 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   [[[EarlGrey selectElementWithMatcher:interactableSettingsButton]
          usingSearchAction:scrollAction
       onElementWithMatcher:ToolsMenuView()] performAction:grey_tap()];
+
+  // TODO(crbug.com/347267212): On iOS18 tools menu taps will fail due to an
+  // apparent EG2 SwiftUI bug. Use XCUIapplication APIs instead here.
+  [self tapButtonUsingXCUIApplication:buttonMatcher];
 }
 
 - (void)tapToolsMenuAction:(id<GREYMatcher>)buttonMatcher {
@@ -209,6 +219,10 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       onElementWithMatcher:grey_accessibilityID(
                                kPopupMenuToolsMenuActionListId)]
       performAction:grey_tap()];
+
+  // TODO(crbug.com/347647806): On iOS18 tools menu taps will fail due to an
+  // apparent EG2 SwiftUI bug. Use XCUIapplication APIs instead here.
+  [self tapButtonUsingXCUIApplication:buttonMatcher];
 }
 
 - (void)tapSettingsMenuButton:(id<GREYMatcher>)buttonMatcher {
@@ -225,9 +239,8 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   ScopedDisableTimerTracking disabler;
   id<GREYMatcher> interactableButtonMatcher =
       grey_allOf(buttonMatcher, grey_interactable(), nil);
-  [[[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
-         usingSearchAction:ScrollDown()
-      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:interactableButtonMatcher]
+      performAction:grey_tap()];
 }
 
 - (void)openAndClearBrowsingDataFromHistory {
@@ -237,31 +250,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       performAction:grey_tap()];
   [self waitForClearBrowsingDataViewVisible:YES];
   [self selectAllBrowsingDataAndClear];
-
-  // Include sufficientlyVisible condition for the case of the clear browsing
-  // dialog, which also has a "Done" button and is displayed over the history
-  // panel.
-  id<GREYMatcher> visibleDoneButton = grey_allOf(
-      chrome_test_util::SettingsDoneButton(), grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:visibleDoneButton]
-      performAction:grey_tap()];
-}
-
-- (void)clearAllBrowsingData {
-  // Open the "Clear Browsing Data" view by the privacy view.
-  [self openSettingsMenu];
-  [self tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
-  [self tapPrivacyMenuButton:chrome_test_util::ClearBrowsingDataCell()];
-  [self waitForClearBrowsingDataViewVisible:YES];
-
-  // Clear all data.
-  [self selectAllBrowsingDataAndClear];
-
-  // Close the "Clear Browsing Data" view.
-  id<GREYMatcher> visibleDoneButton = grey_allOf(
-      chrome_test_util::SettingsDoneButton(), grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:visibleDoneButton]
-      performAction:grey_tap()];
 }
 
 - (void)assertHistoryHasNoEntries {
@@ -340,8 +328,16 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)focusOmniboxAndType:(NSString*)text {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-      performAction:grey_tap()];
+  [self focusOmnibox];
+
+  if (text.length) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_typeText(text)];
+  }
+}
+
+- (void)focusOmniboxAndReplaceText:(NSString*)text {
+  [self focusOmnibox];
 
   if (text.length) {
     [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -387,7 +383,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   EG_TEST_HELPER_ASSERT_TRUE(tabGridButtonVisible,
                              @"Show tab grid button was not visible.");
 
-  // TODO(crbug.com/933953) For an unknown reason synchronization doesn't work
+  // TODO(crbug.com/41442441) For an unknown reason synchronization doesn't work
   // well with tapping on the tabgrid button, and instead triggers the long
   // press gesture recognizer.  Disable this here so the test can be re-enabled.
   ScopedSynchronizationDisabler disabler;
@@ -432,17 +428,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
 - (void)openPageInfo {
   [self openToolsMenu];
-  id<GREYAction> searchAction =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? ScrollRight()
-          : grey_scrollInDirection(kGREYDirectionDown, 200);
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kToolsMenuSiteInformation),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:searchAction
-      onElementWithMatcher:grey_accessibilityID(kPopupMenuToolsMenuTableViewId)]
-      performAction:grey_tap()];
+  [self tapToolsMenuButton:chrome_test_util::SiteInfoDestinationButton()];
 }
 
 - (BOOL)dismissContextMenuIfPresent {
@@ -491,6 +477,23 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 // Clears all browsing data from the device. This method needs to be called when
 // the "Clear Browsing Data" panel is opened.
 - (void)selectAllBrowsingDataAndClear {
+  // Set 'Time Range' to 'All Time'.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE))]
+      performAction:grey_tap()];
+
+  NSString* timeRange = l10n_util::GetNSString(
+      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME);
+  id<GREYMatcher> popupCellMenuItem = grey_allOf(
+      grey_not(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier)),
+      ContextMenuItemWithAccessibilityLabel(timeRange), nil);
+  [[EarlGrey selectElementWithMatcher:popupCellMenuItem]
+      performAction:grey_tap()];
+
+  // Tap on the browsing data subpage.
+  [ChromeEarlGreyUI tapPrivacyMenuButton:BrowsingDataButtonMatcher()];
+
   // Check "Saved Passwords" and "Autofill Data" which are unchecked by
   // default.
   [ChromeEarlGrey
@@ -503,42 +506,20 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
          usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
       onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
 
-  // Set 'Time Range' to 'All Time'.
-  [[[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(ButtonWithAccessibilityLabelId(
-                         IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE),
-                     grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionDown)
-      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          ButtonWithAccessibilityLabelId(
-              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_BEGINNING_OF_TIME)]
-      performAction:grey_tap()];
-  [[[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()] atIndex:0]
+  // Tap the confirm button to save the prefs.
+  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
       performAction:grey_tap()];
 
   // Clear data, and confirm.
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:ConfirmClearBrowsingDataButton()]
-      performAction:grey_tap()];
 
-  // Wait until activity indicator modal is cleared, meaning clearing browsing
-  // data has been finished.
+  // Wait until the spinner is cleared, meaning that clear browsing data has
+  // finished.
   [self waitForAppToIdle];
 
-  // Recheck "Saved Passwords" and "Autofill Data".
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:ClearSavedPasswordsButton()];
-  [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
-      performAction:grey_tap()];
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(ClearAutofillButton(),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_swipeSlowInDirection(kGREYDirectionUp)
-      onElementWithMatcher:ClearBrowsingDataView()] performAction:grey_tap()];
+  // Reset selection.
+  [ChromeEarlGrey resetBrowsingDataPrefs];
 }
 
 // Waits for the clear browsing data view to become visible if `isVisible` is
@@ -601,7 +582,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
   if (textHasBeenTypedProperly && shouldPressEnter) {
     // Press enter to navigate.
-    // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+    // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
     // replaceText can properly handle \n.
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
   }
@@ -610,6 +591,67 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   GREYAssert(textHasBeenTypedProperly,
              @"Failed to type '%s' in the Omnibox after %d attempts.",
              text.c_str(), numberOfAttemptsPerformed);
+}
+
+// This is a temporary workarond to fix broken tests in iO18.
+- (void)tapButtonUsingXCUIApplication:(id<GREYMatcher>)buttonMatcher {
+  if (@available(iOS 18, *)) {
+    NSError* error;
+    [[EarlGrey selectElementWithMatcher:buttonMatcher]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+
+    if ([error.domain isEqual:kGREYInteractionErrorDomain] &&
+        error.code == kGREYInteractionElementNotFoundErrorCode) {
+      // If buttonMatcher is gone, that means it wasn't a SwiftUI element (or
+      // EG2 is fixed).
+      return;
+    }
+
+    // GREYMatcher's that match: accessibilityID('kToolsMenuBookmarksId'))
+    NSString* description = [buttonMatcher description];
+    NSRegularExpression* regex = [NSRegularExpression
+        regularExpressionWithPattern:@"accessibilityID\\('(.*?)'\\)"
+                             options:NSRegularExpressionCaseInsensitive
+                               error:nil];
+    NSTextCheckingResult* match =
+        [regex firstMatchInString:description
+                          options:0
+                            range:NSMakeRange(0, description.length)];
+    if (match) {
+      XCUIApplication* app = [[XCUIApplication alloc] init];
+      NSString* accessibilityID =
+          [description substringWithRange:[match rangeAtIndex:1]];
+      [app.buttons[accessibilityID] tap];
+      return;
+    }
+
+    // GREYMatcher's that match "starts with('kToolsMenuSettingsId')"
+    regex = [NSRegularExpression
+        regularExpressionWithPattern:@"starts with\\('(.*?)'\\)"
+                             options:NSRegularExpressionCaseInsensitive
+                               error:nil];
+    match = [regex firstMatchInString:description
+                              options:0
+                                range:NSMakeRange(0, description.length)];
+    if (match) {
+      NSString* prefix =
+          [description substringWithRange:[match rangeAtIndex:1]];
+      NSPredicate* predicate =
+          [NSPredicate predicateWithFormat:@"identifier BEGINSWITH %@", prefix];
+      XCUIApplication* app = [[XCUIApplication alloc] init];
+      XCUIElement* button = [app.buttons elementMatchingPredicate:predicate];
+      XCTAssertTrue(
+          button.exists,
+          @"Button with accessibility label starting with '%@' should exist",
+          prefix);
+      [button tap];
+      return;
+    }
+
+    XCTFail("SwiftUI/EG2 workaround missing GREYMatcher equivalent "
+            "NSRegularExpression.");
+  }
 }
 
 @end

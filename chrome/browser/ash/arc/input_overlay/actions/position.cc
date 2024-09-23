@@ -122,7 +122,7 @@ bool Position::ParseFromJson(const base::Value::Dict& value) {
     case PositionType::kDependent:
       return ParseDependentFromJson(value);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
 }
@@ -135,7 +135,7 @@ gfx::PointF Position::CalculatePosition(
     case PositionType::kDependent:
       return CalculateDependentPosition(content_bounds);
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return gfx::PointF();
   }
 }

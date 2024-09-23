@@ -1,0 +1,122 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("smart_lock") {
+  sources = [
+    "chrome_proximity_auth_client.cc",
+    "chrome_proximity_auth_client.h",
+    "smart_lock_auth_attempt.cc",
+    "smart_lock_auth_attempt.h",
+    "smart_lock_feature_usage_metrics.cc",
+    "smart_lock_feature_usage_metrics.h",
+    "smart_lock_metrics.cc",
+    "smart_lock_metrics.h",
+    "smart_lock_notification_controller.cc",
+    "smart_lock_notification_controller.h",
+    "smart_lock_service.cc",
+    "smart_lock_service.h",
+    "smart_lock_service_factory.cc",
+    "smart_lock_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/multidevice",
+    "//chromeos/ash/components/proximity_auth",
+    "//chromeos/ash/services/device_sync/public/cpp",
+    "//chromeos/ash/services/multidevice_setup/public/cpp",
+    "//components/account_id",
+    "//components/keyed_service/core",
+    "//ui/message_center/public/cpp",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser/ash/device_sync",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/secure_channel",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//chromeos/ash/services/multidevice_setup/public/mojom",
+    "//chromeos/ash/services/secure_channel/public/cpp/client",
+    "//chromeos/dbus/power",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//components/version_info",
+    "//extensions/browser",
+    "//ui/base",
+    "//ui/chromeos",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "smart_lock_auth_attempt_unittest.cc",
+    "smart_lock_feature_usage_metrics_unittest.cc",
+    "smart_lock_notification_controller_unittest.cc",
+    "smart_lock_service_unittest.cc",
+  ]
+
+  deps = [
+    ":smart_lock",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/multidevice_setup",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/components/multidevice",
+    "//chromeos/ash/components/multidevice:test_support",
+    "//chromeos/ash/components/proximity_auth",
+    "//chromeos/ash/components/proximity_auth:test_support",
+    "//chromeos/ash/services/device_sync/proto",
+    "//chromeos/ash/services/device_sync/public/cpp:test_support",
+    "//chromeos/ash/services/multidevice_setup/public/cpp",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
+    "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
+    "//chromeos/dbus/power",
+    "//components/account_id",
+    "//components/signin/public/identity_manager",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/display",
+    "//ui/display:test_support",
+    "//ui/display/util",
+    "//ui/message_center/public/cpp",
+    "//ui/views:test_support",
+  ]
+}

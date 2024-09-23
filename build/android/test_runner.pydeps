@@ -10,8 +10,6 @@
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_proto_classes.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_trace_writer.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_time.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/encoder.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/wire_format.py
 ../../third_party/catapult/common/py_utils/py_utils/__init__.py
 ../../third_party/catapult/common/py_utils/py_utils/atexit_with_log.py
 ../../third_party/catapult/common/py_utils/py_utils/binary_manager.py
@@ -137,8 +135,12 @@
 ../skia_gold_common/skia_gold_session.py
 ../skia_gold_common/skia_gold_session_manager.py
 ../util/lib/__init__.py
+../util/lib/common/__init__.py
 ../util/lib/common/chrome_test_server_spawner.py
 ../util/lib/common/unittest_util.py
+../util/lib/proto/__init__.py
+../util/lib/proto/exception_occurrences_pb2.py
+../util/lib/proto/exception_recorder.py
 ../util/lib/results/__init__.py
 ../util/lib/results/result_sink.py
 ../util/lib/results/result_types.py
@@ -228,6 +230,5 @@ pylib/utils/logging_utils.py
 pylib/utils/repo_utils.py
 pylib/utils/test_filter.py
 pylib/utils/time_profile.py
-pylib/valgrind_tools.py
 test_runner.py
 tombstones.py

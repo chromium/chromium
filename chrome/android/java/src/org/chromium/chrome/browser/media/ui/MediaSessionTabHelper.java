@@ -42,6 +42,9 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
                 @Override
                 public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
                     assert tab == mTab;
+
+                    if (mMediaSessionHelper == null) return;
+
                     mMediaSessionHelper.updateFavicon(icon);
                 }
 

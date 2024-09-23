@@ -23,7 +23,7 @@ class WebContents;
 // Base class for bubbles that are shown from location bar icons. The bubble
 // will automatically close when the browser transitions in or out of fullscreen
 // mode.
-// TODO(https://crbug.com/788051): Move to chrome/browser/ui/views/page_action/.
+// TODO(crbug.com/40551360): Move to chrome/browser/ui/views/page_action/.
 class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
                                       public FullscreenObserver,
                                       public content::WebContentsObserver {
@@ -48,7 +48,8 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   // Registers with a fullscreen controller identified by |web_contents| to
   // close the bubble if the fullscreen state changes.
   LocationBarBubbleDelegateView(views::View* anchor_view,
-                                content::WebContents* web_contents);
+                                content::WebContents* web_contents,
+                                bool autosize = false);
 
   LocationBarBubbleDelegateView(const LocationBarBubbleDelegateView&) = delete;
   LocationBarBubbleDelegateView& operator=(

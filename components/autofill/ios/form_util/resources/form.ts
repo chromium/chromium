@@ -82,25 +82,9 @@ function getFormControlElements(form: HTMLFormElement|null): Element[] {
  * @param root The node under which to search for iframe elements.
  * @return An array of iframe elements.
  */
-function getIframeElements(root: Node|null): HTMLIFrameElement[] {
-  if (!root) {
-    return [];
-  }
-  const iter: NodeIterator =
-      document.createNodeIterator(root, NodeFilter.SHOW_ELEMENT, {
-        acceptNode(node: Node): number {
-          // Safe cast because of NodeFilter.SHOW_ELEMENT
-          const elt: Element = node as Element;
-          return elt.tagName == 'IFRAME' ? NodeFilter.FILTER_ACCEPT :
-                                           NodeFilter.FILTER_SKIP;
-        },
-      });
-  let node: HTMLIFrameElement|null = null;
-  const accumulator: HTMLIFrameElement[] = [];
-  while (node = iter.nextNode() as HTMLIFrameElement) {
-    accumulator.push(node);
-  }
-  return accumulator;
+function getIframeElements(root: Element|null): HTMLIFrameElement[] {
+  return Array.from(root?.querySelectorAll('iframe') ?? []) as
+      HTMLIFrameElement[];
 }
 
 /**
@@ -287,12 +271,12 @@ function getFormElementFromIdentifier(name: string): HTMLFormElement|null {
 }
 
 /**
- * Returns the form element from an unique form id.
+ * Returns the form element from an form renderer id.
  *
  * @param identifier An ID string obtained via getFormIdentifier.
  * @return The original form element, if it can be determined.
  */
-function getFormElementFromUniqueFormId(identifier: number): HTMLFormElement|
+function getFormElementFromRendererId(identifier: number): HTMLFormElement|
     null {
   if (identifier.toString() === RENDERER_ID_NOT_SET) {
     return null;
@@ -308,7 +292,7 @@ function getFormElementFromUniqueFormId(identifier: number): HTMLFormElement|
 /**
  * Returns whether the last `input` or `change` event on `element` was
  * triggered by a user action (was "trusted").
- * TODO(crbug.com/1501627): Match Blink's behavior so that only a 'reset' event
+ * TODO(crbug.com/40941928): Match Blink's behavior so that only a 'reset' event
  * makes an edited field unedited.
  */
 function fieldWasEditedByUser(element: Element) {
@@ -332,6 +316,6 @@ gCrWeb.form = {
   getFieldName,
   getFormIdentifier,
   getFormElementFromIdentifier,
-  getFormElementFromUniqueFormId,
+  getFormElementFromRendererId,
   fieldWasEditedByUser,
 };

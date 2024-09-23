@@ -6,6 +6,15 @@
 #define CHROME_BROWSER_UI_WEBUI_GCM_INTERNALS_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+
+class GCMInternalsUI;
+
+class GCMInternalsUIConfig
+    : public content::DefaultWebUIConfig<GCMInternalsUI> {
+ public:
+  GCMInternalsUIConfig();
+};
 
 // The WebUI for chrome://gcm-internals.
 class GCMInternalsUI : public content::WebUIController {

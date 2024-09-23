@@ -82,6 +82,20 @@ following information present and accurate:
 *   Title and description clearly describing the bug being fixed
 *   Priority (*Priority*), OS (*OS*) and target milestone(s) (*Milestone*)
     fields are set
+    *   Consider all available data when setting the priority, such as existing
+        metrics for usage of a broken feature, to ensure important merges are
+        not missed. Consider collecting new data, such as by landing new metrics
+        and estimating severity with pre-stable data. For Web Platform changes,
+        [compat
+        tools](https://www.chromium.org/blink/platform-predictability/compat-tools/)
+        such as
+        [UseCounters](https://www.chromium.org/blink/platform-predictability/compat-tools/#usecounter)
+        , [Cluster
+        Telemetry](https://www.chromium.org/blink/platform-predictability/compat-tools/#on-demand-crawl)
+        , and
+        [HTTPArchive](https://www.chromium.org/blink/platform-predictability/compat-tools/#the-http-archive)
+        may be useful.
+
 *   Owner, generally the person requesting / performing the merge
 *   [Release block label](./release_blockers.md) if applicable (*ReleaseBlock*
     field*)
@@ -117,7 +131,7 @@ to track your merges:
     approved) or determining whether or not a merge is actually required and if
     so, requesting it (if TBD)
 *   [Requested
-    merges]https://issues.chromium.org/issues?q=assignee:me%20(-customfield1223134:none%20%7C%20customfield1223087:Review):
+    merges](https://issues.chromium.org/issues?q=assignee:me%20(-customfield1223134:none%20%7C%20customfield1223087:Review)):
     Merges that are waiting for input from release managers or automation; feel
     free to ping bugs that sit in this queue for two business days (assuming you
     verified that the change was already deployed to canary ahead of requesting

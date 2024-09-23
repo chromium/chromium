@@ -104,7 +104,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   virtual bool IsSVGImage() const { return false; }
   virtual bool IsBitmapImage() const { return false; }
   virtual bool IsStaticBitmapImage() const { return false; }
-  virtual bool IsPlaceholderImage() const { return false; }
 
   virtual bool CurrentFrameKnownToBeOpaque() = 0;
 
@@ -278,7 +277,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
         return PaintImage::DecodingMode::kAsync;
     }
 
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return PaintImage::DecodingMode::kUnspecified;
   }
 

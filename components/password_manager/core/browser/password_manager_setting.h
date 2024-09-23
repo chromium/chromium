@@ -18,7 +18,11 @@ enum class PasswordManagerSetting {
   // which support this.
   kAutoSignIn = 1,
 
-  kMaxValue = kAutoSignIn,
+  // Setting controlling whether the biometric re-authentication will be
+  // required before password filling.
+  kBiometricReauthBeforePwdFilling = 2,
+
+  kMaxValue = kBiometricReauthBeforePwdFilling,
 };
 }  // namespace password_manager
 

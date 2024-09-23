@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_PROVIDER_MAC_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_PROVIDER_MAC_H_
 
+#include "base/memory/weak_ptr.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 
 namespace device {
@@ -19,10 +20,13 @@ class PlatformSensorProviderMac : public PlatformSensorProvider {
 
   ~PlatformSensorProviderMac() override;
 
+  base::WeakPtr<PlatformSensorProvider> AsWeakPtr() override;
+
  protected:
   void CreateSensorInternal(mojom::SensorType type,
-                            SensorReadingSharedBuffer* reading_buffer,
                             CreateSensorCallback callback) override;
+
+  base::WeakPtrFactory<PlatformSensorProviderMac> weak_factory_{this};
 };
 
 }  // namespace device

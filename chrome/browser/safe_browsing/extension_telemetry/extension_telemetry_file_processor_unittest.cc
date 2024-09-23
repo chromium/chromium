@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_file_processor.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -42,7 +44,7 @@ void WriteExtensionFile(const base::FilePath& path,
 
 void WriteEmptyFile(const base::FilePath& path, const std::string& file_name) {
   base::FilePath file_path = path.AppendASCII(file_name);
-  base::WriteFile(file_path, base::StringPiece());
+  base::WriteFile(file_path, std::string_view());
 
   int64_t file_size;
   EXPECT_TRUE(base::GetFileSize(file_path, &file_size));

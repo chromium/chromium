@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
-#include <optional>
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -98,7 +98,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   Statistics previous_statistics_;
   EvictionRoundStatistics round_statistics_;
   base::Time time_of_end_of_last_nonskipped_round_;
-  base::Time time_of_end_of_last_round_;
 
   int64_t interval_ms_;
   bool timer_disabled_for_testing_ = false;

@@ -64,7 +64,7 @@ class TextTrackLoader final : public GarbageCollected<TextTrackLoader>,
 
  private:
   // RawResourceClient
-  void DataReceived(Resource*, const char* data, size_t length) override;
+  void DataReceived(Resource*, base::span<const char> data) override;
   void NotifyFinished(Resource*) override;
   String DebugName() const override { return "TextTrackLoader"; }
 

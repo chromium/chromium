@@ -18,13 +18,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -37,7 +37,6 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
 public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTestCase {
-    private static final String TEST_ACCOUNT_NAME = "test@example.com";
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -54,9 +53,9 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
 
     @Before
     public void setUp() {
-        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_NAME);
+        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Activity activity = getActivity();
                     mContentView = new FrameLayout(activity);
@@ -124,7 +123,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     }
 
     private void setUpProfileDataCache(@DrawableRes int badgeResId) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache =
                             badgeResId != 0
@@ -137,20 +136,22 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
                 () -> {
                     return !TextUtils.isEmpty(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getProfileDataOrDefault(
+                                            AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())
                                     .getFullName());
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getProfileDataOrDefault(
+                                            AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())
                                     .getImage());
                 });
     }
 
     private void setBadgeConfig(@DrawableRes int badgeResId) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache.setBadge(badgeResId);
                 });
@@ -158,14 +159,16 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
                 () -> {
                     return !TextUtils.isEmpty(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getProfileDataOrDefault(
+                                            AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())
                                     .getFullName());
                 });
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getProfileDataOrDefault(
+                                            AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())
                                     .getImage());
                 });
     }

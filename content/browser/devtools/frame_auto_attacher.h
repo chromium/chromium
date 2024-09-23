@@ -5,6 +5,7 @@
 #define CONTENT_BROWSER_DEVTOOLS_FRAME_AUTO_ATTACHER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
@@ -28,7 +29,6 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
 
   void SetRenderFrameHost(RenderFrameHostImpl* render_frame_host);
   void DidFinishNavigation(NavigationRequest* navigation_request);
-  void UpdatePages();
   void AutoAttachToPage(FrameTree* frame_tree, bool wait_for_debugger_on_start);
 
  protected:
@@ -54,7 +54,7 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
   void UpdateFrames();
 
  private:
-  RenderFrameHostImpl* render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
   bool observing_service_workers_ = false;
   bool observing_auction_worklets_ = false;
   bool observing_shared_storage_worklets_ = false;

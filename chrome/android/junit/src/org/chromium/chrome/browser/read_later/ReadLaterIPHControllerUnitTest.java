@@ -16,9 +16,7 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -27,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommand;
@@ -37,7 +34,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ReadLaterIPHControllerUnitTest {
-    @Rule public TestRule mFeaturesProcessor = new JUnitProcessor();
 
     @Mock Activity mActivity;
     @Mock View mToolbarMenuButton;

@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -191,6 +192,12 @@ void BluetoothAdapterWin::AdapterStateChanged(
     initialized_ = true;
     std::move(init_callback_).Run();
   }
+
+  // When the Bluetooth adapter is powered off or not present, all Bluetooth
+  // devices should be removed.
+  if (!powered_ || !is_present) {
+    ClearAllDevices();
+  }
 }
 
 void BluetoothAdapterWin::DevicesPolled(
@@ -237,7 +244,7 @@ void BluetoothAdapterWin::DevicesPolled(
         observer.DeviceAdded(this, device_win_raw);
     } else if (base::Contains(changed_devices, device_state->address)) {
       auto iter = devices_.find(device_state->address);
-      DCHECK(iter != devices_.end());
+      CHECK(iter != devices_.end(), base::NotFatalUntil::M130);
       BluetoothDeviceWin* device_win =
           static_cast<BluetoothDeviceWin*>(iter->second.get());
       if (!device_win->IsEqual(*device_state)) {
@@ -262,7 +269,7 @@ base::WeakPtr<BluetoothAdapter> BluetoothAdapterWin::GetWeakPtr() {
 
 // BluetoothAdapterWin should override SetPowered() instead.
 bool BluetoothAdapterWin::SetPoweredImpl(bool powered) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 

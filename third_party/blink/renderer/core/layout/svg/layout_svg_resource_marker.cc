@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 
 #include "base/auto_reset.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_marker_data.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
@@ -36,20 +37,20 @@ LayoutSVGResourceMarker::LayoutSVGResourceMarker(SVGMarkerElement* node)
 
 LayoutSVGResourceMarker::~LayoutSVGResourceMarker() = default;
 
-void LayoutSVGResourceMarker::UpdateLayout() {
+SVGLayoutResult LayoutSVGResourceMarker::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
   if (is_in_layout_)
-    return;
+    return {};
 
   base::AutoReset<bool> in_layout_change(&is_in_layout_, true);
 
-  // LayoutSVGHiddenContainer overrides UpdateLayout(). We need the
+  ClearInvalidationMask();
+  // LayoutSVGHiddenContainer overrides UpdateSVGLayout(). We need the
   // LayoutSVGContainer behavior for calculating local transformations and paint
   // invalidation.
-  LayoutSVGContainer::UpdateLayout();
-
-  ClearInvalidationMask();
+  return LayoutSVGContainer::UpdateSVGLayout(layout_info);
 }
 
 bool LayoutSVGResourceMarker::FindCycleFromSelf() const {

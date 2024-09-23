@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "cc/paint/paint_cache.h"
 
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 
@@ -59,7 +65,7 @@ void ClientPaintCache::FinalizePendingEntries() {
 void ClientPaintCache::AbortPendingEntries() {
   for (const auto& entry : pending_entries_) {
     auto it = cache_map_.Peek(entry);
-    DCHECK(it != cache_map_.end());
+    CHECK(it != cache_map_.end(), base::NotFatalUntil::M130);
     EraseFromMap(it);
   }
   pending_entries_.clear();
@@ -111,7 +117,7 @@ void ServicePaintCache::Purge(PaintCacheDataType type,
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void ServicePaintCache::PurgeAll() {

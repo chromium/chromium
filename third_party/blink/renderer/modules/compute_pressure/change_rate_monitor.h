@@ -34,6 +34,14 @@ class ChangeRateMonitor final {
   // allowed during the observation window's length.
   bool ChangeCountExceedsLimit(V8PressureSource::Enum) const;
 
+  void set_change_count_threshold_for_testing(uint64_t count) {
+    change_count_threshold_ = count;
+  }
+
+  void set_penalty_duration_for_testing(base::TimeDelta time) {
+    penalty_duration_ = time;
+  }
+
   // Return the penalty duration applied during the observation window's
   // duration;
   base::TimeDelta penalty_duration() const { return penalty_duration_; }

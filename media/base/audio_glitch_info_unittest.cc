@@ -10,6 +10,15 @@
 
 namespace media {
 
+class AudioGlitchInfoTester {
+ public:
+  static AudioGlitchInfo SingleBoundedSystemGlitch(
+      const base::TimeDelta duration,
+      const AudioGlitchInfo::Direction direction) {
+    return AudioGlitchInfo::SingleBoundedSystemGlitch(duration, direction);
+  }
+};
+
 TEST(AudioGlitchInfo, EqualityOperator) {
   AudioGlitchInfo info1{.duration = base::Seconds(1), .count = 123};
   AudioGlitchInfo info2{.duration = base::Seconds(3), .count = 369};
@@ -44,11 +53,11 @@ TEST(AudioGlitchInfo, ToString) {
   EXPECT_EQ(info.ToString(), "duration (ms): 123, count: 456");
 }
 
-TEST(AudioGlitchInfo, SingleBoundedGlitch) {
+TEST(AudioGlitchInfo, SingleBoundedSystemGlitch) {
   base::HistogramTester histogram_tester_;
   {
     AudioGlitchInfo result{.duration = base::Seconds(1), .count = 1};
-    EXPECT_EQ(AudioGlitchInfo::SingleBoundedGlitch(
+    EXPECT_EQ(AudioGlitchInfoTester::SingleBoundedSystemGlitch(
                   base::Seconds(1.5), AudioGlitchInfo::Direction::kRender),
               result);
     histogram_tester_.ExpectTimeBucketCount(
@@ -56,7 +65,7 @@ TEST(AudioGlitchInfo, SingleBoundedGlitch) {
   }
   {
     AudioGlitchInfo result{.duration = base::Seconds(0.5), .count = 1};
-    EXPECT_EQ(AudioGlitchInfo::SingleBoundedGlitch(
+    EXPECT_EQ(AudioGlitchInfoTester::SingleBoundedSystemGlitch(
                   base::Seconds(0.5), AudioGlitchInfo::Direction::kCapture),
               result);
     histogram_tester_.ExpectTimeBucketCount(

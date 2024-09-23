@@ -9,7 +9,6 @@ part of the polymer project is also subject to an additional IP rights grant
 found at http://polymer.github.io/PATENTS.txt
 */
 import '../polymer/polymer_bundled.min.js';
-import '../paper-styles/color.js';
 
 import {IronRangeBehavior} from '../iron-range-behavior/iron-range-behavior.js';
 import {Polymer} from '../polymer/polymer_bundled.min.js';
@@ -96,6 +95,10 @@ Polymer({
         width: 200px;
         position: relative;
         overflow: hidden;
+        --google-green-100: #b7e1cd;
+        --google-green-500: #0f9d58;
+        --google-grey-300: #e0e0e0;
+        --google-grey-500: #9e9e9e;
       }
 
       :host([hidden]), [hidden] {

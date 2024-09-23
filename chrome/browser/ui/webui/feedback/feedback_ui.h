@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_UI_H_
 
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
@@ -30,6 +31,15 @@ class FeedbackUI : public ui::WebDialogUI {
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
+};
+
+// WebUIConfig for chrome://feedback
+class FeedbackUIConfig : public content::DefaultWebUIConfig<FeedbackUI> {
+ public:
+  FeedbackUIConfig();
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_FEEDBACK_FEEDBACK_UI_H_

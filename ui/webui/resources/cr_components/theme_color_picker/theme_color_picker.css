@@ -1,0 +1,55 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-theme-color-padding: 8px;
+  --cr-theme-color-picker-column-width: 1fr;
+  --cr-theme-color-picker-grid-gap: 8px;
+  --cr-theme-color-picker-grid-padding: 0 16px;
+}
+
+cr-grid {
+  --cr-column-width: var(--cr-theme-color-picker-column-width);
+  --cr-grid-gap: var(--cr-theme-color-picker-grid-gap);
+  box-sizing: border-box;
+  display: block;
+  padding: var(--cr-theme-color-picker-grid-padding);
+  width: 100%;
+}
+
+#customColorContainer {
+  position: relative;
+}
+
+#colorPickerIcon {
+  -webkit-mask-image: url(chrome://resources/images/colorize.svg);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 100%;
+  background-color: var(
+      --color-theme-color-picker-custom-color-icon-background,
+      var(--cr-fallback-color-on-surface-subtle));
+  height: 20px;
+  left: calc(50% - 10px);
+  pointer-events: none;
+  position: absolute;
+  top: calc(50% - 10px);
+  width: 20px;
+}
+
+managed-dialog {
+  --cr-dialog-width: min(calc(100% - 32px), 512px);
+}
+
+cr-theme-color {
+  background-color: var(
+      --color-theme-color-picker-option-background,
+      var(--cr-fallback-color-neutral-container));
+  border-radius: 12px;
+  padding: var(--cr-theme-color-padding);
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/upgrade_promo_portrait"
+    android:background="@macro/default_bg_color"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/fullscreen_signin"
+        layout="@layout/fullscreen_signin_portrait_view"/>
+    <include
+        android:id="@+id/history_sync"
+        layout="@layout/history_sync_portrait_view"/>
+</FrameLayout>

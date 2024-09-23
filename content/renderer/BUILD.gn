@@ -10,6 +10,7 @@ import("//content/common/features.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
+import("//services/screen_ai/buildflags/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
@@ -28,8 +29,6 @@ target(link_target_type, "renderer") {
     "//chromecast/media/audio:*",
     "//content/app:*",
     "//content/public/renderer:renderer_sources",
-    "//content/renderer:audio_decoder_fuzzer",
-    "//content/renderer:content_security_policy_util_fuzzer",
     "//media/mojo/clients:unit_tests",
   ]
 
@@ -216,7 +215,11 @@ target(link_target_type, "renderer") {
   }
 
   if (is_win) {
-    sources += [ "renderer_main_platform_delegate_win.cc" ]
+    sources += [
+      "font_data/font_data_manager.cc",
+      "font_data/font_data_manager.h",
+      "renderer_main_platform_delegate_win.cc",
+    ]
   }
 
   if (enable_cast_renderer) {
@@ -232,6 +235,7 @@ target(link_target_type, "renderer") {
   public_deps = [
     "//content/common:mojo_bindings",
     "//content/public/common:common_sources",
+    "//content/public/renderer:render_frame_media_playback_options",
     "//ipc",
   ]
 
@@ -246,8 +250,10 @@ target(link_target_type, "renderer") {
     "//cc/mojom",
     "//cc/paint",
     "//components/discardable_memory/client",
+    "//components/input",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
+    "//components/services/font_data/public/mojom",
     "//components/startup_metric_utils",
     "//components/url_formatter",
     "//components/variations:variations_mojom",
@@ -297,6 +303,7 @@ target(link_target_type, "renderer") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:network_service",
     "//services/network/public/mojom",
+    "//services/screen_ai/buildflags",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/tracing/public/cpp",
@@ -307,7 +314,6 @@ target(link_target_type, "renderer") {
     "//third_party/blink/public:buildflags",
     "//third_party/blink/public/common",
     "//third_party/blink/public/platform/media",
-    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/boringssl",
     "//third_party/icu",
     "//third_party/libyuv",
@@ -326,6 +332,7 @@ target(link_target_type, "renderer") {
     "//ui/gl",
     "//ui/latency",
     "//ui/native_theme",
+    "//ui/strings:auto_image_annotation_strings_grit",
     "//ui/surface",
     "//url",
     "//v8",
@@ -344,6 +351,15 @@ target(link_target_type, "renderer") {
     if (use_seccomp_bpf) {
       deps += [ "//sandbox/policy" ]
     }
+  }
+
+  if (enable_screen_ai_service) {
+    sources += [
+      "accessibility/annotations/ax_main_node_annotator.cc",
+      "accessibility/annotations/ax_main_node_annotator.h",
+    ]
+
+    deps += [ "//services/screen_ai/public/mojom" ]
   }
 
   if (is_linux || is_chromeos) {
@@ -389,10 +405,7 @@ target(link_target_type, "renderer") {
         deps += [ "//chromecast/media/audio:audio_renderer" ]
       }
 
-      deps += [
-        "//media/remoting:remoting_constants",
-        "//media/remoting:remoting_renderer",
-      ]
+      deps += [ "//media/remoting:remoting_renderer" ]
     }
   }
 
@@ -573,6 +586,8 @@ target(link_target_type, "renderer") {
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
   visibility = [
+    ":audio_decoder_fuzzer",
+    ":content_security_policy_util_fuzzer",
     "//content/test/*",
     "//content/web_test:web_test_renderer_public_deps",
   ]
@@ -583,21 +598,31 @@ group("for_content_tests") {
 }
 
 fuzzer_test("audio_decoder_fuzzer") {
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
   sources = [ "media/audio_decoder_fuzzer.cpp" ]
   deps = [
-    "//content/public/renderer:renderer_sources",
-    "//content/renderer:renderer",
+    ":for_content_tests",
     "//content/test:test_support",
   ]
   seed_corpus = "//media/test/data"
 }
 
 fuzzer_test("content_security_policy_util_fuzzer") {
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
   sources = [ "content_security_policy_util_fuzzer.cc" ]
   deps = [
+    ":for_content_tests",
     "//base",
-    "//content/public/renderer:renderer_sources",
-    "//content/renderer:renderer",
     "//content/test:test_support",
     "//services/network:network_service",
     "//services/network/public/cpp",

@@ -116,6 +116,14 @@ struct App {
   [MinVersion=22]
   // Whether the app publisher allows the app to be closed.
   OptionalBool allow_close@32;
+
+  [MinVersion=23]
+  // Whether the app publisher allows the user to select app open mode.
+  OptionalBool allow_window_mode_selection@33;
+
+  [MinVersion=24]
+  // An optional ID for the package that installed this app.
+  PackageId? installer_package_id@34;
 };
 
 // The types of apps available in the registry.
@@ -148,6 +156,7 @@ enum Readiness {
   kRemoved,
   // This is used for all non-user initiated uninstallation.
   [MinVersion=1] kUninstalledByNonUser,
+  [MinVersion=2] kDisabledByLocalSettings,  // Disabled by local settings.
 };
 
 // The reason why the app was installed.
@@ -160,9 +169,9 @@ enum InstallReason {
   kDefault,    // Preinstalled by default, but is not considered a system app.
   kSync,       // Installed by sync.
   kUser,       // Installed by user action.
-  [MinVersion=7] kSubApp,     // Installed by the SubApp API call.
-  [MinVersion=8] kKiosk,      // Installed by Kiosk on Chrome OS.
-  [MinVersion=9] kCommandLine,  // Installed by a command line argument.
+  [MinVersion=7] kSubApp,        // Installed by the SubApp API call.
+  [MinVersion=8] kKiosk,         // Installed by Kiosk on Chrome OS.
+  [MinVersion=9] kCommandLine,   // Deprecated, no longer used.
 };
 
 // Augments a bool to include an 'unknown' value.
@@ -479,6 +488,9 @@ enum LaunchSource {
   [MinVersion=11] kFromSysTrayCalendar,          // System Tray Calendar.
   [MinVersion=12] kFromInstaller,                // Installation UI.
   [MinVersion=13] kFromFirstRun,                 // First Run.
+  [MinVersion=14] kFromWelcomeTour,              // Welcome Tour.
+  [MinVersion=15] kFromFocusMode,                // Focus Mode panel.
+  [MinVersion=16] kFromSparky,                   // Sparky.
 };
 
 [Stable, Extensible]
@@ -565,6 +577,25 @@ struct PreferredApp {
   string app_id;
 };
 
+[Stable, Extensible]
+enum PackageIdType {
+  [Default] kUnknown = 0,
+  kWeb = 1,
+  kArc = 2,
+};
+
+// A globally unique stable identifier for an installable app package.
+[Stable]
+struct PackageId {
+  // The app type of the package.
+  PackageIdType package_type;
+
+  // A platform-specific unique ID for the package. For example, for
+  // PackageIdType::kArc, the identifier will be the package name. Must be
+  // non-empty.
+  string identifier;
+};
+
 // Information about an app shortcut.
 
 // This struct is used to transport App Shortcut data between lacros-chrome and
@@ -616,18 +647,30 @@ enum ControllerRegistrationResult {
 
 
 // Represents parameters for installing an app.
+// Next version: 2
 [Stable]
 struct InstallAppParams {
   // Represents the origin of the installation.
+  // Next version: 3
   [Stable, Extensible]
   enum Surface {
     [Default] kUnknown = 0,
-    kAppInstallNavigationThrottle = 1,
+    kAppInstallUriUnknown = 1,
+    [MinVersion=1] kAppInstallUriShowoff = 2,
+    [MinVersion=1] kAppInstallUriMall = 3,
+    [MinVersion=1] kAppInstallUriGetit = 4,
+    [MinVersion=1] kAppInstallUriLauncher = 5,
+    [MinVersion=2] kAppInstallUriPeripherals = 6,
   };
   Surface surface@0;
 
   // Represents which package_id to fetch from Almanac to be installed.
-  string? package_id@1;
+  string? serialized_package_id@1;
+
+  // Instance ID of a parent window to anchor the app install dialog to. If not
+  // provided or a corresponding window is not found, the app install dialog is
+  // created without anchoring to a parent.
+  [MinVersion=1] mojo_base.mojom.UnguessableToken? window_id@2;
 };
 
 // Represents the result of an InstallApp() request.

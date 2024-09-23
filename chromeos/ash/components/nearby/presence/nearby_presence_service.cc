@@ -9,27 +9,8 @@ namespace ash::nearby::presence {
 NearbyPresenceService::NearbyPresenceService() = default;
 NearbyPresenceService::~NearbyPresenceService() = default;
 
-NearbyPresenceService::PresenceDevice::PresenceDevice(
-    ::nearby::internal::Metadata metadata,
-    std::optional<std::string> stable_device_id,
-    std::string endpoint_id,
-    std::vector<Action> actions,
-    int rssi)
-    : metadata_(metadata),
-      stable_device_id_(stable_device_id),
-      endpoint_id_(endpoint_id),
-      actions_(actions),
-      rssi_(rssi) {}
-
-NearbyPresenceService::PresenceDevice::PresenceDevice(
-    const PresenceDevice& presence_device) = default;
-NearbyPresenceService::PresenceDevice&
-NearbyPresenceService::PresenceDevice::operator=(
-    const PresenceDevice& presence_device) = default;
-NearbyPresenceService::PresenceDevice::~PresenceDevice() = default;
-
 NearbyPresenceService::ScanFilter::ScanFilter(
-    IdentityType identity_type,
+    ::nearby::internal::IdentityType identity_type,
     const std::vector<Action>& actions)
     : identity_type_(identity_type), actions_(actions) {}
 
@@ -50,6 +31,50 @@ NearbyPresenceService::ScanSession::ScanSession(
     : remote_(std::move(pending_remote)),
       on_disconnect_callback_(std::move(on_disconnect_callback)) {}
 
-NearbyPresenceService::ScanSession::~ScanSession() {}
+NearbyPresenceService::ScanSession::~ScanSession() {
+  std::move(on_disconnect_callback_).Run();
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const enums::StatusCode status_code) {
+  switch (status_code) {
+    case enums::StatusCode::kAbslOk:
+      return stream << "OK";
+    case enums::StatusCode::kAbslCancelled:
+      return stream << "Cancelled";
+    case enums::StatusCode::kAbslUnknown:
+      return stream << "Unknown";
+    case enums::StatusCode::kAbslInvalidArgument:
+      return stream << "Invalid Argument";
+    case enums::StatusCode::kAbslDeadlineExceeded:
+      return stream << "Deadline Exceeded";
+    case enums::StatusCode::kAbslNotFound:
+      return stream << "Not Found";
+    case enums::StatusCode::kAbslAlreadyExists:
+      return stream << "Already Exists";
+    case enums::StatusCode::kAbslPermissionDenied:
+      return stream << "Permission Denied";
+    case enums::StatusCode::kAbslResourceExhausted:
+      return stream << "Resource Exhausted";
+    case enums::StatusCode::kAbslFailedPrecondition:
+      return stream << "Failed Precondition";
+    case enums::StatusCode::kAbslAborted:
+      return stream << "Aborted";
+    case enums::StatusCode::kAbslOutOfRange:
+      return stream << "Out of Range";
+    case enums::StatusCode::kAbslUnimplemented:
+      return stream << "Unimplemented";
+    case enums::StatusCode::kAbslInternal:
+      return stream << "Internal";
+    case enums::StatusCode::kAbslUnavailable:
+      return stream << "Unavailable";
+    case enums::StatusCode::kAbslDataLoss:
+      return stream << "Data Loss";
+    case enums::StatusCode::kAbslUnauthenticated:
+      return stream << "Unauthenticated";
+    case enums::StatusCode::kFailedToStartProcess:
+      return stream << "Failed to Start Process";
+  }
+}
 
 }  // namespace ash::nearby::presence

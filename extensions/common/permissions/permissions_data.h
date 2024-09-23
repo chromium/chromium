@@ -153,6 +153,10 @@ class PermissionsData {
   // Clears the tab-specific permissions of |tab_id|.
   void ClearTabSpecificPermissions(int tab_id) const;
 
+  // Returns whether the extension has tab-specific permissions for the security
+  // origin of `url` on `tab_id`.
+  bool HasTabPermissionsForSecurityOrigin(int tab_id, const GURL& url) const;
+
   // Returns true if the |extension| has the given |permission|. Prefer
   // IsExtensionWithPermissionOrSuggestInConsole when developers may be using an
   // api that requires a permission they didn't know about, e.g. open web apis.
@@ -304,7 +308,6 @@ class PermissionsData {
   // addition to blocking special sites (like the webstore or chrome:// urls).
   // Must be called with |runtime_lock_| acquired.
   PageAccess CanRunOnPage(const GURL& document_url,
-                          int tab_id,
                           const URLPatternSet& permitted_url_patterns,
                           const URLPatternSet& withheld_url_patterns,
                           const URLPatternSet* tab_url_patterns,

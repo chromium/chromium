@@ -4,6 +4,7 @@
 
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 
+#include "base/notreached.h"
 #include "chromecast/media/cma/base/cast_decrypt_config_impl.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "media/base/decoder_buffer.h"
@@ -11,15 +12,32 @@
 namespace chromecast {
 namespace media {
 
-DecoderBufferAdapter::DecoderBufferAdapter(
-    const scoped_refptr<::media::DecoderBuffer>& buffer)
-    : DecoderBufferAdapter(kPrimary, buffer) {
+namespace {
+
+// Converts a chromium EncryptionScheme to a cast one.
+EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
+  switch (scheme) {
+    case ::media::EncryptionScheme::kUnencrypted:
+      return EncryptionScheme::kUnencrypted;
+    case ::media::EncryptionScheme::kCenc:
+      return EncryptionScheme::kAesCtr;
+    case ::media::EncryptionScheme::kCbcs:
+      return EncryptionScheme::kAesCbc;
+    default:
+      NOTREACHED();
+  }
 }
 
+}  // namespace
+
 DecoderBufferAdapter::DecoderBufferAdapter(
-    StreamId stream_id, const scoped_refptr<::media::DecoderBuffer>& buffer)
-    : stream_id_(stream_id),
-      buffer_(buffer) {
+    const scoped_refptr<::media::DecoderBuffer>& buffer)
+    : DecoderBufferAdapter(kPrimary, buffer) {}
+
+DecoderBufferAdapter::DecoderBufferAdapter(
+    StreamId stream_id,
+    const scoped_refptr<::media::DecoderBuffer>& buffer)
+    : stream_id_(stream_id), buffer_(buffer) {
   DCHECK(buffer_);
 
   const ::media::DecryptConfig* decrypt_config =
@@ -33,7 +51,7 @@ DecoderBufferAdapter::DecoderBufferAdapter(
       // DecryptConfig may contain 0 subsamples if all content is encrypted.
       // Map this case to a single fully-encrypted "subsample" for more
       // consistent backend handling.
-      subsamples.emplace_back(0, buffer_->data_size());
+      subsamples.emplace_back(0, buffer_->size());
     }
 
     EncryptionPattern pattern;
@@ -45,12 +63,12 @@ DecoderBufferAdapter::DecoderBufferAdapter(
 
     decrypt_config_.reset(new CastDecryptConfigImpl(
         decrypt_config->key_id(), decrypt_config->iv(), pattern,
-        std::move(subsamples)));
+        std::move(subsamples),
+        ToEncryptionScheme(decrypt_config->encryption_scheme())));
   }
 }
 
-DecoderBufferAdapter::~DecoderBufferAdapter() {
-}
+DecoderBufferAdapter::~DecoderBufferAdapter() {}
 
 StreamId DecoderBufferAdapter::stream_id() const {
   return stream_id_;
@@ -73,7 +91,7 @@ uint8_t* DecoderBufferAdapter::writable_data() const {
 }
 
 size_t DecoderBufferAdapter::data_size() const {
-  return buffer_->data_size();
+  return buffer_->size();
 }
 
 const CastDecryptConfig* DecoderBufferAdapter::decrypt_config() const {
@@ -82,6 +100,10 @@ const CastDecryptConfig* DecoderBufferAdapter::decrypt_config() const {
 
 bool DecoderBufferAdapter::end_of_stream() const {
   return buffer_->end_of_stream();
+}
+
+bool DecoderBufferAdapter::is_key_frame() const {
+  return buffer_->is_key_frame();
 }
 
 }  // namespace media

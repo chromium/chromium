@@ -5,8 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_FAKE_NAVIGATION_CONTEXT_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_FAKE_NAVIGATION_CONTEXT_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #include "url/gurl.h"
@@ -40,7 +39,7 @@ class FakeNavigationContext : public NavigationContext {
   HttpsUpgradeType GetFailedHttpsUpgradeType() const override;
 
   // Setters for navigation context data members.
-  void SetWebState(std::unique_ptr<WebState> web_state);
+  void SetWebState(WebState* web_state);
   void SetUrl(const GURL& url);
   void SetHasUserGesture(bool has_user_gesture);
   void SetPageTransition(ui::PageTransition transition);
@@ -54,7 +53,7 @@ class FakeNavigationContext : public NavigationContext {
   void SetIsRendererInitiated(bool renderer_initiated);
 
  private:
-  std::unique_ptr<WebState> web_state_;
+  raw_ptr<WebState> web_state_;
   int64_t navigation_id_ = 0;
   GURL url_;
   bool has_user_gesture_ = false;

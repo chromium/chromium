@@ -6,6 +6,7 @@
 #define BASE_PROFILER_SUSPENDABLE_THREAD_DELEGATE_WIN_H_
 
 #include <windows.h>
+
 #include <memory>
 #include <vector>
 

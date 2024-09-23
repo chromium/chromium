@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PATH_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PATH_VALUE_H_
 
-#include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/style_path.h"
@@ -25,7 +24,7 @@ class CSSPathValue : public CSSValue {
 
   explicit CSSPathValue(scoped_refptr<StylePath>,
                         PathSerializationFormat = kNoTransformation);
-  explicit CSSPathValue(std::unique_ptr<SVGPathByteStream>,
+  explicit CSSPathValue(SVGPathByteStream,
                         WindRule wind_rule = RULE_NONZERO,
                         PathSerializationFormat = kNoTransformation);
 

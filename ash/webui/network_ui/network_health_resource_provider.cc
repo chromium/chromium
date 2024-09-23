@@ -4,6 +4,7 @@
 
 #include "ash/webui/network_ui/network_health_resource_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_webui_common_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -66,6 +67,11 @@ constexpr WebUiResource kResources[] = {
 
 void AddResources(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddLocalizedString(
+      "OncTypeTether", ash::features::IsInstantHotspotRebrandEnabled()
+                           ? IDS_NETWORK_TYPE_HOTSPOT
+                           : IDS_NETWORK_TYPE_TETHER);
 
   for (const auto& resource : kResources)
     html_source->AddResourcePath(resource.name, resource.id);

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Federated Credential Management API: Test that the API works if third-party cookies are disabled but the ISS origin trial is enabled.</title>
+<!--
+This is in wpt_internal because this test uses an internal API and also
+this is Chrome-specific behavior.
+-->
+<link rel="help" href="https://fedidcg.github.io/FedCM">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<!--
+Token generated with:
+generate_token.py https://web-platform.test:8444/ FedCmIdpSigninStatus --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial"
+  content="AxsFYFt0hYa+TYkw+/9aNgaGvhJMjPQO9ec5OuuMNFcbVKnhXzUWEricRljJdLkft10VZ1DWQ7vOJPbLbzByNgMAAABleyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiRmVkQ21JZHBTaWduaW5TdGF0dXMiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=">
+
+<body>
+
+<script type="module">
+import {request_options_with_mediation_required,
+        fedcm_test,
+        select_manifest,
+        fedcm_get_and_select_first_account,
+        mark_signed_in} from '/fedcm/support/fedcm-helper.sub.js';
+
+testRunner.setBlockThirdPartyCookies(true);
+
+fedcm_test(async t => {
+  await mark_signed_in();
+
+  const cred = await fedcm_get_and_select_first_account(t, request_options_with_mediation_required());
+  assert_equals(cred.token, "token");
+}, "Test that we can obtain a token");
+</script>

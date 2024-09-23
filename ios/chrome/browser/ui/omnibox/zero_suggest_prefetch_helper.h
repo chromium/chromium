@@ -27,6 +27,9 @@ class OmniboxController;
                           controller:(OmniboxController*)controller;
 - (instancetype)init NS_UNAVAILABLE;
 
+/// Disconnects all observations.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_ZERO_SUGGEST_PREFETCH_HELPER_H_

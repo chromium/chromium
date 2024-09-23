@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.Image role_description='graphic' name='Has two simple children'
+++++android.widget.Image role_description='graphic' name='Has two focusable children'
+++++++android.view.View focusable
+++++++android.view.View focusable

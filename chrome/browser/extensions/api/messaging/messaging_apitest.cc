@@ -18,7 +18,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -39,7 +39,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -858,6 +857,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 // TODO(kalman): test messages from incognito extensions too.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoDenyApp) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> app = LoadChromiumConnectableApp();
   ASSERT_TRUE(app->is_platform_app());
 
@@ -896,6 +899,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoDenyExtensionAndApp) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> extension = LoadChromiumConnectableExtension();
   EXPECT_FALSE(util::IsIncognitoEnabled(extension->id(), profile()));
 
@@ -949,6 +956,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 // handler for the connection event.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoNoEventHandlerInApp) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> app = LoadChromiumConnectableApp(false);
   ASSERT_TRUE(app->is_platform_app());
 
@@ -980,6 +991,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
 // TODO(kalman): see comment above about split mode.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoAllowApp) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> app = LoadChromiumConnectableApp();
   ASSERT_TRUE(app->is_platform_app());
 
@@ -1093,6 +1108,10 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, IllegalArguments) {
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                        FromIncognitoAllowExtension) {
+  // TODO(crbug.com/40937027): Convert test to use HTTPS and then remove.
+  ScopedAllowHttpForHostnamesForTesting allow_http({"www.chromium.org"},
+                                                   profile()->GetPrefs());
+
   scoped_refptr<const Extension> extension = LoadChromiumConnectableExtension();
   EXPECT_FALSE(util::IsIncognitoEnabled(extension->id(), profile()));
 
@@ -1176,25 +1195,13 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, FromPopup) {
   scoped_refptr<const Extension> extension = LoadChromiumConnectableExtension();
 
   // This will let us wait for the chromium.org.html page to load in a popup.
-  ui_test_utils::UrlLoadObserver url_observer(
-      chromium_org_url(), content::NotificationService::AllSources());
+  ui_test_utils::UrlLoadObserver url_observer(chromium_org_url());
 
   // The page at popup_opener_url() should open chromium_org_url() as a popup.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), popup_opener_url()));
   url_observer.Wait();
 
-  // Find the WebContents that committed the chromium_org_url().
-  // TODO(devlin) - it would be nice if UrlLoadObserver handled this for
-  // us, which it could pretty easily do.
-  content::WebContents* popup_contents = nullptr;
-  for (int i = 0; i < browser()->tab_strip_model()->count(); i++) {
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(i);
-    if (contents->GetLastCommittedURL() == chromium_org_url()) {
-      popup_contents = contents;
-      break;
-    }
-  }
+  content::WebContents* popup_contents = url_observer.web_contents();
   ASSERT_NE(nullptr, popup_contents) << "Could not find WebContents for popup";
 
   // Make sure the popup can connect and send messages to the extension.
@@ -1463,7 +1470,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest,
   // With user activation before sending, the sender should be in active state
   // all the time, and the receiver should be in active state.
   //
-  // TODO(crbug.com/957633): The receiver should be inactive here.
+  // TODO(crbug.com/40094773): The receiver should be inactive here.
   EXPECT_EQ(
       "sender-initial:true,sender-sent:true,receiver:true,"
       "sender-received:true",
@@ -1481,7 +1488,7 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest,
   // With user activation consumed right after sending, the sender should be in
   // active state until consumption, and the receiver should be in active state.
   //
-  // TODO(crbug.com/957633): The receiver should be inactive here.
+  // TODO(crbug.com/40094773): The receiver should be inactive here.
   EXPECT_EQ(
       "sender-initial:true,sender-sent:true,sender-consumed:false,"
       "receiver:true,sender-received:false",
@@ -1651,7 +1658,7 @@ class ServiceWorkerMessagingApiTest : public MessagingApiTest {
 
 // After sending message from extension and got response back, there should be
 // no in-flight request hanging.
-// TODO(https://crbug.com/1417555): Disabled due to flakiness.
+// TODO(crbug.com/40257364): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingApiTest,
                        DISABLED_InflightCountAfterSendMessage) {
   constexpr char kManifest[] =

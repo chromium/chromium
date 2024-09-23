@@ -8,6 +8,8 @@ import android.os.Bundle;
 
 import androidx.preference.Preference;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -23,12 +25,19 @@ public class ContextualSearchSettingsFragment extends ChromeBaseSettingsFragment
     static final String PREF_CONTEXTUAL_SEARCH_SWITCH = "contextual_search_switch";
     static final String PREF_WAS_FULLY_ENABLED_SWITCH = "see_better_results_switch";
 
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.contextual_search_preferences);
-        getActivity().setTitle(R.string.contextual_search_title);
+        mPageTitle.set(getString(R.string.contextual_search_title));
         setHasOptionsMenu(true);
         initSwitches();
+    }
+
+    @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
     }
 
     private void initSwitches() {

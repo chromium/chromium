@@ -7,15 +7,16 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "cc/cc_export.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/latency/latency_info.h"
@@ -36,9 +37,9 @@ class CC_EXPORT EventMetrics {
     kMousePressed,
     kMouseReleased,
     kMouseWheel,
-    // TODO(crbug/1071645): Currently, all ET_KEY_PRESSED events are reported
-    // under EventLatency.KeyPressed histogram. This includes both key-down and
-    // key-char events. Consider reporting them separately.
+    // TODO(crbug.com/40126863): Currently, all EventType::kKeyPressed events
+    // are reported under EventLatency.KeyPressed histogram. This includes both
+    // key-down and key-char events. Consider reporting them separately.
     kKeyPressed,
     kKeyReleased,
     kTouchPressed,
@@ -321,6 +322,10 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
 
   std::unique_ptr<EventMetrics> Clone() const override;
 
+  void set_begin_frame_args(const viz::BeginFrameArgs& args) { args_ = args; }
+
+  const viz::BeginFrameArgs& begin_frame_args() const { return args_; }
+
  protected:
   ScrollEventMetrics(EventType type,
                      ScrollType scroll_type,
@@ -342,6 +347,11 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
 
   // Type of the input device for the event.
   ScrollType scroll_type_;
+
+  // The active viz::BeginFrameArgs when the event arrived in the Renderer.
+  // These may not match those of CompositorFrameReporter for which the event
+  // is eventually displayed.
+  viz::BeginFrameArgs args_;
 };
 
 class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
@@ -356,11 +366,12 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
 
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns `nullptr`. Should only be used for scroll-update events.
-  // The |blocking_touch_dispatched_to_renderer| must be not null only for
+  // The `arrived_in_browser_main_timestamp` can be null for events that were
+  // generated synthetically within the Renderer.  The
+  // `blocking_touch_dispatched_to_renderer` must be not null only for
   // scrolls which corresponding TouchMove was blocking.
   //
-  // TODO(b/224960731): Fix tests and stop supporting the case when
-  // `arrived_in_browser_main_timestamp` is null.
+  // TODO(b/329346768): Build `trace_id` generation for synthetic events.
   static std::unique_ptr<ScrollUpdateEventMetrics> Create(
       ui::EventType type,
       ui::ScrollInputType input_type,
@@ -369,8 +380,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       float delta,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      TraceId trace_id,
-      base::TimeTicks blocking_touch_dispatched_to_renderer);
+      base::TimeTicks blocking_touch_dispatched_to_renderer,
+      std::optional<TraceId> trace_id);
 
   // Prefer to use `Create()` above. This method is used only by the Browser
   // process which have own breakdowns.

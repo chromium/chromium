@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/format_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/crash/core/common/crash_key.h"

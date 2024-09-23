@@ -8,7 +8,10 @@ template("_androidx_prebuilt") {
   target(invoker.target_type, target_name) {
     forward_variables_from(invoker, "*", [ "target_type" ])
 
-    if (target_name == "androidx_annotation_annotation_jvm_java") {
+    if (target_name == "androidx_annotation_annotation_java") {
+      # Ensure this dep is the suggested one when targets are missing it.
+      preferred_dep = true
+    } else if (target_name == "androidx_annotation_annotation_jvm_java") {
       # https://crbug.com/989505
       jar_excluded_patterns = [ "META-INF/proguard/*" ]
       proguard_configs = [ "androidx_annotations.flags" ]
@@ -48,9 +51,8 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_lifecycle_lifecycle_process_java") {
       # Only useful for very old SDKs.
       ignore_proguard_configs = true
-    } else if (target_name == "androidx_lifecycle_lifecycle_runtime_java") {
-      # https://crbug.com/887942#c1
-      ignore_proguard_configs = true
+    } else if (target_name == "androidx_graphics_graphics_path_java") {
+      ignore_native_libraries = true
     } else if (target_name == "androidx_media_media_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true
@@ -66,14 +68,6 @@ template("_androidx_prebuilt") {
     } else if (target_name == "androidx_startup_startup_runtime_java") {
       # Keeps emoji2 code. See http://crbug.com/1205141
       ignore_proguard_configs = true
-    } else if (target_name == "androidx_test_rules_java") {
-      # Target needs Android SDK deps which exist in third_party/android_sdk.
-
-      deps += [
-        "//third_party/android_sdk:android_test_base_java",
-        "//third_party/android_sdk:android_test_mock_java",
-        "//third_party/android_sdk:android_test_runner_java",
-      ]
     } else if (target_name == "androidx_test_uiautomator_uiautomator_java") {
       deps += [ ":androidx_test_runner_java" ]
     } else if (target_name == "androidx_tracing_tracing_perfetto_java") {
@@ -89,11 +83,28 @@ template("_androidx_prebuilt") {
                "androidx_versionedparcelable_versionedparcelable_java") {
       # Target has AIDL, but we do not support it yet: http://crbug.com/644439
       ignore_aidl = true
+    } else if (target_name == "androidx_window_window_java") {
+      deps += [
+        # This library has a <uses-library> to enable some extra OS APIs, so ensure the
+        # .jar file is made available to R8 via this dep.
+        "//third_party/android_sdk:android_window_extensions_java",
+
+        # Sidecar as a library seems to be gone in Maven, so deps don't exist
+        # onto sidecar.
+        "//third_party/androidx:androidx_window_sidecar_sidecar_java",
+      ]
     } else if (target_name == "androidx_webkit_webkit_java") {
       visibility = [
         "//android_webview/tools/system_webview_shell:*",
         "//third_party/android_deps:*",
       ]
+    } else if (target_name == "androidx_room_room_guava_java") {
+      deps -= [ ":androidx_room_room_runtime_jvm_java" ]
+      deps += [ ":androidx_room_room_runtime_android_java" ]
+    } else if (target_name == "androidx_sqlite_sqlite_framework_android_java" ||
+               target_name == "androidx_room_room_runtime_android_java") {
+      deps -= [ ":androidx_sqlite_sqlite_jvm_java" ]
+      deps += [ ":androidx_sqlite_sqlite_android_java" ]
     }
   }
 
@@ -123,5 +134,17 @@ template("androidx_android_aar_prebuilt") {
     # The libraries have duplicate resources such as
     # "primary_text_default_material_dark".
     resource_overlay = true
+
+    if (target_name == "androidx_pdf_pdf_viewer_java") {
+      # Target has AIDL, but we do not support it yet: http://crbug.com/644439
+      ignore_aidl = true
+    }
+  }
+}
+
+template("androidx_java_group") {
+  _androidx_prebuilt(target_name) {
+    forward_variables_from(invoker, "*")
+    target_type = "java_group"
   }
 }

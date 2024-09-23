@@ -122,12 +122,9 @@ SuggestionContainerView::~SuggestionContainerView() {
     AssistantSuggestionsController::Get()->GetModel()->RemoveObserver(this);
 }
 
-gfx::Size SuggestionContainerView::CalculatePreferredSize() const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
-}
-
-int SuggestionContainerView::GetHeightForWidth(int width) const {
-  return kPreferredHeightDip;
+gfx::Size SuggestionContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(INT_MAX, kPreferredHeightDip);
 }
 
 void SuggestionContainerView::OnContentsPreferredSizeChanged(

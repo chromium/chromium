@@ -22,7 +22,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -65,7 +64,6 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
         mPref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_TASK_ID);
         mPref.removeKey(ChromePreferenceKeys.CUSTOM_TABS_LAST_URL);
 
-        UmaRecorderHolder.resetForTesting();
         ShadowSystemClock.reset();
     }
 

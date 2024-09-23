@@ -34,10 +34,7 @@ build_epoll_based_tools = is_linux || is_chromeos
 config("quiche_internal_config") {
   cflags = []
   if (is_clang) {
-    cflags += [
-      "-Wno-unused-private-field",
-      "-Wno-sign-compare",
-    ]
+    cflags += [ "-Wno-sign-compare" ]
   }
 }
 
@@ -52,6 +49,9 @@ config("quiche_config") {
 }
 
 component("quiche") {
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [ "-Wno-deprecated-declarations" ]
   sources = [
               "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",
               "overrides/quiche_platform_impl/quiche_client_stats_impl.h",
@@ -63,6 +63,8 @@ component("quiche") {
               "overrides/quiche_platform_impl/quiche_mutex_impl.h",
               "overrides/quiche_platform_impl/quiche_reference_counted_impl.h",
               "overrides/quiche_platform_impl/quiche_server_stats_impl.h",
+              "overrides/quiche_platform_impl/quiche_stack_trace_impl.cc",
+              "overrides/quiche_platform_impl/quiche_stack_trace_impl.h",
               "overrides/quiche_platform_impl/quiche_time_utils_impl.cc",
               "overrides/quiche_platform_impl/quiche_time_utils_impl.h",
               "overrides/quiche_platform_impl/quiche_url_utils_impl.cc",
@@ -78,7 +80,7 @@ component("quiche") {
   all_dependent_configs = [ ":quiche_config" ]
 
   deps = [
-    "//net:uri_template",
+    "//net/third_party/uri_template",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib",
   ]
@@ -132,6 +134,9 @@ proto_library("net_quic_test_tools_proto") {
 
 if (build_epoll_based_tools) {
   static_library("epoll_tool_support") {
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [ "-Wno-deprecated-declarations" ]
     testonly = true
     sources = [
                 "overrides/quiche_platform_impl/quiche_udp_socket_platform_impl.h",
@@ -208,6 +213,10 @@ if (build_epoll_based_tools) {
 
   executable("masque_client") {
     testonly = true
+
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [ "-Wno-deprecated-declarations" ]
     sources = [ "src/quiche/quic/masque/masque_client_bin.cc" ]
 
     configs += [ ":quiche_internal_config" ]
@@ -260,6 +269,10 @@ if (build_epoll_based_tools) {
 
 static_library("quiche_test_support") {
   testonly = true
+
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [ "-Wno-deprecated-declarations" ]
   sources = [
               "overrides/quiche_platform_impl/quiche_expect_bug_impl.h",
               "overrides/quiche_platform_impl/quiche_mock_log_impl.h",
@@ -307,7 +320,6 @@ static_library("quiche_tool_support") {
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//net",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/quic_trace:quic_trace_proto",
@@ -323,6 +335,10 @@ if (!is_ios) {
   # on those.
   source_set("quic_client_core") {
     testonly = true
+
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [ "-Wno-deprecated-declarations" ]
     sources = [
       "src/quiche/quic/tools/quic_toy_client.cc",
       "src/quiche/quic/tools/quic_toy_client.h",
@@ -355,6 +371,10 @@ if (!is_ios) {
 
   executable("quic_packet_printer") {
     testonly = true
+
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [ "-Wno-deprecated-declarations" ]
     sources = [ "src/quiche/quic/tools/quic_packet_printer_bin.cc" ]
 
     configs += [ ":quiche_internal_config" ]
@@ -372,6 +392,10 @@ if (!is_ios) {
 
   executable("quic_crypto_message_printer") {
     testonly = true
+
+    # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+    # absl::HexStringToBytes have been removed.
+    cflags = [ "-Wno-deprecated-declarations" ]
     sources = [ "src/quiche/quic/tools/crypto_message_printer_bin.cc" ]
 
     configs += [ ":quiche_internal_config" ]
@@ -437,10 +461,15 @@ bundle_data("test_data") {
 
 source_set("quiche_tests") {
   testonly = true
+
+  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
+  # absl::HexStringToBytes have been removed.
+  cflags = [ "-Wno-deprecated-declarations" ]
   sources = [
     "src/quiche/binary_http/binary_http_message_test.cc",
     "src/quiche/blind_sign_auth/blind_sign_auth_test.cc",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth_test.cc",
+    "src/quiche/common/btree_scheduler_test.cc",
     "src/quiche/common/capsule_test.cc",
     "src/quiche/common/http/http_header_block_test.cc",
     "src/quiche/common/http/http_header_storage_test.cc",
@@ -454,6 +483,7 @@ source_set("quiche_tests") {
     "src/quiche/common/platform/api/quiche_stack_trace_test.cc",
     "src/quiche/common/platform/api/quiche_time_utils_test.cc",
     "src/quiche/common/platform/api/quiche_url_utils_test.cc",
+    "src/quiche/common/print_elements_test.cc",
     "src/quiche/common/quiche_buffer_allocator_test.cc",
     "src/quiche/common/quiche_callbacks_test.cc",
     "src/quiche/common/quiche_circular_deque_test.cc",
@@ -471,6 +501,7 @@ source_set("quiche_tests") {
     "src/quiche/common/structured_headers_test.cc",
     "src/quiche/common/test_tools/mock_streams_test.cc",
     "src/quiche/common/test_tools/quiche_test_utils_test.cc",
+    "src/quiche/common/wire_serialization_test.cc",
     "src/quiche/http2/adapter/event_forwarder_test.cc",
     "src/quiche/http2/adapter/header_validator_test.cc",
     "src/quiche/http2/adapter/noop_header_validator_test.cc",
@@ -480,7 +511,12 @@ source_set("quiche_tests") {
     "src/quiche/http2/adapter/oghttp2_util_test.cc",
     "src/quiche/http2/adapter/recording_http2_visitor_test.cc",
     "src/quiche/http2/adapter/window_manager_test.cc",
+    "src/quiche/http2/core/array_output_buffer_test.cc",
     "src/quiche/http2/core/priority_write_scheduler_test.cc",
+    "src/quiche/http2/core/spdy_alt_svc_wire_format_test.cc",
+    "src/quiche/http2/core/spdy_frame_builder_test.cc",
+    "src/quiche/http2/core/spdy_framer_test.cc",
+    "src/quiche/http2/core/spdy_protocol_test.cc",
     "src/quiche/http2/decoder/decode_buffer_test.cc",
     "src/quiche/http2/decoder/decode_http2_structures_test.cc",
     "src/quiche/http2/decoder/http2_frame_decoder_test.cc",
@@ -509,6 +545,11 @@ source_set("quiche_tests") {
     "src/quiche/http2/hpack/decoder/hpack_entry_type_decoder_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_string_decoder_test.cc",
     "src/quiche/http2/hpack/decoder/hpack_whole_entry_buffer_test.cc",
+    "src/quiche/http2/hpack/hpack_encoder_test.cc",
+    "src/quiche/http2/hpack/hpack_entry_test.cc",
+    "src/quiche/http2/hpack/hpack_header_table_test.cc",
+    "src/quiche/http2/hpack/hpack_output_stream_test.cc",
+    "src/quiche/http2/hpack/hpack_static_table_test.cc",
     "src/quiche/http2/hpack/http2_hpack_constants_test.cc",
     "src/quiche/http2/hpack/huffman/hpack_huffman_decoder_test.cc",
     "src/quiche/http2/hpack/huffman/hpack_huffman_encoder_test.cc",
@@ -519,6 +560,7 @@ source_set("quiche_tests") {
     "src/quiche/http2/http2_constants_test.cc",
     "src/quiche/http2/http2_structures_test.cc",
     "src/quiche/http2/test_tools/hpack_block_builder_test.cc",
+    "src/quiche/http2/test_tools/hpack_example_test.cc",
     "src/quiche/http2/test_tools/http2_frame_builder_test.cc",
     "src/quiche/http2/test_tools/http2_random_test.cc",
     "src/quiche/http2/test_tools/random_decoder_test_base_test.cc",
@@ -573,6 +615,7 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/crypto/quic_hkdf_test.cc",
     "src/quiche/quic/core/crypto/transport_parameters_test.cc",
     "src/quiche/quic/core/crypto/web_transport_fingerprint_proof_verifier_test.cc",
+    "src/quiche/quic/core/deterministic_connection_id_generator_test.cc",
     "src/quiche/quic/core/frames/quic_frames_test.cc",
     "src/quiche/quic/core/http/http_decoder_test.cc",
     "src/quiche/quic/core/http/http_encoder_test.cc",
@@ -630,6 +673,7 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/quic_error_codes_test.cc",
     "src/quiche/quic/core/quic_flow_controller_test.cc",
     "src/quiche/quic/core/quic_framer_test.cc",
+    "src/quiche/quic/core/quic_generic_session_test.cc",
     "src/quiche/quic/core/quic_idle_network_detector_test.cc",
     "src/quiche/quic/core/quic_interval_deque_test.cc",
     "src/quiche/quic/core/quic_interval_set_test.cc",
@@ -666,6 +710,7 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/quic_write_blocked_list_test.cc",
     "src/quiche/quic/core/tls_chlo_extractor_test.cc",
     "src/quiche/quic/core/tls_client_handshaker_test.cc",
+    "src/quiche/quic/core/tls_server_handshaker_test.cc",
     "src/quiche/quic/core/uber_quic_stream_id_manager_test.cc",
     "src/quiche/quic/core/uber_received_packet_manager_test.cc",
     "src/quiche/quic/platform/api/quic_socket_address_test.cc",
@@ -675,21 +720,13 @@ source_set("quiche_tests") {
     "src/quiche/quic/test_tools/simulator/quic_endpoint_test.cc",
     "src/quiche/quic/test_tools/simulator/simulator_test.cc",
     "src/quiche/quic/test_tools/test_ip_packets_test.cc",
+    "src/quiche/quic/tools/connect_tunnel_test.cc",
+    "src/quiche/quic/tools/connect_udp_tunnel_test.cc",
     "src/quiche/quic/tools/quic_memory_cache_backend_test.cc",
     "src/quiche/quic/tools/quic_tcp_like_trace_converter_test.cc",
     "src/quiche/quic/tools/simple_ticket_crypter_test.cc",
-    "src/quiche/spdy/core/array_output_buffer_test.cc",
     "src/quiche/spdy/core/hpack/hpack_decoder_adapter_test.cc",
-    "src/quiche/spdy/core/hpack/hpack_encoder_test.cc",
-    "src/quiche/spdy/core/hpack/hpack_entry_test.cc",
-    "src/quiche/spdy/core/hpack/hpack_header_table_test.cc",
-    "src/quiche/spdy/core/hpack/hpack_output_stream_test.cc",
     "src/quiche/spdy/core/hpack/hpack_round_trip_test.cc",
-    "src/quiche/spdy/core/hpack/hpack_static_table_test.cc",
-    "src/quiche/spdy/core/spdy_alt_svc_wire_format_test.cc",
-    "src/quiche/spdy/core/spdy_frame_builder_test.cc",
-    "src/quiche/spdy/core/spdy_framer_test.cc",
-    "src/quiche/spdy/core/spdy_protocol_test.cc",
     "src/quiche/web_transport/encapsulated/encapsulated_web_transport_test.cc",
     "src/quiche/web_transport/web_transport_headers_test.cc",
   ]
@@ -810,19 +847,13 @@ fuzzer_test("net_qpack_round_trip_fuzzer") {
 }
 
 component("blind_sign_auth") {
-  visibility = [
-    ":blind_sign_auth_test_support",
-    ":quiche_tests",
-    "//chrome/browser:browser",
-    "//chrome/test:*",
-  ]
-
   sources = [
     "src/quiche/blind_sign_auth/blind_sign_auth.cc",
     "src/quiche/blind_sign_auth/blind_sign_auth.h",
     "src/quiche/blind_sign_auth/blind_sign_auth_interface.h",
-    "src/quiche/blind_sign_auth/blind_sign_http_interface.h",
-    "src/quiche/blind_sign_auth/blind_sign_http_response.h",
+    "src/quiche/blind_sign_auth/blind_sign_message_interface.h",
+    "src/quiche/blind_sign_auth/blind_sign_message_response.cc",
+    "src/quiche/blind_sign_auth/blind_sign_message_response.h",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth.cc",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth.h",
   ]
@@ -855,19 +886,10 @@ proto_library("blind_sign_auth_proto") {
     ":blind_sign_auth_test_support",
     ":quiche",
     ":quiche_tests",
+    "//components/ip_protection/*",
   ]
 
-  sources = [
-    "src/quiche/blind_sign_auth/proto/any.proto",
-    "src/quiche/blind_sign_auth/proto/attestation.proto",
-    "src/quiche/blind_sign_auth/proto/auth_and_sign.proto",
-    "src/quiche/blind_sign_auth/proto/blind_sign_auth_options.proto",
-    "src/quiche/blind_sign_auth/proto/get_initial_data.proto",
-    "src/quiche/blind_sign_auth/proto/key_services.proto",
-    "src/quiche/blind_sign_auth/proto/proxy_layer.proto",
-    "src/quiche/blind_sign_auth/proto/public_metadata.proto",
-    "src/quiche/blind_sign_auth/proto/spend_token_data.proto",
-  ]
+  sources = protobuf_blind_sign_auth
   cc_generator_options = "lite=true,dllexport_decl=COMPONENT_EXPORT(QUICHE):"
   cc_include = "base/component_export.h"
   component_build_force_source_set = true
@@ -892,7 +914,7 @@ source_set("blind_sign_auth_test_support") {
   testonly = true
   sources = [
     "src/quiche/blind_sign_auth/test_tools/mock_blind_sign_auth_interface.h",
-    "src/quiche/blind_sign_auth/test_tools/mock_blind_sign_http_interface.h",
+    "src/quiche/blind_sign_auth/test_tools/mock_blind_sign_message_interface.h",
   ]
   configs += [ ":quiche_internal_config" ]
   public_configs = [ ":quiche_config" ]
@@ -905,4 +927,31 @@ source_set("blind_sign_auth_test_support") {
   ]
   public_deps =
       [ "//third_party/anonymous_tokens:anonymous_tokens_test_support" ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  proto_java_library("blind_sign_auth_proto_java") {
+    visibility = [
+      "//components/ip_protection/*",
+      "//net/third_party/quiche/*",
+    ]
+
+    proto_path = "src/"
+
+    sources = [
+      "src/quiche/blind_sign_auth/proto/any.proto",
+      "src/quiche/blind_sign_auth/proto/attestation.proto",
+      "src/quiche/blind_sign_auth/proto/auth_and_sign.proto",
+      "src/quiche/blind_sign_auth/proto/get_initial_data.proto",
+      "src/quiche/blind_sign_auth/proto/key_services.proto",
+      "src/quiche/blind_sign_auth/proto/proxy_layer.proto",
+      "src/quiche/blind_sign_auth/proto/public_metadata.proto",
+    ]
+
+    deps = [ "//third_party/anonymous_tokens:anonymous_tokens_java_proto" ]
+
+    import_dirs = [ "//third_party/anonymous_tokens/src/" ]
+  }
 }

@@ -3,14 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "base/memory/scoped_refptr.h"
 
 #include <memory>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
@@ -21,7 +24,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
-#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -35,10 +37,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/performance_manager/public/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -46,6 +48,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/gfx/scrollbar_size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/webview/webview.h"
@@ -100,17 +103,9 @@ std::u16string SubBrowserName(const char* fmt) {
 
 }  // namespace
 
-class BrowserViewTest : public TestWithBrowserView,
-                        public ::testing::WithParamInterface<bool> {
+class BrowserViewTest : public TestWithBrowserView {
  public:
-  BrowserViewTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/GetParam()
-            ? std::vector<base::test::FeatureRef>{features::kSidePanelPinning,
-                                                  features::kChromeRefresh2023}
-            : std::vector<base::test::FeatureRef>{},
-        /*disabled_features=*/{});
-  }
+  BrowserViewTest() = default;
 
   BrowserViewTest(const BrowserViewTest&) = delete;
   BrowserViewTest& operator=(const BrowserViewTest&) = delete;
@@ -131,13 +126,10 @@ class BrowserViewTest : public TestWithBrowserView,
     return std::make_unique<PinnedToolbarActionsModel>(
         Profile::FromBrowserContext(context));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test basic construction and initialization.
-TEST_P(BrowserViewTest, BrowserView) {
+TEST_F(BrowserViewTest, BrowserView) {
   // The window is owned by the native widget, not the test class.
   EXPECT_FALSE(window());
 
@@ -152,46 +144,104 @@ TEST_P(BrowserViewTest, BrowserView) {
   EXPECT_FALSE(browser_view()->IsBookmarkBarVisible());
   EXPECT_FALSE(browser_view()->IsBookmarkBarAnimating());
 
-  if (GetParam()) {
-    // Test action item creation and removal.
-    BrowserActions* browser_actions = BrowserActions::FromBrowser(browser());
-    const int side_panel_icon_size =
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
+  // Test action item creation.
+  BrowserActions* browser_actions = browser()->browser_actions();
 
-    ASSERT_NE(browser_actions->root_action_item(), nullptr);
-    EXPECT_GE(
-        browser_actions->root_action_item()->GetChildren().children().size(),
-        1UL);
+  ASSERT_NE(browser_actions->root_action_item(), nullptr);
+  EXPECT_GE(
+      browser_actions->root_action_item()->GetChildren().children().size(),
+      1UL);
 
-    actions::ActionItemVector actions;
-    auto& manager = actions::ActionManager::GetForTesting();
-    manager.GetActions(actions);
-    size_t non_browser_scoped_actions =
-        actions.size() -
-        browser_actions->root_action_item()->GetChildren().children().size() -
-        1;
+  actions::ActionItemVector actions;
+  auto& manager = actions::ActionManager::GetForTesting();
+  manager.GetActions(actions);
 
-    actions::ActionItem* customize_chrome_action =
-        manager.FindAction(kActionSidePanelShowCustomizeChrome,
-                           browser_actions->root_action_item());
-    EXPECT_EQ(customize_chrome_action->GetText(),
-              l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE));
-    EXPECT_EQ(
-        customize_chrome_action->GetImage(),
-        ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
-                                       ui::kColorIcon, side_panel_icon_size));
-    EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
-    browser()->RemoveUserData(BrowserActions::UserDataKey());
+  actions::ActionItem* customize_chrome_action = manager.FindAction(
+      kActionSidePanelShowCustomizeChrome, browser_actions->root_action_item());
+  EXPECT_EQ(customize_chrome_action->GetText(),
+            l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE));
+  EXPECT_EQ(customize_chrome_action->GetImage(),
+            ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
+                                           ui::kColorIcon));
+  EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
+}
 
-    actions.clear();
-    manager.GetActions(actions);
-    EXPECT_EQ(actions.size(), non_browser_scoped_actions);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
+  ASSERT_TRUE(browser_view()->browser());
+  browser_view()->browser()->SetLockedForOnTask(true);
+  EXPECT_FALSE(browser_view()->CanMinimize());
+  EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
+}
+
+TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
+  ASSERT_TRUE(browser_view()->browser());
+  browser_view()->browser()->SetLockedForOnTask(false);
+  EXPECT_TRUE(browser_view()->CanMinimize());
+  EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
+}
+#endif
+
+namespace {
+// A thin wrapper around `Browser` to ensure that it's destructed in the right
+// order.
+class ScopedBrowser {
+ public:
+  explicit ScopedBrowser(Profile* profile) {
+    Browser::CreateParams params(profile, true);
+    browser_view_ =
+        BrowserView::GetBrowserViewForBrowser(Browser::Create(params));
   }
+  ScopedBrowser(const ScopedBrowser&) = delete;
+  ScopedBrowser& operator=(const ScopedBrowser&) = delete;
+  ~ScopedBrowser() {
+    browser_view_->browser()->tab_strip_model()->CloseAllTabs();
+    browser_view_.ExtractAsDangling()->GetWidget()->CloseNow();
+    content::RunAllTasksUntilIdle();
+  }
+
+  Browser* browser() { return browser_view_->browser(); }
+
+ private:
+  raw_ptr<BrowserView> browser_view_;
+};
+}  // namespace
+
+// TODO(crbug.com/326199292): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UpdateActiveBrowser DISABLED_UpdateActiveBrowser
+#else
+#define MAYBE_UpdateActiveBrowser UpdateActiveBrowser
+#endif
+
+// Test that calling `BrowserView::Activate()` or `BrowserView::Show()` sets
+// the last active browser synchronously.
+TEST_F(BrowserViewTest, MAYBE_UpdateActiveBrowser) {
+  // On platforms like Ash-Chrome, for `BrowserView::Activate()` to actually
+  // activate the browser, it has to be made visible first. Thus
+  // `BrowserView::Show()` has to be called first.
+  ScopedBrowser scoped_browser(profile());
+  Browser* browser2 = scoped_browser.browser();
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+
+  browser2->window()->Show();
+  EXPECT_EQ(browser2, BrowserList::GetInstance()->GetLastActive());
+
+  browser()->window()->Show();
+  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+
+  browser2->window()->Activate();
+  EXPECT_EQ(browser2, BrowserList::GetInstance()->GetLastActive());
+
+  browser()->window()->Activate();
+  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+
+  browser2 = nullptr;
 }
 
 // Test layout of the top-of-window UI.
-TEST_P(BrowserViewTest, DISABLED_BrowserViewLayout) {
+TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
   BookmarkBarView::DisableAnimationsForTesting(true);
 
   // |browser_view_| owns the Browser, not the test class.
@@ -280,7 +330,7 @@ TEST_P(BrowserViewTest, DISABLED_BrowserViewLayout) {
   BookmarkBarView::DisableAnimationsForTesting(false);
 }
 
-// TODO(https://crbug.com/1020758): Flaky on Linux.
+// TODO(crbug.com/40656637): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FindBarBoundingBoxLocationBar \
   DISABLED_FindBarBoundingBoxLocationBar
@@ -288,7 +338,7 @@ TEST_P(BrowserViewTest, DISABLED_BrowserViewLayout) {
 #define MAYBE_FindBarBoundingBoxLocationBar FindBarBoundingBoxLocationBar
 #endif
 // Test the find bar's bounding box when the location bar is visible.
-TEST_P(BrowserViewTest, MAYBE_FindBarBoundingBoxLocationBar) {
+TEST_F(BrowserViewTest, MAYBE_FindBarBoundingBoxLocationBar) {
   ASSERT_FALSE(base::i18n::IsRTL());
   const views::View* location_bar = browser_view()->GetLocationBarView();
   const views::View* contents_container =
@@ -310,7 +360,7 @@ TEST_P(BrowserViewTest, MAYBE_FindBarBoundingBoxLocationBar) {
 }
 
 // Test the find bar's bounding box when the location bar is not visible.
-TEST_P(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
+TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
   ASSERT_FALSE(base::i18n::IsRTL());
   const views::View* location_bar = browser_view()->GetLocationBarView();
   const views::View* contents_container =
@@ -329,7 +379,7 @@ TEST_P(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
 
 // Tests that a browser window is correctly associated to a WebContents that
 // belongs to that window's UI hierarchy.
-TEST_P(BrowserViewTest, FindBrowserWindowWithWebContents) {
+TEST_F(BrowserViewTest, FindBrowserWindowWithWebContents) {
   auto web_view = std::make_unique<views::WebView>(browser()->profile());
   ASSERT_NE(nullptr, web_view->GetWebContents());
 
@@ -354,7 +404,7 @@ TEST_P(BrowserViewTest, FindBrowserWindowWithWebContents) {
 
 // Tests that tab contents are correctly associated with their browser window,
 // even when non-active.
-TEST_P(BrowserViewTest, FindBrowserWindowWithWebContentsTabSwitch) {
+TEST_F(BrowserViewTest, FindBrowserWindowWithWebContentsTabSwitch) {
   AddTab(browser_view()->browser(), GURL("about:blank"));
   content::WebContents* original_active_contents =
       browser_view()->GetActiveWebContents();
@@ -383,7 +433,7 @@ TEST_P(BrowserViewTest, FindBrowserWindowWithWebContentsTabSwitch) {
 // Test that repeated accelerators are processed or ignored depending on the
 // commands that they refer to. The behavior for different commands is dictated
 // by IsCommandRepeatable() in chrome/browser/ui/views/accelerator_table.h.
-TEST_P(BrowserViewTest, DISABLED_RepeatedAccelerators) {
+TEST_F(BrowserViewTest, DISABLED_RepeatedAccelerators) {
   // A non-repeated Ctrl-L accelerator should be processed.
   const ui::Accelerator kLocationAccel(ui::VKEY_L, ui::EF_PLATFORM_ACCELERATOR);
   EXPECT_TRUE(browser_view()->AcceleratorPressed(kLocationAccel));
@@ -401,14 +451,14 @@ TEST_P(BrowserViewTest, DISABLED_RepeatedAccelerators) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 // Test that bookmark bar view becomes invisible when closing the browser.
-// TODO(https://crbug.com/1000251): Flaky on Linux.
+// TODO(crbug.com/40097152): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BookmarkBarInvisibleOnShutdown \
   DISABLED_BookmarkBarInvisibleOnShutdown
 #else
 #define MAYBE_BookmarkBarInvisibleOnShutdown BookmarkBarInvisibleOnShutdown
 #endif
-TEST_P(BrowserViewTest, MAYBE_BookmarkBarInvisibleOnShutdown) {
+TEST_F(BrowserViewTest, MAYBE_BookmarkBarInvisibleOnShutdown) {
   BookmarkBarView::DisableAnimationsForTesting(true);
 
   Browser* browser = browser_view()->browser();
@@ -429,7 +479,7 @@ TEST_P(BrowserViewTest, MAYBE_BookmarkBarInvisibleOnShutdown) {
   BookmarkBarView::DisableAnimationsForTesting(false);
 }
 
-TEST_P(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
+TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
   EXPECT_EQ(SubBrowserName("Untitled - %s"),
             browser_view()->GetAccessibleWindowTitleForChannelAndProfile(
                 version_info::Channel::STABLE, browser()->profile()));
@@ -475,7 +525,7 @@ TEST_P(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
           TestingProfile::Builder().BuildIncognito(profile)));
 }
 
-TEST_P(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
+TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   scoped_refptr<TabResourceUsage> tab_resource_usage_ =
       base::MakeRefCounted<TabResourceUsage>();
   tab_resource_usage_->SetMemoryUsageInBytes(100);
@@ -484,17 +534,13 @@ TEST_P(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   memory_usage.tab_resource_usage = tab_resource_usage_;
 
   AddTab(browser(), GURL("about:blank"));
-  Tab* tab = browser_view()->tabstrip()->tab_at(0);
+  Tab* const tab = browser_view()->tabstrip()->tab_at(0);
   tab->SetData(std::move(memory_usage));
 
   // Expect that low memory usage isn't in the window title.
   EXPECT_EQ(SubBrowserName("about:blank - %s"),
             browser_view()->GetAccessibleWindowTitle());
-  uint64_t memory_used =
-      static_cast<uint64_t>(
-          performance_manager::features::
-              kMemoryUsageInHovercardsHighThresholdBytes.Get()) +
-      1;
+  uint64_t memory_used = TabResourceUsage::kHighMemoryUsageThresholdBytes + 1;
   tab_resource_usage_->SetMemoryUsageInBytes(memory_used);
 
   // Expect that high memory usage is in the window title.
@@ -504,7 +550,7 @@ TEST_P(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
 
 #if BUILDFLAG(IS_MAC)
 // Tests that audio playing state is reflected in the "Window" menu on Mac.
-TEST_P(BrowserViewTest, TitleAudioIndicators) {
+TEST_F(BrowserViewTest, TitleAudioIndicators) {
   std::u16string playing_icon = u"\U0001F50A";
   std::u16string muted_icon = u"\U0001F507";
 
@@ -534,7 +580,7 @@ TEST_P(BrowserViewTest, TitleAudioIndicators) {
 }
 #endif
 
-TEST_P(BrowserViewTest, RotatePaneFocusFromView) {
+TEST_F(BrowserViewTest, RotatePaneFocusFromView) {
   auto dialog_model = ui::DialogModel::Builder()
                           .SetTitle(u"test")
                           .SetIsAlertDialog()
@@ -564,10 +610,17 @@ TEST_P(BrowserViewTest, RotatePaneFocusFromView) {
   EXPECT_EQ(ok_button, focus_manager->GetStoredFocusView());
 }
 
+TEST_F(BrowserViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  browser_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kClient);
+}
+
 //  Macs do not have fullscreen policy.
 #if !BUILDFLAG(IS_MAC)
 
-TEST_P(BrowserViewTest, CanFullscreenPolicyWatcher) {
+TEST_F(BrowserViewTest, CanFullscreenPolicyWatcher) {
   auto* fullscreen_pref_path = prefs::kFullscreenAllowed;
   EXPECT_TRUE(browser_view()->CanFullscreen());
 
@@ -686,5 +739,3 @@ TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
   EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
   EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, BrowserViewTest, ::testing::Bool());

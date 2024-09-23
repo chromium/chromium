@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -97,8 +98,8 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
     DCHECK(crash_streak);
     num_crashes = crash_streak.value();
   } else {
-    // TODO(crbug/1341087): Consider not falling back to Local State for clients
-    // on platforms that support the beacon file.
+    // TODO(crbug.com/40850830): Consider not falling back to Local State for
+    // clients on platforms that support the beacon file.
     num_crashes = local_state->GetInteger(kVariationsCrashStreak);
   }
 
@@ -257,7 +258,7 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
-  // TODO(crbug/1231106): For the time being, this is a no-op; i.e.,
+  // TODO(crbug.com/40190558): For the time being, this is a no-op; i.e.,
   // ShouldUseUserDefaultsBeacon() always returns false.
   if (ShouldUseUserDefaultsBeacon())
     return backup_beacon_value.value_or(true);
@@ -301,8 +302,8 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
     DCHECK(!exited_cleanly);
     WriteBeaconFile(exited_cleanly);
   } else {
-    // TODO(crbug/1341864): Stop updating |kStabilityExitedCleanly| on platforms
-    // that support the beacon file.
+    // TODO(crbug.com/40851383): Stop updating |kStabilityExitedCleanly| on
+    // platforms that support the beacon file.
     local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
     if (IsBeaconFileSupported()) {
       WriteBeaconFile(exited_cleanly);

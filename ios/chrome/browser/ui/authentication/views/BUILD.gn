@@ -16,6 +16,7 @@ source_set("views") {
     "//base",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
+    "//ios/chrome/browser/ui/authentication/views/resources",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]

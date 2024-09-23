@@ -333,6 +333,14 @@ TEST_F(DnsProbeServiceTest, CurrentConfig_Secure) {
   local_state()->SetManagedPref(
       prefs::kDnsOverHttpsTemplates,
       std::make_unique<base::Value>(kDohTemplateGet + " " + kDohTemplatePost));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // In a real user session, the pref
+  // prefs::kDnsOverHttpsEffectiveTemplatesChromeOS is set by
+  // ash::SecureDnsManager.
+  local_state()->SetString(prefs::kDnsOverHttpsEffectiveTemplatesChromeOS,
+                           kDohTemplateGet + " " + kDohTemplatePost);
+#endif
   ConfigureTest({}, {});
   net::DnsConfigOverrides overrides =
       probe_service()->GetCurrentConfigOverridesForTesting();

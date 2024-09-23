@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/android/android_video_encode_accelerator.h"
 
 #include <memory>
@@ -14,17 +19,16 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
-#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
-#include "media/video/picture.h"
+#include "media/base/video_frame.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "ui/gl/android/scoped_java_surface.h"
-#include "ui/gl/gl_bindings.h"
 
 namespace media {
 
@@ -371,7 +375,7 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   const int dst_stride_uv = input_buffer_stride_;
 
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
-      PIXEL_FORMAT_NV12, VideoFrame::kUVPlane, visible_size);
+      PIXEL_FORMAT_NV12, VideoFrame::Plane::kUV, visible_size);
   const size_t queued_size =
       // size of Y-plane plus padding till UV-plane
       uv_plane_offset +
@@ -391,12 +395,12 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   // Why NV12?  Because COLOR_FORMAT_YUV420_SEMIPLANAR.  See comment at other
   // mention of that constant.
   bool converted = !libyuv::I420ToNV12(
-      frame->visible_data(VideoFrame::kYPlane),
-      frame->stride(VideoFrame::kYPlane),
-      frame->visible_data(VideoFrame::kUPlane),
-      frame->stride(VideoFrame::kUPlane),
-      frame->visible_data(VideoFrame::kVPlane),
-      frame->stride(VideoFrame::kVPlane), dst_y, dst_stride_y, dst_uv,
+      frame->visible_data(VideoFrame::Plane::kY),
+      frame->stride(VideoFrame::Plane::kY),
+      frame->visible_data(VideoFrame::Plane::kU),
+      frame->stride(VideoFrame::Plane::kU),
+      frame->visible_data(VideoFrame::Plane::kV),
+      frame->stride(VideoFrame::Plane::kV), dst_y, dst_stride_y, dst_uv,
       dst_stride_uv, visible_size.width(), visible_size.height());
   if (!converted) {
     NotifyErrorStatus({EncoderStatus::Codes::kFormatConversionError,
@@ -407,7 +411,7 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   // MediaCodec encoder assumes the presentation timestamps to be monotonically
   // increasing at initialized framerate. But in Chromium, the video capture
   // may be paused for a while or drop some frames, so the timestamp in input
-  // frames won't be continious. Here we cache the timestamps of input frames,
+  // frames won't be continuous. Here we cache the timestamps of input frames,
   // mapping to the generated |presentation_timestamp_|, and will read them out
   // after encoding. Then encoder can work happily always and we can preserve
   // the timestamps in captured frames for other purpose.
@@ -470,12 +474,12 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
       break;
 
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
   const auto it = frame_timestamp_map_.find(presentaion_timestamp);
-  DCHECK(it != frame_timestamp_map_.end());
+  CHECK(it != frame_timestamp_map_.end(), base::NotFatalUntil::M130);
   const base::TimeDelta frame_timestamp = it->second;
   frame_timestamp_map_.erase(it);
 

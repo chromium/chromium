@@ -1,0 +1,25 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("parcel_tracking") {
+  sources = [
+    "parcel_tracking_infobar_modal_overlay_coordinator.h",
+    "parcel_tracking_infobar_modal_overlay_coordinator.mm",
+    "parcel_tracking_infobar_modal_overlay_mediator.h",
+    "parcel_tracking_infobar_modal_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_modal:mediators",
+    "//ios/chrome/browser/parcel_tracking:infobar_delegate",
+    "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/infobars/modals/parcel_tracking",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
+  ]
+}

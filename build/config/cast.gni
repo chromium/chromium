@@ -7,7 +7,7 @@
 # //chromecast/chromecast.gni.
 declare_args() {
   # Set this true for an audio-only Chromecast build.
-  # TODO(https://crbug.com/1516671): Remove this arg as CastOS builds are no
+  # TODO(crbug.com/41489655): Remove this arg as CastOS builds are no
   # longer supported.
   is_cast_audio_only = false
 

@@ -70,7 +70,6 @@ component("gcm") {
   ]
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/system:system",
     "//net",

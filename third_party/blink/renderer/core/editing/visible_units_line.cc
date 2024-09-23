@@ -33,10 +33,12 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
+#include "third_party/blink/renderer/core/editing/text_offset_mapping.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -228,6 +230,13 @@ PositionWithAffinityTemplate<Strategy> StartOfLineAlgorithm(
       vis_pos, c.GetPosition());
 }
 
+bool IsInlineBlock(const LayoutBlockFlow* block_flow) {
+  if (!block_flow) {
+    return false;
+  }
+  return block_flow->StyleRef().Display() == EDisplay::kInlineBlock;
+}
+
 }  // namespace
 
 PositionWithAffinity StartOfLine(const PositionWithAffinity& current_position) {
@@ -385,11 +394,24 @@ static bool InSameLineAlgorithm(
   const LayoutBlockFlow* block2 =
       NGInlineFormattingContextOf(position2.GetPosition());
   if (block1 || block2) {
-    if (block1 != block2) {
-      return false;
-    }
-    if (!InSameNGLineBox(position1, position2)) {
-      return false;
+    if (RuntimeEnabledFeatures::InlineBlockInSameLineEnabled() &&
+        (IsInlineBlock(block1) || IsInlineBlock(block2))) {
+      const TextOffsetMapping::InlineContents inline_contents1 =
+          TextOffsetMapping::FindForwardInlineContents(
+              ToPositionInFlatTree(position1.GetPosition()));
+      const TextOffsetMapping::InlineContents inline_contents2 =
+          TextOffsetMapping::FindForwardInlineContents(
+              ToPositionInFlatTree(position2.GetPosition()));
+      if (inline_contents1 != inline_contents2) {
+        return false;
+      }
+    } else {
+      if (block1 != block2) {
+        return false;
+      }
+      if (!InSameNGLineBox(position1, position2)) {
+        return false;
+      }
     }
     // See (ParameterizedVisibleUnitsLineTest.InSameLineWithMixedEditability
     return RootEditableElementOf(position1.GetPosition()) ==

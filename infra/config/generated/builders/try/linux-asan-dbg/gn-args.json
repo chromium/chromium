@@ -5,6 +5,9 @@
     "is_debug": true,
     "is_lsan": true,
     "symbol_level": 1,
-    "use_remoteexec": true
+    "target_cpu": "x64",
+    "target_os": "linux",
+    "use_remoteexec": true,
+    "use_siso": true
   }
 }

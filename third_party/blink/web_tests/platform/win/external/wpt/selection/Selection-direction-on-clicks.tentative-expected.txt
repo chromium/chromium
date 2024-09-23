@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] direction returns "none" when there is a double click selection(directionless)
+  assert_equals: expected "none" but got "forward"
+[FAIL] direction returns "none" when there is a triple click selection(directionless)
+  assert_equals: expected Element node <div id="container">hello, world</div> but got Text node "hello, world"
+[FAIL] direction returns "none" when the selection is collapsed
+  assert_equals: expected Text node "hello, world" but got Element node <div id="container">hello, world</div>
+Harness: the test ran to completion.
+

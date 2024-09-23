@@ -232,7 +232,6 @@ DaemonController::State ConvertToDaemonState(DWORD service_state) {
 
     default:
       NOTREACHED();
-      return DaemonController::STATE_UNKNOWN;
   }
 }
 

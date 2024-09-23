@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 
 #include <memory>
@@ -159,11 +164,12 @@ TEST(SharedMemoryVideoFramePoolTest, ReportsCorrectUtilization) {
 // Returns true iff each plane of the given |frame| is filled with
 // |values[plane]|.
 bool PlanesAreFilledWithValues(const VideoFrame& frame, const uint8_t* values) {
-  static_assert(VideoFrame::kUPlane == (VideoFrame::kYPlane + 1) &&
-                    VideoFrame::kVPlane == (VideoFrame::kUPlane + 1),
+  static_assert(VideoFrame::Plane::kU == (VideoFrame::Plane::kY + 1) &&
+                    VideoFrame::Plane::kV == (VideoFrame::Plane::kU + 1),
                 "enum values changed, will break code below");
-  for (int plane = VideoFrame::kYPlane; plane <= VideoFrame::kVPlane; ++plane) {
-    const uint8_t expected_value = values[plane - VideoFrame::kYPlane];
+  for (int plane = VideoFrame::Plane::kY; plane <= VideoFrame::Plane::kV;
+       ++plane) {
+    const uint8_t expected_value = values[plane - VideoFrame::Plane::kY];
     for (int y = 0; y < frame.rows(plane); ++y) {
       const uint8_t* row = frame.visible_data(plane) + y * frame.stride(plane);
       for (int x = 0; x < frame.row_bytes(plane); ++x) {

@@ -216,7 +216,7 @@ public class ThreadedInputConnectionTest {
         // Depending on the timing, the result may not be up-to-date.
         assertNotEquals(
                 "hello",
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<CharSequence>() {
                             @Override
                             public CharSequence call() {
@@ -227,7 +227,7 @@ public class ThreadedInputConnectionTest {
         mConnection.updateStateOnUiThread("hello", 5, 5, -1, -1, true, false);
         assertEquals(
                 "hello",
-                ThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         new Callable<CharSequence>() {
                             @Override
                             public CharSequence call() {

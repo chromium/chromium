@@ -13,7 +13,7 @@ rootWebArea
 ++++++++++image editable name='Image'
 ++++++++++staticText editable richlyEditable name=' and a '
 ++++++++++++inlineTextBox editable richlyEditable name=' and a '
-++++++++++button editable name='Button'
+++++++++++button editable name='Button' nameFrom=value
 ++++++++++++staticText name='Button'
 ++++++++++++++inlineTextBox name='Button'
 ++++++++++staticText editable richlyEditable name='.'
@@ -27,6 +27,6 @@ rootWebArea
 ++++++++list editable richlyEditable
 ++++++++++listItem editable richlyEditable
 ++++++++++++listMarker name='1. '
-++++++++++++++staticText ignored name='1. '
+++++++++++++++staticText ignored
 ++++++++++++staticText editable richlyEditable name='Editable list item.'
 ++++++++++++++inlineTextBox editable richlyEditable name='Editable list item.'

@@ -10,12 +10,14 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -39,117 +41,76 @@
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/capability_names.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
-#include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/scoped_handle.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 namespace remoting {
 
 using SetUpUrlForwarderResponse =
     protocol::UrlForwarderControl::SetUpUrlForwarderResponse;
 
-class DesktopSessionProxy::IpcSharedBufferCore
-    : public base::RefCountedThreadSafe<IpcSharedBufferCore> {
- public:
-  IpcSharedBufferCore(int id, base::ReadOnlySharedMemoryRegion region)
-      : id_(id) {
-    mapping_ = region.Map();
-    if (!mapping_.IsValid()) {
-      LOG(ERROR) << "Failed to map a shared buffer: id=" << id
-                 << ", size=" << region.GetSize();
-    }
-    // After being mapped, |region| is no longer needed and can be discarded.
-  }
-
-  IpcSharedBufferCore(const IpcSharedBufferCore&) = delete;
-  IpcSharedBufferCore& operator=(const IpcSharedBufferCore&) = delete;
-
-  int id() const { return id_; }
-  size_t size() const { return mapping_.size(); }
-  const void* memory() const { return mapping_.memory(); }
-
- private:
-  virtual ~IpcSharedBufferCore() = default;
-  friend class base::RefCountedThreadSafe<IpcSharedBufferCore>;
-
-  int id_;
-  base::ReadOnlySharedMemoryMapping mapping_;
-};
-
-class DesktopSessionProxy::IpcSharedBuffer : public webrtc::SharedMemory {
- public:
-  // Note that the webrtc::SharedMemory class is used for both read-only and
-  // writable shared memory, necessitating the ugly const_cast here.
-  IpcSharedBuffer(scoped_refptr<IpcSharedBufferCore> core)
-      : SharedMemory(const_cast<void*>(core->memory()),
-                     core->size(),
-                     0,
-                     core->id()),
-        core_(core) {}
-
-  IpcSharedBuffer(const IpcSharedBuffer&) = delete;
-  IpcSharedBuffer& operator=(const IpcSharedBuffer&) = delete;
-
- private:
-  scoped_refptr<IpcSharedBufferCore> core_;
-};
-
 DesktopSessionProxy::DesktopSessionProxy(
     scoped_refptr<base::SingleThreadTaskRunner> audio_capture_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::WeakPtr<ClientSessionControl> client_session_control,
     base::WeakPtr<ClientSessionEvents> client_session_events,
     base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
     const DesktopEnvironmentOptions& options)
-    : audio_capture_task_runner_(audio_capture_task_runner),
-      caller_task_runner_(caller_task_runner),
+    : base::RefCountedDeleteOnSequence<DesktopSessionProxy>(
+          base::SequencedTaskRunner::GetCurrentDefault()),
+      audio_capture_task_runner_(audio_capture_task_runner),
       io_task_runner_(io_task_runner),
       client_session_control_(client_session_control),
       client_session_events_(client_session_events),
       desktop_session_connector_(desktop_session_connector),
       ipc_file_operations_factory_(this),
-      pending_capture_frame_requests_(0),
       is_desktop_session_connected_(false),
-      options_(options) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-}
+      options_(options) {}
 
 std::unique_ptr<ActionExecutor> DesktopSessionProxy::CreateActionExecutor() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<IpcActionExecutor>(this);
 }
 
 std::unique_ptr<AudioCapturer> DesktopSessionProxy::CreateAudioCapturer() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<IpcAudioCapturer>(this);
 }
 
 std::unique_ptr<InputInjector> DesktopSessionProxy::CreateInputInjector() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<IpcInputInjector>(this);
 }
 
 std::unique_ptr<ScreenControls> DesktopSessionProxy::CreateScreenControls() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<IpcScreenControls>(this);
 }
 
-std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer(
+    webrtc::ScreenId id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Cursor compositing is done by the desktop process if necessary so just
   // return a non-composing frame capturer.
-  return std::make_unique<IpcVideoFrameCapturer>(this);
+  auto video_capturer = std::make_unique<IpcVideoFrameCapturer>(this);
+
+  DCHECK(!base::FindPtrOrNull(video_capturers_, id))
+      << "Multiple capturers created for screen-id " << id;
+  auto capturer_weakptr = video_capturer->GetWeakPtr();
+  video_capturers_[id] = capturer_weakptr;
+
+  // If the session-control endpoint is not bound, the Mojo endpoints will
+  // be requested for each IpcVideFrameCapturer when the Desktop process
+  // becomes attached.
+  if (desktop_session_control_) {
+    RequestMojoVideoCapturer(id, capturer_weakptr);
+  }
+
+  return video_capturer;
 }
 
 std::unique_ptr<webrtc::MouseCursorMonitor>
@@ -160,32 +121,39 @@ DesktopSessionProxy::CreateMouseCursorMonitor() {
 std::unique_ptr<KeyboardLayoutMonitor>
 DesktopSessionProxy::CreateKeyboardLayoutMonitor(
     base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<IpcKeyboardLayoutMonitor>(std::move(callback), this);
 }
 
 std::unique_ptr<FileOperations> DesktopSessionProxy::CreateFileOperations() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return ipc_file_operations_factory_.CreateFileOperations();
 }
 
 std::unique_ptr<UrlForwarderConfigurator>
 DesktopSessionProxy::CreateUrlForwarderConfigurator() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<IpcUrlForwarderConfigurator>(this);
 }
 
 std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
 DesktopSessionProxy::CreateRemoteWebAuthnStateChangeNotifier() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return std::make_unique<RemoteWebAuthnDelegatedStateChangeNotifier>(
       base::BindRepeating(&DesktopSessionProxy::SignalWebAuthnExtension, this));
 }
 
 std::string DesktopSessionProxy::GetCapabilities() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::string result = protocol::kRateLimitResizeRequests;
+  result += " ";
+  result += protocol::kMultiStreamCapability;
+
   // Ask the client to send its resolution unconditionally.
   if (options_.enable_curtaining()) {
     result += " ";
@@ -197,16 +165,6 @@ std::string DesktopSessionProxy::GetCapabilities() const {
     result += protocol::kTouchEventsCapability;
   }
 
-  if (options_.enable_file_transfer()) {
-    result += " ";
-    result += protocol::kFileTransferCapability;
-  }
-
-  if (options_.enable_remote_open_url() && IsRemoteOpenUrlSupported()) {
-    result += " ";
-    result += protocol::kRemoteOpenUrlCapability;
-  }
-
   if (options_.enable_remote_webauthn()) {
     result += " ";
     result += protocol::kRemoteWebAuthnCapability;
@@ -216,6 +174,8 @@ std::string DesktopSessionProxy::GetCapabilities() const {
 }
 
 void DesktopSessionProxy::SetCapabilities(const std::string& capabilities) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Delay creation of the desktop session until the client screen resolution is
   // received if the desktop session requires the initial screen resolution
   // (when enable_curtaining() is true) and the client is expected to
@@ -238,13 +198,12 @@ void DesktopSessionProxy::SetCapabilities(const std::string& capabilities) {
 }
 
 bool DesktopSessionProxy::OnMessageReceived(const IPC::Message& message) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED() << "Received unexpected IPC type: " << message.type();
-  return false;
 }
 
 void DesktopSessionProxy::OnChannelConnected(int32_t peer_pid) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG(1) << "IPC: network <- desktop (" << peer_pid << ")";
 
@@ -255,7 +214,7 @@ void DesktopSessionProxy::OnChannelConnected(int32_t peer_pid) {
 }
 
 void DesktopSessionProxy::OnChannelError() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DetachFromDesktop();
 }
@@ -263,7 +222,7 @@ void DesktopSessionProxy::OnChannelError() {
 void DesktopSessionProxy::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (interface_name == mojom::DesktopSessionEventHandler::Name_) {
     if (desktop_session_event_handler_.is_bound()) {
@@ -295,7 +254,7 @@ void DesktopSessionProxy::OnAssociatedInterfaceRequest(
 bool DesktopSessionProxy::AttachToDesktop(
     mojo::ScopedMessagePipeHandle desktop_pipe,
     int session_id) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!desktop_channel_);
 
   // Ignore the attach event if the client session has already disconnected.
@@ -321,7 +280,7 @@ bool DesktopSessionProxy::AttachToDesktop(
 }
 
 void DesktopSessionProxy::DetachFromDesktop() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   desktop_channel_.reset();
   desktop_session_agent_.reset();
@@ -334,16 +293,8 @@ void DesktopSessionProxy::DetachFromDesktop() {
   // We don't reset |is_url_forwarder_set_up_callback_| here since the request
   // can come in before the DetachFromDesktop-AttachToDesktop sequence.
 
-  shared_buffers_.clear();
-
   // Notify interested folks that the IPC has been disconnected.
   disconnect_handlers_.Notify();
-
-  // Generate fake responses to keep the video capturer in sync.
-  while (pending_capture_frame_requests_) {
-    OnCaptureResult(mojom::CaptureResult::NewCaptureError(
-        webrtc::DesktopCapturer::Result::ERROR_TEMPORARY));
-  }
 
   if (client_session_events_) {
     client_session_events_->OnDesktopDetached();
@@ -353,12 +304,22 @@ void DesktopSessionProxy::DetachFromDesktop() {
 void DesktopSessionProxy::OnDesktopSessionAgentStarted(
     mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
         pending_remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Reset the associated remote to allow us to connect to the new desktop
   // process. This is needed as the desktop may crash and the daemon process
   // will restart it however the remote will still be bound to the previous
   // process since DetachFromDesktop() will not be called.
   desktop_session_control_.reset();
   desktop_session_control_.Bind(std::move(pending_remote));
+
+  // Create new capturers in the Desktop process and bind the Mojo endpoints
+  // to each video-capturer.
+  for (auto& [id, capturer] : video_capturers_) {
+    if (capturer) {
+      RequestMojoVideoCapturer(id, capturer);
+    }
+  }
 
   if (client_session_events_) {
     client_session_events_->OnDesktopAttached(desktop_session_id_);
@@ -372,56 +333,55 @@ void DesktopSessionProxy::SetAudioCapturer(
   audio_capturer_ = audio_capturer;
 }
 
-void DesktopSessionProxy::CaptureFrame() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  if (desktop_session_control_) {
-    ++pending_capture_frame_requests_;
-    desktop_session_control_->CaptureFrame();
-  } else {
-    video_capturer_->OnCaptureResult(
-        webrtc::DesktopCapturer::Result::ERROR_TEMPORARY, nullptr);
-  }
-}
-
-bool DesktopSessionProxy::SelectSource(webrtc::DesktopCapturer::SourceId id) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  if (desktop_session_control_) {
-    desktop_session_control_->SelectSource(id);
-  }
-  return true;
-}
-
-void DesktopSessionProxy::SetVideoCapturer(
-    const base::WeakPtr<IpcVideoFrameCapturer> video_capturer) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  video_capturer_ = video_capturer;
-}
-
 void DesktopSessionProxy::SetMouseCursorMonitor(
     const base::WeakPtr<IpcMouseCursorMonitor>& mouse_cursor_monitor) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   mouse_cursor_monitor_ = mouse_cursor_monitor;
 }
 
 void DesktopSessionProxy::SetKeyboardLayoutMonitor(
     const base::WeakPtr<IpcKeyboardLayoutMonitor>& keyboard_layout_monitor) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   keyboard_layout_monitor_ = std::move(keyboard_layout_monitor);
 }
 
+void DesktopSessionProxy::RebindSingleVideoCapturer(
+    webrtc::ScreenId new_id,
+    base::WeakPtr<IpcVideoFrameCapturer> capturer_weakptr) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // SelectSource() is not used in multi-stream mode.
+  DCHECK_LE(video_capturers_.size(), 1U);
+
+  if (base::FindPtrOrNull(video_capturers_, new_id) == capturer_weakptr.get()) {
+    // The capturer is already bound to `new_id`, so there's no value in
+    // recreating it.
+    LOG(WARNING) << "Ignoring SelectSource() for the same ID: " << new_id;
+    return;
+  }
+
+  video_capturers_.clear();
+  video_capturers_[new_id] = capturer_weakptr;
+
+  // If the session-control endpoint is not bound, the Mojo endpoints will
+  // be requested for each IpcVideFrameCapturer when the Desktop process
+  // becomes attached.
+  if (desktop_session_control_) {
+    RequestMojoVideoCapturer(new_id, capturer_weakptr);
+  }
+}
+
 const std::optional<protocol::KeyboardLayout>&
 DesktopSessionProxy::GetKeyboardCurrentLayout() const {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return keyboard_layout_;
 }
 
 void DesktopSessionProxy::DisconnectSession(protocol::ErrorCode error) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Disconnect the client session if it hasn't been disconnected yet.
   if (client_session_control_.get()) {
@@ -431,7 +391,7 @@ void DesktopSessionProxy::DisconnectSession(protocol::ErrorCode error) {
 
 void DesktopSessionProxy::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (desktop_session_control_) {
     desktop_session_control_->InjectClipboardEvent(event);
@@ -439,7 +399,7 @@ void DesktopSessionProxy::InjectClipboardEvent(
 }
 
 void DesktopSessionProxy::InjectKeyEvent(const protocol::KeyEvent& event) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (desktop_session_control_) {
     desktop_session_control_->InjectKeyEvent(event);
@@ -447,7 +407,7 @@ void DesktopSessionProxy::InjectKeyEvent(const protocol::KeyEvent& event) {
 }
 
 void DesktopSessionProxy::InjectTextEvent(const protocol::TextEvent& event) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (desktop_session_control_) {
     desktop_session_control_->InjectTextEvent(event);
@@ -455,7 +415,7 @@ void DesktopSessionProxy::InjectTextEvent(const protocol::TextEvent& event) {
 }
 
 void DesktopSessionProxy::InjectMouseEvent(const protocol::MouseEvent& event) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (desktop_session_control_) {
     desktop_session_control_->InjectMouseEvent(event);
@@ -463,7 +423,7 @@ void DesktopSessionProxy::InjectMouseEvent(const protocol::MouseEvent& event) {
 }
 
 void DesktopSessionProxy::InjectTouchEvent(const protocol::TouchEvent& event) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (desktop_session_control_) {
     desktop_session_control_->InjectTouchEvent(event);
@@ -472,14 +432,14 @@ void DesktopSessionProxy::InjectTouchEvent(const protocol::TouchEvent& event) {
 
 void DesktopSessionProxy::StartInputInjector(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   client_clipboard_ = std::move(client_clipboard);
 }
 
 void DesktopSessionProxy::SetScreenResolution(
     const ScreenResolution& resolution) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   screen_resolution_ = resolution;
 
@@ -513,7 +473,7 @@ void DesktopSessionProxy::SetScreenResolution(
 
 void DesktopSessionProxy::ExecuteAction(
     const protocol::ActionRequest& request) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!desktop_session_control_) {
     return;
@@ -534,7 +494,7 @@ void DesktopSessionProxy::ExecuteAction(
 void DesktopSessionProxy::BeginFileRead(
     IpcFileOperations::BeginFileReadCallback callback,
     base::OnceClosure on_disconnect) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!desktop_session_control_) {
     std::move(callback).Run(
         mojom::BeginFileReadResult::NewError(protocol::MakeFileTransferError(
@@ -555,7 +515,7 @@ void DesktopSessionProxy::BeginFileWrite(
     const base::FilePath& file_path,
     IpcFileOperations::BeginFileWriteCallback callback,
     base::OnceClosure on_disconnect) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!desktop_session_control_) {
     std::move(callback).Run(
         mojom::BeginFileWriteResult::NewError(protocol::MakeFileTransferError(
@@ -575,7 +535,7 @@ void DesktopSessionProxy::BeginFileWrite(
 
 void DesktopSessionProxy::IsUrlForwarderSetUp(
     UrlForwarderConfigurator::IsUrlForwarderSetUpCallback callback) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (current_url_forwarder_state_) {
     case mojom::UrlForwarderState::kUnknown:
@@ -594,7 +554,7 @@ void DesktopSessionProxy::IsUrlForwarderSetUp(
 
 void DesktopSessionProxy::SetUpUrlForwarder(
     const UrlForwarderConfigurator::SetUpUrlForwarderCallback& callback) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!set_up_url_forwarder_callback_);
 
   if (!desktop_session_control_) {
@@ -609,7 +569,7 @@ void DesktopSessionProxy::SetUpUrlForwarder(
 
 void DesktopSessionProxy::OnUrlForwarderStateChange(
     mojom::UrlForwarderState state) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   current_url_forwarder_state_ = state;
 
@@ -647,29 +607,16 @@ void DesktopSessionProxy::OnUrlForwarderStateChange(
 }
 
 DesktopSessionProxy::~DesktopSessionProxy() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (desktop_session_connector_.get() && is_desktop_session_connected_) {
     desktop_session_connector_->DisconnectTerminal(this);
   }
 }
 
-scoped_refptr<DesktopSessionProxy::IpcSharedBufferCore>
-DesktopSessionProxy::GetSharedBufferCore(int id) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  SharedBuffers::const_iterator i = shared_buffers_.find(id);
-  if (i != shared_buffers_.end()) {
-    return i->second;
-  } else {
-    LOG(ERROR) << "Failed to find the shared buffer " << id;
-    return nullptr;
-  }
-}
-
 void DesktopSessionProxy::OnAudioPacket(
     std::unique_ptr<AudioPacket> audio_packet) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Pass the captured audio packet to |audio_capturer_|.
   audio_capture_task_runner_->PostTask(
@@ -677,31 +624,9 @@ void DesktopSessionProxy::OnAudioPacket(
                                 audio_capturer_, std::move(audio_packet)));
 }
 
-void DesktopSessionProxy::OnSharedMemoryRegionCreated(
-    int id,
-    base::ReadOnlySharedMemoryRegion region,
-    uint32_t size) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  scoped_refptr<IpcSharedBufferCore> shared_buffer =
-      new IpcSharedBufferCore(id, std::move(region));
-
-  if (shared_buffer->memory() != nullptr &&
-      !shared_buffers_.insert(std::make_pair(id, shared_buffer)).second) {
-    LOG(ERROR) << "Duplicate shared buffer id " << id << " encountered";
-  }
-}
-
-void DesktopSessionProxy::OnSharedMemoryRegionReleased(int id) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  // Drop the cached reference to the buffer.
-  shared_buffers_.erase(id);
-}
-
 void DesktopSessionProxy::OnDesktopDisplayChanged(
     const protocol::VideoLayout& displays) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "DSP::OnDesktopDisplayChanged";
   for (int display_id = 0; display_id < displays.video_track_size();
        display_id++) {
@@ -715,43 +640,6 @@ void DesktopSessionProxy::OnDesktopDisplayChanged(
     layout->CopyFrom(displays);
     client_session_control_->OnDesktopDisplayChanged(std::move(layout));
   }
-}
-
-void DesktopSessionProxy::OnCaptureResult(mojom::CaptureResultPtr result) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
-  --pending_capture_frame_requests_;
-
-  if (!video_capturer_) {
-    return;
-  }
-
-  if (result->is_capture_error()) {
-    video_capturer_->OnCaptureResult(result->get_capture_error(), nullptr);
-    return;
-  }
-
-  // Assume that |desktop_frame| is well-formed because it was received from a
-  // more privileged process.
-  mojom::DesktopFramePtr& desktop_frame = result->get_desktop_frame();
-  scoped_refptr<IpcSharedBufferCore> shared_buffer_core =
-      GetSharedBufferCore(desktop_frame->shared_buffer_id);
-  CHECK(shared_buffer_core.get());
-
-  std::unique_ptr<webrtc::DesktopFrame> frame =
-      std::make_unique<webrtc::SharedMemoryDesktopFrame>(
-          desktop_frame->size, desktop_frame->stride,
-          new IpcSharedBuffer(shared_buffer_core));
-  frame->set_capture_time_ms(desktop_frame->capture_time_ms);
-  frame->set_dpi(desktop_frame->dpi);
-  frame->set_capturer_id(desktop_frame->capturer_id);
-
-  for (const auto& rect : desktop_frame->dirty_region) {
-    frame->mutable_updated_region()->AddRect(rect);
-  }
-
-  video_capturer_->OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS,
-                                   std::move(frame));
 }
 
 void DesktopSessionProxy::OnBeginFileReadResult(
@@ -778,7 +666,7 @@ void DesktopSessionProxy::OnBeginFileWriteResult(
 
 void DesktopSessionProxy::OnMouseCursorChanged(
     const webrtc::MouseCursor& mouse_cursor) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (mouse_cursor_monitor_) {
     mouse_cursor_monitor_->OnMouseCursor(
@@ -788,7 +676,7 @@ void DesktopSessionProxy::OnMouseCursorChanged(
 
 void DesktopSessionProxy::OnKeyboardLayoutChanged(
     const protocol::KeyboardLayout& layout) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   keyboard_layout_ = layout;
   if (keyboard_layout_monitor_) {
@@ -798,7 +686,7 @@ void DesktopSessionProxy::OnKeyboardLayoutChanged(
 
 void DesktopSessionProxy::OnClipboardEvent(
     const protocol::ClipboardEvent& event) {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (client_clipboard_) {
     client_clipboard_->InjectClipboardEvent(event);
@@ -806,18 +694,22 @@ void DesktopSessionProxy::OnClipboardEvent(
 }
 
 void DesktopSessionProxy::SignalWebAuthnExtension() {
-  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (desktop_session_control_) {
     desktop_session_control_->SignalWebAuthnExtension();
   }
 }
 
-// static
-void DesktopSessionProxyTraits::Destruct(
-    const DesktopSessionProxy* desktop_session_proxy) {
-  desktop_session_proxy->caller_task_runner_->DeleteSoon(FROM_HERE,
-                                                         desktop_session_proxy);
+void DesktopSessionProxy::RequestMojoVideoCapturer(
+    webrtc::ScreenId id,
+    base::WeakPtr<IpcVideoFrameCapturer> capturer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(desktop_session_control_);
+  DCHECK(capturer);
+  desktop_session_control_->CreateVideoCapturer(
+      id, base::BindOnce(&IpcVideoFrameCapturer::OnCreateVideoCapturerResult,
+                         capturer));
 }
 
 }  // namespace remoting

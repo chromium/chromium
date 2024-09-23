@@ -14,7 +14,7 @@ namespace {
 
 void SurfaceSubmissionInPixelCoordinates(struct wl_client* client,
                                          struct wl_resource* resource) {
-  // TODO(crbug.com/1346347): Implement zaura-shell protocol requests and test
+  // TODO(crbug.com/40232463): Implement zaura-shell protocol requests and test
   // their usage.
   NOTIMPLEMENTED_LOG_ONCE();
 }

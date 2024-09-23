@@ -6,11 +6,13 @@
 #define BASE_ANDROID_CALLBACK_ANDROID_H_
 
 #include <jni.h>
+
 #include <string>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 
@@ -48,5 +50,17 @@ void BASE_EXPORT RunRunnableAndroid(const JavaRef<jobject>& runnable);
 
 }  // namespace android
 }  // namespace base
+
+namespace jni_zero {
+
+template <>
+inline base::RepeatingClosure FromJniType<base::RepeatingClosure>(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj) {
+  return base::BindRepeating(&base::android::RunRunnableAndroid,
+                             base::android::ScopedJavaGlobalRef<jobject>(obj));
+}
+
+}  // namespace jni_zero
 
 #endif  // BASE_ANDROID_CALLBACK_ANDROID_H_

@@ -16,6 +16,7 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace display {
 class Screen;
@@ -24,30 +25,33 @@ class Screen;
 #if defined(TOOLKIT_VIEWS)
 namespace views {
 class View;
+class Widget;
 }
 #endif
 
 namespace ui_test_utils {
 
 // Use in browser interactive uitests to wait until a browser is set to active.
-// To use, create and call WaitForActivation().
-class BrowserActivationWaiter : public BrowserListObserver {
+// To use, create and call WaitForActivation(). Since on some platforms, the
+// active browser list kept in |BrowserList| is updated before the actual
+// activation (see |BrowserView::Show()| for details), observe the widget
+// directly and wait for it to actually get activated.
+class BrowserActivationWaiter : public views::WidgetObserver {
  public:
   explicit BrowserActivationWaiter(const Browser* browser);
   BrowserActivationWaiter(const BrowserActivationWaiter&) = delete;
   BrowserActivationWaiter& operator=(const BrowserActivationWaiter&) = delete;
   ~BrowserActivationWaiter() override;
 
-  // Runs a message loop until the |browser_| supplied to the constructor is
-  // activated, or returns immediately if |browser_| has already become active.
-  // Should only be called once.
+  // Runs a message loop until the widget associated to |browser| supplied to
+  // the constructor is activated, or returns immediately if |browser| has
+  // already active. Should only be called once.
   void WaitForActivation();
 
- private:
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // views::WidgetObserver
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  const base::WeakPtr<const Browser> browser_;
+ private:
   bool observed_ = false;
   base::RunLoop run_loop_;
 };

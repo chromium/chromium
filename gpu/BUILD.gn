@@ -76,95 +76,6 @@ component("webgpu") {
   public_deps = [ "//gpu/command_buffer/client:webgpu_sources" ]
 }
 
-if (!use_static_angle) {
-  shared_library("command_buffer_gles2") {
-    sources = [
-      # TODO(hendrikw): Move egl out of gles2_conform_support.
-      "gles2_conform_support/egl/config.cc",
-      "gles2_conform_support/egl/config.h",
-      "gles2_conform_support/egl/context.cc",
-      "gles2_conform_support/egl/context.h",
-      "gles2_conform_support/egl/display.cc",
-      "gles2_conform_support/egl/display.h",
-      "gles2_conform_support/egl/egl.cc",
-      "gles2_conform_support/egl/surface.cc",
-      "gles2_conform_support/egl/surface.h",
-      "gles2_conform_support/egl/test_support.cc",
-      "gles2_conform_support/egl/test_support.h",
-      "gles2_conform_support/egl/thread_state.cc",
-      "gles2_conform_support/egl/thread_state.h",
-    ]
-
-    deps = [
-      ":gpu",
-      "//base",
-      "//gpu/command_buffer/client:gles2_c_lib",
-      "//gpu/command_buffer/client:gles2_cmd_helper",
-      "//gpu/command_buffer/client:gles2_implementation",
-      "//gpu/command_buffer/service:gles2",
-      "//ui/gl",
-      "//ui/gl/init",
-    ]
-
-    if (use_ozone) {
-      deps += [ "//ui/ozone" ]
-    }
-
-    defines = [
-      "COMMAND_BUFFER_GLES_LIB_SUPPORT_ONLY",
-      "EGLAPIENTRY=",
-    ]
-    if (is_android) {
-      configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-    }
-    if (current_os == "win") {
-      defines += [ "EGLAPI=__declspec(dllexport)" ]
-    } else {
-      defines += [ "EGLAPI=__attribute__((visibility(\"default\")))" ]
-    }
-  }
-
-  test("command_buffer_gles2_tests") {
-    sources = [
-      "command_buffer/tests/command_buffer_gles2_tests_main.cc",
-      "command_buffer/tests/egl_test.cc",
-    ]
-
-    deps = [
-      ":command_buffer_gles2",
-      "//base",
-      "//base/test:test_support",
-      "//base/third_party/dynamic_annotations",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-
-    defines = [
-      "COMMAND_BUFFER_GLES_LIB_SUPPORT_ONLY",
-      "EGLAPIENTRY=",
-    ]
-    if (current_os == "win") {
-      defines += [ "EGLAPI=__declspec(dllimport)" ]
-    } else {
-      defines += [ "EGLAPI=" ]
-    }
-
-    libs = []
-
-    if (is_android) {
-      libs += [ "android" ]
-      deps += [ "//ui/android:ui_java" ]
-    }
-    if ((is_linux || is_chromeos) && !is_component_build) {
-      configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
-    }
-
-    if (use_ozone) {
-      deps += [ "//ui/base:features" ]
-    }
-  }
-}  # if (!use_static_angle)
-
 static_library("test_support") {
   testonly = true
   sources = [
@@ -174,6 +85,10 @@ static_library("test_support") {
     "command_buffer/client/gles2_interface_stub.h",
     "command_buffer/client/gles2_interface_stub_autogen.h",
     "command_buffer/client/gles2_interface_stub_impl_autogen.h",
+    "command_buffer/client/test_gpu_memory_buffer_manager.cc",
+    "command_buffer/client/test_gpu_memory_buffer_manager.h",
+    "command_buffer/client/test_shared_image_interface.cc",
+    "command_buffer/client/test_shared_image_interface.h",
     "command_buffer/client/webgpu_interface_stub.cc",
     "command_buffer/client/webgpu_interface_stub.h",
     "command_buffer/client/webgpu_interface_stub_autogen.h",
@@ -206,7 +121,7 @@ static_library("test_support") {
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/client:webgpu_interface",
     "//gpu/ipc:gpu_thread_holder",
-    "//third_party/dawn/src/dawn:cpp",
+    "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/dawn/src/dawn:proc",
   ]
   deps = [
@@ -224,6 +139,12 @@ static_library("test_support") {
     "//ui/gl:test_support",
   ]
 
+  if (is_fuchsia) {
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem2:fuchsia.sysmem2_hlcpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+  }
   if (use_static_angle) {
     deps += [ "//third_party/angle:translator" ]
   } else {
@@ -305,6 +226,7 @@ test("gl_tests") {
 
   sources = [
     "command_buffer/service/gles2_external_framebuffer_unittest.cc",
+    "command_buffer/service/shared_image/egl_image_backing_factory_unittest.cc",
     "command_buffer/service/shared_image/gl_texture_image_backing_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_factory_unittest.cc",
     "command_buffer/service/shared_image/shared_image_manager_unittest.cc",
@@ -353,7 +275,6 @@ test("gl_tests") {
     "command_buffer/tests/gl_test_utils.cc",
     "command_buffer/tests/gl_test_utils.h",
     "command_buffer/tests/gl_tests_main.cc",
-    "command_buffer/tests/gl_texture_mailbox_unittest.cc",
     "command_buffer/tests/gl_texture_storage_unittest.cc",
     "command_buffer/tests/gl_unallocated_texture_unittest.cc",
     "command_buffer/tests/gl_unittest.cc",
@@ -361,14 +282,11 @@ test("gl_tests") {
     "command_buffer/tests/gl_virtual_contexts_unittest.cc",
     "command_buffer/tests/gl_webgl_multi_draw_test.cc",
     "command_buffer/tests/occlusion_query_unittest.cc",
+    "config/gpu_info_collector_gl_test.cc",
     "ipc/client/gpu_context_tests.h",
     "ipc/client/gpu_in_process_context_tests.cc",
     "ipc/client/raster_in_process_context_tests.cc",
   ]
-
-  if (use_egl) {
-    sources += [ "command_buffer/service/shared_image/egl_image_backing_factory_unittest.cc" ]
-  }
 
   if (is_android) {
     sources += [ "command_buffer/tests/gl_unittests_android.cc" ]
@@ -393,7 +311,6 @@ test("gl_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//cc:test_support",
     "//cc/paint",
     "//components/viz/test:test_support",
@@ -445,6 +362,7 @@ test("gl_tests") {
     sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]
   } else if (is_win) {
     deps += [
+      "//third_party/microsoft_dxheaders:dxguids",
       "//ui/platform_window",
       "//ui/platform_window:platform_impls",
     ]
@@ -453,7 +371,7 @@ test("gl_tests") {
       "command_buffer/service/shared_image/d3d_image_backing_factory_unittest.cc",
       "command_buffer/service/shared_image/dcomp_image_backing_factory_unittest.cc",
     ]
-  } else if (is_linux || is_chromeos) {
+  } else if (is_linux) {
     # Simply loading the Vulkan driver leaks crbug.com/1134681
     # CFI error in third_party/vulkan_memory_allocator crbug.com/1139916
     if (enable_vulkan && !is_lsan && !is_cfi) {
@@ -496,6 +414,7 @@ test("gpu_unittests") {
   sources = [
     "command_buffer/client/buffer_tracker_unittest.cc",
     "command_buffer/client/client_discardable_manager_unittest.cc",
+    "command_buffer/client/client_shared_image_unittest.cc",
     "command_buffer/client/cmd_buffer_helper_test.cc",
     "command_buffer/client/command_buffer_direct_locked.cc",
     "command_buffer/client/command_buffer_direct_locked.h",
@@ -511,6 +430,7 @@ test("gpu_unittests") {
     "command_buffer/client/raster_implementation_unittest.cc",
     "command_buffer/client/raster_implementation_unittest_autogen.h",
     "command_buffer/client/ring_buffer_test.cc",
+    "command_buffer/client/shared_image_pool_unittest.cc",
     "command_buffer/client/transfer_buffer_cmd_copy_helpers_unittest.cc",
     "command_buffer/client/transfer_buffer_unittest.cc",
     "command_buffer/client/vertex_array_object_manager_unittest.cc",
@@ -526,6 +446,7 @@ test("gpu_unittests") {
     "command_buffer/common/id_allocator_test.cc",
     "command_buffer/common/raster_cmd_format_test.cc",
     "command_buffer/common/raster_cmd_format_test_autogen.h",
+    "command_buffer/common/shared_image_usage_unittest.cc",
     "command_buffer/common/shm_count_unittest.cc",
     "command_buffer/common/unittest_main.cc",
     "command_buffer/common/webgpu_cmd_format_test.cc",
@@ -555,7 +476,6 @@ test("gpu_unittests") {
     "command_buffer/service/gr_shader_cache_unittest.cc",
     "command_buffer/service/id_manager_unittest.cc",
     "command_buffer/service/indexed_buffer_binding_host_unittest.cc",
-    "command_buffer/service/mailbox_manager_unittest.cc",
     "command_buffer/service/memory_program_cache_unittest.cc",
     "command_buffer/service/multi_draw_manager_unittest.cc",
     "command_buffer/service/passthrough_program_cache_unittest.cc",
@@ -568,7 +488,7 @@ test("gpu_unittests") {
     "command_buffer/service/raster_decoder_unittest_base.h",
     "command_buffer/service/raster_decoder_unittest_context_lost.cc",
     "command_buffer/service/renderbuffer_manager_unittest.cc",
-    "command_buffer/service/scheduler_dfs_unittest.cc",
+    "command_buffer/service/retaining_one_shot_timer_holder_unittest.cc",
     "command_buffer/service/scheduler_unittest.cc",
     "command_buffer/service/service_discardable_manager_unittest.cc",
     "command_buffer/service/service_transfer_cache_unittest.cc",
@@ -580,6 +500,7 @@ test("gpu_unittests") {
     "command_buffer/service/shared_image/gl_repack_utils_unittest.cc",
     "command_buffer/service/shared_memory_region_wrapper_unittest.cc",
     "command_buffer/service/sync_point_manager_unittest.cc",
+    "command_buffer/service/task_graph_unittest.cc",
     "command_buffer/service/texture_manager_unittest.cc",
     "command_buffer/service/transfer_buffer_manager_unittest.cc",
     "command_buffer/service/transform_feedback_manager_unittest.cc",
@@ -664,12 +585,6 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_android) {
-    sources += [
-      "ipc/common/gpu_memory_buffer_impl_android_hardware_buffer_unittest.cc",
-    ]
-  }
-
   if (is_linux || is_chromeos || is_android) {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
   }
@@ -716,11 +631,11 @@ test("gpu_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/viz/common:shared_image_format",
+    "//components/viz/test:test_support",
     "//gpu/command_buffer/client:gles2_c_lib",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:raster",
@@ -743,7 +658,7 @@ test("gpu_unittests") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
     "//third_party/re2",
     "//ui/gfx",
     "//ui/gfx:test_support",
@@ -818,7 +733,7 @@ test("gpu_perftests") {
   data_deps = [
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   # This target should not require the Chrome executable to run.
@@ -871,7 +786,6 @@ if (enable_validating_command_decoder || is_linux) {
       ":gpu",
       "//base",
       "//base:i18n",
-      "//base/third_party/dynamic_annotations",
       "//ui/gfx/geometry",
       "//ui/gl",
       "//ui/gl:test_support",
@@ -897,7 +811,6 @@ fuzzer_test("gpu_angle_passthrough_fuzzer") {
     ":gles2",
     ":gpu",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
@@ -923,7 +836,6 @@ fuzzer_test("gpu_swangle_passthrough_fuzzer") {
     ":gles2",
     ":gpu",
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
@@ -946,7 +858,6 @@ if (is_linux || is_chromeos) {
       ":gles2",
       ":gpu",
       "//base",
-      "//base/third_party/dynamic_annotations",
       "//ui/gfx/geometry",
       "//ui/gl",
       "//ui/gl:test_support",
@@ -972,7 +883,6 @@ if (is_linux || is_chromeos) {
       ":gles2",
       ":gpu",
       "//base",
-      "//base/third_party/dynamic_annotations",
       "//ui/gfx/geometry",
       "//ui/gl",
       "//ui/gl:test_support",
@@ -999,7 +909,6 @@ if (is_linux || is_chromeos) {
       ":gles2",
       ":gpu",
       "//base",
-      "//base/third_party/dynamic_annotations",
       "//ui/gfx/geometry",
       "//ui/gl",
       "//ui/gl:test_support",
@@ -1018,10 +927,7 @@ if (is_linux || is_chromeos) {
 test("gpu_benchmark") {
   sources = [ "command_buffer/tests/gl_helper_benchmark.cc" ]
 
-  configs += [
-    "//build/config:precompiled_headers",
-    "//third_party/khronos:khronos_headers",
-  ]
+  configs += [ "//build/config:precompiled_headers" ]
 
   if (!is_debug && (is_win || is_android)) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -1041,8 +947,7 @@ test("gpu_benchmark") {
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//ui/gfx",
   ]
-
-  data_deps = [ "//third_party/mesa_headers" ]
 }

@@ -40,14 +40,12 @@ class BookmarkModelHelper : public bookmarks::BaseBookmarkModelObserver {
     bookmark_model_observation_.Observe(bookmark_model_);
   }
 
-  void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
-                           bool ids_reassigned) override {
-    std::move(callback_).Run(model);
+  void BookmarkModelLoaded(bool ids_reassigned) override {
+    std::move(callback_).Run(bookmark_model_);
     delete this;
   }
 
-  void BookmarkModelBeingDeleted(
-      bookmarks::BookmarkModel* bookmark_model) override {
+  void BookmarkModelBeingDeleted() override {
     // Don't leak this instance if the BookmarkModel never loads.
     delete this;
   }

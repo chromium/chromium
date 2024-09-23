@@ -18,6 +18,9 @@
 
 namespace {
 
+// Alpha for the disabled passkey cell.
+const CGFloat kBackgroundDisabledAlpha = 0.4;
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierCredentials = kSectionIdentifierEnumZero,
 };
@@ -25,6 +28,18 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCredential = kItemTypeEnumZero,
 };
+
+// Orders passwords before passkeys. For the same type of credentials defaults
+// to the existing comparator.
+bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
+                              const password_manager::CredentialUIEntry& rhs) {
+  bool is_lhs_passkey = !lhs.passkey_credential_id.empty();
+  bool is_rhs_passkey = !rhs.passkey_credential_id.empty();
+  if (is_lhs_passkey != is_rhs_passkey) {
+    return is_lhs_passkey < is_rhs_passkey;
+  }
+  return lhs < rhs;
+}
 
 }  // namespace
 
@@ -59,6 +74,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
       kPasswordPickerNextButtonID;
   self.view.accessibilityIdentifier = kPasswordPickerViewID;
+  self.clearsSelectionOnViewWillAppear = NO;
 
   [self loadModel];
 }
@@ -77,11 +93,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  // Select first row by default.
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-  [self.tableView selectRowAtIndexPath:indexPath
-                              animated:NO
-                        scrollPosition:UITableViewScrollPositionNone];
+  // Select first row if there is no selection.
+  if (!self.tableView.indexPathForSelectedRow) {
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    [self.tableView selectRowAtIndexPath:indexPath
+                                animated:NO
+                          scrollPosition:UITableViewScrollPositionNone];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -111,16 +129,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  BOOL isPassword = _credentials[indexPath.row].passkey_credential_id.empty();
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  cell.userInteractionEnabled = YES;
+  cell.userInteractionEnabled = isPassword;
   cell.textLabel.numberOfLines = 1;
   cell.detailTextLabel.numberOfLines = 1;
   if (indexPath.row == tableView.indexPathForSelectedRow.row) {
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
   } else {
     cell.accessoryType = UITableViewCellAccessoryNone;
+  }
+  if (!isPassword) {
+    cell.contentView.alpha = kBackgroundDisabledAlpha;
   }
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
@@ -143,6 +166,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     (const std::vector<password_manager::CredentialUIEntry>&)credentials {
   _credentials = credentials;
 
+  // Ensure that passkeys are at the end since they cannot be shared currently.
+  std::sort(_credentials.begin(), _credentials.end(), CompareCredentialsByType);
+
   [self loadModel];
   [self.tableView reloadData];
 }
@@ -155,6 +181,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewURLItem alloc] initWithType:ItemTypeCredential];
   item.title = base::SysUTF16ToNSString(credential.username);
   item.URL = [[CrURL alloc] initWithGURL:GURL(credential.GetURL())];
+  if (!credential.passkey_credential_id.empty()) {
+    item.detailText = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SHARING_PASSWORD_PICKER_PASSKEY_INFO);
+  }
   return item;
 }
 

@@ -4,16 +4,16 @@
 
 #include "components/password_manager/core/browser/import/csv_password.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/import/csv_field_parser.h"
-
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -23,7 +23,7 @@ namespace {
 // ConvertUTF8() unescapes a CSV field |str| and converts the result to a 8-bit
 // string. |str| is assumed to exclude the outer pair of quotation marks, if
 // originally present.
-std::string ConvertUTF8(base::StringPiece str) {
+std::string ConvertUTF8(std::string_view str) {
   std::string str_copy(str);
   base::ReplaceSubstringsAfterOffset(&str_copy, 0, "\"\"", "\"");
   return str_copy;
@@ -55,7 +55,7 @@ CSVPassword::CSVPassword(std::string invalid_url,
       note_(std::move(note)),
       status_(status) {}
 
-CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
+CSVPassword::CSVPassword(const ColumnMap& map, std::string_view row) {
   if (row.empty()) {
     status_ = Status::kSemanticError;
     return;
@@ -66,14 +66,15 @@ CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
   status_ = Status::kOK;
 
   while (parser.HasMoreFields()) {
-    base::StringPiece field;
+    std::string_view field;
     if (!parser.NextField(&field)) {
       status_ = Status::kSyntaxError;
       return;
     }
     auto meaning_it = map.find(field_idx++);
-    if (meaning_it == map.end())
+    if (meaning_it == map.end()) {
       continue;
+    }
     switch (meaning_it->second) {
       case Label::kOrigin: {
         GURL gurl = GURL(field);

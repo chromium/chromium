@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ipc/ipc_message.h"
 
 #include <limits.h>
@@ -9,7 +14,9 @@
 #include <stdint.h>
 
 #include "base/atomic_sequence_num.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/pickle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_attachment.h"
@@ -71,7 +78,8 @@ Message::Message(int32_t routing_id, uint32_t type, PriorityValue priority)
 }
 
 Message::Message(const char* data, size_t data_len)
-    : base::Pickle(data, data_len) {
+    : base::Pickle(base::Pickle::kUnownedData,
+                   base::as_bytes(base::span(data, data_len))) {
   Init();
 }
 

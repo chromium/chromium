@@ -10,7 +10,7 @@
 
 #include "net/http/http_stream.h"
 #include "net/spdy/multiplexed_session.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 
 namespace net {
 
@@ -23,7 +23,6 @@ class NET_EXPORT_PRIVATE MultiplexedHttpStream : public HttpStream {
 
   int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) override;
   void Drain(HttpNetworkSession* session) override;
   std::unique_ptr<HttpStream> RenewStreamForAuth() override;
   void SetConnectionReused() override;
@@ -35,7 +34,7 @@ class NET_EXPORT_PRIVATE MultiplexedHttpStream : public HttpStream {
 
  protected:
   void DispatchRequestHeadersCallback(
-      const spdy::Http2HeaderBlock& spdy_headers);
+      const quiche::HttpHeaderBlock& spdy_headers);
 
   MultiplexedSessionHandle* session() { return session_.get(); }
   const MultiplexedSessionHandle* session() const { return session_.get(); }

@@ -10,6 +10,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
@@ -203,14 +204,14 @@ x11::Time X11EventSource::GetCurrentServerTime() {
   }
 
   // Make a no-op property change on |dummy_window_|.
-  std::vector<uint8_t> data{0};
+  std::vector<uint8_t> data({0});
   connection_->ChangeProperty(x11::ChangePropertyRequest{
       .window = static_cast<x11::Window>(dummy_window_),
       .property = dummy_atom_,
       .type = x11::Atom::STRING,
       .format = CHAR_BIT,
-      .data_len = 1,
-      .data = base::RefCountedBytes::TakeVector(&data),
+      .data_len = base::checked_cast<uint32_t>(data.size()),
+      .data = base::MakeRefCounted<base::RefCountedBytes>(std::move(data)),
   });
 
   // Observe the resulting PropertyNotify event to obtain the timestamp.
@@ -244,6 +245,10 @@ x11::Time X11EventSource::GetTimestamp() {
   }
   DVLOG(1) << "Making a round trip to get a recent server timestamp.";
   return GetCurrentServerTime();
+}
+
+void X11EventSource::ClearLastCursorLocation() {
+  last_cursor_location_.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -294,7 +299,7 @@ void X11EventSource::OnEvent(const x11::Event& x11_event) {
       translated_event && translated_event->IsMouseEvent()) {
     return;
   }
-  if (translated_event && translated_event->type() != ET_UNKNOWN) {
+  if (translated_event && translated_event->type() != EventType::kUnknown) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (translated_event->IsLocatedEvent()) {
       ui::CursorController::GetInstance()->SetCursorLocation(

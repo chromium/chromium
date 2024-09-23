@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/events/win/events_win_utils.h"
+
 #include <stdint.h>
 
 #include "base/check.h"
@@ -18,7 +20,6 @@
 #include "ui/events/keycodes/keyboard_code_conversion_win.h"
 #include "ui/events/keycodes/platform_key_map_win.h"
 #include "ui/events/types/event_type.h"
-#include "ui/events/win/events_win_utils.h"
 #include "ui/events/win/system_event_state_lookup.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -176,7 +177,7 @@ EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
     case WM_SYSKEYDOWN:
     case WM_CHAR:
     case WM_SYSCHAR:
-      return ET_KEY_PRESSED;
+      return EventType::kKeyPressed;
     // The WM_DEADCHAR message is posted to the window with the keyboard focus
     // when a WM_KEYUP message is translated. This happens for special keyboard
     // sequences.
@@ -187,7 +188,7 @@ EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
     // function. It specifies the character code of the system dead key.
     case WM_SYSDEADCHAR:
     case WM_SYSKEYUP:
-      return ET_KEY_RELEASED;
+      return EventType::kKeyReleased;
     case WM_LBUTTONDBLCLK:
     case WM_LBUTTONDOWN:
     case WM_MBUTTONDBLCLK:
@@ -204,7 +205,7 @@ EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
     case WM_RBUTTONDOWN:
     case WM_XBUTTONDBLCLK:
     case WM_XBUTTONDOWN:
-      return ET_MOUSE_PRESSED;
+      return EventType::kMousePressed;
     case WM_LBUTTONUP:
     case WM_MBUTTONUP:
     case WM_NCLBUTTONUP:
@@ -213,26 +214,27 @@ EventType EventTypeFromMSG(const CHROME_MSG& native_event) {
     case WM_NCXBUTTONUP:
     case WM_RBUTTONUP:
     case WM_XBUTTONUP:
-      return ET_MOUSE_RELEASED;
+      return EventType::kMouseReleased;
     case WM_MOUSEMOVE:
-      return IsButtonDown(native_event) ? ET_MOUSE_DRAGGED : ET_MOUSE_MOVED;
+      return IsButtonDown(native_event) ? EventType::kMouseDragged
+                                        : EventType::kMouseMoved;
     case WM_NCMOUSEMOVE:
-      return ET_MOUSE_MOVED;
+      return EventType::kMouseMoved;
     case WM_MOUSEWHEEL:
     case WM_MOUSEHWHEEL:
-      return ET_MOUSEWHEEL;
+      return EventType::kMousewheel;
     case WM_MOUSELEAVE:
     case WM_NCMOUSELEAVE:
-      return ET_MOUSE_EXITED;
+      return EventType::kMouseExited;
     case WM_VSCROLL:
     case WM_HSCROLL:
-      return ET_SCROLL;
+      return EventType::kScroll;
     default:
       // We can't NOTREACHED() here, since this function can be called for any
       // message.
       break;
   }
-  return ET_UNKNOWN;
+  return EventType::kUnknown;
 }
 
 int EventFlagsFromMSG(const CHROME_MSG& native_event) {
@@ -252,6 +254,8 @@ base::TimeTicks EventTimeFromMSG(const CHROME_MSG& native_event) {
   // |TimeTicks::Now()| for event timestamp instead of the native timestamp to
   // ensure computed input latency and web exposed timestamp is consistent with
   // other components.
+  // TODO(crbug.com/342671898): Consider using the new optimistic
+  // EventLatencyTimeFromTickClock() conversion here as well.
   // It is unnecessary to invoke |ValidateEventTimeClock| here because of above.
   // [1] http://blogs.msdn.com/b/oldnewthing/archive/2014/01/22/10491576.aspx
   return EventTimeForNow();
@@ -263,31 +267,34 @@ base::TimeTicks EventLatencyTimeFromTickClock(DWORD event_time,
   if (!g_tick_count_clock)
     g_tick_count_clock = default_tick_count_clock.get();
 
-  base::TimeTicks time_stamp =
+  base::TimeTicks event_tick_count =
       base::TimeTicks() + base::Milliseconds(event_time);
 
   base::TimeTicks current_tick_count = g_tick_count_clock->NowTicks();
   // Check if the 32-bit tick count wrapped around after the event.
-  if (current_tick_count < time_stamp) {
+  if (current_tick_count < event_tick_count) {
     // ::GetTickCount returns an unsigned 32-bit value, which will fit into the
     // signed 64-bit base::TimeTicks.
-    current_tick_count += base::Milliseconds(std::numeric_limits<DWORD>::max());
+    constexpr auto kAdditionalMillisecondsAfterWrap =
+        static_cast<int64_t>(std::numeric_limits<DWORD>::max()) + 1;
+    current_tick_count += base::Milliseconds(kAdditionalMillisecondsAfterWrap);
   }
 
-  // |time_stamp| is from the GetTickCount clock, which has a different 0-point
-  // from |current_time| (which uses either the high-resolution timer or
-  // timeGetTime). Adjust it to be compatible.
-  //
-  // This offset will vary by up to ~16 msec because it depends on when exactly
-  // we sample the high-resolution clock. It would be more consistent to
-  // calculate one offset at the start of the program and apply it every time,
-  // but that consistency isn't needed for jank investigations and then we
-  // would have to adjust for clock drift.
-  const base::TimeDelta time_source_offset = current_time - current_tick_count;
-  time_stamp += time_source_offset;
+  // The Windows ::GetTickCount() clock is simulating an old-school 64hZ clock
+  // ticking every 15.625ms and reports that in ms so in practice each "tick" is
+  // either 15 or 16ms.
+  constexpr auto kMaxTickCountInterval = base::Milliseconds(16);
 
-  ValidateEventTimeClock(&time_stamp);
-  return time_stamp;
+  base::TimeDelta tick_delta = current_tick_count - event_tick_count;
+  // Discount one tick in order to be optimistic about the delay (we cannot know
+  // how close the tick clock was to ticking when `event_tick_count` was
+  // sampled nor how recently it ticked when `current_tick_count` was sampled).
+  tick_delta =
+      std::max(base::Microseconds(0), tick_delta - kMaxTickCountInterval);
+
+  base::TimeTicks converted_event_time = current_time - tick_delta;
+  ValidateEventTimeClock(&converted_event_time);
+  return converted_event_time;
 }
 
 base::TimeTicks EventLatencyTimeFromPerformanceCounter(UINT64 event_time) {
@@ -514,7 +521,7 @@ CHROME_MSG MSGFromKeyEvent(KeyEvent* event, HWND hwnd) {
   if (event->is_char())
     message = WM_CHAR;
   else
-    message = event->type() == ET_KEY_PRESSED ? WM_KEYDOWN : WM_KEYUP;
+    message = event->type() == EventType::kKeyPressed ? WM_KEYDOWN : WM_KEYUP;
   return {hwnd, message, w_param, l_param};
 }
 

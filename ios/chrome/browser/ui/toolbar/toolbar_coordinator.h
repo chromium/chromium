@@ -55,7 +55,7 @@
 - (id<SharingPositioner>)sharingPositioner;
 
 /// Updates the toolbar's appearance.
-/// TODO(crbug.com/1329087): Remove this once toolbar coordinator owns focus
+/// TODO(crbug.com/40842406): Remove this once toolbar coordinator owns focus
 /// orchestrator.
 - (void)updateToolbar;
 

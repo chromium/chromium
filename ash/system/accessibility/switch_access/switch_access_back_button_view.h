@@ -32,8 +32,8 @@ class SwitchAccessBackButtonView : public views::BoxLayoutView {
   void SetForMenu(bool for_menu);
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  int GetHeightForWidth(int w) const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:

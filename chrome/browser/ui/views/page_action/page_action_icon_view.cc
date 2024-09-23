@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,6 +22,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -46,18 +46,16 @@ int PageActionIconView::Delegate::GetPageActionIconSize() const {
 
 gfx::Insets PageActionIconView::Delegate::GetPageActionIconInsets(
     const PageActionIconView* icon_view) const {
-  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-             ? GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING)
-             : GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING);
+  return GetLayoutInsets(LOCATION_BAR_PAGE_ACTION_ICON_PADDING);
 }
 
 bool PageActionIconView::Delegate::ShouldHidePageActionIcons() const {
   return false;
 }
 
-const OmniboxView* PageActionIconView::Delegate::GetOmniboxView() const {
-  // Should not reach here: should call subclass's implementation.
-  NOTREACHED_NORETURN();
+bool PageActionIconView::Delegate::ShouldHidePageActionIcon(
+    PageActionIconView* icon_view) const {
+  return false;
 }
 
 PageActionIconView::PageActionIconView(
@@ -66,14 +64,18 @@ PageActionIconView::PageActionIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     PageActionIconView::Delegate* delegate,
     const char* name_for_histograms,
+    std::optional<actions::ActionId> action_id,
+    Browser* browser,
     bool ephemeral,
     const gfx::FontList& font_list)
     : IconLabelBubbleView(font_list, parent_delegate),
       command_updater_(command_updater),
       delegate_(delegate),
       command_id_(command_id),
+      action_id_(action_id),
       name_for_histograms_(name_for_histograms),
-      ephemeral_(ephemeral) {
+      ephemeral_(ephemeral),
+      browser_(browser) {
   DCHECK(delegate_);
 
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
@@ -124,7 +126,7 @@ void PageActionIconView::InstallLoadingIndicatorForTesting() {
 }
 
 std::u16string PageActionIconView::GetTextForTooltipAndAccessibleName() const {
-  return GetAccessibleName();
+  return GetViewAccessibility().GetCachedName();
 }
 
 std::u16string PageActionIconView::GetTooltipText(const gfx::Point& p) const {
@@ -151,9 +153,8 @@ bool PageActionIconView::ShouldShowSeparator() const {
 }
 
 void PageActionIconView::NotifyClick(const ui::Event& event) {
-  for (PageActionIconViewObserver& observer : observer_list_) {
-    observer.OnPageActionIconViewClicked(this);
-  }
+  observer_list_.Notify(
+      &PageActionIconViewObserver::OnPageActionIconViewClicked, this);
   // Intentionally skip the immediate parent function
   // IconLabelBubbleView::NotifyClick(). It calls ShowBubble() which
   // is redundant here since we use Chrome command to show the bubble.
@@ -276,9 +277,8 @@ void PageActionIconView::UpdateIconImage() {
   // Fall back to the vector icon if no icon image was provided.
   SkColor icon_color =
       active_ ? views::GetCascadingAccentColor(this) : icon_color_;
-  if (GetCustomForegroundColorId().has_value()) {
-    icon_color =
-        GetColorProvider()->GetColor(GetCustomForegroundColorId().value());
+  if (IconColorShouldMatchForeground()) {
+    icon_color = GetForegroundColor();
   }
   const gfx::ImageSkia image = gfx::CreateVectorIconWithBadge(
       GetVectorIcon(), icon_size, icon_color, GetVectorIconBadge());
@@ -299,8 +299,8 @@ content::WebContents* PageActionIconView::GetWebContents() const {
 
 void PageActionIconView::UpdateBorder() {
   gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
-  if (ShouldShowLabel() && OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    // TODO(crbug.com/1447066): Figure out what these values should be. For
+  if (ShouldShowLabel()) {
+    // TODO(crbug.com/40913366): Figure out what these values should be. For
     // bonus point also try to move parts of this into the parent class. This is
     // too bespoke.
     new_insets += gfx::Insets::TLBR(0, 4, 0, 8);
@@ -321,12 +321,11 @@ void PageActionIconView::InstallLoadingIndicator() {
 }
 
 void PageActionIconView::SetVisible(bool visible) {
-  bool was_visible = GetVisible();
+  const bool was_visible = GetVisible();
   IconLabelBubbleView::SetVisible(visible);
   if (!was_visible && visible) {
-    for (PageActionIconViewObserver& observer : observer_list_) {
-      observer.OnPageActionIconViewShown(this);
-    }
+    observer_list_.Notify(
+        &PageActionIconViewObserver::OnPageActionIconViewShown, this);
   }
 }
 

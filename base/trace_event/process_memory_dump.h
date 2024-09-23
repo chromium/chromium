@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Define COUNT_RESIDENT_BYTES_SUPPORTED if platform supports counting of the
 // resident memory.
@@ -77,12 +77,12 @@ class BASE_EXPORT ProcessMemoryDump {
   // |start_address| and |mapped_size|. |mapped_size| is specified in bytes. The
   // value returned is valid only if the given range is currently mmapped by the
   // process. The |start_address| must be page-aligned.
-  static absl::optional<size_t> CountResidentBytes(void* start_address,
-                                                   size_t mapped_size);
+  static std::optional<size_t> CountResidentBytes(void* start_address,
+                                                  size_t mapped_size);
 
   // The same as above, but the given mapped range should belong to the
   // shared_memory's mapped region.
-  static absl::optional<size_t> CountResidentBytesInSharedMemory(
+  static std::optional<size_t> CountResidentBytesInSharedMemory(
       void* start_address,
       size_t mapped_size);
 #endif

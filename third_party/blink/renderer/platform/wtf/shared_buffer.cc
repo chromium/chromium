@@ -24,176 +24,99 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
+#include <cstddef>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
 
-constexpr unsigned SharedBuffer::kSegmentSize;
-
-static inline size_t SegmentIndex(size_t position) {
-  return position / SharedBuffer::kSegmentSize;
-}
-
-static inline size_t OffsetInSegment(size_t position) {
-  return position % SharedBuffer::kSegmentSize;
-}
-
-struct SharedBuffer::SegmentDeleter {
-  void operator()(char* p) const { WTF::Partitions::BufferFree(p); }
-};
-
-SharedBuffer::Segment SharedBuffer::CreateSegment() {
-  return std::unique_ptr<char[], SegmentDeleter>(
-      static_cast<char*>(WTF::Partitions::BufferMalloc(
-          SharedBuffer::kSegmentSize, "WTF::SharedBuffer")));
-}
-
-SharedBuffer::Iterator& SharedBuffer::Iterator::operator++() {
+SegmentedBuffer::Iterator& SegmentedBuffer::Iterator::operator++() {
   DCHECK(!IsEnd());
-  ++index_;
+  ++segment_it_;
   Init(0);
   return *this;
 }
 
-SharedBuffer::Iterator::Iterator(const SharedBuffer* buffer)
-    : index_(buffer->segments_.size() + 1), buffer_(buffer) {
+SegmentedBuffer::Iterator::Iterator(const SegmentedBuffer* buffer)
+    : segment_it_(buffer->segments_.end()), buffer_(buffer) {
   DCHECK(IsEnd());
 }
 
-SharedBuffer::Iterator::Iterator(size_t offset, const SharedBuffer* buffer)
-    : index_(0), buffer_(buffer) {
+SegmentedBuffer::Iterator::Iterator(Vector<Segment>::const_iterator segment_it,
+                                    size_t offset,
+                                    const SegmentedBuffer* buffer)
+    : segment_it_(segment_it), buffer_(buffer) {
   Init(offset);
 }
 
-SharedBuffer::Iterator::Iterator(wtf_size_t segment_index,
-                                 size_t offset,
-                                 const SharedBuffer* buffer)
-    : index_(segment_index + 1), buffer_(buffer) {
-  Init(offset);
-}
-
-void SharedBuffer::Iterator::Init(size_t offset) {
+void SegmentedBuffer::Iterator::Init(size_t offset) {
   if (IsEnd()) {
     value_ = base::span<const char>();
     return;
   }
+  value_ = base::span(segment_it_->data()).subspan(offset);
+}
 
-  if (index_ == 0) {
-    value_ = base::span(buffer_->buffer_).subspan(offset);
+void SegmentedBuffer::Append(base::span<const char> data) {
+  if (data.empty()) {
     return;
   }
-  const auto segment_index = index_ - 1;
-  const auto& segment = buffer_->segments_[segment_index];
-  size_t segment_size = segment_index == buffer_->segments_.size() - 1
-                            ? buffer_->GetLastSegmentSize()
-                            : kSegmentSize;
-  value_ = base::make_span(segment.get(), segment_size).subspan(offset);
+  Append(Vector<char>(data));
 }
 
-SharedBuffer::SharedBuffer() : size_(0) {}
-
-SharedBuffer::SharedBuffer(wtf_size_t size) : size_(size), buffer_(size) {}
-
-SharedBuffer::SharedBuffer(const char* data, wtf_size_t size) : size_(size) {
-  buffer_.Append(data, size);
-}
-
-SharedBuffer::SharedBuffer(const unsigned char* data, wtf_size_t size)
-    : SharedBuffer(reinterpret_cast<const char*>(data), size) {}
-
-SharedBuffer::~SharedBuffer() = default;
-
-scoped_refptr<SharedBuffer> SharedBuffer::AdoptVector(Vector<char>& vector) {
-  scoped_refptr<SharedBuffer> buffer = Create();
-  buffer->buffer_.swap(vector);
-  buffer->size_ = buffer->buffer_.size();
-  return buffer;
-}
-
-const char* SharedBuffer::Data() {
-  MergeSegmentsIntoBuffer();
-  return buffer_.data();
-}
-
-void SharedBuffer::Append(const SharedBuffer& data) {
-  for (const auto& span : data)
-    Append(span.data(), span.size());
-}
-
-void SharedBuffer::AppendInternal(const char* data, size_t length) {
-  if (!length)
-    return;
-
-  DCHECK_GE(size_, buffer_.size());
-  size_t position_in_segment = OffsetInSegment(size_ - buffer_.size());
-  size_ += length;
-
-  if (size_ <= kSegmentSize) {
-    // No need to use segments for small resource data.
-    buffer_.Append(data, static_cast<wtf_size_t>(length));
+void SegmentedBuffer::Append(Vector<char>&& vector) {
+  if (vector.empty()) {
     return;
   }
-
-  while (length > 0) {
-    if (!position_in_segment)
-      segments_.push_back(CreateSegment());
-
-    size_t bytes_to_copy = std::min(length, kSegmentSize - position_in_segment);
-    memcpy(segments_.back().get() + position_in_segment, data, bytes_to_copy);
-
-    data += bytes_to_copy;
-    length -= bytes_to_copy;
-    position_in_segment = 0;
-  }
+  const size_t start_position = size_;
+  size_ += vector.size();
+  segments_.emplace_back(start_position, std::move(vector));
 }
 
-void SharedBuffer::Clear() {
+void SegmentedBuffer::Clear() {
   segments_.clear();
   size_ = 0;
-  buffer_.clear();
 }
 
-SharedBuffer::Iterator SharedBuffer::begin() const {
+SegmentedBuffer::Iterator SegmentedBuffer::begin() const {
   return GetIteratorAt(static_cast<size_t>(0));
 }
 
-SharedBuffer::Iterator SharedBuffer::end() const {
+SegmentedBuffer::Iterator SegmentedBuffer::end() const {
   return Iterator(this);
 }
 
-void SharedBuffer::MergeSegmentsIntoBuffer() {
-  wtf_size_t bytes_left =
-      base::checked_cast<wtf_size_t>(size_ - buffer_.size());
-  for (const auto& segment : segments_) {
-    wtf_size_t bytes_to_copy = std::min<wtf_size_t>(bytes_left, kSegmentSize);
-    buffer_.Append(segment.get(), bytes_to_copy);
-    bytes_left -= bytes_to_copy;
-  }
-  segments_.clear();
-}
-
-SharedBuffer::Iterator SharedBuffer::GetIteratorAtInternal(
+SegmentedBuffer::Iterator SegmentedBuffer::GetIteratorAtInternal(
     size_t position) const {
-  if (position >= size())
+  if (position >= size()) {
     return cend();
-
-  if (position < buffer_.size())
-    return Iterator(position, this);
-
-  return Iterator(
-      base::checked_cast<uint32_t>(SegmentIndex(position - buffer_.size())),
-      base::checked_cast<uint32_t>(OffsetInSegment(position - buffer_.size())),
-      this);
+  }
+  Vector<Segment>::const_iterator it = segments_.begin();
+  if (position < it->data().size()) {
+    return Iterator(it, position, this);
+  }
+  it = std::upper_bound(it, segments_.end(), position,
+                        [](const size_t& position, const Segment& segment) {
+                          return position < segment.start_position();
+                        });
+  --it;
+  return Iterator(it, position - it->start_position(), this);
 }
 
-bool SharedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
+bool SegmentedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
   if (!dest)
     return false;
 
@@ -208,31 +131,56 @@ bool SharedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
   return offset == dest_size;
 }
 
-void SharedBuffer::GetMemoryDumpNameAndSize(String& dump_name,
-                                            size_t& dump_size) const {
-  size_t buffer_size = buffer_.size();
-  dump_name = buffer_size ? "/shared_buffer" : "/segments";
-  dump_size = buffer_size ? buffer_size : size_;
+void SegmentedBuffer::GetMemoryDumpNameAndSize(String& dump_name,
+                                               size_t& dump_size) const {
+  dump_name = "/segments";
+  dump_size = size_;
 }
 
-SharedBuffer::DeprecatedFlatData::DeprecatedFlatData(
-    scoped_refptr<const SharedBuffer> buffer)
-    : buffer_(std::move(buffer)) {
+SegmentedBuffer::DeprecatedFlatData::DeprecatedFlatData(
+    const SegmentedBuffer* buffer)
+    : buffer_(buffer) {
   DCHECK(buffer_);
-
-  if (buffer_->size() <= buffer_->buffer_.size()) {
-    // The SharedBuffer is not segmented - just point to its data.
-    data_ = buffer_->buffer_.data();
+  if (buffer_->segments_.empty()) {
+    data_ = nullptr;
     return;
   }
-
-  // Merge all segments.
-  flat_buffer_.ReserveInitialCapacity(
-      base::checked_cast<wtf_size_t>(buffer_->size()));
-  for (const auto& span : *buffer_)
-    flat_buffer_.Append(span.data(), static_cast<wtf_size_t>(span.size()));
-
+  if (buffer_->segments_.size() == 1) {
+    data_ = buffer_->segments_.begin()->data().data();
+    return;
+  }
+  flat_buffer_ = buffer_->CopyAs<Vector<char>>();
   data_ = flat_buffer_.data();
+}
+
+Vector<Vector<char>> SegmentedBuffer::TakeData() && {
+  Vector<Vector<char>> result;
+  result.ReserveInitialCapacity(segments_.size());
+  for (auto& segment : segments_) {
+    result.push_back(std::move(segment.data()));
+  }
+  Clear();
+  return result;
+}
+
+SharedBuffer::SharedBuffer() = default;
+
+SharedBuffer::SharedBuffer(base::span<const char> data) {
+  Append(data);
+}
+
+SharedBuffer::SharedBuffer(base::span<const unsigned char> data)
+    : SharedBuffer(base::as_chars(data)) {}
+
+SharedBuffer::SharedBuffer(SegmentedBuffer&& data)
+    : SegmentedBuffer(std::move(data)) {}
+
+SharedBuffer::~SharedBuffer() = default;
+
+scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {
+  scoped_refptr<SharedBuffer> buffer = Create();
+  buffer->Append(std::move(vector));
+  return buffer;
 }
 
 }  // namespace WTF

@@ -4,14 +4,14 @@
 
 #include "ui/events/devices/input_device_observer_win.h"
 
+#include <windows.h>
+
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/singleton.h"
-
-#include <windows.h>
 
 // This macro provides the implementation for the observer notification methods.
 #define WIN_NOTIFY_OBSERVERS(method_decl, input_device_types) \

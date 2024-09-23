@@ -122,10 +122,22 @@ def OriginFromArg(arg):
   return "{0}://{1}:{2}".format(origin.scheme, origin.hostname, port)
 
 def ExpiryFromArgs(args):
+  expiry: int
   if args.expire_timestamp:
-    return int(args.expire_timestamp)
-  return (int(time.time()) + (int(args.expire_days) * 86400))
+    expiry = int(args.expire_timestamp)
+  else:
+    expiry = (int(time.time()) + (int(args.expire_days) * 86400))
 
+  if expiry > 2**31 - 1:
+    # The maximum expiry timestamp is bound by the maximum value of a signed
+    # 32-bit integer (2^31-1).
+    # TODO(crbug.com/40872096): All expiries after 2038-01-19 03:14:07 UTC
+    # will raise this error, so add support for a larger range of values
+    # before then.
+    raise argparse.ArgumentTypeError(
+        "%d (%s UTC) is beyond the range of supported expiries" %
+        (expiry, datetime.utcfromtimestamp(expiry)))
+  return expiry
 
 def GenerateTokenData(version, origin, is_subdomain, is_third_party,
                       usage_restriction, feature_name, expiry):

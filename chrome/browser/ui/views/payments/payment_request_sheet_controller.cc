@@ -135,8 +135,8 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
     // Screen readers do not ignore invisible elements, so force the screen
     // reader to skip invisible sheet views by making it an ignored leaf node in
     // the accessibility tree.
-    GetViewAccessibility().OverrideIsIgnored(!visible);
-    GetViewAccessibility().OverrideIsLeaf(!visible);
+    GetViewAccessibility().SetIsIgnored(!visible);
+    GetViewAccessibility().SetIsLeaf(!visible);
   }
 
   raw_ptr<views::View> first_focusable_ = nullptr;
@@ -246,7 +246,8 @@ class PaymentRequestBackArrowButton : public views::ImageButton {
     SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
   }
 
   void OnThemeChanged() override {
@@ -352,7 +353,7 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
                 views::ScrollView::ScrollBarMode::kDisabled)
             // Hack to make labels in ScrollView contents wrap to scroll view
             // width.
-            // TODO(crbug.com/1479113): Fix this hack.
+            // TODO(crbug.com/40280756): Fix this hack.
             .ClipHeightTo(0, std::numeric_limits<int>::max())
             .SetContents(content_view_builder));
   } else {
@@ -482,7 +483,8 @@ void PaymentRequestSheetController::PopulateSheetHeaderView(
   DCHECK_EQ(container, header_view_);
 
   container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
-  container->SetBackground(GetHeaderBackground(header_view_));
+  container->SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDialogBackground));
   views::BoxLayout* layout =
       container->SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_cross_axis_alignment(
@@ -506,24 +508,15 @@ void PaymentRequestSheetController::PopulateSheetHeaderView(
   }
 
   layout->SetFlexForView(
-      container->AddChildView(CreateHeaderContentView(header_view_)), 1);
-}
-
-std::unique_ptr<views::View>
-PaymentRequestSheetController::CreateHeaderContentView(
-    views::View* header_view) {
-  return views::Builder<views::Label>()
-      .SetText(GetSheetTitle())
-      .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
-      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-      .SetID(static_cast<int>(DialogViewID::SHEET_TITLE))
-      .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
-      .Build();
-}
-
-std::unique_ptr<views::Background>
-PaymentRequestSheetController::GetHeaderBackground(views::View* header_view) {
-  return views::CreateThemedSolidBackground(ui::kColorDialogBackground);
+      container->AddChildView(
+          views::Builder<views::Label>()
+              .SetText(GetSheetTitle())
+              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetID(static_cast<int>(DialogViewID::SHEET_TITLE))
+              .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
+              .Build()),
+      1);
 }
 
 std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {
@@ -653,6 +646,10 @@ void PaymentRequestSheetController::PerformPrimaryButtonAction(
     if (callback)
       callback.Run(event);
   }
+}
+
+void PaymentRequestSheetController::Stop() {
+  is_active_ = false;
 }
 
 void PaymentRequestSheetController::BackButtonPressed() {

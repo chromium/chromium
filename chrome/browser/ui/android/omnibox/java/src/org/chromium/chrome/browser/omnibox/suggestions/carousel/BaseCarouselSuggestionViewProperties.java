@@ -5,14 +5,13 @@
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.List;
@@ -23,11 +22,9 @@ public @interface BaseCarouselSuggestionViewProperties {
     public static final WritableObjectPropertyKey<List<ListItem>> TILES =
             new WritableObjectPropertyKey<>();
 
-    /** Controls whether the carousel should have horizontal fade effect. */
-    static final WritableBooleanPropertyKey HORIZONTAL_FADE = new WritableBooleanPropertyKey();
-
     /** Specifies the width of a carousel element. */
-    static final WritableIntPropertyKey ITEM_WIDTH = new WritableIntPropertyKey();
+    static final ReadableObjectPropertyKey<SpacingRecyclerViewItemDecoration> ITEM_DECORATION =
+            new ReadableObjectPropertyKey<>();
 
     /** Specifies the audible description of the carousel type. */
     public static final ReadableObjectPropertyKey<String> CONTENT_DESCRIPTION =
@@ -47,8 +44,7 @@ public @interface BaseCarouselSuggestionViewProperties {
                 BOTTOM_PADDING,
                 APPLY_BACKGROUND,
                 TILES,
-                HORIZONTAL_FADE,
-                ITEM_WIDTH,
+                ITEM_DECORATION,
                 CONTENT_DESCRIPTION
             };
 

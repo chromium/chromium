@@ -5,7 +5,6 @@
 // clang-format off
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
@@ -22,18 +21,25 @@ suite('CrContainerShadowBehavior', function() {
          <style>
            #container {
              height: 50px;
+             overflow: auto;
+             width: 100%;
+           }
+
+           #content {
+             height: 200%;
+             width: 100%;
            }
          </style>
          <div id="before"></div>
-         <div id="container" show-bottom-shadow$="[[showBottomShadow]]"></div>
+         <div id="container" show-bottom-shadow$="[[showBottomShadow]]">
+           <div id="content"></div>
+         </div>
          <div id="after"></div>
        `;
     }
 
     static get properties() {
-      return {
-        showBottomShadow: Boolean,
-      };
+      return {showBottomShadow: Boolean};
     }
 
     showBottomShadow: boolean = false;

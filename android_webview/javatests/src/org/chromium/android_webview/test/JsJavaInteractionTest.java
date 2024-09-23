@@ -25,12 +25,12 @@ import org.chromium.android_webview.ScriptHandler;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.util.TestWebServer;
@@ -77,63 +77,6 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
     private TestWebMessageListener mListener;
-
-    private static class TestWebMessageListener implements WebMessageListener {
-        private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
-
-        public static class Data {
-            private MessagePayload mPayload;
-            public Uri mTopLevelOrigin;
-            public Uri mSourceOrigin;
-            public boolean mIsMainFrame;
-            public JsReplyProxy mReplyProxy;
-            public MessagePort[] mPorts;
-
-            public Data(
-                    MessagePayload payload,
-                    Uri topLevelOrigin,
-                    Uri sourceOrigin,
-                    boolean isMainFrame,
-                    JsReplyProxy replyProxy,
-                    MessagePort[] ports) {
-                mPayload = payload;
-                mTopLevelOrigin = topLevelOrigin;
-                mSourceOrigin = sourceOrigin;
-                mIsMainFrame = isMainFrame;
-                mReplyProxy = replyProxy;
-                mPorts = ports;
-            }
-
-            public String getAsString() {
-                return mPayload.getAsString();
-            }
-
-            public byte[] getAsArrayBuffer() {
-                return mPayload.getAsArrayBuffer();
-            }
-        }
-
-        @Override
-        public void onPostMessage(
-                MessagePayload payload,
-                Uri topLevelOrigin,
-                Uri sourceOrigin,
-                boolean isMainFrame,
-                JsReplyProxy replyProxy,
-                MessagePort[] ports) {
-            mQueue.add(
-                    new Data(
-                            payload, topLevelOrigin, sourceOrigin, isMainFrame, replyProxy, ports));
-        }
-
-        public Data waitForOnPostMessage() throws Exception {
-            return AwActivityTestRule.waitForNextQueueElement(mQueue);
-        }
-
-        public boolean hasNoMoreOnPostMessage() {
-            return mQueue.isEmpty();
-        }
-    }
 
     public JsJavaInteractionTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -335,7 +278,8 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
     public void testAddWebMessageListenerAffectsRendererInitiatedNavigation() throws Throwable {
-        // TODO(crbug.com/969842): We'd either replace the following html file with a file contains
+        // TODO(crbug.com/40630430): We'd either replace the following html file with a file
+        // contains
         // no JavaScript code or add a test to ensure that evaluateJavascript() won't
         // over-trigger DidClearWindowObject.
         loadUrlFromPath(POST_MESSAGE_WITH_PORTS_HTML);
@@ -353,7 +297,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
         final String url = mTestServer.getURL(POST_MESSAGE_SIMPLE_HTML);
         final OnPageFinishedHelper onPageFinishedHelper = mContentsClient.getOnPageFinishedHelper();
         final int currentCallCount = onPageFinishedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mAwContents.evaluateJavaScriptForTests(
                                 "window.location.href = '" + url + "';", null));
@@ -583,17 +527,17 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
 
         // Pass an URI instead of origin shouldn't work.
         final String jsObjectName5 = JS_OBJECT_NAME + "5";
-        try {
-            addWebMessageListenerOnUiThread(
-                    mAwContents,
-                    jsObjectName5,
-                    new String[] {"https://www.example.com/index.html"},
-                    mListener);
-            Assert.fail("allowedOriginRules shouldn't be url like");
-        } catch (RuntimeException e) {
-            // Should catch IllegalArgumentException in the end of the re-throw chain.
-            Assert.assertTrue(getRootCauseException(e) instanceof IllegalArgumentException);
-        }
+        RuntimeException exception =
+                Assert.assertThrows(
+                        RuntimeException.class,
+                        () ->
+                                addWebMessageListenerOnUiThread(
+                                        mAwContents,
+                                        jsObjectName5,
+                                        new String[] {"https://www.example.com/index.html"},
+                                        mListener));
+        // Should catch IllegalArgumentException in the end of the re-throw chain.
+        Assert.assertTrue(exception.getCause() instanceof IllegalArgumentException);
         Assert.assertFalse(
                 isJsObjectInjectedWhenLoadingUrl("https://www.example.com", jsObjectName5));
     }
@@ -603,14 +547,16 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Feature({"AndroidWebView", "JsJavaInteraction"})
     public void testDontAllowAddWebMessageLitenerWithTheSameJsObjectName() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
-        try {
-            addWebMessageListenerOnUiThread(
-                    mAwContents, JS_OBJECT_NAME, new String[] {"*"}, new TestWebMessageListener());
-            Assert.fail("Shouldn't allow the same Js object name be added more than once.");
-        } catch (RuntimeException e) {
-            // Should catch IllegalArgumentException in the end of the re-throw chain.
-            Assert.assertTrue(getRootCauseException(e) instanceof IllegalArgumentException);
-        }
+        RuntimeException exception =
+                Assert.assertThrows(
+                        RuntimeException.class,
+                        () ->
+                                addWebMessageListenerOnUiThread(
+                                        mAwContents,
+                                        JS_OBJECT_NAME,
+                                        new String[] {"*"},
+                                        new TestWebMessageListener()));
+        Assert.assertTrue(exception.getCause() instanceof IllegalArgumentException);
     }
 
     @Test
@@ -722,7 +668,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     public void testJsReplyProxyWorks() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
 
-        final String url = loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
+        loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
@@ -745,7 +691,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     public void testPostArrayBufferEncodeToString() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
 
-        final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_TITLE_HTML);
+        loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_TITLE_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         final String messageStr = HELLO + "FromJava";
@@ -763,7 +709,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
 
     private void verifyPostArrayBufferWorks(byte[] content) throws Exception {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
-        final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_REPLY_HTML);
+        loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_REPLY_HTML);
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         data.mReplyProxy.postMessage(new MessagePayload(content));
         data = mListener.waitForOnPostMessage();
@@ -803,7 +749,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
             throws Throwable {
         final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
-        final String url = loadUrlFromPath(POST_MESSAGE_NULL_OR_UNDEFINED_HTML);
+        loadUrlFromPath(POST_MESSAGE_NULL_OR_UNDEFINED_HTML);
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         data.mReplyProxy.postMessage(new MessagePayload(content));
 
@@ -828,7 +774,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
         addWebMessageListenerOnUiThread(
                 mAwContents, JS_OBJECT_NAME_2, new String[] {"*"}, webMessageListener2);
 
-        final String url = loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
+        loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
 
         // Listener for myObject.
         final String listener1 =
@@ -894,7 +840,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     public void testJsReplyProxyDropsMessageIfJsObjectIsGone() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
 
-        final String url = loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
+        loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
@@ -902,7 +848,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
 
         // Load the same url again.
         loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
-        TestWebMessageListener.Data data2 = mListener.waitForOnPostMessage();
+        mListener.waitForOnPostMessage();
 
         // Use the previous JsReplyProxy to send message. It should drop the message.
         proxy.postMessage(new MessagePayload(NEW_TITLE));
@@ -996,7 +942,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     public void testJsObjectRemoveOnMessage() throws Throwable {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
 
-        final String url = loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
+        loadUrlFromPath(POST_MESSAGE_REPLY_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
@@ -1364,18 +1310,17 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
 
         // Wrong origin rule.
         final String testObjectName5 = testObjectName + "5";
-        try {
-            addDocumentStartJavaScriptOnUiThread(
-                    mAwContents,
-                    "let " + testObjectName5 + " = {};",
-                    new String[] {"https://www.example.com/index.html"});
-            Assert.fail("You cannot use a full URL for allowedOriginRules.");
-        } catch (RuntimeException e) {
-            // Should catch IllegalArgumentException in the end of the re-throw chain.
-            Assert.assertTrue(
-                    "The exception should be an IllegalArgumentException",
-                    getRootCauseException(e) instanceof IllegalArgumentException);
-        }
+        RuntimeException exception =
+                Assert.assertThrows(
+                        RuntimeException.class,
+                        () ->
+                                addDocumentStartJavaScriptOnUiThread(
+                                        mAwContents,
+                                        "let " + testObjectName5 + " = {};",
+                                        new String[] {"https://www.example.com/index.html"}));
+        Assert.assertTrue(
+                "The exception should be an IllegalArgumentException",
+                exception.getCause() instanceof IllegalArgumentException);
         Assert.assertFalse(didScriptRunWhenLoading("https://www.example.com", testObjectName5));
     }
 
@@ -1444,14 +1389,14 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
             Assert.assertEquals(HELLO + Integer.toString(i), data.getAsString());
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> handlers[0].remove());
+        ThreadUtils.runOnUiThreadBlocking(() -> handlers[0].remove());
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         Assert.assertEquals(HELLO + "1", data.getAsString());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> handlers[1].remove());
+        ThreadUtils.runOnUiThreadBlocking(() -> handlers[1].remove());
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
@@ -1476,16 +1421,16 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
         Assert.assertEquals(HELLO, data.getAsString());
 
         // Remove twice, the second time should take no effect.
-        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
-        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
+        ThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
+        ThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
 
         // Remove twice again, should have no effect.
-        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
-        TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
+        ThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
+        ThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
         // Load the page again.
         loadUrlFromPath(HELLO_WORLD_HTML);
 
@@ -1572,7 +1517,7 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
             final AwContents awContents, final String script, final String[] allowedOriginRules)
             throws Exception {
         AwActivityTestRule.checkJavaScriptEnabled(awContents);
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.addDocumentStartJavaScript(script, allowedOriginRules));
     }
 
@@ -1582,16 +1527,13 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
             final String[] allowedOriginRules,
             final WebMessageListener listener)
             throws Exception {
-        AwActivityTestRule.checkJavaScriptEnabled(awContents);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> awContents.addWebMessageListener(jsObjectName, allowedOriginRules, listener));
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                awContents, jsObjectName, allowedOriginRules, listener);
     }
 
     private static void removeWebMessageListenerOnUiThread(
             final AwContents awContents, final String jsObjectName) throws Exception {
-        AwActivityTestRule.checkJavaScriptEnabled(awContents);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> awContents.removeWebMessageListener(jsObjectName));
+        TestWebMessageListener.removeWebMessageListenerOnUiThread(awContents, jsObjectName);
     }
 
     private static boolean hasJavaScriptObject(
@@ -1646,12 +1588,5 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
             sb.append(port);
         }
         return sb.toString();
-    }
-
-    private static Throwable getRootCauseException(Throwable exception) {
-        while (exception.getCause() != null) {
-            exception = exception.getCause();
-        }
-        return exception;
     }
 }

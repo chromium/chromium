@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
 
@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.hamcrest.MockitoHamcrest;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -38,6 +39,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -195,17 +197,21 @@ public class NotificationSuspenderUnitTest {
     public void testStoreNotificationResourcesFromOrigins_MultipleOrigins() {
         populateTestNotifications();
 
-        MatcherAssert.assertThat(
-                mNotificationSuspender.storeNotificationResourcesFromOrigins(
-                        Arrays.asList(
-                                Uri.parse(TEST_ORIGIN_SUBDOMAIN),
-                                Uri.parse(TEST_ORIGIN_HTTP),
-                                Uri.parse(TEST_ORIGIN_OTHER_PORT),
-                                Uri.parse(TEST_OTHER_ORIGIN))),
-                containsInAnyOrder(
-                        TEST_NOTIFICATION_ID_SUBDOMAIN,
-                        TEST_NOTIFICATION_ID_HTTP,
-                        TEST_NOTIFICATION_ID_OTHER_DOMAIN));
+        mNotificationSuspender.storeNotificationResourcesFromOrigins(
+                Arrays.asList(
+                        Uri.parse(TEST_ORIGIN_SUBDOMAIN),
+                        Uri.parse(TEST_ORIGIN_HTTP),
+                        Uri.parse(TEST_ORIGIN_OTHER_PORT),
+                        Uri.parse(TEST_OTHER_ORIGIN)),
+                (notifications) -> {
+                    MatcherAssert.assertThat(
+                            notifications,
+                            containsInAnyOrder(
+                                    TEST_NOTIFICATION_ID_SUBDOMAIN,
+                                    TEST_NOTIFICATION_ID_HTTP,
+                                    TEST_NOTIFICATION_ID_OTHER_DOMAIN));
+                });
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         // Expect the matching notifications to be stored...
         Mockito.verify(mNotificationSuspenderJniMock)
@@ -293,12 +299,13 @@ public class NotificationSuspenderUnitTest {
         Mockito.verify(mNotificationSuspenderJniMock)
                 .reDisplayNotifications(
                         ArgumentMatchers.eq(mProfile),
-                        /* origins= */ MockitoHamcrest.argThat(
-                                arrayContainingInAnyOrder(
-                                        TEST_ORIGIN,
-                                        TEST_ORIGIN_HTTP,
-                                        TEST_OTHER_ORIGIN,
-                                        TEST_OTHER_ORIGIN_HTTP)));
+                        /* origins= */ (List<String>)
+                                MockitoHamcrest.argThat(
+                                        containsInAnyOrder(
+                                                TEST_ORIGIN,
+                                                TEST_ORIGIN_HTTP,
+                                                TEST_OTHER_ORIGIN,
+                                                TEST_OTHER_ORIGIN_HTTP)));
     }
 
     /**
@@ -318,12 +325,13 @@ public class NotificationSuspenderUnitTest {
         Mockito.verify(mNotificationSuspenderJniMock)
                 .reDisplayNotifications(
                         ArgumentMatchers.eq(mProfile),
-                        /* origins= */ MockitoHamcrest.argThat(
-                                arrayContainingInAnyOrder(
-                                        TEST_ORIGIN_HTTP,
-                                        TEST_ORIGIN_SUBDOMAIN,
-                                        TEST_ORIGIN_OTHER_PORT,
-                                        TEST_OTHER_ORIGIN)));
+                        /* origins= */ (List<String>)
+                                MockitoHamcrest.argThat(
+                                        containsInAnyOrder(
+                                                TEST_ORIGIN_HTTP,
+                                                TEST_ORIGIN_SUBDOMAIN,
+                                                TEST_ORIGIN_OTHER_PORT,
+                                                TEST_OTHER_ORIGIN)));
     }
 
     /**
@@ -349,9 +357,12 @@ public class NotificationSuspenderUnitTest {
                                     NotificationPlatformBridge.PLATFORM_ID)));
         }
 
-        MatcherAssert.assertThat(
-                mNotificationSuspender.storeNotificationResourcesFromOrigins(
-                        Collections.singletonList(Uri.parse(TEST_ORIGIN))),
-                containsInAnyOrder(TEST_NOTIFICATION_ID));
+        mNotificationSuspender.storeNotificationResourcesFromOrigins(
+                Collections.singletonList(Uri.parse(TEST_ORIGIN)),
+                (notifications) -> {
+                    MatcherAssert.assertThat(
+                            notifications, containsInAnyOrder(TEST_NOTIFICATION_ID));
+                });
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 }

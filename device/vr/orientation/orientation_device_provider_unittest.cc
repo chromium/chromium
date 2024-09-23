@@ -92,7 +92,7 @@ class VROrientationDeviceProviderTest : public testing::Test {
     init_params->memory = mapped_region_.region.Duplicate();
 
     init_params->buffer_offset =
-        SensorReadingSharedBuffer::GetOffset(kOrientationSensorType);
+        GetSensorReadingSharedBufferOffset(kOrientationSensorType);
 
     return init_params;
   }

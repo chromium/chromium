@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 
 #include <string>
@@ -218,6 +223,7 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRarWithCorrectPassword) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownCorrect);
 }
@@ -240,6 +246,7 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRarWithIncorrectPassword) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownIncorrect);
 }
@@ -459,6 +466,7 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionCorrectPassword) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownCorrect);
 }
@@ -476,6 +484,7 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionIncorrectPassword) {
   ASSERT_EQ(results.archived_binary.size(), 0);
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownIncorrect);
 }
@@ -493,6 +502,7 @@ TEST_F(SandboxedRarAnalyzerTest, HeaderEncryptionNoPassword) {
   ASSERT_EQ(results.archived_binary.size(), 0);
 
   EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
   EXPECT_EQ(results.encryption_info.password_status,
             EncryptionInfo::kKnownIncorrect);
 }

@@ -30,6 +30,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/shutdown_controller_impl.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -45,11 +46,14 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/action_logger.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 
 using session_manager::SessionState;
@@ -154,8 +158,14 @@ class LoginShelfViewTest : public LoginTestBase {
     auto* latter_button_view = login_shelf_view_->GetViewByID(latter);
     EXPECT_TRUE(former_button_view->GetVisible() &&
                 latter_button_view->GetVisible());
-    return login_shelf_view_->GetIndexOf(former_button_view) <
-           login_shelf_view_->GetIndexOf(latter_button_view);
+    auto* former_button_view_container =
+        login_shelf_view_->GetButtonContainerByID(former);
+    auto* latter_button_view_container =
+        login_shelf_view_->GetButtonContainerByID(latter);
+    EXPECT_TRUE(former_button_view_container->GetVisible() &&
+                latter_button_view_container->GetVisible());
+    return login_shelf_view_->GetIndexOf(former_button_view_container) <
+           login_shelf_view_->GetIndexOf(latter_button_view_container);
   }
 
   // Check whether the button is enabled.
@@ -974,6 +984,28 @@ TEST_F(LoginShelfViewTest, DisplayOff) {
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
+// Checks that the add button click appears in the auth events.
+TEST_F(LoginShelfViewTest, AddUserAuthEventRecord) {
+  EXPECT_TRUE(ShowsShelfButtons({}));
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
+                                 LoginShelfView::kBrowseAsGuest,
+                                 LoginShelfView::kAddUser}));
+  Click(LoginShelfView::kAddUser);
+  AuthEventsRecorder* auth_recorder = AuthEventsRecorder::Get();
+  std::string auth_events = auth_recorder->GetAuthEventsLog();
+  EXPECT_EQ(auth_events, "auth_surface_change_Login,add_user,");
+}
+
+TEST_F(LoginShelfViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  login_shelf_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kToolbar);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
+}
+
 class OsInstallButtonTest : public LoginShelfViewTest {
  public:
   OsInstallButtonTest() = default;
@@ -1374,6 +1406,22 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
   Click(LoginShelfView::kRestart);
   EXPECT_FALSE(IsShutdownConfirmationVisible());
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
+}
+
+TEST_F(LoginShelfViewWithShutdownConfirmationTest,
+       ShelfShutdownConfirmationBubbleAccessibleProperties) {
+  CreateUserSessions(1);
+  NotifySessionStateChanged(SessionState::LOCKED);
+  Click(LoginShelfView::kShutdown);
+  auto* confirmation_bubble =
+      login_shelf_view_->GetShutdownConfirmationBubbleForTesting();
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(confirmation_bubble);
+  confirmation_bubble->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRMATION_TITLE));
 }
 
 class LoginShelfViewWithKioskLicenseTest : public LoginShelfViewTest {

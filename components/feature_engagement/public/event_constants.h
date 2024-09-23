@@ -143,40 +143,34 @@ extern const char kPasswordManagerWidgetPromoUsed[];
 // The Password Manager widget promo was closed.
 extern const char kPasswordManagerWidgetPromoClosed[];
 
-// The user has taken an action that is a criterion towards becoming eligible to
-// be shown the blue dot default browser promo.
-extern const char kBlueDotPromoCriterionMet[];
-
-// The user has met all criteria and has become eligible to be shown the blue
-// dot default browser promo.
-extern const char kBlueDotPromoEligibilityMet[];
-
 // The user has been shown the blue dot default browser promo on the overflow
 // carousel.
 extern const char kBlueDotPromoOverflowMenuShown[];
-
-// The user has been shown the blue dot default browser promo on the overflow
-// carousel, for a new user session. (i.e. after 6 hours from last shown).
-extern const char kBlueDotPromoOverflowMenuShownNewSession[];
 
 // The user has been shown the blue dot default browser promo on the settings
 // row.
 extern const char kBlueDotPromoSettingsShown[];
 
-// The user has been shown the blue dot default browser promo on the settings
-// row, after a new user session (i.e. after 6 hours from last shown).
-extern const char kBlueDotPromoSettingsShownNewSession[];
-
-// The user has dismissed the blue dot default browser promo on the overflow
-// carousel.
-extern const char kBlueDotPromoOverflowMenuDismissed[];
+// The user has opened the overflow menu while the blue dot was showing.
+extern const char kBlueDotPromoOverflowMenuOpened[];
 
 // The user has dismissed the blue dot default browser promo on the settings
 // row.
 extern const char kBlueDotPromoSettingsDismissed[];
 
-// The user snoozed the Credential Provider Extension Promo
+// The user has customized the overflow menu while default browser blue dot was
+// showing.
+extern const char kBlueDotOverflowMenuCustomized[];
+
+// The user has dismissed the blue dot default browser promo on the overflow
+// carousel.
+extern const char kBlueDotPromoOverflowMenuDismissed[];
+
+// The user snoozed the Credential Provider Extension Promo.
 extern const char kCredentialProviderExtensionPromoSnoozed[];
+
+// The user tapped Remind Me Later on the Docking Promo.
+extern const char kDockingPromoRemindMeLater[];
 
 // The user opened an url from omnibox.
 extern const char kOpenUrlFromOmnibox[];
@@ -196,9 +190,6 @@ extern const char kShareToolbarItemUsed[];
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
 
-// The omnibox position choice promo has been shown.
-extern const char kOmniboxPositionPromoShown[];
-
 // The user has triggered Parcel Tracking.
 extern const char kParcelTrackingTriggered[];
 
@@ -213,11 +204,18 @@ extern const char kIOSMultiGestureRefreshUsed[];
 // The user has used the pull-to-refresh feature in iOS.
 extern const char kIOSPullToRefreshUsed[];
 
+// The user has tapped the dismiss button of the pull-to-refresh IPH.
+extern const char kIOSPullToRefreshIPHDismissButtonTapped[];
+
 // The user has tapped "incognito" on the page control in the tab grid.
 extern const char kIOSIncognitoPageControlTapped[];
 
-// The user has swiped left from regular tab grid to the incognito tab grid.
-extern const char kIOSSwipeLeftForIncognitoUsed[];
+// The user has swiped right from regular tab grid to the incognito tab grid.
+extern const char kIOSSwipeRightForIncognitoUsed[];
+
+// The user has tapped the dismiss button of the "swipe right for incognito"
+// IPH.
+extern const char kIOSSwipeRightForIncognitoIPHDismissButtonTapped[];
 
 // The user has tapped the toolbar backward/forward button to navigate on a tab.
 extern const char kIOSBackForwardButtonTapped[];
@@ -225,9 +223,89 @@ extern const char kIOSBackForwardButtonTapped[];
 // The user has swiped from the edge to navigate backward or forward on a tab.
 extern const char kIOSSwipeBackForwardUsed[];
 
+// The user has tapped the dismiss button of the "swipe to go back/forward" IPH.
+extern const char kIOSSwipeBackForwardIPHDismissButtonTapped[];
+
+// The user has tapped on an adjacent tab in the tab grid.
+extern const char kIOSTabGridAdjacentTabTapped[];
+
+// The user has swipped the toolbar to go to an adjacent tab.
+extern const char kIOSSwipeToolbarToChangeTabUsed[];
+
+// The user has tapped the dismiss button of the "swipe the toolbar to go to
+// adjacent tab" IPH.
+extern const char kIOSSwipeToolbarToChangeTabIPHDismissButtonTapped[];
+
+// The user has opened the Overflow Menu customization screen.
+extern const char kIOSOverflowMenuCustomizationUsed[];
+
+// The user has used ann Overflow Menu item where customizing the menu could
+// have helped.
+extern const char kIOSOverflowMenuOffscreenItemUsed[];
+
+// The Default Browser FRE promo was shown to the user.
+extern const char kIOSDefaultBrowserFREShown[];
+
+// The user has met all the conditions to be eligible for generic default
+// browser promo.
+extern const char kGenericDefaultBrowserPromoConditionsMet[];
+
+// The user has met all the conditions to be eligible for All Tabs default
+// browser promo.
+extern const char kAllTabsPromoConditionsMet[];
+
+// The user has met all the conditions to be eligible for Made for iOS default
+// browser promo.
+extern const char kMadeForIOSPromoConditionsMet[];
+
+// The user has met all the conditions to be eligible for Stay Safe default
+// browser promo.
+extern const char kStaySafePromoConditionsMet[];
+
 // The user has met a condition that makes the Enhanced Safe Browsing
-// inline and blue-dot promos eligible to be displayed.
+// inline promos eligible to be displayed.
 extern const char kEnhancedSafeBrowsingPromoCriterionMet[];
+
+// The user taps the 'x' button on the Enhanced Safe Browsing inline promo.
+extern const char kInlineEnhancedSafeBrowsingPromoClosed[];
+
+// The generic default browser promo was triggered.
+extern const char kGenericDefaultBrowserPromoTrigger[];
+
+// The all tabs default browser promo was triggered.
+extern const char kAllTabsPromoTrigger[];
+
+// The made for iOS default browser promo was triggered.
+extern const char kMadeForIOSPromoTrigger[];
+
+// The stay safe default browser promo was triggered.
+extern const char kStaySafePromoTrigger[];
+
+// The tailored default browser promo group was triggered.
+extern const char kTailoredDefaultBrowserPromosGroupTrigger[];
+
+// The user has met the conditions for default browser trigger criteria
+// experiment.
+extern const char kDefaultBrowserPromoTriggerCriteriaConditionsMet[];
+
+// The user has tapped the contextual panel entrypoint when it was showing the
+// sample model info.
+extern const char kIOSContextualPanelSampleModelEntrypointUsed[];
+
+// The user has tapped the contextual panel entrypoint when it was branded with
+// price insights infoblock.
+extern const char kIOSContextualPanelPriceInsightsEntrypointUsed[];
+
+// The user has explicitly dismissed the Price Insights branded Contextual Panel
+// entrypoint in-product help.
+extern const char
+    kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[];
+
+// The user has tapped the Home customization menu's entrypoint.
+extern const char kHomeCustomizationMenuUsed[];
+
+// The user has tapped on the lens overlay entrypoint.
+extern const char kLensOverlayEntrypointUsed[];
 
 #endif  // BUILDFLAG(IS_IOS)
 

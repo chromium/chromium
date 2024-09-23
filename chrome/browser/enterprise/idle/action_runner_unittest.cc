@@ -79,7 +79,7 @@ ACTION_P(RunContinuation, success) {
 
 }  // namespace
 
-// TODO(crbug.com/1316551): Enable this when Android supports >1 Action.
+// TODO(crbug.com/40222234): Enable this when Android supports >1 Action.
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that actions are run in sequence, in order of priority.
 TEST(IdleActionRunnerTest, RunsActionsInSequence) {
@@ -196,7 +196,7 @@ TEST(IdleActionRunnerTest, DoNothingWithEmptyPref) {
   runner.Run();
 }
 
-// TODO(crbug.com/1316551): Enable this when Android supports >1 Action.
+// TODO(crbug.com/40222234): Enable this when Android supports >1 Action.
 #if !BUILDFLAG(IS_ANDROID)
 // Tests that ActionRunner only runs the actions configured via the
 // "IdleTimeoutActions" pref.
@@ -263,13 +263,13 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
  public:
   void SetEmbedderDelegate(
       content::BrowsingDataRemoverDelegate* embedder_delegate) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   bool DoesOriginMatchMaskForTesting(
       uint64_t origin_type_mask,
       const url::Origin& origin,
       storage::SpecialStoragePolicy* special_storage_policy) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return true;
   }
   void Remove(const base::Time& delete_begin,
@@ -319,10 +319,10 @@ class FakeBrowsingDataRemover : public BrowsingDataRemover {
   void SetWouldCompleteCallbackForTesting(
       const base::RepeatingCallback<
           void(base::OnceClosure continue_to_completion)>& callback) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
   const base::Time& GetLastUsedBeginTimeForTesting() override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return begin_time_;
   }
   uint64_t GetLastUsedRemovalMaskForTesting() override { return remove_mask_; }

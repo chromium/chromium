@@ -10,7 +10,6 @@
 
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -62,6 +61,11 @@ class StandaloneBrowserTestController
       const std::string& path,
       InstallUnpackedExtensionCallback callback) override;
 
+  void InstallComponentExtension(
+      const std::string& path,
+      const std::string& extension_id,
+      InstallComponentExtensionCallback callback) override;
+
   void RemoveComponentExtension(
       const std::string& extension_id,
       RemoveComponentExtensionCallback callback) override;
@@ -73,6 +77,9 @@ class StandaloneBrowserTestController
   void SetWebAppInstallForceListPref(
       const std::string& web_app_settings_json,
       SetWebAppInstallForceListPrefCallback callback) override;
+
+  void SetFakeExtensionPrinterHandler(
+      SetFakeExtensionPrinterHandlerCallback callback) override;
 
  private:
   class LacrosUtteranceEventDelegate;

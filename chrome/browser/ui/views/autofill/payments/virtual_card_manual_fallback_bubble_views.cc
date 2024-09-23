@@ -13,7 +13,10 @@
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/separator.h"
@@ -54,12 +57,12 @@ VirtualCardManualFallbackBubbleViews::VirtualCardManualFallbackBubbleViews(
     views::View* anchor_view,
     content::WebContents* web_contents,
     VirtualCardManualFallbackBubbleController* controller)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller_);
   SetShowIcon(true);
   SetShowCloseButton(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -258,8 +261,8 @@ void VirtualCardManualFallbackBubbleViews::AddCardDetailButtons(
   expiry_row->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kExpirationMonth));
   expiry_row->AddChildView(std::make_unique<views::Label>(u"/"));
-  // TODO(crbug.com/1196021): Validate this works when the expiration year field
-  // is for two-digit numbers
+  // TODO(crbug.com/40176273): Validate this works when the expiration year
+  // field is for two-digit numbers
   expiry_row->AddChildView(CreateRowItemButtonForField(
       VirtualCardManualFallbackBubbleField::kExpirationYear));
 
@@ -292,7 +295,7 @@ void VirtualCardManualFallbackBubbleViews::
   for (auto& pair : fields_to_buttons_map_) {
     std::u16string tooltip = controller_->GetFieldButtonTooltip(pair.first);
     pair.second->SetTooltipText(tooltip);
-    pair.second->SetAccessibleName(
+    pair.second->GetViewAccessibility().SetName(
         base::StrCat({pair.second->GetText(), u" ", tooltip}));
   }
 }
@@ -303,5 +306,8 @@ void VirtualCardManualFallbackBubbleViews::LearnMoreLinkClicked() {
         autofill::payments::GetVirtualCardEnrollmentSupportUrl());
   }
 }
+
+BEGIN_METADATA(VirtualCardManualFallbackBubbleViews)
+END_METADATA
 
 }  // namespace autofill

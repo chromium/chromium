@@ -127,16 +127,8 @@ void PPAPIDownloadRequest::Start() {
                      weakptr_factory_.GetWeakPtr()),
       service_->GetDownloadRequestTimeout());
 
-  if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
-    CheckAllowlistsOnSBThread(requestor_url_, database_manager_,
-                              weakptr_factory_.GetWeakPtr());
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PPAPIDownloadRequest::CheckAllowlistsOnSBThread,
-                       requestor_url_, database_manager_,
-                       weakptr_factory_.GetWeakPtr()));
-  }
+  CheckAllowlistsOnUIThread(requestor_url_, database_manager_,
+                            weakptr_factory_.GetWeakPtr());
 }
 
 // static
@@ -153,15 +145,11 @@ void PPAPIDownloadRequest::WebContentsDestroyed() {
   Finish(RequestOutcome::REQUEST_DESTROYED, DownloadCheckResult::UNKNOWN);
 }
 
-// Allowlist checking needs to the done on the SB thread.
-void PPAPIDownloadRequest::CheckAllowlistsOnSBThread(
+void PPAPIDownloadRequest::CheckAllowlistsOnUIThread(
     const GURL& requestor_url,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     base::WeakPtr<PPAPIDownloadRequest> download_request) {
-  DCHECK_CURRENTLY_ON(
-      base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
-          ? content::BrowserThread::UI
-          : content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(2) << " checking allowlists for requestor URL:" << requestor_url;
 
   auto callback = base::BindPostTask(

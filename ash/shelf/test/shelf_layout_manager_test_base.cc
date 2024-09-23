@@ -19,6 +19,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/view.h"
@@ -66,18 +67,20 @@ class ShelfDragCallback {
     if (GetShelfLayoutManager()->visibility_state() == SHELF_HIDDEN)
       return;
 
-    if (type == ui::ET_GESTURE_SCROLL_BEGIN) {
+    if (type == ui::EventType::kGestureScrollBegin) {
       scroll_ = gfx::Vector2dF();
       was_visible_on_drag_start_ = GetShelfLayoutManager()->IsVisible();
       return;
     }
 
     // The state of the shelf at the end of the gesture is tested separately.
-    if (type == ui::ET_GESTURE_SCROLL_END)
+    if (type == ui::EventType::kGestureScrollEnd) {
       return;
+    }
 
-    if (type == ui::ET_GESTURE_SCROLL_UPDATE)
+    if (type == ui::EventType::kGestureScrollUpdate) {
       scroll_.Add(delta);
+    }
 
     Shelf* shelf = AshTestBase::GetPrimaryShelf();
     gfx::Rect shelf_bounds = GetShelfWidget()->GetWindowBoundsInScreen();
@@ -180,7 +183,8 @@ void ShelfLayoutManagerTestBase::UpdateAutoHideStateNow() {
 
 aura::Window* ShelfLayoutManagerTestBase::CreateTestWindow() {
   aura::Window* window = new aura::Window(nullptr);
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   ParentWindowInPrimaryRootWindow(window);
@@ -190,7 +194,8 @@ aura::Window* ShelfLayoutManagerTestBase::CreateTestWindow() {
 aura::Window* ShelfLayoutManagerTestBase::CreateTestWindowInParent(
     aura::Window* root_window) {
   aura::Window* window = new aura::Window(nullptr);
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   window->SetType(aura::client::WINDOW_TYPE_NORMAL);
   window->Init(ui::LAYER_TEXTURED);
   aura::client::ParentWindowWithContext(window, root_window, gfx::Rect(),
@@ -199,7 +204,9 @@ aura::Window* ShelfLayoutManagerTestBase::CreateTestWindowInParent(
 }
 
 views::Widget* ShelfLayoutManagerTestBase::CreateTestWidget() {
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  views::Widget::InitParams params(
+      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = GetContext();
   views::Widget* widget = new views::Widget;
@@ -231,7 +238,7 @@ void ShelfLayoutManagerTestBase::StartScroll(gfx::Point start) {
   current_point_ = start;
   ui::GestureEvent event = ui::GestureEvent(
       current_point_.x(), current_point_.y(), ui::EF_NONE, timestamp_,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, -1.0f));
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 0, -1.0f));
   GetShelfLayoutManager()->ProcessGestureEvent(event);
 }
 
@@ -240,7 +247,7 @@ void ShelfLayoutManagerTestBase::UpdateScroll(const gfx::Vector2d& delta) {
   current_point_ += delta;
   ui::GestureEvent event = ui::GestureEvent(
       current_point_.x(), current_point_.y(), ui::EF_NONE, timestamp_,
-      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, delta.x(),
+      ui::GestureEventDetails(ui::EventType::kGestureScrollUpdate, delta.x(),
                               delta.y()));
   GetShelfLayoutManager()->ProcessGestureEvent(event);
 }
@@ -248,9 +255,9 @@ void ShelfLayoutManagerTestBase::UpdateScroll(const gfx::Vector2d& delta) {
 void ShelfLayoutManagerTestBase::EndScroll(bool is_fling, float velocity_y) {
   IncreaseTimestamp();
   ui::GestureEventDetails event_details =
-      is_fling
-          ? ui::GestureEventDetails(ui::ET_SCROLL_FLING_START, 0, velocity_y)
-          : ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END);
+      is_fling ? ui::GestureEventDetails(ui::EventType::kScrollFlingStart, 0,
+                                         velocity_y)
+               : ui::GestureEventDetails(ui::EventType::kGestureScrollEnd);
   ui::GestureEvent event =
       ui::GestureEvent(current_point_.x(), current_point_.y(), ui::EF_NONE,
                        timestamp_, event_details);

@@ -20,17 +20,96 @@ class Animation;
 class AnimationHost;
 class AnimationTimeline;
 
-// Contains an AnimationTimeline and its Animation that owns the impl
-// only scroll offset animations running on a particular CC Layer.
+// This class represents a scroll offset animation that is managed by only the
+// impl thread, i.e. an impl-only scroll animation. It contains an
+// AnimationTimeline and owns the (impl-only) scroll offset Animation running
+// on a particular CC Layer. It exists only on the compositor thread.
+class CC_ANIMATION_EXPORT ScrollOffsetAnimationImpl : public AnimationDelegate {
+ public:
+  explicit ScrollOffsetAnimationImpl(AnimationHost* animation_host);
+  ScrollOffsetAnimationImpl(const ScrollOffsetAnimationImpl&) = delete;
+  ~ScrollOffsetAnimationImpl() override;
+
+  ScrollOffsetAnimationImpl& operator=(const ScrollOffsetAnimationImpl&) =
+      delete;
+
+  void AutoScrollAnimationCreate(ElementId element_id,
+                                 const gfx::PointF& target_offset,
+                                 const gfx::PointF& current_offset,
+                                 float autoscroll_velocity,
+                                 base::TimeDelta animation_start_offset);
+
+  // |delayed_by| shrinks the duration of the
+  // animation. |animation_start_offset| causes us to start the animation
+  // partway through.
+  void MouseWheelScrollAnimationCreate(ElementId element_id,
+                                       const gfx::PointF& target_offset,
+                                       const gfx::PointF& current_offset,
+                                       base::TimeDelta delayed_by,
+                                       base::TimeDelta animation_start_offset);
+
+  std::optional<gfx::PointF> ScrollAnimationUpdateTarget(
+      const gfx::Vector2dF& scroll_delta,
+      const gfx::PointF& max_scroll_offset,
+      base::TimeTicks frame_monotonic_time,
+      base::TimeDelta delayed_by);
+
+  // AnimationDelegate implementation.
+  void NotifyAnimationStarted(base::TimeTicks monotonic_time,
+                              int target_property,
+                              int group) override {}
+  void NotifyAnimationFinished(base::TimeTicks monotonic_time,
+                               int target_property,
+                               int group) override;
+  void NotifyAnimationAborted(base::TimeTicks monotonic_time,
+                              int target_property,
+                              int group) override {}
+  void NotifyAnimationTakeover(
+      base::TimeTicks monotonic_time,
+      int target_property,
+      base::TimeTicks animation_start_time,
+      std::unique_ptr<gfx::AnimationCurve> curve) override {}
+  void NotifyLocalTimeUpdated(
+      std::optional<base::TimeDelta> local_time) override {}
+
+  // Aborts the currently running scroll offset animation on an element and
+  // starts a new one offsetted by adjustment.
+  void ScrollAnimationApplyAdjustment(ElementId element_id,
+                                      const gfx::Vector2dF& adjustment);
+
+  void ScrollAnimationAbort(bool needs_completion);
+  void AnimatingElementRemovedByCommit();
+
+  bool IsAnimating() const;
+  bool IsAutoScrolling() const;
+  ElementId GetElementId() const;
+
+ private:
+  void ScrollAnimationCreateInternal(ElementId element_id,
+                                     std::unique_ptr<gfx::AnimationCurve> curve,
+                                     base::TimeDelta animation_start_offset);
+
+  void ReattachScrollOffsetAnimationIfNeeded(ElementId element_id);
+
+  raw_ptr<AnimationHost> animation_host_;
+  scoped_refptr<AnimationTimeline> scroll_offset_timeline_;
+  scoped_refptr<Animation> scroll_offset_animation_;
+  bool animation_is_autoscroll_ = false;
+};
+
+// Contains an ScrollOffsetAnimationImpl which encapsulates the scroll offset
+// animation running on a particular CC Layer.
 // We have just one animation for impl-only scroll offset animations. I.e. only
 // one element can have an impl-only scroll offset animation at any given time.
+// To support multiple elements having impl-only scroll offset animations, this
+// class will need to have a set (or map) of ScrollOffsetAnimations rather
+// than just one.
 // Note that this class only exists on the compositor thread.
-class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
-    : public AnimationDelegate {
+class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl {
  public:
   explicit ScrollOffsetAnimationsImpl(AnimationHost* animation_host);
   ScrollOffsetAnimationsImpl(const ScrollOffsetAnimationsImpl&) = delete;
-  ~ScrollOffsetAnimationsImpl() override;
+  ~ScrollOffsetAnimationsImpl();
 
   ScrollOffsetAnimationsImpl& operator=(const ScrollOffsetAnimationsImpl&) =
       delete;
@@ -64,43 +143,17 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
   void ScrollAnimationAbort(bool needs_completion);
   void AnimatingElementRemovedByCommit();
 
-  // AnimationDelegate implementation.
-  void NotifyAnimationStarted(base::TimeTicks monotonic_time,
-                              int target_property,
-                              int group) override {}
-  void NotifyAnimationFinished(base::TimeTicks monotonic_time,
-                               int target_property,
-                               int group) override;
-  void NotifyAnimationAborted(base::TimeTicks monotonic_time,
-                              int target_property,
-                              int group) override {}
-  void NotifyAnimationTakeover(
-      base::TimeTicks monotonic_time,
-      int target_property,
-      base::TimeTicks animation_start_time,
-      std::unique_ptr<gfx::AnimationCurve> curve) override {}
-  void NotifyLocalTimeUpdated(
-      std::optional<base::TimeDelta> local_time) override {}
-
   bool IsAnimating() const;
   bool IsAutoScrolling() const;
   ElementId GetElementId() const;
 
  private:
-  void ScrollAnimationCreateInternal(ElementId element_id,
-                                     std::unique_ptr<gfx::AnimationCurve> curve,
-                                     base::TimeDelta animation_start_offset);
-
-  void ReattachScrollOffsetAnimationIfNeeded(ElementId element_id);
-
   raw_ptr<AnimationHost> animation_host_;
-  scoped_refptr<AnimationTimeline> scroll_offset_timeline_;
 
   // We have just one animation for impl-only scroll offset animations.
   // I.e. only one element can have an impl-only scroll offset animation at
   // any given time.
-  scoped_refptr<Animation> scroll_offset_animation_;
-  bool animation_is_autoscroll_ = false;
+  std::unique_ptr<ScrollOffsetAnimationImpl> scroll_offset_animation_;
 };
 
 }  // namespace cc

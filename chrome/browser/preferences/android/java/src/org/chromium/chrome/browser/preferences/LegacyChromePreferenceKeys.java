@@ -18,8 +18,7 @@ import java.util.List;
 @CheckDiscard("Validation is performed in tests and in debug builds.")
 public class LegacyChromePreferenceKeys {
     /**
-     * @return The list of [keys in use] that do not conform to the "Chrome.[Feature].[Key]"
-     *     format.
+     * @return The list of [keys in use] that do not conform to the "Chrome.[Feature].[Key]" format.
      */
     static List<String> getKeysInUse() {
         return Arrays.asList(
@@ -85,8 +84,8 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.OFFLINE_INDICATOR_V2_ENABLED,
                 ChromePreferenceKeys.PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE,
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_COMPLETE_ONCE,
+                ChromePreferenceKeys.PRIVACY_IN_SAMPLE_FOR_METRICS,
                 ChromePreferenceKeys.PRIVACY_METRICS_REPORTING,
-                ChromePreferenceKeys.PRIVACY_METRICS_IN_SAMPLE,
                 ChromePreferenceKeys.PROFILES_BOOT_TIMESTAMP,
                 ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START,
                 ChromePreferenceKeys.RLZ_NOTIFIED,
@@ -113,7 +112,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_SUPPRESSION_PERIOD_START,
                 ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED,
                 ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED,
-                ChromePreferenceKeys.SIGNIN_LEGACY_SYNC_ACCOUNT_EMAIL,
+                ChromePreferenceKeys.SIGNIN_LEGACY_PRIMARY_ACCOUNT_EMAIL,
                 ChromePreferenceKeys.SNAPSHOT_DATABASE_REMOVED,
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME,
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF,

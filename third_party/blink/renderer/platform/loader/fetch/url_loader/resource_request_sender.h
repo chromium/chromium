@@ -28,6 +28,7 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
@@ -52,6 +53,7 @@ struct URLLoaderCompletionStatus;
 }  // namespace network
 
 namespace blink {
+class CodeCacheFetcher;
 class CodeCacheHost;
 class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
@@ -162,7 +164,6 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   friend class URLLoaderClientImpl;
   friend class URLResponseBodyConsumer;
 
-  class CodeCacheFetcher;
   struct PendingRequestInfo {
     PendingRequestInfo(scoped_refptr<ResourceRequestClient> client,
                        network::mojom::RequestDestination request_destination,

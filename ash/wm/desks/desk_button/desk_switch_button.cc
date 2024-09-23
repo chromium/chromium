@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_class_properties.h"
@@ -29,27 +30,26 @@ namespace ash {
 DeskSwitchButton::DeskSwitchButton()
     : ImageButton(
           base::BindRepeating(&DeskSwitchButton::DeskSwitchButtonPressed,
-                              base::Unretained(this))) {}
-
-DeskSwitchButton::~DeskSwitchButton() = default;
-
-gfx::Size DeskSwitchButton::CalculatePreferredSize() const {
-  return gfx::Size(kDeskButtonSwitchButtonWidth,
-                   desk_button_container_->IsHorizontalShelf()
-                       ? kDeskButtonSwitchButtonHeightHorizontal
-                       : kDeskButtonSwitchButtonHeightVertical);
-}
-
-void DeskSwitchButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+                              base::Unretained(this))) {
   // Avoid failing accessibility checks if we don't have a name.
-  views::ImageButton::GetAccessibleNodeData(node_data);
-  if (GetAccessibleName().empty()) {
-    node_data->SetNameExplicitlyEmpty();
+  if (GetViewAccessibility().GetCachedName().empty()) {
+    GetViewAccessibility().SetName(
+        "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
 }
 
+DeskSwitchButton::~DeskSwitchButton() = default;
+
+gfx::Size DeskSwitchButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(kDeskButtonSwitchButtonWidth,
+                   desk_button_container_->zero_state()
+                       ? kDeskButtonSwitchButtonHeightVertical
+                       : kDeskButtonSwitchButtonHeightHorizontal);
+}
+
 void DeskSwitchButton::OnMouseEvent(ui::MouseEvent* event) {
-  if (GetEnabled() && event->type() == ui::ET_MOUSE_PRESSED &&
+  if (GetEnabled() && event->type() == ui::EventType::kMousePressed &&
       event->IsOnlyRightMouseButton()) {
     desk_button_container_->MaybeShowContextMenu(this, event);
     return;
@@ -59,8 +59,8 @@ void DeskSwitchButton::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void DeskSwitchButton::OnGestureEvent(ui::GestureEvent* event) {
-  if (GetEnabled() && (event->type() == ui::ET_GESTURE_LONG_PRESS ||
-                       event->type() == ui::ET_GESTURE_LONG_TAP)) {
+  if (GetEnabled() && (event->type() == ui::EventType::kGestureLongPress ||
+                       event->type() == ui::EventType::kGestureLongTap)) {
     desk_button_container_->MaybeShowContextMenu(this, event);
     return;
   }
@@ -125,11 +125,12 @@ void DeskSwitchButton::UpdateUi(const Desk* active_desk) {
   auto* desk_controller = DesksController::Get();
   int active_desk_index = desk_controller->GetDeskIndex(active_desk);
   if (type_ == Type::kPrev) {
-    SetVisible(desk_button_container_->IsHorizontalShelf() &&
+    SetVisible(!desk_button_container_->zero_state() &&
                active_desk_index - 1 >= 0);
   } else {
-    SetVisible(desk_button_container_->IsHorizontalShelf());
-    SetEnabled(active_desk_index + 1 < desk_controller->GetNumberOfDesks());
+    const int desk_count = desk_controller->GetNumberOfDesks();
+    SetVisible(desk_count > 1 && !desk_button_container_->zero_state());
+    SetEnabled(active_desk_index + 1 < desk_count);
   }
 
   SetImageModel(
@@ -156,7 +157,7 @@ void DeskSwitchButton::UpdateLocaleSpecificSettings() {
     const Desk* target_desk = desk_controller->GetDeskAtIndex(target_index);
     const int id = type_ == Type::kPrev ? IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE
                                         : IDS_SHELF_NEXT_DESK_BUTTON_TITLE;
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         id, target_desk->name(), base::NumberToString16(target_index + 1),
         base::NumberToString16(desk_count)));
   }

@@ -78,8 +78,9 @@ void DispatchVolumeListChangeEventLacros(
   // to polling via getVolumeList().
   ConvertAndFilterMojomToVolumeList(volume_list, &event_args.volumes);
   for (const auto& extension : registry->enabled_extensions()) {
-    if (!consent_provider->IsGrantable(*extension))
+    if (!consent_provider->IsGrantable(*extension)) {
       continue;
+    }
 
     event_router->DispatchEventToExtension(
         extension->id(),

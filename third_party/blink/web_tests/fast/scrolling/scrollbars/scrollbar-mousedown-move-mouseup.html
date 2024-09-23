@@ -2,6 +2,8 @@
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
 <script src='../../../resources/gesture-util.js'></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src='../../../resources/scrollbar-util.js'></script>
 
 <style>
   #scrollme,
@@ -22,63 +24,80 @@
 <div id='notscrollme'></div>
 
 <script>
-  function initEventHandlers(element) {
-    element.addEventListener('mousedown', handleEvent);
-    element.addEventListener('mouseup', handleEvent);
-  }
 
-  window.events = {
-    'scrollme': [],
-    'notscrollme': []
-  };
-
-  function handleEvent(e) {
-    window.events[e.target.id].push(e);
+  function readyPromise(scroller, other) {
+    return new Promise(resolve => {
+      const events = {
+        'scrollme': [],
+        'notscrollme': []
+      };
+      const initEventHandlers = (element) => {
+        element.addEventListener('mousedown', (e) => {
+                                   events[e.target.id].push(e);
+                                 }, { once: true });
+        element.addEventListener('mouseup', (e) => {
+                                   events[e.target.id].push(e);
+                                   requestAnimationFrame(() => {
+                                     requestAnimationFrame(() => {
+                                       resolve(events);
+                                     });
+                                   });
+                                 }, { once: true });
+      }
+      initEventHandlers(scroller);
+      initEventHandlers(other);
+    });
   }
 
   window.onload = async () => {
-    let d1 = document.querySelector('#scrollme');
-    let d2 = document.querySelector('#notscrollme');
-    const middleButton = 1;
+    const d1 = document.getElementById('scrollme');
+    const d2 = document.getElementById('notscrollme');
+    const scroll_start = trackTop(d1);
+    // scroll_start.y + delta_y intentionally exceeds bounds of the scroll
+    // container.
+    const delta_y = d1.getBoundingClientRect().height;
 
-    initEventHandlers(d1);
-    initEventHandlers(d2);
+    if (scrollbarThickness() == 0) {
+      // Test is not relevant on platforms that don't display scrollbars.
+      return;
+    }
 
     internals.settings.setScrollAnimatorEnabled(false);
 
-    promise_test(async () => {
-      await waitForCompositorCommit();
-      await mouseDragAndDrop(d1.offsetLeft + d1.offsetWidth - 4,
-        d1.offsetTop + 30,
-        d2.offsetLeft + d2.offsetWidth - 4,
-        d2.offsetTop + 4);
-      await waitFor(() => { return events['scrollme'].length == 2; });
-
+    async function runMouseDragTest(button) {
+      await waitForCompositorReady();
+      await waitForScrollReset(d1);
+      const ready = readyPromise(d1, d2);
+      // TOOD(kevers): Switch to a method that uses test-driver. At present,
+      // the test driver version does not include separate pauses before and
+      // after the move, which turned out to result in test flakes.
+      await mouseDragAndDrop(
+        scroll_start.x,
+        scroll_start.y,
+        scroll_start.x,
+        scroll_start.y + delta_y,
+        pointerActionButtonId(button));
+      const events = await ready;
       assert_greater_than(d1.scrollTop, 0);
       assert_equals(d2.scrollTop, 0);
+      const which = button == Buttons.LEFT ? 1 : 2;
       assert_equals(events['notscrollme'].length, 0);
+      assert_equals(events['scrollme'].length, 2);
       assert_equals(events['scrollme'][0].type, 'mousedown');
-      assert_equals(events['scrollme'][0].which, 1);
+      assert_equals(events['scrollme'][0].which, which);
       assert_equals(events['scrollme'][1].type, 'mouseup');
-      assert_equals(events['scrollme'][1].which, 1);
+      assert_equals(events['scrollme'][1].which, which);
+    }
 
-      d1.scrollTop = 0;
-      await waitForCompositorCommit();
-      await mouseDragAndDrop(d1.offsetLeft + d1.offsetWidth - 4,
-        d1.offsetTop + 30,
-        d2.offsetLeft + d2.offsetWidth - 4,
-        d2.offsetTop + 4,
-        middleButton);
-      await waitFor(() => { return events['scrollme'].length == 4; });
+    promise_test(async () => {
+      return runMouseDragTest(Buttons.LEFT);
+    }, 'Drag a scrollbar with the left button and release it on another DIV, ' +
+       'only the DIV that owns the dragging scrollbar receive mouse events');
 
-      assert_greater_than(d1.scrollTop, 0);
-      assert_equals(d2.scrollTop, 0);
-      assert_equals(events['notscrollme'].length, 0);
-      assert_equals(events['scrollme'][2].type, 'mousedown');
-      assert_equals(events['scrollme'][2].which, 2);
-      assert_equals(events['scrollme'][3].type, 'mouseup');
-      assert_equals(events['scrollme'][3].which, 2);
-    }, 'Drag a scrollbar and release it on another DIV, only the DIV owns the' +
-      ' dragging scrollbar receive mouse events');
-  }
+    promise_test(async () => {
+      return runMouseDragTest(Buttons.MIDDLE);
+    }, 'Drag a scrollbar with the middle button and release it on another ' +
+       'DIV, only the DIV that owns the dragging scrollbar receive mouse ' +
+       'events');
+}
 </script>

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/not_fatal_until.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker_helpers.h"
 
 namespace performance_manager {
@@ -417,7 +418,7 @@ bool V8ContextTrackerDataStore::MarkDetached(V8ContextData* v8_data) {
 void V8ContextTrackerDataStore::Destroy(
     const blink::ExecutionContextToken& token) {
   auto it = global_execution_context_datas_.find(token);
-  DCHECK(it != global_execution_context_datas_.end());
+  CHECK(it != global_execution_context_datas_.end(), base::NotFatalUntil::M130);
   auto* ec_data = it->get();
   if (ec_data->destroyed) {
     DCHECK_LT(0u, destroyed_execution_context_count_);
@@ -432,7 +433,7 @@ void V8ContextTrackerDataStore::Destroy(
 
 void V8ContextTrackerDataStore::Destroy(const blink::RemoteFrameToken& token) {
   auto it = global_remote_frame_datas_.find(token);
-  DCHECK(it != global_remote_frame_datas_.end());
+  CHECK(it != global_remote_frame_datas_.end(), base::NotFatalUntil::M130);
   auto* rf_data = it->get();
   rf_data->process_data()->Remove(PassKey(), rf_data);
   global_remote_frame_datas_.erase(it);
@@ -440,7 +441,7 @@ void V8ContextTrackerDataStore::Destroy(const blink::RemoteFrameToken& token) {
 
 void V8ContextTrackerDataStore::Destroy(const blink::V8ContextToken& token) {
   auto it = global_v8_context_datas_.find(token);
-  DCHECK(it != global_v8_context_datas_.end());
+  CHECK(it != global_v8_context_datas_.end(), base::NotFatalUntil::M130);
   auto* v8_data = it->get();
   if (v8_data->detached) {
     DCHECK_LT(0u, detached_v8_context_count_);

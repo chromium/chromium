@@ -17,15 +17,18 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-constexpr float kOverlayViewOpacity = 0.7f;
+namespace {
+
+constexpr float kOverlayViewOpacity = 0.60f;
 
 // The time duration for |background_| to fade in.
 constexpr int kFadeInDurationMs = 500;
 
+}  // namespace
+
 AutoPipSettingOverlayView::AutoPipSettingOverlayView(
     ResultCb result_cb,
     const GURL& origin,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow)
     : show_timer_(std::make_unique<base::OneShotTimer>()) {
@@ -35,7 +38,7 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
       std::move(result_cb),
       base::BindOnce(&AutoPipSettingOverlayView::OnHideView,
                      weak_factory_.GetWeakPtr()),
-      origin, browser_view_overridden_bounds, anchor_view, arrow);
+      origin, anchor_view, arrow);
   // Create the content setting UI.
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
@@ -49,6 +52,14 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
                            kColorPipWindowBackground))
                        .Build());
   background_->layer()->SetOpacity(0.0f);
+
+  // TODO(crbug.com/356210387): Apply blur directly to `background_` layer.
+  //
+  // Add layer to blur the web contents.
+  blur_view_ =
+      AddChildView(views::Builder<views::View>().SetPaintToLayer().Build());
+  blur_view_->layer()->SetBackgroundBlur(4.0f);
+
   FadeInLayer(background_->layer());
 }
 
@@ -74,13 +85,15 @@ void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent) {
 }
 
 void AutoPipSettingOverlayView::OnHideView() {
-  // Hide the semi-opaque background layer.
+  // Hide the overlay view.
   SetVisible(false);
 
   // No longer block input events, if we were doing that.
   scoped_ignore_input_events_.reset();
 
-  NotifyAutoPipSettingOverlayViewHidden();
+  if (delegate_) {
+    delegate_->OnAutoPipSettingOverlayViewHidden();
+  }
 }
 
 gfx::Size AutoPipSettingOverlayView::GetBubbleSize() const {
@@ -129,6 +142,7 @@ AutoPipSettingOverlayView::~AutoPipSettingOverlayView() {
         views::Widget::ClosedReason::kUnspecified);
   }
   background_ = nullptr;
+  blur_view_ = nullptr;
   auto_pip_setting_view_ = nullptr;
 }
 
@@ -139,15 +153,9 @@ void AutoPipSettingOverlayView::OnWidgetDestroying(views::Widget*) {
   widget_ = nullptr;
 }
 
-void AutoPipSettingOverlayView::NotifyAutoPipSettingOverlayViewHidden() {
-  for (AutoPipSettingOverlayViewObserver& obs : observers_) {
-    obs.OnAutoPipSettingOverlayViewHidden();
-  }
-}
-
 void AutoPipSettingOverlayView::IgnoreInputEvents(
     content::WebContents* web_contents) {
-  scoped_ignore_input_events_ = web_contents->IgnoreInputEvents();
+  scoped_ignore_input_events_ = web_contents->IgnoreInputEvents(std::nullopt);
 }
 
 BEGIN_METADATA(AutoPipSettingOverlayView)

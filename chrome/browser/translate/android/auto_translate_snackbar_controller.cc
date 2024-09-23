@@ -12,11 +12,13 @@
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/translate/android/jni_headers/AutoTranslateSnackbarController_jni.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/translate/android/jni_headers/AutoTranslateSnackbarController_jni.h"
 
 namespace translate {
 

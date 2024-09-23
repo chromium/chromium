@@ -7,16 +7,16 @@
 #include <memory>
 #include <utility>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 #include "partition_alloc/extended_api.h"
 #include "partition_alloc/thread_cache.h"
@@ -101,7 +101,7 @@ TEST_F(MemoryReclaimerTest, Reclaim) {
   }
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 namespace {
@@ -142,7 +142,7 @@ TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   EXPECT_LT(tcache->CachedMemory(), cached_size / 2);
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
         // PA_CONFIG(THREAD_CACHE_SUPPORTED)
 
 }  // namespace partition_alloc

@@ -4,4 +4,7 @@ Tracing complete
 Found matching LoAF event
 duration-blockingDuration>=50
 numScripts=1
+AnimationFrame::Script::Execute event duration > 50
+Found matching short LoaF events >=4
+Found matching short AnimationFrame::Render events >=4
 

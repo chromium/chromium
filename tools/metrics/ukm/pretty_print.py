@@ -14,7 +14,7 @@ import presubmit_util
 
 def main(argv):
   presubmit_util.DoPresubmitMain(argv, 'ukm.xml', 'ukm.old.xml',
-                                 ukm_model.PrettifyXML)
+                                 ukm_model.PrettifyXmlAndTrimObsolete)
 
 
 if '__main__' == __name__:

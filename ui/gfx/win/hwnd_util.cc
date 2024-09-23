@@ -4,8 +4,9 @@
 
 #include "ui/gfx/win/hwnd_util.h"
 
-#include <dwmapi.h>  // DWMWA_CLOAKED
 #include <windows.h>
+
+#include <dwmapi.h>  // DWMWA_CLOAKED
 
 #include "base/debug/gdi_debug_util_win.h"
 #include "base/logging.h"
@@ -41,7 +42,7 @@ void AdjustWindowToFit(HWND hwnd, const RECT& bounds, bool fit_to_monitor) {
       }
       // Else fall through.
     } else {
-      NOTREACHED() << "Unable to find default monitor";
+      NOTREACHED_IN_MIGRATION() << "Unable to find default monitor";
       // Fall through.
     }
   }  // Else fall through.
@@ -179,7 +180,7 @@ void CenterAndSizeWindow(HWND parent,
       GetMonitorInfo(monitor, &mi);
       center_bounds = mi.rcWork;
     } else {
-      NOTREACHED() << "Unable to get default monitor";
+      NOTREACHED_IN_MIGRATION() << "Unable to get default monitor";
     }
   }
 

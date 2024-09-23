@@ -33,8 +33,7 @@ class GPU_GLES2_EXPORT SharedMemoryRegionWrapper {
   // until destruction.
   bool Initialize(const gfx::GpuMemoryBufferHandle& handle,
                   const gfx::Size& size,
-                  gfx::BufferFormat format,
-                  gfx::BufferPlane plane);
+                  gfx::BufferFormat format);
 
   bool IsValid() const;
   uint8_t* GetMemory(int plane_index) const;

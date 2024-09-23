@@ -15,13 +15,19 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+
+// static
+DomainDiversityReporter* DomainDiversityReporterFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return static_cast<DomainDiversityReporter*>(
+      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+}
 
 // static
 DomainDiversityReporter* DomainDiversityReporterFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
-  return static_cast<DomainDiversityReporter*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+    ProfileIOS* profile) {
+  return GetForProfile(profile);
 }
 
 // static

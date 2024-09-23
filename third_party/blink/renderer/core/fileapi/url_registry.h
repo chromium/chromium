@@ -60,11 +60,11 @@ class CORE_EXPORT URLRegistry {
 
   // These are optional APIs
   virtual URLRegistrable* Lookup(const String&) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return nullptr;
   }
   virtual bool Contains(const String&) {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return false;
   }
 };

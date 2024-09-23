@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/base64.h"
-#include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/gcm_driver/common/gcm_message.h"
@@ -176,10 +178,10 @@ void GCMEncryptionProvider::DecryptMessage(const std::string& app_id,
     // the Encryption and Crypto-Key header values to derive the values.
 
     const auto& encryption_header = message.data.find(kEncryptionProperty);
-    DCHECK(encryption_header != message.data.end());
+    CHECK(encryption_header != message.data.end(), base::NotFatalUntil::M130);
 
     const auto& crypto_key_header = message.data.find(kCryptoKeyProperty);
-    DCHECK(crypto_key_header != message.data.end());
+    CHECK(crypto_key_header != message.data.end(), base::NotFatalUntil::M130);
 
     EncryptionHeaderIterator encryption_header_iterator(
         encryption_header->second.begin(), encryption_header->second.end());
@@ -363,8 +365,8 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
 
   // Creates a cryptographically secure salt of |salt_size| octets in size,
   // and calculate the shared secret for the message.
-  std::string salt;
-  crypto::RandBytes(base::WriteInto(&salt, 16 + 1), 16);
+  std::string salt(16, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(salt));
 
   std::string shared_secret;
   if (!ComputeSharedP256Secret(*key, p256dh, &shared_secret)) {
@@ -394,15 +396,13 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
 
   // Construct encryption header.
   uint32_t rs = record_size;
-  char rs_buf[sizeof(rs)];
-  base::WriteBigEndian(rs_buf, rs);
-  std::string rs_str(std::begin(rs_buf), std::end(rs_buf));
+  std::string rs_str(sizeof(rs), 0u);
+  base::as_writable_byte_span(rs_str).copy_from(base::U32ToBigEndian(rs));
 
   uint8_t key_length = sender_public_key.size();
-  char key_length_buf[sizeof(key_length)];
-  base::WriteBigEndian(key_length_buf, key_length);
-  std::string key_length_str(std::begin(key_length_buf),
-                             std::end(key_length_buf));
+  std::string key_length_str(sizeof(key_length), 0u);
+  base::as_writable_byte_span(key_length_str)
+      .copy_from(base::U8ToBigEndian(key_length));
 
   std::string payload = base::StrCat(
       {salt, rs_str, key_length_str, sender_public_key, ciphertext});

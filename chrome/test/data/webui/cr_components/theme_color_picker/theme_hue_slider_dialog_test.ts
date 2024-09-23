@@ -6,7 +6,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
 
 import type {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('CrComponentsThemeHueSliderDialogTest', () => {
   let element: ThemeHueSliderDialogElement;
@@ -17,19 +17,21 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
     document.body.appendChild(element);
   });
 
-  test('SetsUpCrSliderValues', () => {
+  test('SetsUpCrSliderValues', async () => {
     assertEquals(0, element.$.slider.min);
     assertEquals(359, element.$.slider.max);
 
     element.selectedHue = 200;
+    await microtasksFinished();
     assertEquals(200, element.$.slider.value);
   });
 
-  test('UpdatesCrSliderUi', () => {
+  test('UpdatesCrSliderUi', async () => {
     const knobStyle =
         window.getComputedStyle(element.$.slider.$.knob, '::after');
     element.$.slider.value = 200;
     element.$.slider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
+    await microtasksFinished();
 
     // window.getComputedStyle only returns color values in rgb format, so
     // rgb(0, 170, 255) is manually converted from hsl(200, 100%, 50%).
@@ -37,6 +39,8 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
 
     element.$.slider.value = 300;
     element.$.slider.dispatchEvent(new CustomEvent('cr-slider-value-changed'));
+    await microtasksFinished();
+
     // rgb(255, 0, 255) is manually converted from hsl(300, 100%, 50%).
     assertEquals('rgb(255, 0, 255)', knobStyle.backgroundColor);
   });

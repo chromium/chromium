@@ -47,9 +47,14 @@ source_set("privacy_budget") {
 
   deps = [
     "//base",
+    "//base/version_info:channel",
+    "//chrome/common:channel_info",
+    "//chrome/common:mojo_bindings",
     "//chrome/common/privacy_budget",
     "//components/prefs",
     "//components/ukm",
+    "//components/variations",
+    "//content/public/browser",
     "//content/public/common",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",

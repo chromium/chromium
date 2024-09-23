@@ -6,12 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERABLE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/async_iterator_base.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 
 namespace blink {
-
-class ScriptPromiseResolver;
 
 namespace bindings {
 
@@ -38,19 +37,28 @@ class CORE_EXPORT AsyncIterationSourceBase
 
   // This is called back as part of a get the next iteration result
   // algorithm [1], however this function is called back after a
-  // ScriptPromiseResolver for the next entry has been created, so the
+  // ScriptPromiseResolverBase for the next entry has been created, so the
   // implementation of this callback doesn't need to create a promise resolver,
   // but needs to schedule a task to resolve/reject the promise.
   //
   // [1] https://webidl.spec.whatwg.org/#dfn-get-the-next-iteration-result
   virtual void GetNextIterationResult() = 0;
 
+  // This is called back as part of an asynchronous iterator return
+  // algorithm [1], however this function is called back after a
+  // ScriptPromiseResolverBase for the return result has been created.
+  //
+  // [1] https://webidl.spec.whatwg.org/#asynchronous-iterator-return
+  virtual void AsyncIteratorReturn(ScriptValue value) {
+    NOTREACHED_IN_MIGRATION();
+  }
+
   bool HasPendingPromise() const {
     return pending_promise_resolver_ != nullptr;
   }
 
   // Returns the pending promise resolver by removing it from this instance.
-  ScriptPromiseResolver* TakePendingPromiseResolver() {
+  ScriptPromiseResolver<IDLAny>* TakePendingPromiseResolver() {
     DCHECK(pending_promise_resolver_);
     return pending_promise_resolver_.Release();
   }
@@ -66,11 +74,18 @@ class CORE_EXPORT AsyncIterationSourceBase
   class RunNextStepsCallable;
   class RunFulfillStepsCallable;
   class RunRejectStepsCallable;
+  class RunReturnStepsCallable;
+  class RunReturnFulfillStepsCallable;
 
-  ScriptPromise RunNextSteps(ScriptState* script_state);
+  ScriptPromise<IDLAny> RunNextSteps(ScriptState* script_state);
   ScriptValue RunFulfillSteps(ScriptState* script_state,
                               ScriptValue iter_result_object_or_undefined);
   ScriptValue RunRejectSteps(ScriptState* script_state, ScriptValue reason);
+
+  ScriptPromise<IDLAny> RunReturnSteps(ScriptState* script_state,
+                                       ScriptValue value);
+  ScriptValue RunReturnFulfillSteps(ScriptState* script_state,
+                                    ScriptValue value);
 
   Member<ScriptState> script_state_;
   Member<ScriptFunction> on_settled_function_;
@@ -80,15 +95,20 @@ class CORE_EXPORT AsyncIterationSourceBase
   // https://webidl.spec.whatwg.org/#dfn-default-asynchronous-iterator-object
   // its 'ongoing promise', which is a Promise or null,
   // its 'is finished', which is a boolean.
-  ScriptPromise ongoing_promise_;
+  ScriptPromise<IDLAny> ongoing_promise_;
   bool is_finished_ = false;
 
   // The pending promise resolver. This is basically corresponding to
   // 'nextPromise' in the spec, however, this must be resolved with either
   // a value returned by `MakeIterationResult` or the special
   // 'end of iteration' value returned by `MakeEndOfIteration`, otherwise
-  // must be rejected.
-  Member<ScriptPromiseResolver> pending_promise_resolver_;
+  // must be rejected. When used for 'returnStepsPromise', the fulfillment
+  // value is ignored.
+  // NOTE: `pending_promise_resolver_` should probably be typed according to
+  // the iterable result type in the relevant IDL, but everything internal to
+  // our implementation gives the resolver a v8::Value, which doesn't work
+  // well with typing according to the IDL.
+  Member<ScriptPromiseResolver<IDLAny>> pending_promise_resolver_;
 
   template <typename IDLKeyType,
             typename IDLValueType,
@@ -132,7 +152,7 @@ class PairAsyncIterationSource : public AsyncIterationSourceBase {
         return ESCreateIterResultObject(script_state, false, v8_key, v8_value);
       }
     }
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     return v8::Local<v8::Value>();
   }
 };
@@ -156,7 +176,7 @@ class ValueAsyncIterationSource : public AsyncIterationSourceBase {
 
 }  // namespace bindings
 
-template <typename IDLInterface>
+template <typename IDLInterface, typename... InitArgs>
 class PairAsyncIterable {
  public:
   using AsyncIteratorType = AsyncIterator<IDLInterface>;
@@ -182,33 +202,42 @@ class PairAsyncIterable {
   PairAsyncIterable(const PairAsyncIterable&) = delete;
   PairAsyncIterable& operator=(const PairAsyncIterable&) = delete;
 
-  AsyncIteratorType* keysForBinding(ScriptState* script_state,
-                                    ExceptionState& exception_state) {
+  template <typename... ArgsAndExceptionState>
+  AsyncIteratorType* keysForBinding(
+      ScriptState* script_state,
+      ArgsAndExceptionState&&... args_and_exception_state) {
     const auto kind = IterationSource::Kind::kKey;
-    IterationSource* source =
-        CreateIterationSource(script_state, kind, exception_state);
+    IterationSource* source = CreateIterationSource(
+        script_state, kind,
+        std::forward<ArgsAndExceptionState>(args_and_exception_state)...);
     if (!source) {
       return nullptr;
     }
     return MakeGarbageCollected<AsyncIteratorType>(source);
   }
 
-  AsyncIteratorType* valuesForBinding(ScriptState* script_state,
-                                      ExceptionState& exception_state) {
+  template <typename... ArgsAndExceptionState>
+  AsyncIteratorType* valuesForBinding(
+      ScriptState* script_state,
+      ArgsAndExceptionState&&... args_and_exception_state) {
     const auto kind = IterationSource::Kind::kValue;
-    IterationSource* source =
-        CreateIterationSource(script_state, kind, exception_state);
+    IterationSource* source = CreateIterationSource(
+        script_state, kind,
+        std::forward<ArgsAndExceptionState>(args_and_exception_state)...);
     if (!source) {
       return nullptr;
     }
     return MakeGarbageCollected<AsyncIteratorType>(source);
   }
 
-  AsyncIteratorType* entriesForBinding(ScriptState* script_state,
-                                       ExceptionState& exception_state) {
+  template <typename... ArgsAndExceptionState>
+  AsyncIteratorType* entriesForBinding(
+      ScriptState* script_state,
+      ArgsAndExceptionState&&... args_and_exception_state) {
     const auto kind = IterationSource::Kind::kKeyValue;
-    IterationSource* source =
-        CreateIterationSource(script_state, kind, exception_state);
+    IterationSource* source = CreateIterationSource(
+        script_state, kind,
+        std::forward<ArgsAndExceptionState>(args_and_exception_state)...);
     if (!source) {
       return nullptr;
     }
@@ -219,10 +248,11 @@ class PairAsyncIterable {
   virtual IterationSource* CreateIterationSource(
       ScriptState* script_state,
       IterationSource::Kind kind,
+      InitArgs... args,
       ExceptionState& exception_state) = 0;
 };
 
-template <typename IDLInterface>
+template <typename IDLInterface, typename... InitArgs>
 class ValueAsyncIterable {
  public:
   using AsyncIteratorType = AsyncIterator<IDLInterface>;
@@ -246,11 +276,14 @@ class ValueAsyncIterable {
   ValueAsyncIterable(const ValueAsyncIterable&) = delete;
   ValueAsyncIterable& operator=(const ValueAsyncIterable&) = delete;
 
-  AsyncIteratorType* valuesForBinding(ScriptState* script_state,
-                                      ExceptionState& exception_state) {
+  template <typename... ArgsAndExceptionState>
+  AsyncIteratorType* valuesForBinding(
+      ScriptState* script_state,
+      ArgsAndExceptionState&&... args_and_exception_state) {
     const auto kind = IterationSource::Kind::kValue;
-    IterationSource* source =
-        CreateIterationSource(script_state, kind, exception_state);
+    IterationSource* source = CreateIterationSource(
+        script_state, kind,
+        std::forward<ArgsAndExceptionState>(args_and_exception_state)...);
     if (!source) {
       return nullptr;
     }
@@ -261,6 +294,7 @@ class ValueAsyncIterable {
   virtual IterationSource* CreateIterationSource(
       ScriptState* script_state,
       IterationSource::Kind kind,
+      InitArgs... args,
       ExceptionState& exception_state) = 0;
 };
 

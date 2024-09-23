@@ -31,13 +31,10 @@ class ASH_EXPORT Checkbox : public OptionButtonBase {
   Checkbox& operator=(const Checkbox&) = delete;
   ~Checkbox() override;
 
-  // views::LabelButton:
+  // OptionButtonBase:
   gfx::ImageSkia GetImage(ButtonState for_state) const override;
-
-  // OptionButtonBase::
   const gfx::VectorIcon& GetVectorIcon() const override;
   bool IsIconOnTheLeftSide() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 }  // namespace ash

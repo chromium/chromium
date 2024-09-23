@@ -8,6 +8,7 @@ import androidx.annotation.ColorInt;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.R;
@@ -32,11 +33,13 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
     /** If the scene layer has been initialized. */
     private boolean mIsInitialized;
 
+    private final Profile mProfile;
     private final float mDpToPx;
 
     private ContextualSearchImageControl mImageControl;
 
-    public ContextualSearchSceneLayer(float dpToPx) {
+    public ContextualSearchSceneLayer(Profile profile, float dpToPx) {
+        mProfile = profile;
         mDpToPx = dpToPx;
     }
 
@@ -108,15 +111,21 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         float searchPanelWidth = panel.getWidth();
         float searchPanelHeight = panel.getHeight();
 
+        float searchCaptionAnimationPercentage = searchBarControl.getCaptionAnimationPercentage();
+        boolean searchCaptionVisible = searchBarControl.getCaptionVisible();
+
         float searchBarMarginSide = panel.getBarMarginSide();
         float searchBarMarginTop = panel.getBarMarginTop();
+        float baseSearchBarMarginBottom = panel.getBarMarginBottomPx();
+        float searchBarMarginBottom = baseSearchBarMarginBottom * searchCaptionAnimationPercentage;
         float searchBarHeight = panel.getBarHeight();
+        // By default, the search bar height includes the entire bottom margin. Remove any excess
+        // based on the animation percentage.
+        searchBarHeight -=
+                (baseSearchBarMarginBottom * (1 - searchCaptionAnimationPercentage) / mDpToPx);
 
         float searchContextOpacity = searchBarControl.getSearchBarContextOpacity();
         float searchTermOpacity = searchBarControl.getSearchBarTermOpacity();
-
-        float searchCaptionAnimationPercentage = searchBarControl.getCaptionAnimationPercentage();
-        boolean searchCaptionVisible = searchBarControl.getCaptionVisible();
 
         boolean searchBarBorderVisible = panel.isBarBorderVisible();
         float searchBarBorderHeight = panel.getBarBorderHeight();
@@ -190,6 +199,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                         searchPanelHeight * mDpToPx,
                         searchBarMarginSide * mDpToPx,
                         searchBarMarginTop * mDpToPx,
+                        searchBarMarginBottom,
                         searchBarHeight * mDpToPx,
                         searchContextOpacity,
                         searchBarControl.getTextLayerMinHeight(),
@@ -214,7 +224,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                         touchHighlightVisible,
                         touchHighlightXOffset,
                         touchHighlightWidth,
-                        Profile.getLastUsedRegularProfile(),
+                        mProfile,
                         roundedBarTopResourceId,
                         separatorLineColor);
     }
@@ -309,6 +319,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float searchPanelHeight,
                 float searchBarMarginSide,
                 float searchBarMarginTop,
+                float searchBarMarginBottom,
                 float searchBarHeight,
                 float searchContextOpacity,
                 float searchTextLayerMinHeight,
@@ -333,7 +344,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 boolean touchHighlightVisible,
                 float touchHighlightXOffset,
                 float toucHighlightWidth,
-                Profile profile,
+                @JniType("Profile*") Profile profile,
                 int barBackgroundResourceId,
                 int separatorLineColor);
     }

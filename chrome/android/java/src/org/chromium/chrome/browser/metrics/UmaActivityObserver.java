@@ -16,6 +16,7 @@ public class UmaActivityObserver {
 
     private final UmaSessionStats mUmaSessionStats;
     private boolean mIsSessionActive;
+    private static @ActivityType int sCurrentActivityType = ActivityType.PRE_FIRST_TAB;
 
     public UmaActivityObserver(Context context) {
         mUmaSessionStats = new UmaSessionStats(context);
@@ -23,6 +24,9 @@ public class UmaActivityObserver {
 
     /**
      * Call when an android activity has resumed, with native code loaded.
+     *
+     * <p>This function can safely be called multiple times in a given activity's start/resume
+     * sequence because it checks whether it is already tracking the current activity.
      *
      * @param activityType The type of the Activity.
      * @param tabModelSelector A TabModelSelector instance for recording tab counts on page loads.
@@ -34,17 +38,21 @@ public class UmaActivityObserver {
             @ActivityType int activityType,
             TabModelSelector tabModelSelector,
             AndroidPermissionDelegate permissionDelegate) {
-        // The activity should be inactive. If you hit this assert, please update
-        // crbug.com/172653 on how you got here.
-        assert !mIsSessionActive;
+        if (mIsSessionActive) {
+            if (activityType == sCurrentActivityType) {
+                return;
+            }
+            endUmaSession();
+        }
         mIsSessionActive = true;
 
         // Stage the activity type value such that it can be picked up when the new
         // UMA record is opened as a part of the subsequent session resume.
         ChromeSessionState.setActivityType(activityType);
+        sCurrentActivityType = activityType;
 
         UmaSessionStats.updateMetricsServiceState();
-        mUmaSessionStats.startNewSession(tabModelSelector, permissionDelegate);
+        mUmaSessionStats.startNewSession(activityType, tabModelSelector, permissionDelegate);
     }
 
     /**
@@ -53,12 +61,17 @@ public class UmaActivityObserver {
      * <p>The activity is expected to have previously started with nativve code loaded.
      */
     public void endUmaSession() {
-        // The activity should be active. If you hit this assert, please update
-        // crbug.com/172653 on how you got here.
-        assert mIsSessionActive;
+        if (!mIsSessionActive) {
+            return;
+        }
         mIsSessionActive = false;
 
         // Record session metrics.
         mUmaSessionStats.logAndEndSession();
+    }
+
+    /** Returns the current activity type being used for UMA logging. */
+    public static @ActivityType int getCurrentActivityType() {
+        return sCurrentActivityType;
     }
 }

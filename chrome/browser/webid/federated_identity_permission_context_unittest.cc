@@ -46,20 +46,20 @@ TEST_F(FederatedIdentityPermissionContextTest, RevokeSharingPermission) {
       url::Origin::Create(GURL("https://idp.com"));
   constexpr std::string kAccountId = "accountId";
 
-  EXPECT_FALSE(context_->HasSharingPermission(kRequester, kEmbedder,
+  EXPECT_FALSE(context_->GetLastUsedTimestamp(kRequester, kEmbedder,
                                               kIdentityProvider, kAccountId));
   EXPECT_FALSE(context_->HasSharingPermission(kRequester));
 
   context_->GrantSharingPermission(kRequester, kEmbedder, kIdentityProvider,
                                    kAccountId);
-  EXPECT_TRUE(context_->HasSharingPermission(kRequester, kEmbedder,
+  EXPECT_TRUE(context_->GetLastUsedTimestamp(kRequester, kEmbedder,
                                              kIdentityProvider, kAccountId));
   EXPECT_TRUE(context_->HasSharingPermission(kRequester));
   EXPECT_FALSE(context_->HasSharingPermission(kEmbedder));
 
   context_->RevokeSharingPermission(kRequester, kEmbedder, kIdentityProvider,
                                     kAccountId);
-  EXPECT_FALSE(context_->HasSharingPermission(kRequester, kEmbedder,
+  EXPECT_FALSE(context_->GetLastUsedTimestamp(kRequester, kEmbedder,
                                               kIdentityProvider, kAccountId));
   EXPECT_FALSE(context_->HasSharingPermission(kRequester));
 }

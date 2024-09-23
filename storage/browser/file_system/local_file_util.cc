@@ -36,24 +36,43 @@ class LocalFileUtil::LocalFileEnumerator
                       bool recursive,
                       int file_type)
       : file_util_(file_util),
-        file_enum_(platform_root_path, recursive, file_type),
+        file_enum_(platform_root_path,
+                   recursive,
+                   file_type,
+                   base::FilePath::StringType(),
+                   base::FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
+                   base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION),
         platform_root_path_(platform_root_path),
         virtual_root_path_(virtual_root_path) {}
 
   ~LocalFileEnumerator() override = default;
 
   base::FilePath Next() override {
-    base::FilePath next = file_enum_.Next();
-    while (!next.empty() && file_util_->IsHiddenItem(next))
-      next = file_enum_.Next();
-    if (next.empty())
-      return next;
-    file_util_info_ = file_enum_.GetInfo();
+    while (true) {
+      base::FilePath next = file_enum_.Next();
+      if (next.empty()) {
+        error_ = file_enum_.GetError();
+        return next;
+      } else if (file_util_->IsHiddenItem(next)) {
+        continue;
+      }
+      file_util_info_ = file_enum_.GetInfo();
 
-    base::FilePath path;
-    platform_root_path_.AppendRelativePath(next, &path);
-    return virtual_root_path_.Append(path);
+#if BUILDFLAG(IS_ANDROID)
+      if (next.IsContentUri()) {
+        return next;
+      }
+#endif
+
+      base::FilePath path;
+      platform_root_path_.AppendRelativePath(next, &path);
+      return virtual_root_path_.Append(path);
+    }
   }
+
+  base::File::Error GetError() override { return error_; }
+
+  base::FilePath GetName() override { return file_util_info_.GetName(); }
 
   int64_t Size() override { return file_util_info_.GetSize(); }
 
@@ -67,6 +86,7 @@ class LocalFileUtil::LocalFileEnumerator
   // The |LocalFileUtil| producing |this| is expected to remain valid
   // through the whole lifetime of the enumerator.
   const raw_ptr<const LocalFileUtil> file_util_;
+  base::File::Error error_ = base::File::FILE_OK;
   base::FileEnumerator file_enum_;
   base::FileEnumerator::FileInfo file_util_info_;
   base::FilePath platform_root_path_;

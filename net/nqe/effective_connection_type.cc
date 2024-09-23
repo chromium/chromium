@@ -4,6 +4,8 @@
 
 #include "net/nqe/effective_connection_type.h"
 
+#include <string_view>
+
 #include "base/notreached.h"
 
 namespace {
@@ -36,15 +38,15 @@ const char* GetNameForEffectiveConnectionType(EffectiveConnectionType type) {
     case EFFECTIVE_CONNECTION_TYPE_4G:
       return kEffectiveConnectionType4G;
     case EFFECTIVE_CONNECTION_TYPE_LAST:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return "";
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return "";
 }
 
 std::optional<EffectiveConnectionType> GetEffectiveConnectionTypeForName(
-    base::StringPiece connection_type_name) {
+    std::string_view connection_type_name) {
   if (connection_type_name == kEffectiveConnectionTypeUnknown)
     return EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
   if (connection_type_name == kEffectiveConnectionTypeOffline)

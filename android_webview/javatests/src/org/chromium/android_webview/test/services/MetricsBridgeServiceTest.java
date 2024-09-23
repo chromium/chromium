@@ -4,8 +4,7 @@
 
 package org.chromium.android_webview.test.services;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
-import static org.chromium.android_webview.test.services.MetricsBridgeServiceUnitTest.RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +30,7 @@ import java.util.List;
  * services are properly killed between tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class MetricsBridgeServiceTest {
     @Test
     @MediumTest
@@ -43,10 +42,7 @@ public class MetricsBridgeServiceTest {
                         .setHistogramName("testRecordAndRetrieveNonembeddedMetrics")
                         .setSample(1)
                         .build();
-        byte[][] expectedData =
-                new byte[][] {
-                    recordProto.toByteArray(), RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD
-                };
+        byte[][] expectedData = new byte[][] {recordProto.toByteArray()};
 
         Intent intent =
                 new Intent(ContextUtils.getApplicationContext(), MetricsBridgeService.class);
@@ -74,10 +70,7 @@ public class MetricsBridgeServiceTest {
                         .setHistogramName("testClearAfterRetrieveNonembeddedMetrics")
                         .setSample(1)
                         .build();
-        byte[][] expectedData =
-                new byte[][] {
-                    recordProto.toByteArray(), RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD
-                };
+        byte[][] expectedData = new byte[][] {recordProto.toByteArray()};
 
         Intent intent =
                 new Intent(ContextUtils.getApplicationContext(), MetricsBridgeService.class);
@@ -99,7 +92,7 @@ public class MetricsBridgeServiceTest {
 
             Assert.assertArrayEquals(
                     "metrics kept by the service hasn't been cleared",
-                    new byte[][] {RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD},
+                    new byte[][] {},
                     retrievedDataList.toArray());
         }
     }

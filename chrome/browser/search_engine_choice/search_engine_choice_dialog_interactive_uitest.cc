@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,9 +15,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/country_codes/country_codes.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -32,7 +35,6 @@ const DeepQuery kLearnMoreLink{"search-engine-choice-app", "#infoLink"};
 const DeepQuery kLearnMoreDialog{"search-engine-choice-app", "#infoDialog"};
 const DeepQuery kLearnMoreDialogCloseButton{"search-engine-choice-app",
                                             "#infoDialogButton"};
-const DeepQuery kChevron = {"search-engine-choice-app", "cr-expand-button"};
 const DeepQuery kRadioButton = {"search-engine-choice-app", "cr-radio-button"};
 
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
@@ -77,6 +79,14 @@ class SearchEngineChoiceDialogInteractiveUiTest
     // Change the country to belgium so that the search engine choice test works
     // as intended.
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+
+    // For the item positions to be logged, the variations country has to match
+    // the profile country.
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "be");
+
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -100,8 +110,6 @@ class SearchEngineChoiceDialogInteractiveUiTest
               /*force_chrome_build=*/true);
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSearchEngineChoiceTrigger};
 };
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
@@ -131,7 +139,6 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
       PressJsButton(kWebContentsId, kActionButton),
       // The button should become disabled because we didn't make a choice.
       WaitForButtonDisabled(kWebContentsId, kActionButton),
-      PressJsButton(kWebContentsId, kChevron),
       PressJsButton(kWebContentsId, kRadioButton),
       WaitForButtonEnabled(kWebContentsId, kActionButton),
       PressJsButton(kWebContentsId, kActionButton),
@@ -141,10 +148,8 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed,
       1);
-  EXPECT_EQ(UserActionTester().GetActionCount("ExpandSearchEngineDescription"),
-            1);
 
-  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
+  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(*browser()));
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   const TemplateURL* default_search_engine =
@@ -160,13 +165,19 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
   HistogramTester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       search_engine_type, 1);
+  HistogramTester().ExpectUniqueSample(
+      base::StringPrintf(
+          search_engines::
+              kSearchEngineChoiceScreenShowedEngineAtHistogramPattern,
+          0),
+      search_engine_type, 1);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabPageURL),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
+  EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(*browser()));
 
   // We expect that the value was recorded at least once because more than one
   // navigation could happen in the background.
@@ -175,5 +186,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
                     kSearchEngineChoiceScreenNavigationConditionsHistogram,
                 search_engines::SearchEngineChoiceScreenConditions::
                     kAlreadyCompleted),
+            1);
+  EXPECT_EQ(UserActionTester().GetActionCount("ExpandSearchEngineDescription"),
             1);
 }

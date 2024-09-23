@@ -28,11 +28,11 @@ class InstallablePageData {
 
   void Reset();
 
-  void OnManifestFetched(blink::mojom::ManifestPtr manifest,
-                         GURL manifest_url,
-                         InstallableStatusCode error = NO_ERROR_DETECTED);
+  void OnManifestFetched(
+      blink::mojom::ManifestPtr manifest,
+      GURL manifest_url,
+      InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED);
   void OnPageMetadataFetched(mojom::WebPageMetadataPtr web_page_metadata);
-  void OnCheckWorkerResult(InstallableStatusCode result);
   void OnPrimaryIconFetched(const GURL& icon_url,
                             const IconPurpose purpose,
                             const SkBitmap& bitmap);
@@ -41,18 +41,11 @@ class InstallablePageData {
 
   const blink::mojom::Manifest& GetManifest() const;
   const mojom::WebPageMetadata& WebPageMetadata() const;
-  // Return if service worker is already checked and we have a final result.
-  // Sites can always register a service worker after last check, so
-  // if the previous check result was a missing service worker error, we still
-  // want to check again.
-  bool HasWorkerResult() const;
 
   const GURL& manifest_url() const { return manifest_->url; }
   InstallableStatusCode manifest_error() const { return manifest_->error; }
   bool manifest_fetched() const { return manifest_->fetched; }
   bool web_page_metadata_fetched() const { return web_page_metadata_->fetched; }
-  bool has_worker() const { return worker_->has_worker; }
-  InstallableStatusCode worker_error() const { return worker_->error; }
   const SkBitmap* primary_icon() const { return primary_icon_->icon.get(); }
   IconPurpose primary_icon_purpose() const { return primary_icon_->purpose; }
   const GURL& primary_icon_url() const { return primary_icon_->url; }
@@ -70,7 +63,8 @@ class InstallablePageData {
     ManifestProperty();
     ~ManifestProperty();
 
-    InstallableStatusCode error = NO_ERROR_DETECTED;
+    InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
+    //  This can be empty if the page doesn't have a manifest url.
     GURL url;
     blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
     bool fetched = false;
@@ -81,12 +75,6 @@ class InstallablePageData {
     ~WebPageMetadataProperty();
 
     mojom::WebPageMetadataPtr metadata = mojom::WebPageMetadata::New();
-    bool fetched = false;
-  };
-
-  struct ServiceWorkerProperty {
-    InstallableStatusCode error = NO_ERROR_DETECTED;
-    bool has_worker = false;
     bool fetched = false;
   };
 
@@ -101,7 +89,7 @@ class InstallablePageData {
 
     ~IconProperty();
 
-    InstallableStatusCode error = NO_ERROR_DETECTED;
+    InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
     IconPurpose purpose = IconPurpose::ANY;
     GURL url;
     std::unique_ptr<SkBitmap> icon;
@@ -110,7 +98,6 @@ class InstallablePageData {
 
   std::unique_ptr<ManifestProperty> manifest_;
   std::unique_ptr<WebPageMetadataProperty> web_page_metadata_;
-  std::unique_ptr<ServiceWorkerProperty> worker_;
   std::unique_ptr<IconProperty> primary_icon_;
   std::vector<Screenshot> screenshots_;
   bool is_screenshots_fetch_complete_ = false;

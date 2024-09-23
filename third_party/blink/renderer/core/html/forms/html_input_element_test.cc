@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 using ::testing::Truly;
 
@@ -156,7 +157,11 @@ TEST_F(HTMLInputElementTest, create) {
       GetDocument(), CreateElementFlags::ByParser(&GetDocument()));
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->ParserSetAttributes(Vector<Attribute, kAttributePrealloc>());
-  EXPECT_NE(nullptr, input->UserAgentShadowRoot());
+  if (RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+    EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
+  } else {
+    EXPECT_NE(nullptr, input->UserAgentShadowRoot());
+  }
 }
 
 TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
@@ -226,7 +231,7 @@ TEST_F(HTMLInputElementTest, RadioKeyDownDCHECKFailure) {
   // Make layout-dirty.
   radio2.setAttribute(html_names::kStyleAttr, AtomicString("position:fixed"));
   KeyboardEventInit* init = KeyboardEventInit::Create();
-  init->setKey("ArrowRight");
+  init->setKey(keywords::kArrowRight);
   radio1.DefaultEventHandler(
       *MakeGarbageCollected<KeyboardEvent>(event_type_names::kKeydown, init));
   EXPECT_EQ(GetDocument().ActiveElement(), &radio2);
@@ -256,6 +261,21 @@ TEST_F(HTMLInputElementTest, StepDownOverflow) {
   // InputType::applyStep() should not pass an out-of-range value to
   // setValueAsDecimal, and WTF::msToYear() should not cause a DCHECK failure.
   input->stepDown(1, ASSERT_NO_EXCEPTION);
+}
+
+TEST_F(HTMLInputElementTest, StepDownDefaultToMin) {
+  AtomicString min_attr_value("7");
+
+  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  input->setAttribute(html_names::kTypeAttr, AtomicString("number"));
+  input->setAttribute(html_names::kMinAttr, min_attr_value);
+
+  EXPECT_TRUE(input->Value().empty());
+
+  input->stepDown(1, ASSERT_NO_EXCEPTION);
+
+  // stepDown() should default to min value when the input has no initial value.
+  EXPECT_EQ(min_attr_value, input->Value());
 }
 
 TEST_F(HTMLInputElementTest, CheckboxHasNoShadowRoot) {
@@ -309,6 +329,31 @@ TEST_F(HTMLInputElementTest, UpdateTypeDcheck) {
   input->setAttribute(html_names::kTypeAttr, AtomicString("radio"));
   // Test succeeds if the above setAttribute() didn't trigger a DCHECK failure
   // in Document::UpdateFocusAppearanceAfterLayout().
+}
+
+TEST_F(HTMLInputElementTest, LazilyCreateShadowTree) {
+  GetDocument().body()->setInnerHTML("<input/>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(IsShadowHost(*input));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(IsShadowHost(*input));
+}
+
+TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithPlaceholder) {
+  GetDocument().body()->setInnerHTML("<input placeholder='x'/>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(IsShadowHost(*input));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(IsShadowHost(*input));
+}
+
+TEST_F(HTMLInputElementTest, LazilyCreateShadowTreeWithValue) {
+  GetDocument().body()->setInnerHTML("<input value='x'/>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
+  ASSERT_TRUE(input);
+  EXPECT_FALSE(IsShadowHost(*input));
 }
 
 struct PasswordFieldResetParam {

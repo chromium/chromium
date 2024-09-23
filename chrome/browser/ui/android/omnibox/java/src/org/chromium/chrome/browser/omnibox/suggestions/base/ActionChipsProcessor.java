@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-import android.content.Context;
 import android.util.ArrayMap;
 
 import androidx.annotation.NonNull;
@@ -21,7 +20,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** A class that handles model creation for the Action Chips. */
 public class ActionChipsProcessor {
-    private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
     private final @NonNull ArrayMap<OmniboxAction, Integer> mVisibleActions;
 
@@ -32,8 +30,7 @@ public class ActionChipsProcessor {
      * @param context An Android context.
      * @param suggestionHost Component receiving suggestion events.
      */
-    public ActionChipsProcessor(@NonNull Context context, @NonNull SuggestionHost suggestionHost) {
-        mContext = context;
+    public ActionChipsProcessor(@NonNull SuggestionHost suggestionHost) {
         mSuggestionHost = suggestionHost;
         mVisibleActions = new ArrayMap<>();
     }
@@ -83,6 +80,9 @@ public class ActionChipsProcessor {
                             .with(ChipProperties.CLICK_HANDLER, m -> executeAction(chip, position))
                             .with(ChipProperties.ICON, chip.icon.iconRes)
                             .with(ChipProperties.APPLY_ICON_TINT, chip.icon.tintWithTextColor)
+                            .with(
+                                    ChipProperties.PRIMARY_TEXT_APPEARANCE,
+                                    chip.primaryTextAppearance)
                             .build();
 
             modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
@@ -95,6 +95,6 @@ public class ActionChipsProcessor {
     /** Invoke action associated with the ActionChip. */
     private void executeAction(@NonNull OmniboxAction action, int position) {
         mExecutedAction = action;
-        mSuggestionHost.onOmniboxActionClicked(action);
+        mSuggestionHost.onOmniboxActionClicked(action, position);
     }
 }

@@ -5,59 +5,102 @@
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import '../demo.css.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_toolbar_demo.html.js';
+import {getCss} from './cr_toolbar_demo.css.js';
+import {getHtml} from './cr_toolbar_demo.html.js';
 
-class CrToolbarDemoElement extends PolymerElement {
+export class CrToolbarDemoElement extends CrLitElement {
   static get is() {
     return 'cr-toolbar-demo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      alwaysShowLogo_: Boolean,
-      clearLabel_: String,
-      log_: Array,
-      menuLabel_: String,
-      narrow_: Boolean,
-      narrowThreshold_: Number,
-      pageName_: String,
-      searchPrompt_: String,
-      showMenu_: Boolean,
-      showSearch_: Boolean,
-      showSlottedContent_: Boolean,
+      alwaysShowLogo_: {type: Boolean},
+      clearLabel_: {type: String},
+      log_: {type: Array},
+      menuLabel_: {type: String},
+      narrow_: {type: Boolean},
+      narrowThreshold_: {type: Number},
+      pageName_: {type: String},
+      searchPrompt_: {type: String},
+      showMenu_: {type: Boolean},
+      showSearch_: {type: Boolean},
+      showSlottedContent_: {type: Boolean},
     };
   }
 
-  private alwaysShowLogo_: boolean = true;
-  private clearLabel_: string = 'Clear search';
-  private log_: string[] = [];
-  private menuLabel_: string = 'Menu';
-  private narrow_: boolean;
-  private narrowThreshold_: number = 1000;
-  private pageName_: string = 'Demo';
-  private searchPrompt_: string = 'Search through some content';
-  private showMenu_: boolean = true;
-  private showSearch_: boolean = true;
-  private showSlottedContent_: boolean = false;
+  protected alwaysShowLogo_: boolean = true;
+  protected clearLabel_: string = 'Clear search';
+  protected log_: string[] = [];
+  protected menuLabel_: string = 'Menu';
+  protected narrow_?: boolean;
+  protected narrowThreshold_: number = 1000;
+  protected pageName_: string = 'Demo';
+  protected searchPrompt_: string = 'Search through some content';
+  protected showMenu_: boolean = true;
+  protected showSearch_: boolean = true;
+  protected showSlottedContent_: boolean = false;
 
-  private onMenuClick_() {
-    this.push('log_', 'Menu tapped.');
+  protected onMenuClick_() {
+    this.log_.push('Menu tapped.');
+    this.requestUpdate();
   }
 
-  private onSearchChanged_(e: CustomEvent<string>) {
-    if (e.detail) {
-      this.push('log_', `Search term changed: ${e.detail}`);
-    } else {
-      this.push('log_', 'Search cleared.');
-    }
+  protected onSearchChanged_(e: CustomEvent<string>) {
+    this.log_.push(
+        e.detail ? `Search term changed: ${e.detail}` : 'Search cleared.');
+    this.requestUpdate();
+  }
+
+  protected onPageNameChanged_(e: CustomEvent<{value: string}>) {
+    this.pageName_ = e.detail.value;
+  }
+
+  protected onSearchPromptChanged_(e: CustomEvent<{value: string}>) {
+    this.searchPrompt_ = e.detail.value;
+  }
+
+  protected onClearLabelChanged_(e: CustomEvent<{value: string}>) {
+    this.clearLabel_ = e.detail.value;
+  }
+
+  protected onNarrowThresholdChanged_(e: CustomEvent<{value: string}>) {
+    this.narrowThreshold_ = Number(e.detail.value);
+  }
+
+  protected onMenuLabelChanged_(e: CustomEvent<{value: string}>) {
+    this.menuLabel_ = e.detail.value;
+  }
+
+  protected onAlwaysShowLogoChanged_(e: CustomEvent<{value: boolean}>) {
+    this.alwaysShowLogo_ = e.detail.value;
+  }
+
+  protected onShowMenuChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showMenu_ = e.detail.value;
+  }
+
+  protected onShowSearchChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showSearch_ = e.detail.value;
+  }
+
+  protected onShowSlottedContentChanged_(e: CustomEvent<{value: boolean}>) {
+    this.showSlottedContent_ = e.detail.value;
+  }
+
+  protected onNarrowChanged_(e: CustomEvent<{value: boolean}>) {
+    this.narrow_ = e.detail.value;
   }
 }
 

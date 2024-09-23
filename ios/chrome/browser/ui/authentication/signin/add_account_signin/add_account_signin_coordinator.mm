@@ -10,11 +10,10 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -41,8 +40,7 @@ using signin_metrics::PromoAction;
 // Coordinator to handle additional steps after the identity is added, i.e.
 // after `addAccountSigninManager` does its job.
 @property(nonatomic, strong) SigninCoordinator* postSigninManagerCoordinator;
-// Coordinator for history sync opt-in, if kReplaceSyncPromosWithSignInPromos
-// and kHistoryOptInForRestoreShortyAndReSignin are enabled.
+// Coordinator for history sync opt-in.
 @property(nonatomic, strong)
     HistorySyncPopupCoordinator* historySyncPopupCoordinator;
 // Manager that handles sign-in add account UI.
@@ -107,46 +105,21 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   [super start];
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   id<SystemIdentityInteractionManager> identityInteractionManager =
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->CreateInteractionManager();
-  PrefService* browserPrefService = self.browser->GetBrowserState()->GetPrefs();
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  CoreAccountInfo primaryAccount =
-      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  NSString* userEmail = nil;
-  switch (self.signinIntent) {
-    case AddAccountSigninIntent::kPrimaryAccountReauth:
-      DUMP_WILL_BE_CHECK(!primaryAccount.IsEmpty())
-          << base::SysNSStringToUTF8([self description]);
-      userEmail = base::SysUTF8ToNSString(primaryAccount.email);
-      break;
-    case AddAccountSigninIntent::kAddAccount:
-      // The user wants to add a new account, don't pre-fill any email.
-      break;
-    case AddAccountSigninIntent::kSigninAndSyncReauth:
-      DUMP_WILL_BE_CHECK(primaryAccount.IsEmpty())
-          << base::SysNSStringToUTF8([self description]);
-      std::string userEmailString = browserPrefService->GetString(
-          prefs::kGoogleServicesLastSyncingUsername);
-      // Note(crbug/1443096): Gracefully handle an empty `userEmailString` by
-      // showing the sign-in screen without a prefilled email.
-      if (!userEmailString.empty()) {
-        userEmail = base::SysUTF8ToNSString(userEmailString);
-      }
-      break;
-  }
   self.addAccountSigninManager = [[AddAccountSigninManager alloc]
       initWithBaseViewController:self.baseViewController
+                     prefService:browserState->GetPrefs()
+                 identityManager:IdentityManagerFactory::GetForProfile(
+                                     browserState)
       identityInteractionManager:identityInteractionManager];
   self.addAccountSigninManager.delegate = self;
-  [self.addAccountSigninManager showSigninWithDefaultUserEmail:userEmail];
+  [self.addAccountSigninManager showSigninWithIntent:self.signinIntent];
 }
 
 - (void)stop {
@@ -217,7 +190,7 @@ using signin_metrics::PromoAction;
             (SigninCoordinatorResult)signinResult
                                       identity:(id<SystemIdentity>)identity {
   switch (self.signinIntent) {
-    case AddAccountSigninIntent::kSigninAndSyncReauth:
+    case AddAccountSigninIntent::kResignin:
       if (signinResult == SigninCoordinatorResultSuccess) {
         [self presentPostSigninManagerCoordinatorWithIdentity:identity];
       } else {
@@ -277,22 +250,12 @@ using signin_metrics::PromoAction;
     (id<SystemIdentity>)identity {
   // The new UIViewController is presented on top of the currently displayed
   // view controller.
-  self.postSigninManagerCoordinator =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? [SigninCoordinator
-                instantSigninCoordinatorWithBaseViewController:
-                    self.baseViewController
-                                                       browser:self.browser
-                                                      identity:identity
-                                                   accessPoint:self.accessPoint
-                                                   promoAction:self.promoAction]
-          : [SigninCoordinator
-                userSigninCoordinatorWithBaseViewController:
-                    self.baseViewController
-                                                    browser:self.browser
-                                                   identity:identity
-                                                accessPoint:self.accessPoint
-                                                promoAction:self.promoAction];
+  self.postSigninManagerCoordinator = [SigninCoordinator
+      instantSigninCoordinatorWithBaseViewController:self.baseViewController
+                                             browser:self.browser
+                                            identity:identity
+                                         accessPoint:self.accessPoint
+                                         promoAction:self.promoAction];
 
   __weak AddAccountSigninCoordinator* weakSelf = self;
   self.postSigninManagerCoordinator.signinCompletion = ^(
@@ -310,12 +273,7 @@ using signin_metrics::PromoAction;
   [self.postSigninManagerCoordinator stop];
   self.postSigninManagerCoordinator = nil;
 
-  const bool history_opt_in_flags_enabled =
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      base::FeatureList::IsEnabled(kHistoryOptInForRestoreShortyAndReSignin);
-  if (result != SigninCoordinatorResultSuccess ||
-      !history_opt_in_flags_enabled) {
+  if (result != SigninCoordinatorResultSuccess) {
     [self addAccountDoneWithSigninResult:result identity:info.identity];
     return;
   }
@@ -355,11 +313,13 @@ using signin_metrics::PromoAction;
       stringWithFormat:
           @"<%@: %p, signinIntent: %d, accessPoint: %d, "
           @"postSigninManagerCoordinator: %p, addAccountSigninManager: "
-          @"%p, historySyncPopupCoordinator: %p, alertCoordinator: %p>",
+          @"%p, historySyncPopupCoordinator: %p, alertCoordinator: %p, base "
+          @"view controller: %@>",
           self.class.description, self, static_cast<int>(self.signinIntent),
           static_cast<int>(self.accessPoint), self.postSigninManagerCoordinator,
           self.addAccountSigninManager, self.historySyncPopupCoordinator,
-          self.alertCoordinator];
+          self.alertCoordinator,
+          NSStringFromClass(self.baseViewController.class)];
 }
 
 @end

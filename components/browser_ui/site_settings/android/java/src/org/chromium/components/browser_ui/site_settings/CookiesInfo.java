@@ -14,6 +14,10 @@ public class CookiesInfo implements Serializable {
         mCookies = 0;
     }
 
+    public CookiesInfo(int cookies) {
+        mCookies = cookies;
+    }
+
     public void increment() {
         mCookies++;
     }

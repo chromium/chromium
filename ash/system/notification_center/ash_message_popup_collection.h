@@ -54,7 +54,7 @@ class ASH_EXPORT AshMessagePopupCollection
   // All the types of surfaces that can make popup collection shift up. Used
   // inside of `NotifierCollisionHandler` for metrics collection. Make sure to
   // keep this in sync with `NotifierCollisionSurfaceType` in
-  // tools/metrics/histograms/enums.xml.
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class NotifierCollisionSurfaceType {
     // Default value. Ideally this should never be recorded in the metrics.
     kNone = 0,
@@ -98,7 +98,7 @@ class ASH_EXPORT AshMessagePopupCollection
   void AnimationFinished() override;
   message_center::MessagePopupView* CreatePopup(
       const message_center::Notification& notification) override;
-  void ClosePopupItem(const PopupItem& item) override;
+  void ClosePopupItem(PopupItem& item) override;
 
   // Returns true if `widget` is a popup widget belongs to this popup
   // collection.

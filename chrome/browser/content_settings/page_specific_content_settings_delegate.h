@@ -13,8 +13,6 @@
 #include "components/custom_handlers/protocol_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 
-namespace chrome {
-
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
 
@@ -86,14 +84,15 @@ class PageSpecificContentSettingsDelegate
   void SetDefaultRendererContentSettingRules(
       content::RenderFrameHost* rfh,
       RendererContentSettingRules* rules) override;
-  browsing_data::CookieHelper::IsDeletionDisabledCallback
-  GetIsDeletionDisabledCallback() override;
   content_settings::PageSpecificContentSettings::MicrophoneCameraState
   GetMicrophoneCameraState() override;
   content::WebContents* MaybeGetSyncedWebContentsForPictureInPicture(
       content::WebContents* web_contents) override;
   void OnContentAllowed(ContentSettingsType type) override;
   void OnContentBlocked(ContentSettingsType type) override;
+  bool IsBlockedOnSystemLevel(ContentSettingsType type) override;
+  bool IsFrameAllowlistedForJavaScript(
+      content::RenderFrameHost* render_frame_host) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -127,7 +126,5 @@ class PageSpecificContentSettingsDelegate
   // the user opens the bubble and makes changes multiple times.
   ContentSetting pending_protocol_handler_setting_ = CONTENT_SETTING_DEFAULT;
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_

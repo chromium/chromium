@@ -13,8 +13,14 @@ Chrome apps and extensions accessible to `FakeCWS` in automated tests.
 2.  Save `<app_id>.pem` file to the app source directory inside
     `apps_and_extensions`.
 3.  Save `<app_id>.crx` file to `webstore/downloads/` directory.
-4.  Create <app_id> file in `webstore/inlineinstall/detail/` directory. See
+4.  Create `<app_id>.textproto` file in `webstore/itemsnippet/` directory. See
     other files in that directory for more details.
+5.  In `webstore/itemsnippet/BUILD.gn`, add `<app_id>.textproto` to `sources` so
+    a protobuf string API response can be generated from the `.textproto` file.
+
+TODO(crbug.com/325314721): `webstore/inlineinstall/detail` is deprecated and no
+longer used for tests. The directory will be removed when the item snippets API
+is fully rolled out.
 
 ### How to use test Chrome Apps or extensions?
 

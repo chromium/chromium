@@ -5,15 +5,17 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/message_view.h"
 
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/public/cpp/view_shadow.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/view_shadow.h"
 
 namespace arc::input_overlay {
 
@@ -42,7 +44,7 @@ constexpr SkColor kErrorIconColor = gfx::kGoogleRed300;
 // static
 MessageView* MessageView::Show(DisplayOverlayController* controller,
                                views::View* parent,
-                               const base::StringPiece& message,
+                               std::string_view message,
                                MessageType message_type) {
   auto* view_ptr = parent->AddChildView(std::make_unique<MessageView>(
       controller, parent->size(), message, message_type));
@@ -52,7 +54,7 @@ MessageView* MessageView::Show(DisplayOverlayController* controller,
 
 MessageView::MessageView(DisplayOverlayController* controller,
                          const gfx::Size& parent_size,
-                         const base::StringPiece& message,
+                         std::string_view message,
                          MessageType message_type)
     : views::LabelButton(), display_overlay_controller_(controller) {
   DCHECK(display_overlay_controller_);
@@ -92,7 +94,7 @@ MessageView::MessageView(DisplayOverlayController* controller,
                                                    kInfoIconColor, kIconSize));
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -109,8 +111,9 @@ MessageView::MessageView(DisplayOverlayController* controller,
 MessageView::~MessageView() = default;
 
 void MessageView::AddShadow() {
-  view_shadow_ = std::make_unique<ash::ViewShadow>(this, kShadowElevation);
+  view_shadow_ = std::make_unique<views::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(kCornerRadius);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
 }
 
 BEGIN_METADATA(MessageView)

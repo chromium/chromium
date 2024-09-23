@@ -9,7 +9,7 @@ if (!window.testRunner) {
 
 testRunner.dumpAsText();
 testRunner.waitUntilDone();
-await setupLCPTest();
+await setupLCPTest(["lcp_image_id.pb"]);
 </script>
 <?php
 // Do not output the HTML below this PHP block until the test is reloaded with

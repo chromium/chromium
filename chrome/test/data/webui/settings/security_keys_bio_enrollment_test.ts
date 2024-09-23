@@ -8,7 +8,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SecurityKeysBioEnrollProxy, SettingsSecurityKeysBioEnrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {BioEnrollDialogPage, Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertShown} from './security_keys_test_util.js';
 import {TestSecurityKeysBrowserProxy} from './test_security_keys_browser_proxy.js';
@@ -105,9 +105,12 @@ suite('SecurityKeysBioEnrollment', function() {
     await browserProxy.whenCalled('startBioEnroll');
     assertShown(allDivs, dialog, 'initial');
     resolver.resolve([currentMinPinLength]);
+    await microtasksFinished();
+    assertShown(allDivs, dialog, 'pinPrompt');
 
     const error = 'foo bar baz';
     webUIListenerCallback('security-keys-bio-enroll-error', error);
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'error');
     assertTrue(dialog.$.confirmButton.hidden);
     assertTrue(dialog.$.error.textContent!.trim().includes(error));
@@ -121,10 +124,13 @@ suite('SecurityKeysBioEnrollment', function() {
     await browserProxy.whenCalled('startBioEnroll');
     assertShown(allDivs, dialog, 'initial');
     resolver.resolve([currentMinPinLength]);
+    await microtasksFinished();
+    assertShown(allDivs, dialog, 'pinPrompt');
 
     const error = 'something about setting a new PIN';
     webUIListenerCallback(
         'security-keys-bio-enroll-error', error, true /* requiresPINChange */);
+    await microtasksFinished();
     assertShown(allDivs, dialog, 'error');
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
@@ -159,6 +165,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
     dialog.$.pin.$.pin.value = '000000';
+    await dialog.$.pin.$.pin.updateComplete;
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePin');
     assertEquals(pin, '000000');
@@ -229,6 +236,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'pinPrompt');
     assertEquals(currentMinPinLength, dialog.$.pin.minPinLength);
     dialog.$.pin.$.pin.value = '000000';
+    await dialog.$.pin.$.pin.updateComplete;
     dialog.$.confirmButton.click();
     const pin = await browserProxy.whenCalled('providePin');
     assertEquals(pin, '000000');
@@ -288,6 +296,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertEquals(dialog.$.enrollmentName.value, enrollmentName);
     const invalidNewEnrollmentName = '21 bytes long string!';
     dialog.$.enrollmentName.value = invalidNewEnrollmentName;
+    await dialog.$.enrollmentName.updateComplete;
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
     assertFalse(dialog.$.enrollmentName.invalid);
@@ -299,6 +308,7 @@ suite('SecurityKeysBioEnrollment', function() {
     assertShown(allDivs, dialog, 'chooseName');
     const newEnrollmentName = '20 bytes long string';
     dialog.$.enrollmentName.value = newEnrollmentName;
+    await dialog.$.enrollmentName.updateComplete;
     assertFalse(dialog.$.confirmButton.hidden);
     assertFalse(dialog.$.confirmButton.disabled);
 

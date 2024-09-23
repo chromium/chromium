@@ -5,11 +5,11 @@
 #ifndef UI_WM_CORE_WINDOW_MODALITY_CONTROLLER_H_
 #define UI_WM_CORE_WINDOW_MODALITY_CONTROLLER_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(UI_WM) WindowModalityController
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
-  base::StringPiece GetLogContext() const override;
+  std::string_view GetLogContext() const override;
 
   // Overridden from aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override;

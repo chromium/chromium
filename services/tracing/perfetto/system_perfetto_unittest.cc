@@ -9,6 +9,7 @@
 #include <thread>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -212,7 +213,8 @@ class SystemPerfettoTest : public TracingUnitTest {
       stderr_ += base::File::ErrorToString(config_file.error_details());
       return false;
     }
-    size_t written = config_file.Write(0, config.data(), config.size());
+    size_t written =
+        UNSAFE_TODO(config_file.Write(0, config.data(), config.size()));
     if (written != config.size()) {
       stderr_ = base::StrCat({"Expected ", base::NumberToString(config.size()),
                               " bytes written but actually wrote ",

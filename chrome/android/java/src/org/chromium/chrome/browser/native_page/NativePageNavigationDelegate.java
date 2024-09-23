@@ -6,16 +6,16 @@ package org.chromium.chrome.browser.native_page;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Interface exposing to the common methods to navigate to content shown in native page UIs. */
 public interface NativePageNavigationDelegate {
-    /** @return Whether context menus should allow the option to open a link in incognito. */
-    default boolean isOpenInIncognitoEnabled() {
-        return IncognitoUtils.isIncognitoModeEnabled();
-    }
+    /**
+     * @return Whether context menus should allow the option to open a link in incognito.
+     */
+    boolean isOpenInIncognitoEnabled();
 
     /**
      * Returns whether context menus should allow the option to open a link in a new tab in group.
@@ -37,8 +37,12 @@ public interface NativePageNavigationDelegate {
 
     /**
      * Opens an URL with the desired disposition in a tab in group.
+     *
      * @return The tab where the URL is being loaded.
      */
     @Nullable
     Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams);
+
+    /** Initialize AndroidPrerenderManager JNI interface. */
+    void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager);
 }

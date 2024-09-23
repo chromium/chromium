@@ -34,6 +34,7 @@ class MockUIBroker : public UIBroker {
               ShowLaunchCompanionApp,
               (scoped_refptr<Device>),
               (override));
+  MOCK_METHOD(void, ShowPasskey, (std::u16string, uint32_t), (override));
   MOCK_METHOD(void, RemoveNotifications, (), (override));
   MOCK_METHOD(void, ExtendNotification, (), (override));
 

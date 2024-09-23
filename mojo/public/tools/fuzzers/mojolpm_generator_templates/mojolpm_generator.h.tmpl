@@ -1,0 +1,158 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_MOJOLPM_GENERATOR_H_"|format(
+        filename|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+{%- set classname = "%sTestcase"|format(basename) %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "mojo/public/tools/fuzzers/mojolpm.h"
+#include "{{proto_filename}}"
+
+{% for import in imports %}
+#include "{{import}}"
+{% endfor %}
+
+namespace mojolpmgenerator {
+
+class {{classname}} :
+    public mojolpm::Testcase<{{proto_namespace}}::Testcase,
+                             {{proto_namespace}}::Action> {
+ public:
+  using ProtoTestcase = {{proto_namespace}}::Testcase;
+  using ProtoAction = {{proto_namespace}}::Action;
+
+  {{classname}}(const ProtoTestcase& testcase)
+      : mojolpm::Testcase<ProtoTestcase, ProtoAction>(testcase) {}
+
+  virtual ~{{classname}}() {}
+
+  virtual scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() = 0;
+
+  void SetUp(base::OnceClosure done_closure) override;
+
+  void TearDown(base::OnceClosure done_closure) override;
+
+  void RunAction(const ProtoAction& action,
+                 base::OnceClosure done_closure) override;
+
+ protected:
+  virtual void HandleRunThreadAction(uint32_t id,
+                                     base::OnceClosure done_closure);
+{% for actions in actions_list %}
+{%  for action in actions|selectattr("is_new_action") %}
+  virtual void HandleNew{{action['cpp_name']}}Action(
+      uint32_t id,
+      base::OnceClosure done_closure) = 0;
+{%  endfor %}
+{% endfor %}
+ private:
+{% for actions in actions_list %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+  void HandleRemote{{root_action['cpp_name']}}(const {{proto_namespace}}::Remote{{root_action['cpp_name']}}&,
+                                                 base::OnceClosure);
+{% endfor %}
+{% for actions in actions_list %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+{% set current_action = "RemoteAction" + root_action['cpp_name']|string %}
+  void Handle{{current_action}}(const {{proto_namespace}}::{{current_action}}&,
+                                  base::OnceClosure);
+{% endfor %}
+};
+
+{% for actions in actions_list %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+{% set current_action = "RemoteAction" + root_action['cpp_name']|string %}
+void {{classname}}::Handle{{current_action}}(const {{proto_namespace}}::{{current_action}}& action,
+                                               base::OnceClosure done_closure) {
+{% set all_switch_actions = actions -%}
+{% if ensure_remote %}
+{% set all_switch_actions = actions|rejectattr("is_new_action")|list -%}
+{% endif %}
+{% if all_switch_actions|length > 0 %}
+  switch (action.action_case()) {
+{% for action in all_switch_actions|rejectattr("is_new_action") %}
+    case {{proto_namespace}}::{{current_action}}::{{action['case_name']}}:
+      {{action['mojolpm_func']}}(action.{{action['mojo_name']}}());
+      break;
+{% endfor %}
+{% for action in all_switch_actions|selectattr("is_new_action") %}
+    case {{proto_namespace}}::{{current_action}}::{{action['case_name']}}:
+      HandleNew{{action['cpp_name']}}Action(action.{{action['mojo_name']}}().id(),
+                                            std::move(done_closure));
+      return;
+{% endfor %}
+    case {{proto_namespace}}::{{current_action}}::ACTION_NOT_SET:
+      break;
+  }
+{% endif %}
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+{% endfor %}
+
+
+{% for actions in actions_list %}
+{%- set root_action = actions|selectattr("is_new_action")|first %}
+void {{classname}}::HandleRemote{{root_action['cpp_name']}}(const {{proto_namespace}}::Remote{{root_action['cpp_name']}}& action,
+                                               base::OnceClosure done_closure) {
+{% if ensure_remote %}
+{% for action in actions|selectattr("is_new_action") %}
+  HandleNew{{action['cpp_name']}}Action(action.{{action['mojo_name']}}().id(),
+                                        base::DoNothing());
+{% endfor %}
+{% endif %}
+  if (action.action_{{root_action['mojo_name']}}_size() != 0) {
+    for (const uint32_t index : action.sequence_indexes()) {
+      if (action.sequences_size() == 0) break;
+      const auto& sequence = action.sequences(index % action.sequences_size());
+      for (const uint32_t action_index : sequence.action_indexes()) {
+        const auto& remote_action =
+            action.action_{{root_action['mojo_name']}}(action_index % action.action_{{root_action['mojo_name']}}_size());
+        HandleRemoteAction{{root_action['cpp_name']}}(remote_action, base::DoNothing());
+      }
+    }
+  }
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+{% endfor %}
+
+void {{classname}}::SetUp(base::OnceClosure done_closure) {
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+
+void {{classname}}::TearDown(base::OnceClosure done_closure) {
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+
+void {{classname}}::RunAction(const ProtoAction& action,
+                base::OnceClosure done_closure) {
+  switch (action.action_case()) {
+    case ProtoAction::kRunThreadAction:
+      HandleRunThreadAction(action.run_thread_action().id(), std::move(done_closure));
+      return;
+{% for action_set in actions_list %}
+{%- set action = action_set|selectattr("is_new_action")|first %}
+    case ProtoAction::{{action['case_name']}}:
+      HandleRemote{{action['cpp_name']}}(action.{{action['mojo_name']}}(), std::move(done_closure));
+      return;
+{% endfor %}
+    case ProtoAction::ACTION_NOT_SET:
+      break;
+  }
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+
+void {{classname}}::HandleRunThreadAction(
+    uint32_t id,
+    base::OnceClosure done_closure) {
+  GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
+}
+
+}  // namespace mojolpmgenerator
+
+#endif  // {{header_guard}}

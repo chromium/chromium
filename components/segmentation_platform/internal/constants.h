@@ -32,6 +32,10 @@ extern const char kSegmentationPlatformDisableModelExecutionDelaySwitch[];
 // The timestamp before which all samples were compacted and future compactions
 // need to only check for days after it.
 extern const char kSegmentationLastDBCompactionTimePref[];
+
+// The timestamp since when the UMA signals are stored in SQL database.
+extern const char kSegmentationUmaSqlDatabaseStartTimePref[];
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_CONSTANTS_H_

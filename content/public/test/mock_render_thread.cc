@@ -108,7 +108,7 @@ void MockRenderThread::RemoveFilter(IPC::MessageFilter* filter) {
       return;
     }
   }
-  NOTREACHED() << "filter to be removed not found";
+  NOTREACHED_IN_MIGRATION() << "filter to be removed not found";
 }
 
 #endif

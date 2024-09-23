@@ -28,7 +28,7 @@ namespace sqlite_proto {
 // 4. Now, initialization is finished and the KeyValueData objects can be
 // used (on the main thread) for get/put/delete operations against the database.
 //
-// TODO(crbug.com/1046825): This interface is a bit complex and could do with
+// TODO(crbug.com/40671040): This interface is a bit complex and could do with
 // a refactor.
 class ProtoTableManager : public TableManager {
  public:

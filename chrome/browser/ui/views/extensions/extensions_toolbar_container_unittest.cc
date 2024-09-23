@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -27,7 +27,10 @@
 
 namespace {
 
-// TODO(crbug.com/1452171): Same as permission's ChipController. Pull out to a
+using SitePermissionsHelper = extensions::SitePermissionsHelper;
+using PermissionsManager = extensions::PermissionsManager;
+
+// TODO(crbug.com/40916158): Same as permission's ChipController. Pull out to a
 // shared location.
 base::TimeDelta kConfirmationDisplayDuration = base::Seconds(4);
 
@@ -602,185 +605,239 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
             ExtensionsToolbarButton::State::kAllExtensionsBlocked);
 }
 
-// Test that the request access button visibility changes betweeen page
-// navigations.
-TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButtonVisibility_NavigationBetweenPages) {
-  const GURL url_a("http://www.a.com");
-  const GURL url_b("http://www.b.com");
+// Tests that extensions appear in the request access button iff they have a
+// site access request.
+TEST_F(ExtensionsToolbarContainerUnitTest, RequestAccessButton_Extensions) {
+  auto extension_A =
+      InstallExtensionWithPermissions("Extension A", {"activeTab"});
+  auto extension_B =
+      InstallExtensionWithHostPermissions("Extension B", {"*://www.b.com/*"});
+  auto extension_C =
+      InstallExtensionWithHostPermissions("Extension C", {"<all_urls>"});
+  WithholdHostPermissions(extension_B.get());
+  WithholdHostPermissions(extension_C.get());
 
-  // Add an extension that only requests access to a specific url, and withhold
-  // site access.
-  auto extension_a =
-      InstallExtensionWithHostPermissions("Extension A", {url_a.spec()});
-  WithholdHostPermissions(extension_a.get());
-
-  // Verify only extensions button is visible and has no flat edge.
-  EXPECT_TRUE(extensions_button()->GetVisible());
-  EXPECT_EQ(extensions_button()->GetFlatEdge(), std::nullopt);
+  // Navigate to a site only explicitly requested by extension C. Verify
+  // request access button is not visible, since no extension has added a
+  // request.
+  NavigateAndCommit(GURL("http://www.other.com"));
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
-  // Navigate to an url the extension requests access to.
-  NavigateAndCommit(url_a);
+  // Add a site access request for extension A and verify it's not visible on
+  // the request access button since extensions with only activeTab can't add a
+  // request.
+  AddSiteAccessRequest(*extension_A,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
 
-  // Verify both buttons are visible and have the correct flat edges.
-  EXPECT_TRUE(extensions_button()->GetVisible());
-  EXPECT_EQ(extensions_button()->GetFlatEdge(), ToolbarButton::Edge::kLeft);
+  // Add a site access request for extension B and verify it's not visible on
+  // the request access button since extension didn't request access for the
+  // current site.
+  AddSiteAccessRequest(*extension_B,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add a site access request for extension C and verify it's visible on the
+  // request access button.
+  AddSiteAccessRequest(*extension_C,
+                       browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
-  EXPECT_EQ(request_access_button()->GetFlatEdge(),
-            ToolbarButton::Edge::kRight);
-  EXPECT_EQ(
-      request_access_button()->GetText(),
-      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_C->id()));
 
-  // Navigate to an url the extension does not request access to.
-  NavigateAndCommit(url_b);
+  // Navigate to a site only explicitly requested by extension B and C. Verify
+  // request access button is not visible, since requests are reset on
+  // cross-origin navigations.
+  NavigateAndCommit(GURL("http://www.b.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
 
-  // Verify only extensions button is visible and has no flat edge.
-  EXPECT_TRUE(extensions_button()->GetVisible());
-  EXPECT_EQ(extensions_button()->GetFlatEdge(), std::nullopt);
+  // Add a site access request for extension B and verify it's visible on
+  // the request access button.
+  AddSiteAccessRequest(*extension_B,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_B->id()));
+
+  // Add a site access request for extension C and verify it's visible on the
+  // request access button.
+  AddSiteAccessRequest(*extension_C,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_B->id(), extension_C->id()));
+
+  // Remove the site access request for extension B and verify only extension
+  // C is visible on the request access button.
+  RemoveSiteAccessRequest(*extension_B,
+                          browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_C->id()));
+
+  // Remove the site access request for extension C and verify request access
+  // button is not visible.
+  RemoveSiteAccessRequest(*extension_C,
+                          browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
-// Tests that the request access button visibility changes after host
-// permissions are changed by the context menu.
+// Tests that an extension appears in the request access button iff it has a
+// site access request that matches the given pattern filter.
 TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButtonVisibility_ContextMenuChangesHostPermissions) {
-  const GURL url_a("http://www.a.com");
-  const GURL url_b("http://www.b.com");
-
-  // Add an extension with all urls host permissions. Since we haven't navigated
-  // to an url yet, the extension should not request access.
+       RequestAccessButton_RequestWithPattern) {
   auto extension =
-      InstallExtensionWithHostPermissions("Extension AllUrls", {"<all_urls>"});
-  EXPECT_FALSE(IsRequestAccessButtonVisible());
-
-  // Navigate to an url the extension should have access to as part of
-  // <all_urls>, since permissions are granted by default.
-  NavigateAndCommit(url_a);
-  EXPECT_FALSE(IsRequestAccessButtonVisible());
-
-  extensions::ExtensionContextMenuModel context_menu(
-      extension.get(), browser(), /*is_pinned=*/true, /*delegate=*/nullptr,
-      /*can_show_icon_in_toolbar=*/true,
-      extensions::ExtensionContextMenuModel::ContextMenuSource::kToolbarAction);
-
-  // Changing the context menu may trigger the reload page bubble. Accept it so
-  // permissions are updated.
-  extensions::ExtensionActionRunner* runner =
-      extensions::ExtensionActionRunner::GetForWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
-  runner->accept_bubble_for_testing(true);
-
-  auto* manager = extensions::PermissionsManager::Get(profile());
-  // Change the extension to run only on click using the context
-  // menu. The extension should request access to the current site.
-  {
-    extensions::PermissionsManagerWaiter waiter(manager);
-    context_menu.ExecuteCommand(
-        extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_CLICK, 0);
-    waiter.WaitForExtensionPermissionsUpdate();
-    EXPECT_TRUE(IsRequestAccessButtonVisible());
-    EXPECT_EQ(
-        request_access_button()->GetText(),
-        l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
-  }
-
-  // Change the extension to run only on site using the context
-  // menu. The extension should not request access to the current site.
-  {
-    extensions::PermissionsManagerWaiter waiter(manager);
-    context_menu.ExecuteCommand(
-        extensions::ExtensionContextMenuModel::PAGE_ACCESS_RUN_ON_SITE, 0);
-    waiter.WaitForExtensionPermissionsUpdate();
-    EXPECT_FALSE(IsRequestAccessButtonVisible());
-  }
-}
-
-// Tests the request access button visibility for multiple extensions.
-TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButtonVisibility_MultipleExtensions) {
-  const GURL url_a("http://www.a.com");
-  const GURL url_b("http://www.b.com");
-
-  // Navigate to a.com and since there are no extensions installed yet, no
-  // extension is requesting access to the current site.
-  NavigateAndCommit(url_a);
-  EXPECT_FALSE(IsRequestAccessButtonVisible());
-
-  // Add an extension that doesn't request host permissions.
-  InstallExtension("no_permissions");
-  EXPECT_FALSE(IsRequestAccessButtonVisible());
-
-  // Add an extension that only requests access to a.com, and
-  // withhold host permissions.
-  auto extension =
-      InstallExtensionWithHostPermissions("Extension", {url_a.spec()});
-  WithholdHostPermissions(extension.get());
-  EXPECT_TRUE(IsRequestAccessButtonVisible());
-  EXPECT_EQ(
-      request_access_button()->GetText(),
-      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
-  std::u16string tooltip = base::UTF8ToUTF16(
-      base::StrCat({"Click to allow on a.com:\n", extension->name()}));
-  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()), tooltip);
-
-  // Add an extension with all urls host permissions, and withhold host
-  // permissions.
-  auto extension_all_urls =
-      InstallExtensionWithHostPermissions("Extension AllUrls", {"<all_urls>"});
-  WithholdHostPermissions(extension_all_urls.get());
-  EXPECT_TRUE(IsRequestAccessButtonVisible());
-  EXPECT_EQ(
-      request_access_button()->GetText(),
-      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 2));
-  tooltip = base::UTF8ToUTF16(
-      base::StrCat({"Click to allow on a.com:\n", extension->name(), "\n",
-                    extension_all_urls->name()}));
-  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()), tooltip);
-
-  // Navigate to a different url. Only "all_urls" should request access.
-  NavigateAndCommit(url_b);
-  EXPECT_TRUE(IsRequestAccessButtonVisible());
-  EXPECT_EQ(
-      request_access_button()->GetText(),
-      l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
-  tooltip = base::UTF8ToUTF16(
-      base::StrCat({"Click to allow on b.com:\n", extension_all_urls->name()}));
-  EXPECT_EQ(request_access_button()->GetTooltipText(gfx::Point()), tooltip);
-
-  // Remove the only extension that requests access to the current site.
-  UninstallExtension(extension_all_urls->id());
-  LayoutContainerIfNecessary();
-  WaitForAnimation();
-  EXPECT_FALSE(IsRequestAccessButtonVisible());
-}
-
-// Tests that extensions with activeTab and requested url with withheld access
-// are taken into account for the request access button visibility, but not the
-// ones with just activeTab.
-TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButtonVisibility_ActiveTabExtensions) {
-  const GURL requested_url("http://www.requested-url.com");
-
-  InstallExtensionWithPermissions("Extension A", {"activeTab"});
-  auto extension = InstallExtensionWithHostPermissions(
-      "Extension B", {requested_url.spec(), "activeTab"});
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
-  NavigateAndCommit(requested_url);
+  // Navigate to a site and verify request access button is not visible, since
+  // no extension has added a request.
+  NavigateAndCommit(GURL("http://www.example.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add a site access request with filter that does not match the current web
+  // contents. Verify request access button is hidden.
+  URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
+                    "http://www.other.com/");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add a site access request with filter that matches the current web
+  // contents. Verify extension is visible on the request access button.
+  filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
+                      "http://www.example.com/");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extension->id()));
 
-  NavigateAndCommit(GURL("http://www.non-requested-url.com"));
+  // Add a site access request with filter that does not match the current web
+  // contents. Verify request access button is hidden (previous request was
+  // removed).
+  filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
+                      "http://www.other.com/");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
+// Tests that an extension's site access request is removed when the extension
+// is granted site access.
+TEST_F(ExtensionsToolbarContainerUnitTest,
+       RequestAccessButton_ExtensionGrantedSiteAccess) {
+  auto extension_A = InstallExtensionWithHostPermissions(
+      "Extension A", {"*://www.example.com/*"});
+  auto extension_B =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+  WithholdHostPermissions(extension_A.get());
+  WithholdHostPermissions(extension_B.get());
+
+  // Navigate to a site and verify request access button is not visible, since
+  // no extension has added a request.
+  NavigateAndCommit(GURL("http://www.example.com"));
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add site access requests for both extensions and verify they are visible
+  // on the request access button.
+  AddSiteAccessRequest(*extension_A, web_contents);
+  AddSiteAccessRequest(*extension_B, web_contents);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_A->id(), extension_B->id()));
+
+  // Grant site access to extension B and verify request access button only has
+  // extension A, since extension B's request was removed once the extension
+  // gained access to the site.
+  UpdateUserSiteAccess(*extension_B, web_contents,
+                       PermissionsManager::UserSiteAccess::kOnSite);
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension_A->id()));
+}
+
+// Tests that requests are reset on cross-origin navigations.
+TEST_F(ExtensionsToolbarContainerUnitTest,
+       RequestAccessButtonVisibility_NavigationBetweenPages) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  NavigateAndCommit(GURL("http://www.a.com"));
+  AddSiteAccessRequest(*extension,
+                       browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Navigate to a same-origin site and verify request access button has
+  // extension.
+  NavigateAndCommit(GURL("http://www.a.com/path"));
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Navigate to a cross-origin site and verify request access button is hidden.
+  NavigateAndCommit(GURL("http://www.b.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Navigate to the original site and verify request access button is hidden,
+  // since requests are reset on cross-origin navigations.
+  NavigateAndCommit(GURL("http://www.a.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+}
+
+// Tests that the request access button is visible for matched patterns on
+// same-origin navigations.
+TEST_F(ExtensionsToolbarContainerUnitTest,
+       RequestAccessButton_NavigationBetweenPages_RequestWithPattern) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  // Navigate to a site and verify request access button is hidden, since
+  // no extension has added a request.
+  NavigateAndCommit(GURL("http://www.example.com"));
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Add site access request for extension with a filter that doesn't match the
+  // current web contents. Verify request access button is hidden.
+  URLPattern filter(extensions::Extension::kValidHostPermissionSchemes,
+                    "*://*/path");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Navigate to a same-origin site that matches the filter. Verify extension is
+  // visible on the request access button.
+  NavigateAndCommit(GURL("http://www.example.com/path"));
+  EXPECT_TRUE(IsRequestAccessButtonVisible());
+  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
+              testing::ElementsAre(extension->id()));
+
+  // Add site access request for extension with a filter that doesn't have the
+  // same origin as the current web contents. Verify request access button is
+  // hidden.
+  filter = URLPattern(extensions::Extension::kValidHostPermissionSchemes,
+                      "http://www.other.com/path");
+  AddSiteAccessRequest(
+      *extension, browser()->tab_strip_model()->GetActiveWebContents(), filter);
+  EXPECT_FALSE(IsRequestAccessButtonVisible());
+
+  // Navigate to a cross-origin site that matches the filters. Since it's a
+  // cross-origin navigation, requests are reset. Therefore, verify request
+  // access button is hidden.
+  NavigateAndCommit(GURL("http://www.other.com/path"));
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
 // Test that request access button is visible based on the user site setting
 // selected.
 TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButtonVisibility_UserSiteSetting) {
+       RequestAccessButton_UserSiteSetting) {
   const GURL url("http://www.url.com");
   auto url_origin = url::Origin::Create(url);
 
@@ -790,15 +847,17 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
+  // Navigate to url and add a site request for the extension.
   NavigateAndCommit(url);
+  AddSiteAccessRequest(*extension,
+                       browser()->tab_strip_model()->GetActiveWebContents());
 
   // A site has "customize by extensions" site setting by default,
-  ASSERT_EQ(
-      GetUserSiteSetting(url),
-      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  ASSERT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(IsRequestAccessButtonVisible());
 
-  auto* manager = extensions::PermissionsManager::Get(profile());
+  auto* manager = PermissionsManager::Get(profile());
 
   {
     // Request access button is not visible in restricted sites.
@@ -811,7 +870,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
 
   {
     // Request acesss button is visible if site is not restricted,
-    // and at least one extension is requesting access.
+    // and at least one extension has a site access request.
     extensions::PermissionsManagerWaiter manager_waiter(manager);
     manager->RemoveUserRestrictedSite(url_origin);
     manager_waiter.WaitForUserPermissionsSettingsChange();
@@ -820,10 +879,10 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   }
 }
 
-// Tests that an extension requesting site access but not allowed in
-// the button is not shown in the request access button.
+// Tests that an extension with a site access request but not allowed to show
+// requests in the toolbar is not shown in the request access button.
 TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButtonVisibility_ExtensionsNotAllowedInButton) {
+       RequestAccessButton_ExtensionsNotAllowedInButton) {
   // Add two extensions that request access to all urls, and withhold their
   // site access.
   auto extension_a =
@@ -833,19 +892,26 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   WithholdHostPermissions(extension_a.get());
   WithholdHostPermissions(extension_b.get());
 
-  // By default, both extensions should be allowed in the request
-  // access button. However, request access button is not visible because we
-  // haven't navigated to a site yet.
-  extensions::SitePermissionsHelper permissions_helper(browser()->profile());
+  // By default, both extensions are allowed to show requests in requests access
+  // button. However, request access button is not visible because we haven't
+  // navigated to a site yet (and extensions haven't added any site access
+  // requests).
+  SitePermissionsHelper permissions_helper(browser()->profile());
   EXPECT_TRUE(
       permissions_helper.ShowAccessRequestsInToolbar(extension_a->id()));
   EXPECT_TRUE(
       permissions_helper.ShowAccessRequestsInToolbar(extension_b->id()));
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
-  // Navigate to an url that both extensions requests access to.
+  // Navigate to an url that both extensions want access to, and add site access
+  // requests for both.
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  AddSiteAccessRequest(*extension_a, web_contents);
+  AddSiteAccessRequest(*extension_b, web_contents);
+
+  // Verify request access button has both extensions.
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_EQ(
       request_access_button()->GetText(),
@@ -865,8 +931,10 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
+// Test that an extension's request which is dismissed is not visible in the
+// request access button.
 TEST_F(ExtensionsToolbarContainerUnitTest,
-       RequestAccessButtonVisibility_ExtensionDismissedRequests) {
+       RequestAccessButton_RequestDismissed) {
   // Add two extensions that request access to all urls, and withhold their
   // site access.
   auto extension_a =
@@ -876,36 +944,46 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   WithholdHostPermissions(extension_a.get());
   WithholdHostPermissions(extension_b.get());
 
-  // By default, both extensions should be allowed in the request
-  // access button. However, request access button is not visible because we
-  // haven't navigated to a site yet.
-  extensions::SitePermissionsHelper permissions_helper(browser()->profile());
+  // By default, both extensions are allowed to show requests in requests access
+  // button. However, request access button is not visible because we haven't
+  // navigated to a site yet (and extensions haven't added any site access
+  // requests).
+  SitePermissionsHelper permissions_helper(browser()->profile());
   EXPECT_TRUE(
       permissions_helper.ShowAccessRequestsInToolbar(extension_a->id()));
   EXPECT_TRUE(
       permissions_helper.ShowAccessRequestsInToolbar(extension_b->id()));
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 
-  // Navigate to an url that both extensions requests access to.
+  // Navigate to an url that both extensions want access to, and add site access
+  // requests for both.
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  AddSiteAccessRequest(*extension_a, web_contents);
+  AddSiteAccessRequest(*extension_b, web_contents);
+
+  // Verify request access button has both extensions.
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_EQ(
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 2));
 
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  auto* permissions_manager = extensions::PermissionsManager::Get(profile());
+
   // Dismiss extension A's requests. Verify only extension B is visible in the
   // button.
-  extensions::TabHelper* tab_helper = extensions::TabHelper::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  tab_helper->DismissExtensionRequests(extension_a->id());
+  permissions_manager->UserDismissedSiteAccessRequest(web_contents, tab_id,
+                                                      extension_a->id());
   EXPECT_TRUE(IsRequestAccessButtonVisible());
   EXPECT_EQ(
       request_access_button()->GetText(),
       l10n_util::GetStringFUTF16Int(IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON, 1));
 
   // Dismiss extension B's requests. Verify button is not visible anymore.
-  tab_helper->DismissExtensionRequests(extension_b->id());
+  permissions_manager->UserDismissedSiteAccessRequest(web_contents, tab_id,
+                                                      extension_b->id());
   EXPECT_FALSE(IsRequestAccessButtonVisible());
 }
 
@@ -915,21 +993,24 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
+  // Navigate to url and add a site access request for extension.
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
+  AddSiteAccessRequest(*extension,
+                       browser()->tab_strip_model()->GetActiveWebContents());
   LayoutContainerIfNecessary();
 
   constexpr char kActivatedUserAction[] =
       "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton";
   base::UserActionTester user_action_tester;
-  auto* permissions = extensions::PermissionsManager::Get(profile());
+  auto* permissions = PermissionsManager::Get(profile());
 
   // Request access button is visible because the extension is requesting
   // access.
   ASSERT_TRUE(request_access_button()->GetVisible());
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 0);
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
-            extensions::PermissionsManager::UserSiteAccess::kOnClick);
+            PermissionsManager::UserSiteAccess::kOnClick);
 
   // Extension menu button has default state since extensions are not blocked,
   // and there is no extension with access to the site.
@@ -947,7 +1028,7 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
   EXPECT_EQ(extensions_button()->state(),
             ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
-            extensions::PermissionsManager::UserSiteAccess::kOnClick);
+            PermissionsManager::UserSiteAccess::kOnClick);
 
   // Verify confirmation message appears on the request access button.
   EXPECT_TRUE(request_access_button()->GetVisible());
@@ -977,13 +1058,20 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
       InstallExtensionWithHostPermissions("Extension C", {"<all_urls>"});
   WithholdHostPermissions(extension_A.get());
   WithholdHostPermissions(extension_B.get());
+  WithholdHostPermissions(extension_C.get());
 
   const GURL url("http://www.example.com");
   NavigateAndCommit(url);
   LayoutContainerIfNecessary();
 
-  // Request access button is visible because extension A and B are requesting
-  // access.
+  // Add site access requests for extension A and B.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  AddSiteAccessRequest(*extension_A, web_contents);
+  AddSiteAccessRequest(*extension_B, web_contents);
+  LayoutContainerIfNecessary();
+
+  // Request access button is visible because extension A and B have site access
+  // requests.
   EXPECT_TRUE(request_access_button()->GetVisible());
   EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
               testing::ElementsAre(extension_A->id(), extension_B->id()));
@@ -999,12 +1087,9 @@ TEST_F(ExtensionsToolbarContainerUnitTest,
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT));
 
-  // Update a different extension before the confirmation is collapsed.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  UpdateUserSiteAccess(
-      *extension_C, web_contents,
-      extensions::PermissionsManager::UserSiteAccess::kOnClick);
+  // Add a site access request for extension C before the confirmation is
+  // collapsed.
+  AddSiteAccessRequest(*extension_C, web_contents);
 
   // Confirmation is still showing since collapse time hasn't elapsed.
   EXPECT_TRUE(request_access_button()->GetVisible());
@@ -1056,16 +1141,18 @@ TEST_F(ExtensionsToolbarContainerWithPermittedSitesUnitTest,
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
+  // Navigate to a site and add a site access request for the extension.
   NavigateAndCommit(url);
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  AddSiteAccessRequest(*extension, web_contents);
 
   // A site has "customize by extensions" site setting by default,
-  ASSERT_EQ(
-      GetUserSiteSetting(url),
-      extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  ASSERT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(IsRequestAccessButtonVisible());
 
   // Request access button is not visible in permitted sites.
-  auto* manager = extensions::PermissionsManager::Get(profile());
+  auto* manager = PermissionsManager::Get(profile());
   extensions::PermissionsManagerWaiter waiter(manager);
   manager->AddUserPermittedSite(url_origin);
   waiter.WaitForUserPermissionsSettingsChange();

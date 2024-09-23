@@ -74,8 +74,7 @@ void RTCSessionDescriptionRequestImpl::RequestSucceeded(
       description->setType(description_platform->GetType());
     description->setSdp(description_platform->Sdp());
 
-    requester_->NoteSdpCreated(
-        *RTCSessionDescription::Create(description_platform));
+    requester_->NoteSdpCreated(*description);
     success_callback_->InvokeAndReportException(nullptr, description);
   }
   Clear();

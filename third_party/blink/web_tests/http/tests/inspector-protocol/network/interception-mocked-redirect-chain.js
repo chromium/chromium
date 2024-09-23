@@ -1,5 +1,5 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(
+  const {session, dp} = await testRunner.startBlank(
       `Tests that requests produced by redirects injected via mocked response are intercepted when followed.`);
 
   await session.protocol.Network.clearBrowserCache();
@@ -10,7 +10,9 @@
 
   await dp.Network.setRequestInterception({patterns: [{}]});
 
-  session.navigate('http://test-url/');
+  const loadPromise = dp.Page.onceLifecycleEvent(event => event.params.name === 'load');
+
+  dp.Page.navigate({ url: 'http://test-url/' });
 
   let params = (await dp.Network.onceRequestIntercepted()).params;
   testRunner.log(`Intercepted: ${params.request.url}`);
@@ -28,7 +30,7 @@
   testRunner.log(`Intercepted: ${params.request.url}`);
   respond(params, ['HTTP/1.1 200 OK', 'Content-Type: text/html'], '<body>Hello, world!</body>');
 
-  await dp.Page.onceLifecycleEvent(event => event.params.name === 'load');
+  await loadPromise;
   const body = await session.evaluate('document.body.textContent');
   testRunner.log(`Response body: ${body}`);
 

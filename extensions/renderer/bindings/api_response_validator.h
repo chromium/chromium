@@ -88,7 +88,7 @@ class APIResponseValidator {
 
  private:
   // The type reference map; guaranteed to outlive this object.
-  raw_ptr<const APITypeReferenceMap, ExperimentalRenderer> type_refs_;
+  raw_ptr<const APITypeReferenceMap> type_refs_;
 };
 
 }  // namespace extensions

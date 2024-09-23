@@ -13,13 +13,16 @@ namespace autofill {
 
 class TestAutofillDataModel : public AutofillDataModel {
  public:
-  explicit TestAutofillDataModel();
+  explicit TestAutofillDataModel(size_t usage_history_size = 1);
   TestAutofillDataModel(size_t use_count, base::Time use_date);
 
-  TestAutofillDataModel(const TestAutofillDataModel&) = delete;
-  TestAutofillDataModel& operator=(const TestAutofillDataModel&) = delete;
+  TestAutofillDataModel(const TestAutofillDataModel&) = default;
+  TestAutofillDataModel& operator=(const TestAutofillDataModel&) = default;
 
   ~TestAutofillDataModel() override;
+
+  // For easier access during testing.
+  using AutofillDataModel::MergeUseDates;
 
  private:
   std::u16string GetRawInfo(FieldType type) const override;

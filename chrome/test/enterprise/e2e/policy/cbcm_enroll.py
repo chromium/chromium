@@ -14,33 +14,17 @@ from test_util import getElementFromShadowRoot
 
 def main(argv):
   options = webdriver.ChromeOptions()
-  os.environ["CHROME_LOG_FILE"] = r"c:\temp\chrome_log.txt"
-
-  # Flag which tells Chrome to send events to our test endpoint.
-  # Debugging tip: this flag only works for Dev and Canary builds.
-  # In Stable and Beta builds, Chrome sends events to the default
-  # production endpoint: https://chromereporting-pa.googleapis.com/v1/test/events
-  options.add_argument(
-      "--encrypted-reporting-url=https://autopush-chromereporting-pa.sandbox.googleapis.com/v1/record"
-  )
-
-  # This flag tells Chrome to send heartbeat events on start up.
-  options.add_argument(
-      "--enable-features=EncryptedReportingManualTestHeartbeatEvent,EncryptedReportingPipeline"
-  )
+  os.environ["CHROME_LOG_FILE"] = r"C:\temp\chrome_log.txt"
 
   driver = create_chrome_webdriver(chrome_options=options)
-
-  # Give some time for browser to enroll and to send heartbeat events.
-  time.sleep(25)
 
   try:
     # Verify Policy status legend in chrome://policy page
     policy_url = "chrome://policy"
     driver.get(policy_url)
+    # Give the page 10 seconds for enrollment and legend rending
+    time.sleep(10)
     driver.find_element(By.ID, 'reload-policies').click
-    # Give the page 2 seconds to render the legend
-    time.sleep(2)
     status_box = driver.find_element(By.CSS_SELECTOR, "status-box")
     el = getElementFromShadowRoot(driver, status_box, ".status-box-fields")
 
@@ -51,6 +35,10 @@ def main(argv):
     device_id = el.find_element(By.CLASS_NAME,
                                 'machine-enrollment-device-id').text
     print("DEVICE_ID=" + device_id.strip())
+
+    ## Upload a report and wait 5 seconds for the completion
+    driver.find_element(By.ID, 'upload-report').click
+    time.sleep(5)
   except Exception as error:
     print(error)
   finally:

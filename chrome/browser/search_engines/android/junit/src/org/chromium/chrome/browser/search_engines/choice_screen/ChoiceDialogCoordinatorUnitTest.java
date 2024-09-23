@@ -4,23 +4,24 @@
 
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.robolectric.Shadows.shadowOf;
 
-import android.app.Activity;
-import android.view.View;
-
-import com.google.common.collect.ImmutableList;
+import android.os.Looper;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -30,116 +31,273 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Promise;
+import org.chromium.base.FeatureList;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
-import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
-import org.chromium.components.search_engines.FakeTemplateUrl;
-import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.SearchEnginesFeatures;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogPriority;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.List;
+import java.time.Duration;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.SEARCH_ENGINE_CHOICE})
+@Features.EnableFeatures({SearchEnginesFeatures.CLAY_BLOCKING})
 public class ChoiceDialogCoordinatorUnitTest {
-    public @Rule TestRule mFeatureProcessor = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    private @Mock ChromeActivity<?> mActivity;
-    private @Mock View mContentView;
+    private @Mock ChoiceDialogCoordinator.ViewHolder mViewHolder;
     private @Mock ModalDialogManager mModalDialogManager;
-    private @Mock DefaultSearchEngineDialogHelper.Delegate mDialogHelperDelegate;
-    private @Mock Callback<Boolean> mOnSuccessCallback;
-    private @Mock ChoiceScreenCoordinator mContentCoordinator;
-    private @Captor ArgumentCaptor<PropertyModel> mDialogModelCaptor;
-
-    private static final TemplateUrl FAKE_SEARCH_ENGINE_A =
-            new FakeTemplateUrl("Search Engine A", "sea");
-    private static final TemplateUrl FAKE_SEARCH_ENGINE_B =
-            new FakeTemplateUrl("Search Engine B", "seb");
+    private @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private @Mock SearchEngineChoiceService mSearchEngineChoiceService;
+    private @Captor ArgumentCaptor<Callback<Integer>> mActionButtonCallbackCaptor;
 
     @Before
     public void setUp() {
-        doReturn(mModalDialogManager).when(mActivity).getModalDialogManager();
-        doReturn(mContentView).when(mContentCoordinator).getContentView();
-
-        doReturn(ImmutableList.of(FAKE_SEARCH_ENGINE_A, FAKE_SEARCH_ENGINE_B))
-                .when(mDialogHelperDelegate)
-                .getSearchEnginesForPromoDialog(anyInt());
+        SearchEngineChoiceService.setInstanceForTests(mSearchEngineChoiceService);
+        setUpDialogObserverCapture();
     }
 
     @Test
-    public void testShowDialog() {
-        ChoiceDialogCoordinator coordinator =
-                new ChoiceDialogCoordinator(mActivity, mDialogHelperDelegate, mOnSuccessCallback) {
-                    @Override
-                    ChoiceScreenCoordinator buildContentCoordinator(
-                            Activity activity, ChoiceScreenDelegate delegate) {
-                        return mContentCoordinator;
-                    }
-                };
+    public void testMaybeShow() {
+        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
 
-        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
-        coordinator.show();
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(shouldShowSupplier.hasObservers()); // The dialog started observing.
 
+        shadowOf(Looper.getMainLooper()).idle();
         verify(mModalDialogManager)
-                .showDialog(
-                        mDialogModelCaptor.capture(),
-                        eq(ModalDialogType.APP),
-                        eq(ModalDialogPriority.VERY_HIGH));
+                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
 
-        // Simulate an unexpected dialog closure.
-        int unexpectedDismissalCause = ChoiceDialogCoordinator.SUCCESS_DISMISSAL_CAUSE + 1;
-        PropertyModel dialogModel = mDialogModelCaptor.getValue();
-        dialogModel
-                .get(ModalDialogProperties.CONTROLLER)
-                .onDismiss(dialogModel, unexpectedDismissalCause);
+        shouldShowSupplier.set(false);
 
-        verify(mOnSuccessCallback).onResult(false);
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockCleared();
+        verify(mViewHolder)
+                .updateViewForType(
+                        eq(DialogType.CHOICE_CONFIRM), mActionButtonCallbackCaptor.capture());
+
+        mActionButtonCallbackCaptor.getValue().onResult(DialogType.CHOICE_CONFIRM);
+
+        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
+        assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
     }
 
     @Test
-    public void testChooseOnDialog() {
-        final Promise<ChoiceScreenDelegate> delegateCaptor = new Promise<>();
+    public void testMaybeShow_doesNotShowWhenNotEligible() {
+        doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
 
-        ChoiceDialogCoordinator coordinator =
-                new ChoiceDialogCoordinator(mActivity, mDialogHelperDelegate, mOnSuccessCallback) {
-                    @Override
-                    ChoiceScreenCoordinator buildContentCoordinator(
-                            Activity activity, ChoiceScreenDelegate delegate) {
-                        delegateCaptor.fulfill(delegate);
-                        return mContentCoordinator;
-                    }
-                };
+        assertFalse(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
 
+        shadowOf(Looper.getMainLooper()).idle();
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
-        coordinator.show();
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+    }
 
+    @Test
+    public void testMaybeShow_showsAndBlocksAfterDelayedApproval() {
+        var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
+        doReturn(pendingSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(pendingSupplier.hasObservers()); // The dialog started observing.
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+
+        shadowOf(Looper.getMainLooper()).idle();
         verify(mModalDialogManager)
-                .showDialog(
-                        mDialogModelCaptor.capture(),
-                        eq(ModalDialogType.APP),
-                        eq(ModalDialogPriority.VERY_HIGH));
-        assertTrue(delegateCaptor.isFulfilled());
+                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
 
-        // Simulate a user choice.
-        delegateCaptor.getResult().onChoiceMade(FAKE_SEARCH_ENGINE_B.getKeyword());
+        pendingSupplier.set(true);
+        shadowOf(Looper.getMainLooper()).idle();
 
-        verify(mDialogHelperDelegate)
-                .onUserSearchEngineChoice(
-                        SearchEnginePromoType.SHOW_WAFFLE,
-                        List.of(
-                                FAKE_SEARCH_ENGINE_A.getKeyword(),
-                                FAKE_SEARCH_ENGINE_B.getKeyword()),
-                        FAKE_SEARCH_ENGINE_B.getKeyword());
-        verify(mOnSuccessCallback).onResult(true);
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+    }
+
+    @Test
+    public void testMaybeShow_showsAndUnblocksAfterDelayedDisapproval() {
+        var pendingSupplier = new ObservableSupplierImpl<Boolean>(null);
+        doReturn(pendingSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(pendingSupplier.hasObservers()); // The dialog started observing.
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
+
+        pendingSupplier.set(false);
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockCleared();
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_CONFIRM), any());
+    }
+
+    @Test
+    public void testMaybeShow_doesNotShowWithImmediateDisapproval() {
+        var disapprovingSupplier = new ObservableSupplierImpl<>(false);
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+        doReturn(disapprovingSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(disapprovingSupplier.hasObservers()); // The dialog started observing.
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+        assertFalse(disapprovingSupplier.hasObservers()); // The dialog stopped observing.
+    }
+
+    @Test
+    public void testMaybeShow_dismissesDialogAfterDisconnection() {
+        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(shouldShowSupplier.hasObservers()); // The dialog started observing.
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+        verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH), any());
+
+        shouldShowSupplier.set(null);
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+        assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
+    }
+
+    @Test
+    public void testMaybeShow_dismissesDialogAfterTimeout() {
+        long timeoutDuration = 24_000;
+        var testFeatures = new FeatureList.TestValues();
+        testFeatures.addFeatureFlagOverride(SearchEnginesFeatures.CLAY_BLOCKING, true);
+        testFeatures.addFieldTrialParamOverride(
+                SearchEnginesFeatures.CLAY_BLOCKING,
+                "dialog_timeout_millis",
+                Long.toString(timeoutDuration));
+        FeatureList.setTestValues(testFeatures);
+
+        var pendingSupplier = new ObservableSupplierImpl<>();
+        doReturn(pendingSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+        assertTrue(pendingSupplier.hasObservers()); // The dialog started observing.
+
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mModalDialogManager)
+                .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+        verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
+        verify(mViewHolder).updateViewForType(eq(DialogType.LOADING), any());
+
+        // Verify that we don't get misc updates before the timeout duration is reached
+        reset(mModalDialogManager, mViewHolder);
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(timeoutDuration / 2));
+        verifyNoMoreInteractions(mModalDialogManager, mViewHolder);
+
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMillis(timeoutDuration));
+        verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
+        verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+        assertFalse(pendingSupplier.hasObservers()); // The dialog stopped observing.
+    }
+
+    private ChoiceDialogCoordinator createCoordinatorWithMocks(
+            SearchEngineChoiceService searchEngineChoiceService) {
+        return new ChoiceDialogCoordinator(
+                mViewHolder, mModalDialogManager, mLifecycleDispatcher, searchEngineChoiceService);
+    }
+
+    /**
+     * Sets up the {@link #mModalDialogManager} to notify the first observer that gets registered on
+     * it of {@link ModalDialogManagerObserver#onDialogAdded} and {@link
+     * ModalDialogManagerObserver#onDialogDismissed} events.
+     */
+    private void setUpDialogObserverCapture() {
+        final ModalDialogManagerObserver[] capturedDialogObserverHolder = {null};
+
+        lenient()
+                .doAnswer(
+                        invocationOnMock -> {
+                            capturedDialogObserverHolder[0] =
+                                    invocationOnMock.getArgument(
+                                            0, ModalDialogManagerObserver.class);
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .addObserver(any());
+
+        lenient()
+                .doAnswer(
+                        invocationOnMock -> {
+                            if (capturedDialogObserverHolder[0]
+                                    != invocationOnMock.getArgument(0)) {
+                                capturedDialogObserverHolder[0] = null;
+                            }
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .removeObserver(any());
+
+        lenient()
+                .doAnswer(
+                        invocationOnMock -> {
+                            if (capturedDialogObserverHolder[0] != null) {
+                                capturedDialogObserverHolder[0].onDialogAdded(
+                                        invocationOnMock.getArgument(0, PropertyModel.class));
+                            }
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .showDialog(any(), anyInt(), anyInt());
+
+        lenient()
+                .doAnswer(
+                        invocationOnMock -> {
+                            if (capturedDialogObserverHolder[0] != null) {
+                                capturedDialogObserverHolder[0].onDialogDismissed(
+                                        invocationOnMock.getArgument(0, PropertyModel.class));
+                            }
+                            return null;
+                        })
+                .when(mModalDialogManager)
+                .dismissDialog(any(), anyInt());
     }
 }

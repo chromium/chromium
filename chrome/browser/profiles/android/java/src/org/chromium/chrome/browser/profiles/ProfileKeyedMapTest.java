@@ -28,12 +28,16 @@ import java.util.Set;
 @Config(manifest = Config.NONE)
 public class ProfileKeyedMapTest {
     @Mock private Profile mProfile1;
+    @Mock private Profile mIncognitoProfile1;
     @Mock private Profile mProfile2;
     @Mock private Profile mProfile3;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        Mockito.when(mProfile1.getOriginalProfile()).thenReturn(mProfile1);
+        Mockito.when(mIncognitoProfile1.getOriginalProfile()).thenReturn(mProfile1);
     }
 
     @Test
@@ -41,8 +45,8 @@ public class ProfileKeyedMapTest {
         ProfileKeyedMap<Object> map = new ProfileKeyedMap<Object>(NO_REQUIRED_CLEANUP_ACTION);
 
         Object obj1 = new Object();
-        Assert.assertEquals(obj1, map.getForProfile(mProfile1, () -> obj1));
-        Assert.assertEquals(obj1, map.getForProfile(mProfile1, Object::new));
+        Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> obj1));
+        Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> new Object()));
     }
 
     @Test
@@ -52,7 +56,7 @@ public class ProfileKeyedMapTest {
                 new ProfileKeyedMap<Object>((obj) -> destroyedObjects.add(obj));
 
         Object obj1 = new Object();
-        Assert.assertEquals(obj1, map.getForProfile(mProfile1, () -> obj1));
+        Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> obj1));
 
         ProfileManager.onProfileDestroyed(mProfile1);
         MatcherAssert.assertThat(destroyedObjects, Matchers.hasItem(obj1));
@@ -65,11 +69,11 @@ public class ProfileKeyedMapTest {
                 new ProfileKeyedMap<Object>((obj) -> destroyedObjects.add(obj));
 
         Object obj1 = new Object();
-        Assert.assertEquals(obj1, map.getForProfile(mProfile1, () -> obj1));
+        Assert.assertEquals(obj1, map.getForProfile(mProfile1, (profile) -> obj1));
         Object obj2 = new Object();
-        Assert.assertEquals(obj2, map.getForProfile(mProfile2, () -> obj2));
+        Assert.assertEquals(obj2, map.getForProfile(mProfile2, (profile) -> obj2));
         Object obj3 = new Object();
-        Assert.assertEquals(obj3, map.getForProfile(mProfile3, () -> obj3));
+        Assert.assertEquals(obj3, map.getForProfile(mProfile3, (profile) -> obj3));
 
         map.destroy();
         MatcherAssert.assertThat(destroyedObjects, Matchers.hasItems(obj1, obj2, obj3));
@@ -85,15 +89,15 @@ public class ProfileKeyedMapTest {
                 new ProfileKeyedMap<Object>((obj) -> destroyedObjects.add(obj));
 
         Object obj1 = new Object();
-        Assert.assertEquals(obj1, map1.getForProfile(mProfile1, () -> obj1));
+        Assert.assertEquals(obj1, map1.getForProfile(mProfile1, (profile) -> obj1));
 
         Object obj2 = new Object();
-        Assert.assertEquals(obj2, map2.getForProfile(mProfile1, () -> obj2));
+        Assert.assertEquals(obj2, map2.getForProfile(mProfile1, (profile) -> obj2));
 
         map1.destroy();
         MatcherAssert.assertThat(destroyedObjects, Matchers.hasItem(obj1));
 
-        Assert.assertEquals(obj2, map2.getForProfile(mProfile1, null));
+        Assert.assertEquals(obj2, map2.getForProfile(mProfile1, (profile) -> null));
     }
 
     @Test
@@ -103,14 +107,39 @@ public class ProfileKeyedMapTest {
         Destroyable destroyable1 = Mockito.mock(Destroyable.class);
         Destroyable destroyable2 = Mockito.mock(Destroyable.class);
 
-        map.getForProfile(mProfile1, () -> destroyable1);
-        map.getForProfile(mProfile2, () -> destroyable2);
+        map.getForProfile(mProfile1, (profile) -> destroyable1);
+        map.getForProfile(mProfile2, (profile) -> destroyable2);
 
-        Assert.assertEquals(destroyable1, map.getForProfile(mProfile1, null));
-        Assert.assertEquals(destroyable2, map.getForProfile(mProfile2, null));
+        Assert.assertEquals(destroyable1, map.getForProfile(mProfile1, (profile) -> null));
+        Assert.assertEquals(destroyable2, map.getForProfile(mProfile2, (profile) -> null));
 
         map.destroy();
         Mockito.verify(destroyable1).destroy();
         Mockito.verify(destroyable2).destroy();
+    }
+
+    @Test
+    public void testProfileSelection_OWN_INSTANCE() {
+        ProfileKeyedMap<Object> map =
+                new ProfileKeyedMap<Object>(
+                        ProfileKeyedMap.ProfileSelection.OWN_INSTANCE, NO_REQUIRED_CLEANUP_ACTION);
+        Object originalObj1 = new Object();
+        Object incognitoObj1 = new Object();
+        Assert.assertEquals(originalObj1, map.getForProfile(mProfile1, (profile) -> originalObj1));
+        Assert.assertEquals(
+                incognitoObj1, map.getForProfile(mIncognitoProfile1, (profile) -> incognitoObj1));
+    }
+
+    @Test
+    public void testProfileSelection_REDIRECTED_TO_ORIGINAL() {
+        ProfileKeyedMap<Object> map =
+                new ProfileKeyedMap<Object>(
+                        ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL,
+                        NO_REQUIRED_CLEANUP_ACTION);
+        Object originalObj1 = new Object();
+        Object incognitoObj1 = new Object();
+        Assert.assertEquals(originalObj1, map.getForProfile(mProfile1, (profile) -> originalObj1));
+        Assert.assertEquals(
+                originalObj1, map.getForProfile(mIncognitoProfile1, (profile) -> incognitoObj1));
     }
 }

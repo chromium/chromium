@@ -27,6 +27,17 @@
 namespace testing {
 namespace internal {
 
+// Verbatim copy from gtest-port.cc, since it only provides these constants when
+// GTEST_HAS_STREAM_REDIRECTION is true.
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+// MSVC and C++Builder do not provide a definition of STDERR_FILENO.
+const int kStdOutFileno = 1;
+const int kStdErrFileno = 2;
+#else
+const int kStdOutFileno = STDOUT_FILENO;
+const int kStdErrFileno = STDERR_FILENO;
+#endif  // defined(_MSC_VER) || defined(__BORLANDC__)
+
 // Object that captures an output stream (stdout/stderr).
 class CapturedStream {
  public:
@@ -101,8 +112,6 @@ class CapturedStream {
   // Name of the temporary file holding the stderr output.
   ::std::string filename_;
 };
-
-GTEST_DISABLE_MSC_DEPRECATED_POP_()
 
 static CapturedStream* g_captured_stderr = nullptr;
 static CapturedStream* g_captured_stdout = nullptr;

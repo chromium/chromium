@@ -8,11 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/shell_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -28,6 +30,10 @@ class TestShellDelegate : public ShellDelegate {
   TestShellDelegate& operator=(const TestShellDelegate&) = delete;
 
   ~TestShellDelegate() override;
+
+  int open_feedback_dialog_call_count() const {
+    return open_feedback_dialog_call_count_;
+  }
 
   // Allows tests to override the MultiDeviceSetup binding behavior for this
   // TestShellDelegate.
@@ -51,6 +57,7 @@ class TestShellDelegate : public ShellDelegate {
       const override;
   std::unique_ptr<ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
+  std::unique_ptr<CoralDelegate> CreateCoralDelegate() const override;
   std::unique_ptr<GameDashboardDelegate> CreateGameDashboardDelegate()
       const override;
   std::unique_ptr<AcceleratorPrefsDelegate> CreateAcceleratorPrefsDelegate()
@@ -67,10 +74,13 @@ class TestShellDelegate : public ShellDelegate {
   std::unique_ptr<SystemSoundsDelegate> CreateSystemSoundsDelegate()
       const override;
   std::unique_ptr<api::TasksDelegate> CreateTasksDelegate() const override;
+  std::unique_ptr<TabStripDelegate> CreateTabStripDelegate() const override;
+  std::unique_ptr<FocusModeDelegate> CreateFocusModeDelegate() const override;
   std::unique_ptr<UserEducationDelegate> CreateUserEducationDelegate()
       const override;
+  std::unique_ptr<ash::ScannerDelegate> CreateScannerDelegate() const override;
   scoped_refptr<network::SharedURLLoaderFactory>
-  GetGeolocationUrlLoaderFactory() const override;
+  GetBrowserProcessUrlLoaderFactory() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
   void SetTabScrubberChromeOSEnabled(bool enabled) override;
   void ShouldExitFullscreenBeforeLock(
@@ -78,7 +88,7 @@ class TestShellDelegate : public ShellDelegate {
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   int GetBrowserWebUITabStripHeight() override;
   DeskProfilesDelegate* GetDeskProfilesDelegate() override;
-  void OpenMultitaskingSettings() override {}
+  void OpenMultitaskingSettings() override;
   void BindMultiDeviceSetup(
       mojo::PendingReceiver<multidevice_setup::mojom::MultiDeviceSetup>
           receiver) override;
@@ -101,7 +111,8 @@ class TestShellDelegate : public ShellDelegate {
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackDialog(FeedbackSource source,
-                          const std::string& description_template) override {}
+                          const std::string& description_template,
+                          const std::string& category_tag) override;
   void OpenProfileManager() override {}
   void SetLastCommittedURLForWindow(const GURL& url);
   version_info::Channel GetChannel() override;
@@ -137,11 +148,15 @@ class TestShellDelegate : public ShellDelegate {
   MultiDeviceSetupBinder multidevice_setup_binder_;
   UserEducationDelegateFactory user_education_delegate_factory_;
 
+  scoped_refptr<network::TestSharedURLLoaderFactory> url_loader_factory_;
+
   GURL last_committed_url_;
 
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
 
   std::string version_string_;
+
+  int open_feedback_dialog_call_count_ = 0;
 };
 
 }  // namespace ash

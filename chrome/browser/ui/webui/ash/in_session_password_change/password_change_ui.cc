@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 
 #include <memory>
@@ -157,7 +162,8 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
 
   source->AddResourcePaths(
       base::make_span(kPasswordChangeResources, kPasswordChangeResourcesSize));
-  source->SetDefaultResource(IDR_PASSWORD_CHANGE_CONFIRM_PASSWORD_CHANGE_HTML);
+  source->SetDefaultResource(
+      IDR_PASSWORD_CHANGE_CONFIRM_PASSWORD_CHANGE_APP_HTML);
 
   // The ConfirmPasswordChangeHandler is added by the dialog, so no need to add
   // it here.

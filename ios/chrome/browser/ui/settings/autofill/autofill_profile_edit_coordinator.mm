@@ -4,26 +4,28 @@
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 
 @interface AutofillProfileEditCoordinator () <
     AutofillCountrySelectionTableViewControllerDelegate,
@@ -80,14 +82,10 @@
       autofill::PersonalDataManagerFactory::GetForBrowserState(
           self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
 
-  std::string countryCode = autofill::data_util::GetCountryCodeWithFallback(
-      *_autofillProfile, GetApplicationContext()->GetApplicationLocale());
-
   self.mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:personalDataManager
           autofillProfile:_autofillProfile.get()
-              countryCode:base::SysUTF8ToNSString(countryCode)
         isMigrationPrompt:NO];
 
   self.viewController = [[AutofillSettingsProfileEditTableViewController alloc]
@@ -103,15 +101,19 @@
   self.viewController.handler = self.sharedViewController;
   self.viewController.snackbarCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SnackbarCommands);
+  if (self.openInEditMode) {
+    [self.viewController editButtonPressed];
+  }
 
-  DCHECK(self.baseNavigationController);
+  CHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }
 
 - (void)stop {
-  // Never called because `self.viewController` is pushed out of the stack via
-  // the navigation bar back button.
+  _sharedViewController = nil;
+  _viewController = nil;
+  _mediator = nil;
 }
 
 #pragma mark - AutofillProfileEditMediatorDelegate
@@ -124,9 +126,6 @@
     return;
   }
 
-  self.sharedViewController = nil;
-  self.viewController = nil;
-  self.mediator = nil;
   [self.delegate
       autofillProfileEditCoordinatorTableViewControllerDidFinish:self];
 }
@@ -148,7 +147,7 @@
 }
 
 - (void)didSaveProfile {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate

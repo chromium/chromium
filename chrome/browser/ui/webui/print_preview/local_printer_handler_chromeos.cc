@@ -93,6 +93,60 @@ base::Value::Dict AddIppClientInfoToJobSettings(
   return settings;
 }
 
+// Combines the 16 bit DPI values into a single 32 bit int. Places the DPI width
+// value into bits 31-16 and the DPI height value into bits 15-0.
+int HashDpiValue(int width, int height) {
+  CHECK(width <= std::numeric_limits<uint16_t>::max() &&
+        height <= std::numeric_limits<uint16_t>::max());
+  return (width << 16) + height;
+}
+
+void RecordDpi(const PrinterSemanticCapsAndDefaults& capabilities) {
+  const int default_width = capabilities.default_dpi.width();
+  const int default_height = capabilities.default_dpi.height();
+  if (default_width <= std::numeric_limits<uint16_t>::max() &&
+      default_height <= std::numeric_limits<uint16_t>::max()) {
+    base::UmaHistogramSparse("Printing.CUPS.DPI.Default",
+                             HashDpiValue(default_width, default_height));
+  }
+
+  const std::vector<gfx::Size> dpis = capabilities.dpis;
+  const int dpis_count = dpis.size();
+  base::UmaHistogramCounts100("Printing.CUPS.DPI.Count", dpis_count);
+  if (dpis_count == 0) {
+    return;
+  }
+
+  std::optional<std::pair<int, int>> max_dpi;
+  std::optional<std::pair<int, int>> min_dpi;
+  for (const auto& dpi : dpis) {
+    const int width = dpi.width();
+    const int height = dpi.height();
+    if (width <= std::numeric_limits<uint16_t>::max() &&
+        height <= std::numeric_limits<uint16_t>::max()) {
+      base::UmaHistogramSparse("Printing.CUPS.DPI.AllValues",
+                               HashDpiValue(width, height));
+
+      const int dpi_total = width * height;
+      if (!min_dpi || dpi_total < (min_dpi->first * min_dpi->second)) {
+        min_dpi = std::pair<int, int>(width, height);
+      }
+      if (!max_dpi || dpi_total > (max_dpi->first * max_dpi->second)) {
+        max_dpi = std::pair<int, int>(width, height);
+      }
+    }
+  }
+
+  if (min_dpi) {
+    base::UmaHistogramSparse("Printing.CUPS.DPI.Min",
+                             HashDpiValue(min_dpi->first, min_dpi->second));
+  }
+  if (max_dpi) {
+    base::UmaHistogramSparse("Printing.CUPS.DPI.Max",
+                             HashDpiValue(max_dpi->first, max_dpi->second));
+  }
+}
+
 }  // namespace
 
 // static
@@ -155,6 +209,10 @@ base::Value::Dict LocalPrinterHandlerChromeos::CapabilityToValue(
     crosapi::mojom::CapabilitiesResponsePtr caps) {
   if (!caps) {
     return base::Value::Dict();
+  }
+
+  if (caps->capabilities) {
+    RecordDpi(caps->capabilities.value());
   }
 
   return AssemblePrinterSettings(

@@ -15,12 +15,19 @@ ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
     const std::string& engine_id);
 
-bool IsJapaneseSettingsMigrationComplete(const PrefService& prefs);
+// Adds or replaces the settings in the values map while notifying the
+// PrefService of changes.
+void SetLanguageInputMethodSpecificSetting(PrefService& prefs,
+                                           const std::string& engine_id,
+                                           const base::Value::Dict& values);
 
-void SetJapaneseSettingsMigrationComplete(PrefService& prefs, bool value);
-
-void MigrateJapaneseSettingsToPrefs(PrefService& prefs,
-                                    ime::mojom::JapaneseConfig config);
+// Gets a specific settings value that is held under a key for an engine id if
+// it exists.
+// Will return nullptr if it does not exist.
+const base::Value* GetLanguageInputMethodSpecificSetting(
+    PrefService& prefs,
+    const std::string& engine_id,
+    const std::string& preference_name);
 
 // Returns true if Autocorrect is supported for a given engine id.
 bool IsAutocorrectSupported(const std::string& engine_id);

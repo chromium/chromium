@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class CSSProperty;
+
 // Represents a blink::GridLength, converted into a form that can be
 // interpolated from/to.
 // This class is a representation of the <track-breadth> values:
@@ -30,7 +32,9 @@ class CORE_EXPORT InterpolableGridLength final : public InterpolableValue {
 
   InterpolableGridLength(InterpolableValue* value,
                          InterpolableGridLengthType type);
-  static InterpolableGridLength* Create(const Length& grid_length, float zoom);
+  static InterpolableGridLength* Create(const Length& grid_length,
+                                        const CSSProperty& property,
+                                        float zoom);
 
   Length CreateGridLength(
       const CSSToLengthConversionData& conversion_data) const;

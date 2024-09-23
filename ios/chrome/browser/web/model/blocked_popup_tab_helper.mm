@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/infobars/model/confirm_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "net/base/apple/url_conversions.h"
@@ -42,10 +42,10 @@ NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
 class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   BlockPopupInfoBarDelegate(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       web::WebState* web_state,
       const std::vector<BlockedPopupTabHelper::Popup>& popups)
-      : browser_state_(browser_state), web_state_(web_state), popups_(popups) {
+      : profile_(profile), web_state_(web_state), popups_(popups) {
     delegate_creation_time_ = [NSDate timeIntervalSinceReferenceDate];
   }
 
@@ -95,7 +95,7 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
             forInfobarConfirmType:InfobarConfirmType::
                                       kInfobarConfirmTypeBlockPopups];
     scoped_refptr<HostContentSettingsMap> host_content_map_settings(
-        ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state_));
+        ios::HostContentSettingsMapFactory::GetForProfile(profile_));
     for (auto& popup : popups_) {
       web::WebState::OpenURLParams params(
           popup.popup_url, popup.referrer, WindowOpenDisposition::NEW_POPUP,
@@ -119,7 +119,7 @@ class BlockPopupInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override { return BUTTON_OK; }
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   raw_ptr<web::WebState> web_state_;
   // The popups to open.
   std::vector<BlockedPopupTabHelper::Popup> popups_;
@@ -137,7 +137,7 @@ BlockedPopupTabHelper::~BlockedPopupTabHelper() = default;
 
 bool BlockedPopupTabHelper::ShouldBlockPopup(const GURL& source_url) {
   HostContentSettingsMap* settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(GetBrowserState());
+      ios::HostContentSettingsMapFactory::GetForProfile(GetProfile());
   ContentSetting setting = settings_map->GetContentSetting(
       source_url, source_url, ContentSettingsType::POPUPS);
   return setting != CONTENT_SETTING_ALLOW;
@@ -174,7 +174,7 @@ void BlockedPopupTabHelper::ShowInfoBar() {
   RegisterAsInfoBarManagerObserverIfNeeded(infobar_manager);
 
   std::unique_ptr<BlockPopupInfoBarDelegate> delegate(
-      std::make_unique<BlockPopupInfoBarDelegate>(GetBrowserState(), web_state_,
+      std::make_unique<BlockPopupInfoBarDelegate>(GetProfile(), web_state_,
                                                   popups_));
 
   std::unique_ptr<infobars::InfoBar> infobar = std::make_unique<InfoBarIOS>(
@@ -191,8 +191,8 @@ void BlockedPopupTabHelper::ShowInfoBar() {
                                     kInfobarConfirmTypeBlockPopups];
 }
 
-ChromeBrowserState* BlockedPopupTabHelper::GetBrowserState() const {
-  return ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+ProfileIOS* BlockedPopupTabHelper::GetProfile() const {
+  return ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
 }
 
 void BlockedPopupTabHelper::RegisterAsInfoBarManagerObserverIfNeeded(

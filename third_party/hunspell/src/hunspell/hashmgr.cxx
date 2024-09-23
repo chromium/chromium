@@ -1,6 +1,8 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
+ * Copyright (C) 2002-2017 Németh László
+ *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -206,7 +203,7 @@ struct hentry* HashMgr::lookup(const char* word) const {
   int affix_ids[hunspell::BDict::MAX_AFFIXES_PER_WORD];
   int affix_count = bdict_reader->FindWord(word, affix_ids);
   if (affix_count == 0) { // look for custom added word
-    std::map<base::StringPiece, int>::const_iterator iter = 
+    std::map<std::string_view, int>::const_iterator iter = 
       custom_word_to_affix_id_map_.find(word);
     if (iter != custom_word_to_affix_id_map_.end()) {
       affix_count = 1;
@@ -377,12 +374,12 @@ int HashMgr::add_word(const std::string& in_word,
   delete desc_copy;
   delete word_copy;
 #else
-  std::map<base::StringPiece, int>::iterator iter =
+  std::map<std::string_view, int>::iterator iter =
       custom_word_to_affix_id_map_.find(in_word);
   if (iter == custom_word_to_affix_id_map_.end()) {  // word needs to be added
     std::string* new_string_word = new std::string(in_word);
     pointer_to_strings_.push_back(new_string_word);
-    base::StringPiece sp(*(new_string_word));
+    std::string_view sp(*(new_string_word));
     custom_word_to_affix_id_map_[sp] = 0; // no affixes for custom words
     return 1;
   }
@@ -432,12 +429,11 @@ int HashMgr::add_hidden_capitalized_word(const std::string& word,
 }
 
 // detect captype and modify word length for UTF-8 encoding
-int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
+int HashMgr::get_clen_and_captype(const std::string& word, int* captype, std::vector<w_char> &workbuf) {
   int len;
   if (utf8) {
-    std::vector<w_char> dest_utf;
-    len = u8_u16(dest_utf, word);
-    *captype = get_captype_utf8(dest_utf, langnum);
+    len = u8_u16(workbuf, word);
+    *captype = get_captype_utf8(workbuf, langnum);
   } else {
     len = word.size();
     *captype = get_captype(word, csconv);
@@ -445,10 +441,15 @@ int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
   return len;
 }
 
+int HashMgr::get_clen_and_captype(const std::string& word, int* captype) {
+  std::vector<w_char> workbuf;
+  return get_clen_and_captype(word, captype, workbuf);
+}
+
 // remove word (personal dictionary function for standalone applications)
 int HashMgr::remove(const std::string& word) {
 #ifdef HUNSPELL_CHROME_CLIENT
-  std::map<base::StringPiece, int>::iterator iter =
+  std::map<std::string_view, int>::iterator iter =
       custom_word_to_affix_id_map_.find(word);
   if (iter != custom_word_to_affix_id_map_.end())
       custom_word_to_affix_id_map_.erase(iter);
@@ -643,6 +644,8 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
   // loop through all words on much list and add to hash
   // table and create word and affix strings
 
+  std::vector<w_char> workbuf;
+
   while (dict->getline(ts)) {
     mychomp(ts);
     // split each line into word and morphological description
@@ -715,7 +718,7 @@ int HashMgr::load_tables(const char* tpath, const char* key) {
     }
 
     int captype;
-    int wcl = get_clen_and_captype(ts, &captype);
+    int wcl = get_clen_and_captype(ts, &captype, workbuf);
     const std::string *dp_str = dp.empty() ? NULL : &dp;
     // add the word and its index plus its capitalized form optionally
     if (add_word(ts, wcl, flags, al, dp_str, false) ||

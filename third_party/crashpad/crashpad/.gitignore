@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Keep sorted
+
 *.Makefile
 *.ninja
 *.pyc
@@ -19,24 +21,26 @@
 *.xcodeproj
 *~
 .*.sw?
-.cache
 .DS_Store
+.cache
 .gdb_history
 .gdbinit
 /Makefile
+/build/fuchsia
 /out
 /third_party/edo/edo
+/third_party/fuchsia-gn-sdk
 /third_party/fuchsia/.cipd
 /third_party/fuchsia/clang
 /third_party/fuchsia/qemu
 /third_party/fuchsia/sdk
 /third_party/googletest/googletest
+/third_party/gyp/gyp
 /third_party/libfuzzer
 /third_party/linux/.cipd
 /third_party/linux/clang
 /third_party/linux/sysroot
 /third_party/lss/lss
-/third_party/gyp/gyp
 /third_party/mini_chromium/mini_chromium
 /third_party/ninja/linux
 /third_party/ninja/mac*

@@ -36,7 +36,7 @@ class FormFillerTestClient : public TestClient {
   FormFillerTestClient(const FormFillerTestClient&) = delete;
   FormFillerTestClient& operator=(const FormFillerTestClient&) = delete;
 
-  // Mock PDFEngine::Client methods.
+  // Mock PDFiumEngineClient methods.
   MOCK_METHOD(void, Beep, (), (override));
   MOCK_METHOD(std::string, GetURL, (), (override));
   MOCK_METHOD(void, ScrollToX, (int), (override));
@@ -194,11 +194,18 @@ class FormFillerJavaScriptTest : public FormFillerTest {
  public:
   void SetUp() override {
     // Needed for setting up V8.
+    //
+    // Note that this does not call FormFillerTest::SetUp() to avoid double SDK
+    // initialization.
     InitializeSDK(/*enable_v8=*/true, /*use_skia=*/GetParam(),
                   FontMappingMode::kNoMapping);
   }
 
-  void TearDown() override { ShutdownSDK(); }
+  void TearDown() override {
+    // Note that this does not call FormFillerTest::TearDown() to avoid double
+    // SDK destruction.
+    ShutdownSDK();
+  }
 };
 
 TEST_P(FormFillerJavaScriptTest, IsolateScoping) {

@@ -64,6 +64,7 @@ buildflag_header("media_buildflags") {
     "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",
     "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
+    "USE_CRAS=$use_cras",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
   ]
 
@@ -83,8 +84,8 @@ if (proprietary_codecs && media_use_ffmpeg) {
 }
 
 # Common configuration for targets in the media directory; these must not be
-# exported since things like USE_NEON and USE_CRAS have different meanings
-# elsewhere in the code base.
+# exported since things like USE_NEON have different meanings elsewhere in the
+# code base.
 config("media_config") {
   defines = []
   if (current_cpu == "arm64" || (current_cpu == "arm" && arm_use_neon)) {
@@ -95,9 +96,6 @@ config("media_config") {
     if (!link_pulseaudio) {
       defines += [ "DLOPEN_PULSEAUDIO" ]
     }
-  }
-  if (use_cras) {
-    defines += [ "USE_CRAS" ]
   }
 }
 
@@ -128,7 +126,6 @@ component("media") {
   deps = [
     "//base",
     "//base:i18n",
-    "//base/third_party/dynamic_annotations",
     "//cc/paint",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/common",
@@ -168,6 +165,8 @@ source_set("test_support") {
     "//media/base/android:test_support",
     "//media/filters:test_support",
     "//media/formats:test_support",
+    "//media/mojo/services:test_support",
+    "//media/parsers:test_support",
     "//media/renderers:test_support",
     "//media/video:test_support",
   ]
@@ -292,6 +291,11 @@ test("media_perftests") {
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
   ]
+
+  if (enable_av1_decoder &&
+      ((is_chromeos && (use_v4l2_codec || use_vaapi)) || is_win)) {
+    data_deps += [ "//media/gpu/test/:video_encode_accelerator_tests" ]
+  }
 }
 
 # Note: Most external components should just depend on //media unless they
@@ -372,25 +376,6 @@ if (proprietary_codecs) {
     sources = [ "cdm/cenc_utils_fuzzertest.cc" ]
     deps = [ ":media" ]
   }
-}
-
-fuzzer_test("media_vp9_parser_fuzzer") {
-  sources = [ "filters/vp9_parser_fuzzertest.cc" ]
-  deps = [
-    ":test_support",
-    "//base",
-  ]
-  libfuzzer_options = [ "max_len = 400000" ]
-}
-
-fuzzer_test("media_vp9_parser_encrypted_fuzzer") {
-  sources = [ "filters/vp9_parser_encrypted_fuzzertest.cc" ]
-  deps = [
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-  ]
-  seed_corpus = "//media/test/data"
 }
 
 fuzzer_test("media_vpx_video_decoder_fuzzer") {

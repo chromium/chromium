@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+import("//build/config/ui.gni")
+
+source_set("bubble") {
+  sources = [
+    "webui_bubble_dialog_view.cc",
+    "webui_bubble_dialog_view.h",
+    "webui_bubble_manager.cc",
+    "webui_bubble_manager.h",
+    "webui_bubble_manager_observer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:ui_features",
+    "//content/public/browser",
+    "//skia",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+
+    # TODO(crbug.com/353621219): Use target having
+    # chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h instead after
+    # fixing cyclic dependency for
+    # obj/chrome/browser/ui/views/bubble/bubble/webui_bubble_manager.o.
+    "//chrome/browser/ui:webui_name_variants",
+  ]
+  deps = [
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/input",
+  ]
+
+  if (use_aura) {
+    sources += [
+      "webui_bubble_event_handler_aura.cc",
+      "webui_bubble_event_handler_aura.h",
+    ]
+    public_deps += [
+      "//ui/events",
+      "//ui/gfx/geometry",
+    ]
+    deps += [
+      "//ui/aura",
+      "//ui/display",
+    ]
+  }
+}

@@ -7,13 +7,12 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
@@ -39,6 +38,7 @@ const char kNigoriNonUniqueName[] = "Nigori";
 // these entries; they are used in a UMA histogram.  Please edit
 // SyncCustomPassphraseKeyDerivationMethodState in enums.xml if a value is
 // added.
+// LINT.IfChange(SyncCustomPassphraseKeyDerivationMethodState)
 enum class KeyDerivationMethodStateForMetrics {
   NOT_SET = 0,
   DEPRECATED_UNSUPPORTED = 1,
@@ -46,6 +46,46 @@ enum class KeyDerivationMethodStateForMetrics {
   SCRYPT_8192_8_11 = 3,
   kMaxValue = SCRYPT_8192_8_11
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncCustomPassphraseKeyDerivationMethodState)
+
+// The state of the cross user sharing key pair after pending keys are
+// successfully decrypted. These values are persisted to logs. Entries should
+// not be renumbered and numeric values should never be reused.
+// LINT.IfChange(CrossUserSharingKeyPairStateOnDecryptPendingKeys)
+enum class CrossUserSharingKeyPairStateOnDecryptPendingKeys {
+  // The key pair exists and is in valid state.
+  kValid = 0,
+
+  // The private key is missing for the current public key version.
+  kMissingPrivateKey = 1,
+
+  // Both public and private keys are empty.
+  kEmptyKeyPair = 2,
+
+  // The private key is non-empty but the public key version is not set.
+  kMissingPublicKey = 3,
+
+  kMaxValue = kMissingPublicKey,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:CrossUserSharingKeyPairStateOnDecryptPendingKeys)
+
+CrossUserSharingKeyPairStateOnDecryptPendingKeys
+GetKeyPairStateOnDecryptPendingKeys(const CrossUserSharingKeys& new_key_pair,
+                                    std::optional<uint32_t> key_pair_version) {
+  if (new_key_pair.size() == 0 && !key_pair_version.has_value()) {
+    return CrossUserSharingKeyPairStateOnDecryptPendingKeys::kEmptyKeyPair;
+  }
+
+  if (!key_pair_version.has_value()) {
+    return CrossUserSharingKeyPairStateOnDecryptPendingKeys::kMissingPublicKey;
+  }
+
+  if (!new_key_pair.HasKeyPair(key_pair_version.value())) {
+    return CrossUserSharingKeyPairStateOnDecryptPendingKeys::kMissingPrivateKey;
+  }
+
+  return CrossUserSharingKeyPairStateOnDecryptPendingKeys::kValid;
+}
 
 KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
     const std::optional<KeyDerivationParams>& key_derivation_params) {
@@ -59,7 +99,7 @@ KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
       return KeyDerivationMethodStateForMetrics::SCRYPT_8192_8_11;
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KeyDerivationMethodStateForMetrics::NOT_SET;
 }
 
@@ -90,7 +130,7 @@ KeyDerivationParams GetKeyDerivationParamsFromSpecifics(
           GetScryptSaltFromSpecifics(specifics));
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return KeyDerivationParams::CreateForPbkdf2();
 }
 
@@ -204,7 +244,7 @@ bool IsValidPassphraseTransition(
       return new_passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE ||
              new_passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -226,8 +266,48 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
   return specifics.encrypt_everything() || !old_encrypt_everything;
 }
 
+bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
+  if (local_data.data_type_state().initial_sync_state() !=
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
+    // |local_data| should not be stored before initial sync is done.
+    return false;
+  }
+
+  const sync_pb::NigoriModel& nigori_model = local_data.nigori_model();
+  switch (nigori_model.passphrase_type()) {
+    case NigoriSpecifics::UNKNOWN:
+      // The only legit way to persist UNKNOWN passphrase type is to not
+      // complete keystore initialization upon initial sync, the keystore keys
+      // are supposed to be available - otherwise bridge issues ModelError.
+      return nigori_model.keystore_key_size() > 0;
+    case NigoriSpecifics::CUSTOM_PASSPHRASE:
+      if (nigori_model.custom_passphrase_key_derivation_params()
+              .custom_passphrase_key_derivation_method() ==
+          NigoriSpecifics::UNSPECIFIED) {
+        // Custom passphrase Nigori should have specified key derivation method.
+        return false;
+      }
+      [[fallthrough]];
+    case NigoriSpecifics::IMPLICIT_PASSPHRASE:
+    case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
+    case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
+    case NigoriSpecifics::KEYSTORE_PASSPHRASE:
+      // With real passphrase type encryption keys must always be present
+      // (either decrypted or pending decryption).
+      return nigori_model.cryptographer_data().key_bag().key_size() > 0 ||
+             nigori_model.has_pending_keys();
+  }
+
+  // All new validation logic should be added either before or into the switch
+  // above.
+  NOTREACHED();
+}
+
 std::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
     const sync_pb::CrossUserSharingPublicKey& public_key) {
+  if (!public_key.has_version()) {
+    return std::nullopt;
+  }
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());
   return CrossUserSharingPublicKey::CreateByImport(key);
@@ -280,7 +360,7 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
     }
   }
 
-  void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+  void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override {
     for (Observer& observer : observers_) {
       observer.OnEncryptedTypesChanged(encrypted_types, encrypt_everything);
@@ -302,10 +382,7 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
   }
 
  private:
-  // TODO(crbug/922900): consider using checked ObserverList once
-  // SyncEncryptionHandlerImpl is no longer needed or consider refactoring old
-  // implementation to use checked ObserverList as well.
-  base::ObserverList<SyncEncryptionHandler::Observer>::Unchecked observers_;
+  base::ObserverList<SyncEncryptionHandler::Observer> observers_;
 };
 
 NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
@@ -316,7 +393,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
       broadcasting_observer_(std::make_unique<BroadcastingObserver>()) {
   std::optional<sync_pb::NigoriLocalData> deserialized_data =
       storage_->RestoreData();
-  if (!deserialized_data) {
+  if (!deserialized_data || !IsValidLocalData(*deserialized_data)) {
     // We either have no Nigori node stored locally or it was corrupted.
     processor_->ModelReadyToSync(this, NigoriMetadataBatch());
     return;
@@ -328,7 +405,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
 
   // Restore metadata.
   NigoriMetadataBatch metadata_batch;
-  metadata_batch.model_type_state = deserialized_data->model_type_state();
+  metadata_batch.data_type_state = deserialized_data->data_type_state();
   metadata_batch.entity_metadata = deserialized_data->entity_metadata();
   processor_->ModelReadyToSync(this, std::move(metadata_batch));
 
@@ -410,7 +487,7 @@ void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
   }
 }
 
-ModelTypeSet NigoriSyncBridgeImpl::GetEncryptedTypes() {
+DataTypeSet NigoriSyncBridgeImpl::GetEncryptedTypes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return state_.GetEncryptedTypes();
 }
@@ -601,7 +678,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
   if (specifics.passphrase_type() != NigoriSpecifics::IMPLICIT_PASSPHRASE ||
       !specifics.encryption_keybag().blob().empty()) {
     // We received regular Nigori.
-    // TODO(crbug.com/1445056): consider generating a new public-private key
+    // TODO(crbug.com/40267990): consider generating a new public-private key
     // pair after the initial sync.
     return UpdateLocalState(data->specifics.nigori());
   }
@@ -610,7 +687,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
   // default keystore Nigori.
   DCHECK(state_.keystore_keys_cryptographer);
   if (state_.keystore_keys_cryptographer->IsEmpty()) {
-    // TODO(crbug.com/1407699): try to relax this requirement for Nigori
+    // TODO(crbug.com/40253261): try to relax this requirement for Nigori
     // initialization as well. Keystore keys might not arrive, for example, due
     // to throttling. It seems easier after complete deprecation of
     // IMPLICIT_PASSPHRASE, where not initialized state will be well
@@ -672,7 +749,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   }
 
   const bool had_pending_keys_before_update = state_.pending_keys.has_value();
-  const ModelTypeSet encrypted_types_before_update = state_.GetEncryptedTypes();
+  const DataTypeSet encrypted_types_before_update = state_.GetEncryptedTypes();
 
   state_.encrypt_everything = specifics.encrypt_everything();
 
@@ -715,13 +792,15 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   state_.pending_keys = specifics.encryption_keybag();
   state_.cryptographer->ClearDefaultEncryptionKey();
 
-  if (base::FeatureList::IsEnabled(kSharingOfferKeyPairRead) &&
-      specifics.has_cross_user_sharing_public_key()) {
+  if (specifics.has_cross_user_sharing_public_key()) {
     // Remote update wins over local state.
+    state_.cross_user_sharing_key_pair_version.reset();
     state_.cross_user_sharing_public_key =
         PublicKeyFromProto(specifics.cross_user_sharing_public_key());
-    state_.cross_user_sharing_key_pair_version =
-        specifics.cross_user_sharing_public_key().version();
+    if (state_.cross_user_sharing_public_key) {
+      state_.cross_user_sharing_key_pair_version =
+          specifics.cross_user_sharing_public_key().version();
+    }
   }
 
   std::optional<ModelError> error =
@@ -829,35 +908,37 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
                       "Received keybag is missing the last trusted vault key.");
   }
 
-  if (base::FeatureList::IsEnabled(kSharingOfferKeyPairRead)) {
-    CrossUserSharingKeys new_cross_user_sharing_keys =
-        CrossUserSharingKeys::CreateEmpty();
-    for (auto key_pair :
-         decrypted_pending_keys.cross_user_sharing_private_key()) {
-      new_cross_user_sharing_keys.AddKeyPairFromProto(key_pair);
-    }
+  CrossUserSharingKeys new_cross_user_sharing_keys =
+      CrossUserSharingKeys::CreateEmpty();
+  for (const sync_pb::CrossUserSharingPrivateKey& key_pair :
+       decrypted_pending_keys.cross_user_sharing_private_key()) {
+    new_cross_user_sharing_keys.AddKeyPairFromProto(key_pair);
+  }
 
-    if (state_.cross_user_sharing_key_pair_version.has_value() &&
-        !new_cross_user_sharing_keys.HasKeyPair(
-            state_.cross_user_sharing_key_pair_version.value())) {
-      // TODO(crbug/1474918): Record metric to capture this state.
-      DLOG(ERROR) << "Received keybag is missing the last "
-                  << "cross-user-sharing private key.";
-      // Reset keys so that on next startup they would be recreated and
-      // committed to the server.
-      // TODO(crbug/1474918): Clear obsolete key-pairs from cryptographer.
-      state_.cross_user_sharing_key_pair_version = std::nullopt;
-      state_.cross_user_sharing_public_key = std::nullopt;
-    } else if (state_.cross_user_sharing_key_pair_version.has_value()) {
-      // Use the keys from the server and replace any pre-existing ones (so in
-      // case of conflict the server wins). One of cases when this can happen is
-      // when one of older clients is upgraded to a newer version and generated
-      // a new key pair because it wasn't aware of the previous key pair.
-      state_.cryptographer->ReplaceCrossUserSharingKeys(
-          std::move(new_cross_user_sharing_keys));
-      state_.cryptographer->SelectDefaultCrossUserSharingKey(
-          state_.cross_user_sharing_key_pair_version.value());
-    }
+  base::UmaHistogramEnumeration(
+      "Sync.CrossUserSharingKeyPairState.DecryptPendingKeys",
+      GetKeyPairStateOnDecryptPendingKeys(
+          new_cross_user_sharing_keys,
+          state_.cross_user_sharing_key_pair_version));
+  if (state_.cross_user_sharing_key_pair_version.has_value() &&
+      !new_cross_user_sharing_keys.HasKeyPair(
+          state_.cross_user_sharing_key_pair_version.value())) {
+    DLOG(ERROR) << "Received keybag is missing the last "
+                << "cross-user-sharing private key.";
+    // Reset keys so that on next startup they would be recreated and
+    // committed to the server.
+    // TODO(crbug.com/40070237): Clear obsolete key-pairs from cryptographer.
+    state_.cross_user_sharing_key_pair_version = std::nullopt;
+    state_.cross_user_sharing_public_key = std::nullopt;
+  } else if (state_.cross_user_sharing_key_pair_version.has_value()) {
+    // Use the keys from the server and replace any pre-existing ones (so in
+    // case of conflict the server wins). One of cases when this can happen is
+    // when one of older clients is upgraded to a newer version and generated
+    // a new key pair because it wasn't aware of the previous key pair.
+    state_.cryptographer->ReplaceCrossUserSharingKeys(
+        std::move(new_cross_user_sharing_keys));
+    state_.cryptographer->SelectDefaultCrossUserSharingKey(
+        state_.cross_user_sharing_key_pair_version.value());
   }
 
   // Reset |last_default_trusted_vault_key_name| as |state_| might go out of
@@ -872,34 +953,17 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
   return std::nullopt;
 }
 
-std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetData() {
+std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataForCommit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NigoriSpecifics specifics;
-  if (!pending_local_commit_queue_.empty()) {
-    NigoriState changed_state = state_.Clone();
-    bool success =
-        pending_local_commit_queue_.front()->TryApply(&changed_state);
-    DCHECK(success);
-    specifics = changed_state.ToSpecificsProto();
-  } else {
-    specifics = state_.ToSpecificsProto();
-  }
-
-  if (specifics.passphrase_type() == NigoriSpecifics::UNKNOWN) {
-    // Bridge never received NigoriSpecifics from the server. This line should
-    // be reachable only from processor's GetAllNodesForDebugging().
-    DCHECK(!state_.cryptographer->CanEncrypt());
-    DCHECK(!state_.pending_keys.has_value());
-    return nullptr;
-  }
-
-  DCHECK(IsValidNigoriSpecifics(specifics));
-
-  auto entity_data = std::make_unique<EntityData>();
-  *entity_data->specifics.mutable_nigori() = std::move(specifics);
-  entity_data->name = kNigoriNonUniqueName;
+  std::unique_ptr<EntityData> entity_data = GetDataImpl();
+  CHECK(IsValidNigoriSpecifics(entity_data->specifics.nigori()));
   return entity_data;
+}
+
+std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataForDebugging() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetDataImpl();
 }
 
 void NigoriSyncBridgeImpl::ApplyDisableSyncChanges() {
@@ -957,7 +1021,7 @@ base::Time NigoriSyncBridgeImpl::GetExplicitPassphraseTime() const {
     case NigoriSpecifics::CUSTOM_PASSPHRASE:
       return state_.custom_passphrase_time;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return state_.custom_passphrase_time;
 }
 
@@ -965,7 +1029,7 @@ KeyDerivationParams NigoriSyncBridgeImpl::GetKeyDerivationParamsForPendingKeys()
     const {
   switch (state_.passphrase_type) {
     case NigoriSpecifics::UNKNOWN:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return KeyDerivationParams::CreateForPbkdf2();
     case NigoriSpecifics::IMPLICIT_PASSPHRASE:
     case NigoriSpecifics::KEYSTORE_PASSPHRASE:
@@ -1005,7 +1069,7 @@ sync_pb::NigoriLocalData NigoriSyncBridgeImpl::SerializeAsNigoriLocalData()
 
   // Serialize the metadata.
   const NigoriMetadataBatch metadata_batch = processor_->GetMetadata();
-  *output.mutable_model_type_state() = metadata_batch.model_type_state;
+  *output.mutable_data_type_state() = metadata_batch.data_type_state;
   if (metadata_batch.entity_metadata) {
     *output.mutable_entity_metadata() = *metadata_batch.entity_metadata;
   }
@@ -1025,9 +1089,7 @@ void NigoriSyncBridgeImpl::MaybeTriggerKeystoreReencryption() {
 
 void NigoriSyncBridgeImpl::QueuePendingLocalCommit(
     std::unique_ptr<PendingLocalNigoriCommit> local_commit) {
-  // TODO(crbug.com/1445056): Consider adding more validations in ctor to get
-  // stronger guarantee around DCHECK() below.
-  DCHECK(processor_->IsTrackingMetadata());
+  CHECK(processor_->IsTrackingMetadata());
 
   pending_local_commit_queue_.push_back(std::move(local_commit));
 
@@ -1044,7 +1106,7 @@ void NigoriSyncBridgeImpl::PutNextApplicablePendingLocalCommit() {
     bool success = pending_local_commit_queue_.front()->TryApply(&tmp_state);
     if (success) {
       // This particular commit applies cleanly.
-      processor_->Put(GetData());
+      processor_->Put(GetDataForCommit());
       break;
     }
 
@@ -1071,6 +1133,28 @@ void NigoriSyncBridgeImpl::MaybePopulateKeystoreKeysIntoCryptographer() {
     state_.cryptographer->EmplaceKey(keystore_key,
                                      KeyDerivationParams::CreateForPbkdf2());
   }
+}
+
+std::unique_ptr<EntityData> NigoriSyncBridgeImpl::GetDataImpl() {
+  NigoriSpecifics specifics;
+  if (!pending_local_commit_queue_.empty()) {
+    NigoriState changed_state = state_.Clone();
+    bool success =
+        pending_local_commit_queue_.front()->TryApply(&changed_state);
+    // TODO(crbug.com/349558370): this DCHECK() doesn't seem to be legit when
+    // called by GetDataForDebugging() - this is a caller responsibility to
+    // ensure that for commit codepath, but GetDataForDebugging() could be
+    // called at any time. Decide how to deal with it.
+    DCHECK(success);
+    specifics = changed_state.ToSpecificsProto();
+  } else {
+    specifics = state_.ToSpecificsProto();
+  }
+
+  auto entity_data = std::make_unique<EntityData>();
+  *entity_data->specifics.mutable_nigori() = std::move(specifics);
+  entity_data->name = kNigoriNonUniqueName;
+  return entity_data;
 }
 
 }  // namespace syncer

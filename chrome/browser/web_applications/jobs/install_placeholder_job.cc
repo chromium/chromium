@@ -19,9 +19,10 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -66,7 +67,7 @@ InstallPlaceholderJob::~InstallPlaceholderJob() = default;
 void InstallPlaceholderJob::Start() {
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
   url_loader_->LoadUrl(install_options_.install_url, web_contents_,
-                       WebAppUrlLoader::UrlComparison::kSameOrigin,
+                       webapps::WebAppUrlLoader::UrlComparison::kSameOrigin,
                        base::BindOnce(&InstallPlaceholderJob::OnUrlLoaded,
                                       weak_factory_.GetWeakPtr()));
 }
@@ -81,12 +82,14 @@ void InstallPlaceholderJob::Abort(webapps::InstallResultCode code) {
   if (!callback_) {
     return;
   }
-  webapps::InstallableMetrics::TrackInstallResult(false);
+  webapps::InstallableMetrics::TrackInstallResult(
+      false, ConvertExternalInstallSourceToInstallSource(
+                 install_options_.install_source));
   std::move(callback_).Run(code, std::move(app_id_));
 }
 
 void InstallPlaceholderJob::OnUrlLoaded(
-    WebAppUrlLoader::Result load_url_result) {
+    webapps::WebAppUrlLoaderResult load_url_result) {
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
 
   if (install_options_.override_icon_url) {
@@ -140,9 +143,12 @@ void InstallPlaceholderJob::FinalizeInstall(
     std::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
         bitmaps) {
   // For placeholder installs, the install_url is treated as the start_url.
-  WebAppInstallInfo web_app_info(
-      GenerateManifestIdFromStartUrlOnly(install_options_.install_url));
-  web_app_info.title =
+  GURL start_url = install_options_.install_url;
+  webapps::ManifestId manifest_id =
+      GenerateManifestIdFromStartUrlOnly(start_url);
+  auto web_app_info =
+      std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
+  web_app_info->title =
       install_options_.override_name
           ? base::UTF8ToUTF16(install_options_.override_name.value())
       : install_options_.fallback_app_name
@@ -153,13 +159,12 @@ void InstallPlaceholderJob::FinalizeInstall(
     IconsMap icons_map;
     icons_map.emplace(GURL(install_options_.override_icon_url.value()),
                       bitmaps.value());
-    PopulateProductIcons(&web_app_info, &icons_map);
+    PopulateProductIcons(web_app_info.get(), &icons_map);
   }
 
-  web_app_info.start_url = install_options_.install_url;
-  web_app_info.install_url = install_options_.install_url;
+  web_app_info->install_url = install_options_.install_url;
 
-  web_app_info.user_display_mode = install_options_.user_display_mode;
+  web_app_info->user_display_mode = install_options_.user_display_mode;
 
   WebAppInstallFinalizer::FinalizeOptions options(
       ConvertExternalInstallSourceToInstallSource(
@@ -172,17 +177,17 @@ void InstallPlaceholderJob::FinalizeInstall(
   options.add_to_desktop = install_options_.add_to_desktop;
   options.add_to_quick_launch_bar = install_options_.add_to_quick_launch_bar;
 
-  web_app_info.is_placeholder = true;
+  web_app_info->is_placeholder = true;
 
   lock_->install_finalizer().FinalizeInstall(
-      web_app_info, options,
+      *web_app_info, options,
       base::BindOnce(&InstallPlaceholderJob::OnInstallFinalized,
                      weak_factory_.GetWeakPtr()));
 }
 
-void InstallPlaceholderJob::OnInstallFinalized(const webapps::AppId& app_id,
-                                               webapps::InstallResultCode code,
-                                               OsHooksErrors os_hooks_errors) {
+void InstallPlaceholderJob::OnInstallFinalized(
+    const webapps::AppId& app_id,
+    webapps::InstallResultCode code) {
   debug_value_->Set("result_code", base::ToString(code));
 
   CHECK(web_contents_ && !web_contents_->IsBeingDestroyed());
@@ -199,7 +204,9 @@ void InstallPlaceholderJob::OnInstallFinalized(const webapps::AppId& app_id,
       ConvertExternalInstallSourceToInstallSource(
           install_options_.install_source));
 
-  webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+  webapps::InstallableMetrics::TrackInstallResult(
+      webapps::IsSuccess(code), ConvertExternalInstallSourceToInstallSource(
+                                    install_options_.install_source));
 
   std::move(callback_).Run(code, std::move(app_id));
 }

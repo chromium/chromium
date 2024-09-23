@@ -99,6 +99,7 @@ class MachineLevelUserCloudPolicyFetcher : public CloudPolicyService::Observer {
 
   // CloudPolicyService::Observer:
   void OnCloudPolicyServiceInitializationCompleted() override;
+  std::string_view name() const override;
 
  private:
   void InitializeManager(std::unique_ptr<CloudPolicyClient> client);

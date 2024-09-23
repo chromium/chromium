@@ -8,7 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -18,7 +18,6 @@ namespace autofill {
 class AutofillClient;
 class AutofillOfferData;
 class PersonalDataManager;
-struct SuggestionsContext;
 
 // Per-profile Merchant Promo Code Manager. This class handles promo code
 // related functionality such as retrieving promo code offer data, managing
@@ -36,18 +35,18 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
+      const FormStructure* form_structure,
       const FormFieldData& field,
+      const AutofillField* autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned,
-      const SuggestionsContext& context) override;
+      OnSuggestionsReturnedCallback on_suggestions_returned) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
   void CancelPendingQueries() override {}
   void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
                                             const std::u16string& value,
-                                            PopupItemId popup_item_id) override;
-  void OnSingleFieldSuggestionSelected(const std::u16string& value,
-                                       PopupItemId popup_item_id) override;
+                                            SuggestionType type) override;
+  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
 
   // Initializes the instance with the given parameters. |personal_data_manager|
   // is a profile-scope data manager used to retrieve promo code offers from the
@@ -76,7 +75,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
     void OnOffersSuggestionsShown(
         const FieldGlobalId& field_global_id,
         const std::vector<const AutofillOfferData*>& offers);
-    void OnOfferSuggestionSelected(PopupItemId popup_item_id);
+    void OnOfferSuggestionSelected(SuggestionType type);
 
    private:
     // The global id of the field that most recently had suggestions shown.

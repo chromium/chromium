@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/views/controls/menu/menu_delegate.h"
+#include "ui/views/style/typography.h"
 
 namespace ui {
 class MenuModel;
@@ -95,6 +96,8 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   void WillShowMenu(MenuItemView* menu) override;
   void WillHideMenu(MenuItemView* menu) override;
   void OnMenuClosed(MenuItemView* menu) override;
+  std::optional<SkColor> GetLabelColor(int command_id) const override;
+  bool IsTearingDown() const override;
 
  private:
   // Implementation of BuildMenu().
@@ -103,11 +106,11 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   // Container of ui::MenuModel pointers as encountered by preorder
   // traversal.  The first element is always the top-level model
   // passed to the constructor.
-  raw_ptr<ui::MenuModel> menu_model_;
+  raw_ptr<ui::MenuModel, DanglingUntriaged> menu_model_;
 
   // Pointer to the `MenuItemView` created and updated by `this`, but not owned
   // by `this`.
-  raw_ptr<MenuItemView> menu_ = nullptr;
+  raw_ptr<MenuItemView, DanglingUntriaged> menu_ = nullptr;
 
   // Mouse event flags which can trigger menu actions.
   int triggerable_event_flags_;

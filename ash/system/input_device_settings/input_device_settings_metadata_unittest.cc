@@ -25,7 +25,7 @@ bool ValidateDeviceLists() {
       return false;
     }
   }
-  for (auto mouse_metadata : GetMouseMetadataList()) {
+  for (const auto& mouse_metadata : GetMouseMetadataList()) {
     if (GetKeyboardMetadataList().contains(mouse_metadata.first)) {
       return false;
     }
@@ -35,7 +35,11 @@ bool ValidateDeviceLists() {
 
 bool ValidateVidPidAliasList() {
   for (auto vid_pid_alias_pair : GetVidPidAliasList()) {
-    if (!GetMouseMetadataList().contains(vid_pid_alias_pair.second)) {
+    if (!GetMouseMetadataList().contains(vid_pid_alias_pair.second) &&
+        !GetGraphicsTabletMetadataList().contains(vid_pid_alias_pair.second) &&
+        !GetKeyboardMouseComboMetadataList().contains(
+            vid_pid_alias_pair.second) &&
+        !GetKeyboardMetadataList().contains(vid_pid_alias_pair.second)) {
       return false;
     }
   }

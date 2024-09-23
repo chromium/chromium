@@ -16,8 +16,13 @@ function compareDefault<T>(a: T, b: T): number {
   return (a < b) ? -1 : ((a > b) ? 1 : 0);
 }
 
-function bigintReplacer(_key: string, value: any): any {
-  return typeof value === 'bigint' ? value.toString() : value;
+// Converts the mojo_base.mojom.Uint128 to a string
+function bucketReplacer(_key: string, value: any): any {
+  if (_key === 'bucket') {
+    return (value['high'] * 2n ** 64n + value['low']).toString();
+  } else {
+    return value;
+  }
 }
 
 class ValueColumn<T, V> implements Column<T> {
@@ -179,8 +184,8 @@ function reportStatusToText(status: ReportStatus) {
 }
 
 class Report extends Selectable {
-  // `undefined` indicates a report that wasn't stored/scheduled.
-  id: AggregatableReportRequestID|undefined;
+  // `null` indicates a report that wasn't stored/scheduled.
+  id: AggregatableReportRequestID|null;
   reportBody: string;
   reportUrl: string;
   reportTime: Date;
@@ -207,7 +212,7 @@ class Report extends Selectable {
     this.status = reportStatusToText(mojo.status);
 
     this.contributions =
-        JSON.stringify(mojo.contributions, bigintReplacer, ' ');
+        JSON.stringify(mojo.contributions, bucketReplacer, ' ');
   }
 }
 

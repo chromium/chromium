@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 class LabelButton;
@@ -68,6 +69,10 @@ class LockDebugView : public views::View {
   // as valid.
   void ToggleAuthButtonPressed();
 
+  // Auth panel UI components.
+  void AuthInputRowView();
+  void OnAuthInputRowDebugWidgetClose();
+
   void AddKioskAppButtonPressed();
   void RemoveKioskAppButtonPressed();
   void ToggleDebugDetachableBaseButtonPressed();
@@ -103,7 +108,7 @@ class LockDebugView : public views::View {
                                 views::Button::PressedCallback callback,
                                 views::View* container);
 
-  raw_ptr<LockContentsView> lock_ = nullptr;
+  raw_ptr<LockContentsView, DanglingUntriaged> lock_ = nullptr;
 
   // Debug container which holds the entire debug UI.
   raw_ptr<views::View> container_ = nullptr;
@@ -126,10 +131,13 @@ class LockDebugView : public views::View {
   // to.
   raw_ptr<views::View> per_user_action_view_container_ = nullptr;
 
+  raw_ptr<views::Widget> auth_input_row_debug_widget_ = nullptr;
+
   // Debug dispatcher and cached data for the UI.
   std::unique_ptr<DebugDataDispatcherTransformer> const debug_data_dispatcher_;
   // Reference to the detachable base model passed to (and owned by) lock_.
-  raw_ptr<DebugLoginDetachableBaseModel> debug_detachable_base_model_ = nullptr;
+  raw_ptr<DebugLoginDetachableBaseModel, DanglingUntriaged>
+      debug_detachable_base_model_ = nullptr;
   size_t num_system_info_clicks_ = 0u;
   LoginScreenController::ForceFailAuth force_fail_auth_ =
       LoginScreenController::ForceFailAuth::kOff;

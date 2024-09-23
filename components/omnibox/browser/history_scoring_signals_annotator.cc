@@ -10,8 +10,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -37,6 +39,8 @@ HistoryScoringSignalsAnnotator::HistoryScoringSignalsAnnotator(
 void HistoryScoringSignalsAnnotator::AnnotateResult(
     const AutocompleteInput& input,
     AutocompleteResult* result) {
+  TRACE_EVENT0("omnibox", "HistoryScoringSignalsAnnotator::AnnotateResult");
+
   history::HistoryService* const history_service = client_->GetHistoryService();
   if (!history_service) {
     return;
@@ -54,38 +58,69 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
 
   for (auto& match : *result) {
     // Skip ineligible matches.
-    if (!IsEligibleMatch(match)) {
+    if (!match.IsMlSignalLoggingEligible()) {
       continue;
     }
 
-    // Initialize the scoring signals if needed.
-    if (!match.scoring_signals) {
-      match.scoring_signals = std::make_optional<ScoringSignals>();
-    }
+    history::URLRow url_info;
+    if (AutocompleteMatch::IsSearchType(match.type)) {
+      if (!OmniboxFieldTrial::GetMLConfig()
+               .enable_history_scoring_signals_annotator_for_searches) {
+        continue;
+      }
 
-    // Skip this match if it already has history signals.
-    if (match.scoring_signals->has_typed_count() &&
-        match.scoring_signals->has_total_title_match_length()) {
-      continue;
-    }
+      // Initialize the scoring signals if needed.
+      if (!match.scoring_signals) {
+        match.scoring_signals = std::make_optional<ScoringSignals>();
+      }
 
-    history::URLRow row;
-    // Skip this match if no URL row found.
-    if (url_db->GetRowForURL(match.destination_url, &row) == 0) {
-      continue;
-    }
+      // Skip this match if it already has history signals.
+      if (match.scoring_signals->has_elapsed_time_last_visit_secs()) {
+        continue;
+      }
 
-    // Populate scoring signals.
-    if (!match.scoring_signals->has_typed_count()) {
-      match.scoring_signals->set_typed_count(row.typed_count());
-      match.scoring_signals->set_visit_count(row.visit_count());
+      // Skip this match if no relevant history data was found.
+      if (!url_db->GetAggregateURLDataForKeywordSearchTerm(match.contents,
+                                                           &url_info)) {
+        continue;
+      }
+
+      // Populate scoring signals.
+      match.scoring_signals->set_typed_count(url_info.typed_count());
+      match.scoring_signals->set_visit_count(url_info.visit_count());
       match.scoring_signals->set_elapsed_time_last_visit_secs(
-          (base::Time::Now() - row.last_visit()).InSeconds());
-    }
-    if (!match.scoring_signals->has_total_title_match_length()) {
-      PopulateTitleMatchingSignals(lower_raw_terms,
-                                   lower_terms_to_word_starts_offsets,
-                                   row.title(), &*match.scoring_signals);
+          (base::Time::Now() - url_info.last_visit()).InSeconds());
+    } else {
+      // Initialize the scoring signals if needed.
+      if (!match.scoring_signals) {
+        match.scoring_signals = std::make_optional<ScoringSignals>();
+      }
+
+      // Skip this match if it already has history signals.
+      if (match.scoring_signals->has_typed_count() &&
+          match.scoring_signals->has_total_title_match_length()) {
+        continue;
+      }
+
+      // Skip this match if no URL row found.
+      if (url_db->GetRowForURL(match.destination_url, &url_info) == 0) {
+        continue;
+      }
+
+      // Populate scoring signals.
+      if (!match.scoring_signals->has_typed_count()) {
+        match.scoring_signals->set_typed_count(url_info.typed_count());
+        match.scoring_signals->set_visit_count(url_info.visit_count());
+        match.scoring_signals->set_elapsed_time_last_visit_secs(
+            (base::Time::Now() - url_info.last_visit()).InSeconds());
+      }
+
+      // Populate title-match scoring signals.
+      if (!match.scoring_signals->has_total_title_match_length()) {
+        PopulateTitleMatchingSignals(lower_raw_terms,
+                                     lower_terms_to_word_starts_offsets,
+                                     url_info.title(), &*match.scoring_signals);
+      }
     }
   }
 }

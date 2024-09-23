@@ -8,11 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,9 +21,9 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/native_library.h"
-#include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cdm/common/cdm_manifest.h"
@@ -35,29 +36,24 @@
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_paths.h"
 #include "crypto/sha2.h"
-#include "media/cdm/cdm_capability.h"
+#include "media/base/cdm_capability.h"
 #include "media/cdm/cdm_paths.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/media/component_widevine_cdm_hint_file_linux.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include <optional>
-
-#include "base/path_service.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
 #endif
 
 #if !BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 #error This file should only be compiled when Widevine CDM component is enabled
 #endif
-
-using content::BrowserThread;
-using content::CdmRegistry;
 
 namespace component_updater {
 
@@ -85,7 +81,7 @@ const char ImageLoaderComponentName[] = "WidevineCdm";
 void RegisterWidevineCdmWithChrome(const base::Version& cdm_version,
                                    const base::FilePath& cdm_path,
                                    base::Value::Dict manifest) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // This check must be a subset of the check in VerifyInstallation() to
   // avoid the case where the CDM is accepted by the component updater
@@ -102,9 +98,37 @@ void RegisterWidevineCdmWithChrome(const base::Version& cdm_version,
       kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
       std::move(capability), /*supports_sub_key_systems=*/false,
       kWidevineCdmDisplayName, kWidevineCdmType, cdm_version, cdm_path);
-  CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
+  content::CdmRegistry::GetInstance()->RegisterCdm(cdm_info);
 }
 #endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// On Linux and ChromeOS the Widevine CDM is loaded at startup before the
+// zygote is locked down. To locate the Widevine CDM at startup, a hint file
+// is used. Update the hint file with the new Widevine CDM path.
+bool UpdateHintFile(const base::FilePath& cdm_base_path) {
+  // Also record the current bundled Widevine CDMs version, if a bundled
+  // Widevine CDM is supported and it exists.
+  std::optional<base::Version> bundled_version;
+
+#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+  base::FilePath bundled_cdm_file_path;
+  CHECK(base::PathService::Get(chrome::DIR_BUNDLED_WIDEVINE_CDM,
+                               &bundled_cdm_file_path));
+
+  auto manifest_path =
+      bundled_cdm_file_path.Append(FILE_PATH_LITERAL("manifest.json"));
+  base::Version version;
+  media::CdmCapability capability;
+  if (ParseCdmManifestFromPath(manifest_path, &version, &capability)) {
+    bundled_version = version;
+  }
+#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+
+  return UpdateWidevineCdmHintFile(cdm_base_path, bundled_version);
+}
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Determine the full path to the Widevine CDM binary.
 base::FilePath GetCdmPathFromInstallDir(const base::FilePath& install_dir) {
@@ -153,24 +177,11 @@ void RegisterImage(const std::string& version,
                             base::BindOnce(&OnImageRegistered));
 }
 
-// This is called when an image has been loaded, and |image_dir| is the
-// directory where it has been mounted. This directory should contain the
-// directory structure expected for Widevine (in particular "manifest.json"
-// at the top level, binary in "_platform_specific/<platform>"). If the image
-// was successfully loaded, register it with Chrome via the hint file so that
-// it can be loaded next time ChromeOS restarts.
-void OnImageLoaded(std::optional<std::string> image_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  // Mounting should not fail, but if it does simply log a message. This will
-  // be tried again next time the device reboots.
-  if (!image_dir.has_value()) {
-    VLOG(1) << "Failed to load image for Widevine.";
-    return;
-  }
-
+// Called to verify the manifest and update the hint file if everything looks
+// valid. The directory `image_dir` should be a valid directory.
+void VerifyManifestAndUpdateHintFile(const std::string& image_dir) {
   // Image loaded, so check that the manifest is valid.
-  base::FilePath mount_point(image_dir.value());
+  base::FilePath mount_point(image_dir);
   auto manifest_path = mount_point.Append(FILE_PATH_LITERAL("manifest.json"));
   base::Version version;
   media::CdmCapability capability;
@@ -188,9 +199,32 @@ void OnImageLoaded(std::optional<std::string> image_dir) {
 
   // As we're happy with the contents, update the hint file so this version can
   // be used next time the device restarts.
-  if (!UpdateWidevineCdmHintFile(mount_point)) {
+  if (!UpdateHintFile(mount_point)) {
     VLOG(1) << "Failed to update Widevine CDM hint path.";
   }
+}
+
+// This is called when an image has been loaded, and `image_dir` is the
+// directory where it has been mounted. This directory should contain the
+// directory structure expected for Widevine (in particular "manifest.json"
+// at the top level, binary in "_platform_specific/<platform>"). If the image
+// was successfully loaded, register it with Chrome via the hint file so that
+// it can be loaded next time ChromeOS restarts.
+void OnImageLoaded(std::optional<std::string> image_dir) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Mounting should not fail, but if it does simply log a message. This will
+  // be tried again next time the device reboots.
+  if (!image_dir.has_value()) {
+    VLOG(1) << "Failed to load image for Widevine.";
+    return;
+  }
+
+  // As reading the manifest and writing the hint file cause I/O, run on a
+  // thread that allows blocking.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&VerifyManifestAndUpdateHintFile, image_dir.value()));
 }
 
 // This is called on the UI thread to load the latest registered image for
@@ -368,7 +402,7 @@ void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(
   VLOG(1) << "Updating hint file with Widevine CDM " << cdm_version;
 
   // This is running on a thread that allows IO, so simply update the hint file.
-  if (!UpdateWidevineCdmHintFile(absolute_cdm_install_dir)) {
+  if (!UpdateHintFile(absolute_cdm_install_dir)) {
     PLOG(WARNING) << "Failed to update Widevine CDM hint path.";
   }
 

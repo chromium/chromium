@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
-
 #include <memory>
 
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
 #include "ui/base/resource/resource_bundle.h"
 
 NSErrorDomain const CWVCreditCardVerifierErrorDomain =
@@ -21,25 +21,31 @@ NSErrorUserInfoKey const CWVCreditCardVerifierRetryAllowedKey =
     @"retry_allowed";
 
 namespace {
-// Converts an autofill::AutofillClient::PaymentsRpcResult to a
-// CWVCreditCardVerificationError.
+// Converts an autofill::payments::PaymentsAutofillClient::PaymentsRpcResult to
+// a CWVCreditCardVerificationError.
 CWVCreditCardVerificationError CWVConvertPaymentsRPCResult(
-    autofill::AutofillClient::PaymentsRpcResult result) {
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   switch (result) {
-    case autofill::AutofillClient::PaymentsRpcResult::kNone:
-    case autofill::AutofillClient::PaymentsRpcResult::kSuccess:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kNone:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kSuccess:
     // The following two errors are not expected on iOS.
-    case autofill::AutofillClient::PaymentsRpcResult::
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
         kVcnRetrievalTryAgainFailure:
-    case autofill::AutofillClient::PaymentsRpcResult::
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
         kVcnRetrievalPermanentFailure:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return CWVCreditCardVerificationErrorNone;
-    case autofill::AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kTryAgainFailure:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kClientSideTimeout:
       return CWVCreditCardVerificationErrorTryAgainFailure;
-    case autofill::AutofillClient::PaymentsRpcResult::kPermanentFailure:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kPermanentFailure:
       return CWVCreditCardVerificationErrorPermanentFailure;
-    case autofill::AutofillClient::PaymentsRpcResult::kNetworkError:
+    case autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+        kNetworkError:
       return CWVCreditCardVerificationErrorNetworkFailure;
   }
 }
@@ -98,24 +104,26 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
 
 @synthesize creditCard = _creditCard;
 
-- (instancetype)initWithPrefs:(PrefService*)prefs
-               isOffTheRecord:(BOOL)isOffTheRecord
-                   creditCard:(const autofill::CreditCard&)creditCard
-                       reason:(autofill::AutofillClient::UnmaskCardReason)reason
-                     delegate:
-                         (base::WeakPtr<autofill::CardUnmaskDelegate>)delegate {
+- (instancetype)
+     initWithPrefs:(PrefService*)prefs
+    isOffTheRecord:(BOOL)isOffTheRecord
+        creditCard:(const autofill::CreditCard&)creditCard
+            reason:
+                (autofill::payments::PaymentsAutofillClient::UnmaskCardReason)
+                    reason
+          delegate:(base::WeakPtr<autofill::CardUnmaskDelegate>)delegate {
   self = [super init];
   if (self) {
     _creditCard = [[CWVCreditCard alloc] initWithCreditCard:creditCard];
     _unmaskingController =
-        std::make_unique<autofill::CardUnmaskPromptControllerImpl>(prefs);
+        std::make_unique<autofill::CardUnmaskPromptControllerImpl>(
+            prefs, creditCard,
+            autofill::CardUnmaskPromptOptions(std::nullopt, reason), delegate);
     __weak CWVCreditCardVerifier* weakSelf = self;
     _unmaskingController->ShowPrompt(
         base::BindOnce(^autofill::CardUnmaskPromptView*() {
           return [weakSelf createUnmaskingView];
-        }),
-        creditCard, autofill::CardUnmaskPromptOptions(std::nullopt, reason),
-        delegate);
+        }));
   }
   return self;
 }
@@ -209,11 +217,13 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
                                         retryAllowed:(BOOL)retryAllowed {
   if (_completionHandler) {
     NSError* error;
-    autofill::AutofillClient::PaymentsRpcResult result =
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result =
         _unmaskingController->GetVerificationResult();
     if (errorMessage.length > 0 &&
-        result != autofill::AutofillClient::PaymentsRpcResult::kNone &&
-        result != autofill::AutofillClient::PaymentsRpcResult::kSuccess) {
+        result != autofill::payments::PaymentsAutofillClient::
+                      PaymentsRpcResult::kNone &&
+        result != autofill::payments::PaymentsAutofillClient::
+                      PaymentsRpcResult::kSuccess) {
       NSDictionary* userInfo = @{
         NSLocalizedDescriptionKey : errorMessage,
         CWVCreditCardVerifierRetryAllowedKey : @(retryAllowed),
@@ -230,7 +240,7 @@ class WebViewCardUnmaskPromptView : public autofill::CardUnmaskPromptView {
 #pragma mark - Internal Methods
 
 - (void)didReceiveUnmaskVerificationResult:
-    (autofill::AutofillClient::PaymentsRpcResult)result {
+    (autofill::payments::PaymentsAutofillClient::PaymentsRpcResult)result {
   _unmaskingController->OnVerificationResult(result);
 }
 

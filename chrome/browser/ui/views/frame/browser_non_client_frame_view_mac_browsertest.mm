@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -14,14 +16,13 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/pref_names.h"
@@ -80,10 +81,19 @@ class TextChangeWaiter {
 enum class PrefixTitles { kEnabled, kDisabled };
 
 using BrowserNonClientFrameViewMacBrowserTestTitlePrefixed =
-    web_app::WebAppControllerBrowserTest;
+    web_app::WebAppBrowserTestBase;
 
+// This will always be flaky on mac due to RemoteCocoa, the way it mocks out
+// fullscreen doesn't play with remote cocoa. So it gets true fullscreen (which
+// would probably be flaky in browser tests), but then also hits the DCHECK
+// because it tests real full screen. https://crbug.com/333417404
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TitleUpdates DISABLED_TitleUpdates
+#else
+#define MAYBE_TitleUpdates TitleUpdates
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTestTitlePrefixed,
-                       TitleUpdates) {
+                       MAYBE_TitleUpdates) {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
 
   const GURL start_url = GetInstallableAppURL();
@@ -124,12 +134,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTestTitlePrefixed,
   }
 }
 
-using BrowserNonClientFrameViewMacBrowserTest =
-    web_app::WebAppControllerBrowserTest;
+using BrowserNonClientFrameViewMacBrowserTest = web_app::WebAppBrowserTestBase;
 
 // Test to make sure the WebAppToolbarFrame triggers an InvalidateLayout() when
 // toggled in fullscreen mode.
-// TODO(crbug.com/1156050): Flaky on Mac.
+// TODO(crbug.com/40735737): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ToolbarLayoutFullscreenTransition \
   DISABLED_ToolbarLayoutFullscreenTransition

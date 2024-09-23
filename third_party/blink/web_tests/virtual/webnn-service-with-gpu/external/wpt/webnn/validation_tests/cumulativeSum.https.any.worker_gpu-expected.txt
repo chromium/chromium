@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [cumulativeSum] Test with default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cumulativeSum' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] [cumulativeSum] Test with axis=1
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cumulativeSum' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] [cumulativeSum] Test with exclusive=true
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cumulativeSum' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] [cumulativeSum] Test with reversed=true
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cumulativeSum' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

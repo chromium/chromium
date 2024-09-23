@@ -30,10 +30,10 @@ class PowerEventObserverTestApi {
 
   void CompositingDidCommit(ui::Compositor* compositor);
   void CompositingStarted(ui::Compositor* compositor);
-  void CompositingEnded(ui::Compositor* compositor);
+  void CompositingAckDeprecated(ui::Compositor* compositor);
 
   // Same as calling CompositingDidCommit, CompositingStarted and
-  // CompositingEnded in sequence.
+  // CompositingAckDeprecated in sequence.
   void CompositeFrame(ui::Compositor* compositor);
 
   bool SimulateCompositorsReadyForSuspend();

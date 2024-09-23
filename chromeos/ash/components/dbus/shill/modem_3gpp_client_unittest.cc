@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/dbus/shill/modem_3gpp_client.h"
 
 #include <memory>
@@ -75,9 +80,6 @@ class Modem3gppClientTest : public testing::Test {
     // ShutdownAndBlock() will be called in TearDown().
     EXPECT_CALL(*mock_bus_.get(), ShutdownAndBlock()).WillOnce(Return());
 
-    // Enable Carrier Lock feature flag.
-    scoped_feature_list_.InitAndEnableFeature(features::kCellularCarrierLock);
-
     // Create a client with the mock bus.
     Modem3gppClient::Initialize(mock_bus_.get());
     client_ = Modem3gppClient::Get();
@@ -118,7 +120,6 @@ class Modem3gppClientTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // The 3gppReceived signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback received_callback_;
@@ -168,7 +169,7 @@ TEST_F(Modem3gppClientTest, SetCarrierLockFailure) {
       {CarrierLockResult::kUnknownError, "org.error"},
       {CarrierLockResult::kInvalidSignature, "org.InvalidSignature"},
       {CarrierLockResult::kInvalidImei, "org.InvalidImei"},
-      {CarrierLockResult::kInvalidTimeStamp, "org.InvalidTimeStamp"},
+      {CarrierLockResult::kInvalidTimeStamp, "org.InvalidTimestamp"},
       {CarrierLockResult::kNetworkListTooLarge, "org.NetworkListTooLarge"},
       {CarrierLockResult::kAlgorithmNotSupported, "org.AlgorithmNotSupported"},
       {CarrierLockResult::kFeatureNotSupported, "org.FeatureNotSupported"},

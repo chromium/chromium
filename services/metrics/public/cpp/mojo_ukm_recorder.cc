@@ -48,13 +48,13 @@ void MojoUkmRecorder::UpdateSourceURL(SourceId source_id, const GURL& url) {
 void MojoUkmRecorder::UpdateAppURL(SourceId source_id,
                                    const GURL& url,
                                    const AppType app_type) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MojoUkmRecorder::RecordNavigation(
     SourceId source_id,
     const UkmSource::NavigationData& navigation_data) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MojoUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
@@ -64,8 +64,14 @@ void MojoUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
   interface_->AddEntry(std::move(entry));
 }
 
+void MojoUkmRecorder::RecordWebDXFeatures(SourceId source_id,
+                                          const std::set<int32_t>& features,
+                                          const size_t max_feature_value) {
+  NOTREACHED_IN_MIGRATION();
+}
+
 void MojoUkmRecorder::MarkSourceForDeletion(ukm::SourceId source_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void MojoUkmRecorder::SetParameters(

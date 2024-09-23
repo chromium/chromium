@@ -78,7 +78,8 @@ const syncer::SyncService* StubPasswordManagerClient::GetSyncService() const {
   return nullptr;
 }
 
-AffiliationService* StubPasswordManagerClient::GetAffiliationService() {
+affiliations::AffiliationService*
+StubPasswordManagerClient::GetAffiliationService() {
   return nullptr;
 }
 
@@ -93,6 +94,11 @@ PasswordStoreInterface* StubPasswordManagerClient::GetAccountPasswordStore()
 }
 
 PasswordReuseManager* StubPasswordManagerClient::GetPasswordReuseManager()
+    const {
+  return nullptr;
+}
+
+const PasswordManagerInterface* StubPasswordManagerClient::GetPasswordManager()
     const {
   return nullptr;
 }
@@ -147,6 +153,13 @@ StubPasswordManagerClient::GetMetricsRecorder() {
   return base::OptionalToPtr(metrics_recorder_);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+FirstCctPageLoadPasswordsUkmRecorder*
+StubPasswordManagerClient::GetFirstCctPageLoadUkmRecorder() {
+  return nullptr;
+}
+#endif
+
 signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager() {
   return nullptr;
 }
@@ -172,5 +185,23 @@ bool StubPasswordManagerClient::IsNewTabPage() const {
 version_info::Channel StubPasswordManagerClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+void StubPasswordManagerClient::OpenPasswordDetailsBubble(
+    const password_manager::PasswordForm& form) {}
+
+std::unique_ptr<
+    password_manager::PasswordCrossDomainConfirmationPopupController>
+StubPasswordManagerClient::ShowCrossDomainConfirmationPopup(
+    const gfx::RectF& element_bounds,
+    base::i18n::TextDirection text_direction,
+    const GURL& domain,
+    const std::u16string& password_origin,
+    base::OnceClosure confirmation_callback) {
+  return nullptr;
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace password_manager

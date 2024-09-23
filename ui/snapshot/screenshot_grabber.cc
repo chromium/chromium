@@ -88,7 +88,7 @@ void ScreenshotGrabber::TakeScreenshot(gfx::NativeWindow window,
 
   cursor_hider_ = ScopedCursorHider::Create(aura_window->GetRootWindow());
 #endif
-  ui::GrabWindowSnapshotAsyncPNG(
+  ui::GrabWindowSnapshotAsPNG(
       window, rect,
       base::BindOnce(&ScreenshotGrabber::GrabSnapshotImageCallback,
                      factory_.GetWeakPtr(), window_identifier, is_partial,

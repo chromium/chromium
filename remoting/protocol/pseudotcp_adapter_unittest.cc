@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/protocol/pseudotcp_adapter.h"
 
 #include <memory>
@@ -185,8 +190,7 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
     output_buffer_->SetOffset(0);
     ASSERT_EQ(kTestDataSize, output_buffer_->size());
 
-    EXPECT_EQ(0, memcmp(output_buffer_->data(), input_buffer_->StartOfBuffer(),
-                        kTestDataSize));
+    EXPECT_EQ(output_buffer_->span(), input_buffer_->span_before_offset());
   }
 
  protected:

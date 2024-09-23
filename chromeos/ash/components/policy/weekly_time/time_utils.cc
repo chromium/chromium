@@ -70,29 +70,6 @@ bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
   return true;
 }
 
-std::u16string WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
-                                           base::Clock* clock) {
-  WeeklyTime result = weekly_time;
-  if (!weekly_time.timezone_offset()) {
-    // Get offset to convert the WeeklyTime
-    int offset;
-    auto local_time_zone = base::WrapUnique(icu::TimeZone::createDefault());
-    if (!GetOffsetFromTimezoneToGmt(*local_time_zone, clock, &offset)) {
-      LOG(ERROR) << "Unable to obtain offset for time agnostic timezone";
-      return std::u16string();
-    }
-    result = weekly_time.ConvertToCustomTimezone(-offset);
-  }
-  // Clock with the current time.
-  const auto now = clock->Now();
-  WeeklyTime now_weekly_time = WeeklyTime::GetGmtWeeklyTime(now);
-  // Offset the current time so that its day of the week and time match
-  // |day_of_week| and |milliseconds_|.
-  base::Time offset_time =
-      now + now_weekly_time.GetDurationTo(result.ConvertToTimezone(0));
-  return base::LocalizedTimeFormatWithPattern(offset_time, "EEEE jj:mm a");
-}
-
 std::vector<WeeklyTimeInterval> ConvertIntervalsToGmt(
     const std::vector<WeeklyTimeInterval>& intervals) {
   std::vector<WeeklyTimeInterval> gmt_intervals;

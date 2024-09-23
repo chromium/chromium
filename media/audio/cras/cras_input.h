@@ -78,7 +78,8 @@ class MEDIA_EXPORT CrasInputStream : public AgcAudioStream<AudioInputStream>,
   // registered callback. Called from SamplesReady().
   void ReadAudio(size_t frames, uint8_t* buffer, const timespec* latency_ts);
 
-  // Deals with an error that occured in the stream.  Called from StreamError().
+  // Deals with an error that occurred in the stream.  Called from
+  // StreamError().
   void NotifyStreamError(int err);
 
   // Convert from dB * 100 to a volume ratio.

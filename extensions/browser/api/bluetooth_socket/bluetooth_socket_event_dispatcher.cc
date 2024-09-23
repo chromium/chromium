@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "extensions/browser/api/bluetooth_socket/bluetooth_socket_event_dispatcher.h"
 
 #include <utility>
@@ -175,12 +180,14 @@ void BluetoothSocketEventDispatcher::StartReceive(const SocketParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another read if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   int buffer_size = socket->buffer_size();
-  if (buffer_size <= 0)
+  if (buffer_size <= 0) {
     buffer_size = kDefaultBufferSize;
+  }
   socket->Receive(
       buffer_size,
       base::BindOnce(&BluetoothSocketEventDispatcher::ReceiveCallback, params),
@@ -262,8 +269,9 @@ void BluetoothSocketEventDispatcher::StartAccept(const SocketParams& params) {
       << "Socket has wrong owner.";
 
   // Don't start another accept if the socket has been paused.
-  if (socket->paused())
+  if (socket->paused()) {
     return;
+  }
 
   socket->Accept(
       base::BindOnce(&BluetoothSocketEventDispatcher::AcceptCallback, params),
@@ -359,14 +367,17 @@ void BluetoothSocketEventDispatcher::DispatchEvent(
     std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context_id)) {
+    return;
+  }
+
   content::BrowserContext* context =
       reinterpret_cast<content::BrowserContext*>(browser_context_id);
-  if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
-    return;
 
   EventRouter* router = EventRouter::Get(context);
-  if (router)
+  if (router) {
     router->DispatchEventToExtension(extension_id, std::move(event));
+  }
 }
 
 }  // namespace api

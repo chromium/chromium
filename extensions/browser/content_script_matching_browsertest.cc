@@ -30,7 +30,7 @@ namespace extensions {
 //
 // See also ScriptInjectionTrackerBrowserTest in
 // //chrome/browser/extensions/script_injection_tracker_browsertest.cc.
-// TODO(crbug.com/1385165): Add test coverage for dynamic content and user
+// TODO(crbug.com/40061759): Add test coverage for dynamic content and user
 // scripts matching.
 class ContentScriptMatchingBrowserTest : public ShellApiTest,
                                          public content::WebContentsDelegate {
@@ -178,16 +178,18 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
  private:
   // WebContentsDelegate overrides:
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override {
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
     DCHECK_EQ(tab1_.get(), source);
     DCHECK(new_contents);
     tab2_ = std::move(new_contents);
+    return nullptr;
   }
 
   bool DoContentScriptsMatch(content::RenderFrameHost* navigating_frame,

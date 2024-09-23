@@ -82,6 +82,7 @@ class AsynchronousShutdownObjectContainerImpl
       override;
   NetworkConfigurationRemover* network_configuration_remover() override;
   WifiHotspotDisconnector* wifi_hotspot_disconnector() override;
+  HostConnection::Factory* host_connection_factory() override;
 
  protected:
   AsynchronousShutdownObjectContainerImpl(
@@ -106,6 +107,7 @@ class AsynchronousShutdownObjectContainerImpl
                           disconnect_tethering_request_sender);
 
   raw_ptr<TetherHostFetcher> tether_host_fetcher_;
+  std::unique_ptr<HostConnection::Factory> host_connection_factory_;
   std::unique_ptr<DisconnectTetheringRequestSender>
       disconnect_tethering_request_sender_;
   std::unique_ptr<NetworkConfigurationRemover> network_configuration_remover_;

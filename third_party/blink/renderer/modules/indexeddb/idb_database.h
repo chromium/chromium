@@ -68,8 +68,8 @@ class MODULES_EXPORT IDBDatabase final
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks>
           callbacks_receiver,
       mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime,
-      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>
-          pending_database);
+      mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
+      int scheduling_priority);
 
   void Trace(Visitor*) const override;
 
@@ -251,6 +251,24 @@ class MODULES_EXPORT IDBDatabase final
 
   bool IsConnectionOpen() const;
 
+  // Converts a lifecycle state to a priority integer. Lower values represent
+  // higher priority.
+  //
+  // A note on the input type: the scheduling lifecycle state is used as an
+  // imperfect proxy for the general priority of the frame. Its primary
+  // advantage is that it is synchronously accessible during the flow of
+  // creating a transaction. In contrast, the concept of priority in the
+  // browser's `PerformanceManager` would require asynchronous lookup from IDB
+  // backend code (which runs on a threadpool), which would add latency to
+  // transaction processing. The scheduler's lifecycle state may be slightly out
+  // of date if there are in-flight IPC from the browser, but:
+  //
+  // * prioritization is somewhat heuristic anyway
+  // * nothing should break if the priority is occasionally misjudged.
+  // * `scheduler_observer_` should eventually pick up and forward updates.
+  static int GetSchedulingPriority(
+      scheduler::SchedulingLifecycleState lifecycle_state);
+
  protected:
   // EventTarget
   DispatchEventResult DispatchEventInternal(Event&) override;
@@ -262,6 +280,9 @@ class MODULES_EXPORT IDBDatabase final
                                     ExceptionState&);
   void CloseConnection();
 
+  void OnSchedulerLifecycleStateChanged(
+      scheduler::SchedulingLifecycleState lifecycle_state);
+
   IDBDatabaseMetadata metadata_;
   HeapMojoAssociatedRemote<mojom::blink::IDBDatabase> database_remote_;
   Member<IDBTransaction> version_change_transaction_;
@@ -271,6 +292,11 @@ class MODULES_EXPORT IDBDatabase final
   mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime_;
 
   bool close_pending_ = false;
+
+  // See notes above `GetSchedulingPriority`.
+  int scheduling_priority_;
+  std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle>
+      scheduler_observer_;
 
   HeapMojoAssociatedReceiver<mojom::blink::IDBDatabaseCallbacks, IDBDatabase>
       callbacks_receiver_;

@@ -46,6 +46,9 @@
 #endif
 
 namespace WTF {
+#if INSIDE_BLINK
+class String;
+#endif
 class StringImpl;
 }
 
@@ -113,6 +116,9 @@ class BLINK_PLATFORM_EXPORT WebString {
     return Equals(
         characters ? std::string_view(characters) : std::string_view());
   }
+
+  size_t Find(const WebString&) const;
+  size_t Find(std::string_view characters) const;
 
   size_t length() const;
 

@@ -4,21 +4,30 @@
 
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
+#include "chromeos/ash/components/cryptohome/auth_factor_input.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
-#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/error_types.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -26,14 +35,14 @@
 #include "chromeos/ash/components/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
-#include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
+#include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
-#include "chromeos/ash/components/login/auth/public/auth_session_status.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
+#include "chromeos/ash/components/login/auth/public/recovery_types.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/user_manager/user_type.h"
@@ -44,7 +53,6 @@ namespace {
 
 bool IsKioskUserType(user_manager::UserType type) {
   return type == user_manager::UserType::kKioskApp ||
-         type == user_manager::UserType::kArcKioskApp ||
          type == user_manager::UserType::kWebKioskApp;
 }
 
@@ -127,7 +135,7 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
                                      StartSessionCallback callback,
                                      bool service_is_available) {
   if (!service_is_available) {
-    // TODO(crbug.com/1262139): Maybe have this error surfaced to UI.
+    // TODO(crbug.com/40202510): Maybe have this error surfaced to UI.
     LOG(FATAL) << "Cryptohome service could not start";
   }
   LOGIN_LOG(EVENT) << "Starting AuthSession";
@@ -137,9 +145,7 @@ void AuthPerformer::OnServiceRunning(std::unique_ptr<UserContext> context,
   request.set_intent(SerializeIntent(intent));
 
   if (ephemeral) {
-    request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER);
-  } else {
-    request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_NONE);
+    request.set_is_ephemeral_user(true);
   }
 
   client_->StartAuthSession(
@@ -195,8 +201,9 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   DCHECK(context->GetChallengeResponseKeys().empty());
-  if (context->GetAuthSessionId().empty())
-    NOTREACHED() << "Auth session should exist";
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+  }
 
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     DCHECK(!context->IsUsingPin());
@@ -239,7 +246,7 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
     cryptohome::AuthFactorInput input(
         cryptohome::AuthFactorInput::Pin{key->GetSecret()});
     cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-    request.set_auth_factor_label(ref.label().value());
+    request.add_auth_factor_labels(ref.label().value());
   } else {
     cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword,
                                   cryptohome::KeyLabel{key->GetLabel()}};
@@ -247,7 +254,7 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
         cryptohome::AuthFactorInput::Password{key->GetSecret()});
 
     cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-    request.set_auth_factor_label(ref.label().value());
+    request.add_auth_factor_labels(ref.label().value());
   }
   client_->AuthenticateAuthFactor(
       request,
@@ -282,8 +289,9 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   DCHECK(!context->GetChallengeResponseKeys().empty());
-  if (context->GetAuthSessionId().empty())
-    NOTREACHED() << "Auth session should exist";
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+  }
   LOGIN_LOG(EVENT) << "Authenticating using challenge-response";
 
   user_data_auth::AuthenticateAuthFactorRequest request;
@@ -300,7 +308,7 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
       cryptohome::kCryptohomeKeyDelegateServiceName,
   });
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-  request.set_auth_factor_label(ref.label().value());
+  request.add_auth_factor_labels(ref.label().value());
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
                               weak_factory_.GetWeakPtr(), clock_->Now(),
@@ -314,8 +322,9 @@ void AuthPerformer::AuthenticateWithPassword(
     AuthOperationCallback callback) {
   DCHECK(!password.empty()) << "Caller should check for empty password";
   DCHECK(!key_label.empty()) << "Caller should provide correct label";
-  if (context->GetAuthSessionId().empty())
-    NOTREACHED() << "Auth session should exist";
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+  }
 
   const SessionAuthFactors& auth_factors = context->GetAuthFactorsData();
   if (auth_factors.FindPasswordFactor(cryptohome::KeyLabel{key_label}) ==
@@ -344,6 +353,7 @@ void AuthPerformer::HashPasswordAndAuthenticate(
   password_key.SetLabel(key_label);
   password_key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF, system_salt);
   context->SetKey(password_key);
+  context->SetIsUsingPin(false);
   AuthenticateUsingKnowledgeKey(std::move(context), std::move(callback));
 }
 
@@ -353,8 +363,9 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
                                         AuthOperationCallback callback) {
   DCHECK(!pin.empty()) << "Caller should check for empty PIN";
   DCHECK(!pin_salt.empty()) << "Client code should provide correct salt";
-  if (context->GetAuthSessionId().empty())
-    NOTREACHED() << "Auth session should exist";
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+  }
 
   // Use Key until proper migration to AuthFactors API.
   Key key(pin);
@@ -378,10 +389,67 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
   AuthenticateUsingKnowledgeKey(std::move(context), std::move(callback));
 }
 
+void AuthPerformer::AuthenticateWithFingerprint(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  CHECK(ash::features::IsFingerprintAuthFactorEnabled());
+  CHECK(!context->GetAuthSessionId().empty()) << "Auth session should exist";
+
+  LOGIN_LOG(EVENT) << "Authenticating with fingerprint auth factors";
+
+  const auto& auth_factors = context->GetAuthFactorsData();
+
+  user_data_auth::AuthenticateAuthFactorRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+  std::vector<cryptohome::KeyLabel> fp_labels =
+      auth_factors.GetFactorLabelsByType(
+          cryptohome::AuthFactorType::kFingerprint);
+  if (fp_labels.empty()) {
+    LOGIN_LOG(ERROR) << "Could not find fingerprint factors";
+    std::move(callback).Run(
+        std::move(context),
+        AuthenticationError{cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
+            user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)});
+    return;
+  }
+
+  // The fingerprint auth input is not related to any specific fingerprint auth
+  // factor. it is an empty input to signal the auth factor type.
+  request.mutable_auth_input()->mutable_fingerprint_input();
+  for (auto fp_label : fp_labels) {
+    request.add_auth_factor_labels(fp_label.value());
+  }
+  client_->AuthenticateAuthFactor(
+      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
+}
+
+void AuthPerformer::AuthenticateWithLegacyFingerprint(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  CHECK(!context->GetAuthSessionId().empty()) << "Auth session should exist";
+
+  LOGIN_LOG(EVENT) << "Authenticating with legacy fingerprint auth factors";
+
+  user_data_auth::AuthenticateAuthFactorRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  // The legacy fingerprint auth input is not related to any specific
+  // fingerprint auth factor. it is an empty input to signal the auth factor
+  // type.
+  request.mutable_auth_input()->mutable_legacy_fingerprint_input();
+  client_->AuthenticateAuthFactor(
+      request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
+}
+
 void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                                         AuthOperationCallback callback) {
-  if (context->GetAuthSessionId().empty())
-    NOTREACHED() << "Auth session should exist";
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+  }
 
   LOGIN_LOG(EVENT) << "Authenticating as Kiosk";
 
@@ -401,7 +469,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
   cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::Kiosk{});
   cryptohome::SerializeAuthInput(existing_factor->ref(), input,
                                  request.mutable_auth_input());
-  request.set_auth_factor_label(existing_factor->ref().label().value());
+  request.add_auth_factor_labels(existing_factor->ref().label().value());
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
                               weak_factory_.GetWeakPtr(), clock_->Now(),
@@ -410,8 +478,9 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
 
 void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                                          AuthSessionStatusCallback callback) {
-  if (context->GetAuthSessionId().empty())
-    NOTREACHED() << "Auth session should exist";
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+  }
 
   LOGIN_LOG(EVENT) << "Requesting authsession status";
   user_data_auth::GetAuthSessionStatusRequest request;
@@ -428,7 +497,7 @@ void AuthPerformer::ExtendAuthSessionLifetime(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED() << "Auth session should exist";
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
     return;
   }
   LOGIN_LOG(EVENT) << "Requesting authsession lifetime extension";
@@ -450,14 +519,17 @@ void AuthPerformer::GetRecoveryRequest(
     std::unique_ptr<UserContext> context,
     RecoveryRequestCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED() << "Auth session should exist";
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Obtaining RecoveryRequest";
 
-  user_data_auth::GetRecoveryRequestRequest request;
+  user_data_auth::PrepareAuthFactorRequest request;
 
   request.set_auth_session_id(context->GetAuthSessionId());
+  request.set_auth_factor_type(
+      user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY);
+  request.set_purpose(user_data_auth::PURPOSE_AUTHENTICATE_AUTH_FACTOR);
 
   const std::string& gaia_id = context->GetGaiaID();
   CHECK(!gaia_id.empty()) << "Recovery is only supported for gaia users";
@@ -465,15 +537,17 @@ void AuthPerformer::GetRecoveryRequest(
   const std::string& reauth_proof_token = context->GetReauthProofToken();
   CHECK(!reauth_proof_token.empty()) << "Reauth proof token must be set";
 
-  request.set_requestor_user_id_type(
-      user_data_auth::GetRecoveryRequestRequest::GAIA_ID);
-  request.set_requestor_user_id(gaia_id);
-  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
-  request.set_gaia_access_token(access_token);
-  request.set_gaia_reauth_proof_token(reauth_proof_token);
-  request.set_epoch_response(epoch->data(), epoch->size());
+  auto* recovery_input =
+      request.mutable_prepare_input()->mutable_cryptohome_recovery_input();
+  recovery_input->set_requestor_user_id_type(
+      user_data_auth::CryptohomeRecoveryPrepareInput::GAIA_ID);
+  recovery_input->set_requestor_user_id(gaia_id);
+  recovery_input->set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
+  recovery_input->set_gaia_access_token(access_token);
+  recovery_input->set_gaia_reauth_proof_token(reauth_proof_token);
+  recovery_input->set_epoch_response(epoch->data(), epoch->size());
 
-  client_->GetRecoveryRequest(
+  client_->PrepareAuthFactor(
       std::move(request),
       base::BindOnce(&AuthPerformer::OnGetRecoveryRequest,
                      weak_factory_.GetWeakPtr(), std::move(callback),
@@ -489,7 +563,7 @@ void AuthPerformer::AuthenticateWithRecovery(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED() << "Auth session should exist";
+    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Authenticating via Recovery";
@@ -497,7 +571,7 @@ void AuthPerformer::AuthenticateWithRecovery(
   user_data_auth::AuthenticateAuthFactorRequest request;
 
   request.set_auth_session_id(context->GetAuthSessionId());
-  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
+  request.add_auth_factor_labels(kCryptohomeRecoveryKeyLabel);
 
   user_data_auth::CryptohomeRecoveryAuthInput* recovery_input =
       request.mutable_auth_input()->mutable_cryptohome_recovery_input();
@@ -547,9 +621,16 @@ void AuthPerformer::OnStartAuthSession(
   bool ignore_unknown_factors =
       command_line->HasSwitch(ash::switches::kIgnoreUnknownAuthFactors);
 
-  for (const auto& factor_proto : reply->auth_factors()) {
-    if (ignore_unknown_factors &&
-        !cryptohome::SafeConvertFactorTypeFromProto(factor_proto.type())) {
+  for (const auto& factor_proto :
+       reply->configured_auth_factors_with_status()) {
+    if (ignore_unknown_factors && !cryptohome::SafeConvertFactorTypeFromProto(
+                                      factor_proto.auth_factor().type())) {
+      continue;
+    }
+    // TODO(b/347292062): Implement legacy fingerprint auth factor engine so
+    // we can get rid of the the following temporary workaround.
+    if (factor_proto.auth_factor().type() ==
+        user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT) {
       continue;
     }
     next_factors.emplace_back(
@@ -641,44 +722,20 @@ void AuthPerformer::OnGetAuthSessionStatus(
   if (cryptohome::ErrorMatches(
           error, user_data_auth::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN)) {
     // Do not trigger error handling
-    std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
-                            std::move(context),
+    std::move(callback).Run(std::move(context),
                             /*cryptohome_error=*/std::nullopt);
     return;
   }
 
   if (cryptohome::HasError(error)) {
     LOGIN_LOG(EVENT) << "Failed to get authsession status " << error;
-    std::move(callback).Run(AuthSessionStatus(), base::TimeDelta(),
-                            std::move(context), AuthenticationError{error});
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
   CHECK(reply.has_value());
   CHECK(reply->has_auth_properties());
-  // TODO(b/301078137): As lifetime is now stored in UserContext,
-  // there is no need to pass it separately.
-  base::TimeDelta lifetime;
-  AuthSessionStatus status;
-  switch (reply->status()) {
-    case ::user_data_auth::AUTH_SESSION_STATUS_NOT_SET:
-    case ::user_data_auth::AUTH_SESSION_STATUS_INVALID_AUTH_SESSION:
-      break;
-    case ::user_data_auth::AUTH_SESSION_STATUS_FURTHER_FACTOR_REQUIRED:
-      status.Put(AuthSessionLevel::kSessionIsValid);
-      // Once we support multi-factor authentication (and have partially
-      // authenticated sessions) we might need to use value from reply.
-      lifetime = base::TimeDelta::Max();
-      break;
-    case ::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED:
-      status.Put(AuthSessionLevel::kSessionIsValid);
-      status.Put(AuthSessionLevel::kCryptohomeStrong);
-      lifetime = base::Seconds(reply->auth_properties().seconds_left());
-      break;
-    default:
-      NOTREACHED();
-  }
   FillAuthenticationData(request_start, reply->auth_properties(), *context);
-  std::move(callback).Run(status, lifetime, std::move(context),
+  std::move(callback).Run(std::move(context),
                           /*cryptohome_error=*/std::nullopt);
 }
 
@@ -703,7 +760,7 @@ void AuthPerformer::OnExtendAuthSession(
 void AuthPerformer::OnGetRecoveryRequest(
     RecoveryRequestCallback callback,
     std::unique_ptr<UserContext> context,
-    std::optional<user_data_auth::GetRecoveryRequestReply> reply) {
+    std::optional<user_data_auth::PrepareAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
 
   if (cryptohome::HasError(error)) {
@@ -714,9 +771,11 @@ void AuthPerformer::OnGetRecoveryRequest(
     return;
   }
 
-  CHECK(!reply->recovery_request().empty());
-  std::move(callback).Run(RecoveryRequest(reply->recovery_request()),
-                          std::move(context), std::nullopt);
+  const std::string& recovery_request =
+      reply->prepare_output().cryptohome_recovery_output().recovery_request();
+  CHECK(!recovery_request.empty());
+  std::move(callback).Run(RecoveryRequest(recovery_request), std::move(context),
+                          std::nullopt);
 }
 
 }  // namespace ash

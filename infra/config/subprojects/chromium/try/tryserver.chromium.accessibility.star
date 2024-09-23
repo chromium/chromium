@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.accessibility builder group."""
 
-load("//lib/builders.star", "os", "reclient")
+load("//lib/builders.star", "os", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -16,9 +16,10 @@ try_.defaults.set(
     os = os.LINUX_DEFAULT,
     compilator_cores = 16,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = 150,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 consoles.list_view(
@@ -59,6 +60,7 @@ try_.builder(
             "content/renderer/accessibility/.+",
             "content/browser/accessibility/.+",
             "ui/accessibility/.+",
+            "ui/views/accessibility/.+",
         ],
     ),
 )

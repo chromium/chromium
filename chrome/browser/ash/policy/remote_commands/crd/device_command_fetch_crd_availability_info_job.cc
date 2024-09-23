@@ -45,15 +45,10 @@ base::Value::List GetSupportedSessionTypes(bool is_in_managed_environment) {
   return result;
 }
 
-bool IsAllowedByPolicy() {
-  return CHECK_DEREF(g_browser_process->local_state())
-      .GetBoolean(
-          prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
-}
-
 CrdSessionAvailability GetRemoteSupportAvailability(
     UserSessionType current_user_session) {
-  if (!IsAllowedByPolicy()) {
+  if (!IsRemoteSupportAllowedByPolicy(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     return CrdSessionAvailability::UNAVAILABLE_DISABLED_BY_POLICY;
   }
   if (!UserSessionSupportsRemoteSupport(current_user_session)) {
@@ -65,7 +60,8 @@ CrdSessionAvailability GetRemoteSupportAvailability(
 CrdSessionAvailability GetRemoteAccessAvailability(
     bool is_in_managed_environment,
     UserSessionType current_user_session) {
-  if (!IsAllowedByPolicy()) {
+  if (!IsRemoteAccessAllowedByPolicy(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     return CrdSessionAvailability::UNAVAILABLE_DISABLED_BY_POLICY;
   }
   if (!is_in_managed_environment) {

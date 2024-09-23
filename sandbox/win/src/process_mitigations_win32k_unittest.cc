@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "sandbox/win/src/process_mitigations.h"
-
 #include <windows.h>
 
 #include <string>
 
+#include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/process_mitigations_win32k_policy.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/tests/common/controller.h"
@@ -45,11 +44,32 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownSuccess) {
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K);
 
   TestRunner runner;
+  runner.SetTestState(sandbox::EVERY_STATE);
+
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
             SBOX_ALL_OK);
   EXPECT_EQ(config->SetFakeGdiInit(), sandbox::SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
+}
+
+// This test validates the MITIGATION_WIN32K_DISABLE works without the
+// SetFakeGdiInit() interceptions that allow gdi32.dll and user32.dll to load.
+TEST(ProcessMitigationsWin32kTest,
+     CheckWin32kLockDownSuccessWithoutFakeGdiInit) {
+  // Component build dlls statically link in gdi32 and user32 for convenience.
+#if !defined(COMPONENT_BUILD)
+  std::wstring test_policy_command = L"CheckPolicy ";
+  test_policy_command += std::to_wstring(TESTPOLICY_WIN32K_NOFAKEGDI);
+
+  TestRunner runner;
+  runner.SetTestState(sandbox::EVERY_STATE);
+
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
+            SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
+#endif
 }
 
 }  // namespace sandbox

@@ -101,6 +101,9 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
   }
   SVGElementResourceClient& EnsureSVGResourceClient(SVGElement*);
 
+  SVGResourceTarget& EnsureResourceTarget(SVGElement& element);
+  bool HasResourceTarget() const;
+
   AffineTransform* AnimateMotionTransform();
 
   void Trace(Visitor*) const;
@@ -118,6 +121,7 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
   HashSet<QualifiedName> web_animated_attributes_;
   Member<MutableCSSPropertyValueSet> animated_smil_style_properties_;
   Member<const ComputedStyle> override_computed_style_;
+  WeakMember<SVGResourceTarget> resource_target_;
   // Used by <animateMotion>
   AffineTransform animate_motion_transform_;
 };

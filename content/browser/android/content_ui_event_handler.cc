@@ -8,7 +8,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
-#include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
 #include "ui/events/android/gesture_event_android.h"
@@ -17,6 +16,9 @@
 #include "ui/events/android/motion_event_android.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -99,7 +101,7 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   // Compute Event.Latency.OS2.MOUSE_WHEEL histogram.
   base::TimeTicks current_time = ui::EventTimeForNow();
   base::TimeTicks event_time = base::TimeTicks::FromJavaNanoTime(time_ns);
-  ComputeEventLatencyOS(ui::ET_MOUSEWHEEL, event_time, current_time);
+  ComputeEventLatencyOS(ui::EventType::kMousewheel, event_time, current_time);
   ui::MotionEventAndroid::Pointer pointer(
       0, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */, 0.0f, 0.0f, 0);
 

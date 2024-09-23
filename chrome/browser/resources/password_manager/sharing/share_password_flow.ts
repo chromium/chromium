@@ -82,7 +82,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
   }
 
   private async startSharing_() {
-    // TODO(crbug/1445526): Add timeout to avoid flickering.
+    // TODO(crbug.com/40268194): Add timeout to avoid flickering.
     this.flowState = ShareFlowState.FETCHING;
 
     this.fetchResults_ = await this.passwordManager_.fetchFamilyMembers();
@@ -91,7 +91,7 @@ export class SharePasswordFlowElement extends SharePasswordFlowElementBase {
         this.flowState = ShareFlowState.ERROR;
         break;
       case chrome.passwordsPrivate.FamilyFetchStatus.NO_MEMBERS:
-        // TODO(crbug/1445526): Rename FamilyFetchStatus.NO_MEMBERS to
+        // TODO(crbug.com/40268194): Rename FamilyFetchStatus.NO_MEMBERS to
         // NOT_FAMILY_MEMBER.
         this.flowState = ShareFlowState.NOT_FAMILY_MEMBER;
         break;

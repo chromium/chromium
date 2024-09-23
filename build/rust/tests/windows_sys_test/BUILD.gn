@@ -1,0 +1,14 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_executable.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_executable("windows_sys_test") {
+  allow_unsafe = true  # Calls FFI.
+  deps = [ "//third_party/rust/windows_sys/v0_52:lib" ]
+  sources = [ "main.rs" ]
+  crate_root = "main.rs"
+}

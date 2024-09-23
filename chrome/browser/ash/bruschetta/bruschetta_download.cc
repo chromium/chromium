@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/bruschetta/bruschetta_download.h"
 
 #include "base/files/scoped_temp_dir.h"
@@ -70,22 +75,21 @@ std::string Sha256File(const base::FilePath& path) {
 
   std::unique_ptr<crypto::SecureHash> ctx(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  const size_t kReadBufferSize = 4096;
-  char buffer[kReadBufferSize];
+  std::array<uint8_t, 4096> buffer;
   while (true) {
-    int count = file.ReadAtCurrentPos(buffer, kReadBufferSize);
+    std::optional<size_t> read = file.ReadAtCurrentPos(buffer);
 
     // Treat EOF the same as any other error, stop reading and return the hash
     // of what we read. If there was a disk error or something we'll end up with
     // an invalid hash, same as if the file were truncated.
-    if (count <= 0) {
+    if (read.value_or(0) == 0) {
       break;
     }
-    ctx->Update(buffer, count);
+    ctx->Update(base::span(buffer).subspan(0, *read));
   }
 
-  uint8_t digest_bytes[crypto::kSHA256Length];
-  ctx->Finish(digest_bytes, crypto::kSHA256Length);
+  std::array<uint8_t, crypto::kSHA256Length> digest_bytes;
+  ctx->Finish(digest_bytes);
   return base::HexEncode(digest_bytes);
 }
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -53,11 +54,12 @@ class TabCaptureApiTest : public ExtensionApiTest {
     // Specify smallish window size to make testing of tab capture less CPU
     // intensive.
     command_line->AppendSwitchASCII(::switches::kWindowSize, "300,300");
-    // TODO(https://crbug.com/1424557): Remove this after fixing feature
+    // MSan and GL do not get along so avoid using the GPU with MSan.
+    // TODO(crbug.com/40260482): Remove this after fixing feature
     // detection in 0c tab capture path as it'll no longer be needed.
-    if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
-      command_line->AppendSwitch(::switches::kUseGpuInTests);
-    }
+#if !BUILDFLAG(IS_CHROMEOS) && !defined(MEMORY_SANITIZER)
+    command_line->AppendSwitch(::switches::kUseGpuInTests);
+#endif
   }
 
   void AddExtensionToCommandLineAllowlist() {
@@ -76,7 +78,8 @@ class TabCaptureApiTest : public ExtensionApiTest {
 class TabCaptureApiPixelTest : public TabCaptureApiTest {
  public:
   void SetUp() override {
-    // TODO(crbug/754872): Update this to match WCVCD content_browsertests.
+    // TODO(crbug.com/40534864): Update this to match WCVCD
+    // content_browsertests.
     if (!IsTooIntensiveForThisPlatform())
       EnablePixelOutput();
     TabCaptureApiTest::SetUp();
@@ -90,8 +93,8 @@ class TabCaptureApiPixelTest : public TabCaptureApiTest {
 };
 
 // Tests API behaviors, including info queries, and constraints violations.
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/): Flaky on Mac.
+#if BUILDFLAG(IS_MAC) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/341487291): Flaky on Mac and MSAN builds.
 #define MAYBE_ApiTests DISABLED_ApiTests
 #else
 #define MAYBE_ApiTests ApiTests
@@ -158,7 +161,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
   content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  content::WebContents* web_contents = browser()->OpenURL(params);
+  content::WebContents* web_contents =
+      browser()->OpenURL(params, /*navigation_handle_callback=*/{});
 
   content::RenderFrameHost* const main_frame =
       web_contents->GetPrimaryMainFrame();
@@ -174,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, GetUserMediaTest) {
 
 // Make sure tabCapture.capture only works if the tab has been granted
 // permission via an extension icon click or the extension is allowlisted.
-// TODO(crbug.com/1306351): Flaky on all platforms
+// TODO(crbug.com/40827755): Flaky on all platforms
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
   ExtensionTestMessageListener before_open_tab("ready1",
                                                ReplyBehavior::kWillReply);
@@ -195,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
   content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  content::WebContents* web_contents = browser()->OpenURL(params);
+  content::WebContents* web_contents =
+      browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_TRUE(web_contents) << "Failed to open new tab";
   before_open_tab.Reply("");
 
@@ -210,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
 
   // Open a new tab and make sure capture is denied.
   EXPECT_TRUE(before_open_new_tab.WaitUntilSatisfied());
-  browser()->OpenURL(params);
+  browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   before_open_new_tab.Reply("");
 
   // Add extension to allowlist and make sure capture succeeds.
@@ -229,6 +234,9 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, DISABLED_ActiveTabPermission) {
 // clicks.
 #if BUILDFLAG(IS_MAC)
 // TODO(crbug.com/1392776): Flaky on Mac.
+#define MAYBE_FullscreenEvents DISABLED_FullscreenEvents
+#elif defined(MEMORY_SANITIZER)
+// TODO(crbug.com/341641151): Deflake test for MSAN.
 #define MAYBE_FullscreenEvents DISABLED_FullscreenEvents
 #else
 #define MAYBE_FullscreenEvents FullscreenEvents
@@ -298,19 +306,30 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, CaptureInSplitIncognitoMode) {
 
 // Tests that valid constraints allow tab capture to start, while invalid ones
 // do not.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, Constraints) {
+#if BUILDFLAG(IS_LINUX) || defined(MEMORY_SANITIZER)
+// TODO(crbug.com/343116848): Re-enable this test
+#define MAYBE_Constraints DISABLED_Constraints
+#else
+#define MAYBE_Constraints Constraints
+#endif  // BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_Constraints) {
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(RunExtensionTest("tab_capture/constraints",
                                {.extension_url = "constraints.html"}))
       << message_;
 }
 
+#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/341641151): Deflake test for MSAN.
+#define MAYBE_TabIndicator DISABLED_TabIndicator
+#else
+#define MAYBE_TabIndicator TabIndicator
+#endif  // BUILDFLAG(IS_MAC)
 // Tests that the tab indicator (in the tab strip) is shown during tab capture.
-IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
+IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MAYBE_TabIndicator) {
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_THAT(chrome::GetTabAlertStatesForContents(contents),
-              ::testing::IsEmpty());
+  ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
 
   // A TabStripModelObserver that quits the MessageLoop whenever the
   // UI's model is sent an event that might change the indicator status.
@@ -337,8 +356,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
     base::OnceClosure on_tab_changed_;
   };
 
-  ASSERT_THAT(chrome::GetTabAlertStatesForContents(contents),
-              ::testing::IsEmpty());
+  ASSERT_THAT(GetTabAlertStatesForContents(contents), ::testing::IsEmpty());
 
   // Run an extension test that just turns on tab capture, which should cause
   // the indicator to turn on.
@@ -350,11 +368,11 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
   // Run the browser until the indicator turns on.
   const base::TimeTicks start_time = base::TimeTicks::Now();
   IndicatorChangeObserver observer(browser());
-  while (!base::Contains(chrome::GetTabAlertStatesForContents(contents),
+  while (!base::Contains(GetTabAlertStatesForContents(contents),
                          TabAlertState::TAB_CAPTURING)) {
     if (base::TimeTicks::Now() - start_time >
             TestTimeouts::action_max_timeout()) {
-      EXPECT_THAT(chrome::GetTabAlertStatesForContents(contents),
+      EXPECT_THAT(GetTabAlertStatesForContents(contents),
                   ::testing::Contains(TabAlertState::TAB_CAPTURING));
       return;
     }
@@ -388,7 +406,8 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
                                 content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  content::WebContents* web_contents = browser()->OpenURL(params);
+  content::WebContents* web_contents =
+      browser()->OpenURL(params, /*navigation_handle_callback=*/{});
   ASSERT_TRUE(web_contents) << "Failed to open new tab";
   auto* perm_granter =
       TabHelper::FromWebContents(web_contents)->active_tab_permission_granter();
@@ -418,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, MultipleExtensions) {
     ASSERT_TRUE(extension_b_ready.WaitUntilSatisfied());
   }
   // Only one capture should succeed.
-  // TODO(https://crbug.com/1377780): Remove this restriction.
+  // TODO(crbug.com/40874553): Remove this restriction.
   ASSERT_TRUE(extension_a_success.was_satisfied() !=
               extension_b_success.was_satisfied());
   // Avoid CHECK for forgotten reply in ExtensionTestMessageListener destructor.

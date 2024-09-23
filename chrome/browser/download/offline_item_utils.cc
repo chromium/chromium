@@ -123,6 +123,7 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   item.original_url = download_item->GetOriginalUrl();
   item.is_off_the_record = off_the_record;
   item.referrer_url = download_item->GetReferrerUrl();
+  item.has_user_gesture = download_item->HasUserGesture();
 
   item.is_resumable = download_item->CanResume();
   item.allow_metered = download_item->AllowMetered();
@@ -168,10 +169,10 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
       }
     } break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
-  // TODO(crbug.com/857549): Set pending_state correctly.
+  // TODO(crbug.com/40582846): Set pending_state correctly.
   item.pending_state = item.state == OfflineItemState::PENDING
                            ? PendingState::PENDING_NETWORK
                            : PendingState::NOT_PENDING;
@@ -317,7 +318,9 @@ std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
       break;
 
     case FailState::NO_FAILURE:
-      NOTREACHED();
+      // We reach here if the received bytes is zero. Ideally, we should have a
+      // separate FailState outside of download interrupt reasons, and pass the
+      // bytes info to every function that invokes this.
       [[fallthrough]];
     case FailState::CANNOT_DOWNLOAD:
       [[fallthrough]];

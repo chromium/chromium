@@ -31,26 +31,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
-import org.chromium.chrome.browser.password_manager.FakePasswordStoreAndroidBackendFactoryImpl;
-import org.chromium.chrome.browser.password_manager.FakePasswordSyncControllerDelegateFactoryImpl;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendFactory;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
-import org.chromium.chrome.browser.password_manager.PasswordSyncControllerDelegateFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
@@ -89,7 +84,7 @@ public class PasswordAccessoryIntegrationTest {
     @MediumTest
     public void testPasswordSheetDisplaysProvidedItems() throws TimeoutException {
         preparePasswordBridge();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPasswordStoreBridge.insertPasswordCredential(
                             new PasswordStoreCredential(
@@ -112,21 +107,17 @@ public class PasswordAccessoryIntegrationTest {
 
     private void preparePasswordBridge() {
         Looper.prepare();
-        PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
-                new FakePasswordStoreAndroidBackendFactoryImpl());
-        PasswordSyncControllerDelegateFactory.setFactoryInstanceForTesting(
-                new FakePasswordSyncControllerDelegateFactoryImpl());
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPasswordStoreBridge = new PasswordStoreBridge();
+                    mPasswordStoreBridge =
+                            new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
     }
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID)
     public void testPasswordSheetDisplaysOptions() throws TimeoutException {
         mHelper.loadTestPage(false);
         // Marking the origin as denylisted shows only a very minimal accessory.
@@ -149,7 +140,7 @@ public class PasswordAccessoryIntegrationTest {
     @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
     public void testFillsPasswordOnTap() throws TimeoutException {
         preparePasswordBridge();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPasswordStoreBridge.insertPasswordCredential(
                             new PasswordStoreCredential(
@@ -173,7 +164,6 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID)
     public void testDisplaysEmptyStateMessageWithoutSavedPasswords() throws TimeoutException {
         mHelper.loadTestPage(false);
         // Mark the origin as denylisted to have a reason to show the accessory in the first place.
@@ -193,12 +183,11 @@ public class PasswordAccessoryIntegrationTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.RECOVER_FROM_NEVER_SAVE_ANDROID)
     @DisabledTest(message = "https://crbug.com/1503085")
     public void testEnablesUndenylistingToggle() throws TimeoutException, InterruptedException {
         preparePasswordBridge();
         String url = mTestServer.getURL("/chrome/test/data/password/password_form.html");
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPasswordStoreBridge.blocklistForTesting(url);
                 });

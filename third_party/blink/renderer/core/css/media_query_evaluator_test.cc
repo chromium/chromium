@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_sample_test_utils.h"
@@ -15,6 +21,7 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
@@ -29,19 +36,27 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/gfx/display_color_spaces.h"
 
 namespace blink {
 
 namespace {
 
+const CSSNumericLiteralValue& WrapDouble(
+    double value,
+    CSSPrimitiveValue::UnitType unit_type =
+        CSSPrimitiveValue::UnitType::kNumber) {
+  return *CSSNumericLiteralValue::Create(value, unit_type);
+}
+
 MediaQueryExpValue PxValue(double value) {
-  return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kPixels);
+  return MediaQueryExpValue(
+      WrapDouble(value, CSSPrimitiveValue::UnitType::kPixels));
 }
 
 MediaQueryExpValue RatioValue(unsigned numerator, unsigned denominator) {
-  return MediaQueryExpValue(numerator, denominator);
+  return MediaQueryExpValue(WrapDouble(numerator), WrapDouble(denominator));
 }
 
 }  // namespace
@@ -496,7 +511,7 @@ MediaQueryEvaluatorTestCase g_scripting_enabled_cases[] = {
 };
 
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
-                     const MediaQueryEvaluator& media_query_evaluator,
+                     const MediaQueryEvaluator* media_query_evaluator,
                      CSSParserMode mode) {
   MediaQuerySet* query_set = nullptr;
   for (unsigned i = 0; test_cases[i].input; ++i) {
@@ -504,20 +519,17 @@ void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
       query_set = MediaQuerySet::Create();
     } else {
       StringView str(test_cases[i].input);
-      CSSTokenizer tokenizer(StringView(test_cases[i].input));
-      auto [tokens, offsets] = tokenizer.TokenizeToEOFWithOffsets();
-      query_set = MediaQueryParser::ParseMediaQuerySetInMode(
-          CSSParserTokenRange(tokens),
-          CSSParserTokenOffsets(tokens, std::move(offsets), str), mode,
-          nullptr);
+      CSSParserTokenStream stream(str);
+      query_set =
+          MediaQueryParser::ParseMediaQuerySetInMode(stream, mode, nullptr);
     }
-    EXPECT_EQ(test_cases[i].output, media_query_evaluator.Eval(*query_set))
+    EXPECT_EQ(test_cases[i].output, media_query_evaluator->Eval(*query_set))
         << "Query: " << test_cases[i].input;
   }
 }
 
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
-                     const MediaQueryEvaluator& media_query_evaluator) {
+                     const MediaQueryEvaluator* media_query_evaluator) {
   TestMQEvaluator(test_cases, media_query_evaluator, kHTMLStandardMode);
 }
 
@@ -542,17 +554,19 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   // Default values.
   {
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_screen_test_cases, media_query_evaluator);
     TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
   }
 
   // Default display-state values.
   {
-    data.window_show_state = ui::SHOW_STATE_DEFAULT;
+    data.window_show_state = ui::mojom::blink::WindowShowState::kDefault;
     ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_display_state_test_cases, media_query_evaluator);
   }
 
@@ -560,7 +574,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   {
     ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_resizable_test_cases, media_query_evaluator);
   }
 
@@ -568,7 +583,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   {
     data.media_type = media_type_names::kPrint;
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_print_test_cases, media_query_evaluator);
     data.media_type = media_type_names::kScreen;
   }
@@ -577,7 +593,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   {
     data.media_type = media_type_names::kPrint;
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_update_with_print_device_test_cases,
                     media_query_evaluator);
     data.media_type = media_type_names::kScreen;
@@ -588,7 +605,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
     data.output_device_update_ability_type =
         mojom::blink::OutputDeviceUpdateAbilityType::kSlowType;
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_update_with_slow_device_test_cases,
                     media_query_evaluator);
   }
@@ -598,7 +616,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
     data.output_device_update_ability_type =
         mojom::blink::OutputDeviceUpdateAbilityType::kFastType;
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_update_with_fast_device_test_cases,
                     media_query_evaluator);
   }
@@ -608,7 +627,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
     data.color_bits_per_component = 0;
     data.monochrome_bits_per_component = 8;
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_monochrome_test_cases, media_query_evaluator);
     data.color_bits_per_component = 24;
     data.monochrome_bits_per_component = 0;
@@ -618,7 +638,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   {
     data.media_type = media_type_names::kPrint;
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_overflow_with_print_device_test_cases,
                     media_query_evaluator);
     data.media_type = media_type_names::kScreen;
@@ -627,7 +648,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   // Overflow values with scrolling.
   {
     auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_overflow_with_scrollable_device_test_cases,
                     media_query_evaluator);
   }
@@ -638,7 +660,8 @@ TEST(MediaQueryEvaluatorTest, Dynamic) {
   auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
 
-  MediaQueryEvaluator media_query_evaluator(&page_holder->GetFrame());
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(&page_holder->GetFrame());
   TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
   TestMQEvaluator(g_overflow_with_scrollable_device_test_cases,
                   media_query_evaluator);
@@ -659,9 +682,10 @@ TEST(MediaQueryEvaluatorTest, DynamicNoView) {
   LocalFrame* frame = &page_holder->GetFrame();
   page_holder.reset();
   ASSERT_EQ(nullptr, frame->View());
-  MediaQueryEvaluator media_query_evaluator(frame);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(frame);
   MediaQuerySet* query_set = MediaQuerySet::Create("foobar", nullptr);
-  EXPECT_FALSE(media_query_evaluator.Eval(*query_set));
+  EXPECT_FALSE(media_query_evaluator->Eval(*query_set));
 }
 
 TEST(MediaQueryEvaluatorTest, CachedFloatViewport) {
@@ -670,7 +694,8 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewport) {
   data.viewport_height = 700.125;
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
-  MediaQueryEvaluator media_query_evaluator(media_values);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
   TestMQEvaluator(g_float_viewport_test_cases, media_query_evaluator);
 }
 
@@ -680,7 +705,8 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewportNonFloatFriendly) {
   data.viewport_height = 821;
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
-  MediaQueryEvaluator media_query_evaluator(media_values);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
   TestMQEvaluator(g_float_non_friendly_viewport_test_cases,
                   media_query_evaluator);
 }
@@ -694,7 +720,8 @@ TEST(MediaQueryEvaluatorTest, CachedForcedColors) {
   {
     data.forced_colors = ForcedColors::kNone;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_forcedcolors_none_cases, media_query_evaluator);
   }
 
@@ -702,7 +729,8 @@ TEST(MediaQueryEvaluatorTest, CachedForcedColors) {
   {
     data.forced_colors = ForcedColors::kActive;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_forcedcolors_active_cases, media_query_evaluator);
   }
 }
@@ -717,7 +745,8 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
   {
     data.preferred_contrast = mojom::blink::PreferredContrast::kNoPreference;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_preferscontrast_nopreference_cases,
                     media_query_evaluator);
   }
@@ -726,7 +755,8 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
   {
     data.preferred_contrast = mojom::blink::PreferredContrast::kMore;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_preferscontrast_more_cases, media_query_evaluator);
   }
 
@@ -734,7 +764,8 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
   {
     data.preferred_contrast = mojom::blink::PreferredContrast::kLess;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_preferscontrast_less_cases, media_query_evaluator);
   }
 
@@ -742,7 +773,8 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersContrast) {
   {
     data.preferred_contrast = mojom::blink::PreferredContrast::kCustom;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_preferscontrast_custom_cases, media_query_evaluator);
   }
 }
@@ -754,7 +786,8 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersReducedTransparency) {
   {
     data.prefers_reduced_transparency = false;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_prefersreducedtransparency_nopreference_cases,
                     media_query_evaluator);
   }
@@ -763,7 +796,8 @@ TEST(MediaQueryEvaluatorTest, CachedPrefersReducedTransparency) {
   {
     data.prefers_reduced_transparency = true;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_prefersreducedtransparency_reduce_cases,
                     media_query_evaluator);
   }
@@ -777,7 +811,8 @@ TEST(MediaQueryEvaluatorTest, CachedViewportSegments) {
     data.horizontal_viewport_segments = 1;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_single_horizontal_viewport_segment_cases,
                     media_query_evaluator);
   }
@@ -785,7 +820,8 @@ TEST(MediaQueryEvaluatorTest, CachedViewportSegments) {
   {
     data.horizontal_viewport_segments = 2;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_double_horizontal_viewport_segment_cases,
                     media_query_evaluator);
   }
@@ -794,7 +830,8 @@ TEST(MediaQueryEvaluatorTest, CachedViewportSegments) {
     data.vertical_viewport_segments = 1;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_single_vertical_viewport_segment_cases,
                     media_query_evaluator);
   }
@@ -802,7 +839,8 @@ TEST(MediaQueryEvaluatorTest, CachedViewportSegments) {
   {
     data.vertical_viewport_segments = 2;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_double_vertical_viewport_segment_cases,
                     media_query_evaluator);
   }
@@ -815,14 +853,16 @@ TEST(MediaQueryEvaluatorTest, CachedDevicePosture) {
   {
     data.device_posture = mojom::blink::DevicePostureType::kContinuous;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_device_posture_none_cases, media_query_evaluator);
   }
 
   {
     data.device_posture = mojom::blink::DevicePostureType::kFolded;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_device_posture_folded_cases, media_query_evaluator);
   }
 }
@@ -834,7 +874,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
   {
     data.device_supports_hdr = gfx::DisplayColorSpaces().SupportsHDR();
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_dynamic_range_standard_cases, media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_standard_cases,
                     media_query_evaluator);
@@ -850,7 +891,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
         gfx::DisplayColorSpaces(gfx::ColorSpace::CreateDisplayP3D65())
             .SupportsHDR();
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_dynamic_range_standard_cases, media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_standard_cases,
                     media_query_evaluator);
@@ -868,7 +910,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
         gfx::DisplayColorSpaces(gfx::ColorSpace::CreateExtendedSRGB())
             .SupportsHDR();
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_dynamic_range_high_cases, media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
 
@@ -883,7 +926,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
         gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSRGBLinear())
             .SupportsHDR();
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_dynamic_range_high_cases, media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
 
@@ -897,7 +941,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
     data.device_supports_hdr =
         gfx::DisplayColorSpaces(gfx::ColorSpace::CreateHDR10()).SupportsHDR();
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_dynamic_range_high_cases, media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
 
@@ -911,7 +956,8 @@ TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
     data.device_supports_hdr =
         gfx::DisplayColorSpaces(gfx::ColorSpace::CreateHLG()).SupportsHDR();
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_dynamic_range_high_cases, media_query_evaluator);
     TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
 
@@ -930,7 +976,8 @@ TEST(MediaQueryEvaluatorTest, CachedInvertedColors) {
   {
     data.inverted_colors = false;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_invertedcolors_none_cases, media_query_evaluator);
   }
 
@@ -938,7 +985,8 @@ TEST(MediaQueryEvaluatorTest, CachedInvertedColors) {
   {
     data.inverted_colors = true;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_invertedcolors_inverted_cases, media_query_evaluator);
   }
 }
@@ -950,7 +998,8 @@ TEST(MediaQueryEvaluatorTest, CachedScripting) {
   {
     data.scripting = Scripting::kNone;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_scripting_none_cases, media_query_evaluator);
   }
 
@@ -958,7 +1007,8 @@ TEST(MediaQueryEvaluatorTest, CachedScripting) {
   {
     data.scripting = Scripting::kInitialOnly;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_scripting_initial_only_cases, media_query_evaluator);
   }
 
@@ -966,7 +1016,8 @@ TEST(MediaQueryEvaluatorTest, CachedScripting) {
   {
     data.scripting = Scripting::kEnabled;
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-    MediaQueryEvaluator media_query_evaluator(media_values);
+    MediaQueryEvaluator* media_query_evaluator =
+        MakeGarbageCollected<MediaQueryEvaluator>(media_values);
     TestMQEvaluator(g_scripting_enabled_cases, media_query_evaluator);
   }
 }
@@ -977,11 +1028,12 @@ TEST(MediaQueryEvaluatorTest, RangedValues) {
   data.viewport_height = 250;
 
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-  MediaQueryEvaluator media_query_evaluator(media_values);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
 
   auto eval = [&media_query_evaluator](MediaQueryExp exp) {
     const auto* feature = MakeGarbageCollected<MediaQueryFeatureExpNode>(exp);
-    return media_query_evaluator.Eval(*feature) == KleeneValue::kTrue;
+    return media_query_evaluator->Eval(*feature) == KleeneValue::kTrue;
   };
 
   // (width < 600px)
@@ -1141,7 +1193,8 @@ TEST(MediaQueryEvaluatorTest, ExpNode) {
   data.viewport_width = 500;
 
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-  MediaQueryEvaluator media_query_evaluator(media_values);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
 
   auto* width_lt_400 =
       MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
@@ -1156,37 +1209,37 @@ TEST(MediaQueryEvaluatorTest, ExpNode) {
           "width", MediaQueryExpBounds(MediaQueryExpComparison(
                        PxValue(800), MediaQueryOperator::kLt))));
 
-  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(*width_lt_600));
-  EXPECT_EQ(KleeneValue::kFalse, media_query_evaluator.Eval(*width_lt_400));
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(*width_lt_600));
+  EXPECT_EQ(KleeneValue::kFalse, media_query_evaluator->Eval(*width_lt_400));
 
   EXPECT_EQ(KleeneValue::kTrue,
-            media_query_evaluator.Eval(
+            media_query_evaluator->Eval(
                 *MakeGarbageCollected<MediaQueryNestedExpNode>(width_lt_600)));
   EXPECT_EQ(KleeneValue::kFalse,
-            media_query_evaluator.Eval(
+            media_query_evaluator->Eval(
                 *MakeGarbageCollected<MediaQueryNestedExpNode>(width_lt_400)));
 
   EXPECT_EQ(KleeneValue::kFalse,
-            media_query_evaluator.Eval(
+            media_query_evaluator->Eval(
                 *MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_600)));
   EXPECT_EQ(KleeneValue::kTrue,
-            media_query_evaluator.Eval(
+            media_query_evaluator->Eval(
                 *MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400)));
 
-  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(
                                     *MakeGarbageCollected<MediaQueryAndExpNode>(
                                         width_lt_600, width_lt_800)));
   EXPECT_EQ(
       KleeneValue::kFalse,
-      media_query_evaluator.Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
+      media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
           width_lt_600, width_lt_400)));
 
-  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator.Eval(
+  EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(
                                     *MakeGarbageCollected<MediaQueryOrExpNode>(
                                         width_lt_600, width_lt_400)));
   EXPECT_EQ(
       KleeneValue::kFalse,
-      media_query_evaluator.Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
+      media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
           width_lt_400,
           MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_800))));
 }
@@ -1197,7 +1250,8 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   data.device_width = 400;
 
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-  MediaQueryEvaluator media_query_evaluator(media_values);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
 
   // Viewport-dependent:
   auto* width_lt_400 =
@@ -1221,7 +1275,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(*color, &result_flags);
+    media_query_evaluator->Eval(*color, &result_flags);
 
     EXPECT_FALSE(result_flags.is_viewport_dependent);
     EXPECT_FALSE(result_flags.is_device_dependent);
@@ -1231,7 +1285,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(*width_lt_400, &result_flags);
+    media_query_evaluator->Eval(*width_lt_400, &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
     EXPECT_FALSE(result_flags.is_device_dependent);
@@ -1241,7 +1295,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(*device_width_lt_600, &result_flags);
+    media_query_evaluator->Eval(*device_width_lt_600, &result_flags);
 
     EXPECT_TRUE(result_flags.is_device_dependent);
     EXPECT_FALSE(result_flags.is_viewport_dependent);
@@ -1251,7 +1305,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(
+    media_query_evaluator->Eval(
         *MakeGarbageCollected<MediaQueryNestedExpNode>(device_width_lt_600),
         &result_flags);
 
@@ -1263,7 +1317,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(
+    media_query_evaluator->Eval(
         *MakeGarbageCollected<MediaQueryNotExpNode>(device_width_lt_600),
         &result_flags);
 
@@ -1276,9 +1330,9 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
-                                   width_lt_400, device_width_lt_600),
-                               &result_flags);
+    media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
+                                    width_lt_400, device_width_lt_600),
+                                &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
     EXPECT_TRUE(result_flags.is_device_dependent);
@@ -1292,7 +1346,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(
+    media_query_evaluator->Eval(
         *MakeGarbageCollected<MediaQueryAndExpNode>(
             MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400),
             device_width_lt_600),
@@ -1310,9 +1364,9 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
-                                   width_lt_400, device_width_lt_600),
-                               &result_flags);
+    media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
+                                    width_lt_400, device_width_lt_600),
+                                &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
     EXPECT_FALSE(result_flags.is_device_dependent);
@@ -1323,7 +1377,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator.Eval(
+    media_query_evaluator->Eval(
         *MakeGarbageCollected<MediaQueryOrExpNode>(
             MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400),
             device_width_lt_600),
@@ -1339,7 +1393,8 @@ TEST(MediaQueryEvaluatorTest, CSSMediaQueries4) {
   data.viewport_width = 500;
   data.viewport_height = 500;
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-  MediaQueryEvaluator media_query_evaluator(media_values);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
 
   MediaQueryEvaluatorTestCase test_cases[] = {
       {"(width: 1px) or (width: 2px)", false},
@@ -1386,7 +1441,8 @@ TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
   data.viewport_height = 500;
 
   auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
-  MediaQueryEvaluator media_query_evaluator(media_values);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
 
   MediaQueryEvaluatorTestCase tests[] = {
       {"(unknown)", false},
@@ -1416,7 +1472,7 @@ TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
     MediaQuerySet* query_set =
         MediaQueryParser::ParseMediaQuerySet(input, nullptr);
     ASSERT_TRUE(query_set);
-    EXPECT_EQ(test.output, media_query_evaluator.Eval(*query_set));
+    EXPECT_EQ(test.output, media_query_evaluator->Eval(*query_set));
   }
 }
 
@@ -1515,7 +1571,7 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
       static_cast<int>(IdentifiableSurface::MediaFeatureName::kOrientation)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
+  ASSERT_EQ(collector()->entries().size(), 1u);
 
   auto& entry = collector()->entries().front();
   EXPECT_EQ(entry.metrics.size(), 1u);
@@ -1611,7 +1667,7 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
                 IdentifiableToken(
                     IdentifiableSurface::MediaFeatureName::kDisplayState)));
   EXPECT_EQ(entry.metrics.begin()->value,
-            IdentifiableToken(ui::SHOW_STATE_DEFAULT));
+            IdentifiableToken(ui::mojom::blink::WindowShowState::kDefault));
 }
 
 TEST_F(MediaQueryEvaluatorIdentifiabilityTest,

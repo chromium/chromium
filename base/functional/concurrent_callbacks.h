@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 
@@ -78,6 +79,7 @@ class ConcurrentCallbacks {
   // Create a callback for the done callback to wait for.
   [[nodiscard]] OnceCallback<void(T)> CreateCallback() {
     CHECK(info_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(info_->sequence_checker_);
     ++info_->pending_;
     return info_run_callback_;
   }
@@ -89,6 +91,7 @@ class ConcurrentCallbacks {
   void Done(OnceCallback<void(Results)> done_callback,
             const Location& location = FROM_HERE) && {
     CHECK(info_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(info_->sequence_checker_);
     info_->done_callback_ =
         BindPostTask(SequencedTaskRunner::GetCurrentDefault(),
                      std::move(done_callback), location);
@@ -104,6 +107,7 @@ class ConcurrentCallbacks {
     Info() = default;
 
     void Run(T value) {
+      DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       CHECK_GT(pending_, 0u);
       --pending_;
       results_.push_back(std::move(value));
@@ -112,9 +116,11 @@ class ConcurrentCallbacks {
       }
     }
 
-    size_t pending_ = 0u;
-    Results results_;
-    OnceCallback<void(Results)> done_callback_;
+    size_t pending_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
+    Results results_ GUARDED_BY_CONTEXT(sequence_checker_);
+    OnceCallback<void(Results)> done_callback_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
   RepeatingCallback<void(T)> info_run_callback_;

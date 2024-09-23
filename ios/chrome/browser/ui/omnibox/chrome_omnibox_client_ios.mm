@@ -15,6 +15,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "components/omnibox/browser/location_bar_model.h"
 #import "components/omnibox/browser/omnibox_log.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -22,16 +23,16 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/web_location_bar.h"
@@ -93,9 +94,12 @@ PrefService* ChromeOmniboxClientIOS::GetPrefs() {
   return browser_state_->GetPrefs();
 }
 
+const PrefService* ChromeOmniboxClientIOS::GetPrefs() const {
+  return browser_state_->GetPrefs();
+}
+
 bookmarks::BookmarkModel* ChromeOmniboxClientIOS::GetBookmarkModel() {
-  return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-      browser_state_);
+  return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
 }
 
 AutocompleteControllerEmitter*
@@ -136,6 +140,36 @@ gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
   return gfx::Image();
 }
 
+std::u16string ChromeOmniboxClientIOS::GetFormattedFullURL() const {
+  return location_bar_->GetLocationBarModel()->GetFormattedFullURL();
+}
+
+std::u16string ChromeOmniboxClientIOS::GetURLForDisplay() const {
+  return location_bar_->GetLocationBarModel()->GetURLForDisplay();
+}
+
+GURL ChromeOmniboxClientIOS::GetNavigationEntryURL() const {
+  return location_bar_->GetLocationBarModel()->GetURL();
+}
+
+metrics::OmniboxEventProto::PageClassification
+ChromeOmniboxClientIOS::GetPageClassification(bool is_prefetch) const {
+  return location_bar_->GetLocationBarModel()->GetPageClassification(
+      is_prefetch);
+}
+
+security_state::SecurityLevel ChromeOmniboxClientIOS::GetSecurityLevel() const {
+  return location_bar_->GetLocationBarModel()->GetSecurityLevel();
+}
+
+net::CertStatus ChromeOmniboxClientIOS::GetCertStatus() const {
+  return location_bar_->GetLocationBarModel()->GetCertStatus();
+}
+
+const gfx::VectorIcon& ChromeOmniboxClientIOS::GetVectorIcon() const {
+  return location_bar_->GetLocationBarModel()->GetVectorIcon();
+}
+
 bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
     const std::u16string& text,
     const TemplateURL* template_url,
@@ -147,7 +181,7 @@ bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
 
 void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
                                             OmniboxFocusChangeReason reason) {
-  // TODO(crbug.com/754050): OnFocusChanged is not the correct place to be
+  // TODO(crbug.com/40534385): OnFocusChanged is not the correct place to be
   // canceling prerenders, but this is the closest match to the original
   // location of this code, which was in OmniboxViewIOS::OnDidEndEditing().  The
   // goal of this code is to cancel prerenders when the omnibox loses focus.
@@ -166,10 +200,8 @@ void ChromeOmniboxClientIOS::OnUserPastedInOmniboxResultingInValidURL() {
   base::RecordAction(
       base::UserMetricsAction("Mobile.Omnibox.iOS.PastedValidURL"));
 
-  if (!browser_state_->IsOffTheRecord() &&
-      HasRecentValidURLPastesAndRecordsCurrentPaste()) {
-    engagement_tracker_->NotifyEvent(
-        feature_engagement::events::kBlueDotPromoCriterionMet);
+  if (!browser_state_->IsOffTheRecord()) {
+    default_browser::NotifyOmniboxURLCopyPaste(engagement_tracker_);
   }
 }
 
@@ -191,7 +223,7 @@ void ChromeOmniboxClientIOS::OnResultChanged(
   const AutocompleteMatch& match = result.match_at(0);
   bool is_inline_autocomplete = !match.inline_autocompletion.empty();
 
-  // TODO(crbug.com/228480): When prerendering the result of a paste
+  // TODO(crbug.com/40311794): When prerendering the result of a paste
   // operation, we should change the transition to LINK instead of TYPED.
 
   // Only prerender HISTORY_URL matches, which come from the history DB.  Do
@@ -251,9 +283,7 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  if (base::FeatureList::IsEnabled(
-          omnibox::kOmniboxPopulateShortcutsDatabase) &&
-      location_bar_->GetWebState()) {
+  if (location_bar_->GetWebState()) {
     web::WebState* web_state = location_bar_->GetWebState();
     const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
     if (web_state_tracker_.find(web_state_id) == web_state_tracker_.end()) {
@@ -268,10 +298,6 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
                             match);
 }
 
-LocationBarModel* ChromeOmniboxClientIOS::GetLocationBarModel() {
-  return location_bar_->GetLocationBarModel();
-}
-
 base::WeakPtr<OmniboxClient> ChromeOmniboxClientIOS::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
@@ -279,15 +305,12 @@ base::WeakPtr<OmniboxClient> ChromeOmniboxClientIOS::AsWeakPtr() {
 void ChromeOmniboxClientIOS::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  CHECK(
-      base::FeatureList::IsEnabled(omnibox::kOmniboxPopulateShortcutsDatabase));
-
   const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
   ShortcutElement shortcut = web_state_tracker_.extract(web_state_id).mapped();
   scoped_observations_.RemoveObservation(web_state);
 
   scoped_refptr<ShortcutsBackend> shortcuts_backend =
-      ios::ShortcutsBackendFactory::GetInstance()->GetForBrowserState(
+      ios::ShortcutsBackendFactory::GetInstance()->GetForProfile(
           browser_state_);
 
   // Add the shortcut if the navigation from the omnibox was successful.
@@ -299,9 +322,6 @@ void ChromeOmniboxClientIOS::DidFinishNavigation(
 }
 
 void ChromeOmniboxClientIOS::WebStateDestroyed(web::WebState* web_state) {
-  CHECK(
-      base::FeatureList::IsEnabled(omnibox::kOmniboxPopulateShortcutsDatabase));
-
   const int32_t web_state_id = web_state->GetUniqueIdentifier().identifier();
   web_state_tracker_.erase(web_state_id);
   scoped_observations_.RemoveObservation(web_state);

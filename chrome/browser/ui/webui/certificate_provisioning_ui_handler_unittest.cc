@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -111,7 +112,7 @@ void FormatDictRecurse(base::Value* value,
 
 // Parses |input| as JSON, replaces string fields that match the placeholder
 // format "$0" with the corresponding translated message from |message_ids|.
-base::Value FormatJsonDict(const base::StringPiece input,
+base::Value FormatJsonDict(const std::string_view input,
                            std::vector<std::string> messages) {
   base::Value parsed = base::test::ParseJson(input);
   FormatDictRecurse(&parsed, messages);

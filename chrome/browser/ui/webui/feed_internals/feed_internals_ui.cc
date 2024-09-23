@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 
 #include <utility>
@@ -15,14 +20,16 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/feed_internals_resources.h"
 #include "chrome/grit/feed_internals_resources_map.h"
-#include "components/feed/buildflags.h"
 #include "components/feed/feed_feature_list.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-
-#if BUILDFLAG(ENABLE_FEED_V2)
 #include "chrome/browser/ui/webui/feed_internals/feedv2_internals_page_handler.h"
-#endif
+
+bool FeedInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
 
 FeedInternalsUI::FeedInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
@@ -41,10 +48,8 @@ FeedInternalsUI::~FeedInternalsUI() = default;
 
 void FeedInternalsUI::BindInterface(
     mojo::PendingReceiver<feed_internals::mojom::PageHandler> receiver) {
-#if BUILDFLAG(ENABLE_FEED_V2)
   v2_page_handler_ = std::make_unique<FeedV2InternalsPageHandler>(
       std::move(receiver),
       feed::FeedServiceFactory::GetForBrowserContext(profile_),
       profile_->GetPrefs());
-#endif
 }

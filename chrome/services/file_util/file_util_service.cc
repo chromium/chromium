@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/services/file_util/buildflags.h"
@@ -43,8 +45,22 @@ void FileUtilService::BindZipFileCreator(
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void FileUtilService::BindSafeArchiveAnalyzer(
     mojo::PendingReceiver<chrome::mojom::SafeArchiveAnalyzer> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<SafeArchiveAnalyzer>(),
-                              std::move(receiver));
+  scoped_refptr<base::SequencedTaskRunner> runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           // CONTINUE_ON_SHUTDOWN will continue shutting down even if
+           // tasks are running. This is the only appropriate shutdown
+           // behavior for tasks you don't want blocking shutdown.
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+  runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::PendingReceiver<chrome::mojom::SafeArchiveAnalyzer>
+                 receiver) {
+            mojo::MakeSelfOwnedReceiver(std::make_unique<SafeArchiveAnalyzer>(),
+                                        std::move(receiver));
+          },
+          std::move(receiver)));
 }
 #endif
 

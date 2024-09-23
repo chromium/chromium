@@ -4,7 +4,6 @@
 
 #include "ui/views/widget/sublevel_manager.h"
 
-#include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -77,6 +76,16 @@ void SublevelManager::EnsureOwnerSublevel() {
     parent->GetSublevelManager()->OrderChildWidget(child);
     child = parent;
     parent = parent->parent();
+  }
+}
+
+void SublevelManager::EnsureOwnerTreeSublevel() {
+  for (Widget* child : children_) {
+    child->GetSublevelManager()->EnsureOwnerTreeSublevel();
+  }
+
+  if (Widget* parent = owner_->parent()) {
+    parent->GetSublevelManager()->OrderChildWidget(owner_);
   }
 }
 

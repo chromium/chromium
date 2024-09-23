@@ -6,6 +6,14 @@
 # For the schema of this file, see Metadata message:
 #   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
-monorail {
+monorail: {
   component: "Test>Component"
+}
+
+buganizer: {
+  component_id: 12345
+}
+
+buganizer_public: {
+  component_id: 45678
 }

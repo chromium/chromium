@@ -13,11 +13,11 @@ class Value;
 }
 
 namespace policy {
-class MachineLevelUserCloudPolicyManager;
+class CloudPolicyManager;
 }
 
 // Unit tests are in chrome\browser\enterprise\reporting\policy_info_unittest.cc
-// TODO(crbug.com/1096499): Move the tests to this directory.
+// TODO(crbug.com/40700771): Move the tests to this directory.
 namespace enterprise_reporting {
 
 void AppendChromePolicyInfoIntoProfileReport(
@@ -28,9 +28,9 @@ void AppendExtensionPolicyInfoIntoProfileReport(
     const base::Value::Dict& policies,
     enterprise_management::ChromeUserProfileInfo* profile_info);
 
-void AppendMachineLevelUserCloudPolicyFetchTimestamp(
+void AppendCloudPolicyFetchTimestamp(
     enterprise_management::ChromeUserProfileInfo* profile_info,
-    policy::MachineLevelUserCloudPolicyManager* manager);
+    policy::CloudPolicyManager* manager);
 
 }  // namespace enterprise_reporting
 

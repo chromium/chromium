@@ -8,12 +8,14 @@
 #include "base/android/jni_string.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/unguessable_token.h"
-#include "components/embedder_support/android/context_menu_jni_headers/ContextMenuParams_jni.h"
 #include "content/public/browser/android/additional_navigation_params_android.h"
 #include "content/public/browser/android/impression_android.h"
 #include "content/public/browser/context_menu_params.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "url/android/gurl_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/embedder_support/android/context_menu_jni_headers/ContextMenuParams_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 
@@ -33,10 +35,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
       (params.title_text.empty() ? params.alt_text : params.title_text);
 
   std::optional<base::UnguessableToken> attribution_src_token;
-  std::optional<network::AttributionReportingRuntimeFeatures> runtime_features;
   if (initiator_frame_token && params.impression) {
     attribution_src_token = params.impression->attribution_src_token.value();
-    runtime_features = params.impression->runtime_features;
   }
 
   base::android::ScopedJavaLocalRef<jobject> additional_navigation_params;
@@ -44,7 +44,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
     additional_navigation_params =
         content::CreateJavaAdditionalNavigationParams(
             env, initiator_frame_token.value(), initiator_process_id,
-            attribution_src_token, runtime_features);
+            attribution_src_token);
   }
 
   return base::android::ScopedJavaGlobalRef<jobject>(

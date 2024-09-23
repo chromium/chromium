@@ -124,16 +124,16 @@ ResultExpr RestrictSetSockoptForNetworkService() {
   // IP_TOS and IPV6_TCLASS are for P2P sockets.
   ResultExpr ipv4_optname_switch =
       Switch(optname)
-          .Cases(
-              {IP_RECVERR, IP_MTU_DISCOVER, IP_MULTICAST_LOOP, IP_MULTICAST_TTL,
-               IP_MULTICAST_IF, IP_ADD_MEMBERSHIP, IP_DROP_MEMBERSHIP, IP_TOS},
-              Allow())
+          .Cases({IP_RECVERR, IP_MTU_DISCOVER, IP_MULTICAST_LOOP,
+                  IP_MULTICAST_TTL, IP_MULTICAST_IF, IP_ADD_MEMBERSHIP,
+                  IP_DROP_MEMBERSHIP, IP_TOS, IP_RECVTOS},
+                 Allow())
           .Default(CrashSIGSYSSockopt());
   ResultExpr ipv6_optname_switch =
       Switch(optname)
           .Cases({IPV6_RECVERR, IPV6_MTU_DISCOVER, IPV6_MULTICAST_LOOP,
                   IPV6_MULTICAST_HOPS, IPV6_MULTICAST_IF, IPV6_JOIN_GROUP,
-                  IPV6_LEAVE_GROUP, IPV6_TCLASS, IPV6_V6ONLY},
+                  IPV6_LEAVE_GROUP, IPV6_TCLASS, IPV6_V6ONLY, IPV6_RECVTCLASS},
                  Allow())
           .Default(CrashSIGSYSSockopt());
   ResultExpr tcp_optname_switch =
@@ -173,13 +173,13 @@ ResultExpr RestrictSocketForNetworkService() {
 #if BUILDFLAG(IS_LINUX)
   // AddressTrackerLinux is brokered on Linux (depending on the feature flag),
   // but not ChromeOS.
-  // TODO(crbug.com/1312226): once the kill-switch is removed, this check should
-  // be removed along with the DEPS and BUILD.gn modifications to allow
+  // TODO(crbug.com/40220507): once the kill-switch is removed, this check
+  // should be removed along with the DEPS and BUILD.gn modifications to allow
   // depending on net/base/features.h.
   use_netlink_in_network_service = !base::FeatureList::IsEnabled(
       net::features::kAddressTrackerLinuxIsProxied);
 #else   // !BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/1312226): remove the netlink allowance when
+  // TODO(crbug.com/40220507): remove the netlink allowance when
   // AddressTrackerLinux no longer runs in the network service on ChromeOS.
   use_netlink_in_network_service = true;
 #endif  // !BUILDFLAG(IS_LINUX)

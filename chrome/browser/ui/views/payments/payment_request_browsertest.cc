@@ -27,7 +27,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
 namespace payments {
@@ -106,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest,
                            /*wait_for_animation=*/false);
 }
 
-// TODO(crbug.com/1468503): Fix and re-enable.
+// TODO(crbug.com/40924925): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(PaymentRequestNoShippingTest,
                        DISABLED_InactiveBrowserWindow) {
   std::string a_method_name;

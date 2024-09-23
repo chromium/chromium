@@ -33,11 +33,11 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "render.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
+#include "ui/gfx/x/xproto_types.h"
 #include "xproto.h"
 
 namespace x11 {
@@ -1134,7 +1134,7 @@ class COMPONENT_EXPORT(X11) RandR {
     Atom type{};
     uint32_t bytes_after{};
     uint32_t num_items{};
-    scoped_refptr<base::RefCountedMemory> data{};
+    scoped_refptr<UnsizedRefCountedMemory> data{};
   };
 
   using GetProviderPropertyResponse = Response<GetProviderPropertyReply>;

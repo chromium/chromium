@@ -15,8 +15,11 @@ struct WebPreferences;
 class WebMouseEvent;
 }
 
-namespace content {
+namespace input {
 struct NativeWebKeyboardEvent;
+}  // namespace input
+
+namespace content {
 
 //
 // RenderWidgetHostOwnerDelegate
@@ -40,7 +43,7 @@ class RenderWidgetHostOwnerDelegate {
   // The RenderWidgetHost wants to forward a keyboard event; returns whether
   // it's allowed to do so.
   virtual bool MayRenderWidgetForwardKeyboardEvent(
-      const NativeWebKeyboardEvent& key_event) = 0;
+      const input::NativeWebKeyboardEvent& key_event) = 0;
 
   // Allow OwnerDelegate to control whether its RenderWidgetHost contributes
   // priority to the RenderProcessHost.

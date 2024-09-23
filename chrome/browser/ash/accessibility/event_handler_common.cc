@@ -47,7 +47,7 @@ void ForwardKeyToExtension(const ui::KeyEvent& key_event,
   content::RenderFrameHost* main_frame = host->main_frame_host();
   DCHECK(main_frame);
 
-  const content::NativeWebKeyboardEvent web_event(key_event);
+  const input::NativeWebKeyboardEvent web_event(key_event);
   // Don't forward latency info, as these are getting forwarded to an extension.
   main_frame->GetRenderWidgetHost()->ForwardKeyboardEvent(web_event);
 }
@@ -62,7 +62,7 @@ void ForwardMouseToExtension(const ui::MouseEvent& mouse_event,
   content::RenderFrameHost* main_frame = host->main_frame_host();
   DCHECK(main_frame);
 
-  if (mouse_event.type() == ui::ET_MOUSE_EXITED) {
+  if (mouse_event.type() == ui::EventType::kMouseExited) {
     VLOG(3) << "Couldn't forward unsupported mouse event to extension";
     return;
   }

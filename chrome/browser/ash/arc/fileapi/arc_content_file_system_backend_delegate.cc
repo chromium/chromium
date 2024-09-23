@@ -55,10 +55,4 @@ storage::WatcherManager* ArcContentFileSystemBackendDelegate::GetWatcherManager(
   return nullptr;
 }
 
-void ArcContentFileSystemBackendDelegate::GetRedirectURLForContents(
-    const storage::FileSystemURL& url,
-    storage::URLCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 }  // namespace arc

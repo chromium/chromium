@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
 import android.view.View;
@@ -15,10 +17,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -26,11 +26,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
+import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -54,7 +57,13 @@ import org.chromium.ui.base.TestActivity;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-@DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+@EnableFeatures({
+    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
+    ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS,
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+})
+// TODO(crbug.com/327387704): Add tests with this flag enabled.
+@Features.DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
 public class BookmarkManagerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -63,11 +72,10 @@ public class BookmarkManagerCoordinatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Profile mProfile;
     @Mock private LargeIconBridge.Natives mMockLargeIconBridgeJni;
+    @Mock private ImageServiceBridge.Natives mImageServiceBridgeJni;
     @Mock private SyncService mSyncService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SigninManager mSigninManager;
@@ -84,17 +92,21 @@ public class BookmarkManagerCoordinatorTest {
     public void setUp() {
         // Setup JNI mocks.
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
-
-        Mockito.doReturn(mProfile).when(mProfile).getOriginalProfile();
+        mJniMocker.mock(ImageServiceBridgeJni.TEST_HOOKS, mImageServiceBridgeJni);
 
         // Setup service mocks.
+        doReturn(mProfile).when(mProfile).getOriginalProfile();
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        Mockito.doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
-        Mockito.doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
+        doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
+        doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
+        doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+
+        // Setup bookmark model.
+        doReturn(true).when(mBookmarkModel).areAccountBookmarkFoldersActive();
 
         mActivityScenarioRule
                 .getScenario()
@@ -128,12 +140,8 @@ public class BookmarkManagerCoordinatorTest {
         FrameLayout parent = new FrameLayout(mActivity);
         assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
         assertNotNull(mCoordinator.buildLegacyPromoView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildSectionHeaderView(parent));
-        assertNotNull(mCoordinator.buildAndInitBookmarkFolderView(parent));
-        assertNotNull(mCoordinator.buildAndInitBookmarkItemRow(parent));
-        assertNotNull(mCoordinator.buildAndInitShoppingItemView(parent));
+        assertNotNull(mCoordinator.buildSectionHeaderView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
-        assertNotNull(BookmarkManagerCoordinator.buildShoppingFilterView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
         assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
         assertNotNull(mCoordinator.buildSearchBoxRow(parent));

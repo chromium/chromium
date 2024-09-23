@@ -48,7 +48,7 @@ mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
                          case Input::kExceptWithoutTrueParams:
                            return Output::kExceptWithoutTrueParams;
                        }
-                       NOTREACHED_NORETURN();
+                       NOTREACHED();
                      };
                      return mojom::NoVarySearchWithParseError::NewParseError(
                          map_error(error));

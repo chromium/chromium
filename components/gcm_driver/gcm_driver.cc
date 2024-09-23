@@ -185,7 +185,7 @@ void GCMDriver::GetEncryptionInfo(const std::string& app_id,
 
 void GCMDriver::UnregisterWithSenderIdImpl(const std::string& app_id,
                                            const std::string& sender_id) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GCMDriver::RegisterFinished(const std::string& app_id,
@@ -311,7 +311,7 @@ void GCMDriver::DispatchMessageInternal(const std::string& app_id,
       GCMAppHandler* handler = GetAppHandler(app_id);
       LogDeliveredToAppHandler(app_id, !!handler);
 
-      // TODO(crbug.com/1408769): store incoming messages in memory while
+      // TODO(crbug.com/40888673): store incoming messages in memory while
       // AppHandler is not registered.
       if (handler)
         handler->OnMessage(app_id, message);
@@ -342,7 +342,7 @@ void GCMDriver::DispatchMessageInternal(const std::string& app_id,
       break;  // deliberate fall-through
   }
 
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void GCMDriver::RegisterAfterUnregister(

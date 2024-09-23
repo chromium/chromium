@@ -6,6 +6,7 @@
 #define BASE_PROCESS_PROCESS_INFO_H_
 
 #include "base/base_export.h"
+#include "base/process/process_handle.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -18,6 +19,10 @@ enum IntegrityLevel {
   MEDIUM_INTEGRITY,
   HIGH_INTEGRITY,
 };
+
+// Returns the integrity level of the process with PID `process_id`. Returns
+// INTEGRITY_UNKNOWN in the case of an underlying system failure.
+BASE_EXPORT IntegrityLevel GetProcessIntegrityLevel(ProcessId process_id);
 
 // Returns the integrity level of the process. Returns INTEGRITY_UNKNOWN in the
 // case of an underlying system failure.

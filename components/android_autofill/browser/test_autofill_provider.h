@@ -22,31 +22,25 @@ class TestAutofillProvider : public AutofillProvider {
       AndroidAutofillManager* manager,
       const FormData& form,
       const FormFieldData& field,
-      const gfx::RectF& bounding_box,
       AutofillSuggestionTriggerSource trigger_source) override {}
   void OnTextFieldDidChange(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field,
-                            const gfx::RectF& bounding_box,
                             const base::TimeTicks timestamp) override {}
   void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                             const FormData& form,
-                            const FormFieldData& field,
-                            const gfx::RectF& bounding_box) override {}
+                            const FormFieldData& field) override {}
   void OnSelectControlDidChange(AndroidAutofillManager* manager,
                                 const FormData& form,
-                                const FormFieldData& field,
-                                const gfx::RectF& bounding_box) override {}
+                                const FormFieldData& field) override {}
   void OnFormSubmitted(AndroidAutofillManager* manager,
                        const FormData& form,
                        bool known_success,
                        mojom::SubmissionSource source) override {}
-  void OnFocusNoLongerOnForm(AndroidAutofillManager* manager,
-                             bool had_interacted_form) override {}
+  void OnFocusOnNonFormField(AndroidAutofillManager* manager) override {}
   void OnFocusOnFormField(AndroidAutofillManager* manager,
                           const FormData& form,
-                          const FormFieldData& field,
-                          const gfx::RectF& bounding_box) override {}
+                          const FormFieldData& field) override {}
   void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
                                  const FormData& form,
                                  base::TimeTicks timestamp) override {}

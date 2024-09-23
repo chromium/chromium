@@ -46,10 +46,12 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void InspectedURLChanged(const std::string& url) = 0;
     virtual void SetIsDocked(DispatchCallback callback, bool is_docked) = 0;
     virtual void OpenInNewTab(const std::string& url) = 0;
+    virtual void OpenSearchResultsInNewTab(const std::string& query) = 0;
     virtual void ShowItemInFolder(const std::string& file_system_path) = 0;
     virtual void SaveToFile(const std::string& url,
                             const std::string& content,
-                            bool save_as) = 0;
+                            bool save_as,
+                            bool is_base64) = 0;
     virtual void AppendToFile(const std::string& url,
                               const std::string& content) = 0;
     virtual void RequestFileSystems() = 0;
@@ -94,6 +96,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RemovePreference(const std::string& name) = 0;
     virtual void ClearPreferences() = 0;
     virtual void GetSyncInformation(DispatchCallback callback) = 0;
+    virtual void GetHostConfig(DispatchCallback callback) = 0;
     virtual void DispatchProtocolMessageFromDevToolsFrontend(
         const std::string& message) = 0;
     virtual void RecordCountHistogram(const std::string& name,
@@ -128,7 +131,10 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void CanShowSurvey(DispatchCallback callback,
                                const std::string& trigger) = 0;
     virtual void DoAidaConversation(DispatchCallback callback,
-                                    const std::string& request) = 0;
+                                    const std::string& request,
+                                    int stream_id) = 0;
+    virtual void RegisterAidaClientEvent(DispatchCallback callback,
+                                         const std::string& request) = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

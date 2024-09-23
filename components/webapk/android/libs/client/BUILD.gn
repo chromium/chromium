@@ -10,10 +10,13 @@ android_library("java") {
     "src/org/chromium/components/webapk/lib/client/WebApkValidator.java",
     "src/org/chromium/components/webapk/lib/client/WebApkVerifySignature.java",
   ]
+  resources_package = "org.chromium.components.webapk.lib.client"
   deps = [
     "//base:base_java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/webapk/android/libs/common:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
@@ -25,11 +28,13 @@ robolectric_library("junit") {
   data = [ "//chrome/test/data/webapks/" ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//components/webapk/android/libs/common:java",
     "//testing/android/junit:junit_test_support",
     "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

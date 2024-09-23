@@ -29,7 +29,7 @@ extern NSString* const kNavigationItemStorageVirtualURLKey;
 // Page referrer URL (std::string).
 extern NSString* const kNavigationItemStorageReferrerURLKey;
 // Page referrer URL (NSURL). Deprecated, used for backward compatibility.
-// TODO(crbug.com/696125): Remove this key.
+// TODO(crbug.com/41304278): Remove this key.
 extern NSString* const kNavigationItemStorageReferrerURLDeprecatedKey;
 // Page referrer policy (int).
 extern NSString* const kNavigationItemStorageReferrerPolicyKey;

@@ -21,7 +21,7 @@ EventTarget* NullEventTargeter::FindTargetForEvent(EventTarget* root,
 
 EventTarget* NullEventTargeter::FindNextBestTarget(EventTarget* previous_target,
                                                    Event* event) {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

@@ -68,6 +68,41 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "android-12l-landscape-x64-dbg-tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-android-archive",
+              "builder_group": "chromium.android",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "x64_builder_mb"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "download_xr_test_apks"
+                ],
+                "build_config": "Debug",
+                "config": "android",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Android x64 Builder (dbg)",
+                "project": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "android-12l-x64-dbg-tests",
               "project": "chromium"
             },
@@ -181,6 +216,11 @@
         },
         {
           "bucket": "ci",
+          "builder": "android-12l-landscape-x64-dbg-tests",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "android-12l-x64-dbg-tests",
           "project": "chromium"
         },
@@ -201,6 +241,10 @@
           "group": "tryserver.chromium.android"
         },
         {
+          "builder": "android-12l-landscape-x64-dbg",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "android-12l-x64-dbg",
           "group": "tryserver.chromium.android"
         },
@@ -217,9 +261,18 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
-    "jobs": 500,
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-trusted",
+    "remote_jobs": 500
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -229,6 +282,9 @@
     ]
   },
   "builder_group": "chromium.android",
+  "gardener_rotations": [
+    "android"
+  ],
   "recipe": "chromium",
   "sheriff_rotations": [
     "android"

@@ -5,7 +5,7 @@
 #include "components/prefs/writeable_pref_store.h"
 
 void WriteablePrefStore::ReportSubValuesChanged(
-    const std::string& key,
+    std::string_view key,
     std::set<std::vector<std::string>> path_components,
     uint32_t flags) {
   // Default implementation. Subclasses may use |path_components| to improve

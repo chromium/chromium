@@ -6,12 +6,17 @@
 
 #include <string>
 
-#include "components/prefs/android/jni_headers/PrefService_jni.h"
+#include "base/android/jni_string.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/prefs_export.h"
 
-using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/prefs/android/jni_headers/PrefService_jni.h"
+
 using jni_zero::AttachCurrentThread;
+using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
+using jni_zero::ScopedJavaLocalRef;
 
 PrefServiceAndroid::PrefServiceAndroid(PrefService* pref_service)
     : pref_service_(pref_service) {}
@@ -25,7 +30,7 @@ PrefServiceAndroid::~PrefServiceAndroid() {
 
 // static
 PrefService* PrefServiceAndroid::FromPrefServiceAndroid(
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
   if (obj.is_null()) {
     return nullptr;
   }
@@ -99,6 +104,19 @@ void PrefServiceAndroid::SetDouble(JNIEnv* env,
                                    const JavaParamRef<jstring>& j_preference,
                                    const jdouble j_value) {
   pref_service_->SetDouble(
+      base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
+}
+
+jlong PrefServiceAndroid::GetLong(JNIEnv* env,
+                                  const JavaParamRef<jstring>& j_preference) {
+  return pref_service_->GetInt64(
+      base::android::ConvertJavaStringToUTF8(env, j_preference));
+}
+
+void PrefServiceAndroid::SetLong(JNIEnv* env,
+                                 const JavaParamRef<jstring>& j_preference,
+                                 const jlong j_value) {
+  pref_service_->SetInt64(
       base::android::ConvertJavaStringToUTF8(env, j_preference), j_value);
 }
 

@@ -50,7 +50,6 @@ android_resources("java_resources") {
     "android/java/res/layout/image_descriptions_dialog.xml",
     "android/java/res/layout/radio_button_group_accessibility_preference.xml",
     "android/java/res/xml/image_descriptions_preference.xml",
-    "android/java/res/xml/image_descriptions_settings_preference.xml",
   ]
 
   deps = [
@@ -73,6 +72,7 @@ android_library("unit_device_javatests") {
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
+    "//base:tasks_java",
     "//chrome/browser/device:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",

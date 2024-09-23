@@ -3,8 +3,11 @@
 # found in the LICENSE file.
 """Product classes that encapsulate the interfaces for the testing targets"""
 
+import argparse
 import contextlib
+import functools
 import logging
+from typing import List
 
 from blinkpy.common import path_finder
 from blinkpy.common.memoized import memoized
@@ -12,6 +15,7 @@ from blinkpy.common.memoized import memoized
 _log = logging.getLogger(__name__)
 IOS_VERSION = '17.0'
 IOS_DEVICE = 'iPhone 14 Pro'
+
 
 def do_delay_imports():
     global devil_chromium, devil_env, apk_helper
@@ -36,7 +40,13 @@ def make_product_registry():
     respective classes.
     """
     product_registry = {}
-    product_classes = [Chrome, ContentShell, ChromeiOS, ChromeAndroid, WebView]
+    product_classes = [
+        Chrome,
+        HeadlessShell,
+        ChromeiOS,
+        ChromeAndroid,
+        WebView,
+    ]
     for product_cls in product_classes:
         names = [product_cls.name] + product_cls.aliases
         product_registry.update((name, product_cls) for name in names)
@@ -65,17 +75,23 @@ class Product:
         with self._tasks:
             yield
 
-    def product_specific_options(self):
-        """Product-specific wptrunner parameters needed to run tests."""
-        processes = self._options.child_processes
-        if not processes:
-            if self._options.wrapper:
-                _log.info('Defaulting to 1 worker because of debugging '
-                          'option `--wrapper`')
-                processes = 1
-            else:
-                processes = self._port.default_child_processes()
-        return {'processes': processes}
+    def update_runner_options(self, options: argparse.Namespace):
+        options.processes = self.processes
+        # pylint: disable=assignment-from-none
+        options.browser_version = self.get_version()
+        options.webdriver_binary = self.webdriver_binary
+        options.webdriver_args.extend(self.additional_webdriver_args())
+
+    @functools.cached_property
+    def processes(self) -> int:
+        if self._options.child_processes:
+            return self._options.child_processes
+        elif self._options.wrapper:
+            _log.info('Defaulting to 1 worker because of debugging option '
+                      '`--wrapper`')
+            return 1
+        else:
+            return self._port.default_child_processes()
 
     def additional_webdriver_args(self):
         """Additional webdriver parameters for the product"""
@@ -86,26 +102,7 @@ class Product:
         return None
 
     @property
-    def default_webdriver_binary(self):
-        """Path to the default webdriver binary, if available."""
-        return None
-
-
-class Chrome(Product):
-    name = 'chrome'
-
-    def product_specific_options(self):
-        """Product-specific wptrunner parameters needed to run tests."""
-        return {
-            **super().product_specific_options(),
-            'binary':
-            self._port.path_to_driver(),
-            'webdriver_binary':
-            self.default_webdriver_binary,
-        }
-
-    @property
-    def default_webdriver_binary(self):
+    def webdriver_binary(self):
         if self._host.platform.is_win():
             path = 'chromedriver.exe'
         else:
@@ -113,31 +110,53 @@ class Chrome(Product):
         return self._port.build_path(path)
 
 
-class ContentShell(Product):
-    name = 'content_shell'
+class DesktopProduct(Product):
 
-    def product_specific_options(self):
-        """Product-specific wptrunner parameters needed to run tests."""
-        return {
-            **super().product_specific_options(),
-            'binary':
-            self._port.path_to_driver(),
-        }
+    def update_runner_options(self, options: argparse.Namespace):
+        super().update_runner_options(options)
+        options.binary = self._port.path_to_driver()
+        options.binary_args.extend(self.additional_binary_args())
+
+    def additional_binary_args(self) -> List[str]:
+        # Base args applicable to all embedders.
+        return [
+            '--enable-blink-test-features',
+            # Expose the non-standard `window.gc()` for `wpt_internal/` tests.
+            '--js-flags=--expose-gc',
+        ]
+
+
+class Chrome(DesktopProduct):
+    name = 'chrome'
+
+
+class HeadlessShell(DesktopProduct):
+    name = 'headless_shell'
+
+    def additional_binary_args(self):
+        # TODO(crbug.com/40887057): Support `--enable-leak-detection` and plumb
+        # the flag here.
+        return [
+            *super().additional_binary_args(),
+            "--canvas-2d-layers",
+            '--enable-bfcache',
+            '--enable-field-trial-config',
+            '--force-reporting-destination-attested',
+            # `headless_shell` doesn't send the `Accept-Language` header by
+            # default, so set an arbitrary one that some tests expect.
+            '--accept-lang=en-US,en',
+        ]
 
 
 class ChromeiOS(Product):
-
     name = 'chrome_ios'
 
-    def __init__(self, port, options):
-        super().__init__(port, options)
-
-    def product_specific_options(self):
-        """Product-specific wptrunner parameters needed to run tests."""
-        return {'webdriver_binary': self.default_webdriver_binary}
+    @property
+    def processes(self) -> int:
+        return 1
 
     @property
-    def default_webdriver_binary(self) -> str:
+    def webdriver_binary(self) -> str:
         return self._port._path_finder.path_from_chromium_base(
             'ios', 'chrome', 'test', 'wpt', 'tools',
             'run_cwt_chromedriver_wrapper.py')
@@ -183,7 +202,7 @@ class ChromeAndroidBase(Product):
                 config.Install()
 
                 # use '--child-processes' to decide how many emulators to launch
-                for _ in range(max(self._options.child_processes or 1, 1)):
+                for _ in range(max(self.processes, 1)):
                     instance = config.CreateInstance()
                     instances.append(instance)
 
@@ -211,14 +230,11 @@ class ChromeAndroidBase(Product):
                 self.provision_devices()
             yield
 
-    def product_specific_options(self):
-        return {
-            'adb_binary': self.adb_binary,
-            'device_serial': [device.serial for device in self.devices],
-            'package_name': self.get_browser_package_name(),
-            'browser_version': self.get_version(),
-            'webdriver_binary': self.default_webdriver_binary
-        }
+    def update_runner_options(self, options: argparse.Namespace):
+        super().update_runner_options(options)
+        options.adb_binary = self.adb_binary
+        options.device_serial = [device.serial for device in self.devices]
+        options.package_name = self.get_browser_package_name()
 
     def get_version(self):
         version_provider = self.get_version_provider_package_name()
@@ -236,7 +252,11 @@ class ChromeAndroidBase(Product):
         return None
 
     @property
-    def default_webdriver_binary(self):
+    def processes(self) -> int:
+        return 1
+
+    @property
+    def webdriver_binary(self):
         return self._port.build_path('clang_x64', 'chromedriver')
 
     def get_browser_package_name(self):

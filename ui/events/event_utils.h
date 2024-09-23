@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
@@ -51,8 +51,8 @@ constexpr char kPropertyKeyboardGroup[] = "_keyevent_kbd_group_";
 // Key used to store 'hardware key code' values in Event::Properties.
 constexpr char kPropertyKeyboardHwKeyCode[] = "_keyevent_kbd_hw_keycode_";
 
-// Key used to store mouse event flag telling ET_MOUSE_EXITED must actually be
-// interpreted as "crossing intermediate window" in blink context.
+// Key used to store mouse event flag telling EventType::kMouseExited must
+// actually be interpreted as "crossing intermediate window" in blink context.
 constexpr char kPropertyMouseCrossedIntermediateWindow[] =
     "_mouseevent_cros_window_";
 
@@ -219,17 +219,16 @@ EVENTS_EXPORT void ConvertEventLocationToTargetWindowLocation(
 // The following utilities are useful for debugging and tracing.
 
 // Returns a string description of an event type.
-EVENTS_EXPORT base::StringPiece EventTypeName(EventType type);
+EVENTS_EXPORT std::string_view EventTypeName(EventType type);
 
 // Returns a vector of string representations of EventFlags.
-EVENTS_EXPORT std::vector<base::StringPiece> EventFlagsNames(int event_flags);
+EVENTS_EXPORT std::vector<std::string_view> EventFlagsNames(int event_flags);
 
 // Returns a a vector of string representations of KeyEventFlags.
-EVENTS_EXPORT std::vector<base::StringPiece> KeyEventFlagsNames(
-    int event_flags);
+EVENTS_EXPORT std::vector<std::string_view> KeyEventFlagsNames(int event_flags);
 
 // Returns a a vector of string representations of MouseEventFlags.
-EVENTS_EXPORT std::vector<base::StringPiece> MouseEventFlagsNames(
+EVENTS_EXPORT std::vector<std::string_view> MouseEventFlagsNames(
     int event_flags);
 }  // namespace ui
 

@@ -46,7 +46,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
  public:
   ~NavigationSimulatorImpl() override;
 
-  // TODO(https://crbug.com/1131832): Remove `original_url` as it's not used.
+  // TODO(crbug.com/40150370): Remove `original_url` as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateBrowserInitiated(
       const GURL& original_url,
       WebContents* contents);
@@ -56,7 +56,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
       WebContents* web_contents,
       bool is_renderer_initiated);
 
-  // TODO(https://crbug.com/1131832): Remove `original_url` as it's not used.
+  // TODO(crbug.com/40150370): Remove `original_url` as it's not used.
   static std::unique_ptr<NavigationSimulatorImpl> CreateRendererInitiated(
       const GURL& original_url,
       RenderFrameHost* render_frame_host);
@@ -87,6 +87,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void SetTransition(ui::PageTransition transition) override;
   void SetHasUserGesture(bool has_user_gesture) override;
   void SetNavigationInputStart(base::TimeTicks navigation_input_start) override;
+  void SetNavigationStart(base::TimeTicks navigation_start) override;
   void SetReloadType(ReloadType reload_type) override;
   void SetMethod(const std::string& method) override;
   void SetIsFormSubmission(bool is_form_submission) override;
@@ -231,6 +232,11 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   void set_post_id(int64_t post_id) { post_id_ = post_id; }
 
+  void set_response_postprocess_hook(
+      base::RepeatingCallback<void(network::mojom::URLResponseHead&)> hook) {
+    response_postprocess_hook_ = std::move(hook);
+  }
+
  private:
   NavigationSimulatorImpl(const GURL& original_url,
                           bool browser_initiated,
@@ -371,6 +377,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   int session_history_offset_ = 0;
   bool has_user_gesture_ = true;
   base::TimeTicks navigation_input_start_;
+  base::TimeTicks navigation_start_;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_;
   std::string contents_mime_type_;
@@ -426,6 +433,11 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   bool early_hints_preload_link_header_received_ = false;
 
   std::string supports_loading_mode_header_;
+
+  // A hook that can be used to tweak the response before it is processed.
+  // Called for both redirect and final responses.
+  base::RepeatingCallback<void(network::mojom::URLResponseHead&)>
+      response_postprocess_hook_;
 
   std::optional<bool> was_prerendered_page_activation_;
 

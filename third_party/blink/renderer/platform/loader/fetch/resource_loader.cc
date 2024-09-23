@@ -27,12 +27,19 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 
 #include <algorithm>
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -49,7 +56,6 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -87,6 +93,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/shared_buffer_bytes_consumer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/loader/mixed_content_autoupgrade_status.h"
@@ -94,7 +101,6 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -320,6 +326,13 @@ void ResourceLoader::Trace(Visitor* visitor) const {
 void ResourceLoader::Start() {
   const ResourceRequestHead& request = resource_->GetResourceRequest();
 
+  if (request.GetKeepalive()) {
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        request.GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kStarted,
+        fetcher_->GetProperties().IsDetached());
+  }
+
   if (!resource_->Url().ProtocolIsData()) {
     network_resource_request_ = CreateNetworkRequest(request, request_body_);
     if (is_cache_aware_loading_activated_) {
@@ -399,10 +412,6 @@ void ResourceLoader::Run() {
   // TODO(crbug.com/1169032): Manage cookies' capability control here for the
   // Prerender2.
   StartFetch();
-}
-
-void ResourceLoader::DidReceiveData(base::span<const char> data) {
-  DidReceiveData(data.data(), data.size());
 }
 
 void ResourceLoader::DidReceiveDecodedData(
@@ -770,15 +779,55 @@ FetchContext& ResourceLoader::Context() const {
 
 void ResourceLoader::DidReceiveResponse(
     const WebURLResponse& response,
-    mojo::ScopedDataPipeConsumerHandle body,
+    absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer> body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!response.IsNull());
-  DidReceiveResponseInternal(response.ToResourceResponse(),
-                             std::move(cached_metadata));
-  if (!IsLoading() || !body) {
-    return;
+
+  if (resource_->GetResourceRequest().GetKeepalive()) {
+    // Logs when a keepalive request succeeds. It does not matter whether the
+    // response is a multipart resource or not.
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        resource_->GetResourceRequest().GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kSucceeded,
+        fetcher_->GetProperties().IsDetached());
   }
 
+  DidReceiveResponseInternal(response.ToResourceResponse(),
+                             std::move(cached_metadata));
+  if (!IsLoading()) {
+    return;
+  }
+  if (resource_->HasSuccessfulRevalidation()) {
+    // When we succeeded the revalidation, the response is a 304 Not Modified.
+    // The body of the 304 Not Modified response must be empty.
+    //   RFC9110: https://www.rfc-editor.org/rfc/rfc9110.html#section-6.4.1-8
+    //     All 1xx (Informational), 204 (No Content), and 304 (Not Modified)
+    //     responses do not include content.
+    // net::HttpStreamParser::CalculateResponseBodySize() is skipping loading
+    // the body of 304 Not Modified response. And Blink don't fetch the
+    // revalidating request when the page is controlled by a service worker.
+    // So, We don't need to handle the body for 304 Not Modified responses.
+    if (absl::holds_alternative<SegmentedBuffer>(body)) {
+      CHECK(absl::get<SegmentedBuffer>(body).empty());
+    } else {
+      CHECK(absl::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body));
+      // If the `body` is released here, the network service will treat the
+      // disconnection of the `body` handle as if the request was cancelled. So
+      // we keeps the `body` handle.
+      empty_body_handle_for_revalidation_ =
+          std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body));
+    }
+    return;
+  }
+  if (absl::holds_alternative<SegmentedBuffer>(body)) {
+    DidReceiveDataImpl(std::move(absl::get<SegmentedBuffer>(body)));
+    return;
+  }
+  mojo::ScopedDataPipeConsumerHandle body_handle =
+      std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body));
+  if (!body_handle) {
+    return;
+  }
   if (resource_->GetResourceRequest().DownloadToBlob()) {
     DCHECK(!blob_response_started_);
     blob_response_started_ = true;
@@ -790,7 +839,7 @@ void ResourceLoader::DidReceiveResponse(
     fetcher_->GetBlobRegistry()->RegisterFromStream(
         mime_type.IsNull() ? g_empty_string : mime_type.LowerASCII(), "",
         std::max(static_cast<int64_t>(0), response.ExpectedContentLength()),
-        std::move(body),
+        std::move(body_handle),
         progress_receiver_.BindNewEndpointAndPassRemote(GetLoadingTaskRunner()),
         WTF::BindOnce(&ResourceLoader::FinishedCreatingBlob,
                       WrapWeakPersistent(this)));
@@ -799,9 +848,14 @@ void ResourceLoader::DidReceiveResponse(
 
   DataPipeBytesConsumer::CompletionNotifier* completion_notifier = nullptr;
   DidStartLoadingResponseBodyInternal(
-      *MakeGarbageCollected<DataPipeBytesConsumer>(
-          task_runner_for_body_loader_, std::move(body), &completion_notifier));
+      *MakeGarbageCollected<DataPipeBytesConsumer>(task_runner_for_body_loader_,
+                                                   std::move(body_handle),
+                                                   &completion_notifier));
   data_pipe_completion_notifier_ = completion_notifier;
+}
+
+void ResourceLoader::DidReceiveDataForTesting(base::span<const char> data) {
+  DidReceiveDataImpl(data);
 }
 
 void ResourceLoader::DidReceiveResponseInternal(
@@ -812,8 +866,10 @@ void ResourceLoader::DidReceiveResponseInternal(
   AtomicString content_encoding =
       response.HttpHeaderField(http_names::kContentEncoding);
   bool used_zstd = false;
-  if (content_encoding.LowerASCII() == "zstd") {
+  if (EqualIgnoringASCIICase(content_encoding, "zstd")) {
     fetcher_->GetUseCounter().CountUse(WebFeature::kZstdContentEncoding);
+    fetcher_->GetUseCounter().CountUse(
+        WebFeature::kZstdContentEncodingForSubresource);
     used_zstd = true;
   }
 
@@ -832,12 +888,10 @@ void ResourceLoader::DidReceiveResponseInternal(
     fetcher_->GetUseCounter().CountUse(WebFeature::kSharedDictionaryUsed);
     fetcher_->GetUseCounter().CountUse(
         WebFeature::kSharedDictionaryUsedForSubresource);
-    if (content_encoding.LowerASCII() ==
-        network::GetSharedBrotliContentEncodingName()) {
+    if (EqualIgnoringASCIICase(content_encoding, "dcb")) {
       fetcher_->GetUseCounter().CountUse(
           WebFeature::kSharedDictionaryUsedWithSharedBrotli);
-    } else if (content_encoding.LowerASCII() ==
-               network::GetSharedZstdContentEncodingName()) {
+    } else if (EqualIgnoringASCIICase(content_encoding, "dcz")) {
       fetcher_->GetUseCounter().CountUse(
           WebFeature::kSharedDictionaryUsedWithSharedZstd);
     }
@@ -969,6 +1023,8 @@ void ResourceLoader::DidReceiveResponseInternal(
     return;
   }
 
+  fetcher_->MarkEarlyHintConsumedIfNeeded(resource_->InspectorId(), resource_,
+                                          response);
   // FrameType never changes during the lifetime of a request.
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     ResourceRequest request_for_obserber(initial_request);
@@ -1023,12 +1079,34 @@ void ResourceLoader::DidReceiveResponseInternal(
   }
 }
 
-void ResourceLoader::DidReceiveData(const char* data, size_t length) {
-  if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->DidReceiveData(resource_->InspectorId(),
-                             base::make_span(data, length));
+void ResourceLoader::DidReceiveData(base::span<const char> data) {
+  DidReceiveDataImpl(data);
+}
+
+void ResourceLoader::DidReceiveDataImpl(
+    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+  size_t data_size = 0;
+  // If a BackgroundResponseProcessor consumed the body data on the background
+  // thread, this method is called with a SegmentedBuffer data. Otherwise, it is
+  // called with a span<const char> data several times.
+  if (absl::holds_alternative<SegmentedBuffer>(data)) {
+    data_size = absl::get<SegmentedBuffer>(data).size();
+    if (auto* observer = fetcher_->GetResourceLoadObserver()) {
+      for (const auto& span : absl::get<SegmentedBuffer>(data)) {
+        observer->DidReceiveData(resource_->InspectorId(),
+                                 base::SpanOrSize(span));
+      }
+    }
+  } else {
+    CHECK(absl::holds_alternative<base::span<const char>>(data));
+    base::span<const char> span = absl::get<base::span<const char>>(data);
+    data_size = span.size();
+    if (auto* observer = fetcher_->GetResourceLoadObserver()) {
+      observer->DidReceiveData(resource_->InspectorId(),
+                               base::SpanOrSize(span));
+    }
   }
-  resource_->AppendData(data, length);
+  resource_->AppendData(std::move(data));
 
   // This value should not be exposed for opaque responses.
   if (resource_->response_.WasFetchedViaServiceWorker() &&
@@ -1041,7 +1119,7 @@ void ResourceLoader::DidReceiveData(const char* data, size_t length) {
     // will always be >= 0, but the CheckAdd is used to enforce the second
     // constraint.
     received_body_length_from_service_worker_ =
-        base::CheckAdd(received_body_length_from_service_worker_, length)
+        base::CheckAdd(received_body_length_from_service_worker_, data_size)
             .ValueOrDie<int64_t>();
   }
 }
@@ -1143,6 +1221,12 @@ void ResourceLoader::CountFeature(blink::mojom::WebFeature feature) {
 }
 
 void ResourceLoader::HandleError(const ResourceError& error) {
+  if (resource_->GetResourceRequest().GetKeepalive()) {
+    FetchUtils::LogFetchKeepAliveRequestMetric(
+        resource_->GetResourceRequest().GetRequestContext(),
+        FetchUtils::FetchKeepAliveRequestState::kFailed);
+  }
+
   if (error.CorsErrorStatus() &&
       error.CorsErrorStatus()
           ->has_authorization_covered_by_wildcard_on_preflight) {
@@ -1223,8 +1307,9 @@ void ResourceLoader::RequestSynchronously() {
     // the data url with invalid mime type in some cases.
     // CanHandleDataURLRequestLocally() has already checked if the data url can
     // be handled here.
-    auto [result, response, data] =
-        network_utils::ParseDataURL(resource_->Url(), request.HttpMethod());
+    auto [result, response, data] = network_utils::ParseDataURL(
+        resource_->Url(), request.HttpMethod(), request.GetUkmSourceId(),
+        fetcher_->UkmRecorder());
     if (result != net::OK) {
       error_out = WebURLError(result, resource_->Url());
     } else {
@@ -1269,7 +1354,7 @@ void ResourceLoader::RequestSynchronously() {
   // a 304, where it will overwrite the cached data we should be reusing.
   if (data_out && data_out->size()) {
     for (const auto& span : *data_out) {
-      DidReceiveData(span.data(), span.size());
+      DidReceiveData(span);
     }
   }
 
@@ -1295,6 +1380,17 @@ void ResourceLoader::RequestAsynchronously() {
   }
   CHECK(loader_);
   CHECK(network_resource_request_);
+
+  // When `loader_` is a BackgroundURLLoader and
+  // kBackgroundResponseProcessorBackground feature param is enabled, creates a
+  // BackgroundResponseProcessor for the `resource_`, and set it to the
+  // `loader_`.
+  if (loader_->CanHandleResponseOnBackground()) {
+    if (auto factory =
+            resource_->MaybeCreateBackgroundResponseProcessorFactory()) {
+      loader_->SetBackgroundResponseProcessorFactory(std::move(factory));
+    }
+  }
 
   // Don't do mime sniffing for fetch (crbug.com/2016)
   bool no_mime_sniffing = resource_->GetResourceRequest().GetRequestContext() ==
@@ -1369,9 +1465,9 @@ void ResourceLoader::OnProgress(uint64_t delta) {
   }
 
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
-    observer->DidReceiveData(resource_->InspectorId(),
-                             base::make_span(static_cast<const char*>(nullptr),
-                                             static_cast<size_t>(delta)));
+    observer->DidReceiveData(
+        resource_->InspectorId(),
+        base::SpanOrSize<const char>(base::checked_cast<size_t>(delta)));
   }
   resource_->DidDownloadData(delta);
 }
@@ -1443,7 +1539,9 @@ void ResourceLoader::HandleDataUrl() {
   // CanHandleDataURLRequestLocally() has already checked if the data url can be
   // handled here.
   auto [result, response, data] = network_utils::ParseDataURL(
-      resource_->Url(), resource_->GetResourceRequest().HttpMethod());
+      resource_->Url(), resource_->GetResourceRequest().HttpMethod(),
+      resource_->GetResourceRequest().GetUkmSourceId(),
+      fetcher_->UkmRecorder());
   if (result != net::OK) {
     HandleError(ResourceError(result, resource_->Url(), std::nullopt));
     return;

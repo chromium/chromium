@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -56,7 +57,7 @@ class NeverRunsExternalProtocolHandlerDelegate
  public:
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
       const GURL& url) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
     // This will crash, but it shouldn't get this far with BlockState::BLOCK
     // anyway.
     return nullptr;
@@ -78,19 +79,21 @@ class NeverRunsExternalProtocolHandlerDelegate
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void LaunchUrlWithoutSecurityCheck(
       const GURL& url,
       content::WebContents* web_contents) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
-  void FinishedProcessingCheck() override { NOTREACHED(); }
+  void FinishedProcessingCheck() override { NOTREACHED_IN_MIGRATION(); }
 };
 
 }  // namespace
+
+constexpr char kSecondaryDomain[] = "www.foo.com";
 
 TestNoStatePrefetchContents::TestNoStatePrefetchContents(
     NoStatePrefetchManager* no_state_prefetch_manager,
@@ -155,7 +158,7 @@ void TestNoStatePrefetchContents::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* widget_host,
     bool became_visible) {
   // The NoStatePrefetchContents should never be visible.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 void TestNoStatePrefetchContents::RenderWidgetHostDestroyed(
@@ -459,8 +462,7 @@ void PrerenderInProcessBrowserTest::CreatedBrowserMainParts(
   InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
   safe_browsing_factory_->SetTestDatabaseManager(
       new safe_browsing::FakeSafeBrowsingDatabaseManager(
-          content::GetUIThreadTaskRunner({}),
-          content::GetIOThreadTaskRunner({})));
+          content::GetUIThreadTaskRunner({})));
   safe_browsing::SafeBrowsingService::RegisterFactory(
       safe_browsing_factory_.get());
 }
@@ -508,6 +510,7 @@ void PrerenderInProcessBrowserTest::UseHttpsSrcServer() {
   https_src_server_->RegisterRequestMonitor(base::BindRepeating(
       &PrerenderInProcessBrowserTest::MonitorResourceRequest,
       base::Unretained(this)));
+  https_src_server_->SetCertHostnames({kSecondaryDomain});
   net::test_server::RegisterDefaultHandlers(https_src_server_.get());
   CHECK(https_src_server_->Start());
 }

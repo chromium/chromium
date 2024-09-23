@@ -77,6 +77,11 @@ class CORE_EXPORT ScriptController final
       int argc,
       v8::Local<v8::Value> argv[]);
 
+  // Clears frame resources for a discard operation by replacing the current
+  // document with a new empty document, deleting the current document and its
+  // children.
+  void DiscardFrame();
+
   // Executes a javascript url in the main world. |world_for_csp| denotes the
   // javascript world in which this navigation initiated and which should be
   // used for CSP checks.
@@ -86,8 +91,7 @@ class CORE_EXPORT ScriptController final
 
   // Creates a new isolated world for DevTools with the given human readable
   // |world_name| and returns it id or nullptr on failure.
-  scoped_refptr<DOMWrapperWorld> CreateNewInspectorIsolatedWorld(
-      const String& world_name);
+  DOMWrapperWorld* CreateNewInspectorIsolatedWorld(const String& world_name);
 
   // Disables eval for the main world.
   void DisableEval(const String& error_message);

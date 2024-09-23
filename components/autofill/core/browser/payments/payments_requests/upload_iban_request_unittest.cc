@@ -9,7 +9,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
-
 namespace {
 
 constexpr char kAppLocale[] = "pt-BR";
@@ -18,8 +17,6 @@ constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr char16_t kContextToken[] = u"somecontexttoken";
 constexpr char16_t kValue[] = u"CH5604835012345678009";
 constexpr char16_t kNickname[] = u"My IBAN";
-
-}  // namespace
 
 class UploadIbanRequestTest : public testing::Test {
  public:
@@ -43,7 +40,7 @@ class UploadIbanRequestTest : public testing::Test {
 
 TEST_F(UploadIbanRequestTest, GetRequestContent) {
   EXPECT_EQ(GetRequest().GetRequestUrlPath(),
-            "payments/apis-secure/chromepaymentsservice/saveiban"
+            "payments/apis-secure/chromepaymentsservice/createpaymentinstrument"
             "?s7e_suffix=chromewallet");
   ASSERT_TRUE(!GetRequest().GetRequestContent().empty());
   EXPECT_NE(GetRequest().GetRequestContent().find("language_code"),
@@ -77,4 +74,5 @@ TEST_F(UploadIbanRequestTest, GetRequestContent) {
             std::string::npos);
 }
 
+}  // namespace
 }  // namespace autofill::payments

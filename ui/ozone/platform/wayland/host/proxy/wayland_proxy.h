@@ -10,7 +10,7 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 
 struct wl_buffer;
-struct wl_display;
+struct wl_registry;
 struct wl_surface;
 
 namespace gfx {
@@ -60,11 +60,7 @@ class COMPONENT_EXPORT(WAYLAND_PROXY) WaylandProxy {
   // for the Delegate class.
   virtual void SetDelegate(Delegate* delegate) = 0;
 
-  // Returns the wl_display the WaylandConnection has the connection with. See
-  // WaylandConnection::display() and WaylandConnection::display_wrapper() to
-  // know the difference between the GetDisplay() and GetDisplayWrapper().
-  virtual wl_display* GetDisplay() = 0;
-  virtual wl_display* GetDisplayWrapper() = 0;
+  virtual struct wl_registry* GetRegistry() = 0;
   virtual void RoundTripQueue() = 0;
 
   // Returns wl_surface that backs the |widget|.

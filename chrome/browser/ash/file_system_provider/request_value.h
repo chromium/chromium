@@ -44,6 +44,10 @@ class RequestValue {
       extensions::api::file_system_provider_internal::ReadFileRequestedSuccess::
           Params params);
 
+  static RequestValue CreateForOpenFileSuccess(
+      extensions::api::file_system_provider_internal::OpenFileRequestedSuccess::
+          Params params);
+
   static RequestValue CreateForOperationSuccess(
       extensions::api::file_system_provider_internal::
           OperationRequestedSuccess::Params params);
@@ -90,6 +94,13 @@ class RequestValue {
   }
 
   const extensions::api::file_system_provider_internal::
+      OpenFileRequestedSuccess::Params*
+      open_file_success_params() const {
+    return absl::get_if<extensions::api::file_system_provider_internal::
+                            OpenFileRequestedSuccess::Params>(&data_);
+  }
+
+  const extensions::api::file_system_provider_internal::
       OperationRequestedSuccess::Params*
       operation_success_params() const {
     return absl::get_if<extensions::api::file_system_provider_internal::
@@ -124,6 +135,8 @@ class RequestValue {
                     ReadDirectoryRequestedSuccess::Params,
                 extensions::api::file_system_provider_internal::
                     ReadFileRequestedSuccess::Params,
+                extensions::api::file_system_provider_internal::
+                    OpenFileRequestedSuccess::Params,
                 extensions::api::file_system_provider_internal::
                     OperationRequestedSuccess::Params,
                 extensions::api::file_system_provider_internal::

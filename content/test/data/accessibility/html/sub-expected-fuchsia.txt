@@ -17,15 +17,15 @@ UNKNOWN focusable has_input_focus
 ++++++++++++UNKNOWN label=' '
 ++++++++++UNKNOWN
 ++++++++++++UNKNOWN focusable label='3'
-++++++++++++++UNKNOWN label='oops'
+++++++++++++++UNKNOWN secondary_label='oops'
 ++++++++++++++++STATIC_TEXT label='3'
 ++++++++++++++++++UNKNOWN label='3'
 ++++++++++STATIC_TEXT label=' '
 ++++++++++++UNKNOWN label=' '
 ++++++++++UNKNOWN
 ++++++++++++LINK focusable label='2' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='better' actions='{DEFAULT}'
-++++++++++++++++STATIC_TEXT label='2' actions='{DEFAULT}'
+++++++++++++++UNKNOWN secondary_label='better'
+++++++++++++++++STATIC_TEXT label='2'
 ++++++++++++++++++UNKNOWN label='2'
 ++++++++++STATIC_TEXT label=' '
 ++++++++++++UNKNOWN label=' '

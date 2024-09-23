@@ -55,7 +55,7 @@ class PLATFORM_EXPORT XRFrameTransport final
   // Call before finalizing the frame's image snapshot.
   void FramePreImage(gpu::gles2::GLES2Interface*);
 
-  void FrameSubmit(device::mojom::blink::XRPresentationProvider*,
+  bool FrameSubmit(device::mojom::blink::XRPresentationProvider*,
                    gpu::gles2::GLES2Interface*,
                    gpu::SharedImageInterface*,
                    DrawingBuffer::Client*,
@@ -65,6 +65,8 @@ class PLATFORM_EXPORT XRFrameTransport final
   void FrameSubmitMissing(device::mojom::blink::XRPresentationProvider*,
                           gpu::gles2::GLES2Interface*,
                           int16_t vr_frame_id);
+
+  void RegisterFrameRenderedCallback(base::RepeatingClosure callback);
 
   virtual void Trace(Visitor*) const;
 
@@ -96,6 +98,8 @@ class PLATFORM_EXPORT XRFrameTransport final
   std::unique_ptr<gfx::GpuFence> previous_frame_fence_;
 
   device::mojom::blink::XRPresentationTransportOptionsPtr transport_options_;
+
+  base::RepeatingClosure on_submit_frame_rendered_callback_;
 
   std::unique_ptr<ImageToBufferCopier> frame_copier_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

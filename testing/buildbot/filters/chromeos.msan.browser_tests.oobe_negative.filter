@@ -1,5 +1,5 @@
 # Keep in sync with chromeos.msan.browser_tests.oobe_positive.filter.
-# TODO(crbug.com/1071693): Remove this filter when it's safe to do so.
+# TODO(crbug.com/40126889): Remove this filter when it's safe to do so.
 -AccessibilityManagerLoginTest.*
 -ActiveDirectoryJoinTest.*
 -ActiveDirectoryLoginAutocompleteTest.*

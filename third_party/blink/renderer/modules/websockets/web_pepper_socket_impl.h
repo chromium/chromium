@@ -38,8 +38,11 @@
 #include "third_party/blink/public/web/web_pepper_socket_client.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_client.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+
+namespace WTF {
+class String;
+}  // namespace WTF
 
 namespace blink {
 
@@ -64,19 +67,20 @@ class WebPepperSocketImpl final : public WebPepperSocket {
 
   // WebSocketChannelClient methods proxied by
   // WebPepperSocketChannelClientProxy.
-  void DidConnect(const String& subprotocol, const String& extensions);
-  void DidReceiveTextMessage(const String& payload);
+  void DidConnect(const WTF::String& subprotocol,
+                  const WTF::String& extensions);
+  void DidReceiveTextMessage(const WTF::String& payload);
   void DidReceiveBinaryMessage(std::unique_ptr<Vector<char>> payload);
   void DidError();
   void DidConsumeBufferedAmount(uint64_t consumed);
   void DidStartClosingHandshake();
   void DidClose(WebSocketChannelClient::ClosingHandshakeCompletionStatus,
                 uint16_t code,
-                const String& reason);
+                const WTF::String& reason);
 
  private:
   Persistent<WebSocketChannel> private_;
-  raw_ptr<WebPepperSocketClient, ExperimentalRenderer> client_;
+  raw_ptr<WebPepperSocketClient> client_;
   Persistent<WebPepperSocketChannelClientProxy> channel_proxy_;
   WebString subprotocol_;
   bool is_closing_or_closed_;

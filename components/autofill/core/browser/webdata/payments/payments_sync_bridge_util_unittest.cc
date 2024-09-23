@@ -8,18 +8,25 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -73,7 +80,11 @@ class PaymentsSyncBridgeUtilTest : public testing::Test {
   PaymentsSyncBridgeUtilTest& operator=(const PaymentsSyncBridgeUtilTest&) =
       delete;
 
-  ~PaymentsSyncBridgeUtilTest() override {}
+  ~PaymentsSyncBridgeUtilTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected.
@@ -122,6 +133,7 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   sync_pb::AutofillWalletSpecifics wallet_specifics_iban =
       CreateAutofillWalletSpecificsForIban(
           /*client_tag=*/iban_id);
+
   entity_data.push_back(EntityChange::CreateAdd(
       credit_card_id_1,
       SpecificsToEntity(wallet_specifics_card1, /*client_tag=*/"card-card1")));
@@ -148,8 +160,12 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   std::vector<Iban> wallet_ibans;
   std::vector<PaymentsCustomerData> customer_data;
   std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
   PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
-                                  customer_data, cloud_token_data);
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
 
   ASSERT_EQ(2U, wallet_cards.size());
 
@@ -189,6 +205,127 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   EXPECT_TRUE(wallet_cards.front().product_description().empty());
   EXPECT_EQ(wallet_cards.back().product_description(),
             u"fake product description");
+}
+
+// Test suite for benefit syncing helpers that takes a bool indicating
+// whether benefit syncing should be enabled for testing.
+class PaymentsSyncBridgeUtilCardBenefitsTest
+    : public PaymentsSyncBridgeUtilTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PaymentsSyncBridgeUtilCardBenefitsTest() {
+    feature_list_.InitWithFeatureState(
+        autofill::features::kAutofillEnableCardBenefitsSync,
+        IsBenefitsSyncEnabled());
+  }
+
+  ~PaymentsSyncBridgeUtilCardBenefitsTest() override = default;
+
+  sync_pb::AutofillWalletSpecifics PrepareCardSpecificForBenefit(
+      const std::string_view card_tag,
+      const int64_t instrument_id) {
+    sync_pb::AutofillWalletSpecifics wallet_specifics_card =
+        CreateAutofillWalletSpecificsForCard(
+            /*client_tag=*/base::StrCat({"credit_card_", card_tag}),
+            /*billing_address_id=*/std::string(card_tag));
+    wallet_specifics_card.mutable_masked_card()->set_instrument_id(
+        instrument_id);
+    wallet_specifics_card.mutable_masked_card()->set_product_terms_url(
+        base::StrCat({"https://www.example", card_tag, ".com/term"}));
+    return wallet_specifics_card;
+  }
+
+  void AddBenefitForCard(
+      CreditCardBenefit& benefit,
+      sync_pb::AutofillWalletSpecifics& wallet_specifics_card) {
+    test_api(benefit).SetLinkedCardInstrumentId(
+        CreditCardBenefitBase::LinkedCardInstrumentId(
+            wallet_specifics_card.mutable_masked_card()->instrument_id()));
+    SetAutofillWalletSpecificsFromCardBenefit(benefit, /*enforce_utf8=*/false,
+                                              wallet_specifics_card);
+  }
+
+  bool IsBenefitsSyncEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Initializes the parameterized test suite with a bool indicating whether
+// benefit syncing should be enabled for testing.
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         PaymentsSyncBridgeUtilCardBenefitsTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& arg) {
+                           return arg.param ? "BenefitSyncEnabled"
+                                            : "BenefitSyncDisabled";
+                         });
+
+// Tests that PopulateWalletTypesFromSyncData behaves as expected for wallet
+// card and card benefit.
+TEST_P(PaymentsSyncBridgeUtilCardBenefitsTest,
+       PopulateWalletTypesFromSyncDataForCreditCardBenefits) {
+  // Generate two credit card specifics.
+  sync_pb::AutofillWalletSpecifics wallet_specifics_card1 =
+      PrepareCardSpecificForBenefit(/*card_tag=*/"1", /*instrument_id=*/1234);
+  sync_pb::AutofillWalletSpecifics wallet_specifics_card2 =
+      PrepareCardSpecificForBenefit(/*card_tag=*/"2", /*instrument_id=*/5678);
+
+  // Set a time in milliseconds accuracy so that the testing benefits can be
+  // generated in milliseconds to match the server format.
+  task_environment_.FastForwardBy(base::Milliseconds(1234));
+
+  // Add two credit-card-linked benefits to card 1.
+  CreditCardBenefit merchant_benefit =
+      test::GetActiveCreditCardMerchantBenefit();
+  CreditCardBenefit category_benefit =
+      test::GetActiveCreditCardCategoryBenefit();
+  AddBenefitForCard(merchant_benefit, wallet_specifics_card1);
+  AddBenefitForCard(category_benefit, wallet_specifics_card1);
+
+  // Add one credit-card-linked benefit to card 2.
+  CreditCardBenefit flat_rate_benefit =
+      test::GetActiveCreditCardFlatRateBenefit();
+  AddBenefitForCard(flat_rate_benefit, wallet_specifics_card2);
+
+  // Add cards to entity.
+  syncer::EntityChangeList entity_data;
+  entity_data.push_back(EntityChange::CreateAdd(
+      wallet_specifics_card1.mutable_masked_card()->id(),
+      SpecificsToEntity(wallet_specifics_card1, /*client_tag=*/"card-card1")));
+  entity_data.push_back(EntityChange::CreateAdd(
+      wallet_specifics_card2.mutable_masked_card()->id(),
+      SpecificsToEntity(wallet_specifics_card2, /*client_tag=*/"card-card2")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  EXPECT_EQ(2U, wallet_cards.size());
+
+  // Verify that the `product_terms_url` and `card_benefit` are set correctly.
+  if (IsBenefitsSyncEnabled()) {
+    EXPECT_EQ(
+        wallet_cards.front().product_terms_url().spec(),
+        wallet_specifics_card1.mutable_masked_card()->product_terms_url());
+    EXPECT_EQ(
+        wallet_cards.back().product_terms_url().spec(),
+        wallet_specifics_card2.mutable_masked_card()->product_terms_url());
+    EXPECT_THAT(benefits,
+                testing::UnorderedElementsAre(
+                    flat_rate_benefit, category_benefit, merchant_benefit));
+  } else {
+    EXPECT_TRUE(wallet_cards.front().product_terms_url().is_empty());
+    EXPECT_TRUE(wallet_cards.back().product_terms_url().is_empty());
+    EXPECT_TRUE(benefits.empty());
+  }
 }
 
 // Verify that the billing address id from the card saved on disk is kept if it
@@ -259,10 +396,8 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 // Verify that the use stats on disk are kept when server cards are synced.
 TEST_F(PaymentsSyncBridgeUtilTest,
        CopyRelevantWalletMetadataAndCvc_KeepUseStats) {
-  TestAutofillClock test_clock;
-  base::Time arbitrary_time = base::Time::FromSecondsSinceUnixEpoch(25);
   base::Time disk_time = base::Time::FromSecondsSinceUnixEpoch(10);
-  test_clock.SetNow(arbitrary_time);
+  task_environment_.FastForwardBy(base::Seconds(25));
 
   std::vector<CreditCard> cards_from_local_storage;
   std::vector<CreditCard> wallet_cards;
@@ -394,9 +529,23 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   new_offer_data.push_back(data1);
   EXPECT_FALSE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 
-  new_offer_data.at(0).SetOfferIdForTesting(new_offer_data.at(0).GetOfferId() +
-                                            456);
+  new_offer_data.front().SetOfferIdForTesting(
+      new_offer_data.at(0).GetOfferId() + 456);
   EXPECT_TRUE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
+
+  CreditCardBenefit merchant_benefit =
+      test::GetActiveCreditCardMerchantBenefit();
+  CreditCardBenefit flat_rate_benefit =
+      test::GetActiveCreditCardFlatRateBenefit();
+  std::vector<CreditCardBenefit> old_card_benefits = {flat_rate_benefit,
+                                                      merchant_benefit};
+  std::vector<CreditCardBenefit> new_card_benefits = {merchant_benefit,
+                                                      flat_rate_benefit};
+  EXPECT_FALSE(AreAnyItemsDifferent(old_card_benefits, new_card_benefits));
+
+  test_api(new_card_benefits.front())
+      .SetBenefitId(CreditCardBenefitBase::BenefitId("DifferentId"));
+  EXPECT_TRUE(AreAnyItemsDifferent(old_card_benefits, new_card_benefits));
 }
 
 // Ensures that the ShouldResetAutofillWalletData function works correctly, if
@@ -412,6 +561,13 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   new_offer_data.push_back(data2);
   new_offer_data.push_back(data1);
   EXPECT_TRUE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
+
+  std::vector<CreditCardBenefit> old_card_benefits = {
+      test::GetActiveCreditCardMerchantBenefit(),
+      test::GetActiveCreditCardCategoryBenefit()};
+  std::vector<CreditCardBenefit> new_card_benefits = {
+      test::GetActiveCreditCardMerchantBenefit()};
+  EXPECT_TRUE(AreAnyItemsDifferent(old_card_benefits, new_card_benefits));
 }
 
 // Ensures that function IsOfferSpecificsValid is working correctly.
@@ -556,6 +712,98 @@ TEST_F(PaymentsSyncBridgeUtilTest, AutofillWalletStructDataFromUsageSpecifics) {
             25000);
 }
 
+// Test to ensure that CreditCardBenefits can be correctly converted to
+// AutofillWalletSpecifics.
+TEST_F(PaymentsSyncBridgeUtilTest, SetAutofillWalletSpecificsFromCardBenefit) {
+  // Get one credit-card-linked benefit for each type.
+  CreditCardMerchantBenefit merchant_benefit =
+      test::GetActiveCreditCardMerchantBenefit();
+  CreditCardCategoryBenefit category_benefit =
+      test::GetActiveCreditCardCategoryBenefit();
+  CreditCardFlatRateBenefit flat_rate_benefit =
+      test::GetActiveCreditCardFlatRateBenefit();
+  test_api(category_benefit).SetStartTime(base::Time::Min());
+  test_api(flat_rate_benefit).SetExpiryTime(base::Time::Max());
+
+  // Add above benefits to card specifics.
+  sync_pb::AutofillWalletSpecifics wallet_specifics_card =
+      CreateAutofillWalletSpecificsForCard(/*client_tag=*/"credit_card");
+  SetAutofillWalletSpecificsFromCardBenefit(
+      merchant_benefit, /*enforce_utf8=*/false, wallet_specifics_card);
+  SetAutofillWalletSpecificsFromCardBenefit(
+      category_benefit, /*enforce_utf8=*/false, wallet_specifics_card);
+  SetAutofillWalletSpecificsFromCardBenefit(
+      flat_rate_benefit, /*enforce_utf8=*/false, wallet_specifics_card);
+
+  // Check type specific benefit fields are set correctly.
+  for (const auto& benefit_specifics :
+       wallet_specifics_card.masked_card().card_benefit()) {
+    std::optional<CreditCardBenefit> target_benefit;
+
+    if (benefit_specifics.has_flat_rate_benefit()) {
+      target_benefit = flat_rate_benefit;
+    } else if (benefit_specifics.has_category_benefit()) {
+      // Check category benefit specific field is set correctly.
+      EXPECT_EQ(
+          base::to_underlying(
+              benefit_specifics.category_benefit().category_benefit_type()),
+          base::to_underlying(category_benefit.benefit_category()));
+
+      target_benefit = category_benefit;
+    } else {
+      EXPECT_TRUE(benefit_specifics.has_merchant_benefit());
+
+      // Check merchant benefit specific field is set correctly.
+      const base::flat_set<url::Origin>& benefit_merchant_domains =
+          merchant_benefit.merchant_domains();
+      EXPECT_TRUE(benefit_specifics.merchant_benefit().merchant_domain_size() ==
+                  static_cast<int>(benefit_merchant_domains.size()));
+      for (const std::string& specifics_merchant_domain :
+           benefit_specifics.merchant_benefit().merchant_domain()) {
+        EXPECT_TRUE(benefit_merchant_domains.contains(
+            url::Origin::Create(GURL(specifics_merchant_domain))));
+      }
+
+      target_benefit = merchant_benefit;
+    }
+
+    // Check benefit common fields are set correctly.
+    CreditCardBenefitBase& benefit_base = absl::visit(
+        [](auto& benefit) -> CreditCardBenefitBase& { return benefit; },
+        *target_benefit);
+
+    EXPECT_EQ(benefit_specifics.benefit_id(),
+              benefit_base.benefit_id().value());
+
+    // Specifics with empty start time means the benefit has no start time
+    // (always started). The client benefit start time will be set to min
+    // time with such specifics.
+    // So when the benefit start time is min time, the specifics start time
+    // should have no value.
+    if (benefit_base.start_time().is_min()) {
+      EXPECT_FALSE(benefit_specifics.has_start_time_unix_epoch_milliseconds());
+    } else {
+      EXPECT_EQ(benefit_specifics.start_time_unix_epoch_milliseconds(),
+                benefit_base.start_time().InMillisecondsSinceUnixEpoch());
+    }
+
+    // Specifics with empty end time means the benefit has no expiry time
+    // (never expires). The client benefit expiry time will be set to max
+    // time with such specifics.
+    // So when the benefit expiry time is max time, the specifics end time
+    // should have no value.
+    if (benefit_base.expiry_time().is_max()) {
+      EXPECT_FALSE(benefit_specifics.has_end_time_unix_epoch_milliseconds());
+    } else {
+      EXPECT_EQ(benefit_specifics.end_time_unix_epoch_milliseconds(),
+                benefit_base.expiry_time().InMillisecondsSinceUnixEpoch());
+    }
+
+    EXPECT_EQ(base::UTF8ToUTF16(benefit_specifics.benefit_description()),
+              benefit_base.benefit_description());
+  }
+}
+
 // Round trip test to ensure that WalletCredential struct data for CVV storage
 // is correctly converted to AutofillWalletCredentialSpecifics and then from
 // the converted AutofillWalletCredentialSpecifics to WalletCredential struct
@@ -610,6 +858,421 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   EXPECT_EQ(server_cvc_from_conversion.cvc, server_cvc->cvc);
   EXPECT_EQ(server_cvc_from_conversion.last_updated_timestamp,
             server_cvc->last_updated_timestamp);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+// Tests that PopulateWalletTypesFromSyncData populates BankAccounts.
+TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  syncer::EntityChangeList entity_data;
+  std::string bank_account_id = "payment_instrument:123545";
+  sync_pb::AutofillWalletSpecifics payment_instrument_bank_account_specifics =
+      CreateAutofillWalletSpecificsForBankAccount(
+          /*client_tag=*/bank_account_id, /*nickname=*/"Pix bank account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*bank_name=*/"ABC Bank",
+          /*account_number_suffix=*/"1234",
+          sync_pb::BankAccountDetails_AccountType_CHECKING);
+  entity_data.push_back(EntityChange::CreateAdd(
+      bank_account_id,
+      SpecificsToEntity(payment_instrument_bank_account_specifics,
+                        /*client_tag=*/"bank_account")));
+  BankAccount expected_bank_account(
+      /*instrument_id=*/123545, /*nickname=*/u"Pix bank account",
+      /*display_icon_url=*/GURL("http://www.google.com"),
+      /*bank_name=*/u"ABC Bank",
+      /*account_number_suffix=*/u"1234", BankAccount::AccountType::kChecking);
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  ASSERT_EQ(1u, bank_accounts.size());
+  EXPECT_EQ(expected_bank_account, bank_accounts.at(0));
+}
+
+// Tests that PopulateWalletTypesFromSyncData does not BankAccounts if Pix
+// experiment flag is disabled.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulateBankAccountFromSyncDataExperimentOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableSyncingOfPixBankAccounts);
+  syncer::EntityChangeList entity_data;
+  std::string bank_account_id = "payment_instrument:123545";
+  sync_pb::AutofillWalletSpecifics payment_instrument_bank_account_specifics =
+      CreateAutofillWalletSpecificsForBankAccount(
+          /*client_tag=*/bank_account_id, /*nickname=*/"Pix bank account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*bank_name=*/"ABC Bank",
+          /*account_number_suffix=*/"1234",
+          sync_pb::BankAccountDetails_AccountType_CHECKING);
+  entity_data.push_back(EntityChange::CreateAdd(
+      bank_account_id,
+      SpecificsToEntity(payment_instrument_bank_account_specifics,
+                        /*client_tag=*/"bank_account")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  EXPECT_EQ(0u, bank_accounts.size());
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest, BankAccountFromWalletSpecifics) {
+  sync_pb::AutofillWalletSpecifics payment_instrument_bank_account_specifics =
+      CreateAutofillWalletSpecificsForBankAccount(
+          /*client_tag=*/"payment_instrument:123545",
+          /*nickname=*/"Pix bank account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*bank_name=*/"ABC Bank",
+          /*account_number_suffix=*/"1234",
+          sync_pb::BankAccountDetails_AccountType_CHECKING);
+  BankAccount expected_bank_account(
+      /*instrument_id=*/123545, /*nickname=*/u"Pix bank account",
+      /*display_icon_url=*/GURL("http://www.google.com"),
+      /*bank_name=*/u"ABC Bank",
+      /*account_number_suffix=*/u"1234", BankAccount::AccountType::kChecking);
+
+  EXPECT_EQ(
+      expected_bank_account,
+      BankAccountFromWalletSpecifics(
+          payment_instrument_bank_account_specifics.payment_instrument()));
+}
+
+// Tests that PopulateWalletTypesFromSyncData populates PaymentInstruments for
+// eWallet accounts.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulatePaymentInstrumentsFromSyncData_EwalletAccounts) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  syncer::EntityChangeList entity_data;
+  std::string ewallet_account_id = "payment_instrument:123545";
+  sync_pb::AutofillWalletSpecifics
+      payment_instrument_ewallet_account_specifics =
+          CreateAutofillWalletSpecificsForEwalletAccount(
+              /*client_tag=*/ewallet_account_id, /*nickname=*/"eWallet account",
+              /*display_icon_url=*/GURL("http://www.google.com"),
+              /*ewallet_name=*/"ABC Pay",
+              /*account_display_name=*/"1234",
+              /*is_fido_enrolled=*/false);
+  entity_data.push_back(EntityChange::CreateAdd(
+      ewallet_account_id,
+      SpecificsToEntity(payment_instrument_ewallet_account_specifics,
+                        /*client_tag=*/"ewallet_account")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  ASSERT_EQ(1u, payment_instruments.size());
+  sync_pb::PaymentInstrument payment_instrument = payment_instruments.at(0);
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .instrument_id(),
+            payment_instrument.instrument_id());
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .nickname(),
+            payment_instrument.nickname());
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .display_icon_url(),
+            payment_instrument.display_icon_url());
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .supported_rails()
+                .at(0),
+            payment_instrument.supported_rails().at(0));
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .ewallet_details()
+                .ewallet_name(),
+            payment_instrument.ewallet_details().ewallet_name());
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .ewallet_details()
+                .account_display_name(),
+            payment_instrument.ewallet_details().account_display_name());
+  EXPECT_EQ(
+      payment_instrument_ewallet_account_specifics.payment_instrument()
+          .ewallet_details()
+          .supported_payment_link_uris()
+          .at(0),
+      payment_instrument.ewallet_details().supported_payment_link_uris().at(0));
+  EXPECT_EQ(payment_instrument_ewallet_account_specifics.payment_instrument()
+                .device_details()
+                .is_fido_enrolled(),
+            payment_instrument.device_details().is_fido_enrolled());
+}
+
+// Tests that PopulateWalletTypesFromSyncData does not populate
+// PaymentInstruments for eWallet accounts if eWallet sync experiment flag is
+// disabled.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       PopulatePaymentInstrumentsFromSyncDataExperimentOff_EwalletAccounts) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillSyncEwalletAccounts);
+  syncer::EntityChangeList entity_data;
+  std::string ewallet_account_id = "payment_instrument:123545";
+  sync_pb::AutofillWalletSpecifics
+      payment_instrument_ewallet_account_specifics =
+          CreateAutofillWalletSpecificsForEwalletAccount(
+              /*client_tag=*/ewallet_account_id, /*nickname=*/"eWallet account",
+              /*display_icon_url=*/GURL("http://www.google.com"),
+              /*ewallet_name=*/"ABC Pay",
+              /*account_display_name=*/"1234",
+              /*is_fido_enrolled=*/false);
+  entity_data.push_back(EntityChange::CreateAdd(
+      ewallet_account_id,
+      SpecificsToEntity(payment_instrument_ewallet_account_specifics,
+                        /*client_tag=*/"ewallet_account")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  EXPECT_EQ(0u, payment_instruments.size());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+struct WalletCardTypeMapping {
+  sync_pb::WalletMaskedCreditCard_WalletCardType wallet_card_type;
+  const char* const card_network;
+};
+
+class PaymentsSyncBridgeUtilTest_WalletCardMapping
+    : public ::testing::TestWithParam<WalletCardTypeMapping> {};
+
+// Test to verify the correct mapping of CardType to the card network.
+TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
+       VerifyCardTypeMappingFromCardNetwork) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableVerveCardSupport);
+  auto test_case = GetParam();
+
+  syncer::EntityChangeList entity_data;
+  // Add a credit card.
+  std::string credit_card_id = "credit_card_1";
+  // Add the first card. No nickname is set.
+  sync_pb::AutofillWalletSpecifics wallet_specifics_card =
+      CreateAutofillWalletSpecificsForCard(
+          /*client_tag=*/credit_card_id,
+          /*billing_address_id=*/"1");
+  wallet_specifics_card.mutable_masked_card()->set_type(
+      test_case.wallet_card_type);
+
+  entity_data.push_back(EntityChange::CreateAdd(
+      credit_card_id,
+      SpecificsToEntity(wallet_specifics_card, /*client_tag=*/"card-card1")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  ASSERT_EQ(1U, wallet_cards.size());
+  EXPECT_EQ(test_case.card_network, wallet_cards.front().network());
+}
+
+// Test to verify the correct mapping of the card network to CardType.
+TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
+       VerifyCardNetworkMappingFromCardType) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableVerveCardSupport);
+  auto test_case = GetParam();
+
+  CreditCard credit_card = test::GetMaskedServerCard();
+  credit_card.SetNetworkForMaskedCard(test_case.card_network);
+
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  SetAutofillWalletSpecificsFromServerCard(credit_card, &wallet_specifics);
+
+  EXPECT_EQ(test_case.wallet_card_type,
+            wallet_specifics.mutable_masked_card()->type());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PaymentsSyncBridgeUtilTest_WalletCardMapping,
+    testing::Values(
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::AMEX,
+                              autofill::kAmericanExpressCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::DISCOVER,
+                              autofill::kDiscoverCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::ELO,
+                              autofill::kEloCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::JCB,
+                              autofill::kJCBCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::MASTER_CARD,
+                              autofill::kMasterCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::UNIONPAY,
+                              autofill::kUnionPay},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VERVE,
+                              autofill::kVerveCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VISA,
+                              autofill::kVisaCard}));
+
+// These two tests verify the same case as
+// `PaymentsSyncBridgeUtilTest_WalletCardMapping` but with the added caveat of
+// checking the Verve conversion values with `kAutofillEnableVerveCardSupport`
+// flag off.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       VerifyCardNetworkMappingFromCardType_ForVerve_WithFlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableVerveCardSupport);
+
+  CreditCard credit_card = test::GetMaskedServerCard();
+  credit_card.SetNetworkForMaskedCard(autofill::kVerveCard);
+
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  SetAutofillWalletSpecificsFromServerCard(credit_card, &wallet_specifics);
+
+  // With the flag off, the card type is UNKNOWN instead of VERVE.
+  EXPECT_EQ(sync_pb::WalletMaskedCreditCard::UNKNOWN,
+            wallet_specifics.mutable_masked_card()->type());
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       VerifyCardTypeMappingFromCardNetwork_ForVerve_WithFlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableVerveCardSupport);
+
+  syncer::EntityChangeList entity_data;
+  // Add a credit card.
+  std::string credit_card_id = "credit_card_1";
+  // Add the first card. No nickname is set.
+  sync_pb::AutofillWalletSpecifics wallet_specifics_card =
+      CreateAutofillWalletSpecificsForCard(
+          /*client_tag=*/credit_card_id,
+          /*billing_address_id=*/"1");
+  wallet_specifics_card.mutable_masked_card()->set_type(
+      sync_pb::WalletMaskedCreditCard::VERVE);
+
+  entity_data.push_back(EntityChange::CreateAdd(
+      credit_card_id,
+      SpecificsToEntity(wallet_specifics_card, /*client_tag=*/"card-card1")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  ASSERT_EQ(1U, wallet_cards.size());
+  // With the flag off, the card network is `kGenericCard` instead of
+  // `kVerveCard`.
+  EXPECT_EQ(autofill::kGenericCard, wallet_cards.front().network());
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnFalseForSameData) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1, payment_instrument_2};
+
+  sync_pb::PaymentInstrument payment_instrument_3 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_4 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_3, payment_instrument_4};
+
+  EXPECT_FALSE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentDataSize) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1, payment_instrument_2};
+
+  sync_pb::PaymentInstrument payment_instrument_3 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_3};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentInstrumentId) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1};
+
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_2};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentEwalletDetails) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1};
+
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::EwalletDetails* ewallet_2 =
+      payment_instrument_2.mutable_ewallet_details();
+  ewallet_2->set_ewallet_name("different_ewallet_name");
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_2};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
 }
 
 }  // namespace

@@ -13,15 +13,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/management/management_api.h"
@@ -29,6 +34,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
@@ -147,6 +153,21 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 
 }  // namespace
 
+using WebstorePrivateApiUnittest = ExtensionApiUnittest;
+
+TEST_F(WebstorePrivateApiUnittest, GetFullChromeVersion) {
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetFullChromeVersionFunction>();
+  std::optional<base::Value> response =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), /*args*/ "[]", browser()->profile());
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_dict());
+
+  std::string version = std::string(version_info::GetVersionNumber());
+  EXPECT_EQ(version, *response->GetDict().FindString("version_number"));
+}
+
 class WebstorePrivateExtensionInstallRequestBase : public ExtensionApiUnittest {
  public:
   using ExtensionInstallStatus = api::webstore_private::ExtensionInstallStatus;
@@ -245,6 +266,69 @@ TEST_F(WebstorePrivateGetExtensionStatusTest,
   std::optional<base::Value> response = RunFunctionAndReturnValue(
       function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
   VerifyResponse(ExtensionInstallStatus::kInstallable, *response);
+}
+
+TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionCorrupted) {
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
+  ExtensionPrefs::Get(profile())->SetExtensionDisabled(
+      kExtensionId, disable_reason::DISABLE_CORRUPTED);
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
+  std::optional<base::Value> response = RunFunctionAndReturnValue(
+      function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
+  VerifyResponse(ExtensionInstallStatus::kCorrupted, *response);
+}
+
+class SupervisedUserWebstorePrivateGetExtensionStatusTest
+    : public WebstorePrivateGetExtensionStatusTest {
+ public:
+  SupervisedUserWebstorePrivateGetExtensionStatusTest() {
+    std::vector<base::test::FeatureRef> enabled_features;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    enabled_features.push_back(
+        supervised_user::
+            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    enabled_features.push_back(
+        supervised_user::
+            kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+    enabled_features.push_back(
+        supervised_user::kExposedParentalControlNeededForExtensionInstallation);
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SupervisedUserWebstorePrivateGetExtensionStatusTest,
+       ExtensionCustodianApprovalRequired) {
+  profile()->SetIsSupervisedProfile(true);
+
+  ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
+  ExtensionPrefs::Get(profile())->SetExtensionDisabled(
+      kExtensionId, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
+  std::optional<base::Value> response =
+      RunFunctionAndReturnValue(function.get(), GenerateArgs(kExtensionId));
+  VerifyResponse(ExtensionInstallStatus::kCustodianApprovalRequired, *response);
+}
+
+TEST_F(SupervisedUserWebstorePrivateGetExtensionStatusTest,
+       ExtensionCustodianApprovalRequiredForInstallation) {
+  profile()->SetIsSupervisedProfile(true);
+
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
+  std::optional<base::Value> response =
+      RunFunctionAndReturnValue(function.get(), GenerateArgs(kExtensionId));
+
+  ASSERT_FALSE(
+      ExtensionRegistry::Get(profile())->GetInstalledExtension(kExtensionId));
+  VerifyResponse(
+      ExtensionInstallStatus::kCustodianApprovalRequiredForInstallation,
+      *response);
 }
 
 class WebstorePrivateBeginInstallWithManifest3Test
@@ -717,5 +801,108 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<FrictionDialogTestCase>& info) {
       return info.param.test_name;
     });
+
+// A test suite to be used with the MV2 deprecation experiments.
+class WebstorePrivateManifestV2DeprecationUnitTest
+    : public ExtensionApiUnittest,
+      public testing::WithParamInterface<MV2ExperimentStage> {
+ public:
+  WebstorePrivateManifestV2DeprecationUnitTest();
+  ~WebstorePrivateManifestV2DeprecationUnitTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+WebstorePrivateManifestV2DeprecationUnitTest::
+    WebstorePrivateManifestV2DeprecationUnitTest() {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  switch (GetParam()) {
+    case MV2ExperimentStage::kNone:
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2DeprecationWarning);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Unsupported);
+      break;
+    case MV2ExperimentStage::kWarning:
+      enabled_features.push_back(
+          extensions_features::kExtensionManifestV2DeprecationWarning);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Unsupported);
+      break;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      enabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2DeprecationWarning);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Unsupported);
+      break;
+    case MV2ExperimentStage::kUnsupported:
+      enabled_features.push_back(
+          extensions_features::kExtensionManifestV2Unsupported);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2Disabled);
+      disabled_features.push_back(
+          extensions_features::kExtensionManifestV2DeprecationWarning);
+      break;
+  }
+
+  feature_list_.InitWithFeatures(enabled_features, disabled_features);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    WebstorePrivateManifestV2DeprecationUnitTest,
+    testing::Values(MV2ExperimentStage::kNone,
+                    MV2ExperimentStage::kWarning,
+                    MV2ExperimentStage::kDisableWithReEnable,
+                    MV2ExperimentStage::kUnsupported),
+    [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
+      switch (info.param) {
+        case MV2ExperimentStage::kNone:
+          return "ExperimentDisabled";
+        case MV2ExperimentStage::kWarning:
+          return "WarningExperiment";
+        case MV2ExperimentStage::kDisableWithReEnable:
+          return "DisableExperiment";
+        case MV2ExperimentStage::kUnsupported:
+          return "UnsupportedExperiment";
+      }
+    });
+
+// Tests the behavior of the webstorePrivate.getMV2DeprecationStatus() function.
+TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
+       TestGetMV2DeprecationStatus) {
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetMV2DeprecationStatusFunction>();
+  std::optional<base::Value> response =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), /*args*/ "[]", browser()->profile());
+  ASSERT_TRUE(response);
+
+  std::string expected;
+  switch (GetParam()) {
+    case MV2ExperimentStage::kNone:
+      expected = "inactive";
+      break;
+    case MV2ExperimentStage::kWarning:
+      expected = "warning";
+      break;
+    case MV2ExperimentStage::kDisableWithReEnable:
+      expected = "soft_disable";
+      break;
+    case MV2ExperimentStage::kUnsupported:
+      expected = "hard_disable";
+      break;
+  }
+
+  EXPECT_EQ(expected, *response);
+}
 
 }  // namespace extensions

@@ -26,7 +26,7 @@ class ASH_EXPORT AppListBubbleEventFilter : public BubbleEventFilter {
  public:
   AppListBubbleEventFilter(views::Widget* bubble_widget,
                            views::View* button,
-                           base::RepeatingClosure on_click_outside);
+                           OnClickedOutsideCallback on_click_outside);
   AppListBubbleEventFilter(const AppListBubbleEventFilter&) = delete;
   AppListBubbleEventFilter& operator=(const AppListBubbleEventFilter&) = delete;
   ~AppListBubbleEventFilter() override;

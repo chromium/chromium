@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CheckMarkWrapperElement} from 'chrome://customize-chrome-side-panel.top-chrome/check_mark_wrapper.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle} from './test_support.js';
 
@@ -15,13 +16,15 @@ suite('CheckMarkWrapperTest', () => {
     document.body.appendChild(checkMarkWrapperElement);
   });
 
-  test('renders check mark if checked', () => {
+  test('renders check mark if checked', async () => {
     checkMarkWrapperElement.checked = true;
-    assertNotStyle(checkMarkWrapperElement.$.svg, 'display', 'none');
+    await microtasksFinished();
+    assertNotStyle(checkMarkWrapperElement.$.circle, 'display', 'none');
   });
 
-  test('does not render check mark if not checked', () => {
+  test('does not render check mark if not checked', async () => {
     checkMarkWrapperElement.checked = false;
-    assertStyle(checkMarkWrapperElement.$.svg, 'display', 'none');
+    await microtasksFinished();
+    assertStyle(checkMarkWrapperElement.$.circle, 'display', 'none');
   });
 });

@@ -20,9 +20,9 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_status_code.h"
-#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -136,7 +136,7 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override {
-    // TODO(crbug.com/1242281): Support redirection for WebBundle requests.
+    // TODO(crbug.com/40786524): Support redirection for WebBundle requests.
     if (factory_) {
       factory_->ReportErrorAndCancelPendingLoaders(
           WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
@@ -268,14 +268,14 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     deleteThis();
   }
 
-  void BlockResponseForCorb(mojom::URLResponseHeadPtr response_head) {
-    // A minimum implementation to block CORB-protected resources.
+  void BlockResponseForOrb(mojom::URLResponseHeadPtr response_head) {
+    // A minimum implementation to block ORB-protected resources.
     //
-    // TODO(crbug.com/1082020): Re-use
-    // network::URLLoader::BlockResponseForCorb(), instead of copying
+    // TODO(crbug.com/40130781): Re-use
+    // network::URLLoader::BlockResponseForOrb(), instead of copying
     // essential parts from there, so that the two implementations won't
     // diverge further. That requires non-trivial refactoring.
-    corb::SanitizeBlockedResponseHeaders(*response_head);
+    orb::SanitizeBlockedResponseHeaders(*response_head);
 
     // Send empty body to the URLLoaderClient.
     mojo::ScopedDataPipeProducerHandle producer;
@@ -288,7 +288,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     client_->OnReceiveResponse(std::move(response_head), std::move(consumer),
                                std::nullopt);
 
-    // CORB responses are reported as a success.
+    // ORB responses are reported as a success.
     CompleteBlockedResponse(net::OK, std::nullopt);
   }
 
@@ -331,7 +331,7 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 
   void SetPriority(net::RequestPriority priority,
@@ -441,7 +441,8 @@ class WebBundleURLLoaderFactory::BundleDataSource
     }
     uint64_t out_len = buffer_.GetAvailableLength(offset, length);
     std::vector<uint8_t> output(base::checked_cast<size_t>(out_len));
-    buffer_.ReadData(offset, out_len, output.data());
+    uint64_t read_len = buffer_.ReadData(offset, output);
+    output.resize(base::checked_cast<size_t>(read_len));
     std::move(callback).Run(std::move(output));
   }
 
@@ -456,9 +457,9 @@ class WebBundleURLLoaderFactory::BundleDataSource
   }
 
   // Implements mojo::DataPipeDrainer::Client.
-  void OnDataAvailable(const void* data, size_t num_bytes) override {
+  void OnDataAvailable(base::span<const uint8_t> data) override {
     DCHECK(!finished_loading_);
-    if (!web_bundle_memory_quota_consumer_->AllocateMemory(num_bytes)) {
+    if (!web_bundle_memory_quota_consumer_->AllocateMemory(data.size())) {
       AbortPendingReads();
       if (memory_quota_exceeded_closure_) {
         // Defer calling |memory_quota_exceeded_closure_| to avoid the
@@ -468,7 +469,7 @@ class WebBundleURLLoaderFactory::BundleDataSource
       }
       return;
     }
-    buffer_.Append(reinterpret_cast<const uint8_t*>(data), num_bytes);
+    buffer_.Append(data);
     ProcessPendingReads();
   }
 
@@ -561,7 +562,7 @@ WebBundleURLLoaderFactory::WebBundleURLLoaderFactory(
   if (bundle_url != web_bundle_token_params.bundle_url) {
     // This happens when WebBundle request is redirected by WebRequest extension
     // API.
-    // TODO(crbug.com/1242281): Support redirection for WebBundle requests.
+    // TODO(crbug.com/40786524): Support redirection for WebBundle requests.
     ReportErrorAndCancelPendingLoaders(
         SubresourceWebBundleLoadResult::kWebBundleRedirected,
         mojom::WebBundleErrorType::kWebBundleRedirected,
@@ -868,7 +869,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   mojom::URLResponseHeadPtr response_head =
       web_package::CreateResourceResponseFromHeaderString(headers);
   // Currently we allow only net::HTTP_OK responses in bundles.
-  // TODO(crbug.com/990733): Revisit this once
+  // TODO(crbug.com/41474458): Revisit this once
   // https://github.com/WICG/webpackage/issues/478 is resolved.
   if (response_head->headers->response_code() != net::HTTP_OK) {
     web_bundle_handle_->OnWebBundleError(
@@ -885,12 +886,17 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   loader->SetBodyLength(payload_length);
 
   // Enforce the Cross-Origin-Resource-Policy (CORP) header.
+  //
+  // TODO(crbug.com/333708501)
+  // Implement support for Document-Isolation-Policy in Web Bundles if needed,
+  // by passing a Document-Isolation-Policy at creation time and using it in the
+  // call below.
   if (std::optional<mojom::BlockedByResponseReason> blocked_reason =
           CrossOriginResourcePolicy::IsBlocked(
               loader->url(), loader->url(), loader->request_initiator(),
               *response_head, loader->request_mode(),
               loader->request_destination(), cross_origin_embedder_policy_,
-              coep_reporter_)) {
+              coep_reporter_, DocumentIsolationPolicy())) {
     loader->CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE,
                                     blocked_reason);
     return;
@@ -901,7 +907,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   // is allowed to read those, and only the browser process can issue trusted
   // requests.
   std::string auction_only;
-  // TODO(crbug.com/1448564): Remove old names once API users have migrated to
+  // TODO(crbug.com/40269364): Remove old names once API users have migrated to
   // new names.
   if (!loader->is_trusted() && response_head->headers &&
       (response_head->headers->GetNormalizedHeader("Ad-Auction-Only",
@@ -914,16 +920,16 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
     return;
   }
 
-  auto corb_analyzer = corb::ResponseAnalyzer::Create(corb_state_);
-  auto decision = corb_analyzer->Init(
+  auto orb_analyzer = orb::ResponseAnalyzer::Create(&orb_state_);
+  auto decision = orb_analyzer->Init(
       loader->url(), loader->request_initiator(), loader->request_mode(),
       loader->request_destination(), *response_head);
   switch (decision) {
-    case network::corb::ResponseAnalyzer::Decision::kBlock:
-      loader->BlockResponseForCorb(std::move(response_head));
+    case network::orb::ResponseAnalyzer::Decision::kBlock:
+      loader->BlockResponseForOrb(std::move(response_head));
       return;
-    case network::corb::ResponseAnalyzer::Decision::kAllow:
-    case network::corb::ResponseAnalyzer::Decision::kSniffMore:
+    case network::orb::ResponseAnalyzer::Decision::kAllow:
+    case network::orb::ResponseAnalyzer::Decision::kSniffMore:
       break;
   }
 

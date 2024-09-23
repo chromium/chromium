@@ -5,17 +5,18 @@
 #ifndef COMPONENTS_PREFS_PREF_VALUE_STORE_H_
 #define COMPONENTS_PREFS_PREF_VALUE_STORE_H_
 
+#include <array>
 #include <functional>
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/prefs/pref_store.h"
 #include "components/prefs/prefs_export.h"
@@ -120,7 +121,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   // a non-matching |type| are silently skipped. Returns true if a valid value
   // was found in any of the available PrefStores. Most callers should use
   // Preference::GetValue() instead of calling this method directly.
-  bool GetValue(base::StringPiece name,
+  bool GetValue(std::string_view name,
                 base::Value::Type type,
                 const base::Value** out_value) const;
 
@@ -192,7 +193,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
 
    private:
     // PrefStore::Observer implementation.
-    void OnPrefValueChanged(const std::string& key) override;
+    void OnPrefValueChanged(std::string_view key) override;
     void OnInitializationCompleted(bool succeeded) override;
 
     // PrefValueStore this keeper is part of.
@@ -221,12 +222,12 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
                              PrefStoreType last_checked_store) const;
 
   // Get a value from the specified |store|.
-  bool GetValueFromStore(base::StringPiece name,
+  bool GetValueFromStore(std::string_view name,
                          PrefStoreType store,
                          const base::Value** out_value) const;
 
   // Get a value from the specified |store| if its |type| matches.
-  bool GetValueFromStoreWithType(base::StringPiece name,
+  bool GetValueFromStoreWithType(std::string_view name,
                                  base::Value::Type type,
                                  PrefStoreType store,
                                  const base::Value** out_value) const;
@@ -235,11 +236,11 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   // the user-visible pref value has changed. Triggers the change notification
   // if the effective value of the preference has changed, or if the store
   // controlling the pref has changed.
-  void NotifyPrefChanged(const std::string& path, PrefStoreType new_store);
+  void NotifyPrefChanged(std::string_view, PrefStoreType new_store);
 
   // Called from the PrefStoreKeeper implementation when a pref value for |key|
   // changed in the pref store for |type|.
-  void OnPrefValueChanged(PrefStoreType type, const std::string& key);
+  void OnPrefValueChanged(PrefStoreType type, std::string_view key);
 
   // Handle the event that the store for |type| has completed initialization.
   void OnInitializationCompleted(PrefStoreType type, bool succeeded);
@@ -262,7 +263,7 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
   }
 
   // Keeps the PrefStore references in order of precedence.
-  PrefStoreKeeper pref_stores_[PREF_STORE_TYPE_MAX + 1];
+  std::array<PrefStoreKeeper, PREF_STORE_TYPE_MAX + 1> pref_stores_;
 
   // Used for generating notifications. This is a weak reference,
   // since the notifier is owned by the corresponding PrefService.

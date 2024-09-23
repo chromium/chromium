@@ -6,6 +6,8 @@
 
 #include <lib/sys/cpp/component_context.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -15,7 +17,7 @@
 
 namespace ui {
 
-FlatlandConnection::FlatlandConnection(base::StringPiece debug_name,
+FlatlandConnection::FlatlandConnection(std::string_view debug_name,
                                        OnErrorCallback error_callback) {
   zx_status_t status =
       base::ComponentContextForProcess()

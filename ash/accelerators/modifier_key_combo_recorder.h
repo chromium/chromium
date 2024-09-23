@@ -39,7 +39,8 @@ class ASH_EXPORT ModifierKeyComboRecorder
     kShiftLeft,
     kShiftRight,
     kAltGr,
-    kMaxValue = kAltGr,
+    kFunction,
+    kMaxValue = kFunction,
   };
 
   ModifierKeyComboRecorder();
@@ -67,4 +68,4 @@ class ASH_EXPORT ModifierKeyComboRecorder
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_ACCELERATORS_MODIFIER_KEY_COMBO_RECORDER_H_

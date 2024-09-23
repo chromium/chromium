@@ -21,6 +21,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -66,18 +67,17 @@ DesktopMediaListView::DesktopMediaListView(
     DesktopMediaSourceViewStyle generic_style,
     DesktopMediaSourceViewStyle single_style,
     const std::u16string& accessible_name)
-    : item_spacing_(
-          base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 4 : 0),
-      horizontal_margins_(
-          base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 0),
-      vertical_margins_(
-          base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 0),
+    : item_spacing_(4),
+      horizontal_margins_(16),
+      vertical_margins_(16),
       controller_(controller),
       single_style_(single_style),
       generic_style_(generic_style),
-      active_style_(&single_style_),
-      accessible_name_(accessible_name) {
+      active_style_(&single_style_) {
   SetStyle(&single_style_);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetName(accessible_name);
 }
 
 DesktopMediaListView::~DesktopMediaListView() {}
@@ -86,7 +86,8 @@ void DesktopMediaListView::OnSelectionChanged() {
   controller_->OnSourceSelectionChanged();
 }
 
-gfx::Size DesktopMediaListView::CalculatePreferredSize() const {
+gfx::Size DesktopMediaListView::CalculatePreferredSize(
+    const views::SizeBounds& /*available_size*/) const {
   const int total_rows =
       (static_cast<int>(children().size()) + active_style_->columns - 1) /
       active_style_->columns;
@@ -278,9 +279,4 @@ DesktopMediaSourceView* DesktopMediaListView::GetSelectedView() {
       base::ranges::find_if(children(), &DesktopMediaSourceView::GetSelected,
                             &AsDesktopMediaSourceView);
   return (i == children().cend()) ? nullptr : AsDesktopMediaSourceView(*i);
-}
-
-void DesktopMediaListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGroup;
-  node_data->SetNameChecked(accessible_name_);
 }

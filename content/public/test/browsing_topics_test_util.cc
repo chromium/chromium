@@ -4,6 +4,7 @@
 
 #include "content/public/test/browsing_topics_test_util.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "components/browsing_topics/common/common_types.h"
 #include "content/browser/browsing_topics/browsing_topics_site_data_manager_impl.h"
@@ -94,13 +95,26 @@ void TesterBrowsingTopicsSiteDataManager::GetBrowsingTopicsApiUsage(
     base::Time begin_time,
     base::Time end_time,
     GetBrowsingTopicsApiUsageCallback callback) {
+  auto run_callback_after_delay = base::BindLambdaForTesting(
+      [callback = std::move(callback),
+       this](browsing_topics::ApiUsageContextQueryResult result) mutable {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindLambdaForTesting([callback = std::move(callback),
+                                        result = std::move(result)]() mutable {
+              std::move(callback).Run(std::move(result));
+            }),
+            query_result_delay_);
+      });
+
   if (!query_failure_override_) {
-    manager_impl_->GetBrowsingTopicsApiUsage(begin_time, end_time,
-                                             std::move(callback));
+    manager_impl_->GetBrowsingTopicsApiUsage(
+        begin_time, end_time, std::move(run_callback_after_delay));
     return;
   }
 
-  std::move(callback).Run(browsing_topics::ApiUsageContextQueryResult());
+  std::move(run_callback_after_delay)
+      .Run(browsing_topics::ApiUsageContextQueryResult());
 }
 
 void TesterBrowsingTopicsSiteDataManager::

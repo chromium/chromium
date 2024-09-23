@@ -220,7 +220,7 @@ suite('GooglePhotosPhotosElementTest', function() {
       (dismissFromUser:
            boolean) => test('displays error when photos fail to load', async () => {
         // Set values returned by |wallpaperProvider|.
-        wallpaperProvider.setGooglePhotosPhotos(undefined);
+        wallpaperProvider.setGooglePhotosPhotos(null);
 
         // Initialize |googlePhotosPhotosElement|.
         googlePhotosPhotosElement =
@@ -276,7 +276,7 @@ suite('GooglePhotosPhotosElementTest', function() {
         name: 'foo',
         date: stringToMojoString16('Wednesday, February 16, 2022'),
         url: {url: createSvgDataUrl('svg-0')},
-        location: undefined,
+        location: null,
       },
       // Section of photos with one location.
       {
@@ -651,8 +651,8 @@ suite('GooglePhotosPhotosElementTest', function() {
         }));
 
     // Set the next photos resume token returned by |wallpaperProvider|. When
-    // resume token is undefined, it indicates no additional photos exist.
-    wallpaperProvider.setGooglePhotosPhotosResumeToken(undefined);
+    // resume token is null, it indicates no additional photos exist.
+    wallpaperProvider.setGooglePhotosPhotosResumeToken(null);
 
     // Restrict the viewport so that |googlePhotosPhotosElement| will lazily
     // create photos instead of creating them all at once.
@@ -732,7 +732,7 @@ suite('GooglePhotosPhotosElementTest', function() {
 
   test('reattempts failed photos load on show', async () => {
     // Set values returned by |wallpaperProvider|.
-    wallpaperProvider.setGooglePhotosPhotos(undefined);
+    wallpaperProvider.setGooglePhotosPhotos(null);
 
     // Initialize Google Photos data in the |personalizationStore|.
     await fetchGooglePhotosEnabled(wallpaperProvider, personalizationStore);

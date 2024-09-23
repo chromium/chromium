@@ -1,0 +1,55 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_TEXT value='Beginning<newline>1. A plain list item<newline>2. A list item<newline>with a br (line break) inside it<newline>3. A list item with an inner p role=presentation<newline>4. A list item with both a br and<newline>an inner p role=presentation<newline>5. A list item with inner spans on each line<newline>and separated by a br<newline>6. A list item with a role presentation, and two inner spans, each separated by a space<newline>7. A list item with a role presentation, and two inner spans,<newline>each separated by a br<newline>8. Hello world this is like docs markup without the weird presentational br<newline>9. Hello world this is just like docs, and your kitchen sink<newline>The end' FOCUSABLE IA2_STATE_MULTI_LINE
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='Beginning'
+++++ROLE_SYSTEM_LIST
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='1. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='A plain list item'
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='2. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='A list item'
+++++++++ROLE_SYSTEM_WHITESPACE name='<newline>'
+++++++++ROLE_SYSTEM_STATICTEXT name='with a br (line break) inside it'
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='3. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='A list item with an inner p role=presentation'
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='4. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='A list item with both a br and'
+++++++++ROLE_SYSTEM_WHITESPACE name='<newline>'
+++++++++ROLE_SYSTEM_STATICTEXT name='an inner p role=presentation'
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='5. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='A list item with '
+++++++++ROLE_SYSTEM_STATICTEXT name='inner '
+++++++++ROLE_SYSTEM_STATICTEXT name='spans'
+++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++ROLE_SYSTEM_STATICTEXT name='on each line'
+++++++++ROLE_SYSTEM_WHITESPACE name='<newline>'
+++++++++ROLE_SYSTEM_STATICTEXT name='and separated by a br'
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='6. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='A list item with a role presentation, and two inner spans, '
+++++++++ROLE_SYSTEM_STATICTEXT name='each separated by a space'
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='7. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='A list item with a role presentation, and two inner spans,'
+++++++++ROLE_SYSTEM_WHITESPACE name='<newline>'
+++++++++ROLE_SYSTEM_STATICTEXT name='each separated by a br'
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='8. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='Hello'
+++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++ROLE_SYSTEM_STATICTEXT name='world this'
+++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++ROLE_SYSTEM_STATICTEXT name='is like docs markup without the weird presentational br'
+++++++ROLE_SYSTEM_LISTITEM auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='9. ' auto-generated:true
+++++++++ROLE_SYSTEM_STATICTEXT name='Hello'
+++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++ROLE_SYSTEM_STATICTEXT name='world this'
+++++++++ROLE_SYSTEM_STATICTEXT name=' '
+++++++++ROLE_SYSTEM_STATICTEXT name='is just like docs, and your kitchen sink'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='The end'

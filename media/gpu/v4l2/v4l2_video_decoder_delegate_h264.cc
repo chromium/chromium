@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <type_traits>
 
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -531,11 +532,11 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitSlice(
                ? Status::kOk
                : Status::kFail;
   }
-  std::unique_ptr<uint8_t[]> data_copy(new uint8_t[data_copy_size]);
-  memset(data_copy.get(), 0, data_copy_size);
+  auto data_copy = base::HeapArray<uint8_t>::Uninit(data_copy_size);
+  memset(data_copy.data(), 0, data_copy_size);
   data_copy[2] = 0x01;
-  memcpy(data_copy.get() + 3, data, size);
-  return surface_handler_->SubmitSlice(dec_surface.get(), data_copy.get(),
+  memcpy(data_copy.data() + 3, data, size);
+  return surface_handler_->SubmitSlice(dec_surface.get(), data_copy.data(),
                                        data_copy_size)
              ? Status::kOk
              : Status::kFail;

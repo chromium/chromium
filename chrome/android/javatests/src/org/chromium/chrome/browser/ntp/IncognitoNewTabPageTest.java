@@ -17,22 +17,30 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 
+import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.LocaleUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.ProductConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -41,15 +49,13 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.Locale;
 
 /** Integration tests for IncognitoNewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({
-    ChromeFeatureList.INCOGNITO_NTP_REVAMP,
-    ChromeFeatureList.TRACKING_PROTECTION_3PCD
-})
+@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNewTabPageTest {
     @ClassRule
@@ -61,28 +67,42 @@ public class IncognitoNewTabPageTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private void setCookieControlsMode(@CookieControlsMode int mode) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setInteger(PrefNames.COOKIE_CONTROLS_MODE, mode);
                 });
     }
 
     private void assertCookieControlsMode(@CookieControlsMode int mode) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
-                            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                     .getInteger(PrefNames.COOKIE_CONTROLS_MODE),
                             mode);
                 });
     }
 
     private void enableTrackingProtection() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
                     prefService.setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, true);
+                });
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService =
+                            UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+
+                    prefService.clearPref(Pref.TRACKING_PROTECTION3PCD_ENABLED);
+                    prefService.clearPref(PrefNames.COOKIE_CONTROLS_MODE);
                 });
     }
 
@@ -158,5 +178,27 @@ public class IncognitoNewTabPageTest {
         sActivityTestRule.newIncognitoTabFromMenu();
         onView(withId(R.id.tracking_protection_card))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+    }
+
+    private Context createContextForLocale(Context context, String languageTag) {
+        Locale locale = LocaleUtils.forLanguageTag(languageTag);
+        Resources res = context.getResources();
+        Configuration config = res.getConfiguration();
+        config.setLocale(locale);
+        return context.createConfigurationContext(config);
+    }
+
+    /** Test the ntp text formatting for all locales. */
+    @Test
+    @SmallTest
+    public void testDescriptionLanguages() throws Exception {
+        var context = sActivityTestRule.getActivity().getApplicationContext();
+        for (String languageTag : ProductConfig.LOCALES) {
+            var localeContext = createContextForLocale(context, languageTag);
+            IncognitoDescriptionView.getSpannedBulletText(
+                    localeContext, R.string.new_tab_otr_not_saved);
+            IncognitoDescriptionView.getSpannedBulletText(
+                    localeContext, R.string.new_tab_otr_visible);
+        }
     }
 }

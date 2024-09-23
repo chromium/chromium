@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_WIDGET_NATIVE_WIDGET_DELEGATE_H_
 #define UI_VIEWS_WIDGET_NATIVE_WIDGET_DELEGATE_H_
 
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
@@ -148,7 +149,7 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // later.  Returns true if the initial focus has been set or the window should
   // not set the initial focus, or false if the caller should set the initial
   // focus (if any).
-  virtual bool SetInitialFocus(ui::WindowShowState show_state) = 0;
+  virtual bool SetInitialFocus(ui::mojom::WindowShowState show_state) = 0;
 
   // Returns true if event handling should descend into |child|. |root_layer| is
   // the layer associated with the root Window and |child_layer| the layer

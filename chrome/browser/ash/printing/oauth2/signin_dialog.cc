@@ -15,6 +15,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "url/gurl.h"
@@ -25,7 +27,7 @@ SigninDialog::SigninDialog(content::BrowserContext* browser_context)
     : web_view_(
           AddChildView(std::make_unique<views::WebView>(browser_context))) {
   SetHasWindowSizeControls(true);
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_use_custom_frame(false);
   SetUseDefaultFillLayout(true);
 
@@ -79,14 +81,15 @@ void SigninDialog::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {}
 
 // views::DialogDelegate:
-gfx::Size SigninDialog::CalculatePreferredSize() const {
+gfx::Size SigninDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // TODO(https://crbug.com/1223535): need to tweak this.
   // Or remove this whole class if not needed anymore.
   return gfx::Size(800, 640);
 }
 
-ui::ModalType SigninDialog::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
+ui::mojom::ModalType SigninDialog::GetModalType() const {
+  return ui::mojom::ModalType::kWindow;
 }
 
 views::View* SigninDialog::GetInitiallyFocusedView() {

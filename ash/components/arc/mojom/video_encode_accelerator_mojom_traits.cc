@@ -68,10 +68,8 @@ UnionTraits<arc::mojom::BitrateDataView, media::Bitrate>::GetTag(
     case media::Bitrate::Mode::kExternal:
       // Ash encoder doesn't need to support external rate control.
       NOTREACHED();
-      return arc::mojom::BitrateDataView::Tag::kConstant;
   }
   NOTREACHED();
-  return arc::mojom::BitrateDataView::Tag::kConstant;
 }
 
 // static
@@ -113,7 +111,6 @@ bool UnionTraits<arc::mojom::BitrateDataView, media::Bitrate>::Read(
     }
     default:
       NOTREACHED();
-      return false;
   }
 }
 
@@ -135,7 +132,7 @@ bool StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
     return false;
 
   std::optional<uint32_t> initial_framerate;
-  if (input.has_initial_framerate()) {
+  if (input.has_initial_framerate_deprecated()) {
     initial_framerate = input.initial_framerate();
   }
 
@@ -162,10 +159,13 @@ bool StructTraits<arc::mojom::VideoEncodeAcceleratorConfigDataView,
   }
 
   *output = media::VideoEncodeAccelerator::Config(
-      input_format, input_visible_size, output_profile, *bitrate);
-  output->initial_framerate = initial_framerate;
+      input_format, input_visible_size, output_profile, *bitrate,
+      initial_framerate.value_or(
+          media::VideoEncodeAccelerator::kDefaultFramerate),
+      storage_type,
+      media::VideoEncodeAccelerator::Config::ContentType::kCamera);
   output->h264_output_level = h264_output_level;
-  output->storage_type = storage_type;
+
   return true;
 }
 

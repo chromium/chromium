@@ -255,7 +255,7 @@ constexpr mojom::LockType GetLockType(const std::string& lock_type) {
   if (lock_type == "sim-puk") {
     return mojom::LockType::kSimPuk;
   }
-  if (features::IsCellularCarrierLockEnabled() && lock_type == "network-pin") {
+  if (lock_type == "network-pin") {
     return mojom::LockType::kNetworkPin;
   }
   return mojom::LockType::kNone;
@@ -292,7 +292,6 @@ void UpdateNetwork(
     }
     case mojom::NetworkType::kUnsupported:
       NOTREACHED();
-      break;
   }
 }
 

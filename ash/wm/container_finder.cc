@@ -13,9 +13,12 @@
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "components/app_restore/window_properties.h"
+#include "components/live_caption/views/caption_bubble.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/window_util.h"
@@ -51,7 +54,7 @@ bool HasTransientParentWindow(const aura::Window* window) {
 
 aura::Window* GetSystemModalContainer(aura::Window* root,
                                       aura::Window* window) {
-  DCHECK_EQ(ui::MODAL_TYPE_SYSTEM,
+  DCHECK_EQ(ui::mojom::ModalType::kSystem,
             window->GetProperty(aura::client::kModalKey));
 
   // If |window| is already in a system modal container in |root|, re-use it.
@@ -131,11 +134,24 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
         kShellWindowId_DragImageAndTooltipContainer);
   }
 
+  // Live caption bubble always goes into its dedicated container, above the
+  // float, always-on-top and shelf containers for example.
+  if (window->GetProperty(captions::kIsCaptionBubbleKey)) {
+    return target_root->GetChildById(kShellWindowId_LiveCaptionContainer);
+  }
+
+  // The MahiMenu always goes into the settings bubble container, this ensures
+  // that it is displayed on top of the MahiPanelWidget which can often
+  // intersect with the MahiMenu.
+  if (window->GetProperty(chromeos::mahi::kIsMahiMenuKey)) {
+    return target_root->GetChildById(kShellWindowId_SettingBubbleContainer);
+  }
+
   switch (window->GetType()) {
     case aura::client::WINDOW_TYPE_NORMAL:
     case aura::client::WINDOW_TYPE_POPUP:
       if (window->GetProperty(aura::client::kModalKey) ==
-          ui::MODAL_TYPE_SYSTEM) {
+          ui::mojom::ModalType::kSystem) {
         return GetSystemModalContainer(target_root, window);
       }
       if (HasTransientParentWindow(window)) {
@@ -152,9 +168,7 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
     default:
       NOTREACHED() << "Window " << window->GetId() << " has unhandled type "
                    << window->GetType();
-      break;
   }
-  return nullptr;
 }
 
 aura::Window::Windows GetContainersForAllRootWindows(

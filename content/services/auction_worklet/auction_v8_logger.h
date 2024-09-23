@@ -5,6 +5,8 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_V8_LOGGER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_V8_LOGGER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "v8/include/v8-context.h"
@@ -36,9 +38,9 @@ class CONTENT_EXPORT AuctionV8Logger {
   // Logs the provided warning message to the console. Expects the v8::Context
   // that was passed to the constructor to be the currently active Context.
   //
-  // `message` is expected to be a string literal, hence using a `char*`.
-  // Creating a v8::String from it is expected to succeed.
-  void LogConsoleWarning(const char* message);
+  // If `message` cannot be converted to a v8 string, silently drops the
+  // message.
+  void LogConsoleWarning(std::string_view message);
 
  private:
   friend class AuctionV8Logger;

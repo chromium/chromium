@@ -23,6 +23,8 @@ enum WindowClass {
   kBrowser,
   // NativeWidgetMacFramelessNSWindow
   kFrameless,
+  // NativeWidgetMacOverlayNSWindow
+  kOverlay,
 };
 
 // Parameters used to described creation of an NSWindow.
@@ -319,4 +321,7 @@ interface NativeWidgetNSWindow {
   DisplayContextMenu(ContextMenu menu,
                      pending_remote<MenuHost> host,
                      pending_receiver<Menu> receiver);
+
+  // Set whether the window should be included in screenshots or not.
+  SetAllowScreenshots(bool allow);
 };

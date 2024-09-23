@@ -29,20 +29,12 @@ BASE_FEATURE(kContentCaptureTriggeringForExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kContentCaptureInWebLayer,
-             "ContentCaptureInWebLayer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsContentCaptureEnabled() {
   return base::FeatureList::IsEnabled(kContentCapture);
 }
 
 bool ShouldTriggerContentCaptureForExperiment() {
   return base::FeatureList::IsEnabled(kContentCaptureTriggeringForExperiment);
-}
-
-bool IsContentCaptureEnabledInWebLayer() {
-  return base::FeatureList::IsEnabled(kContentCaptureInWebLayer);
 }
 
 int TaskInitialDelayInMilliseconds() {

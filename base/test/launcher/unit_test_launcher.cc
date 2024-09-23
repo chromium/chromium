@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -29,6 +30,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/allow_check_is_test_for_testing.h"
+#include "base/test/fuzztest_init_helper.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/scoped_block_tests_writing_to_special_dirs.h"
 #include "base/test/test_switches.h"
@@ -178,14 +180,15 @@ int RunTestSuite(RunTestSuiteCallback run_test_suite,
           switches::kSingleProcessTests) ||
       CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kTestChildProcess) ||
+      CommandLine::ForCurrentProcess()->HasSwitch(switches::kFuzz) ||
+      CommandLine::ForCurrentProcess()->HasSwitch(switches::kFuzzFor) ||
+      CommandLine::ForCurrentProcess()->HasSwitch(switches::kListFuzzTests) ||
       force_single_process) {
     return std::move(run_test_suite).Run();
   }
 
   // ICU must be initialized before any attempts to format times, e.g. for logs.
-  if (!base::i18n::InitializeICU()) {
-    return false;
-  }
+  CHECK(base::i18n::InitializeICU());
 
   if (CommandLine::ForCurrentProcess()->HasSwitch(switches::kHelpFlag)) {
     PrintUsage();
@@ -269,11 +272,28 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
 
 void InitGoogleTestChar(int* argc, char** argv) {
   testing::InitGoogleTest(argc, argv);
+  MaybeInitFuzztest(*argc, argv);
 }
 
 #if BUILDFLAG(IS_WIN)
-void InitGoogleTestWChar(int* argc, wchar_t** argv) {
+
+// Safety: as is normal in command lines, argc and argv must correspond
+// to one another. Otherwise there will be out-of-bounds accesses.
+UNSAFE_BUFFER_USAGE void InitGoogleTestWChar(int* argc, wchar_t** argv) {
   testing::InitGoogleTest(argc, argv);
+  // Fuzztest requires a narrow command-line.
+  CHECK(*argc >= 0);
+  base::span<wchar_t*> wide_command_line =
+      UNSAFE_BUFFERS(base::make_span(argv, static_cast<size_t>(*argc)));
+  std::vector<std::string> narrow_command_line;
+  std::vector<char*> narrow_command_line_pointers;
+  narrow_command_line.reserve(*argc);
+  narrow_command_line_pointers.reserve(*argc);
+  for (int i = 0; i < *argc; i++) {
+    narrow_command_line.push_back(WideToUTF8(wide_command_line[i]));
+    narrow_command_line_pointers.push_back(narrow_command_line[i].data());
+  }
+  MaybeInitFuzztest(*argc, narrow_command_line_pointers.data());
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -281,8 +301,8 @@ void InitGoogleTestWChar(int* argc, wchar_t** argv) {
 
 MergeTestFilterSwitchHandler::~MergeTestFilterSwitchHandler() = default;
 void MergeTestFilterSwitchHandler::ResolveDuplicate(
-    base::StringPiece key,
-    CommandLine::StringPieceType new_value,
+    std::string_view key,
+    CommandLine::StringViewType new_value,
     CommandLine::StringType& out_value) {
   if (key != switches::kTestLauncherFilterFile) {
     out_value = CommandLine::StringType(new_value);
@@ -388,6 +408,15 @@ CommandLine DefaultUnitTestPlatformDelegate::GetCommandLineForChildGTestProcess(
   CommandLine new_cmd_line(*CommandLine::ForCurrentProcess());
 
   CHECK(base::PathExists(flag_file));
+
+  // Any `--gtest_filter` flag specified on the original command line is
+  // no longer needed; the test launcher has already determined the list
+  // of actual tests to run in each child process. Since the test launcher
+  // internally uses `--gtest_filter` via a flagfile to pass this info to
+  // the child process, remove any original `--gtest_filter` flags on the
+  // command line, as GoogleTest provides no guarantee about whether the
+  // command line or the flagfile takes precedence.
+  new_cmd_line.RemoveSwitch(kGTestFilterFlag);
 
   std::string long_flags(
       StrCat({"--", kGTestFilterFlag, "=", JoinString(test_names, ":")}));

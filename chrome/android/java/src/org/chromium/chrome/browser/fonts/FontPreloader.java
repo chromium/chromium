@@ -15,6 +15,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * Class to load downloadable fonts async and emit histograms related to the availability of these
@@ -27,6 +28,14 @@ public class FontPreloader {
 
     private static final Integer[] FONTS = {
         R.font.chrome_google_sans, R.font.chrome_google_sans_medium, R.font.chrome_google_sans_bold
+    };
+
+    private static final Integer[] FONTS_V2 = {
+        R.font.chrome_google_sans,
+        R.font.chrome_google_sans_medium,
+        R.font.chrome_google_sans_bold,
+        R.font.chrome_google_sans_text,
+        R.font.chrome_google_sans_text_medium
     };
 
     private static final String UMA_PREFIX = "Android.Fonts";
@@ -49,7 +58,7 @@ public class FontPreloader {
 
     private final ThreadChecker mThreadChecker = new ThreadChecker();
 
-    private Integer[] mFonts = FONTS;
+    private final Integer[] mFonts;
     private boolean mInitialized;
     // Time of first event between |#onAllFontsRetrieved()| and |#onPostInflationStartup*()|.
     private Long mTimeOfFirstEventForPostInflation;
@@ -64,7 +73,13 @@ public class FontPreloader {
         mFonts = fonts;
     }
 
-    private FontPreloader() {}
+    private FontPreloader() {
+        if (ChromeFeatureList.sAndroidGoogleSansText.isEnabled()) {
+            mFonts = FONTS_V2;
+        } else {
+            mFonts = FONTS;
+        }
+    }
 
     /**
      * @return The {@link FontPreloader} singleton instance.

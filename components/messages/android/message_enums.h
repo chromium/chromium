@@ -12,7 +12,7 @@ namespace messages {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/1188983): Revisit enum values. TAB_SWITCHED is not currently
+// TODO(crbug.com/40755174): Revisit enum values. TAB_SWITCHED is not currently
 // used. Likely the same for TAB_DESTROYED and ACTIVITY_DESTROYED. We also need
 // a dedicated value for message dismissed from feature code.
 enum class DismissReason {
@@ -44,7 +44,9 @@ enum class DismissReason {
   DISMISSED_BY_FEATURE = 9,
 
   // Insert new values before this line.
-  COUNT
+  COUNT,
+
+  kMaxValue = COUNT,
 };
 
 // "Urgent" means the user should take actions ASAP, such as responding to
@@ -86,7 +88,7 @@ enum class MessageIdentifier {
   SAFETY_TIP = 5,
   SAVE_ADDRESS_PROFILE = 6,
   MERCHANT_TRUST = 7,
-  ADD_TO_HOMESCREEN_IPH = 8,
+  // Removed: ADD_TO_HOMESCREEN_IPH = 8,
   SEND_TAB_TO_SELF = 9,
   READER_MODE = 10,
   CHROME_SURVEY = 11,
@@ -118,7 +120,7 @@ enum class MessageIdentifier {
   // Removed: RESTORE_CUSTOM_TAB = 37,
   // Removed: UNDO_CUSTOM_TAB_RESTORATION = 38,
   CVC_SAVE = 39,
-  TRACKING_PROTECTION_NOTICE = 40,
+  // Removed: TRACKING_PROTECTION_NOTICE = 40,
   DESKTOP_SITE_WINDOW_SETTING = 41,
   PROMPT_HATS_LOCATION_CUSTOM_INVITATION = 42,
   PROMPT_HATS_LOCATION_GENERIC_INVITATION = 43,
@@ -126,6 +128,11 @@ enum class MessageIdentifier {
   PROMPT_HATS_CAMERA_GENERIC_INVITATION = 45,
   PROMPT_HATS_MICROPHONE_CUSTOM_INVITATION = 46,
   PROMPT_HATS_MICROPHONE_GENERIC_INVITATION = 47,
+  PERMISSION_BLOCKED = 48,
+  SAVE_CARD_FAILURE = 49,
+  VIRTUAL_CARD_ENROLL_FAILURE = 50,
+  PROMPT_HATS_QUICK_DELETE = 51,
+  PROMPT_HATS_SAFETY_HUB = 52,
   // Insert new values before this line.
   COUNT
 };

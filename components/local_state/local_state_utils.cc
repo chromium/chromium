@@ -43,7 +43,7 @@ base::Value::List GetPrefsMetadata(
       metadata.Append("extension_controlled");
       metadata.Append("extension_modifiable");
 #else
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
 #endif
       break;
     case PrefValueStore::PrefStoreType::STANDALONE_BROWSER_STORE:

@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <memory>
+#include <numbers>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -26,6 +32,7 @@
 #include "remoting/protocol/fake_video_renderer.h"
 #include "remoting/protocol/ice_connection_to_client.h"
 #include "remoting/protocol/ice_connection_to_host.h"
+#include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/video_stream.h"
@@ -146,7 +153,7 @@ class TestAudioSource : public AudioSource {
   static int16_t GetSampleValue(double pos, int frequency) {
     const int kMaxSampleValue = 32767;
     return static_cast<int>(
-        sin(pos * 2 * base::kPiDouble * frequency / kAudioSampleRate) *
+        sin(pos * 2 * std::numbers::pi * frequency / kAudioSampleRate) *
             kMaxSampleValue +
         0.5);
   }
@@ -323,7 +330,7 @@ class ConnectionTest : public testing::Test,
     {
       testing::InSequence sequence;
       EXPECT_CALL(host_event_handler_, OnConnectionAuthenticating());
-      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated());
+      EXPECT_CALL(host_event_handler_, OnConnectionAuthenticated(nullptr));
     }
     EXPECT_CALL(host_event_handler_, OnConnectionChannelsConnected())
         .WillOnce(InvokeWithoutArgs(this, &ConnectionTest::OnHostConnected));
@@ -332,22 +339,29 @@ class ConnectionTest : public testing::Test,
 
     {
       testing::InSequence sequence;
+      EXPECT_CALL(
+          client_event_handler_,
+          OnConnectionState(ConnectionToHost::CONNECTING, ErrorCode::OK));
+      EXPECT_CALL(
+          client_event_handler_,
+          OnConnectionState(ConnectionToHost::AUTHENTICATED, ErrorCode::OK));
       EXPECT_CALL(client_event_handler_,
-                  OnConnectionState(ConnectionToHost::CONNECTING, OK));
-      EXPECT_CALL(client_event_handler_,
-                  OnConnectionState(ConnectionToHost::AUTHENTICATED, OK));
-      EXPECT_CALL(client_event_handler_,
-                  OnConnectionState(ConnectionToHost::CONNECTED, OK))
+                  OnConnectionState(ConnectionToHost::CONNECTED, ErrorCode::OK))
           .WillOnce(
               InvokeWithoutArgs(this, &ConnectionTest::OnClientConnected));
     }
     EXPECT_CALL(client_event_handler_, OnRouteChanged(_, _))
         .Times(testing::AnyNumber());
 
+    NetworkSettings network_settings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
+
+    host_connection_->ApplyNetworkSettings(network_settings);
+
     client_connection_->Connect(
         std::move(owned_client_session_),
         TransportContext::ForTests(protocol::TransportRole::CLIENT),
         &client_event_handler_);
+    client_connection_->ApplyNetworkSettings(network_settings);
     client_session_->SimulateConnection(host_session_);
 
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -470,9 +484,9 @@ INSTANTIATE_TEST_SUITE_P(Webrtc, ConnectionTest, ::testing::Values(true));
 
 TEST_P(ConnectionTest, RejectConnection) {
   EXPECT_CALL(client_event_handler_,
-              OnConnectionState(ConnectionToHost::CONNECTING, OK));
+              OnConnectionState(ConnectionToHost::CONNECTING, ErrorCode::OK));
   EXPECT_CALL(client_event_handler_,
-              OnConnectionState(ConnectionToHost::CLOSED, OK));
+              OnConnectionState(ConnectionToHost::CLOSED, ErrorCode::OK));
 
   client_connection_->Connect(
       std::move(owned_client_session_),
@@ -491,10 +505,10 @@ TEST_P(ConnectionTest, MAYBE_Disconnect) {
   Connect();
 
   EXPECT_CALL(client_event_handler_,
-              OnConnectionState(ConnectionToHost::CLOSED, OK));
-  EXPECT_CALL(host_event_handler_, OnConnectionClosed(OK));
+              OnConnectionState(ConnectionToHost::CLOSED, ErrorCode::OK));
+  EXPECT_CALL(host_event_handler_, OnConnectionClosed(ErrorCode::OK));
 
-  client_session_->Close(OK);
+  client_session_->Close(ErrorCode::OK);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -557,7 +571,7 @@ TEST_P(ConnectionTest, MAYBE_Video) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          "screen_stream", std::make_unique<TestScreenCapturer>());
+          0, std::make_unique<TestScreenCapturer>());
 
   // Receive 5 frames.
   for (int i = 0; i < 5; ++i) {
@@ -582,7 +596,7 @@ TEST_P(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          "screen_stream", base::WrapUnique(new TestScreenCapturer()));
+          0, base::WrapUnique(new TestScreenCapturer()));
 
   WaitNextVideoFrame();
 }
@@ -612,7 +626,7 @@ TEST_P(ConnectionTest, MAYBE_DestroyOnIncomingMessage) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/1146302): Test is flaky.
+// TODO(crbug.com/40729981): Test is flaky.
 TEST_P(ConnectionTest, DISABLED_VideoStats) {
   // Currently this test only works for WebRTC because ICE connections stats are
   // reported by SoftwareVideoRenderer which is not used in this test.
@@ -633,7 +647,7 @@ TEST_P(ConnectionTest, DISABLED_VideoStats) {
 
   std::unique_ptr<VideoStream> video_stream =
       host_connection_->StartVideoStream(
-          "screen_stream", std::make_unique<TestScreenCapturer>());
+          0, std::make_unique<TestScreenCapturer>());
   video_stream->SetEventTimestampsSource(input_event_timestamps_source);
 
   WaitNextVideoFrame();
@@ -696,7 +710,7 @@ TEST_P(ConnectionTest, DISABLED_FirstCaptureFailed) {
   auto capturer = std::make_unique<TestScreenCapturer>();
   capturer->FailNthFrame(0);
   auto video_stream =
-      host_connection_->StartVideoStream("screen_stream", std::move(capturer));
+      host_connection_->StartVideoStream(0, std::move(capturer));
 
   WaitNextVideoFrame();
 }
@@ -709,7 +723,7 @@ TEST_P(ConnectionTest, DISABLED_SecondCaptureFailed) {
   auto capturer = std::make_unique<TestScreenCapturer>();
   capturer->FailNthFrame(1);
   auto video_stream =
-      host_connection_->StartVideoStream("screen_stream", std::move(capturer));
+      host_connection_->StartVideoStream(0, std::move(capturer));
 
   WaitNextVideoFrame();
   WaitNextVideoFrame();

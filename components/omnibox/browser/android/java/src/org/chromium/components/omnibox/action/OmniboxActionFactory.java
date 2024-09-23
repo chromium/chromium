@@ -47,20 +47,16 @@ public interface OmniboxActionFactory {
             @NonNull String actionUri);
 
     /**
-     * Create a new HistoryClustersAction.
+     * Construct a new OmniboxAnswerAction.
      *
-     * @param hint the title displayed on the chip
-     * @param accessibilityHint the text to be announced to the accessibility-enabled users
-     * @param query the user-specific query associated with History Clusters
-     * @return new instance of an HistoryClustersAction
+     * @param nativeInstance Pointer to native instance of the object.
+     * @param hint Text that should be displayed in the associated action chip.
+     * @param accessibilityHint Text for screen reader to read when focusing action chip
      */
     @CalledByNative
     @NonNull
-    OmniboxAction buildHistoryClustersAction(
-            long instance,
-            @NonNull String hint,
-            @NonNull String accessibilityHint,
-            @NonNull String query);
+    OmniboxAction buildOmniboxAnswerAction(
+            long nativeInstance, @NonNull String hint, @NonNull String accessibilityHint);
 
     @NativeMethods
     public interface Natives {

@@ -70,8 +70,7 @@ features:
 future_on:
 - fuchsia
 owners:
-- rogerta@chromium.org
-- mad@chromium.org
+- dpr-eng@google.com
 - domfc@chromium.org
 schema:
   items:

@@ -22,6 +22,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -131,18 +133,20 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
   show_check_passwords = password_type_.account_type() ==
                          ReusedPasswordAccountType::SAVED_PASSWORD;
 #endif
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetShowIcon(true);
   if (password_type.account_type() !=
           ReusedPasswordAccountType::SAVED_PASSWORD ||
       show_check_passwords) {
-    SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+               static_cast<int>(ui::mojom::DialogButton::kCancel));
   } else {
-    SetButtons(ui::DIALOG_BUTTON_OK);
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
   }
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButtonLabel(password_type_));
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
+                 GetOkButtonLabel(password_type_));
   SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
+      ui::mojom::DialogButton::kCancel,
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON));
 
   // The set_*_callback() methods below need a OnceCallback each and we only have one
@@ -216,7 +220,7 @@ void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
   // Makes message label align with title label.
   const int horizontal_adjustment =
       provider->GetDistanceMetric(DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE) +
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   if (base::i18n::IsRTL()) {
     message_body_label->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, 0, 0, horizontal_adjustment)));
@@ -227,9 +231,18 @@ void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
   AddChildView(message_body_label);
 }
 
-gfx::Size PasswordReuseModalWarningDialog::CalculatePreferredSize() const {
+gfx::Size PasswordReuseModalWarningDialog::GetMinimumSize() const {
+  // The default GetMinimumSize of `View` will call the layout manager to
+  // calculate under unconstrained conditions when there is a layout manager.
+  // This will cause the minimum value to be calculated incorrectly.
+  return GetPreferredSize(views::SizeBounds(0, 0));
+}
+
+gfx::Size PasswordReuseModalWarningDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   constexpr int kDialogWidth = 400;
-  return gfx::Size(kDialogWidth, GetHeightForWidth(kDialogWidth));
+  return gfx::Size(kDialogWidth, GetLayoutManager()->GetPreferredHeightForWidth(
+                                     this, kDialogWidth));
 }
 
 std::u16string PasswordReuseModalWarningDialog::GetWindowTitle() const {
@@ -278,7 +291,7 @@ void PasswordReuseModalWarningDialog::InvokeActionForTesting(
       Close();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_PARAMETERS_H_
 #define COMPONENTS_HEAP_PROFILING_IN_PROCESS_HEAP_PROFILER_PARAMETERS_H_
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/json/json_value_converter.h"
-#include "base/strings/string_piece.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/profiler/process_type.h"
 #include "base/time/time.h"
-#include "components/metrics/call_stacks/call_stack_profile_params.h"
 
 namespace heap_profiling {
 
@@ -20,6 +22,21 @@ namespace heap_profiling {
 // profiles will then be reported through the metrics service iff metrics
 // reporting is enabled.
 BASE_DECLARE_FEATURE(kHeapProfilerReporting);
+
+// If this is enabled, heap profiling in subprocesses is controlled centrally
+// from the browser process.
+BASE_DECLARE_FEATURE(kHeapProfilerCentralControl);
+
+// The probability of including a child process in each snapshot that's taken
+// when kHeapProfilerCentralControl is enabled, as a percentage from 0 to 100.
+// Defaults to 100, but can be set lower to sub-sample process types that are
+// very common (mainly renderers) to keep data volume low. Samples from child
+// processes are weighted in inverse proportion to the snapshot probability to
+// normalize the aggregated results.
+extern const base::FeatureParam<int> kGpuSnapshotProbability;
+extern const base::FeatureParam<int> kNetworkSnapshotProbability;
+extern const base::FeatureParam<int> kRendererSnapshotProbability;
+extern const base::FeatureParam<int> kUtilitySnapshotProbability;
 
 // Parameters to control the heap profiler.
 struct HeapProfilerParameters {
@@ -48,7 +65,7 @@ struct HeapProfilerParameters {
   // Missing parameters will not be touched. If parsing fails, returns false and
   // sets `is_supported` to false to ensure heap profiling doesn't run with
   // invalid parameters.
-  bool UpdateFromJSON(base::StringPiece json_string);
+  bool UpdateFromJSON(std::string_view json_string);
 };
 
 // Returns a default set of parameters to use if not overridden for a
@@ -59,7 +76,7 @@ HeapProfilerParameters GetDefaultHeapProfilerParameters();
 // identical to the result of GetDefaultHeapProfilerParameters() unless
 // overridden by a field trial.
 HeapProfilerParameters GetHeapProfilerParametersForProcess(
-    metrics::CallStackProfileParams::Process process_type);
+    base::ProfilerProcessType process_type);
 
 }  // namespace heap_profiling
 

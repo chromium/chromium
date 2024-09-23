@@ -53,6 +53,20 @@ class CC_EXPORT SchedulerSettings {
   // they would be under the default settings.
   bool disable_frame_rate_limit = false;
 
+  // When true BeginImplFrameDeadlineMode::SCROLL will be enabled. This deadline
+  // is used to wait for `scroll_deadline_ratio` of `BeginFramrArgs::interval`
+  // for input to arrive, before attempting to draw.
+  bool scroll_deadline_mode_enabled = false;
+  double scroll_deadline_ratio = 0.333;
+
+  // The number of frames to allow slow main commits to delay impl invalidation
+  // frames by.
+  int delay_impl_invalidation_frames = 0;
+
+  // Whether the tree is pushing updates to a separate display tree via a
+  // LayerContext, rather than drawing directly to a compositor frame.
+  bool use_layer_context_for_display = false;
+
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
 };
 

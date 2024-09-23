@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/gwp_asan/common/pack_stack_trace.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 #include <algorithm>
 #include <memory>
+
+#include "base/containers/heap_array.h"
+#include "components/gwp_asan/common/pack_stack_trace.h"
 
 // Tests that Unpack() correctly handles arbitrary inputs.
 
@@ -21,7 +27,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* Data, size_t Size) {
 
   // This should always be large enough to hold the output.
   size_t unpacked_array_size = std::min(Size, unpacked_max_size);
-  std::unique_ptr<uintptr_t[]> unpacked(new uintptr_t[unpacked_array_size]);
-  gwp_asan::internal::Unpack(Data, Size, unpacked.get(), unpacked_max_size);
+  base::HeapArray<uintptr_t> unpacked =
+      base::HeapArray<uintptr_t>::Uninit(unpacked_array_size);
+  gwp_asan::internal::Unpack(Data, Size, unpacked.data(), unpacked_max_size);
   return 0;
 }

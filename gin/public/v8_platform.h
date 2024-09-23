@@ -5,13 +5,13 @@
 #ifndef GIN_PUBLIC_V8_PLATFORM_H_
 #define GIN_PUBLIC_V8_PLATFORM_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "gin/gin_export.h"
 #include "gin/time_clamper.h"
 #include "gin/v8_platform_page_allocator.h"
 #include "gin/v8_platform_thread_isolated_allocator.h"
+#include "partition_alloc/buildflags.h"
 #include "v8/include/v8-platform.h"
 
 namespace gin {
@@ -26,17 +26,16 @@ class GIN_EXPORT V8Platform : public v8::Platform {
 
 // v8::Platform implementation.
 // Some configurations do not use page_allocator.
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   // GetPageAllocator returns gin::PageAllocator instead of v8::PageAllocator,
   // so we can be sure that the allocator used employs security features such as
   // enabling Arm's Branch Target Instructions for executable pages. This is
   // verified in the tests for gin::PageAllocator.
   PageAllocator* GetPageAllocator() override;
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolatedAllocator* GetThreadIsolatedAllocator() override;
 #endif
   void OnCriticalMemoryPressure() override;
-  v8::ZoneBackingAllocator* GetZoneBackingAllocator() override;
 #endif
 
   std::shared_ptr<v8::TaskRunner> GetForegroundTaskRunner(

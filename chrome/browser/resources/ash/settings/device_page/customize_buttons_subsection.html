@@ -27,64 +27,69 @@
     white-space: var(--cr-input-error-white-space);
     width: 256px;
   }
+
+  :host-context([chrome-refresh-2023]) #inputSuffix {
+    top: 140px;
+  }
+
 </style>
 <div class="subsection" id="subsection">
   <template is="dom-repeat"
       items="{{buttonRemappingList}}"
       index-as="index">
-    <customize-button-row
+    <customize-button-row id$="row-[[index]]"
         button-remapping-list="[[buttonRemappingList]]"
         remapping-index="[[index]]"
-        action-list$="[[actionList]]">
+        action-list$="[[actionList]]"
+        meta-key="[[metaKey]]">
     </customize-button-row>
   </template>
 </div>
 
-<template is="dom-if" if="[[shouldShowRenamingDialog_]]" restamp>
-  <cr-dialog id="renamingDialog"
-      on-close="cancelRenamingDialogClicked_" show-on-attach>
-    <div slot="title">$i18n{buttonRenamingDialogTitle}</div>
-    <div slot="body">
-      <div id="inputContainer">
-        <cr-input id="renamingDialogInput"
-          autofocus
-          label="$i18n{buttonRemappingDialogInputLabel}"
-          on-keydown="onKeyDownInRenamingDialog_"
-          invalid="[[buttonNameInvalid_]]"
-          value="{{selectedButtonName_}}"
-          aria-label="$i18n{buttonRenamingDialogTitle}">
-        </cr-input>
-        <div id="inputSuffix">
-          <span id="duplicateNameError" hidden="[[!duplicateButtonName_]]">
-            $i18n{buttonRenamingDialogErrorMessage}
-          </span>
-          <span id="inputCount" aria-hidden="true">
-            [[getInputCountString_(selectedButtonName_)]]
-          </span>
-        </div>
+<cr-dialog id="renamingDialog" on-close="cancelRenamingDialogClicked_">
+  <div slot="title">$i18n{buttonRenamingDialogTitle}</div>
+  <div slot="body">
+    <div id="inputContainer">
+      <cr-input id="renamingDialogInput"
+        autofocus
+        label="$i18n{buttonRemappingDialogInputLabel}"
+        on-keydown="onKeyDownInRenamingDialog_"
+        invalid="[[buttonNameInvalid_]]"
+        value="{{selectedButtonName_}}"
+        aria-description=
+            "[[i18n('buttonRemappingRenamingDialogInputDescription',
+                maxInputLength)]]">
+      </cr-input>
+      <div id="inputSuffix">
+        <span id="duplicateNameError" hidden="[[!duplicateButtonName_]]">
+          $i18n{buttonRenamingDialogErrorMessage}
+        </span>
+        <span id="inputCount" aria-hidden="true">
+          [[getInputCountString_(selectedButtonName_)]]
+        </span>
       </div>
     </div>
-    <div slot="button-container">
-      <div>
-        <cr-button id="cancelButton"
-            on-click="cancelRenamingDialogClicked_">
-          $i18n{buttonRemappingDialogCancelLabel}
-        </cr-button>
-      </div>
-      <div>
-        <cr-button id="saveButton" class="action-button"
-            on-click="saveRenamingDialogClicked_"
-            disabled="[[isSaveButtonDisabled_]]">
-          $i18n{buttonRemappingDialogSaveLabel}
-        </cr-button>
-      </div>
+  </div>
+  <div slot="button-container">
+    <div>
+      <cr-button id="cancelButton"
+          on-click="cancelRenamingDialogClicked_">
+        $i18n{buttonRemappingDialogCancelLabel}
+      </cr-button>
     </div>
-  </cr-dialog>
-</template>
+    <div>
+      <cr-button id="saveButton" class="action-button"
+          on-click="saveRenamingDialogClicked_"
+          disabled="[[isSaveButtonDisabled_]]">
+        $i18n{buttonRemappingDialogSaveLabel}
+      </cr-button>
+    </div>
+  </div>
+</cr-dialog>
 <key-combination-input-dialog
     id="keyCombinationInputDialog"
     button-remapping-list="{{buttonRemappingList}}"
     remapping-index="[[selectedButtonIndex_]]"
-    has-launcher-button="[[hasLauncherButton]]"
+    meta-key="[[metaKey]]"
     on-close="onKeyCombinationDialogClose_">
 </key-combination-input-dialog>

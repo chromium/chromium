@@ -4,7 +4,7 @@
 
 import {addEntries, ENTRIES, RootPath} from '../test_util.js';
 
-import {openNewWindow, remoteCall} from './background.js';
+import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 export type ElementQuery = string|string[];
@@ -19,7 +19,7 @@ export async function androidPhotosBanner() {
   await addEntries(['local'], [ENTRIES.hello]);
 
   // Open Files app.
-  const appId = await openNewWindow(RootPath.DOWNLOADS);
+  const appId = await remoteCall.openNewWindow(RootPath.DOWNLOADS);
 
   const click = async (query: ElementQuery) => {
     chrome.test.assertTrue(
@@ -58,7 +58,7 @@ export async function androidPhotosBanner() {
   await waitForElementLost(photosBannerTextQuery);
 
   // Wait for the DocumentsProvider volume to mount and navigate to Photos.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
   const photosVolumeType = 'documents_provider';
   await directoryTree.waitForItemToHaveChildrenByType(
       photosVolumeType, /* hasChildren= */ true);

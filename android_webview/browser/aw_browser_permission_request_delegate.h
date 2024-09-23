@@ -7,7 +7,12 @@
 
 #include "android_webview/browser/permission/permission_callback.h"
 #include "base/functional/callback_forward.h"
-#include "url/gurl.h"
+
+class GURL;
+
+namespace url {
+class Origin;
+}
 
 namespace android_webview {
 
@@ -35,6 +40,9 @@ class AwBrowserPermissionRequestDelegate {
                                           PermissionCallback callback) = 0;
 
   virtual void CancelMIDISysexPermissionRequests(const GURL& origin) = 0;
+
+  virtual void RequestStorageAccess(const url::Origin& top_level_origin,
+                                    PermissionCallback callback) = 0;
 
  protected:
   AwBrowserPermissionRequestDelegate() {}

@@ -10,7 +10,6 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -18,8 +17,8 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/command_buffer/service/texture_owner.h"
-#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "ui/gl/gl_utils.h"
 
 namespace gpu {
@@ -30,6 +29,7 @@ VideoSurfaceTextureImageBacking::VideoSurfaceTextureImageBacking(
     const gfx::ColorSpace color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
+    std::string debug_label,
     scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
     scoped_refptr<SharedContextState> context_state)
     : AndroidVideoImageBacking(mailbox,
@@ -37,6 +37,7 @@ VideoSurfaceTextureImageBacking::VideoSurfaceTextureImageBacking(
                                color_space,
                                surface_origin,
                                alpha_type,
+                               std::move(debug_label),
                                /*is_thread_safe=*/false),
       stream_texture_sii_(std::move(stream_texture_sii)),
       context_state_(std::move(context_state)),
@@ -132,7 +133,7 @@ class VideoSurfaceTextureImageBacking::
         abstract_texture_(std::move(abstract_texture)),
         passthrough_texture_(gles2::TexturePassthrough::CheckedCast(
             abstract_texture_->GetTextureBase())) {
-    // TODO(https://crbug.com/1172769): Remove this CHECK.
+    // TODO(crbug.com/40166788): Remove this CHECK.
     CHECK(passthrough_texture_);
   }
 

@@ -6,8 +6,7 @@
         "timestamp": "0",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "navigation"
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
         "responses": [
           {
@@ -17,8 +16,9 @@
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
                 "source_event_id": "123",
-                // Clamped to one hour (3600 seconds).
-                "aggregatable_report_window": 3590,
+                // Clamped to one hour (3600 seconds). Trailing zero included
+                // to demonstrate validity.
+                "aggregatable_report_window": 3590.0,
                 "aggregation_keys": {
                   "a": "0x1"
                 }
@@ -31,8 +31,7 @@
         "timestamp": "1000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter2.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -54,8 +53,7 @@
         "timestamp": "2000",
         "registration_request": {
           "context_origin": "https://source.test",
-          "attribution_src_url": "https://reporter.test/register-source",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {
@@ -82,7 +80,6 @@
         // window
         "timestamp": "3599999",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -115,7 +112,6 @@
         // 3,600,000 ms = 1 hour
         "timestamp": "3600000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -150,7 +146,6 @@
         // aggregatable_report_window) + 2 s (source's timestamp)
         "timestamp": "86402000",
         "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
           "context_origin": "https://destination2.test"
         },
         "responses": [
@@ -182,7 +177,6 @@
         // window
         "timestamp": "88400999",
         "registration_request": {
-          "attribution_src_url": "https://reporter2.test/register-trigger",
           "context_origin": "https://destination.test"
         },
         "responses": [
@@ -207,7 +201,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
       {
         "payload": [
@@ -225,13 +218,21 @@
       },
       {
         "payload": {
-          "attribution_destination": "https://destination.test",
+          "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x11",
               "value": 123
             }
-          ]
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "7199",
+            "version": "1.0"
+          }
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         // 7,200,000 ms  = 3,600 s (clamped aggregatable_report_window)  + 1
@@ -252,13 +253,21 @@
       },
       {
         "payload": {
-          "attribution_destination": "https://destination.test",
+          "aggregation_coordinator_origin": "https://coordinator.test",
           "histograms": [
             {
+              "id": "0",
               "key": "0x32",
               "value": 321
             }
-          ]
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter2.test",
+            "scheduled_report_time": "92000",
+            "version": "1.0"
+          }
         },
         // 90,000,000 ms  = 86,400 s (clamped aggregatable_report_window)  + 1
         // hour (base delay) + 1s (source's timestamp) - 1 ms offset

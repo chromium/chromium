@@ -87,7 +87,7 @@ TEST_F(ReauthTabHelperTest, MultipleNavigationReauth) {
 }
 
 // Tests the reauth flow with multiple navigations across two different origins.
-// TODO(https://crbug.com/1045515): update this test once navigations outside of
+// TODO(crbug.com/40116065): update this test once navigations outside of
 // reauth_url() are blocked.
 TEST_F(ReauthTabHelperTest, MultipleNavigationReauthThroughExternalOrigin) {
   auto simulator = content::NavigationSimulator::CreateBrowserInitiated(

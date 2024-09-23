@@ -761,6 +761,63 @@ Called by update_protocol_commands_enum.py.-->
   <int value="127" label="Toggle Emulate Focused Page from Styles tab off"/>
   <int value="128" label="Toggle Emulate Focused Page from Rendering tab"/>
   <int value="129" label="Toggle Emulate Focused Page from Command Menu"/>
+  <int value="130" label="Console insight generated successfully"/>
+  <int value="131"
+      label="Console insight generation errored due to an API error"/>
+  <int value="132"
+      label="Console insight generation errored while rendering Markdown"/>
+  <int value="133" label="Toggle Show Web Vitals"/>
+  <int value="134"
+      label="Console insight generation errored due to a permission denied"/>
+  <int value="135"
+      label="Console insight generation errored because the request cannot be
+             sent"/>
+  <int value="136"
+      label="Console insight generation errored due to a failed reuest"/>
+  <int value="137"
+      label="Console insight generation errored because the response chunk
+             cannot be pased"/>
+  <int value="138"
+      label="Console insight generation errored due to an unkown type of a
+             response chunk"/>
+  <int value="139"
+      label="Console insight generation errored for an unknown reason"/>
+  <int value="140" label="Autofill event received"/>
+  <int value="141"
+      label="Autofill event received and auto-opening Autofill tab"/>
+  <int value="142" label="Animations panel - Animation group selected"/>
+  <int value="143"
+      label="Animations panel - Scroll driven animation group selected"/>
+  <int value="144"
+      label="Animations panel - Scroll driven animation group scrubbed"/>
+  <int value="145" label="Freestyler panel - Opened through Elements panel"/>
+  <int value="146" label="Freestyler panel - Opened through Styles tab"/>
+  <int value="147" label="Console panel - Used context: filter"/>
+  <int value="148" label="Console panel - Used source: filter"/>
+  <int value="149" label="Console panel - Used url: filter"/>
+  <int value="150" label="Console insight consent reminder shown"/>
+  <int value="151" label="Console insight consent reminder canceled"/>
+  <int value="152" label="Console insight consent reminder confirmed"/>
+  <int value="153" label="Console insight onboarding shown"/>
+  <int value="154" label="Console insight onboarding canceled on page 1"/>
+  <int value="155" label="Console insight onboarding canceled on page 2"/>
+  <int value="156" label="Console insight onboarding confirmed"/>
+  <int value="157" label="Console insight onboarding moving to next page"/>
+  <int value="158" label="Console insight onboarding moving to previous page"/>
+  <int value="159" label="Console insight onboarding disabling feature"/>
+  <int value="160" label="Console insight opt-in teaser shown"/>
+  <int value="161"
+      label="Console insight opt-in teaser link to settings clicked"/>
+  <int value="162"
+      label="Console insight opt-in teaser confirmed via settings"/>
+  <int value="163" label="Console insight reminder teaser shown"/>
+  <int value="164" label="Console insight reminder teaser confirmed"/>
+  <int value="165" label="Console insight reminder teaser canceled"/>
+  <int value="166"
+      label="Console insight reminder teaser link to settings clicked"/>
+  <int value="167"
+      label="Console insight reminder teaser aborted via settings"/>
+  <int value="168" label="Console insight generated skipping disclaimers"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
@@ -776,51 +833,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Animation start point is moved"/>
   <int value="3" label="Animation finish point is moved"/>
   <int value="4" label="Other"/>
-</enum>
-
-<enum name="DevToolsBadgeActivated">
-  <int value="0" label="Grid"/>
-  <int value="1" label="Subgrid"/>
-  <int value="2" label="Flex"/>
-  <int value="3" label="Ad"/>
-  <int value="4" label="Scroll snap"/>
-  <int value="5" label="Container"/>
-  <int value="6" label="Slot"/>
-  <int value="7" label="Top layer"/>
-  <int value="8" label="Reveal"/>
-</enum>
-
-<enum name="DevToolsBreakpointEditDialogRevealedFrom">
-  <int value="0" label="Breakpoint sidebar context menu"/>
-  <int value="1" label="Breakpoint sidebar edit button"/>
-  <int value="2" label="Breakpoint marker context menu"/>
-  <int value="3" label="Line gutter context menu"/>
-  <int value="4" label="Keyboard Shortcut"/>
-  <int value="5" label="Linkifier"/>
-  <int value="6" label="Mouse click"/>
-</enum>
-
-<enum name="DevToolsBreakpointsRestoredFromStorageCount">
-  <int value="0" label="Less than 100"/>
-  <int value="1" label="Less than 300"/>
-  <int value="2" label="Less than 1000"/>
-  <int value="3" label="Less than 3000"/>
-  <int value="4" label="Less than 10000"/>
-  <int value="5" label="Less than 30000"/>
-  <int value="6" label="Less than 100000"/>
-  <int value="7" label="Less than 300000"/>
-  <int value="8" label="Less than 1000000"/>
-  <int value="9" label="Above 1000000"/>
-</enum>
-
-<enum name="DevToolsBreakpointWithConditionAdded">
-  <int value="0" label="Logpoint"/>
-  <int value="1" label="Conditional Breakpoint"/>
-</enum>
-
-<enum name="DevToolsColorConvertedFrom">
-  <int value="0" label="Color Swatch (Shift + Click menu)"/>
-  <int value="1" label="Color Picker"/>
 </enum>
 
 <enum name="DevToolsColorPickerOpenedFrom">
@@ -872,17 +884,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="6" label="SchemeData"/>
   <int value="7" label="SchemeFile"/>
   <int value="8" label="SchemeBlob"/>
-</enum>
-
-<enum name="DevToolsElementsSidebarTab">
-  <int value="0" label="Other sidebar pane"/>
-  <int value="1" label="Elements - Styles"/>
-  <int value="2" label="Elements - Computed"/>
-  <int value="3" label="Elements - Layout"/>
-  <int value="4" label="Elements - Event Listeners"/>
-  <int value="5" label="Elements - DOM Breakpoints"/>
-  <int value="6" label="Elements - Properties"/>
-  <int value="7" label="Elements - Accessibility"/>
 </enum>
 
 <enum name="DevtoolsExperiments">
@@ -970,6 +971,15 @@ Called by update_protocol_commands_enum.py.-->
   <int value="83" label="sourcesFrameIndentationMarkersTemporarilyDisable"/>
   <int value="84" label="heapSnapshotTreatBackingStoreAsContainingObject"/>
   <int value="85" label="cssTypeComponentLengthDeprecate"/>
+  <int value="86" label="timelineShowPostMessageEvents"/>
+  <int value="89" label="timelineExtensions"/>
+  <int value="90" label="timelineEnhancedTraces"/>
+  <int value="91" label="timelineCompiledSources"/>
+  <int value="93" label="timelineDebugMode"/>
+  <int value="94" label="timelineAnnotations"/>
+  <int value="95" label="timeline-rpp-sidebar"/>
+  <int value="96" label="timelineObservations"/>
+  <int value="97" label="genAISettingsPanel"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
@@ -1329,15 +1339,15 @@ Called by update_protocol_commands_enum.py.-->
 
 <enum name="DevToolsLegacyResourceTypeFilterItemSelected">
   <int value="0" label="All"/>
-  <int value="1" label="Documents"/>
-  <int value="2" label="Scripts"/>
-  <int value="3" label="XHR and Fetch"/>
-  <int value="4" label="Stylesheets"/>
-  <int value="5" label="Fonts"/>
-  <int value="6" label="Images"/>
+  <int value="1" label="Document"/>
+  <int value="2" label="JavaScript"/>
+  <int value="3" label="Fetch and XHR"/>
+  <int value="4" label="CSS"/>
+  <int value="5" label="Font"/>
+  <int value="6" label="Image"/>
   <int value="7" label="Media"/>
   <int value="8" label="Manifest"/>
-  <int value="9" label="WebSockets"/>
+  <int value="9" label="WebSocket"/>
   <int value="10" label="WebAssembly"/>
   <int value="11" label="Other"/>
 </enum>
@@ -1419,6 +1429,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="33" label="text/javascript+sourcemapped"/>
   <int value="34" label="text/x.angular"/>
   <int value="35" label="text/x.vue"/>
+  <int value="36" label="text/javascript+snippet"/>
+  <int value="37" label="text/javascript+eval"/>
 </enum>
 
 <enum name="DevToolsNetworkPanelMoreFiltersItemSelected">
@@ -1444,11 +1456,16 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="Context menu inspect"/>
   <int value="4" label="Inspect mode shortcut"/>
   <int value="5" label="Toggle shortcut"/>
+  <int value="6" label="Inspect link"/>
+  <int value="7" label="Automatic for new target"/>
+  <int value="8" label="Target reload"/>
+  <int value="9" label="Open for node from another target"/>
+  <int value="10" label="Pinned toolbar button"/>
 </enum>
 
 <enum name="DevToolsPanel">
   <int value="1" label="Elements"/>
-  <int value="2" label="Resources"/>
+  <int value="2" label="Application"/>
   <int value="3" label="Network"/>
   <int value="4" label="Sources"/>
   <int value="5" label="Performance"/>
@@ -1519,8 +1536,8 @@ Called by update_protocol_commands_enum.py.-->
 <enum name="DevToolsPanelWithLocation">
   <int value="1" label="Elements - Main"/>
   <int value="2" label="Elements - Drawer"/>
-  <int value="3" label="Resources - Main"/>
-  <int value="4" label="Resources - Drawer"/>
+  <int value="3" label="Application - Main"/>
+  <int value="4" label="Application - Drawer"/>
   <int value="5" label="Network - Main"/>
   <int value="6" label="Network - Drawer"/>
   <int value="7" label="Sources - Main"/>
@@ -1721,15 +1738,15 @@ Called by update_protocol_commands_enum.py.-->
 
 <enum name="DevToolsResourceTypeFilterItemSelected">
   <int value="0" label="All"/>
-  <int value="1" label="Documents"/>
-  <int value="2" label="Scripts"/>
-  <int value="3" label="XHR and Fetch"/>
-  <int value="4" label="Stylesheets"/>
-  <int value="5" label="Fonts"/>
-  <int value="6" label="Images"/>
+  <int value="1" label="Document"/>
+  <int value="2" label="JavaScript"/>
+  <int value="3" label="Fetch and XHR"/>
+  <int value="4" label="CSS"/>
+  <int value="5" label="Font"/>
+  <int value="6" label="Image"/>
   <int value="7" label="Media"/>
   <int value="8" label="Manifest"/>
-  <int value="9" label="WebSockets"/>
+  <int value="9" label="WebSocket"/>
   <int value="10" label="WebAssembly"/>
   <int value="11" label="Other"/>
 </enum>
@@ -1765,15 +1782,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="12" label="Sources - Snippets"/>
 </enum>
 
-<enum name="DevToolsSourcesSidebarTab">
-  <int value="0" label="Other sidebar pane"/>
-  <int value="1" label="Sources - Page"/>
-  <int value="2" label="Sources - Workspace"/>
-  <int value="3" label="Sources - Overrides"/>
-  <int value="4" label="Sources - Content Scripts"/>
-  <int value="5" label="Sources - Snippets"/>
-</enum>
-
 <enum name="DevToolsStyleTextCopied">
   <int value="1" label="Declaration from changed line"/>
   <int value="2" label="All changes from Styles pane"/>
@@ -1805,11 +1813,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Chrome Sync 'Settings' ModelType disabled"/>
   <int value="3" label="DevTools settings sync disabled"/>
   <int value="4" label="DevTools settings sync enabled"/>
-</enum>
-
-<enum name="DevToolsVMInlineScriptType">
-  <int value="0" label="Module Script"/>
-  <int value="1" label="Classic Script"/>
 </enum>
 
 </enums>

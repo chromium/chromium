@@ -1,0 +1,137 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=/signin_shared.css.js
+ * #import=/signin_vars.css.js
+ * #import=/tangible_sync_style_shared_lit.css.js
+ * #scheme=relative
+ * #include=signin-shared tangible-sync-style-shared-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  --cr-secondary-text-color: var(--google-grey-700);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-inline: var(--tangible-sync-style-banner-width);
+  position: relative;
+}
+
+#header-container {
+  position: relative;
+  width: 100%;
+}
+
+#avatar-container {
+  flex: 0 0 var(--tangible-sync-style-avatar-size);
+  height: var(--tangible-sync-style-avatar-size);
+  left: 0;
+  margin-inline: auto;
+  position: relative;
+  right: 0;
+  width: var(--tangible-sync-style-avatar-size);
+  z-index: 1;
+}
+
+#avatar {
+  border-radius: 50%;
+  height: 60px;
+  width: 60px;
+}
+
+.work-badge {
+  bottom: 0;
+  box-sizing: border-box;
+  position: absolute;
+}
+
+#text-container {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.tangible-sync-style .title {
+  margin: 12px 0;
+}
+
+.tangible-sync-style .subtitle {
+  color: var(--cr-secondary-text-color);
+  margin: 0;
+}
+
+.disclaimer-container {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  justify-content: center;
+  margin-block-start: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.disclaimer:first-child {
+  margin-block-end: 16px;
+}
+
+.disclaimer {
+  align-items: center;
+  background-color: var(--md-background-color);
+  border-radius: 24px;
+  box-sizing: border-box;
+  display: flex;
+  padding: 24px;
+  gap: 16px;
+}
+
+.disclaimer .icon {
+  color: var(--google-blue-600);
+  flex-shrink: 0;
+  height: 36px;
+  width: 36px;
+}
+
+.disclaimer p {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  margin: 0px;
+  text-align: start;
+}
+
+.disclaimer h2 {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0px;
+  text-align: start;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --cr-secondary-text-color: var(--google-grey-500);
+  }
+
+  .work-badge {
+    border-color: var(--md-background-color);
+  }
+
+  .work-badge > cr-icon {
+    box-shadow: 0 0 2px rgba(var(--google-grey-800-rgb), 0.12),
+       0 0 6px rgba(var(--google-grey-800-rgb), 0.15);
+  }
+
+  .disclaimer {
+    background-color: var(--cr-fallback-color-surface);
+  }
+
+  .disclaimer .icon {
+    color: var(--google-blue-300);
+  }
+}

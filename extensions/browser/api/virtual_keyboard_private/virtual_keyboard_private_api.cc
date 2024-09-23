@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
@@ -76,7 +77,7 @@ void ConvertClipboardHistoryItemToClipboardItem(
 
   switch (history_item.display_format()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
       item.text_data = base::UTF16ToUTF8(history_item.display_text());
       item.display_format = DisplayFormat::kText;

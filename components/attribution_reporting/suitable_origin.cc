@@ -47,12 +47,12 @@ std::optional<SuitableOrigin> SuitableOrigin::Deserialize(
 }
 
 SuitableOrigin::SuitableOrigin(mojo::DefaultConstruct::Tag) {
-  DCHECK(!IsValid());
+  CHECK(!IsValid());
 }
 
 SuitableOrigin::SuitableOrigin(url::Origin origin)
     : origin_(std::move(origin)) {
-  DCHECK(IsValid());
+  CHECK(IsValid());
 }
 
 SuitableOrigin::~SuitableOrigin() = default;
@@ -66,7 +66,7 @@ SuitableOrigin::SuitableOrigin(SuitableOrigin&&) = default;
 SuitableOrigin& SuitableOrigin::operator=(SuitableOrigin&&) = default;
 
 std::string SuitableOrigin::Serialize() const {
-  DCHECK(IsValid());
+  CHECK(IsValid());
   return origin_.Serialize();
 }
 

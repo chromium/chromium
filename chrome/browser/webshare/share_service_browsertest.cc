@@ -120,8 +120,7 @@ class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
       content::BrowserMainParts* browser_main_parts) override {
     fake_safe_browsing_database_manager_ =
         base::MakeRefCounted<safe_browsing::FakeSafeBrowsingDatabaseManager>(
-            content::GetUIThreadTaskRunner({}),
-            content::GetIOThreadTaskRunner({}));
+            content::GetUIThreadTaskRunner({}));
     safe_browsing_factory_->SetTestDatabaseManager(
         fake_safe_browsing_database_manager_.get());
     safe_browsing::SafeBrowsingService::RegisterFactory(
@@ -131,7 +130,8 @@ class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
 
   void AddDangerousUrl(const GURL& dangerous_url) {
     fake_safe_browsing_database_manager_->AddDangerousUrl(
-        dangerous_url, safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE);
+        dangerous_url,
+        safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE);
   }
 
   void TearDown() override {
@@ -202,7 +202,8 @@ IN_PROC_BROWSER_TEST_F(ShareServicePrerenderBrowserTest, Text) {
   // Start a prerender.
   const GURL kPrerenderUrl =
       embedded_test_server()->GetURL("/webshare/index.html");
-  const int kPrerenderHostId = prerender_helper_.AddPrerender((kPrerenderUrl));
+  const content::FrameTreeNodeId kPrerenderHostId =
+      prerender_helper_.AddPrerender((kPrerenderUrl));
   ASSERT_EQ(prerender_helper_.GetHostForUrl(kPrerenderUrl), kPrerenderHostId);
 
   content::RenderFrameHost* prerender_rfh =

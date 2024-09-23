@@ -5,6 +5,7 @@
 #include "ui/aura/screen_ozone.h"
 
 #include <memory>
+#include <optional>
 
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
@@ -27,7 +28,7 @@ ScreenOzone::ScreenOzone() {
     // that call into `Screen` functions below have a valid `platform_screen_`.
     platform->InitScreen(platform_screen_.get());
   } else {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "PlatformScreen is not implemented for this ozone platform.";
   }
 }
@@ -143,6 +144,16 @@ std::string ScreenOzone::GetCurrentWorkspace() {
 base::Value::List ScreenOzone::GetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   return platform_screen_->GetGpuExtraInfo(gpu_extra_info);
+}
+
+std::optional<float> ScreenOzone::GetPreferredScaleFactorForWindow(
+    gfx::NativeWindow window) const {
+  return ui::OzonePlatform::GetInstance()
+                 ->GetPlatformRuntimeProperties()
+                 .supports_per_window_scaling
+             ? platform_screen_->GetPreferredScaleFactorForAcceleratedWidget(
+                   GetAcceleratedWidgetForWindow(window))
+             : Screen::GetPreferredScaleFactorForWindow(window);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

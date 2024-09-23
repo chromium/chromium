@@ -1,0 +1,51 @@
+<style include="healthd-internals-shared">
+  #menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  #actionButtonsContainer{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  cr-button {
+    width: 100%;
+  }
+
+  #dataButtonsContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+  }
+
+  .line-chart-menu-button {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    flex-grow: 1;
+    line-height: 1.5em;
+    padding: 10px 10px 10px 10px;
+    user-select: none;
+  }
+
+  .line-chart-menu-button-inner-span {
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+  }
+</style>
+<div id="menu">
+  <div id="actionButtonsContainer">
+    <cr-button class="action-button" on-click="onEnableAllButtonClick">
+      Enable All
+    </cr-button>
+    <cr-button class="cancel-button" on-click="onDisableAllButtonClicked">
+      Disable All
+    </cr-button>
+  </div>
+  <div id="dataButtonsContainer"></div>
+</div>

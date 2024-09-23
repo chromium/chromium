@@ -18,6 +18,9 @@ It would not be reasonable to build the tooling for every Chromium build, so we
 build it centrally (with the scripts here) and distribute it for all to use
 (also fetched with the scripts here).
 
+Similar to the Clang package which exists as a tarball that is unpacked into
+`third_party/llvm-build`, the Rust package exists as a tarball that is unpacked
+into `third_party/rust-toolchain`.
 
 ## Rust build overview
 
@@ -56,18 +59,70 @@ After the build has succeeded and the new toolchain has been copied to
 production, the CQ will run trybots to verify that our code still builds
 and tests pass with the new Rust toolchain.
 
-### Possible failure: Missing dependencies
+### An overview of what is updated in a Rust roll
 
-`build_rust.py` will vendor all dependencies before starting the build. To do
-this it first initializes git submodules. Then it runs `cargo vendor`. However
-some parts of the compiler build are excluded from the top level Cargo.toml
-workspace. Thus it passes `--sync dir` for a number of subdirectories, based
-on [dist.rs, the nightly tarball packager](
-https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L986-L995).
+During Rust packaging, the upstream Rust sources are checked out into
+`third_party/rust-src`.
 
-If another Cargo.toml is required in the future, and not part of the workspace
-it would produce missing dependencies, and the set of directories in
-`build_rust.py` would need to be updated.
+During a Rust roll, a couple of things get updated. The most obvious one is
+various toolchain binaries like `rustc` that live in
+`third_party/rust-toolchain/bin`. These are the direct outputs of a Rust
+toolchain build.
+
+We also update the Rust standard library. We actually provide two copies of the
+standard library in Chromium: a prebuilt version only for use in host tools
+(e.g. build scripts, proc macros), and a version built from source as part of
+the normal Chromium build for use in target artifacts. These are the same
+version of the standard library that the Rust toolchain revision provides.
+
+The reason we have a prebuilt version of the standard library for use in host
+tools is that they are often loaded into `rustc` as a module, so to be safe we
+use the same prebuilts that the toolchain linked against. These are copied from
+the Rust toolchain build to
+`third_party/rust-toolchain/lib/rustlib/$PLATFORM/lib/*.rlib`. We use these
+when the gn arg `rust_prebuilt_stdlib` is true, which is manually set to true
+for gn host toolchains.
+
+The sources of the standard library we build from source for target artifacts
+live in `third_party/rust-toolchain/lib/rustlib/src/rust`. These are copied
+from `third_party/rust-src`. Since Chromium uses gn as its build system, we
+need some way to translate build files from Rust's build system, cargo, to gn
+rules. This is the responsibility of `gnrt`, which is a Chromium-specific tool
+that lives in [`tools/crates/gnrt`](https://crsrc.org/c/tools/crates/gnrt/),
+written in Rust. `gnrt gen` takes a cargo workspace, runs `cargo metadata` on
+it to get information about sources and dependencies, and outputs gn rules
+corresponding to the cargo build rules. Rust has a
+[`sysroot`](https://github.com/rust-lang/rust/tree/master/library/sysroot)
+crate roughly corresponding to a top level cargo workspace we want for the
+standard library. However, we want a couple of customizations without having to
+patch the Rust sources, so we have another crate
+[`fake_root`](https://crsrc.org/c/build/rust/std/fake_root/) above that depends
+on `sysroot`.
+[`tools/rust/gnrt_stdlib.py`](https://crsrc.org/c/tools/rust/gnrt_stdlib.py)
+fetches and invokes the pinned `cargo` (see [`rustc` bootstrapping
+explanation](https://rustc-dev-guide.rust-lang.org/building/bootstrapping/what-bootstrapping-does.html),
+"pinned" is the "stage0" toolchain) to build and run `gnrt` with `fake_root` as
+the base workspace, generating an updated
+[`build/rust/std/rules/BUILD.gn`](https://crsrc.org/c/build/rust/std/rules/BUILD.gn)
+that has gn rules for the new standard library sources. For convenience when
+rolling Rust, this is one big `BUILD.gn` file as opposed to multiple files per
+crate. Note that because we do not ship cargo build files in
+`third_party/rust-toolchain`, we must run `gnrt` against `third_party/rust-src`
+instead of `third_party/rust-toolchain`. But end users do not have
+`third_party/rust-src` checked out, so we must rewrite the
+`third_party/rust-src` paths to the copies of the sources in
+`third_party/rust-toolchain/lib/rustlib/src/rust`, which is checked out by end
+users as part of the Rust toolchain.
+
+As an aside, `gnrt` is also used to generate gn build rules for
+non-standard-library Rust packages in `third_party/rust` used in Chromium's
+build. It uses
+[`third_party/rust/chromium_crates_io`](https://crsrc.org/c/third_party/rust/chromium_crates_io)
+as the base workspace and vendors sources into
+`third_party/rust/chromium_crates_io/vendor`. The `--for-std` argument to `gnrt
+gen` does different things for creating gn rules for the standard library
+versus for various non-standard-library packages, such as producing a single
+BUILD.gn file.
 
 ### Possible failure: Missing sources or inputs
 
@@ -117,21 +172,40 @@ To fix the error:
 * Find the failing build target crate's rules in
   `//build/rust/std/gnrt_config.toml`. The failing crate in the above example
   is `libstd.rlib`, so we want the `[crate.std]` section of the config file.
+* Determine if the target being built is a library or a build script. Build
+  script targets end with the suffix `_build_script`. For example:
+  ```
+  [13627/84339] RUST(BIN) clang_x64_for_rust_host_build_tools/compiler_builtins_compiler_builtins_vunknown_build_script
+  python3 ../../build/rust/rustc_wrapper.py --rustc=../../third_party/rust-toolchain/bin/rustc --depfi...(too long)
+  ERROR: file not in GN sources: ../../third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.123/configure.rs
+  ```
 * Determine if the missing file should go in `sources` or `inputs`.
   * For `sources`, add the path to a `extra_src_roots` list in the crate's
     rules. For the above example, we could add
     `extra_src_roots = ['../../portable-simd/crates/std_float/src']`.
+    * Or if it was a build script target, then
+      `extra_build_script_src_roots = ['../../portable-simd/crates/std_float/src']`.
   * For `inputs`, add the path to a `extra_input_roots` list in the crate's
     rules. For the above example, we could add
     `extra_input_roots = ['../../stdarch/crates/core_arch/src']`.
+    * Or if it was a build script target, then
+      `extra_build_script_input_roots = ['../../stdarch/crates/core_arch/src']`.
 * With the roll CL checked out, run `gclient sync`.
+
 *** note
 NOTE: `gclient sync` will download the version of the rust toolchain from the
 roll CL. In order for this to work, the upload_rust bots should've completed and
 `copy_staging_to_prod_and_goma.sh should've been run.
 ***
+
 * Run `tools/rust/gnrt_stdlib.py` to use gnrt to rebuild the stdlib GN rules
   using the updated config.
+
+*** note
+NOTE: All gnrt_config options are found in
+[//tools/crates/gnrt/lib/config.rs](https://source.chromium.org/chromium/chromium/src/+/main:tools/crates/gnrt/lib/config.rs).
+The `CrateConfig` type has the various per-crate config options.
+***
 
 ### Generating `BUILD.gn` files for stdlib crates
 
@@ -184,7 +258,7 @@ to a new version:
 
 - Run manual tests locally (see the "Building and testing the tools locally"
   section below).
-  TODO(https://crbug.com/1329611): These manual steps should
+  TODO(crbug.com/40226863): These manual steps should
   be made obsolete once Rust-specific tryjobs cover Crubit
   tests.
 
@@ -233,5 +307,5 @@ $ tools/rust/build_crubit.py --install-to=third_party/rust-toolchain/bin/
 Crubit tests are under `//build/rust/tests/test_rs_bindings_from_cc`.  Until
 Crubit is built on the bots, the tests are commented out in
 `//build/rust/tests/BUILD.gn`, but they should still be built and run before
-rolling Crubit.  TODO(https://crbug.com/1329611): Rephrase this paragraph
+rolling Crubit.  TODO(crbug.com/40226863): Rephrase this paragraph
 after Crubit is built and tested on the bots.

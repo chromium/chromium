@@ -24,12 +24,10 @@ export class DiagnoseInfoTableElement extends CustomElement {
 
   constructor() {
     super();
-    this.tableTitle_ =
-        this.getRequiredElement<HTMLElement>('caption#table-title');
-    this.tableHead_ = this.getRequiredElement<HTMLElement>('thead');
-    this.tableBody_ = this.getRequiredElement<HTMLElement>('tbody');
-    this.tableFooter_ =
-        this.getRequiredElement<HTMLElement>('caption#table-footer');
+    this.tableTitle_ = this.getRequiredElement('caption#table-title');
+    this.tableHead_ = this.getRequiredElement('thead');
+    this.tableBody_ = this.getRequiredElement('tbody');
+    this.tableFooter_ = this.getRequiredElement('caption#table-footer');
     this.style.display = 'none';
     this.lastTableEntries_ = [];
   }

@@ -153,7 +153,7 @@ and need to be explicitly added as described in
 At a minimum, `test_manager` is required in order to run tests. This is already
 available when using a combined repo as in option (1).
 
-<!-- TODO(crbug.com/1408597): Remove this paragraph when the packages for fakes
+<!-- TODO(crbug.com/42050571): Remove this paragraph when the packages for fakes
      are subpackaged with the tests.
 -->
 Another required package is
@@ -164,7 +164,7 @@ Other useful packages include:
 * `intl_property_manager` - avoids many warnings when the test shard tries
   to launch it.
 * `audio_core` - avoids warnings related to `fuchsia.media.ProfileProvider`.
-  <!-- TODO(crbug.com/1365682): Replace `audio_core` with the appropriate
+  <!-- TODO(crbug.com/42050523): Replace `audio_core` with the appropriate
        Package name and path here and below, respectively, when switching to
        `fuchsia.scheduler.ProfileProvider`.
   -->

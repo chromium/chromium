@@ -10,13 +10,17 @@
 
 #include "base/check.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
+#include "components/enterprise/client_certificates/core/ssl_key_converter.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/ec_signature_creator.h"
+#include "net/ssl/ssl_private_key.h"
 
 namespace client_certificates {
 
 ECPrivateKey::ECPrivateKey(std::unique_ptr<crypto::ECPrivateKey> key)
-    : PrivateKey(PrivateKeySource::kSoftwareKey), key_(std::move(key)) {
+    : PrivateKey(PrivateKeySource::kSoftwareKey,
+                 SSLKeyConverter::Get()->ConvertECKey(*key)),
+      key_(std::move(key)) {
   CHECK(key_);
 }
 

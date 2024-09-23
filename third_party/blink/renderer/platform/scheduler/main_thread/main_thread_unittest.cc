@@ -78,7 +78,7 @@ class MainThreadTest : public testing::Test {
   base::SimpleTestTickClock clock_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   std::unique_ptr<ScopedSchedulerOverrider> scheduler_overrider_;
-  raw_ptr<Thread, ExperimentalRenderer> thread_;
+  raw_ptr<Thread> thread_;
 };
 
 TEST_F(MainThreadTest, TestTaskObserver) {

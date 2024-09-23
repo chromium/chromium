@@ -24,7 +24,7 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
       out << "FullLayout";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
       out << "Normal";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
 
@@ -82,7 +82,7 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
           out << "BlendModeChanged";
           break;
         default:
-          NOTREACHED();
+          NOTREACHED_IN_MIGRATION();
           break;
       }
     }

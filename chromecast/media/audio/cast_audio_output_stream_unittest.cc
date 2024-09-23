@@ -112,7 +112,6 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
         return CmaBackend::BufferStatus::kBufferSuccess;
       default:
         NOTREACHED();
-        return CmaBackend::BufferStatus::kBufferFailed;
     }
   }
   void GetStatistics(Statistics* statistics) override {}
@@ -176,10 +175,7 @@ class FakeCmaBackend : public CmaBackend {
     audio_decoder_ = std::make_unique<FakeAudioDecoder>(params_);
     return audio_decoder_.get();
   }
-  VideoDecoder* CreateVideoDecoder() override {
-    NOTREACHED();
-    return nullptr;
-  }
+  VideoDecoder* CreateVideoDecoder() override { NOTREACHED(); }
 
   bool Initialize() override { return true; }
   bool Start(int64_t start_pts) override {

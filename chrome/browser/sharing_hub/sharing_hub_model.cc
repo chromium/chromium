@@ -14,7 +14,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -80,16 +78,6 @@ std::vector<SharingHubAction> SharingHubModel::GetFirstPartyActionList(
               IsGeneratorAvailable(web_contents->GetLastCommittedURL())) {
         results.push_back(action);
       }
-    } else if (action.command_id == IDC_FOLLOW) {
-      TabWebFeedFollowState follow_state =
-          feed::WebFeedTabHelper::GetFollowState(web_contents);
-      if (follow_state == TabWebFeedFollowState::kNotFollowed)
-        results.push_back(action);
-    } else if (action.command_id == IDC_UNFOLLOW) {
-      TabWebFeedFollowState follow_state =
-          feed::WebFeedTabHelper::GetFollowState(web_contents);
-      if (follow_state == TabWebFeedFollowState::kFollowed)
-        results.push_back(action);
     } else if (action.command_id == IDC_SAVE_PAGE) {
       if (chrome::CanSavePage(chrome::FindBrowserWithTab(web_contents))) {
         results.push_back(action);
@@ -130,16 +118,6 @@ void SharingHubModel::PopulateFirstPartyActions() {
         l10n_util::GetStringUTF16(IDS_SHARING_HUB_MEDIA_ROUTER_LABEL),
         &vector_icons::kMediaRouterIdleIcon, "SharingHubDesktop.CastSelected",
         0);
-  }
-
-  if (base::FeatureList::IsEnabled(feed::kWebUiFeed)) {
-    first_party_action_list_.emplace_back(
-        IDC_FOLLOW, l10n_util::GetStringUTF16(IDS_SHARING_HUB_FOLLOW_LABEL),
-        &kAddIcon, "SharingHubDesktop.FollowSelected", 0);
-    first_party_action_list_.emplace_back(
-        IDC_UNFOLLOW,
-        l10n_util::GetStringUTF16(IDS_SHARING_HUB_FOLLOWING_LABEL),
-        &views::kMenuCheckIcon, "SharingHubDesktop.UnfollowSelected", 0);
   }
 
   first_party_action_list_.emplace_back(

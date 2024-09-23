@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -137,7 +136,10 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
     std::move(callback_).Run(this, true);
   }
 
-  void OnBubbleClosed(user_education::HelpBubble* help_bubble) { delete this; }
+  void OnBubbleClosed(user_education::HelpBubble*,
+                      user_education::HelpBubble::CloseReason) {
+    delete this;
+  }
 
   void OnTimeout() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

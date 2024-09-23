@@ -11,21 +11,27 @@ class TabStripModel;
 // tools/metrics/histograms/enums.xml. Do not reorder or remove items. Add new
 // items to the end and reflect them in the histogram enum.
 enum class SuggestedTabStripOrganizationReason {
-  MANUAL_TAB_GROUPING = 0,
-  DRAGGED_WITHIN_SAME_TABSTRIP = 1,
-  ADDED_TO_READING_LIST = 2,
-  ADDED_TO_BOOKMARKS = 3,
-  OPENED_LINK_IN_BACKGROUND = 4,
-  SAME_ORIGIN_NAVIGATION = 5,
-  SESSION_RESTORED = 6,
-  RESUMING_FROM_STANDBY = 7,
+  kManualTabGrouping = 0,
+  kDraggedWithinSameTabstrip = 1,
+  kAddedToReadingList = 2,
+  kAddedToBookmarks = 3,
+  kOpenedLinkInBackground = 4,
+  kSameOriginNavigation = 5,
+  kSessionRestored = 6,
+  kResumingFromStandby = 7,
+  kMaxValue = kResumingFromStandby,
 };
 
+// This enum must match the numbering for TabOrganizationEntryPoint in
+// tools/metrics/histograms/histograms.xml. Do not reorder or remove items. Add
+// new items to the end and reflect them in the histogram enum.
 enum class TabOrganizationEntryPoint {
-  NONE = 0,
-  PROACTIVE = 1,
-  TAB_CONTEXT_MENU = 2,
-  THREE_DOT_MENU = 3,
+  kNone = 0,
+  kProactive = 1,
+  kTabContextMenu = 2,
+  kThreeDotMenu = 3,
+  kTabSearch = 4,
+  kMaxValue = kTabSearch,
 };
 
 void LogTabStripOrganizationUKM(const TabStripModel* model,

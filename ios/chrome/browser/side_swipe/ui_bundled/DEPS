@@ -1,0 +1,18 @@
+include_rules = [
+  "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
+  "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
+  "+ios/chrome/browser/ui/fullscreen",
+  "+ios/chrome/browser/tabs/ui_bundled/requirements/tab_strip_highlighting.h",
+  "+ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",
+  "+ios/chrome/browser/ui/toolbar/public",
+  "+ios/chrome/browser/web/model/page_placeholder_tab_helper.h",
+  "+ios/chrome/browser/web/model/web_navigation_util.h",
+]
+
+specific_include_rules = {
+  # TODO(crbug.com/41259428): Remove this exception.
+  "^side_swipe_mediator\.h$": [
+    "+ios/web/web_state/ui/crw_swipe_recognizer_provider.h",
+  ],
+}

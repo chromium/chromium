@@ -18,17 +18,21 @@ declare_args() {
   is_java_debug = is_debug || incremental_install
 }
 
+# These two combinations could theoretically be made to work, but they are
+# not useful and so not worth the effort.
+assert(!(is_java_debug && is_official_build),
+       "Cannot have is_official_build && is_java_debug")
+assert(!(incremental_install && !is_java_debug),
+       "Cannot have incremental_install without is_java_debug")
+
 # Toolchain used to create native libraries for robolectric_binary() targets.
 robolectric_toolchain = "//build/toolchain/android:robolectric_$host_cpu"
 
-# NOTE: Because Chrome OS builds may depend on targets built with the Android
-# toolchain, this GNI file may be read and processed from within Chrome OS
-# toolchains. Checking |is_android| here would therefore be too restrictive.
-if (is_android || is_chromeos) {
+if (is_android) {
   import("//build/config/android/channel.gni")
-  import("//build/config/cast.gni")
   import("//build/config/clang/clang.gni")
   import("//build/config/dcheck_always_on.gni")
+  import("//build/config/sanitizers/sanitizers.gni")
   import("//build/toolchain/siso.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")
@@ -38,14 +42,14 @@ if (is_android || is_chromeos) {
     # heavily but don't write gclient args files.
 
     import("//build/config/gclient_args.gni")
-    if (defined(checkout_android_native_support)) {
+    if (defined(checkout_android)) {
       n = "$0x0A"  # Newline
-      assert(checkout_android_native_support,
+      assert(checkout_android,
              "Missing native Android toolchain support. |target_os| in your " +
                  ".gclient configuration file (in the parent directory of " +
-                 "src) must include \"android\" and/or \"chromeos\". For " +
+                 "src) must include \"android\". For " +
                  "example:${n}${n}solutions = [${n}...${n}]${n}" +
-                 "target_os=[\"chromeos\"]${n}${n}" +
+                 "target_os=[\"android\"]${n}${n}" +
                  "After adding |target_os| please re-run \"gclient sync\".${n}")
     }
   }
@@ -68,6 +72,9 @@ if (is_android || is_chromeos) {
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
     default_min_sdk_version = 26
+    if (is_asan) {
+      default_min_sdk_version = 27
+    }
 
     # Static analysis can be either "on" or "off" or "build_server". This
     # controls how android lint, error-prone, bytecode checks are run. This
@@ -89,6 +96,12 @@ if (is_android || is_chromeos) {
 
   # Our build system no longer supports legacy multidex.
   min_supported_sdk_version = 21
+
+  # ASAN requires O MR1.
+  # https://github.com/google/sanitizers/wiki/AddressSanitizerOnAndroid/01f8df1ac1a447a8475cdfcb03e8b13140042dbd#running-with-wrapsh-recommended
+  if (is_asan) {
+    min_supported_sdk_version = 27
+  }
 
   assert(
       default_min_sdk_version >= min_supported_sdk_version,
@@ -114,23 +127,19 @@ if (is_android || is_chromeos) {
 
   if (!defined(default_android_ndk_root)) {
     default_android_ndk_root = "//third_party/android_toolchain/ndk"
-    if (current_cpu == "riscv64") {
-      # Today (2023-08-30) only the canary Android NDK supports RISC-V64.
-      default_android_ndk_root = "//third_party/android_toolchain_canary/ndk"
-    }
-    default_android_ndk_version = "r26b"
+    default_android_ndk_version = "r27"
   } else {
     assert(defined(default_android_ndk_version))
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
   public_android_sdk_build_tools =
-      "${public_android_sdk_root}/build-tools/34.0.0"
-  public_android_sdk_version = "34"
-  if (android_sdk_release == "u") {
+      "${public_android_sdk_root}/build-tools/35.0.0"
+  public_android_sdk_version = "35"
+  if (android_sdk_release == "v") {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_version = public_android_sdk_version
-    default_android_sdk_build_tools_version = "34.0.0"
+    default_android_sdk_build_tools_version = "35.0.0"
     public_android_sdk = true
   }
 
@@ -143,7 +152,7 @@ if (is_android || is_chromeos) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
     default_lint_android_sdk_root = public_android_sdk_root
-    default_lint_android_sdk_version = 34
+    default_lint_android_sdk_version = 35
   }
 
   if (!defined(default_extras_android_sdk_root)) {
@@ -166,7 +175,7 @@ if (is_android || is_chromeos) {
   }
 
   if (!defined(android_protoc_bin)) {
-    android_protoc_bin = "//third_party/android_protoc/protoc"
+    android_protoc_bin = "//third_party/android_build_tools/protoc/cipd/protoc"
   }
 
   webview_public_framework_dep =
@@ -244,7 +253,7 @@ if (is_android || is_chromeos) {
     # Location of aapt2 used for app bundles. For now, a more recent version
     # than the one distributed with the Android SDK is required.
     android_sdk_tools_bundle_aapt2_dir =
-        "//third_party/android_build_tools/aapt2"
+        "//third_party/android_build_tools/aapt2/cipd"
 
     # Causes expectation failures to break the build, otherwise, just warns on
     # stderr and writes a failure file to $android_configuration_failure_dir:
@@ -289,6 +298,11 @@ if (is_android || is_chromeos) {
 
     # Where to write failed expectations for bots to read.
     expectations_failure_dir = "$root_build_dir/failed_expectations"
+  }
+
+  if (is_asan) {
+    # Disable lint since increasing min_sdk_version can cause ObsoleteSdkInt warnings.
+    disable_android_lint = true
   }
 
   # We need a second declare_args block to make sure we are using the overridden
@@ -427,6 +441,6 @@ if (is_android || is_chromeos) {
   javac_paths_for_inputs =
       [ "//third_party/jdk/current/bin/javac" ] + _common_inputs_for_jre_jdk
 
-  # TODO(crbug.com/1426605): Remove.
+  # TODO(crbug.com/40261378): Remove.
   use_upstream_errorprone_annotations_threadsafe = true
 }

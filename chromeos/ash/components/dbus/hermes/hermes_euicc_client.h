@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
-#include "chromeos/dbus/common/dbus_method_call_status.h"
+#include "chromeos/dbus/common/dbus_callback.h"
 #include "dbus/dbus_result.h"
 #include "dbus/property.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
@@ -36,6 +36,21 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   using RefreshSmdxProfilesCallback = base::OnceCallback<void(
       HermesResponseStatus status,
       const std::vector<dbus::ObjectPath>& profile_paths)>;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(InstallationAttemptStep)
+  enum class InstallationAttemptStep {
+    kInstallationRequested = 0,
+    kHermesUnavailable = 1,
+    kInstallationStarted = 2,
+    kInstallationSucceeded = 3,
+    kInstallationNoResponse = 4,
+    kInstallationFailed = 5,
+    kMaxValue = kInstallationFailed
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:InstallationAttemptStep)
 
   class TestInterface {
    public:
@@ -183,6 +198,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     // Called when an Euicc reset operation completes successfully.
     virtual void OnEuiccReset(const dbus::ObjectPath& euicc_path) {}
   };
+
+  static constexpr char kHermesInstallationAttemptStepsHistogram[] =
+      "Network.Ash.Cellular.ESim.HermesInstallationAttempt.Step";
 
   // Adds an observer for carrier profile lists changes on Hermes manager.
   virtual void AddObserver(Observer* observer);

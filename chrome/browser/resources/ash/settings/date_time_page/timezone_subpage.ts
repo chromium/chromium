@@ -6,7 +6,7 @@
  * @fileoverview 'timezone-subpage' is the collapsible section containing
  * time zone settings.
  */
-import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import '/shared/settings/prefs/prefs.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_dropdown_menu.js';
 import '../controls/settings_radio_group.js';
@@ -15,9 +15,8 @@ import './timezone_selector.js';
 import '../os_privacy_page/privacy_hub_geolocation_dialog.js';
 import '../os_privacy_page/privacy_hub_geolocation_warning_text.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -29,8 +28,8 @@ import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 import {Route, routes} from '../router.js';
 
+import {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
 import {TimeZoneAutoDetectMethod} from './date_time_types.js';
-import {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './timezone_browser_proxy.js';
 import {TimezoneSelectorElement} from './timezone_selector.js';
 import {getTemplate} from './timezone_subpage.html.js';
 
@@ -41,8 +40,8 @@ export interface TimezoneSubpageElement {
   };
 }
 
-const TimezoneSubpageElementBase = DeepLinkingMixin(RouteObserverMixin(
-    I18nMixin(PrefsMixin(WebUiListenerMixin(PolymerElement)))));
+const TimezoneSubpageElementBase =
+    DeepLinkingMixin(RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   static get is() {
@@ -63,10 +62,10 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
         notify: true,
       },
 
-      isGuest_: {
+      canSetSystemTimezone_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isGuest');
+          return loadTimeData.getBoolean('canSetSystemTimezone');
         },
       },
 
@@ -80,7 +79,8 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
 
       geolocationWarningText_: {
         type: String,
-        computed: 'computedGeolocationWarningText(activeTimeZoneDisplayName)',
+        computed: 'computedGeolocationWarningText(activeTimeZoneDisplayName,' +
+            'prefs.ash.user.geolocation_access_level.enforcement)',
       },
 
       shouldShowGeolocationWarningText_: {
@@ -98,16 +98,38 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   }
 
   activeTimeZoneDisplayName: string;
-  private isGuest_: boolean;
-  private browserProxy_: TimeZoneBrowserProxy;
+  private canSetSystemTimezone_: boolean;
+  private browserProxy_: DateTimeBrowserProxy;
   private showEnableSystemGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;
+
+  /**
+   * Returns the browser proxy page handler (to invoke functions).
+   */
+  get pageHandler(): DateTimePageHandlerRemote {
+    return this.browserProxy_.handler;
+  }
+
+  /**
+   * Returns the browser proxy callback router (to receive async messages).
+   */
+  get callbackRouter(): DateTimePageCallbackRouter {
+    return this.browserProxy_.observer;
+  }
 
   constructor() {
     super();
 
-    this.browserProxy_ = TimeZoneBrowserProxyImpl.getInstance();
+    this.browserProxy_ = DateTimeBrowserProxy.getInstance();
   }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    this.callbackRouter.onParentAccessValidationComplete.addListener(
+        this.enableTimeZoneSetting_.bind(this));
+  }
+
 
   /**
    * RouteObserverMixin
@@ -125,18 +147,26 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
     // Check if should ask for parent access code.
     if (isChild()) {
       this.disableTimeZoneSetting_();
-      this.addWebUiListener(
-          'access-code-validation-complete',
-          this.enableTimeZoneSetting_.bind(this));
-      this.browserProxy_.showParentAccessForTimeZone();
+      this.pageHandler.showParentAccessForTimezone();
     }
 
     this.attemptDeepLink();
   }
 
   private computedGeolocationWarningText(): string {
-    return this.i18n(
-        'timeZoneGeolocationWarningText', this.activeTimeZoneDisplayName);
+    if (!this.prefs) {
+      return '';
+    }
+
+    if (this.prefs.ash.user.geolocation_access_level.enforcement ===
+        chrome.settingsPrivate.Enforcement.ENFORCED) {
+      return loadTimeData.getStringF(
+          'timeZoneGeolocationManagedWarningText',
+          this.activeTimeZoneDisplayName);
+    } else {
+      return loadTimeData.getStringF(
+          'timeZoneGeolocationWarningText', this.activeTimeZoneDisplayName);
+    }
   }
 
   private computeShouldShowGeolocationWarningText_(): boolean {

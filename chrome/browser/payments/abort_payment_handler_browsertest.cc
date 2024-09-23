@@ -15,7 +15,7 @@ namespace {
 
 class AbortPaymentHandlerTest : public PaymentRequestPlatformBrowserTestBase {};
 
-// TODO(crbug.com/1129578): fix flakiness and reenable
+// TODO(crbug.com/40720284): fix flakiness and reenable
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_CanAbortInvokedInstalledPaymentHandler \
   DISABLED_CanAbortInvokedInstalledPaymentHandler
@@ -58,7 +58,8 @@ IN_PROC_BROWSER_TEST_F(AbortPaymentHandlerTest,
 
   NavigateTo("b.com", "/payment_handler_aborter.html");
   EXPECT_EQ(
-      "Unable to abort the payment",
+      "Failed to execute 'abort' on 'PaymentRequest': Unable to abort the "
+      "payment",
       content::EvalJs(GetActiveWebContents(),
                       content::JsReplace("launchAndAbort($1, $2)", method_name,
                                          /*abortResponse=*/false)));
@@ -72,7 +73,8 @@ IN_PROC_BROWSER_TEST_F(AbortPaymentHandlerTest,
 
   NavigateTo("b.com", "/payment_handler_aborter.html");
   EXPECT_EQ(
-      "Unable to abort the payment",
+      "Failed to execute 'abort' on 'PaymentRequest': Unable to abort the "
+      "payment",
       content::EvalJs(GetActiveWebContents(),
                       content::JsReplace("launchAndAbort($1, $2)", method_name,
                                          /*abortResponse=*/false)));

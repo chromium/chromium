@@ -156,7 +156,7 @@ void TimeLimitNotifier::ShowPolicyUpdateNotification(
 }
 
 void TimeLimitNotifier::UnscheduleNotifications() {
-  // TODO(crbug.com/897975): Stop() should be sufficient, but doesn't have the
+  // TODO(crbug.com/40599270): Stop() should be sufficient, but doesn't have the
   // expected effect in tests.
   warning_notification_timer_.AbandonAndStop();
   exit_notification_timer_.AbandonAndStop();

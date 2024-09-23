@@ -102,7 +102,7 @@ void PrivacyScreenToastController::OnMouseExitedView() {
 std::u16string PrivacyScreenToastController::GetAccessibleNameForBubble() {
   if (!toast_view_)
     return std::u16string();
-  return toast_view_->GetAccessibleName();
+  return toast_view_->accessible_name();
 }
 
 void PrivacyScreenToastController::HideBubble(

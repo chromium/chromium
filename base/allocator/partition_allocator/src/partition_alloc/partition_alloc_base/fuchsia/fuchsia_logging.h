@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_FUCHSIA_FUCHSIA_LOGGING_H_
-#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_FUCHSIA_FUCHSIA_LOGGING_H_
+#ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_FUCHSIA_FUCHSIA_LOGGING_H_
+#define PARTITION_ALLOC_PARTITION_ALLOC_BASE_FUCHSIA_FUCHSIA_LOGGING_H_
 
 #include <lib/fit/function.h>
 #include <zircon/types.h>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 
 // Use the PA_ZX_LOG family of macros along with a zx_status_t containing a
@@ -54,17 +54,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ZxLogMessage
 #define PA_ZX_DLOG(severity, zx_err) \
   PA_LAZY_STREAM(PA_ZX_LOG_STREAM(severity, zx_err), PA_DLOG_IS_ON(severity))
 
-#if BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #define PA_ZX_DLOG_IF(severity, condition, zx_err)   \
   PA_LAZY_STREAM(PA_ZX_LOG_STREAM(severity, zx_err), \
                  PA_DLOG_IS_ON(severity) && (condition))
-#else  // BUILDFLAG(PA_DCHECK_IS_ON)
+#else  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 #define PA_ZX_DLOG_IF(severity, condition, zx_err) PA_EAT_STREAM_PARAMETERS
-#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
-#define PA_ZX_DCHECK(condition, zx_err)                      \
-  PA_LAZY_STREAM(PA_ZX_LOG_STREAM(DCHECK, zx_err),           \
-                 BUILDFLAG(PA_DCHECK_IS_ON) && !(condition)) \
+#define PA_ZX_DCHECK(condition, zx_err)                        \
+  PA_LAZY_STREAM(PA_ZX_LOG_STREAM(DCHECK, zx_err),             \
+                 PA_BUILDFLAG(DCHECKS_ARE_ON) && !(condition)) \
       << "Check failed: " #condition << ". "
 
-#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_FUCHSIA_FUCHSIA_LOGGING_H_
+#endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_FUCHSIA_FUCHSIA_LOGGING_H_

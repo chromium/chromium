@@ -5,7 +5,8 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_UTILS_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_UTILS_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_export.h"
 
@@ -16,7 +17,7 @@ namespace ui {
 // functions are called.
 
 // Converts NativeTheme::ColorScheme.
-base::StringPiece NATIVE_THEME_EXPORT
+std::string_view NATIVE_THEME_EXPORT
 NativeThemeColorSchemeName(NativeTheme::ColorScheme color_scheme);
 
 }  // namespace ui

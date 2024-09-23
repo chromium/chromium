@@ -90,7 +90,7 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::NACL:
       return api::processes::ProcessType::kNacl;
 
-    // TODO(https://crbug.com/1048715): Assign a different process type for each
+    // TODO(crbug.com/40117341): Assign a different process type for each
     //                                  worker type.
     case task_manager::Task::DEDICATED_WORKER:
     case task_manager::Task::SHARED_WORKER:
@@ -111,13 +111,13 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::PLUGIN_VM:
     case task_manager::Task::SANDBOX_HELPER:
     case task_manager::Task::ZYGOTE:
-    // TODO(crbug.com/1186464): Do not expose lacros tasks for now. Defer
+    // TODO(crbug.com/40172498): Do not expose lacros tasks for now. Defer
     // the decision until further discussion is made.
     case task_manager::Task::LACROS:
       return api::processes::ProcessType::kOther;
   }
 
-  NOTREACHED() << "Unknown task type.";
+  NOTREACHED_IN_MIGRATION() << "Unknown task type.";
   return api::processes::ProcessType::kNone;
 }
 
@@ -465,16 +465,14 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
 
   const int tab_id = params->tab_id;
   content::WebContents* contents = nullptr;
-  int tab_index = -1;
-  if (!ExtensionTabUtil::GetTabById(
-          tab_id, Profile::FromBrowserContext(browser_context()),
-          include_incognito_information(), nullptr, nullptr, &contents,
-          &tab_index)) {
+  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
+                                    include_incognito_information(),
+                                    &contents)) {
     return RespondNow(
         Error(tabs_constants::kTabNotFoundError, base::NumberToString(tab_id)));
   }
 
-  // TODO(https://crbug.com/767563): chrome.processes.getProcessIdForTab API
+  // TODO(crbug.com/41345944): chrome.processes.getProcessIdForTab API
   // incorrectly assumes a *single* renderer process per tab.
   const int process_id = contents->GetPrimaryMainFrame()->GetProcess()->GetID();
   return RespondNow(ArgumentList(

@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/trace_event/trace_config.h"
+
 #include <stddef.h>
+
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_config_memory_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base::trace_event {
 
@@ -359,7 +361,7 @@ TEST(TraceConfigTest, TraceConfigFromDict) {
   EXPECT_FALSE(tc.IsEventPackageNameFilterEnabled());
   EXPECT_STREQ("", tc.ToCategoryFilterString().c_str());
 
-  absl::optional<Value> default_value =
+  std::optional<Value> default_value =
       JSONReader::Read(kDefaultTraceConfigString);
   ASSERT_TRUE(default_value);
   ASSERT_TRUE(default_value->is_dict());
@@ -371,7 +373,7 @@ TEST(TraceConfigTest, TraceConfigFromDict) {
   EXPECT_FALSE(default_tc.IsArgumentFilterEnabled());
   EXPECT_STREQ("", default_tc.ToCategoryFilterString().c_str());
 
-  absl::optional<Value> custom_value =
+  std::optional<Value> custom_value =
       JSONReader::Read(kCustomTraceConfigString);
   ASSERT_TRUE(custom_value);
   ASSERT_TRUE(custom_value->is_dict());

@@ -6,6 +6,7 @@
 #define PRINTING_PRINTING_TEST_H_
 
 #include <windows.h>
+
 #include <winspool.h>
 
 #include <string>

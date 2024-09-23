@@ -257,7 +257,6 @@
 <translation id="3083975830683400843">Chromebit tæki</translation>
 <translation id="3085752524577180175">SOCKS-hýsill</translation>
 <translation id="3104793765551262433">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, útilokað af stjórnanda, nánar</translation>
-<translation id="3113153474486991170">Ekki var hægt að opna „<ph name="PATH" />“ frá þessum stað. Afritaðu í „Skrárnar mínar“til að opna.</translation>
 <translation id="3113592018909187986">Þú átt 1 tilraun eftir. Þú getur ekki notað þetta netkerfi fyrr en þú setur upp nýtt PIN-númer.</translation>
 <translation id="3124404833828281817">Dreyminn einstaklingur</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -338,6 +337,7 @@
 <translation id="3689865792480713551">Hætta við að <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, óvirkt, <ph name="CONNECTION_STATUS" />, sendistyrkur <ph name="SIGNAL_STRENGTH" />%, upplýsingar</translation>
 <translation id="3691184985318546178">Sinhala</translation>
+<translation id="3702842351052426940">SIM-kortið þitt eða eSIM-prófíllinn var hugsanlega gerður óvirkur. Prófaðu að skipta um SIM-kort eða eSIM-prófíl.</translation>
 <translation id="3722341589402358578">Villa kom upp. Tiltekin atriði voru hugsanlega ekki færð í ruslið.</translation>
 <translation id="3726463242007121105">Ekki er hægt að opna þetta tæki vegna þess að ekki er stuðningur við skráakerfi þess.</translation>
 <translation id="3727148787322499904">Ef þessari stillingu er breytt hefur það áhrif á öll samnýtt netkerfi</translation>
@@ -357,8 +357,8 @@
 <translation id="3822559385185038546">Kerfisstjórinn valdi stillingar þessa staðgengilsþjóns</translation>
 <translation id="3830674330436234648">Spilun ekki tiltæk</translation>
 <translation id="383652340667548381">Serbneskt</translation>
+<translation id="3839045880592694915">Símafyrirtækið þitt kemur í veg fyrir að mótaldið geti tengst. Hafðu samband við símafyrirtækið þitt til að fá frekari upplýsingar.</translation>
 <translation id="385051799172605136">Til baka</translation>
-<translation id="3851491607336266896">Tengt, takmörkuð tenging</translation>
 <translation id="3855472144336161447">Þýskt Neo 2</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3866249974567520381">Lýsing</translation>
@@ -377,10 +377,10 @@
 <translation id="3999574733850440202">Nýlega opnaðar Microsoft-skrár voru færðar yfir á OneDrive</translation>
 <translation id="4002066346123236978">Heiti</translation>
 <translation id="4017788180641807848">Enska (bandarísk) með Workman-lyklaborði</translation>
-<translation id="4019998208269143058">Festa við „Skrár fljótt“</translation>
 <translation id="4040753847560036377">Rangt PUK-númer</translation>
 <translation id="4057991113334098539">Virkjar...</translation>
 <translation id="4092890906744441904">Írska</translation>
+<translation id="4101601646343868113">Skráðu þig inn í farsímakerfið og staðfestu að þú sért með virka gagnaáskrift</translation>
 <translation id="4124731372776320263">Samstillir 1 Drive-skrá</translation>
 <translation id="4124935795427217608">Einhyrningur</translation>
 <translation id="4131235941541910880">Færðu óþörf atriði í ruslið</translation>
@@ -458,7 +458,7 @@
 <translation id="4656777537938206294">Gera skrár aðgengilegar án nettengingar</translation>
 <translation id="4658782175094886150">Einstaklingur í snjó</translation>
 <translation id="4669606053856530811">Meðlimir „<ph name="SOURCE_NAME" />“ munu missa aðgang nema þessum atriðum sé deilt með þeim.</translation>
-<translation id="467809019005607715">Google skyggnur</translation>
+<translation id="467809019005607715">Google-skyggnur</translation>
 <translation id="4690246192099372265">Sænskt</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Api</translation>
@@ -605,6 +605,7 @@
 <translation id="5625294776298156701">Tamíl með Tamil99-lyklaborði</translation>
 <translation id="5633226425545095130">Tilfærslu á þessu atriði er deilt með öllum sem hafa aðgang að samnýttu möppunni „<ph name="DESTINATION_NAME" />“.</translation>
 <translation id="5649768706273821470">Hlusta</translation>
+<translation id="5650895901941743674">Athugaðu stillingar aðgangsstaðarins</translation>
 <translation id="5669691691057771421">Sláðu inn nýtt PIN-númer</translation>
 <translation id="5678784840044122290">Linux-forritið verður tiltækt í gegnum skipanalínu og einnig gæti tákn birst í ræsiforritinu.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Ekki hægt að aftengjast geymslu eða sýndardiski<ph name="END_BOLD" />
@@ -684,6 +685,7 @@
 <translation id="6267547857941397424">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, <ph name="BATTERY_STATUS" />% hleðsla á rafhlöðu símans, tengjast</translation>
 <translation id="6269630227984243955">Malajíska</translation>
 <translation id="6271903698064569429">Ekki er hægt að hlaða upp skrám vegna þess að ekki er nógu mikið geymslurými á „<ph name="SHARED_DRIVE_NAME" />“.</translation>
+<translation id="6279140785485544797">Farsímagagnaáskriftin þín er hugsanlega útrunnin. Hafðu samband við símafyrirtækið þitt til að fá aðstoð.</translation>
 <translation id="6287852322318138013">Veldu forrit til að opna þessa skrá</translation>
 <translation id="6295542640242147836">Læsa SIM-korti</translation>
 <translation id="6296410173147755564">Ógilt PUK-númer</translation>
@@ -693,7 +695,6 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-geymsla</translation>
 <translation id="6321303798550928047">Veifar</translation>
 <translation id="6327785803543103246">Sjálfvirk uppgötvun vefstaðgengilsþjóna</translation>
-<translation id="6337014272874260727">Losa úr „Skrár fljótt“</translation>
 <translation id="6339145975392024142">Bandarískt alþjóðlegt tölvulyklaborð</translation>
 <translation id="6356685157277930264">Gluggi með upplýsingum um skrár</translation>
 <translation id="6358884629796491903">Dreki</translation>
@@ -739,6 +740,7 @@
 <translation id="6750737795876287924">Núverandi listi</translation>
 <translation id="6751256176799620176">Ein mappa valin</translation>
 <translation id="6755827872271341378">ChromeOS Flex tæki</translation>
+<translation id="6777029074498310250">Frekari upplýsingar má finna á <ph name="LINK_BEGIN" />onedrive.live.com<ph name="LINK_END" /></translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6794539005637808366">Endurheimtu atriðið eða dragðu það úr ruslinu yfir í nýja möppu</translation>
 <translation id="6795884519221689054">Panda</translation>
@@ -792,6 +794,7 @@
 <translation id="7086590977277044826">Tamíl með InScript-lyklaborði</translation>
 <translation id="7088615885725309056">Eldra</translation>
 <translation id="7103992300314999525">Makedónska</translation>
+<translation id="7104338189998813914">Vandamál kom upp við að opna OneDrive-reikninginn þinn</translation>
 <translation id="7106346894903675391">Kaupa meira geymslurými...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;leita í Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada hljóðrituð</translation>
@@ -852,6 +855,7 @@
 <translation id="7589661784326793847">Hinkraðu augnablik</translation>
 <translation id="7600126690270271294">Serbneska</translation>
 <translation id="7603724359189955920">Grind</translation>
+<translation id="7624010287655004652">Læst af öðru símafyrirtæki</translation>
 <translation id="7627790789328695202">Obb, <ph name="FILE_NAME" /> er til nú þegar. Veldu nýtt heiti og reyndu aftur.</translation>
 <translation id="7628656427739290098"><ph name="PERCENT" />% lokið.</translation>
 <translation id="7649070708921625228">Hjálp</translation>
@@ -1009,6 +1013,7 @@
 <translation id="8600173386174225982">Skráalista var breytt í smámyndayfirlit.</translation>
 <translation id="8601932370724196034">Crostini-myndskrá</translation>
 <translation id="8609695766746872526">Íslenska</translation>
+<translation id="8630384863424041081">Sláðu inn PIN-númer SIM-kortsins þíns eða sjálfgefið PIN-númer frá símafyrirtækinu þínu. Hafðu samband við símafyrirtækið þitt til að fá aðstoð.</translation>
 <translation id="863903787380594467">Rangt PIN-númer. <ph name="RETRIES" /> tilraunir eru eftir.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – gátt</translation>
 <translation id="8656407365183407932">Fjarlægja þurfti skrárnar þínar sem eru ekki á netinu</translation>
@@ -1018,7 +1023,6 @@
 <translation id="8698877009525468705">Skráin inniheldur trúnaðarmál og er háð takmörkunum stjórnandareglu.</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8713112442029511308">Maltneska</translation>
-<translation id="8714138378966541668">Læst af þjónustuaðila</translation>
 <translation id="8714406895390098252">Bíllaus</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valið.</translation>
 <translation id="872537912056138402">Króatískt</translation>
@@ -1074,7 +1078,7 @@
 <translation id="9171921933192916600">Bókaormur</translation>
 <translation id="9172592259078059678">Gujarati umritun</translation>
 <translation id="9173120999827300720">Enska (bandarísk) með alþjóðlegu lyklaborði</translation>
-<translation id="9183302530794969518">Google skjöl</translation>
+<translation id="9183302530794969518">Google-skjöl</translation>
 <translation id="9189836632794948435">Kasakstanska</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> atriði dregin út.</translation>
 <translation id="9213073329713032541">Uppsetning hófst.</translation>

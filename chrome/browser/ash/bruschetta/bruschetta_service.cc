@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -20,12 +22,13 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_remover.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -190,6 +193,13 @@ void BruschettaService::BlockLaunch(guest_os::GuestId guest_id) {
   runnable_vms_.erase(it);
 }
 
+void BruschettaService::StopRunningVms() {
+  for (const auto& [name, _] : running_vms_) {
+    VLOG(1) << "Stopping vm " << name;
+    StopVm(std::move(name));
+  }
+}
+
 void BruschettaService::StopVm(std::string vm_name) {
   auto* client = ash::ConciergeClient::Get();
   DCHECK(client);
@@ -304,7 +314,7 @@ void BruschettaService::OnRemoveVm(base::OnceCallback<void(bool)> callback,
 void BruschettaService::OnUninstallToolsDlc(
     base::OnceCallback<void(bool)> callback,
     guest_os::GuestId guest_id,
-    const std::string& result) {
+    std::string_view result) {
   ash::DlcserviceClient::Get()->Uninstall(
       kUefiDlc,
       base::BindOnce(&BruschettaService::OnUninstallAllDlcs,
@@ -315,8 +325,8 @@ void BruschettaService::OnUninstallToolsDlc(
 void BruschettaService::OnUninstallAllDlcs(
     base::OnceCallback<void(bool)> callback,
     guest_os::GuestId guest_id,
-    const std::string& tools_result,
-    const std::string& firmware_result) {
+    std::string_view tools_result,
+    std::string_view firmware_result) {
   if ((tools_result != dlcservice::kErrorNone &&
        tools_result != dlcservice::kErrorInvalidDlc) ||
       (firmware_result != dlcservice::kErrorNone &&
@@ -349,4 +359,9 @@ void BruschettaService::OnUninstallAllDlcs(
 
   std::move(callback).Run(true);
 }
+
+bool BruschettaService::IsVmRunning(std::string_view vm_name) {
+  return running_vms_.contains(vm_name);
+}
+
 }  // namespace bruschetta

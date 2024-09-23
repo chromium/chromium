@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "temporary_setting.enterpise_badging",
+      "default_value": 0,
+      "values_to_test": [
+        0, 1, 2, 3
+      ]
+    }
+  }
+]

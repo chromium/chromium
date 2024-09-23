@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -23,6 +25,7 @@ import java.io.InputStream;
 
 /** Test AndroidProtocolHandler. */
 @RunWith(Parameterized.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class AndroidProtocolHandlerTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;

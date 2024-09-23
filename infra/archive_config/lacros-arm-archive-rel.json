@@ -16,6 +16,8 @@
             "nacl_helper",
             "nacl_helper_bootstrap",
             "nacl_irt_arm.nexe",
+            "PrivacySandboxAttestationsPreloaded/manifest.json",
+            "PrivacySandboxAttestationsPreloaded/privacy-sandbox-attestations.dat",
             "resources.pak",
             "snapshot_blob.bin"
          ],

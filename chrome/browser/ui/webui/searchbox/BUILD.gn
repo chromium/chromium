@@ -1,0 +1,63 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("searchbox") {
+  sources = [
+    "contextual_searchbox_handler.cc",
+    "contextual_searchbox_handler.h",
+    "lens_searchbox_client.h",
+    "realbox_handler.cc",
+    "realbox_handler.h",
+    "searchbox_handler.cc",
+    "searchbox_handler.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//components/lens/proto/server:proto",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:mojo_bindings",
+    "//components/sessions:session_id",
+    "//components/url_formatter",
+    "//mojo/public/cpp/bindings",
+    "//third_party/metrics_proto",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/webui/resources/cr_components/searchbox:mojo_bindings",
+    "//url",
+  ]
+  deps = [
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/new_tab_page:resources",
+    "//chrome/browser/resources/new_tab_page:resources_grit",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/omnibox",
+    "//components/bookmarks/browser",
+    "//components/navigation_metrics",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:location_bar",
+    "//components/omnibox/browser:vector_icons",
+    "//components/omnibox/common",
+    "//components/prefs",
+    "//components/profile_metrics",
+    "//components/search",
+    "//components/search_engines",
+    "//components/sessions",
+    "//components/strings:components_strings",
+    "//components/strings:components_strings_grit",
+    "//components/variations",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//net",
+    "//third_party/omnibox_proto",
+    "//ui/base",
+  ]
+}

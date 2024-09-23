@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<style>
+  #elements {
+    height: 550px;
+  }
+  button {
+    position: absolute;
+  }
+</style>
+<div id="elements">
+  <button id="a" style="width: 80px; height: 80px; top: 30px; left: 30px;">A</button>
+  <button id="b" style="width: 40px; height: 40px; top: 30px; left: 120px;">B</button>
+  <button id="c" style="width: 160px; height: 40px; top: 50px; left: 140px;">C</button>
+  <button id="d" style="width: 40px; height: 40px; top: 30px; left: 170px;">D</button>
+  <button id="e" style="width: 40px; height: 80px; top: 30px; left: 220px;">E</button>
+  <button id="f" style="width: 40px; height: 40px; top: 30px; left: 280px;">F</button>
+  <button id="g" style="width: 80px; height: 80px; top: 30px; left: 350px;">G</button>
+
+  <button id="h" style="width: 80px; height: 80px; top: 130px; left: 30px;">H</button>
+  <button id="i" style="width: 40px; height: 40px; top: 220px; left: 30px;">I</button>
+  <button id="j" style="width: 40px; height: 160px; top: 240px; left: 50px;">J</button>
+  <button id="k" style="width: 40px; height: 40px; top: 270px; left: 30px;">K</button>
+  <button id="l" style="width: 80px; height: 40px; top: 320px; left: 30px;">L</button>
+  <button id="m" style="width: 40px; height: 40px; top: 380px; left: 30px;">M</button>
+  <button id="n" style="width: 80px; height: 80px; top: 450px; left: 30px;">N</button>
+</div>
+
+<p>This test ensures that Spatial Navigation works with overlapping elements in each direction.</p>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script type="application/javascript">
+  var resultMap = [
+    ["Right", "a"],
+    ["Right", "b"],
+    ["Right", "c"],
+    ["Right", "d"],
+    ["Right", "e"],
+    ["Right", "f"],
+    ["Right", "g"],
+    ["Left", "f"],
+    ["Left", "c"],
+    ["Left", "e"],
+    ["Left", "d"],
+    ["Left", "b"],
+    ["Left", "a"],
+    ["Down", "h"],
+    ["Down", "i"],
+    ["Down", "j"],
+    ["Down", "k"],
+    ["Down", "l"],
+    ["Down", "m"],
+    ["Down", "n"],
+    ["Up", "m"],
+    ["Up", "j"],
+    ["Up", "l"],
+    ["Up", "k"],
+    ["Up", "i"],
+    ["Up", "h"]
+  ];
+
+  snav.assertFocusMoves(resultMap);
+</script>

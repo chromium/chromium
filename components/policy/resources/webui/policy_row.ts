@@ -30,6 +30,7 @@ export interface Policy {
   superseded?: Conflict[];
   forSigninScreen: boolean;
   isExtension: boolean;
+  status: string;
 }
 
 
@@ -199,6 +200,7 @@ export class PolicyRowElement extends CustomElement {
         notice += `, ${supersededNotice}`;
       }
       messagesDisplay!.textContent = notice;
+      policy.status = notice;
 
       if (policy.conflicts) {
         policy.conflicts.forEach(conflict => {

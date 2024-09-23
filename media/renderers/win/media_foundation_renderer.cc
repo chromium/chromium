@@ -179,11 +179,16 @@ void MediaFoundationRenderer::Initialize(MediaResource* media_resource,
           ? MediaFoundationRenderingMode::DirectComposition
           : MediaFoundationRenderingMode::FrameServer;
   for (DemuxerStream* stream : media_resource->GetAllStreams()) {
-    if (stream->type() == DemuxerStream::Type::VIDEO &&
-        stream->video_decoder_config().is_encrypted()) {
-      // This is protected content which only supports Direct Composition mode,
-      // update 'rendering_mode_' accordingly.
-      rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
+    if (stream->type() == DemuxerStream::Type::VIDEO) {
+      // Report BUFFERING_HAVE_ENOUGH only after first frame event is received.
+      // MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY event is sent only if video
+      // stream is present.
+      has_video_ = true;
+      if (stream->video_decoder_config().is_encrypted()) {
+        // This is protected content which only supports Direct Composition
+        // mode, update 'rendering_mode_' accordingly.
+        rendering_mode_ = MediaFoundationRenderingMode::DirectComposition;
+      }
     }
   }
 
@@ -226,12 +231,17 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     }
   }
 
-  // TODO(frankli): Only call the followings when there is a video stream.
-  RETURN_IF_FAILED(InitializeDXGIDeviceManager());
-  RETURN_IF_FAILED(InitializeVirtualVideoWindow());
+  // Only call the following when there is a video stream.
+  for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
+    if (stream->type() == media::DemuxerStream::VIDEO) {
+      RETURN_IF_FAILED(InitializeDXGIDeviceManager());
+      RETURN_IF_FAILED(InitializeVirtualVideoWindow());
+      break;
+    }
+  }
 
   // The OnXxx() callbacks are invoked by MF threadpool thread, we would like
-  // to bind the callbacks to |task_runner_| MessgaeLoop.
+  // to bind the callbacks to |task_runner_| MessageLoop.
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   auto weak_this = weak_factory_.GetWeakPtr();
   RETURN_IF_FAILED(MakeAndInitialize<MediaEngineNotifyImpl>(
@@ -248,6 +258,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
           &MediaFoundationRenderer::OnCanPlayThrough, weak_this)),
       base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&MediaFoundationRenderer::OnPlaying, weak_this)),
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &MediaFoundationRenderer::OnFirstFrameReady, weak_this)),
       base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&MediaFoundationRenderer::OnWaiting, weak_this)),
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
@@ -274,14 +286,12 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     RETURN_IF_FAILED(creation_attributes->SetUnknown(
         MF_MEDIA_ENGINE_DXGI_MANAGER, dxgi_device_manager_.Get()));
 
-    // TODO(crbug.com/1276067): We'll investigate scenarios to see if we can use
-    // the on-screen video window size and not the native video size.
+    // TODO(crbug.com/40808656): We'll investigate scenarios to see if we can
+    // use the on-screen video window size and not the native video size.
     if (rendering_mode_ == MediaFoundationRenderingMode::FrameServer) {
       gfx::Size max_video_size;
-      bool has_video = false;
       for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
         if (stream->type() == media::DemuxerStream::VIDEO) {
-          has_video = true;
           gfx::Size video_size = stream->video_decoder_config().natural_size();
           if (video_size.height() > max_video_size.height()) {
             max_video_size.set_height(video_size.height());
@@ -293,7 +303,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
         }
       }
 
-      if (has_video) {
+      if (has_video_) {
         RETURN_IF_FAILED(InitializeTexturePool(max_video_size));
       }
     }
@@ -308,10 +318,14 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   RETURN_IF_FAILED(CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
                                     CLSCTX_INPROC_SERVER,
                                     IID_PPV_ARGS(&class_factory)));
-  // TODO(frankli): Use MF_MEDIA_ENGINE_REAL_TIME_MODE for low latency hint
-  // instead of 0.
-  RETURN_IF_FAILED(class_factory->CreateInstance(0, creation_attributes.Get(),
-                                                 &mf_media_engine_));
+
+  DWORD creation_flags = 0;
+  // Enable low-latency mode if latency hint is low.
+  if (latency_hint_.has_value() && (*latency_hint_ <= base::Milliseconds(50))) {
+    creation_flags |= MF_MEDIA_ENGINE_REAL_TIME_MODE;
+  }
+  RETURN_IF_FAILED(class_factory->CreateInstance(
+      creation_flags, creation_attributes.Get(), &mf_media_engine_));
 
   // The Media Foundation Media Engine has an initial playback rate of 1.0, but
   // chromium uses an initial playback rate of 0.0. The Media Engine's topology
@@ -412,7 +426,7 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
   RETURN_IF_FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)));
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> adapter_to_use;
-  // TODO(crbug.com/1426249): Need to handle the case when Adapter LUID is
+  // TODO(crbug.com/40899242): Need to handle the case when Adapter LUID is
   // specific per instance of the video playback. This will now allow all
   // instances to use the default DXGI device manager.
   if (gpu_process_adapter_luid_.LowPart || gpu_process_adapter_luid_.HighPart) {
@@ -428,11 +442,33 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
     }
   }
 
-  RETURN_IF_FAILED(D3D11CreateDevice(
+  HRESULT hr = D3D11CreateDevice(
       adapter_to_use.Get(),
       adapter_to_use ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE, 0,
       creation_flags, feature_levels, std::size(feature_levels),
-      D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr));
+      D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr);
+  if (FAILED(hr)) {
+    base::UmaHistogramSparse(
+        "Media.MediaFoundationRenderer.D3D11CreateDeviceFailed", hr);
+    if (hr == DXGI_ERROR_UNSUPPORTED) {
+      // If hardware device creation fails, try creating a software device.
+      // HWDRM cases require hardware security, which is not applicable for a
+      // basic software GPU adapter without hardware-level security. Using 0 for
+      // creation_flags is acceptable for basic video rendering, as warp devices
+      // lack video support, and the warp adapter is a software GPU so
+      // D3D11_CREATE_DEVICE_BGRA_SUPPORT and
+      // D3D11_CREATE_DEVICE_PREVENT_INTERNAL_THREADING_OPTIMIZATIONS don't
+      // apply.
+      RETURN_IF_FAILED(D3D11CreateDevice(
+          adapter_to_use.Get(),
+          adapter_to_use ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE,
+          0,
+          /*creation_flags=*/0, feature_levels, std::size(feature_levels),
+          D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr));
+    } else {
+      RETURN_IF_FAILED(hr);
+    }
+  }
   RETURN_IF_FAILED(media::SetDebugName(d3d11_device.Get(), "Media_MFRenderer"));
 
   ComPtr<ID3D10Multithread> multithreaded_device;
@@ -489,9 +525,15 @@ void MediaFoundationRenderer::SetCdm(CdmContext* cdm_context,
 }
 
 void MediaFoundationRenderer::SetLatencyHint(
-    std::optional<base::TimeDelta> /*latency_hint*/) {
-  // TODO(frankli): Ensure MFMediaEngine rendering pipeine is in real time mode.
-  NOTIMPLEMENTED() << "We do not use the latency hint today";
+    std::optional<base::TimeDelta> latency_hint) {
+  DVLOG_FUNC(1);
+
+  if (latency_hint.has_value()) {
+    DLOG_IF(WARNING, mf_media_engine_)
+        << "Latency hint is not utilized after MF media engine creation.";
+    CHECK(*latency_hint >= base::Milliseconds(0));
+  }
+  latency_hint_ = latency_hint;
 }
 
 void MediaFoundationRenderer::OnCdmProxyReceived() {
@@ -666,12 +708,16 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
   std::move(callback).Run(base::win::ScopedHandle(duplicated_handle), "");
 }
 
-// TODO(crbug.com/1070030): Investigate if we need to add
+// TODO(crbug.com/40126181): Investigate if we need to add
 // OnSelectedVideoTracksChanged() to media renderer.mojom.
 void MediaFoundationRenderer::SetVideoStreamEnabled(bool enabled) {
   DVLOG_FUNC(1) << "enabled=" << enabled;
   if (!mf_source_)
     return;
+
+  // If video is disabled, the samples will not be sent, thus should ignore
+  // waiting for first frame.
+  has_video_ = enabled;
 
   const bool needs_restart = mf_source_->SetVideoStreamEnabled(enabled);
   if (needs_restart) {
@@ -713,7 +759,7 @@ HRESULT MediaFoundationRenderer::InitializeTexturePool(const gfx::Size& size) {
     return E_UNEXPECTED;
   }
 
-  // TODO(crbug.com/1276067): change |size| to instead use the required
+  // TODO(crbug.com/40808656): change |size| to instead use the required
   // size of the output (for example if the video is only 1280x720 instead
   // of a source frame of 1920x1080 we'd use the 1280x720 texture size).
   // However we also need to investigate the scenario of WebGL and 360 video
@@ -927,12 +973,17 @@ void MediaFoundationRenderer::OnCanPlayThrough() {
     }
   }
 
-  // According to HTML5 <video> spec, on "canplaythrough", the video could be
-  // rendered at the current playback rate all the way to its end, and it's
-  // the time to report BUFFERING_HAVE_ENOUGH.
-  OnBufferingStateChange(
-      BufferingState::BUFFERING_HAVE_ENOUGH,
-      BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  // For First frame do not send have enough until first frame notification
+  // is received. Only apply to media with Video, audio only media will use
+  // MF_MEDIA_ENGINE_EVENT_CANPLAYTHROUGH.
+  if (!has_video_ || received_first_video_frame_) {
+    // According to HTML5 <video> spec, on "canplaythrough", the video could be
+    // rendered at the current playback rate all the way to its end, and it's
+    // the time to report BUFFERING_HAVE_ENOUGH.
+    OnBufferingStateChange(
+        BufferingState::BUFFERING_HAVE_ENOUGH,
+        BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  }
 }
 
 void MediaFoundationRenderer::OnPlaying() {
@@ -940,9 +991,13 @@ void MediaFoundationRenderer::OnPlaying() {
 
   has_reported_playing_ = true;
 
-  OnBufferingStateChange(
-      BufferingState::BUFFERING_HAVE_ENOUGH,
-      BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  // For First frame do not send have enough until first frame notification
+  // is received. Only apply to media with Video.
+  if (!has_video_ || received_first_video_frame_) {
+    OnBufferingStateChange(
+        BufferingState::BUFFERING_HAVE_ENOUGH,
+        BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  }
 
   // Earliest time to request first frame to screen
   RequestNextFrame();
@@ -953,6 +1008,22 @@ void MediaFoundationRenderer::OnPlaying() {
   // media engine, which would have reset the engine's statistics, will have
   // been completed.
   StartSendingStatistics();
+}
+
+void MediaFoundationRenderer::OnFirstFrameReady() {
+  DVLOG_FUNC(2);
+  DCHECK(has_video_);
+
+  // MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY can only occur a second time if
+  // part of the MF pipeline was destroyed and re-created. This should never
+  // happen in the current implementation. Only apply to media with Video.
+  // Audio only media will not send MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY.
+  if (!received_first_video_frame_) {
+    received_first_video_frame_ = true;
+    OnBufferingStateChange(
+        BufferingState::BUFFERING_HAVE_ENOUGH,
+        BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
+  }
 }
 
 void MediaFoundationRenderer::OnWaiting() {
@@ -1088,7 +1159,7 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   // it here.
   PipelineStatus new_status = status;
   if (hresult == DRM_E_TEE_INVALID_HWDRM_STATE) {
-    // TODO(crbug.com/1370844): Remove these after the investigation is done.
+    // TODO(crbug.com/40870069): Remove these after the investigation is done.
     base::UmaHistogramBoolean(
         "Media.MediaFoundationRenderer.InvalidHwdrmState.HasReportedPlaying",
         has_reported_playing_);
@@ -1132,8 +1203,8 @@ void MediaFoundationRenderer::RequestNextFrame() {
     return;
   }
 
-  // TODO(crbug.com/1276067): Change the |native_video_size_| to get the correct
-  // output video size as determined by the output texture requirements.
+  // TODO(crbug.com/40808656): Change the |native_video_size_| to get the
+  // correct output video size as determined by the output texture requirements.
   gfx::Size video_size = native_video_size_;
 
   base::UnguessableToken frame_token;

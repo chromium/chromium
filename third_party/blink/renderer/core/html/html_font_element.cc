@@ -20,6 +20,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/html/html_font_element.h"
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -84,8 +89,10 @@ static bool ParseFontSize(const CharacterType* characters,
     return false;
 
   // Step 8
-  int value = CharactersToInt(digits_start, position - digits_start,
-                              WTF::NumberParsingOptions(), nullptr);
+  int value = CharactersToInt(
+      base::span<const CharacterType>(
+          digits_start, static_cast<size_t>(position - digits_start)),
+      WTF::NumberParsingOptions(), nullptr);
 
   // Step 9
   if (mode == kRelativePlus) {
@@ -162,7 +169,7 @@ bool HTMLFontElement::CssValueFromFontSizeNumber(const String& s,
       size = CSSValueID::kXxxLarge;
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
   return true;
 }

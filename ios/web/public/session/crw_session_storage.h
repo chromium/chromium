@@ -23,7 +23,7 @@ class WebStateStorage;
 @class CRWSessionCertificatePolicyCacheStorage;
 
 // NSCoding-compliant class used to serialize session state.
-// TODO(crbug.com/685388): Investigate using code from the sessions component.
+// TODO(crbug.com/40503548): Investigate using code from the sessions component.
 @interface CRWSessionStorage : NSObject <NSCoding>
 
 @property(nonatomic, assign) BOOL hasOpener;

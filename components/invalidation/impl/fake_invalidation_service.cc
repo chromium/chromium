@@ -7,6 +7,7 @@
 #include "components/invalidation/impl/invalidation_service_util.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
+#include "components/invalidation/public/invalidator_state.h"
 
 namespace invalidation {
 
@@ -16,7 +17,7 @@ FakeInvalidationService::FakeInvalidationService()
       pref_service_.registry());
   invalidator_registrar_ = std::make_unique<InvalidatorRegistrarWithMemory>(
       &pref_service_, /*sender_id=*/"sender_id");
-  invalidator_registrar_->UpdateInvalidatorState(INVALIDATIONS_ENABLED);
+  invalidator_registrar_->UpdateInvalidatorState(InvalidatorState::kEnabled);
 }
 
 FakeInvalidationService::~FakeInvalidationService() = default;
@@ -32,12 +33,12 @@ bool FakeInvalidationService::HasObserver(
 
 bool FakeInvalidationService::UpdateInterestedTopics(
     InvalidationHandler* handler,
-    const TopicSet& legacy_topic_set) {
-  std::set<TopicData> topic_set;
-  for (const auto& topic_name : legacy_topic_set) {
-    topic_set.insert(TopicData(topic_name, handler->IsPublicTopic(topic_name)));
+    const TopicSet& topic_set) {
+  TopicMap topic_map;
+  for (const auto& topic_name : topic_set) {
+    topic_map[topic_name] = TopicMetadata(handler->IsPublicTopic(topic_name));
   }
-  return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_set);
+  return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_map);
 }
 
 void FakeInvalidationService::RemoveObserver(
@@ -59,25 +60,7 @@ void FakeInvalidationService::SetInvalidatorState(InvalidatorState state) {
 
 void FakeInvalidationService::EmitInvalidationForTest(
     const Invalidation& invalidation) {
-  // This function might need to modify the |invalidation|, so we start by
-  // making an identical copy of it.
-  Invalidation invalidation_copy(invalidation);
-
-  // If no one is listening to this invalidation, do not send it out.
-  TopicMap subscribed_topics = invalidator_registrar_->GetAllSubscribedTopics();
-  if (subscribed_topics.find(invalidation.topic()) == subscribed_topics.end()) {
-    fake_ack_handler_.RegisterUnsentInvalidation(&invalidation_copy);
-    return;
-  }
-
-  // Otherwise, register the invalidation with the fake_ack_handler_ and deliver
-  // it to the appropriate consumer.
-  fake_ack_handler_.RegisterInvalidation(&invalidation_copy);
-  invalidator_registrar_->DispatchInvalidationToHandlers(invalidation_copy);
-}
-
-FakeAckHandler* FakeInvalidationService::GetFakeAckHandler() {
-  return &fake_ack_handler_;
+  invalidator_registrar_->DispatchInvalidationToHandlers(invalidation);
 }
 
 }  // namespace invalidation

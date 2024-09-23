@@ -35,6 +35,7 @@ def chrome_internal_verifier(
             disable_reuse = tryjob.disable_reuse,
             experiment_percentage = tryjob.experiment_percentage,
             location_filters = location_filters,
+            mode_allowlist = tryjob.custom_cq_run_modes,
             result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
         )
     else:
@@ -70,6 +71,13 @@ chrome_internal_verifier(
     tryjob = try_.job(),
 )
 
+chrome_internal_verifier(
+    builder = "mega-cq-launcher",
+    tryjob = try_.job(
+        custom_cq_run_modes = [try_.MEGA_CQ_DRY_RUN_NAME, try_.MEGA_CQ_FULL_RUN_NAME],
+    ),
+)
+
 ### Optional builders ###
 
 chrome_internal_verifier(
@@ -77,7 +85,21 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "android-internal-dbg",
+)
+
+chrome_internal_verifier(
     builder = "android-internal-rel",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-arm-rel-ready",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-x64-rel-ready",
 )
 
 chrome_internal_verifier(
@@ -85,15 +107,11 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
-    builder = "chromeos-betty-pi-arc-cfi-thin-lto-chrome",
+    builder = "chromeos-betty-chrome-dchecks",
 )
 
 chrome_internal_verifier(
-    builder = "chromeos-betty-pi-arc-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "chromeos-betty-pi-arc-chrome-accessibility-fyi",
+    builder = "chromeos-betty-cfi-thin-lto-chrome",
 )
 
 chrome_internal_verifier(
@@ -110,10 +128,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "chromeos-jacuzzi-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "chromeos-jacuzzi-chrome-skylab",
 )
 
 chrome_internal_verifier(
@@ -134,6 +148,22 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "chromeos-reven-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-ava-nelson",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-cast-astro",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-cast-nelson",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-cast-sherlock",
 )
 
 chrome_internal_verifier(
@@ -169,32 +199,20 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-smoke-sherlock-roller",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.IOS_BRANCHES,
+    builder = "ios-rel-ready",
+)
+
+chrome_internal_verifier(
     builder = "ipad-device",
 )
 
 chrome_internal_verifier(
     builder = "iphone-device",
-)
-
-chrome_internal_verifier(
-    builder = "lacros-amd64-generic-chrome",
-)
-
-chrome_internal_verifier(
-    branch_selector = branches.selector.CROS_BRANCHES,
-    builder = "lacros-amd64-generic-chrome-skylab",
-)
-
-chrome_internal_verifier(
-    builder = "lacros-arm-generic-chrome",
-)
-
-chrome_internal_verifier(
-    builder = "lacros-arm-generic-chrome-skylab",
-)
-
-chrome_internal_verifier(
-    builder = "lacros-arm64-generic-chrome-skylab",
 )
 
 chrome_internal_verifier(
@@ -204,6 +222,10 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.LINUX_BRANCHES,
     builder = "linux-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "linux-cft",
 )
 
 chrome_internal_verifier(
@@ -224,8 +246,17 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    builder = "linux64-rel-ready",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "mac-cft",
 )
 
 chrome_internal_verifier(
@@ -236,6 +267,11 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.MAC_BRANCHES,
     builder = "mac-pgo",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.MAC_BRANCHES,
+    builder = "mac-rel-ready",
 )
 
 chrome_internal_verifier(
@@ -263,13 +299,32 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "webview-arm64-rel-ready",
+)
+
+chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-arm64-pgo",
 )
 
 chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
+    builder = "win-arm64-rel-ready",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "win-cft",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    builder = "win-rel-ready",
 )
 
 chrome_internal_verifier(
@@ -285,4 +340,9 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     builder = "win64-pgo",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    builder = "win64-rel-ready",
 )

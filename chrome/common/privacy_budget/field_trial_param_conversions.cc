@@ -5,7 +5,9 @@
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
+
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,7 +16,7 @@
 
 namespace privacy_budget_internal {
 
-bool DecodeIdentifiabilityType(const base::StringPiece s,
+bool DecodeIdentifiabilityType(const std::string_view s,
                                blink::IdentifiableSurface* out) {
   uint64_t hash = 0;
   if (!base::StringToUint64(s, &hash))
@@ -23,7 +25,7 @@ bool DecodeIdentifiabilityType(const base::StringPiece s,
   return true;
 }
 
-bool DecodeIdentifiabilityType(const base::StringPiece s,
+bool DecodeIdentifiabilityType(const std::string_view s,
                                blink::IdentifiableSurface::Type* out) {
   uint64_t hash = 0;
   if (!base::StringToUint64(s, &hash))
@@ -34,30 +36,30 @@ bool DecodeIdentifiabilityType(const base::StringPiece s,
   return true;
 }
 
-bool DecodeIdentifiabilityType(const base::StringPiece s, int* out) {
+bool DecodeIdentifiabilityType(const std::string_view s, int* out) {
   return base::StringToInt(s, out);
 }
 
-bool DecodeIdentifiabilityType(const base::StringPiece s, uint64_t* out) {
+bool DecodeIdentifiabilityType(const std::string_view s, uint64_t* out) {
   return base::StringToUint64(s, out);
 }
 
-bool DecodeIdentifiabilityType(const base::StringPiece s, unsigned int* out) {
+bool DecodeIdentifiabilityType(const std::string_view s, unsigned int* out) {
   return base::StringToUint(s, out);
 }
 
-bool DecodeIdentifiabilityType(const base::StringPiece s, double* out) {
+bool DecodeIdentifiabilityType(const std::string_view s, double* out) {
   return base::StringToDouble(s, out);
 }
 
-bool DecodeIdentifiabilityType(const base::StringPiece s,
+bool DecodeIdentifiabilityType(const std::string_view s,
                                std::vector<blink::IdentifiableSurface>* out) {
   *out = DecodeIdentifiabilityFieldTrialParam<
       std::vector<blink::IdentifiableSurface>, ';'>(s);
   return !out->empty();
 }
 
-bool DecodeIdentifiabilityType(const base::StringPiece s, std::string* out) {
+bool DecodeIdentifiabilityType(const std::string_view s, std::string* out) {
   *out = std::string(s);
   return true;
 }

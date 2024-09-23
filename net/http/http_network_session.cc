@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -22,6 +23,7 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_response_body_drainer.h"
 #include "net/http/http_stream_factory.h"
+#include "net/http/http_stream_pool.h"
 #include "net/http/url_security_manager.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
@@ -37,6 +39,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -76,6 +79,16 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
   }
 
   return http2_settings;
+}
+
+bool OriginToForceQuicOnInternal(const QuicParams& quic_params,
+                                 const url::SchemeHostPort& destination) {
+  // TODO(crbug.com/40181080): Consider converting `origins_to_force_quic_on` to
+  // use url::SchemeHostPort.
+  return (
+      base::Contains(quic_params.origins_to_force_quic_on, HostPortPair()) ||
+      base::Contains(quic_params.origins_to_force_quic_on,
+                     HostPortPair::FromSchemeHostPort(destination)));
 }
 
 }  // unnamed namespace
@@ -152,6 +165,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                          context.http_server_properties,
                          context.cert_verifier,
                          context.transport_security_state,
+                         context.proxy_delegate,
                          context.sct_auditing_delegate,
                          context.socket_performance_watcher_factory,
                          context.quic_crypto_client_stream_factory,
@@ -219,6 +233,12 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
     memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
         FROM_HERE, base::BindRepeating(&HttpNetworkSession::OnMemoryPressure,
                                        base::Unretained(this)));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    http_stream_pool_ = std::make_unique<HttpStreamPool>(
+        this,
+        /*cleanup_on_ip_address_change=*/!params.ignore_ip_address_changes);
   }
 }
 
@@ -336,13 +356,19 @@ void HttpNetworkSession::CloseAllConnections(int net_error,
                                                          net_log_reason_utf8);
   websocket_socket_pool_manager_->FlushSocketPoolsWithError(
       net_error, net_log_reason_utf8);
-  spdy_session_pool_.CloseCurrentSessions(static_cast<net::Error>(net_error));
+  if (http_stream_pool_) {
+    http_stream_pool_->FlushWithError(net_error, net_log_reason_utf8);
+  }
+  spdy_session_pool_.CloseCurrentSessions(static_cast<Error>(net_error));
   quic_session_pool_.CloseAllSessions(net_error, quic::QUIC_PEER_GOING_AWAY);
 }
 
 void HttpNetworkSession::CloseIdleConnections(const char* net_log_reason_utf8) {
   normal_socket_pool_manager_->CloseIdleSockets(net_log_reason_utf8);
   websocket_socket_pool_manager_->CloseIdleSockets(net_log_reason_utf8);
+  if (http_stream_pool_) {
+    http_stream_pool_->CloseIdleStreams(net_log_reason_utf8);
+  }
   spdy_session_pool_.CloseCurrentIdleSessions(net_log_reason_utf8);
 }
 
@@ -352,6 +378,25 @@ bool HttpNetworkSession::IsQuicEnabled() const {
 
 void HttpNetworkSession::DisableQuic() {
   params_.enable_quic = false;
+}
+
+bool HttpNetworkSession::ShouldForceQuic(const url::SchemeHostPort& destination,
+                                         const ProxyInfo& proxy_info,
+                                         bool is_websocket) {
+  if (!IsQuicEnabled()) {
+    return false;
+  }
+  if (is_websocket) {
+    return false;
+  }
+  // If a proxy is being used, the last proxy in the chain must be QUIC if we
+  // are to use QUIC on top of it.
+  if (!proxy_info.is_direct() && !proxy_info.proxy_chain().Last().is_quic()) {
+    return false;
+  }
+  return OriginToForceQuicOnInternal(*context_.quic_context->params(),
+                                     destination) &&
+         GURL::SchemeIsCryptographic(destination.scheme());
 }
 
 void HttpNetworkSession::IgnoreCertificateErrorsForTesting() {
@@ -386,7 +431,7 @@ ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(
     case WEBSOCKET_SOCKET_POOL:
       return websocket_socket_pool_manager_.get();
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       break;
   }
   return nullptr;

@@ -62,6 +62,7 @@ const char kSubscriptionSeenOfferKey[] = "userSeenOffer";
 const char kSeenOfferIdKey[] = "offerId";
 const char kSeenOfferPriceKey[] = "seenPriceMicros";
 const char kSeenOfferCountryKey[] = "countryCode";
+const char kSeenOfferLocaleKey[] = "languageCode";
 
 }  // namespace
 
@@ -279,18 +280,12 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
     const std::string& http_method,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
-#if BUILDFLAG(IS_IOS)
   // If ReplaceSyncPromosWithSignInPromos is enabled - ConsentLevel::kSync is no
   // longer attainable. See crbug.com/1503156 for details.
   signin::ConsentLevel consent_level =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync;
-#else
-  // TODO(crbug.com/1504089): Remove ifdefs after scope checking is disabled
-  //                          on non-iOS platforms.
-  signin::ConsentLevel consent_level = signin::ConsentLevel::kSync;
-#endif
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
       std::vector<std::string>{kOAuthScope},
@@ -384,6 +379,10 @@ SubscriptionsServerProxy::GetSubscriptionsFromParsedJson(
   return subscriptions;
 }
 
+bool SubscriptionsServerProxy::IsPriceTrackingLocaleKeyEnabled() {
+  return base::FeatureList::IsEnabled(kPriceTrackingSubscriptionServiceLocaleKey);
+}
+
 base::Value::Dict SubscriptionsServerProxy::Serialize(
     const CommerceSubscription& subscription) {
   base::Value::Dict subscription_json;
@@ -401,6 +400,9 @@ base::Value::Dict SubscriptionsServerProxy::Serialize(
     seen_offer_json.Set(kSeenOfferPriceKey,
                         base::NumberToString(seen_offer->user_seen_price));
     seen_offer_json.Set(kSeenOfferCountryKey, seen_offer->country_code);
+    if (IsPriceTrackingLocaleKeyEnabled()) {
+      seen_offer_json.Set(kSeenOfferLocaleKey, seen_offer->locale);
+    }
     subscription_json.Set(kSubscriptionSeenOfferKey,
                           std::move(seen_offer_json));
   }

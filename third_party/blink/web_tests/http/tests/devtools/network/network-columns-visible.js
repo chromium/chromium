@@ -23,8 +23,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     // Note that the expectation for the priority field is HighHigh, because in
     // the expanded view mode we show the initial priority and the requested
     // priority.
-    'name', 'method', 'status', 'protocol', 'scheme', 'domain', 'remoteaddress', 'type', 'initiator', 'cookies',
-    'setcookies', 'priority', 'cache-control', 'connection', 'content-encoding', 'content-length', 'vary'
+    'name', 'method', 'status', 'protocol', 'scheme', 'domain', 'remote-address', 'type', 'initiator', 'cookies',
+    'set-cookies', 'priority', 'cache-control', 'connection', 'content-encoding', 'content-length', 'vary'
   ];
 
   // Setup

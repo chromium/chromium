@@ -24,7 +24,7 @@ void BrowserWebStateListDelegate::WillAddWebState(web::WebState* web_state) {
     // WebState in a Browser are not pre-render tabs, so always attach
     // all the tab helpers (the method is idempotent, so it is okay to
     // call it multiple times for the same WebState).
-    AttachTabHelpers(web_state, /*for_prerender=*/false);
+    AttachTabHelpers(web_state);
   }
 }
 

@@ -31,7 +31,7 @@ class MODULES_EXPORT EventSourceParser final
 
   EventSourceParser(const AtomicString& last_event_id, Client*);
 
-  void AddBytes(const char*, uint32_t);
+  void AddBytes(base::span<const char>);
   const AtomicString& LastEventId() const { return last_event_id_; }
   // Stop parsing. This can be called from Client::onMessageEvent.
   void Stop() { is_stopped_ = true; }
@@ -39,7 +39,7 @@ class MODULES_EXPORT EventSourceParser final
 
  private:
   void ParseLine();
-  String FromUTF8(const char* bytes, uint32_t);
+  String FromUTF8(base::span<const char> bytes);
 
   Vector<char> line_;
 

@@ -48,7 +48,7 @@ void DrawFallbackIconLetter(gfx::Canvas* canvas,
   font_weight = gfx::Font::Weight::SEMIBOLD;
 #endif
 
-  // TODO(crbug.com/853780): Adjust the text color according to the background
+  // TODO(crbug.com/41395192): Adjust the text color according to the background
   // color.
   canvas->DrawStringRectWithFlags(
       monogram,

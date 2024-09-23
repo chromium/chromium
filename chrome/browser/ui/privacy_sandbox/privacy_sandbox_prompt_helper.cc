@@ -42,7 +42,8 @@ PrivacySandboxService::PromptType GetRequiredPromptType(Profile* profile) {
     return PrivacySandboxService::PromptType::kNone;
   }
 
-  return privacy_sandbox_service->GetRequiredPromptType();
+  return privacy_sandbox_service->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -117,10 +118,12 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
         !IsChromeControlledNtpUrl(new_tab_page);
 
     if (has_extention_override || is_non_chrome_controlled_ntp) {
-      web_contents()->OpenURL(content::OpenURLParams(
-          GURL(url::kAboutBlankURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false));
+      web_contents()->OpenURL(
+          content::OpenURLParams(GURL(url::kAboutBlankURL), content::Referrer(),
+                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                 /*is_renderer_initiated=*/false),
+          /*navigation_handle_callback=*/{});
       base::UmaHistogramEnumeration(
           kPrivacySandboxPromptHelperEventHistogram,
           SettingsPrivacySandboxPromptHelperEvent::kAboutBlankOpened);
@@ -155,7 +158,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
   if (search_engine_choice_dialog_service &&
-      !search_engine_choice_dialog_service->CanSuppressPrivacySandboxPromo()) {
+      search_engine_choice_dialog_service->CanSuppressPrivacySandboxPromo()) {
     base::UmaHistogramEnumeration(kPrivacySandboxPromptHelperEventHistogram,
                                   SettingsPrivacySandboxPromptHelperEvent::
                                       kSearchEngineChoiceDialogShown);
@@ -198,8 +201,6 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // normal tabbed browsers will be exlcuded in a later check.
   const bool is_window_height_too_small =
       !CanWindowHeightFitPrivacySandboxPrompt(browser);
-  base::UmaHistogramBoolean("Settings.PrivacySandbox.DialogWindowTooSmall",
-                            is_window_height_too_small);
   // If the windows height is too small, it is difficult to read or interact
   // with the dialog. The dialog is blocking modal, that is why we want to
   // prevent it from showing if there isn't enough space.

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/vpx_video_decoder.h"
 
 #include <stddef.h>
@@ -11,13 +16,14 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/decoder_buffer.h"
@@ -229,17 +235,6 @@ bool VpxVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config) {
   if (config.codec() != VideoCodec::kVP8 && config.codec() != VideoCodec::kVP9)
     return false;
 
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  // When enabled, ffmpeg handles VP8 that doesn't have alpha, and
-  // VpxVideoDecoder will handle VP8 with alpha. FFvp8 is being deprecated.
-  // See http://crbug.com/992235.
-  if (config.codec() == VideoCodec::kVP8 &&
-      FFmpegVideoDecoder::IsCodecSupported(config.codec()) &&
-      config.alpha_mode() == VideoDecoderConfig::AlphaMode::kIsOpaque) {
-    return false;
-  }
-#endif
-
   DCHECK(!vpx_codec_);
   vpx_codec_ = InitializeVpxContext(config);
   if (!vpx_codec_)
@@ -319,7 +314,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     TRACE_EVENT1("media", "vpx_codec_decode", "buffer",
                  buffer->AsHumanReadableString());
     vpx_codec_err_t status =
-        vpx_codec_decode(vpx_codec_.get(), buffer->data(), buffer->data_size(),
+        vpx_codec_decode(vpx_codec_.get(), buffer->data(), buffer->size(),
                          nullptr /* user_priv */, 0 /* deadline */);
     if (status != VPX_CODEC_OK) {
       DLOG(ERROR) << "vpx_codec_decode() error: "
@@ -353,8 +348,8 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
     libyuv::CopyPlane(
         vpx_image_alpha->planes[VPX_PLANE_Y],
         vpx_image_alpha->stride[VPX_PLANE_Y],
-        (*video_frame)->GetWritableVisibleData(VideoFrame::kAPlane),
-        (*video_frame)->stride(VideoFrame::kAPlane),
+        (*video_frame)->GetWritableVisibleData(VideoFrame::Plane::kA),
+        (*video_frame)->stride(VideoFrame::Plane::kA),
         (*video_frame)->visible_rect().width(),
         (*video_frame)->visible_rect().height());
   }
@@ -430,9 +425,8 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
   }
 
   // First 8 bytes of side data is |side_data_id| in big endian.
-  const uint64_t side_data_id =
-      base::NetToHost64(*(reinterpret_cast<const uint64_t*>(
-          buffer->side_data()->alpha_data.data())));
+  const uint64_t side_data_id = base::U64FromBigEndian(
+      base::span(buffer->side_data()->alpha_data).first<8u>());
   if (side_data_id != 1) {
     return kAlphaPlaneProcessed;
   }

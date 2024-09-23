@@ -58,9 +58,7 @@ void MaybePatchGdiGetFontData() {
       sandbox::policy::SandboxTypeFromCommandLine(command_line);
   bool need_gdi =
       service_sandbox_type == sandbox::mojom::Sandbox::kPrintCompositor ||
-      service_sandbox_type == sandbox::mojom::Sandbox::kPdfConversion ||
-      (service_sandbox_type == sandbox::mojom::Sandbox::kRenderer &&
-       command_line.HasSwitch(switches::kPdfRenderer));
+      service_sandbox_type == sandbox::mojom::Sandbox::kPdfConversion;
   if (!need_gdi)
     return;
 

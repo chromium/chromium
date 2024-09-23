@@ -2,16 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 
 #include <memory>
 #include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/common/features.h"
@@ -33,6 +40,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -97,7 +105,7 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
       (options->colorSpaceConversion() != kImageBitmapOptionNone);
   if (options->colorSpaceConversion() != kImageBitmapOptionNone &&
       options->colorSpaceConversion() != kImageBitmapOptionDefault) {
-    NOTREACHED()
+    NOTREACHED_IN_MIGRATION()
         << "Invalid ImageBitmap creation attribute colorSpaceConversion: "
         << IDLEnumAsString(options->colorSpaceConversion());
   }
@@ -186,7 +194,7 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
   constexpr auto kShouldInitialize =
       CanvasResourceProvider::ShouldInitialize::kNo;
   if (context_provider) {
-    const uint32_t usage_flags =
+    const gpu::SharedImageUsageSet usage_flags =
         context_provider->ContextProvider()
             ->SharedImageInterface()
             ->UsageForMailbox(source_image->GetMailboxHolder().mailbox);
@@ -552,7 +560,8 @@ sk_sp<SkImage> ImageBitmap::GetSkImageFromDecoder(
 ImageBitmap::ImageBitmap(ImageElementBase* image,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
-  scoped_refptr<Image> input = image->CachedImage()->GetImage();
+  auto* cached = image->CachedImage();
+  scoped_refptr<Image> input = cached ? cached->GetImage() : Image::NullImage();
   DCHECK(!input->IsTextureBacked());
 
   ParsedOptions parsed_options =
@@ -584,7 +593,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
             : ImageDecoder::kDefaultBitDepth,
         parsed_options.has_color_space_conversion ? ColorBehavior::kTag
                                                   : ColorBehavior::kIgnore,
-        Platform::GetMaxDecodedImageBytes()));
+        cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes()));
     auto skia_image = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
     if (!skia_image)
       return;
@@ -594,6 +603,11 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
                       .set_image(std::move(skia_image),
                                  paint_image.GetContentIdForFrame(0u))
                       .TakePaintImage();
+
+    // Update source alpha states after redecoding.
+    parsed_options.source_is_unpremul =
+        paint_image.GetAlphaType() == kUnpremul_SkAlphaType;
+
   } else if (paint_image.IsLazyGenerated()) {
     // Other Image types can still produce lazy generated images (for example
     // SVGs).
@@ -651,8 +665,9 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
                          std::optional<gfx::Rect> crop_rect,
                          const ImageBitmapOptions* options) {
   SourceImageStatus status;
-  scoped_refptr<Image> image_input = canvas->GetSourceImageForCanvas(
-      FlushReason::kCreateImageBitmap, &status, gfx::SizeF());
+  scoped_refptr<Image> image_input =
+      canvas->GetSourceImageForCanvas(FlushReason::kCreateImageBitmap, &status,
+                                      gfx::SizeF(), kPremultiplyAlpha);
   if (status != kNormalSourceImageStatus)
     return;
   DCHECK(IsA<StaticBitmapImage>(image_input.get()));
@@ -908,26 +923,23 @@ void ImageBitmap::UpdateImageBitmapMemoryUsage() {
         std::numeric_limits<int32_t>::max());
   }
 
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      new_memory_usage - memory_usage_);
+  external_memory_accounter_.Update(v8::Isolate::GetCurrent(),
+                                    new_memory_usage - memory_usage_);
   memory_usage_ = new_memory_usage;
 }
 
 ImageBitmap::~ImageBitmap() {
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      -memory_usage_);
+  external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(), memory_usage_);
 }
 
 void ImageBitmap::ResolvePromiseOnOriginalThread(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolver<ImageBitmap>* resolver,
     bool origin_clean,
     std::unique_ptr<ParsedOptions> parsed_options,
     sk_sp<SkImage> skia_image,
     const ImageOrientationEnum orientation) {
   if (!skia_image) {
-    resolver->Reject(
-        ScriptValue(resolver->GetScriptState()->GetIsolate(),
-                    v8::Null(resolver->GetScriptState()->GetIsolate())));
+    resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
   scoped_refptr<StaticBitmapImage> image =
@@ -939,16 +951,12 @@ void ImageBitmap::ResolvePromiseOnOriginalThread(
                                          std::move(image), kUnpremultiplyAlpha);
   }
   if (!image) {
-    resolver->Reject(
-        ScriptValue(resolver->GetScriptState()->GetIsolate(),
-                    v8::Null(resolver->GetScriptState()->GetIsolate())));
+    resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
   image = ApplyColorSpaceConversion(std::move(image), *(parsed_options.get()));
   if (!image) {
-    resolver->Reject(
-        ScriptValue(resolver->GetScriptState()->GetIsolate(),
-                    v8::Null(resolver->GetScriptState()->GetIsolate())));
+    resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
   ImageBitmap* bitmap = MakeGarbageCollected<ImageBitmap>(image);
@@ -978,7 +986,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
                           ImageOrientationEnum::kDefault));
 }
 
-ScriptPromise ImageBitmap::CreateAsync(
+ScriptPromise<ImageBitmap> ImageBitmap::CreateAsync(
     ImageElementBase* image,
     std::optional<gfx::Rect> crop_rect,
     ScriptState* script_state,
@@ -992,7 +1000,7 @@ ScriptPromise ImageBitmap::CreateAsync(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The ImageBitmap could not be allocated.");
-    return ScriptPromise();
+    return EmptyPromise();
   }
 
   scoped_refptr<Image> input = image->CachedImage()->GetImage();
@@ -1007,13 +1015,12 @@ ScriptPromise ImageBitmap::CreateAsync(
         MakeGarbageCollected<ImageBitmap>(MakeBlankImage(parsed_options));
     if (bitmap->BitmapImage()) {
       bitmap->BitmapImage()->SetOriginClean(!image->WouldTaintOrigin());
-      return ScriptPromise::Cast(
-          script_state, ToV8Traits<ImageBitmap>::ToV8(script_state, bitmap));
+      return ToResolvedPromise<ImageBitmap>(script_state, bitmap);
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
           "The ImageBitmap could not be allocated.");
-      return ScriptPromise();
+      return EmptyPromise();
     }
   }
 
@@ -1040,8 +1047,8 @@ ScriptPromise ImageBitmap::CreateAsync(
     }
   }
 
-  SVGImageForContainer::Create(To<SVGImage>(input.get()),
-                               gfx::SizeF(input_rect.size()), 1, NullURL(),
+  SVGImageForContainer::Create(To<SVGImage>(*input),
+                               gfx::SizeF(input_rect.size()), 1, nullptr,
                                preferred_color_scheme)
       ->Draw(canvas, cc::PaintFlags(), gfx::RectF(draw_dst_rect),
              gfx::RectF(draw_src_rect), ImageDrawOptions());
@@ -1049,9 +1056,9 @@ ScriptPromise ImageBitmap::CreateAsync(
 
   std::unique_ptr<ParsedOptions> passed_parsed_options =
       std::make_unique<ParsedOptions>(parsed_options);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<ImageBitmap>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   worker_pool::PostTask(
       FROM_HERE,
@@ -1074,7 +1081,8 @@ void ImageBitmap::close() {
 }
 
 // static
-ImageBitmap* ImageBitmap::Take(ScriptPromiseResolver*, sk_sp<SkImage> image) {
+ImageBitmap* ImageBitmap::Take(ScriptPromiseResolverBase*,
+                               sk_sp<SkImage> image) {
   return MakeGarbageCollected<ImageBitmap>(
       UnacceleratedStaticBitmapImage::Create(std::move(image)));
 }
@@ -1116,10 +1124,11 @@ gfx::Size ImageBitmap::Size() const {
   return image_->PreferredDisplaySize();
 }
 
-ScriptPromise ImageBitmap::CreateImageBitmap(ScriptState* script_state,
-                                             std::optional<gfx::Rect> crop_rect,
-                                             const ImageBitmapOptions* options,
-                                             ExceptionState& exception_state) {
+ScriptPromise<ImageBitmap> ImageBitmap::CreateImageBitmap(
+    ScriptState* script_state,
+    std::optional<gfx::Rect> crop_rect,
+    const ImageBitmapOptions* options,
+    ExceptionState& exception_state) {
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),
       options, exception_state);

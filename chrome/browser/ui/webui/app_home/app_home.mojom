@@ -50,7 +50,7 @@ struct AppInfo {
 };
 
 struct ClickEvent {
-  // TODO(crbug.com/1350406): Use enum class to represent button event.
+  // TODO(crbug.com/40234138): Use enum class to represent button event.
   double button;
   bool alt_key;
   bool ctrl_key;

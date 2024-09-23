@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 22
+// Next MinVersion: 23
 
 module ash.ime.mojom;
 
@@ -70,7 +70,7 @@ enum NamedDomKey {
 // NamedDomKey for special keys (e.g. Shift), as specified by:
 // https://www.w3.org/TR/uievents/#dom-keyboardevent-key
 //
-// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// TODO(crbug.com/40202148): Note that this type must be marked [Extensible] in
 // all deployed versions before new ordinals can be introduced, and [Extensible]
 // requires specifying a [Default] field.
 //
@@ -304,7 +304,7 @@ struct InputFieldInfo {
 
 // Next ordinal: 8
 //
-// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// TODO(crbug.com/40202148): Note that this type must be marked [Extensible] in
 // all deployed versions before new ordinals can be introduced, and [Extensible]
 // requires specifying a [Default] field.
 [Stable, Extensible, RenamedFrom="chromeos.ime.mojom.InputMethodSettings"]
@@ -394,11 +394,87 @@ struct PinyinSettings {
   [MinVersion=6] bool default_to_full_width_punctuation@6;
 };
 
-// Next ordinal: 1
+// JapaneseSettings are preference values for the Japanese engine as stored
+// in PrefService. The value names closely match how they are defined in prefs.
+// Next ordinal: 14
 [Stable]
 struct JapaneseSettings {
-  JapaneseConfig japanese_config@0;
-  // TODO(b/232341104): Add the Japanese user dictionary here.
+  [Stable, Extensible]
+  enum InputMode {
+    [Default] kUnspecified = 0,
+    kRomaji = 1,
+    kKana = 2,
+  };
+
+  [Stable, Extensible]
+  enum PunctuationStyle {
+    [Default] kUnspecified = 0,
+    kKutenTouten = 1,
+    kCommaPeriod = 2,
+    kKutenPeriod = 3,
+    kCommaTouten = 4,
+  };
+
+  [Stable, Extensible]
+  enum SymbolStyle {
+    [Default] kUnspecified = 0,
+    kCornerBracketMiddleDot = 1,
+    kSquareBracketSlash = 2,
+    kCornerBracketSlash = 3,
+    kSquareBracketMiddleDot = 4,
+  };
+
+  [Stable, Extensible]
+  enum SpaceInputStyle {
+    [Default] kUnspecified = 0,
+    kInputMode = 1,
+    kFullWidth = 2,
+    kHalfWidth = 3,
+  };
+
+  [Stable, Extensible]
+  enum SelectionShortcut {
+    [Default] kUnspecified = 0,
+    kDigits123456789 = 1,
+    kAsdfghjkl = 2,
+    kNoShortcut = 3,
+  };
+
+  [Stable, Extensible]
+  enum KeymapStyle {
+    [Default] kUnspecified = 0,
+    kCustom = 1,
+    kAtok = 2,
+    kMsime = 3,
+    kKotoeri = 4,
+    kMobile = 5,
+    kChromeos = 6,
+  };
+
+  [Stable, Extensible]
+  enum ShiftKeyModeStyle {
+    [Default] kUnspecified = 0,
+    kOff = 1,
+    kAlphanumeric = 2,
+    kKatakana = 3,
+  };
+
+  // This is a legacy field that is no longer used.
+  JpUnusedStruct? unused@0;
+
+  [MinVersion=22] InputMode input_mode@1;
+  [MinVersion=22] PunctuationStyle punctuation_style@2;
+  [MinVersion=22] SymbolStyle symbol_style@3;
+  [MinVersion=22] SpaceInputStyle space_input_style@4;
+  [MinVersion=22] SelectionShortcut selection_shortcut@5;
+  [MinVersion=22] KeymapStyle keymap_style@6;
+  [MinVersion=22] bool automatically_switch_to_halfwidth@7;
+  [MinVersion=22] ShiftKeyModeStyle shift_key_mode_style@8;
+  [MinVersion=22] bool use_input_history@9;
+  [MinVersion=22] bool use_system_dictionary@10;
+  [MinVersion=22] uint32 number_of_suggestions@11;
+  [MinVersion=22] bool disable_personalized_suggestions@12;
+  [MinVersion=22] bool automatically_send_statistics_to_google@13;
 };
 
 // Next ordinal: 3
@@ -444,7 +520,7 @@ struct ZhuyinSettings {
 };
 
 // Next ordinal: 2
-// TODO(crbug.com/1261313): Note that this type must be marked [Extensible] in
+// TODO(crbug.com/40202148): Note that this type must be marked [Extensible] in
 // all deployed versions before new ordinals can be introduced, and [Extensible]
 // requires specifying a [Default] field.
 // TODO(b/217279530): Consider removing this or unifying it with

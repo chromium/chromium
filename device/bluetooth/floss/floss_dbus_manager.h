@@ -154,6 +154,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
 
   // Timeout to wait for clients to become ready.
   static const int kClientReadyTimeoutMs;
+  // Timeout to wait for bluetooth service to become ready.
+  static const int kWaitServiceTimeoutMs;
 
   FlossDBusManager(const FlossDBusManager&) = delete;
   FlossDBusManager& operator=(const FlossDBusManager&) = delete;
@@ -185,8 +187,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   // Get the active adapter.
   int GetActiveAdapter() const;
 
+  // Checks whether the necessary clients are ready. This will happen
+  // asynchronously and may take multiple seconds during tests.
+  bool AreClientsReady() const;
+
   // Returns system bus pointer (owned by FlossDBusThreadManager).
   dbus::Bus* GetSystemBus() const { return bus_; }
+
+  // Gets Floss API version.
+  base::Version GetFlossApiVersion() const { return version_; }
 
   // All returned objects are owned by FlossDBusManager. Do not use these
   // pointers after FlossDBusManager has been shut down.
@@ -234,6 +243,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
   void OnManagerClientInitComplete();
+  void OnManagerServiceAvailable(bool is_available);
+  void OnWaitServiceAvailableTimeout();
 
   // Initializes the manager client
   void InitializeManagerClient();
@@ -282,6 +293,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   bool telephony_interface_present_ = false;
   bool gatt_interface_present_ = false;
   bool socket_manager_interface_present_ = false;
+  base::Time instance_created_time_;
 
   // Currently active Bluetooth adapter
   int active_adapter_ = kInvalidAdapter;

@@ -197,4 +197,67 @@ TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
   }));
 }
 
+// Tests that the expected result is received from executing a script via
+// `ExecuteJavaScript` on the main frame in the page content world.
+TEST_F(WebFrameImplIntTest, ExecuteJavaScriptMainFramePageContentWorld) {
+  ASSERT_TRUE(LoadHtml("<p>"));
+  ExecuteJavaScript(@"__gCrWeb = {};"
+                    @"__gCrWeb['fakeFunction'] = function() {"
+                    @"  return '10';"
+                    @"}");
+
+  web::WebFrameImpl* main_frame_impl = static_cast<web::WebFrameImpl*>(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame());
+  ASSERT_TRUE(main_frame_impl);
+
+  JavaScriptContentWorld world(GetBrowserState(), WKContentWorld.pageWorld);
+  __block bool called = false;
+
+  auto block = ^(const base::Value* value, NSError* error) {
+    ASSERT_FALSE(error);
+    ASSERT_TRUE(value->is_string());
+    EXPECT_EQ(value->GetString(), "10");
+    called = true;
+  };
+  EXPECT_TRUE(main_frame_impl->ExecuteJavaScriptInContentWorld(
+      u"__gCrWeb['fakeFunction']()", &world, base::BindOnce(block)));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return called;
+  }));
+}
+
+// Tests that the expected result is received from executing a script via
+// `ExecuteJavaScript` on the main frame in an isolated content world.
+TEST_F(WebFrameImplIntTest, ExecuteJavaScriptMainFrameIsolatedWorld) {
+  ASSERT_TRUE(LoadHtml("<p>"));
+  WKWebView* web_view =
+      [web::test::GetWebController(web_state()) ensureWebViewCreated];
+  test::ExecuteJavaScript(web_view, WKContentWorld.defaultClientWorld,
+                          @"__gCrWeb = {};"
+                          @"__gCrWeb['fakeFunction'] = function() {"
+                          @"  return '10';"
+                          @"}");
+
+  web::WebFrameImpl* main_frame_impl = static_cast<web::WebFrameImpl*>(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame());
+  ASSERT_TRUE(main_frame_impl);
+
+  JavaScriptContentWorld world(GetBrowserState(),
+                               WKContentWorld.defaultClientWorld);
+  __block bool called = false;
+  auto block = ^(const base::Value* value, NSError* error) {
+    ASSERT_FALSE(error);
+    ASSERT_TRUE(value->is_string());
+    EXPECT_EQ(value->GetString(), "10");
+    called = true;
+  };
+  EXPECT_TRUE(main_frame_impl->ExecuteJavaScriptInContentWorld(
+      u"__gCrWeb['fakeFunction']()", &world, base::BindOnce(block)));
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return called;
+  }));
+}
+
 }  // namespace web

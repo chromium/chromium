@@ -17,6 +17,8 @@ cc_component("paint") {
     "decode_stashing_image_provider.h",
     "decoded_draw_image.cc",
     "decoded_draw_image.h",
+    "deferred_paint_record.cc",
+    "deferred_paint_record.h",
     "directly_composited_image_info.h",
     "discardable_image_map.cc",
     "discardable_image_map.h",
@@ -24,6 +26,8 @@ cc_component("paint") {
     "display_item_list.h",
     "draw_image.cc",
     "draw_image.h",
+    "draw_looper.cc",
+    "draw_looper.h",
     "element_id.cc",
     "element_id.h",
     "filter_operation.cc",
@@ -75,6 +79,8 @@ cc_component("paint") {
     "paint_worklet_job.cc",
     "paint_worklet_job.h",
     "paint_worklet_layer_painter.h",
+    "path_effect.cc",
+    "path_effect.h",
     "raw_memory_transfer_cache_entry.cc",
     "raw_memory_transfer_cache_entry.h",
     "record_paint_canvas.cc",
@@ -84,6 +90,7 @@ cc_component("paint") {
     "render_surface_filters.h",
     "scoped_raster_flags.cc",
     "scoped_raster_flags.h",
+    "scroll_offset_map.h",
     "shader_transfer_cache_entry.cc",
     "shader_transfer_cache_entry.h",
     "skia_paint_canvas.cc",
@@ -111,6 +118,8 @@ cc_component("paint") {
     "target_color_params.cc",
     "target_color_params.h",
     "texture_backing.h",
+    "tone_map_util.cc",
+    "tone_map_util.h",
     "transfer_cache_deserialize_helper.h",
     "transfer_cache_entry.cc",
     "transfer_cache_entry.h",
@@ -159,8 +168,8 @@ cc_component("paint") {
   }
 }
 
-fuzzer_test("paint_op_buffer_fuzzer") {
-  sources = [ "paint_op_buffer_fuzzer.cc" ]
+fuzzer_test("paint_op_raster_fuzzer") {
+  sources = [ "paint_op_raster_fuzzer.cc" ]
 
   libfuzzer_options = [ "max_len=4096" ]
 
@@ -170,6 +179,17 @@ fuzzer_test("paint_op_buffer_fuzzer") {
     "//cc/paint",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/service:gles2",
+  ]
+}
+
+fuzzer_test("paint_op_buffer_fuzzer") {
+  sources = [ "paint_op_buffer_fuzzer.cc" ]
+
+  libfuzzer_options = [ "max_len=4096" ]
+
+  deps = [
+    "//cc:test_support",
+    "//cc/paint",
   ]
 }
 
@@ -183,4 +203,10 @@ fuzzer_test("transfer_cache_fuzzer") {
     "//cc/paint",
     "//components/viz/test:test_support",
   ]
+}
+
+fuzzer_test("paint_op_reader_security_constrainted_fuzzer") {
+  sources = [ "paint_op_reader_fuzzer.cc" ]
+
+  deps = [ "//cc/paint" ]
 }

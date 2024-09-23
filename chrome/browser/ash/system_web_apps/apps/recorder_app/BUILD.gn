@@ -1,0 +1,40 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("recorder_app") {
+  sources = [
+    "chrome_recorder_app_ui_delegate.cc",
+    "chrome_recorder_app_ui_delegate.h",
+    "recorder_system_web_app_info.cc",
+    "recorder_system_web_app_info.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/recorder_app_ui",
+    "//chrome/browser:browser_public_dependencies",
+    "//components/soda:constants",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/system_web_apps/apps",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/feedback",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chromeos/strings",
+    "//components/consent_auditor",
+    "//components/feedback",
+    "//components/signin/public/identity_manager",
+    "//components/soda",
+    "//components/soda:utils",
+    "//url",
+  ]
+}

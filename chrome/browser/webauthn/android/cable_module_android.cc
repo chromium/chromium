@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
-#include "base/sys_byteorder.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
@@ -306,7 +311,9 @@ GetSyncDataIfRegisteredInternal() {
     }
   }
 
-  if (!state->device_supports_cable()) {
+  if (!base::FeatureList::IsEnabled(
+          device::kWebAuthnEnableAndroidCableAuthenticator) ||
+      !state->device_supports_cable()) {
     return syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport();
   }
 
@@ -450,7 +457,7 @@ syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(
     return result;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace internal

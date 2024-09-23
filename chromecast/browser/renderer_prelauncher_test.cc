@@ -12,37 +12,20 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
+#include "chromecast/browser/test/cast_browser_test.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_base.h"
 
 namespace chromecast {
 
-class RendererPrelauncherTest : public content::BrowserTestBase {
- public:
-  RendererPrelauncherTest() {}
-
-  RendererPrelauncherTest(const RendererPrelauncherTest&) = delete;
-  RendererPrelauncherTest& operator=(const RendererPrelauncherTest&) = delete;
-
-  ~RendererPrelauncherTest() override {}
-
+class RendererPrelauncherTest : public shell::CastBrowserTest {
  protected:
-  // content::BrowserTestBase implementation:
-  void SetUp() override;
+  // CastBrowserTest implementation:
   void PreRunTestOnMainThread() override;
-  void PostRunTestOnMainThread() override {}
 };
-
-void RendererPrelauncherTest::SetUp() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(switches::kTestType, "browser");
-
-  BrowserTestBase::SetUp();
-}
 
 void RendererPrelauncherTest::PreRunTestOnMainThread() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/bindings/async_iterator_base.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink::bindings {
 
@@ -10,6 +11,13 @@ v8::Local<v8::Promise> AsyncIteratorBase::next(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   return iteration_source_->Next(script_state, exception_state);
+}
+
+v8::Local<v8::Promise> AsyncIteratorBase::returnForBinding(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  return iteration_source_->Return(
+      script_state, v8::Undefined(script_state->GetIsolate()), exception_state);
 }
 
 v8::Local<v8::Promise> AsyncIteratorBase::returnForBinding(

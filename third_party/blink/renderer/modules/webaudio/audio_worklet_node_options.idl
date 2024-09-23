@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // See: https://webaudio.github.io/web-audio-api/#dictdef-audioworkletnodeoptions
-dictionary AudioWorkletNodeOptions : AudioNodeOptions {
+[ConvertibleToObject] dictionary AudioWorkletNodeOptions : AudioNodeOptions {
     unsigned long numberOfInputs = 1;
     unsigned long numberOfOutputs = 1;
     sequence<unsigned long> outputChannelCount;

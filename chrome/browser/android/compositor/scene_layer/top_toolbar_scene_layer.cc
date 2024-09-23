@@ -6,11 +6,15 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
-#include "chrome/browser/ui/android/toolbar/jni_headers/TopToolbarSceneLayer_jni.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/ui/android/toolbar/jni_headers/TopToolbarSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -41,7 +45,8 @@ void TopToolbarSceneLayer::UpdateToolbarLayer(
     jfloat content_offset,
     bool show_shadow,
     bool visible,
-    bool anonymize) {
+    bool anonymize,
+    const base::android::JavaParamRef<jobject>& joffset_tag) {
   // If the toolbar layer has not been created yet, create it.
   if (!toolbar_layer_) {
     ui::ResourceManager* resource_manager =
@@ -56,9 +61,11 @@ void TopToolbarSceneLayer::UpdateToolbarLayer(
     return;
   }
 
+  viz::OffsetTag offset_tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
   toolbar_layer_->PushResource(toolbar_resource_id, toolbar_background_color,
                                anonymize, url_bar_color, url_bar_resource_id,
-                               x_offset, content_offset, false, !show_shadow);
+                               x_offset, content_offset, false, !show_shadow,
+                               offset_tag);
 }
 
 void TopToolbarSceneLayer::UpdateProgressBar(

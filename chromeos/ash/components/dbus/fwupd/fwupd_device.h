@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_FWUPD_FWUPD_DEVICE_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 
@@ -18,6 +19,8 @@ struct COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdDevice {
   FwupdDevice(const FwupdDevice& other);
   FwupdDevice& operator=(const FwupdDevice& other);
   ~FwupdDevice();
+
+  friend bool operator==(const FwupdDevice&, const FwupdDevice&) = default;
 
   std::string id;
   std::string device_name;

@@ -9,11 +9,11 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -66,16 +66,7 @@ class URLLoaderInterceptor {
     ~RequestParams();
     RequestParams(RequestParams&& other);
     RequestParams& operator=(RequestParams&& other);
-    // This is the process_id of the process that is making the request. This
-    // can be
-    // - a renderer process,
-    // - `network::mojom::kBrowserProcessId` for browser process, or
-    // - `network::mojom::kInvalidProcessId` when a process ID is not yet
-    //    plumbed.
-    // TODO(crbug.com/324458368): Currently this is
-    // `network::mojom::URLLoaderFactoryParams::process_id` where applicable and
-    // not necessarily the initiating RenderFrameHost's process ID. Clarify the
-    // expected process ID here and remove `kInvalidProcessId` cases.
+    // See the comment for `url_loader_factory::TerminalParams::process_id_`.
     int process_id;
     // The following are the parameters to CreateLoaderAndStart.
     mojo::PendingReceiver<network::mojom::URLLoader> receiver;
@@ -129,8 +120,8 @@ class URLLoaderInterceptor {
   // Helper methods for use when intercepting.
   // Writes the given response body, header, and SSL Info to `client`.
   // If `url` is present, also computes the ParsedHeaders for the response.
-  static void WriteResponse(base::StringPiece headers,
-                            base::StringPiece body,
+  static void WriteResponse(std::string_view headers,
+                            std::string_view body,
                             network::mojom::URLLoaderClient* client,
                             std::optional<net::SSLInfo> ssl_info = std::nullopt,
                             std::optional<GURL> url = std::nullopt);
@@ -186,7 +177,6 @@ class URLLoaderInterceptor {
  private:
   class IOState;
   class Interceptor;
-  class URLLoaderFactoryGetterWrapper;
   class Wrapper;
 
   // Adds `this` as an interceptor when a `URLLoaderFactory` is about to be

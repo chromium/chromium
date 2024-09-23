@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -78,8 +77,8 @@ void KeyboardHandler::RegisterMessages() {
       base::BindRepeating(&KeyboardHandler::HandleInitialize,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "showKeyboardShortcutViewer",
-      base::BindRepeating(&KeyboardHandler::HandleShowKeyboardShortcutViewer,
+      "showShortcutCustomizationApp",
+      base::BindRepeating(&KeyboardHandler::HandleShowShortcutCustomizationApp,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "initializeKeyboardWatcher",
@@ -110,7 +109,7 @@ void KeyboardHandler::HandleInitialize(const base::Value::List& args) {
   UpdateKeyboards();
 }
 
-void KeyboardHandler::HandleShowKeyboardShortcutViewer(
+void KeyboardHandler::HandleShowShortcutCustomizationApp(
     const base::Value::List& args) const {
   ash::LaunchSystemWebAppAsync(ProfileManager::GetActiveUserProfile(),
                                ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION);
@@ -123,7 +122,7 @@ void KeyboardHandler::HandleKeyboardChange(const base::Value::List& args) {
 
 void KeyboardHandler::UpdateKeyboards() {
   bool physical_keyboard = false;
-  // In tablet mode, physical keybards are disabled / ignored.
+  // In tablet mode, physical keyboards are disabled / ignored.
   if (!display::Screen::GetScreen()->InTabletMode()) {
     physical_keyboard = true;
   }

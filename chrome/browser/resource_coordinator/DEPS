@@ -8,9 +8,3 @@ include_rules = [
   # header-only types, and some selected common code.
   "+third_party/blink/public/common/sudden_termination_disabler_type.h",
 ]
-
-specific_include_rules = {
-  "tab_manager_delegate_chromeos\.cc": [
-    "+ash/shell.h",
-  ],
-}

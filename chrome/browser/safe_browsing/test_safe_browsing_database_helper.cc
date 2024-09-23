@@ -63,11 +63,11 @@ class InsertingDatabaseFactory : public safe_browsing::TestV4DatabaseFactory {
     const base::FilePath base_store_path(FILE_PATH_LITERAL("UrlDb.store"));
     for (const auto& id : lists_to_insert_) {
       if (!base::Contains(*store_map, id)) {
-        const base::FilePath store_path =
-            base_store_path.InsertBeforeExtensionASCII(base::StringPrintf(
-                " (%d)", base::GetUniquePathNumber(base_store_path)));
+        const base::FilePath store_path = base::GetUniquePath(base_store_path);
         store_map->insert(
-            {id, store_factory_->CreateV4Store(db_task_runner, store_path)});
+            {id, store_factory_->CreateV4Store(
+                     db_task_runner,
+                     store_path.empty() ? base_store_path : store_path)});
       }
     }
 

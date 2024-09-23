@@ -268,11 +268,7 @@ TEST_F(SSLErrorClassificationTest, GetClockState) {
 
   // Now clear the network time.  The build time should reassert
   // itself.
-  network_time_tracker.UpdateNetworkTime(
-      base::Time(),
-      base::Seconds(1),         // resolution
-      base::Milliseconds(250),  // latency
-      base::TimeTicks::Now());  // posting time
+  network_time_tracker.ClearNetworkTimeForTesting();
   ssl_errors::SetBuildTimeForTesting(base::Time::Now() + base::Days(3));
   EXPECT_EQ(
       ssl_errors::ClockState::CLOCK_STATE_PAST,

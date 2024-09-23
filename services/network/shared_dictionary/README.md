@@ -65,11 +65,13 @@ controlled by two flags.
         "use-as-dictionary" response header to the dictionary storage.
         (Note: Not implemented yet.)
       - Blink will fetch the dictionary after detecting
-        `<link rel=dictionary>` in the document HTML or
-        "`Link: rel=dictionary`" in the HTTP response header.
+        `<link rel=compression-dictionary>` in the document HTML or
+        "`Link: rel=compression-dictionary`" in the HTTP response header.
         (Note: Not implemented yet.)
       - HTMLLinkElement.relList.supports('dictionary') will return true.
         (Note: Not implemented yet.)
+    - Note: Until M126, `rel=dictionary` was used instead of
+      `rel=compression-dictionary`.
 
 ## Links
 

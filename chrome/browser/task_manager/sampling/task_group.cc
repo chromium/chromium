@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <limits>
+#include <vector>
 
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -15,10 +15,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
-#include "components/nacl/browser/nacl_browser.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/memory_stats.h"
+
+#if BUILDFLAG(ENABLE_NACL)
+#include "components/nacl/browser/nacl_browser.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -170,7 +173,7 @@ void TaskGroup::AddTask(Task* task) {
 
 void TaskGroup::RemoveTask(Task* task) {
   DCHECK(task);
-  base::Erase(tasks_, task);
+  std::erase(tasks_, task);
 }
 
 void TaskGroup::Refresh(const gpu::VideoMemoryUsageStats& gpu_memory_stats,
@@ -261,7 +264,7 @@ Task* TaskGroup::GetTaskById(TaskId task_id) const {
     if (task->task_id() == task_id)
       return task;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 

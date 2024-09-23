@@ -4,11 +4,13 @@
 
 #include "android_webview/browser/gfx/aw_gl_functor.h"
 
-#include "android_webview/browser_jni_headers/AwGLFunctor_jni.h"
 #include "android_webview/public/browser/draw_gl.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "android_webview/browser_jni_headers/AwGLFunctor_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -117,7 +119,8 @@ void AwGLFunctor::DrawGL(AwDrawGLInfo* draw_info) {
       for (unsigned int i = 0; i < std::size(params.transform); ++i) {
         params.transform[i] = draw_info->transform[i];
       }
-      render_thread_manager_.DrawOnRT(save_restore, params, OverlaysParams());
+      render_thread_manager_.DrawOnRT(save_restore, params, OverlaysParams(),
+                                      ReportRenderingThreadsCallback());
       break;
     }
   }

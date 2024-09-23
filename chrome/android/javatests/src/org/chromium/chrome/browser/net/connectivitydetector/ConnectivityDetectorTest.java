@@ -13,10 +13,11 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -44,7 +45,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     @Before
     public void setUp() throws Exception {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (!NetworkChangeNotifier.isInitialized()) {
                         NetworkChangeNotifier.init();
@@ -157,6 +158,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/343926825")
     public void testProbeDefaultUrlReturning200WithContent() throws Exception {
         String testUrl = sTestServerRule.getServer().getURL("/echo?status=200");
 
@@ -310,7 +312,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     }
 
     private static void setNetworkConnectivity(boolean connected) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     NetworkChangeNotifier.forceConnectivityState(connected);
                 });
@@ -318,7 +320,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
 
     private boolean hasScheduledRetry() {
         final boolean[] result = new boolean[1];
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     result[0] = mConnectivityDetector.getHandlerForTesting().hasMessages(0);
                 });
@@ -326,7 +328,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     }
 
     private void checkConnectivityViaDefaultUrl() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mConnectivityDetector.setUseDefaultUrlForTesting(true);
                     mConnectivityDetector.checkConnectivityViaHttpProbe();
@@ -335,7 +337,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     }
 
     private void checkConnectivityViaFallbackUrl() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mConnectivityDetector.setUseDefaultUrlForTesting(false);
                     mConnectivityDetector.checkConnectivityViaHttpProbe();
@@ -344,7 +346,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     }
 
     private void setConnectionState(@ConnectivityDetector.ConnectionState int connectionState) {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mConnectivityDetector.forceConnectionStateForTesting(connectionState);
                 });

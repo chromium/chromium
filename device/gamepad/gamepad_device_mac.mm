@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "device/gamepad/gamepad_device_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -265,10 +270,6 @@ bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
 }
 
 bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
-  base::apple::ScopedCFTypeRef<CFArrayRef> elements(
-      IOHIDDeviceCopyMatchingElements(device_ref_, nullptr,
-                                      kIOHIDOptionsTypeNone));
-  DCHECK(elements);
   DCHECK(gamepad);
   memset(gamepad->axes, 0, sizeof(gamepad->axes));
   std::fill(axis_elements_, axis_elements_ + Gamepad::kAxesLengthCap, nullptr);
@@ -276,6 +277,15 @@ bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
   std::fill(axis_maximums_, axis_maximums_ + Gamepad::kAxesLengthCap, 0);
   std::fill(axis_report_sizes_, axis_report_sizes_ + Gamepad::kAxesLengthCap,
             0);
+
+  base::apple::ScopedCFTypeRef<CFArrayRef> elements(
+      IOHIDDeviceCopyMatchingElements(device_ref_, /*matching=*/nullptr,
+                                      kIOHIDOptionsTypeNone));
+  if (!elements) {
+    // IOHIDDeviceCopyMatchingElements returns nullptr if we don't have
+    // permission to access the referenced IOHIDDevice.
+    return false;
+  }
 
   // Most axes are mapped so that their index in the Gamepad axes array
   // corresponds to the usage ID. However, this is not possible when the usage

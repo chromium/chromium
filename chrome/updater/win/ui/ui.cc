@@ -178,15 +178,8 @@ void OmahaWnd::Show() {
   CenterWindow(nullptr);
   SetVisible(true);
 
-  // To allow the progress UI to get foreground, the splash screen calls
-  // `::LockSetForegroundWindow(LSFW_LOCK)` before closing the splash screen to
-  // prevent other applications from making a foreground change in between. The
-  // following call completes the cycle with LSFW_UNLOCK.
-  ::LockSetForegroundWindow(LSFW_UNLOCK);
-
   if (!::SetForegroundWindow(*this)) {
-    LOG(WARNING) << __func__
-                 << ": ::SetForegroundWindow failed: " << ::GetLastError();
+    PLOG(WARNING) << __func__ << ": ::SetForegroundWindow failed";
   }
 }
 
@@ -212,7 +205,7 @@ void OmahaWnd::SetControlAttributes(int control_id,
   HWND hwnd = GetDlgItem(control_id);
   CHECK(hwnd);
   ::ShowWindow(hwnd, attributes.is_visible ? SW_SHOW : SW_HIDE);
-  ::EnableWindow(hwnd, attributes.is_enabled ? true : false);
+  ::EnableWindow(hwnd, attributes.is_enabled);
   if (attributes.is_button && attributes.is_default) {
     // We ask the dialog manager to give the default push button the focus, to
     // have the <Enter> key work as expected.

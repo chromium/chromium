@@ -24,10 +24,4 @@ void ColorPagePopupController::openEyeDropper() {
   }
 }
 
-void ColorPagePopupController::openSystemColorChooser() {
-  if (popup_client_) {
-    static_cast<ColorChooserPopupUIController*>(popup_client_)
-        ->OpenSystemColorChooser();
-  }
-}
 }  // namespace blink

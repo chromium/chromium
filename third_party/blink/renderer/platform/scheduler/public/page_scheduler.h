@@ -30,7 +30,6 @@ class PLATFORM_EXPORT PageScheduler {
 
     // An "ordinary" page is a fully-featured page owned by a web view.
     virtual bool IsOrdinary() const = 0;
-    virtual void ReportIntervention(const WTF::String& message) = 0;
     // Returns true if the request has been succcessfully relayed to the
     // compositor.
     virtual bool RequestBeginMainFrameNotExpected(bool new_state) = 0;

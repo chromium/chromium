@@ -83,7 +83,8 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                           viz::FrameSinkId frame_sink_id,
                           base::SafeRef<SiteInstanceGroup> site_instance_group,
                           int32_t routing_id,
-                          bool hidden)
+                          bool hidden,
+                          bool renderer_initiated_creation)
       : RenderWidgetHostImpl(frame_tree,
                              /*self_owned=*/false,
                              frame_sink_id,
@@ -91,11 +92,11 @@ class TracingRenderWidgetHost : public RenderWidgetHostImpl {
                              std::move(site_instance_group),
                              routing_id,
                              hidden,
-                             /*renderer_initiated_creation=*/false,
+                             renderer_initiated_creation,
                              std::make_unique<FrameTokenMessageQueue>()) {}
 
   void OnMouseEventAck(
-      const MouseEventWithLatencyInfo& event,
+      const input::MouseEventWithLatencyInfo& event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result) override {
     RenderWidgetHostImpl::OnMouseEventAck(event, ack_source, ack_result);
@@ -123,10 +124,11 @@ class TracingRenderWidgetHostFactory : public RenderWidgetHostFactory {
       viz::FrameSinkId frame_sink_id,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
-      bool hidden) override {
+      bool hidden,
+      bool renderer_initiated_creation) override {
     return std::make_unique<TracingRenderWidgetHost>(
         frame_tree, delegate, frame_sink_id, std::move(site_instance_group),
-        routing_id, hidden);
+        routing_id, hidden, renderer_initiated_creation);
   }
 };
 
@@ -381,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
   AssertTraceIdsBeginAndEnd(trace_data, "InputLatency::MouseMove");
 }
 
-// TODO(https://crbug.com/923627): This is flaky on multiple platforms.
+// TODO(crbug.com/41436535): This is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
                        DISABLED_CoalescedMouseWheelsCorrectlyTerminated) {
   LoadURL();

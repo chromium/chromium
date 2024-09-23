@@ -8,7 +8,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
-// TODO(crbug.com/760945): Write unit tests for these functions.
+// TODO(crbug.com/41342247): Write unit tests for these functions.
 
 namespace payments {
 

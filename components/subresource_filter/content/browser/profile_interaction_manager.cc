@@ -4,15 +4,17 @@
 
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 
+#include "base/check.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -37,15 +39,15 @@ ProfileInteractionManager::~ProfileInteractionManager() = default;
 void ProfileInteractionManager::DidCreatePage(content::Page& page) {
   // A new ProfileInteractionManager is created for each page so we should only
   // call this, at most, once.
-  DCHECK(!page_);
+  CHECK(!page_, base::NotFatalUntil::M129);
   page_ = &page;
 }
 
 void ProfileInteractionManager::OnReloadRequested() {
   // A reload request comes from browser so it will always be associated with
   // the primary page.
-  DCHECK(page_);
-  DCHECK(page_->IsPrimary());
+  CHECK(page_, base::NotFatalUntil::M129);
+  CHECK(page_->IsPrimary(), base::NotFatalUntil::M129);
 
   ContentSubresourceFilterThrottleManager::LogAction(
       SubresourceFilterAction::kAllowlistedSite);
@@ -57,7 +59,7 @@ void ProfileInteractionManager::OnReloadRequested() {
   GetWebContents()->GetController().Reload(content::ReloadType::NORMAL, true);
 }
 
-// TODO(https://crbug.com/1131969): Consider adding reporting when
+// TODO(crbug.com/40721689): Consider adding reporting when
 // ads violations are triggered.
 void ProfileInteractionManager::OnAdsViolationTriggered(
     content::RenderFrameHost* rfh,
@@ -74,12 +76,12 @@ void ProfileInteractionManager::OnAdsViolationTriggered(
   // enforcing on ads: do not record new interventions if we would be enforcing
   // an intervention on ads already.
   //
-  // TODO(https://crbug.com/1131971): Add support for enabling ads interventions
+  // TODO(crbug.com/40721691): Add support for enabling ads interventions
   // separately for different ads violations.
   const GURL& url = rfh->GetLastCommittedURL();
   std::optional<AdsInterventionManager::LastAdsIntervention> last_intervention =
       profile_context_->ads_intervention_manager()->GetLastAdsIntervention(url);
-  // TODO(crbug.com/1131971): If a host triggers multiple times on a single
+  // TODO(crbug.com/40721691): If a host triggers multiple times on a single
   // navigate and the durations don't match, we'll use the last duration rather
   // than the longest. The metadata should probably store the activation with
   // the longest duration.
@@ -99,7 +101,8 @@ mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
     content::NavigationHandle* navigation_handle,
     mojom::ActivationLevel initial_activation_level,
     ActivationDecision* decision) {
-  DCHECK(IsInSubresourceFilterRoot(navigation_handle));
+  CHECK(IsInSubresourceFilterRoot(navigation_handle),
+        base::NotFatalUntil::M129);
 
   mojom::ActivationLevel effective_activation_level = initial_activation_level;
 
@@ -131,8 +134,8 @@ mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
 void ProfileInteractionManager::MaybeShowNotification() {
   // The caller should make sure this is only called from pages that are
   // currently primary.
-  DCHECK(page_);
-  DCHECK(page_->IsPrimary());
+  CHECK(page_, base::NotFatalUntil::M129);
+  CHECK(page_->IsPrimary(), base::NotFatalUntil::M129);
 
   const GURL& top_level_url = page_->GetMainDocument().GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
@@ -158,7 +161,7 @@ void ProfileInteractionManager::MaybeShowNotification() {
     }
 #endif
 
-    // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
+    // TODO(crbug.com/40139135): Plumb the actual frame reference here
     // (it comes from
     // ContentSubresourceFilterThrottleManager::DidDisallowFirstSubresource,
     // which comes from a specific frame).
@@ -176,9 +179,14 @@ void ProfileInteractionManager::MaybeShowNotification() {
   }
 }
 
+content_settings::CookieSettings*
+ProfileInteractionManager::GetCookieSettings() {
+  return profile_context_->cookie_settings();
+}
+
 content::WebContents* ProfileInteractionManager::GetWebContents() {
-  DCHECK(page_);
-  DCHECK(page_->IsPrimary());
+  CHECK(page_, base::NotFatalUntil::M129);
+  CHECK(page_->IsPrimary(), base::NotFatalUntil::M129);
   return content::WebContents::FromRenderFrameHost(&page_->GetMainDocument());
 }
 

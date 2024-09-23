@@ -4,15 +4,99 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojom") {
+mojom_component("mojom") {
+  output_prefix = "webnn_mojom"
+  macro_prefix = "WEBNN_MOJOM"
+
   sources = [
+    "features.mojom",
+    "webnn_context.mojom",
+    "webnn_context_properties.mojom",
     "webnn_context_provider.mojom",
     "webnn_error.mojom",
     "webnn_graph.mojom",
+    "webnn_graph_builder.mojom",
+    "webnn_tensor.mojom",
   ]
+
   deps = [
-    "//components/ml/webnn:features",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//third_party/blink/public/mojom/tokens",
+  ]
+
+  shared_webnn_typemaps = [
+    {
+      types = [
+        {
+          mojom = "webnn.mojom.ContextProperties"
+          cpp = "::webnn::ContextProperties"
+          default_constructible = false
+        },
+        {
+          mojom = "webnn.mojom.DataTypeLimits"
+          cpp = "::webnn::DataTypeLimits"
+          default_constructible = false
+        },
+        {
+          mojom = "webnn.mojom.OperandDescriptor"
+          cpp = "::webnn::OperandDescriptor"
+          default_constructible = false
+        },
+        {
+          mojom = "webnn.mojom.SupportedDataTypes"
+          cpp = "::webnn::SupportedDataTypes"
+        },
+        {
+          mojom = "webnn.mojom.TensorUsage"
+          cpp = "::webnn::MLTensorUsage"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [
+        "context_properties_mojom_traits.h",
+        "data_type_limits_mojom_traits.h",
+        "operand_descriptor_mojom_traits.h",
+        "supported_data_types_mojom_traits.h",
+        "tensor_usage_mojom_traits.h",
+      ]
+      traits_public_deps = [ ":webnn_mojom_traits" ]
+    },
+  ]
+
+  cpp_typemaps = shared_webnn_typemaps
+  blink_cpp_typemaps = shared_webnn_typemaps
+}
+
+component("webnn_mojom_traits") {
+  sources = [
+    "operand_descriptor_mojom_traits.cc",
+    "operand_descriptor_mojom_traits.h",
+  ]
+
+  public_deps = [
+    ":mojom_shared",
+    "//base",
+    "//mojo/public/cpp/bindings:struct_traits",
+    "//services/webnn/public/cpp",
+  ]
+
+  defines = [ "IS_WEBNN_MOJOM_TRAITS_IMPL" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [
+    "context_properties_mojom_traits_unittest.cc",
+    "operand_descriptor_mojom_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":mojom",
+    ":webnn_mojom_traits",
+    "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
   ]
 }

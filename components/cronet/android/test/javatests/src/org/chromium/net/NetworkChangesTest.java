@@ -82,7 +82,7 @@ public class NetworkChangesTest {
                         }
                     });
 
-            // TODO(crbug.com/1486376): Drop assumes once CQ bots have multiple networks.
+            // TODO(crbug.com/40282869): Drop assumes once CQ bots have multiple networks.
             assume().that(mCellular).isNotNull();
             assume().that(mWifi).isNotNull();
             assume().that(mDefaultNetwork).isNotNull();

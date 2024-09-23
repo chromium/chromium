@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -20,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
@@ -45,11 +46,14 @@ public class PersistedTabDataTest {
 
     @Mock private PersistedTabData.Natives mPersistedTabDataJni;
 
+    @Mock Tab mTab;
+
     @Rule public JniMocker jniMocker = new JniMocker();
 
     @Before
     public void setUp() throws Exception {
-        // TODO(crbug.com/1337102): Remove runOnUiThreadBlocking call after code refactoring/cleanup
+        // TODO(crbug.com/40229155): Remove runOnUiThreadBlocking call after code
+        // refactoring/cleanup
         // ShoppingPersistedTabData must be mocked on the ui thread, otherwise a thread assert will
         // fail. An ObserverList is created when creating the mock. The same ObserverList is used
         // later in the test.
@@ -169,6 +173,69 @@ public class PersistedTabDataTest {
                 .setUserData(ShoppingPersistedTabData.class, mShoppingPersistedTabDataMock);
         PersistedTabData.onTabClose(tab);
         verify(mShoppingPersistedTabDataMock, times(1)).disableSaving();
+    }
+
+    @SmallTest
+    @Test
+    public void testUninitializedTab() throws TimeoutException {
+        doReturn(false).when(mTab).isInitialized();
+        doReturn(false).when(mTab).isDestroyed();
+        doReturn(false).when(mTab).isCustomTab();
+        CallbackHelper helper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistedTabData.from(
+                            mTab,
+                            null,
+                            MockPersistedTabData.class,
+                            (res) -> {
+                                Assert.assertNull(res);
+                                helper.notifyCalled();
+                            });
+                });
+        helper.waitForCallback(0);
+    }
+
+    @SmallTest
+    @Test
+    public void testDestroyedTab() throws TimeoutException {
+        doReturn(true).when(mTab).isInitialized();
+        doReturn(true).when(mTab).isDestroyed();
+        doReturn(false).when(mTab).isCustomTab();
+        CallbackHelper helper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistedTabData.from(
+                            mTab,
+                            null,
+                            MockPersistedTabData.class,
+                            (res) -> {
+                                Assert.assertNull(res);
+                                helper.notifyCalled();
+                            });
+                });
+        helper.waitForCallback(0);
+    }
+
+    @SmallTest
+    @Test
+    public void testCustomTab() throws TimeoutException {
+        doReturn(true).when(mTab).isInitialized();
+        doReturn(false).when(mTab).isDestroyed();
+        doReturn(true).when(mTab).isCustomTab();
+        CallbackHelper helper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistedTabData.from(
+                            mTab,
+                            null,
+                            MockPersistedTabData.class,
+                            (res) -> {
+                                Assert.assertNull(res);
+                                helper.notifyCalled();
+                            });
+                });
+        helper.waitForCallback(0);
     }
 
     static class ThreadVerifierMockPersistedTabData extends MockPersistedTabData {

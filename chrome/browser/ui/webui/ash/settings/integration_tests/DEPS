@@ -1,0 +1,32 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ui/webui/ash/settings/integration_tests",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/login/quick_unlock",
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/chrome_pages.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/webui/ash/settings/test_support",
+  "+chrome/common",
+  "+chrome/test",
+]
+
+specific_include_rules = {
+  '.*interactive_uitest\.cc': [
+    '+ash/ash_element_identifiers.h',
+  ],
+
+  '.*browsertest\.cc': [
+    '+ash/auth/active_session_auth_controller.h',
+  ],
+}

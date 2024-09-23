@@ -87,7 +87,6 @@ gfx::Insets RotateInsets(display::Display::Rotation rotation,
                                insets.top());
   }
   NOTREACHED();
-  return std::move(insets);
 }
 
 gfx::Insets ConvertToDisplay(const display::Display& display,

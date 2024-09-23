@@ -15,16 +15,17 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_badge_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_strings.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
-#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chromeos/components/editor_menu/public/cpp/icon.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
@@ -50,6 +51,8 @@ namespace chromeos::editor_menu {
 namespace {
 
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
+constexpr char16_t kCardShownAnnouncement[] =
+    u"Help Me Write, press tab to focus the Help Me Write card.";
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
 
@@ -58,14 +61,22 @@ constexpr int kBadgeHorizontalPadding = 8;
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
 constexpr int kChipsVerticalPadding = 12;
-constexpr int kHeightWithoutChips = 100;
-constexpr int kHeightPerChipRow = 40;
+
 constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
 
 constexpr gfx::Insets kTextfieldContainerInsets =
     gfx::Insets::TLBR(0, 16, 12, 16);
 
 }  // namespace
+
+int GetChipsContainerHeightWithPaddings(int chip_height, int num_rows) {
+  const int total_chips_height = num_rows * chip_height;
+  const int total_chips_paddings =
+      num_rows >= 1 ? (num_rows - 1) * kChipsVerticalPadding +
+                          kChipsContainerInsets.height()
+                    : 0;
+  return total_chips_height + total_chips_paddings;
+}
 
 EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
                                const PresetTextQueries& preset_text_queries,
@@ -76,27 +87,32 @@ EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
       delegate_(delegate) {
   CHECK(delegate_);
   InitLayout(preset_text_queries);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(editor_menu_mode_ == EditorMenuMode::kWrite
+                                     ? GetEditorMenuWriteCardTitle()
+                                     : GetEditorMenuRewriteCardTitle());
 }
 
 EditorMenuView::~EditorMenuView() = default;
 
 // static
-views::UniqueWidgetPtr EditorMenuView::CreateWidget(
+std::unique_ptr<views::Widget> EditorMenuView::CreateWidget(
     EditorMenuMode editor_menu_mode,
     const PresetTextQueries& preset_text_queries,
     const gfx::Rect& anchor_view_bounds,
     EditorMenuViewDelegate* delegate) {
-  views::Widget::InitParams params;
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_elevation = 2;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.name = kWidgetName;
 
-  views::UniqueWidgetPtr widget =
-      std::make_unique<views::Widget>(std::move(params));
+  auto widget = std::make_unique<views::Widget>(std::move(params));
   EditorMenuView* editor_menu_view =
       widget->SetContentsView(std::make_unique<EditorMenuView>(
           editor_menu_mode, preset_text_queries, anchor_view_bounds, delegate));
@@ -115,15 +131,13 @@ void EditorMenuView::RequestFocus() {
   settings_button_->RequestFocus();
 }
 
-void EditorMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(
-      l10n_util::GetStringUTF16(editor_menu_mode_ == EditorMenuMode::kWrite
-                                    ? IDS_EDITOR_MENU_WRITE_CARD_TITLE
-                                    : IDS_EDITOR_MENU_REWRITE_CARD_TITLE));
-}
+gfx::Size EditorMenuView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (!available_size.width().is_bounded()) {
+    return PreTargetHandlerView::CalculatePreferredSize(available_size);
+  }
 
-int EditorMenuView::GetHeightForWidth(int width) const {
+  int width = available_size.width().value();
   // When the width of editor menu view is updated, we will adjust the number of
   // rows chips (see: UpdateChipsContainer). Thus, here we need to pre-compute
   // the expected number of rows here and so we can estimate the height rather
@@ -132,6 +146,8 @@ int EditorMenuView::GetHeightForWidth(int width) const {
   const int chip_container_width = width - kChipsContainerInsets.width();
   int running_width = 0;
   int num_rows = 0;
+  int chip_height = 0;
+
   for (views::View* row : chips_container_->children()) {
     for (views::View* chip : row->children()) {
       const int chip_width = chip->GetPreferredSize().width();
@@ -143,10 +159,21 @@ int EditorMenuView::GetHeightForWidth(int width) const {
         ++num_rows;
         running_width = chip_width;
       }
+
+      chip_height = chip->height();
     }
   }
 
-  return kHeightWithoutChips + num_rows * kHeightPerChipRow;
+  const int title_height_with_padding =
+      title_container_->height() + kTitleContainerInsets.height();
+  const int chips_height_with_padding =
+      GetChipsContainerHeightWithPaddings(chip_height, num_rows);
+  const int textfield_height_with_padding =
+      textfield_->height() + kTextfieldContainerInsets.height();
+
+  return gfx::Size(width, title_height_with_padding +
+                              chips_height_with_padding +
+                              textfield_height_with_padding);
 }
 
 bool EditorMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -159,6 +186,11 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
                                                bool visible) {
   CHECK(delegate_);
   delegate_->OnEditorMenuVisibilityChanged(visible);
+
+  if (visible && !queued_announcement_) {
+    GetViewAccessibility().AnnounceAlert(kCardShownAnnouncement);
+    queued_announcement_ = true;
+  }
 }
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
@@ -203,9 +235,9 @@ void EditorMenuView::AddTitleContainer() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   auto* title = title_container_->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(editor_menu_mode_ == EditorMenuMode::kWrite
-                                    ? IDS_EDITOR_MENU_WRITE_CARD_TITLE
-                                    : IDS_EDITOR_MENU_REWRITE_CARD_TITLE),
+      editor_menu_mode_ == EditorMenuMode::kWrite
+          ? GetEditorMenuWriteCardTitle()
+          : GetEditorMenuRewriteCardTitle(),
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
   title->SetEnabledColorId(ui::kColorSysOnSurface);
 
@@ -222,8 +254,7 @@ void EditorMenuView::AddTitleContainer() {
       title_container_->AddChildView(views::ImageButton::CreateIconButton(
           base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
                               weak_factory_.GetWeakPtr()),
-          vector_icons::kSettingsOutlineIcon,
-          l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
+          vector_icons::kSettingsOutlineIcon, GetEditorMenuSettingsTooltip()));
 
   title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
 }

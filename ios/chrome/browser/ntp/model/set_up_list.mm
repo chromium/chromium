@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
@@ -18,6 +19,8 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -29,6 +32,7 @@ namespace {
 
 bool GetIsItemComplete(SetUpListItemType type,
                        PrefService* prefs,
+                       PrefService* local_state,
                        AuthenticationService* auth_service) {
   switch (type) {
     case SetUpListItemType::kSignInSync:
@@ -36,26 +40,29 @@ bool GetIsItemComplete(SetUpListItemType type,
     case SetUpListItemType::kDefaultBrowser:
       return IsChromeLikelyDefaultBrowser();
     case SetUpListItemType::kAutofill:
-      return password_manager_util::IsCredentialProviderEnabledOnStartup(prefs);
-    case SetUpListItemType::kNotifications:
+      return password_manager_util::IsCredentialProviderEnabledOnStartup(
+          local_state);
+    case SetUpListItemType::kNotifications: {
+      id<SystemIdentity> identity =
+          auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       if (IsIOSTipsNotificationsEnabled()) {
-        return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-                   .FindBool(kContentNotificationKey)
-                   .value_or(false) ||
-               prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-                   .FindBool(kTipsNotificationKey)
-                   .value_or(false) ||
-               prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-                   .FindBool(kCommerceNotificationKey)
-                   .value_or(false);
+        return push_notification_settings::
+            IsMobileNotificationsEnabledForAnyClient(
+                base::SysNSStringToUTF8(identity.gaiaID), prefs);
       } else {
-        return prefs->GetDict(prefs::kFeaturePushNotificationPermissions)
-            .FindBool(kContentNotificationKey)
-            .value_or(false);
+        return push_notification_settings::
+                   GetMobileNotificationPermissionStatusForClient(
+                       PushNotificationClientId::kContent,
+                       base::SysNSStringToUTF8(identity.gaiaID)) ||
+               push_notification_settings::
+                   GetMobileNotificationPermissionStatusForClient(
+                       PushNotificationClientId::kSports,
+                       base::SysNSStringToUTF8(identity.gaiaID));
       }
+    }
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -69,10 +76,10 @@ SetUpListItem* BuildItem(SetUpListItemType type,
   switch (state) {
     case SetUpListItemState::kUnknown:
     case SetUpListItemState::kNotComplete:
-      complete = GetIsItemComplete(type, prefs, auth_service);
+      complete = GetIsItemComplete(type, prefs, local_state, auth_service);
       // If complete, mark it as "not in list" for next time, but add to list
       // this time.
-      new_state = complete ? SetUpListItemState::kCompleteNotInList
+      new_state = complete ? SetUpListItemState::kCompleteInList
                            : SetUpListItemState::kNotComplete;
       set_up_list_prefs::SetItemState(local_state, type, new_state);
       if (complete) {
@@ -80,9 +87,6 @@ SetUpListItem* BuildItem(SetUpListItemType type,
       }
       return [[SetUpListItem alloc] initWithType:type complete:complete];
     case SetUpListItemState::kCompleteInList:
-      // Display in list this time, but remove from list next time.
-      new_state = SetUpListItemState::kCompleteNotInList;
-      set_up_list_prefs::SetItemState(local_state, type, new_state);
       return [[SetUpListItem alloc] initWithType:type complete:YES];
     case SetUpListItemState::kCompleteNotInList:
       return nil;
@@ -109,6 +113,16 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
   }
 }
 
+// Returns `YES` if all items are complete.
+BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
+  for (SetUpListItem* item in items) {
+    if (!item.complete) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
 }  // namespace
 
 @interface SetUpList () <PrefObserverDelegate>
@@ -121,15 +135,25 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+  // YES if the Notification item should be included in `allItems`.
+  BOOL _shouldIncludeNotificationItem;
 }
 
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                     localState:(PrefService*)localState
                    syncService:(syncer::SyncService*)syncService
-         authenticationService:(AuthenticationService*)authService {
-  if (set_up_list_prefs::IsSetUpListDisabled(localState)) {
+         authenticationService:(AuthenticationService*)authService
+    contentNotificationEnabled:(BOOL)isContentNotificationEnabled {
+  if (IsHomeCustomizationEnabled() &&
+      !prefs->GetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
     return nil;
   }
+
+  if (!IsHomeCustomizationEnabled() &&
+      set_up_list_prefs::IsSetUpListDisabled(localState)) {
+    return nil;
+  }
+
   NSMutableArray<SetUpListItem*>* items =
       [[NSMutableArray<SetUpListItem*> alloc] init];
 
@@ -143,33 +167,39 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
     }
   };
 
-  if (!IsMagicStackEnabled()) {
-    AddSignInItem();
-  }
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kDefaultBrowser, prefs,
                                    localState, authService));
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kAutofill, prefs,
                                    localState, authService));
 
-  // Add content notification item if the feature is enabled and the user has
-  // signed in.
-  if (IsIOSTipsNotificationsEnabled() ||
-      (IsContentPushNotificationsSetUpListEnabled() &&
-       authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin))) {
+  // Add notification item if any of the feature is enabled.
+  if (IsIOSTipsNotificationsEnabled() || isContentNotificationEnabled) {
     AddItemIfNotNil(items, BuildItem(SetUpListItemType::kNotifications, prefs,
                                      localState, authService));
   }
+  AddSignInItem();
 
-  if (IsMagicStackEnabled()) {
-    AddSignInItem();
+  // Once all items are complete, set them to disappear from the list the next
+  // time so that the list will be empty and the "All Set" item will not show.
+  if (AllItemsComplete(items)) {
+    for (SetUpListItem* item in items) {
+      set_up_list_prefs::SetItemState(localState, item.type,
+                                      SetUpListItemState::kCompleteNotInList);
+    }
+    set_up_list_prefs::MarkAllItemsComplete(localState);
   }
 
-  // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
-  return [[self alloc] initWithItems:items localState:localState];
+  // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
+  return [[self alloc] initWithItems:items
+                          localState:localState
+               authenticationService:authService
+          contentNotificationEnabled:isContentNotificationEnabled];
 }
 
 - (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items
-                   localState:(PrefService*)localState {
+                    localState:(PrefService*)localState
+         authenticationService:(AuthenticationService*)authService
+    contentNotificationEnabled:(BOOL)isContentNotificationEnabled {
   self = [super init];
   if (self) {
     _items = items;
@@ -186,6 +216,8 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
         set_up_list_prefs::kFollowItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
+    _shouldIncludeNotificationItem =
+        IsIOSTipsNotificationsEnabled() || isContentNotificationEnabled;
   }
   return self;
 }
@@ -197,20 +229,17 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
 }
 
 - (BOOL)allItemsComplete {
-  for (SetUpListItem* item in _items) {
-    if (!item.complete) {
-      return NO;
-    }
-  }
-  return YES;
+  return AllItemsComplete(self.items);
 }
 
 - (NSArray<SetUpListItem*>*)allItems {
   NSMutableArray* itemTypes = [[NSMutableArray alloc]
       initWithObjects:@(int(SetUpListItemType::kSignInSync)),
                       @(int(SetUpListItemType::kDefaultBrowser)),
-                      @(int(SetUpListItemType::kAutofill)),
-                      @(int(SetUpListItemType::kNotifications)), nil];
+                      @(int(SetUpListItemType::kAutofill)), nil];
+  if (_shouldIncludeNotificationItem) {
+    [itemTypes addObject:@(int(SetUpListItemType::kNotifications))];
+  }
   for (SetUpListItem* item in _items) {
     [itemTypes removeObject:@(int(item.type))];
   }
@@ -237,8 +266,12 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
       set_up_list_prefs::GetItemState(_localState, item.type);
   if (state == SetUpListItemState::kCompleteInList) {
     [item markComplete];
+    BOOL allItemsComplete = [self allItemsComplete];
     [self.delegate setUpListItemDidComplete:item
-                          allItemsCompleted:[self allItemsComplete]];
+                          allItemsCompleted:allItemsComplete];
+    if (allItemsComplete) {
+      set_up_list_prefs::MarkAllItemsComplete(_localState);
+    }
   }
 }
 

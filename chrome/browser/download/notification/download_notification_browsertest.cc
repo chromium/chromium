@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <memory>
@@ -243,11 +248,11 @@ class SlowDownloadInterceptor {
         mojo::CreateDataPipe(data.size(), producer_handle, consumer_handle),
         MOJO_RESULT_OK);
 
-    uint32_t write_size = data.size();
-    MojoResult result = producer_handle->WriteData(data.c_str(), &write_size,
-                                                   MOJO_WRITE_DATA_FLAG_NONE);
+    size_t bytes_written = 0;
+    MojoResult result = producer_handle->WriteData(
+        base::as_byte_span(data), MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
     ASSERT_EQ(MOJO_RESULT_OK, result);
-    ASSERT_EQ(data.size(), write_size);
+    ASSERT_EQ(data.size(), bytes_written);
     ASSERT_TRUE(consumer_handle.is_valid());
     params->client->OnReceiveResponse(std::move(head),
                                       std::move(consumer_handle), std::nullopt);
@@ -752,7 +757,7 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
   else if (download1 == downloads[1])
     download2 = downloads[0];
   else
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   EXPECT_NE(download1, download2);
 
   notifications = GetDownloadNotifications();
@@ -890,7 +895,7 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
   EXPECT_EQ(download::DownloadItem::CANCELLED, downloads[0]->GetState());
 }
 
-// TODO(crbug.com/938672): Reenable this.
+// TODO(crbug.com/41445173): Reenable this.
 IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
                        DISABLED_IncognitoDownloadFile) {
   PrepareIncognitoBrowser();
@@ -934,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
   chrome::CloseWindow(incognito_browser());
 }
 
-// TODO(crbug.com/938672): Reenable this.
+// TODO(crbug.com/41445173): Reenable this.
 IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
                        DISABLED_SimultaneousIncognitoAndNormalDownloads) {
   PrepareIncognitoBrowser();
@@ -1016,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(DownloadNotificationTest,
 }
 
 // These tests have ash dependency so they are only available for ash.
-// TODO(crbug.com/1266950): Enable these tests for Lacros.
+// TODO(crbug.com/40204280): Enable these tests for Lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 //////////////////////////////////////////////////

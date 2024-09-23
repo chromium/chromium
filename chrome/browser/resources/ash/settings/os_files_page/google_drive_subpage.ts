@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/action_link.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/js/action_link.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -110,6 +110,15 @@ export class SettingsGoogleDriveSubpageElement extends
         type: Boolean,
         readonly: true,
         value: () => loadTimeData.getBoolean('enableDriveFsBulkPinning'),
+      },
+
+      /**
+       * Indicates whether the `DriveFsMirroring` flag is enabled.
+       */
+      isDriveFsMirrorSyncEnabled_: {
+        type: Boolean,
+        readonly: true,
+        value: () => loadTimeData.getBoolean('enableDriveFsMirrorSync'),
       },
     };
   }
@@ -600,6 +609,13 @@ export class SettingsGoogleDriveSubpageElement extends
    */
   private onCleanUpStorage_(): void {
     this.dialogType_ = ConfirmationDialogType.BULK_PINNING_CLEAN_UP_STORAGE;
+  }
+
+  /** Gets the mirror sync sub label. */
+  private getMirrorSyncDescription_(): string {
+    // TODO(b/338158838) Get size of MyFiles.
+    // TODO(b/338158838) Get available space on Google Drive.
+    return this.i18n('googleDriveMirrorSyncDescription');
   }
 }
 

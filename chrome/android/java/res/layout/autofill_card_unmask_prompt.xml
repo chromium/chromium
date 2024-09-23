@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(crbug.com/1356735): Use the AlertDialogContent style on the entire layout. -->
+<!-- TODO(crbug.com/40236415): Use the AlertDialogContent style on the entire layout. -->
 <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
@@ -106,7 +106,7 @@ found in the LICENSE file.
                         android:orientation="horizontal"
                         android:visibility="gone">
 
-                        <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+                        <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
                         <EditText
                             tools:ignore="Autofill"
                             android:id="@+id/expiration_month"
@@ -126,7 +126,7 @@ found in the LICENSE file.
                             android:layout_height="wrap_content"
                             android:text="@string/autofill_expiration_date_separator" />
 
-                        <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+                        <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
                         <EditText
                             tools:ignore="Autofill"
                             android:id="@+id/expiration_year"
@@ -141,7 +141,7 @@ found in the LICENSE file.
                             android:hint="@string/autofill_expiration_date_year_hint" />
                     </LinearLayout>
 
-                    <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
+                    <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
                     <EditText
                         tools:ignore="Autofill"
                         android:id="@+id/card_unmask_input"

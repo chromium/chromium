@@ -43,7 +43,7 @@ class PageAutoFetcherHelper {
   // Virtual for testing only.
   virtual bool Bind();
 
-  raw_ptr<content::RenderFrame, ExperimentalRenderer> render_frame_;
+  raw_ptr<content::RenderFrame> render_frame_;
   mojo::Remote<chrome::mojom::OfflinePageAutoFetcher> fetcher_;
 
   base::WeakPtrFactory<PageAutoFetcherHelper> weak_ptr_factory_{this};

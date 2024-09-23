@@ -30,10 +30,10 @@ namespace ash {
 
 namespace {
 
-constexpr char kLoginShelfButtonClassName[] = "LoginShelfButton";
-
 // The highlight radius of the button.
-constexpr int kButtonHighlightRadiusDp = 16;
+// The large pill buttons height is 36 and the radius should be half of that.
+constexpr int kButtonHighlightRadiusDp = 18;
+constexpr int kButtonHighlightWidthDp = 1;
 
 }  // namespace
 
@@ -52,9 +52,9 @@ LoginShelfButton::LoginShelfButton(PressedCallback callback,
   SetFocusPainter(nullptr);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      kButtonHighlightRadiusDp,
-      views::HighlightBorder::Type::kHighlightBorderNoShadow));
+  SetBorder(views::CreateThemedRoundedRectBorder(
+      kButtonHighlightWidthDp, kButtonHighlightRadiusDp,
+      ui::kColorCrosSystemHighlight));
 }
 
 LoginShelfButton::~LoginShelfButton() = default;
@@ -63,13 +63,9 @@ int LoginShelfButton::text_resource_id() const {
   return text_resource_id_;
 }
 
-const char* LoginShelfButton::GetClassName() const {
-  return kLoginShelfButtonClassName;
-}
-
 std::u16string LoginShelfButton::GetTooltipText(const gfx::Point& p) const {
   if (label()->IsDisplayTextTruncated()) {
-    return label()->GetText();
+    return GetText();
   }
   return std::u16string();
 }

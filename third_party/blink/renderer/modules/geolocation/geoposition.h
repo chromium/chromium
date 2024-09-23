@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOPOSITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOPOSITION_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
@@ -50,6 +51,7 @@ class Geoposition final : public ScriptWrappable {
 
   EpochTimeStamp timestamp() const { return timestamp_; }
   GeolocationCoordinates* coords() const { return coordinates_.Get(); }
+  ScriptValue toJSON(ScriptState* script_state) const;
 
  private:
   Member<GeolocationCoordinates> coordinates_;

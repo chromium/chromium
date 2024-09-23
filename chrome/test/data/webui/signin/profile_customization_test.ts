@@ -10,8 +10,8 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestProfileCustomizationBrowserProxy} from './test_profile_customization_browser_proxy.js';
 
@@ -55,6 +55,11 @@ suite('ProfileCustomizationTest', function() {
   // change the name.
   test('ClickDone', async function() {
     await initializeApp();
+    // Wait for the name input to update, and then wait a second time
+    // for the validation that is triggered before checking if the
+    // button is disabled.
+    await app.$.nameInput.updateComplete;
+    await app.$.nameInput.updateComplete;
     assertTrue(isChildVisible(app, '#doneButton'));
     const doneButton = app.$.doneButton;
     assertFalse(doneButton.disabled);
@@ -67,27 +72,37 @@ suite('ProfileCustomizationTest', function() {
   test('ChangeName', async function() {
     await initializeApp();
     const nameInput = app.$.nameInput;
+    await nameInput.updateComplete;
     // Check the default value for the input.
     assertEquals('TestName', nameInput.value);
     assertFalse(nameInput.invalid);
 
     // Invalid name (white space).
     nameInput.value = '   ';
+    // Wait for the name input to update, and then wait a second time
+    // for the validation that is triggered before checking if the
+    // button is disabled.
+    await nameInput.updateComplete;
     assertTrue(nameInput.invalid);
 
     // The button is disabled.
+    await nameInput.updateComplete;
     assertTrue(isChildVisible(app, '#doneButton'));
     const doneButton = app.$.doneButton;
     assertTrue(doneButton.disabled);
 
     // Empty name.
     nameInput.value = '';
+    await nameInput.updateComplete;
     assertTrue(nameInput.invalid);
+    await nameInput.updateComplete;
     assertTrue(doneButton.disabled);
 
     // Valid name.
     nameInput.value = 'Bob';
+    await nameInput.updateComplete;
     assertFalse(nameInput.invalid);
+    await nameInput.updateComplete;
 
     // Click done, and check that the new name is sent.
     assertTrue(isChildVisible(app, '#doneButton'));
@@ -100,7 +115,7 @@ suite('ProfileCustomizationTest', function() {
   test('ProfileInfo', async function() {
     await initializeApp();
     // Check initial info.
-    assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
+    assertNotEquals(null, app.$.title.innerText.match(STATIC_TITLE_PATTERN));
     checkImageUrl('#avatar', AVATAR_URL_1);
     assertFalse(isChildVisible(app, '#workBadge'));
     assertFalse(isChildVisible(app, '#customizeAvatarIcon'));
@@ -112,26 +127,16 @@ suite('ProfileCustomizationTest', function() {
       isManaged: true,
       welcomeTitle: '',
     });
-    assertTrue(app.$.title.innerText.match(STATIC_TITLE_PATTERN) != null);
+    await microtasksFinished();
+    assertNotEquals(null, app.$.title.innerText.match(STATIC_TITLE_PATTERN));
     checkImageUrl('#avatar', AVATAR_URL_2);
     assertTrue(isChildVisible(app, '#workBadge'));
     assertFalse(isChildVisible(app, '#customizeAvatarIcon'));
   });
 
-  test('ThemeSelector', async function() {
-    // cr-customize-themes should not be visible and cr-theme-color-picker
-    // should be visible when ChromeWebuiRefresh2023 is disabled.
-    document.documentElement.toggleAttribute('chrome-refresh-2023', true);
+  test('ThemeColorPicker', async function() {
     await initializeApp();
     assertTrue(!!app.shadowRoot!.querySelector('cr-theme-color-picker'));
-    assertFalse(!!app.shadowRoot!.querySelector('#themeSelector'));
-
-    // cr-customize-themes should be visible and cr-theme-color-picker should
-    // not be visible when ChromeWebuiRefresh2023 is disabled.
-    document.documentElement.toggleAttribute('chrome-refresh-2023', false);
-    await initializeApp();
-    assertFalse(!!app.shadowRoot!.querySelector('cr-theme-color-picker'));
-    assertTrue(!!app.shadowRoot!.querySelector('#themeSelector'));
   });
 
   // Checks that there is no Delete Profile button in the default Profile
@@ -160,7 +165,7 @@ suite(`LocalProfileCreationTest`, function() {
   const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_1';
   const WELCOME_TITLE = 'Welcome!';
 
-  setup(function() {
+  setup(async function() {
     loadTimeData.overrideValues({
       profileName: 'TestName',
       isLocalProfileCreation: true,
@@ -176,11 +181,12 @@ suite(`LocalProfileCreationTest`, function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('profile-customization-app');
     document.body.append(app);
-    return browserProxy.whenCalled('initialized');
+    await browserProxy.whenCalled('initialized');
+    return microtasksFinished();
   });
 
   test('LocalProfileCreationDialog', function() {
-    assertEquals(app.$.title.innerText, WELCOME_TITLE);
+    assertEquals(WELCOME_TITLE, app.$.title.innerText);
     assertFalse(isChildVisible(app, '#workBadge'));
     assertTrue(isChildVisible(app, '#customizeAvatarIcon'));
     assertTrue(isChildVisible(app, '#deleteProfileButton'));

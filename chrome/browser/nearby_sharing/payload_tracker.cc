@@ -107,7 +107,7 @@ void PayloadTracker::OnTransferUpdate() {
   const double percent = CalculateProgressPercent();
   if (IsComplete()) {
     const bool is_transfer_complete =
-        (GetTotalTransferred() >= total_transfer_size_) ? true : false;
+        GetTotalTransferred() >= total_transfer_size_;
     if (is_transfer_complete) {
       CD_LOG(VERBOSE, Feature::NS)
           << __func__ << ": All payloads are complete.";

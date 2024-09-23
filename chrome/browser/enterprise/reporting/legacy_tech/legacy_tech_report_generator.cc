@@ -8,10 +8,24 @@
 
 namespace enterprise_reporting {
 
+namespace {
+GURL SanitizeUrl(const GURL& url) {
+  if (!url.is_valid()) {
+    return GURL();
+  }
+
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearUsername();
+  replacements.ClearPassword();
+  replacements.ClearQuery();
+  return url.ReplaceComponents(replacements);
+}
+}  // namespace
+
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData() = default;
 LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
     const std::string& type,
-    const base::Time& timestamp,
     const GURL& url,
     const GURL& frame_url,
     const std::string& matched_url,
@@ -20,7 +34,6 @@ LegacyTechReportGenerator::LegacyTechData::LegacyTechData(
     uint64_t column,
     std::optional<content::LegacyTechCookieIssueDetails> cookie_issue_details)
     : type(type),
-      timestamp(timestamp),
       url(url),
       frame_url(frame_url),
       matched_url(matched_url),
@@ -48,11 +61,8 @@ std::unique_ptr<LegacyTechEvent> LegacyTechReportGenerator::Generate(
       static_cast<const LegacyTechData&>(data);
   std::unique_ptr<LegacyTechEvent> report = std::make_unique<LegacyTechEvent>();
   report->set_feature_id(legacy_tech_data.type);
-  // Blur timestamp for privacy.
-  report->set_event_timestamp_millis(
-      legacy_tech_data.timestamp.UTCMidnight().InMillisecondsSinceUnixEpoch());
-  report->set_url(legacy_tech_data.url.spec());
-  report->set_frame_url(legacy_tech_data.frame_url.spec());
+  report->set_url(SanitizeUrl(legacy_tech_data.url).spec());
+  report->set_frame_url(SanitizeUrl(legacy_tech_data.frame_url).spec());
   report->set_allowlisted_url_match(legacy_tech_data.matched_url);
   report->set_filename(legacy_tech_data.filename);
   report->set_column(legacy_tech_data.column);
@@ -65,7 +75,7 @@ std::unique_ptr<LegacyTechEvent> LegacyTechReportGenerator::Generate(
         report->mutable_cookie_issue_details();
 
     cookie_issue_report->set_transfer_or_script_url(
-        cookie_issue_data.transfer_or_script_url);
+        SanitizeUrl(cookie_issue_data.transfer_or_script_url).spec());
     cookie_issue_report->set_name(cookie_issue_data.name);
     cookie_issue_report->set_domain(cookie_issue_data.domain);
     cookie_issue_report->set_path(cookie_issue_data.path);

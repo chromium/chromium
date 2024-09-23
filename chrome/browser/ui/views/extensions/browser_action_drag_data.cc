@@ -55,15 +55,19 @@ void BrowserActionDragData::Write(
 }
 
 bool BrowserActionDragData::Read(const ui::OSExchangeData& data) {
-  if (!data.HasCustomFormat(GetBrowserActionFormatType()))
+  if (!data.HasCustomFormat(GetBrowserActionFormatType())) {
     return false;
+  }
 
-  base::Pickle drag_data_pickle;
-  if (!data.GetPickledData(GetBrowserActionFormatType(), &drag_data_pickle))
+  std::optional<base::Pickle> drag_data_pickle =
+      data.GetPickledData(GetBrowserActionFormatType());
+  if (!drag_data_pickle.has_value()) {
     return false;
+  }
 
-  if (!ReadFromPickle(&drag_data_pickle))
+  if (!ReadFromPickle(&drag_data_pickle.value())) {
     return false;
+  }
 
   return true;
 }

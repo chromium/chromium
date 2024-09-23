@@ -61,7 +61,6 @@ class CC_BASE_EXPORT TilingData {
   // Return the tile indices around the given rect.
   IndexRect TileAroundIndexRect(const gfx::Rect& center_rect) const;
 
-  gfx::Rect ExpandRectIgnoringBordersToTileBounds(const gfx::Rect& rect) const;
   gfx::Rect ExpandRectToTileBounds(const gfx::Rect& rect) const;
 
   gfx::Rect TileBounds(int i, int j) const;

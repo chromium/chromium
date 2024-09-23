@@ -63,7 +63,7 @@ class PepperAudioController {
 
   // The Pepper instance which this controller is for. Will be null after
   // OnPepperInstanceDeleted() is called.
-  raw_ptr<PepperPluginInstanceImpl, ExperimentalRenderer> instance_;
+  raw_ptr<PepperPluginInstanceImpl> instance_;
 };
 
 }  // namespace content

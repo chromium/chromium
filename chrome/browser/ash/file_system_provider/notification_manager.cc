@@ -89,9 +89,8 @@ void NotificationManager::ShowNotification() {
     icon_loader_->FetchImage(file_system_info_.provider_id().GetExtensionId());
 
   message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.buttons.push_back(
-      message_center::ButtonInfo(l10n_util::GetStringUTF16(
-          IDS_FILE_SYSTEM_PROVIDER_UNRESPONSIVE_ABORT_BUTTON)));
+  rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
+      IDS_FILE_SYSTEM_PROVIDER_UNRESPONSIVE_ABORT_BUTTON));
 
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,

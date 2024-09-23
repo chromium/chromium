@@ -5,12 +5,15 @@
 #include "chrome/browser/password_manager/android/add_username_dialog/add_username_dialog_bridge.h"
 
 #include <jni.h>
+
 #include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/password_manager/android/add_username_dialog/jni_headers/AddUsernameDialogBridge_jni.h"
 #include "ui/gfx/native_widget_types.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/password_manager/android/add_username_dialog/jni_headers/AddUsernameDialogBridge_jni.h"
 
 namespace {
 
@@ -66,7 +69,7 @@ AddUsernameDialogBridge::~AddUsernameDialogBridge() {
 }
 
 AddUsernameDialogBridge::AddUsernameDialogBridge(
-    base::PassKey<class GeneratedPasswordSavedMessageDelegateTestBase>,
+    base::PassKey<class GeneratedPasswordSavedMessageDelegateTest>,
     std::unique_ptr<JniDelegate> jni_delegate)
     : jni_delegate_(std::move(jni_delegate)) {}
 

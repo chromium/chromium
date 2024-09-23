@@ -15,6 +15,8 @@ import java.lang.annotation.RetentionPolicy;
     DialogDismissalCause.NEGATIVE_BUTTON_CLICKED,
     DialogDismissalCause.ACTION_ON_CONTENT,
     DialogDismissalCause.DISMISSED_BY_NATIVE,
+    DialogDismissalCause.NAVIGATE_BACK,
+    DialogDismissalCause.TOUCH_OUTSIDE,
     DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE,
     DialogDismissalCause.TAB_SWITCHED,
     DialogDismissalCause.TAB_DESTROYED,
@@ -47,49 +49,57 @@ public @interface DialogDismissalCause {
     /** Controlled by client: Dialog is dismissed by native c++ objects. */
     int DISMISSED_BY_NATIVE = 4;
 
-    /** User clicks the navigate back button or touches the scrim outside the dialog. */
-    int NAVIGATE_BACK_OR_TOUCH_OUTSIDE = 5;
+    /** User clicks the navigate back button. Tab Modal dialog only. */
+    int NAVIGATE_BACK = 5;
+
+    /** User touches the scrim outside the dialog. Tab Modal dialog only. */
+    int TOUCH_OUTSIDE = 6;
+
+    /**
+     * User either clicks the navigate back button or touches the scrim outside the dialog. App
+     * Modal dialog only.
+     */
+    int NAVIGATE_BACK_OR_TOUCH_OUTSIDE = 7;
 
     /** User switches away the tab associated with the dialog. */
-    int TAB_SWITCHED = 6;
+    int TAB_SWITCHED = 8;
 
     /** The Tab associated with the dialog is destroyed. */
-    int TAB_DESTROYED = 7;
+    int TAB_DESTROYED = 9;
 
     /** The activity associated with the dialog is destroyed. */
-    int ACTIVITY_DESTROYED = 8;
+    int ACTIVITY_DESTROYED = 10;
 
     /** The content view of the activity associated with the dialog is not attached to window. */
-    int NOT_ATTACHED_TO_WINDOW = 9;
+    int NOT_ATTACHED_TO_WINDOW = 11;
 
     /** User has navigated, e.g. by typing a URL in the location bar. */
-    int NAVIGATE = 10;
+    int NAVIGATE = 12;
 
     /** Controlled by client: The web contents associated with the dialog is destroyed. */
-    int WEB_CONTENTS_DESTROYED = 11;
+    int WEB_CONTENTS_DESTROYED = 13;
 
     /**
-     * Controlled by client: The dialog interaction is deferred due to user engaging with other
-     * UI surfaces outside of dialog or they clicked on a content of the dialog that allows
-     * to defer.
+     * Controlled by client: The dialog interaction is deferred due to user engaging with other UI
+     * surfaces outside of dialog or they clicked on a content of the dialog that allows to defer.
      *
-     * Note that deferred would indicate that the dialog would be shown again later on
-     * unless the user has completed the interaction successfully.
+     * <p>Note that deferred would indicate that the dialog would be shown again later on unless the
+     * user has completed the interaction successfully.
      */
-    int DIALOG_INTERACTION_DEFERRED = 12;
+    int DIALOG_INTERACTION_DEFERRED = 14;
 
     /**
-     * Controlled by client: Action taken on the dialog content that the client
-     * validates and triggers dismissal, if satisfied.
+     * Controlled by client: Action taken on the dialog content that the client validates and
+     * triggers dismissal, if satisfied.
      */
-    int ACTION_ON_DIALOG_COMPLETED = 13;
+    int ACTION_ON_DIALOG_COMPLETED = 15;
 
     /**
      * Controlled by client: The dialog was dismissed because it's not possible for client to
      * validate after the action was taken on the dialog content.
      */
-    int ACTION_ON_DIALOG_NOT_POSSIBLE = 14;
+    int ACTION_ON_DIALOG_NOT_POSSIBLE = 16;
 
     /** Controlled by client: The dialog was automatically dismissed after a timeout. */
-    int CLIENT_TIMEOUT = 15;
+    int CLIENT_TIMEOUT = 17;
 }

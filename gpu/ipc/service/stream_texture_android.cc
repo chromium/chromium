@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/feature_info.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
@@ -101,9 +100,11 @@ StreamTexture::StreamTexture(
     mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver,
     scoped_refptr<SharedContextState> context_state)
     : RefCountedLockHelperDrDc(CreateDrDcLockIfNeeded()),
-      texture_owner_(TextureOwner::Create(GetTextureOwnerMode(),
-                                          context_state,
-                                          GetDrDcLock())),
+      texture_owner_(
+          TextureOwner::Create(GetTextureOwnerMode(),
+                               context_state,
+                               GetDrDcLock(),
+                               TextureOwnerCodecType::kStreamTexture)),
       has_pending_frame_(false),
       channel_(channel),
       route_id_(route_id),
@@ -154,7 +155,7 @@ void StreamTexture::NotifyOverlayPromotion(bool promotion,
                                            const gfx::Rect& bounds) {}
 
 bool StreamTexture::RenderToOverlay() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -193,11 +194,14 @@ void StreamTexture::OnFrameAvailable() {
 
     auto mailbox = CreateSharedImage(coded_size);
     viz::VulkanContextProvider* vulkan_context_provider = nullptr;
+    DawnContextProvider* dawn_context_provider = nullptr;
     if (context_state_->GrContextIsVulkan()) {
       vulkan_context_provider = context_state_->vk_context_provider();
+    } else if (context_state_->IsGraphiteDawnVulkan()) {
+      dawn_context_provider = context_state_->dawn_context_provider();
     }
     auto ycbcr_info = AndroidVideoImageBacking::GetYcbcrInfo(
-        texture_owner_.get(), vulkan_context_provider);
+        texture_owner_.get(), vulkan_context_provider, dawn_context_provider);
 
     client_->OnFrameWithInfoAvailable(mailbox, coded_size, visible_rect,
                                       ycbcr_info);
@@ -230,14 +234,14 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
   // need to ensure that it gets updated here.
 
   auto scoped_make_current = MakeCurrent(context_state_.get());
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+  auto mailbox = gpu::Mailbox::Generate();
 
   // TODO(vikassoni): Hardcoding colorspace to SRGB. Figure how if we have a
   // colorspace and wire it here.
   auto shared_image = AndroidVideoImageBacking::Create(
       mailbox, coded_size, gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, this, context_state_,
-      GetDrDcLock());
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      /*debug_label=*/"StreamTexture", this, context_state_, GetDrDcLock());
   channel_->shared_image_stub()->factory()->RegisterBacking(
       std::move(shared_image));
 

@@ -226,8 +226,8 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
   raw_ptr<base::RunLoop> pending_loop_;
 };
 
-// TODO(crbug.com/936065): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/41443722): Flaky on ChromeOS and macOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
@@ -250,7 +250,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_Basic) {
   loop.Run();
 }
 
-// TODO(crbug.com/1183482): Flaky on mac.
+// TODO(crbug.com/40171219): Flaky on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_AddAndRemoveTwoWatches DISABLED_AddAndRemoveTwoWatches
 #else
@@ -301,7 +301,7 @@ TEST_F(GalleryWatchManagerTest, MAYBE_AddAndRemoveTwoWatches) {
   EXPECT_TRUE(manager()->GetWatchSet(profile(), extension()->id()).empty());
 }
 
-// TODO(crbug.com/1182867): Flaky on mac.
+// TODO(crbug.com/40751695): Flaky on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_RemoveAllWatches DISABLED_RemoveAllWatches
 #else
@@ -372,7 +372,7 @@ TEST_F(GalleryWatchManagerTest, DropWatchOnGalleryPermissionRevoked) {
   success_loop.Run();
 }
 
-// TODO(crbug.com/1183212): flaky on mac.
+// TODO(crbug.com/40751910): flaky on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_DropWatchOnStorageRemoved DISABLED_DropWatchOnStorageRemoved
 #else
@@ -400,7 +400,8 @@ TEST_F(GalleryWatchManagerTest, MAYBE_DropWatchOnStorageRemoved) {
   success_loop.Run();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+// Test is flaky. https://crbug.com/40752685
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_TestWatchOperation DISABLED_TestWatchOperation
 #else
 #define MAYBE_TestWatchOperation TestWatchOperation

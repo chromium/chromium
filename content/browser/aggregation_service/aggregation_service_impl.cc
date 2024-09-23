@@ -124,16 +124,21 @@ void AggregationServiceImpl::AssembleReport(
   assembler_->AssembleReport(std::move(report_request), std::move(callback));
 }
 
-void AggregationServiceImpl::SendReport(const GURL& url,
-                                        const AggregatableReport& report,
-                                        SendCallback callback) {
-  SendReport(url, base::Value(report.GetAsJson()), std::move(callback));
+void AggregationServiceImpl::SendReport(
+    const GURL& url,
+    const AggregatableReport& report,
+    std::optional<AggregatableReportRequest::DelayType> delay_type,
+    SendCallback callback) {
+  SendReport(url, base::Value(report.GetAsJson()), delay_type,
+             std::move(callback));
 }
 
-void AggregationServiceImpl::SendReport(const GURL& url,
-                                        const base::Value& contents,
-                                        SendCallback callback) {
-  sender_->SendReport(url, contents, std::move(callback));
+void AggregationServiceImpl::SendReport(
+    const GURL& url,
+    const base::Value& contents,
+    std::optional<AggregatableReportRequest::DelayType> delay_type,
+    SendCallback callback) {
+  sender_->SendReport(url, contents, delay_type, std::move(callback));
 }
 
 const base::SequenceBound<AggregationServiceStorage>&
@@ -162,7 +167,7 @@ void AggregationServiceImpl::ClearData(
 }
 
 void AggregationServiceImpl::OnUserVisibleTaskComplete() {
-  DCHECK_GT(num_pending_user_visible_tasks_, 0);
+  CHECK_GT(num_pending_user_visible_tasks_, 0);
   --num_pending_user_visible_tasks_;
 
   // No more user visible tasks, so we can reset the priority.
@@ -217,8 +222,8 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
     AggregatableReportRequest report_request,
     std::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
-  DCHECK_EQ(report.has_value(),
-            status == AggregatableReportAssembler::AssemblyStatus::kOk);
+  CHECK_EQ(report.has_value(),
+           status == AggregatableReportAssembler::AssemblyStatus::kOk);
   base::UmaHistogramLongTimes100(
       request_id.has_value()
           ? "PrivacySandbox.AggregationService.ScheduledRequests.AssemblyTime"
@@ -245,11 +250,12 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
     return;
   }
 
-  // TODO(crbug.com/1354220): Consider checking with the browser client if
+  // TODO(crbug.com/40235503): Consider checking with the browser client if
   // reporting is allowed before sending. We don't currently have the top-frame
   // origin to perform this check.
   base::Value value(report->GetAsJson());
-  SendReport(reporting_url, value,
+  auto delay_type = report_request.delay_type();
+  SendReport(reporting_url, value, delay_type,
              /*callback=*/
              base::BindOnce(
                  &AggregationServiceImpl::OnReportSendingComplete,

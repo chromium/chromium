@@ -47,10 +47,6 @@ void LogMessageOutcome(TailoredSecurityOutcome outcome, bool is_in_flow) {
   }
 }
 
-const int kAvatarSize = 256;
-const int kAvatarWithBorderSize = 300;
-const int kBadgeSize = 100;
-
 class CircleImageSource : public gfx::CanvasImageSource {
  public:
   CircleImageSource(int size, SkColor color)
@@ -104,63 +100,15 @@ TailoredSecurityUnconsentedMessageAndroid::
   message_->SetTitle(l10n_util::GetStringUTF16(message_title));
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(primary_button));
   if (!is_in_flow_) {
-    if (base::FeatureList::IsEnabled(
-            safe_browsing::kTailoredSecurityUpdatedMessages)) {
-      message_->SetDescription(l10n_util::GetStringUTF16(
-          IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION_UPDATED));
-    } else {
-      message_->SetDescription(l10n_util::GetStringUTF16(
-          IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION));
-    }
+    message_->SetDescription(l10n_util::GetStringUTF16(
+        IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION));
   }
 
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityUpdatedMessages)) {
-    message_->SetIconResourceId(
-        ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD_BLUE));
-    // Need to disable tint here because it removes a shade of blue from the
-    // shield which distorts the image.
-    message_->DisableIconTint();
-  } else {
-    if (is_in_flow_) {
-      signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-      if (identity_manager &&
-          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-        gfx::ImageSkia avatar_image =
-            identity_manager
-                ->FindExtendedAccountInfoByAccountId(
-                    identity_manager->GetPrimaryAccountId(
-                        signin::ConsentLevel::kSignin))
-                .account_image.AsImageSkia();
-
-        gfx::ImageSkia sized_avatar_image =
-            gfx::ImageSkiaOperations::CreateResizedImage(
-                avatar_image, skia::ImageOperations::RESIZE_BEST,
-                gfx::Size(kAvatarSize, kAvatarSize));
-        gfx::ImageSkia cropped_avatar_image =
-            gfx::ImageSkiaOperations::CreateMaskedImage(
-                sized_avatar_image,
-                gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
-                    sized_avatar_image.width(), SK_ColorWHITE));
-        gfx::ImageSkia final_avatar_image =
-            gfx::ImageSkiaOperations::CreateSuperimposedImage(
-                gfx::CanvasImageSource::MakeImageSkia<CircleImageSource>(
-                    kAvatarWithBorderSize, gfx::kGoogleBlue400),
-                cropped_avatar_image);
-        gfx::ImageSkia badge = gfx::CreateVectorIcon(
-            kSafetyCheckIcon, kBadgeSize, gfx::kGoogleBlue500);
-        icon_ = gfx::ImageSkiaOperations::CreateIconWithBadge(
-            final_avatar_image, badge);
-        message_->SetIcon(*icon_.bitmap());
-        message_->DisableIconTint();
-      }
-    } else {
-      message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
-          IDR_ANDROID_MESSAGE_SAFETY_CHECK));
-    }
-  }
+  message_->SetIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SHIELD_BLUE));
+  // Need to disable tint here because it removes a shade of blue from the
+  // shield which distorts the image.
+  message_->DisableIconTint();
 
   LogMessageOutcome(TailoredSecurityOutcome::kShown, is_in_flow_);
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(

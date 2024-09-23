@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
 #include "base/time/time.h"
@@ -12,7 +17,6 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -23,7 +27,7 @@ class CachedMetadataSenderImpl : public CachedMetadataSender {
                            mojom::blink::CodeCacheType);
   ~CachedMetadataSenderImpl() override = default;
 
-  void Send(CodeCacheHost*, const uint8_t*, size_t) override;
+  void Send(CodeCacheHost*, base::span<const uint8_t>) override;
   bool IsServedFromCacheStorage() override { return false; }
 
  private:
@@ -47,15 +51,14 @@ CachedMetadataSenderImpl::CachedMetadataSenderImpl(
 }
 
 void CachedMetadataSenderImpl::Send(CodeCacheHost* code_cache_host,
-                                    const uint8_t* data,
-                                    size_t size) {
+                                    base::span<const uint8_t> data) {
   if (!code_cache_host)
     return;
   // TODO(crbug.com/862940): This should use the Blink variant of the
   // interface.
   code_cache_host->get()->DidGenerateCacheableMetadata(
       code_cache_type_, response_url_, response_time_,
-      mojo_base::BigBuffer(base::make_span(data, size)));
+      mojo_base::BigBuffer(data));
 }
 
 // This is a CachedMetadataSender implementation that does nothing.
@@ -64,7 +67,7 @@ class NullCachedMetadataSender : public CachedMetadataSender {
   NullCachedMetadataSender() = default;
   ~NullCachedMetadataSender() override = default;
 
-  void Send(CodeCacheHost*, const uint8_t*, size_t) override {}
+  void Send(CodeCacheHost*, base::span<const uint8_t>) override {}
   bool IsServedFromCacheStorage() override { return false; }
 };
 
@@ -76,7 +79,7 @@ class ServiceWorkerCachedMetadataSender : public CachedMetadataSender {
                                     scoped_refptr<const SecurityOrigin>);
   ~ServiceWorkerCachedMetadataSender() override = default;
 
-  void Send(CodeCacheHost*, const uint8_t*, size_t) override;
+  void Send(CodeCacheHost*, base::span<const uint8_t>) override;
   bool IsServedFromCacheStorage() override { return true; }
 
  private:
@@ -97,13 +100,11 @@ ServiceWorkerCachedMetadataSender::ServiceWorkerCachedMetadataSender(
 }
 
 void ServiceWorkerCachedMetadataSender::Send(CodeCacheHost* code_cache_host,
-                                             const uint8_t* data,
-                                             size_t size) {
+                                             base::span<const uint8_t> data) {
   if (!code_cache_host)
     return;
   code_cache_host->get()->DidGenerateCacheableMetadataInCacheStorage(
-      response_url_, response_time_,
-      mojo_base::BigBuffer(base::make_span(data, size)),
+      response_url_, response_time_, mojo_base::BigBuffer(data),
       cache_storage_cache_name_);
 }
 

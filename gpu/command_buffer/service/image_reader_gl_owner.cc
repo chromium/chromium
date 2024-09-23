@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -46,10 +47,10 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
     case TextureOwner::Mode::kAImageReaderInsecure:
       return false;
     case TextureOwner::Mode::kSurfaceTextureInsecure:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return false;
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return false;
 }
 
@@ -77,12 +78,12 @@ uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
   return features::LimitAImageReaderMaxSizeToOne() ? 1 : 2;
 }
 
-absl::optional<gfx::Size> GetImageSize(AImage* image) {
+std::optional<gfx::Size> GetImageSize(AImage* image) {
   int32_t width = 0, height = 0;
   if (AImage_getWidth(image, &width) != AMEDIA_OK ||
       AImage_getHeight(image, &height) != AMEDIA_OK || width <= 0 ||
       height <= 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return gfx::Size(width, height);
@@ -102,8 +103,7 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
                            base::ScopedFD fence_fd)
       : base::android::ScopedHardwareBufferFenceSync(std::move(handle),
                                                      std::move(fence_fd),
-                                                     base::ScopedFD(),
-                                                     true /* is_video */),
+                                                     base::ScopedFD()),
         texture_owner_(std::move(texture_owner)),
         image_(image) {
     DCHECK(image_);
@@ -132,13 +132,15 @@ ImageReaderGLOwner::ImageReaderGLOwner(
     std::unique_ptr<AbstractTextureAndroid> texture,
     Mode mode,
     scoped_refptr<SharedContextState> context_state,
-    scoped_refptr<RefCountedLock> drdc_lock)
+    scoped_refptr<RefCountedLock> drdc_lock,
+    TextureOwnerCodecType type_for_metrics)
     : TextureOwner(false /* binds_texture_on_image_update */,
                    std::move(texture),
                    std::move(context_state)),
       RefCountedLockHelperDrDc(std::move(drdc_lock)),
       context_(gl::GLContext::GetCurrent()),
-      surface_(gl::GLSurface::GetCurrent()) {
+      surface_(gl::GLSurface::GetCurrent()),
+      type_for_metrics_(type_for_metrics) {
   DCHECK(context_);
   DCHECK(surface_);
 
@@ -301,6 +303,9 @@ void ImageReaderGLOwner::UpdateTexImage() {
   base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
                            return_code);
 
+  UMA_HISTOGRAM_ENUMERATION("Media.AImageReaderGLOwner.CodecType",
+                            type_for_metrics_);
+
   // TODO(http://crbug.com/846050).
   // Need to add some better error handling if below error occurs. Currently we
   // just return if error occurs.
@@ -324,7 +329,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
     default:
       LOG(ERROR) << "AImageReader: Unknown error: " << return_code;
       // No other error code should be returned.
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
       return;
   }
   base::ScopedFD scoped_acquire_fence_fd(acquire_fence_fd);
@@ -356,8 +361,8 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
     return nullptr;
   }
 
-  // TODO(1179206): We suspect that buffer is already freed here and it causes
-  // crash later. Trying to crash earlier.
+  // TODO(crbug.com/40749597): We suspect that buffer is already freed here and
+  // it causes crash later. Trying to crash earlier.
   base::AndroidHardwareBufferCompat::GetInstance().Acquire(buffer);
   base::AndroidHardwareBufferCompat::GetInstance().Release(buffer);
 
@@ -431,7 +436,7 @@ void ImageReaderGLOwner::ReleaseRefOnImageLocked(AImage* image,
   AssertAcquiredDrDcLock();
 
   auto it = image_refs_.find(image);
-  DCHECK(it != image_refs_.end());
+  CHECK(it != image_refs_.end(), base::NotFatalUntil::M130);
 
   auto& image_ref = it->second;
   DCHECK_GT(image_ref.count, 0u);

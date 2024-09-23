@@ -11,11 +11,13 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "net/base/hex_utils.h"
+#include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace spdy::test {
 
+using quiche::HttpHeaderBlock;
 using std::map;
 
 TEST(HpackFuzzUtilTest, GeneratorContextInitialization) {
@@ -30,7 +32,7 @@ TEST(HpackFuzzUtilTest, GeneratorContextInitialization) {
 TEST(HpackFuzzUtil, GeneratorContextExpansion) {
   HpackFuzzUtil::GeneratorContext context;
 
-  Http2HeaderBlock headers = HpackFuzzUtil::NextGeneratedHeaderSet(&context);
+  HttpHeaderBlock headers = HpackFuzzUtil::NextGeneratedHeaderSet(&context);
 
   // Headers were generated, and the generator context was expanded.
   EXPECT_LT(0u, headers.size());
@@ -106,7 +108,7 @@ TEST(HpackFuzzUtilTest, PassValidInputThroughAllStages) {
   EXPECT_TRUE(
       HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(&context, input));
 
-  Http2HeaderBlock expect;
+  HttpHeaderBlock expect;
   expect[":method"] = "GET";
   expect[":scheme"] = "http";
   expect[":path"] = "/";

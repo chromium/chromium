@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/power_metrics/energy_metrics_provider_win.h"
 
+#include <initguid.h>
 #include <windows.h>
+
 #include <devioctl.h>
-
-#include <initguid.h>  // This has to be before emi.h
-
 #include <emi.h>
 #include <setupapi.h>
 
@@ -65,11 +69,11 @@ std::unique_ptr<EnergyMetricsProviderWin> EnergyMetricsProviderWin::Create() {
   return base::WrapUnique(new EnergyMetricsProviderWin());
 }
 
-absl::optional<EnergyMetricsProvider::EnergyMetrics>
+std::optional<EnergyMetricsProvider::EnergyMetrics>
 EnergyMetricsProviderWin::CaptureMetrics() {
   if (!Initialize()) {
     handle_.Close();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -85,7 +89,7 @@ EnergyMetricsProviderWin::CaptureMetrics() {
                        measurement_data.data(), measurement_data_size_bytes,
                        &bytes_returned, nullptr)) {
     PLOG(ERROR) << "IOCTL_EMI_GET_MEASUREMENT failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
   CHECK_EQ(bytes_returned, measurement_data_size_bytes);
 
@@ -126,7 +130,7 @@ bool EnergyMetricsProviderWin::Initialize() {
 
   // Pick the first device interface in the returned device information set.
   //
-  // TODO(crbug.com/1385251): Determine if the first device interface is always
+  // TODO(crbug.com/40879127): Determine if the first device interface is always
   // the desired one.
   SP_DEVICE_INTERFACE_DATA dev_data = {0};
   dev_data.cbSize = sizeof(dev_data);

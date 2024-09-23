@@ -60,6 +60,7 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
     visitor->Trace(start_keyframe_);
     visitor->Trace(end_keyframe_);
     visitor->Trace(cached_pair_conversion_);
+    visitor->Trace(conversion_checkers_);
     visitor->Trace(cached_value_);
     Interpolation::Trace(visitor);
   }

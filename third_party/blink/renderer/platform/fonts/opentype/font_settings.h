@@ -94,10 +94,10 @@ class FontSettings {
     return false;
   }
 
-  const T* begin() const { return list_.begin(); }
-  const T* end() const { return list_.end(); }
-  T* begin() { return list_.begin(); }
-  T* end() { return list_.end(); }
+  Vector<T, 0>::const_iterator begin() const { return list_.begin(); }
+  Vector<T, 0>::const_iterator end() const { return list_.end(); }
+  Vector<T, 0>::iterator begin() { return list_.begin(); }
+  Vector<T, 0>::iterator end() { return list_.end(); }
 
  protected:
   FontSettings() = default;

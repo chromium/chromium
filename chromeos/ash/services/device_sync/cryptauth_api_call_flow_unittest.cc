@@ -148,10 +148,8 @@ class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
 
     EXPECT_EQ(serialized_request, network::GetUploadData(request));
 
-    std::string content_type;
-    EXPECT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                          &content_type));
-    EXPECT_EQ("application/x-protobuf", content_type);
+    EXPECT_EQ("application/x-protobuf",
+              request.headers.GetHeader(net::HttpRequestHeaders::kContentType));
   }
 
   void CheckCryptAuthHttpGetRequest(

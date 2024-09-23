@@ -42,9 +42,9 @@ void AutomationClientImpl::BindAutomationClient(
 
 void AutomationClientImpl::DispatchAccessibilityEvents(
     const ui::AXTreeID& tree_id,
-    std::vector<ui::AXTreeUpdate> updates,
+    const std::vector<ui::AXTreeUpdate>& updates,
     const gfx::Point& mouse_location,
-    std::vector<ui::AXEvent> events) {
+    const std::vector<ui::AXEvent>& events) {
   DCHECK(tree_id != ui::AXTreeIDUnknown());
   if (tree_id == ui::AXTreeIDUnknown())
     return;
@@ -55,7 +55,7 @@ void AutomationClientImpl::DispatchAccessibilityEvents(
 }
 
 void AutomationClientImpl::DispatchAccessibilityLocationChange(
-    const content::AXLocationChangeNotificationDetails& details) {
+    const ui::AXLocationChanges& details) {
   ui::AXTreeID tree_id = details.ax_tree_id;
   if (tree_id == ui::AXTreeIDUnknown())
     return;
@@ -103,7 +103,7 @@ void AutomationClientImpl::Disable() {
   AutomationManagerAura::GetInstance()->Disable();
 }
 
-void AutomationClientImpl::EnableTree(const ui::AXTreeID& tree_id) {
+void AutomationClientImpl::EnableChildTree(const ui::AXTreeID& tree_id) {
   // TODO(crbug.com/1355633): Refactor logic from extensions namespace to a
   // common location.
   extensions::AutomationInternalEnableTreeFunction::EnableTree(

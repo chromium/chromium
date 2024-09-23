@@ -1,4 +1,4 @@
-android.webkit.WebView focusable focused scrollable
+android.webkit.WebView focusable focused
 ++android.view.View role_description='article' name='This is an ARIA article 1.'
 ++android.view.View role_description='article' name='This is an ARIA article 2.'
 ++android.widget.ListView role_description='list box' clickable collection item_count=2 row_count=2 column_count=1
@@ -33,7 +33,7 @@ android.webkit.WebView focusable focused scrollable
 ++++android.view.View focusable name='content' item_index=1 row_index=1
 ++++++android.view.View collection_item name='content' row_span=1 column_span=1
 ++android.widget.GridView role_description='table' collection row_count=1 column_count=1
-++++android.view.View
+++++android.view.View name='content'
 ++++++android.view.View collection_item name='content' row_span=1 column_span=1
 ++android.widget.GridView role_description='table' collection row_count=1 column_count=1
 ++++android.view.View

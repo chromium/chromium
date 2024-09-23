@@ -120,9 +120,6 @@ class MediaRouterIntegrationBrowserTest
 
   bool IsRouteCreatedOnUI();
 
-  // Returns true if there is an issue showing in the UI.
-  bool IsUIShowingIssue();
-
   // Returns the route ID for the specific sink.
   std::string GetRouteId(const std::string& sink_id);
 

@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.devui.util;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import androidx.test.filters.SmallTest;
 
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for UploadedCrashesInfoLoader. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS) // These are unit tests
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class UploadedCrashesInfoLoaderTest {
     private static final String TEST_UPLOAD_TIME_SEC_STR = "1234567890";

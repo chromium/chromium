@@ -104,10 +104,11 @@ interface ESimManager {
   GetAvailableEuiccs() => (array<pending_remote<Euicc>> euiccs);
 };
 
-// Euicc interface represents an EUICC (Embedded Universal Integrated
-// Circuit Card) hardware available on the device and provides operations
-// on the EUICC. Each Euicc may have multiple ESimProfiles installed/pending
-// under it.
+// Euicc interface represents an EUICC (Embedded Universal Integrated Circuit
+// Card) hardware available on the device and provides operations on the EUICC.
+// Each Euicc may have multiple ESimProfiles installed/pending under it.
+// Instances of this interface are owned in the browser process in Ash. They
+// will be accessed from WebUI or System UI code in the browser process.
 interface Euicc {
   // Returns properties struct for this Euicc.
   GetProperties() => (EuiccProperties properties);
@@ -123,14 +124,9 @@ interface Euicc {
   RequestAvailableProfiles() =>
     (ESimOperationResult result, array<ESimProfileProperties> profiles);
 
-  // TODO(b/281904820): This API is deprecated as part of the SM-DS Support
-  // project and should be removed in favor of RequestAvailableProfiles().
-  // Starts a request for pending profiles for this Euicc from SMDS.
-  // Returns a status indicating result of the operation. This
-  // method updates the pending profiles list before succeeding. This method
-  // is used to allow the user to explicit trigger a request to check for
-  // new profiles that may have been pushed to SMDS.
-  RequestPendingProfiles() => (ESimOperationResult result);
+  // Refreshes the list of profiles installed on this EUICC. This operation
+  // will also update the cache of profiles that Chrome uses for the UI.
+  RefreshInstalledProfiles() => (ESimOperationResult result);
 
   // Installs a profile with given |activation_code| and |confirmation_code|
   // on this Euicc. Returns the  result code and ESimProfile that was just

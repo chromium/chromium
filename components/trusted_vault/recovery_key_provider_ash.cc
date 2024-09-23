@@ -40,6 +40,9 @@ RecoveryKeyProviderAsh::RecoveryKeyProviderAsh(
       account_id_(std::move(account_id)),
       device_id_(std::move(device_id)) {
   CHECK(user_data_auth_client_task_runner_);
+  // The instance is created on the main thread, but lives on the
+  // `StandadloneTrustedVaultBackend` utility thread.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 RecoveryKeyProviderAsh::~RecoveryKeyProviderAsh() = default;
@@ -128,23 +131,65 @@ void RecoveryKeyProviderAsh::OnGetRecoverableKeyStoresReply(
     return;
   }
 
-  trusted_vault_pb::UpdateVaultRequest update_vault_request;
-  trusted_vault_pb::Vault* vault = update_vault_request.mutable_vault();
-  vault->mutable_vault_parameters()->set_backend_public_key(
+  trusted_vault_pb::Vault vault;
+  vault.mutable_vault_parameters()->set_backend_public_key(
       chosen_key_store->key_store_parameters().backend_public_key());
-  vault->mutable_vault_parameters()->set_counter_id(
+  vault.mutable_vault_parameters()->set_counter_id(
       chosen_key_store->key_store_parameters().counter_id());
-  vault->mutable_vault_parameters()->set_max_attempts(
+  vault.mutable_vault_parameters()->set_max_attempts(
       chosen_key_store->key_store_parameters().max_attempts());
-  vault->mutable_vault_parameters()->set_vault_handle(
+  vault.mutable_vault_parameters()->set_vault_handle(
       chosen_key_store->key_store_parameters().key_store_handle());
-  chosen_key_store->key_store_parameters().SerializeToString(
-      vault->mutable_vault_metadata());
-  vault->set_recovery_key(chosen_key_store->wrapped_recovery_key());
+
+  // The RecoverableKeyStoreMetadata and VaultMetadata protos are not
+  // binary-compatible so we need to translate field by field before we can
+  // serialize it into the `vault_metadata` proto string field.
+  trusted_vault_pb::VaultMetadata vault_metadata;
+  const ::cryptohome::RecoverableKeyStoreMetadata& key_store_metadata =
+      chosen_key_store->key_store_metadata();
+  switch (key_store_metadata.knowledge_factor_type()) {
+    case ::cryptohome::KNOWLEDGE_FACTOR_TYPE_PASSWORD:
+      vault_metadata.set_lskf_type(
+          trusted_vault_pb::VaultMetadata_LskfType_PASSWORD);
+      break;
+    case ::cryptohome::KNOWLEDGE_FACTOR_TYPE_PIN:
+      vault_metadata.set_lskf_type(
+          trusted_vault_pb::VaultMetadata_LskfType_PIN);
+      break;
+    default:
+      // Default is necessary because this proto compiles with sentinels such as
+      // `INT_MIN_SENTINEL_DO_NOT_USE_`.
+      DVLOG(1) << "Unknown knowledge factor type: "
+               << static_cast<int>(key_store_metadata.knowledge_factor_type());
+      std::move(callback).Run(std::nullopt);
+      return;
+  }
+  switch (key_store_metadata.hash_type()) {
+    case ::cryptohome::HASH_TYPE_PBKDF2_AES256_1234:
+      vault_metadata.set_hash_type(
+          trusted_vault_pb::VaultMetadata_HashType_PBKDF2_AES256_1234);
+      break;
+    case ::cryptohome::HASH_TYPE_SHA256_TOP_HALF:
+      vault_metadata.set_hash_type(
+          trusted_vault_pb::VaultMetadata_HashType_SHA256_TOP_HALF);
+      break;
+    default:
+      // Default is necessary because this proto compiles with sentinels such as
+      // `INT_MIN_SENTINEL_DO_NOT_USE_`.
+      DVLOG(1) << "Unknown hash type: "
+               << static_cast<int>(key_store_metadata.hash_type());
+      std::move(callback).Run(std::nullopt);
+      return;
+  }
+  vault_metadata.set_hash_salt(key_store_metadata.hash_salt());
+  vault_metadata.set_cert_path(key_store_metadata.cert_path());
+  vault_metadata.SerializeToString(vault.mutable_vault_metadata());
+
+  vault.set_recovery_key(chosen_key_store->wrapped_recovery_key());
   const cryptohome::WrappedSecurityDomainKey& wrapped_security_domain_key =
       chosen_key_store->wrapped_security_domain_key();
   trusted_vault_pb::ApplicationKey* application_key =
-      vault->add_application_keys();
+      vault.add_application_keys();
   application_key->set_key_name(wrapped_security_domain_key.key_name());
   application_key->mutable_asymmetric_key_pair()->set_public_key(
       wrapped_security_domain_key.public_key());
@@ -152,14 +197,9 @@ void RecoveryKeyProviderAsh::OnGetRecoverableKeyStoresReply(
       wrapped_security_domain_key.wrapped_private_key());
   application_key->mutable_asymmetric_key_pair()->set_wrapping_key(
       wrapped_security_domain_key.wrapped_wrapping_key());
+  vault.mutable_chrome_os_metadata()->set_device_id(device_id_);
 
-  trusted_vault_pb::ChromeOsMetadata* chrome_os_metadata =
-      update_vault_request.mutable_chrome_os_metadata();
-  chrome_os_metadata->set_device_id(device_id_);
-  chrome_os_metadata->set_chrome_os_version(
-      base::SysInfo::OperatingSystemVersion());
-
-  std::move(callback).Run(std::move(update_vault_request));
+  std::move(callback).Run(std::move(vault));
 }
 
 }  // namespace trusted_vault

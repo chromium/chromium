@@ -13,9 +13,9 @@ namespace media_message_center {
 
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationVolumeSliderView
     : public views::View {
- public:
-  METADATA_HEADER(MediaNotificationVolumeSliderView);
+  METADATA_HEADER(MediaNotificationVolumeSliderView, views::View)
 
+ public:
   explicit MediaNotificationVolumeSliderView(
       base::RepeatingCallback<void(float)> set_volume_callback);
   ~MediaNotificationVolumeSliderView() override;

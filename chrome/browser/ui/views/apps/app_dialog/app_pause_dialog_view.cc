@@ -10,6 +10,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
@@ -39,13 +41,14 @@ AppPauseDialogView::AppPauseDialogView(
     const apps::PauseData& pause_data,
     apps::AppServiceProxy::OnPauseDialogClosedCallback closed_callback)
     : AppDialogView(ui::ImageModel::FromImageSkia(image)) {
-  SetTitle(l10n_util::GetStringFUTF16(IDS_APP_PAUSE_PROMPT_TITLE,
-                                      base::UTF8ToUTF16(app_name)));
-
   closed_callback_ = std::move(closed_callback);
 
+  InitializeView();
+  AddTitle(l10n_util::GetStringFUTF16(IDS_APP_PAUSE_PROMPT_TITLE,
+                                      base::UTF8ToUTF16(app_name)));
+
   const int cutoff = pause_data.minutes == 0 || pause_data.hours == 0 ? 0 : -1;
-  std::u16string heading_text = l10n_util::GetStringFUTF16(
+  std::u16string subtitle_text = l10n_util::GetStringFUTF16(
       (app_type == apps::AppType::kWeb) ? IDS_APP_PAUSE_HEADING_FOR_WEB_APPS
                                         : IDS_APP_PAUSE_HEADING,
       base::UTF8ToUTF16(app_name),
@@ -54,7 +57,7 @@ AppPauseDialogView::AppPauseDialogView(
           ui::TimeFormat::Length::LENGTH_LONG, cutoff,
           base::Hours(pause_data.hours) + base::Minutes(pause_data.minutes)));
 
-  InitializeView(heading_text);
+  AddSubtitle(subtitle_text);
 
   g_app_pause_dialog_view = this;
 }

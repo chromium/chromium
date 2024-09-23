@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -55,7 +56,7 @@ class BrowsingTopicsSiteDataStorageTest : public testing::Test {
     return temp_dir_.GetPath().AppendASCII("TestBrowsingTopicsSiteData.db");
   }
 
-  base::FilePath GetSqlFilePath(base::StringPiece sql_filename) {
+  base::FilePath GetSqlFilePath(std::string_view sql_filename) {
     base::FilePath file_path;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
     file_path = file_path.AppendASCII("content/test/data/browsing_topics/");
@@ -169,6 +170,10 @@ TEST_F(BrowsingTopicsSiteDataStorageTest, LoadFromFile_CurrentVersion_Success) {
 
   histograms.ExpectUniqueSample("BrowsingTopics.SiteDataStorage.InitStatus",
                                 true, /*expected_bucket_count=*/1);
+
+  histograms.ExpectTotalCount("BrowsingTopics.SiteDataStorage.FileSize.KB", 1);
+  EXPECT_GT(
+      histograms.GetTotalSum("BrowsingTopics.SiteDataStorage.FileSize.KB"), 0);
 }
 
 TEST_F(BrowsingTopicsSiteDataStorageTest,

@@ -57,7 +57,8 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // This enum covers all the possible variations for the privacy indicators
   // view type that we are interested in recording metrics, specifying whether
   // camera/mic access and screen sharing icons are showing. Note to keep in
-  // sync with enum PrivacyIndicatorsType in tools/metrics/histograms/enums.xml.
+  // sync with enum `PrivacyIndicatorsType` in
+  // tools/metrics/histograms/metadata/ash/enums.xml.
   enum class Type {
     kCamera = 1 << 1,
     kMicrophone = 1 << 2,
@@ -106,16 +107,15 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
  private:
   friend class PrivacyIndicatorsTrayItemViewPixelTest;
   friend class PrivacyIndicatorsTrayItemViewTest;
-  friend class CaptureModePrivacyIndicatorsTest;
 
   // TrayItemView:
   void PerformVisibilityAnimation(bool visible) override;
   void HandleLocaleChange() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  const char* GetClassName() const override;
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
@@ -176,10 +176,6 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
 
   // Used to record metrics of the number of shows per session.
   int count_visible_per_session_ = 0;
-
-  // Used to record metrics of repeated shows per 100 ms.
-  int count_repeated_shows_ = 0;
-  base::DelayTimer repeated_shows_timer_;
 
   // Keeps track of the last time the indicator starts showing. Used to record
   // visibility duration metrics.

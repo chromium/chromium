@@ -125,8 +125,8 @@ void CSSImageValue::RestoreCachedResourceIfNeeded(
   }
 
   cached_content->EmulateLoadStartedForInspector(
-      document.Fetcher(), KURL(url_data_.ResolvedUrl()),
-      initiator_name_.empty() ? fetch_initiator_type_names::kCSS
+      document.Fetcher(), initiator_name_.empty()
+                              ? fetch_initiator_type_names::kCSS
                               : initiator_name_);
 }
 

@@ -4,7 +4,7 @@
 class RawRead
 {
   private:
-    Array<byte> Data;
+    std::vector<byte> Data;
     File *SrcFile;
     size_t DataSize;
     size_t ReadPos;
@@ -27,7 +27,7 @@ class RawRead
     uint GetCRC50();
     byte* GetDataPtr() {return &Data[0];}
     size_t Size() {return DataSize;}
-    size_t PaddedSize() {return Data.Size()-DataSize;}
+    size_t PaddedSize() {return Data.size()-DataSize;}
     size_t DataLeft() {return DataSize-ReadPos;}
     size_t GetPos() {return ReadPos;}
     void SetPos(size_t Pos) {ReadPos=Pos;}

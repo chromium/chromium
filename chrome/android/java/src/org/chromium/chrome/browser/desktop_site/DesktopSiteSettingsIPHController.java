@@ -14,7 +14,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -39,8 +38,6 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -84,7 +81,7 @@ public class DesktopSiteSettingsIPHController {
                 profile,
                 toolbarMenuButton,
                 appMenuHandler,
-                new UserEducationHelper(activity, new Handler(Looper.getMainLooper())),
+                new UserEducationHelper(activity, profile, new Handler(Looper.getMainLooper())),
                 new WebsitePreferenceBridge(),
                 MessageDispatcherProvider.from(windowAndroid));
     }
@@ -118,6 +115,7 @@ public class DesktopSiteSettingsIPHController {
 
     @VisibleForTesting
     void showGenericIPH(@NonNull Tab tab, Profile profile) {
+        if (tab.isNativePage()) return;
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE;
         if (perSiteIPHPreChecksFailed(tab, tracker, featureName)) return;
@@ -168,9 +166,7 @@ public class DesktopSiteSettingsIPHController {
     @VisibleForTesting
     boolean showWindowSettingIPH(@NonNull Tab tab, Profile profile) {
         if (mMessageDispatcher == null) return false;
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_WINDOW_SETTING)) {
-            return false;
-        }
+        if (tab.isNativePage()) return false;
 
         // Return early when the IPH triggering criteria is not satisfied.
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
@@ -214,7 +210,6 @@ public class DesktopSiteSettingsIPHController {
                                 () -> {
                                     SiteSettingsHelper.showCategorySettings(
                                             mContext,
-                                            profile,
                                             SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
@@ -242,9 +237,6 @@ public class DesktopSiteSettingsIPHController {
                         .setOnDismissCallback(
                                 () -> {
                                     turnOffHighlightForMenuItem();
-                                    RecordHistogram.recordBooleanHistogram(
-                                            "Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened",
-                                            mAppMenuHandler.isAppMenuShowing());
                                 })
                         .build());
     }

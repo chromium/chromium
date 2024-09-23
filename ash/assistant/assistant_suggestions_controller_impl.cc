@@ -16,7 +16,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/unguessable_token.h"
@@ -160,7 +159,6 @@ void AssistantSuggestionsControllerImpl::UpdateOnboardingSuggestions() {
             assistant::util::IconName::kScreenshot);
       default:
         NOTREACHED();
-        return GURL();
     }
   };
 

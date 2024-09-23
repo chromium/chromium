@@ -8,7 +8,7 @@ DiscoverFeedService::DiscoverFeedService() = default;
 
 DiscoverFeedService::~DiscoverFeedService() = default;
 
-// TODO(crbug.com/1314418): Remove this when downstream implementation is
+// TODO(crbug.com/40221402): Remove this when downstream implementation is
 // landed.
 void DiscoverFeedService::SetIsShownOnStartSurface(
     bool shown_on_start_surface) {}

@@ -1,0 +1,52 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users",
+        "policies": {},
+        "prefs": {
+          "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
+            "value": 1,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAIVcBackgroundSettings": 0
+        },
+        "prefs": {
+          "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
+            "value": 0,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAIVcBackgroundSettings": 1
+        },
+        "prefs": {
+          "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
+            "value": 1,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAIWallpaperSettings": 2
+        },
+        "prefs": {
+          "ash.personalization_app.gen_ai_wallpaper_enterprise_policy_settings": {
+            "value": 2,
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
+  }
+]

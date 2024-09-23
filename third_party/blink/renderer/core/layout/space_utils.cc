@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/core/layout/space_utils.h"
 
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
@@ -33,11 +37,10 @@ void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
   PhysicalSize orthogonal_children_containing_block_size =
       child.InitialContainingBlockSize();
 
-  LayoutUnit fallback_size;
-  if (IsHorizontalWritingMode(parent_style.GetWritingMode()))
-    fallback_size = orthogonal_children_containing_block_size.height;
-  else
-    fallback_size = orthogonal_children_containing_block_size.width;
+  LayoutUnit fallback_size =
+      parent_style.IsHorizontalWritingMode()
+          ? orthogonal_children_containing_block_size.height
+          : orthogonal_children_containing_block_size.width;
 
   LayoutUnit size(LayoutUnit::Max());
   if (parent_style.LogicalHeight().IsFixed()) {
@@ -77,10 +80,20 @@ void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
   builder->SetOrthogonalFallbackInlineSize(fallback_size);
 }
 
-bool ShouldBlockContainerChildStretchAutoInlineSize(
-    const LayoutInputNode& child) {
-  return !child.GetLayoutBox()->AutoWidthShouldFitContent() &&
-         !child.IsReplaced() && !child.IsTable();
+bool ShouldBlockContainerChildStretchAutoInlineSize(const BlockNode& child) {
+  if (child.IsReplaced()) {
+    return false;
+  }
+  if (child.IsTable()) {
+    return false;
+  }
+  if (const auto* node = child.GetDOMNode()) {
+    if (IsA<HTMLButtonElement>(node) || IsA<HTMLInputElement>(node) ||
+        IsA<HTMLSelectElement>(node) || IsA<HTMLTextAreaElement>(node)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace blink

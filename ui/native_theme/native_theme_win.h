@@ -68,6 +68,7 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme,
+             bool in_forced_colors,
              const std::optional<SkColor>& accent_color) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
@@ -90,9 +91,10 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   friend class base::NoDestructor<NativeThemeWin>;
 
   // NativeTheme:
+  void ConfigureWebInstance() override;
+  std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const override;
 
-  NativeThemeWin(bool should_only_use_dark_colors,
-                 NativeTheme* theme_to_update = nullptr);
+  NativeThemeWin(bool configure_web_instance, bool should_only_use_dark_colors);
   ~NativeThemeWin() override;
 
  private:
@@ -225,6 +227,11 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // The system color change listener and the updated cache of system colors.
   gfx::ScopedSysColorChangeListener color_change_listener_;
+
+  // Used to notify the web native theme of changes to dark mode, high
+  // contrast, preferred color scheme, and preferred contrast.
+  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
+      color_scheme_observer_;
 };
 
 }  // namespace ui

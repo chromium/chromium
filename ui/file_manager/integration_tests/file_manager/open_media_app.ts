@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 
-import {getCaller, pending, repeatUntil, sendTestMessage, type TestEntryInfo} from '../test_util.js';
-import {remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
+import {getCaller, pending, repeatUntil, sendTestMessage, type TestEntryInfo, waitForMediaApp} from '../test_util.js';
+
+import {remoteCall} from './background.js';
+
 
 /**
  * Tests if the media app shows up for the selected file entry and that it has
@@ -20,7 +22,8 @@ export async function opensInMediaApp(path: string, entry: TestEntryInfo) {
   });
 
   // Open Files.App on Downloads/Drive, add `entry` to Downloads/Drive.
-  const filesAppId = await setupAndWaitUntilReady(path, [entry], [entry]);
+  const filesAppId =
+      await remoteCall.setupAndWaitUntilReady(path, [entry], [entry]);
 
   // Open the file in Files app.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -29,8 +32,8 @@ export async function opensInMediaApp(path: string, entry: TestEntryInfo) {
   // Wait for the expected 1 a11y announce.
   const caller = getCaller();
   await repeatUntil(async () => {
-    const a11yMessages =
-        await remoteCall.callRemoteTestUtil('getA11yAnnounces', filesAppId, []);
+    const a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
+        'getA11yAnnounces', filesAppId, []);
     return a11yMessages.length === 1 ?
         true :
         pending(
@@ -39,8 +42,8 @@ export async function opensInMediaApp(path: string, entry: TestEntryInfo) {
   });
 
   // Fetch A11y messages.
-  const a11yMessages =
-      await remoteCall.callRemoteTestUtil('getA11yAnnounces', filesAppId, []);
+  const a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
+      'getA11yAnnounces', filesAppId, []);
 
   // Check that opening the file was announced to screen reader.
   chrome.test.assertEq(1, a11yMessages.length);

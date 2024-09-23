@@ -2,16 +2,44 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/graph/node_attached_data.h"
+#include "components/performance_manager/public/graph/node_attached_data.h"
 
 #include <utility>
 
-#include "base/check_op.h"
-#include "base/containers/contains.h"
-#include "components/performance_manager/graph/graph_impl.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/node_attached_data_storage.h"
+#include "components/performance_manager/graph/node_base.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/graph/node.h"
 
 namespace performance_manager {
+
+namespace {
+
+template <class NodeClassImpl>
+NodeAttachedDataStorage& GetStorageImpl(NodeClassImpl* node) {
+  return NodeAttachedDataStorage::Get(node);
+}
+
+NodeAttachedDataStorage& GetStorage(const Node* node) {
+  switch (node->GetNodeType()) {
+    case NodeTypeEnum::kProcess:
+      return GetStorageImpl(ProcessNodeImpl::FromNode(node));
+    case NodeTypeEnum::kPage:
+      return GetStorageImpl(PageNodeImpl::FromNode(node));
+    case NodeTypeEnum::kFrame:
+      return GetStorageImpl(FrameNodeImpl::FromNode(node));
+    case NodeTypeEnum::kWorker:
+      return GetStorageImpl(WorkerNodeImpl::FromNode(node));
+    case NodeTypeEnum::kSystem:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 NodeAttachedData::NodeAttachedData() = default;
 
@@ -21,52 +49,20 @@ NodeAttachedData::~NodeAttachedData() = default;
 void NodeAttachedDataMapHelper::AttachInMap(
     const Node* node,
     std::unique_ptr<NodeAttachedData> data) {
-  GraphImpl* graph = GraphImpl::FromGraph(node->GetGraph());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(graph->sequence_checker_);
-  const NodeBase* node_base = NodeBase::FromNode(node);
-  DCHECK(graph->NodeInGraph(node_base));
-  GraphImpl::NodeAttachedDataKey data_key =
-      std::make_pair(node, data->GetKey());
-  auto& map = graph->node_attached_data_map_;
-  DCHECK(!base::Contains(map, data_key));
-  map[data_key] = std::move(data);
+  GetStorage(node).AttachData(std::move(data));
 }
 
 // static
 NodeAttachedData* NodeAttachedDataMapHelper::GetFromMap(const Node* node,
                                                         const void* key) {
-  GraphImpl* graph = GraphImpl::FromGraph(node->GetGraph());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(graph->sequence_checker_);
-  const NodeBase* node_base = NodeBase::FromNode(node);
-  DCHECK(graph->NodeInGraph(node_base));
-  GraphImpl::NodeAttachedDataKey data_key = std::make_pair(node, key);
-  auto& map = graph->node_attached_data_map_;
-  auto it = map.find(data_key);
-  if (it == map.end())
-    return nullptr;
-  DCHECK_EQ(key, it->second->GetKey());
-  return it->second.get();
+  return GetStorage(node).GetData(key);
 }
 
 // static
 std::unique_ptr<NodeAttachedData> NodeAttachedDataMapHelper::DetachFromMap(
     const Node* node,
     const void* key) {
-  GraphImpl* graph = GraphImpl::FromGraph(node->GetGraph());
-  DCHECK_CALLED_ON_VALID_SEQUENCE(graph->sequence_checker_);
-  const NodeBase* node_base = NodeBase::FromNode(node);
-  DCHECK(graph->NodeInGraph(node_base));
-  GraphImpl::NodeAttachedDataKey data_key = std::make_pair(node, key);
-  auto& map = graph->node_attached_data_map_;
-  auto it = map.find(data_key);
-
-  std::unique_ptr<NodeAttachedData> data;
-  if (it != map.end()) {
-    data = std::move(it->second);
-    map.erase(it);
-  }
-
-  return data;
+  return GetStorage(node).DetachData(key);
 }
 
 }  // namespace performance_manager

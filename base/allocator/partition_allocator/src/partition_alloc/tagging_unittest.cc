@@ -6,10 +6,10 @@
 
 #include <cstdint>
 
-#include "build/build_config.h"
+#include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
-#include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,7 +50,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementSafe) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-#if defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 // Size / alignment constraints are only enforced on 64-bit architectures.
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeBadSz) {
   base::CPU cpu;
@@ -143,10 +143,10 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadAlign) {
   }
   FreePages(buffer, PageAllocationGranularity());
 }
-#endif  // defined(ARCH_CPU_64_BITS)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
-#if BUILDFLAG(HAS_MEMORY_TAGGING)
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+#if PA_BUILDFLAG(IS_ANDROID)
 TEST(PartitionAllocMemoryTaggingTest,
      ChangeMemoryTaggingModeForAllThreadsPerProcess) {
   base::CPU cpu;
@@ -163,17 +163,19 @@ TEST(PartitionAllocMemoryTaggingTest,
 
   // Skip changing to kDisabled, because scudo does not support enabling MTE
   // once it is disabled.
-  ChangeMemoryTaggingModeForAllThreadsPerProcess(
+  bool success = ChangeMemoryTaggingModeForAllThreadsPerProcess(
       TagViolationReportingMode::kAsynchronous);
+  EXPECT_TRUE(success);
   EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
             TagViolationReportingMode::kAsynchronous);
-  ChangeMemoryTaggingModeForAllThreadsPerProcess(
+  success = ChangeMemoryTaggingModeForAllThreadsPerProcess(
       TagViolationReportingMode::kSynchronous);
+  EXPECT_TRUE(success);
   // End with mode changed back to synchronous.
   EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
             TagViolationReportingMode::kSynchronous);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
 
 TEST(PartitionAllocMemoryTaggingTest, ChangeMemoryTaggingModeForCurrentThread) {
   base::CPU cpu;
@@ -212,6 +214,6 @@ TEST(PartitionAllocMemoryTaggingTest, ChangeMemoryTaggingModeForCurrentThread) {
   // Restore mode to original.
   ChangeMemoryTaggingModeForCurrentThread(original_mode);
 }
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 
 }  // namespace partition_alloc::internal

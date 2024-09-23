@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_IMPORT_CSV_PASSWORD_SEQUENCE_H_
 
 #include <string>
+#include <string_view>
 
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/import/csv_password_iterator.h"
@@ -59,7 +60,7 @@ class CSVPasswordSequence {
   // |data_rows_| captures all but the first row of the parsed CSV string.
   // These are the rows containing the credentials, as opposed to the first
   // row containing the column names.
-  base::StringPiece data_rows_;
+  std::string_view data_rows_;
   // |result_| captures whether the CSV contains correctly CSV-encoded
   // credentials.
   CSVPassword::Status result_ = CSVPassword::Status::kOK;

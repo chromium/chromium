@@ -1,7 +1,7 @@
 monorail: {
   component: "Blink>HTML>Base"
 }
-team_email: "dom-dev@chromium.org"
+team_email: "dom-dev@google.com"
 wpt: {
   notify: YES
 }

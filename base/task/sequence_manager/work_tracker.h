@@ -7,10 +7,9 @@
 
 #include <atomic>
 #include <cstdint>
-#include <memory>
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
 #include "base/threading/thread_checker.h"
@@ -34,7 +33,8 @@ class BASE_EXPORT SyncWorkAuthorization {
 
   explicit SyncWorkAuthorization(WorkTracker* state);
 
-  raw_ptr<WorkTracker> tracker_ = nullptr;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
+  RAW_PTR_EXCLUSION WorkTracker* tracker_ = nullptr;
 };
 
 // Tracks queued and running work to support `RunOrPostTask`.
@@ -123,7 +123,7 @@ class BASE_EXPORT WorkTracker {
   // Allows `OnBeginWork()` to wait until there is no more valid
   // `SyncWorkAuthorization`.
   base::internal::CheckedLock active_sync_work_lock_;
-  std::unique_ptr<ConditionVariable> active_sync_work_cv_ =
+  ConditionVariable active_sync_work_cv_ =
       active_sync_work_lock_.CreateConditionVariable();
 
   THREAD_CHECKER(thread_checker_);

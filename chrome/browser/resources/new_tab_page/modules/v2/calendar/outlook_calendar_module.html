@@ -1,0 +1,14 @@
+<ntp-module-header-v2
+    id="moduleHeaderElementV2"
+    header-text="$i18n{modulesOutlookCalendarTitle}"
+    .menuItemGroups="${this.getMenuItemGroups_()}"
+    more-actions-text="${this.i18nRecursive('',
+                          'modulesMoreActions',
+                          'modulesOutlookCalendarTitle')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @menu-button-click="${this.onMenuButtonClick_}">
+</ntp-module-header-v2>
+<ntp-calendar id="outlook-calendar"
+    .events="${this.events_}"
+    module-name="OutlookCalendar">
+</ntp-calendar>

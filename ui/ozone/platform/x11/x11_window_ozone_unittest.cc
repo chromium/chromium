@@ -128,7 +128,7 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToRightTarget) {
   auto window = CreatePlatformWindow(&delegate, bounds, &widget, nullptr);
 
   ScopedXI2Event xi_event;
-  xi_event.InitGenericButtonEvent(kPointerDeviceId, ET_MOUSE_PRESSED,
+  xi_event.InitGenericButtonEvent(kPointerDeviceId, EventType::kMousePressed,
                                   gfx::Point(218, 290), EF_NONE);
 
   // First check events can be received by a target window.
@@ -136,7 +136,7 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToRightTarget) {
   EXPECT_CALL(delegate, DispatchEvent(_)).WillOnce(CloneEvent(&event));
 
   DispatchXEvent(xi_event, widget);
-  EXPECT_EQ(ET_MOUSE_PRESSED, event->type());
+  EXPECT_EQ(EventType::kMousePressed, event->type());
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
   MockPlatformWindowDelegate delegate_2;
@@ -152,7 +152,7 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToRightTarget) {
   EXPECT_CALL(delegate_2, DispatchEvent(_)).WillOnce(CloneEvent(&event));
 
   DispatchXEvent(xi_event, widget_2);
-  EXPECT_EQ(ET_MOUSE_PRESSED, event->type());
+  EXPECT_EQ(EventType::kMousePressed, event->type());
 
   EXPECT_CALL(delegate, OnClosed()).Times(1);
   EXPECT_CALL(delegate_2, OnClosed()).Times(1);
@@ -175,7 +175,7 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToCapturedWindow) {
       CreatePlatformWindow(&delegate_2, bounds_2, &widget_2, nullptr);
 
   ScopedXI2Event xi_event;
-  xi_event.InitGenericButtonEvent(kPointerDeviceId, ET_MOUSE_PRESSED,
+  xi_event.InitGenericButtonEvent(kPointerDeviceId, EventType::kMousePressed,
                                   gfx::Point(218, 290), EF_NONE);
 
   // Set capture to the second window, but send an event to another window
@@ -188,7 +188,7 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToCapturedWindow) {
 
   DispatchXEvent(xi_event, widget);
   EXPECT_TRUE(event.get());
-  EXPECT_EQ(ET_MOUSE_PRESSED, event->type());
+  EXPECT_EQ(EventType::kMousePressed, event->type());
   EXPECT_EQ(gfx::Point(-277, 215), event->AsLocatedEvent()->location());
 }
 
@@ -248,7 +248,7 @@ TEST_F(X11WindowOzoneTest, MouseEnterAndDelete) {
   EXPECT_CALL(delegate_1, OnMouseEnter()).Times(1);
   window_2->SetCapture();
   ScopedXI2Event xi_event;
-  xi_event.InitGenericButtonEvent(kPointerDeviceId, ET_MOUSE_PRESSED,
+  xi_event.InitGenericButtonEvent(kPointerDeviceId, EventType::kMousePressed,
                                   gfx::Point(0, 0), EF_NONE);
   DispatchXEvent(xi_event, widget_1);
   EXPECT_EQ(window_1.get(),

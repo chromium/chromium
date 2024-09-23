@@ -7,29 +7,31 @@ import '../../background/js/file_manager_base.js';
 import '../../background/js/test_util.js';
 import '../../widgets/xf_jellybean.js';
 
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import type {Crostini} from '../../background/js/crostini.js';
-import {FileManagerBase} from '../../background/js/file_manager_base.js';
+import type {FileManagerBase} from '../../background/js/file_manager_base.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
-import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
-import {ArrayDataModel} from '../../common/js/array_data_model.js';
+import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getMaterializedViews, getPreferences} from '../../common/js/api.js';
+import type {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
-import {EntryList, FakeEntry, FakeEntryImpl, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {FilesAppState} from '../../common/js/files_app_state.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {isDlpEnabled, isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
+import {isDlpEnabled, isGuestOsEnabled, isMaterializedViewsEnabled, isSkyvaultV2Enabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {getLastVisitedURL, isInGuestMode, runningInBrowser} from '../../common/js/util.js';
-import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
+import type {VolumeType} from '../../common/js/volume_manager_types.js';
+import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType} from '../../common/js/volume_manager_types.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
@@ -37,13 +39,13 @@ import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
 import {updateDeviceConnectionState} from '../../state/ducks/device.js';
 import {updateDriveConnectionStatus} from '../../state/ducks/drive.js';
 import {setLaunchParameters} from '../../state/ducks/launch_params.js';
+import {updateMaterializedViews} from '../../state/ducks/materialized_views.js';
 import {updatePreferences} from '../../state/ducks/preferences.js';
 import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {driveRootEntryListKey, trashRootKey} from '../../state/ducks/volumes.js';
-import {DialogType, PropStatus, SearchLocation} from '../../state/state.js';
-import {getEmptyState, getEntry, getStore} from '../../state/store.js';
-import {isXfTree} from '../../widgets/xf_tree_util.js';
+import {DialogType, SearchLocation} from '../../state/state.js';
+import {getEmptyState, getEntry, getStore, getVolume} from '../../state/store.js';
 
 import {ActionsController} from './actions_controller.js';
 import {AndroidAppListModel} from './android_app_list_model.js';
@@ -59,7 +61,8 @@ import {DirectoryTreeNamingController} from './directory_tree_naming_controller.
 import {importElements} from './elements_importer.js';
 import {EmptyFolderController} from './empty_folder_controller.js';
 import {forceDefaultHandler} from './file_manager_commands_util.js';
-import {FileSelection, FileSelectionHandler} from './file_selection.js';
+import type {FileSelection} from './file_selection.js';
+import {FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
@@ -75,8 +78,8 @@ import {ThumbnailModel} from './metadata/thumbnail_model.js';
 import {MetadataBoxController} from './metadata_box_controller.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
 import {NamingController} from './naming_controller.js';
-import {NavigationListModel, NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
 import {NavigationUma} from './navigation_uma.js';
+import {OneDriveController} from './one_drive_controller.js';
 import {ProvidersModel} from './providers_model.js';
 import {QuickViewController} from './quick_view_controller.js';
 import {QuickViewModel} from './quick_view_model.js';
@@ -89,12 +92,11 @@ import {TaskController} from './task_controller.js';
 import {ToolbarController} from './toolbar_controller.js';
 import {CommandButton} from './ui/commandbutton.js';
 import {contextMenuHandler} from './ui/context_menu_handler.js';
-import {DirectoryTree} from './ui/directory_tree.js';
 import {FileGrid} from './ui/file_grid.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 import {FileTable} from './ui/file_table.js';
-import {List} from './ui/list.js';
+import type {List} from './ui/list.js';
 import {Menu} from './ui/menu.js';
 
 /**
@@ -252,6 +254,11 @@ export class FileManager {
   protected lastModifiedController_: LastModifiedController|null = null;
 
   /**
+   * OneDrive controller.
+   */
+  protected oneDriveController_: OneDriveController|null = null;
+
+  /**
    * Component for main window and its misc UI parts.
    */
   protected mainWindowComponent_: null|MainWindowComponent = null;
@@ -319,19 +326,9 @@ export class FileManager {
   private bulkPinningInitialized_: boolean = false;
 
   /**
-   * A fake Drive placeholder item.
-   */
-  private fakeDriveItem_: null|NavigationModelFakeItem = null;
-
-  /**
    * Whether Trash is enabled or not, retrieved from user preferences.
    */
   trashEnabled: boolean = false;
-
-  /**
-   * A fake Trash placeholder item.
-   */
-  private fakeTrashItem_: null|NavigationModelFakeItem = null;
 
   /**
    * A fake entry for Recents.
@@ -349,7 +346,7 @@ export class FileManager {
    * Whether local user files (e.g. My Files, Downloads, Play files...) are
    * enabled or not, retrieved from user preferences.
    */
-  localUserFilesEnabled: boolean = true;
+  localUserFilesAllowed: boolean = true;
 
   constructor() {
     (function() {
@@ -535,8 +532,7 @@ export class FileManager {
     });
 
     this.directoryModel.addEventListener('directory-changed', event => {
-      this.navigationUma_!.onDirectoryChanged(
-          event.detail.newDirEntry as Entry);
+      this.navigationUma_!.onDirectoryChanged(event.detail.newDirEntry);
     });
 
     this.initCommands_();
@@ -662,8 +658,7 @@ export class FileManager {
     }
 
     this.fileTransferController_ = new FileTransferController(
-        this.document, this.ui.listContainer,
-        this.ui.directoryTree as DirectoryTree,
+        this.document, this.ui.listContainer, this.ui.directoryTree!,
         this.ui.showConfirmationDialog.bind(this.ui), this.progressCenter,
         this.metadataModel, this.directoryModel, this.volumeManager,
         this.selectionHandler, this.ui.toast);
@@ -783,12 +778,12 @@ export class FileManager {
         this.onTabletModeChanged_.bind(this));
 
     this.initEssentialUi_();
+    // Initialize the Store for the whole app.
+    this.store_.init(getEmptyState());
     this.initAdditionalUi_();
+    await this.initPrefs_();
     await this.initSettingsPromise_;
     const fileSystemUIPromise = this.initFileSystemUi_();
-    // Initialize the Store for the whole app.
-    const store = getStore();
-    store.init(getEmptyState());
     this.initUiFocus_();
     recordInterval('Load.InitUI');
 
@@ -805,29 +800,17 @@ export class FileManager {
    * initializing methods.
    */
   private initGeneral_() {
-    // Initialize the application state.
-    // TODO(mtomasz): Unify window.appState with location.search format.
-    if (window.appState) {
-      const params: Record<string, any> = {};
-
-      for (const [name, value] of Object.entries(window.appState)) {
-        params[name] = value;
+    // Initialize the application state, from the GET params.
+    let json = {};
+    if (location.search) {
+      const query = location.search.substr(1);
+      try {
+        json = JSON.parse(decodeURIComponent(query));
+      } catch (e) {
+        console.debug(`Error parsing location.search "${query}" due to ${e}`);
       }
-
-      this.launchParams_ = new LaunchParam(params);
-    } else {
-      // Used by the select dialog and SWA.
-      let json = {};
-      if (location.search) {
-        const query = location.search.substr(1);
-        try {
-          json = JSON.parse(decodeURIComponent(query));
-        } catch (e) {
-          console.debug(`Error parsing location.search "${query}" due to ${e}`);
-        }
-      }
-      this.launchParams_ = new LaunchParam(json);
     }
+    this.launchParams_ = new LaunchParam(json);
     this.store_.dispatch(
         setLaunchParameters({dialogType: this.launchParams_.type}));
 
@@ -960,6 +943,23 @@ export class FileManager {
   }
 
   /**
+   * Initializes the prefs in the store.
+   */
+  private async initPrefs_():
+      Promise<chrome.fileManagerPrivate.Preferences|null> {
+    let prefs = null;
+    try {
+      prefs = await getPreferences();
+    } catch (e) {
+      console.error('Cannot get preferences:', e);
+      return null;
+    }
+
+    this.store_.dispatch(updatePreferences(prefs));
+    return prefs;
+  }
+
+  /**
    * One-time initialization of focus. This should run at the last of UI
    * initialization.
    */
@@ -1039,7 +1039,7 @@ export class FileManager {
 
     // Create directory tree naming controller.
     this.directoryTreeNamingController_ = new DirectoryTreeNamingController(
-        this.directoryModel_, this.ui_.directoryTree as DirectoryTree,
+        this.directoryModel_, this.ui_.directoryTree,
         this.ui_.directoryTreeContainer, this.ui_.alertDialog);
 
     // Create spinner controller.
@@ -1100,34 +1100,13 @@ export class FileManager {
     assert(this.androidAppListModel_);
     assert(this.crostini_);
 
-    const directoryTree =
-        this.dialogDom_.querySelector<DirectoryTree>('#directory-tree');
-    assert(directoryTree);
+    const treeContainerDiv = this.dialogDom_.querySelector<HTMLDivElement>(
+        '.dialog-navigation-list-contents');
+    assert(treeContainerDiv);
 
-    if (isNewDirectoryTreeEnabled()) {
-      const treeContainer = directoryTree.parentElement!;
-      directoryTree.remove();
-      const directoryTreeContainer = new DirectoryTreeContainer(
-          treeContainer, this.directoryModel_, this.volumeManager_);
-      this.ui_.initDirectoryTree(directoryTreeContainer);
-    } else {
-      const fakeEntriesVisible =
-          this.dialogType !== DialogType.SELECT_SAVEAS_FILE;
-
-      DirectoryTree.decorate(
-          directoryTree, this.directoryModel_, this.volumeManager_,
-          this.metadataModel_, fakeEntriesVisible);
-
-      directoryTree.dataModel = new NavigationListModel(
-          this.volumeManager_, this.folderShortcutsModel_,
-          fakeEntriesVisible && !isFolderDialogType(this.launchParams_.type) ?
-              new NavigationModelFakeItem(
-                  str('RECENT_ROOT_LABEL'), NavigationModelItemType.RECENT,
-                  this.recentEntry_) :
-              null,
-          this.directoryModel_, this.androidAppListModel_, this.dialogType);
-      this.ui_.initDirectoryTree(directoryTree);
-    }
+    const directoryTreeContainer =
+        new DirectoryTreeContainer(treeContainerDiv, this.directoryModel_);
+    this.ui_.initDirectoryTree(directoryTreeContainer);
 
     // If 'media-store-files-only' volume filter is enabled, then Android ARC
     // SelectFile opened files app to pick files from volumes that are indexed
@@ -1159,12 +1138,7 @@ export class FileManager {
     // multiple VMs.
     chrome.fileManagerPrivate.onCrostiniChanged.addListener(
         this.onCrostiniChanged_.bind(this));
-    this.crostiniController_ = new CrostiniController(
-        this.crostini_,
-        // TODO(b/285977941): `DirectoryTree` is only used when FileExperimental
-        // flag is off, remove it after the tree replacement.
-        this.ui_.directoryTree as DirectoryTree,
-        this.volumeManager_.isDisabled(VolumeType.CROSTINI));
+    this.crostiniController_ = new CrostiniController(this.crostini_);
     await this.crostiniController_.redraw();
     // Never show toast in an open-file dialog.
     const maybeShowToast = this.dialogType === DialogType.FULL_PAGE;
@@ -1172,10 +1146,7 @@ export class FileManager {
         maybeShowToast, this.ui_.toast);
 
     if (isGuestOsEnabled()) {
-      this.guestOsController_ = new GuestOsController(
-          // TODO(b/285977941): `DirectoryTree` is only used when
-          // FileExperimental flag is off, remove it after the tree replacement.
-          this.ui_.directoryTree as DirectoryTree, this.volumeManager_);
+      this.guestOsController_ = new GuestOsController();
       await this.guestOsController_.refresh();
     }
   }
@@ -1226,6 +1197,11 @@ export class FileManager {
     }
   }
 
+  private async initMaterializedViews_() {
+    const views = await getMaterializedViews();
+    this.store_.dispatch(updateMaterializedViews({materializedViews: views}));
+  }
+
   /**
    * Sets up the current directory during initialization.
    */
@@ -1236,6 +1212,13 @@ export class FileManager {
     assert(this.volumeManager_);
     assert(this.metadataModel_);
     assert(this.directoryModel_);
+
+    if (isSkyvaultV2Enabled()) {
+      this.oneDriveController_ = new OneDriveController();
+    }
+    const initMaterializedViewsPromise = isMaterializedViewsEnabled() ?
+        this.initMaterializedViews_() :
+        Promise.resolve();
     const tracker = this.directoryModel_.createDirectoryChangeTracker();
     tracker.start();
 
@@ -1294,13 +1277,6 @@ export class FileManager {
     const searchQuery = this.launchParams_.searchQuery;
     if (searchQuery) {
       startInterval('Load.ProcessInitialSearchQuery');
-      if (!isNewDirectoryTreeEnabled()) {
-        this.store_.dispatch(updateSearch({
-          query: searchQuery,
-          status: PropStatus.STARTED,
-          options: getDefaultSearchOptions(),
-        }));
-      }
       assert(this.spinnerController_);
       // Show a spinner, as the crossover search function call could be slow.
       const hideSpinnerCallback = this.spinnerController_.show();
@@ -1380,9 +1356,7 @@ export class FileManager {
     // If the directory to be changed to is still not resolved, then fallback to
     // the default display root.
     if (!nextCurrentDirEntry) {
-      nextCurrentDirEntry = await new Promise(resolve => {
-        this.volumeManager_!.getDefaultDisplayRoot(resolve);
-      });
+      nextCurrentDirEntry = await this.volumeManager_.getDefaultDisplayRoot();
     }
 
     // If selection failed to be resolved (eg. didn't exist, in case of saving a
@@ -1418,25 +1392,27 @@ export class FileManager {
       }
     }
 
-    // If there is no target select MyFiles by default.
-    if (!nextCurrentDirEntry) {
+    // If there is no target select MyFiles by default, but only if local files
+    // are enabled.
+    if (!nextCurrentDirEntry && this.localUserFilesAllowed) {
       assert(this.ui.directoryTree);
-      if (isXfTree(this.ui.directoryTree)) {
-        const myFiles = getMyFiles(this.store_.getState());
-        // When MyFiles volume is mounted, we rely on the current directory
-        // change to make it as selected (controlled by DirectoryModel),
-        // that's why we can't set MyFiles entry list as the current directory
-        // here.
-        // TODO(b/308504417): MyFiles entry list should be selected before
-        // MyFiles volume mounts.
-        if (myFiles.myFilesVolume) {
-          nextCurrentDirEntry = myFiles.myFilesEntry;
-        }
-      } else if (this.ui.directoryTree?.dataModel.myFilesModel) {
-        nextCurrentDirEntry =
-            this.ui.directoryTree.dataModel.myFilesModel.entry;
+      const myFiles = getMyFiles(this.store_.getState());
+      // When MyFiles volume is mounted, we rely on the current directory
+      // change to make it as selected (controlled by DirectoryModel),
+      // that's why we can't set MyFiles entry list as the current directory
+      // here.
+      // TODO(b/308504417): MyFiles entry list should be selected before
+      // MyFiles volume mounts.
+      if (myFiles && myFiles.myFilesVolume) {
+        nextCurrentDirEntry = myFiles.myFilesEntry;
       }
     }
+
+    // The next directory might be a materialized view.
+    await initMaterializedViewsPromise;
+
+    // TODO(b/328031885): Handle !nextCurrentDirEntry case here - it means some
+    // error occurred and we should show the appropriate UI.
 
     // Check directory change.
     if (!tracker.hasChanged) {
@@ -1598,21 +1574,14 @@ export class FileManager {
    * otherwise remove it. This supports dynamic refresh when the pref changes.
    */
   private async onPreferencesChanged_() {
-    let prefs = null;
-    try {
-      prefs = await getPreferences();
-    } catch (e) {
-      console.error('Cannot get preferences:', e);
+    const prefs = await this.initPrefs_();
+    if (!prefs) {
       return;
     }
 
-    this.store_.dispatch(updatePreferences(prefs));
-
-    let redraw = false;
     if (this.driveEnabled_ !== prefs.driveEnabled) {
       this.driveEnabled_ = prefs.driveEnabled;
       this.toggleDriveRootOnPreferencesUpdate_();
-      redraw = true;
     }
 
     if (this.bulkPinningAvailable_ !== prefs.driveFsBulkPinningAvailable) {
@@ -1631,21 +1600,18 @@ export class FileManager {
       this.toolbarController_.moveToTrashCommand.disabled = !this.trashEnabled;
       this.toolbarController_.moveToTrashCommand.canExecuteChange(
           this.ui.listContainer.currentList);
-      redraw = true;
     }
 
-    if (this.localUserFilesEnabled !== prefs.localUserFilesEnabled) {
-      this.localUserFilesEnabled = prefs.localUserFilesEnabled;
-      // TODO(aidazolic): Trigger all changes necessary: remove placeholders,
-      // remove commands that aren't valid, etc.
+    if (this.localUserFilesAllowed !== prefs.localUserFilesAllowed) {
+      this.localUserFilesAllowed = prefs.localUserFilesAllowed;
+      // Trigger the change after prefs are updated, so that if needed, the
+      // default root can be resolved correctly.
+      await this.maybeChangeRootOnPreferencesUpdate_();
     }
 
     await this.updateOfficePrefs_(prefs);
 
     assert(this.ui.directoryTree);
-    if (redraw && !isXfTree(this.ui.directoryTree)) {
-      this.ui.directoryTree.redraw(false);
-    }
   }
 
   private async onDriveConnectionStatusChanged_() {
@@ -1703,26 +1669,20 @@ export class FileManager {
    */
   private toggleTrashRootOnPreferencesUpdate_() {
     assert(this.ui_);
+    let trashRoot: TrashRootEntry|null =
+        getEntry(this.store_.getState(), trashRootKey) as TrashRootEntry | null;
     if (this.trashEnabled) {
-      if (!this.fakeTrashItem_) {
-        this.fakeTrashItem_ = new NavigationModelFakeItem(
-            str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
-            new TrashRootEntry());
+      if (!trashRoot) {
+        trashRoot = new TrashRootEntry();
       }
-      this.store_.dispatch(addUiEntry(this.fakeTrashItem_.entry as FakeEntry));
+      this.store_.dispatch(addUiEntry(trashRoot));
       assert(this.ui_.directoryTree);
-      if (!isXfTree(this.ui_.directoryTree)) {
-        this.ui_.directoryTree!.dataModel.fakeTrashItem = this.fakeTrashItem_;
-      }
       return;
     }
 
     this.store_.dispatch(removeUiEntry(trashRootKey));
     assert(this.ui_.directoryTree);
-    if (!isXfTree(this.ui_.directoryTree)) {
-      this.ui_.directoryTree!.dataModel.fakeTrashItem = null;
-    }
-    this.navigateAwayFromDisabledRoot_(this.fakeTrashItem_?.entry || null);
+    this.navigateAwayFromDisabledRoot_(trashRoot || null);
   }
 
   /**
@@ -1740,29 +1700,43 @@ export class FileManager {
         this.store_.dispatch(addUiEntry(driveFakeRoot));
       }
       assert(this.ui.directoryTree);
-      if (!isXfTree(this.ui.directoryTree)) {
-        // TODO(b/285977941): Remove the old FakeEntry based drive root.
-        const driveFakeRoot = new FakeEntryImpl(
-            str('DRIVE_DIRECTORY_LABEL'), RootType.DRIVE_FAKE_ROOT);
-        if (!this.fakeDriveItem_) {
-          this.fakeDriveItem_ = new NavigationModelFakeItem(
-              str('DRIVE_DIRECTORY_LABEL'), NavigationModelItemType.DRIVE,
-              driveFakeRoot);
-          this.fakeDriveItem_.disabled =
-              this.volumeManager.isDisabled(VolumeType.DRIVE);
-        }
-        this.ui.directoryTree!.dataModel.fakeDriveItem = this.fakeDriveItem_;
-      }
       return;
     }
     this.store_.dispatch(removeUiEntry(driveRootEntryListKey));
     assert(this.ui.directoryTree);
-    if (!isXfTree(this.ui.directoryTree)) {
-      this.ui.directoryTree!.dataModel.fakeDriveItem = null;
-      this.navigateAwayFromDisabledRoot_(this.fakeDriveItem_?.entry || null);
-    } else {
-      this.navigateAwayFromDisabledRoot_(driveFakeRoot);
+    this.navigateAwayFromDisabledRoot_(driveFakeRoot);
+  }
+
+  /**
+   * Navigates to default display root if currently in a local folder and
+   * `localUserFilesAllowed` preference is updated to False.
+   */
+  private async maybeChangeRootOnPreferencesUpdate_() {
+    if (this.localUserFilesAllowed) {
+      return;
     }
+    assert(this.directoryModel_);
+    assert(this.volumeManager_);
+
+    const fileData = this.directoryModel_.getCurrentFileData();
+    if (!fileData) {
+      return;
+    }
+
+    const tracker = this.directoryModel_.createDirectoryChangeTracker();
+    tracker.start();
+
+    const state = this.store_.getState();
+    const volume = getVolume(state, fileData);
+    // The current directory is pointing to an entry that has a volume,
+    // but the volume isn't mounted anymore.
+    if (fileData.volumeId && !volume) {
+      const displayRoot = await this.volumeManager_.getDefaultDisplayRoot();
+      if (displayRoot && !tracker.hasChanged) {
+        this.directoryModel_!.changeDirectoryEntry(displayRoot);
+      }
+    }
+    tracker.stop();
   }
 
   /**
@@ -1780,7 +1754,7 @@ export class FileManager {
     // The fake root item is being hidden so navigate away if it's the
     // current directory.
     if (this.directoryModel_.getCurrentDirEntry() === entry) {
-      this.volumeManager_.getDefaultDisplayRoot((displayRoot) => {
+      this.volumeManager_.getDefaultDisplayRoot().then((displayRoot) => {
         if (this.directoryModel_!.getCurrentDirEntry() === entry &&
             displayRoot) {
           this.directoryModel_!.changeDirectoryEntry(displayRoot);

@@ -5,9 +5,9 @@
 #include "chrome/browser/task_manager/providers/crosapi/crosapi_task_provider_ash.h"
 
 #include <set>
+#include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/cxx20_erase_vector.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/task_manager/providers/crosapi/crosapi_task.h"
@@ -123,7 +123,8 @@ void CrosapiTaskProviderAsh::GetCrosapiTaskManagerTasks() {
 
 void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
     std::vector<crosapi::mojom::TaskPtr> task_results,
-    std::vector<crosapi::mojom::TaskGroupPtr> task_group_results) {
+    std::vector<crosapi::mojom::TaskGroupPtr> task_group_results,
+    const std::optional<std::string>& active_task_uuid) {
   // Ignore the data returned from the previous crosapi GetTaskManagrTasks
   // call which is issued before StopUpdating().
   if (!IsUpdating())
@@ -138,8 +139,34 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
   bool task_added_or_removed = false;
 
   for (const auto& mojo_task : task_results) {
+    uuid_to_remove.erase(mojo_task->task_uuid);
+  }
+
+  // Remove the stale lacros tasks. Doing this before adding or updating task
+  // can reduce chance needing to move existing tasks.
+  for (const auto& uuid : uuid_to_remove) {
+    NotifyObserverTaskRemoved(uuid_to_task_[uuid].get());
+    std::erase(sorted_task_ids_, uuid_to_task_[uuid]->task_id());
+    uuid_to_task_.erase(uuid);
+    DCHECK_EQ(uuid_to_task_.size(), sorted_task_ids_.size());
+    task_added_or_removed = true;
+  }
+
+  std::optional<TaskId> last_updated_task_id;
+  for (const auto& mojo_task : task_results) {
+    const bool new_task = !base::Contains(uuid_to_task_, mojo_task->task_uuid);
     std::unique_ptr<CrosapiTask>& task = uuid_to_task_[mojo_task->task_uuid];
-    if (uuid_to_remove.erase(mojo_task->task_uuid) == 0) {
+    // Find the next position of |last_updated_task_id| to add or update the
+    // current task.
+    std::vector<TaskId>::iterator destination_it = sorted_task_ids_.begin();
+    if (last_updated_task_id.has_value()) {
+      auto it = std::find(sorted_task_ids_.begin(), sorted_task_ids_.end(),
+                          last_updated_task_id.value());
+      if (it != sorted_task_ids_.end()) {
+        destination_it = it + 1;
+      }
+    }
+    if (new_task) {
       // New lacros task.
       task_added_or_removed = true;
       DCHECK(!task.get());
@@ -149,26 +176,36 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
       // update with new task added. We must make sure |sorted_task_ids_|
       // always contains all the crosapi tasks before calling
       // NotifyObserverTaskAdded.
-      sorted_task_ids_.push_back(task->task_id());
+      sorted_task_ids_.insert(destination_it, task->task_id());
       DCHECK_EQ(uuid_to_task_.size(), sorted_task_ids_.size());
       NotifyObserverTaskAdded(task.get());
     } else {
       // Update existing lacros task.
+      // The existing task does not guarantee to have the same order so we need
+      // to reinsert to the right position if needed. The following will move
+      // the existing task from origin_it to destination_it if they are
+      // different. Task Manager does not support move operation currently,
+      // which may make selection incorrect when it happens. But since reorder
+      // of existing tasks can rarely happen it's acceptable to leave it as is
+      // for now.
+      // TODO(b/329101660): Report move operation to |TableModelObserver|.
+      std::vector<TaskId>::iterator origin_it = std::find(
+          sorted_task_ids_.begin(), sorted_task_ids_.end(), task->task_id());
+      // Insert or remove from the back the vector first.
+      if (origin_it < destination_it) {
+        sorted_task_ids_.insert(destination_it, task->task_id());
+        sorted_task_ids_.erase(origin_it);
+      } else if (origin_it > destination_it) {
+        sorted_task_ids_.erase(origin_it);
+        sorted_task_ids_.insert(destination_it, task->task_id());
+      }
       task->Update(mojo_task);
       if (task->process_id() != mojo_task->process_id) {
         UpdateTaskProcessInfoAndNotifyObserver(
             task.get(), mojo_task->process_id, mojo_task->process_id);
       }
     }
-  }
-
-  // Remove the stale lacros tasks.
-  for (const auto& uuid : uuid_to_remove) {
-    NotifyObserverTaskRemoved(uuid_to_task_[uuid].get());
-    base::Erase(sorted_task_ids_, uuid_to_task_[uuid]->task_id());
-    uuid_to_task_.erase(uuid);
-    DCHECK_EQ(uuid_to_task_.size(), sorted_task_ids_.size());
-    task_added_or_removed = true;
+    last_updated_task_id = task->task_id();
   }
 
   DCHECK_EQ(task_results.size(), uuid_to_task_.size());
@@ -180,13 +217,6 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
         std::move(mojo_task_group);
   }
 
-  // Now task data have been properly updated, let's update |sorted_task_ids_|.
-  // Place task ids in |sorted_task_ids_| with the same order of tasks
-  // shown in |task_results|, which is pre-sorted by Lacros task manager.
-  sorted_task_ids_.clear();
-  for (const auto& task : task_results)
-    sorted_task_ids_.push_back(uuid_to_task_[task->task_uuid]->task_id());
-
   // Notify task manager to invalidate GetTaskIdsList if there are any lacros
   // tasks added or removed, since adding or removing tasks will cause
   // lacros tasks to be re-sorted in lacros. Ash task manager UI won't get the
@@ -195,6 +225,14 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
   DCHECK_EQ(task_results.size(), sorted_task_ids_.size());
   if (task_added_or_removed)
     NotifyObserverTaskIdsListToBeInvalidated();
+
+  if (!active_task_uuid.has_value()) {
+    return;
+  }
+  const auto it = uuid_to_task_.find(active_task_uuid.value());
+  if (it != uuid_to_task_.end()) {
+    NotifyObserverActiveTaskFetched(it->second->task_id());
+  }
 }
 
 void CrosapiTaskProviderAsh::CleanupCachedData() {

@@ -110,7 +110,8 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Activates (opens) the item.
   virtual void ActivateItem(const std::string& id,
                             int event_flags,
-                            AppListLaunchedFrom launched_from) = 0;
+                            AppListLaunchedFrom launched_from,
+                            bool is_app_above_the_fold) = 0;
 
   // Returns the context menu model for a ChromeAppListItem with |id|, or
   // nullptr if there is currently no menu for the item (e.g. during install).
@@ -210,6 +211,14 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Sets the preference of displaying `category` to users to `enabled`.
   virtual void SetCategoryEnabled(AppListSearchControlCategory category,
                                   bool enabled) = 0;
+
+  // Records metrics regarding the apps visibiity from the launcher's default
+  // state. For example, for scrollable apps grid view, an item view would be
+  // above the fold if it is visible without scrolling.
+  virtual void RecordAppsDefaultVisibility(
+      const std::vector<std::string>& apps_above_the_fold,
+      const std::vector<std::string>& apps_below_the_fold,
+      bool is_apps_collections_page) = 0;
 };
 
 }  // namespace ash

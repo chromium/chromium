@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
 import org.chromium.chrome.browser.share.ShareHelper;
+import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -175,6 +176,7 @@ class ShareSheetPropertyModelBuilder {
                     "Sharing.SharingHubAndroid.ThirdPartyAppUsage", logIndex, MAX_NUM_APPS + 1);
         }
         ShareSheetCoordinator.recordShareMetrics(
+                ShareCustomAction.INVALID,
                 "SharingHubAndroid.ThirdPartyAppSelected",
                 linkGenerationStatusForMetrics,
                 linkToggleMetricsDetails,

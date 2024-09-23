@@ -9,6 +9,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/containers/adapters.h"
@@ -314,7 +315,7 @@ TEST_F(CertVerifierServiceTest, TestInvalidIntermediate) {
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
   intermediates.push_back(
-      net::x509_util::CreateCryptoBuffer(base::StringPiece("F")));
+      net::x509_util::CreateCryptoBuffer(std::string_view("F")));
 
   scoped_refptr<net::X509Certificate> test_cert =
       net::X509Certificate::CreateFromBuffer(bssl::UpRef(leaf->cert_buffer()),

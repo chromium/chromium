@@ -416,6 +416,23 @@ enum BulkPinStage {
   cannot_enable_docs_offline
 };
 
+// The default location/volume that the user should use.
+// It's usually MyFiles. When SkyVault is enabled the admin might
+// choose between Google Drive and OneDrive.
+// NOTE: This is independent of the Downloads folder which is mostly used
+// in the browser (lacros or ash).
+enum DefaultLocation {
+  my_files,
+  google_drive,
+  onedrive
+};
+
+enum CloudProvider {
+  not_specified,
+  google_drive,
+  onedrive
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -852,7 +869,9 @@ dictionary Preferences {
   double officeFileMovedGoogleDrive;
   boolean driveFsBulkPinningAvailable;
   boolean driveFsBulkPinningEnabled;
-  boolean localUserFilesEnabled;
+  boolean localUserFilesAllowed;
+  DefaultLocation defaultLocation;
+  CloudProvider skyVaultMigrationDestination;
 };
 
 dictionary PreferencesChange {
@@ -1335,6 +1354,39 @@ dictionary BulkPinProgress {
   boolean emptiedQueue;
 };
 
+// Represents a custom view of files to be displayed.
+dictionary MaterializedView {
+  // Unique indentifier for the view.
+  long viewId;
+
+  // Name of the view displayed to the user.
+  DOMString name;
+};
+
+// Used by EntryData to store the file system of the entry.
+dictionary FileSystemData {
+  // Name of the file system. Will be unique.
+  DOMString name;
+
+  // File system URL of the root entry of the file system.
+  DOMString rootUrl;
+};
+
+// Representation of an entry as a replacement for File/Directory Entries.
+dictionary EntryData {
+  // File system URL of the entry.
+  DOMString entryUrl;
+
+  // If false, the entry is a file.
+  boolean isDirectory;
+
+  // Localized name of the entry for display.
+  DOMString name;
+
+  // Information about the filesystem the entry is located in.
+  FileSystemData filesystem;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -1482,6 +1534,10 @@ callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
 
 callback GetBulkPinProgressCallback = void(BulkPinProgress progress);
 
+callback GetMaterializedViewsCallback = void(MaterializedView[] views);
+
+callback ReadMaterializedViewCallback = void(EntryData[] files);
+
 interface Functions {
   // Cancels file selection.
   static void cancelDialog();
@@ -1521,7 +1577,6 @@ interface Functions {
   // Gets the MIME type of an entry.
   // |entry| The entry to be checked.
   // |callback|
-  [supportsPromises]
   static void getMimeType(DOMString url,
                           GetMimeTypeCallback callback);
 
@@ -1755,13 +1810,7 @@ interface Functions {
   static void searchDriveMetadata(SearchMetadataParams searchParams,
                                   SearchDriveMetadataCallback callback);
 
-  // Search files in the volume having |volumeId| by using |hashList|.
-  [doesNotSupportPromises]
-  static void searchFilesByHashes(DOMString volumeId,
-                                  DOMString[] hashList,
-                                  SearchFilesByHashesCallback callback);
-
-  // Search files in My Files.
+  // Search files in MyFiles.
   [nocompile, doesNotSupportPromises]
   static void searchFiles(SearchMetadataParams searchParams,
                           SearchFilesCallback callback);
@@ -1801,13 +1850,6 @@ interface Functions {
   // Opens page in Settings window.
   // |subPage| Name of a subPage to show.
   static void openSettingsSubpage(DOMString subPage);
-
-  // Computes an MD5 checksum for the given file.
-  // |entry| The entry of the file to checksum.
-  // |callback|
-  [nocompile, doesNotSupportPromises]
-  static void computeChecksum([instanceOf=Entry] object entry,
-                              ComputeChecksumCallback callback);
 
   // Returns list of available providers.
   [doesNotSupportPromises]
@@ -1928,9 +1970,8 @@ interface Functions {
   // |callback| is called with error in case of failure and with no arguments
   // if successfully launched the Sharesheet dialog, but before user has
   // finished the sharing.
-  [nocompile, doesNotSupportPromises]
-  static void sharesheetHasTargets([instanceOf=Entry] object[] entries,
-                           BooleanCallback callback);
+  static void sharesheetHasTargets(DOMString[] fileUrls,
+                                   BooleanCallback callback);
 
   // Invoke Sharesheet for selected files.
   // |entries| Array of selected entries.
@@ -1938,8 +1979,7 @@ interface Functions {
   // |dlpSourceUrls| Array of source URLs corresponding to the entries, used to
   // check Data Leak Prevention (DLP) restrictions
   // |callback|
-  [nocompile, doesNotSupportPromises]
-  static void invokeSharesheet([instanceOf=Entry] object[] entries,
+  static void invokeSharesheet(DOMString[] fileUrls,
                                SharesheetLaunchSource launchSource,
                                DOMString[] dlpSourceUrls,
                                SimpleCallback callback);
@@ -2042,6 +2082,13 @@ interface Functions {
   // drive.
   [doesNotSupportPromises]
   static void calculateBulkPinRequiredSpace(SimpleCallback callback);
+
+  // Returns a list of views that can be displayed to the user.
+  static void getMaterializedViews(GetMaterializedViewsCallback callback);
+
+  // Returns the list of entries contained in the view identified by `viewId`.
+  static void readMaterializedView(long viewId,
+                                   ReadMaterializedViewCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

@@ -110,7 +110,7 @@ String CSSImportRule::supportsText() const {
 
 void CSSImportRule::Reattach(StyleRuleBase*) {
   // FIXME: Implement when enabling caching for stylesheets with import rules.
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
 }
 
 const MediaQuerySet* CSSImportRule::MediaQueries() const {

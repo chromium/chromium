@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [
+    "apn_ui_interactive_uitest.cc",
+    "esim_installation_interactive_uitest.cc",
+    "esim_interactive_uitest.cc",
+    "esim_interactive_uitest_base.cc",
+    "esim_interactive_uitest_base.h",
+    "esim_policy_interactive_uitest.cc",
+    "esim_ui_elements_interactive_uitest.cc",
+    "psim_ui_elements_interactive_uitest.cc",
+    "rename_esim_profile_interactive_uitest.cc",
+    "sim_lock_interactive_uitest.cc",
+    "toggle_cellular_interactive_uitest.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":test_support",
+    "//ash",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/test/base/ash/interactive:test_support",
+    "//chrome/test/base/ash/interactive/network:test_support",
+    "//chrome/test/base/ash/interactive/settings:test_support",
+    "//chromeos/ash/components/dbus/hermes:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/components/onc:test_support",
+    "//chromeos/strings:strings_grit",
+    "//content/test:test_support",
+    "//dbus",
+    "//ui/base:base",
+    "//ui/base:test_support",
+    "//ui/chromeos/strings:strings_grit",
+    "//ui/message_center",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "cellular_util.cc",
+    "cellular_util.h",
+    "esim_name_observer.cc",
+    "esim_name_observer.h",
+    "wait_for_service_connected_observer.cc",
+    "wait_for_service_connected_observer.h",
+  ]
+
+  deps = [
+    "//chrome/test/base/ash/interactive/network:test_support",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//dbus",
+    "//ui/base:test_support",
+  ]
+}

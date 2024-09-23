@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {EventGenerator} from '../../event_generator.js';
-import {KeyCodeData} from '../../key_code.js';
+import {KeyCode} from '../../key_code.js';
+import {TestImportManager} from '../../testing/test_import_manager.js';
 import {Context, ContextChecker} from '../context_checker.js';
 import {InputController} from '../input_controller.js';
 
@@ -65,7 +66,7 @@ export class DeletePreviousCharacterMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.BACK.code);
+    EventGenerator.sendKeyPress(KeyCode.BACK);
   }
 }
 
@@ -84,7 +85,7 @@ export class NavPreviousCharMacro extends RepeatableKeyPressMacro {
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCodeData.RIGHT.code : KeyCodeData.LEFT.code);
+        this.isRTLLocale_ ? KeyCode.RIGHT : KeyCode.LEFT);
   }
 }
 
@@ -103,7 +104,7 @@ export class NavNextCharMacro extends RepeatableKeyPressMacro {
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCodeData.LEFT.code : KeyCodeData.RIGHT.code);
+        this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT);
   }
 }
 
@@ -117,7 +118,7 @@ export class NavPreviousLineMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.UP.code);
+    EventGenerator.sendKeyPress(KeyCode.UP);
   }
 }
 
@@ -131,7 +132,7 @@ export class NavNextLineMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.DOWN.code);
+    EventGenerator.sendKeyPress(KeyCode.DOWN);
   }
 }
 
@@ -146,7 +147,7 @@ export class CopySelectedTextMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.C.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.C, {ctrl: true});
   }
 }
 
@@ -157,7 +158,7 @@ export class PasteTextMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.V.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.V, {ctrl: true});
   }
 }
 
@@ -172,7 +173,7 @@ export class CutSelectedTextMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.X.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.X, {ctrl: true});
   }
 }
 
@@ -183,7 +184,7 @@ export class UndoTextEditMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.Z.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.Z, {ctrl: true});
   }
 }
 
@@ -194,7 +195,7 @@ export class RedoActionMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.Z.code, {ctrl: true, shift: true});
+    EventGenerator.sendKeyPress(KeyCode.Z, {ctrl: true, shift: true});
   }
 }
 
@@ -207,7 +208,7 @@ export class SelectAllTextMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.A.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.A, {ctrl: true});
   }
 }
 
@@ -225,7 +226,7 @@ export class UnselectTextMacro extends RepeatableKeyPressMacro {
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCodeData.LEFT.code : KeyCodeData.RIGHT.code);
+        this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT);
   }
 }
 
@@ -239,7 +240,7 @@ export class DeletePrevWordMacro extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.BACK.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.BACK, {ctrl: true});
   }
 }
 
@@ -257,8 +258,7 @@ export class NavNextWordMacro extends RepeatableKeyPressMacro {
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCodeData.LEFT.code : KeyCodeData.RIGHT.code,
-        {ctrl: true});
+        this.isRTLLocale_ ? KeyCode.LEFT : KeyCode.RIGHT, {ctrl: true});
   }
 }
 
@@ -276,8 +276,7 @@ export class NavPrevWordMacro extends RepeatableKeyPressMacro {
 
   override doKeyPress(): void {
     EventGenerator.sendKeyPress(
-        this.isRTLLocale_ ? KeyCodeData.RIGHT.code : KeyCodeData.LEFT.code,
-        {ctrl: true});
+        this.isRTLLocale_ ? KeyCode.RIGHT : KeyCode.LEFT, {ctrl: true});
   }
 }
 
@@ -290,8 +289,8 @@ export class DeleteAllText extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.A.code, {ctrl: true});
-    EventGenerator.sendKeyPress(KeyCodeData.BACK.code);
+    EventGenerator.sendKeyPress(KeyCode.A, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.BACK);
   }
 }
 
@@ -306,7 +305,7 @@ export class NavStartText extends RepeatableKeyPressMacro {
   override doKeyPress(): void {
     // TODO(b/259397131): Migrate this implementation to use
     // chrome.automation.setDocumentSelection.
-    EventGenerator.sendKeyPress(KeyCodeData.HOME.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.HOME, {ctrl: true});
   }
 }
 
@@ -321,7 +320,7 @@ export class NavEndText extends RepeatableKeyPressMacro {
   override doKeyPress(): void {
     // TODO(b/259397131): Migrate this implementation to use
     // chrome.automation.setDocumentSelection.
-    EventGenerator.sendKeyPress(KeyCodeData.END.code, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.END, {ctrl: true});
   }
 }
 
@@ -335,8 +334,7 @@ export class SelectPrevWord extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(
-        KeyCodeData.LEFT.code, {ctrl: true, shift: true});
+    EventGenerator.sendKeyPress(KeyCode.LEFT, {ctrl: true, shift: true});
   }
 }
 
@@ -350,8 +348,7 @@ export class SelectNextWord extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(
-        KeyCodeData.RIGHT.code, {ctrl: true, shift: true});
+    EventGenerator.sendKeyPress(KeyCode.RIGHT, {ctrl: true, shift: true});
   }
 }
 
@@ -365,7 +362,7 @@ export class SelectNextChar extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.RIGHT.code, {shift: true});
+    EventGenerator.sendKeyPress(KeyCode.RIGHT, {shift: true});
   }
 }
 
@@ -379,6 +376,8 @@ export class SelectPrevChar extends RepeatableKeyPressMacro {
   }
 
   override doKeyPress(): void {
-    EventGenerator.sendKeyPress(KeyCodeData.LEFT.code, {shift: true});
+    EventGenerator.sendKeyPress(KeyCode.LEFT, {shift: true});
   }
 }
+
+TestImportManager.exportForTesting(UnselectTextMacro);

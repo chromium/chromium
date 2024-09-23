@@ -4,11 +4,8 @@
 
 #include "content/browser/preloading/prefetch/prefetch_canary_checker.h"
 
-#include <math.h>
-
 #include <cmath>
 
-#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram.h"
@@ -19,16 +16,13 @@
 #include "build/build_config.h"
 #include "content/browser/preloading/prefetch/prefetch_dns_prober.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
@@ -73,10 +67,10 @@ std::string NameForClient(PrefetchCanaryChecker::CheckType name) {
     case PrefetchCanaryChecker::CheckType::kDNS:
       return "DNS";
     default:
-      NOTREACHED() << static_cast<int>(name);
+      NOTREACHED_IN_MIGRATION() << static_cast<int>(name);
       return std::string();
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return std::string();
 }
 
@@ -144,8 +138,9 @@ PrefetchCanaryChecker::MakePrefetchCanaryChecker(
     const RetryPolicy& retry_policy,
     const base::TimeDelta check_timeout,
     base::TimeDelta revalidate_cache_after) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return nullptr;
+  }
   return std::make_unique<PrefetchCanaryChecker>(browser_context, name, url,
                                                  retry_policy, check_timeout,
                                                  revalidate_cache_after);
@@ -396,8 +391,8 @@ void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
           base::BindOnce(&PrefetchCanaryChecker::OnDNSResolved, GetWeakPtr())),
       client_remote.InitWithNewPipeAndPassReceiver());
 
-  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
-  // DNS resource record query.
+  // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
+  // HTTPS DNS resource record query.
   browser_context_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(

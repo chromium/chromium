@@ -149,7 +149,7 @@ class BoxBorderPainter {
   // computed attributes
   FloatRoundedRect outer_;
   FloatRoundedRect inner_;
-  BorderEdge edges_[4];
+  BorderEdgeArray edges_;
 
   unsigned visible_edge_count_;
   unsigned first_visible_edge_;

@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -442,7 +441,7 @@ TEST_P(LinkLoaderPreloadImageSrcsetTest, Preload) {
   const auto& test_case = GetParam();
   dummy_page_holder_->GetDocument().SetBaseURLOverride(
       KURL("http://example.test/"));
-  dummy_page_holder_->GetDocument().GetFrame()->SetPageZoomFactor(
+  dummy_page_holder_->GetDocument().GetFrame()->SetLayoutZoomFactor(
       test_case.scale_factor);
   LinkLoadParameters params(
       LinkRelAttribute("preload"), kCrossOriginAttributeNotSet, "image/gif",
@@ -846,7 +845,7 @@ TEST_P(DictionaryLinkTest, LoadDictionaryFromLink) {
   // via |dummy_page_holder|.
   url_test_helpers::RegisterMockedErrorURLLoad(href_url);
   LinkLoadParameters params(
-      LinkRelAttribute("dictionary"), kCrossOriginAttributeNotSet,
+      LinkRelAttribute("compression-dictionary"), kCrossOriginAttributeNotSet,
       String() /* type */, String() /* as */, String() /* media */,
       String() /* nonce */, String() /* integrity */,
       String() /* fetch_priority_hint */,
@@ -879,7 +878,8 @@ class DictionaryLoadFromHeaderTest : public SimTest,
     SimTest::SetUp();
 
     SimRequestBase::Params params;
-    String link_header = String("<") + dict_href_ + ">; rel=\"dictionary\"";
+    String link_header =
+        String("<") + dict_href_ + ">; rel=\"compression-dictionary\"";
     params.response_http_headers.Set(http_names::kLink, link_header);
     main_resource_ =
         std::make_unique<SimRequest>(page_href_, "text/html", params);

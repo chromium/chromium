@@ -1,0 +1,5 @@
+include_rules = [
+  "+chromeos/ash/components/dbus/patchpanel",
+  "+chromeos/ash/components/dbus/shill",
+  "+chromeos/ash/components/network",
+]

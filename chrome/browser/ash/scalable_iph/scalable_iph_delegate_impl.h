@@ -44,10 +44,10 @@ class ScalableIphDelegateImpl
   ~ScalableIphDelegateImpl() override;
 
   // scalable_iph::ScalableIphDelegate:
-  void ShowBubble(
+  bool ShowBubble(
       const BubbleParams& params,
       std::unique_ptr<scalable_iph::IphSession> iph_session) override;
-  void ShowNotification(
+  bool ShowNotification(
       const NotificationParams& params,
       std::unique_ptr<scalable_iph::IphSession> iph_session) override;
   void AddObserver(
@@ -86,6 +86,7 @@ class ScalableIphDelegateImpl
       phonehub::FeatureStatusProvider* feature_status_provider);
 
  private:
+  bool IsEligibleAction(scalable_iph::ActionType action_type);
   void SetHasOnlineNetwork(bool has_online_network);
   void QueryOnlineNetworkState();
   void OnNetworkStateList(

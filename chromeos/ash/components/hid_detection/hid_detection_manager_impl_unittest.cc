@@ -76,8 +76,6 @@ class HidDetectionManagerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kOobeHidDetectionRevamp);
     auto fake_bluetooth_hid_detector =
         std::make_unique<FakeBluetoothHidDetector>();
     fake_bluetooth_hid_detector_ = fake_bluetooth_hid_detector.get();

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #import <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
 #include <stddef.h>
@@ -267,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, PressingEnterKillsProcess) {
   }
 }
 
-// TODO(crbug.com/1426429): Re-enable when fixed.
+// TODO(crbug.com/40261286): Re-enable when fixed.
 IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_SelectionConsistency) {
   ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
 
@@ -374,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_SelectionConsistency) {
   EXPECT_EQ(TableFirstSelectedRow(), FindRowForTab(tabs[2]));
 }
 
-// TODO(crbug.com/1426429): Re-enable when fixed.
+// TODO(crbug.com/40261286): Re-enable when fixed.
 IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_NavigateSelection) {
   ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
   ui_controls::EnableUIControls();

@@ -13,7 +13,6 @@
 #include "base/debug/asan_invalid_access.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,7 +34,7 @@ bool ExitedCleanly(int exit_status) {
   return exit_status == 0;
 }
 
-// TODO(crbug.com/1402267): ASAN death test is not picking up the failure
+// TODO(crbug.com/40884672): ASAN death test is not picking up the failure
 // in the emulator logs. Disabling to keep ASAN queue clear.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_ErrorCallback DISABLED_ErrorCallback

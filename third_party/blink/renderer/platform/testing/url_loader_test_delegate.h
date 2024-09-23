@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_TEST_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_URL_LOADER_TEST_DELEGATE_H_
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_common.h"
 
@@ -27,8 +28,7 @@ class URLLoaderTestDelegate {
   virtual void DidReceiveResponse(URLLoaderClient* original_client,
                                   const WebURLResponse&);
   virtual void DidReceiveData(URLLoaderClient* original_client,
-                              const char* data,
-                              size_t data_length);
+                              base::span<const char> data);
   virtual void DidFail(URLLoaderClient* original_client,
                        const WebURLError&,
                        int64_t total_encoded_data_length,

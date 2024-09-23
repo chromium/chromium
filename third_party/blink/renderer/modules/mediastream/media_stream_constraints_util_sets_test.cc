@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 
 #include <cmath>
@@ -63,8 +68,7 @@ bool AreCounterclockwise(const Vector<Point>& vertices) {
   // Compute orientation using the determinant of each diagonal in the
   // polygon, using the first vertex as reference.
   Point prev_diagonal = vertices[1] - vertices[0];
-  for (auto* vertex = vertices.begin() + 2; vertex != vertices.end();
-       ++vertex) {
+  for (auto vertex = vertices.begin() + 2; vertex != vertices.end(); ++vertex) {
     Point current_diagonal = *vertex - vertices[0];
     // The determinant of the two diagonals returns the signed area of the
     // parallelogram they generate. The area is positive if the diagonals are in

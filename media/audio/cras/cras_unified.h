@@ -70,7 +70,8 @@ class MEDIA_EXPORT CrasUnifiedStream : public AudioOutputStream {
                       uint8_t* buffer,
                       const timespec* latency_ts);
 
-  // Deals with an error that occured in the stream.  Called from StreamError().
+  // Deals with an error that occurred in the stream.  Called from
+  // StreamError().
   void NotifyStreamError(int err);
 
   // There is 3 main reasons for output audio glitches.

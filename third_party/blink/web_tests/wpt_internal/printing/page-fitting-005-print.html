@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<link rel="match" href="page-fitting-005-print-ref.html">
+<meta name="assert" content="When the page is scaled down to fit, the area available to margin boxes shrinks too.">
+<script>
+  if (window.testRunner) {
+    testRunner.setPrintingSize(400, 300);
+    testRunner.setShouldCenterAndShrinkToFitPaper(true);
+  }
+</script>
+<style>
+  @page {
+    size: 800px 600px;
+    margin: 100px;
+    border: 10px solid;
+
+    @top-left-corner {
+      box-sizing: border-box;
+      border: 5px solid lime;
+      width: 50px;
+      height: 100%;
+      content: "";
+      background: green;
+    }
+    @top-right-corner {
+      box-sizing: border-box;
+      border: 5px solid lime;
+      width: 100%;
+      height: 50px;
+      content: "";
+      background: green;
+    }
+    @bottom-right-corner {
+      box-sizing: border-box;
+      border: 5px solid lime;
+      width: 50px;
+      height: 100%;
+      content: "";
+      background: green;
+    }
+    @bottom-left-corner {
+      box-sizing: border-box;
+      border: 5px solid lime;
+      width: 100%;
+      height: 50px;
+      content: "";
+      background: green;
+    }
+  }
+</style>

@@ -258,7 +258,7 @@ TEST_F(
 
   controller->OnEventListOpened();
   const std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(
-      ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
+      ui::EventType::kMousePressed, ui::VKEY_UNKNOWN, ui::EF_NONE);
   controller->RecordJoinMeetingButtonPressed(*test_event);
 
   histogram_tester.ExpectTotalCount(
@@ -272,7 +272,7 @@ TEST_F(
   auto controller = std::make_unique<CalendarViewController>();
 
   const std::unique_ptr<ui::Event> test_event = std::make_unique<ui::KeyEvent>(
-      ui::EventType::ET_MOUSE_PRESSED, ui::VKEY_UNKNOWN, ui::EF_NONE);
+      ui::EventType::kMousePressed, ui::VKEY_UNKNOWN, ui::EF_NONE);
   controller->RecordJoinMeetingButtonPressed(*test_event);
 
   histogram_tester.ExpectTotalCount(

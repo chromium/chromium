@@ -11,9 +11,7 @@ import android.view.autofill.VirtualViewFillInfo;
 import androidx.annotation.RequiresApi;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
@@ -26,13 +24,8 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 @Config(manifest = Config.NONE, minSdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-@Features.EnableFeatures({
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_PREFILL_REQUESTS_FOR_LOGIN_FORMS_NAME,
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME
-})
+@Features.EnableFeatures({AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME})
 public class PrefillRequestTest {
-
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Test
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

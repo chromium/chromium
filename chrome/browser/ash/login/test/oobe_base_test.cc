@@ -14,17 +14,15 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/test/gaia_page_event_waiter.h"
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/login_display_host_webui.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/login_display_host_webui.h"
+#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
@@ -34,6 +32,7 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/common/content_switches.h"
@@ -43,52 +42,12 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace ash {
-namespace {
-
-class GaiaPageEventWaiter : public test::TestConditionWaiter {
- public:
-  GaiaPageEventWaiter(const std::string& authenticator_id,
-                      const std::string& event)
-      : message_queue_(LoginDisplayHost::default_host()->GetOobeWebContents()) {
-    std::string js =
-        R"((function() {
-              var authenticator = $AuthenticatorId;
-              var f = function() {
-                authenticator.removeEventListener('$Event', f);
-                window.domAutomationController.send('Done');
-              };
-              authenticator.addEventListener('$Event', f);
-            })();)";
-    base::ReplaceSubstringsAfterOffset(&js, 0, "$AuthenticatorId",
-                                       authenticator_id);
-    base::ReplaceSubstringsAfterOffset(&js, 0, "$Event", event);
-    test::OobeJS().Evaluate(js);
-  }
-
-  ~GaiaPageEventWaiter() override { EXPECT_TRUE(wait_called_); }
-
-  // test::TestConditionWaiter:
-  void Wait() override {
-    ASSERT_FALSE(wait_called_) << "Wait should be called once";
-    wait_called_ = true;
-    std::string message;
-    do {
-      ASSERT_TRUE(message_queue_.WaitForMessage(&message));
-    } while (message != "\"Done\"");
-  }
-
- private:
-  content::DOMMessageQueue message_queue_;
-  bool wait_called_ = false;
-};
-
-}  // namespace
 
 OobeBaseTest::OobeBaseTest() {
   set_exit_when_last_browser_closes(false);
 }
 
-OobeBaseTest::~OobeBaseTest() {}
+OobeBaseTest::~OobeBaseTest() = default;
 
 void OobeBaseTest::RegisterAdditionalRequestHandlers() {}
 
@@ -216,11 +175,9 @@ test::JSChecker OobeBaseTest::SigninFrameJS() {
 
 // static
 OobeScreenId OobeBaseTest::GetFirstSigninScreen() {
-  bool isEnterpriseManaged = !g_browser_process->platform_part()
-                                  ->browser_policy_connector_ash()
-                                  ->IsDeviceEnterpriseManaged();
-  return isEnterpriseManaged ? UserCreationView::kScreenId
-                             : GaiaView::kScreenId;
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged()
+             ? GaiaView::kScreenId
+             : UserCreationView::kScreenId;
 }
 
 void OobeBaseTest::MaybeWaitForLoginScreenLoad() {

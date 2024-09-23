@@ -41,7 +41,7 @@
 
   const domParser = new DOMParser();
   function parseHtml(html) {
-    return domParser.parseFromString(html, 'text/html', {includeShadowRoots: true});
+    return Document.parseHTMLUnsafe(html);
   }
 
   function measureParse(html) {
@@ -51,7 +51,7 @@
   }
 
   function parseAndAppend(parent, html) {
-    const fragment = domParser.parseFromString(html, 'text/html', {includeShadowRoots: true});
+    const fragment = Document.parseHTMLUnsafe(html);
     parent.replaceChildren(...fragment.body.childNodes);
   }
 

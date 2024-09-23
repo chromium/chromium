@@ -25,6 +25,10 @@ class CompositorRenderPass;
 class RasterContextProvider;
 }
 
+namespace gpu {
+class ClientSharedImageInterface;
+}
+
 namespace blink {
 
 // VideoFrameResourceProvider obtains required GPU resources for the video
@@ -41,8 +45,10 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
 
   virtual ~VideoFrameResourceProvider();
 
-  virtual void Initialize(viz::RasterContextProvider* media_context_provider,
-                          viz::SharedBitmapReporter* shared_bitmap_reporter);
+  virtual void Initialize(
+      viz::RasterContextProvider* media_context_provider,
+      viz::SharedBitmapReporter* shared_bitmap_reporter,
+      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
   virtual void AppendQuads(viz::CompositorRenderPass*,
                            scoped_refptr<media::VideoFrame>,
                            media::VideoTransformation,
@@ -64,7 +70,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
  private:
   const cc::LayerTreeSettings settings_;
 
-  raw_ptr<viz::RasterContextProvider, ExperimentalRenderer> context_provider_;
+  raw_ptr<viz::RasterContextProvider> context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   std::unique_ptr<media::VideoResourceUpdater> resource_updater_;
   bool use_sync_primitives_ = false;

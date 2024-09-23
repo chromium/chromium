@@ -44,14 +44,7 @@ bool DesktopMediaPickerViewsTestApi::AudioSupported(
 }
 
 void DesktopMediaPickerViewsTestApi::FocusAudioShareControl() {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    const int index = picker_->dialog_->GetSelectedTabIndex();
-    CHECK_GE(index, 0);
-    CHECK_LT(static_cast<size_t>(index), picker_->dialog_->categories_.size());
-    picker_->dialog_->categories_[index].pane->RequestFocus();
-  } else {
-    picker_->dialog_->audio_share_checkbox_->RequestFocus();
-  }
+  GetActivePane()->RequestFocus();
 }
 
 void DesktopMediaPickerViewsTestApi::PressMouseOnSourceAtIndex(
@@ -63,7 +56,7 @@ void DesktopMediaPickerViewsTestApi::PressMouseOnSourceAtIndex(
   views::View* source_view = GetSourceAtIndex(index);
   if (source_view) {
     source_view->OnMousePressed(
-        ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+        ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), flags, ui::EF_LEFT_MOUSE_BUTTON));
   } else {
     // There's no source view to target, and trying to target a specific source
@@ -90,7 +83,7 @@ void DesktopMediaPickerViewsTestApi::PressKeyOnSourceAtIndex(
 }
 
 void DesktopMediaPickerViewsTestApi::DoubleTapSourceAtIndex(size_t index) {
-  ui::GestureEventDetails details(ui::ET_GESTURE_TAP);
+  ui::GestureEventDetails details(ui::EventType::kGestureTap);
   details.set_tap_count(2);
   ui::GestureEvent double_tap(10, 10, 0, base::TimeTicks(), details);
   views::View* source_view = GetSourceAtIndex(index);
@@ -141,40 +134,44 @@ DesktopMediaPickerViewsTestApi::GetSelectedController() {
 }
 
 bool DesktopMediaPickerViewsTestApi::HasAudioShareControl() const {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    const int index = picker_->dialog_->GetSelectedTabIndex();
-    CHECK_GE(index, 0);
-    CHECK_LT(static_cast<size_t>(index), picker_->dialog_->categories_.size());
-    return picker_->dialog_->categories_[index].pane &&
-           picker_->dialog_->categories_[index].pane->AudioOffered();
-  } else {
-    return picker_->dialog_->audio_share_checkbox_;
-  }
+  return GetActivePane() && GetActivePane()->AudioOffered();
+}
+
+std::u16string DesktopMediaPickerViewsTestApi::GetAudioLabelText() const {
+  return GetActivePane()->GetAudioLabelText();
 }
 
 void DesktopMediaPickerViewsTestApi::SetAudioSharingApprovedByUser(bool allow) {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    const int index = picker_->dialog_->GetSelectedTabIndex();
-    CHECK_GE(index, 0);
-    CHECK_LT(static_cast<size_t>(index), picker_->dialog_->categories_.size());
-    picker_->dialog_->categories_[index].pane->SetAudioSharingApprovedByUser(
-        allow);
-  } else {
-    picker_->dialog_->audio_share_checkbox_->SetChecked(allow);
-  }
+  GetActivePane()->SetAudioSharingApprovedByUser(allow);
 }
 
 bool DesktopMediaPickerViewsTestApi::IsAudioSharingApprovedByUser() const {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    return picker_->dialog_->IsAudioSharingApprovedByUser();
-  } else {
-    return picker_->dialog_->audio_share_checkbox_->GetChecked();
-  }
+  return picker_->dialog_->IsAudioSharingApprovedByUser();
 }
 
 views::MdTextButton* DesktopMediaPickerViewsTestApi::GetReselectButton() {
   return picker_->dialog_->reselect_button_;
 }
+
+const DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane()
+    const {
+  const int index = picker_->dialog_->GetSelectedTabIndex();
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index), picker_->dialog_->categories_.size());
+  CHECK(picker_->dialog_->categories_[index].pane);
+  return picker_->dialog_->categories_[index].pane;
+}
+
+DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane() {
+  return const_cast<DesktopMediaPaneView*>(
+      std::as_const(*this).GetActivePane());
+}
+
+#if BUILDFLAG(IS_MAC)
+void DesktopMediaPickerViewsTestApi::OnPermissionUpdate(bool has_permission) {
+  picker_->dialog_->OnPermissionUpdate(has_permission);
+}
+#endif
 
 const views::View* DesktopMediaPickerViewsTestApi::GetSourceAtIndex(
     size_t index) const {

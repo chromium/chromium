@@ -12,6 +12,16 @@
 
 #pragma mark - AppStateAgent
 
++ (instancetype)agentFromApp:(AppState*)appState {
+  for (id agent in appState.connectedAgents) {
+    if ([agent isMemberOfClass:[self class]]) {
+      return agent;
+    }
+  }
+
+  return nil;
+}
+
 - (void)setAppState:(AppState*)appState {
   // This should only be called once!
   DCHECK(!_appState);

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/branches.star", "branches")
-load("//lib/builders.star", "builders", "cpu", "reclient")
+load("//lib/builders.star", "builders", "cpu", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -18,7 +18,7 @@ ci.defaults.set(
     shadow_builderless = True,
     shadow_free_space = None,
     shadow_pool = "luci.chromium.try",
-    shadow_reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    shadow_siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
 luci.bucket(
@@ -82,7 +82,14 @@ luci.bucket(
                 ci.gpu.SHADOW_SERVICE_ACCOUNT,
             ],
         ),
-        # TODO(crbug.com/1501383): Remove this binding after shadow bucket
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            users = [
+                ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+                ci.gpu.SHADOW_SERVICE_ACCOUNT,
+            ],
+        ),
+        # TODO(crbug.com/40941662): Remove this binding after shadow bucket
         # could inherit the view permission from the actual bucket.
         luci.binding(
             roles = "role/buildbucket.reader",
@@ -135,6 +142,7 @@ luci.gitiles_poller(
         "chromium.gpu.fyi",
         "chromium.swangle",
         "chromium.updater",
+        "chromium.enterprise_companion",
     ],
 ) for name, title in (
     ("main", "{} Main Console".format(settings.project_title)),
@@ -148,9 +156,6 @@ luci.gitiles_poller(
     category = "chrome",
     short_name = short_name,
 ) for name, short_name in (
-    ("lacros-amd64-generic-chrome", "lcr"),
-    ("lacros-arm-generic-chrome", "lcr"),
-    ("lacros-arm64-generic-chrome", "lcr"),
     ("linux-chromeos-chrome", "cro"),
     ("linux-chrome", "lnx"),
     ("mac-chrome", "mac"),
@@ -179,6 +184,7 @@ consoles.console_view(
 ) for name, category, short_name in (
     ("fuchsia-arm64-rel-ready", "gardener|p/chrome|arm64", "rel-ready"),
     ("fuchsia-arm64-nest-sd", "gardener|p/chrome|arm64", "nest-arm"),
+    ("fuchsia-ava-nelson", "gardener|hardware|ava", "nsn"),
     ("fuchsia-builder-perf-arm64", "gardener|p/chrome|arm64", "perf-arm"),
     ("fuchsia-cast-astro", "gardener|hardware|cast", "ast"),
     ("fuchsia-cast-nelson", "gardener|hardware|cast", "nsn"),
@@ -191,6 +197,7 @@ consoles.console_view(
     ("fuchsia-smoke-astro", "gardener|hardware|smoke", "ast"),
     ("fuchsia-smoke-nelson", "gardener|hardware|smoke", "nsn"),
     ("fuchsia-smoke-sherlock", "gardener|hardware|smoke", "sher"),
+    ("fuchsia-smoke-sherlock-roller", "gardener|hardware|smoke", "roll"),
     ("fuchsia-perf-nsn", "gardener|hardware|perf", "nsn"),
     ("fuchsia-perf-shk", "gardener|hardware|perf", "sher"),
     ("fuchsia-x64", "gardener|p/chrome|x64", "rel"),
@@ -202,6 +209,7 @@ exec("./ci/checks.star")
 exec("./ci/chromium.star")
 exec("./ci/chromium.accessibility.star")
 exec("./ci/chromium.android.star")
+exec("./ci/chromium.android.desktop.star")
 exec("./ci/chromium.android.fyi.star")
 exec("./ci/chromium.angle.star")
 exec("./ci/chromium.cft.star")
@@ -209,6 +217,7 @@ exec("./ci/chromium.chromiumos.star")
 exec("./ci/chromium.clang.star")
 exec("./ci/chromium.coverage.star")
 exec("./ci/chromium.dawn.star")
+exec("./ci/chromium.enterprise_companion.star")
 exec("./ci/chromium.fuchsia.star")
 exec("./ci/chromium.fuchsia.fyi.star")
 exec("./ci/chromium.fuzz.star")

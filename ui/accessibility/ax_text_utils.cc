@@ -37,7 +37,7 @@ base::i18n::BreakIterator::BreakType ICUBreakTypeForBoundaryType(
     case ax::mojom::TextBoundary::kParagraphStart:
       return base::i18n::BreakIterator::BREAK_NEWLINE;
     default:
-      NOTREACHED() << boundary;
+      NOTREACHED_IN_MIGRATION() << boundary;
       return base::i18n::BreakIterator::BREAK_NEWLINE;
   }
 }
@@ -111,7 +111,7 @@ size_t FindAccessibleTextBoundary(const std::u16string& text,
 
     switch (boundary) {
       case ax::mojom::TextBoundary::kLineStart:
-        NOTREACHED() << boundary;  // This is handled above.
+        NOTREACHED_IN_MIGRATION() << boundary;  // This is handled above.
         return result;
       case ax::mojom::TextBoundary::kCharacter:
         if (break_iter.IsGraphemeBoundary(result)) {

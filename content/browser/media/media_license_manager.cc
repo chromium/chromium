@@ -5,7 +5,6 @@
 #include "content/browser/media/media_license_manager.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -118,7 +118,7 @@ void MediaLicenseManager::DidGetBucket(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto it = pending_receivers_.find(storage_key);
-  DCHECK(it != pending_receivers_.end());
+  CHECK(it != pending_receivers_.end(), base::NotFatalUntil::M130);
 
   auto receivers_list = std::move(it->second);
   pending_receivers_.erase(it);

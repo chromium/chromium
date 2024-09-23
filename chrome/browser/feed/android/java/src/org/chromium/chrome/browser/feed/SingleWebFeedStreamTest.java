@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -25,7 +26,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -40,7 +40,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -51,6 +50,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedRecommendationFollowAccel
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -74,7 +74,7 @@ import java.util.Map;
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-// TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
+// TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SingleWebFeedStreamTest {
     private static final int LOAD_MORE_TRIGGER_LOOKAHEAD = 5;
@@ -132,9 +132,6 @@ public class SingleWebFeedStreamTest {
     }
 
     @Rule public JniMocker mocker = new JniMocker();
-    // Enable the Features class, so we can call code which checks to see if features are enabled
-    // without crashing.
-    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private void setFeatureOverrides(boolean feedLoadingPlaceholderOn) {
         Map<String, Boolean> overrides = new ArrayMap<>();
@@ -152,7 +149,7 @@ public class SingleWebFeedStreamTest {
                 FeedReliabilityLoggingBridge.getTestHooksForTesting(),
                 mFeedReliabilityLoggingBridgeJniMock);
         mocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJni);
-        Profile.setLastUsedProfileForTesting(mProfileMock);
+        ProfileManager.setLastUsedProfileForTesting(mProfileMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead())
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
@@ -162,14 +159,13 @@ public class SingleWebFeedStreamTest {
         mFeedStream =
                 new FeedStream(
                         mActivity,
+                        mProfileMock,
                         mSnackbarManager,
                         mBottomSheetController,
-                        /* isPlaceholderShownInitially= */ false,
                         mWindowAndroid,
                         /* shareSupplier= */ mShareDelegateSupplier,
                         StreamKind.SINGLE_WEB_FEED,
                         mActionDelegate,
-                        /* helpAndFeedbackLauncher= */ null,
                         /* FeedContentFirstLoadWatcher= */ null,
                         /* streamsMediator= */ null,
                         new SingleWebFeedParameters(
@@ -235,7 +231,8 @@ public class SingleWebFeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
                         any(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
     }
 
@@ -265,7 +262,8 @@ public class SingleWebFeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
                         mLoadUrlParamsCaptor.capture(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
 
         assertEquals(
@@ -302,7 +300,8 @@ public class SingleWebFeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
                         mLoadUrlParamsCaptor.capture(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
 
         assertEquals(
@@ -354,7 +353,8 @@ public class SingleWebFeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
                         any(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
     }
 
@@ -372,7 +372,8 @@ public class SingleWebFeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
                         any(),
                         eq(true),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
     }
 
@@ -389,7 +390,8 @@ public class SingleWebFeedStreamTest {
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
                         any(),
                         eq(false),
-                        any(),
+                        anyInt(),
+                        eq(handler),
                         any());
     }
 

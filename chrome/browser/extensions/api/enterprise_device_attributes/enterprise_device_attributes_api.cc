@@ -49,8 +49,9 @@ std::optional<std::string> ValidateCrosapi(content::BrowserContext* context) {
   // the user for ash is the same as the user for lacros. We do this by
   // restricting the API to the default profile, which is guaranteed to be the
   // same user.
-  if (!Profile::FromBrowserContext(context)->IsMainProfile())
+  if (!Profile::FromBrowserContext(context)->IsMainProfile()) {
     return kUnsupportedProfile;
+  }
 
   return std::nullopt;
 }

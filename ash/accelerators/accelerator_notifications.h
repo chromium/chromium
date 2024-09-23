@@ -26,7 +26,8 @@ ASH_EXPORT void MaybeShowDeprecatedAcceleratorNotification(
     int message_id,
     int new_shortcut_id,
     ui::Accelerator replacement,
-    AcceleratorAction action_id);
+    AcceleratorAction action_id,
+    const char* pref_name);
 
 ASH_EXPORT void ShowDockedMagnifierNotification();
 

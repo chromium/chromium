@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Attribution-Reporting-Register-Source:{"destination":"https://d.test"}
+Attribution-Reporting-Register-OS-Source:"https://r.test"
+Attribution-Reporting-Info:preferred-platform=os

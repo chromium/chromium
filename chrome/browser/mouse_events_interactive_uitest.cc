@@ -18,6 +18,7 @@
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/test/ui_controls.h"
@@ -153,8 +154,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   menu_observer.WaitForMenuOpenAndClose();
 
   content::WebContents* tab = GetActiveWebContents();
-  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"done()",
-                                                        base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"done()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   const std::u16string success_title = u"without mouseleave";
   const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);
@@ -181,15 +182,15 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
-  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"alert()",
-                                                        base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"alert()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   dialog_wait.Run();
 
   // Cancel the dialog.
   js_dialog_manager->HandleJavaScriptDialog(tab, false, nullptr);
 
-  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(u"done()",
-                                                        base::NullCallback());
+  tab->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      u"done()", base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
   const std::u16string success_title = u"without mouseleave";
   const std::u16string failure_title = u"with mouseleave";
   content::TitleWatcher done_title_watcher(tab, success_title);

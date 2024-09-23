@@ -3,6 +3,7 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/cookie_config",
   "+components/domain_reliability",
+  "+components/ip_protection",
   "+components/miracle_parameter",
   "+components/network_session_configurator",
   "+components/os_crypt/async",
@@ -11,6 +12,7 @@ include_rules = [
   # store for networking-related data (Like which servers support QUIC), rather
   # than to store user preferences.
   "+components/prefs",
+  "+components/privacy_sandbox/privacy_sandbox_features.h",
   "+components/privacy_sandbox/masked_domain_list",
   "+components/url_matcher",
   "+components/version_info",

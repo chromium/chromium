@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_SAFE_REF_H_
 #define BASE_MEMORY_SAFE_REF_H_
 
+#include <compare>
 #include <concepts>
 #include <utility>
 
@@ -23,7 +24,7 @@ namespace base {
 // benign crash instead of as a Use-after-Free.
 //
 // SafeRef pointers cannot be null (as expressed by the "Ref" suffix instead of
-// "Ptr"). A SafeRef can be wrapped in an absl::optional if it should not always
+// "Ptr"). A SafeRef can be wrapped in an std::optional if it should not always
 // point to something valid. (A SafePtr sibling type can be introduced if this
 // is problematic, or if consuming moves are needed!)
 //
@@ -119,6 +120,12 @@ class SafeRef {
     // Avoid use-after-move.
     CHECK(ref_.IsValid());
     return *this;
+  }
+
+  // Ordered by the pointer, not the pointee.
+  template <typename U>
+  std::strong_ordering operator<=>(const SafeRef<U>& other) const {
+    return ptr_ <=> other.ptr_;
   }
 
   // Provide access to the underlying T as a reference. Will CHECK() if the T

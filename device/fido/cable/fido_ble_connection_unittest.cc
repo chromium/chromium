@@ -5,19 +5,31 @@
 #include "device/fido/cable/fido_ble_connection.h"
 
 #include <bitset>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <set>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/bluetooth_gatt_characteristic.h"
+#include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -26,7 +38,6 @@
 #include "device/bluetooth/test/mock_bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
 #include "device/fido/cable/fido_ble_uuids.h"
-#include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -101,15 +112,15 @@ class TestReadCallback {
   std::optional<base::RunLoop> run_loop_{std::in_place};
 };
 
-using TestConnectionCallbackReceiver = test::ValueCallbackReceiver<bool>;
+using TestConnectionFuture = base::test::TestFuture<bool>;
 
-using TestReadControlPointLengthCallback =
-    test::ValueCallbackReceiver<std::optional<uint16_t>>;
+using TestReadControlPointLengthFuture =
+    base::test::TestFuture<std::optional<uint16_t>>;
 
-using TestReadServiceRevisionsCallback =
-    test::ValueCallbackReceiver<std::set<FidoBleConnection::ServiceRevision>>;
+using TestReadServiceRevisionsFuture =
+    base::test::TestFuture<std::set<FidoBleConnection::ServiceRevision>>;
 
-using TestWriteCallback = test::ValueCallbackReceiver<bool>;
+using TestWriteCallback = base::test::TestFuture<bool>;
 }  // namespace
 
 class FidoBleConnectionTest : public ::testing::Test {
@@ -424,10 +435,10 @@ TEST_F(FidoBleConnectionTest, DeviceNotPresent) {
   FidoBleConnection connection(adapter(), device_address, uuid(),
                                base::DoNothing());
 
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_FALSE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_FALSE(connection_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, PreConnected) {
@@ -437,10 +448,10 @@ TEST_F(FidoBleConnectionTest, PreConnected) {
   FidoBleConnection connection(adapter(), device_address, uuid(),
                                base::DoNothing());
 
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_TRUE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_TRUE(connection_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, NoConnectionWithoutCompletedGattDiscovery) {
@@ -451,14 +462,14 @@ TEST_F(FidoBleConnectionTest, NoConnectionWithoutCompletedGattDiscovery) {
                                base::DoNothing());
 
   SimulateGattDiscoveryComplete(false);
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(connection_callback_receiver.was_called());
+  EXPECT_FALSE(connection_future.IsReady());
 
   NotifyGattServicesDiscovered();
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_TRUE(connection_callback_receiver.value());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_TRUE(connection_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, GattServicesDiscoveredIgnoredBeforeConnection) {
@@ -470,14 +481,14 @@ TEST_F(FidoBleConnectionTest, GattServicesDiscoveredIgnoredBeforeConnection) {
   NotifyGattServicesDiscovered();
 
   SimulateGattDiscoveryComplete(false);
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(connection_callback_receiver.was_called());
+  EXPECT_FALSE(connection_future.IsReady());
 
   NotifyGattServicesDiscovered();
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_TRUE(connection_callback_receiver.value());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_TRUE(connection_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, GattServicesDiscoveredAgain) {
@@ -487,11 +498,11 @@ TEST_F(FidoBleConnectionTest, GattServicesDiscoveredAgain) {
   FidoBleConnection connection(adapter(), device_address, uuid(),
                                base::DoNothing());
 
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
   NotifyGattServicesDiscovered();
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_TRUE(connection_callback_receiver.value());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_TRUE(connection_future.Get());
 
   // A second call to the event handler should not trigger another attempt to
   // obtain Gatt Services.
@@ -508,10 +519,10 @@ TEST_F(FidoBleConnectionTest, SimulateGattConnectionError) {
                                base::DoNothing());
 
   SimulateGattConnectionError();
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_FALSE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_FALSE(connection_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, SimulateGattNotifySessionStartError) {
@@ -522,10 +533,10 @@ TEST_F(FidoBleConnectionTest, SimulateGattNotifySessionStartError) {
                                base::DoNothing());
 
   SimulateGattNotifySessionStartError();
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_FALSE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_FALSE(connection_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, MultipleServiceRevisions) {
@@ -571,10 +582,10 @@ TEST_F(FidoBleConnectionTest, MultipleServiceRevisions) {
 
     FidoBleConnection connection(adapter(), device_address, uuid(),
                                  base::DoNothing());
-    TestConnectionCallbackReceiver connection_callback_receiver;
-    connection.Connect(connection_callback_receiver.callback());
-    connection_callback_receiver.WaitForCallback();
-    EXPECT_TRUE(connection_callback_receiver.value());
+    TestConnectionFuture connection_future;
+    connection.Connect(connection_future.GetCallback());
+    EXPECT_TRUE(connection_future.Wait());
+    EXPECT_TRUE(connection_future.Get());
   }
 }
 
@@ -603,10 +614,10 @@ TEST_F(FidoBleConnectionTest, UnsupportedServiceRevisions) {
 
     FidoBleConnection connection(adapter(), device_address, uuid(),
                                  base::DoNothing());
-    TestConnectionCallbackReceiver connection_callback_receiver;
-    connection.Connect(connection_callback_receiver.callback());
-    connection_callback_receiver.WaitForCallback();
-    EXPECT_FALSE(connection_callback_receiver.value());
+    TestConnectionFuture connection_future;
+    connection.Connect(connection_future.GetCallback());
+    EXPECT_TRUE(connection_future.Wait());
+    EXPECT_FALSE(connection_future.Get());
   }
 }
 
@@ -619,10 +630,10 @@ TEST_F(FidoBleConnectionTest, ReadServiceRevisionsFails) {
 
   FidoBleConnection connection(adapter(), device_address, uuid(),
                                base::DoNothing());
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_FALSE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_FALSE(connection_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, WriteServiceRevisionsFails) {
@@ -635,10 +646,10 @@ TEST_F(FidoBleConnectionTest, WriteServiceRevisionsFails) {
 
   FidoBleConnection connection(adapter(), device_address, uuid(),
                                base::DoNothing());
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_FALSE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_FALSE(connection_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, ReadStatusNotifications) {
@@ -650,10 +661,10 @@ TEST_F(FidoBleConnectionTest, ReadStatusNotifications) {
   FidoBleConnection connection(adapter(), device_address, uuid(),
                                read_callback.GetCallback());
 
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_TRUE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_TRUE(connection_future.Get());
 
   std::vector<uint8_t> payload = ToByteVector("foo");
   NotifyStatusChanged(payload);
@@ -671,51 +682,51 @@ TEST_F(FidoBleConnectionTest, ReadControlPointLength) {
   FidoBleConnection connection(adapter(), device_address, uuid(),
                                base::DoNothing());
 
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_TRUE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_TRUE(connection_future.Get());
 
   {
-    TestReadControlPointLengthCallback length_callback;
+    TestReadControlPointLengthFuture length_future;
     SetNextReadControlPointLengthReponse(false, {});
-    connection.ReadControlPointLength(length_callback.callback());
-    length_callback.WaitForCallback();
-    EXPECT_EQ(std::nullopt, length_callback.value());
+    connection.ReadControlPointLength(length_future.GetCallback());
+    EXPECT_TRUE(length_future.Wait());
+    EXPECT_EQ(std::nullopt, length_future.Get());
   }
 
   // The Control Point Length should consist of exactly two bytes, hence we
   // EXPECT_EQ(std::nullopt) for payloads of size 0, 1 and 3.
   {
-    TestReadControlPointLengthCallback length_callback;
+    TestReadControlPointLengthFuture length_future;
     SetNextReadControlPointLengthReponse(true, {});
-    connection.ReadControlPointLength(length_callback.callback());
-    length_callback.WaitForCallback();
-    EXPECT_EQ(std::nullopt, length_callback.value());
+    connection.ReadControlPointLength(length_future.GetCallback());
+    EXPECT_TRUE(length_future.Wait());
+    EXPECT_EQ(std::nullopt, length_future.Get());
   }
 
   {
-    TestReadControlPointLengthCallback length_callback;
+    TestReadControlPointLengthFuture length_future;
     SetNextReadControlPointLengthReponse(true, {0xAB});
-    connection.ReadControlPointLength(length_callback.callback());
-    length_callback.WaitForCallback();
-    EXPECT_EQ(std::nullopt, length_callback.value());
+    connection.ReadControlPointLength(length_future.GetCallback());
+    EXPECT_TRUE(length_future.Wait());
+    EXPECT_EQ(std::nullopt, length_future.Get());
   }
 
   {
-    TestReadControlPointLengthCallback length_callback;
+    TestReadControlPointLengthFuture length_future;
     SetNextReadControlPointLengthReponse(true, {0xAB, 0xCD});
-    connection.ReadControlPointLength(length_callback.callback());
-    length_callback.WaitForCallback();
-    EXPECT_EQ(0xABCD, *length_callback.value());
+    connection.ReadControlPointLength(length_future.GetCallback());
+    EXPECT_TRUE(length_future.Wait());
+    EXPECT_EQ(0xABCD, *length_future.Get());
   }
 
   {
-    TestReadControlPointLengthCallback length_callback;
+    TestReadControlPointLengthFuture length_future;
     SetNextReadControlPointLengthReponse(true, {0xAB, 0xCD, 0xEF});
-    connection.ReadControlPointLength(length_callback.callback());
-    length_callback.WaitForCallback();
-    EXPECT_EQ(std::nullopt, length_callback.value());
+    connection.ReadControlPointLength(length_future.GetCallback());
+    EXPECT_TRUE(length_future.Wait());
+    EXPECT_EQ(std::nullopt, length_future.Get());
   }
 }
 
@@ -726,25 +737,25 @@ TEST_F(FidoBleConnectionTest, WriteControlPoint) {
   FidoBleConnection connection(adapter(), device_address, uuid(),
                                base::DoNothing());
 
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_TRUE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_TRUE(connection_future.Get());
 
   {
-    TestWriteCallback write_callback;
+    TestWriteCallback write_future;
     SetNextWriteControlPointResponse(false);
-    connection.WriteControlPoint({}, write_callback.callback());
-    write_callback.WaitForCallback();
-    EXPECT_FALSE(write_callback.value());
+    connection.WriteControlPoint({}, write_future.GetCallback());
+    EXPECT_TRUE(write_future.Wait());
+    EXPECT_FALSE(write_future.Get());
   }
 
   {
-    TestWriteCallback write_callback;
+    TestWriteCallback write_future;
     SetNextWriteControlPointResponse(true);
-    connection.WriteControlPoint({}, write_callback.callback());
-    write_callback.WaitForCallback();
-    EXPECT_TRUE(write_callback.value());
+    connection.WriteControlPoint({}, write_future.GetCallback());
+    EXPECT_TRUE(write_future.Wait());
+    EXPECT_TRUE(write_future.Get());
   }
 }
 
@@ -757,22 +768,22 @@ TEST_F(FidoBleConnectionTest, ReadsAndWriteFailWhenDisconnected) {
                                base::DoNothing());
 
   SimulateGattConnectionError();
-  TestConnectionCallbackReceiver connection_callback_receiver;
-  connection.Connect(connection_callback_receiver.callback());
-  connection_callback_receiver.WaitForCallback();
-  EXPECT_FALSE(connection_callback_receiver.value());
+  TestConnectionFuture connection_future;
+  connection.Connect(connection_future.GetCallback());
+  EXPECT_TRUE(connection_future.Wait());
+  EXPECT_FALSE(connection_future.Get());
 
   // Reads should always fail on a disconnected device.
-  TestReadControlPointLengthCallback length_callback;
-  connection.ReadControlPointLength(length_callback.callback());
-  length_callback.WaitForCallback();
-  EXPECT_EQ(std::nullopt, length_callback.value());
+  TestReadControlPointLengthFuture length_future;
+  connection.ReadControlPointLength(length_future.GetCallback());
+  EXPECT_TRUE(length_future.Wait());
+  EXPECT_EQ(std::nullopt, length_future.Get());
 
   // Writes should always fail on a disconnected device.
-  TestWriteCallback write_callback;
-  connection.WriteControlPoint({}, write_callback.callback());
-  write_callback.WaitForCallback();
-  EXPECT_FALSE(write_callback.value());
+  TestWriteCallback write_future;
+  connection.WriteControlPoint({}, write_future.GetCallback());
+  EXPECT_TRUE(write_future.Wait());
+  EXPECT_FALSE(write_future.Get());
 }
 
 TEST_F(FidoBleConnectionTest, ConnectionAddressChangeWhenDeviceAddressChanges) {

@@ -18,7 +18,6 @@
       <include name="IDR_CAPTURE_IMAGE_CURSOR" file="unscaled_resources/capture_image_cursor.png" type="BINDATA" />
       <include name="IDR_CAPTURE_VIDEO_CURSOR" file="unscaled_resources/capture_video_cursor.png" type="BINDATA" />
       <!-- CrOS internal apps images -->
-      <include name="IDR_SHORTCUT_VIEWER_LOGO_192" file="unscaled_resources/shortcut_viewer_logo_192.png" type="BINDATA" />
       <include name="IDR_SETTINGS_LOGO_192" file="unscaled_resources/settings_logo_192.png" type="BINDATA" />
       <include name="IDR_OS_FLAGS_APP_ICONS_48_PNG" file="unscaled_resources/os_flags_app_icon_48.png" type="BINDATA" />
       <include name="IDR_OS_FLAGS_APP_ICONS_128_PNG" file="unscaled_resources/os_flags_app_icon_128.png" type="BINDATA" />
@@ -38,7 +37,6 @@
       <structure type="lottie" name="IDR_PHONE_HUB_ONBOARDING_IMAGE" file="unscaled_resources/phone_hub_onboarding_image.json" compress="gzip" />
       <structure type="lottie" name="IDR_PHONE_HUB_CONNECTING_IMAGE" file="unscaled_resources/phone_hub_connecting_image.json" compress="gzip" />
       <structure type="lottie" name="IDR_PHONE_HUB_ERROR_STATE_IMAGE" file="unscaled_resources/phone_hub_error_state_image.json" compress="gzip" />
-      <structure type="lottie" name="IDR_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER_IMAGE" file="unscaled_resources/holding_space_recent_files_placeholder_image.json" compress="gzip" />
       <structure type="lottie" name="IDR_ARC_COMPAT_MODE_SPLASH_SCREEN_IMAGE" file="unscaled_resources/arc_compat_mode_splash_screen_image.json" compress="gzip" />
       <structure type="lottie" name="IDR_APP_LIST_SORT_NUDGE_IMAGE" file="unscaled_resources/launcher_sort_nudge_image.json" compress="gzip" />
       <structure type="lottie" name="IDR_APP_LIST_CONTINUE_SECTION_NOTICE_IMAGE" file="unscaled_resources/launcher_continue_section_notice_image.json" compress="gzip" />
@@ -54,6 +52,28 @@
       <!-- Clipboard Nudge -->
       <structure type="lottie" name="IDR_CLIPBOARD_NUDGE_COPIED_IMAGE" file="unscaled_resources/clipboard_nudge_copied.json" compress="gzip" />
       <structure type="lottie" name="IDR_CLIPBOARD_NUDGE_SELECT_IMAGE" file="unscaled_resources/clipboard_nudge_select.json" compress="gzip" />
+      <!-- Pine -->
+      <structure type="lottie" name="IDR_INFORMED_RESTORE_NUDGE_IMAGE_DM" file="unscaled_resources/informed_restore_nudge_dm.json" compress="gzip" />
+      <structure type="lottie" name="IDR_INFORMED_RESTORE_NUDGE_IMAGE_LM" file="unscaled_resources/informed_restore_nudge_lm.json" compress="gzip" />
+      <structure type="lottie" name="IDR_INFORMED_RESTORE_REFRESH_NUDGE_IMAGE_DM" file="unscaled_resources/informed_restore_refresh_nudge_dm.json" compress="gzip" />
+      <structure type="lottie" name="IDR_INFORMED_RESTORE_REFRESH_NUDGE_IMAGE_LM" file="unscaled_resources/informed_restore_refresh_nudge_lm.json" compress="gzip" />
+      <structure type="lottie" name="IDR_INFORMED_RESTORE_ONBOARDING_IMAGE" file="unscaled_resources/informed_restore_onboarding.json" compress="gzip" />
+      <!-- Focus Mode -->
+      <structure type="lottie" name="IDR_FOCUS_MODE_EQUALIZER_ANIMATION" file="unscaled_resources/equalizer.json" compress="gzip" />
+      <structure type="lottie" name="IDR_FOCUS_MODE_CONFETTI_ANIMATION" file="unscaled_resources/confetti.json" compress="gzip" />
+      <!-- Birch -->
+      <structure type="lottie" name="IDR_BIRCH_RELEASE_NOTES_ICON" file="unscaled_resources/birch_release_notes_icon.json" compress="gzip" />
+      <!-- Mahi -->
+      <structure type="lottie" name="IDR_MAHI_GENERAL_ERROR_STATUS_IMAGE" file="unscaled_resources/mahi_general_error_status_image.json" compress="gzip" />
+      <structure type="lottie" name="IDR_MAHI_EDUCATIONAL_NUDGE_IMAGE" file="unscaled_resources/mahi_educational_nudge_image.json" compress="gzip" />
+      <!-- Magic Boost -->
+      <structure type="lottie" name="IDR_MAGIC_BOOST_DISCLAIMER_ILLUSTRATION" file="unscaled_resources/magic_boost_disclaimer_image.json" compress="gzip" />
+      <!-- Shortcut Nudge -->
+      <structure type="lottie" name="IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE" file="unscaled_resources/keyboard_fn_key_nudge_image.json" compress="gzip" />
+      <!-- Capslock Nudge -->
+      <structure type="lottie" name="IDR_KEYBOARD_CAPSLOCK_KEY_NUDGE_IMAGE" file="unscaled_resources/keyboard_capslock_key_nudge_image.json" compress="gzip" />
+      <!-- System Tray Bluetooth Unavailable Images -->
+      <structure type="lottie" name="IDR_TRAY_BLUETOOTH_UNAVAILABLE_STATE_IMAGE" file="unscaled_resources/bluetooth_unavailable_state_image.json" compress="gzip" />
     </structures>
   </release>
 </grit>

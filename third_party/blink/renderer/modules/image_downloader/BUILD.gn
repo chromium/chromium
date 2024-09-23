@@ -11,4 +11,6 @@ blink_modules_sources("image_downloader") {
     "multi_resolution_image_resource_fetcher.cc",
     "multi_resolution_image_resource_fetcher.h",
   ]
+
+  deps = [ "//third_party/blink/renderer/modules/accessibility:accessibility" ]
 }

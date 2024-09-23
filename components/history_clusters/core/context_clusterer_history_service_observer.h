@@ -97,8 +97,8 @@ class ContextClustererHistoryServiceObserver
   void OnURLVisited(history::HistoryService* history_service,
                     const history::URLRow& url_row,
                     const history::VisitRow& visit_row) override;
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
  private:
   friend class ContextClustererHistoryServiceObserverTest;

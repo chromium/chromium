@@ -29,7 +29,7 @@
 namespace base {
 class RunLoop;
 class TimeDelta;
-}
+}  // namespace base
 
 namespace media {
 
@@ -261,6 +261,9 @@ CreateMockDemuxerStream(DemuxerStream::Type type, bool encrypted);
 // value (alpha value must be zero).
 void FillFourColors(VideoFrame& dest_frame,
                     std::optional<uint32_t> xor_mask = std::nullopt);
+
+// Convert RGB color to YUV.
+std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(uint32_t argb);
 
 // Compares two media::Status by StatusCode only.  Also allows the ok helper to
 // match kOk.  It's a special case because we don't know the TypedStatus traits

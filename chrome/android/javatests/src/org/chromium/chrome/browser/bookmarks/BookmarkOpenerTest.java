@@ -17,18 +17,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
@@ -42,7 +42,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.sync.SyncFeatureMap;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.url.GURL;
 
@@ -53,12 +52,17 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Tabs can't be closed reliably between tests.")
-@DisableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
+@DisableFeatures({
+    SyncFeatureMap.SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE,
+    // TODO(crbug.com/344981899): ReplaceSyncPromosWithSigninPromos is disabled because bookmarks
+    // account storage is disabled above, otherwise tests run into assertion failures. Long term,
+    // these tests probably need to be fixed for the bookmarks account storage case rather than
+    // force-disable the feature.
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+})
 public class BookmarkOpenerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private BookmarkOpener mBookmarkOpener;
 
@@ -76,7 +80,7 @@ public class BookmarkOpenerTest {
         mActionTester = new UserActionTester();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
                 });
@@ -120,7 +124,7 @@ public class BookmarkOpenerTest {
             mBookmarkManagerCoordinator = mBookmarkActivity.getManagerForTesting();
         }
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
                     mBookmarkOpener = mBookmarkManagerCoordinator.getBookmarkOpenerForTesting();
@@ -128,7 +132,7 @@ public class BookmarkOpenerTest {
     }
 
     void openRootFolder() {
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> getBookmarkDelegate().openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
@@ -137,9 +141,7 @@ public class BookmarkOpenerTest {
         openRootFolder();
 
         // Mobile bookmarks is merged into all bookmarks when improved bookmark is enabled.
-        if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            onView(withText("Mobile bookmarks")).perform(click());
-        }
+        onView(withText("Mobile bookmarks")).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -157,12 +159,12 @@ public class BookmarkOpenerTest {
     @Test
     @MediumTest
     public void testOpenBookmarkInCurrentTab() {
-        GURL url = new GURL(UrlConstants.ABOUT_URL);
+        GURL url = new GURL(UrlConstants.NTP_URL);
         BookmarkId id = addMobileBookmark("test", url);
         openBookmarkManager();
         openMobileBookmarks();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mBookmarkOpener.openBookmarkInCurrentTab(id, /* incognito= */ false));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -185,7 +187,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openReadingList();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mBookmarkOpener.openBookmarkInCurrentTab(id, /* incognito= */ false));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -206,7 +208,7 @@ public class BookmarkOpenerTest {
     @Test
     @MediumTest
     public void testOpenBookmarkInCurrentTab_Incognito() {
-        GURL url = new GURL(UrlConstants.ABOUT_URL);
+        GURL url = new GURL(UrlConstants.NTP_URL);
         BookmarkId id = addMobileBookmark("test", url);
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL, /* incognito= */ true);
@@ -214,7 +216,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openMobileBookmarks();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mBookmarkOpener.openBookmarkInCurrentTab(id, /* incognito= */ true));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -233,7 +235,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openMobileBookmarks();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mBookmarkOpener.openBookmarksInNewTabs(ids, /* incognito= */ false));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -266,7 +268,7 @@ public class BookmarkOpenerTest {
         openBookmarkManager();
         openMobileBookmarks();
 
-        TestThreadUtils.runOnUiThreadBlockingNoException(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> mBookmarkOpener.openBookmarksInNewTabs(ids, /* incognito= */ true));
         CriteriaHelper.pollUiThread(
                 () -> mActivityTestRule.getActivity().getActivityTab().getUrl().equals(url));
@@ -276,7 +278,7 @@ public class BookmarkOpenerTest {
     private BookmarkId addMobileBookmark(final String title, GURL url) {
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mBookmarkModel.addBookmark(
                                 mBookmarkModel.getMobileFolderId(), 0, title, url));
@@ -286,7 +288,7 @@ public class BookmarkOpenerTest {
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         BookmarkId bookmarkId =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
+                ThreadUtils.runOnUiThreadBlocking(
                         () -> mBookmarkModel.addToDefaultReadingList(title, url));
         return bookmarkId;
     }

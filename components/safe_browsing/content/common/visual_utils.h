@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_COMMON_VISUAL_UTILS_H_
 
-#include <optional>
 #include <string>
 
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"

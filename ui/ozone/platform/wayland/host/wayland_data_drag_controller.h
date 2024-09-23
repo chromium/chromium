@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/task_runner.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -50,41 +51,38 @@ class WaylandWindowManager;
 class WaylandShmBuffer;
 class WaylandSurface;
 
-// WaylandDataDragController implements regular data exchange on top of the
-// Wayland Drag and Drop protocol.  The data can be dragged within the Chromium
-// window, or between Chromium and other application in both directions.
+// WaylandDataDragController implements regular mouse/touch-driven data exchange
+// on top of the Wayland Drag-and-Drop protocol. Data can be dragged within
+// Chromium windows, or between Chromium and other applications in both
+// directions.
 //
-// The outgoing drag starts via the StartSession() method.  For more context,
+// Outgoing drag sessions start via the StartSession() method. For more context,
 // see WaylandTopLevelWindow::StartDrag().
 //
-// The incoming drag starts with the call to OnDragEnter() from the Wayland side
-// (the data device), and ends up in call to WaylandWindow::OnDragEnter(), but
-// two ways of coming there are possible:
+// Incoming drag sessions start with calls to OnDragOffer/OnDragEnter() from the
+// Wayland side (the data device), and end up in calls to WaylandWindow's
+// OnDragEnter() and OnDragDataAvailable(), but two ways of getting there are
+// possible:
 //
-// 1.  The drag has been initiated by a Chromium window.  In this case, the data
+// 1. The drag has been initiated from a Chromium window. In this case, the data
 // that is being dragged is available right away, and therefore the controller
 // can forward the data to the window immediately.
 //
-// 2.  The data is being dragged from another application.  Before notifying the
-// window, the controller requests the data from the source side, which results
-// in a number of requests to Wayland and data transfers from it.  Only after
-// data records of all supported MIME types have been received, the window will
-// be notified.
-//
-// It is possible that further drag events come while the data is still being
-// transferred.  The drag motion event is ignored; the window will first receive
-// OnDragEnter, and any OnDragMotion that comes after that.  The drag leave
-// event stops the transfer and cancels the operation; the window will not
-// receive anything at all.
+// 2. The data is being dragged from another application. In this case, the
+// window is notified right away about the enter event and a data fetching task
+// is posted to the thread pool. Once fully fetched, the data is delivered to
+// the entered window. If the drag cursor leaves the window or the entered
+// windows gets destroyed while the data is still being fetched, the fetching
+// task is cancelled and the whole drag session is aborted.
 class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                   public WaylandDataSource::Delegate,
                                   public WaylandWindowObserver,
                                   public PlatformEventDispatcher {
  public:
   enum class State {
-    kIdle,          // Doing nothing special
-    kStarted,       // The outgoing drag is in progress.
-    kTransferring,  // The incoming data is transferred from the source.
+    kIdle,      // Doing nothing special
+    kStarted,   // The outgoing drag is in progress.
+    kFetching,  // The incoming data is fetched from the source.
   };
 
   WaylandDataDragController(WaylandConnection* connection,
@@ -103,6 +101,23 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                     int operations,
                     mojom::DragEventSource source);
 
+  // Cancels the currently running drag and drop session.
+  //
+  // For an outgoing session, i.e. one that was initiated by us, this will tell
+  // the compositor to cancel the session.
+  //
+  // For an incoming session, this will prevent any future drag events for the
+  // current session that we receive from the compositor from being propagated.
+  // Note that a final leave event will still be sent, and that on the next
+  // wl_data_device.enter event a new session will be created, for which events
+  // will be propagated as usual (e.g. if the user moves the mouse out of our
+  // window and then back over it again).
+  void CancelSession();
+
+  // Returns true if there is an in-progress drag session owned by the data drag
+  // controller.
+  bool IsDragInProgress() const;
+
   // Updates the drag image. An empty |image| may be used to hide a previously
   // set non-empty drag image, and a non-empty |image| shows the drag image
   // again if it was previously hidden.
@@ -111,13 +126,13 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void UpdateDragImage(const gfx::ImageSkia& image,
                        const gfx::Vector2d& offset);
 
-  State state() const { return state_; }
-
-  // TODO(crbug.com/896640): Remove once focus is fixed during DND sessions.
+  // TODO(crbug.com/40598679): Remove once focus is fixed during DND sessions.
   WaylandWindow* entered_window() const { return window_; }
 
   // Returns false iff the data is for a window dragging session.
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const;
+
+  bool IsWindowDragSessionRunning() const;
 
   void DumpState(std::ostream& out) const;
 
@@ -127,14 +142,27 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // able to track only the current fetching task, on which it's interested in.
   using CancelFlag = base::RefCountedData<base::AtomicFlag>;
 
+  friend class WaylandDataDragControllerTest;
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, AsyncNoopStartDrag);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, CancelDrag);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
+                           ForeignDragHandleAskAction);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDragWithText);
-  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, AsyncNoopStartDrag);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
+                           SuppressPointerButtonReleasesAfterEnter);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            StartDragWithWrongMimeType);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
-                           ForeignDragHandleAskAction);
+                           OutgoingSessionWithoutDndFinished);
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
+                           OutgoingSessionWithoutDndFinished);
+
+  enum class DragResult {
+    kCancelled,
+    kCompleted,
+  };
 
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
@@ -154,6 +182,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnDataSourceFinish(WaylandDataSource* source,
                           base::TimeTicks timestamp,
                           bool completed) override;
+  void OnDataSourceDropPerformed(WaylandDataSource* source,
+                                 base::TimeTicks timestamp) override;
   void OnDataSourceSend(WaylandDataSource* source,
                         const std::string& mime_type,
                         std::string* contents) override;
@@ -164,15 +194,24 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Starts the process of fetching data offered by an external client (ie:
   // incoming drag session). The actual I/O is performed in a separate thread
   // using ThreadPool infra. Once data for all supported mime types is fetched,
-  // the OnDataTransferFinished callback is fired.
-  void PostDataTransferTask(const gfx::PointF& location,
+  // the OnDataFetchingFinished callback is fired.
+  void PostDataFetchingTask(const gfx::PointF& location,
                             base::TimeTicks start_time,
                             const scoped_refptr<CancelFlag>& cancel_flag);
 
-  void OnDataTransferFinished(
+  void OnDataFetchingFinished(
       base::TimeTicks start_time,
       std::unique_ptr<ui::OSExchangeData> received_data);
-  void CancelDataTransferIfNeeded();
+  void CancelDataFetchingIfNeeded();
+
+  // Resets everything to idle state. Does nothing if the current state is
+  // already `kIdle`.
+  void Reset();
+
+  // Perform steps required when ending a drag session. e.g: quit the nested
+  // drag loop (if any), remove the event dispatcher override, and notify the
+  // drag/drop handlers based on `result`.
+  void HandleDragEnd(DragResult result, base::TimeTicks timestamp);
 
   std::optional<wl::Serial> GetAndValidateSerialForDrag(
       mojom::DragEventSource source);
@@ -189,9 +228,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // before calling this.
   void SetUpWindowDraggingSessionIfNeeded(const ui::OSExchangeData& data);
 
-  // Sends an ET_MOUSE_RELEASED event to the window that currently has capture.
-  // Must only be called if |pointer_grabber_for_window_drag_| is valid. This
-  // resets |pointer_grabber_for_window_drag_|.
+  // Sends an EventType::kMouseReleased event to the window that currently has
+  // capture. Must only be called if |pointer_grabber_for_window_drag_| is
+  // valid. This resets |pointer_grabber_for_window_drag_|.
   void DispatchPointerRelease(base::TimeTicks timestamp);
 
   // PlatformEventDispatcher:
@@ -204,6 +243,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                  struct wl_callback* callback,
                                  uint32_t time);
 
+  // Returns the task runner instance used to run data fetching tasks in
+  // incoming drag sessions.
+  base::TaskRunner& GetDataFetchTaskRunner();
+
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<WaylandDataDeviceManager> data_device_manager_;
   const raw_ptr<WaylandDataDevice> data_device_;
@@ -214,6 +257,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   State state_ = State::kIdle;
   std::optional<mojom::DragEventSource> drag_source_;
 
+  // In outgoing sessions, tracks if any drag enter has already been received.
+  bool has_received_enter_ = false;
+
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;
 
@@ -221,17 +267,19 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // holds the provider for the data to be sent through Wayland protocol.
   std::unique_ptr<OSExchangeDataProvider> offered_exchange_data_provider_;
 
-  // Offer to receive data from another process via drag-and-drop, or null if
-  // no drag-and-drop from another process is in progress.
+  // The data offer through wl_data_device for the current drag and drop
+  // session, or null if there is no session running.
   //
-  // The data offer from another Wayland client through wl_data_device, that
-  // triggered the current drag and drop session. If null, either there is no
-  // dnd session running or Chromium is the data source.
+  // Note that this is non-null even for a drag initiated by ourselves, we just
+  // don't do anything with the offer as we handle all the data transfer
+  // internally.
   std::unique_ptr<WaylandDataOffer> data_offer_;
 
   // The window that initiated the drag session. Can be null when the session
   // has been started by an external Wayland client.
   raw_ptr<WaylandWindow> origin_window_ = nullptr;
+
+  std::unique_ptr<WaylandSurface> origin_surface_;
 
   // Current window under pointer.
   raw_ptr<WaylandWindow, DanglingUntriaged> window_ = nullptr;
@@ -263,6 +311,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Flag used to notify the data fetcher task, which runs on thread pool, that
   // it should abort the operation. i.e: used only in incoming dnd sessions.
   scoped_refptr<CancelFlag> data_fetch_cancel_flag_;
+
+  // Sequenced task runner used to post fetch tasks to.
+  scoped_refptr<base::TaskRunner> data_fetch_task_runner_;
 
   base::WeakPtrFactory<WaylandDataDragController> weak_factory_{this};
 };

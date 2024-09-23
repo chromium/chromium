@@ -15,7 +15,7 @@ import {Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {FileListModel} from './file_list_model.js';
 import type {ThumbnailModel} from './metadata/thumbnail_model.js';
-import {FillMode, LoaderType, LoadTarget, ThumbnailLoader} from './thumbnail_loader.js';
+import {FillMode, LoadTarget, ThumbnailLoader} from './thumbnail_loader.js';
 
 type ListThumbnailLoaderVolumeType = VolumeType|string;
 
@@ -94,7 +94,7 @@ export class ListThumbnailLoader extends
 
 
     this.directoryModel_.addEventListener(
-        'scan-completed', this.onScanCompleted_.bind(this));
+        'cur-dir-scan-completed', this.onScanCompleted_.bind(this));
     this.dataModel_.addEventListener(
         'splice', this.onSplice_.bind(this) as EventListener);
     this.dataModel_.addEventListener('sorted', this.onSorted_.bind(this));
@@ -388,8 +388,7 @@ export class ListThumbnailLoaderTask {
 
           return new this
               .thumbnailLoaderConstructor_(
-                  this.entry_, LoaderType.IMAGE, metadata,
-                  undefined /* mediaType */, loadTargets)
+                  this.entry_, metadata, undefined /* mediaType */, loadTargets)
               .loadAsDataUrl(FillMode.OVER_FILL);
         })
         .then(result => {

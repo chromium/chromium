@@ -32,12 +32,12 @@ namespace power_metrics {
 
 namespace {
 
-absl::optional<double> GetEventFloatValue(IOHIDServiceClientRef service,
-                                          int64_t event_type) {
+std::optional<double> GetEventFloatValue(IOHIDServiceClientRef service,
+                                         int64_t event_type) {
   base::apple::ScopedCFTypeRef<CFTypeRef> event(
       IOHIDServiceClientCopyEvent(service, event_type, 0, 0));
   if (!event)
-    return absl::nullopt;
+    return std::nullopt;
   return IOHIDEventGetFloatValue(event.get(), IOHIDEventFieldBase(event_type));
 }
 
@@ -92,7 +92,7 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
     }
 
     if (CFStringHasPrefix(product.get(), CFSTR("pACC MTR Temp Sensor"))) {
-      absl::optional<double> temp =
+      std::optional<double> temp =
           GetEventFloatValue(service, kIOHIDEventTypeTemperature);
       if (temp.has_value()) {
         num_p_core_temp += 1;
@@ -101,7 +101,7 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
     }
 
     if (CFStringHasPrefix(product.get(), CFSTR("eACC MTR Temp Sensor"))) {
-      absl::optional<double> temp =
+      std::optional<double> temp =
           GetEventFloatValue(service, kIOHIDEventTypeTemperature);
       if (temp.has_value()) {
         num_e_core_temp += 1;

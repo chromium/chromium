@@ -21,8 +21,9 @@ TEST_F(CustomTabTest, ResizeAfterClose) {
 
   views::Widget toplevel_widget;
   {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_WINDOW);
     params.activatable = views::Widget::InitParams::Activatable::kYes;
     params.bounds = gfx::Rect(0, 0, 200, 200);
     params.parent = root_window();
@@ -33,8 +34,9 @@ TEST_F(CustomTabTest, ResizeAfterClose) {
 
   views::Widget embedded_widget;
   {
-    views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::TYPE_CONTROL);
     params.context = root_window();
     embedded_widget.Init(std::move(params));
     embedded_widget.Show();

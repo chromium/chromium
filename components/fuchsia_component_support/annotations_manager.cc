@@ -8,6 +8,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -17,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 
 namespace fuchsia_component_support {
 
@@ -26,8 +26,8 @@ using AnnotationKeySet =
     std::set<fuchsia::element::AnnotationKey, AnnotationKeyCompare>;
 }  // namespace
 
-fuchsia::element::Annotation MakeAnnotation(base::StringPiece key,
-                                            base::StringPiece value) {
+fuchsia::element::Annotation MakeAnnotation(std::string_view key,
+                                            std::string_view value) {
   fuchsia::element::Annotation result;
   result.key.namespace_ = "global";
   result.key.value = std::string(key);
@@ -42,14 +42,14 @@ fuchsia::element::Annotation MakeAnnotation(base::StringPiece key,
   return result;
 }
 
-fuchsia::element::Annotation MakeBoolAnnotation(base::StringPiece key,
+fuchsia::element::Annotation MakeBoolAnnotation(std::string_view key,
                                                 bool value) {
-  static constexpr base::StringPiece kTrue("true");
-  static constexpr base::StringPiece kFalse("false");
+  static constexpr std::string_view kTrue("true");
+  static constexpr std::string_view kFalse("false");
   return MakeAnnotation(key, value ? kTrue : kFalse);
 }
 
-fuchsia::element::Annotation MakeIntAnnotation(base::StringPiece key,
+fuchsia::element::Annotation MakeIntAnnotation(std::string_view key,
                                                int value) {
   return MakeAnnotation(key, base::NumberToString(value));
 }

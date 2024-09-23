@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_FENCED_FRAME_UTILS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_FENCED_FRAME_UTILS_H_
 
+#include <optional>
+
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -48,6 +50,12 @@ inline constexpr char kAutomaticBeaconEventTypeHistogram[] =
 
 inline constexpr char kFencedFrameBeaconReportingHttpResultUMA[] =
     "Blink.FencedFrame.BeaconReportingHttpResult";
+
+inline constexpr char kFencedFrameBeaconReportingCountUMA[] =
+    "Navigation.FencedFrameBeaconReportingCountSameOrigin";
+
+inline constexpr char kFencedFrameBeaconReportingCountCrossOriginUMA[] =
+    "Navigation.FencedFrameBeaconReportingCountCrossOrigin";
 
 // Corresponds to the "FencedFrameCreationOutcome" histogram enumeration type in
 // tools/metrics/histograms/enums.xml.
@@ -121,6 +129,11 @@ BLINK_COMMON_EXPORT void RecordFencedFrameUnsandboxedFlags(
     network::mojom::WebSandboxFlags flags);
 BLINK_COMMON_EXPORT void RecordFencedFrameFailedSandboxLoadInTopLevelFrame(
     bool is_main_frame);
+
+// Returns true if the DOM event type name `event_type` is allowed to be
+// propagated from a fenced frame to its embedder. Returns false otherwise.
+BLINK_COMMON_EXPORT bool CanNotifyEventTypeAcrossFence(
+    const std::string& event_type);
 
 // Automatic beacon type definitions
 inline constexpr char kDeprecatedFencedFrameTopNavigationBeaconType[] =

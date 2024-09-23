@@ -2,7 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/public/platform/file_path_conversion.h"
+
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
@@ -18,12 +25,12 @@ base::FilePath StringToFilePath(const String& str) {
 
   if (!str.Is8Bit()) {
     return base::FilePath::FromUTF16Unsafe(
-        base::StringPiece16(str.Characters16(), str.length()));
+        std::u16string_view(str.Characters16(), str.length()));
   }
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   StringUTF8Adaptor utf8(str);
-  return base::FilePath::FromUTF8Unsafe(utf8.AsStringPiece());
+  return base::FilePath::FromUTF8Unsafe(utf8.AsStringView());
 #else
   const LChar* data8 = str.Characters8();
   return base::FilePath::FromUTF16Unsafe(

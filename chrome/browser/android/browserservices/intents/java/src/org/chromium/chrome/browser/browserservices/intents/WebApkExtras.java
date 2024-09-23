@@ -77,6 +77,8 @@ public class WebApkExtras {
     /** WebAPK's last update timestamp. */
     public final long lastUpdateTime;
 
+    public final boolean hasCustomName;
+
     /** A class that stores information from shortcut items. */
     public static class ShortcutItem {
         public String name;
@@ -120,7 +122,8 @@ public class WebApkExtras {
                 new ArrayList<>()
                 /* shortcutItems= */ ,
                 /* webApkVersionCode= */ 0,
-                /* lastUpdateTime= */ 0);
+                /* lastUpdateTime= */ 0,
+                /* hasCustomName= */ false);
     }
 
     public WebApkExtras(
@@ -138,7 +141,8 @@ public class WebApkExtras {
             boolean isSplashProvidedByWebApk,
             @NonNull List<ShortcutItem> shortcutItems,
             int webApkVersionCode,
-            long lastUpdateTime) {
+            long lastUpdateTime,
+            boolean hasCustomName) {
         this.webApkPackageName = webApkPackageName;
         this.splashIcon = splashIcon;
         this.isSplashIconMaskable = isSplashIconMaskable;
@@ -154,5 +158,6 @@ public class WebApkExtras {
         this.shortcutItems = shortcutItems;
         this.webApkVersionCode = webApkVersionCode;
         this.lastUpdateTime = lastUpdateTime;
+        this.hasCustomName = hasCustomName;
     }
 }

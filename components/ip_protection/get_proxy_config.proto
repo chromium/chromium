@@ -1,0 +1,54 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with corresponding messages in :
+// http://google3/privacy/net/common/proto/get_proxy_config.proto
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.ip_protection_auth";
+
+package ip_protection;
+
+message GetProxyConfigRequest {
+  // Descriptor of which service is calling this endpoint, eg. chromeipblinding.
+  string service_type = 1;
+}
+
+message GetProxyConfigResponse {
+  reserved 1;
+  reserved 2;
+
+  // Chain of proxies.
+  message ProxyChain {
+    string proxy_a = 1;
+    string proxy_b = 2;
+    // A `chain_id` greater than zero identifies a specific chain, as defined
+    // on the server. A `chain_id` of zero indicates an unidentified chain.
+    // Values less than zero are not allowed. Note that `chain_id` is not
+    // unique: chains with different `proxy_a` or `proxy_b` values may have the
+    // same `chain_id`.
+    int32 chain_id = 3;
+  }
+
+  // Proxy chain each request should be routed through.
+  repeated ProxyChain proxy_chain = 3;
+
+  // Geohints represent a coarse user location matching RFC 8805 geolocation
+  // parts minus the ip prefix and postal code.
+  message GeoHint {
+    // Country code of the geo. Example: "US".
+    string country_code = 1;
+    // ISO region of the geo. Example: "US-CA".
+    string iso_region = 2;
+    // City name of the geo. Example: "MOUNTAIN VIEW".
+    string city_name = 3;
+  }
+
+  // Represents the most recent Geo of the client.
+  GeoHint geo_hint = 4;
+}

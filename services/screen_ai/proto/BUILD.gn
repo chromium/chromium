@@ -1,0 +1,42 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/screen_ai/buildflags/features.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(enable_screen_ai_service)
+
+proto_library("proto") {
+  sources = [
+    "chrome_screen_ai.proto",
+    "view_hierarchy.proto",
+  ]
+  cc_generator_options = "lite"
+}
+
+proto_library("view_hierarchy_proto_descriptor") {
+  sources = [ "view_hierarchy.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "view_hierarchy.descriptor"
+}
+
+source_set("proto_convertors") {
+  sources = [
+    "main_content_extractor_proto_convertor.cc",
+    "main_content_extractor_proto_convertor.h",
+    "visual_annotator_proto_convertor.cc",
+    "visual_annotator_proto_convertor.h",
+  ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//services/screen_ai/public/mojom",
+    "//services/strings",
+    "//ui/accessibility",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}

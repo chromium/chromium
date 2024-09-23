@@ -26,8 +26,11 @@ struct CONTENT_EXPORT PrerenderMismatchedHeaders {
 
   ~PrerenderMismatchedHeaders();
 
+  PrerenderMismatchedHeaders(const PrerenderMismatchedHeaders& other);
   PrerenderMismatchedHeaders(PrerenderMismatchedHeaders&& other);
 
+  PrerenderMismatchedHeaders& operator=(
+      const PrerenderMismatchedHeaders& other);
   PrerenderMismatchedHeaders& operator=(PrerenderMismatchedHeaders&& other);
 
   std::string header_name;
@@ -95,8 +98,7 @@ class CONTENT_EXPORT PrerenderCancellationReason {
   PrerenderCancellationReason(PrerenderCancellationReason&& reason);
 
   // Reports UMA and UKM metrics.
-  void ReportMetrics(PreloadingTriggerType trigger_type,
-                     const std::string& embedder_histogram_suffix) const;
+  void ReportMetrics(const std::string& histogram_suffix) const;
 
   PrerenderFinalStatus final_status() const { return final_status_; }
 
@@ -132,6 +134,10 @@ enum class PrerenderCrossOriginRedirectionProtocolChange {
   kMaxValue = kHttpProtocolDowngrade
 };
 
+std::string GeneratePrerenderHistogramSuffix(
+    PreloadingTriggerType trigger_type,
+    const std::string& embedder_suffix);
+
 void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 
 void RecordPrerenderActivationTime(
@@ -155,49 +161,36 @@ void ReportSuccessActivation(const PrerenderAttributes& attributes,
 // initial prerender navigation when activation fails.
 void RecordPrerenderActivationNavigationParamsMatch(
     PrerenderHost::ActivationNavigationParamsMatch result,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_suffix);
+    const std::string& histogram_suffix);
 
 // Records the detailed types of the cross-origin redirection, e.g., changes to
 // scheme, host name etc.
 void RecordPrerenderRedirectionMismatchType(
     PrerenderCrossOriginRedirectionMismatch case_type,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
+    const std::string& histogram_suffix);
 
 // Records whether the redirection was caused by HTTP protocol upgrade.
 void RecordPrerenderRedirectionProtocolChange(
     PrerenderCrossOriginRedirectionProtocolChange change_type,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
-
-// Takes the headers of incoming navigation which can potentially activate a
-// prerendering navigation as the input, and compares them with the prerendering
-// navigation's. The comparison is order-insensitive and case-insensitive,
-// unlike converting the headers to strings and comparing the strings naively.
-// For each mismatch case, this function reports a record to UMA, so that we can
-// track the use of each header and tell if prerender sets all headers as
-// expected.
-// Assuming the given headers mismatch, this function will report a record if it
-// finds that everything matches. This record will be used to ensure the current
-// activation logic which compares the headers in strings is correct.
-void CONTENT_EXPORT AnalyzePrerenderActivationHeader(
-    net::HttpRequestHeaders potential_activation_headers,
-    net::HttpRequestHeaders prerender_headers,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
+    const std::string& histogram_suffix);
 
 // Records ui::PageTransition of prerender activation navigation when transition
 // mismatch happens on prerender activation.
 void RecordPrerenderActivationTransition(
     int32_t potential_activation_transition,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
+    const std::string& histogram_suffix);
 
+// If you change this, please follow the process in
+// go/preloading-dashboard-updates to update the mapping reflected in dashboard,
+// or if you are not a Googler, please file an FYI bug on https://crbug.new with
+// component Internals>Preload.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // These are also mapped onto the second content internal range of
 // `PreloadingEligibility`.
+//
+// LINT.IfChange
 enum class PrerenderBackNavigationEligibility {
   kEligible = 0,
 
@@ -214,6 +207,7 @@ enum class PrerenderBackNavigationEligibility {
 
   kMaxValue = kRelatedActiveContents,
 };
+// LINT.ThenChange()
 
 // Maps `eligibility` onto a content internal range of PreloadingEligibility.
 CONTENT_EXPORT PreloadingEligibility

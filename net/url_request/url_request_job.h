@@ -24,6 +24,7 @@
 #include "net/base/request_priority.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/filter/source_stream.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -116,6 +117,9 @@ class NET_EXPORT URLRequestJob {
   // Get the number of bytes sent over the network. The values returned by this
   // will never decrease over the lifetime of the URLRequestJob.
   virtual int64_t GetTotalSentBytes() const;
+
+  // Get the number of bytes of the body received from network.
+  virtual int64_t GetReceivedBodyBytes() const;
 
   // Called to fetch the current load state for the job.
   virtual LoadState GetLoadState() const;
@@ -261,6 +265,15 @@ class NET_EXPORT URLRequestJob {
   // destruction. Does not close H2/H3 sessions.
   virtual void CloseConnectionOnDestruction();
 
+  // Returns true if the request should be retried after activating Storage
+  // Access.
+  virtual bool NeedsRetryWithStorageAccess();
+
+  // Set a SharedDictionaryGetter which will be used to get a shared
+  // dictionary for this request.
+  virtual void SetSharedDictionaryGetter(
+      SharedDictionaryGetter dictionary_getter) {}
+
   // Given |policy|, |original_referrer|, and |destination|, returns the
   // referrer URL mandated by |request|'s referrer policy.
   //
@@ -274,6 +287,8 @@ class NET_EXPORT URLRequestJob {
       const GURL& original_referrer,
       const GURL& destination,
       bool* same_origin_out_for_metrics = nullptr);
+
+  virtual cookie_util::StorageAccessStatus StorageAccessStatus() const;
 
  protected:
   // Notifies the job that we are connected.
@@ -335,6 +350,10 @@ class NET_EXPORT URLRequestJob {
   // This is needed so that redirect headers can be cached even though their
   // bodies are never read.
   virtual void DoneReadingRedirectResponse();
+
+  // Called to tell the job that the body won't be read (and headers won't be
+  // cached) because we're going to retry the request.
+  virtual void DoneReadingRetryResponse();
 
   // Called to set up a SourceStream chain for this request.
   // Subclasses should return the appropriate last SourceStream of the chain,

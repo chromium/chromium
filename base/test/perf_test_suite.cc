@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/perf_log.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +26,8 @@ PerfTestSuite::PerfTestSuite(int argc, char** argv) : TestSuite(argc, argv) {}
 
 void PerfTestSuite::Initialize() {
   TestSuite::Initialize();
+
+  test::AllowCheckIsTestForTesting();
 
   // Initialize the perf timer log
   FilePath log_path =

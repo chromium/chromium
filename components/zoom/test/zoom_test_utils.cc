@@ -14,8 +14,8 @@ namespace zoom {
 bool operator==(const ZoomController::ZoomChangedEventData& lhs,
                 const ZoomController::ZoomChangedEventData& rhs) {
   return lhs.web_contents == rhs.web_contents &&
-         blink::PageZoomValuesEqual(lhs.old_zoom_level, rhs.old_zoom_level) &&
-         blink::PageZoomValuesEqual(lhs.new_zoom_level, rhs.new_zoom_level) &&
+         blink::ZoomValuesEqual(lhs.old_zoom_level, rhs.old_zoom_level) &&
+         blink::ZoomValuesEqual(lhs.new_zoom_level, rhs.new_zoom_level) &&
          lhs.zoom_mode == rhs.zoom_mode &&
          lhs.can_show_bubble == rhs.can_show_bubble;
 }

@@ -50,7 +50,6 @@ const char* SchemeEnumToString(VisibilityMetricsLogger::Scheme scheme) {
     default:
       NOTREACHED();
   }
-  return "";
 }
 
 // Have bypassed the usual macros here because they do not support a
@@ -286,16 +285,12 @@ void VisibilityMetricsLogger::ProcessClientUpdate(Client* client,
     if (action != ClientAction::kRemoved) {
       TRACE_EVENT_BEGIN("android_webview.timeline", "WebViewVisible",
                         perfetto::Track::FromPointer(client));
-      // TODO(crbug.com/1021571): Remove this once fixed.
-      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
     }
     ++all_clients_visible_count_;
   } else if (was_visible && !is_visible) {
     if (action != ClientAction::kRemoved) {
       TRACE_EVENT_BEGIN("android_webview.timeline", "WebViewInvisible",
                         perfetto::Track::FromPointer(client));
-      // TODO(crbug.com/1021571): Remove this once fixed.
-      PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
     }
     --all_clients_visible_count_;
   }

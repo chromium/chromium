@@ -41,7 +41,7 @@ base::FilePath OfflinePagePath(const GURL& url, OfflineFileType type) {
     case OFFLINE_TYPE_PDF:
       return directory.Append(kPDFFileName);
   }
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return base::FilePath();
 }
 

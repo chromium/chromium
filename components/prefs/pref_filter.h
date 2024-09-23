@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PREFS_PREF_FILTER_H_
 #define COMPONENTS_PREFS_PREF_FILTER_H_
 
-#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback_forward.h"
@@ -27,7 +27,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
   using PostFilterOnLoadCallback =
       base::OnceCallback<void(base::Value::Dict prefs, bool schedule_write)>;
 
-  virtual ~PrefFilter() {}
+  virtual ~PrefFilter() = default;
 
   // This method is given ownership of the |pref_store_contents| read from disk
   // before the underlying PersistentPrefStore gets to use them. It must hand
@@ -42,7 +42,7 @@ class COMPONENTS_PREFS_EXPORT PrefFilter {
 
   // Receives notification when a pref store value is changed, before Observers
   // are notified.
-  virtual void FilterUpdate(const std::string& path) = 0;
+  virtual void FilterUpdate(std::string_view path) = 0;
 
   // Receives notification when the pref store is about to serialize data
   // contained in |pref_store_contents| to a string. Modifications to

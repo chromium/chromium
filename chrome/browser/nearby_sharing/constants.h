@@ -10,9 +10,6 @@
 // Timeout for reading a response frame from remote device.
 constexpr base::TimeDelta kReadResponseFrameTimeout = base::Seconds(60);
 
-// Timeout for initiating a connection to a remote device.
-constexpr base::TimeDelta kInitiateNearbyConnectionTimeout = base::Seconds(60);
-
 // The delay before the sender will disconnect from the receiver after sending a
 // file. Note that the receiver is expected to immediately disconnect, so this
 // delay is a worst-effort disconnection. Disconnecting too early may interrupt
@@ -37,10 +34,5 @@ constexpr base::TimeDelta kInvalidateDelay = base::Milliseconds(500);
 
 // Time between successive progress updates.
 constexpr base::TimeDelta kMinProgressUpdateFrequency = base::Milliseconds(100);
-
-// Whether or not WifiLan is supported for advertising or discovery. Support as
-// a bandwidth upgrade medium is behind a feature flag.
-constexpr bool kIsWifiLanAdvertisingSupported = false;
-constexpr bool kIsWifiLanDiscoverySupported = false;
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CONSTANTS_H_

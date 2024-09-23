@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class ChromeBrowserState;
 enum class ServiceAccessType;
 
 namespace history {
@@ -19,14 +19,18 @@ class HistoryService;
 
 namespace ios {
 // Singleton that owns all HistoryServices and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class HistoryServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
+  // TODO(crbug.com/358299863): Remove when fully migrated.
   static history::HistoryService* GetForBrowserState(
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       ServiceAccessType access_type);
-  static history::HistoryService* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state,
+
+  static history::HistoryService* GetForProfile(ProfileIOS* profile,
+                                                ServiceAccessType access_type);
+  static history::HistoryService* GetForProfileIfExists(
+      ProfileIOS* profile,
       ServiceAccessType access_type);
   static HistoryServiceFactory* GetInstance();
 

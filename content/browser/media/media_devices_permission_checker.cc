@@ -43,29 +43,38 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
 
   RenderFrameHostDelegate* delegate = frame_host->delegate();
   url::Origin origin = frame_host->GetLastCommittedOrigin();
-  bool audio_permission = delegate->CheckMediaAccessPermission(
+  bool microphone_permission = delegate->CheckMediaAccessPermission(
       frame_host, origin, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
-  bool mic_permissions_policy = true;
-  bool camera_permissions_policy = true;
-  mic_permissions_policy = frame_host->IsFeatureEnabled(
+
+  bool speaker_selection_permission =
+      frame_host->GetBrowserContext()
+          ->GetPermissionController()
+          ->GetPermissionStatusForCurrentDocument(
+              blink::PermissionType::SPEAKER_SELECTION, frame_host) ==
+      blink::mojom::PermissionStatus::GRANTED;
+
+  bool mic_permissions_policy = frame_host->IsFeatureEnabled(
       blink::mojom::PermissionsPolicyFeature::kMicrophone);
-  camera_permissions_policy = frame_host->IsFeatureEnabled(
+  bool camera_permissions_policy = frame_host->IsFeatureEnabled(
       blink::mojom::PermissionsPolicyFeature::kCamera);
+  bool speaker_selection_permissions_policy = frame_host->IsFeatureEnabled(
+      blink::mojom::PermissionsPolicyFeature::kSpeakerSelection);
 
   MediaDevicesManager::BoolDeviceTypes result;
-  // Speakers.
-  // TODO(guidou): use specific permission for audio output when it becomes
-  // available. See http://crbug.com/556542.
-  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
+
+  // Speakers. Also allow speakers if the microphone permission is given, even
+  // if speaker permission is not explicitly given.
+  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
       requested_device_types[static_cast<size_t>(
-          MediaDeviceType::kMediaAudioOuput)] &&
-      audio_permission;
+          MediaDeviceType::kMediaAudioOutput)] &&
+      ((microphone_permission && mic_permissions_policy) ||
+       (speaker_selection_permission && speaker_selection_permissions_policy));
 
   // Mic.
   result[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
       requested_device_types[static_cast<size_t>(
           MediaDeviceType::kMediaAudioInput)] &&
-      audio_permission && mic_permissions_policy;
+      microphone_permission && mic_permissions_policy;
 
   // Camera.
   result[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =

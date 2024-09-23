@@ -9,44 +9,29 @@
 
 namespace autofill {
 
-// static
-VirtualCardEnrollUiModel VirtualCardEnrollUiModel::Create(
-    const VirtualCardEnrollmentFields& enrollment_fields) {
-  VirtualCardEnrollUiModel model;
-  model.window_title = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL);
-  std::u16string learn_more_link_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL);
-  model.explanatory_message = l10n_util::GetStringFUTF16(
+VirtualCardEnrollUiModel::Observer::~Observer() = default;
+
+VirtualCardEnrollUiModel::VirtualCardEnrollUiModel(
+    const VirtualCardEnrollmentFields& enrollment_fields)
+    : window_title_(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL)),
+      accept_action_text_(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL)),
+      cancel_action_text_(l10n_util::GetStringUTF16(
+          enrollment_fields.virtual_card_enrollment_source ==
+                  VirtualCardEnrollmentSource::kSettingsPage
+              ? IDS_CANCEL
+          : enrollment_fields.last_show
+              ? IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_NO_THANKS
+              : IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP)),
+      learn_more_link_text_(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL)),
+      enrollment_fields_(enrollment_fields) {
+  explanatory_message_ = l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL,
-      learn_more_link_text);
-  model.accept_action_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL);
-  model.cancel_action_text = l10n_util::GetStringUTF16(
-      enrollment_fields.virtual_card_enrollment_source ==
-              VirtualCardEnrollmentSource::kSettingsPage
-          ? IDS_CANCEL
-      : enrollment_fields.last_show
-          ? IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_NO_THANKS
-          : IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP);
-  model.learn_more_link_text = learn_more_link_text;
-  model.enrollment_fields = enrollment_fields;
-  return model;
+      learn_more_link_text_);
 }
 
-VirtualCardEnrollUiModel::VirtualCardEnrollUiModel() = default;
 VirtualCardEnrollUiModel::~VirtualCardEnrollUiModel() = default;
-bool VirtualCardEnrollUiModel::operator==(
-    const VirtualCardEnrollUiModel& other) const = default;
-
-VirtualCardEnrollUiModel::VirtualCardEnrollUiModel(
-    const VirtualCardEnrollUiModel& other) = default;
-VirtualCardEnrollUiModel& VirtualCardEnrollUiModel::operator=(
-    const VirtualCardEnrollUiModel& other) noexcept = default;
-
-VirtualCardEnrollUiModel::VirtualCardEnrollUiModel(
-    VirtualCardEnrollUiModel&& other) = default;
-VirtualCardEnrollUiModel& VirtualCardEnrollUiModel::operator=(
-    VirtualCardEnrollUiModel&& other) noexcept = default;
 
 }  // namespace autofill

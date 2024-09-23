@@ -27,7 +27,7 @@ class MODULES_EXPORT MediaControlSliderElement
     double width;
   };
 
-  // Width in CSS pixels * pageZoomFactor (ignores CSS transforms for
+  // Width in CSS pixels * layoutZoomFactor (ignores CSS transforms for
   // simplicity; deliberately ignores pinch zoom's pageScaleFactor).
   int TrackWidth();
 

@@ -19,6 +19,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
@@ -77,7 +78,7 @@ std::unique_ptr<AssistantButton> AssistantButton::Create(
   DCHECK(params.accessible_name_id.has_value());
 
   auto button = std::make_unique<AssistantButton>(listener, button_id);
-  button->SetAccessibleName(
+  button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(params.accessible_name_id.value()));
 
   if (params.tooltip_id) {

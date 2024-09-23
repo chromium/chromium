@@ -22,6 +22,8 @@
 #include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/size.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "media/base/media_switches.h"
@@ -35,6 +37,9 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
+// The initial aspect ratio for Document Picture-in-Picture windows. This does
+// not apply to video Picture-in-Picture windows.
+constexpr double kInitialAspectRatio = 1.0;
 
 // The minimum window size for Document Picture-in-Picture windows. This does
 // not apply to video Picture-in-Picture windows.
@@ -120,6 +125,16 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
   pip_window_controller_ = pip_window_controller;
 
   pip_window_controller_->Show();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (number_of_existing_scoped_disallow_picture_in_pictures_ > 0) {
+    // Don't exit picture-in-picture synchronously since exiting in the middle
+    // of opening leaves us in a bad state.
+    ExitPictureInPictureSoon();
+    RecordPictureInPictureDisallowed(
+        PictureInPictureDisallowedType::kNewWindowClosed);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -146,7 +161,7 @@ void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
   // pre-existing PictureInPictureWindowController's window (if any).
   EnterPictureInPictureWithController(controller);
 
-  NotifyObservers(&Observer::OnEnterPictureInPicture);
+  NotifyObserversOnEnterPictureInPicture();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -166,7 +181,6 @@ PictureInPictureWindowManager::EnterVideoPictureInPicture(
     CreateWindowInternal(web_contents);
   }
 
-  NotifyObservers(&Observer::OnEnterPictureInPicture);
   return content::PictureInPictureResult::kSuccess;
 }
 
@@ -257,17 +271,21 @@ PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
                                 : std::nullopt;
 }
 
-gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
+gfx::Rect PictureInPictureWindowManager::CalculateOuterWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
     const display::Display& display,
-    const gfx::Size& minimum_outer_window_size) {
-  // TODO(https://crbug.com/1327797): This copies a bunch of logic from
+    const gfx::Size& minimum_outer_window_size,
+    const gfx::Size& excluded_margin) {
+  // TODO(crbug.com/40841415): This copies a bunch of logic from
   // VideoOverlayWindowViews. That class and this one should be refactored so
   // VideoOverlayWindowViews uses PictureInPictureWindowManager to calculate
   // window sizing.
   gfx::Rect work_area = display.work_area();
   gfx::Rect window_bounds;
 
+  // If the outer bounds for this request are cached, then ignore everything
+  // else and use those, unless the site requested that we don't.
+  //
   // Typically, we have a window controller at this point, but often during
   // tests we don't.  Don't worry about the cache if it's missing.
   if (pip_window_controller_) {
@@ -279,7 +297,10 @@ gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
     auto cached_window_bounds =
         PictureInPictureBoundsCache::GetBoundsForNewWindow(
             web_contents, display, requested_content_bounds);
-    if (cached_window_bounds) {
+    // Ignore the result if we're asked to do so.  Note that we still have to
+    // ask the cache, so that it's set up to accept position updates later for
+    // this request.
+    if (cached_window_bounds && !pip_options.prefer_initial_window_placement) {
       // Cache hit!  Just return it as the window bounds.
       return *cached_window_bounds;
     }
@@ -287,26 +308,29 @@ gfx::Rect PictureInPictureWindowManager::CalculatePictureInPictureWindowBounds(
 
   if (pip_options.width > 0 && pip_options.height > 0) {
     // Use width and height if we have them both, but ensure it's within the
-    // required bounds.
-    gfx::Size window_size(base::saturated_cast<int>(pip_options.width),
-                          base::saturated_cast<int>(pip_options.height));
+    // required bounds.  Remember that the pip options are the desired inner
+    // size, so we add any non-client size we need to convert to outer size by
+    // adding back the margin around the inner area.
+    gfx::Size window_size(
+        base::saturated_cast<int>(pip_options.width + excluded_margin.width()),
+        base::saturated_cast<int>(pip_options.height +
+                                  excluded_margin.height()));
     window_size.SetToMin(GetMaximumWindowSize(display));
     window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
   } else {
     // Otherwise, fall back to the aspect ratio.
-    double initial_aspect_ratio = pip_options.initial_aspect_ratio > 0.0
-                                      ? pip_options.initial_aspect_ratio
-                                      : 1.0;
     gfx::Size window_size(work_area.width() / 5, work_area.height() / 5);
     window_size.SetToMin(GetMaximumWindowSize(display));
     window_size.SetToMax(minimum_outer_window_size);
     window_bounds = gfx::Rect(window_size);
-    gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kTopLeft, initial_aspect_ratio,
-                               GetMinimumInnerWindowSize(),
-                               GetMaximumWindowSize(display), &window_bounds);
+    gfx::SizeRectToAspectRatioWithExcludedMargin(
+        gfx::ResizeEdge::kTopLeft, kInitialAspectRatio,
+        GetMinimumInnerWindowSize(), GetMaximumWindowSize(display),
+        excluded_margin, window_bounds);
   }
 
+  // Position the window.
   int window_diff_width = work_area.right() - window_bounds.width();
   int window_diff_height = work_area.bottom() - window_bounds.height();
 
@@ -325,16 +349,16 @@ gfx::Rect
 PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
     const blink::mojom::PictureInPictureWindowOptions& pip_options,
     const display::Display& display) {
-  return CalculatePictureInPictureWindowBounds(pip_options, display,
-                                               GetMinimumInnerWindowSize());
-}
+#if !BUILDFLAG(IS_ANDROID)
+  RecordDocumentPictureInPictureRequestedSizeMetrics(pip_options, display);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-gfx::Rect PictureInPictureWindowManager::AdjustPictureInPictureWindowBounds(
-    const blink::mojom::PictureInPictureWindowOptions& pip_options,
-    const display::Display& display,
-    const gfx::Size& minimum_window_size) {
-  return CalculatePictureInPictureWindowBounds(pip_options, display,
-                                               minimum_window_size);
+  // Use an empty `excluded_margin`, which more or less guarantees that these
+  // bounds are incorrect if `pip_options` includes a requested inner size that
+  // we'd like to honor.  It's okay, because we'll recompute it later once we
+  // know the excluded margin.
+  return CalculateOuterWindowBounds(pip_options, display,
+                                    GetMinimumInnerWindowSize(), gfx::Size());
 }
 
 void PictureInPictureWindowManager::UpdateCachedBounds(
@@ -395,8 +419,25 @@ void PictureInPictureWindowManager::CreateWindowInternal(
     content::WebContents* web_contents) {
   video_web_contents_observer_ =
       std::make_unique<VideoWebContentsObserver>(this, web_contents);
-  pip_window_controller_ = content::PictureInPictureWindowController::
-      GetOrCreateVideoPictureInPictureController(web_contents);
+  auto* video_pip_window_controller =
+      content::PictureInPictureWindowController::
+          GetOrCreateVideoPictureInPictureController(web_contents);
+
+  video_pip_window_controller->SetOnWindowCreatedNotifyObserversCallback(
+      base::BindOnce(&PictureInPictureWindowManager::
+                         NotifyObserversOnEnterPictureInPicture,
+                     base::Unretained(this)));
+  pip_window_controller_ = video_pip_window_controller;
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (number_of_existing_scoped_disallow_picture_in_pictures_ > 0) {
+    // Don't exit picture-in-picture synchronously since exiting in the middle
+    // of opening leaves us in a bad state.
+    ExitPictureInPictureSoon();
+    RecordPictureInPictureDisallowed(
+        PictureInPictureDisallowedType::kNewWindowClosed);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void PictureInPictureWindowManager::CloseWindowInternal() {
@@ -419,7 +460,6 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
 
 std::unique_ptr<AutoPipSettingOverlayView>
 PictureInPictureWindowManager::GetOverlayView(
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
   // This should probably CHECK, but tests often can't set the controller.
@@ -458,7 +498,7 @@ PictureInPictureWindowManager::GetOverlayView(
   // close cb, if the pip window should be blocked.
   auto overlay_view = auto_pip_tab_helper->CreateOverlayPermissionViewIfNeeded(
       base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon),
-      browser_view_overridden_bounds, anchor_view, arrow);
+      anchor_view, arrow);
 
   if (!overlay_view) {
     // It's already allowed or blocked / embargoed.
@@ -489,7 +529,99 @@ void PictureInPictureWindowManager::CreateOcclusionTrackerIfNecessary() {
     occlusion_tracker_ = std::make_unique<PictureInPictureOcclusionTracker>();
   }
 }
+
+bool PictureInPictureWindowManager::ShouldFileDialogBlockPictureInPicture(
+    content::WebContents* owner_web_contents) {
+  if (!base::FeatureList::IsEnabled(media::kFileDialogsBlockPictureInPicture)) {
+    return false;
+  }
+
+  // File dialogs opened inside document picture-in-picture windows should not
+  // block picture-in-picture.
+  if (pip_window_controller_ &&
+      pip_window_controller_->GetChildWebContents() == owner_web_contents) {
+    return false;
+  }
+
+  return true;
+}
+
+void PictureInPictureWindowManager::OnScopedDisallowPictureInPictureCreated(
+    base::PassKey<ScopedDisallowPictureInPicture>) {
+  number_of_existing_scoped_disallow_picture_in_pictures_++;
+  if (pip_window_controller_) {
+    ExitPictureInPicture();
+    RecordPictureInPictureDisallowed(
+        PictureInPictureDisallowedType::kExistingWindowClosed);
+  }
+}
+
+void PictureInPictureWindowManager::OnScopedDisallowPictureInPictureDestroyed(
+    base::PassKey<ScopedDisallowPictureInPicture>) {
+  CHECK_NE(number_of_existing_scoped_disallow_picture_in_pictures_, 0u);
+  number_of_existing_scoped_disallow_picture_in_pictures_--;
+}
+
+bool PictureInPictureWindowManager::IsPictureInPictureDisabled() const {
+  return number_of_existing_scoped_disallow_picture_in_pictures_ > 0;
+}
+
+void PictureInPictureWindowManager::
+    RecordDocumentPictureInPictureRequestedSizeMetrics(
+        const blink::mojom::PictureInPictureWindowOptions& pip_options,
+        const display::Display& display) {
+  // Directly record the requested width and height.
+  base::UmaHistogramCounts1000(
+      "Media.DocumentPictureInPicture.RequestedInitialWidth",
+      pip_options.width);
+  base::UmaHistogramCounts1000(
+      "Media.DocumentPictureInPicture.RequestedInitialHeight",
+      pip_options.height);
+
+  // Calculate and record the ratio of requested picture-in-picture size to the
+  // total screen size.
+  gfx::Size requested_size(pip_options.width, pip_options.height);
+  base::CheckedNumeric<int> requested_area = requested_size.GetCheckedArea();
+  base::CheckedNumeric<int> screen_area =
+      display.GetSizeInPixel().GetCheckedArea();
+  if (requested_area.IsValid() && screen_area.IsValid()) {
+    int recorded_percent;
+
+    // We already know `screen_area` is valid, so `ValueOrDie()` should never
+    // die.
+    if (screen_area.ValueOrDie() == base::MakeStrictNum(0)) {
+      // If we have an empty screen area (which should generally not happen in
+      // practice), then record the requested size as 100 percent of the screen
+      // size.
+      recorded_percent = 100;
+    } else {
+      // Otherwise, calculate the actual percentage, and clamp to a value
+      // between 1 and 100 percent.
+      base::CheckedNumeric<int> percent_screen_coverage_requested =
+          (requested_area * 100) / screen_area;
+      recorded_percent = std::min(
+          std::max(percent_screen_coverage_requested.ValueOrDefault(100),
+                   base::MakeStrictNum(1)),
+          base::MakeStrictNum(100));
+    }
+    base::UmaHistogramPercentage(
+        "Media.DocumentPictureInPicture.RequestedSizeToScreenRatio",
+        recorded_percent);
+  }
+}
+
+void PictureInPictureWindowManager::RecordPictureInPictureDisallowed(
+    PictureInPictureDisallowedType type) {
+  base::UmaHistogramEnumeration("Media.PictureInPicture.Disallowed", type);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void PictureInPictureWindowManager::NotifyObserversOnEnterPictureInPicture() {
+  for (Observer& observer : observers_) {
+    observer.OnEnterPictureInPicture();
+  }
+}
 
 PictureInPictureWindowManager::PictureInPictureWindowManager() = default;
 

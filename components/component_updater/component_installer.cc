@@ -61,6 +61,10 @@ bool ComponentInstallerPolicy::AllowUpdatesOnMeteredConnections() const {
   return true;
 }
 
+bool ComponentInstallerPolicy::AllowUpdates() const {
+  return true;
+}
+
 ComponentInstaller::RegistrationInfo::RegistrationInfo()
     : version(kNullVersion) {}
 
@@ -83,7 +87,7 @@ ComponentInstaller::~ComponentInstaller() = default;
 void ComponentInstaller::Register(ComponentUpdateService* cus,
                                   base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(cus);
+  CHECK(cus);
 
   std::vector<uint8_t> public_key_hash;
   installer_policy_->GetHash(&public_key_hash);
@@ -179,9 +183,6 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  DCHECK(!base::PathExists(unpack_path));
-  DCHECK(base::PathExists(local_install_path));
-
 #if BUILDFLAG(IS_APPLE)
   // Since components can be large and can be re-downloaded when needed, they
   // are excluded from backups.
@@ -190,7 +191,7 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
 
   const Result result =
       installer_policy_->OnCustomInstall(*local_manifest, local_install_path);
-  if (result.error) {
+  if (result.result.category_ != update_client::ErrorCategory::kNone) {
     return result;
   }
 
@@ -218,7 +219,7 @@ void ComponentInstaller::Install(
   const Result result =
       InstallHelper(unpack_path, &manifest, &version, &install_path);
   base::DeletePathRecursively(unpack_path);
-  if (result.error) {
+  if (result.result.category_ != update_client::ErrorCategory::kNone) {
     main_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(std::move(callback), result));
     return;
@@ -234,13 +235,15 @@ void ComponentInstaller::Install(
                               base::BindOnce(std::move(callback), result));
 }
 
-bool ComponentInstaller::GetInstalledFile(const std::string& file,
-                                          base::FilePath* installed_file) {
-  if (current_version_ == base::Version(kNullVersion)) {
-    return false;  // No component has been installed yet.
+std::optional<base::FilePath> ComponentInstaller::GetInstalledFile(
+    const std::string& file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::FilePath path = base::FilePath::FromASCII(file);
+  if (path.IsAbsolute() || path.ReferencesParent() ||
+      current_install_dir_.empty()) {
+    return std::nullopt;
   }
-  *installed_file = current_install_dir_.AppendASCII(file);
-  return true;
+  return current_install_dir_.Append(path);
 }
 
 bool ComponentInstaller::Uninstall() {
@@ -449,8 +452,8 @@ void ComponentInstaller::StartRegistration(
     const base::Version& max_previous_product_version,
     scoped_refptr<RegistrationInfo> registration_info) {
   VLOG(1) << __func__ << " for " << installer_policy_->GetName();
-  DCHECK(task_runner_);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // First check for an installation set up alongside Chrome itself.
   base::FilePath root;
@@ -479,8 +482,8 @@ void ComponentInstaller::StartRegistration(
 }
 
 void ComponentInstaller::UninstallOnTaskRunner() {
-  DCHECK(task_runner_);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   const std::optional<base::FilePath> base_dir = GetComponentDirectory();
   if (!base_dir) {
@@ -546,7 +549,8 @@ void ComponentInstaller::FinishRegistration(
                this, installer_policy_->RequiresNetworkEncryption(),
                installer_policy_->SupportsGroupPolicyEnabledComponentUpdates(),
                installer_policy_->AllowCachedCopies(),
-               installer_policy_->AllowUpdatesOnMeteredConnections()))) {
+               installer_policy_->AllowUpdatesOnMeteredConnections(),
+               installer_policy_->AllowUpdates()))) {
     VLOG(0) << "Component registration failed for "
             << installer_policy_->GetName();
     if (!callback.is_null()) {

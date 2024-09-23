@@ -101,7 +101,7 @@ void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
 void It2MeConfirmationDialogChromeOS::ShowConfirmationNotification(
     const std::string& remote_user_email) {
   message_center::RichNotificationData data;
-  data.pinned = true;
+  data.pinned = false;
 
   data.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_DECLINE));

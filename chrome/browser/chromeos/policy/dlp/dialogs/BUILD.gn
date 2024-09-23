@@ -1,0 +1,56 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("dialogs") {
+  sources = [
+    "dlp_warn_dialog.cc",
+    "dlp_warn_dialog.h",
+    "dlp_warn_notifier.cc",
+    "dlp_warn_notifier.h",
+    "policy_dialog_base.cc",
+    "policy_dialog_base.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/base/metadata",
+    "//ui/base/mojom",
+    "//ui/chromeos/strings",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/public/cpp" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_dlp_warn_notifier.cc",
+    "mock_dlp_warn_notifier.h",
+  ]
+
+  deps = [
+    ":dialogs",
+    "//base",
+    "//testing/gmock",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

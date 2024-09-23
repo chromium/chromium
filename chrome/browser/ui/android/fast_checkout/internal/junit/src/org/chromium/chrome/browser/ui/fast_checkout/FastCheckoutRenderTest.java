@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType.CREDIT_CARD_SCREEN;
-import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.view.View;
@@ -159,9 +159,7 @@ public class FastCheckoutRenderTest {
     public void testShowsHomeScreenWithLocalCreditCard() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showOptions(
-                            new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
-                            new FastCheckoutCreditCard[] {LOCAL_CREDIT_CARD});
+                    mCoordinator.showOptions(List.of(AUTOFILL_PROFILE), List.of(LOCAL_CREDIT_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -176,8 +174,7 @@ public class FastCheckoutRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showOptions(
-                            new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
-                            new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
+                            List.of(AUTOFILL_PROFILE), List.of(SERVER_CREDIT_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -195,8 +192,7 @@ public class FastCheckoutRenderTest {
                             .getModelForTesting()
                             .set(FastCheckoutProperties.CURRENT_SCREEN, AUTOFILL_PROFILE_SCREEN);
                     mCoordinator.showOptions(
-                            new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
-                            new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
+                            List.of(AUTOFILL_PROFILE), List.of(SERVER_CREDIT_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -214,8 +210,7 @@ public class FastCheckoutRenderTest {
                             .getModelForTesting()
                             .set(FastCheckoutProperties.CURRENT_SCREEN, CREDIT_CARD_SCREEN);
                     mCoordinator.showOptions(
-                            new FastCheckoutAutofillProfile[] {AUTOFILL_PROFILE},
-                            new FastCheckoutCreditCard[] {SERVER_CREDIT_CARD});
+                            List.of(AUTOFILL_PROFILE), List.of(SERVER_CREDIT_CARD));
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

@@ -5,8 +5,10 @@
 #include "components/permissions/android/nfc/nfc_system_level_setting_impl.h"
 
 #include "base/android/jni_android.h"
-#include "components/permissions/android/jni_headers/NfcSystemLevelSetting_jni.h"
 #include "content/public/browser/web_contents.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/permissions/android/jni_headers/NfcSystemLevelSetting_jni.h"
 
 namespace permissions {
 

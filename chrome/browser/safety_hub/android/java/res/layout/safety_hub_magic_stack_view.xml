@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/safety_hub_magic_stack_container_marginHorizontal"
+    android:layout_marginTop="@dimen/safety_hub_magic_stack_container_marginTop"
+    android:paddingHorizontal="@dimen/safety_hub_magic_stack_container_paddingHorizontal"
+    android:paddingVertical="@dimen/safety_hub_magic_stack_container_paddingVertical"
+    android:orientation="vertical"
+    android:background="@drawable/home_surface_ui_background"
+    tools:ignore="UnusedResources">
+
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/safety_hub_magic_stack_content_marginBottom"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
+
+    <LinearLayout
+        android:baselineAligned="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <org.chromium.components.browser_ui.widget.RoundedCornerImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/safety_hub_magic_stack_icon_size"
+            android:layout_height="@dimen/safety_hub_magic_stack_icon_size"
+            android:padding="@dimen/safety_hub_magic_stack_icon_padding"
+            android:scaleType="centerCrop"
+            android:background="@drawable/safety_hub_magic_stack_icon_background"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"/>
+
+            <TextView
+                android:id="@+id/summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.TextSmall"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Space
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:layout_width="wrap_content"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        style="@style/FilledButton"/>
+
+</org.chromium.chrome.browser.safety_hub.SafetyHubMagicStackView>

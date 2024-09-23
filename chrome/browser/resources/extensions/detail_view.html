@@ -47,36 +47,37 @@
     padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
   }
 
-  .safety-check-warning-container {
+  .message-container {
     align-items: center;
     background-color: var(--google-grey-50);
     display: flex;
     padding: 15px;
+    margin-top: 2px;
   }
 
-  .safety-check-icon {
+  .message-icon {
     align-items: center;
     align-self: flex-start;
     display: flex;
     height: var(--cr-icon-size);
     width: var(--cr-icon-size);
-    fill: var(--google-grey-700);
+    fill: var(--panel-icon-color);
   }
 
-  .safety-check-warning-container iron-icon {
+  .message-container cr-icon {
     height: var(--cr-icon-size);
     padding: 6px;
     width: var(--cr-icon-size);
   }
 
-  @media (prefers-color-scheme: dark) {
-    .safety-check-warning-container {
-      /* Google Grey 911 according to Extensions Safety Check mock. */
-      background-color: rgb(53, 54, 58);
-    }
+  .message-text {
+    flex: 1;
+    margin-inline-start: 15px;
+  }
 
-    .safety-check-icon {
-      fill: var(--review-panel-icon-color);
+  @media (prefers-color-scheme: dark) {
+    .message-container {
+      background-color: var(--google-grey-800);
     }
   }
 
@@ -185,7 +186,18 @@
     height: var(--cr-icon-size);
     width: var(--cr-icon-size);
   }
+
+  #a11yAssociation {
+    height: 0;
+    overflow: hidden;
+  }
 </style>
+<!-- Invisible instead of hidden because VoiceOver refuses to read text of
+element that's hidden when referenced by an aria label. Unfortunately,
+this text can be found by Ctrl + F because it isn't hidden. -->
+<div id="a11yAssociation" aria-hidden="true">
+  [[a11yAssociation(data.name)]]
+</div>
 <div class="page-container" id="container">
   <div class="page-content">
     <div class="page-header">
@@ -199,13 +211,20 @@
       <span id="name" class="cr-title-text" role="heading" aria-level="1">
         [[data.name]]
       </span>
+      <template is="dom-if" if="[[!computeDevReloadButtonHidden_(data.*)]]">
+        <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
+            title="$i18n{itemReload}" aria-label="$i18n{itemReload}"
+            aria-describedby="a11yAssociation" on-click="onReloadClick_">
+        </cr-icon-button>
+      </template>
     </div>
-    <div class="safety-check-warning-container" id="safetyCheckWarningContainer"
+
+    <div id="safetyCheckWarningContainer" class="message-container"
         hidden$="[[!showSafetyCheck_]]">
-      <iron-icon aria-hidden="true" icon="extensions-icons:my_extensions"
-          class="safety-check-icon">
-      </iron-icon>
-      <div class="safety-check-wrapper">
+      <cr-icon aria-hidden="true" icon="extensions-icons:my_extensions"
+          class="message-icon">
+      </cr-icon>
+      <div class="message-text">
         <span class="section-title" aria-level="2">
           $i18n{safetyCheckExtensionsDetailPagePrimaryLabel}
         </span>
@@ -220,6 +239,50 @@
         $i18n{remove}
       </cr-button>
     </div>
+
+    <div id="mv2DeprecationMessage" class="message-container"
+        hidden$="[[!showMv2DeprecationMessage_]]">
+      <cr-icon aria-hidden="true" icon$="[[getMv2DeprecationMessageIcon_()]]"
+          class="message-icon">
+      </cr-icon>
+      <div class="message-text">
+        <span class="section-title" aria-level="2">
+          [[getMv2DeprecationMessageHeader_()]]
+        </span>
+        <div class="section-content"
+            inner-h-t-m-l="[[getMv2DeprecationMessageSubtitle_()]]">
+        </div>
+      </div>
+      <cr-button class="find-alternative-button"
+          on-click="onFindAlternativeButtonClick_"
+          hidden$="[[!showMv2DeprecationFindAlternativeButton_]]">
+        $i18n{mv2DeprecationPanelFindAlternativeButton}
+      </cr-button>
+      <cr-button class="remove-button"
+          on-click="onRemoveButtonClick_"
+          hidden$="[[!showMv2DeprecationRemoveButton_]]">
+        $i18n{mv2DeprecationMessageRemoveButton}
+      </cr-button>
+      <cr-icon-button class="icon-more-vert header-aligned-button"
+          id="actionMenuButton"
+          on-click="onActionMenuButtonClick_"
+          title="$i18n{moreOptions}"
+          aria-label="[[getActionMenuButtonLabel_()]]"
+          hidden$="[[!showMv2DeprecationActionMenu_]]">
+      </cr-icon-button>
+      <cr-action-menu id="actionMenu">
+        <button class="dropdown-item" id="findAlternativeAction"
+            hidden="[[!data.recommendationsUrl]]"
+            on-click="onFindAlternativeActionClick_">
+          $i18n{mv2DeprecationPanelFindAlternativeButton}
+        </button>
+        <button class="dropdown-item" id="keepAction"
+            on-click="onKeepActionClick_">
+          $i18n{mv2DeprecationPanelKeepForNowButton}
+        </button>
+      </cr-action-menu>
+    </div>
+
     <div class="cr-row first control-line" id="enable-section">
       <span class$="[[computeEnabledStyle_(data.state)]]">
         [[computeEnabledText_(data.state, '$i18nPolymer{itemOn}',
@@ -251,17 +314,17 @@
             disabled$="[[!isEnableToggleEnabled_(data.*)]]"
             hidden$="[[!showEnableToggle_(data.*)]]">
         </cr-toggle>
-        <paper-tooltip id="enable-toggle-tooltip" for="enableToggle"
+        <cr-tooltip id="enable-toggle-tooltip" for="enableToggle"
             position="left" aria-hidden="true" animation-delay="0"
             fit-to-visible-bounds>
           [[getEnableToggleTooltipText_(data.*)]]
-        </paper-tooltip>
+        </cr-tooltip>
       </div>
     </div>
     <div id="warnings" hidden$="[[!hasSevereWarnings_(data.*)]]">
       <div id="runtime-warnings" hidden$="[[!data.runtimeWarnings.length]]"
           class="cr-row continuation warning control-line">
-        <iron-icon class="warning-icon" icon="cr:error"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:error"></cr-icon>
         <span>
           <template is="dom-repeat" items="[[data.runtimeWarnings]]">
             [[item]]
@@ -276,7 +339,7 @@
       </div>
       <div class="cr-row continuation warning" id="suspicious-warning"
           hidden$="[[!data.disableReasons.suspiciousInstall]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
         <span>
           $i18n{itemSuspiciousInstall}
           <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}"
@@ -288,35 +351,35 @@
       <div class="cr-row continuation warning control-line"
           id="corrupted-warning"
           hidden$="[[!showRepairButton_(data.disableReasons.corruptInstall)]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
         <span>$i18n{itemCorruptInstall}</span>
         <cr-button id="repair-button" class="action-button"
             on-click="onRepairClick_">
           $i18n{itemRepair}
         </cr-button>
       </div>
-      <div class="cr-row continuation warning" id="blacklisted-warning"
+      <div class="cr-row continuation warning" id="blocklisted-warning"
           hidden$="[[!showBlocklistText_]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
-        <span>[[data.blacklistText]]</span>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
+        <span>[[data.blocklistText]]</span>
       </div>
       <div class="cr-row continuation warning" id="update-required-warning"
           hidden$="[[!data.disableReasons.updateRequired]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
         <span>$i18n{updateRequiredByPolicy}</span>
       </div>
       <div class="cr-row continuation warning"
           id="published-in-store-required-warning"
           hidden$="[[!data.disableReasons.publishedInStoreRequired]]">
-        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <cr-icon class="warning-icon" icon="cr:warning"></cr-icon>
         <span>$i18n{publishedInStoreRequiredByPolicy}</span>
       </div>
     </div>
     <div id="allowlist-warning" class="cr-row continuation"
         hidden$="[[!showAllowlistWarning_(data.*)]]">
-      <iron-icon class="warning-icon"
+      <cr-icon class="warning-icon"
           icon="extensions-icons:safebrowsing_warning">
-      </iron-icon>
+      </cr-icon>
       <span class="cr-secondary-text">
         $i18n{itemAllowlistWarning}
         <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank"
@@ -447,7 +510,7 @@
                     aria-label="$i18n{itemShowAccessRequestsLearnMore}"
                     href="$i18n{showAccessRequestsInToolbarLearnMoreLink}"
                     target="_blank">
-                  <iron-icon icon="cr:help-outline"></iron-icon>
+                  <cr-icon icon="cr:help-outline"></cr-icon>
                 </a>
               </div>
             </extensions-toggle-row>
@@ -471,8 +534,12 @@
       </div>
     </template>
     <cr-link-row class="hr"
+<if expr="chromeos_ash">
+        hidden$="[[isLacrosEnabled_]]"
+</if>
         id="siteSettings" label="$i18n{siteSettings}"
-        on-click="onSiteSettingsClick_" external></cr-link-row>
+        on-click="onSiteSettingsClick_" external
+    ></cr-link-row>
     <template is="dom-if" if="[[shouldShowOptionsSection_(data.*)]]">
       <div id="options-section">
         <template is="dom-if" if="[[canPinToToolbar_(data.pinnedToToolbar)]]">

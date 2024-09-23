@@ -35,11 +35,11 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.services.MockAwComponentUpdateService;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
@@ -70,7 +70,7 @@ public class ComponentsListFragmentUpdateButtonTest {
     }
 
     private CallbackHelper getComponentInfoLoadedListener() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final CallbackHelper helper = new CallbackHelper();
                     ComponentsListFragment.setComponentInfoLoadedListenerForTesting(
@@ -86,7 +86,7 @@ public class ComponentsListFragmentUpdateButtonTest {
         intent.putExtra(MainActivity.FRAGMENT_ID_INTENT_EXTRA, MainActivity.FRAGMENT_ID_COMPONENTS);
         mRule.launchActivity(intent);
 
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ComponentsListFragment.setComponentUpdateServiceNameForTesting(
                             "org.chromium.android_webview.test.services.MockAwComponentUpdateService");

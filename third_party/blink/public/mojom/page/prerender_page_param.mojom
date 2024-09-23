@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The details of a prerendering window.
+struct PrerenderParam {
+  string page_metric_suffix;
+
+  // If true, warms up compositor on a certain loading event if the page is
+  // under prerendering. Please see crbug.com/41496019 and
+  // comments on Page::should_warm_up_compositor_on_prerender_ for more
+  // details.
+  bool should_warm_up_compositor;
+};

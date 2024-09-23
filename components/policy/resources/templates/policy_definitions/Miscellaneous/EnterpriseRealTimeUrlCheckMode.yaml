@@ -30,6 +30,8 @@ schema:
   - 0
   - 1
   type: integer
+future_on:
+- android
 supported_on:
 - chrome.*:86-
 - chrome_os:86-

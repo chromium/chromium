@@ -2,16 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_win || is_mac || is_linux || is_chromeos)
+
 source_set("unit_tests") {
   testonly = true
   sources = []
   deps = [ "core" ]
 
-  if (!is_ios && !is_android) {
-    deps += [
-      "core:unit_tests",
-      "text_finder:unit_tests",
-      "visual_query:unit_tests",
-    ]
-  }
+  deps += [
+    "core:unit_tests",
+    "text_finder:unit_tests",
+    "visual_query:unit_tests",
+  ]
 }

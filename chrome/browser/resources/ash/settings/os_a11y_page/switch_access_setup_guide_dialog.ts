@@ -14,7 +14,7 @@ import '../controls/settings_slider.js';
 import '../os_settings_icons.html.js';
 import './switch_access_action_assignment_pane.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
@@ -435,6 +435,7 @@ export class SettingsSwitchAccessSetupGuideDialogElement extends
 
   private onBluetoothClick_(): void {
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
+    this.$.switchAccessSetupGuideDialog.close();
   }
 
   private onAutoScanSpeedFaster_(): void {

@@ -4,6 +4,7 @@
 
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,6 +28,10 @@
 #include "url/origin.h"
 
 namespace content {
+
+BASE_FEATURE(kCacheStorageTaskPriority,
+             "CacheStorageTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 CacheStorageContextImpl::CacheStorageContextImpl(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
@@ -56,7 +61,9 @@ CacheStorageContextImpl::~CacheStorageContextImpl() {
 scoped_refptr<base::SequencedTaskRunner>
 CacheStorageContextImpl::CreateSchedulerTaskRunner() {
   return base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::USER_VISIBLE});
+      {base::FeatureList::IsEnabled(kCacheStorageTaskPriority)
+           ? base::TaskPriority::USER_BLOCKING
+           : base::TaskPriority::USER_VISIBLE});
 }
 
 void CacheStorageContextImpl::Init(
@@ -75,7 +82,10 @@ void CacheStorageContextImpl::Init(
 
   scoped_refptr<base::SequencedTaskRunner> cache_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+          {base::MayBlock(),
+           base::FeatureList::IsEnabled(kCacheStorageTaskPriority)
+               ? base::TaskPriority::USER_BLOCKING
+               : base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   DCHECK(!dispatcher_host_);
@@ -104,6 +114,7 @@ void CacheStorageContextImpl::AddReceiver(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    const network::DocumentIsolationPolicy& document_isolation_policy,
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
@@ -112,8 +123,8 @@ void CacheStorageContextImpl::AddReceiver(
   auto add_receiver =
       base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
                      weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,
-                     std::move(coep_reporter), bucket_locator.storage_key,
-                     owner, std::move(receiver));
+                     std::move(coep_reporter), document_isolation_policy,
+                     bucket_locator.storage_key, owner, std::move(receiver));
 
   if (bucket_locator.is_default) {
     DCHECK_EQ(storage::BucketId(), bucket_locator.id);
@@ -129,21 +140,6 @@ void CacheStorageContextImpl::AddReceiver(
     std::move(add_receiver)
         .Run(base::unexpected(storage::QuotaError::kNotFound));
   }
-}
-
-void CacheStorageContextImpl::GetAllStorageKeysInfo(
-    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_manager_->GetAllStorageKeysUsage(
-      storage::mojom::CacheStorageOwner::kCacheAPI, std::move(callback));
-}
-
-void CacheStorageContextImpl::DeleteForStorageKey(
-    const blink::StorageKey& storage_key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cache_manager_->DeleteStorageKeyData(
-      storage_key, storage::mojom::CacheStorageOwner::kCacheAPI);
 }
 
 void CacheStorageContextImpl::AddObserver(
@@ -167,6 +163,7 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
+    const network::DocumentIsolationPolicy& document_isolation_policy,
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
@@ -178,7 +175,8 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
                          : std::nullopt;
 
   dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
-                                std::move(coep_reporter), storage_key, bucket,
+                                std::move(coep_reporter),
+                                document_isolation_policy, storage_key, bucket,
                                 owner, std::move(receiver));
 }
 

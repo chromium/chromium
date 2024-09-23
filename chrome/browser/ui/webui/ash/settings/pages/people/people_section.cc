@@ -175,6 +175,8 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_CANCEL},
       {"accountNotUsedInArcLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_NOT_USED_IN_ARC_LABEL},
+      {"accountNotAllowedInArcLabel",
+       IDS_SETTINGS_ACCOUNT_MANAGER_NOT_ALLOWED_IN_ARC_LABEL},
       {"accountUseInArcButtonLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
       {"accountStopUsingInArcButtonLabel",
@@ -208,7 +210,7 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       profile->IsChild() ? IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_CHILD
                          : IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS);
   html_source->AddString("accountManagerChromeUIManagementURL",
-                         base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
+                         chrome::kChromeUIManagementURL16);
   html_source->AddString(
       "accountManagerDescription",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_DESCRIPTION_V2,
@@ -218,6 +220,9 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "arcAccountRestrictionsEnabled",
       AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  html_source->AddBoolean(
+      "arcManagedAccountRestrictionEnabled",
+      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled());
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
@@ -232,6 +237,8 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_ASH_SETTINGS_LOCK_SCREEN_NOTIFICATION_SHOW},
       {"lockScreenPinOrPassword",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_OR_PASSWORD},
+      {"lockScreenPinMoreButtonAriaLabel",
+       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_MORE_BUTTON_ARIA_LABEL},
       {"lockScreenPinAutoSubmit",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT},
       {"lockScreenSetupFingerprintButton",
@@ -245,12 +252,8 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_CHANGE_PASSWORD_BUTTON},
       {"lockScreenChangePinButton",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_CHANGE_PIN_BUTTON},
-      {"lockScreenDevicePasswordOptionLabel",
-       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_DEVICE_PASSWORD_OPTION_LABEL},
       {"lockScreenEditFingerprintsDescription",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_EDIT_FINGERPRINTS_DESCRIPTION},
-      {"lockScreenGoogleAccountPasswordOptionLabel",
-       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_GOOGLE_ACCOUNT_PASSWORD_OPTION_LABEL},
       {"lockScreenNone", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NONE},
       {"lockScreenFingerprintNewName",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_NEW_FINGERPRINT_DEFAULT_NAME},
@@ -311,8 +314,6 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("quickUnlockEnabled", quick_unlock::IsPinEnabled());
-  html_source->AddBoolean("quickUnlockPinAutosubmitFeatureEnabled",
-                          features::IsPinAutosubmitFeatureEnabled());
   html_source->AddBoolean("quickUnlockDisabledByPolicy",
                           quick_unlock::IsPinDisabledByPolicy(
                               pref_service, quick_unlock::Purpose::kAny));
@@ -321,7 +322,14 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "lockScreenHideSensitiveNotificationsSupported",
       ash::features::IsLockScreenHideSensitiveNotificationsSupported());
+  html_source->AddBoolean("changePasswordFactorSetupEnabled",
+                          ash::features::IsChangePasswordFactorSetupEnabled());
 
+  html_source->AddString(
+      "lockScreenSwitchLocalPasswordDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SWITCH_LOCAL_PASSWORD_DESCRIPTION,
+          ui::GetChromeOSDeviceName()));
   html_source->AddString("lockScreenFingerprintNotice",
                          l10n_util::GetStringFUTF16(
                              IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_NOTICE,
@@ -391,6 +399,7 @@ void AddSetupPinDialogStrings(content::WebUIDataSource* html_source) {
       {"configurePinTooShort", IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_TOO_SHORT},
       {"configurePinTooLong", IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_TOO_LONG},
       {"configurePinWeakPin", IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_WEAK_PIN},
+      {"configurePinNondigit", IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_NONDIGIT},
       {"internalError", IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_INTERNAL_ERROR},
       {"pinKeyboardPlaceholderPin", IDS_PIN_KEYBOARD_HINT_TEXT_PIN},
       {"pinKeyboardPlaceholderPinPassword",
@@ -545,13 +554,11 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE_V2,
                                  user->GetGivenName()));
 
-  // Toggles the Chrome OS Account Manager submenu in the People section.
+  // Toggles the ChromeOS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
                           account_manager_facade_ != nullptr);
-  html_source->AddBoolean(
-      "isDeviceAccountManaged",
-      user->IsActiveDirectoryUser() ||
-          profile()->GetProfilePolicyConnector()->IsManaged());
+  html_source->AddBoolean("isDeviceAccountManaged",
+                          profile()->GetProfilePolicyConnector()->IsManaged());
 
   html_source->AddBoolean(
       "secondaryGoogleAccountSigninAllowed",

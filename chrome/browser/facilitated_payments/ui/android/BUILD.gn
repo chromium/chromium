@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+static_library("android") {
+  sources = [
+    "facilitated_payments_bottom_sheet_bridge.cc",
+    "facilitated_payments_bottom_sheet_bridge.h",
+    "facilitated_payments_controller.cc",
+    "facilitated_payments_controller.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base:base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/autofill",
+    "//content/public/browser:browser",
+    "//ui/android:android",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "facilitated_payments_bottom_sheet_bridge_unittest.cc",
+    "facilitated_payments_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":android",
+    "//base",
+    "//chrome/test:test_support",
+    "//content/public/browser:browser",
+    "//testing/gtest",
+    "//ui/android:android",
+  ]
+}
+
+group("jni_headers") {
+  public_deps =
+      [ "//chrome/browser/facilitated_payments/ui/android/internal:jni" ]
+}
+
+android_library("public_java") {
+  resources_package = "org.chromium.chrome.browser.facilitated_payments"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsComponent.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsSequenceView.java",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles/android:java",
+    "//components/autofill/android:payments_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}

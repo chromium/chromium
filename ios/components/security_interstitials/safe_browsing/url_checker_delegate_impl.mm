@@ -15,29 +15,51 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
-namespace {
-// Helper function for managing a blocking page request for `resource`.  For the
-// committed interstitial flow, this function does not actually display the
-// blocking page.  Instead, it updates the allow list and stores a copy of the
-// unsafe resource before calling `resource`'s callback.  The blocking page is
-// displayed later when the do-not-proceed signal triggers an error page.  Must
-// be called on the UI thread.
-void HandleBlockingPageRequestOnUIThread(
-    const security_interstitials::UnsafeResource resource,
-    base::WeakPtr<SafeBrowsingClient> client) {
+#pragma mark - UrlCheckerDelegateImpl
+
+UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
+    base::WeakPtr<SafeBrowsingClient> client)
+    : database_manager_(std::move(database_manager)),
+      client_(client),
+      threat_types_(safe_browsing::CreateSBThreatTypeSet(
+          {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING})) {}
+
+UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
+
+void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
+    base::OnceCallback<content::WebContents*()> web_contents_getter) {}
+
+void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
+    const security_interstitials::UnsafeResource& resource,
+    const std::string& method,
+    const net::HttpRequestHeaders& headers,
+    bool has_user_gesture) {
+  // Helper function for managing a blocking page request for `resource`.  For
+  // the committed interstitial flow, this function does not actually display
+  // the blocking page.  Instead, it updates the allow list and stores a copy of
+  // the unsafe resource before calling `resource`'s callback.  The blocking
+  // page is displayed later when the do-not-proceed signal triggers an error
+  // page.  Must be called on the UI thread.
+
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   // Send do-not-proceed signal if the WebState has been destroyed.
   web::WebState* web_state = resource.weak_web_state.get();
   if (!web_state) {
-    RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                              /*showed_interstitial=*/false);
+    resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                              /*showed_interstitial=*/false,
+                              /*has_post_commit_interstitial_skipped=*/false);
     return;
   }
 
-  if (client && client->ShouldBlockUnsafeResource(resource)) {
-    RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                              /*showed_interstitial=*/false);
+  if (client_ && client_->ShouldBlockUnsafeResource(resource)) {
+    resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                              /*showed_interstitial=*/false,
+                              /*has_post_commit_interstitial_skipped=*/false);
     return;
   }
 
@@ -50,8 +72,10 @@ void HandleBlockingPageRequestOnUIThread(
       SafeBrowsingUrlAllowList::FromWebState(web_state);
   if (allow_list->AreUnsafeNavigationsAllowed(url, &allowed_threats)) {
     if (base::Contains(allowed_threats, threat_type)) {
-      RunUnsafeResourceCallback(resource, /*proceed=*/true,
-                                /*showed_interstitial=*/false);
+      resource.DispatchCallback(FROM_HERE, /*proceed=*/true,
+                                /*showed_interstitial=*/false,
+                                /*has_post_commit_interstitial_skipped=*/false);
+
       return;
     }
   }
@@ -62,46 +86,14 @@ void HandleBlockingPageRequestOnUIThread(
 
   // Send the do-not-proceed signal to cancel the navigation.  This will cause
   // the error page to be displayed using the stored UnsafeResource copy.
-  RunUnsafeResourceCallback(resource, /*proceed=*/false,
-                            /*showed_interstitial=*/true);
-}
-}  // namespace
-
-#pragma mark - UrlCheckerDelegateImpl
-
-UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
-    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
-    base::WeakPtr<SafeBrowsingClient> client)
-    : database_manager_(std::move(database_manager)),
-      client_(client),
-      threat_types_(safe_browsing::CreateSBThreatTypeSet(
-          {safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
-           safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
-           safe_browsing::SB_THREAT_TYPE_URL_UNWANTED,
-           safe_browsing::SB_THREAT_TYPE_BILLING})) {}
-
-UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
-
-void UrlCheckerDelegateImpl::MaybeDestroyNoStatePrefetchContents(
-    base::OnceCallback<content::WebContents*()> web_contents_getter) {}
-
-void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
-    const security_interstitials::UnsafeResource& resource,
-    const std::string& method,
-    const net::HttpRequestHeaders& headers,
-    bool is_main_frame,
-    bool has_user_gesture) {
-  // Query the allow list on the UI thread to determine whether the navigation
-  // can proceed.
-  web::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HandleBlockingPageRequestOnUIThread, resource, client_));
+  resource.DispatchCallback(FROM_HERE, /*proceed=*/false,
+                            /*showed_interstitial=*/true,
+                            /*has_post_commit_interstitial_skipped=*/false);
 }
 
 void UrlCheckerDelegateImpl::
     StartObservingInteractionsForDelayedBlockingPageHelper(
-        const security_interstitials::UnsafeResource& resource,
-        bool is_main_frame) {}
+        const security_interstitials::UnsafeResource& resource) {}
 
 bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
   return false;
@@ -124,8 +116,13 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {
-  NOTREACHED();
+  // TODO(crbug.com/40817491): Implement reporting for suspicious sites.
 }
+
+void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+    std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {}
 
 const safe_browsing::SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {
   return threat_types_;
@@ -137,6 +134,6 @@ UrlCheckerDelegateImpl::GetDatabaseManager() {
 }
 
 safe_browsing::BaseUIManager* UrlCheckerDelegateImpl::GetUIManager() {
-  NOTREACHED();
+  NOTREACHED_IN_MIGRATION();
   return nullptr;
 }

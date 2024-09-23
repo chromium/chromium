@@ -10,12 +10,17 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_constants.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/test/fake_window_state.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/wm_metrics.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "ash/wm/workspace_controller.h"
@@ -26,6 +31,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -42,6 +48,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -67,26 +74,6 @@ void AllowSnap(aura::Window* window) {
                       aura::client::kResizeBehaviorCanResize |
                           aura::client::kResizeBehaviorCanMaximize);
 }
-
-// A simple window delegate that returns the specified min size.
-class TestWindowDelegate : public aura::test::TestWindowDelegate {
- public:
-  TestWindowDelegate() = default;
-  TestWindowDelegate(const TestWindowDelegate&) = delete;
-  TestWindowDelegate& operator=(const TestWindowDelegate&) = delete;
-  ~TestWindowDelegate() override = default;
-
-  void set_min_size(const gfx::Size& size) { min_size_ = size; }
-  void set_max_size(const gfx::Size& size) { max_size_ = size; }
-
- private:
-  // aura::Test::TestWindowDelegate:
-  gfx::Size GetMinimumSize() const override { return min_size_; }
-  gfx::Size GetMaximumSize() const override { return max_size_; }
-
-  gfx::Size min_size_;
-  gfx::Size max_size_;
-};
 
 }  // namespace
 
@@ -236,16 +223,16 @@ class WorkspaceWindowResizerTest : public AshTestBase {
     WindowState::Get(window)->drag_to_maximize_mis_trigger_timer_.FireNow();
   }
 
-  TestWindowDelegate delegate_;
-  TestWindowDelegate delegate2_;
-  TestWindowDelegate delegate3_;
-  TestWindowDelegate delegate4_;
+  aura::test::TestWindowDelegate delegate_;
+  aura::test::TestWindowDelegate delegate2_;
+  aura::test::TestWindowDelegate delegate3_;
+  aura::test::TestWindowDelegate delegate4_;
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<aura::Window> window2_;
   std::unique_ptr<aura::Window> window3_;
   std::unique_ptr<aura::Window> window4_;
 
-  TestWindowDelegate touch_resize_delegate_;
+  aura::test::TestWindowDelegate touch_resize_delegate_;
   std::unique_ptr<aura::Window> touch_resize_window_;
 
   raw_ptr<WorkspaceWindowResizer, DanglingUntriaged> workspace_resizer_ =
@@ -267,7 +254,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_RIGHT_2) {
   EXPECT_EQ("500,200 100x200", window2_->bounds().ToString());
 
   // Push off the screen, w2 should be resized to its min.
-  delegate2_.set_min_size(gfx::Size(20, 20));
+  delegate2_.set_minimum_size(gfx::Size(20, 20));
   resizer->Drag(CalculateDragPoint(*resizer, 800, 20), 0);
   EXPECT_EQ("0,300 780x300", window_->bounds().ToString());
   EXPECT_EQ("780,200 20x200", window2_->bounds().ToString());
@@ -298,7 +285,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_RIGHT_Compress) {
   EXPECT_EQ("300,200 200x200", window2_->bounds().ToString());
 
   // Collapse all the way to w1's min.
-  delegate_.set_min_size(gfx::Size(25, 25));
+  delegate_.set_minimum_size(gfx::Size(25, 25));
   resizer->Drag(CalculateDragPoint(*resizer, -800, 25), 0);
   EXPECT_EQ("0,300 25x300", window_->bounds().ToString());
   EXPECT_EQ("25,200 475x200", window2_->bounds().ToString());
@@ -325,8 +312,8 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_RIGHT_3) {
   window_->SetBounds(gfx::Rect(100, 300, 200, 300));
   window2_->SetBounds(gfx::Rect(300, 300, 150, 200));
   window3_->SetBounds(gfx::Rect(450, 300, 100, 200));
-  delegate2_.set_min_size(gfx::Size(52, 50));
-  delegate3_.set_min_size(gfx::Size(38, 50));
+  delegate2_.set_minimum_size(gfx::Size(52, 50));
+  delegate3_.set_minimum_size(gfx::Size(38, 50));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(window_.get(), HTRIGHT,
@@ -363,8 +350,8 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_RIGHT_3_Compress) {
   window_->SetBounds(gfx::Rect(100, 300, 200, 300));
   window2_->SetBounds(gfx::Rect(300, 300, 200, 200));
   window3_->SetBounds(gfx::Rect(450, 300, 100, 200));
-  delegate2_.set_min_size(gfx::Size(52, 50));
-  delegate3_.set_min_size(gfx::Size(38, 50));
+  delegate2_.set_minimum_size(gfx::Size(52, 50));
+  delegate3_.set_minimum_size(gfx::Size(38, 50));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(window_.get(), HTRIGHT,
@@ -403,7 +390,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_Compress) {
   EXPECT_EQ("400,300 100x300", window2_->bounds().ToString());
 
   // Collapse all the way to w1's min.
-  delegate_.set_min_size(gfx::Size(20, 20));
+  delegate_.set_minimum_size(gfx::Size(20, 20));
   resizer->Drag(CalculateDragPoint(*resizer, 20, -800), 0);
   EXPECT_EQ("0,100 400x20", window_->bounds().ToString());
   EXPECT_EQ("400,120 100x480", window2_->bounds().ToString());
@@ -434,7 +421,7 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_2) {
   EXPECT_EQ("0,350 200x100", window2_->bounds().ToString());
 
   // Push off the screen, w2 should be resized to its min.
-  delegate2_.set_min_size(gfx::Size(20, 20));
+  delegate2_.set_minimum_size(gfx::Size(20, 20));
   resizer->Drag(CalculateDragPoint(*resizer, 50, 820), 0);
   EXPECT_EQ("0,50 400x530", window_->bounds().ToString());
   EXPECT_EQ("0,580 200x20", window2_->bounds().ToString());
@@ -462,8 +449,8 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_3) {
   window_->SetBounds(gfx::Rect(300, 100, 300, 200));
   window2_->SetBounds(gfx::Rect(300, 300, 200, 150));
   window3_->SetBounds(gfx::Rect(300, 450, 200, 100));
-  delegate2_.set_min_size(gfx::Size(50, 52));
-  delegate3_.set_min_size(gfx::Size(50, 38));
+  delegate2_.set_minimum_size(gfx::Size(50, 52));
+  delegate3_.set_minimum_size(gfx::Size(50, 38));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(window_.get(), HTBOTTOM,
@@ -500,8 +487,8 @@ TEST_F(WorkspaceWindowResizerTest, AttachedResize_BOTTOM_3_Compress) {
   window_->SetBounds(gfx::Rect(0, 0, 200, 200));
   window2_->SetBounds(gfx::Rect(10, 200, 200, 200));
   window3_->SetBounds(gfx::Rect(20, 400, 100, 100));
-  delegate2_.set_min_size(gfx::Size(52, 50));
-  delegate3_.set_min_size(gfx::Size(38, 50));
+  delegate2_.set_minimum_size(gfx::Size(52, 50));
+  delegate3_.set_minimum_size(gfx::Size(38, 50));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(window_.get(), HTBOTTOM,
@@ -1486,7 +1473,7 @@ TEST_F(WorkspaceWindowResizerTest, CheckUserWindowManagedFlags) {
 // Test that a window with a specified max size doesn't exceed it when dragged.
 TEST_F(WorkspaceWindowResizerTest, TestMaxSizeEnforced) {
   window_->SetBounds(gfx::Rect(0, 0, 400, 300));
-  delegate_.set_max_size(gfx::Size(401, 301));
+  delegate_.set_maximum_size(gfx::Size(401, 301));
 
   std::unique_ptr<WindowResizer> resizer =
       CreateResizerForTest(window_.get(), gfx::Point(), HTBOTTOMRIGHT);
@@ -1498,7 +1485,7 @@ TEST_F(WorkspaceWindowResizerTest, TestMaxSizeEnforced) {
 // Test that a window with a specified max width doesn't restrict its height.
 TEST_F(WorkspaceWindowResizerTest, TestPartialMaxSizeEnforced) {
   window_->SetBounds(gfx::Rect(0, 0, 400, 300));
-  delegate_.set_max_size(gfx::Size(401, 0));
+  delegate_.set_maximum_size(gfx::Size(401, 0));
 
   std::unique_ptr<WindowResizer> resizer =
       CreateResizerForTest(window_.get(), gfx::Point(), HTBOTTOMRIGHT);
@@ -1548,7 +1535,7 @@ TEST_F(WorkspaceWindowResizerTest, DontRewardRightmostWindowForOverflows) {
   window2_->SetBounds(gfx::Rect(200, 100, 100, 100));
   window3_->SetBounds(gfx::Rect(300, 100, 100, 100));
   window4_->SetBounds(gfx::Rect(400, 100, 100, 100));
-  delegate2_.set_max_size(gfx::Size(101, 0));
+  delegate2_.set_maximum_size(gfx::Size(101, 0));
 
   std::vector<raw_ptr<aura::Window, VectorExperimental>> windows;
   windows.push_back(window2_.get());
@@ -1580,8 +1567,8 @@ TEST_F(WorkspaceWindowResizerTest, DontExceedMaxWidth) {
   window2_->SetBounds(gfx::Rect(200, 100, 100, 100));
   window3_->SetBounds(gfx::Rect(300, 100, 100, 100));
   window4_->SetBounds(gfx::Rect(400, 100, 100, 100));
-  delegate2_.set_max_size(gfx::Size(101, 0));
-  delegate3_.set_max_size(gfx::Size(101, 0));
+  delegate2_.set_maximum_size(gfx::Size(101, 0));
+  delegate3_.set_maximum_size(gfx::Size(101, 0));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(
@@ -1607,8 +1594,8 @@ TEST_F(WorkspaceWindowResizerTest, DontExceedMaxHeight) {
   window2_->SetBounds(gfx::Rect(100, 200, 100, 100));
   window3_->SetBounds(gfx::Rect(100, 300, 100, 100));
   window4_->SetBounds(gfx::Rect(100, 400, 100, 100));
-  delegate2_.set_max_size(gfx::Size(0, 101));
-  delegate3_.set_max_size(gfx::Size(0, 101));
+  delegate2_.set_maximum_size(gfx::Size(0, 101));
+  delegate3_.set_maximum_size(gfx::Size(0, 101));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(
@@ -1634,8 +1621,8 @@ TEST_F(WorkspaceWindowResizerTest, DontExceedMinHeight) {
   window2_->SetBounds(gfx::Rect(100, 200, 100, 100));
   window3_->SetBounds(gfx::Rect(100, 300, 100, 100));
   window4_->SetBounds(gfx::Rect(100, 400, 100, 100));
-  delegate2_.set_min_size(gfx::Size(0, 99));
-  delegate3_.set_min_size(gfx::Size(0, 99));
+  delegate2_.set_minimum_size(gfx::Size(0, 99));
+  delegate3_.set_minimum_size(gfx::Size(0, 99));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(
@@ -1660,7 +1647,7 @@ TEST_F(WorkspaceWindowResizerTest, DontExpandRightmostPastMaxWidth) {
   window_->SetBounds(gfx::Rect(100, 100, 100, 100));
   window2_->SetBounds(gfx::Rect(200, 100, 100, 100));
   window3_->SetBounds(gfx::Rect(300, 100, 100, 100));
-  delegate3_.set_max_size(gfx::Size(101, 0));
+  delegate3_.set_maximum_size(gfx::Size(101, 0));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(
@@ -1684,8 +1671,8 @@ TEST_F(WorkspaceWindowResizerTest, MoveAttachedWhenGrownToMaxSize) {
   window_->SetBounds(gfx::Rect(100, 100, 100, 100));
   window2_->SetBounds(gfx::Rect(200, 100, 100, 100));
   window3_->SetBounds(gfx::Rect(300, 100, 100, 100));
-  delegate2_.set_max_size(gfx::Size(101, 0));
-  delegate3_.set_max_size(gfx::Size(101, 0));
+  delegate2_.set_maximum_size(gfx::Size(101, 0));
+  delegate3_.set_maximum_size(gfx::Size(101, 0));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(
@@ -1709,7 +1696,7 @@ TEST_F(WorkspaceWindowResizerTest, MainWindowHonoursMaxWidth) {
   window_->SetBounds(gfx::Rect(100, 100, 100, 100));
   window2_->SetBounds(gfx::Rect(200, 100, 100, 100));
   window3_->SetBounds(gfx::Rect(300, 100, 100, 100));
-  delegate_.set_max_size(gfx::Size(102, 0));
+  delegate_.set_maximum_size(gfx::Size(102, 0));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(
@@ -1734,7 +1721,7 @@ TEST_F(WorkspaceWindowResizerTest, MainWindowHonoursMinWidth) {
   window_->SetBounds(gfx::Rect(100, 100, 100, 100));
   window2_->SetBounds(gfx::Rect(200, 100, 100, 100));
   window3_->SetBounds(gfx::Rect(300, 100, 100, 100));
-  delegate_.set_min_size(gfx::Size(98, 0));
+  delegate_.set_minimum_size(gfx::Size(98, 0));
 
   std::unique_ptr<WorkspaceWindowResizer> resizer =
       CreateWorkspaceResizerForTest(window_.get(), HTRIGHT,
@@ -2459,62 +2446,6 @@ class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
   }
 };
 
-// Tests that dragging to an external portrait display updates phantom snap to
-// top/bottom phantom windows instead of left/right.
-TEST_F(PortraitWorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
-  UpdateDisplay("800x600,600x800");
-  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  ASSERT_EQ(2U, root_windows.size());
-
-  window_->SetBoundsInScreen(gfx::Rect(0, 0, 50, 60),
-                             display::Screen::GetScreen()->GetPrimaryDisplay());
-
-  gfx::Rect work_area(
-      screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()));
-  EXPECT_EQ(root_windows[0], window_->GetRootWindow());
-  EXPECT_FLOAT_EQ(1.0f, window_->layer()->opacity());
-
-  std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
-  ASSERT_TRUE(resizer.get());
-  EXPECT_FALSE(snap_phantom_window_controller());
-
-  // Drag to snap left in landscape display should show left phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 10, 0), 0);
-  EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(gfx::Rect(0, 0, work_area.width() / 2, work_area.height()),
-            snap_phantom_window_controller()->GetTargetWindowBounds());
-
-  // Drag to snap right in landscape display should show right phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 799, 0), 0);
-  EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(gfx::Rect(work_area.width() / 2, 0, work_area.width() / 2,
-                      work_area.height()),
-            snap_phantom_window_controller()->GetTargetWindowBounds());
-
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(gfx::Point(810, 0));
-  Shell::Get()->cursor_manager()->SetDisplay(display);
-  work_area = display.work_area();
-
-  // Move the window to the portrait display to snap top with vertical movement
-  // more than |kSnapTriggerVerticalMoveThreshold| to show top phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 67), 0);
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 2), 0);
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 1), 0);
-  EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(gfx::Rect(800, 0, work_area.width(), work_area.height() / 2),
-            snap_phantom_window_controller()->GetTargetWindowBounds());
-
-  // Move the window to the portrait display. Now the snap bottom should show
-  // bottom phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 780), 0);
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 781), 0);
-  EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(gfx::Rect(800, work_area.height() / 2, work_area.width(),
-                      work_area.height() / 2),
-            snap_phantom_window_controller()->GetTargetWindowBounds());
-}
-
 // Tests that dragging window to top triggers top snap.
 TEST_F(PortraitWorkspaceWindowResizerTest, SnapTop) {
   const gfx::Rect restore_bounds(50, 50, 100, 100);
@@ -2708,11 +2639,11 @@ TEST_F(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
     std::unique_ptr<WindowResizer> resizer =
         CreateResizerForTest(window_.get());
     ASSERT_TRUE(resizer.get());
-    // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-    // without having to call |CursorManager::SetDisplay|.
-    // Move to the second display.
-    // Drag to bottom right area of the second display to trigger the bottom
-    // snap if vertical snap is enabled or the right snap otherwise.
+    // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse
+    // input without having to call |CursorManager::SetDisplay|. Move to the
+    // second display. Drag to bottom right area of the second display to
+    // trigger the bottom snap if vertical snap is enabled or the right snap
+    // otherwise.
     Shell::Get()->cursor_manager()->SetDisplay(
         display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
     resizer->Drag(CalculateDragPoint(*resizer, display2_work_area.right(),
@@ -2740,10 +2671,10 @@ TEST_F(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
     std::unique_ptr<WindowResizer> resizer =
         CreateResizerForTest(window_.get(), gfx::Point(0, 100));
     ASSERT_TRUE(resizer.get());
-    // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-    // without having to call |CursorManager::SetDisplay|.
-    // Drag to top left area of the second display to trigger the top snap
-    // if vertical snap is enabled or the bottom snap otherwise.
+    // TODO(crbug.com/40638870): Unit tests should be able to simulate mouse
+    // input without having to call |CursorManager::SetDisplay|. Drag to top
+    // left area of the second display to trigger the top snap if vertical snap
+    // is enabled or the bottom snap otherwise.
     Shell::Get()->cursor_manager()->SetDisplay(
         display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
     resizer->Drag(CalculateDragPoint(*resizer, 0, -95), 0);

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/network_context_client_base.h"
+#include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -12,8 +13,10 @@
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
+#include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/public/browser/network_context_client_base.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "net/base/net_errors.h"
@@ -46,17 +49,16 @@ void CreateFile(const base::FilePath& path, const char* content) {
   base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   ASSERT_TRUE(file.IsValid());
   int content_size = strlen(content);
-  int bytes_written = file.Write(0, content, content_size);
+  int bytes_written = UNSAFE_TODO(file.Write(0, content, content_size));
   EXPECT_EQ(bytes_written, content_size);
 }
 
-void ValidateFileContents(base::File& file,
-                          base::StringPiece expected_content) {
+void ValidateFileContents(base::File& file, std::string_view expected_content) {
   int expected_length = expected_content.size();
   ASSERT_EQ(file.GetLength(), expected_length);
-  char content[expected_length];
-  file.Read(0, content, expected_length);
-  EXPECT_EQ(0, strncmp(content, expected_content.data(), expected_length));
+  base::FixedArray<unsigned char> content(expected_length);
+  file.ReadAtCurrentPosAndCheck(content);
+  EXPECT_EQ(base::as_string_view(content), expected_content);
 }
 
 const int kBrowserProcessId = 0;

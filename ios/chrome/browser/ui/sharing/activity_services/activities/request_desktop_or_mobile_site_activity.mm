@@ -6,7 +6,7 @@
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -24,7 +24,7 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 // User agent type of the current page.
 @property(nonatomic, assign) web::UserAgentType userAgent;
 // The handler that is invoked when the IPH bubble is displayed.
-@property(nonatomic, weak) id<BrowserCoordinatorCommands> handler;
+@property(nonatomic, weak) id<HelpCommands> helpHandler;
 // The agent that is invoked when the activity is performed.
 @property(nonatomic, readonly) WebNavigationBrowserAgent* agent;
 
@@ -33,12 +33,12 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 @implementation RequestDesktopOrMobileSiteActivity
 
 - (instancetype)initWithUserAgent:(web::UserAgentType)userAgent
-                          handler:(id<BrowserCoordinatorCommands>)handler
+                      helpHandler:(id<HelpCommands>)helpHandler
                   navigationAgent:(WebNavigationBrowserAgent*)agent {
   self = [super init];
   if (self) {
     _userAgent = userAgent;
-    _handler = handler;
+    _helpHandler = helpHandler;
     _agent = agent;
   }
   return self;
@@ -79,7 +79,8 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
     base::RecordAction(
         base::UserMetricsAction("MobileShareActionRequestDesktop"));
     self.agent->RequestDesktopSite();
-    [self.handler showDefaultSiteViewIPH];
+    [self.helpHandler
+        presentInProductHelpWithType:InProductHelpType::kDefaultSiteView];
   } else {
     base::RecordAction(
         base::UserMetricsAction("MobileShareActionRequestMobile"));

@@ -46,9 +46,7 @@ struct ChromeWidgets: WidgetBundle {
     #if IOS_ENABLE_SHORTCUTS_WIDGET
       ShortcutsWidget()
     #endif
-    #if IOS_ENABLE_SEARCH_PASSWORDS_WIDGET
-      SearchPasswordsWidget()
-    #endif
+    SearchPasswordsWidget()
     DinoGameWidget()
     #if IOS_ENABLE_LOCKSCREEN_WIDGET
       #if IOS_AVAILABLE_LOCKSCREEN_WIDGET

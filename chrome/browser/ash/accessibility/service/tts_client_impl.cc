@@ -112,7 +112,7 @@ void TtsClientImpl::Speak(const std::string& utterance,
   }
 
   // Check for errors in options.
-  // TODO(crbug.com/651711): Centralize the struct validation.
+  // TODO(crbug.com/41278287): Centralize the struct validation.
   if (options->rate < kMinRate || options->rate > kMaxRate) {
     result->error = ax::mojom::TtsError::kErrorInvalidRate;
     std::move(callback).Run(std::move(result));

@@ -152,7 +152,7 @@ void AdvancedProtectionStatusManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
-      // TODO(crbug.com/926204): remove IdentityManager ensures that primary
+      // TODO(crbug.com/41437854): remove IdentityManager ensures that primary
       // account always has valid refresh token when it is set.
       if (event.GetCurrentState().primary_account.is_under_advanced_protection)
         OnAdvancedProtectionEnabled();
@@ -219,7 +219,11 @@ void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
   if (access_token_fetcher_)
     return;
 
-  // Refresh OAuth access token.
+  // Refresh OAuth access token. This class isn't actually interested in the
+  // access token itself, but the account's "under advanced protection" status
+  // can be determined from the "service flags" contained in the response.
+  // Note that the (quite powerful) `kOAuth1LoginScope` is required for the
+  // server to return the service flags.
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kOAuth1LoginScope);
 
@@ -230,7 +234,7 @@ void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
               &AdvancedProtectionStatusManager::OnAccessTokenFetchComplete,
               base::Unretained(this), unconsented_primary_account_id),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kSync);
+          signin::ConsentLevel::kSignin);
 }
 
 void AdvancedProtectionStatusManager::ScheduleNextRefresh() {
@@ -312,7 +316,6 @@ AdvancedProtectionStatusManager::AdvancedProtectionStatusManager(
     const base::TimeDelta& min_delay)
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
-      is_under_advanced_protection_(false),
       minimum_delay_(min_delay) {
   DCHECK(identity_manager_);
   DCHECK(pref_service_);

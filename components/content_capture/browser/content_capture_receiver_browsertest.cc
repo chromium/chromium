@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/content_capture/browser/content_capture_test_helper.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/shell/browser/shell.h"
@@ -86,7 +88,7 @@ class ContentCaptureBrowserTest : public content::ContentBrowserTest {
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
+// TODO(crbug.com/40285326): This fails with the field trial testing config.
 class ContentCaptureBrowserTestNoTestingConfig
     : public ContentCaptureBrowserTest {
  public:

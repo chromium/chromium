@@ -41,6 +41,14 @@ MockCastMediaSinkServiceImpl::MockCastMediaSinkServiceImpl(
 
 MockCastMediaSinkServiceImpl::~MockCastMediaSinkServiceImpl() = default;
 
+TestCastMediaSinkService::TestCastMediaSinkService(
+    cast_channel::CastSocketService* cast_socket_service,
+    DiscoveryNetworkMonitor* network_monitor)
+    : cast_socket_service_(cast_socket_service),
+      network_monitor_(network_monitor) {}
+
+TestCastMediaSinkService::~TestCastMediaSinkService() = default;
+
 std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
 TestCastMediaSinkService::CreateImpl(
     const OnSinksDiscoveredCallback& sinks_discovered_cb,

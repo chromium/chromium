@@ -34,9 +34,12 @@ AppTerminationObserverFactory::AppTerminationObserverFactory()
           "AppTerminationObserver",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              // TODO(crbug.com/1418376): Check if this service is needed in
+              // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // TODO(crbug.com/41488885): Check if this service is needed for
+              // Ash Internals.
+              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
 KeyedService* AppTerminationObserverFactory::BuildServiceInstanceFor(
@@ -66,6 +69,15 @@ BrowserContextKeyedServiceFactory*
 AppTerminationObserver::GetFactoryInstance() {
   static base::NoDestructor<AppTerminationObserverFactory> factory;
   return factory.get();
+}
+
+void AppTerminationObserver::Shutdown() {
+  // The associated `browser_context_` is shutting down, so it's no longer safe
+  // to use (any attempt to access a KeyedService will crash after this point,
+  // since the context is marked as dead). Reset the subscription. See
+  // https://crbug.com/352003806.
+  // See also the note in `OnAppTerminating()`.
+  subscription_.reset();
 }
 
 void AppTerminationObserver::OnAppTerminating() {

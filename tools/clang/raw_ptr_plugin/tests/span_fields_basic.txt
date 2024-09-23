@@ -1,0 +1,67 @@
+span_fields_basic.cpp:27:25: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<SomeClass> member1;
+                        ^
+span_fields_basic.cpp:35:11: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  IntSpan member2;
+          ^
+span_fields_basic.cpp:40:38: error: [chromium-rawptr] Use raw_span<T> instead of a span<T> in the field type's template arguments.
+  std::vector<base::span<SomeClass>> member3;
+                                     ^
+span_fields_basic.cpp:45:40: error: [chromium-rawptr] Use raw_span<T> instead of a span<T> in the field type's template arguments.
+  std::map<int, base::span<SomeClass>> member4;
+                                       ^
+span_fields_basic.cpp:50:47: error: [chromium-rawptr] Use raw_span<T> instead of a span<T> in the field type's template arguments.
+  std::map<base::span<SomeClass>, SomeClass*> member5;
+                                              ^
+span_fields_basic.cpp:55:58: error: [chromium-rawptr] Use raw_span<T> instead of a span<T> in the field type's template arguments.
+  std::map<base::span<SomeClass>, base::span<SomeClass>> member6;
+                                                         ^
+span_fields_basic.cpp:60:25: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<SomeClass> member7;
+                        ^
+span_fields_basic.cpp:65:38: error: [chromium-rawptr] Use raw_span<T> instead of a span<T> in the field type's template arguments.
+  std::vector<base::span<SomeClass>> member8;
+                                     ^
+span_fields_basic.cpp:70:40: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  std::optional<base::span<SomeClass>> member9;
+                                       ^
+span_fields_basic.cpp:104:20: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<char> char_span;
+                   ^
+span_fields_basic.cpp:108:23: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<wchar_t> wide_char_span;
+                      ^
+span_fields_basic.cpp:112:23: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<char8_t> char8_span;
+                      ^
+span_fields_basic.cpp:116:24: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<char16_t> char16_span;
+                       ^
+span_fields_basic.cpp:120:24: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<char32_t> char32_span;
+                       ^
+span_fields_basic.cpp:123:29: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<const uint8_t> const_uint8_span;
+                            ^
+span_fields_basic.cpp:126:28: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<const int8_t> const_int8_span;
+                           ^
+span_fields_basic.cpp:129:35: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<const unsigned char> const_unsigned_char_span;
+                                  ^
+span_fields_basic.cpp:132:33: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<const signed char> const_signed_char_span;
+                                ^
+span_fields_basic.cpp:144:51: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+  base::span<typename MaybeProvidesType<T>::Type> span_field;
+                                                  ^
+span_fields_basic.cpp:148:7: error: [chromium-rawptr] Use raw_span<T> instead of a span<T> in the field type's template arguments.
+      vector_of_span_field;
+      ^
+span_fields_basic.cpp:152:7: error: [chromium-rawptr] Use raw_span<T> instead of a span<T>.
+      optional_span_field;
+      ^
+span_fields_basic.cpp:157:7: error: [chromium-rawptr] Use raw_span<T> instead of a span<T> in the field type's template arguments.
+      vector_of_optional_span_field;
+      ^
+22 errors generated.

@@ -171,6 +171,7 @@ source_set("unit_tests") {
   deps = [
     "//remoting/host:common",
     "//remoting/host:test_support",
+    "//remoting/host:x11_display_utils",
     "//remoting/host/it2me:common",
     "//remoting/host/native_messaging",
     "//remoting/host/security_key:unit_tests",

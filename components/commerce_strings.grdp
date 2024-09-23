@@ -3,7 +3,7 @@
   <!-- Desktop only -->
   <if expr="not is_android and not is_ios">
     <!-- Discount consent strings -->
-    <!-- TODO(crbug.com/1368330): Delete the following strings. -->
+    <!-- TODO(crbug.com/40868354): Delete the following strings. -->
     <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_TITLE" desc="The title shown on the consent bubble for getting discount.">
       Get discount on <ph name="MERCHANT_NAME">$1</ph> and more
     </message>
@@ -31,11 +31,11 @@
     </message>
     <!-- This string can skip translation because the feature is targeted en-us locale. Only the
          en-us user can access the feature UI. -->
-    <!-- TODO(crbug.com/1372493): Remove the special character and enable translation. -->
+    <!-- TODO(crbug.com/40241740): Remove the special character and enable translation. -->
     <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_TITLE" translateable="false" desc="The title shown on the native consent dialog for getting discount.">
       Let Google help you find&#13;discounts for your carts
     </message>
-    
+
     <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_BODY" desc="The actual consent descrition that shows in the native consent dialog.">
       Let Google use your carts to search for personalized discounts. When available, discounts will automatically show up on your carts.
     </message>
@@ -236,9 +236,6 @@
       <message name="IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we find multiple options of this product.">
         Price History Across the Web for this Option
       </message>
-      <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
-        Price History Across the Web
-      </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
         Low Priced Option
       </message>
@@ -250,12 +247,6 @@
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
         Save and Track Price
-      </message>
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
-        Price is Low
-      </message>
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
-        Price is High
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar.">
         Shopping Insights
@@ -271,9 +262,6 @@
       <message name="IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we find multiple options of this product.">
         Price history across the web for this option
       </message>
-      <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
-        Price history across the web
-      </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
         Low priced option
       </message>
@@ -285,12 +273,6 @@
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TRACK_PRICE_TITLE" desc="The title name of the Price Tracking section in the Shopping Insights side panel.">
         Save and track price
-      </message>
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
-        Price is low
-      </message>
-      <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
-        Price is high
       </message>
       <message name="IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT" desc="The tooltip text for the price insights icon in the location bar.">
         Shopping insights
@@ -327,18 +309,6 @@
     <message name="IDS_SHOPPING_INSIGHTS_FEEDBACK_FORM_TITLE" desc="The title name of the feedback form which allows users to share feedback about the Shopping Insights feature.">
       Tell us about your experience
     </message>
-    <message name="IDS_PRICE_RANGE_ALL_OPTIONS" desc="Text shown in Shopping Insights side panel indicating the typical price range of all buying options found on the page.">
-      All options typically <ph name="LOW_PRICE">$1<ex>500</ex></ph> - <ph name="HIGH_PRICE">$2<ex>600</ex></ph>
-    </message>
-    <message name="IDS_PRICE_RANGE_ALL_OPTIONS_ONE_TYPICAL_PRICE" desc="Text shown in Shopping Insights side panel indicating the typical price range of all buying options found on the page. This string is used when we only find one typical price instead of a typical range.">
-      All options typically <ph name="TYPICAL_PRICE">$1<ex>500</ex></ph>
-    </message>
-    <message name="IDS_PRICE_RANGE_SINGLE_OPTION" desc="Text shown in Shopping Insights side panel indicating the typical price range. This string is used when we only find one buying option on the page.">
-      Typically <ph name="LOW_PRICE">$1<ex>500</ex></ph> - <ph name="HIGH_PRICE">$2<ex>600</ex></ph>
-    </message>
-    <message name="IDS_PRICE_RANGE_SINGLE_OPTION_ONE_TYPICAL_PRICE" desc="Text shown in Shopping Insights side panel indicating the typical price range. This string is used when we only find one buying option on the page and we only find one typical price for this option instead of a typical range.">
-      Typically <ph name="LOW_PRICE">$1<ex>500</ex></ph>
-    </message>
     <message name="IDS_PRICE_HISTORY_SINGLE_OPTION_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating this option has relatively low price. This string is used when we only find one buying option on the page.">
       This price is low
     </message>
@@ -356,14 +326,11 @@
     </message>
 
     <!-- For Desktop Discounts on navigation -->
-    <message name="IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT" desc="Text shown in the discount dialog to tell users where to use the discount code.">
-      Use this code at checkout.
+    <message name="IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT_WITH_EXPIRATION_DATE" desc="Text shown in the discount dialog to tell users where to use the discount code and the discount expiration date.">
+      Use this code at checkout. Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>.
     </message>
     <message name="IDS_DISCOUNT_EXPIRATION_DATE" desc="Text shown in the discount dialog to tell users the discount expiration date.">
       Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>.
-    </message>
-    <message name="IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout.">
-      Copy
     </message>
     <message name="IDS_TWO_STRINGS_CONNECTOR" desc="This is used to connect two sentences together by using a ending period and a space. The first sentence does not contain an ending period, but the second sentence will.">
       <ph name="FIRST_STRING">$1<ex>Use this code at checkout</ex></ph>. <ph name="SECOND_STRING">$2<ex>Valid until Aug 15 2023.</ex></ph>
@@ -380,16 +347,12 @@
     <message name="IDS_SEE_SELLER_TERMS_AND_CONDITIONS" desc="This is used as a linked text in the discount dialog, when user clicks the text, it opens the 'Seller's terms and conditions' dialog to see additional qualification of the discount.">
       See seller's terms and conditions
     </message>
-    <if expr="use_titlecase">
-      <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
-        Discount Found
-      </message>
-    </if> <!-- use_titlecase -->
-    <if expr="not use_titlecase">
-      <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
-        Discount found
-      </message>
-    </if> <!-- not use_titlecase -->
+        <message name="IDS_DISCOUNTS_COUPON_CODE_BUTTON_TOOLTIP" desc="The tooltip message for a button containing a copyable coupon code in the discounts bubble on Desktop. This message is shown when the button is hovered over and if the button has not been clicked.">
+      Click to copy
+    </message>
+    <message name="IDS_DISCOUNTS_COUPON_CODE_BUTTON_TOOLTIP_CLICKED" desc="The tooltip message for a button containing a copyable coupon code in the discounts bubble on Desktop. This message is shown when the button is hovered over and if the button has been clicked.">
+      Copied to clipboard
+    </message>
   </if>
 
   <!-- Android only -->
@@ -446,8 +409,295 @@
   <message name="IDS_PRICE_DROP_POPUP_UNTRACK_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we untrack this product and will no longer send its price drop to users." formatter_data="android_java">
     Untrack price
   </message>
+  <message name="IDS_PRICE_RANGE_ALL_OPTIONS" desc="Text shown in Shopping Insights side panel indicating the typical price range of all buying options found on the page.">
+    All options typically <ph name="LOW_PRICE">$1<ex>500</ex></ph> - <ph name="HIGH_PRICE">$2<ex>600</ex></ph>
+  </message>
+  <message name="IDS_PRICE_RANGE_ALL_OPTIONS_ONE_TYPICAL_PRICE" desc="Text shown in Shopping Insights side panel indicating the typical price range of all buying options found on the page. This string is used when we only find one typical price instead of a typical range.">
+    All options typically <ph name="TYPICAL_PRICE">$1<ex>500</ex></ph>
+  </message>
+  <message name="IDS_PRICE_RANGE_SINGLE_OPTION" desc="Text shown in Shopping Insights side panel indicating the typical price range. This string is used when we only find one buying option on the page.">
+    Typically <ph name="LOW_PRICE">$1<ex>500</ex></ph> - <ph name="HIGH_PRICE">$2<ex>600</ex></ph>
+  </message>
+  <message name="IDS_PRICE_RANGE_SINGLE_OPTION_ONE_TYPICAL_PRICE" desc="Text shown in Shopping Insights side panel indicating the typical price range. This string is used when we only find one buying option on the page and we only find one typical price for this option instead of a typical range.">
+    Typically <ph name="LOW_PRICE">$1<ex>500</ex></ph>
+  </message>
+  <message name="IDS_PRICE_TRACKING_DESCRIPTION" desc="The description text for price tracking section of price insights.">
+    Get alerts when the price drops on any site across the web
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_BUYING_OPTIONS_TITLE" desc="The title text for the buying options section of price insights.">
+    Search More Buying Options
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_BUYING_OPTIONS_SUBTITLE" desc="The description text for the BUYING_OPTIONS section of price insights.">
+    From other stores across the web
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_TRACK_BUTTON_TITLE" desc="The title text for track button of price insights.">
+    Track
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_TRACKING_BUTTON_TITLE" desc="The title text for tracking button of price insights.">
+    Tracking
+  </message>
+  <message name="IDS_INSIGHTS_ICON_EXPANDED_TEXT_GOOD_DEAL" desc="The expanded text for the price insights icon in the location bar, indicating an option is a good deal.">
+    Good Deal Now
+  </message>
+  <message name="IDS_INSIGHTS_RICH_IPH_TEXT" desc="The text displayed in the price insights rich IPH.">
+    See price history and more to help you shop smarter.
+  </message>
+  <message name="IDS_INSIGHTS_ICON_PRICE_HIGH_EXPANDED_TEXT" desc="The expanded text for the price insights icon when price is high, indicating that the user should track the page.">
+    Track this item
+  </message>
+  <message name="IDS_INSIGHTS_ICON_EXPANDED_TEXT_PRICE_HISTORY" desc="The expanded text for the price insights icon in the location bar, indicating to see the price history.">
+    See Price History
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_ACCESSIBILITY" desc="Accessibility string for the price insights entry point when the confidence is low.">
+    Price Insights
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_GRAPH_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility string for the price insights graph readout.">
+      These are <ph name="CURRENCY">$1<ex>USD</ex></ph> prices for product <ph name="PRODUCT">$2<ex>iPhone 15.</ex></ph>
+    </message>
+  <message name="IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user has notification enabled.">
+    View
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED" desc="The snackbar title for Price Insights when the user has notification disabled.">
+    You can view price drops for products you track anytime.
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_ENABLED" desc="The snackbar title for Price Insights when the user has notification enabled.">
+    You'll get notified if the price drops on any site.
+  </message>
+  <message name="IDS_PRICE_RANGE_ACCESSIBILITY_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string for the price range component.">
+    Typical price for <ph name="PRODUCT_NAME">$1<ex>iPhone 15 Pro</ex></ph> is <ph name="LOW_PRICE">$2<ex>500</ex></ph> - <ph name="HIGH_PRICE">$3<ex>600</ex></ph> but current price is <ph name="CURRENT_PRICE">$4<ex>600</ex></ph> across the web.
+  </message>
+  <message name="IDS_BUYING_OPTIONS_ACCESSIBILITY_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string for the buying option component of Price Insights.">
+    Search more buying options from other stores that sell this product.
+  </message>
+  <message name="IDS_PRICE_TRACKING_DESCRIPTION_TRACKED" desc="The description text for the price tracking section of price insights when the product is already being tracked.">
+    You're already tracking this product
+  </message>
+  <message name="IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS" desc="The title of the Price History section in the Shopping Insights side panel when we have variants.">
+    Price History Across the Web for This Option
+  </message>
+  <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_TITLE" desc="The title for the UIAlert that redirects the user to iOS' application settings for Chrome.">
+     Turn on price tracking notifications
+  </message>
+  <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_MESSAGE" desc="The description that argues why push notification permission is necessary for price tracking.">
+    To get price drop alerts for products you track, turn on notifications in settings.
+  </message>
+  <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_CLOSE" desc="The label for the alert's close button.">
+    Close
+  </message>
+  <message name="IDS_IOS_PRICE_INSIGHTS_PRICE_TRACK_PERMISSION_REDIRECT_ALERT_REDIRECT" desc="The label for the alert's button that redirects the user to Chrome's application settings in iOS.">
+    Settings
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_MESSAGE" desc="The snackbar title for Price Insights when the user successfully untrack a product.">
+    Price tracking stopped.
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_UNTRACK_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user successfully untrack a product..">
+    Undo
+  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
+      Price History Across the Web
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
+      Price is Low
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
+      Price is High
+    </message>
+  </if> <!-- use_titlecase -->
+  <if expr="not use_titlecase">
+    <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
+      Price history across the web
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_LOW_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively low price.">
+      Price is low
+    </message>
+    <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
+      Price is high
+    </message>
+  </if> <!-- not use_titlecase -->
 
   <message name="IDS_SHOPPING_COLLECTION_FOLDER_NAME" desc="The name of bookmark folder that is automatically created when a user bookmarks a product page.">
     Shopping list
   </message>
+
+  <!-- For Discounts -->
+  <message name="IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout.">
+      Copy
+  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product." formatter_data="android_java">
+      Discount Found
+    </message>
+  </if> <!-- use_titlecase -->
+  <if expr="not use_titlecase">
+    <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product." formatter_data="android_java">
+      Discount found
+    </message>
+  </if> <!-- not use_titlecase -->
+    <!-- Discounts Android only -->
+  <if expr="is_android">
+    <message name="IDS_DISCOUNT_CODE_COPIED_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout. This text will show on the button after user has clicked on the copy button to indicate that the discount code has been copied." formatter_data="android_java">
+      Copied
+    </message>
+    <message name="IDS_DISCOUNT_EXPIRATION_DATE_ANDROID" desc="Text shown in the discount dialog to tell users the discount expiration date." formatter_data="android_java">
+      Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the commerce bottom sheet." formatter_data="android_java">
+      Commerce bottom sheet
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_OPENED_FULL" desc="Accessibility string that describes fully opening the commerce bottom sheet." formatter_data="android_java">
+      Commerce bottom sheet opened at full height
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_CLOSED" desc="Accessibility string that describes closing the commerce bottom sheet." formatter_data="android_java">
+      Commerce bottom sheet closed
+    </message>
+    <message name="IDS_COMMERCE_BOTTOM_SHEET_CONTENT_OPENED_HALF" desc="Accessibility string that describes half opening the commerce bottom sheet." formatter_data="android_java">
+      Commerce bottom sheet opened at half height
+    </message>
+    </if> <!-- is_android -->
+
+  <!-- For Compare -->
+  <message name="IDS_COMPARE_ADD_NEW_COLUMN" translateable="false" desc="Label shown on hover for the button for adding a new column in comparison table.">
+    Add similar products you want to compare
+  </message>
+  <message name="IDS_COMPARE_CITATION_A11Y_LABEL" desc="The accessibility label for a citation in the compare feature's UI.">
+    Citation <ph name="CURRENT_CITATION">$1<ex>1</ex></ph> of <ph name="MAX_CITATIONS">$2<ex>3</ex></ph>, <ph name="PRODUCT_NAME">$3<ex>Laptop</ex></ph>, <ph name="URL">$4<ex>http://example.com</ex></ph>
+  </message>
+  <message name="IDS_COMPARE_DEFAULT_PAGE_TITLE" desc="The default page title for the tab compare feature.">
+    Compare
+  </message>
+  <message name="IDS_COMPARE_DEFAULT_TABLE_TITLE" desc="The default title for a new comparison table.">
+    New table
+  </message>
+  <message name="IDS_COMPARE_DELETE" desc="The title of the menu item for deleting the tab compare table.">
+    Delete comparison table
+  </message>
+  <message name="IDS_COMPARE_DISCLAIMER" desc="Disclaimer text shown in tab compare UIs.">
+    The tab titles and URLs of pages you add to the table are sent to Google, saved to your account <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>, and may be seen by human reviewers to improve this feature.
+  </message>
+  <message name="IDS_COMPARE_EMPTY_PRODUCT_SELECTOR" desc="The text displayed in the product selector when there is no currently selected product.">
+    Add a tab
+  </message>
+  <message name="IDS_COMPARE_EMPTY_SELECTION_MENU" desc="The text that is displayed when the product selection menu has nothing to show.">
+    First, open tabs and visit sites
+  </message>
+  <message name="IDS_COMPARE_EMPTY_STATE_TITLE" desc="The title of the prompt that shows for tab compare when no products have been selected.">
+    Compare products
+  </message>
+  <message name="IDS_COMPARE_EMPTY_STATE_TITLE_DESCRIPTION" desc="The description of the prompt that shows for tab compare when no products have been selected.">
+    Add tabs with similar products to easily compare the details that matter to you
+  </message>
+  <message name="IDS_COMPARE_ENTRY_POINT_DEFAULT" desc="The default text for the Compare entry point button.">
+    Compare tabs?
+  </message>
+  <message name="IDS_COMPARE_ENTRY_POINT" desc="The text for the Compare entry point button with a placeholder for the category of products being compared.">
+    Compare <ph name="CATEGORY">$1<ex>Baby Carriers</ex></ph>?
+  </message>
+  <message name="IDS_COMPARE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Compare feedback form.">
+    Send feedback for Compare
+  </message>
+  <message name="IDS_COMPARE_LEARN_MORE" desc="Text for a link in the compare page that links to a help article about tab compare.">
+    Learn about comparison tables
+  </message>
+  <message name="IDS_COMPARE_LEARN_MORE_A11Y_LABEL" desc="Accessibility label for a link that links to a help article about tab compare.">
+    Learn about comparison tables
+  </message>
+  <message name="IDS_COMPARE_OFFLINE_TOAST_MESSAGE" desc="The message that shows when tab compare is offline.">
+    Check your connection and try again
+  </message>
+  <message name="IDS_COMPARE_OPEN_PRODUCT_PAGE_IN_NEW_TAB" translateable="false" desc="Accessibility label for the button for opening product page in a new tab in comparison table.">
+    Open product page in new tab
+  </message>
+  <message name="IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT" desc="The default text for the Compare page action chip before adding the current page.">
+    Add to Comparison?
+  </message>
+  <message name="IDS_COMPARE_PAGE_ACTION_ADDED_DEFAULT" desc="The default text for the Compare page action chip after adding the current page, indicating that the page has been added to a comparison table.">
+    Added to Comparison
+  </message>
+  <message name="IDS_COMPARE_PAGE_ACTION_ADD" desc="The text for the Compare page action chip with a placeholder for comparison table name, indicating which set the current page will be added to if user clicks on the page action.">
+    Add to <ph name="SET">$1<ex>Cell Phones</ex></ph>?
+  </message>
+  <message name="IDS_COMPARE_PAGE_ACTION_ADDED" desc="The text for the Compare page action chip with a placeholder for what comparison table this current page has been added to.">
+    Added to <ph name="SET">$1<ex>Cell Phones</ex></ph>
+  </message>
+  <message name="IDS_COMPARE_PRICE_ROW_TITLE" desc="The title for the product price row in the tab compare table.">
+    Price
+  </message>
+  <message name="IDS_COMPARE_PRODUCT_SUMMARY_ROW_TITLE" desc="The title for the product summary row in the tab compare table.">
+    Summary
+  </message>
+  <message name="IDS_COMPARE_RECENTLY_VIEWED_TABS_SECTION" desc="The title of the section in the product selection drop-down in the tab compare UI that shows a list of recently viewed tabs.">
+    Recently Viewed
+  </message>
+  <message name="IDS_COMPARE_REMOVE_COLUMN" desc="The title of the menu item for removing a column in the tab compare table.">
+    Remove column
+  </message>
+  <message name="IDS_COMPARE_RENAME" desc="The title of the menu item for renaming the tab compare table.">
+    Rename table
+  </message>
+  <message name="IDS_COMPARE_SEE_ALL" desc="The title of the menu item for viewing all tab compare tables.">
+    See all comparison tables
+  </message>
+  <message name="IDS_COMPARE_SUGGESTIONS_SECTION" desc="The title of the section in the product selection drop-down in the tab compare UI that shows a list of tabs suggested by the browser to be put into the table.">
+    Suggestions
+  </message>
+  <message name="IDS_COMPARE_TABLE_MENU_A11Y_LABEL" desc="The accessibility label for the 3-dot menu containing actions for the table in the compare UI.">
+    More actions for Compare table
+  </message>
+  <message name="IDS_COMPARE_TITLE_INPUT_A11Y_LABEL" desc="The accessibility label for the input field for the table name in the compare feature's UI.">
+    Compare table title, edit text
+  </message>
+  <message name="IDS_TOOLTIP_COMPARE_ENTRY_POINT_CLOSE" desc="The tooltip text for the close button within the Compare entry point button.">
+    Dismiss suggestion
+  </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_MESSAGE" desc="The message on the sync promo for compare when user does not have sync enabled.">
+    Compare products
+  </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_DESCRIPTION" desc="The description on the sync promo for compare when user does not have sync enabled">
+    To see comparison tables, turn on sync
+  </message>
+  <message name="IDS_COMPARE_SYNC_PROMO_BUTTON" desc="The text on the sync button of the sync promo for compare, when user does not have sync enabled.">
+    Turn on sync
+  </message>
+  <message name="IDS_COMPARE_ERROR_TITLE" desc="The title for the error message in the compare UI when data cannot be loaded.">
+    Compare isn't available right now
+  </message>
+  <message name="IDS_COMPARE_ERROR_DESCRIPTION" desc="The description in the compare UI when data cannot be loaded.">
+    Something went wrong. Try again later.
+  </message>
+  <!-- For Compare Disclosure -->
+  <message name="IDS_COMPARE_DISCLOSURE_TITLE" desc="The text for the title of the Compare first-run experience disclosure bubble.">
+    Compare similar products side-by-side
+  </message>
+  <message name="IDS_COMPARE_DISCLOSURE_ITEMS_HEADER" desc="The text for the Compare disclosure items header.">
+    Things to consider
+  </message>
+  <message name="IDS_COMPARE_DISCLOSURE_ABOUT_AI_ITEM" desc="The text for the Compare disclosure item that states that the feature uses AI.">
+    This feature uses AI and won't always get it right
+  </message>
+  <message name="IDS_COMPARE_DISCLOSURE_TAB_ITEM" desc="The text for the Compare disclosure item that states what tab data is shared with Google.">
+    The tab titles and URLs of pages you add to the table are sent to Google
+  </message>
+  <message name="IDS_COMPARE_DISCLOSURE_ACCOUNT_ITEM" desc="The text for the Compare disclosure item that states where the data is stored.">
+    Comparison tables are saved to your account <ph name="EMAIL">$1<ex>test@gmail.com</ex></ph>
+  </message>
+  <message name="IDS_COMPARE_DISCLOSURE_DATA_ITEM" desc="The text for the Compare disclosure item that states who might see the data.">
+    Data may be seen by trained reviewers to improve this feature
+  </message>
+  <if expr="use_titlecase">
+    <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
+      Let's Go
+    </message>
+    <message name="IDS_COMPARE_DISCLOSURE_DECLINE" desc="The text for the decline button on the Compare first-run experience disclosure.">
+      No Thanks
+    </message>
+  </if> <!-- use_titlecase -->
+  <if expr="not use_titlecase">
+    <message name="IDS_COMPARE_DISCLOSURE_ACCEPT" desc="The text for the accept button on the Compare first-run experience disclosure.">
+      Let's go
+    </message>
+    <message name="IDS_COMPARE_DISCLOSURE_DECLINE" desc="The text for the decline button on the Compare first-run experience disclosure.">
+      No thanks
+    </message>
+  </if> <!-- not use_titlecase -->
 </grit-part>

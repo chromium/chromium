@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -28,6 +29,9 @@ const CGFloat kButtonTitleHorizontalContentInset = 40.0;
 const CGFloat kButtonTitleVerticalContentInset = 8.0;
 // Button corner radius.
 const CGFloat kButtonCornerRadius = 8;
+// The size of the checkmark symbol in the confirmation state on the
+// item's button.
+const CGFloat kSymbolConfirmationCheckmarkPointSize = 22;
 // Default Text alignment.
 const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
 }  // namespace
@@ -46,6 +50,8 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     _textAlignment = kDefaultTextAlignment;
     _boldButtonText = YES;
     _dimBackgroundWhenDisabled = YES;
+    _showsActivityIndicator = NO;
+    _showsCheckmark = NO;
   }
   return self;
 }
@@ -102,6 +108,34 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     buttonConfiguration.background.backgroundColor =
         [buttonConfiguration.background.backgroundColor
             colorWithAlphaComponent:kDisabledButtonAlpha];
+  }
+
+  buttonConfiguration.showsActivityIndicator = self.showsActivityIndicator;
+  if (self.showsActivityIndicator) {
+    __weak __typeof(self) weakSelf = self;
+    buttonConfiguration.activityIndicatorColorTransformer =
+        ^UIColor*(UIColor* color) {
+          return weakSelf.activityIndicatorColor
+                     ? weakSelf.activityIndicatorColor
+                     : [UIColor colorNamed:kSolidWhiteColor];
+        };
+  }
+
+  if (self.showsCheckmark) {
+    buttonConfiguration.image = DefaultSymbolWithPointSize(
+        kCheckmarkCircleFillSymbol, kSymbolConfirmationCheckmarkPointSize);
+
+    __weak __typeof(self) weakSelf = self;
+    buttonConfiguration.imageColorTransformer = ^UIColor*(UIColor* color) {
+      return weakSelf.checkmarkColor ? weakSelf.checkmarkColor
+                                     : [UIColor colorNamed:kBlue700Color];
+    };
+  }
+
+  if (self.buttonAccessibilityLabel) {
+    cell.button.accessibilityLabel = self.buttonAccessibilityLabel;
+  } else {
+    cell.button.accessibilityLabel = nil;
   }
 
   cell.button.configuration = buttonConfiguration;

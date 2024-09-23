@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -93,6 +94,11 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
               GetSyncingPaths,
               (drivefs::mojom::DriveFs::GetSyncingPathsCallback callback),
               (override));
+
+  void GetSyncingPathsForTesting(
+      drivefs::mojom::DriveFs::GetSyncingPathsCallback callback) {
+    std::move(callback).Run(drive::FILE_ERROR_OK, syncing_paths_);
+  }
 
   MOCK_METHOD(void,
               StartSearchQuery,
@@ -269,6 +275,15 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   void GetDocsOfflineStats(
       drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback) override;
+
+  void GetMirrorSyncStatusForFile(
+      const base::FilePath& path,
+      GetMirrorSyncStatusForFileCallback callback) override;
+
+  void GetMirrorSyncStatusForDirectory(
+      const base::FilePath& path,
+      GetMirrorSyncStatusForDirectoryCallback callback)
+      override;
 
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;

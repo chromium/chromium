@@ -7,10 +7,11 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
+#include <variant>
 
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -50,6 +51,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::PressButton(
 InteractionSequence::StepBuilder InteractiveTestApi::SelectMenuItem(
     ElementSpecifier menu_item,
     InputType input_type) {
+  RequireInteractiveTest();
   StepBuilder builder;
   builder.SetDescription("SelectMenuItem()");
   internal::SpecifyElement(builder, menu_item);
@@ -62,6 +64,15 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectMenuItem(
             test->test_util().SelectMenuItem(el, input_type));
       },
       input_type, base::Unretained(this)));
+
+  // TODO(https://crbug.com/359252812): On Linux, sometimes a SelectMenuItem is
+  // interrupted by a spurious focus change, even on tests designed to run
+  // single-thread, single-process. Once the culprit has been tracked down and
+  // eliminated, remove this #if.
+#if BUILDFLAG(IS_LINUX)
+  builder.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate);
+#endif
+
   return builder;
 }
 
@@ -105,6 +116,13 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectDropdownItem(
     ElementSpecifier collection,
     size_t item,
     InputType input_type) {
+  // "Don't care" option directly sets the value; the other actually require
+  // popping out the dropdown menu and selecting an item which is not reliable
+  // in non-interactive tests.
+  if (input_type != InputType::kDontCare) {
+    RequireInteractiveTest();
+  }
+
   StepBuilder builder;
   builder.SetDescription(base::StringPrintf("SelectDropdownItem( %zu )", item));
   internal::SpecifyElement(builder, collection);
@@ -140,6 +158,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::EnterText(
 
 InteractionSequence::StepBuilder InteractiveTestApi::ActivateSurface(
     ElementSpecifier element) {
+  RequireInteractiveTest();
   StepBuilder builder;
   builder.SetDescription("ActivateSurface()");
   internal::SpecifyElement(builder, element);
@@ -235,50 +254,43 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForEvent(
 }
 
 // static
-InteractiveTestApi::MultiStep InteractiveTestApi::EnsureNotPresent(
+InteractiveTestApi::StepBuilder InteractiveTestApi::EnsureNotPresent(
     ElementIdentifier element_to_check) {
-  return internal::InteractiveTestPrivate::PostTask(
-      base::StringPrintf("EnsureNotPresent( %s )",
-                         element_to_check.GetName().c_str()),
-      base::BindOnce(
-          [](ElementIdentifier id, InteractionSequence* seq,
-             TrackedElement* reference) {
-            auto* const tracker = ElementTracker::GetElementTracker();
-            auto* const element = seq->IsCurrentStepInAnyContextForTesting()
-                                      ? tracker->GetElementInAnyContext(id)
-                                      : tracker->GetFirstMatchingElement(
-                                            id, reference->context());
-            if (element) {
-              LOG(ERROR) << "Expected element " << element->ToString()
-                         << " not to be present but it was present.";
-              seq->FailForTesting();
-            }
-          },
-          element_to_check));
+  return std::move(
+      WithElement(kInteractiveTestPivotElementId,
+                  [element_to_check](InteractionSequence* seq,
+                                     TrackedElement* reference) {
+                    auto* const tracker = ElementTracker::GetElementTracker();
+                    auto* const element =
+                        seq->IsCurrentStepInAnyContextForTesting()
+                            ? tracker->GetElementInAnyContext(element_to_check)
+                            : tracker->GetFirstMatchingElement(
+                                  element_to_check, reference->context());
+                    if (element) {
+                      LOG(ERROR) << "Expected element " << element->ToString()
+                                 << " not to be present but it was present.";
+                      seq->FailForTesting();
+                    }
+                  })
+          .SetDescription(base::StringPrintf(
+              "EnsureNotPresent( %s )", element_to_check.GetName().c_str())));
 }
 
 // static
-InteractiveTestApi::MultiStep InteractiveTestApi::EnsurePresent(
+InteractiveTestApi::StepBuilder InteractiveTestApi::EnsurePresent(
     ElementSpecifier element_to_check) {
-  return Steps(
-      FlushEvents(),
-      std::move(WithElement(element_to_check, base::DoNothing())
-                    .SetDescription(base::StringPrintf(
-                        "EnsurePresent( %s )",
-                        internal::DescribeElement(element_to_check).c_str()))));
+  return std::move(
+      WithElement(element_to_check, base::DoNothing())
+          .SetDescription(base::StringPrintf(
+              "EnsurePresent( %s )",
+              internal::DescribeElement(element_to_check).c_str())));
 }
 
 InteractionSequence::StepBuilder InteractiveTestApi::NameElement(
-    base::StringPiece name,
+    std::string_view name,
     AbsoluteElementSpecifier spec) {
   return NameElementRelative(kInteractiveTestPivotElementId, name,
                              GetFindElementCallback(std::move(spec)));
-}
-
-// static
-InteractiveTestApi::MultiStep InteractiveTestApi::FlushEvents() {
-  return internal::InteractiveTestPrivate::PostTask("FlushEvents()",
-                                                    base::DoNothing());
 }
 
 // static
@@ -316,6 +328,16 @@ InteractiveTestApi::MultiStep InteractiveTestApi::InContext(
   return steps;
 }
 
+// static
+InteractiveTestApi::MultiStep InteractiveTestApi::WithoutDelay(
+    MultiStep steps) {
+  for (auto& step : steps) {
+    step.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate)
+        .FormatDescription("WithoutDelay( %s )");
+  }
+  return steps;
+}
+
 InteractiveTestApi::StepBuilder InteractiveTestApi::SetOnIncompatibleAction(
     OnIncompatibleAction action,
     const char* reason) {
@@ -327,6 +349,40 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::SetOnIncompatibleAction(
         test->private_test_impl().on_incompatible_action_reason_ = reason;
       },
       base::Unretained(this), action, std::string(reason)));
+}
+
+constexpr char kInteractiveErrorMessage[] = R"(
+
+The test verb you are trying to use requires an interactive test environment.
+
+This is one in which the test can safely control things like mouse movement and
+window activation, without having to worry about other processes making changes
+that can cause flakiness.
+
+Q: But I was just selecting a menu item!
+A: In tests where process exclusivity is not guaranteed, if the test application
+   loses focus, the menu could unexpectedly close, leading to flakiness. We want
+   to preemptively avoid these flakes.
+
+Solutions:
+ - Use PressButton() instead of MoveMouseTo() + ClickMouse()
+ - Move your browser test from browser_tests to interactive_ui_tests
+ - Move your Ash test into chromeos_integration_tests
+
+How to make a browser test interactive:
+ - Rename your test file from *_browsertest.cc to *_interactive_uitest.cc
+    * e.g. my_system_browsertest.cc -> my_system_interactive_uitest.cc
+ - Rename your test class from *Browsertest to *UiTest
+    * e.g. MySystemBrowserTest -> MySystemUiTest
+ - Edit chrome/test/BUILD.gn to move your test from the "browser_tests" target
+   to the "interactive_ui_tests" target.
+    * Ensure that if your test only ran in certain configurations, in
+      browser_tests, it is gated by the same conditions in interactive_ui_tests.
+)";
+
+void InteractiveTestApi::RequireInteractiveTest() {
+  CHECK(internal::InteractiveTestPrivate::allow_interactive_test_verbs_)
+      << kInteractiveErrorMessage;
 }
 
 bool InteractiveTestApi::RunTestSequenceImpl(
@@ -375,7 +431,7 @@ bool InteractiveTestApi::RunTestSequenceImpl(
 InteractiveTestApi::FindElementCallback
 InteractiveTestApi::GetFindElementCallback(AbsoluteElementSpecifier spec) {
   using ContextCallback = base::OnceCallback<TrackedElement*(ElementContext)>;
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](TrackedElement* el) {
             CHECK(el) << "NameView(TrackedElement*): view must be set.";
@@ -433,7 +489,7 @@ void InteractiveTestApi::AddStep(MultiStep& dest, MultiStep src) {
 
 // static
 void InteractiveTestApi::AddDescription(MultiStep& steps,
-                                        const base::StringPiece& format) {
+                                        std::string_view format) {
   for (auto& step : steps) {
     step.FormatDescription(format);
   }

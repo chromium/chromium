@@ -1,0 +1,40 @@
+<style>
+  #container {
+    display: flex;
+    flex-direction: row;
+    min-height: 400px;
+  }
+
+  #sidenav {
+    background-color: var(--cros-sys-app_base_shaded);
+    box-sizing: border-box;
+    padding: 10px;
+    width: 200px;
+  }
+
+  #pageContainer {
+    flex-grow: 1;
+    padding: 20px;
+  }
+</style>
+
+<div id="container">
+  <cros-sidenav id="sidenav"
+      on-cros-sidenav-item-enabled-changed="onSidenavSelect_">
+    <cros-sidenav-item id="0" label="settings-toggle-v2"></cros-sidenav-item>
+    <cros-sidenav-item id="1" label="settings-slider-v2"></cros-sidenav-item>
+    <cros-sidenav-item id="2" label="settings-dropdown-v2"></cros-sidenav-item>
+    <cros-sidenav-item id="3" label="settings-row"></cros-sidenav-item>
+    <cros-sidenav-item id="4" label="settings-dropdown-row"></cros-sidenav-item>
+    <cros-sidenav-item id="5" label="settings-slider-row"></cros-sidenav-item>
+  </cros-sidenav>
+
+  <iron-pages id="pageContainer" selected="[[selectedIndex_]]">
+    <settings-toggle-v2-storybook></settings-toggle-v2-storybook>
+    <settings-slider-v2-storybook></settings-slider-v2-storybook>
+    <settings-dropdown-v2-storybook></settings-dropdown-v2-storybook>
+    <settings-row-storybook></settings-row-storybook>
+    <settings-dropdown-row-storybook></settings-dropdown-row-storybook>
+    <settings-slider-row-storybook></settings-slider-row-storybook>
+  </iron-pages>
+</div>

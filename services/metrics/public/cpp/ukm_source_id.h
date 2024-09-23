@@ -24,8 +24,8 @@ const SourceId kInvalidSourceId = 0;
 // NOTES ON USAGE: if only the underlying int value is required to identify a
 // Source and is used in Mojo interface, and no type conversion needs to be
 // performed, use ukm::SourceId instead.
-// TODO(crbug/1046951): migrate callers to use the public methods below then
-// remove METRICS_EXPORT on this class.
+// TODO(crbug.com/40671096): migrate callers to use the public methods below
+// then remove METRICS_EXPORT on this class.
 class METRICS_EXPORT SourceIdObj {
  public:
   enum class Type : SourceId {

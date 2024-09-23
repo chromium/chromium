@@ -2,10 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/crosapi/keystore_service_ash.h"
 
 #include <initializer_list>
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -71,7 +77,7 @@ const char kDeprecatedMethodErr[] = "Deprecated method was called.";
 
 std::string GetSubjectPublicKeyInfo(
     const scoped_refptr<net::X509Certificate>& certificate) {
-  base::StringPiece spki_der_piece;
+  std::string_view spki_der_piece;
   bool ok = net::asn1::ExtractSPKIFromDERCert(
       net::x509_util::CryptoBufferAsStringPiece(certificate->cert_buffer()),
       &spki_der_piece);

@@ -9,12 +9,11 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "components/ip_protection/common/ip_protection_core.h"
+#include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "components/ip_protection/common/masked_domain_list_manager.h"
 #include "net/base/proxy_delegate.h"
-#include "services/network/ip_protection/ip_protection_config_cache.h"
-#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "net/proxy_resolution/proxy_retry_info.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -23,36 +22,25 @@ class ProxyResolutionService;
 
 namespace network {
 
+using ip_protection::MaskedDomainListManager;
+
 // IpProtectionProxyDelegate is used to support IP protection, by injecting
 // proxies for requests where IP should be protected.
 class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
-    : public net::ProxyDelegate,
-      public mojom::IpProtectionProxyDelegate {
+    : public net::ProxyDelegate {
  public:
-  enum class ProtectionEligibility {
-    kUnknown = 0,
-    kIneligible = 1,
-    kEligible = 2,
-    kMaxValue = kEligible,
-  };
-
-  // Both network_service_proxy_allow_list and ipp_config_cache must be
-  // non-null. The network_service_proxy_allow_list (MaskedDomainList) feature
+  // Both masked_domain_list_manager and ipp_core must be
+  // non-null. The masked_domain_list_manager (MaskedDomainList) feature
   // must be enabled.
   IpProtectionProxyDelegate(
-      NetworkServiceProxyAllowList* network_service_proxy_allow_list,
-      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache,
-      bool is_ip_protection_enabled);
+      MaskedDomainListManager* masked_domain_list_manager,
+      std::unique_ptr<ip_protection::IpProtectionCore> ipp_core);
 
   IpProtectionProxyDelegate(const IpProtectionProxyDelegate&) = delete;
   IpProtectionProxyDelegate& operator=(const IpProtectionProxyDelegate&) =
       delete;
 
   ~IpProtectionProxyDelegate() override;
-
-  void SetReceiver(
-      mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>
-          pending_receiver);
 
   // net::ProxyDelegate implementation:
   void OnResolveProxy(
@@ -61,10 +49,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
       const std::string& method,
       const net::ProxyRetryInfoMap& proxy_retry_info,
       net::ProxyInfo* result) override;
+  void OnSuccessfulRequestAfterFailures(
+      const net::ProxyRetryInfoMap& proxy_retry_info) override;
   void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
-  void OnBeforeTunnelRequest(const net::ProxyChain& proxy_chain,
-                             size_t chain_index,
-                             net::HttpRequestHeaders* extra_headers) override;
+  net::Error OnBeforeTunnelRequest(
+      const net::ProxyChain& proxy_chain,
+      size_t chain_index,
+      net::HttpRequestHeaders* extra_headers) override;
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,
@@ -72,22 +63,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
 
-  // mojom::IpProtectionProxyDelegate implementation:
-  void VerifyIpProtectionConfigGetterForTesting(
-      VerifyIpProtectionConfigGetterForTestingCallback callback) override;
-  void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
-  void SetIpProtectionEnabled(bool enabled) override;
-  void IsIpProtectionEnabledForTesting(
-      IsIpProtectionEnabledForTestingCallback callback) override;
-
-  void OnIpProtectionConfigAvailableForTesting(
-      VerifyIpProtectionConfigGetterForTestingCallback callback);
-
  private:
   friend class IpProtectionProxyDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionProxyDelegateTest, MergeProxyRules);
 
-  ProtectionEligibility CheckEligibility(
+  bool CheckEligibility(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key) const;
   bool CheckAvailability(
@@ -100,13 +80,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
       const net::ProxyList& existing_proxy_list,
       const net::ProxyList& custom_proxy_list);
 
-  const raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
+  const raw_ptr<MaskedDomainListManager> masked_domain_list_manager_;
 
-  const std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
-
-  bool is_ip_protection_enabled_;
-
-  mojo::Receiver<network::mojom::IpProtectionProxyDelegate> receiver_{this};
+  const std::unique_ptr<ip_protection::IpProtectionCore> ipp_core_;
 
   base::WeakPtrFactory<IpProtectionProxyDelegate> weak_factory_{this};
 };

@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "runner.cc": [
+    "+services/network/test/test_url_loader_factory.h",
+    "+services/network/test/test_utils.h",
+  ]
+}

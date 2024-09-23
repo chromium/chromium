@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Device Posture API No Origin Trial Test</title>
+<head>
+  <style>
+    #content {
+      width: 0;
+    }
+    @media (horizontal-viewport-segments: 2) {
+      #content {
+        width: env(viewport-segment-width 0 0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="content"></div>
+</body>

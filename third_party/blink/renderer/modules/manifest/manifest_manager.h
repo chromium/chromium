@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -28,6 +29,12 @@ class ResourceResponse;
 // the ManifestParser in order to do so.
 //
 // Consumers should use the mojo ManifestManager interface to use this class.
+//
+// Manifests returned from this class can only be empty if there is a network
+// fetching error, parsing error, or frame/CORS/opaque origin related issue.
+// Otherwise the manifest will always contain a `start_url`, `id`, and `scope`
+// populated, as the parser will always default based on the document url if
+// they are not specified in the json.
 class MODULES_EXPORT ManifestManager
     : public GarbageCollected<ManifestManager>,
       public Supplement<LocalDOMWindow>,
@@ -69,12 +76,39 @@ class MODULES_EXPORT ManifestManager
   void Trace(Visitor*) const override;
 
  private:
-  enum class ResolveState { kSuccess, kFailure };
+  // Result of requesting the manifest. Storing as a class rather than
+  // individual member fields makes it easier to cache the result between
+  // requests and clear all that needs to be cleared when invalidating the
+  // cache. Additionally this makes it more immediately obvious that a result
+  // will never contain a null manifest or debug info, as we can enforce these
+  // invariants in the API of this class.
+  class Result {
+   public:
+    explicit Result(mojom::blink::ManifestRequestResult result,
+                    KURL manifest_url = KURL(),
+                    mojom::blink::ManifestPtr manifest = nullptr);
+    Result(Result&&);
+    Result& operator=(Result&&);
+
+    mojom::blink::ManifestRequestResult result() const { return result_; }
+    const KURL& manifest_url() const { return manifest_url_; }
+    const mojom::blink::Manifest& manifest() const { return *manifest_; }
+    const mojom::blink::ManifestDebugInfo& debug_info() const {
+      return *debug_info_;
+    }
+    mojom::blink::ManifestDebugInfo& debug_info() { return *debug_info_; }
+
+    void SetManifest(mojom::blink::ManifestPtr manifest);
+
+   private:
+    mojom::blink::ManifestRequestResult result_;
+    KURL manifest_url_;
+    mojom::blink::ManifestPtr manifest_;
+    mojom::blink::ManifestDebugInfoPtr debug_info_;
+  };
 
   using InternalRequestManifestCallback =
-      base::OnceCallback<void(const KURL&,
-                              const mojom::blink::ManifestPtr&,
-                              const mojom::blink::ManifestDebugInfo*)>;
+      base::OnceCallback<void(const Result&)>;
 
   // From ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
@@ -85,34 +119,25 @@ class MODULES_EXPORT ManifestManager
   void OnManifestFetchComplete(const KURL& document_url,
                                const ResourceResponse& response,
                                const String& data);
+  void ParseManifestFromPage(const KURL& document_url,
+                             std::optional<KURL> manifest_url,
+                             const String& data);
   void RecordMetrics(const mojom::blink::Manifest& manifest);
-  void ResolveCallbacks(ResolveState state);
+  void ResolveCallbacks(Result result);
 
   void BindReceiver(
       mojo::PendingReceiver<mojom::blink::ManifestManager> receiver);
+
+  mojom::blink::ManifestPtr DefaultManifest();
 
   friend class ManifestManagerTest;
 
   Member<ManifestFetcher> fetcher_;
   Member<ManifestChangeNotifier> manifest_change_notifier_;
 
-  // Whether the window may have an associated Manifest. If true, the frame
-  // may have a manifest, if false, it can't have one. This boolean is true when
-  // DidChangeManifest() is called, if it is never called, it means that the
-  // associated document has no <link rel="manifest">.
-  bool may_have_manifest_;
-
-  // Whether the current Manifest is dirty.
-  bool manifest_dirty_;
-
-  // Current Manifest. Might be outdated if manifest_dirty_ is true.
-  mojom::blink::ManifestPtr manifest_;
-
-  // The URL of the current manifest.
-  KURL manifest_url_;
-
-  // Current Manifest debug information.
-  mojom::blink::ManifestDebugInfoPtr manifest_debug_info_;
+  // Contains the last RequestManifestImpl result as long as that result is
+  // still valid for subsequent requests.
+  std::optional<Result> cached_result_;
 
   Vector<InternalRequestManifestCallback> pending_callbacks_;
 

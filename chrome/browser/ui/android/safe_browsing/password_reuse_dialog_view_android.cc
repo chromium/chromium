@@ -10,9 +10,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/android/chrome_jni_headers/SafeBrowsingPasswordReuseDialogBridge_jni.h"
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/SafeBrowsingPasswordReuseDialogBridge_jni.h"
 
 namespace safe_browsing {
 
@@ -32,19 +34,10 @@ void PasswordReuseDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
 
   std::u16string warning_detail_text = controller_->GetWarningDetailText();
 
-  auto secondaryButtonText =
-      controller_->GetSecondaryButtonText() != std::u16string()
-          ? base::android::ConvertUTF16ToJavaString(
-                env, controller_->GetSecondaryButtonText())
-          : nullptr;
-
   Java_SafeBrowsingPasswordReuseDialogBridge_showDialog(
-      env, java_object_,
-      base::android::ConvertUTF16ToJavaString(env, controller_->GetTitle()),
-      base::android::ConvertUTF16ToJavaString(env, warning_detail_text),
-      base::android::ConvertUTF16ToJavaString(
-          env, controller_->GetPrimaryButtonText()),
-      secondaryButtonText);
+      env, java_object_, controller_->GetTitle(), warning_detail_text,
+      controller_->GetPrimaryButtonText(),
+      controller_->GetSecondaryButtonText());
 }
 
 void PasswordReuseDialogViewAndroid::CheckPasswords(

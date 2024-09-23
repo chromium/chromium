@@ -5,6 +5,7 @@
 import {AsyncUtil} from '/common/async_util.js';
 import {EventHandler} from '/common/event_handler.js';
 import {FlagName, Flags} from '/common/flags.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Navigator} from './navigator.js';
 import {KeyboardRootNode} from './nodes/keyboard_node.js';
@@ -43,6 +44,7 @@ export class SwitchAccess {
   /** Starts Switch Access behavior. */
   static start(): void {
     KeyboardRootNode.startWatchingVisibility();
+    Navigator.byItem.start();
     readyCallback();
   }
 
@@ -144,3 +146,5 @@ export class SwitchAccess {
     });
   }
 }
+
+TestImportManager.exportForTesting(SwitchAccess);

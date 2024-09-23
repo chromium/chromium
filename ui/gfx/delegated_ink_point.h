@@ -6,6 +6,7 @@
 #define UI_GFX_DELEGATED_INK_POINT_H_
 
 #include <limits>
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
@@ -33,6 +34,7 @@ class DelegatedInkPointDataView;
 class GFX_EXPORT DelegatedInkPoint {
  public:
   DelegatedInkPoint() = default;
+  bool operator==(const DelegatedInkPoint& o) const = default;
   DelegatedInkPoint(const PointF& pt,
                     base::TimeTicks timestamp,
                     int32_t pointer_id = std::numeric_limits<int32_t>::min())
@@ -40,6 +42,10 @@ class GFX_EXPORT DelegatedInkPoint {
 
   const PointF& point() const { return point_; }
   base::TimeTicks timestamp() const { return timestamp_; }
+  std::optional<base::TimeTicks> paint_timestamp() const {
+    return paint_timestamp_;
+  }
+  void set_paint_timestamp(base::TimeTicks ts) { paint_timestamp_ = ts; }
   int32_t pointer_id() const { return pointer_id_; }
   std::string ToString() const;
 
@@ -61,6 +67,9 @@ class GFX_EXPORT DelegatedInkPoint {
 
   // Timestamp from the input event.
   base::TimeTicks timestamp_;
+
+  // Timestamp from the the first time the point is painted.
+  std::optional<base::TimeTicks> paint_timestamp_;
 
   // Pointer ID from the input event. Used to store all DelegatedInkPoints from
   // the same source together in viz so that they are all candidates for a

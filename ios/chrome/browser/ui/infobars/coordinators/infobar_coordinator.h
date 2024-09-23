@@ -5,13 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_INFOBAR_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_COORDINATORS_INFOBAR_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
-
-class ChromeBrowserState;
 
 @protocol ApplicationCommands;
 @protocol InfobarBadgeUIDelegate;
@@ -88,7 +86,7 @@ enum class InfobarBannerPresentationState;
 @property(nonatomic, weak) id<InfobarBadgeUIDelegate> badgeDelegate;
 
 // The Browser owned by the Coordinator.
-// TODO(crbug.com/927064): Once we create the coordinators in the UI Hierarchy
+// TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
 // browser will be set on init.
 @property(nonatomic, assign, readwrite) Browser* browser;
 
@@ -96,7 +94,7 @@ enum class InfobarBannerPresentationState;
 @property(nonatomic, assign) web::WebState* webState;
 
 // The ChromeBrowserState owned by the Coordinator.
-// TODO(crbug.com/927064): Once we create the coordinators in the UI Hierarchy
+// TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
 // baseViewController will be set on init.
 @property(nonatomic, weak) UIViewController* baseViewController;
 

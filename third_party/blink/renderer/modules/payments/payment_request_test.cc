@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -340,31 +339,8 @@ TEST(PaymentRequestTest, CannotShowAfterAborted) {
   ;
 }
 
-TEST(PaymentRequestTest, CannotShowWithoutUserActivation) {
-  test::TaskEnvironment task_environment;
-  ScopedPaymentRequestAllowOneActivationlessShowForTest
-      scoped_activationless_show_enabled(false);
-  PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
-  PaymentRequest* request = PaymentRequest::Create(
-      scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
-      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
-
-  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
-  request->show(scope.GetScriptState(), scope.GetExceptionState());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            ToExceptionCode(DOMExceptionCode::kSecurityError));
-  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
-      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
-  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-      WebFeature::kPaymentRequestActivationlessShow));
-}
-
 TEST(PaymentRequestTest, ShowConsumesUserActivation) {
   test::TaskEnvironment task_environment;
-  ScopedPaymentRequestAllowOneActivationlessShowForTest
-      scoped_activationless_show_enabled(false);
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -380,10 +356,8 @@ TEST(PaymentRequestTest, ShowConsumesUserActivation) {
       WebFeature::kPaymentRequestShowWithoutGestureOrToken));
 }
 
-TEST(PaymentRequestTest, PaymentRequestActivationlessShowEnabled) {
+TEST(PaymentRequestTest, ActivationlessShow) {
   test::TaskEnvironment task_environment;
-  ScopedPaymentRequestAllowOneActivationlessShowForTest
-      scoped_activationless_show_enabled(true);
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
@@ -731,6 +705,7 @@ TEST(PaymentRequestTest, NoCrashWhenPaymentMethodChangeEventDestroysContext) {
   auto* isolate = ToIsolate(&frame);
   v8::HandleScope handle_scope(isolate);
   ScriptState* script_state = ScriptState::From(
+      isolate,
       ToV8ContextEvenIfDetached(&frame, DOMWrapperWorld::MainWorld(isolate)));
   v8::Local<v8::Context> context(script_state->GetContext());
   v8::Context::Scope context_scope(context);
@@ -753,10 +728,8 @@ TEST(PaymentRequestTest, NoCrashWhenPaymentMethodChangeEventDestroysContext) {
                               /*stringified_details=*/"{}");
 }
 
-TEST(PaymentRequestTest, SPCActivationlessShowEnabled) {
+TEST(PaymentRequestTest, SPCActivationlessShow) {
   test::TaskEnvironment task_environment;
-  ScopedSecurePaymentConfirmationAllowOneActivationlessShowForTest
-      scoped_activationless_show_enabled(true);
 
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
@@ -781,35 +754,8 @@ TEST(PaymentRequestTest, SPCActivationlessShowEnabled) {
   }
 }
 
-TEST(PaymentRequestTest, SPCActivationlessShowDisabled) {
-  test::TaskEnvironment task_environment;
-  ScopedSecurePaymentConfirmationAllowOneActivationlessShowForTest
-      scoped_activationless_show_enabled(false);
-
-  PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
-  PaymentRequest* request = PaymentRequest::Create(
-      ExecutionContext::From(scope.GetScriptState()),
-      BuildSecurePaymentConfirmationMethodDataForTest(scope),
-      BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
-
-  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-      WebFeature::kSecurePaymentConfirmationActivationlessShow));
-  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
-  request->show(scope.GetScriptState(), scope.GetExceptionState());
-  EXPECT_EQ(scope.GetExceptionState().Code(),
-            ToExceptionCode(DOMExceptionCode::kSecurityError));
-  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
-      WebFeature::kSecurePaymentConfirmationActivationlessShow));
-  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
-      WebFeature::kPaymentRequestShowWithoutGestureOrToken));
-}
-
 TEST(PaymentRequestTest, SPCActivationlessNotConsumedWithActivation) {
   test::TaskEnvironment task_environment;
-  ScopedSecurePaymentConfirmationAllowOneActivationlessShowForTest
-      scoped_activationless_show_enabled(true);
 
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
@@ -847,6 +793,36 @@ TEST(PaymentRequestTest, SPCActivationlessNotConsumedWithActivation) {
     EXPECT_TRUE(scope.GetDocument().IsUseCounted(
         WebFeature::kPaymentRequestShowWithoutGestureOrToken));
   }
+}
+
+TEST(PaymentRequestTest, DeprecatedPaymentMethod) {
+  test::TaskEnvironment task_environment;
+  PaymentRequestV8TestingScope scope;
+  HeapVector<Member<PaymentMethodData>> method_data(
+      1, PaymentMethodData::Create());
+  method_data[0]->setSupportedMethod("https://android.com/pay");
+
+  PaymentRequest::Create(ExecutionContext::From(scope.GetScriptState()),
+                         method_data, BuildPaymentDetailsInitForTest(),
+                         ASSERT_NO_EXCEPTION);
+
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestDeprecatedPaymentMethod));
+}
+
+TEST(PaymentRequestTest, NotDeprecatedPaymentMethod) {
+  test::TaskEnvironment task_environment;
+  PaymentRequestV8TestingScope scope;
+  HeapVector<Member<PaymentMethodData>> method_data(
+      1, PaymentMethodData::Create());
+  method_data[0]->setSupportedMethod("https://example.test/pay");
+
+  PaymentRequest::Create(ExecutionContext::From(scope.GetScriptState()),
+                         method_data, BuildPaymentDetailsInitForTest(),
+                         ASSERT_NO_EXCEPTION);
+
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestDeprecatedPaymentMethod));
 }
 
 }  // namespace

@@ -12,6 +12,7 @@
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/bits.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -40,8 +41,8 @@ void LogNativeCodeResidentPages(const std::set<size_t>& accessed_pages_set) {
   for (size_t page : accessed_pages_set) {
     std::string page_str = base::StringPrintf("%" PRIuS "\n", page);
 
-    if (file.WriteAtCurrentPos(page_str.c_str(),
-                               static_cast<int>(page_str.size())) < 0) {
+    if (UNSAFE_TODO(file.WriteAtCurrentPos(
+            page_str.c_str(), static_cast<int>(page_str.size()))) < 0) {
       DLOG(WARNING) << "Error while dumping Resident pages";
       return;
     }
@@ -132,7 +133,7 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
         static_cast<int32_t>(not_resident_ordered_pages * kb_per_page);
   }
 
-  // TODO(crbug.com/956464) replace adding |NativeCodeResidentMemory| to trace
+  // TODO(crbug.com/41455053) replace adding |NativeCodeResidentMemory| to trace
   // this way by adding it through |tracing_observer| in Finalize().
   TRACE_EVENT_INSTANT1(base::trace_event::MemoryDumpManager::kTraceCategory,
                        "ReportGlobalNativeCodeResidentMemoryKb",

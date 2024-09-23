@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "extensions/browser/extension_function.h"
 
 namespace ash {
@@ -111,7 +112,9 @@ class QuickUnlockPrivateCanAuthenticatePinFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void HandleCanAuthenticateResult(bool result);
+  void HandleCanAuthenticateResult(
+      bool result,
+      cryptohome::PinLockAvailability available_at);
 
   ChromeExtensionFunctionDetails chrome_details_;
 };

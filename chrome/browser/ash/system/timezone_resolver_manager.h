@@ -9,18 +9,23 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/session_manager/core/session_manager_observer.h"
+
+namespace session_manager {
+class SessionManager;
+}  // namespace session_manager
 
 class PrefService;
 
-namespace ash {
-namespace system {
+namespace ash::system {
 
-class TimeZoneResolverManager
-    : public TimeZoneResolver::Delegate,
-      public ash::SimpleGeolocationProvider::Observer {
+class TimeZoneResolverManager : public TimeZoneResolver::Delegate,
+                                public ash::SimpleGeolocationProvider::Observer,
+                                public session_manager::SessionManagerObserver {
  public:
   class Observer {
    public:
@@ -41,8 +46,8 @@ class TimeZoneResolverManager
     METHODS_NUMBER = 4
   };
 
-  explicit TimeZoneResolverManager(
-      SimpleGeolocationProvider* const geolocation_provider);
+  TimeZoneResolverManager(SimpleGeolocationProvider* geolocation_provider,
+                          session_manager::SessionManager* session_manager);
 
   TimeZoneResolverManager(const TimeZoneResolverManager&) = delete;
   TimeZoneResolverManager& operator=(const TimeZoneResolverManager&) = delete;
@@ -55,6 +60,9 @@ class TimeZoneResolverManager
   // TimeZoneResolver::Delegate:
   bool ShouldSendWiFiGeolocationData() const override;
   bool ShouldSendCellularGeolocationData() const override;
+
+  // session_manager::SessionManagerObserver:
+  void OnUserProfileLoaded(const AccountId& account_id) override;
 
   // Starts or stops TimezoneResolver according to current settings.
   void UpdateTimezoneResolver();
@@ -82,6 +90,9 @@ class TimeZoneResolverManager
   // Unlike `TimeZoneResolverShouldBeRunning()`, this method disregards the
   // system geolocation permission.
   bool TimeZoneResolverAllowedByTimeZoneConfigData();
+
+  // Returns the instance of TimeZoneResolver.
+  ash::TimeZoneResolver* GetResolver();
 
   // Convert kResolveTimezoneByGeolocationMethod /
   // kResolveDeviceTimezoneByGeolocationMethod preference value to
@@ -133,10 +144,14 @@ class TimeZoneResolverManager
   // Becomes true after UpdateTimezoneResolver() has been called at least once.
   bool initialized_ = false;
 
+  std::unique_ptr<ash::TimeZoneResolver> timezone_resolver_;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
   base::WeakPtrFactory<TimeZoneResolverManager> weak_factory_{this};
 };
 
-}  // namespace system
-}  // namespace ash
+}  // namespace ash::system
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_TIMEZONE_RESOLVER_MANAGER_H_

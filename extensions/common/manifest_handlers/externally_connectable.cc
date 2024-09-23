@@ -50,11 +50,9 @@ std::vector<T> Sorted(const std::vector<T>& in) {
 
 }  // namespace
 
-ExternallyConnectableHandler::ExternallyConnectableHandler() {
-}
+ExternallyConnectableHandler::ExternallyConnectableHandler() = default;
 
-ExternallyConnectableHandler::~ExternallyConnectableHandler() {
-}
+ExternallyConnectableHandler::~ExternallyConnectableHandler() = default;
 
 bool ExternallyConnectableHandler::Parse(Extension* extension,
                                          std::u16string* error) {

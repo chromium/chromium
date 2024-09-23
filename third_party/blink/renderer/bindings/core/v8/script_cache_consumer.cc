@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -59,6 +58,23 @@ ScriptCacheConsumer::ScriptCacheConsumer(
     // allowed.
     AdvanceState(State::kConsumeFinished);
   }
+}
+
+ScriptCacheConsumer::ScriptCacheConsumer(
+    v8::Isolate* isolate,
+    scoped_refptr<CachedMetadata> cached_metadata,
+    std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
+        completed_consume_task,
+    const String& script_url_string,
+    uint64_t script_resource_identifier)
+    : isolate_(isolate),
+      cached_metadata_(std::move(cached_metadata)),
+      consume_task_(std::move(completed_consume_task)),
+      script_url_string_(script_url_string),
+      script_resource_identifier_(script_resource_identifier),
+      state_(State::kRunning) {
+  CHECK(consume_task_);
+  AdvanceState(State::kConsumeFinished);
 }
 
 ScriptCacheConsumer::State ScriptCacheConsumer::AdvanceState(

@@ -8,15 +8,13 @@
 #include <optional>
 #include <string>
 
-#include "build/build_config.h"
-
 class Profile;
 
 namespace content {
 class WebContents;
 }
 
-// TODO(crbug.com/1238559)
+// TODO(crbug.com/40193527)
 // The two functions to get the app ID from a WebContents do it in slightly
 // different ways and have different use cases.
 //
@@ -27,22 +25,9 @@ class WebContents;
 // opened using certain flows (see bug for details).
 //
 // Eventually they need to be merged, but in the meantime if you need guidance
-// on which one you should use, please reach out to alexbn@chromium.org or
-// dominickn@chromium.org.
+// on which one you should use, please reach out to alexbn@chromium.org.
 
 namespace apps {
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Get ID of the app running in WebContents as defined by the instance registry
-// and the shelf. Checks for web apps, and extension-based apps (hosted app,
-// packaged v1 apps).
-//
-// For an app running in a tab, non-empty ID will only be returned if the app is
-// configured to run in a tab. For an app running in a window, non-empty ID will
-// be returned regardless of how the app is confiured to launch.
-std::optional<std::string> GetInstanceAppIdForWebContents(
-    content::WebContents* tab);
-#endif
 
 // Gets the ID of the app via one of either of:
 // - |web_app::WebAppTabHelper| associated with this WebContents

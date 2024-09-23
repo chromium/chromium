@@ -28,8 +28,7 @@ class XdgShellSurfaceTest : public test::ExoTestBase {
     auto shell_surface = std::make_unique<XdgShellSurface>(
         surface.get(), gfx::Point{0, 0},
         /*can_minimize=*/true, ash::desks_util::GetActiveDeskContainerId());
-    auto buffer = std::make_unique<Buffer>(
-        exo_test_helper()->CreateGpuMemoryBuffer({w, h}));
+    auto buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(w, h));
     surface->Attach(buffer.get());
     return {std::move(surface), std::move(shell_surface), std::move(buffer)};
   }

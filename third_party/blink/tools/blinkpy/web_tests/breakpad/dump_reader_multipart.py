@@ -75,7 +75,7 @@ class DumpReaderMultipart(DumpReader):
             self._symbols_dir()
         ]
         try:
-            stack = self._host.executive.run_command(cmd, return_stderr=False)
+            stack = self._host.executive.run_command(cmd, stderr=None)
         except:
             _log.warning('Failed to execute "%s"', ' '.join(cmd))
             stack = None

@@ -24,7 +24,6 @@ class LegacyTechReportGenerator {
   struct LegacyTechData : public RealTimeReportGenerator::Data {
     LegacyTechData();
     LegacyTechData(const std::string& type,
-                   const base::Time& timestamp,
                    const GURL& url,
                    const GURL& frame_url,
                    const std::string& matched_url,
@@ -42,7 +41,6 @@ class LegacyTechReportGenerator {
     bool operator==(const LegacyTechData& other) const;
 
     std::string type;
-    base::Time timestamp;
     GURL url;
     GURL frame_url;
     std::string matched_url;

@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "base/functional/bind.h"
@@ -13,15 +14,13 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
-#import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
+#import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/leak_detection/mock_bulk_leak_check_service.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -31,13 +30,13 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -77,6 +76,10 @@ struct MockPasswordCheckManagerObserver
               PasswordCheckStatusChanged,
               (PasswordCheckState),
               (override));
+  MOCK_METHOD(void,
+              ManagerWillShutdown,
+              (IOSChromePasswordCheckManager*),
+              (override));
 };
 
 std::unique_ptr<KeyedService> MakeMockPasswordCheckManagerObserver(
@@ -84,16 +87,16 @@ std::unique_ptr<KeyedService> MakeMockPasswordCheckManagerObserver(
   return std::make_unique<MockBulkLeakCheckService>();
 }
 
-PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece16 username,
-                               base::StringPiece16 password = kPassword116) {
+PasswordForm MakeSavedPassword(std::string_view signon_realm,
+                               std::u16string_view username,
+                               std::u16string_view password = kPassword116) {
   PasswordForm form;
   form.url = GURL(signon_realm);
   form.signon_realm = std::string(signon_realm);
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.in_store = PasswordForm::Store::kProfileStore;
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // TODO(crbug.com/40774419): Once all places that operate changes on forms
   // via UpdateLogin properly set `password_issues`, setting them to an empty
   // map should be part of the default constructor.
   form.password_issues =
@@ -128,10 +131,10 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
-              std::make_unique<password_manager::FakeAffiliationService>());
+              std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = builder.Build();
+    browser_state_ = std::move(builder).Build();
     bulk_leak_check_service_ = static_cast<MockBulkLeakCheckService*>(
         IOSChromeBulkLeakCheckServiceFactory::GetForBrowserState(
             browser_state_.get()));
@@ -155,7 +158,6 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_env_{
-      web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ChromeBrowserState> browser_state_;
   raw_ptr<MockBulkLeakCheckService> bulk_leak_check_service_;

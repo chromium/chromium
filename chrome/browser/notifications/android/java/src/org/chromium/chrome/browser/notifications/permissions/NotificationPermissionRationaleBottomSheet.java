@@ -207,7 +207,7 @@ public class NotificationPermissionRationaleBottomSheet
     public boolean hasCustomLifecycle() {
         // This is set to true to be able to display on startup without being removed by start
         // surface.
-        // TODO(crbug.com/1410793): Get rid of this once we no longer show this on startup.
+        // TODO(crbug.com/40254542): Get rid of this once we no longer show this on startup.
         return true;
     }
 

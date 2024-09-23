@@ -4,6 +4,8 @@
 
 #import "ios/web/content/init/ios_content_client.h"
 
+#include <string_view>
+
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 
@@ -25,7 +27,7 @@ std::u16string IOSContentClient::GetLocalizedString(
   return l10n_util::GetStringFUTF16(message_id, replacement);
 }
 
-base::StringPiece IOSContentClient::GetDataResource(
+std::string_view IOSContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

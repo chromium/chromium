@@ -214,7 +214,7 @@ void PageLoadMetricsWebContentsObserver::RecordUKM() {
 void PageLoadMetricsWebContentsObserver::DidStartLoading() {
   DCHECK(web_contents()->IsLoading());
 
-  // TODO(crbug.com/1145572): Uncomment this DCHECK once there is a guarantee
+  // TODO(crbug.com/40155922): Uncomment this DCHECK once there is a guarantee
   // that DidStartLoading and DidStopLoading are invoked in alternance.
   // DCHECK(!is_loading_);
 

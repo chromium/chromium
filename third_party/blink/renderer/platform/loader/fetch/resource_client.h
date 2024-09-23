@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -57,9 +58,7 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
   // Some RawResourceClients depends on receiving all bytes via DataReceived(),
   // but RawResources forbid revalidation attempts, so they still are guaranteed
   // to get all data via DataReceived().
-  virtual void DataReceived(Resource*,
-                            const char* /* data */,
-                            size_t /* length */) {}
+  virtual void DataReceived(Resource*, base::span<const char> /*data*/) {}
   virtual void NotifyFinished(Resource*) {}
 
   virtual bool IsFontResourceClient() const { return false; }

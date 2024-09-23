@@ -54,25 +54,23 @@ class DiscountsStorage : public history::HistoryServiceObserver {
   DiscountsStorage& operator=(const DiscountsStorage&) = delete;
   ~DiscountsStorage() override;
 
-  virtual void HandleServerDiscounts(
-      const std::vector<std::string>& urls_to_check,
-      DiscountsMap server_results,
-      DiscountInfoCallback callback);
+  virtual void HandleServerDiscounts(const GURL& url,
+                                     std::vector<DiscountInfo> server_results,
+                                     DiscountInfoCallback callback);
 
   // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
 
  private:
   void SaveDiscounts(const GURL& url, const std::vector<DiscountInfo>& infos);
 
   void DeleteDiscountsForUrl(const std::string& url);
 
-  void OnLoadAllDiscounts(const std::vector<std::string>& urls_to_check,
-                          DiscountsMap server_results,
-                          DiscountInfoCallback callback,
-                          bool succeeded,
-                          DiscountsKeyAndValues data);
+  void OnLoadDiscounts(const GURL& url,
+                       DiscountInfoCallback callback,
+                       bool succeeded,
+                       DiscountsKeyAndValues data);
 
   // When loading from local db, discard expired discounts and only convert &
   // return unexpired ones.

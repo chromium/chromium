@@ -93,8 +93,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
       const LayoutObject&,
       AncestorSearchConstraint);
 
-  void UpdateLayout() final;
-
   PaintLayerType LayerTypeRequired() const final;
 
   virtual void FlowThreadDescendantWasInserted(LayoutObject*) {
@@ -116,9 +114,10 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
     NOT_DESTROYED();
   }
 
-  void AbsoluteQuadsForDescendant(const LayoutBox& descendant,
-                                  Vector<gfx::QuadF>&,
-                                  MapCoordinatesFlags mode = 0);
+  void QuadsInAncestorForDescendant(const LayoutBox& descendant,
+                                    Vector<gfx::QuadF>&,
+                                    const LayoutBoxModelObject* ancestor,
+                                    MapCoordinatesFlags);
 
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,

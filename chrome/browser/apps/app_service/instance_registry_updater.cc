@@ -45,6 +45,9 @@ InstanceRegistryUpdater::InstanceRegistryUpdater(
     InstanceRegistry& instance_registry)
     : browser_app_instance_registry_(browser_app_instance_registry),
       instance_registry_(instance_registry) {
+  if (aura::Env::HasInstance()) {
+    env_observer_.Observe(aura::Env::GetInstance());
+  }
   browser_app_instance_registry_observation_.Observe(
       &*browser_app_instance_registry_);
 }
@@ -59,7 +62,7 @@ void InstanceRegistryUpdater::OnBrowserWindowAdded(
 void InstanceRegistryUpdater::OnBrowserWindowUpdated(
     const BrowserWindowInstance& instance) {
   InstanceState state =
-      GetState(instance.window->IsVisible(), instance.is_active);
+      GetState(instance.window->IsVisible(), instance.is_active());
   OnInstance(instance.id, instance.GetAppId(), instance.window, state);
 }
 
@@ -78,7 +81,7 @@ void InstanceRegistryUpdater::OnBrowserAppUpdated(
     const BrowserAppInstance& instance) {
   InstanceState state =
       GetState(instance.window->IsVisible(),
-               instance.is_browser_active && instance.is_web_contents_active);
+               instance.is_browser_active() && instance.is_web_contents_active);
   OnInstance(instance.id, instance.app_id, instance.window, state);
 }
 

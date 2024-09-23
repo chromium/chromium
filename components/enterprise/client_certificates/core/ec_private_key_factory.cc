@@ -15,6 +15,7 @@
 #include "components/enterprise/client_certificates/core/ec_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "crypto/ec_private_key.h"
+#include "net/ssl/ssl_private_key.h"
 
 namespace client_certificates {
 

@@ -51,7 +51,8 @@ TEST_F(BookmarkDragDropTest, DropBookmarksWithCopyFromSameProfile) {
   bookmarks::BookmarkNodeData bookmark_node_data(folder_child_node);
   bookmark_node_data.SetOriginatingProfilePath(profile_->GetPath());
   // Make a copy of `folder_child_node` added to the bookmark bar node.
-  chrome::DropBookmarks(profile_.get(), bookmark_node_data, bb_node, 0, true);
+  chrome::DropBookmarks(profile_.get(), bookmark_node_data, bb_node, 0, true,
+                        chrome::BookmarkReorderDropTarget::kBookmarkBarView);
   ASSERT_EQ(3u, bb_node->children().size());
   const bookmarks::BookmarkNode* newly_copied_node =
       bb_node->children()[0].get();

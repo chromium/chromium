@@ -50,18 +50,18 @@ bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
   profile_path_.clear();
 
   if (data.HasCustomFormat(GetBookmarkFormatType())) {
-    base::Pickle drag_data_pickle;
-    if (data.GetPickledData(GetBookmarkFormatType(), &drag_data_pickle)) {
-      if (!ReadFromPickle(&drag_data_pickle))
+    if (std::optional<base::Pickle> drag_data_pickle =
+            data.GetPickledData(GetBookmarkFormatType());
+        drag_data_pickle.has_value()) {
+      if (!ReadFromPickle(&drag_data_pickle.value())) {
         return false;
+      }
     }
-  } else {
-    // See if there is a URL on the clipboard.
-    GURL url;
-    std::u16string title;
-    if (data.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES, &url,
-                            &title))
-      ReadFromTuple(url, title);
+  } else if (std::optional<ui::OSExchangeData::UrlInfo> result =
+                 data.GetURLAndTitle(
+                     ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+             result.has_value()) {
+    ReadFromTuple(result->url, result->title);
   }
 
   return is_valid();

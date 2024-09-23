@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "media/base/svc_scalability_mode.h"
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/parsers/vp9_parser.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 

@@ -19,8 +19,9 @@
 namespace trusted_vault {
 namespace {
 
+// The "/0" suffix is required but ignored.
 constexpr char kUpdateVaultUrl[] =
-    "https://cryptauthvault.googleapis.com/v1/vaults/";
+    "https://cryptauthvault.googleapis.com/v1/vaults/0";
 
 void ProcessUpdateVaultResponseResponse(
     RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback callback,
@@ -54,15 +55,16 @@ void ProcessUpdateVaultResponseResponse(
       return;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
 
 RecoveryKeyStoreConnectionImpl::RecoveryKeyStoreConnectionImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<network::PendingSharedURLLoaderFactory>
+        pending_url_loader_factory,
     std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher)
-    : url_loader_factory_(url_loader_factory),
+    : pending_url_loader_factory_(std::move(pending_url_loader_factory)),
       access_token_fetcher_(std::move(access_token_fetcher)) {}
 
 RecoveryKeyStoreConnectionImpl::~RecoveryKeyStoreConnectionImpl() = default;
@@ -70,7 +72,7 @@ RecoveryKeyStoreConnectionImpl::~RecoveryKeyStoreConnectionImpl() = default;
 std::unique_ptr<RecoveryKeyStoreConnectionImpl::Request>
 RecoveryKeyStoreConnectionImpl::UpdateRecoveryKeyStore(
     const CoreAccountInfo& account_info,
-    const trusted_vault_pb::UpdateVaultRequest& update_vault_request,
+    const trusted_vault_pb::Vault& vault,
     UpdateRecoveryKeyStoreCallback callback) {
   TrustedVaultRequest::RecordFetchStatusCallback record_fetch_status_to_uma =
       base::BindRepeating(
@@ -78,12 +80,24 @@ RecoveryKeyStoreConnectionImpl::UpdateRecoveryKeyStore(
           RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore);
   auto request = std::make_unique<TrustedVaultRequest>(
       account_info.account_id, TrustedVaultRequest::HttpMethod::kPatch,
-      GURL(kUpdateVaultUrl), update_vault_request.SerializeAsString(),
-      /*max_retry_duration=*/base::Seconds(0), url_loader_factory_,
+      GURL(kUpdateVaultUrl), vault.SerializeAsString(),
+      /*max_retry_duration=*/base::Seconds(0), URLLoaderFactory(),
       access_token_fetcher_->Clone(), std::move(record_fetch_status_to_uma));
   request->FetchAccessTokenAndSendRequest(
       base::BindOnce(&ProcessUpdateVaultResponseResponse, std::move(callback)));
   return request;
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+RecoveryKeyStoreConnectionImpl::URLLoaderFactory() {
+  // `url_loader_factory_` is created lazily, because it needs to be done on
+  // the backend sequence, while this class ctor is called on UI thread.
+  if (!url_loader_factory_) {
+    CHECK(pending_url_loader_factory_);
+    url_loader_factory_ = network::SharedURLLoaderFactory::Create(
+        std::move(pending_url_loader_factory_));
+  }
+  return url_loader_factory_;
 }
 
 }  // namespace trusted_vault

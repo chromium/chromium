@@ -28,6 +28,10 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 
+namespace WTF {
+class String;
+}  // namespace WTF
+
 namespace blink {
 
 class WebGLShader;
@@ -43,7 +47,7 @@ class WebGLDebugShaders final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
 
-  String getTranslatedShaderSource(WebGLShader*);
+  WTF::String getTranslatedShaderSource(WebGLShader*);
 };
 
 }  // namespace blink

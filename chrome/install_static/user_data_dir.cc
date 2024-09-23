@@ -4,8 +4,9 @@
 
 #include "chrome/install_static/user_data_dir.h"
 
-#include <assert.h>
 #include <windows.h>
+
+#include <assert.h>
 
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
@@ -62,9 +63,8 @@ bool GetUserDataDirectoryUsingProcessCommandLine(
     const InstallConstants& mode,
     std::wstring* result,
     std::wstring* invalid_supplied_directory) {
-  return GetUserDataDirectoryImpl(
-      GetSwitchValueFromCommandLine(::GetCommandLine(), kUserDataDirSwitch),
-      mode, result, invalid_supplied_directory);
+  return GetUserDataDirectoryImpl(GetCommandLineSwitchValue(kUserDataDirSwitch),
+                                  mode, result, invalid_supplied_directory);
 }
 
 // Populates |result| with the default User Data directory for the current

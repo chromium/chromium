@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -19,17 +20,14 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.ui.base.ViewAndroidDelegate;
-
-import java.util.concurrent.ExecutionException;
 
 /** Test the select popup and how it interacts with another WebContents. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -54,14 +52,10 @@ public class SelectPopupOtherContentViewTest {
                             + "</body></html>");
 
     private boolean isSelectPopupVisibleOnUiThread() {
-        try {
-            return TestThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            WebContentsUtils.isSelectPopupVisible(
-                                    mActivityTestRule.getWebContents()));
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        WebContentsUtils.isSelectPopupVisible(
+                                mActivityTestRule.getWebContents()));
     }
 
     /**
@@ -81,17 +75,15 @@ public class SelectPopupOtherContentViewTest {
                 this::isSelectPopupVisibleOnUiThread, "The select popup did not show up on click.");
 
         // Now create and destroy a different WebContents.
-        TestThreadUtils.runOnUiThreadBlocking(
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebContents webContents =
                             WebContentsFactory.createWebContents(
-                                    Profile.getLastUsedRegularProfile(), false, false);
+                                    ProfileManager.getLastUsedRegularProfile(), false, false);
                     ChromeActivity activity = mActivityTestRule.getActivity();
 
-                    ContentView cv =
-                            ContentView.createContentView(
-                                    activity, /* eventOffsetHandler= */ null, webContents);
-                    webContents.initialize(
+                    ContentView cv = ContentView.createContentView(activity, webContents);
+                    webContents.setDelegates(
                             "",
                             ViewAndroidDelegate.createBasicDelegate(cv),
                             cv,

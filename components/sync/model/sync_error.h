@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace base {
 class Location;
@@ -50,13 +50,13 @@ class SyncError {
   // Default constructor refers to "no error", and IsSet() will return false.
   SyncError();
 
-  // Create a new Sync error of type |error_type| triggered by |model_type|
+  // Create a new Sync error of type |error_type| triggered by |data_type|
   // from the specified location. IsSet() will return true afterward. Will
   // create and print an error specific message to LOG(ERROR).
   SyncError(const base::Location& location,
             ErrorType error_type,
             const std::string& message,
-            ModelType model_type);
+            DataType data_type);
 
   // Copy and assign via deep copy.
   SyncError(const SyncError& other);
@@ -70,7 +70,7 @@ class SyncError {
   // Will print the new error to LOG(ERROR).
   void Reset(const base::Location& location,
              const std::string& message,
-             ModelType type);
+             DataType type);
 
   // Whether this is a valid error or not.
   bool IsSet() const;
@@ -78,7 +78,7 @@ class SyncError {
   // These must only be called if IsSet() is true.
   const base::Location& location() const;
   const std::string& message() const;
-  ModelType model_type() const;
+  DataType data_type() const;
   ErrorType error_type() const;
 
   // Error severity for logging and UI purposes.
@@ -101,7 +101,7 @@ class SyncError {
   // is called, IsSet() will return true.
   void Init(const base::Location& location,
             const std::string& message,
-            ModelType model_type,
+            DataType data_type,
             ErrorType error_type);
 
   // Reset the error to it's default (unset) values.
@@ -110,7 +110,7 @@ class SyncError {
   // unique_ptr is necessary because Location objects aren't assignable.
   std::unique_ptr<base::Location> location_;
   std::string message_;
-  ModelType model_type_;
+  DataType data_type_;
   ErrorType error_type_;
 };
 

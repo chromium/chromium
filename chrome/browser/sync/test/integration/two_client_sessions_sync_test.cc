@@ -21,7 +21,6 @@
 #include "components/sync/test/fake_server_verifier.h"
 #include "components/sync/test/sessions_hierarchy.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -30,17 +29,13 @@ using sessions_helper::CheckInitialState;
 using sessions_helper::CloseTab;
 using sessions_helper::DeleteForeignSession;
 using sessions_helper::ForeignSessionsMatchChecker;
-using sessions_helper::GetLocalWindows;
 using sessions_helper::GetSessionData;
 using sessions_helper::NavigateTab;
 using sessions_helper::OpenMultipleTabs;
 using sessions_helper::OpenTab;
 using sessions_helper::OpenTabAtIndex;
 using sessions_helper::ScopedWindowMap;
-using sessions_helper::SessionWindowMap;
 using sessions_helper::SyncedSessionVector;
-using sessions_helper::WindowsMatch;
-using testing::IsEmpty;
 
 class TwoClientSessionsSyncTest : public SyncTest {
  public:
@@ -97,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, SingleClientClosed) {
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 
   std::vector<sync_pb::SyncEntity> entities =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::SESSIONS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::SESSIONS);
   // Two header entities and one tab entity (the other one has been deleted).
   EXPECT_EQ(3U, entities.size());
 }
@@ -204,28 +199,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, MultipleWindowsMultipleTabs) {
   EXPECT_TRUE(OpenTabAtIndex(2, 1, GURL(kURL4)));
 
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
-                       NoHistoryIfEncryptionEnabled) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-
-  ASSERT_TRUE(CheckInitialState(0));
-  ASSERT_TRUE(CheckInitialState(1));
-
-  GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("passphrase");
-  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(1)).Wait());
-  ASSERT_TRUE(GetSyncService(1)->GetUserSettings()->SetDecryptionPassphrase(
-      "passphrase"));
-  // Make sure that re-encryption happens before opening the tab (otherwise race
-  // condition may occur when second client attempts to re-encrypt data, while
-  // first client attempts to commit local changes).
-  ASSERT_TRUE(AwaitQuiescence());
-
-  EXPECT_TRUE(OpenTab(0, GURL(kURL1)));
-  EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
-
-  EXPECT_THAT(GetFakeServer()->GetCommittedHistoryURLs(), IsEmpty());
 }
 
 class TwoClientSessionsWithoutDestroyProfileSyncTest

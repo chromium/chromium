@@ -109,7 +109,7 @@ class WKBackForwardListItemHolder;
 @property(nonatomic, readonly, strong) CRWWKNavigationStates* navigationStates;
 
 // The current page loading phase.
-// TODO(crbug.com/956511): Remove this once refactor is done.
+// TODO(crbug.com/40624624): Remove this once refactor is done.
 @property(nonatomic, readwrite, assign) web::WKNavigationState navigationState;
 
 // Returns the WKBackForwardlistItemHolder of current navigation item.

@@ -10,6 +10,10 @@ BrowsingDataRemover::BrowsingDataRemover() = default;
 
 BrowsingDataRemover::~BrowsingDataRemover() = default;
 
+base::WeakPtr<BrowsingDataRemover> BrowsingDataRemover::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void BrowsingDataRemover::AddObserver(BrowsingDataRemoverObserver* observer) {
   observers_.AddObserver(observer);
 }

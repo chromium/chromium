@@ -19,7 +19,9 @@
 #include "build/buildflag.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
+#include "content/public/common/bindings_policy.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
@@ -28,7 +30,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
@@ -41,11 +43,12 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "third_party/jni_zero/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 #endif
 
 class GURL;
@@ -56,6 +59,8 @@ class UnguessableToken;
 
 namespace blink {
 class AssociatedInterfaceProvider;
+class PermissionsPolicy;
+class StorageKey;
 
 namespace mojom {
 enum class AuthenticatorStatus;
@@ -110,6 +115,7 @@ class BrowserContext;
 class DocumentRef;
 struct GlobalRenderFrameHostId;
 struct GlobalRenderFrameHostToken;
+class NavigationHandle;
 class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
@@ -124,6 +130,15 @@ class Page;
 // The preferred way to keep a reference to a RenderFrameHost is storing a
 // GlobalRenderFrameHostId and using RenderFrameHost::FromID() when you need to
 // access it.
+//
+// Any code that uses RenderFrameHost must be aware of back-forward cache, see
+// LifecycleState. The main side-effect is that any IPCs that are processed on a
+// freezable task queue can stall indefinitely. See
+// MainThreadTaskQueue::QueueTraits::can_be_frozen. Code that uses
+// RenderFrameHost should refrain from passing this negative externality on to
+// higher-level dependencies. In short: code that uses RenderFrameHost must be
+// back-forward cache aware, and code that does not use RenderFrameHost should
+// not have to be back-forward cache aware.
 class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                        public IPC::Sender {
   // Do not remove this macro!
@@ -131,9 +146,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
-  // Constant used to denote that a lookup of a FrameTreeNode ID has failed.
-  enum { kNoFrameTreeNodeId = -1 };
-
   // Returns the RenderFrameHost given its ID and the ID of its render process.
   // Returns nullptr if the IDs do not correspond to a live RenderFrameHost.
   static RenderFrameHost* FromID(const GlobalRenderFrameHostId& id);
@@ -155,12 +167,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns the FrameTreeNode ID corresponding to the specified |process_id|
   // and |routing_id|. This routing ID pair may represent a placeholder for
   // frame that is currently rendered in a different process than |process_id|.
-  static int GetFrameTreeNodeIdForRoutingId(int process_id, int routing_id);
+  static FrameTreeNodeId GetFrameTreeNodeIdForRoutingId(int process_id,
+                                                        int routing_id);
 
   // Returns the FrameTreeNode ID corresponding to the specified |process_id|
   // and |frame_token|. This routing ID pair may represent a placeholder for
   // frame that is currently rendered in a different process than |process_id|.
-  static int GetFrameTreeNodeIdForFrameToken(
+  static FrameTreeNodeId GetFrameTreeNodeIdForFrameToken(
       int process_id,
       const ::blink::FrameToken& frame_token);
 
@@ -204,8 +217,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns the accessibility tree ID for this RenderFrameHost.
   virtual ui::AXTreeID GetAXTreeID() = 0;
 
-  using AXTreeSnapshotCallback =
-      base::OnceCallback<void(const ui::AXTreeUpdate&)>;
+  using AXTreeSnapshotCallback = base::OnceCallback<void(ui::AXTreeUpdate&)>;
 
   // Returns the SiteInstance grouping all RenderFrameHosts that have script
   // access to this RenderFrameHost, and must therefore live in the same
@@ -368,6 +380,31 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // supports both Shadow DOM and MPArch implementations.
   virtual bool IsNestedWithinFencedFrame() const = 0;
 
+  // Check if the frame has untrusted network access disabled.
+  //
+  // A Fenced frame can disable untrusted network access for itself and the
+  // descendant iframes in the fenced frame tree by calling the fenced frame API
+  // `window.fence.disableUntrustedNetwork()`. After this API is invoked, no
+  // untrusted network requests are allowed in the fenced frame tree, i.e. in
+  // the root fenced frame and all of its descendant iframes. This includes:
+  // * Subresources requests.
+  // * Navigation requests.
+  // * Event level reporting.
+  // * Any other network channels, for example, WebSocket, web workers, etc.
+  //
+  // Fenced frames will get access to cross-site information, for example,
+  // shared storage API after the untrusted network access is disabled.
+  //
+  // Note: An example of a trusted network request is the aggregation report
+  // sent by Private Aggregation API. Because the report is privacy preserving,
+  // it is allowed from the fenced frame after the untrusted network access is
+  // disabled. Additional trusted network communications, such as to a secure
+  // trusted execution environment, may be added in the future.
+  //
+  // See
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md.
+  virtual bool IsUntrustedNetworkDisabled() const = 0;
+
   // |ForEachRenderFrameHost| traverses this RenderFrameHost and all of its
   // descendants, including frames in any inner frame trees (such as guest
   // views), in breadth-first order.
@@ -395,36 +432,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void ForEachRenderFrameHost(
       base::FunctionRef<void(RenderFrameHost*)> on_frame) = 0;
 
-  // Returns the FrameTreeNode ID associated with this RenderFrameHost. This ID
-  // is browser-global and uniquely identifies a browser-side concept of a frame
-  // (a "FrameTreeNode") that hosts content.
-  //
-  // When the FrameTreeNode is removed, the ID is not used again.
-  //
-  // A FrameTreeNode can outlive its current RenderFrameHost, and may be
-  // associated with multiple RenderFrameHosts over time. This happens because
-  // some navigations require a "RenderFrameHost swap" which causes a new
-  // RenderFrameHost to be housed in the FrameTreeNode. For example, this
-  // happens for any cross-process navigation, since a RenderFrameHost is tied
-  // to a process.
-  //
-  // In the other direction, a RenderFrameHost can also transfer to a different
-  // FrameTreeNode! Prior to the advent of prerendered pages
-  // (content/browser/preloading/prerender/README.md), that was not true, and it
-  // could be assumed that the return value of
-  // RenderFrameHost::GetFrameTreeNodeId() was constant over the lifetime of the
-  // RenderFrameHost. But with prerender activations, the main frame of the
-  // prerendered page transfers to a new FrameTreeNode, so newer code should no
-  // longer make that assumption. This transfer only happens for main frames
-  // (currently only during a prerender activation navigation) and never happens
-  // for subframes.
+  // Returns the FrameTreeNode ID associated with this RenderFrameHost.
   //
   // If a stable identifier is needed, GetGlobalId() always refers to this
   // RenderFrameHost, while this RenderFrameHost might host multiple documents
   // over its lifetime, and this RenderFrameHost might have a shorter lifetime
   // than the frame hosting content, as explained above. For associating data
   // with a single document, DocumentUserData can be used.
-  virtual int GetFrameTreeNodeId() const = 0;
+  virtual FrameTreeNodeId GetFrameTreeNodeId() const = 0;
 
   // Used for devtools instrumentation and trace-ability. The token is
   // propagated to Blink's LocalFrame and both Blink and content/
@@ -442,8 +457,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // committing a navigation. After the first navigation commits this
   // will return the token for the last committed document.
   //
-  // TODO(crbug/1098283): Remove the nullopt scenario by creating the token in
-  // CreateChildFrame() or similar.
+  // TODO(crbug.com/40136951): Remove the nullopt scenario by creating the token
+  // in CreateChildFrame() or similar.
   virtual std::optional<base::UnguessableToken> GetEmbeddingToken() = 0;
 
   // Returns the assigned name of the frame, the name of the iframe tag
@@ -478,10 +493,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // RenderProcessHost::GetWebExposedIsolationLevel() when making decisions
   // based on the isolation level, such as API availability.
   //
-  // Note that this function doesn't account for API availability for certain
-  // documents and URLs that might be force-enabled by the embedder even if they
-  // lack the necessary privilege; in order for this matter to be taken into
-  // consideration, use content::HasIsolatedContextCapability(RenderFrameHost*).
+  // Note that the embedder can force-enable APIs in processes even if they
+  // lack the necessary privilege. This function doesn't account for that; use
+  // content::HasIsolatedContextCapability(RenderFrameHost*) to handle this
+  // case.
   //
   // TODO(https://936696): Once RenderDocument ships this should be exposed as
   // an invariant of the document host.
@@ -554,26 +569,29 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
                                  JavaScriptResultCallback callback) = 0;
 
   // This runs the JavaScript in an isolated world of the top of this frame's
-  // context.
+  // context. It is invalid to specify a `world_id` of
+  // `ISOLATED_WORLD_ID_GLOBAL`.
   virtual void ExecuteJavaScriptInIsolatedWorld(
       const std::u16string& javascript,
       JavaScriptResultCallback callback,
       int32_t world_id) = 0;
 
-  // This runs the JavaScript, but without restrictions. THIS IS ONLY FOR TESTS.
-  virtual void ExecuteJavaScriptForTests(
-      const std::u16string& javascript,
-      JavaScriptResultCallback callback,
-      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
+  // This runs the JavaScript, but without restrictions. Specify a `world_id` of
+  // `ISOLATED_WORLD_ID_GLOBAL` to run the code in the global world. THIS IS
+  // ONLY FOR TESTS.
+  virtual void ExecuteJavaScriptForTests(const std::u16string& javascript,
+                                         JavaScriptResultCallback callback,
+                                         int32_t world_id) = 0;
 
-  // This runs the JavaScript, but without restrictions. THIS IS ONLY FOR TESTS.
-  // Unlike the method above, this one triggers a fake user activation
-  // notification to test functionalities that are gated by user
-  // activation.
+  // This runs the JavaScript, but without restrictions. Unlike the method
+  // above, this one triggers a fake user activation notification to test
+  // functionalities that are gated by user activation. Specify a `world_id` of
+  // `ISOLATED_WORLD_ID_GLOBAL` to run the code in the global world. THIS IS
+  // ONLY FOR TESTS.
   virtual void ExecuteJavaScriptWithUserGestureForTests(
       const std::u16string& javascript,
       JavaScriptResultCallback callback,
-      int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
+      int32_t world_id) = 0;
 
   // Tells the renderer to perform a given action on the plugin located at a
   // given location in its local view coordinate space.
@@ -704,7 +722,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // general, e.g. when using WebContents::FromRenderFrameHost) should first
   // check whether the RenderFrameHost is in the appropriate lifecycle state.
   //
-  // TODO(https://crbug.com/1183639): Currently, //content embedders that
+  // TODO(crbug.com/40171294): Currently, //content embedders that
   // observe WebContentsObserver::RenderFrameCreated() may also learn about
   // speculative RenderFrameHosts, which is the state before a RenderFrameHost
   // becomes kPendingCommit and is picked as the final RenderFrameHost for a
@@ -721,7 +739,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns true if and only if the `lifecycle_state` matches
   // `GetLifecycleState`. This is helpful for determining if a RenderFrameHost
   // is in a specific state since GetLifecycleState can crash on speculative
-  // frames. TODO(crbug.com/1183639): Remove this method once
+  // frames. TODO(crbug.com/40171294): Remove this method once
   // GetLifecycleState() can be used for speculative.
   virtual bool IsInLifecycleState(LifecycleState lifecycle_state) = 0;
 
@@ -738,9 +756,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // during a small window in RenderFrameHostManager::CommitPending which
   // happens before updating the next LifecycleState of old RenderFrameHost. Due
   // to this, IsActive() is preferred instead of using LifecycleState::kActive.
-  // TODO(crbug.com/1177198): Make IsActive and GetLifecycleState() == kActive
+  // TODO(crbug.com/40168690): Make IsActive and GetLifecycleState() == kActive
   // always match.
-  virtual bool IsActive() = 0;
+  virtual bool IsActive() const = 0;
 
   // Checks that the RenderFrameHost is inactive (with some exceptions) and
   // ensures that it will be never activated if it is inactive when calling this
@@ -808,13 +826,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // otherwise.
   virtual WebUI* GetWebUI() = 0;
 
-  // Tell the render frame to enable a set of javascript bindings. The argument
-  // should be a combination of values from BindingsPolicy.
-  virtual void AllowBindings(int binding_flags) = 0;
+  // Tell the render frame to enable a set of javascript bindings.
+  virtual void AllowBindings(BindingsPolicySet bindings) = 0;
 
-  // Returns a bitwise OR of bindings types that have been enabled for this
-  // RenderFrame. See BindingsPolicy for details.
-  virtual int GetEnabledBindings() = 0;
+  // Returns the set of bindings types that have been enabled for this
+  // RenderFrame.
+  virtual BindingsPolicySet GetEnabledBindings() = 0;
 
   // Sets a property with the given name and value on the WebUI object
   // associated with this RenderFrameHost, if one exists.
@@ -864,17 +881,23 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
       const gfx::Point& location,
       const blink::mojom::MediaPlayerAction& action) = 0;
 
-  // Requests the current video frame of the media player at `location`, scaled
-  // if needed to be bounded by `max_size` with aspect ratio preserved, unless
-  // the original area is already less than `max_area`, where `max_size` and
-  // `max_area` are both in device-independent pixels. This is to avoid scaling
-  // images with very large/small aspect ratio to avoid losing information. If
-  // any of the dimensions is non-positive, no scaling will be performed.
-  virtual void RequestVideoFrameAt(
+  // Requests the current video frame and bounds of the media player at
+  // `location`. The returned image is scaled if needed to be bounded by
+  // `max_size` with aspect ratio preserved, unless the original area is already
+  // less than `max_area`, where `max_size` and `max_area` are both in
+  // device-independent pixels. This is to avoid scaling images with very
+  // large/small aspect ratio to avoid losing information. If any of the
+  // dimensions is non-positive, no scaling will be performed. The bounds
+  // originate from the DOM layer, are in DIP and are relative to the local
+  // root's widget (see Element::BoundsInWidget()). No guarantee is made about
+  // their correlation with the bounds of the video frame as displayed in the
+  // presentation layer. The returned bounds are also not guaranteed to
+  // correspond to the result of returned video frame.
+  virtual void RequestVideoFrameAtWithBoundsHint(
       const gfx::Point& location,
       const gfx::Size& max_size,
       int max_area,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback) = 0;
+      base::OnceCallback<void(const SkBitmap&, const gfx::Rect&)> callback) = 0;
 
   // Creates a Network Service-backed factory from appropriate |NetworkContext|.
   //
@@ -916,7 +939,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // may happen can set `do_nothing_if_no_network_service_connection` to true
   // (this should be needed relatively rarely).
   virtual void FlushNetworkAndNavigationInterfacesForTesting(
-      bool do_nothing_if_no_network_service_connection = false) = 0;
+      bool do_nothing_if_no_network_service_connection) = 0;
 
   using PrepareForInnerWebContentsAttachCallback =
       base::OnceCallback<void(RenderFrameHost*)>;
@@ -997,7 +1020,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Report an inspector issue to devtools. Note that the issue is stored on the
   // browser-side, and may contain information that we don't want to share
   // with the renderer.
-  // TODO(crbug.com/1091720): This reporting should be done directly in the
+  // TODO(crbug.com/40134294): This reporting should be done directly in the
   // chrome layer in the future.
   virtual void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr) = 0;
 
@@ -1043,7 +1066,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // site can’t be reached".
   // This can't be called for pending commit RFH because the value is set
   // during call to RenderFrameHostImpl::DidNavigate which happens after commit.
-  virtual bool IsErrorDocument() = 0;
+  virtual bool IsErrorDocument() const = 0;
 
   // Return checked and weak references, respectively, to the current document
   // in this RenderFrameHost, which will be no longer valid once the
@@ -1071,6 +1094,16 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // transient user activation
   virtual bool IsLastCrossDocumentNavigationStartedByUser() const = 0;
 
+  // Returns NavigationHandles to pending-commit cross-document navigations.
+  // These navigations occur when the final RenderFrameHost for the navigation
+  // has been picked, the NavigationHandle ownership has been transferred
+  // to it, the CommitNavigation IPC has been sent to the renderer, and the
+  // navigation is waiting for the DidCommitNavigation acknowledgement. For
+  // more information on how these cross-document navigations are determined,
+  // refer to LifecycleState::kPendingCommit.
+  virtual std::vector<base::SafeRef<NavigationHandle>>
+  GetPendingCommitCrossDocumentNavigations() const = 0;
+
   // Checks Blink runtime-enabled features (BREF) to create and return
   // a CookieSettingOverrides pertaining to the last committed document in the
   // frame. Can only be called on a frame with a committed navigation.
@@ -1090,6 +1123,20 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // click on the `url`, and it is a value between 0 and 1.
   virtual void OnPreloadingHeuristicsModelDone(const GURL& url,
                                                float score) = 0;
+
+  // Checks if `seqno` is known to have originated from this RFH. This will only
+  // return true if `seqno` represents the last clipboard write made by all
+  // RFHs.
+  virtual bool IsClipboardOwner(
+      ui::ClipboardSequenceNumberToken seqno) const = 0;
+
+  // Marks `seqno` as originating from this RFH.
+  virtual void MarkClipboardOwner(ui::ClipboardSequenceNumberToken seqno) = 0;
+
+  // Returns true if RenderFrameHostImpl has non-null PolicyContainerHost.
+  // TODO(crbug.com/346386726): Delete this method once we have solidified the
+  //   lifetime expectations of the PolicyContainerHost object.
+  virtual bool HasPolicyContainerHost() const = 0;
 
  private:
   // This interface should only be implemented inside content.

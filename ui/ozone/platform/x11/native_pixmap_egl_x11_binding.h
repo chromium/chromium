@@ -24,6 +24,8 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
   explicit NativePixmapEGLX11Binding(gfx::BufferFormat format);
   ~NativePixmapEGLX11Binding() override;
 
+  static bool IsBufferFormatSupported(gfx::BufferFormat format);
+
   static std::unique_ptr<NativePixmapGLBinding> Create(
       scoped_refptr<gfx::NativePixmap> pixmap,
       gfx::BufferFormat plane_format,
@@ -32,10 +34,6 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
       GLuint texture_id);
 
   static bool CanImportNativeGLXPixmap();
-
-  // NativePixmapGLBinding:
-  GLuint GetInternalFormat() override;
-  GLenum GetDataType() override;
 
  private:
   bool Initialize(x11::Pixmap pixmap);
@@ -46,7 +44,6 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
 
   EGLSurface surface_ = nullptr;
   EGLDisplay display_;
-  gfx::BufferFormat format_;
 
   x11::Pixmap pixmap_ = x11::Pixmap::None;
 };

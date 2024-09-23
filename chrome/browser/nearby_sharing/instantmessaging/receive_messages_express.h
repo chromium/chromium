@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NEARBY_SHARING_INSTANTMESSAGING_RECEIVE_MESSAGES_EXPRESS_H_
 
 #include <cstdint>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -79,7 +80,7 @@ class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
   void OnFastPathReadyTimeout();
 
   // network::SimpleURLLoaderStreamConsumer:
-  void OnDataReceived(base::StringPiece string_piece,
+  void OnDataReceived(std::string_view string_piece,
                       base::OnceClosure resume) override;
   void OnComplete(bool success) override;
   void OnRetry(base::OnceClosure start_retry) override;

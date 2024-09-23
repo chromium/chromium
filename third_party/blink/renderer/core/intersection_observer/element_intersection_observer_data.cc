@@ -59,18 +59,11 @@ void ElementIntersectionObserverData::StopTrackingWithController(
     controller.RemoveTrackedObserver(*observer);
 }
 
-bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
-    unsigned flags) {
-  bool needs_occlusion_tracking = false;
-  std::optional<base::TimeTicks> monotonic_time;
-  std::optional<IntersectionGeometry::RootGeometry> root_geometry;
-  for (auto& entry : observations_) {
-    needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
-    entry.value->ComputeIntersection(flags,
-                                     IntersectionGeometry::kInfiniteScrollDelta,
-                                     monotonic_time, root_geometry);
+void ElementIntersectionObserverData::ComputeIntersectionsForTarget() {
+  ComputeIntersectionsContext context;
+  for (auto& [observer, observation] : observations_) {
+    observation->ComputeIntersectionImmediately(context);
   }
-  return needs_occlusion_tracking;
 }
 
 bool ElementIntersectionObserverData::NeedsOcclusionTracking() const {

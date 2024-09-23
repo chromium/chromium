@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/url_pattern/url_pattern_util.h"
 
 #include <string_view>
@@ -133,7 +138,7 @@ absl::StatusOr<std::string> HostnameEncodeCallback(std::string_view input) {
   // use of these characters in URLPattern.  Therefore we apply an additional
   // restrictive check for these forbidden code points.
   //
-  // TODO(crbug.com/1065667): Remove this check after the URL parser is fixed.
+  // TODO(crbug.com/40124263): Remove this check after the URL parser is fixed.
   if (ContainsForbiddenHostnameCodePoint(input)) {
     return absl::InvalidArgumentError(
         base::StrCat({"Invalid hostname pattern '", input, "'."}));
@@ -245,7 +250,7 @@ absl::StatusOr<std::string> HashEncodeCallback(std::string_view input) {
 // treated as an IPv6 hostname.  This implements a simple and fast heuristic
 // looking for a leading `[`.  It is intended to catch the most common cases
 // with minimum overhead.
-bool TreatAsIPv6Hostname(base::StringPiece pattern_utf8) {
+bool TreatAsIPv6Hostname(std::string_view pattern_utf8) {
   // The `[` string cannot be a valid IPv6 hostname.  We need at least two
   // characters to represent `[*`.
   if (pattern_utf8.size() < 2) {

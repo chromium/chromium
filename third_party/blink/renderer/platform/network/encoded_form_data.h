@@ -54,6 +54,7 @@ class PLATFORM_EXPORT FormDataElement final {
  public:
   FormDataElement();
   explicit FormDataElement(const Vector<char>&);
+  explicit FormDataElement(Vector<char>&&);
   FormDataElement(
       const String& filename,
       int64_t file_start,
@@ -99,14 +100,29 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
     kMultipartFormData  // for multipart/form-data
   };
 
+  enum class FormDataType {
+    // Has only data elements.
+    kDataOnly,
+    // Can have data, file, and blob elements (no data pipes).
+    kDataAndEncodedFileOrBlob,
+    // Can have data and data pipe elements (no files and blobs).
+    kDataAndDataPipe,
+    // None of above.
+    kInvalid
+  };
+
+  FormDataType GetType() const;
+
   static scoped_refptr<EncodedFormData> Create();
   static scoped_refptr<EncodedFormData> Create(const void*, wtf_size_t);
   static scoped_refptr<EncodedFormData> Create(base::span<const char>);
+  static scoped_refptr<EncodedFormData> Create(SegmentedBuffer&&);
   scoped_refptr<EncodedFormData> Copy() const;
   scoped_refptr<EncodedFormData> DeepCopy() const;
   ~EncodedFormData();
 
   void AppendData(const void* data, wtf_size_t);
+  void AppendData(SegmentedBuffer&&);
   void AppendFile(const String& file_path,
                   const std::optional<base::Time>& expected_modification_time);
   void AppendFileRange(

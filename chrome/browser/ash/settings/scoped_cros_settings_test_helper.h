@@ -22,8 +22,8 @@ class Value;
 
 namespace ash {
 
+class CrosSettingsHolder;
 class FakeOwnerSettingsService;
-class ScopedTestCrosSettings;
 class ScopedTestDeviceSettingsService;
 
 // Helps in a variety of ways with setting up CrosSettings for testing.
@@ -93,7 +93,7 @@ class ScopedCrosSettingsTestHelper {
   std::unique_ptr<ScopedStubInstallAttributes> test_install_attributes_;
   std::unique_ptr<ScopedTestDeviceSettingsService>
       test_device_settings_service_;
-  std::unique_ptr<ScopedTestCrosSettings> test_cros_settings_;
+  std::unique_ptr<CrosSettingsHolder> cros_settings_holder_;
   std::unique_ptr<CrosSettingsProvider> real_settings_provider_;
   std::unique_ptr<CrosSettingsProvider> stub_settings_provider_;
   raw_ptr<StubCrosSettingsProvider> stub_settings_provider_ptr_;

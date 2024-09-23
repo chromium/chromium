@@ -75,15 +75,6 @@ struct StartParams {
   // flakiness in tests.
   bool disable_download_provider = false;
 
-  // Flag to disable ureadahead completely, including host and guest parts.
-  // TODO(b/264585671): Refactor this and |host_ureadahead_generation| to
-  // mode enum.
-  bool disable_ureadahead = false;
-
-  // Flag to indicate host ureadahead generation.
-  // TODO(b/264585671): Refactor this and |disable_ureadahead| to mode enum.
-  bool host_ureadahead_generation = false;
-
   // Flag to indicate whether to use dev caches.
   bool use_dev_caches = false;
 
@@ -95,9 +86,6 @@ struct StartParams {
 
   // Flag to enable keyboard shortcut helper integration.
   bool enable_keyboard_shortcut_helper_integration = false;
-
-  // Flag to enable notification refresh.
-  bool enable_notifications_refresh = false;
 
   // Flag to enable TTS caching.
   bool enable_tts_caching = false;
@@ -116,6 +104,10 @@ struct StartParams {
 
   // Flag that indicates whether ARC is already signed in.
   bool arc_signed_in = false;
+
+  // Flag that would enable ARC Attestation, and would make ARC
+  // RemotelyProvisionedComponentDevice visible to Keystore.
+  bool enable_arc_attestation = false;
 };
 
 }  // namespace arc

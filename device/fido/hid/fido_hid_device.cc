@@ -337,7 +337,7 @@ void FidoHidDevice::PacketWritten(FidoHidMessage message, bool success) {
       ReadMessage();
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 }
 
@@ -398,7 +398,7 @@ void FidoHidDevice::OnRead(bool success,
     case BusyState::kReading:
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_IN_MIGRATION();
   }
 
   MessageReceived(std::move(*message));

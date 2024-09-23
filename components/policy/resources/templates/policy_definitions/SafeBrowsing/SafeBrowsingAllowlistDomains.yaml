@@ -4,7 +4,7 @@ desc: |-
 
   Leaving the policy unset means default Safe Browsing protection applies to all resources.
 
-  This policy must be set as a list of fully qualified domain names. It does not support regular expressions, and will not allowlist subdomains of domains listed in the policy.
+  This policy does not support regular expressions; however, subdomains of a given domain are allowlisted. Fully qualified domain names (FQDNs) are not required.
 
   On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
 

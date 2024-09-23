@@ -1,0 +1,22 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "HistorySearchStringsProto";
+
+// Holds the strings for the History Embeddings Search feature.
+// Next ID: 3
+message HistorySearchStrings {
+  // Hashes of one or two word phrases to be filtered.
+  repeated string filter_words = 1;
+
+  // Hashes of stop words to be removed from query terms before text search.
+  repeated string stop_words = 2;
+}

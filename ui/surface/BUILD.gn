@@ -11,14 +11,12 @@ component("surface") {
     "transport_dib.h",
   ]
 
-  configs += [ "//third_party/khronos:khronos_headers" ]
-
   defines = [ "SURFACE_IMPLEMENTATION" ]
 
   deps = [
     "//base",
-    "//base/third_party/dynamic_annotations",
     "//skia",
+    "//third_party/angle:includes",
     "//ui/base",
     "//ui/gfx/geometry",
     "//ui/gl",

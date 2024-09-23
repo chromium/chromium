@@ -1,0 +1,60 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/policy/handlers",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  #
+  # Files residing in certain directories (e.g., //chrome/browser) are listed
+  # individually. Other dependencies within //chrome are listed on a per-
+  # directory basis. See //tools/chromeos/gen_deps.sh for details.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/ash/accessibility",
+  "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/app_mode",
+  "+chrome/browser/ash/arc/session",
+  "+chrome/browser/ash/arc/test",
+  "+chrome/browser/ash/crosapi",
+  "+chrome/browser/ash/crostini",
+  "+chrome/browser/ash/guest_os/vm_starting_observer.h",
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/net",
+  "+chrome/browser/ash/notifications",
+  "+chrome/browser/ash/plugin_vm",
+  "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ash/policy/skyvault",
+  "+chrome/browser/ash/policy/login",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ash/settings",
+  "+chrome/browser/ash/system",
+  "+chrome/browser/ash/tpm",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/browser_process_platform_part.h",
+  "+chrome/browser/extensions/policy_handlers.h",
+  "+chrome/browser/extensions/updater",
+  "+chrome/browser/lifetime",
+  "+chrome/browser/media/webrtc",
+  "+chrome/browser/notifications",
+  "+chrome/browser/policy",
+  "+chrome/browser/prefs",
+  "+chrome/browser/profiles",
+  "+chrome/browser/site_isolation",
+  "+chrome/browser/tracing",
+  "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/browser_finder.h",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_list.h",
+  "+chrome/browser/ui/tabs",
+  "+chrome/browser/ui/webui/ash/login",
+  "+chrome/browser/upgrade_detector",
+  "+chrome/browser/web_applications/isolated_web_apps",
+  "+chrome/common/chrome_features.h",
+  "+chrome/common/pref_names.h",
+  "+chrome/test/base",
+]

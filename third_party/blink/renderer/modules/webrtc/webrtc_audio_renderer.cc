@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_renderer.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -29,6 +29,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_audio_renderer.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -101,7 +102,7 @@ const char* StateToString(WebRtcAudioRenderer::State state) {
 // and 'started' states to avoid problems related to incorrect usage which
 // might violate the implementation assumptions inside WebRtcAudioRenderer
 // (see the play reference count).
-class SharedAudioRenderer : public WebMediaStreamAudioRenderer {
+class SharedAudioRenderer : public MediaStreamAudioRenderer {
  public:
   // Callback definition for a callback that is called when when Play(), Pause()
   // or SetVolume are called (whenever the internal |playing_state_| changes).
@@ -114,11 +115,10 @@ class SharedAudioRenderer : public WebMediaStreamAudioRenderer {
   using OnPlayStateRemoved =
       base::OnceCallback<void(WebRtcAudioRenderer::PlayingState*)>;
 
-  SharedAudioRenderer(
-      const scoped_refptr<WebMediaStreamAudioRenderer>& delegate,
-      MediaStreamDescriptor* media_stream_descriptor,
-      const OnPlayStateChanged& on_play_state_changed,
-      OnPlayStateRemoved on_play_state_removed)
+  SharedAudioRenderer(const scoped_refptr<MediaStreamAudioRenderer>& delegate,
+                      MediaStreamDescriptor* media_stream_descriptor,
+                      const OnPlayStateChanged& on_play_state_changed,
+                      OnPlayStateRemoved on_play_state_removed)
       : delegate_(delegate),
         media_stream_descriptor_(media_stream_descriptor),
         started_(false),
@@ -189,7 +189,7 @@ class SharedAudioRenderer : public WebMediaStreamAudioRenderer {
 
  private:
   THREAD_CHECKER(thread_checker_);
-  const scoped_refptr<WebMediaStreamAudioRenderer> delegate_;
+  const scoped_refptr<MediaStreamAudioRenderer> delegate_;
   Persistent<MediaStreamDescriptor> media_stream_descriptor_;
   bool started_;
   WebRtcAudioRenderer::PlayingState playing_state_;
@@ -364,7 +364,7 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
   return true;
 }
 
-scoped_refptr<WebMediaStreamAudioRenderer>
+scoped_refptr<MediaStreamAudioRenderer>
 WebRtcAudioRenderer::CreateSharedAudioRendererProxy(
     MediaStreamDescriptor* media_stream_descriptor) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -373,9 +373,9 @@ WebRtcAudioRenderer::CreateSharedAudioRendererProxy(
                          WrapRefCounted(this));
   SharedAudioRenderer::OnPlayStateRemoved on_play_state_removed = WTF::BindOnce(
       &WebRtcAudioRenderer::OnPlayStateRemoved, WrapRefCounted(this));
-  return new SharedAudioRenderer(this, media_stream_descriptor,
-                                 std::move(on_play_state_changed),
-                                 std::move(on_play_state_removed));
+  return base::MakeRefCounted<SharedAudioRenderer>(
+      this, media_stream_descriptor, std::move(on_play_state_changed),
+      std::move(on_play_state_removed));
 }
 
 bool WebRtcAudioRenderer::IsStarted() const {
@@ -590,6 +590,9 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
                                 base::TimeTicks delay_timestamp,
                                 const media::AudioGlitchInfo& glitch_info,
                                 media::AudioBus* audio_bus) {
+  TRACE_EVENT("audio", "WebRtcAudioRenderer::Render", "playout_delay (ms)",
+              delay.InMillisecondsF(), "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF());
   DCHECK(sink_->CurrentThreadIsRenderingThread());
   DCHECK_LE(sink_params_.channels(), 8);
   base::AutoLock auto_lock(lock_);
@@ -635,6 +638,8 @@ void WebRtcAudioRenderer::OnRenderErrorCrossThread() {
 // Called by AudioPullFifo when more data is necessary.
 void WebRtcAudioRenderer::SourceCallback(int fifo_frame_delay,
                                          media::AudioBus* audio_bus) {
+  TRACE_EVENT("audio", "WebRtcAudioRenderer::SourceCallback", "delay (frames)",
+              fifo_frame_delay);
   DCHECK(sink_->CurrentThreadIsRenderingThread());
   base::TimeTicks start_time = base::TimeTicks::Now();
   DVLOG(2) << "WRAR::SourceCallback(" << fifo_frame_delay << ", "
@@ -788,7 +793,7 @@ void WebRtcAudioRenderer::OnPlayStateRemoved(PlayingState* state) {
        it != source_playing_states_.end();) {
     PlayingStates& states = it->second;
     // We cannot use RemovePlayingState as it might invalidate |it|.
-    base::Erase(states, state);
+    std::erase(states, state);
     if (states.empty())
       it = source_playing_states_.erase(it);
     else

@@ -93,7 +93,7 @@ void PepperBrowserConnection::OnMsgCreateResourceHostsFromHostReply(
     std::move(it->second).Run(pending_resource_host_ids);
     pending_create_map_.erase(it);
   } else {
-    NOTREACHED();
+    NOTREACHED_IN_MIGRATION();
   }
 }
 

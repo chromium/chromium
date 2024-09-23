@@ -59,8 +59,6 @@ std::vector<bool> GetOnlyFilledWhenFocused(
   return result;
 }
 
-}  // namespace
-
 TEST(AutofillRationalizationUtilTest, PhoneNumber_FirstNumberIsWholeNumber) {
   auto [fields, expected_only_fill_when_focused] =
       CreateTest({{NAME_FULL, false},
@@ -127,8 +125,8 @@ TEST(AutofillRationalizationUtilTest, PhoneNumber_SkipHiddenPhoneNumberFields) {
                   {PHONE_HOME_WHOLE_NUMBER, false}});
   // With the `kAutofillUseParameterizedSectioning` `!FormFieldData::is_visible`
   // fields are skipped.
-  fields[2]->is_visible = false;
-  fields[2]->is_focusable = false;
+  fields[2]->set_is_visible(false);
+  fields[2]->set_is_focusable(false);
   rationalization_util::RationalizePhoneNumberFields(ToPointers(fields));
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
@@ -183,4 +181,5 @@ TEST(AutofillRationalizationUtilTest, PhoneNumber_IncorrectSuffix) {
               ::testing::Eq(expected_only_fill_when_focused));
 }
 
+}  // namespace
 }  // namespace autofill

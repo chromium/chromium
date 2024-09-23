@@ -4,6 +4,8 @@
 
 #include "chrome/renderer/extensions/api/extension_hooks_delegate.h"
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -71,7 +73,9 @@ class ExtensionHooksDelegateTest
   bool UseStrictIPCMessageSender() override { return true; }
 
   virtual scoped_refptr<const Extension> BuildExtension() {
-    return ExtensionBuilder("foo").Build();
+    // TODO(https://crbug.com/40804030): Update this to use MV3.
+    // Some extension module methods only exist in MV2.
+    return ExtensionBuilder("foo").SetManifestVersion(2).Build();
   }
 
   NativeRendererMessagingService* messaging_service() {
@@ -83,7 +87,7 @@ class ExtensionHooksDelegateTest
  private:
   std::unique_ptr<NativeRendererMessagingService> messaging_service_;
 
-  raw_ptr<ScriptContext, ExperimentalRenderer> script_context_ = nullptr;
+  raw_ptr<ScriptContext> script_context_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 
@@ -121,6 +125,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestDisabled) {
   // extension with an event page).
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo")
+          .SetManifestVersion(2)
           .SetBackgroundContext(ExtensionBuilder::BackgroundContext::EVENT_PAGE)
           .SetLocation(mojom::ManifestLocation::kUnpacked)
           .Build();
@@ -296,12 +301,13 @@ TEST_F(ExtensionHooksDelegateMV3Test, AliasesArentAvailableInMV3) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  auto script_to_value = [context](base::StringPiece source) {
+  auto script_to_value = [context](std::string_view source) {
     return V8ToString(V8ValueFromScriptSource(context, source), context);
   };
 
   EXPECT_EQ("undefined", script_to_value("chrome.extension.connect"));
   EXPECT_EQ("undefined", script_to_value("chrome.extension.connectNative"));
+  EXPECT_EQ("undefined", script_to_value("chrome.extension.getURL"));
   EXPECT_EQ("undefined", script_to_value("chrome.extension.onConnect"));
   EXPECT_EQ("undefined", script_to_value("chrome.extension.onConnectExternal"));
   EXPECT_EQ("undefined", script_to_value("chrome.extension.onMessage"));

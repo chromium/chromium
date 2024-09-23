@@ -1,0 +1,20 @@
+include_rules = [
+  "+chromeos/grit/chromeos_boca_app_bundle_resources.h",
+  "+chromeos/grit/chromeos_boca_app_bundle_resources_map.h",
+  "+chromeos/ash/components/boca",
+  "+google_apis",
+  "+google_apis/classroom",
+  "+google_apis/common",
+  "+components/signin/public/identity_manager",
+  "+components/signin/public/base"
+]
+
+specific_include_rules = {
+  "tab_info_collector_browsertest\.cc": [
+    "+chrome/browser/profiles/profile_manager.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/test/base/in_process_browser_test.h",
+    "+chrome/test/base/ui_test_utils.h"
+  ]
+}

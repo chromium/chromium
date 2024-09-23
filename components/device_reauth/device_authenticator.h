@@ -43,6 +43,15 @@ class DeviceAuthParams {
   std::string auth_result_histogram_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
+enum class BiometricStatus {
+  kRequired,
+  kAvailable,
+  kAvailableLSKF,
+  kUnavailable,
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // This interface encapsulates operations related to biometric authentication.
 // It's intended to be used prior to sharing the user's credentials with a
 // website, either via form filling or the Credential Management API.
@@ -69,6 +78,10 @@ class DeviceAuthenticator {
   // On Android |message| is not relevant, can be empty.
   virtual void AuthenticateWithMessage(const std::u16string& message,
                                        AuthenticateCallback callback) = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  virtual BiometricStatus GetBiometricAvailabilityStatus() = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Cancels an in-progress authentication if the filling surface requesting
   // the cancelation corresponds to the one for which the ongoing auth was

@@ -1,5 +1,8 @@
 'use strict';
 
+// This set of utils also requires the inclusion of
+// third_party/blink/web_tests/shadow-dom/resources/shadow-dom.js.
+
 function innermostActiveElement(element) {
   element = element || document.activeElement;
   if (isIFrameElement(element)) {

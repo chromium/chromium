@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 33
+// Next MinVersion: 35
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -243,29 +243,6 @@ enum ArcCorePriAbiMigEvent {
   kWebviewDowngradeFailure = 7,
 };
 
-// Enumerates the types of a clipboard / drag-and-drop event, including its
-// direction (ARC to Chrome or Chrome to ARC) and its content type (text or
-// an image).
-[Extensible]
-enum ArcClipboardDragDropEvent {
-  kTextClipboardFromChrome = 0,
-  kImageClipboardFromChrome = 1,
-  kTextClipboardFromArc = 2,
-  kImageClipboardFromArc = 3,
-  kTextDragDropFromChrome = 4,
-  kImageDragDropFromChrome = 5,
-  kTextDragDropFromArc = 6,
-  kImageDragDropFromArc = 7,
-};
-
-[Extensible]
-enum ArcImageCopyPasteCompatAction {
-  kPasteFromFiles = 0,
-  kDragFromFiles = 1,
-  kPasteFromBrowser = 2,
-  kDragFromBrowser = 3,
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 [Extensible]
@@ -386,10 +363,25 @@ enum ArcKeyMintError {
   kUnimplemented = 6,
 };
 
+// Enumerates the types of Anr and Crash dialogs, based on the resource id the
+// dialog uses.
+[Extensible]
+enum AppErrorDialogType {
+  [Default] kUnsupported = 0,
+  kAerrApplication = 1,
+  kAerrProcess = 2,
+  kAerrApplicationRepeated = 3,
+  kAerrProcessRepeated = 4,
+  kAnrActivityApplication = 5,
+  kAnrActivityProcess = 6,
+  kAnrApplicationProcess = 7,
+  kAnrProcess = 8,
+};
+
 // This interface is implemented in ash by ArcMetricsService. It is called by
 // ARC side.
-// Deprecated method IDs: 25, 26, 27, 28, 29
-// Next method ID: 37
+// Deprecated method IDs: 8, 14, 15, 18, 25, 26, 27, 28, 29
+// Next method ID: 39
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -416,10 +408,6 @@ interface MetricsHost {
   // Reports boot time during ABI Migration by ARC Metrics Service.
   [MinVersion=7] ReportArcCorePriAbiMigBootTime@7(mojo_base.mojom.TimeDelta duration);
 
-  // Reports a clipboard / drag-and-drop event.
-  [MinVersion=8] ReportClipboardDragDropEvent@8(
-      ArcClipboardDragDropEvent event_type);
-
   // Reports ANR event.
   [MinVersion=9] ReportAnr@10(Anr anr);
 
@@ -437,20 +425,6 @@ interface MetricsHost {
   [MinVersion=11] ReportLowLatencyStylusLibPredictionTarget@13(
     LowLatencyStylusLibPredictionTarget prediction_target);
 
-  // Reports the metrics to perform the entire fixup for P to R upgrade: the
-  // duration, the number of fixed directories, and the number of apps that
-  // contains at least one file or directory that is failed to be fixed.
-  [MinVersion=12] ReportEntireFixupMetrics@14(
-      mojo_base.mojom.TimeDelta duration,
-      uint32 number_of_directories,
-      uint32 number_of_failures);
-
-  // Reports the metrics to perform fixup per app for P to R upgrade: the
-  // duration and the number of fixed directories.
-  [MinVersion=12] ReportPerAppFixupMetrics@15(
-      mojo_base.mojom.TimeDelta duration,
-      uint32 number_of_directories);
-
   // Reports the result of DNS query inside ARC.
   [MinVersion=13] ReportDnsQueryResult@16(
       ArcDnsQuery query,
@@ -459,16 +433,6 @@ interface MetricsHost {
   // Reports main account hash migration status.
   [MinVersion=14] ReportMainAccountHashMigrationMetrics@17(
       MainAccountHashMigrationStatus status);
-
-  // DEPRECATED: this method will be removed once the other end is cleaned up.
-  // Reports the operation type (copy & paste or drag & drop) and the source of
-  // the image (from browser or Files app) when image copy-paste app compat is
-  // triggered.
-  // Image copy-paste app compat is a feature that allows insertion of images to
-  // Android apps through commitContent IME API or Android intent, when the app
-  // don't support images in the clipboard.
-  [MinVersion=15] ReportImageCopyPasteCompatActionDeprecated@18(
-      ArcImageCopyPasteCompatAction action_type);
 
   // Reports occurrence of one event in the ARC networking stack.
   [MinVersion=16] ReportArcNetworkEvent@19(ArcNetworkEvent event);
@@ -523,6 +487,12 @@ interface MetricsHost {
   // Reports window drag resize latency.
   [MinVersion=32] ReportDragResizeLatency@36(
       array<mojo_base.mojom.TimeDelta> durations);
+
+  // Reports the dialog type when Android throws an app error dialog.
+  [MinVersion=33] ReportAppErrorDialogType@37(AppErrorDialogType type);
+
+  // Reports the result of apk cache lookup for an app install.
+  [MinVersion=34] ReportApkCacheHit@38(bool hit);
 };
 
 // Deprecated method IDs: 0

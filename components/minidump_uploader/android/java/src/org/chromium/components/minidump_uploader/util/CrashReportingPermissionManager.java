@@ -7,12 +7,12 @@ package org.chromium.components.minidump_uploader.util;
 /** Interface for crash reporting permissions. */
 public interface CrashReportingPermissionManager {
     /**
-     * Checks whether this client is in-sample for usage metrics and crash reporting. See
-     * {@link org.chromium.chrome.browser.metrics.UmaUtils#isClientInMetricsSample} for details.
+     * Checks whether this client is in-sample for crash reporting. See {@link
+     * org.chromium.chrome.browser.metrics.UmaUtils#isClientInSampleForCrashes} for details.
      *
-     * @returns boolean Whether client is in-sample.
+     * @returns boolean Whether client is in-sample for crash reporting.
      */
-    boolean isClientInMetricsSample();
+    boolean isClientInSampleForCrashes();
 
     /**
      * Checks whether uploading of crash dumps is permitted for the available network(s).

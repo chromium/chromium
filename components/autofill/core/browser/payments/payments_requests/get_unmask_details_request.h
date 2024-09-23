@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
@@ -21,7 +21,7 @@ namespace autofill::payments {
 class GetUnmaskDetailsRequest : public PaymentsRequest {
  public:
   GetUnmaskDetailsRequest(
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               PaymentsNetworkInterface::UnmaskDetails&)>
           callback,
       const std::string& app_locale,
@@ -36,10 +36,11 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
   std::string GetRequestContent() override;
   void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
-  void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
+  void RespondToDelegate(
+      PaymentsAutofillClient::PaymentsRpcResult result) override;
 
  private:
-  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           PaymentsNetworkInterface::UnmaskDetails&)>
       callback_;
   std::string app_locale_;

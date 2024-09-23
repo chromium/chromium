@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='tab' clickable focusable selected name='First Tab'
+++android.view.View role_description='tab' clickable focusable name='Second Tab'
+++android.view.View role_description='tab' clickable focusable name='Third Tab'
+++android.view.View role_description='tab panel' focusable name='First Tab'
+++++android.widget.TextView name='Content for the first panel, this should be read.'

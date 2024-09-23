@@ -91,8 +91,16 @@ const char kEnrollmentLocation[] = "enrollmentLocation";
 // values.
 const char kEnrollmentAutoAttributes[] = "enrollmentAutoAttributes";
 
-// String value, contains enrollment token used for Flex Auto Enrollment.
-const char kFlexToken[] = "flexToken";
+// String value, contains enrollment token (currently only used for Flex Auto
+// Enrollment).
+const char kEnrollmentToken[] = "enrollmentToken";
+
+// String value, indicates origin of OOBE config (i.e. what agent/purpose
+// created the OOBE config and put it on the device).
+// Currently used values are:
+// - "REMOTE_DEPLOYMENT"
+// - "PACKAGING_TOOL"
+const char kSource[] = "source";
 
 using ValueType = base::Value::Type;
 
@@ -128,7 +136,9 @@ constexpr struct {
      ConfigurationHandlerSide::HANDLER_JS},
     {kArcTosAutoAccept, ValueType::BOOLEAN,
      ConfigurationHandlerSide::HANDLER_BOTH},
-    {kFlexToken, ValueType::STRING, ConfigurationHandlerSide::HANDLER_CPP},
+    {kEnrollmentToken, ValueType::STRING,
+     ConfigurationHandlerSide::HANDLER_CPP},
+    {kSource, ValueType::STRING, ConfigurationHandlerSide::HANDLER_CPP},
     {"desc", ValueType::STRING, ConfigurationHandlerSide::HANDLER_DOC},
     {"testValue", ValueType::STRING, ConfigurationHandlerSide::HANDLER_BOTH},
 };

@@ -22,61 +22,6 @@
 // macros in //base/trace_event/typed_macros.h only. With the Perfetto client
 // library, these macros are either implemented by Perfetto or unneeded.
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-#define TRACING_INTERNAL_ADD_TRACE_EVENT(phase, category, name, ...)     \
-  do {                                                                   \
-    INTERNAL_TRACE_EVENT_GET_CATEGORY_INFO(category);                    \
-    if (INTERNAL_TRACE_EVENT_CATEGORY_GROUP_ENABLED()) {                 \
-      trace_event_internal::AddTypedTraceEvent(                          \
-          phase, INTERNAL_TRACE_EVENT_UID(category_group_enabled), name, \
-          ##__VA_ARGS__);                                                \
-    }                                                                    \
-  } while (false)
-
-#define TRACING_INTERNAL_SCOPED_ADD_TRACE_EVENT(category, name, ...)          \
-  struct {                                                                    \
-    struct ScopedTraceEvent {                                                 \
-      /* The parameter is an implementation detail. It allows the         */  \
-      /* anonymous struct to use aggregate initialization to invoke the   */  \
-      /* lambda to emit the begin event with the proper reference capture */  \
-      /* for any TrackEventArgumentFunction in |__VA_ARGS__|. This is     */  \
-      /* required so that the scoped event is exactly ONE line and can't  */  \
-      /* escape the scope if used in a single line if statement.          */  \
-      ScopedTraceEvent(...) {}                                                \
-      ~ScopedTraceEvent() {                                                   \
-        /* TODO(nuskos): Remove the empty string passed as the |name|  */     \
-        /* field. As described in macros.h we shouldn't need it in our */     \
-        /* end state.                                                  */     \
-        TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_END, category, "", \
-                                         [](perfetto::EventContext) {});      \
-      }                                                                       \
-    } event;                                                                  \
-  } BASE_UNIQUIFY(scoped_event){[&]() {                                       \
-    TRACING_INTERNAL_ADD_TRACE_EVENT(TRACE_EVENT_PHASE_BEGIN, category, name, \
-                                     ##__VA_ARGS__);                          \
-    return 0;                                                                 \
-  }()};
-
-// Emits an empty trace packet into the trace to ensure that the service can
-// safely read the last event from the trace buffer. This can be used to
-// periodically "flush" the last event on threads that don't support explicit
-// flushing of the shared memory buffer chunk when the tracing session stops
-// (e.g. thread pool workers).
-//
-// This workaround is only required because the tracing service cannot safely
-// read the last trace packet from an incomplete SMB chunk (crbug.com/1021571
-// and b/162206162) when scraping the SMB. Adding an empty trace packet ensures
-// that all prior events can be scraped by the service.
-#define PERFETTO_INTERNAL_ADD_EMPTY_EVENT()               \
-  do {                                                    \
-    /* Metadata category is enabled for any session. */   \
-    INTERNAL_TRACE_EVENT_GET_CATEGORY_INFO("__metadata"); \
-    if (INTERNAL_TRACE_EVENT_CATEGORY_GROUP_ENABLED())    \
-      trace_event_internal::AddEmptyPacket();             \
-  } while (false)
-
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-
 namespace trace_event_internal {
 
 extern BASE_EXPORT const perfetto::Track kDefaultTrack;

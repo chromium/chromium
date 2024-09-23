@@ -24,7 +24,7 @@ FeaturePromoSessionPolicy::FeaturePromoSessionPolicy() = default;
 FeaturePromoSessionPolicy::~FeaturePromoSessionPolicy() = default;
 
 void FeaturePromoSessionPolicy::Init(
-    const FeaturePromoSessionManager* session_manager,
+    FeaturePromoSessionManager* session_manager,
     FeaturePromoStorageService* storage_service) {
   session_manager_ = session_manager;
   storage_service_ = storage_service;
@@ -70,6 +70,9 @@ void FeaturePromoSessionPolicy::NotifyPromoEnded(
     case FeaturePromoClosedReason::kOverrideForPrecedence:
     case FeaturePromoClosedReason::kOverrideForTesting:
     case FeaturePromoClosedReason::kOverrideForUIRegionConflict:
+    case FeaturePromoClosedReason::kAbortedByFeature:
+    case FeaturePromoClosedReason::kAbortedByAnchorHidden:
+    case FeaturePromoClosedReason::kAbortedByBubbleDestroyed:
       // These count as the user not interacting, so they cannot trigger a full
       // cooldown. Do not record the shown time.
       break;
@@ -105,7 +108,7 @@ FeaturePromoSessionPolicy::SpecificationToPromoInfo(
       promo_info.priority = PromoPriority::kHigh;
       break;
     case FeaturePromoSpecification::PromoSubtype::kActionableAlert:
-    case FeaturePromoSpecification::PromoSubtype::kPerApp:
+    case FeaturePromoSpecification::PromoSubtype::kKeyedNotice:
       promo_info.priority = PromoPriority::kMedium;
       break;
     case FeaturePromoSpecification::PromoSubtype::kNormal:
@@ -115,6 +118,7 @@ FeaturePromoSessionPolicy::SpecificationToPromoInfo(
   switch (spec.promo_type()) {
     case FeaturePromoSpecification::PromoType::kToast:
     case FeaturePromoSpecification::PromoType::kLegacy:
+    case FeaturePromoSpecification::PromoType::kRotating:
       promo_info.weight = PromoWeight::kLight;
       break;
     case FeaturePromoSpecification::PromoType::kSnooze:
@@ -123,7 +127,7 @@ FeaturePromoSessionPolicy::SpecificationToPromoInfo(
       promo_info.weight = PromoWeight::kHeavy;
       break;
     case FeaturePromoSpecification::PromoType::kUnspecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return promo_info;
 }
@@ -137,12 +141,14 @@ FeaturePromoResult FeaturePromoSessionPolicyV2::CanShowPromo(
     return initial_result;
   }
 
-  if (!session_manager()->IsApplicationActive()) {
-    return FeaturePromoResult::kBlockedByUi;
-  }
-
   if (to_show.priority == PromoPriority::kLow &&
       to_show.weight == PromoWeight::kHeavy) {
+    // Ensure session state is current since there could be a new session.
+    session_manager()->MaybeUpdateSessionState();
+
+    // TODO(dfried): Sanity check to determine if our assumption that promos
+    // will not be shown in an idle browser is valid.
+
     const auto now = storage_service()->GetCurrentTime();
     const auto since_session_start =
         now - storage_service()->ReadSessionData().start_time;

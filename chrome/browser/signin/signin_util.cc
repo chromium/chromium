@@ -23,16 +23,22 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/account_reconcilor_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -205,7 +211,7 @@ bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
     const policy::ProfileSeparationPolicies&
         intercepted_account_separation_policies) {
   // We should not move managed data.
-  if (chrome::enterprise_util::UserAcceptedAccountManagement(profile)) {
+  if (enterprise_util::UserAcceptedAccountManagement(profile)) {
     return false;
   }
 
@@ -258,5 +264,87 @@ void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+PrimaryAccountError SetPrimaryAccountWithInvalidToken(
+    Profile* profile,
+    const std::string& user_email,
+    const std::string& gaia_id,
+    bool is_under_advanced_protection,
+    signin_metrics::AccessPoint access_point,
+    signin_metrics::SourceForRefreshTokenOperation source) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+
+  CHECK(identity_manager->FindExtendedAccountInfoByEmailAddress(user_email)
+            .IsEmpty());
+  CHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  DVLOG(1) << "Adding user with gaia id <" << gaia_id << "> and email <"
+           << user_email << "> with invalid refresh token.";
+
+  // Lock AccountReconcilor temporarily to prevent AddOrUpdateAccount failure
+  // since we have an invalid refresh token.
+  AccountReconcilor::Lock account_reconcilor_lock(
+      AccountReconcilorFactory::GetForProfile(profile));
+
+  CoreAccountId account_id =
+      identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
+          gaia_id, user_email, GaiaConstants::kInvalidRefreshToken,
+          is_under_advanced_protection, access_point, source);
+
+  DVLOG(1) << "Account id <" << account_id.ToString()
+           << "> has been added to the profile with invalid token.";
+
+  auto set_primary_account_result =
+      identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+          account_id, signin::ConsentLevel::kSignin);
+  DVLOG(1) << "Operation of setting account id <" << account_id.ToString()
+           << "> received the following result: "
+           << static_cast<int>(set_primary_account_result);
+
+  return set_primary_account_result;
+}
+
+bool IsSigninPending(signin::IdentityManager* identity_manager) {
+  return !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+             identity_manager->GetPrimaryAccountId(
+                 signin::ConsentLevel::kSignin));
+}
+
+SignedInState GetSignedInState(signin::IdentityManager* identity_manager) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSync))) {
+      return SignedInState::kSyncPaused;
+    }
+    return SignedInState::kSyncing;
+  }
+
+  // If explicit browser signin is not enabled, this returns `kSignedIn`
+  // regardless of the error state of the refresh token. There might for example
+  // be an error in the following two cases: (a) The account is managed. (b) The
+  // account is not managed, but the `SigninManager` has not been notified yet,
+  // which would sign the user out.
+  //
+  // If the error state of the primary account is relevant, then it needs to be
+  // checked in addition to this state.
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+               identity_manager->GetPrimaryAccountId(
+                   signin::ConsentLevel::kSignin)) &&
+                   switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+               ? SignedInState::kSignInPending
+               : SignedInState::kSignedIn;
+  }
+
+  // Not signed, but at least one account is signed in on the web.
+  if (!identity_manager->GetAccountsWithRefreshTokens().empty()) {
+    return SignedInState::kWebOnlySignedIn;
+  }
+
+  return SignedInState::kSignedOut;
+}
 
 }  // namespace signin_util

@@ -8,13 +8,10 @@
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 FakeNotificationPresenter::FakeNotificationPresenter()
-    : NotificationPresenter(),
-      potential_hotspot_state_(
+    : potential_hotspot_state_(
           NotificationPresenter::PotentialHotspotNotificationState::
               NO_HOTSPOT_NOTIFICATION_SHOWN),
       is_setup_required_notification_shown_(false),
@@ -22,20 +19,21 @@ FakeNotificationPresenter::FakeNotificationPresenter()
 
 FakeNotificationPresenter::~FakeNotificationPresenter() = default;
 
-std::optional<multidevice::RemoteDeviceRef>
-FakeNotificationPresenter::GetPotentialHotspotRemoteDevice() {
+std::optional<std::string>
+FakeNotificationPresenter::GetPotentialHotspotRemoteDeviceId() {
   EXPECT_EQ(potential_hotspot_state_,
             NotificationPresenter::PotentialHotspotNotificationState::
                 SINGLE_HOTSPOT_NEARBY_SHOWN);
-  return potential_hotspot_remote_device_;
+  return potential_hotspot_tether_host_id_;
 }
 
 void FakeNotificationPresenter::NotifyPotentialHotspotNearby(
-    multidevice::RemoteDeviceRef remote_device,
+    const std::string& device_id,
+    const std::string& device_name,
     int signal_strength) {
   potential_hotspot_state_ = NotificationPresenter::
       PotentialHotspotNotificationState::SINGLE_HOTSPOT_NEARBY_SHOWN;
-  potential_hotspot_remote_device_ = remote_device;
+  potential_hotspot_tether_host_id_ = device_id;
 }
 
 void FakeNotificationPresenter::NotifyMultiplePotentialHotspotsNearby() {
@@ -71,6 +69,4 @@ void FakeNotificationPresenter::RemoveConnectionToHostFailedNotification() {
   is_connection_failed_notification_shown_ = false;
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether
